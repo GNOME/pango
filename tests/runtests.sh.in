@@ -1,7 +1,7 @@
 #! /bin/sh
 
 LOGFILE=runtests.log
-POTENTIAL_TESTS='testboundaries'
+POTENTIAL_TESTS='testboundaries testcolor'
 
 for I in $POTENTIAL_TESTS
 do
