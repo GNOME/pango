@@ -1,4 +1,5 @@
 2000-08-08  Elliot Lee  <sopwith@redhat.com>
+	* modules/arabic/arabic.c: #include <string.h>
 	* pango/modules.c: Fix incorrect list rearrangement.
 	* pango/pango-layout.c (pango_layout_line_x_to_index): Pay attention to shape attributes
 	  (not perfect since the layout of chars inside a shape is unknown, but gives start
