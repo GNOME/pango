@@ -1,3 +1,16 @@
+Thu Jul  8 15:25:29 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-context.[ch]: Add pango_context_get_font_map()
+
+	* pango/pango-fonts.c pango/pango-fontset.c  pango/pango-context.c: 
+	Some s/PangoMetrics/PangoFontMetrics/ in docs.
+
+	* pango/pango-context.c: Fix problem with unsetting
+	the matrix for a context.
+
+	* pango/pango-types.h: Switch to a much more efficient
+	implementation of PANGO_SCALE.
+
 2004-07-07  Morten Welinder  <terra@gnome.org>
 
 	* pango/pango-layout.c (process_item): Add letter spacing
