@@ -411,8 +411,8 @@ pango_xft_font_get_glyph_extents (PangoFont        *font,
 
       if (ink_rect)
 	{
-	  ink_rect->x = extents.x * PANGO_SCALE;
-	  ink_rect->y = extents.y * PANGO_SCALE;
+	  ink_rect->x = - extents.x * PANGO_SCALE; /* Xft crack-rock sign choice */
+	  ink_rect->y = - extents.y * PANGO_SCALE; /*             "              */
 	  ink_rect->width = extents.width * PANGO_SCALE;
 	  ink_rect->height = extents.height * PANGO_SCALE;
 	}
