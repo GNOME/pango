@@ -89,20 +89,19 @@ hangul_engine_lang_new ()
  */
 
 static void
-set_glyph (PangoGlyphString *glyphs, gint i, PangoCFont *cfont,
-	   PangoGlyph glyph)
+set_glyph (PangoGlyphString *glyphs, gint i,
+	   PangoFont *font, PangoXSubfont subfont, guint16 gindex)
 {
   gint width;
 
-  glyphs->glyphs[i].font = cfont;
-  glyphs->glyphs[i].glyph = glyph;
+  glyphs->glyphs[i].glyph = PANGO_X_MAKE_GLYPH (subfont, gindex);
   
-  glyphs->geometry[i].x_offset = 0;
-  glyphs->geometry[i].y_offset = 0;
+  glyphs->glyphs[i].geometry.x_offset = 0;
+  glyphs->glyphs[i].geometry.y_offset = 0;
 
-  pango_x_glyph_extents (&glyphs->glyphs[i],
-			    NULL, NULL, &width, NULL, NULL, NULL, NULL);
-  glyphs->geometry[i].width = width * 72;
+  pango_x_glyph_extents (font, glyphs->glyphs[i].glyph,
+			 NULL, NULL, &width, NULL, NULL, NULL, NULL);
+  glyphs->glyphs[i].geometry.width = width * 72;
 }
 
 
@@ -134,7 +133,7 @@ set_glyph (PangoGlyphString *glyphs, gint i, PangoCFont *cfont,
 #define IS_T(wc) (wc >= 0x11A7 && wc < 0x11F9)
 
 
-typedef void (* RenderSyllableFunc) (PangoCFont *cfont,
+typedef void (* RenderSyllableFunc) (PangoFont *font, PangoXSubfont subfont,
 				     GUChar2 *text, int length,
 				     PangoGlyphString *glyphs,
 				     int *n_glyphs, int n_clusters);
@@ -146,7 +145,7 @@ typedef void (* RenderSyllableFunc) (PangoCFont *cfont,
 
 #define JOHAB_COMMON							      \
   int i;								      \
-  PangoGlyph gindex;							      \
+  guint16 gindex;							      \
 									      \
   /*									      \
    * Check if there are one CHOSEONG, one JUNGSEONG, and no more	      \
@@ -211,8 +210,8 @@ typedef void (* RenderSyllableFunc) (PangoCFont *cfont,
 		  else							      \
 		    gindex += __choseong_map_2[v - VBASE];		      \
 		}							      \
-	      pango_glyph_string_set_size (glyphs, *n_glyphs + 1);		      \
-	      set_glyph (glyphs, *n_glyphs, cfont, gindex);		      \
+	      pango_glyph_string_set_size (glyphs, *n_glyphs + 1);	      \
+	      set_glyph (glyphs, *n_glyphs, font, subfont, gindex);	      \
 	      glyphs->log_clusters[*n_glyphs] = n_clusters;		      \
 	      (*n_glyphs)++;						      \
 	    }								      \
@@ -231,8 +230,8 @@ typedef void (* RenderSyllableFunc) (PangoCFont *cfont,
 		  break;						      \
 		}							      \
   									      \
-	      pango_glyph_string_set_size (glyphs, *n_glyphs + 1);		      \
-	      set_glyph (glyphs, *n_glyphs, cfont, gindex);		      \
+	      pango_glyph_string_set_size (glyphs, *n_glyphs + 1);	      \
+	      set_glyph (glyphs, *n_glyphs, font, subfont, gindex);	      \
 	      glyphs->log_clusters[*n_glyphs] = n_clusters;		      \
 	      (*n_glyphs)++;						      \
 	    }								      \
@@ -241,16 +240,16 @@ typedef void (* RenderSyllableFunc) (PangoCFont *cfont,
 	    {								      \
 	      gindex = __jongseong_johabfont_base[t - TBASE] +		      \
 		__jongseong_map[v - VBASE];				      \
-	      pango_glyph_string_set_size (glyphs, *n_glyphs + 1);		      \
-	      set_glyph (glyphs, *n_glyphs, cfont, gindex);		      \
+	      pango_glyph_string_set_size (glyphs, *n_glyphs + 1);	      \
+	      set_glyph (glyphs, *n_glyphs, font, subfont, gindex);	      \
 	      glyphs->log_clusters[*n_glyphs] = n_clusters;		      \
 	      (*n_glyphs)++;						      \
 	    }								      \
 									      \
 	  if (v == VFILL && t == TFILL) /* dummy for no zero width */	      \
 	    {								      \
-	      pango_glyph_string_set_size (glyphs, *n_glyphs + 1);		      \
-	      set_glyph (glyphs, *n_glyphs, cfont, JOHAB_FILLER);	      \
+	      pango_glyph_string_set_size (glyphs, *n_glyphs + 1);	      \
+	      set_glyph (glyphs, *n_glyphs, font, subfont, JOHAB_FILLER);     \
 	      glyphs->log_clusters[*n_glyphs] = n_clusters;		      \
 	      (*n_glyphs)++;						      \
 	    }								      \
@@ -260,7 +259,7 @@ typedef void (* RenderSyllableFunc) (PangoCFont *cfont,
     }
 
 static void
-render_syllable_with_johabs (PangoCFont *cfont,
+render_syllable_with_johabs (PangoFont *font, PangoXSubfont subfont,
 			     GUChar2 *text, int length,
 			     PangoGlyphString *glyphs,
 			     int *n_glyphs, int n_clusters)
@@ -291,7 +290,7 @@ JOHAB_COMMON
 		break;
 	      
 	      pango_glyph_string_set_size (glyphs, *n_glyphs + 1);
-	      set_glyph (glyphs, *n_glyphs, cfont, gindex);
+	      set_glyph (glyphs, *n_glyphs, font, subfont, gindex);
 	      glyphs->log_clusters[*n_glyphs] = n_clusters;
 	      (*n_glyphs)++;
 	    }
@@ -302,7 +301,7 @@ JOHAB_COMMON
 }
 
 static void
-render_syllable_with_johab (PangoCFont *cfont,
+render_syllable_with_johab (PangoFont *font, PangoXSubfont subfont,
 			    GUChar2 *text, int length,
 			    PangoGlyphString *glyphs,
 			    int *n_glyphs, int n_clusters)
@@ -319,14 +318,14 @@ JOHAB_COMMON
       for (j = 0; (j < 3) && (__jamo_to_johabfont[wc-LBASE][j] != 0); j++)
 	{
 	  pango_glyph_string_set_size (glyphs, *n_glyphs + 1);
-	  set_glyph (glyphs, *n_glyphs, cfont,
+	  set_glyph (glyphs, *n_glyphs, font, subfont,
 		     __jamo_to_johabfont[wc - LBASE][j]);
 	  glyphs->log_clusters[*n_glyphs] = n_clusters;
 	  (*n_glyphs)++;
 	  if (IS_L (wc))
 	    {
 	      pango_glyph_string_set_size (glyphs, *n_glyphs + 1);
-	      set_glyph (glyphs, *n_glyphs, cfont, JOHAB_FILLER);
+	      set_glyph (glyphs, *n_glyphs, font, subfont, JOHAB_FILLER);
 	      glyphs->log_clusters[*n_glyphs] = n_clusters;
 	      (*n_glyphs)++;
 	    }
@@ -335,12 +334,12 @@ JOHAB_COMMON
 }
 
 static void
-render_syllable_with_iso10646 (PangoCFont *cfont,
+render_syllable_with_iso10646 (PangoFont *font, PangoXSubfont subfont,
 			       GUChar2 *text, int length,
 			       PangoGlyphString *glyphs,
 			       int *n_glyphs, int n_clusters)
 {
-  PangoGlyph gindex;
+  guint16 gindex;
   int i;
   
   /*
@@ -384,7 +383,7 @@ render_syllable_with_iso10646 (PangoCFont *cfont,
 	  gindex = (lindex * VCOUNT + vindex) * TCOUNT + tindex + SBASE;
 	  /* easy for composed syllables. */
 	  pango_glyph_string_set_size (glyphs, *n_glyphs + 1);
-	  set_glyph (glyphs, *n_glyphs, cfont, gindex);
+	  set_glyph (glyphs, *n_glyphs, font, subfont, gindex);
 	  glyphs->log_clusters[*n_glyphs] = n_clusters;
 	  (*n_glyphs)++;
 	  return;
@@ -396,20 +395,20 @@ render_syllable_with_iso10646 (PangoCFont *cfont,
     {
       gindex = text[i];
       pango_glyph_string_set_size (glyphs, *n_glyphs + 1);
-      set_glyph (glyphs, *n_glyphs, cfont, gindex);
+      set_glyph (glyphs, *n_glyphs, font, subfont, gindex);
       glyphs->log_clusters[*n_glyphs] = n_clusters;
       (*n_glyphs)++;
     }
 }
 
 static void
-render_syllable_with_ksc5601 (PangoCFont *cfont,
+render_syllable_with_ksc5601 (PangoFont *font, PangoXSubfont subfont,
 			      GUChar2 *text, int length,
 			      PangoGlyphString *glyphs,
 			      int *n_glyphs, int n_clusters)
 {
   guint16 sindex;
-  PangoGlyph gindex;
+  guint16 gindex;
   int i;
 
   /*
@@ -470,7 +469,7 @@ render_syllable_with_ksc5601 (PangoCFont *cfont,
 		  gindex = (((m / 94) + 0x30) << 8) | ((m % 94) + 0x21);
 
 		  pango_glyph_string_set_size (glyphs, *n_glyphs + 1);
-		  set_glyph (glyphs, *n_glyphs, cfont, gindex);
+		  set_glyph (glyphs, *n_glyphs, font, subfont, gindex);
 		  glyphs->log_clusters[*n_glyphs] = n_clusters;
 		  (*n_glyphs)++;
 		  return;
@@ -487,7 +486,7 @@ render_syllable_with_ksc5601 (PangoCFont *cfont,
       for (j = 0; (j < 3) && (__jamo_to_ksc5601[gindex - LBASE][j] != 0); j++)
 	{
 	  pango_glyph_string_set_size (glyphs, *n_glyphs + 1);
-	  set_glyph (glyphs, *n_glyphs, cfont,
+	  set_glyph (glyphs, *n_glyphs, font, subfont,
 		     __jamo_to_ksc5601[gindex - LBASE][j]);
 	  glyphs->log_clusters[*n_glyphs] = n_clusters;
 	  (*n_glyphs)++;
@@ -496,81 +495,71 @@ render_syllable_with_ksc5601 (PangoCFont *cfont,
 }
 
 static gboolean
-ranges_include_korean (int *ranges,
-		       int  n_ranges)
+subfont_has_korean (PangoFont    *font,
+		    PangoXSubfont subfont)
 {
-  gboolean have_syllables = FALSE;
-  gboolean have_jamos = FALSE;
-  gint i;
-  
-  /* Check for syllables and for uncomposed jamos */
+  /* Check for syllables and for uncomposed jamos. We do this
+   * very unscientifically - if we have the first glyph, we
+   * assume we have them all. It might be better to try
+   * for the last one, to account for lazy font designers.
+   */
 
-  for (i=0; i<n_ranges; i++)
-    {
-      if (ranges[2*i] <= 0xac00 && ranges[2*i+1] >= 0xd7a3)
-	have_syllables = 1;
-      if (ranges[2*i] <= 0x1100 && ranges[2*i+1] >= 0x11ff)
-	have_jamos = 1;
-    }
+  if (!pango_x_has_glyph (font, PANGO_X_MAKE_GLYPH (subfont, 0xac00)))
+    return FALSE;
+  if (!pango_x_has_glyph (font, PANGO_X_MAKE_GLYPH (subfont, 0x1100)))
+    return FALSE;
 
-  return have_syllables && have_jamos;
+  return TRUE;
 }
 
 static gboolean
-find_charset (PangoFont *font, gchar **charsets, gint n_charsets,
-	      PangoXCharset *charset, RenderSyllableFunc *render_func)
+find_subfont (PangoFont *font, gchar **charsets, gint n_charsets,
+	      PangoXSubfont *subfont, RenderSyllableFunc *render_func)
 {
   int i;
-  char **xlfds;
-  int n_xlfds;
+  int n_subfonts;
+  PangoXSubfont *subfonts;
+  int *subfont_charsets;
   
-  pango_x_list_cfonts (font, charsets, n_charsets, &xlfds, &n_xlfds);
+  n_subfonts = pango_x_list_subfonts (font, charsets, n_charsets, &subfonts, &subfont_charsets);
 
-  *cfont = NULL;
-  for (i=0; i<n_xlfds; i++)
+  *subfont = 0;
+
+  for (i=0; i<n_subfonts; i++)
     {
-      if (match_end (xlfds[i], "johabs-1"))
+      if (strcmp (charsets[subfont_charsets[i]], "johabs-1") == 0)
 	{
-	  *cfont = pango_x_load_xlfd (font, xlfds[i]);
+	  *subfont = subfonts[i];
 	  *render_func = render_syllable_with_johabs;
 	  break;
 	}
-      if (match_end (xlfds[i], "johab-1"))
+      else if (strcmp (charsets[subfont_charsets[i]], "johab-1") == 0)
 	{
-	  *cfont = pango_x_load_xlfd (font, xlfds[i]);
+	  *subfont = subfonts[i];
 	  *render_func = render_syllable_with_johab;
 	  break;
 	}
-      else if (match_end (xlfds[i], "iso10646-1"))
+      else if (strcmp (charsets[subfont_charsets[i]], "iso10646-1") == 0)
 	{
-	  gint *ranges;
-	  int n_ranges;
-	  
-	  pango_x_xlfd_get_ranges (font, xlfds[i], &ranges, &n_ranges);
-
-	  if (ranges_include_korean (ranges, n_ranges))
+	  if (subfont_has_korean (font, subfonts[i]))
 	    {
-	      *cfont = pango_x_load_xlfd (font, xlfds[i]);
+	      *subfont = subfonts[i];
 	      *render_func = render_syllable_with_iso10646;
-	      g_free (ranges);
 	      break;
 	    }
-
-	  g_free (ranges);
 	}
-      else if (match_end (xlfds[i], "ksc5601.1987-0"))
+      else if (strcmp (charsets[subfont_charsets[i]], "ksc5601.1987-0") == 0)
 	{
-	  *cfont = pango_x_load_xlfd (font, xlfds[i]);
+	  *subfont = subfonts[i];
 	  *render_func = render_syllable_with_ksc5601;
 	  break;
 	}
     }
 
-  for (i=0; i<n_xlfds; i++)
-    g_free (xlfds[i]);
-  g_free (xlfds);
+  g_free (subfonts);
+  g_free (subfont_charsets);
 
-  return (*cfont != NULL);
+  return (*subfont != 0);
 }
 
 static void 
@@ -580,7 +569,7 @@ hangul_engine_shape (PangoFont        *font,
 		     PangoAnalysis    *analysis,
 		     PangoGlyphString *glyphs)
 {
-  PangoXCharset *charset_id;
+  PangoXSubfont subfont;
   RenderSyllableFunc render_func = NULL;
 
   char *ptr, *next;
@@ -612,9 +601,9 @@ hangul_engine_shape (PangoFont        *font,
    * otherwise use iso-10646 or KSC font depending on the ordering
    * of the fontlist.
    */
-  if (!find_charset (font, default_charset, 1, &cfont, &render_func))
-    if (!find_charset (font, secondary_charset, 1, &cfont, &render_func))
-      if (!find_charset (font, fallback_charsets, 2, &cfont, &render_func))
+  if (!find_subfont (font, default_charset, 1, &subfont, &render_func))
+    if (!find_subfont (font, secondary_charset, 1, &subfont, &render_func))
+      if (!find_subfont (font, fallback_charsets, 2, &subfont, &render_func))
 	{
 	  g_warning ("No available Hangul fonts.");
 	  return;
@@ -643,14 +632,14 @@ hangul_engine_shape (PangoFont        *font,
 
 	  if (n_jamos > 0)
 	    {
-	      (*render_func) (cfont, jamos, n_jamos,
+	      (*render_func) (font, subfont, jamos, n_jamos,
 			      glyphs, &n_glyphs, n_clusters);
 	      n_clusters++;
 	      n_jamos = 0;
 	    }
 
 	  /* Draw a syllable.  */
-	  (*render_func) (cfont, wcs, 3,
+	  (*render_func) (font, subfont, wcs, 3,
 			  glyphs, &n_glyphs, n_clusters);
 	  n_clusters++;
 	  /* Clear.  */
@@ -671,7 +660,7 @@ hangul_engine_shape (PangoFont        *font,
 		  (IS_T (jamos[n_jamos - 1]) && IS_V (wc)))
 		{
 		  /* Draw a syllable.  */
-		  (*render_func) (cfont, jamos, n_jamos,
+		  (*render_func) (font, subfont, jamos, n_jamos,
 				  glyphs, &n_glyphs, n_clusters);
 		  n_clusters++;
 		  /* Clear.  */
@@ -692,7 +681,7 @@ hangul_engine_shape (PangoFont        *font,
   /* Draw the remaining Jamos.  */ 
   if (n_jamos > 0)
     {
-      (*render_func) (cfont, jamos, n_jamos,
+      (*render_func) (font, subfont, jamos, n_jamos,
 		      glyphs, &n_glyphs, n_clusters);
       n_clusters++;
       n_jamos = 0;

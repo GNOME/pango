@@ -67,7 +67,7 @@ void       pango_x_glyph_extents (PangoFont        *font,
  */
 typedef guint16 PangoXSubfont;
 
-#define PANGO_X_MAKE_GLYPH(charset,index) (charset<<16 | index)
+#define PANGO_X_MAKE_GLYPH(subfont,index) (subfont<<16 | index)
 #define PANGO_X_GLYPH_SUBFONT(glyph) (glyph>>16)
 #define PANGO_X_GLYPH_INDEX(glyph) (glyph & 0xffff)
 

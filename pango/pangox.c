@@ -51,15 +51,18 @@ struct _PangoXFont {
   gint max_subfonts;
 };
 
-static PangoXSubfontInfo *pango_x_find_subfont (PangoFont          *font,
-						PangoXSubfont       subfont_index);
-static XCharStruct *      pango_x_get_per_char (PangoXSubfontInfo  *subfont,
-						guint16             char_index);
-static void               pango_x_font_destroy (PangoFont          *font);
-static gboolean           pango_x_find_glyph   (PangoFont          *font,
-						PangoGlyph          glyph,
-						PangoXSubfontInfo **subfont_return,
-						XCharStruct       **charstruct_return);
+static PangoXSubfontInfo * pango_x_find_subfont    (PangoFont          *font,
+						    PangoXSubfont       subfont_index);
+static XCharStruct *       pango_x_get_per_char    (PangoFont          *font,
+						    PangoXSubfontInfo  *subfont,
+						    guint16             char_index);
+static void                pango_x_font_destroy    (PangoFont          *font);
+static gboolean            pango_x_find_glyph      (PangoFont          *font,
+						    PangoGlyph          glyph,
+						    PangoXSubfontInfo **subfont_return,
+						    XCharStruct       **charstruct_return);
+static XFontStruct *       pango_x_get_font_struct (PangoFont          *font,
+						    PangoXSubfontInfo  *info);
 
 PangoFontClass pango_x_font_class = {
   pango_x_font_destroy
@@ -150,7 +153,9 @@ pango_x_render  (Display           *display,
 	  c.byte1 = index / 256;
 	  c.byte2 = index % 256;
 
-	  fs = subfont->font_struct;
+	  fs = pango_x_get_font_struct (font, subfont);
+	  if (!fs)
+	    continue;
 	  
 	  if (fs->fid != old_fid)
 	    {
@@ -537,6 +542,21 @@ pango_x_font_destroy (PangoFont *font)
 
 /* Utility functions */
 
+static XFontStruct *
+pango_x_get_font_struct (PangoFont *font, PangoXSubfontInfo *info)
+{
+  PangoXFont *xfont = (PangoXFont *)font;
+  
+  if (!info->font_struct)
+    {
+      info->font_struct = XLoadQueryFont (xfont->display, info->xlfd);
+      if (!info->font_struct)
+	g_warning ("Cannot load font for XLFD '%s\n", info->xlfd);
+    }
+  
+  return info->font_struct;
+}
+
 static PangoXSubfontInfo *
 pango_x_find_subfont (PangoFont  *font,
 		      PangoXSubfont subfont_index)
@@ -553,7 +573,8 @@ pango_x_find_subfont (PangoFont  *font,
 }
 
 static XCharStruct *
-pango_x_get_per_char (PangoXSubfontInfo *subfont,
+pango_x_get_per_char (PangoFont         *font,
+		      PangoXSubfontInfo *subfont,
 		      guint16            char_index)
 {
   XFontStruct *fs;
@@ -565,9 +586,11 @@ pango_x_get_per_char (PangoXSubfontInfo *subfont,
   byte1 = char_index / 256;
   byte2 = char_index % 256;
 
-  fs = subfont->font_struct;
-  
-  if ((fs->min_byte1 == 0) && (fs->min_byte1 == 0))
+  fs = pango_x_get_font_struct (font, subfont);
+  if (!fs)
+    return NULL;
+	  
+  if ((fs->min_byte1 == 0) && (fs->max_byte1 == 0))
     {
       if (byte2 < fs->min_char_or_byte2 || byte2 > fs->max_char_or_byte2)
 	return NULL;
@@ -607,9 +630,9 @@ pango_x_find_glyph (PangoFont *font,
   if (!subfont)
     return FALSE;
   
-  cs = pango_x_get_per_char (subfont, char_index);
+  cs = pango_x_get_per_char (font, subfont, char_index);
 
-  if (cs->width != 0)
+  if (cs && (cs->lbearing != cs->rbearing))
     {
       if (subfont_return)
 	*subfont_return = subfont;

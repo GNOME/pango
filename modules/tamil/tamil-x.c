@@ -96,21 +96,41 @@ tamil_engine_lang_new ()
  * But we can live with this for time being 
  */
 static void
-set_glyph (PangoGlyphString *glyphs, gint i, PangoCFont *cfont, PangoGlyph glyph)
+set_glyph (PangoGlyphString *glyphs, gint i,
+	   PangoFont *font, PangoXSubfont subfont, guint16 gindex)
 {
   gint width;
 
-  glyphs->glyphs[i].font = cfont;
-  glyphs->glyphs[i].glyph = glyph;
+  glyphs->glyphs[i].glyph = PANGO_X_MAKE_GLYPH (subfont, gindex);
   
-  glyphs->geometry[i].x_offset = 0;
-  glyphs->geometry[i].y_offset = 0;
+  glyphs->glyphs[i].geometry.x_offset = 0;
+  glyphs->glyphs[i].geometry.y_offset = 0;
 
   glyphs->log_clusters[i] = i;
 
-  pango_x_glyph_extents (&glyphs->glyphs[i],
-			    NULL, NULL, &width, NULL, NULL, NULL, NULL);
-  glyphs->geometry[i].width = width * 72;
+  pango_x_glyph_extents (font, glyphs->glyphs[i].glyph,
+			 NULL, NULL, &width, NULL, NULL, NULL, NULL);
+  glyphs->glyphs[i].geometry.width = width * 72;
+}
+
+static PangoXSubfont
+find_tscii_font (PangoFont *font)
+{
+  char *charsets[] = { "tscii-0" };
+  PangoXSubfont *subfonts;
+  int *subfont_charsets;
+  int n_subfonts;
+  PangoXSubfont result = 0;
+
+  n_subfonts = pango_x_list_subfonts (font, charsets, 1, &subfonts, &subfont_charsets);
+
+  if (n_subfonts > 0)
+    result = subfonts[0];
+
+  g_free (subfonts);
+  g_free (subfont_charsets);
+
+  return result;
 }
 
 static void 
@@ -128,15 +148,19 @@ tamil_engine_shape (PangoFont     *font,
   unsigned char tsc_str[6];
   int ntsc, nuni;
 
-  PangoCFont *tscii_font = NULL;
+  PangoXSubfont tscii_font;
 
   g_return_if_fail (font != NULL);
   g_return_if_fail (text != NULL);
   g_return_if_fail (length >= 0);
   g_return_if_fail (analysis != NULL);
 
-  tscii_font = pango_x_find_cfont (font, "tscii-0");
-  pango_cfont_ref (tscii_font);
+  tscii_font = find_tscii_font (font);
+  if (!tscii_font)
+    {
+      g_warning ("Cannot find a tscii font!\n");
+      return;
+    }
   
   n_chars = _pango_utf8_len (text, length);
 
@@ -163,14 +187,14 @@ tamil_engine_shape (PangoFont     *font,
       /* We need to differentiate between different return codes later */
       if (res != TA_SUCCESS)
         {
-          set_glyph (glyphs, n_glyph, tscii_font, ' ');
+          set_glyph (glyphs, n_glyph, font, tscii_font, ' ');
           n_glyph++;
           j = j + nuni;
 	  continue; 
         }
       for (i = 0; i < ntsc; i++)
         {
-          set_glyph (glyphs, n_glyph, tscii_font, (PangoGlyph) tsc_str[i]);
+          set_glyph (glyphs, n_glyph, font, tscii_font, (PangoGlyph) tsc_str[i]);
           n_glyph++;
         }
       j = j + nuni;
@@ -178,8 +202,6 @@ tamil_engine_shape (PangoFont     *font,
 	  
   pango_glyph_string_set_size (glyphs, n_glyph);
 
-  if (tscii_font)
-    pango_cfont_unref (tscii_font);
   g_free(wc);
 }
 

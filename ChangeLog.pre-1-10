@@ -1,3 +1,10 @@
+Mon Jan 17 22:03:24 2000  Owen Taylor  <otaylor@redhat.com>
+
+	* modules/hangul/hangul.c modules/tamil/tamil.c:
+	  Updated to use new X font mechanism.
+
+	* libpango/pangox.[ch]: Misc bugfixes, no longer segfaults.
+
 Mon Jan 17 18:29:39 2000  Owen Taylor  <otaylor@redhat.com>
 
 	* libpango/pangox.[ch] modules/basic/basic.c: back away from

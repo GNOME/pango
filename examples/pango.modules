@@ -1,2 +1,6 @@
 /home/otaylor/devel/pango/modules/./basic/.libs/pango-basic.so BasicScriptEngineLang PangoEngineLang PangoRenderNone 0-687:* 688-767: 896-1423:* 1425-1641:* 7680-8191:* 8192-40959:* 44032-55203:kr 63744-64011:kr 65280-65507:*
 /home/otaylor/devel/pango/modules/./basic/.libs/pango-basic.so BasicScriptEngineX PangoEngineShape PangoRenderX 0-687:* 688-767: 896-1423:* 1425-1641:* 7680-8191:* 8192-40959:* 44032-55203:kr 63744-64011:kr 65280-65507:*
+/home/otaylor/devel/pango/modules/./hangul/.libs/pango-hangul.so HangulScriptEngineLang PangoEngineLang PangoRenderNone 4352-4607:* 44032-55203:*
+/home/otaylor/devel/pango/modules/./hangul/.libs/pango-hangul.so HangulScriptEngineX PangoEngineShape PangoRenderX 4352-4607:* 44032-55203:*
+/home/otaylor/devel/pango/modules/./tamil/.libs/pango-tamil.so TamilScriptEngineLang PangoEngineLang PangoRenderNone 2944-3071:*
+/home/otaylor/devel/pango/modules/./tamil/.libs/pango-tamil.so TamilScriptEngineX PangoEngineShape PangoRenderX 2944-3071:*

@@ -829,8 +829,9 @@ main (int argc, char **argv)
    */
   font = pango_x_load_font (GDK_DISPLAY(),
     /*			    "-misc-fixed-medium-r-semicondensed--13-*-*-*-c-*-iso10646-1," */
-			    "-gnu-unifont-medium-r-normal--16-*-*-*-c-*-iso10646-1,"
-			    "-*-*-medium-r-normal--16-*-*-*-*-*-*-*");
+			    "-tamil-tscakaram-medium-r-normal--*-120-*-*-*-*-tscii-0,"
+			    "-gnu-unifont-medium-r-normal--*-160-*-*-c-*-iso10646-1,"
+			    "-*-*-medium-r-normal--*-160-*-*-*-*-*-*");
 
   /* Create the user interface
    */
