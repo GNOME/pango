@@ -35,8 +35,6 @@
 #define FS_VIETNAMESE 0x100
 #endif
 
-#define PANGO_NOTE(x) x
-
 typedef struct _PangoWin32Font PangoWin32Font;
 typedef struct _PangoWin32FontEntry PangoWin32FontEntry;
 typedef struct _PangoWin32SubfontInfo PangoWin32SubfontInfo;

@@ -18,4 +18,4 @@ all : \
 	cp $< $@
 
 pango-basic-win32.dll : basic-win32.o
-	$(GLIB)/build-dll pango-basic-win32 - ../engine.def $< -L ../../pango -lpango-$(PANGO_VER) -lpangowin32-$(PANGO_VER) $(GLIB_LIBS) $(FRIBIDI_LIBS)
+	$(GLIB)/build-dll pango-basic-win32 - ../module.def $< -L ../../pango -lpango-$(PANGO_VER) -lpangowin32-$(PANGO_VER) $(GLIB_LIBS) $(FRIBIDI_LIBS)

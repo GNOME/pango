@@ -18,5 +18,5 @@ all : \
 	cp $< $@
 
 viewer-win32.exe : viewer-win32.o
-	$(CC) -o $@ $< -L ../pango -lpango-$(PANGO_VER) -lpangowin32-$(PANGO_VER) $(GTK_LIBS) $(GLIB_LIBS) -gdi32
+	$(CC) -o $@ $< $(OPTIMIZE) -L ../pango -lpango-$(PANGO_VER) -lpangowin32-$(PANGO_VER) $(GTK_LIBS) $(GLIB_LIBS) -gdi32
 

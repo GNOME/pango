@@ -1,3 +1,25 @@
+2000-07-18  Tor Lillqvist  <tml@iki.fi>
+
+	* pango/Makefile.am (EXTRA_DIST): Add the pangowin32 sources.
+
+	* pango/pangox.c (lang_texts): Add some Latin-1 to the
+	Finnish and Swedish strings.
+
+	* modules/module.def: New file.
+
+	* modules/Makefile.am (EXTRA_DIST): Add it.
+	
+	* modules/basic/Makefile.am (EXTRA_DIST): Add basic-win32.c.
+
+	* */makefile.mingw: Small updates.
+
+	* pango/pangowin32.c
+	* pango/pangowin32-fontmap.c
+	* modules/basic/basic-win32.c
+	* examples/viewer-win32.c: Bug fixes. Remove dead code.
+	Now the Win32 implementation seems to work, except
+	for a few glitches.
+
 2000-07-16  Tor Lillqvist  <tml@iki.fi>
 
 	* pango/pango-utils.h

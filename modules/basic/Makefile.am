@@ -20,4 +20,5 @@ libpango_basic_la_SOURCES = $(sources)
 
 EXTRA_DIST =		\
 	tables-big.i	\
-	tables-small.i
+	tables-small.i	\
+	basic-win32.c

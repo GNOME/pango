@@ -24,16 +24,6 @@
 #include "pangowin32.h"
 #include <fribidi/fribidi.h>
 
-typedef struct _CharCache CharCache;
-
-#define MAX_CHARSETS 32
-
-struct _CharCache 
-{
-  int n_subfonts;
-  PangoWin32Subfont *subfonts;
-};
-
 static PangoEngineRange basic_ranges[] = {
   /* Language characters */
   { 0x0000, 0x02af, "*" },
@@ -97,27 +87,8 @@ basic_engine_lang_new ()
  * Win32 system script engine portion
  */
 
-static CharCache *
-char_cache_new (void)
-{
-  CharCache *result;
-  int i;
-
-  result = g_new (CharCache, 1);
-  result->subfonts = NULL;
-
-  return result;
-}
-
-static void
-char_cache_free (CharCache *cache)
-{
-  g_free (cache->subfonts);
-  g_free (cache);
-}
-
 static PangoGlyph 
-find_char (CharCache *cache, PangoFont *font, gunichar wc)
+find_char (PangoFont *font, gunichar wc)
 {
   PangoWin32UnicodeSubrange subrange;
   PangoWin32Subfont *subfonts;
@@ -177,22 +148,6 @@ swap_range (PangoGlyphString *glyphs, int start, int end)
     }
 }
 
-static CharCache *
-get_char_cache (PangoFont *font)
-{
-  GQuark cache_id = g_quark_from_string ("basic-char-cache");
-  
-  CharCache *cache = g_object_get_qdata (G_OBJECT (font), cache_id);
-  if (!cache)
-    {
-      cache = char_cache_new ();
-      g_object_set_qdata_full (G_OBJECT (font), cache_id, 
-			       cache, (GDestroyNotify)char_cache_free);
-    }
-
-  return cache;
-}
-
 static void 
 basic_engine_shape (PangoFont        *font,
 		    const char       *text,
@@ -204,14 +159,10 @@ basic_engine_shape (PangoFont        *font,
   int i;
   const char *p;
 
-  CharCache *cache;
-
   g_return_if_fail (font != NULL);
   g_return_if_fail (text != NULL);
   g_return_if_fail (length >= 0);
   g_return_if_fail (analysis != NULL);
-
-  cache = get_char_cache (font);
 
   n_chars = g_utf8_strlen (text, length);
   pango_glyph_string_set_size (glyphs, n_chars);
@@ -222,20 +173,12 @@ basic_engine_shape (PangoFont        *font,
       gunichar wc;
       FriBidiChar mirrored_ch;
       PangoGlyph index;
-      char buf[6];
-      const char *input;
 
       wc = g_utf8_get_char (p);
 
-      input = p;
       if (analysis->level % 2)
 	if (fribidi_get_mirror_char (wc, &mirrored_ch))
-	  {
-	    wc = mirrored_ch;
-	    
-	    g_unichar_to_utf8 (wc, buf);
-	    input = buf;
-	  }
+	  wc = mirrored_ch;
 
       if (wc == 0x200B || wc == 0x200E || wc == 0x200F)	/* Zero-width characters */
 	{
@@ -243,7 +186,7 @@ basic_engine_shape (PangoFont        *font,
 	}
       else
 	{
-	  index = find_char (cache, font, wc);
+	  index = find_char (font, wc);
 	  if (index)
 	    {
 	      set_glyph (font, glyphs, i, p - text, index);
@@ -302,12 +245,11 @@ static PangoCoverage *
 basic_engine_get_coverage (PangoFont  *font,
 			   const char *lang)
 {
-  CharCache *cache = get_char_cache (font);
   PangoCoverage *result = pango_coverage_new ();
   gunichar wc;
 
   for (wc = 0; wc < 65536; wc++)
-    if (find_char (cache, font, wc))
+    if (find_char (font, wc))
       pango_coverage_set (result, wc, PANGO_COVERAGE_EXACT);
 
   return result;

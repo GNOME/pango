@@ -48,10 +48,10 @@ module-defs.c : module-defs.c.win32
 	cp $< $@
 
 pango-$(PANGO_VER).dll : $(PANGO_OBJS) pango.def
-	$(GLIB)/build-dll pango $(PANGO_VER) pango.def $(PANGO_OBJS) $(GLIB_LIBS) $(LIBICONV_LIBS) $(FRIBIDI_LIBS)
+	$(GLIB)/build-dll pango $(PANGO_VER) pango.def $(OPTIMIZE) $(PANGO_OBJS) $(GLIB_LIBS) $(LIBICONV_LIBS) $(FRIBIDI_LIBS)
 
 pangowin32-$(PANGO_VER).dll : $(PANGOWIN32_OBJS) pangowin32.def
-	$(GLIB)/build-dll pangowin32 $(PANGO_VER) pangowin32.def $(PANGOWIN32_OBJS) -L . -lpango-$(PANGO_VER) $(GLIB_LIBS) $(FRIBIDI_LIBS) -lgdi32
+	$(GLIB)/build-dll pangowin32 $(PANGO_VER) pangowin32.def $(OPTIMIZE) $(PANGOWIN32_OBJS) -L . -lpango-$(PANGO_VER) $(GLIB_LIBS) $(FRIBIDI_LIBS) -lgdi32
 
 pango-querymodules.exe : $(PANGO_QUERYMODULES_OBJS) pango-$(PANGO_VER).dll pangowin32-$(PANGO_VER).dll
 	$(CC) -o $@ $(PANGO_QUERYMODULES_OBJS) -L . -lpango-$(PANGO_VER) $(GLIB_LIBS)

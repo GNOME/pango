@@ -126,9 +126,6 @@ split_paragraphs (char *text)
 	  Paragraph *para = g_new (Paragraph, 1);
 	  para->text = last_para;
 	  para->length = p - last_para;
-	  /* Don't include the newline */
-	  if (wc == '\n')
-	    para->length--;
 	  para->layout = pango_layout_new (context);
 	  pango_layout_set_text (para->layout, para->text, para->length);
 	  para->height = 0;
@@ -302,7 +299,7 @@ draw (GtkWidget *layout, GdkRectangle *area)
       
       if (height + para->height >= GTK_LAYOUT (layout)->yoffset + area->y)
 	{
-	  GdkGCValuesMask mask = GDK_GC_FOREGROUND|GDK_GC_BACKGROUND;
+	  GdkGCValuesMask mask = GDK_GC_FOREGROUND|GDK_GC_BACKGROUND|GDK_GC_FONT;
 	  HDC hdc;
 
 	  hdc = gdk_win32_hdc_get (GTK_LAYOUT (layout)->bin_window,

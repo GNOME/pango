@@ -66,3 +66,10 @@ pango_querymodules_SOURCES = \
 	querymodules.c
 pango_querymodules_LDADD = libpangox.la libpango.la $(GLIB_LIBS) $(FRIBIDI_LIBS) $(UNICODE_LIBS) $(X_LIBS)
 
+EXTRA_DIST =					\
+	pangowin32.h				\
+	pangowin32.c				\
+	pangowin32-private.h			\
+	pangowin32-fontcache.c			\
+	pangowin32-fontmap.c
+

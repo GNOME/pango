@@ -574,7 +574,7 @@ LangInfo lang_texts[] = {
   { "eo", "Esperanto Saluton" },
   { "es", "Spanish (Español) ¡Hola!" },
   { "et", "Estonian  Tere, Tervist" },
-  { "fi", "Finnish (Suomi)  Hei" },
+  { "fi", "Finnish (Suomi)  Hei, Hyvää päivää" },
   { "fr", "French (Français)" },
   { "de", "German Grüß Gott" },
   { "iw", "Hebrew   שלום" },
@@ -587,7 +587,7 @@ LangInfo lang_texts[] = {
   { "pl", "Polish   Dzień dobry, Hej" },
   { "ru", "Russian (Русский)" },
   { "sk", "Slovak   Dobrý deň" },
-  { "sv", "Swedish (Svenska) Hej, Goddag" },
+  { "sv", "Swedish (Svenska) Hej på dej, Goddag" },
   { "tr", "Turkish (Türkçe) Merhaba" },
   { "zh", "Chinese (中文,普通话,汉语)" }
 };

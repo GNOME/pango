@@ -926,7 +926,7 @@ pango_win32_list_subfonts (PangoFont                 *font,
 
 gboolean
 subfont_has_glyph (PangoWin32SubfontInfo *info,
-		   wchar_t                c)
+		   wchar_t                wc)
 
 {
   struct {
@@ -936,6 +936,7 @@ subfont_has_glyph (PangoWin32SubfontInfo *info,
   DIBSECTION ds;
   TEXTMETRIC tm;
   HFONT hfont;
+  wchar_t default_wc;
 
   if (info->buf_hbm == NULL)
     {
@@ -980,8 +981,8 @@ subfont_has_glyph (PangoWin32SubfontInfo *info,
       FillRect (info->buf_hdc, &info->buf_rect, white_brush);
 
       info->oldfont = SelectObject (info->buf_hdc, hfont);
-      c = tm.tmDefaultChar;
-      TextOutW (info->buf_hdc, info->buf_x, info->buf_y, &c, 1);
+      default_wc = tm.tmDefaultChar;
+      TextOutW (info->buf_hdc, info->buf_x, info->buf_y, &default_wc, 1);
 
       info->buf_hbm =
 	CreateDIBSection (info->buf_hdc, (BITMAPINFO *)&bmi,
@@ -995,8 +996,7 @@ subfont_has_glyph (PangoWin32SubfontInfo *info,
    * does not exist in the font.
    */
   FillRect (info->buf_hdc, &info->buf_rect, white_brush);
-  TextOutW (info->buf_hdc, info->buf_x, info->buf_y,
-	    &c, 1);
+  TextOutW (info->buf_hdc, info->buf_x, info->buf_y, &wc, 1);
   return (memcmp (info->buf, info->default_char_buf, info->buf_size) != 0);
   }
 
@@ -1018,7 +1018,6 @@ pango_win32_has_glyph (PangoFont  *font,
   PangoWin32SubfontInfo *info;
   guint16 char_index = PANGO_WIN32_GLYPH_INDEX (glyph);
   guint16 subfont_index = PANGO_WIN32_GLYPH_SUBFONT (glyph);
-  wchar_t c;
 
   info = pango_win32_find_subfont (font, subfont_index);
   if (!info)
@@ -1193,6 +1192,7 @@ pango_win32_find_glyph (PangoFont              *font,
   if (!subfont_has_glyph (info, char_index))
     return FALSE;
 
+  hfont = pango_win32_get_hfont (font, info);
   oldfont = SelectObject (pango_win32_hdc, hfont);
   GetTextExtentPoint32W (pango_win32_hdc, &char_index, 1, &size);
   SelectObject (pango_win32_hdc, oldfont);
