@@ -1,3 +1,11 @@
+Thu Feb 19 10:44:17 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-context.c (compute_derived_language):
+	Use 'xx' as the language for cases where we 
+	the language tag mismatches the script but we don't
+	have a good language tag for the script.
+	(#123581)
+
 Tue Feb 17 23:15:13 2004  Laszlo Peter  <laca@sun.com>
 
 	* pango-uninstalled.pc.in: use @PANGO_API_VERSION@

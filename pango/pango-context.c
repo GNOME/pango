@@ -872,8 +872,15 @@ compute_derived_language (PangoLanguage *lang,
   else
     {
       derived_lang = pango_script_get_sample_language (script);
+      /* If we don't find a sample language for the script, we
+       * use a language tag that shouldn't actually be used
+       * anywhere. This keeps fontconfig (for the PangoFc*
+       * backend) from using the language tag to affect the
+       * sort order. I don't have a reference for 'xx' being
+       * safe here, though Keith Packard claims it is.
+       */
       if (!derived_lang)
-	derived_lang = lang;
+	derived_lang = pango_language_from_string ("xx");
     }
 
   return derived_lang;
