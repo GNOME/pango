@@ -182,32 +182,34 @@ s-enum-types-c: @REBUILD@ $(pango_headers) Makefile
 pango_querymodules_SOURCES = \
 	querymodules.c
 
+pango_querymodules_DEPENDENCIES = libpangoxft.la
+
 if HAVE_XFT
 pango_querymodules_LDADD = $(FT2_BUILD_LIBS) $(X_BUILD_LIBS) libpangoxft.la libpango.la $(GLIB_LIBS) $(FRIBIDI_LIBS) $(XFT_LIBS) $(FREETYPE_LIBS)
 else
 pango_querymodules_LDADD = $(FT2_BUILD_LIBS) $(X_BUILD_LIBS) libpango.la $(GLIB_LIBS) $(FRIBIDI_LIBS) $(X_LIBS) $(FREETYPE_LIBS)
 endif
 
-EXTRA_DIST =			\
-	$(pango_built_headers)	\
-	module-defs-ft2.c.win32	\
-	module-defs-win32.c.win32 \
-	module-defs.h	        \
-	pango.def		\
-	pangowin32.def		\
-	pangowin32.h		\
-	pangowin32.c		\
-	pangowin32-private.h	\
-	pangowin32-fontcache.c	\
-	pangowin32-fontmap.c	\
-	pangoft2.def		\
-	makefile.mingw		\
-	makefile.mingw.in	\
-	pango.rc		\
-	pango.rc.in		\
-	pangoft2.rc		\
-	pangoft2.rc.in		\
-	pangowin32.rc		\
+EXTRA_DIST =					\
+	$(pango_built_headers)			\
+	module-defs-ft2.c.win32			\
+	module-defs-win32.c.win32		\
+	module-defs.h				\
+	pango.def				\
+	pangowin32.def				\
+	pangowin32.h				\
+	pangowin32.c				\
+	pangowin32-private.h			\
+	pangowin32-fontcache.c			\
+	pangowin32-fontmap.c			\
+	pangoft2.def				\
+	makefile.mingw				\
+	makefile.mingw.in			\
+	pango.rc				\
+	pango.rc.in				\
+	pangoft2.rc				\
+	pangoft2.rc.in				\
+	pangowin32.rc				\
 	pangowin32.rc.in
 
 
@@ -223,6 +225,6 @@ endif
 
 CLEANFILES =					\
 	pango-enum-types.h			\
-	s-pango-enum-types.h			\
+	s-enum-types-h				\
 	pango-enum-types.c			\
-	s-pango-enum-types.c
+	s-enum-types-c

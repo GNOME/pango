@@ -1,3 +1,12 @@
+Thu Jul 12 16:32:42 2001  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/Makefile.am (pango_querymodules_DEPENDENCIES): Add
+	an explicit dependency on libpangoxft.la, to fix
+	parallel make problem (#56818)
+
+	* pango/Makefile.am (CLEANFILES): Fix problem where
+	name of stamp files didn't match actual name.
+
 2001-07-12  Darin Adler  <darin@bentspoon.com>
 
 	* modules/arabic/arabic-x.c: (arabic_engine_shape): Remove stray
