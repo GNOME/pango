@@ -725,11 +725,14 @@ pango_layout_set_text (PangoLayout *layout,
   g_return_if_fail (layout != NULL);
   g_return_if_fail (length == 0 || text != NULL);
 
-  if (!g_utf8_validate (text, length, &end))
-    g_warning ("Invalid UTF8 string passed to pango_layout_set_text()");
+  if (length != 0)
+    {
+      if (!g_utf8_validate (text, length, &end))
+	g_warning ("Invalid UTF8 string passed to pango_layout_set_text()");
+      
+      length = end - text;
+    }
   
-  length = end - text;
-
   if (layout->text)
     g_free (layout->text);
 
@@ -2775,7 +2778,7 @@ pango_layout_check_lines (PangoLayout *layout)
    * is non-NULL even if it is zero length
    */
   if (!layout->text)
-    pango_layout_set_text (layout, "", 0);
+    pango_layout_set_text (layout, NULL, 0);
 
   attrs = pango_layout_get_effective_attributes (layout);
   iter = pango_attr_list_get_iterator (attrs);

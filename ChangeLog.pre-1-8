@@ -1,3 +1,8 @@
+Fri Aug 24 12:21:50 2001  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-layout.c (pango_layout_set_text): Handle
+	text == NULL, length == 0 again.
+
 Thu Aug 23 19:44:34 2001  Tim Janik  <timj@gtk.org>
 
 	* pango/pango-layout.c (pango_layout_check_lines): pass ""
