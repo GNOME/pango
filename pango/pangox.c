@@ -414,7 +414,7 @@ pango_x_font_new (PangoFontMap *fontmap, const char *spec, int size)
   g_return_val_if_fail (fontmap != NULL, NULL);
   g_return_val_if_fail (spec != NULL, NULL);
 
-  result = (PangoXFont *)g_type_create_instance (PANGO_TYPE_X_FONT);
+  result = g_object_new (PANGO_TYPE_X_FONT, NULL);
   
   result->fontmap = fontmap;
   g_object_ref (fontmap);

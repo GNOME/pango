@@ -245,7 +245,7 @@ pango_win32_font_map_for_display (void)
   if (fontmap != NULL)
     return PANGO_FONT_MAP (fontmap);
 
-  fontmap = (PangoWin32FontMap *) g_type_create_instance (PANGO_TYPE_WIN32_FONT_MAP);
+  fontmap = g_object_new (PANGO_TYPE_WIN32_FONT_MAP, NULL);
   
   fontmap->font_cache = pango_win32_font_cache_new ();
   fontmap->freed_fonts = g_queue_new ();
