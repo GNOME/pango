@@ -1,4 +1,11 @@
+Thu Jun  8 14:43:35 2000  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-modules.h: pango/Makefile.am: Add a new
+	header pango-modules.h to export a few parts of the 
+	modules API needed by code for new types of fonts.	
+
 2000-06-08 Elliot Lee <sopwith@redhat.com>
+
 	* pango-config.in: Include X_LIBS in libraries for 'pangox' target.
 
 2000-06-07  Havoc Pennington  <hp@redhat.com>

@@ -23,8 +23,9 @@
 #include <fribidi/fribidi.h>
 #include <unicode.h>
 #include "iconv.h"
+
 #include "utils.h"
-#include "modules.h"
+#include "pango-modules.h"
 
 struct _PangoContext
 {
@@ -732,7 +733,7 @@ add_engines (PangoContext      *context,
 		  render_type_id = g_quark_from_static_string (PANGO_RENDER_TYPE_NONE);
 		}
 	       
-	      lang_map = _pango_find_map (next_lang,
+	      lang_map = pango_find_map (next_lang,
 					  engine_type_id, render_type_id);
 	    }
 
@@ -780,7 +781,7 @@ add_engines (PangoContext      *context,
 
       pos  = unicode_get_utf8 (pos, &wc);
 	  
-      lang_engines[i] = (PangoEngineLang *)_pango_map_get_engine (lang_map, wc);
+      lang_engines[i] = (PangoEngineLang *)pango_map_get_engine (lang_map, wc);
       fonts[i] = get_font (current_fonts, current_coverages, n_families, wc);
 
       /* FIXME: handle reference counting properly on the shapers */

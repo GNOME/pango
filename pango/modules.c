@@ -24,8 +24,8 @@
 #include <string.h>
 
 #include <gmodule.h>
-#include <pango/pango.h>
 
+#include "pango-modules.h"
 #include "modules.h"
 #include "utils.h"
 
@@ -71,9 +71,9 @@ static void      build_map      (PangoMapInfo       *info);
 static void      init_modules   (void);
 
 PangoMap *
-_pango_find_map (const char *lang,
-		 guint       engine_type_id,
-		 guint       render_type_id)
+pango_find_map (const char *lang,
+		guint       engine_type_id,
+		guint       render_type_id)
 {
   GList *tmp_list = maps;
   PangoMapInfo *map_info = NULL;
@@ -461,16 +461,16 @@ build_map (PangoMapInfo *info)
 }
 
 PangoMapEntry *
-_pango_map_get_entry (PangoMap   *map,
-		      guint32     wc)
+pango_map_get_entry (PangoMap   *map,
+		     guint32     wc)
 {
   PangoSubmap *submap = &map->submaps[wc / 256];
   return submap->is_leaf ? &submap->d.entry : &submap->d.leaves[wc % 256];
 }
 
 PangoEngine *
-_pango_map_get_engine (PangoMap *map,
-		       guint32   wc)
+pango_map_get_engine (PangoMap *map,
+		      guint32   wc)
 {
   PangoSubmap *submap = &map->submaps[wc / 256];
   PangoMapEntry *entry = submap->is_leaf ? &submap->d.entry : &submap->d.leaves[wc % 256];

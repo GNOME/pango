@@ -22,7 +22,7 @@
 #ifndef __PANGOX_PRIVATE_H__
 #define __PANGOX_PRIVATE_H__
 
-#include "modules.h"
+#include "pango-modules.h"
 #include "pangox.h"
 #include "pangox-private.h"
 

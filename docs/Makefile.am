@@ -1,5 +1,19 @@
 ## Process this file with automake to create Makefile.in.
 
+pangoheaders = 	   	   		\
+	../pango/pango.h   		\
+	../pango/pango-attributes.h	\
+	../pango/pango-context.h	\
+	../pango/pango-coverage.h	\
+	../pango/pango-engine.h		\
+	../pango/pango-font.h       	\
+	../pango/pango-fontmap.h	\
+	../pango/pango-glyph.h	   	\
+	../pango/pango-item.h	   	\
+	../pango/pango-layout.h	   	\
+	../pango/pango-types.h	   	\
+	../pango/pangox.h	
+
 if HAVE_GTK_DOC
 
 # The name of the module.
@@ -8,11 +22,10 @@ DOC_MODULE=pango
 # The top-level SGML file.
 DOC_MAIN_SGML_FILE=pango-docs.sgml
 
-INCLUDE_DIR=../pango
 SOURCE_DIR=../pango
 
 scan:
-	gtkdoc-scan --module=$(DOC_MODULE) $(INCLUDE_DIR)/pango*.h
+	gtkdoc-scan --module=$(DOC_MODULE) $(pangoheaders)
 
 templates: scan
 	gtkdoc-mktmpl --module=$(DOC_MODULE)

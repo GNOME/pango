@@ -1403,13 +1403,13 @@ pango_x_font_entry_get_coverage (PangoXFontEntry *entry,
 
   for (ch = 0; ch < 65536; ch++)
     {
-      map_entry = _pango_map_get_entry (shape_map, ch);
+      map_entry = pango_map_get_entry (shape_map, ch);
       if (map_entry->info)
 	{
 	  coverage = g_hash_table_lookup (coverage_hash, map_entry->info->id);
 	  if (!coverage)
 	    {
-	      PangoEngineShape *engine = (PangoEngineShape *)_pango_map_get_engine (shape_map, ch);
+	      PangoEngineShape *engine = (PangoEngineShape *)pango_map_get_engine (shape_map, ch);
 	      coverage = engine->get_coverage (font, lang);
 	      g_hash_table_insert (coverage_hash, map_entry->info->id, coverage);
 	    }

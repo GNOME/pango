@@ -2,6 +2,13 @@
 =======
 
 
+<!-- ##### FUNCTION pango_font_ref ##### -->
+<para>
+
+</para>
+
+@font: 
+
 <!-- ##### FUNCTION pango_x_to_cp ##### -->
 =======
 
@@ -49,6 +56,29 @@ that may be accessed by derived classes:
 
 @font: 
 
+<!-- ##### FUNCTION pango_font_map_unref ##### -->
+<para>
+
+</para>
+
+@fontmap: 
+
+<!-- ##### FUNCTION pango_font_unref ##### -->
+<para>
+
+</para>
+
+@font: 
+
+<!-- ##### FUNCTION pango_font_get_data ##### -->
+<para>
+
+</para>
+
+@font: 
+@key: 
+@Returns: 
+
 <!-- ##### FUNCTION pango_x_xlfd_get_ranges ##### -->
 =======
 
@@ -68,6 +98,13 @@ that may be accessed by derived classes:
 @trailing: 
 @x_pos: >>>>>>> 1.8
 
+<!-- ##### TYPEDEF PangoGlyphIndex ##### -->
+<para>
+The #PangoGlyphIndex type is an integral type used to store glyph
+indices.
+</para>
+
+
 <!-- ##### FUNCTION pango_x_glyph_extents ##### -->
 <para>
 
@@ -82,13 +119,6 @@ that may be accessed by derived classes:
 @descent: 
 @logical_ascent: 
 @logical_descent: 
-
-<!-- ##### TYPEDEF PangoGlyphIndex ##### -->
-<para>
-The #PangoGlyphIndex type is an integral type used to store glyph
-indices.
-</para>
-
 
 <!-- ##### FUNCTION pango_attribute_register_type ##### -->
 <para>
@@ -204,6 +234,13 @@ X Rendering
 @char_pos: 
 @trailing: 
 
+<!-- ##### FUNCTION pango_font_init ##### -->
+<para>
+
+</para>
+
+@font: 
+
 <!-- ##### FUNCTION pango_x_list_cfonts ##### -->
 <para>
 
@@ -224,6 +261,16 @@ X Rendering
 @xlfd: 
 @Returns: 
 
+<!-- ##### FUNCTION pango_font_set_data ##### -->
+<para>
+
+</para>
+
+@font: 
+@key: 
+@data: 
+@destroy_func: 
+
 <!-- ##### FUNCTION g_glyph_string_set_size ##### -->
 <para>
 
@@ -240,6 +287,13 @@ X Rendering
 @font: 
 @charset: 
 @Returns: 
+
+<!-- ##### FUNCTION pango_font_map_init ##### -->
+<para>
+
+</para>
+
+@fontmap: 
 
 <!-- ##### STRUCT PangoXCFont ##### -->
 <para>
@@ -304,6 +358,13 @@ the X Window system.
 </para>
 
 @Returns: 
+
+<!-- ##### FUNCTION pango_font_map_ref ##### -->
+<para>
+
+</para>
+
+@fontmap: 
 
 <!-- ##### SECTION ./tmpl/pango-x.sgml:Long_Description ##### -->
 <para>

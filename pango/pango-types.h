@@ -24,12 +24,6 @@
 
 #include <glib.h>
 
-/* Include this here, since we don't depend on GLib 1.3 yet */
-
-#ifndef G_N_ELEMENTS
-#define G_N_ELEMENTS(arr)		(sizeof(arr) / sizeof((arr)[0]))
-#endif
-
 typedef struct _PangoLangRange PangoLangRange;
 typedef struct _PangoLogAttr PangoLogAttr;
 

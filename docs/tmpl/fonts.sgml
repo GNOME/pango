@@ -36,12 +36,11 @@ the characteristics of a font to load.
 
 <!-- ##### ENUM PangoStyle ##### -->
 <para>
-An enumeration specifying the various slant styles possible for a font.
 </para>
 
-@PANGO_STYLE_NORMAL: the font is upright.
-@PANGO_STYLE_OBLIQUE: the font is slanted, but in a roman style.
-@PANGO_STYLE_ITALIC: the font is slanted in an italic style.
+@PANGO_STYLE_NORMAL: 
+@PANGO_STYLE_OBLIQUE:
+@PANGO_STYLE_ITALIC:
 
 <!-- ##### ENUM PangoWeight ##### -->
 <para>
@@ -148,10 +147,7 @@ The #PangoFont structure contains one member
 which the implementation fills in:
 </para>
 
-@klass: a pointer to the <firstterm>class structure</firstterm>
-        for this font. People using a #PangoFont should
-        not directly access this member; they should use the
-        appropriate wrapper functions.
+@parent_instance: 
 
 <!-- ##### STRUCT PangoFontClass ##### -->
 <para>
@@ -171,7 +167,7 @@ It contains the following members:
 </tbody></tgroup></informaltable>
 </para>
 
-@destroy: a function to free the font structure and associated resources.
+@parent_class: 
 @describe: a function to describe the characteristics of a font. See
            pango_font_describe().
 @get_coverage: A function to get a coverage map for the font.
@@ -198,30 +194,6 @@ a font. It contains the following members:
 @descent: the logical extent of the font beneath the baseline.
          as @ascent + @descent. Individual characters may have
          extents exceeding this value.
-
-<!-- ##### FUNCTION pango_font_init ##### -->
-<para>
-
-</para>
-
-@font: 
-
-
-<!-- ##### FUNCTION pango_font_ref ##### -->
-<para>
-
-</para>
-
-@font: 
-
-
-<!-- ##### FUNCTION pango_font_unref ##### -->
-<para>
-
-</para>
-
-@font: 
-
 
 <!-- ##### FUNCTION pango_font_find_shaper ##### -->
 <para>
@@ -276,25 +248,59 @@ a font. It contains the following members:
 @metrics: 
 
 
-<!-- ##### FUNCTION pango_font_get_data ##### -->
+<!-- ##### MACRO PANGO_TYPE_FONT ##### -->
 <para>
 
 </para>
 
-@font: 
-@key: 
+
+
+<!-- ##### MACRO PANGO_FONT ##### -->
+<para>
+
+</para>
+
+@object: 
+
+
+<!-- ##### MACRO PANGO_IS_FONT ##### -->
+<para>
+
+</para>
+
+@object: 
+
+
+<!-- ##### MACRO PANGO_FONT_CLASS ##### -->
+<para>
+
+</para>
+
+@klass: 
+
+
+<!-- ##### MACRO PANGO_IS_FONT_CLASS ##### -->
+<para>
+
+</para>
+
+@klass: 
+
+
+<!-- ##### MACRO PANGO_FONT_GET_CLASS ##### -->
+<para>
+
+</para>
+
+@obj: 
+
+
+<!-- ##### FUNCTION pango_font_get_type ##### -->
+<para>
+
+</para>
+
 @Returns: 
-
-
-<!-- ##### FUNCTION pango_font_set_data ##### -->
-<para>
-
-</para>
-
-@font: 
-@key: 
-@data: 
-@destroy_func: 
 
 
 <!-- ##### STRUCT PangoFontMap ##### -->
@@ -312,10 +318,7 @@ pango_font_map_init() on the structure.
 The #PangoFont structure contains one member which the implementation fills in:
 </para>
 
-@klass: a pointer to the <firstterm>class structure</firstterm>
-        for this font map. People using a #PangoFontMap should
-        not directly access this member; they should use the
-        appropriate wrapper functions.
+@parent_instance: 
 
 <!-- ##### STRUCT PangoFontMapClass ##### -->
 <para>
@@ -323,36 +326,12 @@ The #PangoFontMapClass structure holds the virtual functions for
 a particular #PangoFontMap implementation.
 </para>
 
-@destroy: a function to free the font map structure and associated resources.
+@parent_class: 
 @load_font: a function to load a font with a given description. See
             pango_font_map_load_font()
 @list_fonts: A function to list available fonts. See pango_font_map_list_fonts()
 @list_families: A function to list available font families. See
                 pango_font_map_list_families().
-
-<!-- ##### FUNCTION pango_font_map_init ##### -->
-<para>
-
-</para>
-
-@fontmap: 
-
-
-<!-- ##### FUNCTION pango_font_map_ref ##### -->
-<para>
-
-</para>
-
-@fontmap: 
-
-
-<!-- ##### FUNCTION pango_font_map_unref ##### -->
-<para>
-
-</para>
-
-@fontmap: 
-
 
 <!-- ##### FUNCTION pango_font_map_load_font ##### -->
 <para>
@@ -394,5 +373,60 @@ a particular #PangoFontMap implementation.
 @family: 
 @descs: 
 @n_descs: 
+
+
+<!-- ##### MACRO PANGO_TYPE_FONT_MAP ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO PANGO_FONT_MAP ##### -->
+<para>
+
+</para>
+
+@object: 
+
+
+<!-- ##### MACRO PANGO_IS_FONT_MAP ##### -->
+<para>
+
+</para>
+
+@object: 
+
+
+<!-- ##### MACRO PANGO_FONT_MAP_CLASS ##### -->
+<para>
+
+</para>
+
+@klass: 
+
+
+<!-- ##### MACRO PANGO_IS_FONT_MAP_CLASS ##### -->
+<para>
+
+</para>
+
+@klass: 
+
+
+<!-- ##### MACRO PANGO_FONT_MAP_GET_CLASS ##### -->
+<para>
+
+</para>
+
+@obj: 
+
+
+<!-- ##### FUNCTION pango_font_map_get_type ##### -->
+<para>
+
+</para>
+
+@Returns: 
 
 

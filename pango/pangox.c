@@ -987,7 +987,7 @@ pango_x_get_shaper_map (const char *lang)
       render_type_id = g_quark_from_static_string (PANGO_RENDER_TYPE_X);
     }
   
-  return _pango_find_map (lang, engine_type_id, render_type_id);
+  return pango_find_map (lang, engine_type_id, render_type_id);
 }
 
 static PangoCoverage *
@@ -1007,7 +1007,7 @@ pango_x_font_find_shaper (PangoFont   *font,
   PangoMap *shape_map = NULL;
 
   shape_map = pango_x_get_shaper_map (lang);
-  return (PangoEngineShape *)_pango_map_get_engine (shape_map, ch);
+  return (PangoEngineShape *)pango_map_get_engine (shape_map, ch);
 }
 
 /* Utility functions */

@@ -93,3 +93,81 @@ glyph index.
 @Returns: 
 
 
+<!-- ##### FUNCTION pango_x_font_map_for_display ##### -->
+<para>
+
+</para>
+
+@display: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_x_shutdown_display ##### -->
+<para>
+
+</para>
+
+@display: 
+
+
+<!-- ##### FUNCTION pango_x_font_map_get_font_cache ##### -->
+<para>
+
+</para>
+
+@font_map: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_x_font_subfont_xlfd ##### -->
+<para>
+
+</para>
+
+@font: 
+@subfont_id: 
+@Returns: 
+
+
+<!-- ##### STRUCT PangoXFontCache ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### FUNCTION pango_x_font_cache_new ##### -->
+<para>
+
+</para>
+
+@display: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_x_font_cache_free ##### -->
+<para>
+
+</para>
+
+@cache: 
+
+
+<!-- ##### FUNCTION pango_x_font_cache_load ##### -->
+<para>
+
+</para>
+
+@cache: 
+@xlfd: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_x_font_cache_unload ##### -->
+<para>
+
+</para>
+
+@cache: 
+@fs: 
+
+

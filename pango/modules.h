@@ -25,29 +25,13 @@
 #define __MODULES_H__
 
 typedef struct _PangoIncludedModule PangoIncludedModule;
-typedef struct _PangoMap PangoMap;
 
-typedef struct _PangoMapEntry PangoMapEntry;
-
-struct _PangoMapEntry 
-{
-  PangoEngineInfo *info;
-  gboolean is_exact;
-};
 struct _PangoIncludedModule
 {
   void (*list) (PangoEngineInfo **engines, int *n_engines);
   PangoEngine *(*load) (const char *id);
   void (*unload) (PangoEngine *engine);
 };
-
-PangoMap *     _pango_find_map       (const char *lang,
-				      guint       engine_type_id,
-				      guint       render_type_id);
-PangoMapEntry *_pango_map_get_entry  (PangoMap   *map,
-				      guint32     wc);
-PangoEngine *  _pango_map_get_engine (PangoMap   *map,
-				      guint32     wc);
 
 extern PangoIncludedModule _pango_included_modules[];
 

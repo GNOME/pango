@@ -52,6 +52,7 @@ pangoinclude_HEADERS = 	   \
 	pango-glyph.h	   \
 	pango-item.h	   \
 	pango-layout.h	   \
+	pango-modules.h	   \
 	pango-types.h	   \
 	pangox.h	
 

@@ -34,6 +34,14 @@ extern "C" {
 typedef struct _PangoFontDescription PangoFontDescription;
 typedef struct _PangoFontMetrics PangoFontMetrics;
 
+/**
+ * PangoStyle:
+ * @PANGO_STYLE_NORMAL: the font is upright.
+ * @PANGO_STYLE_OBLIQUE: the font is slanted, but in a roman style.
+ * @PANGO_STYLE_ITALIC: the font is slanted in an italic style.
+ *
+ * An enumeration specifying the various slant styles possible for a font.
+ **/
 typedef enum {
   PANGO_STYLE_NORMAL,
   PANGO_STYLE_OBLIQUE,
