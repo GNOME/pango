@@ -27,7 +27,7 @@
  *
  *    The following character also has a joining class:
  *
- *     U+200C  ZERO WIDTH NON-JOINER  -> causing
+ *     U+200D  ZERO WIDTH JOINER  -> causing
  *
  *    All other characters are given the joining class `none'.
  *
@@ -269,7 +269,7 @@ static joining_class  Get_Joining_Class (gunichar*   string,
       if (string[pos] < 0x0620 ||
 	  string[pos] >= 0x0700)
 	{
-	  if (string[pos] == 0x200C)
+	  if (string[pos] == 0x200D)
 	    return causing;
 	  else
 	    return none;

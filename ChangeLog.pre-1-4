@@ -1,3 +1,8 @@
+2004-01-06  Roozbeh Pournader  <roozbeh@sharif.edu>
+
+	* modules/arabic/arabic-ot.c: Corrected a mistake between ZWJ and
+	ZWNJ. (#130517)
+
 Fri Dec 19 22:20:18 2003  Matthias Clasen  <maclas@gmx.de>
 
 	* docs/tmpl/layout.sgml: Document all members of PangoLayoutLine.
