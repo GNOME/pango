@@ -10,7 +10,7 @@
 	pango/mini-fribidi/Makefile.am, pango/opentype/Makefile.am:
 	Instead add $(GLIB_CFLAGS) directly to INCLUDES (GTKDOC_CFLAGS for
 	docs/Makefile.am). Also some cosmetic line wrapping and
-	reindentation.
+	reindentation. (#77981)
 
 Mon Nov 25 20:25:23 2002  Owen Taylor  <otaylor@redhat.com>
 
