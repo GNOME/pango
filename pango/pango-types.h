@@ -23,6 +23,7 @@
 #define __PANGO_TYPES_H__
 
 #include <glib.h>
+#include <glib-object.h>
 
 typedef struct _PangoLangRange PangoLangRange;
 typedef struct _PangoLogAttr PangoLogAttr;
@@ -74,6 +75,9 @@ typedef enum {
   PANGO_DIRECTION_TTB_RTL
 } PangoDirection;
 
+#define PANGO_TYPE_LANGUAGE (pango_language_get_type ())
+
+GType          pango_language_get_type    (void);
 PangoLanguage *pango_language_from_string (const char *language);
 #define pango_language_to_string(language) ((const char *)language)
 

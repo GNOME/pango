@@ -29,6 +29,21 @@
 #include "pango-fontmap.h"
 #include "pango-utils.h"
 
+GType
+pango_font_description_get_type (void)
+{
+  static GType our_type = 0;
+  
+  if (our_type == 0)
+    our_type = g_boxed_type_register_static ("PangoFontDescription",
+					     NULL,
+					     (GBoxedCopyFunc)pango_font_description_copy,
+					     (GBoxedFreeFunc)pango_font_description_free,
+					     FALSE);
+
+  return our_type;
+}
+
 /**
  * pango_font_description_copy:
  * @desc: a #PangoFontDescription

@@ -934,6 +934,31 @@ lang_hash (gconstpointer key)
   return h;
 }
 
+static PangoLanguage *
+pango_language_copy (PangoLanguage *language)
+{
+  return language; /* language tags are const */
+}
+static void
+pango_language_free (PangoLanguage *language)
+{
+  return; /* nothing */
+}
+
+GType
+pango_language_get_type (void)
+{
+  static GType our_type = 0;
+  
+  if (our_type == 0)
+    our_type = g_boxed_type_register_static ("PangoLanguage",
+                                             NULL,
+                                             (GBoxedCopyFunc)pango_language_copy,
+                                             (GBoxedFreeFunc)pango_language_free,
+                                             FALSE);
+  return our_type;
+}
+
 /**
  * pang_language_from_string:
  * @language: a string representing a language tag

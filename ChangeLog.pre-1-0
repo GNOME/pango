@@ -1,3 +1,25 @@
+2001-07-02  James Henstridge  <james@daa.com.au>
+
+	* pango/glyphstring.c (pango_glyph_string_copy): copy function.
+	(pango_glyph_string_get_type): implement get_type function.
+
+	* pango/pango-glyph.h (pango_glyph_string_get_type): get_type
+	function prototype.
+	(pango_glyph_string_copy): prototype for copy function.
+
+	* pango/pango-utils.c (pango_language_get_type): implementation.
+
+	* pango/pango-types.h (pango_language_get_type): get_type function.
+
+	* pango/pango-tabs.c (pango_tab_array_get_type): implementation.
+
+	* pango/pango-tabs.h (pango_tab_array_get_type): get_type function.
+
+	* pango/fonts.c (pango_font_description_get_type): implementation.
+
+	* pango/pango-font.h (pango_font_description_get_type): add
+	get_type function for typecode.
+
 Mon Jul  2 06:12:18 2001  Tim Janik  <timj@gtk.org>
 
 	* pango/pangoxft-font.c: 

@@ -71,6 +71,44 @@ pango_glyph_string_set_size (PangoGlyphString *string, gint new_len)
   string->num_glyphs = new_len;
 }
 
+GType
+pango_glyph_string_get_type (void)
+{
+  static GType our_type = 0;
+  
+  if (our_type == 0)
+    our_type = g_boxed_type_register_static ("PangoGlyphString",
+					     NULL,
+					     (GBoxedCopyFunc)pango_glyph_string_copy,
+					     (GBoxedFreeFunc)pango_glyph_string_free,
+					     FALSE);
+
+  return our_type;
+}
+
+/**
+ * pango_glyph_string_copy:
+ * @string: a PangoGlyphString.
+ *
+ *  Copy a glyph string and associated storage.
+ *
+ * Returns the copied PangoGlyphString
+ */
+PangoGlyphString *
+pango_glyph_string_copy (PangoGlyphString *string)
+{
+  PangoGlyphString *new_string = g_new (PangoGlyphString, 1);
+
+  *new_string = *string;
+
+  new_string->glyphs = g_memdup (string->glyphs,
+				 string->space * sizeof (PangoGlyphInfo));
+  new_string->log_clusters = g_memdup (string->log_clusters,
+				       string->space * sizeof (gint));
+
+  return new_string;
+}
+
 /**
  * pango_glyph_string_free:
  * @string:    a PangoGlyphString.

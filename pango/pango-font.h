@@ -104,6 +104,9 @@ struct _PangoFontMetrics
   int approximate_digit_width;
 };
 
+#define PANGO_TYPE_FONT_DESCRIPTION (pango_font_description_get_type ())
+
+GType                 pango_font_description_get_type    (void);
 PangoFontDescription *pango_font_description_copy        (const PangoFontDescription  *desc);
 gboolean              pango_font_description_equal       (const PangoFontDescription  *desc1,
 							  const PangoFontDescription  *desc2);

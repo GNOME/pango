@@ -43,6 +43,8 @@ typedef enum
    */
 } PangoTabAlign;
 
+#define PANGO_TYPE_TAB_ARRAY (pango_tab_array_get_type ())
+
 PangoTabArray  *pango_tab_array_new                 (gint           initial_size,
                                                      gboolean       positions_in_pixels);
 PangoTabArray  *pango_tab_array_new_with_positions  (gint           size,
@@ -50,6 +52,7 @@ PangoTabArray  *pango_tab_array_new_with_positions  (gint           size,
                                                      PangoTabAlign  first_alignment,
                                                      gint           first_position,
                                                      ...);
+GType           pango_tab_array_get_type            (void);
 PangoTabArray  *pango_tab_array_copy                (PangoTabArray *src);
 void            pango_tab_array_free                (PangoTabArray *tab_array);
 gint            pango_tab_array_get_size            (PangoTabArray *tab_array);

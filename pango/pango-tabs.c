@@ -152,6 +152,20 @@ pango_tab_array_new_with_positions (gint           size,
   return array;
 }
 
+GType
+pango_tab_array_get_type (void)
+{
+  static GType our_type = 0;
+  
+  if (our_type == 0)
+    our_type = g_boxed_type_register_static ("PangoTabArray",
+                                             NULL,
+                                             (GBoxedCopyFunc)pango_tab_array_copy,
+                                             (GBoxedFreeFunc)pango_tab_array_free,
+                                             FALSE);
+  return our_type;
+}
+
 /**
  * pango_tab_array_copy:
  * @src: #PangoTabArray to copy

@@ -81,9 +81,13 @@ struct _PangoGlyphString {
   gint space;
 };
 
+#define PANGO_TYPE_GLYPH_STRING (pango_glyph_string_get_type ())
+
 PangoGlyphString *pango_glyph_string_new      (void);
 void              pango_glyph_string_set_size (PangoGlyphString *string,
 					       gint              new_len);
+GType             pango_glyph_string_get_type (void);
+PangoGlyphString *pango_glyph_string_copy     (PangoGlyphString *string);
 void              pango_glyph_string_free     (PangoGlyphString *string);
 void              pango_glyph_string_extents  (PangoGlyphString *glyphs,
 					       PangoFont        *font,
