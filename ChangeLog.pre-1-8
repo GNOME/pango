@@ -1,5 +1,8 @@
 2000-07-20  Tor Lillqvist  <tml@iki.fi>
 
+	* examples/pangowin32.aliases: Add some more fonts. Document where
+	to get the fonts.
+
 	* pango/pangowin32.c (subfont_has_glyph): Use 0xFFFE to produce
 	the default glyph.
 	(create_bitmap_dibsection): Zero out the bitmap.
