@@ -1,8 +1,11 @@
 2004-03-03  Tor Lillqvist  <tml@iki.fi>
 
+	* configure.in: Move check for native Win32 (mingw) a bit
+	earlier. If Win32, disable static builds (like GLib does).
+
 	* pango/pango.def
 	* pango/pangoft2.def: Add some missing symbols. (#135945, Cedric
-	Gustin, #135980, J. Ali Harlow)
+	Gustin; #135980, J. Ali Harlow)
 
 	* pango/pangowin32-fontmap.c (pango_win32_family_get_name): Can be
 	static.
