@@ -44,20 +44,19 @@
  */
 #define LFILL 0x115F
 #define VFILL 0x1160
-#define TFILL 0x11A7
 
 #define HTONE1 0x302E
 #define HTONE2 0x302F
 
 #define IS_L(wc) (wc >= LBASE && wc <= LEND)
 #define IS_V(wc) (wc >= VFILL && wc <= VEND)
-#define IS_T(wc) (wc >= TBASE && wc <= TEND)
+#define IS_T(wc) (wc > TBASE && wc <= TEND)
 #define IS_M(wc) (wc == HTONE1 || wc == HTONE2)
 
 /* jamo which can be composited as a Hangul syllable */
 #define IS_L_S(wc) (wc >= LBASE && wc < LBASE + LCOUNT)
 #define IS_V_S(wc) (wc >= VBASE && wc < VBASE + VCOUNT)
-#define IS_T_S(wc) (wc >= TBASE && wc < TBASE + TCOUNT)
+#define IS_T_S(wc) (wc > TBASE && wc < TBASE + TCOUNT)
 
 #define S_FROM_LVT(l,v,t)	(SBASE + (((l) - LBASE) * VCOUNT + ((v) - VBASE)) * TCOUNT + ((t) - TBASE))
 #define S_FROM_LV(l,v)		(SBASE + (((l) - LBASE) * VCOUNT + ((v) - VBASE)) * TCOUNT)
@@ -65,5 +64,5 @@
 #define V_FROM_S(s)		(VBASE + (((s) - SBASE) % NCOUNT) / TCOUNT)
 #define T_FROM_S(s)		(TBASE + (((s) - SBASE) % TCOUNT))
 
-#define IS_S(wc) (SBASE <= (wc) && (wc) <= SCOUNT)
+#define IS_S(wc) (SBASE <= (wc) && (wc) < (SBASE + SCOUNT))
 #define S_HAS_T(s) (((s) - SBASE) % TCOUNT)

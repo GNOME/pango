@@ -1,3 +1,16 @@
+2002-11-04  Changwoo Ryu  <cwryu@debian.org>
+
+	* modules/hangul/hangul-defs.h (IS_S): Fixed wrong syllable
+	check.
+
+	* modules/hangul/hangul-defs.h: 
+	* modules/hangul/hangul-x.c: No more use of TFILL, the internal
+	trailing consonant filler.
+	(render_syllable_with_*): Appended empty syllable
+	(ex. LFILL+VFILL) rendering case (#96175).
+	(render_syllable_with_ksx1005): Fixed wrong fallback glyphs
+	indices (from #95800 by Jungshik Shin).
+
 Fri Nov  1 21:08:42 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* === Released 1.1.3 ===

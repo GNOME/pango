@@ -139,33 +139,19 @@ typedef void (* RenderSyllableFunc) (PangoFont *font, PangoXSubfont subfont,
   if (n_cho <= 1 && n_jung <= 1)					      \
     {									      \
       int composed = 0;							      \
-      gunichar2 l, v, t;						      \
+      gunichar2 l, v, t = 0;						      \
 									      \
-      if (n_cho > 0)							      \
-	l = text[0];							      \
-      else								      \
-	l = LFILL;							      \
-									      \
-      if (n_jung > 0)							      \
-	v = text[n_cho];						      \
-      else								      \
-	v = VFILL;							      \
-									      \
-      if (n_jong > 0)							      \
-	t = text[n_cho + n_jung];					      \
-      else								      \
-	t = TFILL;							      \
+      l = (n_cho > 0) ? text[0] : LFILL;				      \
+      v = (n_jung > 0) ? text[n_cho] : VFILL;				      \
+      t = (n_jong > 0) ? text[n_cho + n_jung] : 0;			      \
 									      \
       if ((__choseong_johabfont_base[l - LBASE] != 0 || l == LFILL) &&	      \
 	  (__jungseong_johabfont_base[v - VBASE] != 0 || v == VFILL) &&	      \
-	  (__jongseong_johabfont_base[t - TBASE] != 0 || t == TFILL))	      \
+	  (!t || (__jongseong_johabfont_base[t - TBASE] != 0)))		      \
 	composed = n_cho + n_jung + ((n_jong > 0) ? 1 : 0);		      \
       else if ((__choseong_johabfont_base[l - LBASE] != 0 || l == LFILL) &&   \
 	       (__jungseong_johabfont_base[v - VBASE] != 0 || v == VFILL))    \
-	{								      \
-	  composed = n_cho + n_jung;					      \
-	  t = TFILL;							      \
-	}								      \
+	composed = n_cho + n_jung;					      \
 									      \
       /* COMPOSABLE */							      \
       if (composed)							      \
@@ -173,7 +159,7 @@ typedef void (* RenderSyllableFunc) (PangoFont *font, PangoXSubfont subfont,
 	  if (l != LFILL)						      \
 	    {								      \
 	      gindex = __choseong_johabfont_base[l - LBASE];		      \
-	      if (t == TFILL)						      \
+	      if (!t)							      \
 		{							      \
 		  if (v == VFILL)					      \
 		    gindex += 1;					      \
@@ -199,11 +185,12 @@ typedef void (* RenderSyllableFunc) (PangoFont *font, PangoXSubfont subfont,
 	      switch (__johabfont_jungseong_kind[v - VBASE])		      \
 		{							      \
 		case 3:							      \
-		  gindex += __johabfont_jongseong_kind[t - TBASE];	      \
+		  if (t)						      \
+		    gindex += __johabfont_jongseong_kind[t - TBASE];	      \
 		  break;						      \
 		case 4:							      \
 		  gindex += ((l == 0x1100 || l == 0x110f) ? 0 : 1) +	      \
-		    ((t != TFILL) ? 2 : 0);				      \
+		    (t ? 2 : 0);					      \
 		  break;						      \
 		}							      \
   									      \
@@ -213,7 +200,7 @@ typedef void (* RenderSyllableFunc) (PangoFont *font, PangoXSubfont subfont,
 	      (*n_glyphs)++;						      \
 	    }								      \
 									      \
-	  if (t != TFILL)						      \
+	  if (t)							      \
 	    {								      \
 	      gindex = __jongseong_johabfont_base[t - TBASE] +		      \
 		__jongseong_map[v - VBASE];				      \
@@ -223,7 +210,7 @@ typedef void (* RenderSyllableFunc) (PangoFont *font, PangoXSubfont subfont,
 	      (*n_glyphs)++;						      \
 	    }								      \
 									      \
-	  if (v == VFILL && t == TFILL) /* dummy for no zero width */	      \
+	  if (v == VFILL && !t) /* dummy for no zero width */		      \
 	    {								      \
 	      pango_glyph_string_set_size (glyphs, *n_glyphs + 1);	      \
 	      set_glyph (glyphs, *n_glyphs, font, subfont, JOHAB_FILLER);     \
@@ -242,6 +229,7 @@ render_syllable_with_johabs (PangoFont *font, PangoXSubfont subfont,
 			     PangoGlyphString *glyphs,
 			     int *n_glyphs, int cluster_offset)
 {
+  int n_prev_glyphs = *n_glyphs;
   JOHAB_COMMON
 
   /* Render as uncomposed forms as a fallback.  */
@@ -249,7 +237,7 @@ render_syllable_with_johabs (PangoFont *font, PangoXSubfont subfont,
     {
       int j;
 
-      if (text[i] == LFILL || text[i] == VFILL || text[i] == TFILL)
+      if (text[i] == LFILL || text[i] == VFILL)
 	continue;
       /*
        * Uses KSC5601 symbol glyphs which johabS-1 has; they're
@@ -275,7 +263,15 @@ render_syllable_with_johabs (PangoFont *font, PangoXSubfont subfont,
       if (j == 0)
 	set_unknown_glyph (glyphs, n_glyphs, font, text[i], cluster_offset);
     }
-
+  /* No glyph rendered yet; it means the empty syllable (ex. LFILL+VFILL) */
+  if (n_prev_glyphs == *n_glyphs)
+    {
+      gindex = JOHAB_FILLER;
+      pango_glyph_string_set_size (glyphs, *n_glyphs + 1);
+      set_glyph (glyphs, *n_glyphs, font, subfont, gindex);
+      glyphs->log_clusters[*n_glyphs] = cluster_offset;
+      (*n_glyphs)++;
+    }
 }
 
 static void
@@ -284,6 +280,7 @@ render_syllable_with_johab (PangoFont *font, PangoXSubfont subfont,
 			    PangoGlyphString *glyphs,
 			    int *n_glyphs, int cluster_offset)
 {
+  int n_prev_glyphs = *n_glyphs;
   JOHAB_COMMON
 
   /* Render as uncomposed forms as a fallback.  */
@@ -291,7 +288,7 @@ render_syllable_with_johab (PangoFont *font, PangoXSubfont subfont,
     {
       int j;
 
-      if (text[i] == LFILL || text[i] == VFILL || text[i] == TFILL)
+      if (text[i] == LFILL || text[i] == VFILL)
 	continue;
       for (j = 0; (j < 3) && (__jamo_to_johabfont[text[i]-LBASE][j] != 0); j++)
 	{
@@ -311,8 +308,15 @@ render_syllable_with_johab (PangoFont *font, PangoXSubfont subfont,
       if (j == 0)
 	set_unknown_glyph (glyphs, n_glyphs, font, text[i], cluster_offset);
     }
-  if (*n_glyphs == 0)
-    set_unknown_glyph (glyphs, n_glyphs, font, 0, cluster_offset);
+  /* No glyph rendered yet; it means the empty syllable (ex. LFILL+VFILL) */
+  if (n_prev_glyphs == *n_glyphs)
+    {
+      gindex = JOHAB_FILLER;
+      pango_glyph_string_set_size (glyphs, *n_glyphs + 1);
+      set_glyph (glyphs, *n_glyphs, font, subfont, gindex);
+      glyphs->log_clusters[*n_glyphs] = cluster_offset;
+      (*n_glyphs)++;
+    }
 }
 
 static void
@@ -321,6 +325,7 @@ render_syllable_with_ksx1005 (PangoFont *font, PangoXSubfont subfont,
 			       PangoGlyphString *glyphs,
 			       int *n_glyphs, int cluster_offset)
 {
+  int n_prev_glyphs = *n_glyphs;
   guint16 gindex;
   int i, composed;
 
@@ -359,7 +364,7 @@ render_syllable_with_ksx1005 (PangoFont *font, PangoXSubfont subfont,
     {
       int j;
 
-      if (text[i] == LFILL || text[i] == VFILL || text[i] == TFILL)
+      if (text[i] == LFILL || text[i] == VFILL)
 	continue;
 
       gindex = text[i];
@@ -369,7 +374,7 @@ render_syllable_with_ksx1005 (PangoFont *font, PangoXSubfont subfont,
           if (index >= 0x2400 && index < 0x2500)
             index = 0xda80 + index % 256;
           else /* 0x2300 - 0x2400 */
-            index = 0xda10 + index % 256;
+            index = 0xda10 + index % 256 + (index > 0x236e ? 0x12 : 0);
 	  pango_glyph_string_set_size (glyphs, *n_glyphs + 1);
 	  set_glyph (glyphs, *n_glyphs, font, subfont, index);
 	  glyphs->log_clusters[*n_glyphs] = cluster_offset;
@@ -377,6 +382,15 @@ render_syllable_with_ksx1005 (PangoFont *font, PangoXSubfont subfont,
 	}
       if (j == 0)
 	set_unknown_glyph (glyphs, n_glyphs, font, gindex, cluster_offset);
+    }
+  /* No glyph rendered yet; it means the empty syllable (ex. LFILL+VFILL) */
+  if (n_prev_glyphs == *n_glyphs)
+    {
+      gindex = 0xd931;
+      pango_glyph_string_set_size (glyphs, *n_glyphs + 1);
+      set_glyph (glyphs, *n_glyphs, font, subfont, gindex);
+      glyphs->log_clusters[*n_glyphs] = cluster_offset;
+      (*n_glyphs)++;
     }
 }
 
@@ -386,6 +400,7 @@ render_syllable_with_iso10646 (PangoFont *font, PangoXSubfont subfont,
 			       PangoGlyphString *glyphs,
 			       int *n_glyphs, int cluster_offset)
 {
+  int n_prev_glyphs = *n_glyphs;
   guint16 gindex;
   int i, composed;
 
@@ -413,7 +428,19 @@ render_syllable_with_iso10646 (PangoFont *font, PangoXSubfont subfont,
   /* Render as uncomposed forms as a fallback.  */
   for (i = 0; i < length; i++)
     {
+      if (text[i] == LFILL || text[i] == VFILL)
+	continue;
+
       gindex = text[i];
+      pango_glyph_string_set_size (glyphs, *n_glyphs + 1);
+      set_glyph (glyphs, *n_glyphs, font, subfont, gindex);
+      glyphs->log_clusters[*n_glyphs] = cluster_offset;
+      (*n_glyphs)++;
+    }
+  /* No glyph rendered yet; it means the empty syllable (ex. LFILL+VFILL) */
+  if (n_prev_glyphs == *n_glyphs)
+    {
+      gindex = 0x3164;
       pango_glyph_string_set_size (glyphs, *n_glyphs + 1);
       set_glyph (glyphs, *n_glyphs, font, subfont, gindex);
       glyphs->log_clusters[*n_glyphs] = cluster_offset;
@@ -500,6 +527,7 @@ render_syllable_with_ksc5601 (PangoFont *font, PangoXSubfont subfont,
 			      PangoGlyphString *glyphs,
 			      int *n_glyphs, int cluster_offset)
 {
+  int n_prev_glyphs = *n_glyphs;
   int gindex = 0, composed = 0;
   gunichar2 jong1, jong2 = 0;
   int i;
@@ -566,6 +594,15 @@ render_syllable_with_ksc5601 (PangoFont *font, PangoXSubfont subfont,
 	}
       if (j == 0)
 	set_unknown_glyph (glyphs, n_glyphs, font, gindex, cluster_offset);
+    }
+  /* No glyph rendered yet; it means the empty syllable (ex. LFILL+VFILL) */
+  if (n_prev_glyphs == *n_glyphs)
+    {
+      gindex = 0x2121;
+      pango_glyph_string_set_size (glyphs, *n_glyphs + 1);
+      set_glyph (glyphs, *n_glyphs, font, subfont, gindex);
+      glyphs->log_clusters[*n_glyphs] = cluster_offset;
+      (*n_glyphs)++;
     }
 }
 
@@ -714,10 +751,10 @@ hangul_engine_shape (PangoFont        *font,
 	  gint16 sindex;
 
 	  sindex = wc4 - SBASE;
-	  wcs[0] = LBASE + (sindex / NCOUNT);
-	  wcs[1] = VBASE + ((sindex % NCOUNT) / TCOUNT);
-	  wcs[2] = TBASE + (sindex % TCOUNT);
-	  n_code = 3;
+	  wcs[n_code++] = LBASE + (sindex / NCOUNT);
+	  wcs[n_code++] = VBASE + ((sindex % NCOUNT) / TCOUNT);
+	  if (sindex % TCOUNT)
+	    wcs[n_code++] = TBASE + (sindex % TCOUNT);
 
 	  if (n_jamos > 0)
 	    {
@@ -728,7 +765,7 @@ hangul_engine_shape (PangoFont        *font,
 	    }
 
 	  /* Draw a syllable.  */
-	  (*render_func) (font, subfont, wcs, 3,
+	  (*render_func) (font, subfont, wcs, n_code,
 			  glyphs, &n_glyphs, cluster_offset);
 	  cluster_offset = next - text;
 	  /* Clear.  */

@@ -157,6 +157,7 @@ static void
 render_syllable (PangoFont *font, gunichar *text, int length,
 		 PangoGlyphString *glyphs, int *n_glyphs, int cluster_offset)
 {
+  int n_prev_glyphs = *n_glyphs;
   int index;
   gunichar wc, tone;
   int i, j, composed;
@@ -199,6 +200,9 @@ render_syllable (PangoFont *font, gunichar *text, int length,
     {
       int jindex;
 
+      if (text[i] == LFILL || text[i] == VFILL)
+	continue;
+
       index = find_char (font, text[i]);
       if (index)
 	{
@@ -223,6 +227,18 @@ render_syllable (PangoFont *font, gunichar *text, int length,
 	    set_glyph (font, glyphs, *n_glyphs, cluster_offset, index);
 	  (*n_glyphs)++;
 	}
+    }
+  if (n_prev_glyphs == *n_glyphs)
+    {
+      index = find_char (font, 0x3164);
+      pango_glyph_string_set_size (glyphs, *n_glyphs + 1);
+      if (!index)
+	set_glyph (font, glyphs, *n_glyphs, cluster_offset,
+		   pango_xft_font_get_unknown_glyph (font, index));
+      else
+	set_glyph (font, glyphs, *n_glyphs, cluster_offset, index);
+      glyphs->log_clusters[*n_glyphs] = cluster_offset;
+      (*n_glyphs)++;
     }
   if (tone)
     render_tone(font, tone, glyphs, n_glyphs, cluster_offset);
