@@ -357,7 +357,7 @@ pango_ft2_render (FT_Bitmap        *bitmap,
 		    q = face->glyph->bitmap.buffer + iy*face->glyph->bitmap.pitch;
 		    for (ix = x_start; ix < x_limit; ix++)
 		      {
-			*p = MIN (*p, 0xFF - *q);
+			*p = *q;
 			q++;
 			p++;
 		      }
@@ -973,27 +973,22 @@ pango_ft2_render_layout_line (FT_Bitmap       *bitmap,
 	    (y + 4) * bitmap->pitch +
 	    x + PANGO_PIXELS (x_off + ink_rect.x) - 1;
 
-	  /* Don't drawn the underline through descenders */
 	  for (ix = 0; ix < x_limit; ix++)
-	    if (*p == 0xFF &&
-		(ix == x_limit - 1 || p[1] == 0xFF))
-	      *p++ = 0;
+	      *p++ = 0xff;
 	  /* Fall through */
 	case PANGO_UNDERLINE_SINGLE:
 	  p = bitmap->buffer +
 	    (y + 2) * bitmap->pitch +
 	    x + PANGO_PIXELS (x_off + ink_rect.x) - 1;
 	  for (ix = 0; ix < x_limit; ix++)
-	    if (*p == 0xFF &&
-		(ix == x_limit - 1 || p[1] == 0xFF))
-	      *p++ = 0;
+	      *p++ = 0xff;
 	  break;
 	case PANGO_UNDERLINE_LOW:
 	  p = bitmap->buffer +
 	    (y + PANGO_PIXELS (ink_rect.y + ink_rect.height)) * bitmap->pitch +
 	    x + PANGO_PIXELS (x_off + ink_rect.x) - 1;
 	  for (ix = 0; ix < PANGO_PIXELS (ink_rect.width); ix++)
-	    *p++ = 0;
+	    *p++ = 0xff;
 	  break;
 	}
 

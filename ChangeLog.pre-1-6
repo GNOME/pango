@@ -1,3 +1,9 @@
+2001-02-05  Alexander Larsson  <alexl@redhat.com>
+
+	* pango/pangoft2.c (pango_ft2_render,
+	pango_ft2_render_layout_line): Remove bogus MIN when rendering
+	freetype text. Also draw full underlines.
+
 Sun Feb  4 07:48:47 2001  Tim Janik  <timj@gtk.org>
 
 	* pango/pango-attributes.c (pango_color_get_type): pass 0 as
