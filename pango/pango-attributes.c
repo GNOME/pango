@@ -1281,8 +1281,8 @@ pango_attr_iterator_next (PangoAttrIterator *iterator)
 	{
 	  iterator->attribute_stack = g_list_prepend (iterator->attribute_stack, iterator->next_attribute->data);
 	  iterator->end_index = MIN (iterator->end_index, ((PangoAttribute *)iterator->next_attribute->data)->end_index);
-	  iterator->next_attribute = iterator->next_attribute->next;
 	}
+      iterator->next_attribute = iterator->next_attribute->next;
     }
 
   if (iterator->next_attribute)
