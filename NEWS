@@ -300,13 +300,13 @@ Changes between 0.12 and 0.13
 * Win32 Support [Tor]
 * Per-display caching of font coverage on the root window  [Owen]
 * Handling of embedded non-characters in PangoLayout [Elliot]
-* Mapping table fixes and improvements [KUSANO Takayuki, Robert, Owen]
+* Mapping table fixes and improvements [KUSANO Takayuki, Abigail, Owen]
 * Adjustable tab handling in PangoLayout [Havoc]
 * Add relative font-scaling attribute [Havoc]
 * Add function to convert XML/GMarkup description to a PangoAttrList [Havoc]
 * New version of Arabic shaper [Karl]
 * Enhanced Indic support with ligature tables from the font and
-  many more languages [Robert]
+  many more languages [Abigail]
 * Include FriBidi core that provides the features that Pango needs and
   can be used instead of separately installed fribidi. [Owen]
 * Add PangoLayoutIterator that abstracts the geometry operations for
