@@ -1167,30 +1167,30 @@ lang_info_compare (const void *key, const void *val)
  * there are obviously many more languages to include as well.
  */
 static LangInfo lang_texts[] = {
-  { "ar", "Arabic  \xd8\xa7\xd9\x84\xd8\xb3\xd9\x84\xd8\xa7\xd9\x85 \xd8\xb9\xd9\x84\xd9\x8a\xd9\x83\xd9\x85" },
-  { "cs", "Czech (\xc4\x8desky)  Dobr\xc3\xbd den" },
+  { "ar", "Arabic  \330\247\331\204\330\263\331\204\330\247\331\205 \330\271\331\204\331\212\331\203\331\205" },
+  { "cs", "Czech (\304\215esky)  Dobr\303\275 den" },
   { "da", "Danish (Dansk)  Hej, Goddag" },
-  { "el", "Greek (\xce\x95\xce\xbb\xce\xbb\xce\xb7\xce\xbd\xce\xb9\xce\xba\xce\xac) \xce\x93\xce\xb5\xce\xb9\xce\xac \xcf\x83\xce\xb1\xcf\x82" },
+  { "el", "Greek (\316\225\316\273\316\273\316\267\316\275\316\271\316\272\316\254) \316\223\316\265\316\271\316\254 \317\203\316\261\317\202" },
   { "en", "English Hello" },
   { "eo", "Esperanto Saluton" },
-  { "es", "Spanish (Espa\xc3\xb1ol) \xc2\xa1Hola!" },
+  { "es", "Spanish (Espa\303\261ol) \302\241Hola!" },
   { "et", "Estonian  Tere, Tervist" },
-  { "fi", "Finnish (Suomi)  Hei, Hyv\xc3\xa4\xc3\xa4 p\xc3\xa4iv\xc3\xa4\xc3\xa4" },
-  { "fr", "French (Fran\xc3\xa7ais)" },
-  { "de", "German Gr\xc3\xbc\xc3\x9f Gott" },
-  { "iw", "Hebrew   \xd7\xa9\xd7\x9c\xd7\x95\xd7\x9d" },
+  { "fi", "Finnish (Suomi)  Hei, Hyv\303\244\303\244 p\303\244iv\303\244\303\244" },
+  { "fr", "French (Fran\303\247ais)" },
+  { "de", "German Gr\303\274\303\237 Gott" },
+  { "iw", "Hebrew   \327\251\327\234\327\225\327\235" },
   { "il", "Italiano  Ciao, Buon giorno" },
-  { "ja", "Japanese (\xe6\x97\xa5\xe6\x9c\xac\xe8\xaa\x9e) \xe3\x81\x93\xe3\x82\x93\xe3\x81\xab\xe3\x81\xa1\xe3\x81\xaf, \xef\xbd\xba\xef\xbe\x9d\xef\xbe\x86\xef\xbe\x81\xef\xbe\x8a" },
-  { "ko", "Korean (\xed\x95\x9c\xea\xb8\x80)   \xec\x95\x88\xeb\x85\x95\xed\x95\x98\xec\x84\xb8\xec\x9a\x94, \xec\x95\x88\xeb\x85\x95\xed\x95\x98\xec\x8b\xad\xeb\x8b\x88\xea\xb9\x8c" },
-  { "mt", "Maltese   \xc4\x8aaw, Sa\xc4\xa7\xc4\xa7a" },
+  { "ja", "Japanese (\346\227\245\346\234\254\350\252\236) \343\201\223\343\202\223\343\201\253\343\201\241\343\201\257, \357\275\272\357\276\235\357\276\206\357\276\201\357\276\212" },
+  { "ko", "Korean (\355\225\234\352\270\200)   \354\225\210\353\205\225\355\225\230\354\204\270\354\232\224, \354\225\210\353\205\225\355\225\230\354\213\255\353\213\210\352\271\214" },
+  { "mt", "Maltese   \304\212aw, Sa\304\247\304\247a" },
   { "nl", "Nederlands, Vlaams Hallo, Dag" },
   { "no", "Norwegian (Norsk) Hei, God dag" },
-  { "pl", "Polish   Dzie\xc5\x84 dobry, Hej" },
-  { "ru", "Russian (\xd0\xa0\xd1\x83\xd1\x81\xd1\x81\xd0\xba\xd0\xb8\xd0\xb9)" },
-  { "sk", "Slovak   Dobr\xc3\xbd de\xc5\x88" },
-  { "sv", "Swedish (Svenska) Hej p\xc3\xa5 dej, Goddag" },
-  { "tr", "Turkish (T\xc3\xbcrk\xc3\xa7e) Merhaba" },
-  { "zh", "Chinese (\xe4\xb8\xad\xe6\x96\x87,\xe6\x99\xae\xe9\x80\x9a\xe8\xaf\x9d,\xe6\xb1\x89\xe8\xaf\xad)" }
+  { "pl", "Polish   Dzie\305\204 dobry, Hej" },
+  { "ru", "Russian (\320\240\321\203\321\201\321\201\320\272\320\270\320\271)" },
+  { "sk", "Slovak   Dobr\303\275 de\305\210" },
+  { "sv", "Swedish (Svenska) Hej p\303\245 dej, Goddag" },
+  { "tr", "Turkish (T\303\274rk\303\247e) Merhaba" },
+  { "zh", "Chinese (\344\270\255\346\226\207,\346\231\256\351\200\232\350\257\235,\346\261\211\350\257\255)" }
 };
 
 /**
@@ -1220,14 +1220,14 @@ pango_language_get_sample_string (PangoLanguage *language)
       if (lang_info)
 	result = lang_info->str;
       else
-	result = "French (Fran\xc3\xa7ais)";     /* Assume iso-8859-1 */
+	result = "French (Fran\303\247ais)";     /* Assume iso-8859-1 */
     }
   else
     {
       /* Complete junk
        */
 
-      result = "\xd8\xa7\xd9\x84\xd8\xb3\xd9\x84\xd8\xa7\xd9\x85 \xd8\xb9\xd9\x84\xd9\x8a\xd9\x83\xd9\x85 \xc4\x8desky \xce\x95\xce\xbb\xce\xbb\xce\xb7\xce\xbd\xce\xb9\xce\xba\xce\xac Fran\xc3\xa7ais \xe6\x97\xa5\xe6\x9c\xac\xe8\xaa\x9e \xed\x95\x9c\xea\xb8\x80 \xd0\xa0\xd1\x83\xd1\x81\xd1\x81\xd0\xba\xd0\xb8\xd0\xb9 \xe4\xb8\xad\xe6\x96\x87,\xe6\x99\xae\xe9\x80\x9a\xe8\xaf\x9d,\xe6\xb1\x89\xe8\xaf\xad T\xc3\xbcrk\xc3\xa7e";
+      result = "\330\247\331\204\330\263\331\204\330\247\331\205 \330\271\331\204\331\212\331\203\331\205 \304\215esky \316\225\316\273\316\273\316\267\316\275\316\271\316\272\316\254 Fran\303\247ais \346\227\245\346\234\254\350\252\236 \355\225\234\352\270\200 \320\240\321\203\321\201\321\201\320\272\320\270\320\271 \344\270\255\346\226\207,\346\231\256\351\200\232\350\257\235,\346\261\211\350\257\255 T\303\274rk\303\247e";
     }
 
   return result;

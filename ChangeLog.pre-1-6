@@ -1,3 +1,9 @@
+Fri Dec  6 18:58:25 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-utils.lo: Use octal escapes rather than
+	hex to avoid the problem over having hex digits 
+	immediately after the hex escape.
+
 Fri Dec  6 18:30:36 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pango-utils.c: Convert literal UTF-8 to hex
