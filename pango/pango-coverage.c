@@ -61,14 +61,8 @@ pango_coverage_new (void)
   PangoCoverage *coverage = g_new (PangoCoverage, 1);
 
   coverage->n_blocks = N_BLOCKS_INCREMENT;
-  coverage->blocks = g_new (PangoBlockInfo, coverage->n_blocks);
+  coverage->blocks = g_new0 (PangoBlockInfo, coverage->n_blocks);
   coverage->ref_count = 1;
-
-  for (i=0; i<coverage->n_blocks; i++)
-    {
-      coverage->blocks[i].data = NULL;
-      coverage->blocks[i].level = PANGO_COVERAGE_NONE;
-    }
   
   return coverage;
 }
@@ -87,10 +81,11 @@ PangoCoverage *
 pango_coverage_copy (PangoCoverage *coverage)
 {
   int i;
-  PangoCoverage *result = g_new (PangoCoverage, 1);
+  PangoCoverage *result;
 
   g_return_val_if_fail (coverage != NULL, NULL);
-  
+
+  result = g_new (PangoCoverage, 1);
   result->n_blocks = coverage->n_blocks;
   result->blocks = g_new (PangoBlockInfo, coverage->n_blocks);
   result->ref_count = 1;
@@ -215,8 +210,14 @@ void pango_coverage_set (PangoCoverage     *coverage,
 
   if (block_index > coverage->n_blocks)
     {
-      coverage->n_blocks += N_BLOCKS_INCREMENT;
+      int old_n_blocks = coverage->n_blocks;
+
+      coverage->n_blocks =
+	N_BLOCKS_INCREMENT * ((block_index + N_BLOCKS_INCREMENT - 1) / N_BLOCKS_INCREMENT);
+      
       coverage->blocks = g_renew (PangoBlockInfo, coverage->blocks, coverage->n_blocks);
+      memset (coverage->blocks + old_n_blocks, 0,
+	      sizeof (PangoBlockInfo) * (coverage->n_blocks - old_n_blocks));
     }
 
   data = coverage->blocks[block_index].data;
@@ -264,9 +265,9 @@ void pango_coverage_max (PangoCoverage *coverage,
 
   if (other->n_blocks > coverage->n_blocks)
     {
-      coverage->n_blocks += N_BLOCKS_INCREMENT;
+      coverage->n_blocks = other->n_blocks;
       coverage->blocks = g_renew (PangoBlockInfo, coverage->blocks, coverage->n_blocks);
-
+      
       for (block_index = old_blocks; block_index < coverage->n_blocks; block_index++)
 	{
 	  if (other->blocks[block_index].data)
