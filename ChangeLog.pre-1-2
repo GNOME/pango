@@ -1,3 +1,11 @@
+Mon Apr  3 20:30:20 2000  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/mapping.c (pango_glyph_string_x_to_index): Fix handling
+	of positions at character limits.
+
+	* modules/basic/basic.c (basic_engine_shape): Fix bug that
+	was causing mirrored characters not to mirror.
+
 Mon Apr  3 15:16:06 2000  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/glyphstring.c (pango_glyph_string_get_logical_widths):

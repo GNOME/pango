@@ -434,14 +434,23 @@ basic_engine_shape (PangoFont        *font,
       GUChar4 wc;
       FriBidiChar mirrored_ch;
       PangoGlyph index;
+      char buf[6];
+      const char *input;
 
       _pango_utf8_iterate (p, &next, &wc);
 
+      input = p;
       if (analysis->level % 2)
 	if (fribidi_get_mirror_char (wc, &mirrored_ch))
-	  wc = mirrored_ch;
+	  {
+	    wc = mirrored_ch;
+	    
+	    _pango_guchar4_to_utf8 (wc, buf);
+	    input = buf;
+	  }
+      
 
-      index = find_char (cache, font, wc, p);
+      index = find_char (cache, font, wc, input);
       if (index)
 	{
 	  set_glyph (font, glyphs, i, p - text, index);

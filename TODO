@@ -126,7 +126,9 @@ General
 
 * s/num_chars/n_chars/ etc. (Always use n_ as enumeration prefix)
 
-* Underline attribute should be an enumeration (none/single/double/squiggle/low,
-  where low is below the ink rect - a style appropriate for underline
-  accelerators.)
+* Fix handling of 'trailing' in x_to_index() to handle clusters 
+  with more than one character where positioning is not allowed
+  inside the cluster. Uniscript sets trailing as 0 or number of j
+  characters in the glyph. (Trailing is currently a boolean
+  for us.)
 

@@ -285,7 +285,7 @@ pango_glyph_string_x_to_index (PangoGlyphString *glyphs,
 	  char *p = text + start_index;
 	  int i = 0;
 
-	  while (i + 1 < cp)
+	  while (i + 1 <= cp)
 	    {
 	      p = unicode_next_utf8 (p);
 	      i++;
@@ -293,8 +293,11 @@ pango_glyph_string_x_to_index (PangoGlyphString *glyphs,
 	    
 	  *index = (p - text);
 	}
+
+      /* FIXME: Handle multiple character clusters better
+       */
       if (trailing)
-	*trailing = (cp - (int)cp) > 0.5 ? 1 : 0;
+	*trailing = (cp - (int)cp > 0.5) ? 1 : 0;
     }
 }
 
