@@ -13,7 +13,7 @@ DOC_SOURCE_DIR=../pango
 SCAN_OPTIONS=
 
 # Extra options to supply to gtkdoc-mkdb
-MKDB_OPTIONS=
+MKDB_OPTIONS=--sgml-mode
 
 # Extra options to supply to gtkdoc-fixref
 FIXXREF_OPTIONS=

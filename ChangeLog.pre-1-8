@@ -1,3 +1,7 @@
+2001-11-14  Matthias Clasen  <matthiasc@poet.de>
+	
+	* docs/Makefile.am (MKDB_OPTIONS): Add --sgml-mode.
+
 2001-11-11  Matthias Clasen  <matthiasc@poet.de>
 	
 	* docs/Makefile.am (IGNORE_HFILES): Add pangoxft-private.h.
