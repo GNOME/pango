@@ -91,13 +91,14 @@ void           pango_ot_buffer_add_glyph  (PangoOTBuffer     *buffer,
 					   guint              glyph_index,
 					   guint              properties,
 					   guint              cluster);
-void           pango_ot_buffer_set_rtl    (PangoOTBuffer     *buffer,
-					   gboolean           rtl);
 void           pango_ot_buffer_get_glyphs (PangoOTBuffer     *buffer,
 					   PangoOTGlyph     **glyphs,
 					   int               *n_glyphs);
 void           pango_ot_buffer_output     (PangoOTBuffer     *buffer,
 					   PangoGlyphString  *glyphs);
+
+void           pango_ot_buffer_set_zero_width_marks (PangoOTBuffer     *buffer,
+						     gboolean           zero_width_marks);
 
 PangoOTRuleset *pango_ot_ruleset_new (PangoOTInfo       *info);
 

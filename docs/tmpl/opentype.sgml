@@ -195,13 +195,13 @@ identify the various OpenType tables in the
 @cluster: 
 
 
-<!-- ##### FUNCTION pango_ot_buffer_set_rtl ##### -->
+<!-- ##### FUNCTION pango_ot_buffer_set_zero_width_marks ##### -->
 <para>
 
 </para>
 
 @buffer: 
-@rtl: 
+@zero_width_marks: 
 
 
 <!-- ##### FUNCTION pango_ot_buffer_get_glyphs ##### -->
