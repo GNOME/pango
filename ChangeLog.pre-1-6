@@ -1,3 +1,10 @@
+Wed Jun 12 11:08:35 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* modules/arabic/langboxfont.[ch] modules/arabic/naqshfont.[ch]:
+	Change @glyph2 parameter of arabic_*_recode() to be a gunichar*
+	like @glyph. (Fixes warning with Solaris 8 compiler;
+	#83256, David L. Cooper II)
+
 Wed Jun 12 11:02:04 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* examples/Makefile.am (EXTRA_DIST) examples/pangoft2.aliases:
