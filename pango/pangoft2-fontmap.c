@@ -326,6 +326,9 @@ _pango_ft2_font_map_get_library (PangoFontMap *fontmap)
 static void
 pango_fc_do_finalize (PangoFT2FontMap    *fontmap)
 {
+  if (fontmap->substitute_destroy)
+    fontmap->substitute_destroy (fontmap->substitute_data);
+
   FT_Done_FreeType (fontmap->library);
 }
 

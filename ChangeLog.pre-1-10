@@ -1,3 +1,18 @@
+Mon Dec  2 17:22:34 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* === Released 1.1.4 ===
+
+	* configure.in: Up version to 1.1.4, interface age 0.
+
+	* NEWS: Updated.
+
+	* pango/pangoxft-fontmap.c (pango_fc_do_finalize)
+	* pango/pangoft2-fontmap.c (pango_fc_do_finalize): Fix
+	leaks of fontmap->substitute_data. (#99850)
+
+	* pango/Makefile.am (INCLUDES): Fix accidental reference
+	to pango-script-table.h.
+
 Sun Nov 17 23:28:26 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pango-glyph-item.[ch] pango/pango-layout.h:

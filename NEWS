@@ -1,3 +1,19 @@
+Changes between 1.1.3 and 1.1.4
+
+* Fix the Arabic-words-broken-by-underlines problem by
+  stripping out non-shape affecting attributes then adding them
+  back after shaping.
+* Hangul shaper fixes [Changwoo Ryu, Jungshik Shin]
+* Handle compatability ideographs in basic-x shaper [Federic Zhang]
+* Rename function parameters to avoid shadowing system headres
+  [Soeren Sandmann]
+* Fix memory leak in Win32 backend [Tor Lillqvist]
+* Fix crasher problem with non-BMP characters [He Qiangqiang]
+* Implement pango_ft2_font_map_set_default_substitute() [Matthias Clasen]
+* Doc improvements [Matthias Clasen, Michael R. Walton, Jungshik Shin]
+* Misc bug and build fixes [Dagfinn I. Mannsåker, Tony Graham,
+  Dan Mills, Sebastian Wilhelmi]
+
 Changes between 1.1.2 and 1.1.3
 
 * Hangul module bug fixes and improvements [Changwoo Ryu, Jungshik Shin]

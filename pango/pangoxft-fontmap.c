@@ -357,6 +357,8 @@ pango_xft_get_context (Display *display,
 static void
 pango_fc_do_finalize (PangoXftFontMap *fontmap)
 {
+  if (fontmap->substitute_destroy)
+    fontmap->substitute_destroy (fontmap->substitute_data);
 }
 
 static void
