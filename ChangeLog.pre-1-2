@@ -1,3 +1,13 @@
+2001-09-10  Alex Larsson  <alexl@redhat.com>
+
+	* pango/fonts.c:
+	* pango/glyphstring.c:
+	* pango/pango-attributes.c:
+	* pango/pango-color.c:
+	* pango/pango-tabs.c:
+	* pango/pango-utils.c:
+	Update to the new g_boxed_type_register_static API.
+	
 Mon Sep  3 19:37:02 2001  Owen Taylor  <otaylor@redhat.com>
 
 	* configure.in: Version 0.18

@@ -159,10 +159,8 @@ pango_tab_array_get_type (void)
   
   if (our_type == 0)
     our_type = g_boxed_type_register_static ("PangoTabArray",
-                                             NULL,
                                              (GBoxedCopyFunc)pango_tab_array_copy,
-                                             (GBoxedFreeFunc)pango_tab_array_free,
-                                             FALSE);
+                                             (GBoxedFreeFunc)pango_tab_array_free);
   return our_type;
 }
 

@@ -36,10 +36,8 @@ pango_font_description_get_type (void)
   
   if (our_type == 0)
     our_type = g_boxed_type_register_static ("PangoFontDescription",
-					     NULL,
 					     (GBoxedCopyFunc)pango_font_description_copy,
-					     (GBoxedFreeFunc)pango_font_description_free,
-					     FALSE);
+					     (GBoxedFreeFunc)pango_font_description_free);
 
   return our_type;
 }

@@ -952,10 +952,8 @@ pango_language_get_type (void)
   
   if (our_type == 0)
     our_type = g_boxed_type_register_static ("PangoLanguage",
-                                             NULL,
                                              (GBoxedCopyFunc)pango_language_copy,
-                                             (GBoxedFreeFunc)pango_language_free,
-                                             FALSE);
+                                             (GBoxedFreeFunc)pango_language_free);
   return our_type;
 }
 

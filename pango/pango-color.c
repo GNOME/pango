@@ -32,10 +32,8 @@ pango_color_get_type (void)
   
   if (our_type == 0)
     our_type = g_boxed_type_register_static ("PangoColor",
-					     NULL,
 					     (GBoxedCopyFunc) pango_color_copy,
-					     (GBoxedFreeFunc) pango_color_free,
-					     FALSE);
+					     (GBoxedFreeFunc) pango_color_free);
 
   return our_type;
 }

@@ -78,10 +78,8 @@ pango_glyph_string_get_type (void)
   
   if (our_type == 0)
     our_type = g_boxed_type_register_static ("PangoGlyphString",
-					     NULL,
 					     (GBoxedCopyFunc)pango_glyph_string_copy,
-					     (GBoxedFreeFunc)pango_glyph_string_free,
-					     FALSE);
+					     (GBoxedFreeFunc)pango_glyph_string_free);
 
   return our_type;
 }

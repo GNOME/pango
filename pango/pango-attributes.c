@@ -717,10 +717,8 @@ pango_attr_list_get_type (void)
   
   if (our_type == 0)
     our_type = g_boxed_type_register_static ("PangoAttrList",
-					     NULL,
 					     (GBoxedCopyFunc) pango_attr_list_copy,
-					     (GBoxedFreeFunc) pango_attr_list_unref,
-					     FALSE);
+					     (GBoxedFreeFunc) pango_attr_list_unref);
 
   return our_type;
 }
