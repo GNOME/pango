@@ -1,5 +1,24 @@
 2000-11-08  Robert Brady  <rwb197@zepler.org>
 
+	* pango/fonts/devnag.README: Updated to point to the new fonts
+
+	* examples/HELLO.utf8: Added a few new entries.
+
+	* modules/Makefile.am, configure.in: s/devanagari/indic/
+	
+	* modules/devangari: Removed.
+
+	* modules/indic: New shapers for Devanagari,
+	Bengali, Gurmukhi, Gujarati, and Burmese, that make use of
+	the below facilities.
+
+	* pango/fonts/devnag18.bdf: Removed.
+
+	* pango/docs/TEXT/ligatures: Documentation on the ligatures.
+
+	* examples/pangox.aliases: Added fonts for the new Indic renderers
+	to sans, serif and monospace.
+
 	* pango/pangox-fontmap.c, pango/pangox-private.h: Add a 
 	per-PangoXFontMap cache for X Atoms.
 

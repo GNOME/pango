@@ -3,12 +3,19 @@
 # family style variant weight stretch   XLFD
 
 sans normal normal normal normal "-*-helvetica-medium-r-normal--*-*-*-*-*-*-*-*,\
-				  -*-clearlyu-medium-r-normal--*-*-*-*-*-*-iso10646-1,\
-	                          -*-fixed-medium-r-normal--*-*-*-*-*-*-*-*,\
+                                  -*-clearlyu-medium-r-normal--*-*-*-*-*-*-iso10646-1,\
+                                  -*-fixed-medium-r-normal--*-*-*-*-*-*-*-*,\
                                   -kaist-iyagi-bold-r-normal--*-*-*-*-*-*-johab-1,\
                                   -*-song ti-medium-r-normal--*-*-*-*-*-*-*-*,\
                                   -tamil-tscakaram-medium-r-normal--*-*-*-*-*-*-tscii-0,\
-                                  -*-devanagari-medium-r-normal--*-*-*-*-*-*-iso10646-dev"
+-*-devanagari-medium-r-normal--*-*-*-*-*-*-iso10646-dev,\
+-*-gujarati-medium-r-normal--*-*-*-*-*-*-iso10646-guj,\
+-*-gurmukhi-medium-r-normal--*-*-*-*-*-*-iso10646-gur,\
+-*-bengali-medium-r-normal--*-*-*-*-*-*-iso10646-bng,\
+-*-kannada-medium-r-normal--*-*-*-*-*-*-iso10646-kan,\
+-*-burmese-medium-r-normal--*-*-*-*-*-*-iso10646-brm,\
+-*-buginese-medium-r-normal--*-*-*-*-*-*-iso10646-bgn,\
+-*-oriya-medium-r-normal--*-*-*-*-*-*-iso10646-ori"
 
 serif normal normal normal normal "-*-times-medium-r-normal--*-*-*-*-*-*-*-*,\
 				  -*-clearlyu-medium-r-normal--*-*-*-*-*-*-iso10646-1,\
@@ -16,11 +23,25 @@ serif normal normal normal normal "-*-times-medium-r-normal--*-*-*-*-*-*-*-*,\
                                    -kaist-iyagi-bold-r-normal--*-*-*-*-*-*-johab-1,\
                                    -*-song ti-medium-r-normal--*-*-*-*-*-*-*-*,\
                                    -tamil-tscakaram-medium-r-normal--*-*-*-*-*-*-tscii-0,\
-                                   -*-devanagari-medium-r-normal--*-*-*-*-*-*-iso10646-dev"
+-*-devanagari-medium-r-normal--*-*-*-*-*-*-iso10646-dev,\
+-*-gujarati-medium-r-normal--*-*-*-*-*-*-iso10646-guj,\
+-*-gurmukhi-medium-r-normal--*-*-*-*-*-*-iso10646-gur,\
+-*-bengali-medium-r-normal--*-*-*-*-*-*-iso10646-bng,\
+-*-kannada-medium-r-normal--*-*-*-*-*-*-iso10646-kan,\
+-*-burmese-medium-r-normal--*-*-*-*-*-*-iso10646-brm,\
+-*-buginese-medium-r-normal--*-*-*-*-*-*-iso10646-bgn,\
+-*-oriya-medium-r-normal--*-*-*-*-*-*-iso10646-ori"
 
 monospace normal normal normal normal "-*-fixed-medium-r-normal--*-*-*-*-*-*-*-*,\
 				       -*-clearlyu-medium-r-normal--*-*-*-*-*-*-iso10646-1,\
                                        -kaist-iyagi-bold-r-normal--*-*-*-*-*-*-johab-1,\
                                        -*-song ti-medium-r-normal--*-*-*-*-*-*-*-*,\
                                        -tamil-tscakaram-medium-r-normal--*-*-*-*-*-*-tscii-0,\
-                                       -*-devanagari-medium-r-normal--*-*-*-*-*-*-iso10646-dev"
+-*-devanagari-medium-r-normal--*-*-*-*-*-*-iso10646-dev,\
+-*-gujarati-medium-r-normal--*-*-*-*-*-*-iso10646-guj,\
+-*-gurmukhi-medium-r-normal--*-*-*-*-*-*-iso10646-gur,\
+-*-bengali-medium-r-normal--*-*-*-*-*-*-iso10646-bng,\
+-*-kannada-medium-r-normal--*-*-*-*-*-*-iso10646-kan,\
+-*-burmese-medium-r-normal--*-*-*-*-*-*-iso10646-brm,\
+-*-buginese-medium-r-normal--*-*-*-*-*-*-iso10646-bgn,\
+-*-oriya-medium-r-normal--*-*-*-*-*-*-iso10646-ori"

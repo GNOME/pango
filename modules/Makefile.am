@@ -2,9 +2,9 @@
 
 SUBDIRS = 		\
 	arabic		\
-	devanagari 	\
 	basic 		\
 	hangul 		\
+	indic           \
 	tamil 		\
 	thai
 
