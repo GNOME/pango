@@ -1,3 +1,39 @@
+2003-03-09  James Henstridge  <james@daa.com.au>
+
+	* autogen.sh: make similar changes to the ones on glib head (call
+	gtk-docize, etc).
+
+	* configure.in: move some calculations into M4 macros, rather than
+	calculating them when configure runs.
+	Use AC_HELP_STRING where appropriate.
+	Replace gtk-doc checks with a call to GTK_DOC_CHECK.
+	Replace AC_OUTPUT_COMMANDS() call with a number of calls to
+	AC_CONFIG_COMMANDS (once per created file).
+	Get rid of the "chmod +x pango-config" bit, because there is no
+	pango-config anymore.
+
+	* Makefile.am: get rid of custom distcheck rule, and set
+	DISTCHECK_CONFIGURE_FLAGS, which is equivalent.
+	Use += to select which .pc files to install.
+
+	* pango/Makefile.am: Add rules to rebuild module-defs* files, and
+	remove them on clean.
+	Reorder so that rules related to each individual library are next
+	to each other.
+	Use BUILT_SOURCES for built sources.
+
+	* pango/opentype/Makefile.am: don't use STRIP_BEGIN/STRIP_END.
+
+	* modules/*/Makefile.am: simplify module makefiles through use of
+	+=, and regularise them a bit (fixed a few bugs in the process).
+
+	* docs/Makefile.am: remove common rules, and instead include
+	gtk-doc.make.
+
+	* examples/Makefile.am: add pango.modules to CLEANFILES.
+
+	* tests/Makefile.am: remove temporary files on clean.
+
 Mon Feb 17 13:06:39 2003  Owen Taylor  <otaylor@redhat.com>
 
 	* configure.in **/Makefile.am: Add an --enable-debug

@@ -32,7 +32,7 @@ pango_viewer_SOURCES =		\
 	viewer-qt.cc		\
 	viewer-qt.h
 
-CLEANFILES = moc_viewer-qt.cc
+CLEANFILES = moc_viewer-qt.cc pango.modules
 pango_viewer_LDADD =					\
 	../pango/libpangox-$(PANGO_API_VERSION).la	\
 	../pango/libpango-$(PANGO_API_VERSION).la	\

@@ -1,29 +1,5 @@
 ## Process this file with automake to create Makefile.in.
 
-if HAVE_XFT
-X_DEFINES=-DHAVE_X
-else
-X_DEFINES=
-endif
-
-if HAVE_XFT
-XFT_DEFINES=-DHAVE_XFT
-else
-XFT_DEFINES=
-endif
-
-if HAVE_FREETYPE
-FT2_DEFINES=-DHAVE_FREETYPE
-else
-FT2_DEFINES=
-endif
-
-if HAVE_WIN32
-WIN32_DEFINES=-DHAVE_WIN32
-else
-WIN32_DEFINES=
-endif
-
 INCLUDES =					\
 	-I$(top_srcdir)				\
 	$(GLIB_CFLAGS)				\
@@ -31,18 +7,28 @@ INCLUDES =					\
 	$(FONTCONFIG_CFLAGS)			\
 	$(FREETYPE_CFLAGS)			\
 	$(X_CFLAGS)				\
-	$(X_DEFINES)				\
-	$(XFT_DEFINES)				\
-	$(FT2_DEFINES)				\
-	$(WIN32_DEFINES)			\
 	-DG_DISABLE_DEPRECATED			\
 	$(PANGO_DEBUG_FLAGS)
+
+if HAVE_XFT
+INCLUDES += -DHAVE_X
+endif
+if HAVE_XFT
+INCLUDES += -DHAVE_XFT
+endif
+if HAVE_FREETYPE
+INCLUDES += -DHAVE_FREETYPE
+endif
+if HAVE_WIN32
+INCLUDES += -DHAVE_WIN32
+endif
+
 
 TESTS=runtests.sh
 
 noinst_PROGRAMS = gen-all-unicode dump-boundaries
 
-check_PROGRAMS = testboundaries testcolor $(CXX_TEST)
+check_PROGRAMS = testboundaries testcolor
 
 gen_all_unicode_SOURCES = gen-all-unicode.c
 
@@ -61,11 +47,10 @@ testcolor_LDADD = ../pango/libpango-$(PANGO_API_VERSION).la
 dump_boundaries_LDADD = ../pango/libpango-$(PANGO_API_VERSION).la
 
 if HAVE_CXX
-CXX_TEST = cxx-test
-cxx_test_SOURCES = cxx-test.C
-else
-CXX_TEST =
+check_PROGRAMS += cxx-test
 endif
+cxx_test_SOURCES = cxx-test.C
+
 
 EXTRA_DIST = 			\
 	all-unicode.txt		\
@@ -77,3 +62,4 @@ all-unicode.txt: gen-all-unicode
 
 all-local: all-unicode.txt
 
+DISTCLEANFILES = all-unicode.txt runtests.log

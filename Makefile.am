@@ -1,5 +1,7 @@
 ## Process this file with automake to create Makefile.in.
 
+AUTOMAKE_OPTIONS = 1.7
+
 SUBDIRS= pango modules examples docs tools tests
 
 EXTRA_DIST = 		\
@@ -18,45 +20,23 @@ EXTRA_DIST = 		\
 	pango-zip.sh	\
 	sanitize-la.sh
 
+pkgconfigdir = $(libdir)/pkgconfig
+pkgconfig_DATA = pango.pc
+
 if HAVE_X
-X_PC=pangox.pc
+pkgconfig_DATA += pangox.pc
 endif
 
 if HAVE_XFT
-XFT_PC=pangoxft.pc
+pkgconfig_DATA += pangoxft.pc
 endif
 
 if HAVE_FREETYPE
-FT2_PC=pangoft2.pc
+pkgconfig_DATA += pangoft2.pc
 endif
 
 if HAVE_WIN32
-WIN32_PC=pangowin32.pc
+pkgconfig_DATA += pangowin32.pc
 endif
 
-pkgconfigdir = $(libdir)/pkgconfig
-pkgconfig_DATA = pango.pc $(X_PC) $(XFT_PC) $(FT2_PC) $(WIN32_PC)
-
-# This is a version of the automake-1.4 distcheck rule modified
-# to pass --enable-gtk-doc to ./configure
-#
-mydistcheck: dist
-	-rm -rf $(distdir)
-	GZIP=$(GZIP_ENV) $(TAR) zxf $(distdir).tar.gz
-	mkdir $(distdir)/=build
-	mkdir $(distdir)/=inst
-	dc_install_base=`cd $(distdir)/=inst && pwd`; \
-	cd $(distdir)/=build \
-	  && ../configure --srcdir=.. --prefix=$$dc_install_base --enable-gtk-doc \
-	  && $(MAKE) $(AM_MAKEFLAGS) \
-	  && $(MAKE) $(AM_MAKEFLAGS) dvi \
-	  && $(MAKE) $(AM_MAKEFLAGS) check \
-	  && $(MAKE) $(AM_MAKEFLAGS) install \
-	  && $(MAKE) $(AM_MAKEFLAGS) installcheck \
-	  && $(MAKE) $(AM_MAKEFLAGS) dist
-	-rm -rf $(distdir)
-	@banner="$(distdir).tar.gz is ready for distribution"; \
-	dashes=`echo "$$banner" | sed s/./=/g`; \
-	echo "$$dashes"; \
-	echo "$$banner"; \
-	echo "$$dashes"
+DISTCHECK_CONFIGURE_FLAGS = --enable-gtk-doc
