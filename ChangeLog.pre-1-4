@@ -1,3 +1,22 @@
+2002-01-18  Alexander Larsson  <alla@lysator.liu.se>
+	
+        * pango/pangoft2-private.h:
+	Add glyph_cache_destroy to PangoFont. This is slightly ugly, we
+	should perhaps have it in the FontMap, but it was easy.
+	
+	Added cached_glyph to PangoFT2GlyphInfo. This can be used by
+	apps that want to have a glyph cache. Only one user per PangoContext
+	though. Right now it is only internally	accessible.
+
+	Added pango_ft2_font_get_cache_glyph_data(), pango_ft2_font_set_cache_glyph_data() and
+	pango_ft2_font_set_glyph_cache_destroy() to access this functionallity
+	
+	* pango/pangoft2.c:
+	Implement glyph caching for pango_ft2_render_layout(). Unbounded
+	caching right now. We should probably limit this in order to not
+	use a lot of memory if the user displayed a lot of glyphs once,
+	and then doesn't use them anymore.
+
 2002-01-17  jacob berkman  <jacob@ximian.com>
 
 	* modules/hebrew/Makefile.am (common_sources): include missing

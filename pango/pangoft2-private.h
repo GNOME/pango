@@ -76,12 +76,14 @@ struct _PangoFT2Font
   gboolean in_cache;
 
   GHashTable *glyph_info;
+  GDestroyNotify glyph_cache_destroy;
 };
 
 struct _PangoFT2GlyphInfo
 {
   PangoRectangle logical_rect;
   PangoRectangle ink_rect;
+  void *cached_glyph;
 };
 
 struct _PangoFT2Face
@@ -114,5 +116,15 @@ void           _pango_ft2_font_map_remove         (PangoFontMap      *fontmap,
 const char    *_pango_ft2_ft_strerror             (FT_Error           error);
 PangoFontDescription *_pango_ft2_font_desc_from_pattern (MiniXftPattern *pattern,
 							 gboolean        include_size);
+
+void *pango_ft2_font_get_cache_glyph_data    (PangoFont      *font,
+					      int             glyph_index);
+void  pango_ft2_font_set_cache_glyph_data    (PangoFont      *font,
+					      int             glyph_index,
+					      void           *cached_glyph);
+void  pango_ft2_font_set_glyph_cache_destroy (PangoFont      *font,
+					      GDestroyNotify  destroy_notify);
+
+
 
 #endif /* __PANGOFT2_PRIVATE_H__ */

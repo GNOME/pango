@@ -51,6 +51,13 @@ struct _PangoFT2FontClass
   PangoFontClass parent_class;
 };
 
+typedef struct
+{
+  FT_Bitmap bitmap;
+  int bitmap_left;
+  int bitmap_top;
+}  PangoFT2RenderedGlyph;
+
 static PangoFontClass *parent_class;	/* Parent class structure for PangoFT2Font */
 
 static void pango_ft2_font_class_init (PangoFT2FontClass *class);
@@ -256,6 +263,44 @@ pango_ft2_font_class_init (PangoFT2FontClass *class)
   font_class->get_metrics = pango_ft2_font_get_metrics;
 }
 
+static void
+pango_ft2_free_rendered_glyph (PangoFT2RenderedGlyph *rendered)
+{
+  g_free (rendered->bitmap.buffer);
+  g_free (rendered);
+}
+
+static PangoFT2RenderedGlyph *
+pango_ft2_font_render_glyph (PangoFont *font,
+			     int glyph_index)
+{
+  PangoFT2RenderedGlyph *rendered;
+  FT_Face face;
+
+  rendered = g_new (PangoFT2RenderedGlyph, 1);
+
+  face = pango_ft2_font_get_face (font);
+  
+  if (face)
+    {
+      /* Draw glyph */
+      /* FIXME hint or not? */ 
+      FT_Load_Glyph (face, glyph_index, FT_LOAD_DEFAULT);
+      FT_Render_Glyph (face->glyph, ft_render_mode_normal);
+
+      rendered->bitmap = face->glyph->bitmap;
+      rendered->bitmap.buffer = g_memdup (face->glyph->bitmap.buffer,
+					  face->glyph->bitmap.rows * face->glyph->bitmap.pitch);
+      rendered->bitmap_left = face->glyph->bitmap_left;
+      rendered->bitmap_top = face->glyph->bitmap_top;
+    }
+  else
+    g_error ("Couldn't get face for PangoFT2Face");
+
+  return rendered;
+}
+
+
 /**
  * pango_ft2_render:
  * @bitmap:  the FreeType2 bitmap onto which to draw the string
@@ -273,14 +318,13 @@ pango_ft2_render (FT_Bitmap        *bitmap,
 		  int               x, 
 		  int               y)
 {
-  FT_Face face;
-  FT_Face prev_face = NULL;
-  FT_UInt glyph_index, prev_index;
+  FT_UInt glyph_index;
   int i;
   int x_position = 0;
   int ix, iy, ixoff, iyoff, y_start, y_limit, x_start, x_limit;
   PangoGlyphInfo *gi;
   guchar *dest, *src;
+  gboolean add_glyph_to_cache;
 
   g_return_if_fail (bitmap != NULL);
   g_return_if_fail (glyphs != NULL);
@@ -292,41 +336,42 @@ pango_ft2_render (FT_Bitmap        *bitmap,
     {
       if (gi->glyph)
 	{
+	  PangoFT2RenderedGlyph *rendered_glyph;
 	  glyph_index = gi->glyph;
-	  face = pango_ft2_font_get_face (font);
 
-	  if (face)
+	  rendered_glyph = pango_ft2_font_get_cache_glyph_data (font, glyph_index);
+	  add_glyph_to_cache = FALSE;
+	  if (rendered_glyph == NULL)
 	    {
-	      /* Draw glyph */
-	      /* FIXME hint or not? */ 
-	      FT_Load_Glyph (face, glyph_index, FT_LOAD_DEFAULT);
-	      FT_Render_Glyph (face->glyph, ft_render_mode_normal);
+	      rendered_glyph = pango_ft2_font_render_glyph (font, glyph_index);
+	      add_glyph_to_cache = TRUE;
+	    }
+	  
+	  ixoff = x + PANGO_PIXELS (x_position + gi->geometry.x_offset);
+	  iyoff = y + PANGO_PIXELS (gi->geometry.y_offset);
+	  
+	  x_start = MAX (0, - (ixoff + rendered_glyph->bitmap_left));
+	  x_limit = MIN (rendered_glyph->bitmap.width, bitmap->width - (ixoff + rendered_glyph->bitmap_left));
 
-	      ixoff = x + PANGO_PIXELS (x_position + gi->geometry.x_offset);
-	      iyoff = y + PANGO_PIXELS (gi->geometry.y_offset);
+	  y_start = MAX (0,  - (iyoff - rendered_glyph->bitmap_top));
+	  y_limit = MIN (rendered_glyph->bitmap.rows, bitmap->rows - (iyoff - rendered_glyph->bitmap_top));
 
-	      x_start = MAX (0, - (ixoff + face->glyph->bitmap_left));
-	      x_limit = MIN (face->glyph->bitmap.width, bitmap->width - (ixoff + face->glyph->bitmap_left));
+	  PING (("glyph %d:%d: bitmap: %dx%d, left:%d top:%d",
+		 i, glyph_index,
+		 rendered_glyph->bitmap.width, rendered_glyph->bitmap.rows,
+		 rendered_glyph->bitmap_left, rendered_glyph->bitmap_top));
+	  PING (("xstart:%d xlim:%d ystart:%d ylim:%d",
+		 x_start, x_limit, y_start, y_limit));
 
-	      y_start = MAX (0,  - (iyoff - face->glyph->bitmap_top));
-	      y_limit = MIN (face->glyph->bitmap.rows, bitmap->rows - (iyoff - face->glyph->bitmap_top));
-
-	      PING (("glyph %d:%d: bitmap: %dx%d, left:%d top:%d",
-		     i, glyph_index,
-		     face->glyph->bitmap.width, face->glyph->bitmap.rows,
-		     face->glyph->bitmap_left, face->glyph->bitmap_top));
-	      PING (("xstart:%d xlim:%d ystart:%d ylim:%d",
-		     x_start, x_limit, y_start, y_limit));
-
-	      if (face->glyph->bitmap.pixel_mode == ft_pixel_mode_grays)
+	  if (rendered_glyph->bitmap.pixel_mode == ft_pixel_mode_grays)
 		for (iy = y_start; iy < y_limit; iy++)
 		  {
 		    dest = bitmap->buffer +
-		      (iyoff - face->glyph->bitmap_top + iy) * bitmap->pitch +
-		      ixoff + face->glyph->bitmap_left + x_start;
+		      (iyoff - rendered_glyph->bitmap_top + iy) * bitmap->pitch +
+		      ixoff + rendered_glyph->bitmap_left + x_start;
 		    
-		    src = face->glyph->bitmap.buffer + 
-                      iy * face->glyph->bitmap.pitch + x_start;
+		    src = rendered_glyph->bitmap.buffer + 
+                      iy * rendered_glyph->bitmap.pitch + x_start;
 
 		    for (ix = x_start; ix < x_limit; ix++)
 		      {
@@ -344,16 +389,16 @@ pango_ft2_render (FT_Bitmap        *bitmap,
 			src++;
 		      }
 		  }
-	      else if (face->glyph->bitmap.pixel_mode == ft_pixel_mode_mono)
+	      else if (rendered_glyph->bitmap.pixel_mode == ft_pixel_mode_mono)
 		for (iy = y_start; iy < y_limit; iy++)
 		  {
 		    dest = bitmap->buffer +
-		      (iyoff - face->glyph->bitmap_top + iy) * bitmap->pitch +
-		      ixoff + face->glyph->bitmap_left + 
+		      (iyoff - rendered_glyph->bitmap_top + iy) * bitmap->pitch +
+		      ixoff + rendered_glyph->bitmap_left + 
                       x_start;
                     
-                    src = face->glyph->bitmap.buffer + 
-                      iy*face->glyph->bitmap.pitch;
+                    src = rendered_glyph->bitmap.buffer + 
+                      iy*rendered_glyph->bitmap.pitch;
 
 		    for (ix = x_start; ix < x_limit; ix++)
 		      {
@@ -366,10 +411,13 @@ pango_ft2_render (FT_Bitmap        *bitmap,
 		  }
 	      else
 		g_warning ("pango_ft2_render: Unrecognized glyph bitmap pixel mode %d\n",
-			   face->glyph->bitmap.pixel_mode);
+			   rendered_glyph->bitmap.pixel_mode);
 
-	      prev_face = face;
-	      prev_index = glyph_index;
+	  if (add_glyph_to_cache)
+	    {
+	      pango_ft2_font_set_glyph_cache_destroy (font,
+						      (GDestroyNotify) pango_ft2_free_rendered_glyph);
+	      pango_ft2_font_set_cache_glyph_data (font, glyph_index, rendered_glyph);
 	    }
 	}
 
@@ -385,11 +433,10 @@ pango_ft2_get_per_char (FT_Face   face,
   return &face->glyph->metrics;
 }
 
-static void
-pango_ft2_font_get_glyph_extents (PangoFont      *font,
-				  PangoGlyph      glyph,
-				  PangoRectangle *ink_rect,
-				  PangoRectangle *logical_rect)
+static PangoFT2GlyphInfo *
+pango_ft2_font_get_glyph_info (PangoFont   *font,
+			       PangoGlyph   glyph,
+			       gboolean     create)
 {
   PangoFT2Font *ft2font = (PangoFT2Font *)font;
   PangoFT2GlyphInfo *info;
@@ -397,10 +444,10 @@ pango_ft2_font_get_glyph_extents (PangoFont      *font,
 
   info = g_hash_table_lookup (ft2font->glyph_info, GUINT_TO_POINTER (glyph));
 
-  if (!info)
+  if ((info == NULL) && create)
     {
       FT_Face face = pango_ft2_font_get_face (font);
-      info = g_new (PangoFT2GlyphInfo, 1);
+      info = g_new0 (PangoFT2GlyphInfo, 1);
       
       if (glyph && (gm = pango_ft2_get_per_char (face, glyph)))
 	{
@@ -430,6 +477,19 @@ pango_ft2_font_get_glyph_extents (PangoFont      *font,
 
       g_hash_table_insert (ft2font->glyph_info, GUINT_TO_POINTER(glyph), info);
     }
+
+  return info;
+}
+     
+static void
+pango_ft2_font_get_glyph_extents (PangoFont      *font,
+				  PangoGlyph      glyph,
+				  PangoRectangle *ink_rect,
+				  PangoRectangle *logical_rect)
+{
+  PangoFT2GlyphInfo *info;
+
+  info = pango_ft2_font_get_glyph_info (font, glyph, TRUE);
 
   if (ink_rect)
     *ink_rect = info->ink_rect;
@@ -533,6 +593,12 @@ pango_ft2_font_dispose (GObject *object)
 static gboolean
 pango_ft2_free_glyph_info_callback (gpointer key, gpointer value, gpointer data)
 {
+  PangoFT2Font *font = PANGO_FT2_FONT (data);
+  PangoFT2GlyphInfo *info = value;
+  
+  if (font->glyph_cache_destroy && info->cached_glyph)
+    (*font->glyph_cache_destroy) (info->cached_glyph);
+
   g_free (value);
   return TRUE;
 }
@@ -556,7 +622,7 @@ pango_ft2_font_finalize (GObject *object)
   g_object_unref (G_OBJECT (ft2font->fontmap));
 
   g_hash_table_foreach_remove (ft2font->glyph_info,
-			       pango_ft2_free_glyph_info_callback, NULL);
+			       pango_ft2_free_glyph_info_callback, object);
   g_hash_table_destroy (ft2font->glyph_info);
   
   G_OBJECT_CLASS (parent_class)->finalize (object);
@@ -913,4 +979,46 @@ _pango_ft2_ft_strerror (FT_Error error)
       sprintf (default_msg, "Unknown FreeType2 error %#x", error);
       return default_msg;
     }
+}
+
+
+void *
+pango_ft2_font_get_cache_glyph_data (PangoFont *font,
+				     int        glyph_index)
+{
+  PangoFT2GlyphInfo *info;
+
+  g_return_val_if_fail (PANGO_FT2_IS_FONT (font), NULL);
+  
+  info = pango_ft2_font_get_glyph_info (font, glyph_index, FALSE);
+
+  if (info == NULL)
+    return NULL;
+  
+  return info->cached_glyph;
+}
+
+void
+pango_ft2_font_set_cache_glyph_data (PangoFont     *font,
+				     int            glyph_index,
+				     void          *cached_glyph)
+{
+  PangoFT2GlyphInfo *info;
+
+  g_return_if_fail (PANGO_FT2_IS_FONT (font));
+  
+  info = pango_ft2_font_get_glyph_info (font, glyph_index, TRUE);
+
+  info->cached_glyph = cached_glyph;
+
+  /* TODO: Implement limiting of the number of cached glyphs */
+}
+
+void
+pango_ft2_font_set_glyph_cache_destroy (PangoFont      *font,
+					GDestroyNotify  destroy_notify)
+{
+  g_return_if_fail (PANGO_FT2_IS_FONT (font));
+  
+  PANGO_FT2_FONT (font)->glyph_cache_destroy = destroy_notify;
 }
