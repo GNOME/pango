@@ -314,7 +314,7 @@ static fontentry charmap [] =
 
 
 void
-urdu_naqsh_recode(PangoXSubfont* subfont,gunichar* glyph,int* glyph2,
+urdu_naqsh_recode(PangoXSubfont* subfont,gunichar* glyph,gunichar* glyph2,
                    PangoXSubfont* nqfont)
 {
     int letter=*glyph;

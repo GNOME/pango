@@ -20,7 +20,7 @@ urdu_naqshinit(PangoFont  *font);
 /* glyph2 is the next glyph in line; if there is none, put in NULL 
  */
 void
-urdu_naqsh_recode(PangoXSubfont* subfont,gunichar* glyph,int* glyph2,
+urdu_naqsh_recode(PangoXSubfont* subfont,gunichar* glyph,gunichar* glyph2,
                    PangoXSubfont* nqfont);
 #endif
 
