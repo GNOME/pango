@@ -208,7 +208,7 @@
 	for PangoLayout. (Rendering happens in three places now -
 	pangox.c, gtk+/gtk/gtktextdisplay.c gtk+/gdk/gdkpango.c.)
       </description>
-      <contact>gtk-i18n-list@gnome.org</contact>
+      <contact>gtk-i18n-list@gnome.org, Gavin Hurley <gavin@audiobasket.com></contact>
     </entry>
     <entry size="medium" status="0%" target="1.0?">
       <title>Deal with proper change notification for PangoContext</title>
