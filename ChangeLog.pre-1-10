@@ -1,3 +1,9 @@
+Wed Feb 12 17:09:00 2003  Owen Taylor  <otaylor@redhat.com>
+ 
+ 	* pango/pango-context.c: Fix bug where language
+ 	tag changes were not causing the font to be
+ 	looked up again. (bugzilla.redhat.com #84034)
+	
 Wed Feb 12 16:48:46 2003  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pango-layout.c (pango_layout_set_text):
