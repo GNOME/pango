@@ -1,6 +1,7 @@
 2003-06-04  Tor Lillqvist  <tml@iki.fi>
 
-	* modules/thai/thai-x.c: Need config.h here, too, for HAVE_X.
+	* modules/thai/thai-x.c: Need config.h here, too, for
+	HAVE_X. Thanks to Patrick Welche.
 
 Mon Jun  2 10:43:15 PDT 2003 Keith Packard <keithp@keithp.com
 
