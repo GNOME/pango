@@ -1,3 +1,12 @@
+Fri Jul 26 18:48:49 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* configure.in modules/thai/Makefile.am 
+	  modules/thai/thai-shaper.[ch]
+	  modules/thai/thai-xft.c modules/thai/thai-x.c:
+	Patch from Theppitak Karoonboonyanan that factors
+	out common code from thai-x.c and adds a new 
+	Xft shaper for Thai. (#78346)
+
 Fri Jul 26 18:15:24 2002  Owen Taylor  <otaylor@redhat.com>
 
         * Add back non-spurious \$ removed in last commit.

@@ -420,6 +420,7 @@ AM_CONDITIONAL(INCLUDE_TAMIL_X,echo $included_modules | egrep '(^|,)tamil-x($|,)
 AM_CONDITIONAL(INCLUDE_TAMIL_XFT,echo $included_modules | egrep '(^|,)tamil-xft($|,)' > /dev/null)
 
 AM_CONDITIONAL(INCLUDE_THAI_X,echo $included_modules | egrep '(^|,)thai-x($|,)' > /dev/null)
+AM_CONDITIONAL(INCLUDE_THAI_XFT,echo $included_modules | egrep '(^|,)thai-xft($|,)' > /dev/null)
 
 
 #
