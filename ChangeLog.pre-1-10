@@ -1,3 +1,8 @@
+Sat Nov 24 13:44:21 2001  Kristian Rietveld  <kristian@planet.nl>
+
+	* pango/pango-fontmap.c (pango_font_map_real_load_fontset):
+	free the font description when we don't need it anymore
+
 2001-11-23  Padraig O'Briain  <padraig.obriain@sun.com>
 
 	* pango/break.c (pango_default_break):

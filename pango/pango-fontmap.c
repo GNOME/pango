@@ -236,6 +236,8 @@ pango_font_map_real_load_fontset (PangoFontMap               *fontmap,
 					"Sans");
     }
 
+  pango_font_description_free (tmp_desc);
+
   /* Everything failed, we are screwed, there is no way to continue
    */
   if (pango_fontset_simple_size (fonts) == 0)
