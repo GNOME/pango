@@ -1,3 +1,11 @@
+2004-02-28  Hans Breuer  <hans@breuer.org>
+
+	* pango/pango.def : updated externals including
+	patch from J. Ali Harlow <ali@juiblex.co.uk>, fixes bug #135518
+
+	* pango/pangowin32-fontmap.c : implement list_sizes() and
+	is_monospace() members
+
 Fri Feb 27 14:26:34 2004  Owen Taylor  <otaylor@redhat.com>
 
 	* modules/indic/indic-ot-class-tables.c (bengCharClasses):

@@ -75,6 +75,8 @@ struct _PangoWin32Family
 
   char *family_name;
   GSList *font_entries;
+
+  gboolean is_monospace;
 };
 
 struct _PangoWin32SizeInfo
@@ -92,6 +94,10 @@ struct _PangoWin32SizeInfo
 
 GType             pango_win32_family_get_type        (void);
 GType             pango_win32_face_get_type          (void);
+
+static void       pango_win32_face_list_sizes        (PangoFontFace  *face,
+                                                      int           **sizes,
+                                                      int            *n_sizes);
 
 static void       pango_win32_font_map_init          (PangoWin32FontMap       *fontmap);
 static void       pango_win32_font_map_class_init    (PangoFontMapClass       *class);
@@ -327,9 +333,9 @@ pango_win32_family_get_name (PangoFontFamily  *family)
 static gboolean
 pango_win32_family_is_monospace (PangoFontFamily *family)
 {
-  /* FIXME: implement me */
-  g_warning ("is_monospace not implemented for win32 backend");
-  return FALSE;
+  PangoWin32Family *win32family = PANGO_WIN32_FAMILY (family);
+
+  return win32family->is_monospace;
 }
 
 static void
@@ -795,6 +801,7 @@ pango_win32_insert_font (PangoWin32FontMap *win32fontmap,
     { 
     case FF_MODERN : /* monospace */
       PING(("monospace"));
+      font_family->is_monospace = TRUE; /* modify before reuse */
       font_family = pango_win32_get_font_family (win32fontmap, "monospace");
       font_family->font_entries = g_slist_append (font_family->font_entries, win32face);
       win32fontmap->n_fonts++;
@@ -950,7 +957,10 @@ pango_win32_face_list_sizes (PangoFontFace  *face,
                              int           **sizes,
                              int            *n_sizes)
 {
-  g_warning ("font_face_list_sizes not implemented for win32 backend");
+  /*
+   * for scalable fonts it's simple, and currently we only have such
+   * see : pango_win32_enum_proc(), TRUETYPE_FONTTYPE
+   */
   *sizes = NULL;
   *n_sizes = 0;
 }
