@@ -23,6 +23,8 @@
 
 #define BUFSIZE 1024
 #define MALLOCSIZE 1024
+#define DEFAULT_FONT_FAMILY "Sans"
+#define DEFAULT_FONT_SIZE 36
 
 #include <pango/pango.h>
 #include <pango/pangoft2.h>
@@ -38,13 +40,16 @@ static PangoContext *context;
 
 static gboolean opt_display = FALSE;
 static int opt_dpi = 96;
-static char *opt_family = "sans";
+
+#define _MAKE_FONT_NAME(family, size) family " " #size
+#define MAKE_FONT_NAME(family, size) _MAKE_FONT_NAME(family, size)
+static char *opt_font = MAKE_FONT_NAME (DEFAULT_FONT_FAMILY, DEFAULT_FONT_SIZE);
+
 static  PangoDirection opt_dir = PANGO_DIRECTION_LTR;
 static char *outfile_name;
 static char *opt_output = NULL;
 static int opt_margin = 10;
 static int opt_markup = FALSE;
-static int opt_scale = 24;
 static  gboolean opt_waterfall = FALSE;
 
 static void fail (const char *format, ...)  G_GNUC_PRINTF (1, 2);
@@ -68,7 +73,7 @@ fail (const char *format, ...)
 static PangoLayout *
 make_layout(PangoContext *context,
 	    const char   *text,
-	    int           scale)
+	    double        size)
 {
   static PangoFontDescription *font_description;
   PangoDirection base_dir;
@@ -80,10 +85,16 @@ make_layout(PangoContext *context,
   else
     pango_layout_set_text (layout, text, -1);
 
-  font_description = pango_font_description_new ();
-  pango_font_description_set_family (font_description, opt_family);
-  pango_font_description_set_size (font_description, scale * PANGO_SCALE);
+  font_description = pango_font_description_from_string (opt_font);
 
+  if ((pango_font_description_get_set_fields (font_description) & PANGO_FONT_MASK_FAMILY) == 0)
+    pango_font_description_set_family (font_description, DEFAULT_FONT_FAMILY);
+
+  if (size > 0)
+    pango_font_description_set_size (font_description, size * PANGO_SCALE);
+  else if ((pango_font_description_get_set_fields (font_description) & PANGO_FONT_MASK_SIZE) == 0)
+    pango_font_description_set_size (font_description, DEFAULT_FONT_SIZE * PANGO_SCALE);
+    
   base_dir = pango_context_get_base_dir (context);
   pango_layout_set_alignment (layout,
 			      base_dir == PANGO_DIRECTION_LTR ? PANGO_ALIGN_LEFT : PANGO_ALIGN_RIGHT);
@@ -105,26 +116,26 @@ do_output (PangoContext *context,
   PangoRectangle logical_rect;
   int x = opt_margin;
   int y = opt_margin;
-  int scale, start_scale, end_scale, increment;
+  int size, start_size, end_size, increment;
   
   *width = 0;
   *height = 0;
 
   if (opt_waterfall)
     {
-      start_scale = 8;
-      end_scale = 48;
+      start_size = 8;
+      end_size = 48;
       increment = 4;
     }
   else
     {
-      start_scale = end_scale = opt_scale;
+      start_size = end_size = -1;
       increment = 1;
     }
 
-  for (scale = start_scale; scale <= end_scale; scale += increment)
+  for (size = start_size; size <= end_size; size += increment)
     {
-      layout = make_layout (context, text, scale);
+      layout = make_layout (context, text, size);
       pango_layout_get_extents (layout, NULL, &logical_rect);
       
       *width = MAX (*width, PANGO_PIXELS (logical_rect.width));
@@ -182,20 +193,19 @@ int main(int argc, char *argv[])
 	  printf("%s - An example viewer for the pango ft2 extension\n"
 		 "\n"
 		 "Syntax:\n"
-		 "    %s [--family f] [--scale s] file\n"
+		 "    %s [options] FILE\n"
 		 "\n"
 		 "Options:\n"
  		 "    --display    Show output using ImageMagick rather than writing to a file.\n"
 		 "    --dpi d      Set the dpi.Default is '%d'.\n"
-		 "    --family f   Set the family. Default is '%s'.\n"
+		 "    --font       Set the font name. Default is '%s'.\n"
 		 "    --margin m   Set the margin on the output in pixels. Default is %d.\n"
 		 "    --markup     Interpret contents as Pango markup.\n"
  		 "    --output f   Name of output file [short form, -o].\n"
-		 "    --scale s    Set the scale. Default is %d.\n"
 		 "    --rtl        Set base dir to RTL. Default is LTR.\n"
 		 "    --waterfall  Create a waterfall display."
 		 "    --width      Width of drawing window. Default is 500.\n",
-		 prog_name, prog_name, opt_dpi, opt_family, opt_margin, opt_scale);
+		 prog_name, prog_name, opt_dpi, opt_font, opt_margin);
 	  exit(0);
 	}
       if (strcmp(opt, "--display") == 0)
@@ -208,9 +218,9 @@ int main(int argc, char *argv[])
 	  opt_dpi = int_arg("--dpi", argv[argp++]);
 	  continue;
 	}
-      if (strcmp(opt, "--family") == 0)
+      if (strcmp(opt, "--font") == 0)
 	{
-	  opt_family = argv[argp++];
+	  opt_font = argv[argp++];
 	  continue;
 	}
       if (strcmp(opt, "--margin") == 0)
@@ -232,11 +242,6 @@ int main(int argc, char *argv[])
       if (strcmp(opt, "--waterfall") == 0)
 	{
 	  opt_waterfall = TRUE;
-	  continue;
-	}
-      if (strcmp(opt, "--scale") == 0)
-	{
-	  opt_scale = int_arg("--scale", argv[argp++]);
 	  continue;
 	}
       if (strcmp(opt, "--rtl") == 0)

@@ -1,3 +1,8 @@
+Fri Aug  8 11:45:15 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* examples/pangoft2topgm.c: Replace --family/--scale
+	options with a single --font
+
 Fri Aug  8 11:33:24 2003  Owen Taylor  <otaylor@redhat.com>
 
 	* examples/pangoft2topgm.c: Add option to run 'display'
