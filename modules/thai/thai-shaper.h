@@ -39,6 +39,9 @@ struct _ThaiFontInfo
 
   PangoGlyph
   (*make_unknown_glyph) (ThaiFontInfo *font_info, unsigned int c);
+	
+  gboolean
+  (*has_glyph) (ThaiFontInfo *font_info, PangoGlyph glyph);
 };
 
 /*

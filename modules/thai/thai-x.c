@@ -64,6 +64,12 @@ thai_x_make_unknown_glyph (ThaiFontInfo *font_info, unsigned int c)
   return pango_x_get_unknown_glyph (font_info->font);
 }
 
+static gboolean
+thai_x_has_glyph (ThaiFontInfo *font_info, PangoGlyph glyph)
+{
+  return pango_x_has_glyph (font_info->font, glyph);
+}
+
 /* Returns a structure with information we will use to rendering given the
  * #PangoFont. This is computed once per font and cached for later retrieval.
  */
@@ -136,6 +142,7 @@ thai_x_get_font_info (PangoFont *font)
 
       font_info->make_glyph = thai_x_make_glyph;
       font_info->make_unknown_glyph = thai_x_make_unknown_glyph;
+      font_info->has_glyph = thai_x_has_glyph;
     }
 
   return font_info;
