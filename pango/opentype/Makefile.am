@@ -47,5 +47,5 @@ ottest_LDADD = 		\
 	$(FREETYPE_LIBS)
 
 EXTRA_DIST = 		\
-	README		\
-	pango-ot.def
+	README
+

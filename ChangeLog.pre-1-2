@@ -1,3 +1,10 @@
+2002-09-24  Tor Lillqvist  <tml@iki.fi>
+
+	* pango/opentype/pango-ot.def: Remove. Not used. (A static library
+	is built here. Exported entries are in ../pangoft2.def.)
+
+	* pango/opentype/Makefile.am (EXTRA_DIST): Remove from here, too.
+
 2002-09-23  Matthias Clasen  <maclas@gmx.de>
 
 	* pango/pango-color.c (pango_color_parse): Make color parsing
