@@ -1,3 +1,20 @@
+2001-08-10  Hans Breuer  <hans@breuer.org>
+
+	* pango/pangowin32.c (pango_win32_render) : restore
+	the previously selected font into the device context.
+
+	(pango_win32_font_get_glyph_extents) : info->ink_rect.y needs
+	to be negative to get underlines right
+
+	* pango/pangowin32-fontmap.c (pango_win32_font_map_list_fonts) :
+	Don't g_assert_not_reached () on !family case. This is what
+	the X version does as well. Testcase for win32: testfonts.c
+
+	* pango/testfonts.c : (new file) simple test program for win32
+	which renders all or selected fonts into a bitmap
+
+	* pango/makefile.msc : re-enable testfonts compiling
+
 2001-08-09  Matthias Clasen  <matthiasc@waldgeist.poet.de>
 
 	* pango/pango-layout.c (pango_layout_line_get_empty_extents): 

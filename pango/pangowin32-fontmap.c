@@ -342,7 +342,7 @@ pango_win32_font_map_list_fonts (PangoFontMap           *fontmap,
   else
     {
       /* FIXME: (Alex) What the heck is this? I think it should just be removed */
-      g_assert_not_reached ();
+      /* HB: I don't think so, the X version does the same ... */
       *n_descs = win32fontmap->n_fonts;
       if (descs)
 	{

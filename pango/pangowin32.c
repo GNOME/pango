@@ -99,7 +99,7 @@ pango_win32_get_hfont (PangoFont *font)
 
       SelectObject (pango_win32_hdc, win32font->hfont);
       GetTextMetrics (pango_win32_hdc, &tm);
-      
+
       win32font->tm_overhang = tm.tmOverhang;
       win32font->tm_descent = tm.tmDescent;
       win32font->tm_ascent = tm.tmAscent;
@@ -246,7 +246,7 @@ pango_win32_render (HDC                hdc,
   if (!hfont)
     return;
 
-  hfont = SelectObject (hdc, hfont);
+  old_hfont = SelectObject (hdc, hfont);
 		
   glyph_indexes = g_new (guint16, glyphs->num_glyphs);
   dX = g_new (INT, glyphs->num_glyphs);
@@ -263,6 +263,7 @@ pango_win32_render (HDC                hdc,
 	       glyph_indexes, glyphs->num_glyphs,
 	       dX);
 
+  SelectObject (hdc, old_hfont); /* restore */
   g_free (glyph_indexes);
   g_free (dX);
 }
@@ -320,7 +321,7 @@ pango_win32_font_get_glyph_extents (PangoFont      *font,
 
       info->ink_rect.x = PANGO_SCALE * gm.gmptGlyphOrigin.x;
       info->ink_rect.width = PANGO_SCALE * gm.gmBlackBoxX;
-      info->ink_rect.y = PANGO_SCALE * gm.gmptGlyphOrigin.y;
+      info->ink_rect.y = - PANGO_SCALE * gm.gmptGlyphOrigin.y;
       info->ink_rect.height = PANGO_SCALE * gm.gmBlackBoxY;
 
       info->logical_rect.x = 0;
@@ -360,6 +361,7 @@ pango_win32_font_get_metrics (PangoFont        *font,
     {
       SelectObject (pango_win32_hdc, hfont);
       GetTextMetrics (pango_win32_hdc, &tm);
+
       metrics->ascent = tm.tmAscent * PANGO_SCALE;
       metrics->descent = tm.tmDescent * PANGO_SCALE;
       metrics->approximate_digit_width = /* really an approximation ... */

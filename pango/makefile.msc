@@ -15,7 +15,7 @@ PANGO_VER = 0.17
 !IFNDEF PACKAGE
 
 DLLS = pango pangowin32 # pangoft2
-EXES = querymodules # testfonts
+EXES = querymodules testfonts
 #? test1 test2 test3 test4 test5
 
 # The main target
