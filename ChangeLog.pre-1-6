@@ -1,3 +1,17 @@
+Fri Mar 15 01:35:56 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/opentype/ftxgsub.c pango/opentype/ftxopen.c
+	pango/opentype/ftxopenf.h: In Load_ChainContextSubst2,
+	handle the case where an empty class definition
+	is represented by an offset of 0.
+
+	* pango/opentype/ftxgpos.c: Same for Load_ChainContextPos2.
+
+	* pango/opentype/{ftxopen.c,ftxgpos.c,ftxgsub.c,ftgdef.c}:
+	Fix pervasive bug where on cleanups on failure of loading
+	an array element, all array elements were freed, not
+	just the ones that had been succesfully loaded.
+
 Thu Mar 14 23:05:18 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/opentype/ftxopen.c: Uncomment GPOS parts.
