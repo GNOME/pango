@@ -1,3 +1,8 @@
+Mon May 28 18:15:55 2001  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-layout.c (pango_layout_move_cursor_visually): 
+	Set *trailing properly at end of line.
+
 Mon May 28 11:51:45 2001  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/modules.c (map_add_engine): Fix problem with

@@ -1311,6 +1311,7 @@ pango_layout_move_cursor_visually (PangoLayout *layout,
 	{
 	  log_pos--;
 	  *new_index = g_utf8_prev_char (layout->text + *new_index) - layout->text;
+	  (*new_trailing)++;
 	}
       while (log_pos > 0 && !layout->log_attrs[start_offset + log_pos].is_cursor_position);
     }
