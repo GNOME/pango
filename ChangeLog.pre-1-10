@@ -1,3 +1,16 @@
+Fri Sep 27 17:50:51 2002  Owen Taylor  <otaylor@redhat.com>
+ 
+ 	(Based on GTK+ patch by J. Ali Harlow in #87774)
+ 
+ 	* configure.in: Add CROSS_COMPILING conditional.
+ 
+ 	* modules/Makefile.am (install-data-local): Don't
+ 	generate pango.modules when installing into a DESTDIR
+ 	or cross-compiling.
+ 
+ 	* examples/Makefile.am (all-local): Don't generate
+ 	pango.modules when cross-compiling.
+ 
 Fri Sep 27 13:10:25 2002  HideToshi Tajima  <hidetoshi.tajima@sun.com>
 
 	* modules/basic/tables-big.i: make charset ordering of
