@@ -33,10 +33,6 @@ typedef struct _PangoXSubfontInfo PangoXSubfontInfo;
 typedef struct _PangoXFamilyEntry PangoXFamilyEntry;
 typedef struct _PangoXFontEntry PangoXFontEntry;
 
-#ifndef G_N_ELEMENTS
-#define G_N_ELEMENTS(arr)		(sizeof(arr) / sizeof((arr)[0]))
-#endif
-
 struct _PangoXFontEntry
 {
   char *xlfd_prefix;

@@ -25,10 +25,10 @@
 #include <unicode.h>
 
 gboolean
-_pango_utf8_iterate (gchar *cur, char **next, GUChar4 *wc_out)
+_pango_utf8_iterate (const char *cur, const char **next, GUChar4 *wc_out)
 {
-  gchar *p = cur;
-  gchar c = *p;
+  const char *p = cur;
+  char c = *p;
   GUChar4 wc;
   gint length;
 
@@ -83,12 +83,12 @@ _pango_utf8_iterate (gchar *cur, char **next, GUChar4 *wc_out)
   return TRUE;
 }
 
-gint
-_pango_utf8_len (gchar *str, gint limit)
+int
+_pango_utf8_len (const char *str, int limit)
 {
-  gchar *cur = str;
-  gchar *next;
-  gint len = 0;
+  const char *cur = str;
+  const char *next;
+  int len = 0;
   
   while (*cur)
     {
@@ -112,11 +112,11 @@ _pango_utf8_len (gchar *str, gint limit)
 #endif
 
 GUChar2 *
-_pango_utf8_to_ucs2 (gchar *str, gint len)
+_pango_utf8_to_ucs2 (const char *str, int len)
 {
   iconv_t cd;
-  gchar *outbuf, *result;
-  gchar *inbuf;
+  char *outbuf, *result;
+  const char *inbuf;
   size_t inbytesleft;
   size_t outbytesleft;
   gint outlen;

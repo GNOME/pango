@@ -26,8 +26,6 @@
 #include "utils.h"
 #include <unicode.h>
 
-#define MEMBERS(strct) sizeof(strct) / sizeof(strct[1])
-
 static PangoEngineRange hangul_ranges[] = {
 
   /* Hangul Jamo U+1100 -- U+11FF */
@@ -44,25 +42,25 @@ static PangoEngineInfo script_engines[] = {
     "HangulScriptEngineLang",
     PANGO_ENGINE_TYPE_LANG,
     PANGO_RENDER_TYPE_NONE,
-    hangul_ranges, MEMBERS(hangul_ranges)
+    hangul_ranges, G_N_ELEMENTS(hangul_ranges)
   },
   {
     "HangulScriptEngineX",
     PANGO_ENGINE_TYPE_SHAPE,
     PANGO_RENDER_TYPE_X,
-    hangul_ranges, MEMBERS(hangul_ranges)
+    hangul_ranges, G_N_ELEMENTS(hangul_ranges)
   }
 };
 
-static gint n_script_engines = MEMBERS (script_engines);
+static int n_script_engines = G_N_ELEMENTS (script_engines);
 
 /*
  * Language script engine
  */
 
 static void 
-hangul_engine_break (gchar            *text,
-		     gint             len,
+hangul_engine_break (const char    *text,
+		     int            len,
 		     PangoAnalysis *analysis,
 		     PangoLogAttr  *attrs)
 {
@@ -89,10 +87,10 @@ hangul_engine_lang_new ()
  */
 
 static void
-set_glyph (PangoGlyphString *glyphs, gint i,
+set_glyph (PangoGlyphString *glyphs, int i,
 	   PangoFont *font, PangoXSubfont subfont, guint16 gindex)
 {
-  gint width;
+  int width;
 
   glyphs->glyphs[i].glyph = PANGO_X_MAKE_GLYPH (subfont, gindex);
   
@@ -513,7 +511,7 @@ subfont_has_korean (PangoFont    *font,
 }
 
 static gboolean
-find_subfont (PangoFont *font, gchar **charsets, gint n_charsets,
+find_subfont (PangoFont *font, char **charsets, int n_charsets,
 	      PangoXSubfont *subfont, RenderSyllableFunc *render_func)
 {
   int i;
@@ -562,35 +560,36 @@ find_subfont (PangoFont *font, gchar **charsets, gint n_charsets,
   return (*subfont != 0);
 }
 
+static char *default_charset[] = {
+  "johabs-1"
+};
+  
+static char *secondary_charset[] = {
+  "johab-1"
+};
+
+static char *fallback_charsets[] = {
+  "iso10646-1",
+  "ksc5601.1987-0"
+};
+
 static void 
 hangul_engine_shape (PangoFont        *font,
-		     gchar            *text,
-		     gint              length,
+		     const char       *text,
+		     int               length,
 		     PangoAnalysis    *analysis,
 		     PangoGlyphString *glyphs)
 {
   PangoXSubfont subfont;
   RenderSyllableFunc render_func = NULL;
 
-  char *ptr, *next;
+  const char *ptr;
+  const char *next;
   int i, n_chars;
   GUChar2 jamos[4];
   int n_jamos = 0;
 
   int n_glyphs = 0, n_clusters = 0;
-
-  static char *default_charset[] = {
-    "johabs-1"
-  };
-  
-  static char *secondary_charset[] = {
-    "johab-1"
-  };
-  
-  static char *fallback_charsets[] = {
-    "iso10646-1",
-    "ksc5601.1987-0"
-  };
 
   g_return_if_fail (font != NULL);
   g_return_if_fail (text != NULL);
@@ -601,9 +600,9 @@ hangul_engine_shape (PangoFont        *font,
    * otherwise use iso-10646 or KSC font depending on the ordering
    * of the fontlist.
    */
-  if (!find_subfont (font, default_charset, 1, &subfont, &render_func))
-    if (!find_subfont (font, secondary_charset, 1, &subfont, &render_func))
-      if (!find_subfont (font, fallback_charsets, 2, &subfont, &render_func))
+  if (!find_subfont (font, default_charset, G_N_ELEMENTS (default_charset), &subfont, &render_func))
+    if (!find_subfont (font, secondary_charset, G_N_ELEMENTS (secondary_charset), &subfont, &render_func))
+      if (!find_subfont (font, fallback_charsets, G_N_ELEMENTS (fallback_charsets), &subfont, &render_func))
 	{
 	  g_warning ("No available Hangul fonts.");
 	  return;
@@ -688,6 +687,57 @@ hangul_engine_shape (PangoFont        *font,
     }
 }
 
+static PangoCoverage *
+hangul_engine_get_coverage (PangoFont  *font,
+			     const char *lang)
+{
+  PangoCoverage *result = pango_coverage_new ();
+  PangoXSubfont subfont;
+  RenderSyllableFunc render_func = NULL;
+  int i;
+
+  /* An approximate implementation, please check and fix as necessary!
+   *                                           OWT 2 Feb 2000
+   */
+  if (find_subfont (font, default_charset, G_N_ELEMENTS (default_charset), &subfont, &render_func) ||
+      find_subfont (font, secondary_charset, G_N_ELEMENTS (secondary_charset), &subfont, &render_func) ||
+      find_subfont (font, fallback_charsets, G_N_ELEMENTS (fallback_charsets), &subfont, &render_func))
+    {
+      if (render_func == render_syllable_with_johabs ||
+	  render_func == render_syllable_with_johab)
+	{
+	  for (i = 0x1100; i <= 0x11ff; i++)
+	    pango_coverage_set (result, i, PANGO_COVERAGE_EXACT);
+
+	  for (i = 0xac00; i <= 0xd7a3; i++)
+	    pango_coverage_set (result, i, PANGO_COVERAGE_EXACT);
+
+	}
+      else if (render_func == render_syllable_with_iso10646)
+	{
+	  for (i = 0x1100; i <= 0x11ff; i++)
+	    pango_coverage_set (result, i, PANGO_COVERAGE_FALLBACK);
+
+	  for (i = 0xac00; i <= 0xd7a3; i++)
+	    pango_coverage_set (result, i, PANGO_COVERAGE_EXACT);
+	}
+      else if (render_func == render_syllable_with_ksc5601)
+	{
+	  for (i = 0x1100; i <= 0x11ff; i++)
+	    pango_coverage_set (result, i, PANGO_COVERAGE_FALLBACK);
+
+	  for (i = 0xac00; i <= 0xd7a3; i++)
+	    pango_coverage_set (result, i, PANGO_COVERAGE_FALLBACK);
+
+	  for (i=0; i<KSC5601_HANGUL; i++)
+	    pango_coverage_set (result, __ksc5601_hangul_to_ucs[i], PANGO_COVERAGE_EXACT);
+	}
+      else
+	g_assert_not_reached();
+    }
+
+  return result;
+}
 
 static PangoEngine *
 hangul_engine_x_new ()
@@ -700,6 +750,7 @@ hangul_engine_x_new ()
   result->engine.type = PANGO_ENGINE_TYPE_LANG;
   result->engine.length = sizeof (result);
   result->script_shape = hangul_engine_shape;
+  result->get_coverage = hangul_engine_get_coverage;
 
   return (PangoEngine *)result;
 }
@@ -711,7 +762,7 @@ hangul_engine_x_new ()
  */
 
 void 
-script_engine_list (PangoEngineInfo **engines, gint *n_engines)
+script_engine_list (PangoEngineInfo **engines, int *n_engines)
 {
   *engines = script_engines;
   *n_engines = n_script_engines;

@@ -12,8 +12,6 @@
 #include "utils.h"
 #include "taconv.h"
 
-#define MEMBERS(strct) sizeof(strct) / sizeof(strct[1])
-
 static PangoEngineRange tamil_range[] = {
   { 0x0b80, 0x0bff, "*" },
 };
@@ -23,25 +21,25 @@ static PangoEngineInfo script_engines[] = {
     "TamilScriptEngineLang",
     PANGO_ENGINE_TYPE_LANG,
     PANGO_RENDER_TYPE_NONE,
-    tamil_range, MEMBERS(tamil_range)
+    tamil_range, G_N_ELEMENTS(tamil_range)
   },
   {
     "TamilScriptEngineX",
     PANGO_ENGINE_TYPE_SHAPE,
     PANGO_RENDER_TYPE_X,
-    tamil_range, MEMBERS(tamil_range)
+    tamil_range, G_N_ELEMENTS(tamil_range)
   }
 };
 
-static gint n_script_engines = MEMBERS (script_engines);
+static gint n_script_engines = G_N_ELEMENTS (script_engines);
 
 /*
  * Language script engine
  */
 
 static void 
-tamil_engine_break (gchar            *text,
-		    gint             len,
+tamil_engine_break (const char   *text,
+		    int            len,
 		    PangoAnalysis *analysis,
 		    PangoLogAttr  *attrs)
 {
@@ -49,8 +47,8 @@ tamil_engine_break (gchar            *text,
  * only difference is char stop based on modifiers
  */
 
-  gchar *cur = text;
-  gchar *next;
+  const char *cur = text;
+  const char *next;
   gint i = 0;
   GUChar4 wc;
 
@@ -96,10 +94,10 @@ tamil_engine_lang_new ()
  * But we can live with this for time being 
  */
 static void
-set_glyph (PangoGlyphString *glyphs, gint i,
+set_glyph (PangoGlyphString *glyphs, int i,
 	   PangoFont *font, PangoXSubfont subfont, guint16 gindex)
 {
-  gint width;
+  int width;
 
   glyphs->glyphs[i].glyph = PANGO_X_MAKE_GLYPH (subfont, gindex);
   
@@ -134,15 +132,16 @@ find_tscii_font (PangoFont *font)
 }
 
 static void 
-tamil_engine_shape (PangoFont     *font,
-		    gchar           *text,
-		    gint             length,
-		    PangoAnalysis *analysis,
-		    PangoGlyphString    *glyphs)
+tamil_engine_shape (PangoFont        *font,
+		    const char       *text,
+		    int               length,
+		    PangoAnalysis    *analysis,
+		    PangoGlyphString *glyphs)
 {
   int n_chars, n_glyph;
   int i, j;
-  char *p, *next;
+  const char *p;
+  const char *next;
   GUChar4 *wc, *uni_str;
   int res;
   unsigned char tsc_str[6];
@@ -205,6 +204,24 @@ tamil_engine_shape (PangoFont     *font,
   g_free(wc);
 }
 
+static PangoCoverage *
+tamil_engine_get_coverage (PangoFont  *font,
+			   const char *lang)
+{
+  PangoCoverage *result = pango_coverage_new ();
+
+  PangoXSubfont tscii_font = find_tscii_font (font);
+  if (tscii_font)
+    {
+      GUChar4 i;
+
+      for (i = 0xb80; i <= 0xbff; i++)
+	pango_coverage_set (result, i, PANGO_COVERAGE_EXACT);
+    }
+
+  return result;
+}
+
 static PangoEngine *
 tamil_engine_x_new ()
 {
@@ -216,6 +233,7 @@ tamil_engine_x_new ()
   result->engine.type = PANGO_ENGINE_TYPE_LANG;
   result->engine.length = sizeof (result);
   result->script_shape = tamil_engine_shape;
+  result->get_coverage = tamil_engine_get_coverage;
 
   return (PangoEngine *)result;
 }
@@ -224,7 +242,7 @@ tamil_engine_x_new ()
  * Pango
  */
 void 
-script_engine_list (PangoEngineInfo **engines, gint *n_engines)
+script_engine_list (PangoEngineInfo **engines, int *n_engines)
 {
   *engines = script_engines;
   *n_engines = n_script_engines;

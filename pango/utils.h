@@ -27,8 +27,8 @@
 typedef guint16 GUChar2;
 typedef guint32 GUChar4;
 
-gboolean _pango_utf8_iterate (gchar *cur, char **next, GUChar4 *wc_out);
-GUChar2 *_pango_utf8_to_ucs2 (gchar *str, gint len);
-gint _pango_utf8_len (gchar *str, gint limit);
+gboolean _pango_utf8_iterate (const char *cur, const char **next, GUChar4 *wc_out);
+GUChar2 *_pango_utf8_to_ucs2 (const char *str, gint len);
+int _pango_utf8_len (const char *str, gint limit);
 
 #endif /* __UTILS_H__ */

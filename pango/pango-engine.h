@@ -67,7 +67,7 @@ struct _PangoEngine
 struct _PangoEngineLang
 {
   PangoEngine engine;
-  void (*script_break) (gchar         *text,
+  void (*script_break) (const char    *text,
 			int            len,
 			PangoAnalysis *analysis,
 			PangoLogAttr  *attrs);
@@ -77,10 +77,12 @@ struct _PangoEngineShape
 {
   PangoEngine engine;
   void (*script_shape) (PangoFont        *font,
-			char             *text,
+			const char       *text,
 			int               length,
 			PangoAnalysis    *analysis,
 			PangoGlyphString *glyphs);
+  PangoCoverage *(*get_coverage) (PangoFont        *font,
+				  const char       *lang);
 };
 
 /* A module should export the following functions */

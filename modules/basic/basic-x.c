@@ -28,21 +28,19 @@
 #include <unicode.h>
 #include <fribidi/fribidi.h>
 
-#define MEMBERS(strct) sizeof(strct) / sizeof(strct[1])
-
 typedef struct _CharRange CharRange;
 typedef struct _Charset Charset;
 typedef struct _CharCache CharCache;
 typedef struct _MaskTable MaskTable;
 
-typedef PangoGlyph (*ConvFunc) (CharCache *cache,
-				gchar     *id,
-				gchar     *input);
+typedef PangoGlyph (*ConvFunc) (CharCache   *cache,
+				const char  *id,
+				const gchar *input);
 
 struct _Charset
 {
-  gchar *id;
-  gchar *x_charset;
+  char *id;
+  char *x_charset;
   ConvFunc conv_func;
 };
 
@@ -70,14 +68,14 @@ struct _CharCache
 };
 
 static PangoGlyph conv_8bit (CharCache *cache,
-				  gchar  *id,
-				  char   *input);
-static PangoGlyph conv_euc (CharCache *cache,
-				 gchar     *id,
-				 char      *input);
-static PangoGlyph conv_ucs4 (CharCache *cache,
-				  gchar     *id,
-				  char      *input);
+			     const char *id,
+			     const char *input);
+static PangoGlyph conv_euc (CharCache  *cache,
+			    const char *id,
+			    const char *input);
+static PangoGlyph conv_ucs4 (CharCache  *cache,
+			     const char *id,
+			     const char *input);
 
 #include "tables-big.i"
 
@@ -86,27 +84,27 @@ static PangoEngineInfo script_engines[] = {
     "BasicScriptEngineLang",
     PANGO_ENGINE_TYPE_LANG,
     PANGO_RENDER_TYPE_NONE,
-    basic_ranges, MEMBERS(basic_ranges)
+    basic_ranges, G_N_ELEMENTS(basic_ranges)
   },
   {
     "BasicScriptEngineX",
     PANGO_ENGINE_TYPE_SHAPE,
     PANGO_RENDER_TYPE_X,
-    basic_ranges, MEMBERS(basic_ranges)
+    basic_ranges, G_N_ELEMENTS(basic_ranges)
   }
 };
 
-static gint n_script_engines = MEMBERS (script_engines);
+static gint n_script_engines = G_N_ELEMENTS (script_engines);
 
 /*
  * Language script engine
  */
 
 static void 
-basic_engine_break (gchar            *text,
-		    gint             len,
-		    PangoAnalysis *analysis,
-		    PangoLogAttr  *attrs)
+basic_engine_break (const char     *text,
+		    gint            len,
+		    PangoAnalysis  *analysis,
+		    PangoLogAttr   *attrs)
 {
 }
 
@@ -135,7 +133,7 @@ find_char_mask (GUChar4 wc)
   int start, end, middle;
 
   start = 0;
-  end = MEMBERS(ranges) - 1;
+  end = G_N_ELEMENTS(ranges) - 1;
 
   if (ranges[start].start > wc || ranges[end].end < wc)
     return 0;
@@ -207,7 +205,7 @@ char_cache_free (CharCache *cache)
 }
 
 PangoGlyph 
-find_char (CharCache *cache, PangoFont *font, GUChar4 wc, char *input)
+find_char (CharCache *cache, PangoFont *font, GUChar4 wc, const char *input)
 {
   guint mask = find_char_mask (wc);
   GSList *tmp_list;
@@ -227,8 +225,8 @@ find_char (CharCache *cache, PangoFont *font, GUChar4 wc, char *input)
 
   if (!tmp_list)
     {
-      char *charset_names[MEMBERS(charsets)];
-      Charset *charsets_map[MEMBERS(charsets)];
+      char *charset_names[G_N_ELEMENTS(charsets)];
+      Charset *charsets_map[G_N_ELEMENTS(charsets)];
 
       int n_charsets = 0;
 
@@ -241,7 +239,7 @@ find_char (CharCache *cache, PangoFont *font, GUChar4 wc, char *input)
       /* Find the character sets that are included in this mask
        */
 
-      for (i=0; i<MEMBERS(charsets); i++)
+      for (i=0; i<G_N_ELEMENTS(charsets); i++)
 	{
 	  if (mask & (1 << i))
 	    {
@@ -297,7 +295,7 @@ set_glyph (PangoFont *font, PangoGlyphString *glyphs, gint i, PangoGlyph glyph)
 }
 
 static iconv_t
-find_converter (CharCache *cache, gchar *id)
+find_converter (CharCache *cache, const char *id)
 {
   iconv_t cd = g_hash_table_lookup (cache->converters, id);
   if (!cd)
@@ -310,15 +308,15 @@ find_converter (CharCache *cache, gchar *id)
 }
 
 static PangoGlyph
-conv_8bit (CharCache *cache,
-	   gchar     *id,
-	   char      *input)
+conv_8bit (CharCache  *cache,
+	   const char *id,
+	   const char *input)
 {
   iconv_t cd;
   char outbuf;
-  char *p;
+  const char *p;
   
-  char *inptr = input;
+  const char *inptr = input;
   int inbytesleft;
   char *outptr = &outbuf;
   int outbytesleft = 1;
@@ -335,15 +333,15 @@ conv_8bit (CharCache *cache,
 }
 
 static PangoGlyph
-conv_euc (CharCache *cache,
-	  gchar     *id,
-	  char      *input)
+conv_euc (CharCache  *cache,
+	  const char *id,
+	  const char *input)
 {
   iconv_t cd;
   char outbuf[2];
-  char *p;
+  const char *p;
 
-  char *inptr = input;
+  const char *inptr = input;
   int inbytesleft;
   char *outptr = outbuf;
   int outbytesleft = 2;
@@ -354,7 +352,7 @@ conv_euc (CharCache *cache,
   cd = find_converter (cache, id);
   g_assert (cd != (iconv_t)-1);
 
-  iconv (cd, (const char **)&inptr, &inbytesleft, &outptr, &outbytesleft);
+  iconv (cd, &inptr, &inbytesleft, &outptr, &outbytesleft);
 
   if ((guchar)outbuf[0] < 128)
     return outbuf[0];
@@ -363,9 +361,9 @@ conv_euc (CharCache *cache,
 }
 
 static PangoGlyph
-conv_ucs4 (CharCache *cache,
-	   gchar     *id,
-	   char      *input)
+conv_ucs4 (CharCache  *cache,
+	   const char *id,
+	   const char *input)
 {
   GUChar4 wc;
   
@@ -393,16 +391,31 @@ swap_range (PangoGlyphString *glyphs, int start, int end)
     }
 }
 
+static CharCache *
+get_char_cache (PangoFont *font)
+{
+  CharCache *cache = pango_font_get_data (font, "basic-char-cache");
+  if (!cache)
+    {
+      cache = char_cache_new ();
+      pango_font_set_data (font, "basic-char-cache",
+			   cache, (GDestroyNotify)char_cache_free);
+    }
+
+  return cache;
+}
+
 static void 
 basic_engine_shape (PangoFont        *font,
-		    gchar            *text,
+		    const char       *text,
 		    gint              length,
 		    PangoAnalysis    *analysis,
 		    PangoGlyphString *glyphs)
 {
   int n_chars;
   int i;
-  char *p, *next;
+  const char *p;
+  const char *next;
 
   PangoXSubfont fallback_subfont = 0;
   CharCache *cache;
@@ -412,14 +425,8 @@ basic_engine_shape (PangoFont        *font,
   g_return_if_fail (length >= 0);
   g_return_if_fail (analysis != NULL);
 
-  cache = pango_font_get_data (font, "basic-char-cache");
-  if (!cache)
-    {
-      cache = char_cache_new ();
-      pango_font_set_data (font, "basic-char-cache",
-			   cache, (GDestroyNotify)char_cache_free);
-    }
-  
+  cache = get_char_cache (font);
+
   n_chars = unicode_strlen (text, length);
   pango_glyph_string_set_size (glyphs, n_chars);
 
@@ -504,6 +511,41 @@ basic_engine_shape (PangoFont        *font,
     }
 }
 
+static PangoCoverage *
+basic_engine_get_coverage (PangoFont  *font,
+			   const char *lang)
+{
+  CharCache *cache = get_char_cache (font);
+  PangoCoverage *result = pango_coverage_new ();
+  GUChar4 wc;
+
+  iconv_t utf8_conv = (iconv_t)-1;
+
+  if (utf8_conv == (iconv_t)-1)
+    {
+      utf8_conv = iconv_open ("utf-8", "ucs-4");
+      if (utf8_conv == (iconv_t)-1)
+	g_error ("Could not open coverter from ucs-4 to utf-8!");
+    }
+
+  for (wc = 0; wc < 65536; wc++)
+    {
+      char buf[4];
+      const char *inbuf = (const char *)&wc;
+      size_t inbytes_left = 4;
+      char *outbuf = buf;
+      size_t outbytes_left = 4;
+      
+      iconv (utf8_conv, &inbuf, &inbytes_left, &outbuf, &outbytes_left);
+
+      if (find_char (cache, font, wc, buf))
+	pango_coverage_set (result, wc, PANGO_COVERAGE_EXACT);
+
+    }
+
+  return result;
+}
+
 static PangoEngine *
 basic_engine_x_new ()
 {
@@ -515,6 +557,7 @@ basic_engine_x_new ()
   result->engine.type = PANGO_ENGINE_TYPE_LANG;
   result->engine.length = sizeof (result);
   result->script_shape = basic_engine_shape;
+  result->get_coverage = basic_engine_get_coverage;
 
   return (PangoEngine *)result;
 }
