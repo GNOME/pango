@@ -731,8 +731,8 @@ hangul_engine_x_new ()
  * Pango
  */
 
-#ifdef MODULE_PREFIX
-#define MODULE_ENTRY(func) _pango_hangul_##func
+#ifdef X_MODULE_PREFIX
+#define MODULE_ENTRY(func) _pango_hangul_x_##func
 #else
 #define MODULE_ENTRY(func) func
 #endif

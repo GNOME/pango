@@ -228,8 +228,8 @@ pango_indic_engine_x_new ()
   return (PangoEngine *) result;
 }
 
-#ifdef GURMUKHI_MODULE_PREFIX
-#define MODULE_ENTRY(func) _pango_gurmukhi_##func
+#ifdef GURMUKHI_X_MODULE_PREFIX
+#define MODULE_ENTRY(func) _pango_gurmukhi_x_##func
 #else
 #define MODULE_ENTRY(func) func
 #endif

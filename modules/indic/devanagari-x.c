@@ -338,8 +338,8 @@ pango_indic_engine_x_new ()
   return (PangoEngine *) result;
 }
 
-#ifdef DEVANAGARI_MODULE_PREFIX
-#define MODULE_ENTRY(func) _pango_devanagari_##func
+#ifdef DEVANAGARI_X_MODULE_PREFIX
+#define MODULE_ENTRY(func) _pango_devanagari_x_##func
 #else
 #define MODULE_ENTRY(func) func
 #endif

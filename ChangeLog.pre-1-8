@@ -1,6 +1,39 @@
 2001-01-03  Alexander Larsson  <alexl@redhat.com>
 
 	* configure.in:
+	* modules/arabic/Makefile.am:
+	* modules/arabic/arabic-x.c:
+	* modules/basic/Makefile.am:
+	* modules/basic/basic-x.c:
+	* modules/hangul/Makefile.am:
+	* modules/hangul/hangul-x.c:
+	* modules/indic/Makefile.am:
+	* modules/indic/bengali-x.c:
+	* modules/indic/devanagari-x.c:
+	* modules/indic/gujarati-x.c:
+	* modules/indic/gurmukhi-x.c:
+	* modules/indic/myanmar-x.c:
+	* modules/tamil/Makefile.am:
+	* modules/tamil/tamil-x.c:
+	* modules/thai/Makefile.am:
+	* modules/thai/thai-x.c:
+	Rename all x modules from abc to abc-x.
+	
+	* modules/arabic/arabic.c:
+	* modules/basic/basic.c:
+	* modules/hangul/hangul.c:
+	* modules/indic/bengali.c:
+	* modules/indic/devanagari.c:
+	* modules/indic/gujarati.c:
+	* modules/indic/gurmukhi.c:
+	* modules/indic/myanmar.c:
+	* modules/tamil/tamil.c:
+	* modules/thai/thai.c:
+	These were all copied to file-x.c and then removed.
+
+2001-01-03  Alexander Larsson  <alexl@redhat.com>
+
+	* configure.in:
 	Update the default list of included modules for
 	--with-included-modules=yes to include all new modules.
 	Split INCLUDED_MODULES and module-defs.c into per shaper

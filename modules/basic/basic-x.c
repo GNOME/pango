@@ -476,8 +476,8 @@ basic_engine_x_new ()
 /* The following three functions provide the public module API for
  * Pango
  */
-#ifdef MODULE_PREFIX
-#define MODULE_ENTRY(func) _pango_basic_##func
+#ifdef X_MODULE_PREFIX
+#define MODULE_ENTRY(func) _pango_basic_x_##func
 #else
 #define MODULE_ENTRY(func) func
 #endif

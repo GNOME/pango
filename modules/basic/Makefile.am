@@ -1,6 +1,6 @@
 ## Process this file with automake to create Makefile.in.
 
-basic_sources = basic.c
+basic_sources = basic-x.c
 
 if HAVE_XFT
 if INCLUDE_BASIC_XFT
@@ -34,13 +34,13 @@ FT2_INCLUDED=
 FT2_PREFIX=
 endif
 
-if INCLUDE_BASIC
-X_INCLUDED=libpango-basic.la
+if INCLUDE_BASIC_X
+X_INCLUDED=libpango-basic-x.la
 X_MODULES=
-X_PREFIX=-DMODULE_PREFIX
+X_PREFIX=-DX_MODULE_PREFIX
 else
 X_INCLUDED=
-X_MODULES=pango-basic.la
+X_MODULES=pango-basic-x.la
 X_PREFIX=
 endif
 
@@ -57,10 +57,10 @@ INCLUDES = 			\
 	$(FREETYPE_CFLAGS)	\
 	$(moddefine)
 
-pango_basic_la_LDFLAGS = $(moduleflags) -export-dynamic -avoid-version -module
-pango_basic_la_LIBADD = 
-pango_basic_la_SOURCES = $(basic_sources)
-libpango_basic_la_SOURCES = $(basic_sources)
+pango_basic_x_la_LDFLAGS = $(moduleflags) -export-dynamic -avoid-version -module
+pango_basic_x_la_LIBADD = 
+pango_basic_x_la_SOURCES = $(basic_sources)
+libpango_basic_x_la_SOURCES = $(basic_sources)
 
 pango_basic_xft_la_LDFLAGS = -rpath $(libdir) -export-dynamic -avoid-version -module
 pango_basic_xft_la_LIBADD = 

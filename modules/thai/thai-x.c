@@ -868,10 +868,10 @@ thai_engine_x_new ()
  * entry points script_engine_list, etc. But if we are compiling
  * it for inclusion directly in Pango, then we need them to
  * to have distinct names for this module, so we prepend
- * _pango_thai_
+ * _pango_thai_x_
  */
-#ifdef MODULE_PREFIX
-#define MODULE_ENTRY(func) _pango_thai_##func
+#ifdef X_MODULE_PREFIX
+#define MODULE_ENTRY(func) _pango_thai_x_##func
 #else
 #define MODULE_ENTRY(func) func
 #endif

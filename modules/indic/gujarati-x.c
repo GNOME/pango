@@ -314,8 +314,8 @@ pango_indic_engine_x_new ()
   return (PangoEngine *) result;
 }
 
-#ifdef GUJARATI_MODULE_PREFIX
-#define MODULE_ENTRY(func) _pango_gujarati_##func
+#ifdef GUJARATI_X_MODULE_PREFIX
+#define MODULE_ENTRY(func) _pango_gujarati_x_##func
 #else
 #define MODULE_ENTRY(func) func
 #endif
