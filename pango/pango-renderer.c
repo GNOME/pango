@@ -910,7 +910,7 @@ pango_renderer_default_draw_error_underline (PangoRenderer *renderer,
  * pango_renderer_draw_trapezoid:
  * @renderer: a #PangoRenderer
  * @part: type of object this trapezoid is part of
- * @y1: Y coordinate of top of trapezoid
+ * @y1_: Y coordinate of top of trapezoid
  * @x11: X coordinate of left end of top of trapezoid
  * @x21: X coordinate of right end of top of trapezoid
  * @y2: X coordinate of top of trapezoid
@@ -925,7 +925,7 @@ pango_renderer_default_draw_error_underline (PangoRenderer *renderer,
 void
 pango_renderer_draw_trapezoid (PangoRenderer  *renderer,
 			       PangoRenderPart part,
-			       double          y1,
+			       double          y1_,
 			       double          x11,
 			       double          x21,
 			       double          y2,
@@ -936,7 +936,7 @@ pango_renderer_draw_trapezoid (PangoRenderer  *renderer,
   g_return_if_fail (renderer->active_count > 0);
   
   PANGO_RENDERER_GET_CLASS (renderer)->draw_trapezoid (renderer, part,
-						       y1, x11, x21,
+						       y1_, x11, x21,
 						       y2, x12, x22);
 }
 
