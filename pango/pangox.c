@@ -1413,32 +1413,35 @@ pango_x_render  (Display           *display,
   
   for (i=0; i<glyphs->num_glyphs; i++)
     {
-      guint16 index = PANGO_X_GLYPH_INDEX (glyphs->glyphs[i].glyph);
-      guint16 subfont_index = PANGO_X_GLYPH_SUBFONT (glyphs->glyphs[i].glyph);
-      PangoXSubfontInfo *subfont;
-      
-      XChar2b c;
-
-      subfont = pango_x_find_subfont (font, subfont_index);
-      if (subfont)
+      if (glyphs->glyphs[i].glyph)
 	{
-	  c.byte1 = index / 256;
-	  c.byte2 = index % 256;
-
-	  fs = pango_x_get_font_struct (font, subfont);
-	  if (!fs)
-	    continue;
+	  guint16 index = PANGO_X_GLYPH_INDEX (glyphs->glyphs[i].glyph);
+	  guint16 subfont_index = PANGO_X_GLYPH_SUBFONT (glyphs->glyphs[i].glyph);
+	  PangoXSubfontInfo *subfont;
+      
+	  XChar2b c;
 	  
-	  if (fs->fid != old_fid)
+	  subfont = pango_x_find_subfont (font, subfont_index);
+	  if (subfont)
 	    {
-	      XSetFont (display, gc, fs->fid);
-	      old_fid = fs->fid;
+	      c.byte1 = index / 256;
+	      c.byte2 = index % 256;
+	      
+	      fs = pango_x_get_font_struct (font, subfont);
+	      if (!fs)
+		continue;
+	      
+	      if (fs->fid != old_fid)
+		{
+		  XSetFont (display, gc, fs->fid);
+		  old_fid = fs->fid;
+		}
+	      
+	      XDrawString16 (display, d, gc,
+			     x + (x_off + glyphs->glyphs[i].geometry.x_offset) / PANGO_SCALE,
+			     y + glyphs->glyphs[i].geometry.y_offset / PANGO_SCALE,
+			     &c, 1);
 	    }
-	  
-	  XDrawString16 (display, d, gc,
-			 x + (x_off + glyphs->glyphs[i].geometry.x_offset) / PANGO_SCALE,
-			 y + glyphs->glyphs[i].geometry.y_offset / PANGO_SCALE,
-			 &c, 1);
 	}
 
       x_off += glyphs->glyphs[i].geometry.width;
@@ -1454,7 +1457,7 @@ pango_x_font_get_glyph_extents  (PangoFont      *font,
   XCharStruct *cs;
   PangoXSubfontInfo *subfont;
 
-  if (pango_x_find_glyph (font, glyph, &subfont, &cs))
+  if (glyph && pango_x_find_glyph (font, glyph, &subfont, &cs))
     {
       if (ink_rect)
 	{
@@ -2019,7 +2022,7 @@ pango_x_list_subfonts (PangoFont        *font,
 }
 
 gboolean
-pango_x_has_glyph (PangoFont       *font,
+pango_x_has_glyph (PangoFont  *font,
 		   PangoGlyph  glyph)
 {
   g_return_val_if_fail (font != NULL, FALSE);

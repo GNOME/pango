@@ -582,6 +582,7 @@ pango_itemize (PangoContext   *context,
       next = unicode_next_utf8 (p);
       
       if (i == 0 ||
+	  text_ucs4[i] == '\t' || text_ucs4[i-1] == '\t' ||
 	  embedding_levels[i] != embedding_levels[i-1] ||
 	  shape_engines[i] != shape_engines[i-1] ||
 	  lang_engines[i] != lang_engines[i-1] ||

@@ -300,6 +300,3 @@ pango_glyph_string_x_to_index (PangoGlyphString *glyphs,
 	*trailing = (cp - (int)cp > 0.5) ? 1 : 0;
     }
 }
-
-
-

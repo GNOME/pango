@@ -46,6 +46,8 @@ struct _PangoLayout
   gint n_chars;		        /* Total number of characters in layout */
   PangoLogAttr *log_attrs;	/* Logical attributes for layout's text */
 
+  int tab_width;		/* Cached width of a tab. -1 == not yet calculated */
+
   GSList *lines;
 };
 
@@ -103,6 +105,8 @@ pango_layout_new (PangoContext *context)
 
   layout->log_attrs = NULL;
   layout->lines = NULL;
+
+  layout->tab_width = -1;
 
   return layout;
 }
@@ -437,6 +441,7 @@ void
 pango_layout_context_changed (PangoLayout *layout)
 {
   pango_layout_clear_lines (layout);
+  layout->tab_width = -1;
 }
 
 /**
@@ -1381,6 +1386,81 @@ free_run (PangoLayoutRun *run, gboolean free_item)
   g_free (run);
 }
 
+static int
+get_tab_pos (PangoLayout *layout, int index)
+{
+  if (layout->tab_width == -1)
+    {
+      /* Find out how wide 8 spaces are in the context's default font. Utter
+       * performance killer. :-( 
+       */
+      PangoGlyphString *glyphs = pango_glyph_string_new ();
+      PangoItem *item;
+      GList *items;
+      int i;
+
+      PangoAttrList *attrs = pango_attr_list_new ();
+      items = pango_itemize (layout->context, " ", 1, attrs);
+      pango_attr_list_unref (attrs);
+
+      item = items->data;
+      pango_shape ("        ", 8, &item->analysis, glyphs);
+      
+      pango_item_free (item);
+      g_list_free (items);
+
+      layout->tab_width = 0;
+      for (i=0; i < glyphs->num_glyphs; i++)
+	layout->tab_width += glyphs->glyphs[i].geometry.width;
+
+      pango_glyph_string_free (glyphs);
+    }
+  
+  return layout->tab_width * index;
+}
+
+static void
+shape_tab (PangoLayoutLine  *line,
+	   PangoGlyphString *glyphs)
+{
+  int i;
+  GSList *tmp_list;
+
+  int current_width = 0;
+
+  /* Compute the width of the line currently - inefficient, but easier
+   * than keeping the current width of the line up to date everywhere
+   */
+  tmp_list = line->runs;
+  while (tmp_list)
+    {
+      PangoLayoutRun *run = tmp_list->data;
+      for (i=0; i < run->glyphs->num_glyphs; i++)
+	current_width += run->glyphs->glyphs[i].geometry.width;
+      
+      tmp_list = tmp_list->next;
+    }
+  
+  pango_glyph_string_set_size (glyphs, 1);
+  
+  glyphs->glyphs[0].glyph = 0;
+  glyphs->glyphs[0].geometry.x_offset = 0;
+  glyphs->glyphs[0].geometry.y_offset = 0;
+  glyphs->glyphs[0].attr.is_cluster_start = 1;
+  
+  glyphs->log_clusters[0] = 0;
+
+  for (i=0;;i++)
+    {
+      int tab_pos = get_tab_pos (line->layout, i);
+      if (tab_pos > current_width)
+	{
+	  glyphs->glyphs[0].geometry.width = tab_pos - current_width;
+	  break;
+	}
+    }
+}
+
 static gboolean
 process_item (PangoLayoutLine *line,
 	      PangoItem       *item,
@@ -1397,7 +1477,10 @@ process_item (PangoLayoutLine *line,
   if (*remaining_width == 0)
     return FALSE;
   
-  pango_shape (text + item->offset, item->length, &item->analysis, glyphs);
+  if (text[item->offset] == '\t')
+    shape_tab (line, glyphs);
+  else
+    pango_shape (text + item->offset, item->length, &item->analysis, glyphs);
 
   if (*remaining_width < 0)
     {
@@ -1579,7 +1662,7 @@ pango_layout_check_lines (PangoLayout *layout)
 	{
 	  PangoItem *item = tmp_list->data;
 	  gboolean fits;
-	  int old_num_chars = item->num_chars;
+ 	  int old_num_chars = item->num_chars;
 
 	  fits = process_item (line, item, start,
 			       layout->log_attrs + start_offset, current_cant_end,

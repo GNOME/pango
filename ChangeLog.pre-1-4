@@ -1,3 +1,39 @@
+Sun May  7 00:00:00 2000  Owen Taylor  <otaylor@redhat.com>
+
+	* modules/basic/basic.c (basic_engine_shape): When
+	handling overstrikes, try to guess a bit better
+	how overstrike glyphs are positioned in the font.
+	(Now works with more of glyphs from clearlyu, though
+	not the Hebrew accents in that font)
+
+	* examples/HELLO.utf8: Insert tab characters to 
+	keep the columns in the right order for either
+	global direction. Insert left-to-right marks in
+	a few places to keep leading and trailing punctuation
+	in the right place.
+
+	* modules/basic/basic.c (basic_engine_shape): Don't
+	show RLM and LRM
+
+	* pango/glyphstring.c (pango_glyph_string_extents): Use
+	the logical width set in the glyph string rather than 
+	that from the font's metrics.
+
+	* pango/pangox.c (pango_x_render): Treat glyph index
+	0 as special - representing invisible, 0 size
+	character. We need this sometimes, and it is
+	easier and faster to have this special case
+	than to shape a space.
+
+	* pango/pango-context.c (pango_itemize): Put
+	tabs into separate items. (Sort of lame hack,
+	we do this to make line breaking with tab
+	handling simpler)
+
+	* examples/viewer.c (checkbutton_toggled): Notify
+	all the layouts that the context has changed so 
+	the RTL base dir change actually takes effect.
+
 Fri May  5 18:56:45 2000  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/break.c (pango_break): Add ZWS to hacky 

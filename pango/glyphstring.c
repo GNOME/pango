@@ -139,6 +139,12 @@ pango_glyph_string_extents (PangoGlyphString *glyphs,
       if (i == 0)
 	{
 	  pango_font_get_glyph_extents (font, glyphs->glyphs[i].glyph, ink_rect, logical_rect);
+
+	  if (logical_rect)
+	    {
+	      logical_rect->x = 0;
+	      logical_rect->width = geometry->width;
+	    }
 	}
       else
 	{
@@ -163,14 +169,11 @@ pango_glyph_string_extents (PangoGlyphString *glyphs,
 
 	  if (logical_rect)
 	    {
-	      new_pos = MIN (logical_rect->x, x_pos + glyph_logical.x + geometry->x_offset);
-	      logical_rect->width = MAX (logical_rect->x + logical_rect->width,
-				     x_pos + glyph_logical.x + glyph_logical.width + geometry->x_offset) - new_pos;
-	      logical_rect->x = new_pos;
+	      logical_rect->width += geometry->width;
 
 	      new_pos = MIN (logical_rect->y, glyph_logical.y + geometry->y_offset);
 	      logical_rect->height = MAX (logical_rect->y + logical_rect->height,
-				      glyph_logical.y + glyph_logical.height + geometry->y_offset) - new_pos;
+					  glyph_logical.y + glyph_logical.height + geometry->y_offset) - new_pos;
 	      logical_rect->y = new_pos;
 	    }
 	}

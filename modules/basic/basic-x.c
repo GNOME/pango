@@ -401,16 +401,9 @@ basic_engine_shape (PangoFont        *font,
 	    input = buf;
 	  }
 
-      if (wc == 0x200B)		/* Zero-width space */
+      if (wc == 0x200B || wc == 0x200E || wc == 0x200F)	/* Zero-width characters */
 	{
-	  index = find_char (cache, font, ' ', input);
-	  if (index)
-	    {
-	      set_glyph (font, glyphs, i, p - text, index);
-	      glyphs->glyphs[i].geometry.width = 0;
-	    }
-	  else
-	    set_glyph (font, glyphs, i, p - text, pango_x_get_unknown_glyph (font));
+	  set_glyph (font, glyphs, i, p - text, 0);
 	}
       else
 	{
@@ -423,10 +416,19 @@ basic_engine_shape (PangoFont        *font,
 		{
 		  if (i > 0)
 		    {
+		      PangoRectangle logical_rect, ink_rect;
+		      
 		      glyphs->glyphs[i].geometry.width = MAX (glyphs->glyphs[i-1].geometry.width,
 							      glyphs->glyphs[i].geometry.width);
 		      glyphs->glyphs[i-1].geometry.width = 0;
 		      glyphs->log_clusters[i] = glyphs->log_clusters[i-1];
+
+		      /* Some heuristics to try to guess how overstrike glyphs are
+		       * done and compensate
+		       */
+		      pango_font_get_glyph_extents (font, glyphs->glyphs[i].glyph, &ink_rect, &logical_rect);
+		      if (logical_rect.width == 0 && ink_rect.x == 0)
+			glyphs->glyphs[i].geometry.x_offset = (glyphs->glyphs[i].geometry.width - ink_rect.width) / 2;
 		    }
 		}
 	    }
