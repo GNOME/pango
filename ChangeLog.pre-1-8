@@ -1,3 +1,8 @@
+2004-08-26  Dov Grobgeld  <dov.grobgeld@weizmann.ac.il>
+
+	* modules/hebrew/hebrew-fc.c (hebrew_engine_shape): Added 
+	open-type support for Hebrew.
+
 2004-08-22  Tor Lillqvist  <tml@iki.fi>
 
 	* pango/pangowin32-fontmap.c (pango_win32_inner_enum_proc): Ignore
