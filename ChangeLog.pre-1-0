@@ -1,3 +1,7 @@
+2002-01-11  Havoc Pennington  <hp@pobox.com>
+
+	* docs/pango_markup.sgml: fix cross-references in here
+
 2002-01-11  Havoc Pennington  <hp@redhat.com>
 
 	* pango/pango-layout.c (pango_layout_set_attributes): allow

@@ -17,11 +17,12 @@ markup language to encode text plus a <link linkend="PangoAttrList">PangoAttrLis
 Frequently, you want to display some text to the user with attributes
 applied to part of the text (for example, you might want bold or
 italicized words). With the base Pango interfaces, you could create a
-#PangoAttrList and apply it to the text; the problem is that you'd
-need to apply attributes to some numeric range of characters, for
-example "characters 12-17." This is broken from an
-internationalization standpoint; once the text is translated, the word
-you wanted to italicize could be in a different position.
+<link linkend="PangoAttrList">PangoAttrList</link> and apply it to the
+text; the problem is that you'd need to apply attributes to some
+numeric range of characters, for example "characters 12-17." This is
+broken from an internationalization standpoint; once the text is
+translated, the word you wanted to italicize could be in a different
+position.
 </para>
 
 <para>
@@ -29,7 +30,7 @@ The solution is to include the text attributes in the string to be
 translated. Pango provides this feature with a small markup language.
 You can parse a marked-up string into the string text plus a
 <link linkend="PangoAttrList">PangoAttrList</link> using the function 
-pango_parse_markup().
+<link linkend="pango-parse-markup">pango_parse_markup()</link>.
 </para>
 
 <para>
@@ -38,11 +39,11 @@ A simple example of a marked-up string might be:
 </para>
 
 <para>
-The root tag of a marked-up document is &lt;markup&gt;, but
-pango_parse_markup() allows you to omit this tag, so you will most
-likely never need to use it. The most general markup tag is
-&lt;span&gt;, then there are some convenience tags. &lt;span&gt; has
-the following attributes:
+The root tag of a marked-up document is &lt;markup&gt;, but <link
+linkend="pango-parse-markup">pango_parse_markup()</link> allows you to
+omit this tag, so you will most likely never need to use it. The most
+general markup tag is &lt;span&gt;, then there are some convenience
+tags. &lt;span&gt; has the following attributes:
 <variablelist><title>&lt;span&gt; attributes</title>
 
 <varlistentry><term>font_desc</term>
