@@ -22,6 +22,8 @@
 #include <ctype.h>
 #include <stdio.h>
 #include <string.h>
+#include <dirent.h>
+#include <limits.h>
 
 #include <gmodule.h>
 
@@ -215,25 +217,10 @@ add_included_modules (void)
     }
 }
 
-static void
-read_modules (void)
+static gboolean /* Returns true if succeeded, false if failed */
+process_module_file(FILE *module_file)
 {
-  FILE *module_file;
   char *line;
-
-  /* FIXME FIXME FIXME - this is a potential security problem from leaving
-   * pango.modules files scattered around to trojan modules.
-   */
-  module_file = fopen ("pango.modules", "r");
-  if (!module_file)
-    {
-      module_file = fopen (LOCALSTATEDIR "/lib/pango/pango.modules", "r");
-      if (!module_file)
-	{
-	  fprintf(stderr, "Cannot load module file!\n");
-	  return;			/* FIXME: Error */
-	}
-    }
 
   while ((line = readline (module_file)))
     {
@@ -277,13 +264,13 @@ read_modules (void)
 		  if (sscanf(q, "%d-%d:", &start, &end) != 2)
 		    {
 		      fprintf(stderr, "Error reading pango.modules");
-		      return;
+		      return FALSE;
 		    }
 		  q = strchr (q, ':');
 		  if (!q)
 		    {
 		      fprintf(stderr, "Error reading pango.modules");
-		      return;
+		      return FALSE;
 		    }
 		  q++;
 		  range->start = start;
@@ -311,7 +298,7 @@ read_modules (void)
       if (i<3)
 	{
 	  fprintf(stderr, "Error reading pango.modules");
-	  return;
+	  return FALSE;
 	}
       
       ranges = g_list_reverse (ranges);
@@ -332,6 +319,65 @@ read_modules (void)
       pair->engine = NULL;
 
       engines = g_list_prepend (engines, pair);
+    }
+
+  return TRUE;
+}
+
+static void
+read_modules (void)
+{
+  FILE *module_file;
+  gboolean read_module_file = FALSE;
+
+  /* FIXME FIXME FIXME - this is a potential security problem from leaving
+   * pango.modules files scattered around to trojan modules.
+   */
+  module_file = fopen ("pango.modules", "r");
+  if(module_file)
+    {
+      read_module_file = read_module_file || process_module_file(module_file);
+      process_module_file(module_file);
+      fclose(module_file);
+    }
+  else
+    {
+      DIR *dirh;
+
+      dirh = opendir(DOTMODULEDIR);
+      if(dirh)
+	{
+	  struct dirent *dent;
+
+	  while((dent = readdir(dirh)))
+	    {
+	      char fullfn[PATH_MAX];
+	      char *ctmp;
+
+	      if(dent->d_name[0] == '.')
+		continue;
+
+	      ctmp = strrchr(dent->d_name, '.');
+	      if(!ctmp || strcmp(ctmp, ".modules") != 0)
+		continue;
+
+	      g_snprintf(fullfn, sizeof(fullfn), DOTMODULEDIR "/%s", dent->d_name);
+	      module_file = fopen(fullfn, "r");
+	      if(module_file)
+		{
+		  read_module_file = read_module_file || process_module_file(module_file);
+		  fclose(module_file);
+		}
+	    }
+	}
+
+      closedir(dirh);
+    }
+
+  if (!read_module_file)
+    {
+      fprintf(stderr, "Could not load any module files!\n");
+      /* FIXME: Error */
     }
 }
 
@@ -377,6 +423,7 @@ build_map (PangoMapInfo *info)
   init_modules();
 
   info->map = map = g_new (PangoMap, 1);
+  map->n_submaps = 0;
   for (i=0; i<256; i++)
     {
       map->submaps[i].is_leaf = TRUE;

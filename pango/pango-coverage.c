@@ -117,12 +117,14 @@ pango_coverage_copy (PangoCoverage *coverage)
  * 
  * Increase the reference count on the #PangoCoverage by one
  **/
-void
+PangoCoverage *
 pango_coverage_ref (PangoCoverage *coverage)
 {
   g_return_if_fail (coverage != NULL);
 
   coverage->ref_count++;
+
+  return coverage;
 }
 
 /**

@@ -70,7 +70,7 @@ pango_font_description_compare (const PangoFontDescription  *desc1,
 	  desc1->weight == desc2->weight &&
 	  desc1->stretch == desc2->stretch &&
 	  desc1->size == desc2->size &&
-	  g_strcasecmp (desc1->family_name, desc2->family_name));
+	  !g_strcasecmp (desc1->family_name, desc2->family_name));
 }
 
 /**

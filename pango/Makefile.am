@@ -1,6 +1,7 @@
 	## Process this file with automake to create Makefile.in.
 
-INCLUDES=-DSYSCONFDIR=\"$(sysconfdir)\" -DLOCALSTATEDIR=\"$(localstatedir)\" -I$(top_srcdir)
+INCLUDES=-DDOTMODULEDIR=\"$(sysconfdir)/pango\" -DSYSCONFDIR=\"$(sysconfdir)\" \
+	-DLOCALSTATEDIR=\"$(localstatedir)\" -I$(top_srcdir)
 
 lib_LTLIBRARIES = libpango.la libpangox.la
 bin_PROGRAMS = pango-querymodules
