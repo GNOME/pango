@@ -31,6 +31,7 @@ typedef struct _PangoFcCoverageKey  PangoFcCoverageKey;
 typedef struct _PangoFcFace         PangoFcFace;
 typedef struct _PangoFcFamily       PangoFcFamily;
 typedef struct _PangoFcPatternSet   PangoFcPatternSet;
+typedef struct _PangoFcFindFuncInfo PangoFcFindFuncInfo;
 
 #define PANGO_FC_TYPE_FAMILY              (pango_fc_family_get_type ())
 #define PANGO_FC_FAMILY(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_FC_TYPE_FAMILY, PangoFcFamily))
@@ -59,6 +60,9 @@ struct _PangoFcFontMapPrivate
   /* List of all families availible */
   PangoFcFamily **families;
   int n_families;		/* -1 == uninitialized */
+
+  /* Decoders */
+  GSList *findfuncs;
 
   guint closed : 1;
 };
@@ -96,6 +100,14 @@ struct _PangoFcPatternSet
   FcPattern **patterns;
   PangoFontset *fontset;
   GList *cache_link;
+};
+
+struct _PangoFcFindFuncInfo
+{
+  PangoFcDecoderFindFunc findfunc;
+  gpointer               user_data;
+  GDestroyNotify         dnotify;
+  gpointer               ddata;
 };
 
 static GType    pango_fc_family_get_type     (void);
@@ -330,6 +342,42 @@ pango_fc_clear_pattern_hashes (PangoFcFontMap *fcfontmap)
   priv->fontset_hash_list = NULL;
 }
 
+/**
+ * pango_fc_font_map_add_find_func:
+ * @fcfontmap: The #PangoFcFontMap to add this method to.
+ * @factory: The #PangoFcDecoderFindFunc callback function
+ * @user_data: User data.
+ * @dnotify: A #GDestroyNotify callback that will be called when the
+ * fontmap is finalized and the decoder is released.
+ *
+ * This function saves a callback method in the #PangoFcFontMap that
+ * will be called whenever new fonts are created.  If the function
+ * returns a #PangoFcDecoder, that decoder will be used to determine
+ * both coverage via a #FcCharSet and a one-to-one mapping of
+ * characters to glyphs.  This will allow applications to have
+ * application-specific encodings for various fonts.
+ *
+ * Since: 1.6.
+ *
+ */
+
+void pango_fc_font_map_add_decoder_find_func (PangoFcFontMap        *fcfontmap,
+					      PangoFcDecoderFindFunc findfunc,
+					      gpointer               user_data,
+					      GDestroyNotify         dnotify)
+{
+  PangoFcFontMapPrivate *priv = fcfontmap->priv;
+  PangoFcFindFuncInfo *info;
+
+  info = g_new (PangoFcFindFuncInfo, 1);
+
+  info->findfunc = findfunc;
+  info->user_data = user_data;
+  info->dnotify = dnotify;
+
+  priv->findfuncs = g_slist_append (priv->findfuncs, info);
+}
+
 static void
 pango_fc_font_map_finalize (GObject *object)
 {
@@ -346,9 +394,19 @@ pango_fc_font_map_finalize (GObject *object)
   if (priv->pattern_hash)
     g_hash_table_destroy (priv->pattern_hash);
 
+  while (priv->findfuncs)
+    {
+      PangoFcFindFuncInfo *info;
+      info = priv->findfuncs->data;
+      if (info->dnotify)
+	info->dnotify (info->user_data);
+
+      g_free (info);
+      priv->findfuncs = g_slist_delete_link (priv->findfuncs, priv->findfuncs);
+    }
+
   G_OBJECT_CLASS (parent_class)->finalize (object);
 }
-
 
 /* Add a mapping from xfont->font_pattern to xfont */
 static void
@@ -594,6 +652,7 @@ pango_fc_font_map_new_font (PangoFontMap  *fontmap,
   PangoFcFontMapPrivate *priv = fcfontmap->priv;
   FcPattern *pattern;
   PangoFcFont *fcfont;
+  GSList *l;
 
   /* Returning NULL here actually violates a contract
    * that loading load_font() will never return NULL.
@@ -639,6 +698,23 @@ pango_fc_font_map_new_font (PangoFontMap  *fontmap,
     FcPatternDestroy (pattern);
 
   fcfont->fontmap = g_object_ref (fcfontmap);
+
+  /*
+   * Give any custom decoders a crack at this font now that it's been
+   * created.
+   */
+  for (l = priv->findfuncs; l && l->data; l = l->next)
+    {
+      PangoFcFindFuncInfo *info = l->data;
+      PangoFcDecoder *decoder;
+
+      decoder = info->findfunc (match, info->user_data);
+      if (decoder)
+	{
+	  _pango_fc_font_set_decoder (fcfont, decoder);
+	  break;
+	}
+    }
 
   return (PangoFont *)fcfont;
 }
@@ -948,25 +1024,22 @@ pango_fc_font_map_set_coverage (PangoFcFontMap            *fcfontmap,
 
 PangoCoverage *
 _pango_fc_font_map_get_coverage (PangoFcFontMap *fcfontmap,
-				 FcPattern      *pattern)
+				 PangoFcFont    *fcfont)
 {
   PangoFcFontMapPrivate *priv = fcfontmap->priv;
   PangoFcCoverageKey key;
   PangoCoverage *coverage;
-  FcChar32  map[FC_CHARSET_MAP_SIZE];
-  FcChar32  ucs4, pos;
   FcCharSet *charset;
-  int i;
   
   /*
    * Assume that coverage information is identified by
    * a filename/index pair; there shouldn't be any reason
    * this isn't true, but it's not specified anywhere
    */
-  if (FcPatternGetString (pattern, FC_FILE, 0, (FcChar8 **) &key.filename) != FcResultMatch)
+  if (FcPatternGetString (fcfont->font_pattern, FC_FILE, 0, (FcChar8 **) &key.filename) != FcResultMatch)
     return NULL;
 
-  if (FcPatternGetInteger (pattern, FC_INDEX, 0, &key.id) != FcResultMatch)
+  if (FcPatternGetInteger (fcfont->font_pattern, FC_INDEX, 0, &key.id) != FcResultMatch)
     return NULL;
   
   coverage = g_hash_table_lookup (priv->coverage_hash, &key);
@@ -977,9 +1050,34 @@ _pango_fc_font_map_get_coverage (PangoFcFontMap *fcfontmap,
    * Pull the coverage out of the pattern, this
    * doesn't require loading the font
    */
-  if (FcPatternGetCharSet (pattern, FC_CHARSET, 0, &charset) != FcResultMatch)
+  if (FcPatternGetCharSet (fcfont->font_pattern, FC_CHARSET, 0, &charset) != FcResultMatch)
     return NULL;
-  
+
+  coverage = _pango_fc_font_map_fc_to_coverage (charset);
+
+  pango_fc_font_map_set_coverage (fcfontmap, &key, coverage);
+ 
+  return coverage;
+}
+
+/**
+ * _pango_fc_font_map_fc_to_coverage:
+ * @charset: #FcCharSet to convert to a #PangoCoverage object.
+ *
+ * Convert the given #FcCharSet into a new #PangoCoverage object.  The
+ * caller is responsible for freeing the newly created object.
+ *
+ * Since: 1.6
+ **/
+
+PangoCoverage  *
+_pango_fc_font_map_fc_to_coverage (FcCharSet *charset)
+{
+  PangoCoverage *coverage;
+  FcChar32  ucs4, pos;
+  FcChar32  map[FC_CHARSET_MAP_SIZE];
+  int i;
+
   /*
    * Convert an Fc CharSet into a pango coverage structure.  Sure
    * would be nice to just use the Fc structure in place...
@@ -1005,7 +1103,7 @@ _pango_fc_font_map_get_coverage (PangoFcFontMap *fcfontmap,
 	    }
 	}
     }
-  
+
   /* Awful hack so Hangul Tone marks get rendered with the same
    * font and in the same run as other Hangul characters. If a font
    * covers the first composed Hangul glyph, then it is declared to cover
@@ -1018,8 +1116,6 @@ _pango_fc_font_map_get_coverage (PangoFcFontMap *fcfontmap,
       pango_coverage_set (coverage, 0x302f, PANGO_COVERAGE_EXACT);
     }
 
-  pango_fc_font_map_set_coverage (fcfontmap, &key, coverage);
- 
   return coverage;
 }
 

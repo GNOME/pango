@@ -173,7 +173,10 @@ libpangoxft_1_0_la_SOURCES =   	\
 # ------------------- libpangoft2 -------------------
 
 if HAVE_FREETYPE
-pangoinclude_HEADERS += pangoft2.h pango-ot.h
+pangoinclude_HEADERS += \
+	pangoft2.h \
+	pango-ot.h \
+	pangofc-decoder.h
 lib_LTLIBRARIES += libpangoft2-1.0.la
 endif
 
@@ -184,6 +187,7 @@ libpangoft2_1_0_la_DEPENDENCIES = opentype/libpango-ot.la libpango-$(PANGO_API_V
 libpangoft2_1_0_la_SOURCES =   	\
 	pangofc-font.c	   	\
 	pangofc-fontmap.c	\
+	pangofc-decoder.c	\
 	pangofc-private.h	\
 	pangoft2.h		\
 	pangoft2.c		\

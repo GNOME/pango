@@ -29,10 +29,15 @@ G_BEGIN_DECLS
 
 void _pango_fc_font_shutdown (PangoFcFont *fcfont);
 
-void           _pango_fc_font_map_remove         (PangoFcFontMap *fcfontmap,
-						  PangoFcFont    *fcfont);
-PangoCoverage *_pango_fc_font_map_get_coverage   (PangoFcFontMap *fcfontmap,
-						  FcPattern      *pattern);
+void           _pango_fc_font_map_remove          (PangoFcFontMap *fcfontmap,
+						   PangoFcFont    *fcfont);
+PangoCoverage *_pango_fc_font_map_get_coverage    (PangoFcFontMap *fcfontmap,
+						   PangoFcFont    *fcfont);
+PangoCoverage  *_pango_fc_font_map_fc_to_coverage (FcCharSet      *charset);
+
+PangoFcDecoder *_pango_fc_font_get_decoder       (PangoFcFont    *font);
+void            _pango_fc_font_set_decoder       (PangoFcFont    *font,
+						  PangoFcDecoder *decoder);
 
 G_END_DECLS
 

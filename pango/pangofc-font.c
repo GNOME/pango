@@ -48,6 +48,15 @@ enum {
   PROP_PATTERN
 };
 
+typedef struct _PangoFcFontPrivate PangoFcFontPrivate;
+
+#define PANGO_FC_FONT_GET_PRIVATE(obj) (G_TYPE_INSTANCE_GET_PRIVATE ((obj), PANGO_TYPE_FC_FONT, PangoFcFontPrivate))
+
+struct _PangoFcFontPrivate
+{
+  PangoFcDecoder *decoder;
+};
+
 static void                  pango_fc_font_class_init   (PangoFcFontClass *class);
 static void                  pango_fc_font_finalize     (GObject          *object);
 static void                  pango_fc_font_set_property (GObject          *object,
@@ -114,6 +123,8 @@ pango_fc_font_class_init (PangoFcFontClass *class)
 							 "Pattern",
 							 "The fontconfig pattern for this font",
 							 G_PARAM_WRITABLE | G_PARAM_CONSTRUCT_ONLY));
+
+  g_type_class_add_private (object_class, sizeof (PangoFcFontPrivate));
 }
 
 static void
@@ -127,6 +138,7 @@ static void
 pango_fc_font_finalize (GObject *object)
 {
   PangoFcFont *fcfont = PANGO_FC_FONT (object);
+  PangoFcFontPrivate *priv = PANGO_FC_FONT_GET_PRIVATE (fcfont);
 
   g_slist_foreach (fcfont->metrics_by_lang, (GFunc)free_metrics_info, NULL);
   g_slist_free (fcfont->metrics_by_lang);  
@@ -136,6 +148,9 @@ pango_fc_font_finalize (GObject *object)
 
   FcPatternDestroy (fcfont->font_pattern);
   pango_font_description_free (fcfont->description);
+
+  if (priv->decoder)
+    _pango_fc_font_set_decoder (fcfont, NULL);
 
   parent_class->finalize (object);
 }
@@ -206,9 +221,17 @@ pango_fc_font_get_coverage (PangoFont     *font,
 			    PangoLanguage *language)
 {
   PangoFcFont *fcfont = (PangoFcFont *)font;
+  PangoFcFontPrivate *priv = PANGO_FC_FONT_GET_PRIVATE (fcfont);
+  FcCharSet *charset;
+
+  if (priv->decoder)
+    {
+      charset = pango_fc_decoder_get_charset (priv->decoder, fcfont);
+      return _pango_fc_font_map_fc_to_coverage (charset);
+    }
 
   return _pango_fc_font_map_get_coverage (PANGO_FC_FONT_MAP (fcfont->fontmap),
-					  fcfont->font_pattern);
+					  fcfont);
 }
 
 static void
@@ -472,7 +495,16 @@ gboolean
 pango_fc_font_has_char (PangoFcFont *font,
 			gunichar     wc)
 {
+  PangoFcFontPrivate *priv = PANGO_FC_FONT_GET_PRIVATE (font);
+  FcCharSet *charset;
+
   g_return_val_if_fail (PANGO_IS_FC_FONT (font), FALSE);
+
+  if (priv->decoder)
+    {
+      charset = pango_fc_decoder_get_charset (priv->decoder, font);
+      return FcCharSetHasChar (charset, wc);
+    }
 
   return PANGO_FC_FONT_GET_CLASS (font)->has_char (font, wc);
 }
@@ -495,7 +527,12 @@ PangoGlyph
 pango_fc_font_get_glyph (PangoFcFont *font,
 			 gunichar     wc)
 {
+  PangoFcFontPrivate *priv = PANGO_FC_FONT_GET_PRIVATE (font);
+
   g_return_val_if_fail (PANGO_IS_FC_FONT (font), 0);
+
+  if (priv->decoder)
+    return pango_fc_decoder_get_glyph (priv->decoder, font, wc);
 
   return PANGO_FC_FONT_GET_CLASS (font)->get_glyph (font, wc);
 }
@@ -576,4 +613,49 @@ pango_fc_font_kern_glyphs (PangoFcFont      *font,
     }
   
   pango_fc_font_unlock_face (font);
+}
+
+/**
+ * _pango_fc_font_get_decoder
+ * @font: a #PangoFcFont
+ *
+ * This will return any custom decoder set on this font.
+ *
+ * Returns: The custom decoder
+ *
+ * Since: 1.6
+ **/
+
+PangoFcDecoder *
+_pango_fc_font_get_decoder (PangoFcFont *font)
+{
+  PangoFcFontPrivate *priv = PANGO_FC_FONT_GET_PRIVATE (font);
+
+  return priv->decoder;
+}
+
+/**
+ * _pango_fc_font_set_decoder
+ * @font: a #PangoFcFont
+ * @decoder: a #PangoFcDecoder to set for this font
+ *
+ * This sets a custom decoder for this font.  Any previous decoder
+ * will be released before this one is set.
+ *
+ * Since: 1.6
+ **/
+
+void
+_pango_fc_font_set_decoder (PangoFcFont    *font,
+			    PangoFcDecoder *decoder)
+{
+  PangoFcFontPrivate *priv = PANGO_FC_FONT_GET_PRIVATE (font);
+
+  if (priv->decoder)
+    g_object_unref (priv->decoder);
+
+  priv->decoder = decoder;
+
+  if (priv->decoder)
+    g_object_ref (priv->decoder);
 }

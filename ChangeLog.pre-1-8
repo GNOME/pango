@@ -1,3 +1,69 @@
+Wed Jun  9 17:32:59 2004  Christopher Blizzard  <blizzard@redhat.com>
+
+	* pango/Makefile.am: Add export of pangofc-decoder.h.  Build
+	pangofc-decoder.c.
+
+	* pango/pangofc-decoder.h pango/pangofc-decoder.c: New files.
+	Virtual base class for any custom font decoders.
+
+	* pango/pangofc-font.c: Add new PangoFcFontPrivate structure.
+
+	* pango/pangofc-font.c (pango_fc_font_class_init): Attach new
+	private structure using g_type_class_add_private().
+
+	* pango/pangofc-font.c (pango_fc_font_finalize): Make sure to
+	unset any decoders that are attached to the font.
+
+	* pango/pangofc-font.c (pango_fc_font_get_coverage): When
+	determining coverage, use a custom decoder if available.
+
+	* pango/pangofc-font.c (pango_fc_font_has_char): When determining
+	if a font has a character, use a custom decoder if available.
+
+	* pango/pangofc-font.c (pango_fc_font_get_glyph): When doing
+	single character to glyph convertions, use a custom decoder if
+	available.
+
+	* pango/pangofc-font.c (_pango_fc_font_get_decoder): New
+	function.  Get the custom decoder for the given font.
+
+	* pango/pangofc-font.c (_pango_fc_font_set_decoder): New
+	function.  Set a custom decoder for the given font.
+
+	* pango/pangofc-fontmap.c: Add structure PangoFcFindFuncInfo to
+	keep track of callbacks to create custom decoders.  Modify
+	PangoFcFontMapPrivate by adding a list of PangoFcFontFuncInfo
+	callbacks that have been registered.
+
+	* pango/pangofc-fontmap.c (pango_fc_font_map_add_find_func): New
+	function.  Add callbacks to the fontmap that will create custom
+	decoders when pango creates new fonts.
+
+	* pango/pangofc-fontmap.c (pango_fc_font_map_finalize): Clear out
+	any findfuncs that have been registered and notify them about
+	destruction.
+
+	* pango/pangofc-fontmap.c (pango_fc_font_map_new_font): When
+	creating new fonts, call back to any registered find functions so
+	they can create custom decoders for those fonts.  Attach those
+	custom decoders to the newly created fonts.
+
+	* pango/pangofc-fontmap.c (_pango_fc_font_map_get_coverage):
+	Change the argument to take a PangoFcFont instead of an FcPattern.
+	Call _pango_fc_font_map_fc_to_coverage instead of doing the
+	conversion inline.
+
+	* pango/pangofc-fontmap.c (_pango_fc_font_map_fc_to_coverage): New
+	function.  Convert an FcCharSet to a PangoCoverage object.
+
+	* pango/pangofc-fontmap.h: New declarations for
+	pango_fc_font_map_add_decoder_find_func and
+	PangoFcDecoderFindFunc.
+
+	* pango/pangofc-private.h: New declarations for
+	_pango_fc_font_map_fc_to_coverage, _pango_fc_font_get_decoder and
+	_pango_fc_font_set_decoder.
+
 Mon Jun  7 2004  Theppitak Karoonboonyanan  <thep@linux.thai.net>
 
 	* modules/thai/Makefile.am modules/thai/thai-shaper.c

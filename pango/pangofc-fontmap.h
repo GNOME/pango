@@ -24,6 +24,7 @@
 
 #include <fontconfig/fontconfig.h>
 #include <pango/pango-fontmap.h>
+#include <pango/pangofc-decoder.h>
 #include <pango/pangofc-font.h>
 
 G_BEGIN_DECLS
@@ -97,6 +98,14 @@ void           pango_fc_font_map_shutdown       (PangoFcFontMap *fcfontmap);
 #endif
 
 GType pango_fc_font_map_get_type (void);
+
+typedef PangoFcDecoder * (*PangoFcDecoderFindFunc) (FcPattern *pattern,
+						    gpointer   user_data);
+
+void pango_fc_font_map_add_decoder_find_func (PangoFcFontMap        *fcfontmap,
+					      PangoFcDecoderFindFunc findfunc,
+					      gpointer               user_data,
+					      GDestroyNotify         dnotify);
 
 PangoFontDescription *pango_fc_font_description_from_pattern (FcPattern *pattern,
 							      gboolean   include_size);
