@@ -1,3 +1,8 @@
+Thu Dec 20 00:18:10 2001  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pangoxft-font.c (pango_xft_picture_render): Fix
+	doc comment.
+
 Wed Dec 19 22:40:24 2001  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pango-layout.c (get_line_extents_layout_coords): 

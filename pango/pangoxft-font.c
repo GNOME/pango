@@ -353,7 +353,7 @@ pango_xft_render (XftDraw          *draw,
 
 /**
  * pango_xft_picture_render:
- * @draw:         an X display
+ * @display:      an X display
  * @src_picture:  the source picture to draw the string with
  * @dest_picture: the destination picture to draw the strign onto
  * @font:         the font in which to draw the string
