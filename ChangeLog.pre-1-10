@@ -1,3 +1,9 @@
+2005-02-21  Owen Taylor  <otaylor@redhat.com>
+ 
+ 	* pango/fonts.c (pango_font_get_glyph_extents): 
+ 	* pango/shape.c (pango_shape): Minor doc fixes.
+ 	(#167922, #167924, Billy Biggs)
+ 
 2005-02-06  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pangocairo.h pango/pangocairo-render.c docs/pango-sections.txt:

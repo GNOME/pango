@@ -1148,7 +1148,7 @@ pango_font_find_shaper (PangoFont     *font,
  * coordinate system for each rectangle has its origin at the
  * base line and horizontal origin of the character with increasing
  * coordinates extending to the right and down. The macros PANGO_ASCENT(),
- * PANGO_DESCENT(), PANGO_LBEARING(), and PANGO_RBEARING can be used to convert
+ * PANGO_DESCENT(), PANGO_LBEARING(), and PANGO_RBEARING() can be used to convert
  * from the extents rectangle to more traditional font metrics. The units
  * of the rectangles are in 1/PANGO_SCALE of a device unit.
  **/
