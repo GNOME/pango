@@ -1,3 +1,8 @@
+Tue Jan  4 14:11:43 2005  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-attributes.c (pango_attr_list_splice): Fix
+	doc sentences to parse. (#161812, Morten Welinder)
+
 Tue Jan  4 14:05:13 2005  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pango-renderer.c (pango_renderer_draw_trapezoid): Rename
