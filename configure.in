@@ -761,14 +761,12 @@ pango/opentype/makefile.mingw
 modules/Makefile
 modules/arabic/Makefile
 modules/basic/Makefile
-modules/basic/makefile.mingw
 modules/hangul/Makefile
 modules/indic/Makefile
 modules/tamil/Makefile
 modules/thai/Makefile
 modules/hebrew/Makefile
 examples/Makefile
-examples/makefile.mingw
 docs/Makefile
 tools/Makefile
 tests/Makefile

@@ -66,9 +66,7 @@ EXTRA_DIST=			\
 	viewer-qt.h		\
 	viewer-win32.c		\
 	pangoft2topgm.c         \
-	makefile.mingw		\
-	makefile.mingw.in	\
-	makefile.msc	\
+	makefile.msc		\
 	HELLO.utf8		\
 	dev-example.utf		\
 	muru.utf		\
