@@ -1,3 +1,11 @@
+Mon Aug  2 15:29:00 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* === Released 1.4.1 ===
+
+	* configure.in: Version 1.4.1.
+
+	* NEWS: Update.
+
 Fri Jul 30 14:05:25 2004  Owen Taylor  <otaylor@redhat.com>
 
 	Improve handling of decomposed two-part vowels 
@@ -39,6 +47,7 @@ Wed Jul 28 17:00:23 2004  Owen Taylor  <otaylor@redhat.com>
  	by Chris Blizzard)
 	
 Tue Jul 27 14:14:05 2004  Behdad Esfahbod  <pango@behdad.org>
+	
 	* modules/arabic/arabic-fc.c: Don't substitute FARSI YEH
 	with ARABIC YEH if the font does not have any ARABIC YEH.
 
