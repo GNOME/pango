@@ -648,7 +648,8 @@ G_WIN32_DLLMAIN_FOR_DLL_NAME(static, dll_name)
  *
  * On Unix, returns the name of the "pango" subdirectory of SYSCONFDIR
  * (which is set at compile time). On Win32, returns a subdirectory of
- * the Pango installation directory.
+ * the Pango installation directory (which is deduced at run time from
+ * the DLL's location, or stored in the Registry).
  *
  * Return value: the Pango sysconf directory. The returned string should
  * not be freed. 
@@ -674,9 +675,9 @@ pango_get_sysconf_subdirectory (void)
  *
  * On Unix, returns the name of the "pango" subdirectory of LIBDIR
  * (which is set at compile time). On Win32, returns the Pango
- * installation directory (which is set at installation time, and
- * stored in the registry). The returned string should not be
- * freed.
+ * installation directory (which is deduced at run time from the DLL's
+ * location, or stored in the Registry). The returned string should
+ * not be freed.
  *
  * Return value: the Pango lib directory. The returned string should
  * not be freed. 

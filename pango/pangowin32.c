@@ -60,7 +60,8 @@ static PangoFontDescription *pango_win32_font_describe          (PangoFont      
 static PangoCoverage        *pango_win32_font_get_coverage      (PangoFont        *font,
 								 PangoLanguage    *lang);
 static void                  pango_win32_font_calc_coverage     (PangoFont        *font,
-								 PangoCoverage    *coverage);
+								 PangoCoverage    *coverage,
+								 PangoLanguage    *lang);
 static PangoEngineShape     *pango_win32_font_find_shaper       (PangoFont        *font,
 								 PangoLanguage    *lang,
 								 guint32           ch);
@@ -92,7 +93,10 @@ pango_win32_get_hfont (PangoFont *font)
       win32font->hfont = pango_win32_font_cache_load (cache, &win32font->logfont);
       if (!win32font->hfont)
 	{
-	  g_warning ("Cannot load font '%s\n", win32font->logfont.lfFaceName);
+	  gchar *face_utf8 = g_locale_to_utf8 (win32font->logfont.lfFaceName,
+					       -1, NULL, NULL, NULL);
+	  g_warning ("Cannot load font '%s\n", face_utf8);
+	  g_free (face_utf8);
 	  return NULL;
 	}
 
@@ -232,15 +236,15 @@ pango_win32_font_new (PangoFontMap  *fontmap,
  * Render a PangoGlyphString onto a Windows DC
  */
 void 
-pango_win32_render (HDC                hdc,
-		    PangoFont         *font,
-		    PangoGlyphString  *glyphs,
-		    int                x, 
-		    int                y)
+pango_win32_render (HDC               hdc,
+		    PangoFont        *font,
+		    PangoGlyphString *glyphs,
+		    int               x, 
+		    int               y)
 {
   HFONT old_hfont = NULL;
   HFONT hfont;
-  int i, num_valid_glyphs;
+  int i;
   guint16 *glyph_indexes;
   INT *dX;
 
@@ -255,23 +259,16 @@ pango_win32_render (HDC                hdc,
   glyph_indexes = g_new (guint16, glyphs->num_glyphs);
   dX = g_new (INT, glyphs->num_glyphs);
 
-  num_valid_glyphs = 0;
   for (i = 0; i <glyphs->num_glyphs; i++)
     {
-      /* Prevent from displaying squares for nonexistent glyphs */
-      if (glyphs->glyphs[i].glyph != 0)
-        {
-          /* Glyph is actually handled */
-          glyph_indexes[num_valid_glyphs] = glyphs->glyphs[i].glyph;
-	  dX[num_valid_glyphs] = glyphs->glyphs[i].geometry.width / PANGO_SCALE;
-	  num_valid_glyphs++;
-	}
+      glyph_indexes[i] = glyphs->glyphs[i].glyph;
+      dX[i] = glyphs->glyphs[i].geometry.width / PANGO_SCALE;
     }
 
   ExtTextOutW (hdc, x, y,
 	       ETO_GLYPH_INDEX,
 	       NULL,
-	       glyph_indexes, num_valid_glyphs,
+	       glyph_indexes, glyphs->num_glyphs,
 	       dX);
 
   SelectObject (hdc, old_hfont); /* restore */
@@ -350,8 +347,8 @@ pango_win32_font_get_glyph_extents (PangoFont      *font,
 }
 
 static PangoFontMetrics *
-pango_win32_font_get_metrics (PangoFont        *font,
-			      PangoLanguage    *language)
+pango_win32_font_get_metrics (PangoFont     *font,
+			      PangoLanguage *language)
 {
   HFONT hfont;
   TEXTMETRIC tm;
@@ -453,8 +450,8 @@ pango_win32_font_finalize (GObject *object)
   if (win32font->hfont != NULL)
     pango_win32_font_cache_unload (cache, win32font->hfont);
 
-  if (win32font->entry)
-    pango_win32_font_entry_remove (win32font->entry, PANGO_FONT (win32font));
+  if (win32font->win32face)
+    pango_win32_font_entry_remove (win32font->win32face, PANGO_FONT (win32font));
  
   g_hash_table_destroy (win32font->glyph_info);
  
@@ -469,7 +466,7 @@ pango_win32_font_describe (PangoFont *font)
   PangoFontDescription *desc;
   PangoWin32Font *win32font = PANGO_WIN32_FONT (font);
 
-  desc = pango_font_description_copy (win32font->entry->description);
+  desc = pango_font_description_copy (win32font->win32face->description);
   pango_font_description_set_size (desc, win32font->size);
   
   return desc;
@@ -491,28 +488,28 @@ pango_win32_get_shaper_map (PangoLanguage *lang)
 }
 
 static PangoCoverage *
-pango_win32_font_get_coverage (PangoFont  *font,
+pango_win32_font_get_coverage (PangoFont     *font,
 			       PangoLanguage *lang)
 {
   PangoCoverage *coverage;
   PangoWin32Font *win32font = (PangoWin32Font *)font;
 
-  coverage = pango_win32_font_entry_get_coverage (win32font->entry);
+  coverage = pango_win32_font_entry_get_coverage (win32font->win32face, lang);
   if (!coverage)
     {
       coverage = pango_coverage_new ();
-      pango_win32_font_calc_coverage (font, coverage);
+      pango_win32_font_calc_coverage (font, coverage, lang);
       
-      pango_win32_font_entry_set_coverage (win32font->entry, coverage);
+      pango_win32_font_entry_set_coverage (win32font->win32face, coverage, lang);
     }
 
   return coverage;
 }
 
 static PangoEngineShape *
-pango_win32_font_find_shaper (PangoFont   *font,
+pango_win32_font_find_shaper (PangoFont     *font,
 			      PangoLanguage *lang,
-			      guint32      ch)
+			      guint32        ch)
 {
   PangoMap *shape_map = NULL;
 
@@ -546,10 +543,10 @@ pango_win32_get_unknown_glyph (PangoFont *font)
  * Render a #PangoLayoutLine onto a device context
  */
 void 
-pango_win32_render_layout_line (HDC               hdc,
-				PangoLayoutLine  *line,
-				int               x, 
-				int               y)
+pango_win32_render_layout_line (HDC              hdc,
+				PangoLayoutLine *line,
+				int              x, 
+				int              y)
 {
   GSList *tmp_list = line->runs;
   PangoRectangle overall_rect;
@@ -650,10 +647,10 @@ pango_win32_render_layout_line (HDC               hdc,
  * Render a #PangoLayoutLine onto an X drawable
  */
 void 
-pango_win32_render_layout (HDC              hdc,
-			   PangoLayout     *layout,
-			   int              x, 
-			   int              y)
+pango_win32_render_layout (HDC          hdc,
+			   PangoLayout *layout,
+			   int          x, 
+			   int          y)
 {
   PangoRectangle logical_rect;
   GSList *tmp_list;
@@ -776,48 +773,11 @@ pango_win32_get_item_properties (PangoItem      *item,
     }
 }
 
-
-
-/* Various truetype defines: */
-
-#define MAKE_TT_TABLE_NAME(c1, c2, c3, c4) \
-   (((guint32)c4) << 24 | ((guint32)c3) << 16 | ((guint32)c2) << 8 | ((guint32)c1))
-
-#define CMAP (MAKE_TT_TABLE_NAME('c','m','a','p'))
-#define CMAP_HEADER_SIZE 4
-#define ENCODING_TABLE_SIZE 8
-#define TABLE_4_HEADER_SIZE (sizeof (guint16)*6)
-
-#define UNICODE_PLATFORM_ID 3
-#define UNICODE_SPECIFIC_ID 1
-
-#pragma pack(1)
-
-struct encoding_table { /* Must be packed! */
-  guint16 platform_id;
-  guint16 encoding_id;
-  guint32 offset;
-};
-
-struct type_4_table { /* Must be packed! */
-  guint16 format;
-  guint16 length;
-  guint16 version;
-  guint16 seg_count_x_2;
-  guint16 search_range;
-  guint16 entry_selector;
-  guint16 range_shift;
-
-  guint16 reserved;
-
-  guint16 arrays[1];
-};
-
 static guint 
 get_unicode_mapping_offset (HDC hdc)
 {
   guint16 n_tables;
-  struct encoding_table *table;
+  struct cmap_encoding_subtable *table;
   gint32 res;
   int i;
   guint32 offset;
@@ -837,8 +797,8 @@ get_unicode_mapping_offset (HDC hdc)
 
   for (i = 0; i < n_tables; i++)
     {
-      if (table[i].platform_id == GUINT16_TO_BE (UNICODE_PLATFORM_ID) &&
-	  table[i].encoding_id == GUINT16_TO_BE (UNICODE_SPECIFIC_ID))
+      if (table[i].platform_id == GUINT16_TO_BE (MICROSOFT_PLATFORM_ID) &&
+	  table[i].encoding_id == GUINT16_TO_BE (UNICODE_ENCODING_ID))
 	{
 	  offset = GUINT32_FROM_BE (table[i].offset);
 	  g_free (table);
@@ -849,14 +809,14 @@ get_unicode_mapping_offset (HDC hdc)
   return 0;
 }
 
-static struct type_4_table *
+static struct type_4_cmap *
 get_unicode_mapping (HDC hdc)
 {
   guint32 offset;
   guint32 res;
   guint16 length;
   guint16 *tbl, *tbl_end;
-  struct type_4_table *table;
+  struct type_4_cmap *table;
 
   /* FIXME: Could look here at the CRC for the font in the DC 
             and return a cached copy if the same */
@@ -881,7 +841,7 @@ get_unicode_mapping (HDC hdc)
   
   table->format = GUINT16_FROM_BE (table->format);
   table->length = GUINT16_FROM_BE (table->length);
-  table->version = GUINT16_FROM_BE (table->version);
+  table->language = GUINT16_FROM_BE (table->language);
   table->seg_count_x_2 = GUINT16_FROM_BE (table->seg_count_x_2);
   table->search_range = GUINT16_FROM_BE (table->search_range);
   table->entry_selector = GUINT16_FROM_BE (table->entry_selector);
@@ -906,28 +866,28 @@ get_unicode_mapping (HDC hdc)
 }
 
 static guint16 *
-get_id_range_offset (struct type_4_table *table)
+get_id_range_offset (struct type_4_cmap *table)
 {
   gint32 seg_count = table->seg_count_x_2/2;
   return &table->arrays[seg_count*3];
 }
 
 static guint16 *
-get_id_delta (struct type_4_table *table)
+get_id_delta (struct type_4_cmap *table)
 {
   gint32 seg_count = table->seg_count_x_2/2;
   return &table->arrays[seg_count*2];
 }
 
 static guint16 *
-get_start_count (struct type_4_table *table)
+get_start_count (struct type_4_cmap *table)
 {
   gint32 seg_count = table->seg_count_x_2/2;
   return &table->arrays[seg_count*1];
 }
 
 static guint16 *
-get_end_count (struct type_4_table *table)
+get_end_count (struct type_4_cmap *table)
 {
   gint32 seg_count = table->seg_count_x_2/2;
   /* Apparently the reseved spot is not reserved for 
@@ -937,9 +897,9 @@ get_end_count (struct type_4_table *table)
 
 
 static gboolean
-find_segment (struct type_4_table *table, 
-	      guint16              wc,
-	      guint16             *segment)
+find_segment (struct type_4_cmap *table, 
+	      guint16             wc,
+	      guint16            *segment)
 {
   guint16 start, end, i;
   guint16 seg_count = table->seg_count_x_2/2;
@@ -997,21 +957,21 @@ find_segment (struct type_4_table *table,
   return FALSE;
 }
 
-static struct type_4_table *
+static struct type_4_cmap *
 font_get_unicode_table (PangoFont *font)
 {
   PangoWin32Font *win32font = (PangoWin32Font *)font;
   HFONT hfont;
-  struct type_4_table *table;
+  struct type_4_cmap *table;
 
-  if (win32font->entry->unicode_table)
-    return (struct type_4_table *)win32font->entry->unicode_table;
+  if (win32font->win32face->unicode_table)
+    return (struct type_4_cmap *)win32font->win32face->unicode_table;
 
   hfont = pango_win32_get_hfont (font);
   SelectObject (pango_win32_hdc, hfont);
   table = get_unicode_mapping (pango_win32_hdc);
   
-  win32font->entry->unicode_table = table;
+  win32font->win32face->unicode_table = table;
 
   return table;
 }
@@ -1029,7 +989,7 @@ gint
 pango_win32_font_get_glyph_index (PangoFont *font,
 				  gunichar   wc)
 {
-  struct type_4_table *table;
+  struct type_4_cmap *table;
   guint16 *id_range_offset;
   guint16 *id_delta;
   guint16 *start_count;
@@ -1066,11 +1026,107 @@ pango_win32_font_get_glyph_index (PangoFont *font,
   return glyph;
 }
 
+gboolean
+pango_win32_get_name_header (HDC                 hdc,
+			     struct name_header *header)
+{
+  if (GetFontData (hdc, NAME, 0, header, sizeof (*header)) != sizeof (*header))
+    return FALSE;
+
+  header->num_records = GUINT16_FROM_BE (header->num_records);
+  header->string_storage_offset = GUINT16_FROM_BE (header->string_storage_offset);
+
+  return TRUE;
+}
+  
+gboolean
+pango_win32_get_name_record (HDC                 hdc,
+			     gint                i,
+			     struct name_record *record)
+{
+  if (GetFontData (hdc, NAME, 6 + i * sizeof (*record),
+		   record, sizeof (*record)) != sizeof (*record))
+    return FALSE;
+  
+  record->platform_id = GUINT16_FROM_BE (record->platform_id);
+  record->encoding_id = GUINT16_FROM_BE (record->encoding_id);
+  record->language_id = GUINT16_FROM_BE (record->language_id);
+  record->name_id = GUINT16_FROM_BE (record->name_id);
+  record->string_length = GUINT16_FROM_BE (record->string_length);
+  record->string_offset = GUINT16_FROM_BE (record->string_offset);
+
+  return TRUE;
+}
+
+  
+static gboolean
+font_has_name_in (PangoFont                       *font,
+		  PangoWin32CoverageLanguageClass  cjkv)
+{
+  HFONT hfont, oldhfont;
+  struct name_header header;
+  struct name_record record;
+  gint i;
+  gboolean retval = FALSE;
+
+  if (cjkv == PANGO_WIN32_COVERAGE_UNSPEC)
+    return TRUE;
+
+  hfont = pango_win32_get_hfont (font);
+  oldhfont = SelectObject (pango_win32_hdc, hfont);
+
+  if (!pango_win32_get_name_header (pango_win32_hdc, &header))
+    {
+      SelectObject (pango_win32_hdc, oldhfont);
+      return FALSE;
+    }
+
+  for (i = 0; i < header.num_records; i++)
+    {
+      if (!pango_win32_get_name_record (pango_win32_hdc, i, &record))
+	{
+	  SelectObject (pango_win32_hdc, oldhfont);
+	  return FALSE;
+	}
+
+      if ((record.name_id != 1 && record.name_id != 16) || record.string_length <= 0)
+	continue;
+
+      PING(("platform:%d encoding:%d language:%04x name_id:%d",
+	    record.platform_id, record.encoding_id, record.language_id, record.name_id));
+
+      if (record.platform_id == MICROSOFT_PLATFORM_ID)
+	if ((cjkv == PANGO_WIN32_COVERAGE_ZH_TW &&
+	     record.language_id == MAKELANGID (LANG_CHINESE, SUBLANG_CHINESE_TRADITIONAL))
+	    ||
+	    (cjkv == PANGO_WIN32_COVERAGE_ZH_CN &&
+	     record.language_id == MAKELANGID (LANG_CHINESE, SUBLANG_CHINESE_SIMPLIFIED))
+	    ||
+	    (cjkv == PANGO_WIN32_COVERAGE_JA &&
+	     PRIMARYLANGID (record.language_id) == LANG_JAPANESE)
+	    ||
+	    (cjkv == PANGO_WIN32_COVERAGE_KO &&
+	     PRIMARYLANGID (record.language_id) == LANG_KOREAN)
+	    ||
+	    (cjkv == PANGO_WIN32_COVERAGE_VI &&
+	     PRIMARYLANGID (record.language_id) == LANG_VIETNAMESE))
+	  {
+	    PING (("yep:%d:%04x", cjkv, record.language_id));
+	    retval = TRUE;
+	    break;
+	  }
+    }
+
+  SelectObject (pango_win32_hdc, oldhfont);
+  return retval;
+}
+
 static void
 pango_win32_font_calc_coverage (PangoFont     *font,
-				PangoCoverage *coverage)
+				PangoCoverage *coverage,
+				PangoLanguage *lang)
 {
-  struct type_4_table *table;
+  struct type_4_cmap *table;
   guint16 *id_range_offset;
   guint16 *start_count;
   guint16 *end_count;
@@ -1078,13 +1134,30 @@ pango_win32_font_calc_coverage (PangoFont     *font,
   guint16 id;
   guint32 ch;
   int i;
+  PangoWin32CoverageLanguageClass cjkv;
+  gboolean hide_unihan = FALSE;
+  
+  PING(("font:%s lang:%s",
+	pango_font_description_to_string (pango_font_describe (font)),
+	pango_language_to_string (lang)));
+
+  cjkv = pango_win32_coverage_language_classify (lang);
+
+  if (cjkv != PANGO_WIN32_COVERAGE_UNSPEC && !font_has_name_in (font, cjkv))
+    {
+      PING(("hiding UniHan chars"));
+      hide_unihan = TRUE;
+    }
 
   /* Do GetFontData magic on font->hfont here. */
 
   table = font_get_unicode_table (font);
 
   if (table == NULL)
-    return;
+    {
+      PING(("no table"));
+      return;
+    }
   
   seg_count = table->seg_count_x_2/2;
   end_count = get_end_count (table);
@@ -1095,13 +1168,25 @@ pango_win32_font_calc_coverage (PangoFont     *font,
     {
       if (id_range_offset[i] == 0)
 	{
+#ifdef PANGO_WIN32_DEBUGGING
+	  if (end_count[i] == start_count[i])
+	    PING (("\\u%04x", start_count[i]));
+	  else
+	    PING (("\\u%04x:\\u%04x", start_count[i], end_count[i]));
+#endif	  
 	  for (ch = start_count[i]; 
 	       ch <= end_count[i];
 	       ch++)
-	    pango_coverage_set (coverage, ch, PANGO_COVERAGE_EXACT);
+	    if (hide_unihan && ch >= 0x3400 && ch <= 0x9FAF)
+	      pango_coverage_set (coverage, ch, PANGO_COVERAGE_APPROXIMATE);
+	    else
+	      pango_coverage_set (coverage, ch, PANGO_COVERAGE_EXACT);
 	}
       else
 	{
+#ifdef PANGO_WIN32_DEBUGGING
+	  guint32 ch0 = G_MAXUINT;
+#endif
 	  for (ch = start_count[i]; 
 	       ch <= end_count[i];
 	       ch++)
@@ -1110,10 +1195,36 @@ pango_win32_font_calc_coverage (PangoFont     *font,
 		     (ch - start_count[i]) +
 		     &id_range_offset[i]);
 	      if (id)
-		pango_coverage_set (coverage, ch, PANGO_COVERAGE_EXACT);
+		{
+#ifdef PANGO_WIN32_DEBUGGING
+		  if (ch0 == G_MAXUINT)
+		    ch0 = ch;
+#endif
+		  if (hide_unihan && ch >= 0x3400 && ch <= 0x9FAF)
+		    pango_coverage_set (coverage, ch, PANGO_COVERAGE_APPROXIMATE);
+		  else
+		    pango_coverage_set (coverage, ch, PANGO_COVERAGE_EXACT);
+		}
+#ifdef PANGO_WIN32_DEBUGGING
+	      else if (ch0 < G_MAXUINT)
+		{
+		  if (ch > ch0 + 2)
+		    PING (("\\u%04x:\\u%04x", ch0, ch - 1));
+		  else
+		    PING (("\\u%04x", ch0));
+		  ch0 = G_MAXUINT;
+		}
+#endif
 	    }
+#ifdef PANGO_WIN32_DEBUGGING
+	  if (ch0 < G_MAXUINT)
+	    {
+	      if (ch > ch0 + 2)
+		PING (("\\u%04x:\\u%04x", ch0, ch - 1));
+	      else
+		PING (("\\u%04x", ch0));
+	    }
+#endif
 	}
     }
 }
-
-

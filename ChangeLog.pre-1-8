@@ -1,12 +1,85 @@
 2002-09-21  Tor Lillqvist  <tml@iki.fi>
 
+	* pango-zip.sh.in: Distribute also pango.aliases and pango.modules.
+
+	* pango/pangowin32-private.h
+	* pango/pangowin32*.c: Rename DEBUGGING to PANGO_WIN32_DEBUGGING.
+	Use plain printf instrad of g_print in the PING macro for
+	debugging output (to avoid UTF-8 requirement).
+
+	* pango/pangowin32.h: Guard against redefinition of _WIN32_WINNT.
+
+	* pango/pangowin32-private.h: Remove the FS_VIETNAMESE define, not
+	needed. Rename PangoWin32Font::face to win32face. Add enum
+	PangoWin32CoverageLanguageClass, used to classify PangoLanguages
+	that might have locale-specific coverage of fonts (i.e. CJKV).
+	Change PangoWin32Face::coverage into an array, coverages. Move
+	some TrueType macro and struct defines from pangowin32.c
+	here. Rename them a bit to match the names used in the specs
+	better. Add declarations for new functions (see below).
+
+	* pango/pangowin32.c (pango_win32_get_hfont): Convert
+	LOGFONT::lfFaceName to UTF-8 before printing.
+
+	(pango_win32_render): Revert the change from
+	2002-09-05. Characters not in a font are supposed to show up at
+	this stage as invalid glyphs (usually a box). It's up to the
+	higher layers to filter out TABs and other characters that
+	shouldn't be visible.
+
+	(pango_win32_get_name_header, pango_win32_get_name_record): New
+	functions, to read the name table header and records from a
+	TrueType font.
+
+	(font_name_in): New function, checks if a font has a name in one
+	of the spoecial-case languages, or actually locales (zh_TW, zh_CN,
+	ja, ko, vi). Checks the TrueType name table.
+
+	(pango_win32_font_calc_coverage): Take a PangoLanguage parameter,
+	too.  Use it to decide whether to hide the Unified CJKV Ideographs
+	block in case the font is not for the specified locale. If so, the
+	coverage for these characters is set to PANGO_COVERAGE_APPROXIMATE.
+
+	* pango/pangowin32-fontmap.c: Remove PangoWin32FontMap::faces,
+	unused. Remove dead _WE_WANT_GLOBAL_ALIASES_ code. Rename
+	parent_class to font_map_parent_class to match pangox-fontmap.c.
+
+	(get_family_name, get_family_name_lowercase): New functions.
+	Search for an English name for a TrueType font, in case the font
+	name in LOGFONT::lfFaceName is non-ASCII. (Can one assume that if
+	it is ASCII, it is the English name? Do some TrueType fonts have
+	different names in French, German, etc, and does the system return
+	these if the locale is set to use French, German, etc?)
+
+	(pango_win32_insert_font): Don't store LOGFONTs that differ only
+	in charset. What charset we specify when calling
+	CreateFontIndirect() is irrelevant, as we are going to use
+	ExtTextOutW() anyway, i.e. Unicode. Use the English family name
+	from get_family_name_lowercase(), not the one returned in the
+	LOGFONT from font enumeration.
+
+	Bypass the code that sets up the mapping for monospace, serif and
+	sans, and the recignition of plain "courier" for "courier new". We
+	need a pango.aliases anyhow, so let it handle that.
+
+	(pango_win32_coverage_language_classify): New function.
+
+	(pango_win32_font_entry_set_coverage,
+	pango_win32_font_entry_get_coverage): Take also a PangoLanguage
+	parameter, use the corresponding entry in the
+	PangoWin32Face::coverages array.
+	
+	* pango/pango-utils.c (pango_get_lib_subdirectory,
+	pango_get_sysconf_subdirectory): Fix doc comment on Win32
+	behaviour.
+
 	* examples/Makefile.am (EXTRA_DIST): Don't distribute
 	pangowin32.aliases, which isn't used.
 
 	* examples/pangowin32.aliases: Add comment that the file is of
 	historical interest only. Could be removed from CVS completely,
-	but I'll keep it for a while because of the useful comments on how
-	to get various non-Latin fonts.
+	but I'll keep it for a while because of the useful comments on
+	where to get various non-Latin fonts.
 
 Thu Sep 19 15:12:21 2002  Owen Taylor  <otaylor@redhat.com>
 
