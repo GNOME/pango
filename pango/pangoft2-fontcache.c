@@ -28,7 +28,7 @@
 
 /* Number of fonts to retain after they are not otherwise referenced.
  */
-#define CACHE_SIZE 3
+#define CACHE_SIZE 10
 
 typedef struct _CacheEntry CacheEntry;
 

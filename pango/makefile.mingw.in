@@ -31,6 +31,7 @@ PANGO_OBJS =					\
 	pango-fontmap.o				\
 	pango-item.o				\
 	pango-layout.o				\
+	pango-tabs.o				\
 	pango-utils.o				\
 	reorder-items.o				\
 	shape.o

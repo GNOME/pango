@@ -118,8 +118,7 @@ split_paragraphs (char *text)
       if (wc == (gunichar)-1)
 	{
 	  fprintf (stderr, "%s: Invalid character in input\n", g_get_prgname ());
-	  g_list_foreach (result, (GFunc)g_free, NULL);
-	  return NULL;
+	  wc = 0;
 	}
       if (!*p || !wc || wc == '\n')
 	{

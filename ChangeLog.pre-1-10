@@ -1,3 +1,34 @@
+2000-10-03  Tor Lillqvist  <tml@iki.fi>
+
+	* pango/pango.def
+	* pango/pangoft2.def: Add new entry points.
+
+	* pango/pango-coverage.c (pango_coverage_set): Remove unnecessary
+	loop calling memset() with same parameters 64 times ;-)
+
+	* pango/makefile.mingw.in (PANGO_OBJS): Add pango-tabs.o.
+
+	Some small changes that have been laying around on my disk. The
+	Win32 and FT2 backends aren't "production quality" yet. For
+	speedup, need to cache at least the coverage info.
+	
+	* pango/pangoft2.c (pango_ft2_get_coverage): New function.
+
+	* modules/basic/basic-win32.c: Use "BasicScriptEngineLangWin32" to
+	be unique.
+
+	* modules/basic/basic-ft2.c: Add comments explaining what Unicode
+	ranges the table entries covers. Use "BasicScriptEngineLangFT2" to
+	be unique.
+	(basic_engine_get_coverage): Test calling
+	pango_ft2_get_coverage().
+	(basic_engine_ft2_new): Set corect engine type. Not that this
+	apparently is used for anything, the X11 basic shaper module also
+	sets its type as TYPE_LANG.
+
+	* examples/viewer-ft2.c (split_paragraphs): Just end the string
+	upon encountering an invalid character. Don't return.
+
 2000-09-29  Martin Baulig  <baulig@suse.de>
 
 	* Makefile.am (pkgconfigdir): Set this to `$(libexecdir)/pkgconfig';

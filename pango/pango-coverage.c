@@ -237,8 +237,7 @@ void pango_coverage_set (PangoCoverage     *coverage,
 	(coverage->blocks[block_index].level << 4) |
         (coverage->blocks[block_index].level << 6);
       
-      for (i=0; i<64; i++)
-	memset (data, byte, 64);
+      memset (data, byte, 64);
     }
 
   i = index % 256;

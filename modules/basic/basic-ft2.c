@@ -27,23 +27,79 @@
 #include <fribidi/fribidi.h>
 
 static PangoEngineRange basic_ranges[] = {
-  /* Language characters */
-  { 0x0000, 0x02af, "*" },
+  /* Basic Latin, Latin-1 Supplement, Latin Extended-A, Latin Extended-B,
+   * IPA Extensions
+   */
+  { 0x0000, 0x02af, "*" }, 
+
+  /* Spacing Modifier Letters */
   { 0x02b0, 0x02ff, "" },
+
+  /* Not covered: Combining Diacritical Marks */
+
+  /* Greek, Cyrillic, Armenian */
   { 0x0380, 0x058f, "*" },
-  { 0x0591, 0x05f4, "*" }, /* Hebrew */
-  { 0x060c, 0x06f9, "" }, /* Arabic */
-  { 0x0e01, 0x0e5b, "" },  /* Thai */
+
+  /* Hebrew */
+  { 0x0591, 0x05f4, "*" },
+
+  /* Arabic */
+  { 0x060c, 0x06f9, "" },
+
+  /* Not covered: Syriac, Thaana, Devanagari, Bengali, Gurmukhi, Gujarati,
+   * Oriya, Tamil, Telugu, Kannada, Malayalam, Sinhala
+   */
+
+  /* Thai */
+  { 0x0e01, 0x0e5b, "" },  
+
+  /* Not covered: Lao, Tibetan, Myanmar, Georgian, Hangul Jamo, Ethiopic,
+   * Cherokee, Unified Canadian Aboriginal Syllabics, Ogham, Runic,
+   * Khmer, Mongolian
+   */
+
+  /* Latin Extended Additional, Greek Extended */
   { 0x1e00, 0x1fff, "*" },
+
+  /* General Punctuation, Superscripts and Subscripts, Currency Symbols,
+   * Combining Marks for Symbols, Letterlike Symbols, Number Forms,
+   * Arrows, Mathematical Operators, Miscellaneous Technical,
+   * Control Pictures, Optical Character Recognition, Enclosed Alphanumerics,
+   * Box Drawing, Block Elements, Geometric Shapes, Miscellaneous Symbols,
+   * Dingbats, Braille Patterns, CJK Radicals Supplement, Kangxi Radicals,
+   * Ideographic Description Characters, CJK Symbols and Punctuation,
+   * Hiragana, Katakana, Bopomofo, Hangul Compatibility Jamo, Kanbun,
+   * Bopomofo Extended, Enclosed CJK Letters and Months, CJK Compatibility,
+   * CJK Unified Ideographs Extension A, CJK Unified Ideographs
+   */
   { 0x2000, 0x9fff, "*" },
+
+  /* Not covered: Yi Syllables, Yi Radicals */
+
+  /* Hangul Syllables */
   { 0xac00, 0xd7a3, "kr" },
+
+  /* Not covered: Private Use */
+
+  /* CJK Compatibility Ideographs (partly) */
   { 0xf900, 0xfa0b, "kr" },
+
+  /* Not covered: CJK Compatibility Ideographs (partly),
+   * Alphabetic Presentation Forms, Arabic Presentation Forms-A,
+   * Combining Half Marks, CJK Compatibility Forms,
+   * Small Form Variants, Arabic Presentation Forms-B,
+   * Specials
+   */
+
+  /* Halfwidth and Fullwidth Forms (partly) */
   { 0xff00, 0xffe3, "*" }
+
+  /* Not covered: Halfwidth and Fullwidth Forms, Specials */
 };
 
 static PangoEngineInfo script_engines[] = {
   {
-    "BasicScriptEngineLang",
+    "BasicScriptEngineLangFT2",
     PANGO_ENGINE_TYPE_LANG,
     PANGO_RENDER_TYPE_NONE,
     basic_ranges, G_N_ELEMENTS(basic_ranges)
@@ -261,10 +317,13 @@ basic_engine_get_coverage (PangoFont  *font,
   PangoCoverage *result = pango_coverage_new ();
   gunichar wc;
 
+#if 0
   for (wc = 0; wc < 65536; wc++)
     if (find_char (font, wc))
       pango_coverage_set (result, wc, PANGO_COVERAGE_EXACT);
-
+#else
+  result = pango_ft2_get_coverage (font, lang);
+#endif
   return result;
 }
 
@@ -276,7 +335,7 @@ basic_engine_ft2_new (void)
   result = g_new (PangoEngineShape, 1);
 
   result->engine.id = "BasicScriptEngine";
-  result->engine.type = PANGO_ENGINE_TYPE_LANG;
+  result->engine.type = PANGO_ENGINE_TYPE_SHAPE;
   result->engine.length = sizeof (result);
   result->script_shape = basic_engine_shape;
   result->get_coverage = basic_engine_get_coverage;
@@ -304,8 +363,7 @@ MODULE_ENTRY(script_engine_list) (PangoEngineInfo **engines,
 PangoEngine *
 MODULE_ENTRY(script_engine_load) (const char *id)
 {
-  g_print ("basic-ft2: LOAD\n");
-  if (!strcmp (id, "BasicScriptEngineLang"))
+  if (!strcmp (id, "BasicScriptEngineLangFT2"))
     return basic_engine_lang_new ();
   else if (!strcmp (id, "BasicScriptEngineFT2"))
     return basic_engine_ft2_new ();
@@ -316,5 +374,4 @@ MODULE_ENTRY(script_engine_load) (const char *id)
 void 
 MODULE_ENTRY(script_engine_unload) (PangoEngine *engine)
 {
-  g_print ("basic-ft2: UNLOAD\n");
 }

@@ -41,7 +41,7 @@ static PangoEngineRange basic_ranges[] = {
 
 static PangoEngineInfo script_engines[] = {
   {
-    "BasicScriptEngineLang",
+    "BasicScriptEngineLangWin32",
     PANGO_ENGINE_TYPE_LANG,
     PANGO_RENDER_TYPE_NONE,
     basic_ranges, G_N_ELEMENTS(basic_ranges)
@@ -298,7 +298,7 @@ MODULE_ENTRY(script_engine_list) (PangoEngineInfo **engines,
 PangoEngine *
 MODULE_ENTRY(script_engine_load) (const char *id)
 {
-  if (!strcmp (id, "BasicScriptEngineLang"))
+  if (!strcmp (id, "BasicScriptEngineLangWin32"))
     return basic_engine_lang_new ();
   else if (!strcmp (id, "BasicScriptEngineWin32"))
     return basic_engine_win32_new ();
