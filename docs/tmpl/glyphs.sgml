@@ -100,25 +100,7 @@ horizontal origin.
 
 <!-- ##### TYPEDEF PangoGlyph ##### -->
 <para>
-The #PangoGlyph structure represents a single glyph in the output
-form of a string. It contains the following fields.
-
-<informaltable pgwide="1" frame="none" role="struct">
-<tgroup cols="2"><colspec colwidth="2*"/><colspec colwidth="8*"/>
-<tbody>
-
-<row>
-<entry>#PangoGlyphIndex glyph;</entry>
-<entry>the index of the glyph into the font. (Rendering system
-       dependent).</entry>
-</row>
-
-<row>
-<entry>#PangoCFont *font;</entry>
-<entry>the rendering-system-specific font information for this glyph.</entry>
-</row>
-
-</tbody></tgroup></informaltable>
+A #PangoGlyph represents a single glyph in the output form of a string. 
 </para>
 
 
