@@ -278,7 +278,7 @@ pango_cairo_show_glyph_string (cairo_t          *cr,
   g_return_if_fail (PANGO_IS_CAIRO_FONT (font));
   g_return_if_fail (glyphs != NULL);
 
-  fontmap = PANGO_FC_FONT (font)->fontmap;
+  fontmap = pango_font_get_font_map (font);
   renderer = _pango_cairo_font_map_get_renderer (PANGO_CAIRO_FONT_MAP (fontmap));
   crenderer = PANGO_CAIRO_RENDERER (renderer);
 
@@ -408,7 +408,7 @@ pango_cairo_glyph_string_path (cairo_t          *cr,
   g_return_if_fail (PANGO_IS_CAIRO_FONT (font));
   g_return_if_fail (glyphs != NULL);
 
-  fontmap = PANGO_FC_FONT (font)->fontmap;
+  fontmap = pango_font_get_font_map (font);
   renderer = _pango_cairo_font_map_get_renderer (PANGO_CAIRO_FONT_MAP (fontmap));
   crenderer = PANGO_CAIRO_RENDERER (renderer);
 

@@ -32,26 +32,13 @@
 #include "pangowin32-private.h"
 #include "modules.h"
 
-#define PANGO_TYPE_WIN32_FONT            (pango_win32_font_get_type ())
-#define PANGO_WIN32_FONT(object)         (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_TYPE_WIN32_FONT, PangoWin32Font))
-#define PANGO_WIN32_FONT_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST ((klass), PANGO_TYPE_WIN32_FONT, PangoWin32FontClass))
-#define PANGO_WIN32_IS_FONT(object)      (G_TYPE_CHECK_INSTANCE_TYPE ((object), PANGO_TYPE_WIN32_FONT))
-#define PANGO_WIN32_IS_FONT_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), PANGO_TYPE_WIN32_FONT))
-#define PANGO_WIN32_FONT_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS ((obj), PANGO_TYPE_WIN32_FONT, PangoWin32FontClass))
-
 #define PANGO_WIN32_UNKNOWN_FLAG 0x10000000
 
 HDC pango_win32_hdc;
 OSVERSIONINFO pango_win32_os_version_info;
 gboolean pango_win32_debug = FALSE;
 
-typedef struct _PangoWin32FontClass   PangoWin32FontClass;
 typedef struct _PangoWin32MetricsInfo PangoWin32MetricsInfo;
-
-struct _PangoWin32FontClass
-{
-  PangoFontClass parent_class;
-};
 
 struct _PangoWin32MetricsInfo
 {
@@ -61,6 +48,11 @@ struct _PangoWin32MetricsInfo
 
 static void pango_win32_font_dispose    (GObject             *object);
 static void pango_win32_font_finalize   (GObject             *object);
+
+static gboolean pango_win32_font_real_select_font      (PangoFont *font,
+							HDC        hdc);
+static void     pango_win32_font_real_done_font        (PangoFont *font);
+static double   pango_win32_font_real_get_scale_factor (PangoFont *font);
 
 static PangoFontDescription *pango_win32_font_describe          (PangoFont        *font);
 static PangoCoverage        *pango_win32_font_get_coverage      (PangoFont        *font,
@@ -77,6 +69,13 @@ static void                  pango_win32_font_get_glyph_extents (PangoFont      
 								 PangoRectangle   *logical_rect);
 static PangoFontMetrics *    pango_win32_font_get_metrics       (PangoFont        *font,
 								 PangoLanguage    *lang);
+static PangoFontMap *        pango_win32_font_get_font_map      (PangoFont        *font);
+
+static gboolean pango_win32_font_real_select_font      (PangoFont *font,
+							HDC        hdc);
+static void     pango_win32_font_real_done_font        (PangoFont *font);
+static double   pango_win32_font_real_get_scale_factor (PangoFont *font);
+
 static HFONT                 pango_win32_get_hfont              (PangoFont        *font);
 static void                  pango_win32_get_item_properties    (PangoItem        *item,
 								 PangoUnderline   *uline,
@@ -85,7 +84,7 @@ static void                  pango_win32_get_item_properties    (PangoItem      
 								 PangoAttrColor   *bg_color,
 								 gboolean         *bg_set);
 
-static inline HFONT
+static HFONT
 pango_win32_get_hfont (PangoFont *font)
 {
   PangoWin32Font *win32font = (PangoWin32Font *)font;
@@ -218,6 +217,11 @@ pango_win32_font_class_init (PangoWin32FontClass *class)
   font_class->find_shaper = pango_win32_font_find_shaper;
   font_class->get_glyph_extents = pango_win32_font_get_glyph_extents;
   font_class->get_metrics = pango_win32_font_get_metrics;
+  font_class->get_font_map = pango_win32_font_get_font_map;
+
+  class->select_font = pango_win32_font_real_select_font;
+  class->done_font = pango_win32_font_real_done_font;
+  class->get_scale_factor = pango_win32_font_real_get_scale_factor;
 
   pango_win32_get_dc ();
 }
@@ -624,6 +628,43 @@ pango_win32_font_get_metrics (PangoFont     *font,
   return pango_font_metrics_ref (info->metrics);
 }
 
+static PangoFontMap *
+pango_win32_font_get_font_map (PangoFont *font)
+{
+  PangoWin32Font *win32font = (PangoWin32Font *)font;
+
+  return win32font->fontmap;
+}
+
+static gboolean
+pango_win32_font_real_select_font (PangoFont *font,
+				   HDC        hdc)
+{
+  HFONT hfont = pango_win32_get_hfont (font);
+
+  if (!hfont)
+    return FALSE;
+  
+  if (!SelectObject (hdc, hfont))
+    {
+      g_warning ("pango_win32_font_real_select_font: Cannot select font\n");
+      return FALSE;
+    }
+  
+  return TRUE;
+}
+
+static void
+pango_win32_font_real_done_font (PangoFont *font)
+{
+}
+
+static double
+pango_win32_font_real_get_scale_factor (PangoFont *font)
+{
+  return PANGO_SCALE;
+}
+
 /**
  * pango_win32_font_logfont:
  * @font: a #PangoFont which must be from the Win32 backend
@@ -646,6 +687,64 @@ pango_win32_font_logfont (PangoFont *font)
   *lfp = win32font->logfont;
 
   return lfp;
+}
+
+/**
+ * pango_win32_font_select_font:
+ * @font: a #PangoFont from the Win32 backend
+ * @scale: location to store a scale factor from Windows
+ *    units to Pango Units.
+ * 
+ * Selects the font into the specified DC and changes the mapping mode
+ * and world transformation of the DC appropriately for the font.
+ * You may want to surround the use of this function with calls
+ * to SaveDC and RestoreDC. Call pango_win32_font_done_font() when
+ * you are done using the DC to release allocated resources.
+ *
+ * See 
+ * 
+ * Return value: %TRUE if the operation succeeded.
+ **/
+gboolean
+pango_win32_font_select_font (PangoFont *font,
+			      HDC        hdc)
+{
+  g_return_val_if_fail (PANGO_WIN32_IS_FONT (font), FALSE);
+  
+  return PANGO_WIN32_FONT_GET_CLASS (font)->select_font (font, hdc);
+}
+
+/**
+ * pango_win32_font_done_font:
+ * @font: a #PangoFont from the win32 backend
+ *
+ * Releases any resources allocated by pango_win32_font_done_font()
+ **/
+void
+pango_win32_font_done_font (PangoFont *font)
+{
+  g_return_if_fail (PANGO_WIN32_IS_FONT (font));
+  
+  PANGO_WIN32_FONT_GET_CLASS (font)->done_font (font);
+}
+
+/**
+ * pango_win32_font_get_scale_factor:
+ * @font: a #PangoFont from the win32 backend
+ * 
+ * Returns the scale factor from logical units in the coordinate
+ * space used by pango_win32_font_select_font() to Pango units
+ * in user space.
+ * 
+ * Return value: factor to multiply logical units by to get Pango
+ *               units.
+ **/
+double
+pango_win32_font_get_scale_factor (PangoFont *font)
+{
+  g_return_val_if_fail (PANGO_WIN32_IS_FONT (font), 1.);
+  
+  return PANGO_WIN32_FONT_GET_CLASS (font)->get_scale_factor (font);
 }
 
 static void
@@ -1179,15 +1278,14 @@ static struct type_4_cmap *
 font_get_unicode_table (PangoFont *font)
 {
   PangoWin32Font *win32font = (PangoWin32Font *)font;
-  HFONT hfont;
   struct type_4_cmap *table;
 
   if (win32font->win32face->unicode_table)
     return (struct type_4_cmap *)win32font->win32face->unicode_table;
 
-  hfont = pango_win32_get_hfont (font);
-  SelectObject (pango_win32_hdc, hfont);
+  pango_win32_font_select_font (font, pango_win32_hdc);
   table = get_unicode_mapping (pango_win32_hdc);
+  pango_win32_font_done_font (font);
   
   win32font->win32face->unicode_table = table;
 

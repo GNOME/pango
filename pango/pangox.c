@@ -92,6 +92,7 @@ static void                  pango_x_font_get_glyph_extents (PangoFont        *f
 							     PangoRectangle   *logical_rect);
 static PangoFontMetrics *    pango_x_font_get_metrics       (PangoFont        *font,
 							     PangoLanguage    *language);
+static PangoFontMap *        pango_x_font_get_font_map      (PangoFont        *font);
 
 static PangoXSubfontInfo * pango_x_find_subfont    (PangoFont          *font,
 						    PangoXSubfont       subfont_index);
@@ -942,6 +943,14 @@ pango_x_font_get_metrics (PangoFont        *font,
     }
       
   return pango_font_metrics_ref (info->metrics);
+}
+
+static PangoFontMap *
+pango_x_font_get_font_map (PangoFont *font)
+{
+  PangoXFont *xfont = (PangoXFont *)font;
+
+  return xfont->fontmap;
 }
 
 /* Compare the tail of a to b */

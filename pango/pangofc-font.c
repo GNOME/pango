@@ -69,6 +69,7 @@ static PangoCoverage *       pango_fc_font_get_coverage (PangoFont        *font,
 							 PangoLanguage    *language);
 static PangoFontMetrics *    pango_fc_font_get_metrics  (PangoFont        *font,
 							 PangoLanguage    *language);
+static PangoFontMap *        pango_fc_font_get_font_map (PangoFont        *font);
 static PangoFontDescription *pango_fc_font_describe     (PangoFont        *font);
 
 G_DEFINE_TYPE (PangoFcFont, pango_fc_font, PANGO_TYPE_FONT)
@@ -88,6 +89,7 @@ pango_fc_font_class_init (PangoFcFontClass *class)
   font_class->find_shaper = pango_fc_font_find_shaper;
   font_class->get_coverage = pango_fc_font_get_coverage;
   font_class->get_metrics = pango_fc_font_get_metrics;
+  font_class->get_font_map = pango_fc_font_get_metrics;
   
   g_object_class_install_property (object_class, PROP_PATTERN,
 				   g_param_spec_pointer ("pattern",
@@ -459,6 +461,14 @@ pango_fc_font_get_metrics (PangoFont     *font,
     }
 
   return pango_font_metrics_ref (info->metrics);
+}
+
+static PangoFontMap *
+pango_fc_font_get_font_map (PangoFont *font)
+{
+  PangoFcFont *fcfont = PANGO_FC_FONT (font);
+
+  return fcfont->fontmap;
 }
 
 static gboolean

@@ -24,8 +24,10 @@
 #include "pangocairo.h"
 #include "pangocairo-private.h"
 
-#ifdef HAVE_CAIRO_FREETYPE
-#include "pangocairo-fc.h"
+#if defined (HAVE_CAIRO_FREETYPE)
+#  include "pangocairo-fc.h"
+#elif defined (HAVE_CAIRO_WIN32)
+#  include "pangocairo-win32.h"
 #endif
 
 GType
@@ -82,8 +84,12 @@ pango_cairo_font_map_new (void)
 {
   /* Make sure that the type system is initialized */
   g_type_init ();
-  
+
+#if defined(HAVE_CAIRO_WIN32)
+  return g_object_new (PANGO_TYPE_CAIRO_WIN32_FONT_MAP, NULL);
+#elif defined(HAVE_CAIRO_FREETYPE)
   return g_object_new (PANGO_TYPE_CAIRO_FC_FONT_MAP, NULL);
+#endif
 }
 
 /**

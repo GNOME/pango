@@ -1,3 +1,50 @@
+2005-02-24  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pangocairo-win32.h pango/pangocairo-win32font.c 
+	pango/pangocairo-win32fontmap.c	pango/Makefile.am:
+	PangoCairoFontMap for win32 fonts.
+
+	* pango/pangocairo-fontmap.c: Use PangoCairoWin32FontMap
+	when available.
+
+	* pango/pangowin32.h pango/pangowin32-fontmap.h pango/pangowin32.c: 
+	Add virtual pango_win32_font_select_font()
+	to prepare a DC for use with a PangoWin32Font, and to release,
+	pango_win32_font_scale_font() to get logical unit => Pango units scale,
+	pango_win32_font_done_font() to release resources.
+
+	* pango/pangowin32-fontmap.[ch]: Add a find_font() virtual method
+	to allow subclasses that change how PangoFont lookup and
+	creation happens.
+
+	* pango/pangowin32-fontmap.c: Move initialization into 
+	pango_win32_font_map_init() to facilitate derivation.
+	
+	* pango/pangowin2.c pango/pangowin32-fontmap.c 
+	pango/pangowin32-private.h: Move PangoWin32Font/PangoWin32FontMap 
+	definitions into pangowin32-private.h to allow derivation for 
+	PangoCairoWin32Font.
+
+	* modules/basic/basic-win32.c: Use pango_win32_font_select_font()
+	and friends.
+
+	* modules/basic/basic-win32.c: Use g_utf8_to_utf16 instead
+	of g_convert for simplicity and speed.
+
+	* pango/fonts.c (pango_font_get_font_map) pango/pango-font.h
+	pango/pangofc-font.c pango/pangowin32.c pango/pango.c pango/pango.def
+	docs/pango-sections.txt: Add a virtual function to get the fontmap 
+	for a font.
+
+	* pango/pangocairo-render.c: Use pango_font_get_font_map()
+	rather than PangoFcFontMap hack.
+
+	* pango/pango-types.h: Move the declaration of PangoFontMap here
+	to avoid interactions between pango-font.h and pango-fontmap.h.
+
+	* pango/pangocairo.h: Remove accidental include 
+	of pangofc-fontmap.h.
+
 2005-02-21  Owen Taylor  <otaylor@redhat.com>
  
  	* pango/fonts.c (pango_font_get_glyph_extents): 

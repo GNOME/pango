@@ -64,9 +64,57 @@ typedef enum
     PANGO_WIN32_N_COVERAGES
   } PangoWin32CoverageLanguageClass;
 
-typedef struct _PangoWin32Font PangoWin32Font;
-typedef struct _PangoWin32Face PangoWin32Face;
-typedef struct _PangoWin32GlyphInfo PangoWin32GlyphInfo;
+#define PANGO_TYPE_WIN32_FONT_MAP             (pango_win32_font_map_get_type ())
+#define PANGO_WIN32_FONT_MAP(object)          (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_TYPE_WIN32_FONT_MAP, PangoWin32FontMap))
+#define PANGO_WIN32_IS_FONT_MAP(object)       (G_TYPE_CHECK_INSTANCE_TYPE ((object), PANGO_TYPE_WIN32_FONT_MAP))
+#define PANGO_WIN32_FONT_MAP_CLASS(klass)     (G_TYPE_CHECK_CLASS_CAST ((klass), PANGO_TYPE_WIN32_FONT_MAP, PangoWin32FontMapClass))
+#define PANGO_IS_WIN32_FONT_MAP_CLASS(klass)  (G_TYPE_CHECK_CLASS_TYPE ((klass), PANGO_TYPE_WIN32_FONT_MAP))
+#define PANGO_WIN32_FONT_MAP_GET_CLASS(obj)   (G_TYPE_INSTANCE_GET_CLASS ((obj), PANGO_TYPE_WIN32_FONT_MAP, PangoWin32FontMapClass))
+
+#define PANGO_TYPE_WIN32_FONT            (pango_win32_font_get_type ())
+#define PANGO_WIN32_FONT(object)         (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_TYPE_WIN32_FONT, PangoWin32Font))
+#define PANGO_WIN32_FONT_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST ((klass), PANGO_TYPE_WIN32_FONT, PangoWin32FontClass))
+#define PANGO_WIN32_IS_FONT(object)      (G_TYPE_CHECK_INSTANCE_TYPE ((object), PANGO_TYPE_WIN32_FONT))
+#define PANGO_WIN32_IS_FONT_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), PANGO_TYPE_WIN32_FONT))
+#define PANGO_WIN32_FONT_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS ((obj), PANGO_TYPE_WIN32_FONT, PangoWin32FontClass))
+
+typedef struct _PangoWin32FontMap      PangoWin32FontMap;
+typedef struct _PangoWin32FontMapClass PangoWin32FontMapClass;
+typedef struct _PangoWin32Font         PangoWin32Font;
+typedef struct _PangoWin32FontClass    PangoWin32FontClass;
+typedef struct _PangoWin32Face         PangoWin32Face;
+typedef struct _PangoWin32GlyphInfo    PangoWin32GlyphInfo;
+
+struct _PangoWin32FontMap
+{
+  PangoFontMap parent_instance;
+
+  PangoWin32FontCache *font_cache;
+  GQueue *freed_fonts;
+
+  /* Map Pango family names to PangoWin32Family structs */
+  GHashTable *families;
+
+  /* Map LOGFONTS (taking into account only the lfFaceName, lfItalic
+   * and lfWeight fields) to PangoWin32SizeInfo structs.
+   */
+  GHashTable *size_infos;
+
+  int n_fonts;
+
+  double resolution;		/* (points / pixel) * PANGO_SCALE */
+};
+
+struct _PangoWin32FontMapClass
+{
+  PangoFontMapClass parent_class;
+
+  PangoFont *(*find_font) (PangoWin32FontMap          *fontmap,
+			   PangoContext               *context,
+			   PangoWin32Face             *face,
+			   const PangoFontDescription *desc);
+
+};
 
 struct _PangoWin32Font
 {
@@ -94,6 +142,16 @@ struct _PangoWin32Font
   GHashTable *glyph_info;
 };
 
+struct _PangoWin32FontClass
+{
+  PangoFontClass parent_class;
+
+  gboolean (*select_font)      (PangoFont *font,
+				HDC        hdc);
+  void     (*done_font)        (PangoFont *font);
+  double   (*get_scale_factor) (PangoFont *font);
+};
+
 struct _PangoWin32Face
 {
   PangoFontFace parent_instance;
@@ -113,7 +171,6 @@ struct _PangoWin32GlyphInfo
   PangoRectangle logical_rect;
   PangoRectangle ink_rect;
 };
-
 
 /* TrueType defines: */
 
@@ -176,6 +233,8 @@ struct name_record
   guint16 string_offset;
 };
 
+GType pango_win32_font_get_type (void);
+
 PangoWin32Font *pango_win32_font_new                (PangoFontMap   *fontmap,
 						     const LOGFONT  *lfp,
 						     int             size);
@@ -191,6 +250,8 @@ void            pango_win32_font_entry_set_coverage (PangoWin32Face *face,
 						     PangoLanguage  *lang);
 void            pango_win32_font_entry_remove       (PangoWin32Face *face,
 						     PangoFont      *font);
+
+GType pango_win32_font_map_get_type (void);
 
 void            pango_win32_fontmap_cache_add       (PangoFontMap   *fontmap,
 						     PangoWin32Font *xfont);

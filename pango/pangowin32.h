@@ -78,6 +78,11 @@ HDC            pango_win32_get_dc             (void);
 
 gboolean       pango_win32_get_debug_flag     (void);
 
+gboolean pango_win32_font_select_font      (PangoFont *font,
+					    HDC        hdc);
+void     pango_win32_font_done_font        (PangoFont *font);
+double   pango_win32_font_get_scale_factor (PangoFont *font);
+
 #endif
 
 /* API for libraries that want to use PangoWin32 mixed with classic

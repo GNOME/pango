@@ -222,7 +222,7 @@ lib_LTLIBRARIES += libpangocairo-1.0.la
 endif
 
 libpangocairo_1_0_la_LDFLAGS = -version-info $(LT_VERSION_INFO) $(no_undefined)
-libpangocairo_1_0_la_LIBADD = libpangoft2-$(PANGO_API_VERSION).la libpango-$(PANGO_API_VERSION).la $(CAIRO_LIBS) $(GLIB_LIBS)
+libpangocairo_1_0_la_LIBADD = libpango-$(PANGO_API_VERSION).la $(CAIRO_LIBS) $(GLIB_LIBS)
 libpangocairo_1_0_la_DEPENDENCIES = libpango-$(PANGO_API_VERSION).la
 
 libpangocairo_1_0_la_SOURCES =  \
@@ -231,8 +231,15 @@ libpangocairo_1_0_la_SOURCES =  \
 	pangocairo-render.c	\
 	pangocairo-private.h
 
+if HAVE_CAIRO_WIN32
+libpangocairo_1_0_la_LIBADD += libpangowin32-$(PANGO_API_VERSION).la 
+libpangocairo_1_0_la_DEPENDENCIES += libpangowin32-$(PANGO_API_VERSION).la 
+
+libpangocairo_1_0_la_SOURCES += pangocairo-win32font.c pangocairo-win32fontmap.c pangocairo-win32.h
+endif
+
 if HAVE_CAIRO_FREETYPE
-libpangocairo_1_0_la_LIBADD += $(FREETYPE_LIBS)
+libpangocairo_1_0_la_LIBADD +=  libpangoft2-$(PANGO_API_VERSION).la $(FREETYPE_LIBS)
 libpangocairo_1_0_la_DEPENDENCIES += libpangoft2-$(PANGO_API_VERSION).la 
 
 libpangocairo_1_0_la_SOURCES += \

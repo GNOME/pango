@@ -23,7 +23,7 @@
 #define __PANGOCAIRO_H__
 
 #include <pango/pango-context.h>
-#include <pango/pangofc-fontmap.h>
+#include <pango/pango-fontmap.h>
 #include <pango/pango-layout.h>
 #include <cairo.h>
 

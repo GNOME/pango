@@ -128,6 +128,7 @@ EXPORTS
 	pango_font_find_shaper
 	pango_font_get_coverage
 	pango_font_get_glyph_extents
+	pango_font_get_font_map
 	pango_font_get_metrics
 	pango_font_get_type
 	pango_font_map_get_shape_engine_type

@@ -24,6 +24,7 @@
 
 #define BASIC_WIN32_DEBUGGING
 
+#include <math.h>
 #include <stdlib.h>
 
 #include <glib.h>
@@ -713,6 +714,7 @@ itemize_shape_and_place (PangoFont        *font,
   SCRIPT_CONTROL control;
   SCRIPT_STATE state;
   SCRIPT_ITEM items[100];
+  double scale = pango_win32_font_get_scale_factor (font);
 
   memset (&control, 0, sizeof (control));
   memset (&state, 0, sizeof (state));
@@ -822,9 +824,9 @@ itemize_shape_and_place (PangoFont        *font,
 	  if (iglyphs[glyphix] != 0)
 	    {
 	      glyphs->glyphs[ng+glyphix].glyph = iglyphs[glyphix];
-	      glyphs->glyphs[ng+glyphix].geometry.width = PANGO_SCALE * advances[glyphix];
-	      glyphs->glyphs[ng+glyphix].geometry.x_offset = PANGO_SCALE * offsets[glyphix].du;
-	      glyphs->glyphs[ng+glyphix].geometry.y_offset = PANGO_SCALE * offsets[glyphix].dv;
+	      glyphs->glyphs[ng+glyphix].geometry.width = floor (0.5 + scale * advances[glyphix]);
+	      glyphs->glyphs[ng+glyphix].geometry.x_offset = floor (0.5 + scale * offsets[glyphix].du);
+	      glyphs->glyphs[ng+glyphix].geometry.y_offset = floor (0.5 + scale * offsets[glyphix].dv);
 	    }
 	  else
 	    {
@@ -865,38 +867,17 @@ uniscribe_shape (PangoFont        *font,
 		 PangoGlyphString *glyphs)
 {
   wchar_t *wtext;
-  int wlen, i;
+  long wlen;
+  int i;
   gboolean retval = TRUE;
-  HGDIOBJ old_font = NULL;
-  HFONT hfont = NULL;
-  LOGFONT *lf;
   SCRIPT_CACHE script_cache[100];
 
-  wtext = (wchar_t *) g_convert (text, length, "UTF-16LE", "UTF-8",
-				 NULL, &wlen, NULL);
-  if (wtext == NULL)
+  if (!pango_win32_font_select_font (font, hdc))
     return FALSE;
 
-  wlen /= 2;
-
-  lf = pango_win32_font_logfont (font);
-  hfont = pango_win32_font_cache_load (font_cache, lf);
-  g_free (lf);
-
-  if (hfont == NULL)
+  wtext = g_utf8_to_utf16 (text, length, NULL, &wlen, NULL);
+  if (wtext == NULL)
     retval = FALSE;
-
-  if (retval)
-    old_font = SelectObject (hdc, hfont);
-
-  if (old_font == NULL)
-    {
-#ifdef BASIC_WIN32_DEBUGGING
-      if (pango_win32_debug)
-	printf ("pango-basic-win32: SelectObject for font failed\n");
-#endif
-      retval = FALSE;
-    }
 
   if (retval)
     {
@@ -924,12 +905,9 @@ uniscribe_shape (PangoFont        *font,
 
     }
 
-  g_free (wtext);
-  if (old_font != NULL)
-    SelectObject (hdc, old_font);
+  pango_win32_font_done_font (font);
 
-  if (hfont != NULL)
-    pango_win32_font_cache_unload (font_cache, hfont);
+  g_free (wtext);
 
   return retval && glyphs->num_glyphs > 0;
 }

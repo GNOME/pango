@@ -32,7 +32,8 @@ typedef struct _PangoLogAttr PangoLogAttr;
 typedef struct _PangoEngineLang PangoEngineLang;
 typedef struct _PangoEngineShape PangoEngineShape;
 
-typedef struct _PangoFont PangoFont;
+typedef struct _PangoFont    PangoFont;
+typedef struct _PangoFontMap PangoFontMap;
 
 typedef struct _PangoMatrix    PangoMatrix;
 typedef struct _PangoRectangle PangoRectangle;

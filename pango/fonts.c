@@ -1185,6 +1185,23 @@ pango_font_get_metrics (PangoFont        *font,
   return PANGO_FONT_GET_CLASS (font)->get_metrics (font, language);
 }
 
+/**
+ * pango_font_get_font_map:
+ * @font: a #PangoFont
+ * 
+ * Gets the font map for which the font was created.
+ *
+ * Returns: the #PangoFontMap for the font
+ **/
+PangoFontMap *
+pango_font_get_font_map (PangoFont *font)
+{
+  if (PANGO_FONT_GET_CLASS (font)->get_font_map)
+    return PANGO_FONT_GET_CLASS (font)->get_font_map (font);
+  else
+    return NULL;
+}
+
 GType
 pango_font_metrics_get_type (void)
 {
