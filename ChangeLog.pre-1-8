@@ -1,3 +1,9 @@
+2002-07-22  Sven Neumann  <sven@gimp.org>
+
+	* pango/pangoft2.c (pango_ft2_font_get_face): don't access the old
+	(invalid) face pointer after loading a fallback face because we
+	couldn't set the unicode charmap.
+
 Mon Jul 15 20:22:46 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pangoxft-font.c: Fix trivial typo that was

@@ -248,9 +248,7 @@ pango_ft2_font_get_face (PangoFont      *font)
 
   g_assert (ft2font->face);
   
-  face = ft2font->face;
-
-  if (!set_unicode_charmap (face))
+  if (!set_unicode_charmap (ft2font->face))
     {
       g_warning ("Unable to load unicode charmap from font file %s", filename);
       
@@ -259,6 +257,8 @@ pango_ft2_font_get_face (PangoFont      *font)
 
       load_fallback_face (ft2font, filename);
     }
+
+  face = ft2font->face;
 
   if (ft2font->size != GPOINTER_TO_UINT (face->generic.data))
     {
