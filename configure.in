@@ -280,16 +280,17 @@ if $have_cairo ; then
   pango_save_ldflags=$LDFLAGS
   LDFLAGS="$LDFLAGS $CAIRO_LIBS"
   AC_CHECK_LIB(cairo, cairo_win32_font_select_font, have_cairo_win32=true, :)
-  LDFLAGS=$pango_save_ldflags
   if $have_cairo_win32 && $have_win32; then
     AC_DEFINE(HAVE_CAIRO_WIN32, 1, [Whether Cairo uses the Win32 GDI for fonts])
   else			  
     AC_CHECK_LIB(cairo, cairo_ft_font_lock_face, have_cairo_freetype=true, :)
-    LDFLAGS=$pango_save_ldflags
     if $have_cairo_freetype && $have_freetype ; then
       AC_DEFINE(HAVE_CAIRO_FREETYPE, 1, [Whether Cairo uses FreeType for fonts])
+    else
+      have_cairo=false
     fi
   fi
+  LDFLAGS=$pango_save_ldflags
 fi
 
 AM_CONDITIONAL(HAVE_CAIRO, $have_cairo)

@@ -1,3 +1,9 @@
+Thu Feb  3 18:23:27 2005  Manish Singh  <yosh@gimp.org>
+
+	* configure.in: use CAIRO_LIBS for all libcairo checks, and disable
+	the cairo backend if we don't have Win32 nor FreeType support in
+	cairo.
+
 2005-02-03  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pangofc-font.c (pango_fc_font_real_get_glyph): Fix unpaired
