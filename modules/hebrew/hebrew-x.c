@@ -419,24 +419,11 @@ hebrew_engine_x_new ()
   return (PangoEngine *)result;
 }
 
-/* The following three functions provide the public module API for
- * Pango. If we are compiling it is a module, then we name the
- * entry points script_engine_list, etc. But if we are compiling
- * it for inclusion directly in Pango, then we need them to
- * to have distinct names for this module, so we prepend
- * _pango_hebrew_x_
- */
-#ifdef X_MODULE_PREFIX
-#define MODULE_ENTRY(func) _pango_hebrew_x_##func
-#else
-#define MODULE_ENTRY(func) func
-#endif
-
 /* List the engines contained within this module
  */
-
 void 
-MODULE_ENTRY(script_engine_list) (PangoEngineInfo **engines, gint *n_engines)
+PANGO_MODULE_ENTRY(list) (PangoEngineInfo **engines,
+			  int              *n_engines)
 {
   *engines = script_engines;
   *n_engines = G_N_ELEMENTS (script_engines);
@@ -445,7 +432,7 @@ MODULE_ENTRY(script_engine_list) (PangoEngineInfo **engines, gint *n_engines)
 /* Load a particular engine given the ID for the engine
  */
 PangoEngine *
-MODULE_ENTRY(script_engine_load) (const char *id)
+PANGO_MODULE_ENTRY(load) (const char *id)
 {
   if (!strcmp (id, SCRIPT_ENGINE_NAME))
     return hebrew_engine_x_new ();
@@ -454,7 +441,6 @@ MODULE_ENTRY(script_engine_load) (const char *id)
 }
 
 void 
-MODULE_ENTRY(script_engine_unload) (PangoEngine *engine)
+PANGO_MODULE_ENTRY(unload) (PangoEngine *engine)
 {
 }
-

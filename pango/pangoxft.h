@@ -25,6 +25,7 @@
 
 #include <pango/pango-context.h>
 #include <pango/pango-ot.h>
+#include <pango/pangofc-font.h>
 
 G_BEGIN_DECLS
 
@@ -83,15 +84,17 @@ GType      pango_xft_font_get_type (void);
 
 #ifdef PANGO_ENABLE_ENGINE
 XftFont *     pango_xft_font_get_font          (PangoFont *font);
+Display *     pango_xft_font_get_display       (PangoFont *font);
+#ifndef PANGO_DISABLE_DEPRECATED
 FT_Face       pango_xft_font_lock_face         (PangoFont *font);
 void	      pango_xft_font_unlock_face       (PangoFont *font);
 guint	      pango_xft_font_get_glyph	       (PangoFont *font,
 						gunichar   wc);
 gboolean      pango_xft_font_has_char          (PangoFont *font,
 						gunichar   wc);
-Display *     pango_xft_font_get_display       (PangoFont *font);
 PangoGlyph    pango_xft_font_get_unknown_glyph (PangoFont *font,
 						gunichar   wc);
+#endif /* PANGO_DISABLE_DEPRECATED */
 #endif /* PANGO_ENABLE_ENGINE */
 
 G_END_DECLS

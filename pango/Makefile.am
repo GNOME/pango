@@ -78,6 +78,7 @@ libpango_1_0_la_SOURCES =  \
 	pango-markup.c	   \
 	pango-tabs.c	   \
 	pango-utils.c	   \
+	pangofc-font.c	   \
 	reorder-items.c    \
 	shape.c	           \
 	pango-enum-types.c
@@ -100,7 +101,8 @@ pango_headers =		   \
 	pango-modules.h	   \
 	pango-tabs.h	   \
 	pango-types.h	   \
-	pango-utils.h
+	pango-utils.h	   \
+	pangofc-font.h
 
 pangoinclude_HEADERS =	   \
 	$(pango_headers)   \

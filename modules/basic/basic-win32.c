@@ -1067,18 +1067,9 @@ init_uniscribe (void)
 #endif
 } 
 
-/* The following three functions provide the public module API for
- * Pango
- */
-#ifdef WIN32_MODULE_PREFIX
-#define MODULE_ENTRY(func) _pango_basic_win32_##func
-#else
-#define MODULE_ENTRY(func) func
-#endif
-
 void
-MODULE_ENTRY(script_engine_list) (PangoEngineInfo **engines,
-				  gint             *n_engines)
+PANGO_MODULE_ENTRY(list) (PangoEngineInfo **engines,
+			  gint             *n_engines)
 {
   init_uniscribe ();
 
@@ -1115,7 +1106,7 @@ MODULE_ENTRY(script_engine_list) (PangoEngineInfo **engines,
 }
 
 PangoEngine *
-MODULE_ENTRY(script_engine_load) (const char *id)
+PANGO_MODULE_ENTRY(load) (const char *id)
 {
   init_uniscribe ();
 
@@ -1129,6 +1120,6 @@ MODULE_ENTRY(script_engine_load) (const char *id)
 }
 
 void 
-MODULE_ENTRY(script_engine_unload) (PangoEngine *engine)
+PANGO_MODULE_ENTRY(unload) (PangoEngine *engine)
 {
 }

@@ -31,10 +31,17 @@
 
 #include <glib.h>
 #include "pango-engine.h"
-#include "pangoxft.h"
 #include "thai-shaper.h"
 
+#ifdef BUILD_XFT
+#include "pangoxft.h"
 #define SCRIPT_ENGINE_NAME "ThaiScriptEngineXft"
+#define RENDER_TYPE PANGO_RENDER_TYPE_XFT
+#else
+#include "pangoft2.h"
+#define SCRIPT_ENGINE_NAME "ThaiScriptEngineFT2"
+#define RENDER_TYPE PANGO_RENDER_TYPE_FT2
+#endif
 
 /* We handle the range U+0e01 to U+0e5b exactly
  */
@@ -46,7 +53,7 @@ static PangoEngineInfo script_engines[] = {
   {
     SCRIPT_ENGINE_NAME,
     PANGO_ENGINE_TYPE_SHAPE,
-    PANGO_RENDER_TYPE_XFT,
+    RENDER_TYPE,
     thai_ranges, G_N_ELEMENTS(thai_ranges)
   }
 };
@@ -113,13 +120,14 @@ static int tis620_2[128] = {
 static int
 contain_glyphs(PangoFont *font, const int glyph_map[128])
 {
+  PangoFcFont *fc_font = (PangoFcFont *)font;
   unsigned char c;
 
   for (c = 0; c < 0x80; c++)
     {
       if (glyph_map[c])
         {
-	  if (!pango_xft_font_has_char (font, glyph_map[c]))
+	  if (!pango_fc_font_has_char (fc_font, glyph_map[c]))
             return 0;
         }
     }
@@ -166,6 +174,7 @@ thai_make_glyph (ThaiFontInfo *font_info, unsigned int c)
 {
   int index;
   PangoGlyph result;
+  PangoFcFont *fc_font = (PangoFcFont *)font_info->font;
 
   switch (font_info->font_set) {
     case THAI_FONT_ISO10646:index = c; break;
@@ -175,17 +184,25 @@ thai_make_glyph (ThaiFontInfo *font_info, unsigned int c)
     default:                index = 0; break;
   }
   
-  result = pango_xft_font_get_glyph (font_info->font, index);
+  result = pango_fc_font_get_glyph (fc_font, index);
   if (result)
     return result;
   else
-    return pango_xft_font_get_unknown_glyph (font_info->font, index);
+    return pango_fc_font_get_unknown_glyph (fc_font, index);
 }
 
 PangoGlyph
 thai_make_unknown_glyph (ThaiFontInfo *font_info, unsigned int c)
 {
-  return pango_xft_font_get_unknown_glyph (font_info->font, c);
+  return pango_fc_font_get_unknown_glyph ((PangoFcFont *)font_info->font, c);
+}
+
+/* Unused; used only for X backend and XTIS encoding
+ */
+gboolean
+thai_has_glyph (ThaiFontInfo *font_info, PangoGlyph glyph)
+{
+  return TRUE;
 }
 
 static PangoCoverage *
@@ -196,7 +213,7 @@ thai_engine_get_coverage (PangoFont  *font,
 }
 
 static PangoEngine *
-thai_engine_xft_new ()
+thai_engine_fc_new ()
 {
   PangoEngineShape *result;
   
@@ -211,23 +228,11 @@ thai_engine_xft_new ()
   return (PangoEngine *)result;
 }
 
-/* The following three functions provide the public module API for
- * Pango. If we are compiling it is a module, then we name the
- * entry points script_engine_list, etc. But if we are compiling
- * it for inclusion directly in Pango, then we need them to
- * to have distinct names for this module, so we prepend
- * _pango_thai_xft_
- */
-#ifdef XFT_MODULE_PREFIX
-#define MODULE_ENTRY(func) _pango_thai_xft_##func
-#else
-#define MODULE_ENTRY(func) func
-#endif
-
 /* List the engines contained within this module
  */
 void 
-MODULE_ENTRY(script_engine_list) (PangoEngineInfo **engines, gint *n_engines)
+PANGO_MODULE_ENTRY(list) (PangoEngineInfo **engines,
+			  int              *n_engines)
 {
   *engines = script_engines;
   *n_engines = G_N_ELEMENTS (script_engines);
@@ -236,16 +241,15 @@ MODULE_ENTRY(script_engine_list) (PangoEngineInfo **engines, gint *n_engines)
 /* Load a particular engine given the ID for the engine
  */
 PangoEngine *
-MODULE_ENTRY(script_engine_load) (const char *id)
+PANGO_MODULE_ENTRY(load) (const char *id)
 {
   if (!strcmp (id, SCRIPT_ENGINE_NAME))
-    return thai_engine_xft_new ();
+    return thai_engine_fc_new ();
   else
     return NULL;
 }
 
 void 
-MODULE_ENTRY(script_engine_unload) (PangoEngine *engine)
+PANGO_MODULE_ENTRY(unload) (PangoEngine *engine)
 {
 }
-

@@ -1,5 +1,5 @@
 /* Pango
- * hebrew-xft.h:
+ * hebrew-fc.h: Hebrew shaper for FreeType-based backends
  *
  * Copyright (C) 2000 Red Hat Software
  * Author: Owen Taylor <otaylor@redhat.com>
@@ -22,7 +22,6 @@
 
 #include <string.h>
 
-#include "pangoxft.h"
 #include "pango-engine.h"
 #include "pango-utils.h"
 #include "hebrew-shaper.h"
@@ -35,11 +34,21 @@ static PangoEngineRange hebrew_ranges[] = {
   { 0xfb1d, 0xfb4f, "*" }  /* Hebrew presentation forms */
 };
 
+#ifdef BUILD_XFT2	  
+#include "pangoxft.h"
+#define SCRIPT_ENGINE_NAME "HebrewScriptEngineXft"
+#define RENDER_TYPE PANGO_RENDER_TYPE_XFT
+#else
+#include "pangoft2.h"
+#define SCRIPT_ENGINE_NAME "HebrewScriptEngineFt2"
+#define RENDER_TYPE PANGO_RENDER_TYPE_FT2
+#endif
+
 static PangoEngineInfo script_engines[] = {
   {
-    "HebrewScriptEngineXft",
+    SCRIPT_ENGINE_NAME,
     PANGO_ENGINE_TYPE_SHAPE,
-    PANGO_RENDER_TYPE_XFT,
+    RENDER_TYPE,
     hebrew_ranges, G_N_ELEMENTS(hebrew_ranges)
   }
 };
@@ -58,7 +67,7 @@ get_cluster_glyphs(PangoFont      *font,
   for (i=0; i<cluster_size; i++)
     {
       PangoRectangle logical_rect;
-      glyph_num[i] = pango_xft_font_get_glyph (font, cluster[i]);
+      glyph_num[i] = pango_fc_font_get_glyph ((PangoFcFont *)font, cluster[i]);
       glyph[i] = glyph_num[i];
 
       pango_font_get_glyph_extents (font,
@@ -194,13 +203,13 @@ hebrew_engine_get_coverage (PangoFont  *font,
 }
 
 static PangoEngine *
-hebrew_engine_xft_new ()
+hebrew_engine_fc_new ()
 {
   PangoEngineShape *result;
   
   result = g_new (PangoEngineShape, 1);
 
-  result->engine.id = PANGO_RENDER_TYPE_XFT;
+  result->engine.id = SCRIPT_ENGINE_NAME;
   result->engine.type = PANGO_ENGINE_TYPE_SHAPE;
   result->engine.length = sizeof (result);
   result->script_shape = hebrew_engine_shape;
@@ -209,23 +218,11 @@ hebrew_engine_xft_new ()
   return (PangoEngine *)result;
 }
 
-/* The following three functions provide the public module API for
- * Pango. If we are compiling it is a module, then we name the
- * entry points script_engine_list, etc. But if we are compiling
- * it for inclusion directly in Pango, then we need them to
- * to have distinct names for this module, so we prepend
- * _pango_hebrew_xft_
- */
-#ifdef XFT_MODULE_PREFIX
-#define MODULE_ENTRY(func) _pango_hebrew_xft_##func
-#else
-#define MODULE_ENTRY(func) func
-#endif
-
 /* List the engines contained within this module
  */
 void 
-MODULE_ENTRY(script_engine_list) (PangoEngineInfo **engines, gint *n_engines)
+PANGO_MODULE_ENTRY(list) (PangoEngineInfo **engines,
+			  int              *n_engines)
 {
   *engines = script_engines;
   *n_engines = G_N_ELEMENTS (script_engines);
@@ -234,15 +231,15 @@ MODULE_ENTRY(script_engine_list) (PangoEngineInfo **engines, gint *n_engines)
 /* Load a particular engine given the ID for the engine
  */
 PangoEngine *
-MODULE_ENTRY(script_engine_load) (const char *id)
+PANGO_MODULE_ENTRY(load) (const char *id)
 {
-  if (!strcmp (id, "HebrewScriptEngineXft"))
-    return hebrew_engine_xft_new ();
+  if (!strcmp (id, SCRIPT_ENGINE_NAME))
+    return hebrew_engine_fc_new ();
   else
     return NULL;
 }
 
 void 
-MODULE_ENTRY(script_engine_unload) (PangoEngine *engine)
+PANGO_MODULE_ENTRY(unload) (PangoEngine *engine)
 {
 }

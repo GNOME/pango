@@ -1,5 +1,5 @@
 /* Pango
- * hangul-xft.c:
+ * hangul-fc.c: Hangul shaper for FreeType based backends
  *
  * Copyright (C) 2002 Changwoo Ryu
  * Author: Changwoo Ryu <cwryu@debian.org>
@@ -22,14 +22,21 @@
 
 #include <string.h>
 
-#include "pangoxft.h"
 #include "pango-engine.h"
 #include "pango-utils.h"
 
 #include "hangul-defs.h"
 #include "tables-jamos.i"
 
+#ifdef BUILD_XFT
+#include "pangoxft.h"
 #define SCRIPT_ENGINE_NAME "HangulScriptEngineXft"
+#define RENDER_TYPE PANGO_RENDER_TYPE_XFT
+#else
+#include "pangoft2.h"
+#define SCRIPT_ENGINE_NAME "HangulScriptEngineFT2"
+#define RENDER_TYPE PANGO_RENDER_TYPE_FT2
+#endif
 
 static PangoEngineRange hangul_ranges[] = {
   /* Language characters */
@@ -42,7 +49,7 @@ static PangoEngineInfo script_engines[] = {
   {
     SCRIPT_ENGINE_NAME,
     PANGO_ENGINE_TYPE_SHAPE,
-    PANGO_RENDER_TYPE_XFT,
+    RENDER_TYPE,
     hangul_ranges, G_N_ELEMENTS(hangul_ranges)
   }
 };
@@ -122,8 +129,10 @@ set_glyph_tone (PangoFont *font, PangoGlyphString *glyphs, int i,
 }
 
 
-#define find_char pango_xft_font_get_glyph
-
+#define find_char(font,wc) \
+    pango_fc_font_get_glyph((PangoFcFont *)font, wc)
+#define get_unknown_glyph(font,wc) \
+    pango_fc_font_get_unknown_glyph((PangoFcFont *)font, wc)
 
 static void
 render_tone (PangoFont *font, gunichar tone, PangoGlyphString *glyphs,
@@ -147,7 +156,7 @@ render_tone (PangoFont *font, gunichar tone, PangoGlyphString *glyphs,
         }
       else 
         set_glyph (font, glyphs, *n_glyphs, cluster_offset,
-                   pango_xft_font_get_unknown_glyph (font, tone));
+		   get_unknown_glyph (font, tone));
     }
   (*n_glyphs)++;
 }
@@ -167,7 +176,7 @@ render_isolated_tone (PangoFont *font, gunichar tone, PangoGlyphString *glyphs,
   if (!index)
     index = find_char (font, ' ');      /* Space */
   if (!index)			        /* Unknown glyph box with 0000 in it */
-    index = find_char (font, pango_xft_font_get_unknown_glyph (font, 0));
+    index = find_char (font, get_unknown_glyph (font, 0));
 
   /* Add the base character
    */
@@ -214,7 +223,7 @@ render_syllable (PangoFont *font, gunichar *text, int length,
       pango_glyph_string_set_size (glyphs, *n_glyphs + 1);
       if (!index)
 	set_glyph (font, glyphs, *n_glyphs, cluster_offset,
-		   pango_xft_font_get_unknown_glyph (font, wc));
+		   get_unknown_glyph (font, wc));
       else
 	set_glyph (font, glyphs, *n_glyphs, cluster_offset, index);
       (*n_glyphs)++;
@@ -249,7 +258,7 @@ render_syllable (PangoFont *font, gunichar *text, int length,
 	  pango_glyph_string_set_size (glyphs, *n_glyphs + 1);
 	  if (!index)
 	    set_glyph (font, glyphs, *n_glyphs, cluster_offset,
-		       pango_xft_font_get_unknown_glyph (font, index));
+		       get_unknown_glyph (font, index));
 	  else
 	    set_glyph (font, glyphs, *n_glyphs, cluster_offset, index);
 	  (*n_glyphs)++;
@@ -261,7 +270,7 @@ render_syllable (PangoFont *font, gunichar *text, int length,
       pango_glyph_string_set_size (glyphs, *n_glyphs + 1);
       if (!index)
 	set_glyph (font, glyphs, *n_glyphs, cluster_offset,
-		   pango_xft_font_get_unknown_glyph (font, index));
+		   get_unknown_glyph (font, index));
       else
 	set_glyph (font, glyphs, *n_glyphs, cluster_offset, index);
       glyphs->log_clusters[*n_glyphs] = cluster_offset;
@@ -386,23 +395,11 @@ hangul_engine_xft_new ()
   return (PangoEngine *)result;
 }
 
-/* The following three functions provide the public module API for
- * Pango. If we are compiling it is a module, then we name the
- * entry points script_engine_list, etc. But if we are compiling
- * it for inclusion directly in Pango, then we need them to
- * to have distinct names for this module, so we prepend
- * _pango_hangul_xft__
- */
-#ifdef XFT_MODULE_PREFIX
-#define MODULE_ENTRY(func) _pango_hangul_xft_##func
-#else
-#define MODULE_ENTRY(func) func
-#endif
-
 /* List the engines contained within this module
  */
 void 
-MODULE_ENTRY(script_engine_list) (PangoEngineInfo **engines, gint *n_engines)
+PANGO_MODULE_ENTRY(list) (PangoEngineInfo **engines,
+			  int              *n_engines)
 {
   *engines = script_engines;
   *n_engines = G_N_ELEMENTS (script_engines);
@@ -411,7 +408,7 @@ MODULE_ENTRY(script_engine_list) (PangoEngineInfo **engines, gint *n_engines)
 /* Load a particular engine given the ID for the engine
  */
 PangoEngine *
-MODULE_ENTRY(script_engine_load) (const char *id)
+PANGO_MODULE_ENTRY(load) (const char *id)
 {
   if (!strcmp (id, SCRIPT_ENGINE_NAME))
     return hangul_engine_xft_new ();
@@ -420,6 +417,6 @@ MODULE_ENTRY(script_engine_load) (const char *id)
 }
 
 void 
-MODULE_ENTRY(script_engine_unload) (PangoEngine *engine)
+PANGO_MODULE_ENTRY(unload) (PangoEngine *engine)
 {
 }

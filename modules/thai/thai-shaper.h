@@ -43,6 +43,9 @@ thai_make_glyph (ThaiFontInfo *font_info, unsigned int c);
 PangoGlyph
 thai_make_unknown_glyph (ThaiFontInfo *font_info, unsigned int c);
 
+gboolean
+thai_has_glyph (ThaiFontInfo *font_info, PangoGlyph glyph);
+
 /*
  * Public functions
  */

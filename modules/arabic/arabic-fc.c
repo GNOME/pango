@@ -1,7 +1,7 @@
 /* Pango
- * arabic-xft.h:
+ * arabic-fc.h:
  *
- * Copyright (C) 2000 Red Hat Software
+ * Copyright (C) 2000, 2003 Red Hat Software
  * Author: Owen Taylor <otaylor@redhat.com>
  *
  * This library is free software; you can redistribute it and/or
@@ -24,11 +24,18 @@
 
 #include "arabic-ot.h"
 
-#include "pangoxft.h"
 #include "pango-engine.h"
 #include "pango-utils.h"
 
+#ifdef BUILD_XFT
+#include "pangoxft.h"
 #define SCRIPT_ENGINE_NAME "ArabicScriptEngineXft"
+#define RENDER_TYPE PANGO_RENDER_TYPE_XFT
+#else
+#include "pangoft2.h"
+#define SCRIPT_ENGINE_NAME "ArabicScriptEngineFt2"
+#define RENDER_TYPE PANGO_RENDER_TYPE_FT2
+#endif
 
 static PangoEngineRange arabic_ranges[] = {
   /* Language characters */
@@ -39,7 +46,7 @@ static PangoEngineInfo script_engines[] = {
   {
     SCRIPT_ENGINE_NAME,
     PANGO_ENGINE_TYPE_SHAPE,
-    PANGO_RENDER_TYPE_XFT,
+    RENDER_TYPE,
     arabic_ranges, G_N_ELEMENTS(arabic_ranges)
   }
 };
@@ -129,10 +136,10 @@ set_glyph (PangoFont *font, PangoGlyphString *glyphs, int i, int offset, PangoGl
 
 static void 
 arabic_engine_shape (PangoFont        *font,
-		    const char       *text,
-		    gint              length,
-		    PangoAnalysis    *analysis,
-		    PangoGlyphString *glyphs)
+		     const char       *text,
+		     gint              length,
+		     PangoAnalysis    *analysis,
+		     PangoGlyphString *glyphs)
 {
   int n_chars;
   int i;
@@ -141,13 +148,16 @@ arabic_engine_shape (PangoFont        *font,
   gunichar *wcs = NULL;
   FT_Face face;
   PangoOTRuleset *ruleset;
+  PangoFcFont *fc_font;
 
   g_return_if_fail (font != NULL);
   g_return_if_fail (text != NULL);
   g_return_if_fail (length >= 0);
   g_return_if_fail (analysis != NULL);
 
-  face = pango_xft_font_lock_face (font);
+  fc_font = PANGO_FC_FONT (font);
+
+  face = pango_fc_font_lock_face (fc_font);
   g_assert (face);
 
   n_chars = g_utf8_strlen (text, length);
@@ -198,12 +208,12 @@ arabic_engine_shape (PangoFont        *font,
 	      ((properties[i] & (initial | medial)) != (initial | medial)))
 	    wc = 0x64a;
 	  
-	  index = pango_xft_font_get_glyph (font, wc);
+	  index = pango_fc_font_get_glyph (fc_font, wc);
 
 	  if (!index)
 	    {
 	      set_glyph (font, glyphs, i, p - text,
-			 pango_xft_font_get_unknown_glyph (font, wc));
+			 pango_fc_font_get_unknown_glyph (fc_font, wc));
 	    }
 	  else
 	    {
@@ -287,18 +297,18 @@ arabic_engine_shape (PangoFont        *font,
 	}
     }
   
-  pango_xft_font_unlock_face (font);
+  pango_fc_font_unlock_face (fc_font);
 }
 
 static PangoCoverage *
-arabic_engine_get_coverage (PangoFont  *font,
-			   PangoLanguage *lang)
+arabic_engine_get_coverage (PangoFont     *font,
+			    PangoLanguage *lang)
 {
   return pango_font_get_coverage (font, lang);
 }
 
 static PangoEngine *
-arabic_engine_xft_new ()
+arabic_engine_fc_new ()
 {
   PangoEngineShape *result;
   
@@ -313,23 +323,11 @@ arabic_engine_xft_new ()
   return (PangoEngine *)result;
 }
 
-/* The following three functions provide the public module API for
- * Pango. If we are compiling it is a module, then we name the
- * entry points script_engine_list, etc. But if we are compiling
- * it for inclusion directly in Pango, then we need them to
- * to have distinct names for this module, so we prepend
- * _pango_arabic_
- */
-#ifdef XFT_MODULE_PREFIX
-#define MODULE_ENTRY(func) _pango_arabic_xft_##func
-#else
-#define MODULE_ENTRY(func) func
-#endif
-
 /* List the engines contained within this module
  */
 void 
-MODULE_ENTRY(script_engine_list) (PangoEngineInfo **engines, gint *n_engines)
+PANGO_MODULE_ENTRY(list) (PangoEngineInfo **engines,
+			  int              *n_engines)
 {
   *engines = script_engines;
   *n_engines = G_N_ELEMENTS (script_engines);
@@ -338,15 +336,15 @@ MODULE_ENTRY(script_engine_list) (PangoEngineInfo **engines, gint *n_engines)
 /* Load a particular engine given the ID for the engine
  */
 PangoEngine *
-MODULE_ENTRY(script_engine_load) (const char *id)
+PANGO_MODULE_ENTRY(load) (const char *id)
 {
   if (!strcmp (id, SCRIPT_ENGINE_NAME))
-    return arabic_engine_xft_new ();
+    return arabic_engine_fc_new ();
   else
     return NULL;
 }
 
 void 
-MODULE_ENTRY(script_engine_unload) (PangoEngine *engine)
+PANGO_MODULE_ENTRY(unload) (PangoEngine *engine)
 {
 }

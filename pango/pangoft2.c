@@ -87,6 +87,18 @@ static void                  pango_ft2_font_get_glyph_extents (PangoFont        
 static PangoFontMetrics *    pango_ft2_font_get_metrics       (PangoFont            *font,
 							       PangoLanguage        *language);
   
+static FT_Face    pango_ft2_font_real_lock_face         (PangoFcFont *font);
+static void       pango_ft2_font_real_unlock_face       (PangoFcFont *font);
+static gboolean   pango_ft2_font_real_has_char          (PangoFcFont *font,
+							 gunichar     wc);
+static guint      pango_ft2_font_real_get_glyph         (PangoFcFont *font,
+							 gunichar     wc);
+static PangoGlyph pango_ft2_font_real_get_unknown_glyph (PangoFcFont *font,
+							 gunichar     wc);
+static int        pango_ft2_font_real_get_kerning       (PangoFcFont *font,
+							 PangoGlyph   left,
+							 PangoGlyph   right);
+
 static void                  pango_ft2_get_item_properties    (PangoItem      	    *item,
 							       PangoUnderline 	    *uline,
 							       PangoAttrColor 	    *fg_color,
@@ -197,6 +209,8 @@ load_fallback_face (PangoFT2Font *ft2font,
  * 
  * Returns the native FreeType2 FT_Face structure used for this PangoFont.
  * This may be useful if you want to use FreeType2 functions directly.
+ *
+ * Use pango_fc_font_get_face() instead.
  * 
  * Return value: a pointer to a #FT_Face structure, with the size set correctly
  **/
@@ -301,7 +315,7 @@ pango_ft2_font_get_type (void)
       };
       
       object_type = g_type_register_static (PANGO_TYPE_FONT,
-                                            "PangoFT2Font",
+                                            "PangoFcFont",
                                             &object_info, 0);
     }
   
@@ -325,7 +339,8 @@ pango_ft2_font_class_init (PangoFT2FontClass *class)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (class);
   PangoFontClass *font_class = PANGO_FONT_CLASS (class);
-
+  PangoFcFontClass *fc_font_class = PANGO_FC_FONT_CLASS (class);
+  
   parent_class = g_type_class_peek_parent (class);
   
   object_class->finalize = pango_ft2_font_finalize;
@@ -335,6 +350,13 @@ pango_ft2_font_class_init (PangoFT2FontClass *class)
   font_class->find_shaper = pango_ft2_font_find_shaper;
   font_class->get_glyph_extents = pango_ft2_font_get_glyph_extents;
   font_class->get_metrics = pango_ft2_font_get_metrics;
+  
+  fc_font_class->lock_face = pango_ft2_font_real_lock_face;
+  fc_font_class->unlock_face = pango_ft2_font_real_unlock_face;
+  fc_font_class->has_char = pango_ft2_font_real_has_char;
+  fc_font_class->get_glyph = pango_ft2_font_real_get_glyph;
+  fc_font_class->get_unknown_glyph = pango_ft2_font_real_get_unknown_glyph;
+  fc_font_class->get_kerning = pango_ft2_font_real_get_kerning;
 }
 
 static void
@@ -586,6 +608,8 @@ pango_ft2_font_get_glyph_extents (PangoFont      *font,
  * @right: the right #PangoGlyph
  * 
  * Retrieves kerning information for a combination of two glyphs.
+ *
+ * Use pango_fc_font_get_kerning() instead.
  * 
  * Return value: The amount of kerning (in Pango units) to apply for 
  * the given combination of glyphs.
@@ -595,27 +619,7 @@ pango_ft2_font_get_kerning (PangoFont *font,
 			    PangoGlyph left,
 			    PangoGlyph right)
 {
-  FT_Face face;
-  FT_Error error;
-  FT_Vector kerning;
-
-  face = pango_ft2_font_get_face (font);
-  if (!face)
-    return 0;
-
-  if (!FT_HAS_KERNING (face))
-    return 0;
-
-  if (!left || !right)
-    return 0;
-
-  error = FT_Get_Kerning (face, left, right,
-			  ft_kerning_default, &kerning);
-  if (error != FT_Err_Ok)
-    g_warning ("FT_Get_Kerning returns error: %s",
-	       _pango_ft2_ft_strerror (error));
-
-  return PANGO_UNITS_26_6 (kerning.x);
+  return pango_fc_font_get_kerning (PANGO_FC_FONT (font), left, right);
 }
 
 static PangoFontMetrics *
@@ -681,6 +685,79 @@ pango_ft2_font_get_metrics (PangoFont     *font,
     }
 
   return pango_font_metrics_ref (info->metrics);
+}
+
+static FT_Face
+pango_ft2_font_real_lock_face (PangoFcFont *font)
+{
+  return pango_ft2_font_get_face ((PangoFont *)font);
+}
+
+static void
+pango_ft2_font_real_unlock_face (PangoFcFont *font)
+{
+}
+
+static gboolean
+pango_ft2_font_real_has_char (PangoFcFont *font,
+			      gunichar     wc)
+{
+  FT_Face face;
+  FT_UInt index;
+
+  face = pango_ft2_font_get_face ((PangoFont *)font);
+  index = FT_Get_Char_Index (face, wc);
+  return (index && index <= face->num_glyphs);
+}
+				   
+static guint
+pango_ft2_font_real_get_glyph (PangoFcFont *font,
+			       gunichar     wc)
+{
+  FT_Face face;
+  FT_UInt index;
+
+  face = pango_ft2_font_get_face ((PangoFont *)font);
+  index = FT_Get_Char_Index (face, wc);
+  if (index && index <= face->num_glyphs)
+    return index;
+
+  return 0;
+}
+
+static PangoGlyph
+pango_ft2_font_real_get_unknown_glyph (PangoFcFont *font,
+				       gunichar     wc)
+{
+  return 0;
+}
+
+static int
+pango_ft2_font_real_get_kerning (PangoFcFont *font,
+				 PangoGlyph   left,
+				 PangoGlyph   right)
+{
+  FT_Face face;
+  FT_Error error;
+  FT_Vector kerning;
+
+  face = pango_ft2_font_get_face ((PangoFont *)font);
+  if (!face)
+    return 0;
+
+  if (!FT_HAS_KERNING (face))
+    return 0;
+
+  if (!left || !right)
+    return 0;
+
+  error = FT_Get_Kerning (face, left, right,
+			  ft_kerning_default, &kerning);
+  if (error != FT_Err_Ok)
+    g_warning ("FT_Get_Kerning returns error: %s",
+	       _pango_ft2_ft_strerror (error));
+
+  return PANGO_UNITS_26_6 (kerning.x);
 }
 
 static gboolean
@@ -794,6 +871,8 @@ pango_ft2_font_find_shaper (PangoFont     *font,
  * @font: a #PangoFont
  * 
  * Return the index of a glyph suitable for drawing unknown characters.
+ * 
+ * Use pango_fc_font_get_unknown_glyph() instead.
  * 
  * Return value: a glyph index into @font
  **/

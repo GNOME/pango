@@ -25,8 +25,8 @@
 
 #include "indic-ot.h"
 
-#include "pangoxft.h"
 #include "pango-engine.h"
+#include "pango-ot.h"
 #include "pango-utils.h"
 
 typedef struct _PangoEngineShapeIndic PangoEngineShapeIndic;
@@ -46,7 +46,17 @@ struct _PangoIndicInfo
   gchar             *gposQuarkName;
 };
 
-#define INDIC_ENGINE_INFO(script) {#script "ScriptEngineXft", PANGO_ENGINE_TYPE_SHAPE, PANGO_RENDER_TYPE_XFT, script##_ranges, G_N_ELEMENTS(script##_ranges)}
+#ifdef BUILD_XFT
+#include "pangoxft.h"
+#define ENGINE_SUFFIX "ScriptEngineXft"
+#define RENDER_TYPE PANGO_RENDER_TYPE_XFT
+#else
+#include "pangoft2.h"
+#define ENGINE_SUFFIX "ScriptEngineFT2"
+#define RENDER_TYPE PANGO_RENDER_TYPE_FT2
+#endif
+
+#define INDIC_ENGINE_INFO(script) {#script ENGINE_SUFFIX, PANGO_ENGINE_TYPE_SHAPE, RENDER_TYPE, script##_ranges, G_N_ELEMENTS(script##_ranges)}
 
 #define PANGO_INDIC_INFO(script) {OT_TAG_##script, &script##_class_table, "pango-indic-" #script "-GSUB-ruleset", "pango-indic-" #script "-GPOS-rulsest"}
 
@@ -302,13 +312,15 @@ indic_engine_shape (PangoFont        *font,
   PangoOTRuleset *gsub_ruleset = NULL, *gpos_ruleset = NULL;
   PangoEngineShapeIndic *indic_shape_engine = NULL;
   PangoIndicInfo *indic_info = NULL;
+  PangoFcFont *fc_font;
 
   g_return_if_fail (font != NULL);
   g_return_if_fail (text != NULL);
   g_return_if_fail (length >= 0);
   g_return_if_fail (analysis != NULL);
 
-  face = pango_xft_font_lock_face (font);
+  fc_font = PANGO_FC_FONT (font);
+  face = pango_fc_font_lock_face (fc_font);
   g_assert (face != NULL);
 
   indic_shape_engine = (PangoEngineShapeIndic *) analysis->shape_engine;
@@ -366,7 +378,7 @@ indic_engine_shape (PangoFont        *font,
     }
 #endif
 
-  pango_xft_font_unlock_face (font);
+  pango_fc_font_unlock_face (fc_font);
 
   g_free (tags);
   g_free (indices);
@@ -383,7 +395,7 @@ indic_engine_get_coverage (PangoFont  *font,
 }
 
 static PangoEngine *
-indic_engine_xft_new (gint index)
+indic_engine_fc_new (gint index)
 {
   PangoEngineShapeIndic *result;
   
@@ -400,23 +412,11 @@ indic_engine_xft_new (gint index)
   return (PangoEngine *)result;
 }
 
-/* The following three functions provide the public module API for
- * Pango. If we are compiling it as a module, then we name the
- * entry points script_engine_list, etc. But if we are compiling
- * it for inclusion directly in Pango, then we need them to
- * to have distinct names for this module, so we prepend
- * _pango_indic_xft_
- */
-#ifdef XFT_MODULE_PREFIX
-#define MODULE_ENTRY(func) _pango_indic_xft_##func
-#else
-#define MODULE_ENTRY(func) func
-#endif
-
 /* List the engines contained within this module
  */
 void 
-MODULE_ENTRY(script_engine_list) (PangoEngineInfo **engines, gint *n_engines)
+PANGO_MODULE_ENTRY(list) (PangoEngineInfo **engines,
+			  int              *n_engines)
 {
   *engines = script_engines;
   *n_engines = G_N_ELEMENTS (script_engines);
@@ -425,7 +425,7 @@ MODULE_ENTRY(script_engine_list) (PangoEngineInfo **engines, gint *n_engines)
 /* Load a particular engine given the ID for the engine
  */
 PangoEngine *
-MODULE_ENTRY(script_engine_load) (const char *id)
+PANGO_MODULE_ENTRY(load) (const char *id)
 {
   gint i;
 
@@ -433,7 +433,7 @@ MODULE_ENTRY(script_engine_load) (const char *id)
     {
       if (!strcmp(id, script_engines[i].id))
 	{
-	  return indic_engine_xft_new(i);
+	  return indic_engine_fc_new(i);
 	}
     }
 
@@ -441,6 +441,6 @@ MODULE_ENTRY(script_engine_load) (const char *id)
 }
 
 void 
-MODULE_ENTRY(script_engine_unload) (PangoEngine *engine)
+PANGO_MODULE_ENTRY(unload) (PangoEngine *engine)
 {
 }

@@ -1,5 +1,5 @@
 /* Pango
- * basic-xft.h:
+ * basic-fc.c: Basic shaper for FreeType-based backends
  *
  * Copyright (C) 2000 Red Hat Software
  * Author: Owen Taylor <otaylor@redhat.com>
@@ -23,39 +23,65 @@
 #include <string.h>
 
 #include <glib/gprintf.h>
-#include "pangoxft.h"
 #include "pango-engine.h"
 #include "pango-utils.h"
 
 #include "basic-common.h"
 
+#ifdef BUILD_XFT
+#include "pangoxft.h"
+#define SCRIPT_ENGINE_NAME "BasicScriptEngineXft"
+#define RENDER_TYPE PANGO_RENDER_TYPE_XFT
+#else /* FT2 */
+#include "pangoft2.h"
+#define SCRIPT_ENGINE_NAME "BasicScriptEngineFt2"
+#define RENDER_TYPE PANGO_RENDER_TYPE_FT2
+#endif
+
 static PangoEngineRange basic_ranges[] = {
-  /* Language characters */
-  { 0x0380, 0x058f, "*" },
+  /* Basic Latin, Latin-1 Supplement, Latin Extended-A, Latin Extended-B,
+   * IPA Extensions
+   */
+  { 0x0000, 0x02af, "*" }, 
+  { 0x0380, 0x058f, "*" }, /* Greek, Cyrillic, Armenian */
   { 0x10a0, 0x10ff, "*" }, /* Georgian */
   { 0x1200, 0x16ff, "*" }, /* Ethiopic,Cherokee,Canadian,Ogham,Runic */
-  { 0x1e00, 0x1fff, "*" },
-  { 0x2000, 0x302d, "*" },
+  { 0x1e00, 0x1fff, "*" }, /* Latin Extended Additional, Greek Extended */
+  
+  /* General Punctuation, Superscripts and Subscripts, Currency Symbols,
+   * Combining Marks for Symbols, Letterlike Symbols, Number Forms,
+   * Arrows, Mathematical Operators, Miscellaneous Technical,
+   * Control Pictures, Optical Character Recognition, Enclosed Alphanumerics,
+   * Box Drawing, Block Elements, Geometric Shapes, Miscellaneous Symbols,
+   * Dingbats, Braille Patterns, CJK Radicals Supplement, Kangxi Radicals,
+   * Ideographic Description Characters, CJK Symbols and Punctuation,
+   * Hiragana, Katakana, Bopomofo, Hangul Compatibility Jamo, Kanbun,
+   * Bopomofo Extended, Enclosed CJK Letters and Months, CJK Compatibility,
+   * CJK Unified Ideographs Extension A, CJK Unified Ideographs
+   */
+  { 0x2000, 0x3029, "*" },	/* Gap for Hangul diacritics */
   { 0x3030, 0x9fff, "*" },
   { 0xa000, 0xa4c6, "*" }, /* Yi */
   { 0xe000, 0xf7ee, "*" }, /* HKSCS-1999 */
   { 0xf900, 0xfa2d, "*" }, /* CJK Compatibility Ideographs */
   { 0xfe30, 0xfe6b, "*" }, /* CJK Compatibility Forms and Small Form Variants */
-  { 0xff00, 0xffe3, "*" },
+  { 0xff00, 0xffe3, "*" }, /* Halfwidth and Fullwidth Forms (partly) */
   { 0x0000, 0xffff, "" },
 };
 
 static PangoEngineInfo script_engines[] = {
   {
-    "BasicScriptEngineXft",
+    SCRIPT_ENGINE_NAME,
     PANGO_ENGINE_TYPE_SHAPE,
-    PANGO_RENDER_TYPE_XFT,
+    RENDER_TYPE,
     basic_ranges, G_N_ELEMENTS(basic_ranges)
   }
 };
 
 static void
-swap_range (PangoGlyphString *glyphs, int start, int end)
+swap_range (PangoGlyphString *glyphs,
+	    int               start,
+	    int               end)
 {
   int i, j;
   
@@ -75,7 +101,11 @@ swap_range (PangoGlyphString *glyphs, int start, int end)
 }
 
 static void
-set_glyph (PangoFont *font, PangoGlyphString *glyphs, int i, int offset, PangoGlyph glyph)
+set_glyph (PangoFont        *font,
+	   PangoGlyphString *glyphs,
+	   int               i,
+	   int               offset,
+	   PangoGlyph        glyph)
 {
   PangoRectangle logical_rect;
 
@@ -88,6 +118,12 @@ set_glyph (PangoFont *font, PangoGlyphString *glyphs, int i, int offset, PangoGl
 
   pango_font_get_glyph_extents (font, glyphs->glyphs[i].glyph, NULL, &logical_rect);
   glyphs->glyphs[i].geometry.width = logical_rect.width;
+
+  if (i > 0) 
+    glyphs->glyphs[i-1].geometry.width +=
+      pango_fc_font_get_kerning ((PangoFcFont *)font,
+				 glyphs->glyphs[i-1].glyph,
+				 glyphs->glyphs[i].glyph);
 }
 
 static void 
@@ -97,6 +133,7 @@ basic_engine_shape (PangoFont        *font,
 		    PangoAnalysis    *analysis,
 		    PangoGlyphString *glyphs)
 {
+  PangoFcFont *fc_font = PANGO_FC_FONT (font);
   int n_chars;
   int i;
   const char *p;
@@ -109,8 +146,10 @@ basic_engine_shape (PangoFont        *font,
   n_chars = g_utf8_strlen (text, length);
   pango_glyph_string_set_size (glyphs, n_chars);
 
+  pango_fc_font_lock_face (fc_font);
+
   p = text;
-  for (i=0; i < n_chars; i++)
+  for (i = 0; i < n_chars; i++)
     {
       gunichar wc;
       gunichar mirrored_ch;
@@ -131,29 +170,12 @@ basic_engine_shape (PangoFont        *font,
 	}
       else
 	{
-	  index = pango_xft_font_get_glyph (font, wc);
+	  index = pango_fc_font_get_glyph (fc_font, wc);
 
 	  if (!index)
 	    {
 	      set_glyph (font, glyphs, i, p - text,
-			 pango_xft_font_get_unknown_glyph (font, wc));
-
-#if 0	      
-	      gint j;
-	      char buf[9];
-	      int len = (wc < 65536) ? 6 : 8;
-
-	      g_sprintf (buf, "[%0*X]", len - 2, wc);
-
-	      n_chars += len - 1;
-	      pango_glyph_string_set_size (glyphs, n_chars);
-	      for (j=0; j < len; j++)
-		{
-		  set_glyph (font, glyphs, i + j,
-			     p - text, find_char (face, font, buf[j]));
-		}
-	      i += len - 1;
-#endif
+			 pango_fc_font_get_unknown_glyph (fc_font, wc));
 	    }
 	  else
 	    {
@@ -184,8 +206,9 @@ basic_engine_shape (PangoFont        *font,
       p = g_utf8_next_char (p);
     }
 
-  /* Simple bidi support... may have separate modules later */
-
+  /* Simple bidi support; most bidi languages (Arabic, Hebrew, Syriac)
+   * are in fact handled in other modules.
+   */
   if (analysis->level % 2)
     {
       int start, end;
@@ -194,7 +217,7 @@ basic_engine_shape (PangoFont        *font,
       swap_range (glyphs, 0, n_chars);
       
       /* Now reorder glyphs within each cluster back to LTR */
-      for (start=0; start<n_chars;)
+      for (start = 0; start < n_chars;)
 	{
 	  end = start;
 	  while (end < n_chars &&
@@ -205,6 +228,8 @@ basic_engine_shape (PangoFont        *font,
 	  start = end;
 	}
     }
+  
+  pango_fc_font_unlock_face (fc_font);
 }
 
 static PangoCoverage *
@@ -215,13 +240,13 @@ basic_engine_get_coverage (PangoFont  *font,
 }
 
 static PangoEngine *
-basic_engine_xft_new ()
+basic_engine_fc_new ()
 {
   PangoEngineShape *result;
   
   result = g_new (PangoEngineShape, 1);
 
-  result->engine.id = PANGO_RENDER_TYPE_XFT;
+  result->engine.id = SCRIPT_ENGINE_NAME;
   result->engine.type = PANGO_ENGINE_TYPE_SHAPE;
   result->engine.length = sizeof (result);
   result->script_shape = basic_engine_shape;
@@ -230,23 +255,11 @@ basic_engine_xft_new ()
   return (PangoEngine *)result;
 }
 
-/* The following three functions provide the public module API for
- * Pango. If we are compiling it is a module, then we name the
- * entry points script_engine_list, etc. But if we are compiling
- * it for inclusion directly in Pango, then we need them to
- * to have distinct names for this module, so we prepend
- * _pango_basic_xft_
- */
-#ifdef XFT_MODULE_PREFIX
-#define MODULE_ENTRY(func) _pango_basic_xft_##func
-#else
-#define MODULE_ENTRY(func) func
-#endif
-
 /* List the engines contained within this module
  */
 void 
-MODULE_ENTRY(script_engine_list) (PangoEngineInfo **engines, gint *n_engines)
+PANGO_MODULE_ENTRY(list) (PangoEngineInfo **engines,
+			  int              *n_engines)
 {
   *engines = script_engines;
   *n_engines = G_N_ELEMENTS (script_engines);
@@ -255,15 +268,15 @@ MODULE_ENTRY(script_engine_list) (PangoEngineInfo **engines, gint *n_engines)
 /* Load a particular engine given the ID for the engine
  */
 PangoEngine *
-MODULE_ENTRY(script_engine_load) (const char *id)
+PANGO_MODULE_ENTRY(load) (const char *id)
 {
-  if (!strcmp (id, "BasicScriptEngineXft"))
-    return basic_engine_xft_new ();
+  if (!strcmp (id, SCRIPT_ENGINE_NAME))
+    return basic_engine_fc_new ();
   else
     return NULL;
 }
 
 void 
-MODULE_ENTRY(script_engine_unload) (PangoEngine *engine)
+PANGO_MODULE_ENTRY(unload) (PangoEngine *engine)
 {
 }

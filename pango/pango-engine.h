@@ -94,6 +94,24 @@ void         script_engine_list   (PangoEngineInfo **engines,
 PangoEngine *script_engine_load   (const char       *id);
 void         script_engine_unload (PangoEngine      *engine);
 
+/* Macro used for possibly builtin Pango modules. Not useful
+ * for externally build modules. If we are compiling a module standaline,
+ * then we name the entry points script_engine_list, etc. But if we
+ * are compiling it for inclusion directly in Pango, then we need them to
+ * to have distinct names for this module, so we prepend a prefix.
+ *
+ * The two intermediate macros are to deal with details of the C
+ * preprocessor; token pasting tokens must be function arguments,
+ * and macro substitution isn't used on function arguments that
+ * are used for token pasting.
+ */
+#ifdef PANGO_MODULE_PREFIX
+#define PANGO_MODULE_ENTRY(func) _PANGO_MODULE_ENTRY2(PANGO_MODULE_PREFIX,func)
+#define _PANGO_MODULE_ENTRY2(prefix,func) _PANGO_MODULE_ENTRY3(prefix,func)
+#define _PANGO_MODULE_ENTRY3(prefix,func) prefix##_script_engine_##func
+#else
+#define PANGO_MODULE_ENTRY(func) script_engine_##func
+#endif
 
 #endif /* PANGO_ENABLE_ENGINE */
 

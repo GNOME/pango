@@ -582,7 +582,7 @@ get_glyphs_list (ThaiFontInfo	*font_info,
         if (cluster[2])
 	    xtis_index += group2_map[cluster[2] - 0xe30];
         glyph = thai_make_glyph (font_info, xtis_index);
-        if (pango_x_has_glyph (font_info->font, glyph)) {
+        if (thai_has_glyph (font_info, glyph)) {
             glyph_lists[0] = glyph;
             return 1;
         }

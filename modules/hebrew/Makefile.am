@@ -23,7 +23,6 @@ if HAVE_X
 INCLUDES += $(X_CFLAGS)
 if INCLUDE_HEBREW_X
 noinst_LTLIBRARIES += libpango-hebrew-x.la
-INCLUDES += -DX_MODULE_PREFIX
 else
 module_LTLIBRARIES += pango-hebrew-x.la
 endif
@@ -35,31 +34,32 @@ pango_hebrew_x_la_LDFLAGS = -export-dynamic -avoid-version -module
 pango_hebrew_x_la_LIBADD = $(pangoxlibs)
 pango_hebrew_x_la_SOURCES = $(hebrew_x_sources)
 libpango_hebrew_x_la_SOURCES = $(hebrew_x_sources)
+libpango_hebrew_x_la_CFLAGS = -DPANGO_MODULE_PREFIX=_pango_hebrew_x
 
 
 if HAVE_XFT
 INCLUDES += $(XFT_CFLAGS)
 if INCLUDE_HEBREW_XFT
 noinst_LTLIBRARIES += libpango-hebrew-xft.la
-INCLUDES += -DXFT_MODULE_PREFIX
 else
 module_LTLIBRARIES += pango-hebrew-xft.la
 endif
 endif
 
-hebrew_xft_sources = $(common_sources) hebrew-xft.c 
+hebrew_xft_sources = $(common_sources) hebrew-fc.c 
 
 pango_hebrew_xft_la_LDFLAGS = -export-dynamic -avoid-version -module
 pango_hebrew_xft_la_LIBADD = $(pangoxftlibs)
 pango_hebrew_xft_la_SOURCES = $(hebrew_xft_sources)
+pango_hebrew_xft_la_CFLAGS = -DBUILD_XFT
 libpango_hebrew_xft_la_SOURCES = $(hebrew_xft_sources)
+libpango_hebrew_xft_la_CFLAGS = -DBUILD_XFT -DPANGO_MODULE_PREFIX=_pango_hebrew_xft
 
 
 if HAVE_FREETYPE
 INCLUDES += $(FREETYPE_CFLAGS)
 if INCLUDE_HEBREW_FT2
 noinst_LTLIBRARIES += libpango-hebrew-ft2.la
-INCLUDES += -DFT2_MODULE_PREFIX
 else
 module_LTLIBRARIES += pango-hebrew-ft2.la
 endif
@@ -69,12 +69,14 @@ if PLATFORM_WIN32
 no_undefined = -no-undefined
 endif
 
-hebrew_ft2_sources = $(common_sources) hebrew-ft2.c 
+hebrew_ft2_sources = $(common_sources) hebrew-fc.c 
 
 pango_hebrew_ft2_la_LDFLAGS = -export-dynamic -avoid-version -module $(no_undefined)
 pango_hebrew_ft2_la_LIBADD = $(pangoft2libs)
 pango_hebrew_ft2_la_SOURCES = $(hebrew_ft2_sources)
+pango_hebrew_ft2_la_CFLAGS = -DBUILD_FT2
 libpango_hebrew_ft2_la_SOURCES = $(hebrew_ft2_sources)
+libpango_hebrew_ft2_la_CFLAGS = -DBUILD_FT2 -DPANGO_MODULE_PREFIX=_pango_hebrew_ft2
 
 
 included-modules: $(noinst_LTLIBRARIES)

@@ -285,21 +285,16 @@ pango_indic_engine_x_new ()
   return (PangoEngine *) result;
 }
 
-#ifdef BENGALI_X_MODULE_PREFIX
-#define MODULE_ENTRY(func) _pango_bengali_x_##func
-#else
-#define MODULE_ENTRY(func) func
-#endif
-
 void
-MODULE_ENTRY(script_engine_list) (PangoEngineInfo ** engines, int *n_engines)
+PANGO_MODULE_ENTRY(list) (PangoEngineInfo **engines,
+			  int              *n_engines)
 {
   *engines = script_engines;
   *n_engines = n_script_engines;
 }
 
 PangoEngine *
-MODULE_ENTRY(script_engine_load) (const char *id)
+PANGO_MODULE_ENTRY(load) (const char *id)
 {
   if (!strcmp (id, SCRIPT_ENGINE_NAME))
     return pango_indic_engine_x_new ();
@@ -308,7 +303,7 @@ MODULE_ENTRY(script_engine_load) (const char *id)
 }
 
 void
-MODULE_ENTRY(script_engine_unload) (PangoEngine * engine)
+PANGO_MODULE_ENTRY(unload) (PangoEngine *engine)
 {
 }
 

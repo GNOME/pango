@@ -31,7 +31,7 @@ typedef struct _PangoXftFont PangoXftFont;
 
 struct _PangoXftFont
 {
-  PangoFont parent_instance;
+  PangoFcFont parent_instance;
 
   FcPattern *font_pattern;	    /* fully resolved pattern */
   XftFont *xft_font;		    /* created on demand */

@@ -23,11 +23,10 @@
 #ifndef __PANGOFT2_H__
 #define __PANGOFT2_H__
 
-#include <freetype/freetype.h>
-
 #include <fontconfig/fontconfig.h>
 
 #include <pango/pango-layout.h>
+#include <pango/pangofc-font.h>
 
 G_BEGIN_DECLS
 
@@ -79,6 +78,7 @@ PangoContext *pango_ft2_font_map_create_context         (PangoFT2FontMap        
 
 /* API for rendering modules
  */
+#ifndef PANGO_DISABLE_DEPRECATED
 PangoGlyph     pango_ft2_get_unknown_glyph (PangoFont       *font);
 int            pango_ft2_font_get_kerning  (PangoFont       *font,
 					    PangoGlyph       left,
@@ -86,6 +86,7 @@ int            pango_ft2_font_get_kerning  (PangoFont       *font,
 FT_Face        pango_ft2_font_get_face     (PangoFont       *font);
 PangoCoverage *pango_ft2_font_get_coverage (PangoFont       *font,
 					    PangoLanguage   *language);
+#endif /* PANGO_DISABLE_DEPRECATED */
 
 G_END_DECLS
 
