@@ -1,5 +1,9 @@
 Fri Jul 26 18:11:56 2002  Owen Taylor  <otaylor@redhat.com>
 
+	* Add back non-spurious \$ removed in last commit.
+
+Fri Jul 26 18:11:56 2002  Owen Taylor  <otaylor@redhat.com>
+
 	* Fix a leftover spurious \$ from the last commit.
 
 Fri Jul 26 17:59:06 2002  Owen Taylor  <otaylor@redhat.com>
