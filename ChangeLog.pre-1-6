@@ -1,3 +1,13 @@
+Mon Aug 25 11:00:46 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* === Released 1.2.4 ===
+
+	* configure.in: Version 1.2.4, interface age 4.
+
+	* configure.in: chmod +x tests/runtests.sh.
+
+	* NEWS: Updated.
+
 Mon Aug 25 10:17:21 2003  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/opentype/ftxgsub.c (Lookup_ChainContextSubst3)

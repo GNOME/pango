@@ -171,7 +171,7 @@ by the structure which simplifies memory management.
 </para>
 
 @num_glyphs: the number of glyphs in the string.
-@glyphs: an array of #PangoGlyphInfo structures of length <structfield>num_glyphs</structfield>. 
+@glyphs: an array of #PangoGlyphInfo structures of length <structfield>num_glyphs</structfield>.
 @log_clusters: for each glyph, byte index of the starting character for the
 cluster. The indices are relative to the start of the text
 corresponding to the PangoGlyphString.
