@@ -31,8 +31,8 @@
 #define PANGO_TYPE_X_FONT_MAP              (pango_x_font_map_get_type ())
 #define PANGO_X_FONT_MAP(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_TYPE_X_FONT_MAP, PangoXFontMap))
 #define PANGO_X_FONT_MAP_CLASS(klass)      (G_TYPE_CHECK_CLASS_CAST ((klass), PANGO_TYPE_X_FONT_MAP, PangoXFontMapClass))
-#define PANGO_IS_X_FONT_MAP(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), PANGO_TYPE_X_FONT_MAP))
-#define PANGO_IS_X_FONT_MAP_CLASS(klass)   (G_TYPE_CHECK_CLASS_TYPE ((klass), PANGO_TYPE_X_FONT_MAP))
+#define PANGO_X_IS_FONT_MAP(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), PANGO_TYPE_X_FONT_MAP))
+#define PANGO_X_IS_FONT_MAP_CLASS(klass)   (G_TYPE_CHECK_CLASS_TYPE ((klass), PANGO_TYPE_X_FONT_MAP))
 #define PANGO_X_FONT_MAP_GET_CLASS(obj)    (G_TYPE_INSTANCE_GET_CLASS ((obj), PANGO_TYPE_X_FONT_MAP, PangoXFontMapClass))
 
 typedef struct _PangoXFamilyEntry  PangoXFamilyEntry;
@@ -1396,7 +1396,7 @@ PangoXFontCache *
 pango_x_font_map_get_font_cache (PangoFontMap *font_map)
 {
   g_return_val_if_fail (font_map != NULL, NULL);
-  g_return_val_if_fail (PANGO_IS_X_FONT_MAP (font_map), NULL);
+  g_return_val_if_fail (PANGO_X_IS_FONT_MAP (font_map), NULL);
 
   return PANGO_X_FONT_MAP (font_map)->font_cache;
 }

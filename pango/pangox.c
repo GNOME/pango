@@ -35,8 +35,8 @@
 #define PANGO_TYPE_X_FONT              (pango_x_font_get_type ())
 #define PANGO_X_FONT(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_TYPE_X_FONT, PangoXFont))
 #define PANGO_X_FONT_CLASS(klass)      (G_TYPE_CHECK_CLASS_CAST ((klass), PANGO_TYPE_X_FONT, PangoXFontClass))
-#define PANGO_IS_X_FONT(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), PANGO_TYPE_X_FONT))
-#define PANGO_IS_X_FONT_CLASS(klass)   (G_TYPE_CHECK_CLASS_TYPE ((klass), PANGO_TYPE_X_FONT))
+#define PANGO_X_IS_FONT(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), PANGO_TYPE_X_FONT))
+#define PANGO_X_IS_FONT_CLASS(klass)   (G_TYPE_CHECK_CLASS_TYPE ((klass), PANGO_TYPE_X_FONT))
 #define PANGO_X_FONT_GET_CLASS(obj)    (G_TYPE_INSTANCE_GET_CLASS ((obj), PANGO_TYPE_X_FONT, PangoXFontClass))
 
 typedef struct _PangoXFontClass   PangoXFontClass;
@@ -838,6 +838,16 @@ pango_x_list_subfonts (PangoFont        *font,
   return n_subfonts;
 }
 
+/**
+ * pango_x_has_glyph:
+ * @font: a #PangoFont which must be from the X backend.
+ * @glyph: the index of a glyph in the font. (Formed
+ *         using the PANGO_X_MAKE_GLYPH macro)
+ * 
+ * Check if the given glyph is present in a X font.
+ * 
+ * Return value: %TRUE if the glyph is present.
+ **/
 gboolean
 pango_x_has_glyph (PangoFont  *font,
 		   PangoGlyph  glyph)
@@ -858,6 +868,36 @@ pango_x_has_glyph (PangoFont  *font,
     return TRUE;
   else
     return FALSE;
+}
+
+/**
+ * pango_x_font_subfont_xlfd:
+ * @font: a #PangoFont which must be from the X backend
+ * @subfont_id: the id of a subfont within the font.
+ * 
+ * Determine the X Logical Font Description for the specified
+ * subfont.
+ * 
+ * Return value: A newly allocated string containing the XLFD for the
+ * subfont. This string must be freed with g_free().
+ **/
+char *
+pango_x_font_subfont_xlfd (PangoFont     *font,
+			   PangoXSubfont  subfont_id)
+{
+  PangoXSubfontInfo *subfont;
+
+  g_return_val_if_fail (font != NULL, NULL);
+  g_return_val_if_fail (PANGO_X_IS_FONT (font), NULL);
+
+  subfont = pango_x_find_subfont (font, subfont_id);
+  if (!subfont)
+    {
+      g_warning ("pango_x_font_subfont_xlfd: Invalid subfont_id specified");
+      return NULL;
+    }
+
+  return g_strdup (subfont->xlfd);
 }
 
 static void
@@ -1294,4 +1334,3 @@ pango_x_get_item_properties (PangoItem      *item,
       tmp_list = tmp_list->next;
     }
 }
-

@@ -1,3 +1,8 @@
+Mon May 29 13:22:36 2000  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pangox.c pango/pangox.h (pango_x_font_subfont_xlfd): New
+	function to retrieve the XLFD for a given subfont.
+
 Mon May 29 11:14:34 2000  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pangox-fontcache.c (pango_x_font_cache_load): Fix bug
@@ -8,7 +13,7 @@ Mon May 29 11:14:34 2000  Owen Taylor  <otaylor@redhat.com>
 	whitespace follows that must go onto the same line.
 
 	* examples/viewer-qt.h: Minor changes so it compiles with
-	qt-2.0. (Though the utf8 codec in qt-2.0 seems to be slightly
+	Qt-2.0. (Though the utf8 codec in Qt-2.0 seems to be slightly
 	buggy.)
 	
 Sun May 28 16:24:43 2000  Owen Taylor  <otaylor@redhat.com>

@@ -98,6 +98,9 @@ void          pango_x_font_cache_unload    (PangoXFontCache *cache,
 PangoFontMap *   pango_x_font_map_for_display    (Display      *display);
 PangoXFontCache *pango_x_font_map_get_font_cache (PangoFontMap *font_map);
 
+char *pango_x_font_subfont_xlfd (PangoFont     *font,
+				 PangoXSubfont  subfont_id);
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
