@@ -381,9 +381,12 @@ xft_font_get_font (PangoFont *font)
 
   if (xfont->xft_font == NULL)
     {
+      FcPattern *pattern = FcPatternDuplicate (fcfont->font_pattern);
+      FcPatternDel (pattern, FC_SPACING);
+
       _pango_xft_font_map_get_info (fcfont->fontmap, &display, &screen);
 
-      xfont->xft_font = XftFontOpenPattern (display, FcPatternDuplicate (fcfont->font_pattern));
+      font->xft_font = XftFontOpenPattern (display, pattern);
       if (!xfont->xft_font)
 	{
 	  gchar *name = pango_font_description_to_string (fcfont->description);

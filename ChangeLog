@@ -1,5 +1,12 @@
 2005-03-01  Owen Taylor  <otaylor@redhat.com>
 
+	* pango/pangoxft-font.c (xft_font_get_font): Delete
+	FC_SPACING value out of pattern before passing it
+	to Xft, to prevent Xft clipping characters and
+	trashing metrics. (#164879, Billy Biggs)
+
+2005-03-01  Owen Taylor  <otaylor@redhat.com>
+
 	Build fixes from Andrew P. Lentvorski, Jr, #164655
 
 	* pango/pangoft2-render.c: Duplicate the 
