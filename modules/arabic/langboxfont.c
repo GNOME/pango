@@ -15,35 +15,33 @@
 #ifdef DEBUG
 #include <stdio.h>
 #endif
+#include "langboxfont.h"
 
 
-int
-arabic_lboxinit(PangoFont  *font,PangoXSubfont* lboxfonts)
+ArabicFontInfo* 
+arabic_lboxinit(PangoFont  *font)
 { 
     static char *lbox_charsets0[] = {
         "iso8859-6.8x",
     };
-
-    PangoXSubfont *subfonts;
-    int           *subfont_charsets;
-    int            n_subfonts;
+    
+    ArabicFontInfo    *fs = NULL;
+    PangoXSubfont     *subfonts;
+    int               *subfont_charsets;
+    int                n_subfonts;
 
     n_subfonts = pango_x_list_subfonts (font,lbox_charsets0, 
                                         1, &subfonts, &subfont_charsets);
     if (n_subfonts > 0)
         {
-            lboxfonts[0] = subfonts[0];
-            g_free (subfonts);
-            g_free (subfont_charsets);
-        }
-    else
-        {
-            g_free (subfonts);
-            g_free (subfont_charsets);
-            return 0;
+            fs              = g_new (ArabicFontInfo,1);
+            fs->level       = ar_standard | ar_composedtashkeel | ar_lboxfont;
+            fs->subfonts[0] = subfonts[0];
         }
 
-    return 1;
+    g_free (subfonts);
+    g_free (subfont_charsets);
+    return fs;
 }
 
 
@@ -187,26 +185,14 @@ arabic_lbox_recode(PangoXSubfont* subfont,int* glyph,int* glyph2,
         }
     else if ((letter >= 0xFE80)&&(letter <= 0xFEF4))
         { 
-#ifdef DEBUG
-            if (charmap[letter-0xFE80].unicodechar != letter)
-                {
-                    fprintf(stderr,"[ar] lboxfont charmap table defect "
-                            "%x comes out as %x ",
-                            letter,charmap[letter-0xFE80].unicodechar);
-                }
-#endif
             *glyph   = charmap[letter-0xFE80].charindex;
         }
     else if ((letter >= 0x64B)&&(letter <= 0x652))
         { /* a vowel */
             *glyph   = letter - 0x64B + 0xA8;
         }
-    else if ((letter >= 0xFEF5)&&(letter <= 0xFEFC))
+    else if ((letter >= 0xFEF5)&&(letter <= 0xFEFC)&&(glyph2)&&(*glyph2==0))
         { /* Lam-Alif. Langbox solved the problem in their own way ... */
-#ifdef DEBUG
-            fprintf(stderr,"[ar] lbox-recoding chars %x",
-                    letter);
-#endif
             if (!(letter % 2))
                 {
                     *glyph = 0xA6;
@@ -233,7 +219,7 @@ arabic_lbox_recode(PangoXSubfont* subfont,int* glyph,int* glyph2,
         }
     else switch(letter)
         { 
-            /* extra vowels */
+	    /* extra vowels */
         case 0xFC5E: *glyph  = 0x82; break;
         case 0xFC5F: *glyph  = 0x83; break;
         case 0xFC60: *glyph  = 0x84; break;
@@ -244,6 +230,18 @@ arabic_lbox_recode(PangoXSubfont* subfont,int* glyph,int* glyph2,
         case 0x621: *glyph   = charmap[0].charindex; break; /* hamza */
         case 0x640: *glyph   = 0xE0; break; /* tatweel */
         case 0x61F: *glyph   = 0xBF; break; /* question mark */
+	  
+	    /* farsi ye */
+	case 0xFBFC: *glyph = 0x8D; break;
+	case 0xFBFD: *glyph = 0xE9; break; 
+	case 0xFBFE: *glyph = 0xFE; break;
+	case 0xFBFF: *glyph = 0xFE; break;
+	    /* Gaf -- the font does not have it, but this is better than nothing */
+	case 0xFB92: *glyph = 0xE3; break;
+	case 0xFB93: *glyph = 0xE3; break;
+	case 0xFB94: *glyph = 0xF9; break;
+	case 0xFB95: *glyph = 0x9B; break;
+
         default:
             *glyph   = 0x20; /* we don't have this thing -- use a space */
             /* This has to be something that does not print anything !! */

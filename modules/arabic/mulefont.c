@@ -11,15 +11,15 @@
 #include "pango.h"
 #include "pangox.h"
 
+
 /*  #define DEBUG   */
 #ifdef DEBUG
 #include <stdio.h>
 #endif
+#include "mulefont.h"
 
-
-
-int
-arabic_muleinit(PangoFont  *font,PangoXSubfont* mulefonts)
+ArabicFontInfo*
+arabic_muleinit(PangoFont  *font)
 { 
     static char *mule_charsets0[] = {
         "mulearabic-0",
@@ -32,14 +32,19 @@ arabic_muleinit(PangoFont  *font,PangoXSubfont* mulefonts)
     static char *mule_charsets2[] = {
         "mulearabic-2",
     };
-    PangoXSubfont *subfonts;
-    int           *subfont_charsets;
-    int            n_subfonts;
+
+    ArabicFontInfo *fs = NULL;
+    PangoXSubfont  *subfonts;
+    int            *subfont_charsets;
+    int             n_subfonts;
+    PangoXSubfont   mulefonts[3];
 
     n_subfonts = pango_x_list_subfonts (font,mule_charsets0, 
                                         1, &subfonts, &subfont_charsets);
     if (n_subfonts > 0)
-        mulefonts[0] = subfonts[0];
+        {
+            mulefonts[0] = subfonts[0];
+        }
     g_free (subfonts);
     g_free (subfont_charsets);
 
@@ -48,32 +53,28 @@ arabic_muleinit(PangoFont  *font,PangoXSubfont* mulefonts)
     if (n_subfonts > 0)
         {
             mulefonts[1] = subfonts[0];
-            g_free (subfonts);
-            g_free (subfont_charsets);
         }
-    else
-        {
-            g_free (subfonts);
-            g_free (subfont_charsets);
-            return 0;
-        }
+    g_free (subfonts);
+    g_free (subfont_charsets);
 
     n_subfonts = pango_x_list_subfonts (font,mule_charsets2, 
                                         1, &subfonts, &subfont_charsets);
     if (n_subfonts > 0)
         {
             mulefonts[2] = subfonts[0];
-            g_free (subfonts);
-            g_free (subfont_charsets);
         }
-    else
-        {
-            g_free (subfonts);
-            g_free (subfont_charsets);
-            return 0;
-        }
+    g_free (subfonts);
+    g_free (subfont_charsets);
 
-    return 1;
+    if (( mulefonts[0] != 0)&&(mulefonts[1] != 0)&&(mulefonts[2] != 0))
+        {
+            fs              = g_new (ArabicFontInfo,1);
+            fs->level       = ar_novowel | ar_mulefont;
+            fs->subfonts[0] = mulefonts[0];
+            fs->subfonts[1] = mulefonts[1];
+            fs->subfonts[2] = mulefonts[2];
+        }
+    return fs;
 }
 
 
@@ -274,8 +275,14 @@ arabic_mule_recode(PangoXSubfont* subfont,int* glyph,PangoXSubfont* mulefonts)
 	    case 0xFB58: *subfont = mulefonts[1]; *glyph = 0x66; break;
 	    case 0xFB59: *subfont = mulefonts[1]; *glyph = 0x67; break;
 		/* farsi Jeh */
+	    case 0xFBFC: *subfont = mulefonts[2]; *glyph = 0x5D; break;
+            case 0xFBFD: *subfont = mulefonts[2]; *glyph = 0x5E; break; 
+	    case 0xFBFE: *subfont = mulefonts[1]; *glyph = 0x60; break;
+	    case 0xFBFF: *subfont = mulefonts[1]; *glyph = 0x61; break;
+	      /* extra */
 	    case 0xFB8A: *subfont = mulefonts[1]; *glyph = 0x68; break;
 	    case 0xFB8B: *subfont = mulefonts[1]; *glyph = 0x69; break;
+
 	    default:
 		*subfont = mulefonts[1];
 		*glyph   = 0x26; /* we don't have this thing -- use a dot */

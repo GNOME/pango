@@ -8,15 +8,16 @@
 #define __mulefont_h_
 #include "pango.h"
 #include "pangox.h"
+#include "arconv.h"
 
-/* mulefonts must be an array with at least three entries */
-
-int
-arabic_muleinit(PangoFont  *font,PangoXSubfont* mulefonts);
-/* a return value of 0 means this has failed */
+/* 
+ *  create an arabic_fontstruct for the mulefont-module
+ *  returns: NULL on failure
+ */
+ArabicFontInfo*
+arabic_muleinit(PangoFont  *font);
 
 void 
 arabic_mule_recode(PangoXSubfont* subfont,int* glyph,PangoXSubfont* mulefonts);
-
 
 #endif

@@ -1,3 +1,7 @@
+Thu Nov  2 16:21:22 2000  Owen Taylor  <otaylor@redhat.com>
+
+	* New Arabic shaper from Karl Koehler.
+
 2000-11-01  Havoc Pennington  <hp@redhat.com>
 
 	* pango/pango-markup.c (pango_parse_markup): Return the accel
