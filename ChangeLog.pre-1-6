@@ -1,3 +1,14 @@
+Wed Jun 23 16:13:53 2004  Owen Taylor  <otaylor@redhat.com>
+
+	#143693, Sayamindu Dasgupta
+
+	* pango/opentype/pango-ot-buffer.c (pango_ot_buffer_set_zero_width_marks) pango/opentype/pango-ot-private.h:
+	Allow setting for whether marks should be given zero width,
+	defaulting to FALSE.
+
+	* modules/arabic/arabic-fc.c (arabic_engine_shape): Turn
+	on zero-width-marks setting.
+
 Wed Jun 23 11:17:51 2004  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pango-attributes.[ch]: Add new letter_spacing
