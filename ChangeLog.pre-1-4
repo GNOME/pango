@@ -1,3 +1,8 @@
+Wed Apr 30 16:46:52 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/fonts.c (pango_font_description_hash): Hash
+	case insensitively (#106942, Morten Welinder)
+
 Tue Apr 29 18:02:31 2003  Owen Taylor  <otaylor@redhat.com>
 
 	* configure.in: Add the fonconfig cflags/libs to 
