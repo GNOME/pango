@@ -47,6 +47,7 @@ The #PangoLayout structure is opaque, and has no user-visible
 fields.
 </para>
 
+
 <!-- ##### FUNCTION pango_layout_new ##### -->
 <para>
 
@@ -65,6 +66,23 @@ fields.
 
 
 <!-- ##### FUNCTION pango_layout_unref ##### -->
+<para>
+
+</para>
+
+@layout: 
+
+
+<!-- ##### FUNCTION pango_layout_get_context ##### -->
+<para>
+
+</para>
+
+@layout: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_layout_context_changed ##### -->
 <para>
 
 </para>
@@ -174,6 +192,16 @@ for partial lines.
 @PANGO_ALIGN_LEFT: Put all available space on the right
 @PANGO_ALIGN_CENTER: Center the line within the available space
 @PANGO_ALIGN_RIGHT: Put all available space on the left
+
+<!-- ##### FUNCTION pango_layout_get_log_attrs ##### -->
+<para>
+
+</para>
+
+@layout: 
+@attrs: 
+@n_attrs: 
+
 
 <!-- ##### FUNCTION pango_layout_xy_to_index ##### -->
 <para>

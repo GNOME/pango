@@ -427,7 +427,7 @@ pango_attr_stretch_new (PangoStretch  stretch)
 
 /**
  * pango_attr_underline_new:
- * @underline: %TRUE if the text should be underlined
+ * @underline: the underline style.
  * 
  * Create a new underline-style object.
  * 

@@ -2418,7 +2418,6 @@ pango_x_render_layout_line (Display          *display,
  * @layout:    a #PangoLayout
  * @x:         the X position of the left of the layout (in pixels)
  * @y:         the Y position of the top of the layout (in pixels)
- * @user_data: extra data to pass to get_gc and free_gc
  *
  * Render a #PangoLayoutLine onto an X drawable
  */

@@ -2,17 +2,23 @@
 <TITLE>Text Processing</TITLE>
 <FILE>main</FILE>
 <SUBSECTION>
-pango_itemize
 PangoContext
 PangoItem
 PangoAnalysis
 PangoLangRange
 PangoDirection
+<SUBSECTION>
+pango_itemize
+pango_item_free
+pango_item_copy
+pango_item_new
 pango_reorder_items
 <SUBSECTION>
 pango_context_new
 pango_context_ref
 pango_context_unref
+pango_context_get_data
+pango_context_set_data
 pango_context_add_font_map
 pango_context_get_font_description
 pango_context_set_font_description
@@ -34,6 +40,7 @@ pango_justify
 <SECTION>
 <TITLE>Glyph Storage</TITLE>
 <FILE>glyphs</FILE>
+PANGO_SCALE
 PangoRectangle
 PANGO_ASCENT
 PANGO_DESCENT
@@ -86,6 +93,7 @@ pango_font_description_to_string
 <SUBSECTION>
 PangoFont
 PangoFontClass
+PangoFontMetrics
 pango_font_init
 pango_font_ref
 pango_font_unref
@@ -93,6 +101,7 @@ pango_font_find_shaper
 pango_font_describe
 pango_font_get_coverage
 pango_font_get_glyph_extents
+pango_font_get_metrics
 pango_font_get_data
 pango_font_set_data
 <SUBSECTION>
@@ -132,6 +141,7 @@ pango_attr_foreground_new
 pango_attr_background_new
 pango_attr_strikethrough_new
 pango_attr_underline_new
+PangoUnderline
 pango_attr_rise_new
 <SUBSECTION>
 PangoAttrList
@@ -157,6 +167,9 @@ pango_layout_new
 pango_layout_ref
 pango_layout_unref
 
+pango_layout_get_context
+pango_layout_context_changed
+
 pango_layout_set_text
 pango_layout_set_attributes
 pango_layout_set_width
@@ -168,6 +181,8 @@ pango_layout_get_justify
 pango_layout_set_alignment
 pango_layout_get_alignment
 PangoAlignment
+
+pango_layout_get_log_attrs
 
 pango_layout_xy_to_index
 pango_layout_index_to_pos
@@ -209,6 +224,9 @@ script_engine_unload
 <FILE>x-rendering</FILE>
 PANGO_RENDER_TYPE_X
 pango_x_get_context
+pango_x_context_set_funcs
+PangoGetGCFunc
+PangoFreeGCFunc
 pango_x_render
 pango_x_render_layout_line
 pango_x_render_layout

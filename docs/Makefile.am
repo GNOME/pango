@@ -8,8 +8,8 @@ DOC_MODULE=pango
 # The top-level SGML file.
 DOC_MAIN_SGML_FILE=pango-docs.sgml
 
-INCLUDE_DIR=../libpango
-SOURCE_DIR=../libpango
+INCLUDE_DIR=../pango
+SOURCE_DIR=../pango
 
 scan:
 	gtkdoc-scan --module=$(DOC_MODULE) $(INCLUDE_DIR)/pango*.h

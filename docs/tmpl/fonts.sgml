@@ -155,10 +155,10 @@ which the implementation fills in:
 
 <!-- ##### STRUCT PangoFontClass ##### -->
 <para>
-The PangoFontClass structure contains the virtual
+The #PangoFontClass structure contains the virtual
 functions for an implementation of a a PangoFont.
 
-It contains the following member:
+It contains the following members:
 
 <informaltable pgwide=1 frame="none" role="struct">
 <tgroup cols="2"><colspec colwidth="2*"><colspec colwidth="8*">
@@ -177,8 +177,27 @@ It contains the following member:
 @get_coverage: A function to get a coverage map for the font.
                See pango_font_get_coverage().
 @find_shaper: A function to find the shaper for a particular character 
-              point. See pango_font_find_shaper.
-@get_glyph_extents: 
+              point. See pango_font_find_shaper().
+@get_glyph_extents: A function called to find out the logical and ink
+                    extents of a glyph within the fonts. See
+                    pango_font_get_glyph_extents().
+@get_metrics: A function called to find the overall metric information
+              for the font or the metric information appropriate to
+              a particular language. See pango_font_get_metrics().
+
+<!-- ##### STRUCT PangoFontMetrics ##### -->
+<para>
+The #PangoFontMetrics structure represents the overall metrics for
+a font. It contains the following members:
+</para>
+
+@ascent: the logical extent of the font upwards from the baseline.
+         The spacing between lines of text should be calculated
+         as @ascent + @descent. Individual characters may have
+         extents exceeding this value.
+@descent: the logical extent of the font beneath the baseline.
+         as @ascent + @descent. Individual characters may have
+         extents exceeding this value.
 
 <!-- ##### FUNCTION pango_font_init ##### -->
 <para>
@@ -247,6 +266,16 @@ It contains the following member:
 @logical_rect: 
 
 
+<!-- ##### FUNCTION pango_font_get_metrics ##### -->
+<para>
+
+</para>
+
+@font: 
+@lang: 
+@metrics: 
+
+
 <!-- ##### FUNCTION pango_font_get_data ##### -->
 <para>
 
@@ -298,7 +327,8 @@ a particular #PangoFontMap implementation.
 @load_font: a function to load a font with a given description. See
             pango_font_map_load_font()
 @list_fonts: A function to list available fonts. See pango_font_map_list_fonts()
-@list_families: 
+@list_families: A function to list available font families. See
+                pango_font_map_list_families().
 
 <!-- ##### FUNCTION pango_font_map_init ##### -->
 <para>

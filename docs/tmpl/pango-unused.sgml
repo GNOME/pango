@@ -1,10 +1,3 @@
-<!-- ##### FUNCTION pango_cfont_init ##### -->
-<para>
-
-</para>
-
-@font: 
-
 <!-- ##### FUNCTION pango_layout_line_x_to_cp ##### -->
 <para>
 
@@ -14,118 +7,6 @@
 @x_pos: 
 @char_pos: 
 @trailing: 
-
-<!-- ##### FUNCTION pango_layout_cp_to_line_x ##### -->
-<para>
-
-</para>
-
-@layout: 
-@char_pos: 
-@trailing: 
-@line: 
-@x_pos: 
-
-<!-- ##### FUNCTION pango_cfont_ref ##### -->
-<para>
-
-</para>
-
-@font: 
-
-<!-- ##### TYPEDEF PangoGlyphIndex ##### -->
-<para>
-The #PangoGlyphIndex type is an integral type used to store glyph
-indices.
-</para>
-
-
-<!-- ##### FUNCTION pango_context_get_size ##### -->
-<para>
-
-</para>
-
-@context: 
-@Returns: 
-
-<!-- ##### FUNCTION pango_x_glyph_extents ##### -->
-<para>
-
-</para>
-
-@font: 
-@glyph: 
-@lbearing: 
-@rbearing: 
-@width: 
-@ascent: 
-@descent: 
-@logical_ascent: 
-@logical_descent: 
-
-<!-- ##### FUNCTION pango_cp_to_x ##### -->
-<para>
-
-</para>
-
-@text: 
-@length: 
-@analysis: 
-@glyphs: 
-@char_pos: 
-@trailing: 
-@x_pos: 
-
-<!-- ##### FUNCTION pango_x_find_cfont ##### -->
-<para>
-
-</para>
-
-@font: 
-@charset: 
-@Returns: 
-
-<!-- ##### FUNCTION g_glyph_string_set_size ##### -->
-<para>
-
-</para>
-
-@string: 
-@new_len: 
-
-<!-- ##### FUNCTION pango_coverage_destroy ##### -->
-<para>
-
-</para>
-
-@coverage: 
-
-<!-- ##### FUNCTION pango_x_xlfd_get_ranges ##### -->
-<para>
-
-</para>
-
-@font: 
-@xlfd: 
-@ranges: 
-@n_ranges: 
-@Returns: 
-
-<!-- ##### FUNCTION g_glyph_string_free ##### -->
-<para>
-
-</para>
-
-@string: 
-
-<!-- ##### FUNCTION pango_x_load_xlfd ##### -->
-<para>
-
-</para>
-
-@font: 
-@xlfd: 
-@Returns: 
 
 <!-- ##### FUNCTION pango_x_to_cp ##### -->
 <para>
@@ -140,115 +21,7 @@ indices.
 @char_pos: 
 @trailing: 
 
-<!-- ##### SECTION ./tmpl/pango-x.sgml:Title ##### -->
-X Rendering
-
-
-<!-- ##### SECTION ./tmpl/pango-x.sgml:See_Also ##### -->
-<para>
-
-</para>
-
-
-<!-- ##### SECTION ./tmpl/pango-x.sgml:Short_Description ##### -->
-Functions for rendering and measuring glyphs on
-the X Window system.
-
-
-<!-- ##### FUNCTION pango_context_set_size ##### -->
-<para>
-
-</para>
-
-@context: 
-@size: 
-
-<!-- ##### FUNCTION pango_attribute_register_type ##### -->
-<para>
-
-</para>
-
-@name: 
-@Returns: 
-
-<!-- ##### FUNCTION g_glyph_string_new ##### -->
-<para>
-
-</para>
-
-@Returns: 
-
-<!-- ##### FUNCTION pango_layout_set_first_line_width ##### -->
-<para>
-
-</para>
-
-@layout: 
-@width: 
-
-<!-- ##### SECTION ./tmpl/pango-x.sgml:Long_Description ##### -->
-<para>
-
-</para>
-
-
-<!-- ##### FUNCTION pango_x_list_cfonts ##### -->
-<para>
-
-</para>
-
-@font: 
-@charsets: 
-@n_charsets: 
-@xlfds: 
-@n_xlfds: 
-
-<!-- ##### STRUCT PangoCFontClass ##### -->
-<para>
-The PangoCFontClass structure contains the virtual
-functions for an implementation of a a PangoCFont.
-
-It contains the following member:
-
-<informaltable pgwide=1 frame="none" role="struct">
-<tgroup cols="2"><colspec colwidth="2*"><colspec colwidth="8*">
-<tbody>
-
-<row>
-<entry>void (*destroy) (#PangoFont *font);</entry>
-<entry>a function to free the font structure and associated resources.</entry>
-</row>
-</tbody></tgroup></informaltable>
-</para>
-
-
-<!-- ##### STRUCT PangoXCFont ##### -->
-<para>
-The PangoXCFont represents a component of a
-composite font for the X window system. It
-has the following publically accessible fields:
-
-<informaltable pgwide=1 frame="none" role="struct">
-<tgroup cols="2"><colspec colwidth="2*"><colspec colwidth="8*">
-<tbody>
-
-<row>
-<entry><structname>Display</structname> *display;</entry>
-<entry>the X Display for which this font component was created.</entry>
-</row>
-
-<row>
-<entry><structname>XFontStruct</structname> *font_struct;</entry>
-<entry>the X font information for the corresponding X font.</entry>
-</row>
-
-</tbody></tgroup></informaltable>
-</para>
-
-@display: 
-@font_struct: 
-
-<!-- ##### FUNCTION pango_cfont_unref ##### -->
+<!-- ##### FUNCTION pango_cfont_init ##### -->
 <para>
 
 </para>
@@ -290,6 +63,87 @@ that may be accessed by derived classes:
 
 @klass: 
 
+<!-- ##### FUNCTION pango_x_xlfd_get_ranges ##### -->
+<para>
+
+</para>
+
+@font: 
+@xlfd: 
+@ranges: 
+@n_ranges: 
+@Returns: 
+
+<!-- ##### FUNCTION pango_context_set_size ##### -->
+<para>
+
+</para>
+
+@context: 
+@size: 
+
+<!-- ##### FUNCTION pango_x_glyph_extents ##### -->
+<para>
+
+</para>
+
+@font: 
+@glyph: 
+@lbearing: 
+@rbearing: 
+@width: 
+@ascent: 
+@descent: 
+@logical_ascent: 
+@logical_descent: 
+
+<!-- ##### TYPEDEF PangoGlyphIndex ##### -->
+<para>
+The #PangoGlyphIndex type is an integral type used to store glyph
+indices.
+</para>
+
+
+<!-- ##### FUNCTION pango_attribute_register_type ##### -->
+<para>
+
+</para>
+
+@name: 
+@Returns: 
+
+<!-- ##### SECTION ./tmpl/pango-x.sgml:See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION ./tmpl/pango-x.sgml:Title ##### -->
+X Rendering
+
+
+<!-- ##### FUNCTION pango_cfont_ref ##### -->
+<para>
+
+</para>
+
+@font: 
+
+<!-- ##### FUNCTION pango_cfont_unref ##### -->
+<para>
+
+</para>
+
+@font: 
+
+<!-- ##### FUNCTION pango_layout_set_first_line_width ##### -->
+<para>
+
+</para>
+
+@layout: 
+@width: 
+
 <!-- ##### FUNCTION pango_x_extents ##### -->
 <para>
 
@@ -304,4 +158,150 @@ that may be accessed by derived classes:
 @descent: 
 @logical_ascent: 
 @logical_descent: 
+
+<!-- ##### FUNCTION pango_coverage_destroy ##### -->
+<para>
+
+</para>
+
+@coverage: 
+
+<!-- ##### FUNCTION pango_cp_to_x ##### -->
+<para>
+
+</para>
+
+@text: 
+@length: 
+@analysis: 
+@glyphs: 
+@char_pos: 
+@trailing: 
+@x_pos: 
+
+<!-- ##### FUNCTION pango_x_list_cfonts ##### -->
+<para>
+
+</para>
+
+@font: 
+@charsets: 
+@n_charsets: 
+@xlfds: 
+@n_xlfds: 
+
+<!-- ##### FUNCTION pango_x_load_xlfd ##### -->
+<para>
+
+</para>
+
+@font: 
+@xlfd: 
+@Returns: 
+
+<!-- ##### FUNCTION g_glyph_string_set_size ##### -->
+<para>
+
+</para>
+
+@string: 
+@new_len: 
+
+<!-- ##### FUNCTION pango_x_find_cfont ##### -->
+<para>
+
+</para>
+
+@font: 
+@charset: 
+@Returns: 
+
+<!-- ##### STRUCT PangoXCFont ##### -->
+<para>
+The PangoXCFont represents a component of a
+composite font for the X window system. It
+has the following publically accessible fields:
+
+<informaltable pgwide=1 frame="none" role="struct">
+<tgroup cols="2"><colspec colwidth="2*"><colspec colwidth="8*">
+<tbody>
+
+<row>
+<entry><structname>Display</structname> *display;</entry>
+<entry>the X Display for which this font component was created.</entry>
+</row>
+
+<row>
+<entry><structname>XFontStruct</structname> *font_struct;</entry>
+<entry>the X font information for the corresponding X font.</entry>
+</row>
+
+</tbody></tgroup></informaltable>
+</para>
+
+@display: 
+@font_struct: 
+
+<!-- ##### FUNCTION g_glyph_string_free ##### -->
+<para>
+
+</para>
+
+@string: 
+
+<!-- ##### FUNCTION pango_layout_cp_to_line_x ##### -->
+<para>
+
+</para>
+
+@layout: 
+@char_pos: 
+@trailing: 
+@line: 
+@x_pos: 
+
+<!-- ##### SECTION ./tmpl/pango-x.sgml:Short_Description ##### -->
+Functions for rendering and measuring glyphs on
+the X Window system.
+
+
+<!-- ##### FUNCTION pango_context_get_size ##### -->
+<para>
+
+</para>
+
+@context: 
+@Returns: 
+
+<!-- ##### FUNCTION g_glyph_string_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+<!-- ##### SECTION ./tmpl/pango-x.sgml:Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### STRUCT PangoCFontClass ##### -->
+<para>
+The PangoCFontClass structure contains the virtual
+functions for an implementation of a a PangoCFont.
+
+It contains the following member:
+
+<informaltable pgwide=1 frame="none" role="struct">
+<tgroup cols="2"><colspec colwidth="2*"><colspec colwidth="8*">
+<tbody>
+
+<row>
+<entry>void (*destroy) (#PangoFont *font);</entry>
+<entry>a function to free the font structure and associated resources.</entry>
+</row>
+</tbody></tgroup></informaltable>
+</para>
+
 

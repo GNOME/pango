@@ -17,21 +17,6 @@ various steps of this process.
 
 </para>
 
-<!-- ##### FUNCTION pango_itemize ##### -->
-<para>
-
-</para>
-
-@context: 
-@text: 
-@length: 
-@attrs: 
-@Returns: 
-<!-- # Unused Parameters # -->
-@lang_info: 
-@n_langs: 
-
-
 <!-- ##### STRUCT PangoContext ##### -->
 <para>
 The #PangoContext structure stores global information
@@ -95,6 +80,7 @@ a segment of text. It contains the following fields:
 @offset: 
 @length: 
 @num_chars: 
+@extra_attrs: 
 @analysis: 
 
 <!-- ##### STRUCT PangoAnalysis ##### -->
@@ -165,12 +151,58 @@ It contains the following fields:
 
 <!-- ##### ENUM PangoDirection ##### -->
 <para>
+The #PangoDirection type represents the direction of writing
+for text.
+</para>
+
+@PANGO_DIRECTION_LTR: The text is written left-to-right
+@PANGO_DIRECTION_RTL: The text is written right-to-left
+@PANGO_DIRECTION_TTB_LTR: The text is written vertically
+                          top-to-bottom, with the rows ordered from
+                          left to right.
+@PANGO_DIRECTION_TTB_RTL: The text is written vertically
+                          top-to-bottom, with the rows ordered from
+                          right to left.
+
+<!-- ##### FUNCTION pango_itemize ##### -->
+<para>
 
 </para>
 
-@PANGO_DIRECTION_LTR: 
-@PANGO_DIRECTION_RTL: 
-@PANGO_DIRECTION_TTB: 
+@context: 
+@text: 
+@length: 
+@attrs: 
+@Returns: 
+<!-- # Unused Parameters # -->
+@lang_info: 
+@n_langs: 
+
+
+<!-- ##### FUNCTION pango_item_free ##### -->
+<para>
+
+</para>
+
+@item: 
+
+
+<!-- ##### FUNCTION pango_item_copy ##### -->
+<para>
+
+</para>
+
+@item: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_item_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
 
 <!-- ##### FUNCTION pango_reorder_items ##### -->
 <para>
@@ -203,6 +235,27 @@ It contains the following fields:
 </para>
 
 @context: 
+
+
+<!-- ##### FUNCTION pango_context_get_data ##### -->
+<para>
+
+</para>
+
+@context: 
+@key: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_context_set_data ##### -->
+<para>
+
+</para>
+
+@context: 
+@key: 
+@data: 
+@destroy_func: 
 
 
 <!-- ##### FUNCTION pango_context_add_font_map ##### -->

@@ -33,6 +33,42 @@ X Window System.
 @Returns: 
 
 
+<!-- ##### FUNCTION pango_x_context_set_funcs ##### -->
+<para>
+
+</para>
+
+@context: 
+@get_gc_func: 
+@free_gc_func: 
+
+
+<!-- ##### USER_FUNCTION PangoGetGCFunc ##### -->
+<para>
+Used to represent a function which is called when a new GC must be
+created to draw something other than the default color when rendering
+a layout. The function used here will typically retrieve information
+from the context with pango_context_get_data().
+</para>
+
+@context: the #PangoContext
+@color: color attribute representing the desired color
+@base_gc: default GC used for rendering. The function will typically
+          copy attributes such as clip region from the GC
+@Returns: the new GC
+
+
+<!-- ##### USER_FUNCTION PangoFreeGCFunc ##### -->
+<para>
+Used to represent a function which is called to free a GC created with
+the corresponding PangoGetGCFunc. The function used here will
+typically retrieve information from the context with pango_context_set_data().
+</para>
+
+@context: the #PangoContext 
+@gc: the GC to free
+
+
 <!-- ##### FUNCTION pango_x_render ##### -->
 <para>
 

@@ -1,3 +1,8 @@
+Tue Apr  4 20:56:29 2000  Owen Taylor  <otaylor@redhat.com>
+
+	* docs/tmpl/* docs/Makefile.am docs/pango-sections.txt
+	  pango/pango-attributes.c pango/pangox.c: Doc updates.
+
 Tue Apr  4 20:13:06 2000  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pango-context.h: Add user data to PangoContext

@@ -235,6 +235,23 @@ a integer or enumeration value.
 @Returns: 
 
 
+<!-- ##### ENUM PangoUnderline ##### -->
+<para>
+the #PangoUnderline enumeration is used to specify
+whether text should be underlined, and if so, the type
+of underlining.
+</para>
+
+@PANGO_UNDERLINE_NONE: no underline should be drawn.
+@PANGO_UNDERLINE_SINGLE: a single underline should be drawn.
+@PANGO_UNDERLINE_DOUBLE: a double underline should be drawn.
+@PANGO_UNDERLINE_LOW: a single underline should be drawn at a position
+                      beneath the ink extents of the text being
+                      underlined. This should be used only for underlining
+                      single characters, such as for keyboard
+                      accelerators. %PANGO_UNDERLINE_SINGLE should
+                      be used for extended portions of text.
+
 <!-- ##### FUNCTION pango_attr_rise_new ##### -->
 <para>
 
@@ -360,6 +377,7 @@ attributes currently in effect can be queried.
 @iterator: 
 @base: 
 @current: 
+@extra_attrs: 
 
 
 <!-- ##### FUNCTION pango_attr_iterator_destroy ##### -->
