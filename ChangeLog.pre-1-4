@@ -1,3 +1,9 @@
+Wed Jan 16 14:45:23 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-layout.c (pango_layout_check_lines): 
+	A string ending in a paragraph delimiter has an
+	empty line at the end. (#68079, Arjan J. Molenaar.)
+
 Wed Jan 16 09:25:34 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/fonts.c (pango_font_description_from_string): Initialize

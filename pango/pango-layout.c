@@ -2889,7 +2889,7 @@ pango_layout_check_lines (PangoLayout *layout)
       
       delim_len = next_para_index - delimiter_index;
       
-      if ((end + delim_len) == (layout->text + layout->length))
+      if (end == (layout->text + layout->length))
 	done = TRUE;
 
       g_assert (end <= (layout->text + layout->length));
