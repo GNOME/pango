@@ -96,6 +96,13 @@
 	</ul>
       </description>
     </entry>
+    <entry size="small" status="0%" target="1.0">
+      <title>Determine how to localise numbers</title>
+      <description>
+         Some locales (mainly Arabic and Indic-script languages), 
+         want to localize numbers. How should this be done?
+      </description>
+    </entry>
     <entry size="small" status="0%" target="1.0?">
       <title>Fix API inconsistencies</title>
       <description>
