@@ -91,7 +91,7 @@ MiniXftDefaultSet (Display *dpy, MiniXftPattern *defaults)
 int
 MiniXftDefaultParseBool (char *v)
 {
-    char    c0, c1;
+    unsigned char    c0, c1;
 
     c0 = *v;
     if (isupper (c0))

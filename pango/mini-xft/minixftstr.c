@@ -136,7 +136,7 @@ _MiniXftMatchSymbolic (MiniXftSymbolic *s, int n, const char *name, int def)
 int
 _MiniXftStrCmpIgnoreCase (const char *s1, const char *s2)
 {
-    char    c1, c2;
+    unsigned char    c1, c2;
     
     for (;;) 
     {

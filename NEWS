@@ -1,3 +1,10 @@
+Changes between 0.24 and 0.25
+
+* Win32 fixes [Tor Lillqvist, Hans Breuer]
+* Cleanup of <ctype.h> [Darin Adler]
+* Bug and build fixes [Anders Carlsson, Sven Neumann, Havoc Pennington,
+  Morten Welinder]
+
 Changes between 0.23 and 0.24
 
 * Win32 backend improvements [Tor Lillqvist]

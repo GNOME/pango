@@ -1,3 +1,16 @@
+Sun Feb 17 18:50:30 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* configure.in: Version 0.25
+
+	* configure.in: Add X_EXTRA_LIBS to XFT_LIBS.
+
+	* NEWS: Updates
+
+	* pango/mini-xft/minixftdpy.c
+	* pango/mini-xft/minixftstr.c: Fix some problems
+	with signed arguments to to isupper()/tolower().
+	(#71705, Morten Welinder)
+
 2002-02-15  Hans Breuer  <hans@breuer.org>
 
 	* examples/makefile.am pango/makefile.am : added

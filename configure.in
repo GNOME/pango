@@ -3,7 +3,7 @@ dnl Process this file with autoconf to create configure.
 AC_INIT(ChangeLog)
 
 PANGO_MAJOR_VERSION=0
-PANGO_MINOR_VERSION=24
+PANGO_MINOR_VERSION=25
 
 AC_SUBST(PANGO_MAJOR_VERSION)
 AC_SUBST(PANGO_MINOR_VERSION)
@@ -158,7 +158,7 @@ if test $have_x = true ; then
     CPPFLAGS="$pango_save_cppflags"
     
     if $have_xft ; then
-      XFT_LIBS="-lXft -lXrender -lXext $X_LIBS $FREETYPE_LIBS"
+      XFT_LIBS="-lXft -lXrender -lXext $X_LIBS $FREETYPE_LIBS $X_EXTRA_LIBS"
     fi
   fi
 fi
