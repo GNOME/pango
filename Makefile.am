@@ -10,7 +10,7 @@ EXTRA_DIST = 		\
 	pango.pc.in	\
 	pangox.pc.in
 
-pkgconfigdir = $(libdir)/pkgconfig
+pkgconfigdir = $(libexecdir)/pkgconfig
 pkgconfig_DATA = pango.pc pangox.pc
 
 dist-hook: pango.spec

@@ -3,10 +3,13 @@ exec_prefix=@exec_prefix@
 libdir=@libdir@
 includedir=@includedir@
 
-Name: Pango X
-Description: X Window System font support for Pango
-Version: @VERSION@
-Requires: pango
-Libs: -L${libdir} -lpangox @X_LIBS@
-Cflags:
+VERSION="@VERSION@"
+REQUIRES="pango"
+CFLAGS=""
+LIBS_PATH="-L${libdir}"
+LIBS_SELF_LIBS="-lpangox"
+LIBS_SYSTEM_LIBS="@X_LIBS@"
+
+#Name: Pango X
+#Description: X Window System font support for Pango
 
