@@ -344,7 +344,7 @@ hebrew_shaper_get_cluster_kerning(gunichar            *cluster,
 		)
 	       && ((gl >= UNI_SHEVA && gl <= UNI_QAMATS) ||
 		   gl == UNI_QUBUTS)
-	       && width[i] < width[0]
+	       && ink_rect[i].width < base_ink_width
 	       ) 
 	{
 	  x_offset[i] = base_ink_x_offset + base_ink_width
