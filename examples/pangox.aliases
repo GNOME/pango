@@ -3,6 +3,7 @@
 # family style variant weight stretch   XLFD
   
 sans normal normal normal normal "-*-helvetica-medium-r-normal--*-*-*-*-*-*-*-*,\
+				  -*-clearlyu-medium-r-normal--*-*-*-*-*-*-iso10646-1,\
 	                          -*-fixed-medium-r-normal--*-*-*-*-*-*-*-*,\
                                   -kaist-iyagi-bold-r-normal--*-*-*-*-*-*-johab-1,\
                                   -*-song ti-medium-r-normal--*-*-*-*-*-*-*-*,\
@@ -10,6 +11,7 @@ sans normal normal normal normal "-*-helvetica-medium-r-normal--*-*-*-*-*-*-*-*,
                                   -*-devanagari-medium-r-normal--*-*-*-*-*-*-iso10646-dev"
 
 serif normal normal normal normal "-*-times-medium-r-normal--*-*-*-*-*-*-*-*,\
+				  -*-clearlyu-medium-r-normal--*-*-*-*-*-*-iso10646-1,\
 	                           -*-fixed-medium-r-normal--*-*-*-*-*-*-*-*,\
                                    -kaist-iyagi-bold-r-normal--*-*-*-*-*-*-johab-1,\
                                    -*-song ti-medium-r-normal--*-*-*-*-*-*-*-*,\
@@ -17,7 +19,7 @@ serif normal normal normal normal "-*-times-medium-r-normal--*-*-*-*-*-*-*-*,\
                                    -*-devanagari-medium-r-normal--*-*-*-*-*-*-iso10646-dev"
 
 monospace normal normal normal normal "-*-fixed-medium-r-normal--*-*-*-*-*-*-*-*,\
-	                               -*-fixed-medium-r-normal--*-*-*-*-*-*-*-*,\
+				       -*-clearlyu-medium-r-normal--*-*-*-*-*-*-iso10646-1,\
                                        -kaist-iyagi-bold-r-normal--*-*-*-*-*-*-johab-1,\
                                        -*-song ti-medium-r-normal--*-*-*-*-*-*-*-*,\
                                        -tamil-tscakaram-medium-r-normal--*-*-*-*-*-*-tscii-0,\
