@@ -405,6 +405,7 @@ pango_default_break (const gchar   *text,
   GUnicodeType prev_type;
   GUnicodeBreakType prev_break_type; /* skips spaces */
   gboolean prev_was_break_space;
+  gboolean prev_was_end = FALSE;
   WordType current_word_type = WordNone;
   gunichar last_word_letter = 0;
   SentenceState sentence_state = STATE_SENTENCE_OUTSIDE;
@@ -452,23 +453,31 @@ pango_default_break (const gchar   *text,
       
       wc = next_wc;
 
-      next = g_utf8_next_char (next);
-
-      if (next == end)
+      if (prev_was_end)
         {
-          /* This is how we fill in the last element (end position) of the
-           * attr array - assume there's a newline off the end of @text.
+          /*
+           * If we have already reached the end of @text g_utf8_next_char()
+           * may not increment next
            */
-          next_wc = '\n';
-        }
-      else if (next > end)
-        {
           next_wc = 0;
         }
       else
         {
-          next_wc = g_utf8_get_char (next);
-          g_assert (next_wc != 0);
+          next = g_utf8_next_char (next);
+
+          if (next == end)
+            {
+              /* This is how we fill in the last element (end position) of the
+               * attr array - assume there's a newline off the end of @text.
+               */
+              next_wc = '\n';
+              prev_was_end = TRUE;
+            }
+          else
+            {
+              next_wc = g_utf8_get_char (next);
+              g_assert (next_wc != 0);
+            }
         }
 
       type = g_unichar_type (wc);
