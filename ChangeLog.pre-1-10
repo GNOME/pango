@@ -1,3 +1,7 @@
+2004-12-14  Dan Winship  <danw@novell.com>
+
+	* examples/Makefile.am (INCLUDES): add XFT_CFLAGS
+
 Tue Dec 14 17:27:14 2004  Owen Taylor  <otaylor@redhat.com>
 
 	* modules/indic/indic-ot-class-tables.c (guruCharClasses): 

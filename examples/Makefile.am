@@ -9,6 +9,7 @@ INCLUDES =				\
 	-I$(top_srcdir)			\
 	$(QT_INCLUDES)			\
 	$(GLIB_CFLAGS)			\
+	$(XFT_CFLAGS)			\
 	$(FREETYPE_CFLAGS)
 
 ###################################################
