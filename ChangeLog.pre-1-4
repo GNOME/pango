@@ -1,3 +1,9 @@
+Wed Jun 12 11:02:04 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* examples/Makefile.am (EXTRA_DIST) examples/pangoft2.aliases:
+	Remove pangoft2.aliases from CVS/distribution; it is
+	no longer used. (#82736, Sven Neumann.)
+
 2002-06-10  Matthias Clasen  <maclas@gmx.de>
 
 	* pango/pango-fontset.c (pango_fontset_real_get_metrics): Don't

@@ -73,7 +73,6 @@ EXTRA_DIST=			\
 	muru.utf		\
 	pangorc			\
 	pangox.aliases		\
-	pangoft2.aliases	\
 	pangowin32.aliases
 
 if HAVE_X
