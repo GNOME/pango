@@ -52,10 +52,38 @@ UNICODE_LIBS="`unicode-config --libs`"
 AC_SUBST(UNICODE_LIBS)
 AC_SUBST(UNICODE_CFLAGS)
 
-AC_CHECK_FUNCS(flockfile)
-
 AC_CHECK_LIB(unicode, unicode_type, :,
 	     AC_MSG_ERROR([*** libunicode not found.]), $UNICODE_LIBS)
+
+#
+# Checks for iconv
+#
+AC_ARG_WITH(libiconv, [ --with-libiconv     Use the libiconv library ],,with_libiconv=maybe)
+
+found_iconv=no
+
+if ! test "x$with_libiconv" = "xyes" ; then
+   # 
+   # Check in the C library 
+   #
+   AC_CHECK_FUNC(iconv_open, with_libiconv=no; found_iconv=yes)
+fi
+
+if test "x$with_libiconv" != "xno" ; then
+   #
+   # Check for libiconv
+   #
+   AC_CHECK_LIB(iconv, libiconv_open, with_libiconv=yes; found_iconv=yes)
+fi
+
+if test "x$found_iconv" = "xno" ; then
+   AC_MSG_ERROR([*** No iconv() implementation found in C library or libiconv])
+fi
+
+if test "x$with_libiconv" = "xyes" ; then
+  UNICODE_LIBS="$UNICODE_LIBS -liconv"
+fi
+  
 
 AC_CHECK_FUNCS(flockfile)
 

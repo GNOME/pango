@@ -1,3 +1,9 @@
+Wed Apr 26 19:55:40 2000  Owen Taylor  <otaylor@redhat.com>
+
+	* configure.in: Add checks looking for iconv in libiconv.
+	(Thanks to Ross Campbell for helping me test this
+	out.)
+
 Mon Apr 24 22:51:06 2000  Owen Taylor  <otaylor@redhat.com>
 
 	* configure.in: Released 0.10
