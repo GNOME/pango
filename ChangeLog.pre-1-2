@@ -1,3 +1,8 @@
+Wed Feb 27 08:55:32 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/Makefile.am (pango_querymodules_LDADD): Add
+	$(X_EXTRA_LIBS) (reported Richard Warren)
+
 Tue Feb 26 19:06:07 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/mini-xft/minixftint.h: Fix some C++ style

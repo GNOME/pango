@@ -158,7 +158,7 @@ libpango_la_LIBADD = mini-fribidi/libmini-fribidi.la
 endif
 
 libpangox_la_LDFLAGS = -release $(VERSION)
-libpangox_la_LIBADD = libpango.la $(INCLUDED_X_MODULES) $(X_LIBS) 
+libpangox_la_LIBADD = libpango.la $(INCLUDED_X_MODULES) $(X_LIBS) $(X_EXTRA_LIBS)
 libpangox_la_DEPENDENCIES = $(INCLUDED_X_MODULES) libpango.la
 
 libpangowin32_la_SOURCES =	\
@@ -263,7 +263,7 @@ if HAVE_XFT
 pango_querymodules_LDADD = $(FT2_BUILD_LIBS) $(X_BUILD_LIBS) libpangoxft.la $(GLIB_LIBS) $(FRIBIDI_LIBS) $(XFT_LIBS) $(FREETYPE_LIBS)
 pango_querymodules_DEPENDENCIES = $(FT2_BUILD_LIBS) $(X_BUILD_LIBS) libpangoxft.la libpango.la
 else
-pango_querymodules_LDADD = $(FT2_BUILD_LIBS) $(X_BUILD_LIBS) $(WIN32_BUILD_LIBS) $(GLIB_LIBS) $(FRIBIDI_LIBS) $(X_LIBS) $(FREETYPE_LIBS)
+pango_querymodules_LDADD = $(FT2_BUILD_LIBS) $(X_BUILD_LIBS) $(WIN32_BUILD_LIBS) $(GLIB_LIBS) $(FRIBIDI_LIBS) $(X_LIBS) $(FREETYPE_LIBS) $(X_EXTRA_LIBS)
 pango_querymodules_DEPENDENCIES = $(FT2_BUILD_LIBS) $(X_BUILD_LIBS) $(WIN32_BUILD_LIBS) libpango.la
 endif
 
