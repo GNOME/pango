@@ -1,0 +1,95 @@
+<!-- ##### SECTION Title ##### -->
+X Fonts
+
+<!-- ##### SECTION Short_Description ##### -->
+Functions for shape engines to manipulate X fonts.
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+The functions and macros in this section are used by shape
+engines to look up glyphs for particular character
+sets within an #PangoFont for the X rendering system.
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### TYPEDEF PangoXSubfont ##### -->
+<para>
+The #PangXSubFont type is an integer ID that identifies one
+particular X font within the fonts referenced in a 
+a #PangoFont.
+</para>
+
+
+<!-- ##### MACRO PANGO_X_MAKE_GLYPH ##### -->
+<para>
+Make a glyph index from a #PangoXSubFont index and a index
+of a character with the corresponding X font.
+</para>
+
+@subfont: a #PangoXSubfont index
+@index: the index of a character within an X font.
+
+
+<!-- ##### MACRO PANGO_X_GLYPH_SUBFONT ##### -->
+<para>
+Extract the subfont index from a glyph index.
+</para>
+
+@glyph: a #PangoGlyphIndex
+
+
+<!-- ##### MACRO PANGO_X_GLYPH_INDEX ##### -->
+<para>
+Extract the character index within the X font from a
+glyph index.
+</para>
+
+@glyph: a #PangoGlyphIndex
+
+
+<!-- ##### FUNCTION pango_x_load_font ##### -->
+<para>
+
+</para>
+
+@display: 
+@spec: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_x_get_unknown_glyph ##### -->
+<para>
+
+</para>
+
+@font: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_x_has_glyph ##### -->
+<para>
+
+</para>
+
+@font: 
+@glyph: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_x_list_subfonts ##### -->
+<para>
+
+</para>
+
+@font: 
+@charsets: 
+@n_charsets: 
+@subfont_ids: 
+@subfont_charsets: 
+@Returns: 
+
+

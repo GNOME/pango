@@ -1,5 +1,6 @@
 sgml
 html
+pango-unused.txt
 pango-decl-list.txt
 pango-decl.txt
 Makefile.in

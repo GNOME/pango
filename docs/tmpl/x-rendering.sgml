@@ -1,0 +1,81 @@
+<!-- ##### SECTION Title ##### -->
+X Rendering
+
+<!-- ##### SECTION Short_Description ##### -->
+Functions for measuring glyphs and rendering X fonts.
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+The functions in thjis system are used to take the output
+of the shaping modules and render that on the screen.
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### MACRO PANGO_RENDER_TYPE_X ##### -->
+<para>
+%PANGO_RENDER_TYPE_X is a string constant that
+is used to identify shaping modules for the
+X Window System.
+</para>
+
+
+
+<!-- ##### FUNCTION pango_x_get_context ##### -->
+<para>
+
+</para>
+
+@display: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_x_render ##### -->
+<para>
+
+</para>
+
+@display: 
+@d: 
+@gc: 
+@font: 
+@glyphs: 
+@x: 
+@y: 
+
+
+<!-- ##### FUNCTION pango_x_extents ##### -->
+<para>
+
+</para>
+
+@font: 
+@glyphs: 
+@lbearing: 
+@rbearing: 
+@width: 
+@ascent: 
+@descent: 
+@logical_ascent: 
+@logical_descent: 
+
+
+<!-- ##### FUNCTION pango_x_glyph_extents ##### -->
+<para>
+
+</para>
+
+@font: 
+@glyph: 
+@lbearing: 
+@rbearing: 
+@width: 
+@ascent: 
+@descent: 
+@logical_ascent: 
+@logical_descent: 
+
+
