@@ -3715,14 +3715,13 @@ pango_layout_run_get_extents (PangoLayoutRun *run,
                               PangoRectangle *run_ink,
                               PangoRectangle *run_logical)
 {
-  PangoUnderline uline = PANGO_UNDERLINE_NONE;
   ItemProperties properties;
   PangoRectangle tmp_ink;
   gboolean need_ink;
 
   pango_layout_get_item_properties (run->item, &properties);
 
-  need_ink = run_ink || uline == PANGO_UNDERLINE_LOW;
+  need_ink = run_ink || properties.uline == PANGO_UNDERLINE_LOW;
   
   if (properties.shape_set)
     imposed_extents (run->item->num_chars,
@@ -4321,6 +4320,62 @@ update_run (PangoLayoutIter *iter,
   iter->index = run_start_index;
 }
 
+static PangoLayoutIter *
+pango_layout_iter_copy (PangoLayoutIter *iter)
+{
+  PangoLayoutIter *new;
+  GSList *l;
+
+  new = g_new (PangoLayoutIter, 1);
+  
+  new->layout = g_object_ref (iter->layout);
+  new->line_list_link = iter->line_list_link;
+  new->line = iter->line;
+  pango_layout_line_ref (new->line);
+
+  new->run_list_link = iter->run_list_link;
+  new->run = iter->run;
+  new->index = iter->index;
+
+  new->logical_rect = iter->logical_rect;
+
+  new->line_extents = NULL;
+  new->line_extents_link = NULL;
+  for (l = iter->line_extents; l; l = l->next)
+    {
+      new->line_extents = g_slist_prepend (new->line_extents,
+					   g_memdup (l->data,
+						     sizeof (Extents)));
+      if (l == iter->line_extents_link)
+	new->line_extents_link = new->line_extents;
+    }
+
+  new->line_extents = g_slist_reverse (new->line_extents);
+  
+  new->run_x = iter->run_x;
+  new->run_logical_rect = iter->run_logical_rect;
+  new->ltr = iter->ltr;
+  
+  new->cluster_x = iter->cluster_x;
+  new->cluster_index = iter->cluster_index;
+  new->cluster_start = iter->cluster_start;
+  new->next_cluster_start = iter->next_cluster_start;
+
+  return new;
+}
+
+GType
+pango_layout_iter_get_type (void)
+{
+  static GType our_type = 0;
+  
+  if (our_type == 0)
+    our_type = g_boxed_type_register_static ("PangoLayoutIter",
+					     (GBoxedCopyFunc)pango_layout_iter_copy,
+					     (GBoxedFreeFunc)pango_layout_iter_free);
+
+  return our_type;
+}
 
 /**
  * pango_layout_get_iter:

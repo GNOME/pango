@@ -65,7 +65,6 @@ struct _PangoLayoutLine
 #define PANGO_IS_LAYOUT_CLASS(klass)   (G_TYPE_CHECK_CLASS_TYPE ((klass), PANGO_TYPE_LAYOUT))
 #define PANGO_LAYOUT_GET_CLASS(obj)    (G_TYPE_INSTANCE_GET_CLASS ((obj), PANGO_TYPE_LAYOUT, PangoLayoutClass))
 
-
 /* The PangoLayout and PangoLayoutClass structs are private; if you
  * need to create a subclass of these, mail otaylor@redhat.com
  */
@@ -194,6 +193,10 @@ void     pango_layout_line_get_pixel_extents (PangoLayoutLine *layout_line,
 					      PangoRectangle  *logical_rect);
 
 typedef struct _PangoLayoutIter PangoLayoutIter;
+
+#define PANGO_TYPE_LAYOUT_ITER         (pango_layout_iter_get_type ())
+
+GType            pango_layout_iter_get_type (void);
 
 PangoLayoutIter *pango_layout_get_iter  (PangoLayout     *layout);
 void             pango_layout_iter_free (PangoLayoutIter *iter);

@@ -1,3 +1,8 @@
+Thu Jun 24 00:50:46 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-layout.c (pango_layout_run_get_extents): Fix
+	bug with using wrong uline value.
+
 Wed Jun 23 17:26:50 2004  Owen Taylor  <otaylor@redhat.com>
 
 	* tests/Makefile.am (pango.modules): Don't generate
