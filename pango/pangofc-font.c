@@ -545,6 +545,12 @@ pango_fc_font_get_glyph (PangoFcFont *font,
 
   g_return_val_if_fail (PANGO_IS_FC_FONT (font), 0);
 
+  /* Replace NBSP with a normal space; it should be invariant that
+   * they shape the same other than breaking properties.
+   */
+  if (wc == 0xA0)
+	  wc = 0x20;
+
   if (priv->decoder)
     return pango_fc_decoder_get_glyph (priv->decoder, font, wc);
 

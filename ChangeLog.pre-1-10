@@ -1,3 +1,9 @@
+Thu Jul 15 10:48:01 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pangofc-font.c (pango_fc_font_get_glyph): Replace
+	non-breaking-space with a normal space before looking it up.
+	(Inspired by http://bugzilla.ximian.com/show_bug.cgi?id=60549)
+
 Wed Jul 14 17:47:38 2004  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pango-layout.[ch] pango/ellipsize.c pango/Makefile.am:
