@@ -2,13 +2,13 @@
 
 	* pango/Makefile.am (EXTRA_DIST): Add the pangowin32 sources.
 
-	* pango/pangox.c (lang_texts): Add some Latin-1 to the
+	* pango/pangox.c (lang_texts): Add some non-ASCII to the
 	Finnish and Swedish strings.
 
 	* modules/module.def: New file.
 
 	* modules/Makefile.am (EXTRA_DIST): Add it.
-	
+
 	* modules/basic/Makefile.am (EXTRA_DIST): Add basic-win32.c.
 
 	* */makefile.mingw: Small updates.
