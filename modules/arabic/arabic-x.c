@@ -130,18 +130,20 @@ find_unic_font (PangoFont *font,char* charsets[],PangoXSubfont* rfonts)
                         {
                             rfonts[0] = subfonts[i];
                             result   = 2;
+			    break;
                         }
                     if ( pango_x_has_glyph /* Shadda+Kasra */
                          (font,PANGO_X_MAKE_GLYPH(subfonts[i],0xFC62)))
                         {
                             result = 3; /* extra vowels in font, hopefully */
+			    break;
                         }
                     if ( pango_x_has_glyph /* Lam-Min alone */
                          (font,PANGO_X_MAKE_GLYPH(subfonts[i],0xFC42)))
                         {
                             result = 4; /* extra ligatures in font, hopefully */
+			    break;
                         }
-                    break;
                 }
         }
 

@@ -1,3 +1,11 @@
+Tue Apr  4 22:03:42 2000  Owen Taylor  <otaylor@redhat.com>
+
+	* configure.in: Released 0.9
+
+	* modules/arabic/arabic.c (find_unic_font): Keep on
+	searching past the first iso-10646 font if the first
+	font doesn't have the required ligatures.
+
 Tue Apr  4 20:56:29 2000  Owen Taylor  <otaylor@redhat.com>
 
 	* docs/tmpl/* docs/Makefile.am docs/pango-sections.txt
