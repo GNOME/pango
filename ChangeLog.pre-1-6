@@ -1,3 +1,8 @@
+Thu Jan 24 18:05:54 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-layout.c (get_items_log_attrs): Fix problems with
+	computing the length of the paragraph delimiter. (Reported by Evan Martin)
+
 2002-01-24  Sven Neumann  <sven@gimp.org>
 
 	* configure.in
