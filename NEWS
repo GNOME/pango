@@ -1,3 +1,25 @@
+Changes between 1.0.0 rc2 and 1.0.0
+
+* Updated README files.
+* Minor build fixes [Tor Lillqvist, Jacob Berkman]
+
+Changes between 1.0.0 rc1 and 1.0.0 rc2
+
+* Fix missing weight names when parsing font names [Arnaud Charlet]
+* Build fixes [Martin Gansser, Manish Singh]
+
+Changes between 0.26 and 1.0.0 rc1
+
+* Try to build libraries with only shared library dependencies
+  on Xft to deal with transition to Xft2.
+* Efficiency improvements for Xft backend
+* Bug, build and portability fixes
+
+Contributors: Jacob Berkman, Abel Cheung, David L. Cooper II, 
+  Miroslaw Dobrzanski-Neumann, , Dov Grobgeld, Alex Larsson, Tor Lillqvist, 
+  Sven Neumann, Gediminas Paulauskas, Manish Singh, Raymond Wan, 
+  Richard Warren.
+
 Changes between 0.25 and 0.26
 
 * Fixes for AIX compilation [Miroslaw Dobrzanski-Neumann]

@@ -1,5 +1,12 @@
-Owen Taylor <otaylor@redhat.com>
+Owen Taylor <otaylor@redhat.com>, with help from many others, including:
 
-Hangul module: Changwoo Ryu <cwryu@adam.kaist.ac.kr>
-Tamil module: Sivaraj Doddannan <sivaraj@intelligroup.com> 
+Robert Brady (Indic shapers), Hans Breuer (Windows backend), Matthias
+Clasen (Documentation), Sivaraj Doddannan (Tamil shaper), Dov Grobgeld
+(Hebrew shaper), Karl Koehler (Arabic shaper), Alex Larsson (FreeType
+and Windows backends), Tor Lillqvist (FreeType and Windows backends),
+Changwoo Ryu (Hangul shaper), Havoc Pennington, Roozbeh Pournader
+(Arabic shaper), Chookij Vanatham (Hebrew shaper).
+
+
+
 
