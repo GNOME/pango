@@ -24,7 +24,6 @@
 
 #include "pango/pango-context.h"
 #include "pango/pango-utils.h"
-#include "iconv.h"
 
 #include "pango-modules.h"
 

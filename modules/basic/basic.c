@@ -19,8 +19,6 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#include <iconv.h>
-
 #include <glib.h>
 #include "pango.h"
 #include "pangox.h"
@@ -63,7 +61,7 @@ struct _MaskTable
 struct _CharCache 
 {
   MaskTable *mask_tables[256];
-  iconv_t converters[MAX_CHARSETS];
+  GIConv converters[MAX_CHARSETS];
 };
 
 static PangoGlyph conv_8bit (CharCache  *cache,
@@ -135,7 +133,7 @@ char_cache_new (void)
   result = g_new0 (CharCache, 1);
 
   for (i=0; i<MAX_CHARSETS; i++)
-    result->converters[i] = (iconv_t)-1;
+    result->converters[i] = (GIConv)-1;
 
   return result;
 }
@@ -155,8 +153,8 @@ char_cache_free (CharCache *cache)
       }
 
   for (i=0; i<MAX_CHARSETS; i++)
-    if (cache->converters[i] != (iconv_t)-1)
-      iconv_close (cache->converters[i]);
+    if (cache->converters[i] != (GIConv)-1)
+      g_iconv_close (cache->converters[i]);
   
   g_free (cache);
 }
@@ -244,14 +242,14 @@ set_glyph (PangoFont *font, PangoGlyphString *glyphs, int i, int offset, PangoGl
   glyphs->glyphs[i].geometry.width = logical_rect.width;
 }
 
-static iconv_t
+static GIConv
 find_converter (CharCache *cache, Charset *charset)
 {
-  iconv_t cd = cache->converters[charset->index];
-  if (cd == (iconv_t)-1)
+  GIConv cd = cache->converters[charset->index];
+  if (cd == (GIConv)-1)
     {
-      cd = iconv_open  (charset->id, "UTF-8");
-      g_assert (cd != (iconv_t)-1);
+      cd = g_iconv_open  (charset->id, "UTF-8");
+      g_assert (cd != (GIConv)-1);
       cache->converters[charset->index] = cd;
     }
 
@@ -263,7 +261,7 @@ conv_8bit (CharCache  *cache,
 	   Charset     *charset,
 	   const char *input)
 {
-  iconv_t cd;
+  GIConv cd;
   char outbuf;
   
   const char *inptr = input;
@@ -275,7 +273,7 @@ conv_8bit (CharCache  *cache,
   
   cd = find_converter (cache, charset);
 
-  iconv (cd, (const char **)&inptr, &inbytesleft, &outptr, &outbytesleft);
+  g_iconv (cd, (char **)&inptr, &inbytesleft, &outptr, &outbytesleft);
 
   return (guchar)outbuf;
 }
@@ -285,7 +283,7 @@ conv_euc (CharCache  *cache,
 	  Charset     *charset,
 	  const char *input)
 {
-  iconv_t cd;
+  GIConv cd;
   char outbuf[2];
 
   const char *inptr = input;
@@ -297,7 +295,7 @@ conv_euc (CharCache  *cache,
   
   cd = find_converter (cache, charset);
 
-  iconv (cd, &inptr, &inbytesleft, &outptr, &outbytesleft);
+  g_iconv (cd, (char **)&inptr, &inbytesleft, &outptr, &outbytesleft);
 
   if ((guchar)outbuf[0] < 128)
     return outbuf[0];

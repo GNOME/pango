@@ -80,39 +80,6 @@ AC_SUBST(FRIBIDI_CFLAGS)
 AM_CONDITIONAL(HAVE_FRIBIDI, test x$have_fribidi = xyes)
 
 #
-# Checks for iconv
-#
-AC_ARG_WITH(libiconv, [ --with-libiconv     Use the libiconv library ],,with_libiconv=maybe)
-
-found_iconv=no
-
-if test "x$with_libiconv" != "xyes" ; then
-   # 
-   # Check in the C library 
-   #
-   AC_CHECK_FUNC(iconv_open, with_libiconv=no; found_iconv=yes)
-fi
-
-if test "x$with_libiconv" != "xno" ; then
-   #
-   # Check for libiconv
-   #
-   AC_CHECK_LIB(iconv, libiconv_open, with_libiconv=yes; found_iconv=yes)
-fi
-
-if test "x$found_iconv" = "xno" ; then
-   AC_MSG_ERROR([*** No iconv() implementation found in C library or libiconv])
-fi
-
-UNICODE_CFLAGS=
-UNICODE_LIBS=
-if test "x$with_libiconv" = "xyes" ; then
-  UNICODE_LIBS="-liconv"
-fi
-AC_SUBST(UNICODE_CFLAGS)
-AC_SUBST(UNICODE_LIBS)
-  
-#
 # Allow building some or all modules included
 #
 AC_ARG_WITH(included_modules, [ --with-included-modules=MODULE1,MODULE2,...     Build the given modules into Pango])

@@ -20,7 +20,6 @@
  */
 
 #include "pango.h"
-#include "iconv.h"
 #include "modules.h"
 
 static void add_engines (PangoContext     *context,
