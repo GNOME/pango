@@ -189,7 +189,7 @@ EXTRA_DIST =			\
 
 install-data-local:
 	($(mkinstalldirs) $(DESTDIR)$(sysconfdir)/pango; \
-	if ls $(DESTDIR)$(libdir)/pango/modules/*.so | grep -q 'so'; then \
+	if ls $(DESTDIR)$(libdir)/pango/modules/*.so | grep 'so' > /dev/null ; then \
           echo "Wrote $(DESTDIR)$(sysconfdir)/pango/pango.modules."; \
           $(top_builddir)/pango/pango-querymodules $(DESTDIR)$(libdir)/pango/modules/*.so \
 		> $(DESTDIR)$(sysconfdir)/pango/pango.modules; \

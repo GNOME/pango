@@ -1,3 +1,8 @@
+Wed May  9 10:11:06 2001  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/Makefile.am (install-data-local): Get rid
+	of grep -q (pointed out by Tony Graham).
+
 2001-05-06  Alexander Larsson  <alla@lysator.liu.se>
 
 	* configure.in:
