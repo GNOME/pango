@@ -1,3 +1,8 @@
+2004-11-30  Matthias Clasen  <mclasen@redhat.com>
+
+	* pango/pango-renderer.c (pango_renderer_default_prepare_run): Set
+	the background color instead of setting underline twice.
+
 2004-11-28  Theppitak Karoonboonyanan  <thep@linux.thai.net>
 
 	Add Lao support to Thai module. (#156781)

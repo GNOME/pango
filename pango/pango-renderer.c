@@ -1190,7 +1190,7 @@ pango_renderer_default_prepare_run (PangoRenderer  *renderer,
     strikethrough_color = fg_color;
 
   pango_renderer_set_color (renderer, PANGO_RENDER_PART_FOREGROUND, fg_color);
-  pango_renderer_set_color (renderer, PANGO_RENDER_PART_UNDERLINE, fg_color);
+  pango_renderer_set_color (renderer, PANGO_RENDER_PART_BACKGROUND, bg_color);
   pango_renderer_set_color (renderer, PANGO_RENDER_PART_UNDERLINE, underline_color);
   pango_renderer_set_color (renderer, PANGO_RENDER_PART_STRIKETHROUGH, strikethrough_color);
 }
