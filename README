@@ -5,17 +5,21 @@ For more information about Pango, see:
 
  http://www.labs.redhat.com/~otaylor/pango/index.html
 
-Requirements
+Dependencies
 ============
 
-You'll need Dov Grobgeld's FriBidi library. This
-is available frmo:
+You'll need a fairly capable implementation
+of iconv() - for instance the iconv from the
+GNU C library version 2.1
+
+Pango can optionally be compiled to use Dov Grobgeld's FriBidi
+library. This is available from:
 
  http://imagic.weizmann.ac.il/~dov/freesw/FriBidi/
 
-You'll also need a fairly capable implementation
-of iconv() - for instance the iconv from the
-GNU C library version 2.1
+If the --with-fribidi option is not given to configure, then
+Pango will use internal copies of the FriBidi routines.
+No functionality will be lost by using the internal routines.
 
 Notes
 =====

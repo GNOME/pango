@@ -27,6 +27,7 @@
 
 #include <fribidi/fribidi.h>
 
+#include "pango-utils.h"
 #include "pangowin32.h"
 #include "pangowin32-private.h"
 
@@ -673,7 +674,7 @@ get_font_metrics_from_string (PangoFont        *font,
   gunichar *text_ucs4;
   int n_chars, i;
   guint8 *embedding_levels;
-  FriBidiCharType base_dir = PANGO_DIRECTION_LTR;
+  PangoDirection base_dir = PANGO_DIRECTION_LTR;
   GSList *subfonts = NULL;
   
   n_chars = g_utf8_strlen (str, -1);
@@ -683,8 +684,8 @@ get_font_metrics_from_string (PangoFont        *font,
     return;
 
   embedding_levels = g_new (guint8, n_chars);
-  fribidi_log2vis_get_embedding_levels (text_ucs4, n_chars, &base_dir,
-					embedding_levels);
+  pango_log2vis_get_embedding_levels (text_ucs4, n_chars, &base_dir,
+				      embedding_levels);
   g_free (text_ucs4);
 
   last_shaper = NULL;

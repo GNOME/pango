@@ -22,8 +22,8 @@
 #include <string.h>
 #include <stdlib.h>
 
-#include <fribidi/fribidi.h>
-#include <pango/pango-context.h>
+#include "pango/pango-context.h"
+#include "pango/pango-utils.h"
 #include "iconv.h"
 
 #include "pango-modules.h"
@@ -531,7 +531,7 @@ pango_itemize (PangoContext      *context,
   gunichar *text_ucs4;
   int n_chars, i;
   guint8 *embedding_levels;
-  FriBidiCharType base_dir;
+  PangoDirection base_dir;
   PangoItem *item;
   const char *p;
   const char *next;
@@ -550,11 +550,8 @@ pango_itemize (PangoContext      *context,
   if (length == 0)
     return NULL;
 
-  if (context->base_dir == PANGO_DIRECTION_RTL)
-    base_dir = FRIBIDI_TYPE_RTL;
-  else
-    base_dir = FRIBIDI_TYPE_LTR;
-  
+  base_dir = context->base_dir;
+
   if (length == 0)
     return NULL;
 
@@ -568,7 +565,7 @@ pango_itemize (PangoContext      *context,
   n_chars = g_utf8_strlen (text + start_index, length);
   embedding_levels = g_new (guint8, n_chars);
 
-  fribidi_log2vis_get_embedding_levels (text_ucs4, n_chars, &base_dir,
+  pango_log2vis_get_embedding_levels (text_ucs4, n_chars, &base_dir,
 					embedding_levels);
 
   /* Storing these as ranges would be a lot more efficient,

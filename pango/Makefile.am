@@ -1,5 +1,10 @@
 ## Process this file with automake to create Makefile.in.
 
+if HAVE_FRIBIDI
+else
+SUBDIRS = mini-fribidi
+endif
+
 INCLUDES = 					\
 	-DSYSCONFDIR=\"$(sysconfdir)\" 		\
 	-DLIBDIR=\"$(libdir)\" 			\
@@ -42,6 +47,10 @@ libpangox_la_SOURCES = 	   \
 # scheme or the standard libtool scheme.
 #
 libpango_la_LDFLAGS = -release $(VERSION) $(GLIB_LIBS)
+if HAVE_FRIBIDI
+else
+libpango_la_LIBADD = mini-fribidi/libmini-fribidi.la
+endif
 
 libpangox_la_LDFLAGS = -release $(VERSION)
 libpangox_la_LIBADD = $(INCLUDED_MODULES)

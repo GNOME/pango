@@ -1,3 +1,21 @@
+Sun Nov 12 16:07:06 2000  Owen Taylor  <otaylor@redhat.com>
+
+	* configure.in pango/pango-utils.[ch] pango/Makefile.am
+	pango/mini-fribidi/*: Include a stripped-down version of fribidi
+	to avoid the extra dependency. No fribidi symbols are
+	exported so conflicts with the real fribidi should not
+	happen. Library can optionally be compiled with the 
+	real libfribidi.
+
+	* pango/pango-utils.[ch]: Wrappers for
+	fribidi_ functions when compiling with fribiid.
+	
+	* modules/basic/basic-ft2.c modules/basic/basic-win32.c
+	modules/basic/basic.c modules/thai/thai.c pango/Makefile.am
+	pango/itemize.c pango/pango-context.c pango/pangoft2.c
+	pango/pangowin32.c pango/pangox.c: Use pango_ versions of fribidi
+	functions.
+	
 2000-11-12  Robert Brady  <robert@suse.co.uk>
 
 	* pango/pango-indic.c (pango_shift_vowels): Don't corrupt the 

@@ -73,3 +73,13 @@ char *   pango_get_sysconf_subdirectory (void);
  */
 char *   pango_get_lib_subdirectory (void);
 
+
+/* A couple of routines from fribidi that we either wrap or
+ * provide ourselves.
+ */
+void     pango_log2vis_get_embedding_levels (gunichar       *str,
+					     int             len,
+					     PangoDirection *pbase_dir,
+					     guint8         *embedding_level_list);
+gboolean pango_get_mirror_char              (gunichar        ch,
+					     gunichar       *mirrored_ch);

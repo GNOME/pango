@@ -19,7 +19,6 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#include <fribidi/fribidi.h>
 #include "pango.h"
 #include "iconv.h"
 #include "modules.h"
@@ -98,7 +97,7 @@ pango_itemize (PangoContext   *context,
   shape_engines = g_new0 (PangoEngineInfo *, n_chars);
   lang_engines = g_new0 (PangoEngineInfo *, n_chars);
 
-  fribidi_log2vis_get_embedding_levels (text_ucs2, n_chars, &base_dir,
+  pango_log2vis_get_embedding_levels (text_ucs2, n_chars, &base_dir,
 					embedding_levels);
 
   /* Now, make shaping-engine affilitations for characters in

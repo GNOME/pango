@@ -34,26 +34,6 @@ AM_PATH_GLIB_2_0(1.3.1,,
                  AC_MSG_ERROR([GLib 1.3.1 is required for building Pango]),
 	         gmodule gobject)
 
-AC_PATH_PROG(FRIBIDI_CONFIG, fribidi-config, no)
-if test x$FRIBIDI_CONFIG = xno ; then
-  AC_MSG_ERROR([*** fribidi-config not found])
-fi
-
-if $FRIBIDI_CONFIG --cflags | grep lib/glib/include > /dev/null ; then
-  AC_MSG_ERROR([*** fribidi appears to be compiled against GLib-1.2.x.
-*** You must compile fribidi with GLib-1.3.1 or better.])
-fi
- 
-FRIBIDI_CFLAGS="`$FRIBIDI_CONFIG --cflags`"
-CFLAGS="$CFLAGS $FRIBIDI_CFLAGS"
-FRIBIDI_LIBS="`$FRIBIDI_CONFIG --libs`"
-AC_SUBST(FRIBIDI_LIBS)
-AC_SUBST(FRIBIDI_CFLAGS)
-
-AC_CHECK_LIB(fribidi, fribidi_map_range, :,
-	     AC_MSG_ERROR([*** libfribidi not found.]), $FRIBIDI_LIBS)
-
-
 AC_PATH_PROG(GLIB_CONFIG, glib-config-2.0, no)
 if test x$GLIB_CONFIG = xno ; then
   AC_MSG_ERROR([*** glib-config-2.0 not found])
@@ -64,6 +44,40 @@ GLIB_LIBS="`$GLIB_CONFIG --libs gmodule gobject`"
 AC_SUBST(GLIB_LIBS)
 AC_SUBST(GLIB_CFLAGS)
 
+#
+# Checks for fribidi
+#
+AC_ARG_WITH(fribidi, [ --with-fribidi     Use external fribidi library ],,with_fribidi=no)
+
+FRIBIDI_LIBS=""
+FRIBIDI_CFLAGS=""
+have_fribidi=no
+
+if test "x$with_fribidi" = "xyes" ; then
+   AC_PATH_PROG(FRIBIDI_CONFIG, fribidi-config, no)
+   if test x$FRIBIDI_CONFIG = xno ; then
+     AC_MSG_ERROR([*** fribidi-config not found])
+   fi
+
+   if $FRIBIDI_CONFIG --cflags | grep lib/glib/include > /dev/null ; then
+     AC_MSG_ERROR([*** fribidi appears to be compiled against GLib-1.2.x.
+     *** You must compile fribidi with GLib-1.3.1 or better.])
+   fi
+ 
+   FRIBIDI_CFLAGS="`$FRIBIDI_CONFIG --cflags`"
+   CFLAGS="$CFLAGS $FRIBIDI_CFLAGS"
+   FRIBIDI_LIBS="`$FRIBIDI_CONFIG --libs`"
+
+   AC_CHECK_LIB(fribidi, fribidi_get_mirror_char, :,
+	        AC_MSG_ERROR([*** libfribidi not found.]), $FRIBIDI_LIBS)
+
+   AC_DEFINE(HAVE_FRIBIDI)
+   have_fribidi=yes
+fi
+
+AC_SUBST(FRIBIDI_LIBS)
+AC_SUBST(FRIBIDI_CFLAGS)
+AM_CONDITIONAL(HAVE_FRIBIDI, test x$have_fribidi = xyes)
 
 #
 # Checks for iconv
@@ -258,6 +272,7 @@ AC_CHECK_HEADER(unistd.h, AC_DEFINE(HAVE_UNISTD_H))
 AC_OUTPUT([
 Makefile 
 pango/Makefile
+pango/mini-fribidi/Makefile
 pango/makefile.mingw
 pango/pango.rc
 pango/pangoft2.rc

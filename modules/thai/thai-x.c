@@ -24,7 +24,6 @@
 #include <glib.h>
 #include "pango.h"
 #include "pangox.h"
-#include <fribidi/fribidi.h>
 
 /* We handle the range U+0e01 to U+0e5b exactly
  */

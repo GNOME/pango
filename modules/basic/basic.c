@@ -24,7 +24,7 @@
 #include <glib.h>
 #include "pango.h"
 #include "pangox.h"
-#include <fribidi/fribidi.h>
+#include "pango-utils.h"
 
 typedef struct _CharRange CharRange;
 typedef struct _Charset Charset;
@@ -376,7 +376,7 @@ basic_engine_shape (PangoFont        *font,
   for (i=0; i < n_chars; i++)
     {
       gunichar wc;
-      FriBidiChar mirrored_ch;
+      gunichar mirrored_ch;
       PangoGlyph index;
       char buf[6];
       const char *input;
@@ -385,7 +385,7 @@ basic_engine_shape (PangoFont        *font,
 
       input = p;
       if (analysis->level % 2)
-	if (fribidi_get_mirror_char (wc, &mirrored_ch))
+	if (pango_get_mirror_char (wc, &mirrored_ch))
 	  {
 	    wc = mirrored_ch;
 	    

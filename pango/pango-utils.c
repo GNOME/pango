@@ -29,6 +29,10 @@
 #include "pango-font.h"
 #include "pango-utils.h"
 
+#ifdef HAVE_FRIBIDI
+#include <fribidi/fribidi.h>
+#endif
+
 #ifndef HAVE_FLOCKFILE
 #  define flockfile(f) (void)1
 #  define funlockfile(f) (void)1
@@ -895,3 +899,30 @@ pango_parse_stretch (const char            *str,
   return FALSE;
 }
 
+#ifdef HAVE_FRIBIDI
+
+void 
+pango_log2vis_get_embedding_levels (gunichar       *str,
+				    int             len,
+				    PangoDirection *pbase_dir,
+				    guint8         *embedding_level_list)
+{
+  FriBidiCharType fribidi_base_dir;
+
+  fribidi_base_dir = (*pbase_dir == PANGO_DIRECTION_LTR) ? FRIBIDI_TYPE_L : FRIBIDI_TYPE_R;
+
+  fribidi_log2vis_get_embedding_levels (str, len, &fribidi_base_dir,
+					embedding_level_list);
+  
+  *pbase_dir = (fribidi_base_dir == FRIBIDI_TYPE_L) ?  PANGO_DIRECTION_LTR : PANGO_DIRECTION_RTL;
+}
+
+
+gboolean 
+pango_get_mirror_char (gunichar        ch,
+		       gunichar       *mirrored_ch)
+{
+  return fribidi_get_mirror_char (ch, mirrored_ch); 
+}
+
+#endif /* HAVE_FRIBIDI */

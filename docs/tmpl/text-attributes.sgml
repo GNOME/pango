@@ -41,7 +41,6 @@ attribute is listed in parentheses after the description.
 @PANGO_ATTR_STRIKETHROUGH: whether the text is struck-through (#PangoAttrInt)
 @PANGO_ATTR_RISE: baseline displacement (#PangoAttrInt)
 @PANGO_ATTR_SHAPE: 
-@PANGO_ATTR_SCALE: 
 
 <!-- ##### STRUCT PangoAttrClass ##### -->
 <para>
@@ -99,14 +98,6 @@ a integer or enumeration value.
 @attr: the common portion of the attribute
 @value: the value of the attribute
 
-<!-- ##### STRUCT PangoAttrFloat ##### -->
-<para>
-
-</para>
-
-@attr: 
-@value: 
-
 <!-- ##### STRUCT PangoAttrFontDesc ##### -->
 <para>
 The #PangoAttrFontDesc structure is used to store an attribute that
@@ -124,21 +115,6 @@ sets all aspects of the font description at once.
 @attr: 
 @ink_rect: 
 @logical_rect: 
-
-<!-- ##### FUNCTION pango_parse_markup ##### -->
-<para>
-
-</para>
-
-@markup_text: 
-@length: 
-@accel_marker: 
-@attr_list: 
-@text: 
-@accel_char: 
-@error: 
-@Returns: 
-
 
 <!-- ##### FUNCTION pango_attr_type_register ##### -->
 <para>
@@ -295,15 +271,6 @@ sets all aspects of the font description at once.
 
 @ink_rect: 
 @logical_rect: 
-@Returns: 
-
-
-<!-- ##### FUNCTION pango_attr_scale_new ##### -->
-<para>
-
-</para>
-
-@scale_factor: 
 @Returns: 
 
 

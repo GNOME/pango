@@ -22,7 +22,7 @@
 #include <glib.h>
 #include "pango.h"
 #include "pangowin32.h"
-#include <fribidi/fribidi.h>
+#include "pango-utils.h"
 
 static PangoEngineRange basic_ranges[] = {
   /* Language characters */
@@ -178,13 +178,13 @@ basic_engine_shape (PangoFont        *font,
   for (i = 0; i < n_chars; i++)
     {
       gunichar wc;
-      FriBidiChar mirrored_ch;
+      gunichar mirrored_ch;
       PangoGlyph index;
 
       wc = g_utf8_get_char (p);
 
       if (analysis->level % 2)
-	if (fribidi_get_mirror_char (wc, &mirrored_ch))
+	if (pango_get_mirror_char (wc, &mirrored_ch))
 	  wc = mirrored_ch;
 
       if (wc == 0x200B || wc == 0x200E || wc == 0x200F)	/* Zero-width characters */
