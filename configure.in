@@ -810,7 +810,6 @@ examples/Makefile
 docs/Makefile
 tools/Makefile
 tests/Makefile
-pango.spec
 pango.pc
 pangox.pc
 pangowin32.pc
