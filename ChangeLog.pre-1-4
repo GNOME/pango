@@ -1,3 +1,8 @@
+2002-06-03  Sven Neumann  <sven@gimp.org>
+
+	* pango/pangoft2-fontmap.c (pango_ft2_font_map_list_families): set
+	n_families, fixes bug #83746.
+
 2002-05-28  Matthias Clasen  <maclas@gmx.de>
 
 	* docs/*: Produce XML, not SGML.

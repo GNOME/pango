@@ -439,13 +439,16 @@ pango_ft2_font_map_list_families (PangoFontMap           *fontmap,
       ft2fontmap->families[count++] = create_family (ft2fontmap, "Monospace");
 
       MiniXftFontSetDestroy (fontset);
+
+      ft2fontmap->n_families = count;
     }
   
   if (n_families)
     *n_families = ft2fontmap->n_families;
   
   if (families)
-    *families = g_memdup (ft2fontmap->families, ft2fontmap->n_families * sizeof (PangoFontFamily *));
+    *families = g_memdup (ft2fontmap->families,
+                          ft2fontmap->n_families * sizeof (PangoFontFamily *));
 }
 
 static int
