@@ -1,3 +1,7 @@
+2000-11-13  Havoc Pennington  <hp@redhat.com>
+
+	* examples/pangox.aliases: Add italic/bold variants
+
 2000-11-13  Elliot Lee  <sopwith@redhat.com>
 
 	Patches from long ago:

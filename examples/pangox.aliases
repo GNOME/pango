@@ -18,6 +18,9 @@ sans normal normal normal normal "-*-helvetica-medium-r-normal--*-*-*-*-*-*-*-*,
 -*-oriya-medium-r-normal--*-*-*-*-*-*-iso10646-ori,\
 -daewoo-mincho-medium-r-normal--*-*-*-*-*-*-ksc5601.1987-0"
 
+sans italic normal normal normal "-*-helvetica-medium-o-normal--*-*-*-*-*-*-*-*"
+sans normal normal bold normal "-*-helvetica-bold-r-normal--*-*-*-*-*-*-*-*"
+sans italic normal bold normal "-*-helvetica-bold-o-normal--*-*-*-*-*-*-*-*"
 
 serif normal normal normal normal "-*-times-medium-r-normal--*-*-*-*-*-*-*-*,\
 				  -*-clearlyu-medium-r-normal--*-*-*-*-*-*-iso10646-1,\
@@ -35,6 +38,10 @@ serif normal normal normal normal "-*-times-medium-r-normal--*-*-*-*-*-*-*-*,\
 -*-oriya-medium-r-normal--*-*-*-*-*-*-iso10646-ori,\
 -daewoo-mincho-medium-r-normal--*-*-*-*-*-*-ksc5601.1987-0"
 
+serif italic normal normal normal "-*-times-medium-i-normal--*-*-*-*-*-*-*-*"
+serif normal normal bold normal "-*-times-bold-r-normal--*-*-*-*-*-*-*-*"
+serif italic normal bold normal "-*-times-bold-i-normal--*-*-*-*-*-*-*-*"
+
 monospace normal normal normal normal "-*-fixed-medium-r-normal--*-*-*-*-*-*-*-*,\
 				       -*-clearlyu-medium-r-normal--*-*-*-*-*-*-iso10646-1,\
                                        -kaist-iyagi-bold-r-normal--*-*-*-*-*-*-johab-1,\
@@ -49,3 +56,7 @@ monospace normal normal normal normal "-*-fixed-medium-r-normal--*-*-*-*-*-*-*-*
 -*-buginese-medium-r-normal--*-*-*-*-*-*-iso10646-bgn,\
 -*-oriya-medium-r-normal--*-*-*-*-*-*-iso10646-ori,\
 -daewoo-mincho-medium-r-normal--*-*-*-*-*-*-ksc5601.1987-0"
+
+monospace italic normal normal normal "-*-fixed-medium-i-normal--*-*-*-*-*-*-*-*"
+monospace normal normal bold normal "-*-fixed-bold-r-normal--*-*-*-*-*-*-*-*"
+monospace italic normal bold normal "-*-fixed-bold-i-normal--*-*-*-*-*-*-*-*"
