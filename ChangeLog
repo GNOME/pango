@@ -1,3 +1,8 @@
+Tue Apr 15 03:43:54 2003  Owen Taylor  <otaylor@redhat.com>
+ 
+ 	* modules/indic/bengali-x.c (vowel_split): Fix missing
+ 	static. (#108693, Rick Jones)
+ 
 Mon Apr 14 07:52:25 2003  Owen Taylor  <otaylor@redhat.com>
 
 	* configure.in. modules/indic/Makefile.am modules/indic-ft2.c:
