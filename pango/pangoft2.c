@@ -718,6 +718,34 @@ pango_ft2_get_unknown_glyph (PangoFont *font)
   return 0;
 }
 
+
+static void
+pango_ft2_draw_hline (FT_Bitmap *bitmap,
+		      int        y,
+		      int        start,
+		      int        end)
+{
+  unsigned char *p;
+  int ix;
+
+  if (y < 0 || y >= bitmap->rows)
+    return;
+
+  if (end <= 0 || start >= bitmap->width)
+    return;
+  
+  if (start < 0)
+    start = 0;
+
+  if (end >= bitmap->width)
+    end = bitmap->width;
+
+  p = bitmap->buffer + y * bitmap->pitch + start;
+	      
+  for (ix = 0; ix < end - start; ix++)
+    *p++ = 0xff;
+}
+
 /**
  * pango_ft2_render_layout_line:
  * @bitmap:    a FT_Bitmap to render the line onto
@@ -737,10 +765,7 @@ pango_ft2_render_layout_line (FT_Bitmap       *bitmap,
   PangoRectangle overall_rect;
   PangoRectangle logical_rect;
   PangoRectangle ink_rect;
-  unsigned char *p;
-  int ix;
   int x_off = 0;
-  int x_limit;
 
   pango_layout_line_get_extents (line,NULL, &overall_rect);
   
@@ -765,32 +790,24 @@ pango_ft2_render_layout_line (FT_Bitmap       *bitmap,
       pango_ft2_render (bitmap, run->item->analysis.font, run->glyphs,
 			x + PANGO_PIXELS (x_off), y);
 
-      x_limit = PANGO_PIXELS (ink_rect.width);
       switch (uline)
 	{
 	case PANGO_UNDERLINE_NONE:
 	  break;
 	case PANGO_UNDERLINE_DOUBLE:
-	  p = bitmap->buffer +
-	    (y + 4) * bitmap->pitch +
-	    x + PANGO_PIXELS (x_off + ink_rect.x) - 1;
-
-	  for (ix = 0; ix < x_limit; ix++)
-	      *p++ = 0xff;
+	  pango_ft2_draw_hline (bitmap, y + 4,
+				x + PANGO_PIXELS (x_off + ink_rect.x),
+				x + PANGO_PIXELS (x_off + ink_rect.x + ink_rect.width));
 	  /* Fall through */
 	case PANGO_UNDERLINE_SINGLE:
-	  p = bitmap->buffer +
-	    (y + 2) * bitmap->pitch +
-	    x + PANGO_PIXELS (x_off + ink_rect.x) - 1;
-	  for (ix = 0; ix < x_limit; ix++)
-	      *p++ = 0xff;
+	  pango_ft2_draw_hline (bitmap, y + 2,
+				x + PANGO_PIXELS (x_off + ink_rect.x),
+				x + PANGO_PIXELS (x_off + ink_rect.x + ink_rect.width));
 	  break;
 	case PANGO_UNDERLINE_LOW:
-	  p = bitmap->buffer +
-	    (y + PANGO_PIXELS (ink_rect.y + ink_rect.height)) * bitmap->pitch +
-	    x + PANGO_PIXELS (x_off + ink_rect.x) - 1;
-	  for (ix = 0; ix < PANGO_PIXELS (ink_rect.width); ix++)
-	    *p++ = 0xff;
+	  pango_ft2_draw_hline (bitmap, y + PANGO_PIXELS (ink_rect.y + ink_rect.height),
+				x + PANGO_PIXELS (x_off + ink_rect.x),
+				x + PANGO_PIXELS (x_off + ink_rect.x + ink_rect.width));
 	  break;
 	}
 

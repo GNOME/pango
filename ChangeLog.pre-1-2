@@ -1,3 +1,8 @@
+2002-01-20  Alexander Larsson  <alla@lysator.liu.se>
+
+	* pango/pangoft2.c (pango_ft2_draw_hline):
+	Clean up underline drawing. Fixes segfaults.
+
 Sat Jan 19 11:50:32 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* configure.in: Add a AC_TRY_LINK() for	qt, since broken setups
