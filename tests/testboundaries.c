@@ -316,13 +316,14 @@ check_invariants (const char *text)
     fail ("Invalid UTF-8 in test text");
   
   len = g_utf8_strlen (text, -1);
-  attrs = g_new0 (PangoLogAttr, len);
+  attrs = g_new0 (PangoLogAttr, len + 1);
 
   pango_get_log_attrs (text,
                        -1,
                        0,
-                       "C",
-                       attrs);
+                       pango_language_from_string ("C"),
+                       attrs,
+                       len + 1);
   
   check_line_invariants (text, attrs);
   check_sentence_invariants (text, attrs);
