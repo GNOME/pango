@@ -6,7 +6,7 @@ PERL = perl
 !ENDIF
 
 # Possibly override Pango version from build/win32/module.defs
-PANGO_VER = 0.22
+PANGO_VER = 0.23
 
 # INCLUDES = -I .. -I .
 # DEFINES = -DPACKAGE=\"Pango\" -DVERSION=\"$(PANGO_VER)\"

@@ -786,7 +786,6 @@ a particular #PangoFontset implementation.
    in the fontset; see pango_fontset_get_metrics().
 @get_language: a function to get the language of the fontset.
 
-
 <!-- ##### FUNCTION pango_fontset_get_font ##### -->
 <para>
 
@@ -816,6 +815,7 @@ a particular #PangoFontset implementation.
 <para>
 The GObject type for #PangoFontsetSimple.
 </para>
+
 
 
 <!-- ##### FUNCTION pango_fontset_simple_new ##### -->

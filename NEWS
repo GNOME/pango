@@ -1,3 +1,17 @@
+Changes between 0.22 and 0.23
+
+* Documentation improvements [Matthias Clasen]
+* Win32 fixes [Hans Breuer]
+* Improve search for XftConfig [Manish Singh]
+* Fixes for crashes in Hangul shaper [Owen Taylor]
+* Improvements to Arabic shapers for X and Xft [Roozbeh Pournader]
+* Add jisx0212, jisx0201, Big5 support to basic shaper [HideToshi Tajima]
+* Many bug fixes
+
+Other contributors: Darin Adler, Dennis Dementiev, Sebastian Klemke, 
+  Alex Larsson, Sven Neumann, Joshua Pritikin, Padraig O'Briain, 
+  Kristian Rietveld, Sebastian Wilhelmi
+
 Changes between 0.21 and 0.22
 
 * Documentation improvements [Matthias Clasen]
