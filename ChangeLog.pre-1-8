@@ -1,3 +1,7 @@
+2003-08-08  Matthias Clasen  <maclas@gmx.de>
+
+	* docs/pango-docs.sgml: Add an index.
+
 Fri Aug  8 12:59:42 2003  Owen Taylor  <otaylor@redhat.com>
  
  	* pango/pangoft2-fontmap.c (pango_ft2_font_map_default_substitute):

@@ -51,5 +51,8 @@
     &pango-Engines;
     &pango-Indic-Engine-Support;
     &pango-Modules;
-    </chapter>
+  </chapter>
+
+  <index/>
+
 </book>
