@@ -1,3 +1,9 @@
+Fri Dec  1 11:49:50 2000  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-layout.c (get_tab_pos): Make sure that
+	we don't end up in an infinite loop due to zero-width
+	tabs. (Fix problem found by Hans Breuer)
+
 2000-12-01  Tor Lillqvist  <tml@iki.fi>
 
 	* pango/pango-utils.c (pango_get_sysconf_subdirectory): Use

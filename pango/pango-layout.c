@@ -1969,6 +1969,53 @@ uninsert_run (PangoLayoutLine *line)
   return item;
 }
 
+static void
+ensure_tab_width (PangoLayout *layout)
+{
+  if (layout->tab_width == -1)
+    {
+      /* Find out how wide 8 spaces are in the context's default
+       * font. Utter performance killer. :-(
+       */
+      PangoGlyphString *glyphs = pango_glyph_string_new ();
+      PangoItem *item;
+      GList *items;
+      int i;
+      
+      PangoAttrList *attrs = pango_attr_list_new ();
+      if (layout->font_desc)
+	{
+	  PangoAttribute *attr = pango_attr_font_desc_new (layout->font_desc);
+	  attr->start_index = 0;
+	  attr->end_index = layout->length;
+	  
+	  pango_attr_list_insert_before (attrs, attr);
+	}
+      
+      items = pango_itemize (layout->context, " ", 0, 1, attrs, NULL);
+      pango_attr_list_unref (attrs);
+      
+      item = items->data;
+      pango_shape ("        ", 8, &item->analysis, glyphs);
+      
+      pango_item_free (item);
+      g_list_free (items);
+      
+      layout->tab_width = 0;
+      for (i=0; i < glyphs->num_glyphs; i++)
+	layout->tab_width += glyphs->glyphs[i].geometry.width;
+      
+      pango_glyph_string_free (glyphs);
+
+      /* We need to make sure the tab_width is > 0 so finding tab positions
+       * terminates. This check should be necessary only under extreme
+       * problems with the font.
+       */
+      if (layout->tab_width <= 0)
+	layout->tab_width = 50 * PANGO_SCALE; /* pretty much arbitrary */
+    }
+}
+
 /* For now we only need the tab position, we assume
  * all tabs are left-aligned.
  */
@@ -2006,10 +2053,9 @@ get_tab_pos (PangoLayout *layout, int index)
       /* Extrapolate tab position, repeating the last tab gap to
        * infinity.
        */
-      
-      gint last_pos = 0;
-      gint next_to_last_pos = 0;
-      gint pos;
+      int last_pos = 0;
+      int next_to_last_pos = 0;
+      int tab_width;
       
       pango_tab_array_get_tab (layout->tabs, n_tabs - 1, NULL, &last_pos);
 
@@ -2018,53 +2064,29 @@ get_tab_pos (PangoLayout *layout, int index)
       else
         next_to_last_pos = 0;
 
-      pos = last_pos + ((last_pos - next_to_last_pos) * (index - n_tabs + 1));
-
       if (in_pixels)
-        return pos * PANGO_SCALE;
+	{
+	  next_to_last_pos *= PANGO_SCALE;
+	  last_pos *= PANGO_SCALE;
+	}
+      
+      if (last_pos > next_to_last_pos)
+	{
+	  tab_width = last_pos - next_to_last_pos;
+	}
       else
-        return pos;
+	{
+	  ensure_tab_width (layout);
+	  tab_width = layout->tab_width;
+	}
+
+      return last_pos + tab_width * (index - n_tabs + 1);
     }
   else
     {
-      /* No tab array set, so use default tab width */
-      
-      if (layout->tab_width == -1)
-        {
-          /* Find out how wide 8 spaces are in the context's default
-           * font. Utter performance killer. :-(
-           */
-          PangoGlyphString *glyphs = pango_glyph_string_new ();
-          PangoItem *item;
-          GList *items;
-          int i;
-
-          PangoAttrList *attrs = pango_attr_list_new ();
-          if (layout->font_desc)
-            {
-              PangoAttribute *attr = pango_attr_font_desc_new (layout->font_desc);
-              attr->start_index = 0;
-              attr->end_index = layout->length;
-	  
-              pango_attr_list_insert_before (attrs, attr);
-            }
-
-          items = pango_itemize (layout->context, " ", 0, 1, attrs, NULL);
-          pango_attr_list_unref (attrs);
-
-          item = items->data;
-          pango_shape ("        ", 8, &item->analysis, glyphs);
-      
-          pango_item_free (item);
-          g_list_free (items);
-
-          layout->tab_width = 0;
-          for (i=0; i < glyphs->num_glyphs; i++)
-            layout->tab_width += glyphs->glyphs[i].geometry.width;
-
-          pango_glyph_string_free (glyphs);
-        }
-
+      /* No tab array set, so use default tab width
+       */
+      ensure_tab_width (layout);
       return layout->tab_width * index;
     }
 }
@@ -2100,10 +2122,6 @@ shape_tab (PangoLayoutLine  *line,
   
   glyphs->log_clusters[0] = 0;
 
-  /* FIXME: this is making an endless loop under certain continditions.
-   * It happens with get_tab_pos () returning 0, cause there are no tabs. 
-   * HB: condition (i < line->layout->length) seems *not* to fix it.
-   */
   for (i=0;;i++)
     {
       int tab_pos = get_tab_pos (line->layout, i);
