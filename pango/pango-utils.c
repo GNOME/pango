@@ -498,7 +498,7 @@ read_config_file (const char *filename, gboolean enoent_error)
 	{
 	  gboolean empty = FALSE;
 	  gboolean append = FALSE;
-	  char *k, *v;
+	  char *v;
 
 	  if (!section)
 	    {
@@ -545,16 +545,12 @@ read_config_file (const char *filename, gboolean enoent_error)
 	  g_string_prepend_c (tmp_buffer1, '/');
 	  g_string_prepend (tmp_buffer1, section);
 
-	  /* Remove any existing values */
-	  if (g_hash_table_lookup_extended (config_hash, tmp_buffer1->str,
-					    (gpointer *)&k, (gpointer *)&v))
+	  if (append)
 	    {
-	      g_free (k);
-	      if (append)
-		{
-		  g_string_prepend (tmp_buffer2, v);
-		  g_free (v);
-		}
+	      /* Get any existing value */
+	      v = g_hash_table_lookup (config_hash, tmp_buffer1->str);
+	      if (v)
+		g_string_prepend (tmp_buffer2, v);
 	    }
 	      
 	  if (!empty)
@@ -594,7 +590,9 @@ read_config ()
       const char *home;
       const char *envvar;
       
-      config_hash = g_hash_table_new (g_str_hash, g_str_equal);
+      config_hash = g_hash_table_new_full (g_str_hash, g_str_equal,
+					   (GDestroyNotify)g_free,
+					   (GDestroyNotify)g_free);
       filename = g_build_filename (pango_get_sysconf_subdirectory (),
 				   "pangorc",
 				   NULL);

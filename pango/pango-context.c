@@ -26,6 +26,7 @@
 #include "pango/pango-utils.h"
 
 #include "pango-engine.h"
+#include "pango-engine-private.h"
 #include "pango-modules.h"
 
 struct _PangoContext
@@ -624,7 +625,7 @@ add_engines (PangoContext      *context,
 	analysis->shape_engine = NULL;
       
       if (analysis->shape_engine == NULL)
-        analysis->shape_engine = pango_get_fallback_shaper ();
+        analysis->shape_engine = _pango_get_fallback_shaper ();
       
       analysis->extra_attrs = extra_attrs;
     }

@@ -84,6 +84,20 @@ escape_string (const char *str)
   return g_string_free (result, FALSE);
 }
 
+/* Suppresses strict-aliasing warnings for gcc >= 3.3 */
+#if __GNUC__ > 3 || (__GNUC__ == 3 && __GNUC_MINOR__ >= 3)
+#define GET_SYMBOL(module,name,location) ({              \
+  gboolean result;					 \
+  void *tmp;                                             \
+  result = g_module_symbol (module, name, &tmp);         \
+  location = (typeof(location))tmp;                      \
+  result;                                                \
+})
+#else
+#define GET_SYMBOL(module,name,location)                 \
+  g_module_symbol (module, name, (gpointer *)&location);
+#endif
+
 void 
 query_module (const char *dir, const char *name)
 {
@@ -106,10 +120,10 @@ query_module (const char *dir, const char *name)
     g_printerr ("Cannot load module %s: %s\n", path, g_module_error ());
 	  
   if (module &&
-      g_module_symbol (module, "script_engine_list", (gpointer *) &list) &&
-      g_module_symbol (module, "script_engine_init", (gpointer *) &init) &&
-      g_module_symbol (module, "script_engine_exit", (gpointer *) &exit) &&
-      g_module_symbol (module, "script_engine_create", (gpointer *) &create))
+      GET_SYMBOL (module, "script_engine_list", list) &&
+      GET_SYMBOL (module, "script_engine_init", init) &&
+      GET_SYMBOL (module, "script_engine_exit", exit) &&
+      GET_SYMBOL (module, "script_engine_create", create))
     {
       gint i,j;
       PangoEngineInfo *engines;

@@ -100,6 +100,8 @@ GObjectClass *parent_class;
 static void build_map    (PangoMapInfo *info);
 static void init_modules (void);
 
+static GType pango_module_get_type (void);
+
 /**
  * pango_find_map:
  * @language: the language tag for which to find the map

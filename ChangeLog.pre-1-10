@@ -1,3 +1,30 @@
+Fri Aug 22 18:09:52 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/opentype/fterrcompat.h: Add some macro definitions
+	for gcc-3.3 that suppress the bogus strict-aliasing 
+	warnings.
+
+	* pango/pango-utils.c (read_config_file): Use 
+	g_hash_table_new_full() to simplify code and fix
+	gcc-3.3 warnings.
+
+	* pango/pangox-fontmap.c (pango_x_real_get_coverage_win)
+	* pango/querymodules.c (query_module): Suppress gcc-3.3
+	warnings.
+
+	* pango/modules.c (pango_find_map): Fix warning from
+	missing declaration of pango_module_get_type().
+
+	* pango/pango-context.c/pango-engine.c: Fix name confusion
+	for pango_get_fallback_shaper().
+
+Fri Aug 22 17:29:42 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* examples/Makefile.am (pango.modules): Add a dependency
+	on pango-querymodules... Really needs to depend on the
+	modules too, but this at least will reduce the chances
+	of it not getting rebuild when necessary.
+
 Thu Aug 21 00:29:46 2003  Soeren Sandmann  <sandmann@daimi.au.dk>
 
 	* pango/pangofc-fontmap.c (pango_fc_face_get_type): Remove

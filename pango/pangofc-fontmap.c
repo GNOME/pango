@@ -452,14 +452,14 @@ pango_fc_font_map_list_families (PangoFontMap      *fontmap,
       count = 0;
       for (i = 0; i < fontset->nfont; i++)
 	{
-	  char *s;
+	  FcChar8 *s;
 	  FcResult res;
 	  
 	  res = FcPatternGetString (fontset->fonts[i], FC_FAMILY, 0, (FcChar8 **) &s);
 	  g_assert (res == FcResultMatch);
 	  
 	  if (!is_alias_family (s))
-	    priv->families[count++] = create_family (fcfontmap, s);
+	    priv->families[count++] = create_family (fcfontmap, (gchar *)s);
 	}
 
       FcFontSetDestroy (fontset);
@@ -1014,14 +1014,14 @@ pango_fc_font_description_from_pattern (FcPattern *pattern, gboolean include_siz
   PangoWeight weight;
   double size;
   
-  char *s;
+  FcChar8 *s;
   int i;
 
   desc = pango_font_description_new ();
 
   g_assert (FcPatternGetString (pattern, FC_FAMILY, 0, (FcChar8 **) &s) == FcResultMatch);
 
-  pango_font_description_set_family (desc, s);
+  pango_font_description_set_family (desc, (gchar *)s);
   
   if (FcPatternGetInteger (pattern, FC_SLANT, 0, &i) == FcResultMatch)
     {

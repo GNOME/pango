@@ -151,7 +151,7 @@ static PANGO_DEFINE_TYPE (PangoFallbackEngine, pango_fallback_engine,
 			  PANGO_TYPE_ENGINE_SHAPE);
 
 PangoEngineShape *
-pango_get_fallback_shaper (void)
+_pango_get_fallback_shaper (void)
 {
   static PangoEngineShape *fallback_shaper = NULL;
   if (!fallback_shaper)

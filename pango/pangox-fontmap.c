@@ -545,7 +545,7 @@ pango_x_real_get_coverage_win (Display *display)
   int format;
   gulong n_items;
   gulong bytes_after;
-  Atom *data;
+  guchar *data;
   Window retval = None;
   int (*old_handler) (Display *, XErrorEvent *);
   
@@ -559,12 +559,12 @@ pango_x_real_get_coverage_win (Display *display)
 		      0, 4,
 		      False, XA_WINDOW,
 		      &type, &format, &n_items, &bytes_after,
-		      (guchar **)&data);
+		      &data);
   
   if (type == XA_WINDOW)
     {
       if (format == 32 && n_items == 1 && bytes_after == 0)
-	retval = *data;
+	retval = *(Atom *)data;
       
       XFree (data);
     }
@@ -577,11 +577,11 @@ pango_x_real_get_coverage_win (Display *display)
 			  0, 4,
 			  False, XA_WINDOW,
 			  &type, &format, &n_items, &bytes_after,
-			  (guchar **)&data) == Success &&
+			  &data) == Success &&
       type == XA_WINDOW)
     {
       if (format != 32 || n_items != 1 || bytes_after != 0 ||
-	  *data != retval)
+	  *(Atom *)data != retval)
 	retval = None;
       
       XFree (data);
