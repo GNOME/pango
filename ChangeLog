@@ -1,3 +1,9 @@
+Mon Sep 13 10:18:51 2004  Owen Taylor  <otaylor@redhat.com>
+
+ 	* pango/pango-context.c (itemize_state_process_run): 
+ 	Except ideographic spaces from the !g_unichar_isgraph() test.
+ 	(#145275, Federic Zhang)
+	
 Mon Sep 20 12:17:37 2004  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pangofc-font.c (get_face_metrics): 
