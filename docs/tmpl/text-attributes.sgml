@@ -354,6 +354,15 @@ The GObject type for #PangoUnderline.
 @Returns: 
 
 
+<!-- ##### FUNCTION pango_attr_fallback_new ##### -->
+<para>
+
+</para>
+
+@enable_fallback: 
+@Returns: 
+
+
 <!-- ##### MACRO PANGO_SCALE_XX_SMALL ##### -->
 <para>
 The scale factor for three shrinking steps (1 / (1.2 * 1.2 * 1.2)).

@@ -1,3 +1,15 @@
+Mon Mar  1 19:24:09 2004  Owen Taylor  <otaylor@redhat.com>
+
+	 * === Released 1.3.5 ===
+
+	* configure.in: Version 1.3.5 (1.3.4 skipped), interface age 0.
+	
+	* NEWS: Update
+
+	* modules/arabic/arabic-fc.c (arabic_engine_shape): 
+	Fix a crash from left-over handling of clusters
+	for non-spacing marks.
+
 Mon Mar  1 20:32:06 2004  Tim Janik  <timj@gtk.org>
 
         * autogen.sh:
@@ -127,7 +139,7 @@ Fri Feb 27 14:26:34 2004  Owen Taylor  <otaylor@redhat.com>
 	* modules/indic/indic-ot-class-tables.c (bengCharClasses):
 	Mark BENGALI LETTER A (U+0985) and BENGALI LETTER E (U+098F)
 	as consonants which gives better behavior when they
-	are combined wiht halant, though it isn't exactly right.
+	are combined with halant, though it isn't exactly right.
 	(#118299, Sayamindu Dasgupta)
 
 Fri Feb 27 11:24:50 2004  Owen Taylor  <otaylor@redhat.com>

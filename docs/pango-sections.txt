@@ -9,6 +9,7 @@ PangoDirection
 PANGO_TYPE_DIRECTION
 <SUBSECTION>
 pango_itemize
+pango_itemize_with_base_dir
 pango_item_free
 pango_item_copy
 pango_item_new
@@ -288,6 +289,7 @@ PangoUnderline
 PANGO_TYPE_UNDERLINE
 pango_attr_shape_new
 pango_attr_scale_new
+pango_attr_fallback_new
 PANGO_SCALE_XX_SMALL
 PANGO_SCALE_X_SMALL
 PANGO_SCALE_SMALL
@@ -719,6 +721,8 @@ pango_fc_font_get_type
 <FILE>opentype</FILE>
 PangoOTTag
 PangoOTInfo
+PangoOTBuffer
+PangoOTGlyph
 PangoOTRuleset
 PangoOTTableType
 pango_ot_info_get
@@ -728,8 +732,16 @@ pango_ot_info_find_feature
 pango_ot_info_list_scripts
 pango_ot_info_list_languages
 pango_ot_info_list_features
+pango_ot_buffer_new
+pango_ot_buffer_destroy
+pango_ot_buffer_clear
+pango_ot_buffer_add_glyph
+pango_ot_buffer_set_rtl
+pango_ot_buffer_get_glyphs
+pango_ot_buffer_output
 pango_ot_ruleset_new
 pango_ot_ruleset_add_feature
-pango_ot_ruleset_shape
+pango_ot_ruleset_substitute
+pango_ot_ruleset_position
 </SECTION>
 

@@ -291,6 +291,7 @@ arabic_engine_shape (PangoEngineShape *engine,
       PangoGlyph index;
       char buf[6];
       const char *input;
+      int cluster = 0;
 
       wc = g_utf8_get_char (p);
 
@@ -328,14 +329,11 @@ arabic_engine_shape (PangoEngineShape *engine,
 	    }
 	  else
 	    {
+	      if (g_unichar_type (wc) != G_UNICODE_NON_SPACING_MARK)
+		cluster = p - text;
+		    
 	      pango_ot_buffer_add_glyph (buffer, index,
-					 properties[i], p - text);
-	      
-	      if (g_unichar_type (wc) == G_UNICODE_NON_SPACING_MARK)
-		{
-		  if (i > 0)
-		    glyphs->log_clusters[i] = glyphs->log_clusters[i-1];
-		}
+					 properties[i], cluster);
 	    }
 	}
       

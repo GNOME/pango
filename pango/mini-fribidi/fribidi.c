@@ -1050,13 +1050,6 @@ pango_log2vis_get_embedding_levels (/* input */
   return TRUE;
 }
 
-/**
- * pango_unichar_direction:
- * @ch: character to examine
- *
- * Returns the direction of a character, as used in the
- *  Unicode bidirectional algorithm.
- */
 PangoDirection
 pango_unichar_direction (gunichar ch)
 {

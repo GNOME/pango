@@ -1121,7 +1121,6 @@ pango_itemize_with_base_dir (PangoContext      *context,
  * @context:   a structure holding information that affects
                the itemization process.
  * @text:      the text to itemize.
- * @base_dir:  base direction to use for BiDi algorithm.
  * @start_index: first byte in @text to process
  * @length:    the number of bytes (not characters) to process
  *             after @start_index.

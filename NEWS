@@ -1,6 +1,17 @@
+Overview of changes between 1.3.3 and 1.3.5
+===========================================
+* Add support for automatically determining the base direction for
+  PangoLayout from the contained text [Dov Grobgeld]
+* Major rework of internal opentype interfaces to fix
+  problems with GPOS. Turn on GPOS handling for Arabic.
+* Add a PangoAttribute to turn off font fallback [Noah Levitt]
+* Add wavy error-indication underlines [Nicolas Setton]
+* Improve handling of BENGALI LETTER A/E [Sayamindu Dasgupta]
+* Win32 bug fixes and improvements [J. Ali Harlow, Hans Breuer]
+* Misc bug fixes [Noah, Roozbeh Pournader]
+
 Overview of changes between 1.3.2 and 1.3.3
 ===========================================
-
 * Add pango_font_face_list_sizes() [Noah Levitt]
 * Add pango_font_family_is_monospace [Noah]
 * Do OpenType processing for CFF fonts [Manjunath Sripadarao]

@@ -33,6 +33,23 @@ use pango_ot_info_new().
 </para>
 
 
+<!-- ##### STRUCT PangoOTBuffer ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### STRUCT PangoOTGlyph ##### -->
+<para>
+
+</para>
+
+@glyph: 
+@properties: 
+@cluster: 
+@component: 
+@ligID: 
+
 <!-- ##### STRUCT PangoOTRuleset ##### -->
 <para>
 The <structname>PangoOTRuleSet</structname> structure holds a
@@ -61,10 +78,10 @@ identify the various OpenType tables in the
 
 </para>
 
-@font: 
+@face: 
 @Returns: 
 <!-- # Unused Parameters # -->
-@face: 
+@font: 
 
 
 <!-- ##### FUNCTION pango_ot_info_find_script ##### -->
@@ -142,6 +159,70 @@ identify the various OpenType tables in the
 @Returns: 
 
 
+<!-- ##### FUNCTION pango_ot_buffer_new ##### -->
+<para>
+
+</para>
+
+@font: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_ot_buffer_destroy ##### -->
+<para>
+
+</para>
+
+@buffer: 
+
+
+<!-- ##### FUNCTION pango_ot_buffer_clear ##### -->
+<para>
+
+</para>
+
+@buffer: 
+
+
+<!-- ##### FUNCTION pango_ot_buffer_add_glyph ##### -->
+<para>
+
+</para>
+
+@buffer: 
+@glyph_index: 
+@properties: 
+@cluster: 
+
+
+<!-- ##### FUNCTION pango_ot_buffer_set_rtl ##### -->
+<para>
+
+</para>
+
+@buffer: 
+@rtl: 
+
+
+<!-- ##### FUNCTION pango_ot_buffer_get_glyphs ##### -->
+<para>
+
+</para>
+
+@buffer: 
+@glyphs: 
+@n_glyphs: 
+
+
+<!-- ##### FUNCTION pango_ot_buffer_output ##### -->
+<para>
+
+</para>
+
+@buffer: 
+@glyphs: 
+
+
 <!-- ##### FUNCTION pango_ot_ruleset_new ##### -->
 <para>
 
@@ -160,5 +241,23 @@ identify the various OpenType tables in the
 @table_type: 
 @feature_index: 
 @property_bit: 
+
+
+<!-- ##### FUNCTION pango_ot_ruleset_substitute ##### -->
+<para>
+
+</para>
+
+@ruleset: 
+@buffer: 
+
+
+<!-- ##### FUNCTION pango_ot_ruleset_position ##### -->
+<para>
+
+</para>
+
+@ruleset: 
+@buffer: 
 
 

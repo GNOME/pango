@@ -83,6 +83,21 @@ The GObject type for #PangoDirection.
 @Returns: 
 
 
+<!-- ##### FUNCTION pango_itemize_with_base_dir ##### -->
+<para>
+
+</para>
+
+@context: 
+@base_dir: 
+@text: 
+@start_index: 
+@length: 
+@attrs: 
+@cached_iter: 
+@Returns: 
+
+
 <!-- ##### FUNCTION pango_item_free ##### -->
 <para>
 
@@ -253,11 +268,14 @@ The GObject type for #PangoDirection.
 
 <!-- ##### FUNCTION pango_unichar_direction ##### -->
 <para>
-
+Determines the direction of a character; either
+%PANGO_DIRECTION_LTR, %PANGO_DIRECTION_LTR, or
+%PANGO_DIRECTION_NEUTRAL.
 </para>
 
-@ch: 
-@Returns: 
+@ch: character to examine
+@Returns:  the direction of a character, as used in the
+  Unicode bidirectional algorithm.
 
 
 <!-- ##### FUNCTION pango_find_base_dir ##### -->
