@@ -126,89 +126,47 @@ static int nscripts;
 #endif
 
 #ifdef HAVE_USP10_H
-static PangoEngineRange uniscribe_ranges[] = {
+static PangoEngineScriptInfo uniscribe_scripts[] = {
   /* We claim to cover everything ;-) */
-  { 0x0020, 0xffee, "*" }
+  { PANGO_SCRIPT_COMMON,  "" },
 };
 #endif
 
-static PangoEngineRange basic_ranges[] = {
+static PangoEngineScriptInfo basic_scripts[] = {
   /* Those characters that can be rendered legibly without Uniscribe.
    * I am not certain this list is correct.
    */
+  { PANGO_SCRIPT_ARMENIAN, "*" },
+  { PANGO_SCRIPT_BOPOMOFO, "*" },
+  { PANGO_SCRIPT_CHEROKEE, "*" },
+  { PANGO_SCRIPT_COPTIC,   "*" },
+  { PANGO_SCRIPT_CYRILLIC, "*" },
+  { PANGO_SCRIPT_DESERET,  "*" },
+  { PANGO_SCRIPT_ETHIOPIC, "*" },
+  { PANGO_SCRIPT_GEORGIAN, "*" },
+  { PANGO_SCRIPT_GOTHIC,   "*" },
+  { PANGO_SCRIPT_GREEK,    "*" },
+  { PANGO_SCRIPT_HAN,      "*" },
+  { PANGO_SCRIPT_HANGUL,   "*" },
+  { PANGO_SCRIPT_HIRAGANA, "*" },
+  { PANGO_SCRIPT_KATAKANA, "*" },
+  { PANGO_SCRIPT_LATIN,    "*" },
+  { PANGO_SCRIPT_OGHAM,    "*" },
+  { PANGO_SCRIPT_OLD_ITALIC, "*" },
+  { PANGO_SCRIPT_RUNIC,     "*" },
+  { PANGO_SCRIPT_THAI,      "*" },
+  { PANGO_SCRIPT_CANADIAN_ABORIGINAL, "*" },
+  { PANGO_SCRIPT_YI,       "*" },
+  { PANGO_SCRIPT_BRAILLE,  "*" },
+  { PANGO_SCRIPT_CYPRIOT,  "*" },
+  { PANGO_SCRIPT_LIMBU,    "*" },
+  { PANGO_SCRIPT_OSMANYA,  "*" },
+  { PANGO_SCRIPT_SHAVIAN,  "*" },
+  { PANGO_SCRIPT_LINEAR_B, "*" },
+  { PANGO_SCRIPT_UGARITIC, "*" },
 
-  /* Basic Latin, Latin-1 Supplement, Latin Extended-A, Latin Extended-B,
-   * IPA Extensions
-   */
-  { 0x0020, 0x02af, "*" },
-
-  /* Spacing Modifier Letters */
-  { 0x02b0, 0x02ff, "" },
-
-  /* Not covered: Combining Diacritical Marks */
-
-  /* Greek, Cyrillic, Armenian */
-  { 0x0380, 0x058f, "*" },
-
-  /* Hebrew */
-  { 0x0591, 0x05f4, "*" },
-
-  /* Arabic */
-  { 0x060c, 0x06f9, "" },
-
-  /* Not covered: Syriac, Thaana, Devanagari, Bengali, Gurmukhi, Gujarati,
-   * Oriya, Tamil, Telugu, Kannada, Malayalam, Sinhala
-   */
-
-  /* Thai */
-  { 0x0e01, 0x0e5b, "" },
-
-  /* Not covered: Lao, Tibetan, Myanmar */
-
-  /* Georgian */
-  { 0x10a0, 0x10ff, "*" },
-
-  /* Not covered: Hangul Jamo */
-
-  /* Ethiopic, Cherokee, Unified Canadian Aboriginal Syllabics, Ogham,
-   * Runic */
-  { 0x1200, 0x16ff, "*" },
-
-  /* Not covered: Khmer, Mongolian */
-
-  /* Latin Extended Additional, Greek Extended */
-  { 0x1e00, 0x1fff, "*" },
-
-  /* General Punctuation, Superscripts and Subscripts, Currency
-   * Symbols, Combining Marks for Symbols, Letterlike Symbols, Number
-   * Forms, Arrows, Mathematical Operators, Miscellaneous Technical,
-   * Control Pictures, Optical Character Recognition, Enclosed
-   * Alphanumerics, Box Drawing, Block Elements, Geometric Shapes,
-   * Miscellaneous Symbols, Dingbats, Braille Patterns, CJK Radicals
-   * Supplement, Kangxi Radicals, Ideographic Description Characters,
-   * CJK Symbols and Punctuation, Hiragana, Katakana, Bopomofo, Hangul
-   * Compatibility Jamo, Kanbun, Bopomofo Extended, Enclosed CJK
-   * Letters and Months, CJK Compatibility, CJK Unified Ideographs
-   * Extension A, CJK Unified Ideographs, Yi Syllables, Yi Radicals
-   */
-  { 0x2000, 0xa4c6, "*" },
-
-  /* Hangul Syllables */
-  { 0xac00, 0xd7a3, "kr" },
-
-  /* Not covered: Private Use */
-
-  /* CJK Compatibility Ideographs (partly) */
-  { 0xf900, 0xfa0b, "kr" },
-
-  /* Not covered: CJK Compatibility Ideographs (partly), Alphabetic
-   * Presentation Forms, Arabic Presentation Forms-A, Combining Half
-   * Marks, CJK Compatibility Forms, Small Form Variants, Arabic
-   * Presentation Forms-B, Specials
-   */
-
-  /* Halfwidth and Fullwidth Forms */
-  { 0xff00, 0xffed, "*" }
+  /* Claim to handle everything as a fallback */
+  { PANGO_SCRIPT_COMMON,   "" }
 };
 
 static PangoEngineInfo script_engines[] = {
@@ -1189,8 +1147,8 @@ PANGO_MODULE_ENTRY(list) (PangoEngineInfo **engines,
 {
   init_uniscribe ();
 
-  script_engines[0].ranges = basic_ranges;
-  script_engines[0].n_ranges = G_N_ELEMENTS (basic_ranges);
+  script_engines[0].scripts = basic_scripts;
+  script_engines[0].n_scripts = G_N_ELEMENTS (basic_scripts);
 
 #ifdef HAVE_USP10_H
   if (have_uniscribe)

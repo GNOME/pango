@@ -468,7 +468,7 @@ pango_script_get_type
 <TITLE>Engines</TITLE>
 <FILE>engines</FILE>
 PangoEngineInfo
-PangoEngineRange
+PangoEngineScriptInfo
 PangoEngine
 PangoEngineClass
 PANGO_RENDER_TYPE_NONE

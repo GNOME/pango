@@ -40,8 +40,6 @@ for the codepoint to which this entry belongs and also whether the engine
 matches the language tag for this entry's map exactly or just approximately.
 </para>
 
-@info: 
-@is_exact: 
 
 <!-- ##### FUNCTION pango_find_map ##### -->
 <para>
@@ -54,24 +52,16 @@ matches the language tag for this entry's map exactly or just approximately.
 @Returns: 
 
 
-<!-- ##### FUNCTION pango_map_get_entry ##### -->
-<para>
-
-</para>
-
-@map: 
-@wc: 
-@Returns: 
-
-
 <!-- ##### FUNCTION pango_map_get_engine ##### -->
 <para>
 
 </para>
 
 @map: 
-@wc: 
+@script: 
 @Returns: 
+<!-- # Unused Parameters # -->
+@wc: 
 
 
 <!-- ##### FUNCTION pango_module_register ##### -->

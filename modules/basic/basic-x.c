@@ -83,6 +83,7 @@ struct _CharCache
   CharsetOrdering *ordering;
   MaskTable *mask_tables[256];
   GIConv converters[MAX_CHARSETS];
+  PangoCoverage *coverage;
 };
 
 struct _CharCachePointer
@@ -115,25 +116,8 @@ static PangoGlyph conv_euctw (CharCache  *cache,
 
 #include "tables-big.i"
 
-static PangoEngineRange basic_ranges[] = {
-  /* Language characters */
-  { 0x0000, 0x02af, "*" },
-  { 0x02b0, 0x02ff, "" },
-  { 0x0380, 0x058f, "*" },
-  { 0x0591, 0x05f4, "" }, /* Hebrew */
-  { 0x060c, 0x06f9, "" }, /* Arabic */
-  { 0x0e01, 0x0e5b, "" },  /* Thai */
-  { 0x10a0, 0x10ff, "*" }, /* Georgian */
-  { 0x1200, 0x16ff, "*" }, /* Ethiopic,Cherokee,Canadian,Ogham,Runic */
-  { 0x1e00, 0x1fff, "*" },
-  { 0x2000, 0x33ff, "*" },
-  { 0x3400, 0x9fa5, "*" }, /* Unihan */
-  { 0xa000, 0xa4c6, "*" }, /* Yi */
-  { 0xac00, 0xd7a3, "" },
-  { 0xe000, 0xf7ee, "*" }, /* HKSCS-1999 */
-  { 0xf900, 0xfa2d, "*" }, /* CJK Compatibility Ideographs */
-  { 0xfe30, 0xfe6b, "*" }, /* CJK Compatibility Forms and Small Form Variants */
-  { 0xff00, 0xffee, "*" }  /* Halfwidth and Fullwidth Forms */
+static PangoEngineScriptInfo basic_scripts[] = {
+  { PANGO_SCRIPT_COMMON,  "" },
 };
 
 static PangoEngineInfo script_engines[] = {
@@ -141,7 +125,7 @@ static PangoEngineInfo script_engines[] = {
     SCRIPT_ENGINE_NAME,
     PANGO_ENGINE_TYPE_SHAPE,
     PANGO_RENDER_TYPE_X,
-    basic_ranges, G_N_ELEMENTS(basic_ranges)
+    basic_scripts, G_N_ELEMENTS(basic_scripts)
   }
 };
 
@@ -684,31 +668,24 @@ basic_engine_shape (PangoEngineShape *engine,
     }
 }
 
-static PangoCoverage *
-basic_engine_get_coverage (PangoEngineShape *engine,
-			   PangoFont        *font,
-			   PangoLanguage    *lang)
+static PangoCoverageLevel
+basic_engine_covers (PangoEngineShape *engine,
+		     PangoFont        *font,
+		     PangoLanguage    *lang,
+		     gunichar          wc)
 {
   CharCache *cache = get_char_cache (font, lang);
-  PangoCoverage *result = pango_coverage_new ();
-  gunichar wc;
+  char buf[6];
 
-  for (wc = 0; wc < 65536; wc++)
-    {
-      char buf[6];
+  g_unichar_to_utf8 (wc, buf);
 
-      g_unichar_to_utf8 (wc, buf);
-      if (find_char (cache, font, wc, buf))
-	pango_coverage_set (result, wc, PANGO_COVERAGE_EXACT);
-    }
-
-  return result;
+  return find_char (cache, font, wc, buf) ? PANGO_COVERAGE_EXACT : PANGO_COVERAGE_NONE;
 }
 
 static void
 basic_engine_x_class_init (PangoEngineShapeClass *class)
 {
-  class->get_coverage = basic_engine_get_coverage;
+  class->covers = basic_engine_covers;
   class->script_shape = basic_engine_shape;
 }
 

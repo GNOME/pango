@@ -187,7 +187,8 @@ pango_win32_font_map_class_init (PangoFontMapClass *class)
   object_class->finalize = pango_win32_font_map_finalize;
   class->load_font = pango_win32_font_map_load_font;
   class->list_families = pango_win32_font_map_list_families;
-
+  class->shape_engine_type = PANGO_RENDER_TYPE_WIN32;
+  
   pango_win32_get_dc ();
 }
 

@@ -249,3 +249,24 @@ pango_font_map_real_load_fontset (PangoFontMap               *fontmap,
 
   return PANGO_FONTSET (fonts);
 }
+
+/**
+ * pango_font_map_get_shape_engine_type:
+ * @fontmap: a #PangoFontmap
+ * 
+ * Returns the render ID for shape engines for this fontmap.
+ * See the <structfield>render_type</structfield> field of
+ * #PangoEngineInfo.
+  * 
+ * Return value: the ID string for shape engines for
+ *  this fontmap. Owned by Pango, should not be modified
+ *  or freed.
+ **/
+const char *
+pango_font_map_get_shape_engine_type (PangoFontMap *fontmap)
+{
+  g_return_val_if_fail (PANGO_IS_FONT_MAP (fontmap), NULL);
+  
+  return PANGO_FONT_MAP_GET_CLASS (fontmap)->shape_engine_type;
+}
+

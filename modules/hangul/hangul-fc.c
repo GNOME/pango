@@ -36,11 +36,8 @@ typedef PangoEngineShapeClass HangulEngineFcClass ;
 #define SCRIPT_ENGINE_NAME "HangulScriptEngineFc"
 #define RENDER_TYPE PANGO_RENDER_TYPE_FC
 
-static PangoEngineRange hangul_ranges[] = {
-  /* Language characters */
-  { 0x1100, 0x11ff, "*" }, /* Hangul Jamo */
-  { 0x302e, 0x302f, "*" }, /* Hangul Tone Marks */
-  { 0xac00, 0xd7a3, "*" }, /* Hangul Syllables */
+static PangoEngineScriptInfo hangul_scripts[] = {
+  { PANGO_SCRIPT_HANGUL, "*" }
 };
 
 static PangoEngineInfo script_engines[] = {
@@ -48,7 +45,7 @@ static PangoEngineInfo script_engines[] = {
     SCRIPT_ENGINE_NAME,
     PANGO_ENGINE_TYPE_SHAPE,
     RENDER_TYPE,
-    hangul_ranges, G_N_ELEMENTS(hangul_ranges)
+    hangul_scripts, G_N_ELEMENTS(hangul_scripts)
   }
 };
 

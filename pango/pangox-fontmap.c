@@ -220,6 +220,7 @@ pango_x_font_map_class_init (PangoFontMapClass *class)
   object_class->finalize = pango_x_font_map_finalize;
   class->load_font = pango_x_font_map_load_font;
   class->list_families = pango_x_font_map_list_families;
+  class->shape_engine_type = PANGO_RENDER_TYPE_X;
 }
 
 /*
@@ -1527,7 +1528,6 @@ pango_x_face_get_coverage (PangoXFace      *xface,
   PangoXFont *xfont;
   PangoXFontMap *xfontmap = NULL; /* Quiet gcc */
   PangoCoverage *result = NULL;
-  GHashTable *coverage_hash;
   Atom atom = None;
 
   if (xface)
@@ -1553,42 +1553,28 @@ pango_x_face_get_coverage (PangoXFace      *xface,
 
   if (!result)
     {
-      guint32 ch;
       PangoMap *shape_map;
-      PangoCoverage *coverage;
-      PangoCoverageLevel font_level;
-      PangoMapEntry *map_entry;
-      
+      PangoEngineShape *engine;
+      gunichar wc;
+
       result = pango_coverage_new ();
       
-      coverage_hash = g_hash_table_new (g_str_hash, g_str_equal);
-      
       shape_map = pango_x_get_shaper_map (language);
+      engine = (PangoEngineShape *)pango_map_get_engine (shape_map, PANGO_SCRIPT_COMMON);
       
-      for (ch = 0; ch < 65536; ch++)
+      for (wc = 0; wc < 65536; wc++)
 	{
-	  map_entry = pango_map_get_entry (shape_map, ch);
-	  if (map_entry->info)
-	    {
-	      coverage = g_hash_table_lookup (coverage_hash, map_entry->info->id);
-	      if (!coverage)
-		{
-		  PangoEngineShape *engine = (PangoEngineShape *)pango_map_get_engine (shape_map, ch);
-		  coverage = _pango_engine_shape_get_coverage (engine, font, language);
-		  g_hash_table_insert (coverage_hash, map_entry->info->id, coverage);
-		}
-	  
-	      font_level = pango_coverage_get (coverage, ch);
-	      if (font_level == PANGO_COVERAGE_EXACT && !map_entry->is_exact)
-		font_level = PANGO_COVERAGE_APPROXIMATE;
-	      
-	      if (font_level != PANGO_COVERAGE_NONE)
-		pango_coverage_set (result, ch, font_level);
-	    }
+	  PangoCoverageLevel level;
+
+	  level = _pango_engine_shape_covers (engine, font, language, wc);
+	  if (level != PANGO_COVERAGE_NONE)
+	    pango_coverage_set (result, wc, level);
 	}
       
-      g_hash_table_foreach (coverage_hash, free_coverages_foreach, NULL);
-      g_hash_table_destroy (coverage_hash);
+      return result;
+
+      
+      result = _pango_engine_shape_get_coverage (engine, font, language);
 
       if (atom)
 	pango_x_store_cached_coverage (xfontmap, atom, result);

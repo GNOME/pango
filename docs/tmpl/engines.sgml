@@ -37,23 +37,20 @@ engine. It contains the following fields:
 @id: a unique string ID for the engine.
 @engine_type: a string identifying the engine type.
 @render_type: a string identifying the render type.
-@ranges: a pointer to an array of #PangoEngineRange
-         structures. Each structure contains information
-         about a range of Unicode code points that
-         this engine handles.
-@n_ranges: the number of elements in <structfield>ranges</structfield>.
+@scripts: 
+@n_scripts: 
 
-<!-- ##### STRUCT PangoEngineRange ##### -->
+<!-- ##### STRUCT PangoEngineScriptInfo ##### -->
 <para>
-The PangoEngineRange structure contains
-information about a range of Unicode code
-points. It contains the following fields:
+The PangoEngineScriptInfo structure contains
+information about how the shaper covers a particular
+script.
 </para>
 
-@start: the first code point in the range.
-@end: the last code point for the range.
+@script: a #PangoScript. The value %PANGO_SCRIPT_COMMON has
+        the special meaning here of "all scripts"
 @langs: a semicolon separated list of languages that this
-        engine handles for this range. This may be empty, 
+        engine handles for this script. This may be empty, 
         in which case the engine is saying that it is a
         fallback choice for all languages for this range,
         but should not be used if another engine 

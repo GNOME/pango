@@ -26,6 +26,7 @@
 #include <pango/pango-item.h>
 #include <pango/pango-font.h>
 #include <pango/pango-glyph.h>
+#include <pango/pango-script.h>
 
 G_BEGIN_DECLS
 
@@ -182,20 +183,20 @@ struct _PangoEngineShapeClass
 			int               length,
 			PangoAnalysis    *analysis,
 			PangoGlyphString *glyphs);
-  PangoCoverage *(*get_coverage) (PangoEngineShape *engine,
+  PangoCoverageLevel (*covers)   (PangoEngineShape *engine,
 				  PangoFont        *font,
-				  PangoLanguage    *language);
+				  PangoLanguage    *language,
+				  gunichar          wc);
 };
 
 GType pango_engine_shape_get_type (void) G_GNUC_CONST;
 
 typedef struct _PangoEngineInfo PangoEngineInfo;
-typedef struct _PangoEngineRange PangoEngineRange;
+typedef struct _PangoEngineScriptInfo PangoEngineScriptInfo;
 
-struct _PangoEngineRange 
+struct _PangoEngineScriptInfo 
 {
-  guint32 start;
-  guint32 end;
+  PangoScript script;
   gchar *langs;
 };
 
@@ -204,8 +205,8 @@ struct _PangoEngineInfo
   gchar *id;
   gchar *engine_type;
   gchar *render_type;
-  PangoEngineRange *ranges;
-  gint n_ranges;
+  PangoEngineScriptInfo *scripts;
+  gint n_scripts;
 };
 
 /**

@@ -31,12 +31,6 @@ G_BEGIN_DECLS
 typedef struct _PangoMap PangoMap;
 typedef struct _PangoMapEntry PangoMapEntry;
 
-struct _PangoMapEntry 
-{
-  PangoEngineInfo *info;
-  gboolean is_exact;
-};
-
 typedef struct _PangoIncludedModule PangoIncludedModule;
 
 struct _PangoIncludedModule
@@ -51,10 +45,12 @@ struct _PangoIncludedModule
 PangoMap *     pango_find_map        (PangoLanguage       *language,
 				      guint                engine_type_id,
 				      guint                render_type_id);
-PangoMapEntry *pango_map_get_entry   (PangoMap            *map,
-				      guint32              wc);
 PangoEngine *  pango_map_get_engine  (PangoMap            *map,
-				      guint32              wc);
+				      PangoScript          script);
+void           pango_map_get_engines (PangoMap            *map,
+				      PangoScript          script,
+				      GSList             **exact_engines,
+				      GSList             **fallback_engines);
 void           pango_module_register (PangoIncludedModule *module);
 
 #endif /* PANGO_ENABLE_BACKEND */

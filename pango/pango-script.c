@@ -341,3 +341,175 @@ pango_script_iter_next (PangoScriptIter *iter)
 
   return TRUE;
 }
+
+/**********************************************************
+ * End of code from ICU
+ **********************************************************/
+
+#include "pango-script-lang-table.h"
+
+static int
+script_for_lang_compare (gconstpointer key,
+			 gconstpointer member)
+{
+  const char *lang = key;
+  const PangoScriptForLang *script_for_lang = member;
+  
+  return strcmp (lang,
+		 pango_language_to_string (script_for_lang->lang));
+}
+
+/**
+ * pango_language_includes_script:
+ * @language: a PangoLanguage
+ * @script: a #PangoScript
+ * 
+ * Determines if @script is one of the scripts used to
+ * write @language. The returned value is conservative;
+ * if nothing is known about the language tag @language,
+ * %TRUE will be returned, since, as far as Pango knows,
+ * @script might be used to write @language.
+ *
+ * This routine is used in Pango's itemization process when
+ * determining if a supplied language tag is relevant to
+ * a particular section of text. It probably is not useful for
+ * applications in most circumstances.
+ * 
+ * Return value: %TRUE if @script is one of the scripts used
+ * to write @language, or if nothing is known about @language.
+ **/
+gboolean
+pango_language_includes_script (PangoLanguage *language,
+				PangoScript    script)
+{
+  PangoScriptForLang *script_for_lang;
+  int j;
+
+  g_return_val_if_fail (language != NULL, FALSE);
+
+  /* This bsearch could be optimized to occur only once if
+   * we store the pointer to the PangoScriptForLang in the
+   * same block as the string value for the PangoLanguage.
+   */
+  script_for_lang = bsearch (pango_language_to_string (language),
+			     pango_script_for_lang,
+			     sizeof (PangoScriptForLang),
+			     G_N_ELEMENTS (pango_script_for_lang),
+			     script_for_lang_compare);
+  if (!script_for_lang)
+    return TRUE;
+
+  for (j = 0; j < G_N_ELEMENTS (script_for_lang->scripts); j++)
+    if (script_for_lang->scripts[j] == script)
+      return TRUE;
+
+  return FALSE;
+}
+
+/**
+ * pango_script_get_sample_language:
+ * @script: a #PangoScript
+ * 
+ * Given a script, finds a language tag that is reasonably
+ * representative of that script. This will usually be the
+ * most widely spoken or used language written in that script:
+ * for instance, the sample language for %PANGO_SCRIPT_CYRILLIC
+ * is <literal>ru</literal> (Russian), the sample lanugage
+ * for %PANGO_SCRIPT_ARABIC is <literal>ar</literal>.
+ *
+ * For some
+ * scripts, no sample language will be returned because there
+ * is no language that is sufficiently representative. The best
+ * example of this is %PANGO_SCRIPT_HAN, where various different
+ * variants of written Chinese, Japanese, and Korean all use
+ * significantly different sets of Han characters and forms
+ * of shared characters. No sample language can be provided
+ * for many historical scripts as well.
+ * 
+ * Return value: a #PangoLanguage that is representative
+ * of the script, or %NULL if no such language exists.
+ **/
+PangoLanguage *
+pango_script_get_sample_language (PangoScript script)
+{
+  /* Note that in the following, we want
+   * pango_language_includes_script() for the sample language
+   * to include the script, so alternate orthographies
+   * (Shavian for English, Osmanya for Somali, etc), typically
+   * have no sample language
+   */
+  const char sample_languages[][4] = {
+    "",    /* PANGO_SCRIPT_COMMON */
+    "",    /* PANGO_SCRIPT_INHERITED */
+    "ar",  /* PANGO_SCRIPT_ARABIC */
+    "hy",  /* PANGO_SCRIPT_ARMENIAN */
+    "bn",  /* PANGO_SCRIPT_BENGALI */
+    /* Used primarily in Taiwan, but not part of the standard
+     * zh-tw orthography  */
+    "",    /* PANGO_SCRIPT_BOPOMOFO */
+    "chr", /* PANGO_SCRIPT_CHEROKEE */
+    "cop", /* PANGO_SCRIPT_COPTIC */
+    "ru",  /* PANGO_SCRIPT_CYRILLIC */
+    /* Deseret was used to write English */
+    "",    /* PANGO_SCRIPT_DESERET */
+    "hi",  /* PANGO_SCRIPT_DEVANAGARI */
+    "am",  /* PANGO_SCRIPT_ETHIOPIC */
+    "ka",  /* PANGO_SCRIPT_GEORGIAN */
+    "",    /* PANGO_SCRIPT_GOTHIC */
+    "el",  /* PANGO_SCRIPT_GREEK */
+    "gu",  /* PANGO_SCRIPT_GUJARATI */
+    "pa",  /* PANGO_SCRIPT_GURMUKHI */
+    "",    /* PANGO_SCRIPT_HAN */
+    "ko",  /* PANGO_SCRIPT_HANGUL */
+    "he",  /* PANGO_SCRIPT_HEBREW */
+    "ja",  /* PANGO_SCRIPT_HIRAGANA */
+    "kn",  /* PANGO_SCRIPT_KANNADA */
+    "ja",  /* PANGO_SCRIPT_KATAKANA */
+    "km",  /* PANGO_SCRIPT_KHMER */
+    "lo",  /* PANGO_SCRIPT_LAO */
+    "en",  /* PANGO_SCRIPT_LATIN */
+    "ml",  /* PANGO_SCRIPT_MALAYALAM */
+    "mn",  /* PANGO_SCRIPT_MONGOLIAN */
+    "my",  /* PANGO_SCRIPT_MYANMAR */
+    /* Ogham was used to write old Irish */
+    "",    /* PANGO_SCRIPT_OGHAM */
+    "",    /* PANGO_SCRIPT_OLD_ITALIC */
+    "or",  /* PANGO_SCRIPT_ORIYA */
+    "",    /* PANGO_SCRIPT_RUNIC */
+    "si",  /* PANGO_SCRIPT_SINHALA */
+    "syr", /* PANGO_SCRIPT_SYRIAC */
+    "ta",  /* PANGO_SCRIPT_TAMIL */
+    "te",  /* PANGO_SCRIPT_TELUGU */
+    "dv",  /* PANGO_SCRIPT_THAANA */
+    "th",  /* PANGO_SCRIPT_THAI */
+    "bo",  /* PANGO_SCRIPT_TIBETAN */
+    "iu",  /* PANGO_SCRIPT_CANADIAN_ABORIGINAL */
+    "",    /* PANGO_SCRIPT_YI */
+    "tl",  /* PANGO_SCRIPT_TAGALOG */
+    /* There are no ISO-636 language codes for the following
+     * Phillipino languages/scripts */
+    "",    /* PANGO_SCRIPT_HANUNOO */
+    "",    /* PANGO_SCRIPT_BUHID */
+    "",    /* PANGO_SCRIPT_TAGBANWA */
+
+    "",    /* PANGO_SCRIPT_BRAILLE */
+    "",    /* PANGO_SCRIPT_CYPRIOT */
+    "",    /* PANGO_SCRIPT_LIMBU */
+    /* Used for Somali (so) in the past */
+    "",    /* PANGO_SCRIPT_OSMANYA */
+    /* The Shavian alphabet was designed for English */
+    "",    /* PANGO_SCRIPT_SHAVIAN */
+    "",    /* PANGO_SCRIPT_LINEAR_B */
+    "",    /* PANGO_SCRIPT_TAI_LE */
+    "uga", /* PANGO_SCRIPT_UGARITIC */
+  };
+
+  g_return_val_if_fail (script >= 0, NULL);
+  g_return_val_if_fail (script < G_N_ELEMENTS (sample_languages), NULL);
+  const char *sample_language = sample_languages[script];
+
+  if (!sample_language[0])
+    return NULL;
+  else
+    return pango_language_from_string (sample_language);
+}

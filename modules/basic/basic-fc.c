@@ -36,35 +36,35 @@ typedef PangoEngineShapeClass BasicEngineFcClass;
 #define SCRIPT_ENGINE_NAME "BasicScriptEngineFc"
 #define RENDER_TYPE PANGO_RENDER_TYPE_FC
 
-static PangoEngineRange basic_ranges[] = {
-  /* Basic Latin, Latin-1 Supplement, Latin Extended-A, Latin Extended-B,
-   * IPA Extensions
-   */
-  { 0x0000, 0x02af, "*" }, 
-  { 0x0380, 0x058f, "*" }, /* Greek, Cyrillic, Armenian */
-  { 0x10a0, 0x10ff, "*" }, /* Georgian */
-  { 0x1200, 0x16ff, "*" }, /* Ethiopic,Cherokee,Canadian,Ogham,Runic */
-  { 0x1e00, 0x1fff, "*" }, /* Latin Extended Additional, Greek Extended */
-  
-  /* General Punctuation, Superscripts and Subscripts, Currency Symbols,
-   * Combining Marks for Symbols, Letterlike Symbols, Number Forms,
-   * Arrows, Mathematical Operators, Miscellaneous Technical,
-   * Control Pictures, Optical Character Recognition, Enclosed Alphanumerics,
-   * Box Drawing, Block Elements, Geometric Shapes, Miscellaneous Symbols,
-   * Dingbats, Braille Patterns, CJK Radicals Supplement, Kangxi Radicals,
-   * Ideographic Description Characters, CJK Symbols and Punctuation,
-   * Hiragana, Katakana, Bopomofo, Hangul Compatibility Jamo, Kanbun,
-   * Bopomofo Extended, Enclosed CJK Letters and Months, CJK Compatibility,
-   * CJK Unified Ideographs Extension A, CJK Unified Ideographs
-   */
-  { 0x2000, 0x3029, "*" },	/* Gap for Hangul diacritics */
-  { 0x3030, 0x9fff, "*" },
-  { 0xa000, 0xa4c6, "*" }, /* Yi */
-  { 0xe000, 0xf7ee, "*" }, /* HKSCS-1999 */
-  { 0xf900, 0xfa2d, "*" }, /* CJK Compatibility Ideographs */
-  { 0xfe30, 0xfe6b, "*" }, /* CJK Compatibility Forms and Small Form Variants */
-  { 0xff00, 0xffe3, "*" }, /* Halfwidth and Fullwidth Forms (partly) */
-  { 0x0000, 0xffff, "" },
+static PangoEngineScriptInfo basic_scripts[] = {
+  { PANGO_SCRIPT_ARMENIAN, "*" },
+  { PANGO_SCRIPT_BOPOMOFO, "*" },
+  { PANGO_SCRIPT_CHEROKEE, "*" },
+  { PANGO_SCRIPT_COPTIC,   "*" },
+  { PANGO_SCRIPT_CYRILLIC, "*" },
+  { PANGO_SCRIPT_DESERET,  "*" },
+  { PANGO_SCRIPT_ETHIOPIC, "*" },
+  { PANGO_SCRIPT_GEORGIAN, "*" },
+  { PANGO_SCRIPT_GOTHIC,   "*" },
+  { PANGO_SCRIPT_GREEK,    "*" },
+  { PANGO_SCRIPT_HAN,      "*" },
+  { PANGO_SCRIPT_HIRAGANA, "*" },
+  { PANGO_SCRIPT_KATAKANA, "*" },
+  { PANGO_SCRIPT_LATIN,    "*" },
+  { PANGO_SCRIPT_OGHAM,    "*" },
+  { PANGO_SCRIPT_OLD_ITALIC, "*" },
+  { PANGO_SCRIPT_RUNIC,     "*" },
+  { PANGO_SCRIPT_CANADIAN_ABORIGINAL, "*" },
+  { PANGO_SCRIPT_YI,       "*" },
+  { PANGO_SCRIPT_BRAILLE,  "*" },
+  { PANGO_SCRIPT_CYPRIOT,  "*" },
+  { PANGO_SCRIPT_LIMBU,    "*" },
+  { PANGO_SCRIPT_OSMANYA,  "*" },
+  { PANGO_SCRIPT_SHAVIAN,  "*" },
+  { PANGO_SCRIPT_LINEAR_B, "*" },
+  { PANGO_SCRIPT_UGARITIC, "*" },
+    
+  { PANGO_SCRIPT_COMMON,   "" }
 };
 
 static PangoEngineInfo script_engines[] = {
@@ -72,7 +72,7 @@ static PangoEngineInfo script_engines[] = {
     SCRIPT_ENGINE_NAME,
     PANGO_ENGINE_TYPE_SHAPE,
     RENDER_TYPE,
-    basic_ranges, G_N_ELEMENTS(basic_ranges)
+    basic_scripts, G_N_ELEMENTS(basic_scripts)
   }
 };
 

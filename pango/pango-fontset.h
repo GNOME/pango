@@ -41,9 +41,27 @@ GType pango_fontset_get_type (void) G_GNUC_CONST;
 
 typedef struct _PangoFontset        PangoFontset;
 
-PangoFont *       pango_fontset_get_font    (PangoFontset  *fontset,
-					     guint          wc);
-PangoFontMetrics *pango_fontset_get_metrics (PangoFontset  *fontset);
+/**
+ * PangoFontsetForeachFunc
+ * @fontset: a #PangoFontset
+ * @font: a font from @fontset
+ * @data: callback data
+ * 
+ * A callback function used by pango_fontset_foreach() when enumerating
+ * the fonts in a fontset.
+ *
+ * Returns: if %TRUE, stop iteration and return immediatlehy.
+ **/
+typedef gboolean (*PangoFontsetForeachFunc) (PangoFontset  *fontset,
+					     PangoFont     *font,
+					     gpointer       data);
+
+PangoFont *       pango_fontset_get_font    (PangoFontset           *fontset,
+					     guint                   wc);
+PangoFontMetrics *pango_fontset_get_metrics (PangoFontset           *fontset);
+void              pango_fontset_foreach     (PangoFontset           *fontset,
+					     PangoFontsetForeachFunc func,
+					     gpointer                data);
 
 #ifdef PANGO_ENABLE_BACKEND
 
@@ -64,11 +82,14 @@ struct _PangoFontsetClass
 
   /*< public >*/
    
-  PangoFont *       (*get_font)     (PangoFontset  *fontset,
-				     guint          wc);
+  PangoFont *       (*get_font)     (PangoFontset     *fontset,
+				     guint             wc);
 
-  PangoFontMetrics *(*get_metrics)  (PangoFontset  *fontset);
-  PangoLanguage *   (*get_language) (PangoFontset  *fontset);
+  PangoFontMetrics *(*get_metrics)  (PangoFontset     *fontset);
+  PangoLanguage *   (*get_language) (PangoFontset     *fontset);
+  void              (*foreach)      (PangoFontset           *fontset,
+				     PangoFontsetForeachFunc func,
+				     gpointer                data);
 
   /*< private >*/
 

@@ -31,18 +31,25 @@ PANGO_DEFINE_TYPE_ABSTRACT (PangoEngineLang, pango_engine_lang,
 			    NULL, NULL,
 			    PANGO_TYPE_ENGINE);
 
-static PangoCoverage *
-pango_engine_shape_real_get_coverage (PangoEngineShape *engine,
-				      PangoFont        *font,
-				      PangoLanguage    *language)
+static PangoCoverageLevel
+pango_engine_shape_real_covers (PangoEngineShape *engine,
+				PangoFont        *font,
+				PangoLanguage    *language,
+				gunichar          wc)
 {
-  return pango_font_get_coverage (font, language);
+  
+  PangoCoverage *coverage = pango_font_get_coverage (font, language);
+  PangoCoverageLevel result = pango_coverage_get (coverage, wc);
+
+  pango_coverage_unref (coverage);
+
+  return result;
 }
 
 void
 pango_engine_shape_class_init (PangoEngineShapeClass *class)
 {
-  class->get_coverage = pango_engine_shape_real_get_coverage;
+  class->covers = pango_engine_shape_real_covers;
 }
 
 PANGO_DEFINE_TYPE_ABSTRACT (PangoEngineShape, pango_engine_shape,
@@ -70,17 +77,19 @@ _pango_engine_shape_shape (PangoEngineShape *engine,
 						       glyphs);
 }
 
-PangoCoverage *
-_pango_engine_shape_get_coverage (PangoEngineShape *engine,
-				  PangoFont        *font,
-				  PangoLanguage    *language)
+PangoCoverageLevel
+_pango_engine_shape_covers (PangoEngineShape *engine,
+			    PangoFont        *font,
+			    PangoLanguage    *language,
+			    gunichar          wc)
 {
-  g_return_val_if_fail (PANGO_IS_ENGINE_SHAPE (engine), NULL);
-  g_return_val_if_fail (PANGO_IS_FONT (font), NULL);
+  g_return_val_if_fail (PANGO_IS_ENGINE_SHAPE (engine), PANGO_COVERAGE_NONE);
+  g_return_val_if_fail (PANGO_IS_FONT (font), PANGO_COVERAGE_NONE);
 
-  return PANGO_ENGINE_SHAPE_GET_CLASS (engine)->get_coverage (engine,
-							      font,
-							      language);
+  return PANGO_ENGINE_SHAPE_GET_CLASS (engine)->covers (engine,
+							font,
+							language,
+							wc);
 }
 
 /* No extra fields needed */
@@ -124,25 +133,19 @@ fallback_engine_shape (PangoEngineShape *engine,
     }
 }
 
-static PangoCoverage*
-fallback_engine_get_coverage (PangoEngineShape *engine,
-			      PangoFont        *font,
-                              PangoLanguage    *lang)
+static PangoCoverageLevel
+fallback_engine_covers (PangoEngineShape *engine,
+			PangoFont        *font,
+			PangoLanguage    *lang,
+			gunichar          wc)
 {
-  PangoCoverage *result = pango_coverage_new ();
-
-  /* We return an empty coverage (this function won't get
-   * called, but if it is, empty coverage will keep
-   * it from being used).
-   */
-  
-  return result;
+  return PANGO_COVERAGE_NONE;
 }
 
 static void
 fallback_engine_class_init (PangoEngineShapeClass *class)
 {
-  class->get_coverage = fallback_engine_get_coverage;
+  class->covers = fallback_engine_covers;
   class->script_shape = fallback_engine_shape;
 }
 

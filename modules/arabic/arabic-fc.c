@@ -35,9 +35,8 @@ typedef PangoEngineShapeClass ArabicEngineFcClass ;
 #define SCRIPT_ENGINE_NAME "ArabicScriptEngineFc"
 #define RENDER_TYPE PANGO_RENDER_TYPE_FC
 
-static PangoEngineRange arabic_ranges[] = {
-  /* Language characters */
-  { 0x060c, 0x06f9, "*" }, /* Arabic */
+static PangoEngineScriptInfo arabic_scripts[] = {
+  { PANGO_SCRIPT_ARABIC, "*" },
 };
 
 static PangoEngineInfo script_engines[] = {
@@ -45,7 +44,7 @@ static PangoEngineInfo script_engines[] = {
     SCRIPT_ENGINE_NAME,
     PANGO_ENGINE_TYPE_SHAPE,
     RENDER_TYPE,
-    arabic_ranges, G_N_ELEMENTS(arabic_ranges)
+    arabic_scripts, G_N_ELEMENTS(arabic_scripts)
   }
 };
 

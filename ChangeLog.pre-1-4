@@ -1,3 +1,63 @@
+Tue Sep 23 18:03:57 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-engines.[ch] pango/pango-engines-private.h: 
+	Modules now declare a list of scripts that they cover instead of a
+	list of code point ranges. Also, there is now a ->covers() virtual
+	function that allows a module to decide live whether the font
+	covers a particular codepoint; remove old get_coverage() method.
+
+	* pango/pango-fontset.[ch]: Add a foreach() function to 
+	iterate over all the fonts in a fontset (with a true
+	return stopping iteration).
+
+	* pango/pango-context.c: Complete rewrite using script-run
+	information to improve language tags. Switch to an approach
+	where we handle one run at a time rather than computing
+	information for each character individually then later
+	breaking the result into runs.
+	
+	* pango/pango-fontset.[ch]: Switch over to using
+	pango-impl-utils.h.
+
+	* modules/basic/basic-x.c pango/pangox-fontmap.c: Adapt to
+	the change from get_coverage => covers.
+
+	* pango/pango-modules.h pango/modules.c: Switch PangoMap
+	over to being based on script rather than being based
+	on codepoint. Remove the no longer needed pango_map_get_entry().
+
+	* pango/modules.c: Handle new script-based modules.
+
+	* pango/pango-fc-fontmap.c pango/pango-win32-fontmap.c 
+	pango/pang-fontmap.[ch]: Add a shape_engine_type field
+	to PangoFontmapClass, pango_font_map_get_shape_engine_type();
+	this allows generic code to find a shaper for a particular
+	fontmap.
+
+	* pango/pango-script.[ch]: Add pango_script_get_sample_language(),
+	pango_language_includes_script(); functions for determining
+	the relationship between scripts and language.
+
+	* tools/gen-script-for-lang.c: Modify to spit out a
+	useful table.
+
+	* pango/pango-script-lang-table.h: Version of table
+	generated from current fontconfig data.
+
+	* pango/pangox.c: Remove complicated code to compute
+	coverages; no longer useful now that we just have
+	the basic shaper as a legacy thing.
+
+	* modules/*/*.c: Adapt to identifying shape engines
+	by language range.
+
+	* modules/thai/thai-fc.c modules/thai/thai-shaper.[ch]:
+	Remove now unused "has_glyph" function and XTIS support.
+
+	* modules/thai/thai-fc.c: Handle non-Thai characters
+	as well, since the Thai module now gets spaces,
+	punctuation, and so forth.
+
 Mon Sep 15 17:16:59 2003  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/opentype/fterrcompat.h: Fix gcc-3.3 versions of 

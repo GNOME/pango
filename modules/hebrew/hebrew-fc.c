@@ -33,10 +33,8 @@ typedef PangoEngineShapeClass HebrewEngineFcClass ;
 
 #define MAX_CLUSTER_CHRS	20
 
-static PangoEngineRange hebrew_ranges[] = {
-  /* Language characters */
-  { 0x0591, 0x05f4, "*" }, /* Hebrew */
-  { 0xfb1d, 0xfb4f, "*" }  /* Hebrew presentation forms */
+static PangoEngineScriptInfo hebrew_scripts[] = {
+  { PANGO_SCRIPT_HEBREW, "*" }
 };
 
 #define SCRIPT_ENGINE_NAME "HebrewScriptEngineFc"
@@ -47,7 +45,7 @@ static PangoEngineInfo script_engines[] = {
     SCRIPT_ENGINE_NAME,
     PANGO_ENGINE_TYPE_SHAPE,
     RENDER_TYPE,
-    hebrew_ranges, G_N_ELEMENTS(hebrew_ranges)
+    hebrew_scripts, G_N_ELEMENTS(hebrew_scripts)
   }
 };
 

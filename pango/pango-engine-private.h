@@ -27,15 +27,16 @@
 
 G_BEGIN_DECLS
 
-void           _pango_engine_shape_shape        (PangoEngineShape *engine,
-						 PangoFont        *font,
-						 const char       *text,
-						 int               length,
-						 PangoAnalysis    *analysis,
-						 PangoGlyphString *glyphs);
-PangoCoverage *_pango_engine_shape_get_coverage (PangoEngineShape *engine,
-						 PangoFont        *font,
-						 PangoLanguage    *language);
+void               _pango_engine_shape_shape  (PangoEngineShape *engine,
+					       PangoFont        *font,
+					       const char       *text,
+					       int               length,
+					       PangoAnalysis    *analysis,
+					       PangoGlyphString *glyphs);
+PangoCoverageLevel _pango_engine_shape_covers (PangoEngineShape *engine,
+					       PangoFont        *font,
+					       PangoLanguage    *language,
+					       gunichar          wc);
 
 PangoEngineShape *_pango_get_fallback_shaper (void);
 

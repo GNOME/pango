@@ -138,27 +138,6 @@ enum indic_glyph_property_
 };
 
 /*
- * Per-script character ranges
- */
-#define SCRIPT_RANGE_deva 0x0900, 0x0970
-
-#define SCRIPT_RANGE_beng 0x0980, 0x09FA
-
-#define SCRIPT_RANGE_guru 0x0A00, 0x0A74
-
-#define SCRIPT_RANGE_gujr 0x0A80, 0x0AEF
-
-#define SCRIPT_RANGE_orya 0x0B00, 0x0B70
-
-#define SCRIPT_RANGE_taml 0x0B80, 0x0BF2
-
-#define SCRIPT_RANGE_telu 0x0C00, 0x0C6F
-
-#define SCRIPT_RANGE_knda 0x0C80, 0x0CEF
-
-#define SCRIPT_RANGE_mlym 0x0D00, 0x0D6F
-
-/*
  * Macros to test the charClass flags for various things.
  */
 #define IS_VM_ABOVE(charClass) ((charClass & CF_CLASS_MASK) == CC_MODIFYING_MARK_ABOVE)

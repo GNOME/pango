@@ -46,7 +46,6 @@ void          pango_font_map_list_families (PangoFontMap                 *fontma
 					    PangoFontFamily            ***families,
 					    int                          *n_families);
 
-
 #ifdef PANGO_ENABLE_BACKEND
 
 #define PANGO_FONT_MAP_CLASS(klass)      (G_TYPE_CHECK_CLASS_CAST ((klass), PANGO_TYPE_FONT_MAP, PangoFontMapClass))
@@ -76,6 +75,8 @@ struct _PangoFontMapClass
 				  PangoContext               *context,
 				  const PangoFontDescription *desc,
 				  PangoLanguage              *language);
+  
+  const char *shape_engine_type;
 
   /*< private >*/
 
@@ -85,6 +86,8 @@ struct _PangoFontMapClass
   void (*_pango_reserved3) (void);
   void (*_pango_reserved4) (void);
 };
+
+const char   *pango_font_map_get_shape_engine_type (PangoFontMap *fontmap);
 
 #endif /* PANGO_ENABLE_BACKEND */
 

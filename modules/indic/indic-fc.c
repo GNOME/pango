@@ -52,11 +52,9 @@ struct _PangoIndicInfo
 #define ENGINE_SUFFIX "ScriptEngineFc"
 #define RENDER_TYPE PANGO_RENDER_TYPE_FC
 
-#define INDIC_ENGINE_INFO(script) {#script ENGINE_SUFFIX, PANGO_ENGINE_TYPE_SHAPE, RENDER_TYPE, script##_ranges, G_N_ELEMENTS(script##_ranges)}
+#define INDIC_ENGINE_INFO(script) {#script ENGINE_SUFFIX, PANGO_ENGINE_TYPE_SHAPE, RENDER_TYPE, script##_scripts, G_N_ELEMENTS(script##_scripts)}
 
 #define PANGO_INDIC_INFO(script) {OT_TAG_##script, &script##_class_table, "pango-indic-" #script "-GSUB-ruleset", "pango-indic-" #script "-GPOS-rulsest"}
-
-#define INDIC_SCRIPT_RANGE(script) {SCRIPT_RANGE_##script, "*"}
 
 #define OT_TAG_deva FT_MAKE_TAG('d','e','v','a')
 #define OT_TAG_beng FT_MAKE_TAG('b','e','n','g')
@@ -68,40 +66,40 @@ struct _PangoIndicInfo
 #define OT_TAG_knda FT_MAKE_TAG('k','n','d','a')
 #define OT_TAG_mlym FT_MAKE_TAG('m','l','y','m')
 
-static PangoEngineRange deva_ranges[] = {
-  INDIC_SCRIPT_RANGE(deva), /* Devanagari */
+static PangoEngineScriptInfo deva_scripts[] = {
+  { PANGO_SCRIPT_DEVANAGARI, "*" }
 };
 
-static PangoEngineRange beng_ranges[] = {
-  INDIC_SCRIPT_RANGE(beng), /* Bengali */
+static PangoEngineScriptInfo beng_scripts[] = {
+  {PANGO_SCRIPT_BENGALI, "*" }
 };
 
-static PangoEngineRange guru_ranges[] = {
-  INDIC_SCRIPT_RANGE(guru), /* Gurmukhi */
+static PangoEngineScriptInfo guru_scripts[] = {
+  { PANGO_SCRIPT_GURMUKHI, "*" }
 };
 
-static PangoEngineRange gujr_ranges[] = {
-  INDIC_SCRIPT_RANGE(gujr), /* Gujarati */
+static PangoEngineScriptInfo gujr_scripts[] = {
+  { PANGO_SCRIPT_GUJARATI, "*" }
 };
 
-static PangoEngineRange orya_ranges[] = {
-  INDIC_SCRIPT_RANGE(orya), /* Oriya */
+static PangoEngineScriptInfo orya_scripts[] = {
+  { PANGO_SCRIPT_ORIYA, "*" }
 };
 
-static PangoEngineRange taml_ranges[] = {
-  INDIC_SCRIPT_RANGE(taml), /* Tamil */
+static PangoEngineScriptInfo taml_scripts[] = {
+  { PANGO_SCRIPT_TAMIL, "*" }
 };
 
-static PangoEngineRange telu_ranges[] = {
-  INDIC_SCRIPT_RANGE(telu), /* Telugu */
+static PangoEngineScriptInfo telu_scripts[] = {
+  { PANGO_SCRIPT_TELUGU, "*" }
 };
 
-static PangoEngineRange knda_ranges[] = {
-  INDIC_SCRIPT_RANGE(knda), /* Kannada */
+static PangoEngineScriptInfo knda_scripts[] = {
+  { PANGO_SCRIPT_KANNADA, "*" }
 };
 
-static PangoEngineRange mlym_ranges[] = {
-  INDIC_SCRIPT_RANGE(mlym), /* Malayalam */
+static PangoEngineScriptInfo mlym_scripts[] = {
+  { PANGO_SCRIPT_MALAYALAM, "*" }
 };
 
 static PangoEngineInfo script_engines[] = {

@@ -8,8 +8,16 @@
 #include <pango/pango-types.h>
 #include <pango/pango-utils.h>
 
-PangoScript script_for_file (const char *base_dir,
-			     const char *file_part);
+#define MAX_SCRIPTS 3
+
+typedef struct {
+  PangoLanguage *lang;
+  PangoScript scripts[MAX_SCRIPTS];
+} LangInfo;
+
+static void scripts_for_file (const char *base_dir,
+			      const char *file_part,
+			      LangInfo   *info);
 
 const char *get_script_name (PangoScript script)
 {
@@ -55,14 +63,15 @@ void warn_mismatch (const char *file_part,
 	      file_part, get_script_name (script1), get_script_name (script2));
 }
 
-PangoScript script_for_line (const char *base_dir,
-			     const char *file_part,
-			     const char *str)
+static void
+scripts_for_line (const char  *base_dir,
+		  const char  *file_part,
+		  const char  *str,
+		  LangInfo    *info)
 {
   gunichar start_char;
   gunichar end_char;
   gunichar ch;
-  PangoScript result = PANGO_SCRIPT_COMMON;
   const char *p = str;
 
   if (g_str_has_prefix (str, "include"))
@@ -77,10 +86,10 @@ PangoScript script_for_line (const char *base_dir,
 	  pango_skip_space (&str))
 	goto err;
 
-      result = script_for_file (base_dir, file_part->str);
+      scripts_for_file (base_dir, file_part->str, info);
       g_string_free (file_part, TRUE);
 
-      return result;
+      return;
     }
   
   /* Format is HEX_DIGITS or HEX_DIGITS-HEX_DIGITS */
@@ -107,30 +116,39 @@ PangoScript script_for_line (const char *base_dir,
       if (script != PANGO_SCRIPT_COMMON &&
 	  script != PANGO_SCRIPT_INHERITED)
 	{
-	  if (result != PANGO_SCRIPT_COMMON && script != result)
+	  int j;
+	  for (j = 0; j < MAX_SCRIPTS; j++)
 	    {
-	      warn_mismatch (file_part, script, result);
-	      return PANGO_SCRIPT_INVALID_CODE;
+	      if (info->scripts[j] == script)
+		break;
+	      if (info->scripts[j] == PANGO_SCRIPT_INVALID_CODE)
+		{
+		  info->scripts[j] = script;
+		  break;
+		}
 	    }
-	  result = script;
+
+	  if (j == MAX_SCRIPTS)
+	    fail ("More than %d scripts found for %s\n", MAX_SCRIPTS, file_part);
 	}
     }
 
-  return result;
+  return;
   
  err:
   fail ("While processing '%s', cannot parse line: '%s'\n", file_part, str);
-  return PANGO_SCRIPT_INVALID_CODE; /* Not reached */
+  return; /* Not reached */
 }
      
-PangoScript script_for_file (const char *base_dir,
-			     const char *file_part)
+static void
+scripts_for_file (const char *base_dir,
+		  const char *file_part,
+		  LangInfo   *info)
 {
   GError *error = NULL;
   char *filename = g_build_filename (base_dir, file_part, NULL);
   GIOChannel *channel = g_io_channel_new_file (filename, "r", &error);
   GIOStatus status = G_IO_STATUS_NORMAL;
-  PangoScript result = PANGO_SCRIPT_COMMON;
 
   if (!channel)
     fail ("Error opening '%s': %s\n", filename, error);
@@ -155,21 +173,7 @@ PangoScript script_for_file (const char *base_dir,
 	    *comment = '\0';
 	  g_strstrip (str);
 	  if (str[0] != '\0') 	/* Empty */
-	    {
-	      PangoScript script = script_for_line (base_dir, file_part, str);
-	      if (script != PANGO_SCRIPT_COMMON &&
-		  script != PANGO_SCRIPT_INHERITED)
-		{
-		  if (result != PANGO_SCRIPT_COMMON && script != result)
-		    {
-		      warn_mismatch (file_part, script, result);
-		      result = PANGO_SCRIPT_INVALID_CODE;
-		      status = G_IO_STATUS_EOF;
-		    }
-		  else
-		    result = script;
-		}
-	    }
+	    scripts_for_line (base_dir, file_part, str, info);
 	  g_free (str);
 	  break;
 	case G_IO_STATUS_EOF:
@@ -187,14 +191,47 @@ PangoScript script_for_file (const char *base_dir,
     fail ("Error closing '%s': %s\n", channel, error);
 
   g_free (filename);
+}
 
-  return result;
+static void
+do_file (GArray      *script_array,
+	 const char  *base_dir,
+	 const char  *file_part)
+{
+  char *langpart;
+  LangInfo info;
+  int j;
+
+  langpart = g_strndup (file_part, strlen (file_part) - strlen (".orth"));
+  info.lang = pango_language_from_string (langpart);
+  g_free (langpart);
+
+  for (j = 0; j < MAX_SCRIPTS; j++)
+    info.scripts[j] = PANGO_SCRIPT_INVALID_CODE;
+  
+  scripts_for_file (base_dir, file_part, &info);
+
+  g_array_append_val (script_array, info);
+}
+
+static int
+compare_lang (gconstpointer a,
+	      gconstpointer b)
+{
+  const LangInfo *info_a = a;
+  const LangInfo *info_b = a;
+
+  return strcmp (pango_language_to_string (info_a->lang),
+		 pango_language_to_string (info_b->lang));
 }
 
 int main (int argc, char **argv)
 {
   GDir *dir;
   GError *error = NULL;
+  GArray *script_array;
+  int i, j;
+  int max_lang_len = 0;
 
   g_type_init ();
 
@@ -205,6 +242,8 @@ int main (int argc, char **argv)
   if (!dir)
     fail ("%s\n", error->message);
 
+  script_array = g_array_new (FALSE, FALSE, sizeof (LangInfo));
+  
   while (TRUE)
     {
       const char *name = g_dir_read_name (dir);
@@ -212,22 +251,46 @@ int main (int argc, char **argv)
 	break;
 
       if (g_str_has_suffix (name, ".orth"))
-	{
-	  char *langpart = g_strndup (name,
-				      strlen (name) - strlen (".orth"));
-	  PangoLanguage *lang = pango_language_from_string (langpart);
-	  PangoScript script;
-
-	  script = script_for_file (argv[1], name);
-	  g_print ("%s - %s\n",
-		   pango_language_to_string (lang),
-		   get_script_name (script));
-	  g_free (langpart);
-	}
+	do_file (script_array, argv[1], name);
     }
 
+  g_array_sort (script_array, compare_lang);
+
+  for (i = 0; i < script_array->len; i++)
+    {
+      LangInfo *info = &g_array_index (script_array, LangInfo, i);
+      
+      max_lang_len = MAX (max_lang_len,
+			  1 + strlen (pango_language_to_string (info->lang)));
+    }
+      
+  g_print ("typedef struct {\n"
+	   "  const char lang[%d];\n"
+	   "  PangoScript scripts[%d];\n"
+	   "} PangoScriptForLang;\n"
+	   "\n"
+	   "PangoScriptForLang pango_script_for_lang[] = {\n",
+	   max_lang_len,
+	   MAX_SCRIPTS);
+  
+  for (i = 0; i < script_array->len; i++)
+    {
+      LangInfo *info = &g_array_index (script_array, LangInfo, i);
+      
+      g_print ("  { \"%s\", { ", pango_language_to_string (info->lang));
+      for (j = 0; j < MAX_SCRIPTS; j++)
+	{
+	  if (j != 0)
+	    g_print (", ");
+	  g_print ("%s", get_script_name (info->scripts[j]));
+	}
+      g_print (" } },\n");
+    }
+
+  g_print ("};\n");
+  
+  
   g_dir_close (dir);
   
   return 0;
 }
-

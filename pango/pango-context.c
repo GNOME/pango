@@ -46,15 +46,6 @@ struct _PangoContextClass
   
 };
 
-static void add_engines (PangoContext      *context,
-			 const gchar       *text,
-                         gint               start_index,
-			 gint               length,
-			 PangoAttrList     *attrs,
-                         PangoAttrIterator *cached_iter,
-                         gint               n_chars,
-			 PangoAnalysis     *analyses);
-
 static void pango_context_init        (PangoContext      *context);
 static void pango_context_class_init  (PangoContextClass *klass);
 static void pango_context_finalize    (GObject           *object);
@@ -360,6 +351,647 @@ pango_context_get_base_dir (PangoContext *context)
   return context->base_dir;
 }
 
+/**********************************************************************/
+
+static gboolean
+advance_attr_iterator_to (PangoAttrIterator *iterator,
+			  int                start_index)
+{
+  int start_range, end_range;
+  
+  pango_attr_iterator_range (iterator, &start_range, &end_range);
+
+  while (start_index >= end_range)
+    {
+      if (!pango_attr_iterator_next (iterator))
+        return FALSE;
+      pango_attr_iterator_range (iterator, &start_range, &end_range);
+    }
+
+  if (start_range > start_index)
+    g_warning ("In pango_itemize(), the cached iterator passed in "
+               "had already moved beyond the start_index");
+
+  return TRUE;
+}
+
+/***************************************************************************
+ * We cache the results of character,fontset => font,shaper in a hash table
+ ***************************************************************************/
+
+typedef struct {
+  GHashTable *hash;
+} ShaperFontCache;
+
+typedef struct {
+  PangoEngineShape *shape_engine;
+  PangoFont *font;
+} ShaperFontElement;
+
+static void
+shaper_font_cache_destroy (ShaperFontCache *cache)
+{
+  g_hash_table_destroy (cache->hash);
+  g_free (cache);
+}
+
+static void
+shaper_font_element_destroy (ShaperFontElement *element)
+{
+  if (element->font)
+    g_object_unref (element->font);
+  g_free (element);
+}
+
+static ShaperFontCache *
+get_shaper_font_cache (PangoFontset *fontset)
+{
+  ShaperFontCache *cache;
+  
+  static GQuark cache_quark = 0;
+  if (!cache_quark)
+    cache_quark = g_quark_from_static_string ("pango-shaper-font-cache");
+  
+  cache = g_object_get_qdata (G_OBJECT (fontset), cache_quark);
+  if (!cache)
+    {
+      cache = g_new (ShaperFontCache, 1);
+      cache->hash = g_hash_table_new_full (g_direct_hash, NULL,
+					   NULL, (GDestroyNotify)shaper_font_element_destroy);
+
+      g_object_set_qdata_full (G_OBJECT (fontset), cache_quark,
+			       cache, (GDestroyNotify)shaper_font_cache_destroy);
+    }
+
+  return cache;
+}
+
+static gboolean
+shaper_font_cache_get (ShaperFontCache   *cache,
+		       gunichar           wc,
+		       PangoEngineShape **shape_engine,
+		       PangoFont        **font)
+{
+  ShaperFontElement *element;
+  
+  element = g_hash_table_lookup (cache->hash, GUINT_TO_POINTER (wc));
+  if (element)
+    {
+      *shape_engine = element->shape_engine;
+      *font = element->font;
+
+      return TRUE;
+    }
+  else
+    return FALSE;
+}
+
+static void
+shaper_font_cache_insert (ShaperFontCache   *cache,
+			  gunichar           wc,
+			  PangoEngineShape  *shape_engine,
+			  PangoFont         *font)
+{
+  ShaperFontElement *element = g_new (ShaperFontElement, 1);
+  element->shape_engine = shape_engine;
+  element->font = font;
+  
+  g_hash_table_insert (cache->hash, GUINT_TO_POINTER (wc), element);
+}
+
+/**********************************************************************/
+
+typedef enum {
+  EMBEDDING_CHANGED    = 1 << 0,
+  SCRIPT_CHANGED       = 1 << 1,
+  LANG_CHANGED         = 1 << 2,
+  FONT_CHANGED         = 1 << 3,
+  DERIVED_LANG_CHANGED = 1 << 4
+} ChangedFlags;
+
+typedef struct _ItemizeState ItemizeState;
+
+struct _ItemizeState
+{
+  PangoContext *context;
+  const char *text;
+  const char *end;
+  
+  const char *run_start;
+  const char *run_end;
+
+  GList *result;
+  PangoItem *item;
+
+  guint8 *embedding_levels;
+  int embedding_end_offset;
+  const char *embedding_end;
+  guint8 embedding;
+
+  PangoAttrIterator *attr_iter;
+  gboolean free_attr_iter;
+  const char *attr_end;
+  PangoFontDescription *font_desc;
+  PangoLanguage *lang;
+  GSList *extra_attrs;
+  gboolean copy_extra_attrs;
+
+  ChangedFlags changed;
+  
+  PangoScriptIter *script_iter;
+  const char *script_end;
+  PangoScript script;
+
+  PangoLanguage *derived_lang;
+  PangoEngineLang *lang_engine;
+  
+  PangoFontset *current_fonts;
+  ShaperFontCache *cache;
+  
+  GSList *exact_engines;
+  GSList *fallback_engines;
+};
+
+static void
+update_embedding_end (ItemizeState *state)
+{
+  state->embedding = state->embedding_levels[state->embedding_end_offset];
+  while (state->embedding_end < state->end &&
+	 state->embedding_levels[state->embedding_end_offset] == state->embedding)
+    {
+      state->embedding_end_offset++;
+      state->embedding_end = g_utf8_next_char (state->embedding_end);
+    }
+  
+  state->changed |= EMBEDDING_CHANGED;
+}
+
+static void
+update_attr_iterator (ItemizeState *state)
+{
+  PangoLanguage *old_lang;
+  int end_index;
+  
+  pango_attr_iterator_range (state->attr_iter, NULL, &end_index);
+  if (end_index < state->end - state->text)
+    state->attr_end = state->text + end_index;
+  else
+    state->attr_end = state->end;
+
+  old_lang = state->lang;
+  state->font_desc = pango_font_description_copy_static (state->context->font_desc);
+  pango_attr_iterator_get_font (state->attr_iter, state->font_desc,
+				&state->lang, &state->extra_attrs);
+  state->copy_extra_attrs = FALSE;
+
+  state->changed |= FONT_CHANGED;
+  if (state->lang != old_lang)
+    state->changed |= LANG_CHANGED;
+}
+
+static void
+update_end (ItemizeState *state)
+{
+  state->run_end = state->embedding_end;
+  if (state->attr_end < state->run_end)
+    state->run_end = state->attr_end;
+  if (state->script_end < state->run_end)
+    state->run_end = state->script_end;
+}
+
+static void
+itemize_state_init (ItemizeState      *state,
+		    PangoContext      *context, 
+		    const char        *text,
+		    int                start_index,
+		    int                length,
+		    PangoAttrList     *attrs,
+		    PangoAttrIterator *cached_iter)
+{
+  PangoDirection base_dir;
+  gunichar *text_ucs4;
+  long n_chars;
+
+  state->context = context;
+  state->text = text;
+  state->end = text + start_index + length;
+
+  state->result = NULL;
+  state->item = NULL;
+
+  state->run_start = text + start_index;
+  
+  /* First, apply the bidirectional algorithm to break
+   * the text into directional runs.
+   */
+  base_dir = context->base_dir;
+
+  text_ucs4 = g_utf8_to_ucs4_fast (text + start_index, length, &n_chars);
+  state->embedding_levels = g_new (guint8, n_chars);
+  pango_log2vis_get_embedding_levels (text_ucs4, n_chars, &base_dir,
+                                      state->embedding_levels);
+  g_free (text_ucs4);
+  
+  state->embedding_end_offset = 0;
+  state->embedding_end = text + start_index;
+  update_embedding_end (state);
+  
+  /* Initialize the attribute iterator
+   */
+  if (cached_iter)
+    {
+      state->attr_iter = cached_iter;
+      state->free_attr_iter = FALSE;
+    }
+  else
+    {
+      state->attr_iter = pango_attr_list_get_iterator (attrs);
+      state->free_attr_iter = TRUE;
+    }
+
+  advance_attr_iterator_to (state->attr_iter, start_index);
+  update_attr_iterator (state);
+
+  /* Initialize the script iterator
+   */
+  state->script_iter = pango_script_iter_new (text + start_index, length);
+  pango_script_iter_get_range (state->script_iter, NULL,
+			       &state->script_end, &state->script);
+
+  update_end (state);
+
+  state->derived_lang = NULL;
+  state->lang_engine = NULL;
+  state->current_fonts = NULL;
+  state->cache = NULL;
+  state->exact_engines = NULL;
+  state->fallback_engines = NULL;
+  
+  state->changed = EMBEDDING_CHANGED | SCRIPT_CHANGED | LANG_CHANGED | FONT_CHANGED;
+}
+
+static gboolean
+itemize_state_next (ItemizeState *state)
+{
+  if (state->run_end == state->end)
+    return FALSE;
+
+  state->changed = 0;
+
+  state->run_start = state->run_end;
+
+  if (state->run_end == state->embedding_end)
+    {
+      update_embedding_end (state);
+    }
+
+  if (state->run_end == state->attr_end)
+    {
+      pango_attr_iterator_next (state->attr_iter);
+      update_attr_iterator (state);
+    }
+
+  if (state->run_end == state->script_end)
+    {
+      pango_script_iter_next (state->script_iter);
+      pango_script_iter_get_range (state->script_iter, NULL,
+				   &state->script_end, &state->script);
+      state->changed |= SCRIPT_CHANGED;
+    }
+
+  update_end (state);
+
+  return TRUE;
+}
+
+static GSList *
+copy_attr_slist (GSList *attr_slist)
+{
+  GSList *new_list = NULL;
+  GSList *l;
+  
+  for (l = attr_slist; l; l = l->next)
+    new_list = g_slist_prepend (new_list, pango_attribute_copy (l->data));
+
+  return g_slist_reverse (new_list);
+}
+
+static void
+itemize_state_fill_shaper (ItemizeState     *state,
+			   PangoEngineShape *shape_engine,
+			   PangoFont        *font)
+{
+  GList *l;
+  
+  for (l = state->result; l; l = l->next)
+    {
+      PangoItem *item = l->data;
+      if (item->analysis.shape_engine)
+	break;
+      item->analysis.font = g_object_ref (font);
+      item->analysis.shape_engine = shape_engine;
+    }
+}
+
+static void
+itemize_state_add_character (ItemizeState     *state,
+			     PangoEngineShape *shape_engine,
+			     PangoFont        *font,
+			     gboolean          force_break,
+			     const char       *pos)
+{
+  if (state->item)
+    {
+      if (!force_break &&
+	  state->item->analysis.lang_engine == state->lang_engine &&
+	  state->item->analysis.shape_engine == shape_engine &&
+	  state->item->analysis.font == font)
+	{
+	  state->item->num_chars++;
+	  return;
+	}
+
+      state->item->length = (pos - state->text) - state->item->offset;
+
+      if (!state->item->analysis.shape_engine && shape_engine)
+	{
+	  itemize_state_fill_shaper (state, shape_engine, font);
+	}
+      else if (state->item->analysis.shape_engine && !shape_engine)
+	{
+	  font = state->item->analysis.font;
+	  shape_engine = state->item->analysis.shape_engine;
+	}
+    }
+
+  state->item = pango_item_new ();
+  state->item->offset = pos - state->text;
+  state->item->length = 0;
+  state->item->num_chars = 1;
+  state->item->analysis.shape_engine = shape_engine;
+  state->item->analysis.lang_engine = state->lang_engine;
+
+  if (font)
+    g_object_ref (font);
+  state->item->analysis.font = font;
+  
+  state->item->analysis.level = state->embedding;
+  state->item->analysis.language = state->derived_lang;
+  
+  if (state->copy_extra_attrs)
+    {
+      state->item->analysis.extra_attrs = copy_attr_slist (state->extra_attrs);
+    }
+  else
+    {
+      state->item->analysis.extra_attrs = state->extra_attrs;
+      state->copy_extra_attrs = TRUE;
+    }
+
+  state->result = g_list_prepend (state->result, state->item);
+}
+
+static void
+get_engines (PangoContext  *context,
+	     PangoLanguage *lang,
+	     PangoScript    script,
+	     GSList       **exact_engines,
+	     GSList       **fallback_engines)
+{
+  const char *engine_type = pango_font_map_get_shape_engine_type (context->font_map);
+  PangoMap *shaper_map = pango_find_map (lang,
+					 g_quark_from_string (PANGO_ENGINE_TYPE_SHAPE),
+					 g_quark_from_string (engine_type));
+  pango_map_get_engines (shaper_map, script,
+			 exact_engines, fallback_engines);
+}
+
+typedef struct {
+  PangoLanguage *lang;
+  gunichar wc;
+  GSList *engines;
+  PangoEngineShape *shape_engine;
+  PangoFont *font;
+} GetShaperFontInfo;
+
+static gboolean
+get_shaper_and_font_foreach (PangoFontset *fontset,
+			     PangoFont    *font,
+			     gpointer      data)
+{
+  GetShaperFontInfo *info = data;
+  GSList *l;
+
+  for (l = info->engines; l; l = l->next)
+    {
+      PangoEngineShape *engine = l->data;
+      PangoCoverageLevel level;
+
+      level = _pango_engine_shape_covers (engine, font,
+					  info->lang, info->wc);
+      if (level != PANGO_COVERAGE_NONE)
+	{
+	  info->shape_engine = engine;
+	  info->font = g_object_ref (font);
+	  return TRUE;
+	}
+    }
+
+  return FALSE;
+}
+
+static gboolean
+get_shaper_and_font (ItemizeState      *state,
+		     gunichar           wc,
+		     PangoEngineShape **shape_engine,
+		     PangoFont        **font)
+{
+  GetShaperFontInfo info;
+
+  if (shaper_font_cache_get (state->cache, wc, shape_engine, font))
+    return *shape_engine != NULL;
+
+  if (!state->exact_engines && !state->fallback_engines)
+    get_engines (state->context, state->derived_lang, state->script,
+		 &state->exact_engines, &state->fallback_engines);
+
+  info.lang = state->derived_lang;
+  info.wc = wc;
+  info.shape_engine = NULL;
+  info.font = NULL;
+
+  info.engines = state->exact_engines;
+  pango_fontset_foreach (state->current_fonts, get_shaper_and_font_foreach, &info);
+  if (info.shape_engine)
+    {
+      *shape_engine = info.shape_engine;
+      *font = info.font;
+
+      shaper_font_cache_insert (state->cache, wc, *shape_engine, *font);
+
+      return TRUE;
+    }
+
+  info.engines = state->fallback_engines;
+  pango_fontset_foreach (state->current_fonts, get_shaper_and_font_foreach, &info);
+
+  *shape_engine = info.shape_engine;
+  *font = info.font;
+
+  shaper_font_cache_insert (state->cache, wc, *shape_engine, *font);
+      
+  return *shape_engine != NULL;
+}
+
+static void
+itemize_state_reset_shape_engines (ItemizeState *state)
+{
+  g_slist_free (state->exact_engines);
+  state->exact_engines = NULL;
+  g_slist_free (state->fallback_engines);
+  state->fallback_engines = NULL;
+}
+
+static PangoLanguage *
+compute_derived_language (PangoLanguage *lang,
+			  PangoScript    script)
+{
+  PangoLanguage *derived_lang;
+  
+  /* Make sure the language tag is consistent with the derived
+   * script. There is no point in marking up a section of
+   * Arabic text with the "en" language tag.
+   */
+  if (lang && pango_language_includes_script (lang, script))
+    derived_lang = lang;
+  else
+    {
+      derived_lang = pango_script_get_sample_language (script);
+      if (!derived_lang)
+	derived_lang = lang;
+    }
+
+  return derived_lang;
+}
+
+static PangoMap *
+get_lang_map (PangoLanguage *lang)
+{
+  static guint engine_type_id = 0;
+  static guint render_type_id = 0;
+  
+  if (engine_type_id == 0)
+    {
+      engine_type_id = g_quark_from_static_string (PANGO_ENGINE_TYPE_LANG);
+      render_type_id = g_quark_from_static_string (PANGO_RENDER_TYPE_NONE);
+    }
+	       
+  return pango_find_map (lang, engine_type_id, render_type_id);
+}
+
+static void
+itemize_state_update_for_new_run (ItemizeState *state)
+{
+  if (state->changed & (SCRIPT_CHANGED | LANG_CHANGED))
+    {
+      PangoLanguage *old_derived_lang = state->derived_lang;
+      state->derived_lang = compute_derived_language (state->lang, state->script);
+      if (old_derived_lang != state->derived_lang)
+	state->changed |= DERIVED_LANG_CHANGED;
+    }
+      
+  if ((state->changed & DERIVED_LANG_CHANGED) || !state->lang_engine)
+    {
+      PangoMap *lang_map = get_lang_map (state->derived_lang);
+      state->lang_engine = (PangoEngineLang *)pango_map_get_engine (lang_map, state->script);
+    }
+
+  if (state->changed & (SCRIPT_CHANGED | DERIVED_LANG_CHANGED))
+    itemize_state_reset_shape_engines (state);
+  
+  if (state->changed & (FONT_CHANGED | DERIVED_LANG_CHANGED) &&
+      state->current_fonts)
+    {
+      g_object_unref (state->current_fonts);
+      state->current_fonts = NULL;
+      state->cache = NULL;
+    }
+
+  if (!state->current_fonts)
+    {
+      state->current_fonts = pango_font_map_load_fontset (state->context->font_map,
+							  state->context,
+							  state->font_desc,
+							  state->derived_lang);
+      state->cache = get_shaper_font_cache (state->current_fonts);
+    }
+}
+
+static void
+itemize_state_process_run (ItemizeState *state)
+{
+  const char *p;
+  gboolean last_was_tab = FALSE;
+
+  itemize_state_update_for_new_run (state);
+
+  for (p = state->run_start;
+       p < state->run_end;
+       p = g_utf8_next_char (p))
+    {
+      gunichar wc = g_utf8_get_char (p);
+      gboolean is_tab = wc == '\t';
+      PangoEngineShape *shape_engine;
+      PangoFont *font;
+
+      if (!g_unichar_isgraph (wc))
+	{
+	  shape_engine = NULL;
+	  font = NULL;
+	}
+      else
+        get_shaper_and_font (state, wc, &shape_engine, &font);
+	
+      itemize_state_add_character (state,
+				   shape_engine, font,
+				   is_tab || last_was_tab,
+				   p);
+      
+      last_was_tab = is_tab;
+    }
+
+  /* Finish the final item from the current segment */
+  state->item->length = (p - state->text) - state->item->offset;
+  if (!state->item->analysis.shape_engine)
+    {
+      PangoEngineShape *shape_engine;
+      PangoFont *font;
+      
+      if (!get_shaper_and_font (state, ' ', &shape_engine, &font))
+	{
+	  shape_engine = _pango_get_fallback_shaper ();
+	  font = NULL;
+	}
+
+      itemize_state_fill_shaper (state, shape_engine, font);
+    }
+  state->item = NULL;
+}
+
+static void
+itemize_state_finish (ItemizeState *state)
+{
+  g_free (state->embedding_levels);
+  if (state->free_attr_iter)
+    pango_attr_iterator_destroy (state->attr_iter);
+  pango_script_iter_free (state->script_iter);
+  pango_font_description_free (state->font_desc);
+
+  itemize_state_reset_shape_engines (state);
+  if (state->current_fonts)
+    g_object_unref (state->current_fonts);
+}
+
 /**
  * pango_itemize:
  * @context:   a structure holding information that affects
@@ -393,16 +1025,7 @@ pango_itemize (PangoContext      *context,
 	       PangoAttrList     *attrs,
                PangoAttrIterator *cached_iter)
 {
-  gunichar *text_ucs4;
-  long n_chars, i;
-  guint8 *embedding_levels;
-  PangoDirection base_dir;
-  PangoItem *item;
-  const char *p;
-  const char *next;
-  GList *result = NULL;
-
-  PangoAnalysis *analyses;
+  ItemizeState state;
 
   g_return_val_if_fail (context != NULL, NULL);
   g_return_val_if_fail (start_index >= 0, NULL);
@@ -412,247 +1035,16 @@ pango_itemize (PangoContext      *context,
   if (length == 0)
     return NULL;
 
-  base_dir = context->base_dir;
+  itemize_state_init (&state, context, text, start_index, length,
+		      attrs, cached_iter);
 
-  if (length == 0)
-    return NULL;
+  do 
+    itemize_state_process_run (&state);
+  while (itemize_state_next (&state));
 
-  /* First, apply the bidirectional algorithm to break
-   * the text into directional runs.
-   */
-  text_ucs4 = g_utf8_to_ucs4_fast (text + start_index, length, &n_chars);
-
-  embedding_levels = g_new (guint8, n_chars);
-
-  pango_log2vis_get_embedding_levels (text_ucs4, n_chars, &base_dir,
-                                      embedding_levels);
-
-  /* Storing ranges would be more efficient, but also more
-   * complicated... we take the simple approach for now.
-   */
-
-  analyses = g_new0 (PangoAnalysis, n_chars);
-
-  /* Now, fill in the appropriate shapers, language engines and fonts for
-   * each character.
-   */
-
-  add_engines (context, text, start_index, length, attrs,
-               cached_iter,
-               n_chars,
-	       analyses);
-
-  /* Make a GList of PangoItems out of the above results
-   */
-
-  item = NULL;
-  p = text + start_index;
-  for (i=0; i<n_chars; i++)
-    {
-      PangoAnalysis *analysis = &analyses[i];
-      PangoAnalysis *last_analysis = i > 0 ? &analyses[i-1] : 0;
-      
-      next = g_utf8_next_char (p);
-      
-      if (i == 0 ||
-	  text_ucs4[i] == '\t' || text_ucs4[i-1] == '\t' ||
-	  embedding_levels[i] != embedding_levels[i-1] ||
-	  analysis->shape_engine != last_analysis->shape_engine ||
-	  analysis->lang_engine != last_analysis->lang_engine ||
-	  analysis->font != last_analysis->font ||
-	  analysis->language != last_analysis->language ||
-	  analysis->extra_attrs != last_analysis->extra_attrs)
-	{
-          /* assert that previous item got at least one char */
-          g_assert (item == NULL || item->length > 0);
-          g_assert (item == NULL || item->num_chars > 0);
-          
-	  item = pango_item_new ();
-	  item->offset = p - text;
-	  item->num_chars = 0;
-	  item->analysis.level = embedding_levels[i];
-	  
-	  item->analysis.shape_engine = analysis->shape_engine;
-	  item->analysis.lang_engine = analysis->lang_engine;
-
-	  item->analysis.font = analysis->font;
-	  item->analysis.language = analysis->language;
-
-	  /* Copy the extra attribute list if necessary */
-	  if (analysis->extra_attrs && i != 0 && analysis->extra_attrs == last_analysis->extra_attrs)
-	    {
-	      GSList *tmp_list = analysis->extra_attrs;
-	      GSList *new_list = NULL;
-	      while (tmp_list)
-		{
-		  new_list = g_slist_prepend (new_list,
-					      pango_attribute_copy (tmp_list->data));
-		  tmp_list = tmp_list->next;
-		}
-	      item->analysis.extra_attrs = g_slist_reverse (new_list);
-	    }
-	  else
-	    item->analysis.extra_attrs = analysis->extra_attrs;
-
-	  result = g_list_prepend (result, item);
-	}
-      else
-	g_object_unref (analysis->font);
-
-      item->length = (next - text) - item->offset;
-      item->num_chars++;
-      p = next;
-    }  
-
-  g_free (analyses);
-  g_free (embedding_levels);
-  g_free (text_ucs4);
+  itemize_state_finish (&state);
   
-  return g_list_reverse (result);
-}
-
-static gboolean
-advance_iterator_to (PangoAttrIterator *iterator,
-                     int                start_index)
-{
-  int start_range, end_range;
-  
-  pango_attr_iterator_range (iterator, &start_range, &end_range);
-
-  while (start_index >= end_range)
-    {
-      if (!pango_attr_iterator_next (iterator))
-        return FALSE;
-      pango_attr_iterator_range (iterator, &start_range, &end_range);
-    }
-
-  if (start_range > start_index)
-    g_warning ("In pango_itemize(), the cached iterator passed in "
-               "had already moved beyond the start_index");
-
-  return TRUE;
-}
-
-static void
-add_engines (PangoContext      *context,
-	     const gchar       *text,
-             gint               start_index,
-	     gint               length,
-	     PangoAttrList     *attrs,
-             PangoAttrIterator *cached_iter,
-             gint               n_chars,
-	     PangoAnalysis     *analyses)
-{
-  const char *pos;
-  PangoLanguage *language = NULL;
-  int next_index;
-  GSList *extra_attrs = NULL;
-  PangoMap *lang_map = NULL;
-  PangoFontDescription *current_desc = NULL;
-  PangoFontset *current_fonts = NULL;
-  PangoAttrIterator *iterator;
-  gboolean first_iteration = TRUE;
-  gunichar wc;
-  int i = 0;
-
-  if (cached_iter)
-    iterator = cached_iter;
-  else
-    iterator = pango_attr_list_get_iterator (attrs);
-
-  advance_iterator_to (iterator, start_index);
-  
-  pango_attr_iterator_range (iterator, NULL, &next_index);
-  
-  pos = text + start_index;
-  for (i=0; i<n_chars; i++)
-    {
-      PangoAnalysis *analysis = &analyses[i];
-      
-      if (first_iteration || pos - text == next_index)
-	{
-	  PangoLanguage *next_language;
-	  PangoFontDescription *next_desc = pango_font_description_copy_static (context->font_desc);
-
-          first_iteration = FALSE;
-          
-          /* Only advance the iterator if we've exhausted a range,
-           * not on the first iteration.
-           */
-          if (pos - text == next_index)
-            {
-              pango_attr_iterator_next (iterator);
-              pango_attr_iterator_range (iterator, NULL, &next_index);
-            }
-          
-	  pango_attr_iterator_get_font (iterator, next_desc, &next_language, &extra_attrs);
-
-          if (!next_language)
-	    next_language = context->language;
-
-	  if (i == 0 || language != next_language)
-	    {
-	      static guint engine_type_id = 0;
-	      static guint render_type_id = 0;
-	      
-	      if (engine_type_id == 0)
-		{
-		  engine_type_id = g_quark_from_static_string (PANGO_ENGINE_TYPE_LANG);
-		  render_type_id = g_quark_from_static_string (PANGO_RENDER_TYPE_NONE);
-		}
-	       
-	      lang_map = pango_find_map (next_language,
-					 engine_type_id, render_type_id);
-	    }
-
-	  if (i == 0 ||
-	      language != next_language ||
-	      !pango_font_description_equal (current_desc, next_desc))
-	    {
-	      pango_font_description_free (current_desc);
-	      current_desc = next_desc;
-	      language = next_language;
-	      
-	      if (current_fonts)
-		g_object_unref (current_fonts);
-	      
-	      current_fonts = pango_font_map_load_fontset (context->font_map,
-							   context,
-							   current_desc,
-							   language);
-	    }
-	  else
-	    pango_font_description_free (next_desc);
-        }
-
-      wc = g_utf8_get_char (pos);
-      pos = g_utf8_next_char (pos);
-      
-      analysis->lang_engine = (PangoEngineLang *)pango_map_get_engine (lang_map, wc);
-      analysis->font = pango_fontset_get_font (current_fonts, wc);
-      analysis->language = language;
-      
-      /* FIXME: handle reference counting properly on the shapers */
-      if (analysis->font)
-	analysis->shape_engine = pango_font_find_shaper (analysis->font, language, wc);
-      else
-	analysis->shape_engine = NULL;
-      
-      if (analysis->shape_engine == NULL)
-        analysis->shape_engine = _pango_get_fallback_shaper ();
-      
-      analysis->extra_attrs = extra_attrs;
-    }
-
-  g_assert (pos - text == start_index + length);
-
-  if (current_desc)
-    pango_font_description_free (current_desc);
-  if (current_fonts)
-    g_object_unref (current_fonts);
-
-  if (iterator != cached_iter)
-    pango_attr_iterator_destroy (iterator);
+  return g_list_reverse (state.result);
 }
 
 /**

@@ -26,44 +26,19 @@
 #include "pango-types.h"
 #include "pango-font.h"
 #include "pango-fontset.h"
+#include "pango-impl-utils.h"
 #include "pango-utils.h"
 
-static void              pango_fontset_class_init       (PangoFontsetClass *class);
 static PangoFontMetrics *pango_fontset_real_get_metrics (PangoFontset      *fontset);
-
-GType
-pango_fontset_get_type (void)
-{
-  static GType object_type = 0;
-
-  if (!object_type)
-    {
-      static const GTypeInfo object_info =
-      {
-        sizeof (PangoFontsetClass),
-        (GBaseInitFunc) NULL,
-        (GBaseFinalizeFunc) NULL,
-        (GClassInitFunc) pango_fontset_class_init,
-        NULL,           /* class_finalize */
-        NULL,           /* class_data */
-        sizeof (PangoFontset),
-        0,              /* n_preallocs */
-	NULL            /* init */
-      };
-      
-      object_type = g_type_register_static (G_TYPE_OBJECT,
-                                            "PangoFontset",
-                                            &object_info, 0);
-    }
-  
-  return object_type;
-}
 
 static void
 pango_fontset_class_init (PangoFontsetClass *class)
 {
   class->get_metrics = pango_fontset_real_get_metrics;
 }
+
+PANGO_DEFINE_TYPE_ABSTRACT (PangoFontset, pango_fontset,
+			    pango_fontset_class_init, NULL, G_TYPE_OBJECT);
 
 /**
  * pango_fontset_get_font:
@@ -81,7 +56,7 @@ pango_fontset_get_font (PangoFontset  *fontset,
 			guint          wc)
 {
   
-  g_return_val_if_fail (fontset != NULL, NULL);
+  g_return_val_if_fail (PANGO_IS_FONTSET (fontset), NULL);
 
   return PANGO_FONTSET_GET_CLASS (fontset)->get_font (fontset, wc);
 }
@@ -98,11 +73,30 @@ pango_fontset_get_font (PangoFontset  *fontset,
 PangoFontMetrics *
 pango_fontset_get_metrics (PangoFontset  *fontset)
 {
-  g_return_val_if_fail (fontset != NULL, NULL);
+  g_return_val_if_fail (PANGO_IS_FONTSET (fontset), NULL);
 
   return PANGO_FONTSET_GET_CLASS (fontset)->get_metrics (fontset);
 }
 
+/**
+ * pango_fontset_foreach:
+ * @fontset: a #PangoFontset
+ * @func: Callback function
+ * @data: data to pass to the callback function
+ * 
+ * Iterate through all the fonts in a fontset, calling @func for
+ * each one. If @func returns TRUE, that stops the iteration.
+ **/
+void
+pango_fontset_foreach (PangoFontset           *fontset,
+		       PangoFontsetForeachFunc func,
+		       gpointer                data)
+{
+  g_return_if_fail (PANGO_IS_FONTSET (fontset));
+  g_return_if_fail (func != NULL);
+
+  PANGO_FONTSET_GET_CLASS (fontset)->foreach (fontset, func, data);
+}
 
 static PangoFontMetrics *
 pango_fontset_real_get_metrics (PangoFontset  *fontset)
@@ -175,13 +169,15 @@ pango_fontset_real_get_metrics (PangoFontset  *fontset)
 #define PANGO_IS_FONTSET_SIMPLE_CLASS(klass)   (G_TYPE_CHECK_CLASS_TYPE ((klass), PANGO_TYPE_FONTSET_SIMPLE))
 #define PANGO_FONTSET_SIMPLE_GET_CLASS(obj)    (G_TYPE_INSTANCE_GET_CLASS ((obj), PANGO_TYPE_FONTSET_SIMPLE, PangoFontsetSimpleClass))
 
-static void              pango_fontset_simple_class_init   (PangoFontsetSimpleClass *class);
 static void              pango_fontset_simple_finalize     (GObject                 *object);
 static void              pango_fontset_simple_init         (PangoFontsetSimple      *fontset);
 static PangoFontMetrics *pango_fontset_simple_get_metrics  (PangoFontset            *fontset);
 static PangoLanguage *   pango_fontset_simple_get_language (PangoFontset            *fontset);
 static  PangoFont *      pango_fontset_simple_get_font     (PangoFontset            *fontset,
 							    guint                    wc);
+static void              pango_fontset_simple_foreach      (PangoFontset            *fontset,
+							    PangoFontsetForeachFunc  func,
+							    gpointer                 data);
 
 struct _PangoFontsetSimple
 {
@@ -218,34 +214,6 @@ pango_fontset_simple_new (PangoLanguage *language)
   return fontset;
 }
 
-GType
-pango_fontset_simple_get_type (void)
-{
-  static GType object_type = 0;
-
-  if (!object_type)
-    {
-      static const GTypeInfo object_info =
-      {
-        sizeof (PangoFontsetSimpleClass),
-        (GBaseInitFunc) NULL,
-        (GBaseFinalizeFunc) NULL,
-        (GClassInitFunc) pango_fontset_simple_class_init,
-        NULL,           /* class_finalize */
-        NULL,           /* class_data */
-        sizeof (PangoFontsetSimple),
-        0,              /* n_preallocs */
-        (GInstanceInitFunc) pango_fontset_simple_init,
-      };
-      
-      object_type = g_type_register_static (PANGO_TYPE_FONTSET,
-                                            "PangoFontsetSimple",
-                                            &object_info, 0);
-    }
-  
-  return object_type;
-}
-
 static void
 pango_fontset_simple_class_init (PangoFontsetSimpleClass *class)
 {
@@ -258,6 +226,7 @@ pango_fontset_simple_class_init (PangoFontsetSimpleClass *class)
   fontset_class->get_font = pango_fontset_simple_get_font;
   fontset_class->get_metrics = pango_fontset_simple_get_metrics;
   fontset_class->get_language = pango_fontset_simple_get_language;
+  fontset_class->foreach = pango_fontset_simple_foreach;
 }
 
 static void 
@@ -267,6 +236,10 @@ pango_fontset_simple_init (PangoFontsetSimple *fontset)
   fontset->coverages = g_ptr_array_new ();
   fontset->language = NULL;
 }
+
+PANGO_DEFINE_TYPE (PangoFontsetSimple, pango_fontset_simple,
+		   pango_fontset_simple_class_init, pango_fontset_simple_init,
+		   PANGO_TYPE_FONTSET);
 
 static void
 pango_fontset_simple_finalize (GObject *object)
@@ -378,4 +351,21 @@ pango_fontset_simple_get_font (PangoFontset  *fontset,
 
   font = g_ptr_array_index(simple->fonts, result);
   return g_object_ref (font);
+}
+
+static void
+pango_fontset_simple_foreach (PangoFontset           *fontset,
+			      PangoFontsetForeachFunc func,
+			      gpointer                data)
+{
+  PangoFontsetSimple *simple = PANGO_FONTSET_SIMPLE (fontset);
+  int i;
+  
+  for (i = 0; i < simple->fonts->len; i++)
+    {
+      if ((*func) (fontset,
+		   g_ptr_array_index (simple->fonts, i),
+		   data))
+	return;
+    }
 }

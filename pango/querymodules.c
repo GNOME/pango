@@ -27,6 +27,7 @@
 #include "pango-context.h"
 #include "pango-utils.h"
 #include "pango-engine.h"
+#include "pango-enum-types.h"
 
 #include <errno.h>
 #include <string.h>
@@ -98,6 +99,24 @@ escape_string (const char *str)
   g_module_symbol (module, name, (gpointer *)&location)
 #endif
 
+static const char *
+script_from_string (PangoScript script)
+{
+  static GEnumClass *class = NULL;
+  GEnumValue *value;
+  if (!class)
+    class = g_type_class_ref (PANGO_TYPE_SCRIPT);
+  
+  value = g_enum_get_value (class, script);
+  if (!value)
+    {
+      g_warning ("Engine reported invalid script value %d\n", script);
+      return script_from_string (PANGO_SCRIPT_INVALID_CODE);
+    }
+
+  return value->value_nick;
+}
+
 void 
 query_module (const char *dir, const char *name)
 {
@@ -151,14 +170,13 @@ query_module (const char *dir, const char *name)
 		    engines[i].id, engines[i].engine_type, engines[i].render_type);
 	  g_free (quoted_path);
 
-	  for (j=0; j < engines[i].n_ranges; j++)
+	  for (j=0; j < engines[i].n_scripts; j++)
 	    {
 	      if (j != 0)
 		g_printf (" ");
-	      g_printf ("%d-%d:%s",
-		      engines[i].ranges[j].start,
-		      engines[i].ranges[j].end,
-		      engines[i].ranges[j].langs);
+	      g_printf ("%s:%s",
+			script_from_string (engines[i].scripts[j].script),
+			engines[i].scripts[j].langs);
 	    }
 	  g_printf ("\n");
 	}
@@ -179,6 +197,8 @@ int main (int argc, char **argv)
   int i;
   char *path;
 
+  g_type_init ();
+  
   g_printf ("# Pango Modules file\n"
 	    "# Automatically generated file, do not edit\n"
 	    "#\n");

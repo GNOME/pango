@@ -44,8 +44,8 @@ typedef PangoEngineShapeClass ThaiEngineFcClass ;
 
 /* We handle the range U+0e01 to U+0e5b exactly
  */
-static PangoEngineRange thai_ranges[] = {
-  { 0x0e01, 0x0e5b, "*" },  /* Thai */
+static PangoEngineScriptInfo thai_scripts[] = {
+  { PANGO_SCRIPT_THAI, "*" }
 };
 
 static PangoEngineInfo script_engines[] = {
@@ -53,7 +53,7 @@ static PangoEngineInfo script_engines[] = {
     SCRIPT_ENGINE_NAME,
     PANGO_ENGINE_TYPE_SHAPE,
     RENDER_TYPE,
-    thai_ranges, G_N_ELEMENTS(thai_ranges)
+    thai_scripts, G_N_ELEMENTS(thai_scripts)
   }
 };
 
@@ -194,14 +194,6 @@ PangoGlyph
 thai_make_unknown_glyph (ThaiFontInfo *font_info, unsigned int c)
 {
   return pango_fc_font_get_unknown_glyph ((PangoFcFont *)font_info->font, c);
-}
-
-/* Unused; used only for X backend and XTIS encoding
- */
-gboolean
-thai_has_glyph (ThaiFontInfo *font_info, PangoGlyph glyph)
-{
-  return TRUE;
 }
 
 static void

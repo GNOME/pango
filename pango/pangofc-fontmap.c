@@ -201,6 +201,7 @@ pango_fc_font_map_class_init (PangoFontMapClass *class)
   class->load_font = pango_fc_font_map_load_font;
   class->load_fontset = pango_fc_font_map_load_fontset;
   class->list_families = pango_fc_font_map_list_families;
+  class->shape_engine_type = PANGO_RENDER_TYPE_FC;
 
 #ifdef INSTANCE_PRIVATE_DATA_WORKS
   g_type_class_add_private (object_class, sizeof (PangoFontMapClass));

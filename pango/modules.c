@@ -27,6 +27,7 @@
 
 #include <gmodule.h>
 
+#include "pango-enum-types.h"
 #include "pango-modules.h"
 #include "pango-utils.h"
 #include "pango-impl-utils.h"
@@ -42,19 +43,15 @@ typedef struct _PangoMapInfo PangoMapInfo;
 typedef struct _PangoEnginePair PangoEnginePair;
 typedef struct _PangoSubmap PangoSubmap;
 
-struct _PangoSubmap
-{
-  gboolean is_leaf;
-  union {
-    PangoMapEntry entry;
-    PangoMapEntry *leaves;
-  } d;
-};
-
 struct _PangoMap
 {
-  gint n_submaps;
-  PangoSubmap *submaps;
+  GArray *entries;
+};
+
+struct _PangoMapEntry 
+{
+  GSList *exact;
+  GSList *fallback;
 };
 
 struct _PangoMapInfo
@@ -341,6 +338,21 @@ find_or_create_module (const char *raw_path)
   return module;
 }
 
+static PangoScript
+script_from_string (const char *str)
+{
+  static GEnumClass *class = NULL;
+  GEnumValue *value;
+  if (!class)
+    class = g_type_class_ref (PANGO_TYPE_SCRIPT);
+  
+  value = g_enum_get_value_by_nick (class, str);
+  if (!value)
+    return PANGO_SCRIPT_INVALID_CODE;
+
+  return value->value;
+}
+
 static gboolean /* Returns true if succeeded, false if failed */
 process_module_file (FILE *module_file)
 {
@@ -351,13 +363,14 @@ process_module_file (FILE *module_file)
   while (pango_read_line (module_file, line_buf))
     {
       PangoEnginePair *pair = g_new (PangoEnginePair, 1);
-      PangoEngineRange *range;
-      GList *ranges = NULL;
+      PangoEngineScriptInfo *script_info;
+      PangoScript script;
+      GList *scripts = NULL;
       GList *tmp_list;
 
-      const char *p, *q;
+      const char *p;
+      char *q;
       int i;
-      int start, end;
 
       p = line_buf->str;
 
@@ -391,26 +404,25 @@ process_module_file (FILE *module_file)
 	      pair->info.render_type = g_strdup (tmp_buf->str);
 	      break;
 	    default:
-	      range = g_new (PangoEngineRange, 1);
-	      if (sscanf(tmp_buf->str, "%d-%d:", &start, &end) != 2)
-		{
-		  g_printerr ("Error reading modules file");
-		  have_error = TRUE;
-		  goto error;
-		}
 	      q = strchr (tmp_buf->str, ':');
 	      if (!q)
 		{
-		  g_printerr ( "Error reading modules file");
 		  have_error = TRUE;
 		  goto error;
 		}
-	      q++;
-	      range->start = start;
-	      range->end = end;
-	      range->langs = g_strdup (q);
+	      *q = '\0';
+	      script = script_from_string (tmp_buf->str);
+	      if (script == PANGO_SCRIPT_INVALID_CODE)
+		{
+		  have_error = TRUE;
+		  goto error;
+		}
 	      
-	      ranges = g_list_prepend (ranges, range);
+	      script_info = g_new (PangoEngineScriptInfo, 1);
+	      script_info->script = script;
+	      script_info->langs = g_strdup (q + 1);
+	      
+	      scripts = g_list_prepend (scripts, script_info);
 	    }
 
 	  if (!pango_skip_space (&p))
@@ -421,19 +433,18 @@ process_module_file (FILE *module_file)
       
       if (i<3)
 	{
-	  g_printerr ("Error reading modules file");
 	  have_error = TRUE;
 	  goto error;
 	}
       
-      ranges = g_list_reverse (ranges);
-      pair->info.n_ranges = g_list_length (ranges);
-      pair->info.ranges = g_new (PangoEngineRange, pair->info.n_ranges);
+      scripts = g_list_reverse (scripts);
+      pair->info.n_scripts = g_list_length (scripts);
+      pair->info.scripts = g_new (PangoEngineScriptInfo, pair->info.n_scripts);
       
-      tmp_list = ranges;
-      for (i=0; i<pair->info.n_ranges; i++)
+      tmp_list = scripts;
+      for (i=0; i<pair->info.n_scripts; i++)
 	{
-	  pair->info.ranges[i] = *(PangoEngineRange *)tmp_list->data;
+	  pair->info.scripts[i] = *(PangoEngineScriptInfo *)tmp_list->data;
 	  tmp_list = tmp_list->next;
 	}
 
@@ -442,11 +453,12 @@ process_module_file (FILE *module_file)
       dlloaded_engines = g_slist_prepend (dlloaded_engines, pair);
 
     error:
-      g_list_foreach (ranges, (GFunc)g_free, NULL);
-      g_list_free (ranges);
+      g_list_foreach (scripts, (GFunc)g_free, NULL);
+      g_list_free (scripts);
 
       if (have_error)
 	{
+	  g_printerr ("Error reading Pango modules file\n");
 	  g_free(pair);
 	  break;
 	}
@@ -497,17 +509,6 @@ read_modules (void)
 }
 
 static void
-set_entry (PangoMapEntry *entry, gboolean is_exact, PangoEngineInfo *info)
-{
-  if ((is_exact && !entry->is_exact) ||
-      !entry->info)
-    {
-      entry->is_exact = is_exact;
-      entry->info = info;
-    }
-}
-
-static void
 init_modules (void)
 {
   static gboolean init = FALSE;
@@ -523,90 +524,35 @@ init_modules (void)
   read_modules ();
 }
 
-static PangoSubmap *
-map_get_submap (PangoMap *map,
-		int       index)
-{
-  if (index >= map->n_submaps)
-    {
-      /* Round up to a multiple of 256 */
-      int new_n_submaps = (index + 0x100) & ~0xff;
-      int i;
-      
-      map->submaps = g_renew (PangoSubmap, map->submaps, new_n_submaps);
-      for (i=map->n_submaps; i<new_n_submaps; i++)
-	{
-	  map->submaps[i].is_leaf = TRUE;
-	  map->submaps[i].d.entry.info = NULL;
-	  map->submaps[i].d.entry.is_exact = FALSE;
-	}
-      
-      map->n_submaps = new_n_submaps;
-    }
-
-  return &map->submaps[index];
-}
-
 static void
 map_add_engine (PangoMapInfo    *info,
 		PangoEnginePair *pair)
 {
-  int submap;
-  int i, j;
   PangoMap *map = info->map;
+  int i;
  
-  for (i=0; i<pair->info.n_ranges; i++)
+  for (i=0; i<pair->info.n_scripts; i++)
     {
+      PangoScript script;
+      PangoMapEntry *entry;
       gboolean is_exact = FALSE;
 
-      if (pair->info.ranges[i].langs)
+      if (pair->info.scripts[i].langs)
 	{
-	  if (pango_language_matches (info->language, pair->info.ranges[i].langs))
+	  if (pango_language_matches (info->language, pair->info.scripts[i].langs))
 	    is_exact = TRUE;
 	}
-      
-      for (submap = pair->info.ranges[i].start / 256;
-	   submap <= pair->info.ranges[i].end / 256;
-	   submap ++)
-	{
-	  PangoSubmap *submap_struct = map_get_submap (map, submap);
-	  gunichar start;
-	  gunichar end;
 
-	  if (submap == pair->info.ranges[i].start / 256)
-	    start = pair->info.ranges[i].start % 256;
-	  else
-	    start = 0;
-	  
-	  if (submap == pair->info.ranges[i].end / 256)
-	    end = pair->info.ranges[i].end % 256;
-	  else
-	    end = 255;
-	  
-	  if (submap_struct->is_leaf &&
-	      start == 0 && end == 255)
-	    {
-	      set_entry (&submap_struct->d.entry,
-			 is_exact, &pair->info);
-	    }
-	  else
-	    {
-	      if (submap_struct->is_leaf)
-		{
-		  PangoMapEntry old_entry = submap_struct->d.entry;
-		  
-		  submap_struct->is_leaf = FALSE;
-		  submap_struct->d.leaves = g_new (PangoMapEntry, 256);
-		  for (j=0; j<256; j++)
-		    submap_struct->d.leaves[j] = old_entry;
-		}
-	      
-	      for (j=start; j<=end; j++)
-		set_entry (&submap_struct->d.leaves[j],
-			   is_exact, &pair->info);
-	      
-	    }
-	}
+      script = pair->info.scripts[i].script;
+      if (script >= map->entries->len)
+	g_array_set_size (map->entries, script + 1);
+
+      entry = &g_array_index (map->entries, PangoMapEntry, script);
+
+      if (is_exact)
+	entry->exact = g_slist_prepend (entry->exact, pair);
+      else
+	entry->exact = g_slist_prepend (entry->fallback, pair);
     }
 }
 
@@ -662,73 +608,110 @@ build_map (PangoMapInfo *info)
     }
   
   info->map = map = g_new (PangoMap, 1);
-  map->submaps = NULL;
-  map->n_submaps = 0;
-
+  map->entries = g_array_new (FALSE, TRUE, sizeof (PangoMapEntry));
+			      
   map_add_engine_list (info, dlloaded_engines, engine_type, render_type);  
   map_add_engine_list (info, registered_engines, engine_type, render_type);  
 }
 
 /**
- * pango_map_get_entry:
+ * pango_map_get_engine:
  * @map: a #PangoMap
- * @wc:  an ISO-10646 codepoint
+ * @script: a #PangoScript
  * 
- * Returns the entry in the map for a given codepoint. The entry
- * contains information about the engine that should be used for
- * the codepoint and also whether the engine matches the language
- * tag for which the map was created exactly or just approximately.
+ * Returns the best engine listed in the map for a given script
  * 
- * Return value: the #PangoMapEntry for the codepoint. This value
- *   is owned by the #PangoMap and should not be freed.
+ * Return value: the best engine, if one is listed for the script,
+ *    or %NULL. The lookup may cause the engine to be loaded;
+ *    once an engine is loaded, it won't be unloaded. If multiple
+ *    engines are exact for the script, the choice of which is
+ *    returned is arbitrary.
  **/
-PangoMapEntry *
-pango_map_get_entry (PangoMap   *map,
-		     guint32     wc)
+PangoEngine *
+pango_map_get_engine (PangoMap   *map,
+		      PangoScript script)
 {
-  int i = wc / 256;
+  PangoMapEntry *entry = NULL;
+  PangoMapEntry *common_entry = NULL;
+  
+  if (script < map->entries->len)
+    entry = &g_array_index (map->entries, PangoMapEntry, script);
 
-  if (i < map->n_submaps)
-    {
-      PangoSubmap *submap = &map->submaps[i];
-      return submap->is_leaf ? &submap->d.entry : &submap->d.leaves[wc % 256];
-    }
+  if (PANGO_SCRIPT_COMMON < map->entries->len)
+    common_entry = &g_array_index (map->entries, PangoMapEntry, PANGO_SCRIPT_COMMON);
+
+  if (entry && entry->exact)
+    return pango_engine_pair_get_engine (entry->exact->data);
+  else if (common_entry && common_entry->exact)
+    return pango_engine_pair_get_engine (common_entry->exact->data);
+  else if (entry && entry->fallback)
+    return pango_engine_pair_get_engine (entry->fallback->data);
+  else if (common_entry && common_entry->fallback)
+    return pango_engine_pair_get_engine (common_entry->fallback->data);
   else
+    return NULL;
+}
+
+void
+append_engines (GSList **engine_list,
+		GSList  *pair_list)
+{
+  GSList *l;
+
+  for (l = pair_list; l; l = l->next)
     {
-      static PangoMapEntry default_entry = { NULL, FALSE };
-      return &default_entry;
+      PangoEngine *engine = pango_engine_pair_get_engine (l->data);
+      if (engine)
+	*engine_list = g_slist_append (*engine_list, engine);
     }
 }
 
 /**
- * pango_map_get_engine:
+ * pango_map_get_engines:
  * @map: a #PangoMap
- * @wc:  an ISO-10646 codepoint
+ * @script: a #PangoScript
+ * @exact_engines: location to store list of engines that exactly
+ *  handle this script.
+ * @fallback_engines: location to store list of engines that approximately
+ *  handle this script.
  * 
- * Returns the engine listed in the map for a given codepoint. 
- * 
- * Return value: the engine, if one is listed for the codepoint,
- *    or %NULL. The lookup may cause the engine to be loaded;
- *    once an engine is loaded
+ * Finds engines in the map that handle the given script. The returned
+ * lists should be fred with g_slist_free, but the engines in the
+ * lists are owned by GLib and will be kept around permanently, so
+ * they should not be unref'ed.
  **/
-PangoEngine *
-pango_map_get_engine (PangoMap *map,
-		      guint32   wc)
+void
+pango_map_get_engines (PangoMap     *map,
+		       PangoScript   script,
+		       GSList      **exact_engines,
+		       GSList      **fallback_engines)
 {
-  int i = wc / 256;
+  PangoMapEntry *entry = NULL;
+  PangoMapEntry *common_entry = NULL;
+  
+  if (script < map->entries->len)
+    entry = &g_array_index (map->entries, PangoMapEntry, script);
 
-  if (i < map->n_submaps)
+  if (PANGO_SCRIPT_COMMON < map->entries->len)
+    common_entry = &g_array_index (map->entries, PangoMapEntry, PANGO_SCRIPT_COMMON);
+
+  if (exact_engines)
     {
-      PangoSubmap *submap = &map->submaps[i];
-      PangoMapEntry *entry = submap->is_leaf ? &submap->d.entry : &submap->d.leaves[wc % 256];
-      
-      if (entry->info)
-	return pango_engine_pair_get_engine ((PangoEnginePair *)entry->info);
-      else
-	return NULL;
+      *exact_engines = NULL;
+      if (entry && entry->exact)
+	append_engines (exact_engines, entry->exact);
+      else if (common_entry && common_entry->exact)
+	append_engines (exact_engines, common_entry->exact);
     }
-  else
-    return NULL;
+  
+  if (fallback_engines)
+    {
+      *fallback_engines = NULL;
+      if (entry && entry->fallback)
+	append_engines (fallback_engines, entry->fallback);
+      else if (common_entry && common_entry->fallback)
+	append_engines (fallback_engines, common_entry->fallback);
+    }
 }
 
 /**
