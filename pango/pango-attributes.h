@@ -103,6 +103,8 @@ struct _PangoAttribute
 typedef gboolean (*PangoAttrFilterFunc) (PangoAttribute *attribute,
 					 gpointer        data);
 
+typedef gpointer (*PangoAttrDataCopyFunc) (gconstpointer data);
+
 struct _PangoAttrClass
 {
   /*< public >*/
@@ -147,6 +149,10 @@ struct _PangoAttrShape
   PangoAttribute attr;
   PangoRectangle ink_rect;
   PangoRectangle logical_rect;
+  
+  gpointer              data;
+  PangoAttrDataCopyFunc copy_func;
+  GDestroyNotify        destroy_func;
 };
 
 struct _PangoAttrFontDesc
@@ -179,11 +185,17 @@ PangoAttribute *pango_attr_font_desc_new     (const PangoFontDescription *desc);
 PangoAttribute *pango_attr_underline_new     (PangoUnderline              underline);
 PangoAttribute *pango_attr_strikethrough_new (gboolean                    strikethrough);
 PangoAttribute *pango_attr_rise_new          (int                         rise);
-PangoAttribute *pango_attr_shape_new         (const PangoRectangle       *ink_rect,
-					      const PangoRectangle       *logical_rect);
 PangoAttribute *pango_attr_scale_new         (double                      scale_factor);
 PangoAttribute *pango_attr_fallback_new      (gboolean                    enable_fallback);
 PangoAttribute *pango_attr_letter_spacing_new (int                        letter_spacing);
+
+PangoAttribute *pango_attr_shape_new           (const PangoRectangle       *ink_rect,
+					        const PangoRectangle       *logical_rect);
+PangoAttribute *pango_attr_shape_new_with_data (const PangoRectangle       *ink_rect,
+						const PangoRectangle       *logical_rect,
+						gpointer                    data,
+						PangoAttrDataCopyFunc       copy_func,
+						GDestroyNotify              destroy_func);
 
 GType              pango_attr_list_get_type      (void) G_GNUC_CONST;
 PangoAttrList *    pango_attr_list_new           (void);

@@ -697,13 +697,25 @@ static PangoAttribute *
 pango_attr_shape_copy (const PangoAttribute *attr)
 {
   const PangoAttrShape *shape_attr = (PangoAttrShape *)attr;
+  gpointer data;
+
+  if (shape_attr->copy_func)
+    data = shape_attr->copy_func (shape_attr->data);
+  else
+    data = shape_attr->data;
   
-  return pango_attr_shape_new (&shape_attr->ink_rect, &shape_attr->logical_rect);
+  return pango_attr_shape_new_with_data (&shape_attr->ink_rect, &shape_attr->logical_rect,
+					 data, shape_attr->copy_func, shape_attr->destroy_func);
 }
 
 static void
 pango_attr_shape_destroy (PangoAttribute *attr)
 {
+  const PangoAttrShape *shape_attr = (PangoAttrShape *)attr;
+  
+  if (shape_attr->destroy_func)
+    shape_attr->destroy_func (shape_attr->data);
+  
   g_free (attr);
 }
 
@@ -713,7 +725,7 @@ pango_attr_shape_equal (const PangoAttribute *attr1,
 {
   const PangoAttrShape *shape_attr1 = (const PangoAttrShape *)attr1;
   const PangoAttrShape *shape_attr2 = (const PangoAttrShape *)attr2;
-  
+
   return (shape_attr1->logical_rect.x == shape_attr2->logical_rect.x &&
 	  shape_attr1->logical_rect.y == shape_attr2->logical_rect.y &&
 	  shape_attr1->logical_rect.width == shape_attr2->logical_rect.width &&
@@ -721,7 +733,57 @@ pango_attr_shape_equal (const PangoAttribute *attr1,
 	  shape_attr1->ink_rect.x == shape_attr2->ink_rect.x &&
 	  shape_attr1->ink_rect.y == shape_attr2->ink_rect.y &&
 	  shape_attr1->ink_rect.width == shape_attr2->ink_rect.width &&
-	  shape_attr1->ink_rect.height == shape_attr2->ink_rect.height);
+	  shape_attr1->ink_rect.height == shape_attr2->ink_rect.height &&
+	  shape_attr1->data == shape_attr2->data);
+}
+
+/**
+ * pango_attr_shape_new_with_data:
+ * @ink_rect:     ink rectangle to assign to each character
+ * @logical_rect: logical rectangle assign to each character
+ * @data:         user data pointer
+ * @copy_func:    function to copy @data when the attribute
+ *                is copied. If %NULL, @data is simply copied
+ *                as a pointer.
+ * @destroy_func: function to free @data when the attribute
+ *                is freed, or %NULL.
+ * 
+ * Like pango_attr_shape_new(), but a user data pointer is also
+ * provided; this pointer can be accessed when rendering later
+ * rendering the glyph.
+ * 
+ * Return value: the newly created attribute
+ *
+ * Since: 1.8
+ **/
+PangoAttribute *
+pango_attr_shape_new_with_data (const PangoRectangle  *ink_rect,
+				const PangoRectangle  *logical_rect,
+				gpointer               data,
+				PangoAttrDataCopyFunc  copy_func,
+				GDestroyNotify         destroy_func)
+{
+  static const PangoAttrClass klass = {
+    PANGO_ATTR_SHAPE,
+    pango_attr_shape_copy,
+    pango_attr_shape_destroy,
+    pango_attr_shape_equal
+  };
+
+  PangoAttrShape *result;
+
+  g_return_val_if_fail (ink_rect != NULL, NULL);
+  g_return_val_if_fail (logical_rect != NULL, NULL);
+  
+  result = g_new (PangoAttrShape, 1);
+  result->attr.klass = &klass;
+  result->ink_rect = *ink_rect;
+  result->logical_rect = *logical_rect;
+  result->data = data;
+  result->copy_func = copy_func;
+  result->destroy_func =  destroy_func;
+
+  return (PangoAttribute *)result;
 }
 
 /**
@@ -740,24 +802,11 @@ PangoAttribute *
 pango_attr_shape_new (const PangoRectangle *ink_rect,
 		      const PangoRectangle *logical_rect)
 {
-  static const PangoAttrClass klass = {
-    PANGO_ATTR_SHAPE,
-    pango_attr_shape_copy,
-    pango_attr_shape_destroy,
-    pango_attr_shape_equal
-  };
-
-  PangoAttrShape *result;
-
   g_return_val_if_fail (ink_rect != NULL, NULL);
   g_return_val_if_fail (logical_rect != NULL, NULL);
-  
-  result = g_new (PangoAttrShape, 1);
-  result->attr.klass = &klass;
-  result->ink_rect = *ink_rect;
-  result->logical_rect = *logical_rect;
 
-  return (PangoAttribute *)result;
+  return pango_attr_shape_new_with_data (ink_rect, logical_rect,
+					 NULL, NULL, NULL);
 }
 
 GType

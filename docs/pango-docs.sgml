@@ -45,10 +45,10 @@
 
   <chapter id="rendering">
     <title>Rendering with Pango</title>
-    &pango-X-Fonts-and-Rendering;
     &pango-Win32-Fonts-and-Rendering;
     &pango-FreeType-Fonts-and-Rendering;
     &pango-Xft-Fonts-and-Rendering;
+    &pango-X-Fonts-and-Rendering;
   </chapter>
 
   <chapter id="lowlevel">

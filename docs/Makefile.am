@@ -9,7 +9,7 @@ DOC_MODULE=pango
 DOC_MAIN_SGML_FILE=pango-docs.sgml
 
 # Extra options to supply to gtkdoc-scan
-SCAN_OPTIONS=
+SCAN_OPTIONS=--deprecated-guards="PANGO_DISABLE_DEPRECATED"
 
 # The directory containing the source code. Relative to $(srcdir)
 DOC_SOURCE_DIR=../pango

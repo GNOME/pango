@@ -777,7 +777,8 @@ pango_xft_picture_render (Display          *display,
  * @screen:   the index of the screen for @display to which rendering will be done
  * 
  * Create a new #PangoXftRenderer to allow rendering Pango objects
- * with the Xft library.
+ * with the Xft library. You must call pango_xft_renderer_set_draw() before
+ * using the renderer.
  *
  * Return value: the newly created #PangoXftRenderer object. Unref
  * with g_object_unref() when you are finished with it.

@@ -1,14 +1,15 @@
 <!-- ##### SECTION Title ##### -->
-X Fonts and Rendering
+Deprecated X font backend
 
 <!-- ##### SECTION Short_Description ##### -->
-Functions for shape engines to manipulate X fonts
+Font handling and rendering with the deprecated X font backend
 
 <!-- ##### SECTION Long_Description ##### -->
 <para>
-The functions and macros in this section are used by shape
-engines to look up glyphs for particular character
-sets within an #PangoFont for the X rendering system.
+The functions and macros in this section are for use with the old
+X font backend which used server-side bitmap fonts. This font backend
+is no longer supported, and attempts to use it will produce
+unpredictable results. Use the <link linkend="pango-Xft-Fonts-and-Rendering">Xft backend</link> instead.
 </para>
 
 <!-- ##### SECTION See_Also ##### -->

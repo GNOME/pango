@@ -213,7 +213,9 @@ pango_xft_get_font_map (Display *display,
  * @screen: the screen number of a screen within @display
  * 
  * Release any resources that have been cached for the
- * combination of @display and @screen.
+ * combination of @display and @screen. Note that when the
+ * X display is closed, resources are released automatically,
+ * without needing to call this function.
  *
  * Since: 1.2
  **/

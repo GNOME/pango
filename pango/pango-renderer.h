@@ -91,12 +91,13 @@ struct _PangoRenderer
  * @draw_error_underline: draws a squiggly line that approximately
  * covers the given rectangle in the style of an underline used to
  * indicate a spelling error. 
+ * @draw_shape: draw content for a glyph shaped with #PangoAttrShape.
+ *   @x, @y are the coordinates of the left edge of the baseline,
+ *   in user coordinates.
  * @draw_trapezoid: draws a trapezoidal filled area
  * @draw_glyph: draws a single glyph
  * @part_changed: do renderer specific processing when rendering
  *  attributes change
- * @color_set: updates the renderer when a color has changed.
- *   if @color is %NULL, means that the color has been unset
  * @begin: Do renderer-specific initialization before drawing
  * @end: Do renderer-specific cleanup after drawing
  * @prepare_run: updates the renderer for a new run
@@ -133,6 +134,12 @@ struct _PangoRendererClass
 				int                width,
 				int                height);
 
+  /* Nothing is drawn for shaped glyphs unless this is implemented */
+  void (*draw_shape) (PangoRenderer  *renderer,
+		      PangoAttrShape *attr,
+		      int             x,
+		      int             y);
+
   /* These two must be implemented and take coordinates in
    * device space as doubles.
    */
@@ -154,9 +161,6 @@ struct _PangoRendererClass
    */
   void (*part_changed) (PangoRenderer   *renderer,
 			PangoRenderPart  part);
-  void (*color_set) (PangoRenderer  *renderer,
-		     PangoRenderPart part,
-		     PangoColor     *color);
 
   /* Paired around drawing operations
    */
@@ -222,11 +226,12 @@ void pango_renderer_deactivate           (PangoRenderer    *renderer);
 
 void        pango_renderer_part_changed (PangoRenderer   *renderer,
 					 PangoRenderPart  part);
-void        pango_renderer_set_color    (PangoRenderer   *renderer,
-					 PangoRenderPart  part,
-					 PangoColor      *color);
-PangoColor *pango_renderer_get_color    (PangoRenderer   *renderer,
-					 PangoRenderPart  part);
+
+void        pango_renderer_set_color (PangoRenderer    *renderer,
+				      PangoRenderPart   part,
+				      const PangoColor *color);
+PangoColor *pango_renderer_get_color (PangoRenderer    *renderer,
+				      PangoRenderPart   part);
 
 void                        pango_renderer_set_matrix (PangoRenderer     *renderer,
 						       const PangoMatrix *matrix);

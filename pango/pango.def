@@ -28,6 +28,7 @@ EXPORTS
 	pango_attr_rise_new
 	pango_attr_scale_new
 	pango_attr_shape_new
+	pango_attr_shape_new_with_data
 	pango_attr_size_new
 	pango_attr_stretch_new
 	pango_attr_strikethrough_new

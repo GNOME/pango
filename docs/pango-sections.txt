@@ -307,6 +307,8 @@ pango_attr_underline_new
 PangoUnderline
 PANGO_TYPE_UNDERLINE
 pango_attr_shape_new
+pango_attr_shape_new_with_data
+PangoAttrDataCopyFunc
 pango_attr_scale_new
 pango_attr_fallback_new
 PANGO_SCALE_XX_SMALL
@@ -728,6 +730,7 @@ pango_xft_font_get_glyph
 pango_xft_font_get_unknown_glyph
 PangoXftRenderer
 PangoXftRendererClass
+
 pango_xft_renderer_new
 pango_xft_renderer_set_draw
 pango_xft_renderer_set_default_color

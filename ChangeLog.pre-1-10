@@ -1,3 +1,32 @@
+Fri Nov 19 17:44:33 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-renderer.[ch]: Remove color_set() virtual
+	function ... it's not absolutely necessary for chaining
+	renderers, and it's not clear that chaining renderers
+	is actually useful, anyways.
+
+	* pango/pango-renderer.[ch] (pango_renderer_set_color): Constify
+	color argument.
+
+	* pango/pango-render.c: Fix various bugs.
+
+	* pango/pango-attributes.[ch] (pango_attr_shape_new_with_data):
+	Add the ability to create a shape attribute with user data.
+
+	* pango/pango-renderer.[ch] (PangoRendererClass): Add a draw_shape
+	virtual function, to draw content for PangoAttrShape.
+
+	* pango/pangoxft-fontmap.c (pango_xft_shutdown_display): 
+	Add note to docs that XCloseDisplay() will automatically take care
+	of releasing Pango's allocated resources for the display.
+	
+	* docs/Makefile.am (SCAN_OPTIONS): Add the appropriate 
+	--deprecated-guards option.
+	
+	* docs/tmpl/xft-fonts.sgml: Add long description.
+
+	* docs/tmpl/x-fonts.sgml: Document as dead.
+
 2004-10-26  Matthias Clasen  <mclasen@redhat.com>
 
 	* docs/tmpl/text-attributes.sgml: Document PANGO_UNDERLINE_ERROR

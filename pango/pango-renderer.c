@@ -196,8 +196,11 @@ draw_underline (PangoRenderer *renderer,
 		LineState     *state)
 {
   PangoRectangle *rect = &state->underline_rect;
+  PangoUnderline underline = state->underline;
   
-  switch (state->underline)
+  state->underline = PANGO_UNDERLINE_NONE;
+  
+  switch (underline)
     {
     case PANGO_UNDERLINE_NONE:
       break;
@@ -226,8 +229,6 @@ draw_underline (PangoRenderer *renderer,
 					   3 * rect->height);
       break;
     }
-
-  state->underline = PANGO_UNDERLINE_NONE;
 }
 
 static void
@@ -235,16 +236,17 @@ draw_strikethrough (PangoRenderer *renderer,
 		    LineState     *state)
 {
   PangoRectangle *rect = &state->strikethrough_rect;
+  gboolean strikethrough = state->strikethrough;
 
-  if (state->strikethrough)
+  state->strikethrough = FALSE;
+  
+  if (strikethrough)
     pango_renderer_draw_rectangle (renderer,
 				   PANGO_RENDER_PART_STRIKETHROUGH,
 				   rect->x,
 				   rect->y,
 				   rect->width,
 				   rect->height);
-
-  state->strikethrough = FALSE;
 }
 
 static void
@@ -264,6 +266,7 @@ handle_line_state_change (PangoRenderer  *renderer,
       draw_underline (renderer, state);
       state->underline = renderer->underline;
       rect->x = state->logical_rect_end;
+      rect->width = 0;
     }
 
   if (part == PANGO_RENDER_PART_STRIKETHROUGH &&
@@ -275,6 +278,7 @@ handle_line_state_change (PangoRenderer  *renderer,
       draw_underline (renderer, state);
       state->underline = renderer->underline;
       rect->x = state->logical_rect_end;
+      rect->width = 0;
     }
 }
 
@@ -381,19 +385,17 @@ add_strikethrough (PangoRenderer    *renderer,
 }
 
 static void
-get_item_properties (PangoItem      *item,
-		     gint           *rise,
-		     gboolean       *shape_set,
-		     PangoRectangle *ink_rect,
-		     PangoRectangle *logical_rect)
+get_item_properties (PangoItem       *item,
+		     gint            *rise,
+		     PangoAttrShape **shape_attr)
 {
   GSList *l;
 
   if (rise)
     *rise = 0;
 
-  if (shape_set)
-    *shape_set = FALSE;
+  if (shape_attr)
+    *shape_attr = NULL;
 
   for (l = item->analysis.extra_attrs; l; l = l->next)
     {
@@ -402,12 +404,8 @@ get_item_properties (PangoItem      *item,
       switch (attr->klass->type)
 	{
 	case PANGO_ATTR_SHAPE:
-	  if (shape_set)
-	    *shape_set = TRUE;
-	  if (logical_rect)
-	    *logical_rect = ((PangoAttrShape *)attr)->logical_rect;
-	  if (ink_rect)
-	    *ink_rect = ((PangoAttrShape *)attr)->ink_rect;
+	  if (shape_attr)
+	    *shape_attr = (PangoAttrShape *)attr;
 	  break;
 
         case PANGO_ATTR_RISE:
@@ -418,6 +416,29 @@ get_item_properties (PangoItem      *item,
 	default:
 	  break;
 	}
+    }
+}
+
+static void
+draw_shaped_glyphs (PangoRenderer    *renderer,
+		    PangoGlyphString *glyphs,
+		    PangoAttrShape   *attr,
+		    int               x,
+		    int               y)
+{
+  PangoRendererClass *class = PANGO_RENDERER_GET_CLASS (renderer);
+  int i;
+
+  if (!class->draw_shape)
+    return;
+
+  for (i = 0; i < glyphs->num_glyphs; i++)
+    {
+      PangoGlyphInfo *gi = &glyphs->glyphs[i];
+
+      class->draw_shape (renderer, attr, x, y);
+
+      x += gi->geometry.width;
     }
 }
 
@@ -470,17 +491,20 @@ pango_renderer_draw_layout_line (PangoRenderer    *renderer,
       PangoFontMetrics *metrics;
       gint rise;
       PangoLayoutRun *run = l->data;
+      PangoAttrShape *shape_attr;
       PangoRectangle logical_rect;
       PangoRectangle ink_rect;
-      gboolean shape_set;
 
       pango_renderer_prepare_run (renderer, run);
       
-      get_item_properties (run->item,
-			   &rise,
-			   &shape_set, &ink_rect, &logical_rect);
+      get_item_properties (run->item, &rise, &shape_attr);
 
-      if (!shape_set)
+      if (shape_attr)
+	{
+	  ink_rect = shape_attr->ink_rect;
+	  logical_rect = shape_attr->logical_rect;
+	}
+      else
 	{
 	  if (renderer->underline != PANGO_UNDERLINE_NONE ||
 	      renderer->strikethrough)
@@ -491,7 +515,7 @@ pango_renderer_draw_layout_line (PangoRenderer    *renderer,
 					NULL, &logical_rect);
 	}
 
-      state.logical_rect_end = x_off + logical_rect.x + logical_rect.width;
+      state.logical_rect_end = x + x_off + logical_rect.x + logical_rect.width;
 
       if (renderer->priv->color_set[PANGO_RENDER_PART_BACKGROUND])
 	{
@@ -509,19 +533,16 @@ pango_renderer_draw_layout_line (PangoRenderer    *renderer,
 					 overall_rect.height);
 	}
 
-      if (!shape_set)
+      if (shape_attr)
+	{
+	  draw_shaped_glyphs (renderer, run->glyphs, shape_attr, x + x_off, y - rise);
+	}
+      else
 	{
 	  pango_renderer_draw_glyphs (renderer,
 				      run->item->analysis.font, run->glyphs,
 				      x + x_off, y - rise);
 	}
-#if 0      
-      else
-	{
-	  pango_renderer_draw_shaped (renderer,
-				      x + x_off, y - rise);
-	}
-#endif      
 
       if (renderer->underline != PANGO_UNDERLINE_NONE ||
 	  renderer->strikethrough)
@@ -1015,15 +1036,13 @@ pango_renderer_deactivate (PangoRenderer *renderer)
  * Since: 1.8
  **/
 void
-pango_renderer_set_color (PangoRenderer   *renderer,
-			  PangoRenderPart  part,
-			  PangoColor      *color)
+pango_renderer_set_color (PangoRenderer    *renderer,
+			  PangoRenderPart   part,
+			  const PangoColor *color)
 {
   g_return_if_fail (PANGO_IS_RENDERER (renderer));
   g_return_if_fail (IS_VALID_PART (part));
 
-  pango_renderer_part_changed (renderer, part);
-  
   if ((!color && !renderer->priv->color_set[part]) ||
       (color && renderer->priv->color_set[part] &&
        renderer->priv->color[part].red == color->red &&
@@ -1031,6 +1050,8 @@ pango_renderer_set_color (PangoRenderer   *renderer,
        renderer->priv->color[part].blue == color->blue))
     return;
 
+  pango_renderer_part_changed (renderer, part);
+  
   if (color)
     {
       renderer->priv->color_set[part] = TRUE;
@@ -1040,9 +1061,6 @@ pango_renderer_set_color (PangoRenderer   *renderer,
     {
       renderer->priv->color_set[part] = FALSE;
     }
-
-  if (PANGO_RENDERER_GET_CLASS (renderer)->color_set)
-    PANGO_RENDERER_GET_CLASS (renderer)->color_set (renderer, part, color);
 }
 
 /**

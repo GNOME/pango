@@ -73,10 +73,10 @@ struct _PangoXftRenderer
  * @composite_trapezoids: draw the specified trapezoids using
  *   the current color and other attributes for @part
  * @composite_glyphs: draw the specified glyphs using
- *   the current color and other attributes for @part
+ *   the current foreground color and other foreground
+ *   attributes 
  *
- * #PangoXftRenderer is a subclass of #PangoRenderer used for rendering
- * Renders a #PangoGlyphString onto an Xrender <type>Picture</type> object.
+ * The class structure for #PangoXftRenderer
  *
  * Since: 1.8
  */
