@@ -244,6 +244,28 @@ process_module_file (FILE *module_file)
 	    {
 	    case 0:
 	      pair->load_info = g_strdup (tmp_buf->str);
+#ifdef G_OS_WIN32
+	      if (strncmp (pair->load_info,
+			   LIBDIR "/pango/modules/",
+			   strlen (LIBDIR "/pango/modules/")) == 0)
+		{
+		  /* This is an entry put there by make install on the
+		   * packager's system. On Windows a prebuilt Pango
+		   * package can be installed in a random
+		   * location. The pango.modules file distributed in
+		   * such a package contains paths from the package
+		   * builder's machine. Replace the path with the real
+		   * one on this machine. */
+		  gchar *tem = pair->load_info;
+		  pair->load_info =
+		    g_strconcat (pango_get_lib_subdirectory (),
+				 "\\modules\\",
+				 tem + strlen (LIBDIR "/pango/modules/"),
+				 NULL);
+		  g_free (tem);
+		}
+
+#endif
 	      break;
 	    case 1:
 	      pair->info.id = g_strdup (tmp_buf->str);

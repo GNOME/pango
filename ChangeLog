@@ -1,3 +1,18 @@
+2001-10-31  Tor Lillqvist  <tml@iki.fi>
+
+	* pango/modules.c (process_module_file): Neat Win32 feature: A
+	prebuilt Pango package can be installed in a random location
+	(i.e., not the same used when configuring and building the
+	software). The pango.modules file provided with the package
+	contains paths on the packager's system, not the end-users. We
+	notice this, and replace with the corresponding path in the
+	installation directory on the end-user's machine.
+
+	* pango/pango-utils.c: Use G_WIN32_DLLMAIN_FOR_DLL_NAME.
+	(pango_get_sysconf_subdirectory,pango_get_lib_subdirectory): No
+	need to call g_path_get_basename on the DLL name, DllMain already
+	does it.
+
 Wed Oct 31 11:00:55 2001  Owen Taylor  <otaylor@redhat.com>
 
 	* modules/tamil/tamil-{xft,x}.c: Make a number of functions
