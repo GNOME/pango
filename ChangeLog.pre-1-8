@@ -1,3 +1,9 @@
+Mon Jun 21 13:55:17 2004  Owen Taylor  <otaylor@redhat.com>
+
+ 	* pango/opentype/otlbuffer.c: Use the gcc-3.3 
+ 	strict-aliasing compatible macros from fterrcompat.h
+ 	(#140495, reported by Stanislav Brabec)
+ 
 Mon Jun 21 11:41:18 2004  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pango-attributes.c (pango_attr_list_change): 
