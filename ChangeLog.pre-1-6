@@ -1,3 +1,11 @@
+2000-11-01
+
+	* modules/thai/thai.c: added aliases for X11 font names used on
+	Solaris
+	* modules/arabic/{arabic,naqshfont}.c: changed X11 font registry from
+	"symbol-0" to "urdunaqsh-0"; using "symbol-0" isn't really usable;
+	you get almost always the bad font...
+
 2000-11-01  Havoc Pennington  <hp@pobox.com>
 
 	* pango/pango-attributes.c (pango_attr_scale_new): Add a new

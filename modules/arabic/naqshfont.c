@@ -21,7 +21,7 @@ int
 urdu_naqshinit(PangoFont  *font,PangoXSubfont* nqfont)
 { 
     static char *nq_charsets0[] = {
-        "symbol-0",
+        "urdunaqsh-0",
     };
 
     PangoXSubfont *subfonts;

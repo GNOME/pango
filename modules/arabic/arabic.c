@@ -134,7 +134,7 @@ find_unic_font (PangoFont *font,char* charsets[],PangoXSubfont* rfonts)
 #endif
                     break;
                 } 
-            else if ( (strcmp (charsets[subfont_charsets[i]], "symbol-0") == 0)
+            else if ( (strcmp (charsets[subfont_charsets[i]], "urdunaqsh-0") == 0)
                       && urdu_naqshinit(font,rfonts) )
                 {
                     result = ar_standard | ar_naqshfont;
@@ -180,7 +180,7 @@ static char *default_charset[] = {
     "iso10646-1",  
     "iso8859-6.8x",
     "mulearabic-2",
-    "symbol-0"
+    "urdunaqsh-0",
 };
   
 
