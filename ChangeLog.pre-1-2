@@ -1,3 +1,9 @@
+Fri Mar  1 14:37:47 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pangoxft-font.c (pango_xft_font_get_glyph_extents):
+	Treat glyph 0 as an 0 size, non-drawn glyph consistent
+	with other backends. (#71931)
+
 Fri Mar  1 14:25:22 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/modules.c: Don't crash on out-of-BMP values.

@@ -306,7 +306,7 @@ pango_xft_real_render (Display          *display,
 					 
 		  }
 	    }
-	  else
+	  else if (glyph)
 	    {
 	      if (draw)
 		XftDrawString32 (draw, color, xft_font,
@@ -521,7 +521,7 @@ pango_xft_font_get_glyph_extents (PangoFont        *font,
 	  logical_rect->height = (xft_font->ascent + xft_font->descent) * PANGO_SCALE;
 	}
     }
-  else
+  else if (glyph)
     {
       XftTextExtents32 (display, xft_font, &glyph, 1, &extents);
 
@@ -539,6 +539,23 @@ pango_xft_font_get_glyph_extents (PangoFont        *font,
 	  logical_rect->y = - xft_font->ascent * PANGO_SCALE;
 	  logical_rect->width = extents.xOff * PANGO_SCALE;
 	  logical_rect->height = (xft_font->ascent + xft_font->descent) * PANGO_SCALE;
+	}
+    }
+  else
+    {
+      if (ink_rect)
+	{
+	  ink_rect->x = 0;
+	  ink_rect->width = 0;
+	  ink_rect->y = 0;
+	  ink_rect->height = 0;
+	}
+      if (logical_rect)
+	{
+	  logical_rect->x = 0;
+	  logical_rect->width = 0;
+	  logical_rect->y = 0;
+	  logical_rect->height = 0;
 	}
     }
 }
