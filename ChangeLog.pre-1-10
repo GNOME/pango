@@ -1,3 +1,9 @@
+Wed Oct 25 15:39:49 2000  Tim Janik  <timj@gtk.org>
+
+	* *.c: adapted g_Type_register_*() calls. GLib wants an additional
+	flag field to specify tape flags per node. added 0s all over the place,
+	making the assumption that no pango types are abstract ones.
+
 2000-10-03  Tor Lillqvist  <tml@iki.fi>
 
 	* pango/pango.def

@@ -154,7 +154,7 @@ pango_ft2_font_map_get_type (void)
       
       object_type = g_type_register_static (PANGO_TYPE_FONT_MAP,
                                             "PangoFT2FontMap",
-                                            &object_info);
+                                            &object_info, 0);
     }
   
   return object_type;

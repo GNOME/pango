@@ -200,7 +200,7 @@ pango_win32_font_get_type (void)
       
       object_type = g_type_register_static (PANGO_TYPE_FONT,
                                             "PangoWin32Font",
-                                            &object_info);
+                                            &object_info, 0);
     }
   
   return object_type;
