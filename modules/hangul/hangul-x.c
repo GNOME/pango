@@ -23,8 +23,6 @@
 
 #include "pango.h"
 #include "pangox.h"
-#include "utils.h"
-#include <unicode.h>
 
 static PangoEngineRange hangul_ranges[] = {
 
@@ -134,7 +132,7 @@ set_glyph (PangoGlyphString *glyphs,
 
 
 typedef void (* RenderSyllableFunc) (PangoFont *font, PangoXSubfont subfont,
-				     GUChar2 *text, int length,
+				     gunichar2 *text, int length,
 				     PangoGlyphString *glyphs,
 				     int *n_glyphs, int cluster_offset);
 
@@ -171,7 +169,7 @@ typedef void (* RenderSyllableFunc) (PangoFont *font, PangoXSubfont subfont,
 									      \
   if (n_cho <= 1 && n_jung <= 1 && n_jong <= 1)				      \
     {									      \
-      GUChar2 l, v, t;							      \
+      gunichar2 l, v, t;						      \
 									      \
       if (n_cho > 0)							      \
 	l = text[0];							      \
@@ -260,7 +258,7 @@ typedef void (* RenderSyllableFunc) (PangoFont *font, PangoXSubfont subfont,
 
 static void
 render_syllable_with_johabs (PangoFont *font, PangoXSubfont subfont,
-			     GUChar2 *text, int length,
+			     gunichar2 *text, int length,
 			     PangoGlyphString *glyphs,
 			     int *n_glyphs, int cluster_offset)
 {
@@ -302,7 +300,7 @@ JOHAB_COMMON
 
 static void
 render_syllable_with_johab (PangoFont *font, PangoXSubfont subfont,
-			    GUChar2 *text, int length,
+			    gunichar2 *text, int length,
 			    PangoGlyphString *glyphs,
 			    int *n_glyphs, int cluster_offset)
 {
@@ -312,7 +310,7 @@ JOHAB_COMMON
   for (i = 0; i < length; i++)
     {
       int j;
-      GUChar2 wc;
+      gunichar2 wc;
 
       wc = text[i];
       for (j = 0; (j < 3) && (__jamo_to_johabfont[wc-LBASE][j] != 0); j++)
@@ -335,7 +333,7 @@ JOHAB_COMMON
 
 static void
 render_syllable_with_iso10646 (PangoFont *font, PangoXSubfont subfont,
-			       GUChar2 *text, int length,
+			       gunichar2 *text, int length,
 			       PangoGlyphString *glyphs,
 			       int *n_glyphs, int cluster_offset)
 {
@@ -403,7 +401,7 @@ render_syllable_with_iso10646 (PangoFont *font, PangoXSubfont subfont,
 
 static void
 render_syllable_with_ksc5601 (PangoFont *font, PangoXSubfont subfont,
-			      GUChar2 *text, int length,
+			      gunichar2 *text, int length,
 			      PangoGlyphString *glyphs,
 			      int *n_glyphs, int cluster_offset)
 {
@@ -588,7 +586,7 @@ hangul_engine_shape (PangoFont        *font,
   const char *ptr;
   const char *next;
   int i, n_chars;
-  GUChar2 jamos[4];
+  gunichar2 jamos[4];
   int n_jamos = 0;
 
   int n_glyphs = 0, cluster_offset = 0;
@@ -608,7 +606,7 @@ hangul_engine_shape (PangoFont        *font,
 	{
 	  PangoGlyph unknown_glyph = pango_x_get_unknown_glyph (font);
 	  
-	  n_chars = unicode_strlen (text, length);
+	  n_chars = g_utf8_strlen (text, length);
 	  pango_glyph_string_set_size (glyphs, n_chars);
 
 	  for (i=0; i<n_chars; i++)
@@ -619,16 +617,18 @@ hangul_engine_shape (PangoFont        *font,
 	  return;
 	}
 
-  n_chars = unicode_strlen (text, length);
+  n_chars = g_utf8_strlen (text, length);
   ptr = text;
   
   for (i = 0; i < n_chars; i++)
     {
-      GUChar4 wc4;
-      GUChar2 wcs[4], wc;
+      gunichar wc4;
+      gunichar2 wcs[4], wc;
       int n_code = 0;
 
-      _pango_utf8_iterate (ptr, &next, &wc4);
+      wc4 = g_utf8_get_char (ptr);
+      next = g_utf8_next_char (ptr);
+      
       if (wc4 >= SBASE && wc4 < (SBASE + SCOUNT))
 	{
 	  /* decompose the syllable.  */
@@ -656,7 +656,7 @@ hangul_engine_shape (PangoFont        *font,
 	}
       else if (wc4 >= 0x1100 && wc4 <= 0x11ff)
 	{
-	  wc = (GUChar2) wc4;
+	  wc = (gunichar2) wc4;
 
 	  if (n_jamos == 0)
 	    {

@@ -1,3 +1,13 @@
+Wed Jun 21 12:11:56 2000  Owen Taylor  <otaylor@redhat.com>
+
+	* configure.in: Remove tests for libunicode
+
+	* pango/utils.[ch]: Removed. The functions from here are now in
+	GLib.
+
+	* **.[ch]: Removed use of libunicode and utils.c in favor of
+	Unicode functions in GLib. Requires latest GLib from CVS.
+
 2000-06-14  Havoc Pennington  <hp@redhat.com>
 
 	* pango/pango-attributes.c (pango_attr_list_copy): Function to

@@ -10,8 +10,6 @@
 #include <glib.h>
 #include "pango.h"
 #include "pangox.h"
-#include "utils.h"
-#include <unicode.h>
 
 /*  #define DEBUG   */
 #ifdef DEBUG
@@ -80,7 +78,7 @@ arabic_muleinit(PangoFont  *font,PangoXSubfont* mulefonts)
 
 
 typedef struct {
-    GUChar4   unicodechar;
+    gunichar  unicodechar;
     int       fontindex;
     int       charindex;
 } fontentry;

@@ -9,9 +9,7 @@
 #include <glib.h>
 #include "pango.h"
 #include "pangox.h"
-#include "utils.h"
 #include "taconv.h"
-#include <unicode.h>
 
 static PangoEngineRange tamil_range[] = {
   { 0x0b80, 0x0bff, "*" },
@@ -49,19 +47,14 @@ tamil_engine_break (const char   *text,
  */
 
   const char *cur = text;
-  const char *next;
   gint i = 0;
-  GUChar4 wc;
+  gunichar wc;
 
-  while (*cur)
+  while (*cur && cur - text < len)
     {
-      if (!_pango_utf8_iterate (cur, &next, &wc))
-         return;
-      if (cur == next)
-        break;
-      if ((next - text) > len)
-        break;
-      cur = next;
+      wc = g_utf8_get_char (cur);
+      if (wc == (gunichar)-1)
+	break;           /* FIXME: ERROR */
 
       attrs[i].is_white = (wc == ' ' || wc == '\t' || wc == 'n') ? 1 : 0;
       attrs[i].is_break = (i > 0 && attrs[i-1].is_white) || attrs[i].is_white;
@@ -69,6 +62,7 @@ tamil_engine_break (const char   *text,
       attrs[i].is_word_stop = (i == 0) || attrs[i-1].is_white;
 
       i++;
+      cur = g_utf8_next_char (cur);
     }
 }
 
@@ -98,7 +92,6 @@ static void
 set_glyph (PangoGlyphString *glyphs, int i, int cluster_start,
 	   PangoFont *font, PangoXSubfont subfont, guint16 gindex)
 {
-  int width;
   PangoRectangle logical_rect;
 
   glyphs->glyphs[i].glyph = PANGO_X_MAKE_GLYPH (subfont, gindex);
@@ -143,8 +136,7 @@ tamil_engine_shape (PangoFont        *font,
   int i, j;
   const char *cluster_start;
   const char *p;
-  const char *next;
-  GUChar4 *wc, *uni_str;
+  gunichar *wc, *uni_str;
   int res;
   unsigned char tsc_str[6];
   int ntsc, nuni;
@@ -163,17 +155,18 @@ tamil_engine_shape (PangoFont        *font,
       return;
     }
   
-  n_chars = _pango_utf8_len (text, length);
+  n_chars = g_utf8_strlen (text, length);
 
   /* temporarily set the size to 3 times the number of unicode chars */
   pango_glyph_string_set_size (glyphs, n_chars * 3);
-  wc = (GUChar4 *)g_malloc(sizeof(GUChar4)*n_chars);  
+
+  wc = (gunichar *)g_malloc(sizeof(gunichar)*n_chars);  
 
   p = text;
   for (i=0; i < n_chars; i++)
     {
-      _pango_utf8_iterate (p, &next, &wc[i]);
-      p = next;
+      wc[i] = g_utf8_get_char (p);
+      p = g_utf8_next_char (p);
     }
 
   n_glyph = 0;
@@ -201,7 +194,7 @@ tamil_engine_shape (PangoFont        *font,
         }
       j = j + nuni;
       while (nuni--)
-	cluster_start = unicode_next_utf8 (cluster_start);
+	cluster_start = g_utf8_next_char (cluster_start);
     }
 	  
   pango_glyph_string_set_size (glyphs, n_glyph);
@@ -218,7 +211,7 @@ tamil_engine_get_coverage (PangoFont  *font,
   PangoXSubfont tscii_font = find_tscii_font (font);
   if (tscii_font)
     {
-      GUChar4 i;
+      gunichar i;
 
       for (i = 0xb80; i <= 0xbff; i++)
 	pango_coverage_set (result, i, PANGO_COVERAGE_EXACT);

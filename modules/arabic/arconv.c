@@ -18,15 +18,15 @@
 #endif
 
 typedef struct {
-    GUChar4 basechar;
-    GUChar4 charstart;
+    gunichar basechar;
+    gunichar charstart;
     int count;
 } shapestruct;
 
 typedef struct {
-    GUChar4      basechar;
-    GUChar4      mark1;  /* has to be initialized to zero */
-    GUChar4      vowel;  /*  */
+    gunichar     basechar;
+    gunichar     mark1;  /* has to be initialized to zero */
+    gunichar     vowel;  /*  */
     char         connecttoleft;
     signed char  lignum; /* is a ligature with lignum aditional characters */
     char         numshapes; 
@@ -155,7 +155,7 @@ charstruct_init(charstruct* s)
 }
  
 void
-copycstostring(GUChar4* string,int* i,charstruct* s,int level)
+copycstostring(gunichar* string,int* i,charstruct* s,int level)
 { /* s is a shaped charstruct; i is the index into the string */
     if (s->basechar == 0) return;
 
@@ -189,7 +189,7 @@ copycstostring(GUChar4* string,int* i,charstruct* s,int level)
 }
 
 int 
-arabic_isvowel(GUChar4 s)
+arabic_isvowel(gunichar s)
 { /* is this 'joining HAMZA' ( strange but has to be handled like a vowel )
    *  Kasra, Fatha, Damma, Sukun ? 
    */
@@ -199,8 +199,8 @@ arabic_isvowel(GUChar4 s)
     return 0;
 }
 
-static GUChar4 
-unshape(GUChar4 s)
+static gunichar
+unshape(gunichar s)
 {
     int j = 0;
     if ( (s > 0xFE80)  && ( s < 0xFEFF ))
@@ -218,8 +218,8 @@ unshape(GUChar4 s)
         }
 }
 
-static GUChar4 
-charshape(GUChar4 s,short which)
+static gunichar 
+charshape(gunichar s,short which)
 { /* which 0=alone 1=end 2=start 3=middle */
     int j = 0;
     if ((s >= chartable[1].basechar)  && (s <= 0x64A) && ( s != TATWEEL)) 
@@ -245,7 +245,7 @@ charshape(GUChar4 s,short which)
 
 
 static short 
-shapecount(GUChar4 s)
+shapecount(gunichar s)
 {
     int j = 0;
     if (arabic_isvowel(s))
@@ -269,10 +269,10 @@ shapecount(GUChar4 s)
 }
 
 int 
-ligature(GUChar4* string,int si,int len,charstruct* oldchar)
+ligature(gunichar* string,int si,int len,charstruct* oldchar)
 { /* no ligature possible --> return 0; 1 == vowel; 2 = two chars */
     int     retval = 0;
-    GUChar4 newchar = string[si];
+    gunichar newchar = string[si];
     if (arabic_isvowel(newchar))
         {
             retval = 1;
@@ -395,7 +395,7 @@ ligature(GUChar4* string,int si,int len,charstruct* oldchar)
 }
 
 static void 
-shape(int olen,int* len,GUChar4* string,int level)
+shape(int olen,int* len,gunichar* string,int level)
 {
     /* The string must be in visual order already.
     ** This routine does the basic arabic reshaping.
@@ -468,10 +468,10 @@ shape(int olen,int* len,GUChar4* string,int level)
 }
 
 static void 
-doublelig(int olen,int* len,GUChar4* string,int level)
+doublelig(int olen,int* len,gunichar* string,int level)
 { /* Ok. We have presentation ligatures in our font. */
     int        si  = (olen)-1;
-    GUChar4    lapresult;
+    gunichar   lapresult;
 
     while (si > 0)
         {
@@ -550,7 +550,7 @@ doublelig(int olen,int* len,GUChar4* string,int level)
 }
 
 void 
-arabic_reshape(int* len,GUChar4* string,int level)
+arabic_reshape(int* len,gunichar* string,int level)
 {
     int i;
     int olen = *len;

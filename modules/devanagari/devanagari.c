@@ -20,10 +20,8 @@
  */
 
 #include <glib.h>
-#include <unicode.h>
 #include <stdio.h>
 
-#include "utils.h"
 #include "pango.h"
 #include "pangox.h"
 
@@ -94,7 +92,7 @@ static gboolean
 static PangoCoverage *
 devanagari_engine_get_coverage (PangoFont * font, const char *lang)
 {
-  GUChar4 i;
+  gunichar i;
   PangoCoverage *result = pango_coverage_new ();
   PangoXSubfont subfont;
 
@@ -171,14 +169,14 @@ is_ind_vowel (int i)
 }
 
 static int
-is_nonspacing_vowel (GUChar4 c)
+is_nonspacing_vowel (gunichar c)
 {
   /* one that doesn't space. ie 93f and 940 don't count */
   return (c >= 0x941 && c <= 0x948) || (c >= 0x962 && c <= 0x963);
 }
 
 static int
-get_char (GUChar4 * chars, GUChar4 * end)
+get_char (gunichar * chars, gunichar * end)
 {
   if (chars >= end)
     return 0;
@@ -186,15 +184,15 @@ get_char (GUChar4 * chars, GUChar4 * end)
 }
 
 static void
-devanagari_shift_vowels (GUChar4 * chars, GUChar4 * end)
+devanagari_shift_vowels (gunichar * chars, gunichar * end)
 {
   /* moves 0x93f (I) before consonant clusters where appropriate. */
-  GUChar4 *strt = chars;
+  gunichar *strt = chars;
   while (chars < end)
     {
       if (*chars == 0x93f && chars > strt)
 	{
-	  GUChar4 *bubble = chars;
+	  gunichar *bubble = chars;
 	  int i = 1;
 
 	  /* move back TO START! */
@@ -212,12 +210,12 @@ devanagari_shift_vowels (GUChar4 * chars, GUChar4 * end)
 }
 
 void
-devanagari_convert_vowels (int *num, GUChar4 * chars)
+devanagari_convert_vowels (int *num, gunichar * chars)
 {
   /* goes along and converts matras to vowel letters if needed.
    * this is only currently done at the beginning of the string. */
-  GUChar4 *end = chars + *num;
-  GUChar4 *start = chars;
+  gunichar *end = chars + *num;
+  gunichar *start = chars;
   while (chars < end)
     {
       if ((chars == start && is_comb_vowel (chars[0])) ||
@@ -231,11 +229,11 @@ devanagari_convert_vowels (int *num, GUChar4 * chars)
 }
 
 static void
-devanagari_compact (int *num, GUChar4 * chars, gint * cluster)
+devanagari_compact (int *num, gunichar * chars, gint * cluster)
 {
   /* shuffle stuff up into the blanked out elements. */
-  GUChar4 *dest = chars;
-  GUChar4 *end = chars + *num;
+  gunichar *dest = chars;
+  gunichar *end = chars + *num;
   gint *cluster_dest = cluster;
   while (chars < end)
     {
@@ -296,12 +294,12 @@ const char *bar[] =
 #endif
 
 static void
-devanagari_make_ligs (GUChar4 * start, GUChar4 * end, int *cluster)
+devanagari_make_ligs (gunichar * start, gunichar * end, int *cluster)
 {
-  GUChar4 t0 = get_char (start, end);
-  GUChar4 t1 = get_char (start + 1, end);
-  GUChar4 t2 = get_char (start + 2, end);
-  GUChar4 t3 = get_char (start + 3, end);
+  gunichar t0 = get_char (start, end);
+  gunichar t1 = get_char (start + 1, end);
+  gunichar t2 = get_char (start + 2, end);
+  gunichar t3 = get_char (start + 3, end);
 
   int i, j;
   int repha = 0, ligature = 0;
@@ -425,19 +423,19 @@ devanagari_engine_shape (PangoFont * font,
 
   int n_chars, n_glyph;
   int lvl;
-  const char *p, *next;
+  const char *p;
   int i;
-  GUChar4 *wc;
+  gunichar *wc;
   int sb;
   int n_syls;
-  GUChar4 **syls = g_malloc (sizeof (GUChar4 **));
+  gunichar **syls = g_malloc (sizeof (gunichar **));
 
   g_return_if_fail (font != NULL);
   g_return_if_fail (text != NULL);
   g_return_if_fail (length >= 0);
   g_return_if_fail (analysis != NULL);
 
-  n_chars = n_glyph = unicode_strlen (text, length);
+  n_chars = n_glyph = g_utf8_strlen (text, length);
   lvl = find_unic_font (font, default_charset, &subfont);
   if (!lvl)
     {
@@ -454,18 +452,18 @@ devanagari_engine_shape (PangoFont * font,
 	  glyphs->glyphs[i].geometry.width = logical_rect.width;
 	  glyphs->log_clusters[i] = 0;
 
-	  p = unicode_next_utf8 (p);
+	  p = g_utf8_next_char (p);
 	}
       return;
     }
   p = text;
-  wc = (GUChar4 *) g_malloc (sizeof (GUChar4) * n_chars);
+  wc = (gunichar *) g_malloc (sizeof (gunichar) * n_chars);
   pango_glyph_string_set_size (glyphs, n_glyph);
   for (i = 0; i < n_chars; i++)
     {
-      _pango_utf8_iterate (p, &next, &wc[i]);
+      wc[i] = g_utf8_get_char (p);
       glyphs->log_clusters[i] = p - text;
-      p = next;
+      p = g_utf8_next_char (p);
     }
 
   devanagari_convert_vowels (&n_glyph, wc);
@@ -478,7 +476,7 @@ devanagari_engine_shape (PangoFont * font,
       if (i && (is_consonant (wc[i]) | is_ind_vowel (wc[i]))
 	  && wc[i - 1] != 0x94d)
 	{
-	  syls = g_realloc (syls, ((n_syls + 2) * sizeof (GUChar4 **)));
+	  syls = g_realloc (syls, ((n_syls + 2) * sizeof (gunichar **)));
 	  syls[n_syls] = wc + i;
 	  n_syls++;
 	  sb = glyphs->log_clusters[i];
@@ -550,19 +548,14 @@ devanagari_engine_break (const char *text,
 			 PangoAnalysis * analysis, PangoLogAttr * attrs)
 {
   const char *cur = text;
-  const char *next;
   gint i = 0;
-  GUChar4 wc;
+  gunichar wc;
 
-  while (*cur)
+  while (*cur && cur - text < len)
     {
-      if (!_pango_utf8_iterate (cur, &next, &wc))
-	return;
-      if (cur == next)
-	break;
-      if ((next - text) > len)
-	break;
-      cur = next;
+      wc = g_utf8_get_char (cur);
+      if (wc == (gunichar)-1)
+	break;			/* FIXME: ERROR */
 
       attrs[i].is_white = (wc == ' ' || wc == '\t' || wc == 'n') ? 1 : 0;
       attrs[i].is_break = (i > 0 && attrs[i - 1].is_white) ||
@@ -570,7 +563,9 @@ devanagari_engine_break (const char *text,
       attrs[i].is_char_stop = 1;
       attrs[i].is_word_stop = (i == 0) || attrs[i - 1].is_white;
       /* actually, is_word_stop in not correct, but simple and good enough. */
+
       i++;
+      cur = g_utf8_next_char (cur);
     }
 }
 

@@ -24,8 +24,6 @@
 #include <glib.h>
 #include "pango.h"
 #include "pangox.h"
-#include "utils.h"
-#include <unicode.h>
 #include <fribidi/fribidi.h>
 
 /* We handle the range U+0e01 to U+0e5b exactly
@@ -240,7 +238,7 @@ add_glyph (ThaiFontInfo     *font_info,
  * code pointer
  */
 static int
-get_glyph (ThaiFontInfo *font_info, unicode_char_t wc)
+get_glyph (ThaiFontInfo *font_info, gunichar wc)
 {
   switch (font_info->type)
     {
@@ -260,9 +258,9 @@ static void
 add_cluster (ThaiFontInfo *font_info,
 	     PangoGlyphString *glyphs,
 	     int cluster_start,
-	     unicode_char_t base, 
-	     unicode_char_t group1,
-	     unicode_char_t group2)
+	     gunichar base, 
+	     gunichar group1,
+	     gunichar group2)
 {
   /* If we are rendering with an XTIS font, we try to find a precomposed
    * glyph for the cluster.
@@ -303,11 +301,11 @@ thai_engine_shape (PangoFont        *font,
 		   PangoGlyphString *glyphs)
 {
   ThaiFontInfo *font_info;
-  const char *p, *next;
+  const char *p;
 
-  unicode_char_t base = 0;
-  unicode_char_t group1 = 0;
-  unicode_char_t group2 = 0;
+  gunichar base = 0;
+  gunichar group1 = 0;
+  gunichar group2 = 0;
   int cluster_start = 0;
 
   pango_glyph_string_set_size (glyphs, 0);
@@ -318,9 +316,9 @@ thai_engine_shape (PangoFont        *font,
   while (p < text + length)
     {
       int group;
-      unicode_char_t wc;
+      gunichar wc;
 
-      next = unicode_get_utf8 (p, &wc);
+      wc = g_utf8_get_char (p);
 
       if (wc >= 0xe30 && wc < 0xe50)
 	group = groups[wc - 0xe30];
@@ -347,7 +345,7 @@ thai_engine_shape (PangoFont        *font,
 	  break;
 	}
       
-      p = next;
+      p = g_utf8_next_char (p);
     }
 
   if (base)
@@ -364,7 +362,7 @@ thai_engine_get_coverage (PangoFont  *font,
   
   if (font_info->type != THAI_FONT_NONE)
     {
-      unicode_char_t wc;
+      gunichar wc;
       
       for (wc = 0xe01; wc <= 0xe3a; wc++)
 	pango_coverage_set (result, wc, PANGO_COVERAGE_EXACT);

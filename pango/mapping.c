@@ -29,7 +29,6 @@
  */
 
 #include <pango/pango.h>
-#include <unicode.h>
 
 /**
  * pango_glyph_string_index_to_x:
@@ -143,7 +142,7 @@ pango_glyph_string_index_to_x (PangoGlyphString *glyphs,
       if (p < text + index)
 	cluster_offset++;
       cluster_chars++;
-      p = unicode_next_utf8 (p);
+      p = g_utf8_next_char (p);
     }
   
   /* Now interpolate the result. For South Asian languages
@@ -265,7 +264,7 @@ pango_glyph_string_x_to_index (PangoGlyphString *glyphs,
   p = text + start_index;
   while (p < text + end_index)
     {
-      p = unicode_next_utf8 (p);
+      p = g_utf8_next_char (p);
       cluster_chars++;
     }
   
@@ -287,7 +286,7 @@ pango_glyph_string_x_to_index (PangoGlyphString *glyphs,
 
 	  while (i + 1 <= cp)
 	    {
-	      p = unicode_next_utf8 (p);
+	      p = g_utf8_next_char (p);
 	      i++;
 	    }
 	    

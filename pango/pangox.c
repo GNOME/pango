@@ -24,11 +24,8 @@
 
 #include <X11/Xlib.h>
 #include <fribidi/fribidi.h>
-#include <unicode.h>
 #include "pangox.h"
 #include "pangox-private.h"
-
-#include "utils.h"
 
 #include <config.h>
 
@@ -487,15 +484,15 @@ get_font_metrics_from_string (PangoFont        *font,
   PangoGlyphString *glyph_str = pango_glyph_string_new ();
   PangoEngineShape *shaper, *last_shaper;
   int last_level;
-  GUChar4 *text_ucs4;
+  gunichar *text_ucs4;
   int n_chars, i;
   guint8 *embedding_levels;
   FriBidiCharType base_dir = PANGO_DIRECTION_LTR;
   GSList *subfonts = NULL;
   
-  n_chars = unicode_strlen (str, -1);
+  n_chars = g_utf8_strlen (str, -1);
 
-  text_ucs4 = _pango_utf8_to_ucs4 (str, strlen (str));
+  text_ucs4 = g_utf8_to_ucs4 (str, strlen (str));
   if (!text_ucs4)
     return;
 
@@ -511,9 +508,9 @@ get_font_metrics_from_string (PangoFont        *font,
   p = start = str;
   while (*p)
     {
-      unicode_char_t wc;
-      p = unicode_get_utf8 (p, &wc);
-
+      gunichar wc = g_utf8_get_char (p);
+      p = g_utf8_next_char (p);
+	  
       shaper = pango_font_find_shaper (font, lang, wc);
       if (p > start &&
 	  (shaper != last_shaper || last_level != embedding_levels[i]))

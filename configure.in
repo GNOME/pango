@@ -33,7 +33,7 @@ if test x$FRIBIDI_CONFIG = xno ; then
   AC_MSG_ERROR([*** fribidi-config not found])
 fi
 FRIBIDI_CFLAGS="`$FRIBIDI_CONFIG --cflags`"
-CFLAGS="$CFLAGS $UNICODE_CFLAGS"
+CFLAGS="$CFLAGS $FRIBIDI_CFLAGS"
 FRIBIDI_LIBS="`$FRIBIDI_CONFIG --libs`"
 AC_SUBST(FRIBIDI_LIBS)
 AC_SUBST(FRIBIDI_CFLAGS)
@@ -51,20 +51,6 @@ CFLAGS="$CFLAGS $GLIB_CFLAGS"
 GLIB_LIBS="`$GLIB_CONFIG --libs gmodule gobject`"
 AC_SUBST(GLIB_LIBS)
 AC_SUBST(GLIB_CFLAGS)
-
-
-AC_PATH_PROG(UNICODE_CONFIG, unicode-config, no)
-if test x$UNICODE_CONFIG = xno ; then
-  AC_MSG_ERROR([*** unicode-config not found])
-fi
-UNICODE_CFLAGS="`$UNICODE_CONFIG --cflags`"
-CFLAGS="$CFLAGS $UNICODE_CFLAGS"
-UNICODE_LIBS="`$UNICODE_CONFIG --libs`"
-AC_SUBST(UNICODE_LIBS)
-AC_SUBST(UNICODE_CFLAGS)
-
-AC_CHECK_LIB(unicode, unicode_type, :,
-	     AC_MSG_ERROR([*** libunicode not found.]), $UNICODE_LIBS)
 
 
 #
@@ -92,9 +78,13 @@ if test "x$found_iconv" = "xno" ; then
    AC_MSG_ERROR([*** No iconv() implementation found in C library or libiconv])
 fi
 
+UNICODE_CFLAGS=
+UNICODE_LIBS=
 if test "x$with_libiconv" = "xyes" ; then
-  UNICODE_LIBS="$UNICODE_LIBS -liconv"
+  UNICODE_LIBS="-liconv"
 fi
+AC_SUBST(UNICODE_CFLAGS)
+AC_SUBST(UNICODE_LIBS)
   
 #
 # Allow building some or all modules included

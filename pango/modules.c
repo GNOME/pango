@@ -29,7 +29,6 @@
 
 #include "pango-modules.h"
 #include "modules.h"
-#include "utils.h"
 
 typedef struct _PangoMapInfo PangoMapInfo;
 typedef struct _PangoEnginePair PangoEnginePair;
@@ -464,8 +463,8 @@ build_map (PangoMapInfo *info)
 		   submap <= pair->info.ranges[i].end / 256;
 		   submap ++)
 		{
-		  GUChar4 start;
-		  GUChar4 end;
+		  gunichar start;
+		  gunichar end;
 		  
 		  if (submap == pair->info.ranges[i].start / 256)
 		    start = pair->info.ranges[i].start % 256;

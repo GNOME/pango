@@ -20,8 +20,6 @@
  */
 
 #include "pango.h"
-#include <unicode.h>
-#include "utils.h"
 
 /**
  * pango_break:
@@ -41,20 +39,14 @@ void pango_break (const gchar   *text,
   /* Pseudo-implementation */
 
   const gchar *cur = text;
-  const gchar *next;
   gint i = 0;
-  GUChar4 wc;
+  gunichar wc;
   
-  while (*cur)
+  while (*cur && cur - text < length)
     {
-      next = unicode_get_utf8 (cur, &wc);
-      if (!next)
+      wc = g_utf8_get_char (cur);
+      if (wc == (gunichar)-1)
 	break;			/* FIXME: ERROR */
-      if (cur == next)
-	break;
-      if ((next - text) > length)
-	break;
-      cur = next;
 
       attrs[i].is_white = (wc == ' ' || wc == '\t' || wc == '\n' || wc == 0x200b) ? 1 : 0;
       attrs[i].is_break = i == 0 || attrs[i-1].is_white || attrs[i].is_white;
@@ -62,5 +54,6 @@ void pango_break (const gchar   *text,
       attrs[i].is_word_stop = (i == 0) || attrs[i-1].is_white;
       
       i++;
+      cur = g_utf8_next_char (cur);
     }
 }

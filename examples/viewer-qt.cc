@@ -104,15 +104,12 @@ ViewerPara::draw (QPainter *painter, GC gc, int y)
 			 gc, layout_, 0, devicePt.y());
 }
 
-unicode_char_t 
+gunichar 
 ViewerPara::getChar (int index)
 {
-  unicode_char_t result;
-  
-  if (unicode_get_utf8 (((const char *)text_) + index, &result))
-    return result;
-  else
-    return 0;
+  gunichar result;
+
+  return g_utf8_get_char ((const char *)text_ + index);
 }
 
 QRect 
@@ -319,9 +316,9 @@ ViewerView::contentsMousePressEvent (QMouseEvent *event)
       if (y <= event->y() && event->y() < y_end)
 	{
 	  int index = para->findPoint (event->x(), event->y() - y);
-	  unicode_char_t wc = para->getChar (index);
+	  gunichar wc = para->getChar (index);
 
-	  if (index >= 0 && wc)
+	  if (index >= 0 && wc != (gunichar)-1)
 	    {
 	      highlight_para_ = para;
 	      highlight_index_ = index;

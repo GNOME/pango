@@ -10,8 +10,6 @@
 #include <glib.h>
 #include "pango.h"
 #include "pangox.h"
-#include "utils.h"
-#include <unicode.h>
 
 /*  #define DEBUG   */
 #ifdef DEBUG
@@ -50,7 +48,7 @@ arabic_lboxinit(PangoFont  *font,PangoXSubfont* lboxfonts)
 
 
 typedef struct {
-    GUChar4   unicodechar;
+    gunichar  unicodechar;
     int       charindex;
 } fontentry;
 

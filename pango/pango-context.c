@@ -21,10 +21,8 @@
 
 #include <pango/pango-context.h>
 #include <fribidi/fribidi.h>
-#include <unicode.h>
 #include "iconv.h"
 
-#include "utils.h"
 #include "pango-modules.h"
 
 struct _PangoContext
@@ -511,7 +509,7 @@ pango_itemize (PangoContext   *context,
 	       int             length,
 	       PangoAttrList  *attrs)
 {
-  GUChar4 *text_ucs4;
+  gunichar *text_ucs4;
   int n_chars, i;
   guint8 *embedding_levels;
   FriBidiCharType base_dir;
@@ -543,11 +541,11 @@ pango_itemize (PangoContext   *context,
   /* First, apply the bidirectional algorithm to break
    * the text into directional runs.
    */
-  text_ucs4 = _pango_utf8_to_ucs4 (text, length);
+  text_ucs4 = g_utf8_to_ucs4 (text, length);
   if (!text_ucs4)
     return NULL;
 
-  n_chars = unicode_strlen (text, length);
+  n_chars = g_utf8_strlen (text, length);
   embedding_levels = g_new (guint8, n_chars);
 
   fribidi_log2vis_get_embedding_levels (text_ucs4, n_chars, &base_dir,
@@ -577,7 +575,7 @@ pango_itemize (PangoContext   *context,
   p = text;
   for (i=0; i<n_chars; i++)
     {
-      next = unicode_next_utf8 (p);
+      next = g_utf8_next_char (p);
       
       if (i == 0 ||
 	  text_ucs4[i] == '\t' || text_ucs4[i-1] == '\t' ||
@@ -637,8 +635,8 @@ pango_itemize (PangoContext   *context,
 static PangoFont *
 get_font (PangoFont     **fonts,
 	  PangoCoverage **coverages,
-	  int            n_families,
-	  GUChar4        wc)
+	  int             n_families,
+	  gunichar        wc)
 {
   PangoFont *result = NULL;
   PangoCoverageLevel best_level = PANGO_COVERAGE_NONE;
@@ -693,10 +691,10 @@ add_engines (PangoContext      *context,
   PangoAttrIterator *iterator;
   PangoAttribute *attr;
   
-  GUChar4 wc;
+  gunichar wc;
   int i, j;
 
-  n_chars = unicode_strlen (text, length);
+  n_chars = g_utf8_strlen (text, length);
 
   iterator = pango_attr_list_get_iterator (attrs);
 
@@ -775,7 +773,8 @@ add_engines (PangoContext      *context,
 	  pango_attr_iterator_next (iterator);
 	}
 
-      pos  = unicode_get_utf8 (pos, &wc);
+      wc = g_utf8_get_char (pos);
+      pos = g_utf8_next_char (pos);
 	  
       lang_engines[i] = (PangoEngineLang *)pango_map_get_engine (lang_map, wc);
       fonts[i] = get_font (current_fonts, current_coverages, n_families, wc);

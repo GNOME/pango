@@ -21,9 +21,7 @@ libpango_la_SOURCES = 	   \
 	pango-item.c	   \
 	pango-layout.c	   \
 	reorder-items.c    \
-	shape.c 	   \
-	utils.c  	   \
-	utils.h
+	shape.c
 
 libpangox_la_SOURCES = 	   \
 	pangox.c	   \

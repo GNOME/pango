@@ -20,10 +20,8 @@
  */
 
 #include <fribidi/fribidi.h>
-#include <unicode.h>
 #include "pango.h"
 #include "iconv.h"
-#include "utils.h"
 #include "modules.h"
 
 static void add_engines (PangoContext     *context,
@@ -90,7 +88,7 @@ pango_itemize (PangoContext   *context,
   if (!text_ucs2)
     return NULL;
 
-  n_chars = unicode_strlen (text, length);
+  n_chars = g_utf8_strlen (text, length);
   embedding_levels = g_new (guint8, n_chars);
 
   /* Storing these as ranges would be a lot more efficient,
@@ -126,7 +124,7 @@ pango_itemize (PangoContext   *context,
   p = text;
   for (i=0; i<n_chars; i++)
     {
-      next = unicode_next_utf8 (p);
+      next = g_utf8_next_char (p);
       
       if (i == 0 ||
 	  embedding_levels[i] != embedding_levels[i-1] ||
@@ -182,7 +180,7 @@ add_engines (PangoContext     *context,
   GUChar4 wc;
   int i, j;
 
-  n_chars = unicode_strlen (text, length);
+  n_chars = g_utf8_strlen (text, length);
 
   pos = text;
   last_lang = NULL;
@@ -211,7 +209,8 @@ add_engines (PangoContext     *context,
 	  last_lang = lang;
 	}
 
-      pos  = unicode_get_utf8 (pos, &wc);
+      wc = g_utf8_get_char (pos);
+      pos = g_utf8_next_char (pos);
 
       if (!lang_engines[i])
 	{

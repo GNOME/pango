@@ -22,7 +22,6 @@
 #include <glib.h>
 #include <pango/pango-glyph.h>
 #include <pango/pango-font.h>
-#include <unicode.h>
 
 /**
  * pango_glyph_string_new:
@@ -188,7 +187,7 @@ pango_glyph_string_extents (PangoGlyphString *glyphs,
  * @text: the text corresponding to the glyphs
  * @length: the length of @text, in bytes
  * @embedding_level: the embedding level of the string
- * @logical_widths: an array whose length is unicode_strlen (text, length)
+ * @logical_widths: an array whose length is g_utf8_strlen (text, length)
  *                  to be filled in with the resulting character widths.
  *
  * Given a #PangoGlyphString resulting from pango_shape() and the corresponding
@@ -222,7 +221,7 @@ pango_glyph_string_get_logical_widths (PangoGlyphString *glyphs,
 	      while (p < text + glyphs->log_clusters[glyph_index])
 		{
 		  next_cluster++;
-		  p = unicode_next_utf8 (p);
+		  p = g_utf8_next_char (p);
 		}
 	    }
 	  else
@@ -230,7 +229,7 @@ pango_glyph_string_get_logical_widths (PangoGlyphString *glyphs,
 	      while (p < text + length)
 		{
 		  next_cluster++;
-		  p = unicode_next_utf8 (p);
+		  p = g_utf8_next_char (p);
 		}
 	    }
 	  

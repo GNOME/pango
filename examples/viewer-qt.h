@@ -24,7 +24,6 @@
 #include <qlist.h>
 #include <qmainwindow.h>
 #include <pango/pango.h>
-#include <unicode.h>
 
 class QComboBox;
 class QSpinBox;
@@ -40,7 +39,7 @@ class ViewerPara
   int height ();
   void draw (QPainter *painter, GC gc, int y);
   QRect charBounds (int index);
-  unicode_char_t getChar (int index);
+  gunichar getChar (int index);
   int findPoint (int x, int y);
 
  private:

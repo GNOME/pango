@@ -10,8 +10,6 @@
 #include <glib.h>
 #include "pango.h"
 #include "pangox.h"
-#include "utils.h"
-#include <unicode.h>
 
 #include "arconv.h" 
 #include "mulefont.h"
@@ -62,27 +60,24 @@ arabic_engine_break (const char    *text,
      */
 
     const char *cur = text;
-    const char *next;
     gint        i  = 0;
-    GUChar4     wc;
+    gunichar    wc;
 
-    while (*cur)
-        {
-            if (!_pango_utf8_iterate (cur, &next, &wc))
-                return;
-            if (cur == next)
-                break;
-            if ((next - text) > len)
-                break;
-            cur = next;
+    while (*cur && cur - text < len)
+      {
+	    wc = g_utf8_get_char (cur);
+	    if (wc == (gunichar)-1)
+	           break;           /* FIXME: ERROR */
 
             attrs[i].is_white = (wc == ' ' || wc == '\t' || wc == 'n') ? 1 : 0;
             attrs[i].is_break = (i > 0 && attrs[i-1].is_white) || attrs[i].is_white;
             attrs[i].is_char_stop = 1;
             attrs[i].is_word_stop = (i == 0) || attrs[i-1].is_white;
             /* actually, is_word_stop in not correct, but simple and good enough. */
+	    
             i++;
-        }
+            cur = g_utf8_next_char (cur);
+      }
 }
 
 static PangoEngine *
@@ -222,8 +217,7 @@ arabic_engine_shape (PangoFont        *font,
     int         i;
     const char *p;
     const char *pold;
-    const char *next;
-    GUChar4    *wc;
+    gunichar   *wc;
     int         lvl      = 1;
 
     g_return_if_fail (font != NULL);
@@ -235,7 +229,7 @@ arabic_engine_shape (PangoFont        *font,
     **   the needed chars -- or tree mulearabic-coded fonts ...
     */
   
-    n_chars = n_glyph = unicode_strlen (text, length);
+    n_chars = n_glyph = g_utf8_strlen (text, length);
 
     if (!(lvl = find_unic_font (font, default_charset,arfonts)))
         {
@@ -250,19 +244,19 @@ arabic_engine_shape (PangoFont        *font,
                     set_glyph (glyphs, font, 
                                PANGO_X_GLYPH_SUBFONT (unknown_glyph), i, 
                                p - text, PANGO_X_GLYPH_INDEX (unknown_glyph),0);
-                    p = unicode_next_utf8 (p);
+                    p = g_utf8_next_char (p);
                 }
             return;
         }
     subfont = arfonts[0];
 
-    wc = (GUChar4 *)g_malloc(sizeof(GUChar4)*n_chars);  
+    wc = (gunichar *)g_malloc(sizeof(gunichar)*n_chars);  
 
     p = text;
     for (i=0; i < n_chars; i++)
         {
-            _pango_utf8_iterate (p, &next, &wc[n_chars - i - 1]);
-            p = next;
+            wc[n_chars - i - 1] = g_utf8_get_char (p);
+            p = g_utf8_next_char (p);
         }
   
   
@@ -290,7 +284,7 @@ arabic_engine_shape (PangoFont        *font,
         {
             if (wc[i] == 0)
                 {
-                    p = unicode_next_utf8 (p);
+                    p = g_utf8_next_char (p);
                     i--;
                 }
             else 
@@ -323,7 +317,7 @@ arabic_engine_shape (PangoFont        *font,
                               cluster_start, wc[i], is_vowel);
       
                     pold = p;
-                    p    = unicode_next_utf8 (p);
+                    p    = g_utf8_next_char (p);
                     n_glyph--;
                     i--;
                 }
@@ -337,7 +331,7 @@ static PangoCoverage *
 arabic_engine_get_coverage (PangoFont  *font,
                             const char *lang)
 {
-    GUChar4 i;
+    gunichar i;
     PangoCoverage *result = pango_coverage_new ();
 
     for (i = 0x60B; i <= 0x66D; i++)

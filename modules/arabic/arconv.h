@@ -7,7 +7,8 @@
 
 #ifndef __arconv_h_
 #define __arconv_h_
-#include "utils.h"
+
+#include <glib.h>
 
 /*
  * arabic_reshape: reshapes string ( ordered left-to right visual order )
@@ -19,7 +20,7 @@
  *          4 : with some extra Ligatures
  *
  */
-void arabic_reshape(int* len,GUChar4* string,int level);
-int  arabic_isvowel(GUChar4 s);
+void arabic_reshape(int* len,gunichar* string,int level);
+int  arabic_isvowel(gunichar s);
 
 #endif

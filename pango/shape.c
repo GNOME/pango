@@ -20,7 +20,6 @@
  */
 
 #include <pango/pango.h>
-#include "utils.h"
 
 /**
  * pango_shape:

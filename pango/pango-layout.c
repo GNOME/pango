@@ -22,7 +22,6 @@
 #include <pango/pango-layout.h>
 #include <pango/pango.h>		/* For pango_shape() */
 #include <string.h>
-#include <unicode.h>
 
 #define LINE_IS_VALID(line) ((line)->layout != NULL)
 
@@ -431,18 +430,17 @@ pango_layout_set_text (PangoLayout *layout,
     }
   else
     {
-      unicode_char_t junk;
       const char *p = text;
       int n_chars = 0;
       
       while (*p && (length < 0 || p < text + length))
 	{
-	  p = unicode_get_utf8 (p, &junk);
-	  if (!p)
+	  if (g_utf8_get_char (p) == (gunichar)-1)
 	    {
 	      g_warning ("Invalid UTF8 string passed to pango_layout_set_text()");
 	      return;
 	    }
+	  p = g_utf8_next_char (p);
 	  n_chars++;
 	}
 
@@ -454,8 +452,7 @@ pango_layout_set_text (PangoLayout *layout,
 
       length = p - text;
       
-      /* NULL-terminate the text, since we currently use unicode_next_utf8()
-       * in quite a few places, and for convenience.
+      /* NULL-terminate the text for convenience.
        */
       
       layout->text = g_malloc (length + 1);
@@ -761,10 +758,10 @@ pango_layout_move_cursor_visually (PangoLayout *layout,
     next_line = NULL;
 
   if (old_trailing)
-    old_index = unicode_next_utf8 (layout->text + old_index) - layout->text;
+    old_index = g_utf8_next_char (layout->text + old_index) - layout->text;
 
   log2vis_map = pango_layout_line_get_log2vis_map (line, TRUE);
-  n_vis = unicode_strlen (layout->text + bytes_seen, line->length);
+  n_vis = g_utf8_strlen (layout->text + bytes_seen, line->length);
 
   vis_pos = log2vis_map[old_index - bytes_seen];
   g_free (log2vis_map);
@@ -794,7 +791,7 @@ pango_layout_move_cursor_visually (PangoLayout *layout,
 	  line = next_line;
 	}
       
-      vis_pos = unicode_strlen (layout->text + bytes_seen, line->length);
+      vis_pos = g_utf8_strlen (layout->text + bytes_seen, line->length);
     }
   else if (vis_pos == n_vis && direction > 0)
     {
@@ -830,9 +827,9 @@ pango_layout_move_cursor_visually (PangoLayout *layout,
   *new_index = bytes_seen + vis2log_map[vis_pos];
   g_free (vis2log_map);
 
-  if (*new_index == bytes_seen + line->length)
+  if (*new_index == bytes_seen + line->length && line->length > 0)
     {
-      *new_index = unicode_previous_utf8 (layout->text, layout->text + *new_index) - layout->text;
+      *new_index = g_utf8_prev_char (layout->text + *new_index) - layout->text;
       *new_trailing = 1;
     }
   else
@@ -1023,7 +1020,7 @@ pango_layout_line_get_vis2log_map (PangoLayoutLine *line,
   int n_chars;
 
   pango_layout_line_get_range (line, &start, &end);
-  n_chars = unicode_strlen (start, end - start);
+  n_chars = g_utf8_strlen (start, end - start);
   
   result = g_new (int, n_chars + 1);
 
@@ -1057,12 +1054,12 @@ pango_layout_line_get_vis2log_map (PangoLayoutLine *line,
 	      (prev_dir == run_dir))
 	    result[pos] = p - start;
 
-	  p = unicode_next_utf8 (p);
+	  p = g_utf8_next_char (p);
 
 	  for (i = 1; i < run_n_chars; i++)
 	    {
 	      result[pos + i] = p - start;
-	      p = unicode_next_utf8 (p);
+	      p = g_utf8_next_char (p);
 	    }
 
 	  if ((strong && base_dir == run_dir) ||
@@ -1075,12 +1072,12 @@ pango_layout_line_get_vis2log_map (PangoLayoutLine *line,
 	      (!strong && base_dir != run_dir))
 	    result[pos + run_n_chars] = p - start;
 
-	  p = unicode_next_utf8 (p);
+	  p = g_utf8_next_char (p);
 
 	  for (i = 1; i < run_n_chars; i++)
 	    {
 	      result[pos + run_n_chars - i] = p - start;
-	      p = unicode_next_utf8 (p);
+	      p = g_utf8_next_char (p);
 	    }
 
 	  if ((strong && base_dir == run_dir) ||
@@ -1108,7 +1105,7 @@ pango_layout_line_get_log2vis_map (PangoLayoutLine *line,
   int n_chars;
 
   pango_layout_line_get_range (line, &start, &end);
-  n_chars = unicode_strlen (start, end - start);
+  n_chars = g_utf8_strlen (start, end - start);
   result = g_new0 (int, end - start + 1);
 
   reverse_map = pango_layout_line_get_vis2log_map (line, strong);
@@ -1220,7 +1217,7 @@ pango_layout_get_cursor_pos (PangoLayout    *layout,
     }
   else
     {
-      gint prev_index = unicode_previous_utf8 (layout->text, layout->text + index) - layout->text;
+      gint prev_index = g_utf8_prev_char (layout->text + index) - layout->text;
       dir1 = pango_layout_line_get_char_direction (layout_line, prev_index);
       pango_layout_line_index_to_x (layout_line, prev_index, TRUE, &x1_trailing);
     }
@@ -1565,7 +1562,7 @@ process_item (PangoLayoutLine *line,
 	{
 	  PangoItem *new_item = pango_item_copy (item);
 	  
-	  length = unicode_offset_to_index (text + item->offset, num_chars);
+	  length = g_utf8_offset_to_pointer (text + item->offset, num_chars) - (text + item->offset);
 	  
 	  new_item->length = length;
 	  new_item->num_chars = num_chars;
@@ -1679,7 +1676,7 @@ pango_layout_check_lines (PangoLayout *layout)
 
       while (end != layout->text + layout->length && *end != '\n')
 	{
-	  end = unicode_next_utf8 (end);
+	  end = g_utf8_next_char (end);
 	  para_chars++;
 	}
       
@@ -1911,8 +1908,13 @@ pango_layout_line_x_to_index (PangoLayoutLine *line,
       return;
     }
   
-  last_index = first_index + line->length;
-  last_index = unicode_previous_utf8 (line->layout->text + first_index, line->layout->text + last_index) - line->layout->text;
+  if (line->length > 0)
+    {
+      last_index = first_index + line->length;
+      last_index = g_utf8_prev_char (line->layout->text + last_index) - line->layout->text;
+    }
+  else
+    last_index = first_index;	/* FIXME - does this make sense at all? */
 
   /* This is a HACK. If a program only keeps track if cursor (etc)
    * indices and not the trailing flag, then the trailing index of the
@@ -2072,9 +2074,11 @@ pango_layout_line_get_x_ranges (PangoLayoutLine  *line,
 	      int run_end_index = MIN (end_index, run->item->offset + run->item->length);
 	      int run_start_x, run_end_x;
 
+	      g_assert (run_end_index > 0);
+	      
 	      /* Back the end_index off one since we want to find the trailing edge of the preceding character */
 
-	      run_end_index = unicode_previous_utf8 (line->layout->text, line->layout->text + run_end_index) - line->layout->text;
+	      run_end_index = g_utf8_prev_char (line->layout->text + run_end_index) - line->layout->text;
 
 	      pango_glyph_string_index_to_x (run->glyphs,
 					     line->layout->text + run->item->offset,

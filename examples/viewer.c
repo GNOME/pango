@@ -26,7 +26,6 @@
 #include <pango/pango.h>
 #include <pango/pangox.h>
 
-#include <unicode.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <errno.h>
@@ -113,14 +112,16 @@ static GList *
 split_paragraphs (char *text)
 {
   char *p = text;
-  unicode_char_t wc;
+  char *next;
+  gunichar wc;
   GList *result = NULL;
   char *last_para = text;
   
   while (*p)
     {
-      char *next = unicode_get_utf8 (p, &wc);
-      if (!next)
+      wc = g_utf8_get_char (p);
+      next = g_utf8_next_char (p);
+      if (wc == (gunichar)-1)
 	{
 	  fprintf (stderr, "gscript-viewer: Invalid character in input\n");
 	  g_list_foreach (result, (GFunc)g_free, NULL);
@@ -344,9 +345,9 @@ button_press (GtkWidget *layout, GdkEventButton *event)
   
   if (para)
     {
-      unicode_char_t wc;
+      gunichar wc;
 
-      unicode_get_utf8 (para->text + offset, &wc);
+      wc = g_utf8_get_char (para->text + offset);
       message = g_strdup_printf ("Current char: U%04x", wc);
       
       xor_char (layout, NULL, highlight_para, highlight_offset);
