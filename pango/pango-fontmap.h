@@ -48,7 +48,6 @@ struct _PangoFontMapClass
 {
   GObjectClass parent_class;
   
-  void       (*destroy)       (PangoFontMap               *fontmap);
   PangoFont *(*load_font)     (PangoFontMap               *fontmap,
 			       const PangoFontDescription *desc);
   void       (*list_fonts)    (PangoFontMap               *fontmap,

@@ -238,7 +238,7 @@ pango_x_font_cache_unload (PangoXFontCache *cache,
   g_return_if_fail (cache != NULL);
   g_return_if_fail (fs != NULL);
 
-  entry = g_hash_table_lookup (cache->forward, fs);
+  entry = g_hash_table_lookup (cache->back, fs);
   g_return_if_fail (entry != NULL);
 
   cache_entry_unref (cache, entry);  

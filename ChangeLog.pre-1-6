@@ -1,3 +1,17 @@
+Mon Jun  5 15:35:03 2000  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pangox-fontcache.c (pango_x_font_cache_unload): Fix
+	problem with unloading fonts.
+
+	* pango/pangox-fontmap.c pango/pangox-private.h pangox/pangox.c:
+	Add a simple PangoXFont; get rid of the eternal caching of
+	all fonts.
+
+Wed May 31 16:11:46 2000  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-fontmap.h (struct _PangoFontMapClass): Remove unused
+	destroy vfunc.
+
 Sat Jun  3 06:01:38  Pablo Saratxaga <pablo@mandrakesoft.com>
 
 	* modules/thai/thai.c: added other common X11 font encoding

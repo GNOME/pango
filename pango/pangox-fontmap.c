@@ -40,6 +40,9 @@ typedef struct _PangoXFontMap      PangoXFontMap;
 typedef struct _PangoXFontMapClass PangoXFontMapClass;
 typedef struct _PangoXSizeInfo     PangoXSizeInfo;
 
+/* Number of freed fonts */
+#define MAX_FREED_FONTS 16
+
 /* This is the largest field length we will accept. If a fontname has a field
    larger than this we will skip it. */
 #define XLFD_MAX_FIELD_LEN 64
@@ -72,6 +75,7 @@ struct _PangoXFontMap
   Display *display;
 
   PangoXFontCache *font_cache;
+  GQueue *freed_fonts;
 
   GHashTable *families;
   GHashTable *size_infos;
@@ -245,7 +249,8 @@ pango_x_font_map_for_display (Display *display)
   
   xfontmap->display = display;
   xfontmap->font_cache = pango_x_font_cache_new (display);
-
+  xfontmap->freed_fonts = g_queue_new ();
+  
   /* Get a maximum of MAX_FONTS fontnames from the X server.
      Use "-*" as the pattern rather than "-*-*-*-*-*-*-*-*-*-*-*-*-*-*" since
      the latter may result in fonts being returned which don't actually exist.
@@ -283,6 +288,9 @@ pango_x_font_map_finalize (GObject *object)
   PangoXFontMap *xfontmap = PANGO_X_FONT_MAP (object);
   
   pango_x_font_cache_free (xfontmap->font_cache);
+  g_list_foreach (xfontmap->freed_fonts->head, (GFunc)g_object_unref, NULL);
+  g_queue_free (xfontmap->freed_fonts);
+  
   /* FIXME: Lots more here */
   
   fontmaps = g_list_remove (fontmaps, object);
@@ -472,7 +480,11 @@ pango_x_font_map_load_font (PangoFontMap               *fontmap,
 	      if (xfont->size == description->size)
 		{
 		  result = (PangoFont *)xfont;
+
 		  g_object_ref (G_OBJECT (result));
+		  if (xfont->in_cache)
+		    pango_x_fontmap_cache_remove (fontmap, xfont);
+		  
 		  break;
 		}
 	      tmp_list = tmp_list->next;
@@ -480,15 +492,14 @@ pango_x_font_map_load_font (PangoFontMap               *fontmap,
 
 	  if (!result)
 	    {
-	      result = (PangoFont *)pango_x_font_new (xfontmap->display, best_match->xlfd, description->size);
-	      ((PangoXFont *)result)->entry = best_match;
-	      best_match->cached_fonts = g_slist_prepend (best_match->cached_fonts, result);
-	    }
+	      PangoXFont *xfont = pango_x_font_new (xfontmap->display, best_match->xlfd, description->size);
+	      
+	      xfont->fontmap = fontmap;
+	      xfont->entry = best_match;
+	      best_match->cached_fonts = g_slist_prepend (best_match->cached_fonts, xfont);
 
-	  /* HORRIBLE performance hack until some better caching scheme is arrived at
-	   */
-	  if (result)
-	    g_object_ref (G_OBJECT (result));
+	      result = (PangoFont *)xfont;
+	    }
 	}
     }
 
@@ -1399,4 +1410,42 @@ pango_x_font_map_get_font_cache (PangoFontMap *font_map)
   g_return_val_if_fail (PANGO_X_IS_FONT_MAP (font_map), NULL);
 
   return PANGO_X_FONT_MAP (font_map)->font_cache;
+}
+
+void
+pango_x_fontmap_cache_add (PangoFontMap    *fontmap,
+			   PangoXFont      *xfont)
+{
+  PangoXFontMap *xfontmap = PANGO_X_FONT_MAP (fontmap);
+
+  if (xfontmap->freed_fonts->length == MAX_FREED_FONTS)
+    {
+      PangoXFont *old_font = g_queue_pop_tail (xfontmap->freed_fonts);
+      g_object_unref (G_OBJECT (old_font));
+    }
+
+  g_object_ref (G_OBJECT (xfont));
+  g_queue_push_head (xfontmap->freed_fonts, xfont);
+  xfont->in_cache = TRUE;
+}
+
+void
+pango_x_fontmap_cache_remove (PangoFontMap    *fontmap,
+			      PangoXFont      *xfont)
+{
+  PangoXFontMap *xfontmap = PANGO_X_FONT_MAP (fontmap);
+
+  GList *link = g_list_find (xfontmap->freed_fonts->head, xfont);
+  if (link == xfontmap->freed_fonts->tail)
+    {
+      xfontmap->freed_fonts->tail = xfontmap->freed_fonts->tail->prev;
+      if (xfontmap->freed_fonts->tail)
+	xfontmap->freed_fonts->tail->next = NULL;
+    }
+  
+  xfontmap->freed_fonts->head = g_list_delete_link (xfontmap->freed_fonts->head, link);
+  xfontmap->freed_fonts->length--;
+  xfont->in_cache = FALSE;
+
+  g_object_unref (G_OBJECT (xfont));
 }

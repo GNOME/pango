@@ -69,8 +69,11 @@ struct _PangoXFontClass
   PangoFontClass parent_class;
 };
 
+static PangoFontClass *parent_class;	/* Parent class structure for PangoXFont */
+
 static void pango_x_font_class_init (PangoXFontClass *class);
 static void pango_x_font_init       (PangoXFont      *xfont);
+static void pango_x_font_shutdown   (GObject         *object);
 static void pango_x_font_finalize   (GObject         *object);
 
 static PangoFontDescription *pango_x_font_describe          (PangoFont        *font);
@@ -249,8 +252,12 @@ pango_x_font_class_init (PangoXFontClass *class)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (class);
   PangoFontClass *font_class = PANGO_FONT_CLASS (class);
+
+  parent_class = g_type_class_peek_parent (class);
   
   object_class->finalize = pango_x_font_finalize;
+  object_class->shutdown = pango_x_font_shutdown;
+  
   font_class->describe = pango_x_font_describe;
   font_class->get_coverage = pango_x_font_get_coverage;
   font_class->find_shaper = pango_x_font_find_shaper;
@@ -901,6 +908,22 @@ pango_x_font_subfont_xlfd (PangoFont     *font,
 }
 
 static void
+pango_x_font_shutdown (GObject *object)
+{
+  PangoXFont *xfont = PANGO_X_FONT (object);
+
+  /* If the font is not already in the freed-fonts cache, add it,
+   * if it is already there, do nothing and the font will be
+   * freed.
+   */
+  if (!xfont->in_cache)
+    pango_x_fontmap_cache_add (xfont->fontmap, xfont);
+
+  G_OBJECT_CLASS (parent_class)->shutdown (object);
+}
+
+
+static void
 subfonts_foreach (gpointer key, gpointer value, gpointer data)
 {
   g_free (key);
@@ -911,6 +934,9 @@ static void
 pango_x_font_finalize (GObject *object)
 {
   PangoXFont *xfont = (PangoXFont *)object;
+  PangoFontMap *fontmap = pango_x_font_map_for_display (xfont->display);
+  PangoXFontCache *cache = pango_x_font_map_get_font_cache (fontmap);
+
   int i;
 
   for (i=0; i<xfont->n_subfonts; i++)
@@ -918,8 +944,9 @@ pango_x_font_finalize (GObject *object)
       PangoXSubfontInfo *info = xfont->subfonts[i];
 
       g_free (info->xlfd);
+
       if (info->font_struct)
-	XFreeFont (xfont->display, info->font_struct);
+	pango_x_font_cache_unload (cache, info->font_struct);
 
       g_free (info);
     }
@@ -936,6 +963,8 @@ pango_x_font_finalize (GObject *object)
     pango_x_font_entry_remove (xfont->entry, (PangoFont *)xfont);
 
   g_strfreev (xfont->fonts);
+
+  G_OBJECT_CLASS (parent_class)->finalize (object);
 }
 
 static PangoFontDescription *

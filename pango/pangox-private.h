@@ -50,6 +50,12 @@ struct _PangoXFont
   int max_subfonts;
 
   GSList *metrics_by_lang;
+
+  PangoFontMap *fontmap;
+  /* If TRUE, font is in cache of recently unused fonts and not otherwise
+   * in use.
+   */
+  gboolean in_cache;
   
   PangoXFontEntry *entry;	/* Used to remove cached fonts */
 };
@@ -67,5 +73,10 @@ PangoCoverage *pango_x_font_entry_get_coverage (PangoXFontEntry *entry,
 						const char      *lang);
 void           pango_x_font_entry_remove       (PangoXFontEntry *entry,
 						PangoFont       *font);
+
+void           pango_x_fontmap_cache_add       (PangoFontMap    *fontmap,
+						PangoXFont      *xfont);
+void           pango_x_fontmap_cache_remove    (PangoFontMap    *fontmap,
+						PangoXFont      *xfont);
 
 #endif /* __PANGOX_PRIVATE_H__ */
