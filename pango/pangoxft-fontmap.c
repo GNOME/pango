@@ -516,16 +516,21 @@ pango_xft_font_map_load_font (PangoFontMap               *fontmap,
   PangoXftFontMap *xfontmap = (PangoXftFontMap *)fontmap;
   XftPattern *pattern, *match;
   XftResult res;
+  PangoFont *font = NULL;
   
   pattern = pango_xft_make_pattern (description);
       
   match = XftFontMatch (xfontmap->display, xfontmap->screen, pattern, &res);
+  
   XftPatternDestroy (pattern);
   
   if (match)
-    return  pango_xft_font_map_new_font (fontmap, match);
-
-  return NULL;
+    {
+      font = pango_xft_font_map_new_font (fontmap, match);
+      XftPatternDestroy (match);
+    }
+  
+  return font;
 }
 
 

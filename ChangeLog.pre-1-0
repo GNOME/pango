@@ -1,3 +1,11 @@
+2001-11-26  Alex Larsson  <alexl@redhat.com>
+
+	* pango/pangoxft-font.c (pango_xft_font_get_coverage):
+	Don't leak filename copy.
+
+	* pango/pangoxft-fontmap.c (pango_xft_font_map_load_font):
+	Don't leak matched pattern
+
 Mon Nov 26 18:17:00 2001  Owen Taylor  <otaylor@redhat.com>
 
 	* tests/Makefile.am tests/gen-all-unicode.c: Instead

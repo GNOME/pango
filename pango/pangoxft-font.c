@@ -478,7 +478,7 @@ pango_xft_font_get_coverage (PangoFont     *font,
 	pango_coverage_set (coverage, i, PANGO_COVERAGE_EXACT);
     }
 
-  _pango_xft_font_map_set_coverage (xfont->fontmap, g_strdup (filename), coverage);
+  _pango_xft_font_map_set_coverage (xfont->fontmap, filename, coverage);
       
   return coverage;
 }
