@@ -42,23 +42,6 @@ Charset charsets[] = {
   { 18, "ISO-10646",    "iso10646-1",      conv_ucs4 }
 };
 
-static PangoEngineRange basic_ranges[] = {
-  /* Language characters */
-  { 0x0000, 0x02af, "*" },
-  { 0x02b0, 0x02ff, "" },
-  { 0x0380, 0x058f, "*" },
-  { 0x0591, 0x05f4, "*" }, /* Hebrew */
-  { 0x060c, 0x06f9, "" }, /* Arabic */
-  { 0x0e01, 0x0e5b, "" },  /* Thai */
-  { 0x10a0, 0x10ff, "*" }, /* Georgian */
-  { 0x1200, 0x16ff, "*" }, /* Ethiopic,Cherokee,Canadian,Ogham,Runic */
-  { 0x1e00, 0x1fff, "*" },
-  { 0x2000, 0x9fff, "*" },
-  { 0xac00, 0xd7a3, "kr" },
-  { 0xf900, 0xfa0b, "kr" },
-  { 0xff00, 0xffe3, "*" }
-};
-
 const guint32 char_mask_map[] = {
   0,
   ENC_ISO_8859_10|ENC_ISO_8859_1|ENC_ISO_8859_13|ENC_ISO_8859_14|ENC_ISO_8859_15|ENC_ISO_8859_2|ENC_ISO_8859_3|ENC_ISO_8859_4|ENC_ISO_8859_5|ENC_ISO_8859_6|ENC_ISO_8859_7|ENC_ISO_8859_8|ENC_ISO_8859_9|ENC_KOI8_R,

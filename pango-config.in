@@ -66,6 +66,9 @@ while test $# -gt 0; do
     pangox)
       lib_pangox=yes
       ;;
+    pangoxft)
+      lib_pangoxft=yes
+      ;;
     *)
       usage 1 1>&2
       ;;
@@ -89,6 +92,9 @@ if test "$echo_libs" = "yes"; then
 	libs="-lpango @FRIBIDI_LIBS@ @GLIB_LIBS@"
 	if test "$lib_pangox" = "yes"; then
 		libs="@X_LIBS@ -lpangox $libs"
+	fi
+	if test "$lib_pangoxft" = "yes"; then
+		libs="@XFT_LIBS@ -lpangoxft $libs"
 	fi
 	echo -L@libdir@ $libs 
 fi

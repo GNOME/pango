@@ -8,9 +8,19 @@ endif
 INCLUDES = 					\
 	-DSYSCONFDIR=\"$(sysconfdir)\" 		\
 	-DLIBDIR=\"$(libdir)\" 			\
+	$(X_CFLAGS)				\
 	-I$(top_srcdir)
 
-lib_LTLIBRARIES = libpango.la libpangox.la
+if HAVE_XFT
+XFT_HFILES=pangoxft.h
+XFT_BUILD_LIBS=libpangoxft.la
+else
+XFT_HFILES=
+XFT_BUILD_LIBS=
+endif
+
+lib_LTLIBRARIES = libpango.la libpangox.la $(XFT_BUILD_LIBS)
+
 bin_PROGRAMS = pango-querymodules
 
 libpango_la_SOURCES = 	   \
@@ -53,7 +63,14 @@ libpango_la_LIBADD = mini-fribidi/libmini-fribidi.la
 endif
 
 libpangox_la_LDFLAGS = -release $(VERSION)
-libpangox_la_LIBADD = $(INCLUDED_MODULES)
+libpangox_la_LIBADD = $(INCLUDED_MODULES) $(X_LIBS)
+
+libpangoxft_la_SOURCES =   	\
+	pangoxft-font.c		\
+	pangoxft-fontmap.c
+
+libpangoxft_la_LIBADD = $(INCLUDED_MODULES) $(XFT_LIBS)
+libpangoxft_la_LDFLAGS = -release $(VERSION)
 
 pangoincludedir=$(includedir)/pango-1.0/pango
 
@@ -73,14 +90,19 @@ pangoinclude_HEADERS = 	   \
 	pango-tabs.h	   \
 	pango-types.h	   \
 	pango-utils.h	   \
-	pangox.h	
+	pangox.h	   \
+	$(XFT_HFILES) 
 
 #
 # As a temporary hack, we pull in libpangox here so that we can link
 #
 pango_querymodules_SOURCES = \
 	querymodules.c
+if HAVE_XFT
+pango_querymodules_LDADD = libpangox.la libpangoxft.la libpango.la $(GLIB_LIBS) $(FRIBIDI_LIBS) $(XFT_LIBS)
+else
 pango_querymodules_LDADD = libpangox.la libpango.la $(GLIB_LIBS) $(FRIBIDI_LIBS) $(X_LIBS)
+endif
 
 EXTRA_DIST =			\
 	module-defs.c.win32	\
@@ -105,16 +127,3 @@ EXTRA_DIST =			\
 	pangoft2.rc.in		\
 	pangowin32.rc		\
 	pangowin32.rc.in
-
-
-makefile.mingw: $(top_builddir)/config.status $(top_srcdir)/pango/makefile.mingw.in
-	cd $(top_builddir) && CONFIG_FILES=pango/$@ CONFIG_HEADERS= $(SHELL) ./config.status
-
-pango2.rc: $(top_builddir)/config.status $(top_srcdir)/pango/pango.rc.in
-	cd $(top_builddir) && CONFIG_FILES=pango/$@ CONFIG_HEADERS= $(SHELL) ./config.status
-
-pangoft2.rc: $(top_builddir)/config.status $(top_srcdir)/pango/pangoft2.rc.in
-	cd $(top_builddir) && CONFIG_FILES=pango/$@ CONFIG_HEADERS= $(SHELL) ./config.status
-
-pangowin32.rc: $(top_builddir)/config.status $(top_srcdir)/pango/pangowin32.rc.in
-	cd $(top_builddir) && CONFIG_FILES=pango/$@ CONFIG_HEADERS= $(SHELL) ./config.status

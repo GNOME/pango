@@ -22,6 +22,6 @@
   }; \
   static gint n_script_engines = G_N_ELEMENTS (script_engines);
 
-#define pango_indic_get_char ( (chars) >= (end) ? 0 : *(chars) )
+#define pango_indic_get_char(chars,end) ( (chars) >= (end) ? 0 : *(chars) )
 
 #endif

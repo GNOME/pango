@@ -1,4 +1,4 @@
-/* pANGO
+/* Pango
  * thai.c:
  *
  * Copyright (C) 1999 Red Hat Software
@@ -26,6 +26,8 @@
  * Boston, MA 02111-1307, USA.
  */
 
+
+#include <string.h>
 
 #include <glib.h>
 #include <string.h>
@@ -238,40 +240,40 @@ static const gint TAC_char_class[256] = {
 static const gchar TAC_compose_and_input_check_type_table[17][17] = {
       /* Cn */ /* 0,   1,   2,   3,   4,   5,   6,   7,
                   8,   9,   A,   B,   C,   D,   E,   F       */
-  /* Cn-1 00 */	'X', 'A', 'A', 'A', 'A', 'A', 'A', 'R',
-                'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R',
-  /* 10 */      'X', 'A', 'A', 'A', 'S', 'S', 'A', 'R',
-                'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R',
-  /* 20 */      'X', 'A', 'A', 'A', 'A', 'S', 'A', 'C',
-                'C', 'C', 'C', 'C', 'C', 'C', 'C', 'C', 'C',
-  /* 30 */      'X', 'S', 'A', 'S', 'S', 'S', 'S', 'R',
-                'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R',
-  /* 40 */      'X', 'S', 'A', 'A', 'S', 'S', 'A', 'R',
-                'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R',
-  /* 50 */      'X', 'A', 'A', 'A', 'A', 'S', 'A', 'R',
-                'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R',
-  /* 60 */      'X', 'A', 'A', 'A', 'S', 'A', 'S', 'R',
-                'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R',
-  /* 70 */      'X', 'A', 'A', 'A', 'S', 'S', 'A', 'R',
-                'R', 'R', 'C', 'C', 'R', 'R', 'R', 'R', 'R',
-  /* 80 */      'X', 'A', 'A', 'A', 'S', 'S', 'A', 'R',
-                'R', 'R', 'C', 'R', 'R', 'R', 'R', 'R', 'R',
-  /* 90 */      'X', 'A', 'A', 'A', 'S', 'S', 'A', 'R',
-                'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R',
-  /* A0 */      'X', 'A', 'A', 'A', 'A', 'A', 'A', 'R',
-                'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R',
-  /* B0 */      'X', 'A', 'A', 'A', 'S', 'S', 'A', 'R',
-                'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R',
-  /* C0 */      'X', 'A', 'A', 'A', 'S', 'S', 'A', 'R',
-                'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R',
-  /* D0 */      'X', 'A', 'A', 'A', 'S', 'S', 'A', 'R',
-                'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R',
-  /* E0 */      'X', 'A', 'A', 'A', 'S', 'S', 'A', 'R',
-                'R', 'R', 'C', 'C', 'R', 'R', 'R', 'R', 'R',
-  /* F0 */      'X', 'A', 'A', 'A', 'S', 'S', 'A', 'R',
-                'R', 'R', 'C', 'R', 'R', 'R', 'R', 'R', 'R',
-                'X', 'A', 'A', 'A', 'S', 'S', 'A', 'R',
-                'R', 'R', 'C', 'R', 'C', 'R', 'R', 'R', 'R'
+  /* Cn-1 00 */	{ 'X', 'A', 'A', 'A', 'A', 'A', 'A', 'R',
+                'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R' },
+  /* 10 */      { 'X', 'A', 'A', 'A', 'S', 'S', 'A', 'R',
+                'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R' },
+  /* 20 */      { 'X', 'A', 'A', 'A', 'A', 'S', 'A', 'C',
+                'C', 'C', 'C', 'C', 'C', 'C', 'C', 'C', 'C' },
+  /* 30 */      {'X', 'S', 'A', 'S', 'S', 'S', 'S', 'R',
+                'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R' },
+  /* 40 */      { 'X', 'S', 'A', 'A', 'S', 'S', 'A', 'R',
+                'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R' },
+  /* 50 */      { 'X', 'A', 'A', 'A', 'A', 'S', 'A', 'R',
+                'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R' },
+  /* 60 */      { 'X', 'A', 'A', 'A', 'S', 'A', 'S', 'R',
+                'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R' },
+  /* 70 */      { 'X', 'A', 'A', 'A', 'S', 'S', 'A', 'R',
+                'R', 'R', 'C', 'C', 'R', 'R', 'R', 'R', 'R' },
+  /* 80 */      { 'X', 'A', 'A', 'A', 'S', 'S', 'A', 'R',
+                'R', 'R', 'C', 'R', 'R', 'R', 'R', 'R', 'R' },
+  /* 90 */      { 'X', 'A', 'A', 'A', 'S', 'S', 'A', 'R',
+                'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R' },
+  /* A0 */      { 'X', 'A', 'A', 'A', 'A', 'A', 'A', 'R',
+                'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R' },
+  /* B0 */      { 'X', 'A', 'A', 'A', 'S', 'S', 'A', 'R',
+                'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R' },
+  /* C0 */      { 'X', 'A', 'A', 'A', 'S', 'S', 'A', 'R',
+                'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R' },
+  /* D0 */      { 'X', 'A', 'A', 'A', 'S', 'S', 'A', 'R',
+                'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R' },
+  /* E0 */      { 'X', 'A', 'A', 'A', 'S', 'S', 'A', 'R',
+                'R', 'R', 'C', 'C', 'R', 'R', 'R', 'R', 'R' },
+  /* F0 */      { 'X', 'A', 'A', 'A', 'S', 'S', 'A', 'R',
+                'R', 'R', 'C', 'R', 'R', 'R', 'R', 'R', 'R' },
+                { 'X', 'A', 'A', 'A', 'S', 'S', 'A', 'R',
+ 	        'R', 'R', 'C', 'R', 'C', 'R', 'R', 'R', 'R' }
 };
 
 typedef struct {
@@ -439,10 +441,10 @@ add_glyph (ThaiFontInfo     *font_info,
 
 static gint
 get_adjusted_glyphs_list (ThaiFontInfo *font_info,
-		                  gunichar *cluster,
-		                  gint num_chrs,
-		                  PangoGlyph **glyph_lists,
-				  const ThaiShapeTable *shaping_table)
+			  gunichar *cluster,
+			  gint num_chrs,
+			  PangoGlyph *glyph_lists,
+			  const ThaiShapeTable *shaping_table)
 {
   switch (num_chrs)
     {
@@ -665,7 +667,7 @@ static gint
 get_glyphs_list (ThaiFontInfo	*font_info,
 		 gunichar	*cluster,
 		 gint		num_chrs,
-		 PangoGlyph	**glyph_lists)
+		 PangoGlyph	*glyph_lists)
 {
   PangoGlyph glyph;
   gint xtis_index;
@@ -737,7 +739,7 @@ add_cluster (ThaiFontInfo	*font_info,
   gint num_glyphs;
   gint i;
   
-  num_glyphs = get_glyphs_list(font_info, cluster, num_chrs, &glyphs_list);
+  num_glyphs = get_glyphs_list(font_info, cluster, num_chrs, glyphs_list);
   for (i=0; i<num_glyphs; i++)
        add_glyph (font_info, glyphs, cluster_start, glyphs_list[i],
 	    		i == 0 ? FALSE : TRUE);
@@ -758,12 +760,15 @@ is_wtt_composible (gunichar cur_wc, gunichar nxt_wc)
       case 'C':
         return TRUE;
     }
+
+  g_assert_not_reached ();
+  return FALSE;
 }
 
 static const char *
 get_next_cluster(const char	*text,
 		 gint		length,
-		 gunichar	**cluster,
+		 gunichar       *cluster,
 		 gint		*num_chrs)
 {  
   const char *p;
@@ -808,11 +813,6 @@ thai_engine_shape (PangoFont        *font,
   gunichar cluster[MAX_CLUSTER_CHRS];
   gint num_chrs;
 
-  gunichar base = 0;
-  gunichar group1 = 0;
-  gunichar group2 = 0;
-  int cluster_start = 0;
-
   pango_glyph_string_set_size (glyphs, 0);
 
   font_info = get_font_info (font);
@@ -821,7 +821,7 @@ thai_engine_shape (PangoFont        *font,
   while (p < text + length)
     {
 	log_cluster = p;
-	p = get_next_cluster (p, text + length - p, &cluster, &num_chrs);
+	p = get_next_cluster (p, text + length - p, cluster, &num_chrs);
 	add_cluster (font_info, glyphs, log_cluster - text, cluster, num_chrs);
     }
 }
