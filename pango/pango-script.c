@@ -327,10 +327,12 @@ pango_script_iter_next (PangoScriptIter *iter)
 	   * if this character is a close paired character,
 	   * pop it from the stack
 	   */
-	  if (pair_index >= 0 && !IS_OPEN (pair_index) != 0 && iter->paren_sp >= 0)
+	  if (pair_index >= 0 && !IS_OPEN (pair_index) && iter->paren_sp >= 0)
 	    {
 	      iter->paren_sp--;
-	      start_sp--;
+	      
+	      if (iter->paren_sp < start_sp)
+		start_sp = iter->paren_sp;
             }
 	}
       else

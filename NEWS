@@ -1,7 +1,14 @@
 Overview of changes between 1.3.0 and 1.3.1
 ===========================================
+* Support non-Unicode font encodings when supported by fontconfig
+  [Sven Neumann]
+* Draw 6-digit hex boxes for > U+FFFF [Noah Levitt]
+* Update to latest fribidi [Noah]
+* Honor U+2028 LINE SEPARATOR [Noah]
 * Fix a problem with iteration by chars [Mariano Suárez-Alvarez]
-* Misc bug and build fixes [Martin Kretzschmar, Padraig O'Briain]
+* Misc bug and build fixes [Jeff Bonggren, Martin Kretzschmar, 
+  Noah, Sven Neumann, Padraig O'Briain, Manish Singh, 
+  Morten Welinder]
 * Fix header file includes to work with recent FreeType.
 
 Overview of changes between 1.2.x and 1.3.0
