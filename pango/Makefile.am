@@ -27,7 +27,6 @@ INCLUDES =						\
 	$(PANGO_DEBUG_FLAGS)				\
 	$(GLIB_CFLAGS)					\
 	$(XFT_CFLAGS)					\
-	$(FONTCONFIG_CFLAGS)				\
 	$(FREETYPE_CFLAGS)				\
 	$(X_CFLAGS)					\
 	-I$(top_srcdir)
@@ -183,7 +182,7 @@ lib_LTLIBRARIES += libpangoft2-1.0.la
 endif
 
 libpangoft2_1_0_la_LDFLAGS = -version-info $(LT_VERSION_INFO) $(no_undefined)
-libpangoft2_1_0_la_LIBADD = opentype/libpango-ot.la libpango-$(PANGO_API_VERSION).la $(INCLUDED_FT2_MODULES) $(FONTCONFIG_LIBS) $(GLIB_LIBS)
+libpangoft2_1_0_la_LIBADD = opentype/libpango-ot.la libpango-$(PANGO_API_VERSION).la $(INCLUDED_FT2_MODULES) $(FREETYPE_LIBS) $(GLIB_LIBS)
 libpangoft2_1_0_la_DEPENDENCIES = libpango-$(PANGO_API_VERSION).la $(INCLUDED_FT2_MODULES)
 
 libpangoft2_1_0_la_SOURCES =   	\

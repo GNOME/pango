@@ -8,7 +8,6 @@ INCLUDES =				\
 	-I$(top_srcdir)			\
 	$(QT_INCLUDES)			\
 	$(GLIB_CFLAGS)			\
-	$(FONTCONFIG_CFLAGS)		\
 	$(FREETYPE_CFLAGS)
 
 ###################################################
