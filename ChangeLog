@@ -1,3 +1,7 @@
+Thu Jun  1 13:04:06 CEST 2000 Paolo Molaro <lupus@debian.org>
+
+	* configure.in: look for qt also in /usr/lib/qt2.
+
 Wed May 31 10:46:53 2000  Owen Taylor  <otaylor@redhat.com>
 
 	* configure.in: Release 0.11
