@@ -1,3 +1,30 @@
+2002-05-26  Tor Lillqvist  <tml@iki.fi>
+
+	* pango-zip.sh.in: Use complete PANGO_VERSION in zip file
+	names.
+
+	* pango/Makefile.am: (Win32) Compile resource files and link with
+	them.
+
+	* pango/pango.rc.in
+	* pango/pangoft2.rc.in
+	* pango/pangowin32.rc.in: Include also the micro version number.
+
+	* pango/pangowin32-fontcache.c (logfont_hash): Use absolute value
+	of lfHeight.
+
+	* pango/pangowin32-fontmap.c (pango_win32_font_map_for_display):
+	Instead of HORZSIZE which is Windows idea of physical monitor
+	width (but which can be *very* wrong), use LOGPIXELSY (the
+	"logical" dpi). This can be set by the user by choosing "small
+	fonts", "large fonts", or a custom dpi in the Display Settings.
+	Thanks to Joaquin Cuenca Abela.
+
+	(pango_win32_make_matching_logfont): Set lfHeight to the negative
+	of the requested size. Positive lfHeight indicates "cell height",
+	negative "character height" (?), which is closer to what we want,
+	says Joaquin Cuenca Abela.
+
 Tue May 21 15:27:41 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* modules/basic/tables-big.i: Fix C++ comment.
