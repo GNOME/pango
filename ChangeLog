@@ -1,3 +1,8 @@
+Sun Aug 20 13:45:08 2000  Owen Taylor  <otaylor@redhat.com>
+
+	* TODO.xml TODO: Move most all of the TODO items here to the XML file. 
+	This needs to be built using the Python script gtk+/docs/make-todo.
+
 2000-08-20  Tor Lillqvist  <tml@iki.fi>
 
 	* pango/pango-utils.c (pango_parse_*): Add parameter telling

@@ -1,56 +1,6 @@
-Shaping
-=======
-
-Layout Driver
-=============
-
-The PangoLayout object is a highlevel driver that takes an attributed
-string and produces lines of glyphs.
-
-* Figure out better ways of doing line breaks. (This may involve
-  implementing the TeX/Raph x0-x1 stuff for line breaks.)
-
-* Add spacing parameter as illustrated; this should be a quick
-  (10 minute) addition.
-
-* pango_layout_context_changed() is a hack. Either the context
-  should have change-notification, or else the layout should 
-  make a copy of the context when the context is set.
-
-* optimize right alignment for width == -1 and only a single 
-  line. (Currently this causes a useless call to gtk_layout_get_extents.)
-
-X rendering
-===========
-
-* Right now we assume a single resolution for all fonts on a display;
-  but in theory, the resolution could be per-screen. To solve 
-  this, we would probably want to add a window argument to 
-  pango_x_get_context() and then have some sort of X specific font 
-  loading interface.
-
-* It is not clear that X is interpreting the ink_rect the same way
-  as we are. There is a bit of fudging in the underline drawing
-  code to deal with this and make the underlines look symetric.
-
-* pangox.c/get_font_metrics_from_string() needs to gutted and
-  replaced with using pango_itemize(); to support this, we need 
-  the ability to specifiy a particular font to use when itemizing.
-  This probably means adding a attribute type which contains
-  a PangoFont *, and overrides the description.
-
-* we don't handle the case where the set of fonts on the server
-  changes, either for the cached list of fonts, or for for the
-  information cached on the PANGO_COVERAGE_WIN on the X server.
-
-Other rendering engines
-=======================
-
-* Somebody should start working on a libart font-system / renderer
-  soon, to make sure that the interfaces are suitable.
-
-* FreeType-2.0 support could be very interesting, with the OpenType 
-  that it has.
+[ All the important TODO items have been moved to TODO.xml. These
+  are the remaining things where I'm not really sure what I was
+  thinking about or not sure that it still is a good idea ]
 
 Engines
 =======
@@ -66,35 +16,11 @@ Language Modules
   
  * The clusters set by the current modules need to be set.
 
- * Tamil module should be switched over to libunicode from utils.c stuff.
-
-Documentation
-=============
-
-* Much or all of the X Fonts document from pango.org needs to be moved
-  into the API reference.
-
-Fonts
-=====
-
-* Add handling for baseline adjustment
-
-* pango_context_list_fonts() does not properly suppress duplicates
-  when multiple font maps are involved
-
 General
 =======
 
-* unicode_next_utf8() is extensively used on strings which are not
-  guaranteed to be NULL terminated. This is a BUG. Once I agree
-  with Tom Tromey on a change to libunicode to make the operation
-  more efficient, these need to be gone through one-by-one.
-
-* Remove the extraneous font argument from the script_shape virtual function
-  in ShapeEngine.
-
-* rename pango_context_set_size() to pango_context_set_font_size()
-* settle on either _free or _destroy
+* In some places, we iterate assuming NULL termination through
+  strings that might not be NULL terminated. (pango_itemize()?)
 
 * PangoAttrList currently takes the policy of "most recent wins"
   when multiple attributes of the same type are present for a range. 
@@ -102,37 +28,9 @@ General
   also had a depth/priority and "most recent wins" only applied
   for attributes of the same priority. 
 
-* Add a "make test" target to examples/, add environment variables
-  to point to module and font alias files, remove the code that
-  loads these from the current directory.  (There are security
-  implications with the current stuff)
-
-* Report errors from functions, these errors include such things.
-
-  - Invalid string
-  - Font does not match 
-
- Probably the right thing to do here is to use something very close
- to the GConf API ... see Havoc's GException proposal.
-
 * Allow UTF8 strings with embedded NULLs.
-
-* Write a small default shaping engine that only
-  draws a placeholder character ... and does that in
-  a way that always works.
-
-* s/num_chars/n_chars/ etc. (Always use n_ as enumeration prefix)
-
-* Fix handling of 'trailing' in x_to_index() to handle clusters 
-  with more than one character where positioning is not allowed
-  inside the cluster. Uniscript sets trailing as 0 or number of j
-  characters in the glyph. (Trailing is currently a boolean
-  for us.)
 
 * pango_font_get_metrics() currently takes a language tag, but
   really uses that to find out one or more _scripts_; should we
   define script tags and put those (optionally?) in the 
   interface?
-
-* pango_glyph_string_set_size() does not handle the fact that 
-  n_glyphs can be less than n_chars!
