@@ -281,17 +281,20 @@ pango_glyph_string_get_logical_widths (PangoGlyphString *glyphs,
   int last_cluster = 0;
   int width = 0;
   int last_cluster_width = 0;
-  const char *p = text;
+  const char *p = text;		/* Points to start of current cluster */
   
   for (i=0; i<=glyphs->num_glyphs; i++)
     {
       int glyph_index = (embedding_level % 2 == 0) ? i : glyphs->num_glyphs - i - 1;
-      
+
+      /* If this glyph belongs to a new cluster, or we're at the end, find
+       * the start of the next cluster, and assign the widths for this cluster.
+       */
       if (i == glyphs->num_glyphs || p != text + glyphs->log_clusters[glyph_index])
 	{
 	  int next_cluster = last_cluster;
 	  
-	  if (glyph_index > 0 && glyph_index < glyphs->num_glyphs)
+	  if (i < glyphs->num_glyphs)
 	    {
 	      while (p < text + glyphs->log_clusters[glyph_index])
 		{
@@ -316,7 +319,7 @@ pango_glyph_string_get_logical_widths (PangoGlyphString *glyphs,
 	}
       
       if (i < glyphs->num_glyphs)
-	width += glyphs->glyphs[i].geometry.width;
+	width += glyphs->glyphs[glyph_index].geometry.width;
     }
 }
 

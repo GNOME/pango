@@ -1,3 +1,9 @@
+Thu Jul 24 15:02:56 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/glyphstring.c (pango_glyph_string_get_logical_widths): 
+	Fix up right-to-left case. (Based on patch from
+	Damon Chaplin, #117325)
+
 Thu Jul 24 14:35:48 2003  Owen Taylor  <otaylor@redhat.com>
  
  	* pango/pango-utils.c (pango_language_matches): Increment
