@@ -348,7 +348,7 @@ pango_x_shutdown_display (Display *display)
 	{
 	  fontmaps = g_list_delete_link (fontmaps, tmp_list);
 	  pango_x_fontmap_cache_clear (xfontmap);
-	  g_object_unref (G_OBJECT (xfontmap));
+	  g_object_unref (xfontmap);
 
 	  return;
 	}
@@ -482,7 +482,7 @@ pango_x_font_map_load_font (PangoFontMap               *fontmap,
 		{
 		  result = (PangoFont *)xfont;
 
-		  g_object_ref (G_OBJECT (result));
+		  g_object_ref (result);
 		  if (xfont->in_cache)
 		    pango_x_fontmap_cache_remove (fontmap, xfont);
 		  
@@ -1366,10 +1366,10 @@ pango_x_fontmap_cache_add (PangoFontMap    *fontmap,
   if (xfontmap->freed_fonts->length == MAX_FREED_FONTS)
     {
       PangoXFont *old_font = g_queue_pop_tail (xfontmap->freed_fonts);
-      g_object_unref (G_OBJECT (old_font));
+      g_object_unref (old_font);
     }
 
-  g_object_ref (G_OBJECT (xfont));
+  g_object_ref (xfont);
   g_queue_push_head (xfontmap->freed_fonts, xfont);
   xfont->in_cache = TRUE;
 }
@@ -1392,7 +1392,7 @@ pango_x_fontmap_cache_remove (PangoFontMap    *fontmap,
   xfontmap->freed_fonts->length--;
   xfont->in_cache = FALSE;
 
-  g_object_unref (G_OBJECT (xfont));
+  g_object_unref (xfont);
 }
 
 static void

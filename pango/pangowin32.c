@@ -218,7 +218,7 @@ pango_win32_font_new (PangoFontMap  *fontmap,
   result = (PangoWin32Font *)g_object_new (PANGO_TYPE_WIN32_FONT, NULL);
   
   result->fontmap = fontmap;
-  g_object_ref (G_OBJECT (fontmap));
+  g_object_ref (fontmap);
 
   result->size = size;
   pango_win32_make_matching_logfont (fontmap, lfp, size,
@@ -453,8 +453,8 @@ pango_win32_font_get_metrics (PangoFont     *font,
       metrics->approximate_digit_width = extents.width / 10.0;
 
       pango_font_description_free (font_desc);
-      g_object_unref (G_OBJECT (layout));
-      g_object_unref (G_OBJECT (context));
+      g_object_unref (layout);
+      g_object_unref (context);
     }
 
   return metrics;
@@ -514,7 +514,7 @@ pango_win32_font_finalize (GObject *object)
  
   g_hash_table_destroy (win32font->glyph_info);
  
-  g_object_unref (G_OBJECT (win32font->fontmap));
+  g_object_unref (win32font->fontmap);
 
   G_OBJECT_CLASS (parent_class)->finalize (object);
 }

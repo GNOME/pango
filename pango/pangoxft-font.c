@@ -138,7 +138,7 @@ _pango_xft_font_new (PangoFontMap               *fontmap,
   xfont->fontmap = fontmap;
   xfont->font_pattern = pattern;
   
-  g_object_ref (G_OBJECT (fontmap));
+  g_object_ref (fontmap);
   xfont->description = _pango_xft_font_desc_from_pattern (pattern, TRUE);
   xfont->xft_font = NULL;
 
@@ -480,8 +480,8 @@ pango_xft_font_get_metrics (PangoFont     *font,
       
 	  info->metrics->approximate_digit_width = extents.width / 10;
 
-	  g_object_unref (G_OBJECT (layout));
-	  g_object_unref (G_OBJECT (context));
+	  g_object_unref (layout);
+	  g_object_unref (context);
 	}
     }
 

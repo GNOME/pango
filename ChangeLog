@@ -1,3 +1,11 @@
+Mon Oct 14 15:39:41 2002  Manish Singh  <yosh@gimp.org>
+
+	* pango/pango-context.c pango/pango-layout.c pango/pangoft2.c
+	pango/pangowin32-fontmap.c pango/pangowin32.c pango/pangox-fontmap.c
+	pango/pangox.c pango/pangoxft-font.c pango/pangoxft-fontmap.c
+	pango/testfonts.c pango/opentype/pango-ot-ruleset.c:
+	Get rid of unnecessary casts for g_object_{ref,unref}
+
 2002-10-15  Matthias Clasen  <maclas@gmx.de>
 
 	* docs/Makefile.am: Dist the xml/*.xml, not

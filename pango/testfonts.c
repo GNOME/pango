@@ -125,7 +125,7 @@ int main (int argc, char **argv)
 
       pango_coverage_unref (coverage);
       pango_font_description_free (desc);
-      g_object_unref (G_OBJECT (font));
+      g_object_unref (font);
     }
 
   pango_font_map_list_families (fontmap, &families, &nb);
@@ -208,7 +208,7 @@ int main (int argc, char **argv)
           item = pango_item_new ();
 
           item->analysis.shape_engine = pango_font_find_shaper (font, lang, s[0]);
-          item->analysis.font = g_object_ref (G_OBJECT (font));
+          item->analysis.font = g_object_ref (font);
           pango_shape ( s, sizeof(s), &(item->analysis), glyphs);
 
           if (hdc) 
@@ -237,7 +237,7 @@ int main (int argc, char **argv)
           pango_item_free (item);
 
           pango_coverage_unref (coverage); 
-          g_object_unref (G_OBJECT (font));
+          g_object_unref (font);
         }
       pango_font_description_free (desc);
     }

@@ -252,7 +252,7 @@ pango_xft_shutdown_display (Display *display,
       
       xftfontmap->display = NULL;
       xftfontmap->closed = TRUE;
-      g_object_unref (G_OBJECT (fontmap));
+      g_object_unref (fontmap);
     }
 }  
 

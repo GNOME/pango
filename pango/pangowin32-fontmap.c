@@ -271,7 +271,7 @@ pango_win32_shutdown_display (void)
   if (fontmap)
     {
       pango_win32_fontmap_cache_clear (fontmap);
-      g_object_unref (G_OBJECT (fontmap));
+      g_object_unref (fontmap);
 
       fontmap = NULL;
     }
@@ -471,7 +471,7 @@ pango_win32_font_map_load_font (PangoFontMap               *fontmap,
 		  PING (("size matches"));
 		  result = (PangoFont *)win32font;
 
-		  g_object_ref (G_OBJECT (result));
+		  g_object_ref (result);
 		  if (win32font->in_cache)
 		    pango_win32_fontmap_cache_remove (fontmap, win32font);
 		  
@@ -1010,10 +1010,10 @@ pango_win32_fontmap_cache_add (PangoFontMap   *fontmap,
   if (win32fontmap->freed_fonts->length == MAX_FREED_FONTS)
     {
       PangoWin32Font *old_font = g_queue_pop_tail (win32fontmap->freed_fonts);
-      g_object_unref (G_OBJECT (old_font));
+      g_object_unref (old_font);
     }
 
-  g_object_ref (G_OBJECT (win32font));
+  g_object_ref (win32font);
   g_queue_push_head (win32fontmap->freed_fonts, win32font);
   win32font->in_cache = TRUE;
 }
@@ -1036,7 +1036,7 @@ pango_win32_fontmap_cache_remove (PangoFontMap   *fontmap,
   win32fontmap->freed_fonts->length--;
   win32font->in_cache = FALSE;
 
-  g_object_unref (G_OBJECT (win32font));
+  g_object_unref (win32font);
 }
 
 static void

@@ -107,7 +107,7 @@ _pango_ft2_font_new (PangoFontMap    *fontmap,
   ft2font->fontmap = fontmap;
   ft2font->font_pattern = pattern;
   
-  g_object_ref (G_OBJECT (fontmap));
+  g_object_ref (fontmap);
   ft2font->description = _pango_ft2_font_desc_from_pattern (pattern, TRUE);
   ft2font->face = NULL;
 
@@ -670,8 +670,8 @@ pango_ft2_font_get_metrics (PangoFont     *font,
       
       info->metrics->approximate_digit_width = extents.width / 10;
 
-      g_object_unref (G_OBJECT (layout));
-      g_object_unref (G_OBJECT (context));
+      g_object_unref (layout);
+      g_object_unref (context);
     }
 
   return pango_font_metrics_ref (info->metrics);
@@ -729,7 +729,7 @@ pango_ft2_font_finalize (GObject *object)
   pango_font_description_free (ft2font->description);
   FcPatternDestroy (ft2font->font_pattern);
   
-  g_object_unref (G_OBJECT (ft2font->fontmap));
+  g_object_unref (ft2font->fontmap);
 
   g_slist_foreach (ft2font->metrics_by_lang, (GFunc)free_metrics_info, NULL);
   g_slist_free (ft2font->metrics_by_lang);  

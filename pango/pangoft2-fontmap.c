@@ -272,7 +272,7 @@ pango_ft2_shutdown_display (void)
     {
       pango_fc_font_map_cache_clear (pango_ft2_global_fontmap);
       
-      g_object_unref (G_OBJECT (pango_ft2_global_fontmap));
+      g_object_unref (pango_ft2_global_fontmap);
       
       pango_ft2_global_fontmap = NULL;
     }

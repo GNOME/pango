@@ -417,7 +417,7 @@ pango_x_font_new (PangoFontMap *fontmap, const char *spec, int size)
   result = (PangoXFont *)g_type_create_instance (PANGO_TYPE_X_FONT);
   
   result->fontmap = fontmap;
-  g_object_ref (G_OBJECT (fontmap));
+  g_object_ref (fontmap);
   result->display = pango_x_fontmap_get_display (fontmap);
 
   result->fonts = g_strsplit(spec, ",", -1);
@@ -1323,7 +1323,7 @@ pango_x_font_finalize (GObject *object)
   if (xfont->xface)
     pango_x_face_remove (xfont->xface, (PangoFont *)xfont);
 
-  g_object_unref (G_OBJECT (xfont->fontmap));
+  g_object_unref (xfont->fontmap);
 
   g_strfreev (xfont->fonts);
 

@@ -121,7 +121,7 @@ pango_context_finalize (GObject *object)
   context = PANGO_CONTEXT (object);
 
   if (context->font_map)
-    g_object_unref (G_OBJECT(context->font_map));
+    g_object_unref (context->font_map);
 
   pango_font_description_free (context->font_desc);
   
@@ -161,10 +161,10 @@ pango_context_set_font_map (PangoContext *context,
   g_return_if_fail (!font_map || PANGO_IS_FONT_MAP (font_map));
 
   if (context->font_map)
-    g_object_unref (G_OBJECT (context->font_map));
+    g_object_unref (context->font_map);
 
   if (font_map)
-    g_object_ref (G_OBJECT (font_map));
+    g_object_ref (font_map);
 
   context->font_map = font_map;
 }

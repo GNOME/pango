@@ -232,7 +232,7 @@ pango_layout_finalize (GObject *object)
   pango_layout_clear_lines (layout);
   
   if (layout->context)
-    g_object_unref (G_OBJECT (layout->context));
+    g_object_unref (layout->context);
   
   if (layout->attrs)
     pango_attr_list_unref (layout->attrs);
@@ -268,7 +268,7 @@ pango_layout_new (PangoContext *context)
   layout = PANGO_LAYOUT (g_type_create_instance (pango_layout_get_type ()));
 
   layout->context = context;
-  g_object_ref (G_OBJECT (context));
+  g_object_ref (context);
 
   return layout;
 }
@@ -3457,7 +3457,7 @@ pango_layout_line_get_empty_extents (PangoLayoutLine *line,
 	  logical_rect->y = - pango_font_metrics_get_ascent (metrics);
 	  logical_rect->height = - logical_rect->y + pango_font_metrics_get_descent (metrics);
 
-	  g_object_unref (G_OBJECT (font));
+	  g_object_unref (font);
 	  pango_font_metrics_unref (metrics);
 	}
       else
@@ -4003,7 +4003,7 @@ pango_layout_get_iter (PangoLayout *layout)
   iter = g_new (PangoLayoutIter, 1);
 
   iter->layout = layout;
-  g_object_ref (G_OBJECT (iter->layout));
+  g_object_ref (iter->layout);
 
   pango_layout_check_lines (layout);
   
@@ -4045,7 +4045,7 @@ pango_layout_iter_free (PangoLayoutIter *iter)
   g_slist_foreach (iter->line_extents, (GFunc) g_free, NULL);
   g_slist_free (iter->line_extents);
   pango_layout_line_unref (iter->line);
-  g_object_unref (G_OBJECT (iter->layout));
+  g_object_unref (iter->layout);
   g_free (iter);
 }
 
