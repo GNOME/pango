@@ -1,3 +1,11 @@
+Tue May 27 12:19:53 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* modules/basic/basic-ft2.c: Claim to handle everything
+	as a fallback (#106354, Simon Budig)
+
+	* examples/pangoft2topgm.c (main): Add code to check
+	for "./pangorc" so that it works uninstalled.
+
 Fri May  2 17:20:23 2003  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/mapping.c (pango_glyph_string_x_to_index): 

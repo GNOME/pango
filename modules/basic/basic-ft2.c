@@ -98,9 +98,12 @@ static PangoEngineRange basic_ranges[] = {
    */
 
   /* Halfwidth and Fullwidth Forms (partly) */
-  { 0xff00, 0xffe3, "*" }
+  { 0xff00, 0xffe3, "*" },
 
   /* Not covered: Halfwidth and Fullwidth Forms, Specials */
+
+  /* Claim to handle everything as a fallback */
+  { 0x0000, 0xffff, "" }
 };
 
 static PangoEngineInfo script_engines[] = {

@@ -146,6 +146,9 @@ int main(int argc, char *argv[])
   char *prog_name = g_path_get_basename (argv[0]);
   
   g_type_init();
+
+  if (g_file_test ("./pangorc", G_FILE_TEST_EXISTS))
+    putenv ("PANGO_RC_FILE=./pangorc");
   
   /* Parse command line */
   argp=1;
