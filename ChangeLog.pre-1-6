@@ -1,3 +1,8 @@
+2004-04-05  Anders Carlsson  <andersca@gnome.org>
+
+	* examples/argcontext.c (arg_context_parse): 
+	Handle '--' correctly.
+
 Tue Mar 16 11:24:46 2004  Owen Taylor  <otaylor@redhat.com>
 
 	* === Released 1.4.0 ===

@@ -147,7 +147,7 @@ arg_context_parse (ArgContext *context,
 	  arg = (*argv)[i] + 2;
 
 	  /* '--' terminates list of arguments */
-	  if (arg == 0)
+	  if (*arg == '\0')
 	    {
 	      (*argv)[i] = NULL;
 	      break;
