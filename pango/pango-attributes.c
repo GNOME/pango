@@ -689,13 +689,11 @@ pango_attr_list_get_type (void)
   static GType our_type = 0;
   
   if (our_type == 0)
-    {
-      g_type_init (0);
-      
-      our_type = g_boxed_type_register_static ("PangoAttrList",
-                                               pango_attr_list_copy,
-                                               pango_attr_list_unref);
-    }
+    our_type = g_boxed_type_register_static ("PangoAttrList",
+					     NULL,
+					     pango_attr_list_copy,
+					     pango_attr_list_unref,
+					     FALSE);
 
   return our_type;
 }
@@ -1505,13 +1503,11 @@ pango_color_get_type (void)
   static GType our_type = 0;
   
   if (our_type == 0)
-    {
-      g_type_init (0);
-      
-      our_type = g_boxed_type_register_static ("PangoColor",
-                                               pango_color_copy,
-                                               pango_color_free);
-    }
+    our_type = g_boxed_type_register_static ("PangoColor",
+					     NULL,
+					     pango_color_copy,
+					     pango_color_free,
+					     FALSE);
 
   return our_type;
 }

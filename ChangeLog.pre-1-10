@@ -1,3 +1,10 @@
+Wed Mar  7 09:21:14 2001  Tim Janik  <timj@gtk.org>
+
+	* pango/pango-attributes.c: fixed up g_boxed_type_register_static()
+	since GLib signature changed.
+	
+	* got rid of bogus g_type_init() calls.
+
 2001-02-28  Havoc Pennington  <hp@redhat.com>
 
 	* pango/pango-font.h (struct _PangoFontMetrics): add
