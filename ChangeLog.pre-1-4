@@ -1,3 +1,9 @@
+Sat Jul 26 10:30:24 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/opentype/ftxgpos.c: Fix additional places where 
+	TTO_Err_Not_Covered wasn't considered a successful return 
+	from Get_Class. (From Qt, Lars Knoll)
+
 Sat Jul 26 09:41:22 2003  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/opentype/ftxgsub.c (Lookup_LigatureSubst):
