@@ -82,4 +82,5 @@ EXTRA_DIST = 			\
 all-unicode.txt: gen-all-unicode
 	./gen-all-unicode > all-unicode.txt
 
+CLEANFILES = pango.modules
 DISTCLEANFILES = all-unicode.txt runtests.log

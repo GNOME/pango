@@ -104,6 +104,25 @@ The GObject type for #PangoScript
 @Returns: 
 
 
+<!-- ##### FUNCTION pango_script_get_sample_language ##### -->
+<para>
+
+</para>
+
+@script: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_language_includes_script ##### -->
+<para>
+
+</para>
+
+@language: 
+@script: 
+@Returns: 
+
+
 <!-- ##### FUNCTION pango_script_iter_new ##### -->
 <para>
 

@@ -65,10 +65,12 @@ libpango_1_0_la_SOURCES =      \
 	pango-fontmap.c	       \
 	pango-fontset.c	       \
 	pango-glyph-item.c     \
+	pango-impl-utils.h     \
 	pango-item.c	       \
 	pango-layout.c	       \
 	pango-markup.c	       \
 	pango-script.c	       \
+	pango-script-lang-table.h \
 	pango-script-table.h   \
 	pango-tabs.c	       \
 	pango-utils.c	       \

@@ -1,3 +1,101 @@
+Overview of changes between 1.2.x and 1.3.0
+===========================================
+* Share modules between the FT2 and Xft backend. Export PangoFcFont
+  and PangoFcFontMap base classes so that other fontconfig based
+  backends can be written and use these same modules.
+* Redo module system to use GTypeModule and work much like GTK+ theme
+  engines and input method modules.
+* Change modules to declare coverage by script, rather than by code
+  point. Add a ->covers callback so that modules can dynamically
+  decide whether they can cover a particular codepoint with a given
+  font. (This will allow multiple modules to handle a script for
+  different types fonts.)
+* Complete rewrite of itemization pass. Now uses script information to
+  improve language tags. This solves problems with incorrect language
+  tags resulting in drastically wrong fonts being selected by
+  fontconfig.
+* Add backspace-deletes-character PangoLogAttr; will allow proper
+  deletion behavior for non-Western scripts.  [Noah Levitt]
+* Add pango_fc_font_kern_glyphs(), which speeds up kerning a lot over
+  doing it pair-by-pair. [Soeren Sandmann]. Kern in the Xft backend as
+  well as the FT2 backend.
+* Remove the X font backend, except a minimal set of stubs to maintain
+  binary compatibility.
+* Many improvements to pangoft2topgm to allow displaying PangoMarkup,
+  saving to different file formats, etc.
+* Convert build system to automake-1.7; many cleanups and
+  improvements. [James Henstridge]
+* Documentation additions and improvements [Matthias Clasen, Martin
+  Pool]; add man pages for the included binaries.  [Matthias]
+* Misc bug and build fixes [Josh Beam, Tony Graham, Kaushal Kumar,
+  Noah, Mehran Mehr, Soeren, Morten Welinder]
+* Win32 build fixes [Tor Lillquist, Hans Breuer]
+
+============================================================
+
+Overview of Changes in Pango 1.2.5
+==================================
+* Fix a problem where the indic-xft shaper didn't get linked
+  against all necessary files.
+
+Overview of Changes in Pango 1.2.4
+==================================
+* Win32 [Tor Lillqvist]
+  - Avoid calling Uniscribe when not necessary [Hans Breuer]
+  - Build fixes
+* Indic shaper
+  - Add pre-base-matra fixup code from ICU [Sivaraj Doddannan]
+  - Port of Bengali rendering fix from ICU [Taneem Ahmed]
+* OpenType
+  - Port various fixes by Werner Lemberg from FreeType version
+  - Port various fixes by Lars Knoll from Qt version
+  - Many other bug fixes [Kailash C. Chowksey, Me]
+* Fix bugs in FT2 rendering code [Sven Neumann]
+* Remove Qt-based example program; was causing compilation problems 
+  for a lot of people.
+* Doc fixes [Noah Levitt]
+* Misc bug fixes [Dave Cuthbert, Damon Chaplin, Christophe Fergeau,
+  Tony Graham, Morten Welinder]
+* Build fixes [Sven Neumann, Benedikt Spranger]
+
+Overview of Changes in Pango 1.2.3
+==================================
+* Fix operation with --disable-debug [Jeff Waugh]
+* Improve handling of ink rectangle extents for empty runs
+* Fix problem with keynav at line boundaries for RTL text [Matthias Clasen]
+
+Overview of Changes in Pango 1.2.2
+==================================
+* Cache fontsets for the Xft and FT2 backends, a large speedup for short 
+  strings [Owen Taylor, Soeren Sandmann]
+* Make built in rendering functions, especially the FT2 one,
+   work more like the GDK implementation [Sven Neumann]
+* Add an indic-ft2 module [Kapil Chowskey], 
+  Add a thai-ft2 module [Theppitak Karoonboonyanan]
+* Optimize pango_x_render() by drawing multiple character with
+  a single request when possible [Morten Welinder]
+* Change the handling of attributes that cover only partial glyphs
+  [Owen, Taneem Ahmed, Sunil Mohan Adapa]
+* Fix problems with Arial Unicode and the Opentype code [Owen, Noah Levitt]
+* Fix common crash for fonts missing a GDEF table
+* Fix common portability problem with informative output at end 
+  of configure.
+* Build cleanups and fixes [Tim Mooney, Chris Ross, Akira Tagoh, 
+  Will Partain, James Su]
+* Miscellaneous bug fixes and cleanups [Simon Budig, Rick Jones, 
+  Noah, Padraig O'Briain, Benjamin Otte, Andrey Panov, Federic Zhang]
+* Documentation fixes [Tim, Sven]
+
+Overview of Changes in Pango 1.2.1
+==================================
+* Handle older TrueType Open Arabic fonts.
+* Make Win32 backend handle a common TrueType font bug [Tor Lillqvist]
+* Fix crash with some non-BMP characters [Morten Welinder]
+* Avoid crashing on font descriptions like " 12" [Padraig O'Briain]
+* Minor build fixes [Rich Burridge, Sven Neumann]
+
+============================================================
+
 Changes between 1.1.6 and 1.2.0
 
 * Documentation fixes

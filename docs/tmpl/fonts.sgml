@@ -756,6 +756,15 @@ Returns the type of a #PangoFontMap.
 @n_families: 
 
 
+<!-- ##### FUNCTION pango_font_map_get_shape_engine_type ##### -->
+<para>
+
+</para>
+
+@fontmap: 
+@Returns: 
+
+
 <!-- ##### STRUCT PangoFontset ##### -->
 <para>
 A #PangoFontset represents a set of #PangoFont to use
@@ -805,6 +814,27 @@ a particular #PangoFontset implementation.
 
 @fontset: 
 @Returns: 
+
+
+<!-- ##### USER_FUNCTION PangoFontsetForeachFunc ##### -->
+<para>
+
+</para>
+
+@fontset: 
+@font: 
+@data: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_fontset_foreach ##### -->
+<para>
+
+</para>
+
+@fontset: 
+@func: 
+@data: 
 
 
 <!-- ##### STRUCT PangoFontsetSimple ##### -->

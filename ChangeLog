@@ -1,3 +1,19 @@
+Fri Oct 24 00:09:17 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* === Released 1.3.0 ===
+
+	* pango/module-defs-fc.c.win32 pango/module-defs-fc.c.win32: 
+	Add the -fc version, remove the -ft2 version. Not sure this
+	file is actually needed any more.
+
+	* pango/Makefile.am (libpango_1_0_la_SOURCES): Add 
+	pango-impl-utils.h, pango-script-lang-table.h.
+
+	* docs/Makefile.am (dist-hook-local): Distribute generated
+	manpage.
+
+	* tests/Makefile.am (CLEANFILES): Add pango.modules
+
 Wed Oct 15 17:18:37 2003  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pango-context.c (itemize_state_init): Initialize

@@ -25,7 +25,6 @@ Rendering-system dependent script engines
 </para>
 
 @script_shape: 
-@get_coverage: 
 @covers: 
 
 <!-- ##### MACRO PANGO_ENGINE_TYPE_SHAPE ##### -->

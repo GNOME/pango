@@ -71,6 +71,10 @@ HTML_IMAGES =				\
 # Extra options to supply to gtkdoc-fixref
 FIXXREF_OPTIONS=
 
+include $(top_srcdir)/gtk-doc.make
+
+########################################################################
+
 man_MANS = pango-querymodules.1 
 
 if ENABLE_MAN
@@ -80,17 +84,20 @@ if ENABLE_MAN
 
 endif
 
-include $(top_srcdir)/gtk-doc.make
-
 EXTRA_DIST +=				\
 	layout.fig			\
 	layout.eps			\
 	version.xml.in
 
-
+BUILT_EXTRA_DIST = $(man_MANS)
 
 dist-hook-local:
-	mkdir $(distdir)/TEXT;          \
-	for f in $(srcdir)/TEXT/* ; do  \
-	  test -f $$f && cp -p $$f $(distdir)/TEXT; \
+	files='$(BUILT_EXTRA_DIST)';				\
+	for f in $$files; do					\
+	  if test -f $$f; then d=.; else d=$(srcdir); fi;	\
+	  cp $$d/$$f $(distdir) || exit 1; done;		\
+								\
+	mkdir $(distdir)/TEXT;					\
+	for f in $(srcdir)/TEXT/* ; do				\
+	  test -f $$f && cp -p $$f $(distdir)/TEXT;		\
 	done

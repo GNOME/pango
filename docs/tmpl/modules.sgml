@@ -64,6 +64,17 @@ matches the language tag for this entry's map exactly or just approximately.
 @wc: 
 
 
+<!-- ##### FUNCTION pango_map_get_engines ##### -->
+<para>
+
+</para>
+
+@map: 
+@script: 
+@exact_engines: 
+@fallback_engines: 
+
+
 <!-- ##### FUNCTION pango_module_register ##### -->
 <para>
 
