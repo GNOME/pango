@@ -284,6 +284,8 @@ pango_xft_get_font_map (Display *display,
       if (xfontmap->display == display &&
 	  xfontmap->screen == screen) 
 	return PANGO_FONT_MAP (xfontmap);
+
+      tmp_list = tmp_list->next;
     }
 
   xfontmap = (PangoXftFontMap *)g_object_new (PANGO_TYPE_XFT_FONT_MAP, NULL);
