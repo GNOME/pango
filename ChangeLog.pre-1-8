@@ -1,3 +1,8 @@
+Wed Oct 15 17:18:37 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-context.c (itemize_state_init): Initialize
+	state->lang. (#124047, Morten Welinder)
+
 Tue Oct 14 19:00:17 2003  Owen Taylor  <otaylor@redhat.com>
 
 	* modules/hebrew/hebrew-fc.c (hebrew_engine_shape): 
