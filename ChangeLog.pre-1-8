@@ -1,3 +1,9 @@
+Wed Feb 12 16:41:03 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* modules/hangul/Makefile.am (libpango_hangul_x_la_SOURCES): 
+	Fix typo where xft_sources was used again. (#105219,
+	Chris Ross)
+
 Thu Jan 30 16:41:46 2003  Owen Taylor  <otaylor@redhat.com>
 
         * Makefile.am (EXTRA_DIST): Remove spec.spec.in from

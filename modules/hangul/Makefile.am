@@ -62,7 +62,7 @@ pango_hangul_x_la_LDFLAGS = -export-dynamic -avoid-version -module
 pango_hangul_x_la_SOURCES = $(x_sources)
 pango_hangul_x_la_LIBADD = $(hangul_x_libadd)
 
-libpango_hangul_x_la_SOURCES = $(xft_sources)
+libpango_hangul_x_la_SOURCES = $(x_sources)
 
 pango_hangul_xft_la_LDFLAGS = -export-dynamic -avoid-version -module
 pango_hangul_xft_la_LIBADD = $(hangul_xft_libadd)
