@@ -697,74 +697,88 @@ static PangoEngineShape fallback_shaper = {
   fallback_engine_get_coverage
 };
 
-static PangoFont *
-get_font (PangoFont     **fonts,
-	  PangoCoverage **coverages,
-	  int             n_families,
-	  gunichar        wc)
+/* FIXME: Remove this artificial limit */
+#define MAX_FAMILIES 16
+
+typedef struct _FontSet FontSet;
+
+struct _FontSet
 {
-  PangoFont *result = NULL;
+  int n_families;
+  PangoFont *fonts[MAX_FAMILIES];
+  PangoCoverage *coverages[MAX_FAMILIES];  
+};
+
+#define FONT_SET_INITIALIZER { 0, }
+
+static gint
+font_set_get_font (FontSet  *font_set,
+		   gunichar  wc)
+{
   PangoCoverageLevel best_level = PANGO_COVERAGE_NONE;
 
+  int result = -1;
   int i;
   
-  for (i=0; i<n_families; i++)
+  for (i=0; i < font_set->n_families; i++)
     {
-      if (fonts[i])
+      if (font_set->fonts[i])
 	{
-	  PangoCoverageLevel level = pango_coverage_get (coverages[i], wc);
+	  PangoCoverageLevel level = pango_coverage_get (font_set->coverages[i], wc);
 	  
-	  if (!result || level > best_level)
+	  if (result == -1 || level > best_level)
 	    {
-	      result = fonts[i];
+	      result = i;
 	      best_level = level;
 	    }
 	}
     }
 
-  if (result)
-    g_object_ref (result);
-      
   return result;
 }
 
-/* FIXME: Remove this artificial limit */
-#define MAX_FAMILIES 16
+static void
+font_set_free (FontSet *font_set)
+{
+  int j;
+  
+  for (j=0; j < font_set->n_families; j++)
+    {
+      if (font_set->fonts[j])
+	{
+	  g_object_unref (font_set->fonts[j]);
+	  pango_coverage_unref (font_set->coverages[j]);
+	}
+    }
+
+  font_set->n_families = 0;
+}
 
 static void
-load_font (PangoContext          *context,
-	   PangoLanguage         *language,
-	   PangoFontDescription  *desc,
-	   PangoFont            **current_fonts,
-	   PangoCoverage        **current_coverages,
-	   int                   *n_families)
+font_set_load (FontSet              *font_set,
+	       PangoContext         *context,
+	       PangoLanguage        *language,
+	       PangoFontDescription *desc)
 {
   char **families;
   char *orig_family;
   int j;
-  
-  for (j=0; j < *n_families; j++)
-    {
-      if (current_fonts[j])
-	{
-	  g_object_unref (current_fonts[j]);
-	  pango_coverage_unref (current_coverages[j]);
-	}
-    }
+
+  font_set_free (font_set);
 
   orig_family = desc->family_name;
   families = g_strsplit (orig_family, ",", -1);
 
-  *n_families = 0;
-  for (j=0; families[j] && *n_families < MAX_FAMILIES; j++)
+  font_set->n_families = 0;
+  for (j=0; families[j] && font_set->n_families < MAX_FAMILIES; j++)
     {
       desc->family_name = families[j];
-      current_fonts[*n_families] = pango_context_load_font (context, desc);
+      font_set->fonts[font_set->n_families] = pango_context_load_font (context, desc);
       
-      if (current_fonts[*n_families])
+      if (font_set->fonts[font_set->n_families])
 	{
-	  current_coverages[*n_families] = pango_font_get_coverage (current_fonts[*n_families], language);
-	  (*n_families)++;
+	  font_set->coverages[font_set->n_families] = pango_font_get_coverage (font_set->fonts[font_set->n_families], language);
+	  (font_set->n_families)++;
 	}
     }
   
@@ -773,7 +787,7 @@ load_font (PangoContext          *context,
   /* The font description was completely unloadable, try with
    * family == "Sans"
    */
-  if (*n_families == 0)
+  if (font_set->n_families == 0)
     {
       char *ctmp1, *ctmp2;
       
@@ -789,17 +803,17 @@ load_font (PangoContext          *context,
       
       desc->family_name = "Sans";
       
-      current_fonts[0] = pango_context_load_font (context, desc);
-      if (current_fonts[0])
+      font_set->fonts[0] = pango_context_load_font (context, desc);
+      if (font_set->fonts[0])
 	{
-	  current_coverages[0] = pango_font_get_coverage (current_fonts[0], language);
-	  *n_families = 1;
+	  font_set->coverages[0] = pango_font_get_coverage (font_set->fonts[0], language);
+	  font_set->n_families = 1;
 	}
     }
   
   /* We couldn't try with Sans and the specified style. Try Sans Normal
    */
-  if (*n_families == 0)
+  if (font_set->n_families == 0)
     {
       char *ctmp1, *ctmp2;
       
@@ -814,17 +828,17 @@ load_font (PangoContext          *context,
       g_free (ctmp1);
       g_free (ctmp2);
       
-      current_fonts[0] = pango_context_load_font (context, desc);
-      if (current_fonts[0])
+      font_set->fonts[0] = pango_context_load_font (context, desc);
+      if (font_set->fonts[0])
 	{
-	  current_coverages[0] = pango_font_get_coverage (current_fonts[0], language);
-	  *n_families = 1;
+	  font_set->coverages[0] = pango_font_get_coverage (font_set->fonts[0], language);
+	  font_set->n_families = 1;
 	}
     }
 
   /* Everything failed, we are screwed, there is no way to continue
    */
-  if (n_families == 0)
+  if (font_set->n_families == 0)
     {
       g_warning ("All font failbacks failed!!!!");
       exit (1);
@@ -869,13 +883,12 @@ add_engines (PangoContext      *context,
   GSList *extra_attrs = NULL;
   PangoMap *lang_map = NULL;
   PangoFontDescription current_desc = { 0 };
-  int n_families = 0;
-  PangoFont *current_fonts[MAX_FAMILIES];
-  PangoCoverage *current_coverages[MAX_FAMILIES];  
+  FontSet current_fonts = FONT_SET_INITIALIZER;
   PangoAttrIterator *iterator;
   gboolean first_iteration = TRUE;
   gunichar wc;
-  int i = 0, j;
+  int i = 0;
+  int font_index;
 
   if (cached_iter)
     iterator = cached_iter;
@@ -935,8 +948,7 @@ add_engines (PangoContext      *context,
 	    {
 	      current_desc = next_desc;
 
-	      load_font (context, language, &current_desc,
-			 current_fonts, current_coverages, &n_families);
+	      font_set_load (&current_fonts, context, language, &current_desc);
 	    }
         }
 
@@ -944,7 +956,14 @@ add_engines (PangoContext      *context,
       pos = g_utf8_next_char (pos);
       
       analysis->lang_engine = (PangoEngineLang *)pango_map_get_engine (lang_map, wc);
-      analysis->font = get_font (current_fonts, current_coverages, n_families, wc);
+      font_index = font_set_get_font (&current_fonts, wc);
+      if (font_index != -1)
+	{
+	  analysis->font = current_fonts.fonts[font_index];
+	  g_object_ref (analysis->font);
+	}
+      else
+	analysis->font = NULL;
       analysis->language = language;
       
       /* FIXME: handle reference counting properly on the shapers */
@@ -960,17 +979,94 @@ add_engines (PangoContext      *context,
     }
 
   g_assert (pos - text == start_index + length);
-  
-  for (j=0; j<n_families; j++)
-    {
-      if (current_fonts[j])
-	{
-	  g_object_unref (current_fonts[j]);
-	  pango_coverage_unref (current_coverages[j]);
-	}
-    }
+
+  font_set_free (&current_fonts);
 
   if (iterator != cached_iter)
     pango_attr_iterator_destroy (iterator);
 }
 
+/**
+ * pango_context_get_metrics:
+ * @context: a #PangoContext
+ * @desc: a #PangoFontDescription structure
+ * @language: language tag used to determine which script to get the metrics
+ *            for, or %NULL to indicate to get the metrics for the entire
+ *            font.
+ * @metrics: Structure to fill in with the metrics of the font
+ * 
+ * Get overall metric information for a font particular font
+ * description.  Since the metrics may be substantially different for
+ * different scripts, a language tag can be provided to indicate that
+ * the metrics should be retrieved that correspond to the script(s)
+ * used by that language.
+ *
+ * The #PangoFontDescription is interpreted in the same way as
+ * by pango_itemize(), and the family name may be a comma separated
+ * list of figures. If characters from multiple of these families
+ * would be used to render the string, then the returned fonts would
+ * be a composite of the metrics for the fonts loaded for the
+ * individual families.
+ **/
+void
+pango_context_get_metrics (PangoContext                 *context,
+			   const PangoFontDescription   *desc,
+			   PangoLanguage                *language,
+			   PangoFontMetrics             *metrics)
+{
+  FontSet current_fonts = FONT_SET_INITIALIZER;
+  PangoFontMetrics raw_metrics[MAX_FAMILIES];
+  gboolean have_metrics[MAX_FAMILIES];
+  PangoFontDescription tmp_desc = *desc;
+  const char *sample_str;
+  const char *p;
+  int i;
+
+  g_return_if_fail (PANGO_IS_CONTEXT (context));
+  g_return_if_fail (desc != NULL);
+  g_return_if_fail (metrics != NULL);
+
+  sample_str = pango_language_get_sample_string (language);
+
+  font_set_load (&current_fonts, context, language, &tmp_desc);
+
+  for (i=0; i < MAX_FAMILIES; i++)
+    have_metrics[i] = FALSE;
+  
+  if (current_fonts.n_families == 1)
+    pango_font_get_metrics (current_fonts.fonts[0], language, metrics);
+  else
+    {
+      int count = 0;
+
+      p = sample_str;
+      while (*p)
+	{
+	  gunichar wc = g_utf8_get_char (p);
+	  int index = font_set_get_font (&current_fonts, wc);
+	  if (!have_metrics[index])
+	    {
+	      pango_font_get_metrics (current_fonts.fonts[index], language, &raw_metrics[index]);
+	      have_metrics[index] = TRUE;
+	    }
+
+	  if (count == 0)
+	    *metrics = raw_metrics[index];
+	  else
+	    {
+	      metrics->ascent = MAX (metrics->ascent, raw_metrics[index].ascent);
+	      metrics->descent = MAX (metrics->descent, raw_metrics[index].descent);
+	      metrics->approximate_char_width += raw_metrics[index].approximate_char_width;
+	      metrics->approximate_digit_width += raw_metrics[index].approximate_digit_width;
+	    }
+	  
+	  p = g_utf8_next_char (p);
+	  count++;
+	}
+
+      metrics->approximate_char_width /= count;
+      metrics->approximate_digit_width /= count;
+    }
+      
+  font_set_free (&current_fonts);
+}

@@ -1,3 +1,21 @@
+Tue Jun 26 15:11:30 2001  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-context.c (font_set_get_font)
+	  pango/pango-context.c (add_engines): Couple of
+	bug fixes for the last change.
+
+	* configure.in: Abort out when AM_PATH_GLIB fails.
+
+Tue Jun 26 10:19:02 2001  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-utils.c (pango_language_matches): Handle
+	language == NULL as matching nothing but '*'.
+
+	* pango/pango-context.[ch] (pango_context_get_metrics): Add a
+	(slowish) function to get the metrics for a font description,
+	including fallbacks as with pango_itemize(), rather than a single
+	font.
+
 Sat Jun 23 10:01:20 2001  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pangowin32-fontmap.c (pango_win32_font_entry_get_coverage): 

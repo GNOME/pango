@@ -116,7 +116,7 @@ struct _PangoXSubfontInfo
 
 struct _PangoXMetricsInfo
 {
-  PangoLanguage *language;
+  const char *sample_str;
   PangoFontMetrics metrics;
 };
 
@@ -855,51 +855,6 @@ get_font_metrics_from_string (PangoFont        *font,
   g_free (embedding_levels);
 }
 
-typedef struct {
-  const char *lang;
-  const char *str;
-} LangInfo;
-
-int
-lang_info_compare (const void *key, const void *val)
-{
-  const LangInfo *lang_info = val;
-
-  return strncmp (key, lang_info->lang, 2);
-}
-
-/* The following array is supposed to contain enough text to tickle all necessary fonts for each
- * of the languages in the following. Yes, it's pretty lame. Not all of the languages
- * in the following have sufficient text to excercise all the accents for the language, and
- * there are obviously many more languages to include as well.
- */
-LangInfo lang_texts[] = {
-  { "ar", "Arabic  السلام عليكم" },
-  { "cs", "Czech (česky)  Dobrý den" },
-  { "da", "Danish (Dansk)  Hej, Goddag" },
-  { "el", "Greek (Ελληνικά) Γειά σας" },
-  { "en", "English Hello" },
-  { "eo", "Esperanto Saluton" },
-  { "es", "Spanish (Español) ¡Hola!" },
-  { "et", "Estonian  Tere, Tervist" },
-  { "fi", "Finnish (Suomi)  Hei, Hyvää päivää" },
-  { "fr", "French (Français)" },
-  { "de", "German Grüß Gott" },
-  { "iw", "Hebrew   שלום" },
-  { "il", "Italiano  Ciao, Buon giorno" },
-  { "ja", "Japanese (日本語) こんにちは, ｺﾝﾆﾁﾊ" },
-  { "ko", "Korean (한글)   안녕하세요, 안녕하십니까" },
-  { "mt", "Maltese   Ċaw, Saħħa" },
-  { "nl", "Nederlands, Vlaams Hallo, Dag" },
-  { "no", "Norwegian (Norsk) Hei, God dag" },
-  { "pl", "Polish   Dzień dobry, Hej" },
-  { "ru", "Russian (Русский)" },
-  { "sk", "Slovak   Dobrý deň" },
-  { "sv", "Swedish (Svenska) Hej på dej, Goddag" },
-  { "tr", "Turkish (Türkçe) Merhaba" },
-  { "zh", "Chinese (中文,普通话,汉语)" }
-};
-
 static void
 pango_x_font_get_metrics (PangoFont        *font,
 			  PangoLanguage    *language,
@@ -908,43 +863,15 @@ pango_x_font_get_metrics (PangoFont        *font,
   PangoXMetricsInfo *info = NULL; /* Quiet gcc */
   PangoXFont *xfont = (PangoXFont *)font;
   GSList *tmp_list;
-  const char *lang_str = pango_language_to_string (language);
       
-  PangoLanguage *lookup_lang;
-  const char *str;
-
-  if (language)
-    {
-      LangInfo *lang_info = bsearch (lang_str, lang_texts,
-				     G_N_ELEMENTS (lang_texts), sizeof (LangInfo),
-				     lang_info_compare);
-
-      if (lang_info)
-	{
-	  lookup_lang = pango_language_from_string (lang_info->lang);
-	  str = lang_info->str;
-	}
-      else
-	{
-	  lookup_lang = pango_language_from_string ("UNKNOWN");
-	  str = "French (Français)";     /* Assume iso-8859-1 */
-	}
-    }
-  else
-    {
-      lookup_lang = pango_language_from_string ("NONE");
-
-      /* Complete junk
-       */
-      str = "السلام عليكم česky Ελληνικά Français 日本語 한글 Русский 中文,普通话,汉语 Türkçe";
-    }
+  const char *sample_str = pango_language_get_sample_string (language);
   
   tmp_list = xfont->metrics_by_lang;
   while (tmp_list)
     {
       info = tmp_list->data;
       
-      if (info->language == lookup_lang)    /* We _don't_ need strcmp */
+      if (info->sample_str == sample_str)    /* We _don't_ need strcmp */
 	break;
 
       tmp_list = tmp_list->next;
@@ -957,18 +884,18 @@ pango_x_font_get_metrics (PangoFont        *font,
       PangoContext *context;
       
       info = g_new (PangoXMetricsInfo, 1);
-      info->language = lookup_lang;
+      info->sample_str = sample_str;
 
       xfont->metrics_by_lang = g_slist_prepend (xfont->metrics_by_lang, info);
       
-      get_font_metrics_from_string (font, lookup_lang, str, &info->metrics);
+      get_font_metrics_from_string (font, language, sample_str, &info->metrics);
 
       /* This is sort of a sledgehammer solution, but we cache this
        * stuff so not a huge deal hopefully. Get the avg. width of the
        * chars in "0123456789"
        */
       context = pango_x_get_context (pango_x_fontmap_get_display (xfont->fontmap));
-      pango_context_set_language (context, lookup_lang);
+      pango_context_set_language (context, language);
       layout = pango_layout_new (context);
       pango_layout_set_text (layout, "0123456789", -1);
 

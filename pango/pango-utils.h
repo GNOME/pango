@@ -83,3 +83,6 @@ gboolean pango_log2vis_get_embedding_levels (gunichar       *str,
 gboolean pango_get_mirror_char              (gunichar        ch,
 
 					     gunichar       *mirrored_ch);
+
+G_CONST_RETURN char *pango_language_get_sample_string (PangoLanguage *language);
+

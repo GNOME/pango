@@ -984,7 +984,8 @@ pango_language_from_string (const char *language)
 
 /**
  * pango_language_matches:
- * @language: a language tag (see pango_language_from_string())
+ * @language: a language tag (see pango_language_from_string()),
+ *            %NULL is allowed and matches nothing but '*'
  * @range_list: a list of language ranges, separated by ';' characters.
  *   each element must either be '*', or a RFC 3066 language range
  *   canonicalized as by pango_lang_canonicalize().
@@ -1013,7 +1014,7 @@ pango_language_matches (PangoLanguage *language,
 	}
 
       if (strncmp (p, "*", 1) == 0 ||
-	  (strncmp (lang_str, p, end - p) == 0 &&
+	  (lang_str && strncmp (lang_str, p, end - p) == 0 &&
 	   (lang_str[end - p] == '\0' || lang_str[end - p] == '-')))
 	return TRUE;
 
@@ -1021,6 +1022,91 @@ pango_language_matches (PangoLanguage *language,
     }
 
   return FALSE;
+}
+
+typedef struct {
+  const char *lang;
+  const char *str;
+} LangInfo;
+
+int
+lang_info_compare (const void *key, const void *val)
+{
+  const LangInfo *lang_info = val;
+
+  return strncmp (key, lang_info->lang, 2);
+}
+
+/* The following array is supposed to contain enough text to tickle all necessary fonts for each
+ * of the languages in the following. Yes, it's pretty lame. Not all of the languages
+ * in the following have sufficient text to excercise all the accents for the language, and
+ * there are obviously many more languages to include as well.
+ */
+LangInfo lang_texts[] = {
+  { "ar", "Arabic  السلام عليكم" },
+  { "cs", "Czech (česky)  Dobrý den" },
+  { "da", "Danish (Dansk)  Hej, Goddag" },
+  { "el", "Greek (Ελληνικά) Γειά σας" },
+  { "en", "English Hello" },
+  { "eo", "Esperanto Saluton" },
+  { "es", "Spanish (Español) ¡Hola!" },
+  { "et", "Estonian  Tere, Tervist" },
+  { "fi", "Finnish (Suomi)  Hei, Hyvää päivää" },
+  { "fr", "French (Français)" },
+  { "de", "German Grüß Gott" },
+  { "iw", "Hebrew   שלום" },
+  { "il", "Italiano  Ciao, Buon giorno" },
+  { "ja", "Japanese (日本語) こんにちは, ｺﾝﾆﾁﾊ" },
+  { "ko", "Korean (한글)   안녕하세요, 안녕하십니까" },
+  { "mt", "Maltese   Ċaw, Saħħa" },
+  { "nl", "Nederlands, Vlaams Hallo, Dag" },
+  { "no", "Norwegian (Norsk) Hei, God dag" },
+  { "pl", "Polish   Dzień dobry, Hej" },
+  { "ru", "Russian (Русский)" },
+  { "sk", "Slovak   Dobrý deň" },
+  { "sv", "Swedish (Svenska) Hej på dej, Goddag" },
+  { "tr", "Turkish (Türkçe) Merhaba" },
+  { "zh", "Chinese (中文,普通话,汉语)" }
+};
+
+/**
+ * pango_language_get_sample_string:
+ * @language: a #PangoLanguage
+ * 
+ * Get a string that is representative of the characters needed to
+ * render a particular language. This function is a bad hack for
+ * internal use by renderers and Pango.
+ * 
+ * Return value: the sample string. This value is owned by Pango
+ *   and must not be freed.
+ **/
+G_CONST_RETURN char *
+pango_language_get_sample_string (PangoLanguage *language)
+{
+  const char *result;
+  
+  if (language)
+    {
+      const char *lang_str = pango_language_to_string (language);
+      
+      LangInfo *lang_info = bsearch (lang_str, lang_texts,
+				     G_N_ELEMENTS (lang_texts), sizeof (LangInfo),
+				     lang_info_compare);
+
+      if (lang_info)
+	result = lang_info->str;
+      else
+	result = "French (Français)";     /* Assume iso-8859-1 */
+    }
+  else
+    {
+      /* Complete junk
+       */
+
+      result = "السلام عليكم česky Ελληνικά Français 日本語 한글 Русский 中文,普通话,汉语 Türkçe";
+    }
+
+  return result;
 }
 
 #ifdef HAVE_FRIBIDI

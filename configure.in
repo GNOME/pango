@@ -119,7 +119,13 @@ AM_CONDITIONAL(HAVE_XFT, $have_xft)
 #
 # Checks for GLib
 #
-AM_PATH_GLIB_2_0(1.3.5,,,gobject gmodule)
+GLIB_REQUIRED_VERSION=1.3.6
+
+AM_PATH_GLIB_2_0($GLIB_REQUIRED_VERSION, :,
+  AC_MSG_ERROR([
+*** Glib $GLIB_REQUIRED_VERSION or better is required. The latest version of 
+*** Glib is always available from ftp://ftp.gtk.org/.]),
+  gobject gmodule)
 
 CFLAGS="$CFLAGS $GLIB_CFLAGS"
 

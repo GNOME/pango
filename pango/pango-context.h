@@ -61,6 +61,11 @@ void          pango_context_list_families (PangoContext                 *context
 					   int                          *n_families);
 PangoFont *   pango_context_load_font     (PangoContext                 *context,
 					   const PangoFontDescription   *desc);
+void          pango_context_get_metrics   (PangoContext                 *context,
+					   const PangoFontDescription   *desc,
+					   PangoLanguage                *language,
+					   PangoFontMetrics             *metrics);
+
 
 void                      pango_context_set_font_description (PangoContext               *context,
 							      const PangoFontDescription *desc);

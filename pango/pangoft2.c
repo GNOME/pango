@@ -48,7 +48,7 @@ typedef struct _PangoFT2ContextInfo PangoFT2ContextInfo;
 
 struct _PangoFT2MetricsInfo
 {
-  PangoLanguage *language;
+  const char *sample_str;
   PangoFontMetrics metrics;
 };
 
@@ -622,52 +622,6 @@ get_font_metrics_from_string (PangoFont        *font,
   g_free (embedding_levels);
 }
 
-typedef struct {
-  const char *lang;
-  const char *str;
-} LangInfo;
-
-int
-lang_info_compare (const void *key,
-		   const void *val)
-{
-  const LangInfo *lang_info = val;
-
-  return strncmp (key, lang_info->lang, 2);
-}
-
-/* The following array is supposed to contain enough text to tickle all necessary fonts for each
- * of the languages in the following. Yes, it's pretty lame. Not all of the languages
- * in the following have sufficient text to excercise all the accents for the language, and
- * there are obviously many more languages to include as well.
- */
-LangInfo lang_texts[] = {
-  { "ar", "Arabic  Ø§Ù,DX³ÙX§Ù… Ø¹ÙY(JY,CY…(B" },
-  { "cs", "Czech (Äesky)  DobrÃ½ den" },
-  { "da", "Danish (Dansk)  Hej, Goddag" },
-  { "el", "Greek (Î$(GN;Î»Î·Î½Î¹ÎºÎ¬(B) Î$(CN5Î¹Î¬ Ï,CN±Ï‚(B" },
-  { "en", "English Hello" },
-  { "eo", "Esperanto Saluton" },
-  { "es", "Spanish (EspaÃ±ol) Â¡Hola!" },
-  { "et", "Estonian  Tere, Tervist" },
-  { "fi", "Finnish (Suomi)  Hei, HyvÃ¤Ã¤ pÃ¤ivÃ¤Ã¤" },
-  { "fr", "French (FranÃ§ais)" },
-  { "de", "German GrÃ¼ÃŸ Gott" },
-  { "iw", "Hebrew   ×©×œ×•×" },
-  { "il", "Italiano  Ciao, Buon giorno" },
-  { "ja", "Japanese (æ—¥æ¬èªž) ã“ã‚“ã«ã¡ã¯, ï½ºï¾ï¾,Fo¾ï¾Š(B" },
-  { "ko", "Korean (í•œê¸€)   ì•,Hk…•í•˜ì,D8ìš”(B, ì•,Hk…•í•˜ì‹­ë‹j¹Œ(B" },
-  { "mt", "Maltese   ÄŠaw, SaÄ§Ä§a" },
-  { "nl", "Nederlands, Vlaams Hallo, Dag" },
-  { "no", "Norwegian (Norsk) Hei, God dag" },
-  { "pl", "Polish   DzieÅ„ dobry, Hej" },
-  { "ru", "Russian (Ð Ñ,CQÑÐºÐ¸Ð¹(B)" },
-  { "sk", "Slovak   DobrÃ½ deÅˆ" },
-  { "sv", "Swedish (Svenska) Hej pÃ¥ dej, Goddag" },
-  { "tr", "Turkish (TÃ¼rkÃ§e) Merhaba" },
-  { "zh", "Chinese (ä¸­æ–‡,æ$(1.i€è¯(B,æ±(Ih¯­(B)" }
-};
-
 static void
 pango_ft2_font_get_metrics (PangoFont        *font,
 			    PangoLanguage    *language,
@@ -677,43 +631,14 @@ pango_ft2_font_get_metrics (PangoFont        *font,
   PangoFT2Font *ft2font = (PangoFT2Font *)font;
   GSList *tmp_list;
       
-  PangoLanguage *lookup_lang;
-  const char *str;
-
-  if (language)
-    {
-      const char *lang_str = pango_language_to_string (language);
-      
-      LangInfo *lang_info = bsearch (lang_str, lang_texts,
-				     G_N_ELEMENTS (lang_texts), sizeof (LangInfo),
-				     lang_info_compare);
-
-      if (lang_info)
-	{
-	  lookup_lang = pango_language_from_string (lang_info->lang);
-	  str = lang_info->str;
-	}
-      else
-	{
-	  lookup_lang = pango_language_from_string ("UNKNOWN");
-	  str = "French (FranÃ§ais)";     /* Assume iso-8859-1 */
-	}
-    }
-  else
-    {
-      lookup_lang = pango_language_from_string ("NONE");
-
-      /* Complete junk
-       */
-      str = "Ø§Ù,DX³ÙX§Ù… Ø¹ÙY(JY,CY… Ä(Besky Î$(GN;Î»Î·Î½Î¹ÎºÎ¬ (BFranÃ§ais æ—¥æ¬èªž í•œê¸€ Ð Ñ,CQÑÐºÐ¸Ð¹ ä¸­æ–‡(B,æ$(1.i€è¯(B,æ±(Ih¯­ (BTÃ¼rkÃ§e";
-    }
+  const char *sample_str = pango_language_get_sample_string (language);
   
   tmp_list = ft2font->metrics_by_lang;
   while (tmp_list)
     {
       info = tmp_list->data;
       
-      if (info->language == lookup_lang)        /* We _don't_ need strcmp */
+      if (info->sample_str == sample_str)        /* We _don't_ need strcmp */
 	break;
 
       tmp_list = tmp_list->next;
@@ -722,11 +647,11 @@ pango_ft2_font_get_metrics (PangoFont        *font,
   if (!tmp_list)
     {
       info = g_new (PangoFT2MetricsInfo, 1);
-      info->language = lookup_lang;
+      info->sample_str = sample_str;
 
       ft2font->metrics_by_lang = g_slist_prepend (ft2font->metrics_by_lang, info);
       
-      get_font_metrics_from_string (font, language, str, &info->metrics);
+      get_font_metrics_from_string (font, language, sample_str, &info->metrics);
     }
       
   *metrics = info->metrics;

@@ -127,7 +127,8 @@ pango_find_map (PangoLanguage *language,
     {
       /* Move the found map to the beginning of the list
        * for speed next time around if we had to do
-       * any failing strcmps.
+       * any failing comparison. (No longer so important,
+       * since we don't strcmp.)
        */
       maps = g_list_remove_link(maps, tmp_list);
       maps = g_list_prepend(maps, tmp_list->data);
