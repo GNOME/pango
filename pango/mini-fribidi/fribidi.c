@@ -1017,6 +1017,7 @@ pango_log2vis_get_embedding_levels (/* input */
       fribidi_base_dir = FRIBIDI_TYPE_R;
       break;
     case PANGO_DIRECTION_WEAK_LTR:
+    case PANGO_DIRECTION_NEUTRAL:
       fribidi_base_dir = FRIBIDI_TYPE_WL;
       break;
     case PANGO_DIRECTION_WEAK_RTL:

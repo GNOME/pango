@@ -1,3 +1,8 @@
+Fri Feb 27 11:24:50 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/mini-fribidi/fribidi.c (pango_log2vis_get_embedding_levels):
+	Handle PANGO_DIRECTION_NEUTRAL.
+
 Fri Feb 27 09:30:10 2004  Owen Taylor  <otaylor@redhat.com>
 
 	Add some new enum and values and utilities for supporting
