@@ -1,3 +1,8 @@
+Wed Sep 24 18:29:34 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* modules/hebrew/hebrew-shaper.c (hebrew_shaper_get_next_cluster):
+	Handle non-hebrew characters.
+
 2003-09-25  Matthias Clasen  <maclas@gmx.de>
 
 	* pango/break.c (pango_default_break): Only reset the word 
@@ -5,7 +10,6 @@
 	start. Otherwise both 't' and 'e' are classified as word 
 	start in '123test'.  (#122754, Hidetoshi Tajima)
 	
-
 Tue Sep 23 19:43:05 2003  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pango-context.c (itemize_state_add_character): Don't

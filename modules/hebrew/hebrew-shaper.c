@@ -33,7 +33,8 @@
 #include "pango-engine.h"
 
 /* Wrap all characters above 0xF00 to ALEF. */
-#define ucs2iso8859_8(wc)		(wc>0xF000 ? 0x11 : (unsigned int)((unsigned int)(wc) - 0x0590 + 0x10))
+#define ishebrew(wc)                    ((wc)>0x590 && (wc)<0x600)
+#define ucs2iso8859_8(wc)		((unsigned int)((unsigned int)(wc) - 0x0590 + 0x10))
 #define iso8859_8_2uni(c)		((gunichar)(c) - 0x10 + 0x0590)
 
 #define MAX_CLUSTER_CHRS	256
@@ -207,18 +208,16 @@ static const gint Unicode_shape_table[128] = {
 };
 
 /* Treat all characters above 0xF000 as characters */
-#define is_char_class(wc, mask)	(wc > 0xF000 \
-                                 || char_class_table[ucs2iso8859_8 ((wc))] & (mask))
+#define is_hebrew(wc) ((wc) >= 0x590 && (wc) < 0x600)
+#define is_char_class(wc, mask)	(char_class_table[ucs2iso8859_8 ((wc))] & (mask))
 #define	is_composible(cur_wc, nxt_wc)	(compose_table[char_type_table[ucs2iso8859_8 (cur_wc)]]\
 						      [char_type_table[ucs2iso8859_8 (nxt_wc)]])
 
-
-
 const char *
-hebrew_shaper_get_next_cluster(const char	*text,
+hebrew_shaper_get_next_cluster(const char      *text,
 			       gint		length,
-			       gunichar       *cluster,
-			       gint		*num_chrs)
+			       gunichar        *cluster,
+			       gint	       *num_chrs)
 {  
   const char *p;
   gint n_chars = 0;
@@ -229,14 +228,23 @@ hebrew_shaper_get_next_cluster(const char	*text,
     {
       gunichar current = g_utf8_get_char (p);
       
-      if (n_chars == 0 ||
-	  is_composible ((gunichar)(cluster[0]), current) )
+      if (!ishebrew (current) ||
+	  (n_chars == 0 && is_char_class(current, ~(NoDefine|SpacingLetter))))
+	{
+	  /* Not a legal Hebrew cluster */
+	  
+	  if (n_chars == 0)
+	    {
+	      cluster[n_chars++] = current;
+	      p = g_utf8_next_char (p);
+	    }
+	  break;
+	}
+      else if (n_chars == 0 ||
+	       is_composible (cluster[0], current))
 	{
 	  cluster[n_chars++] = current;
 	  p = g_utf8_next_char (p);
-	  if (n_chars == 1 &&
-	      is_char_class(cluster[0], ~(NoDefine|SpacingLetter)) )
-	      break;
 	}
       else
 	break;
