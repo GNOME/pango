@@ -320,7 +320,7 @@ pango_xft_real_render (Display          *display,
 		for (k = 0; k < 2; k++)
 		  {
 		    XftCharSpec *c = &chars[j * 2 + k];
-		    c->ucs4 = buf[2 + j + k] & 0xff;
+		    c->ucs4 = buf[j * 2 + k] & 0xff;
 		    c->x = xs[k+1];
 		    c->y = ys[j+1];
 		  }

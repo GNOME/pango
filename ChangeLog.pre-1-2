@@ -1,3 +1,8 @@
+Mon Jul 15 20:22:46 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pangoxft-font.c: Fix trivial typo that was
+	causing the charcode hex boxes to be misrendered.
+
 Mon Jul 15 14:56:34 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pangoft2.c (pango_ft2_font_get_face): Move
