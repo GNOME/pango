@@ -914,6 +914,21 @@ find_color(const char *name,
   return TRUE;
 }
 
+static gboolean 
+hex (const char *spec, 
+    int len, 
+    unsigned int *c)
+{
+  const char *end;
+  *c = 0; 
+  for (end = spec + len; spec != end; spec++)
+    if (g_ascii_isxdigit (*spec))
+      *c = (*c << 4) | g_ascii_xdigit_value (*spec);
+    else
+      return FALSE;
+  return TRUE;
+}
+
 /**
  * pango_color_parse:
  * @color: a #PangoColor structure in which to store the result
@@ -934,55 +949,41 @@ gboolean
 pango_color_parse (PangoColor *color,
 		   const char *spec)
 {
+  g_return_val_if_fail (spec != NULL, FALSE);
+
   if (spec[0] == '#')
     {
-      char fmt[16];
-      int i, r, g, b;
+      size_t len;
+      unsigned int r, g, b;
 
-      if ((i = strlen (spec+1)) % 3)
+      spec++;
+      len = strlen (spec);
+      if (len % 3 || len < 3 || len > 12)
         return FALSE;
+      
+      len /= 3;
 
-      i /= 3;
+      if (!hex (spec, len, &r) || 
+	  !hex (spec + len, len, &g) ||
+	  !hex (spec + len * 2, len, &b))
+	return FALSE;
 
-      sprintf (fmt, "%%%dx%%%dx%%%dx", i, i, i);
-      if (sscanf (spec+1, fmt, &r, &g, &b) != 3)
-        return FALSE;
-
-      if (i == 4)
-        {
-          if (color)
+      if (color)
+	{
+	  int bits = len * 4;
+	  r <<= 16 - bits;
+	  g <<= 16 - bits;
+	  b <<= 16 - bits;
+	  while (bits < 16)
 	    {
-	      color->red = r;
-	      color->green = g;
-	      color->blue = b;
+	      r |= (r >> bits);
+	      g |= (g >> bits);
+	      b |= (b >> bits);
+	      bits *= 2;  
 	    }
-        }
-      else if (i == 1)
-        {
-          if (color)
-	    {
-	      color->red = (r * 65535) / 15;
-	      color->green = (g * 65535) / 15;
-	      color->blue = (b * 65535) / 15;
-	    }
-        }
-      else if (i == 2)
-        {
-          if (color)
-	    {
-	      color->red = (r * 65535) / 255;
-	      color->green = (g * 65535) / 255;
-	      color->blue = (b * 65535) / 255;
-	    }
-        }
-      else /* if (i == 3) */
-        {
-	  if (color)
-	    {
-	      color->red = (r * 65535) / 4095;
-	      color->green = (g * 65535) / 4095;
-	      color->blue = (b * 65535) / 4095;
-	    }
+	  color->red   = r;
+	  color->green = g;
+	  color->blue  = b;
         }
     }
   else
@@ -990,6 +991,5 @@ pango_color_parse (PangoColor *color,
       if (!find_color (spec, color))
         return FALSE;
     }
-
   return TRUE;
 }

@@ -1,3 +1,14 @@
+2002-09-23  Matthias Clasen  <maclas@gmx.de>
+
+	* pango/pango-color.c (pango_color_parse): Make color parsing
+	more robust and correct. (#93804)
+
+	* tests/testcolor.c: Tests for pango_color_parse.
+
+	* tests/Makefile.am: Build testcolor.
+
+	* tests/runtests.sh: Run testcolor. 
+
 2002-09-23  Tor Lillqvist  <tml@iki.fi>
 
 	* modules/basic/basic-win32.c: Minor spacing fixes, comment the
