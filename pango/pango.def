@@ -7,6 +7,7 @@ EXPORTS
 	pango_attr_iterator_copy
 	pango_attr_iterator_destroy
 	pango_attr_iterator_get
+	pango_attr_iterator_get_attrs
 	pango_attr_iterator_get_font
 	pango_attr_iterator_next
 	pango_attr_iterator_range
@@ -15,6 +16,7 @@ EXPORTS
 	pango_attr_list_copy
 	pango_attr_list_get_iterator
 	pango_attr_list_get_type
+	pango_attr_list_filter
 	pango_attr_list_insert
 	pango_attr_list_insert_before
 	pango_attr_list_new
@@ -260,4 +262,3 @@ EXPORTS
 	pango_variant_get_type
 	pango_weight_get_type
 	pango_wrap_mode_get_type
-

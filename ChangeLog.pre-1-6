@@ -1,3 +1,8 @@
+2003-10-12  Tor Lillqvist  <tml@iki.fi>
+
+	* pango/pango.def: Add two missing symbols. Thanks to
+	ffxz@sohu.com.
+
 2003-09-25  Matthias Clasen  <maclas@gmx.de>
 
 	* pango/break.c (pango_default_break): Only reset the word 
