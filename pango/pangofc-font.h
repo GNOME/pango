@@ -123,8 +123,6 @@ struct _PangoFcFontClass
 
 #endif /* PANGO_ENABLE_BACKEND */
 
-FT_Face    pango_fc_font_lock_face         (PangoFcFont      *font);
-void       pango_fc_font_unlock_face       (PangoFcFont      *font);
 gboolean   pango_fc_font_has_char          (PangoFcFont      *font,
 					    gunichar          wc);
 guint      pango_fc_font_get_glyph         (PangoFcFont      *font,
@@ -138,6 +136,8 @@ void       pango_fc_font_kern_glyphs       (PangoFcFont      *font,
 
 GType      pango_fc_font_get_type (void);
 
-G_END_DECLS
+FT_Face    pango_fc_font_lock_face         (PangoFcFont      *font);
+void       pango_fc_font_unlock_face       (PangoFcFont      *font);
 
+G_END_DECLS
 #endif /* __PANGO_FC_FONT_H__ */

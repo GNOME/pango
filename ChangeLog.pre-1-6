@@ -1,3 +1,14 @@
+Mon Jun 21 14:34:34 2004  Owen Taylor  <otaylor@redhat.com>
+
+	#142355, Sven Neumann
+
+	* pango/pangoft2.c (pango_ft2_font_get_face): Mention
+	pango_fc_font_lock/unlock face as the correct
+	replacements.
+
+	* pango/pangofc-font.h: Move lock/unlock_face outside
+	of the #ifdef PANGO_ENABLE_ENGINE.
+
 Mon Jun 21 14:23:05 2004  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pango-layout.c (no_shape_filter_func)
