@@ -1,0 +1,13 @@
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libdir=@libdir@
+includedir=@includedir@
+
+Name: Pango
+Description: Internationalized text handling
+Version: @VERSION@
+Requires: fribidi,gobject-2.0,gmodule-2.0
+Libs: -L${libdir} -lpango
+Cflags: -I${includedir}
+
+

@@ -1,3 +1,11 @@
+2000-07-31  Havoc Pennington  <hp@redhat.com>
+
+        * pango.pc.in, pangox.pc.in: pkg-config info files
+	
+	* Makefile.am: dist/install .pc files
+
+	* configure.in: output .pc files
+
 2000-07-28  Martin Baulig  <baulig@suse.de>
 
 	* pango/pango-layout.c (pango_layout_finalize): Destroy

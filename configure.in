@@ -235,6 +235,8 @@ tools/Makefile
 fonts/Makefile
 pango.spec
 pango-config
+pango.pc
+pangox.pc
 ],[case "$CONFIG_FILES" in
 *pango-config*)chmod +x pango-config;;
 esac])
