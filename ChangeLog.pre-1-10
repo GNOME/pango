@@ -1,3 +1,15 @@
+Mon Jan 26 10:30:06 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/modules/thai/thai-c: Fix up glyph addition
+	code so that it works properly with the typical
+	TrueType fonts that have 0 width for combining
+	characters. (#124175, Theppitak Karoonboonyanan)
+
+Fri Jan 23 16:05:31 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-markup.c (open_tag_free): Fix some
+	more problems with NULL attribute lists.
+
 Thu Jan 22 12:36:10 2004  Owen Taylor  <otaylor@redhat.com>
 
 	* === Released 1.3.2 ===

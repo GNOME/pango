@@ -816,7 +816,8 @@ parse_absolute_size (OpenTag               *tag,
    */
   factor = scale_factor (level, 1.0);
   add_attribute (tag, pango_attr_scale_new (factor));
-  open_tag_set_absolute_font_scale (tag, factor);
+  if (tag)
+    open_tag_set_absolute_font_scale (tag, factor);
   
   return TRUE;
 }
@@ -950,7 +951,8 @@ span_parse_func     (MarkupData            *md,
       if (parsed)
         {
           add_attribute (tag, pango_attr_font_desc_new (parsed));
-          open_tag_set_absolute_font_size (tag, pango_font_description_get_size (parsed));
+	  if (tag)
+	    open_tag_set_absolute_font_size (tag, pango_font_description_get_size (parsed));
           pango_font_description_free (parsed);
         }
     }
@@ -982,7 +984,8 @@ span_parse_func     (MarkupData            *md,
             }
 
           add_attribute (tag, pango_attr_size_new (n));
-          open_tag_set_absolute_font_size (tag, n);
+	  if (tag)
+	    open_tag_set_absolute_font_size (tag, n);
         }
       else if (strcmp (size, "smaller") == 0)
         {
