@@ -7,11 +7,13 @@ config.log
 config.status
 config.sub
 pango.pc
+pangocairo.pc
 pangox.pc
 pangoxft.pc
 pangoft2.pc
 pangowin32.pc
 pango-uninstalled.pc
+pangocairo-uninstalled.pc
 pangox-uninstalled.pc
 pangoxft-uninstalled.pc
 pangoft2-uninstalled.pc
