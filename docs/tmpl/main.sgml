@@ -171,12 +171,12 @@ for text.
 
 @context: 
 @text: 
+@start_index: 
 @length: 
 @attrs: 
+@cached_iter: 
 @Returns: 
 <!-- # Unused Parameters # -->
-@start_index: 
-@cached_iter: 
 @lang_info: 
 @n_langs: 
 
@@ -203,6 +203,17 @@ for text.
 
 </para>
 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_item_split ##### -->
+<para>
+
+</para>
+
+@orig: 
+@split_index: 
+@split_offset: 
 @Returns: 
 
 
@@ -342,16 +353,44 @@ for text.
 @log_attrs: 
 
 
+<!-- ##### FUNCTION pango_find_paragraph_boundary ##### -->
+<para>
+
+</para>
+
+@text: 
+@length: 
+@paragraph_delimiter_index: 
+@next_paragraph_start: 
+
+
+<!-- ##### FUNCTION pango_default_break ##### -->
+<para>
+
+</para>
+
+@text: 
+@length: 
+@analysis: 
+@attrs: 
+
+
 <!-- ##### STRUCT PangoLogAttr ##### -->
 <para>
 The #PangoLogAttr structure stores information
 about the attributes of a single character.
 </para>
 
-@is_break: 
+@is_line_break: 
+@is_mandatory_break: 
+@is_char_break: 
 @is_white: 
-@is_char_stop: 
-@is_word_stop: 
+@is_cursor_position: 
+@is_word_start: 
+@is_word_end: 
+@is_sentence_boundary: 
+@is_sentence_start: 
+@is_sentence_end: 
 
 <!-- ##### FUNCTION pango_shape ##### -->
 <para>

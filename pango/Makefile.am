@@ -135,10 +135,12 @@ pangoinclude_HEADERS = 	   	\
 	$(FT2_HFILES)
 
 pango-enum-types.h: @REBUILD@ $(pango_headers) makeenums.pl
-	$(PERL)	./makeenums.pl include $(pango_headers) > pango-enum-types.h
+	cd $(srcdir) \
+	&& $(PERL) ./makeenums.pl include $(pango_headers) > pango-enum-types.h
 
 pango-enum-types.c: @REBUILD@ $(pango_headers) makeenums.pl
-	$(PERL) ./makeenums.pl cfile $(pango_headers) > pango-enum-types.c
+	cd $(srcdir) \
+	&& $(PERL) ./makeenums.pl cfile $(pango_headers) > pango-enum-types.c
 
 #
 # As a temporary hack, we pull in libpangox here so that we can link
