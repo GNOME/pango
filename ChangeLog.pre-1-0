@@ -1,3 +1,18 @@
+Mon Sep 24 19:18:48 2001  Owen Taylor  <otaylor@redhat.com>
+
+	Patch from Alex Larsson
+
+	* pango/pango-layout.c (pango_layout_index_to_line_and_extents,
+	pango_layout_index_to_line): Extract out some code portions
+	into separate functions and fix problems with cursor motion
+	in multi-paragraph layouts.
+
+	* pango/pango-layout.c (pango_layout_index_to_pos): Fix
+	for multi-paragraph layouts.
+
+	* pango/pango-layout.c (pango_layout_move_cursor_visually): Fix
+	for multi-paragraph layouts.
+	
 Mon Sep 24 18:19:22 2001  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pango-layout.c (pango_layout_index_to_pos): Fix
