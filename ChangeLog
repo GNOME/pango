@@ -1,3 +1,7 @@
+Mon Oct 29 11:54:06 2001  Owen Taylor  <otaylor@redhat.com>
+
+	* pangox.pc.in (Cflags): Add @X_CFLAGS@ (#63095, Dan Winship)
+
 2001-10-29  Tor Lillqvist  <tml@iki.fi>
 
 	* pango-zip.sh.in: New file, used to build distribution package
