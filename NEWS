@@ -1,3 +1,14 @@
+Overview of changes between 1.5.0 and 1.5.1
+===========================================
+* Add ellipsization support to PangoLayout
+* Add pango_context_get_font_map().
+* Fix metrics for the Xft backend when a transform is in effect
+* Separate out backend-independent parts of pangoft2topgm for
+  future rendering testbeds.
+* Code cleanups (use G_DEFINE_TYPE, make PangoMatrix parameters const)
+* Add a GType for PangoMatrix [Torsten Schoenfeld]
+* Misc bug fixes [Morten Welinder]
+
 Overview of changes between 1.4.x and 1.5.0
 ===========================================
 * Allow applications to provide custom font decoders [Chris Blizzard]

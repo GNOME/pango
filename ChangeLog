@@ -1,3 +1,11 @@
+Mon Jul 19 16:48:23 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* === Released 1.5.1 ===
+
+	* configure.in: Pango 1.5.1
+
+	* NEWS: Updates
+
 Mon Jul 19 17:09:11 2004  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/opentype/disasm.c: Add support for 
