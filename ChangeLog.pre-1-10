@@ -1,3 +1,8 @@
+Tue Jul 27 06:35:25 2004  Behdad Esfahbod  <pango@behdad.org>
+
+	* pango/opentype/otlbuffer.c (otl_buffer_copy_output_glyph):
+	Fix bug to copy glyph from in_string, not out_string.
+
 Mon Jul 26 19:11:46 2004  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/opentype/ftxgdef.c: Fix allocation and indexing
