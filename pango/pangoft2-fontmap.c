@@ -276,6 +276,15 @@ pango_ft2_scan_directory (const char      *path,
   return found_font;
 }
 
+/**
+ * pango_ft2_font_map_for_display:
+ *
+ * Returns a #PangoFT2FontMap. Font maps are cached and should
+ * not be freed. If the font map is no longer needed, it can
+ * be released with pango_ft2_shutdown_display().
+ *
+ * Returns: a #PangoFT2FontMap.
+ **/
 PangoFontMap *
 pango_ft2_font_map_for_display (void)
 {
@@ -861,6 +870,14 @@ free_coverages_foreach (gpointer key,
   pango_coverage_unref (value);
 }
 
+/**
+ * pango_ft2_font_map_get_font_cache:
+ * @font_map: a #PangoFT2FontMap.
+ *
+ * Obtains the font cache associated with the given font map.
+ *
+ * Returns: the #PangoFT2FontCache of @font_map.
+ **/
 PangoFT2FontCache *
 pango_ft2_font_map_get_font_cache (PangoFontMap *font_map)
 {
@@ -982,6 +999,13 @@ dump_family (gpointer key,
   pango_ft2_family_entry_dump (indent, entry);
 }
 
+/**
+ * pango_ft2_fontmap_dump:
+ * @indent: the indent to use.
+ * @fontmap: a #PangoFT2FontMap.
+ *
+ * Writes a description of the given font map to stdout.
+ **/
 void
 pango_ft2_fontmap_dump (int           indent,
 			PangoFontMap *fontmap)

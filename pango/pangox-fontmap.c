@@ -1,5 +1,5 @@
 /* Pango
- * pango-font.h: Font handling
+ * pangox-fontmap.c: X font handling
  *
  * Copyright (C) 2000 Red Hat Software
  *
@@ -217,6 +217,16 @@ pango_x_font_map_class_init (PangoFontMapClass *class)
 
 static GList *fontmaps = NULL;
 
+/**
+ * pango_x_font_map_for_display:
+ * @display: an X #Display.
+ *
+ * Returns a #PangoXFontMap for @display. Font maps are cached and should 
+ * not be freed. If the font map for a display is no longer needed, it can 
+ * be released with pango_x_shutdown_display().
+ *
+ * Returns: a #PangoXFontMap for @display.
+ **/
 PangoFontMap *
 pango_x_font_map_for_display (Display *display)
 {
@@ -1280,6 +1290,14 @@ free_coverages_foreach (gpointer key,
   pango_coverage_unref (value);
 }
 
+/**
+ * pango_x_font_map_get_font_cache:
+ * @font_map: a #PangoXFontMap.
+ *
+ * Obtains the font cache associated with the given font map.
+ *
+ * Returns: the #PangoXFontCache of @font_map.
+ **/
 PangoXFontCache *
 pango_x_font_map_get_font_cache (PangoFontMap *font_map)
 {

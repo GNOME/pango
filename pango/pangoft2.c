@@ -709,6 +709,15 @@ pango_ft2_n_subfonts (PangoFont *font)
   return ft2font->n_fonts;
 }
 
+/**
+ * pango_ft2_get_coverage:
+ * @font: a #PangoFT2Font.
+ * @language: the language to compute the coverage for.
+ * 
+ * Computes the coverage of @language by @font.
+ * 
+ * Returns: a newly-allocated #PangoCoverage.
+ **/
 PangoCoverage *
 pango_ft2_get_coverage (PangoFont     *font,
 			PangoLanguage *language)

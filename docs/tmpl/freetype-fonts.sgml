@@ -40,8 +40,6 @@ FreeType Fonts and Rendering
 @n_fonts: 
 @size: 
 @Returns: 
-<!-- # Unused Parameters # -->
-@args: 
 
 
 <!-- ##### FUNCTION pango_ft2_render ##### -->
@@ -146,8 +144,6 @@ FreeType Fonts and Rendering
 @font: 
 @language: 
 @Returns: 
-<!-- # Unused Parameters # -->
-@lang: 
 
 
 <!-- ##### FUNCTION pango_ft2_get_face ##### -->

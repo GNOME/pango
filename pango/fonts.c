@@ -1025,7 +1025,7 @@ pango_font_describe (PangoFont      *font)
  * 
  * Computes the coverage map for a given font and language tag.
  * 
- * Return value: a newly-allocated #PangoContext object.
+ * Return value: a newly-allocated #PangoCoverage object.
  **/
 PangoCoverage *
 pango_font_get_coverage (PangoFont     *font,

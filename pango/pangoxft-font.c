@@ -512,7 +512,7 @@ pango_xft_font_get_display (PangoFont *font)
 }
 
 /**
- * pango_xft_get_unknown_glyph:
+ * pango_xft_font_get_unknown_glyph:
  * @font: a #PangoFont.
  * @wc: the Unicode character for which a glyph is needed.
  *

@@ -22,7 +22,7 @@ Tab Stops
 
 <!-- ##### MACRO PANGO_TYPE_TAB_ARRAY ##### -->
 <para>
-
+The GObject type for #PangoTabArray.
 </para>
 
 
@@ -36,7 +36,7 @@ Tab Stops
 
 <!-- ##### MACRO PANGO_TYPE_TAB_ALIGN ##### -->
 <para>
-
+The GObject type for #PangoTabAlign.
 </para>
 
 

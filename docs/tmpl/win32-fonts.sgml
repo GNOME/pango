@@ -112,8 +112,6 @@ Win32 Fonts and Rendering
 @cache: 
 @logfont: 
 @Returns: 
-<!-- # Unused Parameters # -->
-@lfp: 
 
 
 <!-- ##### FUNCTION pango_win32_font_cache_unload ##### -->

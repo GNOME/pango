@@ -203,7 +203,7 @@ fields.
 
 <!-- ##### MACRO PANGO_TYPE_WRAP_MODE ##### -->
 <para>
-
+The GObject type for #PangoWrapMode.
 </para>
 
 
@@ -330,7 +330,7 @@ for partial lines.
 
 <!-- ##### MACRO PANGO_TYPE_ALIGNMENT ##### -->
 <para>
-
+The GObject type for #PangoAlignment.
 </para>
 
 

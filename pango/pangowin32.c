@@ -997,6 +997,15 @@ font_get_unicode_table (PangoFont *font)
   return table;
 }
 
+/**
+ * pango_win32_font_get_glyph_index:
+ * @font: a #PangoFont.
+ * @wc: a Unicode character.
+ *
+ * Obtains the index of the glyph for @wc in @font.
+ *
+ * Returns: the glyph index for @wc.
+ **/
 gint
 pango_win32_font_get_glyph_index (PangoFont *font,
 				  gunichar   wc)

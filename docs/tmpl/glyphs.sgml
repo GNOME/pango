@@ -241,7 +241,7 @@ accessible fields
 
 <!-- ##### MACRO PANGO_TYPE_GLYPH_STRING ##### -->
 <para>
-
+The GObject type for #PangoGlyphString.
 </para>
 
 

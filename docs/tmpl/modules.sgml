@@ -46,8 +46,6 @@ modules
 @engine_type_id: 
 @render_type_id: 
 @Returns: 
-<!-- # Unused Parameters # -->
-@lang: 
 
 
 <!-- ##### FUNCTION pango_map_get_entry ##### -->

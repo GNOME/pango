@@ -134,7 +134,7 @@ for text.
 
 <!-- ##### MACRO PANGO_TYPE_DIRECTION ##### -->
 <para>
-
+The GObject type for #PangoDirection.
 </para>
 
 
@@ -151,9 +151,6 @@ for text.
 @attrs: 
 @cached_iter: 
 @Returns: 
-<!-- # Unused Parameters # -->
-@lang_info: 
-@n_langs: 
 
 
 <!-- ##### FUNCTION pango_item_free ##### -->
@@ -280,8 +277,6 @@ for text.
 @context: 
 @desc: 
 @Returns: 
-<!-- # Unused Parameters # -->
-@size: 
 
 
 <!-- ##### FUNCTION pango_context_get_metrics ##### -->
@@ -379,7 +374,5 @@ about the attributes of a single character.
 @length: 
 @analysis: 
 @glyphs: 
-<!-- # Unused Parameters # -->
-@font: 
 
 

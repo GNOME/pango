@@ -28,7 +28,6 @@ pango_context_get_metrics
 pango_context_list_families
 <SUBSECTION Standard>
 PANGO_TYPE_CONTEXT
-pango_context_get_type
 PangoContextClass
 PANGO_CONTEXT
 PANGO_CONTEXT_CLASS
@@ -46,6 +45,7 @@ pango_shape
 
 <SUBSECTION Private>
 pango_direction_get_type
+pango_context_get_type
 </SECTION>
 
 <SECTION>
@@ -145,23 +145,23 @@ pango_font_description_to_string
 pango_font_description_to_filename
 <SUBSECTION>
 PangoFontMetrics
+PANGO_TYPE_FONT_METRICS
 pango_font_metrics_ref
 pango_font_metrics_unref
 pango_font_metrics_get_ascent
 pango_font_metrics_get_descent
 pango_font_metrics_get_approximate_char_width
 pango_font_metrics_get_approximate_digit_width
-PANGO_TYPE_FONT_METRICS
 <SUBSECTION>
 PangoFont
+PANGO_TYPE_FONT
+PANGO_FONT
+PANGO_IS_FONT
 pango_font_find_shaper
 pango_font_describe
 pango_font_get_coverage
 pango_font_get_glyph_extents
 pango_font_get_metrics
-PANGO_TYPE_FONT
-PANGO_FONT
-PANGO_IS_FONT
 <SUBSECTION>
 PangoFontFamily
 PANGO_TYPE_FONT_FAMILY
@@ -178,17 +178,32 @@ pango_font_face_get_face_name
 pango_font_face_describe
 <SUBSECTION>
 PangoFontMap
-PangoFontMapClass
-pango_font_map_load_font
-pango_font_map_list_families
 PANGO_TYPE_FONT_MAP
 PANGO_FONT_MAP
 PANGO_IS_FONT_MAP
+PangoFontMapClass
 PANGO_FONT_MAP_CLASS
 PANGO_IS_FONT_MAP_CLASS
 PANGO_FONT_MAP_GET_CLASS
+pango_font_map_load_font
+pango_font_map_list_families
+
+<SUBSECTION Standard>
+PANGO_FONT_FACE_CLASS
+PANGO_IS_FONT_CLASS
+PANGO_FONT_FACE_GET_CLASS
+PangoFontFamilyClass
+PangoFontFaceClass
+PANGO_FONT_GET_CLASS
+PANGO_FONT_CLASS
+PANGO_IS_FONT_FAMILY_CLASS
+PangoFontClass
+PANGO_FONT_FAMILY_GET_CLASS
+PANGO_FONT_FAMILY_CLASS
+PANGO_IS_FONT_FACE_CLASS
 
 <SUBSECTION Private>
+pango_font_metrics_new
 pango_font_get_type
 pango_stretch_get_type
 pango_style_get_type
@@ -200,20 +215,6 @@ pango_font_map_get_type
 pango_font_face_get_type
 pango_font_family_get_type
 pango_font_metrics_get_type
-
-PANGO_FONT_FACE_CLASS
-PANGO_IS_FONT_CLASS
-PANGO_FONT_FACE_GET_CLASS
-PangoFontFamilyClass
-pango_font_metrics_new
-PangoFontFaceClass
-PANGO_FONT_GET_CLASS
-PANGO_FONT_CLASS
-PANGO_IS_FONT_FAMILY_CLASS
-PangoFontClass
-PANGO_FONT_FAMILY_GET_CLASS
-PANGO_FONT_FAMILY_CLASS
-PANGO_IS_FONT_FACE_CLASS
 </SECTION>
 
 <SECTION>
@@ -406,13 +407,15 @@ pango_layout_line_get_x_ranges
 
 <SUBSECTION Standard>
 PANGO_TYPE_LAYOUT
-pango_layout_get_type
 PangoLayoutClass
 PANGO_LAYOUT
 PANGO_IS_LAYOUT
 PANGO_LAYOUT_CLASS
 PANGO_IS_LAYOUT_CLASS
 PANGO_LAYOUT_GET_CLASS
+
+<SUBSECTION Private>
+pango_layout_get_type
 pango_alignment_get_type
 pango_wrap_mode_get_type
 </SECTION>
@@ -564,9 +567,12 @@ pango_xft_font_get_face
 pango_xft_font_get_ot_info
 pango_xft_font_get_display
 pango_xft_font_get_unknown_glyph
+
 <SUBSECTION Standard>
 PANGO_TYPE_XFT_FONT
 PANGO_XFT_IS_FONT
+
+<SUBSECTION Private>
 pango_xft_font_get_type
 </SECTION>
 

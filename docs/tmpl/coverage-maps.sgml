@@ -36,7 +36,7 @@ character point for a particular script.
 
 <!-- ##### MACRO PANGO_TYPE_COVERAGE_LEVEL ##### -->
 <para>
-
+The GObject type for #PangoCoverageLevel.
 </para>
 
 

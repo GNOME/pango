@@ -1,5 +1,5 @@
 /* Pango
- * pangowin32-fontmap.c: Font handling
+ * pangowin32-fontmap.c: Win32 font handling
  *
  * Copyright (C) 2000 Red Hat Software
  * Copyright (C) 2000 Tor Lillqvist
@@ -228,6 +228,15 @@ pango_win32_enum_proc (LOGFONT    *lfp,
   return 1;
 }
 
+/**
+ * pango_win32_font_map_for_display:
+ *
+ * Returns a #PangoWin32FontMap. Font maps are cached and should
+ * not be freed. If the font map is no longer needed, it can
+ * be released with pango_win32_shutdown_display().
+ *
+ * Returns: a #PangoFontMap.
+ **/
 PangoFontMap *
 pango_win32_font_map_for_display (void)
 {
@@ -975,6 +984,14 @@ pango_win32_font_entry_remove (PangoWin32Face *face,
   face->cached_fonts = g_slist_remove (face->cached_fonts, font);
 }
 
+/**
+ * pango_win32_font_map_get_font_cache:
+ * @font_map: a #PangoWin32FontMap.
+ *
+ * Obtains the font cache associated with the given font map.
+ *
+ * Returns: the #PangoWin32FontCache of @font_map.
+ **/
 PangoWin32FontCache *
 pango_win32_font_map_get_font_cache (PangoFontMap *font_map)
 {
