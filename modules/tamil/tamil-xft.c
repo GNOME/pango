@@ -403,7 +403,7 @@ tamil_engine_xft_new ()
  * Pango
  */
 #ifdef XFT_MODULE_PREFIX
-#define MODULE_ENTRY(func) _pango_basic_xft_##func
+#define MODULE_ENTRY(func) _pango_tamil_xft_##func
 #else
 #define MODULE_ENTRY(func) func
 #endif

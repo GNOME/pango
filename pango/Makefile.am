@@ -95,15 +95,18 @@ libpango_la_LIBADD = mini-fribidi/libmini-fribidi.la
 endif
 
 libpangox_la_LDFLAGS = -release $(VERSION)
-libpangox_la_LIBADD =  $(X_LIBS) $(INCLUDED_X_MODULES)
+libpangox_la_LIBADD =  $(INCLUDED_X_MODULES) $(X_LIBS) libpango.la
+libpangox_la_DEPENDENCIES = $(INCLUDED_X_MODULES)
+
 libpangoxft_la_SOURCES =   	\
 	pangoxft-font.c		\
 	pangoxft-fontmap.c      \
 	pangoxft-private.h	\
 	module-defs-xft.c
 
-libpangoxft_la_LIBADD = $(INCLUDED_XFT_MODULES) $(XFT_LIBS) opentype/libpango-ot.la
+libpangoxft_la_LIBADD = $(INCLUDED_XFT_MODULES) $(XFT_LIBS) opentype/libpango-ot.la libpango.la
 libpangoxft_la_LDFLAGS = -release $(VERSION)
+libpangoxft_la_DEPENDENCIES = $(INCLUDED_XFT_MODULES)
 
 libpangoft2_la_SOURCES =   	\
 	pangoft2.h		\
@@ -113,8 +116,9 @@ libpangoft2_la_SOURCES =   	\
 	pangoft2-fontmap.c	\
 	module-defs-ft2.c
 
-libpangoft2_la_LIBADD = $(INCLUDED_FT2_MODULES) $(FREETYPE_LIBS)
+libpangoft2_la_LIBADD = $(INCLUDED_FT2_MODULES) $(FREETYPE_LIBS) libpango.la
 libpangoft2_la_LDFLAGS = -release $(VERSION)
+libpangoft2_la_DEPENDENCIES = $(INCLUDED_FT2_MODULES)
 
 pangoincludedir=$(includedir)/pango-1.0/pango
 
@@ -197,3 +201,14 @@ install-data-local:
           echo "No dynamic modules were installed; all modules were linked statically."; \
 	  echo "# This is an empty file, because Pango was installed with no dynamic modules" > $(DESTDIR)$(sysconfdir)/pango/pango.modules; \
         fi)
+
+if HAVE_INCLUDED_MODULES
+included-modules:
+	@cd $(top_builddir)/modules && $(MAKE) $(AM_MAKEFLAGS) included-modules
+
+$(INCLUDED_X_MODULES) $(INCLUDED_XFT_MODULES) $(INCLUDED_FT2_MODULES): included-modules
+	@true
+
+.PHONY: included-modules
+endif
+

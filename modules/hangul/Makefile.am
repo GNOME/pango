@@ -2,6 +2,11 @@
 
 sources = hangul-x.c
 
+pangolibs = $(top_builddir)/pango/libpango.la $(FRIBIDI_LIBS) $(GLIB_LIBS)
+pangoxlibs = $(top_builddir)/pango/libpangox.la $(X_LIBS) $(pangolibs)
+pangoxftlibs = $(top_builddir)/pango/libpangoxft.la $(XFT_LIBS) $(pangolibs)
+pangoft2libs = $(top_builddir)/pango/libpangoft2.la $(FREETYPE_LIBS) $(pangolibs)
+
 if HAVE_X
 if INCLUDE_HANGUL_X
 noinst_LTLIBRARIES = libpango-hangul-x.la
@@ -9,17 +14,22 @@ moddefine = -DX_MODULE_PREFIX
 else
 moduledir = $(libdir)/pango/modules
 module_LTLIBRARIES = pango-hangul-x.la
-moduleflags= -rpath $(libdir)
+hangul_x_libadd = $(pangoxlibs)
 endif
 endif
 
 INCLUDES = -I$(top_srcdir) -I$(top_srcdir)/pango/ $(moddefine) $(X_CFLAGS)
 
-pango_hangul_x_la_LDFLAGS = $(moduleflags) -export-dynamic -avoid-version -module
+pango_hangul_x_la_LDFLAGS = -export-dynamic -avoid-version -module
 pango_hangul_x_la_SOURCES = $(sources)
+pango_hangul_x_la_LIBADD = $(hangul_x_libadd)
 
 libpango_hangul_x_la_SOURCES = $(sources)
 
 EXTRA_DIST =			\
 	tables-ksc5601.i	\
 	tables-johabfont.i
+
+included-modules: $(noinst_LTLIBRARIES)
+
+.PHONY: included-modules

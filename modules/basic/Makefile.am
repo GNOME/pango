@@ -2,6 +2,11 @@
 
 basic_sources = basic-x.c
 
+pangolibs = $(top_builddir)/pango/libpango.la $(FRIBIDI_LIBS) $(GLIB_LIBS)
+pangoxlibs = $(top_builddir)/pango/libpangox.la $(X_LIBS) $(pangolibs)
+pangoxftlibs = $(top_builddir)/pango/libpangoxft.la $(XFT_LIBS) $(pangolibs)
+pangoft2libs = $(top_builddir)/pango/libpangoft2.la $(FREETYPE_LIBS) $(pangolibs)
+
 if HAVE_XFT
 if INCLUDE_BASIC_XFT
 XFT_INCLUDED=libpango-basic-xft.la
@@ -11,6 +16,7 @@ else
 XFT_INCLUDED=
 XFT_MODULES=pango-basic-xft.la
 XFT_PREFIX=
+basic_xft_libadd=$(pangoxlibs)
 endif
 else
 XFT_MODULES=
@@ -27,6 +33,7 @@ else
 FT2_INCLUDED=
 FT2_MODULES=pango-basic-ft2.la
 FT2_PREFIX=
+basic_ft2_libadd=$(pangoft2libs)
 endif
 else
 FT2_MODULES=
@@ -43,6 +50,7 @@ else
 X_INCLUDED=
 X_MODULES=pango-basic-x.la
 X_PREFIX=
+basic_x_libadd=$(pangoxlibs)
 endif
 else
 X_INCLUDED=
@@ -54,7 +62,6 @@ noinst_LTLIBRARIES = $(X_INCLUDED) $(XFT_INCLUDED) $(FT2_INCLUDED)
 module_LTLIBRARIES = $(X_MODULES) $(XFT_MODULES) $(FT2_MODULES)
 moddefine = $(X_PREFIX) $(XFT_PREFIX) $(FT2_PREFIX)
 moduledir = $(libdir)/pango/modules
-moduleflags=-rpath $(libdir)
 
 INCLUDES = 			\
 	-I$(top_srcdir) 	\
@@ -63,18 +70,18 @@ INCLUDES = 			\
 	$(FREETYPE_CFLAGS)	\
 	$(moddefine)
 
-pango_basic_x_la_LDFLAGS = $(moduleflags) -export-dynamic -avoid-version -module
-pango_basic_x_la_LIBADD = 
+pango_basic_x_la_LDFLAGS = -export-dynamic -avoid-version -module
+pango_basic_x_la_LIBADD = $(basic_x_libadd)
 pango_basic_x_la_SOURCES = $(basic_sources)
 libpango_basic_x_la_SOURCES = $(basic_sources)
 
-pango_basic_xft_la_LDFLAGS = -rpath $(libdir) -export-dynamic -avoid-version -module
-pango_basic_xft_la_LIBADD = 
+pango_basic_xft_la_LDFLAGS = -export-dynamic -avoid-version -module
+pango_basic_xft_la_LIBADD = $(basic_xft_libadd)
 pango_basic_xft_la_SOURCES = basic-xft.c
 libpango_basic_xft_la_SOURCES = basic-xft.c
 
-pango_basic_ft2_la_LDFLAGS = -rpath $(libdir) -export-dynamic -avoid-version -module
-pango_basic_ft2_la_LIBADD =  $(FREETYPE_LIBS)
+pango_basic_ft2_la_LDFLAGS = -export-dynamic -avoid-version -module
+pango_basic_ft2_la_LIBADD = $(basic_ft2_libadd)
 pango_basic_ft2_la_SOURCES = basic-ft2.c
 libpango_basic_ft2_la_SOURCES = basic-ft2.c
 
@@ -85,3 +92,6 @@ EXTRA_DIST =		\
 	makefile.mingw	\
 	makefile.mingw.in
 
+included-modules: $(noinst_LTLIBRARIES)
+
+.PHONY: included-modules

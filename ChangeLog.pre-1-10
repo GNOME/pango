@@ -1,3 +1,25 @@
+Tue May  1 16:03:48 2001  Owen Taylor  <otaylor@redhat.com>
+
+	* autogen.sh (libtool_version): Require libtool 1.4 when
+	build out of CVS.
+
+	* **/Makefile.am: Add inter-library dependencies,
+	especially for the modules. Many cleanups to the
+	module makefiles.
+	
+	* configure.in modules/indic/Makefile.am: Remove 
+	INCLUDE_ANY_INDIC conditional which doesn't seem to have
+	any point and was definitely suspect as done.
+
+	* modules/tamil/tamil-xft.c (MODULE_ENTRY): Fix prefix
+	to be _pango_tamil instead of _pango_basic.
+
+        * Makefile.am: Build modules/ after pango/ so we can
+	make the modules depend on libpango/libpangox. 
+
+	* examples/Makefile.am: Remove spurious rule to rebuild
+	makefile.mingw.
+
 Mon May 14 19:10:11 2001  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pangoxft-font.c: Fix to correspond to extremely

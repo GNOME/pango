@@ -1,13 +1,20 @@
 ## Process this file with automake to create Makefile.in.
 
+pangolibs = $(top_builddir)/pango/libpango.la $(FRIBIDI_LIBS) $(GLIB_LIBS)
+pangoxlibs = $(top_builddir)/pango/libpangox.la $(X_LIBS) $(pangolibs)
+pangoxftlibs = $(top_builddir)/pango/libpangoxft.la $(XFT_LIBS) $(pangolibs)
+pangoft2libs = $(top_builddir)/pango/libpangoft2.la $(FREETYPE_LIBS) $(pangolibs)
+
 if HAVE_XFT
-XFT_MODULES=pango-arabic-xft.la
 if INCLUDE_ARABIC_XFT
+XFT_MODULES=
 XFT_INCLUDED=libpango-arabic-xft.la
 XFT_PREFIX=-DXFT_MODULE_PREFIX
 else
+XFT_MODULES=pango-arabic-xft.la
 XFT_INCLUDED=
 XFT_PREFIX=
+arabic_xft_libadd=$(pangoxftlibs)
 endif
 else
 XFT_MODULES=
@@ -40,6 +47,7 @@ else
 X_MODULES=pango-arabic-x.la
 X_INCLUDED=
 X_PREFIX=
+arabic_x_libadd=$(pangoxlibs)
 endif
 else
 X_MODULES=
@@ -51,19 +59,21 @@ noinst_LTLIBRARIES = $(X_INCLUDED) $(XFT_INCLUDED)
 module_LTLIBRARIES = $(X_MODULES) $(XFT_MODULES)
 moddefine = $(X_PREFIX) $(XFT_PREFIX)
 moduledir = $(libdir)/pango/modules
-moduleflags=-rpath $(libdir)
 
 INCLUDES = -I$(top_srcdir) -I$(top_srcdir)/pango/ $(moddefine) $(X_CFLAGS) $(FREETYPE_CFLAGS)
 
-pango_arabic_x_la_LDFLAGS = $(moduleflags) -export-dynamic -avoid-version -module
+pango_arabic_x_la_LDFLAGS = -export-dynamic -avoid-version -module
+pango_arabic_x_la_LIBADD = $(arabic_x_libadd)
 pango_arabic_x_la_SOURCES = $(x_sources)
 
 libpango_arabic_x_la_SOURCES = $(x_sources)
 
-pango_arabic_xft_la_LDFLAGS = -rpath $(libdir) -export-dynamic -avoid-version -module
-pango_arabic_xft_la_LIBADD = 
+pango_arabic_xft_la_LDFLAGS = -export-dynamic -avoid-version -module
+pango_arabic_xft_la_LIBADD = $(arabic_xft_libadd)
 pango_arabic_xft_la_SOURCES = $(xft_sources)
 
 libpango_arabic_xft_la_SOURCES = $(xft_sources)
 
+included-modules: $(noinst_LTLIBRARIES)
 
+.PHONY: included-modules

@@ -213,6 +213,7 @@ if test "x$with_included_modules" != xno || test "x$with_included_modules" = x ;
 fi
 
 AC_MSG_RESULT($included_modules)
+AM_CONDITIONAL(HAVE_INCLUDED_MODULES, test "x$included_modules" != x)
 
 INCLUDED_X_MODULES=
 INCLUDED_XFT_MODULES=
@@ -224,7 +225,7 @@ for module in $included_modules; do
   else
     dir=`echo $module | sed "s/-.*//"`
   fi
-  
+
   if echo $module | grep -- "-xft\($\|,\)" > /dev/null; then
     INCLUDED_XFT_MODULES="$INCLUDED_XFT_MODULES \$(top_builddir)/modules/$dir/libpango-$module.la"
   elif echo $module | grep -- "-ft2\($\|,\)" > /dev/null; then
@@ -257,17 +258,6 @@ AM_CONDITIONAL(INCLUDE_GURMUKHI_X,echo $included_modules | grep '\(^\|,\)gurmukh
 AM_CONDITIONAL(INCLUDE_BENGALI_X,echo $included_modules | grep '\(^\|,\)bengali-x\($\|,\)' > /dev/null)
 AM_CONDITIONAL(INCLUDE_GUJARATI_X,echo $included_modules | grep '\(^\|,\)gujarati-x\($\|,\)' > /dev/null)
 AM_CONDITIONAL(INCLUDE_DEVANAGARI_X,echo $included_modules | grep '\(^\|,\)devanagari-x\($\|,\)' > /dev/null)
-
-have_indic_modules="no"
-IFS="${IFS= 	}"; pango_save_ifs="$IFS"; IFS=","
-for module in $indic_modules; do
-  if echo $included_modules | grep "\(^\| \)$module\(\$\| \)" > /dev/null; then
-    have_indic_modules="yes"
-  fi
-done
-IFS="$pango_save_ifs"
-
-AM_CONDITIONAL(INCLUDE_ANY_INDIC,test $have_indic_modules = yes)
 
 #
 # We use flockfile to implement pango_getline() - should be moved to GLib

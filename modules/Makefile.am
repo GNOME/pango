@@ -11,3 +11,11 @@ SUBDIRS = 		\
 
 EXTRA_DIST =		\
 	module.def
+
+included-modules:
+	@for d in $(SUBDIRS) ; do \
+		( cd $$d && $(MAKE) $(AM_MAKEFLAGS) included-modules ) ; \
+        done
+
+.PHONY: included-modules
+

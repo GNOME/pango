@@ -56,8 +56,3 @@ EXTRA_DIST=			\
 if HAVE_X
 alias_DATA = pangox.aliases
 endif
-
-makefile.mingw: $(top_builddir)/config.status $(top_srcdir)/examples/makefile.mingw.in
-	cd $(top_builddir) && CONFIG_FILES=examples/$@ CONFIG_HEADERS= $(SHELL) ./config.status
-
-
