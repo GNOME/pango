@@ -1,3 +1,13 @@
+Fri Nov  2 13:56:58 2001  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-layout.c: Patch from Alex Larsson to improve
+	line breaking algorithm so that it doesn't do O(n^2) --
+	each character is shaped at most twice - once to get the
+	widths, and once if the run is broken. Also, quite a
+	bit of cleanup to consistently use the ParaBreakState
+	object to keep track of the state of the line-break
+	process. (#62014)
+
 Fri Nov  2 08:50:16 2001  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/{fonts.c,pango-color.c,pango-utils.c,

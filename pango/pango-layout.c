@@ -2197,17 +2197,8 @@ imposed_extents (gint              n_chars,
  * Line Breaking *
  *****************/
 
-static void
-insert_run (PangoLayoutLine *line, PangoItem *item, PangoGlyphString *glyphs)
-{
-  PangoLayoutRun *run = g_new (PangoLayoutRun, 1);
-
-  run->item = item;
-  run->glyphs = glyphs;
-
-  line->runs = g_slist_prepend (line->runs, run);
-  line->length += item->length;
-}
+static void shape_tab (PangoLayoutLine  *line,
+		       PangoGlyphString *glyphs);
 
 static void
 free_run (PangoLayoutRun *run, gboolean free_item)
@@ -2466,48 +2457,138 @@ typedef enum
   BREAK_ALL_FIT
 } BreakResult;
 
+typedef struct _ParaBreakState ParaBreakState;
+
+struct _ParaBreakState
+{
+  GList *items;			/* This paragraph turned into items */
+  gboolean first_line;		/* TRUE if this is the first line of the paragraph */
+  int line_start_index;		/* Start index of line in layout->text */
+
+  int remaining_width;		/* Amount of space remaining on line; < 0 is infinite */
+
+  int start_offset;		/* Character offset of first item in state->items in layout->text */
+  PangoGlyphString *glyphs;	/* Glyphs for the first item in state->items */
+  PangoGlyphUnit *log_widths;	/* Logical widths for first item in state->items.. */
+  int log_widths_offset;        /* Offset into log_widths to the point corresponding
+				 * to the remaining portion of the first item */
+};
+
+static void
+insert_run (PangoLayoutLine *line,
+	    ParaBreakState  *state,
+	    const char      *text,
+	    PangoItem       *run_item,
+	    gboolean         last_run)
+{
+  PangoLayoutRun *run = g_new (PangoLayoutRun, 1);
+
+  run->item = run_item;
+
+  if (last_run && state->log_widths_offset == 0)
+    run->glyphs = state->glyphs;
+  else
+    {
+      run->glyphs = pango_glyph_string_new ();
+      
+      if (text[run_item->offset] == '\t')
+	shape_tab (line, run->glyphs);
+      else
+	pango_shape (text + run_item->offset, run_item->length, &run_item->analysis, run->glyphs);
+    }
+
+  if (last_run)
+    {
+      if (state->log_widths_offset > 0)
+	pango_glyph_string_free (state->glyphs);
+      state->glyphs = NULL;
+      g_free (state->log_widths);
+    }
+  
+  line->runs = g_slist_prepend (line->runs, run);
+  line->length += run_item->length;
+}
+
+/**
+ * Tries to insert as much as possible of the item at the head of
+ * state->items onto @line. Three results are possible:
+ *
+ *  BREAK_NONE_FIT: Could
+ *  BREAK_SOME_FIT: The item was broken in the middle
+ *  BREAK_ALL_FIT: Everything fit.
+ *
+ * If @no_break_at_start is TRUE, then BREAK_NONE_FIT will never
+ * be returned, a run will be added even if inserting the minimum amount
+ * will cause the line to overflow. This is used when we've discovered
+ * we can't break the line at all and have to backtrack and try again
+ * allowing overflow.
+ *
+ * If @no_break_at_end is TRUE, then BREAK_ALL_FIT will never be
+ * returned even everything fits; the run will be broken earlier,
+ * or BREAK_NONE_FIT returned. This is used when the end of the
+ * run is not a break position.
+ **/
 static BreakResult
 process_item (PangoLayout     *layout,
 	      PangoLayoutLine *line,
-	      PangoItem       *item,
-	      const char      *text,
-	      int              start_offset,
+	      ParaBreakState  *state,
 	      gboolean         no_break_at_start,
-	      gboolean         no_break_at_end,
-	      int             *remaining_width)
+	      gboolean         no_break_at_end)
 {
-  PangoGlyphString *glyphs = pango_glyph_string_new ();
   PangoRectangle shape_ink;
   PangoRectangle shape_logical;
-  gboolean shape_set;
+  PangoItem *item = state->items->data;
+  gboolean shape_set = FALSE;
   int width;
   int length;
   int i;
+  gboolean processing_new_item = FALSE;
 
-  pango_layout_get_item_properties (item, NULL, NULL,
-                                    &shape_ink, &shape_logical, &shape_set);
-
-  if (shape_set)
-    imposed_shape (item->num_chars, &shape_ink, &shape_logical, glyphs);
-  else if (text[item->offset] == '\t')
-    shape_tab (line, glyphs);
-  else
-    pango_shape (text + item->offset, item->length, &item->analysis, glyphs);
-
-  if (*remaining_width < 0)	/* Wrapping off */
+  if (!state->glyphs)
     {
-      insert_run (line, item, glyphs);
+      state->glyphs = pango_glyph_string_new ();
+      
+      pango_layout_get_item_properties (item, NULL, NULL,
+					&shape_ink,
+					&shape_logical,
+					&shape_set);
+
+      if (shape_set)
+	imposed_shape (item->num_chars, &shape_ink, &shape_logical, state->glyphs);
+      else if (layout->text[item->offset] == '\t')
+	shape_tab (line, state->glyphs);
+      else
+	pango_shape (layout->text + item->offset, item->length, &item->analysis, state->glyphs);
+
+      state->log_widths = NULL;
+      state->log_widths_offset = 0;
+
+      processing_new_item = TRUE;
+    }
+  
+  if (state->remaining_width < 0 && !no_break_at_end)	/* Wrapping off */
+    {
+      insert_run (line, state, layout->text, item, TRUE);
+
       return BREAK_ALL_FIT;
     }
 
-  width =0;
-  for (i=0; i < glyphs->num_glyphs; i++)
-    width += glyphs->glyphs[i].geometry.width;
-
-  if (width <= *remaining_width && !no_break_at_end)
+  width = 0;
+  if (processing_new_item)
     {
-      *remaining_width -= width;
-      insert_run (line, item, glyphs);
+      for (i = 0; i < state->glyphs->num_glyphs; i++)
+	width += state->glyphs->glyphs[i].geometry.width;
+    }
+  else
+    {
+      for (i = 0; i < item->num_chars; i++)
+	width += state->log_widths[state->log_widths_offset + i];
+    }
+  
+  if (width <= state->remaining_width && !no_break_at_end)
+    {
+      state->remaining_width -= width;
+      insert_run (line, state, layout->text, item, TRUE);
 
       return BREAK_ALL_FIT;
     }
@@ -2516,80 +2597,75 @@ process_item (PangoLayout     *layout,
       int num_chars = item->num_chars;
       int break_num_chars = num_chars;
       int break_width = width;
-      PangoGlyphUnit *log_widths = g_new (PangoGlyphUnit, item->num_chars);
-      pango_glyph_string_get_logical_widths (glyphs, text + item->offset, item->length, item->analysis.level, log_widths);
+
+      if (processing_new_item)
+	{
+	  state->log_widths = g_new (PangoGlyphUnit, item->num_chars);
+	  pango_glyph_string_get_logical_widths (state->glyphs,
+						 layout->text + item->offset, item->length, item->analysis.level,
+						 state->log_widths);
+	}
       
       /* Shorten the item by one line break
        */
       while (--num_chars > 0)
-	{
-	  width -= log_widths[num_chars];
+ {
+	  width -= (state->log_widths)[state->log_widths_offset + num_chars];
 	  
-	  if (can_break_at (layout, start_offset + num_chars))
+	  if (can_break_at (layout, state->start_offset + num_chars))
 	    {
 	      break_num_chars = num_chars;
 	      break_width = width;
 	      
-	      if (width <= *remaining_width)
+	      if (width <= state->remaining_width)
 		break;
 	    }
 	}
-
-      g_free (log_widths);
       
-      if (no_break_at_start || break_width <= *remaining_width)	/* Succesfully broke the item */
+      if (no_break_at_start || break_width <= state->remaining_width)	/* Succesfully broke the item */
 	{
-	  *remaining_width -= break_width;
+	  state->remaining_width -= break_width;
 	  
 	  if (break_num_chars == item->num_chars)
 	    {
-	      insert_run (line, item, glyphs);
-	      
+	      insert_run (line, state, layout->text, item, TRUE);
+
 	      return BREAK_ALL_FIT;
 	    }
 	  else
 	    {
 	      PangoItem *new_item;
 
-	      length = g_utf8_offset_to_pointer (text + item->offset, break_num_chars) - (text + item->offset);
+	      length = g_utf8_offset_to_pointer (layout->text + item->offset, break_num_chars) - (layout->text + item->offset);
 
               new_item = pango_item_split (item, length, break_num_chars);
 	      
-	      if (shape_set)
-		imposed_shape (item->num_chars, &shape_ink, &shape_logical, glyphs);
-	      else
-		pango_shape (text + new_item->offset, new_item->length, &new_item->analysis, glyphs);
-	      
-	      insert_run (line, new_item, glyphs);
-	      
+	      insert_run (line, state, layout->text, new_item, FALSE);
+
+	      state->log_widths_offset += break_num_chars;
+
+	      /* Shaped items should never be broken */
+	      g_assert (!shape_set);
+
 	      return BREAK_SOME_FIT;
 	    }
 	}
       else
 	{
-	  pango_glyph_string_free (glyphs);
+	  pango_glyph_string_free (state->glyphs);
+	  state->glyphs = NULL;
+	  g_free (state->log_widths);
+
 	  return BREAK_NONE_FIT;
 	}
     }
 }
-
-typedef struct _ParaBreakState ParaBreakState;
-
-struct _ParaBreakState
-{
-  GList *items;
-  gboolean first_line;
-  const char *text;
-  gint start_offset;
-  gint line_start_index;
-};
 
 static void
 process_line (PangoLayout    *layout,
 	      ParaBreakState *state)
 {
   PangoLayoutLine *line;
-  gint remaining_width;
   
   gboolean have_break = FALSE;      /* If we've seen a possible break yet */
   gboolean break_at_start = FALSE;  /* If that break is at the start of a run */
@@ -2601,9 +2677,9 @@ process_line (PangoLayout    *layout,
   line->start_index = state->line_start_index;
   
   if (state->first_line)
-    remaining_width = (layout->indent >= 0) ? layout->width - layout->indent : layout->width;
+    state->remaining_width = (layout->indent >= 0) ? layout->width - layout->indent : layout->width;
   else
-    remaining_width = (layout->indent >= 0) ? layout->width : layout->width + layout->indent;
+    state->remaining_width = (layout->indent >= 0) ? layout->width : layout->width + layout->indent;
 
   while (state->items)
     {
@@ -2614,23 +2690,20 @@ process_line (PangoLayout    *layout,
 
       if (line->runs && can_break_at (layout, state->start_offset))
 	{
-	  if (remaining_width == 0)
+	  if (state->remaining_width == 0)
 	    goto done;
 
 	  have_break = TRUE;
 	  break_at_start = TRUE;
-	  break_remaining_width = remaining_width;
+	  break_remaining_width = state->remaining_width;
 	  break_start_offset = state->start_offset;
 	  break_link = line->runs;
 	}
 
       old_num_chars = item->num_chars;
-      old_remaining_width = remaining_width;
+      old_remaining_width = state->remaining_width;
       
-      result = process_item (layout, line, item, layout->text,
-			     state->start_offset,
-			     !have_break, FALSE,
-			     &remaining_width);
+      result = process_item (layout, line, state, !have_break, FALSE);
 
       switch (result)
 	{
@@ -2658,17 +2731,15 @@ process_line (PangoLayout    *layout,
 	    state->items = g_list_prepend (state->items, uninsert_run (line));
 
 	  state->start_offset = break_start_offset;
+	  state->remaining_width = break_remaining_width;
 
 	  if (!break_at_start)
 	    {
 	      /* Reshape run to break */
-	      PangoItem *item = state->items->data;
-
+	      item = state->items->data;
+	      
 	      old_num_chars = item->num_chars;
-	      result = process_item (layout, line, item, layout->text,
-				     state->start_offset,
-				     TRUE, TRUE,
-				     &break_remaining_width);
+	      result = process_item (layout, line, state, TRUE, TRUE);
 	      g_assert (result == BREAK_SOME_FIT);
 
 	      state->start_offset += old_num_chars - item->num_chars; 
@@ -2842,8 +2913,10 @@ pango_layout_check_lines (PangoLayout *layout)
 	{
 	  state.first_line = TRUE;
 	  state.start_offset = start_offset;
-	  state.text = start;
-          state.line_start_index = state.text - layout->text;
+          state.line_start_index = start - layout->text;
+
+	  state.glyphs = NULL;
+	  state.log_widths = NULL;
 	  
 	  while (state.items)
             process_line (layout, &state);
