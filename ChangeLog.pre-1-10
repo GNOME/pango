@@ -1,3 +1,17 @@
+2002-11-26  Sebastian Wilhelmi  <wilhelmi@ira.uka.de>
+
+	* configure.in: Do not add GLIB_CFLAGS to CFLAGS.
+
+	* docs/Makefile.am, examples/Makefile.am,
+	modules/arabic/Makefile.am, modules/basic/Makefile.am,
+	modules/hangul/Makefile.am, modules/hebrew/Makefile.am,
+	modules/indic/Makefile.am, modules/tamil/Makefile.am,
+	modules/thai/Makefile.am, pango/Makefile.am,
+	pango/mini-fribidi/Makefile.am, pango/opentype/Makefile.am:
+	Instead add $(GLIB_CFLAGS) directly to INCLUDES (GTKDOC_CFLAGS for
+	docs/Makefile.am). Also some cosmetic line wrapping and
+	reindentation.
+
 Mon Nov 25 20:25:23 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/glyphstring.c (pango_glyph_string_extents_range): 

@@ -90,6 +90,7 @@ INCLUDES =					\
 	-DG_DISABLE_DEPRECATED			\
 	-I$(top_srcdir)				\
 	-I$(top_srcdir)/pango/			\
+	$(GLIB_CFLAGS)				\
 	$(XFT_CFLAGS)				\
 	$(X_CFLAGS)				\
 	$(myanmar_x_cflags)			\

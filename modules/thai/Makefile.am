@@ -48,7 +48,16 @@ module_LTLIBRARIES = $(X_MODULES) $(XFT_MODULES)
 moddefine = $(X_PREFIX) $(XFT_PREFIX)
 moduledir = $(libdir)/pango/$(PANGO_MODULE_VERSION)/modules
 
-INCLUDES = -DPANGO_ENABLE_ENGINE -DG_DISABLE_DEPRECATED -I$(top_srcdir) -I$(top_srcdir)/pango/ $(moddefine) $(XFT_CFLAGS) $(FREETYPE_CFLAGS) $(X_CFLAGS)
+INCLUDES =			\
+	-DPANGO_ENABLE_ENGINE	\
+	-DG_DISABLE_DEPRECATED	\
+	-I$(top_srcdir)		\
+	-I$(top_srcdir)/pango/	\
+	$(moddefine)		\
+	$(GLIB_CFLAGS)		\
+	$(XFT_CFLAGS)		\
+	$(FREETYPE_CFLAGS)	\
+	$(X_CFLAGS)
 
 pango_thai_x_la_LDFLAGS = -export-dynamic -avoid-version -module
 pango_thai_x_la_LIBADD = $(thai_x_libadd)

@@ -4,7 +4,8 @@ INCLUDES = 					\
 	-DSYSCONFDIR=\"$(sysconfdir)\" 		\
 	-DLIBDIR=\"$(libdir)\" 			\
 	-DG_DISABLE_DEPRECATED			\
-	-I$(top_srcdir)
+	-I$(top_srcdir)				\
+	$(GLIB_CFLAGS)
 
 LDADDS = @STRIP_BEGIN@ 	\
 	@x_ldflags@	\

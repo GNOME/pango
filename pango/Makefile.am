@@ -17,13 +17,14 @@ SUBDIRS = $(OPENTYPE_SUBDIR) $(FRIBIDI_SUBDIR)
 
 DIST_SUBDIRS = mini-fribidi opentype
 
-INCLUDES = 						\
+INCLUDES =						\
 	-DPANGO_ENABLE_BACKEND				\
 	-DPANGO_ENABLE_ENGINE				\
-	-DSYSCONFDIR=\"$(sysconfdir)\" 			\
-	-DLIBDIR=\"$(libdir)\" 				\
+	-DSYSCONFDIR=\"$(sysconfdir)\"			\
+	-DLIBDIR=\"$(libdir)\"				\
 	-DMODULE_VERSION=\"$(PANGO_MODULE_VERSION)\"	\
 	-DG_DISABLE_DEPRECATED				\
+	$(GLIB_CFLAGS)					\
 	$(XFT_CFLAGS)					\
 	$(FONTCONFIG_CFLAGS)				\
 	$(FREETYPE_CFLAGS)				\
