@@ -241,6 +241,7 @@ get_gpos_ruleset (FT_Face face, PangoIndicInfo *indic_info)
 
   return ruleset;
 }
+
 static void
 set_glyphs (PangoFont *font, FT_Face face, const gunichar *wcs, gulong *tags, glong n_glyphs, PangoOTBuffer *buffer)
 {
@@ -250,10 +251,14 @@ set_glyphs (PangoFont *font, FT_Face face, const gunichar *wcs, gulong *tags, gl
 
   for (i = 0; i < n_glyphs; i += 1)
     {
-      pango_ot_buffer_add_glyph (buffer,
-				 FT_Get_Char_Index (face, wcs[i]),
-				 tags[i],
-				 i);
+      guint glyph;
+
+      if (ZERO_WIDTH_CHAR (wcs[i]))
+	glyph = 0;
+      else
+	glyph = FT_Get_Char_Index (face, wcs[i]);
+      
+      pango_ot_buffer_add_glyph (buffer, glyph, tags[i], i);
     }
 }
 

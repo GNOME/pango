@@ -1,3 +1,9 @@
+Wed Dec 15 18:50:18 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* modules/indic/indic-fc.c modules/indic/indic-ot.h:
+	Force zero-width marks to glyph index 0 so they
+	won't be drawn. (#145233, Aniruddha Shankar)
+
 Tue Dec 14 18:36:57 2004  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pango-layout.c (pango_layout_copy): Copy 
