@@ -15,7 +15,7 @@ System for layout and rendering of internationalized text.
 %package devel
 Summary:	System for layout and rendering of internationalized text
 Group:		Development/Libraries
-Requires:	name = %{version}
+Requires:	%{name} = %{version}
 Requires:	libunicode-devel
 Requires:	fribidi-devel
 Requires:	XFree86-devel
