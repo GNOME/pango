@@ -1,5 +1,13 @@
 2001-02-28  Havoc Pennington  <hp@redhat.com>
 
+	* pango/pango-font.h (struct _PangoFontMetrics): add
+	approximate_digit_width field
+
+	* pango/pangox.c (pango_x_font_get_metrics): make up an
+	approximate digit width number
+	
+2001-02-28  Havoc Pennington  <hp@redhat.com>
+
 	* pango/pango-font.h (struct _PangoFontMetrics): Add
 	approximate_char_width field
 

@@ -525,9 +525,9 @@ pango_x_font_get_glyph_extents  (PangoFont      *font,
 static gboolean
 get_int_prop (Atom         atom,
               XFontStruct *fs,
-              gint        *val)
+              int         *val)
 {
-  gint i;
+  int i;
 
   *val = 0;
   
@@ -556,8 +556,8 @@ get_font_metrics_from_subfonts (PangoFont        *font,
   PangoXFont *xfont = (PangoXFont *)font;
   GSList *tmp_list = subfonts;
   gboolean first = TRUE;
-  gint total_avg_widths = 0;
-  gint n_avg_widths = 0;
+  int total_avg_widths = 0;
+  int n_avg_widths = 0;
   Atom avg_width_atom;
 
   avg_width_atom = pango_x_fontmap_atom_from_name (xfont->fontmap,
@@ -780,12 +780,32 @@ pango_x_font_get_metrics (PangoFont        *font,
 
   if (!tmp_list)
     {
+      PangoLayout *layout;
+      PangoRectangle extents;
+      PangoContext *context;
+      
       info = g_new (PangoXMetricsInfo, 1);
       info->lang = lookup_lang;
 
       xfont->metrics_by_lang = g_slist_prepend (xfont->metrics_by_lang, info);
       
       get_font_metrics_from_string (font, lang, str, &info->metrics);
+
+      /* This is sort of a sledgehammer solution, but we cache this
+       * stuff so not a huge deal hopefully. Get the avg. width of the
+       * chars in "0123456789"
+       */
+      context = pango_x_get_context (pango_x_fontmap_get_display (xfont->fontmap));
+      pango_context_set_lang (context, lang);
+      layout = pango_layout_new (context);
+      pango_layout_set_text (layout, "0123456789", -1);
+
+      pango_layout_get_extents (layout, NULL, &extents);
+
+      metrics->approximate_digit_width = extents.width / 10;
+
+      g_object_unref (G_OBJECT (layout));
+      g_object_unref (G_OBJECT (context));
     }
       
   *metrics = info->metrics;
