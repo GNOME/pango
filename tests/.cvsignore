@@ -1,2 +1,6 @@
+.deps
+.libs
+runtests.log
+testboundaries
 Makefile.in
 Makefile
