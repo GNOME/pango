@@ -370,7 +370,7 @@ INCLUDED_FT2_MODULES=
 INCLUDED_WIN32_MODULES=
 IFS="${IFS= 	}"; pango_save_ifs="$IFS"; IFS=","
 for module in $included_modules; do
-  if echo $indic_modules | egrep "(^| )$module($| )" > /dev/null; then
+  if echo $indic_modules | egrep "(^| )$module(\$| )" > /dev/null; then
     dir=indic
   else
     dir=`echo $module | sed "s/-.*//"`
