@@ -26,8 +26,6 @@
 #include <stdlib.h>
 #include <glib.h>
 
-#include <fribidi/fribidi.h>
-
 #include "pango-utils.h"
 #include "pangowin32.h"
 #include "pangowin32-private.h"
@@ -1347,9 +1345,9 @@ pango_win32_render_layout_line (HDC               hdc,
 	{
 	  HBRUSH oldbrush;
 
-	  brush = CreateSolidBrush (RGB ((bg_color.red + 128) >> 8,
-					 (bg_color.green + 128) >> 8,
-					 (bg_color.blue + 128) >> 8));
+	  brush = CreateSolidBrush (RGB ((bg_color.color.red + 128) >> 8,
+					 (bg_color.color.green + 128) >> 8,
+					 (bg_color.color.blue + 128) >> 8));
 	  oldbrush = SelectObject (hdc, brush);
 	  Rectangle (hdc, x + (x_off + logical_rect.x) / PANGO_SCALE,
 			  y + overall_rect.y / PANGO_SCALE,
@@ -1361,9 +1359,9 @@ pango_win32_render_layout_line (HDC               hdc,
 
       if (fg_set)
 	{
-	  brush = CreateSolidBrush (RGB ((fg_color.red + 128) >> 8,
-					 (fg_color.green + 128) >> 8,
-					 (fg_color.blue + 128) >> 8));
+	  brush = CreateSolidBrush (RGB ((fg_color.color.red + 128) >> 8,
+					 (fg_color.color.green + 128) >> 8,
+					 (fg_color.color.blue + 128) >> 8));
 	  oldfg = SelectObject (hdc, brush);
 	}
 

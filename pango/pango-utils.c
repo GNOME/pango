@@ -620,66 +620,13 @@ char *
 pango_get_sysconf_subdirectory (void)
 {
 #ifdef G_OS_WIN32
+  static gchar *result = NULL;
 
-  /* On Windows we don't hardcode any paths (SYSCONFDIR) in the DLL,
-   * but rely on an installation program to store the installation
-   * directory in the registry. If no installation program has been
-   * used, assume the Pango directory is %WINDIR%\Pango.
-   *
-   * If the latter doesn't exist either, fall back to the directory
-   * the pango-$PANGO_VERSION.dll comes from, to stop polluting
-   * neither the Registry nor the windows directory (which may be
-   * write protected with Win2K anyway).
-   */
+  if (result == NULL)
+    result = g_win32_get_package_installation_subdirectory
+      ("pango", g_strdup_printf ("pango-%s.dll", PANGO_VERSION), "etc\\pango");
 
-  static gboolean been_here = FALSE;
-  static gchar pango_sysconf_dir[200];
-  gchar win_dir[100];
-  HKEY reg_key = NULL;
-  DWORD type;
-  DWORD nbytes = sizeof (pango_sysconf_dir);
-
-  if (been_here)
-    return pango_sysconf_dir;
-
-  been_here = TRUE;
-
-  if (RegOpenKeyEx (HKEY_LOCAL_MACHINE, "Software\\GNU\\Pango", 0,
-		    KEY_QUERY_VALUE, &reg_key) != ERROR_SUCCESS
-      || RegQueryValueEx (reg_key, "InstallationDirectory", 0,
-			  &type, pango_sysconf_dir, &nbytes) != ERROR_SUCCESS
-      || type != REG_SZ)
-    {
-      /* Uh oh. Use %WinDir%\Pango */
-      GetWindowsDirectory (win_dir, sizeof (win_dir));
-      sprintf (pango_sysconf_dir, "%s\\pango", win_dir);
-
-      if (!g_file_test (pango_sysconf_dir, G_FILE_TEST_IS_DIR))
-        {
-           /* Oops. %WinDir%\pango does not exist */
-           HMODULE hm = NULL;
-           gchar* libname = g_strdup_printf ("pango-%s.dll", PANGO_VERSION);
-           hm = GetModuleHandle (libname);
-           if (!hm)
-             g_warning ("Can't find myself (%s)", libname);
-           else
-             {
-               GetModuleFileName (hm,
-                                  pango_sysconf_dir,
-                                  sizeof(pango_sysconf_dir));
-               /* strip dll name */
-               if (strrchr (pango_sysconf_dir, '\\'))
-                 *strrchr (pango_sysconf_dir, '\\') = 0;
-             }
-           g_free (libname);
-        }
-    }
-
-  if (reg_key != NULL)
-    RegCloseKey (reg_key);
-
-  return pango_sysconf_dir;
-
+  return result;
 #else
   return SYSCONFDIR "/pango";
 #endif
@@ -689,7 +636,13 @@ char *
 pango_get_lib_subdirectory (void)
 {
 #ifdef G_OS_WIN32
-  return pango_get_sysconf_subdirectory ();
+  static gchar *result = NULL;
+
+  if (result == NULL)
+    result = g_win32_get_package_installation_subdirectory
+      ("pango", g_strdup_printf ("pango-%s.dll", PANGO_VERSION), "lib\\pango");
+
+  return result;
 #else
   return LIBDIR "/pango";
 #endif

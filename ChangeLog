@@ -1,3 +1,24 @@
+2001-02-10  Tor Lillqvist  <tml@iki.fi>
+
+	* pango/pango-utils.c (pango_get_sysconf_subdirectory,
+	pango_get_lib_subdirectory): (Win32): Use
+	g_win32_get_package_installation_subdirectory(). Use the same
+	directory structure as on Unix, etc\pango and lib\pango under the
+	installation "prefix".
+	
+	* config.h.win32
+	* pango/makefile.mingw.in: Use mini-fribidi instead of full
+	FriBiDi.
+
+	* pango/pangowin32.c (pango_win32_render_layout_line): Adapt to
+	changed PangoAttrColor.
+
+	* pango/querymodules.c: Include <io.h> for getcwd() prototype.
+	(query_module): Handle modules with spaces in the path, and
+	backslashes, use g_strescape() (for Windows).
+
+	* pango/mini-fribidi/makefile.mingw: New file
+
 2001-02-05  Alexander Larsson  <alexl@redhat.com>
 
 	* pango/pangoft2.c (pango_ft2_render,

@@ -44,10 +44,9 @@
 #include <stdlib.h>
 #define PATH_MAX _MAX_PATH
 #endif /* PATH_MAX */
-#ifdef _MSC_VER
-#include <direct.h>
+#include <direct.h>		/* for getcwd() with MSVC */
+#include <io.h>			/* for getcwd() with mingw */
 #define getcwd _getcwd
-#endif
 #else
 #define SOEXT ".so"
 #endif
@@ -85,7 +84,24 @@ query_module (const char *dir, const char *name)
 
       for (i=0; i<n_engines; i++)
 	{
-	  g_print ("%s %s %s %s ", path, engines[i].id, engines[i].engine_type, engines[i].render_type);
+	  const gchar *quote;
+	  gchar *quoted_path;
+
+	  if (strchr (path, ' ') != NULL)
+	    {
+	      quote = "\"";
+	      quoted_path = g_strescape (path, NULL);
+	    }
+	  else
+	    {
+	      quote = "";
+	      quoted_path = g_strdup (path);
+	    }
+	  
+	  g_print ("%s%s%s %s %s %s ", quote, quoted_path, quote,
+		   engines[i].id, engines[i].engine_type, engines[i].render_type);
+	  g_free (quoted_path);
+
 	  for (j=0; j < engines[i].n_ranges; j++)
 	    {
 	      if (j != 0)
