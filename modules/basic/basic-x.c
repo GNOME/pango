@@ -97,6 +97,15 @@ static PangoGlyph conv_16bit (CharCache  *cache,
 static PangoGlyph conv_ucs4 (CharCache  *cache,
 			     GIConv      cd,
 			     const char *input);
+static PangoGlyph conv_16bit_MSB_on (CharCache  *cache,
+			      GIConv      cd,
+			      const char *input);
+static PangoGlyph conv_gb18030_1 (CharCache  *cache,
+			      GIConv      cd,
+			      const char *input);
+static PangoGlyph conv_euctw (CharCache  *cache,
+			      GIConv      cd,
+			      const char *input);
 
 #include "tables-big.i"
 
@@ -111,10 +120,13 @@ static PangoEngineRange basic_ranges[] = {
   { 0x10a0, 0x10ff, "*" }, /* Georgian */
   { 0x1200, 0x16ff, "*" }, /* Ethiopic,Cherokee,Canadian,Ogham,Runic */
   { 0x1e00, 0x1fff, "*" },
-  { 0x2000, 0x9fff, "*" },
+  { 0x2000, 0x33ff, "*" },
+  { 0x3400, 0x9fa5, "*" }, /* Unihan */
+  { 0xa000, 0xa4c6, "*" }, /* Yi */
   { 0xac00, 0xd7a3, "kr" },
+  { 0xe000, 0xf7ee, "*" }, /* HKSCS */
   { 0xf900, 0xfa0b, "kr" },
-  { 0xff00, 0xffe3, "*" }
+  { 0xff00, 0xffed, "*" }
 };
 
 static PangoEngineInfo script_engines[] = {
@@ -366,6 +378,76 @@ conv_16bit (CharCache  *cache,
     return outbuf[0];
   else
     return ((guchar)outbuf[0] & 0x7f) * 256 + ((guchar)outbuf[1] & 0x7f);
+}
+
+static PangoGlyph
+conv_16bit_MSB_on (CharCache  *cache,
+	    GIConv      cd,
+	    const char *input)
+{
+  char outbuf[2];
+
+  const char *inptr = input;
+  size_t inbytesleft;
+  char *outptr = outbuf;
+  size_t outbytesleft = 2;
+
+  inbytesleft = g_utf8_next_char (input) - input;
+  
+  g_iconv (cd, (char **)&inptr, &inbytesleft, &outptr, &outbytesleft);
+
+  if ((guchar)outbuf[0] < 128)
+    return outbuf[0];
+  else
+    return (guchar)outbuf[0] * 256 + (guchar)outbuf[1];
+}
+
+static PangoGlyph
+conv_gb18030_1 (CharCache  *cache,
+		GIConv      cd,
+		const char *input)
+{
+  char outbuf[4];
+
+  const char *inptr = input;
+  size_t inbytesleft;
+  char *outptr = outbuf;
+  size_t outbytesleft = 4;
+
+
+  inbytesleft = g_utf8_next_char (input) - input;
+  
+  g_iconv (cd, (char **)&inptr, &inbytesleft, &outptr, &outbytesleft);
+
+  if ((guchar)outbuf[0] < 128)
+    return outbuf[0];
+  else
+    return  12600 * ((guchar)outbuf[0] - 0x81) + 1260 * ((guchar)outbuf[1] - 0x30) + 10 * ((guchar)outbuf[2] - 0x81) + ((guchar)outbuf[3] - 0x30);
+}
+
+static PangoGlyph
+conv_euctw (CharCache  *cache,
+	    GIConv      cd,
+	    const char *input)
+{
+  char outbuf[4];
+
+  const char *inptr = input;
+  size_t inbytesleft;
+  char *outptr = outbuf;
+  size_t outbytesleft = 4;
+
+  inbytesleft = g_utf8_next_char (input) - input;
+  
+  g_iconv (cd, (char **)&inptr, &inbytesleft, &outptr, &outbytesleft);
+
+  /* The first two bytes determine which page of CNS to use; we
+   * get this information from tables-big.i, so ignore them
+   */
+  if ((guchar)outbuf[0] < 128)
+    return outbuf[0];
+  else
+    return ((guchar)outbuf[2] & 0x7f) * 256 + ((guchar)outbuf[3] & 0x7f);
 }
 
 static PangoGlyph

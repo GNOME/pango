@@ -1,3 +1,11 @@
+Fri Jul 26 19:46:45 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* modules/basic/basic-x.c modules/basic/tables-big.i:
+	Patch fromm Qingjiang (Brian) Yuan adding support
+	for GB-18030, BIG5-HKSCS, CNS-11643 and GBK encodings.
+	Also fix wrong encoding for Big5 fonts and look
+	for big5-1 as well as big5-0 for the encoding name.
+	
 Fri Jul 26 19:23:58 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* modules/hangul/hangul-x.c modules/hangul/tables-ksc5601.1:
