@@ -85,7 +85,18 @@ PangoGlyph pango_x_get_unknown_glyph (PangoFont      *font);
 
 /* API for libraries that want to use PangoX mixed with classic X fonts.
  */
-PangoFontMap *pango_x_font_map_for_display (Display *display);
+typedef struct _PangoXFontCache PangoXFontCache;
+
+PangoXFontCache *pango_x_font_cache_new     (Display         *display);
+void             pango_x_font_cache_free    (PangoXFontCache *cache);
+
+XFontStruct * pango_x_font_cache_load      (PangoXFontCache *cache,
+					    char            *xlfd);
+void          pango_x_font_cache_unload    (PangoXFontCache *cache,
+					    XFontStruct     *fs);
+
+PangoFontMap *   pango_x_font_map_for_display    (Display      *display);
+PangoXFontCache *pango_x_font_map_get_font_cache (PangoFontMap *font_map);
 
 #ifdef __cplusplus
 }
@@ -93,7 +104,3 @@ PangoFontMap *pango_x_font_map_for_display (Display *display);
 
 
 #endif /* __PANGOX_H__ */
-
-
-
-

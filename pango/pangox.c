@@ -125,8 +125,13 @@ static void
 pango_x_make_font_struct (PangoFont *font, PangoXSubfontInfo *info)
 {
   PangoXFont *xfont = (PangoXFont *)font;
+  PangoFontMap *fontmap;
+  PangoXFontCache *cache;
+
+  fontmap = pango_x_font_map_for_display (xfont->display);
+  cache = pango_x_font_map_get_font_cache (fontmap);
   
-  info->font_struct = XLoadQueryFont (xfont->display, info->xlfd);
+  info->font_struct = pango_x_font_cache_load (cache, info->xlfd);
   if (!info->font_struct)
     g_warning ("Cannot load font for XLFD '%s\n", info->xlfd);
   
@@ -1289,6 +1294,4 @@ pango_x_get_item_properties (PangoItem      *item,
       tmp_list = tmp_list->next;
     }
 }
-
-
 

@@ -1,3 +1,19 @@
+Sat May 27 22:05:53 2000  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/Makefile.am (pangoinclude_HEADERS): Install
+	pango-fontmap.h.
+
+	* pango/pangox-fontcache.c pango/pangox.h: Add a simple
+	cache from XLFD => font struct.
+
+	* pango/pango-fontmap.c: Use this when loading and unloading
+	fonts.
+
+Sat May 27 21:57:03 2000  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-context.c (pango_context_add_font_map): 
+	Ref font map.
+
 Sat May 27 21:06:13 2000  Owen Taylor  <otaylor@redhat.com>
 
 	* modules/thai/thai.c modules/basic/basic: 

@@ -131,6 +131,7 @@ pango_context_add_font_map (PangoContext *context,
   g_return_if_fail (context != NULL);
   g_return_if_fail (font_map != NULL);
   
+  g_object_ref (G_OBJECT (font_map));
   context->font_maps =  g_slist_append (context->font_maps, font_map);
 }
 

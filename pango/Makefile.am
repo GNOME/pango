@@ -26,7 +26,8 @@ libpango_la_SOURCES = 	   \
 
 libpangox_la_SOURCES = 	   \
 	pangox.c	   \
-	pangox-fontmap.c
+	pangox-fontcache.c \
+	pangox-fontmap.c 
 
 # We use the -release flag for now until the API settles
 # down at which point we'll either use the GTK+ versioning
@@ -46,6 +47,7 @@ pangoinclude_HEADERS = 	   \
 	pango-coverage.h   \
 	pango-engine.h	   \
 	pango-font.h       \
+	pango-fontmap.h	   \
 	pango-glyph.h	   \
 	pango-item.h	   \
 	pango-layout.h	   \

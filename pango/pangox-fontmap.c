@@ -71,6 +71,8 @@ struct _PangoXFontMap
 
   Display *display;
 
+  PangoXFontCache *font_cache;
+
   GHashTable *families;
   GHashTable *size_infos;
 
@@ -235,7 +237,6 @@ pango_x_font_map_for_display (Display *display)
 
       if (xfontmap->display == display)
 	{
-	  g_object_ref (G_OBJECT (xfontmap));
 	  return PANGO_FONT_MAP (xfontmap);
 	}
     }
@@ -243,6 +244,7 @@ pango_x_font_map_for_display (Display *display)
   xfontmap = (PangoXFontMap *)g_type_create_instance (PANGO_TYPE_X_FONT_MAP);
   
   xfontmap->display = display;
+  xfontmap->font_cache = pango_x_font_cache_new (display);
 
   /* Get a maximum of MAX_FONTS fontnames from the X server.
      Use "-*" as the pattern rather than "-*-*-*-*-*-*-*-*-*-*-*-*-*-*" since
@@ -263,6 +265,7 @@ pango_x_font_map_for_display (Display *display)
 
   pango_x_font_map_read_aliases (xfontmap);
 
+  g_object_ref (G_OBJECT (xfontmap));
   fontmaps = g_list_prepend (fontmaps, xfontmap);
 
   /* This is a little screwed up, since different screens on the same display
@@ -271,14 +274,17 @@ pango_x_font_map_for_display (Display *display)
   screen = DefaultScreen (xfontmap->display);
   xfontmap->resolution = (PANGO_SCALE * 72.27 / 25.4) * ((double) DisplayWidthMM (xfontmap->display, screen) /
 							 DisplayWidth (xfontmap->display, screen));
-
-  g_object_ref (G_OBJECT (xfontmap));
   return PANGO_FONT_MAP (xfontmap);
 }
 
 static void
 pango_x_font_map_finalize (GObject *object)
 {
+  PangoXFontMap *xfontmap = PANGO_X_FONT_MAP (object);
+  
+  pango_x_font_cache_free (xfontmap->font_cache);
+  /* FIXME: Lots more here */
+  
   fontmaps = g_list_remove (fontmaps, object);
 }
 
@@ -1384,4 +1390,13 @@ pango_x_font_entry_remove (PangoXFontEntry *entry,
 			   PangoFont       *font)
 {
   entry->cached_fonts = g_slist_remove (entry->cached_fonts, font);
+}
+
+PangoXFontCache *
+pango_x_font_map_get_font_cache (PangoFontMap *font_map)
+{
+  g_return_val_if_fail (font_map != NULL, NULL);
+  g_return_val_if_fail (PANGO_IS_X_FONT_MAP (font_map), NULL);
+
+  return PANGO_X_FONT_MAP (font_map)->font_cache;
 }
