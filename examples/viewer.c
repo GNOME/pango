@@ -214,7 +214,7 @@ break_run (char         *text,
   buf = pango_glyph_string_new();
   
   pango_shape (font, text + item->offset, item->length, &item->analysis, buf);
-  pango_x_extents (buf, NULL, NULL, &width, NULL, NULL, logical_ascent, logical_descent);
+  pango_x_extents (font, buf, NULL, NULL, &width, NULL, NULL, logical_ascent, logical_descent);
 
   result = FALSE;
   *new_item = NULL;
@@ -407,7 +407,7 @@ runs_x_to_cp (char *text, GList *runs, int x, int *offset)
       PangoItem *item = runs->data;
 
       pango_shape (font, text + item->offset, item->length, &item->analysis, buf);
-      pango_x_extents (buf, NULL, NULL, &width, NULL, NULL, NULL, NULL);
+      pango_x_extents (font, buf, NULL, NULL, &width, NULL, NULL, NULL, NULL);
 
       if (x >= pixels && x < pixels + width)
 	{
@@ -502,7 +502,7 @@ runs_char_bounds (char *text, GList *runs, int offset, int *x, int *width)
       PangoItem *item = runs->data;
       
       pango_shape (font, text + item->offset, item->length, &item->analysis, buf);
-      pango_x_extents (buf, NULL, NULL, &run_width, NULL, NULL, NULL, NULL);
+      pango_x_extents (font, buf, NULL, NULL, &run_width, NULL, NULL, NULL, NULL);
 
       if (offset >= item->offset &&
 	  offset < item->offset + item->length)
@@ -661,14 +661,14 @@ expose_paragraph (Paragraph *para, GdkDrawable *drawable,
 
 	  /* Render the glyphs to the screen */
 	  pango_x_render (GDK_DISPLAY(), GDK_WINDOW_XWINDOW (drawable),
-			  GDK_GC_XGC (gc), buf, x + x_off,
+			  GDK_GC_XGC (gc), font, buf, x + x_off,
 			  y + line->ascent);
 
 	  /* Advance to next x position
 	   */
 	  if (run_list->next)
 	    {
-	      pango_x_extents (buf, NULL, NULL, &width, NULL, NULL, NULL, NULL);
+	      pango_x_extents (font, buf, NULL, NULL, &width, NULL, NULL, NULL, NULL);
 
 	      x_off += width;
 	    }

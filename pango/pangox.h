@@ -33,17 +33,6 @@ extern "C" {
 
 #define PANGO_RENDER_TYPE_X "PangoRenderX"
 
-typedef struct _PangoXCFont PangoXCFont;
-
-struct _PangoXCFont {
-  /*< private >*/
-  PangoCFont font;
-
-  /*< public >*/
-  Display *display;
-  XFontStruct *font_struct;
-};
-
 /* Calls for applications
  */
 PangoFont *pango_x_load_font     (Display          *display,
@@ -51,10 +40,12 @@ PangoFont *pango_x_load_font     (Display          *display,
 void       pango_x_render        (Display          *display,
 				  Drawable          d,
 				  GC                gc,
+				  PangoFont        *font,
 				  PangoGlyphString *glyphs,
 				  gint              x,
 				  gint              y);
-void       pango_x_extents       (PangoGlyphString *glyphs,
+void       pango_x_extents       (PangoFont        *font,
+				  PangoGlyphString *glyphs,
 				  gint             *lbearing,
 				  gint             *rbearing,
 				  gint             *width,
@@ -62,7 +53,8 @@ void       pango_x_extents       (PangoGlyphString *glyphs,
 				  gint             *descent,
 				  gint             *logical_ascent,
 				  gint             *logical_descent);
-void       pango_x_glyph_extents (PangoGlyph       *glyph,
+void       pango_x_glyph_extents (PangoFont        *font,
+				  PangoGlyphIndex   glyph,
 				  gint             *lbearing,
 				  gint             *rbearing,
 				  gint             *width,
@@ -71,23 +63,19 @@ void       pango_x_glyph_extents (PangoGlyph       *glyph,
 				  gint             *logical_ascent,
 				  gint             *logical_descent);
 
-
-/* Calls for rendering modules
+/* API for rendering modules
  */
-PangoCFont *pango_x_find_cfont      (PangoFont   *font,
-				     gchar       *charset);
-void        pango_x_list_cfonts     (PangoFont   *font,
-				     gchar      **charsets,
-				     gint         n_charsets,
-				     gchar     ***xlfds,
-				     gint        *n_xlfds);
-gboolean    pango_x_xlfd_get_ranges (PangoFont   *font,
-				     gchar       *xlfd,
-				     gint       **ranges,
-				     gint        *n_ranges);
-PangoCFont *pango_x_load_xlfd       (PangoFont   *font,
-				     gchar       *xlfd);
-			   
+typedef guint16 PangoXCharset;
+
+#define PANGO_X_MAKE_GLYPH(charset,index) (charset<<16 | index)
+#define PANGO_X_GLYPH_CHARSET(glyph) (glyph>>16)
+#define PANGO_X_GLYPH_INDEX(glyph) (glyph & 0xffff)
+
+PangoXCharset pango_x_find_charset (PangoFont       *font,
+				    gchar           *charset);
+gboolean      pango_x_has_glyph    (PangoFont       *font,
+				    PangoGlyphIndex  glyph);
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

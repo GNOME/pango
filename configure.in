@@ -48,4 +48,5 @@ modules/tamil/Makefile
 examples/Makefile
 docs/Makefile
 tools/Makefile
+fonts/Makefile
 ])

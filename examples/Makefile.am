@@ -14,4 +14,4 @@ pango.modules:
 	( cd ../modules && \
           ../libpango/pango-querymodules `find . -name '*.so'` > ../examples/pango.modules )
           
-EXTRA_DIST=HELLO.utf8
+EXTRA_DIST=HELLO.utf8 muru.utf

@@ -46,8 +46,6 @@ typedef struct _PangoLogAttr PangoLogAttr;
 
 typedef struct _PangoFont PangoFont;
 typedef struct _PangoFontClass PangoFontClass;
-typedef struct _PangoCFont PangoCFont;
-typedef struct _PangoCFontClass PangoCFontClass;
 
 typedef struct _PangoGlyph PangoGlyph;
 typedef struct _PangoGlyphGeometry PangoGlyphGeometry;
@@ -128,9 +126,9 @@ struct _PangoLogAttr {
  * of Unicode text.
  */
 void pango_break (gchar           *text, 
-                     gint             length, 
-                     PangoAnalysis *analysis, 
-                     PangoLogAttr  *attrs);
+		  gint             length, 
+		  PangoAnalysis *analysis, 
+		  PangoLogAttr  *attrs);
 
 /*
  * FONT OPERATIONS
@@ -159,25 +157,6 @@ void     pango_font_set_data (PangoFont      *font,
 			      gpointer        data,
 			      GDestroyNotify  destroy_func);
 
-/* A component of a font. The contents of this are completely
- * rendering system dependent
- */
-struct _PangoCFont {
-  PangoCFontClass *klass;
-
-  /*< private >*/
-  gint ref_count;
-};
-
-struct _PangoCFontClass {
-  void (*destroy) (PangoCFont *cfont);
-};
-
-void pango_cfont_init  (PangoCFont *font);
-void pango_cfont_ref   (PangoCFont *font);
-void pango_cfont_unref (PangoCFont *font);
-
-
 /*
  * GLYPH STORAGE
  */
@@ -191,7 +170,6 @@ typedef guint32 PangoGlyphIndex;
 struct _PangoGlyph
 {
   PangoGlyphIndex  glyph;
-  PangoCFont *font;
 };
 
 /* Positioning information about a glyph
@@ -236,11 +214,11 @@ void              pango_glyph_string_free     (PangoGlyphString *string);
 
 /* Turn a string of characters into a string of glyphs
  */
-void pango_shape (PangoFont      *font, 
-                     gchar            *text, 
-                     gint              length, 
-                     PangoAnalysis *analysis,
-                     PangoGlyphString     *glyphs);
+void pango_shape (PangoFont        *font,
+		  gchar            *text,
+		  gint              length,
+		  PangoAnalysis    *analysis,
+		  PangoGlyphString *glyphs);
 
 /* [ pango_place - subsume into g_script_shape? ] */
 

@@ -1,3 +1,4 @@
 ## Process this file with automake to create Makefile.in.
 
-SUBDIRS=basic # hangul tamil
+EXTRA_DIST= \
+	tscakaram.pcf

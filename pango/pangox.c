@@ -1,5 +1,5 @@
 /* Pango
- * gscriptx.c:
+ * gscriptx.c: Routines for handling X fonts
  *
  * Copyright (C) 1999 Red Hat Software
  *
@@ -26,31 +26,43 @@
 #include <string.h>
 
 typedef struct _PangoXFont PangoXFont;
-typedef struct _XLFDInfo XLFDInfo;
+typedef struct _PangoXCFont PangoXCFont;
+typedef struct _PangoXCharsetInfo PangoXCharsetInfo;
+
+struct _PangoXCFont {
+  gchar *xlfd;
+  XFontStruct *font_struct;
+};
+
+struct _PangoXCharsetInfo {
+  PangoXCharset charset;
+  gchar *name;
+  GSList *cfonts;
+};
 
 struct _PangoXFont {
   PangoFont font;
   Display *display;
-  gchar **fonts;
-  gint n_fonts;
-  GHashTable *name_hash;
-  GHashTable *xlfd_hash;
+
+  char **fonts;
+  
+  GHashTable *charsets_by_name;
+  PangoXCharsetInfo **charsets;
+
+  gint n_charsets;
+  gint max_charsets;
 };
 
-struct _XLFDInfo {
-  XFontStruct *font_struct;
-  PangoCFont *cfont;
-};
-
-static void pango_x_font_destroy (PangoFont *font);
-static void pango_x_cfont_destroy (PangoCFont *cfont);
+static XCharStruct *pango_x_get_per_char  (PangoXCFont   *cfont,
+					   guint16        glyph_index);
+static PangoXCFont *pango_x_find_cfont    (PangoXFont    *font,
+					   PangoXCharset  charset,
+					   guint16        index,
+					   XCharStruct  **per_char_return);
+static void         pango_x_font_destroy  (PangoFont     *font);
 
 PangoFontClass pango_x_font_class = {
   pango_x_font_destroy
-};
-
-PangoCFontClass pango_x_cfont_class = {
-  pango_x_cfont_destroy
 };
 
 /**
@@ -65,7 +77,7 @@ PangoCFontClass pango_x_cfont_class = {
  */
 PangoFont *
 pango_x_load_font (Display *display,
-		      gchar    *spec)
+		   gchar    *spec)
 {
   PangoXFont *result;
 
@@ -80,12 +92,12 @@ pango_x_load_font (Display *display,
   result->font.klass = &pango_x_font_class;
 
   result->fonts = g_strsplit(spec, ",", -1);
-  result->n_fonts = 0;
-  while (result->fonts[result->n_fonts])
-    result->n_fonts++;
-  
-  result->name_hash = g_hash_table_new (g_str_hash, g_str_equal);
-  result->xlfd_hash = g_hash_table_new (g_str_hash, g_str_equal);
+
+  result->charsets_by_name = g_hash_table_new (g_str_hash, g_str_equal);
+  result->charsets = g_new (PangoXCharsetInfo *, 1);
+
+  result->n_charsets = 0;
+  result->max_charsets = 1;
 
   return (PangoFont *)result;
 }
@@ -102,43 +114,62 @@ pango_x_load_font (Display *display,
  * Render a PangoGlyphString onto an X drawable
  */
 void 
-pango_x_render  (Display       *display,
-		    Drawable       d,
-		    GC             gc,
-		    PangoGlyphString  *glyphs,
-		    gint           x, 
-		    gint           y)
+pango_x_render  (Display           *display,
+		 Drawable           d,
+		 GC                 gc,
+		 PangoFont         *font,
+		 PangoGlyphString  *glyphs,
+		 gint               x, 
+		 gint               y)
 {
   /* Slow initial implementation. For speed, it should really
    * collect the characters into runs, and draw multiple
    * characters with each XDrawString16 call.
    */
-  XChar2b c;
-  PangoXCFont *cfont;
+  PangoXFont *xfont = (PangoXFont *)font;
   Font old_fid = None;
   XFontStruct *fs;
   int i;
 
+  g_return_if_fail (display != NULL);
+  g_return_if_fail (glyphs != NULL);
+  
   for (i=0; i<glyphs->num_glyphs; i++)
     {
-      c.byte1 = glyphs->glyphs[i].glyph / 256;
-      c.byte2 = glyphs->glyphs[i].glyph % 256;
-      cfont = (PangoXCFont *)glyphs->glyphs[i].font;
-      fs = cfont->font_struct;
+      guint16 index = PANGO_X_GLYPH_INDEX (glyphs->glyphs[i].glyph);
+      guint16 charset = PANGO_X_GLYPH_CHARSET (glyphs->glyphs[i].glyph);
+      PangoXCFont *cfont;
       
-      if (fs->fid != old_fid)
+      XChar2b c;
+
+      if (charset < 1 || charset > xfont->n_charsets)
 	{
-	  XSetFont (display, gc, fs->fid);
-	  old_fid = fs->fid;
+	  g_warning ("Glyph string contains invalid charset %d", charset);
+	  continue;
 	}
 
-      XDrawString16 (display, d, gc,
-		     x + glyphs->geometry[i].x_offset / 72,
-		     y + glyphs->geometry[i].y_offset / 72,
-		     &c, 1);
+      cfont = pango_x_find_cfont (xfont, charset, index, NULL);
+      
+      if (cfont)
+	{
+	  c.byte1 = index / 256;
+	  c.byte2 = index % 256;
 
-      x += glyphs->geometry[i].width / 72;
+	  fs = cfont->font_struct;
+	  
+	  if (fs->fid != old_fid)
+	    {
+	      XSetFont (display, gc, fs->fid);
+	      old_fid = fs->fid;
+	    }
+	  
+	  XDrawString16 (display, d, gc,
+			 x + glyphs->geometry[i].x_offset / 72,
+			 y + glyphs->geometry[i].y_offset / 72,
+			 &c, 1);
 
+	  x += glyphs->geometry[i].width / 72;
+	}
     }
 }
 
@@ -158,55 +189,66 @@ pango_x_render  (Display       *display,
  * Compute the measurements of a single glyph in pixels.
  */
 void 
-pango_x_glyph_extents (PangoGlyph        *glyph,
-			  gint          *lbearing, 
-			  gint          *rbearing,
-			  gint          *width, 
-			  gint          *ascent, 
-			  gint          *descent,
-			  gint          *logical_ascent,
-			  gint          *logical_descent)
+pango_x_glyph_extents (PangoFont       *font,
+		       PangoGlyphIndex  glyph,
+		       gint            *lbearing, 
+		       gint            *rbearing,
+		       gint            *width, 
+		       gint            *ascent, 
+		       gint            *descent,
+		       gint            *logical_ascent,
+		       gint            *logical_descent)
 {
-  int index;
-  
+  PangoXFont *xfont = (PangoXFont *)font;
   PangoXCFont *cfont;
-  XFontStruct *fs;
+
   XCharStruct *cs;
-  XChar2b c;
-  
-  c.byte1 = glyph->glyph / 256;
-  c.byte2 = glyph->glyph % 256;
-  cfont = (PangoXCFont *)glyph->font;
-  fs = cfont->font_struct;
-  
-  if ((fs->min_byte1 == 0) && (fs->max_byte1 == 0))
-    index = c.byte2 - fs->min_char_or_byte2;
+
+  guint16 index = PANGO_X_GLYPH_INDEX (glyph);
+  guint16 charset = PANGO_X_GLYPH_CHARSET (glyph);
+      
+  if (charset < 1 || charset > xfont->n_charsets)
+    {
+      g_warning ("Glyph string contains invalid charset %d\n", charset);
+      return;
+    }
+
+  cfont = pango_x_find_cfont (xfont, charset, index, &cs);
+
+  if (cfont)
+    {
+      if (lbearing)
+	*lbearing = cs->lbearing;
+      if (rbearing)
+	*rbearing = cs->rbearing;
+      if (width)
+	*width = cs->width;
+      if (ascent)
+	*ascent = cs->ascent;
+      if (descent)
+	*descent = cs->descent;
+      if (logical_ascent)
+	*logical_ascent = cfont->font_struct->ascent;
+      if (logical_descent)
+	*logical_descent = cfont->font_struct->descent;
+    }
   else
     {
-      index = ((c.byte1 - fs->min_byte1) *
-	       (fs->max_char_or_byte2 - fs->min_char_or_byte2 + 1)) +
-	c.byte2 - fs->min_char_or_byte2;
+      if (lbearing)
+	*lbearing = 0;
+      if (rbearing)
+	*rbearing = 0;
+      if (width)
+	*width = 0;
+      if (ascent)
+	*ascent = 0;
+      if (descent)
+	*descent = 0;
+      if (logical_ascent)
+	*logical_ascent = 0;
+      if (logical_descent)
+	*logical_descent = 0;
     }
-  
-  if (fs->per_char)
-    cs = &fs->per_char[index];
-  else
-    cs = &fs->min_bounds;
-
-  if (lbearing)
-    *lbearing = cs->lbearing;
-  if (rbearing)
-    *rbearing = cs->rbearing;
-  if (width)
-    *width = cs->width;
-  if (ascent)
-    *ascent = cs->ascent;
-  if (descent)
-    *descent = cs->descent;
-  if (logical_ascent)
-    *logical_ascent = fs->ascent;
-  if (logical_descent)
-    *logical_descent = fs->descent;
 }
 
 /**
@@ -227,23 +269,18 @@ pango_x_glyph_extents (PangoGlyph        *glyph,
  * nicer to use structures as in XmbTextExtents.
  */
 void 
-pango_x_extents (PangoGlyphString *glyphs,
-		    gint          *lbearing, 
-		    gint          *rbearing,
-		    gint          *width, 
-		    gint          *ascent, 
-		    gint          *descent,
-		    gint          *logical_ascent,
-		    gint          *logical_descent)
+pango_x_extents (PangoFont        *font,
+		 PangoGlyphString *glyphs,
+		 gint             *lbearing, 
+		 gint             *rbearing,
+		 gint             *width, 
+		 gint             *ascent, 
+		 gint             *descent,
+		 gint             *logical_ascent,
+		 gint             *logical_descent)
 {
-  int index;
-  
-  PangoXCFont *cfont;
-  XFontStruct *fs;
-  XCharStruct *cs;
-  PangoGlyphGeometry *geometry;
-  XChar2b c;
-  
+  PangoXFont *xfont = (PangoXFont *)font;
+
   int i;
 
   int t_lbearing = 0;
@@ -254,48 +291,42 @@ pango_x_extents (PangoGlyphString *glyphs,
   int t_logical_descent = 0;
   int t_width = 0;
 
+  g_return_if_fail (font != NULL);
+  g_return_if_fail (glyphs != NULL);
+  
   for (i=0; i<glyphs->num_glyphs; i++)
     {
-      c.byte1 = glyphs->glyphs[i].glyph / 256;
-      c.byte2 = glyphs->glyphs[i].glyph % 256;
-      cfont = (PangoXCFont *)glyphs->glyphs[i].font;
-      fs = cfont->font_struct;
+      XCharStruct *cs;
       
-      if ((fs->min_byte1 == 0) && (fs->min_byte1 == 0))
-	index = c.byte2 - fs->min_char_or_byte2;
-      else
-	{
-	  index = ((c.byte1 - fs->min_byte1) *
-		   (fs->max_char_or_byte2 - fs->min_char_or_byte2 + 1)) +
-	    c.byte2 - fs->min_char_or_byte2;
-	}
+      guint16 index = PANGO_X_GLYPH_INDEX (glyphs->glyphs[i].glyph);
+      guint16 charset = PANGO_X_GLYPH_CHARSET (glyphs->glyphs[i].glyph);
+      
+      PangoGlyphGeometry *geometry = &glyphs->geometry[i];
+      PangoXCFont *cfont = pango_x_find_cfont (xfont, charset, index, &cs);
 
-      if (fs->per_char)
-	cs = &fs->per_char[index];
-      else
-	cs = &fs->min_bounds;
-
-      geometry = &glyphs->geometry[i];
-
-      if (i == 0)
+      if (cfont)
 	{
-	  t_lbearing = cs->lbearing - geometry->x_offset / 72;
-	  t_rbearing = cs->rbearing + geometry->x_offset / 72;
-	  t_ascent = cs->ascent + geometry->y_offset / 72;
-	  t_descent = cs->descent - geometry->y_offset / 72;
-	  t_logical_ascent = fs->ascent + geometry->y_offset / 72;
-	  t_logical_descent = fs->descent - geometry->y_offset / 72;
-	}
-      else
-	{
-	  t_lbearing = MAX (t_lbearing,
-			    cs->lbearing - geometry->x_offset / 72 - t_width);
-	  t_rbearing = MAX (t_rbearing,
-			    t_width + cs->rbearing + geometry->x_offset / 72);
-	  t_ascent = MAX (t_ascent, cs->ascent + geometry->y_offset / 72);
-	  t_descent = MAX (t_descent, cs->descent - geometry->y_offset / 72);
-	  t_logical_ascent = MAX (t_logical_ascent, fs->ascent + geometry->y_offset / 72);
-	  t_logical_descent = MAX (t_logical_descent, fs->descent - geometry->y_offset / 72);
+	  if (i == 0)
+	    {
+	      t_lbearing = cs->lbearing - geometry->x_offset / 72;
+	      t_rbearing = cs->rbearing + geometry->x_offset / 72;
+	      t_ascent = cs->ascent + geometry->y_offset / 72;
+	      t_descent = cs->descent - geometry->y_offset / 72;
+
+	      t_logical_ascent = cfont->font_struct->ascent + geometry->y_offset / 72;
+	      t_logical_descent = cfont->font_struct->descent - geometry->y_offset / 72;
+	    }
+	  else
+	    {
+	      t_lbearing = MAX (t_lbearing,
+				cs->lbearing - geometry->x_offset / 72 - t_width);
+	      t_rbearing = MAX (t_rbearing,
+				t_width + cs->rbearing + geometry->x_offset / 72);
+	      t_ascent = MAX (t_ascent, cs->ascent + geometry->y_offset / 72);
+	      t_descent = MAX (t_descent, cs->descent - geometry->y_offset / 72);
+	      t_logical_ascent = MAX (t_logical_ascent, cfont->font_struct->ascent + geometry->y_offset / 72);
+	      t_logical_descent = MAX (t_logical_descent, cfont->font_struct->descent - geometry->y_offset / 72);
+	    }
 	}
       
       t_width += geometry->width / 72;
@@ -385,373 +416,217 @@ name_for_charset (char *xlfd, char *charset)
 }
 
 /**
- * pango_x_load_xlfd:
- * @font:    a #PangoFont
- * @xlfd:    the XLFD of a component font to load
- *
- * Create a component font from a XLFD. It is assumed that
- * the xlfd matches a font matching one of the names
- * of @font, but this is not currently required.
+ * pango_x_find_charset:
+ * @font: a #PangoFont
+ * @charset: string name of charset
  * 
- * Returns the new #PangoXCFont
- */
-PangoCFont *
-pango_x_load_xlfd (PangoFont *font,
-		      gchar       *xlfd)
+ * Look up the character set ID for a character set in the given font.
+ * If a character set ID has not yet been assigned, a new ID will be assigned.
+ * 
+ * Return value: Character ID for character set, if there is a match in this
+ *               font, otherwise 0.
+ **/
+PangoXCharset
+pango_x_find_charset (PangoFont *font,
+		      gchar     *charset)
 {
-  XFontStruct *fs;
   PangoXFont *xfont = (PangoXFont *)font;
-  XLFDInfo *info;
+  PangoXCharsetInfo *info;
+  int i;
 
-  g_return_val_if_fail (font != NULL, NULL);
+  g_return_val_if_fail (font != NULL, 0);
+  g_return_val_if_fail (charset != NULL, 0);
 
-  info = g_hash_table_lookup (xfont->xlfd_hash, xlfd);
+  info = g_hash_table_lookup (xfont->charsets_by_name, charset);
+
   if (!info)
     {
-      info = g_new (XLFDInfo, 1);
-      info->cfont = NULL;
-      info->font_struct = NULL;
-      
-      g_hash_table_insert (xfont->xlfd_hash, g_strdup(xlfd), info);
-    }
+      info = g_new (PangoXCharsetInfo, 1);
 
-  if (!info->cfont)
-    {
-      fs = XLoadQueryFont (xfont->display, xlfd);
-      if (fs)
-	{
-	  PangoXCFont *cfont = g_new (PangoXCFont, 1);
-	  cfont->display = xfont->display;
-	  cfont->font_struct = fs;
-	  cfont->font.klass = &pango_x_cfont_class;
+      info->cfonts = NULL;
 
-	  info->cfont = (PangoCFont *)cfont;
-	  
-	  pango_cfont_init (info->cfont);
-	  pango_cfont_ref (info->cfont);
-
-	  if (info->font_struct)
-	    XFreeFontInfo (NULL, info->font_struct, 1);
-
-	  info->font_struct = fs;
-	}
-    }
-
-  return info->cfont;
-}
-
-static gchar **
-find_cfonts (PangoFont *font, gchar *charset)
-{
-  PangoXFont *xfont = (PangoXFont *)font;
-  gchar **cfonts;
-  int i;
-  
-  cfonts = g_hash_table_lookup (xfont->name_hash, charset);
-  if (!cfonts)
-    {
-      cfonts = g_new (gchar *, xfont->n_fonts + 1);
-      for (i=0; i<xfont->n_fonts; i++)
+      for (i = 0; xfont->fonts[i]; i++)
 	{
 	  char *xlfd = name_for_charset (xfont->fonts[i], charset);
-	  gchar **names;
-	  gint count;
 
-	  cfonts[i] = NULL;
 	  if (xlfd)
 	    {
-	      names = XListFonts (xfont->display, xlfd, 1, &count);
+	      int count;
+	      char **names = XListFonts (xfont->display, xlfd, 1, &count);
 	      if (count > 0)
-		cfonts[i] = g_strdup (names[0]);
+		{
+		  PangoXCFont *cfont = g_new (PangoXCFont, 1);
+
+		  cfont->xlfd = g_strdup (names[0]);
+		  cfont->font_struct = NULL;
+
+		  info->cfonts = g_slist_append (info->cfonts, cfont);
+		}
 
 	      XFreeFontNames (names);
 	      g_free (xlfd);
 	    }
 	}
 
-      g_hash_table_insert (xfont->name_hash, g_strdup(charset), cfonts);
-    }
-
-  return cfonts;
-}
-
-/**
- * pango_x_find_cfont:
- * @font:     A font from pango_x_load_font()
- * @charset:  characterset descript (last two components of XLFD)
- *
- * Find a component font of a #PangoFont.
- *
- * Returns the #PangoCFont for @charset, or NULL, if no appropriate
- *   font could be found.
- */
-PangoCFont *
-pango_x_find_cfont (PangoFont *font,
-		       gchar       *charset)
-{
-  PangoXFont *xfont = (PangoXFont *)font;
-  gchar **names;
-  int i;
-
-  names = find_cfonts (font, charset);
-  for (i=0; i<xfont->n_fonts; i++)
-    if (names[i])
-      return pango_x_load_xlfd (font, names[i]);
-
-  return NULL;
-}
-
-void
-font_struct_get_ranges (Display     *display,
-			XFontStruct *fs,
-			gint       **ranges,
-			gint        *n_ranges)
-{
-  gint i, j;
-  static Atom bounds_atom = None;
-  gint *range_buf = NULL;
-  size_t range_buf_size = 8;
-
-  if (bounds_atom == None)
-    bounds_atom = XInternAtom (display, "_XFREE86_GLYPH_RANGES", False);
-
-  j = 0;
-  for (i=0; i<fs->n_properties; i++)
-    {
-      if (fs->properties[i].name == bounds_atom)
+      if (info->cfonts)
 	{
-	  char *val = XGetAtomName (display, fs->properties[i].card32);
-	  char *p;
-	  guint start, end;
+	  info->name = g_strdup (charset);
+	  g_hash_table_insert (xfont->charsets_by_name, info->name, info);
 
-	  p = val;
-	  while (*p)
+	  xfont->n_charsets++;
+
+	  if (xfont->n_charsets > xfont->max_charsets)
 	    {
-	      int count;
-	      
-	      while (*p && isspace (*p))
-		p++;
-
-	      count = sscanf (p, "%u_%u", &start, &end);
-	      
-	      if (count > 0)
-		{
-		  if (count == 1)
-		    end = start;
-		    
-		  if (!range_buf || (2*j+1) >= range_buf_size)
-		    {
-		      size_t new_size = range_buf_size * 2;
-		      if (new_size < range_buf_size) /* Paranoia */
-			{
-			  XFree (val);
-			  *ranges = NULL;
-			  *n_ranges = 0;
-			  
-			  return;
-			}
-		      range_buf_size = new_size;
-		      range_buf = g_realloc (range_buf, sizeof(gint) * range_buf_size);
-		    }
-
-		  range_buf[2*j] = start;
-		  range_buf[2*j + 1] = end;
-		  j++;
-		}
-	      else
-		{
-		  goto error;
-		}
-
-	      while (*p && !isspace (*p))
-		p++;
+	      xfont->max_charsets *= 2;
+	      xfont->charsets = g_renew (PangoXCharsetInfo *, xfont->charsets, xfont->max_charsets);
 	    }
-
-	error:
-	  XFree (val);
+	  
+	  info->charset = xfont->n_charsets;
+	  xfont->charsets[xfont->n_charsets - 1] = info;
 	}
-      
-    }
-
-  if (j > 0)
-    {
-      *n_ranges = j;
-      *ranges = g_malloc (sizeof(gint) * 2*j);
-      memcpy (*ranges, range_buf, sizeof(gint) * 2*j);
-    }
-  else
-    {
-      *n_ranges = 1;
-      *ranges = g_malloc (sizeof(gint) * 2);
-
-      (*ranges)[0] = fs->min_byte1 * 256 + fs->min_char_or_byte2;
-      (*ranges)[1] = fs->max_byte1 * 256 + fs->max_char_or_byte2;
-    }
-
-  g_free (range_buf);
-}
-
-/**
- * pango_x_xlfd_get_ranges:
- * @font:     a #PangoFont.
- * @xlfd:     a XLFD of a component font.
- * @ranges:   location to store returned ranges.
- * @n_ranges: location to store the number of ranges.
- *
- * Find the range of valid characters for a particular
- * XLFD representing a component of the given font.
- *
- * Returns %TRUE if the XLFD matches a font, FALSE otherwise.
- * in the latter case, @ranges and @n_ranges are unchanged.
- */
-gboolean
-pango_x_xlfd_get_ranges (PangoFont *font,
-			    gchar       *xlfd,
-			    gint       **ranges,
-			    gint        *n_ranges)
-{
-  PangoXFont *xfont = (PangoXFont *)font;
-  gchar **names;
-  gint count;
-  XLFDInfo *info;
-
-  info = g_hash_table_lookup (xfont->xlfd_hash, xlfd);
-  if (!info)
-    {
-      info = g_new (XLFDInfo, 1);
-      info->cfont = NULL;
-      info->font_struct = NULL;
-      g_hash_table_insert (xfont->xlfd_hash, g_strdup(xlfd), info);
-    }
-
-  if (!info->font_struct)
-    {
-      names = XListFontsWithInfo (xfont->display, xlfd, 1, &count, &info->font_struct);
-
-      if (count == 0)
-	info->font_struct = NULL;
-
-      XFreeFontNames (names);
-    }
-
-  if (info->font_struct)
-    {
-      font_struct_get_ranges (xfont->display, info->font_struct, ranges, n_ranges);
-      return TRUE;
-    }
-  else
-    return FALSE;
-}
-
-/**
- * pango_x_xlfd_list_cfonts:
- * @font:       a #PangoFont.
- * @charsets:   the list of character sets to match against.
- * @n_charsets: the number of elements in @charsets.
- * @xlfds:      location to store a pointer to an array of returned XLFDs.
- * @n_xlfds:    location to store the number of XLFDs.
- *
- * List all possible XLFDs that can match a particular set
- * of character sets for the given #PangoFont. The
- * returned values are sorted at highest priority by
- * the order of the names in fontlist used to create
- * the #PangoFont, and then sorted by the ordering
- * of the character sets in @charsets.
- *
- */
-void 
-pango_x_list_cfonts (PangoFont *font,
-			gchar      **charsets,
-			gint         n_charsets,
-			gchar     ***xlfds,
-			gint        *n_xlfds)
-{
-  PangoXFont *xfont = (PangoXFont *)font;
-
-  int i, j;
-
-  GSList *result = NULL;
-  GSList *tmp_list;
-
-  gchar ***names = g_new (gchar **, n_charsets);
-
-  *n_xlfds = 0;
-  for (j=0; j<n_charsets; j++)
-    names[j] = find_cfonts (font, charsets[j]);
-
-  for (i=0; i < xfont->n_fonts; i++)
-    for (j=0; j < n_charsets; j++)
-      if (names[j][i] != 0)
+      else
 	{
-	  (*n_xlfds)++;
-	  result = g_slist_prepend (result, g_strdup (names[j][i]));
+	  g_free (info);
+	  info = NULL;
 	}
+    }
 
-  result = g_slist_reverse (result);
-  *xlfds = g_new (gchar *, *n_xlfds);
+  if (info)
+    return info->charset;
+  else
+    return 0;
+}
 
-  tmp_list = result;
-  for (i=0; i< *n_xlfds; i++)
+gboolean
+pango_x_has_glyph (PangoFont       *font,
+		   PangoGlyphIndex  glyph)
+{
+  PangoXFont *xfont = (PangoXFont *)font;
+  
+  guint16 index, charset;
+  
+  g_return_val_if_fail (font != NULL, FALSE);
+  
+  index = PANGO_X_GLYPH_INDEX (glyph);
+  charset = PANGO_X_GLYPH_CHARSET (glyph);
+
+  if (charset < 1 || charset > xfont->n_charsets)
     {
-      (*xlfds)[i] = tmp_list->data;
-      tmp_list = tmp_list->next;
+      g_warning ("Glyph string contains invalid charset %d", charset);
+      return FALSE;
     }
   
-  g_slist_free (result);
-  g_free (names);
-}
-
-void
-name_hash_foreach (gpointer key, gpointer value, gpointer data)
-{
-  gchar *charset = key;
-  gchar **names = value;
-  PangoXFont *xfont = data;
-  int i;
-
-  for (i=0; i<xfont->n_fonts; i++)
-    g_free (names[i]);
-  g_free (names);
-  g_free (charset);
-}
-
-void
-xlfd_hash_foreach (gpointer key, gpointer value, gpointer data)
-{
-  gchar *xlfd = key;
-  XLFDInfo *info = value;
-
-  if (info->cfont)
-    pango_cfont_unref (info->cfont);
-  else if (info->font_struct)
-    XFreeFontInfo (NULL, info->font_struct, 1);
-
-  g_free (info);
-  
-  g_free (xlfd);
+  return (pango_x_find_cfont (xfont, charset, index, NULL) != NULL);
 }
 
 static void
 pango_x_font_destroy (PangoFont *font)
 {
   PangoXFont *xfont = (PangoXFont *)font;
+  int i;
 
-  g_hash_table_foreach (xfont->name_hash, name_hash_foreach, xfont);
-  g_hash_table_destroy (xfont->name_hash);
+  g_hash_table_destroy (xfont->charsets_by_name);
 
-  g_hash_table_foreach (xfont->xlfd_hash, xlfd_hash_foreach, xfont);
-  g_hash_table_destroy (xfont->xlfd_hash);
+  for (i=0; i<xfont->n_charsets; i++)
+    {
+      GSList *cfonts = xfont->charsets[i]->cfonts;
+
+      while (cfonts)
+	{
+	  PangoXCFont *cfont = cfonts->data;
+
+	  g_free (cfont->xlfd);
+	  if (cfont->font_struct)
+	    XFreeFont (xfont->display, cfont->font_struct);
+
+	  g_free (cfont);
+	  
+	  cfonts = cfonts->next;
+	}
+
+      g_slist_free (xfont->charsets[i]->cfonts);
+
+      g_free (xfont->charsets[i]->name);
+      g_free (xfont->charsets[i]);
+    }
+
+  g_free (xfont->charsets);
 
   g_strfreev (xfont->fonts);
   g_free (font);
 }
 
-static void
-pango_x_cfont_destroy (PangoCFont *font)
-{
-  PangoXCFont *xcfont = (PangoXCFont *)font;
+/* Utility functions */
 
-  XFreeFont (xcfont->display, xcfont->font_struct);
+static XCharStruct *
+pango_x_get_per_char (PangoXCFont *cfont, guint16 glyph_index)
+{
+  guint8 byte1;
+  guint8 byte2;
   
-  g_free (font);
+  XFontStruct *fs = cfont->font_struct;
+  int index;
+
+  byte1 = glyph_index / 256;
+  byte2 = glyph_index % 256;
+  
+  if ((fs->min_byte1 == 0) && (fs->min_byte1 == 0))
+    {
+      if (byte2 < fs->min_char_or_byte2 || byte2 > fs->max_char_or_byte2)
+	return NULL;
+      
+      index = byte2 - fs->min_char_or_byte2;
+    }
+  else
+    {
+      if (byte1 < fs->min_byte1 || byte1 > fs->max_byte1 ||
+	  byte2 < fs->min_char_or_byte2 || byte2 > fs->max_char_or_byte2)
+	return NULL;
+      
+      index = ((byte1 - fs->min_byte1) *
+	       (fs->max_char_or_byte2 - fs->min_char_or_byte2 + 1)) +
+	byte2 - fs->min_char_or_byte2;
+    }
+  
+  if (fs->per_char)
+    return &fs->per_char[index];
+  else
+    return &fs->min_bounds;
 }
+
+static PangoXCFont *
+pango_x_find_cfont (PangoXFont *font, PangoXCharset charset, guint16 index, XCharStruct **per_char_return)
+{
+  GSList *cfonts = font->charsets[charset - 1]->cfonts;
+  
+  while (cfonts)
+    {
+      XCharStruct *per_char;
+      PangoXCFont *cfont = cfonts->data;
+      
+      if (!cfont->font_struct)
+	{
+	  cfont->font_struct = XLoadQueryFont (font->display, cfont->xlfd);
+	  if (!cfont->font_struct)
+	    g_error ("Error loading font '%s'\n", cfont->xlfd);
+	}
+
+      per_char = pango_x_get_per_char (cfont, index);
+
+      if (per_char && per_char->width != 0)
+	{
+	  if (per_char_return)
+	    *per_char_return = per_char;
+	  
+	  return cfont;
+	}
+	  
+      cfonts = cfonts->next;
+    }
+
+  if (per_char_return)
+    *per_char_return = NULL;
+  
+  return NULL;
+}
+      

@@ -1,3 +1,28 @@
+Sat Jan 15 01:06:45 2000  Owen Taylor  <otaylor@redhat.com>
+
+	* libpango/pangox.c libpango/pangox.h libpango/fonts.c
+	  libpango/glyphstring.c modules/basic/basic.c:
+
+	  Eliminate PangoCFont; For X, encode charset into upper
+	  16 bits of 32 bit glyph IDs. Revise X core <=> module
+	  interfaces to support this change.
+
+	  Remove support for X_XLFD_FONT_RANGES, which has been
+	  disavowed by its proponents, in favor of checking metrics
+	  to figure out if the relevant characters are there.
+
+	  Rework operation of basic module to be faster and simple.
+
+	* modules/Makefile.am: temporarily comment out Tamil and
+	  Hangul modules until I finish mucking with the
+	  X font interfaces.
+
+Fri Jan 14 12:08:43 2000  Owen Taylor  <otaylor@redhat.com>
+
+	* examples/HELLO.utf8: Add Pango properly spelled.
+
+	* **/Makefile.am: make dist fixes.
+
 Thu Jan 13 17:49:45 2000  Owen Taylor  <otaylor@redhat.com>
 
 	* TODO: Updated.

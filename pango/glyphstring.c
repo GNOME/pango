@@ -83,21 +83,6 @@ pango_glyph_string_set_size (PangoGlyphString *string, gint new_len)
 void
 pango_glyph_string_free (PangoGlyphString *string)
 {
-  int i;
-  PangoCFont *last_cfont = NULL;
-
-  for (i=0; i<string->num_glyphs; i++)
-    {
-      if (last_cfont && string->glyphs[i].font != last_cfont)
-	{
-	  pango_cfont_unref (last_cfont);
-	  last_cfont = string->glyphs[i].font;
-	}
-    }
-  
-  if (last_cfont)
-    pango_cfont_unref (last_cfont);
-
   g_free (string->glyphs);
   g_free (string->geometry);
   g_free (string->attrs);

@@ -77,7 +77,7 @@ pango_font_unref (PangoFont *font)
 
 /**
  * pango_font_set_data:
- * @font:         a #PangoCFont
+ * @font:         a #PangoFont
  * @key:          a string identifying the type of user data.
  * @data:         the data to store. If %NULL, the current
  *                data for the key will be removed.
@@ -92,16 +92,16 @@ pango_font_unref (PangoFont *font)
  */
 void
 pango_font_set_data (PangoFont   *font,
-			gchar         *key,
-			gpointer       data,
-			GDestroyNotify destroy_func)
+		     gchar         *key,
+		     gpointer       data,
+		     GDestroyNotify destroy_func)
 {
   g_datalist_set_data_full (&font->data, key, data, destroy_func);
 }
 
 /**
  * pango_font_get_data:
- * @font:    a #PangoCFont
+ * @font:    a #PangoFont
  * @key:     a string identifying the type of user data.
  *
  * Look up user data tagged with a particular key.
@@ -114,54 +114,4 @@ pango_font_get_data (PangoFont *font,
 {
   return g_datalist_get_data (&font->data, key);
 }
-
-/**
- * pango_cfont_init:
- * @font:    a #PangoCFont
- *
- * Initialize a #PangoCFont structure. This should
- * only be called from the "new" routine of code which
- * is implementing  a "subclass" of #PangoCFont
- */
-void 
-pango_cfont_init (PangoCFont *font)
-{
-  g_return_if_fail (font != NULL);
-
-  font->ref_count = 1;
-}
-
-/**
- * pango_cfont_ref:
- * @font:    a #PangoCFont
- *
- * Increase the reference count of a #GScripCFont.
- */
-void 
-pango_cfont_ref (PangoCFont *font)
-{
-  g_return_if_fail (font != NULL);
-
-  font->ref_count++;
-}
-
-/**
- * pango_cfont_unref:
- * @font: a #PangoCFont
- *
- * Decrease the reference count of a #PangoXFont.
- * if the result is zero, destroy the font component
- * and free the associated memory.
- */
-void 
-pango_cfont_unref (PangoCFont *font)
-{
-  g_return_if_fail (font != NULL);
-  g_return_if_fail (font->ref_count > 0);
-  
-  font->ref_count--;
-  if (font->ref_count == 0)
-    font->klass->destroy (font);
-}
-
 

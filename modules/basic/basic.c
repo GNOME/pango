@@ -36,8 +36,8 @@ typedef struct _CharCache CharCache;
 typedef struct _MaskTable MaskTable;
 
 typedef PangoGlyphIndex (*ConvFunc) (CharCache *cache,
-				 gchar     *id,
-				 gchar     *input);
+				     gchar     *id,
+				     gchar     *input);
 
 struct _Charset
 {
@@ -56,12 +56,10 @@ struct _CharRange
 struct _MaskTable 
 {
   guint mask;
-  int n_els;
-  char **xlfds;
-  gint **ranges;
-  gint *n_ranges;
+  PangoXCharset *charset_ids;
   Charset **charsets;
-  PangoCFont **cfonts;
+
+  int n_charsets;
 };
 
 struct _CharCache 
@@ -71,14 +69,14 @@ struct _CharCache
 };
 
 static PangoGlyphIndex conv_8bit (CharCache *cache,
-			      gchar  *id,
-			      char   *input);
+				  gchar  *id,
+				  char   *input);
 static PangoGlyphIndex conv_euc (CharCache *cache,
-			     gchar     *id,
-			     char      *input);
+				 gchar     *id,
+				 char      *input);
 static PangoGlyphIndex conv_ucs4 (CharCache *cache,
-			      gchar     *id,
-			      char      *input);
+				  gchar     *id,
+				  char      *input);
 
 #include "tables-big.i"
 
@@ -186,7 +184,6 @@ static void
 char_cache_free (CharCache *cache)
 {
   GSList *tmp_list;
-  int i;
 
   tmp_list = cache->mask_tables;
   while (tmp_list)
@@ -194,20 +191,9 @@ char_cache_free (CharCache *cache)
       MaskTable *mask_table = tmp_list->data;
       tmp_list = tmp_list->next;
 
-      for (i=0; i<mask_table->n_els; i++)
-	{
-	  g_free (mask_table->xlfds[i]);
-	  g_free (mask_table->ranges[i]);
-	  if (mask_table->cfonts[i])
-	    pango_cfont_unref (mask_table->cfonts[i]);
-	}
-
-      g_free (mask_table->xlfds);
-      g_free (mask_table->ranges);
-      g_free (mask_table->n_ranges);
+      g_free (mask_table->charset_ids);
       g_free (mask_table->charsets);
-      g_free (mask_table->cfonts);
-	
+      
       g_free (mask_table);
     }
 
@@ -219,60 +205,13 @@ char_cache_free (CharCache *cache)
   g_free (cache);
 }
 
-static gboolean
-check_character (gint *ranges, gint n_ranges, GUChar4 wc)
-{
-  int start, end, middle;
-
-  start = 0;
-  end = n_ranges - 1;
-
-  if (ranges[2*start] > wc || ranges[2*end + 1] < wc)
-    return FALSE;
-
-  while (1)
-    {
-      middle = (start + end) / 2;
-      if (middle == start)
-	{
-	  if (ranges[2 * middle] > wc || ranges[2 * middle + 1] < wc)
-	    return FALSE;
-	  else
-	    return TRUE;
-	}
-      else
-	{
-	  if (ranges[2*middle] <= wc)
-	    start = middle;
-	  else if (ranges[2*middle + 1] >= wc)
-	    end = middle;
-	  else
-	    return FALSE;
-	}
-    }
-}
-
-/* Compare the tail of a to b */
-static gboolean
-match_end (char *a, char *b)
-{
-  size_t len_a = strlen (a);
-  size_t len_b = strlen (b);
-
-  if (len_b > len_a)
-    return FALSE;
-  else
-    return (strcmp (a + len_a - len_b, b) == 0);
-}
-
-static gboolean
-find_char (CharCache *cache, PangoFont *font, GUChar4 wc, char *input,
-	   PangoCFont **cfont, PangoGlyphIndex *glyph)
+PangoGlyphIndex 
+find_char (CharCache *cache, PangoFont *font, GUChar4 wc, char *input)
 {
   guint mask = find_char_mask (wc);
   GSList *tmp_list;
   MaskTable *mask_table;
-  int i, j;
+  int i;
 
   tmp_list = cache->mask_tables;
   while (tmp_list)
@@ -287,87 +226,61 @@ find_char (CharCache *cache, PangoFont *font, GUChar4 wc, char *input,
 
   if (!tmp_list)
     {
-      gchar **charset_list;
-      gint n_charsets = 0;
-      
+      PangoXCharset tmp_charset_ids[MEMBERS(charsets)];
+      Charset *tmp_charsets[MEMBERS(charsets)];
+
       mask_table = g_new (MaskTable, 1);
+
+      mask_table->mask = mask;
+      mask_table->n_charsets = 0;
 
       /* Find the character sets that are included in this mask
        */
-      charset_list = g_new (gchar *, MEMBERS(charsets));
 
       for (i=0; i<MEMBERS(charsets); i++)
 	{
 	  if (mask & (1 << i))
-	    charset_list[n_charsets++] = charsets[i].x_charset;
+	    {
+	      PangoXCharset charset_id = pango_x_find_charset (font, charsets[i].x_charset);
+	      if (charset_id)
+		{
+		  tmp_charset_ids[mask_table->n_charsets] = charset_id;
+		  tmp_charsets[mask_table->n_charsets] = &charsets[i];
+		  mask_table->n_charsets++;
+		}
+	    }
 	}
-
-      /* Find the possible xlfds for the charset list
-       */
-      mask_table->mask = mask;
-      pango_x_list_cfonts (font, charset_list, n_charsets,
-			      &mask_table->xlfds,
-			      &mask_table->n_els);
-
-      g_free (charset_list);
-
-      mask_table->cfonts = g_new0 (PangoCFont *, mask_table->n_els);
-
-      mask_table->ranges = g_new (gint *, mask_table->n_els);
-      mask_table->n_ranges = g_new (gint, mask_table->n_els);
-      mask_table->charsets = g_new (Charset *, mask_table->n_els);
-
-      for (i=0; i < mask_table->n_els; i++)
-	{
-	  pango_x_xlfd_get_ranges (font,
-				      mask_table->xlfds[i],
-				      &mask_table->ranges[i],
-				      &mask_table->n_ranges[i]);
-
-	  mask_table->charsets[i] = NULL;
-	  for (j=0; j < MEMBERS(charsets); j++)
-	    if (match_end (mask_table->xlfds[i], charsets[j].x_charset))
-	      {
-		mask_table->charsets[i] = &charsets[j];
-		break;
-	      }
-	}
+      
+      mask_table->charset_ids = g_new (PangoXCharset, mask_table->n_charsets);
+      mask_table->charsets = g_new (Charset *, mask_table->n_charsets);
+      
+      memcpy (mask_table->charset_ids, tmp_charset_ids, sizeof(PangoXCharset) * mask_table->n_charsets);
+      memcpy (mask_table->charsets, tmp_charsets, sizeof(Charset *) * mask_table->n_charsets);
 
       cache->mask_tables = g_slist_prepend (cache->mask_tables, mask_table);
     }
 
-  for (i=0; i < mask_table->n_els; i++)
+  for (i=0; i < mask_table->n_charsets; i++)
     {
-      if (mask_table->charsets[i])
-	{
-	  PangoGlyphIndex index;
+      PangoGlyphIndex index;
+      PangoGlyphIndex glyph;
 
-	  index = (*mask_table->charsets[i]->conv_func) (cache, mask_table->charsets[i]->id, input);
-	  
-	  if (check_character (mask_table->ranges[i], mask_table->n_ranges[i], index))
-	    {
-	      if (!mask_table->cfonts[i])
-		mask_table->cfonts[i] = pango_x_load_xlfd (font, mask_table->xlfds[i]);
-	      
-	      *cfont = mask_table->cfonts[i];
-	      pango_cfont_ref (*cfont);
+      index = (*mask_table->charsets[i]->conv_func) (cache, mask_table->charsets[i]->id, input);
 
-	      *glyph = index;
+      glyph = PANGO_X_MAKE_GLYPH (mask_table->charset_ids[i], index);
 
-	      return TRUE;
-	    }
-	}
+      if (pango_x_has_glyph (font, glyph))
+	return glyph;	  
     }
 
-  return FALSE;
+  return 0;
 }
 
 static void
-set_glyph (PangoGlyphString *glyphs, gint i, PangoCFont *cfont, PangoGlyphIndex glyph)
+set_glyph (PangoFont *font, PangoGlyphString *glyphs, gint i, PangoGlyphIndex glyph)
 {
   gint width;
 
-  glyphs->glyphs[i].font = cfont;
   glyphs->glyphs[i].glyph = glyph;
   
   glyphs->geometry[i].x_offset = 0;
@@ -375,8 +288,8 @@ set_glyph (PangoGlyphString *glyphs, gint i, PangoCFont *cfont, PangoGlyphIndex 
 
   glyphs->log_clusters[i] = i;
 
-  pango_x_glyph_extents (&glyphs->glyphs[i],
-			    NULL, NULL, &width, NULL, NULL, NULL, NULL);
+  pango_x_glyph_extents (font, glyphs->glyphs[i].glyph,
+			 NULL, NULL, &width, NULL, NULL, NULL, NULL);
   glyphs->geometry[i].width = width * 72;
 }
 
@@ -488,17 +401,17 @@ swap_range (PangoGlyphString *glyphs, int start, int end)
 }
 
 static void 
-basic_engine_shape (PangoFont     *font,
-		    gchar           *text,
-		    gint             length,
-		    PangoAnalysis *analysis,
-		    PangoGlyphString    *glyphs)
+basic_engine_shape (PangoFont        *font,
+		    gchar            *text,
+		    gint              length,
+		    PangoAnalysis    *analysis,
+		    PangoGlyphString *glyphs)
 {
   int n_chars;
   int i;
   char *p, *next;
 
-  PangoCFont *fallback_font = NULL;
+  PangoXCharset fallback_charset = 0;
   CharCache *cache;
 
   g_return_if_fail (font != NULL);
@@ -511,7 +424,7 @@ basic_engine_shape (PangoFont     *font,
     {
       cache = char_cache_new ();
       pango_font_set_data (font, "basic-char-cache",
-			      cache, (GDestroyNotify)char_cache_free);
+			   cache, (GDestroyNotify)char_cache_free);
     }
   
   n_chars = unicode_strlen (text, length);
@@ -522,7 +435,6 @@ basic_engine_shape (PangoFont     *font,
     {
       GUChar4 wc;
       FriBidiChar mirrored_ch;
-      PangoCFont *cfont = NULL;
       PangoGlyphIndex index;
 
       _pango_utf8_iterate (p, &next, &wc);
@@ -531,12 +443,10 @@ basic_engine_shape (PangoFont     *font,
 	if (fribidi_get_mirror_char (wc, &mirrored_ch))
 	  wc = mirrored_ch;
 
-      if (find_char (cache, font, wc, p, &cfont, &index))
+      index = find_char (cache, font, wc, p);
+      if (index)
 	{
-	  set_glyph (glyphs, i, cfont, index);
-
-	  if (i != 0 && glyphs->glyphs[i-1].font == cfont)
-	    pango_cfont_unref (cfont);
+	  set_glyph (font, glyphs, i, index);
 
 	  if (unicode_type (wc) == UNICODE_NON_SPACING_MARK)
 	    {
@@ -551,13 +461,10 @@ basic_engine_shape (PangoFont     *font,
 	}
       else
 	{
-	  if (!fallback_font)
-	    fallback_font = pango_x_find_cfont (font, "iso8859-1");
+	  if (!fallback_charset)
+	    fallback_charset = pango_x_find_charset (font, "iso8859-1");
 	  
-	  if (i == 0 || glyphs->glyphs[i-1].font != fallback_font)
-	    pango_cfont_ref (fallback_font);
-	  
-	  set_glyph (glyphs, i, fallback_font, ' ');
+	  set_glyph (font, glyphs, i, PANGO_X_MAKE_GLYPH (fallback_charset, ' '));
 	}
       
       p = next;
@@ -584,9 +491,6 @@ basic_engine_shape (PangoFont     *font,
 	  start = end;
 	}
     }
-
-  if (fallback_font)
-    pango_cfont_unref (fallback_font);
 }
 
 static PangoEngine *
