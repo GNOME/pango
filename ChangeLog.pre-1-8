@@ -1,3 +1,9 @@
+Thu Dec  2 15:47:44 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* === Released 1.7.0 ===
+
+	* NEWS: Update.
+
 Thu Dec  2 15:31:33 2004  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/break.c (pango_default_break): Ignore formatting

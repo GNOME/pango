@@ -1,8 +1,28 @@
 Overview of changes between 1.6.x and 1.7.0
 ===========================================
 
+* Add PangoRenderer, a subclassable driver object holding the 
+  logic for rendering PangoLayout.
+* Support transformed rendering for the Xft backend
+* Add Lao support in Thai Module [Theppitak Karoonboonyanan]
+* Support Thai OpenType fonts [Theppitak]
+* Add Syriac module [Emil Soleyman-Zomalan]
+* Add underline-color and strikethrough-color attributes
+  [Morten Welinder]
+* Add pango_win32_render_transformed() [Hans Breuer]
+* Misc fixes [Hans Breuer, Matthias Clasen, Manish Singh,
+   Morten Welinder]
+* Documentation improvements
+
 ============================================================
 
+Overview of changes since 1.6.0
+===============================
+* Fix several problem when computing font and selecting fonts
+  metrics for CJK [Felipe Heidrich, Federic Zhang]
+* Win32 bug fixes [Tor Lillqvist, Kazuki Iwamoto, Ivan Wong]
+* Misc bug fixes [Paolo Borelli, Behdad Esfahbod, Leon Ho, Arun M, 
+  Kjartan Maraas, Vincent Noel, Christian Persch, Enrico Scholz]
 
 Overview of changes between 1.5.2 and 1.6.0
 ===========================================
