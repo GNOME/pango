@@ -1,3 +1,12 @@
+Sun Sep 29 14:51:25 2002  Owen Taylor  <otaylor@redhat.com>
+
+	Start of merges from freetype1 of OpenType fixes.
+
+	(2001-03-17  Werner Lemberg)
+
+	* pango/opentype/ftxgdef.c pango/opentype/ftxgpos.c pango/opentype/ftxgsub.c:
+	More fixes for special marks.
+
 2002-09-28  Tor Lillqvist  <tml@iki.fi>
 
 	* pango/pangowin32-fontmap.c (pango_win32_insert_font): Revert
@@ -223,6 +232,7 @@ Wed Aug 28 15:22:14 2002  Eric Mader   <mader@jtcsv.com>
 	* pango/modules/indic/indic-ot-class-tables.c:
 	Change Punjabi script ('punj') to Gurmukhi ('guru')
 	
+>>>>>>> 1.602
 Tue Aug 20 17:31:39 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* Released 1.1.1.
