@@ -508,6 +508,8 @@ main (int argc, char **argv)
   QApplication a (argc, argv);
   const char *filename;
 
+  g_type_init ((GTypeDebugFlags) 0);
+  
   QApplication::setStyle (new QCDEStyle());
 
   if (QFileInfo ("./pangorc").exists ())

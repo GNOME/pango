@@ -1,3 +1,8 @@
+Mon Apr  2 12:01:03 2001  Owen Taylor  <otaylor@redhat.com>
+
+	* examples/viewer-qt.cc (main): Add the mystic 
+         g_type_init ((GTypeDebugFlags) 0);.
+
 2001-04-02  Alexander Larsson  <alexl@redhat.com>
 
 	* pango/pangoft2-fontmap.c:
