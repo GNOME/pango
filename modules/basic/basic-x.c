@@ -52,7 +52,7 @@ typedef struct _CharCachePointer CharCachePointer;
 typedef struct _MaskTable MaskTable;
 
 typedef PangoGlyph (*ConvFunc) (CharCache   *cache,
-				Charset     *charset,
+				GIConv       cd,
 				const gchar *input);
 
 #define MAX_CHARSETS 32
@@ -103,16 +103,16 @@ struct _CharCachePointer
 };
 
 static PangoGlyph conv_8bit (CharCache  *cache,
-			     Charset    *charset,
+			     GIConv      cd,
 			     const char *input);
 static PangoGlyph conv_eucjp (CharCache  *cache,
-			      Charset    *charset,
+			      GIConv      cd,
 			      const char *input);
 static PangoGlyph conv_16bit (CharCache  *cache,
-			      Charset    *charset,
+			      GIConv      cd,
 			      const char *input);
 static PangoGlyph conv_ucs4 (CharCache  *cache,
-			     Charset    *charset,
+			     GIConv      cd,
 			     const char *input);
 
 #include "tables-big.i"
@@ -271,13 +271,32 @@ find_char (CharCache *cache, PangoFont *font, gunichar wc, const char *input)
     {
       PangoGlyph index;
       PangoGlyph glyph;
+      Charset *charset;
 
-      index = (*mask_table->charsets[i]->conv_func) (cache, mask_table->charsets[i], input);
+      charset = mask_table->charsets[i];
+      if (charset)
+	{
+	  GIConv cd = cache->converters[charset->index];
 
-      glyph = PANGO_X_MAKE_GLYPH (mask_table->subfonts[i], index);
+	  if (charset->id && cd == (GIConv)-1)
+	    {
+	      cd = g_iconv_open (charset->id, "UTF-8");
+	      if (cd == (GIConv)-1)
+		{
+		  g_warning ("Could not load converter from %s to UTF-8", charset->id);
+		  mask_table->charsets[i] = NULL;
+		  continue;
+		}
+	      
+	      cache->converters[charset->index] = cd;      
+	    }
+	  
+	  index = (*charset->conv_func) (cache, cd, input);
+	  glyph = PANGO_X_MAKE_GLYPH (mask_table->subfonts[i], index);
 
-      if (pango_x_has_glyph (font, glyph))
-	return glyph;	  
+	  if (pango_x_has_glyph (font, glyph))
+	    return glyph;	  
+	}
     }
 
   return 0;
@@ -299,26 +318,11 @@ set_glyph (PangoFont *font, PangoGlyphString *glyphs, int i, int offset, PangoGl
   glyphs->glyphs[i].geometry.width = logical_rect.width;
 }
 
-static GIConv
-find_converter (CharCache *cache, Charset *charset)
-{
-  GIConv cd = cache->converters[charset->index];
-  if (cd == (GIConv)-1)
-    {
-      cd = g_iconv_open  (charset->id, "UTF-8");
-      g_assert (cd != (GIConv)-1);
-      cache->converters[charset->index] = cd;
-    }
-
-  return cd;
-}
-
 static PangoGlyph
 conv_8bit (CharCache  *cache,
-	   Charset     *charset,
+	   GIConv      cd,
 	   const char *input)
 {
-  GIConv cd;
   char outbuf;
   
   const char *inptr = input;
@@ -328,8 +332,6 @@ conv_8bit (CharCache  *cache,
 
   inbytesleft = g_utf8_next_char (input) - input;
   
-  cd = find_converter (cache, charset);
-
   g_iconv (cd, (char **)&inptr, &inbytesleft, &outptr, &outbytesleft);
 
   return (guchar)outbuf;
@@ -337,10 +339,9 @@ conv_8bit (CharCache  *cache,
 
 static PangoGlyph
 conv_eucjp (CharCache  *cache,
-	    Charset     *charset,
+	    GIConv      cd,
 	    const char *input)
 {
-  GIConv cd;
   char outbuf[4];
 
   const char *inptr = input;
@@ -350,8 +351,6 @@ conv_eucjp (CharCache  *cache,
 
   inbytesleft = g_utf8_next_char (input) - input;
   
-  cd = find_converter (cache, charset);
-
   g_iconv (cd, (char **)&inptr, &inbytesleft, &outptr, &outbytesleft);
 
   if ((guchar)outbuf[0] < 128)
@@ -366,10 +365,9 @@ conv_eucjp (CharCache  *cache,
 
 static PangoGlyph
 conv_16bit (CharCache  *cache,
-	    Charset     *charset,
+	    GIConv      cd,
 	    const char *input)
 {
-  GIConv cd;
   char outbuf[2];
 
   const char *inptr = input;
@@ -379,8 +377,6 @@ conv_16bit (CharCache  *cache,
 
   inbytesleft = g_utf8_next_char (input) - input;
   
-  cd = find_converter (cache, charset);
-
   g_iconv (cd, (char **)&inptr, &inbytesleft, &outptr, &outbytesleft);
 
   if ((guchar)outbuf[0] < 128)
@@ -391,7 +387,7 @@ conv_16bit (CharCache  *cache,
 
 static PangoGlyph
 conv_ucs4 (CharCache  *cache,
-	   Charset     *charset,
+	   GIConv      cd,
 	   const char *input)
 {
   return g_utf8_get_char (input);

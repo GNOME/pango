@@ -24,7 +24,7 @@ enum {
 };
 
 Charset charsets[] = {
-  { 0,  "ISO-8859-1",   "iso8859-1",       conv_ucs4 },
+  { 0,  NULL,           "iso8859-1",       conv_ucs4 },
   { 1,  "ISO-8859-2",   "iso8859-2",       conv_8bit },
   { 2,  "ISO-8859-3",   "iso8859-3",       conv_8bit },
   { 3,  "ISO-8859-4",   "iso8859-4",       conv_8bit },
@@ -45,7 +45,7 @@ Charset charsets[] = {
   { 18, "EUC-JP",       "jisx0201.1976-0", conv_eucjp },
   { 19, "EUC-JP",       "jisx0212.1990-0", conv_eucjp },
   { 20, "BIG5",	        "big5-0",	   conv_16bit },
-  { 21, "ISO-10646",    "iso10646-1",      conv_ucs4 }
+  { 21, NULL,           "iso10646-1",      conv_ucs4 }
 };
 
 CharsetOrdering charset_orderings[] = {

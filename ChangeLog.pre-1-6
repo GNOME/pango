@@ -1,3 +1,10 @@
+Wed Mar 20 14:57:48 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* modules/basic/basic-x.c  modules/basic/tables-{big,small}.i: 
+	When loading an iconv converter fails, recover gracefully
+	and warn rather than aborting. (#73861, report about problems
+	on IRIX from Soeren Sandmann)
+
 2002-03-18  Changwoo Ryu  <cwryu@debian.org>
 
 	* modules/basic/tables-big.i: Enabled ksc5601 fonts for the Hangul

@@ -15,7 +15,7 @@ enum {
 };
 
 Charset charsets[] = {
-  { 0, "ISO-8859-1", "iso8859-1", conv_ucs4 },
+  { 0, NULL,         "iso8859-1", conv_ucs4 },
   { 1, "ISO-8859-2", "iso8859-2", conv_8bit },
   { 2, "ISO-8859-3", "iso8859-3", conv_8bit },
   { 3, "ISO-8859-4", "iso8859-4", conv_8bit },
@@ -24,7 +24,7 @@ Charset charsets[] = {
   { 6, "ISO-8859-7", "iso8859-7", conv_8bit },
   { 7, "ISO-8859-8", "iso8859-8", conv_8bit },
   { 8, "ISO-8859-9", "iso8859-9", conv_8bit },
-  { 9, "ISO-10646",  "iso10646-1", conv_ucs4 }
+  { 9, NULL,         "iso10646-1", conv_ucs4 }
 };
 
 static PangoEngineRange basic_ranges[] = {
