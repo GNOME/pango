@@ -1,3 +1,13 @@
+Sun Feb 24 13:40:55 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pangoxft-fontmap.c (pango_xft_pattern_equal):
+	Rewrite to reduce the number of strcmps.
+
+	* pango/pangoxft-fontmap.c (pango_xft_font_map_load_font):
+	Compute the patterns as for load_fontset(), then just
+	return the first. This takes advantage of our caching
+	strategy.
+
 Sun Feb 24 12:12:09 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pangoxft-fontmap.c (pango_xft_font_map_new_font): 

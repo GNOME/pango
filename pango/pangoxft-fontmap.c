@@ -200,66 +200,132 @@ pango_xft_pattern_hash (XftPattern *pattern)
   return hash;
 }
 
+typedef enum {
+  PATTERN_FILE       = 1 << 0,
+  PATTERN_INDEX      = 1 << 1,
+  PATTERN_PIXEL_SIZE = 1 << 3,
+  PATTERN_RGBA       = 1 << 4,
+  PATTERN_ANTIALIAS  = 1 << 5,
+  PATTERN_MINSPACE   = 1 << 6,
+  PATTERN_SPACING    = 1 << 7,
+  PATTERN_CHAR_WIDTH = 1 << 8
+} PatternElement;
+
+typedef struct {
+  char  *file;
+  int    index;
+  double pixel_size;
+  int    rgba;
+  Bool   antialias;
+  Bool   minspace;
+  int    spacing;
+  int    char_width;
+} PatternInfo;
+
+static PatternElement
+get_pattern_info (XftPattern  *pattern,
+		  PatternInfo *info)
+{
+  int i;
+  PatternElement fields = 0;
+  
+  for (i = 0; i < pattern->num; i++)
+    {
+      const char *object = pattern->elts[i].object;
+      XftValue *value;
+
+      if (!pattern->elts[i].values)
+	continue;
+
+      value = &pattern->elts[i].values->value;
+
+      switch (object[0])
+	{
+	case 'a':
+	  if (strcmp (object, XFT_ANTIALIAS) == 0 && value->type == XftTypeBool)
+	    {
+	      info->antialias = value->u.b;
+	      fields |= PATTERN_ANTIALIAS;
+	    }
+	  break;
+	case 'c':
+	  if (strcmp (object, XFT_CHAR_WIDTH) == 0 && value->type == XftTypeInteger)
+	    {
+	      info->char_width = value->u.i;
+	      fields |= PATTERN_CHAR_WIDTH;
+	    }
+	  break;
+	case 'f':
+	  if (strcmp (object, XFT_FILE) == 0 && value->type == XftTypeString)
+	    {
+	      info->file = value->u.s;
+	      fields |= PATTERN_FILE;
+	    }
+	  break;
+	case 'i':
+	  if (strcmp (object, XFT_INDEX) == 0 && value->type == XftTypeInteger)
+	    {
+	      info->index = value->u.i;
+	      fields |= PATTERN_INDEX;
+	    }
+	  break;
+	case 'm':
+	  if (strcmp (object, XFT_MINSPACE) == 0 && value->type == XftTypeBool)
+	    {
+	      info->minspace = value->u.b;
+	      fields |= PATTERN_MINSPACE;
+	    }
+	  break;
+	case 'p':
+	  if (strcmp (object, XFT_PIXEL_SIZE) == 0 && value->type == XftTypeDouble)
+	    {
+	      info->pixel_size = value->u.d;
+	      fields |= PATTERN_PIXEL_SIZE;
+	      break;
+	    }
+	case 'r':
+	  if (strcmp (object, XFT_RGBA) == 0 && value->type == XftTypeInteger)
+	    {
+	      info->rgba = value->u.i;
+	      fields |= PATTERN_RGBA;
+	    }
+	  break;
+	case 's':
+	  if (strcmp (object, XFT_SPACING) == 0 && value->type == XftTypeInteger)
+	    {
+	      info->spacing = value->u.i;
+	      fields |= PATTERN_SPACING;
+	      break;
+	    }
+	  break;
+	}
+    }
+
+  return fields;
+}
+
 gboolean
 pango_xft_pattern_equal (XftPattern *pattern1,
 			 XftPattern *pattern2)
 {
-  char *file1, *file2;
-  int index1, index2;
-  double size1, size2;
-  XftResult res1, res2;
-  int int1, int2;
-  Bool bool1, bool2;
-  
-  XftPatternGetString (pattern1, XFT_FILE, 0, &file1);
-  XftPatternGetString (pattern2, XFT_FILE, 0, &file2);
+  PatternInfo info1;
+  PatternInfo info2;
+  PatternElement elements1, elements2;
 
-  g_assert (file1 != NULL && file2 != NULL);
+  elements1 = get_pattern_info (pattern1, &info1);
+  elements2 = get_pattern_info (pattern2, &info2);
 
-  if (strcmp (file1, file2) != 0)
-    return FALSE;
-  
-  if (XftPatternGetInteger (pattern1, XFT_INDEX, 0, &index1) != XftResultMatch)
-    return FALSE;
-  
-  if (XftPatternGetInteger (pattern2, XFT_INDEX, 0, &index2) != XftResultMatch)
+  if (elements1 != elements2)
     return FALSE;
 
-  if (index1 != index2)
-    return FALSE;
-
-  if (XftPatternGetDouble (pattern1, XFT_PIXEL_SIZE, 0, &size1) != XftResultMatch)
-    return FALSE;
-
-  if (XftPatternGetDouble (pattern2, XFT_PIXEL_SIZE, 0, &size2) != XftResultMatch)
-    return FALSE;
-
-  if (size1 != size2)
-    return FALSE;
-
-  res1 = XftPatternGetInteger (pattern1, XFT_RGBA, 0, &int1);
-  res2 = XftPatternGetInteger (pattern2, XFT_RGBA, 0, &int2);
-  if (res1 != res2 || (res1 == XftResultMatch && int1 != int2))
-    return FALSE;
-  
-  res1 = XftPatternGetBool (pattern1, XFT_ANTIALIAS, 0, &bool1);
-  res2 = XftPatternGetBool (pattern2, XFT_ANTIALIAS, 0, &bool2);
-  if (res1 != res2 || (res1 == XftResultMatch && bool1 != bool2))
-    return FALSE;
-  
-  res1 = XftPatternGetBool (pattern1, XFT_MINSPACE, 0, &bool1);
-  res2 = XftPatternGetBool (pattern2, XFT_MINSPACE, 0, &bool2);
-  if (res1 != res2 || (res1 == XftResultMatch && bool1 != bool2))
-    return FALSE;
-
-  res1 = XftPatternGetInteger (pattern1, XFT_SPACING, 0, &int1);
-  res2 = XftPatternGetInteger (pattern2, XFT_SPACING, 0, &int2);
-  if (res1 != res2 || (res1 == XftResultMatch && int1 != int2))
-    return FALSE;
-
-  res1 = XftPatternGetInteger (pattern1, XFT_CHAR_WIDTH, 0, &int1);
-  res2 = XftPatternGetInteger (pattern2, XFT_CHAR_WIDTH, 0, &int2);
-  if (res1 != res2 || (res1 == XftResultMatch && int1 != int2))
+  if (((elements1 & PATTERN_FILE) &&       strcmp (info1.file, info2.file) != 0) ||
+      ((elements1 & PATTERN_INDEX) &&      info1.index != info2.index) ||
+      ((elements1 & PATTERN_PIXEL_SIZE) && info1.pixel_size != info2.pixel_size) ||
+      ((elements1 & PATTERN_RGBA) &&       info1.rgba != info2.rgba) ||
+      ((elements1 & PATTERN_ANTIALIAS) &&  info1.antialias != info2.antialias) ||
+      ((elements1 & PATTERN_MINSPACE) &&   info1.minspace != info2.minspace) ||
+      ((elements1 & PATTERN_SPACING) &&    info1.spacing != info2.spacing) ||
+      ((elements1 & PATTERN_CHAR_WIDTH) && info1.char_width != info2.char_width))
     return FALSE;
   
   return TRUE;
