@@ -1,3 +1,7 @@
+2002-03-07  jacob berkman  <jacob@ximian.com>
+
+	* autogen.sh: pass --enable-gtk-doc to configure
+
 2002-03-08  Tor Lillqvist  <tml@iki.fi>
 
 	* pango-zip.sh.in: Use PANGO_MODULE_VERSION in modules path.
