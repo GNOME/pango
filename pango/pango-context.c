@@ -185,8 +185,8 @@ list_families_foreach (gpointer key, gpointer value, gpointer user_data)
 /**
  * pango_context_list_families:
  * @context: a #PangoContext
- * @families: location to store a pointer to an array of strings.
- *            This array should be freed with pango_font_map_free_families().
+ * @families: location to store a pointer to an array of PangoFontFamily *.
+ *            This array should be freed with g_free().
  * @n_families: location to store the number of elements in @descs
  * 
  * List all families for a context.

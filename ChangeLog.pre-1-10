@@ -1,3 +1,13 @@
+Wed Sep 19 19:28:52 2001  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-fontmap.c: Remove pango_font_map_free_families,
+	which was no longer in the headers, no longer needed, and
+	no longer working.
+
+	* pango/pango-fontmap.c (pango_font_map_list_families)
+	* pango/pango-context.c (pango_context_list_families): Remove
+	references to pango_font_map_free_families.
+
 2001-09-19  Havoc Pennington  <hp@redhat.com>
 
 	* pango/opentype/fterrcompat.h: header to abstract the difference
