@@ -3417,20 +3417,23 @@ pango_layout_run_get_extents (PangoLayoutRun *run,
     case PANGO_UNDERLINE_SINGLE:
       if (run_ink)
         run_ink->height = MAX (run_ink->height, 2 * PANGO_SCALE - run_ink->y);
-      run_logical->height = MAX (run_logical->height, 2 * PANGO_SCALE - run_logical->y);
+      if (run_logical)
+	run_logical->height = MAX (run_logical->height, 2 * PANGO_SCALE - run_logical->y);
       break;
     case PANGO_UNDERLINE_DOUBLE:
       if (run_ink)
         run_ink->height = MAX (run_ink->height, 4 * PANGO_SCALE - run_ink->y);
-      run_logical->height = MAX (run_logical->height, 4 * PANGO_SCALE - run_logical->y);
+      if (run_logical)
+	run_logical->height = MAX (run_logical->height, 4 * PANGO_SCALE - run_logical->y);
       break;
     case PANGO_UNDERLINE_LOW:
       /* FIXME: Should this simply be run_logical->height += 2 * PANGO_SCALE instead?
        */
       if (run_ink)
 	run_ink->height += 2 * PANGO_SCALE;
-      run_logical->height = MAX (run_logical->height,
-				 tmp_ink.y + tmp_ink.height + 2 * PANGO_SCALE - run_logical->y);
+      if (run_logical)
+	run_logical->height = MAX (run_logical->height,
+				   tmp_ink.y + tmp_ink.height + 2 * PANGO_SCALE - run_logical->y);
       break;
     }
 
@@ -3439,7 +3442,8 @@ pango_layout_run_get_extents (PangoLayoutRun *run,
       if (run_ink)
         run_ink->y -= rise;
 
-      run_logical->y -= rise;
+      if (run_logical)
+	run_logical->y -= rise;
     }
 }
 
