@@ -1,3 +1,10 @@
+Mon Jul 15 14:59:22 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pangoft2.c (pango_ft2_get_per_char)
+	* pango/pangoft2.c (pango_ft2_font_render_glyph): 
+	Make load flags FT_LOAD_NO_BITMAP, since we can't
+	handle bitmaps at the moment in our render functions.
+
 Wed Jul  3 18:39:45 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pangoft2.c pango/pangoxft-font.c: Be more

@@ -370,7 +370,7 @@ pango_ft2_font_render_glyph (PangoFont *font,
     {
       /* Draw glyph */
       /* FIXME hint or not? */ 
-      FT_Load_Glyph (face, glyph_index, FT_LOAD_DEFAULT);
+      FT_Load_Glyph (face, glyph_index, FT_LOAD_NO_BITMAP);
       FT_Render_Glyph (face->glyph, ft_render_mode_normal);
 
       rendered->bitmap = face->glyph->bitmap;
@@ -514,7 +514,7 @@ static FT_Glyph_Metrics *
 pango_ft2_get_per_char (FT_Face   face,
 			guint32   glyph_index)
 {
-  FT_Load_Glyph (face, glyph_index, FT_LOAD_DEFAULT);
+  FT_Load_Glyph (face, glyph_index, FT_LOAD_NO_BITMAP);
   return &face->glyph->metrics;
 }
 
