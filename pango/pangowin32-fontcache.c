@@ -210,33 +210,33 @@ pango_win32_font_cache_load (PangoWin32FontCache *cache,
 	  /* If we fail, try some similar fonts often found on Windows. */
 	  if (tries == 0)
 	    {
-	      if (g_strcasecmp (lf.lfFaceName, "helvetica") == 0)
+	      if (g_ascii_strcasecmp (lf.lfFaceName, "helvetica") == 0)
 		strcpy (lf.lfFaceName, "arial");
-	      else if (g_strcasecmp (lf.lfFaceName, "new century schoolbook") == 0)
+	      else if (g_ascii_strcasecmp (lf.lfFaceName, "new century schoolbook") == 0)
 		strcpy (lf.lfFaceName, "century schoolbook");
-	      else if (g_strcasecmp (lf.lfFaceName, "courier") == 0)
+	      else if (g_ascii_strcasecmp (lf.lfFaceName, "courier") == 0)
 		strcpy (lf.lfFaceName, "courier new");
-	      else if (g_strcasecmp (lf.lfFaceName, "lucida") == 0)
+	      else if (g_ascii_strcasecmp (lf.lfFaceName, "lucida") == 0)
 		strcpy (lf.lfFaceName, "lucida sans unicode");
-	      else if (g_strcasecmp (lf.lfFaceName, "lucidatypewriter") == 0)
+	      else if (g_ascii_strcasecmp (lf.lfFaceName, "lucidatypewriter") == 0)
 		strcpy (lf.lfFaceName, "lucida console");
-	      else if (g_strcasecmp (lf.lfFaceName, "times") == 0)
+	      else if (g_ascii_strcasecmp (lf.lfFaceName, "times") == 0)
 		strcpy (lf.lfFaceName, "times new roman");
 	    }
 	  else if (tries == 1)
 	    {
-	      if (g_strcasecmp (lf.lfFaceName, "courier") == 0)
+	      if (g_ascii_strcasecmp (lf.lfFaceName, "courier") == 0)
 		{
 		  strcpy (lf.lfFaceName, "");
 		  lf.lfPitchAndFamily |= FF_MODERN;
 		}
-	      else if (g_strcasecmp (lf.lfFaceName, "times new roman") == 0)
+	      else if (g_ascii_strcasecmp (lf.lfFaceName, "times new roman") == 0)
 		{
 		  strcpy (lf.lfFaceName, "");
 		  lf.lfPitchAndFamily |= FF_ROMAN;
 		}
-	      else if (g_strcasecmp (lf.lfFaceName, "helvetica") == 0
-		       || g_strcasecmp (lf.lfFaceName, "lucida") == 0)
+	      else if (g_ascii_strcasecmp (lf.lfFaceName, "helvetica") == 0
+		       || g_ascii_strcasecmp (lf.lfFaceName, "lucida") == 0)
 		{
 		  strcpy (lf.lfFaceName, "");
 		  lf.lfPitchAndFamily |= FF_SWISS;

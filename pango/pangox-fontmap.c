@@ -981,6 +981,7 @@ pango_x_get_xlfd_field (const char *fontname,
 			char       *buffer)
 {
   const char *t1, *t2;
+  char *p;
   int countdown, len, num_dashes;
   
   if (!fontname)
@@ -1010,7 +1011,8 @@ pango_x_get_xlfd_field (const char *fontname,
       strncpy (buffer, t1, len);
       buffer[len] = 0;
       /* Convert to lower case. */
-      g_strdown (buffer);
+      for (p = buffer; *p; p++)
+	*p = g_ascii_tolower (*p);
     }
   else
     strcpy(buffer, "(nil)");

@@ -725,7 +725,7 @@ pango_win32_insert_font (PangoWin32FontMap *win32fontmap,
    */
   lfp2 = g_new (LOGFONT, 1);
   *lfp2 = *lfp;
-  g_strdown (lfp2->lfFaceName);
+  lfp2->lfFaceName = g_ascii_strdown (lfp2->lfFaceName, -1);
   size_info = g_hash_table_lookup (win32fontmap->size_infos, lfp);
   if (!size_info)
     {
@@ -740,7 +740,7 @@ pango_win32_insert_font (PangoWin32FontMap *win32fontmap,
   
   /* Convert the LOGFONT into a PangoFontDescription */
   
-  family_name = g_strdup (lfp2->lfFaceName);
+  family_name = lfp2->lfFaceName;
   
   if (!lfp2->lfItalic)
     style = PANGO_STYLE_NORMAL;
@@ -803,7 +803,7 @@ pango_win32_insert_font (PangoWin32FontMap *win32fontmap,
   win32face->coverage = NULL;
   win32face->logfont = *lfp;
   win32face->unicode_table = NULL;
-  g_strdown (win32face->logfont.lfFaceName);
+  win32face->logfont.lfFaceName = g_ascii_strdown (lfp->lfFaceName, -1);
   font_family->font_entries = g_slist_append (font_family->font_entries, win32face);
   win32fontmap->n_fonts++;
 

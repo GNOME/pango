@@ -205,10 +205,10 @@ pango_ft2_is_font_file (const char *name)
 
   len = strlen (name);
   if (len > 4 &&
-      (g_strncasecmp (&name[len-4], ".pfa", 4) == 0 ||
-       g_strncasecmp (&name[len-4], ".pfb", 4) == 0 ||
-       g_strncasecmp (&name[len-4], ".ttf", 4) == 0 ||
-       g_strncasecmp (&name[len-4], ".ttc", 4) == 0))
+      (g_ascii_strncasecmp (&name[len-4], ".pfa", 4) == 0 ||
+       g_ascii_strncasecmp (&name[len-4], ".pfb", 4) == 0 ||
+       g_ascii_strncasecmp (&name[len-4], ".ttf", 4) == 0 ||
+       g_ascii_strncasecmp (&name[len-4], ".ttc", 4) == 0))
     return TRUE;
 
   return FALSE;

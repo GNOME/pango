@@ -610,7 +610,7 @@ pango_font_description_equal (const PangoFontDescription  *desc1,
 	  desc1->stretch == desc2->stretch &&
 	  desc1->size == desc2->size &&
 	  (desc1->family_name == desc2->family_name ||
-	   (desc1->family_name && desc2->family_name && g_strcasecmp (desc1->family_name, desc2->family_name) == 0)));
+	   (desc1->family_name && desc2->family_name && g_ascii_strcasecmp (desc1->family_name, desc2->family_name) == 0)));
 }
 
 /**
@@ -728,7 +728,7 @@ find_field (FieldMap *map, int n_elements, const char *str, int len, int *val)
   
   for (i=0; i<n_elements; i++)
     {
-      if (map[i].str && g_strncasecmp (map[i].str, str, len) == 0)
+      if (map[i].str && g_ascii_strncasecmp (map[i].str, str, len) == 0)
 	{
 	  if (val)
 	    *val = map[i].value;
@@ -742,7 +742,7 @@ find_field (FieldMap *map, int n_elements, const char *str, int len, int *val)
 static gboolean
 find_field_any (const char *str, int len, PangoFontDescription *desc)
 {
-  return (g_strcasecmp (str, "Normal") == 0 ||
+  return (g_ascii_strcasecmp (str, "Normal") == 0 ||
 	  find_field (style_map, G_N_ELEMENTS (style_map), str, len,
 		      desc ? (int *)&desc->style : NULL) ||
 	  find_field (variant_map, G_N_ELEMENTS (variant_map), str, len,
@@ -822,7 +822,7 @@ pango_font_description_from_string (const char *str)
   if (wordlen != 0)
     {
       char *end;
-      double size = g_strtod (p, &end);
+      double size = g_ascii_strtod (p, &end);
       if (end - p == wordlen) /* word is a valid float */
 	{
 	  desc->size = (int)(size * PANGO_SCALE + 0.5);
@@ -908,7 +908,6 @@ char *
 pango_font_description_to_string (const PangoFontDescription  *desc)
 {
   GString *result = g_string_new (NULL);
-  char *str;
 
   if (desc->family_name && desc->mask & PANGO_FONT_MASK_FAMILY)
     {
@@ -932,17 +931,16 @@ pango_font_description_to_string (const PangoFontDescription  *desc)
 
   if (desc->mask & PANGO_FONT_MASK_SIZE)
     {
+      char buf[G_ASCII_DTOSTR_BUF_SIZE];
+      
       if (result->len > 0 || result->str[result->len -1] != ' ')
 	g_string_append_c (result, ' ');
 
-      /* FIXME: %g is not right here. We need to always use '.
-       */
-      g_string_append_printf (result, "%g", (double)desc->size / PANGO_SCALE);
+      g_ascii_dtostr (buf, sizeof (buf), (double)desc->size / PANGO_SCALE);
+      g_string_append (result, buf);
     }
   
-  str = result->str;
-  g_string_free (result, FALSE);
-  return str;
+  return g_string_free (result, FALSE);
 }
 
 /**
@@ -962,12 +960,13 @@ pango_font_description_to_filename (const PangoFontDescription  *desc)
   char *result = pango_font_description_to_string (desc);
   char *p;
 
-  g_strdown (result);
   p = result;
   while (*p)
     {
-      if (strchr ("-+_.", *p) == NULL && !isalnum (*p))
+      if (strchr ("-+_.", *p) == NULL && !g_ascii_isalnum (*p))
 	*p = '_';
+      else
+	*p = g_ascii_tolower (*p);
       p++;
     }
 

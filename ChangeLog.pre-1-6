@@ -1,3 +1,14 @@
+Fri Nov  2 08:50:16 2001  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/{fonts.c,pango-color.c,pango-utils.c,
+	         pangoft2-fontmap.c,pangowin32-fontcache.c,
+	         pangowin32-fontmap.c, pangox-fontmap.c}:
+	Patch from Darin Adler, with updates, to use 
+	g_ascii_* instead of locale-dependent variants
+	(#55833).
+
+	* pango/fonts.c: Use g_ascii_dtostr, g_ascii_strtod().
+
 2001-10-31  Tor Lillqvist  <tml@iki.fi>
 
 	* pango/modules.c (process_module_file): Neat Win32 feature: A

@@ -709,21 +709,21 @@ pango_parse_style (const char *str,
     {
     case 'n':
     case 'N':
-      if (g_strcasecmp (str, "normal") == 0)
+      if (g_ascii_strcasecmp (str, "normal") == 0)
 	{
 	  *style = PANGO_STYLE_NORMAL;
 	  return TRUE;
 	}
       break;
     case 'i':
-      if (g_strcasecmp (str, "italic") == 0)
+      if (g_ascii_strcasecmp (str, "italic") == 0)
 	{
 	  *style = PANGO_STYLE_ITALIC;
 	  return TRUE;
 	}
       break;
     case 'o':
-      if (g_strcasecmp (str, "oblique") == 0)
+      if (g_ascii_strcasecmp (str, "oblique") == 0)
 	{
 	  *style = PANGO_STYLE_OBLIQUE;
 	  return TRUE;
@@ -760,7 +760,7 @@ pango_parse_variant (const char   *str,
     {
     case 'n':
     case 'N':
-      if (g_strcasecmp (str, "normal") == 0)
+      if (g_ascii_strcasecmp (str, "normal") == 0)
 	{
 	  *variant = PANGO_VARIANT_NORMAL;
 	  return TRUE;
@@ -768,8 +768,8 @@ pango_parse_variant (const char   *str,
       break;
     case 's':
     case 'S':
-      if (g_strcasecmp (str, "small_caps") == 0 ||
-	  g_strcasecmp (str, "smallcaps") == 0)
+      if (g_ascii_strcasecmp (str, "small_caps") == 0 ||
+	  g_ascii_strcasecmp (str, "smallcaps") == 0)
 	{
 	  *variant = PANGO_VARIANT_SMALL_CAPS;
 	  return TRUE;
@@ -806,7 +806,7 @@ pango_parse_weight (const char  *str,
     {
     case 'b':
     case 'B':
-      if (g_strcasecmp (str, "bold") == 0)
+      if (g_ascii_strcasecmp (str, "bold") == 0)
 	{
 	  *weight = PANGO_WEIGHT_BOLD;
 	  return TRUE;
@@ -814,7 +814,7 @@ pango_parse_weight (const char  *str,
       break;
     case 'h':
     case 'H':
-      if (g_strcasecmp (str, "heavy") == 0)
+      if (g_ascii_strcasecmp (str, "heavy") == 0)
 	{
 	  *weight = PANGO_WEIGHT_HEAVY;
 	  return TRUE;
@@ -822,7 +822,7 @@ pango_parse_weight (const char  *str,
       break;
     case 'l':
     case 'L':
-      if (g_strcasecmp (str, "light") == 0)
+      if (g_ascii_strcasecmp (str, "light") == 0)
 	{
 	  *weight = PANGO_WEIGHT_LIGHT;
 	  return TRUE;
@@ -830,7 +830,7 @@ pango_parse_weight (const char  *str,
       break;
     case 'n':
     case 'N':
-      if (g_strcasecmp (str, "normal") == 0)
+      if (g_ascii_strcasecmp (str, "normal") == 0)
 	{
 	  *weight = PANGO_WEIGHT_NORMAL;
 	  return TRUE;
@@ -838,12 +838,12 @@ pango_parse_weight (const char  *str,
       break;
     case 'u':
     case 'U':
-      if (g_strcasecmp (str, "ultralight") == 0)
+      if (g_ascii_strcasecmp (str, "ultralight") == 0)
 	{
 	  *weight = PANGO_WEIGHT_ULTRALIGHT;
 	  return TRUE;
 	}
-      else if (g_strcasecmp (str, "ultrabold") == 0)
+      else if (g_ascii_strcasecmp (str, "ultrabold") == 0)
 	{
 	  *weight = PANGO_WEIGHT_ULTRABOLD;
 	  return TRUE;
@@ -904,7 +904,7 @@ pango_parse_stretch (const char   *str,
     { 
     case 'c':
     case 'C':
-      if (g_strcasecmp (str, "condensed") == 0)
+      if (g_ascii_strcasecmp (str, "condensed") == 0)
 	{
 	  *stretch = PANGO_STRETCH_CONDENSED;
 	  return TRUE;
@@ -912,19 +912,19 @@ pango_parse_stretch (const char   *str,
       break;
     case 'e':
     case 'E':
-      if (g_strcasecmp (str, "extra_condensed") == 0 ||
-	  g_strcasecmp (str, "extracondensed") == 0)
+      if (g_ascii_strcasecmp (str, "extra_condensed") == 0 ||
+	  g_ascii_strcasecmp (str, "extracondensed") == 0)
 	{
 	  *stretch = PANGO_STRETCH_EXTRA_CONDENSED;
 	  return TRUE;
 	}
-     if (g_strcasecmp (str, "extra_expanded") == 0 ||
-	 g_strcasecmp (str, "extraexpanded") == 0)
+     if (g_ascii_strcasecmp (str, "extra_expanded") == 0 ||
+	 g_ascii_strcasecmp (str, "extraexpanded") == 0)
 	{
 	  *stretch = PANGO_STRETCH_EXTRA_EXPANDED;
 	  return TRUE;
 	}
-      if (g_strcasecmp (str, "expanded") == 0)
+      if (g_ascii_strcasecmp (str, "expanded") == 0)
 	{
 	  *stretch = PANGO_STRETCH_EXPANDED;
 	  return TRUE;
@@ -932,7 +932,7 @@ pango_parse_stretch (const char   *str,
       break;
     case 'n':
     case 'N':
-      if (g_strcasecmp (str, "normal") == 0)
+      if (g_ascii_strcasecmp (str, "normal") == 0)
 	{
 	  *stretch = PANGO_STRETCH_NORMAL;
 	  return TRUE;
@@ -940,14 +940,14 @@ pango_parse_stretch (const char   *str,
       break;
     case 's':
     case 'S':
-      if (g_strcasecmp (str, "semi_condensed") == 0 ||
-	  g_strcasecmp (str, "semicondensed") == 0)
+      if (g_ascii_strcasecmp (str, "semi_condensed") == 0 ||
+	  g_ascii_strcasecmp (str, "semicondensed") == 0)
 	{
 	  *stretch = PANGO_STRETCH_SEMI_CONDENSED;
 	  return TRUE;
 	}
-      if (g_strcasecmp (str, "semi_expanded") == 0 ||
-	  g_strcasecmp (str, "semiexpanded") == 0)
+      if (g_ascii_strcasecmp (str, "semi_expanded") == 0 ||
+	  g_ascii_strcasecmp (str, "semiexpanded") == 0)
 	{
 	  *stretch = PANGO_STRETCH_SEMI_EXPANDED;
 	  return TRUE;
@@ -955,14 +955,14 @@ pango_parse_stretch (const char   *str,
       break;
     case 'u':
     case 'U':
-      if (g_strcasecmp (str, "ultra_condensed") == 0 ||
-	  g_strcasecmp (str, "ultracondensed") == 0)
+      if (g_ascii_strcasecmp (str, "ultra_condensed") == 0 ||
+	  g_ascii_strcasecmp (str, "ultracondensed") == 0)
 	{
 	  *stretch = PANGO_STRETCH_ULTRA_CONDENSED;
 	  return TRUE;
 	}
-      if (g_strcasecmp (str, "ultra_expanded") == 0 ||
-	  g_strcasecmp (str, "ultraexpanded") == 0)
+      if (g_ascii_strcasecmp (str, "ultra_expanded") == 0 ||
+	  g_ascii_strcasecmp (str, "ultraexpanded") == 0)
 	{
 	  *stretch = PANGO_STRETCH_ULTRA_EXPANDED;
 	  return TRUE;
