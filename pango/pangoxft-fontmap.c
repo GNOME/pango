@@ -458,6 +458,23 @@ create_family (PangoXftFontMap *xfontmap,
   return family;
 }
 
+static gboolean
+is_alias_family (const char *family_name)
+{
+  switch (family_name[0])
+    {
+    case 'm':
+    case 'M':
+      return (g_ascii_strcasecmp (family_name, "monospace") == 0);
+    case 's':
+    case 'S':
+      return (g_ascii_strcasecmp (family_name, "sans") == 0 ||
+	      g_ascii_strcasecmp (family_name, "serif") == 0);
+    }
+
+  return FALSE;
+}
+
 static void
 pango_xft_font_map_list_families (PangoFontMap           *fontmap,
 				  PangoFontFamily      ***families,
@@ -488,17 +505,15 @@ pango_xft_font_map_list_families (PangoFontMap           *fontmap,
 	  res = XftPatternGetString (fontset->fonts[i], XFT_FAMILY, 0, &s);
 	  g_assert (res == XftResultMatch);
 
-	  if (strcmp (s, "sans") != 0 &&
-	      strcmp (s, "serif") != 0 &&
-	      strcmp (s, "monospace") != 0)
+	  if (!is_alias_family (s))
 	    xfontmap->families[count++] = create_family (xfontmap, s);
 	}
 
       XftFontSetDestroy (fontset);
 
-      xfontmap->families[count++] = create_family (xfontmap, "sans");
-      xfontmap->families[count++] = create_family (xfontmap, "serif");
-      xfontmap->families[count++] = create_family (xfontmap, "monospace");
+      xfontmap->families[count++] = create_family (xfontmap, "Sans");
+      xfontmap->families[count++] = create_family (xfontmap, "Serif");
+      xfontmap->families[count++] = create_family (xfontmap, "Monospace");
       
       xfontmap->n_families = count;
     }
@@ -883,6 +898,22 @@ _pango_xft_font_desc_from_pattern (XftPattern *pattern, gboolean include_size)
 }
 
 static PangoFontDescription *
+make_alias_description (PangoXftFamily *xfamily,
+			gboolean        bold,
+			gboolean        italic)
+{
+  PangoFontDescription *desc = pango_font_description_new ();
+
+  pango_font_description_set_family (desc, xfamily->family_name);
+  pango_font_description_set_style (desc, italic ? PANGO_STYLE_ITALIC : PANGO_STYLE_NORMAL);
+  pango_font_description_set_variant (desc, PANGO_VARIANT_NORMAL);
+  pango_font_description_set_weight (desc, bold ? PANGO_WEIGHT_BOLD : PANGO_WEIGHT_NORMAL);
+  pango_font_description_set_stretch (desc, PANGO_STRETCH_NORMAL);
+
+  return desc;
+}
+
+static PangoFontDescription *
 pango_xft_face_describe (PangoFontFace *face)
 {
   PangoXftFace *xface = PANGO_XFT_FACE (face);
@@ -893,6 +924,18 @@ pango_xft_face_describe (PangoFontFace *face)
   XftPattern *match_pattern;
   XftPattern *result_pattern;
 
+  if (is_alias_family (xfamily->family_name))
+    {
+      if (strcmp (xface->style, "Regular") == 0)
+	return make_alias_description (xfamily, FALSE, FALSE);
+      else if (strcmp (xface->style, "Bold") == 0)
+	return make_alias_description (xfamily, TRUE, FALSE);
+      else if (strcmp (xface->style, "Italic") == 0)
+	return make_alias_description (xfamily, FALSE, TRUE);
+      else			/* Bold Italic */
+	return make_alias_description (xfamily, TRUE, TRUE);
+    }
+  
   match_pattern = XftPatternBuild (NULL,
 				   XFT_ENCODING, XftTypeString, "iso10646-1",
 				   XFT_FAMILY, XftTypeString, xfamily->family_name,
@@ -983,9 +1026,7 @@ pango_xft_family_list_faces (PangoFontFamily  *family,
       XftFontSet *fontset;
       int i;
 
-      if (strcmp (xfamily->family_name, "sans") == 0 ||
-	  strcmp (xfamily->family_name, "serif") == 0 ||
-	  strcmp (xfamily->family_name, "monospace") == 0)
+      if (is_alias_family (xfamily->family_name))
 	{
 	  xfamily->n_faces = 4;
 	  xfamily->faces = g_new (PangoXftFace *, xfamily->n_faces);
