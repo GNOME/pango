@@ -1,3 +1,9 @@
+Wed Oct  1 12:40:38 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-script.c (pango_script_get_sample_language): 
+	Fix a c99-ism, include stdlib.h for bsearch. 
+	(#123616, Kaushal Kumar)
+
 2003-09-30  Matthias Clasen  <maclas@gmx.de>
 
 	* pango/pango-engine.h (struct _PangoEngineShapeClass): Replace

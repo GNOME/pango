@@ -53,6 +53,7 @@
  * or other dealings in this Software without prior written authorization
  * of the copyright holder.
  */
+#include <stdlib.h>
 #include <string.h>
 
 #include "pango-script.h"
@@ -507,10 +508,12 @@ pango_script_get_sample_language (PangoScript script)
     "",    /* PANGO_SCRIPT_TAI_LE */
     "uga", /* PANGO_SCRIPT_UGARITIC */
   };
-
+  const char *sample_language;
+  
   g_return_val_if_fail (script >= 0, NULL);
   g_return_val_if_fail (script < G_N_ELEMENTS (sample_languages), NULL);
-  const char *sample_language = sample_languages[script];
+  
+  sample_language = sample_languages[script];
 
   if (!sample_language[0])
     return NULL;
