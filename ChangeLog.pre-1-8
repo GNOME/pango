@@ -1,3 +1,9 @@
+Thu Mar  7 10:51:16 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* configure.in: Fix some problems with setting 
+	library variables for --enable-explicit-deps. (Laszlo Peter,
+	#73851) 
+
 Wed Mar  6 12:44:00 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* Pango 1.0.0 rc2.

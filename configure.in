@@ -570,7 +570,7 @@ esac
 AC_MSG_RESULT($enable_explicit_deps)
 
 if test $enable_explicit_deps = yes ; then
-  PKGCONFIG_X_LIBS=$X_LIBS@ $X_EXTRA_LIBS
+  PKGCONFIG_X_LIBS="$X_LIBS $X_EXTRA_LIBS"
   PKGCONFIG_XFT_LIBS=$XFT_LIBS
   PKGCONFIG_FREETYPE_LIBS=$XFT_LIBS
 else
