@@ -1,3 +1,8 @@
+2004-05-06  Theppitak Karoonboonyanan  <thep@linux.thai.net>
+
+	* pango/break.c (pango_break):
+	Fix incorrect casts to get the class object of lang engine. (#141931)
+
 2004-04-29  Tor Lillqvist  <tml@iki.fi>
 
 	* pango/pangowin32-fontmap.c (pango_win32_font_map_for_display):
