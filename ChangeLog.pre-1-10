@@ -1,3 +1,25 @@
+2001-11-19  Tor Lillqvist  <tml@iki.fi>
+
+	* pango-zip.sh.in: Suffix package names with datestamp. Add
+	the Pango modules.
+
+	* pango/pango.def: pango_context_add_font_map ->
+	pango_context_set_font_map. Add pango_fontset_*.
+
+	* pango/pangoft2.def: Reflect Alexander's changes.
+
+	* pango/mini-xft/minixftinit.c (get_xft_default_path): New
+	function. Use pango_get_sysconf_subdirectory () to construct a
+	suitable path.
+
+	* pango/mini-xft/minixftint.h: On Win32, don't use the hardcoded
+	/usr/X11R6/lib/X11/XftConfig path (or any other hardcoded path),
+	but instead the function get_xft_default_path().
+
+	* pango/mini-xft/minixftcache.c (MiniXftFileCacheSave): On Win32,
+	don't use link() and unlink() for the lock file. Instead, use a
+	lock directory.
+
 2001-11-18  Alexander Larsson  <alla@lysator.liu.se>
 
 	* pango/pangoxft-fontmap.c:

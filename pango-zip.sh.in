@@ -2,8 +2,8 @@
 
 # Build zipfiles for Pango on Win32: separate runtime and developer packages
 
-ZIP=/tmp/pango-@PANGO_MAJOR_VERSION@.@PANGO_MINOR_VERSION@.zip
-DEVZIP=/tmp/pango-dev-@PANGO_MAJOR_VERSION@.@PANGO_MINOR_VERSION@.zip
+ZIP=/tmp/pango-@PANGO_MAJOR_VERSION@.@PANGO_MINOR_VERSION@-`date +%Y%m%d`.zip
+DEVZIP=/tmp/pango-dev-@PANGO_MAJOR_VERSION@.@PANGO_MINOR_VERSION@-`date +%Y%m%d`.zip
 cd @prefix@
 
 rm $ZIP
@@ -13,8 +13,9 @@ etc/pango
 lib/libpango-@PANGO_MAJOR_VERSION@-@PANGO_MINOR_VERSION@.dll
 lib/libpangoft2-@PANGO_MAJOR_VERSION@-@PANGO_MINOR_VERSION@.dll
 lib/libpangowin32-@PANGO_MAJOR_VERSION@-@PANGO_MINOR_VERSION@.dll
-lib/pango/modules/*.dll
 EOF
+
+zip $ZIP lib/pango/modules/*.dll
 
 rm $DEVZIP
 zip -r $DEVZIP -@ <<EOF

@@ -23,6 +23,11 @@
  */
 
 #include <stdlib.h>
+
+#ifdef _WIN32
+#include <stdio.h>
+#endif
+
 #include "minixftint.h"
 
 MiniXftFontSet  *_MiniXftFontSet;
@@ -46,3 +51,23 @@ MiniXftInit (char *config)
     }
     return True;
 }
+
+#ifdef _WIN32
+char *
+get_xft_default_path (void)
+{
+  static char *result = NULL;
+  extern char *pango_get_sysconf_subdirectory (void);
+  char *p;
+
+  if (result)
+    return result;
+
+  p = pango_get_sysconf_subdirectory ();
+  result = malloc (strlen (p) + 20);
+
+  sprintf (result, "%s\\..\\XftConfig", p);
+
+  return result;
+}
+#endif

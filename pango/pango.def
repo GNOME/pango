@@ -42,7 +42,6 @@ EXPORTS
 	pango_color_parse
 	pango_color_get_type
 	pango_config_key_get
-	pango_context_add_font_map
 	pango_context_get_base_dir
 	pango_context_get_font_description
 	pango_context_get_language
@@ -53,6 +52,7 @@ EXPORTS
 	pango_context_new
 	pango_context_set_base_dir
 	pango_context_set_font_description
+	pango_context_set_font_map
 	pango_context_set_language
 	pango_coverage_copy
 	pango_coverage_from_bytes
@@ -118,6 +118,13 @@ EXPORTS
 	pango_font_metrics_new
 	pango_font_metrics_ref
 	pango_font_metrics_unref
+	pango_fontset_get_font
+	pango_fontset_get_metrics
+	pango_fontset_get_type
+	pango_fontset_simple_append
+	pango_fontset_simple_get_type
+	pango_fontset_simple_new
+	pango_fontset_simple_size
 	pango_get_lib_subdirectory
 	pango_get_log_attrs
 	pango_get_mirror_char

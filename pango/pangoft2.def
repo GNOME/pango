@@ -1,20 +1,10 @@
 EXPORTS
-	pango_ft2_font_cache_free
-	pango_ft2_font_cache_load
-	pango_ft2_font_cache_new
-	pango_ft2_font_cache_unload
+	pango_ft2_font_get_coverage
+	pango_ft2_font_get_face
 	pango_ft2_font_get_kerning
 	pango_ft2_font_map_for_display
-	pango_ft2_font_map_get_font_cache
-	pango_ft2_font_subfont_open_args
-	pango_ft2_fontmap_dump
-	pango_ft2_ft_strerror
 	pango_ft2_get_context
-	pango_ft2_get_coverage
-	pango_ft2_get_face
 	pango_ft2_get_unknown_glyph
-	pango_ft2_load_font
-	pango_ft2_n_subfonts
 	pango_ft2_render
 	pango_ft2_render_layout
 	pango_ft2_render_layout_line

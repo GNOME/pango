@@ -59,7 +59,12 @@ extern MiniXftFontSet	*_MiniXftFontSet;
 #define XFT_NMISSING	256
 
 #ifndef XFT_DEFAULT_PATH
+#ifndef _WIN32
 #define XFT_DEFAULT_PATH "/usr/X11R6/lib/X11/XftConfig"
+#else
+extern char *get_xft_default_path (void);
+#define XFT_DEFAULT_PATH get_xft_default_path ()
+#endif
 #endif
 
 #define XFT_DBG_OPEN	1

@@ -30,6 +30,11 @@
 #include <errno.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+
+#ifdef _WIN32
+#define mkdir(path, mode) _mkdir(path)
+#endif
+
 #include "minixftint.h"
 
 typedef struct _MiniXftFileCacheEnt {
@@ -421,8 +426,13 @@ MiniXftFileCacheSave (char *cache_file)
     strcat (lck, "L");
     strcpy (tmp, cache_file);
     strcat (tmp, "T");
+#ifndef _WIN32
     if (link (lck, cache_file) < 0 && errno != ENOENT)
 	goto bail1;
+#else
+    if (mkdir (lck, 0666) < 0)
+        goto bail1;
+#endif
     if (access (tmp, F_OK) == 0)
 	goto bail2;
     f = fopen (tmp, "w");
@@ -460,7 +470,11 @@ MiniXftFileCacheSave (char *cache_file)
     if (rename (tmp, cache_file) < 0)
 	goto bail3;
     
+#ifndef _WIN32
     unlink (lck);
+#else
+    rmdir (lck);
+#endif
     cache->updated = False;
     return True;
 
@@ -469,7 +483,11 @@ bail4:
 bail3:
     unlink (tmp);
 bail2:
+#ifndef _WIN32
     unlink (lck);
+#else
+    rmdir (lck);
+#endif
 bail1:
     free (lck);
 bail0:
