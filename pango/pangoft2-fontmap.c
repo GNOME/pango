@@ -499,11 +499,13 @@ pango_ft2_font_map_new_font (PangoFontMap    *fontmap,
   
   if (font)
     {
-      /* Revive fonts from cache */
+      g_object_ref (font);
+      
+      /* Revive font from cache */
       if (font->in_cache)
 	pango_ft2_font_map_cache_remove (fontmap, font);
-      
-      return (PangoFont *)g_object_ref (G_OBJECT(font));
+	  
+      return (PangoFont *)font;
     }
   
   return  (PangoFont *)_pango_ft2_font_new (fontmap, MiniXftPatternDuplicate (match));

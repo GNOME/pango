@@ -1,3 +1,12 @@
+Sun Feb 24 12:12:09 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pangoxft-fontmap.c (pango_xft_font_map_new_font): 
+	Fix problem where we unref'ed before we ref'ed resulting
+	in entries in the cache that shouldn't have been there.
+
+	* pango/pangoft2-fontmap.c (pango_ft2_font_map_new_font): 
+	Same.
+
 Sat Feb 23 21:40:27 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* configure.in: Version 0.26
