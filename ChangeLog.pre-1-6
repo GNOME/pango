@@ -1,3 +1,14 @@
+Thu Aug  8 21:37:48 2002  Owen Taylor  <otaylor@redhat.com>
+
+        Some fixes from #90267
+	
+	* configure.in: Fix case where freetype2 is not in
+	default include path. Quiet some warnings if
+	/usr/lib/qt* doesn't exist.
+
+	* examples/Makefile.am: Fix problem where if no
+	Qt was found, -I /include was in the CFLAGS.
+
 Thu Aug  8 19:14:09 2002  Owen Taylor  <otaylor@redhat.com>
 
         * pango/pangoxft-font.c (load_fallback_font): Fix
