@@ -903,7 +903,7 @@ pango_ft2_render_layout_line (FT_Bitmap       *bitmap,
 
 /**
  * pango_ft2_render_layout:
- * @bitmap:    a FT_Bitmap to render the line onto
+ * @bitmap:    a FT_Bitmap to render the layout onto
  * @layout:    a #PangoLayout
  * @x:         the X position of the left of the layout (in pixels)
  * @y:         the Y position of the top of the layout (in pixels)
