@@ -185,6 +185,8 @@ pango_win32_font_cache_load (PangoWin32FontCache *cache,
   else
     {
       lf = *lfp;
+      /* Always turn on anti-aliasing */
+      lf.lfQuality = ANTIALIASED_QUALITY;
       for (tries = 0; ; tries++)
 	{
 #if 0

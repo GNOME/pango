@@ -23,6 +23,7 @@
 #include "config.h"
 
 #include <glib.h>
+#include <stdlib.h>
 #ifdef HAVE_DIRENT_H
 #include <dirent.h>
 #endif
@@ -42,25 +43,8 @@
 
 #include <windows.h>
 
-gchar*
-gtk_get_default_language (void)
-{
-  gchar *lang;
-  gchar *p;
-  
-  lang = g_strdup (setlocale (LC_CTYPE, NULL));
-  p = strchr (lang, '.');
-  if (p)
-    *p = '\0';
-  p = strchr (lang, '@');
-  if (p)
-    *p = '\0';
-
-  return lang;
-}
-
-HDC  pre_render (int width, int height);
-void post_render (HDC hdc, const char* sFile);
+static HDC pre_render (int width, int height);
+static void post_render (HDC hdc, const char* sFile);
 
 float 
 calc_duration (GTimeVal *tv1, GTimeVal *tv0)
@@ -72,21 +56,22 @@ calc_duration (GTimeVal *tv1, GTimeVal *tv0)
 int main (int argc, char **argv)
 {
   PangoFontMap *fontmap = pango_win32_font_map_for_display();
+  PangoContext *context;
   PangoCoverage * coverage = NULL;
   PangoFont* font = NULL;
   PangoFontFamily** families; 
   int nb;
   int i;
-  gchar* family_name = NULL;
-  gchar* lang = gtk_get_default_language ();
+  const gchar* family_name = NULL;
+  PangoLanguage *lang = pango_language_from_string (g_win32_getlocale ());
   HDC hdc = NULL;
   int line = 0;
   GTimeVal tv0, tv1;
   int my_font_size = 64;
 
   printf ("# Pango Font Test\n"
-	  "# Language: %s\n",
-	  "#\n", lang);
+	  "# Language: %s\n"
+	  "#\n", pango_language_to_string (lang));
 
   /* FIXME: this wasn't necessary with previous version
    *   and isn't done with current gtk+ win32 
@@ -94,13 +79,13 @@ int main (int argc, char **argv)
    * force initialization of built-in engines, otherwise
    * the rendering get's really fast - too fast to work :-(
    */
-  pango_win32_get_context ();
+  context = pango_win32_get_context ();
 
   if (argc == 1)		/* No arguments given */
     {
       PangoFontDescription *desc = pango_font_description_from_string("Sans 12");
 
-      font = pango_font_map_load_font (fontmap, desc);
+      font = pango_font_map_load_font (fontmap, context, desc);
     }
   else
     {
@@ -120,7 +105,7 @@ int main (int argc, char **argv)
       desc = pango_font_description_from_string(s->str);
       family_name = pango_font_description_get_family (desc);
 
-      font = pango_font_map_load_font (fontmap, desc);
+      font = pango_font_map_load_font (fontmap, context, desc);
       
       coverage = pango_font_get_coverage (font, lang);
 
@@ -133,12 +118,12 @@ int main (int argc, char **argv)
 
   pango_font_map_list_families (fontmap, &families, &nb);
 
-  hdc = pre_render(my_font_size * 64, 3 * my_font_size * nb / 2);
+  hdc = pre_render(my_font_size * 64, 3 * my_font_size * MIN (nb, 10) / 2);
 
-  for (i = 0; i < nb; i++)
+  for (i = 0; i < MIN (nb, 10); i++)
   {
     PangoFontDescription *desc = pango_font_description_new ();
-    char *family_name = pango_font_family_get_name (families[i]);
+    const char *family_name = pango_font_family_get_name (families[i]);
     PangoWeight weight = pango_font_description_get_weight (desc);
     PangoStyle  style  = pango_font_description_get_style  (desc);
 
@@ -151,14 +136,12 @@ int main (int argc, char **argv)
     pango_font_description_set_size (desc, my_font_size * PANGO_SCALE);
 
     g_get_current_time (&tv0);
-    font = pango_font_map_load_font (fontmap, desc);
+    font = pango_font_map_load_font (fontmap, context, desc);
     g_get_current_time (&tv1);
     g_print ("\tpango_font_map_load_font took %.3f sec\n", calc_duration (&tv1, &tv0));
 
     if (font) 
     {
-      PangoContext  *context;
-      PangoLayout   *layout;
       PangoItem     *item;
       PangoGlyphString * glyphs;
       char s[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -171,7 +154,6 @@ int main (int argc, char **argv)
       g_print ("\tpango_font_get_coverage took %.3f sec\n", calc_duration (&tv1, &tv0));
 
       /* ... */
-      context = pango_win32_get_context ();
       pango_context_set_language (context, lang);
       pango_context_set_base_dir (context, PANGO_DIRECTION_LTR);
       pango_context_set_font_description (context, desc);
@@ -216,12 +198,6 @@ int main (int argc, char **argv)
   if (hdc)
     post_render (hdc, "pango-fonts.bmp");
 
-  pango_font_map_list_families (fontmap, &families, &nb);
-  for (i = 0; i < nb; i++)
-  {
-    //g_print ("%s\n", families[i]);
-  }
-
   //pango_font_map_free_families (families, nb);
 
   return 0;
@@ -233,12 +209,14 @@ int main (int argc, char **argv)
 static HBITMAP hbmpold = NULL;
 static HWND hwndRender = NULL;
 
-BOOL
-SaveBitmap(HBITMAP hBmp, char* pszFile);
+static BOOL
+SaveBitmap (HBITMAP hBmp, const char* pszFile);
 
-HDC pre_render (int width, int height)
+static
+HDC
+pre_render (int width, int height)
 {
-  
+  HDC hmemdc;
   HDC hdc;
   HBITMAP hbmp;
   RECT r;
@@ -255,17 +233,28 @@ HDC pre_render (int width, int height)
 			     GetModuleHandle(NULL),
 			     NULL);
 
-  hdc = CreateCompatibleDC (GetDC(hwndRender));
-  hbmp = CreateCompatibleBitmap (hdc, width, height);
-  hbmpold = SelectObject(hdc, hbmp);
+  if (hwndRender == NULL)
+    fprintf (stderr, "Couldn't create window\n"), exit (1);
 
-  FillRect (hdc, &r, GetStockObject(WHITE_BRUSH));
-  SetTextColor (hdc, RGB (0,0,0));
-  SetBkMode (hdc, TRANSPARENT);
-  return hdc;
+  hdc = GetDC(hwndRender);
+  hmemdc = CreateCompatibleDC (hdc);
+  if (hdc == NULL)
+    fprintf (stderr, "CreateCompatibleDC failed\n"), exit (1);
+
+  hbmp = CreateCompatibleBitmap (hdc, width, height);
+  if (hbmp == NULL)
+    fprintf (stderr, "CreateCompatibleBitmap failed\n"), exit (1);
+
+  hbmpold = SelectObject(hmemdc, hbmp);
+
+  FillRect (hmemdc, &r, GetStockObject(WHITE_BRUSH));
+  SetTextColor (hmemdc, RGB (0,0,0));
+  SetBkMode (hmemdc, TRANSPARENT);
+  return hmemdc;
 }
 
-void post_render (HDC hdc, char* sFile)
+static void
+post_render (HDC hdc, const char* sFile)
 {
   HBITMAP hbmp = SelectObject(hdc, hbmpold);
   if (sFile)
@@ -276,8 +265,8 @@ void post_render (HDC hdc, char* sFile)
   DestroyWindow (hwndRender);
 }
 
-BOOL
-SaveBitmap(HBITMAP hBmp, char* pszFile)
+static BOOL
+SaveBitmap (HBITMAP hBmp, const char* pszFile)
 {
   BITMAP bmp;
   PBITMAPINFO pbmi;
@@ -299,14 +288,15 @@ SaveBitmap(HBITMAP hBmp, char* pszFile)
     cClrBits = 24;
   else
     cClrBits = 32;
+
   /*
    * Allocate memory for the BITMAPINFO structure. (This structure
    * contains a BITMAPINFOHEADER structure and an array of RGBQUAD data
    * structures.)      */
-  if (cClrBits != 24)
+  if (cClrBits < 24)
     pbmi = (PBITMAPINFO) GlobalAlloc(LPTR,
 				    sizeof(BITMAPINFOHEADER) +
-				    sizeof(RGBQUAD) * (2^cClrBits));
+				    sizeof(RGBQUAD) * (1 << cClrBits));
   /*
    * There is no RGBQUAD array for the 24-bit-per-pixel format.      */
   else
@@ -319,7 +309,9 @@ SaveBitmap(HBITMAP hBmp, char* pszFile)
   pbmi->bmiHeader.biPlanes = bmp.bmPlanes;
   pbmi->bmiHeader.biBitCount = bmp.bmBitsPixel;
   if (cClrBits < 24)
-    pbmi->bmiHeader.biClrUsed = 2^cClrBits;
+    pbmi->bmiHeader.biClrUsed = (1 << cClrBits);
+  else
+    pbmi->bmiHeader.biClrUsed = 0;
   /* If the bitmap is not compressed, set the BI_RGB flag. */
   pbmi->bmiHeader.biCompression = BI_RGB;
   /*

@@ -1,3 +1,18 @@
+2001-11-22  Tor Lillqvist  <tml@iki.fi>
+
+	* pango/pangowin32-fontcache.c (pango_win32_font_cache_load):
+	Always turn on anti-aliasing.
+
+2001-11-21  Tor Lillqvist  <tml@iki.fi>
+
+	* pango/testfonts.c: Fix a couple of bugs, update for current
+	Pango API. It's not completely clear to me what the program is
+	supposed to do with the command line args. It does load a matching
+	font, but does nothing with it. It then always lists *all* font
+	families, and renders a string in each. This causes a huge image
+	with associated swapping to death if you have lots of fonts... I
+	added a restriction, only the first 10 fonts are rendered.
+
 2001-11-20  Alex Larsson  <alexl@redhat.com>
 
 	* pango/pangoxft-font.c (pango_xft_font_finalize):
