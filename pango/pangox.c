@@ -1804,7 +1804,7 @@ pango_x_apply_ligatures (PangoFont     *font,
  * @font: A #PangoFont
  * @rfont: A pointer to a #PangoXSubfont
  * @charsets: An array of charsets.
- * @n_charset: The number of charsets in @charsets.
+ * @n_charsets: The number of charsets in @charsets.
  * 
  * Looks for subfonts with the @charset charset,
  * in @font, and puts the first one in *@rfont

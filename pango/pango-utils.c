@@ -142,14 +142,17 @@ pango_split_file_list (const char *str)
  * any other character is ignored and written into the output buffer
  * unmodified.
  * 
- * Return value: %FALSE if the stream was already at an EOF character.
+ * Return value: 0 if the stream was already at an EOF character, otherwise
+ *               the number of lines read (this is useful for maintaining
+ *               a line number counter which doesn't combine lines with \) 
  **/
-gboolean
+gint
 pango_read_line (FILE *stream, GString *str)
 {
   gboolean quoted = FALSE;
   gboolean comment = FALSE;
   int n_read = 0;
+  int lines = 1;
   
   flockfile (stream);
 
@@ -189,6 +192,8 @@ pango_read_line (FILE *stream, GString *str)
 		      (c == '\r' && next_c == '\n') ||
 		      (c == '\n' && next_c == '\r')))
 		  ungetc (next_c, stream);
+
+		lines++;
 		
 		break;
 	      }
@@ -230,7 +235,7 @@ pango_read_line (FILE *stream, GString *str)
 
   funlockfile (stream);
 
-  return n_read > 0;
+  return (n_read > 0) ? lines : 0;
 }
 
 /**

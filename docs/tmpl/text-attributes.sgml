@@ -54,7 +54,7 @@ provided for #PangoAttribute.
 @type: the type ID for this attribute
 @copy: function to duplicate an attribute of this type (see pango_attribute_copy())
 @destroy: function to free an attribute of this type (see pango_attribute_destroy())
-@equal: function to compare two attributes of this type (see pango_attribute_equal())
+@equal: 
 
 <!-- ##### STRUCT PangoAttribute ##### -->
 <para>

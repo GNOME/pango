@@ -116,7 +116,7 @@ void pango_x_fallback_shape (PangoFont        *font,
 
 gboolean pango_x_apply_ligatures (PangoFont     *font, 
                                   PangoXSubfont  subfont, 
-                                  gunichar     **chars, 
+                                  gunichar     **glyphs, 
                                   int           *n_glyphs,
                                   int          **clusters);
 

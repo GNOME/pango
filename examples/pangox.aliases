@@ -2,61 +2,207 @@
 #
 # family style variant weight stretch   XLFD
 
-sans normal normal normal normal "-*-helvetica-medium-r-normal--*-*-*-*-*-*-*-*,\
-                                  -*-clearlyu-medium-r-normal--*-*-*-*-*-*-iso10646-1,\
-                                  -*-fixed-medium-r-normal--*-*-*-*-*-*-*-*,\
-                                  -kaist-iyagi-bold-r-normal--*-*-*-*-*-*-johab-1,\
-                                  -*-song ti-medium-r-normal--*-*-*-*-*-*-*-*,\
-                                  -tamil-tscakaram-medium-r-normal--*-*-*-*-*-*-tscii-0,\
--*-devanagari-medium-r-normal--*-*-*-*-*-*-iso10646-dev,\
--*-gujarati-medium-r-normal--*-*-*-*-*-*-iso10646-guj,\
--*-gurmukhi-medium-r-normal--*-*-*-*-*-*-iso10646-gur,\
--*-bengali-medium-r-normal--*-*-*-*-*-*-iso10646-bng,\
--*-kannada-medium-r-normal--*-*-*-*-*-*-iso10646-kan,\
--*-burmese-medium-r-normal--*-*-*-*-*-*-iso10646-brm,\
--*-buginese-medium-r-normal--*-*-*-*-*-*-iso10646-bgn,\
--*-oriya-medium-r-normal--*-*-*-*-*-*-iso10646-ori,\
--daewoo-mincho-medium-r-normal--*-*-*-*-*-*-ksc5601.1987-0"
+sans normal normal normal normal \
+  "-*-helvetica-medium-r-normal--*-*-*-*-*-*-*-*,\
+   -*-clearlyu-medium-r-normal--*-*-*-*-*-*-iso10646-1,\
+   -*-fixed-medium-r-normal--*-*-*-*-*-*-*-*,\
+   -kaist-iyagi-bold-r-normal--*-*-*-*-*-*-johab-1,\
+   -*-song ti-medium-r-normal--*-*-*-*-*-*-*-*,\
+   -tamil-tscakaram-medium-r-normal--*-*-*-*-*-*-tscii-0,\
+   -*-devanagari-medium-r-normal--*-*-*-*-*-*-iso10646-dev,\
+   -*-gujarati-medium-r-normal--*-*-*-*-*-*-iso10646-guj,\
+   -*-gurmukhi-medium-r-normal--*-*-*-*-*-*-iso10646-gur,\
+   -*-bengali-medium-r-normal--*-*-*-*-*-*-iso10646-bng,\
+   -*-kannada-medium-r-normal--*-*-*-*-*-*-iso10646-kan,\
+   -*-burmese-medium-r-normal--*-*-*-*-*-*-iso10646-brm,\
+   -*-buginese-medium-r-normal--*-*-*-*-*-*-iso10646-bgn,\
+   -*-oriya-medium-r-normal--*-*-*-*-*-*-iso10646-ori,\
+   -daewoo-mincho-medium-r-normal--*-*-*-*-*-*-ksc5601.1987-0"
 
-sans italic normal normal normal "-*-helvetica-medium-o-normal--*-*-*-*-*-*-*-*"
-sans normal normal bold normal "-*-helvetica-bold-r-normal--*-*-*-*-*-*-*-*"
-sans italic normal bold normal "-*-helvetica-bold-o-normal--*-*-*-*-*-*-*-*"
+sans italic normal normal normal \
+  "-*-helvetica-medium-o-normal--*-*-*-*-*-*-*-*,\
+   -*-clearlyu-medium-r-normal--*-*-*-*-*-*-iso10646-1,\
+   -*-fixed-medium-r-normal--*-*-*-*-*-*-*-*,\
+   -kaist-iyagi-bold-r-normal--*-*-*-*-*-*-johab-1,\
+   -*-song ti-medium-r-normal--*-*-*-*-*-*-*-*,\
+   -tamil-tscakaram-medium-r-normal--*-*-*-*-*-*-tscii-0,\
+   -*-devanagari-medium-r-normal--*-*-*-*-*-*-iso10646-dev,\
+   -*-gujarati-medium-r-normal--*-*-*-*-*-*-iso10646-guj,\
+   -*-gurmukhi-medium-r-normal--*-*-*-*-*-*-iso10646-gur,\
+   -*-bengali-medium-r-normal--*-*-*-*-*-*-iso10646-bng,\
+   -*-kannada-medium-r-normal--*-*-*-*-*-*-iso10646-kan,\
+   -*-burmese-medium-r-normal--*-*-*-*-*-*-iso10646-brm,\
+   -*-buginese-medium-r-normal--*-*-*-*-*-*-iso10646-bgn,\
+   -*-oriya-medium-r-normal--*-*-*-*-*-*-iso10646-ori,\
+   -daewoo-mincho-medium-r-normal--*-*-*-*-*-*-ksc5601.1987-0"
 
-serif normal normal normal normal "-*-times-medium-r-normal--*-*-*-*-*-*-*-*,\
-				  -*-clearlyu-medium-r-normal--*-*-*-*-*-*-iso10646-1,\
-	                           -*-fixed-medium-r-normal--*-*-*-*-*-*-*-*,\
-                                   -kaist-iyagi-bold-r-normal--*-*-*-*-*-*-johab-1,\
-                                   -*-song ti-medium-r-normal--*-*-*-*-*-*-*-*,\
-                                   -tamil-tscakaram-medium-r-normal--*-*-*-*-*-*-tscii-0,\
--*-devanagari-medium-r-normal--*-*-*-*-*-*-iso10646-dev,\
--*-gujarati-medium-r-normal--*-*-*-*-*-*-iso10646-guj,\
--*-gurmukhi-medium-r-normal--*-*-*-*-*-*-iso10646-gur,\
--*-bengali-medium-r-normal--*-*-*-*-*-*-iso10646-bng,\
--*-kannada-medium-r-normal--*-*-*-*-*-*-iso10646-kan,\
--*-burmese-medium-r-normal--*-*-*-*-*-*-iso10646-brm,\
--*-buginese-medium-r-normal--*-*-*-*-*-*-iso10646-bgn,\
--*-oriya-medium-r-normal--*-*-*-*-*-*-iso10646-ori,\
--daewoo-mincho-medium-r-normal--*-*-*-*-*-*-ksc5601.1987-0"
+sans normal normal bold normal \
+  "-*-helvetica-bold-r-normal--*-*-*-*-*-*-*-*,\
+   -*-clearlyu-medium-r-normal--*-*-*-*-*-*-iso10646-1,\
+   -*-fixed-medium-r-normal--*-*-*-*-*-*-*-*,\
+   -kaist-iyagi-bold-r-normal--*-*-*-*-*-*-johab-1,\
+   -*-song ti-medium-r-normal--*-*-*-*-*-*-*-*,\
+   -tamil-tscakaram-medium-r-normal--*-*-*-*-*-*-tscii-0,\
+   -*-devanagari-medium-r-normal--*-*-*-*-*-*-iso10646-dev,\
+   -*-gujarati-medium-r-normal--*-*-*-*-*-*-iso10646-guj,\
+   -*-gurmukhi-medium-r-normal--*-*-*-*-*-*-iso10646-gur,\
+   -*-bengali-medium-r-normal--*-*-*-*-*-*-iso10646-bng,\
+   -*-kannada-medium-r-normal--*-*-*-*-*-*-iso10646-kan,\
+   -*-burmese-medium-r-normal--*-*-*-*-*-*-iso10646-brm,\
+   -*-buginese-medium-r-normal--*-*-*-*-*-*-iso10646-bgn,\
+   -*-oriya-medium-r-normal--*-*-*-*-*-*-iso10646-ori,\
+   -daewoo-mincho-medium-r-normal--*-*-*-*-*-*-ksc5601.1987-0"
 
-serif italic normal normal normal "-*-times-medium-i-normal--*-*-*-*-*-*-*-*"
-serif normal normal bold normal "-*-times-bold-r-normal--*-*-*-*-*-*-*-*"
-serif italic normal bold normal "-*-times-bold-i-normal--*-*-*-*-*-*-*-*"
+sans italic normal bold normal \
+  "-*-helvetica-bold-o-normal--*-*-*-*-*-*-*-*,\
+   -*-clearlyu-medium-r-normal--*-*-*-*-*-*-iso10646-1,\
+   -*-fixed-medium-r-normal--*-*-*-*-*-*-*-*,\
+   -kaist-iyagi-bold-r-normal--*-*-*-*-*-*-johab-1,\
+   -*-song ti-medium-r-normal--*-*-*-*-*-*-*-*,\
+   -tamil-tscakaram-medium-r-normal--*-*-*-*-*-*-tscii-0,\
+   -*-devanagari-medium-r-normal--*-*-*-*-*-*-iso10646-dev,\
+   -*-gujarati-medium-r-normal--*-*-*-*-*-*-iso10646-guj,\
+   -*-gurmukhi-medium-r-normal--*-*-*-*-*-*-iso10646-gur,\
+   -*-bengali-medium-r-normal--*-*-*-*-*-*-iso10646-bng,\
+   -*-kannada-medium-r-normal--*-*-*-*-*-*-iso10646-kan,\
+   -*-burmese-medium-r-normal--*-*-*-*-*-*-iso10646-brm,\
+   -*-buginese-medium-r-normal--*-*-*-*-*-*-iso10646-bgn,\
+   -*-oriya-medium-r-normal--*-*-*-*-*-*-iso10646-ori,\
+   -daewoo-mincho-medium-r-normal--*-*-*-*-*-*-ksc5601.1987-0"
 
-monospace normal normal normal normal "-*-fixed-medium-r-normal--*-*-*-*-*-*-*-*,\
-				       -*-clearlyu-medium-r-normal--*-*-*-*-*-*-iso10646-1,\
-                                       -kaist-iyagi-bold-r-normal--*-*-*-*-*-*-johab-1,\
-                                       -*-song ti-medium-r-normal--*-*-*-*-*-*-*-*,\
-                                       -tamil-tscakaram-medium-r-normal--*-*-*-*-*-*-tscii-0,\
--*-devanagari-medium-r-normal--*-*-*-*-*-*-iso10646-dev,\
--*-gujarati-medium-r-normal--*-*-*-*-*-*-iso10646-guj,\
--*-gurmukhi-medium-r-normal--*-*-*-*-*-*-iso10646-gur,\
--*-bengali-medium-r-normal--*-*-*-*-*-*-iso10646-bng,\
--*-kannada-medium-r-normal--*-*-*-*-*-*-iso10646-kan,\
--*-burmese-medium-r-normal--*-*-*-*-*-*-iso10646-brm,\
--*-buginese-medium-r-normal--*-*-*-*-*-*-iso10646-bgn,\
--*-oriya-medium-r-normal--*-*-*-*-*-*-iso10646-ori,\
--daewoo-mincho-medium-r-normal--*-*-*-*-*-*-ksc5601.1987-0"
 
-monospace italic normal normal normal "-*-fixed-medium-i-normal--*-*-*-*-*-*-*-*"
-monospace normal normal bold normal "-*-fixed-bold-r-normal--*-*-*-*-*-*-*-*"
-monospace italic normal bold normal "-*-fixed-bold-i-normal--*-*-*-*-*-*-*-*"
+serif normal normal normal normal \
+  "-*-times-medium-r-normal--*-*-*-*-*-*-*-*,\
+   -*-clearlyu-medium-r-normal--*-*-*-*-*-*-iso10646-1,\
+   -*-fixed-medium-r-normal--*-*-*-*-*-*-*-*,\
+   -kaist-iyagi-bold-r-normal--*-*-*-*-*-*-johab-1,\
+   -*-song ti-medium-r-normal--*-*-*-*-*-*-*-*,\
+   -tamil-tscakaram-medium-r-normal--*-*-*-*-*-*-tscii-0,\
+   -*-devanagari-medium-r-normal--*-*-*-*-*-*-iso10646-dev,\
+   -*-gujarati-medium-r-normal--*-*-*-*-*-*-iso10646-guj,\
+   -*-gurmukhi-medium-r-normal--*-*-*-*-*-*-iso10646-gur,\
+   -*-bengali-medium-r-normal--*-*-*-*-*-*-iso10646-bng,\
+   -*-kannada-medium-r-normal--*-*-*-*-*-*-iso10646-kan,\
+   -*-burmese-medium-r-normal--*-*-*-*-*-*-iso10646-brm,\
+   -*-buginese-medium-r-normal--*-*-*-*-*-*-iso10646-bgn,\
+   -*-oriya-medium-r-normal--*-*-*-*-*-*-iso10646-ori,\
+   -daewoo-mincho-medium-r-normal--*-*-*-*-*-*-ksc5601.1987-0"
+
+serif italic normal normal normal \
+  "-*-times-medium-i-normal--*-*-*-*-*-*-*-*,\
+   -*-clearlyu-medium-r-normal--*-*-*-*-*-*-iso10646-1,\
+   -*-fixed-medium-r-normal--*-*-*-*-*-*-*-*,\
+   -kaist-iyagi-bold-r-normal--*-*-*-*-*-*-johab-1,\
+   -*-song ti-medium-r-normal--*-*-*-*-*-*-*-*,\
+   -tamil-tscakaram-medium-r-normal--*-*-*-*-*-*-tscii-0,\
+   -*-devanagari-medium-r-normal--*-*-*-*-*-*-iso10646-dev,\
+   -*-gujarati-medium-r-normal--*-*-*-*-*-*-iso10646-guj,\
+   -*-gurmukhi-medium-r-normal--*-*-*-*-*-*-iso10646-gur,\
+   -*-bengali-medium-r-normal--*-*-*-*-*-*-iso10646-bng,\
+   -*-kannada-medium-r-normal--*-*-*-*-*-*-iso10646-kan,\
+   -*-burmese-medium-r-normal--*-*-*-*-*-*-iso10646-brm,\
+   -*-buginese-medium-r-normal--*-*-*-*-*-*-iso10646-bgn,\
+   -*-oriya-medium-r-normal--*-*-*-*-*-*-iso10646-ori,\
+   -daewoo-mincho-medium-r-normal--*-*-*-*-*-*-ksc5601.1987-0"
+
+serif normal normal bold normal \
+  "-*-times-bold-r-normal--*-*-*-*-*-*-*-*,\
+   -*-clearlyu-medium-r-normal--*-*-*-*-*-*-iso10646-1,\
+   -*-fixed-medium-r-normal--*-*-*-*-*-*-*-*,\
+   -kaist-iyagi-bold-r-normal--*-*-*-*-*-*-johab-1,\
+   -*-song ti-medium-r-normal--*-*-*-*-*-*-*-*,\
+   -tamil-tscakaram-medium-r-normal--*-*-*-*-*-*-tscii-0,\
+   -*-devanagari-medium-r-normal--*-*-*-*-*-*-iso10646-dev,\
+   -*-gujarati-medium-r-normal--*-*-*-*-*-*-iso10646-guj,\
+   -*-gurmukhi-medium-r-normal--*-*-*-*-*-*-iso10646-gur,\
+   -*-bengali-medium-r-normal--*-*-*-*-*-*-iso10646-bng,\
+   -*-kannada-medium-r-normal--*-*-*-*-*-*-iso10646-kan,\
+   -*-burmese-medium-r-normal--*-*-*-*-*-*-iso10646-brm,\
+   -*-buginese-medium-r-normal--*-*-*-*-*-*-iso10646-bgn,\
+   -*-oriya-medium-r-normal--*-*-*-*-*-*-iso10646-ori,\
+   -daewoo-mincho-medium-r-normal--*-*-*-*-*-*-ksc5601.1987-0"
+
+serif italic normal bold normal \
+  "-*-times-bold-i-normal--*-*-*-*-*-*-*-*,\
+   -*-clearlyu-medium-r-normal--*-*-*-*-*-*-iso10646-1,\
+   -*-fixed-medium-r-normal--*-*-*-*-*-*-*-*,\
+   -kaist-iyagi-bold-r-normal--*-*-*-*-*-*-johab-1,\
+   -*-song ti-medium-r-normal--*-*-*-*-*-*-*-*,\
+   -tamil-tscakaram-medium-r-normal--*-*-*-*-*-*-tscii-0,\
+   -*-devanagari-medium-r-normal--*-*-*-*-*-*-iso10646-dev,\
+   -*-gujarati-medium-r-normal--*-*-*-*-*-*-iso10646-guj,\
+   -*-gurmukhi-medium-r-normal--*-*-*-*-*-*-iso10646-gur,\
+   -*-bengali-medium-r-normal--*-*-*-*-*-*-iso10646-bng,\
+   -*-kannada-medium-r-normal--*-*-*-*-*-*-iso10646-kan,\
+   -*-burmese-medium-r-normal--*-*-*-*-*-*-iso10646-brm,\
+   -*-buginese-medium-r-normal--*-*-*-*-*-*-iso10646-bgn,\
+   -*-oriya-medium-r-normal--*-*-*-*-*-*-iso10646-ori,\
+   -daewoo-mincho-medium-r-normal--*-*-*-*-*-*-ksc5601.1987-0"
+
+monospace normal normal normal normal \
+  "-*-fixed-medium-r-normal--*-*-*-*-*-*-*-*,\
+   -*-clearlyu-medium-r-normal--*-*-*-*-*-*-iso10646-1,\
+   -*-fixed-medium-r-normal--*-*-*-*-*-*-*-*,\
+   -kaist-iyagi-bold-r-normal--*-*-*-*-*-*-johab-1,\
+   -*-song ti-medium-r-normal--*-*-*-*-*-*-*-*,\
+   -tamil-tscakaram-medium-r-normal--*-*-*-*-*-*-tscii-0,\
+   -*-devanagari-medium-r-normal--*-*-*-*-*-*-iso10646-dev,\
+   -*-gujarati-medium-r-normal--*-*-*-*-*-*-iso10646-guj,\
+   -*-gurmukhi-medium-r-normal--*-*-*-*-*-*-iso10646-gur,\
+   -*-bengali-medium-r-normal--*-*-*-*-*-*-iso10646-bng,\
+   -*-kannada-medium-r-normal--*-*-*-*-*-*-iso10646-kan,\
+   -*-burmese-medium-r-normal--*-*-*-*-*-*-iso10646-brm,\
+   -*-buginese-medium-r-normal--*-*-*-*-*-*-iso10646-bgn,\
+   -*-oriya-medium-r-normal--*-*-*-*-*-*-iso10646-ori,\
+   -daewoo-mincho-medium-r-normal--*-*-*-*-*-*-ksc5601.1987-0"
+
+monospace italic normal normal normal \
+  "-*-fixed-medium-i-normal--*-*-*-*-*-*-*-*,\
+   -*-clearlyu-medium-r-normal--*-*-*-*-*-*-iso10646-1,\
+   -*-fixed-medium-r-normal--*-*-*-*-*-*-*-*,\
+   -kaist-iyagi-bold-r-normal--*-*-*-*-*-*-johab-1,\
+   -*-song ti-medium-r-normal--*-*-*-*-*-*-*-*,\
+   -tamil-tscakaram-medium-r-normal--*-*-*-*-*-*-tscii-0,\
+   -*-devanagari-medium-r-normal--*-*-*-*-*-*-iso10646-dev,\
+   -*-gujarati-medium-r-normal--*-*-*-*-*-*-iso10646-guj,\
+   -*-gurmukhi-medium-r-normal--*-*-*-*-*-*-iso10646-gur,\
+   -*-bengali-medium-r-normal--*-*-*-*-*-*-iso10646-bng,\
+   -*-kannada-medium-r-normal--*-*-*-*-*-*-iso10646-kan,\
+   -*-burmese-medium-r-normal--*-*-*-*-*-*-iso10646-brm,\
+   -*-buginese-medium-r-normal--*-*-*-*-*-*-iso10646-bgn,\
+   -*-oriya-medium-r-normal--*-*-*-*-*-*-iso10646-ori,\
+   -daewoo-mincho-medium-r-normal--*-*-*-*-*-*-ksc5601.1987-0"
+
+monospace normal normal bold normal \
+  "-*-fixed-bold-r-normal--*-*-*-*-*-*-*-*,\
+   -*-clearlyu-medium-r-normal--*-*-*-*-*-*-iso10646-1,\
+   -*-fixed-medium-r-normal--*-*-*-*-*-*-*-*,\
+   -kaist-iyagi-bold-r-normal--*-*-*-*-*-*-johab-1,\
+   -*-song ti-medium-r-normal--*-*-*-*-*-*-*-*,\
+   -tamil-tscakaram-medium-r-normal--*-*-*-*-*-*-tscii-0,\
+   -*-devanagari-medium-r-normal--*-*-*-*-*-*-iso10646-dev,\
+   -*-gujarati-medium-r-normal--*-*-*-*-*-*-iso10646-guj,\
+   -*-gurmukhi-medium-r-normal--*-*-*-*-*-*-iso10646-gur,\
+   -*-bengali-medium-r-normal--*-*-*-*-*-*-iso10646-bng,\
+   -*-kannada-medium-r-normal--*-*-*-*-*-*-iso10646-kan,\
+   -*-burmese-medium-r-normal--*-*-*-*-*-*-iso10646-brm,\
+   -*-buginese-medium-r-normal--*-*-*-*-*-*-iso10646-bgn,\
+   -*-oriya-medium-r-normal--*-*-*-*-*-*-iso10646-ori,\
+   -daewoo-mincho-medium-r-normal--*-*-*-*-*-*-ksc5601.1987-0"
+
+monospace italic normal bold normal \
+  "-*-fixed-bold-i-normal--*-*-*-*-*-*-*-*,\
+   -*-clearlyu-medium-r-normal--*-*-*-*-*-*-iso10646-1,\
+   -*-fixed-medium-r-normal--*-*-*-*-*-*-*-*,\
+   -kaist-iyagi-bold-r-normal--*-*-*-*-*-*-johab-1,\
+   -*-song ti-medium-r-normal--*-*-*-*-*-*-*-*,\
+   -tamil-tscakaram-medium-r-normal--*-*-*-*-*-*-tscii-0,\
+   -*-devanagari-medium-r-normal--*-*-*-*-*-*-iso10646-dev,\
+   -*-gujarati-medium-r-normal--*-*-*-*-*-*-iso10646-guj,\
+   -*-gurmukhi-medium-r-normal--*-*-*-*-*-*-iso10646-gur,\
+   -*-bengali-medium-r-normal--*-*-*-*-*-*-iso10646-bng,\
+   -*-kannada-medium-r-normal--*-*-*-*-*-*-iso10646-kan,\
+   -*-burmese-medium-r-normal--*-*-*-*-*-*-iso10646-brm,\
+   -*-buginese-medium-r-normal--*-*-*-*-*-*-iso10646-bgn,\
+   -*-oriya-medium-r-normal--*-*-*-*-*-*-iso10646-ori,\
+   -daewoo-mincho-medium-r-normal--*-*-*-*-*-*-ksc5601.1987-0"

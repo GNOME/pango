@@ -2,12 +2,11 @@
 X Rendering
 
 <!-- ##### SECTION Short_Description ##### -->
-Functions for Rendering Pango objects on X displays.
+
 
 <!-- ##### SECTION Long_Description ##### -->
 <para>
-The functions in this system are used to take the output
-of the shaping modules and render that on the screen.
+
 </para>
 
 <!-- ##### SECTION See_Also ##### -->
@@ -17,9 +16,7 @@ of the shaping modules and render that on the screen.
 
 <!-- ##### MACRO PANGO_RENDER_TYPE_X ##### -->
 <para>
-%PANGO_RENDER_TYPE_X is a string constant that
-is used to identify shaping modules for the
-X Window System.
+
 </para>
 
 
@@ -45,28 +42,22 @@ X Window System.
 
 <!-- ##### USER_FUNCTION PangoGetGCFunc ##### -->
 <para>
-Used to represent a function which is called when a new GC must be
-created to draw something other than the default color when rendering
-a layout. The function used here will typically retrieve information
-from the context with pango_context_get_data().
+
 </para>
 
-@context: the #PangoContext
-@color: color attribute representing the desired color
-@base_gc: default GC used for rendering. The function will typically
-          copy attributes such as clip region from the GC
-@Returns: the new GC
+@context: 
+@color: 
+@base_gc: 
+@Returns: 
 
 
 <!-- ##### USER_FUNCTION PangoFreeGCFunc ##### -->
 <para>
-Used to represent a function which is called to free a GC created with
-the corresponding PangoGetGCFunc. The function used here will
-typically retrieve information from the context with pango_context_set_data().
+
 </para>
 
-@context: the #PangoContext
-@gc: the GC to free
+@context: 
+@gc: 
 
 
 <!-- ##### FUNCTION pango_x_render ##### -->

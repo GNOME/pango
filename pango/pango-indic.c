@@ -64,7 +64,7 @@ pango_indic_shift_vowels (PangoIndicScript *script,
  * @script: A #PangoIndicScript
  * @num: The number of glyphs
  * @chars: An array of glyphs/characters
- * @clusters: The cluster array.
+ * @cluster: The cluster array.
  *
  * This eliminates any blank space in the @chars
  * array, updated @clusters and @num also. 

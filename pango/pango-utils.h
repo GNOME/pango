@@ -26,7 +26,7 @@
 char    *pango_trim_string     (const char *str);
 char **  pango_split_file_list (const char *str);
 
-gboolean pango_read_line      (FILE        *stream,
+gint     pango_read_line      (FILE        *stream,
 			       GString     *str);
 
 gboolean pango_skip_space     (const char **pos);

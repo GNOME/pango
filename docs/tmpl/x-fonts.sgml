@@ -148,10 +148,12 @@ glyph index.
 
 @font: 
 @subfont: 
-@chars: 
+@glyphs: 
 @n_glyphs: 
 @clusters: 
 @Returns: 
+<!-- # Unused Parameters # -->
+@chars: 
 
 
 <!-- ##### FUNCTION pango_x_fallback_shape ##### -->

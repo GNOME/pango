@@ -2868,21 +2868,28 @@ pango_layout_run_get_extents (PangoLayoutRun *run,
 
   PangoRectangle shape_ink;
   PangoRectangle shape_logical;
+  PangoRectangle tmp_ink;
   gboolean shape_set;
+  gboolean need_ink;
 
   pango_layout_get_item_properties (run->item, &uline,
                                     &shape_ink, &shape_logical, &shape_set);
 
   if (shape_setp)
     *shape_setp = shape_set;
+
+  need_ink = run_ink || uline == PANGO_UNDERLINE_LOW;
   
   if (shape_set)
     imposed_extents (run->item->num_chars, &shape_ink, &shape_logical,
-                     (uline != PANGO_UNDERLINE_NONE) ? run_ink : NULL, run_logical);
+		     need_ink ? &tmp_ink : NULL, run_logical);
   else
     pango_glyph_string_extents (run->glyphs, run->item->analysis.font,
-                                (uline != PANGO_UNDERLINE_NONE) ? run_ink : NULL,
+                                need_ink ? &tmp_ink : NULL,
                                 run_logical);
+
+  if (run_ink)
+    *run_ink = tmp_ink;
 
   switch (uline)
     {
@@ -2899,12 +2906,12 @@ pango_layout_run_get_extents (PangoLayoutRun *run,
       run_logical->height = MAX (run_logical->height, 4 * PANGO_SCALE - run_logical->y);
       break;
     case PANGO_UNDERLINE_LOW:
-      if (run_ink)
-        run_ink->height += 2 * PANGO_SCALE;
-	  
       /* FIXME: Should this simply be run_logical->height += 2 * PANGO_SCALE instead?
        */
-      run_logical->height = MAX (run_logical->height, run_ink->y + run_ink->height - run_logical->y);
+      if (run_ink)
+	run_ink->height += 2 * PANGO_SCALE;
+      run_logical->height = MAX (run_logical->height,
+				 tmp_ink.y + tmp_ink.height + 2 * PANGO_SCALE - run_logical->y);
       break;
     }
 }

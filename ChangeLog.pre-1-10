@@ -1,3 +1,23 @@
+Tue Nov 14 11:10:24 2000  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-layout.c (pango_layout_run_get_extents): 
+	Fix low underline code to deal with run_ink == NULL.
+
+	* pango/pango-utils.c (pango_read_line): Return number
+	of lines read to allow decent parse errors line numbers.
+
+	* pango/pangox-fontmap.c (pango_x_font_map_read_alias_file):
+	Fix line number count.
+
+	* examples/pangox.aliases: Include extra international fonts
+	for all styles, not just roman, reindent so it looks 
+	halfway legible.
+
+Mon Nov 13 14:02:48 2000  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pangox.c pango/pango-indic.c: Some doc comment
+	fixes.
+
 2000-11-13  Havoc Pennington  <hp@redhat.com>
 
 	* pango/pango-layout.c (pango_layout_get_cursor_pos): Don't need

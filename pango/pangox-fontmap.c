@@ -852,14 +852,15 @@ pango_x_font_map_read_alias_file (PangoXFontMap *xfontmap,
     {
       GString *line_buf = g_string_new (NULL);
       GString *tmp_buf = g_string_new (NULL);
+      gint lines_read;
 
-      while (pango_read_line (infile, line_buf))
+      while ((lines_read = pango_read_line (infile, line_buf)))
 	{
 	  PangoXFamilyEntry *family_entry;
 
 	  const char *p = line_buf->str;
 	  
-	  lineno++;
+	  lineno += lines_read;
 
 	  if (!pango_skip_space (&p))
 	    continue;
