@@ -35,6 +35,18 @@ Thu May 27 15:08:32 2004  Owen Taylor  <otaylor@redhat.com>
 	* pango/break.c (pango_break):
 	Fix incorrect casts to get the class object of lang engine. (#141931)
 
+2004-04-29  Jody Goldberg <jody@gnome.org>
+
+	* pango/pango-layout.c (get_alignment) : only invert if the layout and
+	  the context really disagree, not if they are WEAK_LTR vs LTR
+
+2004-03-11  Jody Goldberg <jody@gnome.org>
+
+	* pango/pango-attributes.h : Add a comment clarifying that
+	  PangoAttribute::end_index is _exclusive_.  The range is [start..end)
+	  Additionally clarify that that the indicies are in _bytes_ not
+	  characters.
+
 2004-04-29  Tor Lillqvist  <tml@iki.fi>
 
 	* pango/pangowin32-fontmap.c (pango_win32_font_map_for_display):
