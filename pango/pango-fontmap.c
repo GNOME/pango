@@ -58,6 +58,7 @@ pango_font_map_load_font  (PangoFontMap               *fontmap,
 			   const PangoFontDescription *desc)
 {
   g_return_val_if_fail (fontmap != NULL, NULL);
+  g_return_val_if_fail (pango_font_description_get_family (desc) != NULL, NULL);
 
   return PANGO_FONT_MAP_GET_CLASS (fontmap)->load_font (fontmap, context, desc);
 }
