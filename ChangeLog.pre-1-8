@@ -1,3 +1,7 @@
+2002-10-14  Matthias Clasen  <maclas@gmx.de>
+
+	* docs/Makefile.am (SCANOBJ_FILES): Add $(DOC_MODULE).interfaces.
+
 Sun Oct 13 12:35:14 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* === Released 1.1.2 ===
