@@ -1,3 +1,10 @@
+Fri Jul 25 12:07:21 2003  Owen Taylor  <otaylor@redhat.com>
+
+        * modules/indic/mprefixups.[ch] modules/indic/indic-ot.[ch]
+        modules/indic/indic-fc.c: Port pre-base-mantra
+        fixup code from ICU, as needed for Tamil and Malayalam.
+        (Based on patch from Sivaraj Doddannan, #111166)
+
 Fri Jul 25 11:06:14 2003  Owen Taylor  <otaylor@redhat.com>
 
 	* modules/indic/indic-ot.[ch]: Port of some fixes from

@@ -313,6 +313,7 @@ indic_engine_shape (PangoFont        *font,
   PangoEngineShapeIndic *indic_shape_engine = NULL;
   PangoIndicInfo *indic_info = NULL;
   PangoFcFont *fc_font;
+  MPreFixups *mprefixups;
 
   g_return_if_fail (font != NULL);
   g_return_if_fail (text != NULL);
@@ -332,14 +333,15 @@ indic_engine_shape (PangoFont        *font,
   indic_info = indic_shape_engine->indicInfo;
 
   wc_in    = expand_text (text, length, &utf8_offsets, &n_chars);
-  n_glyphs = indic_ot_reorder (wc_in, utf8_offsets, n_chars, indic_info->classTable, NULL, NULL, NULL);
-
+ 
+  n_glyphs = indic_ot_reorder (wc_in, utf8_offsets, n_chars, indic_info->classTable, NULL, NULL, NULL, NULL);
+  
   wc_out  = g_new (gunichar, n_glyphs);
   indices = g_new (glong,    n_glyphs);
   tags    = g_new (gulong,   n_glyphs);
 
-  n_glyphs  = indic_ot_reorder (wc_in, utf8_offsets, n_chars, indic_info->classTable, wc_out, indices, tags);
-
+  n_glyphs  = indic_ot_reorder (wc_in, utf8_offsets, n_chars, indic_info->classTable, wc_out, indices, tags, &mprefixups);
+  
   pango_glyph_string_set_size (glyphs, n_glyphs);
   set_glyphs(font, face, wc_out, n_glyphs, glyphs);
 
@@ -348,6 +350,13 @@ indic_engine_shape (PangoFont        *font,
   if (gsub_ruleset != NULL)
     {
       pango_ot_ruleset_shape (gsub_ruleset, glyphs, tags);
+    }
+
+  /* Fix pre-modifiers for some scripts before base consonant */
+  if (mprefixups)
+    {
+      indic_mprefixups_apply (mprefixups, glyphs);
+      indic_mprefixups_free (mprefixups);
     }
 
   /* apply default positioning */

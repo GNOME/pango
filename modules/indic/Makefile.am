@@ -98,7 +98,9 @@ xft_sources =		 	\
 	indic-fc.c		\
 	indic-ot-class-tables.c	\
 	indic-ot.c		\
-	indic-ot.h
+	indic-ot.h		\
+	mprefixups.c		\
+	mprefixups.h
 
 pango_indic_xft_la_LDFLAGS = -export-dynamic -avoid-version -module
 pango_indic_xft_la_LIBADD = $(pangoxftlibs)
@@ -121,7 +123,9 @@ ft2_sources =		 	\
 	indic-fc.c		\
 	indic-ot-class-tables.c	\
 	indic-ot.c		\
-	indic-ot.h
+	indic-ot.h		\
+	mprefixups.c		\
+	mprefixups.h
 
 pango_indic_ft2_la_LDFLAGS = -export-dynamic -avoid-version -module $(no_undefined)
 pango_indic_ft2_la_LIBADD = $(pangoft2libs)
