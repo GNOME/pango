@@ -1,3 +1,9 @@
+2001-09-20  Sven Neumann  <sven@gimp.org>
+
+	* pango/fonts.c (pango_font_description_set_family,
+	pango_font_description_copy): unset the static_family flag so the
+	family_name gets freed on the next call.
+
 2001-09-20  James Henstridge  <james@daa.com.au>
 
 	* pango/Makefile.am (s-enum-types-c): fix rule so that flags get

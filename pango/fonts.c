@@ -108,6 +108,7 @@ pango_font_description_set_family (PangoFontDescription *desc,
     {
       desc->family_name = g_strdup (family);
       desc->mask |= PANGO_FONT_MASK_FAMILY;
+      desc->static_family = FALSE;
     }
   else
     {
@@ -570,6 +571,7 @@ pango_font_description_copy  (const PangoFontDescription  *desc)
   *result = *desc;
 
   result->family_name = g_strdup (result->family_name);
+  result->static_family = FALSE;
 
   return result;
 }
