@@ -1,5 +1,7 @@
+Makefile.in
+Makefile
+pango-querymodules
 *.lo
 *.la
 .deps
 .libs
-gscript-querymodules

@@ -233,7 +233,7 @@ break_run (char         *text,
       PangoGlyphUnit *log_widths = g_new (PangoGlyphUnit, item->num_chars);
 
       pango_break (text + item->offset, item->length, &item->analysis,
-		      log_attrs);
+		   log_attrs);
       get_logical_widths (text, item, buf, log_widths);
 
       new_width = 0;
@@ -415,8 +415,8 @@ runs_x_to_cp (char *text, GList *runs, int x, int *offset)
 	  char *p;
 	  
 	  pango_x_to_cp (text + item->offset, item->length,
-			    &item->analysis, buf, (x - pixels) * 72,
-			    &pos, NULL);
+			 &item->analysis, buf, (x - pixels) * 72,
+			 &pos, NULL);
 
 	  /* Converter the character position to byte offset */
 	  p = text + item->offset;
@@ -514,9 +514,9 @@ runs_char_bounds (char *text, GList *runs, int offset, int *x, int *width)
 
 	  /* Find bounds */
 	  pango_cp_to_x (text + item->offset, item->length,
-			    &item->analysis, buf, char_pos, FALSE, &start_x);
+			 &item->analysis, buf, char_pos, FALSE, &start_x);
 	  pango_cp_to_x (text + item->offset, item->length,
-			    &item->analysis, buf, char_pos, TRUE, &end_x);
+			 &item->analysis, buf, char_pos, TRUE, &end_x);
 	  
 	  if (start_x < end_x)
 	    {
@@ -655,14 +655,14 @@ expose_paragraph (Paragraph *para, GdkDrawable *drawable,
 
 	  /* Convert the item into glyphs */
 	  pango_shape (font,
-			  para->text + item->offset, item->length,
-			  &item->analysis,
-			  buf);
+		       para->text + item->offset, item->length,
+		       &item->analysis,
+		       buf);
 
 	  /* Render the glyphs to the screen */
 	  pango_x_render (GDK_DISPLAY(), GDK_WINDOW_XWINDOW (drawable),
-			     GDK_GC_XGC (gc), buf, x + x_off,
-			     y + line->ascent);
+			  GDK_GC_XGC (gc), buf, x + x_off,
+			  y + line->ascent);
 
 	  /* Advance to next x position
 	   */
@@ -828,9 +828,9 @@ main (int argc, char **argv)
   /* We hard code a font globally for now
    */
   font = pango_x_load_font (GDK_DISPLAY(),
-			       //			       "-misc-fixed-medium-r-semicondensed--13-*-*-*-c-*-iso10646-1,"
- 			       "-gnu-unifont-medium-r-normal--16-*-*-*-c-*-iso10646-1,"
- 			       "-*-*-medium-r-normal--12-*-*-*-*-*-*-*");
+    /*			    "-misc-fixed-medium-r-semicondensed--13-*-*-*-c-*-iso10646-1," */
+			    "-gnu-unifont-medium-r-normal--16-*-*-*-c-*-iso10646-1,"
+			    "-*-*-medium-r-normal--16-*-*-*-*-*-*-*");
 
   /* Create the user interface
    */

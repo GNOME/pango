@@ -1,5 +1,7 @@
-gscript.modules
-gscript-viewer
+Makefile.in
+Makefile
+pango.modules
+pango-viewer
 .deps
 .libs
 *.lo

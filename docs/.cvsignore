@@ -1,4 +1,6 @@
 sgml
 html
-gscript-decl-list.txt
-gscript-decl.txt
+pango-decl-list.txt
+pango-decl.txt
+Makefile.in
+Makefile

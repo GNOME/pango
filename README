@@ -17,6 +17,13 @@ You'll also need a fairly capable implementation
 of iconv() - for instance the iconv from the
 GNU C library version 2.1
 
+Notes
+=====
+
+- There is a bug in some X servers (XF86-3.3.5 + TNT2) for
+  example that keeps the johab fonts used for the hangul
+  module from displaying correctly.
+
 License
 =======
 
