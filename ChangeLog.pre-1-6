@@ -1,3 +1,12 @@
+Thu Nov 21 00:26:40 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* configure.in: Use some shell magic rather than 
+	perl to check for the right gtk-doc version to
+	avoid having to worry about finding Perl. 
+	Make checks handle 0.10 > 0.9. (#99120, Dan Mills)
+	Check for 0.10, since we need that for 
+	--output-format=xml.
+
 2002-11-12  Tor Lillqvist  <tml@iki.fi>
 
 	* pango/pangowin32-fontcache.c (free_cache_entry,
