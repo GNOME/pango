@@ -366,9 +366,7 @@ read_modules (void)
   while (n-- > 0)
     {
       module_file = fopen (files[n], "r");
-      if (!module_file)
-	g_warning ("Error opening module file '%s': %s\n", files[n], g_strerror (errno));
-      else
+      if (module_file)
 	{
 	  process_module_file(module_file);
 	  fclose(module_file);

@@ -1,7 +1,15 @@
+Mon Mar 25 15:53:17 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/modules.c (read_modules): Remove warning about
+	opening modules file... in some cases (included modules)
+	it isn't needed, and the warning about no modules that
+	was added recently should let people know what is going
+	on. (#73834, Arnaud Charlet)
+
 Mon Mar 25 15:46:54 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* modules/basic/basic-*.c: Convert U+00A0 (NON BREAK SPACE)
-	to U+0020 (SPACE)
+	to U+0020 (SPACE). (#73279, Mikael Hallendal)
 
 	* modules/basic/basic-xft.c (basic_engine_shape): Remove
 	some dead code.
