@@ -161,6 +161,9 @@ pango_layout_finalize (GObject *object)
     pango_attr_list_unref (layout->attrs);
   if (layout->text)
     g_free (layout->text);
+
+  if (layout->font_desc)
+    pango_font_description_free (layout->font_desc);
   
   G_OBJECT_CLASS (parent_class)->finalize (object);
 }

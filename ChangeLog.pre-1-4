@@ -1,3 +1,8 @@
+2000-07-28  Martin Baulig  <baulig@suse.de>
+
+	* pango/pango-layout.c (pango_layout_finalize): Destroy
+	the layout->font_desc to avoid a memory leak.
+
 2000-07-27  Tor Lillqvist  <tml@iki.fi>
 
 	* pango/pango.def
