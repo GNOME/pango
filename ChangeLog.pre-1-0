@@ -1,3 +1,12 @@
+2001-11-22  Matthias Clasen  <matthiasc@poet.de>
+
+	* docs/pango-sections.txt: Remove duplicates. 
+	
+	* docs/tmpl/fonts.sgml: Document PANGO_TYPE_FONTSET
+	and PANGO_TYPE_FONTSET_SIMPLE.
+
+	* pango/pangoxft-font.c: Fix typos in some doc comments.
+
 Thu Nov 22 14:23:07 2001  Owen Taylor  <otaylor@redhat.com>
 
 	* Version 0.22

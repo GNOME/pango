@@ -225,14 +225,14 @@ draw_box (Display      *display,
 
 /**
  * pango_xft_render:
- * @draw:    the XftDraw object.
+ * @draw:    the <type>XftDraw</type> object.
  * @color:   the color in which to draw the string
  * @font:    the font in which to draw the string
  * @glyphs:  the glyph string to draw
  * @x:       the x position of start of string (in pixels)
  * @y:       the y position of baseline (in pixels)
  *
- * Render a PangoGlyphString onto an XftDraw object wrapping an X drawable.
+ * Renders a #PangoGlyphString onto an <type>XftDraw</type> object wrapping an X drawable.
  */
 static void
 pango_xft_real_render (Display          *display,
@@ -326,14 +326,14 @@ pango_xft_real_render (Display          *display,
 
 /**
  * pango_xft_render:
- * @draw:    the XftDraw object.
+ * @draw:    the <type>XftDraw</type> object.
  * @color:   the color in which to draw the string
  * @font:    the font in which to draw the string
  * @glyphs:  the glyph string to draw
  * @x:       the x position of start of string (in pixels)
  * @y:       the y position of baseline (in pixels)
  *
- * Render a PangoGlyphString onto an XftDraw object wrapping an X drawable.
+ * Renders a #PangoGlyphString onto an <type>XftDraw</type> object wrapping an X drawable.
  */
 void
 pango_xft_render (XftDraw          *draw,
@@ -352,7 +352,7 @@ pango_xft_render (XftDraw          *draw,
 }
 
 /**
- * pango_xft_picture render:
+ * pango_xft_picture_render:
  * @draw:         an X display
  * @src_picture:  the source picture to draw the string with
  * @dest_picture: the destination picture to draw the strign onto
@@ -361,7 +361,7 @@ pango_xft_render (XftDraw          *draw,
  * @x:            the x position of start of string (in pixels)
  * @y:            the y position of baseline (in pixels)
  *
- * Render a PangoGlyphString onto an Xrender picture object.
+ * Renders a #PangoGlyphString onto an Xrender <type>Picture</type> object.
  */
 void
 pango_xft_picture_render (Display          *display,

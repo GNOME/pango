@@ -191,15 +191,13 @@ pango_font_map_load_fontset
 pango_font_map_list_families
 <SUBSECTION>
 PangoFontset
+PANGO_TYPE_FONTSET
+PangoFontsetClass
 pango_fontset_get_font
 pango_fontset_get_metrics
-PangoFontsetClass
-PANGO_TYPE_FONTSET_SIMPLE
-PANGO_FONTSET_SIMPLE
-PANGO_IS_FONTSET_SIMPLE
 PangoFontsetSimple
+PANGO_TYPE_FONTSET_SIMPLE
 PangoFontsetSimpleClass
-pango_fontset_simple_get_type
 pango_fontset_simple_new
 pango_fontset_simple_append
 pango_fontset_simple_size
@@ -219,11 +217,9 @@ PANGO_FONT_FAMILY_CLASS
 PANGO_IS_FONT_FACE_CLASS
 PANGO_FONTSET
 PANGO_IS_FONTSET
-PANGO_TYPE_FONTSET
 PANGO_FONTSET_CLASS
 PANGO_IS_FONTSET_CLASS
 PANGO_FONTSET_GET_CLASS
-PANGO_TYPE_FONTSET_SIMPLE
 PANGO_FONTSET_SIMPLE
 PANGO_IS_FONTSET_SIMPLE
 

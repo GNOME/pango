@@ -793,7 +793,13 @@ Returns the type of a #PangoFontMap.
 
 <!-- ##### MACRO PANGO_TYPE_FONTSET_SIMPLE ##### -->
 <para>
+The GObject type for #PangoFontsetSimple.
+</para>
 
+
+<!-- ##### MACRO PANGO_TYPE_FONTSET ##### -->
+<para>
+The GObject type for #PangoFontset.
 </para>
 
 
