@@ -8,7 +8,7 @@ INCLUDES =					\
 	-DG_DISABLE_DEPRECATED			\
 	$(PANGO_DEBUG_FLAGS)			\
 	-I$(top_srcdir)				\
-	-I$(top_srcdir)/pango/			\
+	-I$(top_srcdir)/pango			\
 	$(GLIB_CFLAGS)
 
 if PLATFORM_WIN32

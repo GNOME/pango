@@ -75,6 +75,8 @@ struct _PangoWin32Font
   LOGFONT logfont;
   int size;
 
+  GSList *metrics_by_lang;
+
   PangoFontMap *fontmap;
 
   /* Written by pango_win32_get_hfont: */

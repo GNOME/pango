@@ -1,3 +1,14 @@
+2005-03-24  Tor Lillqvist  <tml@novell.com>
+
+	* modules/*/Makefile.am (INCLUDES): Remove extra slash.
+
+2004-12-18  Tor Lillqvist  <tml@iki.fi>
+
+	* pango/pangowin32-private.h
+	* pango/pangowin32.c (pango_win32_font_get_metrics): Cache metrics
+	by language, like the other backends do. Don't try to get the
+	width of the 0..9 digit string if the font doesn't cover digits.
+
 Wed Dec 15 18:50:18 2004  Owen Taylor  <otaylor@redhat.com>
 
 	* modules/indic/indic-fc.c modules/indic/indic-ot.h:
