@@ -16,14 +16,14 @@ Indic Engine Support
 
 <!-- ##### MACRO PANGO_ZERO_WIDTH_NON_JOINER ##### -->
 <para>
-
+The Unicode character 'ZERO WIDTH NON-JOINER', 0x200c.
 </para>
 
 
 
 <!-- ##### MACRO PANGO_ZERO_WIDTH_JOINER ##### -->
 <para>
-
+The Unicode character 'ZERO WIDTH JOINER', 0x200d.
 </para>
 
 

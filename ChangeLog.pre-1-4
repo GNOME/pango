@@ -1,3 +1,12 @@
+2001-10-27  Matthias Clasen  <matthiasc@poet.de>
+
+	* pango/modules.c: Typo fix.
+
+ 	* docs/tmpl/text-attributes.sgml, docs/tmpl/freetype-fonts.sgml,
+	docs/tmpl/xft-fonts.sgml, docs/tmpl/win32-fonts.sgml,
+	docs/tmpl/glyphs.sgml, docs/tmpl/x-rendering.sgml,
+	docs/tmpl/pango-indic.sgml: Updates.
+
 2001-10-26  Matthias Clasen  <matthiasc@poet.de>
 
 	* pango/fonts.c, pango/pangoft2.c, pango/pangowin32.c,

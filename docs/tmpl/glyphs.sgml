@@ -20,7 +20,7 @@ glyphs.
 <!-- ##### MACRO PANGO_SCALE ##### -->
 <para>
 The PANGO_SCALE macro represents the scale between dimensions used
-for pango distances and device units. (The definition of device
+for Pango distances and device units. (The definition of device
 units is dependent on the output device; it will typically be pixels
 for a screen, and points for a printer.) PANGO_SCALE is currently
 1000, but this may be changed in the future.
@@ -30,10 +30,10 @@ for a screen, and points for a printer.) PANGO_SCALE is currently
 
 <!-- ##### MACRO PANGO_PIXELS ##### -->
 <para>
-
+Converts a dimension to device units.
 </para>
 
-@d: 
+@d: a dimension in Pango units.
 
 
 <!-- ##### STRUCT PangoRectangle ##### -->

@@ -347,49 +347,49 @@ The GObject type for #PangoUnderline.
 
 <!-- ##### MACRO PANGO_SCALE_XX_SMALL ##### -->
 <para>
-
+The scale factor for three shrinking steps (1 / (1.2 * 1.2 * 1.2)).
 </para>
 
 
 
 <!-- ##### MACRO PANGO_SCALE_X_SMALL ##### -->
 <para>
-
+The scale factor for two shrinking steps (1 / (1.2 * 1.2)).
 </para>
 
 
 
 <!-- ##### MACRO PANGO_SCALE_SMALL ##### -->
 <para>
-
+The scale factor for one shrinking step (1 / 1.2).
 </para>
 
 
 
 <!-- ##### MACRO PANGO_SCALE_MEDIUM ##### -->
 <para>
-
+The scale factor for normal size (1.0).
 </para>
 
 
 
 <!-- ##### MACRO PANGO_SCALE_LARGE ##### -->
 <para>
-
+The scale factor for one magnification step (1.2).
 </para>
 
 
 
 <!-- ##### MACRO PANGO_SCALE_X_LARGE ##### -->
 <para>
-
+The scale factor for two magnification steps (1.2 * 1.2).
 </para>
 
 
 
 <!-- ##### MACRO PANGO_SCALE_XX_LARGE ##### -->
 <para>
-
+The scale factor for three magnification steps (1.2 * 1.2 * 1.2).
 </para>
 
 
@@ -470,11 +470,11 @@ The GObject type for #PangoLanguage.
 
 <!-- ##### MACRO pango_language_to_string ##### -->
 <para>
-
+Returns a RFC-3066 format string representing the given language tag. 
 </para>
 
-@language: 
-
+@language: a language tag.
+@Returns: a string representing the language tag.
 
 <!-- ##### FUNCTION pango_language_matches ##### -->
 <para>

@@ -16,7 +16,8 @@ FreeType Fonts and Rendering
 
 <!-- ##### MACRO PANGO_RENDER_TYPE_FT2 ##### -->
 <para>
-
+A string constant identifying the FreeType renderer. The associated quark (see
+g_quark_from_string()) is used to identify the renderer in pango_find_map().
 </para>
 
 
@@ -78,33 +79,35 @@ FreeType Fonts and Rendering
 
 <!-- ##### TYPEDEF PangoFT2Subfont ##### -->
 <para>
-
+The #PangoFT2SubFont type is an integer ID that identifies one
+particular FreeType font within the fonts referenced in a #PangoFont.
 </para>
 
 
 <!-- ##### MACRO PANGO_FT2_MAKE_GLYPH ##### -->
 <para>
-
+Makes a glyph index from a #PangoFT2SubFont index and a index
+of a character with the corresponding FreeType font.
 </para>
 
-@subfont: 
-@index: 
+@subfont: a #PangoFT2Subfont index.
+@index: the index of a character within an FreeType font.
 
 
 <!-- ##### MACRO PANGO_FT2_GLYPH_SUBFONT ##### -->
 <para>
-
+Extracts the subfont index from a glyph index.
 </para>
 
-@glyph: 
-
+@glyph: a #PangoGlyphIndex.
 
 <!-- ##### MACRO PANGO_FT2_GLYPH_INDEX ##### -->
 <para>
-
+Extracts the character index within the FreeType font from a
+glyph index.
 </para>
 
-@glyph: 
+@glyph: a #PangoGlyphIndex.
 
 
 <!-- ##### FUNCTION pango_ft2_n_subfonts ##### -->

@@ -79,8 +79,8 @@ static void init_modules (void);
 /**
  * pango_find_map:
  * @language: the language tag for which to find the map
- * @engine_type_id: the render type for the map to find
- * @render_type_id: the engine type for the map to find
+ * @engine_type_id: the engine type for the map to find
+ * @render_type_id: the render type for the map to find
  * 
  * Locate a #PangoMap for a particular engine type and render
  * type. The resulting map can be used to determine the engine
