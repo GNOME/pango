@@ -1,3 +1,9 @@
+Tue Jul 13 10:07:44 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/Makefile.am: Reverse order of pangoft2/pangoxft
+	in Makefile; apparently automake doesn't figure out
+	the correct installation order. (#146472)
+
 Tue Jul 13 10:02:53 2004  Owen Taylor  <otaylor@redhat.com>
  
  	* pango/pango-utils.c (pango_language_get_sample_string):

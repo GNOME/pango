@@ -153,23 +153,6 @@ libpangox_1_0_la_SOURCES = \
 	pangox-fontmap.c
 
 
-# ------------------- libpangoxft -------------------
-
-if HAVE_XFT
-pangoinclude_HEADERS += pangoxft.h pango-ot.h
-lib_LTLIBRARIES += libpangoxft-1.0.la
-endif
-
-libpangoxft_1_0_la_LDFLAGS = -version-info $(LT_VERSION_INFO) $(no_undefined)
-libpangoxft_1_0_la_LIBADD = libpangoft2-$(PANGO_API_VERSION).la libpango-$(PANGO_API_VERSION).la $(XFT_LIBS) $(GLIB_LIBS)
-libpangoxft_1_0_la_DEPENDENCIES = libpangoft2-$(PANGO_API_VERSION).la libpango-$(PANGO_API_VERSION).la
-
-libpangoxft_1_0_la_SOURCES =   	\
-	pangoxft-font.c		\
-	pangoxft-fontmap.c      \
-	pangoxft-private.h
-
-
 # ------------------- libpangoft2 -------------------
 
 if HAVE_FREETYPE
@@ -198,6 +181,23 @@ libpangoft2_1_0_la_DEPENDENCIES += pangoft2-win32res.lo
 endif
 pangoft2-win32res.lo: pangoft2.rc
 	$(top_srcdir)/../glib/build/win32/lt-compile-resource $< $@
+
+
+# ------------------- libpangoxft -------------------
+
+if HAVE_XFT
+pangoinclude_HEADERS += pangoxft.h pango-ot.h
+lib_LTLIBRARIES += libpangoxft-1.0.la
+endif
+
+libpangoxft_1_0_la_LDFLAGS = -version-info $(LT_VERSION_INFO) $(no_undefined)
+libpangoxft_1_0_la_LIBADD = libpangoft2-$(PANGO_API_VERSION).la libpango-$(PANGO_API_VERSION).la $(XFT_LIBS) $(GLIB_LIBS)
+libpangoxft_1_0_la_DEPENDENCIES = libpangoft2-$(PANGO_API_VERSION).la libpango-$(PANGO_API_VERSION).la
+
+libpangoxft_1_0_la_SOURCES =   	\
+	pangoxft-font.c		\
+	pangoxft-fontmap.c      \
+	pangoxft-private.h
 
 
 # ------------------- libpangowin32 -------------------
