@@ -27,20 +27,11 @@ g_quark_from_string()) is used to identify the renderer in pango_find_map().
 
 </para>
 
+@dpi_x: 
+@dpi_y: 
 @Returns: 
-
-
-<!-- ##### FUNCTION pango_ft2_load_font ##### -->
-<para>
-
-</para>
-
-@fontmap: 
-@open_args: 
-@face_indices: 
-@n_fonts: 
-@size: 
-@Returns: 
+<!-- # Unused Parameters # -->
+@dpi: 
 
 
 <!-- ##### FUNCTION pango_ft2_render ##### -->
@@ -77,48 +68,6 @@ g_quark_from_string()) is used to identify the renderer in pango_find_map().
 @y: 
 
 
-<!-- ##### TYPEDEF PangoFT2Subfont ##### -->
-<para>
-The #PangoFT2SubFont type is an integer ID that identifies one
-particular FreeType font within the fonts referenced in a #PangoFont.
-</para>
-
-
-<!-- ##### MACRO PANGO_FT2_MAKE_GLYPH ##### -->
-<para>
-Makes a glyph index from a #PangoFT2SubFont index and a index
-of a character with the corresponding FreeType font.
-</para>
-
-@subfont: a #PangoFT2Subfont index.
-@index: the index of a character within an FreeType font.
-
-
-<!-- ##### MACRO PANGO_FT2_GLYPH_SUBFONT ##### -->
-<para>
-Extracts the subfont index from a glyph index.
-</para>
-
-@glyph: a #PangoGlyphIndex.
-
-<!-- ##### MACRO PANGO_FT2_GLYPH_INDEX ##### -->
-<para>
-Extracts the character index within the FreeType font from a
-glyph index.
-</para>
-
-@glyph: a #PangoGlyphIndex.
-
-
-<!-- ##### FUNCTION pango_ft2_n_subfonts ##### -->
-<para>
-
-</para>
-
-@font: 
-@Returns: 
-
-
 <!-- ##### FUNCTION pango_ft2_get_unknown_glyph ##### -->
 <para>
 
@@ -139,69 +88,6 @@ glyph index.
 @Returns: 
 
 
-<!-- ##### FUNCTION pango_ft2_get_coverage ##### -->
-<para>
-
-</para>
-
-@font: 
-@language: 
-@Returns: 
-
-
-<!-- ##### FUNCTION pango_ft2_get_face ##### -->
-<para>
-
-</para>
-
-@font: 
-@subfont_index: 
-@Returns: 
-
-
-<!-- ##### STRUCT PangoFT2FontCache ##### -->
-<para>
-
-</para>
-
-
-<!-- ##### FUNCTION pango_ft2_font_cache_new ##### -->
-<para>
-
-</para>
-
-@library: 
-@Returns: 
-
-
-<!-- ##### FUNCTION pango_ft2_font_cache_free ##### -->
-<para>
-
-</para>
-
-@cache: 
-
-
-<!-- ##### FUNCTION pango_ft2_font_cache_load ##### -->
-<para>
-
-</para>
-
-@cache: 
-@args: 
-@face_index: 
-@Returns: 
-
-
-<!-- ##### FUNCTION pango_ft2_font_cache_unload ##### -->
-<para>
-
-</para>
-
-@cache: 
-@face: 
-
-
 <!-- ##### FUNCTION pango_ft2_font_map_for_display ##### -->
 <para>
 
@@ -215,34 +101,5 @@ glyph index.
 
 </para>
 
-
-
-<!-- ##### FUNCTION pango_ft2_font_map_get_font_cache ##### -->
-<para>
-
-</para>
-
-@font_map: 
-@Returns: 
-
-
-<!-- ##### FUNCTION pango_ft2_font_subfont_open_args ##### -->
-<para>
-
-</para>
-
-@font: 
-@subfont_id: 
-@open_args: 
-@face_index: 
-
-
-<!-- ##### FUNCTION pango_ft2_fontmap_dump ##### -->
-<para>
-
-</para>
-
-@indent: 
-@fontmap: 
 
 

@@ -32,7 +32,7 @@ G_BEGIN_DECLS
 #define PANGO_RENDER_TYPE_FT2 "PangoRenderFT2"
 
 /* Calls for applications */
-PangoContext  *pango_ft2_get_context        (double dpi);
+PangoContext  *pango_ft2_get_context        (double dpi_x, double dpi_y);
 
 void           pango_ft2_render             (FT_Bitmap        *bitmap,
 					     PangoFont        *font,

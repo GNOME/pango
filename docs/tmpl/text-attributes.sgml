@@ -28,21 +28,21 @@ attribute is listed in parentheses after the description.
 </para>
 
 @PANGO_ATTR_INVALID: 
-@PANGO_ATTR_LANGUAGE: language (#PangoAttrLanguage) 
+@PANGO_ATTR_LANGUAGE: language (#PangoAttrLanguage)
 @PANGO_ATTR_FAMILY: font family name list (#PangoAttrString)
 @PANGO_ATTR_STYLE: font slant style (#PangoAttrInt)
 @PANGO_ATTR_WEIGHT: font weight (#PangoAttrInt)
 @PANGO_ATTR_VARIANT: font variant (normal or small caps) (#PangoAttrInt)
 @PANGO_ATTR_STRETCH: font stretch (#PangoAttrInt)
 @PANGO_ATTR_SIZE: font size in 1000th's of a point (#PangoAttrInt)
-@PANGO_ATTR_FONT_DESC: font description (#PangoAttrFontDesc) 
+@PANGO_ATTR_FONT_DESC: font description (#PangoAttrFontDesc)
 @PANGO_ATTR_FOREGROUND: foreground color (#PangoAttrColor)
 @PANGO_ATTR_BACKGROUND: background color (#PangoAttrColor)
 @PANGO_ATTR_UNDERLINE: whether the text has an underline (#PangoAttrInt)
 @PANGO_ATTR_STRIKETHROUGH: whether the text is struck-through (#PangoAttrInt)
 @PANGO_ATTR_RISE: baseline displacement (#PangoAttrInt)
 @PANGO_ATTR_SHAPE: shape (#PangoAttrShape)
-@PANGO_ATTR_SCALE: font size scale factor (#PangoAttrScale) 
+@PANGO_ATTR_SCALE: font size scale factor (#PangoAttrScale)
 
 <!-- ##### MACRO PANGO_TYPE_ATTR_TYPE ##### -->
 <para>
@@ -139,7 +139,7 @@ impose shape restrictions.
 </para>
 
 @attr: the common portion of the attribute
-@ink_rect: the ink rectangle to restrict to 
+@ink_rect: the ink rectangle to restrict to
 @logical_rect: the logical rectangle to restrict to
 
 <!-- ##### FUNCTION pango_parse_markup ##### -->
@@ -487,6 +487,7 @@ Returns a RFC-3066 format string representing the given language tag.
 
 @language: a language tag.
 @Returns: a string representing the language tag.
+
 
 <!-- ##### FUNCTION pango_language_matches ##### -->
 <para>

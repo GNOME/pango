@@ -169,7 +169,8 @@ pango_ft2_font_get_face (PangoFont      *font)
 
 /**
  * pango_ft2_get_context:
- * @dpi:  the dpi of the target device
+ * @dpi_x:  the horizontal dpi of the target device
+ * @dpi_y:  the vertical dpi of the target device
  * 
  * Retrieves a #PangoContext appropriate for rendering with the PangoFT2
  * backend.
@@ -177,7 +178,7 @@ pango_ft2_font_get_face (PangoFont      *font)
  * Return value: the new #PangoContext
  **/
 PangoContext *
-pango_ft2_get_context (double dpi)
+pango_ft2_get_context (double dpi_x, double dpi_y)
 {
   PangoContext *result;
   static gboolean registered_modules = FALSE;
@@ -191,7 +192,7 @@ pango_ft2_get_context (double dpi)
         pango_module_register (&_pango_included_ft2_modules[i]);
     }
 
-  MiniXftSetDPI (dpi);
+  MiniXftSetDPI (dpi_y);
   
   result = pango_context_new ();
   pango_context_set_font_map (result, pango_ft2_font_map_for_display ());

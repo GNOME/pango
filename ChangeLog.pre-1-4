@@ -1,5 +1,11 @@
 2001-11-18  Alex Larsson  <alexl@redhat.com>
 
+	* pango/pangoft2.[ch] (pango_ft2_get_context):
+	Take both dpi_x and dpi_y as arguments. Doesn't currently handle
+	dpi_x correctly, but at least the API is in.
+	
+2001-11-18  Alex Larsson  <alexl@redhat.com>
+
 	* pango/pango-context.[ch]:
 	Add new function pango_context_load_fontset() to wrap
 	pango_font_map_load_fontset().

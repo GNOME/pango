@@ -116,10 +116,10 @@ The bits in a #PangoFontMask correspond to fields in a
 </para>
 
 @PANGO_FONT_MASK_FAMILY: the font family is specified.
-@PANGO_FONT_MASK_STYLE: the font style is specified. 
+@PANGO_FONT_MASK_STYLE: the font style is specified.
 @PANGO_FONT_MASK_VARIANT: the font variant is specified.
-@PANGO_FONT_MASK_WEIGHT: the font weight is specified. 
-@PANGO_FONT_MASK_STRETCH: the font stretch is specified. 
+@PANGO_FONT_MASK_WEIGHT: the font weight is specified.
+@PANGO_FONT_MASK_STRETCH: the font stretch is specified.
 @PANGO_FONT_MASK_SIZE: the font size is specified.
 
 <!-- ##### MACRO PANGO_TYPE_FONT_MASK ##### -->
@@ -395,11 +395,11 @@ The GObject type for #PangoFontMask.
 @approximate_char_width: 
 @approximate_digit_width: 
 
-
 <!-- ##### MACRO PANGO_TYPE_FONT_METRICS ##### -->
 <para>
 The GObject type for #PangoFontMetrics.
 </para>
+
 
 
 <!-- ##### FUNCTION pango_font_metrics_ref ##### -->
@@ -455,7 +455,6 @@ The GObject type for #PangoFontMetrics.
 @Returns: 
 
 
-
 <!-- ##### STRUCT PangoFont ##### -->
 <para>
 The #PangoFont structure is used to represent
@@ -481,12 +480,13 @@ The GObject type for #PangoFont.
 </para>
 
 
+
 <!-- ##### MACRO PANGO_FONT ##### -->
 <para>
 Casts a #GObject to a #PangoFont.
 </para>
 
-@object: a #GObject. 
+@object: a #GObject.
 
 
 <!-- ##### MACRO PANGO_IS_FONT ##### -->
@@ -548,7 +548,6 @@ Returns %TRUE if @object is a #PangoFont.
 @Returns: 
 
 
-
 <!-- ##### STRUCT PangoFontFamily ##### -->
 <para>
 
@@ -576,7 +575,7 @@ Casts a #GObject to a #PangoFontFamily.
 Returns %TRUE if @object is a #PangoFontFamily.
 </para>
 
-@object: a #GObject. 
+@object: a #GObject.
 
 
 <!-- ##### FUNCTION pango_font_family_get_name ##### -->
@@ -617,7 +616,7 @@ The GObject type for #PangoFontFace.
 Casts a #GObject to a #PangoFontFace.
 </para>
 
-@object: a #GObject. 
+@object: a #GObject.
 
 
 <!-- ##### MACRO PANGO_IS_FONT_FACE ##### -->
@@ -625,7 +624,7 @@ Casts a #GObject to a #PangoFontFace.
 Returns %TRUE if @object is a #PangoFontFace.
 </para>
 
-@object: a #GObject. 
+@object: a #GObject.
 
 
 <!-- ##### FUNCTION pango_font_face_get_face_name ##### -->
@@ -663,7 +662,6 @@ The #PangoFont structure contains one member which the implementation fills in:
 
 @parent_instance: 
 
-
 <!-- ##### MACRO PANGO_TYPE_FONT_MAP ##### -->
 <para>
 The GObject type for #PangoFontMap.
@@ -676,7 +674,7 @@ The GObject type for #PangoFontMap.
 Casts a #GObject to a #PangoFontMap. 
 </para>
 
-@object: a #GObject. 
+@object: a #GObject.
 
 
 <!-- ##### MACRO PANGO_IS_FONT_MAP ##### -->
@@ -684,7 +682,7 @@ Casts a #GObject to a #PangoFontMap.
 Returns %TRUE if @object is a #PangoFontMap.
 </para>
 
-@object: a #GObject. 
+@object: a #GObject.
 
 
 <!-- ##### STRUCT PangoFontMapClass ##### -->
@@ -698,14 +696,14 @@ a particular #PangoFontMap implementation.
             pango_font_map_load_font()
 @list_families: A function to list available font families. See
                 pango_font_map_list_families().
-
+@load_fontset: 
 
 <!-- ##### MACRO PANGO_FONT_MAP_CLASS ##### -->
 <para>
 Casts a #GObject to a #PangoFontMapClass.
 </para>
 
-@klass: a #GObject. 
+@klass: a #GObject.
 
 
 <!-- ##### MACRO PANGO_IS_FONT_MAP_CLASS ##### -->
@@ -723,12 +721,14 @@ Returns the type of a #PangoFontMap.
 
 @obj: a #PangoFontMap.
 
+
 <!-- ##### FUNCTION pango_font_map_load_font ##### -->
 <para>
 
 </para>
 
 @fontmap: 
+@context: 
 @desc: 
 @Returns: 
 
@@ -741,6 +741,5 @@ Returns the type of a #PangoFontMap.
 @fontmap: 
 @families: 
 @n_families: 
-
 
 
