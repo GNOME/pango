@@ -64,6 +64,14 @@ PANGO_ASCENT
 PANGO_DESCENT
 PANGO_LBEARING
 PANGO_RBEARING
+PangoMatrix
+PANGO_MATRIX_INIT
+pango_matrix_copy
+pango_matrix_free
+pango_matrix_translate
+pango_matrix_scale
+pango_matrix_rotate
+pango_matrix_concat
 PangoGlyph
 PangoGlyphInfo
 PangoGlyphGeometry
