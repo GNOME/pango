@@ -2898,7 +2898,7 @@ pango_layout_check_lines (PangoLayout *layout)
 
       g_assert (end <= (layout->text + layout->length));
       g_assert (start <= (layout->text + layout->length));
-      g_assert (delim_len < 3);
+      g_assert (delim_len < 4);	/* PS is 3 bytes */
       g_assert (delim_len >= 0);
       
       state.items = pango_itemize (layout->context,
