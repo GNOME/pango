@@ -1344,9 +1344,9 @@ pango_attr_list_change (PangoAttrList  *list,
  * 
  * This function splices attribute list @other into @list.
  * This operation is equivalent to stretching every attribute
- * applies at position @pos in @list by an amount @len,
+ * that applies at position @pos in @list by an amount @len,
  * and then calling pango_attr_list_change() with a copy
- * of each attributes in @other in sequence (offset in position by @pos).
+ * of each attribute in @other in sequence (offset in position by @pos).
  *
  * This operation proves useful for, for instance, inserting
  * a preedit string in the middle of an edit buffer.
