@@ -32,6 +32,8 @@ gboolean _pango_utf8_iterate    (const char  *cur,
 				 GUChar4     *wc_out);
 GUChar2 *_pango_utf8_to_ucs2    (const char  *str,
 				 gint         len);
+GUChar4 *_pango_utf8_to_ucs4    (const char  *str,
+			         int          len);
 int      _pango_guchar4_to_utf8 (GUChar4      c,
 				 char        *outbuf);
 int      _pango_utf8_len        (const char  *str,

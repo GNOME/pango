@@ -473,7 +473,7 @@ pango_itemize (PangoContext   *context,
 	       int             length,
 	       PangoAttrList  *attrs)
 {
-  guint16 *text_ucs2;
+  GUChar4 *text_ucs4;
   gint n_chars;
   guint8 *embedding_levels;
   FriBidiCharType base_dir;
@@ -506,8 +506,8 @@ pango_itemize (PangoContext   *context,
   /* First, apply the bidirectional algorithm to break
    * the text into directional runs.
    */
-  text_ucs2 = _pango_utf8_to_ucs2 (text, length);
-  if (!text_ucs2)
+  text_ucs4 = _pango_utf8_to_ucs4 (text, length);
+  if (!text_ucs4)
     return NULL;
 
   n_chars = unicode_strlen (text, length);
@@ -522,7 +522,7 @@ pango_itemize (PangoContext   *context,
   fonts = g_new0 (PangoFont *, n_chars);
   extra_attr_lists = g_new0 (GSList *, n_chars);
 
-  fribidi_log2vis_get_embedding_levels (text_ucs2, n_chars, &base_dir,
+  fribidi_log2vis_get_embedding_levels (text_ucs4, n_chars, &base_dir,
 					embedding_levels);
 
   /* Now, fill in the appropriate shapers, language engines and fonts for
@@ -595,7 +595,7 @@ pango_itemize (PangoContext   *context,
   g_free (fonts);
   g_free (extra_attr_lists);
   
-  g_free (text_ucs2);
+  g_free (text_ucs4);
   
   return g_list_reverse (result);
 }

@@ -1,3 +1,8 @@
+Tue Apr  4 12:01:37 2000  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/utils.[ch] pango/pango-context.c: fribidi-0.1.9
+	wants UCS-4 not UCS2; switch accordingly.
+
 Mon Apr  3 20:30:20 2000  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/mapping.c (pango_glyph_string_x_to_index): Fix handling

@@ -153,6 +153,58 @@ _pango_utf8_to_ucs2 (const char *str, int len)
 
 }
 
+#ifdef __GLIBC__
+#  define UCS4_CHARSET "UNICODELITTLE"
+#else
+#  if G_BYTE_ORDER == G_LITTLE_ENDIAN
+#    define UCS4_CHARSET "UCS-4-LE"
+#  else
+#    define UCS4_CHARSET "UCS-4-BE"
+#  endif
+#endif
+
+GUChar4 *
+_pango_utf8_to_ucs4 (const char *str, int len)
+{
+  iconv_t cd;
+  char *outbuf, *result;
+  const char *inbuf;
+  size_t inbytesleft;
+  size_t outbytesleft;
+  gint outlen;
+
+  gint count;
+
+  cd = iconv_open (UCS4_CHARSET, "UTF-8");
+  
+  if (cd == (iconv_t)-1)
+    g_error ("No converter from UTF-8 to " UCS4_CHARSET);
+
+  if (len < 0)
+    len = strlen (str);
+
+  outlen = unicode_strlen (str, len) * sizeof(GUChar4);
+  result = g_malloc (outlen);
+      
+  inbuf = str;
+  inbytesleft = len;
+  outbuf = result;
+  outbytesleft = outlen;
+  
+  count = iconv (cd, &inbuf, &inbytesleft, &outbuf, &outbytesleft);
+
+  if (count < 0 && (errno != E2BIG))
+    {
+      g_free (result);
+      result = NULL;
+    }
+
+  iconv_close (cd);
+
+  return (GUChar4 *)result;
+
+}
+
 /**
  * _pango_guchar4_to_utf8:
  * @ch: a ISO10646 character code
