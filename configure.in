@@ -268,7 +268,7 @@ AM_CONDITIONAL(BUILD_OT_TESTS, test $have_varargs = yes)
 #
 AC_MSG_CHECKING(modules to link statically)
 
-AC_ARG_WITH(included_modules, [ --with-included-modules=MODULE1,MODULE2,...     Build the given modules into Pango])
+AC_ARG_WITH(included_modules, [ --with-included-modules=MODULE1,MODULE2,...   build the given modules into Pango])
 
 arabic_modules="arabic-ft2,arabic-x,arabic-xft"
 basic_modules="basic-ft2,basic-win32,basic-x,basic-xft"
@@ -362,7 +362,7 @@ AC_CHECK_FUNCS(flockfile)
 # present
 #
 
-AC_ARG_WITH(qt, [ --with-qt=DIR    Location where Qt is installed],,with_qt=yes)
+AC_ARG_WITH(qt, [ --with-qt=DIR            location where Qt is installed],,with_qt=yes)
 
 if test "$CXX" != "" ; then
   AC_MSG_CHECKING(For Qt location)
@@ -430,7 +430,7 @@ dnl **************************
 dnl *** Checks for gtk-doc ***
 dnl **************************
 
-AC_ARG_WITH(html-dir, [  --with-html-dir=PATH path to installed docs ])
+AC_ARG_WITH(html-dir, [  --with-html-dir=PATH    path to installed docs ])
 
 if test "x$with_html_dir" = "x" ; then
   HTML_DIR='${datadir}/gtk-doc/html'
@@ -465,7 +465,7 @@ AC_CHECK_PROG(DB2HTML, db2html, true, false)
 AM_CONDITIONAL(HAVE_DOCBOOK, $DB2HTML)
 
 dnl Let people disable the gtk-doc stuff.
-AC_ARG_ENABLE(gtk-doc, [  --enable-gtk-doc  Use gtk-doc to build documentation [default=auto]], enable_gtk_doc="$enableval", enable_gtk_doc=auto)
+AC_ARG_ENABLE(gtk-doc, [  --enable-gtk-doc        use gtk-doc to build documentation [default=auto]], enable_gtk_doc="$enableval", enable_gtk_doc=auto)
 
 if test x$enable_gtk_doc = xauto ; then
   if test x$GTKDOC = xtrue ; then

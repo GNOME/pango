@@ -1,3 +1,7 @@
+2002-02-28  Sven Neumann  <sven@gimp.org>
+
+	* configure.in: align --help output.
+
 Wed Feb 27 11:10:07 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/Makefile.am (libpangoft2_la_LIBADD): Move .la
