@@ -192,6 +192,20 @@ AC_SUBST(FRIBIDI_PC)
 AM_CONDITIONAL(HAVE_FRIBIDI, test x$have_fribidi = xyes)
 
 #
+# The OpenType test programs aren't particularly portable
+#
+have_varargs=no
+AC_MSG_CHECKING(Whether to build OpenType test programs)
+pango_save_cppflags="$CPPFLAGS"
+AC_TRY_COMPILE([#include <glib.h>],[
+#if !(defined(G_HAVE_ISO_VARARGS) || defined(G_HAVE_GNUC_VARARGS))
+#error "No varargs macro definitions"
+#endif
+],have_varargs=yes)
+AC_MSG_RESULT($have_varargs)
+AM_CONDITIONAL(BUILD_OT_TESTS, test $have_varargs = yes)
+
+#
 # Allow building some or all modules included
 #
 AC_MSG_CHECKING(modules to link statically)

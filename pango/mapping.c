@@ -38,12 +38,12 @@
  * @analysis:  the analysis information return from pango_itemize()
  * @index:     the byte index within @text
  * @trailing:  whether we should compute the result for the beginning
- *             or end of the character (or cluster - the decision
- *             for which may be script dependent).
+ *             or end of the character.
  * @x_pos:     location to store result
  *
  * Converts from character position to x position. (X position
- * is measured from the left edge of the run)
+ * is measured from the left edge of the run). Character positions
+ * are computed by dividing up each cluster into equal portions.
  */
 
 void
@@ -145,10 +145,6 @@ pango_glyph_string_index_to_x (PangoGlyphString *glyphs,
       p = g_utf8_next_char (p);
     }
   
-  /* Now interpolate the result. For South Asian languages
-   * we actually shouldn't iterpolate
-   */
-
   if (trailing)
     cluster_offset += 1;
 
@@ -166,13 +162,15 @@ pango_glyph_string_index_to_x (PangoGlyphString *glyphs,
  * @x_pos:     the x offset (in thousands of a device unit)
  * @index:     location to store calculated byte index within @text
  * @trailing:  location to store a integer indicating where
- *             in the cluster the user clicked. If the script
- *             allows positioning within the cluster, it is either
- *             0 or 1; otherwise it is either 0 or the number
- *             of characters in the cluster. In either case
- *             0 represents the trailing edge of the cluster.
+ *             whether the user clicked on the leading or trailing
+ *             edge of the character.
  *
- * Convert from x offset to position. 
+ * Convert from x offset to character position. Character positions
+ * are computed by dividing up each cluster into equal portions.
+ * In scripts where positioning within a cluster is not allowed
+ * (such as Thai), the returned value may not be a valid cursor
+ * position; the caller must combine the result with the logical
+ * attributes for the text to compute the valid cursor position.
  */
 void 
 pango_glyph_string_x_to_index (PangoGlyphString *glyphs,
@@ -181,7 +179,7 @@ pango_glyph_string_x_to_index (PangoGlyphString *glyphs,
 			       PangoAnalysis    *analysis,
 			       int               x_pos,
 			       int              *index, 
-			       int              *trailing)
+			       gboolean         *trailing)
 {
   int i;
   int start_xpos = 0;
@@ -293,8 +291,6 @@ pango_glyph_string_x_to_index (PangoGlyphString *glyphs,
 	  *index = (p - text);
 	}
 
-      /* FIXME: Handle multiple character clusters better
-       */
       if (trailing)
 	*trailing = (cp - (int)cp > 0.5) ? 1 : 0;
     }

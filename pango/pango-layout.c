@@ -1,7 +1,7 @@
 /* Pango
  * pango-layout.c: Highlevel layout driver
  *
- * Copyright (C) 2000 Red Hat Software
+ * Copyright (C) 2000, 2001 Red Hat Software
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -968,14 +968,12 @@ pango_layout_get_line (PangoLayout *layout,
 
 /**
  * pango_layout_line_index_to_x:
- * @line:      a #PangoLayoutLine
- * @index:     byte offset within the Layout's text 
- * @trailing:  integer indicating where in the cluster the user clicked.
- *             If the script allows positioning within the cluster, it is either
- *             0 or 1; otherwise it is either 0 or the number
- *             of characters in the cluster. In either case
- *             0 represents the trailing edge of the cluster.
- * @x_pos:     location to store the x_offset (in thousandths of a device unit)
+ * @line:         a #PangoLayoutLine
+ * @index:        byte offset of a grapheme within the layout
+ * @trailing: an integer indicating the edge of the grapheme to retrieve the position
+ *            of. If 0, the trailing edge of the grapheme, if > 0, the leading
+ *            of the grapheme.
+ * @x_pos: location to store the x_offset (in thousandths of a device unit)
  * 
  * Convert index within a line to X pos
  *
@@ -984,9 +982,10 @@ pango_layout_get_line (PangoLayout *layout,
 void
 pango_layout_line_index_to_x (PangoLayoutLine  *line,
 			      int               index,
-			      gboolean          trailing,
+			      int               trailing,
 			      int              *x_pos)
 {
+  PangoLayout *layout = line->layout;
   GSList *run_list = line->runs;
   int width = 0;
 
@@ -1004,18 +1003,39 @@ pango_layout_line_index_to_x (PangoLayoutLine  *line,
 	  if (shape_set)
 	    {
 	      if (x_pos)
-		*x_pos = width + (trailing ? logical_rect.width : 0);
+		*x_pos = width + (trailing > 0 ? logical_rect.width : 0);
 	    }
 	  else
 	    {
+	      int offset = g_utf8_pointer_to_offset (layout->text, layout->text + index);
+	      if (trailing)
+		{
+		  while (index < line->start_index + line->length &&
+			 offset + 1 < layout->n_chars &&
+			 !layout->log_attrs[offset + 1].is_cursor_position)
+		    {
+		      offset++;
+		      index = g_utf8_next_char (layout->text + index) - layout->text;
+		    }
+		}
+	      else
+		{
+		  while (index > line->start_index &&
+			 !layout->log_attrs[offset].is_cursor_position)
+		    {
+		      offset--;
+		      index = g_utf8_prev_char (layout->text + index) - layout->text;
+		    }
+		  
+		}
+	      
 	      pango_glyph_string_index_to_x (run->glyphs,
-					     line->layout->text + run->item->offset,
+					     layout->text + run->item->offset,
 					     run->item->length,
 					     &run->item->analysis,
 					     index - run->item->offset, trailing, x_pos);
-
 	      if (x_pos)
-		*x_pos += width;
+	        *x_pos += width;
 	    }
 	  
 	  return;
@@ -1030,17 +1050,17 @@ pango_layout_line_index_to_x (PangoLayoutLine  *line,
       run_list = run_list->next;
     }
 
-  if(x_pos)
+  if (x_pos)
     *x_pos = width;
 }
 	  
 /**
  * pango_layout_index_to_line_x:
  * @layout:    a #PangoLayout
- * @index:     the byte index of the character to find
- * @trailing:  whether we should compute the result for the beginning
- *             or end of the character (or cluster - the decision
- *             for which may be script dependent).
+ * @index:     the byte index of a grapheme within the layout.
+ * @trailing:  an integer indicating the edge of the grapheme to retrieve the position
+ *             of. If 0, the trailing edge of the grapheme, if > 0, the leading
+ *             of the grapheme.
  * @line:      location to store resulting line index. (which will
  *             between 0 and pango_layout_get_line_count(layout) - 1)
  * @x_pos:     location to store resulting position within line
@@ -1111,15 +1131,22 @@ pango_layout_index_to_line_x (PangoLayout *layout,
 /**
  * pango_layout_move_cursor_visually:
  * @layout:       a #PangoLayout.
- * @old_index:    the old cursor byte index
- * @old_trailing: 
+ * @old_index:    the byte index of the grapheme for the old index
+ * @old_trailing: if 0, the cursor was at the trailing edge of the 
+ *                grapheme indicated by @old_index, if > 0, the cursor
+ *                was at the leading edge.
  * @direction:    direction to move cursor. A negative
  *                value indicates motion to the left.
  * @new_index:    location to store the new cursor byte index. A value of -1 
  *                indicates that the cursor has been moved off the beginning
  *                of the layout. A value of G_MAXINT indicates that
  *                the cursor has been moved off the end of the layout.
- * @new_trailing: 
+ * @new_trailing: number of characters to move forward from the location returned
+ *                for @new_index to get the position where the cursor should
+ *                be displayed. This allows distinguishing the position at
+ *                the beginning of one line from the position at the end
+ *                of the preceding line. @new_index is always on the line
+ *                where the cursor should be displayed. 
  * 
  * Computes a new cursor position from an old position and
  * a count of positions to move visually. If @count is positive,
@@ -1132,6 +1159,11 @@ pango_layout_index_to_line_x (PangoLayout *layout,
  * between logical and visual order will depend on the direction
  * of the current run, and there may be jumps when the cursor
  * is moved off of the end of a run.
+ *
+ * Motion here is in cursor positions, not in characters, so a
+ * single call to pango_layout_move_cursor_visually() may move the
+ * cursor over multiple characters when multiple characters combine
+ * to form a single grapheme.
  **/
 void
 pango_layout_move_cursor_visually (PangoLayout *layout,
@@ -1150,7 +1182,8 @@ pango_layout_move_cursor_visually (PangoLayout *layout,
   int *log2vis_map;
   int *vis2log_map;
   int n_vis;
-  int vis_pos;
+  int vis_pos, log_pos;
+  int start_offset;
 
   g_return_if_fail (layout != NULL);
   g_return_if_fail (old_index >= 0 && old_index <= layout->length);
@@ -1186,7 +1219,9 @@ pango_layout_move_cursor_visually (PangoLayout *layout,
   else
     next_line = NULL;
 
-  if (old_trailing)
+  start_offset = g_utf8_pointer_to_offset (layout->text, layout->text + line->start_index);
+
+  while (old_trailing--)
     old_index = g_utf8_next_char (layout->text + old_index) - layout->text;
 
   log2vis_map = pango_layout_line_get_log2vis_map (line, TRUE);
@@ -1250,19 +1285,31 @@ pango_layout_move_cursor_visually (PangoLayout *layout,
       vis_pos = 0;
     }
 
-  vis_pos += (direction > 0) ? 1 : -1;
-  
   vis2log_map = pango_layout_line_get_vis2log_map (line, TRUE);
+
+  do
+    {
+      vis_pos += direction > 0 ? 1 : -1;
+      log_pos = g_utf8_pointer_to_offset (layout->text + line->start_index,
+					  layout->text + line->start_index + vis2log_map[vis_pos]);
+    }
+  while (vis_pos > 0 && vis_pos < n_vis &&
+	 !layout->log_attrs[start_offset + log_pos].is_cursor_position);
+  
   *new_index = line->start_index + vis2log_map[vis_pos];
   g_free (vis2log_map);
 
+  *new_trailing = 0;
+    
   if (*new_index == line->start_index + line->length && line->length > 0)
     {
-      *new_index = g_utf8_prev_char (layout->text + *new_index) - layout->text;
-      *new_trailing = 1;
+      do
+	{
+	  log_pos--;
+	  *new_index = g_utf8_prev_char (layout->text + *new_index) - layout->text;
+	}
+      while (log_pos > 0 && !layout->log_attrs[start_offset + log_pos].is_cursor_position);
     }
-  else
-    *new_trailing = 0;
 }
 
 /**
@@ -1274,11 +1321,9 @@ pango_layout_move_cursor_visually (PangoLayout *layout,
  *             from the top edge of the layout
  * @index:     location to store calculated byte index
  * @trailing:  location to store a integer indicating where
- *             in the cluster the user clicked. If the script
- *             allows positioning within the cluster, it is either
- *             0 or 1; otherwise it is either 0 or the number
- *             of characters in the cluster. In either case
- *             0 represents the trailing edge of the cluster.
+ *             in the grapheme the user clicked. It will either
+ *             be zero, or the number of characters in the
+ *             grapheme. 0 represents the trailing edge of the grapheme.
  *
  * Convert from X and Y position within a layout to the byte 
  * index to the character at that logical position. If the
@@ -1294,7 +1339,7 @@ pango_layout_xy_to_index (PangoLayout *layout,
 			  int          x,
 			  int          y,
 			  int         *index,
-			  gboolean    *trailing)
+			  gint        *trailing)
 {
   PangoLayoutIter *iter;
   PangoLayoutLine *prev_line = NULL;
@@ -1376,14 +1421,14 @@ pango_layout_xy_to_index (PangoLayout *layout,
  * pango_layout_index_to_pos:
  * @layout: a #PangoLayout
  * @index: byte index within @layout
- * @pos: rectangle in which to store the position of the character
+ * @pos: rectangle in which to store the position of the grapheme
  * 
  * Convert from an index within a PangoLayout to the onscreen position
- * corresponding to that character, which is represented as rectangle.
- * Note that pos->x is always the leading edge of the character. If the
- * and pos->x + pos->width the trailing edge of the character. If the
- * directionality of the character is right-to-left, then pos->width
- * will be negative.
+ * corresponding to the grapheme at that index, which is represented
+ * as rectangle.  Note that pos->x is always the leading edge of the
+ * grapheme and pos->x + pos->width the trailing edge of the
+ * grapheme. If the directionality of the grapheme is right-to-left,
+ * then pos->width will be negative.
  **/
 void
 pango_layout_index_to_pos (PangoLayout    *layout,
@@ -1444,10 +1489,10 @@ pango_layout_index_to_pos (PangoLayout    *layout,
       pos->y = logical_rect.y;
       pos->height = logical_rect.height;
 
-      pango_layout_line_index_to_x (layout_line, index, FALSE, &x_pos);
+      pango_layout_line_index_to_x (layout_line, index, 0, &x_pos);
       pos->x = logical_rect.x + x_pos;
 	  
-      pango_layout_line_index_to_x (layout_line, index, TRUE, &x_pos);
+      pango_layout_line_index_to_x (layout_line, index, 1, &x_pos);
       pos->width = (logical_rect.x + x_pos) - pos->x;
     }
   
@@ -2860,13 +2905,12 @@ pango_layout_line_unref (PangoLayoutLine *line)
  * @line:      a #PangoLayoutLine
  * @x_pos:     the x offset (in thousands of a device unit)
  *             from the left edge of the line.
- * @index:     location to store calculated byte offset.
+ * @index:     location to store calculated byte offset for
+ *             the grapheme in which the user clicked.
  * @trailing:  location to store a integer indicating where
- *             in the cluster the user clicked. If the script
- *             allows positioning within the cluster, it is either
- *             0 or 1; otherwise it is either 0 or the number
- *             of characters in the cluster. In either case
- *             0 represents the trailing edge of the cluster.
+ *             in the grapheme the user clicked. It will either
+ *             be zero, or the number of characters in the
+ *             grapheme. 0 represents the trailing edge of the cluster.
  *
  * Convert from x offset to the byte index of the corresponding
  * character within the text of the layout. If @x_pos is outside the line,
@@ -2883,9 +2927,13 @@ pango_layout_line_x_to_index (PangoLayoutLine *line,
   GSList *tmp_list;
   gint start_pos = 0;
   gint first_index = 0; /* line->start_index */
-  gint last_index;      /* last char in line */
-  gint end_index;       /* end iterator for line (one char past last_index) */
+  gint first_offset;
+  gint last_index;      /* start of last grapheme in line */
+  gint last_offset;
+  gint end_index;       /* end iterator for line */
+  gint end_offset;      /* end iterator for line */
   PangoDirection base_dir;
+  PangoLayout *layout;
   gboolean last_trailing;
 
   g_return_val_if_fail (line != NULL, FALSE);
@@ -2894,7 +2942,9 @@ pango_layout_line_x_to_index (PangoLayoutLine *line,
   if (!LINE_IS_VALID (line))
     return FALSE;
 
-  base_dir = pango_context_get_base_dir (line->layout->context);
+  layout = line->layout;
+
+  base_dir = pango_context_get_base_dir (layout->context);
 
   /* Find the last index in the line
    */
@@ -2912,8 +2962,21 @@ pango_layout_line_x_to_index (PangoLayoutLine *line,
 
   g_assert (line->length > 0);
   
+  first_offset = g_utf8_pointer_to_offset (layout->text, layout->text + line->start_index);
+
   end_index = first_index + line->length;
-  last_index = g_utf8_prev_char (line->layout->text + end_index) - line->layout->text;
+  end_offset = first_offset + g_utf8_pointer_to_offset (layout->text + first_index, layout->text + end_index);
+  
+  last_index = end_index;
+  last_offset = end_offset;
+  last_trailing = 0;
+  do
+    {
+      last_index = g_utf8_prev_char (layout->text + last_index) - layout->text;
+      last_offset--;
+      last_trailing++;
+    }
+  while (last_offset > first_offset && !layout->log_attrs[last_offset].is_cursor_position);
 
   /* This is a HACK. If a program only keeps track if cursor (etc)
    * indices and not the trailing flag, then the trailing index of the
@@ -2922,11 +2985,12 @@ pango_layout_line_x_to_index (PangoLayoutLine *line,
    * positions with wrapped lines should distinguish leading and
    * trailing cursors.
    */
-  tmp_list = line->layout->lines;
+  tmp_list = layout->lines;
   while (tmp_list->data != line)
     tmp_list = tmp_list->next;
 
-  last_trailing = tmp_list->next ? 0 : 1;
+  if (tmp_list->next)
+    last_trailing = 0;
   
   if (x_pos < 0)
     {
@@ -2955,10 +3019,14 @@ pango_layout_line_x_to_index (PangoLayoutLine *line,
 
       if (x_pos >= start_pos && x_pos < start_pos + logical_rect.width)
 	{
+	  int offset;
+	  gboolean char_trailing;
+	  int grapheme_start_offset;
+	  int grapheme_end_offset;
 	  int pos;
+	  int char_index;
 
-	  if (index)
-	    *index = run->item->offset;
+	  char_index = run->item->offset;
 
 	  if (shape_set)
 	    {
@@ -2967,15 +3035,42 @@ pango_layout_line_x_to_index (PangoLayoutLine *line,
 	  else
 	    {
 	      pango_glyph_string_x_to_index (run->glyphs,
-					     line->layout->text + run->item->offset, run->item->length,
+					     layout->text + run->item->offset, run->item->length,
 					     &run->item->analysis,
 					     x_pos - start_pos,
-					     &pos, trailing);
+					     &pos, &char_trailing);
 
-	      if (index)
-		*index += pos;
+	      char_index += pos;
+	    }
+
+	  /* Convert from characters to graphemes */
+
+	  offset = g_utf8_pointer_to_offset (layout->text, layout->text + char_index);
+
+	  grapheme_start_offset = offset;
+	  while (grapheme_start_offset > first_offset &&
+		 !layout->log_attrs[grapheme_start_offset].is_cursor_position)
+	    {
+	      char_index = g_utf8_prev_char (layout->text + char_index) - layout->text;
+	      grapheme_start_offset--;
 	    }
 	  
+	  if (index)
+	    *index = char_index;
+	  if (trailing)
+	    {
+	      grapheme_end_offset = offset;
+	      do
+		grapheme_end_offset++;
+	      while (grapheme_end_offset < end_offset &&
+		     !layout->log_attrs[grapheme_end_offset].is_cursor_position);
+	      
+	      if (offset + char_trailing > (grapheme_start_offset + grapheme_end_offset) / 2)
+		*trailing = grapheme_end_offset - grapheme_start_offset;
+	      else
+		*trailing = 0;
+	    }
+
 	  return TRUE;
 	}
 

@@ -151,7 +151,7 @@ gboolean pango_layout_xy_to_index          (PangoLayout    *layout,
 					    int             x,
 					    int             y,
 					    int            *index,
-					    gboolean       *trailing);
+					    int            *trailing);
 void     pango_layout_get_extents          (PangoLayout    *layout,
 					    PangoRectangle *ink_rect,
 					    PangoRectangle *logical_rect);

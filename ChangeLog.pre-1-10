@@ -1,3 +1,23 @@
+Fri May 18 11:30:57 2001  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/opentype/disasm.c: Use ISO C99 varargs when
+	available.
+
+Thu May 17 11:16:23 2001  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/mapping.c: Fixup docs, remove some FIXMEs that are 
+	no longer applicable.
+
+	* pango/pango-layout.c: Move by graphemes, not characters.
+
+	* pango/pango-layout.c (pango_layout_line_x_to_index): 
+	Position at the closest grapheme boundary, not at character
+	boundaries.
+
+	* pango/pango-layout.c (pango_layout_line_index_to_x): 
+	Return positions of grapheme boundaries, not character 
+	boundaries.
+
 Tue May  1 16:03:48 2001  Owen Taylor  <otaylor@redhat.com>
 
 	* autogen.sh (libtool_version): Require libtool 1.4 when
