@@ -42,7 +42,6 @@
 
 static gboolean is_prefixing_vowel (gunichar i);
 static gboolean is_vowel_sign (gunichar i);
-static gunichar vowel_sign_to_matra (gunichar i);
 
 static PangoIndicScript script = {
   SCRIPT_STRING,

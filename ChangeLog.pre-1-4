@@ -1,3 +1,7 @@
+2001-07-27  Darin Adler  <darin@bentspoon.com>
+
+	* modules/indic/gujarati-x.c: Remove unused prototype.
+
 2001-07-20  Hans Breuer  <hans@breuer.org>
 
 	* pango/pango-layout.c (pango_layout_line_get_vis2log_map) : 
