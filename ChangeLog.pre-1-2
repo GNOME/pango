@@ -1,3 +1,8 @@
+2001-12-11  Alex Larsson  <alexl@redhat.com>
+
+	* pango/pangoft2.c (pango_ft2_render):
+	Fix the details in clipping to the bitmap size.
+
 Mon Dec 10 14:22:22 2001  HideToshi Tajima  <hidetoshi.tajima@sun.com>
 
 	* modules/basic/tables-big.i: change "EUC-CN" to "GB2312" which

@@ -280,7 +280,7 @@ pango_ft2_render (FT_Bitmap        *bitmap,
   int x_position = 0;
   int ix, iy, ixoff, iyoff, y_start, y_limit, x_start, x_limit;
   PangoGlyphInfo *gi;
-  guchar *p, *q;
+  guchar *dest, *src;
 
   g_return_if_fail (bitmap != NULL);
   g_return_if_fail (glyphs != NULL);
@@ -305,12 +305,11 @@ pango_ft2_render (FT_Bitmap        *bitmap,
 	      ixoff = x + PANGO_PIXELS (x_position + gi->geometry.x_offset);
 	      iyoff = y + PANGO_PIXELS (gi->geometry.y_offset);
 
-	      x_start = MAX (0, -face->glyph->bitmap_left - ixoff);
-	      x_limit = MIN (face->glyph->bitmap.width, face->glyph->bitmap_left - ixoff + bitmap->width);
+	      x_start = MAX (0, - (ixoff + face->glyph->bitmap_left));
+	      x_limit = MIN (face->glyph->bitmap.width, bitmap->width - (ixoff + face->glyph->bitmap_left));
 
-	      y_start = MAX (0, face->glyph->bitmap_top - iyoff);
-	      y_limit = MIN (face->glyph->bitmap.rows, face->glyph->bitmap_top - iyoff + bitmap->rows);
-
+	      y_start = MAX (0,  - (iyoff - face->glyph->bitmap_top));
+	      y_limit = MIN (face->glyph->bitmap.rows, bitmap->rows - (iyoff - face->glyph->bitmap_top));
 
 	      PING (("glyph %d:%d: bitmap: %dx%d, left:%d top:%d",
 		     i, glyph_index,
@@ -322,48 +321,47 @@ pango_ft2_render (FT_Bitmap        *bitmap,
 	      if (face->glyph->bitmap.pixel_mode == ft_pixel_mode_grays)
 		for (iy = y_start; iy < y_limit; iy++)
 		  {
-		    p = bitmap->buffer +
+		    dest = bitmap->buffer +
 		      (iyoff - face->glyph->bitmap_top + iy) * bitmap->pitch +
-		      ixoff + face->glyph->bitmap_left + 
-                      x_start;
+		      ixoff + face->glyph->bitmap_left + x_start;
 		    
-		    q = face->glyph->bitmap.buffer + 
-                      iy * face->glyph->bitmap.pitch;
+		    src = face->glyph->bitmap.buffer + 
+                      iy * face->glyph->bitmap.pitch + x_start;
 
 		    for (ix = x_start; ix < x_limit; ix++)
 		      {
-                        switch (*q)
+                        switch (*src)
                           {
                           case 0:
                             break;
                           case 0xff:
-                            *p = 0xff;
+                            *dest = 0xff;
                           default:
-                            *p = MIN ((gushort) *p + (gushort) *q, 0xff);
+                            *dest = MIN ((gushort) *dest + (gushort) *src, 0xff);
                             break;
                           }
-                        q++;
-			p++;
+                        dest++;
+			src++;
 		      }
 		  }
 	      else if (face->glyph->bitmap.pixel_mode == ft_pixel_mode_mono)
 		for (iy = y_start; iy < y_limit; iy++)
 		  {
-		    p = bitmap->buffer +
+		    dest = bitmap->buffer +
 		      (iyoff - face->glyph->bitmap_top + iy) * bitmap->pitch +
 		      ixoff + face->glyph->bitmap_left + 
                       x_start;
                     
-                    q = face->glyph->bitmap.buffer + 
+                    src = face->glyph->bitmap.buffer + 
                       iy*face->glyph->bitmap.pitch;
 
 		    for (ix = x_start; ix < x_limit; ix++)
 		      {
-			if ((*q) & (1 << (7 - (ix % 8))))
-			  *p = 0xff;
+			if ((*src) & (1 << (7 - (ix % 8))))
+			  *dest |= (1 << (7 - (ix % 8)));
 			if ((ix % 8) == 7)
-			  q++;
-			p++;
+			  src++;
+			dest++;
 		      }
 		  }
 	      else
