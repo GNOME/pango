@@ -17,6 +17,12 @@ Thu Dec  6 10:03:49 2001  HideToshi Tajima  <hidetoshi.tajima@sun.com>
 	character sets only.
 	* modules/basic/tables-big.i: add jisx0212, jisx0201 and big5.
 
+2001-12-04  Manish Singh  <yosh@gimp.org>
+
+	* pango/modules.c
+	* pango/querymodules.c:  g_module_symbol takes a gpointer *, not just
+        a gpointer.
+
 2001-12-03  Matthias Clasen  <matthiasc@poet.de>
 
 	* docs/pango-sections.txt, docs/tmpl/fonts.sgml, 
@@ -39,7 +45,6 @@ Thu Dec  6 10:03:49 2001  HideToshi Tajima  <hidetoshi.tajima@sun.com>
 
 	* pango/pango-fontset.c: Documentation updates.
 
->>>>>>> 1.391
 Thu Nov 29 11:40:51 2001  Owen Taylor  <otaylor@redhat.com>
 
 	* examples/viewer-qt.cc: Include qpainter.h - apparently
