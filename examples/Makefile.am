@@ -60,6 +60,7 @@ EXTRA_DIST=			\
 	pangoft2topgm.c         \
 	makefile.mingw		\
 	makefile.mingw.in	\
+	makefile.msc	\
 	HELLO.utf8		\
 	dev-example.utf		\
 	muru.utf		\

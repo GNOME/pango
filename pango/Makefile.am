@@ -277,6 +277,7 @@ EXTRA_DIST =					\
 	pangoft2.def				\
 	makefile.mingw				\
 	makefile.mingw.in			\
+	makefile.msc			\
 	pango.rc				\
 	pango.rc.in				\
 	pangoft2.rc				\
