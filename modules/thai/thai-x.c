@@ -555,9 +555,9 @@ get_adjusted_glyphs_list (ThaiFontInfo *font_info,
 	    glyph_lists[0] =
 		PANGO_X_MAKE_GLYPH (font_info->subfont, 0x7F);
 	    glyph_lists[1] =
-		PANGO_X_MAKE_GLYPH (font_info->subfont, ucs2tis (cluster[1]));
+		PANGO_X_MAKE_GLYPH (font_info->subfont, ucs2tis (cluster[0]));
 	    glyph_lists[2] =
-		PANGO_X_MAKE_GLYPH (font_info->subfont, ucs2tis (cluster[2]));
+		PANGO_X_MAKE_GLYPH (font_info->subfont, ucs2tis (cluster[1]));
 	    return 3;
 	  }
         break;
