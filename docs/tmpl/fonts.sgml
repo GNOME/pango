@@ -588,6 +588,15 @@ Returns %TRUE if @object is a #PangoFontFamily.
 @Returns: 
 
 
+<!-- ##### FUNCTION pango_font_family_is_monospace ##### -->
+<para>
+
+</para>
+
+@family: 
+@Returns: 
+
+
 <!-- ##### FUNCTION pango_font_family_list_faces ##### -->
 <para>
 
@@ -635,6 +644,16 @@ Returns %TRUE if @object is a #PangoFontFace.
 
 @face: 
 @Returns: 
+
+
+<!-- ##### FUNCTION pango_font_face_list_sizes ##### -->
+<para>
+
+</para>
+
+@face: 
+@sizes: 
+@n_sizes: 
 
 
 <!-- ##### FUNCTION pango_font_face_describe ##### -->

@@ -1,3 +1,26 @@
+Fri Feb 27 09:30:10 2004  Owen Taylor  <otaylor@redhat.com>
+
+	Add some new enum and values and utilities for supporting
+	automatically determined base direction. (#70451, based
+	on changes by Dov Grobgeld)
+	
+	* pango/pango-types.h docs/tmpl/main.sgml: Add 
+	PANGO_DIRECTION_WEAK_RTL/LTR, extend the docs for
+	PangoDirection.
+
+	* pango/pango-types.h pango/pango-utils.h: Move
+	pango_get_mirror_char() to pango-types.h.
+
+	* pango/mini-fribidi/fribidi.c (pango_log2vis_get_embedding_levels):
+	Handle new values of PangoDirection, handle 
+	PANGO_DIRECTION_TTB_LTR/RTL as aliases for PANGO_DIRECTION_RTL/LTR.
+
+	* pango/mini-fribidi/fribidi.c pango/pango-types.h: Add
+	pango_unichar_direction().
+
+	* pango/pango-utils.c pango/pango-types.h: Add
+	pango_find_base_dir()
+
 2003-02-26  Noah Levitt  <nlevitt@columbia.edu>
 
 	* pango/pangofc-fontmap.c: Use g_array_sort correctly.

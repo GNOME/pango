@@ -19,9 +19,14 @@
  * Boston, MA 02111-1307, USA.
  */
 
+#ifndef __PANGO_UTILS_H__
+#define __PANGO_UTILS_H__
+
 #include <stdio.h>
 #include <glib.h>
 #include <pango/pango-font.h>
+
+G_BEGIN_DECLS
 
 char **  pango_split_file_list (const char *str);
 
@@ -88,8 +93,9 @@ gboolean pango_log2vis_get_embedding_levels (gunichar       *str,
 					     int             len,
 					     PangoDirection *pbase_dir,
 					     guint8         *embedding_level_list);
-gboolean pango_get_mirror_char              (gunichar        ch,
-					     gunichar       *mirrored_ch);
 
 G_CONST_RETURN char *pango_language_get_sample_string (PangoLanguage *language);
 
+G_END_DECLS
+
+#endif /* __PANGO_UTILS_H__ */

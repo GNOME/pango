@@ -1493,3 +1493,39 @@ pango_lookup_aliases (const char   *fontname,
       *n_families = 0;
     }
 }
+
+/**
+ * pango_find_base_dir:
+ * @text:   the text to process
+ * @length: length of @text in bytes (may be -1 if @text is nul-terminated)
+ *
+ * Searches a string the first character that has a strong 
+ * direction, according to the Unicode bidirectional algorithm.
+ *
+ * Return value: The direction corresponding to the first strong character.
+ * If no such character is found, then %PANGO_DIRECTION_NEUTRAL is returned.
+ */
+PangoDirection
+pango_find_base_dir (const gchar *text,
+		     gint         length)
+{
+  PangoDirection dir = PANGO_DIRECTION_NEUTRAL;
+  const gchar *p;
+
+  g_return_val_if_fail (text != NULL, PANGO_DIRECTION_NEUTRAL);
+
+  p = text;
+  while ((length < 0 || p < text + length) && *p)
+    {
+      gunichar wc = g_utf8_get_char (p);
+
+      dir = pango_unichar_direction (wc);
+
+      if (dir != PANGO_DIRECTION_NEUTRAL)
+	break;
+
+      p = g_utf8_next_char (p);
+    }
+
+  return dir;
+}

@@ -1006,8 +1006,24 @@ pango_log2vis_get_embedding_levels (/* input */
 
   DBG ("Entering fribidi_log2vis_get_embedding_levels()\n");
 
-  fribidi_base_dir = (*pbase_dir == PANGO_DIRECTION_LTR) ? FRIBIDI_TYPE_LTR : FRIBIDI_TYPE_RTL;
-
+  switch (*pbase_dir)
+    {
+    case PANGO_DIRECTION_LTR:
+    case PANGO_DIRECTION_TTB_RTL:
+      fribidi_base_dir = FRIBIDI_TYPE_L;
+      break;
+    case PANGO_DIRECTION_RTL:
+    case PANGO_DIRECTION_TTB_LTR:
+      fribidi_base_dir = FRIBIDI_TYPE_R;
+      break;
+    case PANGO_DIRECTION_WEAK_LTR:
+      fribidi_base_dir = FRIBIDI_TYPE_WL;
+      break;
+    case PANGO_DIRECTION_WEAK_RTL:
+      fribidi_base_dir = FRIBIDI_TYPE_WR;
+      break;
+    }
+  
   if (len == 0)
     {
       DBG ("Leaving fribidi_log2vis_get_embedding_levels()\n");
@@ -1033,3 +1049,22 @@ pango_log2vis_get_embedding_levels (/* input */
   return TRUE;
 }
 
+/**
+ * pango_unichar_direction:
+ * @ch: character to examine
+ *
+ * Returns the direction of a character, as used in the
+ *  Unicode bidirectional algorithm.
+ */
+PangoDirection
+pango_unichar_direction (gunichar ch)
+{
+  FriBidiCharType fribidi_ch_type = _pango_fribidi_get_type (ch);
+
+  if (!FRIBIDI_IS_LETTER (fribidi_ch_type))
+    return PANGO_DIRECTION_NEUTRAL;
+  else if (FRIBIDI_IS_RTL (fribidi_ch_type))
+    return PANGO_DIRECTION_RTL;
+  else
+    return PANGO_DIRECTION_LTR;
+}

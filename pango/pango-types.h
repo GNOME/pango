@@ -65,15 +65,45 @@ struct _PangoRectangle
 #define PANGO_LBEARING(rect) ((rect).x)
 #define PANGO_RBEARING(rect) ((rect).x + (rect).width)
 
-/* Information about a segment of text with a consistent
- * shaping/language engine and bidirectional level
- */
-
+/**
+ * PangoDirection:
+ * @PANGO_DIRECTION_LTR: A strong left-to-right direction
+ * @PANGO_DIRECTION_RTL: A strong right-to-left direction
+ * @PANGO_DIRECTION_TTB_LTR: Deprecated value; treated the
+ *   same as %PANGO_DIRECTION_RTL.
+ * @PANGO_DIRECTION_TTB_RTL: Deprecated value; treated the
+ *   same as PANGO_DIRECTION_LTR
+ * @PANGO_DIRECTION_WEAK_LTR: A weak left-to-right direction
+ * @PANGO_DIRECTION_WEAK_RTL: A weak right-to-left direction
+ * @PANGO_DIRECTION_NEUTRAL: No direction specified
+ * 
+ * The #PangoDirection type represents a direction in the
+ * Unicode bidirectional algorithm; not every value in this
+ * enumeration makes sense for every usage of #PangoDirection;
+ * for example, the return value of pango_unichar_direction()
+ * and pango_find_base_direction() cannot be %PANGO_DIRECTION_WEAK_LTR
+ * or %PANGO_DIRECTION_WEAK_RTL, since every character is either
+ * neutral or has a strong direction; on the other hand
+ * %PANGO_DIRECTION_NEUTRAL doesn't make sense to pass
+ * to pango_log2vis_get_embedding_levels().
+ *
+ * The %PANGO_DIRECTION_TTB_LTR, %PANGO_DIRECTION_TTB_RTL
+ * values come from an earlier interpretation of this
+ * enumeration as the writing direction of a block of
+ * text and are no longer used; See the Text module of the
+ * CSS3 spec for how vertical text is planned to be handled
+ * in a future version of Pango. The explanation of why
+ * %PANGO_DIRECTION_TTB_LTR is treated as %PANGO_DIRECTION_RTL
+ * can be found there as well.
+ **/			  
 typedef enum {
   PANGO_DIRECTION_LTR,
   PANGO_DIRECTION_RTL,
   PANGO_DIRECTION_TTB_LTR,
-  PANGO_DIRECTION_TTB_RTL
+  PANGO_DIRECTION_TTB_RTL,
+  PANGO_DIRECTION_WEAK_LTR,
+  PANGO_DIRECTION_WEAK_RTL,
+  PANGO_DIRECTION_NEUTRAL
 } PangoDirection;
 
 #define PANGO_TYPE_LANGUAGE (pango_language_get_type ())
@@ -84,6 +114,12 @@ PangoLanguage *pango_language_from_string (const char *language);
 
 gboolean      pango_language_matches  (PangoLanguage *language,
 				       const char *range_list);
+
+gboolean       pango_get_mirror_char        (gunichar     ch,
+					     gunichar    *mirrored_ch);
+PangoDirection pango_unichar_direction      (gunichar     ch);
+PangoDirection pango_find_base_dir          (const gchar *text,
+					     gint         length);
 
 G_END_DECLS
 

@@ -83,7 +83,7 @@ pango_context_get_type (void)
 static void
 pango_context_init (PangoContext *context)
 {
-  context->base_dir = PANGO_DIRECTION_LTR;
+  context->base_dir = PANGO_DIRECTION_WEAK_LTR;
   context->language = NULL;
   context->font_map = NULL;
 
@@ -325,6 +325,13 @@ pango_context_get_language (PangoContext *context)
  * @direction: the new base direction
  * 
  * Sets the base direction for the context.
+ *
+ * The base direction is used in applying the Unicode bidirectional
+ * algorithm; if the @direction is %PANGO_DIRECTION_LTR or
+ * %PANGO_DIRECTION_RTL, then the value will be used as the paragraph
+ * direction in the Unicode bidirectional algorithm.  A value of
+ * %PANGO_DIRECTION_WEAK_LTR or %PANGO_DIRECTION_WEAK_RTL is used only
+ * for paragraphs that do not contain any strong characters themselves. 
  **/
 void
 pango_context_set_base_dir (PangoContext  *context,
@@ -337,9 +344,10 @@ pango_context_set_base_dir (PangoContext  *context,
 
 /**
  * pango_context_get_base_dir:
- * @context: 
+ * @context: a #PangoContext
  * 
- * Retrieves the base direction for the context.
+ * Retrieves the base direction for the context. See
+ * pango_context_set_base_dir().
  * 
  * Return value: the base direction for the context.
  **/

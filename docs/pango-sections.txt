@@ -27,6 +27,10 @@ pango_context_load_font
 pango_context_load_fontset
 pango_context_get_metrics
 pango_context_list_families
+<SUBSECTION>
+pango_get_mirror_char
+pango_unichar_direction
+pango_find_base_dir
 <SUBSECTION Standard>
 PANGO_TYPE_CONTEXT
 PangoContextClass
@@ -172,6 +176,7 @@ PANGO_TYPE_FONT_FAMILY
 PANGO_FONT_FAMILY
 PANGO_IS_FONT_FAMILY
 pango_font_family_get_name
+pango_font_family_is_monospace
 pango_font_family_list_faces
 <SUBSECTION>
 PangoFontFace
@@ -179,6 +184,7 @@ PANGO_TYPE_FONT_FACE
 PANGO_FONT_FACE
 PANGO_IS_FONT_FACE
 pango_font_face_get_face_name
+pango_font_face_list_sizes
 pango_font_face_describe
 <SUBSECTION>
 PangoFontMap

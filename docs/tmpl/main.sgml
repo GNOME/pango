@@ -52,18 +52,15 @@ fields:
 
 <!-- ##### ENUM PangoDirection ##### -->
 <para>
-The #PangoDirection type represents the direction of writing
-for text.
 </para>
 
-@PANGO_DIRECTION_LTR: The text is written left-to-right
-@PANGO_DIRECTION_RTL: The text is written right-to-left
-@PANGO_DIRECTION_TTB_LTR: The text is written vertically
-                          top-to-bottom, with the rows ordered from
-                          left to right.
-@PANGO_DIRECTION_TTB_RTL: The text is written vertically
-                          top-to-bottom, with the rows ordered from
-                          right to left.
+@PANGO_DIRECTION_LTR: 
+@PANGO_DIRECTION_RTL: 
+@PANGO_DIRECTION_TTB_LTR: 
+@PANGO_DIRECTION_TTB_RTL: 
+@PANGO_DIRECTION_WEAK_LTR: 
+@PANGO_DIRECTION_WEAK_RTL: 
+@PANGO_DIRECTION_NEUTRAL: 
 
 <!-- ##### MACRO PANGO_TYPE_DIRECTION ##### -->
 <para>
@@ -242,6 +239,35 @@ The GObject type for #PangoDirection.
 @context: 
 @families: 
 @n_families: 
+
+
+<!-- ##### FUNCTION pango_get_mirror_char ##### -->
+<para>
+
+</para>
+
+@ch: 
+@mirrored_ch: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_unichar_direction ##### -->
+<para>
+
+</para>
+
+@ch: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_find_base_dir ##### -->
+<para>
+
+</para>
+
+@text: 
+@length: 
+@Returns: 
 
 
 <!-- ##### FUNCTION pango_break ##### -->
