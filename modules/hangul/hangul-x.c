@@ -329,6 +329,82 @@ JOHAB_COMMON
 }
 
 static void
+render_syllable_with_ksx1005 (PangoFont *font, PangoXSubfont subfont,
+			       gunichar2 *text, int length,
+			       PangoGlyphString *glyphs,
+			       int *n_glyphs, int cluster_offset)
+{
+  guint16 gindex;
+  int i;
+
+  /*
+   * Check if there are one CHOSEONG, one JUNGSEONG, and no more
+   * than one JONGSEONG.
+   */
+  int n_cho = 0, n_jung = 0, n_jong = 0;
+  i = 0;
+  while (i < length && IS_L (text[i]))
+    {
+      n_cho++;
+      i++;
+    }
+  while (i < length && IS_V (text[i]))
+    {
+      n_jung++;
+      i++;
+    }
+  while (i < length && IS_T (text[i]))
+    {
+      n_jong++;
+      i++;
+    }
+  if (n_cho == 1 && n_jung == 1 && n_jong <= 1)
+    {
+      int lindex, vindex, tindex;
+
+      lindex = text[0] - LBASE;
+      vindex = text[1] - VBASE;
+      tindex = text[2] - TBASE;
+
+      /* convert to JOHAB */
+ 
+      gindex = 0x8000 + (larray[lindex] << 10) + (varray[vindex] << 5) + tarray[tindex];
+
+      pango_glyph_string_set_size (glyphs, *n_glyphs + 1);
+      set_glyph (glyphs, *n_glyphs, font, subfont, gindex);
+      glyphs->log_clusters[*n_glyphs] = cluster_offset;
+      (*n_glyphs)++;
+
+      return;
+    }
+
+  /* Render as uncomposed forms as a fallback.  */
+  for (i = 0; i < length; i++)
+    {
+      int j;
+
+      if (text[i] == LFILL || text[i] == VFILL || text[i] == TFILL)
+	continue;
+
+      gindex = text[i];
+      for (j = 0; (j < 3) && (__jamo_to_ksc5601[gindex - LBASE][j] != 0); j++)
+	{
+	  int index = __jamo_to_ksc5601[gindex - LBASE][j];
+          if (index >= 0x2400 && index < 0x2500)
+            index = 0xda80 + index % 256;
+          else /* 0x2300 - 0x2400 */
+            index = 0xda10 + index % 256;
+	  pango_glyph_string_set_size (glyphs, *n_glyphs + 1);
+	  set_glyph (glyphs, *n_glyphs, font, subfont, index);
+	  glyphs->log_clusters[*n_glyphs] = cluster_offset;
+	  (*n_glyphs)++;
+	}
+      if (j == 0)
+	set_unknown_glyph (glyphs, n_glyphs, font, gindex, cluster_offset);
+    }
+}
+
+static void
 render_syllable_with_iso10646 (PangoFont *font, PangoXSubfont subfont,
 			       gunichar2 *text, int length,
 			       PangoGlyphString *glyphs,
@@ -548,6 +624,12 @@ find_subfont (PangoFont *font, char **charsets, int n_charsets,
 	      break;
 	    }
 	}
+      else if (strcmp (charsets[subfont_charsets[i]], "ksc5601.1992-3") == 0)
+	{
+	      *subfont = subfonts[i];
+	      *render_func = render_syllable_with_ksx1005;
+	      break;
+	}
       else if (strcmp (charsets[subfont_charsets[i]], "ksc5601.1987-0") == 0)
 	{
 	  *subfont = subfonts[i];
@@ -572,6 +654,7 @@ static char *secondary_charset[] = {
 
 static char *fallback_charsets[] = {
   "iso10646-1",
+  "ksc5601.1992-3",
   "ksc5601.1987-0"
 };
 
@@ -751,6 +834,14 @@ hangul_engine_get_coverage (PangoFont  *font,
 
 	  for (i=0; i<KSC5601_HANGUL; i++)
 	    pango_coverage_set (result, __ksc5601_hangul_to_ucs[i], PANGO_COVERAGE_EXACT);
+	}
+      else if (render_func == render_syllable_with_ksx1005)
+	{
+	  for (i = 0x1100; i <= 0x11ff; i++)
+	    pango_coverage_set (result, i, PANGO_COVERAGE_EXACT);
+
+	  for (i = 0xac00; i <= 0xd7a3; i++)
+	    pango_coverage_set (result, i, PANGO_COVERAGE_EXACT);
 	}
       else
 	g_assert_not_reached();
