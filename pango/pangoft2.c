@@ -524,14 +524,14 @@ get_font_metrics_from_subfonts (PangoFont        *font,
 
       if (first)
 	{
-	  metrics->ascent = PANGO_UNITS_26_6 (face->ascender);
-	  metrics->descent = PANGO_UNITS_26_6 (face->descender);
+	  metrics->ascent = PANGO_UNITS_26_6 (face->size->metrics.ascender);
+	  metrics->descent = PANGO_UNITS_26_6 (-face->size->metrics.descender);
 	  first = FALSE;
 	}
       else
 	{
-	  metrics->ascent = MAX (PANGO_UNITS_26_6 (face->ascender), metrics->ascent);
-	  metrics->descent = MAX (PANGO_UNITS_26_6 (face->descender), metrics->descent);
+	  metrics->ascent = MAX (PANGO_UNITS_26_6 (face->size->metrics.ascender), metrics->ascent);
+	  metrics->descent = MAX (PANGO_UNITS_26_6 (-face->size->metrics.descender), metrics->descent);
 	}
 
       tmp_list = tmp_list->next;
