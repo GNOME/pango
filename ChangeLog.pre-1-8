@@ -1,3 +1,9 @@
+2000-08-11  Havoc Pennington  <hp@redhat.com>
+
+	* pangox.pc.in (Cflags): remove /usr/include
+
+	* pango.pc.in (Cflags): remove /usr/include
+
 2000-08-08  Elliot Lee  <sopwith@redhat.com>
 	* modules/arabic/arabic.c: #include <string.h>
 	* pango/modules.c: Fix incorrect list rearrangement.
