@@ -453,8 +453,8 @@ pango_x_render  (Display           *display,
           gunichar wc;
           
           pango_font_get_metrics (font, NULL, &metrics);
-          
-          x1 = (x_off + glyphs->glyphs[i].geometry.x_offset) / PANGO_SCALE;
+
+          x1 = x + (x_off + glyphs->glyphs[i].geometry.x_offset) / PANGO_SCALE;
           y1 = y + (glyphs->glyphs[i].geometry.y_offset - metrics.ascent) / PANGO_SCALE;
           x2 = x1 + glyphs->glyphs[i].geometry.width / PANGO_SCALE;
           y2 = y1 + (metrics.ascent + metrics.descent) / PANGO_SCALE;
@@ -472,63 +472,49 @@ pango_x_render  (Display           *display,
                 /* Draw a carriage-return thingy */
                 PangoRectangle up_stroke;
                 PangoRectangle across_stroke;
-                int arrowhead_top_x, arrowhead_top_y;
-                int arrowhead_bottom_x, arrowhead_bottom_y;
-                int arrowhead_point_x, arrowhead_point_y;
-                int xoff;
-                double slope;
-                int h;
-                
-                up_stroke.width = (x2 - x1) * 0.125;
-                if ((up_stroke.width % 2) == 0)
-                  up_stroke.width -= 1;
-                up_stroke.height = (y2 - y1) * 0.275;
-                up_stroke.x = x2 - up_stroke.width;
-                up_stroke.y = baseline - up_stroke.height - up_stroke.width / 2 - 1;
 
-                across_stroke.width = (x2 - x1) * 0.5;
-                across_stroke.height = up_stroke.width;
-                across_stroke.x = up_stroke.x - across_stroke.width;
-                across_stroke.y = up_stroke.y + up_stroke.height - across_stroke.height;
+		int stroke_thick = MAX ((y2 - y1) * 0.075, 1);
+		int hborder = (x2 - x1) * 0.1;
+		int arrow_height = 0.25 * (y2 - y1);
+		int top_border = (y2 - y1) * 0.25;
 
-                h = across_stroke.height * 3.2;
-                arrowhead_top_x = across_stroke.x;
-                arrowhead_top_y = across_stroke.y - h; 
-                arrowhead_bottom_x = across_stroke.x;
-                arrowhead_bottom_y = across_stroke.y + across_stroke.height + h;
+		int arrow_x, arrow_width, tmp_height;
 
-                arrowhead_point_x = x1 + (x2 - x1) * 0.14;
-                arrowhead_point_y = across_stroke.y + across_stroke.height / 2;
+		/* Draw the arrow-head */
 
-                /* require odd size, to line up with the odd-sized stroke */
-                if (((arrowhead_top_y - arrowhead_point_y) % 2) == 0)
-                  arrowhead_top_y -= 1;
-                
-                XFillRectangle (display, d, gc,
-                                up_stroke.x, up_stroke.y,
-                                up_stroke.width, up_stroke.height);
+		tmp_height = (stroke_thick % 2 == 0) ? 2 : 1; /* Starting height */
+		arrow_height = 2 * ((1 + arrow_height - tmp_height) / 2) + tmp_height; /* Force symmetry */
+		arrow_width = 2 + arrow_height - tmp_height;
+
+		for (arrow_x = x1 + hborder; arrow_x < x1 + hborder + arrow_width; arrow_x++)
+		  {
+                    XDrawLine (display, d, gc,
+                               arrow_x,
+			       baseline - stroke_thick + (stroke_thick - tmp_height) / 2,
+                               arrow_x,
+			       baseline - stroke_thick + (stroke_thick - tmp_height) / 2 + tmp_height - 1);
+		    
+		    if ((arrow_x - x1 - hborder) % 2 == 1)
+		      tmp_height += 2;
+		  }
+
+                across_stroke.x = arrow_x;
+                across_stroke.width = x2 - hborder - arrow_x - stroke_thick;
+                across_stroke.y = baseline - stroke_thick;
+                across_stroke.height = stroke_thick;
 
                 XFillRectangle (display, d, gc,
                                 across_stroke.x, across_stroke.y,
                                 across_stroke.width, across_stroke.height);
 
-                slope =
-                  (double)(arrowhead_top_x - arrowhead_point_x) /
-                  (double)(arrowhead_top_y - arrowhead_point_y);
-                
-                xoff = arrowhead_point_x;
-                while (xoff <= arrowhead_top_x)
-                  {
-                    int half_height = ((xoff - arrowhead_point_x) / slope);
-                    
-                    XDrawLine (display, d, gc,
-                               xoff,
-                               arrowhead_point_y - half_height,
-                               xoff,
-                               arrowhead_point_y + half_height);
+		up_stroke.x = across_stroke.x + across_stroke.width;
+		up_stroke.width = stroke_thick;
+		up_stroke.y = y1 + top_border;
+		up_stroke.height = baseline - up_stroke.y;
 
-                    ++xoff;
-                  }
+                XFillRectangle (display, d, gc,
+                                up_stroke.x, up_stroke.y,
+                                up_stroke.width, up_stroke.height);
               }
               break;
 
@@ -606,7 +592,7 @@ pango_x_font_get_glyph_extents  (PangoFont      *font,
 
             pango_font_get_metrics (font, NULL, &metrics);
             
-#define MAGIC_FACTOR 2.1
+#define MAGIC_FACTOR 1.75
             
             w = metrics.approximate_char_width * MAGIC_FACTOR;
             
@@ -744,14 +730,10 @@ get_font_metrics_from_subfonts (PangoFont        *font,
                * We want pixels * PANGO_SCALE
                */
 
-              /* Convert to points */
-              avg_width = ((double) avg_width) / (double) 10.0;
-              /* points * PANGO_SCALE */
-              avg_width *= PANGO_SCALE;
-              /* Convert to pixels */
-              avg_width /= (double) PANGO_X_FONT_MAP (PANGO_X_FONT (font)->fontmap)->resolution;
+              /* Convert to points * PANGO_SCALE */
+              avg_width *= PANGO_SCALE / (double) 10.0;
               /* Convert to pixels * PANGO_SCALE */
-              avg_width *= PANGO_SCALE;
+              avg_width *= (PANGO_SCALE / PANGO_X_FONT_MAP (PANGO_X_FONT (font)->fontmap)->resolution);
             }
           else
             {

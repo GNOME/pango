@@ -1,3 +1,9 @@
+Tue May  1 19:27:00 2001  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pangox.c (pango_x_render): Rewrite the newline
+	arrow drawing code to act a little better on a range
+	of different sizes of fonts.
+
 2001-04-27  Havoc Pennington  <hp@redhat.com>
 
 	* pango/pangox-fontmap.c: Move some fontmap stuff to
