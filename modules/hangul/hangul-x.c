@@ -100,7 +100,7 @@ set_unknown_glyph (PangoGlyphString *glyphs,
 #include "hangul-defs.h"
 
 typedef void (* RenderSyllableFunc) (PangoFont *font, PangoXSubfont subfont,
-				     gunichar2 *text, int length,
+				     gunichar *text, int length,
 				     PangoGlyphString *glyphs,
 				     int *n_glyphs, int cluster_offset);
 
@@ -139,7 +139,7 @@ typedef void (* RenderSyllableFunc) (PangoFont *font, PangoXSubfont subfont,
   if (n_cho <= 1 && n_jung <= 1)					      \
     {									      \
       int composed = 0;							      \
-      gunichar2 l, v, t = 0;						      \
+      gunichar l, v, t = 0;						      \
 									      \
       l = (n_cho > 0) ? text[0] : LFILL;				      \
       v = (n_jung > 0) ? text[n_cho] : VFILL;				      \
@@ -225,7 +225,7 @@ typedef void (* RenderSyllableFunc) (PangoFont *font, PangoXSubfont subfont,
 
 static void
 render_syllable_with_johabs (PangoFont *font, PangoXSubfont subfont,
-			     gunichar2 *text, int length,
+			     gunichar *text, int length,
 			     PangoGlyphString *glyphs,
 			     int *n_glyphs, int cluster_offset)
 {
@@ -276,7 +276,7 @@ render_syllable_with_johabs (PangoFont *font, PangoXSubfont subfont,
 
 static void
 render_syllable_with_johab (PangoFont *font, PangoXSubfont subfont,
-			    gunichar2 *text, int length,
+			    gunichar *text, int length,
 			    PangoGlyphString *glyphs,
 			    int *n_glyphs, int cluster_offset)
 {
@@ -321,7 +321,7 @@ render_syllable_with_johab (PangoFont *font, PangoXSubfont subfont,
 
 static void
 render_syllable_with_ksx1005 (PangoFont *font, PangoXSubfont subfont,
-			       gunichar2 *text, int length,
+			       gunichar *text, int length,
 			       PangoGlyphString *glyphs,
 			       int *n_glyphs, int cluster_offset)
 {
@@ -396,7 +396,7 @@ render_syllable_with_ksx1005 (PangoFont *font, PangoXSubfont subfont,
 
 static void
 render_syllable_with_iso10646 (PangoFont *font, PangoXSubfont subfont,
-			       gunichar2 *text, int length,
+			       gunichar *text, int length,
 			       PangoGlyphString *glyphs,
 			       int *n_glyphs, int cluster_offset)
 {
@@ -449,7 +449,7 @@ render_syllable_with_iso10646 (PangoFont *font, PangoXSubfont subfont,
 }
 
 static int
-find_ksc5601 (gunichar2 ucs)
+find_ksc5601 (gunichar ucs)
 {
   int l = 0;
   int u = KSC5601_HANGUL - 1;
@@ -477,9 +477,9 @@ find_ksc5601 (gunichar2 ucs)
 }
 
 static gboolean
-try_decompose_jongseong(gunichar2 jong, gunichar2 *jong1, gunichar2 *jong2)
+try_decompose_jongseong(gunichar jong, gunichar *jong1, gunichar *jong2)
 {
-  static gunichar2 table[][2] = {
+  static gunichar table[][2] = {
     {0, 0},
     /* U+11A8- */
     {0, 0}, {0, 0}, {0x11A8, 0x11BA}, {0, 0},
@@ -523,13 +523,13 @@ try_decompose_jongseong(gunichar2 jong, gunichar2 *jong1, gunichar2 *jong2)
 
 static void
 render_syllable_with_ksc5601 (PangoFont *font, PangoXSubfont subfont,
-			      gunichar2 *text, int length,
+			      gunichar *text, int length,
 			      PangoGlyphString *glyphs,
 			      int *n_glyphs, int cluster_offset)
 {
   int n_prev_glyphs = *n_glyphs;
   int gindex = 0, composed = 0;
-  gunichar2 jong1, jong2 = 0;
+  gunichar jong1, jong2 = 0;
   int i;
 
   if (length >= 3 && IS_L_S(text[0]) && IS_V_S(text[1]) && IS_T_S(text[2]))
@@ -705,15 +705,14 @@ hangul_engine_shape (PangoFont        *font,
   PangoXSubfont subfont;
   RenderSyllableFunc render_func = NULL;
 
-  const char *ptr;
-  const char *next;
-  int i, n_chars;
-  gunichar2 jamos_static[4];
-  guint max_jamos = G_N_ELEMENTS (jamos_static);
-  gunichar2 *jamos = jamos_static;
-  int n_jamos = 0;
+  int n_chars, n_glyphs;
+  int i;
+  const char *p, *start;
 
-  int n_glyphs = 0, cluster_offset = 0;
+  gunichar jamos_static[8];
+  guint max_jamos = G_N_ELEMENTS (jamos_static);
+  gunichar *jamos = jamos_static;
+  int n_jamos = 0;
 
   g_return_if_fail (font != NULL);
   g_return_if_fail (text != NULL);
@@ -734,95 +733,62 @@ hangul_engine_shape (PangoFont        *font,
 	}
 
   n_chars = g_utf8_strlen (text, length);
-  ptr = text;
+  n_glyphs = 0;
+  start = p = text;
+  n_jamos = 0;
   
   for (i = 0; i < n_chars; i++)
     {
-      gunichar wc4;
-      gunichar2 wcs[4], wc;
-      int n_code = 0;
+      gunichar prev = jamos[n_jamos - 1];
+      gunichar wc;
 
-      wc4 = g_utf8_get_char (ptr);
-      next = g_utf8_next_char (ptr);
-      
-      if (wc4 >= SBASE && wc4 < (SBASE + SCOUNT))
+      wc = g_utf8_get_char (p);
+
+      /* Check syllable boundaries. */
+      if (n_jamos &&
+	  ((!IS_L (prev) && IS_S (wc)) ||
+	   (IS_T (prev) && IS_L (wc)) ||
+	   (IS_V (prev) && IS_L (wc)) ||
+	   (IS_T (prev) && IS_V (wc))))
 	{
-	  /* decompose the syllable.  */
-	  gint16 sindex;
+	  /* Draw a syllable. */
 
-	  sindex = wc4 - SBASE;
-	  wcs[n_code++] = LBASE + (sindex / NCOUNT);
-	  wcs[n_code++] = VBASE + ((sindex % NCOUNT) / TCOUNT);
-	  if (sindex % TCOUNT)
-	    wcs[n_code++] = TBASE + (sindex % TCOUNT);
-
-	  if (n_jamos > 0)
-	    {
-	      (*render_func) (font, subfont, jamos, n_jamos,
-			      glyphs, &n_glyphs, cluster_offset);
-	      cluster_offset = next - text;
-	      n_jamos = 0;
-	    }
-
-	  /* Draw a syllable.  */
-	  (*render_func) (font, subfont, wcs, n_code,
-			  glyphs, &n_glyphs, cluster_offset);
-	  cluster_offset = next - text;
-	  /* Clear.  */
+	  (*render_func) (font, subfont, jamos, n_jamos,
+			  glyphs, &n_glyphs, start - text);
+	  n_jamos = 0;
+	  start = p;
 	}
-      else if (wc4 >= 0x1100 && wc4 <= 0x11ff)
-	{
-	  wc = (gunichar2) wc4;
 
-	  if (n_jamos == 0)
+      if (n_jamos == max_jamos)
+	{
+	  max_jamos += 3;	/* at most 3 for each syllable code (L+V+T) */
+	  if (jamos == jamos_static)
 	    {
-	      jamos[n_jamos++] = wc;
+	      jamos = g_new (gunichar, max_jamos);
+	      memcpy (jamos, jamos_static, n_jamos*sizeof(gunichar));
 	    }
 	  else
-	    {
-	      /* Check syllable boundaries. */
-	      if ((IS_T (jamos[n_jamos - 1]) && IS_L (wc)) ||
-		  (IS_V (jamos[n_jamos - 1]) && IS_L (wc)) ||
-		  (IS_T (jamos[n_jamos - 1]) && IS_V (wc)))
-		{
-		  /* Draw a syllable.  */
-		  (*render_func) (font, subfont, jamos, n_jamos,
-				  glyphs, &n_glyphs, cluster_offset);
-		  cluster_offset = next - text;
-		  /* Clear.  */
-		  n_jamos = 0;
-		}
-	      if (n_jamos == max_jamos)
-		{
-		  max_jamos++;
-		  if (jamos == jamos_static)
-		    {
-		      jamos = g_new (gunichar2, max_jamos);
-		      memcpy(jamos, jamos_static, n_jamos*sizeof(gunichar2));
-		    }
-		  else
-		    jamos = g_renew (gunichar2, jamos, max_jamos);
-		}
-	      jamos[n_jamos++] = wc;
-	    }
-	}
-      else
-	{
-	  g_warning ("Character not handled by Hangul shaper: %#04x", wc4);
-	  continue;
+	    jamos = g_renew (gunichar, jamos, max_jamos);
 	}
 
-      ptr = next;
+      if (IS_S (wc))
+	{
+	  jamos[n_jamos++] = L_FROM_S (wc);
+	  jamos[n_jamos++] = V_FROM_S (wc);
+	  if (S_HAS_T (wc))
+	    jamos[n_jamos++] = T_FROM_S (wc);
+	}
+      else if (IS_M (wc) && !n_jamos)
+	;			/* ignore M's which do not follow syllables  */
+      else
+	jamos[n_jamos++] = wc;
+      p = g_utf8_next_char (p);
     }
 
   /* Draw the remaining Jamos.  */ 
-  if (n_jamos > 0)
-    {
-      (*render_func) (font, subfont, jamos, n_jamos,
-		      glyphs, &n_glyphs, cluster_offset);
-      cluster_offset = next - text;
-      n_jamos = 0;
-    }
+  if (n_jamos)
+    (*render_func) (font, subfont, jamos, n_jamos,
+		    glyphs, &n_glyphs, start - text);
 
   if (jamos != jamos_static)
     g_free (jamos);

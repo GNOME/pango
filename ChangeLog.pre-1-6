@@ -1,3 +1,9 @@
+2002-11-06  Changwoo Ryu  <cwryu@debian.org>
+
+	* modules/hangul/hangul-x.c (hangul_engine_shape): Applied some of
+	the hangul-xft changes into hangul-x; it takes precomposed
+	syllables as same as L+V or L+V+S jamo sequences.
+
 2002-11-04  Changwoo Ryu  <cwryu@debian.org>
 
 	* modules/hangul/hangul-defs.h (IS_S): Fixed wrong syllable
