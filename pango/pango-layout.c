@@ -722,10 +722,13 @@ pango_layout_set_text (PangoLayout *layout,
 		       const char  *text,
 		       int          length)
 {
-  const gchar *end;
+  const char *end;
+  char *old_text;
   
   g_return_if_fail (layout != NULL);
   g_return_if_fail (length == 0 || text != NULL);
+
+  old_text = layout->text;
 
   if (length != 0)
     {
@@ -735,9 +738,6 @@ pango_layout_set_text (PangoLayout *layout,
       length = end - text;
     }
   
-  if (layout->text)
-    g_free (layout->text);
-
   /* NULL-terminate the text for convenience.
    */
   layout->text = g_malloc (length + 1);
@@ -748,6 +748,9 @@ pango_layout_set_text (PangoLayout *layout,
   layout->length = length;
 
   pango_layout_clear_lines (layout);
+  
+  if (old_text)
+    g_free (old_text);
 }
 
 /**
