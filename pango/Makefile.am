@@ -8,12 +8,7 @@ if HAVE_FREETYPE
 OPENTYPE_SUBDIR=opentype
 endif
 
-if HAVE_FRIBIDI
-else
-FRIBIDI_SUBDIR = mini-fribidi
-endif
-
-SUBDIRS = $(OPENTYPE_SUBDIR) $(FRIBIDI_SUBDIR)
+SUBDIRS = $(OPENTYPE_SUBDIR) mini-fribidi
 
 DIST_SUBDIRS = mini-fribidi opentype
 
@@ -158,11 +153,7 @@ libpango_1_0_la_LDFLAGS =			\
 	$(GLIB_LIBS)				\
 	$(no_undefined) $(pango_export_symbols)
 
-if HAVE_FRIBIDI
-libpango_1_0_la_LIBADD = $(pango_win32res)
-else
 libpango_1_0_la_LIBADD = mini-fribidi/libmini-fribidi.la $(pango_win32res)
-endif
 libpango_1_0_la_DEPENDENCIES = $(pango_win32res)
 
 libpangox_1_0_la_LDFLAGS = -version-info $(LT_VERSION_INFO)
@@ -281,10 +272,10 @@ pango_querymodules_SOURCES = \
 	querymodules.c
 
 if HAVE_XFT
-pango_querymodules_LDADD = $(FT2_BUILD_LIBS) $(X_BUILD_LIBS) libpangoxft-$(PANGO_API_VERSION).la $(GLIB_LIBS) $(FRIBIDI_LIBS) $(XFT_LIBS) $(FREETYPE_LIBS)
+pango_querymodules_LDADD = $(FT2_BUILD_LIBS) $(X_BUILD_LIBS) libpangoxft-$(PANGO_API_VERSION).la $(GLIB_LIBS) $(XFT_LIBS) $(FREETYPE_LIBS)
 pango_querymodules_DEPENDENCIES = $(FT2_BUILD_LIBS) $(X_BUILD_LIBS) libpangoxft-$(PANGO_API_VERSION).la libpango-$(PANGO_API_VERSION).la
 else
-pango_querymodules_LDADD = $(FT2_BUILD_LIBS) $(X_BUILD_LIBS) $(WIN32_BUILD_LIBS) $(GLIB_LIBS) $(FRIBIDI_LIBS) $(X_LIBS) $(FREETYPE_LIBS) $(X_EXTRA_LIBS)
+pango_querymodules_LDADD = $(FT2_BUILD_LIBS) $(X_BUILD_LIBS) $(WIN32_BUILD_LIBS) $(GLIB_LIBS) $(X_LIBS) $(FREETYPE_LIBS) $(X_EXTRA_LIBS)
 pango_querymodules_DEPENDENCIES = $(FT2_BUILD_LIBS) $(X_BUILD_LIBS) $(WIN32_BUILD_LIBS) libpango-$(PANGO_API_VERSION).la
 endif
 
