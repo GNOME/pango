@@ -7,9 +7,10 @@ DEVZIP=/tmp/pango-dev-@PANGO_VERSION@-`date +%Y%m%d`.zip
 cd @prefix@
 
 rm $ZIP
-zip -r $ZIP -@ <<EOF
+zip $ZIP -@ <<EOF
 bin/pango-querymodules.exe
-etc/pango
+etc/pango/pango.aliases
+etc/pango/pango.modules
 lib/libpango-@PANGO_API_VERSION@-@LT_CURRENT_MINUS_AGE@.dll
 lib/libpangoft2-@PANGO_API_VERSION@-@LT_CURRENT_MINUS_AGE@.dll
 lib/libpangowin32-@PANGO_API_VERSION@-@LT_CURRENT_MINUS_AGE@.dll
