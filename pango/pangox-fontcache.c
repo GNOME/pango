@@ -211,8 +211,10 @@ pango_x_font_cache_load (PangoXFontCache *cache,
 	}
       else
 	cache->mru_count++;
-      
+
       cache->mru = g_list_prepend (cache->mru, entry);
+      if (!cache->mru_tail)
+	cache->mru_tail = cache->mru;
       entry->mru = cache->mru;
     }
 

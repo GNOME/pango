@@ -293,7 +293,7 @@ ViewerView::updateHighlightChar ()
 	    {
 	      QRect bounds = para->charBounds (highlight_index_);
 	      bounds.moveBy (0, y);
-	      updateContents (bounds);
+	      updateContents (bounds.x(), bounds.y(), bounds.width(), bounds.height());
 	      
 	      break;
 	    }

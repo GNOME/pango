@@ -1470,11 +1470,19 @@ shape_tab (PangoLayoutLine  *line,
     }
 }
 
-static gboolean
+typedef enum 
+{
+  BREAK_NONE_FIT,
+  BREAK_SOME_FIT,
+  BREAK_ALL_FIT,
+} BreakResult;
+
+static BreakResult
 process_item (PangoLayoutLine *line,
 	      PangoItem       *item,
 	      const char      *text,
 	      PangoLogAttr    *log_attrs,
+	      gboolean         no_break_at_start,
 	      gboolean         no_break_at_end,
 	      int             *remaining_width)
 {
@@ -1483,18 +1491,15 @@ process_item (PangoLayoutLine *line,
   int length;
   int i;
 
-  if (*remaining_width == 0)
-    return FALSE;
-  
   if (text[item->offset] == '\t')
     shape_tab (line, glyphs);
   else
     pango_shape (text + item->offset, item->length, &item->analysis, glyphs);
 
-  if (*remaining_width < 0)
+  if (*remaining_width < 0)	/* Wrapping off */
     {
       insert_run (line, item, glyphs);
-      return TRUE;
+      return BREAK_ALL_FIT;
     }
 
   width =0;
@@ -1506,7 +1511,7 @@ process_item (PangoLayoutLine *line,
       *remaining_width -= width;
       insert_run (line, item, glyphs);
 
-      return TRUE;
+      return BREAK_ALL_FIT;
     }
   else
     {
@@ -1544,21 +1549,21 @@ process_item (PangoLayoutLine *line,
 	  *remaining_width -= width;
 	  insert_run (line, new_item, glyphs);
 
-	  return FALSE;
+	  return BREAK_SOME_FIT;
 	}
       else
 	{
-	  if (!line->runs)	/* Only item, insert it anyways */
+	  if (no_break_at_start) /* We must insert something */
 	    {
 	      *remaining_width = 0;
 	      insert_run (line, item, glyphs);
 	      
-	      return TRUE;
+	      return BREAK_ALL_FIT;
 	    }
 	  else
 	    {
 	      pango_glyph_string_free (glyphs);
-	      return FALSE;
+	      return BREAK_NONE_FIT;
 	    }
 	}
     }
@@ -1670,15 +1675,17 @@ pango_layout_check_lines (PangoLayout *layout)
       while (tmp_list)
 	{
 	  PangoItem *item = tmp_list->data;
-	  gboolean fits;
+	  BreakResult result;
  	  int old_num_chars = item->num_chars;
 
-	  fits = process_item (line, item, start,
-			       layout->log_attrs + start_offset, current_cant_end,
-			       &remaining_width);
+	  result = process_item (line, item, start,
+				 layout->log_attrs + start_offset,
+				 (line->runs == NULL) || last_cant_end,
+				 current_cant_end,
+				 &remaining_width);
 	  current_cant_end = FALSE;
 	  
-	  if (fits)
+	  if (result == BREAK_ALL_FIT)
 	    {
 	      tmp_list = tmp_list->next;
 	      start_offset += old_num_chars;
@@ -1705,7 +1712,7 @@ pango_layout_check_lines (PangoLayout *layout)
 	       * we need to back up and break the last item.
 	       */
 
-	      if (last_cant_end && old_num_chars - item->num_chars == 0)
+	      if (last_cant_end && result == BREAK_NONE_FIT)
 		{
 		  GSList *tmp_node;
 		  

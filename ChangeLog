@@ -1,3 +1,16 @@
+Mon May 29 11:14:34 2000  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pangox-fontcache.c (pango_x_font_cache_load): Fix bug
+	in MRU list code.
+
+	* pango/pango-layout.c (pango_layout_check_lines): Fix infinite
+	loop in the case where the first item doesn't fit, but
+	whitespace follows that must go onto the same line.
+
+	* examples/viewer-qt.h: Minor changes so it compiles with
+	qt-2.0. (Though the utf8 codec in qt-2.0 seems to be slightly
+	buggy.)
+	
 Sun May 28 16:24:43 2000  Owen Taylor  <otaylor@redhat.com>
 
         * examples/Makefile.am examples/viewer-qt.cc 
