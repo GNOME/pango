@@ -1,3 +1,7 @@
+Wed Jan 21 00:50:56 2004  Matthias Clasen  <maclas@gmx.de>
+
+	* NEWS: Updates for 1.3.2.
+
 2004-01-06  Roozbeh Pournader  <roozbeh@sharif.edu>
 
 	* modules/arabic/arabic-ot.c: Corrected a mistake between ZWJ and
