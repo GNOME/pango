@@ -1,3 +1,10 @@
+2001-10-30  Sven Neumann  <sven@gimp.org>
+
+	* tests/Makefile.am: don't link against pangox at all. 
+
+	Please keep in mind that building on UNIX does not necessarily mean 
+	that X11 is available.
+
 Mon Oct 29 11:54:06 2001  Owen Taylor  <otaylor@redhat.com>
 
 	* pangox.pc.in (Cflags): Add @X_CFLAGS@ (#63095, Dan Winship)
