@@ -1274,7 +1274,7 @@ pango_layout_get_cursor_pos (PangoLayout    *layout,
  * @logical_rect: rectangle used to store the logical extents of the glyph string
  *            or %NULL to indicate that the result is not needed.
  * 
- * Compute the logical and ink extents of a layout line. See the documentation
+ * Compute the logical and ink extents of a layout. See the documentation
  * for pango_font_get_glyph_extents() for details about the interpretation
  * of the rectangles.
  */
@@ -1368,6 +1368,99 @@ pango_layout_get_extents (PangoLayout    *layout,
       y_offset += line_logical.height;
       line_list = line_list->next;
     }
+}
+
+/**
+ * pango_layout_get_pixel_extents:
+ * @layout:   a #PangoLayout
+ * @ink_rect: rectangle used to store the extents of the glyph string as drawn
+ *            or %NULL to indicate that the result is not needed.
+ * @logical_rect: rectangle used to store the logical extents of the glyph string
+ *            or %NULL to indicate that the result is not needed.
+ * 
+ * Compute the logical and ink extents of a layout. See the documentation
+ * for pango_font_get_glyph_extents() for details about the interpretation
+ * of the rectangles. The returned rectangles are in device units, as
+ * opposed to pango_layout_get_extents(), which returns the extents in
+ * units of device unit / PANGO_SCALE.
+ **/
+void
+pango_layout_get_pixel_extents (PangoLayout *layout,
+				PangoRectangle *ink_rect,
+				PangoRectangle *logical_rect)
+{
+  g_return_if_fail (PANGO_IS_LAYOUT (layout));
+
+  pango_layout_get_extents (layout, ink_rect, logical_rect);
+
+  if (ink_rect)
+    {
+      ink_rect->width = (ink_rect->width + PANGO_SCALE / 2) / PANGO_SCALE;
+      ink_rect->height = (ink_rect->height + PANGO_SCALE / 2) / PANGO_SCALE;
+
+      ink_rect->x = PANGO_PIXELS (ink_rect->x);
+      ink_rect->y = PANGO_PIXELS (ink_rect->y);
+    }
+
+  if (logical_rect)
+    {
+      logical_rect->width = (logical_rect->width + PANGO_SCALE / 2) / PANGO_SCALE;
+      logical_rect->height = (logical_rect->height + PANGO_SCALE / 2) / PANGO_SCALE;
+
+      logical_rect->x = PANGO_PIXELS (logical_rect->x);
+      logical_rect->y = PANGO_PIXELS (logical_rect->y);
+    }
+}
+
+/**
+ * pango_layout_get_size:
+ * @layout: a #PangoLayout
+ * @width: location to store the logical width, or %NULL
+ * @height: location to store the logical height, or %NULL
+ * 
+ * Determine the logical width and height of a #PangoLayout
+ * in Pango units. (device units divided by PANGO_SCALE). This
+ * is simply a convenience function around pango_layout_get_extents.
+ **/
+void
+pango_layout_get_size (PangoLayout *layout,
+		       int         *width,
+		       int         *height)
+{
+  PangoRectangle logical_rect;
+
+  pango_layout_get_extents (layout, NULL, &logical_rect);
+
+  if (width)
+    *width = logical_rect.width;
+  if (height)
+    *height = logical_rect.height;
+}
+
+/**
+ * pango_layout_get_pixel_size:
+ * @layout: a #PangoLayout
+ * @width: location to store the logical width, or %NULL
+ * @height: location to store the logical height, or %NULL
+ * 
+ * Determine the logical width and height of a #PangoLayout
+ * in device units. (pango_layout_get_size() returns the width
+ * and height in thousandths of a device unit.) This
+ * is simply a convenience function around pango_layout_get_extents.
+ **/
+void
+pango_layout_get_pixel_size (PangoLayout *layout,
+			     int         *width,
+			     int         *height)
+{
+  PangoRectangle logical_rect;
+
+  pango_layout_get_extents (layout, NULL, &logical_rect);
+
+  if (width)
+    *width = (logical_rect.width + PANGO_SCALE / 2) / PANGO_SCALE;
+  if (height)
+    *height = (logical_rect.height + PANGO_SCALE / 2) / PANGO_SCALE;
 }
 
 static void
@@ -2337,6 +2430,47 @@ pango_layout_line_new (PangoLayout *layout)
   return (PangoLayoutLine *) private;
 }
 
+/**
+ * pango_layout_line_get_pixel_extents:
+ * @layout:   a #PangoLayout
+ * @ink_rect: rectangle used to store the extents of the glyph string as drawn
+ *            or %NULL to indicate that the result is not needed.
+ * @logical_rect: rectangle used to store the logical extents of the glyph string
+ *            or %NULL to indicate that the result is not needed.
+ * 
+ * Compute the logical and ink extents of a layout line. See the documentation
+ * for pango_font_get_glyph_extents() for details about the interpretation
+ * of the rectangles. The returned rectangles are in device units, as
+ * opposed to pango_layout_line_get_extents(), which returns the extents in
+ * units of device unit / PANGO_SCALE.
+ **/
+void
+pango_layout_line_get_pixel_extents (PangoLayoutLine *layout_line,
+				     PangoRectangle  *ink_rect,
+				     PangoRectangle  *logical_rect)
+{
+  g_return_if_fail (LINE_IS_VALID (layout_line));
+
+  pango_layout_line_get_extents (layout_line, ink_rect, logical_rect);
+
+  if (ink_rect)
+    {
+      ink_rect->width = (ink_rect->width + PANGO_SCALE / 2) / PANGO_SCALE;
+      ink_rect->height = (ink_rect->height + PANGO_SCALE / 2) / PANGO_SCALE;
+
+      ink_rect->x = PANGO_PIXELS (ink_rect->x);
+      ink_rect->y = PANGO_PIXELS (ink_rect->y);
+    }
+
+  if (logical_rect)
+    {
+      logical_rect->width = (logical_rect->width + PANGO_SCALE / 2) / PANGO_SCALE;
+      logical_rect->height = (logical_rect->height + PANGO_SCALE / 2) / PANGO_SCALE;
+
+      logical_rect->x = PANGO_PIXELS (logical_rect->x);
+      logical_rect->y = PANGO_PIXELS (logical_rect->y);
+    }
+}
 
 /*
  * NB: This implement the exact same algorithm as

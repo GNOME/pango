@@ -1,3 +1,12 @@
+Sun Jul  2 17:19:11 2000  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-types.h: Add a PANGO_PIXELS macro to convert
+	from pango units to device units and round.
+
+	* pango/pango-layout.[ch]: Add convenience functions
+	pango_layout_get_pixel_extents, pango_layout_get_size,
+	pango_layout_get_pixel_size pango_layout_line_get_pixel_extents.
+
 Fri Jun 30 16:46:31 2000  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pango-utils.[ch] Makefile.am: A bunch of simple functions

@@ -49,6 +49,9 @@ struct _PangoRectangle
 };
 
 #define PANGO_SCALE 1024
+#define PANGO_PIXELS(d) (((d) >= 0) ?                             \
+                         ((d) + PANGO_SCALE / 2) / PANGO_SCALE :  \
+                         ((d) - PANGO_SCALE / 2) / PANGO_SCALE)
 
 /* Macros to translate from extents rectangles to ascent/descent/lbearing/rbearing
  */

@@ -120,6 +120,15 @@ gboolean pango_layout_xy_to_index          (PangoLayout    *layout,
 void     pango_layout_get_extents          (PangoLayout    *layout,
 					    PangoRectangle *ink_rect,
 					    PangoRectangle *logical_rect);
+void     pango_layout_get_pixel_extents    (PangoLayout    *layout,
+					    PangoRectangle *ink_rect,
+					    PangoRectangle *logical_rect);
+void     pango_layout_get_size             (PangoLayout    *layout,
+					    int            *width,
+					    int            *height);
+void     pango_layout_get_pixel_size       (PangoLayout    *layout,
+					    int            *width,
+					    int            *height);
 
 int              pango_layout_get_line_count       (PangoLayout    *layout);
 PangoLayoutLine *pango_layout_get_line             (PangoLayout    *layout,
@@ -144,6 +153,9 @@ void     pango_layout_line_get_x_ranges (PangoLayoutLine  *line,
 void     pango_layout_line_get_extents  (PangoLayoutLine  *line,
 					 PangoRectangle   *ink_rect,
 					 PangoRectangle   *logical_rect);
+void     pango_layout_line_get_pixel_extents (PangoLayoutLine *layout_line,
+					      PangoRectangle  *ink_rect,
+					      PangoRectangle  *logical_rect);
 
 #ifdef __cplusplus
 }
