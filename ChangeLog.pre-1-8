@@ -1,3 +1,8 @@
+Mon Dec 11 15:20:24 2000  Owen Taylor  <otaylor@redhat.com>
+
+	* examples/HELLO.utf8: Add a tab into to Yiddish line
+	to force correct segmentation around the parentheses.
+
 2000-11-30  Havoc Pennington  <hp@pobox.com>
 
 	* modules/thai/thai.c: delete lang engine
