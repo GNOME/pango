@@ -533,7 +533,7 @@ basic_engine_shape (PangoFont        *font,
       const char *input;
 
       wc = g_utf8_get_char (p);
-
+      
       input = p;
       if (analysis->level % 2)
 	if (pango_get_mirror_char (wc, &mirrored_ch))
@@ -544,6 +544,14 @@ basic_engine_shape (PangoFont        *font,
 	    input = buf;
 	  }
 
+      if (wc == 0xa0)	/* non-break-space */
+	{
+	  wc = 0x20;
+	  
+	  g_unichar_to_utf8 (wc, buf);
+	  input = buf;
+	}
+		
       if (ZERO_WIDTH_CHAR (wc))
 	{
 	  set_glyph (font, glyphs, i, p - text, 0);

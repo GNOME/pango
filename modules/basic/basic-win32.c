@@ -140,6 +140,9 @@ basic_engine_shape (PangoFont        *font,
 	if (pango_get_mirror_char (wc, &mirrored_ch))
 	  wc = mirrored_ch;
 
+      if (wc == 0xa0)	/* non-break-space */
+	wc = 0x20;
+		
       if (wc == 0x200B || wc == 0x200E || wc == 0x200F)	/* Zero-width characters */
 	{
 	  set_glyph (font, glyphs, i, p - text, 0);

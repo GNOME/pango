@@ -1,3 +1,11 @@
+Mon Mar 25 15:46:54 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* modules/basic/basic-*.c: Convert U+00A0 (NON BREAK SPACE)
+	to U+0020 (SPACE)
+
+	* modules/basic/basic-xft.c (basic_engine_shape): Remove
+	some dead code.
+
 Mon Mar 25 15:31:17 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pangowin32.c (pango_win32_font_get_metrics): Set
