@@ -1,3 +1,10 @@
+Thu Jan 30 16:41:46 2003  Owen Taylor  <otaylor@redhat.com>
+
+        * Makefile.am (EXTRA_DIST): Remove spec.spec.in from
+        EXTRA_DIST, and from dist rules. (#102231)
+
+	* configure.in: Don't generate pango.spec.
+
 Tue Jan 28 18:20:45 2003  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pango-coverage.c (pango_coverage_set/get): Fix 
