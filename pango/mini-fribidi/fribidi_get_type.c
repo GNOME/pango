@@ -40,7 +40,7 @@ _pango_fribidi_get_type(FriBidiChar uch)
 {
   FriBidiPropCharType *block;
   int i = uch % 256, j = uch / 256;
-  if (j > 256)
+  if (j >= 256)
     return FRIBIDI_TYPE_LTR;
   
   block = FriBidiPropertyBlocks[j];
