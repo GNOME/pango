@@ -203,6 +203,8 @@ pango_glyph_item_apply_attrs (PangoGlyphItem   *glyph_item,
 
   if (ltr)
     result = g_slist_reverse (result);
+
+  pango_attr_iterator_destroy (iter);
   
   return result;
 }

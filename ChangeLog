@@ -1,3 +1,8 @@
+Sun Dec  8 15:22:10 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-glyph-item.c (pango_glyph_item_apply_attrs): 
+	Free the iter. (Fix from Kjartan Maraas, #100672)
+
 2002-12-08  Matthias Clasen  <maclas@gmx.de>
 
 	* docs/tmpl/pango-indic.sgml: Document PangoIndicScript.
