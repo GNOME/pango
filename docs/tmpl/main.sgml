@@ -23,8 +23,8 @@ The #PangoContext structure stores global information
 used to control the itemization process. It contains
 the following fields:
 
-<informaltable pgwide=1 frame="none" role="struct">
-<tgroup cols="2"><colspec colwidth="2*"><colspec colwidth="8*">
+<informaltable pgwide="1" frame="none" role="struct">
+<tgroup cols="2"><colspec colwidth="2*"/><colspec colwidth="8*"/>
 <tbody>
 
 <row>
@@ -49,8 +49,8 @@ the following fields:
 The #PangoItem structure stores information about
 a segment of text. It contains the following fields:
 
-<informaltable pgwide=1 frame="none" role="struct">
-<tgroup cols="2"><colspec colwidth="2*"><colspec colwidth="8*">
+<informaltable pgwide="1" frame="none" role="struct">
+<tgroup cols="2"><colspec colwidth="2*"/><colspec colwidth="8*"/>
 <tbody>
 
 <row>
@@ -88,8 +88,8 @@ The #PangoAnalysis structure stores information about
 the properties of a segment of text. It has the following
 fields:
 
-<informaltable pgwide=1 frame="none" role="struct">
-<tgroup cols="2"><colspec colwidth="2*"><colspec colwidth="8*">
+<informaltable pgwide="1" frame="none" role="struct">
+<tgroup cols="2"><colspec colwidth="2*"/><colspec colwidth="8*"/>
 <tbody>
 
 <row>

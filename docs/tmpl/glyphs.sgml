@@ -103,8 +103,8 @@ horizontal origin.
 The #PangoGlyph structure represents a single glyph in the output
 form of a string. It contains the following fields.
 
-<informaltable pgwide=1 frame="none" role="struct">
-<tgroup cols="2"><colspec colwidth="2*"><colspec colwidth="8*">
+<informaltable pgwide="1" frame="none" role="struct">
+<tgroup cols="2"><colspec colwidth="2*"/><colspec colwidth="8*"/>
 <tbody>
 
 <row>
@@ -139,8 +139,8 @@ The #PangoGlyphGeometry structure contains width and positioning
 information for a single glyph. Distances are in
 1/64ths of a point.
 
-<informaltable pgwide=1 frame="none" role="struct">
-<tgroup cols="2"><colspec colwidth="2*"><colspec colwidth="8*">
+<informaltable pgwide="1" frame="none" role="struct">
+<tgroup cols="2"><colspec colwidth="2*"/><colspec colwidth="8*"/>
 <tbody>
 
 <row>
@@ -178,8 +178,8 @@ The PangoGlyphVisAttr is used to communicate information between
 the shaping phase and the rendering phase. It's contents
 are still evolving.
 
-<informaltable pgwide=1 frame="none" role="struct">
-<tgroup cols="2"><colspec colwidth="2*"><colspec colwidth="8*">
+<informaltable pgwide="1" frame="none" role="struct">
+<tgroup cols="2"><colspec colwidth="2*"/><colspec colwidth="8*"/>
 <tbody>
 
 <row>
@@ -208,8 +208,8 @@ by the structure which simplifies memory management.
 #PangoGlyphString contains the following publically
 accessible fields
 
-<informaltable pgwide=1 frame="none" role="struct">
-<tgroup cols="2"><colspec colwidth="2*"><colspec colwidth="8*">
+<informaltable pgwide="1" frame="none" role="struct">
+<tgroup cols="2"><colspec colwidth="2*"/><colspec colwidth="8*"/>
 <tbody>
 
 <row>

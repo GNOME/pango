@@ -1,21 +1,26 @@
-<!doctype book PUBLIC "-//OASIS//DTD DocBook V3.1//EN" [
-<!entity pango-Text-Processing SYSTEM "sgml/main.sgml">
-<!entity pango-Glyph-Storage SYSTEM "sgml/glyphs.sgml">
-<!entity pango-Coverage-Maps SYSTEM "sgml/coverage-maps.sgml">
-<!entity pango-Fonts SYSTEM "sgml/fonts.sgml">
-<!entity pango-Text-Attributes SYSTEM "sgml/text-attributes.sgml">
-<!entity pango-Tab-Stops SYSTEM "sgml/tab-stops.sgml">
-<!entity pango-Layout-Objects SYSTEM "sgml/layout.sgml">
-<!entity pango-Engines SYSTEM "sgml/engines.sgml">
-<!entity pango-Indic-Engine-Support SYSTEM "sgml/pango-indic.sgml">
-<!entity pango-Modules SYSTEM "sgml/modules.sgml">
-<!entity pango-X-Rendering SYSTEM "sgml/x-rendering.sgml">
-<!entity pango-X-Fonts SYSTEM "sgml/x-fonts.sgml">
-<!entity pango-Win32-Fonts-and-Rendering SYSTEM "sgml/win32-fonts.sgml">
-<!entity pango-FreeType-Fonts-and-Rendering SYSTEM "sgml/freetype-fonts.sgml">
-<!entity pango-Xft-Fonts-and-Rendering SYSTEM "sgml/xft-fonts.sgml">
-<!entity pango-OpenType-Font-Handling SYSTEM "sgml/opentype.sgml">
-<!entity markup-format SYSTEM "pango_markup.sgml">
+<?xml version="1.0"?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN" 
+               "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd" [
+<!ENTITY hash "#">
+<!ENTITY nbsp "&#x00a0;">
+<!ENTITY mdash "&#8212;">
+<!ENTITY pango-Text-Processing SYSTEM "xml/main.xml">
+<!ENTITY pango-Glyph-Storage SYSTEM "xml/glyphs.xml">
+<!ENTITY pango-Coverage-Maps SYSTEM "xml/coverage-maps.xml">
+<!ENTITY pango-Fonts SYSTEM "xml/fonts.xml">
+<!ENTITY pango-Text-Attributes SYSTEM "xml/text-attributes.xml">
+<!ENTITY pango-Tab-Stops SYSTEM "xml/tab-stops.xml">
+<!ENTITY pango-Layout-Objects SYSTEM "xml/layout.xml">
+<!ENTITY pango-Engines SYSTEM "xml/engines.xml">
+<!ENTITY pango-Indic-Engine-Support SYSTEM "xml/pango-indic.xml">
+<!ENTITY pango-Modules SYSTEM "xml/modules.xml">
+<!ENTITY pango-X-Rendering SYSTEM "xml/x-rendering.xml">
+<!ENTITY pango-X-Fonts SYSTEM "xml/x-fonts.xml">
+<!ENTITY pango-Win32-Fonts-and-Rendering SYSTEM "xml/win32-fonts.xml">
+<!ENTITY pango-FreeType-Fonts-and-Rendering SYSTEM "xml/freetype-fonts.xml">
+<!ENTITY pango-Xft-Fonts-and-Rendering SYSTEM "xml/xft-fonts.xml">
+<!ENTITY pango-OpenType-Font-Handling SYSTEM "xml/opentype.xml">
+<!ENTITY markup-format SYSTEM "pango_markup.sgml">
 ]>
 <book id="index">
   <bookinfo>

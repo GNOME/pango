@@ -1,3 +1,12 @@
+2002-05-28  Matthias Clasen  <maclas@gmx.de>
+
+	* docs/*: Produce XML, not SGML.
+
+	* pango/fonts.c (pango_font_family_list_faces): Docs typo fix.
+
+	* pango/pango-color.c (pango_color_parse): Fix markup to reduce
+	spurious <link>s.
+
 2002-05-26  Tor Lillqvist  <tml@iki.fi>
 
 	* pango-zip.sh.in: Use complete PANGO_VERSION in zip file

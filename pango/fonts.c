@@ -835,7 +835,7 @@ pango_font_description_from_string (const char *str)
 	{
 	  desc->size = (int)(size * PANGO_SCALE + 0.5);
 	  desc->mask |= PANGO_FONT_MASK_SIZE;
-	  last = p;
+	  last = p;	  
 	}
     }
 
@@ -1322,7 +1322,7 @@ pango_font_family_get_name (PangoFontFamily  *family)
 
 /**
  * pango_font_family_list_faces:
- * @family: a #PangFontFamily
+ * @family: a #PangoFontFamily
  * @faces: location to store an array of pointers to #PangoFontFace
  *   objects, or %NULL. This array should be freed with g_free()
  *   when it is no longer needed.

@@ -921,13 +921,13 @@ find_color(const char *name,
  * 
  * Fill in the fields of a color from a string specification. The
  * string can either one of a large set of standard names. (Taken
- * from the X11 rgb.txt file), or it can be a hex value in the
- * form '#rgb' '#rrggbb' '#rrrgggbbb' or '#rrrrggggbbbb' where
+ * from the X11 <filename>rgb.txt</filename> file), or it can be a hex value in the
+ * form '&hash;rgb' '&hash;rrggbb' '&hash;rrrgggbbb' or '&hash;rrrrggggbbbb' where
  * 'r', 'g' and 'b' are hex digits of the red, green, and blue
  * components of the color, respectively. (White in the four
- * forms is '#fff' '#ffffff' '#fffffffff' and '#ffffffffffff')
+ * forms is '&hash;fff' '&hash;ffffff' '&hash;fffffffff' and '&hash;ffffffffffff')
  *
- * Return value: TRUE if parsing of the specifier succeeded,
+ * Return value: %TRUE if parsing of the specifier succeeded,
  *   otherwise false.
  **/
 gboolean

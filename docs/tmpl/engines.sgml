@@ -32,8 +32,8 @@ function is used when building a catalog of all available modules.
 The #PangoEngineInfo structure contains information about a particular
 engine. It contains the following fields:
 
-<informaltable pgwide=1 frame="none" role="struct">
-<tgroup cols="2"><colspec colwidth="2*"><colspec colwidth="8*">
+<informaltable pgwide="1" frame="none" role="struct">
+<tgroup cols="2"><colspec colwidth="2*"/><colspec colwidth="8*"/>
 <tbody>
 
 <row>
@@ -78,8 +78,8 @@ The PangoEngineRange structure contains
 information about a range of Unicode code
 points. It contains the following fields:
 
-<informaltable pgwide=1 frame="none" role="struct">
-<tgroup cols="2"><colspec colwidth="2*"><colspec colwidth="8*">
+<informaltable pgwide="1" frame="none" role="struct">
+<tgroup cols="2"><colspec colwidth="2*"/><colspec colwidth="8*"/>
 <tbody>
 
 <row>
@@ -118,8 +118,8 @@ The #PangoEngine structure contains basic
 information common to all script engines. It
 contains the following fields:
 
-<informaltable pgwide=1 frame="none" role="struct">
-<tgroup cols="2"><colspec colwidth="2*"><colspec colwidth="8*">
+<informaltable pgwide="1" frame="none" role="struct">
+<tgroup cols="2"><colspec colwidth="2*"/><colspec colwidth="8*"/>
 <tbody>
 
 <row>
@@ -154,8 +154,8 @@ basic #PangoEngine structure to engines that
 deal with the rendering-system independent part
 of of the rendering pipeline. It contains the following fields:
 
-<informaltable pgwide=1 frame="none" role="struct">
-<tgroup cols="2"><colspec colwidth="2*"><colspec colwidth="8*">
+<informaltable pgwide="1" frame="none" role="struct">
+<tgroup cols="2"><colspec colwidth="2*"/><colspec colwidth="8*"/>
 <tbody>
 
 <row>
@@ -182,8 +182,8 @@ basic #PangoEngine structure to engines that
 deal with the rendering-system dependent part
 of of the rendering pipeline. It contains the following fields:
 
-<informaltable pgwide=1 frame="none" role="struct">
-<tgroup cols="2"><colspec colwidth="2*"><colspec colwidth="8*">
+<informaltable pgwide="1" frame="none" role="struct">
+<tgroup cols="2"><colspec colwidth="2*"/><colspec colwidth="8*"/>
 <tbody>
 
 <row>
