@@ -1,3 +1,11 @@
+Tue Apr 15 06:03:39 2003  Owen Taylor  <otaylor@redhat.com>
+ 
+ 	* pango/opentype/ftxgpos.c: Fix confusion between
+ 	boolean and FT_Error return. (#108358, Noah Levitt)
+ 
+ 	* pango/opentype/ftxopen.c (Get_Class1): index is
+	allowed to be NULL. (#108358, Noah Levitt)
+ 
 Tue Apr 15 05:34:05 2003  Owen Taylor  <otaylor@redhat.com>
  
  	* pango/fonts.c (pango_font_description_set_family):
