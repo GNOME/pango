@@ -9,7 +9,7 @@ Structures representing abstract fonts.
 Pango supports a flexible architecture where a
 particular rendering architecture can supply an
 implementation of fonts. The #PangoFont structure
-representn an abstract rendering-system-indepent font.
+represents an abstract rendering-system-indepent font.
 Pango provides routines to list available fonts, and
 to load a font of a given description.
 </para>
@@ -193,7 +193,7 @@ which the implementation fills in:
 <!-- ##### STRUCT PangoFontClass ##### -->
 <para>
 The #PangoFontClass structure contains the virtual
-functions for an implementation of a a PangoFont.
+functions for an implementation of a PangoFont.
 
 It contains the following members:
 
@@ -233,6 +233,7 @@ a font. It contains the following members:
          as @ascent + @descent. Individual characters may have
          extents exceeding this value.
 @descent: the logical extent of the font beneath the baseline.
+         The spacing between lines of text should be calculated
          as @ascent + @descent. Individual characters may have
          extents exceeding this value.
 @approximate_char_width: 

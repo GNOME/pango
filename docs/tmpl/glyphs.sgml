@@ -73,7 +73,7 @@ glyph descends below the baseline.
 <!-- ##### MACRO PANGO_LBEARING ##### -->
 <para>
 Extracts the <firstterm>left bearing</firstterm> from a #PangoRectangle
-representing glyph extents. The descent is the distance from the
+representing glyph extents. The left bearing is the distance from the
 horizontal origin to the farthest left point of the character.
 This is positive for characters drawn completely to the right of the
 glyph origin.
@@ -84,9 +84,9 @@ glyph origin.
 
 <!-- ##### MACRO PANGO_RBEARING ##### -->
 <para>
-Extracts the <firstterm>left bearing</firstterm> from a #PangoRectangle
-representing glyph extents. The descent is the distance from the
-horizontal origin to the farthest left point of the character.
+Extracts the <firstterm>right bearing</firstterm> from a #PangoRectangle
+representing glyph extents. The right bearing is the distance from the
+horizontal origin to the farthest right point of the character.
 This is positive except for characters drawn completely to the left of the
 horizontal origin.
 </para>

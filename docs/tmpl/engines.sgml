@@ -98,9 +98,9 @@ points. It contains the following fields:
        engine handles for this range. This may be empty, 
        in which case the engine is saying that it is a
        fallback choice for all languages for this range,
-       but should not be used if another engine provides
+       but should not be used if another engine 
        indicates that it is specific for the language for
-       a given code point. A  entry in this list of "*"
+       a given code point. An entry in this list of "*"
        indicates that this engine is specific to all
        languages for this range.</entry>
 </row>
@@ -149,7 +149,7 @@ contains the following fields:
 
 <!-- ##### STRUCT PangoEngineLang ##### -->
 <para>
-The #PangoEngineLang structure extents the
+The #PangoEngineLang structure extends the
 basic #PangoEngine structure to engines that
 deal with the rendering-system independent part
 of of the rendering pipeline. It contains the following fields:
@@ -177,7 +177,7 @@ of of the rendering pipeline. It contains the following fields:
 
 <!-- ##### STRUCT PangoEngineShape ##### -->
 <para>
-The #PangoEngineShape structure extents the
+The #PangoEngineShape structure extends the
 basic #PangoEngine structure to engines that
 deal with the rendering-system dependent part
 of of the rendering pipeline. It contains the following fields:

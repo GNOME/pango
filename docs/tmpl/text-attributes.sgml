@@ -89,7 +89,7 @@ a string value.
 
 <!-- ##### STRUCT PangoAttrColor ##### -->
 <para>
-The #PangoAttrString structure is used to represent attributes that
+The #PangoAttrColor structure is used to represent attributes that
 are colors.
 </para>
 
@@ -98,7 +98,7 @@ are colors.
 
 <!-- ##### STRUCT PangoAttrInt ##### -->
 <para>
-The #PangoAttrString structure is used to represent attributes with
+The #PangoAttrInt structure is used to represent attributes with
 a integer or enumeration value.
 </para>
 

@@ -19,8 +19,7 @@ sets within an #PangoFont for the X rendering system.
 <!-- ##### TYPEDEF PangoXSubfont ##### -->
 <para>
 The #PangXSubFont type is an integer ID that identifies one
-particular X font within the fonts referenced in a 
-a #PangoFont.
+particular X font within the fonts referenced in a #PangoFont.
 </para>
 
 
