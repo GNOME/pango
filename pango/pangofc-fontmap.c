@@ -1185,7 +1185,8 @@ pango_fc_face_list_sizes (PangoFontFace  *face,
                 {
                   FcPattern *tmp = FcPatternDuplicate (fontset->fonts[i]);
                   pango_fc_default_substitute (fcface->family->fontmap, tmp);
-                  FcPatternGetDouble (tmp, FC_DPI, 0, &dpi);
+                  if (FcPatternGetDouble (tmp, FC_DPI, 0, &dpi) != FcResultMatch)
+                    dpi = 72.0;
                   FcPatternDestroy (tmp);
                 }
 
