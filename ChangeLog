@@ -1,3 +1,17 @@
+2000-09-08  Jonathan Blandford  <jrb@redhat.com>
+
+	* pango/pango-attributes.c (pango_attr_list_change): Minor fixes
+	to Owen's patch below to make it work.
+
+	* pango/pango-attributes.c (pango_attribute_copy): Copy the
+	start_index/end_index explicitly rather then rely on the copy
+	function doing it for you, as none did so.
+
+Thu Sep  7 05:12:09 2000  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-attributes.c (pango_attr_list_change): Fix up to
+	match the docs, correct bugs found by Jonathan Blandford.
+
 2000-09-04  Robert W Brady  <robert@susu.org.uk>
 
 	* modules/basic/tables-big.i: Use iso10646-1 fonts
