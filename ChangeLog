@@ -1,3 +1,9 @@
+Fri May 10 14:41:27 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/opentype/ftxgdef.c (TT_Load_GDEF_Table): Fix acess
+	outside of a loaded frame and some memory leaks
+	on failure.
+
 Tue May  7 19:20:05 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* modules/tamil/Makefile.am (EXTRA_LTLIBRARIES): Temporarily
