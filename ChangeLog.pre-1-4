@@ -1,3 +1,14 @@
+Sun Dec  8 22:57:55 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pangox.c: Draw the unknown glyph box with
+	X primitives rather than hoping that some font has an 
+	actualpainting unknown glyph... that code was 
+	apparently still working badly. Use "en" not
+	NULL as the language tags for getting the metrics
+	for the return glyph and the unknown character
+	glyph... NULL gives too large results. (#98245,
+	Based on a patch from Morten Welinder.)
+
 Sun Dec  8 15:22:10 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pango-glyph-item.c (pango_glyph_item_apply_attrs): 

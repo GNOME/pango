@@ -508,9 +508,12 @@ pango_x_render  (Display           *display,
 	      
       if (glyph & PANGO_X_UNKNOWN_FLAG)
         {
-          PangoFontMetrics *metrics = pango_font_get_metrics (font, NULL);
+	  PangoFontMetrics *metrics = pango_font_get_metrics (font,
+							      pango_language_from_string ("en"));
           int x1, y1, x2, y2; /* rectangle the character should go inside. */
           int baseline;
+	  int stroke_thick;
+
           gunichar wc;
           
           x1 = glyph_x;
@@ -518,6 +521,7 @@ pango_x_render  (Display           *display,
           x2 = x1 + PANGO_PIXELS (glyphs->glyphs[i].geometry.width);
           y2 = y1 + PANGO_PIXELS (metrics->ascent + metrics->descent);
           baseline = glyph_y;
+	  stroke_thick = MAX ((int) (0.5 + 0.075 * (y2 - y1)), 1);
           
           wc = glyph & (~PANGO_X_UNKNOWN_FLAG);
 
@@ -532,7 +536,6 @@ pango_x_render  (Display           *display,
                 PangoRectangle up_stroke;
                 PangoRectangle across_stroke;
 
-		int stroke_thick = MAX ((y2 - y1) * 0.075, 1);
 		int hborder = (x2 - x1) * 0.1;
 		int arrow_height = 0.25 * (y2 - y1);
 		int top_border = (y2 - y1) * 0.25;
@@ -578,15 +581,40 @@ pango_x_render  (Display           *display,
               break;
 
             default:
+	      {
+		/* Perhaps we should draw the box-with-numbers as in the
+		 * Xft backend, though we have no guarantee of having
+		 * an appropriate size of font. Right now, we just
+		 * draw an empty box. (To draw the box-with-numbers.
+		 * the backends would have to be changed to use
+		 * pango_x_font_get_unknown_glyph() rather than
+		 * pango_x_get_unknown_glyph().
+		 */
 
-              /* Here we should draw the box-with-numbers as in the
-               * Xft backend. The shaper never gives us a glyph that
-               * activates this case at the moment though, so also
-               * needs hacking.
-               */
-              
-              break;
-            }
+		int xspace = MAX ((int) (0.5 + 0.1 * (x2 - x1)), 1);
+		int yspace = MAX ((int) (0.5 + 0.1 * (y2 - y1)), 1);
+
+		x1 += xspace;
+		x2 -= xspace;
+		y1 += yspace;
+		y2 -= yspace;
+
+		XFillRectangle (display, d, gc,
+				x1, y1,
+				x2 - x1, stroke_thick);
+		XFillRectangle (display, d, gc,
+				x1, y1 + stroke_thick,
+				stroke_thick, y2 - y1 - 2 * stroke_thick);
+		XFillRectangle (display, d, gc,
+				x2 - stroke_thick, y1 + stroke_thick,
+				stroke_thick, y2 - y1 - 2 * stroke_thick);
+		XFillRectangle (display, d, gc,
+				x1, y2 - stroke_thick,
+				x2 - x1, stroke_thick);
+		
+		break;
+	      }
+	    }
 
 	  pango_font_metrics_unref (metrics);
         }
@@ -636,7 +664,11 @@ pango_x_font_get_glyph_extents  (PangoFont      *font,
 
   if (glyph & PANGO_X_UNKNOWN_FLAG)
     {
+      PangoFontMetrics *metrics = pango_font_get_metrics (font,
+							  pango_language_from_string ("en"));
       gunichar wc;
+      gdouble width_factor;
+      int w;
       
       wc = glyph & (~PANGO_X_UNKNOWN_FLAG);
           
@@ -647,37 +679,37 @@ pango_x_font_get_glyph_extents  (PangoFont      *font,
         case 0x2028: /* Line separator */
         case 0x2029: /* Paragraph separator */
           {
-            /* Size of carriage-return thingy */
-            PangoFontMetrics *metrics = pango_font_get_metrics (font, NULL);
-            int w;
+#define MAGIC_FACTOR 1.2
 
-#define MAGIC_FACTOR 1.75
+            /* carriage-return thingy */
+	    width_factor = MAGIC_FACTOR;
+	    break;
+	  }
+	default:
+	  {
+	    /* Unknown glyph square */
+	    width_factor = 0.7;
+	  }
+	}
+	    
+      w = metrics->approximate_char_width * width_factor;
+      w = PANGO_SCALE * PANGO_PIXELS (w);
             
-            w = metrics->approximate_char_width * MAGIC_FACTOR;
-            
-            if (ink_rect)
-              {
-                ink_rect->x = 0;
-                ink_rect->width = w;
-                ink_rect->y = - metrics->ascent;
-                ink_rect->height = metrics->ascent + metrics->descent;
-              }
-            if (logical_rect)
-              {
-                logical_rect->x = 0;
-                logical_rect->width = w;
-                logical_rect->y = - metrics->ascent;
-                logical_rect->height = metrics->ascent + metrics->descent;
-              }
-
-	    pango_font_metrics_unref (metrics);
-          }
-          break;
-          
-        default:
-              
-          break;
-        }
+      if (ink_rect)
+	{
+	  ink_rect->x = 0;
+	  ink_rect->width = w;
+	  ink_rect->y = - metrics->ascent;
+	  ink_rect->height = metrics->ascent + metrics->descent;
+	}
+      if (logical_rect)
+	{
+	  logical_rect->x = 0;
+	  logical_rect->width = w;
+	  logical_rect->y = - metrics->ascent;
+	  logical_rect->height = metrics->ascent + metrics->descent;
+	}
+      
     }
   else if (glyph && pango_x_find_glyph (font, glyph, &subfont, &cs))
     {
@@ -912,10 +944,14 @@ get_subfonts_foreach (PangoFont      *font,
 		      gpointer        data)
 {
   GSList **subfonts = data;
+  PangoGlyph glyph = glyph_info->glyph;
 
-  PangoXSubfont subfont = PANGO_X_GLYPH_SUBFONT (glyph_info->glyph);
-  if (!g_slist_find (*subfonts, GUINT_TO_POINTER ((guint)subfont)))
-    *subfonts = g_slist_prepend (*subfonts, GUINT_TO_POINTER ((guint)subfont));
+  if ((glyph & PANGO_X_UNKNOWN_FLAG) == 0)
+    {
+      PangoXSubfont subfont = PANGO_X_GLYPH_SUBFONT (glyph);
+      if (!g_slist_find (*subfonts, GUINT_TO_POINTER ((guint)subfont)))
+	*subfonts = g_slist_prepend (*subfonts, GUINT_TO_POINTER ((guint)subfont));
+    }
 }
 
 /* Get composite font metrics for all subfonts resulting from shaping
@@ -1475,42 +1511,18 @@ pango_x_find_glyph (PangoFont *font,
  * pango_x_get_unknown_glyph:
  * @font: a #PangoFont.
  * 
- * Returns the index of a glyph suitable for drawing unknown characters.
+ * Returns the index of a glyph suitable for drawing unknown characters;
+ * you should generally use pango_x_font_get_unknown_glyph_instead,
+ * since that may return a glyph that provides a better representation
+ * of a particular char. (E.g., by showing hex digits, or a glyph
+ * representive of a certain Unicode range.)
  * 
  * Return value: a glyph index into @font.
  **/
 PangoGlyph
 pango_x_get_unknown_glyph (PangoFont *font)
 {
-  PangoXFont *xfont = (PangoXFont *)font;
-  
-  /* The strategy here is to find _a_ X font, any X font in the fontset, and
-   * then get the unknown glyph for that font.
-   */
-
-  g_return_val_if_fail (font != 0, 0);
-  g_return_val_if_fail (xfont->n_fonts != 0, 0);
-
-  if (xfont->n_subfonts == 0)
-    {
-      int count;
-      char **names = XListFonts (xfont->display, xfont->fonts[0], 1, &count);
-
-      if (count > 0)
-	pango_x_insert_subfont (font, names[0]);
-
-      XFreeFontNames (names);
-    }
-
-  if (xfont->n_subfonts > 0)
-    {
-      XFontStruct *font_struct = pango_x_get_font_struct (font, xfont->subfonts[0]);
-
-      if (font_struct)
-	return PANGO_X_MAKE_GLYPH (1,font_struct->default_char);
-    }
-
-  return 0;
+  return PANGO_X_UNKNOWN_FLAG;
 }
 
 /**
@@ -2175,16 +2187,5 @@ pango_x_font_get_unknown_glyph (PangoFont *font,
 {
   g_return_val_if_fail (PANGO_IS_FONT (font), 0);
 
-  switch (wc)
-    {
-    case '\n':
-    case '\r':
-    case 0x2028: /* Line separator */
-    case 0x2029: /* Paragraph separator */
-      return PANGO_X_UNKNOWN_FLAG | wc;
-      break;
-    default:
-      return 0;
-      break;
-    }
+  return PANGO_X_UNKNOWN_FLAG | wc;
 }
