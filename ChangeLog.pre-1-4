@@ -1,9 +1,20 @@
+Tue Sep  9 12:21:02 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pangofc-fontmap.cI (pango_fc_font_description_from_pattern): 
+	Fix a g_assert() with a side-effect. (Maybe #121742?)
+	
 2003-09-02  Noah Levitt  <nlevitt@columbia.edu>
 
 	* tests/.cvsignore:
 	* tests/Makefile.am:
 	* tests/pangorc: Fix tests so that can be run before "make install"
 	has been. (#119831)
+
+Wed Aug 27 11:37:26 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* === Released 1.2.5 ===
+
+	* configure.in: Version 1.2.5, interface age 5.
 
 Tue Aug 26 16:38:22 2003  Owen Taylor  <otaylor@redhat.com>
 

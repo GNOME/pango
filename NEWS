@@ -1,3 +1,8 @@
+Overview of Changes in Pango 1.2.5
+==================================
+* Fix a problem where the indic-xft shaper didn't get linked
+  against all necessary files.
+
 Overview of Changes in Pango 1.2.4
 ==================================
 * Win32 [Tor Lillqvist]
