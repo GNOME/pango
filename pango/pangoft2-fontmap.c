@@ -519,17 +519,23 @@ pango_ft2_font_map_load_font (PangoFontMap               *fontmap,
 {
   MiniXftPattern *pattern, *match;
   MiniXftResult res;
-
+  PangoFont *font;
+  
   pattern = pango_ft2_make_pattern (description);
       
   match = MiniXftFontMatch ((Display *)1, 0, pattern, &res);
       
   MiniXftPatternDestroy (pattern);
+
+  font = NULL;
   
   if (match)
-    return  pango_ft2_font_map_new_font (fontmap, match);
+    {
+      font = pango_ft2_font_map_new_font (fontmap, match);
+      MiniXftPatternDestroy (match);
+    }
 
-  return NULL;
+  return font;
 }
 
 static PangoFontset *

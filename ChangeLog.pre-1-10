@@ -1,3 +1,8 @@
+2002-03-26  Alex Larsson  <alexl@redhat.com>
+
+	* pango/pangoft2-fontmap.c (pango_ft2_font_map_load_font):
+	Free pattern after using it.
+
 2002-03-26  Sven Neumann  <sven@gimp.org>
 
 	* pango/pangoft2-private.h
