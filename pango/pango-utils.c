@@ -429,9 +429,9 @@ read_config_file (const char *filename, gboolean enoent_error)
 {
   FILE *file;
     
-  GString *line_buffer = g_string_new (NULL);
-  GString *tmp_buffer1 = g_string_new (NULL);
-  GString *tmp_buffer2 = g_string_new (NULL);
+  GString *line_buffer;
+  GString *tmp_buffer1;
+  GString *tmp_buffer2;
   char *errstring = NULL;
   const char *pos;
   char *section = NULL;
@@ -446,6 +446,10 @@ read_config_file (const char *filename, gboolean enoent_error)
       return;
     }
   
+  line_buffer = g_string_new (NULL);
+  tmp_buffer1 = g_string_new (NULL);
+  tmp_buffer2 = g_string_new (NULL);
+
   while (pango_read_line (file, line_buffer))
     {
       line++;

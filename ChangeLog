@@ -1,5 +1,17 @@
 2001-01-23    <alla@lysator.liu.se>
 
+	* pango/pango-item.c (pango_item_free):
+	Free item->extra_attrs list.
+
+	* pango/pango-layout.c (process_item):
+	Don't leak copy of item.
+
+	* pango/pango-utils.c (read_config_file):
+	If the config file open fails, don't leak the
+	temp buffers.
+
+2001-01-23    <alla@lysator.liu.se>
+
 	* modules/basic/basic-ft2.c (basic_engine_get_coverage):
 	Don't leak PangoCoverage.
 	* pango/pangoft2-fontmap.c (pango_ft2_font_map_load_font):

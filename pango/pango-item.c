@@ -81,7 +81,10 @@ void
 pango_item_free (PangoItem *item)
 {
   if (item->extra_attrs)
-    g_slist_foreach (item->extra_attrs, (GFunc)pango_attribute_destroy, NULL);
+    {
+      g_slist_foreach (item->extra_attrs, (GFunc)pango_attribute_destroy, NULL);
+      g_slist_free (item->extra_attrs);
+    }
   
   g_object_unref (G_OBJECT (item->analysis.font));
 

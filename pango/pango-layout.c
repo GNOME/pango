@@ -2345,7 +2345,7 @@ process_item (PangoLayout     *layout,
 	    }
 	  else
 	    {
-	      PangoItem *new_item = pango_item_copy (item);
+	      PangoItem *new_item;
 
 	      length = g_utf8_offset_to_pointer (text + item->offset, break_num_chars) - (text + item->offset);
 
