@@ -1,3 +1,11 @@
+Fri Sep 28 11:27:57 2001  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-attributes.c (pango_attr_iterator_get_font): Use
+	PANGO_FONT_MASK_* not PANGO_ATTR_* when manipulating the
+	mask. Add fields to mask for PANGO_ATTR_FONT_DESC so
+	it won't be overwritten by later attributes.
+	(Fixes from Tony Graham, #61297)
+	
 Thu Sep 27 12:08:23 2001  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pango-utils.c (pango_log2vis_get_embedding_levels): 

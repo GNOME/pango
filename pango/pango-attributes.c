@@ -1410,57 +1410,58 @@ pango_attr_iterator_get_font (PangoAttrIterator     *iterator,
 	case PANGO_ATTR_FONT_DESC:
 	  {
 	    PangoFontMask new_mask = pango_font_description_get_set_fields (((PangoAttrFontDesc *)attr)->desc) & ~mask;
+	    mask |= new_mask;
 	    pango_font_description_unset_fields (desc, new_mask);
 	    pango_font_description_merge_static (desc, ((PangoAttrFontDesc *)attr)->desc, FALSE);
 	    
 	    break;
           }
 	case PANGO_ATTR_FAMILY:
-	  if (!(mask & PANGO_ATTR_FAMILY))
+	  if (!(mask & PANGO_FONT_MASK_FAMILY))
 	    {
-	      mask |= PANGO_ATTR_FAMILY;
+	      mask |= PANGO_FONT_MASK_FAMILY;
 	      pango_font_description_set_family (desc, ((PangoAttrString *)attr)->value);
 	    }
 	  break;
 	case PANGO_ATTR_STYLE:
-	  if (!(mask & PANGO_ATTR_STYLE))
+	  if (!(mask & PANGO_FONT_MASK_STYLE))
 	    {
-	      mask |= PANGO_ATTR_STYLE;
+	      mask |= PANGO_FONT_MASK_STYLE;
 	      pango_font_description_set_style (desc, ((PangoAttrInt *)attr)->value);
 	    }
 	  break;
 	case PANGO_ATTR_VARIANT:
-	  if (!(mask & PANGO_ATTR_VARIANT))
+	  if (!(mask & PANGO_FONT_MASK_VARIANT))
 	    {
-	      mask |= PANGO_ATTR_VARIANT;
+	      mask |= PANGO_FONT_MASK_VARIANT;
 	      pango_font_description_set_variant (desc, ((PangoAttrInt *)attr)->value);
 	    }
 	  break;
 	case PANGO_ATTR_WEIGHT:
-	  if (!(mask & PANGO_ATTR_WEIGHT))
+	  if (!(mask & PANGO_FONT_MASK_WEIGHT))
 	    {
-	      mask |= PANGO_ATTR_WEIGHT;
+	      mask |= PANGO_FONT_MASK_WEIGHT;
 	      pango_font_description_set_weight (desc, ((PangoAttrInt *)attr)->value);
 	    }
 	  break;
 	case PANGO_ATTR_STRETCH:
-	  if (!(mask & PANGO_ATTR_STRETCH))
+	  if (!(mask & PANGO_FONT_MASK_STRETCH))
 	    {
-	      mask |= PANGO_ATTR_STRETCH;
+	      mask |= PANGO_FONT_MASK_STRETCH;
 	      pango_font_description_set_stretch (desc, ((PangoAttrInt *)attr)->value);
 	    }
 	  break;
 	case PANGO_ATTR_SIZE:
-	  if (!(mask & PANGO_ATTR_SIZE))
+	  if (!(mask & PANGO_FONT_MASK_SIZE))
 	    {
-	      mask |= PANGO_ATTR_SIZE;
+	      mask |= PANGO_FONT_MASK_SIZE;
 	      pango_font_description_set_size (desc, ((PangoAttrInt *)attr)->value);
 	    }
 	  break;
         case PANGO_ATTR_SCALE:
-	  if (!(mask & PANGO_ATTR_SIZE))
+	  if (!(mask & PANGO_FONT_MASK_SIZE))
 	    {
-	      mask |= PANGO_ATTR_SIZE;
+	      mask |= PANGO_FONT_MASK_SIZE;
 	      pango_font_description_set_size (desc,
 					       ((PangoAttrFloat *)attr)->value * pango_font_description_get_size (desc));
 	    }
