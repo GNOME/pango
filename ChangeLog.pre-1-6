@@ -1,3 +1,10 @@
+Wed Feb 12 16:44:05 2003  Owen Taylor  <otaylor@redhat.com>
+ 
+ 	* examples/viewer-qt.cc: Remove call to
+ 	QApplication::setStyle (new QCDEStyle())... didn't
+ 	make sense and caused problems if CDEStyle wasn't
+ 	compiled into Qt. (#105264, Andrey Panov)
+ 
 Thu Jan 30 16:41:46 2003  Owen Taylor  <otaylor@redhat.com>
  
          * Makefile.am (EXTRA_DIST): Remove spec.spec.in from
