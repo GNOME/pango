@@ -76,6 +76,25 @@ if test "x$FREETYPE_CONFIG" != "xno" ; then
 
   AC_CHECK_LIB(freetype, FT_New_Face, have_freetype=true
 	       ,:,$FREETYPE_LIBS)
+
+  if $have_freetype ; then
+    pango_save_cflags="$CFLAGS"
+    CFLAGS="$CFLAGS $FREETYPE_CFLAGS"
+
+    AC_MSG_CHECKING([For sufficiently new FreeType (at least 2.0.1)])
+    AC_TRY_COMPILE([
+#include <freetype/freetype.h>
+#include FT_ERRORS_H
+]
+                ,[(void)1;],:,have_freetype=false)
+    if $have_freetype ; then
+      AC_MSG_RESULT(yes)
+    else
+      AC_MSG_RESULT(no)
+    fi
+
+    CFLAGS="$pango_save_cflags"
+  fi
 fi
 AC_SUBST(FREETYPE_LIBS)
 AC_SUBST(FREETYPE_CFLAGS)
