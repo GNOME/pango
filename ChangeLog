@@ -1,3 +1,8 @@
+Tue Jul 20 12:10:42 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-script.c (pango_language_includes_script): 
+	return TRUE for PANGO_SCRIPT_COMMON and PANGO_SCRIPT_INHERITED.
+
 Mon Jul 19 16:48:23 2004  Owen Taylor  <otaylor@redhat.com>
 
 	* === Released 1.5.1 ===

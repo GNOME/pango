@@ -415,6 +415,9 @@ pango_language_includes_script (PangoLanguage *language,
 
   g_return_val_if_fail (language != NULL, FALSE);
 
+  if (!REAL_SCRIPT (script))
+    return TRUE;
+
   /* This bsearch could be optimized to occur only once if
    * we store the pointer to the PangoScriptForLang in the
    * same block as the string value for the PangoLanguage.
