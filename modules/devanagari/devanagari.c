@@ -21,6 +21,7 @@
 
 #include <glib.h>
 #include <unicode.h>
+#include <stdio.h>
 
 #include "utils.h"
 #include "pango.h"
@@ -33,6 +34,11 @@
 #define RA 0x930
 #define JOINING_RA 0xe97f
 #define REPHA 0xe97e
+#define EYELASH_RA 0xe97d
+#define RRA 0x931
+
+#define U_S 0x941
+#define UU_S 0x942
 
 typedef struct _LigData LigData;
 
@@ -159,6 +165,12 @@ is_consonant (int i)
 }
 
 static int
+is_ind_vowel (int i)
+{
+  return (i >= 0x905 && i <= 0x914);
+}
+
+static int
 is_nonspacing_vowel (GUChar4 c)
 {
   /* one that doesn't space. ie 93f and 940 don't count */
@@ -173,187 +185,29 @@ get_char (GUChar4 * chars, GUChar4 * end)
   return *chars;
 }
 
-void
-devanagari_make_ligatures (int *num, GUChar4 * chars, gint * cluster)
-{
-  /* perhaps a syllable based approach would be better? */
-  GUChar4 *src = chars;
-  GUChar4 *start = chars;
-  GUChar4 *end = chars + *num;
-  gint *c_src = cluster;
-  while (src < end)
-    {
-      int t0, t1, t2, t3, p1;
-      if (chars != start)
-	p1 = chars[-1];
-      else
-	p1 = 0;
-      t0 = get_char (src, end);
-      t1 = get_char (src + 1, end);
-      t2 = get_char (src + 2, end);
-      t3 = get_char (src + 3, end);
-
-      if (!is_half_consonant (p1))
-	{
-	  int i;
-	  /* This makes T.T.T.T come out OK. We need an expert in Devanagari
-	   * to explain what 3 and 4-consonant ligatures are supposed to
-	   * look like, especially when some of the adjacent characters
-	   * form ligatures in 2 consonant form. 
-	   *
-	   * (T.T.T.T is significant as T.T forms a conjunt with a half-form
-	   * which looks very similar so it was producing TT (half-form), 
-	   * joined to TT unfortunately, this was indistinguishable from
-	   * T.T.T )
-	   */
-	  for (i = 0; i < n_ligatures; i++)
-	    {
-	      /* handle the conjuncts */
-	      LigData *l = ligatures + i;
-	      if (t0 == l->source[0] && t1 == l->source[1]
-		  && t2 == l->source[2])
-		{
-		  /* RA ligature handling magic */
-		  if (t2 == RA && (is_consonant (t3) || (t3 == 0x94d)))
-		    continue;
-
-		  chars[0] = l->replacement;
-		  src += 3;
-		  chars++;
-
-		  *cluster = *c_src;
-		  c_src += 3;
-		  cluster++;
-		  break;
-		}
-	    }
-	  if (i != n_ligatures)
-	    {
-	      /* if we made a conjunct here, loop... */
-	      continue;
-	    }
-	}
-
-      if ((is_consonant (t0)) &&
-	  (t1 == VIRAMA) && (t2 == RA) &&
-	  (!is_consonant (t3)) && (t3 != 0x94d))
-	{
-	  /* turn C vir RA to C joining-RA */
-	  chars[0] = *src;
-	  chars[1] = JOINING_RA;
-
-	  *cluster = *c_src;
-	  cluster[1] = *c_src;
-
-	  src += 3;
-	  chars += 2;
-
-	  c_src += 3;
-	  cluster += 2;
-	  continue;
-	}
-
-      /* some ligatures have half-forms. use them. */
-      if ((p1 >= 0xe900 && p1 <= 0xe906) && t0 == VIRAMA && is_consonant (t1))
-	{
-	  chars[-1] = 0xe972;
-	  src++;
-	  c_src++;
-	  continue;
-	}
-
-      /* is_ligating_consonant(t2) probably wants to
-       * be is_consonant(t2), not sure. */
-      if (is_ligating_consonant (t0) &&
-	  t1 == VIRAMA && is_ligating_consonant (t2))
-	{
-	  chars[0] = t0 + 0xe000;
-	  src += 2;
-	  chars++;
-
-	  *cluster = *c_src;
-	  c_src += 2;
-	  cluster++;
-	  continue;
-	}
-
-      /* Handle Virama followed by Nukta. This suppresses the special-case
-       * ligature, and just enables regular half-form building.
-       * 
-       * Cavaet as above. */
-      if (is_ligating_consonant (t0) &&
-	  t1 == VIRAMA && t2 == NUKTA && is_ligating_consonant (t3))
-	{
-	  chars[0] = t0 + 0xe000;
-	  src += 3;
-	  chars++;
-
-	  *cluster = *c_src;
-	  c_src += 3;
-	  cluster++;
-
-	  continue;
-	}
-
-      /* convert R virama vowel to full-vowel with repha */
-      if (p1 != VIRAMA &&
-	  !is_half_consonant (p1) &&
-	  t0 == RA && t1 == VIRAMA && is_comb_vowel (t2))
-	{
-	  chars[0] = vowelsign_to_letter (t2);
-	  chars[1] = REPHA;
-	  *cluster = *c_src;
-	  cluster[1] = *c_src;
-	  chars += 2;
-	  cluster += 2;
-
-	  c_src += 3;
-	  src += 3;
-	  continue;
-	}
-
-      *chars = *src;
-      src++;
-      chars++;
-
-      *cluster = *c_src;
-      cluster++;
-      c_src++;
-    }
-  *num = chars - start;
-}
-
-void
-devanagari_shift_vowels (int *num, GUChar4 * chars, gint * clusters)
+static void
+devanagari_shift_vowels (GUChar4 * chars, GUChar4 * end)
 {
   /* moves 0x93f (I) before consonant clusters where appropriate. */
-  GUChar4 *strt = chars, *end = chars + *num;
+  GUChar4 *strt = chars;
   while (chars < end)
     {
       if (*chars == 0x93f && chars > strt)
 	{
 	  GUChar4 *bubble = chars;
 	  int i = 1;
-	  /* move back one consonant, and past any half consonants */
-	  /* How should this interact with vowel letters and other 
-	   * non-consonant signs? */
 
-	  /* also, should it go back past consonants that have a virama
-	   * attached, so as to be at the start of the syllable? */
+	  /* move back TO START! */
 
-	  /* probably should go past JOINING RA as well. */
-	  while (bubble > strt && (i || is_half_consonant (bubble[-1])))
+	  while (bubble > strt)
 	    {
 	      bubble[0] = bubble[-1];
 	      bubble[-1] = 0x93f;
 	      i = 0;
 	      bubble--;
 	    }
-	  /* XXX : if we bubble the cluster stuff here back with the
-	     glyph, it breaks. */
 	}
       chars++;
-      clusters++;
     }
 }
 
@@ -366,7 +220,9 @@ devanagari_convert_vowels (int *num, GUChar4 * chars)
   GUChar4 *start = chars;
   while (chars < end)
     {
-      if (chars == start && is_comb_vowel (chars[0]))
+      if ((chars == start && is_comb_vowel (chars[0])) ||
+	  (chars != start && is_comb_vowel (chars[0])
+	   && is_comb_vowel (chars[-1])))
 	{
 	  chars[0] = vowelsign_to_letter (chars[0]);
 	}
@@ -374,21 +230,7 @@ devanagari_convert_vowels (int *num, GUChar4 * chars)
     }
 }
 
-void
-devanagari_remove_explicit_virama (int *num, GUChar4 * chars)
-{
-  /* collapse two viramas in a row to one virama. This is defined
-   * to mean 'show it with the virama, don't ligate'. */
-  GUChar4 *end = chars + *num;
-  while (chars < end)
-    {
-      if (chars[0] == VIRAMA && chars[1] == VIRAMA)
-	chars[1] = 0;
-      chars++;
-    }
-}
-
-void
+static void
 devanagari_compact (int *num, GUChar4 * chars, gint * cluster)
 {
   /* shuffle stuff up into the blanked out elements. */
@@ -415,6 +257,164 @@ devanagari_compact (int *num, GUChar4 * chars, gint * cluster)
   *num -= (chars - dest);
 }
 
+#if 0
+const char *foo[] =
+{
+  "k", "kh", "g", "gh", "ng",
+  "c", "ch", "j", "jh", "ny",
+  "tt", "tth", "dd", "ddh", "nn",
+  "t", "th", "d", "dh", "n", "nnn",
+  "p", "ph", "b", "bh", "m",
+
+  "y", "r", "rr", "l", "ll", "lll",
+
+  "v", "sh", "ss", "s", "h",
+
+  "-", "-", "-", "-",
+
+  "aa",
+  "i", "ii",
+  "u", "uu",
+  "[r]", "[rr]",
+  "[e]", "{e}",
+  "e", "ai",
+  "[o]", "{o}",
+  "o", "au",
+};
+
+const char *bar[] =
+{
+  "A", "AA",
+  "I", "II",
+  "U", "UU",
+  "[R]", "[RR]",
+  "[E]", "{E}",
+  "E", "AI",
+  "[O]", "{O}",
+  "O", "AU",
+};
+#endif
+
+static void
+devanagari_make_ligs (GUChar4 * start, GUChar4 * end, int *cluster)
+{
+  GUChar4 t0 = get_char (start, end);
+  GUChar4 t1 = get_char (start + 1, end);
+  GUChar4 t2 = get_char (start + 2, end);
+  GUChar4 t3 = get_char (start + 3, end);
+
+  int i, j;
+  int repha = 0, ligature = 0;
+
+  for (i = 0; i < (end - start); i++)
+    {
+      t0 = get_char (start + i, end);
+      t1 = get_char (start + 1 + i, end);
+      t2 = get_char (start + 2 + i, end);
+      t3 = get_char (start + 3 + i, end);
+
+      if (!ligature)
+	{
+	  for (j = 0; j < n_ligatures; j++)
+	    {
+	      /* handle the conjuncts */
+	      LigData *l = ligatures + j;
+	      if (t0 == l->source[0] && t1 == l->source[1]
+		  && t2 == l->source[2])
+		{
+		  start[i + 0] = 0;
+		  start[i + 1] = 0;
+		  start[i + 2] = l->replacement;
+		  ligature = 1;
+		  break;
+		}
+	    }
+	  if (j != n_ligatures)
+	    continue;
+	}
+
+      if ((t0 >= 0xe900 && t0 <= 0xe906) && t1 == VIRAMA
+	  && is_ligating_consonant (t2))
+	{
+	  start[i + 1] = start[i] + 0x70;
+	  start[i] = 0;
+	  continue;
+	}
+
+      if (is_consonant (t0) && t1 == VIRAMA && t2 == RA)
+	{
+	  start[i + 1] = 0;
+	  start[i + 2] = JOINING_RA;
+	  continue;
+	}
+
+      if (t0 == RRA && t1 == VIRAMA)
+	{
+	  start[i] = 0;
+	  start[i + 1] = EYELASH_RA;
+	  continue;
+	}
+
+      if (t0 == RA && t1 == VIRAMA && is_ligating_consonant (t2))
+	{
+
+	  start[i + 0] = 0;
+	  start[i + 1] = 0;
+	  start[i + 2] = t2;
+	  repha = 1;
+	  continue;
+	}
+
+      if (is_ligating_consonant (t0) &&
+	  t1 == VIRAMA && is_ligating_consonant (t2))
+	{
+	  start[i + 0] = t0 + 0xe000;
+	  start[i + 1] = 0;
+	  start[i + 2] = t2;
+	  continue;
+	}
+
+      if (t0 == RA && (t1 == U_S || t1 == UU_S))
+	{
+
+	  if (t1 == U_S)
+	    start[i + 1] = 0xe90e;
+
+	  if (t1 == UU_S)
+	    start[i + 1] = 0xe90f;
+
+	  start[i] = 0;
+
+	}
+    }
+
+  for (i = 0; i < (end - start); i++)
+    {
+      t0 = get_char (start + i, end);
+      t1 = get_char (start + 1 + i, end);
+      t2 = get_char (start + 2 + i, end);
+      t3 = get_char (start + 3 + i, end);
+    }
+
+  if (repha)
+    {
+      int src = 0, dest = 0;
+      while (src < (end - start))
+	{
+	  start[dest] = start[src];
+	  src++;
+	  if (start[dest])
+	    dest++;
+	}
+      while (dest < (end - start))
+	{
+	  start[dest] = 0;
+	  dest++;
+	}
+      end[-1] = REPHA;
+    }
+}
+
 static void
 devanagari_engine_shape (PangoFont * font,
 			 const char *text,
@@ -427,7 +427,9 @@ devanagari_engine_shape (PangoFont * font,
   int lvl;
   const char *p, *next;
   int i;
-  GUChar4 *wc;
+  GUChar4 *wc, *sb;
+  int n_syls;
+  GUChar4 **syls = g_malloc (sizeof (GUChar4 **));
 
   g_return_if_fail (font != NULL);
   g_return_if_fail (text != NULL);
@@ -466,10 +468,33 @@ devanagari_engine_shape (PangoFont * font,
     }
 
   devanagari_convert_vowels (&n_glyph, wc);
-  devanagari_make_ligatures (&n_glyph, wc, glyphs->log_clusters);
-  devanagari_remove_explicit_virama (&n_glyph, wc);
+
+  n_syls = 1;
+  syls[0] = wc;
+  sb = glyphs->log_clusters[0];
+  for (i = 0; i < n_chars; i++)
+    {
+      if (i && (is_consonant (wc[i]) | is_ind_vowel (wc[i]))
+	  && wc[i - 1] != 0x94d)
+	{
+	  syls = g_realloc (syls, ((n_syls + 2) * sizeof (GUChar4 **)));
+	  syls[n_syls] = wc + i;
+	  n_syls++;
+	  sb = glyphs->log_clusters[i];
+	}
+      glyphs->log_clusters[i] = sb;
+    }
+  syls[n_syls] = wc + i;
+
+  for (i = 0; i < n_syls; i++)
+    {
+      devanagari_make_ligs (syls[i], syls[i + 1], glyphs->log_clusters +
+			    (syls[i] - wc));
+      devanagari_shift_vowels (syls[i], syls[i + 1]);
+    }
+
   devanagari_compact (&n_glyph, wc, glyphs->log_clusters);
-  devanagari_shift_vowels (&n_glyph, wc, glyphs->log_clusters);
+
   pango_glyph_string_set_size (glyphs, n_glyph);
 
   for (i = 0; i < n_glyph; i++)
@@ -482,20 +507,18 @@ devanagari_engine_shape (PangoFont * font,
       glyphs->glyphs[i].geometry.y_offset = 0;
       glyphs->glyphs[i].geometry.width = logical_rect.width;
 
-      if ((wc[i] == VIRAMA || wc[i] == ANUSWAR || wc[i] == CANDRA ||
-	   wc[i] == JOINING_RA || wc[i] == REPHA ||
-	   is_nonspacing_vowel (wc[i])) && i)
+      if (wc[i] == JOINING_RA || wc[i] == ANUSWAR ||
+	  wc[i] == REPHA || wc[i] == VIRAMA || wc[i] == CANDRA
+	  is_nonspacing_vowel (wc[i]))
 	{
 	  if (wc[i] == VIRAMA)
 	    {
 	      glyphs->glyphs[i].geometry.x_offset =
 		(-glyphs->glyphs[i - 1].geometry.width / 2);
-	    }
-	  else if (is_nonspacing_vowel (wc[i]))
-	    {
-	      glyphs->glyphs[i].geometry.x_offset =
-		-((glyphs->glyphs[i - 1].geometry.width) +
-		  (logical_rect.width)) / 2;
+
+	      if (!glyphs->glyphs[i].geometry.x_offset)
+		glyphs->glyphs[i].geometry.x_offset =
+		  (-glyphs->glyphs[i - 2].geometry.width / 2);
 	    }
 	  else
 	    glyphs->glyphs[i].geometry.x_offset = -logical_rect.width * 2;
@@ -504,6 +527,7 @@ devanagari_engine_shape (PangoFont * font,
 	  glyphs->log_clusters[i] = glyphs->log_clusters[i - 1];
 	}
     }
+  g_free (syls);
 }
 
 static PangoEngine *

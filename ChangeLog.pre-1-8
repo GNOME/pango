@@ -1,3 +1,11 @@
+2000-04-21  Robert Brady  <rwb197@zepler.org>
+
+	* modules/devanagari/dev-ligatures.h: Add some more ligature
+	mappings.
+	
+	* modules/devanagari.c: New version, now syllable-based, with
+	proper RA handling.
+
 Mon Apr 17 12:04:20 2000  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pango-layout.[ch]: Add a function pango_layout_line_get_x_ranges(),
