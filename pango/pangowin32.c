@@ -840,6 +840,7 @@ get_unicode_mapping (HDC hdc)
   guint32 offset;
   guint32 res;
   guint16 length;
+  guint16 *tbl, *tbl_end;
   struct type_4_table *table;
 
   /* FIXME: Could look here at the CRC for the font in the DC 
@@ -875,6 +876,15 @@ get_unicode_mapping (HDC hdc)
     {
       g_free (table);
       return NULL;
+    }
+  
+  tbl_end = (guint16 *)((char *)table + length);
+  tbl = &table->reserved;
+
+  while (tbl < tbl_end)
+    {
+      *tbl = GUINT16_FROM_BE (*tbl);
+      tbl++;
     }
 
   return table;
@@ -920,6 +930,16 @@ find_segment (struct type_4_table *table,
   guint16 seg_count = table->seg_count_x_2/2;
   guint16 *end_count = get_end_count (table);
   guint16 *start_count = get_start_count (table);
+  static guint last = 0; /* Cache of one */
+  
+  if (last < seg_count &&
+      wc >= start_count[last] &&
+      wc <= end_count[last])
+    {
+      *segment = last;
+      return TRUE;
+    }
+      
 
   /* Binary search for the segment */
   start = 0; /* inclusive */
@@ -933,20 +953,21 @@ find_segment (struct type_4_table *table,
 	{
 	  /* We made no progress. Look if this is the one. */
 	  
-	  if (wc >= GUINT16_FROM_BE (start_count[i]) &&
-	      wc <= GUINT16_FROM_BE (end_count[i]))
+	  if (wc >= start_count[i] &&
+	      wc <= end_count[i])
 	    {
 	      *segment = i;
+	      last = i;
 	      return TRUE;
 	    }
 	  else
 	    return FALSE;
 	}
-      else if (wc < GUINT16_FROM_BE (start_count[i]))
+      else if (wc < start_count[i])
 	{
 	  end = i;
 	}
-      else if (wc > GUINT16_FROM_BE (end_count[i]))
+      else if (wc > end_count[i])
 	{
 	  start = i;
 	}
@@ -954,6 +975,7 @@ find_segment (struct type_4_table *table,
 	{
 	  /* Found it! */
 	  *segment = i;
+	  last = i;
 	  return TRUE;
 	}
     }
@@ -1006,14 +1028,12 @@ pango_win32_font_get_glyph_index (PangoFont *font,
   start_count = get_start_count (table);
 
   if (id_range_offset[segment] == 0)
-    glyph = (GUINT16_FROM_BE (id_delta[segment]) + ch) % 65536;
+    glyph = (id_delta[segment] + ch) % 65536;
   else
     {
-      id = *(GUINT16_FROM_BE (id_range_offset[segment])/2 +
-	     (ch - GUINT16_FROM_BE  (start_count[segment])) +
+      id = *(id_range_offset[segment]/2 +
+	     (ch - start_count[segment]) +
 	     &id_range_offset[segment]);
-      id = GUINT16_FROM_BE (id);
-
       if (id)
 	glyph = (id_delta[segment] + id) %65536;
       else
@@ -1054,22 +1074,20 @@ pango_win32_font_calc_coverage (PangoFont     *font,
     {
       if (id_range_offset[i] == 0)
 	{
-	  for (ch = GUINT16_FROM_BE (start_count[i]); 
-	       ch <= GUINT16_FROM_BE (end_count[i]);
+	  for (ch = start_count[i]; 
+	       ch <= end_count[i];
 	       ch++)
 	    pango_coverage_set (coverage, ch, PANGO_COVERAGE_EXACT);
 	}
       else
 	{
-	  for (ch = GUINT16_FROM_BE (start_count[i]); 
-	       ch <= GUINT16_FROM_BE (end_count[i]);
+	  for (ch = start_count[i]; 
+	       ch <= end_count[i];
 	       ch++)
 	    {
-	      id = *(GUINT16_FROM_BE (id_range_offset[i])/2 +
-		     (ch - GUINT16_FROM_BE  (start_count[i])) +
+	      id = *(id_range_offset[i]/2 +
+		     (ch - start_count[i]) +
 		     &id_range_offset[i]);
-	      id = GUINT16_FROM_BE (id);
-	      
 	      if (id)
 		pango_coverage_set (coverage, ch, PANGO_COVERAGE_EXACT);
 	    }
