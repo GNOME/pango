@@ -374,9 +374,9 @@ pango_layout_get_width (PangoLayout    *layout)
 /**
  * pango_layout_set_wrap:
  * @layout: a #PangoLayout
- * @wrap: wrap mode
+ * @wrap: the wrap mode
  * 
- * Sets the wrap style; the wrap style only has an effect if a width
+ * Sets the wrap mode; the wrap mode only has an effect if a width
  * is set on the layout with pango_layout_set_width(). To turn off wrapping,
  * set the width to -1.
  **/
@@ -397,7 +397,7 @@ pango_layout_set_wrap (PangoLayout  *layout,
  * pango_layout_get_wrap:
  * @layout: a #PangoLayout
  * 
- * Get the wrap mode for the layout.
+ * Gets the wrap mode for the layout.
  * 
  * Return value: Active wrap mode.
  **/
@@ -412,13 +412,13 @@ pango_layout_get_wrap (PangoLayout *layout)
 /**
  * pango_layout_set_indent
  * @layout: a #PangoLayout.
- * @indent: the amount by which to indent
+ * @indent: the amount by which to indentset
  * 
  * Sets the amount by which the first line should be shorter than the
  * rest of the lines. This may be negative, in which case
  * the subsequent lines will be shorter than the first line. (However,
  * in either case, the entire width of the layout will be given by
- * the value 
+ * the value.) 
  **/
 void
 pango_layout_set_indent (PangoLayout *layout,
@@ -489,7 +489,7 @@ pango_layout_get_spacing (PangoLayout *layout)
  * @layout: a #PangoLayout
  * @attrs: a #PangoAttrList
  * 
- * Sets the text attributes for a layout object
+ * Sets the text attributes for a layout object.
  **/
 void
 pango_layout_set_attributes (PangoLayout   *layout,
@@ -514,7 +514,7 @@ pango_layout_set_attributes (PangoLayout   *layout,
  * pango_layout_get_attributes:
  * @layout: a #PangoLayout
  * 
- * Gets the attribute list for the layout, if any
+ * Gets the attribute list for the layout, if any.
  * 
  * Return value: a #PangoAttrList
  **/
@@ -529,10 +529,10 @@ pango_layout_get_attributes (PangoLayout *layout)
 /**
  * pango_layout_set_font_description:
  * @layout: a #PangoLayout
- * @desc: the new pango font description, or %NULL to unset the
+ * @desc: the new #PangoFontDescription, or %NULL to unset the
  *        current font description.
  * 
- * Set the default font description for the layout. If no font 
+ * Sets the default font description for the layout. If no font 
  * description is set on the layout, the font description from
  * the layout's context is used.
  **/
@@ -650,7 +650,7 @@ pango_layout_set_tabs (PangoLayout   *layout,
  * pango_layout_get_tabs:
  * @layout: a #PangoLayout
  * 
- * Get the current #PangoTabArray used by this layout. If no
+ * Gets the current #PangoTabArray used by this layout. If no
  * #PangoTabArray has been set, then the default tabs are in use
  * and %NULL is returned. Default tabs are every 8 spaces.
  * The return value should be freed with pango_tab_array_free().
@@ -712,10 +712,10 @@ pango_layout_get_single_paragraph_mode (PangoLayout *layout)
  * @layout: a #PangoLayout
  * @text: a UTF8-string
  * @length: the length of @text, in bytes. -1 indicates that
- *          the string is null terminated and the length should be
+ *          the string is nul-terminated and the length should be
  *          calculated.
  * 
- * Set the text of the layout.
+ * Sets the text of the layout.
  **/
 void
 pango_layout_set_text (PangoLayout *layout,
@@ -866,7 +866,7 @@ pango_layout_context_changed (PangoLayout *layout)
  *           array. (The stored value will be equal to the total number
  *           of characters in the layout.)
  * 
- * Retrieve an array of logical attributes for each character in
+ * Retrieves an array of logical attributes for each character in
  * the @layout. 
  **/
 void
@@ -893,7 +893,7 @@ pango_layout_get_log_attrs (PangoLayout    *layout,
  * pango_layout_get_line_count:
  * @layout: #PangoLayout
  * 
- * Retrieve the count of lines for the @layout.
+ * Retrieves the count of lines for the @layout.
  * 
  * Return value: the line count
  **/
@@ -910,7 +910,7 @@ pango_layout_get_line_count (PangoLayout   *layout)
  * pango_layout_get_lines:
  * @layout: a #PangoLayout
  * 
- * Return the lines of the @layout as a list.
+ * Returns the lines of the @layout as a list.
  * 
  * Return value: a #GSList containing the lines in the layout. This
  * points to internal data of the #PangoLayout and must be used with
@@ -928,7 +928,7 @@ pango_layout_get_lines (PangoLayout *layout)
  * pango_layout_get_line:
  * @layout: a #PangoLayout
  * @line: the index of a line, which must be between 0 and
- *        pango_layout_get_line_count(layout) - 1, inclusive.
+ *        <literal>pango_layout_get_line_count(layout) - 1</literal>, inclusive.
  * 
  * Retrieves a particular line from a #PangoLayout.
  * 
@@ -1365,7 +1365,7 @@ pango_layout_move_cursor_visually (PangoLayout *layout,
  *             be zero, or the number of characters in the
  *             grapheme. 0 represents the trailing edge of the grapheme.
  *
- * Convert from X and Y position within a layout to the byte 
+ * Converts from X and Y position within a layout to the byte 
  * index to the character at that logical position. If the
  * position is not inside the layout, the closest position is chosen
  * (the x/y position will be clamped inside the layout).
@@ -1463,12 +1463,12 @@ pango_layout_xy_to_index (PangoLayout *layout,
  * @index_: byte index within @layout
  * @pos: rectangle in which to store the position of the grapheme
  * 
- * Convert from an index within a PangoLayout to the onscreen position
+ * Converts from an index within a #PangoLayout to the onscreen position
  * corresponding to the grapheme at that index, which is represented
- * as rectangle.  Note that pos->x is always the leading edge of the
- * grapheme and pos->x + pos->width the trailing edge of the
- * grapheme. If the directionality of the grapheme is right-to-left,
- * then pos->width will be negative.
+ * as rectangle.  Note that <literal>pos->x</literal> is always the leading 
+ * edge of the grapheme and <literal>pos->x + pos->width</literal> the trailing 
+ * edge of the grapheme. If the directionality of the grapheme is right-to-left,
+ * then <literal>pos->width</literal> will be negative.
  **/
 void
 pango_layout_index_to_pos (PangoLayout    *layout,
@@ -1689,7 +1689,7 @@ pango_layout_line_get_char_direction (PangoLayoutLine *layout_line,
  * @strong_pos: location to store the strong cursor position (may be %NULL)
  * @weak_pos: location to store the weak cursor position (may be %NULL)
  * 
- * Given an index within a layout, determine the positions that of the
+ * Given an index within a layout, determines the positions that of the
  * strong and weak cursors if the insertion point is at that
  * index. The position of each cursor is stored as a zero-width
  * rectangle. The strong cursor location is the location where
@@ -1997,7 +1997,7 @@ pango_layout_get_extents_internal (PangoLayout    *layout,
  * @logical_rect: rectangle used to store the logical extents of the layout 
                  or %NULL to indicate that the result is not needed.
  * 
- * Compute the logical and ink extents of @layout. Logical extents
+ * Computes the logical and ink extents of @layout. Logical extents
  * are usually what you want for positioning things. The extents
  * are given in layout coordinates; layout coordinates begin at the
  * top left corner of the layout. 
@@ -2020,10 +2020,10 @@ pango_layout_get_extents (PangoLayout    *layout,
  * @logical_rect: rectangle used to store the logical extents of the 
  *              layout or %NULL to indicate that the result is not needed.
  * 
- * Compute the logical and ink extents of @layout in device units.
+ * Computes the logical and ink extents of @layout in device units.
  * See pango_layout_get_extents(); this function just calls
  * pango_layout_get_extents() and then converts the extents to
- * device units using the #PANGO_SCALE factor.
+ * device units using the %PANGO_SCALE factor.
  **/
 void
 pango_layout_get_pixel_extents (PangoLayout *layout,
@@ -2059,9 +2059,9 @@ pango_layout_get_pixel_extents (PangoLayout *layout,
  * @width: location to store the logical width, or %NULL
  * @height: location to store the logical height, or %NULL
  * 
- * Determine the logical width and height of a #PangoLayout
- * in Pango units. (device units divided by PANGO_SCALE). This
- * is simply a convenience function around pango_layout_get_extents.
+ * Determines the logical width and height of a #PangoLayout
+ * in Pango units. (device units divided by %PANGO_SCALE). This
+ * is simply a convenience function around pango_layout_get_extents().
  **/
 void
 pango_layout_get_size (PangoLayout *layout,
@@ -2084,10 +2084,10 @@ pango_layout_get_size (PangoLayout *layout,
  * @width: location to store the logical width, or %NULL
  * @height: location to store the logical height, or %NULL
  * 
- * Determine the logical width and height of a #PangoLayout
+ * Determines the logical width and height of a #PangoLayout
  * in device units. (pango_layout_get_size() returns the width
  * and height in thousandths of a device unit.) This
- * is simply a convenience function around pango_layout_get_extents.
+ * is simply a convenience function around pango_layout_get_extents().
  **/
 void
 pango_layout_get_pixel_size (PangoLayout *layout,
@@ -3043,7 +3043,7 @@ pango_layout_check_lines (PangoLayout *layout)
  * pango_layout_line_ref:
  * @line: a #PangoLayoutLine
  * 
- * Increase the reference count of a #PangoLayoutLine by one.
+ * Increases the reference count of a #PangoLayoutLine by one.
  **/
 void
 pango_layout_line_ref (PangoLayoutLine *line)
@@ -3059,7 +3059,7 @@ pango_layout_line_ref (PangoLayoutLine *line)
  * pango_layout_line_unref:
  * @line: a #PangoLayoutLine
  * 
- * Decrease the reference count of a #PangoLayoutLine by one.
+ * Decreases the reference count of a #PangoLayoutLine by one.
  * if the result is zero, the line and all associated memory
  * will be freed.
  **/
@@ -3098,7 +3098,7 @@ pango_layout_line_unref (PangoLayoutLine *line)
  *             be zero, or the number of characters in the
  *             grapheme. 0 represents the trailing edge of the cluster.
  *
- * Convert from x offset to the byte index of the corresponding
+ * Converts from x offset to the byte index of the corresponding
  * character within the text of the layout. If @x_pos is outside the line,
  * the start or end of the line will be stored at @index_.
  *
@@ -3316,14 +3316,14 @@ pango_layout_line_x_to_index (PangoLayoutLine *line,
  *               edge of the layout. Otherwise, it will end at the
  *               trailing edge of the last character.
  * @ranges:      location to store a pointer to an array of ranges.
- *               The array will be of length 2*@n_ranges, with each
- *               range starting at (*ranges)[2*n] and of width
- *               (*ranges)[2*n + 1] - (*ranges)[2*n]. This array must be
- *               freed with g_free. The coordinates are relative to the
- *               layout and are in #PangoGlyphUnit.
+ *               The array will be of length <literal>2*n_ranges</literal>, 
+ *               with each range starting at <literal>(*ranges)[2*n]</literal>
+ *               and of width <literal>(*ranges)[2*n + 1] - (*ranges)[2*n]</literal>. 
+ *               This array must be freed with g_free(). The coordinates are relative 
+ *               to the layout and are in #PangoGlyphUnit.
  * @n_ranges: The number of ranges stored in @ranges.
  * 
- * Get a list of visual ranges corresponding to a given logical range.
+ * Gets a list of visual ranges corresponding to a given logical range.
  * This list is not necessarily minimal - there may be consecutive
  * ranges which are adjacent. The ranges will be sorted from left to
  * right. The ranges are with respect to the left edge of the entire
@@ -3621,7 +3621,7 @@ pango_layout_run_get_extents (PangoLayoutRun *run,
  * @logical_rect: rectangle used to store the logical extents of the glyph string
  *            or %NULL to indicate that the result is not needed.
  * 
- * Compute the logical and ink extents of a layout line. See the documentation
+ * Computes the logical and ink extents of a layout line. See the documentation
  * for pango_font_get_glyph_extents() for details about the interpretation
  * of the rectangles.
  */
@@ -3727,7 +3727,7 @@ pango_layout_line_new (PangoLayout *layout)
  * @logical_rect: rectangle used to store the logical extents of the glyph string
  *               or %NULL to indicate that the result is not needed.
  * 
- * Compute the logical and ink extents of a layout line. See the documentation
+ * Computes the logical and ink extents of a layout line. See the documentation
  * for pango_font_get_glyph_extents() for details about the interpretation
  * of the rectangles. The returned rectangles are in device units, as
  * opposed to pango_layout_line_get_extents(), which returns the extents in
