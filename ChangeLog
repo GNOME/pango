@@ -1,3 +1,9 @@
+Thu Dec 27 14:19:46 2001  Owen Taylor  <otaylor@redhat.com>
+
+	* modules/basic/basic-x.c: Mark as only an approximate
+	match for Hebrew, so the Hebrew shaper will be used
+	in preference. (#67557, Dov Grobgeld)
+
 Wed Dec 26 11:52:28 2001  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pango-fontmap.c (pango_font_map_load_fontset) 
