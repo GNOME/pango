@@ -876,7 +876,10 @@ pango_font_description_from_string (const char *str)
     str++;
 
   if (str != last)
-    desc->family_name = g_strndup (str, last - str);
+    {
+      desc->family_name = g_strndup (str, last - str);
+      desc->mask |= PANGO_FONT_MASK_FAMILY;      
+    }
 
   return desc;
 }
