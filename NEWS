@@ -11,7 +11,7 @@ Changes between 1.1.1 and 1.1.2
 * Indic module improvements [Eric Mader]
 * Fixes to generic OpenType handling [Eric]
 * Improve language specific charset ordering basic-x11 [James Su, Brian Yuan]
-* Some merges of fixes by Werner Lember to the original 
+* Some merges of fixes by Werner Lemberg to the original 
   FreeType OpenType code.
 * Robustify and otherwise improve pango_color_parse() [Matthias Clasen]
 * Some cross-compiling fixes [J. Ali Harlow]
