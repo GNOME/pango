@@ -1,3 +1,10 @@
+Wed Oct 31 11:00:55 2001  Owen Taylor  <otaylor@redhat.com>
+
+	* modules/tamil/tamil-{xft,x}.c: Make a number of functions
+	static to avoid symbol clashes when both tamil-x.c and
+	tamil-xft.c are linked statically into the same library.
+	(#63436, Raymond Wan)
+
 2001-10-30  Matthias Clasen  <matthiasc@poet.de>
 
 	* docs/pango-sections.txt, pango/pango-ot.h: Remove declarations

@@ -86,7 +86,8 @@ static gint n_script_engines = G_N_ELEMENTS (script_engines);
 
 /* Return non-zero if c is a akara mey, 0 otherwise
  */
-int is_consonant (unsigned int c)
+static int
+is_consonant (unsigned int c)
 {
   /* Too many gaps between consonants - So use a bit map */
   /** KSHA might come at 0xBBA later ?? **/
@@ -96,7 +97,8 @@ int is_consonant (unsigned int c)
 
 /* Return 1 if c is a modifier, 0 otherwise
  */
-int is_modifier (unsigned int c)
+static int
+is_modifier (unsigned int c)
 {
   if ((c >= 0x0BBE && c <= 0x0BC2) ||
       (c >= 0x0BC6 && c <= 0x0BC8) ||
@@ -111,7 +113,7 @@ int is_modifier (unsigned int c)
 /* Apply the modifier to the base character to get the string of glyph
  * indices 
  */
-void
+static void
 apply_modifier (gunichar base,
 		gunichar modifier,
 		gunichar *glyph_str,
