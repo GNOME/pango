@@ -1,3 +1,7 @@
+Wed Mar 20 15:22:54 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* configure.in: Error out if no backends found. (#74880)
+
 Wed Mar 20 15:14:15 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pango-markup.c (text_handler): Dummy-initialize

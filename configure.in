@@ -244,6 +244,17 @@ AC_SUBST(WIN32_LIBS)
 AM_CONDITIONAL(HAVE_WIN32, $have_win32) 
 
 #
+# We must have some backend defined, in order for the pango-querymodules
+# rule in pango/Makefile.am to work correctly. If you are up to writing
+# a new Pango backend outside of Pango, you are up to sending the necessary
+# patch to fix that rule. :-)
+#
+if $HAVE_FREETYPE || $HAVE_X || $HAVE_XFT || $HAVE_WIN32  ; then : ; else
+  AC_MSG_ERROR([*** Didn't find any of FreeType, X11, or Win32.
+*** Must have at least one backend to build Pango.])
+fi
+
+#
 # Checks for GLib
 #
 GLIB_REQUIRED_VERSION=2.0.0
