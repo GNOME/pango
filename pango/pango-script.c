@@ -209,7 +209,7 @@ static const gunichar paired_chars[] = {
   0x301a, 0x301b
 };
 
-int
+static int
 get_pair_index (gunichar ch)
 {
   int lower = 0;

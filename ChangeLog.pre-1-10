@@ -1,3 +1,13 @@
+Mon Jun 21 14:23:05 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-layout.c (no_shape_filter_func)
+	pango/pango-script.c (get_pair_index): 
+	pango/modules.c (append_engines): Fix 
+	some missing statics. (#142237, Morten Welinder)
+
+	* pango/mini-fribidi/fribidi_types.c: Move
+	fribidi_type_name inside the #ifdef DEBUG.
+
 Mon Jun 21 13:55:17 2004  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/opentype/otlbuffer.c: Use the gcc-3.3 
