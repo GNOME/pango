@@ -1973,7 +1973,7 @@ pango_x_apply_ligatures (PangoFont     *font,
             g_free (temp);
         }
 
-      next_pattern:
+      next_pattern: ;
       }
   
   return hits >= 1;

@@ -1,3 +1,14 @@
+Thu Oct 18 14:40:04 2001  Owen Taylor  <otaylor@redhat.com>
+
+	(Fixes from Frank Belew, #58905)
+
+	* pango/pangox.c (pango_x_apply_ligatures): Fix label
+	at end of block.
+
+	* pango/mini-fribidi/fribidi.c pango/mini-fribidi/fribid.patch:
+	Use g_alloca() instead of mix of MSVC specific and GCC specific
+	stuff.
+
 2001-10-15  Matthias Clasen  <matthiasc@poet.de>
 
 	* pango/tmpl/x-fonts.sgml

@@ -1,12 +1,12 @@
 This directory holds a stripped down version of Dov Grobgeld's FriBidi
-library. The files in here are taken from FriBidi 0.1.12, with the
-changes in fribidi-0.1.12.patch applied to them.
+library. The fribidi version that fribidi.patch is against was
+obtained with "cvs up -D '4/16/2001'" from the fribidi cvs repository.
 
 Like Pango, FriBidi is licensed under the terms of the GNU Lesser
 General Public License - see the file COPYING in the toplevel
 directory of the Pango distribution.
 
-12 November 2000
+12 November 2000, 18 October 2001
 Owen Taylor
 
 
