@@ -20,6 +20,7 @@
  */
 
 #include <string.h>
+#include <stdlib.h>
 #include <math.h>
 
 #include <X11/Xlib.h>

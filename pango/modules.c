@@ -261,7 +261,7 @@ process_module_file (FILE *module_file)
 	      q++;
 	      range->start = start;
 	      range->end = end;
-	      range->langs = g_strdup (tmp_buf->str);
+	      range->langs = g_strdup (q);
 	      
 	      ranges = g_list_prepend (ranges, range);
 	    }

@@ -22,6 +22,7 @@
 
 #include <string.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 #include <qapplication.h>
 #include <qcdestyle.h>
@@ -165,7 +166,12 @@ ViewerView::readFile (const QString &name)
 {
   QFile file (name);
   
-  file.open (IO_ReadOnly);
+  if (!file.open (IO_ReadOnly))
+    {
+      fprintf (stderr, "Cannot open file '%s'\n");
+      return;
+    }
+  
   QTextStream ts (&file);;
 
   ts.setCodec (QTextCodec::codecForName ("utf8"));
@@ -349,7 +355,7 @@ cmp_strings (const void *a, const void *b)
   return strcmp (*(const char **)a, *(const char **)b);
 }
 
-ViewerWindow::ViewerWindow ()
+ViewerWindow::ViewerWindow (const QString &filename)
 {
   // Create menu
 
@@ -401,7 +407,7 @@ ViewerWindow::ViewerWindow ()
 
   fontChanged ();
 
-  view_->readFile ("/home/otaylor/devel/pango/examples/HELLO.utf8");
+  view_->readFile (filename);
 
   resize (500, 500);
 }
@@ -500,13 +506,19 @@ int
 main (int argc, char **argv)
 {
   QApplication a (argc, argv);
+  const char *filename;
 
   QApplication::setStyle (new QCDEStyle());
 
   if (QFileInfo ("./pangorc").exists ())
     putenv ("PANGO_RC_FILE=./pangorc");
-  
-  ViewerWindow *vw = new ViewerWindow ();
+
+  if (argc == 2)
+    filename = argv[1];
+  else
+    filename = "HELLO.utf8";
+    
+  ViewerWindow *vw = new ViewerWindow (filename);
 
   vw->show();
 

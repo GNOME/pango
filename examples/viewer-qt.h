@@ -89,7 +89,7 @@ class ViewerWindow : public QMainWindow
 
  public:
 
-  ViewerWindow ();
+  ViewerWindow (const QString &filename);
   ~ViewerWindow ();
 
  private:
