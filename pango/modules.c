@@ -183,7 +183,8 @@ handle_included_module (PangoIncludedModule *mod)
 {
   PangoEngineInfo *engine_info;
   int n_engines;
-
+  int j;
+  
   mod->list (&engine_info, &n_engines);
 
   for (j = 0; j < n_engines; j++)

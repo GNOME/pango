@@ -1,3 +1,8 @@
+2000-11-16  Havoc Pennington  <hp@redhat.com>
+
+	* pango/modules.c (handle_included_module): Declare variable j so
+	it compiles
+
 2000-11-15  Elliot Lee  <sopwith@redhat.com>
 
 	* pango/modules.c: Make some vars static.
