@@ -1,6 +1,11 @@
 ## Process this file with automake to create Makefile.in.
 
-SUBDIRS=basic hangul tamil arabic
+SUBDIRS = 		\
+	arabic		\
+	devanagari 	\
+	basic 		\
+	hangul 		\
+	tamil 
 
 install-data-local:
 	$(mkinstalldirs) $(DESTDIR)$(localstatedir)/lib/pango

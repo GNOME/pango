@@ -66,6 +66,7 @@ pango/Makefile
 modules/Makefile
 modules/arabic/Makefile
 modules/basic/Makefile
+modules/devanagari/Makefile
 modules/hangul/Makefile
 modules/tamil/Makefile
 examples/Makefile

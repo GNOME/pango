@@ -1,3 +1,20 @@
+Wed Apr 12 13:59:22 2000  Owen Taylor  <otaylor@redhat.com>
+
+	* configure.in modules/Makefile.am modules/devanagari/*: Added Devanagari
+	shaper from Robert Brady <rwb197@zepler.org>
+
+	* examples/HELLO.utf8: Added Hindi from Emacs 
+
+	* examples/dev-example.utf: Some syllable strings for testing
+	the Devanagari shaper.
+	
+	* examples/pangox_aliases: Added 
+	  -*-devanagari-medium-r-normal--*-*-*-*-*-*-iso10646-dev
+
+	* fonts/devnag18.bdf fonts/devnag.README: Devanagari font
+	from http://crl.NMSU.Edu/~mleisher/devnag.html currently
+	required for operation of the devanagari shaper.
+	
 Tue Apr  4 22:03:42 2000  Owen Taylor  <otaylor@redhat.com>
 
 	* configure.in: Released 0.9
