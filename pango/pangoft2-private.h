@@ -101,6 +101,8 @@ struct _PangoFT2GlyphInfo
 
 struct _PangoFT2Face
 {
+  PangoFontFace parent_instance;
+  
   FT_Open_Args **open_args;
   FT_Long *face_indices;
   int n_fonts;

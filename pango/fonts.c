@@ -1277,7 +1277,7 @@ pango_font_family_get_type (void)
         NULL,           /* class_init */
         NULL,           /* class_finalize */
         NULL,           /* class_data */
-        sizeof (PangoFont),
+        sizeof (PangoFontFamily),
         0,              /* n_preallocs */
 	NULL            /* init */
       };

@@ -74,6 +74,8 @@ struct _PangoFT2FontMap
 
 struct _PangoFT2Family
 {
+  PangoFontFamily parent_instance;
+  
   char *family_name;
 
   /* List of PangoFT2FontEntry structs */
