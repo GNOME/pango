@@ -120,7 +120,7 @@ load_fallback_face (PangoFT2Font *ft2font,
 			 FC_SIZE, FcTypeDouble, (double)pango_font_description_get_size (fcfont->description)/PANGO_SCALE,
 			 NULL);
   
-  matched = FcFontMatch (0, sans, &result);
+  matched = FcFontMatch (NULL, sans, &result);
   
   if (FcPatternGetString (matched, FC_FILE, 0, &filename2) != FcResultMatch)
     goto bail1;

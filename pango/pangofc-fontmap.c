@@ -449,7 +449,7 @@ pango_fc_font_map_list_families (PangoFontMap      *fontmap,
       if (families)
 	*families = NULL;
       if (n_families)
-	n_families = 0;
+	*n_families = 0;
 
       return;
     }
@@ -592,7 +592,7 @@ pango_fc_make_pattern (const PangoFontDescription *description)
 
   size = (double) pango_font_description_get_size (description) / PANGO_SCALE;
   
-  pattern = FcPatternBuild (0,
+  pattern = FcPatternBuild (NULL,
 			    FC_WEIGHT, FcTypeInteger, weight,
 			    FC_SLANT,  FcTypeInteger, slant,
 #ifdef FC_WIDTH
@@ -751,7 +751,7 @@ pango_fc_font_map_get_patterns (PangoFontMap               *fontmap,
 
       pango_fc_default_substitute (fcfontmap, pattern);
       
-      font_patterns = FcFontSort (NULL, pattern, FcTrue, 0, &res);
+      font_patterns = FcFontSort (NULL, pattern, FcTrue, NULL, &res);
 
       if (!font_patterns)
 	{

@@ -1,3 +1,17 @@
+Wed Sep 22 14:07:47 2004  Owen Taylor  <otaylor@redhat.com>
+
+	Cleanups from 'sparse', #149922, Kjartan Maraas
+
+	* pango/pango-utils.c (read_config): () => (void) in
+	definition.
+
+	* pango/pangofc-fontmap.c (pango_fc_font_map_list_families):
+	Initialize *n_families, not n_families.
+
+	* pango/pangofc-fontmap.c pango/pangoft2.c opentype/ftxgdef.c 
+	opentype/ftxgpos.c opentype/ftxgsub.c: : Fix various 0/NULL 
+	confusion.
+
 Mon Sep 20 13:57:35 2004  Owen Taylor  <otaylor@redhat.com>
 
 	* modules/indic/mprefixups.c (indic_mprefixups_apply): 

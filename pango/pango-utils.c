@@ -583,7 +583,7 @@ read_config_file (const char *filename, gboolean enoent_error)
 }
 
 static void
-read_config ()
+read_config (void)
 {
   if (!config_hash)
     {
