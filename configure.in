@@ -87,6 +87,12 @@ AC_SUBST(FREETYPE_LIBS)
 AC_SUBST(FREETYPE_CFLAGS)
 AM_CONDITIONAL(HAVE_FREETYPE, $have_freetype) 
 
+## see which freetype we have, 2.0.3 vs. 2.0.4
+pango_save_cppflags="$CPPFLAGS"  
+CPPFLAGS="$CPPFLAGS $FREETYPE_CFLAGS"
+AC_CHECK_HEADER(freetype/internal/tterrors.h, AC_DEFINE(HAVE_FREETYPE_2_0_3))
+CPPFLAGS="$pango_save_cppflags"
+
 #
 # Checks for Xft/XRender
 #

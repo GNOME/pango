@@ -1,3 +1,12 @@
+2001-09-19  Havoc Pennington  <hp@redhat.com>
+
+	* pango/opentype/fterrcompat.h: header to abstract the difference
+	between FreeType 2.0.3 and 2.0.4 error codes, based on the
+	configure check.	
+
+	* configure.in: check for the tterrors.h header in FreeType 2.0.3,
+	and define HAVE_FREETYPE_2_0_3 if we have it
+
 Wed Sep 19 10:48:04 2001  Tim Janik  <timj@gtk.org>
 
 	* Released 0.19.

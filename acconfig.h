@@ -16,3 +16,4 @@
 
 #undef HAVE_FRIBIDI
 #undef HAVE_UNISTD_H
+#undef HAVE_FREETYPE_2_0_3
