@@ -197,6 +197,7 @@ extern IndicOTClassTable taml_class_table;
 extern IndicOTClassTable telu_class_table;
 extern IndicOTClassTable knda_class_table;
 extern IndicOTClassTable mlym_class_table;
+extern IndicOTClassTable sinh_class_table;
 
 const IndicOTSplitMatra *indic_ot_get_split_matra(const IndicOTClassTable *class_table, IndicOTCharClass char_class);
 

@@ -65,6 +65,7 @@ struct _PangoIndicInfo
 #define OT_TAG_telu FT_MAKE_TAG('t','e','l','u')
 #define OT_TAG_knda FT_MAKE_TAG('k','n','d','a')
 #define OT_TAG_mlym FT_MAKE_TAG('m','l','y','m')
+#define OT_TAG_sinh FT_MAKE_TAG('s','i','n','h')
 
 static PangoEngineScriptInfo deva_scripts[] = {
   { PANGO_SCRIPT_DEVANAGARI, "*" }
@@ -102,10 +103,15 @@ static PangoEngineScriptInfo mlym_scripts[] = {
   { PANGO_SCRIPT_MALAYALAM, "*" }
 };
 
+static PangoEngineScriptInfo sinh_scripts[] = {
+  { PANGO_SCRIPT_SINHALA, "*" }
+};
+
 static PangoEngineInfo script_engines[] = {
   INDIC_ENGINE_INFO(deva), INDIC_ENGINE_INFO(beng), INDIC_ENGINE_INFO(guru),
   INDIC_ENGINE_INFO(gujr), INDIC_ENGINE_INFO(orya), INDIC_ENGINE_INFO(taml),
-  INDIC_ENGINE_INFO(telu), INDIC_ENGINE_INFO(knda), INDIC_ENGINE_INFO(mlym)
+  INDIC_ENGINE_INFO(telu), INDIC_ENGINE_INFO(knda), INDIC_ENGINE_INFO(mlym),
+  INDIC_ENGINE_INFO(sinh)
 };
 
 /*
@@ -119,7 +125,8 @@ static PangoEngineInfo script_engines[] = {
 static PangoIndicInfo indic_info[] = {
   PANGO_INDIC_INFO(deva), PANGO_INDIC_INFO(beng), PANGO_INDIC_INFO(guru),
   PANGO_INDIC_INFO(gujr), PANGO_INDIC_INFO(orya), PANGO_INDIC_INFO(taml),
-  PANGO_INDIC_INFO(telu), PANGO_INDIC_INFO(knda), PANGO_INDIC_INFO(mlym)
+  PANGO_INDIC_INFO(telu), PANGO_INDIC_INFO(knda), PANGO_INDIC_INFO(mlym),
+  PANGO_INDIC_INFO(sinh)
 };
 
 static void

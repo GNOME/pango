@@ -1,3 +1,13 @@
+Tue Dec 14 20:44:53 2004  Owen Taylor  <otaylor@redhat.com>
+
+	Sinhala support (#153517, Anuradha Ratnaweera)
+
+	* modules/indic/indic-ot.h modules/indic/indic-fc.c 
+	modules/indic/indic-ot-class-tables.c: Add tables for Sinhala.
+
+	* modules/indic/indic-ot.c (indic_ot_reorder): Add handling
+	of Virama for two-part dependent vowels.
+
 Tue Dec 14 18:36:57 2004  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pango-layout.c (pango_layout_copy): Copy 

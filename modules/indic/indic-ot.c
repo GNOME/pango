@@ -29,6 +29,7 @@ struct _Output
     gunichar fMabove;
     gunichar fMpost;
     gunichar fLengthMark;
+    gunichar fVirama; /* to handle virama in sinhala split matras */
     glong    fMatraIndex;
     gulong   fMatraTags;
     gboolean fMatraWordStart;
@@ -50,7 +51,7 @@ static void initOutput(Output *output, const glong *originalOffsets, gunichar *o
     output->fOutIndex    = 0;
     output->fMatraTags   = 0;
 
-    output->fMpre = output->fMbelow = output->fMabove = output->fMpost = output->fLengthMark = 0;
+    output->fMpre = output->fMbelow = output->fMabove = output->fMpost = output->fLengthMark = output->fVirama = 0;
 
     output->fMPreOutIndex = -1;
     output->fMPreFixups = mpreFixups;
@@ -69,12 +70,14 @@ static void saveMatra(Output *output, gunichar matra, IndicOTCharClass matraClas
         output->fMpost = matra;
     } else if (IS_LENGTH_MARK(matraClass)) {
         output->fLengthMark = matra;
+    } else if (IS_VIRAMA(matraClass)) {
+        output->fVirama = matra;
     }
 }
 
 static void initMatra(Output *output, guint32 matraIndex, gulong matraTags, gboolean wordStart)
 {
-    output->fMpre = output->fMbelow = output->fMabove = output->fMpost = output->fLengthMark = 0;
+    output->fMpre = output->fMbelow = output->fMabove = output->fMpost = output->fLengthMark = output->fVirama = 0;
     output->fMPreOutIndex = -1;
     output->fMatraIndex = matraIndex;
     output->fMatraTags = matraTags;
@@ -162,6 +165,13 @@ static void writeLengthMark(Output *output)
     }
 }
 
+static void writeVirama(Output *output)
+{
+    if (output->fVirama != 0) {
+	writeChar(output, output->fVirama, output->fMatraIndex, output->fMatraTags);
+    }
+}
+
 static glong getOutputIndex(Output *output)
 {
     return output->fOutIndex;
@@ -230,6 +240,7 @@ glong indic_ot_reorder(const gunichar *chars, const glong *utf8_offsets, glong c
             writeMabove(&output);
             writeMpost(&output);
             writeLengthMark(&output);
+	    writeVirama(&output);
             break;
 
         case CC_CONSONANT:
@@ -414,6 +425,7 @@ glong indic_ot_reorder(const gunichar *chars, const glong *utf8_offsets, glong c
 	    }
 
 	    writeLengthMark(&output);
+	    writeVirama(&output);
 
 	    /* write reph */
 	    if ((class_table->scriptFlags & SF_REPH_AFTER_BELOW) == 0) {

@@ -192,6 +192,19 @@ static IndicOTCharClass mlymCharClasses[] =
     _iv, _iv, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx  /* 0D60 - 0D6F */
 };
 
+static IndicOTCharClass sinhCharClasses[] =
+{
+    _xx, _xx, _mp, _mp, _xx, _iv, _iv, _iv, _iv, _iv, _iv, _iv, _iv, _iv, _iv, _iv, /* 0D80 - 0D8F */
+    _iv, _iv, _iv, _iv, _iv, _iv, _iv, _xx, _xx, _xx, _ct, _ct, _ct, _ct, _ct, _ct, /* 0D90 - 0D9F */
+    _ct, _ct, _ct, _ct, _ct, _ct, _ct, _ct, _ct, _ct, _ct, _ct, _ct, _ct, _ct, _ct, /* 0DA0 - 0DAF */
+    _ct, _ct, _xx, _ct, _ct, _ct, _ct, _ct, _ct, _ct, _ct, _ct, _xx, _ct, _xx, _xx, /* 0DB0 - 0DBF */
+    _ct, _ct, _ct, _ct, _ct, _ct, _ct, _xx, _xx, _xx, _vr, _xx, _xx, _xx, _xx, _dr, /* 0DC0 - 0DCF */
+    _dr, _dr, _da, _da, _db, _xx, _db, _xx, _dr, _dl, _s1, _dl, _s2, _s3, _s4, _dr, /* 0DD0 - 0DDF */
+    _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, /* 0DE0 - 0DEF */
+    _xx, _xx, _dr, _dr, _xx                                                         /* 0DF0 - 0DF4 */
+};
+
+
 /*
  * Split matra tables
  */
@@ -207,6 +220,10 @@ static const IndicOTSplitMatra kndaSplitTable[] = {{0x0CBF, 0x0CD5}, {0x0CC6, 0x
                                       {0x0CC6, 0x0CC2, 0x0CD5}};
 
 static const IndicOTSplitMatra mlymSplitTable[] = {{0x0D46, 0x0D3E}, {0x0D47, 0x0D3E}, {0x0D46, 0x0D57}};
+
+static const IndicOTSplitMatra sinhSplitTable[] = {{0x0DD9, 0x0DCA}, {0x0DD9, 0x0DCF}, {0x0DD9, 0x0DCF, 0x0DCA},
+						   {0x0DD9, 0x0DF3} };
+
 
 /*
  * Script Flags
@@ -226,6 +243,7 @@ static const IndicOTSplitMatra mlymSplitTable[] = {{0x0D46, 0x0D3E}, {0x0D47, 0x
 #define TELU_SCRIPT_FLAGS (SF_MATRAS_AFTER_BASE | 3)
 #define KNDA_SCRIPT_FLAGS (SF_MATRAS_AFTER_BASE | 3)
 #define MLYM_SCRIPT_FLAGS (SF_MPRE_FIXUP | SF_NO_POST_BASE_LIMIT)
+#define SINH_SCRIPT_FLAGS (SF_MPRE_FIXUP | SF_NO_POST_BASE_LIMIT)
 
 /*
  * Indic Class Tables
@@ -247,6 +265,8 @@ IndicOTClassTable telu_class_table = {0x0C00, 0x0C6F, 3, TELU_SCRIPT_FLAGS, telu
 IndicOTClassTable knda_class_table = {0x0C80, 0x0CEF, 4, KNDA_SCRIPT_FLAGS, kndaCharClasses, kndaSplitTable};
 
 IndicOTClassTable mlym_class_table = {0x0D00, 0x0D6F, 3, MLYM_SCRIPT_FLAGS, mlymCharClasses, mlymSplitTable};
+
+IndicOTClassTable sinh_class_table = {0x0D80, 0x0DF4, 3, SINH_SCRIPT_FLAGS, sinhCharClasses, sinhSplitTable};
 
 const IndicOTSplitMatra *indic_ot_get_split_matra(const IndicOTClassTable *class_table, IndicOTCharClass char_class)
 {
