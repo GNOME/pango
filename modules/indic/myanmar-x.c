@@ -134,7 +134,7 @@ pango_engine_shape (PangoFont * font,
   gunichar *wc;
   int sb;
   int n_syls;
-  gunichar **syls = g_malloc (sizeof (gunichar **));
+  gunichar **syls = g_new (gunichar *, 2);
 
   g_return_if_fail (font != NULL);
   g_return_if_fail (text != NULL);
@@ -161,7 +161,7 @@ pango_engine_shape (PangoFont * font,
       if (i && (is_consonant (wc[i]) | is_ind_vowel (wc[i]))
 	  && wc[i - 1] != VIRAMA)
 	{
-	  syls = g_realloc (syls, ((n_syls + 2) * sizeof (gunichar **)));
+	  syls = g_renew (gunichar *, syls, n_syls + 2);
 	  syls[n_syls] = wc + i;
 	  n_syls++;
 	  sb = glyphs->log_clusters[i];
