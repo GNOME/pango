@@ -428,10 +428,11 @@ pango_xft_font_finalize (GObject *object)
     g_object_unref (xfont->ot_info);
 
   pango_font_description_free (xfont->description);
-  XftPatternDestroy (xfont->font_pattern);
 
   if (xfont->xft_font)
     XftFontClose (display, xfont->xft_font);
+  else
+    XftPatternDestroy (xfont->font_pattern); /* If we opened the font it will own and destroy this pattern */
 
   G_OBJECT_CLASS (parent_class)->finalize (object);
 }
