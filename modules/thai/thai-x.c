@@ -55,7 +55,7 @@ static PangoEngineInfo script_engines[] = {
  * #PangoFont. This is computed once per font and cached for later retrieval.
  */
 ThaiFontInfo *
-get_font_info (PangoFont *font)
+thai_get_font_info (PangoFont *font)
 {
   static const char *charsets[] = {
     "tis620-2",
@@ -127,13 +127,13 @@ get_font_info (PangoFont *font)
 }
 
 PangoGlyph
-make_glyph (ThaiFontInfo *font_info, unsigned int c)
+thai_make_glyph (ThaiFontInfo *font_info, unsigned int c)
 {
   return PANGO_X_MAKE_GLYPH (font_info->info.subfont, c);
 }
 
 PangoGlyph
-make_unknown_glyph (ThaiFontInfo *font_info, unsigned int c)
+thai_make_unknown_glyph (ThaiFontInfo *font_info, unsigned int c)
 {
   return pango_x_get_unknown_glyph (font_info->font);
 }
@@ -144,7 +144,7 @@ thai_engine_get_coverage (PangoFont  *font,
 {
   PangoCoverage *result = pango_coverage_new ();
   
-  ThaiFontInfo *font_info = get_font_info (font);
+  ThaiFontInfo *font_info = thai_get_font_info (font);
   
   if (font_info->font_set != THAI_FONT_NONE)
     {

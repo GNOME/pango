@@ -132,7 +132,7 @@ contain_glyphs(FT_Face face, const int glyph_map[128])
  * #PangoFont. This is computed once per font and cached for later retrieval.
  */
 ThaiFontInfo *
-get_font_info (PangoFont *font)
+thai_get_font_info (PangoFont *font)
 {
   ThaiFontInfo *font_info;
   GQuark info_id = g_quark_from_string ("thai-font-info");
@@ -170,7 +170,7 @@ get_font_info (PangoFont *font)
 }
 
 PangoGlyph
-make_glyph (ThaiFontInfo *font_info, unsigned int c)
+thai_make_glyph (ThaiFontInfo *font_info, unsigned int c)
 {
   int index;
   PangoGlyph result;
@@ -191,7 +191,7 @@ make_glyph (ThaiFontInfo *font_info, unsigned int c)
 }
 
 PangoGlyph
-make_unknown_glyph (ThaiFontInfo *font_info, unsigned int c)
+thai_make_unknown_glyph (ThaiFontInfo *font_info, unsigned int c)
 {
   return pango_xft_font_get_unknown_glyph (font_info->font, c);
 }

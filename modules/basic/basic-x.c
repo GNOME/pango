@@ -199,7 +199,7 @@ char_cache_free (CharCache *cache)
   g_free (cache);
 }
 
-PangoGlyph 
+static PangoGlyph 
 find_char (CharCache *cache, PangoFont *font, gunichar wc, const char *input)
 {
   int mask_index;
