@@ -1,3 +1,9 @@
+Mon Jul 26 15:55:03 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pangoxft-font.c (get_glyph_extents_missing): 
+	mini_width/height are still (before render patch) in 
+	pixels, not Pango units.
+
 Mon Jul 26 15:24:11 2004  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/opentype/ftxgsub.c (ADD_Glyph): Remove the
