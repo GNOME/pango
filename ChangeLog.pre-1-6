@@ -1,3 +1,8 @@
+Tue Feb 10 19:03:44 2004  Manish Singh  <yosh@gimp.org>
+
+	* pango/pango-context.c (itemize_state_init): initialize font_desc
+	to NULL.
+
 Tue Feb 10 14:33:54 2004  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pango-markup.c: Handle 'tag' being NULL

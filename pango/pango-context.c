@@ -611,6 +611,7 @@ itemize_state_init (ItemizeState      *state,
       state->free_attr_iter = TRUE;
     }
 
+  state->font_desc = NULL;
   state->lang = NULL;
 
   advance_attr_iterator_to (state->attr_iter, start_index);
