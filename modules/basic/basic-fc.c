@@ -32,15 +32,15 @@
 static PangoEngineRange basic_ranges[] = {
   /* Language characters */
   { 0x0380, 0x058f, "*" },
-  { 0x0591, 0x05f4, "" }, /* Hebrew */
-  { 0x060c, 0x06f9, "" }, /* Arabic */
-  { 0x0e01, 0x0e5b, "" },  /* Thai */
   { 0x10a0, 0x10ff, "*" }, /* Georgian */
   { 0x1200, 0x16ff, "*" }, /* Ethiopic,Cherokee,Canadian,Ogham,Runic */
   { 0x1e00, 0x1fff, "*" },
   { 0x2000, 0x302d, "*" },
   { 0x3030, 0x9fff, "*" },
-  { 0xf900, 0xfa0b, "kr" },
+  { 0xa000, 0xa4c6, "*" }, /* Yi */
+  { 0xe000, 0xf7ee, "*" }, /* HKSCS-1999 */
+  { 0xf900, 0xfa2d, "*" }, /* CJK Compatibility Ideographs */
+  { 0xfe30, 0xfe6b, "*" }, /* CJK Compatibility Forms and Small Form Variants */
   { 0xff00, 0xffe3, "*" },
   { 0x0000, 0xffff, "" },
 };
