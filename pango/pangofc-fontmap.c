@@ -1164,8 +1164,7 @@ pango_fc_face_get_type (void)
       
       object_type = g_type_register_static (PANGO_TYPE_FONT_FACE,
                                             "PangoFcFace",
-                                            &object_info,
-					    G_TYPE_FLAG_ABSTRACT);
+                                            &object_info, 0);
     }
   
   return object_type;

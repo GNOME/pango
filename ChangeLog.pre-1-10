@@ -1,3 +1,8 @@
+Thu Aug 21 00:29:46 2003  Soeren Sandmann  <sandmann@daimi.au.dk>
+
+	* pango/pangofc-fontmap.c (pango_fc_face_get_type): Remove
+	ABSTRACT from g_type_register_static() call
+
 2003-08-20  Noah Levitt  <nlevitt@columbia.edu>
 
 	* configure.in: Bump version to 1.3.0.
