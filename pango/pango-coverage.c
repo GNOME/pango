@@ -169,10 +169,11 @@ pango_coverage_get (PangoCoverage *coverage,
   int block_index;
   
   g_return_val_if_fail (coverage != NULL, PANGO_COVERAGE_NONE);
+  g_return_val_if_fail (index < 0, PANGO_COVERAGE_NONE);
 
   block_index = index / 256;
 
-  if (block_index > coverage->n_blocks)
+  if (block_index >= coverage->n_blocks)
     return PANGO_COVERAGE_NONE;
   else
     {
@@ -206,11 +207,12 @@ pango_coverage_set (PangoCoverage     *coverage,
   guchar *data;
   
   g_return_if_fail (coverage != NULL);
+  g_return_if_fail (index < 0);
   g_return_if_fail (level >= 0 || level <= 3);
 
   block_index = index / 256;
 
-  if (block_index > coverage->n_blocks)
+  if (block_index >= coverage->n_blocks)
     {
       int old_n_blocks = coverage->n_blocks;
 
