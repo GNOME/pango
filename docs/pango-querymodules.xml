@@ -1,0 +1,53 @@
+<refentry id="pango-querymodules">
+
+<refmeta>
+<refentrytitle>pango-querymodules</refentrytitle>
+<manvolnum>1</manvolnum>
+</refmeta>
+
+<refnamediv>
+<refname>pango-querymodules</refname>
+<refpurpose>Module registration utility</refpurpose>
+</refnamediv>
+
+<refsynopsisdiv>
+<cmdsynopsis>
+<command>pango-querymodules</command>
+<arg choice="opt" rep="repeat">module</arg>
+</cmdsynopsis>
+</refsynopsisdiv>
+
+<refsect1><title>Description</title>
+<para>
+<command>pango-querymodules</command> collects information about loadable 
+modules for Pango and writes it to <filename>stdout</filename>. 
+</para>
+<para>
+If called without arguments, it looks for modules in the Pango module path.  
+</para>
+<para>
+If called with arguments, it looks for the specified modules. The arguments
+may be absolute or relative paths.
+</para>
+</refsect1>
+
+<refsect1><title>Environment</title>
+<para>
+The Pango module path is specified by the key
+<literal>Pango/ModulesPath</literal> in the Pango config database, which is
+read from
+      <filename><replaceable>sysconfdir</replaceable>/pango/pangorc</filename>,
+      <filename>~/.pangorc</filename> and the file specified in the environment
+      variable <envar>PANGO_RC_FILE</envar>. 
+</para>
+</refsect1>
+
+<refsect1><title>Bugs</title>
+<para>
+None known yet.
+</para>
+</refsect1>
+
+</refentry>
+
+

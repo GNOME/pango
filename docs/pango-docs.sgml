@@ -17,6 +17,7 @@
 <!ENTITY pango-Xft-Fonts-and-Rendering SYSTEM "xml/xft-fonts.xml">
 <!ENTITY pango-OpenType-Font-Handling SYSTEM "xml/opentype.xml">
 <!ENTITY markup-format SYSTEM "pango_markup.sgml">
+<!ENTITY pango-querymodules SYSTEM "pango-querymodules.xml">
 <!ENTITY version SYSTEM "version.xml">
 ]>
 <book id="index">
@@ -52,6 +53,12 @@
     &pango-Indic-Engine-Support;
     &pango-Modules;
     </chapter>
+
+  <chapter id="tools">
+    <title>Pango Tools</title>
+
+    &pango-querymodules;
+  </chapter>
 
   <index/>
 
