@@ -1,3 +1,8 @@
+Mon Jul 26 19:11:46 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/opentype/ftxgdef.c: Fix allocation and indexing
+	in NewGlyphClasses array. (#130661, Masatake YAMATO)
+
 Mon Jul 26 15:55:03 2004  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pangoxft-font.c (get_glyph_extents_missing): 
