@@ -4,8 +4,11 @@
 	* pango/pangowin32-private.h
 	* pango/pangowin32-fontcache.c
 	* pango/pangowin32-fontmap.c
+	* pango/makefile.mingw
 	* modules/basic/basic-win32.c
+	* modules/basic/makefile.mingw
 	* examples/viewer-win32.c
+	* examples/makefile.mingw
 	* examples/pangowin32.aliases: New files. Start of a Win32
 	implementation. Does not work yet.
 
