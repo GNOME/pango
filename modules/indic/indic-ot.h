@@ -143,7 +143,7 @@ enum indic_glyph_property_
 
 #define SCRIPT_RANGE_beng 0x0980, 0x09FA
 
-#define SCRIPT_RANGE_punj 0x0A00, 0x0A74
+#define SCRIPT_RANGE_guru 0x0A00, 0x0A74
 
 #define SCRIPT_RANGE_gujr 0x0A80, 0x0AEF
 
@@ -209,7 +209,7 @@ typedef struct _IndicOTClassTable IndicOTClassTable;
 
 extern IndicOTClassTable deva_class_table;
 extern IndicOTClassTable beng_class_table;
-extern IndicOTClassTable punj_class_table;
+extern IndicOTClassTable guru_class_table;
 extern IndicOTClassTable gujr_class_table;
 extern IndicOTClassTable orya_class_table;
 extern IndicOTClassTable taml_class_table;

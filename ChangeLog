@@ -1,3 +1,10 @@
+Wed Aug 28 15:22:14 2002  Eric Mader   <mader@jtcsv.com>
+	
+	* pango/modules/indic/indic-ot.h:
+	* pango/modules/indic/indic-ot.c:
+	* pango/modules/indic/indic-ot-class-tables.c:
+	Change Punjabi script ('punj') to Gurmukhi ('guru')
+	
 Tue Aug 20 17:31:39 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* Released 1.1.1.

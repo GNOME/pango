@@ -54,7 +54,7 @@ struct _PangoIndicInfo
 
 #define OT_TAG_deva FT_MAKE_TAG('d','e','v','a')
 #define OT_TAG_beng FT_MAKE_TAG('b','e','n','g')
-#define OT_TAG_punj FT_MAKE_TAG('p','u','n','j')
+#define OT_TAG_guru FT_MAKE_TAG('g','u','r','u')
 #define OT_TAG_gujr FT_MAKE_TAG('g','u','j','r')
 #define OT_TAG_orya FT_MAKE_TAG('o','r','y','a')
 #define OT_TAG_taml FT_MAKE_TAG('t','a','m','l')
@@ -70,8 +70,8 @@ static PangoEngineRange beng_ranges[] = {
   INDIC_SCRIPT_RANGE(beng), /* Bengali */
 };
 
-static PangoEngineRange punj_ranges[] = {
-  INDIC_SCRIPT_RANGE(punj), /* Punjabi */
+static PangoEngineRange guru_ranges[] = {
+  INDIC_SCRIPT_RANGE(guru), /* Gurmukhi */
 };
 
 static PangoEngineRange gujr_ranges[] = {
@@ -99,7 +99,7 @@ static PangoEngineRange mlym_ranges[] = {
 };
 
 static PangoEngineInfo script_engines[] = {
-  INDIC_ENGINE_INFO(deva), INDIC_ENGINE_INFO(beng), INDIC_ENGINE_INFO(punj),
+  INDIC_ENGINE_INFO(deva), INDIC_ENGINE_INFO(beng), INDIC_ENGINE_INFO(guru),
   INDIC_ENGINE_INFO(gujr), INDIC_ENGINE_INFO(orya), INDIC_ENGINE_INFO(taml),
   INDIC_ENGINE_INFO(telu), INDIC_ENGINE_INFO(knda), INDIC_ENGINE_INFO(mlym)
 };
@@ -113,7 +113,7 @@ static PangoEngineInfo script_engines[] = {
  * putting the pointers to the PangoEngineInfo in PangoIndicInfo...
  */
 static PangoIndicInfo indic_info[] = {
-  PANGO_INDIC_INFO(deva), PANGO_INDIC_INFO(beng), PANGO_INDIC_INFO(punj),
+  PANGO_INDIC_INFO(deva), PANGO_INDIC_INFO(beng), PANGO_INDIC_INFO(guru),
   PANGO_INDIC_INFO(gujr), PANGO_INDIC_INFO(orya), PANGO_INDIC_INFO(taml),
   PANGO_INDIC_INFO(telu), PANGO_INDIC_INFO(knda), PANGO_INDIC_INFO(mlym)
 };
@@ -140,11 +140,12 @@ maybe_add_GSUB_feature (PangoOTRuleset *ruleset,
     }
 }
 
-static void maybe_add_GPOS_feature (PangoOTRuleset *ruleset,
-				    PangoOTInfo    *info,
-				    guint           script_index,
-				    PangoOTTag      feature_tag,
-				    gulong          property_bit)
+static void
+maybe_add_GPOS_feature (PangoOTRuleset *ruleset,
+		        PangoOTInfo    *info,
+			guint           script_index,
+			PangoOTTag      feature_tag,
+			gulong          property_bit)
 {
   guint feature_index;
 

@@ -94,7 +94,7 @@ static IndicOTCharClass bengCharClasses[] =
     _ct, _ct, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx                           /* 09F0 - 09FA */
 };
 
-static IndicOTCharClass punjCharClasses[] =
+static IndicOTCharClass guruCharClasses[] =
 {
     _xx, _xx, _ma, _xx, _xx, _iv, _iv, _iv, _iv, _iv, _iv, _xx, _xx, _xx, _xx, _iv, /* 0A00 - 0A0F */
     _iv, _xx, _xx, _iv, _iv, _ct, _ct, _ct, _ct, _ct, _ct, _ct, _ct, _ct, _ct, _ct, /* 0A10 - 0A1F */
@@ -207,7 +207,7 @@ static const IndicOTSplitMatra mlymSplitTable[] = {{0x0D46, 0x0D3E}, {0x0D47, 0x
  */
 #define DEVA_SCRIPT_FLAGS (SF_EYELASH_RA | SF_NO_POST_BASE_LIMIT)
 #define BENG_SCRIPT_FLAGS (SF_REPH_AFTER_BELOW | SF_NO_POST_BASE_LIMIT)
-#define PUNJ_SCRIPT_FLAGS (SF_NO_POST_BASE_LIMIT)
+#define GURU_SCRIPT_FLAGS (SF_NO_POST_BASE_LIMIT)
 #define GUJR_SCRIPT_FLAGS (SF_NO_POST_BASE_LIMIT)
 #define ORYA_SCRIPT_FLAGS (SF_REPH_AFTER_BELOW | SF_NO_POST_BASE_LIMIT)
 #define TAML_SCRIPT_FLAGS (SF_MPRE_FIXUP | SF_NO_POST_BASE_LIMIT)
@@ -222,7 +222,7 @@ IndicOTClassTable deva_class_table = {0x0900, 0x0970, 2, DEVA_SCRIPT_FLAGS, deva
 
 IndicOTClassTable beng_class_table = {0x0980, 0x09FA, 3, BENG_SCRIPT_FLAGS, bengCharClasses, bengSplitTable};
 
-IndicOTClassTable punj_class_table = {0x0A00, 0x0A74, 2, PUNJ_SCRIPT_FLAGS, punjCharClasses, NULL};
+IndicOTClassTable guru_class_table = {0x0A00, 0x0A74, 2, GURU_SCRIPT_FLAGS, guruCharClasses, NULL};
 
 IndicOTClassTable gujr_class_table = {0x0A80, 0x0AEF, 2, GUJR_SCRIPT_FLAGS, gujrCharClasses, NULL};
 
