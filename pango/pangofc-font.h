@@ -24,6 +24,7 @@
 
 #include <freetype/freetype.h>
 #include <pango/pango-font.h>
+#include <pango/pango-glyph.h>
 
 #if defined(PANGO_ENABLE_ENGINE) || defined(PANGO_ENABLE_BACKEND)
 
@@ -52,17 +53,16 @@ struct _PangoFcFontClass
   PangoFontClass parent_class;
 
   /*< public >*/
-  FT_Face    (*lock_face)         (PangoFcFont *font);
-  void       (*unlock_face)       (PangoFcFont *font);
-  gboolean   (*has_char)          (PangoFcFont *font,
-				   gunichar     wc);
-  guint      (*get_glyph)         (PangoFcFont *font,
-				   gunichar     wc);
-  PangoGlyph (*get_unknown_glyph) (PangoFcFont *font,
-				   gunichar     wc);
-  int        (*get_kerning)       (PangoFcFont *font,
-				   PangoGlyph   left,
-				   PangoGlyph   right);
+  FT_Face    (*lock_face)         (PangoFcFont      *font);
+  void       (*unlock_face)       (PangoFcFont      *font);
+  gboolean   (*has_char)          (PangoFcFont      *font,
+				   gunichar          wc);
+  guint      (*get_glyph)         (PangoFcFont      *font,
+				   gunichar          wc);
+  PangoGlyph (*get_unknown_glyph) (PangoFcFont      *font,
+				   gunichar          wc);
+  void	     (*kern_glyphs)       (PangoFcFont      *font,
+				   PangoGlyphString *glyphs);
   /*< private >*/
 
   /* Padding for future expansion */
@@ -76,17 +76,17 @@ struct _PangoFcFontClass
 
 GType      pango_fc_font_get_type (void);
 
-FT_Face    pango_fc_font_lock_face         (PangoFcFont *font);
-void       pango_fc_font_unlock_face       (PangoFcFont *font);
-gboolean   pango_fc_font_has_char          (PangoFcFont *font,
-					    gunichar     wc);
-guint      pango_fc_font_get_glyph         (PangoFcFont *font,
-					    gunichar     wc);
-PangoGlyph pango_fc_font_get_unknown_glyph (PangoFcFont *font,
-					    gunichar     wc);
-int        pango_fc_font_get_kerning       (PangoFcFont *font,
-					    PangoGlyph   left,
-					    PangoGlyph   right);
+FT_Face    pango_fc_font_lock_face         (PangoFcFont      *font);
+void       pango_fc_font_unlock_face       (PangoFcFont      *font);
+gboolean   pango_fc_font_has_char          (PangoFcFont      *font,
+					    gunichar          wc);
+guint      pango_fc_font_get_glyph         (PangoFcFont      *font,
+					    gunichar          wc);
+PangoGlyph pango_fc_font_get_unknown_glyph (PangoFcFont      *font,
+					    gunichar          wc);
+void       pango_fc_font_kern_glyphs       (PangoFcFont      *font,
+					    PangoGlyphString *glyphs);
+
 G_END_DECLS
 
 #endif /* PANGO_ENABLE_ENGINE || PANGO_ENABLE_BACKEND */

@@ -88,17 +88,16 @@ static PangoFontMetrics *     pango_ft2_font_get_metrics       (PangoFont      *
 								PangoLanguage  *language);
   
 
-static FT_Face    pango_ft2_font_real_lock_face         (PangoFcFont    *font);
-static void       pango_ft2_font_real_unlock_face       (PangoFcFont    *font);
-static gboolean   pango_ft2_font_real_has_char          (PangoFcFont    *font,
-							 gunichar        wc);
-static guint      pango_ft2_font_real_get_glyph         (PangoFcFont    *font,
-							 gunichar        wc);
-static PangoGlyph pango_ft2_font_real_get_unknown_glyph (PangoFcFont    *font,
-							 gunichar        wc);
-static int        pango_ft2_font_real_get_kerning       (PangoFcFont    *font,
-							 PangoGlyph      left,
-							 PangoGlyph      right);
+static FT_Face    pango_ft2_font_real_lock_face         (PangoFcFont      *font);
+static void       pango_ft2_font_real_unlock_face       (PangoFcFont      *font);
+static gboolean   pango_ft2_font_real_has_char          (PangoFcFont      *font,
+							 gunichar          wc);
+static guint      pango_ft2_font_real_get_glyph         (PangoFcFont      *font,
+							 gunichar          wc);
+static PangoGlyph pango_ft2_font_real_get_unknown_glyph (PangoFcFont      *font,
+							 gunichar          wc);
+static void       pango_ft2_font_real_kern_glyphs       (PangoFcFont      *font,
+							 PangoGlyphString *glyphs);
 
 static GType      pango_ft2_font_get_type               (void);
 
@@ -359,7 +358,7 @@ pango_ft2_font_class_init (PangoFT2FontClass *class)
   fc_font_class->has_char = pango_ft2_font_real_has_char;
   fc_font_class->get_glyph = pango_ft2_font_real_get_glyph;
   fc_font_class->get_unknown_glyph = pango_ft2_font_real_get_unknown_glyph;
-  fc_font_class->get_kerning = pango_ft2_font_real_get_kerning;
+  fc_font_class->kern_glyphs = pango_ft2_font_real_kern_glyphs;
 }
 
 static void
@@ -633,7 +632,7 @@ pango_ft2_font_get_glyph_extents (PangoFont      *font,
  * 
  * Retrieves kerning information for a combination of two glyphs.
  *
- * Use pango_fc_font_get_kerning() instead.
+ * Use pango_fc_font_kern_glyphs() instead.
  * 
  * Return value: The amount of kerning (in Pango units) to apply for 
  * the given combination of glyphs.
@@ -643,7 +642,31 @@ pango_ft2_font_get_kerning (PangoFont *font,
 			    PangoGlyph left,
 			    PangoGlyph right)
 {
-  return pango_fc_font_get_kerning (PANGO_FC_FONT (font), left, right);
+  PangoFcFont *fc_font = PANGO_FC_FONT (font);
+  
+  FT_Face face;
+  FT_Error error;
+  FT_Vector kerning;
+
+  face = pango_fc_font_lock_face (fc_font);
+  if (!face)
+    return 0;
+
+  if (!FT_HAS_KERNING (face))
+    {
+      pango_fc_font_unlock_face (fc_font);
+      return 0;
+    }
+
+  error = FT_Get_Kerning (face, left, right, ft_kerning_default, &kerning);
+  if (error != FT_Err_Ok)
+    {
+      pango_fc_font_unlock_face (fc_font);
+      return 0;
+    }
+
+  pango_fc_font_unlock_face (fc_font);
+  return PANGO_UNITS_26_6 (kerning.x);
 }
 
 static PangoFontMetrics *
@@ -756,32 +779,38 @@ pango_ft2_font_real_get_unknown_glyph (PangoFcFont *font,
   return 0;
 }
 
-static int
-pango_ft2_font_real_get_kerning (PangoFcFont *font,
-				 PangoGlyph   left,
-				 PangoGlyph   right)
-{
+static void
+pango_ft2_font_real_kern_glyphs (PangoFcFont      *font,
+				 PangoGlyphString *glyphs)
+{ 
   FT_Face face;
   FT_Error error;
   FT_Vector kerning;
+  int i;
 
-  face = pango_ft2_font_get_face ((PangoFont *)font);
+  face = pango_fc_font_lock_face (font);
   if (!face)
-    return 0;
+    return;
 
   if (!FT_HAS_KERNING (face))
-    return 0;
+    {
+      pango_fc_font_unlock_face (font);
+      return;
+    }
+  
+  for (i = 1; i < glyphs->num_glyphs; ++i)
+    {
+      error = FT_Get_Kerning (face,
+			      glyphs->glyphs[i-1].glyph,
+			      glyphs->glyphs[i].glyph,
+			      ft_kerning_default,
+			      &kerning);
 
-  if (!left || !right)
-    return 0;
-
-  error = FT_Get_Kerning (face, left, right,
-			  ft_kerning_default, &kerning);
-  if (error != FT_Err_Ok)
-    g_warning ("FT_Get_Kerning returns error: %s",
-	       _pango_ft2_ft_strerror (error));
-
-  return PANGO_UNITS_26_6 (kerning.x);
+      if (error == FT_Err_Ok)
+	glyphs->glyphs[i-1].geometry.width += PANGO_UNITS_26_6 (kerning.x);
+    }
+  
+  pango_fc_font_unlock_face (font);
 }
 
 static gboolean

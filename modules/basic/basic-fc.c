@@ -118,12 +118,6 @@ set_glyph (PangoFont        *font,
 
   pango_font_get_glyph_extents (font, glyphs->glyphs[i].glyph, NULL, &logical_rect);
   glyphs->glyphs[i].geometry.width = logical_rect.width;
-
-  if (i > 0) 
-    glyphs->glyphs[i-1].geometry.width +=
-      pango_fc_font_get_kerning ((PangoFcFont *)font,
-				 glyphs->glyphs[i-1].glyph,
-				 glyphs->glyphs[i].glyph);
 }
 
 static void 
@@ -228,7 +222,9 @@ basic_engine_shape (PangoFont        *font,
 	  start = end;
 	}
     }
-  
+
+  pango_fc_font_kern_glyphs (fc_font, glyphs);
+
   pango_fc_font_unlock_face (fc_font);
 }
 

@@ -1,3 +1,23 @@
+Sat Aug  2 16:40:19 2003  Soeren Sandmann  <sandmann@daimi.au.dk>
+
+	Add API to kern a complete glyph string. Remove API to kern
+	individual glyph pairs.
+
+	* modules/basic/basic-fc.c (basic_engine_shape): use
+	pango_fc_font_kern_glyphs() instead of pango_fc_font_get_kerning().
+
+	* pango/pangoft2.c (pango_ft2_font_real_kern_glyphs): add this
+	function, remove pango_ft2_font_real_get_kerning().
+
+	* pango/pangoxft-font.c (pango_xft_font_real_kern_glyphs): add
+	this function, remove pango_xft_font_real_get_kerning().
+
+	* pango/pangofc-font.c (pango_fc_font_kern_glyphs): new
+	function. Remove pango_fc_font_get_kerning().
+
+	* pango/pangofc-font.h: remove pango_fc_font_get_kerning(), add
+	pango_fc_font_kern_glyphs().
+
 Tue Jul 29 09:58:13 2003  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/opentype/ftxgdef.c (Check_Property): Rewrite

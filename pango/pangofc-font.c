@@ -152,24 +152,18 @@ pango_fc_font_get_unknown_glyph (PangoFcFont *font,
 }
 
 /**
- * pango_fc_font_get_kerning:
- * @font: a #PangoFcFont.
- * @left: the left #PangoGlyph
- * @right: the right #PangoGlyph
+ * pango_fc_font_kern_glyphs
+ * @font: a #PangoFcFont
+ * @glyphs: a #PangoGlyphString
  * 
- * Retrieves kerning information for a combination of two glyphs.
+ * Adjust each adjacent pair of glyphs in @glyphs according to
+ * kerning information in @font.
  * 
- * Return value: The amount of kerning (in Pango units) to apply for 
- * the given combination of glyphs.
- *
  * Since: 1.4
  **/
-int
-pango_fc_font_get_kerning (PangoFcFont *font,
-			   PangoGlyph   left,
-			   PangoGlyph   right)
+void
+pango_fc_font_kern_glyphs (PangoFcFont      *font,
+			   PangoGlyphString *glyphs)
 {
-  g_return_val_if_fail (PANGO_IS_FC_FONT (font), 0);
-
-  return PANGO_FC_FONT_GET_CLASS (font)->get_kerning (font, left, right);
+  PANGO_FC_FONT_GET_CLASS (font)->kern_glyphs (font, glyphs);
 }
