@@ -1,3 +1,13 @@
+Tue May 27 12:32:43 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-context.c (pango_context_new)
+	  pango/pango-layout.c (pango_context_new)
+	  pango/pango-win32.c (pango_win32_font_map_for_display)
+	  pango/pangox-fontmap.c (pango_x_font_map_for_display)
+	  pango/pangox.c (pango_x_font_new): Use g_object_new()
+	rather than g_type_create_instance() (Patch from
+	Benjamin Otte, #112786)
+
 Tue May 27 12:19:53 2003  Owen Taylor  <otaylor@redhat.com>
 
 	* modules/basic/basic-ft2.c: Claim to handle everything

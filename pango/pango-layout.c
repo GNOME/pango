@@ -265,7 +265,7 @@ pango_layout_new (PangoContext *context)
 
   g_return_val_if_fail (context != NULL, NULL);
 
-  layout = PANGO_LAYOUT (g_type_create_instance (pango_layout_get_type ()));
+  layout = g_object_new (PANGO_TYPE_LAYOUT, NULL);
 
   layout->context = context;
   g_object_ref (context);

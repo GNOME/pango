@@ -287,7 +287,7 @@ pango_x_font_map_for_display (Display *display)
       tmp_list = tmp_list->next;
     }
 
-  xfontmap = (PangoXFontMap *)g_type_create_instance (PANGO_TYPE_X_FONT_MAP);
+  xfontmap = g_object_new (PANGO_TYPE_X_FONT_MAP, NULL);
   
   xfontmap->display = display;
   xfontmap->font_cache = pango_x_font_cache_new (display);
