@@ -1,3 +1,10 @@
+Mon May 13 15:56:29 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pangoxft-fontmap.c: Fake sans,serif,monospace
+	in the list of fonts.
+
+	* pango/pangoft2-fontmap.c: Fake aliases here as well.
+
 Mon May 13 14:58:12 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pangox.c configure.in: Add a implementation
