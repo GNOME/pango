@@ -58,6 +58,8 @@ void         pango_layout_ref            (PangoLayout    *layout);
 void         pango_layout_unref          (PangoLayout    *layout);
 
 
+PangoContext  *pango_layout_get_context    (PangoLayout    *layout);
+
 void           pango_layout_set_attributes (PangoLayout    *layout,
 					    PangoAttrList  *attrs);
 void           pango_layout_set_text       (PangoLayout    *layout,

@@ -38,6 +38,23 @@ X rendering
   as we are. There is a bit of fudging in the underline drawing
   code to deal with this and make the underlines look symetric.
 
+* pangox.c/get_font_metrics_from_string() needs to gutted and
+  replaced with using pango_itemize(); to support this, we need 
+  the ability to specifiy a particular font to use when itemizing.
+  This probably means adding a attribute type which contains
+  a PangoFont *, and overrides the description.
+
+* pangox.c needs to be split into at least two separate files.
+
+  (
+   Probably along the lines of 
+
+   1) font map
+   2) font 
+   3) rendering
+  )
+
+
 Other rendering engines
 =======================
 
@@ -131,4 +148,9 @@ General
   inside the cluster. Uniscript sets trailing as 0 or number of j
   characters in the glyph. (Trailing is currently a boolean
   for us.)
+
+* pango_font_get_metrics() currently takes a language tag, but
+  really uses that to find out one or more _scripts_; should we
+  define script tags and put those (optionally?) in the 
+  interface?
 

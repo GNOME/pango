@@ -35,6 +35,7 @@ struct _PangoContext
   PangoFontDescription *font_desc;
 
   GSList *font_maps;
+  GData *data;
 };
 
 static void add_engines (PangoContext      *context,
@@ -63,6 +64,7 @@ pango_context_new (void)
   result->base_dir = PANGO_DIRECTION_LTR;
   result->lang = NULL;
   result->font_maps = NULL;
+  result->data = NULL;
 
   desc.family_name = "serif";
   desc.style = PANGO_STYLE_NORMAL;
@@ -454,6 +456,44 @@ pango_context_get_base_dir (PangoContext *context)
 }
 
 /**
+ * pango_context_set_data:
+ * @context:      a #PangoContext
+ * @key:          the string key that identifies the data
+ * @data:         the data to store
+ * @destroy_func: the function to free @data when it is no longer needed (may be %NULL)
+ * 
+ * Adds user data to a #PangoContext.
+ **/
+void
+pango_context_set_data (PangoContext  *context,
+			const char    *key,
+			gpointer       data,
+			GDestroyNotify destroy_func)
+{
+  g_return_if_fail (context != NULL);
+  
+  g_datalist_set_data_full (&context->data, key, data, destroy_func);
+}
+
+/**
+ * pango_context_get_data:
+ * @context: a #PangoContext
+ * @key:     the string key that identifies the data
+ * 
+ * Retrieves user data from a #PangoContext
+ * 
+ * Return value: the data, if @key was found, or %NULL.
+ **/
+gpointer
+pango_context_get_data (PangoContext  *context,
+			const char    *key)
+{
+  g_return_val_if_fail (context != NULL, NULL);
+  
+  return g_datalist_get_data (&context->data, key);
+}
+
+/**
  * pango_itemize:
  * @context:   a structure holding information that affects
                the itemization process.
@@ -474,10 +514,9 @@ pango_itemize (PangoContext   *context,
 	       PangoAttrList  *attrs)
 {
   GUChar4 *text_ucs4;
-  gint n_chars;
+  int n_chars, i;
   guint8 *embedding_levels;
   FriBidiCharType base_dir;
-  gint i;
   PangoItem *item;
   const char *p;
   const char *next;
@@ -502,7 +541,7 @@ pango_itemize (PangoContext   *context,
   
   if (length == 0)
     return NULL;
-  
+
   /* First, apply the bidirectional algorithm to break
    * the text into directional runs.
    */
@@ -513,6 +552,9 @@ pango_itemize (PangoContext   *context,
   n_chars = unicode_strlen (text, length);
   embedding_levels = g_new (guint8, n_chars);
 
+  fribidi_log2vis_get_embedding_levels (text_ucs4, n_chars, &base_dir,
+					embedding_levels);
+
   /* Storing these as ranges would be a lot more efficient,
    * but also more complicated... we take the simple
    * approach for now.
@@ -521,9 +563,6 @@ pango_itemize (PangoContext   *context,
   lang_engines = g_new0 (PangoEngineInfo *, n_chars);
   fonts = g_new0 (PangoFont *, n_chars);
   extra_attr_lists = g_new0 (GSList *, n_chars);
-
-  fribidi_log2vis_get_embedding_levels (text_ucs4, n_chars, &base_dir,
-					embedding_levels);
 
   /* Now, fill in the appropriate shapers, language engines and fonts for
    * each character.

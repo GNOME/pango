@@ -20,8 +20,11 @@
  */
 
 #include <X11/Xlib.h>
+#include <fribidi/fribidi.h>
+#include <unicode.h>
 #include "modules.h"
 #include "pangox.h"
+#include "utils.h"
 #include <ctype.h>
 #include <math.h>
 #include <stdio.h>
@@ -36,8 +39,11 @@ typedef struct _PangoXFontMap PangoXFontMap;
 typedef struct _PangoXSubfontInfo PangoXSubfontInfo;
 
 typedef struct _PangoXSizeInfo PangoXSizeInfo;
+typedef struct _PangoXMetricsInfo PangoXMetricsInfo;
 typedef struct _PangoXFamilyEntry PangoXFamilyEntry;
 typedef struct _PangoXFontEntry PangoXFontEntry;
+
+typedef struct _PangoXContextInfo PangoXContextInfo;
 
 struct _PangoXSizeInfo
 {
@@ -66,6 +72,12 @@ struct _PangoXSubfontInfo
   XFontStruct *font_struct;
 };
 
+struct _PangoXMetricsInfo
+{
+  const char *lang;
+  PangoFontMetrics metrics;
+};
+
 struct _PangoXFont
 {
   PangoFont font;
@@ -85,6 +97,8 @@ struct _PangoXFont
   int n_subfonts;
   int max_subfonts;
 
+  GSList *metrics_by_lang;
+  
   PangoXFontEntry *entry;	/* Used to remove cached fonts */
 };
 
@@ -100,6 +114,12 @@ struct _PangoXFontMap
   int n_fonts;
 
   double resolution;		/* (points / pixel) * PANGO_SCALE */
+};
+
+struct _PangoXContextInfo
+{
+  PangoGetGCFunc  get_gc_func;
+  PangoFreeGCFunc free_gc_func;
 };
 
 /* This is the largest field length we will accept. If a fontname has a field
@@ -174,17 +194,20 @@ static void       pango_x_font_map_list_families (PangoFontMap                 *
 						  int                          *n_families);
 static void       pango_x_font_map_read_aliases  (PangoXFontMap                *xfontmap);
 
-static void                  pango_x_font_destroy           (PangoFont      *font);
-static PangoFontDescription *pango_x_font_describe          (PangoFont      *font);
-static PangoCoverage *       pango_x_font_get_coverage      (PangoFont      *font,
-							     const char     *lang);
-static PangoEngineShape *    pango_x_font_find_shaper       (PangoFont      *font,
-							     const char     *lang,
-							     guint32         ch);
-static void                  pango_x_font_get_glyph_extents (PangoFont      *font,
-							     PangoGlyph      glyph,
-							     PangoRectangle *ink_rect,
-							     PangoRectangle *logical_rect);
+static void                  pango_x_font_destroy           (PangoFont        *font);
+static PangoFontDescription *pango_x_font_describe          (PangoFont        *font);
+static PangoCoverage *       pango_x_font_get_coverage      (PangoFont        *font,
+							     const char       *lang);
+static PangoEngineShape *    pango_x_font_find_shaper       (PangoFont        *font,
+							     const char       *lang,
+							     guint32           ch);
+static void                  pango_x_font_get_glyph_extents (PangoFont        *font,
+							     PangoGlyph        glyph,
+							     PangoRectangle   *ink_rect,
+							     PangoRectangle   *logical_rect);
+static void                  pango_x_font_get_metrics       (PangoFont        *font,
+							     const gchar      *lang,
+							     PangoFontMetrics *metrics);
 
 static PangoXSubfontInfo * pango_x_find_subfont    (PangoFont          *font,
 						    PangoXSubfont       subfont_index);
@@ -225,7 +248,8 @@ PangoFontClass pango_x_font_class = {
   pango_x_font_describe,
   pango_x_font_get_coverage,
   pango_x_font_find_shaper,
-  pango_x_font_get_glyph_extents
+  pango_x_font_get_glyph_extents,
+  pango_x_font_get_metrics
 };
 
 PangoFontMapClass pango_x_font_map_class = {
@@ -1206,15 +1230,56 @@ pango_x_insert_font (PangoXFontMap *xfontmap,
 }
 
 
+/**
+ * pango_x_get_context:
+ * @display: an X display (As returned by XOpenDisplay().)
+ * 
+ * Retrieves a #PangoContext appropriate for rendering with X fonts on the given display.
+  * 
+ * Return value: the new #PangoContext
+ **/
 PangoContext *
 pango_x_get_context (Display *display)
 {
   PangoContext *result;
+  PangoXContextInfo *info;
+
+  g_return_val_if_fail (display != NULL, NULL);
 
   result = pango_context_new ();
+  
+  info = g_new (PangoXContextInfo, 1);
+  info->get_gc_func = NULL;
+  info->free_gc_func = NULL;
+  pango_context_set_data (result, "pango-x-info", info, (GDestroyNotify)g_free);
+  
   pango_context_add_font_map (result, pango_x_font_map_for_display (display));
 
   return result;
+}
+
+/**
+ * pango_x_context_set_funcs:
+ * @context: a #PangoContext.
+ * @get_gc_func: function called to create a new GC for a given color.
+ * @free_gc_func: function called to free a GC created with @get_gc_func.
+ * 
+ * Sets the functions that will be used to get GC's in various colors when
+ * rendering layouts with this context.
+ **/
+void
+pango_x_context_set_funcs  (PangoContext     *context,
+			    PangoGetGCFunc    get_gc_func,
+			    PangoFreeGCFunc   free_gc_func)
+{
+  PangoXContextInfo *info;
+  
+  g_return_if_fail (context != NULL);
+
+  info = pango_context_get_data (context, "pango-x-info");
+
+  info->get_gc_func = get_gc_func;
+  info->free_gc_func = free_gc_func;
 }
 
 /**
@@ -1222,7 +1287,7 @@ pango_x_get_context (Display *display)
  * @display: the X display
  * @spec:    a comma-separated list of XLFD's
  *
- * Load up a logical font based on a "fontset" style
+ * Loads up a logical font based on a "fontset" style
  * text specification.
  *
  * Returns a new #PangoFont
@@ -1253,6 +1318,8 @@ pango_x_load_font (Display *display,
 
   result->n_subfonts = 0;
   result->max_subfonts = 1;
+
+  result->metrics_by_lang = NULL;
 
   result->size = -1;
   result->entry = NULL;
@@ -1298,6 +1365,8 @@ pango_x_load_font_with_size (Display *display,
 
   result->n_subfonts = 0;
   result->max_subfonts = 1;
+
+  result->metrics_by_lang = NULL;
 
   result->size = size;
   result->entry = NULL;
@@ -1415,6 +1484,236 @@ pango_x_font_get_glyph_extents  (PangoFont      *font,
 	  logical_rect->height = 0;
 	}
     }
+}
+
+/* Get composite font metrics for all subfonts in list
+ */
+static void
+get_font_metrics_from_subfonts (PangoFont        *font,
+				GSList           *subfonts,
+				PangoFontMetrics *metrics)
+{
+  GSList *tmp_list = subfonts;
+  gboolean first = TRUE;
+  
+  metrics->ascent = 0;
+  metrics->descent = 0;
+  
+  while (tmp_list)
+    {
+      PangoXSubfontInfo *subfont = pango_x_find_subfont (font, GPOINTER_TO_UINT (tmp_list->data));
+      
+      if (subfont)
+	{
+	  XFontStruct *fs = pango_x_get_font_struct (font, subfont);
+	  if (fs)
+	    {
+	      if (first)
+		{
+		  metrics->ascent = fs->ascent * PANGO_SCALE;
+		  metrics->descent = fs->descent * PANGO_SCALE;
+		  first = FALSE;
+		}
+	      else
+		{
+		  metrics->ascent = MAX (fs->ascent * PANGO_SCALE, metrics->ascent);
+		  metrics->descent = MAX (fs->descent * PANGO_SCALE, metrics->descent);
+		}
+	    }
+	}
+      else
+	g_warning ("Invalid subfont %d in get_font_metrics_from_subfonts", GPOINTER_TO_UINT (tmp_list->data));
+	  
+      tmp_list = tmp_list->next;
+    }
+}
+
+/* Get composite font metrics for all subfonts resulting from shaping
+ * string str with the given font
+ *
+ * This duplicates quite a bit of code from pango_itemize. This function
+ * should die and we should simply add the ability to specify particular
+ * fonts when itemizing.
+ */
+static void
+get_font_metrics_from_string (PangoFont        *font,
+			      const char       *lang,
+			      const char       *str,
+			      PangoFontMetrics *metrics)
+{
+  const char *start, *p;
+  PangoGlyphString *glyph_str = pango_glyph_string_new ();
+  PangoEngineShape *shaper, *last_shaper;
+  int last_level;
+  GUChar4 *text_ucs4;
+  int n_chars, i;
+  guint8 *embedding_levels;
+  FriBidiCharType base_dir = PANGO_DIRECTION_LTR;
+  GSList *subfonts = NULL;
+  
+  n_chars = unicode_strlen (str, -1);
+
+  text_ucs4 = _pango_utf8_to_ucs4 (str, strlen (str));
+  if (!text_ucs4)
+    return;
+
+  embedding_levels = g_new (guint8, n_chars);
+  fribidi_log2vis_get_embedding_levels (text_ucs4, n_chars, &base_dir,
+					embedding_levels);
+  g_free (text_ucs4);
+
+  last_shaper = NULL;
+  last_level = 0;
+  
+  i = 0;
+  p = start = str;
+  while (*p)
+    {
+      unicode_char_t wc;
+      p = unicode_get_utf8 (p, &wc);
+
+      shaper = pango_font_find_shaper (font, lang, wc);
+      if (p > start &&
+	  (shaper != last_shaper || last_level != embedding_levels[i]))
+	{
+	  PangoAnalysis analysis;
+	  int j;
+
+	  analysis.shape_engine = shaper;
+	  analysis.lang_engine = NULL;
+	  analysis.font = font;
+	  analysis.level = last_level;
+	  
+	  pango_shape (start, p - start, &analysis, glyph_str);
+
+	  for (j = 0; j < glyph_str->num_glyphs; j++)
+	    {
+	      PangoXSubfont subfont = PANGO_X_GLYPH_SUBFONT (glyph_str->glyphs[j].glyph);
+	      if (!g_slist_find (subfonts, GUINT_TO_POINTER ((guint)subfont)))
+		subfonts = g_slist_prepend (subfonts, GUINT_TO_POINTER ((guint)subfont));
+	    }
+	  
+	  start = p;
+	}
+
+      last_shaper = shaper;
+      last_level = embedding_levels[i];
+      i++;
+    }
+
+  get_font_metrics_from_subfonts (font, subfonts, metrics);
+  g_slist_free (subfonts);
+  
+  pango_glyph_string_free (glyph_str);
+  g_free (embedding_levels);
+}
+
+typedef struct {
+  const char *lang;
+  const char *str;
+} LangInfo;
+
+int
+lang_info_compare (const void *key, const void *val)
+{
+  const LangInfo *lang_info = val;
+
+  return strncmp (key, lang_info->lang, 2);
+}
+
+/* The following array is supposed to contain enough text to tickle all necessary fonts for each
+ * of the languages in the following. Yes, it's pretty lame. Not all of the languages
+ * in the following have sufficient text to excercise all the accents for the language, and
+ * there are obviously many more languages to include as well.
+ */
+LangInfo lang_texts[] = {
+  { "ar", "Arabic  السلام عليكم" },
+  { "cs", "Czech (česky)  Dobrý den" },
+  { "da", "Danish (Dansk)  Hej, Goddag" },
+  { "el", "Greek (Ελληνικά) Γειά σας" },
+  { "en", "English Hello" },
+  { "eo", "Esperanto Saluton" },
+  { "es", "Spanish (Español) ¡Hola!" },
+  { "et", "Estonian  Tere, Tervist" },
+  { "fi", "Finnish (Suomi)  Hei" },
+  { "fr", "French (Français)" },
+  { "de", "German Grüß Gott" },
+  { "iw", "Hebrew   שלום" },
+  { "il", "Italiano  Ciao, Buon giorno" },
+  { "ja", "Japanese (日本語) こんにちは, ｺﾝﾆﾁﾊ" },
+  { "ko", "Korean (한글)   안녕하세요, 안녕하십니까" },
+  { "mt", "Maltese   Ċaw, Saħħa" },
+  { "nl", "Nederlands, Vlaams Hallo, Dag" },
+  { "no", "Norwegian (Norsk) Hei, God dag" },
+  { "pl", "Polish   Dzień dobry, Hej" },
+  { "ru", "Russian (Русский)" },
+  { "sk", "Slovak   Dobrý deň" },
+  { "sv", "Swedish (Svenska) Hej, Goddag" },
+  { "tr", "Turkish (Türkçe) Merhaba" },
+  { "zh", "Chinese (中文,普通话,汉语)" }
+};
+
+static void
+pango_x_font_get_metrics (PangoFont        *font,
+			  const gchar      *lang,
+			  PangoFontMetrics *metrics)
+{
+  PangoXMetricsInfo *info;
+  PangoXFont *xfont = (PangoXFont *)font;
+  GSList *tmp_list;
+      
+  const char *lookup_lang;
+  const char *str;
+
+  if (lang)
+    {
+      LangInfo *lang_info = bsearch (lang, lang_texts,
+				     G_N_ELEMENTS (lang_texts), sizeof (LangInfo),
+				     lang_info_compare);
+
+      if (lang_info)
+	{
+	  lookup_lang = lang_info->lang;
+	  str = lang_info->str;
+	}
+      else
+	{
+	  lookup_lang = "UNKNOWN";
+	  str = "French (Français)";     /* Assume iso-8859-1 */
+	}
+    }
+  else
+    {
+      lookup_lang = "NONE";
+
+      /* Complete junk
+       */
+      str = "السلام عليكم česky Ελληνικά Français 日本語 한글 Русский 中文,普通话,汉语 Türkçe";
+    }
+  
+  tmp_list = xfont->metrics_by_lang;
+  while (tmp_list)
+    {
+      info = tmp_list->data;
+      
+      if (info->lang == lookup_lang)        /* We _don't_ need strcmp */
+	break;
+
+      tmp_list = tmp_list->next;
+    }
+
+  if (!tmp_list)
+    {
+      info = g_new (PangoXMetricsInfo, 1);
+      info->lang = lookup_lang;
+
+      xfont->metrics_by_lang = g_slist_prepend (xfont->metrics_by_lang, info);
+      
+      get_font_metrics_from_string (font, lang, str, &info->metrics);
+    }
+      
+  *metrics = info->metrics;
+  return;
 }
 
 /* Compare the tail of a to b */
@@ -1753,6 +2052,9 @@ pango_x_font_destroy (PangoFont *font)
   g_hash_table_foreach (xfont->subfonts_by_charset, subfonts_foreach, NULL);
   g_hash_table_destroy (xfont->subfonts_by_charset);
 
+  g_slist_foreach (xfont->metrics_by_lang, (GFunc)g_free, NULL);
+  g_slist_free (xfont->metrics_by_lang);
+  
   if (xfont->entry)
     xfont->entry->cached_fonts = g_slist_remove (xfont->entry->cached_fonts, xfont);
 
@@ -2013,32 +2315,31 @@ pango_x_get_unknown_glyph (PangoFont *font)
  * pango_x_render_layout_line:
  * @display:   the X display
  * @drawable:  the drawable on which to draw string
+ * @gc:        GC to use for uncolored drawing
  * @line:      a #PangoLayoutLine
  * @x:         the x position of start of string (in pixels)
  * @y:         the y position of baseline (in pixels)
- * @get_gc:    function to call to retrieve a GC for a particular color
- * @free_gc:   function to call to free a GC retrieved from get_gc
- * @user_data: extra data to pass to get_gc and free_gc
  *
  * Render a #PangoLayoutLine onto an X drawable
  */
 void 
 pango_x_render_layout_line (Display          *display,
 			    Drawable          drawable,
+			    GC                gc,
 			    PangoLayoutLine  *line,
 			    int               x, 
-			    int               y,
-                            PangoGetGCFunc    get_gc,
-			    PangoFreeGCFunc   free_gc,
-			    gpointer          user_data)
+			    int               y)
 {
   GSList *tmp_list = line->runs;
+  PangoRectangle overall_rect;
   PangoRectangle logical_rect;
   PangoRectangle ink_rect;
+  PangoContext *context = pango_layout_get_context (line->layout);
+  PangoXContextInfo *info = pango_context_get_data (context, "pango-x-info");
   
   int x_off = 0;
 
-  pango_layout_line_get_extents (line,NULL, &logical_rect);
+  pango_layout_line_get_extents (line,NULL, &overall_rect);
   
   while (tmp_list)
     {
@@ -2052,10 +2353,10 @@ pango_x_render_layout_line (Display          *display,
 
       pango_x_get_item_properties (run->item, &uline, &fg_color, &fg_set, &bg_color, &bg_set);
 
-      if (fg_set)
-	fg_gc = (*get_gc) (&fg_color, user_data);
+      if (fg_set && info->get_gc_func)
+	fg_gc = info->get_gc_func (context, &fg_color, gc);
       else
-	fg_gc = (*get_gc) (NULL, user_data);
+	fg_gc = gc;
 
       if (uline == PANGO_UNDERLINE_NONE)
 	pango_glyph_string_extents (run->glyphs, run->item->analysis.font,
@@ -2064,17 +2365,18 @@ pango_x_render_layout_line (Display          *display,
 	pango_glyph_string_extents (run->glyphs, run->item->analysis.font,
 				    &ink_rect, &logical_rect);
 
-      if (bg_set)
+      if (bg_set && info->get_gc_func)
 	{
-	  GC bg_gc = (*get_gc) (&bg_color, user_data);
+	  GC bg_gc = info->get_gc_func (context, &bg_color, gc);
 
 	  XFillRectangle (display, drawable, bg_gc,
 			  x + (x_off + logical_rect.x) / PANGO_SCALE,
-			  y + logical_rect.y / PANGO_SCALE,
+			  y + overall_rect.y / PANGO_SCALE,
 			  logical_rect.width / PANGO_SCALE,
-			  logical_rect.height / PANGO_SCALE);
+			  overall_rect.height / PANGO_SCALE);
 
-	  (*free_gc) (bg_gc, user_data);
+	  if (info->free_gc_func)
+	    info->free_gc_func (context, bg_gc);
 	}
 
       pango_x_render (display, drawable, fg_gc, run->item->analysis.font, run->glyphs,
@@ -2101,7 +2403,8 @@ pango_x_render_layout_line (Display          *display,
 	  break;
 	}
 
-      (*free_gc) (fg_gc, user_data);
+      if (fg_set && info->get_gc_func && info->free_gc_func)
+	info->free_gc_func (context, fg_gc);
       
       x_off += logical_rect.width;
     }
@@ -2111,11 +2414,10 @@ pango_x_render_layout_line (Display          *display,
  * pango_x_render_layout:
  * @display:   the X display
  * @drawable:  the drawable on which to draw string
+ * @gc:        GC to use for uncolored drawing
  * @layout:    a #PangoLayout
  * @x:         the X position of the left of the layout (in pixels)
  * @y:         the Y position of the top of the layout (in pixels)
- * @get_gc:    function to call to retrieve a GC for a particular color
- * @free_gc:   function to call to free a GC retrieved from get_gc
  * @user_data: extra data to pass to get_gc and free_gc
  *
  * Render a #PangoLayoutLine onto an X drawable
@@ -2123,12 +2425,10 @@ pango_x_render_layout_line (Display          *display,
 void 
 pango_x_render_layout (Display         *display,
 		       Drawable         drawable,
+		       GC               gc,
 		       PangoLayout     *layout,
 		       int              x, 
-		       int              y,
-		       PangoGetGCFunc   get_gc,
-		       PangoFreeGCFunc  free_gc,
-		       gpointer         user_data)
+		       int              y)
 {
   PangoRectangle logical_rect;
   GSList *tmp_list;
@@ -2190,9 +2490,8 @@ pango_x_render_layout (Display         *display,
 	    }
 	}
 	  
-      pango_x_render_layout_line (display, drawable, 
-				  line, x + x_offset / PANGO_SCALE, y + (y_offset - logical_rect.y) / PANGO_SCALE,
-				  get_gc, free_gc, user_data);
+      pango_x_render_layout_line (display, drawable, gc,
+				  line, x + x_offset / PANGO_SCALE, y + (y_offset - logical_rect.y) / PANGO_SCALE);
 
       y_offset += logical_rect.height;
       tmp_list = tmp_list->next;

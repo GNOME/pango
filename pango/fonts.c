@@ -431,11 +431,13 @@ pango_font_unref (PangoFont *font)
  * font. 
  */
 void
-pango_font_set_data (PangoFont   *font,
-		     gchar         *key,
+pango_font_set_data (PangoFont     *font,
+		     const gchar   *key,
 		     gpointer       data,
 		     GDestroyNotify destroy_func)
 {
+  g_return_if_fail (font != NULL);
+
   g_datalist_set_data_full (&font->data, key, data, destroy_func);
 }
 
@@ -449,9 +451,11 @@ pango_font_set_data (PangoFont   *font,
  * Returns the data, or NULL if that key does not exist.
  */
 gpointer
-pango_font_get_data (PangoFont *font,
-			gchar       *key)
+pango_font_get_data (PangoFont   *font,
+		     const gchar *key)
 {
+  g_return_val_if_fail (font != NULL, NULL);
+
   return g_datalist_get_data (&font->data, key);
 }
 
@@ -521,7 +525,31 @@ pango_font_get_glyph_extents  (PangoFont      *font,
 
   font->klass->get_glyph_extents (font, glyph, ink_rect, logical_rect);
 }
+
+/**
+ * pango_font_get_metrics:
+ * @font: a #PangoFont
+ * @lang: language tag used to determine which script to get the metrics
+ *        for, or %NULL to indicate to get the metrics for the entire
+ *        font.
+ * @metrics: Structure to fill in with the metrics of the font
+ * 
+ * Get overall metric information for a font. Since the metrics may be
+ * substantially different for different scripts, a language tag can
+ * be provided to indicate that the metrics should be retrieved that
+ * correspond to the script(s) used by that language.
+ **/
      
+void
+pango_font_get_metrics (PangoFont        *font,
+			const gchar      *lang,
+			PangoFontMetrics *metrics)
+{
+  g_return_if_fail (font != NULL);
+
+  font->klass->get_metrics (font, lang, metrics);
+}
+
 /**
  * pango_font_map_init:
  * @fontmap:    a #PangoFontMap

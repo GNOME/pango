@@ -144,6 +144,24 @@ pango_layout_unref (PangoLayout *layout)
 }
 
 /**
+ * pango_layout_get_context:
+ * @layout: a #PangoLayout
+ * 
+ * Retrieves the #PangoContext used for this layout.
+ * 
+ * Return value: The #PangoContext for the layout. This does not
+ * have an additional refcount added, so if you want to keep
+ * a copy of this around, you must reference it yourself.
+ **/
+PangoContext *
+pango_layout_get_context (PangoLayout *layout)
+{
+  g_return_if_fail (layout != NULL);
+
+  return layout->context;
+}
+
+/**
  * pango_layout_set_width:
  * @layout: a #PangoLayout.
  * @width: the desired width, or -1 to indicate that no wrapping should be

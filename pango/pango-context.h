@@ -59,6 +59,13 @@ void                  pango_context_set_base_dir         (PangoContext          
 							  PangoDirection              direction);
 PangoDirection        pango_context_get_base_dir         (PangoContext               *context);
 
+void                  pango_context_set_data             (PangoContext  *context,
+							  const char    *key,
+							  gpointer       data,
+							  GDestroyNotify destroy_func);
+gpointer              pango_context_get_data             (PangoContext  *context,
+							  const char    *key);
+
 /* Break a string of Unicode characters into segments with
  * consistent shaping/language engine and bidrectional level.
  * Returns a GList of PangoItem's

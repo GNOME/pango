@@ -1,8 +1,19 @@
-Tue Apr  4 12:01:37 2000  Owen Taylor  <otaylor@redhat.com>
+Tue Apr  4 20:13:06 2000  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-context.h: Add user data to PangoContext
+
+	* pango/pangox.[ch] examples/viewer.c: Rework system for create GC's 
+	so that	the necessary information is stored on the PangoContext
+	instead of being passed to layout_render()
 
 	* pango/utils.[ch] pango/pango-context.c: fribidi-0.1.9
 	wants UCS-4 not UCS2; switch accordingly.
 
+	* pango/fonts.c pango/pango-font.h pango/pangox.c: Add functions
+	to get overall font metrics, possibly per-language. (Right now,
+	just font ascent, descent.) The implementation of this for
+	X is horribly complex.
+	
 Mon Apr  3 20:30:20 2000  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/mapping.c (pango_glyph_string_x_to_index): Fix handling
