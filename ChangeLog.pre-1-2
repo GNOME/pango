@@ -1,3 +1,9 @@
+Sat Dec 22 11:49:38 2001  Owen Taylor  <otaylor@redhat.com>
+
+	* modules/arabic/arabic-ot.c: Patch from Roozbeh
+	Pournader to update for shaping class changes
+	in Unicode 3.1.1.
+
 Thu Dec 20 00:18:10 2001  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pangoxft-font.c (pango_xft_picture_render): Fix

@@ -50,7 +50,7 @@ joining_class  arabic[] =
   /* U+0640 */
   causing, dual, dual, dual,
   dual, dual, dual, dual,
-  right, right, dual, transparent,
+  right, dual, dual, transparent,
   transparent, transparent, transparent, transparent,
 
   /* U+0650 */
@@ -66,7 +66,7 @@ joining_class  arabic[] =
   none, none, none, none,
 
   /* U+0670 */
-  transparent, none, right, right,
+  transparent, right, right, right,
   none, right, right, right,
   dual, dual, dual, dual,
   dual, dual, dual, dual,
@@ -103,7 +103,7 @@ joining_class  arabic[] =
 
   /* U+06D0 */
   dual, dual, right, right,
-  none, none, none, transparent,
+  none, right, none, transparent,
   transparent, transparent, transparent, transparent,
   transparent, transparent, transparent, transparent,
 
