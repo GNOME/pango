@@ -37,7 +37,6 @@
 #define BUFSIZE 1024
 
 typedef struct _Paragraph Paragraph;
-typedef struct _Line Line;
 
 /* Structure representing a paragraph
  */
@@ -46,16 +45,6 @@ struct _Paragraph {
   int length;
   int height;   /* Height, in pixels */
   PangoLayout *layout;
-};
-
-/* Structure representing a line
- */
- struct _Line {
-  /* List of PangoItems for this paragraph in visual order */
-  GList *runs;
-  int ascent;   /* Ascent of line, in pixels */
-  int descent;  /* Descent of lines, in pixels */
-  int offset;   /* Offset from left margin line, in pixels */
 };
 
 GList *paragraphs;
@@ -529,12 +518,6 @@ make_styles_combo ()
   fill_styles_combo (combo);
   
   return combo;
-}
-
-int
-cmp_strings (const void *a, const void *b)
-{
-  return strcmp (*(const char **)a, *(const char **)b);
 }
 
 GtkWidget *

@@ -2,15 +2,31 @@
 
 aliasdir = $(sysconfdir)/pango
 
-INCLUDES = -I$(top_srcdir)
+###################################################
+if BUILD_QT_TEST
 
-if BUILD_TESTS
+QT_INCLUDES=-I $(QTDIR)/include
+QT_LIBS=-L $(QTDIR)/lib -lqt 
+MOC=$(QTDIR)/bin/moc
+
+INCLUDES = -I$(top_srcdir) $(QT_INCLUDES) $(GLIB_CFLAGS)
+
 bin_PROGRAMS = pango-viewer
 
-pango_viewer_SOURCES = \
-	viewer.c
-pango_viewer_LDADD = ../pango/libpango.la ../pango/libpangox.la $(GTK_LIBS) $(FRIBIDI_LIBS) $(UNICODE_LIBS)
+pango_viewer_SOURCES =		\
+	viewer-qt.cc		\
+	viewer-qt.h		\
+	moc_viewer-qt.cc
+
+moc_viewer-qt.cc: viewer-qt.h
+	$(MOC) $< -o $@
+
+BUILT_SOURCES=moc_viewer-qt.cc
+
+pango_viewer_LDADD = ../pango/libpango.la ../pango/libpangox.la $(FRIBIDI_LIBS) $(UNICODE_LIBS) $(QT_LIBS)
+
 endif
+###################################################
 
 all-local: pango.modules
 

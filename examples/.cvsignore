@@ -2,6 +2,7 @@ Makefile.in
 Makefile
 pango.modules
 pango-viewer
+moc_viewer-qt.cc
 .deps
 .libs
 *.lo

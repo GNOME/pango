@@ -385,7 +385,7 @@ pango_layout_get_alignment (PangoLayout *layout)
  **/
 void
 pango_layout_set_text (PangoLayout *layout,
-		       char        *text,
+		       const char  *text,
 		       int          length)
 {
   g_return_if_fail (layout != NULL);
@@ -402,7 +402,7 @@ pango_layout_set_text (PangoLayout *layout,
   else
     {
       unicode_char_t junk;
-      char *p = text;
+      const char *p = text;
       int n_chars = 0;
       
       while (*p && (length < 0 || p < text + length))

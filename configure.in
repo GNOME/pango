@@ -24,12 +24,9 @@ fi
 X_LIBS="-L$x_libraries -lX11"
 AC_SUBST(X_LIBS)
 
-gtk_works=no
-AM_PATH_GTK(1.2.0,
-            [CFLAGS="$GTK_CFLAGS $CFLAGS"; gtk_works=yes],
-            AC_MSG_WARN("Disabling GTK+-based tests"))
-
-AM_CONDITIONAL(BUILD_TESTS, test x$gtk_works = xyes)
+AM_PATH_GLIB(1.3.1,,
+             AC_MSG_ERROR([GLib 1.3.1 is required for building Pango]),
+	     gmodule gobject)
 
 AC_PATH_PROG(FRIBIDI_CONFIG, fribidi-config, no)
 if test x$FRIBIDI_CONFIG = xno ; then
@@ -136,8 +133,51 @@ AM_CONDITIONAL(INCLUDE_THAI,echo $included_modules | grep '\(^\|,\)thai\($\|,\)'
 #
 AC_CHECK_FUNCS(flockfile)
 
+#
+# Check for Qt - which we use for building the viewer example, if
+# present
+#
+
+AC_ARG_WITH(qt, [ --with-qt=DIR    Location where Qt is installed],,with_qt=yes)
+
+QTDIR=
+AC_MSG_CHECKING(For Qt location)
+  
+if test "x$with_qt" = xyes ; then         
+# Search for Qt in various possibly standard ocations
+   for dir in /usr/lib/qt-2.1.0 /usr/lib/qt-2.0.1 /usr/lib/qt-2.0.0 ; do
+      if test -x $dir/bin/moc ; then
+         QTDIR=$dir
+         break
+      fi
+   done
+
+else
+   if ! test "x$with_qt" = xno ; then
+      if test -x $with_qt/bin/moc ; then
+         QTDIR=$with_qt
+      fi
+   fi
+fi
+
+if test "x$QTDIR" = x ; then
+  AC_MSG_RESULT(none)
+else
+  AC_MSG_RESULT($QTDIR)
+  
+  AC_PROG_CXX
+fi
+
+AM_CONDITIONAL(BUILD_QT_TEST, ! test "x$QTDIR" = x)
+AC_SUBST(QTDIR)
+  
+#
+# Check for gtkdoc
+#
 AC_CHECK_PROG(gtkdoc, gtkdoc-scan, yes, no)
 AM_CONDITIONAL(HAVE_GTK_DOC, test x$gtkdoc = xyes)
+
+
 
 AC_OUTPUT_COMMANDS([
 cat > pango/module-defs.c <<EOTEXT

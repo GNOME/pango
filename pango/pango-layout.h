@@ -63,7 +63,7 @@ PangoContext  *pango_layout_get_context    (PangoLayout    *layout);
 void           pango_layout_set_attributes (PangoLayout    *layout,
 					    PangoAttrList  *attrs);
 void           pango_layout_set_text       (PangoLayout    *layout,
-					    char           *text,
+					    const char     *text,
 					    int             length);
 
 void           pango_layout_set_width     (PangoLayout    *layout,
