@@ -313,4 +313,11 @@ pangowin32.lib: libpangowin32.la pangowin32.def
 
 install-data-local: install-ms-lib install-libtool-import-lib
 
+if DISABLE_EXPLICIT_DEPS
+install-exec-local: 
+	for i in libpangoft2.la libpangoxft.la libpangox.la ; do \
+	  test -f $(DESTDIR)$(libdir)/$$i && $(SHELL) $(top_srcdir)/sanitize-la.sh $(DESTDIR)$(libdir)/$$i ; \
+	done
+endif
+
 uninstall-local: uninstall-ms-lib uninstall-libtool-import-lib

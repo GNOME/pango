@@ -1,3 +1,22 @@
+Fri Mar  1 00:46:49 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* configure: Default to --disable-static.
+
+	* configure.in pangoft2.pc.in pangoxft2.pc.in pangox.pc.in:
+	Add a --enable-explicit-deps option to control whether dependency 
+	libraries are written into .la files and .pc files. 
+	Default is auto: if static libraries are off
+	and shlib dependencies are found, don't write deps.
+
+	* pango/Makefile.am sanitize-la.sh: Shell script used
+	to strip dependencies out of .la files.
+
+	* configure.in: Default to --disable-gtk-doc.
+
+	* Makefile.am: Add a slightly modified distcheck rule
+	that passes --enable-gtk-doc to the configure inside.
+	(So that 'make dist' succeeds inside.)
+
 Fri Mar  1 14:37:47 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pangoxft-font.c (pango_xft_font_get_glyph_extents):
