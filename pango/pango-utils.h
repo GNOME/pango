@@ -38,6 +38,9 @@ gboolean pango_scan_int       (const char **pos,
 
 #ifdef PANGO_ENABLE_BACKEND
 char *   pango_config_key_get (const char  *key);
+void     pango_lookup_aliases (const char   *fontname,
+			       char       ***families,
+			       int          *n_families);
 #endif /* PANGO_ENABLE_BACKEND */
 
 /* Functions for parsing textual representations

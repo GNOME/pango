@@ -19,11 +19,14 @@
  * Boston, MA 02111-1307, USA.
  */
 
+#include <string.h>
+
 #include "pango-fontmap.h"
 #include "pangoxft.h"
 #include "pangoxft-private.h"
 #include "modules.h"
 
+#include "X11/Xft/Xft.h"
 #include "X11/Xft/XftFreetype.h"
 
 /* Number of freed fonts */
@@ -32,6 +35,7 @@
 typedef struct _PangoXftFontMap      PangoXftFontMap;
 typedef struct _PangoXftFamily       PangoXftFamily;
 typedef struct _PangoXftFace         PangoXftFace;
+typedef struct _PangoXftPatternSet   PangoXftPatternSet;
 
 #define PANGO_TYPE_XFT_FONT_MAP              (pango_xft_font_map_get_type ())
 #define PANGO_XFT_FONT_MAP(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_TYPE_XFT_FONT_MAP, PangoXftFontMap))
@@ -41,12 +45,18 @@ struct _PangoXftFontMap
 {
   PangoFontMap parent_instance;
 
-  GHashTable *font_hash;
-  GHashTable *coverage_hash;
-  GQueue *freed_fonts;
+  GHashTable *fontset_hash; /* Maps PangoFontDescription -> PangoXftPatternSet */
+  GHashTable *coverage_hash; /* Maps font file name -> PangoCoverage */
 
+  GHashTable *fonts; /* Maps XftPattern -> PangoXftFont */
+  GQueue *freed_fonts; /* Fonts in fonts that has been freed */
+
+  /* List of all families availible */
   PangoXftFamily **families;
   int n_families;		/* -1 == uninitialized */
+
+  /* List of all fonts (XftPatterns) availible */
+  XftFontSet *font_set;
 
   Display *display;
   int screen;  
@@ -67,6 +77,12 @@ struct _PangoXftFamily
   int n_faces;		/* -1 == uninitialized */
 };
 
+struct _PangoXftPatternSet
+{
+  int n_patterns;
+  XftPattern **patterns;
+};
+
 #define PANGO_XFT_TYPE_FACE              (pango_xft_face_get_type ())
 #define PANGO_XFT_FACE(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_XFT_TYPE_FACE, PangoXftFace))
 #define PANGO_XFT_IS_FACE(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), PANGO_XFT_TYPE_FACE))
@@ -83,18 +99,24 @@ static GType    pango_xft_font_map_get_type   (void);
 GType           pango_xft_family_get_type     (void);
 GType           pango_xft_face_get_type       (void);
 
-static void       pango_xft_font_map_init          (PangoXftFontMap              *fontmap);
-static void       pango_xft_font_map_class_init    (PangoFontMapClass            *class);
-static void       pango_xft_font_map_finalize      (GObject                      *object);
-static PangoFont *pango_xft_font_map_load_font     (PangoFontMap                 *fontmap,
-						    const PangoFontDescription   *description);
-static void       pango_xft_font_map_list_families (PangoFontMap                 *fontmap,
-						    PangoFontFamily            ***families,
-						    int                          *n_families);
+static void          pango_xft_font_map_init          (PangoXftFontMap              *fontmap);
+static void          pango_xft_font_map_class_init    (PangoFontMapClass            *class);
+static void          pango_xft_font_map_finalize      (GObject                      *object);
+static PangoFont *   pango_xft_font_map_load_font     (PangoFontMap                 *fontmap,
+						       const PangoFontDescription   *description);
+static PangoFontset *pango_xft_font_map_load_fontset  (PangoFontMap                 *fontmap,
+						       const PangoFontDescription   *desc,
+						       PangoLanguage                *language);
+static void          pango_xft_font_map_list_families (PangoFontMap                 *fontmap,
+						       PangoFontFamily            ***families,
+						       int                          *n_families);
 
-static void pango_xft_font_map_cache_clear  (PangoXftFontMap *xfontmap);
-static void pango_xft_font_map_cache_remove (PangoFontMap    *fontmap,
-					     PangoXftFont    *xfont);
+
+static void pango_xft_font_set_free         (PangoXftPatternSet *font_set);
+
+static void pango_xft_font_map_cache_clear  (PangoXftFontMap    *xfontmap);
+static void pango_xft_font_map_cache_remove (PangoFontMap       *fontmap,
+					     PangoXftFont       *xfont);
 
 static PangoFontClass *parent_class;	/* Parent class structure for PangoXftFontMap */
 
@@ -141,10 +163,97 @@ pango_xft_font_map_class_init (PangoFontMapClass *class)
   
   object_class->finalize = pango_xft_font_map_finalize;
   class->load_font = pango_xft_font_map_load_font;
+  class->load_fontset = pango_xft_font_map_load_fontset;
   class->list_families = pango_xft_font_map_list_families;
 }
 
 static GSList *fontmaps = NULL;
+
+guint
+pango_xft_pattern_hash (XftPattern *pattern)
+{
+  char *str;
+  int i;
+  double d;
+  guint hash = 0;
+  
+  XftPatternGetString (pattern, XFT_FILE, 0, &str);
+  if (str)
+    hash = g_str_hash (str);
+
+  if (XftPatternGetInteger (pattern, XFT_INDEX, 0, &i) == XftResultMatch)
+    hash ^= i;
+
+  if (XftPatternGetDouble (pattern, XFT_PIXEL_SIZE, 0, &d) == XftResultMatch)
+    hash ^= (guint) (d*1000.0);
+
+  return hash;
+}
+
+gboolean
+pango_xft_pattern_equal (XftPattern *pattern1,
+			 XftPattern *pattern2)
+{
+  char *file1, *file2;
+  int index1, index2;
+  double size1, size2;
+  XftResult res1, res2;
+  int int1, int2;
+  Bool bool1, bool2;
+  
+  XftPatternGetString (pattern1, XFT_FILE, 0, &file1);
+  XftPatternGetString (pattern2, XFT_FILE, 0, &file2);
+
+  g_assert (file1 != NULL && file2 != NULL);
+
+  if (strcmp (file1, file2) != 0)
+    return FALSE;
+  
+  if (XftPatternGetInteger (pattern1, XFT_INDEX, 0, &index1) != XftResultMatch)
+    return FALSE;
+  
+  if (XftPatternGetInteger (pattern2, XFT_INDEX, 0, &index2) != XftResultMatch)
+    return FALSE;
+
+  if (index1 != index2)
+    return FALSE;
+
+  if (XftPatternGetDouble (pattern1, XFT_PIXEL_SIZE, 0, &size1) != XftResultMatch)
+    return FALSE;
+
+  if (XftPatternGetDouble (pattern2, XFT_PIXEL_SIZE, 0, &size2) != XftResultMatch)
+    return FALSE;
+
+  if (size1 != size2)
+    return FALSE;
+
+  res1 = XftPatternGetInteger (pattern1, XFT_RGBA, 0, &int1);
+  res2 = XftPatternGetInteger (pattern2, XFT_RGBA, 0, &int2);
+  if (res1 != res2 || (res1 == XftResultMatch && int1 != int2))
+    return FALSE;
+  
+  res1 = XftPatternGetBool (pattern1, XFT_ANTIALIAS, 0, &bool1);
+  res2 = XftPatternGetBool (pattern2, XFT_ANTIALIAS, 0, &bool2);
+  if (res1 != res2 || (res1 == XftResultMatch && bool1 != bool2))
+    return FALSE;
+  
+  res1 = XftPatternGetBool (pattern1, XFT_MINSPACE, 0, &bool1);
+  res2 = XftPatternGetBool (pattern2, XFT_MINSPACE, 0, &bool2);
+  if (res1 != res2 || (res1 == XftResultMatch && bool1 != bool2))
+    return FALSE;
+
+  res1 = XftPatternGetInteger (pattern1, XFT_SPACING, 0, &int1);
+  res2 = XftPatternGetInteger (pattern2, XFT_SPACING, 0, &int2);
+  if (res1 != res2 || (res1 == XftResultMatch && int1 != int2))
+    return FALSE;
+
+  res1 = XftPatternGetInteger (pattern1, XFT_CHAR_WIDTH, 0, &int1);
+  res2 = XftPatternGetInteger (pattern2, XFT_CHAR_WIDTH, 0, &int2);
+  if (res1 != res2 || (res1 == XftResultMatch && int1 != int2))
+    return FALSE;
+  
+  return TRUE;
+}
 
 static PangoFontMap *
 pango_xft_get_font_map (Display *display,
@@ -172,9 +281,15 @@ pango_xft_get_font_map (Display *display,
   xfontmap->display = display;
   xfontmap->screen = screen;
 
-  xfontmap->font_hash = g_hash_table_new ((GHashFunc)pango_font_description_hash,
-					  (GEqualFunc)pango_font_description_equal);
-  xfontmap->coverage_hash = g_hash_table_new (g_str_hash, g_str_equal);
+  xfontmap->fonts = g_hash_table_new ((GHashFunc)pango_xft_pattern_hash,
+				      (GEqualFunc)pango_xft_pattern_equal);
+  xfontmap->fontset_hash = g_hash_table_new_full ((GHashFunc)pango_font_description_hash,
+						  (GEqualFunc)pango_font_description_equal,
+						  (GDestroyNotify)pango_font_description_free,
+						  (GDestroyNotify)pango_xft_font_set_free);
+  xfontmap->coverage_hash = g_hash_table_new_full (g_str_hash, g_str_equal,
+						   (GDestroyNotify)g_free,
+						   (GDestroyNotify)pango_coverage_unref);
   xfontmap->freed_fonts = g_queue_new ();
 
   fontmaps = g_slist_prepend (fontmaps, xfontmap);
@@ -211,18 +326,9 @@ pango_xft_get_context (Display *display,
     }
   
   result = pango_context_new ();
-  pango_context_add_font_map (result, pango_xft_get_font_map (display, screen));
+  pango_context_set_font_map (result, pango_xft_get_font_map (display, screen));
 
   return result;
-}
-
-static void
-coverage_foreach (gpointer key, gpointer value, gpointer data)
-{
-  PangoCoverage *coverage = value;
-
-  g_free (key);
-  pango_coverage_unref (coverage);
 }
 
 static void
@@ -233,30 +339,34 @@ pango_xft_font_map_finalize (GObject *object)
   fontmaps = g_slist_remove (fontmaps, object);
 
   g_queue_free (xfontmap->freed_fonts);
-  g_hash_table_destroy (xfontmap->font_hash);
-
-  g_hash_table_foreach (xfontmap->coverage_hash, coverage_foreach, NULL);
+  g_hash_table_destroy (xfontmap->fontset_hash);
   g_hash_table_destroy (xfontmap->coverage_hash);
   
   G_OBJECT_CLASS (parent_class)->finalize (object);
 }
 
+
+/* Add a mapping from xfont->font_pattern to xfont */
 void
 _pango_xft_font_map_add (PangoFontMap *fontmap,
-			PangoXftFont *xfont)
+			 PangoXftFont *xfont)
 {
   PangoXftFontMap *xfontmap = PANGO_XFT_FONT_MAP (fontmap);
 
-  g_hash_table_insert (xfontmap->font_hash, xfont->description, xfont);
+  g_hash_table_insert (xfontmap->fonts,
+		       xfont->font_pattern,
+		       xfont);
 }
 
+/* Remove mapping from xfont->font_pattern to xfont */
 void
 _pango_xft_font_map_remove (PangoFontMap *fontmap,
 			   PangoXftFont *xfont)
 {
   PangoXftFontMap *xfontmap = PANGO_XFT_FONT_MAP (fontmap);
 
-  g_hash_table_remove (xfontmap->font_hash, xfont->description);
+  g_hash_table_remove (xfontmap->fonts,
+		       xfont->font_pattern);
 }
 
 static void
@@ -303,38 +413,10 @@ pango_xft_font_map_list_families (PangoFontMap           *fontmap,
     *families = g_memdup (xfontmap->families, xfontmap->n_families * sizeof (PangoFontFamily *));
 }
 
-static PangoFont *
-pango_xft_font_map_load_font (PangoFontMap               *fontmap,
-			      const PangoFontDescription *description)
+static int
+pango_xft_convert_weight (PangoWeight pango_weight)
 {
-  PangoXftFontMap *xfontmap = (PangoXftFontMap *)fontmap;
-  PangoXftFont *font;
-  PangoStyle pango_style;
-  int slant;
-  PangoWeight pango_weight;
   int weight;
-  XftFont *xft_font;
-
-  font = g_hash_table_lookup (xfontmap->font_hash, description);
-
-  if (font)
-    {
-      if (font->in_cache)
-	pango_xft_font_map_cache_remove (fontmap, font);
-      
-      return (PangoFont *)g_object_ref (G_OBJECT (font));
-    }
-
-  pango_style = pango_font_description_get_style (description);
-  
-  if (pango_style == PANGO_STYLE_ITALIC)
-    slant = XFT_SLANT_ITALIC;
-  else if (pango_style == PANGO_STYLE_OBLIQUE)
-    slant = XFT_SLANT_OBLIQUE;
-  else
-    slant = XFT_SLANT_ROMAN;
-
-  pango_weight = pango_font_description_get_weight (description);
   
   if (pango_weight < (PANGO_WEIGHT_NORMAL + PANGO_WEIGHT_LIGHT) / 2)
     weight = XFT_WEIGHT_LIGHT;
@@ -346,54 +428,197 @@ pango_xft_font_map_load_font (PangoFontMap               *fontmap,
     weight = XFT_WEIGHT_BOLD;
   else
     weight = XFT_WEIGHT_BLACK;
+  
+  return weight;
+}
 
+static int
+pango_xft_convert_slant (PangoStyle pango_style)
+{
+  int slant;
+  
+  if (pango_style == PANGO_STYLE_ITALIC)
+    slant = XFT_SLANT_ITALIC;
+  else if (pango_style == PANGO_STYLE_OBLIQUE)
+    slant = XFT_SLANT_OBLIQUE;
+  else
+    slant = XFT_SLANT_ROMAN;
+  
+  return slant;
+}
+
+
+static XftPattern *
+pango_xft_make_pattern (const PangoFontDescription *description)
+{
+  XftPattern *pattern;
+  PangoStyle pango_style;
+  int slant;
+  int weight;
+  
+  pango_style = pango_font_description_get_style (description);
+
+  slant = pango_xft_convert_slant (pango_style);
+  weight = pango_xft_convert_weight (pango_font_description_get_weight (description));
+  
   /* To fool Xft into not munging glyph indices, we open it as glyphs-fontspecific
    * then set the encoding ourself
    */
-  xft_font = XftFontOpen (xfontmap->display, xfontmap->screen,
-			  XFT_ENCODING, XftTypeString, "glyphs-fontspecific",
-			  XFT_CORE, XftTypeBool, False,
-			  XFT_FAMILY, XftTypeString,  pango_font_description_get_family (description),
-			  XFT_WEIGHT, XftTypeInteger, weight,
-			  XFT_SLANT,  XftTypeInteger, slant,
-			  XFT_SIZE, XftTypeDouble, (double)pango_font_description_get_size (description)/PANGO_SCALE,
-			  NULL);
+  pattern = XftPatternBuild (0,
+			     XFT_ENCODING, XftTypeString, "glyphs-fontspecific",
+			     XFT_CORE, XftTypeBool, False,
+			     XFT_FAMILY, XftTypeString,  pango_font_description_get_family (description),
+			     XFT_WEIGHT, XftTypeInteger, weight,
+			     XFT_SLANT,  XftTypeInteger, slant,
+			     XFT_SIZE, XftTypeDouble, (double)pango_font_description_get_size (description)/PANGO_SCALE,
+			     NULL);
 
-  if (xft_font)
+  return pattern;
+}
+
+static PangoFont *
+pango_xft_font_map_new_font (PangoFontMap  *fontmap,
+			     XftPattern    *match)
+{
+  PangoXftFontMap *xfontmap = (PangoXftFontMap *)fontmap;
+  PangoXftFont *font;
+  
+  /* Look up cache */
+  font = g_hash_table_lookup (xfontmap->fonts, match);
+  
+  if (font)
     {
-      FT_Face face;
-      FT_Error error;
+      /* Revive fonts from cache */
+      if (font->in_cache)
+	pango_xft_font_map_cache_remove (fontmap, font);
       
-      int charmap;
-
-      g_assert (!xft_font->core);
-      
-      face = xft_font->u.ft.font->face;
-
-      for (charmap = 0; charmap < face->num_charmaps; charmap++)
-	if (face->charmaps[charmap]->encoding == ft_encoding_unicode)
-	  break;
-
-      if (charmap == face->num_charmaps)
-	goto error;
-
-      error = FT_Set_Charmap(face, face->charmaps[charmap]);
-      
-      if (error)
-	goto error;
-      
-      font = _pango_xft_font_new (fontmap, description, xft_font);
+      return (PangoFont *)g_object_ref (G_OBJECT(font));
     }
-  else
-    return NULL;
+  
+  return  (PangoFont *)_pango_xft_font_new (fontmap, XftPatternDuplicate (match));
+}
 
-  return (PangoFont *)font;
+static PangoFont *
+pango_xft_font_map_load_font (PangoFontMap               *fontmap,
+			      const PangoFontDescription *description)
+{
+  PangoXftFontMap *xfontmap = (PangoXftFontMap *)fontmap;
+  XftPattern *pattern, *match;
+  XftResult res;
+  
+  pattern = pango_xft_make_pattern (description);
+      
+  match = XftFontMatch (xfontmap->display, xfontmap->screen, pattern, &res);
+  XftPatternDestroy (pattern);
+  
+  if (match)
+    return  pango_xft_font_map_new_font (fontmap, match);
 
- error:
-
-  XftFontClose (xfontmap->display, xft_font);
   return NULL;
 }
+
+
+static void
+pango_xft_font_set_free (PangoXftPatternSet *font_set)
+{
+  int i;
+  
+  for (i = 0; i < font_set->n_patterns; i++)
+    XftPatternDestroy (font_set->patterns[i]);
+
+  g_free (font_set);
+}
+
+static PangoFontset *
+pango_xft_font_map_load_fontset (PangoFontMap                 *fontmap,
+				 const PangoFontDescription   *desc,
+				 PangoLanguage                *language)
+{
+  PangoXftFontMap *xfontmap = (PangoXftFontMap *)fontmap;
+  XftPattern *pattern, *pattern_copy;
+  XftPattern *match;
+  int i;
+  char *family, *family_res;
+  XftResult res;
+  int id;
+  GPtrArray *array;
+  PangoXftPatternSet *patterns;
+  PangoFontsetSimple *simple;
+
+  patterns = g_hash_table_lookup (xfontmap->fontset_hash, desc);
+
+  if (patterns == NULL)
+    {
+      if (xfontmap->font_set == NULL)
+	xfontmap->font_set = XftListFonts (xfontmap->display, xfontmap->screen,
+					   XFT_CORE, XftTypeBool, False,
+					   XFT_ENCODING, XftTypeString, "iso10646-1",
+					   NULL,
+					   XFT_FOUNDRY,  XFT_STYLE,      XFT_FAMILY,
+					   XFT_ENCODING, XFT_FILE,       XFT_INDEX,
+					   XFT_CORE,     XFT_FAMILY,     XFT_WEIGHT,
+					   XFT_SLANT,    XFT_CHAR_WIDTH, XFT_MATRIX, 
+					   XFT_RGBA,     XFT_ANTIALIAS,  XFT_MINSPACE,
+					   XFT_SPACING,  XFT_SIZE,
+					   NULL);
+      
+      pattern = pango_xft_make_pattern (desc);
+
+      XftConfigSubstitute (pattern);
+      XftDefaultSubstitute (xfontmap->display, xfontmap->screen, pattern);
+
+      pattern_copy = XftPatternDuplicate (pattern);
+
+      array = g_ptr_array_new ();
+      patterns = g_new (PangoXftPatternSet, 1);
+
+      match = NULL;
+      id = 0;
+      while (XftPatternGetString (pattern, XFT_FAMILY, id++, &family) == XftResultMatch)
+	{
+	  XftPatternDel (pattern_copy, XFT_FAMILY);
+	  XftPatternAddString (pattern_copy, XFT_FAMILY, family);
+	  
+	  match = XftFontSetMatch (&xfontmap->font_set, 1, pattern_copy, &res);
+	  
+	  if (match &&
+	      XftPatternGetString (match, XFT_FAMILY, 0, &family_res) == XftResultMatch &&
+	      g_ascii_strcasecmp (family, family_res) == 0)
+	    {
+	      g_ptr_array_add (array, match);
+	      match = NULL;
+	    }
+	  if (match)
+	    XftPatternDestroy (match);
+	}
+      
+      if (array->len == 0)
+	{
+	  match = XftFontSetMatch (&xfontmap->font_set, 1, pattern, &res);
+	  g_ptr_array_add (array, match);
+	}
+
+      XftPatternDestroy (pattern);
+      XftPatternDestroy (pattern_copy);
+
+      patterns->n_patterns = array->len;
+      patterns->patterns = (XftPattern **)g_ptr_array_free (array, FALSE);
+      
+      g_hash_table_insert (xfontmap->fontset_hash,
+			   pango_font_description_copy (desc),
+			   patterns);
+    }
+
+  
+  simple = pango_fontset_simple_new (language);
+
+  for (i = 0; i < patterns->n_patterns; i++)
+    pango_fontset_simple_append (simple,
+				 pango_xft_font_map_new_font (fontmap, patterns->patterns[i]));
+  
+  return PANGO_FONTSET (simple);
+}
+
 
 void
 _pango_xft_font_map_cache_add (PangoFontMap *fontmap,
@@ -482,8 +707,8 @@ _pango_xft_font_map_get_info (PangoFontMap *fontmap,
  * PangoXftFace
  */
 
-static PangoFontDescription *
-font_desc_from_pattern (XftPattern *pattern)
+PangoFontDescription *
+_pango_xft_font_desc_from_pattern (XftPattern *pattern)
 {
   PangoFontDescription *desc;
   PangoStyle style;
@@ -560,7 +785,7 @@ pango_xft_face_describe (PangoFontFace *face)
   result_pattern = XftFontMatch (xfontmap->display, xfontmap->screen, match_pattern, &res);
   if (result_pattern)
     {
-      desc = font_desc_from_pattern (result_pattern);
+      desc = _pango_xft_font_desc_from_pattern (result_pattern);
       XftPatternDestroy (result_pattern);
     }
 
@@ -645,7 +870,8 @@ pango_xft_family_list_faces (PangoFontFamily  *family,
 	  XftResult res;
 	  
 	  res = XftPatternGetString (fontset->fonts[i], XFT_STYLE, 0, &s);
-	  g_assert (res == XftResultMatch);
+	  if (res != XftResultMatch)
+	    s = "Regular";
 	  
 	  xfamily->faces[i] = g_object_new (PANGO_XFT_TYPE_FACE, NULL);
 	  xfamily->faces[i]->style = g_strdup (s);

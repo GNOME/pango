@@ -15,7 +15,9 @@ AM_CONFIG_HEADER(config.h)
 AC_PROG_CC
 AC_LIBTOOL_WIN32_DLL
 AM_PROG_LIBTOOL
-
+AM_PROG_LEX
+AC_PROG_YACC
+	
 AC_MSG_CHECKING([for some Win32 platform])
 case "$host" in
   *-*-mingw*|*-*-cygwin*)
@@ -553,6 +555,7 @@ AC_OUTPUT([
 Makefile 
 pango/Makefile
 pango/mini-fribidi/Makefile
+pango/mini-xft/Makefile
 pango/opentype/Makefile
 pango/makefile.mingw
 pango/pango.rc

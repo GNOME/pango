@@ -25,6 +25,7 @@
 
 #include "pango-modules.h"
 #include "pangoft2.h"
+#include "mini-xft/MiniXft.h"
 
 /* Debugging... */
 /*#define DEBUGGING 1*/
@@ -52,43 +53,27 @@
    ((d) - PANGO_SCALE_26_6 / 2) / PANGO_SCALE_26_6)
 #define PANGO_UNITS_26_6(d) (PANGO_SCALE_26_6 * (d))
 
-typedef struct _PangoFT2OA PangoFT2OA;
-typedef struct _PangoFT2Font PangoFT2Font;
+typedef struct _PangoFT2Font      PangoFT2Font;
 typedef struct _PangoFT2GlyphInfo PangoFT2GlyphInfo;
-typedef struct _PangoFT2Face PangoFT2Face;
-typedef struct _PangoFT2SubfontInfo PangoFT2SubfontInfo;
+typedef struct _PangoFT2Face      PangoFT2Face;
+typedef struct _PangoFT2Family    PangoFT2Family;
 
-struct _PangoFT2OA
-{
-  FT_Open_Args *open_args;
-  FT_Long face_index;
-};
 
 struct _PangoFT2Font
 {
   PangoFont font;
 
-  /* A PangoFT2Font consists of one or several FT2 fonts (faces) that
-   * are assumed to blend visually well, and cover separate parts of
-   * the Unicode characters. The FT2 faces are not kept unnecessarily
-   * open, thus also we keep both the FT_Open_Args (and face index),
-   * and FT_Face.
-   */
-  PangoFT2OA **oa;
-  FT_Face *faces;
-  int n_fonts;
+  MiniXftPattern *font_pattern;
+  FT_Face face;
 
   int size;
 
-  GSList *metrics_by_lang;
-
   PangoFontMap *fontmap;
-  /* If TRUE, font is in cache of recently unused fonts and not otherwise
-   * in use.
-   */
-  gboolean in_cache;
+  PangoFontDescription *description;
   
-  PangoFT2Face *entry;
+  /* If TRUE, font is in cache of recently unused fonts and not otherwise
+   * in use. */
+  gboolean in_cache;
 
   GHashTable *glyph_info;
 };
@@ -103,27 +88,30 @@ struct _PangoFT2Face
 {
   PangoFontFace parent_instance;
   
-  FT_Open_Args **open_args;
-  FT_Long *face_indices;
-  int n_fonts;
-  PangoFontDescription *description;
-  PangoCoverage *coverage;
-  char *face_name;
-
-  GSList *cached_fonts;
+  PangoFT2Family *family;
+  char *style;
 };
 
-PangoMap      *pango_ft2_get_shaper_map          (PangoLanguage     *language);
-PangoCoverage *pango_ft2_face_get_coverage       (PangoFT2Face      *face,
-						  PangoFont         *font,
-						  PangoLanguage     *language);
-void           pango_ft2_face_remove             (PangoFT2Face      *face,
-						  PangoFont         *font);
-FT_Library    *pango_ft2_fontmap_get_library     (PangoFontMap      *fontmap);
-void           pango_ft2_fontmap_cache_add       (PangoFontMap      *fontmap,
-						  PangoFT2Font      *ft2font);
-void           pango_ft2_fontmap_cache_remove    (PangoFontMap      *fontmap,
-						  PangoFT2Font      *ft2font);
-const char    *pango_ft2_ft_strerror             (FT_Error           error);
+PangoFT2Font * _pango_ft2_font_new                (PangoFontMap                *font,
+						   MiniXftPattern              *pattern);
+PangoMap      *_pango_ft2_get_shaper_map          (PangoLanguage     *language);
+void           _pango_ft2_font_map_set_coverage   (PangoFontMap                *fontmap,
+						   const char                  *name,
+						   PangoCoverage               *coverage);
+PangoCoverage *_pango_ft2_font_map_get_coverage   (PangoFontMap                *fontmap,
+						   const char                  *name);
+void           _pango_ft2_face_remove             (PangoFT2Face      *face,
+						   PangoFont         *font);
+FT_Library     _pango_ft2_font_map_get_library    (PangoFontMap      *fontmap);
+void           _pango_ft2_font_map_cache_add      (PangoFontMap      *fontmap,
+						   PangoFT2Font      *ft2font);
+void           _pango_ft2_font_map_cache_remove    (PangoFontMap      *fontmap,
+						   PangoFT2Font      *ft2font);
+void           _pango_ft2_font_map_add            (PangoFontMap      *fontmap,
+						   PangoFT2Font      *ft2font);
+void           _pango_ft2_font_map_remove         (PangoFontMap      *fontmap,
+						   PangoFT2Font      *ft2font);
+const char    *_pango_ft2_ft_strerror             (FT_Error           error);
+PangoFontDescription *_pango_ft2_font_desc_from_pattern (MiniXftPattern *pattern);
 
 #endif /* __PANGOFT2_PRIVATE_H__ */

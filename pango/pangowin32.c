@@ -129,7 +129,7 @@ pango_win32_get_context (void)
     }
 
   result = pango_context_new ();
-  pango_context_add_font_map (result, pango_win32_font_map_for_display ());
+  pango_context_set_font_map (result, pango_win32_font_map_for_display ());
 
   return result;
 }

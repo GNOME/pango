@@ -46,12 +46,6 @@ typedef struct _PangoFT2FontClass   PangoFT2FontClass;
 typedef struct _PangoFT2MetricsInfo PangoFT2MetricsInfo;
 typedef struct _PangoFT2ContextInfo PangoFT2ContextInfo;
 
-struct _PangoFT2MetricsInfo
-{
-  const char *sample_str;
-  PangoFontMetrics *metrics;
-};
-
 struct _PangoFT2FontClass
 {
   PangoFontClass parent_class;
@@ -65,9 +59,6 @@ static void pango_ft2_font_dispose    (GObject         *object);
 static void pango_ft2_font_finalize   (GObject         *object);
 
 static PangoFontDescription *pango_ft2_font_describe          (PangoFont            *font);
-
-static PangoCoverage *       pango_ft2_font_get_coverage      (PangoFont            *font,
-							       PangoLanguage        *language);
 
 static PangoEngineShape *    pango_ft2_font_find_shaper       (PangoFont            *font,
 							       PangoLanguage        *language,
@@ -88,66 +79,87 @@ static void                  pango_ft2_get_item_properties    (PangoItem      	 
 							       PangoAttrColor 	    *bg_color,
 							       gboolean       	    *bg_set);
 
-static char *
-pango_ft2_open_args_describe (PangoFT2OA *oa)
+static GType pango_ft2_font_get_type (void);
+
+PangoFT2Font *
+_pango_ft2_font_new (PangoFontMap    *fontmap,
+		     MiniXftPattern  *pattern)
 {
-  if (oa->open_args->flags & ft_open_memory)
-    return g_strdup_printf ("memory at %p", oa->open_args->memory_base);
-  else if (oa->open_args->flags == ft_open_pathname)
-    return g_strdup_printf ("file '%s'", oa->open_args->pathname);
-  else if (oa->open_args->flags & ft_open_stream)
-    return g_strdup_printf ("FT_Stream at %p", oa->open_args->stream);
-  else
-    return g_strdup_printf ("open_args at %p, face_index %ld", oa->open_args, oa->face_index);
+  PangoFT2Font *ft2font;
+  double d;
+
+  g_return_val_if_fail (fontmap != NULL, NULL);
+  g_return_val_if_fail (pattern != NULL, NULL);
+
+  ft2font = (PangoFT2Font *)g_object_new (PANGO_TYPE_FT2_FONT, NULL);
+
+  ft2font->fontmap = fontmap;
+  ft2font->font_pattern = pattern;
+  
+  g_object_ref (G_OBJECT (fontmap));
+  ft2font->description = _pango_ft2_font_desc_from_pattern (pattern);
+  ft2font->face = NULL;
+
+  if (MiniXftPatternGetDouble (pattern, XFT_PIXEL_SIZE, 0, &d) == MiniXftResultMatch)
+    ft2font->size = d*PANGO_SCALE;
+
+  _pango_ft2_font_map_add (ft2font->fontmap, ft2font);
+
+  return ft2font;
 }
 
+
 /**
- * pango_ft2_get_face:
+ * pango_ft2_font_get_face:
  * @font: a #PangoFont
- * @subfont_index: the index of a subfont
  * 
- * Looks up a subfont in a #PangoFT2Font and returns a pointer to the 
- * native FreeType2 FT_Face structure. This may be useful if you want
- * to use FreeType2 functions directly.
+ * Returns the native FreeType2 FT_Face structure used for this PangoFont.
+ * This may be useful if you want to use FreeType2 functions directly.
  * 
- * Return value: a pointer to a #FT_Face structure.
+ * Return value: a pointer to a #FT_Face structure, with the size set correctly
  **/
 FT_Face
-pango_ft2_get_face (PangoFont      *font,
-		    PangoFT2Subfont subfont_index)
+pango_ft2_font_get_face (PangoFont      *font)
 {
   PangoFT2Font *ft2font = (PangoFT2Font *)font;
-  PangoFT2FontCache *cache;
   FT_Face face;
   FT_Error error;
+  MiniXftPattern *pattern;
+  char *filename;
+  int id;
 
-  if (subfont_index < 1 || subfont_index > ft2font->n_fonts)
+  pattern = ft2font->font_pattern;
+
+  if (!ft2font->face)
     {
-      g_warning ("Invalid subfont %d", subfont_index);
+      if (MiniXftPatternGetString (pattern, XFT_FILE, 0, &filename) != MiniXftResultMatch)
+	goto bail0;
+    
+      if (MiniXftPatternGetInteger (pattern, XFT_INDEX, 0, &id) != MiniXftResultMatch)
+	goto bail0;
+    
+      error = FT_New_Face (_pango_ft2_font_map_get_library (ft2font->fontmap),
+			   filename, id, &ft2font->face);
+      ft2font->face->generic.data = 0;
+    }
+ bail0:
+  
+  if (!ft2font->face)
+    {
+      g_warning ("Cannot load font\n");
       return NULL;
     }
-  
-  if (!ft2font->faces[subfont_index-1])
-    {
-      cache = pango_ft2_font_map_get_font_cache (ft2font->fontmap);
-  
-      ft2font->faces[subfont_index-1] =
-	pango_ft2_font_cache_load (cache,
-				   ft2font->oa[subfont_index-1]->open_args,
-				   ft2font->oa[subfont_index-1]->face_index);
 
-      if (!ft2font->faces[subfont_index-1])
-	g_warning ("Cannot load font for %s",
-		   pango_ft2_open_args_describe (ft2font->oa[subfont_index-1]));
-    }
-
-  face = ft2font->faces[subfont_index-1];
+  face = ft2font->face;
 
   if (ft2font->size != GPOINTER_TO_UINT (face->generic.data))
     {
       face->generic.data = GUINT_TO_POINTER (ft2font->size);
 
-      error = FT_Set_Char_Size (face, 0, PANGO_PIXELS_26_6 (ft2font->size), 72, 72);
+      error = FT_Set_Char_Size (face,
+				PANGO_PIXELS_26_6 (ft2font->size),
+				PANGO_PIXELS_26_6 (ft2font->size),
+				0, 0);
       if (error)
 	g_warning ("Error in FT_Set_Char_Size: %d", error);
     }
@@ -157,6 +169,7 @@ pango_ft2_get_face (PangoFont      *font,
 
 /**
  * pango_ft2_get_context:
+ * @dpi:  the dpi of the target device
  * 
  * Retrieves a #PangoContext appropriate for rendering with the PangoFT2
  * backend.
@@ -164,7 +177,7 @@ pango_ft2_get_face (PangoFont      *font,
  * Return value: the new #PangoContext
  **/
 PangoContext *
-pango_ft2_get_context (void)
+pango_ft2_get_context (double dpi)
 {
   PangoContext *result;
   static gboolean registered_modules = FALSE;
@@ -177,9 +190,11 @@ pango_ft2_get_context (void)
       for (i = 0; _pango_included_ft2_modules[i].list; i++)
         pango_module_register (&_pango_included_ft2_modules[i]);
     }
+
+  MiniXftSetDPI (dpi);
   
   result = pango_context_new ();
-  pango_context_add_font_map (result, pango_ft2_font_map_for_display ());
+  pango_context_set_font_map (result, pango_ft2_font_map_for_display ());
 
   return result;
 }
@@ -215,14 +230,10 @@ pango_ft2_font_get_type (void)
 static void 
 pango_ft2_font_init (PangoFT2Font *ft2font)
 {
-  ft2font->oa = NULL;
-  ft2font->faces = NULL;
+  ft2font->face = NULL;
 
-  ft2font->n_fonts = 0;
+  ft2font->size = 0;
 
-  ft2font->metrics_by_lang = NULL;
-
-  ft2font->entry = NULL;
   ft2font->glyph_info = g_hash_table_new (NULL, NULL);
 }
 
@@ -244,54 +255,6 @@ pango_ft2_font_class_init (PangoFT2FontClass *class)
   font_class->get_metrics = pango_ft2_font_get_metrics;
 }
 
-/**
- * pango_ft2_load_font:
- * @fontmap: a #PangoFontmap
- * @open_args: parameters that control loading
- * @face_indices: 
- * @n_fonts: 
- * @size: 
- * 
- * Loads a logical font based on XXX
- * 
- * Return value: a new #PangoFont
- **/
-PangoFont *
-pango_ft2_load_font (PangoFontMap  *fontmap,
-		     FT_Open_Args **open_args,
-		     FT_Long       *face_indices,
-		     int            n_fonts,
-		     int            size)
-{
-  PangoFT2Font *result;
-  int i;
-
-  g_return_val_if_fail (fontmap != NULL, NULL);
-  g_return_val_if_fail (open_args != NULL, NULL);
-  g_return_val_if_fail (face_indices != NULL, NULL);
-  g_return_val_if_fail (n_fonts > 0, NULL);
-
-  result = (PangoFT2Font *)g_object_new (PANGO_TYPE_FT2_FONT, NULL);
-  
-  result->fontmap = fontmap;
-  g_object_ref (G_OBJECT (result->fontmap));
-
-  result->oa = g_new (PangoFT2OA *, n_fonts);
-  result->faces = g_new (FT_Face, n_fonts);
-  result->n_fonts = n_fonts;
-  result->size = size;
-
-  for (i = 0; i < n_fonts; i++)
-    {
-      result->oa[i] = g_new (PangoFT2OA, 1);
-      result->oa[i]->open_args = open_args[i];
-      result->oa[i]->face_index = face_indices[i];
-      result->faces[i] = NULL;
-    }
-
-  return &result->font;
-}
- 
 /**
  * pango_ft2_render:
  * @bitmap:  the FreeType2 bitmap onto which to draw the string
@@ -315,7 +278,6 @@ pango_ft2_render (FT_Bitmap        *bitmap,
   int i;
   int x_position = 0;
   int ix, iy, ixoff, iyoff, y_start, y_limit, x_start, x_limit;
-  PangoFT2Subfont subfont_index;
   PangoGlyphInfo *gi;
   guchar *p, *q;
 
@@ -329,9 +291,8 @@ pango_ft2_render (FT_Bitmap        *bitmap,
     {
       if (gi->glyph)
 	{
-	  glyph_index = PANGO_FT2_GLYPH_INDEX (gi->glyph);
-	  subfont_index = PANGO_FT2_GLYPH_SUBFONT (gi->glyph);
-	  face = pango_ft2_get_face (font, subfont_index);
+	  glyph_index = gi->glyph;
+	  face = pango_ft2_font_get_face (font);
 
 	  if (face)
 	    {
@@ -418,15 +379,9 @@ pango_ft2_render (FT_Bitmap        *bitmap,
 }
 
 static FT_Glyph_Metrics *
-pango_ft2_get_per_char (PangoFont       *font,
-			PangoFT2Subfont  subfont_index,
-			guint32          glyph_index)
+pango_ft2_get_per_char (FT_Face   face,
+			guint32   glyph_index)
 {
-  FT_Face face;
-
-  if (!(face = pango_ft2_get_face (font, subfont_index)))
-    return NULL;
-
   FT_Load_Glyph (face, glyph_index, FT_LOAD_DEFAULT);
   return &face->glyph->metrics;
 }
@@ -439,22 +394,17 @@ pango_ft2_font_get_glyph_extents (PangoFont      *font,
 {
   PangoFT2Font *ft2font = (PangoFT2Font *)font;
   PangoFT2GlyphInfo *info;
-  PangoFT2Subfont subfont_index;
-  FT_UInt glyph_index;
   FT_Glyph_Metrics *gm;
 
   info = g_hash_table_lookup (ft2font->glyph_info, GUINT_TO_POINTER (glyph));
 
   if (!info)
     {
+      FT_Face face = pango_ft2_font_get_face (font);
       info = g_new (PangoFT2GlyphInfo, 1);
-      glyph_index = PANGO_FT2_GLYPH_INDEX (glyph);
-      subfont_index = PANGO_FT2_GLYPH_SUBFONT (glyph);
       
-      if (glyph && (gm = pango_ft2_get_per_char (font, subfont_index, glyph_index)))
+      if (glyph && (gm = pango_ft2_get_per_char (face, glyph)))
 	{
-	  FT_Face face = pango_ft2_get_face (font, subfont_index);
-	  
 	  info->ink_rect.x = PANGO_UNITS_26_6 (gm->horiBearingX);
 	  info->ink_rect.width = PANGO_UNITS_26_6 (gm->width);
 	  info->ink_rect.y = -PANGO_UNITS_26_6 (gm->horiBearingY);
@@ -481,7 +431,7 @@ pango_ft2_font_get_glyph_extents (PangoFont      *font,
 
       g_hash_table_insert (ft2font->glyph_info, GUINT_TO_POINTER(glyph), info);
     }
-  
+
   if (ink_rect)
     *ink_rect = info->ink_rect;
   if (logical_rect)
@@ -504,278 +454,65 @@ pango_ft2_font_get_kerning (PangoFont *font,
 			    PangoGlyph left,
 			    PangoGlyph right)
 {
-  PangoFT2Subfont subfont_index;
   FT_Face face;
-  FT_UInt left_glyph_index, right_glyph_index;
   FT_Error error;
   FT_Vector kerning;
 
-  subfont_index = PANGO_FT2_GLYPH_SUBFONT (left);
-  if (PANGO_FT2_GLYPH_SUBFONT (right) != subfont_index)
-    return 0;
-  
-  face = pango_ft2_get_face (font, subfont_index);
+  face = pango_ft2_font_get_face (font);
   if (!face)
     return 0;
 
   if (!FT_HAS_KERNING (face))
     return 0;
 
-  left_glyph_index = PANGO_FT2_GLYPH_INDEX (left);
-  right_glyph_index = PANGO_FT2_GLYPH_INDEX (right);
-
-  if (!left_glyph_index || !right_glyph_index)
+  if (!left || !right)
     return 0;
 
-  error = FT_Get_Kerning (face, left_glyph_index, right_glyph_index,
+  error = FT_Get_Kerning (face, left, right,
 			  ft_kerning_default, &kerning);
   if (error != FT_Err_Ok)
     g_warning ("FT_Get_Kerning returns error: %s",
-	       pango_ft2_ft_strerror (error));
+	       _pango_ft2_ft_strerror (error));
 
   return PANGO_UNITS_26_6 (kerning.x);
-}
-
-/* Get composite font metrics for all subfonts in list
- */
-static void
-get_font_metrics_from_subfonts (PangoFont        *font,
-				GSList           *subfonts,
-				PangoFontMetrics *metrics)
-{
-  GSList *tmp_list = subfonts;
-  gboolean first = TRUE;
-  
-  metrics->ascent = 0;
-  metrics->descent = 0;
-  
-  while (tmp_list)
-    {
-      FT_Face face = pango_ft2_get_face (font, GPOINTER_TO_UINT (tmp_list->data));
-      
-      g_assert (face != NULL);
-
-      if (first)
-	{
-	  metrics->ascent = PANGO_UNITS_26_6 (face->size->metrics.ascender);
-	  metrics->descent = PANGO_UNITS_26_6 (-face->size->metrics.descender);
-	  metrics->approximate_digit_width = PANGO_UNITS_26_6 (face->size->metrics.max_advance);
-	  metrics->approximate_char_width = PANGO_UNITS_26_6 (face->size->metrics.max_advance);
-	  first = FALSE;
-	}
-      else
-	{
-	  metrics->ascent = MAX (PANGO_UNITS_26_6 (face->size->metrics.ascender), metrics->ascent);
-	  metrics->descent = MAX (PANGO_UNITS_26_6 (-face->size->metrics.descender), metrics->descent);
-	  metrics->approximate_digit_width =
-	    MAX (PANGO_UNITS_26_6 (face->size->metrics.max_advance), metrics->approximate_digit_width);
-	  metrics->approximate_char_width =
-	    MAX (PANGO_UNITS_26_6 (face->size->metrics.max_advance), metrics->approximate_char_width);
-	}
-
-      tmp_list = tmp_list->next;
-    }
-}
-
-/* Get composite font metrics for all subfonts resulting from shaping
- * string str with the given font
- *
- * This duplicates quite a bit of code from pango_itemize. This function
- * should die and we should simply add the ability to specify particular
- * fonts when itemizing.
- */
-static void
-get_font_metrics_from_string (PangoFont        *font,
-			      PangoLanguage    *language,
-			      const char       *str,
-			      PangoFontMetrics *metrics)
-{
-  const char *start, *p;
-  PangoGlyphString *glyph_str = pango_glyph_string_new ();
-  PangoEngineShape *shaper, *last_shaper;
-  int last_level;
-  gunichar *text_ucs4;
-  long n_chars, i;
-  guint8 *embedding_levels;
-  PangoDirection base_dir = PANGO_DIRECTION_LTR;
-  GSList *subfonts = NULL;
-
-  text_ucs4 = g_utf8_to_ucs4_fast (str, -1, &n_chars);
-  if (!text_ucs4)
-    return;
-
-  embedding_levels = g_new (guint8, n_chars);
-  pango_log2vis_get_embedding_levels (text_ucs4, n_chars, &base_dir,
-				      embedding_levels);
-  g_free (text_ucs4);
-
-  last_shaper = NULL;
-  last_level = 0;
-  
-  i = 0;
-  p = start = str;
-  while (*p)
-    {
-      gunichar wc = g_utf8_get_char (p);
-      p = g_utf8_next_char (p);
-	  
-      shaper = pango_font_find_shaper (font, language, wc);
-      if (p > start &&
-	  (shaper != last_shaper || last_level != embedding_levels[i]))
-	{
-	  PangoAnalysis analysis;
-	  int j;
-
-	  analysis.shape_engine = shaper;
-	  analysis.lang_engine = NULL;
-	  analysis.font = font;
-	  analysis.level = last_level;
-	  
-	  pango_shape (start, p - start, &analysis, glyph_str);
-
-	  for (j = 0; j < glyph_str->num_glyphs; j++)
-	    {
-	      PangoFT2Subfont subfont_index = PANGO_FT2_GLYPH_SUBFONT (glyph_str->glyphs[j].glyph);
-	      if (!g_slist_find (subfonts, GUINT_TO_POINTER ((guint)subfont_index)))
-		subfonts = g_slist_prepend (subfonts, GUINT_TO_POINTER ((guint)subfont_index));
-	    }
-	  
-	  start = p;
-	}
-
-      last_shaper = shaper;
-      last_level = embedding_levels[i];
-      i++;
-    }
-
-  get_font_metrics_from_subfonts (font, subfonts, metrics);
-  g_slist_free (subfonts);
-  
-  pango_glyph_string_free (glyph_str);
-  g_free (embedding_levels);
-
-  return;
 }
 
 static PangoFontMetrics *
 pango_ft2_font_get_metrics (PangoFont        *font,
 			    PangoLanguage    *language)
 {
-  PangoFT2MetricsInfo *info = NULL; /* Quiet GCC */
-  PangoFT2Font *ft2font = (PangoFT2Font *)font;
-  GSList *tmp_list;
-      
-  const char *sample_str = pango_language_get_sample_string (language);
+  PangoFontMetrics *metrics;
+  FT_Face face;
   
-  tmp_list = ft2font->metrics_by_lang;
-  while (tmp_list)
-    {
-      info = tmp_list->data;
-      
-      if (info->sample_str == sample_str)        /* We _don't_ need strcmp */
-	break;
+  face = pango_ft2_font_get_face (font);
 
-      tmp_list = tmp_list->next;
-    }
+  metrics = pango_font_metrics_new ();
+  
+  metrics->ascent = PANGO_UNITS_26_6 (face->size->metrics.ascender);
+  metrics->descent = PANGO_UNITS_26_6 (-face->size->metrics.descender);
+  metrics->approximate_digit_width = PANGO_UNITS_26_6 (face->size->metrics.max_advance);
+  metrics->approximate_char_width = PANGO_UNITS_26_6 (face->size->metrics.max_advance);
 
-  if (!tmp_list)
-    {
-      info = g_new (PangoFT2MetricsInfo, 1);
-      info->sample_str = sample_str;
-      info->metrics = pango_font_metrics_new ();
-      get_font_metrics_from_string (font, language, sample_str, info->metrics);
-
-      ft2font->metrics_by_lang = g_slist_prepend (ft2font->metrics_by_lang, info);
-    }
-      
-  return pango_font_metrics_ref (info->metrics);
+  return pango_font_metrics_ref (metrics);
 }
 
-/**
- * pango_ft2_n_subfonts:
- * @font: a #PangoFont
- *
- * Returns the number of subfonts in a #PangoFT2Font.
- *
- * Return value: the number of subfonts in @font
- **/
-int
-pango_ft2_n_subfonts (PangoFont *font)
+static PangoCoverage *
+pango_ft2_calc_coverage (PangoFont     *font,
+			 PangoLanguage *language)
 {
-  PangoFT2Font *ft2font = (PangoFT2Font *)font;
-
-  g_return_val_if_fail (font != NULL, 0);
-
-  return ft2font->n_fonts;
-}
-
-/**
- * pango_ft2_get_coverage:
- * @font: a #PangoFT2Font.
- * @language: the language to compute the coverage for.
- * 
- * Computes the coverage of @language by @font.
- * 
- * Returns: a newly-allocated #PangoCoverage.
- **/
-PangoCoverage *
-pango_ft2_get_coverage (PangoFont     *font,
-			PangoLanguage *language)
-{
-  PangoFT2Font *ft2font = (PangoFT2Font *)font;
-  PangoCoverage *result = pango_coverage_new ();
-  PangoCoverage *tmp;
-  PangoGlyph glyph;
+  PangoCoverage *result;
   FT_Face face;
   gunichar wc;
-  int i;
 
-  for (i = 1; i <= ft2font->n_fonts; i++)
+  result = pango_coverage_new ();
+  face = pango_ft2_font_get_face (font);
+  for (wc = 0; wc < 65536; wc++)
     {
-      tmp = pango_coverage_new ();
-      face = pango_ft2_get_face (font, i);
-      for (wc = 0; wc < 65536; wc++)
-	{
-	  glyph = PANGO_FT2_MAKE_GLYPH (i, wc);
-	  if (FT_Get_Char_Index (face, wc))
-	    pango_coverage_set (tmp, wc, PANGO_COVERAGE_EXACT);
-	}
-      pango_coverage_max (result, tmp);
-      pango_coverage_unref (tmp);
+      if (FT_Get_Char_Index (face, wc))
+	pango_coverage_set (result, wc, PANGO_COVERAGE_EXACT);
     }
 
   return result;
-}
-
-/**
- * pango_ft2_font_subfont_open_args:
- * @font: a #PangoFont which must be from the FT2 backend
- * @subfont_id: the id of a subfont within the @font
- * @open_args: pointer where to store the #FT_Open_Args for this subfont
- * @face_index: pointer where to store the face index for this subfont
- * 
- * Determine the FT_Open_Args and face index for the specified subfont.
- **/
-void
-pango_ft2_font_subfont_open_args (PangoFont        *font,
-				  PangoFT2Subfont   subfont_id,
-				  FT_Open_Args    **open_args,
-				  FT_Long          *face_index)
-{
-  PangoFT2Font *ft2font = (PangoFT2Font *)font;
-  *open_args = NULL;
-  *face_index = 0;
-
-  g_return_if_fail (font != NULL);
-  g_return_if_fail (PANGO_FT2_IS_FONT (font));
-
-  if (subfont_id < 1 || subfont_id > ft2font->n_fonts)
-    g_warning ("pango_ft2_font_subfont_open_args: Invalid subfont_id specified");
-  else
-    {
-      *open_args = ft2font->oa[subfont_id-1]->open_args;
-      *face_index = ft2font->oa[subfont_id-1]->face_index;
-    }
 }
 
 static void
@@ -788,7 +525,7 @@ pango_ft2_font_dispose (GObject *object)
    * freed.
    */
   if (!ft2font->in_cache && ft2font->fontmap)
-    pango_ft2_fontmap_cache_add (ft2font->fontmap, ft2font);
+    _pango_ft2_font_map_cache_add (ft2font->fontmap, ft2font);
 
   G_OBJECT_CLASS (parent_class)->dispose (object);
 }
@@ -802,39 +539,25 @@ pango_ft2_free_glyph_info_callback (gpointer key, gpointer value, gpointer data)
 }
 
 static void
-free_metrics_info (PangoFT2MetricsInfo *info)
-{
-  pango_font_metrics_unref (info->metrics);
-  g_free (info);
-}
-
-static void
 pango_ft2_font_finalize (GObject *object)
 {
   PangoFT2Font *ft2font = (PangoFT2Font *)object;
-  PangoFT2FontCache *cache = pango_ft2_font_map_get_font_cache (ft2font->fontmap);
-  int i;
 
-  PING ((" "));
+  _pango_ft2_font_map_remove (ft2font->fontmap, ft2font);
 
-  for (i = 0; i < ft2font->n_fonts; i++)
+  if (ft2font->face)
     {
-      if (ft2font->faces[i])
-	pango_ft2_font_cache_unload (cache, ft2font->faces[i]);
+      FT_Done_Face (ft2font->face);
+      ft2font->face = NULL;
     }
 
-  g_free (ft2font->oa);
-  g_free (ft2font->faces);
-
-  g_slist_foreach (ft2font->metrics_by_lang, (GFunc)free_metrics_info, NULL);
-  g_slist_free (ft2font->metrics_by_lang);
+  pango_font_description_free (ft2font->description);
+  MiniXftPatternDestroy (ft2font->font_pattern);
   
-  if (ft2font->entry)
-    pango_ft2_face_remove (ft2font->entry, (PangoFont *)ft2font);
-
   g_object_unref (G_OBJECT (ft2font->fontmap));
 
-  g_hash_table_foreach_remove (ft2font->glyph_info, pango_ft2_free_glyph_info_callback, NULL);
+  g_hash_table_foreach_remove (ft2font->glyph_info,
+			       pango_ft2_free_glyph_info_callback, NULL);
   g_hash_table_destroy (ft2font->glyph_info);
   
   G_OBJECT_CLASS (parent_class)->finalize (object);
@@ -848,7 +571,7 @@ pango_ft2_font_describe (PangoFont *font)
 
   ft2font = PANGO_FT2_FONT (font);
 
-  desc = pango_font_description_copy (ft2font->entry->description);
+  desc = pango_font_description_copy (ft2font->description);
   pango_font_description_set_size (desc, ft2font->size);
 
   return desc;
@@ -869,13 +592,31 @@ pango_ft2_get_shaper_map (PangoLanguage *language)
   return pango_find_map (language, engine_type_id, render_type_id);
 }
 
-static PangoCoverage *
+PangoCoverage *
 pango_ft2_font_get_coverage (PangoFont     *font,
 			     PangoLanguage *language)
 {
   PangoFT2Font *ft2font = (PangoFT2Font *)font;
+  char *filename = NULL;
+  FT_Face face;
+  PangoCoverage *coverage;
+  
+  MiniXftPatternGetString (ft2font->font_pattern, XFT_FILE, 0, &filename);
+  
+  coverage = _pango_ft2_font_map_get_coverage (ft2font->fontmap, filename);
 
-  return pango_ft2_face_get_coverage (ft2font->entry, font, language);
+  if (coverage)
+    return pango_coverage_ref (coverage);
+
+  /* Ugh, this is going to be SLOW */
+
+  face = pango_ft2_font_get_face (font);
+
+  coverage = pango_ft2_calc_coverage (font, language);
+
+  _pango_ft2_font_map_set_coverage (ft2font->fontmap, filename, coverage);
+      
+  return coverage;
 }
 
 static PangoEngineShape *
@@ -902,7 +643,7 @@ pango_ft2_font_find_shaper (PangoFont     *font,
 PangoGlyph
 pango_ft2_get_unknown_glyph (PangoFont *font)
 {
-  return PANGO_FT2_MAKE_GLYPH (1, 0);
+  return 0;
 }
 
 /**
@@ -1140,7 +881,7 @@ ft_error_compare (const void *pkey,
 }
 
 const char *
-pango_ft2_ft_strerror (FT_Error error)
+_pango_ft2_ft_strerror (FT_Error error)
 {
 #undef __FTERRORS_H__
 #define FT_ERRORDEF( e, v, s )  { e, s },

@@ -119,21 +119,13 @@ static PangoGlyph
 find_char (PangoFont *font,
 	   gunichar   wc)
 {
-  int i;
-  int n_subfonts;
+  FT_Face face;
+  FT_UInt index;
 
-  n_subfonts = pango_ft2_n_subfonts (font);
-
-  for (i = 0; i < n_subfonts; i++)
-    {
-      FT_Face face;
-      FT_UInt index;
-
-      face = pango_ft2_get_face (font, i+1);
-      index = FT_Get_Char_Index (face, wc);
-      if (index && index <= face->num_glyphs)
-	return PANGO_FT2_MAKE_GLYPH (i+1, index);
-    }
+  face = pango_ft2_font_get_face (font);
+  index = FT_Get_Char_Index (face, wc);
+  if (index && index <= face->num_glyphs)
+    return index;
 
   return 0;
 }
@@ -285,19 +277,7 @@ static PangoCoverage *
 basic_engine_get_coverage (PangoFont  *font,
 			   PangoLanguage *lang)
 {
-  PangoCoverage *result;
-#if 0
-  gunichar wc;
-  
-  result = pango_coverage_new ();
-  
-  for (wc = 0; wc < 65536; wc++)
-    if (find_char (font, wc))
-      pango_coverage_set (result, wc, PANGO_COVERAGE_EXACT);
-#else
-  result = pango_ft2_get_coverage (font, lang);
-#endif
-  return result;
+  return pango_ft2_font_get_coverage (font, lang);
 }
 
 static PangoEngine *
@@ -346,3 +326,4 @@ void
 MODULE_ENTRY(script_engine_unload) (PangoEngine *engine)
 {
 }
+

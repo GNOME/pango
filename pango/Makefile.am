@@ -6,6 +6,9 @@ GPATH = $(srcdir)
 
 if HAVE_FREETYPE
 OPENTYPE_SUBDIR=opentype
+XFT_SUBDIR = mini-xft
+else
+XFT_SUBDIR = 
 endif
 
 if HAVE_FRIBIDI
@@ -13,9 +16,9 @@ else
 FRIBIDI_SUBDIR = mini-fribidi
 endif
 
-SUBDIRS = $(OPENTYPE_SUBDIR) $(FRIBIDI_SUBDIR)
+SUBDIRS = $(OPENTYPE_SUBDIR) $(FRIBIDI_SUBDIR) $(XFT_SUBDIR)
 
-DIST_SUBDIRS = mini-fribidi opentype
+DIST_SUBDIRS = mini-fribidi mini-xft opentype
 
 INCLUDES = 					\
 	-DPANGO_ENABLE_BACKEND			\
@@ -122,6 +125,7 @@ libpango_la_SOURCES = 	   \
 	pango-context.c    \
 	pango-coverage.c   \
 	pango-fontmap.c	   \
+	pango-fontset.c	   \
 	pango-intset.c	   \
 	pango-intset.h	   \
 	pango-item.c	   \
@@ -183,11 +187,10 @@ libpangoft2_la_SOURCES =   	\
 	pangoft2.h		\
 	pangoft2.c		\
 	pangoft2-private.h	\
-	pangoft2-fontcache.c	\
 	pangoft2-fontmap.c	\
 	module-defs-ft2.c
 
-libpangoft2_la_LIBADD = $(INCLUDED_FT2_MODULES) $(FREETYPE_LIBS) libpango.la
+libpangoft2_la_LIBADD = $(INCLUDED_FT2_MODULES) $(FREETYPE_LIBS) mini-xft/libmini-xft.la libpango.la
 libpangoft2_la_LDFLAGS = -release $(VERSION) $(GLIB_LIBS) $(no_undefined) $(pangoft2_export_symbols)
 libpangoft2_la_DEPENDENCIES = $(INCLUDED_FT2_MODULES) libpango.la
 
@@ -202,6 +205,7 @@ pango_headers=		   \
 	pango-engine.h	   \
 	pango-font.h       \
 	pango-fontmap.h	   \
+	pango-fontset.h    \
 	pango-glyph.h	   \
 	pango-indic.h	   \
 	pango-item.h	   \

@@ -20,6 +20,14 @@
  */
 
 #include "pango-fontmap.h"
+#include "pango-utils.h"
+#include <stdlib.h>
+
+static void          pango_font_map_class_init        (PangoFontMapClass          *class);
+static PangoFontset *pango_font_map_real_load_fontset (PangoFontMap               *fontmap,
+						       const PangoFontDescription *desc,
+						       PangoLanguage              *language);
+
 
 GType
 pango_font_map_get_type (void)
@@ -33,7 +41,7 @@ pango_font_map_get_type (void)
         sizeof (PangoFontMapClass),
         (GBaseInitFunc) NULL,
         (GBaseFinalizeFunc) NULL,
-        NULL,           /* class_init */
+        (GClassInitFunc) pango_font_map_class_init,
         NULL,           /* class_finalize */
         NULL,           /* class_data */
         sizeof (PangoFontMap),
@@ -47,6 +55,13 @@ pango_font_map_get_type (void)
     }
   
   return object_type;
+}
+
+
+static void
+pango_font_map_class_init (PangoFontMapClass *class)
+{
+  class->load_fontset = pango_font_map_real_load_fontset;
 }
 
 /**
@@ -84,4 +99,140 @@ pango_font_map_list_families (PangoFontMap      *fontmap,
   g_return_if_fail (fontmap != NULL);
 
   PANGO_FONT_MAP_GET_CLASS (fontmap)->list_families (fontmap, families, n_families);
+}
+
+/**
+ * pango_font_map_load_fontset:
+ * @fontmap: a #PangoFontMap
+ * @desc: a #PangoFontDescription describing the font to load
+ * @language: a #PangoLanguage the fonts will be used for
+ * 
+ * Load a set of fonts in the fontmap that can be used to render
+ * a font matching @desc.
+ *
+ * Returns the fontset, or %NULL if no font matched.
+ **/
+PangoFontset *
+pango_font_map_load_fontset (PangoFontMap                 *fontmap,
+			     const PangoFontDescription   *desc,
+			     PangoLanguage                *language)
+{
+  g_return_val_if_fail (fontmap != NULL, 0);
+
+  return PANGO_FONT_MAP_GET_CLASS (fontmap)->load_fontset (fontmap, desc, language);
+}
+
+static void
+pango_font_map_fontset_add_fonts (PangoFontMap          *fontmap,
+				  PangoFontsetSimple    *fonts,
+				  PangoFontDescription  *desc,
+				  char                  *family)
+{
+  char **aliases;
+  int n_aliases;
+  int j;
+  PangoFont *font;
+
+  pango_lookup_aliases (family,
+			&aliases,
+			&n_aliases);
+      
+  if (n_aliases)
+    {
+      for (j = 0; j < n_aliases; j++)
+	{
+	  pango_font_description_set_family_static (desc, aliases[j]);
+	  font = pango_font_map_load_font (fontmap, desc);
+	  if (font)
+	    pango_fontset_simple_append (fonts, font);
+	}
+    }
+  else
+    {
+      pango_font_description_set_family_static (desc, family);
+      font = pango_font_map_load_font (fontmap, desc);
+      if (font)
+	pango_fontset_simple_append (fonts, font);
+    }
+}
+
+static PangoFontset *
+pango_font_map_real_load_fontset (PangoFontMap               *fontmap,
+				  const PangoFontDescription *desc,
+				  PangoLanguage              *language)
+{
+  PangoFontDescription *tmp_desc = pango_font_description_copy_static (desc);
+  char **families;
+  int i;
+  PangoFontsetSimple *fonts;
+
+  families = g_strsplit (pango_font_description_get_family (desc), ",", -1);
+
+  fonts = pango_fontset_simple_new (language);
+  
+  for (i = 0; families[i]; i++)
+    pango_font_map_fontset_add_fonts (fontmap,
+				      fonts,
+				      tmp_desc,
+				      families[i]);
+  
+  g_strfreev (families);
+
+  /* The font description was completely unloadable, try with
+   * family == "Sans"
+   */
+  if (pango_fontset_simple_size (fonts) == 0)
+    {
+      char *ctmp1, *ctmp2;
+      
+      pango_font_description_set_family_static (tmp_desc,
+						pango_font_description_get_family (desc));
+      
+      ctmp1 = pango_font_description_to_string (desc);
+      pango_font_description_set_family_static (tmp_desc, "Sans");
+      ctmp2 = pango_font_description_to_string (tmp_desc);
+      
+      g_warning ("Couldn't load font \"%s\" falling back to \"%s\"", ctmp1, ctmp2);
+      g_free (ctmp1);
+      g_free (ctmp2);
+      
+      pango_font_map_fontset_add_fonts (fontmap,
+					fonts,
+					tmp_desc,
+					"Sans");
+    }
+  
+  /* We couldn't try with Sans and the specified style. Try Sans Normal
+   */
+  if (pango_fontset_simple_size (fonts) == 0)
+    {
+      char *ctmp1, *ctmp2;
+      
+      pango_font_description_set_family_static (tmp_desc, "Sans");
+      ctmp1 = pango_font_description_to_string (tmp_desc);
+      pango_font_description_set_style (tmp_desc, PANGO_STYLE_NORMAL);
+      pango_font_description_set_weight (tmp_desc, PANGO_WEIGHT_NORMAL);
+      pango_font_description_set_variant (tmp_desc, PANGO_VARIANT_NORMAL);
+      pango_font_description_set_stretch (tmp_desc, PANGO_STRETCH_NORMAL);
+      ctmp2 = pango_font_description_to_string (tmp_desc);
+      
+      g_warning ("Couldn't load font \"%s\" falling back to \"%s\"", ctmp1, ctmp2);
+      g_free (ctmp1);
+      g_free (ctmp2);
+      
+      pango_font_map_fontset_add_fonts (fontmap,
+					fonts,
+					tmp_desc,
+					"Sans");
+    }
+
+  /* Everything failed, we are screwed, there is no way to continue
+   */
+  if (pango_fontset_simple_size (fonts) == 0)
+    {
+      g_warning ("All font failbacks failed!!!!");
+      exit (1);
+    }
+
+  return PANGO_FONTSET (fonts);
 }

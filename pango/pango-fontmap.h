@@ -23,6 +23,7 @@
 #define __PANGO_FONTMAP_H__
 
 #include <pango/pango-font.h>
+#include <pango/pango-fontset.h>
 
 G_BEGIN_DECLS
 
@@ -32,12 +33,16 @@ G_BEGIN_DECLS
 
 typedef struct _PangoFontMap PangoFontMap;
 
-GType      pango_font_map_get_type       (void) G_GNUC_CONST;
-PangoFont *pango_font_map_load_font     (PangoFontMap                 *fontmap,
-					 const PangoFontDescription   *desc);
-void       pango_font_map_list_families (PangoFontMap                 *fontmap,
-					 PangoFontFamily            ***families,
-					 int                          *n_families);
+GType         pango_font_map_get_type       (void) G_GNUC_CONST;
+PangoFont *   pango_font_map_load_font     (PangoFontMap                 *fontmap,
+					    const PangoFontDescription   *desc);
+PangoFontset *pango_font_map_load_fontset  (PangoFontMap                 *fontmap,
+					    const PangoFontDescription   *desc,
+					    PangoLanguage                *language);
+void          pango_font_map_list_families (PangoFontMap                 *fontmap,
+					    PangoFontFamily            ***families,
+					    int                          *n_families);
+
 
 #ifdef PANGO_ENABLE_BACKEND
 
@@ -56,11 +61,14 @@ struct _PangoFontMapClass
 {
   GObjectClass parent_class;
   
-  PangoFont *(*load_font)     (PangoFontMap               *fontmap,
-			       const PangoFontDescription *desc);
-  void       (*list_families) (PangoFontMap               *fontmap,
-			       PangoFontFamily          ***families,
-			       int                        *n_families);
+  PangoFont *   (*load_font)     (PangoFontMap               *fontmap,
+				  const PangoFontDescription *desc);
+  void          (*list_families) (PangoFontMap               *fontmap,
+				  PangoFontFamily          ***families,
+				  int                        *n_families);
+  PangoFontset *(*load_fontset)  (PangoFontMap               *fontmap,
+				  const PangoFontDescription *desc,
+				  PangoLanguage              *language);
 };
 
 #endif /* PANGO_ENABLE_BACKEND */

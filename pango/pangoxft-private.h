@@ -32,7 +32,8 @@ typedef struct _PangoXftFont PangoXftFont;
 struct _PangoXftFont
 {
   PangoFont parent_instance;
-  
+
+  XftPattern *font_pattern;
   XftFont *xft_font;
   PangoFont *mini_font;
   PangoFontMap *fontmap;
@@ -47,8 +48,7 @@ struct _PangoXftFont
 };
 
 PangoXftFont * _pango_xft_font_new              (PangoFontMap                *font,
-						 const PangoFontDescription  *description,
-						 XftFont                     *xft_font);
+						 XftPattern                  *pattern);
 void           _pango_xft_font_map_cache_add    (PangoFontMap                *fontmap,
 						 PangoXftFont                *xfont);
 void           _pango_xft_font_map_add          (PangoFontMap                *fontmap,
@@ -63,6 +63,8 @@ PangoCoverage *_pango_xft_font_map_get_coverage (PangoFontMap                *fo
 void           _pango_xft_font_map_get_info     (PangoFontMap                *fontmap,
 						 Display                    **display,
 						 int                         *screen);
+
+PangoFontDescription * _pango_xft_font_desc_from_pattern (XftPattern *pattern);
 
 G_END_DECLS
 

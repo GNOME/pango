@@ -1,3 +1,55 @@
+2001-11-17  Alexander Larsson  <alla@lysator.liu.se>
+
+	* configure.in:
+	Check for LEX and YACC. This will be made optional later,
+	with the build sources checked in to cvs.
+	Generate pango/mini-xft/Makefile
+
+	* modules/basic/basic-ft2.c:
+	Use the new pangoft2 API.
+
+	* pango/Makefile.am:
+	Build mini-xft.
+	Add new files.
+
+	* pango/pango-context.[ch]:
+	Support only one fontmap per context.
+	Use pango_font_map_load_fontset() and PangoFontset instead
+	of internal fontset.
+
+	* pango/pango-fontmap.[ch]:
+	New virtual function pango_font_map_load_fontset() and
+	default implementation that uses pango_font_map_load_font().
+
+	* pango/pango-utils.[ch] (pango_lookup_aliases):
+	Utility function for looking up aliases. This can be
+	used by backend that has no backend specific aliases.
+
+	* pango/pangoft2-fontcache.c:
+	Removed file.
+
+	* pango/pangoft2-fontmap.c:
+	* pango/pangoft2-private.h:
+	* pango/pangoft2.c:
+	* pango/pangoft2.h:
+	Major rewrite. Doesn't handle fontsets. Uses mini-xft so that
+	it will always match the PangoXft backend. Simplified the
+	public API.
+
+	* pango/pangowin32.c:
+	* pango/pangox.c:
+	pango_context_add_font_map -> pango_context_set_font_map 
+
+	* pango/pangoxft-font.c:
+	* pango/pangoxft-fontmap.c:
+	* pango/pangoxft-private.h:
+	New code to handle fontsets.
+
+	* pango/mini-xft/*:
+	Mini version of libXft from XFree86 in order to have
+	the pangoFT2 and pangXft backends have same config files and
+	generate the same fonts.
+	
 2001-11-14  Matthias Clasen  <matthiasc@poet.de>
 	
 	* docs/Makefile.am (MKDB_OPTIONS): Add --sgml-mode.

@@ -275,7 +275,7 @@ pango_x_get_context (Display *display)
                            g_quark_from_static_string ("pango-x-info"),
                            info, (GDestroyNotify)g_free);
   
-  pango_context_add_font_map (result, pango_x_font_map_for_display (display));
+  pango_context_set_font_map (result, pango_x_font_map_for_display (display));
 
   return result;
 }

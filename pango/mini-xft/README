@@ -1,0 +1,14 @@
+This is a copy of the libXft library from the XFree86 cvs server, with
+all the X specific parts removed. It is used by pangoft2 to locate
+fonts and to handle font aliases in exactly the same way as Xft does.
+
+In order to not have symbols collide, the following sed scripts were run
+on the code:
+
+for file in xftgram.y xftlex.l xftdir.c xftcache.c xftdpy.c xftfs.c xftname.c xftcfg.c xftfont.c xftinit.c xftlist.c xftpat.c xftdbg.c xftfreetype.c xftmatrix.c xftmatch.c  xftstr.c xftgram.h xftint.h ; do
+    sed s#Xft#MiniXft#g $file | sed s#/X11/MiniXftConfig#/X11/XftConfig#g | sed s/xftint.h/minixftint.h/g | sed s/xftgram.h/minixftgram.h/g> mini-xft/mini$file;
+done
+
+for file in XftFreetype.h Xft.h; do
+    sed s/Xft/MiniXft/g $file > mini-xft/Mini$file;
+done
