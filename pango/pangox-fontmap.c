@@ -1571,11 +1571,6 @@ pango_x_face_get_coverage (PangoXFace      *xface,
 	    pango_coverage_set (result, wc, level);
 	}
       
-      return result;
-
-      
-      result = _pango_engine_shape_get_coverage (engine, font, language);
-
       if (atom)
 	pango_x_store_cached_coverage (xfontmap, atom, result);
     }

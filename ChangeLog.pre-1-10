@@ -1,3 +1,12 @@
+Fri Oct 31 13:01:25 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/Makefile.am (libpangox_1_0_la_LDFLAGS): Fix some
+	leftover references to INCLUDE_XFT_MODULES, 
+	INCLUDED_FC_MODULES. (#125588, Martin Kretzschmar)
+
+	* pango/pangox-fontmap.c (pango_x_face_get_coverage): 
+	Fix some code that was never quite finished.
+
 Fri Oct 31 12:32:38 2003  Owen Taylor  <otaylor@redhat.com>
  
  	Fix one problem with iteration by chars (Part of

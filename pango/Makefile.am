@@ -160,8 +160,8 @@ lib_LTLIBRARIES += libpangoxft-1.0.la
 endif
 
 libpangoxft_1_0_la_LDFLAGS = -version-info $(LT_VERSION_INFO)
-libpangoxft_1_0_la_LIBADD = libpangoft2-$(PANGO_API_VERSION).la libpango-$(PANGO_API_VERSION).la $(INCLUDED_XFT_MODULES) $(XFT_LIBS) 
-libpangoxft_1_0_la_DEPENDENCIES = libpangoft2-$(PANGO_API_VERSION).la libpango-$(PANGO_API_VERSION).la $(INCLUDED_XFT_MODULES)
+libpangoxft_1_0_la_LIBADD = libpangoft2-$(PANGO_API_VERSION).la libpango-$(PANGO_API_VERSION).la $(XFT_LIBS) 
+libpangoxft_1_0_la_DEPENDENCIES = libpangoft2-$(PANGO_API_VERSION).la libpango-$(PANGO_API_VERSION).la
 
 libpangoxft_1_0_la_SOURCES =   	\
 	pangoxft-font.c		\
@@ -177,8 +177,8 @@ lib_LTLIBRARIES += libpangoft2-1.0.la
 endif
 
 libpangoft2_1_0_la_LDFLAGS = -version-info $(LT_VERSION_INFO) $(no_undefined)
-libpangoft2_1_0_la_LIBADD = opentype/libpango-ot.la libpango-$(PANGO_API_VERSION).la $(INCLUDED_FT2_MODULES) $(FREETYPE_LIBS) $(GLIB_LIBS)
-libpangoft2_1_0_la_DEPENDENCIES = opentype/libpango-ot.la libpango-$(PANGO_API_VERSION).la $(INCLUDED_FT2_MODULES)
+libpangoft2_1_0_la_LIBADD = opentype/libpango-ot.la libpango-$(PANGO_API_VERSION).la $(INCLUDED_FC_MODULES) $(FREETYPE_LIBS) $(GLIB_LIBS)
+libpangoft2_1_0_la_DEPENDENCIES = opentype/libpango-ot.la libpango-$(PANGO_API_VERSION).la $(INCLUDED_FC_MODULES)
 
 libpangoft2_1_0_la_SOURCES =   	\
 	pangofc-font.c	   	\
@@ -322,7 +322,7 @@ if HAVE_INCLUDED_MODULES
 included-modules:
 	@cd $(top_builddir)/modules && $(MAKE) $(AM_MAKEFLAGS) included-modules
 
-$(INCLUDED_X_MODULES) $(INCLUDED_XFT_MODULES) $(INCLUDED_FT2_MODULES) $(INCLUDED_WIN32_MODULES): included-modules
+$(INCLUDED_X_MODULES) $(INCLUDED_FC_MODULES) $(INCLUDED_WIN32_MODULES): included-modules
 	@true
 
 .PHONY: included-modules
