@@ -7,7 +7,7 @@ Overview of Changes in Pango 1.2.4
   - Add pre-base-matra fixup code from ICU [Sivaraj Doddannan]
   - Port of Bengali rendering fix from ICU [Taneem Ahmed]
 * OpenType
-  - Port various fixes by Werner Lember from FreeType version
+  - Port various fixes by Werner Lemberg from FreeType version
   - Port various fixes by Lars Knoll from Qt version
   - Many other bug fixes [Kailash C. Chowksey, Me]
 * Fix bugs in FT2 rendering code [Sven Neumann]
