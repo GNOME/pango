@@ -154,7 +154,7 @@ get_mini_font (PangoFont *font)
       pango_font_description_set_size (desc,
 				       0.5 * pango_font_description_get_size (xfont->description));
       
-      xfont->mini_font = pango_font_map_load_font (xfont->fontmap, desc);
+      xfont->mini_font = pango_font_map_load_font (xfont->fontmap, NULL, desc);
       pango_font_description_free (desc);
       
       mini_xft = pango_xft_font_get_font (xfont->mini_font);

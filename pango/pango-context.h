@@ -31,7 +31,8 @@ G_BEGIN_DECLS
 /* Sort of like a GC - application set information about how
  * to handle scripts
  */
-typedef struct _PangoContext      PangoContext;
+
+/* PangoContext typedefed in pango-fontmap.h */
 typedef struct _PangoContextClass PangoContextClass;
 
 #define PANGO_TYPE_CONTEXT              (pango_context_get_type ())
@@ -59,6 +60,9 @@ void          pango_context_list_families (PangoContext                 *context
 					   int                          *n_families);
 PangoFont *   pango_context_load_font     (PangoContext                 *context,
 					   const PangoFontDescription   *desc);
+PangoFontset *pango_context_load_fontset  (PangoContext                 *context,
+					   const PangoFontDescription   *desc,
+					   PangoLanguage                *language);
 
 PangoFontMetrics *pango_context_get_metrics   (PangoContext                 *context,
 					       const PangoFontDescription   *desc,

@@ -1,3 +1,18 @@
+2001-11-18  Alex Larsson  <alexl@redhat.com>
+
+	* pango/pango-context.[ch]:
+	Add new function pango_context_load_fontset() to wrap
+	pango_font_map_load_fontset().
+	Add PangoContext arguments to load_font and load_fontset.
+
+	* pango/pango-fontmap.[ch]:
+	* pango/pangoft2-fontmap.c:
+	* pango/pangowin32-fontmap.c:
+	* pango/pangox-fontmap.c:
+	* pango/pangoxft-font.c:
+	* pango/pangoxft-fontmap.c
+	Add PangoContext arguments to load_font and load_fontset.
+
 2001-11-19  Tor Lillqvist  <tml@iki.fi>
 
 	* pango-zip.sh.in: Suffix package names with datestamp. Add

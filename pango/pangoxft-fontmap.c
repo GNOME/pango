@@ -111,8 +111,10 @@ static void          pango_xft_font_map_init          (PangoXftFontMap          
 static void          pango_xft_font_map_class_init    (PangoFontMapClass            *class);
 static void          pango_xft_font_map_finalize      (GObject                      *object);
 static PangoFont *   pango_xft_font_map_load_font     (PangoFontMap                 *fontmap,
+						       PangoContext                 *context,
 						       const PangoFontDescription   *description);
 static PangoFontset *pango_xft_font_map_load_fontset  (PangoFontMap                 *fontmap,
+						       PangoContext                 *context,
 						       const PangoFontDescription   *desc,
 						       PangoLanguage                *language);
 static void          pango_xft_font_map_list_families (PangoFontMap                 *fontmap,
@@ -508,6 +510,7 @@ pango_xft_font_map_new_font (PangoFontMap  *fontmap,
 
 static PangoFont *
 pango_xft_font_map_load_font (PangoFontMap               *fontmap,
+			      PangoContext               *context,
 			      const PangoFontDescription *description)
 {
   PangoXftFontMap *xfontmap = (PangoXftFontMap *)fontmap;
@@ -539,6 +542,7 @@ pango_xft_font_set_free (PangoXftPatternSet *font_set)
 
 static PangoFontset *
 pango_xft_font_map_load_fontset (PangoFontMap                 *fontmap,
+				 PangoContext                 *context,
 				 const PangoFontDescription   *desc,
 				 PangoLanguage                *language)
 {

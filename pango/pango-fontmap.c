@@ -25,6 +25,7 @@
 
 static void          pango_font_map_class_init        (PangoFontMapClass          *class);
 static PangoFontset *pango_font_map_real_load_fontset (PangoFontMap               *fontmap,
+						       PangoContext               *context,
 						       const PangoFontDescription *desc,
 						       PangoLanguage              *language);
 
@@ -67,6 +68,7 @@ pango_font_map_class_init (PangoFontMapClass *class)
 /**
  * pango_font_map_load_font:
  * @fontmap: a #PangoFontMap
+ * @context: the #PangoContext the font will be used with
  * @desc: a #PangoFontDescription describing the font to load
  * 
  * Load the font in the fontmap that is the closest match for @desc.
@@ -75,11 +77,12 @@ pango_font_map_class_init (PangoFontMapClass *class)
  **/
 PangoFont *
 pango_font_map_load_font  (PangoFontMap               *fontmap,
+			   PangoContext               *context,
 			   const PangoFontDescription *desc)
 {
   g_return_val_if_fail (fontmap != NULL, NULL);
 
-  return PANGO_FONT_MAP_GET_CLASS (fontmap)->load_font (fontmap, desc);
+  return PANGO_FONT_MAP_GET_CLASS (fontmap)->load_font (fontmap, context, desc);
 }
 
 /**
@@ -104,6 +107,7 @@ pango_font_map_list_families (PangoFontMap      *fontmap,
 /**
  * pango_font_map_load_fontset:
  * @fontmap: a #PangoFontMap
+ * @context: the #PangoContext the font will be used with
  * @desc: a #PangoFontDescription describing the font to load
  * @language: a #PangoLanguage the fonts will be used for
  * 
@@ -114,16 +118,18 @@ pango_font_map_list_families (PangoFontMap      *fontmap,
  **/
 PangoFontset *
 pango_font_map_load_fontset (PangoFontMap                 *fontmap,
+			     PangoContext                 *context,
 			     const PangoFontDescription   *desc,
 			     PangoLanguage                *language)
 {
   g_return_val_if_fail (fontmap != NULL, 0);
 
-  return PANGO_FONT_MAP_GET_CLASS (fontmap)->load_fontset (fontmap, desc, language);
+  return PANGO_FONT_MAP_GET_CLASS (fontmap)->load_fontset (fontmap, context, desc, language);
 }
 
 static void
 pango_font_map_fontset_add_fonts (PangoFontMap          *fontmap,
+				  PangoContext          *context,
 				  PangoFontsetSimple    *fonts,
 				  PangoFontDescription  *desc,
 				  char                  *family)
@@ -142,7 +148,7 @@ pango_font_map_fontset_add_fonts (PangoFontMap          *fontmap,
       for (j = 0; j < n_aliases; j++)
 	{
 	  pango_font_description_set_family_static (desc, aliases[j]);
-	  font = pango_font_map_load_font (fontmap, desc);
+	  font = pango_font_map_load_font (fontmap, context, desc);
 	  if (font)
 	    pango_fontset_simple_append (fonts, font);
 	}
@@ -150,7 +156,7 @@ pango_font_map_fontset_add_fonts (PangoFontMap          *fontmap,
   else
     {
       pango_font_description_set_family_static (desc, family);
-      font = pango_font_map_load_font (fontmap, desc);
+      font = pango_font_map_load_font (fontmap, context, desc);
       if (font)
 	pango_fontset_simple_append (fonts, font);
     }
@@ -158,6 +164,7 @@ pango_font_map_fontset_add_fonts (PangoFontMap          *fontmap,
 
 static PangoFontset *
 pango_font_map_real_load_fontset (PangoFontMap               *fontmap,
+				  PangoContext               *context,
 				  const PangoFontDescription *desc,
 				  PangoLanguage              *language)
 {
@@ -172,6 +179,7 @@ pango_font_map_real_load_fontset (PangoFontMap               *fontmap,
   
   for (i = 0; families[i]; i++)
     pango_font_map_fontset_add_fonts (fontmap,
+				      context,
 				      fonts,
 				      tmp_desc,
 				      families[i]);
@@ -197,6 +205,7 @@ pango_font_map_real_load_fontset (PangoFontMap               *fontmap,
       g_free (ctmp2);
       
       pango_font_map_fontset_add_fonts (fontmap,
+					context,
 					fonts,
 					tmp_desc,
 					"Sans");
@@ -221,6 +230,7 @@ pango_font_map_real_load_fontset (PangoFontMap               *fontmap,
       g_free (ctmp2);
       
       pango_font_map_fontset_add_fonts (fontmap,
+					context,
 					fonts,
 					tmp_desc,
 					"Sans");

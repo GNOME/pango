@@ -130,6 +130,7 @@ static void     pango_x_font_map_class_init (PangoFontMapClass *class);
 
 static void       pango_x_font_map_finalize      (GObject                      *object);
 static PangoFont *pango_x_font_map_load_font     (PangoFontMap                 *fontmap,
+						  PangoContext                 *context,
 						  const PangoFontDescription   *description);
 static void       pango_x_font_map_list_families (PangoFontMap                 *fontmap,
 						  PangoFontFamily            ***families,
@@ -397,6 +398,7 @@ pango_x_get_font_family (PangoXFontMap *xfontmap,
 
 static PangoFont *
 pango_x_font_map_load_font (PangoFontMap               *fontmap,
+			    PangoContext               *context,
 			    const PangoFontDescription *description)
 {
   PangoXFontMap *xfontmap = (PangoXFontMap *)fontmap;

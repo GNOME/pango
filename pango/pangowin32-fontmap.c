@@ -101,6 +101,7 @@ static void       pango_win32_font_map_class_init    (PangoFontMapClass       *c
 
 static void       pango_win32_font_map_finalize      (GObject                      *object);
 static PangoFont *pango_win32_font_map_load_font     (PangoFontMap                 *fontmap,
+						      PangoContext                 *context,
 						      const PangoFontDescription   *description);
 static void       pango_win32_font_map_list_families (PangoFontMap                 *fontmap,
 						       PangoFontFamily            ***families,
@@ -428,6 +429,7 @@ pango_win32_get_font_family (PangoWin32FontMap *win32fontmap,
 
 static PangoFont *
 pango_win32_font_map_load_font (PangoFontMap               *fontmap,
+				angoContext                *context,
 				const PangoFontDescription *description)
 {
   PangoWin32FontMap *win32fontmap = (PangoWin32FontMap *)fontmap;

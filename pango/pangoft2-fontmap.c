@@ -105,8 +105,10 @@ static void          pango_ft2_font_map_init          (PangoFT2FontMap          
 static void          pango_ft2_font_map_class_init    (PangoFontMapClass            *class);
 static void          pango_ft2_font_map_finalize      (GObject                      *object);
 static PangoFont *   pango_ft2_font_map_load_font     (PangoFontMap                 *fontmap,
+						       PangoContext                 *context,
 						       const PangoFontDescription   *description);
 static PangoFontset *pango_ft2_font_map_load_fontset  (PangoFontMap                 *fontmap,
+						       PangoContext                 *context,
 						       const PangoFontDescription   *desc,
 						       PangoLanguage                *language);
 static void          pango_ft2_font_set_free          (PangoFT2PatternSet           *font_set);
@@ -500,6 +502,7 @@ pango_ft2_font_map_new_font (PangoFontMap    *fontmap,
 
 static PangoFont *
 pango_ft2_font_map_load_font (PangoFontMap               *fontmap,
+			      PangoContext               *context,
 			      const PangoFontDescription *description)
 {
   MiniXftPattern *pattern, *match;
@@ -519,6 +522,7 @@ pango_ft2_font_map_load_font (PangoFontMap               *fontmap,
 
 static PangoFontset *
 pango_ft2_font_map_load_fontset (PangoFontMap                 *fontmap,
+				 PangoContext                 *context,
 				 const PangoFontDescription   *desc,
 				 PangoLanguage                *language)
 {
@@ -563,7 +567,7 @@ pango_ft2_font_map_load_fontset (PangoFontMap                 *fontmap,
 	      MiniXftPatternGetString (match, XFT_FAMILY, 0, &family_res) == MiniXftResultMatch &&
 	      g_ascii_strcasecmp (family, family_res) == 0)
 	    {
-	      patterns->patterns[patterns->n_patterns++] = match;
+	      g_ptr_array_add (array, match);
 	      match = NULL;
 	    }
 	  if (match)
@@ -573,7 +577,7 @@ pango_ft2_font_map_load_fontset (PangoFontMap                 *fontmap,
       if (array->len == 0)
 	{
 	  match = MiniXftFontSetMatch (&_MiniXftFontSet, 1, pattern, &res);
-	  patterns->patterns[patterns->n_patterns++] = match;
+	  g_ptr_array_add (array, match);
 	}
 
       MiniXftPatternDestroy (pattern);

@@ -31,12 +31,15 @@ G_BEGIN_DECLS
 #define PANGO_FONT_MAP(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_TYPE_FONT_MAP, PangoFontMap))
 #define PANGO_IS_FONT_MAP(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), PANGO_TYPE_FONT_MAP))
 
+typedef struct _PangoContext PangoContext;
 typedef struct _PangoFontMap PangoFontMap;
 
 GType         pango_font_map_get_type       (void) G_GNUC_CONST;
 PangoFont *   pango_font_map_load_font     (PangoFontMap                 *fontmap,
+					    PangoContext                 *context,
 					    const PangoFontDescription   *desc);
 PangoFontset *pango_font_map_load_fontset  (PangoFontMap                 *fontmap,
+					    PangoContext                 *context,
 					    const PangoFontDescription   *desc,
 					    PangoLanguage                *language);
 void          pango_font_map_list_families (PangoFontMap                 *fontmap,
@@ -62,11 +65,13 @@ struct _PangoFontMapClass
   GObjectClass parent_class;
   
   PangoFont *   (*load_font)     (PangoFontMap               *fontmap,
+				  PangoContext               *context,
 				  const PangoFontDescription *desc);
   void          (*list_families) (PangoFontMap               *fontmap,
 				  PangoFontFamily          ***families,
 				  int                        *n_families);
   PangoFontset *(*load_fontset)  (PangoFontMap               *fontmap,
+				  PangoContext               *context,
 				  const PangoFontDescription *desc,
 				  PangoLanguage              *language);
 };

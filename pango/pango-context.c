@@ -215,7 +215,28 @@ pango_context_load_font (PangoContext               *context,
 {
   g_return_val_if_fail (context != NULL, NULL);
 
-  return  pango_font_map_load_font (context->font_map, desc);
+  return pango_font_map_load_font (context->font_map, context, desc);
+}
+
+/**
+ * pango_context_load_fontset:
+ * @context: a #PangoContext
+ * @desc: a #PangoFontDescription describing the fonts to load
+ * @language: a #PangoLanguage the fonts will be used for
+ * 
+ * Load a set of fonts in the context that can be used to render
+ * a font matching @desc.
+ *
+ * Returns the fontset, or %NULL if no font matched.
+ **/
+PangoFontset *
+pango_context_load_fontset (PangoContext               *context,
+			    const PangoFontDescription *desc,
+			     PangoLanguage             *language)
+{
+  g_return_val_if_fail (context != NULL, NULL);
+
+  return pango_font_map_load_fontset (context->font_map, context, desc, language);
 }
 
 /**
@@ -633,6 +654,7 @@ add_engines (PangoContext      *context,
 		g_object_unref (current_fonts);
 	      
 	      current_fonts = pango_font_map_load_fontset (context->font_map,
+							   context,
 							   current_desc,
 							   language);
 	    }
@@ -705,7 +727,7 @@ pango_context_get_metrics (PangoContext                 *context,
   g_return_val_if_fail (PANGO_IS_CONTEXT (context), NULL);
   g_return_val_if_fail (desc != NULL, NULL);
 
-  current_fonts = pango_font_map_load_fontset (context->font_map, desc, language);
+  current_fonts = pango_font_map_load_fontset (context->font_map, context, desc, language);
 
   metrics = pango_fontset_get_metrics (current_fonts);
   
