@@ -260,11 +260,11 @@ pango_querymodules_SOURCES = \
 	querymodules.c
 
 if HAVE_XFT
-pango_querymodules_LDADD = $(FT2_BUILD_LIBS) $(X_BUILD_LIBS) libpangoxft.la libpango.la $(GLIB_LIBS) $(FRIBIDI_LIBS) $(XFT_LIBS) $(FREETYPE_LIBS)
+pango_querymodules_LDADD = $(FT2_BUILD_LIBS) $(X_BUILD_LIBS) libpangoxft.la $(GLIB_LIBS) $(FRIBIDI_LIBS) $(XFT_LIBS) $(FREETYPE_LIBS)
 pango_querymodules_DEPENDENCIES = $(FT2_BUILD_LIBS) $(X_BUILD_LIBS) libpangoxft.la libpango.la
 else
-pango_querymodules_LDADD = $(FT2_BUILD_LIBS) $(X_BUILD_LIBS) libpango.la $(GLIB_LIBS) $(FRIBIDI_LIBS) $(X_LIBS) $(FREETYPE_LIBS)
-pango_querymodules_DEPENDENCIES = $(FT2_BUILD_LIBS) $(X_BUILD_LIBS) libpango.la
+pango_querymodules_LDADD = $(FT2_BUILD_LIBS) $(X_BUILD_LIBS) $(WIN32_BUILD_LIBS) $(GLIB_LIBS) $(FRIBIDI_LIBS) $(X_LIBS) $(FREETYPE_LIBS)
+pango_querymodules_DEPENDENCIES = $(FT2_BUILD_LIBS) $(X_BUILD_LIBS) $(WIN32_BUILD_LIBS) libpango.la
 endif
 
 EXTRA_DIST =					\

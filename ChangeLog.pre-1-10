@@ -1,3 +1,12 @@
+Sat Feb  2 18:27:38 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/Makefile.am (pango_querymodules_LDADD): Try removing
+	libpango.la from the link line since it will be pulled
+	in from the other libraries to avoid duplicate inclusion.
+	(#70400.)
+
+	* pangox.pc.in (Libs): Add @X_XTRA_LIBS@ (#70400)
+
 2002-02-01  Havoc Pennington  <hp@redhat.com>
 
 	* pangoxft.pc.in (Description, Name): fix cut-and-paste mess
