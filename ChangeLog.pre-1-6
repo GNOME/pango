@@ -1,3 +1,8 @@
+Tue Sep  9 12:17:07 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* tools/Makefile.am (EXTRA_DIST): Remove reference
+	to now-gone make-table.sh (#121393, Josh Beam)
+
 2003-09-02  Noah Levitt  <nlevitt@columbia.edu>
 
 	* tests/.cvsignore:
