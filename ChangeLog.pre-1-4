@@ -1,3 +1,8 @@
+Fri Dec  6 17:56:32 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* configure.in: Add missing thai-xft to thai-modules.
+	(#99883, Tony Graham)
+	
 Mon Dec  2 17:22:34 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* === Released 1.1.4 ===
