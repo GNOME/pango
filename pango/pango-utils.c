@@ -574,18 +574,16 @@ read_config ()
       const char *envvar;
       
       config_hash = g_hash_table_new (g_str_hash, g_str_equal);
-      filename = g_strconcat (pango_get_sysconf_subdirectory (),
-			      G_DIR_SEPARATOR_S "pangorc",
-			      NULL);
+      filename = g_build_filename (pango_get_sysconf_subdirectory (),
+				   "pangorc",
+				   NULL);
       read_config_file (filename, FALSE);
       g_free (filename);
 
       home = g_get_home_dir ();
       if (home && *home)
 	{
-	  filename = g_strconcat (home,
-				  G_DIR_SEPARATOR_S ".pangorc",
-				  NULL);
+	  filename = g_build_filename (home, ".pangorc", NULL);
 	  read_config_file (filename, FALSE);
 	  g_free (filename);
 	}

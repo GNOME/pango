@@ -332,9 +332,9 @@ read_modules (void)
   int n;
 
   if (!file_str)
-    file_str = g_strconcat (pango_get_sysconf_subdirectory (),
-			    G_DIR_SEPARATOR_S "pango.modules",
-			    NULL);
+    file_str = g_build_filename (pango_get_sysconf_subdirectory (),
+				 "pango.modules",
+				 NULL);
 
   files = pango_split_file_list (file_str);
 
