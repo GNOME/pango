@@ -80,7 +80,7 @@ struct _PangoWin32SubfontInfo
 
 struct _PangoWin32MetricsInfo
 {
-  const char *lang;
+  PangoLanguage *lang;
   PangoFontMetrics metrics;
 };
 
@@ -99,10 +99,10 @@ static void pango_win32_font_finalize   (GObject             *object);
 static PangoFontDescription *pango_win32_font_describe      (PangoFont        *font);
 
 static PangoCoverage        *pango_win32_font_get_coverage  (PangoFont        *font,
-							     const char       *lang);
+							     PangoLanguage    *lang);
 
 static PangoEngineShape     *pango_win32_font_find_shaper   (PangoFont        *font,
-							     const char       *lang,
+							     PangoLanguage    *lang,
 							     guint32           ch);
 
 static void pango_win32_font_get_glyph_extents 	       (PangoFont        *font,
@@ -111,7 +111,7 @@ static void pango_win32_font_get_glyph_extents 	       (PangoFont        *font,
 					 		PangoRectangle   *logical_rect);
 
 static void pango_win32_font_get_metrics       	       (PangoFont        *font,
-					 		const gchar      *lang,
+					 		PangoLanguage   *lang,
 					 		PangoFontMetrics *metrics);
 
 static PangoWin32SubfontInfo *pango_win32_find_subfont (PangoFont          *font,
@@ -682,7 +682,7 @@ get_font_metrics_from_subfonts (PangoFont        *font,
  */
 static void
 get_font_metrics_from_string (PangoFont        *font,
-			      const char       *lang,
+			      PangoLanguage    *lang,
 			      const char       *str,
 			      PangoFontMetrics *metrics)
 {
@@ -800,36 +800,37 @@ LangInfo lang_texts[] = {
 
 static void
 pango_win32_font_get_metrics (PangoFont        *font,
-			      const gchar      *lang,
+			      PangoLanguage    *lang,
 			      PangoFontMetrics *metrics)
 {
   PangoWin32MetricsInfo *info;
   PangoWin32Font *win32font = (PangoWin32Font *)font;
   GSList *tmp_list;
       
-  const char *lookup_lang;
+  const char *lang_str = pango_language_to_string (lang);
+  PangoLanguage *lookup_lang;
   const char *str;
 
   if (lang)
     {
-      LangInfo *lang_info = bsearch (lang, lang_texts,
+      LangInfo *lang_info = bsearch (lang_str, lang_texts,
 				     G_N_ELEMENTS (lang_texts), sizeof (LangInfo),
 				     lang_info_compare);
 
       if (lang_info)
 	{
-	  lookup_lang = lang_info->lang;
+	  lookup_lang = pango_language_from_string (lang_info->lang);
 	  str = lang_info->str;
 	}
       else
 	{
-	  lookup_lang = "UNKNOWN";
+	  lookup_lang = pango_language_to_string ("UNKNOWN");
 	  str = "French (Français)";     /* Assume iso-8859-1 */
 	}
     }
   else
     {
-      lookup_lang = "NONE";
+      lookup_lang = pango_language_to_string ("NONE");
 
       /* Complete junk
        */
@@ -868,7 +869,7 @@ pango_win32_font_get_metrics (PangoFont        *font,
        * chars in "0123456789"
        */
       context = pango_win32_get_context ();
-      pango_context_set_lang (context, lookup_lang);
+      pango_context_set_language (context, lookup_lang);
       layout = pango_layout_new (context);
       pango_layout_set_text (layout, "0123456789", -1);
 
@@ -1283,7 +1284,7 @@ pango_win32_font_describe (PangoFont *font)
 }
 
 PangoMap *
-pango_win32_get_shaper_map (const char *lang)
+pango_win32_get_shaper_map (PangoLanguage *lang)
 {
   static guint engine_type_id = 0;
   static guint render_type_id = 0;
@@ -1299,7 +1300,7 @@ pango_win32_get_shaper_map (const char *lang)
 
 static PangoCoverage *
 pango_win32_font_get_coverage (PangoFont  *font,
-			       const char *lang)
+			       PangoLanguage *lang)
 {
   PangoWin32Font *win32font = (PangoWin32Font *)font;
 
@@ -1308,7 +1309,7 @@ pango_win32_font_get_coverage (PangoFont  *font,
 
 static PangoEngineShape *
 pango_win32_font_find_shaper (PangoFont   *font,
-			      const gchar *lang,
+			      PangoLanguage *lang,
 			      guint32      ch)
 {
   PangoMap *shape_map = NULL;
@@ -1575,7 +1576,7 @@ pango_win32_get_item_properties (PangoItem      *item,
 				 PangoAttrColor *bg_color,
 				 gboolean       *bg_set)
 {
-  GSList *tmp_list = item->extra_attrs;
+  GSList *tmp_list = item->analysis.extra_attrs;
 
   if (fg_set)
     *fg_set = FALSE;

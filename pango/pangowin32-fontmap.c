@@ -1367,7 +1367,7 @@ free_coverages_foreach (gpointer key,
 PangoCoverage *
 pango_win32_font_entry_get_coverage (PangoWin32FontEntry *entry,
 				     PangoFont           *font,
-				     const char          *lang)
+				     PangoLanguage       *lang)
 {
   guint32 ch;
   PangoMap *shape_map;
@@ -1393,7 +1393,7 @@ pango_win32_font_entry_get_coverage (PangoWin32FontEntry *entry,
 				 "\\cache.win32\\",
 				 pango_font_description_to_filename (description),
 				 ".",
-				 lang ? lang : "",
+				 lang ? pango_language_to_string (lang) : "",
 				 NULL);
   pango_font_description_free (description);
 

@@ -9,7 +9,7 @@ EXPORTS
 	pango_attr_iterator_get_font
 	pango_attr_iterator_next
 	pango_attr_iterator_range
-	pango_attr_lang_new
+	pango_attr_language_new
 	pango_attr_list_change
 	pango_attr_list_copy
 	pango_attr_list_get_iterator
@@ -21,6 +21,7 @@ EXPORTS
 	pango_attr_list_splice
 	pango_attr_list_unref
 	pango_attr_rise_new
+	pango_attr_scale_new
 	pango_attr_shape_new
 	pango_attr_size_new
 	pango_attr_stretch_new
@@ -38,7 +39,7 @@ EXPORTS
 	pango_context_add_font_map
 	pango_context_get_base_dir
 	pango_context_get_font_description
-	pango_context_get_lang
+	pango_context_get_language
 	pango_context_get_type
 	pango_context_list_families
 	pango_context_list_fonts
@@ -46,7 +47,7 @@ EXPORTS
 	pango_context_new
 	pango_context_set_base_dir
 	pango_context_set_font_description
-	pango_context_set_lang
+	pango_context_set_language
 	pango_coverage_copy
 	pango_coverage_from_bytes
 	pango_coverage_get
@@ -96,6 +97,7 @@ EXPORTS
 	pango_item_free
 	pango_item_new
 	pango_itemize
+	pango_language_from_string
 	pango_layout_context_changed
 	pango_layout_copy
 	pango_layout_get_alignment

@@ -95,7 +95,7 @@ PangoWin32Font *pango_win32_font_new                (PangoFontMap    	 *fontmap,
 						     const LOGFONT     	 *lfp,
 						     int                  n_fonts,
 						     int             	  size);
-PangoMap *      pango_win32_get_shaper_map          (const char      	 *lang);
+PangoMap *      pango_win32_get_shaper_map          (PangoLanguage   	 *lang);
 gboolean	pango_win32_logfont_has_subrange    (PangoFontMap        *fontmap,
 						     LOGFONT		 *lfp,
 						     PangoWin32UnicodeSubrange subrange);
@@ -104,7 +104,7 @@ LOGFONT *       pango_win32_make_matching_logfont   (PangoFontMap    	 *fontmap,
 						     int             	  size);
 PangoCoverage * pango_win32_font_entry_get_coverage (PangoWin32FontEntry *entry,
 						     PangoFont       	 *font,
-						     const char      	 *lang);
+						     PangoLanguage   	 *lang);
 void            pango_win32_font_entry_remove       (PangoWin32FontEntry *entry,
 						     PangoFont           *font);
 

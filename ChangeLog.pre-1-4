@@ -1,3 +1,13 @@
+2001-06-22  Hans Breuer  <hans@breuer.org>
+
+	* pango/makefile.msc : changed version to 0.17
+
+	* pango/pango.def : updated externals
+
+	* pango/pangowin32-fontmap.c :
+	* pango/pangowin32-private.h :
+	* pango/pangowin32.c : adapted to PangoLanguage usage
+
 Sat Jun  9 17:36:09 2001  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pango-types.h pango/pango-utils.c: Add a new PangoLanguage
