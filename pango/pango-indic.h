@@ -28,11 +28,17 @@
  * or like living dangerously.
  */
 
-#ifndef __PANGO_PANGO_INDIC_H__
-#define __PANGO_PANGO_INDIC_H__
+#ifndef __PANGO_INDIC_H__
+#define __PANGO_INDIC_H__
 
-#define ZERO_WIDTH_NON_JOINER 0x200c
-#define ZERO_WIDTH_JOINER     0x200d
+#include <pango-glyph.h>
+
+G_BEGIN_DECLS
+
+#ifdef PANGO_ENABLE_ENGINE
+
+#define PANGO_ZERO_WIDTH_NON_JOINER 0x200c
+#define PANGO_ZERO_WIDTH_JOINER     0x200d
 
 typedef struct _PangoIndicScript PangoIndicScript;
 
@@ -76,5 +82,8 @@ void pango_indic_split_out_characters (PangoIndicScript *script,
                                        int *n_glyph, 
                                        PangoGlyphString *glyphs);
 
+#endif /* PANGO_ENABLE_ENGINE */
 
-#endif
+G_END_DECLS
+
+#endif /* __PANGO_INDIC_H */

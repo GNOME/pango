@@ -442,31 +442,12 @@ pango_win32_font_map_load_font (PangoFontMap               *fontmap,
       while (tmp_list)
 	{
 	  PangoWin32FontEntry *font_entry = tmp_list->data;
+
+	  if (pango_font_description_better_match (description,
+						   best_match ? best_match->description : NULL,
+						   font_entry->description))
+	    best_match = font_entry;
 	  
-	  if (font_entry->description.variant == description->variant &&
-	      font_entry->description.stretch == description->stretch)
-	    {
-	      int old_distance = best_match ? abs(best_match->description.weight - description->weight) : G_MAXINT;
-
-	      if (font_entry->description.style == description->style)
-	        {
-		  int distance = abs(font_entry->description.weight - description->weight);
-
-		  if (distance < old_distance)
-		    best_match = font_entry;
-		}
-	      else if (font_entry->description.style != PANGO_STYLE_NORMAL &&
-		       description->style != PANGO_STYLE_NORMAL)
-		{
-		  /* Equate oblique and italic, but with a big penalty
-		   */
-		  int distance = PANGO_SCALE * 1000 + abs(font_entry->description.weight - description->weight);
-
-		  if (distance < old_distance)
-		    best_match = font_entry;
-		}
-	    }
-
 	  tmp_list = tmp_list->next;
 	}
 
@@ -529,6 +510,10 @@ pango_win32_font_map_read_alias_file (PangoWin32FontMap *win32fontmap,
       while (pango_read_line (infile, line_buf))
 	{
 	  PangoWin32FamilyEntry *family_entry;
+	  PangoStyle style;
+	  PangoVariant variant;
+	  PangoWeight weight;
+	  PangoStretch stretch;
 
 	  const char *p = line_buf->str;
 	  
@@ -541,32 +526,38 @@ pango_win32_font_map_read_alias_file (PangoWin32FontMap *win32fontmap,
 	    goto error;
 
 	  font_entry = g_new (PangoWin32FontEntry, 1);
-	  font_entry->description.family_name = g_strdup (tmp_buf->str);
-	  g_strdown (font_entry->description.family_name);
+	  font_entry->description = pango_font_description_new ();
 
-	  if (!pango_scan_string (&p, tmp_buf))
-	    goto error;
-
-	  if (!pango_parse_style (tmp_buf->str, &font_entry->description, TRUE))
-	    goto error;
-
-	  if (!pango_scan_string (&p, tmp_buf))
-	    goto error;
-
-	  if (!pango_parse_variant (tmp_buf->str, &font_entry->description, TRUE))
-	    goto error;
-
-	  if (!pango_scan_string (&p, tmp_buf))
-	    goto error;
-
-	  if (!pango_parse_weight (tmp_buf->str, &font_entry->description, TRUE))
-	    goto error;
+	  g_string_ascii_down (tmp_buf);
+	  pango_font_description_set_family (tmp_buf->str);
 	  
 	  if (!pango_scan_string (&p, tmp_buf))
 	    goto error;
 
-	  if (!pango_parse_stretch (tmp_buf->str, &font_entry->description, TRUE))
+	  if (!pango_parse_style (tmp_buf->str, &style, TRUE))
 	    goto error;
+	  pango_font_description_set_style (font_entry->description, style);
+
+	  if (!pango_scan_string (&p, tmp_buf))
+	    goto error;
+
+	  if (!pango_parse_variant (tmp_buf->str, &variant, TRUE))
+	    goto error;
+	  pango_font_description_set_variant (font_entry->description, variant);
+	  
+	  if (!pango_scan_string (&p, tmp_buf))
+	    goto error;
+
+	  if (!pango_parse_weight (tmp_buf->str, &weight, TRUE))
+	    goto error;
+	  pango_font_description_set_weight (font_entry->description, weight);
+	  
+	  if (!pango_scan_string (&p, tmp_buf))
+	    goto error;
+
+	  if (!pango_parse_stretch (tmp_buf->str, &stretch, TRUE))
+	    goto error;
+	  pango_font_description_set_stretch (font_entry->description, stretch);
 
 	  if (!pango_scan_string (&p, tmp_buf))
 	    goto error;

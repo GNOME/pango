@@ -22,7 +22,6 @@
 #include <glib.h>
 #include <string.h>
 #include "pangox.h"
-#include "pangox-private.h"
 #include "pango-engine.h"
 #include "pango-utils.h"
 

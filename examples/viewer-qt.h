@@ -98,7 +98,11 @@ class ViewerWindow : public QMainWindow
   PangoContext *context_;
 
   QComboBox *family_combo_;
+  PangoFontFamily **families_;
+  
   QComboBox *style_combo_;
+  PangoFontFace **faces_;
+  
   QSpinBox *size_box_;
 
   QPopupMenu *file_menu_;

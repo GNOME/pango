@@ -19,10 +19,13 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#include <pangoxft.h>
-
 #ifndef __PANGOXFT_PRIVATE_H__
 #define __PANGOXFT_PRIVATE_H__
+
+#include <pangoxft.h>
+#include <pango-ot.h>
+
+G_BEGIN_DECLS
 
 typedef struct _PangoXftFont PangoXftFont;
 
@@ -60,5 +63,7 @@ PangoCoverage *_pango_xft_font_map_get_coverage (PangoFontMap                *fo
 void           _pango_xft_font_map_get_info     (PangoFontMap                *fontmap,
 						 Display                    **display,
 						 int                         *screen);
+
+G_END_DECLS
 
 #endif /* __PANGOXFT_PRIVATE_H__ */

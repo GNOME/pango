@@ -24,9 +24,9 @@
 
 #include <pango/pango-engine.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
+G_BEGIN_DECLS
+
+#ifdef PANGO_ENABLE_BACKEND
 
 typedef struct _PangoMap PangoMap;
 typedef struct _PangoMapEntry PangoMapEntry;
@@ -55,8 +55,8 @@ PangoEngine *  pango_map_get_engine  (PangoMap            *map,
 				      guint32              wc);
 void           pango_module_register (PangoIncludedModule *module);
 
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+#endif /* PANGO_ENABLE_BACKEND */
+
+G_END_DECLS
 
 #endif /* __PANGO_MODULES_H__ */

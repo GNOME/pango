@@ -1,3 +1,60 @@
+Tue Sep 18 15:47:08 2001  Owen Taylor  <otaylor@redhat.com>
+
+	* configure.in (PANGO_MINOR_VERSION): Up to 0.19.
+
+	* pango/pango-font.h pango/pango-fontmap.[ch] pango/fonts.c
+	pango/pangoxft-fontmap.c pango/pangoft-fontmap.c pango/pango-context.[ch]
+	pango/pangox-fontmap.c: Add new PangoFontFace and PangoFontFamily
+	object types, and change the font listing API to list faces and
+	families, instead of face names and font descriptions.
+
+	* pango/pango-font.h pango/fonts.c: Make PangoFontDescription
+	an opaque heap-allocated structure, add accessors and
+	convenience functions.
+
+	* pango/pango-font.h pango/pango-private.h: Make PangoFontMetrics
+	heap allocated, protect the structure definition with
+	#ifdef PANGO_ENABLE_BACKEND, and add getters for the fields.
+
+	* pango/pango-attributes.[ch] ( pango_attr_iterator_get_font):
+	instead of providing a base font description and one to fill
+	in, provide a single font description to modify based on
+	the attributes.
+
+	* pango/pango-attributes.[ch]: Fix PangoAttrFontDesc to have
+	a PangoFontDescription by reference, not by value.
+
+	* pango/pango-utils.[ch]: make pango_parse_style() and friends
+	take pointers to individual enumerations instead of to a
+	PangoFontDescription structure.
+
+	* pango/*.c: Fix for the PangoFontDescription and PangoFontMetrics
+	changes.
+
+        * pango/pango-{break,engine,indic,ot,xft}.h pango/Makefile.am
+	pango/opentype/Makefile.am: Protect portions with
+	PANGO_ENABLE_ENGINE to shrink the public API.
+
+	* modules/*/Makefile.am: -DPANGO_ENABLE_ENGINE.
+
+	* pango/{pangox.h,pangox-private.h} modules/basic/basic-x.c: Move
+	pango_x_font_get_unknown_glyph() into public header since it is
+	used from modules.
+
+	* pango/pango-{context,font,fontmap,modules.utils}.h pango/Makefile.am:
+	Protect portions with PANGO_ENABLE_BACKEND to shrink the public	API.
+
+	* pango/*.h: Use G_BEGIN/END_DECLS
+
+	* examples/viewer-qt.[cc,h]: Fix for changes to font listing API,
+	PangoFontDescription.
+
+	* pango/pango-indic.h modules/indic/*: Since we install this
+	header fix it up to Pango conventions, namespece
+	ZERO_WIDTH_JOINER, ZERO_WIDTH_NON_JOINER.
+
+	* docs/pango-sections.txt: Updated.
+
 2001-09-18  Matt Wilson  <msw@redhat.com>
 
 	* modules/basic/Makefile.am (basic_xft_libadd): add

@@ -25,9 +25,7 @@
 #include <pango/pango-font.h>
 #include <glib-object.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
+G_BEGIN_DECLS
 
 /* PangoColor */
 
@@ -147,7 +145,7 @@ struct _PangoAttrShape
 struct _PangoAttrFontDesc
 {
   PangoAttribute attr;
-  PangoFontDescription desc;
+  PangoFontDescription *desc;
 };
 
 PangoAttrType    pango_attr_type_register (const gchar          *name);
@@ -204,8 +202,7 @@ void               pango_attr_iterator_destroy  (PangoAttrIterator     *iterator
 PangoAttribute *   pango_attr_iterator_get      (PangoAttrIterator     *iterator,
                                                  PangoAttrType          type);
 void               pango_attr_iterator_get_font (PangoAttrIterator     *iterator,
-                                                 PangoFontDescription  *base,
-                                                 PangoFontDescription  *current,
+                                                 PangoFontDescription  *desc,
 						 PangoLanguage        **language,
                                                  GSList               **extra_attrs);
 
@@ -218,8 +215,6 @@ gboolean pango_parse_markup (const char                 *markup_text,
                              gunichar                   *accel_char,
                              GError                    **error);
 
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+G_END_DECLS
 
 #endif /* __PANGO_ATTRIBUTES_H__ */

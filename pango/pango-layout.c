@@ -2251,18 +2251,19 @@ ensure_tab_width (PangoLayout *layout)
       PangoAttrList *layout_attrs;
       PangoAttrList *tmp_attrs;
       PangoAttrIterator *iter;
-      PangoFontDescription font_desc;
+      PangoFontDescription *font_desc = pango_font_description_copy_static (pango_context_get_font_description (layout->context));
       PangoLanguage *language;
       int i;
 
       layout_attrs = pango_layout_get_effective_attributes (layout);
       iter = pango_attr_list_get_iterator (layout_attrs);
-      pango_attr_iterator_get_font (iter, pango_context_get_font_description (layout->context),
-				    &font_desc, &language, NULL);
+      pango_attr_iterator_get_font (iter, font_desc, &language, NULL);
       
       tmp_attrs = pango_attr_list_new ();
 
-      attr = pango_attr_font_desc_new (&font_desc);
+      attr = pango_attr_font_desc_new (font_desc);
+      pango_font_description_free (font_desc);
+      
       attr->start_index = 0;
       attr->end_index = 1;
       pango_attr_list_insert_before (tmp_attrs, attr);
@@ -3293,9 +3294,9 @@ pango_layout_line_get_empty_extents (PangoLayoutLine *line,
       char *line_start;
       int index;
       PangoLayout *layout = line->layout;
-      PangoFontDescription font_desc;
       PangoFont *font;
-      PangoFontMetrics metrics;
+      PangoFontDescription *font_desc = NULL;
+      gboolean free_font_desc = FALSE;
 
       pango_layout_line_get_range (line, &line_start, NULL);
       index = line_start - layout->text;
@@ -3319,12 +3320,15 @@ pango_layout_line_get_empty_extents (PangoLayoutLine *line,
 		    base_font_desc = layout->font_desc;
 		  else
 		    base_font_desc = pango_context_get_font_description (layout->context);
+
+		  font_desc = pango_font_description_copy_static (base_font_desc);
+		  free_font_desc = TRUE;
 		    
 		  pango_attr_iterator_get_font (iter,
-						base_font_desc,
-						&font_desc,
+						font_desc,
 						NULL,
 						NULL);
+
 		  break;
 		}
 	      
@@ -3336,28 +3340,33 @@ pango_layout_line_get_empty_extents (PangoLayoutLine *line,
       else
 	{
 	  if (layout->font_desc)
-	    font_desc = *layout->font_desc;
+	    font_desc = layout->font_desc;
 	  else
-	    font_desc = *pango_context_get_font_description (layout->context);
+	    font_desc = pango_context_get_font_description (layout->context);
 	}
 
-      font = pango_context_load_font (layout->context, &font_desc);
+      font = pango_context_load_font (layout->context, font_desc);
       if (font)
 	{
-	  pango_font_get_metrics (font,
-				  pango_context_get_language (layout->context),
-				  &metrics);
+	  PangoFontMetrics *metrics;
 
-	  logical_rect->y = - metrics.ascent;
-	  logical_rect->height = metrics.ascent + metrics.descent;
+	  metrics = pango_font_get_metrics (font,
+					    pango_context_get_language (layout->context));
+
+	  logical_rect->y = - pango_font_metrics_get_ascent (metrics);
+	  logical_rect->height = - logical_rect->y + pango_font_metrics_get_descent (metrics);
 
 	  g_object_unref (G_OBJECT (font));
+	  pango_font_metrics_unref (metrics);
 	}
       else
 	{
 	  logical_rect->y = 0;
 	  logical_rect->height = 0;
 	}
+
+      if (free_font_desc)
+	pango_font_description_free (font_desc);
       
       logical_rect->x = 0;
       logical_rect->width = 0;

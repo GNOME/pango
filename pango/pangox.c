@@ -117,7 +117,7 @@ struct _PangoXSubfontInfo
 struct _PangoXMetricsInfo
 {
   const char *sample_str;
-  PangoFontMetrics metrics;
+  PangoFontMetrics *metrics;
 };
 
 struct _PangoXContextInfo
@@ -166,9 +166,8 @@ static void                  pango_x_font_get_glyph_extents (PangoFont        *f
 							     PangoGlyph        glyph,
 							     PangoRectangle   *ink_rect,
 							     PangoRectangle   *logical_rect);
-static void                  pango_x_font_get_metrics       (PangoFont        *font,
-							     PangoLanguage    *language,
-							     PangoFontMetrics *metrics);
+static PangoFontMetrics *    pango_x_font_get_metrics       (PangoFont        *font,
+							     PangoLanguage    *language);
 
 static PangoXSubfontInfo * pango_x_find_subfont    (PangoFont          *font,
 						    PangoXSubfont       subfont_index);
@@ -346,7 +345,7 @@ pango_x_font_init (PangoXFont *xfont)
   xfont->metrics_by_lang = NULL;
 
   xfont->size = -1;
-  xfont->entry = NULL;
+  xfont->xface = NULL;
 }
 
 static void
@@ -452,18 +451,16 @@ pango_x_render  (Display           *display,
       if (glyphs->glyphs[i].glyph &
           PANGO_X_UNKNOWN_FLAG)
         {
+          PangoFontMetrics *metrics = pango_font_get_metrics (font, NULL);
           int x1, y1, x2, y2; /* rectangle the character should go inside. */
           int baseline;
-          PangoFontMetrics metrics;
           gunichar wc;
           
-          pango_font_get_metrics (font, NULL, &metrics);
-
           x1 = x + (x_off + glyphs->glyphs[i].geometry.x_offset) / PANGO_SCALE;
-          y1 = y + (glyphs->glyphs[i].geometry.y_offset - metrics.ascent) / PANGO_SCALE;
+          y1 = y + (glyphs->glyphs[i].geometry.y_offset - metrics->ascent) / PANGO_SCALE;
           x2 = x1 + glyphs->glyphs[i].geometry.width / PANGO_SCALE;
-          y2 = y1 + (metrics.ascent + metrics.descent) / PANGO_SCALE;
-          baseline = y1 + metrics.ascent / PANGO_SCALE;
+          y2 = y1 + (metrics->ascent + metrics->descent) / PANGO_SCALE;
+          baseline = y1 + metrics->ascent / PANGO_SCALE;
           
           wc = glyphs->glyphs[i].glyph & (~PANGO_X_UNKNOWN_FLAG);
 
@@ -533,6 +530,8 @@ pango_x_render  (Display           *display,
               
               break;
             }
+
+	  pango_font_metrics_unref (metrics);
         }
       else if (glyphs->glyphs[i].glyph)
 	{
@@ -592,29 +591,29 @@ pango_x_font_get_glyph_extents  (PangoFont      *font,
         case 0x2029: /* Paragraph separator */
           {
             /* Size of carriage-return thingy */
-            PangoFontMetrics metrics;
+            PangoFontMetrics *metrics = pango_font_get_metrics (font, NULL);
             int w;
 
-            pango_font_get_metrics (font, NULL, &metrics);
-            
 #define MAGIC_FACTOR 1.75
             
-            w = metrics.approximate_char_width * MAGIC_FACTOR;
+            w = metrics->approximate_char_width * MAGIC_FACTOR;
             
             if (ink_rect)
               {
                 ink_rect->x = 0;
                 ink_rect->width = w;
-                ink_rect->y = - metrics.ascent;
-                ink_rect->height = metrics.ascent + metrics.descent;
+                ink_rect->y = - metrics->ascent;
+                ink_rect->height = metrics->ascent + metrics->descent;
               }
             if (logical_rect)
               {
                 logical_rect->x = 0;
                 logical_rect->width = w;
-                logical_rect->y = - metrics.ascent;
-                logical_rect->height = metrics.ascent + metrics.descent;
+                logical_rect->y = - metrics->ascent;
+                logical_rect->height = metrics->ascent + metrics->descent;
               }
+
+	    pango_font_metrics_unref (metrics);
           }
           break;
           
@@ -855,10 +854,9 @@ get_font_metrics_from_string (PangoFont        *font,
   g_free (embedding_levels);
 }
 
-static void
+static PangoFontMetrics *
 pango_x_font_get_metrics (PangoFont        *font,
-			  PangoLanguage    *language,
-			  PangoFontMetrics *metrics)
+			  PangoLanguage    *language)
 {
   PangoXMetricsInfo *info = NULL; /* Quiet gcc */
   PangoXFont *xfont = (PangoXFont *)font;
@@ -885,10 +883,11 @@ pango_x_font_get_metrics (PangoFont        *font,
       
       info = g_new (PangoXMetricsInfo, 1);
       info->sample_str = sample_str;
+      info->metrics = pango_font_metrics_new ();
 
       xfont->metrics_by_lang = g_slist_prepend (xfont->metrics_by_lang, info);
       
-      get_font_metrics_from_string (font, language, sample_str, &info->metrics);
+      get_font_metrics_from_string (font, language, sample_str, info->metrics);
 
       /* This is sort of a sledgehammer solution, but we cache this
        * stuff so not a huge deal hopefully. Get the avg. width of the
@@ -901,14 +900,13 @@ pango_x_font_get_metrics (PangoFont        *font,
 
       pango_layout_get_extents (layout, NULL, &extents);
       
-      info->metrics.approximate_digit_width = extents.width / 10.0;
+      info->metrics->approximate_digit_width = extents.width / 10.0;
 
       g_object_unref (G_OBJECT (layout));
       g_object_unref (G_OBJECT (context));
     }
       
-  *metrics = info->metrics;
-  return;
+  return pango_font_metrics_ref (info->metrics);
 }
 
 /* Compare the tail of a to b */
@@ -1197,6 +1195,13 @@ free_sets_foreach (gpointer key, gpointer value, gpointer data)
 }
 
 static void
+free_metrics_info (PangoXMetricsInfo *info)
+{
+  pango_font_metrics_unref (info->metrics);
+  g_free (info);
+}
+
+static void
 pango_x_font_finalize (GObject *object)
 {
   PangoXFont *xfont = (PangoXFont *)object;
@@ -1235,11 +1240,11 @@ pango_x_font_finalize (GObject *object)
   g_hash_table_foreach (xfont->subfonts_by_charset, subfonts_foreach, NULL);
   g_hash_table_destroy (xfont->subfonts_by_charset);
 
-  g_slist_foreach (xfont->metrics_by_lang, (GFunc)g_free, NULL);
+  g_slist_foreach (xfont->metrics_by_lang, (GFunc)free_metrics_info, NULL);
   g_slist_free (xfont->metrics_by_lang);
   
-  if (xfont->entry)
-    pango_x_font_entry_remove (xfont->entry, (PangoFont *)xfont);
+  if (xfont->xface)
+    pango_x_face_remove (xfont->xface, (PangoFont *)xfont);
 
   g_object_unref (G_OBJECT (xfont->fontmap));
 
@@ -1276,7 +1281,7 @@ pango_x_font_get_coverage (PangoFont     *font,
 {
   PangoXFont *xfont = (PangoXFont *)font;
 
-  return pango_x_font_entry_get_coverage (xfont->entry, font, language);
+  return pango_x_face_get_coverage (xfont->xface, font, language);
 }
 
 static PangoEngineShape *

@@ -26,8 +26,8 @@
 #include "pangox.h"
 #include "pangox-private.h"
 
-typedef struct _PangoXFont PangoXFont;
-typedef struct _PangoXFontEntry PangoXFontEntry;
+typedef struct _PangoXFace        PangoXFace;
+typedef struct _PangoXFont        PangoXFont;
 typedef struct _PangoXSubfontInfo PangoXSubfontInfo;
 
 struct _PangoXFont
@@ -57,7 +57,7 @@ struct _PangoXFont
    */
   gboolean in_cache;
   
-  PangoXFontEntry *entry;	/* Used to remove cached fonts */
+  PangoXFace *xface;	/* Used to remove cached fonts */
 };
 
 
@@ -103,10 +103,10 @@ char *         pango_x_make_matching_xlfd      (PangoFontMap    *fontmap,
 						char            *xlfd,
 						const char      *charset,
 						int              size);
-PangoCoverage *pango_x_font_entry_get_coverage (PangoXFontEntry *entry,
+PangoCoverage *pango_x_face_get_coverage       (PangoXFace      *xface,
 						PangoFont       *font,
 						PangoLanguage   *language);
-void           pango_x_font_entry_remove       (PangoXFontEntry *entry,
+void           pango_x_face_remove             (PangoXFace      *xface,
 						PangoFont       *font);
 
 Display *      pango_x_fontmap_get_display     (PangoFontMap    *fontmap);
@@ -119,8 +119,5 @@ Atom           pango_x_fontmap_atom_from_name (PangoFontMap *fontmap,
                                                const char   *atomname);
 const char    *pango_x_fontmap_name_from_atom  (PangoFontMap *fontmap,
                                                 Atom          atom);
-
-PangoGlyph     pango_x_font_get_unknown_glyph  (PangoFont    *font,
-                                                gunichar      wc);
 
 #endif /* __PANGOX_PRIVATE_H__ */

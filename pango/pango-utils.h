@@ -23,12 +23,13 @@
 #include <glib.h>
 #include <pango/pango-font.h>
 
-char    *pango_trim_string     (const char *str);
 char **  pango_split_file_list (const char *str);
 
+#ifdef PANGO_ENABLE_BACKEND
+
+char    *pango_trim_string     (const char *str);
 gint     pango_read_line      (FILE        *stream,
 			       GString     *str);
-
 gboolean pango_skip_space     (const char **pos);
 gboolean pango_scan_word      (const char **pos,
 			       GString     *out);
@@ -39,6 +40,8 @@ gboolean pango_scan_int       (const char **pos,
 
 char *   pango_config_key_get (const char  *key);
 
+#endif /* PANGO_ENABLE_BACKEND */
+
 /* Functions for parsing textual representations
  * of PangoFontDescription fields. They return TRUE if the input string
  * contains a valid value, which then has been assigned to the corresponding
@@ -46,18 +49,20 @@ char *   pango_config_key_get (const char  *key);
  * a warning is printed (with g_warning) if the string does not
  * contain a valid value.
  */
-gboolean pango_parse_style   (const char           *str,
-			      PangoFontDescription *desc,
-			      gboolean              warn);
-gboolean pango_parse_variant (const char            *str,
-			      PangoFontDescription *desc,
-			      gboolean              warn);
-gboolean pango_parse_weight  (const char            *str,
-			      PangoFontDescription *desc,
-			      gboolean              warn);
-gboolean pango_parse_stretch (const char            *str,
-			      PangoFontDescription *desc,
-			      gboolean              warn);
+gboolean pango_parse_style   (const char   *str,
+			      PangoStyle   *style,
+			      gboolean      warn);
+gboolean pango_parse_variant (const char   *str,
+			      PangoVariant *variant,
+			      gboolean      warn);
+gboolean pango_parse_weight  (const char   *str,
+			      PangoWeight  *weight,
+			      gboolean      warn);
+gboolean pango_parse_stretch (const char   *str,
+			      PangoStretch *stretch,
+			      gboolean      warn);
+
+#ifdef PANGO_ENABLE_BACKEND
 
 /* On Unix, return the name of the "pango" subdirectory of SYSCONFDIR
  * (which is set at compile time). On Win32, return the Pango
@@ -73,6 +78,8 @@ G_CONST_RETURN char *   pango_get_sysconf_subdirectory (void);
  */
 G_CONST_RETURN char *   pango_get_lib_subdirectory (void);
 
+#endif /* PANGO_ENABLE_BACKEND */
+
 /* A couple of routines from fribidi that we either wrap or
  * provide ourselves.
  */
@@ -81,7 +88,6 @@ gboolean pango_log2vis_get_embedding_levels (gunichar       *str,
 					     PangoDirection *pbase_dir,
 					     guint8         *embedding_level_list);
 gboolean pango_get_mirror_char              (gunichar        ch,
-
 					     gunichar       *mirrored_ch);
 
 G_CONST_RETURN char *pango_language_get_sample_string (PangoLanguage *language);

@@ -32,7 +32,7 @@
 #include "pango-utils.h"
 #include "pangox-private.h"
 
-typedef struct _PangoXFamilyEntry  PangoXFamilyEntry;
+typedef struct _PangoXFamily       PangoXFamily;
 typedef struct _PangoXSizeInfo     PangoXSizeInfo;
 
 /* Number of freed fonts */
@@ -63,22 +63,23 @@ typedef enum
   XLFD_NUM_FIELDS     
 } FontField;
 
-struct _PangoXFontMapClass
+struct _PangoXFamily
 {
-  PangoFontMapClass parent_class;
-};
-
-struct _PangoXFamilyEntry
-{
+  PangoFontFamily parent_instance;
+  
   char *family_name;
   GSList *font_entries;
 };
 
-struct _PangoXFontEntry
+struct _PangoXFace
 {
+  PangoFontFace parent_instance;
+  
   char *xlfd;
-  PangoFontDescription description;
+  PangoFontDescription *description;
   PangoCoverage *coverage;
+
+  char *face_name;
 
   GSList *cached_fonts;
 };
@@ -125,17 +126,13 @@ const struct {
 };
 
 static void     pango_x_font_map_init       (PangoXFontMap      *fontmap);
-static void     pango_x_font_map_class_init (PangoXFontMapClass *class);
+static void     pango_x_font_map_class_init (PangoFontMapClass *class);
 
 static void       pango_x_font_map_finalize      (GObject                      *object);
 static PangoFont *pango_x_font_map_load_font     (PangoFontMap                 *fontmap,
 						  const PangoFontDescription   *description);
-static void       pango_x_font_map_list_fonts    (PangoFontMap                 *fontmap,
-						  const gchar                  *family,
-						  PangoFontDescription       ***descs,
-						  int                          *n_descs);
 static void       pango_x_font_map_list_families (PangoFontMap                 *fontmap,
-						  gchar                      ***families,
+						  PangoFontFamily            ***families,
 						  int                          *n_families);
 
 static void     pango_x_fontmap_cache_clear (PangoXFontMap   *xfontmap);
@@ -152,7 +149,21 @@ static char *   pango_x_get_xlfd_field      (const char         *fontname,
 static char *   pango_x_get_identifier      (const char         *fontname);
 
 
-static PangoFontClass *parent_class;	/* Parent class structure for PangoXFontMap */
+#define PANGO_X_TYPE_FAMILY              (pango_x_family_get_type ())
+#define PANGO_X_FAMILY(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_X_TYPE_FAMILY, PangoXFamily))
+#define PANGO_X_IS_FAMILY(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), PANGO_X_TYPE_FAMILY))
+
+GType           pango_x_family_get_type (void);
+
+
+#define PANGO_X_TYPE_FACE              (pango_x_face_get_type ())
+#define PANGO_X_FACE(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_X_TYPE_FACE, PangoXFace))
+#define PANGO_X_IS_FACE(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), PANGO_X_TYPE_FACE))
+
+GType           pango_x_face_get_type (void);
+
+
+static PangoFontClass *font_map_parent_class;	/* Parent class structure for PangoXFontMap */
 
 GType
 pango_x_font_map_get_type (void)
@@ -163,7 +174,7 @@ pango_x_font_map_get_type (void)
     {
       static const GTypeInfo object_info =
       {
-        sizeof (PangoXFontMapClass),
+        sizeof (PangoFontMapClass),
         (GBaseInitFunc) NULL,
         (GBaseFinalizeFunc) NULL,
         (GClassInitFunc) pango_x_font_map_class_init,
@@ -193,17 +204,15 @@ pango_x_font_map_init (PangoXFontMap *xfontmap)
 }
 
 static void
-pango_x_font_map_class_init (PangoXFontMapClass *class)
+pango_x_font_map_class_init (PangoFontMapClass *class)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (class);
-  PangoFontMapClass *font_map_class = PANGO_FONT_MAP_CLASS (class);
   
-  parent_class = g_type_class_peek_parent (class);
+  font_map_parent_class = g_type_class_peek_parent (class);
   
   object_class->finalize = pango_x_font_map_finalize;
-  font_map_class->load_font = pango_x_font_map_load_font;
-  font_map_class->list_fonts = pango_x_font_map_list_fonts;
-  font_map_class->list_families = pango_x_font_map_list_families;
+  class->load_font = pango_x_font_map_load_font;
+  class->list_families = pango_x_font_map_list_families;
 }
 
 static GList *fontmaps = NULL;
@@ -314,80 +323,7 @@ pango_x_font_map_finalize (GObject *object)
 
   fontmaps = g_list_remove (fontmaps, xfontmap);
   
-  G_OBJECT_CLASS (parent_class)->finalize (object);
-}
-
-typedef struct
-{
-  int n_found;
-  PangoFontDescription **descs;
-} ListFontsInfo;
-
-static void
-list_fonts_foreach (gpointer key, gpointer value, gpointer user_data)
-{
-  PangoXFamilyEntry *entry = value;
-  ListFontsInfo *info = user_data;
-
-  GSList *tmp_list = entry->font_entries;
-
-  while (tmp_list)
-    {
-      PangoXFontEntry *font_entry = tmp_list->data;
-      
-      info->descs[info->n_found++] = pango_font_description_copy (&font_entry->description);
-      tmp_list = tmp_list->next;
-    }
-}
-
-static void
-pango_x_font_map_list_fonts (PangoFontMap           *fontmap,
-			     const gchar            *family,
-			     PangoFontDescription ***descs,
-			     int                    *n_descs)
-{
-  PangoXFontMap *xfontmap = (PangoXFontMap *)fontmap;
-  ListFontsInfo info;
-
-  if (!n_descs)
-    return;
-
-  if (family)
-    {
-      PangoXFamilyEntry *entry = g_hash_table_lookup (xfontmap->families, family);
-      if (entry)
-	{
-	  *n_descs = g_slist_length (entry->font_entries);
-	  if (descs)
-	    {
-	      *descs = g_new (PangoFontDescription *, *n_descs);
-	      
-	      info.descs = *descs;
-	      info.n_found = 0;
-
-	      list_fonts_foreach ((gpointer)family, (gpointer)entry, &info);
-	    }
-	}
-      else
-	{
-	  *n_descs = 0;
-	  if (descs)
-	    *descs = NULL;
-	}
-    }
-  else
-    {
-      *n_descs = xfontmap->n_fonts;
-      if (descs)
-	{
-	  *descs = g_new (PangoFontDescription *, xfontmap->n_fonts);
-	  
-	  info.descs = *descs;
-	  info.n_found = 0;
-	  
-	  g_hash_table_foreach (xfontmap->families, list_fonts_foreach, &info);
-	}
-    }
+  G_OBJECT_CLASS (font_map_parent_class)->finalize (object);
 }
 
 static void
@@ -395,12 +331,12 @@ list_families_foreach (gpointer key, gpointer value, gpointer user_data)
 {
   GSList **list = user_data;
 
-  *list = g_slist_prepend (*list, key);
+  *list = g_slist_prepend (*list, value);
 }
 
 static void
 pango_x_font_map_list_families (PangoFontMap           *fontmap,
-				gchar                ***families,
+				PangoFontFamily      ***families,
 				int                    *n_families)
 {
   GSList *family_list = NULL;
@@ -418,12 +354,12 @@ pango_x_font_map_list_families (PangoFontMap           *fontmap,
     {
       int i = 0;
 	
-      *families = g_new (gchar *, *n_families);
+      *families = g_new (PangoFontFamily *, *n_families);
 
       tmp_list = family_list;
       while (tmp_list)
 	{
-	  (*families)[i] = g_strdup (tmp_list->data);
+	  (*families)[i] = tmp_list->data;
 	  i++;
 	  tmp_list = tmp_list->next;
 	}
@@ -432,21 +368,21 @@ pango_x_font_map_list_families (PangoFontMap           *fontmap,
   g_slist_free (family_list);
 }
 
-static PangoXFamilyEntry *
-pango_x_get_family_entry (PangoXFontMap *xfontmap,
-			  const char    *family_name)
+static PangoXFamily *
+pango_x_get_font_family (PangoXFontMap *xfontmap,
+			 const char    *family_name)
 {
-  PangoXFamilyEntry *family_entry = g_hash_table_lookup (xfontmap->families, family_name);
-  if (!family_entry)
+  PangoXFamily *font_family = g_hash_table_lookup (xfontmap->families, family_name);
+  if (!font_family)
     {
-      family_entry = g_new (PangoXFamilyEntry, 1);
-      family_entry->family_name = g_strdup (family_name);
-      family_entry->font_entries = NULL;
+      font_family = g_object_new (PANGO_X_TYPE_FAMILY, NULL);
+      font_family->family_name = g_strdup (family_name);
+      font_family->font_entries = NULL;
       
-      g_hash_table_insert (xfontmap->families, family_entry->family_name, family_entry);
+      g_hash_table_insert (xfontmap->families, font_family->family_name, font_family);
     }
 
-  return family_entry;
+  return font_family;
 }
 
 static PangoFont *
@@ -454,58 +390,38 @@ pango_x_font_map_load_font (PangoFontMap               *fontmap,
 			    const PangoFontDescription *description)
 {
   PangoXFontMap *xfontmap = (PangoXFontMap *)fontmap;
-  PangoXFamilyEntry *family_entry;
+  PangoXFamily *font_family;
   PangoFont *result = NULL;
   GSList *tmp_list;
   gchar *name;
+  gint size;
 
   g_return_val_if_fail (description != NULL, NULL);
-  g_return_val_if_fail (description->size > 0, NULL);
-  
-  name = g_strdup (description->family_name);
-  g_strdown (name);
 
-  family_entry = g_hash_table_lookup (xfontmap->families, name);
-  if (family_entry)
+  name = g_ascii_strdown (pango_font_description_get_family (description));
+  size = pango_font_description_get_size (description);
+
+  if (size <= 0)
+    return NULL;
+
+  font_family = g_hash_table_lookup (xfontmap->families, name);
+  if (font_family)
     {
-      PangoXFontEntry *best_match = NULL;
-      int best_distance = G_MAXINT;
+      PangoXFace *best_match = NULL;
       
-      tmp_list = family_entry->font_entries;
+      tmp_list = font_family->font_entries;
       while (tmp_list)
 	{
-	  PangoXFontEntry *font_entry = tmp_list->data;
+	  PangoXFace *font_entry = tmp_list->data;
 	  
-	  if (font_entry->description.variant == description->variant &&
-	      font_entry->description.stretch == description->stretch)
-	    {
-	      if (font_entry->description.style == description->style)
-		{
-		  int distance = abs(font_entry->description.weight - description->weight);
-		  if (distance < best_distance)
-		    {
-		      best_match = font_entry;
-		      best_distance = distance;
-		    }
-		}
-	      else if (font_entry->description.style != PANGO_STYLE_NORMAL &&
-		       description->style != PANGO_STYLE_NORMAL)
-		{
-		  /* Equate oblique and italic, but with a big penalty
-		   */
-		  int distance = PANGO_SCALE * 1000 + abs(font_entry->description.weight - description->weight);
-
-		  if (distance < best_distance)
-		    {
-		      best_match = font_entry;
-		      best_distance = distance;
-		    }
-		}
-	    }
-
+	  if (pango_font_description_better_match (description,
+						   best_match ? best_match->description : NULL,
+						   font_entry->description))
+	    best_match = font_entry;
+	  
 	  tmp_list = tmp_list->next;
 	}
-
+      
       if (best_match)
 	{
 	  GSList *tmp_list = best_match->cached_fonts;
@@ -513,7 +429,7 @@ pango_x_font_map_load_font (PangoFontMap               *fontmap,
 	  while (tmp_list)
 	    {
 	      PangoXFont *xfont = tmp_list->data;
-	      if (xfont->size == description->size)
+	      if (xfont->size == size)
 		{
 		  result = (PangoFont *)xfont;
 
@@ -528,10 +444,10 @@ pango_x_font_map_load_font (PangoFontMap               *fontmap,
 
 	  if (!result)
 	    {
-	      PangoXFont *xfont = pango_x_font_new (fontmap, best_match->xlfd, description->size);
+	      PangoXFont *xfont = pango_x_font_new (fontmap, best_match->xlfd, size);
 	      
 	      xfont->fontmap = fontmap;
-	      xfont->entry = best_match;
+	      xfont->xface = best_match;
 	      best_match->cached_fonts = g_slist_prepend (best_match->cached_fonts, xfont);
 
 	      result = (PangoFont *)xfont;
@@ -815,7 +731,7 @@ pango_x_font_map_read_alias_file (PangoXFontMap *xfontmap,
   char **xlfds;
   int lineno = 0;
   int i;
-  PangoXFontEntry *font_entry = NULL;
+  PangoXFace *xface = NULL;
 
   infile = fopen (filename, "r");
   if (infile)
@@ -826,7 +742,11 @@ pango_x_font_map_read_alias_file (PangoXFontMap *xfontmap,
 
       while ((lines_read = pango_read_line (infile, line_buf)))
 	{
-	  PangoXFamilyEntry *family_entry;
+	  PangoXFamily *font_family;
+	  PangoStyle style;
+	  PangoVariant variant;
+	  PangoWeight weight;
+	  PangoStretch stretch;
 
 	  const char *p = line_buf->str;
 	  
@@ -838,34 +758,40 @@ pango_x_font_map_read_alias_file (PangoXFontMap *xfontmap,
 	  if (!pango_scan_string (&p, tmp_buf))
 	    goto error;
 
-	  font_entry = g_new (PangoXFontEntry, 1);
-	  font_entry->xlfd = NULL;
-	  font_entry->description.family_name = g_strdup (tmp_buf->str);
-	  g_strdown (font_entry->description.family_name);
+	  xface = g_object_new (PANGO_X_TYPE_FACE, NULL);
+	  xface->xlfd = NULL;
+	  xface->description = pango_font_description_new ();
+	  
+	  g_string_ascii_down (tmp_buf);
+	  pango_font_description_set_family (xface->description, tmp_buf->str);
 
 	  if (!pango_scan_string (&p, tmp_buf))
 	    goto error;
 
-	  if (!pango_parse_style (tmp_buf->str, &font_entry->description, TRUE))
+	  if (!pango_parse_style (tmp_buf->str, &style, TRUE))
 	    goto error;
+	  pango_font_description_set_style (xface->description, style);
 
 	  if (!pango_scan_string (&p, tmp_buf))
 	    goto error;
 
-	  if (!pango_parse_variant (tmp_buf->str, &font_entry->description, TRUE))
+	  if (!pango_parse_variant (tmp_buf->str, &variant, TRUE))
 	    goto error;
-
-	  if (!pango_scan_string (&p, tmp_buf))
-	    goto error;
-
-	  if (!pango_parse_weight (tmp_buf->str, &font_entry->description, TRUE))
-	    goto error;
+	  pango_font_description_set_variant (xface->description, variant);
 	  
 	  if (!pango_scan_string (&p, tmp_buf))
 	    goto error;
 
-	  if (!pango_parse_stretch (tmp_buf->str, &font_entry->description, TRUE))
+	  if (!pango_parse_weight (tmp_buf->str, &weight, TRUE))
 	    goto error;
+	  pango_font_description_set_weight (xface->description, weight);
+	  
+	  if (!pango_scan_string (&p, tmp_buf))
+	    goto error;
+
+	  if (!pango_parse_stretch (tmp_buf->str, &stretch, TRUE))
+	    goto error;
+	  pango_font_description_set_stretch (xface->description, stretch);
 
 	  if (!pango_scan_string (&p, tmp_buf))
 	    goto error;
@@ -887,19 +813,20 @@ pango_x_font_map_read_alias_file (PangoXFontMap *xfontmap,
 		}
 	    }
 
-	  font_entry->xlfd = g_strjoinv (",", xlfds);
+	  xface->xlfd = g_strjoinv (",", xlfds);
 	  g_strfreev (xlfds);
 
 	  /* Insert the font entry into our structures */
 
-	  family_entry = pango_x_get_family_entry (xfontmap, font_entry->description.family_name);
-	  family_entry->font_entries = g_slist_prepend (family_entry->font_entries, font_entry);
+	  font_family = pango_x_get_font_family (xfontmap,
+						 pango_font_description_get_family (xface->description));
+	  font_family->font_entries = g_slist_prepend (font_family->font_entries, xface);
 	  xfontmap->n_fonts++;
 
-	  g_free (font_entry->description.family_name);
-	  font_entry->description.family_name = family_entry->family_name;
-	  font_entry->cached_fonts = NULL;
-	  font_entry->coverage = NULL;
+	  /* Save space by consolidating duplicated string */
+	  pango_font_description_set_family_static (xface->description, font_family->family_name);
+	  xface->cached_fonts = NULL;
+	  xface->coverage = NULL;
 	}
 
       if (ferror (infile))
@@ -908,13 +835,13 @@ pango_x_font_map_read_alias_file (PangoXFontMap *xfontmap,
       goto out;
 
     error:
-      if (font_entry)
+      if (xface)
 	{
-	  if (font_entry->xlfd)
-	    g_free (font_entry->xlfd);
-	  if (font_entry->description.family_name)
-	    g_free (font_entry->description.family_name);
-	  g_free (font_entry);
+	  if (xface->xlfd)
+	    g_free (xface->xlfd);
+	  if (xface->description)
+	    pango_font_description_free (xface->description);
+	  g_free (xface);
 	}
 
       g_warning ("Error parsing line %d of alias file '%s'", lineno, filename);
@@ -1040,8 +967,8 @@ pango_x_get_identifier (const char *fontname)
  */
 static char*
 pango_x_get_xlfd_field (const char *fontname,
-			 FontField    field_num,
-			 char       *buffer)
+			FontField   field_num,
+			char       *buffer)
 {
   const char *t1, *t2;
   int countdown, len, num_dashes;
@@ -1087,22 +1014,25 @@ pango_x_get_xlfd_field (const char *fontname,
    is created and inserted in alphabetical order in the table. */
 static void
 pango_x_insert_font (PangoXFontMap *xfontmap,
-		     const char  *fontname)
+		     const char    *fontname)
 {
-  PangoFontDescription description;
+  PangoFontDescription *description;
+  char *family_name;
+  PangoStyle style;
+  PangoVariant variant;
+  PangoWeight weight;
+  PangoStretch stretch;
   char family_buffer[XLFD_MAX_FIELD_LEN];
   char weight_buffer[XLFD_MAX_FIELD_LEN];
   char slant_buffer[XLFD_MAX_FIELD_LEN];
   char set_width_buffer[XLFD_MAX_FIELD_LEN];
   GSList *tmp_list;
-  PangoXFamilyEntry *family_entry;
-  PangoXFontEntry *font_entry;
+  PangoXFamily *font_family;
+  PangoXFace *xface;
   PangoXSizeInfo *size_info;
   char *identifier;
   int i;
 
-  description.size = 0;
-  
   /* First insert the XLFD into the list of XLFDs for the "identifier" - which
    * is the 2-4th fields of the XLFD
    */
@@ -1123,20 +1053,18 @@ pango_x_insert_font (PangoXFontMap *xfontmap,
   
   /* Convert the XLFD into a PangoFontDescription */
   
-  description.family_name = pango_x_get_xlfd_field (fontname, XLFD_FAMILY, family_buffer);
-  g_strdown (description.family_name);
-  
-  if (!description.family_name)
+  family_name = pango_x_get_xlfd_field (fontname, XLFD_FAMILY, family_buffer);
+  if (!family_name)
     return;
-
-  description.style = PANGO_STYLE_NORMAL;
+    
+  style = PANGO_STYLE_NORMAL;
   if (pango_x_get_xlfd_field (fontname, XLFD_SLANT, slant_buffer))
     {
       for (i=0; i<G_N_ELEMENTS(styles_map); i++)
 	{
 	  if (!strcmp (styles_map[i].text, slant_buffer))
 	    {
-	      description.style = styles_map[i].value;
+	      style = styles_map[i].value;
 	      break;
 	    }
 	}
@@ -1144,16 +1072,16 @@ pango_x_insert_font (PangoXFontMap *xfontmap,
   else
     strcpy (slant_buffer, "*");
 
-  description.variant = PANGO_VARIANT_NORMAL;
+  variant = PANGO_VARIANT_NORMAL;
   
-  description.weight = PANGO_WEIGHT_NORMAL;
+  weight = PANGO_WEIGHT_NORMAL;
   if (pango_x_get_xlfd_field (fontname, XLFD_WEIGHT, weight_buffer))
     {
       for (i=0; i<G_N_ELEMENTS(weights_map); i++)
 	{
 	  if (!strcmp (weights_map[i].text, weight_buffer))
 	    {
-	      description.weight = weights_map[i].value;
+	      weight = weights_map[i].value;
 	      break;
 	    }
 	}
@@ -1161,14 +1089,14 @@ pango_x_insert_font (PangoXFontMap *xfontmap,
   else
     strcpy (weight_buffer, "*");
 
-  description.stretch = PANGO_STRETCH_NORMAL;
+  stretch = PANGO_STRETCH_NORMAL;
   if (pango_x_get_xlfd_field (fontname, XLFD_SET_WIDTH, set_width_buffer))
     {
       for (i=0; i<G_N_ELEMENTS(stretches_map); i++)
 	{
 	  if (!strcmp (stretches_map[i].text, set_width_buffer))
 	    {
-	      description.stretch = stretches_map[i].value;
+	      stretch = stretches_map[i].value;
 	      break;
 	    }
 	}
@@ -1176,29 +1104,35 @@ pango_x_insert_font (PangoXFontMap *xfontmap,
   else
     strcpy (set_width_buffer, "*");
 
-  family_entry = pango_x_get_family_entry (xfontmap, description.family_name);
+  font_family = pango_x_get_font_family (xfontmap, family_name);
 
-  tmp_list = family_entry->font_entries;
+  tmp_list = font_family->font_entries;
   while (tmp_list)
     {
-      font_entry = tmp_list->data;
+      xface = tmp_list->data;
 
-      if (font_entry->description.style == description.style &&
-	  font_entry->description.variant == description.variant &&
-	  font_entry->description.weight == description.weight &&
-	  font_entry->description.stretch == description.stretch)
+      if (pango_font_description_get_style (xface->description) == style &&
+	  pango_font_description_get_weight (xface->description) == weight &&
+	  pango_font_description_get_stretch (xface->description) == stretch &&
+	  pango_font_description_get_variant (xface->description) == variant)
 	return;
 
       tmp_list = tmp_list->next;
     }
 
-  font_entry = g_new (PangoXFontEntry, 1);
-  font_entry->description = description;
-  font_entry->description.family_name = family_entry->family_name;
-  font_entry->cached_fonts = NULL;
-  font_entry->coverage = NULL;
+  description = pango_font_description_new ();
+  pango_font_description_set_family_static (description, font_family->family_name);
+  pango_font_description_set_style (description, style);
+  pango_font_description_set_weight (description, weight);
+  pango_font_description_set_stretch (description, stretch);
+  pango_font_description_set_variant (description, variant);
 
-  font_entry->xlfd = g_strconcat ("-*-",
+  xface = g_object_new (PANGO_X_TYPE_FACE, NULL);
+  xface->description = description;
+  xface->cached_fonts = NULL;
+  xface->coverage = NULL;
+
+  xface->xlfd = g_strconcat ("-*-",
 				  family_buffer,
 				  "-",
 				  weight_buffer,
@@ -1209,7 +1143,7 @@ pango_x_insert_font (PangoXFontMap *xfontmap,
 				  "--*-*-*-*-*-*-*-*",
 				  NULL);
 
-  family_entry->font_entries = g_slist_append (family_entry->font_entries, font_entry);
+  font_family->font_entries = g_slist_append (font_family->font_entries, xface);
   xfontmap->n_fonts++;
 }
 
@@ -1346,97 +1280,6 @@ free_coverages_foreach (gpointer key,
   pango_coverage_unref (value);
 }
 
-PangoCoverage *
-pango_x_font_entry_get_coverage (PangoXFontEntry *entry,
-				 PangoFont       *font,
-				 PangoLanguage   *language)
-{
-  PangoXFont *xfont;
-  PangoXFontMap *xfontmap = NULL; /* Quiet gcc */
-  PangoCoverage *result = NULL;
-  GHashTable *coverage_hash;
-  Atom atom = None;
-
-  if (entry)
-    {
-      if (entry->coverage)
-	{
-	  pango_coverage_ref (entry->coverage);
-	  return entry->coverage;
-	}
-      
-      xfont = (PangoXFont *)font;
-      
-      xfontmap = (PangoXFontMap *)pango_x_font_map_for_display (xfont->display);
-      if (entry->xlfd)
-	{
-	  const char *lang_str = language ? pango_language_to_string (language) : "*";
-	  
-	  char *str = g_strconcat (lang_str, "|", entry->xlfd, NULL);
-	  result = pango_x_get_cached_coverage (xfontmap, str, &atom);
-	  g_free (str);
-	}
-    }
-
-  if (!result)
-    {
-      guint32 ch;
-      PangoMap *shape_map;
-      PangoCoverage *coverage;
-      PangoCoverageLevel font_level;
-      PangoMapEntry *map_entry;
-      
-      result = pango_coverage_new ();
-      
-      coverage_hash = g_hash_table_new (g_str_hash, g_str_equal);
-      
-      shape_map = pango_x_get_shaper_map (language);
-      
-      for (ch = 0; ch < 65536; ch++)
-	{
-	  map_entry = pango_map_get_entry (shape_map, ch);
-	  if (map_entry->info)
-	    {
-	      coverage = g_hash_table_lookup (coverage_hash, map_entry->info->id);
-	      if (!coverage)
-		{
-		  PangoEngineShape *engine = (PangoEngineShape *)pango_map_get_engine (shape_map, ch);
-		  coverage = engine->get_coverage (font, language);
-		  g_hash_table_insert (coverage_hash, map_entry->info->id, coverage);
-		}
-	  
-	  font_level = pango_coverage_get (coverage, ch);
-	  if (font_level == PANGO_COVERAGE_EXACT && !map_entry->is_exact)
-	    font_level = PANGO_COVERAGE_APPROXIMATE;
-
-	  if (font_level != PANGO_COVERAGE_NONE)
-	    pango_coverage_set (result, ch, font_level);
-	    }
-	}
-      
-      g_hash_table_foreach (coverage_hash, free_coverages_foreach, NULL);
-      g_hash_table_destroy (coverage_hash);
-
-      if (atom)
-	pango_x_store_cached_coverage (xfontmap, atom, result);
-    }
-      
-  if (entry)
-    {
-      entry->coverage = result;
-      pango_coverage_ref (result);
-    }
-      
-  return result;
-}
-
-void
-pango_x_font_entry_remove (PangoXFontEntry *entry,
-			   PangoFont       *font)
-{
-  entry->cached_fonts = g_slist_remove (entry->cached_fonts, font);
-}
-
 PangoXFontCache *
 pango_x_font_map_get_font_cache (PangoFontMap *font_map)
 {
@@ -1546,3 +1389,232 @@ pango_x_fontmap_name_from_atom (PangoFontMap *fontmap,
 
   return name2;
 }
+
+/* 
+ * PangoXFace
+ */
+
+static PangoFontDescription *
+pango_x_face_describe (PangoFontFace *face)
+{
+  PangoXFace *xface = PANGO_X_FACE (face);
+
+  return pango_font_description_copy (xface->description);
+}
+
+static const char *
+pango_x_face_get_face_name (PangoFontFace *face)
+{
+  PangoXFace *xface = PANGO_X_FACE (face);
+
+  if (!xface->face_name)
+    {
+      PangoFontDescription *desc = pango_font_face_describe (face);
+      
+      pango_font_description_unset_fields (desc,
+					   PANGO_FONT_MASK_FAMILY | PANGO_FONT_MASK_SIZE);
+
+      xface->face_name = pango_font_description_to_string (desc);
+      pango_font_description_free (desc);
+    }
+
+  return xface->face_name;
+}
+
+static void
+pango_x_face_class_init (PangoFontFaceClass *class)
+{
+  class->describe = pango_x_face_describe;
+  class->get_face_name = pango_x_face_get_face_name;
+}
+
+GType
+pango_x_face_get_type (void)
+{
+  static GType object_type = 0;
+
+  if (!object_type)
+    {
+      static const GTypeInfo object_info =
+      {
+        sizeof (PangoFontFaceClass),
+        (GBaseInitFunc) NULL,
+        (GBaseFinalizeFunc) NULL,
+        (GClassInitFunc) pango_x_face_class_init,
+        NULL,           /* class_finalize */
+        NULL,           /* class_data */
+        sizeof (PangoXFace),
+        0,              /* n_preallocs */
+        (GInstanceInitFunc) NULL,
+      };
+      
+      object_type = g_type_register_static (PANGO_TYPE_FONT_FACE,
+                                            "PangoXFace",
+                                            &object_info, 0);
+    }
+  
+  return object_type;
+}
+
+PangoCoverage *
+pango_x_face_get_coverage (PangoXFace      *xface,
+			   PangoFont       *font,
+			   PangoLanguage   *language)
+{
+  PangoXFont *xfont;
+  PangoXFontMap *xfontmap = NULL; /* Quiet gcc */
+  PangoCoverage *result = NULL;
+  GHashTable *coverage_hash;
+  Atom atom = None;
+
+  if (xface)
+    {
+      if (xface->coverage)
+	{
+	  pango_coverage_ref (xface->coverage);
+	  return xface->coverage;
+	}
+      
+      xfont = (PangoXFont *)font;
+      
+      xfontmap = (PangoXFontMap *)pango_x_font_map_for_display (xfont->display);
+      if (xface->xlfd)
+	{
+	  const char *lang_str = language ? pango_language_to_string (language) : "*";
+	  
+	  char *str = g_strconcat (lang_str, "|", xface->xlfd, NULL);
+	  result = pango_x_get_cached_coverage (xfontmap, str, &atom);
+	  g_free (str);
+	}
+    }
+
+  if (!result)
+    {
+      guint32 ch;
+      PangoMap *shape_map;
+      PangoCoverage *coverage;
+      PangoCoverageLevel font_level;
+      PangoMapEntry *map_entry;
+      
+      result = pango_coverage_new ();
+      
+      coverage_hash = g_hash_table_new (g_str_hash, g_str_equal);
+      
+      shape_map = pango_x_get_shaper_map (language);
+      
+      for (ch = 0; ch < 65536; ch++)
+	{
+	  map_entry = pango_map_get_entry (shape_map, ch);
+	  if (map_entry->info)
+	    {
+	      coverage = g_hash_table_lookup (coverage_hash, map_entry->info->id);
+	      if (!coverage)
+		{
+		  PangoEngineShape *engine = (PangoEngineShape *)pango_map_get_engine (shape_map, ch);
+		  coverage = engine->get_coverage (font, language);
+		  g_hash_table_insert (coverage_hash, map_entry->info->id, coverage);
+		}
+	  
+	  font_level = pango_coverage_get (coverage, ch);
+	  if (font_level == PANGO_COVERAGE_EXACT && !map_entry->is_exact)
+	    font_level = PANGO_COVERAGE_APPROXIMATE;
+
+	  if (font_level != PANGO_COVERAGE_NONE)
+	    pango_coverage_set (result, ch, font_level);
+	    }
+	}
+      
+      g_hash_table_foreach (coverage_hash, free_coverages_foreach, NULL);
+      g_hash_table_destroy (coverage_hash);
+
+      if (atom)
+	pango_x_store_cached_coverage (xfontmap, atom, result);
+    }
+      
+  if (xface)
+    {
+      xface->coverage = result;
+      pango_coverage_ref (result);
+    }
+      
+  return result;
+}
+
+void
+pango_x_face_remove (PangoXFace  *xface,
+		     PangoFont   *font)
+{
+  xface->cached_fonts = g_slist_remove (xface->cached_fonts, font);
+}
+
+/*
+ * PangoXFontFamily
+ */
+
+static void
+pango_x_family_list_faces (PangoFontFamily  *family,
+			   PangoFontFace  ***faces,
+			   int              *n_faces)
+{
+  PangoXFamily *xfamily = PANGO_X_FAMILY (family);
+
+  *n_faces = g_slist_length (xfamily->font_entries);
+  if (faces)
+    {
+      GSList *tmp_list;
+      int i = 0;
+      
+      *faces = g_new (PangoFontFace *, *n_faces);
+
+      tmp_list = xfamily->font_entries;
+      while (tmp_list)
+	{
+	  (*faces)[i++] = tmp_list->data;
+	  tmp_list = tmp_list->next;
+	}
+    }
+}
+
+const char *
+pango_x_family_get_name (PangoFontFamily  *family)
+{
+  PangoXFamily *xfamily = PANGO_X_FAMILY (family);
+
+  return xfamily->family_name;
+}
+
+static void
+pango_x_family_class_init (PangoFontFamilyClass *class)
+{
+  class->list_faces = pango_x_family_list_faces;
+  class->get_name = pango_x_family_get_name;
+}
+
+GType
+pango_x_family_get_type (void)
+{
+  static GType object_type = 0;
+
+  if (!object_type)
+    {
+      static const GTypeInfo object_info =
+      {
+        sizeof (PangoFontFamilyClass),
+        (GBaseInitFunc) NULL,
+        (GBaseFinalizeFunc) NULL,
+        (GClassInitFunc) pango_x_family_class_init,
+        NULL,           /* class_finalize */
+        NULL,           /* class_data */
+        sizeof (PangoXFamily),
+        0,              /* n_preallocs */
+        (GInstanceInitFunc) NULL,
+      };
+      
+      object_type = g_type_register_static (PANGO_TYPE_FONT_FAMILY,
+                                            "PangoXFamily",
+                                            &object_info, 0);
+    }
+  
+  return object_type;
+}
+

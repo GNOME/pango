@@ -5,7 +5,6 @@
 PangoContext
 PangoItem
 PangoAnalysis
-PangoLangRange
 PangoDirection
 PANGO_TYPE_DIRECTION
 <SUBSECTION>
@@ -20,13 +19,13 @@ pango_context_new
 pango_context_add_font_map
 pango_context_get_font_description
 pango_context_set_font_description
+pango_context_get_language
+pango_context_set_language
 pango_context_get_base_dir
 pango_context_set_base_dir
-pango_context_get_lang
-pango_context_set_lang
 pango_context_load_font
+pango_context_get_metrics
 pango_context_list_families
-pango_context_list_fonts
 <SUBSECTION Standard>
 PANGO_TYPE_CONTEXT
 pango_context_get_type
@@ -65,7 +64,9 @@ PangoGlyphGeometry
 PangoGlyphUnit
 PangoGlyphVisAttr
 PangoGlyphString
+PANGO_TYPE_GLYPH_STRING
 pango_glyph_string_new
+pango_glyph_string_copy
 pango_glyph_string_set_size
 pango_glyph_string_free
 pango_glyph_string_extents
@@ -73,6 +74,9 @@ pango_glyph_string_extents_range
 pango_glyph_string_index_to_x
 pango_glyph_string_x_to_index
 pango_glyph_string_get_logical_widths
+
+<SUBSECTION Private>
+pango_glyph_string_get_type
 </SECTION>
 
 <SECTION>
@@ -100,6 +104,7 @@ pango_coverage_level_get_type
 <TITLE>Fonts</TITLE>
 <FILE>fonts</FILE>
 PangoFontDescription
+PANGO_TYPE_FONT_DESCRIPTION
 PangoStyle
 PANGO_TYPE_STYLE
 PangoWeight
@@ -108,17 +113,46 @@ PangoVariant
 PANGO_TYPE_VARIANT
 PangoStretch
 PANGO_TYPE_STRETCH
+PangoFontMask
+PANGO_TYPE_FONT_MASK
+pango_font_description_new
 pango_font_description_copy
+pango_font_description_copy_static
+pango_font_description_hash
 pango_font_description_equal
-pango_font_descriptions_free
 pango_font_description_free
+pango_font_descriptions_free
+pango_font_description_set_family
+pango_font_description_set_family_static
+pango_font_description_get_family
+pango_font_description_set_style
+pango_font_description_get_style
+pango_font_description_set_variant
+pango_font_description_get_variant
+pango_font_description_set_weight
+pango_font_description_get_weight
+pango_font_description_set_stretch
+pango_font_description_get_stretch
+pango_font_description_set_size
+pango_font_description_get_size
+pango_font_description_get_set_fields
+pango_font_description_unset_fields
+pango_font_description_merge
+pango_font_description_merge_static
+pango_font_description_better_match
 pango_font_description_from_string
 pango_font_description_to_string
 pango_font_description_to_filename
 <SUBSECTION>
-PangoFont
-PangoFontClass
 PangoFontMetrics
+pango_font_metrics_ref
+pango_font_metrics_unref
+pango_font_metrics_get_ascent
+pango_font_metrics_get_descent
+pango_font_metrics_get_approximate_char_width
+pango_font_metrics_get_approximate_digit_width
+<SUBSECTION>
+PangoFont
 pango_font_find_shaper
 pango_font_describe
 pango_font_get_coverage
@@ -127,30 +161,58 @@ pango_font_get_metrics
 PANGO_TYPE_FONT
 PANGO_FONT
 PANGO_IS_FONT
-PANGO_FONT_CLASS
-PANGO_IS_FONT_CLASS
-PANGO_FONT_GET_CLASS
-pango_font_get_type
+<SUBSECTION>
+PangoFontFamily
+PANGO_TYPE_FONT_FAMILY
+PANGO_FONT_FAMILY
+PANGO_IS_FONT_FAMILY
+pango_font_family_get_name
+pango_font_family_list_faces
+<SUBSECTION>
+PangoFontFace
+PANGO_TYPE_FONT_FACE
+PANGO_FONT_FACE
+PANGO_IS_FONT_FACE
+pango_font_face_get_face_name
+pango_font_face_describe
 <SUBSECTION>
 PangoFontMap
 PangoFontMapClass
 pango_font_map_load_font
 pango_font_map_list_families
-pango_font_map_free_families
-pango_font_map_list_fonts
 PANGO_TYPE_FONT_MAP
 PANGO_FONT_MAP
 PANGO_IS_FONT_MAP
 PANGO_FONT_MAP_CLASS
 PANGO_IS_FONT_MAP_CLASS
 PANGO_FONT_MAP_GET_CLASS
-pango_font_map_get_type
 
 <SUBSECTION Private>
+pango_font_get_type
 pango_stretch_get_type
 pango_style_get_type
 pango_variant_get_type
 pango_weight_get_type
+pango_font_mask_get_type
+pango_font_description_get_type
+pango_font_map_get_type
+pango_font_face_get_type
+pango_font_family_get_type
+
+PANGO_FONT_FACE_CLASS
+PANGO_IS_FONT_CLASS
+PANGO_FONT_FACE_GET_CLASS
+PangoFontFamilyClass
+pango_font_metrics_new
+PangoFontFaceClass
+pango_x_font_get_unknown_glyph
+PANGO_FONT_GET_CLASS
+PANGO_FONT_CLASS
+PANGO_IS_FONT_FAMILY_CLASS
+PangoFontClass
+PANGO_FONT_FAMILY_GET_CLASS
+PANGO_FONT_FAMILY_CLASS
+PANGO_IS_FONT_FACE_CLASS
 </SECTION>
 
 <SECTION>
@@ -161,6 +223,7 @@ PANGO_TYPE_ATTR_TYPE
 PangoAttrClass
 PangoAttribute
 PangoAttrString
+PangoAttrLanguage
 PangoAttrColor
 PangoAttrInt
 PangoAttrFloat
@@ -172,7 +235,7 @@ pango_attribute_copy
 pango_attribute_equal
 pango_attribute_destroy
 <SUBSECTION>
-pango_attr_lang_new
+pango_attr_language_new
 pango_attr_family_new
 pango_attr_style_new
 pango_attr_variant_new
@@ -199,7 +262,13 @@ pango_attr_rise_new
 PangoColor
 PANGO_TYPE_COLOR
 pango_color_free
+pango_color_parse
 pango_color_copy
+PangoLanguage
+PANGO_TYPE_LANGUAGE
+pango_language_from_string
+pango_language_to_string
+pango_language_matches
 <SUBSECTION>
 PangoAttrList
 PANGO_TYPE_ATTR_LIST
@@ -224,12 +293,14 @@ pango_attr_type_get_type
 pango_attr_list_get_type
 pango_underline_get_type
 pango_color_get_type
+pango_language_get_type
 </SECTION>
 
 <SECTION>
 <TITLE>Tab Stops</TITLE>
 <FILE>tab-stops</FILE>
 PangoTabArray
+PANGO_TYPE_TAB_ARRAY
 PangoTabAlign
 PANGO_TYPE_TAB_ALIGN
 pango_tab_array_new
@@ -245,6 +316,7 @@ pango_tab_array_get_positions_in_pixels
 
 <SUBSECTION Private>
 pango_tab_align_get_type
+pango_tab_array_get_type
 </SECTION>
 
 <SECTION>
@@ -361,18 +433,6 @@ script_engine_unload
 </SECTION>
 
 <SECTION>
-<FILE>pango-indic</FILE>
-<TITLE>Indic Engine Support</TITLE>
-ZERO_WIDTH_NON_JOINER
-ZERO_WIDTH_JOINER
-PangoIndicScript
-pango_indic_shift_vowels
-pango_indic_compact
-pango_indic_convert_vowels
-pango_indic_split_out_characters
-</SECTION>
-
-<SECTION>
 <TITLE>Modules</TITLE>
 <FILE>modules</FILE>
 PangoIncludedModule
@@ -382,6 +442,18 @@ pango_find_map
 pango_map_get_entry
 pango_map_get_engine
 pango_module_register
+</SECTION>
+
+<SECTION>
+FILE>pango-indic</FILE>
+<TITLE>Indic Engine Support</TITLE>
+PANGO_ZERO_WIDTH_NON_JOINER
+PANGO_ZERO_WIDTH_JOINER
+PangoIndicScript
+pango_indic_shift_vowels
+pango_indic_compact
+pango_indic_convert_vowels
+pango_indic_split_out_characters
 </SECTION>
 
 <SECTION>
@@ -427,19 +499,12 @@ pango_x_font_cache_unload
 <FILE>win32-fonts</FILE>
 PANGO_RENDER_TYPE_WIN32
 pango_win32_get_context
-pango_win32_load_font
 pango_win32_render
 pango_win32_render_layout_line
 pango_win32_render_layout
-PangoWin32UnicodeSubrange
-pango_win32_unicode_classify
-PangoWin32Subfont
-PANGO_WIN32_MAKE_GLYPH
-PANGO_WIN32_GLYPH_SUBFONT
-PANGO_WIN32_GLYPH_INDEX
-pango_win32_list_subfonts
-pango_win32_has_glyph
 pango_win32_get_unknown_glyph
+pango_win32_font_get_coverage
+pango_win32_font_get_glyph_index
 PangoWin32FontCache
 pango_win32_font_cache_new
 pango_win32_font_cache_free
@@ -448,8 +513,7 @@ pango_win32_font_cache_unload
 pango_win32_font_map_for_display
 pango_win32_shutdown_display
 pango_win32_font_map_get_font_cache
-pango_win32_font_subfont_logfont
-pango_win32_fontmap_dump
+pango_win32_font_logfont
 
 <SUBSECTION Private>
 STRICT

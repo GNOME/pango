@@ -55,7 +55,7 @@
 typedef struct _PangoFT2OA PangoFT2OA;
 typedef struct _PangoFT2Font PangoFT2Font;
 typedef struct _PangoFT2GlyphInfo PangoFT2GlyphInfo;
-typedef struct _PangoFT2FontEntry PangoFT2FontEntry;
+typedef struct _PangoFT2Face PangoFT2Face;
 typedef struct _PangoFT2SubfontInfo PangoFT2SubfontInfo;
 
 struct _PangoFT2OA
@@ -88,7 +88,7 @@ struct _PangoFT2Font
    */
   gboolean in_cache;
   
-  PangoFT2FontEntry *entry;
+  PangoFT2Face *entry;
 
   GHashTable *glyph_info;
 };
@@ -99,22 +99,23 @@ struct _PangoFT2GlyphInfo
   PangoRectangle ink_rect;
 };
 
-struct _PangoFT2FontEntry
+struct _PangoFT2Face
 {
   FT_Open_Args **open_args;
   FT_Long *face_indices;
   int n_fonts;
-  PangoFontDescription description;
+  PangoFontDescription *description;
   PangoCoverage *coverage;
+  char *face_name;
 
   GSList *cached_fonts;
 };
 
 PangoMap      *pango_ft2_get_shaper_map          (PangoLanguage     *language);
-PangoCoverage *pango_ft2_font_entry_get_coverage (PangoFT2FontEntry *entry,
+PangoCoverage *pango_ft2_face_get_coverage       (PangoFT2Face      *face,
 						  PangoFont         *font,
 						  PangoLanguage     *language);
-void           pango_ft2_font_entry_remove       (PangoFT2FontEntry *entry,
+void           pango_ft2_face_remove             (PangoFT2Face      *face,
 						  PangoFont         *font);
 FT_Library    *pango_ft2_fontmap_get_library     (PangoFontMap      *fontmap);
 void           pango_ft2_fontmap_cache_add       (PangoFontMap      *fontmap,

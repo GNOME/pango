@@ -64,6 +64,7 @@ moddefine = $(X_PREFIX) $(XFT_PREFIX) $(FT2_PREFIX)
 moduledir = $(libdir)/pango/modules
 
 INCLUDES = 			\
+	-DPANGO_ENABLE_ENGINE	\
 	-I$(top_srcdir) 	\
 	-I$(top_srcdir)/pango/ 	\
 	$(X_CFLAGS) 		\

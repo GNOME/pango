@@ -25,9 +25,7 @@
 #include <pango/pango-types.h>
 #include <pango/pango-item.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
+G_BEGIN_DECLS
 
 typedef struct _PangoGlyphGeometry PangoGlyphGeometry;
 typedef struct _PangoGlyphVisAttr PangoGlyphVisAttr;
@@ -131,8 +129,6 @@ void pango_shape (const gchar      *text,
 
 GList *pango_reorder_items (GList *logical_items);
 
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+G_END_DECLS
 
 #endif /* __PANGO_GLYPH_H__ */

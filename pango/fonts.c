@@ -29,6 +29,21 @@
 #include "pango-fontmap.h"
 #include "pango-utils.h"
 
+struct _PangoFontDescription
+{
+  char *family_name;
+
+  PangoStyle style;
+  PangoVariant variant;
+  PangoWeight weight;
+  PangoStretch stretch;
+
+  guint16 mask;
+  guint static_family : 1;
+
+  int size;
+};
+
 GType
 pango_font_description_get_type (void)
 {
@@ -40,6 +55,502 @@ pango_font_description_get_type (void)
 					     (GBoxedFreeFunc)pango_font_description_free);
 
   return our_type;
+}
+
+/**
+ * pango_font_description_new:
+ * 
+ * Creates a new font description structure with all fields unset.
+ * 
+ * Return value: the newly created #PangoFontDescription. Use
+ * pango_font_description_free to free the result.
+ **/
+PangoFontDescription *
+pango_font_description_new (void)
+{
+  PangoFontDescription *desc = g_new (PangoFontDescription, 1);
+
+  desc->mask = 0;
+  desc->family_name = NULL;
+  desc->style = PANGO_STYLE_NORMAL;
+  desc->variant = PANGO_VARIANT_NORMAL;
+  desc->weight = PANGO_WEIGHT_NORMAL;
+  desc->stretch = PANGO_STRETCH_NORMAL;
+  desc->size = 0;
+
+  return desc;
+}
+
+/**
+ * pango_font_description_set_family:
+ * @desc: a #PangoFontDescription.
+ * @family: a string representing the family name.
+ * 
+ * Sets the family name field of a font description. The family
+ * name represents a family of related font styles, and will
+ * resolve to a particular #PangoFontFamily. In some uses of
+ * #PangoFontDescription, it is also possible to use a comma
+ * separated list of family names for this field.
+ **/
+void
+pango_font_description_set_family (PangoFontDescription *desc,
+				   const char           *family)
+{
+  g_return_if_fail (desc != NULL);
+
+  if (desc->family_name == family)
+    return;
+  
+  if (desc->family_name && !desc->static_family)
+    g_free (desc->family_name);
+
+  if (family)
+    {
+      desc->family_name = g_strdup (family);
+      desc->mask |= PANGO_FONT_MASK_FAMILY;
+    }
+  else
+    {
+      desc->family_name = NULL;
+      desc->mask &= ~PANGO_FONT_MASK_FAMILY;
+    }
+}
+
+/**
+ * pango_font_description_set_family_static:
+ * @desc: a #PangoFontDescription
+ * @family: a string representing the family name.
+ * 
+ * Like pango_font_description_set_family(), except that no
+ * copy of @family is made. The caller must make sure that the
+ * string passed in stays around until @desc has been freed
+ * or the name is set again. This function can be used if
+ * @family is a static string such as a C string literal, or
+ * if @desc is only needed temporarily.
+ **/
+void
+pango_font_description_set_family_static (PangoFontDescription *desc,
+					  const char           *family)
+{
+  g_return_if_fail (desc != NULL);
+
+  if (desc->family_name == family)
+    return;
+  
+  if (desc->family_name && !desc->static_family)
+    g_free (desc->family_name);
+
+  if (family)
+    {
+      desc->family_name = (char *)family;
+      desc->mask |= PANGO_FONT_MASK_FAMILY;
+      desc->static_family = TRUE;
+    }
+  else
+    {
+      desc->family_name = NULL;
+      desc->mask &= ~PANGO_FONT_MASK_FAMILY;
+    }
+}
+
+/**
+ * pango_font_description_get_family:
+ * @desc: a #PangoFontDescription.
+ * 
+ * Gets the family name field of a font description. See
+ * pango_font_description_set_family().
+ * 
+ * Return value: The family name field, or %NULL if the family name is unset.
+ **/
+G_CONST_RETURN char *
+pango_font_description_get_family (const PangoFontDescription *desc)
+{
+  g_return_val_if_fail (desc != NULL, NULL);
+
+  return desc->family_name;
+}
+
+/**
+ * pango_font_description_set_style:
+ * @desc: a #PangoFontDescription
+ * @style: the style for the font description
+ * 
+ * Sets the style field of a #PangoFontDescription. The
+ * #PangoStyle enumeration describes whether the font is slanted and
+ * the manner in which it is slanted; it can be either
+ * %PANGO_STYLE_NORMAL, %PANGO_STYLE_ITALIC, or %PANGO_STYLE_OBLIQUE.
+ * Most fonts will either have a italic style or an oblique
+ * style, but not both, and font matching in Pango will 
+ * match italic specifications with oblique fonts and vice-versa
+ * if an exact match is not found.
+ **/
+void
+pango_font_description_set_style (PangoFontDescription *desc,
+				  PangoStyle            style)
+{
+  g_return_if_fail (desc != NULL);
+
+  desc->style = style;
+  desc->mask |= PANGO_FONT_MASK_STYLE;
+}
+
+/**
+ * pango_font_description_get_style:
+ * @desc: a #PangoFontDescription
+ * 
+ * Gets the style field of a #PangoFontDescription. See
+ * pango_font_description_set_style().
+ * 
+ * Return value: the style field for the font description. Returns
+ *   %PANGO_STYLE_NORMAL if the style field is unset. Use
+ *   pango_font_description_get_set_fields() to find out if
+ *   the field was explicitely set or not.
+ **/
+PangoStyle
+pango_font_description_get_style (const PangoFontDescription *desc)
+{
+  g_return_val_if_fail (desc != NULL, PANGO_STYLE_NORMAL);
+
+  return desc->style;
+}
+
+/**
+ * pango_font_description_set_variant:
+ * @desc: a #PangoFontDescription
+ * @variant: the variant type for the font description.
+ * 
+ * Sets the variant field of a font description. The %PangoVariant
+ * can either by %PANGO_VARIANT_NORMAL or %PANGO_VARIANT_SMALL_CAPS.
+ **/
+void
+pango_font_description_set_variant (PangoFontDescription *desc,
+				    PangoVariant          variant)
+{
+  g_return_if_fail (desc != NULL);
+  
+  desc->variant = variant;
+  desc->mask |= PANGO_FONT_MASK_VARIANT;
+}
+
+/**
+ * pango_font_description_get_variant:
+ * @desc: a #PangoFontDescription.
+ * 
+ * Gets the variant field of a #PangoFontDescription. See
+ * pango_font_description_set_variant().
+ * 
+ * Return value: the variant field for the font description. Returns
+ *   %PANGO_VARIANT_NORMAL if the variant field is unset. Use
+ *   pango_font_description_get_set_fields() to find out if
+ *   the field was explicitely set or not.
+ **/
+PangoVariant
+pango_font_description_get_variant (const PangoFontDescription *desc)
+{
+  g_return_val_if_fail (desc != NULL, PANGO_VARIANT_NORMAL);
+  
+  return desc->variant;
+}
+
+/**
+ * pango_font_description_set_weight:
+ * @desc: a #PangoFontDescription
+ * @weight: the weight for the font description.
+ * 
+ * Sets the weight field of a font description. The weight field
+ * specifies how bold or light the font should be. In addition
+ * to the values of the #PangoWeight enumeration, other intermediate
+ * numeric values are possible.
+ **/
+void
+pango_font_description_set_weight (PangoFontDescription *desc,
+				   PangoWeight          weight)
+{
+  g_return_if_fail (desc != NULL);
+
+  desc->weight = weight;
+  desc->mask |= PANGO_FONT_MASK_WEIGHT;
+}
+
+/**
+ * pango_font_description_get_weight:
+ * @desc: a #PangoFontDescription
+ * 
+ * Gets the weight field of a font description. See
+ * pango_font_description_set_weight().
+ * 
+ * Return value: the weight field for the font description. Returns
+ *   %PANGO_WEIGHT_NORMAL if the weight field is unset. Use
+ *   pango_font_description_get_set_fields() to find out if
+ *   the field was explicitely set or not.
+ **/
+PangoWeight
+pango_font_description_get_weight (const PangoFontDescription *desc)
+{
+  g_return_val_if_fail (desc != NULL, PANGO_WEIGHT_NORMAL);
+  
+  return desc->weight;
+}
+
+/**
+ * pango_font_description_set_stretch:
+ * @desc: a #PangoFontDescription
+ * @stretch: the stretch for the font description
+ * 
+ * Sets the stretch field of a font description. The stretch field
+ * specifes how narrow or wide the font should be.
+ **/
+void
+pango_font_description_set_stretch (PangoFontDescription *desc,
+				    PangoStretch          stretch)
+{
+  g_return_if_fail (desc != NULL);
+  
+  desc->stretch = stretch;
+  desc->mask |= PANGO_FONT_MASK_STRETCH;
+}
+
+/**
+ * pango_font_description_get_stretch:
+ * @desc: a #PangoFontDescription.
+ * 
+ * Gets the stretch field of a font description.
+ * See pango_font_description_set_stretch().
+ * 
+ * Return value: the stretch field for the font description. Returns
+ *   %PANGO_STRETCH_NORMAL if the stretch field is unset. Use
+ *   pango_font_description_get_set_fields() to find out if
+ *   the field was explicitely set or not.
+ **/
+PangoStretch
+pango_font_description_get_stretch (const PangoFontDescription *desc)
+{
+  g_return_val_if_fail (desc != NULL, PANGO_STRETCH_NORMAL);
+
+  return desc->stretch;
+}
+
+/**
+ * pango_font_description_set_size:
+ * @desc: a #PangoFontDescription
+ * @size: the size for the font description in pango units.
+ *        (PANGO_SCALE pango units equals one point)
+ * 
+ * Sets the size field of a font description.
+ **/
+void
+pango_font_description_set_size (PangoFontDescription *desc,
+				 gint                  size)
+{
+  g_return_if_fail (desc != NULL);
+  
+  desc->size = size;
+  desc->mask |= PANGO_FONT_MASK_SIZE;
+}
+
+/**
+ * pango_font_description_get_size:
+ * @desc: a #PangoFontDescription
+ * 
+ * Gets the size field of a font description.
+ * See pango_font_description_get_size().
+ * 
+ * Return value: the size field for the font description in pango
+ *   units.  (PANGO_SCALE pango units equals one point.)  Returns 0 if
+ *   the stretch field is unset. Use
+ *   pango_font_description_get_set_fields() to find out if the field
+ *   was explicitely set or not.
+ **/
+gint
+pango_font_description_get_size (const PangoFontDescription *desc)
+{
+  g_return_val_if_fail (desc != NULL, 0);
+
+  return desc->size;
+}
+
+/**
+ * pango_font_description_get_set_fields:
+ * @desc: a #PangoFontDescription
+ * 
+ * Determines which fields in a font description have been set.
+ * 
+ * Return value: a bitmask with bits set corresponding to the
+ *   fields in @desc that have been set.
+ **/
+PangoFontMask
+pango_font_description_get_set_fields (const PangoFontDescription *desc)
+{
+  g_return_val_if_fail (desc != NULL, 0);
+
+  return desc->mask;
+}
+
+/**
+ * pango_font_description_unset_fields:
+ * @desc: a #PangoFontDescription
+ * @to_unset: bitmask of fields in the @desc to unset.
+ * 
+ * Unsets some of the fields in a #PangoFontDescription.
+ **/
+void
+pango_font_description_unset_fields (PangoFontDescription *desc,
+				     PangoFontMask         to_unset)
+{
+  g_return_if_fail (desc != NULL);
+
+  /* We reset cleared mask values back to defaults, to avoid
+   * having to check the mask for getters.
+   */
+  if (to_unset & PANGO_FONT_MASK_FAMILY)
+    pango_font_description_set_family (desc, NULL);
+  if (to_unset & PANGO_FONT_MASK_STYLE)
+    desc->style = PANGO_STYLE_NORMAL;
+  if (to_unset & PANGO_FONT_MASK_VARIANT)
+    desc->variant = PANGO_VARIANT_NORMAL;
+  if (to_unset & PANGO_FONT_MASK_WEIGHT)
+    desc->weight = PANGO_WEIGHT_NORMAL;
+  if (to_unset & PANGO_FONT_MASK_STRETCH)
+    desc->stretch = PANGO_STRETCH_NORMAL;
+  if (to_unset & PANGO_FONT_MASK_SIZE)
+    desc->size = 0;
+    
+  desc->mask &= ~to_unset;
+}
+
+/**
+ * pango_font_description_merge:
+ * @desc: a #PangoFontDescription
+ * @desc_to_merge: the #PangoFontDescription to merge from
+ * @replace_existing: if %TRUE, replace fields in @desc with the
+ *   corresponding values from @desc_to_merge, even if they
+ *   are already exist.
+ * 
+ * Merge the fields that are set in @desc_to_merge into the fields in
+ * @desc.  If @replace_existing is %FALSE, only fields in @desc that
+ * are not already set are affected. If %TRUE, then fields that are
+ * already set will be replaced as well.
+ **/
+void
+pango_font_description_merge (PangoFontDescription       *desc,
+			      const PangoFontDescription *desc_to_merge,
+			      gboolean                    replace_existing)
+{
+  PangoFontMask new_mask;
+  
+  g_return_if_fail (desc != NULL);
+
+  if (replace_existing)
+    new_mask = desc_to_merge->mask;
+  else
+    new_mask = desc_to_merge->mask & ~desc->mask;
+
+  if (new_mask & PANGO_FONT_MASK_FAMILY)
+    pango_font_description_set_family (desc, desc_to_merge->family_name);
+  if (new_mask & PANGO_FONT_MASK_STYLE)
+    desc->style = desc_to_merge->style;
+  if (new_mask & PANGO_FONT_MASK_VARIANT)
+    desc->variant = desc_to_merge->variant;
+  if (new_mask & PANGO_FONT_MASK_WEIGHT)
+    desc->weight = desc_to_merge->weight;
+  if (new_mask & PANGO_FONT_MASK_STRETCH)
+    desc->stretch = desc_to_merge->stretch;
+  if (new_mask & PANGO_FONT_MASK_SIZE)
+    desc->size = desc_to_merge->size;
+}
+
+/**
+ * pango_font_description_merge_static:
+ * @desc: a #PangoFontDescription
+ * @desc_to_merge: the #PangoFontDescription to merge from
+ * @replace_existing: if %TRUE, replace fields in @desc with the
+ *   corresponding values from @desc_to_merge, even if they
+ *   are already exist.
+ *
+ * Like pango_font_description_merge(), but only a shallow copy is made
+ * of the family name and other allocated fields. @desc can only be
+ * used until @desc_to_merge is modified or freed. This is meant
+ * to be used when the merged font description is only needed temporarily.
+ **/
+void
+pango_font_description_merge_static (PangoFontDescription       *desc,
+				     const PangoFontDescription *desc_to_merge,
+				     gboolean                    replace_existing)
+{
+  PangoFontMask new_mask;
+  
+  g_return_if_fail (desc != NULL);
+
+  if (replace_existing)
+    new_mask = desc_to_merge->mask;
+  else
+    new_mask = desc_to_merge->mask & ~desc->mask;
+
+  if (new_mask & PANGO_FONT_MASK_FAMILY)
+    pango_font_description_set_family_static (desc, desc_to_merge->family_name);
+  if (new_mask & PANGO_FONT_MASK_STYLE)
+    desc->style = desc_to_merge->style;
+  if (new_mask & PANGO_FONT_MASK_VARIANT)
+    desc->variant = desc_to_merge->variant;
+  if (new_mask & PANGO_FONT_MASK_WEIGHT)
+    desc->weight = desc_to_merge->weight;
+  if (new_mask & PANGO_FONT_MASK_STRETCH)
+    desc->stretch = desc_to_merge->stretch;
+  if (new_mask & PANGO_FONT_MASK_SIZE)
+    desc->size = desc_to_merge->size;
+}
+
+static gint
+compute_distance (const PangoFontDescription *a,
+		  const PangoFontDescription *b)
+{
+  if (a->style == b->style)
+    {
+      return abs(a->weight - b->weight);
+    }
+  else if (a->style != PANGO_STYLE_NORMAL &&
+	   b->style != PANGO_STYLE_NORMAL)
+    {
+      /* Equate oblique and italic, but with a big penalty
+       */
+      return 1000000 + abs (a->weight - b->weight);
+    }
+  else
+    return G_MAXINT;
+}
+
+/**
+ * pango_font_description_better_match:
+ * @desc: a #PangoFontDecription
+ * @old_match: a #PangoFontDescription, or %NULL
+ * @new_match: a #PangoFontDescription
+ * 
+ * Determines if the style attributes of @new_match are a closer match
+ * for @desc than @old_match, or if @old_match is %NULL, determines if
+ * @new_match is a match at all. Approximate matching is done for
+ * weight and style; other attributes must match exactly.
+ * 
+ * Return value: %TRUE if @new_match is a better match
+ **/
+gboolean
+pango_font_description_better_match (const PangoFontDescription *desc,
+				     const PangoFontDescription *old_match,
+				     const PangoFontDescription *new_match)
+{
+  g_return_val_if_fail (desc != NULL, G_MAXINT);
+  g_return_val_if_fail (new_match != NULL, G_MAXINT);
+  
+  if (new_match->variant == desc->variant &&
+      new_match->stretch == desc->stretch)
+    {
+      int old_distance = old_match ? compute_distance (desc, old_match) : G_MAXINT;
+      int new_distance = compute_distance (desc, new_match);
+
+      if (new_distance < old_distance)
+	return TRUE;
+    }
+
+  return FALSE;
 }
 
 /**
@@ -64,6 +575,29 @@ pango_font_description_copy  (const PangoFontDescription  *desc)
 }
 
 /**
+ * pango_font_description_copy_static:
+ * @desc: a #PangoFontDescription
+ * 
+ * Like pango_font_description_copy(), but only a shallow copy is made
+ * of the family name and other allocated fields. The result can only
+ * be used until @desc is modififed or freed. This is meant to be used
+ * when the copy is only needed temporarily.
+ * 
+ * Return value: a newly allocated #PangoFontDescription. This value
+ *               must be freed using pango_font_description_free().
+ **/
+PangoFontDescription *
+pango_font_description_copy_static (const PangoFontDescription *desc)
+{
+  PangoFontDescription *result = g_new (PangoFontDescription, 1);
+
+  *result = *desc;
+  result->static_family = TRUE;
+
+  return result;
+}
+
+/**
  * pango_font_description_equal:
  * @desc1: a #PangoFontDescription
  * @desc2: another #PangoFontDescription
@@ -82,12 +616,46 @@ pango_font_description_equal (const PangoFontDescription  *desc1,
   g_return_val_if_fail (desc1 != NULL, FALSE);
   g_return_val_if_fail (desc2 != NULL, FALSE);
 
-  return (desc1->style == desc2->style &&
+  return (desc1->mask == desc2->mask &&
+	  desc1->style == desc2->style &&
 	  desc1->variant == desc2->variant &&
 	  desc1->weight == desc2->weight &&
 	  desc1->stretch == desc2->stretch &&
 	  desc1->size == desc2->size &&
-	  !g_strcasecmp (desc1->family_name, desc2->family_name));
+	  (desc1->family_name == desc2->family_name ||
+	   (desc1->family_name && desc2->family_name && g_strcasecmp (desc1->family_name, desc2->family_name) == 0)));
+}
+
+/**
+ * pango_font_description_hash:
+ * @desc: a #PangoFontDescription
+ * 
+ * Compute a hash of a #PangoFontDescription structure suitable
+ * to be used, for example, as an argument to g_hash_table_new().
+ * 
+ * Return value: the hash value.
+ **/
+guint
+pango_font_description_hash (const PangoFontDescription *desc)
+{
+  guint hash = 0;
+
+  hash = desc->mask;
+  
+  if (desc->mask & PANGO_FONT_MASK_FAMILY)
+    hash = g_str_hash (desc->family_name);
+  if (desc->mask & PANGO_FONT_MASK_SIZE)
+    hash ^= desc->size;
+  if (desc->mask & PANGO_FONT_MASK_STYLE)
+    hash ^= desc->style << 16;
+  if (desc->mask & PANGO_FONT_MASK_VARIANT)
+    hash ^= desc->variant << 18;
+  if (desc->mask & PANGO_FONT_MASK_WEIGHT)
+    hash ^= desc->weight << 16;
+  if (desc->mask & PANGO_FONT_MASK_STRETCH)
+    hash ^= desc->stretch << 26;
+
+  return hash;
 }
 
 /**
@@ -101,7 +669,7 @@ void pango_font_description_free  (PangoFontDescription  *desc)
 {
   if (desc)
     {
-      if (desc->family_name)
+      if (desc->family_name && !desc->static_family)
 	g_free (desc->family_name);
 
       g_free (desc);
@@ -244,6 +812,11 @@ pango_font_description_from_string (const char *str)
   g_return_val_if_fail (str != NULL, NULL);
 
   desc = g_new (PangoFontDescription, 1);
+
+  desc->mask = PANGO_FONT_MASK_STYLE |
+               PANGO_FONT_MASK_WEIGHT |
+               PANGO_FONT_MASK_VARIANT |
+               PANGO_FONT_MASK_STRETCH;
   
   desc->family_name = NULL;
   desc->style = PANGO_STYLE_NORMAL;
@@ -266,6 +839,7 @@ pango_font_description_from_string (const char *str)
       if (end - p == wordlen) /* word is a valid float */
 	{
 	  desc->size = (int)(size * PANGO_SCALE + 0.5);
+	  desc->mask |= PANGO_FONT_MASK_SIZE;
 	  last = p;
 	}
     }
@@ -366,7 +940,7 @@ pango_font_description_to_string (const PangoFontDescription  *desc)
   if (result->len == 0)
     g_string_append (result, "Normal");
 
-  if (desc->size > 0)
+  if (desc->mask & PANGO_FONT_MASK_SIZE)
     {
       if (result->len > 0 || result->str[result->len -1] != ' ')
 	g_string_append_c (result, ' ');
@@ -457,7 +1031,7 @@ pango_font_describe (PangoFont      *font)
 /**
  * pango_font_get_coverage:
  * @font: a #PangoFont
- * @lang: the language tag
+ * @language: the language tag
  * 
  * Compute the coverage map for a given font and language tag.
  * 
@@ -531,18 +1105,300 @@ pango_font_get_glyph_extents  (PangoFont      *font,
  * @language: language tag used to determine which script to get the metrics
  *            for, or %NULL to indicate to get the metrics for the entire
  *            font.
- * @metrics: Structure to fill in with the metrics of the font
  * 
  * Get overall metric information for a font. Since the metrics may be
  * substantially different for different scripts, a language tag can
  * be provided to indicate that the metrics should be retrieved that
  * correspond to the script(s) used by that language.
+ *
+ * Returns: a #PangoMetrics object. The caller must call pango_font_metrics_unref()
+ *   when finished using the object.
  **/
-     
-void
+PangoFontMetrics *
 pango_font_get_metrics (PangoFont        *font,
-			PangoLanguage    *language,
-			PangoFontMetrics *metrics)
+			PangoLanguage    *language)
 {
-  PANGO_FONT_GET_CLASS (font)->get_metrics (font, language, metrics);
+  return PANGO_FONT_GET_CLASS (font)->get_metrics (font, language);
+}
+
+/**
+ * pango_font_metrics_new:
+ * 
+ * Creates a new #PangoFontMetrics structure. This is only for
+ * internal use by Pango backends and there is no public way
+ * to set the fields of the structure.
+ * 
+ * Return value: a newly created #PangoFontMetrics structure
+ *   with a reference count of 1.
+ **/
+PangoFontMetrics *
+pango_font_metrics_new (void)
+{
+  PangoFontMetrics *metrics = g_new0 (PangoFontMetrics, 1);
+  metrics->ref_count = 1;
+
+  return metrics;
+}
+
+/**
+ * pango_font_metrics_ref:
+ * @metrics: a #PangoFontMetrics structure
+ * 
+ * Increases the reference count of a font metrics structure.
+ * 
+ * Return value: @metrics
+ **/
+PangoFontMetrics *
+pango_font_metrics_ref (PangoFontMetrics *metrics)
+{
+  g_return_val_if_fail (metrics != NULL, NULL);
+  
+  metrics->ref_count++;
+
+  return metrics;
+}
+
+/**
+ * pango_font_metrics_unref:
+ * @metrics: a #PangoFontMetrics structure
+ * 
+ * Decreases the reference count of a font metrics structure. If
+ * the result is zero, frees the structure and any associated
+ * memory.
+ **/
+void
+pango_font_metrics_unref (PangoFontMetrics *metrics)
+{
+  g_return_if_fail (metrics != NULL);
+  g_return_if_fail (metrics->ref_count > 0 );
+  
+  metrics->ref_count--;
+  
+  if (metrics->ref_count == 0)
+    g_free (metrics);
+}
+
+/**
+ * pango_font_metrics_get_ascent:
+ * @metrics: a #PangoFontMetrics structure
+ * 
+ * Gets the ascent from a font metrics structure. The ascent is
+ * the distance from the baseline to the logical top of a line
+ * of text. (The logical top may be above or below the top of the
+ * actual drawn ink. It is necessary to lay out the text to figure
+ * where the ink will be.)
+ * 
+ * Return value: the ascent, in pango units. (1 point == PANGO_SCALE pango units.)
+ **/
+int
+pango_font_metrics_get_ascent (PangoFontMetrics *metrics)
+{
+  g_return_val_if_fail (metrics != NULL, 0);
+
+  return metrics->ascent;
+}
+
+/**
+ * pango_font_metrics_get_descent:
+ * @metrics: a #PangoFontMetrics structure
+ * 
+ * Gets the descent from a font metrics structure. The descent is
+ * the distance from the baseline to the logical bottom of a line
+ * of text. (The logical bottom may be above or below the bottom of the
+ * actual drawn ink. It is necessary to lay out the text to figure
+ * where the ink will be.)
+ * 
+ * Return value: the descent, in pango units. (1 point == PANGO_SCALE pango units.)
+ **/
+int
+pango_font_metrics_get_descent (PangoFontMetrics *metrics)
+{
+  g_return_val_if_fail (metrics != NULL, 0);
+
+  return metrics->descent;
+}
+
+/**
+ * pango_font_metrics_get_approximate_char_width:
+ * @metrics: a #PangoFontMetrics structure
+ * 
+ * Gets the approximate character width for a font metrics structure.
+ * This is merely a representative value useful, for example, for
+ * determining the initial size for a window. Actual characters in
+ * text will be wider and narrower than this.
+ * 
+ * Return value: the character width, in pango units. (1 point == PANGO_SCALE pango units.)
+ **/
+int
+pango_font_metrics_get_approximate_char_width (PangoFontMetrics *metrics)
+{
+  g_return_val_if_fail (metrics != NULL, 0);
+
+  return metrics->approximate_char_width;
+}
+
+/**
+ * pango_font_metrics_get_approximate_digit_width:
+ * @metrics: a #PangoFontMetrics structure
+ * 
+ * Gets the approximate digit width for a font metrics structure.
+ * This is merely a representative value useful, for example, for
+ * determining the initial size for a window. Actual digits in
+ * text can be wider and narrower than this, though this value
+ * is generally somewhat more accurate than the result of
+ * pango_font_metrics_get_approximate_digit_width().
+ * 
+ * Return value: the digit width, in pango units. (1 point == PANGO_SCALE pango units.)
+ **/
+int
+pango_font_metrics_get_approximate_digit_width (PangoFontMetrics *metrics)
+{
+  g_return_val_if_fail (metrics != NULL, 0);
+
+  return metrics->approximate_digit_width;
+}
+
+/*
+ * PangoFontFamily
+ */
+
+GType
+pango_font_family_get_type (void)
+{
+  static GType object_type = 0;
+
+  if (!object_type)
+    {
+      static const GTypeInfo object_info =
+      {
+        sizeof (PangoFontFamilyClass),
+        (GBaseInitFunc) NULL,
+        (GBaseFinalizeFunc) NULL,
+        NULL,           /* class_init */
+        NULL,           /* class_finalize */
+        NULL,           /* class_data */
+        sizeof (PangoFont),
+        0,              /* n_preallocs */
+	NULL            /* init */
+      };
+      
+      object_type = g_type_register_static (G_TYPE_OBJECT,
+                                            "PangoFontFamily",
+                                            &object_info, 0);
+    }
+  
+  return object_type;
+}
+
+/**
+ * pango_font_family_get_name:
+ * @family: a #PangoFontFamily
+ * 
+ * Gets the name of the family. The name is unique among all
+ * fonts for the font backend and can be used in a #PangoFontDescription
+ * to specify that a face from this family is desired.
+ * 
+ * Return value: the name of the family. This string is owned
+ *   by the family object and must not be modified or freed.
+ **/
+G_CONST_RETURN char *
+pango_font_family_get_name (PangoFontFamily  *family)
+{
+  g_return_val_if_fail (PANGO_IS_FONT_FAMILY (family), NULL);
+
+  return PANGO_FONT_FAMILY_GET_CLASS (family)->get_name (family);
+}
+
+/**
+ * pango_font_family_list_faces:
+ * @family: a #PangFontFamily
+ * @faces: location to store an array of pointers to #PangoFontFace
+ *   objects, or %NULL. This array should be freed with g_free()
+ *   when it is no longer needed.
+ * @n_faces: location to store number of elements in @faces.
+ * 
+ * Lists the different font faces that make up @family. The faces
+ * in a family share a common design, but differ in slant, weight,
+ * width and other aspects.
+ **/
+void 
+pango_font_family_list_faces (PangoFontFamily  *family,
+			      PangoFontFace  ***faces,
+			      int              *n_faces)
+{
+  g_return_if_fail (PANGO_IS_FONT_FAMILY (family));
+
+  PANGO_FONT_FAMILY_GET_CLASS (family)->list_faces (family, faces, n_faces);
+}
+
+/*
+ * PangoFontFace
+ */
+
+GType
+pango_font_face_get_type (void)
+{
+  static GType object_type = 0;
+
+  if (!object_type)
+    {
+      static const GTypeInfo object_info =
+      {
+        sizeof (PangoFontFaceClass),
+        (GBaseInitFunc) NULL,
+        (GBaseFinalizeFunc) NULL,
+        NULL,           /* class_init */
+        NULL,           /* class_finalize */
+        NULL,           /* class_data */
+        sizeof (PangoFont),
+        0,              /* n_preallocs */
+	NULL            /* init */
+      };
+      
+      object_type = g_type_register_static (G_TYPE_OBJECT,
+                                            "PangoFontFace",
+                                            &object_info, 0);
+    }
+  
+  return object_type;
+}
+
+/**
+ * pango_font_face_describe:
+ * @face: a #PangoFontFace
+ * 
+ * Returns the family, style, variant, weight and stretch of
+ * a #PangoFontFace. The size field of the resulting font description
+ * will be unset. 
+ * 
+ * Return value: a newly created #PangoFontDescription structure
+ *  holding the description of the face. Use pango_font_description_free()
+ *  to free the result.
+ **/
+PangoFontDescription *
+pango_font_face_describe (PangoFontFace *face)
+{
+  g_return_val_if_fail (PANGO_IS_FONT_FACE (face), NULL);
+
+  return PANGO_FONT_FACE_GET_CLASS (face)->describe (face);
+}
+
+/**
+ * pango_font_face_get_face_name:
+ * @face: a #PangoFontFace.
+ * 
+ * Gets a name representing the style of this face among the
+ * different faces in the PangoFontFamily for the face. This
+ * name is unique among all faces in the family and is suitable
+ * for displaying to users.
+ * 
+ * Return value: the face name for the face. This string is
+ *   owned by the face object and must not be modified or freed.
+ **/
+G_CONST_RETURN char *
+pango_font_face_get_face_name (PangoFontFace *face)
+{
+  g_return_val_if_fail (PANGO_IS_FONT_FACE (face), NULL);
+
+  return PANGO_FONT_FACE_GET_CLASS (face)->get_face_name (face);
 }

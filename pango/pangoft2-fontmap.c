@@ -43,14 +43,10 @@
 
 #define PANGO_TYPE_FT2_FONT_MAP              (pango_ft2_font_map_get_type ())
 #define PANGO_FT2_FONT_MAP(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_TYPE_FT2_FONT_MAP, PangoFT2FontMap))
-#define PANGO_FT2_FONT_MAP_CLASS(klass)      (G_TYPE_CHECK_CLASS_CAST ((klass), PANGO_TYPE_FT2_FONT_MAP, PangoFT2FontMapClass))
 #define PANGO_FT2_IS_FONT_MAP(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), PANGO_TYPE_FT2_FONT_MAP))
-#define PANGO_FT2_IS_FONT_MAP_CLASS(klass)   (G_TYPE_CHECK_CLASS_TYPE ((klass), PANGO_TYPE_FT2_FONT_MAP))
-#define PANGO_FT2_FONT_MAP_GET_CLASS(obj)    (G_TYPE_INSTANCE_GET_CLASS ((obj), PANGO_TYPE_FT2_FONT_MAP, PangoFontMapClass))
 
-typedef struct _PangoFT2FamilyEntry  PangoFT2FamilyEntry;
+typedef struct _PangoFT2Family       PangoFT2Family;
 typedef struct _PangoFT2FontMap      PangoFT2FontMap;
-typedef struct _PangoFT2FontMapClass PangoFT2FontMapClass;
 typedef struct _PangoFT2SizeInfo     PangoFT2SizeInfo;
 
 /* Number of freed fonts */
@@ -76,12 +72,7 @@ struct _PangoFT2FontMap
   double resolution;		/* (points / pixel) * PANGO_SCALE */
 };
 
-struct _PangoFT2FontMapClass
-{
-  PangoFontMapClass parent_class;
-};
-
-struct _PangoFT2FamilyEntry
+struct _PangoFT2Family
 {
   char *family_name;
 
@@ -89,23 +80,29 @@ struct _PangoFT2FamilyEntry
   GSList *font_entries;
 };
 
-static GType      pango_ft2_font_map_get_type      (void);
+#define PANGO_FT2_TYPE_FAMILY              (pango_ft2_family_get_type ())
+#define PANGO_FT2_FAMILY(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_FT2_TYPE_FAMILY, PangoFT2Family))
+#define PANGO_FT2_IS_FAMILY(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), PANGO_FT2_TYPE_FAMILY))
+
+#define PANGO_FT2_TYPE_FACE              (pango_ft2_face_get_type ())
+#define PANGO_FT2_FACE(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_FT2_TYPE_FACE, PangoFT2Face))
+#define PANGO_FT2_IS_FACE(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), PANGO_FT2_TYPE_FACE))
+
+static GType    pango_ft2_font_map_get_type      (void);
+GType           pango_ft2_family_get_type          (void);
+GType           pango_ft2_face_get_type            (void);
 
 static void       pango_ft2_font_map_init          (PangoFT2FontMap             *fontmap);
 
-static void       pango_ft2_font_map_class_init    (PangoFT2FontMapClass        *class);
+static void       pango_ft2_font_map_class_init    (PangoFontMapClass           *class);
 
 static void       pango_ft2_font_map_finalize      (GObject                      *object);
 
 static PangoFont *pango_ft2_font_map_load_font     (PangoFontMap                 *fontmap,
 						    const PangoFontDescription   *description);
 
-static void       pango_ft2_font_map_list_fonts    (PangoFontMap                 *fontmap,
-						    const gchar                  *family,
-						    PangoFontDescription       ***descs,
-						    int                          *n_descs);
 static void       pango_ft2_font_map_list_families (PangoFontMap                 *fontmap,
-						    gchar                      ***families,
+						    PangoFontFamily            ***families,
 						    int                          *n_families);
 
 static void       pango_ft2_fontmap_cache_clear    (PangoFT2FontMap              *ft2fontmap);
@@ -131,7 +128,7 @@ pango_ft2_font_map_get_type (void)
     {
       static const GTypeInfo object_info =
       {
-        sizeof (PangoFT2FontMapClass),
+        sizeof (PangoFontMapClass),
         (GBaseInitFunc) NULL,
         (GBaseFinalizeFunc) NULL,
         (GClassInitFunc) pango_ft2_font_map_class_init,
@@ -150,50 +147,26 @@ pango_ft2_font_map_get_type (void)
   return object_type;
 }
 
-static guint
-face_style_hash (gconstpointer v)
-{
-  PangoFontDescription *desc = (PangoFontDescription *)v;
-
-  return g_str_hash (desc->family_name) +
-    desc->style + desc->variant + desc->weight + desc->stretch;
-}
-
-static gint
-face_style_equal (gconstpointer v1,
-		  gconstpointer v2)
-{
-  PangoFontDescription *desc1 = (PangoFontDescription *)v1;
-  PangoFontDescription *desc2 = (PangoFontDescription *)v2;
-
-  return (g_strcasecmp (desc1->family_name, desc2->family_name) == 0 &&
-	  desc1->style == desc2->style &&
-	  desc1->variant == desc2->variant &&
-	  desc1->weight == desc2->weight &&
-	  desc1->stretch == desc2->stretch);
-}
-
 static void 
 pango_ft2_font_map_init (PangoFT2FontMap *ft2fontmap)
 {
   ft2fontmap->families = g_hash_table_new (g_str_hash, g_str_equal);
-  ft2fontmap->faces = g_hash_table_new (face_style_hash, face_style_equal);
+  ft2fontmap->faces = g_hash_table_new ((GHashFunc)pango_font_description_hash,
+					(GEqualFunc)pango_font_description_equal);
   ft2fontmap->n_fonts = 0;
 }
 
 static void
-pango_ft2_font_map_class_init (PangoFT2FontMapClass *class)
+pango_ft2_font_map_class_init (PangoFontMapClass *class)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (class);
-  PangoFontMapClass *font_map_class = PANGO_FONT_MAP_CLASS (class);
   char *font_path;
   
   parent_class = g_type_class_peek_parent (class);
   
   object_class->finalize = pango_ft2_font_map_finalize;
-  font_map_class->load_font = pango_ft2_font_map_load_font;
-  font_map_class->list_fonts = pango_ft2_font_map_list_fonts;
-  font_map_class->list_families = pango_ft2_font_map_list_families;
+  class->load_font = pango_ft2_font_map_load_font;
+  class->list_families = pango_ft2_font_map_list_families;
 
   font_path = pango_config_key_get ("PangoFT2/FontPath");
 
@@ -374,95 +347,18 @@ pango_ft2_font_map_finalize (GObject *object)
   G_OBJECT_CLASS (parent_class)->finalize (object);
 }
 
-typedef struct
-{
-  int n_found;
-  PangoFontDescription **descs;
-} ListFontsInfo;
-
 static void
-list_fonts_foreach (gpointer key,
-		    gpointer value,
-		    gpointer user_data)
-{
-  PangoFT2FamilyEntry *entry = value;
-  ListFontsInfo *info = user_data;
-
-  GSList *tmp_list = entry->font_entries;
-
-  while (tmp_list)
-    {
-      PangoFT2FontEntry *font_entry = tmp_list->data;
-      
-      info->descs[info->n_found++] = pango_font_description_copy (&font_entry->description);
-      tmp_list = tmp_list->next;
-    }
-}
-
-static void
-pango_ft2_font_map_list_fonts (PangoFontMap           *fontmap,
-			       const gchar            *family,
-			       PangoFontDescription ***descs,
-			       int                    *n_descs)
-{
-  PangoFT2FontMap *ft2fontmap = (PangoFT2FontMap *)fontmap;
-  ListFontsInfo info;
-
-  if (!n_descs)
-    return;
-
-  if (family)
-    {
-      PangoFT2FamilyEntry *entry = g_hash_table_lookup (ft2fontmap->families, family);
-      if (entry)
-	{
-	  *n_descs = g_slist_length (entry->font_entries);
-	  if (descs)
-	    {
-	      *descs = g_new (PangoFontDescription *, *n_descs);
-	      
-	      info.descs = *descs;
-	      info.n_found = 0;
-
-	      list_fonts_foreach ((gpointer)family, (gpointer)entry, &info);
-	    }
-	}
-      else
-	{
-	  *n_descs = 0;
-	  if (descs)
-	    *descs = NULL;
-	}
-    }
-  else
-    {
-      *n_descs = ft2fontmap->n_fonts;
-      if (descs)
-	{
-	  *descs = g_new (PangoFontDescription *, ft2fontmap->n_fonts);
-	  
-	  info.descs = *descs;
-	  info.n_found = 0;
-	  
-	  g_hash_table_foreach (ft2fontmap->families, list_fonts_foreach, &info);
-	}
-    }
-}
-
-static void
-list_families_foreach (gpointer key,
-		       gpointer value,
-		       gpointer user_data)
+list_families_foreach (gpointer key, gpointer value, gpointer user_data)
 {
   GSList **list = user_data;
 
-  *list = g_slist_prepend (*list, key);
+  *list = g_slist_prepend (*list, value);
 }
 
 static void
-pango_ft2_font_map_list_families (PangoFontMap *fontmap,
-				  gchar      ***families,
-				  int          *n_families)
+pango_ft2_font_map_list_families (PangoFontMap           *fontmap,
+				  PangoFontFamily      ***families,
+				  int                    *n_families)
 {
   GSList *family_list = NULL;
   GSList *tmp_list;
@@ -479,12 +375,12 @@ pango_ft2_font_map_list_families (PangoFontMap *fontmap,
     {
       int i = 0;
 	
-      *families = g_new (gchar *, *n_families);
+      *families = g_new (PangoFontFamily *, *n_families);
 
       tmp_list = family_list;
       while (tmp_list)
 	{
-	  (*families)[i] = g_strdup (tmp_list->data);
+	  (*families)[i] = tmp_list->data;
 	  i++;
 	  tmp_list = tmp_list->next;
 	}
@@ -493,21 +389,21 @@ pango_ft2_font_map_list_families (PangoFontMap *fontmap,
   g_slist_free (family_list);
 }
 
-static PangoFT2FamilyEntry *
-pango_ft2_get_family_entry (PangoFT2FontMap *ft2fontmap,
-			    const char      *family_name)
+static PangoFT2Family *
+pango_ft2_get_family (PangoFT2FontMap *ft2fontmap,
+		      const char      *family_name)
 {
-  PangoFT2FamilyEntry *family_entry = g_hash_table_lookup (ft2fontmap->families, family_name);
-  if (!family_entry)
+  PangoFT2Family *ft2family = g_hash_table_lookup (ft2fontmap->families, family_name);
+  if (!ft2family)
     {
-      family_entry = g_new (PangoFT2FamilyEntry, 1);
-      family_entry->family_name = g_strdup (family_name);
-      family_entry->font_entries = NULL;
+      ft2family = g_object_new (PANGO_FT2_TYPE_FAMILY, NULL);
+      ft2family->family_name = g_strdup (family_name);
+      ft2family->font_entries = NULL;
       
-      g_hash_table_insert (ft2fontmap->families, family_entry->family_name, family_entry);
+      g_hash_table_insert (ft2fontmap->families, ft2family->family_name, ft2family);
     }
 
-  return family_entry;
+  return ft2family;
 }
 
 static PangoFont *
@@ -515,42 +411,32 @@ pango_ft2_font_map_load_font (PangoFontMap               *fontmap,
 			      const PangoFontDescription *description)
 {
   PangoFT2FontMap *ft2fontmap = (PangoFT2FontMap *)fontmap;
-  PangoFT2FamilyEntry *family_entry;
+  PangoFT2Family *family_entry;
   PangoFont *result = NULL;
   GSList *tmp_list;
   gchar *name;
 
   g_return_val_if_fail (description != NULL, NULL);
-  g_return_val_if_fail (description->size > 0, NULL);
   
-  name = g_strdup (description->family_name);
-  g_strdown (name);
+  name = g_ascii_strdown (pango_font_description_get_family (description));
 
   family_entry = g_hash_table_lookup (ft2fontmap->families, name);
   g_free (name);
   
   if (family_entry)
     {
-      PangoFT2FontEntry *best_match = NULL;
+      PangoFT2Face *best_match = NULL;
       
       tmp_list = family_entry->font_entries;
       while (tmp_list)
 	{
-	  PangoFT2FontEntry *font_entry = tmp_list->data;
+	  PangoFT2Face *face = tmp_list->data;
 	  
-	  if (font_entry->description.style == description->style &&
-	      font_entry->description.variant == description->variant &&
-	      font_entry->description.stretch == description->stretch)
-	    {
-	      int distance = abs (font_entry->description.weight - description->weight);
-	      int old_distance = best_match ? abs (best_match->description.weight - description->weight) : G_MAXINT;
-
-	      if (distance < old_distance)
-		{
-		  best_match = font_entry;
-		}
-	    }
-
+	  if (pango_font_description_better_match (description,
+						   best_match ? best_match->description : NULL,
+						   face->description))
+	    best_match = face;
+	  
 	  tmp_list = tmp_list->next;
 	}
 
@@ -558,11 +444,13 @@ pango_ft2_font_map_load_font (PangoFontMap               *fontmap,
 	{
 	  GSList *tmp_list = best_match->cached_fonts;
 
+	  gint size = pango_font_description_get_size (description);
+
 	  while (tmp_list)
 	    {
 	      PangoFT2Font *ft2font = tmp_list->data;
 
-	      if (ft2font->size == description->size)
+	      if (ft2font->size == size)
 		{
 		  result = (PangoFont *)ft2font;
 	      
@@ -581,7 +469,7 @@ pango_ft2_font_map_load_font (PangoFontMap               *fontmap,
 						      best_match->open_args,
 						      best_match->face_indices,
 						      best_match->n_fonts,
-						      description->size);
+						      size);
 	      
 	      ft2font->fontmap = fontmap;
 	      ft2font->entry = best_match;
@@ -603,7 +491,7 @@ pango_ft2_font_map_read_alias_file (PangoFT2FontMap *ft2fontmap,
   int lineno = 0;
   int nfaces;
   int i;
-  PangoFT2FontEntry *font_entry = NULL;
+  PangoFT2Face *face = NULL;
   gchar **faces;
   gboolean ret_val = FALSE;
 
@@ -615,7 +503,11 @@ pango_ft2_font_map_read_alias_file (PangoFT2FontMap *ft2fontmap,
 
       while (pango_read_line (infile, line_buf))
 	{
-	  PangoFT2FamilyEntry *family_entry;
+	  PangoFT2Family *family_entry;
+	  PangoStyle style;
+	  PangoVariant variant;
+	  PangoWeight weight;
+	  PangoStretch stretch;
 
 	  const char *p = line_buf->str;
 	  
@@ -627,37 +519,43 @@ pango_ft2_font_map_read_alias_file (PangoFT2FontMap *ft2fontmap,
 	  if (!pango_scan_string (&p, tmp_buf))
 	    goto error;
 
-	  font_entry = g_new (PangoFT2FontEntry, 1);
-	  font_entry->n_fonts = 0;
-	  font_entry->open_args = NULL;
-	  font_entry->face_indices = NULL;
+	  face = g_new (PangoFT2Face, 1);
+	  face->n_fonts = 0;
+	  face->open_args = NULL;
+	  face->face_indices = NULL;
 
-	  font_entry->description.family_name = g_strdup (tmp_buf->str);
-	  g_strdown (font_entry->description.family_name);
+	  face->description = pango_font_description_new ();
 
-	  if (!pango_scan_string (&p, tmp_buf))
-	    goto error;
-
-	  if (!pango_parse_style (tmp_buf->str, &font_entry->description, TRUE))
-	    goto error;
-
-	  if (!pango_scan_string (&p, tmp_buf))
-	    goto error;
-
-	  if (!pango_parse_variant (tmp_buf->str, &font_entry->description, TRUE))
-	    goto error;
-
-	  if (!pango_scan_string (&p, tmp_buf))
-	    goto error;
-
-	  if (!pango_parse_weight (tmp_buf->str, &font_entry->description, TRUE))
-	    goto error;
+	  g_string_ascii_down (tmp_buf);
+	  pango_font_description_set_family (face->description, tmp_buf->str);
 	  
 	  if (!pango_scan_string (&p, tmp_buf))
 	    goto error;
 
-	  if (!pango_parse_stretch (tmp_buf->str, &font_entry->description, TRUE))
+	  if (!pango_parse_style (tmp_buf->str, &style, TRUE))
 	    goto error;
+	  pango_font_description_set_style (face->description, style);
+
+	  if (!pango_scan_string (&p, tmp_buf))
+	    goto error;
+
+	  if (!pango_parse_variant (tmp_buf->str, &variant, TRUE))
+	    goto error;
+	  pango_font_description_set_variant (face->description, variant);
+	  
+	  if (!pango_scan_string (&p, tmp_buf))
+	    goto error;
+
+	  if (!pango_parse_weight (tmp_buf->str, &weight, TRUE))
+	    goto error;
+	  pango_font_description_set_weight (face->description, weight);
+	  
+	  if (!pango_scan_string (&p, tmp_buf))
+	    goto error;
+
+	  if (!pango_parse_stretch (tmp_buf->str, &stretch, TRUE))
+	    goto error;
+	  pango_font_description_set_stretch (face->description, stretch);
 
 	  if (!pango_scan_string (&p, tmp_buf))
 	    goto error;
@@ -674,39 +572,40 @@ pango_ft2_font_map_read_alias_file (PangoFT2FontMap *ft2fontmap,
 	      nfaces++;
 	    }
 
-	  font_entry->open_args = g_new (FT_Open_Args *, nfaces);
-	  font_entry->face_indices = g_new (FT_Long, nfaces);
+	  face->open_args = g_new (FT_Open_Args *, nfaces);
+	  face->face_indices = g_new (FT_Long, nfaces);
 	  
 	  for (i = 0; i < nfaces; i++)
 	    {
-	      PangoFontDescription desc;
+	      PangoFontDescription *desc = pango_font_description_copy_static (face->description);
 	      PangoFT2OA *oa;
 
-	      desc = font_entry->description;
-	      desc.family_name = faces[i];
-	      oa = g_hash_table_lookup (ft2fontmap->faces, &desc);
+	      pango_font_description_set_family_static (desc, faces[i]);
+	      oa = g_hash_table_lookup (ft2fontmap->faces, desc);
 	      if (!oa)
 		g_warning ("Face '%s' on line %d of '%s' not found", faces[i], lineno, filename);
 	      else
 		{
-		  font_entry->open_args[font_entry->n_fonts] = oa->open_args;
-		  font_entry->face_indices[font_entry->n_fonts] = oa->face_index;
-		  font_entry->n_fonts++;
+		  face->open_args[face->n_fonts] = oa->open_args;
+		  face->face_indices[face->n_fonts] = oa->face_index;
+		  face->n_fonts++;
 		}
+
+	      pango_font_description_free (desc);
 	    }
 
 	  g_strfreev (faces);
 	  
 	  /* Insert the font entry into our structures */
 
-	  family_entry = pango_ft2_get_family_entry (ft2fontmap, font_entry->description.family_name);
-	  family_entry->font_entries = g_slist_prepend (family_entry->font_entries, font_entry);
+	  family_entry = pango_ft2_get_family (ft2fontmap, pango_font_description_get_family (face->description));
+	  family_entry->font_entries = g_slist_prepend (family_entry->font_entries, face);
 	  ft2fontmap->n_fonts++;
 
-	  g_free (font_entry->description.family_name);
-	  font_entry->description.family_name = family_entry->family_name;
-	  font_entry->cached_fonts = NULL;
-	  font_entry->coverage = NULL;
+	  /* Save space by consolidating duplicated string */
+	  pango_font_description_set_family_static (face->description, family_entry->family_name);
+	  face->cached_fonts = NULL;
+	  face->coverage = NULL;
 	}
 
       if (ferror (infile))
@@ -716,15 +615,15 @@ pango_ft2_font_map_read_alias_file (PangoFT2FontMap *ft2fontmap,
       goto out;
 
     error:
-      if (font_entry)
+      if (face)
 	{
-	  if (font_entry->open_args)
-	    g_free (font_entry->open_args);
-	  if (font_entry->face_indices)
-	    g_free (font_entry->face_indices);
-	  if (font_entry->description.family_name)
-	    g_free (font_entry->description.family_name);
-	  g_free (font_entry);
+	  if (face->open_args)
+	    g_free (face->open_args);
+	  if (face->face_indices)
+	    g_free (face->face_indices);
+	  if (face->description)
+	    pango_font_description_free (face->description);
+	  g_free (face);
 	}
 
       g_warning ("Error parsing line %d of alias file '%s'", lineno, filename);
@@ -793,32 +692,37 @@ pango_ft2_font_map_read_aliases (PangoFT2FontMap *ft2fontmap)
 static void
 pango_print_desc (PangoFontDescription *desc)
 {
+  PangoStyle style = pango_font_description_get_style (desc);
+  PangoVariant variant = pango_font_description_get_variant (desc);
+  PangoWeight weight = pango_font_description_get_weight (desc);
+  PangoStretch stretch = pango_font_description_get_stretch (desc);
+  
   g_print ("%s%s%s%s%s",
-	   desc->family_name,
-	   (desc->style == PANGO_STYLE_NORMAL ? "" :
-	    (desc->style == PANGO_STYLE_OBLIQUE ? " OBLIQUE" :
-	     (desc->style == PANGO_STYLE_ITALIC ? " ITALIC" : " ???"))),
-	   (desc->variant == PANGO_VARIANT_NORMAL ? "" :
-	    (desc->variant == PANGO_VARIANT_SMALL_CAPS ? " SMALL CAPS" : "???")),
-	   (desc->weight >= (PANGO_WEIGHT_LIGHT + PANGO_WEIGHT_NORMAL) / 2 &&
-	    desc->weight < (PANGO_WEIGHT_NORMAL + PANGO_WEIGHT_BOLD) / 2 ? "" :
-	    (desc->weight < (PANGO_WEIGHT_ULTRALIGHT + PANGO_WEIGHT_LIGHT) / 2 ? " ULTRALIGHT" :
-	     (desc->weight >= (PANGO_WEIGHT_ULTRALIGHT + PANGO_WEIGHT_LIGHT) / 2 &&
-	      desc->weight < (PANGO_WEIGHT_LIGHT + PANGO_WEIGHT_NORMAL) / 2 ? " LIGHT" :
-	      (desc->weight >= (PANGO_WEIGHT_NORMAL + PANGO_WEIGHT_BOLD) / 2 &&
-	       desc->weight < (PANGO_WEIGHT_BOLD + PANGO_WEIGHT_ULTRABOLD) / 2 ? " BOLD" :
-	       (desc->weight >= (PANGO_WEIGHT_BOLD + PANGO_WEIGHT_ULTRABOLD) / 2 &&
-		desc->weight < (PANGO_WEIGHT_ULTRABOLD + PANGO_WEIGHT_HEAVY) / 2 ? " ULTRABOLD" :
+	   pango_font_get_family (desc),
+	   (style == PANGO_STYLE_NORMAL ? "" :
+	    (style == PANGO_STYLE_OBLIQUE ? " OBLIQUE" :
+	     (style == PANGO_STYLE_ITALIC ? " ITALIC" : " ???"))),
+	   (variant == PANGO_VARIANT_NORMAL ? "" :
+	    (variant == PANGO_VARIANT_SMALL_CAPS ? " SMALL CAPS" : "???")),
+	   (weight >= (PANGO_WEIGHT_LIGHT + PANGO_WEIGHT_NORMAL) / 2 &&
+	    weight < (PANGO_WEIGHT_NORMAL + PANGO_WEIGHT_BOLD) / 2 ? "" :
+	    (weight < (PANGO_WEIGHT_ULTRALIGHT + PANGO_WEIGHT_LIGHT) / 2 ? " ULTRALIGHT" :
+	     (weight >= (PANGO_WEIGHT_ULTRALIGHT + PANGO_WEIGHT_LIGHT) / 2 &&
+	      weight < (PANGO_WEIGHT_LIGHT + PANGO_WEIGHT_NORMAL) / 2 ? " LIGHT" :
+	      (weight >= (PANGO_WEIGHT_NORMAL + PANGO_WEIGHT_BOLD) / 2 &&
+	       weight < (PANGO_WEIGHT_BOLD + PANGO_WEIGHT_ULTRABOLD) / 2 ? " BOLD" :
+	       (weight >= (PANGO_WEIGHT_BOLD + PANGO_WEIGHT_ULTRABOLD) / 2 &&
+		weight < (PANGO_WEIGHT_ULTRABOLD + PANGO_WEIGHT_HEAVY) / 2 ? " ULTRABOLD" :
 		" HEAVY"))))),
-	   (desc->stretch == PANGO_STRETCH_ULTRA_CONDENSED ? " ULTRA CONDENSED" :
-	    (desc->stretch == PANGO_STRETCH_EXTRA_CONDENSED ? " EXTRA CONDENSED" :
-	     (desc->stretch == PANGO_STRETCH_CONDENSED ? " CONDENSED" :
-	      (desc->stretch == PANGO_STRETCH_SEMI_CONDENSED ? " SEMI CONDENSED" :
-	       (desc->stretch == PANGO_STRETCH_NORMAL ? "" :
-		(desc->stretch == PANGO_STRETCH_SEMI_EXPANDED ? " SEMI EXPANDED" :
-		 (desc->stretch == PANGO_STRETCH_EXPANDED ? " EXPANDED" :
-		  (desc->stretch == PANGO_STRETCH_EXTRA_EXPANDED ? " EXTRA EXPANDED" :
-		   (desc->stretch == PANGO_STRETCH_ULTRA_EXPANDED ? " ULTRA EXPANDED" : " ???"))))))))));
+	   (stretch == PANGO_STRETCH_ULTRA_CONDENSED ? " ULTRA CONDENSED" :
+	    (stretch == PANGO_STRETCH_EXTRA_CONDENSED ? " EXTRA CONDENSED" :
+	     (stretch == PANGO_STRETCH_CONDENSED ? " CONDENSED" :
+	      (stretch == PANGO_STRETCH_SEMI_CONDENSED ? " SEMI CONDENSED" :
+	       (stretch == PANGO_STRETCH_NORMAL ? "" :
+		(stretch == PANGO_STRETCH_SEMI_EXPANDED ? " SEMI EXPANDED" :
+		 (stretch == PANGO_STRETCH_EXPANDED ? " EXPANDED" :
+		  (stretch == PANGO_STRETCH_EXTRA_EXPANDED ? " EXTRA EXPANDED" :
+		   (stretch == PANGO_STRETCH_ULTRA_EXPANDED ? " ULTRA EXPANDED" : " ???"))))))))));
 }
 
 static void
@@ -836,29 +740,32 @@ pango_ft2_insert_face (PangoFT2FontMap *ft2fontmap,
 		       int              face_index)
 {
   PangoFontDescription *description;
+  char *family_name;
+  PangoStyle style;
+  PangoVariant variant;
+  PangoWeight weight;
+  PangoStretch stretch;
   GSList *tmp_list;
-  PangoFT2FamilyEntry *family_entry;
-  PangoFT2FontEntry *font_entry;
+  PangoFT2Family *family_entry;
+  PangoFT2Face *face_entry;
   PangoFT2OA *oa;
   FT_Open_Args *open_args;
 
-  description = g_new (PangoFontDescription, 1);
-  description->family_name = g_strdup (face->family_name);
-  g_strdown (description->family_name);
+  family_name = g_ascii_strdown (face->family_name);
 
   if (face->style_flags & FT_STYLE_FLAG_ITALIC)
-    description->style = PANGO_STYLE_ITALIC;
+    style = PANGO_STYLE_ITALIC;
   else
-    description->style = PANGO_STYLE_NORMAL;
+    style = PANGO_STYLE_NORMAL;
 
-  description->variant = PANGO_VARIANT_NORMAL;
+  variant = PANGO_VARIANT_NORMAL;
 
   if (face->style_flags & FT_STYLE_FLAG_BOLD)
-    description->weight = PANGO_WEIGHT_BOLD;
+    weight = PANGO_WEIGHT_BOLD;
   else
-    description->weight = PANGO_WEIGHT_NORMAL;
+    weight = PANGO_WEIGHT_NORMAL;
 
-  description->stretch = PANGO_STRETCH_NORMAL;
+  stretch = PANGO_STRETCH_NORMAL;
 
   if (face->style_name)
     {
@@ -867,36 +774,33 @@ pango_ft2_insert_face (PangoFT2FontMap *ft2fontmap,
 
       while (styles[i])
 	{
-	  (void) (pango_parse_style (styles[i], description, FALSE) ||
-		  pango_parse_variant (styles[i], description, FALSE) ||
-		  pango_parse_weight (styles[i], description, FALSE) ||
-		  pango_parse_stretch (styles[i], description, FALSE));
+	  (void) (pango_parse_style (styles[i], &style, FALSE) ||
+		  pango_parse_variant (styles[i], &variant, FALSE) ||
+		  pango_parse_weight (styles[i], &weight, FALSE) ||
+		  pango_parse_stretch (styles[i], &stretch, FALSE));
 	  i++;
 	}
       g_strfreev (styles);
     }
-
-  description->size = 0;
 
 #if 0
   PING ((""));
   pango_print_desc (description);
 #endif
 
-  family_entry = pango_ft2_get_family_entry (ft2fontmap, description->family_name);
+  family_entry = pango_ft2_get_family (ft2fontmap, family_name);
+  g_free (family_name);
 
   tmp_list = family_entry->font_entries;
   while (tmp_list)
     {
-      font_entry = tmp_list->data;
+      face_entry = tmp_list->data;
 
-      if (font_entry->description.style == description->style &&
-	  font_entry->description.variant == description->variant &&
-	  font_entry->description.weight == description->weight &&
-	  font_entry->description.stretch == description->stretch)
+      if (pango_font_description_get_style (face_entry->description) == style &&
+	  pango_font_description_get_weight (face_entry->description) == weight &&
+	  pango_font_description_get_stretch (face_entry->description) == stretch &&
+	  pango_font_description_get_variant (face_entry->description) == variant)
 	{
-	  g_free (description->family_name);
-	  g_free (description);
 #if 0
 	  PING ((" family and description matched (!)"));
 #endif
@@ -905,6 +809,13 @@ pango_ft2_insert_face (PangoFT2FontMap *ft2fontmap,
 
       tmp_list = tmp_list->next;
     }
+
+  description = pango_font_description_new ();
+  pango_font_description_set_family_static (description, family_entry->family_name);
+  pango_font_description_set_style (description, style);
+  pango_font_description_set_weight (description, weight);
+  pango_font_description_set_stretch (description, stretch);
+  pango_font_description_set_variant (description, variant);
 
   oa = g_hash_table_lookup (ft2fontmap->faces, description);
   if (!oa)
@@ -927,17 +838,16 @@ pango_ft2_insert_face (PangoFT2FontMap *ft2fontmap,
   g_print ("\n");
 #endif
 
-  font_entry = g_new (PangoFT2FontEntry, 1);
-  font_entry->description = *description;
-  font_entry->description.family_name = family_entry->family_name;
-  font_entry->cached_fonts = NULL;
-  font_entry->coverage = NULL;
-  font_entry->open_args = g_new (FT_Open_Args *, 1);
-  font_entry->open_args[0] = oa->open_args;
-  font_entry->face_indices = g_new (FT_Long, 1);
-  font_entry->face_indices[0] = oa->face_index;
-  font_entry->n_fonts = 1;
-  family_entry->font_entries = g_slist_append (family_entry->font_entries, font_entry);
+  face_entry = g_object_new (PANGO_FT2_TYPE_FACE, NULL);
+  face_entry->description = description;
+  face_entry->cached_fonts = NULL;
+  face_entry->coverage = NULL;
+  face_entry->open_args = g_new (FT_Open_Args *, 1);
+  face_entry->open_args[0] = oa->open_args;
+  face_entry->face_indices = g_new (FT_Long, 1);
+  face_entry->face_indices[0] = oa->face_index;
+  face_entry->n_fonts = 1;
+  family_entry->font_entries = g_slist_append (family_entry->font_entries, face_entry);
   ft2fontmap->n_fonts++;
 }
 
@@ -949,10 +859,208 @@ free_coverages_foreach (gpointer key,
   pango_coverage_unref (value);
 }
 
+PangoFT2FontCache *
+pango_ft2_font_map_get_font_cache (PangoFontMap *font_map)
+{
+  g_return_val_if_fail (font_map != NULL, NULL);
+  g_return_val_if_fail (PANGO_FT2_IS_FONT_MAP (font_map), NULL);
+
+  return PANGO_FT2_FONT_MAP (font_map)->font_cache;
+}
+
+void
+pango_ft2_fontmap_cache_add (PangoFontMap *fontmap,
+			     PangoFT2Font *ft2font)
+{
+  PangoFT2FontMap *ft2fontmap = PANGO_FT2_FONT_MAP (fontmap);
+
+  if (ft2fontmap->freed_fonts->length == MAX_FREED_FONTS)
+    {
+      PangoFT2Font *old_font = g_queue_pop_tail (ft2fontmap->freed_fonts);
+      g_object_unref (G_OBJECT (old_font));
+    }
+
+  g_object_ref (G_OBJECT (ft2font));
+  g_queue_push_head (ft2fontmap->freed_fonts, ft2font);
+  ft2font->in_cache = TRUE;
+}
+
+void
+pango_ft2_fontmap_cache_remove (PangoFontMap *fontmap,
+				PangoFT2Font *ft2font)
+{
+  PangoFT2FontMap *ft2fontmap = PANGO_FT2_FONT_MAP (fontmap);
+
+  GList *link = g_list_find (ft2fontmap->freed_fonts->head, ft2font);
+  if (link == ft2fontmap->freed_fonts->tail)
+    {
+      ft2fontmap->freed_fonts->tail = ft2fontmap->freed_fonts->tail->prev;
+      if (ft2fontmap->freed_fonts->tail)
+	ft2fontmap->freed_fonts->tail->next = NULL;
+    }
+  
+  ft2fontmap->freed_fonts->head = g_list_delete_link (ft2fontmap->freed_fonts->head, link);
+  ft2fontmap->freed_fonts->length--;
+  ft2font->in_cache = FALSE;
+
+  g_object_unref (G_OBJECT (ft2font));
+}
+
+static void
+pango_ft2_fontmap_cache_clear (PangoFT2FontMap *ft2fontmap)
+{
+  g_list_foreach (ft2fontmap->freed_fonts->head, (GFunc)g_object_unref, NULL);
+  g_list_free (ft2fontmap->freed_fonts->head);
+  ft2fontmap->freed_fonts->head = NULL;
+  ft2fontmap->freed_fonts->tail = NULL;
+  ft2fontmap->freed_fonts->length = 0;
+}
+
+static void
+pango_ft2_face_dump (int           indent,
+		     PangoFT2Face *face)
+{
+  int i;
+
+  printf ("%*sPangoFT2Face@%p:\n"
+	  "%*s  lfp:\n",
+	  indent, "", face,
+	  indent, "");
+  
+  for (i = 0; i < face->n_fonts; i++)
+    printf ("%*s    PangoFT2OpenArgs:%s:%ld\n",
+	    indent, "", face->open_args[i]->pathname, face->face_indices[i]);
+  
+  printf ("%*s  description:\n"
+	  "%*s    family_name: %s\n"
+	  "%*s    style: %d\n"
+	  "%*s    variant: %d\n"
+	  "%*s    weight: %d\n"
+	  "%*s    stretch: %d\n"
+	  "%*s  coverage: %p\n",
+	  indent, "",
+	  indent, "", pango_font_description_get_family (face->description),
+	  indent, "", pango_font_description_get_style (face->description),
+	  indent, "", pango_font_description_get_variant (face->description),
+	  indent, "", pango_font_description_get_weight (face->description),
+	  indent, "", pango_font_description_get_stretch (face->description),
+	  indent, "", face->coverage);
+}
+
+static void
+pango_ft2_family_entry_dump (int             indent,
+			     PangoFT2Family *entry)
+{
+  GSList *tmp_list = entry->font_entries;
+  
+  printf ("%*sPangoFT2Family@%p:\n"
+	  "%*s  family_name: %s\n"
+	  "%*s  font_entries:\n",
+	  indent, "", entry,
+	  indent, "", entry->family_name,
+	  indent, "");
+
+  while (tmp_list)
+    {
+      PangoFT2Face *face = tmp_list->data;
+      
+      pango_ft2_face_dump (indent + 2, face);
+      tmp_list = tmp_list->next;
+    }
+}
+
+static void
+dump_family (gpointer key,
+	     gpointer value,
+	     gpointer user_data)
+{
+  PangoFT2Family *entry = value;
+  int indent = (int) user_data;
+
+  pango_ft2_family_entry_dump (indent, entry);
+}
+
+void
+pango_ft2_fontmap_dump (int           indent,
+			PangoFontMap *fontmap)
+{
+  PangoFT2FontMap *ft2fontmap = PANGO_FT2_FONT_MAP (fontmap);
+
+  printf ("%*sPangoFT2FontMap@%p:\n",
+	  indent, "", ft2fontmap);
+  g_hash_table_foreach (ft2fontmap->families, dump_family, (gpointer) (indent + 2));
+}
+
+/* 
+ * PangoFT2Face
+ */
+
+static PangoFontDescription *
+pango_ft2_face_describe (PangoFontFace *face)
+{
+  PangoFT2Face *ft2face = PANGO_FT2_FACE (face);
+
+  return pango_font_description_copy (ft2face->description);
+}
+
+static const char *
+pango_ft2_face_get_face_name (PangoFontFace *face)
+{
+  PangoFT2Face *ft2face = PANGO_FT2_FACE (face);
+
+  if (!ft2face->face_name)
+    {
+      PangoFontDescription *desc = pango_font_face_describe (face);
+      
+      pango_font_description_unset_fields (desc,
+					   PANGO_FONT_MASK_FAMILY | PANGO_FONT_MASK_SIZE);
+
+      ft2face->face_name = pango_font_description_to_string (desc);
+      pango_font_description_free (desc);
+    }
+
+  return ft2face->face_name;
+}
+
+static void
+pango_ft2_face_class_init (PangoFontFaceClass *class)
+{
+  class->describe = pango_ft2_face_describe;
+  class->get_face_name = pango_ft2_face_get_face_name;
+}
+
+GType
+pango_ft2_face_get_type (void)
+{
+  static GType object_type = 0;
+
+  if (!object_type)
+    {
+      static const GTypeInfo object_info =
+      {
+        sizeof (PangoFontFaceClass),
+        (GBaseInitFunc) NULL,
+        (GBaseFinalizeFunc) NULL,
+        (GClassInitFunc) pango_ft2_face_class_init,
+        NULL,           /* class_finalize */
+        NULL,           /* class_data */
+        sizeof (PangoFT2Face),
+        0,              /* n_preallocs */
+        (GInstanceInitFunc) NULL,
+      };
+      
+      object_type = g_type_register_static (PANGO_TYPE_FONT_FACE,
+                                            "PangoFT2Face",
+                                            &object_info, 0);
+    }
+  
+  return object_type;
+}
+
 PangoCoverage *
-pango_ft2_font_entry_get_coverage (PangoFT2FontEntry *entry,
-				   PangoFont         *font,
-				   PangoLanguage     *language)
+pango_ft2_face_get_coverage (PangoFT2Face      *face,
+			     PangoFont         *font,
+			     PangoLanguage     *language)
 {
   guint32 ch;
   PangoMap *shape_map;
@@ -969,11 +1077,11 @@ pango_ft2_font_entry_get_coverage (PangoFT2FontEntry *entry,
   guchar *buf;
   size_t buflen;
 
-  if (entry)
-    if (entry->coverage)
+  if (face)
+    if (face->coverage)
       {
-	pango_coverage_ref (entry->coverage);
-	return entry->coverage;
+	pango_coverage_ref (face->coverage);
+	return face->coverage;
       }
 
   description = pango_font_describe (font);
@@ -1039,9 +1147,9 @@ pango_ft2_font_entry_get_coverage (PangoFT2FontEntry *entry,
 	}
     }
 
-  if (entry)
+  if (face)
     {
-      entry->coverage = result;
+      face->coverage = result;
       pango_coverage_ref (result);
     }
 
@@ -1051,140 +1159,78 @@ pango_ft2_font_entry_get_coverage (PangoFT2FontEntry *entry,
 }
 
 void
-pango_ft2_font_entry_remove (PangoFT2FontEntry *entry,
-			     PangoFont         *font)
+pango_ft2_face_remove (PangoFT2Face *face,
+		       PangoFont    *font)
 {
-  entry->cached_fonts = g_slist_remove (entry->cached_fonts, font);
+  face->cached_fonts = g_slist_remove (face->cached_fonts, font);
 }
 
-PangoFT2FontCache *
-pango_ft2_font_map_get_font_cache (PangoFontMap *font_map)
-{
-  g_return_val_if_fail (font_map != NULL, NULL);
-  g_return_val_if_fail (PANGO_FT2_IS_FONT_MAP (font_map), NULL);
-
-  return PANGO_FT2_FONT_MAP (font_map)->font_cache;
-}
-
-void
-pango_ft2_fontmap_cache_add (PangoFontMap *fontmap,
-			     PangoFT2Font *ft2font)
-{
-  PangoFT2FontMap *ft2fontmap = PANGO_FT2_FONT_MAP (fontmap);
-
-  if (ft2fontmap->freed_fonts->length == MAX_FREED_FONTS)
-    {
-      PangoFT2Font *old_font = g_queue_pop_tail (ft2fontmap->freed_fonts);
-      g_object_unref (G_OBJECT (old_font));
-    }
-
-  g_object_ref (G_OBJECT (ft2font));
-  g_queue_push_head (ft2fontmap->freed_fonts, ft2font);
-  ft2font->in_cache = TRUE;
-}
-
-void
-pango_ft2_fontmap_cache_remove (PangoFontMap *fontmap,
-				PangoFT2Font *ft2font)
-{
-  PangoFT2FontMap *ft2fontmap = PANGO_FT2_FONT_MAP (fontmap);
-
-  GList *link = g_list_find (ft2fontmap->freed_fonts->head, ft2font);
-  if (link == ft2fontmap->freed_fonts->tail)
-    {
-      ft2fontmap->freed_fonts->tail = ft2fontmap->freed_fonts->tail->prev;
-      if (ft2fontmap->freed_fonts->tail)
-	ft2fontmap->freed_fonts->tail->next = NULL;
-    }
-  
-  ft2fontmap->freed_fonts->head = g_list_delete_link (ft2fontmap->freed_fonts->head, link);
-  ft2fontmap->freed_fonts->length--;
-  ft2font->in_cache = FALSE;
-
-  g_object_unref (G_OBJECT (ft2font));
-}
+/*
+ * PangoXFontFamily
+ */
 
 static void
-pango_ft2_fontmap_cache_clear (PangoFT2FontMap *ft2fontmap)
+pango_ft2_family_list_faces (PangoFontFamily  *family,
+			   PangoFontFace  ***faces,
+			   int              *n_faces)
 {
-  g_list_foreach (ft2fontmap->freed_fonts->head, (GFunc)g_object_unref, NULL);
-  g_list_free (ft2fontmap->freed_fonts->head);
-  ft2fontmap->freed_fonts->head = NULL;
-  ft2fontmap->freed_fonts->tail = NULL;
-  ft2fontmap->freed_fonts->length = 0;
-}
+  PangoFT2Family *ft2family = PANGO_FT2_FAMILY (family);
 
-static void
-pango_ft2_font_entry_dump (int                indent,
-			   PangoFT2FontEntry *font_entry)
-{
-  int i;
-
-  printf ("%*sPangoFT2FontEntry@%p:\n"
-	  "%*s  lfp:\n",
-	  indent, "", font_entry,
-	  indent, "");
-  
-  for (i = 0; i < font_entry->n_fonts; i++)
-    printf ("%*s    PangoFT2OpenArgs:%s:%ld\n",
-	    indent, "", font_entry->open_args[i]->pathname, font_entry->face_indices[i]);
-  
-  printf ("%*s  description:\n"
-	  "%*s    family_name: %s\n"
-	  "%*s    style: %d\n"
-	  "%*s    variant: %d\n"
-	  "%*s    weight: %d\n"
-	  "%*s    stretch: %d\n"
-	  "%*s  coverage: %p\n",
-	  indent, "",
-	  indent, "", font_entry->description.family_name,
-	  indent, "", font_entry->description.style,
-	  indent, "", font_entry->description.variant,
-	  indent, "", font_entry->description.weight,
-	  indent, "", font_entry->description.stretch,
-	  indent, "", font_entry->coverage);
-}
-
-static void
-pango_ft2_family_entry_dump (int                  indent,
-			     PangoFT2FamilyEntry *entry)
-{
-  GSList *tmp_list = entry->font_entries;
-  
-  printf ("%*sPangoFT2FamilyEntry@%p:\n"
-	  "%*s  family_name: %s\n"
-	  "%*s  font_entries:\n",
-	  indent, "", entry,
-	  indent, "", entry->family_name,
-	  indent, "");
-
-  while (tmp_list)
+  *n_faces = g_slist_length (ft2family->font_entries);
+  if (faces)
     {
-      PangoFT2FontEntry *font_entry = tmp_list->data;
+      GSList *tmp_list;
+      int i = 0;
       
-      pango_ft2_font_entry_dump (indent + 2, font_entry);
-      tmp_list = tmp_list->next;
+      *faces = g_new (PangoFontFace *, *n_faces);
+
+      tmp_list = ft2family->font_entries;
+      while (tmp_list)
+	{
+	  (*faces)[i++] = tmp_list->data;
+	  tmp_list = tmp_list->next;
+	}
     }
 }
 
-static void
-dump_family (gpointer key,
-	     gpointer value,
-	     gpointer user_data)
+const char *
+pango_ft2_family_get_name (PangoFontFamily  *family)
 {
-  PangoFT2FamilyEntry *entry = value;
-  int indent = (int) user_data;
-
-  pango_ft2_family_entry_dump (indent, entry);
+  PangoFT2Family *ft2family = PANGO_FT2_FAMILY (family);
+  return ft2family->family_name;
 }
 
-void
-pango_ft2_fontmap_dump (int           indent,
-			PangoFontMap *fontmap)
+static void
+pango_ft2_family_class_init (PangoFontFamilyClass *class)
 {
-  PangoFT2FontMap *ft2fontmap = PANGO_FT2_FONT_MAP (fontmap);
+  class->list_faces = pango_ft2_family_list_faces;
+  class->get_name = pango_ft2_family_get_name;
+}
 
-  printf ("%*sPangoFT2FontMap@%p:\n",
-	  indent, "", ft2fontmap);
-  g_hash_table_foreach (ft2fontmap->families, dump_family, (gpointer) (indent + 2));
+GType
+pango_ft2_family_get_type (void)
+{
+  static GType object_type = 0;
+
+  if (!object_type)
+    {
+      static const GTypeInfo object_info =
+      {
+        sizeof (PangoFontFamilyClass),
+        (GBaseInitFunc) NULL,
+        (GBaseFinalizeFunc) NULL,
+        (GClassInitFunc) pango_ft2_family_class_init,
+        NULL,           /* class_finalize */
+        NULL,           /* class_data */
+        sizeof (PangoFT2Family),
+        0,              /* n_preallocs */
+        (GInstanceInitFunc) NULL,
+      };
+      
+      object_type = g_type_register_static (PANGO_TYPE_FONT_FAMILY,
+                                            "PangoFT2Family",
+                                            &object_info, 0);
+    }
+  
+  return object_type;
 }

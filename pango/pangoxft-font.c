@@ -54,9 +54,8 @@ static void                  pango_xft_font_get_glyph_extents (PangoFont        
 							       PangoGlyph        glyph,
 							       PangoRectangle   *ink_rect,
 							       PangoRectangle   *logical_rect);
-static void                  pango_xft_font_get_metrics       (PangoFont        *font,
-							       PangoLanguage    *language,
-							       PangoFontMetrics *metrics);
+static PangoFontMetrics *    pango_xft_font_get_metrics       (PangoFont        *font,
+							       PangoLanguage    *language);
 
 
 GType
@@ -143,7 +142,7 @@ get_mini_font (PangoFont *font)
   if (!xfont->mini_font)
     {
       Display *display;
-      PangoFontDescription desc;
+      PangoFontDescription *desc = pango_font_description_new ();
       int i;
       int width = 0, height = 0;
       XGlyphInfo extents;
@@ -151,15 +150,14 @@ get_mini_font (PangoFont *font)
       FT_Face face;
       
       _pango_xft_font_map_get_info (xfont->fontmap, &display, NULL);
+
+      pango_font_description_set_family_static (desc, "monospace");
+      pango_font_description_set_size (desc,
+				       0.5 * pango_font_description_get_size (xfont->description));
       
-      desc.family_name = "monospace";
-      desc.style = PANGO_STYLE_NORMAL;
-      desc.variant = PANGO_VARIANT_NORMAL;
-      desc.weight = PANGO_WEIGHT_NORMAL;
+      xfont->mini_font = pango_font_map_load_font (xfont->fontmap, desc);
+      pango_font_description_free (desc);
       
-      desc.size = 0.5 * xfont->description->size;
-      
-      xfont->mini_font = pango_font_map_load_font (xfont->fontmap, &desc);
       mini_xft = ((PangoXftFont *)xfont->mini_font)->xft_font;
       face = pango_xft_font_get_face (xfont->mini_font);
       
@@ -280,17 +278,19 @@ pango_xft_render (XftDraw          *draw,
     }
 }
 
-static void
+static PangoFontMetrics *
 pango_xft_font_get_metrics (PangoFont        *font,
-			    PangoLanguage    *language,
-			    PangoFontMetrics *metrics)
+			    PangoLanguage    *language)
 {
   PangoXftFont *xfont = (PangoXftFont *)font;
+  PangoFontMetrics *metrics = pango_font_metrics_new ();
 
   metrics->ascent = PANGO_SCALE * xfont->xft_font->ascent;
   metrics->descent = PANGO_SCALE * xfont->xft_font->descent;
   metrics->approximate_digit_width = PANGO_SCALE * xfont->xft_font->max_advance_width;
   metrics->approximate_char_width = PANGO_SCALE * xfont->xft_font->max_advance_width;
+
+  return metrics;
 }
 
 static void
@@ -344,6 +344,7 @@ pango_xft_font_get_coverage (PangoFont     *font,
 			     PangoLanguage *language)
 {
   PangoXftFont *xfont = (PangoXftFont *)font;
+  const gchar *family = pango_font_description_get_family (xfont->description);
   FT_Face face;
   PangoCoverage *coverage;
   Display *display;
@@ -351,8 +352,7 @@ pango_xft_font_get_coverage (PangoFont     *font,
   
   _pango_xft_font_map_get_info (xfont->fontmap, &display, NULL);
   
-  coverage = _pango_xft_font_map_get_coverage (xfont->fontmap,
-					       xfont->description->family_name);
+  coverage = _pango_xft_font_map_get_coverage (xfont->fontmap, family);
 
   if (coverage)
     return pango_coverage_ref (coverage);
@@ -370,7 +370,7 @@ pango_xft_font_get_coverage (PangoFont     *font,
 	pango_coverage_set (coverage, i, PANGO_COVERAGE_EXACT);
     }
 
-  _pango_xft_font_map_set_coverage (xfont->fontmap, xfont->description->family_name, coverage);
+  _pango_xft_font_map_set_coverage (xfont->fontmap, family, coverage);
       
   return coverage;
 }

@@ -18,6 +18,8 @@ SUBDIRS = $(OPENTYPE_SUBDIR) $(FRIBIDI_SUBDIR)
 DIST_SUBDIRS = mini-fribidi opentype
 
 INCLUDES = 					\
+	-DPANGO_ENABLE_BACKEND			\
+	-DPANGO_ENABLE_ENGINE			\
 	-DSYSCONFDIR=\"$(sysconfdir)\" 		\
 	-DLIBDIR=\"$(libdir)\" 			\
 	$(X_CFLAGS)				\

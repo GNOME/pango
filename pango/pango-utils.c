@@ -648,9 +648,9 @@ pango_get_lib_subdirectory (void)
 }
 
 gboolean
-pango_parse_style (const char           *str,
-		   PangoFontDescription *desc,
-		   gboolean		 warn)
+pango_parse_style (const char *str,
+		   PangoStyle *style,
+		   gboolean    warn)
 {
   if (*str == '\0')
     return FALSE;
@@ -661,21 +661,21 @@ pango_parse_style (const char           *str,
     case 'N':
       if (g_strcasecmp (str, "normal") == 0)
 	{
-	  desc->style = PANGO_STYLE_NORMAL;
+	  *style = PANGO_STYLE_NORMAL;
 	  return TRUE;
 	}
       break;
     case 'i':
       if (g_strcasecmp (str, "italic") == 0)
 	{
-	  desc->style = PANGO_STYLE_ITALIC;
+	  *style = PANGO_STYLE_ITALIC;
 	  return TRUE;
 	}
       break;
     case 'o':
       if (g_strcasecmp (str, "oblique") == 0)
 	{
-	  desc->style = PANGO_STYLE_OBLIQUE;
+	  *style = PANGO_STYLE_OBLIQUE;
 	  return TRUE;
 	}
       break;
@@ -687,9 +687,9 @@ pango_parse_style (const char           *str,
 }
 
 gboolean
-pango_parse_variant (const char           *str,
-		     PangoFontDescription *desc,
-		     gboolean		   warn)
+pango_parse_variant (const char   *str,
+		     PangoVariant *variant,
+		     gboolean	   warn)
 {
   if (*str == '\0')
     return FALSE;
@@ -700,7 +700,7 @@ pango_parse_variant (const char           *str,
     case 'N':
       if (g_strcasecmp (str, "normal") == 0)
 	{
-	  desc->variant = PANGO_VARIANT_NORMAL;
+	  *variant = PANGO_VARIANT_NORMAL;
 	  return TRUE;
 	}
       break;
@@ -709,7 +709,7 @@ pango_parse_variant (const char           *str,
       if (g_strcasecmp (str, "small_caps") == 0 ||
 	  g_strcasecmp (str, "smallcaps") == 0)
 	{
-	  desc->variant = PANGO_VARIANT_SMALL_CAPS;
+	  *variant = PANGO_VARIANT_SMALL_CAPS;
 	  return TRUE;
 	}
       break;
@@ -721,9 +721,9 @@ pango_parse_variant (const char           *str,
 }
 
 gboolean
-pango_parse_weight (const char           *str,
-		    PangoFontDescription *desc,
-		    gboolean		  warn)
+pango_parse_weight (const char  *str,
+		    PangoWeight *weight,
+		    gboolean     warn)
 {
   if (*str == '\0')
     return FALSE;
@@ -734,7 +734,7 @@ pango_parse_weight (const char           *str,
     case 'B':
       if (g_strcasecmp (str, "bold") == 0)
 	{
-	  desc->weight = PANGO_WEIGHT_BOLD;
+	  *weight = PANGO_WEIGHT_BOLD;
 	  return TRUE;
 	}
       break;
@@ -742,7 +742,7 @@ pango_parse_weight (const char           *str,
     case 'H':
       if (g_strcasecmp (str, "heavy") == 0)
 	{
-	  desc->weight = PANGO_WEIGHT_HEAVY;
+	  *weight = PANGO_WEIGHT_HEAVY;
 	  return TRUE;
 	}
       break;
@@ -750,7 +750,7 @@ pango_parse_weight (const char           *str,
     case 'L':
       if (g_strcasecmp (str, "light") == 0)
 	{
-	  desc->weight = PANGO_WEIGHT_LIGHT;
+	  *weight = PANGO_WEIGHT_LIGHT;
 	  return TRUE;
 	}
       break;
@@ -758,7 +758,7 @@ pango_parse_weight (const char           *str,
     case 'N':
       if (g_strcasecmp (str, "normal") == 0)
 	{
-	  desc->weight = PANGO_WEIGHT_NORMAL;
+	  *weight = PANGO_WEIGHT_NORMAL;
 	  return TRUE;
 	}
       break;
@@ -766,12 +766,12 @@ pango_parse_weight (const char           *str,
     case 'U':
       if (g_strcasecmp (str, "ultralight") == 0)
 	{
-	  desc->weight = PANGO_WEIGHT_ULTRALIGHT;
+	  *weight = PANGO_WEIGHT_ULTRALIGHT;
 	  return TRUE;
 	}
       else if (g_strcasecmp (str, "ultrabold") == 0)
 	{
-	  desc->weight = PANGO_WEIGHT_ULTRABOLD;
+	  *weight = PANGO_WEIGHT_ULTRABOLD;
 	  return TRUE;
 	}
       break;
@@ -788,7 +788,7 @@ pango_parse_weight (const char           *str,
       {
 	char *end;
 
-	desc->weight = strtol (str, &end, 0);
+	*weight = strtol (str, &end, 0);
 	if (*end != '\0')
 	  {
 	    if (warn)
@@ -805,9 +805,9 @@ pango_parse_weight (const char           *str,
 }
 
 gboolean
-pango_parse_stretch (const char            *str,
-		     PangoFontDescription *desc,
-		     gboolean		   warn)
+pango_parse_stretch (const char   *str,
+		     PangoStretch *stretch,
+		     gboolean	   warn)
 {
   if (*str == '\0')
     return FALSE;
@@ -818,7 +818,7 @@ pango_parse_stretch (const char            *str,
     case 'C':
       if (g_strcasecmp (str, "condensed") == 0)
 	{
-	  desc->stretch = PANGO_STRETCH_CONDENSED;
+	  *stretch = PANGO_STRETCH_CONDENSED;
 	  return TRUE;
 	}
       break;
@@ -827,18 +827,18 @@ pango_parse_stretch (const char            *str,
       if (g_strcasecmp (str, "extra_condensed") == 0 ||
 	  g_strcasecmp (str, "extracondensed") == 0)
 	{
-	  desc->stretch = PANGO_STRETCH_EXTRA_CONDENSED;
+	  *stretch = PANGO_STRETCH_EXTRA_CONDENSED;
 	  return TRUE;
 	}
      if (g_strcasecmp (str, "extra_expanded") == 0 ||
 	 g_strcasecmp (str, "extraexpanded") == 0)
 	{
-	  desc->stretch = PANGO_STRETCH_EXTRA_EXPANDED;
+	  *stretch = PANGO_STRETCH_EXTRA_EXPANDED;
 	  return TRUE;
 	}
       if (g_strcasecmp (str, "expanded") == 0)
 	{
-	  desc->stretch = PANGO_STRETCH_EXPANDED;
+	  *stretch = PANGO_STRETCH_EXPANDED;
 	  return TRUE;
 	}
       break;
@@ -846,7 +846,7 @@ pango_parse_stretch (const char            *str,
     case 'N':
       if (g_strcasecmp (str, "normal") == 0)
 	{
-	  desc->stretch = PANGO_STRETCH_NORMAL;
+	  *stretch = PANGO_STRETCH_NORMAL;
 	  return TRUE;
 	}
       break;
@@ -855,13 +855,13 @@ pango_parse_stretch (const char            *str,
       if (g_strcasecmp (str, "semi_condensed") == 0 ||
 	  g_strcasecmp (str, "semicondensed") == 0)
 	{
-	  desc->stretch = PANGO_STRETCH_SEMI_CONDENSED;
+	  *stretch = PANGO_STRETCH_SEMI_CONDENSED;
 	  return TRUE;
 	}
       if (g_strcasecmp (str, "semi_expanded") == 0 ||
 	  g_strcasecmp (str, "semiexpanded") == 0)
 	{
-	  desc->stretch = PANGO_STRETCH_SEMI_EXPANDED;
+	  *stretch = PANGO_STRETCH_SEMI_EXPANDED;
 	  return TRUE;
 	}
       break;
@@ -870,13 +870,13 @@ pango_parse_stretch (const char            *str,
       if (g_strcasecmp (str, "ultra_condensed") == 0 ||
 	  g_strcasecmp (str, "ultracondensed") == 0)
 	{
-	  desc->stretch = PANGO_STRETCH_ULTRA_CONDENSED;
+	  *stretch = PANGO_STRETCH_ULTRA_CONDENSED;
 	  return TRUE;
 	}
       if (g_strcasecmp (str, "ultra_expanded") == 0 ||
 	  g_strcasecmp (str, "ultraexpanded") == 0)
 	{
-	  desc->variant = PANGO_STRETCH_ULTRA_EXPANDED;
+	  *stretch = PANGO_STRETCH_ULTRA_EXPANDED;
 	  return TRUE;
 	}
       break;
@@ -1016,6 +1016,8 @@ pango_language_from_string (const char *language)
  * in the list if the range is '*', the range is exactly the tag,
  * or the range is a prefix of the tag, and the character after the
  * tag is '-'.
+ *
+ * Returns: %TRUE if a match was found.
  **/
 gboolean
 pango_language_matches (PangoLanguage *language,

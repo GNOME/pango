@@ -505,7 +505,7 @@ pango_attr_font_desc_copy (const PangoAttribute *attr)
 {
   const PangoAttrFontDesc *desc_attr = (const PangoAttrFontDesc *)attr;
   
-  return pango_attr_font_desc_new (&desc_attr->desc);
+  return pango_attr_font_desc_new (desc_attr->desc);
 }
 
 static void
@@ -513,7 +513,7 @@ pango_attr_font_desc_destroy (PangoAttribute *attr)
 {
   PangoAttrFontDesc *desc_attr = (PangoAttrFontDesc *)attr;
 
-  g_free (desc_attr->desc.family_name);
+  pango_font_description_free (desc_attr->desc);
   g_free (attr);
 }
 
@@ -524,7 +524,7 @@ pango_attr_font_desc_equal (const PangoAttribute *attr1,
   const PangoAttrFontDesc *desc_attr1 = (const PangoAttrFontDesc *)attr1;
   const PangoAttrFontDesc *desc_attr2 = (const PangoAttrFontDesc *)attr2;
   
-  return pango_font_description_equal (&desc_attr1->desc, &desc_attr2->desc);
+  return pango_font_description_equal (desc_attr1->desc, desc_attr2->desc);
 }
 
 /**
@@ -549,8 +549,7 @@ pango_attr_font_desc_new (const PangoFontDescription *desc)
 
   PangoAttrFontDesc *result = g_new (PangoAttrFontDesc, 1);
   result->attr.klass = &klass;
-  result->desc = *desc;
-  result->desc.family_name = g_strdup (desc->family_name);
+  result->desc = pango_font_description_copy (desc);
 
   return (PangoAttribute *)result;
 }
@@ -1363,15 +1362,13 @@ pango_attr_iterator_get (PangoAttrIterator *iterator,
 /**
  * pango_attr_iterator_get_font:
  * @iterator: a #PangoAttrIterator
- * @base: the default values to use for fields not currently overridden.
- * @current: a #PangoFontDescription to fill in with the current values. This
- *           #PangoFontDescription structure cannot be freed with
- *           pango_font_description_free. The @family member of this structure
- *           will be filled in with a string that is either shared with
- *           an attribute in the #PangoAttrList associated with the structure,
- *           or with @base. If you want to save this value, you should
- *           allocate it on the stack and then use pango_font_description_copy().
- * @language: if non-%NULl, location to store language tag for item, or %NULL
+ * @desc: a #PangoFontDescription to fill in with the current values.
+ *        The family name in this structure will be set using
+ *        pango_font_description_set_family_static using values from
+ *        an attribute in the #PangoAttrList associated with the iterator,
+ *        so if you plan to keep it around, you must call:
+ *        pango_font_description_set_family (desc, pango_font_description_get_family (desc)).
+ * @language: if non-%NULL, location to store language tag for item, or %NULL
  *            if non is found.
  * @extra_attrs: if non-%NULL, location in which to store a list of non-font
  *           attributes at the the current position; only the highest priority
@@ -1383,28 +1380,19 @@ pango_attr_iterator_get (PangoAttrIterator *iterator,
  **/
 void
 pango_attr_iterator_get_font (PangoAttrIterator     *iterator,
-			      PangoFontDescription  *base,
-			      PangoFontDescription  *current,
+			      PangoFontDescription  *desc,
 			      PangoLanguage        **language,
 			      GSList               **extra_attrs)
 {
   GList *tmp_list1;
   GSList *tmp_list2;
 
-  gboolean have_family = FALSE;
-  gboolean have_style = FALSE;
-  gboolean have_variant = FALSE;
-  gboolean have_weight = FALSE;
-  gboolean have_stretch = FALSE;
-  gboolean have_size = FALSE;
+  PangoFontMask mask = 0;
   gboolean have_language = FALSE;
 
   g_return_if_fail (iterator != NULL);
-  g_return_if_fail (base != NULL);
-  g_return_if_fail (current != NULL);
+  g_return_if_fail (desc != NULL);
   
-  *current = *base;
-
   if (language)
     *language = NULL;
   
@@ -1421,88 +1409,62 @@ pango_attr_iterator_get_font (PangoAttrIterator     *iterator,
 	{
 	case PANGO_ATTR_FONT_DESC:
 	  {
-	  if (!have_family)
-	    {
-	      have_family = TRUE;
-	      current->family_name = ((PangoAttrFontDesc *)attr)->desc.family_name;
-	    }
-	  if (!have_style)
-	    {
-	      have_style = TRUE;
-	      current->style = ((PangoAttrFontDesc *)attr)->desc.style;
-	    }
-	  if (!have_variant)
-	    {
-	      have_variant = TRUE;
-	      current->variant = ((PangoAttrFontDesc *)attr)->desc.variant;
-	    }
-	  if (!have_weight)
-	    {
-	      have_weight = TRUE;
-	      current->weight = ((PangoAttrFontDesc *)attr)->desc.weight;
-	    }
-	  if (!have_stretch)
-	    {
-	      have_stretch = TRUE;
-	      current->stretch = ((PangoAttrFontDesc *)attr)->desc.stretch;
-	    }
-	  if (!have_size)
-	    {
-	      have_size = TRUE;
-	      current->size = ((PangoAttrFontDesc *)attr)->desc.size;
-	    }
+	    PangoFontMask new_mask = pango_font_description_get_set_fields (((PangoAttrFontDesc *)attr)->desc) & ~mask;
+	    pango_font_description_unset_fields (desc, new_mask);
+	    pango_font_description_merge_static (desc, ((PangoAttrFontDesc *)attr)->desc, FALSE);
+	    
+	    break;
           }
-          break;
-          
 	case PANGO_ATTR_FAMILY:
-	  if (!have_family)
+	  if (!(mask & PANGO_ATTR_FAMILY))
 	    {
-	      have_family = TRUE;
-	      current->family_name = ((PangoAttrString *)attr)->value;
+	      mask |= PANGO_ATTR_FAMILY;
+	      pango_font_description_set_family (desc, ((PangoAttrString *)attr)->value);
 	    }
 	  break;
 	case PANGO_ATTR_STYLE:
-	  if (!have_style)
+	  if (!(mask & PANGO_ATTR_STYLE))
 	    {
-	      have_style = TRUE;
-	      current->style = ((PangoAttrInt *)attr)->value;
+	      mask |= PANGO_ATTR_STYLE;
+	      pango_font_description_set_style (desc, ((PangoAttrInt *)attr)->value);
 	    }
 	  break;
 	case PANGO_ATTR_VARIANT:
-	  if (!have_variant)
+	  if (!(mask & PANGO_ATTR_VARIANT))
 	    {
-	      have_variant = TRUE;
-	      current->variant = ((PangoAttrInt *)attr)->value;
+	      mask |= PANGO_ATTR_VARIANT;
+	      pango_font_description_set_variant (desc, ((PangoAttrInt *)attr)->value);
 	    }
 	  break;
 	case PANGO_ATTR_WEIGHT:
-	  if (!have_weight)
+	  if (!(mask & PANGO_ATTR_WEIGHT))
 	    {
-	      have_weight = TRUE;
-	      current->weight = ((PangoAttrInt *)attr)->value;
+	      mask |= PANGO_ATTR_WEIGHT;
+	      pango_font_description_set_weight (desc, ((PangoAttrInt *)attr)->value);
 	    }
 	  break;
 	case PANGO_ATTR_STRETCH:
-	  if (!have_stretch)
+	  if (!(mask & PANGO_ATTR_STRETCH))
 	    {
-	      have_stretch = TRUE;
-	      current->stretch = ((PangoAttrInt *)attr)->value;
+	      mask |= PANGO_ATTR_STRETCH;
+	      pango_font_description_set_stretch (desc, ((PangoAttrInt *)attr)->value);
 	    }
 	  break;
 	case PANGO_ATTR_SIZE:
-	  if (!have_size)
+	  if (!(mask & PANGO_ATTR_SIZE))
 	    {
-	      have_size = TRUE;
-	      current->size = ((PangoAttrInt *)attr)->value;
+	      mask |= PANGO_ATTR_SIZE;
+	      pango_font_description_set_size (desc, ((PangoAttrInt *)attr)->value);
 	    }
 	  break;
         case PANGO_ATTR_SCALE:
-          if (!have_size)
+	  if (!(mask & PANGO_ATTR_SIZE))
 	    {
-	      have_size = TRUE;
-	      current->size = ((PangoAttrFloat *)attr)->value * base->size;
+	      mask |= PANGO_ATTR_SIZE;
+	      pango_font_description_set_size (desc,
+					       ((PangoAttrFloat *)attr)->value * pango_font_description_get_size (desc));
 	    }
-          break;
+	  break;
 	case PANGO_ATTR_LANGUAGE:
 	  if (language)
 	    {

@@ -26,9 +26,7 @@
 #include <pango/pango-context.h>
 #include <pango/pango-ot.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
+G_BEGIN_DECLS
 
 #include <X11/Xlib.h>
 #include <X11/Xft/Xft.h>
@@ -54,16 +52,15 @@ GType      pango_xft_font_get_type (void);
 /* For shape engines
  */
 
+#ifdef PANGO_ENABLE_ENGINE
 XftFont *     pango_xft_font_get_font          (PangoFont *font);
 FT_Face       pango_xft_font_get_face          (PangoFont *font);
-PangoOTInfo * pango_xft_font_get_ot_info       (PangoFont *font);
 Display *     pango_xft_font_get_display       (PangoFont *font);
 PangoGlyph    pango_xft_font_get_unknown_glyph (PangoFont *font,
 						gunichar   wc);
+PangoOTInfo * pango_xft_font_get_ot_info       (PangoFont *font);
+#endif /* PANGO_ENABLE_ENGINE */
 
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
-
+G_END_DECLS
 
 #endif /* __PANGOXFT_H__ */

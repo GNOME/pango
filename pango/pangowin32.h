@@ -27,9 +27,7 @@
 #include <glib.h>
 #include <pango/pango.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
+G_BEGIN_DECLS
 
 #define STRICT
 #include <windows.h>
@@ -84,9 +82,6 @@ PangoWin32FontCache *pango_win32_font_map_get_font_cache (PangoFontMap       *fo
 
 LOGFONT             *pango_win32_font_logfont            (PangoFont          *font);
 
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
-
+G_END_DECLS
 
 #endif /* __PANGOWIN32_H__ */

@@ -27,9 +27,7 @@
 #include <pango/pango-glyph.h>
 #include <pango/pango-tabs.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
+G_BEGIN_DECLS
 
 typedef struct _PangoLayout      PangoLayout;
 typedef struct _PangoLayoutClass PangoLayoutClass;
@@ -230,9 +228,7 @@ void pango_layout_iter_get_layout_extents  (PangoLayoutIter *iter,
                                             PangoRectangle  *logical_rect);
 int  pango_layout_iter_get_baseline        (PangoLayoutIter *iter);
 
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+G_END_DECLS
 
 #endif /* __PANGO_LAYOUT_H__ */
 

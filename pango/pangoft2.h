@@ -25,9 +25,7 @@
 
 #include <pango/pango-layout.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
+G_BEGIN_DECLS
 
 #include <freetype/freetype.h>
 
@@ -101,9 +99,6 @@ void               pango_ft2_font_subfont_open_args  (PangoFont         *font,
 void     pango_ft2_fontmap_dump (int           indent,
 				 PangoFontMap *fontmap);
 
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
-
+G_END_DECLS
 
 #endif /* __PANGOFT2_H__ */

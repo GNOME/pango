@@ -67,9 +67,8 @@ static void                  pango_win32_font_get_glyph_extents (PangoFont      
 								 PangoGlyph        glyph,
 								 PangoRectangle   *ink_rect,
 								 PangoRectangle   *logical_rect);
-static void                  pango_win32_font_get_metrics       (PangoFont        *font,
-								 PangoLanguage    *lang,
-								 PangoFontMetrics *metrics);
+static PangoFontMetrics *    pango_win32_font_get_metrics       (PangoFont        *font,
+								 PangoLanguage    *lang);
 static HFONT                 pango_win32_get_hfont              (PangoFont        *font);
 static void                  pango_win32_get_item_properties    (PangoItem        *item,
 								 PangoUnderline   *uline,
@@ -339,16 +338,18 @@ pango_win32_font_get_glyph_extents (PangoFont      *font,
     *logical_rect = info->logical_rect;
 }
 
-static void
+static PangoFontMetrics *
 pango_win32_font_get_metrics (PangoFont        *font,
-			      PangoLanguage    *language,
-			      PangoFontMetrics *metrics)
+			      PangoLanguage    *language)
 {
   HFONT hfont;
   TEXTMETRIC tm;
   PangoLayout *layout;
   PangoRectangle extents;
   PangoContext *context;
+  PangoFontMetrics *metrics;
+
+  metrics = pango_font_metrics_new ();
   
   metrics->ascent = 0;
   metrics->descent = 0;
@@ -385,7 +386,7 @@ pango_win32_font_get_metrics (PangoFont        *font,
       g_object_unref (G_OBJECT (context));
     }
 
-  return;
+  return metrics;
 }
 
 

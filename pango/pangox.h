@@ -26,9 +26,7 @@
 #include <glib.h>
 #include <pango/pango-layout.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
+G_BEGIN_DECLS
 
 #include <X11/Xlib.h>
 
@@ -83,6 +81,10 @@ gboolean   pango_x_has_glyph         (PangoFont      *font,
 				      PangoGlyph      glyph);
 PangoGlyph pango_x_get_unknown_glyph (PangoFont      *font);
 
+#ifdef PANGO_ENABLE_ENGINE
+PangoGlyph pango_x_font_get_unknown_glyph (PangoFont    *font,
+					   gunichar      wc);
+#endif /* PANGO_ENABLE_ENGINE */
 
 /* API for libraries that want to use PangoX mixed with classic X fonts.
  */
@@ -120,10 +122,6 @@ gboolean pango_x_apply_ligatures (PangoFont     *font,
                                   int           *n_glyphs,
                                   int          **clusters);
 
-
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
-
+G_END_DECLS
 
 #endif /* __PANGOX_H__ */

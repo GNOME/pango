@@ -25,9 +25,7 @@
 #include <pango/pango-types.h>
 #include <pango/pango-item.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
+G_BEGIN_DECLS
 
 typedef struct _PangoAnalysis PangoAnalysis;
 typedef struct _PangoItem PangoItem;
@@ -57,8 +55,6 @@ PangoItem *pango_item_split (PangoItem  *orig,
                              int         split_index,
                              int         split_offset);
 
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+G_END_DECLS
 
 #endif /* __PANGO_ITEM_H__ */

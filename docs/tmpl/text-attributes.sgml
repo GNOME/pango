@@ -87,6 +87,14 @@ a string value.
 @attr: the common portion of the attribute
 @value: the value of the attribute
 
+<!-- ##### STRUCT PangoAttrLanguage ##### -->
+<para>
+
+</para>
+
+@attr: 
+@value: 
+
 <!-- ##### STRUCT PangoAttrColor ##### -->
 <para>
 The #PangoAttrColor structure is used to represent attributes that
@@ -180,6 +188,15 @@ sets all aspects of the font description at once.
 </para>
 
 @attr: 
+
+
+<!-- ##### FUNCTION pango_attr_language_new ##### -->
+<para>
+
+</para>
+
+@language: 
+@Returns: 
 
 
 <!-- ##### FUNCTION pango_attr_family_new ##### -->
@@ -410,12 +427,62 @@ of underlining.
 @color: 
 
 
+<!-- ##### FUNCTION pango_color_parse ##### -->
+<para>
+
+</para>
+
+@color: 
+@spec: 
+@Returns: 
+
+
 <!-- ##### FUNCTION pango_color_copy ##### -->
 <para>
 
 </para>
 
 @src: 
+@Returns: 
+
+
+<!-- ##### STRUCT PangoLanguage ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### MACRO PANGO_TYPE_LANGUAGE ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### FUNCTION pango_language_from_string ##### -->
+<para>
+
+</para>
+
+@language: 
+@Returns: 
+
+
+<!-- ##### MACRO pango_language_to_string ##### -->
+<para>
+
+</para>
+
+@language: 
+
+
+<!-- ##### FUNCTION pango_language_matches ##### -->
+<para>
+
+</para>
+
+@language: 
+@range_list: 
 @Returns: 
 
 
@@ -578,11 +645,12 @@ attributes currently in effect can be queried.
 </para>
 
 @iterator: 
-@base: 
-@current: 
+@desc: 
 @language: 
 @extra_attrs: 
 <!-- # Unused Parameters # -->
+@base: 
+@current: 
 @lang: 
 
 

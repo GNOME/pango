@@ -239,11 +239,27 @@ accessible fields
 @glyphs: 
 @log_clusters: 
 
+<!-- ##### MACRO PANGO_TYPE_GLYPH_STRING ##### -->
+<para>
+
+</para>
+
+
+
 <!-- ##### FUNCTION pango_glyph_string_new ##### -->
 <para>
 
 </para>
 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_glyph_string_copy ##### -->
+<para>
+
+</para>
+
+@string: 
 @Returns: 
 
 

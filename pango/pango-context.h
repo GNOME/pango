@@ -26,9 +26,7 @@
 #include <pango/pango-fontmap.h>
 #include <pango/pango-attributes.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
+G_BEGIN_DECLS
 
 /* Sort of like a GC - application set information about how
  * to handle scripts
@@ -49,23 +47,22 @@ typedef struct _PangoContextClass PangoContextClass;
  */
 
 GType         pango_context_get_type      (void) G_GNUC_CONST;
+
+#ifdef PANGO_ENABLE_BACKEND
 PangoContext *pango_context_new           (void);
 void          pango_context_add_font_map  (PangoContext                 *context,
 					   PangoFontMap                 *font_map);
-void          pango_context_list_fonts    (PangoContext                 *context,
-					   const char                   *family,
-					   PangoFontDescription       ***descs,
-					   int                          *n_descs);
+#endif /* PANGO_ENABLE_BACKEND */
+
 void          pango_context_list_families (PangoContext                 *context,
-					   gchar                      ***families,
+					   PangoFontFamily            ***families,
 					   int                          *n_families);
 PangoFont *   pango_context_load_font     (PangoContext                 *context,
 					   const PangoFontDescription   *desc);
-void          pango_context_get_metrics   (PangoContext                 *context,
-					   const PangoFontDescription   *desc,
-					   PangoLanguage                *language,
-					   PangoFontMetrics             *metrics);
 
+PangoFontMetrics *pango_context_get_metrics   (PangoContext                 *context,
+					       const PangoFontDescription   *desc,
+					       PangoLanguage                *language);
 
 void                      pango_context_set_font_description (PangoContext               *context,
 							      const PangoFontDescription *desc);
@@ -89,8 +86,6 @@ GList *pango_itemize (PangoContext      *context,
                       PangoAttrIterator *cached_iter);
 
 
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+G_END_DECLS
 
 #endif /* __PANGO_CONTEXT_H__ */

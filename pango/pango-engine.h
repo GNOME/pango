@@ -27,9 +27,9 @@
 #include <pango/pango-font.h>
 #include <pango/pango-glyph.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
+G_BEGIN_DECLS
+
+#ifdef PANGO_ENABLE_ENGINE
 
 /* Module API */
 
@@ -94,8 +94,8 @@ PangoEngine *script_engine_load   (const char       *id);
 void         script_engine_unload (PangoEngine      *engine);
 
 
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+#endif /* PANGO_ENABLE_ENGINE */
+
+G_END_DECLS
 
 #endif /* __PANGO_ENGINE_H__ */

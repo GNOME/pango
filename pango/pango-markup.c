@@ -943,7 +943,7 @@ span_parse_func     (MarkupData            *md,
       if (parsed)
         {
           add_attribute (tag, pango_attr_font_desc_new (parsed));
-          open_tag_set_absolute_font_size (tag, parsed->size);
+          open_tag_set_absolute_font_size (tag, pango_font_description_get_size (parsed));
           pango_font_description_free (parsed);
         }
     }
@@ -1004,10 +1004,10 @@ span_parse_func     (MarkupData            *md,
 
   if (style)
     {
-      PangoFontDescription desc;
+      PangoStyle pango_style;
       
-      if (pango_parse_style (style, &desc, FALSE))
-        add_attribute (tag, pango_attr_style_new (desc.style));
+      if (pango_parse_style (style, &pango_style, FALSE))
+        add_attribute (tag, pango_attr_style_new (pango_style));
       else
         {
           g_set_error (error,
@@ -1023,11 +1023,11 @@ span_parse_func     (MarkupData            *md,
 
   if (weight)
     {
-      PangoFontDescription desc;
+      PangoWeight pango_weight;
       
-      if (pango_parse_weight (weight, &desc, FALSE))
+      if (pango_parse_weight (weight, &pango_weight, FALSE))
         add_attribute (tag,
-                       pango_attr_weight_new (desc.weight));
+                       pango_attr_weight_new (pango_weight));
       else
         {
           g_set_error (error,
@@ -1043,10 +1043,10 @@ span_parse_func     (MarkupData            *md,
 
   if (variant)
     {
-      PangoFontDescription desc;
+      PangoVariant pango_variant;
       
-      if (pango_parse_variant (variant, &desc, FALSE))
-        add_attribute (tag, pango_attr_variant_new (desc.variant));
+      if (pango_parse_variant (variant, &pango_variant, FALSE))
+        add_attribute (tag, pango_attr_variant_new (pango_variant));
       else
         {
           g_set_error (error,
@@ -1062,10 +1062,10 @@ span_parse_func     (MarkupData            *md,
 
   if (stretch)
     {
-      PangoFontDescription desc;
+      PangoStretch pango_stretch;
       
-      if (pango_parse_stretch (stretch, &desc, FALSE))
-        add_attribute (tag, pango_attr_stretch_new (desc.stretch));
+      if (pango_parse_stretch (stretch, &pango_stretch, FALSE))
+        add_attribute (tag, pango_attr_stretch_new (pango_stretch));
       else
         {
           g_set_error (error,

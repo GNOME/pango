@@ -76,7 +76,7 @@ static char *default_charset = "iso10646-dev";
 static PangoEngineRange pango_indic_range[] =
 {
   {RANGE_START, RANGE_END, "*"},
-  {ZERO_WIDTH_JOINER, ZERO_WIDTH_JOINER, "*"},
+  {PANGO_ZERO_WIDTH_JOINER, PANGO_ZERO_WIDTH_JOINER, "*"},
 };
 
 SCRIPT_ENGINE_DEFINITION
@@ -95,7 +95,7 @@ pango_indic_engine_get_coverage (PangoFont * font, PangoLanguage *lang)
       for (i = RANGE_START; i <= RANGE_END; i++)
 	pango_coverage_set (result, i, PANGO_COVERAGE_EXACT);
 
-      pango_coverage_set (result, ZERO_WIDTH_JOINER, PANGO_COVERAGE_EXACT);
+      pango_coverage_set (result, PANGO_ZERO_WIDTH_JOINER, PANGO_COVERAGE_EXACT);
     }
 
   return result;
@@ -163,7 +163,7 @@ is_intermediate_form (int q)
 static int 
 is_consonantal_form (int q) 
 {
-  return (q == ZERO_WIDTH_JOINER) || is_consonant (q) || (q >= 0xd000);
+  return (q == PANGO_ZERO_WIDTH_JOINER) || is_consonant (q) || (q >= 0xd000);
 }
 
 static int 

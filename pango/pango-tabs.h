@@ -24,9 +24,7 @@
 
 #include <pango/pango-types.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
+G_BEGIN_DECLS
 
 typedef struct _PangoTabArray PangoTabArray;
 
@@ -73,10 +71,6 @@ void            pango_tab_array_get_tabs            (PangoTabArray *tab_array,
 gboolean        pango_tab_array_get_positions_in_pixels (PangoTabArray *tab_array);
 
 
-
-
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+G_END_DECLS
 
 #endif /* __PANGO_TABS_H__ */

@@ -117,36 +117,6 @@ fields:
 @language: 
 @extra_attrs: 
 
-<!-- ##### STRUCT PangoLangRange ##### -->
-<para>
-The #PangoLangRange structure stores language tagging
-information for a range of character positions of text. 
-It contains the following fields:
-
-<informaltable pgwide=1 frame="none" role="struct">
-<tgroup cols="2"><colspec colwidth="2*"><colspec colwidth="8*">
-<tbody>
-
-<row>
-<entry>gint start;</entry>
-<entry>the start position of this tagged range in bytes.</entry>
-</row>
-
-<row>
-<entry>gint length;</entry>
-<entry>the length of this tagged range in bytes.</entry>
-</row>
-
-<row>
-<entry>gchar *lang;</entry> 
-<entry>the language for this range, in the standard form 
-       "fr" or "fr_FR".</entry>
-</row>
-
-</tbody></tgroup></informaltable>
-</para>
-
-
 <!-- ##### ENUM PangoDirection ##### -->
 <para>
 The #PangoDirection type represents the direction of writing
@@ -266,6 +236,24 @@ for text.
 @desc: 
 
 
+<!-- ##### FUNCTION pango_context_get_language ##### -->
+<para>
+
+</para>
+
+@context: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_context_set_language ##### -->
+<para>
+
+</para>
+
+@context: 
+@language: 
+
+
 <!-- ##### FUNCTION pango_context_get_base_dir ##### -->
 <para>
 
@@ -296,6 +284,17 @@ for text.
 @size: 
 
 
+<!-- ##### FUNCTION pango_context_get_metrics ##### -->
+<para>
+
+</para>
+
+@context: 
+@desc: 
+@language: 
+@Returns: 
+
+
 <!-- ##### FUNCTION pango_context_list_families ##### -->
 <para>
 
@@ -304,17 +303,6 @@ for text.
 @context: 
 @families: 
 @n_families: 
-
-
-<!-- ##### FUNCTION pango_context_list_fonts ##### -->
-<para>
-
-</para>
-
-@context: 
-@family: 
-@descs: 
-@n_descs: 
 
 
 <!-- ##### FUNCTION pango_break ##### -->

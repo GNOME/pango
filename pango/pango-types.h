@@ -25,7 +25,8 @@
 #include <glib.h>
 #include <glib-object.h>
 
-typedef struct _PangoLangRange PangoLangRange;
+G_BEGIN_DECLS
+
 typedef struct _PangoLogAttr PangoLogAttr;
 
 typedef struct _PangoEngineLang PangoEngineLang;
@@ -84,14 +85,7 @@ PangoLanguage *pango_language_from_string (const char *language);
 gboolean      pango_language_matches  (PangoLanguage *language,
 				       const char *range_list);
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
-
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
-
+G_END_DECLS
 
 #endif /* __PANGO_TYPES_H__ */
 

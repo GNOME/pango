@@ -350,9 +350,12 @@ ViewerView::contentsMousePressEvent (QMouseEvent *event)
 }
 
 static int
-cmp_strings (const void *a, const void *b)
+cmp_families (const void *a, const void *b)
 {
-  return strcmp (*(const char **)a, *(const char **)b);
+  const char *a_name = pango_font_family_get_name (*(PangoFontFamily **)a);
+  const char *b_name = pango_font_family_get_name (*(PangoFontFamily **)b);
+  
+  return strcmp (a_name, b_name);
 }
 
 ViewerWindow::ViewerWindow (const QString &filename)
@@ -378,25 +381,26 @@ ViewerWindow::ViewerWindow (const QString &filename)
 
   family_combo_ = new QComboBox (toolbar);
 
-  gchar **families;
   int n_families, i;
 
-  pango_context_list_families (view_->context(), &families, &n_families);
-  qsort (families, n_families, sizeof(char *), cmp_strings);
+  pango_context_list_families (view_->context(), &families_, &n_families);
+  qsort (families_, n_families, sizeof(PangoFontFamily *), cmp_families);
 
   for (i=0; i<n_families; i++)
     {
-      family_combo_->insertItem (families[i]);
-      if (!strcmp (families[i], "sans"))
+      const char *name = pango_font_family_get_name (families_[i]);
+      
+      family_combo_->insertItem (name);
+      if (!strcmp (name, "sans"))
 	family_combo_->setCurrentItem (i);
     }
 
-  pango_font_map_free_families (families, n_families);
-  
   QObject::connect (family_combo_, SIGNAL(activated(int)), this, SLOT(fillStyleCombo(int)));
 
+  faces_ = NULL;
+
   style_combo_ = new QComboBox (toolbar);
-  fillStyleCombo (0);
+  fillStyleCombo (family_combo_->currentItem ());
 
   size_box_ = new QSpinBox (1, 1000, 1, toolbar);
   size_box_->setValue (16);
@@ -415,73 +419,69 @@ ViewerWindow::ViewerWindow (const QString &filename)
 static int
 compare_font_descriptions (const PangoFontDescription *a, const PangoFontDescription *b)
 {
-  int val = strcmp (a->family_name, b->family_name);
+  int val = strcmp (pango_font_description_get_family (a), pango_font_description_get_family (b));
   if (val != 0)
     return val;
 
-  if (a->weight != b->weight)
-    return a->weight - b->weight;
+  if (pango_font_description_get_weight (a) != pango_font_description_get_weight (b))
+    return pango_font_description_get_weight (a) - pango_font_description_get_weight (b);
 
-  if (a->style != b->style)
-    return a->style - b->style;
+  if (pango_font_description_get_style (a) != pango_font_description_get_style (b))
+    return pango_font_description_get_style (a) - pango_font_description_get_style (b);
   
-  if (a->stretch != b->stretch)
-    return a->stretch - b->stretch;
+  if (pango_font_description_get_stretch (a) != pango_font_description_get_stretch (b))
+    return pango_font_description_get_stretch (a) - pango_font_description_get_stretch (b);
 
-  if (a->variant != b->variant)
-    return a->variant - b->variant;
+  if (pango_font_description_get_variant (a) != pango_font_description_get_variant (b))
+    return pango_font_description_get_variant (a) - pango_font_description_get_variant (b);
 
   return 0;
 }
 
 static int
-font_description_sort_func (const void *a, const void *b)
+faces_sort_func (const void *a, const void *b)
 {
-  return compare_font_descriptions (*(PangoFontDescription **)a, *(PangoFontDescription **)b);
+  PangoFontDescription *desc_a = pango_font_face_describe (*(PangoFontFace **)a);
+  PangoFontDescription *desc_b = pango_font_face_describe (*(PangoFontFace **)b);
+  
+  int ord = compare_font_descriptions (desc_a, desc_b);
+
+  pango_font_description_free (desc_a);
+  pango_font_description_free (desc_b);
+
+  return ord;
 }
 
 void
 ViewerWindow::fillStyleCombo (int index)
 {
-  QString family = family_combo_->currentText();
+  PangoFontFamily *family = families_[index];
+  int n_faces;
 
-  PangoFontDescription **descs;
-  int n_descs;
+  if (faces_)
+    g_free (faces_);
 
-  pango_context_list_fonts (view_->context(), family, &descs, &n_descs);
-  qsort (descs, n_descs, sizeof(PangoFontDescription *), font_description_sort_func);
+  pango_font_family_list_faces (family, &faces_, &n_faces);
+
+  qsort (faces_, n_faces, sizeof(PangoFontFace *), faces_sort_func);
 
   style_combo_->clear();
-  for (int i = 0; i < n_descs; i++)
+  for (int i = 0; i < n_faces; i++)
     {
-      PangoFontDescription tmp_desc;
-
-      tmp_desc = *descs[i];
-      tmp_desc.family_name = NULL;
-      tmp_desc.size = 0;
-
-      char *str = pango_font_description_to_string (&tmp_desc);
+      const char *str = pango_font_face_get_face_name (faces_[i]);
       style_combo_->insertItem (str);
     }
-
-  pango_font_descriptions_free (descs, n_descs);
 }
 
 void
 ViewerWindow::fontChanged ()
 {
+  PangoFontFace *face = faces_[style_combo_->currentItem()];
+
   QString style = style_combo_->currentText();
 
-  if (style == "Normal")
-    style = "";
-  else
-    style += " ";
-
-  QString font_name = (family_combo_->currentText() + " " +
-		       style +
-		       QString::number (size_box_->value()));
-
-  PangoFontDescription *font_desc = pango_font_description_from_string (font_name);
+  PangoFontDescription *font_desc = pango_font_face_describe (face);
+  pango_font_description_set_size (font_desc, size_box_->value () * PANGO_SCALE);
 
   view_->setFontDesc (font_desc);
 

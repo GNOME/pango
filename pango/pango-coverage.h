@@ -24,9 +24,7 @@
 
 #include <glib.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
+G_BEGIN_DECLS
 
 typedef struct _PangoCoverage PangoCoverage;
 
@@ -55,12 +53,6 @@ void           pango_coverage_to_bytes   (PangoCoverage  *coverage,
 PangoCoverage *pango_coverage_from_bytes (guchar         *bytes,
 					  int             n_bytes);
 
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+G_END_DECLS
 
 #endif /* __PANGO_COVERAGE_H__ */
-
-
-
-

@@ -22,10 +22,6 @@
 #ifndef __PANGO_H__
 #define __PANGO_H__
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
-
 #include <pango/pango-attributes.h>
 #include <pango/pango-break.h>
 #include <pango/pango-context.h>
@@ -38,10 +34,5 @@ extern "C" {
 #include <pango/pango-item.h>
 #include <pango/pango-layout.h>
 #include <pango/pango-types.h>
-
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
-
 
 #endif /* __PANGO_H__ */

@@ -24,9 +24,7 @@
 
 #include <glib.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
+G_BEGIN_DECLS
 
 #include <pango/pango-item.h>
 
@@ -87,6 +85,8 @@ void pango_get_log_attrs (const char    *text,
                           PangoLanguage *language,
                           PangoLogAttr  *log_attrs);
 
+#ifdef PANGO_ENABLE_ENGINE
+
 /* This is the default break algorithm, used if no language
  * engine overrides it. Normally you should use pango_break()
  * instead; this function is mostly useful for chaining up
@@ -97,9 +97,8 @@ void pango_default_break (const gchar   *text,
                           PangoAnalysis *analysis,
                           PangoLogAttr  *attrs);
 
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+#endif /* PANGO_ENABLE_ENGINE */
 
+G_END_DECLS
 
 #endif /* __PANGO_BREAK_H__ */

@@ -27,12 +27,13 @@ what fonts are available on the system and also for specifying
 the characteristics of a font to load.
 </para>
 
-@family_name: the name of the font family.
-@style: the style (slant) of the font.
-@variant: the variant (normal or small caps) of the font.
-@weight: the weight (boldness) of the font.
-@stretch: the relative width of the font.
-@size: 
+
+<!-- ##### MACRO PANGO_TYPE_FONT_DESCRIPTION ##### -->
+<para>
+
+</para>
+
+
 
 <!-- ##### ENUM PangoStyle ##### -->
 <para>
@@ -108,7 +109,52 @@ within a family.
 
 
 
+<!-- ##### ENUM PangoFontMask ##### -->
+<para>
+
+</para>
+
+@PANGO_FONT_MASK_FAMILY: 
+@PANGO_FONT_MASK_STYLE: 
+@PANGO_FONT_MASK_VARIANT: 
+@PANGO_FONT_MASK_WEIGHT: 
+@PANGO_FONT_MASK_STRETCH: 
+@PANGO_FONT_MASK_SIZE: 
+
+<!-- ##### MACRO PANGO_TYPE_FONT_MASK ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### FUNCTION pango_font_description_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+
 <!-- ##### FUNCTION pango_font_description_copy ##### -->
+<para>
+
+</para>
+
+@desc: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_font_description_copy_static ##### -->
+<para>
+
+</para>
+
+@desc: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_font_description_hash ##### -->
 <para>
 
 </para>
@@ -127,6 +173,14 @@ within a family.
 @Returns: 
 
 
+<!-- ##### FUNCTION pango_font_description_free ##### -->
+<para>
+
+</para>
+
+@desc: 
+
+
 <!-- ##### FUNCTION pango_font_descriptions_free ##### -->
 <para>
 
@@ -136,12 +190,170 @@ within a family.
 @n_descs: 
 
 
-<!-- ##### FUNCTION pango_font_description_free ##### -->
+<!-- ##### FUNCTION pango_font_description_set_family ##### -->
 <para>
 
 </para>
 
 @desc: 
+@family: 
+
+
+<!-- ##### FUNCTION pango_font_description_set_family_static ##### -->
+<para>
+
+</para>
+
+@desc: 
+@family: 
+
+
+<!-- ##### FUNCTION pango_font_description_get_family ##### -->
+<para>
+
+</para>
+
+@desc: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_font_description_set_style ##### -->
+<para>
+
+</para>
+
+@desc: 
+@style: 
+
+
+<!-- ##### FUNCTION pango_font_description_get_style ##### -->
+<para>
+
+</para>
+
+@desc: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_font_description_set_variant ##### -->
+<para>
+
+</para>
+
+@desc: 
+@variant: 
+
+
+<!-- ##### FUNCTION pango_font_description_get_variant ##### -->
+<para>
+
+</para>
+
+@desc: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_font_description_set_weight ##### -->
+<para>
+
+</para>
+
+@desc: 
+@weight: 
+
+
+<!-- ##### FUNCTION pango_font_description_get_weight ##### -->
+<para>
+
+</para>
+
+@desc: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_font_description_set_stretch ##### -->
+<para>
+
+</para>
+
+@desc: 
+@stretch: 
+
+
+<!-- ##### FUNCTION pango_font_description_get_stretch ##### -->
+<para>
+
+</para>
+
+@desc: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_font_description_set_size ##### -->
+<para>
+
+</para>
+
+@desc: 
+@size: 
+
+
+<!-- ##### FUNCTION pango_font_description_get_size ##### -->
+<para>
+
+</para>
+
+@desc: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_font_description_get_set_fields ##### -->
+<para>
+
+</para>
+
+@desc: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_font_description_unset_fields ##### -->
+<para>
+
+</para>
+
+@desc: 
+@to_unset: 
+
+
+<!-- ##### FUNCTION pango_font_description_merge ##### -->
+<para>
+
+</para>
+
+@desc: 
+@desc_to_merge: 
+@replace_existing: 
+
+
+<!-- ##### FUNCTION pango_font_description_merge_static ##### -->
+<para>
+
+</para>
+
+@desc: 
+@desc_to_merge: 
+@replace_existing: 
+
+
+<!-- ##### FUNCTION pango_font_description_better_match ##### -->
+<para>
+
+</para>
+
+@desc: 
+@old_match: 
+@new_match: 
+@Returns: 
 
 
 <!-- ##### FUNCTION pango_font_description_from_string ##### -->
@@ -171,6 +383,70 @@ within a family.
 @Returns: 
 
 
+<!-- ##### STRUCT PangoFontMetrics ##### -->
+<para>
+
+</para>
+
+@ref_count: 
+@ascent: 
+@descent: 
+@approximate_char_width: 
+@approximate_digit_width: 
+
+<!-- ##### FUNCTION pango_font_metrics_ref ##### -->
+<para>
+
+</para>
+
+@metrics: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_font_metrics_unref ##### -->
+<para>
+
+</para>
+
+@metrics: 
+
+
+<!-- ##### FUNCTION pango_font_metrics_get_ascent ##### -->
+<para>
+
+</para>
+
+@metrics: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_font_metrics_get_descent ##### -->
+<para>
+
+</para>
+
+@metrics: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_font_metrics_get_approximate_char_width ##### -->
+<para>
+
+</para>
+
+@metrics: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_font_metrics_get_approximate_digit_width ##### -->
+<para>
+
+</para>
+
+@metrics: 
+@Returns: 
+
+
 <!-- ##### STRUCT PangoFont ##### -->
 <para>
 The #PangoFont structure is used to represent
@@ -189,55 +465,6 @@ which the implementation fills in:
 </para>
 
 @parent_instance: 
-
-<!-- ##### STRUCT PangoFontClass ##### -->
-<para>
-The #PangoFontClass structure contains the virtual
-functions for an implementation of a PangoFont.
-
-It contains the following members:
-
-<informaltable pgwide=1 frame="none" role="struct">
-<tgroup cols="2"><colspec colwidth="2*"><colspec colwidth="8*">
-<tbody>
-
-<row>
-<entry>void (*destroy) (#PangoFont *font);</entry>
-<entry>a function to free the font structure and associated resources.</entry>
-</row>
-</tbody></tgroup></informaltable>
-</para>
-
-@parent_class: 
-@describe: a function to describe the characteristics of a font. See
-           pango_font_describe().
-@get_coverage: A function to get a coverage map for the font.
-               See pango_font_get_coverage().
-@find_shaper: A function to find the shaper for a particular character 
-              point. See pango_font_find_shaper().
-@get_glyph_extents: A function called to find out the logical and ink
-                    extents of a glyph within the fonts. See
-                    pango_font_get_glyph_extents().
-@get_metrics: A function called to find the overall metric information
-              for the font or the metric information appropriate to
-              a particular language. See pango_font_get_metrics().
-
-<!-- ##### STRUCT PangoFontMetrics ##### -->
-<para>
-The #PangoFontMetrics structure represents the overall metrics for
-a font. It contains the following members:
-</para>
-
-@ascent: the logical extent of the font upwards from the baseline.
-         The spacing between lines of text should be calculated
-         as @ascent + @descent. Individual characters may have
-         extents exceeding this value.
-@descent: the logical extent of the font beneath the baseline.
-         The spacing between lines of text should be calculated
-         as @ascent + @descent. Individual characters may have
-         extents exceeding this value.
-@approximate_char_width: 
-@approximate_digit_width: 
 
 <!-- ##### FUNCTION pango_font_find_shaper ##### -->
 <para>
@@ -292,8 +519,9 @@ a font. It contains the following members:
 
 @font: 
 @language: 
-@metrics: 
+@Returns: 
 <!-- # Unused Parameters # -->
+@metrics: 
 @lang: 
 
 
@@ -320,35 +548,100 @@ a font. It contains the following members:
 @object: 
 
 
-<!-- ##### MACRO PANGO_FONT_CLASS ##### -->
+<!-- ##### STRUCT PangoFontFamily ##### -->
 <para>
 
 </para>
 
-@klass: 
+@parent_instance: 
 
-
-<!-- ##### MACRO PANGO_IS_FONT_CLASS ##### -->
+<!-- ##### MACRO PANGO_TYPE_FONT_FAMILY ##### -->
 <para>
 
 </para>
 
-@klass: 
 
 
-<!-- ##### MACRO PANGO_FONT_GET_CLASS ##### -->
+<!-- ##### MACRO PANGO_FONT_FAMILY ##### -->
 <para>
 
 </para>
 
-@obj: 
+@object: 
 
 
-<!-- ##### FUNCTION pango_font_get_type ##### -->
+<!-- ##### MACRO PANGO_IS_FONT_FAMILY ##### -->
 <para>
 
 </para>
 
+@object: 
+
+
+<!-- ##### FUNCTION pango_font_family_get_name ##### -->
+<para>
+
+</para>
+
+@family: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_font_family_list_faces ##### -->
+<para>
+
+</para>
+
+@family: 
+@faces: 
+@n_faces: 
+
+
+<!-- ##### STRUCT PangoFontFace ##### -->
+<para>
+
+</para>
+
+@parent_instance: 
+
+<!-- ##### MACRO PANGO_TYPE_FONT_FACE ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO PANGO_FONT_FACE ##### -->
+<para>
+
+</para>
+
+@object: 
+
+
+<!-- ##### MACRO PANGO_IS_FONT_FACE ##### -->
+<para>
+
+</para>
+
+@object: 
+
+
+<!-- ##### FUNCTION pango_font_face_get_face_name ##### -->
+<para>
+
+</para>
+
+@face: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_font_face_describe ##### -->
+<para>
+
+</para>
+
+@face: 
 @Returns: 
 
 
@@ -378,7 +671,6 @@ a particular #PangoFontMap implementation.
 @parent_class: 
 @load_font: a function to load a font with a given description. See
             pango_font_map_load_font()
-@list_fonts: A function to list available fonts. See pango_font_map_list_fonts()
 @list_families: A function to list available font families. See
                 pango_font_map_list_families().
 
@@ -402,26 +694,6 @@ a particular #PangoFontMap implementation.
 @fontmap: 
 @families: 
 @n_families: 
-
-
-<!-- ##### FUNCTION pango_font_map_free_families ##### -->
-<para>
-
-</para>
-
-@families: 
-@n_families: 
-
-
-<!-- ##### FUNCTION pango_font_map_list_fonts ##### -->
-<para>
-
-</para>
-
-@fontmap: 
-@family: 
-@descs: 
-@n_descs: 
 
 
 <!-- ##### MACRO PANGO_TYPE_FONT_MAP ##### -->
@@ -469,13 +741,5 @@ a particular #PangoFontMap implementation.
 </para>
 
 @obj: 
-
-
-<!-- ##### FUNCTION pango_font_map_get_type ##### -->
-<para>
-
-</para>
-
-@Returns: 
 
 

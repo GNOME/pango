@@ -1,3 +1,16 @@
+Changes between 0.18 and 0.19
+
+* Change font listing API to be more extensible. Instead of
+  using family names and 
+* Make PangoMetrics and PangoFontDescription opaque heap-allocated
+  structures to allow extension going forward.
+* Allow for PangoFontDescription structures with unspecified
+  style/variant/stretch/weight.
+* Add PANGO_ENABLE_BACKEND and PANGO_ENABLE_ENGINE #defines to
+  protect parts of the API where we don't want to guarantee
+  source binary compatibility for 1.x.
+* Bug fixes.
+
 Changes between 0.17 and 0.18
 
 * Add PangoLanguage type for language tags, use consistently.
