@@ -1,3 +1,15 @@
+Sat Nov  1 09:32:15 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-ot.h pango/pangoft2.h modules/indic/indic-ot.h
+	pango/pangoft2.c pango/opentype/pango-ot-info.c
+	pango/opentype/pango-ot-ruleset.c pango/opentype/ottest.c
+        pango/opentype/ftxopen.[ch] pango/opentype/ftxgdef.c
+	pango/opentype/ftxgsub.c pango/opentype/ftxgpos.c: 
+	Switch over to recommended Freetype system of 
+	include ft2build.h then #include FT_FREETYPE_H.
+	Fixes ftmodule.h problem with current Freetype CVS.
+	(#125548)
+
 Fri Oct 31 12:32:38 2003  Owen Taylor  <otaylor@redhat.com>
 
 	Fix one problem with iteration by chars (Part of

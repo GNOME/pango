@@ -23,7 +23,8 @@
 #ifndef __PANGOFT2_H__
 #define __PANGOFT2_H__
 
-#include <freetype/freetype.h>
+#include <ft2build.h>
+#include FT_FREETYPE_H
 
 #include <fontconfig/fontconfig.h>
 
