@@ -34,6 +34,7 @@
 static PangoEngineRange hebrew_ranges[] = {
   /* Hebrew */
   { 0x0591, 0x05f4, "*" },
+  { 0xfb1d, 0xfb4f, "*" }  /* Hebrew presentation forms */
 };
 
 static PangoEngineInfo script_engines[] = {

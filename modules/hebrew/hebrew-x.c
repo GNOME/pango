@@ -91,6 +91,7 @@ static const gint Unicode_shape_table[128] = {
  */
 static PangoEngineRange hebrew_ranges[] = {
   { 0x0591, 0x05f4, "*" },  /* Hebrew */
+  { 0xfb1d, 0xfb4f, "*" }  /* Hebrew presentation forms */
 };
 
 static PangoEngineInfo script_engines[] = {
