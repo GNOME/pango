@@ -1,3 +1,8 @@
+Mon Aug 16 13:58:04 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* examples/renderdemo.[ch] examples/pangoft2topgm.c:
+	add a --hinting command line flag.
+
 Mon Aug 16 13:42:38 2004  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pango-ot.h (struct _PangoOTGlyph): Sync with
