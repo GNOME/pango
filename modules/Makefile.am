@@ -4,10 +4,11 @@ SUBDIRS = 		\
 	arabic		\
 	basic 		\
 	hangul 		\
-	indic           \
-	thai		\
 	hebrew		\
-	syriac
+	indic           \
+	syriac		\
+	thai		\
+	tibetan
 
 EXTRA_DIST =		\
 	module.def

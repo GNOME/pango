@@ -1,3 +1,8 @@
+Wed Dec 15 11:15:37 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* configure.in modules/Makefile.am modules/tibetan/*:
+	Add simple tibetan module. (#148566, G Karunakar)
+
 Wed Dec 15 08:38:52 2004  Owen Taylor  <otaylor@redhat.com>
 
 	* modules/indic/indic-ot-class-tables.c: Split
