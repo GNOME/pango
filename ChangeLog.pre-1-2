@@ -1,3 +1,10 @@
+2002-07-02  Matthias Warkus  <mawarkus@gnome.org>
+
+	* pango/pango-markup.c (span_parse_func): Fixed typo that was
+	causing markup with <span rise="..."> attributes to
+	segfault. Permission to commit to HEAD and stable branch granted
+	by Owen Taylor.
+
 Sat Jun 15 23:26:41 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* modules/arabic/arabic-ot.c: Support new Arabic
