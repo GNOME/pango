@@ -1,3 +1,9 @@
+Fri Dec  6 19:42:33 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/modules.c (map_get_submap): Dynamically allocate
+	submap arrays so we aren't constrained to the BMP.
+	(#100307, Federic Zhang)
+
 Fri Dec  6 18:58:25 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pango-utils.lo: Use octal escapes rather than

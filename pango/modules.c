@@ -46,7 +46,7 @@ struct _PangoSubmap
 struct _PangoMap
 {
   gint n_submaps;
-  PangoSubmap submaps[256];
+  PangoSubmap *submaps;
 };
 
 struct _PangoMapInfo
@@ -402,6 +402,30 @@ init_modules (void)
   read_modules ();
 }
 
+static PangoSubmap *
+map_get_submap (PangoMap *map,
+		int       index)
+{
+  if (index >= map->n_submaps)
+    {
+      /* Round up to a multiple of 256 */
+      int new_n_submaps = (index + 0x100) & ~0xff;
+      int i;
+      
+      map->submaps = g_renew (PangoSubmap, map->submaps, new_n_submaps);
+      for (i=map->n_submaps; i<new_n_submaps; i++)
+	{
+	  map->submaps[i].is_leaf = TRUE;
+	  map->submaps[i].d.entry.info = NULL;
+	  map->submaps[i].d.entry.is_exact = FALSE;
+	}
+      
+      map->n_submaps = new_n_submaps;
+    }
+
+  return &map->submaps[index];
+}
+
 static void
 map_add_engine (PangoMapInfo    *info,
 		PangoEnginePair *pair)
@@ -424,9 +448,10 @@ map_add_engine (PangoMapInfo    *info,
 	   submap <= pair->info.ranges[i].end / 256;
 	   submap ++)
 	{
+	  PangoSubmap *submap_struct = map_get_submap (map, submap);
 	  gunichar start;
 	  gunichar end;
-	  
+
 	  if (submap == pair->info.ranges[i].start / 256)
 	    start = pair->info.ranges[i].start % 256;
 	  else
@@ -437,26 +462,26 @@ map_add_engine (PangoMapInfo    *info,
 	  else
 	    end = 255;
 	  
-	  if (map->submaps[submap].is_leaf &&
+	  if (submap_struct->is_leaf &&
 	      start == 0 && end == 255)
 	    {
-	      set_entry (&map->submaps[submap].d.entry,
+	      set_entry (&submap_struct->d.entry,
 			 is_exact, &pair->info);
 	    }
 	  else
 	    {
-	      if (map->submaps[submap].is_leaf)
+	      if (submap_struct->is_leaf)
 		{
-		  PangoMapEntry old_entry = map->submaps[submap].d.entry;
+		  PangoMapEntry old_entry = submap_struct->d.entry;
 		  
-		  map->submaps[submap].is_leaf = FALSE;
-		  map->submaps[submap].d.leaves = g_new (PangoMapEntry, 256);
+		  submap_struct->is_leaf = FALSE;
+		  submap_struct->d.leaves = g_new (PangoMapEntry, 256);
 		  for (j=0; j<256; j++)
-		    map->submaps[submap].d.leaves[j] = old_entry;
+		    submap_struct->d.leaves[j] = old_entry;
 		}
 	      
 	      for (j=start; j<=end; j++)
-		set_entry (&map->submaps[submap].d.leaves[j],
+		set_entry (&submap_struct->d.leaves[j],
 			   is_exact, &pair->info);
 	      
 	    }
@@ -488,7 +513,6 @@ map_add_engine_list (PangoMapInfo *info,
 static void
 build_map (PangoMapInfo *info)
 {
-  int i;
   PangoMap *map;
 
   const char *engine_type = g_quark_to_string (info->engine_type_id);
@@ -517,13 +541,8 @@ build_map (PangoMapInfo *info)
     }
   
   info->map = map = g_new (PangoMap, 1);
-  map->n_submaps = 256;
-  for (i=0; i<256; i++)
-    {
-      map->submaps[i].is_leaf = TRUE;
-      map->submaps[i].d.entry.info = NULL;
-      map->submaps[i].d.entry.is_exact = FALSE;
-    }
+  map->submaps = NULL;
+  map->n_submaps = 0;
 
   map_add_engine_list (info, dlloaded_engines, engine_type, render_type);  
   map_add_engine_list (info, registered_engines, engine_type, render_type);  
