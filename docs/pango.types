@@ -1,0 +1,11 @@
+#include <pango/pango.h>
+
+pango_font_get_type
+pango_font_family_get_type
+pango_font_face_get_type
+pango_context_get_type
+pango_font_map_get_type
+pango_fontset_get_type
+pango_fontset_simple_get_type
+pango_layout_get_type
+

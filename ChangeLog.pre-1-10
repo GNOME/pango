@@ -1,3 +1,9 @@
+2002-05-02  Matthias Clasen  <maclas@gmx.de>
+
+	* docs/Makefile.am (GTKDOC_CFLAGS, GTKDOC_LIBS): Set these. 
+
+	* docs/pango.types: Add some types here.
+
 Tue Apr 23 16:15:07 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/opentype/fterrcompat.h: Add compatibility 

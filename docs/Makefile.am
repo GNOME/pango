@@ -52,8 +52,14 @@ extra_files =				\
 
 # CFLAGS and LDFLAGS for compiling scan program. Only needed
 # if $(DOC_MODULE).types is non-empty.
-GTKDOC_CFLAGS =
-GTKDOC_LIBS =
+GTKDOC_CFLAGS =               				\
+	@CFLAGS@					\
+	-DPANGO_ENABLE_BACKEND				\
+	-I$(top_srcdir) 				\
+	-I$(top_builddir)
+
+GTKDOC_LIBS =               						\
+	$(top_builddir)/pango/libpango-1.0.la
 
 # Commands for compiling and linking 
 GTKDOC_CC=$(LIBTOOL) --mode=compile $(CC)
