@@ -25,7 +25,6 @@
 #include <stdio.h>
 
 #include <qapplication.h>
-#include <qcdestyle.h>
 #include <qcombobox.h>
 #include <qfile.h>
 #include <qfileinfo.h>
@@ -511,8 +510,6 @@ main (int argc, char **argv)
 
   g_type_init ();
   
-  QApplication::setStyle (new QCDEStyle());
-
   if (QFileInfo ("./pangorc").exists ())
     putenv ("PANGO_RC_FILE=./pangorc");
 
