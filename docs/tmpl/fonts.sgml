@@ -59,6 +59,7 @@ value ranging from 100 to 900, but there are some predefined values:
 @PANGO_WEIGHT_ULTRALIGHT: the ultralight weight (= 200)
 @PANGO_WEIGHT_LIGHT:  the light weight (=300)
 @PANGO_WEIGHT_NORMAL: the default weight (= 400)
+@PANGO_WEIGHT_SEMIBOLD: a weight intermediate between normal and bold (=600)
 @PANGO_WEIGHT_BOLD: the bold weight (= 700)
 @PANGO_WEIGHT_ULTRABOLD: the ultrabold weight (= 800)
 @PANGO_WEIGHT_HEAVY: the heavy weight (= 900)
@@ -300,6 +301,24 @@ The GObject type for #PangoFontMask.
 
 
 <!-- ##### FUNCTION pango_font_description_get_size ##### -->
+<para>
+
+</para>
+
+@desc: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_font_description_set_absolute_size ##### -->
+<para>
+
+</para>
+
+@desc: 
+@size: 
+
+
+<!-- ##### FUNCTION pango_font_description_get_size_is_absolute ##### -->
 <para>
 
 </para>

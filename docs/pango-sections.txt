@@ -159,6 +159,8 @@ pango_font_description_set_stretch
 pango_font_description_get_stretch
 pango_font_description_set_size
 pango_font_description_get_size
+pango_font_description_set_absolute_size
+pango_font_description_get_size_is_absolute
 pango_font_description_get_set_fields
 pango_font_description_unset_fields
 pango_font_description_merge
@@ -286,6 +288,7 @@ PangoAttrInt
 PangoAttrFloat
 PangoAttrFontDesc
 PangoAttrShape
+PangoAttrSize
 pango_parse_markup
 pango_attr_type_register
 pango_attribute_copy
@@ -299,6 +302,7 @@ pango_attr_variant_new
 pango_attr_stretch_new
 pango_attr_weight_new
 pango_attr_size_new
+pango_attr_size_new_absolute
 pango_attr_font_desc_new
 pango_attr_foreground_new
 pango_attr_background_new

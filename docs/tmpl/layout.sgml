@@ -162,6 +162,15 @@ has no user-visible fields.
 @desc: 
 
 
+<!-- ##### FUNCTION pango_layout_get_font_description ##### -->
+<para>
+
+</para>
+
+@layout: 
+@Returns: 
+
+
 <!-- ##### FUNCTION pango_layout_set_width ##### -->
 <para>
 

@@ -149,6 +149,15 @@ impose shape restrictions.
 @copy_func: 
 @destroy_func: 
 
+<!-- ##### STRUCT PangoAttrSize ##### -->
+<para>
+
+</para>
+
+@attr: 
+@size: 
+@absolute: 
+
 <!-- ##### FUNCTION pango_parse_markup ##### -->
 <para>
 
@@ -255,6 +264,15 @@ impose shape restrictions.
 
 
 <!-- ##### FUNCTION pango_attr_size_new ##### -->
+<para>
+
+</para>
+
+@size: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_attr_size_new_absolute ##### -->
 <para>
 
 </para>
