@@ -1,3 +1,10 @@
+Thu Feb  3 19:00:17 2005  Manish Singh  <yosh@gimp.org>
+
+	* pango/pangocairo-fc.h: spell _pango_cairo_fc_get_render_key
+	correctly.
+
+	* pango/pangocairo-fcfont.c: #include cairo-ft.h
+
 Thu Feb  3 18:23:27 2005  Manish Singh  <yosh@gimp.org>
 
 	* configure.in: use CAIRO_LIBS for all libcairo checks, and disable

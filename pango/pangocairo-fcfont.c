@@ -24,6 +24,8 @@
 #include <math.h>
 #include <stdlib.h>
 
+#include <cairo-ft.h>
+
 #include "pango-fontmap.h"
 #include "pangocairo-private.h"
 #include "pangocairo-fc.h"
