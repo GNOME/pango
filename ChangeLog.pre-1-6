@@ -1,7 +1,8 @@
 2003-08-11  Matthias Clasen  <maclas@gmx.de>
 
-	* acinclude.m4: Copy newer versions of JH_CHECK_XML_CATALOG and JH_PATH_XML_CATALOG from
-	gtk-doc to enable configuring without xmlcatalog in PATH.  (#119115)
+	* acinclude.m4: Copy newer versions of JH_CHECK_XML_CATALOG and
+	JH_PATH_XML_CATALOG from gtk-doc to enable configuring without
+	xmlcatalog in PATH.  (#119115) 
 
 Fri Aug  8 12:59:42 2003  Owen Taylor  <otaylor@redhat.com>
 
