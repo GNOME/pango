@@ -25,8 +25,6 @@
 
 char **  pango_split_file_list (const char *str);
 
-#ifdef PANGO_ENABLE_BACKEND
-
 char    *pango_trim_string     (const char *str);
 gint     pango_read_line      (FILE        *stream,
 			       GString     *str);
@@ -38,8 +36,8 @@ gboolean pango_scan_string    (const char **pos,
 gboolean pango_scan_int       (const char **pos,
 			       int         *out);
 
+#ifdef PANGO_ENABLE_BACKEND
 char *   pango_config_key_get (const char  *key);
-
 #endif /* PANGO_ENABLE_BACKEND */
 
 /* Functions for parsing textual representations

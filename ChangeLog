@@ -1,3 +1,12 @@
+Thu Oct 18 15:48:14 2001  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-utils.h: Remove the rest of the 
+	silly pango file-reading code from PANGO_ENABLE_BACKEND,
+	so I can use it in gtkimmodule.c. It's nothing
+	that should be in Pango longterm, but it's not
+	enough code to worry about removing before Pango-2.0.
+	(#61602, Sven Neumann)
+
 Thu Oct 18 14:40:04 2001  Owen Taylor  <otaylor@redhat.com>
 
 	(Fixes from Frank Belew, #58905)
