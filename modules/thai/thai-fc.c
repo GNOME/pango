@@ -160,10 +160,8 @@ thai_get_font_info (PangoFont *font)
         font_info->font_set = THAI_FONT_TIS_WIN;
       else if (contain_glyphs(font, tis620_1))
         font_info->font_set = THAI_FONT_TIS_MAC;
-      else if (contain_glyphs(font, tis620_0))
-        font_info->font_set = THAI_FONT_TIS;
       else
-        font_info->font_set = THAI_FONT_ISO10646;
+        font_info->font_set = THAI_FONT_TIS;
   
       g_object_set_qdata_full (G_OBJECT (font), info_id, font_info, (GDestroyNotify)g_free);
     }
@@ -179,7 +177,6 @@ thai_make_glyph (ThaiFontInfo *font_info, unsigned int c)
   PangoFcFont *fc_font = (PangoFcFont *)font_info->font;
 
   switch (font_info->font_set) {
-    case THAI_FONT_ISO10646:index = c; break;
     case THAI_FONT_TIS:     index = (c & 0x80) ? tis620_0[c & 0x7f] : c; break;
     case THAI_FONT_TIS_MAC: index = (c & 0x80) ? tis620_1[c & 0x7f] : c; break;
     case THAI_FONT_TIS_WIN: index = (c & 0x80) ? tis620_2[c & 0x7f] : c; break;

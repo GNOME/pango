@@ -83,41 +83,6 @@
 #define char_class(wc)		TAC_char_class[(unsigned int)(wc)]
 #define is_char_type(wc, mask)	(char_type_table[ucs2tis ((wc))] & (mask))
 
-/* All combining marks for Thai fall in the range U+0E30-U+0E50,
- * so we confine our data tables to that range, and use
- * default values for characters outside those ranges.
- */
-
-/* Map from code point to group used for rendering with XTIS fonts
- * (0 == base character)
- */
-static const char groups[32] = {
-  0, 1, 0, 0, 1, 1, 1, 1,
-  1, 1, 1, 0, 0, 0, 0, 0,
-  0, 0, 0, 0, 0, 0, 0, 2,
-  2, 2, 2, 2, 2, 2, 1, 0
-};
-
-/* Map from code point to index within group 1
- * (0 == no combining mark from group 1)
- */   
-static const char group1_map[32] = {
-  0, 1, 0, 0, 2, 3, 4, 5,
-  6, 7, 8, 0, 0, 0, 0, 0,
-  0, 0, 0, 0, 0, 0, 0, 0,
-  0, 0, 0, 0, 0, 0, 0, 0
-};
-
-/* Map from code point to index within group 2
- * (0 == no combining mark from group 2)
- */   
-static const char group2_map[32] = {
-  0, 0, 0, 0, 0, 0, 0, 0,
-  0, 0, 0, 0, 0, 0, 0, 0,
-  0, 0, 0, 0, 0, 0, 0, 1,
-  2, 3, 4, 5, 6, 7, 1, 0
-};
-
 static const gint char_type_table[256] = {
   /*       0,   1,   2,   3,   4,   5,   6,   7,
            8,   9,   A,   B,   C,   D,   E,   F  */
@@ -577,11 +542,6 @@ get_glyphs_list (ThaiFontInfo	*font_info,
 	 */
         return get_adjusted_glyphs_list (font_info, cluster,
 		num_chrs, glyph_lists, &Win_shape_table);
-      
-      case THAI_FONT_ISO10646:
-        for (i=0; i < num_chrs; i++)
-          glyph_lists[i] = thai_make_glyph (font_info, cluster[i]);
-        return num_chrs;
     }
 
   return 0;			/* Quiet GCC */

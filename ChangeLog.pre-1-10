@@ -1,3 +1,13 @@
+2004-10-07  Theppitak Karoonboonyanan  <thep@linux.thai.net>
+
+	* modules/thai/thai-shaper.c (groups, group1_map, group2_map):
+	Remove unused data for XTIS.
+
+	* modules/thai/thai-shaper.[ch] (enum ThaiFontSet, get_glyphs_list),
+	modules/thai/thai-fc.c (thai_get_font_info, thai_make_glyph):
+	Remove THAI_FONT_ISO10646 font set, as it's already covered by
+	THAI_FONT_TIS.
+
 Sat Oct  2 10:08:13 2004  Manish Singh  <yosh@gimp.org>
 
 	* modules/thai/thai-ot.c (thai_ot_get_ruleset): Use

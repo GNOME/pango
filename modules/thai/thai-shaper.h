@@ -13,8 +13,7 @@ typedef enum {
   THAI_FONT_NONE,
   THAI_FONT_TIS,
   THAI_FONT_TIS_MAC,
-  THAI_FONT_TIS_WIN,
-  THAI_FONT_ISO10646
+  THAI_FONT_TIS_WIN
 } ThaiFontSet;
 
 typedef enum {
