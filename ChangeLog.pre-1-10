@@ -1,3 +1,9 @@
+Mon Nov 25 20:25:23 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/glyphstring.c (pango_glyph_string_extents_range): 
+	Clarify the meaning of the @end parameter. (#96843,
+	Jungshik Shin)
+
 Mon Nov 25 19:57:02 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/fonts.c (pango_font_description_free): Remove

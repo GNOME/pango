@@ -125,7 +125,8 @@ pango_glyph_string_free (PangoGlyphString *string)
  * pango_glyph_string_extents_range:
  * @glyphs:   a #PangoGlyphString
  * @start:    start index
- * @end:      end index
+ * @end:      end index (the range is the set of bytes with
+              indices such that start <= index < end)
  * @font:     a #PangoFont
  * @ink_rect: rectangle used to store the extents of the glyph string range as drawn
  *            or %NULL to indicate that the result is not needed.
