@@ -1,3 +1,11 @@
+Wed Mar 27 19:30:35 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* Released 1.0.1
+
+	* NEWS: Updates.
+
+	* configure.in: Version 1.0.1, interface, binary age 1.
+
 Tue Mar 26 18:22:07 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* modules/basic/basic-*.c modules/basic/basic-common.h: Move

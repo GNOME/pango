@@ -131,7 +131,7 @@ It contains the following fields.
 
 @glyph: the glyph itself.
 @geometry: the positional information about the glyph.
-@attr: the visual attributes of the glyph. 
+@attr: the visual attributes of the glyph.
 
 <!-- ##### STRUCT PangoGlyphGeometry ##### -->
 <para>

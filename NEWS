@@ -1,3 +1,19 @@
+Changes between 1.0.0 and 1.0.1
+
+* Documentation improvements [Matthias Clasen]
+* Use new API in FreeType 2.0.9 to greatly speed up coverage
+  calculation for Xft and FT2 backends.
+* Some fixes for reading of OpenType tables.
+* Add -D_REENTRANT to compilation when necessary. [Sven Neumann]
+* Try and enable ClearType for Win32 backend. [Tor Lillqvist]
+* Fixes for Korean glyphs in the basic-x shaper [Changwoo Ryu]
+* Improvements for computation of average char/digit width [Sven Neumann]
+* Bug and error reporting fixes 
+  [Arnaud Charlet, Erewan Chenede, Mikael Hallendal, Stefan Israelsson, 
+   Alex Larsson, Soeren Sandmann, Dan Winship]
+
+============================================================
+
 Changes between 1.0.0 rc2 and 1.0.0
 
 * Updated README files.
