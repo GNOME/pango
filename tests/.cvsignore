@@ -6,5 +6,6 @@ dump-boundaries
 gen-all-unicode
 all-unicode.txt
 cxx-test
+testcolor
 Makefile.in
 Makefile
