@@ -83,10 +83,10 @@ if test "$echo_exec_prefix" = "yes"; then
 fi
 if test "$echo_cflags" = "yes"; then
 	cflags="@UNICODE_CFLAGS@ @GLIB_CFLAGS@"
-	echo -I@libdir@/glib/include $includes $cflags
+	echo $includes $cflags
 fi
 if test "$echo_libs" = "yes"; then
-	libs="-lpango -lfribidi @UNICODE_LIBS@ @GLIB_LIBS@"
+	libs="-lpango @FRIBIDI_LIBS@ @UNICODE_LIBS@ @GLIB_LIBS@"
 	if test "$lib_pangox" = "yes"; then
 		libs="@X_LIBS@ -lpangox $libs"
 	fi

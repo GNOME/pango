@@ -1,3 +1,14 @@
+Thu Jul  6 15:24:38 2000  Owen Taylor  <otaylor@redhat.com>
+
+	* Released 0.12
+
+        * configure.in: Use AM_PATH_GLIB_2_0()
+	
+	* pango-config.in: Use @FRIBIDI_LIBS@, not -lfribidi
+
+	* pango-config.in: Fix accidental inclusion 
+	-I lib/glib/include/
+
 Mon Jul 10 10:42:42 2000  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pango-utils.c (pango_split_file_list): Fix
@@ -10,8 +21,6 @@ Mon Jul 10 10:42:42 2000  Owen Taylor  <otaylor@redhat.com>
 	(pango_break): Fix bug in word stop location
 
 Thu Jul  6 15:24:38 2000  Owen Taylor  <otaylor@redhat.com>
-
-	* Released 0.12
 
 	* gdk/Makefile.am: Fix missing \ which was causing
 	srcdir != builddir builds to fail.

@@ -24,9 +24,9 @@ fi
 X_LIBS="-L$x_libraries -lX11"
 AC_SUBST(X_LIBS)
 
-AM_PATH_GLIB(1.3.1,,
-             AC_MSG_ERROR([GLib 1.3.1 is required for building Pango]),
-	     gmodule gobject)
+AM_PATH_GLIB_2_0(1.3.1,,
+                 AC_MSG_ERROR([GLib 1.3.1 is required for building Pango]),
+	         gmodule gobject)
 
 AC_PATH_PROG(FRIBIDI_CONFIG, fribidi-config, no)
 if test x$FRIBIDI_CONFIG = xno ; then
@@ -42,9 +42,9 @@ AC_CHECK_LIB(fribidi, fribidi_map_range, :,
 	     AC_MSG_ERROR([*** libfribidi not found.]), $FRIBIDI_LIBS)
 
 
-AC_PATH_PROG(GLIB_CONFIG, glib-config, no)
+AC_PATH_PROG(GLIB_CONFIG, glib-config-2.0, no)
 if test x$GLIB_CONFIG = xno ; then
-  AC_MSG_ERROR([*** glib-config not found])
+  AC_MSG_ERROR([*** glib-config-2.0 not found])
 fi
 GLIB_CFLAGS="`$GLIB_CONFIG --cflags gmodule gobject`"
 CFLAGS="$CFLAGS $GLIB_CFLAGS"
