@@ -89,7 +89,7 @@ pango_fc_font_class_init (PangoFcFontClass *class)
   font_class->find_shaper = pango_fc_font_find_shaper;
   font_class->get_coverage = pango_fc_font_get_coverage;
   font_class->get_metrics = pango_fc_font_get_metrics;
-  font_class->get_font_map = pango_fc_font_get_metrics;
+  font_class->get_font_map = pango_fc_font_get_font_map;
   
   g_object_class_install_property (object_class, PROP_PATTERN,
 				   g_param_spec_pointer ("pattern",

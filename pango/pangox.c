@@ -284,6 +284,7 @@ pango_x_font_class_init (PangoXFontClass *class)
   font_class->find_shaper = pango_x_font_find_shaper;
   font_class->get_glyph_extents = pango_x_font_get_glyph_extents;
   font_class->get_metrics = pango_x_font_get_metrics;
+  font_class->get_font_map = pango_x_font_get_font_map;
 }
 
 PangoXFont *
