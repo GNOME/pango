@@ -813,72 +813,30 @@ pango_win32_render_layout (HDC          hdc,
 			   int          x, 
 			   int          y)
 {
-  PangoRectangle logical_rect;
-  GSList *tmp_list;
-  PangoAlignment align;
-  int indent;
-  int width;
-  int y_offset = 0;
+  PangoLayoutIter *iter;
 
-  gboolean first = TRUE;
-  
-  g_return_if_fail (layout != NULL);
+  g_return_if_fail (hdc != NULL);
+  g_return_if_fail (PANGO_IS_LAYOUT (layout));
 
-  indent = pango_layout_get_indent (layout);
-  width = pango_layout_get_width (layout);
-  align = pango_layout_get_alignment (layout);
-
-  if (width == -1 && align != PANGO_ALIGN_LEFT)
+  do
     {
-      pango_layout_get_extents (layout, NULL, &logical_rect);
-      width = logical_rect.width;
-    }
-  
-  tmp_list = pango_layout_get_lines (layout);
-  while (tmp_list)
-    {
-      PangoLayoutLine *line = tmp_list->data;
-      int x_offset;
+      PangoRectangle   logical_rect;
+      PangoLayoutLine *line;
+      int              baseline;
       
-      pango_layout_line_get_extents (line, NULL, &logical_rect);
-
-      if (width != 1 && align == PANGO_ALIGN_RIGHT)
-	x_offset = width - logical_rect.width;
-      else if (width != 1 && align == PANGO_ALIGN_CENTER)
-	x_offset = (width - logical_rect.width) / 2;
-      else
-	x_offset = 0;
-
-      if (first)
-	{
-	  if (indent > 0)
-	    {
-	      if (align == PANGO_ALIGN_LEFT)
-		x_offset += indent;
-	      else
-		x_offset -= indent;
-	    }
-
-	  first = FALSE;
-	}
-      else
-	{
-	  if (indent < 0)
-	    {
-	      if (align == PANGO_ALIGN_LEFT)
-		x_offset -= indent;
-	      else
-		x_offset += indent;
-	    }
-	}
-	  
-      pango_win32_render_layout_line (hdc, line,
-				      x + PANGO_PIXELS (x_offset),
-				      y + PANGO_PIXELS (y_offset - logical_rect.y));
-
-      y_offset += logical_rect.height;
-      tmp_list = tmp_list->next;
+      line = pango_layout_iter_get_line (iter);
+      
+      pango_layout_iter_get_line_extents (iter, NULL, &logical_rect);
+      baseline = pango_layout_iter_get_baseline (iter);
+      
+      pango_win32_render_layout_line (hdc,
+                                      line,
+                                      x + PANGO_PIXELS (logical_rect.x),
+                                      y + PANGO_PIXELS (baseline));
     }
+  while (pango_layout_iter_next_line (iter));
+
+  pango_layout_iter_free (iter);  
 }
 
 /* This utility function is duplicated here and in pango-layout.c; should it be

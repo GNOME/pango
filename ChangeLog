@@ -1,3 +1,11 @@
+2003-04-02  Sven Neumann  <sven@gimp.org>
+
+	* pango/pangoft2.c (pango_ft2_render_layout)
+	* pango/pangowin32.c (pango_win32_render_layout)
+	* pango/pangox.c (pango_x_render_layout): use a PangoLayoutIter to
+	iterate over the lines and let render_layout_line() do the actual
+	rendering. Fixes bug #105292.
+
 2003-03-28  Sven Neumann  <sven@gimp.org>
 
 	* pango/pangoft2-fontmap.c
