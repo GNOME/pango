@@ -257,6 +257,7 @@ a particular #PangoFontMap implementation.
 @load_font: a function to load a font with a given description. See
             pango_font_map_load_font()
 @list_fonts: A function to list available fonts. See pango_font_map_list_fonts()
+@list_families: 
 
 <!-- ##### FUNCTION pango_font_map_init ##### -->
 <para>
@@ -293,12 +294,32 @@ a particular #PangoFontMap implementation.
 @Returns: 
 
 
+<!-- ##### FUNCTION pango_font_map_list_families ##### -->
+<para>
+
+</para>
+
+@fontmap: 
+@families: 
+@n_families: 
+
+
+<!-- ##### FUNCTION pango_font_map_free_families ##### -->
+<para>
+
+</para>
+
+@families: 
+@n_families: 
+
+
 <!-- ##### FUNCTION pango_font_map_list_fonts ##### -->
 <para>
 
 </para>
 
 @fontmap: 
+@family: 
 @descs: 
 @n_descs: 
 

@@ -35,7 +35,7 @@ AC_SUBST(UNICODE_LIBS)
 AC_CHECK_FUNCS(flockfile)
 
 AC_CHECK_LIB(unicode, unicode_type, :,
-	     AC_MSG_ERROR([*** libunicode not found.]))
+	     AC_MSG_ERROR([*** libunicode not found.]), $UNICODE_LIBS)
 
 AC_CHECK_PROG(gtkdoc, gtkdoc-scan, yes, no)
 AM_CONDITIONAL(HAVE_GTK_DOC, test x$gtkdoc = xyes)

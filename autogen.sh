@@ -6,7 +6,7 @@ test -z "$srcdir" && srcdir=.
 
 ORIGDIR=`pwd`
 cd $srcdir
-PROJECT=PanGo
+PROJECT=Pango
 TEST_TYPE=-f
 FILE=libpango/pango.h
 
