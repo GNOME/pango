@@ -1,3 +1,7 @@
+2002-03-03  jacob berkman  <jacob@ximian.com>
+
+	* Makefile.am (EXTRA_DIST): add sanitize-la.sh
+
 Sat Mar  2 21:57:55 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* examples/Makefile.am (pango.modules): Write 

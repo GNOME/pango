@@ -16,7 +16,8 @@ EXTRA_DIST = 		\
 	pangowin32-uninstalled.pc.in	\
 	TODO.xml	\
 	README.win32	\
-	pango-zip.sh
+	pango-zip.sh	\
+	sanitize-la.sh
 
 if HAVE_X
 X_PC=pangox.pc
