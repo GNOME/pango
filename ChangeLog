@@ -1,3 +1,8 @@
+Sun Nov 21 10:46:34 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-layout.c (pango_layout_set_text): Fix UTF8 => UTF-8
+	in warning and doc comment. (#153551, Morten Welinder)
+
 Sat Nov 20 23:50:40 2004  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pangoxft-font.c (get_glyph_extents_missing): Fix double
