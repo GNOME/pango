@@ -1,3 +1,9 @@
+Tue Apr 15 04:53:56 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* modules/indic/indic-ot.h (enum): Cast some enumeration
+	members that are bigger than signed integers to (int) to fix
+	warning on AIX. (#107924)
+
 Tue Apr 15 04:39:48 2003  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pango-coverage.c (pango_coverage_set): Fix

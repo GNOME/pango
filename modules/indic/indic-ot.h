@@ -58,7 +58,7 @@ typedef enum
 {
   CF_CLASS_MASK   = 0x0000FFFF,
 
-  CF_CONSONANT    = 0x80000000,
+  CF_CONSONANT    = (int)0x80000000,
 
   CF_REPH         = 0x40000000,
   CF_VATTU        = 0x20000000,
@@ -85,7 +85,7 @@ typedef glong IndicOTCharClass;
  */
 typedef enum
 {
-  SF_MATRAS_AFTER_BASE    = 0x80000000,
+  SF_MATRAS_AFTER_BASE    = (int)0x80000000,
   SF_REPH_AFTER_BELOW     = 0x40000000,
   SF_EYELASH_RA           = 0x20000000,
   SF_MPRE_FIXUP           = 0x10000000,
