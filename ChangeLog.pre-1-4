@@ -1,3 +1,11 @@
+2003-07-25  Sven Neumann  <sven@gimp.org>
+
+	* pango/pangoft2.c (pango_ft2_render_layout_line): removed
+	redundant call to pango_layout_line_get_extents() (#116822).
+
+	* pango/pangoft2.c (pango_ft2_render): fixed source bitmap offset
+	for the monochrome case; some code cleanup (#116837).
+
 Thu Jul 24 18:03:32 2003  Owen Taylor  <otaylor@redhat.com>
 
 	* modules/*/Makefile.am: Remove leftover FRIBIDI_LIBS
