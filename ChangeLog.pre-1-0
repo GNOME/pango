@@ -1,3 +1,9 @@
+2001-04-02  Alexander Larsson  <alexl@redhat.com>
+
+	* pango/pangoft2-fontmap.c:
+	Add some initilaization failure warnings if no fonts found
+	or no fontaliases files found.
+
 2001-03-31  Fatih Demir <kabalak@gtranslator.org>
 
 	* .cvsignore: Extended the ignore list to be right

@@ -241,7 +241,7 @@ pango_ft2_is_font_file (const char *name)
   return FALSE;
 }
 
-static void
+static gboolean
 pango_ft2_scan_directory (const char      *path,
 			  PangoFT2FontMap *ft2fontmap)
 {
@@ -251,11 +251,12 @@ pango_ft2_scan_directory (const char      *path,
   FT_Face face;
   FT_Error error;
   int i;
+  gboolean found_font = FALSE;
 
   dir = opendir (path);
   if (!dir)
     /* Don't warn; it's OK to have nonexistent entries in the font path */
-    return;
+    return FALSE;
 
   while ((entry = readdir (dir)) != NULL)
     {
@@ -273,7 +274,10 @@ pango_ft2_scan_directory (const char      *path,
 	  else
 	    {
 	      if (face->face_flags & FT_FACE_FLAG_SCALABLE)
-		pango_ft2_insert_face (ft2fontmap, face, fullname, 0);
+		{
+		  pango_ft2_insert_face (ft2fontmap, face, fullname, 0);
+		  found_font = TRUE;
+		}
 	      
 	      for (i = 1; i < face->num_faces; i++)
 		{
@@ -286,7 +290,10 @@ pango_ft2_scan_directory (const char      *path,
 		    g_warning ("Error loading font %d from '%s': %s",
 			       i, fullname, pango_ft2_ft_strerror (error));
 		  else if (face->face_flags & FT_FACE_FLAG_SCALABLE)
-		    pango_ft2_insert_face (ft2fontmap, face, fullname, i);
+		    {
+		      pango_ft2_insert_face (ft2fontmap, face, fullname, i);
+		      found_font = TRUE;
+		    }
 		}
 	      error = FT_Done_Face (face);
 	      if (error != FT_Err_Ok)
@@ -297,6 +304,7 @@ pango_ft2_scan_directory (const char      *path,
       g_free (fullname);
     }
   closedir (dir);
+  return found_font;
 }
 
 PangoFontMap *
@@ -304,6 +312,7 @@ pango_ft2_font_map_for_display (void)
 {
   char **tmp_list;
   FT_Error error;
+  gboolean read_font;
 
   /* Make sure that the type system is initialized */
   g_type_init (0);
@@ -326,12 +335,16 @@ pango_ft2_font_map_for_display (void)
   
   tmp_list = pango_ft2_font_directories;
 
+  read_font = FALSE;
   while (*tmp_list)
     {
-      pango_ft2_scan_directory ((const char *) *tmp_list, pango_ft2_global_fontmap);
+      read_font |= pango_ft2_scan_directory ((const char *) *tmp_list, pango_ft2_global_fontmap);
       tmp_list++;
     }
 
+  if (!read_font)
+    g_warning ("No fonts found by pangft2. Things will probably not work");
+  
   pango_ft2_font_map_read_aliases (pango_ft2_global_fontmap);
 
   return PANGO_FONT_MAP (pango_ft2_global_fontmap);
@@ -588,7 +601,7 @@ pango_ft2_font_map_load_font (PangoFontMap               *fontmap,
   return result;
 }
 
-static void
+static gboolean
 pango_ft2_font_map_read_alias_file (PangoFT2FontMap *ft2fontmap,
 				    const char      *filename)
 {
@@ -598,6 +611,7 @@ pango_ft2_font_map_read_alias_file (PangoFT2FontMap *ft2fontmap,
   int i;
   PangoFT2FontEntry *font_entry = NULL;
   gchar **faces;
+  gboolean ret_val = FALSE;
 
   infile = fopen (filename, "r");
   if (infile)
@@ -704,6 +718,7 @@ pango_ft2_font_map_read_alias_file (PangoFT2FontMap *ft2fontmap,
       if (ferror (infile))
 	g_warning ("Error reading file '%s': %s", filename, g_strerror(errno));
 
+      ret_val = TRUE;
       goto out;
 
     error:
@@ -727,6 +742,7 @@ pango_ft2_font_map_read_alias_file (PangoFT2FontMap *ft2fontmap,
       fclose (infile);
     }
 
+  return ret_val;
 }
 
 static void
@@ -737,6 +753,7 @@ pango_ft2_font_map_read_aliases (PangoFT2FontMap *ft2fontmap)
   char *home;
   char *tmp_str;
   int n;
+  gboolean read_aliasfile;
 
   if (!files_str)
     {
@@ -761,8 +778,14 @@ pango_ft2_font_map_read_aliases (PangoFT2FontMap *ft2fontmap)
   while (files[n])
     n++;
 
+
+  read_aliasfile = FALSE;
+  
   while (n-- > 0)
-    pango_ft2_font_map_read_alias_file (ft2fontmap, files[n]);
+    read_aliasfile |= pango_ft2_font_map_read_alias_file (ft2fontmap, files[n]);
+
+  if (!read_aliasfile)
+    g_warning ("Didn't read any pango ft2 fontalias file. Things will probably not work.");
 
   g_strfreev (files);
   g_free (files_str);
