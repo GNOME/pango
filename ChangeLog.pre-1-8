@@ -1,3 +1,8 @@
+2002-09-04  Tor Lillqvist  <tml@iki.fi>
+
+	* pango/pango-utils.c: G_WIN32_DLLMAIN_FOR_DLL_NAME not needed on
+	Cygwin, surround with #ifdef G_OS_WIN32. (91785, Masahiro Sakai)
+
 Wed Aug 28 15:22:14 2002  Eric Mader   <mader@jtcsv.com>
 	
 	* pango/modules/indic/indic-ot.h:

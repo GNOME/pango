@@ -635,10 +635,12 @@ pango_config_key_get (const char *key)
   return g_strdup (g_hash_table_lookup (config_hash, key));
 }
 
+#ifdef G_OS_WIN32
+
 /* DllMain function needed to tuck away the DLL name */
 
 G_WIN32_DLLMAIN_FOR_DLL_NAME(static, dll_name)
-
+#endif
 
 /**
  * pango_get_sysconf_subdirectory:
