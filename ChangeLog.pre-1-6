@@ -1,7 +1,7 @@
 Wed Jul 28 09:49:29 2004  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pango-layout.c (pango_layout_set_ellipsize): Fix
-	API docs. (#148627)
+	API docs. (#148627, Keith Sharp)
 
 Tue Jul 27 14:07:44 2004  Behdad Esfahbod  <pango@behdad.org>
 
