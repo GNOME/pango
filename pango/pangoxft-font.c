@@ -312,6 +312,9 @@ static void
 pango_xft_font_finalize (GObject *object)
 {
   PangoXftFont *xfont = (PangoXftFont *)object;
+  Display *display;
+  
+  _pango_xft_font_map_get_info (xfont->fontmap, &display, NULL);
 
   _pango_xft_font_map_remove (xfont->fontmap, xfont);
 
@@ -320,6 +323,10 @@ pango_xft_font_finalize (GObject *object)
 
   if (xfont->ot_info)
     g_object_unref (xfont->ot_info);
+
+  pango_font_description_free (xfont->description);
+  
+  XftFontClose (display, xfont->xft_font);
 
   G_OBJECT_CLASS (parent_class)->finalize (object);
 }

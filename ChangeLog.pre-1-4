@@ -1,3 +1,13 @@
+Mon Sep  3 19:37:02 2001  Owen Taylor  <otaylor@redhat.com>
+
+	* configure.in: Version 0.18
+
+	* NEWS: Updated.
+
+	* pango/pangoxft-font.c (pango_xft_font_finalize): Actually
+	free the XftFont (and description). Lack of such pointed out
+	by David Turner.
+
 Sun Sep  2 12:08:15 2001  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pango-layout.c pango/pango-utils.c: Make 

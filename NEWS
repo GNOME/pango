@@ -1,3 +1,18 @@
+Changes between 0.17 and 0.18
+
+* Add PangoLanguage type for language tags, use consistently.
+* Add support for different font orderings for different lanuages to
+  basic shaper.
+* Win32 fixes [Alex,Hans]
+* Add pango_context_get_metrics() to get metrics for a font description
+* Add GTypes for various types [James]
+* Lots of warning fixes [Darin]
+* Fix to PangoLayout for lines with only tabs on them [Matthias]
+* Improve compositing of glyphs for pangoft2 backend [Sven]
+* Export pango_color_parse().
+* Adapt to changes in GLib.
+* Build and bug fixes.
+
 Changes between 0.16 and 0.17
 
 * Build/bug fixes
