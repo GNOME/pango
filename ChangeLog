@@ -1,3 +1,7 @@
+Thu May 23 16:52:55 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* Released 1.0.2.
+
 2002-05-23  Changwoo Ryu  <cwryu@debian.org>
 
 	* modules/hangul/hangul-x.c (render_syllable_with_ksc5601): 
