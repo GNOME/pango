@@ -228,6 +228,8 @@ pango_x_font_map_for_display (Display *display)
 
       if (xfontmap->display == display)
 	return PANGO_FONT_MAP (xfontmap);
+
+      tmp_list = tmp_list->next;
     }
 
   xfontmap = (PangoXFontMap *)g_type_create_instance (PANGO_TYPE_X_FONT_MAP);

@@ -1,3 +1,14 @@
+Thu May 31 12:31:20 2001  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pangox-fontmap.c (pango_x_font_map_for_display):
+	Actually advance through list. (Problem noticed 
+	by Erwann Chenede)
+
+	* modules/Makefile.am (install-data-local): Move rule
+	for generation of /etc/pango/pango.modules to here,
+	since we are now built _after_ the library. (Problem
+	noticed by KUSANO Takayuki)
+
 Tue May 29 18:17:11 2001  Owen Taylor  <otaylor@redhat.com>
 
 	* autogen.sh (have_libtool): Fix GNU sedism
