@@ -308,7 +308,8 @@ get_face_metrics (PangoFcFont      *fcfont,
       FT_Vector_Transform (&vector, &ft_matrix);
       metrics->ascent = PANGO_UNITS_26_6 (vector.y);
     }
-  else if (fcfont->is_hinted)
+  else if (fcfont->is_hinted ||
+	   (face->face_flags & FT_FACE_FLAG_SCALABLE) == 0)
     {
       metrics->descent = - PANGO_UNITS_26_6 (face->size->metrics.descender);
       metrics->ascent = PANGO_UNITS_26_6 (face->size->metrics.ascender);

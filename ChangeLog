@@ -1,3 +1,10 @@
+Mon Sep 20 12:17:37 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pangofc-font.c (get_face_metrics): 
+	Don't use face->ascender/descender for non-scalable fonts,
+	since they aren't set. (#Enrico Scholz, 
+	https://bugzilla.redhat.com/bugzilla/show_bug.cgi?id=129246)
+
 2004-09-18  Tor Lillqvist  <tml@iki.fi>
 
 	* pango/pango.def: Add pango_context_set_matrix. (#152883, Ivan
