@@ -1,3 +1,14 @@
+Thu Jun 24 14:07:10 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* === Released 1.5.0 ===
+
+	* NEWS: Updated
+
+Thu Jun 24 13:35:03 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-glyph-item.c (pango_glyph_item_apply_attrs): 
+	Fix double cluster increment.
+
 Thu Jun 24 00:50:46 2004  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pango-layout.c (pango_layout_run_get_extents): Fix

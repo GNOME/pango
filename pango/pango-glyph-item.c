@@ -431,9 +431,6 @@ pango_glyph_item_apply_attrs (PangoGlyphItem   *glyph_item,
 	  state.segment_attrs = g_slist_concat (state.segment_attrs,
 						pango_attr_iterator_get_attrs (iter));
 	}
-
-      if (!glyph_item_iter_next_cluster (&state.iter))
-	break;
     }
 
  out:
