@@ -1,3 +1,10 @@
+2000-05-24  Matt Wilson  <msw@redhat.com>
+
+	* modules/basic/basic.c (conv_8bit): use size_t for arguments to
+	iconv, not int.  Fixes 64 bit platforms.
+
+	* modules/basic/basic.c (conv_euc): likewise
+
 Mon May 22 18:19:32 2000  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pango-layout.c (process_item): Fix <, <= confusion.

@@ -270,9 +270,9 @@ conv_8bit (CharCache  *cache,
   const char *p;
   
   const char *inptr = input;
-  int inbytesleft;
+  size_t inbytesleft;
   char *outptr = &outbuf;
-  int outbytesleft = 1;
+  size_t outbytesleft = 1;
 
   _pango_utf8_iterate (input, &p, NULL);
   inbytesleft = p - input;
@@ -294,9 +294,9 @@ conv_euc (CharCache  *cache,
   const char *p;
 
   const char *inptr = input;
-  int inbytesleft;
+  size_t inbytesleft;
   char *outptr = outbuf;
-  int outbytesleft = 2;
+  size_t outbytesleft = 2;
 
   _pango_utf8_iterate (input, &p, NULL);
   inbytesleft = p - input;
