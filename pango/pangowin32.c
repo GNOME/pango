@@ -135,26 +135,21 @@ pango_win32_find_subfont (PangoFont        *font,
   return win32font->subfonts[subfont_index-1];
 }
 
-static void
-pango_win32_make_hfont (PangoFont             *font,
-			PangoWin32SubfontInfo *info)
-{
-  PangoWin32Font *win32font = (PangoWin32Font *)font;
-  PangoWin32FontCache *cache;
-
-  cache = pango_win32_font_map_get_font_cache (win32font->fontmap);
-  
-  info->hfont = pango_win32_font_cache_load (cache, &info->logfont);
-  if (!info->hfont)
-    g_warning ("Cannot load font '%s\n", info->logfont.lfFaceName);
-}
-
 static inline HFONT
 pango_win32_get_hfont (PangoFont             *font,
 		       PangoWin32SubfontInfo *info)
 {
+  PangoWin32Font *win32font = (PangoWin32Font *)font;
+  PangoWin32FontCache *cache;
+
   if (!info->hfont)
-    pango_win32_make_hfont (font, info);
+    {
+      cache = pango_win32_font_map_get_font_cache (win32font->fontmap);
+  
+      info->hfont = pango_win32_font_cache_load (cache, &info->logfont);
+      if (!info->hfont)
+	g_warning ("Cannot load font '%s\n", info->logfont.lfFaceName);
+    }
   
   return info->hfont;
 }
@@ -247,7 +242,7 @@ pango_win32_font_class_init (PangoWin32FontClass *class)
 PangoWin32Font *
 pango_win32_font_new (PangoFontMap  *fontmap,
 		      const LOGFONT *lfp,
-		      int            n_fonts,
+		      int            n_logfonts,
 		      int	     size)
 {
   PangoWin32Font *result;
@@ -260,9 +255,9 @@ pango_win32_font_new (PangoFontMap  *fontmap,
   result->fontmap = fontmap;
   g_object_ref (G_OBJECT (fontmap));
 
-  result->n_fonts = n_fonts;
-  result->fonts = g_new (LOGFONT, n_fonts);
-  memcpy (result->fonts, lfp, sizeof (LOGFONT) * n_fonts);
+  result->n_logfonts = n_logfonts;
+  result->logfonts = g_new (LOGFONT, n_logfonts);
+  memcpy (result->logfonts, lfp, sizeof (LOGFONT) * n_logfonts);
   result->size = size;
 
   return result;
@@ -530,7 +525,7 @@ PangoWin32UnicodeSubrange
 pango_win32_unicode_classify (wchar_t wc)
 {
   int min = 0;
-  int max = sizeof (utab) / sizeof (utab[0]) - 1;
+  int max = G_N_ELEMENTS (utab) - 1;
   int mid;
 
   while (max >= min)
@@ -563,14 +558,14 @@ pango_win32_font_get_glyph_extents (PangoFont      *font,
 	{
 	  ink_rect->x = PANGO_SCALE * size.cx;
 	  ink_rect->width = ink_rect->x;
-	  ink_rect->y = PANGO_SCALE * 0;
+	  ink_rect->y = PANGO_SCALE * -size.cy;
 	  ink_rect->height = PANGO_SCALE * size.cy;
 	}
       if (logical_rect)
 	{
 	  logical_rect->x = 0;
 	  logical_rect->width = PANGO_SCALE * size.cx;
-	  logical_rect->y = 0;
+	  logical_rect->y = - PANGO_SCALE * size.cy;
 	  logical_rect->height = PANGO_SCALE * size.cy;
 	}
     }
@@ -872,27 +867,24 @@ pango_win32_list_subfonts (PangoFont                 *font,
   LOGFONT *lfp;
   PangoWin32Font *win32font = (PangoWin32Font *)font;
   PangoWin32Subfont *subfont_list;
-  PangoFontMap *fontmap;
   int i, j;
   int n_subfonts;
 
   g_return_val_if_fail (font != NULL, 0);
 
-  fontmap = pango_win32_font_map_for_display ();
-  
   subfont_list = g_hash_table_lookup (win32font->subfonts_by_subrange, (gpointer) subrange);
   if (!subfont_list)
     {
-      subfont_list = g_new (PangoWin32Subfont, win32font->n_fonts);
+      subfont_list = g_new (PangoWin32Subfont, win32font->n_logfonts);
       
-      for (i = 0; i < win32font->n_fonts; i++)
+      for (i = 0; i < win32font->n_logfonts; i++)
 	{
 	  /* Does this font cover the subrange? */
 	  PangoWin32Subfont subfont = 0;
 	  
-	  if (pango_win32_logfont_has_subrange (fontmap, win32font->fonts+i, subrange))
+	  if (pango_win32_logfont_has_subrange (win32font->fontmap, win32font->logfonts+i, subrange))
 	  {
-	    lfp = pango_win32_make_matching_logfont (fontmap, win32font->fonts+i, win32font->size);
+	    lfp = pango_win32_make_matching_logfont (win32font->fontmap, win32font->logfonts+i, win32font->size);
 	    if (lfp)
 	      {
 		subfont = pango_win32_insert_subfont (font, lfp);
@@ -907,14 +899,14 @@ pango_win32_list_subfonts (PangoFont                 *font,
     }
   
   n_subfonts = 0;
-  for (i = 0; i < win32font->n_fonts; i++)
+  for (i = 0; i < win32font->n_logfonts; i++)
     if (subfont_list[i])
       n_subfonts++;
 
   *subfont_ids = g_new (PangoWin32Subfont, n_subfonts);
 
   n_subfonts = 0;
-  for (i = 0; i < win32font->n_fonts; i++)
+  for (i = 0; i < win32font->n_logfonts; i++)
     if (subfont_list[i])
       {
 	(*subfont_ids)[n_subfonts] = subfont_list[i];
@@ -924,52 +916,81 @@ pango_win32_list_subfonts (PangoFont                 *font,
   return n_subfonts;
 }
 
-gboolean
-subfont_has_glyph (PangoWin32SubfontInfo *info,
-		   wchar_t                wc)
-
+static HBITMAP
+create_bitmap_dibsection (HDC    hdc,
+			  char **bits,
+			  int   *size,
+			  int    width,
+			  int    height)
 {
   struct {
     BITMAPINFOHEADER bmiHeader;
     RGBQUAD bmiColors[2];
   } bmi;
   DIBSECTION ds;
+  HBITMAP result;
+
+  bmi.bmiHeader.biSize = sizeof (BITMAPINFOHEADER);
+  bmi.bmiHeader.biWidth = width;
+  bmi.bmiHeader.biHeight = -height;
+  bmi.bmiHeader.biPlanes = 1;
+  bmi.bmiHeader.biBitCount = 1;
+  bmi.bmiHeader.biCompression = BI_RGB;
+  bmi.bmiHeader.biSizeImage = 0;
+  bmi.bmiHeader.biXPelsPerMeter =
+    bmi.bmiHeader.biYPelsPerMeter = 0;
+  bmi.bmiHeader.biClrUsed = 0;
+  bmi.bmiHeader.biClrImportant = 0;
+  
+  bmi.bmiColors[0].rgbBlue =
+    bmi.bmiColors[0].rgbGreen =
+    bmi.bmiColors[0].rgbRed = 0x00;
+  bmi.bmiColors[0].rgbReserved = 0x00;
+  
+  bmi.bmiColors[1].rgbBlue =
+    bmi.bmiColors[1].rgbGreen =
+    bmi.bmiColors[1].rgbRed = 0xFF;
+  bmi.bmiColors[1].rgbReserved = 0x00;
+      
+  result = CreateDIBSection (hdc, (BITMAPINFO *)&bmi, DIB_RGB_COLORS,
+			     (PVOID *)bits, NULL, 0);
+  if (size != NULL)
+    {
+      GetObject (result, sizeof (ds), &ds);
+      *size = ds.dsBmih.biSizeImage;
+    }
+  return result;
+}
+
+static gboolean
+subfont_has_glyph (PangoFont             *font,
+		   PangoWin32SubfontInfo *info,
+		   wchar_t                wc)
+
+{
   TEXTMETRIC tm;
-  HFONT hfont;
+  PangoWin32Font *win32font = (PangoWin32Font *) font;
   wchar_t default_wc;
+#ifdef HEAVY_DEBUGGING
+  static int dispx = 0, dispy = 0;
+#endif
+
+  if (!pango_win32_logfont_has_subrange (win32font->fontmap, &info->logfont,
+					 pango_win32_unicode_classify (wc)))
+    return FALSE;
 
   if (info->buf_hbm == NULL)
     {
       info->buf_hdc = CreateCompatibleDC (pango_win32_hdc);
-      GetTextMetrics (pango_win32_hdc, &tm);
+      info->oldfont = SelectObject (info->buf_hdc, info->hfont);
+      SetTextAlign (info->buf_hdc, TA_LEFT|TA_BASELINE|TA_NOUPDATECP);
+      GetTextMetrics (info->buf_hdc, &tm);
+      PING(("wt:%d,ht:%d",tm.tmMaxCharWidth,tm.tmHeight));
 
-      bmi.bmiHeader.biSize = sizeof (BITMAPINFOHEADER);
-      bmi.bmiHeader.biWidth = tm.tmMaxCharWidth;
-      bmi.bmiHeader.biHeight = -tm.tmHeight;
-      bmi.bmiHeader.biPlanes = 1;
-      bmi.bmiHeader.biBitCount = 1;
-      bmi.bmiHeader.biCompression = BI_RGB;
-      bmi.bmiHeader.biSizeImage = 0;
-      bmi.bmiHeader.biXPelsPerMeter =
-	bmi.bmiHeader.biYPelsPerMeter = 0;
-      bmi.bmiHeader.biClrUsed = 0;
-      bmi.bmiHeader.biClrImportant = 0;
-
-      bmi.bmiColors[0].rgbBlue =
-	bmi.bmiColors[0].rgbGreen =
-	bmi.bmiColors[0].rgbRed = 0x00;
-      bmi.bmiColors[0].rgbReserved = 0x00;
-
-      bmi.bmiColors[1].rgbBlue =
-	bmi.bmiColors[1].rgbGreen =
-	bmi.bmiColors[1].rgbRed = 0xFF;
-      bmi.bmiColors[1].rgbReserved = 0x00;
-      
       info->default_char_hbm =
-	CreateDIBSection (info->buf_hdc, (BITMAPINFO *)&bmi,
-			  DIB_RGB_COLORS, (PVOID *)&info->default_char_buf, NULL, 0);
-      GetObject (info->default_char_hbm, sizeof (ds), &ds);
-      info->buf_size = ds.dsBmih.biSizeImage;
+	create_bitmap_dibsection (info->buf_hdc, &info->default_char_buf,
+				  &info->buf_size,
+				  tm.tmMaxCharWidth, tm.tmHeight);
       
       info->oldbm = SelectObject (info->buf_hdc, info->default_char_hbm);
       info->buf_rect.left = 0;
@@ -980,14 +1001,25 @@ subfont_has_glyph (PangoWin32SubfontInfo *info,
       info->buf_y = tm.tmHeight - tm.tmDescent;
       FillRect (info->buf_hdc, &info->buf_rect, white_brush);
 
-      info->oldfont = SelectObject (info->buf_hdc, hfont);
       default_wc = tm.tmDefaultChar;
       TextOutW (info->buf_hdc, info->buf_x, info->buf_y, &default_wc, 1);
+#ifdef HEAVY_DEBUGGING
+      if (wc < 256)
+	{
+	  BitBlt (pango_win32_hdc,dispx,dispy,tm.tmMaxCharWidth,tm.tmHeight,info->buf_hdc,0,0,SRCCOPY);
+	  dispx += tm.tmMaxCharWidth + 5;
+	  if (dispx > 1000)
+	    {
+	      dispx = 0;
+	      dispy += tm.tmHeight + 5;
+	    }
+	}
+#endif
 
       info->buf_hbm =
-	CreateDIBSection (info->buf_hdc, (BITMAPINFO *)&bmi,
-			  DIB_RGB_COLORS, (PVOID *)&info->buf, NULL, 0);
-      
+	create_bitmap_dibsection (info->buf_hdc, &info->buf,
+				  NULL,
+				  tm.tmMaxCharWidth, tm.tmHeight);
       SelectObject (info->buf_hdc, info->buf_hbm);
     }
 
@@ -997,8 +1029,21 @@ subfont_has_glyph (PangoWin32SubfontInfo *info,
    */
   FillRect (info->buf_hdc, &info->buf_rect, white_brush);
   TextOutW (info->buf_hdc, info->buf_x, info->buf_y, &wc, 1);
+#ifdef HEAVY_DEBUGGING
+  if (wc < 256)
+    {
+      BitBlt (pango_win32_hdc,dispx,dispy,info->buf_rect.right,info->buf_rect.bottom,info->buf_hdc,0,0,SRCCOPY);
+      dispx += info->buf_rect.right + 5;
+      if (dispx > 1000)
+	{
+	  dispx = 0;
+	  dispy += info->buf_rect.bottom + 5;
+	}
+    }
+#endif
+
   return (memcmp (info->buf, info->default_char_buf, info->buf_size) != 0);
-  }
+}
 
 /**
  * pango_win32_has_glyph:
@@ -1027,7 +1072,7 @@ pango_win32_has_glyph (PangoFont  *font,
   if (hfont == NULL)
     return FALSE;
 
-  return subfont_has_glyph (info, char_index);
+  return subfont_has_glyph (font, info, char_index);
 }
 
 /**
@@ -1124,7 +1169,7 @@ pango_win32_font_finalize (GObject *object)
 
   g_object_unref (G_OBJECT (win32font->fontmap));
 
-  g_free (win32font->fonts);
+  g_free (win32font->logfonts);
 
   G_OBJECT_CLASS (parent_class)->finalize (object);
 }
@@ -1180,7 +1225,6 @@ pango_win32_find_glyph (PangoFont              *font,
 			SIZE                   *size_return)
 {
   SIZE size;
-  HFONT hfont, oldfont;
   PangoWin32SubfontInfo *info;
   guint16 char_index = PANGO_WIN32_GLYPH_INDEX (glyph);
   guint16 subfont_index = PANGO_WIN32_GLYPH_SUBFONT (glyph);
@@ -1189,13 +1233,10 @@ pango_win32_find_glyph (PangoFont              *font,
   if (!info)
     return FALSE;
   
-  if (!subfont_has_glyph (info, char_index))
+  if (!subfont_has_glyph (font, info, char_index))
     return FALSE;
 
-  hfont = pango_win32_get_hfont (font, info);
-  oldfont = SelectObject (pango_win32_hdc, hfont);
-  GetTextExtentPoint32W (pango_win32_hdc, &char_index, 1, &size);
-  SelectObject (pango_win32_hdc, oldfont);
+  GetTextExtentPoint32W (info->buf_hdc, &char_index, 1, &size);
 
   if (subfont_return)
     *subfont_return = info;

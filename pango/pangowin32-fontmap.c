@@ -518,7 +518,9 @@ pango_win32_guess_subranges (UINT           charset,
   fsp->fsUsb[0] = fsp->fsUsb[1] = fsp->fsUsb[2] = fsp->fsUsb[3] = 0;
 
   /* Set Unicode subrange bits based on code pages supported.
-   * This is mostly just guesswork.
+   * This is mostly just guesswork. No harm is done even if a bit is set,
+   * and the font after all doesn't cover that subrange completely.
+   * The bits are used just as a first approximation on font coverage.
    */
 
 #define check_cp(bit) (fsp->fsCsb[0] & (FS_##bit))
@@ -1265,7 +1267,6 @@ pango_win32_logfont_has_subrange (PangoFontMap              *fontmap,
   PangoWin32FontMap *win32fontmap;
   PangoWin32SizeInfo *size_info;
 
-  PING(("lfp.face=%s,wt=%d,ht=%d,subr:%d",lfp->lfFaceName,lfp->lfWeight,lfp->lfHeight,subrange));
   win32fontmap = PANGO_WIN32_FONT_MAP (fontmap);
   size_info = g_hash_table_lookup (win32fontmap->size_infos, lfp);
   if (!size_info)

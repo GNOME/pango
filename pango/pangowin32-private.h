@@ -43,8 +43,8 @@ struct _PangoWin32Font
 {
   PangoFont font;
 
-  LOGFONT *fonts;
-  int n_fonts;
+  LOGFONT *logfonts;
+  int n_logfonts;
   int size;
 
   /* hash table mapping from Unicode subranges to array of PangoWin32Subfont

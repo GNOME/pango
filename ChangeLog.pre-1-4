@@ -1,3 +1,16 @@
+2000-07-19  Tor Lillqvist  <tml@iki.fi>
+
+	* examples/pangowin32.aliases: Add Tahoma and Angsana New, these
+	common fonts have Thai characters.
+
+	* pango/pangowin32-private.h: Rename fonts and n_fonts members
+	to logfonts and n_logfonts, as that is what they are.
+
+	* pango/pangowin32.c: Bug fixes. Works much better now.
+	(pango_win32_font_get_glyph_extents): Set y offset correctly.
+	(subfont_has_glyph): Call SetTextAlign. Select the font into the
+	HDC before calling GetTextMetrics.
+	
 2000-07-18  Tor Lillqvist  <tml@iki.fi>
 
 	* pango/Makefile.am (EXTRA_DIST): Add the pangowin32 sources.
