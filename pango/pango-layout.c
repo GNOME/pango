@@ -415,7 +415,7 @@ pango_layout_set_text (PangoLayout *layout,
     }
   else
     {
-      layout->text = NULL;
+      layout->text = g_strdup ("");
       layout->n_chars = 0;
     }
   
@@ -722,7 +722,7 @@ pango_layout_move_cursor_visually (PangoLayout *layout,
   vis_pos = log2vis_map[old_index - bytes_seen];
   g_free (log2vis_map);
   
-  if (vis_pos == 0 && count < 0)
+  if (vis_pos == 0 && direction < 0)
     {
       if (base_dir == PANGO_DIRECTION_LTR)
 	{
@@ -749,7 +749,7 @@ pango_layout_move_cursor_visually (PangoLayout *layout,
       
       vis_pos = unicode_strlen (layout->text + bytes_seen, line->length);
     }
-  else if (vis_pos == n_vis && count > 0)
+  else if (vis_pos == n_vis && direction > 0)
     {
       if (base_dir == PANGO_DIRECTION_LTR)
 	{
@@ -777,7 +777,7 @@ pango_layout_move_cursor_visually (PangoLayout *layout,
       vis_pos = 0;
     }
 
-  vis_pos += (count > 0) ? 1 : -1;
+  vis_pos += (direction > 0) ? 1 : -1;
   
   vis2log_map = pango_layout_line_get_vis2log_map (line, TRUE);
   *new_index = bytes_seen + vis2log_map[vis_pos];
@@ -1533,6 +1533,12 @@ pango_layout_check_lines (PangoLayout *layout)
 
   g_assert (!layout->log_attrs);
 
+  /* For simplicity, we make sure at this point that layout->text
+   * is non-NULL even if it is zero length
+   */
+  if (!layout->text)
+    pango_layout_set_text (layout, NULL, 0);
+  
   layout->log_attrs = g_new (PangoLogAttr, layout->n_chars);
   
   start_offset = 0;
@@ -1771,6 +1777,16 @@ pango_layout_line_x_to_index (PangoLayoutLine *line,
       tmp_list = tmp_list->next;
     }
 
+  if (line->length == 0)
+    {
+      if (index)
+	*index = first_index;
+      if (trailing)
+	*trailing = 0;
+      
+      return;
+    }
+  
   last_index = first_index + line->length;
   last_index = unicode_previous_utf8 (line->layout->text + first_index, line->layout->text + last_index) - line->layout->text;
 
@@ -1985,6 +2001,84 @@ pango_layout_line_get_x_ranges (PangoLayoutLine  *line,
     *n_ranges = range_count;
 }
 
+static void
+pango_layout_line_get_empty_extents (PangoLayoutLine *line,
+				     PangoRectangle  *ink_rect,
+				     PangoRectangle  *logical_rect)
+{
+  if (ink_rect)
+    {
+      ink_rect->x = 0;
+      ink_rect->y = 0;
+      ink_rect->width = 0;
+      ink_rect->height = 0;
+    }
+  
+  if (logical_rect)
+    {
+      char *line_start;
+      int index;
+      PangoLayout *layout = line->layout;
+      PangoFontDescription font_desc;
+      PangoFont *font;
+      PangoFontMetrics metrics;
+
+      pango_layout_line_get_range (line, &line_start, NULL);
+      index = line_start - layout->text;
+
+      /* Find the font description for this line
+       */
+      if (layout->attrs)
+	{
+	  PangoAttrIterator *iter = pango_attr_list_get_iterator (layout->attrs);
+	  int start, end;
+	  
+	  while (TRUE)
+	    {
+	      pango_attr_iterator_range (iter, &start, &end);
+	      
+	      if (start <= index && index < end)
+		{
+		  pango_attr_iterator_get_font (iter,
+						pango_context_get_font_description (layout->context),
+						&font_desc,
+						NULL);
+		  break;
+		}
+	      
+	      pango_attr_iterator_next (iter);
+	    }
+	  
+	  pango_attr_iterator_destroy (iter);
+	}
+      else
+	{
+	  font_desc = *pango_context_get_font_description (layout->context);
+	}
+
+      font = pango_context_load_font (layout->context, &font_desc);
+      if (font)
+	{
+	  char *lang = pango_context_get_lang (layout->context);
+	  pango_font_get_metrics (font, lang, &metrics);
+	  g_free (lang);
+
+	  logical_rect->y = - metrics.ascent;
+	  logical_rect->height = metrics.ascent + metrics.descent;
+
+	  pango_font_unref (font);
+	}
+      else
+	{
+	  logical_rect->y = 0;
+	  logical_rect->height = 0;
+	}
+      
+      logical_rect->x = 0;
+      logical_rect->width = 0;
+    }
+}
+
 /**
  * pango_layout_line_get_extents:
  * @line:     a #PangoLayoutLine
@@ -2010,6 +2104,12 @@ pango_layout_line_get_extents (PangoLayoutLine *line,
   if (!LINE_IS_VALID (line))
     return;
 
+  if (!line->runs)
+    {
+      pango_layout_line_get_empty_extents (line, ink_rect, logical_rect);
+      return;
+    }
+  
   if (ink_rect)
     {
       ink_rect->x = 0;

@@ -1,3 +1,12 @@
+Mon Apr 24 18:09:29 2000  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-layout.c (pango_layout_line_get_empty_extents): Come
+	up with a reasonable guess for metrics for empty lines based
+	on the font metrics.
+
+	* modules/devanagari/devanagari.c (devanagari_engine_shape): A couple
+	of trivial fixups to make things compile.
+
 Sun Apr 23 23:33:10 2000  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pango-layout.c (pango_layout_move_cursor_visually): New

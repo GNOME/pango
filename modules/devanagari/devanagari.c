@@ -427,7 +427,8 @@ devanagari_engine_shape (PangoFont * font,
   int lvl;
   const char *p, *next;
   int i;
-  GUChar4 *wc, *sb;
+  GUChar4 *wc;
+  int sb;
   int n_syls;
   GUChar4 **syls = g_malloc (sizeof (GUChar4 **));
 
@@ -508,7 +509,7 @@ devanagari_engine_shape (PangoFont * font,
       glyphs->glyphs[i].geometry.width = logical_rect.width;
 
       if (wc[i] == JOINING_RA || wc[i] == ANUSWAR ||
-	  wc[i] == REPHA || wc[i] == VIRAMA || wc[i] == CANDRA
+	  wc[i] == REPHA || wc[i] == VIRAMA || wc[i] == CANDRA ||
 	  is_nonspacing_vowel (wc[i]))
 	{
 	  if (wc[i] == VIRAMA)
