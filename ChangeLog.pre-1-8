@@ -1,3 +1,22 @@
+2001-11-24  Manish Singh  <yosh@gimp.org>
+
+	* acconfig.h
+	* configure.in: support for --with-xftconfig-dir= path to system
+	XftConfig file
+
+	* pango/pango-utils.c
+	* pango/pangox.c: include "config.h", not <config.h>
+
+	* pango/pangoxft-fontmap.c: this file is pangoxft-fontmap.c, not
+	pangoxft-fontmap.h :)
+
+	* pango/mini-xft/minixftint.h
+	* pango/mini-xft/minixftinit.c: add code for searching common
+	locations for the XftConfig file. We search MINI_XFTCONFIG_DIR
+	if configure defines it for us (as above), then $sysconfdir,
+	then (only on !_WIN32) /etc/X11 and /usr/X11R6/lib/X11.
+	
+
 Sat Nov 24 13:44:21 2001  Kristian Rietveld  <kristian@planet.nl>
 
 	* pango/pango-fontmap.c (pango_font_map_real_load_fontset):

@@ -34,7 +34,7 @@
 
 #define PANGO_LIGATURE_HACK_DEBUG
 
-#include <config.h>
+#include "config.h"
 
 #define PANGO_TYPE_X_FONT              (pango_x_font_get_type ())
 #define PANGO_X_FONT(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_TYPE_X_FONT, PangoXFont))

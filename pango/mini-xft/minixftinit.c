@@ -24,9 +24,7 @@
 
 #include <stdlib.h>
 
-#ifdef _WIN32
-#include <stdio.h>
-#endif
+#include <glib.h>
 
 #include "minixftint.h"
 
@@ -43,7 +41,7 @@ MiniXftInit (char *config)
     {
 	config = getenv ("XFT_CONFIG");
 	if (!config)
-	    config = XFT_DEFAULT_PATH;
+	    config = mini_xft_get_default_path ();
     }
     if (MiniXftConfigLexFile (config))
     {
@@ -52,22 +50,56 @@ MiniXftInit (char *config)
     return True;
 }
 
-#ifdef _WIN32
+extern char *pango_get_sysconf_subdirectory (void);
+
+#ifdef MINI_XFTCONFIG_DIR
+#define SYSCONF_INDEX 1
+#else
+#define SYSCONF_INDEX 0
+#endif
+
 char *
-get_xft_default_path (void)
+mini_xft_get_default_path (void)
 {
   static char *result = NULL;
-  extern char *pango_get_sysconf_subdirectory (void);
-  char *p;
-
+  char *paths[] = {
+#ifdef MINI_XFTCONFIG_DIR
+    MINI_XFTCONFIG_DIR,
+#endif
+    NULL,
+#ifndef _WIN32
+    "/etc/X11",
+    "/usr/X11R6/lib/X11"
+#endif
+  };
+  int i;
+  gboolean found = FALSE;
+  
   if (result)
     return result;
 
-  p = pango_get_sysconf_subdirectory ();
-  result = malloc (strlen (p) + 20);
+  paths[SYSCONF_INDEX] = g_build_path (G_DIR_SEPARATOR_S,
+				       pango_get_sysconf_subdirectory (),
+				       "..",
+				       NULL);
 
-  sprintf (result, "%s\\..\\XftConfig", p);
+  for (i = 0; i < (sizeof(paths) / sizeof(paths[0])); i++)
+    {
+      if (result)
+	g_free (result);
 
+      result = g_build_filename (paths[i], "XftConfig", NULL);
+
+      if (g_file_test (result, G_FILE_TEST_EXISTS))
+	{
+	  found = TRUE;
+	  break;
+	}
+    }
+
+  if (!found)
+    g_warning ("Could not find XftConfig file");
+
+  g_free (paths[SYSCONF_INDEX]);
   return result;
 }
-#endif

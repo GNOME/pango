@@ -24,7 +24,7 @@
 #include <string.h>
 #include <stdlib.h>
 
-#include <config.h>
+#include "config.h"
 
 #include "pango-font.h"
 #include "pango-utils.h"

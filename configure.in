@@ -229,6 +229,15 @@ AC_SUBST(FRIBIDI_PC)
 AM_CONDITIONAL(HAVE_FRIBIDI, test x$have_fribidi = xyes)
 
 #
+# Allow setting a default path for XftConfig
+#
+AC_ARG_WITH(xftconfig-dir, [  --with-xftconfig-dir=PATH   path to system XftConfig file for minixft ])
+
+if test "x$with_xftconfig_dir" != "x"; then
+   AC_DEFINE_UNQUOTED(MINI_XFTCONFIG_DIR, "$with_xftconfig_dir")
+fi
+
+#
 # The OpenType test programs aren't particularly portable
 #
 have_varargs=no

@@ -1,5 +1,5 @@
 /* Pango
- * pangoxft-fontmap.h: Xft font handling
+ * pangoxft-fontmap.c: Xft font handling
  *
  * Copyright (C) 2000 Red Hat Software
  *
