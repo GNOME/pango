@@ -1,3 +1,8 @@
+Mon Aug 16 14:17:56 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* examples/renderdemo.c (fc_substitute_func): Fix reversed
+	auto-hint option.
+
 2004-08-26  Tor Lillqvist  <tml@iki.fi>
 
 	* pango/pangoft2.def: Add pango_ot_buffer_set_zero_width_marks,

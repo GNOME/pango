@@ -313,7 +313,7 @@ fc_substitute_func (FcPattern *pattern, gpointer   data)
       FcPatternAddBool (pattern, FC_HINTING, opt_hinting != HINT_NONE);
       
       FcPatternDel (pattern, FC_AUTOHINT);
-      FcPatternAddBool (pattern, FC_AUTOHINT, opt_hinting != HINT_AUTO);
+      FcPatternAddBool (pattern, FC_AUTOHINT, opt_hinting == HINT_AUTO);
     }
 }
 
