@@ -643,7 +643,7 @@ pango_win32_render_layout (HDC              hdc,
   int width;
   int y_offset = 0;
 
-  gboolean first = FALSE;
+  gboolean first = TRUE;
   
   g_return_if_fail (layout != NULL);
 

@@ -1,3 +1,13 @@
+Mon Dec 10 09:18:09 2001  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-layout.c (pango_layout_index_to_pos): 
+	Fix problem with returned width on lines other than
+	the first line (#66274).
+
+	* pango/pangox,ft2,win32.c (pango_*_render_layout):
+	Fix problem where indent wasn't honored (#66275). 
+	[ Note, however, there are remaining problems - see, #66626 ]
+
 Thu Dec  6 19:07:31 2001  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pango-layout.c (get_items_log_attrs): Fix problem

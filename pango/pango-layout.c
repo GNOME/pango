@@ -1509,7 +1509,7 @@ pango_layout_index_to_pos (PangoLayout    *layout,
   pango_layout_line_index_to_x (layout_line, index, 0, &x_pos);
   pos->x = logical_rect.x + x_pos;
 
-  if (index < layout_line->length)
+  if (index < layout_line->start_index + layout_line->length)
     {
       pango_layout_line_index_to_x (layout_line, index, 1, &x_pos);
       pos->width = (logical_rect.x + x_pos) - pos->x;

@@ -756,7 +756,7 @@ pango_ft2_render_layout (FT_Bitmap   *bitmap,
   int width;
   int y_offset = 0;
 
-  gboolean first = FALSE;
+  gboolean first = TRUE;
   
   g_return_if_fail (bitmap != NULL);
   g_return_if_fail (layout != NULL);
