@@ -540,6 +540,13 @@ pango_win32_font_get_metrics (PangoFont     *font,
       pango_layout_set_text (layout, "0123456789", -1);
       metrics->approximate_digit_width = max_glyph_width (layout);
 
+      /* FIXME: Should get the real values from the TrueType font file */
+      metrics->underline_position = -2 * PANGO_SCALE;
+      metrics->underline_thickness = 1 * PANGO_SCALE;
+      metrics->strikethrough_thickness = metrics->underline_thickness;
+      /* Really really wild guess */
+      metrics->strikethrough_position = metrics->ascent / 3;
+
       pango_font_description_free (font_desc);
       g_object_unref (layout);
       g_object_unref (context);
