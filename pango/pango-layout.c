@@ -1873,7 +1873,7 @@ typedef enum
 {
   BREAK_NONE_FIT,
   BREAK_SOME_FIT,
-  BREAK_ALL_FIT,
+  BREAK_ALL_FIT
 } BreakResult;
 
 static BreakResult
