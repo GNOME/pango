@@ -22,6 +22,13 @@
  * PERFORMANCE OF THIS SOFTWARE.
  */
 
+#ifdef _WIN32
+#include <windows.h>
+#include <shlobj.h>
+#ifndef SHGFP_TYPE_CURRENT
+#define SHGFP_TYPE_CURRENT 0
+#endif
+#endif
 #include <sys/types.h>
 #include <dirent.h>
 #include <stdlib.h>
@@ -40,6 +47,48 @@ MiniXftDirScan (MiniXftFontSet *set, const char *dir, Bool force)
     int		    count;
     Bool	    ret = True;
     int		    id;
+
+#ifdef _WIN32
+    char windows_font_folder[MAX_PATH];
+
+    /* Recognize the special marker WINDOWSFONTDIR */
+    if (strcmp (dir, "WINDOWSFONTDIR") == 0)
+      {
+	typedef HRESULT (_stdcall *PFN_SHGetFolderPathA) (HWND, int, HANDLE, DWORD, LPSTR); 
+	PFN_SHGetFolderPathA sh_get_folder_path;
+	HMODULE shfolder_dll;
+
+	/* Try SHGetFolderPath if available */
+	if ((shfolder_dll = LoadLibrary ("shfolder.dll")) == NULL ||
+	    (sh_get_folder_path = (PFN_SHGetFolderPathA) GetProcAddress (shfolder_dll, "SHGetFolderPathA")) == NULL ||
+	    (*sh_get_folder_path) (NULL, CSIDL_FONTS, NULL,
+				     SHGFP_TYPE_CURRENT,
+				     windows_font_folder) != S_OK)
+	  {
+	    /* SHGetFolderPath not available, or failed. Use
+	     * GetWindowsDirectory, append "fonts".
+	     */
+	    int maxlen = sizeof (windows_font_folder) - strlen ("\\fonts") - 1;
+	    UINT n;
+	    if ((n = GetWindowsDirectory (windows_font_folder, maxlen)) == 0 ||
+		 n > maxlen)
+	      {
+		/* Didn't work either. Guess. */
+		if (access ("C:\\winnt\fonts\\arial.ttf", 0))
+		  strcpy (windows_font_folder, "C:\\winnt\fonts");
+		else
+		  strcpy (windows_font_folder, "C:\\windows\fonts");
+	      }
+	    else
+	      {
+		if (windows_font_folder[n-1] != '\\')
+		  strcat (windows_font_folder, "\\");
+		strcat (windows_font_folder, "fonts");
+	      }
+	  }
+	dir = windows_font_folder;
+      }
+#endif
 
     file = (char *) malloc (strlen (dir) + 1 + 256 + 1);
     if (!file)
