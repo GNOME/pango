@@ -1,3 +1,10 @@
+Wed Apr 16 03:46:42 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/opentype/pango-ot-info.c (synthesize_class_def):
+	More careful handling of face->charmap; if is NULL,
+	try to set a unicode charmap, if that doesn't succeed,
+	return. (Hopefully fixes #106550)
+	
 Tue Apr 15 11:49:39 2003  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/opentype/ftxg{sub/pos}.c: When loading
