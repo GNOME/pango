@@ -438,6 +438,7 @@ pango_scan_int (const char **pos, int *out)
     buf[i] = '\0';
 
   *out = atoi (buf);
+  *pos = p;
 
   return TRUE;
 }

@@ -1,7 +1,15 @@
+Thu Sep 19 15:12:21 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-utils.c (pango_scan_int): Fix problem
+	where position wasn't updated properly.
+
 Mon Sep 9 11:09:18 Eric Mader	<mader@jtcsv.com>
-	* pango/pango/opentype/pango-to-ruleset.c: correctly handle back, new_advance.
+	
+	* pango/pango/opentype/pango-to-ruleset.c: correctly handle back,
+	new_advance.
 
 Fri Sep 6 15:41:28 Eric Mader	<mader@jtcsv.com>
+	
 	* pango/pango/opentype/ftxopen.c:
 	* pango/pango/opentype/ftxopen.h: don't fail on an empty script
 	
