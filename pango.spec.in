@@ -61,7 +61,7 @@ rm -rf $RPM_BUILD_ROOT
 %files
 %doc README AUTHORS COPYING ChangeLog TODO
 %doc examples/HELLO.utf8
-%{_libdir}/libpango*-*.so
+%{_libdir}/libpango*-*.so.*
 %{_bindir}/pango-*
 %{_libdir}/pango
 %config %{_sysconfdir}/pango/pangox.aliases
