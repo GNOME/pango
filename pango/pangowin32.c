@@ -1058,7 +1058,6 @@ pango_win32_get_name_record (HDC                 hdc,
   return TRUE;
 }
 
-  
 static gboolean
 font_has_name_in (PangoFont                       *font,
 		  PangoWin32CoverageLanguageClass  cjkv)

@@ -182,7 +182,7 @@ void            pango_win32_font_entry_set_coverage (PangoWin32Face *face,
 						     PangoLanguage  *lang);
 void            pango_win32_font_entry_remove       (PangoWin32Face *face,
 						     PangoFont      *font);
-								    
+
 void            pango_win32_fontmap_cache_add       (PangoFontMap   *fontmap,
 						     PangoWin32Font *xfont);
 void            pango_win32_fontmap_cache_remove    (PangoFontMap   *fontmap,
