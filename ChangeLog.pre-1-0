@@ -1,3 +1,10 @@
+2001-03-15  Sven Neumann  <sven@gimp.org>
+
+	* Makefile.am
+	* configure.in
+	* modules/*/Makefile.am
+	* pango/Makefile.am: make it compile without X headers
+
 2001-03-12  Sven Neumann  <sven@gimp.org>
 
 	* pango/pangoft2.c (pango_ft2_font_describe): set the size field

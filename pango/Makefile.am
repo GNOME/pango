@@ -20,6 +20,14 @@ INCLUDES = 					\
 	$(FREETYPE_CFLAGS)			\
 	-I$(top_srcdir)
 
+if HAVE_X
+X_HFILES=pangox.h
+X_BUILD_LIBS=libpangox.la
+else
+X_HFILES=
+X_BUILD_LIBS=
+endif
+
 if HAVE_XFT
 XFT_HFILES=pangoxft.h pango-ot.h
 XFT_BUILD_LIBS=libpangoxft.la
@@ -37,7 +45,7 @@ FT2_HFILES=
 endif
 
 
-lib_LTLIBRARIES = libpango.la libpangox.la $(XFT_BUILD_LIBS) $(FT2_BUILD_LIBS)
+lib_LTLIBRARIES = libpango.la $(X_BUILD_LIBS) $(XFT_BUILD_LIBS) $(FT2_BUILD_LIBS)
 
 bin_PROGRAMS = pango-querymodules
 
@@ -125,12 +133,12 @@ pango_headers=		   \
 	pango-modules.h	   \
 	pango-tabs.h	   \
 	pango-types.h	   \
-	pango-utils.h	   \
-	pangox.h
+	pango-utils.h
 
 pangoinclude_HEADERS = 	   	\
 	$(pango_headers)   	\
 	$(pango_built_headers)	\
+	$(X_HFILES)		\
 	$(XFT_HFILES)           \
 	$(FT2_HFILES)
 
@@ -149,9 +157,9 @@ pango_querymodules_SOURCES = \
 	querymodules.c
 
 if HAVE_XFT
-pango_querymodules_LDADD = $(FT2_BUILD_LIBS) libpangox.la libpangoxft.la libpango.la $(GLIB_LIBS) $(FRIBIDI_LIBS) $(XFT_LIBS) $(FREETYPE_LIBS)
+pango_querymodules_LDADD = $(FT2_BUILD_LIBS) $(X_BUILD_LIBS) libpangoxft.la libpango.la $(GLIB_LIBS) $(FRIBIDI_LIBS) $(XFT_LIBS) $(FREETYPE_LIBS)
 else
-pango_querymodules_LDADD = $(FT2_BUILD_LIBS) libpangox.la libpango.la $(GLIB_LIBS) $(FRIBIDI_LIBS) $(X_LIBS) $(FREETYPE_LIBS)
+pango_querymodules_LDADD = $(FT2_BUILD_LIBS) $(X_BUILD_LIBS) libpango.la $(GLIB_LIBS) $(FRIBIDI_LIBS) $(X_LIBS) $(FREETYPE_LIBS)
 endif
 
 EXTRA_DIST =			\

@@ -34,6 +34,7 @@ FT2_INCLUDED=
 FT2_PREFIX=
 endif
 
+if HAVE_X
 if INCLUDE_BASIC_X
 X_INCLUDED=libpango-basic-x.la
 X_MODULES=
@@ -41,6 +42,11 @@ X_PREFIX=-DX_MODULE_PREFIX
 else
 X_INCLUDED=
 X_MODULES=pango-basic-x.la
+X_PREFIX=
+endif
+else
+X_INCLUDED=
+X_MODULES=
 X_PREFIX=
 endif
 

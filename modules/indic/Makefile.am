@@ -8,6 +8,8 @@ sources =		 	\
 	devanagari-x.c		\
 	pango-indic-script.h
 
+if HAVE_X
+
 if INCLUDE_MYANMAR_X
 myanmar_x_noinst=libpango-myanmar-x.la
 myanmar_x_cflags=-DMYANMAR_X_MODULE_PREFIX
@@ -53,6 +55,8 @@ noinst_LTLIBRARIES = $(myanmar_x_noinst) $(gurmukhi_x_noinst) $(bengali_x_noinst
 else
 moduledir = $(libdir)/pango/modules
 module_LTLIBRARIES = $(myanmar_x_inst) $(gurmukhi_x_inst) $(bengali_x_inst) $(devanagari_x_inst) $(gujarati_x_inst)
+endif
+
 endif
 
 INCLUDES = -I$(top_srcdir) -I$(top_srcdir)/pango/ $(X_CFLAGS) $(myanmar_x_cflags) $(gurmukhi_x_cflags) $(bengali_x_cflags) $(devanagari_x_cflags) $(gujarati_x_cflags)

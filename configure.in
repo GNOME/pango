@@ -41,11 +41,13 @@ fi
 AC_SUBST(REBUILD)
 
 if test x$no_x = xyes ; then
-  AC_MSG_ERROR([X development libraries not found])
+  AC_MSG_WARN([X development libraries not found])
+  have_x=false
+else
+  X_LIBS="$X_LIBS -lX11"
+  have_x=true
 fi
-
-X_LIBS="$X_LIBS -lX11"
-
+AM_CONDITIONAL(HAVE_X, $have_x) 
 
 #
 # Find pkg-config

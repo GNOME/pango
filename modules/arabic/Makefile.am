@@ -31,6 +31,7 @@ xft_sources = \
 	arabic-ot.c \
 	arabic-ot.h
 
+if HAVE_X
 if INCLUDE_ARABIC_X
 X_MODULES=
 X_INCLUDED=libpango-arabic-x.la
@@ -40,7 +41,11 @@ X_MODULES=pango-arabic-x.la
 X_INCLUDED=
 X_PREFIX=
 endif
-
+else
+X_MODULES=
+X_INCLUDED=
+X_PREFIX=
+endif
 
 noinst_LTLIBRARIES = $(X_INCLUDED) $(XFT_INCLUDED)
 module_LTLIBRARIES = $(X_MODULES) $(XFT_MODULES)

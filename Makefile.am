@@ -11,6 +11,10 @@ EXTRA_DIST = 		\
 	TODO.xml	\
 	README.win32
 
+if HAVE_X
+X_PC=pangox.pc
+endif
+
 if HAVE_XFT
 XFT_PC=pangoxft.pc
 endif
@@ -20,7 +24,7 @@ FT2_PC=pangoft2.pc
 endif
 
 pkgconfigdir = $(libdir)/pkgconfig
-pkgconfig_DATA = pango.pc pangox.pc $(XFT_PC) $(FT2_PC)
+pkgconfig_DATA = pango.pc $(X_PC) $(XFT_PC) $(FT2_PC)
 
 dist-hook: pango.spec
 	cp pango.spec $(distdir)

@@ -2,6 +2,7 @@
 
 sources = hangul-x.c
 
+if HAVE_X
 if INCLUDE_HANGUL_X
 noinst_LTLIBRARIES = libpango-hangul-x.la
 moddefine = -DX_MODULE_PREFIX
@@ -9,6 +10,7 @@ else
 moduledir = $(libdir)/pango/modules
 module_LTLIBRARIES = pango-hangul-x.la
 moduleflags= -rpath $(libdir)
+endif
 endif
 
 INCLUDES = -I$(top_srcdir) -I$(top_srcdir)/pango/ $(moddefine) $(X_CFLAGS)
