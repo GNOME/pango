@@ -1,3 +1,8 @@
+Wed Jan 28 17:47:52 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* configure.in: Require GLib-2.3.1. (#132695,
+	Rodney Dawes.)
+
 Mon Jan 26 14:20:34 2004  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/opentype/pango-ot-info.c (is_truetype): Suport
