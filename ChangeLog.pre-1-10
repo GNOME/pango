@@ -1,3 +1,8 @@
+Thu Aug  8 18:55:21 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* examples/Makefile.am (INCLUDES): Add FONTCONFIG_CFLAGS
+	to INCLUDES. (Joe Yandle.)
+
 2002-08-08  jacob berkman  <jacob@ximian.com>
 
 	* modules/hangul/Makefile.am (EXTRA_DIST): add tables-jamos.i
