@@ -14,8 +14,10 @@ EXPORTS
 	pango_attr_list_copy
 	pango_attr_list_get_iterator
 	pango_attr_list_insert
+	pango_attr_list_insert_before
 	pango_attr_list_new
 	pango_attr_list_ref
+	pango_attr_list_splice
 	pango_attr_list_unref
 	pango_attr_rise_new
 	pango_attr_shape_new
@@ -27,9 +29,9 @@ EXPORTS
 	pango_attr_underline_new
 	pango_attr_variant_new
 	pango_attr_weight_new
-	pango_attribute_compare
 	pango_attribute_copy
 	pango_attribute_destroy
+	pango_attribute_equal
 	pango_break
 	pango_config_key_get
 	pango_context_add_font_map
@@ -52,8 +54,8 @@ EXPORTS
 	pango_coverage_set
 	pango_coverage_unref
 	pango_find_map
-	pango_font_description_compare
 	pango_font_description_copy
+	pango_font_description_equal
 	pango_font_description_free
 	pango_font_description_from_string
 	pango_font_description_to_string
@@ -70,6 +72,7 @@ EXPORTS
 	pango_font_map_load_font
 	pango_get_lib_subdirectory
 	pango_get_log_attrs
+	pango_get_mirror_char
 	pango_get_sysconf_subdirectory
 	pango_glyph_string_extents
 	pango_glyph_string_free
@@ -93,6 +96,7 @@ EXPORTS
 	pango_layout_get_cursor_pos
 	pango_layout_get_extents
 	pango_layout_get_indent
+	pango_layout_get_iter
 	pango_layout_get_justify
 	pango_layout_get_line
 	pango_layout_get_line_count
@@ -103,12 +107,29 @@ EXPORTS
 	pango_layout_get_size
 	pango_layout_get_spacing
 	pango_layout_get_tabs
+	pango_layout_get_text
 	pango_layout_get_type
 	pango_layout_get_width
 	pango_layout_index_to_pos
+	pango_layout_iter_at_last_line
+	pango_layout_iter_free
+	pango_layout_iter_get_baseline
+	pango_layout_iter_get_char_extents
+	pango_layout_iter_get_cluster_extents
+	pango_layout_iter_get_index
+	pango_layout_iter_get_layout_extents
+	pango_layout_iter_get_line
+	pango_layout_iter_get_line_extents
+	pango_layout_iter_get_line_yrange
+	pango_layout_iter_get_run
+	pango_layout_iter_get_run_extents
 	pango_layout_line_get_extents
 	pango_layout_line_get_pixel_extents
 	pango_layout_line_get_x_ranges
+	pango_layout_iter_next_char
+	pango_layout_iter_next_cluster
+	pango_layout_iter_next_line
+	pango_layout_iter_next_run
 	pango_layout_line_index_to_x
 	pango_layout_line_ref
 	pango_layout_line_unref
@@ -125,6 +146,7 @@ EXPORTS
 	pango_layout_set_text
 	pango_layout_set_width
 	pango_layout_xy_to_index
+	pango_log2vis_get_embedding_levels
 	pango_map_get_engine
 	pango_map_get_entry
 	pango_parse_markup

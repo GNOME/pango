@@ -2,6 +2,7 @@
  * pangoft2.c: Routines for handling FreeType2 fonts
  *
  * Copyright (C) 1999 Red Hat Software
+ * Copyright (C) 2000 Tor Lillqvist
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public

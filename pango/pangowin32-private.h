@@ -2,6 +2,7 @@
  * pangowin32-private.h:
  *
  * Copyright (C) 1999 Red Hat Software
+ * Copyright (C) 2000 Tor Lillqvist
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public

@@ -1,3 +1,11 @@
+2000-11-15  Tor Lillqvist  <tml@iki.fi>
+
+	* config.h.win32: Define HAVE_FRIBIDI.
+
+	* pango/pango.def: Add new functions.
+
+	* pango/pango{win32*,ft2*}.[ch]: Add my name to copyright notice.
+
 Tue Nov 14 11:10:24 2000  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pango-layout.c (pango_layout_run_get_extents): 

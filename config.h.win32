@@ -4,3 +4,5 @@
 /*#undef HAVE_FLOCKFILE */
 /*#undef HAVE_ICONV_H */
 /*#undef HAVE_UNISTD_H */
+
+#define HAVE_FRIBIDI 1
