@@ -799,10 +799,16 @@ pango_xft_font_real_get_kerning (PangoFcFont *font,
     return 0;
 
   if (!FT_HAS_KERNING (face))
-    return 0;
+    {
+      pango_fc_font_unlock_face (font);
+      return 0;
+    }
 
   if (!left || !right)
-    return 0;
+    {
+      pango_fc_font_unlock_face (font);
+      return 0;
+    }
 
   error = FT_Get_Kerning (face, left, right,
 			  ft_kerning_default, &kerning);
