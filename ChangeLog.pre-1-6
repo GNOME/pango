@@ -1,3 +1,14 @@
+2002-03-26  Sven Neumann  <sven@gimp.org>
+
+	* pango/pangoft2-private.h
+	* pango/pangoft2.c (pango_ft2_font_get_metrics): calculate 
+	average_char_width and average_digit_width by measuring sample layouts
+	and cache font metrics per language just like PangoX does, #53425.
+
+	* pango/pangoxft-font.c
+	* pango/pangoxft-private.h: the same approach for average_char_width
+	and average_digit_width as in PangoFT2, #53425.
+
 Mon Mar 25 15:53:17 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/modules.c (read_modules): Remove warning about

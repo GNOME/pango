@@ -40,6 +40,8 @@ struct _PangoXftFont
   PangoFontDescription *description;
   PangoOTInfo *ot_info;
 
+  GSList *metrics_by_lang;
+
   guint16 mini_width;
   guint16 mini_height;
   guint16 mini_pad; 

@@ -71,6 +71,8 @@ struct _PangoFT2Font
   PangoFontMap *fontmap;
   PangoFontDescription *description;
   
+  GSList *metrics_by_lang;
+
   /* If TRUE, font is in cache of recently unused fonts and not otherwise
    * in use. */
   gboolean in_cache;

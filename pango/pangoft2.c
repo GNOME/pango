@@ -44,11 +44,16 @@
 
 typedef struct _PangoFT2FontClass   PangoFT2FontClass;
 typedef struct _PangoFT2MetricsInfo PangoFT2MetricsInfo;
-typedef struct _PangoFT2ContextInfo PangoFT2ContextInfo;
 
 struct _PangoFT2FontClass
 {
   PangoFontClass parent_class;
+};
+
+struct _PangoFT2MetricsInfo
+{
+  const char       *sample_str;
+  PangoFontMetrics *metrics;
 };
 
 typedef struct
@@ -56,12 +61,12 @@ typedef struct
   FT_Bitmap bitmap;
   int bitmap_left;
   int bitmap_top;
-}  PangoFT2RenderedGlyph;
+} PangoFT2RenderedGlyph;
 
 static PangoFontClass *parent_class;	/* Parent class structure for PangoFT2Font */
 
 static void pango_ft2_font_class_init (PangoFT2FontClass *class);
-static void pango_ft2_font_init       (PangoFT2Font      *xfont);
+static void pango_ft2_font_init       (PangoFT2Font      *ft2font);
 static void pango_ft2_font_dispose    (GObject         *object);
 static void pango_ft2_font_finalize   (GObject         *object);
 
@@ -281,6 +286,8 @@ pango_ft2_font_init (PangoFT2Font *ft2font)
   ft2font->face = NULL;
 
   ft2font->size = 0;
+
+  ft2font->metrics_by_lang = NULL;
 
   ft2font->glyph_info = g_hash_table_new (NULL, NULL);
 }
@@ -577,22 +584,68 @@ pango_ft2_font_get_kerning (PangoFont *font,
 }
 
 static PangoFontMetrics *
-pango_ft2_font_get_metrics (PangoFont        *font,
-			    PangoLanguage    *language)
+pango_ft2_font_get_metrics (PangoFont     *font,
+			    PangoLanguage *language)
 {
-  PangoFontMetrics *metrics;
-  FT_Face face;
-  
-  face = pango_ft2_font_get_face (font);
+  PangoFT2Font *ft2font = PANGO_FT2_FONT (font);
+  PangoFT2MetricsInfo *info = NULL; /* Quiet gcc */
+  GSList *tmp_list;      
 
-  metrics = pango_font_metrics_new ();
+  const char *sample_str = pango_language_get_sample_string (language);
   
-  metrics->ascent = PANGO_UNITS_26_6 (face->size->metrics.ascender);
-  metrics->descent = PANGO_UNITS_26_6 (-face->size->metrics.descender);
-  metrics->approximate_digit_width = PANGO_UNITS_26_6 (face->size->metrics.max_advance);
-  metrics->approximate_char_width = PANGO_UNITS_26_6 (face->size->metrics.max_advance);
+  tmp_list = ft2font->metrics_by_lang;
+  while (tmp_list)
+    {
+      info = tmp_list->data;
+      
+      if (info->sample_str == sample_str)    /* We _don't_ need strcmp */
+	break;
 
-  return pango_font_metrics_ref (metrics);
+      tmp_list = tmp_list->next;
+    }
+
+  if (!tmp_list)
+    {
+      PangoContext *context;
+      PangoLayout *layout;
+      PangoRectangle extents;
+      FT_Face face = pango_ft2_font_get_face (font);
+
+      info = g_new (PangoFT2MetricsInfo, 1);
+      info->sample_str = sample_str;
+      info->metrics = pango_font_metrics_new ();
+
+      info->metrics->ascent = PANGO_UNITS_26_6 (face->size->metrics.ascender);
+      info->metrics->descent = PANGO_UNITS_26_6 (- face->size->metrics.descender);
+      info->metrics->approximate_char_width = 
+        info->metrics->approximate_digit_width = 
+        PANGO_UNITS_26_6 (face->size->metrics.max_advance);
+
+      ft2font->metrics_by_lang = g_slist_prepend (ft2font->metrics_by_lang, info);
+
+      context = pango_context_new ();
+      pango_context_set_font_map (context, ft2font->fontmap);
+      pango_context_set_language (context, language);
+      
+      layout = pango_layout_new (context);
+      pango_layout_set_font_description (layout, ft2font->description);
+
+      pango_layout_set_text (layout, sample_str, -1);      
+      pango_layout_get_extents (layout, NULL, &extents);
+      
+      info->metrics->approximate_char_width = 
+        extents.width / g_utf8_strlen (sample_str, -1);
+
+      pango_layout_set_text (layout, "0123456789", -1);      
+      pango_layout_get_extents (layout, NULL, &extents);
+      
+      info->metrics->approximate_digit_width = extents.width / 10;
+
+      g_object_unref (G_OBJECT (layout));
+      g_object_unref (G_OBJECT (context));
+    }
+
+  return pango_font_metrics_ref (info->metrics);
 }
 
 static PangoCoverage *
@@ -665,6 +718,13 @@ pango_ft2_free_glyph_info_callback (gpointer key, gpointer value, gpointer data)
 }
 
 static void
+free_metrics_info (PangoFT2MetricsInfo *info)
+{
+  pango_font_metrics_unref (info->metrics);
+  g_free (info);
+}
+
+static void
 pango_ft2_font_finalize (GObject *object)
 {
   PangoFT2Font *ft2font = (PangoFT2Font *)object;
@@ -681,6 +741,9 @@ pango_ft2_font_finalize (GObject *object)
   MiniXftPatternDestroy (ft2font->font_pattern);
   
   g_object_unref (G_OBJECT (ft2font->fontmap));
+
+  g_slist_foreach (ft2font->metrics_by_lang, (GFunc)free_metrics_info, NULL);
+  g_slist_free (ft2font->metrics_by_lang);  
 
   g_hash_table_foreach_remove (ft2font->glyph_info,
 			       pango_ft2_free_glyph_info_callback, object);

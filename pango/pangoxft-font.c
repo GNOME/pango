@@ -25,7 +25,10 @@
 
 #include "pangoxft-private.h"
 #include "X11/Xft/XftFreetype.h"
+
+#include "pango-layout.h"
 #include "pango-modules.h"
+#include "pango-utils.h"
 
 #define PANGO_XFT_FONT(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_TYPE_XFT_FONT, PangoXftFont))
 #define PANGO_XFT_FONT_CLASS(klass)      (G_TYPE_CHECK_CLASS_CAST ((klass), PANGO_TYPE_XFT_FONT, PangoXftFontClass))
@@ -34,11 +37,18 @@
 
 #define PANGO_XFT_UNKNOWN_FLAG 0x10000000
 
-typedef struct _PangoXftFontClass   PangoXftFontClass;
+typedef struct _PangoXftFontClass    PangoXftFontClass;
+typedef struct _PangoXftMetricsInfo  PangoXftMetricsInfo;
 
 struct _PangoXftFontClass
 {
-  PangoFontClass parent_class;
+  PangoFontClass  parent_class;
+};
+
+struct _PangoXftMetricsInfo
+{
+  const char       *sample_str;
+  PangoFontMetrics *metrics;
 };
 
 static PangoFontClass *parent_class;	/* Parent class structure for PangoXftFont */
@@ -93,6 +103,7 @@ pango_xft_font_get_type (void)
 static void 
 pango_xft_font_init (PangoXftFont *xfont)
 {
+  xfont->metrics_by_lang = NULL;
   xfont->in_cache = FALSE;
 }
 
@@ -386,18 +397,70 @@ pango_xft_picture_render (Display          *display,
 }
 
 static PangoFontMetrics *
-pango_xft_font_get_metrics (PangoFont        *font,
-			    PangoLanguage    *language)
+pango_xft_font_get_metrics (PangoFont     *font,
+			    PangoLanguage *language)
 {
-  PangoFontMetrics *metrics = pango_font_metrics_new ();
-  XftFont *xft_font = pango_xft_font_get_font (font);
+  PangoXftFont *xfont = PANGO_XFT_FONT (font);
+  PangoXftMetricsInfo *info = NULL; /* Quiet gcc */
+  GSList *tmp_list;      
 
-  metrics->ascent = PANGO_SCALE * xft_font->ascent;
-  metrics->descent = PANGO_SCALE * xft_font->descent;
-  metrics->approximate_digit_width = PANGO_SCALE * xft_font->max_advance_width;
-  metrics->approximate_char_width = PANGO_SCALE * xft_font->max_advance_width;
+  const char *sample_str = pango_language_get_sample_string (language);
+  
+  tmp_list = xfont->metrics_by_lang;
+  while (tmp_list)
+    {
+      info = tmp_list->data;
+      
+      if (info->sample_str == sample_str)    /* We _don't_ need strcmp */
+	break;
 
-  return metrics;
+      tmp_list = tmp_list->next;
+    }
+
+  if (!tmp_list)
+    {
+      PangoLayout *layout;
+      PangoRectangle extents;
+      PangoContext *context;
+      XftFont *xft_font = pango_xft_font_get_font (font);
+      Display *display;
+  
+      _pango_xft_font_map_get_info (xfont->fontmap, &display, NULL);
+      context = pango_xft_get_context (display, 0);
+
+      info = g_new (PangoXftMetricsInfo, 1);
+      info->sample_str = sample_str;
+      info->metrics = pango_font_metrics_new ();
+
+      info->metrics->ascent = PANGO_SCALE * xft_font->ascent;
+      info->metrics->descent = PANGO_SCALE * xft_font->descent;
+      info->metrics->approximate_char_width = 
+        info->metrics->approximate_digit_width = 
+        PANGO_SCALE * xft_font->max_advance_width;
+
+      xfont->metrics_by_lang = g_slist_prepend (xfont->metrics_by_lang, 
+                                                info);
+
+      pango_context_set_language (context, language);
+      layout = pango_layout_new (context);
+      pango_layout_set_font_description (layout, xfont->description);
+
+      pango_layout_set_text (layout, sample_str, -1);      
+      pango_layout_get_extents (layout, NULL, &extents);
+      
+      info->metrics->approximate_char_width = 
+        extents.width / g_utf8_strlen (sample_str, -1);
+
+      pango_layout_set_text (layout, "0123456789", -1);      
+      pango_layout_get_extents (layout, NULL, &extents);
+      
+      info->metrics->approximate_digit_width = extents.width / 10;
+
+      g_object_unref (G_OBJECT (layout));
+      g_object_unref (G_OBJECT (context));
+    }
+
+  return pango_font_metrics_ref (info->metrics);
 }
 
 static void
@@ -413,6 +476,13 @@ pango_xft_font_dispose (GObject *object)
     _pango_xft_font_map_cache_add (xfont->fontmap, xfont);
 
   G_OBJECT_CLASS (parent_class)->dispose (object);
+}
+
+static void
+free_metrics_info (PangoXftMetricsInfo *info)
+{
+  pango_font_metrics_unref (info->metrics);
+  g_free (info);
 }
 
 static void
@@ -432,6 +502,9 @@ pango_xft_font_finalize (GObject *object)
     g_object_unref (xfont->ot_info);
 
   pango_font_description_free (xfont->description);
+
+  g_slist_foreach (xfont->metrics_by_lang, (GFunc)free_metrics_info, NULL);
+  g_slist_free (xfont->metrics_by_lang);  
 
   if (xfont->xft_font)
     XftFontClose (display, xfont->xft_font);
