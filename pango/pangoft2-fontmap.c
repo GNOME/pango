@@ -382,6 +382,23 @@ create_family (PangoFT2FontMap *xfontmap,
   return family;
 }
 
+static gboolean
+is_alias_family (const char *family_name)
+{
+  switch (family_name[0])
+    {
+    case 'm':
+    case 'M':
+      return (g_ascii_strcasecmp (family_name, "monospace") == 0);
+    case 's':
+    case 'S':
+      return (g_ascii_strcasecmp (family_name, "sans") == 0 ||
+	      g_ascii_strcasecmp (family_name, "serif") == 0);
+    }
+
+  return FALSE;
+}
+
 static void
 pango_ft2_font_map_list_families (PangoFontMap           *fontmap,
 				  PangoFontFamily      ***families,
@@ -412,12 +429,14 @@ pango_ft2_font_map_list_families (PangoFontMap           *fontmap,
 	  res = MiniXftPatternGetString (fontset->fonts[i], XFT_FAMILY, 0, &s);
 	  g_assert (res == MiniXftResultMatch);
 	  
- 
- 	  if (strcmp (s, "sans") != 0 &&
- 	      strcmp (s, "serif") != 0 &&
- 	      strcmp (s, "monospace") != 0)
+ 	  if (!is_alias_family (s))
 	    ft2fontmap->families[count++] = create_family (ft2fontmap, s);
+
 	}
+
+      ft2fontmap->families[count++] = create_family (ft2fontmap, "Sans");
+      ft2fontmap->families[count++] = create_family (ft2fontmap, "Serif");
+      ft2fontmap->families[count++] = create_family (ft2fontmap, "Monospace");
 
       MiniXftFontSetDestroy (fontset);
     }
@@ -747,6 +766,22 @@ _pango_ft2_font_desc_from_pattern (MiniXftPattern *pattern,
 
 
 static PangoFontDescription *
+make_alias_description (PangoFT2Family *ft2family,
+			gboolean        bold,
+			gboolean        italic)
+{
+  PangoFontDescription *desc = pango_font_description_new ();
+
+  pango_font_description_set_family (desc, ft2family->family_name);
+  pango_font_description_set_style (desc, italic ? PANGO_STYLE_ITALIC : PANGO_STYLE_NORMAL);
+  pango_font_description_set_variant (desc, PANGO_VARIANT_NORMAL);
+  pango_font_description_set_weight (desc, bold ? PANGO_WEIGHT_BOLD : PANGO_WEIGHT_NORMAL);
+  pango_font_description_set_stretch (desc, PANGO_STRETCH_NORMAL);
+
+  return desc;
+}
+
+static PangoFontDescription *
 pango_ft2_face_describe (PangoFontFace *face)
 {
   PangoFT2Face *ft2face = (PangoFT2Face *) face;
@@ -756,6 +791,18 @@ pango_ft2_face_describe (PangoFontFace *face)
   MiniXftPattern *match_pattern;
   MiniXftPattern *result_pattern;
 
+  if (is_alias_family (ft2family->family_name))
+    {
+      if (strcmp (ft2face->style, "Regular") == 0)
+	return make_alias_description (ft2family, FALSE, FALSE);
+      else if (strcmp (ft2face->style, "Bold") == 0)
+	return make_alias_description (ft2family, TRUE, FALSE);
+      else if (strcmp (ft2face->style, "Italic") == 0)
+	return make_alias_description (ft2family, FALSE, TRUE);
+      else			/* Bold Italic */
+	return make_alias_description (ft2family, TRUE, TRUE);
+    }
+  
   match_pattern = MiniXftPatternBuild (NULL,
 				       XFT_ENCODING, MiniXftTypeString, "iso10646-1",
 				       XFT_FAMILY, MiniXftTypeString, ft2family->family_name,
@@ -873,9 +920,7 @@ pango_ft2_family_list_faces (PangoFontFamily  *family,
       MiniXftFontSet *fontset;
       int i;
 
-      if (strcmp (ft2family->family_name, "sans") == 0 ||
-	  strcmp (ft2family->family_name, "serif") == 0 ||
-	  strcmp (ft2family->family_name, "monospace") == 0)
+      if (is_alias_family (ft2family->family_name))
   	{
  	  ft2family->n_faces = 4;
  	  ft2family->faces = g_new (PangoFT2Face *, ft2family->n_faces);
