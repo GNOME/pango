@@ -115,7 +115,7 @@ pango_font_description_set_family (PangoFontDescription *desc,
     }
 
   if (old_family)
-    g_free (desc->family_name);
+    g_free (old_family);
 }
 
 /**
