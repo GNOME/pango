@@ -1,4 +1,9 @@
-2000-11-01
+2000-11-01  Havoc Pennington  <hp@redhat.com>
+
+	* pango/pango-markup.c (text_handler): Fix bug where not all text
+	was appended when parsing accelerators
+
+2000-11-01 Pablo Saratxaga <pablo@mandrakesoft.com>
 
 	* modules/thai/thai.c: added aliases for X11 font names used on
 	Solaris

@@ -511,6 +511,21 @@ text_handler           (GMarkupParseContext *context,
           p = g_utf8_next_char (p);
         }
 
+      if (range_end)
+        {
+          g_string_append_len (md->text,
+                               range_start,
+                               range_end - range_start);
+          md->index += range_end - range_start;
+        }
+      else
+        {
+          g_string_append_len (md->text,
+                               range_start,
+                               end - range_start);
+          md->index += end - range_start;
+        }
+      
       if (md->attr_list != NULL && uline_index >= 0)
         {
           /* Add the underline indicating the accelerator */          
