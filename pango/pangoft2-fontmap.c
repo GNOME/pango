@@ -306,7 +306,7 @@ pango_ft2_font_map_for_display (void)
   FT_Error error;
 
   /* Make sure that the type system is initialized */
-  g_type_init();
+  g_type_init (0);
   
   if (pango_ft2_global_fontmap != NULL)
     return PANGO_FONT_MAP (pango_ft2_global_fontmap);

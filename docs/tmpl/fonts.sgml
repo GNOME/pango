@@ -42,13 +42,6 @@ the characteristics of a font to load.
 @PANGO_STYLE_OBLIQUE: 
 @PANGO_STYLE_ITALIC: 
 
-<!-- ##### MACRO PANGO_TYPE_STYLE ##### -->
-<para>
-
-</para>
-
-
-
 <!-- ##### ENUM PangoWeight ##### -->
 <para>
 An enumeration specifying the weight (boldness) of a font. This is a numerical
@@ -62,13 +55,6 @@ value ranging from 100 to 900, but there are two predefined values:
 @PANGO_WEIGHT_ULTRABOLD: 
 @PANGO_WEIGHT_HEAVY: 
 
-<!-- ##### MACRO PANGO_TYPE_WEIGHT ##### -->
-<para>
-
-</para>
-
-
-
 <!-- ##### ENUM PangoVariant ##### -->
 <para>
 An enumeration specifying capitalization variant of the font.
@@ -77,13 +63,6 @@ An enumeration specifying capitalization variant of the font.
 @PANGO_VARIANT_NORMAL: A normal font.
 @PANGO_VARIANT_SMALL_CAPS: A font with the lower case characters
   replaced by smaller variants of the capital characters.
-
-<!-- ##### MACRO PANGO_TYPE_VARIANT ##### -->
-<para>
-
-</para>
-
-
 
 <!-- ##### ENUM PangoStretch ##### -->
 <para>
@@ -101,29 +80,12 @@ within a family.
 @PANGO_STRETCH_EXTRA_EXPANDED: 
 @PANGO_STRETCH_ULTRA_EXPANDED: 
 
-<!-- ##### MACRO PANGO_TYPE_STRETCH ##### -->
-<para>
-
-</para>
-
-
-
 <!-- ##### FUNCTION pango_font_description_copy ##### -->
 <para>
 
 </para>
 
 @desc: 
-@Returns: 
-
-
-<!-- ##### FUNCTION pango_font_description_equal ##### -->
-<para>
-
-</para>
-
-@desc1: 
-@desc2: 
 @Returns: 
 
 
@@ -154,15 +116,6 @@ within a family.
 
 
 <!-- ##### FUNCTION pango_font_description_to_string ##### -->
-<para>
-
-</para>
-
-@desc: 
-@Returns: 
-
-
-<!-- ##### FUNCTION pango_font_description_to_filename ##### -->
 <para>
 
 </para>

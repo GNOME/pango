@@ -225,7 +225,7 @@ pango_win32_font_map_for_display (void)
   RECT rect;
 
   /* Make sure that the type system is initialized */
-  g_type_init();
+  g_type_init (0);
   
   if (fontmap != NULL)
     return PANGO_FONT_MAP (fontmap);

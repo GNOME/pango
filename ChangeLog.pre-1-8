@@ -1,3 +1,17 @@
+Sun Feb  4 07:48:47 2001  Tim Janik  <timj@gtk.org>
+
+	* pango/pango-attributes.c (pango_color_get_type): pass 0 as
+	first argument to g_type_init().
+
+	* pango/pangoxft-fontmap.c (pango_xft_get_font_map): 
+	* pango/pangowin32-fontmap.c (pango_win32_font_map_for_display): 
+	* pango/pangoft2-fontmap.c (pango_ft2_font_map_for_display): 
+	* pango/pangox-fontmap.c (pango_x_font_map_for_display): 
+	* pango/pango-context.c (pango_context_new):  likewise.
+
+	* i dare saying that i doubt the usefullness of all these
+	g_type_init() calls though.
+
 2001-01-26  Havoc Pennington  <hp@redhat.com>
 
 	* pango/pangox.h (PangoGetGCFunc): take a PangoColor not a

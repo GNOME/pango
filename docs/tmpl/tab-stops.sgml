@@ -27,13 +27,6 @@ Tab Stops
 
 @PANGO_TAB_LEFT: 
 
-<!-- ##### MACRO PANGO_TYPE_TAB_ALIGN ##### -->
-<para>
-
-</para>
-
-
-
 <!-- ##### FUNCTION pango_tab_array_new ##### -->
 <para>
 

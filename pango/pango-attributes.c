@@ -1484,7 +1484,7 @@ pango_color_get_type (void)
   
   if (our_type == 0)
     {
-      g_type_init ();
+      g_type_init (0);
       
       our_type = g_boxed_type_register_static ("PangoColor",
                                                pango_color_copy,

@@ -150,7 +150,7 @@ pango_context_new (void)
 {
   PangoContext *context;
 
-  g_type_init ();
+  g_type_init (0);
   
   context = PANGO_CONTEXT (g_type_create_instance (pango_context_get_type ()));
   
