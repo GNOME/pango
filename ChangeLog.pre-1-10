@@ -1,3 +1,11 @@
+Tue Dec 10 14:51:01 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* === Released 1.1.5 ===
+
+	* configure.in: Version 1.1.5, interface age 1.
+
+	* NEWS: Update.
+
 Sun Dec  8 22:57:55 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pangox.c: Draw the unknown glyph box with
@@ -45,12 +53,6 @@ Fri Dec  6 23:07:58 2002  Owen Taylor  <otaylor@redhat.com>
 	  pango/pangox.c (pango_x_render): Roughly clip glyphs
 	into the X coordinate area to avoid wrap-around. (#73199)
 
-Fri Dec  6 22:30:17 2002  Owen Taylor  <otaylor@redhat.com>
-
-	* pango/pangoxft-font.c (pango_xft_real_render): 
-	   pango/pangox.c (pango_x_render):  Truncate rendering
-	after 32768 pixels to avoid the possiblity of wrapping.
-
 Fri Dec  6 19:42:33 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/modules.c (map_get_submap): Dynamically allocate
@@ -65,7 +67,7 @@ Fri Dec  6 18:58:25 2002  Owen Taylor  <otaylor@redhat.com>
 
 Fri Dec  6 18:30:36 2002  Owen Taylor  <otaylor@redhat.com>
 
-	* pango/pango-utils.c: Convert literal UTF-8 to hex
+	* pango/pango-utils.c: Convert literal UTF-8 to octal
 	escapes. (#92050, Arnaud Charlet)
 
 	* pango/testfonts.c: Convert literal ISO-8859-1

@@ -1,3 +1,17 @@
+Changes between 1.1.4 and 1.1.5
+
+* Fix wrap-around coordinate problems for X, Xt.
+* Draw unknown character boxes with X primitives for the
+  X backend instead of hoping for a suitable glyph [Morten Welinder]
+* Fix crash with FT2 arabic shaper from using face->generic.data
+  for two things.
+* For Xft/FT2, give an informative error mesage when no fonts are found.
+* Support shape modules with ranges beyond the BMP [Federic Zhang]
+* Use octal escapes rather than literal UTF-8 [Arnaud Charlet]
+* Use g_[sf]printf where appropriate [Matthias Clasen]
+* Doc improvements [Matthias]
+* Misc build and bug fixes [Tony Graham, Kjartan Maraas]
+
 Changes between 1.1.3 and 1.1.4
 
 * Fix the Arabic-words-broken-by-underlines problem by

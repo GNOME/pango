@@ -48,7 +48,7 @@ struct.
 @is_vowel_half: determines whether the given character is part of a two-part
 vowel. This is an optional function.
 @vowel_split: returns whether the given vowel can be split and the pieces in
-which it can be split. This is an optional function. 
+which it can be split. This is an optional function.
 
 <!-- ##### FUNCTION pango_indic_shift_vowels ##### -->
 <para>
