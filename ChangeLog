@@ -1,3 +1,19 @@
+2004-10-09  Theppitak Karoonboonyanan  <thep@linux.thai.net>
+
+	Explicitly handle dangling upper/lower marks by optionally using
+	dottedcircle as base, rather than requiring it.
+
+	* modules/thai/thai-shaper.h: Explicitly declare make_glyph and
+	get_glyph functions for 8-bit and Unicode chars as separate functions.
+
+	* modules/thai/thai-shaper.c (get_adjusted_glyphs_list): Rename
+	function calls to the new ones. Conditionally use dottedcircle glyph
+	as base for dangling upper/lower marks if available; simply expand
+	width to that of inkrect otherwise.
+
+	* modules/thai/thai-fc.c: Implement those new functions declared in
+	thai-shaper.h. Remove 0x25cc from tis620_2 glyph set.
+
 2004-10-08  Theppitak Karoonboonyanan  <thep@linux.thai.net>
 
 	* modules/thai/thai-ot.c (thai_ot_get_ruleset): Return NULL if ruleset
