@@ -1,5 +1,4 @@
 dnl Process this file with autoconf to create configure.
-
 AC_PREREQ(2.53)
 AC_INIT(ChangeLog)
 
@@ -815,7 +814,7 @@ pango-zip.sh
 *pango-config*)chmod +x pango-config;;
 esac])
 echo "configuration:
-	backends: `if $have_freetype ; then echo " FreeType"; fi \
+	backends: `if $have_freetype && $have_fontconfig; then echo " FreeType"; fi \
 	``if $have_x ; then echo " X"; fi \
 	``if $have_xft ; then echo " Xft"; fi \
 	``if $have_win32 ; then echo " Win32"; fi`"

@@ -1,3 +1,8 @@
+2003-01-20  Sven Neumann  <sven@gimp.org>
+
+	* configure.in: fixed configure output which was wrong in case
+	freetype is available but fontconfig isn't (bug #103917).
+
 2003-01-17  Padraig O'Briain  <padraig.obriain@sun.com>
 
 	* pango/fonts.c (pango_font_description_from_string): Avoid crash
