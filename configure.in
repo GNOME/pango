@@ -239,7 +239,7 @@ AM_CONDITIONAL(HAVE_WIN32, $have_win32)
 # a new Pango backend outside of Pango, you are up to sending the necessary
 # patch to fix that rule. :-)
 #
-if $HAVE_FREETYPE || $HAVE_X || $HAVE_XFT || $HAVE_WIN32  ; then : ; else
+if $have_freetype || $have_x || $have_xft || $have_win32  ; then : ; else
   AC_MSG_ERROR([*** Didn't find any of FreeType, X11, or Win32.
 *** Must have at least one backend to build Pango.])
 fi

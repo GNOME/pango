@@ -1,3 +1,9 @@
+Thu Aug  1 10:41:26 2002  Owen Taylor  <otaylor@redhat.com>
+ 
+ 	* configure.in: Fix check for having any backend
+ 	HAVE_XFT => have_xft, etc. (Problem reported
+ 	by Andreas J Guelzow)
+ 
 2002-08-01  Changwoo Ryu  <cwryu@debian.org>
 
 	* modules/hangul/hangul-x.c (render_syllable_with_ksx1005):
