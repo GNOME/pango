@@ -96,7 +96,7 @@ struct _PangoAttribute
 {
   const PangoAttrClass *klass;
   guint start_index;	/* in bytes */
-  guint end_index;	/* the character containing this byte is not included */
+  guint end_index;	/* in bytes. The character at this index is not included */
 };
 
 typedef gboolean (*PangoAttrFilterFunc) (PangoAttribute *attribute,
