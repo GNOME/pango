@@ -1,3 +1,17 @@
+Changes between 0.13 and 0.14
+
+* Win32 improvements [Tor]
+* Much better boundary resolution using algorithms from the Unicode
+  standard [Havoc]
+* Initial support for anti-aliased TrueType and OpenType fonts
+  using the Xft and Xrender libraries from XFree86 4. [Owen]
+* Fix the FreeType support on Unix so it can be used for the frame-buffer 
+  port of GTK+. [Alex]
+* Fix up module building [Alex]
+* Add average-character-width font metric [Havoc]
+* Bug fixes
+
+
 Changes between 0.12 and 0.13
 
 * Win32 Support [Tor]

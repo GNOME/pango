@@ -99,6 +99,7 @@ libpangox_la_LIBADD =  $(X_LIBS) $(INCLUDED_X_MODULES)
 libpangoxft_la_SOURCES =   	\
 	pangoxft-font.c		\
 	pangoxft-fontmap.c      \
+	pangoxft-private.h	\
 	module-defs-xft.c
 
 libpangoxft_la_LIBADD = $(INCLUDED_XFT_MODULES) $(XFT_LIBS) opentype/libpango-ot.la

@@ -1,3 +1,13 @@
+Tue Apr  3 15:05:19 2001  Owen Taylor  <otaylor@redhat.com>
+
+	* Release 0.14
+
+	* NEWS: updated.
+
+        * pango/pango/opentype/Makefile.am: make dist fixes.
+	 
+	* configure.in (PANGO_MINOR_VERSION): Up to 0.14
+
 Mon Apr  2 12:01:03 2001  Owen Taylor  <otaylor@redhat.com>
 
 	* examples/viewer-qt.cc (main): Add the mystic 

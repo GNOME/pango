@@ -1,13 +1,13 @@
 dnl Process this file with autoconf to create configure.
 
 PANGO_MAJOR_VERSION=0
-PANGO_MINOR_VERSION=13
+PANGO_MINOR_VERSION=14
 
 AC_SUBST(PANGO_MAJOR_VERSION)
 AC_SUBST(PANGO_MINOR_VERSION)
 
 AC_INIT(ChangeLog)
-AM_INIT_AUTOMAKE(pango, 0.13)
+AM_INIT_AUTOMAKE(pango, 0.14)
 
 AM_CONFIG_HEADER(config.h)
 
@@ -450,6 +450,7 @@ pango/opentype/Makefile
 pango/makefile.mingw
 pango/pango.rc
 pango/pangoft2.rc
+pango/pangowin32.rc
 pango/opentype/makefile.mingw
 modules/Makefile
 modules/arabic/Makefile
