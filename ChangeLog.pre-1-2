@@ -1,3 +1,8 @@
+Sun Aug 12 10:33:02 2001  Owen Taylor  <otaylor@redhat.com>
+
+	* docs/Makefile.am pango/Makefile.am: Set GPATH to fix srcdir !=
+	builddir problems with GNU make.
+
 2001-08-10  Hans Breuer  <hans@breuer.org>
 
 	* pango/pangowin32.c (pango_win32_render) : restore

@@ -1,5 +1,9 @@
 ## Process this file with automake to create Makefile.in.
 
+# We set GPATH here; this gives us semantics for GNU make
+# which are more like other make's VPATH.
+GPATH = $(srcdir)
+
 if HAVE_FREETYPE
 OPENTYPE_SUBDIR=opentype
 endif
