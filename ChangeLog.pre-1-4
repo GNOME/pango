@@ -1,3 +1,7 @@
+Mon Feb 14 22:04:38 2000  Owen Taylor  <otaylor@redhat.com>
+
+	* libpango/pango-attributes.[ch]: Start of attribute lists. 
+
 Fri Feb 11 16:04:50 2000  Owen Taylor  <otaylor@redhat.com>
 
         * libpango/Makefile.am: make dist fixups.

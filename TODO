@@ -63,6 +63,12 @@ Documentation
 General
 =======
 
+* PangoAttrList currently takes the policy of "most recent wins"
+  when multiple attributes of the same type are present for a range. 
+  It would map better on the TkText tag-based API if attributes
+  also had a depth/priority and "most recent wins" only applied
+  for attributes of the same priority. 
+
 * Add a "make test" target to examples/, add environment variables
   to point to module and font alias files, remove the code that
   loads these from the current directory.  (There are security
