@@ -95,7 +95,7 @@ static GType pango_ft2_font_get_type (void);
 
 PangoFT2Font *
 _pango_ft2_font_new (PangoFontMap    *fontmap,
-		     MiniXftPattern  *pattern)
+		     FcPattern  *pattern)
 {
   PangoFT2Font *ft2font;
   double d;
@@ -112,7 +112,7 @@ _pango_ft2_font_new (PangoFontMap    *fontmap,
   ft2font->description = _pango_ft2_font_desc_from_pattern (pattern, TRUE);
   ft2font->face = NULL;
 
-  if (MiniXftPatternGetDouble (pattern, XFT_PIXEL_SIZE, 0, &d) == MiniXftResultMatch)
+  if (FcPatternGetDouble (pattern, FC_PIXEL_SIZE, 0, &d) == FcResultMatch)
     ft2font->size = d*PANGO_SCALE;
 
   _pango_ft2_font_map_add (ft2font->fontmap, ft2font);
@@ -136,48 +136,47 @@ pango_ft2_font_get_face (PangoFont      *font)
   PangoFT2Font *ft2font = (PangoFT2Font *)font;
   FT_Face face;
   FT_Error error;
-  MiniXftPattern *pattern;
-  char *filename;
+  FcPattern *pattern;
+  FcChar8 *filename;
   int id;
 
   pattern = ft2font->font_pattern;
 
   if (!ft2font->face)
     {
-      if (MiniXftPatternGetString (pattern, XFT_FILE, 0, &filename) != MiniXftResultMatch)
+      if (FcPatternGetString (pattern, FC_FILE, 0, &filename) != FcResultMatch)
 	goto bail0;
     
-      if (MiniXftPatternGetInteger (pattern, XFT_INDEX, 0, &id) != MiniXftResultMatch)
+      if (FcPatternGetInteger (pattern, FC_INDEX, 0, &id) != FcResultMatch)
 	goto bail0;
     
       error = FT_New_Face (_pango_ft2_font_map_get_library (ft2font->fontmap),
-			   filename, id, &ft2font->face);
+			   (char *) filename, id, &ft2font->face);
       if (error)
 	{
-	  MiniXftPattern *sans;
-	  MiniXftPattern *matched;
-	  MiniXftResult result;
-	  char *filename2 = NULL;
+	  FcPattern *sans;
+	  FcPattern *matched;
+	  FcResult result;
+	  FcChar8 *filename2 = NULL;
 	  gchar *name;
 
 	bail0:
 	  
-	  sans = MiniXftPatternBuild (0,
-				      XFT_FAMILY, MiniXftTypeString, "sans",
-				      XFT_ENCODING, MiniXftTypeString, "glyphs-fontspecific",
-				      XFT_SIZE, MiniXftTypeDouble, (double)pango_font_description_get_size (ft2font->description)/PANGO_SCALE,
-				      NULL);
+	  sans = FcPatternBuild (NULL,
+				 FC_FAMILY, FcTypeString, "sans",
+				 FC_SIZE, FcTypeDouble, (double)pango_font_description_get_size (ft2font->description)/PANGO_SCALE,
+				 NULL);
 
-	  matched = MiniXftFontMatch ((Display *)1, 0, sans, &result);
+	  matched = FcFontMatch (0, sans, &result);
 
-	  if (MiniXftPatternGetString (matched, XFT_FILE, 0, &filename2) != MiniXftResultMatch)
+	  if (FcPatternGetString (matched, FC_FILE, 0, &filename2) != FcResultMatch)
 	    goto bail1;
 	  
-	  if (MiniXftPatternGetInteger (matched, XFT_INDEX, 0, &id) != MiniXftResultMatch)
+	  if (FcPatternGetInteger (matched, FC_INDEX, 0, &id) != FcResultMatch)
 	    goto bail1;
 	  
 	  error = FT_New_Face (_pango_ft2_font_map_get_library (ft2font->fontmap),
-			       filename2, id, &ft2font->face);
+			       (char *) filename2, id, &ft2font->face);
 
 	  
 	  if (error)
@@ -194,8 +193,8 @@ pango_ft2_font_get_face (PangoFont      *font)
 	      g_free (name);
 	    }
 
-	  MiniXftPatternDestroy (sans);
-	  MiniXftPatternDestroy (matched);
+	  FcPatternDestroy (sans);
+	  FcPatternDestroy (matched);
 	}
       ft2font->face->generic.data = 0;
     }
@@ -217,6 +216,16 @@ pango_ft2_font_get_face (PangoFont      *font)
     }
   
   return face;
+}
+
+static double pango_ft2_resolution = 75.0;
+
+void
+pango_ft2_default_substitute (FcPattern *pattern)
+{
+  FcValue v;
+  if (FcPatternGet (pattern, FC_DPI, 0, &v) == FcResultNoMatch)
+    FcPatternAddDouble (pattern, FC_DPI, pango_ft2_resolution);
 }
 
 /**
@@ -244,7 +253,7 @@ pango_ft2_get_context (double dpi_x, double dpi_y)
         pango_module_register (&_pango_included_ft2_modules[i]);
     }
 
-  MiniXftSetDPI (dpi_y);
+  pango_ft2_resolution = dpi_y;
   
   result = pango_context_new ();
   pango_context_set_font_map (result, pango_ft2_font_map_for_display ());
@@ -738,7 +747,7 @@ pango_ft2_font_finalize (GObject *object)
     }
 
   pango_font_description_free (ft2font->description);
-  MiniXftPatternDestroy (ft2font->font_pattern);
+  FcPatternDestroy (ft2font->font_pattern);
   
   g_object_unref (G_OBJECT (ft2font->fontmap));
 
@@ -793,11 +802,11 @@ pango_ft2_font_get_coverage (PangoFont     *font,
 			     PangoLanguage *language)
 {
   PangoFT2Font *ft2font = (PangoFT2Font *)font;
-  char *filename = NULL;
+  FcChar8 *filename = NULL;
   FT_Face face;
   PangoCoverage *coverage;
   
-  MiniXftPatternGetString (ft2font->font_pattern, XFT_FILE, 0, &filename);
+  FcPatternGetString (ft2font->font_pattern, FC_FILE, 0, &filename);
   
   coverage = _pango_ft2_font_map_get_coverage (ft2font->fontmap, filename);
 

@@ -8,5 +8,5 @@ Description: Xft font support for Pango
 Version: @VERSION@
 Requires: pango
 Libs: -L${libdir} -lpangoxft-@PANGO_API_VERSION@ @PKGCONFIG_XFT_LIBS@
-Cflags: -I${includedir}/pango-1.0 @X_CFLAGS@ @FREETYPE_CFLAGS@
+Cflags: -I${includedir}/pango-1.0 @X_CFLAGS@ @FONTCONFIG_CFLAGS@
 

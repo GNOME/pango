@@ -19,3 +19,4 @@
 #undef HAVE_FREETYPE_2_0_3
 
 #undef MINI_XFTCONFIG_DIR
+#undef HAVE_XFT2

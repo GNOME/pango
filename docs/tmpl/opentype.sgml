@@ -49,15 +49,6 @@ identify the various OpenType tables in the
 @PANGO_OT_TABLE_GSUB: The GSUB table.
 @PANGO_OT_TABLE_GPOS: The GPOS table.
 
-<!-- ##### FUNCTION pango_ot_info_new ##### -->
-<para>
-
-</para>
-
-@face: 
-@Returns: 
-
-
 <!-- ##### FUNCTION pango_ot_info_find_script ##### -->
 <para>
 

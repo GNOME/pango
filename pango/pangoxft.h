@@ -28,8 +28,14 @@
 
 G_BEGIN_DECLS
 
+#define _XFT_NO_COMPAT
+#define _XFTCOMPAT_H_
 #include <X11/Xlib.h>
 #include <X11/Xft/Xft.h>
+#if defined(XftVersion) && XftVersion >= 20000
+#else
+#error "must have Xft version 2 or newer"
+#endif
 
 #define PANGO_RENDER_TYPE_XFT "PangoRenderXft"
 
@@ -61,11 +67,12 @@ GType      pango_xft_font_get_type (void);
 
 #ifdef PANGO_ENABLE_ENGINE
 XftFont *     pango_xft_font_get_font          (PangoFont *font);
-FT_Face       pango_xft_font_get_face          (PangoFont *font);
+FT_Face       pango_xft_font_lock_face         (PangoFont *font);
+void	      pango_xft_font_unlock_face       (PangoFont *font);
+guint	      pango_xft_font_get_glyph	       (PangoFont *font, gunichar wc);
 Display *     pango_xft_font_get_display       (PangoFont *font);
 PangoGlyph    pango_xft_font_get_unknown_glyph (PangoFont *font,
 						gunichar   wc);
-PangoOTInfo * pango_xft_font_get_ot_info       (PangoFont *font);
 #endif /* PANGO_ENABLE_ENGINE */
 
 G_END_DECLS

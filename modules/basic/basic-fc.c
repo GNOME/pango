@@ -89,17 +89,6 @@ set_glyph (PangoFont *font, PangoGlyphString *glyphs, int i, int offset, PangoGl
   glyphs->glyphs[i].geometry.width = logical_rect.width;
 }
 
-static guint
-find_char (FT_Face face, PangoFont *font, gunichar wc)
-{
-  int index = FT_Get_Char_Index (face, wc);
-
-  if (index && index <= face->num_glyphs)
-    return index;
-  else
-    return 0;
-}
-
 static void 
 basic_engine_shape (PangoFont        *font,
 		    const char       *text,
@@ -117,9 +106,6 @@ basic_engine_shape (PangoFont        *font,
   g_return_if_fail (length >= 0);
   g_return_if_fail (analysis != NULL);
 
-  face = pango_xft_font_get_face (font);
-  g_assert (face);
-  
   n_chars = g_utf8_strlen (text, length);
   pango_glyph_string_set_size (glyphs, n_chars);
 
@@ -145,7 +131,7 @@ basic_engine_shape (PangoFont        *font,
 	}
       else
 	{
-	  index = find_char (face, font, wc);
+	  index = pango_xft_font_get_glyph (font, wc);
 
 	  if (!index)
 	    {

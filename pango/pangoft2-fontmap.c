@@ -35,7 +35,7 @@
 #include "pango-utils.h"
 #include "pangoft2-private.h"
 
-#include "mini-xft/MiniXftFreetype.h"
+#include <fontconfig/fontconfig.h>
 
 #ifdef G_OS_WIN32
 #define STRICT
@@ -85,7 +85,7 @@ struct _PangoFT2FontMap
 struct _PangoFT2PatternSet
 {
   int n_patterns;
-  MiniXftPattern **patterns;
+  FcPattern **patterns;
 };
 
 #define PANGO_FT2_TYPE_FAMILY              (pango_ft2_family_get_type ())
@@ -158,95 +158,36 @@ pango_ft2_font_set_free (PangoFT2PatternSet *font_set)
   int i;
   
   for (i = 0; i < font_set->n_patterns; i++)
-    MiniXftPatternDestroy (font_set->patterns[i]);
+    FcPatternDestroy (font_set->patterns[i]);
 
   g_free (font_set);
 }
 
 static guint
-pango_ft2_pattern_hash (MiniXftPattern *pattern)
+pango_ft2_pattern_hash (FcPattern *pattern)
 {
-  char *str;
+  FcChar8 *str;
   int i;
   double d;
   guint hash = 0;
   
-  MiniXftPatternGetString (pattern, XFT_FILE, 0, &str);
-  if (str)
-    hash = g_str_hash (str);
+  if (FcPatternGetString (pattern, FC_FILE, 0, &str) == FcResultMatch)
+    hash = g_str_hash ((char *) str);
 
-  if (MiniXftPatternGetInteger (pattern, XFT_INDEX, 0, &i) == MiniXftResultMatch)
+  if (FcPatternGetInteger (pattern, FC_INDEX, 0, &i) == FcResultMatch)
     hash ^= i;
 
-  if (MiniXftPatternGetDouble (pattern, XFT_PIXEL_SIZE, 0, &d) == MiniXftResultMatch)
+  if (FcPatternGetDouble (pattern, FC_PIXEL_SIZE, 0, &d) == FcResultMatch)
     hash ^= (guint) (d*1000.0);
 
   return hash;
 }
 
 static gboolean
-pango_ft2_pattern_equal (MiniXftPattern *pattern1,
-			 MiniXftPattern *pattern2)
+pango_ft2_pattern_equal (FcPattern *pattern1,
+			 FcPattern *pattern2)
 {
-  char *file1, *file2;
-  int index1, index2;
-  double size1, size2;
-  MiniXftResult res1, res2;
-  int int1, int2;
-  Bool bool1, bool2;
-  
-  MiniXftPatternGetString (pattern1, XFT_FILE, 0, &file1);
-  MiniXftPatternGetString (pattern2, XFT_FILE, 0, &file2);
-
-  g_assert (file1 != NULL && file2 != NULL);
-
-  if (strcmp (file1, file2) != 0)
-    return FALSE;
-  
-  if (MiniXftPatternGetInteger (pattern1, XFT_INDEX, 0, &index1) != MiniXftResultMatch)
-    return FALSE;
-  
-  if (MiniXftPatternGetInteger (pattern2, XFT_INDEX, 0, &index2) != MiniXftResultMatch)
-    return FALSE;
-
-  if (index1 != index2)
-    return FALSE;
-
-  if (MiniXftPatternGetDouble (pattern1, XFT_PIXEL_SIZE, 0, &size1) != MiniXftResultMatch)
-    return FALSE;
-
-  if (MiniXftPatternGetDouble (pattern2, XFT_PIXEL_SIZE, 0, &size2) != MiniXftResultMatch)
-    return FALSE;
-
-  if (size1 != size2)
-    return FALSE;
-
-  res1 = MiniXftPatternGetInteger (pattern1, XFT_RGBA, 0, &int1);
-  res2 = MiniXftPatternGetInteger (pattern2, XFT_RGBA, 0, &int2);
-  if (res1 != res2 || (res1 == MiniXftResultMatch && int1 != int2))
-    return FALSE;
-  
-  res1 = MiniXftPatternGetBool (pattern1, XFT_ANTIALIAS, 0, &bool1);
-  res2 = MiniXftPatternGetBool (pattern2, XFT_ANTIALIAS, 0, &bool2);
-  if (res1 != res2 || (res1 == MiniXftResultMatch && bool1 != bool2))
-    return FALSE;
-  
-  res1 = MiniXftPatternGetBool (pattern1, XFT_MINSPACE, 0, &bool1);
-  res2 = MiniXftPatternGetBool (pattern2, XFT_MINSPACE, 0, &bool2);
-  if (res1 != res2 || (res1 == MiniXftResultMatch && bool1 != bool2))
-    return FALSE;
-
-  res1 = MiniXftPatternGetInteger (pattern1, XFT_SPACING, 0, &int1);
-  res2 = MiniXftPatternGetInteger (pattern2, XFT_SPACING, 0, &int2);
-  if (res1 != res2 || (res1 == MiniXftResultMatch && int1 != int2))
-    return FALSE;
-
-  res1 = MiniXftPatternGetInteger (pattern1, XFT_CHAR_WIDTH, 0, &int1);
-  res2 = MiniXftPatternGetInteger (pattern2, XFT_CHAR_WIDTH, 0, &int2);
-  if (res1 != res2 || (res1 == MiniXftResultMatch && int1 != int2))
-    return FALSE;
-  
-  return TRUE;
+  return FcPatternEqual (pattern1, pattern2);
 }
 
 
@@ -371,11 +312,11 @@ _pango_ft2_font_map_remove (PangoFontMap *fontmap,
 }
 
 static PangoFT2Family *
-create_family (PangoFT2FontMap *xfontmap,
+create_family (PangoFT2FontMap *ft2fontmap,
 	       const char      *family_name)
 {
   PangoFT2Family *family = g_object_new (PANGO_FT2_TYPE_FAMILY, NULL);
-  family->fontmap = xfontmap;
+  family->fontmap = ft2fontmap;
   family->family_name = g_strdup (family_name);
   family->n_faces = -1;
 
@@ -405,29 +346,28 @@ pango_ft2_font_map_list_families (PangoFontMap           *fontmap,
 				  int                    *n_families)
 {
   PangoFT2FontMap *ft2fontmap = (PangoFT2FontMap *)fontmap;
-  MiniXftFontSet *fontset;
+  FcFontSet *fontset;
   int i;
   int count;
 
   if (ft2fontmap->n_families < 0)
     {
-      fontset = MiniXftListFonts ((Display *)1, 0,
-				  XFT_CORE, MiniXftTypeBool, False,
-				  XFT_ENCODING, MiniXftTypeString, "iso10646-1",
-				  NULL,
-				  XFT_FAMILY,
-				  NULL);
+      FcObjectSet *os = FcObjectSetBuild (FC_FAMILY, NULL);
+      FcPattern	*pat = FcPatternCreate ();
+      fontset = FcFontList (NULL, pat, os);
+      FcPatternDestroy (pat);
+      FcObjectSetDestroy (os);
 
       ft2fontmap->families = g_new (PangoFT2Family *, fontset->nfont + 3); /* 3 standard aliases */
 
       count = 0;
       for (i = 0; i < fontset->nfont; i++)
 	{
-	  char *s;
-	  MiniXftResult res;
+	  FcChar8 *s;
+	  FcResult res;
 	  
-	  res = MiniXftPatternGetString (fontset->fonts[i], XFT_FAMILY, 0, &s);
-	  g_assert (res == MiniXftResultMatch);
+	  res = FcPatternGetString (fontset->fonts[i], FC_FAMILY, 0, &s);
+	  g_assert (res == FcResultMatch);
 	  
  	  if (!is_alias_family (s))
 	    ft2fontmap->families[count++] = create_family (ft2fontmap, s);
@@ -438,7 +378,7 @@ pango_ft2_font_map_list_families (PangoFontMap           *fontmap,
       ft2fontmap->families[count++] = create_family (ft2fontmap, "Serif");
       ft2fontmap->families[count++] = create_family (ft2fontmap, "Monospace");
 
-      MiniXftFontSetDestroy (fontset);
+      FcFontSetDestroy (fontset);
 
       ft2fontmap->n_families = count;
     }
@@ -457,15 +397,15 @@ pango_ft2_convert_weight (PangoWeight pango_weight)
   int weight;
   
   if (pango_weight < (PANGO_WEIGHT_NORMAL + PANGO_WEIGHT_LIGHT) / 2)
-    weight = XFT_WEIGHT_LIGHT;
+    weight = FC_WEIGHT_LIGHT;
   else if (pango_weight < (PANGO_WEIGHT_NORMAL + 600) / 2)
-    weight = XFT_WEIGHT_MEDIUM;
+    weight = FC_WEIGHT_MEDIUM;
   else if (pango_weight < (600 + PANGO_WEIGHT_BOLD) / 2)
-    weight = XFT_WEIGHT_DEMIBOLD;
+    weight = FC_WEIGHT_DEMIBOLD;
   else if (pango_weight < (PANGO_WEIGHT_BOLD + PANGO_WEIGHT_ULTRABOLD) / 2)
-    weight = XFT_WEIGHT_BOLD;
+    weight = FC_WEIGHT_BOLD;
   else
-    weight = XFT_WEIGHT_BLACK;
+    weight = FC_WEIGHT_BLACK;
   
   return weight;
 }
@@ -476,20 +416,20 @@ pango_ft2_convert_slant (PangoStyle pango_style)
   int slant;
   
   if (pango_style == PANGO_STYLE_ITALIC)
-    slant = XFT_SLANT_ITALIC;
+    slant = FC_SLANT_ITALIC;
   else if (pango_style == PANGO_STYLE_OBLIQUE)
-    slant = XFT_SLANT_OBLIQUE;
+    slant = FC_SLANT_OBLIQUE;
   else
-    slant = XFT_SLANT_ROMAN;
+    slant = FC_SLANT_ROMAN;
   
   return slant;
 }
 
 
-static MiniXftPattern *
+static FcPattern *
 pango_ft2_make_pattern (const PangoFontDescription *description)
 {
-  MiniXftPattern *pattern;
+  FcPattern *pattern;
   PangoStyle pango_style;
   int slant;
   int weight;
@@ -504,19 +444,16 @@ pango_ft2_make_pattern (const PangoFontDescription *description)
   /* To fool Xft into not munging glyph indices, we open it as glyphs-fontspecific
    * then set the encoding ourself
    */
-  pattern = MiniXftPatternBuild (0,
-				 XFT_ENCODING, MiniXftTypeString, "glyphs-fontspecific",
-				 XFT_CORE, MiniXftTypeBool, False,
-				 XFT_FAMILY, MiniXftTypeString,  pango_font_description_get_family (description),
-				 XFT_WEIGHT, MiniXftTypeInteger, weight,
-				 XFT_SLANT,  MiniXftTypeInteger, slant,
-				 XFT_SIZE, MiniXftTypeDouble, (double)pango_font_description_get_size (description)/PANGO_SCALE,
-				 NULL);
+  pattern = FcPatternBuild (NULL,
+			    FC_WEIGHT, FcTypeInteger, weight,
+			    FC_SLANT,  FcTypeInteger, slant,
+			    FC_SIZE, FcTypeDouble, (double)pango_font_description_get_size (description)/PANGO_SCALE,
+			    NULL);
 
   families = g_strsplit (pango_font_description_get_family (description), ",", -1);
   
   for (i = 0; families[i]; i++)
-    MiniXftPatternAddString (pattern, XFT_FAMILY, families[i]);
+    FcPatternAddString (pattern, FC_FAMILY, families[i]);
 
   g_strfreev (families);
 
@@ -525,7 +462,7 @@ pango_ft2_make_pattern (const PangoFontDescription *description)
 
 static PangoFont *
 pango_ft2_font_map_new_font (PangoFontMap    *fontmap,
-			     MiniXftPattern  *match)
+			     FcPattern  *match)
 {
   PangoFT2FontMap *ft2fontmap = (PangoFT2FontMap *)fontmap;
   PangoFT2Font *font;
@@ -544,7 +481,7 @@ pango_ft2_font_map_new_font (PangoFontMap    *fontmap,
       return (PangoFont *)font;
     }
   
-  return  (PangoFont *)_pango_ft2_font_new (fontmap, MiniXftPatternDuplicate (match));
+  return  (PangoFont *)_pango_ft2_font_new (fontmap, FcPatternDuplicate (match));
 }
 
 
@@ -553,22 +490,21 @@ pango_ft2_font_map_load_font (PangoFontMap               *fontmap,
 			      PangoContext               *context,
 			      const PangoFontDescription *description)
 {
-  MiniXftPattern *pattern, *match;
-  MiniXftResult res;
+  FcPattern *pattern, *match;
+  FcResult res;
   PangoFont *font;
   
   pattern = pango_ft2_make_pattern (description);
       
-  match = MiniXftFontMatch ((Display *)1, 0, pattern, &res);
-      
-  MiniXftPatternDestroy (pattern);
+  match = FcFontMatch (0, pattern, &res);
+  FcPatternDestroy (pattern);
 
   font = NULL;
   
   if (match)
     {
       font = pango_ft2_font_map_new_font (fontmap, match);
-      MiniXftPatternDestroy (match);
+      FcPatternDestroy (match);
     }
 
   return font;
@@ -581,11 +517,11 @@ pango_ft2_font_map_load_fontset (PangoFontMap                 *fontmap,
 				 PangoLanguage                *language)
 {
   PangoFT2FontMap *ft2fontmap = (PangoFT2FontMap *)fontmap;
-  MiniXftPattern *pattern, *pattern_copy;
-  MiniXftPattern *match;
+  FcPattern *pattern, *pattern_copy;
+  FcPattern *match;
   int i;
-  char *family, *family_res;
-  MiniXftResult res;
+  FcChar8 *family, *family_res;
+  FcResult res;
   GPtrArray *array;
   int id;
   PangoFT2PatternSet *patterns;
@@ -596,49 +532,52 @@ pango_ft2_font_map_load_fontset (PangoFontMap                 *fontmap,
   if (patterns == NULL)
     {
       pattern = pango_ft2_make_pattern (desc);
+      
+      if (!FcInit ())
+	{
+	  g_warning ("Cannot initialize fontconfig");
+	  return NULL;
+	}
+      FcConfigSubstitute (0, pattern, FcMatchPattern);
+      FcDefaultSubstitute (pattern);
+      pango_ft2_default_substitute (pattern);
 
-      MiniXftInit (0);
-      MiniXftInitFtLibrary ();
-	  
-      MiniXftConfigSubstitute (pattern);
-      MiniXftDefaultSubstitute ((Display *)1, 0, pattern);
-
-      pattern_copy = MiniXftPatternDuplicate (pattern);
+      pattern_copy = FcPatternDuplicate (pattern);
 
       array = g_ptr_array_new ();
       patterns = g_new (PangoFT2PatternSet, 1);
 
       match = NULL;
       id = 0;
-      while (MiniXftPatternGetString (pattern, XFT_FAMILY, id++, &family) == MiniXftResultMatch)
+      while (FcPatternGetString (pattern, FC_FAMILY, id++, &family) == FcResultMatch)
 	{
-	  MiniXftPatternDel (pattern_copy, XFT_FAMILY);
-	  MiniXftPatternAddString (pattern_copy, XFT_FAMILY, family);
+	  FcPatternDel (pattern_copy, FC_FAMILY);
+	  FcPatternAddString (pattern_copy, FC_FAMILY, family);
 
-	  match = MiniXftFontSetMatch (&_MiniXftFontSet, 1, pattern_copy, &res);
+	  match = FcFontMatch (NULL, pattern_copy, &res);
 	  
 	  if (match &&
-	      MiniXftPatternGetString (match, XFT_FAMILY, 0, &family_res) == MiniXftResultMatch &&
-	      g_ascii_strcasecmp (family, family_res) == 0)
+	      FcPatternGetString (match, FC_FAMILY, 0, &family_res) == FcResultMatch &&
+	      FcStrCmpIgnoreCase (family, family_res) == 0)
 	    {
 	      g_ptr_array_add (array, match);
 	      match = NULL;
 	    }
 	  if (match)
-	    MiniXftPatternDestroy (match);
+	    FcPatternDestroy (match);
 	}
       
       if (array->len == 0)
 	{
-	  match = MiniXftFontSetMatch (&_MiniXftFontSet, 1, pattern, &res);
+	  match = FcFontMatch (0, pattern, &res);
 	  g_ptr_array_add (array, match);
 	}
 
-      MiniXftPatternDestroy (pattern);
-      MiniXftPatternDestroy (pattern_copy);
+      FcPatternDestroy (pattern);
+      FcPatternDestroy (pattern_copy);
 
       patterns->n_patterns = array->len;
-      patterns->patterns = (MiniXftPattern **)g_ptr_array_free (array, FALSE);
+      patterns->patterns = (FcPattern **)g_ptr_array_free (array, FALSE);
       
       g_hash_table_insert (ft2fontmap->fontset_hash,
 			   pango_font_description_copy (desc),
@@ -707,28 +646,28 @@ pango_ft2_font_map_cache_clear (PangoFT2FontMap *ft2fontmap)
  */
 
 PangoFontDescription *
-_pango_ft2_font_desc_from_pattern (MiniXftPattern *pattern,
-				   gboolean        include_size)
+_pango_ft2_font_desc_from_pattern (FcPattern *pattern,
+				   gboolean  include_size)
 {
   PangoFontDescription *desc;
   PangoStyle style;
   PangoWeight weight;
   double size;
   
-  char *s;
+  FcChar8 *s;
   int i;
 
   desc = pango_font_description_new ();
 
-  g_assert (MiniXftPatternGetString (pattern, XFT_FAMILY, 0, &s) == MiniXftResultMatch);
+  g_assert (FcPatternGetString (pattern, FC_FAMILY, 0, &s) == FcResultMatch);
 
   pango_font_description_set_family (desc, s);
   
-  if (MiniXftPatternGetInteger (pattern, XFT_SLANT, 0, &i) == MiniXftResultMatch)
+  if (FcPatternGetInteger (pattern, FC_SLANT, 0, &i) == FcResultMatch)
     {
-      if (i == XFT_SLANT_ROMAN)
+      if (i == FC_SLANT_ROMAN)
 	style = PANGO_STYLE_NORMAL;
-      else if (i == XFT_SLANT_OBLIQUE)
+      else if (i == FC_SLANT_OBLIQUE)
 	style = PANGO_STYLE_OBLIQUE;
       else
 	style = PANGO_STYLE_ITALIC;
@@ -738,17 +677,17 @@ _pango_ft2_font_desc_from_pattern (MiniXftPattern *pattern,
 
   pango_font_description_set_style (desc, style);
 
-  if (MiniXftPatternGetInteger (pattern, XFT_WEIGHT, 0, &i) == MiniXftResultMatch)
+  if (FcPatternGetInteger (pattern, FC_WEIGHT, 0, &i) == FcResultMatch)
     { 
-     if (i < XFT_WEIGHT_LIGHT)
+     if (i < FC_WEIGHT_LIGHT)
 	weight = PANGO_WEIGHT_ULTRALIGHT;
-      else if (i < (XFT_WEIGHT_LIGHT + XFT_WEIGHT_MEDIUM) / 2)
+      else if (i < (FC_WEIGHT_LIGHT + FC_WEIGHT_MEDIUM) / 2)
 	weight = PANGO_WEIGHT_LIGHT;
-      else if (i < (XFT_WEIGHT_MEDIUM + XFT_WEIGHT_DEMIBOLD) / 2)
+      else if (i < (FC_WEIGHT_MEDIUM + FC_WEIGHT_DEMIBOLD) / 2)
 	weight = PANGO_WEIGHT_NORMAL;
-      else if (i < (XFT_WEIGHT_DEMIBOLD + XFT_WEIGHT_BOLD) / 2)
+      else if (i < (FC_WEIGHT_DEMIBOLD + FC_WEIGHT_BOLD) / 2)
 	weight = 600;
-      else if (i < (XFT_WEIGHT_BOLD + XFT_WEIGHT_BLACK) / 2)
+      else if (i < (FC_WEIGHT_BOLD + FC_WEIGHT_BLACK) / 2)
 	weight = PANGO_WEIGHT_BOLD;
       else
 	weight = PANGO_WEIGHT_ULTRABOLD;
@@ -756,7 +695,7 @@ _pango_ft2_font_desc_from_pattern (MiniXftPattern *pattern,
   else
     weight = PANGO_WEIGHT_NORMAL;
 
-  if (include_size && MiniXftPatternGetDouble (pattern, XFT_SIZE, 0, &size) == MiniXftResultMatch)
+  if (include_size && FcPatternGetDouble (pattern, FC_SIZE, 0, &size) == FcResultMatch)
       pango_font_description_set_size (desc, size * PANGO_SCALE);
   
   pango_font_description_set_weight (desc, weight);
@@ -790,9 +729,9 @@ pango_ft2_face_describe (PangoFontFace *face)
   PangoFT2Face *ft2face = (PangoFT2Face *) face;
   PangoFT2Family *ft2family = ft2face->family;
   PangoFontDescription *desc = NULL;
-  MiniXftResult res;
-  MiniXftPattern *match_pattern;
-  MiniXftPattern *result_pattern;
+  FcResult res;
+  FcPattern *match_pattern;
+  FcPattern *result_pattern;
 
   if (is_alias_family (ft2family->family_name))
     {
@@ -806,22 +745,21 @@ pango_ft2_face_describe (PangoFontFace *face)
 	return make_alias_description (ft2family, TRUE, TRUE);
     }
   
-  match_pattern = MiniXftPatternBuild (NULL,
-				       XFT_ENCODING, MiniXftTypeString, "iso10646-1",
-				       XFT_FAMILY, MiniXftTypeString, ft2family->family_name,
-				       XFT_CORE, MiniXftTypeBool, False,
-				       XFT_STYLE, MiniXftTypeString, ft2face->style,
-				       NULL);
+  match_pattern = FcPatternBuild (NULL,
+				  FC_FAMILY, FcTypeString, ft2family->family_name,
+				  FC_STYLE, FcTypeString, ft2face->style,
+				  NULL);
+
   g_assert (match_pattern);
   
-  result_pattern = MiniXftFontMatch ((Display *)1, 0, match_pattern, &res);
+  result_pattern = FcFontMatch (NULL, match_pattern, &res);
   if (result_pattern)
     {
       desc = _pango_ft2_font_desc_from_pattern (result_pattern, FALSE);
-      MiniXftPatternDestroy (result_pattern);
+      FcPatternDestroy (result_pattern);
     }
 
-  MiniXftPatternDestroy (match_pattern);
+  FcPatternDestroy (match_pattern);
   
   return desc;
 }
@@ -920,9 +858,11 @@ pango_ft2_family_list_faces (PangoFontFamily  *family,
 
   if (ft2family->n_faces < 0)
     {
-      MiniXftFontSet *fontset;
+      FcFontSet *fontset;
+      FcPattern *pat;
+      FcObjectSet *os;
       int i;
-
+      
       if (is_alias_family (ft2family->family_name))
   	{
  	  ft2family->n_faces = 4;
@@ -936,29 +876,31 @@ pango_ft2_family_list_faces (PangoFontFamily  *family,
 	}
       else
 	{
-	  fontset = MiniXftListFonts ((Display *)1, 0,
-				      XFT_ENCODING, MiniXftTypeString, "iso10646-1",
-				      XFT_FAMILY, MiniXftTypeString, ft2family->family_name,
-				      XFT_CORE, MiniXftTypeBool, False,
-				      NULL,
-				      XFT_STYLE,
-				      NULL);
-	  
-	  ft2family->n_faces = fontset->nfont;
-	  ft2family->faces = g_new (PangoFT2Face *, ft2family->n_faces);
-	  
+	  os = FcObjectSetBuild (FC_STYLE, NULL);
+	  pat = FcPatternBuild (NULL, 
+				FC_FAMILY, FcTypeString, ft2family->family_name,
+				NULL);
+      
+	  fontset = FcFontList (NULL, pat, os);
+      
+	  FcPatternDestroy (pat);
+	  FcObjectSetDestroy (os);
+      
+   	  ft2family->n_faces = fontset->nfont;
+          ft2family->faces = g_new (PangoFT2Face *, ft2family->n_faces);
+
 	  for (i = 0; i < fontset->nfont; i++)
 	    {
-	      char *s;
-	      MiniXftResult res;
+	      FcChar8 *s;
+	      FcResult res;
 	      
-	      res = MiniXftPatternGetString (fontset->fonts[i], XFT_STYLE, 0, &s);
-	      g_assert (res == MiniXftResultMatch);
+	      res = FcPatternGetString (fontset->fonts[i], FC_STYLE, 0, &s);
+	      g_assert (res == FcResultMatch);
 	      
 	      ft2family->faces[i] = create_face (ft2family, s);
 	    }
 	  
-	  MiniXftFontSetDestroy (fontset);
+	  FcFontSetDestroy (fontset);
 	}
     }
   

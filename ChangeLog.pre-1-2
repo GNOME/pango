@@ -1,3 +1,34 @@
+Mon Jun  3 18:56:09 2002  Owen Taylor  <otaylor@redhat.com>
+
+	Xft2 and fontconfig conversion, based largely on a patch
+	from Keith Packard.
+
+	* configure.in acconfig.h: Add checks for fontconfig, switch
+	Xft checks to switch for Xft2 using pkg-config.
+
+	* pangoxft.pc.in pangoxft.pc.in 
+	modules/{arabic,basic,hebrew,indic,tamil}/Makefile.am
+	pango/Makefile.am: Reflect new Xft/fontconfig dependencies.
+
+	* pango/pangoxft-private.h pango/pangoxft-fontmap.c 
+	modules/arabic/arabic-xft.c modules/indic/indic-xft.c: 
+	Switch over to using Xft2 and fontconfig.
+
+	* pango/pangoft2.c pango/pangoft2-fontmap.c pango/pangoft2-private.h 
+	pango/pango/Makefile.am: Remove usage of mini-xft in 
+	favor of fontconfig.
+
+	* pango/pango-ot.h pango/opentype/pango-ot-info.c pango/pangoxft.h
+	modules/arabic/arabic-{xft,ft2}.c modules/indic/indic-xft.c:
+	Attach OpenType information directly to the FT_Face
+	structure using FT_Generic.
+
+	* modules/tamil/Makefile.am modules/tamil/tamil-xft.c 
+	configure.in: Remove this module, no longer needed.
+
+	* pango/pangoxft-font.c (pango_xft_real_render): Coalesce
+	calls to Xft rendering functions.
+
 2002-06-03  Matthias Clasen  <maclas@gmx.de>
 
 	* pango/fonts.c (pango_font_description_better_match): Typo fix.

@@ -86,7 +86,7 @@ module_LTLIBRARIES = $(X_MODULES) $(XFT_MODULES) $(FT2_MODULES)
 moddefine = $(X_PREFIX) $(XFT_PREFIX) $(FT2_PREFIX)
 moduledir = $(libdir)/pango/$(PANGO_MODULE_VERSION)/modules
 
-INCLUDES = -DPANGO_ENABLE_ENGINE -DG_DISABLE_DEPRECATED -I$(top_srcdir) -I$(top_srcdir)/pango/ $(moddefine) $(X_CFLAGS) $(FREETYPE_CFLAGS)
+INCLUDES = -DPANGO_ENABLE_ENGINE -DG_DISABLE_DEPRECATED -I$(top_srcdir) -I$(top_srcdir)/pango/ $(moddefine) $(XFT_CFLAGS) $(FREETYPE_CFLAGS) $(X_CFLAGS)
 
 pango_arabic_x_la_LDFLAGS = -export-dynamic -avoid-version -module
 pango_arabic_x_la_LIBADD = $(arabic_x_libadd)

@@ -90,7 +90,7 @@ get_ruleset (PangoFont *font)
           return NULL;
         }
 	    
-      info = pango_ot_info_new (face);
+      info = pango_ot_info_get (face);
       ruleset = pango_ot_ruleset_new (info);
       
       if (!info)

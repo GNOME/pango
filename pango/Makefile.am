@@ -6,9 +6,6 @@ GPATH = $(srcdir)
 
 if HAVE_FREETYPE
 OPENTYPE_SUBDIR=opentype
-XFT_SUBDIR = mini-xft
-else
-XFT_SUBDIR = 
 endif
 
 if HAVE_FRIBIDI
@@ -16,9 +13,9 @@ else
 FRIBIDI_SUBDIR = mini-fribidi
 endif
 
-SUBDIRS = $(OPENTYPE_SUBDIR) $(FRIBIDI_SUBDIR) $(XFT_SUBDIR)
+SUBDIRS = $(OPENTYPE_SUBDIR) $(FRIBIDI_SUBDIR)
 
-DIST_SUBDIRS = mini-fribidi mini-xft opentype
+DIST_SUBDIRS = mini-fribidi opentype
 
 INCLUDES = 						\
 	-DPANGO_ENABLE_BACKEND				\
@@ -27,8 +24,9 @@ INCLUDES = 						\
 	-DLIBDIR=\"$(libdir)\" 				\
 	-DMODULE_VERSION=\"$(PANGO_MODULE_VERSION)\"	\
 	-DG_DISABLE_DEPRECATED				\
+	$(XFT_CFLAGS)					\
+	$(FONTCONFIG_CFLAGS)				\
 	$(X_CFLAGS)					\
-	$(FREETYPE_CFLAGS)				\
 	-I$(top_srcdir)
 
 if HAVE_X
@@ -55,7 +53,7 @@ XFT_HFILES=
 XFT_BUILD_LIBS=
 endif
 
-if HAVE_FREETYPE
+if HAVE_FONTCONFIG
 FT2_HFILES=pangoft2.h pango-ot.h
 FT2_BUILD_LIBS=libpangoft2-1.0.la
 else
@@ -78,7 +76,7 @@ pangoft2_win32res = pangoft2-win32res.lo
 
 install-libtool-import-lib:
 	$(INSTALL) .libs/libpango-$(PANGO_API_VERSION).dll.a $(DESTDIR)$(libdir)
-if HAVE_FREETYPE
+if HAVE_FONTCONFIG
 	$(INSTALL) .libs/libpangoft2-$(PANGO_API_VERSION).dll.a $(DESTDIR)$(libdir)
 endif
 	$(INSTALL) .libs/libpangowin32-$(PANGO_API_VERSION).dll.a $(DESTDIR)$(libdir)
@@ -99,7 +97,7 @@ noinst_DATA = pango-$(PANGO_API_VERSION).lib pangoft2-$(PANGO_API_VERSION).lib p
 
 install-ms-lib:
 	$(INSTALL) pango-$(PANGO_API_VERSION).lib $(DESTDIR)$(libdir)
-if HAVE_FREETYPE
+if HAVE_FONTCONFIG
 	$(INSTALL) pangoft2-$(PANGO_API_VERSION).lib $(DESTDIR)$(libdir)
 endif
 	$(INSTALL) pangowin32-$(PANGO_API_VERSION).lib $(DESTDIR)$(libdir)
@@ -208,8 +206,8 @@ libpangoft2_1_0_la_SOURCES =   	\
 libpangoft2_1_0_la_LDFLAGS = -version-info $(LT_VERSION_INFO)	\
 	$(GLIB_LIBS)						\
 	$(no_undefined) $(pangoft2_export_symbols)
-libpangoft2_1_0_la_LIBADD = mini-xft/libmini-xft.la opentype/libpango-ot.la libpango-$(PANGO_API_VERSION).la $(INCLUDED_FT2_MODULES) $(FREETYPE_LIBS) $(pangoft2_win32res)
-libpangoft2_1_0_la_DEPENDENCIES = $(INCLUDED_FT2_MODULES) libpango-$(PANGO_API_VERSION).la $(pangoft2_win32res)
+libpangoft2_1_0_la_LIBADD = opentype/libpango-ot.la libpango-$(PANGO_API_VERSION).la $(INCLUDED_FT2_MODULES) $(FONTCONFIG_LIBS) $(pangoft2_win32res)
+libpangoft2_1_0_la_DEPENDENCIES = $(INCLUDED_FT2_MODULES) libpango-$(PANGO_API_VERSION).la
 
 pangoft2-win32res.lo : pangoft2.rc
 	$(top_srcdir)/../glib/build/win32/lt-compile-resource pangoft2.rc pangoft2-win32res.lo
@@ -279,10 +277,10 @@ pango_querymodules_SOURCES = \
 	querymodules.c
 
 if HAVE_XFT
-pango_querymodules_LDADD = $(FT2_BUILD_LIBS) $(X_BUILD_LIBS) libpangoxft-$(PANGO_API_VERSION).la $(GLIB_LIBS) $(FRIBIDI_LIBS) $(XFT_LIBS) $(FREETYPE_LIBS)
+pango_querymodules_LDADD = $(FT2_BUILD_LIBS) $(X_BUILD_LIBS) libpangoxft-$(PANGO_API_VERSION).la $(GLIB_LIBS) $(FRIBIDI_LIBS) $(XFT_LIBS) $(FONTCONFIG_LIBS)
 pango_querymodules_DEPENDENCIES = $(FT2_BUILD_LIBS) $(X_BUILD_LIBS) libpangoxft-$(PANGO_API_VERSION).la libpango-$(PANGO_API_VERSION).la
 else
-pango_querymodules_LDADD = $(FT2_BUILD_LIBS) $(X_BUILD_LIBS) $(WIN32_BUILD_LIBS) $(GLIB_LIBS) $(FRIBIDI_LIBS) $(X_LIBS) $(FREETYPE_LIBS) $(X_EXTRA_LIBS)
+pango_querymodules_LDADD = $(FT2_BUILD_LIBS) $(X_BUILD_LIBS) $(WIN32_BUILD_LIBS) $(GLIB_LIBS) $(FRIBIDI_LIBS) $(X_LIBS) $(FONTCONFIG_LIBS) $(X_EXTRA_LIBS)
 pango_querymodules_DEPENDENCIES = $(FT2_BUILD_LIBS) $(X_BUILD_LIBS) $(WIN32_BUILD_LIBS) libpango-$(PANGO_API_VERSION).la
 endif
 

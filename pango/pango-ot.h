@@ -40,7 +40,7 @@ typedef enum
   PANGO_OT_TABLE_GPOS
 } PangoOTTableType;
 
-PangoOTInfo *pango_ot_info_new (FT_Face face);
+PangoOTInfo *pango_ot_info_get (FT_Face face);
 
 gboolean pango_ot_info_find_script   (PangoOTInfo      *info,
 				      PangoOTTableType  table_type,

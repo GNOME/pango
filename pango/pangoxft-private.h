@@ -33,12 +33,11 @@ struct _PangoXftFont
 {
   PangoFont parent_instance;
 
-  XftPattern *font_pattern;
+  FcPattern *font_pattern;
   XftFont *xft_font;
   PangoFont *mini_font;
   PangoFontMap *fontmap;
   PangoFontDescription *description;
-  PangoOTInfo *ot_info;
 
   GSList *metrics_by_lang;
 
@@ -50,7 +49,7 @@ struct _PangoXftFont
 };
 
 PangoXftFont * _pango_xft_font_new              (PangoFontMap                *font,
-						 XftPattern                  *pattern);
+						 FcPattern                  *pattern);
 void           _pango_xft_font_map_cache_add    (PangoFontMap                *fontmap,
 						 PangoXftFont                *xfont);
 void           _pango_xft_font_map_add          (PangoFontMap                *fontmap,
@@ -66,7 +65,7 @@ void           _pango_xft_font_map_get_info     (PangoFontMap                *fo
 						 Display                    **display,
 						 int                         *screen);
 
-PangoFontDescription * _pango_xft_font_desc_from_pattern (XftPattern *pattern,
+PangoFontDescription * _pango_xft_font_desc_from_pattern (FcPattern *pattern,
 							  gboolean    include_size);
 
 G_END_DECLS

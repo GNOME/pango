@@ -61,12 +61,12 @@ maybe_add_feature (PangoOTRuleset *ruleset,
 }
 
 static PangoOTRuleset *
-get_ruleset (PangoFont *font)
+get_ruleset (FT_Face face)
 {
   PangoOTRuleset *ruleset;
   static GQuark ruleset_quark = 0;
 
-  PangoOTInfo *info = pango_xft_font_get_ot_info (font);
+  PangoOTInfo *info = pango_ot_info_get (face);
 
   if (!ruleset_quark)
     ruleset_quark = g_quark_from_string ("pango-arabic-ruleset");
@@ -74,7 +74,7 @@ get_ruleset (PangoFont *font)
   if (!info)
     return NULL;
 
-  ruleset = g_object_get_qdata (G_OBJECT (font), ruleset_quark);
+  ruleset = g_object_get_qdata (G_OBJECT (info), ruleset_quark);
 
   if (!ruleset)
     {
@@ -93,7 +93,7 @@ get_ruleset (PangoFont *font)
 	  maybe_add_feature (ruleset, info, script_index, FT_MAKE_TAG ('l','i','g','a'), 0xFFFF);
 	}
 
-      g_object_set_qdata_full (G_OBJECT (font), ruleset_quark, ruleset,
+      g_object_set_qdata_full (G_OBJECT (info), ruleset_quark, ruleset,
 			       (GDestroyNotify)g_object_unref);
     }
 
@@ -127,17 +127,6 @@ set_glyph (PangoFont *font, PangoGlyphString *glyphs, int i, int offset, PangoGl
   glyphs->log_clusters[i] = offset;
 }
 
-static guint
-find_char (FT_Face face, PangoFont *font, gunichar wc)
-{
-  int index = FT_Get_Char_Index (face, wc);
-
-  if (index && index <= face->num_glyphs)
-    return index;
-  else
-    return 0;
-}
-
 static void 
 arabic_engine_shape (PangoFont        *font,
 		    const char       *text,
@@ -158,13 +147,13 @@ arabic_engine_shape (PangoFont        *font,
   g_return_if_fail (length >= 0);
   g_return_if_fail (analysis != NULL);
 
-  face = pango_xft_font_get_face (font);
+  face = pango_xft_font_lock_face (font);
   g_assert (face);
 
   n_chars = g_utf8_strlen (text, length);
   pango_glyph_string_set_size (glyphs, n_chars);
 
-  ruleset = get_ruleset (font);
+  ruleset = get_ruleset (face);
   if (ruleset)
     {
       wcs = g_utf8_to_ucs4_fast (text, length, NULL);
@@ -209,7 +198,7 @@ arabic_engine_shape (PangoFont        *font,
 	      ((properties[i] & (initial | medial)) != (initial | medial)))
 	    wc = 0x64a;
 	  
-	  index = find_char (face, font, wc);
+	  index = pango_xft_font_get_glyph (font, wc);
 
 	  if (!index)
 	    {
@@ -247,7 +236,7 @@ arabic_engine_shape (PangoFont        *font,
       p = g_utf8_next_char (p);
     }
 
-  ruleset = get_ruleset (font);
+  ruleset = get_ruleset (face);
 
   if (ruleset)
     {
@@ -297,6 +286,8 @@ arabic_engine_shape (PangoFont        *font,
 	  start = end;
 	}
     }
+  
+  pango_xft_font_unlock_face (font);
 }
 
 static PangoCoverage *

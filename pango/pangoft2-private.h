@@ -25,7 +25,7 @@
 
 #include "pango-modules.h"
 #include "pangoft2.h"
-#include "mini-xft/MiniXft.h"
+#include <fontconfig/fontconfig.h>
 
 /* Debugging... */
 /*#define DEBUGGING 1*/
@@ -63,7 +63,7 @@ struct _PangoFT2Font
 {
   PangoFont font;
 
-  MiniXftPattern *font_pattern;
+  FcPattern *font_pattern;
   FT_Face face;
 
   int size;
@@ -97,7 +97,7 @@ struct _PangoFT2Face
 };
 
 PangoFT2Font * _pango_ft2_font_new                (PangoFontMap                *font,
-						   MiniXftPattern              *pattern);
+						   FcPattern              *pattern);
 PangoMap      *_pango_ft2_get_shaper_map          (PangoLanguage     *language);
 void           _pango_ft2_font_map_set_coverage   (PangoFontMap                *fontmap,
 						   const char                  *name,
@@ -116,7 +116,7 @@ void           _pango_ft2_font_map_add            (PangoFontMap      *fontmap,
 void           _pango_ft2_font_map_remove         (PangoFontMap      *fontmap,
 						   PangoFT2Font      *ft2font);
 const char    *_pango_ft2_ft_strerror             (FT_Error           error);
-PangoFontDescription *_pango_ft2_font_desc_from_pattern (MiniXftPattern *pattern,
+PangoFontDescription *_pango_ft2_font_desc_from_pattern (FcPattern *pattern,
 							 gboolean        include_size);
 
 void *pango_ft2_font_get_cache_glyph_data    (PangoFont      *font,
@@ -127,6 +127,6 @@ void  pango_ft2_font_set_cache_glyph_data    (PangoFont      *font,
 void  pango_ft2_font_set_glyph_cache_destroy (PangoFont      *font,
 					      GDestroyNotify  destroy_notify);
 
-
+void  pango_ft2_default_substitute (FcPattern *pattern);
 
 #endif /* __PANGOFT2_PRIVATE_H__ */

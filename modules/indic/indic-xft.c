@@ -161,16 +161,16 @@ void maybe_add_GPOS_feature (PangoOTRuleset *ruleset,
 }
 
 static PangoOTRuleset *
-get_gsub_ruleset (PangoFont *font, PangoIndicInfo *indic_info)
+get_gsub_ruleset (FT_Face face, PangoIndicInfo *indic_info)
 {
-  PangoOTInfo    *info = pango_xft_font_get_ot_info (font);
+  PangoOTInfo    *info = pango_ot_info_get (face);
   GQuark          ruleset_quark = g_quark_from_string (indic_info->gsubQuarkName);
   PangoOTRuleset *ruleset;
 
   if (!info)
     return NULL;
 
-  ruleset = g_object_get_qdata (G_OBJECT (font), ruleset_quark);
+  ruleset = g_object_get_qdata (G_OBJECT (info), ruleset_quark);
 
   if (!ruleset)
     {
@@ -195,7 +195,7 @@ get_gsub_ruleset (PangoFont *font, PangoIndicInfo *indic_info)
 	  maybe_add_GSUB_feature (ruleset, info, script_index, FT_MAKE_TAG ('h','a','l','n'), haln);
 	}
 
-      g_object_set_qdata_full (G_OBJECT (font), ruleset_quark, ruleset,
+      g_object_set_qdata_full (G_OBJECT (info), ruleset_quark, ruleset,
 			       (GDestroyNotify)g_object_unref);
     }
 
@@ -204,16 +204,16 @@ get_gsub_ruleset (PangoFont *font, PangoIndicInfo *indic_info)
 
 
 static PangoOTRuleset *
-get_gpos_ruleset (PangoFont *font, PangoIndicInfo *indic_info)
+get_gpos_ruleset (FT_Face face, PangoIndicInfo *indic_info)
 {
-  PangoOTInfo    *info = pango_xft_font_get_ot_info (font);
+  PangoOTInfo    *info = pango_ot_info_get (face);
   GQuark          ruleset_quark = g_quark_from_string (indic_info->gposQuarkName);
   PangoOTRuleset *ruleset;
 
   if (!info)
     return NULL;
 
-  ruleset = g_object_get_qdata (G_OBJECT (font), ruleset_quark);
+  ruleset = g_object_get_qdata (G_OBJECT (info), ruleset_quark);
 
   if (!ruleset)
     {
@@ -229,16 +229,15 @@ get_gpos_ruleset (PangoFont *font, PangoIndicInfo *indic_info)
 	  maybe_add_GPOS_feature (ruleset, info, script_index, FT_MAKE_TAG ('d','i','s','t'), dist);
 	}
 
-      g_object_set_qdata_full (G_OBJECT (font), ruleset_quark, ruleset,
+      g_object_set_qdata_full (G_OBJECT (info), ruleset_quark, ruleset,
 			       (GDestroyNotify)g_object_unref);
     }
 
   return ruleset;
 }
 static void
-set_glyphs (PangoFont *font, const gunichar *wcs, const glong *indices, glong n_glyphs, PangoGlyphString *glyphs)
+set_glyphs (PangoFont *font, FT_Face face, const gunichar *wcs, const glong *indices, glong n_glyphs, PangoGlyphString *glyphs)
 {
-  FT_Face face = pango_xft_font_get_face (font);
   gint i;
 
   g_assert (face);
@@ -308,7 +307,7 @@ indic_engine_shape (PangoFont        *font,
   g_return_if_fail (length >= 0);
   g_return_if_fail (analysis != NULL);
 
-  face = pango_xft_font_get_face (font);
+  face = pango_xft_font_lock_face (font);
   g_assert (face != NULL);
 
   indic_shape_engine = (PangoEngineShapeIndic *) analysis->shape_engine;
@@ -329,10 +328,10 @@ indic_engine_shape (PangoFont        *font,
   n_glyphs  = indic_ot_reorder (wc_in, utf8_offsets, n_chars, indic_info->classTable, wc_out, indices, tags);
 
   pango_glyph_string_set_size (glyphs, n_glyphs);
-  set_glyphs(font, wc_out, indices, n_glyphs, glyphs);
+  set_glyphs(font, face, wc_out, indices, n_glyphs, glyphs);
 
   /* do gsub processing */
-  gsub_ruleset = get_gsub_ruleset (font, indic_info);
+  gsub_ruleset = get_gsub_ruleset (face, indic_info);
   if (gsub_ruleset != NULL)
     {
       pango_ot_ruleset_shape (gsub_ruleset, glyphs, tags);
@@ -359,12 +358,14 @@ indic_engine_shape (PangoFont        *font,
 
 #if 1
   /* do gpos processing */
-  gpos_ruleset = get_gpos_ruleset (font, indic_info);
+  gpos_ruleset = get_gpos_ruleset (face, indic_info);
   if (gpos_ruleset != NULL)
     {
       pango_ot_ruleset_shape (gpos_ruleset, glyphs, tags);
     }
 #endif
+
+  pango_xft_font_unlock_face (font);
 
   g_free (tags);
   g_free (indices);

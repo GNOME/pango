@@ -26,17 +26,6 @@
 #include "pangoxft-private.h"
 #include "modules.h"
 
-#include "X11/Xft/Xft.h"
-#include "X11/Xft/XftFreetype.h"
-
-#ifndef XFT_MINSPACE
-#define XFT_MINSPACE        "minspace"  /* Bool use minimum line spacing */
-#endif
-
-#ifndef XFT_MATRIX
-#define XFT_MATRIX          "matrix"    /* XftMatrix */
-#endif
-
 /* Number of freed fonts */
 #define MAX_FREED_FONTS 16
 
@@ -64,7 +53,7 @@ struct _PangoXftFontMap
   int n_families;		/* -1 == uninitialized */
 
   /* List of all fonts (XftPatterns) availible */
-  XftFontSet *font_set;
+/*  FcFontSet *font_set; */
 
   Display *display;
   int screen;  
@@ -88,7 +77,7 @@ struct _PangoXftFamily
 struct _PangoXftPatternSet
 {
   int n_patterns;
-  XftPattern **patterns;
+  FcPattern **patterns;
 };
 
 #define PANGO_XFT_TYPE_FACE              (pango_xft_face_get_type ())
@@ -180,155 +169,31 @@ pango_xft_font_map_class_init (PangoFontMapClass *class)
 static GSList *fontmaps = NULL;
 
 guint
-pango_xft_pattern_hash (XftPattern *pattern)
+pango_xft_pattern_hash (FcPattern *pattern)
 {
   char *str;
   int i;
   double d;
   guint hash = 0;
   
-  XftPatternGetString (pattern, XFT_FILE, 0, &str);
+  FcPatternGetString (pattern, FC_FILE, 0, (FcChar8 **) &str);
   if (str)
     hash = g_str_hash (str);
 
-  if (XftPatternGetInteger (pattern, XFT_INDEX, 0, &i) == XftResultMatch)
+  if (FcPatternGetInteger (pattern, FC_INDEX, 0, &i) == FcResultMatch)
     hash ^= i;
 
-  if (XftPatternGetDouble (pattern, XFT_PIXEL_SIZE, 0, &d) == XftResultMatch)
+  if (FcPatternGetDouble (pattern, FC_PIXEL_SIZE, 0, &d) == FcResultMatch)
     hash ^= (guint) (d*1000.0);
 
   return hash;
 }
 
-typedef enum {
-  PATTERN_FILE       = 1 << 0,
-  PATTERN_INDEX      = 1 << 1,
-  PATTERN_PIXEL_SIZE = 1 << 3,
-  PATTERN_RGBA       = 1 << 4,
-  PATTERN_ANTIALIAS  = 1 << 5,
-  PATTERN_MINSPACE   = 1 << 6,
-  PATTERN_SPACING    = 1 << 7,
-  PATTERN_CHAR_WIDTH = 1 << 8
-} PatternElement;
-
-typedef struct {
-  char  *file;
-  int    index;
-  double pixel_size;
-  int    rgba;
-  Bool   antialias;
-  Bool   minspace;
-  int    spacing;
-  int    char_width;
-} PatternInfo;
-
-static PatternElement
-get_pattern_info (XftPattern  *pattern,
-		  PatternInfo *info)
-{
-  int i;
-  PatternElement fields = 0;
-  
-  for (i = 0; i < pattern->num; i++)
-    {
-      const char *object = pattern->elts[i].object;
-      XftValue *value;
-
-      if (!pattern->elts[i].values)
-	continue;
-
-      value = &pattern->elts[i].values->value;
-
-      switch (object[0])
-	{
-	case 'a':
-	  if (strcmp (object, XFT_ANTIALIAS) == 0 && value->type == XftTypeBool)
-	    {
-	      info->antialias = value->u.b;
-	      fields |= PATTERN_ANTIALIAS;
-	    }
-	  break;
-	case 'c':
-	  if (strcmp (object, XFT_CHAR_WIDTH) == 0 && value->type == XftTypeInteger)
-	    {
-	      info->char_width = value->u.i;
-	      fields |= PATTERN_CHAR_WIDTH;
-	    }
-	  break;
-	case 'f':
-	  if (strcmp (object, XFT_FILE) == 0 && value->type == XftTypeString)
-	    {
-	      info->file = value->u.s;
-	      fields |= PATTERN_FILE;
-	    }
-	  break;
-	case 'i':
-	  if (strcmp (object, XFT_INDEX) == 0 && value->type == XftTypeInteger)
-	    {
-	      info->index = value->u.i;
-	      fields |= PATTERN_INDEX;
-	    }
-	  break;
-	case 'm':
-	  if (strcmp (object, XFT_MINSPACE) == 0 && value->type == XftTypeBool)
-	    {
-	      info->minspace = value->u.b;
-	      fields |= PATTERN_MINSPACE;
-	    }
-	  break;
-	case 'p':
-	  if (strcmp (object, XFT_PIXEL_SIZE) == 0 && value->type == XftTypeDouble)
-	    {
-	      info->pixel_size = value->u.d;
-	      fields |= PATTERN_PIXEL_SIZE;
-	      break;
-	    }
-	case 'r':
-	  if (strcmp (object, XFT_RGBA) == 0 && value->type == XftTypeInteger)
-	    {
-	      info->rgba = value->u.i;
-	      fields |= PATTERN_RGBA;
-	    }
-	  break;
-	case 's':
-	  if (strcmp (object, XFT_SPACING) == 0 && value->type == XftTypeInteger)
-	    {
-	      info->spacing = value->u.i;
-	      fields |= PATTERN_SPACING;
-	      break;
-	    }
-	  break;
-	}
-    }
-
-  return fields;
-}
-
 gboolean
-pango_xft_pattern_equal (XftPattern *pattern1,
-			 XftPattern *pattern2)
+pango_xft_pattern_equal (FcPattern *pattern1,
+			 FcPattern *pattern2)
 {
-  PatternInfo info1;
-  PatternInfo info2;
-  PatternElement elements1, elements2;
-
-  elements1 = get_pattern_info (pattern1, &info1);
-  elements2 = get_pattern_info (pattern2, &info2);
-
-  if (elements1 != elements2)
-    return FALSE;
-
-  if (((elements1 & PATTERN_FILE) &&       strcmp (info1.file, info2.file) != 0) ||
-      ((elements1 & PATTERN_INDEX) &&      info1.index != info2.index) ||
-      ((elements1 & PATTERN_PIXEL_SIZE) && info1.pixel_size != info2.pixel_size) ||
-      ((elements1 & PATTERN_RGBA) &&       info1.rgba != info2.rgba) ||
-      ((elements1 & PATTERN_ANTIALIAS) &&  info1.antialias != info2.antialias) ||
-      ((elements1 & PATTERN_MINSPACE) &&   info1.minspace != info2.minspace) ||
-      ((elements1 & PATTERN_SPACING) &&    info1.spacing != info2.spacing) ||
-      ((elements1 & PATTERN_CHAR_WIDTH) && info1.char_width != info2.char_width))
-    return FALSE;
-  
-  return TRUE;
+  return FcPatternEqual (pattern1, pattern2);
 }
 
 static PangoFontMap *
@@ -481,17 +346,15 @@ pango_xft_font_map_list_families (PangoFontMap           *fontmap,
 				  int                    *n_families)
 {
   PangoXftFontMap *xfontmap = PANGO_XFT_FONT_MAP (fontmap);
-  XftFontSet *fontset;
+  FcFontSet *fontset;
   int i;
   int count;
 
   if (xfontmap->n_families < 0)
     {
       fontset = XftListFonts (xfontmap->display, xfontmap->screen,
-			      XFT_CORE, XftTypeBool, False,
-			      XFT_ENCODING, XftTypeString, "iso10646-1",
 			      NULL,
-			      XFT_FAMILY,
+			      FC_FAMILY,
 			      NULL);
 
       xfontmap->families = g_new (PangoXftFamily *, fontset->nfont + 3); /* 3 standard aliases */
@@ -500,16 +363,16 @@ pango_xft_font_map_list_families (PangoFontMap           *fontmap,
       for (i = 0; i < fontset->nfont; i++)
 	{
 	  char *s;
-	  XftResult res;
+	  FcResult res;
 	  
-	  res = XftPatternGetString (fontset->fonts[i], XFT_FAMILY, 0, &s);
-	  g_assert (res == XftResultMatch);
-
+	  res = FcPatternGetString (fontset->fonts[i], FC_FAMILY, 0, (FcChar8 **) &s);
+	  g_assert (res == FcResultMatch);
+	  
 	  if (!is_alias_family (s))
 	    xfontmap->families[count++] = create_family (xfontmap, s);
 	}
 
-      XftFontSetDestroy (fontset);
+      FcFontSetDestroy (fontset);
 
       xfontmap->families[count++] = create_family (xfontmap, "Sans");
       xfontmap->families[count++] = create_family (xfontmap, "Serif");
@@ -531,15 +394,15 @@ pango_xft_convert_weight (PangoWeight pango_weight)
   int weight;
   
   if (pango_weight < (PANGO_WEIGHT_NORMAL + PANGO_WEIGHT_LIGHT) / 2)
-    weight = XFT_WEIGHT_LIGHT;
+    weight = FC_WEIGHT_LIGHT;
   else if (pango_weight < (PANGO_WEIGHT_NORMAL + 600) / 2)
-    weight = XFT_WEIGHT_MEDIUM;
+    weight = FC_WEIGHT_MEDIUM;
   else if (pango_weight < (600 + PANGO_WEIGHT_BOLD) / 2)
-    weight = XFT_WEIGHT_DEMIBOLD;
+    weight = FC_WEIGHT_DEMIBOLD;
   else if (pango_weight < (PANGO_WEIGHT_BOLD + PANGO_WEIGHT_ULTRABOLD) / 2)
-    weight = XFT_WEIGHT_BOLD;
+    weight = FC_WEIGHT_BOLD;
   else
-    weight = XFT_WEIGHT_BLACK;
+    weight = FC_WEIGHT_BLACK;
   
   return weight;
 }
@@ -550,20 +413,20 @@ pango_xft_convert_slant (PangoStyle pango_style)
   int slant;
   
   if (pango_style == PANGO_STYLE_ITALIC)
-    slant = XFT_SLANT_ITALIC;
+    slant = FC_SLANT_ITALIC;
   else if (pango_style == PANGO_STYLE_OBLIQUE)
-    slant = XFT_SLANT_OBLIQUE;
+    slant = FC_SLANT_OBLIQUE;
   else
-    slant = XFT_SLANT_ROMAN;
+    slant = FC_SLANT_ROMAN;
   
   return slant;
 }
 
 
-static XftPattern *
+static FcPattern *
 pango_xft_make_pattern (const PangoFontDescription *description)
 {
-  XftPattern *pattern;
+  FcPattern *pattern;
   PangoStyle pango_style;
   int slant;
   int weight;
@@ -578,18 +441,16 @@ pango_xft_make_pattern (const PangoFontDescription *description)
   /* To fool Xft into not munging glyph indices, we open it as glyphs-fontspecific
    * then set the encoding ourself
    */
-  pattern = XftPatternBuild (0,
-			     XFT_ENCODING, XftTypeString, "glyphs-fontspecific",
-			     XFT_CORE, XftTypeBool, False,
-			     XFT_WEIGHT, XftTypeInteger, weight,
-			     XFT_SLANT,  XftTypeInteger, slant,
-			     XFT_SIZE, XftTypeDouble, (double)pango_font_description_get_size (description)/PANGO_SCALE,
+  pattern = FcPatternBuild (0,
+			     FC_WEIGHT, FcTypeInteger, weight,
+			     FC_SLANT,  FcTypeInteger, slant,
+			     FC_SIZE, FcTypeDouble, (double)pango_font_description_get_size (description)/PANGO_SCALE,
 			     NULL);
 
   families = g_strsplit (pango_font_description_get_family (description), ",", -1);
   
   for (i = 0; families[i]; i++)
-    XftPatternAddString (pattern, XFT_FAMILY, families[i]);
+    FcPatternAddString (pattern, FC_FAMILY, families[i]);
 
   g_strfreev (families);
 
@@ -598,7 +459,7 @@ pango_xft_make_pattern (const PangoFontDescription *description)
 
 static PangoFont *
 pango_xft_font_map_new_font (PangoFontMap  *fontmap,
-			     XftPattern    *match)
+			     FcPattern    *match)
 {
   PangoXftFontMap *xfontmap = (PangoXftFontMap *)fontmap;
   PangoXftFont *font;
@@ -617,7 +478,7 @@ pango_xft_font_map_new_font (PangoFontMap  *fontmap,
       return (PangoFont *)font;
     }
   
-  return  (PangoFont *)_pango_xft_font_new (fontmap, XftPatternDuplicate (match));
+  return  (PangoFont *)_pango_xft_font_new (fontmap, FcPatternDuplicate (match));
 }
 
 static PangoXftPatternSet *
@@ -626,10 +487,10 @@ pango_xft_font_map_get_patterns (PangoFontMap               *fontmap,
 				 const PangoFontDescription *desc)
 {
   PangoXftFontMap *xfontmap = (PangoXftFontMap *)fontmap;
-  XftPattern *pattern, *pattern_copy;
-  XftPattern *match;
+  FcPattern *pattern, *pattern_copy;
+  FcPattern *match;
   char *family, *family_res;
-  XftResult res;
+  FcResult res;
   int id;
   GPtrArray *array;
   PangoXftPatternSet *patterns;
@@ -638,52 +499,40 @@ pango_xft_font_map_get_patterns (PangoFontMap               *fontmap,
 
   if (patterns == NULL)
     {
-      if (xfontmap->font_set == NULL)
-	xfontmap->font_set = XftListFonts (xfontmap->display, xfontmap->screen,
-					   XFT_CORE, XftTypeBool, False,
-					   XFT_ENCODING, XftTypeString, "iso10646-1",
-					   NULL,
-					   XFT_FOUNDRY,    XFT_STYLE,    XFT_FAMILY,
-					   XFT_ENCODING,   XFT_FILE,     XFT_INDEX,
-					   XFT_CORE,       XFT_WEIGHT,   XFT_SLANT,
-					   XFT_CHAR_WIDTH, XFT_MATRIX,   XFT_RGBA,
-					   XFT_ANTIALIAS,  XFT_MINSPACE, XFT_SPACING,
-					   XFT_SIZE,
-					   NULL);
-      
       pattern = pango_xft_make_pattern (desc);
 
-      XftConfigSubstitute (pattern);
+      FcConfigSubstitute (0, pattern, FcMatchPattern);
       XftDefaultSubstitute (xfontmap->display, xfontmap->screen, pattern);
 
-      pattern_copy = XftPatternDuplicate (pattern);
+      pattern_copy = FcPatternDuplicate (pattern);
 
       array = g_ptr_array_new ();
       patterns = g_new (PangoXftPatternSet, 1);
 
       match = NULL;
       id = 0;
-      while (XftPatternGetString (pattern, XFT_FAMILY, id++, &family) == XftResultMatch)
+      while (FcPatternGetString (pattern, FC_FAMILY, id++, (FcChar8 **) &family) == FcResultMatch)
 	{
-	  XftPatternDel (pattern_copy, XFT_FAMILY);
-	  XftPatternAddString (pattern_copy, XFT_FAMILY, family);
+	  FcPatternDel (pattern_copy, FC_FAMILY);
+	  FcPatternAddString (pattern_copy, FC_FAMILY, family);
 	  
-	  match = XftFontSetMatch (&xfontmap->font_set, 1, pattern_copy, &res);
+	  match = FcFontMatch (NULL, pattern_copy, &res);
 	  
 	  if (match &&
-	      XftPatternGetString (match, XFT_FAMILY, 0, &family_res) == XftResultMatch &&
+	      FcPatternGetString (match, FC_FAMILY, 0, (FcChar8 **) &family_res) == FcResultMatch &&
 	      g_ascii_strcasecmp (family, family_res) == 0)
 	    {
 	      g_ptr_array_add (array, match);
 	      match = NULL;
 	    }
 	  if (match)
-	    XftPatternDestroy (match);
+	    FcPatternDestroy (match);
 	}
       
       if (array->len == 0)
 	{
-	  match = XftFontSetMatch (&xfontmap->font_set, 1, pattern, &res);
+	  match = XftFontMatch (xfontmap->display, xfontmap->screen,
+				pattern, &res);
 	  if (match == NULL)
 	    g_error ("Failed to match any font. This could be due to a broken Xft "
 		     "configuration, or if you run XFree 4.1.0 due to a bug in libXrender. "
@@ -691,11 +540,11 @@ pango_xft_font_map_get_patterns (PangoFontMap               *fontmap,
 	  g_ptr_array_add (array, match);
 	}
 
-      XftPatternDestroy (pattern);
-      XftPatternDestroy (pattern_copy);
+      FcPatternDestroy (pattern);
+      FcPatternDestroy (pattern_copy);
 
       patterns->n_patterns = array->len;
-      patterns->patterns = (XftPattern **)g_ptr_array_free (array, FALSE);
+      patterns->patterns = (FcPattern **)g_ptr_array_free (array, FALSE);
       
       g_hash_table_insert (xfontmap->fontset_hash,
 			   pango_font_description_copy (desc),
@@ -724,7 +573,7 @@ pango_xft_font_set_free (PangoXftPatternSet *font_set)
   int i;
   
   for (i = 0; i < font_set->n_patterns; i++)
-    XftPatternDestroy (font_set->patterns[i]);
+    FcPatternDestroy (font_set->patterns[i]);
 
   g_free (font_set);
 }
@@ -838,7 +687,7 @@ _pango_xft_font_map_get_info (PangoFontMap *fontmap,
  */
 
 PangoFontDescription *
-_pango_xft_font_desc_from_pattern (XftPattern *pattern, gboolean include_size)
+_pango_xft_font_desc_from_pattern (FcPattern *pattern, gboolean include_size)
 {
   PangoFontDescription *desc;
   PangoStyle style;
@@ -850,15 +699,15 @@ _pango_xft_font_desc_from_pattern (XftPattern *pattern, gboolean include_size)
 
   desc = pango_font_description_new ();
 
-  g_assert (XftPatternGetString (pattern, XFT_FAMILY, 0, &s) == XftResultMatch);
+  g_assert (FcPatternGetString (pattern, FC_FAMILY, 0, (FcChar8 **) &s) == FcResultMatch);
 
   pango_font_description_set_family (desc, s);
   
-  if (XftPatternGetInteger (pattern, XFT_SLANT, 0, &i) == XftResultMatch)
+  if (FcPatternGetInteger (pattern, FC_SLANT, 0, &i) == FcResultMatch)
     {
-      if (i == XFT_SLANT_ROMAN)
+      if (i == FC_SLANT_ROMAN)
 	style = PANGO_STYLE_NORMAL;
-      else if (i == XFT_SLANT_OBLIQUE)
+      else if (i == FC_SLANT_OBLIQUE)
 	style = PANGO_STYLE_OBLIQUE;
       else
 	style = PANGO_STYLE_ITALIC;
@@ -868,17 +717,17 @@ _pango_xft_font_desc_from_pattern (XftPattern *pattern, gboolean include_size)
 
   pango_font_description_set_style (desc, style);
 
-  if (XftPatternGetInteger (pattern, XFT_WEIGHT, 0, &i) == XftResultMatch)
+  if (FcPatternGetInteger (pattern, FC_WEIGHT, 0, &i) == FcResultMatch)
     { 
-     if (i < XFT_WEIGHT_LIGHT)
+     if (i < FC_WEIGHT_LIGHT)
 	weight = PANGO_WEIGHT_ULTRALIGHT;
-      else if (i < (XFT_WEIGHT_LIGHT + XFT_WEIGHT_MEDIUM) / 2)
+      else if (i < (FC_WEIGHT_LIGHT + FC_WEIGHT_MEDIUM) / 2)
 	weight = PANGO_WEIGHT_LIGHT;
-      else if (i < (XFT_WEIGHT_MEDIUM + XFT_WEIGHT_DEMIBOLD) / 2)
+      else if (i < (FC_WEIGHT_MEDIUM + FC_WEIGHT_DEMIBOLD) / 2)
 	weight = PANGO_WEIGHT_NORMAL;
-      else if (i < (XFT_WEIGHT_DEMIBOLD + XFT_WEIGHT_BOLD) / 2)
+      else if (i < (FC_WEIGHT_DEMIBOLD + FC_WEIGHT_BOLD) / 2)
 	weight = 600;
-      else if (i < (XFT_WEIGHT_BOLD + XFT_WEIGHT_BLACK) / 2)
+      else if (i < (FC_WEIGHT_BOLD + FC_WEIGHT_BLACK) / 2)
 	weight = PANGO_WEIGHT_BOLD;
       else
 	weight = PANGO_WEIGHT_ULTRABOLD;
@@ -886,7 +735,7 @@ _pango_xft_font_desc_from_pattern (XftPattern *pattern, gboolean include_size)
   else
     weight = PANGO_WEIGHT_NORMAL;
 
-  if (include_size && XftPatternGetDouble (pattern, XFT_SIZE, 0, &size) == XftResultMatch)
+  if (include_size && FcPatternGetDouble (pattern, FC_SIZE, 0, &size) == FcResultMatch)
       pango_font_description_set_size (desc, size * PANGO_SCALE);
   
   pango_font_description_set_weight (desc, weight);
@@ -920,9 +769,9 @@ pango_xft_face_describe (PangoFontFace *face)
   PangoXftFamily *xfamily = xface->family;
   PangoXftFontMap *xfontmap = xfamily->fontmap;
   PangoFontDescription *desc = NULL;
-  XftResult res;
-  XftPattern *match_pattern;
-  XftPattern *result_pattern;
+  FcResult res;
+  FcPattern *match_pattern;
+  FcPattern *result_pattern;
 
   if (is_alias_family (xfamily->family_name))
     {
@@ -936,22 +785,21 @@ pango_xft_face_describe (PangoFontFace *face)
 	return make_alias_description (xfamily, TRUE, TRUE);
     }
   
-  match_pattern = XftPatternBuild (NULL,
-				   XFT_ENCODING, XftTypeString, "iso10646-1",
-				   XFT_FAMILY, XftTypeString, xfamily->family_name,
-				   XFT_CORE, XftTypeBool, False,
-				   XFT_STYLE, XftTypeString, xface->style,
-				   NULL);
+  match_pattern = FcPatternBuild (NULL,
+				  FC_FAMILY, FcTypeString, xfamily->family_name,
+				  FC_STYLE, FcTypeString, xface->style,
+				  NULL);
+
   g_assert (match_pattern);
   
   result_pattern = XftFontMatch (xfontmap->display, xfontmap->screen, match_pattern, &res);
   if (result_pattern)
     {
       desc = _pango_xft_font_desc_from_pattern (result_pattern, FALSE);
-      XftPatternDestroy (result_pattern);
+      FcPatternDestroy (result_pattern);
     }
 
-  XftPatternDestroy (match_pattern);
+  FcPatternDestroy (match_pattern);
   
   return desc;
 }
@@ -1023,9 +871,9 @@ pango_xft_family_list_faces (PangoFontFamily  *family,
 
   if (xfamily->n_faces < 0)
     {
-      XftFontSet *fontset;
+      FcFontSet *fontset;
       int i;
-
+      
       if (is_alias_family (xfamily->family_name))
 	{
 	  xfamily->n_faces = 4;
@@ -1040,29 +888,27 @@ pango_xft_family_list_faces (PangoFontFamily  *family,
       else
 	{
 	  fontset = XftListFonts (xfontmap->display, xfontmap->screen,
-				  XFT_ENCODING, XftTypeString, "iso10646-1",
-				  XFT_FAMILY, XftTypeString, xfamily->family_name,
-				  XFT_CORE, XftTypeBool, False,
+				  FC_FAMILY, FcTypeString, xfamily->family_name,
 				  NULL,
-				  XFT_STYLE,
+				  FC_STYLE,
 				  NULL);
-	  
+      
 	  xfamily->n_faces = fontset->nfont;
 	  xfamily->faces = g_new (PangoXftFace *, xfamily->n_faces);
 	  
 	  for (i = 0; i < fontset->nfont; i++)
 	    {
-	      char *s;
-	      XftResult res;
-	      
-	      res = XftPatternGetString (fontset->fonts[i], XFT_STYLE, 0, &s);
-	      if (res != XftResultMatch)
+	      FcChar8 *s;
+	      FcResult res;
+
+	      res = FcPatternGetString (fontset->fonts[i], FC_STYLE, 0, (FcChar8 **) &s);
+	      if (res != FcResultMatch)
 		s = "Regular";
-	      
+
 	      xfamily->faces[i] = create_face (xfamily, s);
 	    }
 
-	  XftFontSetDestroy (fontset);
+	  FcFontSetDestroy (fontset);
 	}
     }
   

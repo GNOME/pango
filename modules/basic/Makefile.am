@@ -90,8 +90,9 @@ INCLUDES = 			\
 	-DG_DISABLE_DEPRECATED	\
 	-I$(top_srcdir) 	\
 	-I$(top_srcdir)/pango/ 	\
-	$(X_CFLAGS) 		\
+	$(XFT_CFLAGS) 		\
 	$(FREETYPE_CFLAGS)	\
+	$(X_CFLAGS) 		\
 	$(moddefine)
 
 pango_basic_x_la_LDFLAGS = -export-dynamic -avoid-version -module

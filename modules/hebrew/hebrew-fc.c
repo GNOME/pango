@@ -43,20 +43,8 @@ static PangoEngineInfo script_engines[] = {
   }
 };
 
-static guint
-get_glyph_num (FT_Face face, PangoFont *font, gunichar wc)
-{
-  int index = FT_Get_Char_Index (face, wc);
-
-  if (index && index <= face->num_glyphs)
-    return index;
-  else
-    return 0;
-}
-
 static void
-get_cluster_glyphs(FT_Face        face,
-		   PangoFont      *font,
+get_cluster_glyphs(PangoFont      *font,
 		   gunichar       cluster[],
 		   gint           cluster_size,
 		   /* output */
@@ -69,7 +57,7 @@ get_cluster_glyphs(FT_Face        face,
   for (i=0; i<cluster_size; i++)
     {
       PangoRectangle logical_rect;
-      glyph_num[i] = get_glyph_num(face, font, cluster[i]);
+      glyph_num[i] = pango_xft_font_get_glyph (font, cluster[i]);
       glyph[i] = glyph_num[i];
 
       pango_font_get_glyph_extents (font,
@@ -154,8 +142,6 @@ hebrew_engine_shape (PangoFont        *font,
   g_return_if_fail (analysis != NULL);
 
   pango_glyph_string_set_size (glyphs, 0);
-  face = pango_xft_font_get_face (font);
-  g_assert (face);
 
   p = text;
   while (p < text + length)
@@ -164,8 +150,7 @@ hebrew_engine_shape (PangoFont        *font,
       p = hebrew_shaper_get_next_cluster (p, text + length - p,
 					  /* output */
 					  cluster, &cluster_size);
-      get_cluster_glyphs(face,
-			 font,
+      get_cluster_glyphs(font,
 			 cluster,
 			 cluster_size,
 			 /* output */
