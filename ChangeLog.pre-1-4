@@ -1,3 +1,9 @@
+Mon Jun  2 12:10:11 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-glyph-item.c (pango_glyph_item_apply_attrs):
+	Don't put statements with side-effects inside g_assert()!
+	(#114137, Jeff Waugh)
+
 2003-05-30  Tor Lillqvist  <tml@iki.fi>
 
 	* pango/pangoft2.def: Add pango_ft2_font_map_set_default_substitute.
@@ -177,7 +183,7 @@ Tue Apr 15 06:03:39 2003  Owen Taylor  <otaylor@redhat.com>
 Tue Apr 15 05:47:35 2003  Owen Taylor  <otaylor@redhat.com>
 
 	* configure.in: Don't look for Xft unless we found
-	FreeType. (#109753)
+	FreeType. (#109573)
 
 Tue Apr 15 05:34:05 2003  Owen Taylor  <otaylor@redhat.com>
 

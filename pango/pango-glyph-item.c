@@ -315,8 +315,8 @@ pango_glyph_item_apply_attrs (PangoGlyphItem   *glyph_item,
       pango_attr_iterator_range (iter, &range_start, &range_end);
       if (range_end > state.cluster_end)
 	break;
-      
-      g_assert (pango_attr_iterator_next (iter));
+
+      pango_attr_iterator_next (iter);
     }
 
   state.segment_attrs = pango_attr_iterator_get_attrs (iter);
@@ -363,7 +363,7 @@ pango_glyph_item_apply_attrs (PangoGlyphItem   *glyph_item,
 	  if (range_end > state.cluster_end) /* Range intersects next cluster */
 	    break;
 
-	  g_assert (pango_attr_iterator_next (iter));
+	  pango_attr_iterator_next (iter);
 	  pango_attr_iterator_range (iter, &range_start, &range_end);
 
 	  if (range_start >= state.cluster_end) /* New range doesn't intersect this cluster */
