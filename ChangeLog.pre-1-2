@@ -1,3 +1,10 @@
+Wed Jul 31 14:41:07 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pangox.c (pango_x_list_subfonts): Make charset
+	ordering more important than ordering in the font
+	specfication, and document the previously undocumented
+	ordering. (#88562, Brian Yuan.)
+
 Wed Jul 31 12:38:36 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/querymodules.c (string_needs_escape): Avoid

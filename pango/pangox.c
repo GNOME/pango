@@ -1086,7 +1086,8 @@ pango_x_insert_subfont (PangoFont *font, const char *xlfd)
  * @subfont_charsets: location to store a pointer to an array of subfont IDs for each found subfont;
  *               the result must be freed using g_free().
  * 
- * Lists the subfonts of a given font.
+ * Lists the subfonts of a given font. The result is ordered first by charset,
+ * and then within each charset, by the order of fonts in the font specification.
  *
  * Return value: length of the arrays stored in @subfont_ids and 
  * @subfont_charsets.
@@ -1164,8 +1165,8 @@ pango_x_list_subfonts (PangoFont        *font,
 
   n_subfonts = 0;
 
-  for (i=0; i<xfont->n_fonts; i++)
-    for (j=0; j<n_charsets; j++)
+  for (j=0; j<n_charsets; j++)
+    for (i=0; i<xfont->n_fonts; i++)
       if (subfont_lists[j][i])
 	{
 	  (*subfont_ids)[n_subfonts] = subfont_lists[j][i];
