@@ -1,3 +1,8 @@
+Sun Aug 24 12:35:25 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/querymodules.c: Remove a stray ; (#120528,
+	Mehran Mehr)
+
 Fri Aug 22 18:09:52 2003  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/opentype/fterrcompat.h: Add some macro definitions

@@ -95,7 +95,7 @@ escape_string (const char *str)
 })
 #else
 #define GET_SYMBOL(module,name,location)                 \
-  g_module_symbol (module, name, (gpointer *)&location);
+  g_module_symbol (module, name, (gpointer *)&location)
 #endif
 
 void 
