@@ -1,3 +1,11 @@
+2005-01-25  Tor Lillqvist  <tml@novell.com>
+
+	* modules/basic/Makefile.am (usp10.h): Don't use -p option to cp,
+	can cause "failed to preserve ownership" errors.
+
+	* modules/*/Makefile.am (INCLUDES): Remove extraneous slash here,
+	too.
+
 2005-01-11  Owen Taylor  <otaylor@redhat.com>
 
 	* modules/basic/Makefile.am (INCLUDES): Remove an extraneous

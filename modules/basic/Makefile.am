@@ -75,7 +75,7 @@ basic-win32.lo: usp10.h
 
 # Do it like this to avoid getting other headers from where usp10.h is
 usp10.h: $(USP10_H)
-	cp -p $(USP10_H) usp10.h
+	cp $(USP10_H) usp10.h
 endif
 
 
