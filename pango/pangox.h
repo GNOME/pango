@@ -43,7 +43,7 @@ void           pango_x_context_set_funcs  (PangoContext     *context,
 					   PangoFreeGCFunc   free_gc_func);
 
 PangoFont *    pango_x_load_font          (Display          *display,
-					   gchar            *spec);
+					   const gchar      *spec);
 void           pango_x_render             (Display          *display,
 					   Drawable          d,
 					   GC                gc,

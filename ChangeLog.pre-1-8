@@ -1,3 +1,18 @@
+Mon Mar 25 14:52:29 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pangox.c (pango_x_font_get_metrics): Rewrite
+	average_digit_width computation to go through the same 
+	shaping hack as the average_char_width code.
+	(Part of #53425)
+
+	* pango/pangox.c (pango_x_font_describe): Implement
+	except for results of pango_x_font_load().
+
+	* pango/pangox.c (pango_x_load_font): Document as
+	"don't use".
+
+	* pango/pangox.[ch] (pango_x_load_font): Add missing const.
+
 2002-03-25  Sven Neumann  <sven@gimp.org>
 
 	* pango/fonts.c (pango_font_description_from_string): this function

@@ -394,14 +394,17 @@ pango_x_font_new (PangoFontMap *fontmap, const char *spec, int size)
  * @display: the X display.
  * @spec:    a comma-separated list of XLFD's.
  *
- * Loads up a logical font based on a "fontset" style
- * text specification.
+ * Loads up a logical font based on a "fontset" style text
+ * specification. This is not remotely useful (Pango API's generally
+ * work in terms of PangoFontDescription) and the result may not
+ * work correctly in all circumstances. Use of this function should
+ * be avoided.
  *
  * Returns a new #PangoFont.
  */
 PangoFont *
-pango_x_load_font (Display *display,
-		   char    *spec)
+pango_x_load_font (Display    *display,
+		   const char *spec)
 {
   PangoXFont *result;
 
@@ -682,6 +685,95 @@ get_int_prop (Atom         atom,
   return FALSE;
 }
 
+/* Call @func with each glyph resulting from shaping @string with each
+ * glyph. This duplicates quite a bit of code from pango_itemize. This
+ * function should die and we should simply add the ability to specify
+ * particular fonts when itemizing.
+ */
+static void
+itemize_string_foreach (PangoFont     *font,
+			PangoLanguage *language,
+			const char    *str,
+			void         (*func) (PangoFont      *font,
+					      PangoGlyphInfo *glyph_info,
+					      gpointer        data),
+			gpointer       data)
+{
+  const char *start, *p;
+  PangoGlyphString *glyph_str = pango_glyph_string_new ();
+  PangoEngineShape *shaper, *last_shaper;
+  int last_level;
+  gunichar *text_ucs4;
+  long n_chars, i;
+  guint8 *embedding_levels;
+  PangoDirection base_dir = PANGO_DIRECTION_LTR;
+  gboolean finished = FALSE;
+  
+  text_ucs4 = g_utf8_to_ucs4_fast (str, -1, &n_chars);
+  if (!text_ucs4)
+    return;
+
+  embedding_levels = g_new (guint8, n_chars);
+  pango_log2vis_get_embedding_levels (text_ucs4, n_chars, &base_dir,
+				      embedding_levels);
+  g_free (text_ucs4);
+
+  last_shaper = NULL;
+  last_level = 0;
+
+  i = 0;
+  p = start = str;
+  while (*p || !finished)
+    {
+      gunichar wc;
+
+      if (*p)
+	{
+	  wc = g_utf8_get_char (p);
+	  shaper = pango_font_find_shaper (font, language, wc);
+	}
+      else
+	{
+	  finished = TRUE;
+	  shaper = NULL;
+	}
+	  
+      if (p > start && 
+	  (finished ||
+	   (shaper != last_shaper || last_level != embedding_levels[i])))
+	{
+	  PangoAnalysis analysis;
+	  int j;
+
+	  analysis.shape_engine = last_shaper;
+	  analysis.lang_engine = NULL;
+	  analysis.font = font;
+	  analysis.language = language;
+	  analysis.level = last_level;
+	  analysis.extra_attrs = NULL;
+	  
+	  pango_shape (start, p - start, &analysis, glyph_str);
+
+	  for (j = 0; j < glyph_str->num_glyphs; j++)
+	    (*func) (font, &glyph_str->glyphs[j], data);
+	  
+	  start = p;
+	}
+
+      if (!finished)
+	{
+	  p = g_utf8_next_char (p);
+	      
+	  last_shaper = shaper;
+	  last_level = embedding_levels[i];
+	  i++;
+        }
+    }
+  
+  pango_glyph_string_free (glyph_str);
+  g_free (embedding_levels);
+}
+
 /* Get composite font metrics for all subfonts in list
  */
 static void
@@ -760,12 +852,20 @@ get_font_metrics_from_subfonts (PangoFont        *font,
     metrics->approximate_char_width = 10 * PANGO_SCALE;
 }
 
+void
+get_subfonts_foreach (PangoFont      *font,
+		      PangoGlyphInfo *glyph_info,
+		      gpointer        data)
+{
+  GSList **subfonts = data;
+
+  PangoXSubfont subfont = PANGO_X_GLYPH_SUBFONT (glyph_info->glyph);
+  if (!g_slist_find (*subfonts, GUINT_TO_POINTER ((guint)subfont)))
+    *subfonts = g_slist_prepend (*subfonts, GUINT_TO_POINTER ((guint)subfont));
+}
+
 /* Get composite font metrics for all subfonts resulting from shaping
  * string str with the given font
- *
- * This duplicates quite a bit of code from pango_itemize. This function
- * should die and we should simply add the ability to specify particular
- * fonts when itemizing.
  */
 static void
 get_font_metrics_from_string (PangoFont        *font,
@@ -773,87 +873,36 @@ get_font_metrics_from_string (PangoFont        *font,
 			      const char       *str,
 			      PangoFontMetrics *metrics)
 {
-  const char *start, *p;
-  PangoGlyphString *glyph_str = pango_glyph_string_new ();
-  PangoEngineShape *shaper, *last_shaper;
-  int last_level;
-  gunichar *text_ucs4;
-  long n_chars, i;
-  guint8 *embedding_levels;
-  PangoDirection base_dir = PANGO_DIRECTION_LTR;
   GSList *subfonts = NULL;
-  gboolean finished = FALSE;
   
-  text_ucs4 = g_utf8_to_ucs4_fast (str, -1, &n_chars);
-  if (!text_ucs4)
-    return;
-
-  embedding_levels = g_new (guint8, n_chars);
-  pango_log2vis_get_embedding_levels (text_ucs4, n_chars, &base_dir,
-				      embedding_levels);
-  g_free (text_ucs4);
-
-  last_shaper = NULL;
-  last_level = 0;
-
-  i = 0;
-  p = start = str;
-  while (*p || !finished)
-    {
-      gunichar wc;
-
-      if (*p)
-	{
-	  wc = g_utf8_get_char (p);
-	  shaper = pango_font_find_shaper (font, language, wc);
-	}
-      else
-	{
-	  finished = TRUE;
-	  shaper = NULL;
-	}
-	  
-      if (p > start && 
-	  (finished ||
-	   (shaper != last_shaper || last_level != embedding_levels[i])))
-	{
-	  PangoAnalysis analysis;
-	  int j;
-
-	  analysis.shape_engine = last_shaper;
-	  analysis.lang_engine = NULL;
-	  analysis.font = font;
-	  analysis.language = language;
-	  analysis.level = last_level;
-	  analysis.extra_attrs = NULL;
-	  
-	  pango_shape (start, p - start, &analysis, glyph_str);
-
-	  for (j = 0; j < glyph_str->num_glyphs; j++)
-	    {
-	      PangoXSubfont subfont = PANGO_X_GLYPH_SUBFONT (glyph_str->glyphs[j].glyph);
-	      if (!g_slist_find (subfonts, GUINT_TO_POINTER ((guint)subfont)))
-		subfonts = g_slist_prepend (subfonts, GUINT_TO_POINTER ((guint)subfont));
-	    }
-	  
-	  start = p;
-	}
-
-      if (!finished)
-	{
-	  p = g_utf8_next_char (p);
-	      
-	  last_shaper = shaper;
-	  last_level = embedding_levels[i];
-	  i++;
-        }
-    }
-
+  itemize_string_foreach (font, language, str, get_subfonts_foreach, &subfonts);
   get_font_metrics_from_subfonts (font, subfonts, metrics);
   g_slist_free (subfonts);
+}
+
+void
+average_width_foreach (PangoFont      *font,
+		       PangoGlyphInfo *glyph_info,
+		       gpointer        data)
+{
+  int *width = data;
+
+  *width += glyph_info->geometry.width;
+}
+
+/* Get composite font metrics for all subfonts resulting from shaping
+ * string str with the given font
+ */
+static gdouble
+get_total_width_for_string (PangoFont        *font,
+			    PangoLanguage    *language,
+			    const char       *str)
+{
+  int width = 0;
   
-  pango_glyph_string_free (glyph_str);
-  g_free (embedding_levels);
+  itemize_string_foreach (font, language, str, average_width_foreach, &width);
+
+  return width;
 }
 
 static PangoFontMetrics *
@@ -879,33 +928,15 @@ pango_x_font_get_metrics (PangoFont        *font,
 
   if (!tmp_list)
     {
-      PangoLayout *layout;
-      PangoRectangle extents;
-      PangoContext *context;
-      
       info = g_new (PangoXMetricsInfo, 1);
       info->sample_str = sample_str;
       info->metrics = pango_font_metrics_new ();
 
       xfont->metrics_by_lang = g_slist_prepend (xfont->metrics_by_lang, info);
-      
+
       get_font_metrics_from_string (font, language, sample_str, info->metrics);
 
-      /* This is sort of a sledgehammer solution, but we cache this
-       * stuff so not a huge deal hopefully. Get the avg. width of the
-       * chars in "0123456789"
-       */
-      context = pango_x_get_context (pango_x_fontmap_get_display (xfont->fontmap));
-      pango_context_set_language (context, language);
-      layout = pango_layout_new (context);
-      pango_layout_set_text (layout, "0123456789", -1);
-
-      pango_layout_get_extents (layout, NULL, &extents);
-      
-      info->metrics->approximate_digit_width = extents.width / 10.0;
-
-      g_object_unref (G_OBJECT (layout));
-      g_object_unref (G_OBJECT (context));
+      info->metrics->approximate_digit_width = get_total_width_for_string (font, language, "0123456789") / 10;
     }
       
   return pango_font_metrics_ref (info->metrics);
@@ -1261,8 +1292,19 @@ pango_x_font_finalize (GObject *object)
 static PangoFontDescription *
 pango_x_font_describe (PangoFont *font)
 {
-  /* FIXME: implement */
-  return NULL;
+  /* FIXME: this doesn't work for fonts from pango_x_font_load()
+   */
+  PangoXFont *xfont = (PangoXFont *)font;
+
+  if (xfont->xface)
+    {
+      PangoFontDescription *desc = pango_font_face_describe (PANGO_FONT_FACE (xfont->xface));
+      pango_font_description_set_size (desc, xfont->size);
+
+      return desc;
+    }
+  else
+    return NULL;
 }
 
 PangoMap *

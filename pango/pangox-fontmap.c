@@ -1536,12 +1536,12 @@ pango_x_face_get_coverage (PangoXFace      *xface,
 		  g_hash_table_insert (coverage_hash, map_entry->info->id, coverage);
 		}
 	  
-	  font_level = pango_coverage_get (coverage, ch);
-	  if (font_level == PANGO_COVERAGE_EXACT && !map_entry->is_exact)
-	    font_level = PANGO_COVERAGE_APPROXIMATE;
-
-	  if (font_level != PANGO_COVERAGE_NONE)
-	    pango_coverage_set (result, ch, font_level);
+	      font_level = pango_coverage_get (coverage, ch);
+	      if (font_level == PANGO_COVERAGE_EXACT && !map_entry->is_exact)
+		font_level = PANGO_COVERAGE_APPROXIMATE;
+	      
+	      if (font_level != PANGO_COVERAGE_NONE)
+		pango_coverage_set (result, ch, font_level);
 	    }
 	}
       
