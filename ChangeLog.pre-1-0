@@ -1,3 +1,9 @@
+Sat Feb 23 21:40:27 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* configure.in: Version 0.26
+
+	* NEWS: Updates.
+
 Sat Feb 23 17:34:26 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* modules/basic/basic-{ft2,x,xft}.c: Patch from Sven Neumann

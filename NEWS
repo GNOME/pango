@@ -1,3 +1,9 @@
+Changes between 0.25 and 0.26
+
+* Fixes for AIX compilation [Miroslaw Dobrzanski-Neumann]
+* Fix zero-width characters being displayed [Sven Neumann]
+* Add some padding to class structures [Owen Taylor]
+
 Changes between 0.24 and 0.25
 
 * Win32 fixes [Tor Lillqvist, Hans Breuer]
