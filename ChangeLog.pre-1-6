@@ -1,3 +1,10 @@
+Sun Aug  3 18:37:46 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pangofc-font.c (get_face_metrics): Fix sign 
+	of metrics->descent.
+
+	* pango/pango-engine-private.h: fix include (Noah Levitt)
+
 Sat Aug  2 23:19:16 2003  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pango-engine.[ch] modules/*/*-{fc,win32,x}.c

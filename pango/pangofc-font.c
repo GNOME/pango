@@ -244,7 +244,7 @@ get_face_metrics (PangoFcFont      *fcfont,
       vector.x = 0;
       vector.y = face->size->metrics.descender;
       FT_Vector_Transform (&vector, &ft_matrix);
-      metrics->descent = PANGO_UNITS_26_6 (vector.y);
+      metrics->descent = - PANGO_UNITS_26_6 (vector.y);
       
       vector.x = 0;
       vector.y = face->size->metrics.ascender;
@@ -253,7 +253,7 @@ get_face_metrics (PangoFcFont      *fcfont,
     }
   else
     {
-      metrics->descent = PANGO_UNITS_26_6 (face->size->metrics.descender);
+      metrics->descent = - PANGO_UNITS_26_6 (face->size->metrics.descender);
       metrics->ascent = PANGO_UNITS_26_6 (face->size->metrics.ascender);
     }
   
