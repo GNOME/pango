@@ -71,14 +71,17 @@ static void saveMatra(Output *output, gunichar matra, IndicOTCharClass matraClas
     }
 }
 
-static void noteMatra(Output *output, const IndicOTClassTable *classTable, gunichar matra, guint32 matraIndex, gulong matraTags)
+static void initMatra(Output *output, guint32 matraIndex, gulong matraTags)
 {
-    IndicOTCharClass matraClass = indic_ot_get_char_class(classTable, matra);
-
     output->fMpre = output->fMbelow = output->fMabove = output->fMpost = output->fLengthMark = 0;
     output->fMPreOutIndex = -1;
     output->fMatraIndex = matraIndex;
     output->fMatraTags = matraTags;
+}
+
+static gboolean noteMatra(Output *output, const IndicOTClassTable *classTable, gunichar matra)
+{
+    IndicOTCharClass matraClass = indic_ot_get_char_class(classTable, matra);
 
     if (IS_MATRA(matraClass)) {
         if (IS_SPLIT_MATRA(matraClass)) {
@@ -94,7 +97,10 @@ static void noteMatra(Output *output, const IndicOTClassTable *classTable, gunic
         } else {
             saveMatra(output, matra, matraClass);
         }
-    }
+	
+	return TRUE;
+    } else
+      return FALSE;
 }
 
 static void noteBaseConsonant(Output *output)
@@ -184,7 +190,10 @@ glong indic_ot_reorder(const gunichar *chars, const glong *utf8_offsets, glong c
         }
 
         matra = vmabove - 1;
-        noteMatra(&output, class_table, chars[matra], /*matra*/ prev, blwf_p);
+	initMatra(&output, prev, blwf_p);
+	while (noteMatra(&output, class_table, chars[matra]) &&
+	       matra != prev)
+	    matra--;
 
         switch (indic_ot_get_char_class(class_table, chars[prev]) & CF_CLASS_MASK) {
         case CC_RESERVED:

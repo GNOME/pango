@@ -1,3 +1,15 @@
+Fri Jul 30 14:05:25 2004  Owen Taylor  <otaylor@redhat.com>
+
+	Improve handling of decomposed two-part vowels 
+	(#121882, Jungshik Shin)
+
+	* modules/indic/indic-ot-class-tables.c (stateTable): 
+	allow a dependent vowel to be followed by another 
+	dependent vowel.
+
+	* modules/indic/indic-ot.c (indic_ot_reorder): Handle
+	multiple vowel matras.
+
 Fri Jul 30 13:33:49 2004  Owen Taylor  <otaylor@redhat.com>
 
 	* modules/indic/indic-ot.c (indic_ot_reorder): Suppress
