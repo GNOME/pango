@@ -1842,11 +1842,7 @@ get_line_extents_layout_coords (PangoLayout     *layout,
     {
       *line_ink_layout = line_ink;
       line_ink_layout->x = line_ink.x + x_offset;
-  
-      if (line == layout->lines->data)
-        line_ink_layout->y = line_ink.y;
-      else
-        line_ink_layout->y = y_offset - line_logical.y + line_ink.y;
+      line_ink_layout->y = y_offset - line_logical.y + line_ink.y;
     }
 
   if (line_logical_layout)

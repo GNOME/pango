@@ -1,3 +1,9 @@
+Wed Dec 19 22:40:24 2001  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-layout.c (get_line_extents_layout_coords): 
+	Remove incorrect special casing of initial line.
+	(Reported by Darin Adler)
+
 Tue Dec 18 12:33:03 2001  Owen Taylor  <otaylor@redhat.com>
 
 	* modules/indic/*-x.c (pango_engine_shape): Syllable
