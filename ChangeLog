@@ -1,3 +1,14 @@
+2001-06-07  Havoc Pennington  <hp@redhat.com>
+
+	* pango/Makefile.am: add libpango.la to _DEPENDENCIES for the
+	other libs
+
+	* configure.in: use AM_PATH_GLIB_2_0
+
+	* autogen.sh: support AUTOGEN_SUBDIR_MODE
+
+	* Makefile.am: dist the .pc.in files
+
 Tue Jun  5 10:40:17 2001  Owen Taylor  <otaylor@redhat.com>
 
 	* docs/reference/tmpl/*.smgl: Patch from Matthias 

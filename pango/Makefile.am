@@ -96,7 +96,7 @@ endif
 
 libpangox_la_LDFLAGS = -release $(VERSION)
 libpangox_la_LIBADD =  $(INCLUDED_X_MODULES) $(X_LIBS) libpango.la
-libpangox_la_DEPENDENCIES = $(INCLUDED_X_MODULES)
+libpangox_la_DEPENDENCIES = $(INCLUDED_X_MODULES) libpango.la
 
 libpangoxft_la_SOURCES =   	\
 	pangoxft-font.c		\
@@ -106,7 +106,7 @@ libpangoxft_la_SOURCES =   	\
 
 libpangoxft_la_LIBADD = $(INCLUDED_XFT_MODULES) $(XFT_LIBS) opentype/libpango-ot.la libpango.la
 libpangoxft_la_LDFLAGS = -release $(VERSION)
-libpangoxft_la_DEPENDENCIES = $(INCLUDED_XFT_MODULES)
+libpangoxft_la_DEPENDENCIES = $(INCLUDED_XFT_MODULES) libpango.la
 
 libpangoft2_la_SOURCES =   	\
 	pangoft2.h		\
@@ -118,7 +118,7 @@ libpangoft2_la_SOURCES =   	\
 
 libpangoft2_la_LIBADD = $(INCLUDED_FT2_MODULES) $(FREETYPE_LIBS) libpango.la
 libpangoft2_la_LDFLAGS = -release $(VERSION)
-libpangoft2_la_DEPENDENCIES = $(INCLUDED_FT2_MODULES)
+libpangoft2_la_DEPENDENCIES = $(INCLUDED_FT2_MODULES) libpango.la
 
 pangoincludedir=$(includedir)/pango-1.0/pango
 

@@ -8,6 +8,10 @@ EXTRA_DIST = 		\
 	pangox.pc.in	\
 	pangoxft.pc.in	\
 	pangoft2.pc.in	\
+	pango-uninstalled.pc.in		\
+	pangox-uninstalled.pc.in	\
+	pangoxft-uninstalled.pc.in	\
+	pangoft2-uninstalled.pc.in	\
 	TODO.xml	\
 	README.win32
 
