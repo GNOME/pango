@@ -5,10 +5,10 @@ hebrew_x_sources = $(common_sources) hebrew-x.c
 hebrew_xft_sources = $(common_sources) hebrew-xft.c 
 hebrew_ft2_sources = $(common_sources) hebrew-ft2.c 
 
-pangolibs = $(top_builddir)/pango/libpango.la $(FRIBIDI_LIBS) $(GLIB_LIBS)
-pangoxlibs = $(top_builddir)/pango/libpangox.la $(X_LIBS) $(pangolibs)
+pangolibs = $(top_builddir)/pango/libpango-$(PANGO_API_VERSION).la $(FRIBIDI_LIBS) $(GLIB_LIBS)
+pangoxlibs = $(top_builddir)/pango/libpangox-$(PANGO_API_VERSION).la $(X_LIBS) $(pangolibs)
 pangoxftlibs = $(top_builddir)/pango/libpangoxft.la $(XFT_LIBS) $(pangolibs)
-pangoft2libs = $(top_builddir)/pango/libpangoft2.la $(FREETYPE_LIBS) $(pangolibs)
+pangoft2libs = $(top_builddir)/pango/libpangoft2-$(PANGO_API_VERSION).la $(FREETYPE_LIBS) $(pangolibs)
 
 if HAVE_XFT
 if INCLUDE_BASIC_XFT

@@ -32,7 +32,7 @@ INCLUDES = 					\
 
 if HAVE_X
 X_HFILES=pangox.h
-X_BUILD_LIBS=libpangox.la
+X_BUILD_LIBS=libpangox-1.0.la
 else
 X_HFILES=
 X_BUILD_LIBS=
@@ -40,7 +40,7 @@ endif
 
 if HAVE_WIN32
 WIN32_HFILES=pangowin32.h
-WIN32_BUILD_LIBS=libpangowin32.la
+WIN32_BUILD_LIBS=libpangowin32-1.0.la
 else
 WIN32_HFILES=
 WIN32_BUILD_LIBS=
@@ -48,7 +48,7 @@ endif
 
 if HAVE_XFT
 XFT_HFILES=pangoxft.h pango-ot.h
-XFT_BUILD_LIBS=libpangoxft.la
+XFT_BUILD_LIBS=libpangoxft-1.0.la
 else
 XFT_HFILES=
 XFT_BUILD_LIBS=
@@ -56,7 +56,7 @@ endif
 
 if HAVE_FREETYPE
 FT2_HFILES=pangoft2.h pango-ot.h
-FT2_BUILD_LIBS=libpangoft2.la
+FT2_BUILD_LIBS=libpangoft2-1.0.la
 else
 FT2_HFILES=
 FT2_BUILD_LIBS=
@@ -87,7 +87,7 @@ uninstall-libtool-import-lib:
 
 endif
 
-lib_LTLIBRARIES = libpango.la $(X_BUILD_LIBS) $(WIN32_BUILD_LIBS) $(XFT_BUILD_LIBS) $(FT2_BUILD_LIBS)
+lib_LTLIBRARIES = libpango-1.0.la $(X_BUILD_LIBS) $(WIN32_BUILD_LIBS) $(XFT_BUILD_LIBS) $(FT2_BUILD_LIBS)
 
 if MS_LIB_AVAILABLE
 noinst_DATA = pango.lib pangoft2.lib pangowin32.lib
@@ -113,9 +113,9 @@ bin_PROGRAMS = pango-querymodules
 pango_built_headers = pango-enum-types.h
 pango_built_cfiles = pango-enum-types.c
 
-$(OBJECTS) $(libpango_la_OBJECTS): $(pango_built_headers)
+$(OBJECTS) $(libpango_1_0_la_OBJECTS): $(pango_built_headers)
 
-libpango_la_SOURCES = 	   \
+libpango_1_0_la_SOURCES =  \
 	break.c 	   \
 	fonts.c 	   \
 	glyphstring.c 	   \
@@ -138,7 +138,7 @@ libpango_la_SOURCES = 	   \
 	shape.c	           \
 	$(pango_built_cfiles)
 
-libpangox_la_SOURCES = 	   \
+libpangox_1_0_la_SOURCES = \
 	modules.h 	   \
 	module-defs-x.c	   \
 	pangox.c	   \
@@ -147,21 +147,21 @@ libpangox_la_SOURCES = 	   \
 	pangox-fontmap.c   \
 	pango-indic.c
 
-# We use the -release flag for now until the API settles
-# down at which point we'll either use the GTK+ versioning
-# scheme or the standard libtool scheme.
-#
-libpango_la_LDFLAGS = -release $(VERSION) $(GLIB_LIBS) $(no_undefined) $(pango_export_symbols)
+libpango_1_0_la_LDFLAGS =			\
+	-version-info $(LT_VERSION_INFO)	\
+	$(GLIB_LIBS)				\
+	$(no_undefined) $(pango_export_symbols)
+
 if HAVE_FRIBIDI
 else
-libpango_la_LIBADD = mini-fribidi/libmini-fribidi.la
+libpango_1_0_la_LIBADD = mini-fribidi/libmini-fribidi.la
 endif
 
-libpangox_la_LDFLAGS = -release $(VERSION)
-libpangox_la_LIBADD = libpango.la $(INCLUDED_X_MODULES) $(X_LIBS) $(X_EXTRA_LIBS)
-libpangox_la_DEPENDENCIES = $(INCLUDED_X_MODULES) libpango.la
+libpangox_1_0_la_LDFLAGS = -version-info $(LT_VERSION_INFO)
+libpangox_1_0_la_LIBADD = libpango-$(PANGO_API_VERSION).la $(INCLUDED_X_MODULES) $(X_LIBS) $(X_EXTRA_LIBS)
+libpangox_1_0_la_DEPENDENCIES = $(INCLUDED_X_MODULES) libpango-$(PANGO_API_VERSION).la
 
-libpangowin32_la_SOURCES =	\
+libpangowin32_1_0_la_SOURCES =	\
 	pangowin32.h		\
 	pangowin32.c		\
 	pangowin32-private.h	\
@@ -169,31 +169,35 @@ libpangowin32_la_SOURCES =	\
 	pangowin32-fontmap.c	\
 	module-defs-win32.c
 
-libpangowin32_la_LDFLAGS = -release $(VERSION) $(GLIB_LIBS) $(no_undefined) $(pangowin32_export_symbols)
-libpangowin32_la_LIBADD = libpango.la $(INCLUDED_WIN32_MODULES) $(WIN32_LIBS) 
-libpangowin32_la_DEPENDENCIES = libpango.la
+libpangowin32_1_0_la_LDFLAGS = -version-info $(LT_VERSION_INFO)	\
+	$(GLIB_LIBS)						\
+	$(no_undefined) $(pangowin32_export_symbols)
+libpangowin32_1_0_la_LIBADD = libpango-$(PANGO_API_VERSION).la $(INCLUDED_WIN32_MODULES) $(WIN32_LIBS) 
+libpangowin32_1_0_la_DEPENDENCIES = libpango-$(PANGO_API_VERSION).la
 
 
-libpangoxft_la_SOURCES =   	\
+libpangoxft_1_0_la_SOURCES =   	\
 	pangoxft-font.c		\
 	pangoxft-fontmap.c      \
 	pangoxft-private.h	\
 	module-defs-xft.c
 
-libpangoxft_la_LIBADD = opentype/libpango-ot.la libpango.la $(INCLUDED_XFT_MODULES) $(XFT_LIBS) 
-libpangoxft_la_LDFLAGS = -release $(VERSION)
-libpangoxft_la_DEPENDENCIES = $(INCLUDED_XFT_MODULES) libpango.la
+libpangoxft_1_0_la_LDFLAGS = -version-info $(LT_VERSION_INFO)
+libpangoxft_1_0_la_LIBADD = opentype/libpango-ot.la libpango-$(PANGO_API_VERSION).la $(INCLUDED_XFT_MODULES) $(XFT_LIBS) 
+libpangoxft_1_0_la_DEPENDENCIES = $(INCLUDED_XFT_MODULES) libpango-$(PANGO_API_VERSION).la
 
-libpangoft2_la_SOURCES =   	\
+libpangoft2_1_0_la_SOURCES =   	\
 	pangoft2.h		\
 	pangoft2.c		\
 	pangoft2-private.h	\
 	pangoft2-fontmap.c	\
 	module-defs-ft2.c
 
-libpangoft2_la_LIBADD = mini-xft/libmini-xft.la opentype/libpango-ot.la libpango.la $(INCLUDED_FT2_MODULES) $(FREETYPE_LIBS) 
-libpangoft2_la_LDFLAGS = -release $(VERSION) $(GLIB_LIBS) $(no_undefined) $(pangoft2_export_symbols)
-libpangoft2_la_DEPENDENCIES = $(INCLUDED_FT2_MODULES) libpango.la
+libpangoft2_1_0_la_LDFLAGS = -version-info $(LT_VERSION_INFO)	\
+	$(GLIB_LIBS)						\
+	$(no_undefined) $(pangowin32_export_symbols)
+libpangoft2_1_0_la_LIBADD = mini-xft/libmini-xft.la opentype/libpango-ot.la libpango-$(PANGO_API_VERSION).la $(INCLUDED_FT2_MODULES) $(FREETYPE_LIBS) 
+libpangoft2_1_0_la_DEPENDENCIES = $(INCLUDED_FT2_MODULES) libpango-$(PANGO_API_VERSION).la
 
 pangoincludedir=$(includedir)/pango-1.0/pango
 
@@ -260,11 +264,11 @@ pango_querymodules_SOURCES = \
 	querymodules.c
 
 if HAVE_XFT
-pango_querymodules_LDADD = $(FT2_BUILD_LIBS) $(X_BUILD_LIBS) libpangoxft.la $(GLIB_LIBS) $(FRIBIDI_LIBS) $(XFT_LIBS) $(FREETYPE_LIBS)
-pango_querymodules_DEPENDENCIES = $(FT2_BUILD_LIBS) $(X_BUILD_LIBS) libpangoxft.la libpango.la
+pango_querymodules_LDADD = $(FT2_BUILD_LIBS) $(X_BUILD_LIBS) libpangoxft-$(PANGO_API_VERSION).la $(GLIB_LIBS) $(FRIBIDI_LIBS) $(XFT_LIBS) $(FREETYPE_LIBS)
+pango_querymodules_DEPENDENCIES = $(FT2_BUILD_LIBS) $(X_BUILD_LIBS) libpangoxft-$(PANGO_API_VERSION).la libpango-$(PANGO_API_VERSION).la
 else
 pango_querymodules_LDADD = $(FT2_BUILD_LIBS) $(X_BUILD_LIBS) $(WIN32_BUILD_LIBS) $(GLIB_LIBS) $(FRIBIDI_LIBS) $(X_LIBS) $(FREETYPE_LIBS) $(X_EXTRA_LIBS)
-pango_querymodules_DEPENDENCIES = $(FT2_BUILD_LIBS) $(X_BUILD_LIBS) $(WIN32_BUILD_LIBS) libpango.la
+pango_querymodules_DEPENDENCIES = $(FT2_BUILD_LIBS) $(X_BUILD_LIBS) $(WIN32_BUILD_LIBS) libpango-$(PANGO_API_VERSION).la
 endif
 
 EXTRA_DIST =					\
@@ -302,20 +306,20 @@ CLEANFILES =					\
 	pango-enum-types.c			\
 	s-enum-types-c
 
-pango.lib: libpango.la pango.def
+pango.lib: libpango-$(PANGO_API_VERSION).la pango.def
 	lib -name:libpango-@PANGO_MAJOR_VERSION@-@PANGO_MINOR_VERSION@.dll -def:pango.def -out:$@
 
-pangoft2.lib: libpangoft2.la pangoft2.def
+pangoft2.lib: libpangoft2-$(PANGO_API_VERSION).la pangoft2.def
 	lib -name:libpangoft2-@PANGO_MAJOR_VERSION@-@PANGO_MINOR_VERSION@.dll -def:pangoft2.def -out:$@
 
-pangowin32.lib: libpangowin32.la pangowin32.def
+pangowin32.lib: libpangowin32-$(PANGO_API_VERSION).la pangowin32.def
 	lib -name:libpangowin32-@PANGO_MAJOR_VERSION@-@PANGO_MINOR_VERSION@.dll -def:pangowin32.def -out:$@
 
 install-data-local: install-ms-lib install-libtool-import-lib
 
 if DISABLE_EXPLICIT_DEPS
 install-exec-local: 
-	for i in libpangoft2.la libpangoxft.la libpangox.la ; do \
+	for i in libpangoft2-$(PANGO_API_VERSION).la libpangoxft-$(PANGO_API_VERSION).la libpangox-$(PANGO_API_VERSION).la ; do \
 	  test -f $(DESTDIR)$(libdir)/$$i && $(SHELL) $(top_srcdir)/sanitize-la.sh $(DESTDIR)$(libdir)/$$i ; \
 	done
 endif

@@ -7,6 +7,6 @@ Name: Pango X
 Description: X Window System font support for Pango
 Version: @VERSION@
 Requires: pango
-Libs: -L${libdir} -lpangox @PKGCONFIG_X_LIBS@
+Libs: -L${libdir} -lpangox-@PANGO_API_VERSION@ @PKGCONFIG_X_LIBS@
 Cflags: -I${includedir}/pango-1.0 @X_CFLAGS@
 

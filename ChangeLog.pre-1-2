@@ -1,3 +1,9 @@
+Tue Mar  5 11:00:20 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* configure.in **/Makefile.am *.pc.in: Switch over to 
+	GLib/GTK+ style library versioning. Update version numbers
+	to 1.0.0.
+
 2002-03-03  jacob berkman  <jacob@ximian.com>
 
 	* Makefile.am (EXTRA_DIST): add sanitize-la.sh

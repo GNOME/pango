@@ -25,7 +25,12 @@ pango_viewer_SOURCES =		\
 	viewer-qt.h
 
 CLEANFILES = moc_viewer-qt.cc
-pango_viewer_LDADD = ../pango/libpangox.la ../pango/libpango.la $(FRIBIDI_LIBS) $(QT_LIBS) moc_viewer-qt.$(OBJEXT)
+pango_viewer_LDADD =					\
+	../pango/libpangox-$(PANGO_API_VERSION).la	\
+	../pango/libpango-$(PANGO_API_VERSION).la	\
+	$(FRIBIDI_LIBS)					\
+	$(QT_LIBS)					\
+	moc_viewer-qt.$(OBJEXT)
 ###################################################
 
 ###################################################
@@ -34,7 +39,10 @@ ft2_programs = pangoft2topgm
 endif
 
 pangoft2topgm_SOURCES = pangoft2topgm.c
-pangoft2topgm_LDADD = ../pango/libpango.la ../pango/libpangoft2.la $(FREETYPE_LIBS)
+pangoft2topgm_LDADD =					\
+	../pango/libpango-$(PANGO_API_VERSION).la	\
+	../pango/libpangoft2-$(PANGO_API_VERSION).la	\
+	$(FREETYPE_LIBS)
 ###################################################
 
 bin_PROGRAMS = $(viewer_programs)
