@@ -157,42 +157,11 @@ if test "x$FREETYPE_CONFIG" != "xno" ; then
 
   pango_save_ldflags=$LDFLAGS
   LDFLAGS="$LDFLAGS $FREETYPE_LIBS"
-  AC_CHECK_LIB(freetype, FT_New_Face, have_freetype=true, :)
+  AC_CHECK_LIB(freetype, FT_Get_Next_Char, have_freetype=true, :)
   LDFLAGS=$pango_save_ldflags
-
-  if $have_freetype ; then
-    pango_save_cppflags="$CPPFLAGS"
-    CPPFLAGS="$CPPFLAGS $FREETYPE_CFLAGS"
-
-    AC_MSG_CHECKING([For sufficiently new FreeType (at least 2.0.1)])
-    AC_TRY_COMPILE([
-#include <freetype/freetype.h>
-#include FT_ERRORS_H
-]
-                ,[(void)1;],:,have_freetype=false)
-    if $have_freetype ; then
-      AC_MSG_RESULT(yes)
-    else
-      AC_MSG_RESULT(no)
-    fi
-
-    CPPFLAGS="$pango_save_cppflags"
-  fi
 fi
 AC_SUBST(FREETYPE_LIBS)
 AC_SUBST(FREETYPE_CFLAGS)
-
-## see which freetype we have, 2.0.3 vs. 2.0.4
-pango_save_cppflags="$CPPFLAGS"  
-CPPFLAGS="$CPPFLAGS $FREETYPE_CFLAGS"
-AC_CHECK_HEADER(freetype/internal/tterrors.h, AC_DEFINE(HAVE_FREETYPE_2_0_3))
-CPPFLAGS="$pango_save_cppflags"
-
-## Check to see whether we have FT_Get_First_Char(), new in 2.0.9
-pango_save_libs=$LIBS
-LIBS="$LIBS $FREETYPE_LIBS"
-AC_CHECK_FUNCS(FT_Get_First_Char)
-LIBS=$pango_save_libs
 
 #
 # Check for fontconfig

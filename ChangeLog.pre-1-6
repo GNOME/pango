@@ -1,3 +1,11 @@
+Wed Feb 12 16:59:23 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* configure.in pango/opentype/fterrcompat.h README: 
+	Up the FreeType version requirement to 2.0.9.
+	(2.2.1 had a compilation failure with older versions,
+	this catches it more cleanly, and removes some unneeded
+	checks. #105302, problem reported by Will Partain.)
+
 Wed Feb 12 16:48:46 2003  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pango-layout.c (pango_layout_set_text):
