@@ -19,16 +19,28 @@
  * Boston, MA 02111-1307, USA.
  */
 
+#include "config.h"
+
 #include <glib.h>
+#ifdef HAVE_DIRENT_H
 #include <dirent.h>
+#endif
 #include <gmodule.h>
 #include "pango.h"
 #include "pango-utils.h"
 
 #include <errno.h>
 #include <string.h>
+#ifdef HAVE_UNISTD_H
 #include <unistd.h>
+#endif
 #include <stdio.h>
+
+#ifdef G_OS_WIN32
+#define SOEXT ".dll"
+#else
+#define SOEXT ".so"
+#endif
 
 void 
 query_module (const char *dir, const char *name)
@@ -102,7 +114,9 @@ int main (int argc, char **argv)
       
       path = pango_config_key_get ("Pango/ModulesPath");
       if (!path)
-	path = g_strdup (LIBDIR "/pango/modules");
+	path = g_strconcat (pango_get_lib_subdirectory (),
+			    G_DIR_SEPARATOR_S "modules",
+			    NULL);
 
       printf ("# ModulesPath = %s\n#\n", path);
 
@@ -118,7 +132,7 @@ int main (int argc, char **argv)
 	      while ((dent = readdir (dir)))
 		{
 		  int len = strlen (dent->d_name);
-		  if (len > 3 && strcmp (dent->d_name + len - 3, ".so") == 0)
+		  if (len > 3 && strcmp (dent->d_name + len - strlen (SOEXT), SOEXT) == 0)
 		    query_module (dirs[i], dent->d_name);
 		}
 	      

@@ -210,6 +210,9 @@ EOTEXT
 included_modules=$included_modules
 ])
 
+AC_HEADER_DIRENT
+AC_CHECK_HEADER(unistd.h, AC_DEFINE(HAVE_UNISTD_H))
+
 AC_OUTPUT([
 Makefile 
 pango/Makefile

@@ -1,0 +1,21 @@
+PANGO_VER = 0.12
+
+TOP = ../../..
+
+include $(TOP)/build/win32/make.mingw
+
+OPTIMIZE = -g
+
+INCLUDES = -I ../../pango -I ../..
+DEFINES = 
+DEPCFLAGS = $(GLIB_CFLAGS) $(FRIBIDI_CFLAGS)
+
+all : \
+	../../config.h \
+	pango-basic-win32.dll
+
+../../config.h : ../../config.h.win32
+	cp $< $@
+
+pango-basic-win32.dll : basic-win32.o
+	$(GLIB)/build-dll pango-basic-win32 - ../engine.def $< -L ../../pango -lpango-$(PANGO_VER) -lpangowin32-$(PANGO_VER) $(GLIB_LIBS) $(FRIBIDI_LIBS)

@@ -1,3 +1,37 @@
+2000-07-15  Tor Lillqvist  <tml@iki.fi>
+
+	* pango/pangowin32.h
+	* pango/pangowin32-private.h
+	* pango/pangowin32-fontcache.c
+	* pango/pangowin32-fontmap.c
+	* modules/basic/basic-win32.c
+	* examples/viewer-win32.c
+	* examples/pangowin32.aliases: New files. Start of a Win32
+	implementation. Does not work yet.
+
+	* configure.in: Chek for dirent.h and unistd.h.
+
+	* pango/pango-utils.h
+	* pango/pango-utils.c (pango_get_sysconf_subdirectory,
+	pango_get_lib_subdirectory): New functions, for better
+	portability, to enable installation-time choice of directory (on
+	Windows) instead of compile-time. Use these instead of SYSCONFDIR
+	"/pango" and LIBDIR "/pango".
+
+	(pango_split_file_list): Fix comment, the function splits on
+	searchpath separators, not commas. Use G_SEARCHPATH_SEPARATOR_S
+	for portability. Don't try to expand '~' as home directory on
+	Windows.
+
+	(read_config): Use pango_get_sysconf_subdirectory().
+
+	* pango/modules.c (read_modules): Use pango_get_sysconf_subdirectory().
+	Don't crash if a module file cannot be opened.
+
+	* pango/querymodules.c: Include config.h Conditionalize inclusion
+	of dirent.h and unistd.h. Use platform-specific shared library
+	extension. Use pango_get_lib_subdirectory().
+
 Thu Jul  6 15:24:38 2000  Owen Taylor  <otaylor@redhat.com>
 
 	* Released 0.12

@@ -19,6 +19,8 @@
  * Boston, MA 02111-1307, USA.
  */
 
+#include "config.h"
+
 #include <ctype.h>
 #include <stdio.h>
 #include <string.h>
@@ -316,7 +318,9 @@ read_modules (void)
   int n;
 
   if (!file_str)
-    file_str = g_strdup (SYSCONFDIR "/pango/pango.modules");
+    file_str = g_strconcat (pango_get_sysconf_subdirectory (),
+			    G_DIR_SEPARATOR_S "pango.modules",
+			    NULL);
 
   files = pango_split_file_list (file_str);
 
@@ -329,9 +333,11 @@ read_modules (void)
       module_file = fopen (files[n], "r");
       if (!module_file)
 	g_warning ("Error opening module file '%s': %s\n", files[n], g_strerror (errno));
-
-      process_module_file(module_file);
-      fclose(module_file);
+      else
+	{
+	  process_module_file(module_file);
+	  fclose(module_file);
+	}
     }
 
   g_strfreev (files);

@@ -33,6 +33,13 @@
 #  define getc_unlocked(f) getc(f)
 #endif /* !HAVE_FLOCKFILE */
 
+#ifdef G_OS_WIN32
+
+#define STRICT
+#include <windows.h>
+
+#endif
+
 /**
  * pango_trim_string:
  * @str: a string
@@ -62,8 +69,8 @@ pango_trim_string (const char *str)
  * pango_split_file_list:
  * @str: a comma separated list of filenames
  * 
- * Split a comma-separated list of files, stripping white space
- * and subsituting ~/ with $HOME/
+ * Split a G_SEARCHPATH_SEPARATOR-separated list of files, stripping
+ * white space and subsituting ~/ with $HOME/
  * 
  * Return value: a list of strings to be freed with g_strfreev()
  **/
@@ -74,7 +81,7 @@ pango_split_file_list (const char *str)
   int j;
   char **files;
 
-  files = g_strsplit (str, ":", -1);
+  files = g_strsplit (str, G_SEARCHPATH_SEPARATOR_S, -1);
 
   while (files[i])
     {
@@ -93,14 +100,20 @@ pango_split_file_list (const char *str)
 
 	  continue;
 	}
-      
+#ifndef G_OS_WIN32
+      /* '~' is a quite normal and common character in file names on
+       * Windows, especially in the 8.3 versions of long file names, which
+       * still occur and then. Also, few Windows user are aware of the
+       * Unix shell convention that '~' stands for the home directory,
+       * even if they happen to have a home directory.
+       */
       if (file[0] == '~' && file[1] == G_DIR_SEPARATOR)
 	{
 	  char *tmp = g_strconcat (g_get_home_dir(), file + 1, NULL);
 	  g_free (file);
 	  file = tmp;
 	}
-
+#endif
       g_free (files[i]);
       files[i] = file;
 	
@@ -539,13 +552,24 @@ read_config ()
   if (!config_hash)
     {
       char *filename;
+      char *home;
       
       config_hash = g_hash_table_new (g_str_hash, g_str_equal);
-      read_config_file (SYSCONFDIR "/" "pango/pangorc", FALSE);
-
-      filename = g_strconcat (g_get_home_dir (), "/.pangorc", NULL);
+      filename = g_strconcat (pango_get_sysconf_subdirectory (),
+			      G_DIR_SEPARATOR_S "pangorc",
+			      NULL);
       read_config_file (filename, FALSE);
       g_free (filename);
+
+      home = g_get_home_dir ();
+      if (home && *home)
+	{
+	  filename = g_strconcat (home,
+				  G_DIR_SEPARATOR_S ".pangorc",
+				  NULL);
+	  read_config_file (filename, FALSE);
+	  g_free (filename);
+	}
 
       filename = g_getenv ("PANGO_RC_FILE");
       if (filename)
@@ -572,4 +596,58 @@ pango_config_key_get (const char *key)
   read_config ();
 
   return g_strdup (g_hash_table_lookup (config_hash, key));
+}
+
+char *
+pango_get_sysconf_subdirectory (void)
+{
+#ifdef G_OS_WIN32
+
+  /* On Windows we don't hardcode any paths (SYSCONFDIR) in the DLL,
+   * but rely on an installation program to store the installation
+   * directory in the registry. If no installation program has been
+   * used, punt and assume the Pango directory is %WINDIR%\Pango.
+   */
+
+  static gboolean been_here = FALSE;
+  static gchar pango_sysconf_dir[200];
+  gchar win_dir[100];
+  HKEY reg_key = NULL;
+  DWORD type;
+  DWORD nbytes = sizeof (pango_sysconf_dir);
+
+  if (been_here)
+    return pango_sysconf_dir;
+
+  been_here = TRUE;
+
+  if (RegOpenKeyEx (HKEY_LOCAL_MACHINE, "Software\\GNU\\Pango", 0,
+		    KEY_QUERY_VALUE, &reg_key) != ERROR_SUCCESS
+      || RegQueryValueEx (reg_key, "InstallationDirectory", 0,
+			  &type, pango_sysconf_dir, &nbytes) != ERROR_SUCCESS
+      || type != REG_SZ)
+    {
+      /* Uh oh. Use %WinDir%\Pango */
+      GetWindowsDirectory (win_dir, sizeof (win_dir));
+      sprintf (pango_sysconf_dir, "%s\\pango", win_dir);
+    }
+
+  if (reg_key != NULL)
+    RegCloseKey (reg_key);
+
+  return pango_sysconf_dir;
+
+#else
+  return SYSCONFDIR "/pango";
+#endif
+}
+
+char *
+pango_get_lib_subdirectory (void)
+{
+#ifdef G_OS_WIN32
+  return pango_get_sysconf_subdirectory ();
+#else
+  return LIBDIR "/pango";
+#endif
 }

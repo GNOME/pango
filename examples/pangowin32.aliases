@@ -1,0 +1,7 @@
+# File defining aliases of PangoFontDescription to Windows font set
+#
+# family style variant weight stretch   facename,...
+
+sans normal normal normal normal "arial,gulimche,ms gothic,ms hei,mingliu"
+serif normal normal normal normal "times new roman,gulimche,ms gothic,ms song,mingliu"
+monospace normal normal normal normal "courier new,gulimche,ms gothic,ms song,mingliu"

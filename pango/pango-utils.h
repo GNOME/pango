@@ -38,3 +38,16 @@ gboolean pango_scan_int       (const char **pos,
 
 char *   pango_config_key_get (const char  *key);
 
+/* On Unix, return the name of the "pango" subdirectory of SYSCONFDIR
+ * (which is set at compile time). On Win32, return the Pango
+ * installation directory (which is set at installation time, and
+ * stored in the registry). The returned string should not be
+ * g_free'd.
+ */
+char *   pango_get_sysconf_subdirectory (void);
+
+/* Ditto for LIBDIR/pango. On Win32, use the same Pango
+ * installation directory. This returned string should not be
+ * g_free'd either.
+ */
+char *   pango_get_lib_subdirectory (void);
