@@ -1,3 +1,10 @@
+Sun Nov 21 11:43:00 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/break.c: Turn off backspace-deletes-character behavior
+	for Kana and Hangul. It's wrong for Kana, and for Hangul it's 
+	theoretically right but interacts badly with current input 
+	methods. (#155897, Leon Ho)
+
 Sun Nov 21 11:40:03 2004  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pango-layout.c (pango_layout_get_log_attrs): Return n+1

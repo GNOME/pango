@@ -370,7 +370,9 @@ static int line_break_indexes[] = {
 #define LATIN(wc) (((wc) >= 0x0020 && (wc) <= 0x02AF) || ((wc) >= 0x1E00 && (wc) <= 0x1EFF))
 #define CYRILLIC(wc) (((wc) >= 0x0400 && (wc) <= 0x052F))
 #define GREEK(wc) (((wc) >= 0x0370 && (wc) <= 0x3FF) || ((wc) >= 0x1F00 && (wc) <= 0x1FFF))
-#define BACKSPACE_DELETES_CHARACTER(wc) (!LATIN (wc) && !CYRILLIC (wc) && !GREEK (wc))
+#define KANA(wc) ((wc) >= 0x3040 && (wc) <= 0x30FF)
+#define HANGUL(wc) ((wc) >= 0xAC00 && (wc) <= 0xD7A3)
+#define BACKSPACE_DELETES_CHARACTER(wc) (!LATIN (wc) && !CYRILLIC (wc) && !GREEK (wc) && !KANA(wc) && !HANGUL(wc))
 
 
 /* p. 132-133 of Unicode spec table 5-6 will help understand this */
