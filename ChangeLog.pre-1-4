@@ -1,3 +1,6 @@
+2000-12-11 Elliot Lee <sopwith@redhat.com>
+	* modules/thai/thai.c, pango/break.c: #include <string.h>
+
 Mon Dec 11 15:20:24 2000  Owen Taylor  <otaylor@redhat.com>
 
 	* examples/HELLO.utf8: Add a tab into to Yiddish line

@@ -21,6 +21,7 @@
 
 #include "pango.h"
 #include "pango-modules.h"
+#include <string.h>
 
 /* See http://www.unicode.org/unicode/reports/tr14/ if you hope
  * to understand the line breaking code.
