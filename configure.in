@@ -109,7 +109,10 @@ XFT_CFLAGS=""
 if test $have_x = true ; then
   if test $have_freetype = true ; then
     AC_CHECK_LIB(Xrender, XRenderFindFormat, 
-      AC_CHECK_LIB(Xft, XftFontOpen, have_xft=true, :, -lXrender -lXext $X_LIBS $FREETYPE_LIBS)
+      AC_CHECK_LIB(Xft, XftFontOpen,
+	AC_CHECK_HEADER(X11/Xft/XftFreetype.h,
+	  have_xft=true,:),
+	:,-lXrender -lXext $X_LIBS $FREETYPE_LIBS)
     ,:,-lXext $X_LIBS)
 
     if $have_xft = 'true' ; then
