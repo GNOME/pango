@@ -71,48 +71,7 @@ PangoOTTag *pango_ot_info_list_features  (PangoOTInfo      *info,
 					  guint             script_index,
 					  guint             language_index);
 
-  /* A pointer to a function which loads a glyph.  Its parameters are
-   * the same as in a call to TT_Load_Glyph() -- if no glyph loading
-   * function will be registered with pango_ot_set_glyph_loader(),
-   * TT_Load_Glyph() will be called indeed.  The purpose of this function
-   * pointer is to provide a hook for caching glyph outlines and sbits
-   * (using the instance's generic pointer to hold the data).
-   *
-   * If for some reason no outline data is available (e.g. for an
-   * embedded bitmap glyph), _glyph->outline.n_points should be set to
-   * zero.  _glyph can be computed with
-   *
-   *    _glyph = HANDLE_Glyph( glyph )                                    
-   */
-typedef FT_Error  (*PangoOTGlyphLoader) (FT_Face      face,
-				         FT_UInt      glyphIndex,
-				         FT_Int       loadFlags,
-					 gpointer     data);
-
- /* A pointer to a function which selects the alternate glyph.  `pos' is
-  * the position of the glyph with index `glyphID', `num_alternates'
-  * gives the number of alternates in the `alternates' array.  `data'
-  * points to the user-defined structure specified during a call to
-  * TT_GSUB_Register_Alternate_Function().  The function must return an
-  * index into the `alternates' array.
-  */
-typedef FT_UShort  (*PangoOTAlternateFunc) (FT_ULong    pos,
-					    FT_UShort   glyphID,
-					    FT_UShort   num_alternates,
-					    FT_UShort*  alternates,
-					    gpointer    data);
-
-
 PangoOTRuleset *pango_ot_ruleset_new (PangoOTInfo       *info);
-
-void pango_ot_ruleset_set_glyph_loader   (PangoOTRuleset       *ruleset,
-					  PangoOTGlyphLoader    func,
-					  gpointer              data,
-					  GDestroyNotify        notify);
-void pango_ot_ruleset_set_alternate_func (PangoOTRuleset       *ruleset,
-					  PangoOTAlternateFunc  func,
-					  gpointer              data,
-					  GDestroyNotify        notify);
 
 void            pango_ot_ruleset_add_feature (PangoOTRuleset   *ruleset,
 					      PangoOTTableType  table_type,

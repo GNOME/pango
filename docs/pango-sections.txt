@@ -590,11 +590,7 @@ pango_ot_info_find_feature
 pango_ot_info_list_scripts
 pango_ot_info_list_languages
 pango_ot_info_list_features
-PangoOTGlyphLoader
-PangoOTAlternateFunc
 pango_ot_ruleset_new
-pango_ot_ruleset_set_glyph_loader
-pango_ot_ruleset_set_alternate_func
 pango_ot_ruleset_add_feature
 pango_ot_ruleset_shape
 </SECTION>
