@@ -54,7 +54,7 @@ XFT_HFILES=
 XFT_BUILD_LIBS=
 endif
 
-if HAVE_FONTCONFIG
+if HAVE_FREETYPE
 FT2_HFILES=pangoft2.h pango-ot.h
 FT2_BUILD_LIBS=libpangoft2-1.0.la
 else
@@ -77,7 +77,7 @@ pangoft2_win32res = pangoft2-win32res.lo
 
 install-libtool-import-lib:
 	$(INSTALL) .libs/libpango-$(PANGO_API_VERSION).dll.a $(DESTDIR)$(libdir)
-if HAVE_FONTCONFIG
+if HAVE_FREETYPE
 	$(INSTALL) .libs/libpangoft2-$(PANGO_API_VERSION).dll.a $(DESTDIR)$(libdir)
 endif
 	$(INSTALL) .libs/libpangowin32-$(PANGO_API_VERSION).dll.a $(DESTDIR)$(libdir)
@@ -98,7 +98,7 @@ noinst_DATA = pango-$(PANGO_API_VERSION).lib pangoft2-$(PANGO_API_VERSION).lib p
 
 install-ms-lib:
 	$(INSTALL) pango-$(PANGO_API_VERSION).lib $(DESTDIR)$(libdir)
-if HAVE_FONTCONFIG
+if HAVE_FREETYPE
 	$(INSTALL) pangoft2-$(PANGO_API_VERSION).lib $(DESTDIR)$(libdir)
 endif
 	$(INSTALL) pangowin32-$(PANGO_API_VERSION).lib $(DESTDIR)$(libdir)

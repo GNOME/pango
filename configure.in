@@ -153,8 +153,10 @@ if test "x$FREETYPE_CONFIG" != "xno" ; then
   FREETYPE_CFLAGS=`$FREETYPE_CONFIG --cflags`
   FREETYPE_LIBS=`$FREETYPE_CONFIG --libs`
 
-  AC_CHECK_LIB(freetype, FT_New_Face, have_freetype=true
-	       ,:,$FREETYPE_LIBS)
+  pango_save_ldflags=$LDFLAGS
+  LDFLAGS="$LDFLAGS $FREETYPE_LIBS"
+  AC_CHECK_LIB(freetype, FT_New_Face, have_freetype=true, :)
+  LDFLAGS=$pango_save_ldflags
 
   if $have_freetype ; then
     pango_save_cppflags="$CPPFLAGS"
@@ -177,7 +179,6 @@ if test "x$FREETYPE_CONFIG" != "xno" ; then
 fi
 AC_SUBST(FREETYPE_LIBS)
 AC_SUBST(FREETYPE_CFLAGS)
-AM_CONDITIONAL(HAVE_FREETYPE, $have_freetype) 
 
 ## see which freetype we have, 2.0.3 vs. 2.0.4
 pango_save_cppflags="$CPPFLAGS"  
@@ -200,7 +201,8 @@ PKG_CHECK_MODULES(FONTCONFIG, fontconfig >= 1.0.1, have_fontconfig=true, :)
 
 AC_SUBST(FONTCONFIG_LIBS)
 AC_SUBST(FONTCONFIG_CFLAGS)
-AM_CONDITIONAL(HAVE_FONTCONFIG, $have_fontconfig)
+
+AM_CONDITIONAL(HAVE_FREETYPE, $have_freetype && $have_fontconfig)
 
 #
 # Checks for Xft/XRender
@@ -437,7 +439,7 @@ if test "$CXX" != "" ; then
 	 QTDIR=
        fi
      else
-       dirs=`cd /usr/lib && ls -d -r qt*`
+       dirs=`cd /usr/lib && ls -d -r qt* 2>/dev/null`
        for dir in $dirs ; do
           case $dir in
             qt2*|qt-2*|qt3*|qt-3*)
