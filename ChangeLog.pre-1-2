@@ -1,3 +1,10 @@
+2001-12-17  Darin Adler  <darin@bentspoon.com>
+
+	* pango/pangoft2.c: Fix doc comment.
+	* pango/pangoft2.h: Move include outside G_BEGIN_DECLS.
+	* pango/querymodules.c: (main): Add const to avoid warning.
+	* tests/dump-boundaries.c: (fail): Remove unused local.
+
 2001-12-14  Sven Neumann  <sven@gimp.org>
 
 	* modules/hebrew/hebrew-x.c (hebrew_engine_get_coverage): use

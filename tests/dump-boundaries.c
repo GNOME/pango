@@ -33,7 +33,6 @@ fail (const char *format,
       ...)
 {
   char *str;
-  char *line_text;
   
   va_list args;
 

@@ -25,9 +25,9 @@
 
 #include <pango/pango-layout.h>
 
-G_BEGIN_DECLS
-
 #include <freetype/freetype.h>
+
+G_BEGIN_DECLS
 
 #define PANGO_RENDER_TYPE_FT2 "PangoRenderFT2"
 

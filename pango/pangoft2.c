@@ -739,7 +739,7 @@ pango_ft2_render_layout_line (FT_Bitmap       *bitmap,
  * @x:         the X position of the left of the layout (in pixels)
  * @y:         the Y position of the top of the layout (in pixels)
  *
- * Render a #PangoLayoutLine onto a FreeType2 bitmap
+ * Render a #PangoLayout onto a FreeType2 bitmap
  */
 void 
 pango_ft2_render_layout (FT_Bitmap   *bitmap,
