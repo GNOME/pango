@@ -465,7 +465,9 @@ pango_xft_make_pattern (const PangoFontDescription *description)
   PangoStyle pango_style;
   int slant;
   int weight;
-  
+  char **families;
+  int i;
+
   pango_style = pango_font_description_get_style (description);
 
   slant = pango_xft_convert_slant (pango_style);
@@ -477,11 +479,17 @@ pango_xft_make_pattern (const PangoFontDescription *description)
   pattern = XftPatternBuild (0,
 			     XFT_ENCODING, XftTypeString, "glyphs-fontspecific",
 			     XFT_CORE, XftTypeBool, False,
-			     XFT_FAMILY, XftTypeString,  pango_font_description_get_family (description),
 			     XFT_WEIGHT, XftTypeInteger, weight,
 			     XFT_SLANT,  XftTypeInteger, slant,
 			     XFT_SIZE, XftTypeDouble, (double)pango_font_description_get_size (description)/PANGO_SCALE,
 			     NULL);
+
+  families = g_strsplit (pango_font_description_get_family (description), ",", -1);
+  
+  for (i = 0; families[i]; i++)
+    XftPatternAddString (pattern, XFT_FAMILY, families[i]);
+
+  g_strfreev (families);
 
   return pattern;
 }
@@ -571,12 +579,12 @@ pango_xft_font_map_load_fontset (PangoFontMap                 *fontmap,
 					   XFT_CORE, XftTypeBool, False,
 					   XFT_ENCODING, XftTypeString, "iso10646-1",
 					   NULL,
-					   XFT_FOUNDRY,  XFT_STYLE,      XFT_FAMILY,
-					   XFT_ENCODING, XFT_FILE,       XFT_INDEX,
-					   XFT_CORE,     XFT_FAMILY,     XFT_WEIGHT,
-					   XFT_SLANT,    XFT_CHAR_WIDTH, XFT_MATRIX, 
-					   XFT_RGBA,     XFT_ANTIALIAS,  XFT_MINSPACE,
-					   XFT_SPACING,  XFT_SIZE,
+					   XFT_FOUNDRY,    XFT_STYLE,    XFT_FAMILY,
+					   XFT_ENCODING,   XFT_FILE,     XFT_INDEX,
+					   XFT_CORE,       XFT_WEIGHT,   XFT_SLANT,
+					   XFT_CHAR_WIDTH, XFT_MATRIX,   XFT_RGBA,
+					   XFT_ANTIALIAS,  XFT_MINSPACE, XFT_SPACING,
+					   XFT_SIZE,
 					   NULL);
       
       pattern = pango_xft_make_pattern (desc);

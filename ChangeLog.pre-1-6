@@ -1,3 +1,13 @@
+Fri Jan 11 15:01:13 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pangoft2-fontmap.c (pango_ft2_make_pattern) 
+	pango/pangoxft-fontmap.c (pango_xft_make_pattern): 
+	Split comma separated family names and add them in
+	pieces, so they are all visible to Xft.
+
+	* pango/pangoxft-fontmap.c: Remove duplicate XFT_FAMILY
+	in call to XftListFonts.
+
 Thu Jan 10 16:27:24 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/mini-fribidi/fribidi.c: Fix read of unitialized

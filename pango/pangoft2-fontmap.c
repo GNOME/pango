@@ -458,6 +458,8 @@ pango_ft2_make_pattern (const PangoFontDescription *description)
   PangoStyle pango_style;
   int slant;
   int weight;
+  char **families;
+  int i;
   
   pango_style = pango_font_description_get_style (description);
 
@@ -475,6 +477,13 @@ pango_ft2_make_pattern (const PangoFontDescription *description)
 				 XFT_SLANT,  MiniXftTypeInteger, slant,
 				 XFT_SIZE, MiniXftTypeDouble, (double)pango_font_description_get_size (description)/PANGO_SCALE,
 				 NULL);
+
+  families = g_strsplit (pango_font_description_get_family (description), ",", -1);
+  
+  for (i = 0; families[i]; i++)
+    MiniXftPatternAddString (pattern, XFT_FAMILY, families[i]);
+
+  g_strfreev (families);
 
   return pattern;
 }
