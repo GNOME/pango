@@ -16,7 +16,7 @@ else
 XFT_INCLUDED=
 XFT_MODULES=pango-basic-xft.la
 XFT_PREFIX=
-basic_xft_libadd=$(pangoxlibs)
+basic_xft_libadd=$(pangoxlibs) $(pangoxftlibs)
 endif
 else
 XFT_MODULES=
