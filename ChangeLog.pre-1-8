@@ -1,3 +1,12 @@
+Tue Feb  8 15:05:17 2000  Owen Taylor  <otaylor@redhat.com>
+
+	* libpango/pangox.c: Moved the primary size and charset matching
+	inside of Pango instead of on the font server. This allows us
+	to do better matching, and only scale scaleable fonts, and not
+	scale bitmaps. Also, match size and charset simultaneously,
+	so that we can handle the cases where all sizes are not available
+	in all charsets better.
+
 Mon Feb  7 20:27:35 2000  Owen Taylor  <otaylor@redhat.com>
 
 	* libpango/pangox.c (pango_x_names_for_size): Start at reworking
