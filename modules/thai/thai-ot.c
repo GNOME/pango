@@ -52,7 +52,7 @@ thai_ot_get_ruleset (PangoFont *font)
   PangoOTInfo    *info;
   PangoOTRuleset *ruleset = NULL;
 
-  g_return_if_fail (font != NULL);
+  g_return_val_if_fail (font != NULL, NULL);
 
   fc_font = PANGO_FC_FONT (font);
   face = pango_fc_font_lock_face (fc_font);

@@ -1,3 +1,9 @@
+Sat Oct  2 10:08:13 2004  Manish Singh  <yosh@gimp.org>
+
+	* modules/thai/thai-ot.c (thai_ot_get_ruleset): Use
+	g_return_val_if_fail() instead of g_return_if_fail() since this
+	function returns a value.
+
 2004-10-02  Theppitak Karoonboonyanan  <thep@linux.thai.net>
 
 	Make Thai module prefer OpenType tables, if available, to PUA
