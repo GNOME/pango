@@ -101,6 +101,7 @@ void                  pango_font_descriptions_free       (PangoFontDescription  
 
 PangoFontDescription *pango_font_description_from_string (const char                  *str);
 char *                pango_font_description_to_string   (const PangoFontDescription  *desc);
+char *                pango_font_description_to_filename (const PangoFontDescription  *desc);
 
 
 /* Logical fonts

@@ -89,17 +89,6 @@ struct _PangoFT2FamilyEntry
   GSList *font_entries;
 };
 
-struct _PangoFT2FontEntry
-{
-  FT_Open_Args **open_args;
-  FT_Long *face_indices;
-  int n_fonts;
-  PangoFontDescription description;
-  PangoCoverage *coverage;
-
-  GSList *cached_fonts;
-};
-
 static GType      pango_ft2_font_map_get_type      (void);
 
 static void       pango_ft2_font_map_init          (PangoFT2FontMap             *fontmap);
@@ -886,7 +875,7 @@ pango_ft2_insert_face (PangoFT2FontMap *ft2fontmap,
 	  g_free (description->family_name);
 	  g_free (description);
 #if 0
-	  PING ((" family and description matched (!)\n"));
+	  PING ((" family and description matched (!)"));
 #endif
 	  return;
 	}
@@ -949,6 +938,11 @@ pango_ft2_font_entry_get_coverage (PangoFT2FontEntry *entry,
   PangoCoverageLevel font_level;
   PangoMapEntry *map_entry;
   GHashTable *coverage_hash;
+  PangoFontDescription *description;
+  FILE *cache_file;
+  gchar *cache_file_name;
+  guchar *buf;
+  int buflen;
 
   if (entry)
     if (entry->coverage)
@@ -957,36 +951,63 @@ pango_ft2_font_entry_get_coverage (PangoFT2FontEntry *entry,
 	return entry->coverage;
       }
 
-  result = pango_coverage_new ();
+  description = pango_font_describe (font);
+  cache_file_name = g_strconcat (pango_get_sysconf_subdirectory (),
+				 "\\cache.ft2\\",
+				 pango_font_description_to_filename (description),
+				 ".",
+				 lang ? lang : "",
+				 NULL);
+  pango_font_description_free (description);
 
-  coverage_hash = g_hash_table_new (g_str_hash, g_str_equal);
-  
-  shape_map = pango_ft2_get_shaper_map (lang);
-
-  for (ch = 0; ch < 65536; ch++)
+  PING (("trying to load %s", cache_file_name));
+  if (g_file_get_contents (cache_file_name, &buf, &buflen, NULL))
     {
-      map_entry = pango_map_get_entry (shape_map, ch);
-      if (map_entry->info)
-	{
-	  coverage = g_hash_table_lookup (coverage_hash, map_entry->info->id);
-	  if (!coverage)
-	    {
-	      PangoEngineShape *engine = (PangoEngineShape *)pango_map_get_engine (shape_map, ch);
-	      coverage = engine->get_coverage (font, lang);
-	      g_hash_table_insert (coverage_hash, map_entry->info->id, coverage);
-	    }
-	  
-	  font_level = pango_coverage_get (coverage, ch);
-	  if (font_level == PANGO_COVERAGE_EXACT && !map_entry->is_exact)
-	    font_level = PANGO_COVERAGE_APPROXIMATE;
-
-	  if (font_level != PANGO_COVERAGE_NONE)
-	    pango_coverage_set (result, ch, font_level);
-	}
+      result = pango_coverage_from_bytes (buf, buflen);
+      g_free (buf);
     }
 
-  g_hash_table_foreach (coverage_hash, free_coverages_foreach, NULL);
-  g_hash_table_destroy (coverage_hash);
+  if (!result)
+    {
+      result = pango_coverage_new ();
+
+      coverage_hash = g_hash_table_new (g_str_hash, g_str_equal);
+  
+      shape_map = pango_ft2_get_shaper_map (lang);
+
+      for (ch = 0; ch < 65536; ch++)
+	{
+	  map_entry = pango_map_get_entry (shape_map, ch);
+	  if (map_entry->info)
+	    {
+	      coverage = g_hash_table_lookup (coverage_hash, map_entry->info->id);
+	      if (!coverage)
+		{
+		  PangoEngineShape *engine = (PangoEngineShape *)pango_map_get_engine (shape_map, ch);
+		  coverage = engine->get_coverage (font, lang);
+		  g_hash_table_insert (coverage_hash, map_entry->info->id, coverage);
+		}
+	      
+	      font_level = pango_coverage_get (coverage, ch);
+	      if (font_level == PANGO_COVERAGE_EXACT && !map_entry->is_exact)
+		font_level = PANGO_COVERAGE_APPROXIMATE;
+
+	      if (font_level != PANGO_COVERAGE_NONE)
+		pango_coverage_set (result, ch, font_level);
+	    }
+	}
+
+      g_hash_table_foreach (coverage_hash, free_coverages_foreach, NULL);
+      g_hash_table_destroy (coverage_hash);
+
+      cache_file = fopen (cache_file_name, "wb");
+      pango_coverage_to_bytes (result, &buf, &buflen);
+      PING (("saving %d bytes to %s", buflen, cache_file_name));
+      fwrite (buf, buflen, 1, cache_file);
+      fclose (cache_file);
+      g_free (cache_file_name);
+      g_free (buf);
+    }
 
   if (entry)
     {

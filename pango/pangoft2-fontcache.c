@@ -61,7 +61,7 @@ free_cache_entry (PangoFT2OA        *oa,
 {
   FT_Error error;
 
-  PING (("FT_Done_Face (%p)\n", entry->face));
+  PING (("FT_Done_Face (%p)", entry->face));
 
   error = FT_Done_Face (entry->face);
   if (error != FT_Err_Ok)
@@ -162,7 +162,7 @@ cache_entry_unref (PangoFT2FontCache *cache,
 		   CacheEntry        *entry)
 {
   entry->ref_count--;
-  PING (("face:%p ref_count:%d\n", entry->face, entry->ref_count));
+  PING (("face:%p ref_count:%d", entry->face, entry->ref_count));
   if (entry->ref_count == 0)
     {
       g_hash_table_remove (cache->forward, &entry->oa);
@@ -209,7 +209,7 @@ pango_ft2_font_cache_load (PangoFT2FontCache *cache,
       FT_Face face;
       FT_Error error;
 
-      PING (("FT_Open_Face (%s,%ld)\n", args->pathname, face_index));
+      PING (("FT_Open_Face (%s,%ld)", args->pathname, face_index));
 
       error = FT_Open_Face (cache->library, args, face_index, &face);
       if (error != FT_Err_Ok)
@@ -219,7 +219,7 @@ pango_ft2_font_cache_load (PangoFT2FontCache *cache,
 	  return NULL;
 	}
       
-      PING (("  = %p\n", face));
+      PING (("  = %p", face));
 
       entry = g_new (CacheEntry, 1);
 
@@ -304,6 +304,6 @@ pango_ft2_font_cache_unload (PangoFT2FontCache *cache,
   entry = g_hash_table_lookup (cache->back, face);
   g_return_if_fail (entry != NULL);
 
-  PING (("pango_ft2_font_cache_unload\n"));
+  PING (("pango_ft2_font_cache_unload"));
   cache_entry_unref (cache, entry);  
 }

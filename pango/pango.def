@@ -47,17 +47,21 @@ EXPORTS
 	pango_context_set_font_description
 	pango_context_set_lang
 	pango_coverage_copy
+	pango_coverage_from_bytes
 	pango_coverage_get
 	pango_coverage_max
 	pango_coverage_new
 	pango_coverage_ref
 	pango_coverage_set
+	pango_coverage_to_bytes
 	pango_coverage_unref
 	pango_find_map
+	pango_font_describe
 	pango_font_description_copy
 	pango_font_description_equal
 	pango_font_description_free
 	pango_font_description_from_string
+	pango_font_description_to_filename
 	pango_font_description_to_string
 	pango_font_descriptions_free
 	pango_font_find_shaper

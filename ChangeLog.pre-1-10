@@ -1,3 +1,29 @@
+2000-11-19  Tor Lillqvist  <tml@iki.fi>
+
+	* README.win32: New file.
+
+	* pango/fonts.c (pango_font_description_to_filename): New
+	function. As pango_font_description_to_string, but with result
+	that is better suitable as a filename: No spaces or other strange
+	characters, all in lowercase.
+	(pango_font_describe): Implement this function, call the
+	corresponding method.
+
+	* pango/pango-font.h: Declare pango_font_description_to_filename.
+
+	* pango/pangowin32.c (pango_win32_font_describe)
+	* pango/pangoft2.c (pango_ft2_font_describe): Implement these.
+
+	* pango/pangoft2-fontmap.c (pango_ft2_font_entry_get_coverage)
+	* pango/pangowin32-fontmap.c (pango_win32_font_entry_get_coverage):
+	Implement file-based persistent caching of coverages.
+
+	* pango/pangoft2-private.h (struct _PangoFT2FontEntry)
+	* pango/pangowin32-private.h (struct _PangoWin32FontEntry): Move
+	struct definition here from the -fontmap files.
+
+	* pango/pango.def: Updates.
+
 Fri Nov 17 16:12:34 2000  Owen Taylor  <otaylor@redhat.com>
 
 	* Released 0.13

@@ -78,16 +78,6 @@ struct _PangoWin32FamilyEntry
   GSList *font_entries;
 };
 
-struct _PangoWin32FontEntry
-{
-  LOGFONT *lfp;
-  int n_fonts;
-  PangoFontDescription description;
-  PangoCoverage *coverage;
-
-  GSList *cached_fonts;
-};
-
 struct _PangoWin32SizeInfo
 {
   FONTSIGNATURE signature;
@@ -1341,54 +1331,82 @@ pango_win32_font_entry_get_coverage (PangoWin32FontEntry *entry,
   guint32 ch;
   PangoMap *shape_map;
   PangoCoverage *coverage;
-  PangoCoverage *result;
   PangoCoverageLevel font_level;
   PangoMapEntry *map_entry;
   GHashTable *coverage_hash;
+  PangoCoverage *result = NULL;
+  PangoFontDescription *description;
+  FILE *cache_file;
+  gchar *cache_file_name;
+  guchar *buf;
+  int buflen;
 
-  if (entry)
-    if (entry->coverage)
-      {
-	pango_coverage_ref (entry->coverage);
-	return entry->coverage;
-      }
+  if (entry->coverage)
+    {
+      pango_coverage_ref (entry->coverage);
+      return entry->coverage;
+    }
 
-  result = pango_coverage_new ();
+  description = pango_font_describe (font);
+  cache_file_name = g_strconcat (pango_get_sysconf_subdirectory (),
+				 "\\cache.win32\\",
+				 pango_font_description_to_filename (description),
+				 ".",
+				 lang ? lang : "",
+				 NULL);
+  pango_font_description_free (description);
 
-  coverage_hash = g_hash_table_new (g_str_hash, g_str_equal);
+  PING (("trying to load %s", cache_file_name));
+  if (g_file_get_contents (cache_file_name, &buf, &buflen, NULL))
+    {
+      result = pango_coverage_from_bytes (buf, buflen);
+      g_free (buf);
+    }
+
+  if (!result)
+    {
+      result = pango_coverage_new ();
+
+      coverage_hash = g_hash_table_new (g_str_hash, g_str_equal);
   
-  shape_map = pango_win32_get_shaper_map (lang);
+      shape_map = pango_win32_get_shaper_map (lang);
 
-  for (ch = 0; ch < 65536; ch++)
-    {
-      map_entry = pango_map_get_entry (shape_map, ch);
-      if (map_entry->info)
+      for (ch = 0; ch < 65536; ch++)
 	{
-	  coverage = g_hash_table_lookup (coverage_hash, map_entry->info->id);
-	  if (!coverage)
+	  map_entry = pango_map_get_entry (shape_map, ch);
+	  if (map_entry->info)
 	    {
-	      PangoEngineShape *engine = (PangoEngineShape *)pango_map_get_engine (shape_map, ch);
-	      coverage = engine->get_coverage (font, lang);
-	      g_hash_table_insert (coverage_hash, map_entry->info->id, coverage);
+	      coverage = g_hash_table_lookup (coverage_hash, map_entry->info->id);
+	      if (!coverage)
+		{
+		  PangoEngineShape *engine = (PangoEngineShape *)pango_map_get_engine (shape_map, ch);
+		  coverage = engine->get_coverage (font, lang);
+		  g_hash_table_insert (coverage_hash, map_entry->info->id, coverage);
+		}
+	      
+	      font_level = pango_coverage_get (coverage, ch);
+	      if (font_level == PANGO_COVERAGE_EXACT && !map_entry->is_exact)
+		font_level = PANGO_COVERAGE_APPROXIMATE;
+	      
+	      if (font_level != PANGO_COVERAGE_NONE)
+		pango_coverage_set (result, ch, font_level);
 	    }
-	  
-	  font_level = pango_coverage_get (coverage, ch);
-	  if (font_level == PANGO_COVERAGE_EXACT && !map_entry->is_exact)
-	    font_level = PANGO_COVERAGE_APPROXIMATE;
-
-	  if (font_level != PANGO_COVERAGE_NONE)
-	    pango_coverage_set (result, ch, font_level);
 	}
-    }
+      
+      g_hash_table_foreach (coverage_hash, free_coverages_foreach, NULL);
+      g_hash_table_destroy (coverage_hash);
 
-  g_hash_table_foreach (coverage_hash, free_coverages_foreach, NULL);
-  g_hash_table_destroy (coverage_hash);
-
-  if (entry)
-    {
-      entry->coverage = result;
-      pango_coverage_ref (result);
+      cache_file = fopen (cache_file_name, "wb");
+      pango_coverage_to_bytes (result, &buf, &buflen);
+      PING (("saving %d bytes to %s", buflen, cache_file_name));
+      fwrite (buf, buflen, 1, cache_file);
+      fclose (cache_file);
+      g_free (cache_file_name);
+      g_free (buf);
     }
+  
+  entry->coverage = result;
+  pango_coverage_ref (result);
 
   return result;
 }

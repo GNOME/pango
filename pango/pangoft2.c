@@ -286,7 +286,7 @@ pango_ft2_render (FT_Bitmap        *bitmap,
   g_return_if_fail (bitmap != NULL);
   g_return_if_fail (glyphs != NULL);
 
-  PING (("bitmap: %dx%d@+%d+%d\n", bitmap->width, bitmap->rows, x, y));
+  PING (("bitmap: %dx%d@+%d+%d", bitmap->width, bitmap->rows, x, y));
 
   gi = glyphs->glyphs;
   for (i = 0; i < glyphs->num_glyphs; i++, gi++)
@@ -315,11 +315,11 @@ pango_ft2_render (FT_Bitmap        *bitmap,
 	      y_limit = MIN (face->glyph->bitmap.rows, face->glyph->bitmap_top - iyoff + bitmap->rows);
 
 
-	      PING (("glyph %d:%d: bitmap: %dx%d, left:%d top:%d\n",
+	      PING (("glyph %d:%d: bitmap: %dx%d, left:%d top:%d",
 		     i, glyph_index,
 		     face->glyph->bitmap.width, face->glyph->bitmap.rows,
 		     face->glyph->bitmap_left, face->glyph->bitmap_top));
-	      PING (("xstart:%d xlim:%d ystart:%d ylim:%d\n",
+	      PING (("xstart:%d xlim:%d ystart:%d ylim:%d",
 		     x_start, x_limit, y_start, y_limit));
 
 	      if (face->glyph->bitmap.pixel_mode == ft_pixel_mode_grays)
@@ -425,7 +425,7 @@ pango_ft2_font_get_glyph_extents (PangoFont      *font,
 	  /* Some fonts report negative descender, some positive ! (?) */
 	  logical_rect->height = PANGO_UNITS_26_6 (face->size->metrics.ascender + ABS (face->size->metrics.descender) + 128);
 	}
-      PING (("glyph:%d logical: %dx%d@%d+%d\n",
+      PING (("glyph:%d logical: %dx%d@%d+%d",
 	     char_index, logical_rect->width, logical_rect->height,
 	     logical_rect->x, logical_rect->y));
     }
@@ -855,7 +855,7 @@ pango_ft2_font_finalize (GObject *object)
   PangoFT2FontCache *cache = pango_ft2_font_map_get_font_cache (ft2font->fontmap);
   int i;
 
-  PING (("\n"));
+  PING ((""));
 
   for (i = 0; i < ft2font->n_fonts; i++)
     {
@@ -880,8 +880,9 @@ pango_ft2_font_finalize (GObject *object)
 static PangoFontDescription *
 pango_ft2_font_describe (PangoFont *font)
 {
-  /* FIXME: implement */
-  return NULL;
+  PangoFT2Font *ft2font = PANGO_FT2_FONT (font);
+
+  return pango_font_description_copy (&ft2font->entry->description);
 }
 
 PangoMap *
@@ -1051,7 +1052,7 @@ pango_ft2_render_layout (FT_Bitmap   *bitmap,
   width = pango_layout_get_width (layout);
   align = pango_layout_get_alignment (layout);
 
-  PING (("x:%d y:%d indent:%d width:%d\n", x, y, indent, width));
+  PING (("x:%d y:%d indent:%d width:%d", x, y, indent, width));
 
   if (width == -1 && align != PANGO_ALIGN_LEFT)
     {
@@ -1097,7 +1098,7 @@ pango_ft2_render_layout (FT_Bitmap   *bitmap,
 	    }
 	}
 
-      PING (("x_offset:%d y_offset:%d logical_rect.y:%d logical_rect.height:%d\n", x_offset, y_offset, logical_rect.y, logical_rect.height));
+      PING (("x_offset:%d y_offset:%d logical_rect.y:%d logical_rect.height:%d", x_offset, y_offset, logical_rect.y, logical_rect.height));
 
       pango_ft2_render_layout_line (bitmap, line,
 				    x + PANGO_PIXELS (x_offset),

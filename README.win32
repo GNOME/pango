@@ -1,0 +1,5 @@
+There are two Pango backends written for Win32: pangowin32 and
+pangoft2. Pangowin32 uses the Win32 GDI font API. Pangoft2 uses
+FreeType2. Neither one is even close to being as useable as the X11
+backend. They are buggy and slow, and print copious amounts of
+debugging output.

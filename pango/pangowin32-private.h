@@ -61,7 +61,7 @@ struct _PangoWin32Font
   int size;
 
   /* hash table mapping from Unicode subranges to array of PangoWin32Subfont
-   * ids, of length n_fonts
+   * ids, of length n_subfonts
    */
   GHashTable *subfonts_by_subrange;
   
@@ -78,7 +78,17 @@ struct _PangoWin32Font
    */
   gboolean in_cache;
   
-  PangoWin32FontEntry *entry;	/* Used to remove cached fonts */
+  PangoWin32FontEntry *entry;
+};
+
+struct _PangoWin32FontEntry
+{
+  LOGFONT *lfp;
+  int n_fonts;
+  PangoFontDescription description;
+  PangoCoverage *coverage;
+
+  GSList *cached_fonts;
 };
 
 PangoWin32Font *pango_win32_font_new                (PangoFontMap    	 *fontmap,

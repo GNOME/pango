@@ -365,6 +365,35 @@ pango_font_description_to_string (const PangoFontDescription  *desc)
   return str;
 }
 
+/**
+ * pango_font_description_to_filename:
+ * @desc: a #PangoFontDescription
+ * 
+ * Create a filename representation of a font description. The
+ * filename is identical to the result from calling
+ * pango_font_description_to_string(), but with underscores instead of
+ * characters that are untypical in filenames, and in lower case only.
+ *
+ * Return value: a new string that must be freed with g_free().
+ **/
+char *
+pango_font_description_to_filename (const PangoFontDescription  *desc)
+{
+  char *result = pango_font_description_to_string (desc);
+  char *p;
+
+  g_strdown (result);
+  p = result;
+  while (*p)
+    {
+      if (strchr ("-_.", *p) == NULL && !isalnum (*p))
+	*p = '_';
+      p++;
+    }
+
+  return result;
+}  
+  
 GType
 pango_font_get_type (void)
 {
@@ -391,6 +420,22 @@ pango_font_get_type (void)
     }
   
   return object_type;
+}
+
+/**
+ * pango_font_describe:
+ * @font: a #PangoFont
+ * 
+ * Return a description of the font.
+ * 
+ * Return value: a newly allocated #PangoFontDescription object.
+ **/
+PangoFontDescription *
+pango_font_describe (PangoFont      *font)
+{
+  g_return_val_if_fail (font != NULL, NULL);
+
+  return PANGO_FONT_GET_CLASS (font)->describe (font);
 }
 
 /**

@@ -27,17 +27,19 @@
 #include "pangoft2.h"
 
 /* Debugging... */
-#define DEBUGGING 0
+#define DEBUGGING 1
 
 #if defined(DEBUGGING) && DEBUGGING
 #ifdef __GNUC__
 #define PING(printlist)					\
 (g_print ("%s:%d ", __PRETTY_FUNCTION__, __LINE__),	\
- g_print printlist)
+ g_print printlist,					\
+ g_print ("\n"))
 #else
 #define PING(printlist)					\
 (g_print ("%s:%d ", __FILE__, __LINE__),		\
- g_print printlist)
+ g_print printlist,					\
+ g_print ("\n"))
 #endif
 #else  /* !DEBUGGING */
 #define PING(printlist)
@@ -85,7 +87,18 @@ struct _PangoFT2Font
    */
   gboolean in_cache;
   
-  PangoFT2FontEntry *entry;	/* Used to remove cached fonts */
+  PangoFT2FontEntry *entry;
+};
+
+struct _PangoFT2FontEntry
+{
+  FT_Open_Args **open_args;
+  FT_Long *face_indices;
+  int n_fonts;
+  PangoFontDescription description;
+  PangoCoverage *coverage;
+
+  GSList *cached_fonts;
 };
 
 PangoMap      *pango_ft2_get_shaper_map          (const char        *lang);

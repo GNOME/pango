@@ -1195,8 +1195,10 @@ pango_win32_font_finalize (GObject *object)
 static PangoFontDescription *
 pango_win32_font_describe (PangoFont *font)
 {
-  /* FIXME: implement */
-  return NULL;
+  PangoFontDescription *result;
+  PangoWin32Font *win32font = PANGO_WIN32_FONT (font);
+
+  return pango_font_description_copy (&win32font->entry->description);
 }
 
 PangoMap *
