@@ -1,3 +1,10 @@
+Wed Feb 12 16:44:05 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* examples/viewer-qt.cc: Remove call to
+	QApplication::setStyle (new QCDEStyle())... didn't
+	make sense and caused problems if CDEStyle wasn't
+	compiled into Qt. (#105264, Andrey Panov)
+
 Wed Feb 12 16:41:03 2003  Owen Taylor  <otaylor@redhat.com>
 
 	* modules/hangul/Makefile.am (libpango_hangul_x_la_SOURCES): 
