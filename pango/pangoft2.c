@@ -200,7 +200,6 @@ FT_Face
 pango_ft2_font_get_face (PangoFont      *font)
 {
   PangoFT2Font *ft2font = (PangoFT2Font *)font;
-  FT_Face face;
   FT_Error error;
   FcPattern *pattern;
   FcChar8 *filename;
@@ -256,9 +255,7 @@ pango_ft2_font_get_face (PangoFont      *font)
 	  load_fallback_face (ft2font, filename);
 	}
 
-      face = ft2font->face;
-
-      error = FT_Set_Char_Size (face,
+      error = FT_Set_Char_Size (ft2font->face,
 				PANGO_PIXELS_26_6 (ft2font->size),
 				PANGO_PIXELS_26_6 (ft2font->size),
 				0, 0);
@@ -266,7 +263,7 @@ pango_ft2_font_get_face (PangoFont      *font)
 	g_warning ("Error in FT_Set_Char_Size: %d", error);
     }
   
-  return face;
+  return ft2font->face;
 }
 
 static GType

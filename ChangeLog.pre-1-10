@@ -1,3 +1,12 @@
+Sat Dec  7 01:05:25 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pangofc-fontmap.cI (pango_fc_font_map_get_patterns):
+	Print out an informative error message and exit(1) if
+	no fonts are found. (#98672)
+
+	* pango/pangoft2.c (pango_ft2_font_get_face): Fix some
+	bugs in the last commit.
+
 Sat Dec  7 00:10:02 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pangoft2.c (pango_ft2_font_get_face): Don't
