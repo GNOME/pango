@@ -28,7 +28,6 @@ INCLUDES =					\
 	-I$(top_srcdir)				\
 	$(GLIB_CFLAGS)				\
 	$(XFT_CFLAGS)				\
-	$(FONTCONFIG_CFLAGS)			\
 	$(FREETYPE_CFLAGS)			\
 	$(X_CFLAGS)				\
 	$(X_DEFINES)				\

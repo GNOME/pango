@@ -189,8 +189,6 @@ if test "x$FREETYPE_CONFIG" != "xno" ; then
   AC_CHECK_LIB(freetype, FT_Get_Next_Char, have_freetype=true, :)
   LDFLAGS=$pango_save_ldflags
 fi
-AC_SUBST(FREETYPE_LIBS)
-AC_SUBST(FREETYPE_CFLAGS)
 
 #
 # Check for fontconfig
@@ -199,11 +197,13 @@ have_fontconfig=false
 
 PKG_CHECK_MODULES(FONTCONFIG, fontconfig >= 1.0.1, have_fontconfig=true, :)
 
-AC_SUBST(FONTCONFIG_LIBS)
-AC_SUBST(FONTCONFIG_CFLAGS)
+FREETYPE_LIBS="$FONTCONFIG_LIBS $FREETYPE_LIBS"
+FREETYPE_CFLAGS="$FONTCONFIG_CFLAGS $FREETYPE_CFLAGS"
 
+AC_SUBST(FREETYPE_LIBS)
+AC_SUBST(FREETYPE_CFLAGS)
+	
 AM_CONDITIONAL(HAVE_FREETYPE, $have_freetype && $have_fontconfig)
-
 #
 # Checks for Xft/XRender
 #

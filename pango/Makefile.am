@@ -27,7 +27,6 @@ INCLUDES =						\
 	$(PANGO_DEBUG_FLAGS)				\
 	$(GLIB_CFLAGS)					\
 	$(XFT_CFLAGS)					\
-	$(FONTCONFIG_CFLAGS)				\
 	$(FREETYPE_CFLAGS)				\
 	$(X_CFLAGS)					\
 	-I$(top_srcdir)
@@ -210,7 +209,7 @@ libpangoft2_1_0_la_SOURCES =   	\
 libpangoft2_1_0_la_LDFLAGS = -version-info $(LT_VERSION_INFO)	\
 	$(GLIB_LIBS)						\
 	$(no_undefined) $(pangoft2_export_symbols)
-libpangoft2_1_0_la_LIBADD = opentype/libpango-ot.la libpango-$(PANGO_API_VERSION).la $(INCLUDED_FT2_MODULES) $(FONTCONFIG_LIBS) $(pangoft2_win32res)
+libpangoft2_1_0_la_LIBADD = opentype/libpango-ot.la libpango-$(PANGO_API_VERSION).la $(INCLUDED_FT2_MODULES) $(FREETYPE_LIBS) $(pangoft2_win32res)
 libpangoft2_1_0_la_DEPENDENCIES = $(INCLUDED_FT2_MODULES) libpango-$(PANGO_API_VERSION).la
 
 pangoft2-win32res.lo : pangoft2.rc
@@ -282,10 +281,10 @@ pango_querymodules_SOURCES = \
 	querymodules.c
 
 if HAVE_XFT
-pango_querymodules_LDADD = $(FT2_BUILD_LIBS) $(X_BUILD_LIBS) libpangoxft-$(PANGO_API_VERSION).la $(GLIB_LIBS) $(FRIBIDI_LIBS) $(XFT_LIBS) $(FONTCONFIG_LIBS)
+pango_querymodules_LDADD = $(FT2_BUILD_LIBS) $(X_BUILD_LIBS) libpangoxft-$(PANGO_API_VERSION).la $(GLIB_LIBS) $(FRIBIDI_LIBS) $(XFT_LIBS) $(FREETYPE_LIBS)
 pango_querymodules_DEPENDENCIES = $(FT2_BUILD_LIBS) $(X_BUILD_LIBS) libpangoxft-$(PANGO_API_VERSION).la libpango-$(PANGO_API_VERSION).la
 else
-pango_querymodules_LDADD = $(FT2_BUILD_LIBS) $(X_BUILD_LIBS) $(WIN32_BUILD_LIBS) $(GLIB_LIBS) $(FRIBIDI_LIBS) $(X_LIBS) $(FONTCONFIG_LIBS) $(X_EXTRA_LIBS)
+pango_querymodules_LDADD = $(FT2_BUILD_LIBS) $(X_BUILD_LIBS) $(WIN32_BUILD_LIBS) $(GLIB_LIBS) $(FRIBIDI_LIBS) $(X_LIBS) $(FREETYPE_LIBS) $(X_EXTRA_LIBS)
 pango_querymodules_DEPENDENCIES = $(FT2_BUILD_LIBS) $(X_BUILD_LIBS) $(WIN32_BUILD_LIBS) libpango-$(PANGO_API_VERSION).la
 endif
 
