@@ -1,7 +1,7 @@
 2003-01-29  Tor Lillqvist  <tml@iki.fi>
 
-	* pango/pango-coverage.c (pango_coverage_set): g_return_if_fail
-	for index >= 0 was the wrong way.
+	* pango/pango-coverage.c (pango_coverage_get/set):
+	g_return_if_fail for index >= 0 was the wrong way.
 
 	* pango/pangowin32.c (pango_win32_font_calc_coverage): Break out
 	of loop if char is 0xFFFF. Some fonts have tables terminated like
