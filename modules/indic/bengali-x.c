@@ -77,7 +77,7 @@ vowel_sign_to_matra (gunichar i)
   return i + 0x987 - 0x9c8;
 }
 
-gboolean
+static gboolean
 vowel_split (gunichar i, gunichar *a, gunichar *b)
 {
   if (i == 0x9cb || i == 0x9cc) {

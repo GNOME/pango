@@ -1,3 +1,8 @@
+Tue Apr 15 03:43:54 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* modules/indic/bengali-x.c (vowel_split): Fix missing
+	static. (#108693, Rick Jones)
+
 Wed Feb 12 17:09:00 2003  Owen Taylor  <otaylor@redhat.com>
  
  	* pango/pango-context.c: Fix bug where language
