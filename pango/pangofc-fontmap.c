@@ -612,8 +612,8 @@ pango_fc_make_pattern (const PangoFontDescription *description)
 }
 
 static PangoFont *
-pango_fc_font_map_new_font (PangoFontMap  *fontmap,
-			    PangoMatrix   *pango_matrix,
+pango_fc_font_map_new_font (PangoFontMap      *fontmap,
+			    const PangoMatrix *pango_matrix,
 			    FcPattern     *match)
 {
   PangoFcFontMap *fcfontmap = (PangoFcFontMap *)fontmap;
@@ -885,7 +885,7 @@ pango_fc_font_map_load_fontset (PangoFontMap                 *fontmap,
   PangoFcFontMap *fcfontmap = PANGO_FC_FONT_MAP (fontmap);
   PangoFcFontMapPrivate *priv = fcfontmap->priv;
   PangoFontset *result;
-  PangoMatrix *matrix;
+  const PangoMatrix *matrix;
   int i;
   
   if (!patterns)

@@ -1,3 +1,8 @@
+Sat Jul 10 18:03:58 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pangofc-fontmap.c (pango_fc_font_map_new_font): 
+	Const-ification fix.
+
 Sat Jul 10 17:55:03 2004  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pango-types.h pango/pango-utils.c (pango_matrix_concat):
