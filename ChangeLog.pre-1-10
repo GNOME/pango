@@ -1,3 +1,8 @@
+Tue May 21 15:27:41 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* modules/basic/tables-big.i: Fix C++ comment.
+	(#82035, David L. Cooper II)
+
 Tue May 14 12:02:13 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pangoxft-fontmap.c pango/pangoft2-fontmap.c:
