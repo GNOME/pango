@@ -1,3 +1,8 @@
+2002-03-16  Sven Neumann  <sven@gimp.org>
+
+	* configure.in (GLIB_CFLAGS): use CFLAGS from gthread-2.0 to assure
+	pango behaves correctly in a threaded environment.
+
 Fri Mar 15 12:25:26 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* modules/basic/tables-big.i: Prefer ksc5601 fonts to
