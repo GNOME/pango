@@ -22,6 +22,7 @@
 
 #include <glib.h>
 #include "pangowin32.h"
+#include "pango-engine.h"
 #include "pango-utils.h"
 
 #define SCRIPT_ENGINE_NAME "BasicScriptEngineWin32"

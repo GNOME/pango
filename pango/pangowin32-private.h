@@ -50,7 +50,7 @@
 #endif
 
 typedef struct _PangoWin32Font PangoWin32Font;
-typedef struct _PangoWin32FontEntry PangoWin32FontEntry;
+typedef struct _PangoWin32Face PangoWin32Face;
 typedef struct _PangoWin32GlyphInfo PangoWin32GlyphInfo;
 
 struct _PangoWin32Font
@@ -68,7 +68,7 @@ struct _PangoWin32Font
   gint   tm_descent;
   gint   tm_overhang;
 
-  PangoWin32FontEntry *entry;
+  PangoWin32Face *entry;
 
   /* If TRUE, font is in cache of recently unused fonts and not otherwise
    * in use.
@@ -77,11 +77,15 @@ struct _PangoWin32Font
   GHashTable *glyph_info;
 };
 
-struct _PangoWin32FontEntry
+struct _PangoWin32Face
 {
+  PangoFontFace parent_instance;
+
   LOGFONT logfont;
-  PangoFontDescription description;
+  PangoFontDescription *description;
   PangoCoverage *coverage;
+
+  char *face_name;
 
   gpointer unicode_table;
 
@@ -103,10 +107,10 @@ void            pango_win32_make_matching_logfont   (PangoFontMap    	 *fontmap,
 						     const LOGFONT       *lfp,
 						     int             	  size,
 						     LOGFONT             *out);
-PangoCoverage * pango_win32_font_entry_get_coverage (PangoWin32FontEntry *entry);
-void            pango_win32_font_entry_set_coverage (PangoWin32FontEntry *entry,
+PangoCoverage * pango_win32_font_entry_get_coverage (PangoWin32Face *face);
+void            pango_win32_font_entry_set_coverage (PangoWin32Face *face,
 						     PangoCoverage       *coverage);
-void            pango_win32_font_entry_remove       (PangoWin32FontEntry *entry,
+void            pango_win32_font_entry_remove       (PangoWin32Face *face,
 						     PangoFont           *font);
 
 void            pango_win32_fontmap_cache_add       (PangoFontMap    	 *fontmap,

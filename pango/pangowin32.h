@@ -25,7 +25,8 @@
 #define __PANGOWIN32_H__
 
 #include <glib.h>
-#include <pango/pango.h>
+#include <pango/pango-font.h>
+#include <pango/pango-layout.h>
 
 G_BEGIN_DECLS
 

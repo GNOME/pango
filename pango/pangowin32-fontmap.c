@@ -35,14 +35,10 @@
 
 #define PANGO_TYPE_WIN32_FONT_MAP           (pango_win32_font_map_get_type ())
 #define PANGO_WIN32_FONT_MAP(object)        (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_TYPE_WIN32_FONT_MAP, PangoWin32FontMap))
-#define PANGO_WIN32_FONT_MAP_CLASS(klass)   (G_TYPE_CHECK_CLASS_CAST ((klass), PANGO_TYPE_WIN32_FONT_MAP, PangoWin32FontMapClass))
 #define PANGO_WIN32_IS_FONT_MAP(object)     (G_TYPE_CHECK_INSTANCE_TYPE ((object), PANGO_TYPE_WIN32_FONT_MAP))
-#define PANGO_WIN32_IS_FONT_MAP_CLASS(klass)(G_TYPE_CHECK_CLASS_TYPE ((klass), PANGO_TYPE_WIN32_FONT_MAP))
-#define PANGO_WIN32_FONT_MAP_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), PANGO_TYPE_WIN32_FONT_MAP, PangoWin32FontMapClass))
 
-typedef struct _PangoWin32FamilyEntry  PangoWin32FamilyEntry;
 typedef struct _PangoWin32FontMap      PangoWin32FontMap;
-typedef struct _PangoWin32FontMapClass PangoWin32FontMapClass;
+typedef struct _PangoWin32Family       PangoWin32Family;
 typedef struct _PangoWin32SizeInfo     PangoWin32SizeInfo;
 
 /* Number of freed fonts */
@@ -55,8 +51,11 @@ struct _PangoWin32FontMap
   PangoWin32FontCache *font_cache;
   GQueue *freed_fonts;
 
-  /* Map Pango family names tp PangoWin32FamilyEntry structs */
+  /* Map Pango family names tp PangoWin32Family structs */
   GHashTable *families;
+
+  /* Maps the family and style of a face to a PangoWin32Face struct */
+  GHashTable *faces;
 
   /* Map LOGFONTS (taking into account only the lfFaceName, lfItalic
    * and lfWeight fields) to PangoWin32SizeInfo structs.
@@ -73,8 +72,10 @@ struct _PangoWin32FontMapClass
   PangoFontMapClass parent_class;
 };
 
-struct _PangoWin32FamilyEntry
+struct _PangoWin32Family
 {
+  PangoFontFamily parent_instance;
+
   char *family_name;
   GSList *font_entries;
 };
@@ -84,20 +85,26 @@ struct _PangoWin32SizeInfo
   GSList *logfonts;
 };
 
-static GType      pango_win32_font_map_get_type      (void);
-static void       pango_win32_font_map_init          (PangoWin32FontMap            *fontmap);
-static void       pango_win32_font_map_class_init    (PangoWin32FontMapClass       *class);
+#define PANGO_WIN32_TYPE_FAMILY              (pango_win32_family_get_type ())
+#define PANGO_WIN32_FAMILY(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_WIN32_TYPE_FAMILY, PangoWin32Family))
+#define PANGO_WIN32_IS_FAMILY(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), PANGO_WIN32_TYPE_FAMILY))
+
+#define PANGO_WIN32_TYPE_FACE              (pango_win32_face_get_type ())
+#define PANGO_WIN32_FACE(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_WIN32_TYPE_FACE, PangoWin32Face))
+#define PANGO_WIN32_IS_FACE(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), PANGO_WIN32_TYPE_FACE))
+
+GType             pango_win32_family_get_type        (void);
+GType             pango_win32_face_get_type          (void);
+
+static void       pango_win32_font_map_init          (PangoWin32FontMap       *fontmap);
+static void       pango_win32_font_map_class_init    (PangoFontMapClass       *class);
 
 static void       pango_win32_font_map_finalize      (GObject                      *object);
 static PangoFont *pango_win32_font_map_load_font     (PangoFontMap                 *fontmap,
 						      const PangoFontDescription   *description);
-static void       pango_win32_font_map_list_fonts    (PangoFontMap                 *fontmap,
-						      const gchar                  *family,
-						      PangoFontDescription       ***descs,
-						      int                          *n_descs);
 static void       pango_win32_font_map_list_families (PangoFontMap                 *fontmap,
-						      gchar                      ***families,
-						      int                          *n_families);
+						       PangoFontFamily            ***families,
+						       int                          *n_families);
   
 static void       pango_win32_fontmap_cache_clear    (PangoWin32FontMap            *win32fontmap);
 
@@ -119,7 +126,7 @@ pango_win32_font_map_get_type (void)
     {
       static const GTypeInfo object_info =
       {
-        sizeof (PangoWin32FontMapClass),
+        sizeof (PangoFontMapClass),
         (GBaseInitFunc) NULL,
         (GBaseFinalizeFunc) NULL,
         (GClassInitFunc) pango_win32_font_map_class_init,
@@ -170,21 +177,21 @@ pango_win32_font_map_init (PangoWin32FontMap *win32fontmap)
 {
   win32fontmap->families = g_hash_table_new (g_str_hash, g_str_equal);
   win32fontmap->size_infos = g_hash_table_new (logfont_nosize_hash, logfont_nosize_equal);
+  win32fontmap->faces = g_hash_table_new ((GHashFunc)pango_font_description_hash,
+                                          (GEqualFunc)pango_font_description_equal);
   win32fontmap->n_fonts = 0;
 }
 
 static void
-pango_win32_font_map_class_init (PangoWin32FontMapClass *class)
+pango_win32_font_map_class_init (PangoFontMapClass *class)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (class);
-  PangoFontMapClass *font_map_class = PANGO_FONT_MAP_CLASS (class);
   
   parent_class = g_type_class_peek_parent (class);
   
   object_class->finalize = pango_win32_font_map_finalize;
-  font_map_class->load_font = pango_win32_font_map_load_font;
-  font_map_class->list_fonts = pango_win32_font_map_list_fonts;
-  font_map_class->list_families = pango_win32_font_map_list_families;
+  class->load_font = pango_win32_font_map_load_font;
+  class->list_families = pango_win32_font_map_list_families;
 
   if (pango_win32_hdc == NULL)
     pango_win32_hdc = CreateDC ("DISPLAY", NULL, NULL, NULL);
@@ -280,80 +287,73 @@ pango_win32_font_map_finalize (GObject *object)
   G_OBJECT_CLASS (parent_class)->finalize (object);
 }
 
-typedef struct
-{
-  int n_found;
-  PangoFontDescription **descs;
-} ListFontsInfo;
-
+/*
+ * PangoWin32Family
+ */
 static void
-list_fonts_foreach (gpointer key,
-		    gpointer value,
-		    gpointer user_data)
+pango_win32_family_list_faces (PangoFontFamily  *family,
+			   PangoFontFace  ***faces,
+			   int              *n_faces)
 {
-  PangoWin32FamilyEntry *entry = value;
-  ListFontsInfo *info = user_data;
-  GSList *tmp_list = entry->font_entries;
-
-  while (tmp_list)
+  PangoWin32Family *win32family = PANGO_WIN32_FAMILY (family);
+ 
+  *n_faces = g_slist_length (win32family->font_entries);
+  if (faces)
     {
-      PangoWin32FontEntry *font_entry = tmp_list->data;
+      GSList *tmp_list;
+      int i = 0;
       
-      info->descs[info->n_found++] = pango_font_description_copy (&font_entry->description);
-      tmp_list = tmp_list->next;
+      *faces = g_new (PangoFontFace *, *n_faces);
+
+      tmp_list = win32family->font_entries;
+      while (tmp_list)
+	{
+	  (*faces)[i++] = tmp_list->data;
+	  tmp_list = tmp_list->next;
+	}
     }
 }
 
-static void
-pango_win32_font_map_list_fonts (PangoFontMap           *fontmap,
-				 const gchar            *family,
-				 PangoFontDescription ***descs,
-				 int                    *n_descs)
+const char *
+pango_win32_family_get_name (PangoFontFamily  *family)
 {
-  PangoWin32FontMap *win32fontmap = (PangoWin32FontMap *)fontmap;
-  ListFontsInfo info;
+  PangoWin32Family *win32family = PANGO_WIN32_FAMILY (family);
+  return win32family->family_name;
+}
 
-  if (!n_descs)
-    return;
+static void
+pango_win32_family_class_init (PangoFontFamilyClass *class)
+{
+  class->list_faces = pango_win32_family_list_faces;
+  class->get_name = pango_win32_family_get_name;
+}
 
-  if (family)
+GType
+pango_win32_family_get_type (void)
+{
+  static GType object_type = 0;
+
+  if (!object_type)
     {
-      PangoWin32FamilyEntry *entry = g_hash_table_lookup (win32fontmap->families, family);
-      if (entry)
-	{
-	  *n_descs = g_slist_length (entry->font_entries);
-	  if (descs)
-	    {
-	      *descs = g_new (PangoFontDescription *, *n_descs);
-	      
-	      info.descs = *descs;
-	      info.n_found = 0;
-
-	      list_fonts_foreach ((gpointer)family, (gpointer)entry, &info);
-	    }
-	}
-      else
-	{
-	  *n_descs = 0;
-	  if (descs)
-	    *descs = NULL;
-	}
+      static const GTypeInfo object_info =
+      {
+        sizeof (PangoFontFamilyClass),
+        (GBaseInitFunc) NULL,
+        (GBaseFinalizeFunc) NULL,
+        (GClassInitFunc) pango_win32_family_class_init,
+        NULL,           /* class_finalize */
+        NULL,           /* class_data */
+        sizeof (PangoWin32Family),
+        0,              /* n_preallocs */
+        (GInstanceInitFunc) NULL,
+      };
+      
+      object_type = g_type_register_static (PANGO_TYPE_FONT_FAMILY,
+                                            "PangoWin32Family",
+                                            &object_info, 0);
     }
-  else
-    {
-      /* FIXME: (Alex) What the heck is this? I think it should just be removed */
-      /* HB: I don't think so, the X version does the same ... */
-      *n_descs = win32fontmap->n_fonts;
-      if (descs)
-	{
-	  *descs = g_new (PangoFontDescription *, win32fontmap->n_fonts);
-	  
-	  info.descs = *descs;
-	  info.n_found = 0;
-	  
-	  g_hash_table_foreach (win32fontmap->families, list_fonts_foreach, &info);
-	}
-    }
+  
+  return object_type;
 }
 
 static void
@@ -363,12 +363,12 @@ list_families_foreach (gpointer key,
 {
   GSList **list = user_data;
 
-  *list = g_slist_prepend (*list, key);
+  *list = g_slist_prepend (*list, value);
 }
 
 static void
 pango_win32_font_map_list_families (PangoFontMap *fontmap,
-				    gchar      ***families,
+				    PangoFontFamily ***families,
 				    int          *n_families)
 {
   GSList *family_list = NULL;
@@ -386,12 +386,12 @@ pango_win32_font_map_list_families (PangoFontMap *fontmap,
     {
       int i = 0;
 	
-      *families = g_new (gchar *, *n_families);
+      *families = g_new (PangoFontFamily *, *n_families);
 
       tmp_list = family_list;
       while (tmp_list)
 	{
-	  (*families)[i] = g_strdup (tmp_list->data);
+	  (*families)[i] = tmp_list->data;
 	  i++;
 	  tmp_list = tmp_list->next;
 	}
@@ -400,21 +400,21 @@ pango_win32_font_map_list_families (PangoFontMap *fontmap,
   g_slist_free (family_list);
 }
 
-static PangoWin32FamilyEntry *
-pango_win32_get_family_entry (PangoWin32FontMap *win32fontmap,
-			      const char        *family_name)
+static PangoWin32Family *
+pango_win32_get_font_family (PangoWin32FontMap *win32fontmap,
+                        const char        *family_name)
 {
-  PangoWin32FamilyEntry *family_entry = g_hash_table_lookup (win32fontmap->families, family_name);
-  if (!family_entry)
+  PangoWin32Family *win32family = g_hash_table_lookup (win32fontmap->families, family_name);
+  if (!win32family)
     {
-      family_entry = g_new (PangoWin32FamilyEntry, 1);
-      family_entry->family_name = g_strdup (family_name);
-      family_entry->font_entries = NULL;
+      win32family = g_object_new (PANGO_WIN32_TYPE_FAMILY, NULL);
+      win32family->family_name = g_strdup (family_name);
+      win32family->font_entries = NULL;
       
-      g_hash_table_insert (win32fontmap->families, family_entry->family_name, family_entry);
+      g_hash_table_insert (win32fontmap->families, win32family->family_name, win32family);
     }
 
-  return family_entry;
+  return win32family;
 }
 
 static PangoFont *
@@ -422,31 +422,29 @@ pango_win32_font_map_load_font (PangoFontMap               *fontmap,
 				const PangoFontDescription *description)
 {
   PangoWin32FontMap *win32fontmap = (PangoWin32FontMap *)fontmap;
-  PangoWin32FamilyEntry *family_entry;
+  PangoWin32Family *win32family;
   PangoFont *result = NULL;
   GSList *tmp_list;
   gchar *name;
 
   g_return_val_if_fail (description != NULL, NULL);
-  g_return_val_if_fail (description->size > 0, NULL);
   
-  name = g_strdup (description->family_name);
-  g_strdown (name);
+  name = g_ascii_strdown (pango_font_description_get_family (description));
 
-  family_entry = g_hash_table_lookup (win32fontmap->families, name);
-  if (family_entry)
+  win32family = g_hash_table_lookup (win32fontmap->families, name);
+  if (win32family)
     {
-      PangoWin32FontEntry *best_match = NULL;
+      PangoWin32Face *best_match = NULL;
       
-      tmp_list = family_entry->font_entries;
+      tmp_list = win32family->font_entries;
       while (tmp_list)
 	{
-	  PangoWin32FontEntry *font_entry = tmp_list->data;
+	  PangoWin32Face *face = tmp_list->data;
 
 	  if (pango_font_description_better_match (description,
 						   best_match ? best_match->description : NULL,
-						   font_entry->description))
-	    best_match = font_entry;
+						   face->description))
+	    best_match = face;
 	  
 	  tmp_list = tmp_list->next;
 	}
@@ -454,11 +452,12 @@ pango_win32_font_map_load_font (PangoFontMap               *fontmap,
       if (best_match)
 	{
 	  GSList *tmp_list = best_match->cached_fonts;
+	  gint size = pango_font_description_get_size (description);
 
 	  while (tmp_list)
 	    {
 	      PangoWin32Font *win32font = tmp_list->data;
-	      if (win32font->size == description->size)
+	      if (win32font->size == size)
 		{
 		  result = (PangoFont *)win32font;
 
@@ -475,7 +474,7 @@ pango_win32_font_map_load_font (PangoFontMap               *fontmap,
 	    {
 	      PangoWin32Font *win32font;
 	      
-	      win32font = pango_win32_font_new (fontmap, &best_match->logfont, description->size);
+	      win32font = pango_win32_font_new (fontmap, &best_match->logfont, size);
 	      win32font->fontmap = fontmap;
 	      win32font->entry = best_match;
 	      best_match->cached_fonts = g_slist_prepend (best_match->cached_fonts, win32font);
@@ -494,7 +493,7 @@ static void
 pango_win32_font_map_read_alias_file (PangoWin32FontMap *win32fontmap,
 				      const char        *filename)
 {
-  PangoWin32FontEntry *font_entry = NULL;
+  PangoWin32Face *face = NULL;
   FILE *infile;
   char **faces;
   int lineno = 0;
@@ -509,7 +508,7 @@ pango_win32_font_map_read_alias_file (PangoWin32FontMap *win32fontmap,
 
       while (pango_read_line (infile, line_buf))
 	{
-	  PangoWin32FamilyEntry *family_entry;
+	  PangoWin32Family *family_entry;
 	  PangoStyle style;
 	  PangoVariant variant;
 	  PangoWeight weight;
@@ -525,11 +524,12 @@ pango_win32_font_map_read_alias_file (PangoWin32FontMap *win32fontmap,
 	  if (!pango_scan_string (&p, tmp_buf))
 	    goto error;
 
-	  font_entry = g_new (PangoWin32FontEntry, 1);
-	  font_entry->description = pango_font_description_new ();
+	  face = g_object_new g_object_new (PANGO_WIN32_TYPE_FACE, NULL);
+	  face->n_fonts = 0;
+	  face->description = pango_font_description_new ();
 
 	  g_string_ascii_down (tmp_buf);
-	  pango_font_description_set_family (tmp_buf->str);
+	  pango_font_description_set_family (face->description, tmp_buf->str);
 	  
 	  if (!pango_scan_string (&p, tmp_buf))
 	    goto error;
@@ -699,14 +699,18 @@ pango_win32_insert_font (PangoWin32FontMap *win32fontmap,
 			 LOGFONT           *lfp)
 {
   LOGFONT *lfp2;
-  PangoFontDescription description;
+  PangoFontDescription *description;
+  char *family_name;
   GSList *tmp_list;
-  PangoWin32FamilyEntry *family_entry;
-  PangoWin32FontEntry *font_entry;
+  PangoWin32Family *font_family;
+  PangoWin32Face *win32face;
   PangoWin32SizeInfo *size_info;
+  PangoStyle style;
+  PangoVariant variant;
+  PangoWeight weight;
+  PangoStretch stretch;
 
   PING(("lfp.face=%s,wt=%ld,ht=%ld",lfp->lfFaceName,lfp->lfWeight,lfp->lfHeight));
-  description.size = 0;
   
   /* First insert the LOGFONT into the list of LOGFONTs for the typeface name
    */
@@ -727,62 +731,71 @@ pango_win32_insert_font (PangoWin32FontMap *win32fontmap,
   
   /* Convert the LOGFONT into a PangoFontDescription */
   
-  description.family_name = g_strdup (lfp2->lfFaceName);
+  family_name = g_strdup (lfp2->lfFaceName);
   
   if (!lfp2->lfItalic)
-    description.style = PANGO_STYLE_NORMAL;
+    style = PANGO_STYLE_NORMAL;
   else
-    description.style = PANGO_STYLE_ITALIC;
+    style = PANGO_STYLE_ITALIC;
 
-  description.variant = PANGO_VARIANT_NORMAL;
+  variant = PANGO_VARIANT_NORMAL;
   
   /* The PangoWeight values PANGO_WEIGHT_* map exactly do Windows FW_* values.
    * Is this on purpose? Quantize the weight to exact PANGO_WEIGHT_*
    * values. Is this a good idea?
    */
   if (lfp2->lfWeight == FW_DONTCARE)
-    description.weight = PANGO_WEIGHT_NORMAL;
+    weight = PANGO_WEIGHT_NORMAL;
   else if (lfp2->lfWeight <= (FW_ULTRALIGHT + FW_LIGHT) / 2)
-    description.weight = PANGO_WEIGHT_ULTRALIGHT;
+    weight = PANGO_WEIGHT_ULTRALIGHT;
   else if (lfp2->lfWeight <= (FW_LIGHT + FW_NORMAL) / 2)
-    description.weight = PANGO_WEIGHT_LIGHT;
+    weight = PANGO_WEIGHT_LIGHT;
   else if (lfp2->lfWeight <= (FW_NORMAL + FW_BOLD) / 2)
-    description.weight = PANGO_WEIGHT_NORMAL;
+    weight = PANGO_WEIGHT_NORMAL;
   else if (lfp2->lfWeight <= (FW_BOLD + FW_ULTRABOLD) / 2)
-    description.weight = PANGO_WEIGHT_BOLD;
+    weight = PANGO_WEIGHT_BOLD;
   else if (lfp2->lfWeight <= (FW_ULTRABOLD + FW_HEAVY) / 2)
-    description.weight = PANGO_WEIGHT_ULTRABOLD;
+    weight = PANGO_WEIGHT_ULTRABOLD;
   else
-    description.weight = PANGO_WEIGHT_HEAVY;
+    weight = PANGO_WEIGHT_HEAVY;
 
   /* XXX No idea how to figure out the stretch */
-  description.stretch = PANGO_STRETCH_NORMAL;
+  stretch = PANGO_STRETCH_NORMAL;
 
-  family_entry = pango_win32_get_family_entry (win32fontmap, description.family_name);
+  font_family = pango_win32_get_font_family (win32fontmap, family_name);
 
-  tmp_list = family_entry->font_entries;
+  tmp_list = font_family->font_entries;
   while (tmp_list)
     {
-      font_entry = tmp_list->data;
+      win32face = tmp_list->data;
 
-      if (font_entry->description.style == description.style &&
-	  font_entry->description.variant == description.variant &&
-	  font_entry->description.weight == description.weight &&
-	  font_entry->description.stretch == description.stretch)
+      if (pango_font_description_get_style (win32face->description) == style &&
+	  pango_font_description_get_weight (win32face->description) == weight &&
+	  pango_font_description_get_stretch (win32face->description) == stretch &&
+	  pango_font_description_get_variant (win32face->description) == variant)
 	return;
 
       tmp_list = tmp_list->next;
     }
 
-  font_entry = g_new (PangoWin32FontEntry, 1);
-  font_entry->description = description;
-  font_entry->description.family_name = family_entry->family_name;
-  font_entry->cached_fonts = NULL;
-  font_entry->coverage = NULL;
-  font_entry->logfont = *lfp;
-  font_entry->unicode_table = NULL;
-  g_strdown (font_entry->logfont.lfFaceName);
-  family_entry->font_entries = g_slist_append (family_entry->font_entries, font_entry);
+  description = pango_font_description_new ();
+  pango_font_description_set_family_static (description, font_family->family_name);
+  pango_font_description_set_style (description, style);
+  pango_font_description_set_weight (description, weight);
+  pango_font_description_set_stretch (description, stretch);
+  pango_font_description_set_variant (description, variant);
+
+  /*
+   * Create the FontFace
+   */
+  win32face = g_object_new (PANGO_WIN32_TYPE_FACE, NULL);
+  win32face->description = description;
+  win32face->cached_fonts = NULL;
+  win32face->coverage = NULL;
+  win32face->logfont = *lfp;
+  win32face->unicode_table = NULL;
+  g_strdown (win32face->logfont.lfFaceName);
+  font_family->font_entries = g_slist_append (font_family->font_entries, win32face);
   win32fontmap->n_fonts++;
 
   /*
@@ -796,18 +809,18 @@ pango_win32_insert_font (PangoWin32FontMap *win32fontmap,
   switch (lfp->lfPitchAndFamily & (0x0F << 4)) /* bit 4...7 */
     { 
     case FF_MODERN : /* monospace */
-      family_entry = pango_win32_get_family_entry (win32fontmap, "monospace");
-      family_entry->font_entries = g_slist_append (family_entry->font_entries, font_entry);
+      font_family = pango_win32_get_font_family (win32fontmap, "monospace");
+      font_family->font_entries = g_slist_append (font_family->font_entries, win32face);
       win32fontmap->n_fonts++;
       break;
     case FF_ROMAN : /* serif */
-      family_entry = pango_win32_get_family_entry (win32fontmap, "serif");
-      family_entry->font_entries = g_slist_append (family_entry->font_entries, font_entry);
+      font_family = pango_win32_get_font_family (win32fontmap, "serif");
+      font_family->font_entries = g_slist_append (font_family->font_entries, win32face);
       win32fontmap->n_fonts++;
       break;
     case  FF_SWISS  : /* sans */
-      family_entry = pango_win32_get_family_entry (win32fontmap, "sans");
-      family_entry->font_entries = g_slist_append (family_entry->font_entries, font_entry);
+      font_family = pango_win32_get_font_family (win32fontmap, "sans");
+      font_family->font_entries = g_slist_append (font_family->font_entries, win32face);
       win32fontmap->n_fonts++;
       break;
     }
@@ -883,29 +896,91 @@ free_coverages_foreach (gpointer key,
 }
 
 void
-pango_win32_font_entry_set_coverage (PangoWin32FontEntry *entry,
+pango_win32_font_entry_set_coverage (PangoWin32Face *face,
 				     PangoCoverage       *coverage)
 {
-  entry->coverage = pango_coverage_ref (coverage);
+  face->coverage = pango_coverage_ref (coverage);
+}
+
+static PangoFontDescription *
+pango_win32_face_describe (PangoFontFace *face)
+{
+  PangoWin32Face *win32face = PANGO_WIN32_FACE (face);
+
+  return pango_font_description_copy (win32face->description);
+}
+
+static const char *
+pango_win32_face_get_face_name (PangoFontFace *face)
+{
+  PangoWin32Face *win32face = PANGO_WIN32_FACE (face);
+
+  if (!win32face->face_name)
+    {
+      PangoFontDescription *desc = pango_font_face_describe (face);
+      
+      pango_font_description_unset_fields (desc,
+					   PANGO_FONT_MASK_FAMILY | PANGO_FONT_MASK_SIZE);
+
+      win32face->face_name = pango_font_description_to_string (desc);
+      pango_font_description_free (desc);
+    }
+
+  return win32face->face_name;
+}
+
+static void
+pango_win32_face_class_init (PangoFontFaceClass *class)
+{
+  class->describe = pango_win32_face_describe;
+  class->get_face_name = pango_win32_face_get_face_name;
+}
+
+GType
+pango_win32_face_get_type (void)
+{
+  static GType object_type = 0;
+
+  if (!object_type)
+    {
+      static const GTypeInfo object_info =
+      {
+        sizeof (PangoFontFaceClass),
+        (GBaseInitFunc) NULL,
+        (GBaseFinalizeFunc) NULL,
+        (GClassInitFunc) pango_win32_face_class_init,
+        NULL,           /* class_finalize */
+        NULL,           /* class_data */
+        sizeof (PangoWin32Face),
+        0,              /* n_preallocs */
+        (GInstanceInitFunc) NULL,
+      };
+      
+      object_type = g_type_register_static (PANGO_TYPE_FONT_FACE,
+                                            "PangoWin32Face",
+                                            &object_info, 0);
+    }
+  
+  return object_type;
 }
 
 PangoCoverage *
-pango_win32_font_entry_get_coverage (PangoWin32FontEntry *entry)
+pango_win32_font_entry_get_coverage (PangoWin32Face *face)
 {
-  if (entry->coverage)
+  if (face->coverage)
     {
-      pango_coverage_ref (entry->coverage);
-      return entry->coverage;
+      pango_coverage_ref (face->coverage);
+      return face->coverage;
     }
 
   return NULL;
 }
 
 void
-pango_win32_font_entry_remove (PangoWin32FontEntry *entry,
+pango_win32_font_entry_remove (PangoWin32Face *face,
 			       PangoFont           *font)
 {
-  entry->cached_fonts = g_slist_remove (entry->cached_fonts, font);
+  face->cached_fonts = g_slist_remove (face->cached_fonts, font);
 }
 
 PangoWin32FontCache *

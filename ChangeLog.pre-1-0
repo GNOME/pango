@@ -1,3 +1,26 @@
+2001-09-21  Hans Breuer  <hans@breuer.org>
+
+	* pango/pango.def : updated externals
+
+	* pango/makefile.msc : build ft2 backend too.
+
+	* pango/pangowin32-fontmap.c 
+	 - Convert PangoWin32FamilyEntry into PangoWin32Family deriving
+	   from PangoFontFamily.
+	 - Convert PangoWin32FontEntry into PangoWin32Face deriving
+	   from PangoFontFace.
+	 - Change the list_families() method of the PangoWin32FontMap
+	   to list PangoFontFamily * rather than names.
+
+	* pango/pangowin32.c : reflect PangoFontDescription api change
+
+	* pango/pangowin32.h : don't include pango.h but only the
+	required headers
+
+	* modules/basic/basic-win32.c : #include "pango-engine.h"
+
+	* pango/testfonts.c : reflect recent pango api changes
+
 2001-09-20  Sven Neumann  <sven@gimp.org>
 
 	* pango/fonts.c (pango_font_description_set_family,
