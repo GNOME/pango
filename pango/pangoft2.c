@@ -110,21 +110,6 @@ _pango_ft2_font_new (PangoFT2FontMap *ft2fontmap,
   return ft2font;
 }
 
-static gboolean
-set_unicode_charmap (FT_Face face)
-{
-  int charmap;
-
-  for (charmap = 0; charmap < face->num_charmaps; charmap++)
-    if (face->charmaps[charmap]->encoding == ft_encoding_unicode)
-      {
-	FT_Error error = FT_Set_Charmap(face, face->charmaps[charmap]);
-	return error == FT_Err_Ok;
-      }
-
-  return FALSE;
-}
-
 static void
 load_fallback_face (PangoFT2Font *ft2font,
 		    const char   *original_file)
@@ -169,12 +154,6 @@ load_fallback_face (PangoFT2Font *ft2font,
       g_free (name);
     }
 
-  if (!set_unicode_charmap (ft2font->face))
-    {
-      g_warning ("Unable to load unicode charmap from file %s, exiting\n", filename2);
-      exit (1);
-    }
-  
   FcPatternDestroy (sans);
   FcPatternDestroy (matched);
 }
@@ -248,17 +227,6 @@ pango_ft2_font_get_face (PangoFont *font)
 	}
 
       g_assert (ft2font->face);
-      
-      if (!set_unicode_charmap (ft2font->face))
-	{
-	  g_warning ("Unable to load unicode charmap from font file %s",
-                     filename);
-	  
-	  FT_Done_Face (ft2font->face);
-	  ft2font->face = NULL;
-	  
-	  load_fallback_face (ft2font, filename);
-	}
 
       error = FT_Set_Char_Size (ft2font->face,
 				PANGO_PIXELS_26_6 (ft2font->size),
@@ -652,14 +620,15 @@ static gboolean
 pango_ft2_font_real_has_char (PangoFcFont *font,
 			      gunichar     wc)
 {
-  FT_Face face;
-  FT_UInt index;
+  FcCharSet *charset;
 
-  face = pango_ft2_font_get_face ((PangoFont *)font);
-  index = FT_Get_Char_Index (face, wc);
-  return (index && index <= face->num_glyphs);
+  if (FcPatternGetCharSet (font->font_pattern,
+                           FC_CHARSET, 0, &charset) != FcResultMatch)
+    return FALSE;
+
+  return FcCharSetHasChar (charset, wc);
 }
-				   
+
 static guint
 pango_ft2_font_real_get_glyph (PangoFcFont *font,
 			       gunichar     wc)
@@ -668,7 +637,7 @@ pango_ft2_font_real_get_glyph (PangoFcFont *font,
   FT_UInt index;
 
   face = pango_ft2_font_get_face ((PangoFont *)font);
-  index = FT_Get_Char_Index (face, wc);
+  index = FcFreeTypeCharIndex (face, wc);
   if (index && index <= face->num_glyphs)
     return index;
 

@@ -1,3 +1,12 @@
+2003-11-20  Sven Neumann  <sven@gimp.org>
+
+	* pango/pangoft2-fontmap.c: reverted the patch for bug #123602
+	since I only applied it accidentally. I still believe the patch
+	should go in though.
+
+	* pango/pangoft2.c: really applied the fix for #101856 as
+	described below.
+
 2003-11-20  Noah Levitt  <nlevitt@columbia.edu>
 
 	* pango/pango-utils.c:
@@ -24,10 +33,10 @@
 
 2003-11-18  Sven Neumann  <sven@gimp.org>
 
-	* pango/pangoft2-fontmap.c: removed the set_unicode_charmap() call.
-	Made pango_ft2_font_real_get_glyph() use FcFreeTypeCharIndex()
-	rather than FT_Get_Char_Index(). Made pango_ft2_font_real_has_char()
-	use FcCharSetHasChar().  This allows to use PangoFT2 with all font
+	* pango/pangoft2.c: removed the set_unicode_charmap() call.  Made
+	pango_ft2_font_real_get_glyph() use FcFreeTypeCharIndex() rather
+	than FT_Get_Char_Index(). Made pango_ft2_font_real_has_char() use
+	FcCharSetHasChar().  This allows to use PangoFT2 with all font
 	encodings supported by fontconfig and fixes bug #101856.
 
 Sat Nov 15 16:03:30 2003  Owen Taylor  <otaylor@redhat.com>
