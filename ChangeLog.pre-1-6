@@ -1,3 +1,12 @@
+Thu Dec  6 10:03:49 2001  HideToshi Tajima  <hidetoshi.tajima@sun.com>
+
+	* modules/basic/basic-x.c
+	(conv_eucjp): handle codeset1(right half of jisx0201.1976)
+	and codeset3(jisx0212.1990) of EUCJP
+	(conv_16bit): renamed from the old conv_euc - handle 16bit
+	character sets only.
+	* modules/basic/tables-big.i: add jisx0212, jisx0201 and big5.
+
 2001-12-03  Matthias Clasen  <matthiasc@poet.de>
 
 	* docs/pango-sections.txt, docs/tmpl/fonts.sgml, 

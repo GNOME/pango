@@ -86,9 +86,12 @@ struct _CharCachePointer
 static PangoGlyph conv_8bit (CharCache  *cache,
 			     Charset    *charset,
 			     const char *input);
-static PangoGlyph conv_euc (CharCache  *cache,
-			    Charset    *charset,
-			    const char *input);
+static PangoGlyph conv_eucjp (CharCache  *cache,
+			      Charset    *charset,
+			      const char *input);
+static PangoGlyph conv_16bit (CharCache  *cache,
+			      Charset    *charset,
+			      const char *input);
 static PangoGlyph conv_ucs4 (CharCache  *cache,
 			     Charset    *charset,
 			     const char *input);
@@ -314,9 +317,38 @@ conv_8bit (CharCache  *cache,
 }
 
 static PangoGlyph
-conv_euc (CharCache  *cache,
-	  Charset     *charset,
-	  const char *input)
+conv_eucjp (CharCache  *cache,
+	    Charset     *charset,
+	    const char *input)
+{
+  GIConv cd;
+  char outbuf[4];
+
+  const char *inptr = input;
+  size_t inbytesleft;
+  char *outptr = outbuf;
+  size_t outbytesleft = 4;
+
+  inbytesleft = g_utf8_next_char (input) - input;
+  
+  cd = find_converter (cache, charset);
+
+  g_iconv (cd, (char **)&inptr, &inbytesleft, &outptr, &outbytesleft);
+
+  if ((guchar)outbuf[0] < 128)
+    return outbuf[0];
+  else if ((guchar)outbuf[0] == 0x8e && outbytesleft == 2)
+    return ((guchar)outbuf[1]);
+  else if ((guchar)outbuf[0] == 0x8f && outbytesleft == 1)
+    return ((guchar)outbuf[1] & 0x7f) * 256 + ((guchar)outbuf[2] & 0x7f);
+  else
+    return ((guchar)outbuf[0] & 0x7f) * 256 + ((guchar)outbuf[1] & 0x7f);
+}
+
+static PangoGlyph
+conv_16bit (CharCache  *cache,
+	    Charset     *charset,
+	    const char *input)
 {
   GIConv cd;
   char outbuf[2];
