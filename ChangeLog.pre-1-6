@@ -1,3 +1,20 @@
+Fri Nov  8 20:02:09 2002  Soeren Sandmann  <sandmann@daimi.au.dk>
+
+	* docs/tmpl/coverage-maps.sgml:
+	* docs/tmpl/glyphs.sgml:
+	* docs/tmpl/layout.sgml:
+	* docs/tmpl/x-fonts.sgml:
+	* pango/mapping.c:
+	* pango/pango-coverage.c:
+	* pango/pango-coverage.h:
+	* pango/pango-glyph.h:
+	* pango/pango-layout.c:
+	* pango/pango-layout.h:
+	* pango/pangox.h:
+
+	Trivial s/foo/foo_/ fixes to make pango.h includable with -Wshadow
+	(#91680).
+
 2002-11-09  Changwoo Ryu  <cwryu@debian.org>
 
 	* modules/hangul/hangul-x.c (render_syllable_with_ksx1001johab):

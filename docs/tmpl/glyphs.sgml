@@ -319,7 +319,7 @@ The GObject type for #PangoGlyphString.
 @text: 
 @length: 
 @analysis: 
-@index: 
+@index_: 
 @trailing: 
 @x_pos: 
 
@@ -334,7 +334,7 @@ The GObject type for #PangoGlyphString.
 @length: 
 @analysis: 
 @x_pos: 
-@index: 
+@index_: 
 @trailing: 
 
 

@@ -156,7 +156,7 @@ pango_coverage_unref (PangoCoverage *coverage)
 /**
  * pango_coverage_get:
  * @coverage: a #PangoCoverage
- * @index: the index to check
+ * @index_: the index to check
  * 
  * Determine whether a particular index is covered by @coverage
  * 
@@ -192,8 +192,8 @@ pango_coverage_get (PangoCoverage *coverage,
 /**
  * pango_coverage_set:
  * @coverage: a #PangoCoverage
- * @index: the index to modify
- * @level: the new level for @index
+ * @index_: the index to modify
+ * @level: the new level for @index_
  * 
  * Modify a particular index within @coverage
  **/

@@ -109,7 +109,7 @@ void pango_glyph_string_index_to_x (PangoGlyphString *glyphs,
 				    char             *text,
 				    int               length,
 				    PangoAnalysis    *analysis,
-				    int               index,
+				    int               index_,
 				    gboolean          trailing,
 				    int              *x_pos);
 void pango_glyph_string_x_to_index (PangoGlyphString *glyphs,
@@ -117,7 +117,7 @@ void pango_glyph_string_x_to_index (PangoGlyphString *glyphs,
 				    int               length,
 				    PangoAnalysis    *analysis,
 				    int               x_pos,
-				    int              *index,
+				    int              *index_,
 				    int              *trailing);
 
 /* Turn a string of characters into a string of glyphs

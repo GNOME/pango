@@ -68,7 +68,7 @@ void           pango_x_render_layout      (Display          *display,
  */
 typedef guint16 PangoXSubfont;
 
-#define PANGO_X_MAKE_GLYPH(subfont,index) ((subfont)<<16 | (index))
+#define PANGO_X_MAKE_GLYPH(subfont,index_) ((subfont)<<16 | (index_))
 #define PANGO_X_GLYPH_SUBFONT(glyph) ((glyph)>>16)
 #define PANGO_X_GLYPH_INDEX(glyph) ((glyph) & 0xffff)
 

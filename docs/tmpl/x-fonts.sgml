@@ -30,7 +30,7 @@ of a character with the corresponding X font.
 </para>
 
 @subfont: a #PangoXSubfont index
-@index: the index of a character within an X font.
+@index_: the index of a character within an X font.
 
 
 <!-- ##### MACRO PANGO_X_GLYPH_SUBFONT ##### -->

@@ -36,7 +36,7 @@
  * @text:      the text for the run
  * @length:    the number of bytes (not characters) in @text.
  * @analysis:  the analysis information return from pango_itemize()
- * @index:     the byte index within @text
+ * @index_:    the byte index within @text
  * @trailing:  whether we should compute the result for the beginning
  *             or end of the character.
  * @x_pos:     location to store result
@@ -160,7 +160,7 @@ pango_glyph_string_index_to_x (PangoGlyphString *glyphs,
  * @length:    the number of bytes (not characters) in text.
  * @analysis:  the analysis information return from pango_itemize()
  * @x_pos:     the x offset (in thousands of a device unit)
- * @index:     location to store calculated byte index within @text
+ * @index_:    location to store calculated byte index within @text
  * @trailing:  location to store a integer indicating where
  *             whether the user clicked on the leading or trailing
  *             edge of the character.

@@ -955,7 +955,7 @@ pango_layout_get_line (PangoLayout *layout,
 /**
  * pango_layout_line_index_to_x:
  * @line:     a #PangoLayoutLine
- * @index:    byte offset of a grapheme within the layout
+ * @index_:   byte offset of a grapheme within the layout
  * @trailing: an integer indicating the edge of the grapheme to retrieve 
  *            the position of. If 0, the trailing edge of the grapheme, 
  *            if > 0, the leading of the grapheme.
@@ -1119,7 +1119,7 @@ pango_layout_index_to_line_and_extents (PangoLayout     *layout,
 /**
  * pango_layout_index_to_line_x:
  * @layout:    a #PangoLayout
- * @index:     the byte index of a grapheme within the layout.
+ * @index_:    the byte index of a grapheme within the layout.
  * @trailing:  an integer indicating the edge of the grapheme to retrieve the 
  *             position of. If 0, the trailing edge of the grapheme, if > 0, 
  *             the leading of the grapheme.
@@ -1128,7 +1128,7 @@ pango_layout_index_to_line_and_extents (PangoLayout     *layout,
  * @x_pos:     location to store resulting position within line
  *             (in thousandths of a device unit)
  *
- * Converts from byte @index within the @layout to line and X position.
+ * Converts from byte @index_ within the @layout to line and X position.
  * (X position is measured from the left edge of the line)
  */
 void
@@ -1351,7 +1351,7 @@ pango_layout_move_cursor_visually (PangoLayout *layout,
  *             from the left edge of the layout.
  * @y:         the Y offset (in thousandths of a device unit)
  *             from the top edge of the layout
- * @index:     location to store calculated byte index
+ * @index_:    location to store calculated byte index
  * @trailing:  location to store a integer indicating where
  *             in the grapheme the user clicked. It will either
  *             be zero, or the number of characters in the
@@ -1452,7 +1452,7 @@ pango_layout_xy_to_index (PangoLayout *layout,
 /**
  * pango_layout_index_to_pos:
  * @layout: a #PangoLayout
- * @index: byte index within @layout
+ * @index_: byte index within @layout
  * @pos: rectangle in which to store the position of the grapheme
  * 
  * Convert from an index within a PangoLayout to the onscreen position
@@ -1677,7 +1677,7 @@ pango_layout_line_get_char_direction (PangoLayoutLine *layout_line,
 /**
  * pango_layout_get_cursor_pos:
  * @layout: a #PangoLayout
- * @index: the byte index of the cursor
+ * @index_: the byte index of the cursor
  * @strong_pos: location to store the strong cursor position (may be %NULL)
  * @weak_pos: location to store the weak cursor position (may be %NULL)
  * 
@@ -3026,7 +3026,7 @@ pango_layout_line_unref (PangoLayoutLine *line)
  * @line:      a #PangoLayoutLine
  * @x_pos:     the x offset (in thousands of a device unit)
  *             from the left edge of the line.
- * @index:     location to store calculated byte offset for
+ * @index_:    location to store calculated byte offset for
  *             the grapheme in which the user clicked.
  * @trailing:  location to store a integer indicating where
  *             in the grapheme the user clicked. It will either
@@ -3035,7 +3035,7 @@ pango_layout_line_unref (PangoLayoutLine *line)
  *
  * Convert from x offset to the byte index of the corresponding
  * character within the text of the layout. If @x_pos is outside the line,
- * the start or end of the line will be stored at @index.
+ * the start or end of the line will be stored at @index_.
  *
  * Returns: %FALSE if @x_pos was outside the line, %TRUE if inside
  **/
@@ -4536,8 +4536,8 @@ pango_layout_iter_get_line_extents (PangoLayoutIter *iter,
 /**
  * pango_layout_iter_get_line_yrange:
  * @iter: a #PangoLayoutIter
- * @y0: start of line 
- * @y1: end of line
+ * @y0_: start of line 
+ * @y1_: end of line
  *
  * Divides the vertical space in the #PangoLayout being iterated over
  * between the lines in the layout, and returns the space belonging to

@@ -88,7 +88,7 @@ point to #PangoCoverageLevel. It is an opaque structure with no public fields.
 </para>
 
 @coverage: 
-@index: 
+@index_: 
 @Returns: 
 
 
@@ -107,7 +107,7 @@ point to #PangoCoverageLevel. It is an opaque structure with no public fields.
 </para>
 
 @coverage: 
-@index: 
+@index_: 
 @level: 
 
 

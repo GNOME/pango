@@ -359,7 +359,7 @@ The GObject type for #PangoAlignment.
 @layout: 
 @x: 
 @y: 
-@index: 
+@index_: 
 @trailing: 
 @Returns: 
 
@@ -370,7 +370,7 @@ The GObject type for #PangoAlignment.
 </para>
 
 @layout: 
-@index: 
+@index_: 
 @pos: 
 
 
@@ -380,7 +380,7 @@ The GObject type for #PangoAlignment.
 </para>
 
 @layout: 
-@index: 
+@index_: 
 @strong_pos: 
 @weak_pos: 
 
@@ -600,8 +600,8 @@ The GObject type for #PangoAlignment.
 </para>
 
 @iter: 
-@y0: 
-@y1: 
+@y0_: 
+@y1_: 
 
 
 <!-- ##### FUNCTION pango_layout_iter_get_line_extents ##### -->
@@ -694,7 +694,7 @@ a #PangoLayoutLine.
 </para>
 
 @line: 
-@index: 
+@index_: 
 @trailing: 
 @x_pos: 
 
@@ -706,7 +706,7 @@ a #PangoLayoutLine.
 
 @line: 
 @x_pos: 
-@index: 
+@index_: 
 @trailing: 
 @Returns: 
 

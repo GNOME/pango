@@ -40,9 +40,9 @@ PangoCoverage *    pango_coverage_ref     (PangoCoverage      *coverage);
 void               pango_coverage_unref   (PangoCoverage      *coverage);
 PangoCoverage *    pango_coverage_copy    (PangoCoverage      *coverage);
 PangoCoverageLevel pango_coverage_get     (PangoCoverage      *coverage,
-					   int                 index);
+					   int                 index_);
 void               pango_coverage_set     (PangoCoverage      *coverage,
-					   int                 index,
+					   int                 index_,
 					   PangoCoverageLevel  level);
 void               pango_coverage_max     (PangoCoverage      *coverage,
 					   PangoCoverage      *other);
