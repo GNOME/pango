@@ -20,6 +20,57 @@ respectively.
 
 </para>
 
+<!-- ##### STRUCT PangoFontDescription ##### -->
+<para>
+
+</para>
+
+@family_name: 
+@style: 
+@variant: 
+@weight: 
+@stretch: 
+
+<!-- ##### ENUM PangoStyle ##### -->
+<para>
+
+</para>
+
+@PANGO_STYLE_NORMAL: 
+@PANGO_STYLE_OBLIQUE: 
+@PANGO_STYLE_ITALIC: 
+
+<!-- ##### ENUM PangoWeight ##### -->
+<para>
+
+</para>
+
+@PANGO_WEIGHT_NORMAL: 
+@PANGO_WEIGHT_BOLD: 
+
+<!-- ##### ENUM PangoVariant ##### -->
+<para>
+
+</para>
+
+@PANGO_VARIANT_NORMAL: 
+@PANGO_VARIANT_SMALL_CAPS: 
+
+<!-- ##### ENUM PangoStretch ##### -->
+<para>
+
+</para>
+
+@PANGO_STRETCH_ULTRA_CONDENSED: 
+@PANGO_STRETCH_EXTRA_CONDENSED: 
+@PANGO_STRETCH_CONDENSED: 
+@PANGO_STRETCH_SEMI_CONDENSED: 
+@PANGO_STRETCH_NORMAL: 
+@PANGO_STRETCH_SEMI_EXPANDED: 
+@PANGO_STRETCH_EXPANDED: 
+@PANGO_STRETCH_EXTRA_EXPANDED: 
+@PANGO_STRETCH_ULTRA_EXPANDED: 
+
 <!-- ##### STRUCT PangoFont ##### -->
 <para>
 The #PangoFont structure is used to represent
@@ -69,6 +120,45 @@ It contains the following member:
 </para>
 
 
+<!-- ##### STRUCT PangoFontMap ##### -->
+<para>
+
+</para>
+
+@klass: 
+
+<!-- ##### STRUCT PangoFontMapClass ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### FUNCTION pango_font_description_copy ##### -->
+<para>
+
+</para>
+
+@desc: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_font_descriptions_free ##### -->
+<para>
+
+</para>
+
+@descs: 
+@n_descs: 
+
+
+<!-- ##### FUNCTION pango_font_description_free ##### -->
+<para>
+
+</para>
+
+@desc: 
+
+
 <!-- ##### FUNCTION pango_font_init ##### -->
 <para>
 
@@ -93,6 +183,37 @@ It contains the following member:
 @font: 
 
 
+<!-- ##### FUNCTION pango_font_find_shaper ##### -->
+<para>
+
+</para>
+
+@font: 
+@lang: 
+@ch: 
+@Returns: 
+<!-- # Unused Parameters # -->
+@char: 
+
+
+<!-- ##### FUNCTION pango_font_describe ##### -->
+<para>
+
+</para>
+
+@font: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_font_get_coverage ##### -->
+<para>
+
+</para>
+
+@font: 
+@Returns: 
+
+
 <!-- ##### FUNCTION pango_font_get_data ##### -->
 <para>
 
@@ -112,5 +233,50 @@ It contains the following member:
 @key: 
 @data: 
 @destroy_func: 
+
+
+<!-- ##### FUNCTION pango_font_map_init ##### -->
+<para>
+
+</para>
+
+@fontmap: 
+
+
+<!-- ##### FUNCTION pango_font_map_ref ##### -->
+<para>
+
+</para>
+
+@fontmap: 
+
+
+<!-- ##### FUNCTION pango_font_map_unref ##### -->
+<para>
+
+</para>
+
+@fontmap: 
+
+
+<!-- ##### FUNCTION pango_font_map_load_font ##### -->
+<para>
+
+</para>
+
+@fontmap: 
+@desc: 
+@size: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_font_map_list_fonts ##### -->
+<para>
+
+</para>
+
+@fontmap: 
+@descs: 
+@n_descs: 
 
 

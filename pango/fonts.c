@@ -22,6 +22,66 @@
 #include "pango.h"
 
 /**
+ * pango_font_description_copy:
+ * @desc: a #PangoFontDescription
+ * 
+ * Make a copy of a #PangoFontDescription.
+ * 
+ * Return value: a newly allocated #PangoFontDescription. This value
+ *               must be freed using pango_font_description_free().
+ **/
+PangoFontDescription *
+pango_font_description_copy  (PangoFontDescription  *desc)
+{
+  PangoFontDescription *result = g_new (PangoFontDescription, 1);
+
+  *result = *desc;
+
+  result->family_name = g_strdup (result->family_name);
+
+  return result;
+}
+
+/**
+ * pango_font_description_free:
+ * @desc: a #PangoFontDescription
+ * 
+ * Free a font description returned from pango_font_describe()
+ * or pango_font_description_copy().
+ **/
+void pango_font_description_free  (PangoFontDescription  *desc)
+{
+  if (desc)
+    {
+      if (desc->family_name)
+	g_free (desc->family_name);
+
+      g_free (desc);
+    }
+}
+
+/**
+ * pango_font_descriptions_free:
+ * @descs: a pointer to an array of #PangoFontDescription
+ * @n_descs: number of font descriptions in @descs
+ * 
+ * Free a list of font descriptions from pango_font_map_list_fonts()
+ **/
+void
+pango_font_descriptions_free (PangoFontDescription **descs,
+			      int                    n_descs)
+{
+  int i;
+
+  if (descs)
+    {
+      for (i = 0; i<n_descs; i++)
+	pango_font_description_free (descs[i]);
+      g_free (descs);
+    }
+}
+
+/**
  * pango_font_init:
  * @font:    a #PangoFont
  *
@@ -115,3 +175,93 @@ pango_font_get_data (PangoFont *font,
   return g_datalist_get_data (&font->data, key);
 }
 
+
+/**
+ * pango_font_map_init:
+ * @fontmap:    a #PangoFontMap
+ *
+ * Initialize a #PangoFontMap structure. This should
+ * only be called from the "new" routine of code which
+ * is implementing  a "subclass" of #PangoFontMap
+ */
+void 
+pango_font_map_init (PangoFontMap *fontmap)
+{
+  g_return_if_fail (fontmap != NULL);
+
+  fontmap->ref_count = 1;
+}
+
+/**
+ * pango_font_map_ref:
+ * @fontmap:    a #PangoFontMap
+ *
+ * Increase the reference count of a #PangoFontMap.
+ */
+void 
+pango_font_map_ref (PangoFontMap *fontmap)
+{
+  g_return_if_fail (fontmap != NULL);
+
+  fontmap->ref_count++;
+}
+
+
+/**
+ * pango_font_map_unref:
+ * @fontmap: a #PangoFontMap
+ *
+ * Decrease the reference count of a #PangoFontMap.
+ * if the result is zero, destroy the font
+ * and free the associated memory.
+ */
+void 
+pango_font_map_unref (PangoFontMap *fontmap)
+{
+  g_return_if_fail (fontmap != NULL);
+  g_return_if_fail (fontmap->ref_count > 0);
+  
+  fontmap->ref_count--;
+  if (fontmap->ref_count == 0)
+    fontmap->klass->destroy (fontmap);
+}
+
+/**
+ * pango_font_map_load_font:
+ * @fontmap: a #PangoFontMap
+ * @desc: a #PangoFontDescription describing the font to load
+ * @size: the size at which to load the font (in points) 
+ * 
+ * Load the font in the fontmap that is the closest match for @desc.
+ *
+ * Returns the font loaded, or %NULL if no font matched.
+ **/
+PangoFont *
+pango_font_map_load_font  (PangoFontMap         *fontmap,
+			   PangoFontDescription *desc,
+			   double                size)
+{
+  g_return_val_if_fail (fontmap != NULL, NULL);
+
+  return fontmap->klass->load_font (fontmap, desc, size);
+}
+
+/**
+ * pango_font_map_list_fonts:
+ * @fontmap: a #PangoFontMap
+ * @descs: location to store a pointer to an array of pointers to
+ *         #PangoFontDescription. This array should be freed
+ *         with pango_font_descriptions_free().
+ * @n_descs: location to store the number of elements in @descs
+ * 
+ * List all fonts in a fontmap.
+ **/
+void
+pango_font_map_list_fonts (PangoFontMap           *fontmap,
+			   PangoFontDescription ***descs,
+			   int                    *n_descs)
+{
+  g_return_if_fail (fontmap != NULL);
+
+  fontmap->klass->list_fonts (fontmap, descs, n_descs);
+}

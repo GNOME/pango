@@ -35,6 +35,8 @@ extern "C" {
 
 /* Calls for applications
  */
+PangoContext *pango_x_get_context (Display         *display);  
+
 PangoFont *pango_x_load_font     (Display          *display,
 				  gchar            *spec);
 void       pango_x_render        (Display          *display,

@@ -1,7 +1,7 @@
 /* Pango
- * modules.h:
+ * pango-layout.h: Highlevel layout driver
  *
- * Copyright (C) 1999 Red Hat Software
+ * Copyright (C) 2000 Red Hat Software
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -19,39 +19,26 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#include <pango-engine.h>
+#ifndef __PANGO_LAYOUT_H__
+#define __PANGO_LAYOUT_H__
 
-#ifndef __MODULES_H__
-#define __MODULES_H__
+#ifdef __cplusplus
+extern "C" {
+#endif /* __cplusplus */
 
-typedef struct _PangoMap PangoMap;
-typedef struct _PangoSubmap PangoSubmap;
-typedef struct _PangoMapEntry PangoMapEntry;
+typedef struct _PangoLayout PangoLayout;
 
-struct _PangoMapEntry 
-{
-  PangoEngineInfo *info;
-  gboolean is_exact;
-};
+  /*
+  pango_layout_new (char *text, int length);
+  pango_layout_get_glyph_strings ();
+  pango_layout_cp_to_xy ();
+  pango_layout_xy_to_cp ();
+  pango_layout_justify ();
+  */
 
-struct _PangoSubmap
-{
-  gboolean is_leaf;
-  union {
-    PangoMapEntry entry;
-    PangoMapEntry *leaves;
-  } d;
-};
+#ifdef __cplusplus
+}
+#endif /* __cplusplus */
 
-struct _PangoMap
-{
-  gint n_submaps;
-  PangoSubmap submaps[256];
-};
+#endif __PANGO_LAYOUT_H__
 
-PangoMap *_pango_find_map (gchar *lang,
-				gchar *engine_type,
-				gchar *render_type);
-PangoEngine *_pango_load_engine (gchar *id);
-
-#endif /* __MODULES_H__ */

@@ -55,6 +55,15 @@ X Window System.
 @glyph: 
 
 
+<!-- ##### FUNCTION pango_x_get_context ##### -->
+<para>
+
+</para>
+
+@display: 
+@Returns: 
+
+
 <!-- ##### FUNCTION pango_x_load_font ##### -->
 <para>
 

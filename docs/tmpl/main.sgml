@@ -56,9 +56,6 @@ the following fields:
 </tbody></tgroup></informaltable>
 </para>
 
-@lang: 
-@render_type: 
-@direction: 
 
 <!-- ##### STRUCT PangoItem ##### -->
 <para>
@@ -179,6 +176,96 @@ It contains the following fields:
 
 @logical_items: 
 @Returns: 
+
+
+<!-- ##### FUNCTION pango_context_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_context_ref ##### -->
+<para>
+
+</para>
+
+@context: 
+
+
+<!-- ##### FUNCTION pango_context_unref ##### -->
+<para>
+
+</para>
+
+@context: 
+
+
+<!-- ##### FUNCTION pango_context_add_font_map ##### -->
+<para>
+
+</para>
+
+@context: 
+@font_map: 
+
+
+<!-- ##### FUNCTION pango_context_get_base_dir ##### -->
+<para>
+
+</para>
+
+@context: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_context_set_base_dir ##### -->
+<para>
+
+</para>
+
+@context: 
+@direction: 
+
+
+<!-- ##### FUNCTION pango_context_get_lang ##### -->
+<para>
+
+</para>
+
+@context: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_context_set_lang ##### -->
+<para>
+
+</para>
+
+@context: 
+@lang: 
+
+
+<!-- ##### FUNCTION pango_context_load_font ##### -->
+<para>
+
+</para>
+
+@context: 
+@desc: 
+@size: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_context_list_fonts ##### -->
+<para>
+
+</para>
+
+@context: 
+@descs: 
+@n_descs: 
 
 
 <!-- ##### FUNCTION pango_break ##### -->

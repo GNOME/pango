@@ -8,10 +8,11 @@ libpango_la_SOURCES = \
 	fonts.c \
 	glyphstring.c \
 	pangox.c \
-	itemize.c \
 	mapping.c \
 	modules.c \
 	modules.h \
+	pango-context.c \
+	pango-coverage.c \
 	reorder-items.c \
 	shape.c \
 	utils.c \

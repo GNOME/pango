@@ -2,6 +2,7 @@
 <!entity pango-main SYSTEM "sgml/main.sgml">
 <!entity pango-glyphs SYSTEM "sgml/glyphs.sgml">
 <!entity pango-fonts SYSTEM "sgml/fonts.sgml">
+<!entity pango-coverage-maps SYSTEM "sgml/coverage-maps.sgml">
 <!entity pango-engines SYSTEM "sgml/engines.sgml">
 <!entity pango-x SYSTEM "sgml/pango-x.sgml">
 ]>
@@ -15,6 +16,7 @@
     &pango-main;
     &pango-glyphs;
     &pango-fonts;
+    &pango-coverage-maps;
     &pango-engines;
   </chapter>
 

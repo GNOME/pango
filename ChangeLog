@@ -1,3 +1,23 @@
+Wed Feb  2 00:07:13 2000  Owen Taylor  <otaylor@redhat.com>
+
+	* libpango/pango-*.h: The great header file reorganization.
+	Split up roughtly by objects.
+
+	* libpango/pango-font.h libpango/fonts.h: Add generic
+	font-loading and listing interfaces.
+
+	* libpango/pangox.c: Implement font-listing/loading interfaces
+	for X.
+
+	* libpango/pango-context.[ch]: Flesh out context structure.
+	Add appropriate accesors, font loading-methods, etc.
+
+	* libpango/pango-coverage.[ch]: Coverage map objects.
+
+	* examples/viewer.c: First stab at adding font-selection. Majorly
+	deficient for the moment until we add font lists and fallbacks
+	based on coverage maps.
+
 Thu Jan 27 16:50:51 2000  Owen Taylor  <otaylor@redhat.com>
 
 	* docs/**: Updates to match recent API changes.
