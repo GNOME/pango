@@ -1,23 +1,28 @@
 #!/bin/sh
 
-# Build zipfile for Pango on Win32: both runtime and developer stuff
+# Build zipfiles for Pango on Win32: separate runtime and developer packages
 
-# These two directory paths are obviously system-dependent. This is what tml
-# happens to use.
-ZIP=/g/tmp/pango-@PANGO_MAJOR_VERSION@.@PANGO_MINOR_VERSION@.zip
-cd /target
+ZIP=/tmp/pango-@PANGO_MAJOR_VERSION@.@PANGO_MINOR_VERSION@.zip
+DEVZIP=/tmp/pango-dev-@PANGO_MAJOR_VERSION@.@PANGO_MINOR_VERSION@.zip
+cd @prefix@
 
 rm $ZIP
 zip -r $ZIP -@ <<EOF
+bin/pango-querymodules.exe
 etc/pango
-include/pango-1.0
 lib/libpango-@PANGO_MAJOR_VERSION@-@PANGO_MINOR_VERSION@.dll
+lib/libpangoft2-@PANGO_MAJOR_VERSION@-@PANGO_MINOR_VERSION@.dll
+lib/libpangowin32-@PANGO_MAJOR_VERSION@-@PANGO_MINOR_VERSION@.dll
+lib/pango/modules/*.dll
+EOF
+
+rm $DEVZIP
+zip -r $DEVZIP -@ <<EOF
+include/pango-1.0
 lib/libpango.dll.a
 lib/pango.lib
-lib/libpangoft2-@PANGO_MAJOR_VERSION@-@PANGO_MINOR_VERSION@.dll
 lib/libpangoft2.dll.a
 lib/pangoft2.lib
-lib/libpangowin32-@PANGO_MAJOR_VERSION@-@PANGO_MINOR_VERSION@.dll
 lib/libpangowin32.dll.a
 lib/pangowin32.lib
 lib/pkgconfig/pango.pc

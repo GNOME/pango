@@ -39,6 +39,7 @@ EXPORTS
 	pango_break
 	pango_color_copy
 	pango_color_free
+	pango_color_parse
 	pango_color_get_type
 	pango_config_key_get
 	pango_context_add_font_map
