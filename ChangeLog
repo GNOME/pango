@@ -1,3 +1,16 @@
+2004-10-02  Theppitak Karoonboonyanan  <thep@linux.thai.net>
+
+	Make Thai module prefer OpenType tables, if available, to PUA
+	substitutions. (#153927)
+
+	* modules/thai/thai-ot.[ch]:
+	Merge get_gsub_ruleset() and get_gpos_ruleset() into an exported
+	function thai_ot_get_ruleset(). Rearrange thai_ot_shape() to call
+	it properly.
+
+	* modules/thai/thai-fc.c:
+	Try OT ruleset before PUA glyph sets.
+
 2004-09-25  Tor Lillqvist  <tml@iki.fi>
 
 	* pango/pango.def: Add the new pango_renderer_* symbols.

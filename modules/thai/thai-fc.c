@@ -34,6 +34,7 @@
 #include "pangofc-font.h"
 
 #include "thai-shaper.h"
+#include "thai-ot.h"
 
 /* No extra fields needed */
 typedef PangoEngineShape      ThaiEngineFc;
@@ -152,8 +153,10 @@ thai_get_font_info (PangoFont *font)
       font_info = g_new (ThaiFontInfo, 1);
       font_info->font = font;
   
-      /* detect font set by determining availibility of glyphs */
-      if (contain_glyphs(font, tis620_2))
+      /* detect font set by determining availibility of OT ruleset & glyphs */
+      if (thai_ot_get_ruleset (font))
+        font_info->font_set = THAI_FONT_TIS;
+      else if (contain_glyphs(font, tis620_2))
         font_info->font_set = THAI_FONT_TIS_WIN;
       else if (contain_glyphs(font, tis620_1))
         font_info->font_set = THAI_FONT_TIS_MAC;
