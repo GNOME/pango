@@ -126,13 +126,13 @@ get_font_info (PangoFont *font)
 }
 
 PangoGlyph
-make_glyph (ThaiFontInfo *font_info, unsigned char c)
+make_glyph (ThaiFontInfo *font_info, unsigned int c)
 {
   return PANGO_X_MAKE_GLYPH (font_info->subfont, c);
 }
 
 PangoGlyph
-make_unknown_glyph (ThaiFontInfo *font_info, unsigned char c)
+make_unknown_glyph (ThaiFontInfo *font_info, unsigned int c)
 {
   return pango_x_get_unknown_glyph (font_info->font);
 }

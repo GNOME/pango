@@ -1,3 +1,13 @@
+Wed Jul 31 15:43:39 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* modules/thai/{thai-shaper.h,thai-x.c,thai-xft.c}:
+	Argument to make_glyph() shouldn't have been
+	unsigned char, since we pass unicode through it.
+
+	* modules/thai/thai-xft.c (make_glyph): Handle 
+	THAI_FONT_ISO10646 correctly. If a character isn't
+	found, return the correct unknown glyph.
+
 Sat Jul 27 18:18:20 2002  Owen Taylor  <otaylor@redhat.com>
 
 	Patch from Changwoo Ryu  <cwryu@debian.org> (#86591)
