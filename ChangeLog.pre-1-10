@@ -1,5 +1,10 @@
 2005-03-01  Owen Taylor  <otaylor@redhat.com>
 
+	* pango/pangoxft-font.c: Fix a typo in the last
+	commit (Manish Singh)
+
+2005-03-01  Owen Taylor  <otaylor@redhat.com>
+
 	* pango/pangoxft-font.c (xft_font_get_font): Delete
 	FC_SPACING value out of pattern before passing it
 	to Xft, to prevent Xft clipping characters and
