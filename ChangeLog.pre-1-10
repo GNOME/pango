@@ -1,3 +1,8 @@
+Wed Nov 15 16:56:38 2000  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-layout.c (process_item): Fix problem with
+	unbreakable words at start of line longer than line width.
+
 Wed Nov 15 15:04:00 2000  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pango-layout.c (pango_layout_get_extents_internal):

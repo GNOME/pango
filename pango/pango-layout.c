@@ -2200,6 +2200,8 @@ process_item (PangoLayout     *layout,
   else
     {
       int num_chars = item->num_chars;
+      int break_num_chars = num_chars;
+      int break_width = width;
       PangoGlyphUnit *log_widths = g_new (PangoGlyphUnit, item->num_chars);
       pango_glyph_string_get_logical_widths (glyphs, text + item->offset, item->length, item->analysis.level, log_widths);
       
@@ -2209,50 +2211,55 @@ process_item (PangoLayout     *layout,
 	{
 	  width -= log_widths[num_chars];
 	  
-	  if (can_break_at (layout, start_offset + num_chars) &&
-	      width <= *remaining_width)
-	    break;
+	  if (can_break_at (layout, start_offset + num_chars))
+	    {
+	      break_num_chars = num_chars;
+	      break_width = width;
+	      
+	      if (width <= *remaining_width)
+		break;
+	    }
 	}
 
       g_free (log_widths);
       
-      if (num_chars > 0)	/* Succesfully broke the item */
+      if (no_break_at_start || break_width <= *remaining_width)	/* Succesfully broke the item */
 	{
-	  PangoItem *new_item = pango_item_copy (item);
+	  *remaining_width -= break_width;
 	  
-	  length = g_utf8_offset_to_pointer (text + item->offset, num_chars) - (text + item->offset);
-	  
-	  new_item->length = length;
-	  new_item->num_chars = num_chars;
-	  
-	  item->offset += length;
-	  item->length -= length;
-	  item->num_chars -= num_chars;
-
-	  if (shape_set)
-	    imposed_shape (item->num_chars, &shape_ink, &shape_logical, glyphs);
-	  else
-	    pango_shape (text + new_item->offset, new_item->length, &new_item->analysis, glyphs);
-	  
-	  *remaining_width -= width;
-	  insert_run (line, new_item, glyphs);
-
-	  return BREAK_SOME_FIT;
-	}
-      else
-	{
-	  if (no_break_at_start) /* We must insert something */
+	  if (break_num_chars == item->num_chars)
 	    {
-	      *remaining_width = 0;
 	      insert_run (line, item, glyphs);
 	      
 	      return BREAK_ALL_FIT;
 	    }
 	  else
 	    {
-	      pango_glyph_string_free (glyphs);
-	      return BREAK_NONE_FIT;
+	      PangoItem *new_item = pango_item_copy (item);
+	      
+	      length = g_utf8_offset_to_pointer (text + item->offset, break_num_chars) - (text + item->offset);
+	      
+	      new_item->length = length;
+	      new_item->num_chars = break_num_chars;
+	      
+	      item->offset += length;
+	      item->length -= length;
+	      item->num_chars -= break_num_chars;
+	      
+	      if (shape_set)
+		imposed_shape (item->num_chars, &shape_ink, &shape_logical, glyphs);
+	      else
+		pango_shape (text + new_item->offset, new_item->length, &new_item->analysis, glyphs);
+	      
+	      insert_run (line, new_item, glyphs);
+	      
+	      return BREAK_SOME_FIT;
 	    }
+	}
+      else
+	{
+	  pango_glyph_string_free (glyphs);
+	  return BREAK_NONE_FIT;
 	}
     }
 }
