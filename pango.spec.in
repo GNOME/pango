@@ -1,92 +1,97 @@
-Summary:	System for layout and rendering of internationalized text
-Name:		pango
-Version:	@VERSION@
-Release:	1
-License:	LGPL
-Group:		System Environment/Libraries
-Source:		ftp://ftp.gimp.org/pub/gtk/v1.3/%{name}-%{version}.tar.gz
-BuildRoot:	/var/tmp/%{name}-%{version}-root
-Requires:	glib2
-BuildRequires:	glib2-devel
+%define glib2_base_version 2.0.0
+%define glib2_version %{glib2_base_version}-1
+%define pkgconfig_version 0.12
+%define freetype_version 2.1.2-2
+%define fontconfig_version 0.0.1.020626.1517-2
+%define xft_version 1.9.1.020626.1517-1
+
+Summary: System for layout and rendering of internationalized text.
+Name: pango
+Version: @VERSION@
+Release: 1
+License: LGPL
+Group: System Environment/Libraries
+Source: ftp://ftp.gtk.org/pub/gtk/v2.1/pango-%{version}.tar.bz2
+URL: http://www.pango.org
+BuildRoot: %{_tmppath}/pango-%{PACKAGE_VERSION}-root
+
+# We need to prereq this so we can run pango-querymodules
+Prereq: glib2 >= %{glib2_version}
+BuildRequires: libtool >= 1.4.2-10
+BuildRequires: glib2-devel >= %{glib2_version}
+BuildRequires: pkgconfig >= %{pkgconfig_version}
+BuildRequires: freetype-devel >= %{freetype_version}
+BuildRequires: fontconfig-devel >= %{fontconfig_version}
+BuildRequires: Xft-devel >= %{xft_version}
+BuildRequires: XFree86-devel >= 4.0.2
+Obsoletes: pango-gtkbeta, fribidi-gtkbeta
 
 %description
-System for layout and rendering of internationalized text.
+Pango is a system for layout and rendering of internationalized text.
+
 
 %package devel
-Summary:	System for layout and rendering of internationalized text
-Group:		Development/Libraries
-Requires:	%{name} = %{version}
-Requires:	libunicode-devel
-Requires:	fribidi-devel
-Requires:	XFree86-devel
+Summary: System for layout and rendering of internationalized text.
+Group: Development/Libraries
+Requires: pango = %{PACKAGE_VERSION}
+Requires: XFree86-devel
+Requires: glib2-devel >= %{glib2_version}
+Requires: freetype-devel >= %{freetype_version}
+Requires: fontconfig-devel >= %{fontconfig_version}
+Requires: Xft-devel >= %{xft_version}
+Obsoletes: fribidi-gtkbeta-devel, pango-gtkbeta-devel
 
 %description devel
-The pango-devel package includes the static libraries and header files
-for the pango package.
+The pango-devel package includes the static libraries, header files,
+and developer docs for the pango package.
 
 Install pango-devel if you want to develop programs which will use
 pango.
 
 %prep
-%setup
+%setup -q -n pango-%{version}
 
 %build
-CFLAGS="$RPM_OPT_FLAGS"
-./configure --prefix=%{_prefix} \
-    --bindir=%{_bindir} --mandir=%{_mandir} \
-    --localstatedir=%{_localstatedir} --libdir=%{_libdir} \
-    --datadir=%{_datadir} --includedir=%{_includedir} \
-    --sysconfdir=%{_sysconfdir} --disable-gtk-doc
+
+%configure --without-qt --disable-gtk-doc
 make
 
 %install
 rm -rf $RPM_BUILD_ROOT
 
-make prefix=$RPM_BUILD_ROOT%{_prefix} bindir=$RPM_BUILD_ROOT%{_bindir} \
-    mandir=$RPM_BUILD_ROOT%{_mandir} libdir=$RPM_BUILD_ROOT%{_libdir} \
-    localstatedir=$RPM_BUILD_ROOT%{_localstatedir} \
-    datadir=$RPM_BUILD_ROOT%{_datadir} \
-    includedir=$RPM_BUILD_ROOT%{_includedir} \
-    sysconfdir=$RPM_BUILD_ROOT%{_sysconfdir} install
-
+%makeinstall
+rm -rf $RPM_BUILD_ROOT%{_libdir}/*.la
 %clean
 rm -rf $RPM_BUILD_ROOT
 
 %post
 /sbin/ldconfig
-%{_bindir}/pango-querymodules > %{_sysconfdir}/pango/pango.modules
+%{_prefix}/bin/pango-querymodules > /etc/pango/pango.modules
 
 %postun -p /sbin/ldconfig
 
 %files
+%defattr(-, root, root)
 %doc README AUTHORS COPYING ChangeLog TODO
 %doc examples/HELLO.utf8
-%{_libdir}/libpango*-*.so
-%{_bindir}/pango-*
-%{_libdir}/pango
-%config %{_sysconfdir}/pango/pangox.aliases
+%{_prefix}/lib/libpango*-*.so.*
+%{_prefix}/bin/pango-querymodules
+%{_prefix}/lib/pango
+%config /etc/pango/pangox.aliases
+%ghost /etc/pango/pango.modules
+
 
 %files devel
 %defattr(-, root, root)
-%{_libdir}/libpango*.so
-%{_libdir}/*a
-%{_libdir}/pkgconfig/*.pc
-%{_includedir}/pango-1.0
-%{_datadir}/gtk-doc/html/pango
+%{_prefix}/lib/libpango*.so
+%{_prefix}/include/*
+%{_prefix}/lib/pkgconfig/*
+%{_prefix}/share/gtk-doc/*
+
 
 %changelog
-* Mon Aug 27 2001 Jens Finke <jens@gnome.org>
-- glib2 package required
-- updated source url
-
-* Wed Aug 16 2001 Jens Finke <jens@gnome.org>
-- Updated spec file to match GPP standard:
- - Removed %define for prefix
- - Use License instead of Copyright
- - Added Requires: for glib.
- - Use rpm macros in the %files section
- - added pkgconfig dir to devel package
- - other minor clean ups
+* Mon Nov 04 2002 Christian Schaller <Uraeus@linuxrising.org>
+- Update for use in CVS package
 
 * Fri Feb 11 2000 Owen Taylor <otaylor@redhat.com>
 - Created spec file
