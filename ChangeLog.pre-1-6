@@ -1,3 +1,14 @@
+Thu May 29 20:05:45 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-glyph-item.c: Fix a stupid bug in the
+	shortcircuit case.
+
+Thu May 29 18:49:00 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* modules/indic/indic-fc.c: Use the correct tags at
+	the GPOS stage, taking into account changes during
+	the GSUB stage. (#112433)
+
 Thu May 29 18:37:58 2003  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pango-glyph-item.c (pango_glyph_item_apply_attrs):

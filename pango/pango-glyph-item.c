@@ -319,14 +319,14 @@ pango_glyph_item_apply_attrs (PangoGlyphItem   *glyph_item,
       g_assert (pango_attr_iterator_next (iter));
     }
 
+  state.segment_attrs = pango_attr_iterator_get_attrs (iter);
+  
   /* Short circuit the case when we don't actually need to
    * split the item
    */
   if (range_start <= glyph_item->item->offset &&
       range_end >= glyph_item->item->offset + glyph_item->item->length)
     goto out;
-  
-  state.segment_attrs = pango_attr_iterator_get_attrs (iter);
   
   while (TRUE)
     {
