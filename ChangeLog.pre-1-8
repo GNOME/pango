@@ -1,3 +1,8 @@
+2004-07-12  Changwoo Ryu  <cwryu@debian.org>
+
+	* modules/hangul/hangul-fc.c (render_basic): Render U+00A0
+	(non-break-space) as a space.
+
 Sat Jul 10 18:06:21 2004  Owen Taylor  <otaylor@redhat.com>
 
 	* examples/renderdemo.[ch] examples/Makefile.am

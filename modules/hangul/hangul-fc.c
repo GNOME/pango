@@ -280,6 +280,10 @@ render_basic (PangoFont *font, gunichar wc,
 	      PangoGlyphString *glyphs, int *n_glyphs, int cluster_offset)
 {
   int index;
+
+  if (wc == 0xa0)	/* non-break-space */
+    wc = 0x20;
+
   index = find_char (font, wc);
   pango_glyph_string_set_size (glyphs, *n_glyphs + 1);
   if (index)
