@@ -246,15 +246,22 @@ tamil_engine_x_new ()
 /* The following three functions provide the public module API for
  * Pango
  */
+
+#ifdef MODULE_PREFIX
+#define MODULE_ENTRY(func) _pango_tamil_##func
+#else
+#define MODULE_ENTRY(func) func
+#endif
+
 void 
-script_engine_list (PangoEngineInfo **engines, int *n_engines)
+MODULE_ENTRY(script_engine_list) (PangoEngineInfo **engines, int *n_engines)
 {
   *engines = script_engines;
   *n_engines = n_script_engines;
 }
 
 PangoEngine *
-script_engine_load (const char *id)
+MODULE_ENTRY(script_engine_load) (const char *id)
 {
   if (!strcmp (id, "TamilScriptEngineLang"))
     return tamil_engine_lang_new ();
@@ -265,7 +272,7 @@ script_engine_load (const char *id)
 }
 
 void 
-script_engine_unload (PangoEngine *engine)
+MODULE_ENTRY(script_engine_unload) (PangoEngine *engine)
 {
 }
 

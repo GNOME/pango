@@ -24,8 +24,9 @@
 #ifndef __MODULES_H__
 #define __MODULES_H__
 
+typedef struct _PangoIncludedModule PangoIncludedModule;
 typedef struct _PangoMap PangoMap;
-typedef struct _PangoSubmap PangoSubmap;
+
 typedef struct _PangoMapEntry PangoMapEntry;
 
 struct _PangoMapEntry 
@@ -33,25 +34,21 @@ struct _PangoMapEntry
   PangoEngineInfo *info;
   gboolean is_exact;
 };
-
-struct _PangoSubmap
+struct _PangoIncludedModule
 {
-  gboolean is_leaf;
-  union {
-    PangoMapEntry entry;
-    PangoMapEntry *leaves;
-  } d;
+  void (*list) (PangoEngineInfo **engines, int *n_engines);
+  PangoEngine *(*load) (const char *id);
+  void (*unload) (PangoEngine *engine);
 };
 
-struct _PangoMap
-{
-  gint n_submaps;
-  PangoSubmap submaps[256];
-};
+PangoMap *     _pango_find_map       (const char *lang,
+				      guint       engine_type_id,
+				      guint       render_type_id);
+PangoMapEntry *_pango_map_get_entry  (PangoMap   *map,
+				      guint32     wc);
+PangoEngine *  _pango_map_get_engine (PangoMap   *map,
+				      guint32     wc);
 
-PangoMap *_pango_find_map (const char *lang,
-			   const char *engine_type,
-			   const char *render_type);
-PangoEngine *_pango_load_engine (const char *id);
+extern PangoIncludedModule _pango_included_modules[];
 
 #endif /* __MODULES_H__ */

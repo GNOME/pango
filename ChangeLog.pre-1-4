@@ -1,3 +1,58 @@
+Fri May  5 18:56:45 2000  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/break.c (pango_break): Add ZWS to hacky 
+	break algorithm.
+
+	* modules/basic/basic.c (basic_engine_shape): Special
+	case zero-width-space as a temporary hack. (What's the
+	right solution?)
+
+	* modules/basic/tables-big.i: Added support for TIS-620
+	encoding.
+
+	* configure.in pango/modules.[ch] pango/Makefile.am
+	modules/**: First stab at support for linking modules
+	directly into Pango. Add a --with-included-modules=
+	flag that causes the specified modules to be built
+	as convenience libraries and linked directly into
+	libpangox. 
+
+Tue May  2 22:59:52 2000  Owen Taylor  <otaylor@redhat.com>
+
+	* modules/basic/basic.c: Get rid of link list of masks
+	in cache structure in favor of an array. (This is
+	easy to do now since we already have linear indices
+	for the masks from the new table format.)
+
+	* pango/modules.c pango/pango-context.c pango/pangox.c:
+	Modify _pango_find_map() to take quarks for the
+	engine type and render type instead of strings. 
+	Get rid of the map hash table in favor of a GList
+	with the most recently used map at the beginning.
+
+	* pango/modules.[ch] pango/pango-context.c pango/pangox.c:
+	Add some utility functions for getting the engine 
+	for a particular character in a map. Using modules.c
+	knowledge of map structure, this allows us to save
+	a bunch of useless strcmps.
+
+	* pango/pango-context.c (add_engines): Remove unused
+	lookup of shape mask.
+
+	* modules/basic/tables-{small,big}.i modules/basic/basic.c
+	tools/compress-table.pl: Reencode mask table to avoid binary
+	searches and save a bit of space.
+
+	* modules/basic/basic.c (find_converter): Get rid
+	of gratuitous use of hash tables for looking up
+	iconv converters.
+
+	* modules/basic/tables-{small,big}.i modules/basic/basic.c:
+	Use conv_ucs4 instead of conv_8bit for latin-1.
+
+	* pango/pango-layout.c: Avoid calling pango_glyph_string_extents() - 
+	just add up the widths from shaping.
+
 Tue May  2 19:16:17 PDT 2000 Manish Singh <yosh@gimp.org>
 
 	* examples/Makefile.am: typo fix

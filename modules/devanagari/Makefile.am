@@ -1,14 +1,21 @@
 ## Process this file with automake to create Makefile.in.
 
-moduledir = $(libdir)/pango/modules
-module_LTLIBRARIES = pango-devanagari.la
-
-INCLUDES = -I$(top_srcdir) -I$(top_srcdir)/pango/ 
-
-pango_devanagari_la_SOURCES = 	\
+sources =		 	\
 	devanagari.c		\
 	dev-ligatures.h
 
-pango_devanagari_la_LDFLAGS = -rpath $(libdir) -export-dynamic -avoid-version -module
+if INCLUDE_DEVANAGARI
+noinst_LTLIBRARIES = libpango-devanagari.la
+moddefine = -DMODULE_PREFIX
+else
+moduledir = $(libdir)/pango/modules
+module_LTLIBRARIES = pango-devanagari.la
+endif
 
-EXTRA_DIST= 
+INCLUDES = -I$(top_srcdir) -I$(top_srcdir)/pango/ $(moddefine)
+
+pango_devanagari_la_LDFLAGS = -rpath $(libdir) -export-dynamic -avoid-version -module
+pango_devanagari_la_SOURCES = $(sources)
+
+libpango_devanagari_la_SOURCES = $(sources)
+

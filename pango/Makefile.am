@@ -12,6 +12,7 @@ libpango_la_SOURCES = 	   \
 	mapping.c 	   \
 	modules.c 	   \
 	modules.h 	   \
+	module-defs.c	   \
 	pango-attributes.c \
 	pango-context.c    \
 	pango-coverage.c   \
@@ -30,7 +31,9 @@ libpangox_la_SOURCES = 	   \
 # scheme or the standard libtool scheme.
 #
 libpango_la_LDFLAGS = -release $(VERSION)
+
 libpangox_la_LDFLAGS = -release $(VERSION)
+libpangox_la_LIBADD = $(INCLUDED_MODULES)
 
 pangoincludedir=$(includedir)/pango
 
@@ -47,7 +50,10 @@ pangoinclude_HEADERS = 	   \
 	pango-types.h	   \
 	pangox.h	
 
+#
+# As a temporary hack, we pull in libpangox here so that we can link
+#
 pango_querymodules_SOURCES = \
 	querymodules.c
-pango_querymodules_LDADD = libpango.la $(GLIB_LIBS) $(FRIBIDI_LIBS) $(UNICODE_LIBS)
+pango_querymodules_LDADD = libpangox.la libpango.la $(GLIB_LIBS) $(FRIBIDI_LIBS) $(UNICODE_LIBS) $(X_LIBS)
 

@@ -544,13 +544,6 @@ devanagari_engine_x_new ()
   return (PangoEngine *) result;
 }
 
-void
-script_engine_list (PangoEngineInfo ** engines, int *n_engines)
-{
-  *engines = script_engines;
-  *n_engines = n_script_engines;
-}
-
 static void
 devanagari_engine_break (const char *text,
 			 int len,
@@ -597,8 +590,21 @@ devanagari_engine_lang_new ()
   return (PangoEngine *) result;
 }
 
+#ifdef MODULE_PREFIX
+#define MODULE_ENTRY(func) _pango_devanagari_##func
+#else
+#define MODULE_ENTRY(func) func
+#endif
+
+void
+MODULE_ENTRY(script_engine_list) (PangoEngineInfo ** engines, int *n_engines)
+{
+  *engines = script_engines;
+  *n_engines = n_script_engines;
+}
+
 PangoEngine *
-script_engine_load (const char *id)
+MODULE_ENTRY(script_engine_load) (const char *id)
 {
   if (!strcmp (id, "DevanagariScriptEngineLang"))
     return devanagari_engine_lang_new ();
@@ -609,6 +615,6 @@ script_engine_load (const char *id)
 }
 
 void
-script_engine_unload (PangoEngine * engine)
+MODULE_ENTRY(script_engine_unload) (PangoEngine * engine)
 {
 }

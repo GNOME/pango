@@ -34,11 +34,14 @@ typedef struct _CharCache CharCache;
 typedef struct _MaskTable MaskTable;
 
 typedef PangoGlyph (*ConvFunc) (CharCache   *cache,
-				const char  *id,
+				Charset     *charset,
 				const gchar *input);
+
+#define MAX_CHARSETS 32
 
 struct _Charset
 {
+  int   index;
   char *id;
   char *x_charset;
   ConvFunc conv_func;
@@ -53,8 +56,6 @@ struct _CharRange
 
 struct _MaskTable 
 {
-  guint mask;
-
   int n_subfonts;
 
   PangoXSubfont *subfonts;
@@ -63,18 +64,18 @@ struct _MaskTable
 
 struct _CharCache 
 {
-  GSList *mask_tables;
-  GHashTable *converters;
+  MaskTable *mask_tables[256];
+  iconv_t converters[MAX_CHARSETS];
 };
 
-static PangoGlyph conv_8bit (CharCache *cache,
-			     const char *id,
+static PangoGlyph conv_8bit (CharCache  *cache,
+			     Charset    *charset,
 			     const char *input);
 static PangoGlyph conv_euc (CharCache  *cache,
-			    const char *id,
+			    Charset    *charset,
 			    const char *input);
 static PangoGlyph conv_ucs4 (CharCache  *cache,
-			     const char *id,
+			     Charset    *charset,
 			     const char *input);
 
 #include "tables-big.i"
@@ -127,79 +128,37 @@ basic_engine_lang_new ()
  * X window system script engine portion
  */
 
-static guint
-find_char_mask (GUChar4 wc)
-{
-  int start, end, middle;
-
-  start = 0;
-  end = G_N_ELEMENTS(ranges) - 1;
-
-  if (ranges[start].start > wc || ranges[end].end < wc)
-    return 0;
-
-  while (1)
-    {
-      middle = (start + end) / 2;
-      if (middle == start)
-	{
-	  if (ranges[middle].start > wc || ranges[middle].end < wc)
-	    return ENC_ISO_10646;
-	  else
-	    return ranges[middle].charsets | ENC_ISO_10646;
-	}
-      else
-	{
-	  if (ranges[middle].start <= wc)
-	    start = middle;
-	  else if (ranges[middle].end >= wc)
-	    end = middle;
-	  else
-	    return ENC_ISO_10646;
-	}
-    }
-}
-
 static CharCache *
 char_cache_new (void)
 {
   CharCache *result;
+  int i;
 
-  result = g_new (CharCache, 1);
-  result->mask_tables = NULL;
-  result->converters = g_hash_table_new (g_str_hash, g_str_equal);
+  result = g_new0 (CharCache, 1);
+
+  for (i=0; i<MAX_CHARSETS; i++)
+    result->converters[i] = (iconv_t)-1;
 
   return result;
 }
 
 static void
-char_cache_converters_foreach (gpointer key, gpointer value, gpointer data)
-{
-  g_free (key);
-  iconv_close ((iconv_t)value);
-}
-
-static void
 char_cache_free (CharCache *cache)
 {
-  GSList *tmp_list;
+  int i;
 
-  tmp_list = cache->mask_tables;
-  while (tmp_list)
-    {
-      MaskTable *mask_table = tmp_list->data;
-      tmp_list = tmp_list->next;
+  for (i=0; i<256; i++)
+    if (cache->mask_tables[i])
+      {
+	g_free (cache->mask_tables[i]->subfonts);
+	g_free (cache->mask_tables[i]->charsets);
+	
+	g_free (cache->mask_tables[i]);
+      }
 
-      g_free (mask_table->subfonts);
-      g_free (mask_table->charsets);
-      
-      g_free (mask_table);
-    }
-
-  g_slist_free (cache->mask_tables);
-
-  g_hash_table_foreach (cache->converters, char_cache_converters_foreach, NULL);
-  g_hash_table_destroy (cache->converters); 
+  for (i=0; i<MAX_CHARSETS; i++)
+    if (cache->converters[i] != (iconv_t)-1)
+      iconv_close (cache->converters[i]);
   
   g_free (cache);
 }
@@ -207,34 +166,28 @@ char_cache_free (CharCache *cache)
 PangoGlyph 
 find_char (CharCache *cache, PangoFont *font, GUChar4 wc, const char *input)
 {
-  guint mask = find_char_mask (wc);
-  GSList *tmp_list;
+  int mask_index;
   MaskTable *mask_table;
   int i;
 
-  tmp_list = cache->mask_tables;
-  while (tmp_list)
-    {
-      mask_table = tmp_list->data;
+  if (wc >= G_N_ELEMENTS (char_masks))
+    mask_index = 0;
+  else
+    mask_index = char_masks[wc];
 
-      if (mask_table->mask == mask)
-	break;
-
-      tmp_list = tmp_list->next;
-    }
-
-  if (!tmp_list)
+  if (cache->mask_tables[mask_index])
+    mask_table = cache->mask_tables[mask_index];
+  else
     {
       char *charset_names[G_N_ELEMENTS(charsets)];
       Charset *charsets_map[G_N_ELEMENTS(charsets)];
-
+      guint mask;
       int n_charsets = 0;
-
       int *subfont_charsets;
 
       mask_table = g_new (MaskTable, 1);
 
-      mask_table->mask = mask;
+      mask = char_mask_map[mask_index] | ENC_ISO_10646;
 
       /* Find the character sets that are included in this mask
        */
@@ -258,7 +211,7 @@ find_char (CharCache *cache, PangoFont *font, GUChar4 wc, const char *input)
 
       g_free (subfont_charsets);
 
-      cache->mask_tables = g_slist_prepend (cache->mask_tables, mask_table);
+      cache->mask_tables[mask_index] = mask_table;
     }
 
   for (i=0; i < mask_table->n_subfonts; i++)
@@ -266,7 +219,7 @@ find_char (CharCache *cache, PangoFont *font, GUChar4 wc, const char *input)
       PangoGlyph index;
       PangoGlyph glyph;
 
-      index = (*mask_table->charsets[i]->conv_func) (cache, mask_table->charsets[i]->id, input);
+      index = (*mask_table->charsets[i]->conv_func) (cache, mask_table->charsets[i], input);
 
       glyph = PANGO_X_MAKE_GLYPH (mask_table->subfonts[i], index);
 
@@ -294,13 +247,14 @@ set_glyph (PangoFont *font, PangoGlyphString *glyphs, int i, int offset, PangoGl
 }
 
 static iconv_t
-find_converter (CharCache *cache, const char *id)
+find_converter (CharCache *cache, Charset *charset)
 {
-  iconv_t cd = g_hash_table_lookup (cache->converters, id);
-  if (!cd)
+  iconv_t cd = cache->converters[charset->index];
+  if (cd == (iconv_t)-1)
     {
-      cd = iconv_open  (id, "UTF-8");
-      g_hash_table_insert (cache->converters, g_strdup(id), (gpointer)cd);
+      cd = iconv_open  (charset->id, "UTF-8");
+      g_assert (cd != (iconv_t)-1);
+      cache->converters[charset->index] = cd;
     }
 
   return cd;
@@ -308,7 +262,7 @@ find_converter (CharCache *cache, const char *id)
 
 static PangoGlyph
 conv_8bit (CharCache  *cache,
-	   const char *id,
+	   Charset     *charset,
 	   const char *input)
 {
   iconv_t cd;
@@ -323,8 +277,7 @@ conv_8bit (CharCache  *cache,
   _pango_utf8_iterate (input, &p, NULL);
   inbytesleft = p - input;
   
-  cd = find_converter (cache, id);
-  g_assert (cd != (iconv_t)-1);
+  cd = find_converter (cache, charset);
 
   iconv (cd, (const char **)&inptr, &inbytesleft, &outptr, &outbytesleft);
 
@@ -333,7 +286,7 @@ conv_8bit (CharCache  *cache,
 
 static PangoGlyph
 conv_euc (CharCache  *cache,
-	  const char *id,
+	  Charset     *charset,
 	  const char *input)
 {
   iconv_t cd;
@@ -348,8 +301,7 @@ conv_euc (CharCache  *cache,
   _pango_utf8_iterate (input, &p, NULL);
   inbytesleft = p - input;
   
-  cd = find_converter (cache, id);
-  g_assert (cd != (iconv_t)-1);
+  cd = find_converter (cache, charset);
 
   iconv (cd, &inptr, &inbytesleft, &outptr, &outbytesleft);
 
@@ -361,12 +313,12 @@ conv_euc (CharCache  *cache,
 
 static PangoGlyph
 conv_ucs4 (CharCache  *cache,
-	   const char *id,
+	   Charset     *charset,
 	   const char *input)
 {
   GUChar4 wc;
   
-  _pango_utf8_iterate (input, NULL, &wc);
+  unicode_get_utf8 (input, &wc);
   return wc;
 }
 
@@ -448,26 +400,39 @@ basic_engine_shape (PangoFont        *font,
 	    _pango_guchar4_to_utf8 (wc, buf);
 	    input = buf;
 	  }
-      
 
-      index = find_char (cache, font, wc, input);
-      if (index)
+      if (wc == 0x200B)		/* Zero-width space */
 	{
-	  set_glyph (font, glyphs, i, p - text, index);
-
-	  if (unicode_type (wc) == UNICODE_NON_SPACING_MARK)
+	  index = find_char (cache, font, ' ', input);
+	  if (index)
 	    {
-	      if (i > 0)
-		{
-		  glyphs->glyphs[i].geometry.width = MAX (glyphs->glyphs[i-1].geometry.width,
-							  glyphs->glyphs[i].geometry.width);
-		  glyphs->glyphs[i-1].geometry.width = 0;
-		  glyphs->log_clusters[i] = glyphs->log_clusters[i-1];
-		}
+	      set_glyph (font, glyphs, i, p - text, index);
+	      glyphs->glyphs[i].geometry.width = 0;
 	    }
+	  else
+	    set_glyph (font, glyphs, i, p - text, pango_x_get_unknown_glyph (font));
 	}
       else
-	set_glyph (font, glyphs, i, p - text, pango_x_get_unknown_glyph (font));
+	{
+	  index = find_char (cache, font, wc, input);
+	  if (index)
+	    {
+	      set_glyph (font, glyphs, i, p - text, index);
+	      
+	      if (unicode_type (wc) == UNICODE_NON_SPACING_MARK)
+		{
+		  if (i > 0)
+		    {
+		      glyphs->glyphs[i].geometry.width = MAX (glyphs->glyphs[i-1].geometry.width,
+							      glyphs->glyphs[i].geometry.width);
+		      glyphs->glyphs[i-1].geometry.width = 0;
+		      glyphs->log_clusters[i] = glyphs->log_clusters[i-1];
+		    }
+		}
+	    }
+	  else
+	    set_glyph (font, glyphs, i, p - text, pango_x_get_unknown_glyph (font));
+	}
       
       p = next;
     }
@@ -534,15 +499,21 @@ basic_engine_x_new ()
 /* The following three functions provide the public module API for
  * Pango
  */
+#ifdef MODULE_PREFIX
+#define MODULE_ENTRY(func) _pango_basic_##func
+#else
+#define MODULE_ENTRY(func) func
+#endif
+
 void 
-script_engine_list (PangoEngineInfo **engines, gint *n_engines)
+MODULE_ENTRY(script_engine_list) (PangoEngineInfo **engines, gint *n_engines)
 {
   *engines = script_engines;
   *n_engines = n_script_engines;
 }
 
 PangoEngine *
-script_engine_load (const char *id)
+MODULE_ENTRY(script_engine_load) (const char *id)
 {
   if (!strcmp (id, "BasicScriptEngineLang"))
     return basic_engine_lang_new ();
@@ -553,7 +524,7 @@ script_engine_load (const char *id)
 }
 
 void 
-script_engine_unload (PangoEngine *engine)
+MODULE_ENTRY(script_engine_unload) (PangoEngine *engine)
 {
 }
 

@@ -31,125 +31,139 @@
 
 typedef struct _PangoMapInfo PangoMapInfo;
 typedef struct _PangoEnginePair PangoEnginePair;
+typedef struct _PangoSubmap PangoSubmap;
+
+struct _PangoSubmap
+{
+  gboolean is_leaf;
+  union {
+    PangoMapEntry entry;
+    PangoMapEntry *leaves;
+  } d;
+};
+
+struct _PangoMap
+{
+  gint n_submaps;
+  PangoSubmap submaps[256];
+};
 
 struct _PangoMapInfo
 {
   const gchar *lang;
-  const gchar *engine_type;
-  const gchar *render_type;
+  guint engine_type_id;
+  guint render_type_id;
+  PangoMap *map;
 };
 
 struct _PangoEnginePair
 {
   PangoEngineInfo info;
-  gchar *module;
+  gboolean included;
+  void *load_info;
   PangoEngine *engine;
 };
 
+GList *maps;
 GList *engines;
 
-static PangoMap *build_map      (PangoMapInfo       *info);
-static void      read_modules   (void);
-static guint     map_info_hash  (const PangoMapInfo *map);
-static gboolean  map_info_equal (const PangoMapInfo *map_a, 
-				 const PangoMapInfo *map_b);
+static void      build_map      (PangoMapInfo       *info);
+static void      init_modules   (void);
 
 PangoMap *
 _pango_find_map (const char *lang,
-		 const char *engine_type,
-		 const char *render_type)
+		 guint       engine_type_id,
+		 guint       render_type_id)
 {
-  PangoMapInfo map_info;
-  PangoMap *map;
-  
-  static GHashTable *map_hash = NULL;
+  GList *tmp_list = maps;
+  PangoMapInfo *map_info = NULL;
+  gboolean found_earlier = FALSE;
 
-  if (!map_hash)
-    map_hash = g_hash_table_new ((GHashFunc)map_info_hash,
-				 (GCompareFunc)map_info_equal);
-
-  map_info.lang = lang ? lang : "NONE";
-  map_info.engine_type = engine_type;
-  map_info.render_type = render_type;
-
-  map = g_hash_table_lookup (map_hash, &map_info);
-  if (!map)
-    {
-      PangoMapInfo *new_info = g_new (PangoMapInfo, 1);
-      new_info->lang = g_strdup (map_info.lang);
-      new_info->engine_type = g_strdup (engine_type);
-      new_info->render_type = g_strdup (render_type);
-
-      map = build_map (new_info);
-      g_hash_table_insert (map_hash, new_info, map);
-    }
-
-  return map;
-}
-
-PangoEngine *
-_pango_load_engine (const char *id)
-{
-  GList *tmp_list;
-  
-  read_modules();
-
-  tmp_list = engines;
   while (tmp_list)
     {
-      PangoEnginePair *pair = tmp_list->data;
-      tmp_list = tmp_list->next;
-
-      if (!strcmp (pair->info.id, id))
+      map_info = tmp_list->data;
+      if (map_info->engine_type_id == engine_type_id &&
+	  map_info->render_type_id == render_type_id)
 	{
-	  GModule *module;
-	  PangoEngine *(*load) (const gchar *id);
-
-	  if (!pair->engine)
-	    {
-	      module = g_module_open (pair->module, 0);
-	      if (!module)
-		{
-		  fprintf(stderr, "Cannot load module %s: %s\n",
-			  pair->module, g_module_error());
-		  return NULL;
-		}
-	      
-	      g_module_symbol (module, "script_engine_load", (gpointer)&load);
-	      if (!load)
-		{
-		  fprintf(stderr, "cannot retrieve script_engine_load from %s: %s\n",
-			  pair->module, g_module_error());
-		  g_module_close (module);
-		  return NULL;
-		}
-
-	      pair->engine = (*load) (id);
-	    }
-
-	  return pair->engine;
+	  if (strcmp (map_info->lang, lang) == 0)
+	    break;
+	  else
+	    found_earlier = TRUE;
 	}
+
+      tmp_list = tmp_list->next;
     }
 
-  return NULL;
+  if (!tmp_list)
+    {
+      map_info = g_new (PangoMapInfo, 1);
+      map_info->lang = g_strdup (lang);
+      map_info->engine_type_id = engine_type_id;
+      map_info->render_type_id = render_type_id;
+
+      build_map (map_info);
+
+      maps = g_list_prepend (maps, map_info);
+    }
+  else if (found_earlier)
+    {
+      /* Move the found map to the beginning of the list
+       * for speed next time around if we had to do
+       * any failing strcmps.
+       */
+      if (tmp_list->next)
+	tmp_list->next->prev = tmp_list->prev;
+      tmp_list->prev->next = tmp_list->next;
+      tmp_list->next = maps;
+      tmp_list->prev = NULL;
+      maps = tmp_list;
+    }
+  
+  return map_info->map;
 }
 
-
-static guint 
-map_info_hash (const PangoMapInfo *map)
+static PangoEngine *
+pango_engine_pair_get_engine (PangoEnginePair *pair)
 {
-  return g_str_hash (map->lang) |
-         g_str_hash (map->engine_type) |
-         g_str_hash (map->render_type);
+  if (!pair->engine)
+    {
+      if (pair->included)
+	{
+	  PangoIncludedModule *included_module = pair->load_info;
+	  
+	  pair->engine = included_module->load (pair->info.id);
+	}
+      else
+	{
+	  GModule *module;
+	  char *module_name = pair->load_info;
+	  PangoEngine *(*load) (const gchar *id);
+  	  
+	  module = g_module_open (module_name, 0);
+	  if (!module)
+	    {
+	      fprintf(stderr, "Cannot load module %s: %s\n",
+		      module_name, g_module_error());
+	      return NULL;
+	    }
+	  
+	  g_module_symbol (module, "script_engine_load", (gpointer)&load);
+	  if (!load)
+	    {
+	      fprintf(stderr, "cannot retrieve script_engine_load from %s: %s\n",
+		      module_name, g_module_error());
+	      g_module_close (module);
+	      return NULL;
+	    }
+	  
+	  pair->engine = (*load) (pair->info.id);
+	}
+      
+    }
+
+  return pair->engine;
 }
 
-static gboolean
-map_info_equal (const PangoMapInfo *map_a, const PangoMapInfo *map_b)
-{
-  return (strcmp (map_a->lang, map_b->lang) == 0 &&
-	  strcmp (map_a->engine_type, map_b->engine_type) == 0 &&
-	  strcmp (map_a->render_type, map_b->render_type) == 0);
-}
 
 static char *
 readline(FILE *file)
@@ -176,16 +190,36 @@ readline(FILE *file)
 }
 
 static void
+add_included_modules (void)
+{
+  int i, j;
+
+  for (i = 0; _pango_included_modules[i].list; i++)
+    {
+      PangoEngineInfo *engine_info;
+      int n_engines;
+
+      _pango_included_modules[i].list (&engine_info, &n_engines);
+
+      for (j=0; j < n_engines; j++)
+	{
+	  PangoEnginePair *pair = g_new (PangoEnginePair, 1);
+
+	  pair->info = engine_info[j];
+	  pair->included = TRUE;
+	  pair->load_info = &_pango_included_modules[i];
+	  pair->engine = NULL;
+
+	  engines = g_list_prepend (engines, pair);
+	}
+    }
+}
+
+static void
 read_modules (void)
 {
   FILE *module_file;
-  static gboolean init = FALSE;
   char *line;
-
-  if (init)
-    return;
-  else
-    init = TRUE;
 
   /* FIXME FIXME FIXME - this is a potential security problem from leaving
    * pango.modules files scattered around to trojan modules.
@@ -201,7 +235,6 @@ read_modules (void)
 	}
     }
 
-  engines = NULL;
   while ((line = readline (module_file)))
     {
       PangoEnginePair *pair = g_new (PangoEnginePair, 1);
@@ -213,6 +246,8 @@ read_modules (void)
       int start;
       int end;
 
+      pair->included = FALSE;
+      
       p = line;
       q = line;
       ranges = NULL;
@@ -226,7 +261,7 @@ read_modules (void)
 	      switch (i)
 		{
 		case 0:
-		  pair->module = g_strndup (q, p-q);
+		  pair->load_info = g_strndup (q, p-q);
 		  break;
 		case 1:
 		  pair->info.id = g_strndup (q, p-q);
@@ -298,7 +333,6 @@ read_modules (void)
 
       engines = g_list_prepend (engines, pair);
     }
-  engines = g_list_reverse (engines);
 }
 
 static void
@@ -312,16 +346,37 @@ set_entry (PangoMapEntry *entry, gboolean is_exact, PangoEngineInfo *info)
     }
 }
 
-static PangoMap *
+static void
+init_modules (void)
+{
+  static gboolean init = FALSE;
+
+  if (init)
+    return;
+  else
+    init = TRUE;
+
+  engines = NULL;
+
+  add_included_modules();
+  read_modules();
+
+  engines = g_list_reverse (engines);
+}
+
+static void
 build_map (PangoMapInfo *info)
 {
   GList *tmp_list;
   int i, j;
   PangoMap *map;
-  
-  read_modules();
 
-  map = g_new (PangoMap, 1);
+  char *engine_type = g_quark_to_string (info->engine_type_id);
+  char *render_type = g_quark_to_string (info->render_type_id);
+  
+  init_modules();
+
+  info->map = map = g_new (PangoMap, 1);
   for (i=0; i<256; i++)
     {
       map->submaps[i].is_leaf = TRUE;
@@ -335,8 +390,8 @@ build_map (PangoMapInfo *info)
       PangoEnginePair *pair = tmp_list->data;
       tmp_list = tmp_list->next;
 
-      if (strcmp (pair->info.engine_type, info->engine_type) == 0 &&
-	  strcmp (pair->info.render_type, info->render_type) == 0)
+      if (strcmp (pair->info.engine_type, engine_type) == 0 &&
+	  strcmp (pair->info.render_type, render_type) == 0)
 	{
 	  int submap;
 
@@ -403,6 +458,25 @@ build_map (PangoMapInfo *info)
 	    }
 	}
     }
+}
 
-  return map;
+PangoMapEntry *
+_pango_map_get_entry (PangoMap   *map,
+		      guint32     wc)
+{
+  PangoSubmap *submap = &map->submaps[wc / 256];
+  return submap->is_leaf ? &submap->d.entry : &submap->d.leaves[wc % 256];
+}
+
+PangoEngine *
+_pango_map_get_engine (PangoMap *map,
+		       guint32   wc)
+{
+  PangoSubmap *submap = &map->submaps[wc / 256];
+  PangoMapEntry *entry = submap->is_leaf ? &submap->d.entry : &submap->d.leaves[wc % 256];
+
+  if (entry->info)
+    return pango_engine_pair_get_engine ((PangoEnginePair *)entry->info);
+  else
+    return NULL;
 }

@@ -1,6 +1,6 @@
 ## Process this file with automake to create Makefile.in.
 
-SUBDIRS=pango modules examples docs tools fonts
+SUBDIRS=modules pango examples docs tools fonts
 
 bin_SCRIPTS = pango-config
 

@@ -772,15 +772,21 @@ hangul_engine_x_new ()
  * Pango
  */
 
+#ifdef MODULE_PREFIX
+#define MODULE_ENTRY(func) _pango_hangul_##func
+#else
+#define MODULE_ENTRY(func) func
+#endif
+
 void 
-script_engine_list (PangoEngineInfo **engines, int *n_engines)
+MODULE_ENTRY(script_engine_list) (PangoEngineInfo **engines, int *n_engines)
 {
   *engines = script_engines;
   *n_engines = n_script_engines;
 }
 
 PangoEngine *
-script_engine_load (const char *id)
+MODULE_ENTRY(script_engine_load) (const char *id)
 {
   if (!strcmp (id, "HangulScriptEngineLang"))
     return hangul_engine_lang_new ();
@@ -791,7 +797,7 @@ script_engine_load (const char *id)
 }
 
 void 
-script_engine_unload (PangoEngine *engine)
+MODULE_ENTRY(script_engine_unload) (PangoEngine *engine)
 {
 }
 

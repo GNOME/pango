@@ -200,14 +200,14 @@ add_engines (PangoContext     *context,
       else
 	lang = context->lang;
 
-      if (last_lang != lang ||
-	  last_lang == 0 || lang == 0 ||
-	  strcmp (lang, last_lang) != 0)
+      if (last_lang != lang &&
+	  (last_lang == 0 || lang == 0 ||
+	   strcmp (lang, last_lang) != 0))
 	{
 	  lang_map = _pango_find_map (lang, PANGO_ENGINE_TYPE_LANG,
-					 PANGO_RENDER_TYPE_NONE);
+				      PANGO_RENDER_TYPE_NONE);
 	  shape_map = _pango_find_map (lang, PANGO_ENGINE_TYPE_SHAPE,
-					  context->render_type);
+				       context->render_type);
 	  last_lang = lang;
 	}
 

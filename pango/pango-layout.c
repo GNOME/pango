@@ -1390,8 +1390,9 @@ process_item (PangoLayoutLine *line,
 	      int             *remaining_width)
 {
   PangoGlyphString *glyphs = pango_glyph_string_new ();
-  PangoRectangle logical_rect;
   int width;
+  int length;
+  int i;
 
   if (*remaining_width == 0)
     return FALSE;
@@ -1404,14 +1405,11 @@ process_item (PangoLayoutLine *line,
       return TRUE;
     }
 
-  /* We special-case the case where the whole item fits. Removing this special
-   * case would simplify the code, speed up the break case, and wouldn't
-   * slow things down much for the non-break case.
-   */
-  pango_glyph_string_extents (glyphs, item->analysis.font, NULL, &logical_rect);
-  width = logical_rect.width;
+  width =0;
+  for (i=0; i < glyphs->num_glyphs; i++)
+    width += glyphs->glyphs[i].geometry.width;
 
-  if (logical_rect.width < *remaining_width && !no_break_at_end)
+  if (width < *remaining_width && !no_break_at_end)
     {
       *remaining_width -= width;
       insert_run (line, item, glyphs);
@@ -1420,11 +1418,8 @@ process_item (PangoLayoutLine *line,
     }
   else
     {
-      int length;
       int num_chars = item->num_chars;
-      
       PangoGlyphUnit *log_widths = g_new (PangoGlyphUnit, item->num_chars);
-
       pango_glyph_string_get_logical_widths (glyphs, text + item->offset, item->length, item->analysis.level, log_widths);
       
       /* Shorten the item by one line break

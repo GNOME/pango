@@ -2081,17 +2081,31 @@ free_coverages_foreach (gpointer key,
   pango_coverage_unref (value);
 }
 
+static PangoMap *
+pango_x_get_shaper_map (const char *lang)
+{
+  static guint engine_type_id = 0;
+  static guint render_type_id = 0;
+  
+  if (engine_type_id == 0)
+    {
+      engine_type_id = g_quark_from_static_string (PANGO_ENGINE_TYPE_SHAPE);
+      render_type_id = g_quark_from_static_string (PANGO_RENDER_TYPE_X);
+    }
+  
+  return _pango_find_map (lang, engine_type_id, render_type_id);
+}
+
 static PangoCoverage *
 pango_x_font_get_coverage (PangoFont  *font,
 			   const char *lang)
 {
   guint32 ch;
   PangoMap *shape_map;
-  PangoSubmap *submap;
-  PangoMapEntry *entry;
   PangoCoverage *coverage;
   PangoCoverage *result;
   PangoCoverageLevel font_level;
+  PangoMapEntry *entry;
   GHashTable *coverage_hash;
   PangoXFont *xfont = (PangoXFont *)font;
 
@@ -2106,20 +2120,17 @@ pango_x_font_get_coverage (PangoFont  *font,
 
   coverage_hash = g_hash_table_new (g_str_hash, g_str_equal);
   
-  shape_map = _pango_find_map (lang, PANGO_ENGINE_TYPE_SHAPE,
-			       PANGO_RENDER_TYPE_X);
+  shape_map = pango_x_get_shaper_map (lang);
 
   for (ch = 0; ch < 65536; ch++)
     {
-      submap = &shape_map->submaps[ch / 256];
-      entry = submap->is_leaf ? &submap->d.entry : &submap->d.leaves[ch % 256];
-
+      entry = _pango_map_get_entry (shape_map, ch);
       if (entry->info)
 	{
 	  coverage = g_hash_table_lookup (coverage_hash, entry->info->id);
 	  if (!coverage)
 	    {
-	      PangoEngineShape *engine = (PangoEngineShape *)_pango_load_engine (entry->info->id);
+	      PangoEngineShape *engine = (PangoEngineShape *)_pango_map_get_engine (shape_map, ch);
 	      coverage = engine->get_coverage (font, lang);
 	      g_hash_table_insert (coverage_hash, entry->info->id, coverage);
 	    }
@@ -2151,20 +2162,9 @@ pango_x_font_find_shaper (PangoFont   *font,
 			  guint32      ch)
 {
   PangoMap *shape_map = NULL;
-  PangoSubmap *submap;
-  PangoMapEntry *entry;
 
-  shape_map = _pango_find_map (lang, PANGO_ENGINE_TYPE_SHAPE,
-			       PANGO_RENDER_TYPE_X);
-
-  submap = &shape_map->submaps[ch / 256];
-  entry = submap->is_leaf ? &submap->d.entry : &submap->d.leaves[ch % 256];
-
-  /* FIXME: check entry->is_exact */
-  if (entry->info)
-    return (PangoEngineShape *)_pango_load_engine (entry->info->id);
-  else
-    return NULL;
+  shape_map = pango_x_get_shaper_map (lang);
+  return (PangoEngineShape *)_pango_map_get_engine (shape_map, ch);
 }
 
 /* Utility functions */

@@ -58,7 +58,7 @@ query_module (GModule *module, gchar *name)
 		       engines[i].ranges[j].langs);
 	    }
 	  g_print ("\n");
-	}
+	  }
     }
   else
     {
@@ -83,7 +83,7 @@ int main (int argc, char **argv)
       else
 	tmp = g_strconcat (cwd, "/", argv[i], NULL);
 
-      module = g_module_open (tmp, G_MODULE_BIND_LAZY);
+      module = g_module_open (tmp, 0);
       if (module)
 	{
 	  query_module (module, tmp);

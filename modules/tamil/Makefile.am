@@ -1,11 +1,18 @@
 ## Process this file with automake to create Makefile.in.
 
+sources = tamil.c taconv.c taconv.h tadefs.h
+
+if INCLUDE_TAMIL
+noinst_LTLIBRARIES = libpango-tamil.la
+moddefine = -DMODULE_PREFIX=_pango_tamil_
+else
 moduledir = $(libdir)/pango/modules
 module_LTLIBRARIES = pango-tamil.la
+endif
 
-INCLUDES = -I$(top_srcdir) -I$(top_srcdir)/pango/ 
+INCLUDES = -I$(top_srcdir) -I$(top_srcdir)/pango/ $(moddefine)
 
-pango_tamil_la_SOURCES = tamil.c taconv.c taconv.h tadefs.h
 pango_tamil_la_LDFLAGS = -rpath $(libdir) -export-dynamic -avoid-version -module
+pango_tamil_la_SOURCES = $(sources)
 
-EXTRA_DIST= 
+libpango_tamil_la_SOURCES = $(sources)

@@ -43,7 +43,7 @@ static void add_engines (PangoContext      *context,
 			 gint               length,
 			 PangoAttrList     *attrs,
 			 PangoEngineShape **shape_engines,
-			 PangoEngineInfo  **lang_engines,
+			 PangoEngineLang  **lang_engines,
 			 PangoFont        **fonts,
 			 GSList           **extra_attr_lists);
 
@@ -523,7 +523,7 @@ pango_itemize (PangoContext   *context,
   GList *result = NULL;
   
   PangoEngineShape **shape_engines;
-  PangoEngineInfo  **lang_engines;
+  PangoEngineLang  **lang_engines;
   GSList           **extra_attr_lists;
   PangoFont        **fonts;
 
@@ -560,7 +560,7 @@ pango_itemize (PangoContext   *context,
    * approach for now.
    */
   shape_engines = g_new0 (PangoEngineShape *, n_chars);
-  lang_engines = g_new0 (PangoEngineInfo *, n_chars);
+  lang_engines = g_new0 (PangoEngineLang *, n_chars);
   fonts = g_new0 (PangoFont *, n_chars);
   extra_attr_lists = g_new0 (GSList *, n_chars);
 
@@ -594,11 +594,7 @@ pango_itemize (PangoContext   *context,
 	  item->analysis.level = embedding_levels[i];
 	  
 	  item->analysis.shape_engine = shape_engines[i];
-	  
-	  if (lang_engines[i])
-	    item->analysis.lang_engine = (PangoEngineLang *)_pango_load_engine (lang_engines[i]->id);
-	  else
-	    item->analysis.lang_engine = NULL;
+	  item->analysis.lang_engine = lang_engines[i];
 
 	  item->analysis.font = fonts[i];
 
@@ -676,7 +672,7 @@ add_engines (PangoContext      *context,
 	     gint               length,
 	     PangoAttrList     *attrs,
 	     PangoEngineShape **shape_engines,
-	     PangoEngineInfo  **lang_engines,
+	     PangoEngineLang  **lang_engines,
 	     PangoFont        **fonts,
 	     GSList           **extra_attr_lists)
 {
@@ -685,7 +681,6 @@ add_engines (PangoContext      *context,
   int next_index = 0;
   GSList *extra_attrs = NULL;
   gint n_chars;
-  PangoMap *shape_map = NULL;
   PangoMap *lang_map = NULL;
   PangoFontDescription current_desc = { 0 };
 
@@ -709,9 +704,6 @@ add_engines (PangoContext      *context,
   pos = text;
   for (i=0; i<n_chars; i++)
     {
-      PangoSubmap *submap;
-      PangoMapEntry *entry;
-
       if (pos - text == next_index)
 	{
 	  char *next_lang;
@@ -727,12 +719,19 @@ add_engines (PangoContext      *context,
 	      (lang != next_lang &&
 	       (lang == NULL || next_lang == NULL || strcmp (lang, next_lang) != 0)))
 	    {
+	      static guint engine_type_id = 0;
+	      static guint render_type_id = 0;
+	      
 	      lang = next_lang;
+
+	      if (engine_type_id == 0)
+		{
+		  engine_type_id = g_quark_from_static_string (PANGO_ENGINE_TYPE_LANG);
+		  render_type_id = g_quark_from_static_string (PANGO_RENDER_TYPE_NONE);
+		}
 	       
-	      lang_map = _pango_find_map (next_lang, PANGO_ENGINE_TYPE_LANG,
-					  PANGO_RENDER_TYPE_NONE);
-	      shape_map = _pango_find_map (next_lang, PANGO_ENGINE_TYPE_SHAPE,
-					   "PangoRenderX");
+	      lang_map = _pango_find_map (next_lang,
+					  engine_type_id, render_type_id);
 	    }
 
 	  pango_attr_iterator_get_font (iterator, context->font_desc, &next_desc, &extra_attrs);
@@ -779,11 +778,7 @@ add_engines (PangoContext      *context,
 
       pos  = unicode_get_utf8 (pos, &wc);
 	  
-      submap = &lang_map->submaps[wc / 256];
-      entry = submap->is_leaf ? &submap->d.entry : &submap->d.leaves[wc % 256];
-	  
-      lang_engines[i] = entry->info;
-
+      lang_engines[i] = (PangoEngineLang *)_pango_map_get_engine (lang_map, wc);
       fonts[i] = get_font (current_fonts, current_coverages, n_families, wc);
 
       /* FIXME: handle reference counting properly on the shapers */
