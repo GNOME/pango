@@ -22,10 +22,10 @@
 #ifndef __PANGO_FC_FONT_H__
 #define __PANGO_FC_FONT_H__
 
-#if defined(PANGO_ENABLE_ENGINE) || defined(PANGO_ENABLE_BACKEND)
-
 #include <freetype/freetype.h>
 #include <pango/pango-font.h>
+
+#if defined(PANGO_ENABLE_ENGINE) || defined(PANGO_ENABLE_BACKEND)
 
 G_BEGIN_DECLS
 

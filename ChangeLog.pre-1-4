@@ -1,3 +1,8 @@
+Tue Apr 15 07:03:19 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pangofc-font.h: Always include freetype.h
+	even when not ENABLE_ENGINE | ENABLE_BACKEND.
+
 Tue Apr 15 06:57:02 2003  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/opentype/ftxgpos.c: Fix mispelled constant
