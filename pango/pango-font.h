@@ -74,6 +74,16 @@ typedef enum {
   PANGO_STRETCH_ULTRA_EXPANDED
 } PangoStretch;
 
+
+/* CSS scale factors (1.2 factor between each size) */
+#define PANGO_SCALE_XX_SMALL ((double)0.5787037037037)
+#define PANGO_SCALE_X_SMALL  ((double)0.6444444444444)
+#define PANGO_SCALE_SMALL    ((double)0.8333333333333)
+#define PANGO_SCALE_MEDIUM   ((double)1.0)
+#define PANGO_SCALE_LARGE    ((double)1.2)
+#define PANGO_SCALE_X_LARGE  ((double)1.4399999999999)
+#define PANGO_SCALE_XX_LARGE ((double)1.728)
+
 struct _PangoFontDescription
 {
   char *family_name;
