@@ -332,9 +332,9 @@ hebrew_modules="hebrew-fc"
 indic_modules="indic-fc"
 syriac_modules="syriac-fc"
 thai_modules="thai-fc"
-tibetan_modules="tibetan_fc"
+tibetan_modules="tibetan-fc"
 
-all_modules="$arabic_modules,$basic_modules,$hangul_modules,$hebrew_modules,$indic_modules,$syriac_modules,$thai_modules,tibetan_modules"
+all_modules="$arabic_modules,$basic_modules,$hangul_modules,$hebrew_modules,$indic_modules,$syriac_modules,$thai_modules,$tibetan_modules"
 
 included_modules=""
 if test "x$with_included_modules" != xno || test "x$with_included_modules" = x ; then
