@@ -1,3 +1,20 @@
+Mon Aug 19 14:07:02 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pangofc-fontmap.cI (pango_fc_font_map_get_patterns):
+	Delete the FC_PATTERN out of the result of FcFontRenderPrepare(),
+	because it makes identical fonts look like not identical fonts.
+
+	* pango/pangofc-fontmap.cI (uniquify_pattern): pango/pangoft-fontmap.c
+	pango/pangoxft-fontmap.c: Use a hash table to uniquify the patterns
+	we cache to save memory and speed lookups.
+
+	* pango/pangoxft-font.c (pango_xft_font_get_font): Split into
+	a public wrappper (with g_return_if_fail()) around a static
+	internal function (without check).
+
+	* pango/pangoxft-fontmap.c (_pango_xft_font_map_get_info): Remove
+	checked cast, since it was showing up high on profiles.
+
 Fri Aug 16 17:49:38 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pangofc-fontmap.cI pango/pangoxft-fontmap.c 

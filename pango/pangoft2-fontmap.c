@@ -54,7 +54,11 @@ struct _PangoFT2FontMap
   /* We have one map from  PangoFontDescription -> PangoXftPatternSet
    * per language tag.
    */
-  GList *fontset_hash_list; 
+  GList *fontset_hash_list;
+  /* pattern_hash is used to make sure we only store one copy of
+   * each identical pattern. (Speeds up lookup).
+   */
+  GHashTable *pattern_hash; 
   GHashTable *coverage_hash; /* Maps font file name -> PangoCoverage */
 
   GHashTable *fonts; /* Maps XftPattern -> PangoFT2Font */

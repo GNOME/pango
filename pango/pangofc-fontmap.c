@@ -140,9 +140,7 @@ pango_fc_font_map_init (PangoFcFontMap *fcfontmap)
 {
   fcfontmap->n_families = -1;
 
-  fcfontmap->fonts = g_hash_table_new ((GHashFunc)pango_fc_pattern_hash,
-					(GEqualFunc)pango_fc_pattern_equal);
-
+  fcfontmap->fonts = g_hash_table_new ((GHashFunc)g_direct_hash, NULL);
   fcfontmap->coverage_hash = g_hash_table_new_full ((GHashFunc)pango_fc_coverage_key_hash,
 						     (GEqualFunc)pango_fc_coverage_key_equal,
 						     (GDestroyNotify)g_free,
@@ -307,6 +305,9 @@ pango_fc_font_map_finalize (GObject *object)
   if (fcfontmap->fonts)
     g_hash_table_destroy (fcfontmap->fonts);
 
+  if (fcfontmap->pattern_hash)
+    g_hash_table_destroy (fcfontmap->pattern_hash);
+  
   pango_fc_do_finalize (fcfontmap);
   
   G_OBJECT_CLASS (parent_class)->finalize (object);
@@ -525,6 +526,33 @@ pango_fc_font_map_new_font (PangoFontMap  *fontmap,
   return  (PangoFont *)_pango_fc_font_new (fontmap, match);
 }
 
+static FcPattern *
+uniquify_pattern (PangoFcFontMap *fcfontmap,
+		  FcPattern      *pattern)
+{
+  FcPattern *old_pattern;
+  
+  if (!fcfontmap->pattern_hash)
+    fcfontmap->pattern_hash =
+      g_hash_table_new_full ((GHashFunc)pango_fc_pattern_hash,
+			     (GEqualFunc)pango_fc_pattern_equal,
+			     (GDestroyNotify)FcPatternDestroy, NULL);
+  
+  old_pattern = g_hash_table_lookup (fcfontmap->pattern_hash, pattern);
+  if (old_pattern)
+    {
+      FcPatternDestroy (pattern);
+      FcPatternReference (old_pattern);
+      return old_pattern;
+    }
+  else
+    {
+      FcPatternReference (pattern);
+      g_hash_table_insert (fcfontmap->pattern_hash, pattern, pattern);
+      return pattern;
+    }
+}
+
 static PangoFcPatternSet *
 pango_fc_font_map_get_patterns (PangoFontMap               *fontmap,
 				 PangoContext               *context,
@@ -566,9 +594,13 @@ pango_fc_font_map_get_patterns (PangoFontMap               *fontmap,
       {
 	font_pattern = FcFontRenderPrepare (NULL, pattern,
 					    font_patterns->fonts[f]);
-	
+	/* The FC_PATTERN element, which points back to our the original patterm
+	 * defeats our hash tables.
+	 */
+	FcPatternDel (font_pattern, FC_PATTERN);
+
 	if (font_pattern)
-	  patterns->patterns[patterns->n_patterns++] = font_pattern;
+	  patterns->patterns[patterns->n_patterns++] = uniquify_pattern (fcfontmap, font_pattern);
       }
       
       FcPatternDestroy (pattern);
