@@ -1,3 +1,9 @@
+2005-03-24  Theppitak Karoonboonyanan  <thep@linux.thai.net>
+
+	* modules/thai/thai-fc.c (tis620_1), modules/thai/thai-shaper.c
+	(Mac_shape_table): Added more MacThai PUA glyphs that are not defined
+	in vendor data at Unicode.org, but just available in actual fonts.
+
 2005-03-20  Tor Lillqvist  <tml@novell.com>
 
 	* modules/basic/basic-win32.c (make_langid): Leave out some
