@@ -92,7 +92,7 @@ static GSList *registered_engines = NULL;
 static GSList *dlloaded_engines = NULL;
 static GHashTable *dlloaded_modules;
 
-GObjectClass *parent_class;
+static GObjectClass *parent_class;
 
 static void build_map    (PangoMapInfo *info);
 static void init_modules (void);

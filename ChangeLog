@@ -1,3 +1,7 @@
+2003-11-12  Padraig O'Briain  <padraig.obriain@sun.com>
+
+	* pangoo/modules.c: Make parent_class variable static.
+
 Sat Nov  1 09:32:15 2003  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pango-ot.h pango/pangofc-font.h modules/indic/indic-ot.h
