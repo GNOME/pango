@@ -184,9 +184,10 @@ pango_win32_font_cache_load (PangoWin32FontCache *cache,
     }
   else
     {
+      BOOL aa = TRUE; /* turn on anti-aliasing */
       lf = *lfp;
-      /* Always turn on anti-aliasing */
-      lf.lfQuality = ANTIALIASED_QUALITY;
+      SystemParametersInfo (SPI_GETFONTSMOOTHING, 0, &aa, 0);
+      lf.lfQuality = (aa ? ANTIALIASED_QUALITY : DEFAULT_QUALITY);
       for (tries = 0; ; tries++)
 	{
 #if 0

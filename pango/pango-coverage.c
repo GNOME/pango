@@ -197,9 +197,10 @@ pango_coverage_get (PangoCoverage *coverage,
  * 
  * Modify a particular index within @coverage
  **/
-void pango_coverage_set (PangoCoverage     *coverage,
-			 int                index,
-			 PangoCoverageLevel level)
+void
+pango_coverage_set (PangoCoverage     *coverage,
+                    int                index,
+                    PangoCoverageLevel level)
 {
   int block_index, i;
   guchar *data;
@@ -253,8 +254,9 @@ void pango_coverage_set (PangoCoverage     *coverage,
  * value of the current coverage for the index and the coverage for
  * the corresponding index in @other.
  **/
-void pango_coverage_max (PangoCoverage *coverage,
-			 PangoCoverage *other)
+void
+pango_coverage_max (PangoCoverage *coverage,
+                    PangoCoverage *other)
 {
   int block_index, i;
   int old_blocks;

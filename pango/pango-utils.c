@@ -1262,13 +1262,13 @@ pango_get_mirror_char (gunichar        ch,
 #endif /* HAVE_FRIBIDI */
 
 
-guint
+static guint
 alias_hash (struct PangoAlias *alias)
 {
   return g_str_hash (alias->alias);
 }
 
-gboolean
+static gboolean
 alias_equal (struct PangoAlias *alias1,
 	     struct PangoAlias *alias2)
 {
@@ -1277,7 +1277,7 @@ alias_equal (struct PangoAlias *alias1,
 }
 
 
-void
+static void
 alias_free (struct PangoAlias *alias)
 {
   int i;
@@ -1423,7 +1423,7 @@ read_alias_file (const char *filename)
   fclose (file);
 }
 
-void
+static void
 pango_load_aliases (void)
 {
   char *filename;

@@ -794,7 +794,7 @@ struct type_4_table { /* Must be packed! */
   guint16 arrays[1];
 };
 
-guint 
+static guint 
 get_unicode_mapping_offset (HDC hdc)
 {
   guint16 n_tables;
@@ -830,7 +830,7 @@ get_unicode_mapping_offset (HDC hdc)
   return 0;
 }
 
-struct type_4_table *
+static struct type_4_table *
 get_unicode_mapping (HDC hdc)
 {
   guint32 offset;
@@ -886,28 +886,28 @@ get_unicode_mapping (HDC hdc)
   return table;
 }
 
-guint16 *
+static guint16 *
 get_id_range_offset (struct type_4_table *table)
 {
   gint32 seg_count = table->seg_count_x_2/2;
   return &table->arrays[seg_count*3];
 }
 
-guint16 *
+static guint16 *
 get_id_delta (struct type_4_table *table)
 {
   gint32 seg_count = table->seg_count_x_2/2;
   return &table->arrays[seg_count*2];
 }
 
-guint16 *
+static guint16 *
 get_start_count (struct type_4_table *table)
 {
   gint32 seg_count = table->seg_count_x_2/2;
   return &table->arrays[seg_count*1];
 }
 
-guint16 *
+static guint16 *
 get_end_count (struct type_4_table *table)
 {
   gint32 seg_count = table->seg_count_x_2/2;
@@ -917,7 +917,7 @@ get_end_count (struct type_4_table *table)
 }
 
 
-gboolean
+static gboolean
 find_segment (struct type_4_table *table, 
 	      guint16              wc,
 	      guint16             *segment)

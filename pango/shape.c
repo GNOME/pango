@@ -34,10 +34,11 @@
  * convert the characters into glyphs. You may also pass
  * in only a substring of the item from pango_itemize().
  */
-void pango_shape (const gchar      *text, 
-		  gint              length, 
-		  PangoAnalysis    *analysis,
-		  PangoGlyphString *glyphs)
+void
+pango_shape (const gchar      *text, 
+             gint              length, 
+             PangoAnalysis    *analysis,
+             PangoGlyphString *glyphs)
 {
   if (analysis->shape_engine)
     analysis->shape_engine->script_shape (analysis->font, text, length, analysis, glyphs);

@@ -1,12 +1,12 @@
 TOP = ../..
-!INCLUDE $(TOP)/build/win32/make.msc
+!INCLUDE $(TOP)/glib/build/win32/make.msc
 
 !IFNDEF PERL
 PERL = perl
 !ENDIF
 
 # Possibly override Pango version from build/win32/module.defs
-PANGO_VER = 0.21
+PANGO_VER = 0.22
 
 # INCLUDES = -I .. -I .
 # DEFINES = -DPACKAGE=\"Pango\" -DVERSION=\"$(PANGO_VER)\"
@@ -46,7 +46,7 @@ PKG_CFLAGS = -I.. -I. -I$(PRJ_TOP) \
 		-DPACKAGE=\"Pango\" -DVERSION=\"$(PANGO_VER)\" \
 		-DPANGO_ENABLE_BACKEND -DPANGO_ENABLE_ENGINE \
 		$(GLIB_CFLAGS) $(LIBICONV_CFLAGS) \
-		$(FREETYPE2_CFLAGS) $(DIRENT_CFLAGS) \
+		$(FREETYPE2_CFLAGS) \
 		$(X11_CFLAGS)  -DSYSCONFDIR=\"/etc\"
 
 !IFDEF OBJS_pango
@@ -60,8 +60,8 @@ PKG_LINK = $(GLIB_LIBS) $(LIBICONV_LIBS) \
 !ENDIF
 
 !IFDEF OBJS_pangoft2
-PKG_LINK = $(GLIB_LIBS) $(LIBICONV_LIBS) $(FREETYPE2_LIBS) $(DIRENT_LIBS) \
-	pango-$(PANGO_VER).lib
+PKG_LINK = $(GLIB_LIBS) $(LIBICONV_LIBS) $(FREETYPE2_LIBS) \
+	pango-$(PANGO_VER).lib mini-xft/mini-xft.lib
 !ENDIF
 
 !IFDEF OBJS_pangox
@@ -70,13 +70,12 @@ PKG_LINK = $(GLIB_LIBS) $(LIBICONV_LIBS) \
 !ENDIF
 
 !IF DEFINED (OBJS_querymodules) || DEFINED (OBJS_testfonts)
-PKG_LINK = $(GLIB_LIBS) $(LIBICONV_LIBS) $(DIRENT_LIBS) \
+PKG_LINK = $(GLIB_LIBS) $(LIBICONV_LIBS) \
 	pango-$(PANGO_VER).lib pangowin32-$(PANGO_VER).lib
 !ENDIF
 
 !IFDEF OBJS_pango
 OBJECTS = \
-#	backend.obj \
 	break.obj \
 	fonts.obj \
 	glyphstring.obj \
@@ -86,6 +85,7 @@ OBJECTS = \
 	pango-color.obj \
 	pango-context.obj \
 	pango-coverage.obj \
+	pango-fontset.obj \
 	pango-fontmap.obj \
 	pango-intset.obj \
 	pango-item.obj \
@@ -128,7 +128,6 @@ OBJECTS = \
 OBJECTS = \
 	module-defs-ft2.obj \
 	pangoft2.obj \
-	pangoft2-fontcache.obj \
 	pangoft2-fontmap.obj \
 	basic-ft2.obj
 !ENDIF

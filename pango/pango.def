@@ -39,8 +39,8 @@ EXPORTS
 	pango_break
 	pango_color_copy
 	pango_color_free
-	pango_color_parse
 	pango_color_get_type
+	pango_color_parse
 	pango_config_key_get
 	pango_context_get_base_dir
 	pango_context_get_font_description
@@ -49,6 +49,7 @@ EXPORTS
 	pango_context_get_type
 	pango_context_list_families
 	pango_context_load_font
+	pango_context_load_fontset
 	pango_context_new
 	pango_context_set_base_dir
 	pango_context_set_font_description
@@ -85,6 +86,7 @@ EXPORTS
 	pango_font_description_get_weight
 	pango_font_description_hash
 	pango_font_description_merge
+	pango_font_description_merge_static
 	pango_font_description_new
 	pango_font_description_set_family
 	pango_font_description_set_family_static
@@ -111,10 +113,13 @@ EXPORTS
 	pango_font_map_get_type
 	pango_font_map_list_families
 	pango_font_map_load_font
+	pango_font_map_load_fontset
+	pango_font_mask_get_type
 	pango_font_metrics_get_approximate_char_width
 	pango_font_metrics_get_approximate_digit_width
 	pango_font_metrics_get_ascent
 	pango_font_metrics_get_descent
+	pango_font_metrics_get_type
 	pango_font_metrics_new
 	pango_font_metrics_ref
 	pango_font_metrics_unref
@@ -219,6 +224,7 @@ EXPORTS
 	pango_layout_set_wrap
 	pango_layout_xy_to_index
 	pango_log2vis_get_embedding_levels
+	pango_lookup_aliases
 	pango_map_get_engine
 	pango_map_get_entry
 	pango_module_register
@@ -253,4 +259,5 @@ EXPORTS
 	pango_underline_get_type
 	pango_variant_get_type
 	pango_weight_get_type
+	pango_wrap_mode_get_type
 

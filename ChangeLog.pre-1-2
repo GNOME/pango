@@ -1,3 +1,21 @@
+2001-11-23  Hans Breuer  <hans@breuer.org>
+
+	* testfonts.c : removed the arbitrary limit to 10 fonts. 
+	Instead make the command line params useful again and reduce
+	the default result bitmap size by decreasing the default 
+	font size.	
+
+	* pango/pangowin32-fontcache.c (pango_win32_font_cache_load):
+	Don't always turn on anti-aliasing. Respect the users settings 
+	from 'Properties of Display/Effects'.
+
+	* pango/makefile.msc : updated, version 0.22
+	* pango/pango.def : updated externals
+
+	* pango/font.c pango/pango-coverage.c pango-utils.c
+	  pango/pangowin32.c pango/shape.c :
+	coding style and static correctness
+
 2001-11-22  Matthias Clasen  <matthiasc@poet.de>
 
 	* docs/pango-sections.txt: Remove duplicates. 
