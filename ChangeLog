@@ -1,3 +1,9 @@
+2000-09-04  Robert W Brady  <robert@susu.org.uk>
+
+	* modules/basic/tables-big.i: Use iso10646-1 fonts
+	for Georgian, Ethiopic, Cherokee, Canadian, Ogham,
+	Runic.
+
 Thu Aug 31 11:29:33 2000  Owen Taylor  <otaylor@redhat.com>
 
 	* tools/maps/tis-620: Check in this file, since it 

@@ -50,6 +50,8 @@ static PangoEngineRange basic_ranges[] = {
   { 0x0591, 0x05f4, "*" }, /* Hebrew */
   { 0x060c, 0x06f9, "" }, /* Arabic */
   { 0x0e01, 0x0e5b, "" },  /* Thai */
+  { 0x10a0, 0x10ff, "*" }, /* Georgian */
+  { 0x1200, 0x16ff, "*" }, /* Ethiopic,Cherokee,Canadian,Ogham,Runic */
   { 0x1e00, 0x1fff, "*" },
   { 0x2000, 0x9fff, "*" },
   { 0xac00, 0xd7a3, "kr" },
