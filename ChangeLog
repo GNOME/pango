@@ -1,3 +1,15 @@
+Tue Dec 14 18:08:36 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-font.h: Add PANGO_WEIGHT_SEMIBOLD. 
+	(#86957, Lars Clausen)
+
+	* pango/fonts.c: s/600/PANGO_WEIGHT_SEMIBOLD.
+
+	* pango/pangofc-fontmap.c (pango_fc_convert_weight_to_fc)
+	* pango/pangofc-fontmap.c (pango_fc_convert_weight_to_pango):
+	Handle PANGO_WEIGHT_SEMIBOLD, use additional weights added
+	in fontconfig-2.2.
+
 2004-12-14  Dan Winship  <danw@novell.com>
 
 	* examples/Makefile.am (INCLUDES): add XFT_CFLAGS

@@ -729,7 +729,7 @@ static FieldMap weight_map[] = {
   { PANGO_WEIGHT_LIGHT, "Light" },
   { PANGO_WEIGHT_NORMAL, NULL },
   { 500, "Medium" },
-  { 600, "Semi-Bold" },
+  { PANGO_WEIGHT_SEMIBOLD, "Semi-Bold" },
   { PANGO_WEIGHT_BOLD, "Bold" },
   { PANGO_WEIGHT_ULTRABOLD, "Ultra-Bold" },
   { PANGO_WEIGHT_HEAVY, "Heavy" }
