@@ -35,51 +35,49 @@ extern "C" {
 
 /* Calls for applications
  */
-PangoFont * pango_x_load_font     (Display          *display,
-				   char             *spec);
-void        pango_x_render        (Display          *display,
-				   Drawable          d,
-				   GC                gc,
-				   PangoFont        *font,
-				   PangoGlyphString *glyphs,
-				   int               x,
-				   int               y);
-void        pango_x_extents       (PangoFont        *font,
-				   PangoGlyphString *glyphs,
-				   int              *lbearing,
-				   int              *rbearing,
-				   int              *width,
-				   int              *ascent,
-				   int              *descent,
-				   int              *logical_ascent,
-				   int              *logical_descent);
-void        pango_x_glyph_extents (PangoFont        *font,
-				   PangoGlyph        glyph,
-				   int              *lbearing,
-				   int              *rbearing,
-				   int              *width,
-				   int              *ascent,
-				   int              *descent,
-				   int              *logical_ascent,
-				   int              *logical_descent);
+PangoFont *pango_x_load_font     (Display          *display,
+				  gchar            *spec);
+void       pango_x_render        (Display          *display,
+				  Drawable          d,
+				  GC                gc,
+				  PangoFont        *font,
+				  PangoGlyphString *glyphs,
+				  gint              x,
+				  gint              y);
+void       pango_x_extents       (PangoFont        *font,
+				  PangoGlyphString *glyphs,
+				  gint             *lbearing,
+				  gint             *rbearing,
+				  gint             *width,
+				  gint             *ascent,
+				  gint             *descent,
+				  gint             *logical_ascent,
+				  gint             *logical_descent);
+void       pango_x_glyph_extents (PangoFont        *font,
+				  PangoGlyph        glyph,
+				  gint             *lbearing,
+				  gint             *rbearing,
+				  gint             *width,
+				  gint             *ascent,
+				  gint             *descent,
+				  gint             *logical_ascent,
+				  gint             *logical_descent);
 
 /* API for rendering modules
  */
-typedef guint16 PangoXSubfontID;
+typedef guint16 PangoXSubfont;
 
-#define PANGO_X_MAKE_GLYPH(subfont,index) (subfont<<16 | index)
+#define PANGO_X_MAKE_GLYPH(charset,index) (charset<<16 | index)
 #define PANGO_X_GLYPH_SUBFONT(glyph) (glyph>>16)
 #define PANGO_X_GLYPH_INDEX(glyph) (glyph & 0xffff)
 
-void          pango_x_list_charsets (PangoFont      *font,
-				     char          **charsets,
-				     int             n_charsets,
-				     int             charsets);
-
-PangoXCharset pango_x_find_charset (PangoFont       *font,
-				    char           *charset);
-gboolean      pango_x_has_glyph    (PangoFont       *font,
-				    PangoGlyph       glyph);
+int      pango_x_list_subfonts (PangoFont      *font,
+				char          **charsets,
+				int             n_charsets,
+				PangoXSubfont **subfont_ids,
+				int           **subfont_charsets);
+gboolean pango_x_has_glyph     (PangoFont      *font,
+				PangoGlyph      glyph);
 
 #ifdef __cplusplus
 }

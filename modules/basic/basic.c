@@ -36,8 +36,8 @@ typedef struct _CharCache CharCache;
 typedef struct _MaskTable MaskTable;
 
 typedef PangoGlyph (*ConvFunc) (CharCache *cache,
-				     gchar     *id,
-				     gchar     *input);
+				gchar     *id,
+				gchar     *input);
 
 struct _Charset
 {
@@ -56,10 +56,11 @@ struct _CharRange
 struct _MaskTable 
 {
   guint mask;
-  PangoXCharset *charset_ids;
-  Charset **charsets;
 
-  int n_charsets;
+  int n_subfonts;
+
+  PangoXSubfont *subfonts;
+  Charset **charsets;
 };
 
 struct _CharCache 
@@ -191,7 +192,7 @@ char_cache_free (CharCache *cache)
       MaskTable *mask_table = tmp_list->data;
       tmp_list = tmp_list->next;
 
-      g_free (mask_table->charset_ids);
+      g_free (mask_table->subfonts);
       g_free (mask_table->charsets);
       
       g_free (mask_table);
@@ -226,13 +227,16 @@ find_char (CharCache *cache, PangoFont *font, GUChar4 wc, char *input)
 
   if (!tmp_list)
     {
-      PangoXCharset tmp_charset_ids[MEMBERS(charsets)];
-      Charset *tmp_charsets[MEMBERS(charsets)];
+      char *charset_names[MEMBERS(charsets)];
+      Charset *charsets_map[MEMBERS(charsets)];
+
+      int n_charsets = 0;
+
+      int *subfont_charsets;
 
       mask_table = g_new (MaskTable, 1);
 
       mask_table->mask = mask;
-      mask_table->n_charsets = 0;
 
       /* Find the character sets that are included in this mask
        */
@@ -241,33 +245,32 @@ find_char (CharCache *cache, PangoFont *font, GUChar4 wc, char *input)
 	{
 	  if (mask & (1 << i))
 	    {
-	      PangoXCharset charset_id = pango_x_find_charset (font, charsets[i].x_charset);
-	      if (charset_id)
-		{
-		  tmp_charset_ids[mask_table->n_charsets] = charset_id;
-		  tmp_charsets[mask_table->n_charsets] = &charsets[i];
-		  mask_table->n_charsets++;
-		}
+	      charset_names[n_charsets] = charsets[i].x_charset;
+	      charsets_map[n_charsets] = &charsets[i];
+	      
+	      n_charsets++;
 	    }
 	}
       
-      mask_table->charset_ids = g_new (PangoXCharset, mask_table->n_charsets);
-      mask_table->charsets = g_new (Charset *, mask_table->n_charsets);
-      
-      memcpy (mask_table->charset_ids, tmp_charset_ids, sizeof(PangoXCharset) * mask_table->n_charsets);
-      memcpy (mask_table->charsets, tmp_charsets, sizeof(Charset *) * mask_table->n_charsets);
+      mask_table->n_subfonts = pango_x_list_subfonts (font, charset_names, n_charsets, &mask_table->subfonts, &subfont_charsets);
+
+      mask_table->charsets = g_new (Charset *, mask_table->n_subfonts);
+      for (i=0; i<mask_table->n_subfonts; i++)
+	mask_table->charsets[i] = charsets_map[subfont_charsets[i]];
+
+      g_free (subfont_charsets);
 
       cache->mask_tables = g_slist_prepend (cache->mask_tables, mask_table);
     }
 
-  for (i=0; i < mask_table->n_charsets; i++)
+  for (i=0; i < mask_table->n_subfonts; i++)
     {
       PangoGlyph index;
       PangoGlyph glyph;
 
       index = (*mask_table->charsets[i]->conv_func) (cache, mask_table->charsets[i]->id, input);
 
-      glyph = PANGO_X_MAKE_GLYPH (mask_table->charset_ids[i], index);
+      glyph = PANGO_X_MAKE_GLYPH (mask_table->subfonts[i], index);
 
       if (pango_x_has_glyph (font, glyph))
 	return glyph;	  
@@ -401,7 +404,7 @@ basic_engine_shape (PangoFont        *font,
   int i;
   char *p, *next;
 
-  PangoXCharset fallback_charset = 0;
+  PangoXSubfont fallback_subfont = 0;
   CharCache *cache;
 
   g_return_if_fail (font != NULL);
@@ -451,10 +454,28 @@ basic_engine_shape (PangoFont        *font,
 	}
       else
 	{
-	  if (!fallback_charset)
-	    fallback_charset = pango_x_find_charset (font, "iso8859-1");
+	  if (!fallback_subfont)
+	    {
+	      static char *charset_names[] = { "iso8859-1" };
+	      PangoXSubfont *subfonts;
+	      int *subfont_charsets;
+	      int n_subfonts;
+	      
+	      n_subfonts = pango_x_list_subfonts (font, charset_names, 1, &subfonts, &subfont_charsets);
+
+	      if (n_subfonts == 0)
+		{
+		  g_warning ("No fallback character found\n");
+		  continue;
+		}
+
+	      fallback_subfont = subfonts[0];
+
+	      g_free (subfont_charsets);
+	      g_free (subfonts);
+	    }
 	  
-	  set_glyph (font, glyphs, i, PANGO_X_MAKE_GLYPH (fallback_charset, ' '));
+	  set_glyph (font, glyphs, i, PANGO_X_MAKE_GLYPH (fallback_subfont, ' '));
 	}
       
       p = next;
