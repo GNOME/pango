@@ -1,3 +1,8 @@
+Tue Aug 26 16:38:22 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* modules/indic/Makefile.am (xft_sources): Add mprefixups.[ch]
+	to xft_sources as well as ft2_sources.
+
 Mon Aug 25 11:00:46 2003  Owen Taylor  <otaylor@redhat.com>
 
 	* === Released 1.2.4 ===

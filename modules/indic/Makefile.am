@@ -12,7 +12,9 @@ xft_sources =		 	\
 	indic-xft.c		\
 	indic-ot-class-tables.c	\
 	indic-ot.c		\
-	indic-ot.h
+	indic-ot.h		\
+	mprefixups.c		\
+	mprefixups.h
 
 pangolibs = $(top_builddir)/pango/libpango-$(PANGO_API_VERSION).la $(GLIB_LIBS)
 pangoxlibs = $(top_builddir)/pango/libpangox-$(PANGO_API_VERSION).la $(X_LIBS) $(pangolibs)
