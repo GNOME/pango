@@ -1,3 +1,15 @@
+2002-03-06  Tor Lillqvist  <tml@iki.fi>
+
+	* pango/Makefile.am (libpangoft2_1_0_la_LDFLAGS): Use
+	pangoft2_export_symbols, not pangowin32_export_symbols.
+
+	* pango/pango.rc.in
+	* pango/pangowin32.rc.in
+	* pango/pangoft2.rc.in
+	* pango/Makefile.am
+	* pango-zip.sh.in: : Adapt to new shared library naming scheme,
+	also for Win32 import library names.
+
 2002-03-05  Manish Singh  <yosh@gimp.org>
 
 	* configure.in: require GLIB 2.0.0 at minimum

@@ -72,15 +72,15 @@ pangowin32_export_symbols = -export-symbols pangowin32.def
 pangoft2_export_symbols = -export-symbols pangoft2.def
 
 install-libtool-import-lib:
-	$(INSTALL) .libs/libpango.dll.a $(DESTDIR)$(libdir)
+	$(INSTALL) .libs/libpango-$(PANGO_API_VERSION).dll.a $(DESTDIR)$(libdir)
 if HAVE_FREETYPE
-	$(INSTALL) .libs/libpangoft2.dll.a $(DESTDIR)$(libdir)
+	$(INSTALL) .libs/libpangoft2-$(PANGO_API_VERSION).dll.a $(DESTDIR)$(libdir)
 endif
-	$(INSTALL) .libs/libpangowin32.dll.a $(DESTDIR)$(libdir)
+	$(INSTALL) .libs/libpangowin32-$(PANGO_API_VERSION).dll.a $(DESTDIR)$(libdir)
 uninstall-libtool-import-lib:
-	-rm $(DESTDIR)$(libdir)/libpango.dll.a
-	-rm $(DESTDIR)$(libdir)/libpangoft2.dll.a
-	-rm $(DESTDIR)$(libdir)/libpangowin32.dll.a
+	-rm $(DESTDIR)$(libdir)/libpango-$(PANGO_API_VERSION).dll.a
+	-rm $(DESTDIR)$(libdir)/libpangoft2-$(PANGO_API_VERSION).dll.a
+	-rm $(DESTDIR)$(libdir)/libpangowin32-$(PANGO_API_VERSION).dll.a
 else
 install-libtool-import-lib:
 uninstall-libtool-import-lib:
@@ -90,19 +90,19 @@ endif
 lib_LTLIBRARIES = libpango-1.0.la $(X_BUILD_LIBS) $(WIN32_BUILD_LIBS) $(XFT_BUILD_LIBS) $(FT2_BUILD_LIBS)
 
 if MS_LIB_AVAILABLE
-noinst_DATA = pango.lib pangoft2.lib pangowin32.lib
+noinst_DATA = pango-$(PANGO_API_VERSION).lib pangoft2-$(PANGO_API_VERSION).lib pangowin32-$(PANGO_API_VERSION).lib
 
 install-ms-lib:
-	$(INSTALL) pango.lib $(DESTDIR)$(libdir)
+	$(INSTALL) pango-$(PANGO_API_VERSION).lib $(DESTDIR)$(libdir)
 if HAVE_FREETYPE
-	$(INSTALL) pangoft2.lib $(DESTDIR)$(libdir)
+	$(INSTALL) pangoft2-$(PANGO_API_VERSION).lib $(DESTDIR)$(libdir)
 endif
-	$(INSTALL) pangowin32.lib $(DESTDIR)$(libdir)
+	$(INSTALL) pangowin32-$(PANGO_API_VERSION).lib $(DESTDIR)$(libdir)
 
 uninstall-ms-lib:
-	-rm $(DESTDIR)$(libdir)/pango.lib
-	-rm $(DESTDIR)$(libdir)/pangoft2.lib
-	-rm $(DESTDIR)$(libdir)/pangowin32.lib
+	-rm $(DESTDIR)$(libdir)/pango-$(PANGO_API_VERSION).lib
+	-rm $(DESTDIR)$(libdir)/pangoft2-$(PANGO_API_VERSION).lib
+	-rm $(DESTDIR)$(libdir)/pangowin32-$(PANGO_API_VERSION).lib
 else
 install-ms-lib:
 uninstall-ms-lib:
@@ -195,7 +195,7 @@ libpangoft2_1_0_la_SOURCES =   	\
 
 libpangoft2_1_0_la_LDFLAGS = -version-info $(LT_VERSION_INFO)	\
 	$(GLIB_LIBS)						\
-	$(no_undefined) $(pangowin32_export_symbols)
+	$(no_undefined) $(pangoft2_export_symbols)
 libpangoft2_1_0_la_LIBADD = mini-xft/libmini-xft.la opentype/libpango-ot.la libpango-$(PANGO_API_VERSION).la $(INCLUDED_FT2_MODULES) $(FREETYPE_LIBS) 
 libpangoft2_1_0_la_DEPENDENCIES = $(INCLUDED_FT2_MODULES) libpango-$(PANGO_API_VERSION).la
 
@@ -306,14 +306,14 @@ CLEANFILES =					\
 	pango-enum-types.c			\
 	s-enum-types-c
 
-pango.lib: libpango-$(PANGO_API_VERSION).la pango.def
-	lib -name:libpango-@PANGO_MAJOR_VERSION@-@PANGO_MINOR_VERSION@.dll -def:pango.def -out:$@
+pango-$(PANGO_API_VERSION).lib: libpango-$(PANGO_API_VERSION).la pango.def
+	lib -name:libpango-$(PANGO_API_VERSION)-@LT_CURRENT_MINUS_AGE@.dll -def:pango.def -out:$@
 
-pangoft2.lib: libpangoft2-$(PANGO_API_VERSION).la pangoft2.def
-	lib -name:libpangoft2-@PANGO_MAJOR_VERSION@-@PANGO_MINOR_VERSION@.dll -def:pangoft2.def -out:$@
+pangoft2-$(PANGO_API_VERSION).lib: libpangoft2-$(PANGO_API_VERSION).la pangoft2.def
+	lib -name:libpangoft2-$(PANGO_API_VERSION)-@LT_CURRENT_MINUS_AGE@.dll -def:pangoft2.def -out:$@
 
-pangowin32.lib: libpangowin32-$(PANGO_API_VERSION).la pangowin32.def
-	lib -name:libpangowin32-@PANGO_MAJOR_VERSION@-@PANGO_MINOR_VERSION@.dll -def:pangowin32.def -out:$@
+pangowin32-$(PANGO_API_VERSION).lib: libpangowin32-$(PANGO_API_VERSION).la pangowin32.def
+	lib -name:libpangowin32-$(PANGO_API_VERSION)-@LT_CURRENT_MINUS_AGE@.dll -def:pangowin32.def -out:$@
 
 install-data-local: install-ms-lib install-libtool-import-lib
 

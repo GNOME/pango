@@ -10,9 +10,9 @@ rm $ZIP
 zip -r $ZIP -@ <<EOF
 bin/pango-querymodules.exe
 etc/pango
-lib/libpango-@PANGO_MAJOR_VERSION@-@PANGO_MINOR_VERSION@.dll
-lib/libpangoft2-@PANGO_MAJOR_VERSION@-@PANGO_MINOR_VERSION@.dll
-lib/libpangowin32-@PANGO_MAJOR_VERSION@-@PANGO_MINOR_VERSION@.dll
+lib/libpango-@PANGO_API_VERSION@-@LT_CURRENT_MINUS_AGE@.dll
+lib/libpangoft2-@PANGO_API_VERSION@-@LT_CURRENT_MINUS_AGE@.dll
+lib/libpangowin32-@PANGO_API_VERSION@-@LT_CURRENT_MINUS_AGE@.dll
 EOF
 
 zip $ZIP lib/pango/modules/*.dll
@@ -20,12 +20,12 @@ zip $ZIP lib/pango/modules/*.dll
 rm $DEVZIP
 zip -r $DEVZIP -@ <<EOF
 include/pango-1.0
-lib/libpango.dll.a
-lib/pango.lib
-lib/libpangoft2.dll.a
-lib/pangoft2.lib
-lib/libpangowin32.dll.a
-lib/pangowin32.lib
+lib/libpango-@PANGO_API_VERSION@.dll.a
+lib/pango-@PANGO_API_VERSION@.lib
+lib/libpangoft2-@PANGO_API_VERSION@.dll.a
+lib/pangoft2-@PANGO_API_VERSION@.lib
+lib/libpangowin32-@PANGO_API_VERSION@.dll.a
+lib/pangowin32-@PANGO_API_VERSION@.lib
 lib/pkgconfig/pango.pc
 lib/pkgconfig/pangowin32.pc
 lib/pkgconfig/pangoft2.pc
