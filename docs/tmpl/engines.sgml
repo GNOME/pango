@@ -2,30 +2,24 @@
 Engines
 
 <!-- ##### SECTION Short_Description ##### -->
-Modules to do language-specific and rendering-system-specific
-processing.
+language-specific and rendering-system-specific processing.
 
 <!-- ##### SECTION Long_Description ##### -->
 <para>
-Pango utilizes a module architecture in which
-the language-specific and render-system-specific
-components are provided by loadable modules. Each
-loadable module supplies one or more
-<firstterm>engines</firstterm>. 
-Each <firstterm>engine</firstterm> has an associated
-<firstterm>engine type</firstterm> and 
-<firstterm>render type</firstterm>. These two
-types are represented by strings.
+Pango utilizes a module architecture in which the language-specific
+and render-system-specific components are provided by loadable
+modules. Each loadable module supplies one or more
+<firstterm>engines</firstterm>.  Each <firstterm>engine</firstterm>
+has an associated <firstterm>engine type</firstterm> and
+<firstterm>render type</firstterm>. These two types are represented by
+strings.
 </para>
 <para>
-Each dynamically-loaded module exports several
-functions which provide the public API. These
-functions are script_engine_list(), 
-script_engine_load() and script_engine_unload().
-The latter two functions are used for loading
-and unloading modules, while the first function
-is used when building a catalog of all available
-modules.
+Each dynamically-loaded module exports several functions which provide
+the public API. These functions are script_engine_list(),
+script_engine_load() and script_engine_unload().  The latter two
+functions are used for loading and unloading modules, while the first
+function is used when building a catalog of all available modules.
 </para>
 
 <!-- ##### SECTION See_Also ##### -->
@@ -35,9 +29,8 @@ modules.
 
 <!-- ##### STRUCT PangoEngineInfo ##### -->
 <para>
-The #PangoEngineInfo structure contains
-information about a particular engine. It
-contains the following fields:
+The #PangoEngineInfo structure contains information about a particular
+engine. It contains the following fields:
 
 <informaltable pgwide=1 frame="none" role="struct">
 <tgroup cols="2"><colspec colwidth="2*"><colspec colwidth="8*">
@@ -242,8 +235,10 @@ specific.
 
 <!-- ##### FUNCTION script_engine_list ##### -->
 <para>
-Function to be provided by a module to list
-the engines that the module supplies.
+Function to be provided by a module to list the engines that the
+module supplies. The function stores a pointer to an array
+of #PangoEngineInfo structures and the length of that array in
+the given location.
 </para>
 
 @engines: location to store a pointer to an array of engines.
@@ -252,21 +247,25 @@ the engines that the module supplies.
 
 <!-- ##### FUNCTION script_engine_load ##### -->
 <para>
-Function to be provided by a module to load
-a particular engine.
+Function to be provided by a module to load a particular engine.
 </para>
 
-@id: the ID from the #ScriptEngineInfo structure of the
+@id: the ID from the #PangoEngineInfo structure of the
      module to load.
 @Returns: the newly created script engine.
 
 
 <!-- ##### FUNCTION script_engine_unload ##### -->
 <para>
-Function to be provided by a module to unload
-an engine.
+Function to be provided by a module to unload an engine loaded
+with script_engine_load().
 </para>
 
 @engine: the engine to unload.
+
+
+<!-- Local Variables: -->
+<!-- sgml-parent-document: ("../pango-docs.sgml" "book" "refsect2") -->
+<!-- End: -->
 
 
