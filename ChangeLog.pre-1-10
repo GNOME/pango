@@ -1,3 +1,9 @@
+Mon Nov 25 19:24:29 2002  Owen Taylor  <otaylor@redhat.com>
+ 
+ 	* pango/mini-fribidi/fribidi_get_type.c (_pango_fribidi_get_type): 
+ 	Fix off-by-one in check for non-BMP characters.
+ 	(#91834, He Qiangqiang)
+ 
 Mon Nov 25 11:58:30 2002  Owen Taylor  <otaylor@redhat.com>
  
  	* examples/viewer-qt.cc (readFile): Fix missing argument
