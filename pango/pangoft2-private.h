@@ -79,6 +79,12 @@ struct _PangoFT2GlyphInfo
   void *cached_glyph;
 };
 
+#define PANGO_TYPE_FT2_FONT              (pango_ft2_font_get_type ())
+#define PANGO_FT2_FONT(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_TYPE_FT2_FONT, PangoFT2Font))
+#define PANGO_FT2_IS_FONT(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), PANGO_TYPE_FT2_FONT))
+
+GType pango_ft2_font_get_type (void);
+
 PangoFT2Font * _pango_ft2_font_new                (PangoFT2FontMap   *ft2fontmap,
 						   FcPattern         *pattern);
 FT_Library     _pango_ft2_font_map_get_library    (PangoFontMap      *fontmap);
@@ -92,17 +98,17 @@ void  pango_ft2_font_set_cache_glyph_data    (PangoFont      *font,
 void  pango_ft2_font_set_glyph_cache_destroy (PangoFont      *font,
 					      GDestroyNotify  destroy_notify);
 
-void _pango_ft2_draw_rect            (FT_Bitmap   *bitmap,
-				      PangoMatrix *matrix,
-				      int          x,
-				      int          y,
-				      int          width,
-				      int          height);
-void _pango_ft2_draw_error_underline (FT_Bitmap   *bitmap,
-				      PangoMatrix *matrix,
-				      int          x,
-				      int          y,
-				      int          width,
-				      int          height);
+void _pango_ft2_draw_rect            (FT_Bitmap         *bitmap,
+				      const PangoMatrix *matrix,
+				      int                x,
+				      int                y,
+				      int                width,
+				      int                height);
+void _pango_ft2_draw_error_underline (FT_Bitmap         *bitmap,
+				      const PangoMatrix *matrix,
+				      int                x,
+				      int                y,
+				      int                width,
+				      int                height);
 
 #endif /* __PANGOFT2_PRIVATE_H__ */

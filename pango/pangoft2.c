@@ -38,10 +38,7 @@
 #define FT_LOAD_TARGET_MONO  FT_LOAD_MONOCHROME
 #endif
 
-#define PANGO_TYPE_FT2_FONT              (pango_ft2_font_get_type ())
-#define PANGO_FT2_FONT(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_TYPE_FT2_FONT, PangoFT2Font))
 #define PANGO_FT2_FONT_CLASS(klass)      (G_TYPE_CHECK_CLASS_CAST ((klass), PANGO_TYPE_FT2_FONT, PangoFT2FontClass))
-#define PANGO_FT2_IS_FONT(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), PANGO_TYPE_FT2_FONT))
 #define PANGO_FT2_IS_FONT_CLASS(klass)   (G_TYPE_CHECK_CLASS_TYPE ((klass), PANGO_TYPE_FT2_FONT))
 #define PANGO_FT2_FONT_GET_CLASS(obj)    (G_TYPE_INSTANCE_GET_CLASS ((obj), PANGO_TYPE_FT2_FONT, PangoFT2FontClass))
 
@@ -59,10 +56,6 @@ typedef struct
   int bitmap_top;
 } PangoFT2RenderedGlyph;
 
-static PangoFontClass *parent_class;	/* Parent class structure for PangoFT2Font */
-
-static void pango_ft2_font_class_init (PangoFT2FontClass *class);
-static void pango_ft2_font_init       (PangoFT2Font      *ft2font);
 static void pango_ft2_font_finalize   (GObject         *object);
 
 static void                   pango_ft2_font_get_glyph_extents (PangoFont      *font,
@@ -78,8 +71,6 @@ static guint      pango_ft2_font_real_get_glyph         (PangoFcFont      *font,
 							 gunichar          wc);
 static PangoGlyph pango_ft2_font_real_get_unknown_glyph (PangoFcFont      *font,
 							 gunichar          wc);
-
-static GType      pango_ft2_font_get_type               (void);
 
 static void       pango_ft2_get_item_properties         (PangoItem      *item,
 							 PangoUnderline *uline,
@@ -263,33 +254,7 @@ pango_ft2_font_get_face (PangoFont *font)
   return ft2font->face;
 }
 
-static GType
-pango_ft2_font_get_type (void)
-{
-  static GType object_type = 0;
-
-  if (!object_type)
-    {
-      static const GTypeInfo object_info =
-      {
-        sizeof (PangoFT2FontClass),
-        (GBaseInitFunc) NULL,
-        (GBaseFinalizeFunc) NULL,
-        (GClassInitFunc) pango_ft2_font_class_init,
-        NULL,           /* class_finalize */
-        NULL,           /* class_data */
-        sizeof (PangoFT2Font),
-        0,              /* n_preallocs */
-        (GInstanceInitFunc) pango_ft2_font_init,
-      };
-      
-      object_type = g_type_register_static (PANGO_TYPE_FC_FONT,
-                                            "PangoFT2Font",
-                                            &object_info, 0);
-    }
-  
-  return object_type;
-}
+G_DEFINE_TYPE (PangoFT2Font, pango_ft2_font, PANGO_TYPE_FC_FONT)
 
 static void 
 pango_ft2_font_init (PangoFT2Font *ft2font)
@@ -307,8 +272,6 @@ pango_ft2_font_class_init (PangoFT2FontClass *class)
   GObjectClass *object_class = G_OBJECT_CLASS (class);
   PangoFontClass *font_class = PANGO_FONT_CLASS (class);
   PangoFcFontClass *fc_font_class = PANGO_FC_FONT_CLASS (class);
-  
-  parent_class = g_type_class_peek_parent (class);
   
   object_class->finalize = pango_ft2_font_finalize;
   
@@ -362,11 +325,11 @@ pango_ft2_font_render_glyph (PangoFont *font,
 }
 
 static void
-transform_point (PangoMatrix *matrix,
-		 int          x,
-		 int          y,
-		 int         *x_out_pixels,
-		 int         *y_out_pixels)
+transform_point (const PangoMatrix *matrix,
+		 int                x,
+		 int                y,
+		 int               *x_out_pixels,
+		 int               *y_out_pixels)
 {
   double x_out = (matrix->xx * x + matrix->xy * y) / PANGO_SCALE + matrix->x0;
   double y_out = (matrix->yx * x + matrix->yy * y) / PANGO_SCALE + matrix->y0;
@@ -394,12 +357,12 @@ transform_point (PangoMatrix *matrix,
  * transformation matrix to that passed in to this function.
  **/
 void 
-pango_ft2_render_transformed (FT_Bitmap        *bitmap,
-			      PangoMatrix      *matrix,
-			      PangoFont        *font,
-			      PangoGlyphString *glyphs,
-			      int               x, 
-			      int               y)
+pango_ft2_render_transformed (FT_Bitmap         *bitmap,
+			      const PangoMatrix *matrix,
+			      PangoFont         *font,
+			      PangoGlyphString  *glyphs,
+			      int                x, 
+			      int                y)
 {
   FT_UInt glyph_index;
   int i;
@@ -720,7 +683,7 @@ pango_ft2_font_finalize (GObject *object)
 			       pango_ft2_free_glyph_info_callback, object);
   g_hash_table_destroy (ft2font->glyph_info);
   
-  G_OBJECT_CLASS (parent_class)->finalize (object);
+  G_OBJECT_CLASS (pango_ft2_font_parent_class)->finalize (object);
 }
 
 /**
@@ -758,7 +721,7 @@ pango_ft2_get_unknown_glyph (PangoFont *font)
 
 static void
 draw_underline (FT_Bitmap         *bitmap,
-		PangoMatrix       *matrix,
+		const PangoMatrix *matrix,
 		PangoFontMetrics  *metrics,
 		PangoUnderline     uline,
 		int                x,
@@ -814,12 +777,12 @@ draw_underline (FT_Bitmap         *bitmap,
 }
 
 static void
-draw_strikethrough (FT_Bitmap        *bitmap,
-		    PangoMatrix      *matrix,
-		    PangoFontMetrics *metrics,
-		    int               x,
-		    int               width,
-		    int               base_y)
+draw_strikethrough (FT_Bitmap         *bitmap,
+		    const PangoMatrix *matrix,
+		    PangoFontMetrics  *metrics,
+		    int                x,
+		    int                width,
+		    int                base_y)
 {
   int strikethrough_thickness = pango_font_metrics_get_strikethrough_thickness (metrics);
   int strikethrough_position = pango_font_metrics_get_strikethrough_position (metrics);
@@ -854,7 +817,7 @@ pango_ft2_render_layout_line_subpixel (FT_Bitmap       *bitmap,
   PangoRectangle logical_rect;
   PangoRectangle ink_rect;
   int x_off = 0;
-  PangoMatrix *matrix;
+  const PangoMatrix *matrix;
 
   matrix = pango_context_get_matrix (pango_layout_get_context (line->layout));
 

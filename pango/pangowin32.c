@@ -52,10 +52,6 @@ struct _PangoWin32FontClass
   PangoFontClass parent_class;
 };
 
-static PangoFontClass *parent_class;	/* Parent class structure for PangoWin32Font */
-
-static void pango_win32_font_class_init (PangoWin32FontClass *class);
-static void pango_win32_font_init       (PangoWin32Font      *win32font);
 static void pango_win32_font_dispose    (GObject             *object);
 static void pango_win32_font_finalize   (GObject             *object);
 
@@ -142,33 +138,7 @@ pango_win32_get_context (void)
   return result;
 }
 
-static GType
-pango_win32_font_get_type (void)
-{
-  static GType object_type = 0;
-
-  if (!object_type)
-    {
-      static const GTypeInfo object_info =
-      {
-        sizeof (PangoWin32FontClass),
-        (GBaseInitFunc) NULL,
-        (GBaseFinalizeFunc) NULL,
-        (GClassInitFunc) pango_win32_font_class_init,
-        NULL,           /* class_finalize */
-        NULL,           /* class_data */
-        sizeof (PangoWin32Font),
-        0,              /* n_preallocs */
-        (GInstanceInitFunc) pango_win32_font_init,
-      };
-      
-      object_type = g_type_register_static (PANGO_TYPE_FONT,
-                                            "PangoWin32Font",
-                                            &object_info, 0);
-    }
-  
-  return object_type;
-}
+G_DEFINE_TYPE (PangoWin32Font, pango_win32_font, PANGO_TYPE_FONT)
 
 static void 
 pango_win32_font_init (PangoWin32Font *win32font)
@@ -231,8 +201,6 @@ pango_win32_font_class_init (PangoWin32FontClass *class)
   GObjectClass *object_class = G_OBJECT_CLASS (class);
   PangoFontClass *font_class = PANGO_FONT_CLASS (class);
 
-  parent_class = g_type_class_peek_parent (class);
-  
   object_class->finalize = pango_win32_font_finalize;
   object_class->dispose = pango_win32_font_dispose;
   
@@ -243,6 +211,11 @@ pango_win32_font_class_init (PangoWin32FontClass *class)
   font_class->get_metrics = pango_win32_font_get_metrics;
 
   pango_win32_get_dc ();
+}
+
+static void
+pango_win32_font_init (PangoWin32Font *win32font)
+{
 }
 
 PangoWin32Font *

@@ -41,10 +41,7 @@ struct _PangoXftFontClass
   PangoFcFontClass  parent_class;
 };
 
-static PangoFontClass *parent_class;	/* Parent class structure for PangoXftFont */
-
-static void pango_xft_font_class_init (PangoXftFontClass *class);
-static void pango_xft_font_finalize   (GObject         *object);
+static void pango_xft_font_finalize (GObject *object);
 
 static void                  pango_xft_font_get_glyph_extents (PangoFont        *font,
 							       PangoGlyph        glyph,
@@ -63,33 +60,7 @@ static void       pango_xft_font_real_shutdown          (PangoFcFont      *font)
 
 static XftFont *xft_font_get_font (PangoFont *font);
 
-GType
-pango_xft_font_get_type (void)
-{
-  static GType object_type = 0;
-
-  if (!object_type)
-    {
-      static const GTypeInfo object_info =
-      {
-        sizeof (PangoXftFontClass),
-        (GBaseInitFunc) NULL,
-        (GBaseFinalizeFunc) NULL,
-        (GClassInitFunc) pango_xft_font_class_init,
-        NULL,           /* class_finalize */
-        NULL,           /* class_data */
-        sizeof (PangoXftFont),
-        0,              /* n_preallocs */
-        (GInstanceInitFunc) NULL,
-      };
-      
-      object_type = g_type_register_static (PANGO_TYPE_FC_FONT,
-                                            "PangoXftFont",
-                                            &object_info, 0);
-    }
-  
-  return object_type;
-}
+G_DEFINE_TYPE (PangoXftFont, pango_xft_font, PANGO_TYPE_FC_FONT)
 
 static void
 pango_xft_font_class_init (PangoXftFontClass *class)
@@ -98,8 +69,6 @@ pango_xft_font_class_init (PangoXftFontClass *class)
   PangoFontClass *font_class = PANGO_FONT_CLASS (class);
   PangoFcFontClass *fc_font_class = PANGO_FC_FONT_CLASS (class);
 
-  parent_class = g_type_class_peek_parent (class);
-  
   object_class->finalize = pango_xft_font_finalize;
   
   font_class->get_glyph_extents = pango_xft_font_get_glyph_extents;
@@ -110,6 +79,11 @@ pango_xft_font_class_init (PangoXftFontClass *class)
   fc_font_class->get_glyph = pango_xft_font_real_get_glyph;
   fc_font_class->get_unknown_glyph = pango_xft_font_real_get_unknown_glyph;
   fc_font_class->shutdown = pango_xft_font_real_shutdown;
+}
+
+static void
+pango_xft_font_init (PangoXftFont *xftfont)
+{
 }
 
 PangoXftFont *
@@ -438,7 +412,7 @@ pango_xft_font_finalize (GObject *object)
   if (xfont->glyph_info)
     g_hash_table_destroy (xfont->glyph_info);
 
-  G_OBJECT_CLASS (parent_class)->finalize (object);
+  G_OBJECT_CLASS (pango_xft_font_parent_class)->finalize (object);
 }
 
 static void
@@ -568,7 +542,7 @@ pango_xft_font_get_glyph_extents (PangoFont        *font,
     }
   else if (glyph)
     {
-      if (!fcfont->transform)
+      if (!fcfont->is_transformed)
 	get_glyph_extents_xft (fcfont, glyph, ink_rect, logical_rect);
       else
 	get_glyph_extents_raw (xfont, glyph, ink_rect, logical_rect);

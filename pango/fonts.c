@@ -999,33 +999,17 @@ pango_font_description_to_filename (const PangoFontDescription  *desc)
 
   return result;
 }  
-  
-GType
-pango_font_get_type (void)
-{
-  static GType object_type = 0;
 
-  if (!object_type)
-    {
-      static const GTypeInfo object_info =
-      {
-        sizeof (PangoFontClass),
-        (GBaseInitFunc) NULL,
-        (GBaseFinalizeFunc) NULL,
-        NULL,           /* class_init */
-        NULL,           /* class_finalize */
-        NULL,           /* class_data */
-        sizeof (PangoFont),
-        0,              /* n_preallocs */
-	NULL            /* init */
-      };
-      
-      object_type = g_type_register_static (G_TYPE_OBJECT,
-                                            "PangoFont",
-                                            &object_info, 0);
-    }
-  
-  return object_type;
+G_DEFINE_TYPE (PangoFont, pango_font, G_TYPE_OBJECT)
+
+static void
+pango_font_class_init (PangoFontClass *class)
+{
+}
+
+static void
+pango_font_init (PangoFont *font)
+{
 }
 
 /**
@@ -1362,32 +1346,16 @@ pango_font_metrics_get_strikethrough_thickness (PangoFontMetrics *metrics)
  * PangoFontFamily
  */
 
-GType
-pango_font_family_get_type (void)
-{
-  static GType object_type = 0;
+G_DEFINE_TYPE (PangoFontFamily, pango_font_family, G_TYPE_OBJECT)
 
-  if (!object_type)
-    {
-      static const GTypeInfo object_info =
-      {
-        sizeof (PangoFontFamilyClass),
-        (GBaseInitFunc) NULL,
-        (GBaseFinalizeFunc) NULL,
-        NULL,           /* class_init */
-        NULL,           /* class_finalize */
-        NULL,           /* class_data */
-        sizeof (PangoFontFamily),
-        0,              /* n_preallocs */
-	NULL            /* init */
-      };
-      
-      object_type = g_type_register_static (G_TYPE_OBJECT,
-                                            "PangoFontFamily",
-                                            &object_info, 0);
-    }
-  
-  return object_type;
+static void
+pango_font_family_class_init (PangoFontFamilyClass *class)
+{
+}
+
+static void
+pango_font_family_init (PangoFontFamily *family)
+{
 }
 
 /**
@@ -1465,32 +1433,16 @@ pango_font_family_is_monospace (PangoFontFamily  *family)
  * PangoFontFace
  */
 
-GType
-pango_font_face_get_type (void)
-{
-  static GType object_type = 0;
+G_DEFINE_TYPE (PangoFontFace, pango_font_face, G_TYPE_OBJECT)
 
-  if (!object_type)
-    {
-      static const GTypeInfo object_info =
-      {
-        sizeof (PangoFontFaceClass),
-        (GBaseInitFunc) NULL,
-        (GBaseFinalizeFunc) NULL,
-        NULL,           /* class_init */
-        NULL,           /* class_finalize */
-        NULL,           /* class_data */
-        sizeof (PangoFont),
-        0,              /* n_preallocs */
-	NULL            /* init */
-      };
-      
-      object_type = g_type_register_static (G_TYPE_OBJECT,
-                                            "PangoFontFace",
-                                            &object_info, 0);
-    }
-  
-  return object_type;
+static void
+pango_font_face_class_init (PangoFontFaceClass *class)
+{
+}
+
+static void
+pango_font_face_init (PangoFontFace *face)
+{
 }
 
 /**

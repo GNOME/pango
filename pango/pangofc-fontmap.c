@@ -113,8 +113,6 @@ struct _PangoFcFindFuncInfo
 static GType    pango_fc_family_get_type     (void);
 static GType    pango_fc_face_get_type       (void);
 
-static void          pango_fc_font_map_init          (PangoFcFontMap              *fontmap);
-static void          pango_fc_font_map_class_init    (PangoFontMapClass            *class);
 static void          pango_fc_font_map_finalize      (GObject                      *object);
 static PangoFont *   pango_fc_font_map_load_font     (PangoFontMap                 *fontmap,
 						       PangoContext                 *context,
@@ -137,35 +135,7 @@ static guint    pango_fc_coverage_key_hash  (PangoFcCoverageKey *key);
 static gboolean pango_fc_coverage_key_equal (PangoFcCoverageKey *key1,
 					      PangoFcCoverageKey *key2);
 
-static PangoFontClass *parent_class;
-
-GType
-pango_fc_font_map_get_type (void)
-{
-  static GType object_type = 0;
-
-  if (!object_type)
-    {
-      static const GTypeInfo object_info =
-      {
-        sizeof (PangoFcFontMapClass),
-        (GBaseInitFunc) NULL,
-        (GBaseFinalizeFunc) NULL,
-        (GClassInitFunc) pango_fc_font_map_class_init,
-        NULL,           /* class_finalize */
-        NULL,           /* class_data */
-        sizeof (PangoFcFontMap),
-        0,              /* n_preallocs */
-        (GInstanceInitFunc) pango_fc_font_map_init,
-      };
-      
-      object_type = g_type_register_static (PANGO_TYPE_FONT_MAP,
-                                            "PangoFcFontMap",
-                                            &object_info, 0);
-    }
-  
-  return object_type;
-}
+G_DEFINE_TYPE (PangoFcFontMap, pango_fc_font_map, PANGO_TYPE_FONT_MAP)
 
 static void 
 pango_fc_font_map_init (PangoFcFontMap *fcfontmap)
@@ -198,17 +168,16 @@ pango_fc_font_map_init (PangoFcFontMap *fcfontmap)
 }
 
 static void
-pango_fc_font_map_class_init (PangoFontMapClass *class)
+pango_fc_font_map_class_init (PangoFcFontMapClass *class)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (class);
-  
-  parent_class = g_type_class_peek_parent (class);
+  PangoFontMapClass *fontmap_class = PANGO_FONT_MAP_CLASS (class);
   
   object_class->finalize = pango_fc_font_map_finalize;
-  class->load_font = pango_fc_font_map_load_font;
-  class->load_fontset = pango_fc_font_map_load_fontset;
-  class->list_families = pango_fc_font_map_list_families;
-  class->shape_engine_type = PANGO_RENDER_TYPE_FC;
+  fontmap_class->load_font = pango_fc_font_map_load_font;
+  fontmap_class->load_fontset = pango_fc_font_map_load_fontset;
+  fontmap_class->list_families = pango_fc_font_map_list_families;
+  fontmap_class->shape_engine_type = PANGO_RENDER_TYPE_FC;
 
   g_type_class_add_private (object_class, sizeof (PangoFcFontMapPrivate));
 }
@@ -404,7 +373,7 @@ pango_fc_font_map_finalize (GObject *object)
       priv->findfuncs = g_slist_delete_link (priv->findfuncs, priv->findfuncs);
     }
 
-  G_OBJECT_CLASS (parent_class)->finalize (object);
+  G_OBJECT_CLASS (pango_fc_font_map_parent_class)->finalize (object);
 }
 
 /* Add a mapping from xfont->font_pattern to xfont */

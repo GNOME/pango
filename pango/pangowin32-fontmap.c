@@ -99,9 +99,6 @@ static void       pango_win32_face_list_sizes        (PangoFontFace  *face,
                                                       int           **sizes,
                                                       int            *n_sizes);
 
-static void       pango_win32_font_map_init          (PangoWin32FontMap       *fontmap);
-static void       pango_win32_font_map_class_init    (PangoFontMapClass       *class);
-
 static void       pango_win32_font_map_finalize      (GObject                      *object);
 static PangoFont *pango_win32_font_map_load_font     (PangoFontMap                 *fontmap,
 						      PangoContext                 *context,
@@ -115,35 +112,7 @@ static void       pango_win32_fontmap_cache_clear    (PangoWin32FontMap         
 static void       pango_win32_insert_font            (PangoWin32FontMap            *fontmap,
 						      LOGFONT                      *lfp);
 
-static PangoFontClass *font_map_parent_class;	/* Parent class structure for PangoWin32FontMap */
-
-static GType
-pango_win32_font_map_get_type (void)
-{
-  static GType object_type = 0;
-
-  if (!object_type)
-    {
-      static const GTypeInfo object_info =
-      {
-        sizeof (PangoFontMapClass),
-        (GBaseInitFunc) NULL,
-        (GBaseFinalizeFunc) NULL,
-        (GClassInitFunc) pango_win32_font_map_class_init,
-        NULL,           /* class_finalize */
-        NULL,           /* class_data */
-        sizeof (PangoWin32FontMap),
-        0,              /* n_preallocs */
-        (GInstanceInitFunc) pango_win32_font_map_init,
-      };
-      
-      object_type = g_type_register_static (PANGO_TYPE_FONT_MAP,
-                                            "PangoWin32FontMap",
-                                            &object_info, 0);
-    }
-  
-  return object_type;
-}
+G_DEFINE_TYPE (PangoWin32FontMap, pango_win32_font_map, PANGO_TYPE_FONT_MAP)
 
 /* A hash function for LOGFONTs that takes into consideration only
  * those fields that indicate a specific .ttf file is in use:
@@ -187,8 +156,6 @@ static void
 pango_win32_font_map_class_init (PangoFontMapClass *class)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (class);
-  
-  font_map_parent_class = g_type_class_peek_parent (class);
   
   object_class->finalize = pango_win32_font_map_finalize;
   class->load_font = pango_win32_font_map_load_font;
@@ -293,7 +260,7 @@ pango_win32_font_map_finalize (GObject *object)
   
   pango_win32_font_cache_free (win32fontmap->font_cache);
 
-  G_OBJECT_CLASS (font_map_parent_class)->finalize (object);
+  G_OBJECT_CLASS (pango_win32_font_map_parent_class)->finalize (object);
 }
 
 /*

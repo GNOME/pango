@@ -45,17 +45,18 @@ typedef void (*PangoFT2SubstituteFunc) (FcPattern *pattern,
 
 /* Calls for applications */
 
-void pango_ft2_render                      (FT_Bitmap        *bitmap,
-					    PangoFont        *font,
-					    PangoGlyphString *glyphs,
-					    gint              x,
-					    gint              y);
-void pango_ft2_render_transformed          (FT_Bitmap        *bitmap,
-					    PangoMatrix      *matrix,
-					    PangoFont        *font,
-					    PangoGlyphString *glyphs,
-					    int               x,
-					    int               y);
+void pango_ft2_render             (FT_Bitmap         *bitmap,
+				   PangoFont         *font,
+				   PangoGlyphString  *glyphs,
+				   gint               x,
+				   gint               y);
+void pango_ft2_render_transformed (FT_Bitmap         *bitmap,
+				   const PangoMatrix *matrix,
+				   PangoFont         *font,
+				   PangoGlyphString  *glyphs,
+				   int                x,
+				   int                y);
+
 void pango_ft2_render_layout_line          (FT_Bitmap        *bitmap,
 					    PangoLayoutLine  *line,
 					    int               x,

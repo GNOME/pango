@@ -75,8 +75,8 @@ struct _PangoFcFont
   
   GSList *metrics_by_lang;
 
-  guint hinted : 1;
-  guint transform : 1;
+  guint is_hinted : 1;
+  guint is_transformed : 1;
 };
 
 /**

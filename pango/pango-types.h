@@ -96,7 +96,7 @@ struct _PangoMatrix
  **/
 #define PANGO_MATRIX_INIT { 1., 0., 0., 1., 0., 0. }
 
-PangoMatrix *pango_matrix_copy   (PangoMatrix *matrix);
+PangoMatrix *pango_matrix_copy   (const PangoMatrix *matrix);
 void         pango_matrix_free   (PangoMatrix *matrix);
 
 void pango_matrix_translate (PangoMatrix *matrix,

@@ -162,8 +162,6 @@ static int *pango_layout_line_get_vis2log_map (PangoLayoutLine  *line,
 static void pango_layout_get_item_properties (PangoItem      *item,
 					      ItemProperties *properties);
 
-static void pango_layout_init        (PangoLayout      *layout);
-static void pango_layout_class_init  (PangoLayoutClass *klass);
 static void pango_layout_finalize    (GObject          *object);
 
 G_DEFINE_TYPE (PangoLayout, pango_layout, G_TYPE_OBJECT)

@@ -56,44 +56,15 @@ struct _PangoXftFontMapClass
   PangoFcFontMapClass parent_class;
 };
 
-static void          pango_xft_font_map_class_init         (PangoXftFontMapClass *class);
 static void          pango_xft_font_map_default_substitute (PangoFcFontMap       *fcfontmap,
 							    FcPattern            *pattern);
 static PangoFcFont * pango_xft_font_map_new_font           (PangoFcFontMap       *fcfontmap,
 							    FcPattern            *pattern);
 static void          pango_xft_font_map_finalize           (GObject              *object);
 
-static GObjectClass *parent_class;
-
 static GSList *fontmaps = NULL;
 
-GType
-pango_xft_font_map_get_type (void)
-{
-  static GType object_type = 0;
-
-  if (!object_type)
-    {
-      static const GTypeInfo object_info =
-      {
-        sizeof (PangoXftFontMapClass),
-        (GBaseInitFunc) NULL,
-        (GBaseFinalizeFunc) NULL,
-        (GClassInitFunc) pango_xft_font_map_class_init,
-        NULL,           /* class_finalize */
-        NULL,           /* class_data */
-        sizeof (PangoXftFontMap),
-        0,              /* n_preallocs */
-        (GInstanceInitFunc) NULL,
-      };
-      
-      object_type = g_type_register_static (PANGO_TYPE_FC_FONT_MAP,
-                                            "PangoXftFontMap",
-                                            &object_info, 0);
-    }
-  
-  return object_type;
-}
+G_DEFINE_TYPE (PangoXftFontMap, pango_xft_font_map, PANGO_TYPE_FC_FONT_MAP)
 
 static void
 pango_xft_font_map_class_init (PangoXftFontMapClass *class)
@@ -101,11 +72,14 @@ pango_xft_font_map_class_init (PangoXftFontMapClass *class)
   GObjectClass *gobject_class = G_OBJECT_CLASS (class);
   PangoFcFontMapClass *fcfontmap_class = PANGO_FC_FONT_MAP_CLASS (class);
 
-  parent_class = g_type_class_peek_parent (class);
-
   gobject_class->finalize  = pango_xft_font_map_finalize;
   fcfontmap_class->default_substitute = pango_xft_font_map_default_substitute;
   fcfontmap_class->new_font = pango_xft_font_map_new_font;
+}
+
+static void
+pango_xft_font_map_init (PangoXftFontMap *xftfontmap)
+{
 }
 
 static void
@@ -118,7 +92,7 @@ pango_xft_font_map_finalize (GObject *object)
   if (xftfontmap->substitute_destroy)
     xftfontmap->substitute_destroy (xftfontmap->substitute_data);
 
-  parent_class->finalize (object);
+  G_OBJECT_CLASS (pango_xft_font_map_parent_class)->finalize (object);
 }
 
 

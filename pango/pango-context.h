@@ -79,9 +79,9 @@ void                      pango_context_set_base_dir         (PangoContext      
 							      PangoDirection              direction);
 PangoDirection            pango_context_get_base_dir         (PangoContext               *context);
 
-void         pango_context_set_matrix (PangoContext *context,
-				       PangoMatrix  *matrix);
-PangoMatrix *pango_context_get_matrix (PangoContext *context);
+void                        pango_context_set_matrix (PangoContext      *context,
+						      const PangoMatrix *matrix);
+G_CONST_RETURN PangoMatrix *pango_context_get_matrix (PangoContext      *context);
 
 /* Break a string of Unicode characters into segments with
  * consistent shaping/language engine and bidrectional level.

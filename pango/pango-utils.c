@@ -997,7 +997,7 @@ pango_parse_stretch (const char   *str,
  *  pango_matrix_free().
  **/
 PangoMatrix *
-pango_matrix_copy (PangoMatrix *matrix)
+pango_matrix_copy (const PangoMatrix *matrix)
 {
   g_return_val_if_fail (matrix != NULL, NULL);
 

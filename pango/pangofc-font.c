@@ -57,7 +57,6 @@ struct _PangoFcFontPrivate
   PangoFcDecoder *decoder;
 };
 
-static void                  pango_fc_font_class_init   (PangoFcFontClass *class);
 static void                  pango_fc_font_finalize     (GObject          *object);
 static void                  pango_fc_font_set_property (GObject          *object,
 							 guint             prop_id,
@@ -72,45 +71,14 @@ static PangoFontMetrics *    pango_fc_font_get_metrics  (PangoFont        *font,
 							 PangoLanguage    *language);
 static PangoFontDescription *pango_fc_font_describe     (PangoFont        *font);
 
-static GObjectClass *parent_class;
+G_DEFINE_TYPE (PangoFcFont, pango_fc_font, PANGO_TYPE_FONT)
 
-GType
-pango_fc_font_get_type (void)
-{
-  static GType object_type = 0;
-
-  if (!object_type)
-    {
-      static const GTypeInfo object_info =
-      {
-        sizeof (PangoFcFontClass),
-        (GBaseInitFunc) NULL,
-        (GBaseFinalizeFunc) NULL,
-        (GClassInitFunc) pango_fc_font_class_init,
-        NULL,           /* class_finalize */
-        NULL,           /* class_data */
-        sizeof (PangoFcFont),
-        0,              /* n_preallocs */
-        NULL            /* init */
-      };
-      
-      object_type = g_type_register_static (PANGO_TYPE_FONT,
-                                            "PangoFcFont",
-                                            &object_info,
-					    G_TYPE_FLAG_ABSTRACT);
-    }
-  
-  return object_type;
-}
- 
 static void
 pango_fc_font_class_init (PangoFcFontClass *class)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (class);
   PangoFontClass *font_class = PANGO_FONT_CLASS (class);
   
-  parent_class = g_type_class_peek_parent (class);
- 
   object_class->finalize = pango_fc_font_finalize;
   object_class->set_property = pango_fc_font_set_property;
   font_class->describe = pango_fc_font_describe;
@@ -125,6 +93,11 @@ pango_fc_font_class_init (PangoFcFontClass *class)
 							 G_PARAM_WRITABLE | G_PARAM_CONSTRUCT_ONLY));
 
   g_type_class_add_private (object_class, sizeof (PangoFcFontPrivate));
+}
+
+static void
+pango_fc_font_init (PangoFcFont *fcfont)
+{
 }
 
 static void
@@ -152,7 +125,7 @@ pango_fc_font_finalize (GObject *object)
   if (priv->decoder)
     _pango_fc_font_set_decoder (fcfont, NULL);
 
-  parent_class->finalize (object);
+  G_OBJECT_CLASS (pango_fc_font_parent_class)->finalize (object);
 }
 
 static gboolean
@@ -208,8 +181,8 @@ pango_fc_font_set_property (GObject       *object,
 	FcPatternReference (pattern);
 	fcfont->font_pattern = pattern;
 	fcfont->description = pango_fc_font_description_from_pattern (pattern, TRUE);
-	fcfont->hinted = pattern_is_hinted (pattern);
-	fcfont->transform = pattern_is_transformed (pattern);
+	fcfont->is_hinted = pattern_is_hinted (pattern);
+	fcfont->is_transformed = pattern_is_transformed (pattern);
       }
       break;
     default:
@@ -335,7 +308,7 @@ get_face_metrics (PangoFcFont      *fcfont,
       FT_Vector_Transform (&vector, &ft_matrix);
       metrics->ascent = PANGO_UNITS_26_6 (vector.y);
     }
-  else if (fcfont->hinted)
+  else if (fcfont->is_hinted)
     {
       metrics->descent = - PANGO_UNITS_26_6 (face->size->metrics.descender);
       metrics->ascent = PANGO_UNITS_26_6 (face->size->metrics.ascender);
@@ -390,7 +363,7 @@ get_face_metrics (PangoFcFont      *fcfont,
   /* If hinting is on for this font, quantize the underline and strikethrough position
    * to integer values.
    */
-  if (fcfont->hinted)
+  if (fcfont->is_hinted)
     {
       quantize_position (&metrics->underline_thickness, &metrics->underline_position);
       quantize_position (&metrics->strikethrough_thickness, &metrics->strikethrough_position);
@@ -767,7 +740,7 @@ _pango_fc_font_get_raw_extents (PangoFcFont    *fcfont,
 	{
 	  logical_rect->x = 0;
 	  logical_rect->width = PANGO_UNITS_26_6 (gm->horiAdvance);
-	  if (fcfont->hinted)
+	  if (fcfont->is_hinted)
 	    {
 	      logical_rect->y = - PANGO_UNITS_26_6 (face->size->metrics.ascender);
 	      logical_rect->height = PANGO_UNITS_26_6 (face->size->metrics.ascender - face->size->metrics.descender);

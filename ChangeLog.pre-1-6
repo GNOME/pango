@@ -1,3 +1,23 @@
+Sat Jul 10 17:33:38 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pangoft2-private.h pango/pangoft2-render.c
+	pango/pango-context.[ch] pango/pangoft2.[ch] pango/pango-utils.
+	pango/pango-types.h pango/pangofc-fontmap.c: Make PangoMatrix
+	arguments const where appropriate.
+
+	* pango/pango-context.c pango/fonts.c pango/pangofc-font.c 
+	pangofc-fontmap.c pango/pangoft2.c pango/pangoft2-fontmap.c 
+	pango/pangoxft-font.c pango/pangoxft-fontmap.c 
+	pango/pangowin32-fontmap.c: Use G_DEFINE_TYPE comprehensively.
+
+	* pango/pangoft2-private.h pangoft2.c: Un-staticify
+	pango_ft2_font_get_type.
+
+Sat Jul 10 16:55:46 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pangofc-font.h (struct _PangoFcFont): 
+	s/hinted/is_hinted/ s/transform/is_transformed/.
+
 Sat Jul 10 16:39:44 2004  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pangofc-font.[ch]: Add hinted/transform flags

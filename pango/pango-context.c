@@ -48,39 +48,9 @@ struct _PangoContextClass
   
 };
 
-static void pango_context_init        (PangoContext      *context);
-static void pango_context_class_init  (PangoContextClass *klass);
 static void pango_context_finalize    (GObject           *object);
 
-static gpointer parent_class;
-
-GType
-pango_context_get_type (void)
-{
-  static GType object_type = 0;
-
-  if (!object_type)
-    {
-      static const GTypeInfo object_info =
-      {
-        sizeof (PangoContextClass),
-        (GBaseInitFunc) NULL,
-        (GBaseFinalizeFunc) NULL,
-        (GClassInitFunc) pango_context_class_init,
-        NULL,           /* class_finalize */
-        NULL,           /* class_data */
-        sizeof (PangoContext),
-        0,              /* n_preallocs */
-        (GInstanceInitFunc) pango_context_init,
-      };
-      
-      object_type = g_type_register_static (G_TYPE_OBJECT,
-                                            "PangoContext",
-                                            &object_info, 0);
-    }
-  
-  return object_type;
-}
+G_DEFINE_TYPE (PangoContext, pango_context, G_TYPE_OBJECT)
 
 static void
 pango_context_init (PangoContext *context)
@@ -103,8 +73,6 @@ pango_context_class_init (PangoContextClass *klass)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (klass);
   
-  parent_class = g_type_class_peek_parent (klass);
-  
   object_class->finalize = pango_context_finalize;
 }
 
@@ -122,7 +90,7 @@ pango_context_finalize (GObject *object)
   if (context->matrix)
     pango_matrix_free (context->matrix);
   
-  G_OBJECT_CLASS (parent_class)->finalize (object);
+  G_OBJECT_CLASS (pango_context_parent_class)->finalize (object);
 }
 
 
@@ -169,8 +137,8 @@ pango_context_new (void)
  * matrices, depending on how the text is fit to the pixel grid.
  **/
 void
-pango_context_set_matrix (PangoContext *context,
-			  PangoMatrix  *matrix)
+pango_context_set_matrix (PangoContext       *context,
+			  const PangoMatrix  *matrix)
 {
   g_return_if_fail (PANGO_IS_CONTEXT (context));
 
@@ -194,7 +162,7 @@ pango_context_set_matrix (PangoContext *context,
  *  matrix is owned by Pango and must not be modified or
  *  freed.
  **/
-PangoMatrix *
+G_CONST_RETURN PangoMatrix *
 pango_context_get_matrix (PangoContext *context)
 {
   g_return_val_if_fail (PANGO_IS_CONTEXT (context), NULL);

@@ -227,10 +227,10 @@ typedef struct
 } Point;
 
 static void
-to_device (PangoMatrix *matrix,
-	   double       x,
-	   double       y,
-	   Point       *result)
+to_device (const PangoMatrix *matrix,
+	   double             x,
+	   double             y,
+	   Point             *result)
 {
   result->x = (x * matrix->xx + y * matrix->xy) / PANGO_SCALE + matrix->x0;
   result->y = (x * matrix->yx + y * matrix->yy) / PANGO_SCALE + matrix->y0;
@@ -270,12 +270,12 @@ compare_points (const void *a,
  * is done anti-aliased.
  **/
 void
-_pango_ft2_draw_rect (FT_Bitmap    *bitmap,
-		      PangoMatrix  *matrix,
-		      int           x,
-		      int           y,
-		      int           width,
-		      int           height)
+_pango_ft2_draw_rect (FT_Bitmap          *bitmap,
+		      const PangoMatrix  *matrix,
+		      int                 x,
+		      int                 y,
+		      int                 width,
+		      int                 height)
 {
   static const PangoMatrix identity = PANGO_MATRIX_INIT;
   Point points[4];
@@ -390,11 +390,11 @@ _pango_ft2_draw_rect (FT_Bitmap    *bitmap,
 #define HEIGHT_SQUARES 2.5
 
 static void
-get_total_matrix (PangoMatrix  *total,
-		  PangoMatrix  *global,
-		  int           x,
-		  int           y,
-		  int           square)
+get_total_matrix (PangoMatrix        *total,
+		  const PangoMatrix  *global,
+		  int                 x,
+		  int                 y,
+		  int                 square)
 {
   PangoMatrix local;
   gdouble scale = 0.5 * square;
@@ -433,12 +433,12 @@ get_total_matrix (PangoMatrix  *total,
  * in the original rectangle)
  **/
 void
-_pango_ft2_draw_error_underline (FT_Bitmap    *bitmap,
-				 PangoMatrix  *matrix,
-				 int           x,
-				 int           y,
-				 int           width,
-				 int           height)
+_pango_ft2_draw_error_underline (FT_Bitmap          *bitmap,
+				 const PangoMatrix  *matrix,
+				 int                 x,
+				 int                 y,
+				 int                 width,
+				 int                 height)
 {
 
   int square = height / HEIGHT_SQUARES;

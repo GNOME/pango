@@ -67,8 +67,6 @@ struct _PangoFT2FontMapClass
   PangoFcFontMapClass parent_class;
 };
 
-static void          pango_ft2_font_map_class_init          (PangoFT2FontMapClass *class);
-static void          pango_ft2_font_map_init                (PangoFT2FontMap      *fontmap);
 static void          pango_ft2_font_map_finalize            (GObject              *object);
 static void          pango_ft2_font_map_default_substitute  (PangoFcFontMap       *fcfontmap,
 							     FcPattern            *pattern);
@@ -77,35 +75,7 @@ static PangoFcFont * pango_ft2_font_map_new_font            (PangoFcFontMap     
 
 static PangoFT2FontMap *pango_ft2_global_fontmap = NULL;
 
-static GObjectClass *parent_class;
-
-GType
-pango_ft2_font_map_get_type (void)
-{
-  static GType object_type = 0;
-
-  if (!object_type)
-    {
-      static const GTypeInfo object_info =
-      {
-        sizeof (PangoFT2FontMapClass),
-        (GBaseInitFunc) NULL,
-        (GBaseFinalizeFunc) NULL,
-        (GClassInitFunc) pango_ft2_font_map_class_init,
-        NULL,           /* class_finalize */
-        NULL,           /* class_data */
-        sizeof (PangoFT2FontMap),
-        0,              /* n_preallocs */
-        (GInstanceInitFunc) pango_ft2_font_map_init,
-      };
-
-      object_type = g_type_register_static (PANGO_TYPE_FC_FONT_MAP,
-                                            "PangoFT2FontMap",
-                                            &object_info, 0);
-    }
-  
-  return object_type;
-}
+G_DEFINE_TYPE (PangoFT2FontMap, pango_ft2_font_map, PANGO_TYPE_FC_FONT_MAP)
 
 static void
 pango_ft2_font_map_class_init (PangoFT2FontMapClass *class)
@@ -113,8 +83,6 @@ pango_ft2_font_map_class_init (PangoFT2FontMapClass *class)
   GObjectClass *gobject_class = G_OBJECT_CLASS (class);
   PangoFcFontMapClass *fcfontmap_class = PANGO_FC_FONT_MAP_CLASS (class);
   
-  parent_class = g_type_class_peek_parent (class);
-
   gobject_class->finalize = pango_ft2_font_map_finalize;
   fcfontmap_class->default_substitute = pango_ft2_font_map_default_substitute;
   fcfontmap_class->new_font = pango_ft2_font_map_new_font;
@@ -138,7 +106,7 @@ pango_ft2_font_map_finalize (GObject *object)
 
   FT_Done_FreeType (ft2fontmap->library);
 
-  parent_class->finalize (object);
+  G_OBJECT_CLASS (pango_ft2_font_map_parent_class)->finalize (object);
 }
 
 /**
