@@ -437,7 +437,7 @@ text_handler           (GMarkupParseContext *context,
       const gchar *range_end;
       gboolean just_saw_marker;
       gssize uline_index = -1;
-      gsize uline_len = -1;
+      gsize uline_len = 0;	/* Quiet GCC */
       
       range_end = NULL;
       range_start = text;
