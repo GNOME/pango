@@ -713,7 +713,7 @@ pango_layout_get_single_paragraph_mode (PangoLayout *layout)
 }
 
 /**
- * pango_layout_get_ellipsize:
+ * pango_layout_set_ellipsize:
  * @layout: a #PangoLayout
  * @ellipsize: the new ellipsization mode for @layout
  * 
@@ -725,8 +725,6 @@ pango_layout_get_single_paragraph_mode (PangoLayout *layout)
  * If the layout contains characters such as newlines that
  * force it to be layed out in multiple lines, then each line
  * is ellipsized separately.
- * 
- * Return value: Gets the current ellipsization mode for the layout.
  **/
 void
 pango_layout_set_ellipsize (PangoLayout        *layout,
