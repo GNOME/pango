@@ -1,3 +1,9 @@
+Wed Feb 12 17:17:12 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* configure.in: If --without-x is specified, don't
+	try to build Xft backend either. (#105210, patch
+	from Akira Tagoh)
+
 Wed Feb 12 17:09:00 2003  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pango-context.c: Fix bug where language
