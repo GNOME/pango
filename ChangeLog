@@ -1,3 +1,10 @@
+Mon Aug 25 10:17:21 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/opentype/ftxgsub.c (Lookup_ChainContextSubst3)
+	* pango/opentype/ftxgpos.c (Lookup_ChainContextPos3):
+	Fix problems where the coverage wasn't being checked
+	for the first input glyph. (#118639, Kailash C. Chowksey)
+
 Mon Aug 25 10:11:59 2003  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/Makefile.am (EXTRA_DIST): add testfonts.c to
