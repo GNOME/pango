@@ -887,14 +887,6 @@ pango_win32_make_matching_logfont (PangoFontMap  *fontmap,
     *out = *lfp; /* Whatever. We need to pass something... */
 }
 
-static void
-free_coverages_foreach (gpointer key,
-			gpointer value,
-			gpointer data)
-{
-  pango_coverage_unref (value);
-}
-
 void
 pango_win32_font_entry_set_coverage (PangoWin32Face *face,
 				     PangoCoverage       *coverage)

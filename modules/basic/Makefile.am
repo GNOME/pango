@@ -6,6 +6,7 @@ pangolibs = $(top_builddir)/pango/libpango.la $(FRIBIDI_LIBS) $(GLIB_LIBS)
 pangoxlibs = $(top_builddir)/pango/libpangox.la $(X_LIBS) $(pangolibs)
 pangoxftlibs = $(top_builddir)/pango/libpangoxft.la $(XFT_LIBS) $(pangolibs)
 pangoft2libs = $(top_builddir)/pango/libpangoft2.la $(FREETYPE_LIBS) $(pangolibs)
+pangowin32libs = $(top_builddir)/pango/libpangowin32.la $(pangolibs)
 
 if HAVE_XFT
 if INCLUDE_BASIC_XFT
@@ -58,9 +59,30 @@ X_MODULES=
 X_PREFIX=
 endif
 
-noinst_LTLIBRARIES = $(X_INCLUDED) $(XFT_INCLUDED) $(FT2_INCLUDED)
-module_LTLIBRARIES = $(X_MODULES) $(XFT_MODULES) $(FT2_MODULES)
-moddefine = $(X_PREFIX) $(XFT_PREFIX) $(FT2_PREFIX)
+if HAVE_WIN32
+if INCLUDE_BASIC_WIN32
+WIN32_INCLUDED=libpango-basic-win32.la
+WIN32_MODULES=
+WIN32_PREFIX=-DWIN32_MODULE_PREFIX
+else
+WIN32_INCLUDED=
+WIN32_MODULES=pango-basic-win32.la
+WIN32_PREFIX=
+basic_win32_libadd=$(pangowin32libs)
+endif
+else
+WIN32_INCLUDED=
+WIN32_MODULES=
+WIN32_PREFIX=
+endif
+
+if PLATFORM_WIN32
+no_undefined = -no-undefined
+endif
+
+noinst_LTLIBRARIES = $(X_INCLUDED) $(XFT_INCLUDED) $(FT2_INCLUDED) $(WIN32_INCLUDED)
+module_LTLIBRARIES = $(X_MODULES) $(XFT_MODULES) $(FT2_MODULES) $(WIN32_MODULES)
+moddefine = $(X_PREFIX) $(XFT_PREFIX) $(FT2_PREFIX) $(WIN32_PREFIX)
 moduledir = $(libdir)/pango/modules
 
 INCLUDES = 			\
@@ -81,15 +103,19 @@ pango_basic_xft_la_LIBADD = $(basic_xft_libadd)
 pango_basic_xft_la_SOURCES = basic-xft.c
 libpango_basic_xft_la_SOURCES = basic-xft.c
 
-pango_basic_ft2_la_LDFLAGS = -export-dynamic -avoid-version -module
+pango_basic_ft2_la_LDFLAGS = -export-dynamic -avoid-version -module $(no_undefined)
 pango_basic_ft2_la_LIBADD = $(basic_ft2_libadd)
 pango_basic_ft2_la_SOURCES = basic-ft2.c
 libpango_basic_ft2_la_SOURCES = basic-ft2.c
 
+pango_basic_win32_la_LDFLAGS = -export-dynamic -avoid-version -module $(no_undefined)
+pango_basic_win32_la_LIBADD = $(basic_win32_libadd)
+pango_basic_win32_la_SOURCES = basic-win32.c
+libpango_basic_win32_la_SOURCES = basic-win32.c
+
 EXTRA_DIST =		\
 	tables-big.i	\
 	tables-small.i	\
-	basic-win32.c	\
 	makefile.mingw	\
 	makefile.mingw.in
 

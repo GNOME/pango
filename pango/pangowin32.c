@@ -82,7 +82,6 @@ pango_win32_get_hfont (PangoFont *font)
 {
   PangoWin32Font *win32font = (PangoWin32Font *)font;
   PangoWin32FontCache *cache;
-  HGDIOBJ oldfont;
   TEXTMETRIC tm;
 
   if (!win32font->hfont)
@@ -233,9 +232,7 @@ pango_win32_render (HDC                hdc,
 {
   HFONT old_hfont = NULL;
   HFONT hfont;
-  UINT orig_align = -1;
   int i;
-  int x_off = 0;
   guint16 *glyph_indexes;
   INT *dX;
 
@@ -275,7 +272,6 @@ pango_win32_font_get_glyph_extents (PangoFont      *font,
 {
   PangoWin32Font *win32font = (PangoWin32Font *)font;
   guint16 glyph_index = glyph;
-  SIZE size;
   GLYPHMETRICS gm;
   guint32 res;
   HFONT hfont;
@@ -434,7 +430,6 @@ pango_win32_font_finalize (GObject *object)
 {
   PangoWin32Font *win32font = (PangoWin32Font *)object;
   PangoWin32FontCache *cache = pango_win32_font_map_get_font_cache (win32font->fontmap);
-  int i;
 
   if (win32font->hfont != NULL)
     pango_win32_font_cache_unload (cache, win32font->hfont);
@@ -1049,14 +1044,11 @@ pango_win32_font_calc_coverage (PangoFont     *font,
 {
   struct type_4_table *table;
   guint16 *id_range_offset;
-  guint16 *id_delta;
   guint16 *start_count;
   guint16 *end_count;
   guint16 seg_count;
-  guint segment;
   guint16 id;
   guint32 ch;
-  guint16 glyph;
   int i;
 
   /* Do GetFontData magic on font->hfont here. */

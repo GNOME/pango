@@ -5,6 +5,7 @@ EXPORTS
 	pango_win32_font_cache_unload
 	pango_win32_font_entry_get_coverage
 	pango_win32_font_entry_remove
+	pango_win32_font_get_glyph_index
 	pango_win32_font_map_for_display
 	pango_win32_font_map_get_font_cache
 	pango_win32_font_new

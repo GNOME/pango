@@ -1,3 +1,49 @@
+2001-10-03  Tor Lillqvist  <tml@iki.fi>
+
+	Add the Win32 GDI Pango backend to autoconfiguration:
+
+	* configure.in: Call AC_LIBTOOL_WIN32_DLL. Check for native Win32
+	or Cygwin, set automake conditional PLATFORM_WIN32. Check for
+	native Win32, set OS_WIN32. Refactor the
+	Xrender+Xft+Xft+FreeType.h checks not to use AC_CHECK_LIBs inside
+	eachother, autoconf 2.52e on Cygwin generated bad shell code for
+	that. Check for gdi32 library, set automake conditional
+	HAVE_WIN32. Add the basic-win32 module, add INCLUDED_WIN32_MODULES
+	and INCLUDE_BASIC_WIN32. Write pango/module-defs-win32.c. Generate
+	pangowin32*.pc.
+
+	* pangowin32.pc.in
+	* pangowin32-uninstalled.pc.in: New files.
+
+	* Makefile.am: Add pangowin32*.pc.in.
+
+	* .cvsignore: Add pangowin32*.pc.
+
+	* modules/basic/Makefile.am: Add the basic-win32 backend. Use
+	-no-undefined on PLATFORM_WIN32.
+
+	* pango/Makefile.am: Add the Win32 backend. Use -no-undefined on
+	PLATFORM_WIN32. Use the .def files on OS_WIN32. Link libpangoft2
+	with GLIB_LIBS.
+
+	* pango/pango-utils.c: (DllMain): New function, on
+	G_OS_WIN32. Used to get the actual DLL name, which is tucked away.
+	(pango_get_sysconf_subdirectory, pango_get_lib_subdirectory):
+	(Win32): Append VERSION to the registry key passed to
+	g_win32_get_package_installation_subdirectory(). Use the real DLL
+	name from above instead of assuming the DLL has a certain name.
+
+	Other Win32 backend fixes:
+
+	* pango/pangowin32-fontmap.c: (free_coverages_foreach): Remove, unused.
+
+	* pango/pangowin32.c: Remove unused variables.
+
+	* pango/pangowin32.def: Add pango_win32_font_get_glyph_index.
+
+	* pango/pangowin32.h: Remove pango_win32_font_get_coverage, which
+	is static.
+
 Mon Oct  1 16:02:54 2001  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/fonts.c: g_string_printfa => g_string_append_printf.

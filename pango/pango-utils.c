@@ -615,6 +615,29 @@ pango_config_key_get (const char *key)
   return g_strdup (g_hash_table_lookup (config_hash, key));
 }
 
+#ifdef G_OS_WIN32
+
+/* DllMain function needed to tuck away the DLL name */
+
+static char dll_name[MAX_PATH];
+
+BOOL WINAPI
+DllMain (HINSTANCE hinstDLL,
+	 DWORD     fdwReason,
+	 LPVOID    lpvReserved)
+{
+  switch (fdwReason)
+    {
+    case DLL_PROCESS_ATTACH:
+      GetModuleFileName ((HMODULE) hinstDLL, dll_name, sizeof (dll_name));
+      break;
+    }
+
+  return TRUE;
+}
+
+#endif /* G_OS_WIN32 */
+
 G_CONST_RETURN char *
 pango_get_sysconf_subdirectory (void)
 {
@@ -623,7 +646,7 @@ pango_get_sysconf_subdirectory (void)
 
   if (result == NULL)
     result = g_win32_get_package_installation_subdirectory
-      ("pango", g_strdup_printf ("pango-%s.dll", PANGO_VERSION), "etc\\pango");
+      (PACKAGE " " VERSION, g_path_get_basename (dll_name), "etc\\pango");
 
   return result;
 #else
@@ -639,7 +662,7 @@ pango_get_lib_subdirectory (void)
 
   if (result == NULL)
     result = g_win32_get_package_installation_subdirectory
-      ("pango", g_strdup_printf ("pango-%s.dll", PANGO_VERSION), "lib\\pango");
+      (PACKAGE " " VERSION, g_path_get_basename (dll_name), "lib\\pango");
 
   return result;
 #else

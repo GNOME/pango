@@ -59,8 +59,6 @@ void           pango_win32_render_layout      (HDC               hdc,
  */
 
 PangoGlyph             pango_win32_get_unknown_glyph    (PangoFont        *font);
-PangoCoverage         *pango_win32_font_get_coverage    (PangoFont        *font,
-							 PangoLanguage    *lang);
 gint                   pango_win32_font_get_glyph_index (PangoFont        *font,
 							 gunichar          wc);
 

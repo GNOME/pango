@@ -34,6 +34,14 @@ X_HFILES=
 X_BUILD_LIBS=
 endif
 
+if HAVE_WIN32
+WIN32_HFILES=pangowin32.h
+WIN32_BUILD_LIBS=libpangowin32.la
+else
+WIN32_HFILES=
+WIN32_BUILD_LIBS=
+endif
+
 if HAVE_XFT
 XFT_HFILES=pangoxft.h pango-ot.h
 XFT_BUILD_LIBS=libpangoxft.la
@@ -50,8 +58,17 @@ FT2_BUILD_LIBS=
 FT2_HFILES=
 endif
 
+if PLATFORM_WIN32
+no_undefined = -no-undefined
+endif
 
-lib_LTLIBRARIES = libpango.la $(X_BUILD_LIBS) $(XFT_BUILD_LIBS) $(FT2_BUILD_LIBS)
+if OS_WIN32
+pango_export_symbols = -export-symbols pango.def
+pangowin32_export_symbols = -export-symbols pangowin32.def
+pangoft2_export_symbols = -export-symbols pangoft2.def
+endif
+
+lib_LTLIBRARIES = libpango.la $(X_BUILD_LIBS) $(WIN32_BUILD_LIBS) $(XFT_BUILD_LIBS) $(FT2_BUILD_LIBS)
 
 bin_PROGRAMS = pango-querymodules
 
@@ -95,7 +112,7 @@ libpangox_la_SOURCES = 	   \
 # down at which point we'll either use the GTK+ versioning
 # scheme or the standard libtool scheme.
 #
-libpango_la_LDFLAGS = -release $(VERSION) $(GLIB_LIBS)
+libpango_la_LDFLAGS = -release $(VERSION) $(GLIB_LIBS) $(no_undefined) $(pango_export_symbols)
 if HAVE_FRIBIDI
 else
 libpango_la_LIBADD = mini-fribidi/libmini-fribidi.la
@@ -104,6 +121,19 @@ endif
 libpangox_la_LDFLAGS = -release $(VERSION)
 libpangox_la_LIBADD =  $(INCLUDED_X_MODULES) $(X_LIBS) libpango.la
 libpangox_la_DEPENDENCIES = $(INCLUDED_X_MODULES) libpango.la
+
+libpangowin32_la_SOURCES =	\
+	pangowin32.h		\
+	pangowin32.c		\
+	pangowin32-private.h	\
+	pangowin32-fontcache.c	\
+	pangowin32-fontmap.c	\
+	module-defs-win32.c
+
+libpangowin32_la_LDFLAGS = -release $(VERSION) $(GLIB_LIBS) $(no_undefined) $(pangowin32_export_symbols)
+libpangowin32_la_LIBADD = $(INCLUDED_WIN32_MODULES) $(WIN32_LIBS) libpango.la
+libpangowin32_la_DEPENDENCIES = libpango.la
+
 
 libpangoxft_la_SOURCES =   	\
 	pangoxft-font.c		\
@@ -124,7 +154,7 @@ libpangoft2_la_SOURCES =   	\
 	module-defs-ft2.c
 
 libpangoft2_la_LIBADD = $(INCLUDED_FT2_MODULES) $(FREETYPE_LIBS) libpango.la
-libpangoft2_la_LDFLAGS = -release $(VERSION)
+libpangoft2_la_LDFLAGS = -release $(VERSION) $(GLIB_LIBS) $(no_undefined) $(pangoft2_export_symbols)
 libpangoft2_la_DEPENDENCIES = $(INCLUDED_FT2_MODULES) libpango.la
 
 pangoincludedir=$(includedir)/pango-1.0/pango
@@ -204,11 +234,6 @@ EXTRA_DIST =					\
 	module-defs.h				\
 	pango.def				\
 	pangowin32.def				\
-	pangowin32.h				\
-	pangowin32.c				\
-	pangowin32-private.h			\
-	pangowin32-fontcache.c			\
-	pangowin32-fontmap.c			\
 	pangoft2.def				\
 	makefile.mingw				\
 	makefile.mingw.in			\
