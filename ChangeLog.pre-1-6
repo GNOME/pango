@@ -1,3 +1,8 @@
+Fri Apr  7 03:08:09 2000  Owen Taylor  <otaylor@redhat.com>
+
+	* configure.in (UNICODE_LIBS): Add back in flockfile
+	check which was accidentally removed.
+
 2000-04-21  Robert Brady  <rwb197@zepler.org>
 
 	* modules/devanagari/dev-ligatures.h: Add some more ligature

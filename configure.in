@@ -52,6 +52,8 @@ UNICODE_LIBS="`unicode-config --libs`"
 AC_SUBST(UNICODE_LIBS)
 AC_SUBST(UNICODE_CFLAGS)
 
+AC_CHECK_FUNCS(flockfile)
+
 AC_CHECK_LIB(unicode, unicode_type, :,
 	     AC_MSG_ERROR([*** libunicode not found.]), $UNICODE_LIBS)
 
