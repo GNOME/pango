@@ -1,3 +1,30 @@
+2004-10-16  Theppitak Karoonboonyanan  <thep@linux.thai.net>
+
+	Merge from HEAD.
+
+	* modules/thai/thai-ot.[ch] (thai_ot_get_ruleset),
+	modules/thai/thai-fc.c (thai_get_font_info): Prefer OpenType to PUA
+	substitutions.
+
+	* modules/thai/thai-shaper.c (groups, group1_map, group2_map):
+	Remove unused data for XTIS.
+
+	* modules/thai/thai-shaper.[ch] (enum ThaiFontSet, get_glyphs_list),
+	modules/thai/thai-fc.c (thai_get_font_info, thai_make_glyph):
+	Remove THAI_FONT_ISO10646 font set.
+
+	* modules/thai/thai-fc.c (tis620_1): Fix the PUA glyph table.
+
+	* modules/thai/thai-shaper.h (thai_{get,make}_glyph_{tis,uni}),
+	modules/thai/thai-shaper.c (get_adjusted_glyphs_list),
+	modules/thai/thai-fc.c (thai_{get,make}_glyph_{tis,uni}, tis620_2):
+	Explicitly handle dangling upper/lower marks with dottedcircle and
+	fails gracefully if the glyph is not available.
+
+	* modules/thai/thai-shaper.[ch] (thai_get_glyph_tis,
+	thai_make_glyph_tis): Use guchar instead of gchar as argument type.
+	Make *_tis functions wrappers to *_uni functions.
+
 2004-09-15  Tor Lillqvist  <tml@iki.fi>
 
 	* pango/pangowin32-fontmap.c (pango_win32_insert_font): Ignore

@@ -13,8 +13,7 @@ typedef enum {
   THAI_FONT_NONE,
   THAI_FONT_TIS,
   THAI_FONT_TIS_MAC,
-  THAI_FONT_TIS_WIN,
-  THAI_FONT_ISO10646
+  THAI_FONT_TIS_WIN
 } ThaiFontSet;
 
 typedef enum {
@@ -35,10 +34,19 @@ ThaiFontInfo *
 thai_get_font_info (PangoFont *font);
 
 PangoGlyph
-thai_make_glyph (ThaiFontInfo *font_info, unsigned int c);
+thai_get_glyph_tis (ThaiFontInfo *font_info, guchar c);
 
 PangoGlyph
-thai_make_unknown_glyph (ThaiFontInfo *font_info, unsigned int c);
+thai_make_glyph_tis (ThaiFontInfo *font_info, guchar c);
+
+PangoGlyph
+thai_get_glyph_uni (ThaiFontInfo *font_info, gunichar uc);
+
+PangoGlyph
+thai_make_glyph_uni (ThaiFontInfo *font_info, gunichar uc);
+
+PangoGlyph
+thai_make_unknown_glyph (ThaiFontInfo *font_info, gunichar uc);
 
 /*
  * Public functions

@@ -34,6 +34,7 @@
 #include "pangofc-font.h"
 
 #include "thai-shaper.h"
+#include "thai-ot.h"
 
 /* No extra fields needed */
 typedef PangoEngineShape      ThaiEngineFc;
@@ -79,22 +80,22 @@ static int tis620_0[128] = {
 };
 
 static int tis620_1[128] = {
-    0x00ab, 0x00bb, 0x2026, 0xf88c, 0xf88f, 0xf892, 0xf895, 0xf898,
-    0xf88b, 0xf88e, 0xf891, 0xf894, 0xf897, 0x201c, 0x201d, 0xf899,
-    /**/ 0, 0x2022, 0xf884, 0xf889, 0xf885, 0xf886, 0xf887, 0xf888,
-    0xf88a, 0xf88d, 0xf890, 0xf893, 0xf896, 0x2018, 0x2019,      0,
-    0x00a0, 0x0e01, 0x0e02, 0x0e03, 0x0e04, 0x0e05, 0x0e06, 0x0e07,
+    /**/ 0,      0,      0, 0xf88c, 0xf88f, 0xf892, 0xf895, 0xf898,
+    0xf88b, 0xf88e, 0xf891, 0xf894, 0xf897,      0,      0, 0xf899,
+    /**/ 0,      0, 0xf884, 0xf889, 0xf885, 0xf886, 0xf887, 0xf888,
+    0xf88a, 0xf88d, 0xf890, 0xf893, 0xf896,      0,      0,      0,
+    /**/ 0, 0x0e01, 0x0e02, 0x0e03, 0x0e04, 0x0e05, 0x0e06, 0x0e07,
     0x0e08, 0x0e09, 0x0e0a, 0x0e0b, 0x0e0c, 0x0e0d, 0x0e0e, 0x0e0f,
     0x0e10, 0x0e11, 0x0e12, 0x0e13, 0x0e14, 0x0e15, 0x0e16, 0x0e17,
     0x0e18, 0x0e19, 0x0e1a, 0x0e1b, 0x0e1c, 0x0e1d, 0x0e1e, 0x0e1f,
     0x0e20, 0x0e21, 0x0e22, 0x0e23, 0x0e24, 0x0e25, 0x0e26, 0x0e27,
     0x0e28, 0x0e29, 0x0e2a, 0x0e2b, 0x0e2c, 0x0e2d, 0x0e2e, 0x0e2f,
     0x0e30, 0x0e31, 0x0e32, 0x0e33, 0x0e34, 0x0e35, 0x0e36, 0x0e37,
-    0x0e38, 0x0e39, 0x0e3a, 0xfeff, 0x200b, 0x2013, 0x2014, 0x0e3f,
+    0x0e38, 0x0e39, 0x0e3a,      0,      0,      0,      0, 0x0e3f,
     0x0e40, 0x0e41, 0x0e42, 0x0e43, 0x0e44, 0x0e45, 0x0e46, 0x0e47,
-    0x0e48, 0x0e49, 0x0e4a, 0x0e4b, 0x0e4c, 0x0e4d, 0x2122, 0x0e4f,
+    0x0e48, 0x0e49, 0x0e4a, 0x0e4b, 0x0e4c, 0x0e4d,      0, 0x0e4f,
     0x0e50, 0x0e51, 0x0e52, 0x0e53, 0x0e54, 0x0e55, 0x0e56, 0x0e57,
-    0x0e58, 0x0e59, 0x00ae, 0x00a9,      0,      0,      0,      0
+    0x0e58, 0x0e59,      0,      0,      0,      0,      0,      0
 };
 
 static int tis620_2[128] = {
@@ -109,7 +110,7 @@ static int tis620_2[128] = {
     0x0e20, 0x0e21, 0x0e22, 0x0e23, 0x0e24, 0x0e25, 0x0e26, 0x0e27,
     0x0e28, 0x0e29, 0x0e2a, 0x0e2b, 0x0e2c, 0x0e2d, 0x0e2e, 0x0e2f,
     0x0e30, 0x0e31, 0x0e32, 0x0e33, 0x0e34, 0x0e35, 0x0e36, 0x0e37,
-    0x0e38, 0x0e39, 0x0e3a,      0,      0, 0x25cc,      0, 0x0e3f,
+    0x0e38, 0x0e39, 0x0e3a,      0,      0,      0,      0, 0x0e3f,
     0x0e40, 0x0e41, 0x0e42, 0x0e43, 0x0e44, 0x0e45, 0x0e46, 0x0e47,
     0x0e48, 0x0e49, 0x0e4a, 0x0e4b, 0x0e4c, 0x0e4d, 0x0e4e, 0x0e4f,
     0x0e50, 0x0e51, 0x0e52, 0x0e53, 0x0e54, 0x0e55, 0x0e56, 0x0e57,
@@ -152,15 +153,15 @@ thai_get_font_info (PangoFont *font)
       font_info = g_new (ThaiFontInfo, 1);
       font_info->font = font;
   
-      /* detect font set by determining availibility of glyphs */
-      if (contain_glyphs(font, tis620_2))
+      /* detect font set by determining availibility of OT ruleset & glyphs */
+      if (thai_ot_get_ruleset (font))
+        font_info->font_set = THAI_FONT_TIS;
+      else if (contain_glyphs(font, tis620_2))
         font_info->font_set = THAI_FONT_TIS_WIN;
       else if (contain_glyphs(font, tis620_1))
         font_info->font_set = THAI_FONT_TIS_MAC;
-      else if (contain_glyphs(font, tis620_0))
-        font_info->font_set = THAI_FONT_TIS;
       else
-        font_info->font_set = THAI_FONT_ISO10646;
+        font_info->font_set = THAI_FONT_TIS;
   
       g_object_set_qdata_full (G_OBJECT (font), info_id, font_info, (GDestroyNotify)g_free);
     }
@@ -168,32 +169,52 @@ thai_get_font_info (PangoFont *font)
   return font_info;
 }
 
-PangoGlyph
-thai_make_glyph (ThaiFontInfo *font_info, unsigned int c)
+static gunichar
+get_glyph_index_tis (ThaiFontInfo *font_info, guchar c)
 {
-  int index;
-  PangoGlyph result;
-  PangoFcFont *fc_font = (PangoFcFont *)font_info->font;
-
   switch (font_info->font_set) {
-    case THAI_FONT_ISO10646:index = c; break;
-    case THAI_FONT_TIS:     index = (c & 0x80) ? tis620_0[c & 0x7f] : c; break;
-    case THAI_FONT_TIS_MAC: index = (c & 0x80) ? tis620_1[c & 0x7f] : c; break;
-    case THAI_FONT_TIS_WIN: index = (c & 0x80) ? tis620_2[c & 0x7f] : c; break;
-    default:                index = 0; break;
+    case THAI_FONT_TIS:     return (c & 0x80) ? tis620_0[c & 0x7f] : c;
+    case THAI_FONT_TIS_MAC: return (c & 0x80) ? tis620_1[c & 0x7f] : c;
+    case THAI_FONT_TIS_WIN: return (c & 0x80) ? tis620_2[c & 0x7f] : c;
+    default:                return 0;
   }
-  
-  result = pango_fc_font_get_glyph (fc_font, index);
-  if (result)
-    return result;
-  else
-    return pango_fc_font_get_unknown_glyph (fc_font, index);
 }
 
 PangoGlyph
-thai_make_unknown_glyph (ThaiFontInfo *font_info, unsigned int c)
+thai_get_glyph_tis (ThaiFontInfo *font_info, guchar c)
 {
-  return pango_fc_font_get_unknown_glyph ((PangoFcFont *)font_info->font, c);
+  return thai_get_glyph_uni (font_info, get_glyph_index_tis (font_info, c));
+}
+
+PangoGlyph
+thai_make_glyph_tis (ThaiFontInfo *font_info, guchar c)
+{
+  return thai_make_glyph_uni (font_info, get_glyph_index_tis (font_info, c));
+}
+
+PangoGlyph
+thai_get_glyph_uni (ThaiFontInfo *font_info, gunichar uc)
+{
+  return pango_fc_font_get_glyph ((PangoFcFont *)font_info->font, uc);
+}
+
+PangoGlyph
+thai_make_glyph_uni (ThaiFontInfo *font_info, gunichar uc)
+{
+  PangoGlyph result;
+  PangoFcFont *fc_font = (PangoFcFont *)font_info->font;
+
+  result = pango_fc_font_get_glyph (fc_font, uc);
+  if (result)
+    return result;
+  else
+    return pango_fc_font_get_unknown_glyph (fc_font, uc);
+}
+
+PangoGlyph
+thai_make_unknown_glyph (ThaiFontInfo *font_info, gunichar uc)
+{
+  return pango_fc_font_get_unknown_glyph ((PangoFcFont *)font_info->font, uc);
 }
 
 static void
