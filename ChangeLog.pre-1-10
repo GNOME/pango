@@ -1,3 +1,18 @@
+Tue Jun 22 14:10:41 2004  Owen Taylor  <otaylor@redhat.com>
+ 
+ 	* pango/break.c: Handle new Unicode-4.0 WORD_JOINER
+ 	and NEXT_LINE classes. (#143436, Jeroen Zwartepoorte)
+ 
+ 	* pango/break.c (pango_default_break): Handle space
+ 	followed by a combining character as called for by
+ 	TR 14.
+ 
+ 	* tests/testboundaries.c (check_line_char): Fix up
+ 	for space+combining mark
+ 	
+ 	* pango/break.c (pango_default_break): Change fixme
+ 	for G_UNICODE_BREAK_SURROGATE to g_assert_not_reached().
+ 	
 Mon Jun 21 16:02:04 2004  Owen Taylor  <otaylor@redhat.com>
 
 	#143556, Noah Misch
