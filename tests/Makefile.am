@@ -59,7 +59,7 @@ endif
 cxx_test_SOURCES = cxx-test.C
 
 if CROSS_COMPILING
-all-local: all-unicode.txt
+all-local:
 else
 all-local: all-unicode.txt pango.modules
 endif
