@@ -315,7 +315,7 @@ pango_ft2_font_map_for_display (void)
   gboolean read_font;
 
   /* Make sure that the type system is initialized */
-  g_type_init (0);
+  g_type_init ();
   
   if (pango_ft2_global_fontmap != NULL)
     return PANGO_FONT_MAP (pango_ft2_global_fontmap);

@@ -220,7 +220,7 @@ pango_x_font_map_for_display (Display *display)
   g_return_val_if_fail (display != NULL, NULL);
   
   /* Make sure that the type system is initialized */
-  g_type_init (0);
+  g_type_init ();
   
   while (tmp_list)
     {

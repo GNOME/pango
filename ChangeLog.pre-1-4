@@ -1,3 +1,11 @@
+Thu Jun 28 21:49:30 2001  Owen Taylor  <otaylor@redhat.com>
+
+	* configure.in (GLIB_REQUIRED_VERSION): Require GLib-1.3.7
+
+	* pango/pangoft2-fontmap.c pango/pangowin32-fontmap.c
+	  pango/pangox-fontmap.c pango/pangoxft-fontmap.c:
+	Fix args to g_type_init().
+
 Tue Jun 26 15:11:30 2001  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pango-context.c (font_set_get_font)

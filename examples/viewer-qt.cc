@@ -508,7 +508,7 @@ main (int argc, char **argv)
   QApplication a (argc, argv);
   const char *filename;
 
-  g_type_init ((GTypeDebugFlags) 0);
+  g_type_init ();
   
   QApplication::setStyle (new QCDEStyle());
 
