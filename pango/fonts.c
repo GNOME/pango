@@ -811,6 +811,8 @@ pango_font_description_from_string (const char *str)
                PANGO_FONT_MASK_STRETCH;
   
   desc->family_name = NULL;
+  desc->static_family = FALSE;
+  
   desc->style = PANGO_STYLE_NORMAL;
   desc->weight = PANGO_WEIGHT_NORMAL;
   desc->variant = PANGO_VARIANT_NORMAL;

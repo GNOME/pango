@@ -1,3 +1,8 @@
+Wed Jan 16 09:25:34 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/fonts.c (pango_font_description_from_string): Initialize
+	the static_family field. (Fix from Zack Rusin)
+
 2002-01-14  Havoc Pennington  <hp@pobox.com>
 
 	* pango/pango-layout.c: slight correction to
@@ -49,6 +54,7 @@ Thu Jan 10 15:04:31 2002  Owen Taylor  <otaylor@redhat.com>
 	Don't offset the logical rect by y_offset - this generally
 	is not desired, since it means that the logical height
 	of a line could change if it included accented characters.
+	(#67921, Dov Grobgeld)
 
 2002-01-09  Alex Larsson  <alexl@redhat.com>
 
