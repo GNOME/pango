@@ -840,11 +840,13 @@ get_font_metrics_from_string (PangoFont        *font,
 	}
 
       if (!finished)
-	p = g_utf8_next_char (p);
-
-      last_shaper = shaper;
-      last_level = embedding_levels[i];
-      i++;
+	{
+	  p = g_utf8_next_char (p);
+	      
+	  last_shaper = shaper;
+	  last_level = embedding_levels[i];
+	  i++;
+        }
     }
 
   get_font_metrics_from_subfonts (font, subfonts, metrics);

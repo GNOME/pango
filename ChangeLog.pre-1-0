@@ -1,3 +1,9 @@
+2001-10-09  Matt Wilson  <msw@redhat.com>
+
+	* pango/pangox.c (get_font_metrics_from_string): protect from
+	indexing off the end of the embedding_levels array by only doing
+	so if we're not finished.
+
 2001-10-04  Havoc Pennington  <hp@pobox.com>
 
 	* pango/break.c (pango_default_break): fix wrong 
