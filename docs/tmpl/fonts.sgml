@@ -111,15 +111,16 @@ The GObject type for #PangoStretch.
 
 <!-- ##### ENUM PangoFontMask ##### -->
 <para>
-
+The bits in a #PangoFontMask correspond to fields in a  
+#PangoFontDescription that have been set.
 </para>
 
-@PANGO_FONT_MASK_FAMILY: 
-@PANGO_FONT_MASK_STYLE: 
-@PANGO_FONT_MASK_VARIANT: 
-@PANGO_FONT_MASK_WEIGHT: 
-@PANGO_FONT_MASK_STRETCH: 
-@PANGO_FONT_MASK_SIZE: 
+@PANGO_FONT_MASK_FAMILY: the font family is specified.
+@PANGO_FONT_MASK_STYLE: the font style is specified. 
+@PANGO_FONT_MASK_VARIANT: the font variant is specified.
+@PANGO_FONT_MASK_WEIGHT: the font weight is specified. 
+@PANGO_FONT_MASK_STRETCH: the font stretch is specified. 
+@PANGO_FONT_MASK_SIZE: the font size is specified.
 
 <!-- ##### MACRO PANGO_TYPE_FONT_MASK ##### -->
 <para>

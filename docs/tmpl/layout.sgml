@@ -50,7 +50,12 @@ fields.
 
 <!-- ##### STRUCT PangoLayoutIter ##### -->
 <para>
-
+A <structname>PangoLayoutIter</structname> structure can be used to
+iterate over the visual extents of a #PangoLayout. 
+</para>
+<para>
+The <structname>PangoLayoutIter</structname> structure is opaque, and 
+has no user-visible fields.
 </para>
 
 
@@ -195,11 +200,12 @@ fields.
 
 <!-- ##### ENUM PangoWrapMode ##### -->
 <para>
-
+describes how to wrap the lines of a #PangoLayout to the desired width.
 </para>
 
-@PANGO_WRAP_WORD: 
-@PANGO_WRAP_CHAR: 
+@PANGO_WRAP_WORD: wrap lines at word boundaries.
+@PANGO_WRAP_CHAR: wrap lines at character boundaries.
+
 
 <!-- ##### MACRO PANGO_TYPE_WRAP_MODE ##### -->
 <para>

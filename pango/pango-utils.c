@@ -1052,7 +1052,7 @@ pango_language_get_type (void)
  * pointer) and compared with other language tags (compare the
  * pointer.)
  *
- * This function first canonicalizes the string by by converting it to
+ * This function first canonicalizes the string by converting it to
  * lowercase, mapping '_' to '-', and stripping all characters other
  * than letters and '-'.
  * 

@@ -43,22 +43,24 @@ g_quark_from_string()) is used to identify the renderer in pango_find_map().
 
 <!-- ##### USER_FUNCTION PangoGetGCFunc ##### -->
 <para>
-
+Specifies the type of the function used to create a new GC for a given
+color. 
 </para>
 
-@context: 
-@color: 
-@base_gc: 
-@Returns: 
+@context: a #PangoContext.
+@color: the color to create a new GC for.
+@base_gc: the GC to base the new GC on.
+@Returns: the new GC.
 
 
 <!-- ##### USER_FUNCTION PangoFreeGCFunc ##### -->
 <para>
-
+Specifies the type of the function used to free a GC created with 
+the corresponding #PangoGetGCFunc function.
 </para>
 
-@context: 
-@gc: 
+@context: a #PangoContext.
+@gc: the GC to free.
 
 
 <!-- ##### FUNCTION pango_x_render ##### -->

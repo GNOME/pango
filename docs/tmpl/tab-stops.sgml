@@ -16,7 +16,8 @@ Tab Stops
 
 <!-- ##### STRUCT PangoTabArray ##### -->
 <para>
-
+A <structname>PangoTabArray</structname> struct contains an array
+of tab stops. Each tab stop has an alignment and a position.
 </para>
 
 
@@ -29,10 +30,11 @@ The GObject type for #PangoTabArray.
 
 <!-- ##### ENUM PangoTabAlign ##### -->
 <para>
-
+A #PangoTabAlign specifies where a tab stop appears relative to the text.
 </para>
 
-@PANGO_TAB_LEFT: 
+@PANGO_TAB_LEFT: the tab stop appears to the left of the text. 
+
 
 <!-- ##### MACRO PANGO_TYPE_TAB_ALIGN ##### -->
 <para>

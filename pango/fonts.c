@@ -393,7 +393,7 @@ pango_font_description_get_set_fields (const PangoFontDescription *desc)
  * settings for those fields, to clear a family name set with
  * pango_font_description_set_family_static() so that it won't
  * be returned by subsequent calls to pango_font_description_get_family(),
- * you must actually call pango_font_description-set_family (desc, NULL);
+ * you must actually call pango_font_description_set_family (desc, NULL);
  **/
 void
 pango_font_description_unset_fields (PangoFontDescription *desc,

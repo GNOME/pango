@@ -28,21 +28,21 @@ attribute is listed in parentheses after the description.
 </para>
 
 @PANGO_ATTR_INVALID: 
-@PANGO_ATTR_LANGUAGE: 
+@PANGO_ATTR_LANGUAGE: language (#PangoAttrLanguage) 
 @PANGO_ATTR_FAMILY: font family name list (#PangoAttrString)
 @PANGO_ATTR_STYLE: font slant style (#PangoAttrInt)
 @PANGO_ATTR_WEIGHT: font weight (#PangoAttrInt)
 @PANGO_ATTR_VARIANT: font variant (normal or small caps) (#PangoAttrInt)
 @PANGO_ATTR_STRETCH: font stretch (#PangoAttrInt)
 @PANGO_ATTR_SIZE: font size in 1000th's of a point (#PangoAttrInt)
-@PANGO_ATTR_FONT_DESC: 
+@PANGO_ATTR_FONT_DESC: font description (#PangoAttrFontDesc) 
 @PANGO_ATTR_FOREGROUND: foreground color (#PangoAttrColor)
 @PANGO_ATTR_BACKGROUND: background color (#PangoAttrColor)
 @PANGO_ATTR_UNDERLINE: whether the text has an underline (#PangoAttrInt)
 @PANGO_ATTR_STRIKETHROUGH: whether the text is struck-through (#PangoAttrInt)
 @PANGO_ATTR_RISE: baseline displacement (#PangoAttrInt)
-@PANGO_ATTR_SHAPE: 
-@PANGO_ATTR_SCALE: 
+@PANGO_ATTR_SHAPE: shape (#PangoAttrShape)
+@PANGO_ATTR_SCALE: font size scale factor (#PangoAttrScale) 
 
 <!-- ##### MACRO PANGO_TYPE_ATTR_TYPE ##### -->
 <para>
@@ -85,15 +85,16 @@ a string value.
 </para>
 
 @attr: the common portion of the attribute
-@value: the value of the attribute
+@value: the string which is the value of the attribute
 
 <!-- ##### STRUCT PangoAttrLanguage ##### -->
 <para>
-
+The #PangoAttrColor structure is used to represent attributes that
+are languages.
 </para>
 
-@attr: 
-@value: 
+@attr: the common portion of the attribute
+@value: the #PangoLanguage which is the value of the attribute
 
 <!-- ##### STRUCT PangoAttrColor ##### -->
 <para>
@@ -102,7 +103,7 @@ are colors.
 </para>
 
 @attr: the common portion of the attribute
-@color: 
+@color: the #PangoColor which is the value of the attribute
 
 <!-- ##### STRUCT PangoAttrInt ##### -->
 <para>
@@ -115,11 +116,12 @@ a integer or enumeration value.
 
 <!-- ##### STRUCT PangoAttrFloat ##### -->
 <para>
-
+The #PangoAttrFloat structure is used to represent attributes with
+a float or double value.
 </para>
 
-@attr: 
-@value: 
+@attr: the common portion of the attribute
+@value: the value of the attribute
 
 <!-- ##### STRUCT PangoAttrFontDesc ##### -->
 <para>
@@ -132,12 +134,13 @@ sets all aspects of the font description at once.
 
 <!-- ##### STRUCT PangoAttrShape ##### -->
 <para>
-
+The #PangoAttrShape structure is used to represent attributes which 
+impose shape restrictions.
 </para>
 
-@attr: 
-@ink_rect: 
-@logical_rect: 
+@attr: the common portion of the attribute
+@ink_rect: the ink rectangle to restrict to 
+@logical_rect: the logical rectangle to restrict to
 
 <!-- ##### FUNCTION pango_parse_markup ##### -->
 <para>
@@ -405,12 +408,16 @@ The scale factor for three magnification steps (1.2 * 1.2 * 1.2).
 
 <!-- ##### STRUCT PangoColor ##### -->
 <para>
-
+The <structname>PangoColor</structname> structure is used to
+represent a color in an uncalibrated RGB colorspace.
 </para>
 
-@red: 
-@green: 
-@blue: 
+@red: The red component of the color. This is a value between 0 and 65535, 
+      with 65535 indicating full intensity.
+@green: The green component of the color. This is a value between 0 and 65535, 
+      with 65535 indicating full intensity.
+@blue: The blue component of the color. This is a value between 0 and 65535, 
+      with 65535 indicating full intensity.
 
 <!-- ##### MACRO PANGO_TYPE_COLOR ##### -->
 <para>
@@ -448,7 +455,12 @@ The GObject type for #PangoColor.
 
 <!-- ##### STRUCT PangoLanguage ##### -->
 <para>
-
+The <structname>PangoLanguage</structname> structure is used to
+represent a language.
+</para>
+<para>
+<structname>PangoLanguage</structname> pointers can be efficiently 
+copied and compared with each other.
 </para>
 
 

@@ -31,7 +31,8 @@ IGNORE_HFILES=			\
 	pango-utils.h		\
 	pangoft2-private.h	\
 	pangowin32-private.h	\
-	pangox-private.h
+	pangox-private.h	\
+	pangoxft-private.h
 
 # Extra files to add when scanning
 EXTRA_HFILES=

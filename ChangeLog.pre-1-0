@@ -1,3 +1,30 @@
+2001-11-11  Matthias Clasen  <matthiasc@poet.de>
+	
+	* docs/Makefile.am (IGNORE_HFILES): Add pangoxft-private.h.
+
+	* pango/pango-utils.c (pango_language_from_string): Fix typo in 
+	documentation.
+
+	* docs/tmpl/text-attributes.sgml: Document PangoColor, PangoLanguage,
+	PangoAttrLanguage, PangoAttrFloat and PangoAttrShape.
+
+	* docs/tmpl/layout.sgml: Document PangoWrapMode and PangoLayoutIter.
+
+	* docs/tmpl/tab-stops.sgml: Document PangoTabAlign and PangoTabArray.
+
+	* docs/tmpl/fonts.sgml: Document PangoFontMask.
+
+	* pango/fonts.c (pango_font_description_unset_fields): Fix typo in 
+	documentation. 
+
+	* docs/tmpl/opentype.sgml: Remove documentation templates of the 
+	unimplemented functions pango_ot_ruleset_set_glyph_loader and
+        pango_ot_ruleset_set_alternate_func and the related typedefs
+        PangoOTGlyphLoader and PangoOTAlternateFunc.
+
+	* docs/tmpl/x-rendering.sgml: Document PangoGetGCFunc and
+	PangoFreeGCFunc typedefs.
+
 2001-11-08  Tor Lillqvist  <tml@iki.fi>
 
 	* pango-zip.sh.in: Build separate developer package.

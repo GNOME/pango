@@ -124,31 +124,6 @@ OpenType Font Handling
 @Returns: 
 
 
-<!-- ##### USER_FUNCTION PangoOTGlyphLoader ##### -->
-<para>
-
-</para>
-
-@face: 
-@glyphIndex: 
-@loadFlags: 
-@data: 
-@Returns: 
-
-
-<!-- ##### USER_FUNCTION PangoOTAlternateFunc ##### -->
-<para>
-
-</para>
-
-@pos: 
-@glyphID: 
-@num_alternates: 
-@alternates: 
-@data: 
-@Returns: 
-
-
 <!-- ##### FUNCTION pango_ot_ruleset_new ##### -->
 <para>
 
@@ -156,28 +131,6 @@ OpenType Font Handling
 
 @info: 
 @Returns: 
-
-
-<!-- ##### FUNCTION pango_ot_ruleset_set_glyph_loader ##### -->
-<para>
-
-</para>
-
-@ruleset: 
-@func: 
-@data: 
-@notify: 
-
-
-<!-- ##### FUNCTION pango_ot_ruleset_set_alternate_func ##### -->
-<para>
-
-</para>
-
-@ruleset: 
-@func: 
-@data: 
-@notify: 
 
 
 <!-- ##### FUNCTION pango_ot_ruleset_add_feature ##### -->
