@@ -13,6 +13,9 @@ INCLUDES =					\
 	-I$(top_srcdir)/pango/			\
 	$(GLIB_CFLAGS)
 
+if PLATFORM_WIN32
+no_undefined = -no-undefined
+endif
 
 moduledir = $(libdir)/pango/$(PANGO_MODULE_VERSION)/modules
 module_LTLIBRARIES =
@@ -120,7 +123,7 @@ ft2_sources =		 	\
 	indic-ot.c		\
 	indic-ot.h
 
-pango_indic_ft2_la_LDFLAGS = -export-dynamic -avoid-version -module
+pango_indic_ft2_la_LDFLAGS = -export-dynamic -avoid-version -module $(no_undefined)
 pango_indic_ft2_la_LIBADD = $(pangoft2libs)
 pango_indic_ft2_la_SOURCES = $(ft2_sources)
 pango_indic_ft2_la_CFLAGS = -DBUILD_FT2

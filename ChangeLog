@@ -1,3 +1,24 @@
+2003-05-29  Tor Lillqvist  <tml@iki.fi>
+
+	* acconfig.h: Add HAVE_X.
+
+	* configure.in: Set HAVE_X.
+
+	* modules/thai/thai-shaper.h: Don't include pangox.h unless
+	HAVE_X. Also leave out the PangoXSubfont field unless HAVE_X.
+
+	* modules/hangul/Makefile.am
+	* modules/indic/Makefile.am
+	* modules/thai/Makefile.am: Use -no-undefined on Windows.
+
+	* modules/thai/thai-shaper.c: Include config.h for HAVE_X.
+
+	* README.win32: Some minor edits.
+
+	* pango/pango.def: Add pango_fc_* entries.
+
+	* pango/pangoft2.def: Add some missing entries.
+
 Wed May 28 17:43:16 2003  Owen Taylor  <otaylor@redhat.com>
 
 	(#107630, Federic Zhang)

@@ -183,6 +183,7 @@ if test x$no_x = xyes ; then
 else
   X_LIBS="$X_LIBS -lX11"
   have_x=true
+  AC_DEFINE(HAVE_X)
 fi
 AM_CONDITIONAL(HAVE_X, $have_x) 
 
