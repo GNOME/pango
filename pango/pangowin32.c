@@ -428,8 +428,8 @@ pango_win32_render_transformed (HDC                hdc,
   else if (matrix)
     {
       xForm.eM11 = matrix->xx;
-      xForm.eM12 = matrix->xy;
-      xForm.eM21 = matrix->yx;
+      xForm.eM12 = matrix->yx;
+      xForm.eM21 = matrix->xy;
       xForm.eM22 = matrix->yy;
       xForm.eDx = matrix->x0;
       xForm.eDy = matrix->y0;
