@@ -1,5 +1,10 @@
 2005-03-03  Owen Taylor  <otaylor@redhat.com>
 
+	* pango/pangoxft-render.c (pango_xft_renderer_draw_glyphs):
+	Call XftCharIndex() on the right font. (#163511)
+
+2005-03-03  Owen Taylor  <otaylor@redhat.com>
+
 	* pango/opentype/ftxopen.c (Coverage_Index1, Coverage_Index2, 
 	Get_Class2): For all binary searches, handle the case where
 	the number of items is 0. (#162977, Nick Lamb)

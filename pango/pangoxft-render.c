@@ -343,6 +343,7 @@ pango_xft_renderer_draw_glyphs (PangoRenderer    *renderer,
               int cols;
 	      
 	      PangoFont *mini_font = _pango_xft_font_get_mini_font (xfont);
+	      XftFont *mini_xft_font = pango_xft_font_get_font (mini_font);
 	      
 	      glyph &= ~PANGO_XFT_UNKNOWN_FLAG;
 	      
@@ -380,7 +381,7 @@ pango_xft_renderer_draw_glyphs (PangoRenderer    *renderer,
 		    for (col = 0; col < cols; col++)
 		      {
 			draw_glyph (renderer, mini_font,
-				    XftCharIndex (NULL, xft_font,
+				    XftCharIndex (NULL, mini_xft_font,
 						  buf[row * cols + col] & 0xff),
 				    xs[col+1],
 				    ys[row+1]);
