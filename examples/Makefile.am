@@ -2,31 +2,43 @@
 
 aliasdir = $(sysconfdir)/pango
 
-###################################################
-if BUILD_QT_TEST
+INCLUDES = -DG_DISABLE_DEPRECATED -I$(top_srcdir) $(QT_INCLUDES) $(GLIB_CFLAGS) $(FREETYPE_CFLAGS)
 
+###################################################
 QT_INCLUDES=-I $(QTDIR)/include
 QT_LIBS=-L$(QTDIR)/lib -lqt 
 MOC=$(QTDIR)/bin/moc
 
-INCLUDES = -DG_DISABLE_DEPRECATED -I$(top_srcdir) $(QT_INCLUDES) $(GLIB_CFLAGS)
+if BUILD_QT_TEST
 
-bin_PROGRAMS = pango-viewer
+viewer_programs = pango-viewer
 
-pango_viewer_SOURCES =		\
-	viewer-qt.cc		\
-	viewer-qt.h		\
-	moc_viewer-qt.cc
+BUILT_SOURCES=moc_viewer-qt.cc
 
 moc_viewer-qt.cc: viewer-qt.h
 	$(MOC) $< -o $@
 
-BUILT_SOURCES=moc_viewer-qt.cc
-
-pango_viewer_LDADD = ../pango/libpangox.la ../pango/libpango.la $(FRIBIDI_LIBS) $(QT_LIBS)
-
 endif
+
+pango_viewer_SOURCES =		\
+	viewer-qt.cc		\
+	viewer-qt.h
+
+CLEANFILES = moc_viewer-qt.cc
+pango_viewer_LDADD = ../pango/libpangox.la ../pango/libpango.la $(FRIBIDI_LIBS) $(QT_LIBS) moc_viewer-qt.$(OBJEXT)
 ###################################################
+
+###################################################
+if HAVE_FREETYPE
+ft2_programs = pangoft2topgm
+endif
+
+pangoft2topgm_SOURCES = pangoft2topgm.c
+pangoft2topgm_LDADD = ../pango/libpango.la ../pango/libpangoft2.la $(FREETYPE_LIBS)
+###################################################
+
+bin_PROGRAMS = $(viewer_programs)
+noinst_PROGRAMS =  $(ft2_programs)
 
 all-local: pango.modules
 
@@ -45,7 +57,6 @@ EXTRA_DIST=			\
 	viewer-qt.cc		\
 	viewer-qt.h		\
 	viewer-win32.c		\
-	viewer-ft2.c		\
 	pangoft2topgm.c         \
 	makefile.mingw		\
 	makefile.mingw.in	\

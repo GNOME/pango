@@ -47,8 +47,6 @@ struct _Paragraph {
 GList *paragraphs;
 
 static PangoFontDescription *font_description;
-static Paragraph *highlight_para;
-static int highlight_offset;
 
 PangoContext *context;
 
@@ -143,8 +141,8 @@ int main(int argc, char *argv[])
   char *text;
   int y_start = 0, x_start = 0;
   int paint_width = 500;
-  int paint_height = 500;
   int argp;
+  char *prog_name = g_path_get_basename (argv[0]);
   
   g_type_init();
   
@@ -155,7 +153,6 @@ int main(int argc, char *argv[])
       char *opt = argv[argp++];
       if (strcmp(opt, "--help") == 0)
 	{
-	  char *prog_name = g_get_prgname();
 	  printf("%s - An example viewer for the pango ft2 extension\n"
 		 "\n"
 		 "Syntax:\n"
@@ -163,8 +160,8 @@ int main(int argc, char *argv[])
 		 "\n"
 		 "Options:\n"
 		 "    --family f   Set the initial family. Default is '%s'.\n"
-		 "    --scale s    Set the initial scale. Default is %d\n",
-		 "    --rtl        Set base dir to RTL. Default is LTR.\n",
+		 "    --scale s    Set the initial scale. Default is %d\n"
+		 "    --rtl        Set base dir to RTL. Default is LTR.\n"
 		 "    --width      Width of drawing window. Default is 500.\n",
 		 prog_name, prog_name, init_family, init_scale);
 	  exit(0);
@@ -195,7 +192,7 @@ int main(int argc, char *argv[])
 
   if (argp + 1 != argc)
     {
-      fprintf (stderr, "Usage: %s [options] FILE\n", g_get_prgname());
+      fprintf (stderr, "Usage: %s [options] FILE\n", prog_name);
       exit(1);
     }
 
@@ -270,4 +267,6 @@ int main(int argc, char *argv[])
 	  g_free (buf);
 	}
     }
+
+  return 0;
 }
