@@ -1,3 +1,7 @@
+Fri Nov 6 15:41:28 Eric Mader	<mader@jtcsv.com>
+	* pango/pango/opentype/ftxopen.c:
+	* pango/pango/opentype/ftxopen.h: don't fail on an empty script
+	
 2002-09-05  jacob berkman  <jacob@ximian.com>
 
 	* autogen.sh: copy version with automake-1.4 fixes from -1-0 branch
