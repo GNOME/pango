@@ -84,3 +84,24 @@ Fontconfig-based backend involves deriving from both
 @fontmap: 
 
 
+<!-- ##### FUNCTION pango_fc_font_map_add_decoder_find_func ##### -->
+<para>
+
+</para>
+
+@fcfontmap: 
+@findfunc: 
+@user_data: 
+@dnotify: 
+
+
+<!-- ##### USER_FUNCTION PangoFcDecoderFindFunc ##### -->
+<para>
+
+</para>
+
+@pattern: 
+@user_data: 
+@Returns: 
+
+

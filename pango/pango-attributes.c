@@ -601,8 +601,7 @@ pango_attr_strikethrough_new (gboolean strikethrough)
 /**
  * pango_attr_rise_new:
  * @rise: the amount that the text should be displaced vertically,
- *        in 10'000ths of an em. Positive values displace the
- *        text upwards.
+ *        in Pango units. Positive values displace the text upwards.
  * 
  * Create a new baseline displacement attribute.
  * 
@@ -668,6 +667,30 @@ pango_attr_fallback_new (gboolean enable_fallback)
   };
 
   return pango_attr_int_new (&klass, (int)enable_fallback);
+}
+
+/**
+ * pango_attr_letter_spacing_new:
+ * @letter_spacing: amount of extra space to add between graphemes
+ *   of the text, in Pango units.
+ * 
+ * Create a new letter-spacing attribute.
+ * 
+ * Return value: the new #PangoAttribute.
+ *
+ * Since: 1.6
+ **/
+PangoAttribute *
+pango_attr_letter_spacing_new (int letter_spacing)
+{
+  static const PangoAttrClass klass = {
+    PANGO_ATTR_LETTER_SPACING,
+    pango_attr_int_copy,
+    pango_attr_int_destroy,
+    pango_attr_int_equal
+  };
+
+  return pango_attr_int_new (&klass, letter_spacing);
 }
 
 static PangoAttribute *

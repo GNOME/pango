@@ -24,6 +24,7 @@
 #define __PANGO_GLYPH_ITEM_H__
 
 #include <pango/pango-attributes.h>
+#include <pango/pango-break.h>
 #include <pango/pango-item.h>
 #include <pango/pango-glyph.h>
 
@@ -37,12 +38,16 @@ struct _PangoGlyphItem
   PangoGlyphString *glyphs;
 };
 
-PangoGlyphItem *pango_glyph_item_split       (PangoGlyphItem *orig,
-					      const char     *text,
-					      int             split_index);
-GSList *        pango_glyph_item_apply_attrs (PangoGlyphItem *glyph_item,
-					      const char     *text,
-					      PangoAttrList  *list);
+PangoGlyphItem *pango_glyph_item_split        (PangoGlyphItem *orig,
+					       const char     *text,
+					       int             split_index);
+GSList *        pango_glyph_item_apply_attrs  (PangoGlyphItem *glyph_item,
+					       const char     *text,
+					       PangoAttrList  *list);
+void            pango_glyph_item_letter_space (PangoGlyphItem *glyph_item,
+					       const char     *text,
+					       PangoLogAttr   *log_attrs,
+					       int             letter_spacing);
 
 G_END_DECLS
 

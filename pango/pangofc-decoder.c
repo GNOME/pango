@@ -41,19 +41,19 @@ pango_fc_decoder_class_init (PangoFcDecoderClass *klass)
 
 /**
  * pango_fc_decoder_get_charset:
- * @decoder: A #PangoFcDecoder to use when querying the font for a
- * supported #FcCharSet.
- * @fcfont: The #PangoFcFont to query.
+ * @decoder: a #PangoFcDecoder
+ * @fcfont: the #PangoFcFont to query.
  *
  * Generates an #FcCharSet of supported characters for the fcfont
- * given.  The returned #FcCharSet should be a reference to an
- * internal value stored by the #PangoFcDecoder and will not be freed
- * by Pango.
+ * given.  The returned #FcCharSet will be a reference to an
+ * internal value stored by the #PangoFcDecoder and must not
+ * be modified or freed.
+ *
+ * Return value: the #FcCharset for @fcfont; must not be modified
+ *   or freed.
  *
  * Since: 1.6
- *
- */
-
+ **/
 FcCharSet *
 pango_fc_decoder_get_charset (PangoFcDecoder *decoder,
 			      PangoFcFont    *fcfont)
@@ -65,22 +65,25 @@ pango_fc_decoder_get_charset (PangoFcDecoder *decoder,
 
 /**
  * pango_fc_decoder_get_glyph:
- * @decoder: A #PangoFcDecoder to use when querying the font.
- * @fcfont: The #PangoFcFont to query.
- * @wc: The unicode code point that you would like to see converted to
- * a single #PangoGlyph.
+ * @decoder: a #PangoFcDecoder
+ * @fcfont: a #PangoFcFont to query.
+ * @wc: the unicode code point to convert to a single #PangoGlyph.
  *
- * Generates a #PangoGlyph for the given unicode point with the custom
- * decoder.
+ * Generates a #PangoGlyph for the given unicode point using the
+ * custom decoder. For complex scripts where there can be multiple
+ * glyphs for a single character, the decoder will return whatever
+ * glyph is most convenient for it. (Usually whatever glyph is directly
+ * in the fonts character map table.)
+ *
+ * Return value: the glyph index, or 0 if the glyph isn't covered
+ *  by the font.
  *
  * Since: 1.6
- *
- */
-
+ **/
 PangoGlyph
-pango_fc_decoder_get_glyph   (PangoFcDecoder *decoder,
-			      PangoFcFont    *fcfont,
-			      guint32         wc)
+pango_fc_decoder_get_glyph (PangoFcDecoder *decoder,
+			    PangoFcFont    *fcfont,
+			    guint32         wc)
 {
   g_return_val_if_fail (PANGO_IS_FC_DECODER (decoder), 0);
 

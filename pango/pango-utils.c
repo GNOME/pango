@@ -1391,6 +1391,21 @@ pango_log2vis_get_embedding_levels (gunichar       *str,
 
 #endif /* HAVE_FRIBIDI */
 
+/**
+ * pango_get_mirror_char:
+ * @ch: a unicode character
+ * @mirrored_ch: location to store the mirrored character
+ *
+ * If @ch has the Unicode mirrored property and there is another unicode
+ * character that typically has a glyph that is the mirror image of @ch's
+ * glyph, puts that character in the address pointed to by @mirrored_ch.
+ *
+ * Use g_unichar_get_mirror_char() instead; the docs for that function
+ * provide full details.
+ * 
+ * Return value: %TRUE if @ch has a mirrored character and @mirrored_ch is
+ * filled in, %FALSE otherwise
+ **/
 gboolean 
 pango_get_mirror_char (gunichar        ch,
 		       gunichar       *mirrored_ch)

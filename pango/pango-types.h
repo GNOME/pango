@@ -172,8 +172,12 @@ PangoLanguage *pango_language_from_string (const char *language);
 gboolean      pango_language_matches  (PangoLanguage *language,
 				       const char *range_list);
 
+#ifndef PANGO_DISABLE_DEPRECATED
 gboolean       pango_get_mirror_char        (gunichar     ch,
 					     gunichar    *mirrored_ch);
+#endif
+
+
 PangoDirection pango_unichar_direction      (gunichar     ch);
 PangoDirection pango_find_base_dir          (const gchar *text,
 					     gint         length);

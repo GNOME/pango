@@ -93,6 +93,7 @@ pango_glyph_string_x_to_index
 pango_glyph_string_get_logical_widths
 pango_glyph_item_split
 pango_glyph_item_apply_attrs
+pango_glyph_item_letter_space
 
 <SUBSECTION Private>
 pango_glyph_string_get_type
@@ -312,6 +313,7 @@ PANGO_SCALE_LARGE
 PANGO_SCALE_X_LARGE
 PANGO_SCALE_XX_LARGE
 pango_attr_rise_new
+pango_attr_letter_spacing_new
 PangoColor
 PANGO_TYPE_COLOR
 pango_color_free
@@ -697,6 +699,8 @@ pango_fc_font_description_from_pattern
 pango_fc_font_map_cache_clear
 pango_fc_font_map_create_context
 pango_fc_font_map_shutdown
+pango_fc_font_map_add_decoder_find_func
+PangoFcDecoderFindFunc
 <SUBSECTION Standard>
 PANGO_FC_FONT_MAP
 PANGO_IS_FC_FONT_MAP
@@ -731,6 +735,23 @@ PANGO_IS_FC_FONT_CLASS
 PANGO_FC_FONT_GET_CLASS
 <SUBSECTION Private>
 pango_fc_font_get_type
+</SECTION>
+
+<SECTION>
+<FILE>pangofc-decoder</FILE>
+<TITLE>PangoFcDecoder</TITLE>
+PangoFcDecoder
+PangoFcDecoderClass
+pango_fc_decoder_get_charset
+pango_fc_decoder_get_glyph
+<SUBSECTION Standard>
+PANGO_FC_DECODER
+PANGO_IS_FC_DECODER
+PANGO_TYPE_FC_DECODER
+pango_fc_decoder_get_type
+PANGO_FC_DECODER_CLASS
+PANGO_IS_FC_DECODER_CLASS
+PANGO_FC_DECODER_GET_CLASS
 </SECTION>
 
 <SECTION>

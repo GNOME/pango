@@ -857,6 +857,7 @@ span_parse_func     (MarkupData            *md,
   const char *underline = NULL;
   const char *strikethrough = NULL;
   const char *rise = NULL;
+  const char *letter_spacing = NULL;
   const char *lang = NULL;
   const char *fallback = NULL;
   
@@ -927,6 +928,11 @@ span_parse_func     (MarkupData            *md,
         {
           CHECK_DUPLICATE (rise);
           rise = values[i];
+        }
+      else if (strcmp (names[i], "letter_spacing") == 0)
+        {
+          CHECK_DUPLICATE (letter_spacing);
+          letter_spacing = values[i];
         }
       else if (strcmp (names[i], "lang") == 0)
         {
@@ -1229,6 +1235,28 @@ span_parse_func     (MarkupData            *md,
         }
 
       add_attribute (tag, pango_attr_rise_new (n));
+    }
+
+  if (letter_spacing)
+    {
+      char *end = NULL;
+      glong n;
+      
+      n = strtol (letter_spacing, &end, 10);
+
+      if (*end != '\0')
+        {
+          g_set_error (error,
+                       G_MARKUP_ERROR,
+                       G_MARKUP_ERROR_INVALID_CONTENT,
+                       _("Value of 'letter_spacing' attribute on <span> tag "
+                         "on line %d could not be parsed; "
+                         "should be an integer, not '%s'"),
+                       line_number, letter_spacing);
+          goto error;
+        }
+
+      add_attribute (tag, pango_attr_letter_spacing_new (n));
     }
 
   if (lang)

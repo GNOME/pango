@@ -44,6 +44,7 @@ attribute is listed in parentheses after the description.
 @PANGO_ATTR_SHAPE: shape (#PangoAttrShape)
 @PANGO_ATTR_SCALE: font size scale factor (#PangoAttrScale)
 @PANGO_ATTR_FALLBACK: whether fallback is enabled (#PangoAttrInt)
+@PANGO_ATTR_LETTER_SPACING: 
 
 <!-- ##### MACRO PANGO_TYPE_ATTR_TYPE ##### -->
 <para>
@@ -418,6 +419,15 @@ The scale factor for three magnification steps (1.2 * 1.2 * 1.2).
 </para>
 
 @rise: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_attr_letter_spacing_new ##### -->
+<para>
+
+</para>
+
+@letter_spacing: 
 @Returns: 
 
 

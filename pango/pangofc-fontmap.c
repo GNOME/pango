@@ -343,28 +343,27 @@ pango_fc_clear_pattern_hashes (PangoFcFontMap *fcfontmap)
 }
 
 /**
- * pango_fc_font_map_add_find_func:
+ * pango_fc_font_map_add_decoder_find_func:
  * @fcfontmap: The #PangoFcFontMap to add this method to.
- * @factory: The #PangoFcDecoderFindFunc callback function
+ * @findfunc: The #PangoFcDecoderFindFunc callback function
  * @user_data: User data.
  * @dnotify: A #GDestroyNotify callback that will be called when the
- * fontmap is finalized and the decoder is released.
+ *  fontmap is finalized and the decoder is released.
  *
  * This function saves a callback method in the #PangoFcFontMap that
- * will be called whenever new fonts are created.  If the function
- * returns a #PangoFcDecoder, that decoder will be used to determine
- * both coverage via a #FcCharSet and a one-to-one mapping of
+ * will be called whenever new fonts are created.  If the
+ * function returns a #PangoFcDecoder, that decoder will be used to
+ * determine both coverage via a #FcCharSet and a one-to-one mapping of
  * characters to glyphs.  This will allow applications to have
  * application-specific encodings for various fonts.
  *
  * Since: 1.6.
- *
- */
-
-void pango_fc_font_map_add_decoder_find_func (PangoFcFontMap        *fcfontmap,
-					      PangoFcDecoderFindFunc findfunc,
-					      gpointer               user_data,
-					      GDestroyNotify         dnotify)
+ **/
+void
+pango_fc_font_map_add_decoder_find_func (PangoFcFontMap        *fcfontmap,
+					 PangoFcDecoderFindFunc findfunc,
+					 gpointer               user_data,
+					 GDestroyNotify         dnotify)
 {
   PangoFcFontMapPrivate *priv = fcfontmap->priv;
   PangoFcFindFuncInfo *info;

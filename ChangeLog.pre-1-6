@@ -1,3 +1,39 @@
+Wed Jun 23 11:17:51 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-attributes.[ch]: Add new letter_spacing
+	attribute.
+
+	* pango/pango-attributes.c (pango_attr_rise_new): Correct
+	description; rise is in Pango units, not em-relative.
+
+	* pango/pango-glyph-item.c: Break out iteration-over-clusters
+	from ApplyAttrsState into a separate GlyphItemIter.
+
+	* pango/pango-glyph-item.[ch]: New function 
+	pango_glyph_item_letter_space() to add add letter spacing
+	to a single glyph item.
+
+	* pango/pango-markup.c: Add a letter_spacing attribute.
+
+	* pango/pango-layout.c: Use G_DEFINE_TYPE().
+
+	* pango/pango-layout.c (pango_layout_get_item_properties):
+	Switch to use a structure rather than a pile of out
+	parameters.
+
+	* pango/pango-layout.c (pango_run_get_extents): Remove
+	the unused shape_set out parameter.
+
+	* pango/pangofc-decoder.[ch] pango/pangofc-fontmap.[ch]:
+	Doc fixes.
+
+	* pango/pango-types.h: Deprecate pango_get_mirror_char()
+	
+	* pango/pango-utils.c (pango_get_mirror_char): Add docs.
+
+	* docs/pango-sections.txt docs/pango-docs.sgml: Add 
+	PangoFcDecoder and letter spacing.
+	
 Tue Jun 22 14:10:41 2004  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/break.c: Handle new Unicode-4.0 WORD_JOINER

@@ -99,6 +99,16 @@ void           pango_fc_font_map_shutdown       (PangoFcFontMap *fcfontmap);
 
 GType pango_fc_font_map_get_type (void);
 
+/**
+ * PangoFcDecoderFindFunc:
+ * @pattern: a fully resolved #FcPattern specifying the font on the system
+ * @user_data: user data passed to pango_fc_font_map_add_decoder_find_func()
+ * 
+ * Callback function passed to pango_fc_font_map_add_decoder_find_func().
+ * 
+ * Return value: a new reference to a custom decoder for this pattern,
+ *  or %NULL if the default decoder handling should be used.
+ **/
 typedef PangoFcDecoder * (*PangoFcDecoderFindFunc) (FcPattern *pattern,
 						    gpointer   user_data);
 

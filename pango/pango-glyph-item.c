@@ -44,6 +44,8 @@
  * it internally)
  * 
  * Return value: new item representing text before @split_index
+ *
+ * Since: 1.2
  **/
 PangoGlyphItem *
 pango_glyph_item_split (PangoGlyphItem *orig,
@@ -124,20 +126,119 @@ pango_glyph_item_split (PangoGlyphItem *orig,
   return new;
 }
 
-/* Structure holding state when we're iterating over a GlyphItem for
- * pango_glyph_item_apply_attrs(). cluster_start/cluster_end (and
- * range_start/range_end in apply_attrs()) are offsets into the
- * text, so note the difference of glyph_item->item->offset between
- * them and clusters in the log_clusters[] array.
+/* Structure holding state when we're iterating over a GlyphItem.
+   start_index/cluster_end (and range_start/range_end in
+   apply_attrs()) are offsets into the text, so note the difference
+   of glyph_item->item->offset between them and clusters in the
+   log_clusters[] array.
  */
-typedef struct 
+typedef struct
 {
   PangoGlyphItem *glyph_item;
   const gchar *text;
   
-  int glyph_index;
-  int cluster_start;
-  int cluster_end;
+  int start_glyph;
+  int start_index;
+  int start_char;
+
+  int end_glyph;
+  int end_index;
+  int end_char;
+} GlyphItemIter;
+
+/* Advance to the next cluster, returns FALSE if
+ * we were already on the last cluster
+ */
+static gboolean
+glyph_item_iter_next_cluster (GlyphItemIter *iter)
+{
+  int glyph_index = iter->end_glyph;
+  PangoGlyphString *glyphs = iter->glyph_item->glyphs;
+  PangoItem *item = iter->glyph_item->item;
+    
+  iter->start_glyph = iter->end_glyph;
+  iter->start_index = iter->end_index;
+  iter->start_char = iter->end_char;
+  
+  if (LTR (iter->glyph_item))
+    {
+      if (glyph_index == glyphs->num_glyphs)
+	return FALSE;
+      
+      while (TRUE)
+	{
+	  glyph_index++;
+	  
+	  if (glyph_index == glyphs->num_glyphs)
+	    {
+	      iter->end_index = item->offset + item->length;
+	      iter->end_char = item->num_chars;
+	      break;
+	    }
+	  
+	  if (item->offset + glyphs->log_clusters[glyph_index] >= iter->start_index)
+	    {
+	      iter->end_index = item->offset + glyphs->log_clusters[glyph_index];
+	      iter->end_char += g_utf8_strlen (iter->text + iter->start_index,
+					       iter->end_index - iter->start_index);
+	      break; 
+	    }
+	}
+    }
+  else			/* RTL */
+    {
+      if (glyph_index < 0)
+	return FALSE;
+      
+      while (TRUE)
+	{
+	  glyph_index--;
+	  
+	  if (glyph_index < 0)
+	    {
+	      iter->end_index = item->offset + item->length;
+	      iter->end_char = item->num_chars;
+	      break;
+	    }
+	  
+	  if (item->offset + glyphs->log_clusters[glyph_index] >= iter->start_index)
+	    {
+	      iter->end_index = item->offset + glyphs->log_clusters[glyph_index];
+	      iter->end_char += g_utf8_strlen (iter->text + iter->start_index,
+					       iter->end_index - iter->start_index);
+	      break; 
+	    }
+	}
+    }
+
+  iter->end_glyph = glyph_index;
+  return TRUE;
+}
+
+/* Returns FALSE if there are no clusters in the glyph item */
+static gboolean
+glyph_item_iter_init (GlyphItemIter  *iter,
+		      PangoGlyphItem *glyph_item,
+		      const char     *text)
+{
+  iter->glyph_item = glyph_item;
+  iter->text = text;
+  
+  if (LTR (glyph_item))
+    iter->end_glyph = 0;
+  else
+    iter->end_glyph = glyph_item->glyphs->num_glyphs - 1;
+
+  iter->end_index = glyph_item->item->offset;
+  iter->end_char = 0;
+
+  /* Advance onto the first cluster of the glyph item */
+  return glyph_item_iter_next_cluster (iter);
+}
+
+typedef struct 
+{
+  GlyphItemIter iter;
   
   GSList *segment_attrs;
 } ApplyAttrsState;
@@ -168,81 +269,27 @@ attr_slist_copy (GSList *attrs)
   return new_attrs;
 }
 
-/* Advance to the next logical cluster
- */
-static gboolean
-next_cluster (ApplyAttrsState *state)
-{
-  int glyph_index = state->glyph_index;
-  PangoGlyphString *glyphs = state->glyph_item->glyphs;
-  PangoItem *item = state->glyph_item->item;
-    
-  state->cluster_start = state->cluster_end;
-  
-  if (LTR (state->glyph_item))
-    {
-      if (glyph_index == glyphs->num_glyphs)
-	return FALSE;
-      
-      while (TRUE)
-	{
-	  glyph_index++;
-	  
-	  if (glyph_index == glyphs->num_glyphs)
-	    {
-	      state->cluster_end = item->offset + item->length;
-	      break;
-	    }
-	  
-	  if (item->offset + glyphs->log_clusters[glyph_index] >= state->cluster_start)
-	    {
-	      state->cluster_end = item->offset + glyphs->log_clusters[glyph_index];
-	      break; 
-	    }
-	}
-    }
-  else			/* RTL */
-    {
-      if (glyph_index < 0)
-	return FALSE;
-      
-      while (TRUE)
-	{
-	  glyph_index--;
-	  
-	  if (glyph_index < 0)
-	    {
-	      state->cluster_end = item->offset + item->length;
-	      break;
-	    }
-	  
-	  if (item->offset + glyphs->log_clusters[glyph_index] >= state->cluster_start)
-	    {
-	      state->cluster_end = item->offset + glyphs->log_clusters[glyph_index];
-	      break; 
-	    }
-	}
-    }
-
-  state->glyph_index = glyph_index;
-  return TRUE;
-}
-
 /* Split the glyph item at the start of the current cluster
  */
 static PangoGlyphItem *
 split_before_cluster_start (ApplyAttrsState *state)
 {
   PangoGlyphItem *split_item;
-  int split_len = state->cluster_start - state->glyph_item->item->offset;
+  int split_len = state->iter.start_index - state->iter.glyph_item->item->offset;
 
-  split_item = pango_glyph_item_split (state->glyph_item, state->text, split_len);
+  split_item = pango_glyph_item_split (state->iter.glyph_item, state->iter.text, split_len);
   append_attrs (split_item, state->segment_attrs);
 
   /* Adjust iteration to account for the split
    */
-  if (LTR (state->glyph_item))
-    state->glyph_index -= split_item->glyphs->num_glyphs;
+  if (LTR (state->iter.glyph_item))
+    {
+      state->iter.start_glyph -= split_item->glyphs->num_glyphs;
+      state->iter.end_glyph -= split_item->glyphs->num_glyphs;
+    }
+  
+  state->iter.start_char -= split_item->item->num_chars;
+  state->iter.end_char -= split_item->item->num_chars;
  
   return split_item;
 }
@@ -273,6 +320,8 @@ split_before_cluster_start (ApplyAttrsState *state)
  * Return value: a list of glyph items resulting from splitting
  *   @glyph_item. Free the elements using pango_glyph_item_free(),
  *   the list using g_slist_free().
+ *
+ * Since: 1.2
  **/
 GSList *
 pango_glyph_item_apply_attrs (PangoGlyphItem   *glyph_item,
@@ -283,6 +332,7 @@ pango_glyph_item_apply_attrs (PangoGlyphItem   *glyph_item,
   GSList *result = NULL;
   ApplyAttrsState state;
   gboolean start_new_segment = FALSE;
+  gboolean have_cluster;
   int range_start, range_end;
 
   /* This routine works by iterating through the item cluster by
@@ -290,30 +340,20 @@ pango_glyph_item_apply_attrs (PangoGlyphItem   *glyph_item,
    * add to the next output item, and decide when to split
    * off an output item based on two criteria:
    *
-   * A) If cluster_start < attribute_start < cluster_end
+   * A) If start_index < attribute_start < end_index
    *    (attribute starts within cluster) then we need
    *    to split between the last cluster and this cluster.
-   * B) If cluster_start < attribute_end <= cluster_end,
+   * B) If start_index < attribute_end <= end_index,
    *    (attribute ends within cluster) then we need to
    *    split between this cluster and the next one.
    */
 
-  state.glyph_item = glyph_item;
-  state.text = text;
-  
-  if (LTR (glyph_item))
-    state.glyph_index = 0;
-  else
-    state.glyph_index = glyph_item->glyphs->num_glyphs - 1;
-
-  state.cluster_end = glyph_item->item->offset;
-  
   /* Advance the attr iterator to the start of the item
    */
   while (TRUE)
     {
       pango_attr_iterator_range (iter, &range_start, &range_end);
-      if (range_end > state.cluster_end)
+      if (range_end > glyph_item->item->offset)
 	break;
 
       pango_attr_iterator_next (iter);
@@ -327,14 +367,15 @@ pango_glyph_item_apply_attrs (PangoGlyphItem   *glyph_item,
   if (range_start <= glyph_item->item->offset &&
       range_end >= glyph_item->item->offset + glyph_item->item->length)
     goto out;
-  
-  while (TRUE)
+
+  for (have_cluster = glyph_item_iter_init (&state.iter, glyph_item, text);
+       have_cluster;
+       have_cluster = glyph_item_iter_next_cluster (&state.iter))
     {
-      /* Find the next logical cluster; [range_start,range_end]
-       * is the first range that intersects the new cluster.
+      
+      /* [range_start,range_end] is the first range that intersects
+       * the current cluster.
        */
-      if (!next_cluster (&state))
-	break;
 
       /* Split item into two, if this cluster isn't a continuation
        * of the last cluster
@@ -357,29 +398,29 @@ pango_glyph_item_apply_attrs (PangoGlyphItem   *glyph_item,
 	  /* If any ranges end in this cluster, then the next cluster
 	   * goes into a separate segment
 	   */
-	  if (range_end <= state.cluster_end)
+	  if (range_end <= state.iter.end_index)
 	    start_new_segment = TRUE;
 
-	  if (range_end > state.cluster_end) /* Range intersects next cluster */
+	  if (range_end > state.iter.end_index) /* Range intersects next cluster */
 	    break;
 
 	  pango_attr_iterator_next (iter);
 	  pango_attr_iterator_range (iter, &range_start, &range_end);
 
-	  if (range_start >= state.cluster_end) /* New range doesn't intersect this cluster */
+	  if (range_start >= state.iter.end_index) /* New range doesn't intersect this cluster */
 	    {
 	      /* No gap between ranges, so previous range must of ended
 	       * at cluster boundary.
 	       */
-	      g_assert (range_start == state.cluster_end && start_new_segment);
+	      g_assert (range_start == state.iter.end_index && start_new_segment);
 	      break;
 	    }
 
 	  /* If any ranges start *inside* this cluster, then we need
 	   * to split the previous cluster into a separate segment
 	   */
-	  if (range_start > state.cluster_start &&
-	      state.cluster_start != glyph_item->item->offset)
+	  if (range_start > state.iter.start_index &&
+	      state.iter.start_index != glyph_item->item->offset)
 	    {
 	      GSList *new_attrs = attr_slist_copy (state.segment_attrs);
 	      result = g_slist_prepend (result, 
@@ -390,6 +431,9 @@ pango_glyph_item_apply_attrs (PangoGlyphItem   *glyph_item,
 	  state.segment_attrs = g_slist_concat (state.segment_attrs,
 						pango_attr_iterator_get_attrs (iter));
 	}
+
+      if (!glyph_item_iter_next_cluster (&state.iter))
+	break;
     }
 
  out:
@@ -404,4 +448,46 @@ pango_glyph_item_apply_attrs (PangoGlyphItem   *glyph_item,
   pango_attr_iterator_destroy (iter);
   
   return result;
+}
+
+/**
+ * pango_glyph_item_letter_space:
+ * @glyph_item: a #PangoGlyphItem
+ * @text: text that @glyph_item corresponds to
+ *   (glyph_item->item->offset is an offset from the
+ *    start of @text)
+ * @log_attrs: logical attributes for the item (the
+ *   first logical attribute refers to the position
+ *   before the first character in the item)
+ * @letter_spacing: amount of letter spacing to add
+ *   in Pango units. May be negative, though too large
+ *   negative values will give ugly results.
+ * 
+ * Adds spacing between the graphemes of @glyph_item to
+ * give the effect of typographic letter spacing.b
+ *
+ * Since: 1.6
+ **/
+void
+pango_glyph_item_letter_space (PangoGlyphItem *glyph_item,
+			       const char     *text,
+			       PangoLogAttr   *log_attrs,
+			       int             letter_spacing)
+{
+  GlyphItemIter iter;
+  gboolean have_cluster;
+
+  for (have_cluster = glyph_item_iter_init (&iter, glyph_item, text);
+       have_cluster;
+       have_cluster = glyph_item_iter_next_cluster (&iter))
+    {
+      if (iter.start_char > 0 &&
+	  log_attrs[iter.start_char].is_cursor_position)
+	{
+	  if (iter.start_glyph < iter.end_glyph) /* LTR */
+	    glyph_item->glyphs->glyphs[iter.start_glyph - 1].geometry.width += letter_spacing;
+	  else			                 /* RTL */
+	    glyph_item->glyphs->glyphs[iter.start_glyph].geometry.width += letter_spacing;
+	}
+    }
 }

@@ -16,6 +16,7 @@ pango_fontset_get_type
 pango_fontset_simple_get_type
 pango_fc_font_get_type
 pango_fc_font_map_get_type
+pango_fc_decoder_get_type
 pango_ft2_font_map_get_type
 pango_xft_font_get_type
 

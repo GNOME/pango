@@ -46,37 +46,33 @@ typedef struct _PangoFcDecoderClass PangoFcDecoderClass;
  * function callback that was originally registered with
  * pango_fc_font_map_add_decoder_find_func().  Pango requires
  * information about the supported charset for a font as well as the
- * indivdual character to glyph conversions.  Pango gets that
+ * individual character to glyph conversions.  Pango gets that
  * information via the #get_charset and #get_glyph callbacks into your
  * object implementation.
  *
  * Since: 1.6
- *
  **/
-
 struct _PangoFcDecoder
 {
+  /*< private >*/
   GObject parent_instance;
 };
 
 /**
  * PangoFcDecoderClass:
- *
  * @get_charset: This returns an #FcCharset given a #PangoFcFont that
- * includes a list of supported characters in the font.  The
- * #FcCharSet that is returned should be an internal reference to your
- * code.  Pango will not free this structure.  It is also important
- * that you make this callback very fast because this callback is also
- * used to determine unicode coverage on a per-character basis.
+ *  includes a list of supported characters in the font.  The
+ *  #FcCharSet that is returned should be an internal reference to your
+ *  code.  Pango will not free this structure.  It is important that
+ *  you make this callback fast because this callback is called
+ *  separately for each character to determine unicode coverage.
  * @get_glyph: This returns a single #PangoGlyph for a given unicode
- * code point.
+ *  code point.
  *
  * Class structure for #PangoFcDecoder.
  *
  * Since: 1.6
- *
  **/
-
 struct _PangoFcDecoderClass
 {
   /*< private >*/

@@ -29,6 +29,7 @@
 #define LINE_IS_VALID(line) ((line)->layout != NULL)
 
 typedef struct _Extents Extents;
+typedef struct _ItemProperties ItemProperties;
 
 struct _Extents
 {
@@ -38,6 +39,16 @@ struct _Extents
   /* Line extents in layout coords */
   PangoRectangle ink_rect;
   PangoRectangle logical_rect;
+};
+
+struct _ItemProperties
+{
+  PangoUnderline  uline;
+  gint            rise;
+  gint            letter_spacing;
+  gboolean        shape_set;
+  PangoRectangle *shape_ink_rect;
+  PangoRectangle *shape_logical_rect;
 };
 
 struct _PangoLayoutIter
@@ -63,9 +74,6 @@ struct _PangoLayoutIter
   /* X position of the current run */
   int run_x;
 
-  /* Does the run have a shape attribute */
-  gboolean run_is_shaped;
-  
   /* Extents of the current run */
   PangoRectangle run_logical_rect;
 
@@ -152,45 +160,13 @@ static int *pango_layout_line_get_vis2log_map (PangoLayoutLine  *line,
 					       gboolean          strong);
 
 static void pango_layout_get_item_properties (PangoItem      *item,
-					      PangoUnderline *uline,
-                                              gint           *rise,
-					      PangoRectangle *ink_rect,
-					      PangoRectangle *logical_rect,
-					      gboolean       *shape_set);
+					      ItemProperties *properties);
 
 static void pango_layout_init        (PangoLayout      *layout);
 static void pango_layout_class_init  (PangoLayoutClass *klass);
 static void pango_layout_finalize    (GObject          *object);
 
-static gpointer parent_class;
-
-GType
-pango_layout_get_type (void)
-{
-  static GType object_type = 0;
-
-  if (!object_type)
-    {
-      static const GTypeInfo object_info =
-      {
-        sizeof (PangoLayoutClass),
-        (GBaseInitFunc) NULL,
-        (GBaseFinalizeFunc) NULL,
-        (GClassInitFunc) pango_layout_class_init,
-        NULL,           /* class_finalize */
-        NULL,           /* class_data */
-        sizeof (PangoLayout),
-        0,              /* n_preallocs */
-        (GInstanceInitFunc) pango_layout_init,
-      };
-      
-      object_type = g_type_register_static (G_TYPE_OBJECT,
-                                            "PangoLayout",
-                                            &object_info, 0);
-    }
-  
-  return object_type;
-}
+G_DEFINE_TYPE (PangoLayout, pango_layout, G_TYPE_OBJECT)
 
 static void
 pango_layout_init (PangoLayout *layout)
@@ -219,8 +195,6 @@ pango_layout_class_init (PangoLayoutClass *klass)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (klass);
   
-  parent_class = g_type_class_peek_parent (klass);
-  
   object_class->finalize = pango_layout_finalize;
 }
 
@@ -247,7 +221,7 @@ pango_layout_finalize (GObject *object)
   if (layout->tabs)
     pango_tab_array_free (layout->tabs);
   
-  G_OBJECT_CLASS (parent_class)->finalize (object);
+  G_OBJECT_CLASS (pango_layout_parent_class)->finalize (object);
 }
 
 
@@ -1038,19 +1012,17 @@ pango_layout_line_index_to_x (PangoLayoutLine  *line,
 
   while (run_list)
     {
-      PangoRectangle logical_rect;
       PangoLayoutRun *run = run_list->data;
-      gboolean shape_set;
+      ItemProperties properties;
       
-      pango_layout_get_item_properties (run->item, NULL, NULL, NULL,
-                                        &logical_rect, &shape_set);
+      pango_layout_get_item_properties (run->item, &properties);
 
       if (run->item->offset <= index && run->item->offset + run->item->length > index)
 	{
-	  if (shape_set)
+	  if (properties.shape_set)
 	    {
 	      if (x_pos)
-		*x_pos = width + (trailing > 0 ? logical_rect.width : 0);
+		*x_pos = width + (trailing > 0 ? properties.shape_logical_rect->width : 0);
 	    }
 	  else
 	    {
@@ -1088,11 +1060,18 @@ pango_layout_line_index_to_x (PangoLayoutLine  *line,
 	  return;
 	}
       
-      if (!shape_set)
-	pango_glyph_string_extents (run->glyphs, run->item->analysis.font,
-				    NULL, &logical_rect);
-
-      width += logical_rect.width;
+      if (!properties.shape_set)
+	{
+	  PangoRectangle logical_rect;
+	  
+	  pango_glyph_string_extents (run->glyphs, run->item->analysis.font,
+				      NULL, &logical_rect);
+	  width += logical_rect.width;
+	}
+      else
+	{
+	  width += properties.shape_logical_rect->width;
+	}
 
       run_list = run_list->next;
     }
@@ -2603,15 +2582,57 @@ struct _ParaBreakState
 
   int start_offset;		/* Character offset of first item in state->items in layout->text */
   PangoGlyphString *glyphs;	/* Glyphs for the first item in state->items */
+  ItemProperties properties;	/* Properties for the first item in state->items */
   PangoGlyphUnit *log_widths;	/* Logical widths for first item in state->items.. */
   int log_widths_offset;        /* Offset into log_widths to the point corresponding
 				 * to the remaining portion of the first item */
 };
 
+static PangoGlyphString *
+shape_run (PangoLayoutLine *line,
+	   ParaBreakState  *state,
+	   PangoItem       *item)
+{
+  PangoLayout *layout = line->layout;
+  PangoGlyphString *glyphs = pango_glyph_string_new ();
+  
+  if (layout->text[item->offset] == '\t')
+    shape_tab (line, glyphs);
+  else
+    {
+      if (state->properties.shape_set)
+	imposed_shape (layout->text + item->offset, item->num_chars,
+		       state->properties.shape_ink_rect, state->properties.shape_logical_rect,
+		       glyphs);
+      else 
+	pango_shape (layout->text + item->offset, item->length, &item->analysis, glyphs);
+
+      if (state->properties.letter_spacing)
+	{
+	  PangoGlyphItem glyph_item;
+	  
+	  glyph_item.item = item;
+	  glyph_item.glyphs = glyphs;
+	  
+	  pango_glyph_item_letter_space (&glyph_item,
+					 layout->text,
+					 layout->log_attrs + state->start_offset,
+					 state->properties.letter_spacing);
+
+	  /* We put all the letter spacing after the last glyph, then
+	   * will go back and redistribute it at the beginning and the
+	   * end in a post-processing step over the whole line.
+	   */
+	  glyphs->glyphs[glyphs->num_glyphs - 1].geometry.width += state->properties.letter_spacing;
+	}
+    }
+
+  return glyphs;
+}
+
 static void
 insert_run (PangoLayoutLine *line,
 	    ParaBreakState  *state,
-	    const char      *text,
 	    PangoItem       *run_item,
 	    gboolean         last_run)
 {
@@ -2622,14 +2643,7 @@ insert_run (PangoLayoutLine *line,
   if (last_run && state->log_widths_offset == 0)
     run->glyphs = state->glyphs;
   else
-    {
-      run->glyphs = pango_glyph_string_new ();
-      
-      if (text[run_item->offset] == '\t')
-	shape_tab (line, run->glyphs);
-      else
-	pango_shape (text + run_item->offset, run_item->length, &run_item->analysis, run->glyphs);
-    }
+    run->glyphs = shape_run (line, state, run_item);
 
   if (last_run)
     {
@@ -2668,8 +2682,6 @@ process_item (PangoLayout     *layout,
 	      gboolean         force_fit,
 	      gboolean         no_break_at_end)
 {
-  PangoRectangle shape_ink;
-  PangoRectangle shape_logical;
   PangoItem *item = state->items->data;
   gboolean shape_set = FALSE;
   int width;
@@ -2683,20 +2695,9 @@ process_item (PangoLayout     *layout,
 
   if (!state->glyphs)
     {
-      state->glyphs = pango_glyph_string_new ();
+      pango_layout_get_item_properties (item, &state->properties);
+      state->glyphs = shape_run (line, state, item);
       
-      pango_layout_get_item_properties (item, NULL, NULL,
-					&shape_ink,
-					&shape_logical,
-					&shape_set);
-
-      if (shape_set)
-	imposed_shape (layout->text + item->offset, item->num_chars, &shape_ink, &shape_logical, state->glyphs);
-      else if (layout->text[item->offset] == '\t')
-	shape_tab (line, state->glyphs);
-      else
-	pango_shape (layout->text + item->offset, item->length, &item->analysis, state->glyphs);
-
       state->log_widths = NULL;
       state->log_widths_offset = 0;
 
@@ -2705,14 +2706,14 @@ process_item (PangoLayout     *layout,
 
   if (g_utf8_get_char (layout->text + item->offset) == LINE_SEPARATOR)
     {
-      insert_run (line, state, layout->text, item, TRUE);
+      insert_run (line, state, item, TRUE);
       state->log_widths_offset += item->num_chars;
       return BREAK_LINE_SEPARATOR;
     }
   
   if (state->remaining_width < 0 && !no_break_at_end)  /* Wrapping off */
     {
-      insert_run (line, state, layout->text, item, TRUE);
+      insert_run (line, state, item, TRUE);
 
       return BREAK_ALL_FIT;
     }
@@ -2722,11 +2723,17 @@ process_item (PangoLayout     *layout,
     {
       for (i = 0; i < state->glyphs->num_glyphs; i++)
 	width += state->glyphs->glyphs[i].geometry.width;
+      
+      /* We'll add half the letter spacing to each side of the item */
+      width += state->properties.letter_spacing;
     }
   else
     {
       for (i = 0; i < item->num_chars; i++)
 	width += state->log_widths[state->log_widths_offset + i];
+
+      /* In this case, the letter spacing width has already been
+       * added to the last element in log_widths */
     }
 
   if ((width <= state->remaining_width || (item->num_chars == 1 && !line->runs)) &&
@@ -2734,7 +2741,7 @@ process_item (PangoLayout     *layout,
     {
       state->remaining_width -= width;
       state->remaining_width = MAX (state->remaining_width, 0);
-      insert_run (line, state, layout->text, item, TRUE);
+      insert_run (line, state, item, TRUE);
 
       return BREAK_ALL_FIT;
     }
@@ -2752,6 +2759,13 @@ process_item (PangoLayout     *layout,
 	  pango_glyph_string_get_logical_widths (state->glyphs,
 						 layout->text + item->offset, item->length, item->analysis.level,
 						 state->log_widths);
+
+	  /* The extra run letter spacing is actually divided after
+	   * the last and and before the first, but it works to
+	   * account it all on the last
+	   */
+	  if (item->num_chars > 0)
+	    state->log_widths[item->num_chars] += state->properties.letter_spacing;
 	}
 
     retry_break:
@@ -2794,7 +2808,7 @@ process_item (PangoLayout     *layout,
 	  
 	  if (break_num_chars == item->num_chars)
 	    {
-	      insert_run (line, state, layout->text, item, TRUE);
+	      insert_run (line, state, item, TRUE);
 
 	      return BREAK_ALL_FIT;
 	    }
@@ -2810,7 +2824,7 @@ process_item (PangoLayout     *layout,
 
               new_item = pango_item_split (item, length, break_num_chars);
 	      
-	      insert_run (line, state, layout->text, new_item, FALSE);
+	      insert_run (line, state, new_item, FALSE);
 
 	      state->log_widths_offset += break_num_chars;
 
@@ -3366,14 +3380,15 @@ pango_layout_line_x_to_index (PangoLayoutLine *line,
   tmp_list = line->runs;
   while (tmp_list)
     {
-      PangoRectangle logical_rect;
       PangoLayoutRun *run = tmp_list->data;
-      gboolean shape_set;
+      PangoRectangle logical_rect;
+      ItemProperties properties;
 
-      pango_layout_get_item_properties (run->item, NULL, NULL,
-                                        NULL, &logical_rect, &shape_set);
+      pango_layout_get_item_properties (run->item, &properties);
 
-      if (!shape_set)
+      if (properties.shape_set)
+	logical_rect = *properties.shape_logical_rect;
+      else
 	pango_glyph_string_extents (run->glyphs, run->item->analysis.font, NULL, &logical_rect);
 
       if (x_pos >= start_pos && x_pos < start_pos + logical_rect.width)
@@ -3388,7 +3403,7 @@ pango_layout_line_x_to_index (PangoLayoutLine *line,
 
 	  char_index = run->item->offset;
 
-	  if (shape_set)
+	  if (properties.shape_set)
 	    {
 	      *trailing = 0;
 	    }
@@ -3697,28 +3712,22 @@ pango_layout_line_get_empty_extents (PangoLayoutLine *line,
 
 static void
 pango_layout_run_get_extents (PangoLayoutRun *run,
-                              gboolean       *shape_setp,
                               PangoRectangle *run_ink,
                               PangoRectangle *run_logical)
 {
   PangoUnderline uline = PANGO_UNDERLINE_NONE;
-  int rise = 0;
-  PangoRectangle shape_ink;
-  PangoRectangle shape_logical;
+  ItemProperties properties;
   PangoRectangle tmp_ink;
-  gboolean shape_set;
   gboolean need_ink;
 
-  pango_layout_get_item_properties (run->item, &uline, &rise,
-                                    &shape_ink, &shape_logical, &shape_set);
-
-  if (shape_setp)
-    *shape_setp = shape_set;
+  pango_layout_get_item_properties (run->item, &properties);
 
   need_ink = run_ink || uline == PANGO_UNDERLINE_LOW;
   
-  if (shape_set)
-    imposed_extents (run->item->num_chars, &shape_ink, &shape_logical,
+  if (properties.shape_set)
+    imposed_extents (run->item->num_chars,
+		     properties.shape_ink_rect,
+		     properties.shape_logical_rect,
 		     need_ink ? &tmp_ink : NULL, run_logical);
   else
     pango_glyph_string_extents (run->glyphs, run->item->analysis.font,
@@ -3728,7 +3737,7 @@ pango_layout_run_get_extents (PangoLayoutRun *run,
   if (run_ink)
     *run_ink = tmp_ink;
 
-  switch (uline)
+  switch (properties.uline)
     {
     case PANGO_UNDERLINE_NONE:
       break;
@@ -3761,13 +3770,13 @@ pango_layout_run_get_extents (PangoLayoutRun *run,
       break;
     }
 
-  if (rise != 0)
+  if (properties.rise != 0)
     {
       if (run_ink)
-        run_ink->y -= rise;
+        run_ink->y -= properties.rise;
 
       if (run_logical)
-	run_logical->y -= rise;
+	run_logical->y -= properties.rise;
     }
 }
 
@@ -3820,7 +3829,7 @@ pango_layout_line_get_extents (PangoLayoutLine *line,
       PangoRectangle run_ink;
       PangoRectangle run_logical;
 
-      pango_layout_run_get_extents (run, NULL,
+      pango_layout_run_get_extents (run,
                                     ink_rect ? &run_ink : NULL,
                                     &run_logical);
       
@@ -3997,6 +4006,118 @@ pango_layout_line_reorder (PangoLayoutLine *line)
   g_slist_free (logical_runs);
 }
 
+static int
+get_item_letter_spacing (PangoItem *item)
+{
+  ItemProperties properties;
+
+  pango_layout_get_item_properties (item, &properties);
+
+  return properties.letter_spacing;
+}
+
+static void
+adjust_final_space (PangoGlyphString *glyphs,
+		    int               adjustment)
+{
+  glyphs->glyphs[glyphs->num_glyphs - 1].geometry.width += adjustment;
+}
+
+static gboolean
+is_tab_run (PangoLayout    *layout,
+	    PangoLayoutRun *run)
+{
+  return (layout->text[run->item->offset] == '\t');
+}
+
+/* When doing shaping, we add the letter spacing value for a
+ * run after every grapheme in the run. This produces ugly
+ * asymetrical results, so what this routine is redistributes
+ * that space to the beginning and the end of the run.
+ *
+ * We also trim the letter spacing from runs adjacent to
+ * tabs and from the outside runs of the lines so that things
+ * line up properly. The line breaking and tab positioning
+ * were computed without this trimming so they are no longer
+ * exactly correct, but this won't be very noticable in most
+ * cases.
+ */
+static void
+adjust_line_letter_spacing (PangoLayoutLine *line)
+{
+  PangoLayout *layout = line->layout;
+  gboolean reversed;
+  PangoLayoutRun *last_run;
+  int tab_adjustment;
+  GSList *l;
+  
+  /* If we have tab stops and the resolved direction of the
+   * line is RTL, then we need to walk through the line
+   * in reverse direction to figure out the corrections for
+   * tab stops.
+   */
+  reversed = FALSE;
+  if (line->resolved_dir == PANGO_DIRECTION_RTL)
+    {
+      for (l = line->runs; l; l = l->next)
+	if (is_tab_run (layout, l->data))
+	  {
+	    line->runs = g_slist_reverse (line->runs);
+	    reversed = TRUE;
+	    break;
+	  }
+    }
+
+  /* Walk over the runs in the line, redistributing letter
+   * spacing from the end of the run to the start of the
+   * run and trimming letter spacing from the ends of the
+   * runs adjacent to the ends of the line or tab stops.
+   *
+   * We accumulate a correction factor from this trimming
+   * which we add onto the next tab stop space to keep the
+   * things properly aligned.
+   */
+  
+  last_run = NULL;
+  tab_adjustment = 0;
+  for (l = line->runs; l; l = l->next)
+    {
+      PangoLayoutRun *run = l->data;
+      PangoLayoutRun *next_run = l->next ? l->next->data : NULL;
+
+      if (is_tab_run (layout, run))
+	{
+	  adjust_final_space (run->glyphs, tab_adjustment);
+	  tab_adjustment = 0;
+	}
+      else
+	{
+	  PangoLayoutRun *visual_next_run = reversed ? last_run : next_run;
+	  PangoLayoutRun *visual_last_run = reversed ? next_run : last_run;
+	  int run_spacing = get_item_letter_spacing (run->item);
+	  int adjustment = run_spacing / 2;
+	  
+	  if (visual_last_run && !is_tab_run (layout, visual_last_run))
+	    adjust_final_space (visual_last_run->glyphs, adjustment);
+	  else
+	    tab_adjustment += adjustment;
+	  
+	  if (visual_next_run && !is_tab_run (layout, visual_next_run))
+	    adjust_final_space (run->glyphs, - adjustment);
+	  else
+	    {
+	      adjust_final_space (run->glyphs, - run_spacing);
+	      tab_adjustment += run_spacing - adjustment;
+	    }
+	}
+
+      last_run = run;
+    }
+
+  if (reversed)
+    line->runs = g_slist_reverse (line->runs);
+}
+
 static void
 pango_layout_line_postprocess (PangoLayoutLine *line)
 {
@@ -4010,30 +4131,25 @@ pango_layout_line_postprocess (PangoLayoutLine *line)
   /* Now convert logical to visual order
    */
   pango_layout_line_reorder (line);
+  
+  /* Fixup letter spacing between runs
+   */
+  adjust_line_letter_spacing (line);
 }
 
-/* This utility function is duplicated here and in pangox.c; should it be
- * public? Trouble is - what is the appropriate set of properties?
- */
 static void
 pango_layout_get_item_properties (PangoItem      *item,
-				  PangoUnderline *uline,
-                                  gint           *rise,
-				  PangoRectangle *ink_rect,
-				  PangoRectangle *logical_rect,
-				  gboolean       *shape_set)
+				  ItemProperties *properties)
 {
   GSList *tmp_list = item->analysis.extra_attrs;
 
-  if (shape_set)
-    *shape_set = FALSE;
+  properties->uline = PANGO_UNDERLINE_NONE;
+  properties->letter_spacing = 0;
+  properties->rise = 0;
+  properties->shape_set = FALSE;
+  properties->shape_ink_rect = NULL;
+  properties->shape_logical_rect = NULL;
 
-  if (rise)
-    *rise = 0;
-
-  if (uline)
-    *uline = PANGO_UNDERLINE_NONE;
-    
   while (tmp_list)
     {
       PangoAttribute *attr = tmp_list->data;
@@ -4041,24 +4157,23 @@ pango_layout_get_item_properties (PangoItem      *item,
       switch (attr->klass->type)
 	{
 	case PANGO_ATTR_UNDERLINE:
-	  if (uline)
-	    *uline = ((PangoAttrInt *)attr)->value;
+	  properties->uline = ((PangoAttrInt *)attr)->value;
 	  break;
 
         case PANGO_ATTR_RISE:
-	  if (rise)
-	    *rise = ((PangoAttrInt *)attr)->value;
+	  properties->rise = ((PangoAttrInt *)attr)->value;
           break;
           
-	case PANGO_ATTR_SHAPE:
-	  if (shape_set)
-	    *shape_set = TRUE;
-	  if (logical_rect)
-	    *logical_rect = ((PangoAttrShape *)attr)->logical_rect;
-	  if (ink_rect)
-	    *ink_rect = ((PangoAttrShape *)attr)->ink_rect;
+	case PANGO_ATTR_LETTER_SPACING:
+	  properties->letter_spacing = ((PangoAttrInt *)attr)->value;
 	  break;
-	  
+
+	case PANGO_ATTR_SHAPE:
+	  properties->shape_set = TRUE;
+	  properties->shape_logical_rect = &((PangoAttrShape *)attr)->logical_rect;
+	  properties->shape_ink_rect = &((PangoAttrShape *)attr)->ink_rect;
+	  break;
+
 	default:
 	  break;
 	}
@@ -4157,7 +4272,6 @@ update_run (PangoLayoutIter *iter,
   if (iter->run)
     {
       pango_layout_run_get_extents (iter->run,
-                                    &iter->run_is_shaped,
                                     NULL,
                                     &iter->run_logical_rect);
 
@@ -4168,8 +4282,6 @@ update_run (PangoLayoutIter *iter,
     }
   else
     {
-      iter->run_is_shaped = FALSE;
-      
       iter->run_logical_rect.x = iter->run_x;
       iter->run_logical_rect.y = line_ext->logical_rect.y;
       iter->run_logical_rect.width = 0;
@@ -4694,7 +4806,7 @@ pango_layout_iter_get_run_extents (PangoLayoutIter *iter,
     {
       if (iter->run)
         {
-          pango_layout_run_get_extents (iter->run, NULL, ink_rect, NULL);
+          pango_layout_run_get_extents (iter->run, ink_rect, NULL);
           offset_y (iter, &ink_rect->y);
           ink_rect->x += iter->run_x;
         }

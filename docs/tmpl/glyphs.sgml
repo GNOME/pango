@@ -393,3 +393,14 @@ The GObject type for #PangoGlyphString.
 @Returns: 
 
 
+<!-- ##### FUNCTION pango_glyph_item_letter_space ##### -->
+<para>
+
+</para>
+
+@glyph_item: 
+@text: 
+@log_attrs: 
+@letter_spacing: 
+
+
