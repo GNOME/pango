@@ -108,7 +108,7 @@ void pango_matrix_scale     (PangoMatrix *matrix,
 void pango_matrix_rotate    (PangoMatrix *matrix,
 			     double       degrees);
 void pango_matrix_concat    (PangoMatrix *matrix,
-			     PangoMatrix *new);
+			     PangoMatrix *new_matrix);
 
 #define PANGO_SCALE 1024
 #define PANGO_PIXELS(d) (((d) >= 0) ?                             \

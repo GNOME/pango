@@ -1098,15 +1098,15 @@ pango_matrix_rotate (PangoMatrix *matrix,
 /**
  * pango_matrix_concat:
  * @matrix: a #PangoMatrix
- * @new: a #PangoMatrix
+ * @new_matrix: a #PangoMatrix
  * 
  * Changes the transformation represented by @matrix to be the
  * transformation given by first applying transformation
- * given by @new then applying the original transformation.
+ * given by @new_matrix then applying the original transformation.
  **/
 void
 pango_matrix_concat (PangoMatrix *matrix,
-		     PangoMatrix *new)
+		     PangoMatrix *new_matrix)
 {
   PangoMatrix tmp;
   
@@ -1114,12 +1114,12 @@ pango_matrix_concat (PangoMatrix *matrix,
 
   tmp = *matrix;
 
-  matrix->xx = tmp.xx * new->xx + tmp.xy * new->yx;
-  matrix->xy = tmp.xx * new->xy + tmp.xy * new->yy;
-  matrix->yx = tmp.yx * new->xx + tmp.yy * new->yx;
-  matrix->yy = tmp.yx * new->xy + tmp.yy * new->yy;
-  matrix->x0  = tmp.xx * new->x0 + tmp.xy * new->y0 + tmp.x0;
-  matrix->y0  = tmp.yx * new->y0 + tmp.yy * new->y0 + tmp.y0;
+  matrix->xx = tmp.xx * new_matrix->xx + tmp.xy * new_matrix->yx;
+  matrix->xy = tmp.xx * new_matrix->xy + tmp.xy * new_matrix->yy;
+  matrix->yx = tmp.yx * new_matrix->xx + tmp.yy * new_matrix->yx;
+  matrix->yy = tmp.yx * new_matrix->xy + tmp.yy * new_matrix->yy;
+  matrix->x0  = tmp.xx * new_matrix->x0 + tmp.xy * new_matrix->y0 + tmp.x0;
+  matrix->y0  = tmp.yx * new_matrix->y0 + tmp.yy * new_matrix->y0 + tmp.y0;
 }
 
 static const char canon_map[256] = {

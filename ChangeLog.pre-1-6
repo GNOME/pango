@@ -1,3 +1,9 @@
+Mon May 31 07:39:01 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-utils.c pango/pango-types.h (pango_matrix_concat): 
+	Fix 'new' as parameter name (C++ compatibility issue).
+	(#143430, David Hawthorne)
+
 Fri May 28 11:39:39 2004  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pango-types.h pango/pango-utils.c: Add PangoMatrix
