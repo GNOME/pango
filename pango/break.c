@@ -442,7 +442,8 @@ pango_default_break (const gchar   *text,
       GUnicodeBreakType break_type;
       BreakOpportunity break_op;
 
-      if (i >= attrs_len)
+      /* >, not >=, because of the extra newline we stick on the end */
+      if (i > attrs_len)
         {
           g_warning ("pango_default_break(): the array of PangoLogAttr passed in must have at least N+1 elements, if there are N characters in the text being broken");
           return;

@@ -1,3 +1,8 @@
+2001-10-04  Havoc Pennington  <hp@pobox.com>
+
+	* pango/break.c (pango_default_break): fix wrong 
+	check for incorrect attrs_len
+
 2001-10-04  Sven Neumann  <sven@gimp.org>
 
 	* pango/pangoft2-fontmap.c (pango_ft2_font_map_read_alias_file): 
