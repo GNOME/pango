@@ -39,7 +39,12 @@ struct _PangoXftFont
 
   guint16 mini_width;		    /* metrics for missing glyph drawing */
   guint16 mini_height;
-  guint16 mini_pad; 
+  guint16 mini_pad;
+
+  GHashTable *glyph_info;	    /* Used only when we can't get
+				     * glyph extents out of Xft because
+				     * we have a transformation in effect
+				     */
 };
 
 PangoXftFont *_pango_xft_font_new          (PangoXftFontMap  *xftfontmap,

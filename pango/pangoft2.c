@@ -31,6 +31,7 @@
 #include "pangoft2.h"
 #include "pangoft2-private.h"
 #include "pangofc-fontmap.h"
+#include "pangofc-private.h"
 
 /* for compatibility with older freetype versions */
 #ifndef FT_LOAD_TARGET_MONO
@@ -558,72 +559,25 @@ pango_ft2_render (FT_Bitmap        *bitmap,
   pango_ft2_render_transformed (bitmap, NULL, font, glyphs, x * PANGO_SCALE, y * PANGO_SCALE);
 }
 
-static FT_Glyph_Metrics *
-pango_ft2_get_per_char (PangoFont *font,
-			guint32    glyph_index)
-{
-  PangoFT2Font *ft2font = (PangoFT2Font *)font;
-  FT_Face face;
-	
-  face = pango_ft2_font_get_face (font);
-  
-  FT_Load_Glyph (face, glyph_index, ft2font->load_flags);
-  return &face->glyph->metrics;
-}
-
 static PangoFT2GlyphInfo *
 pango_ft2_font_get_glyph_info (PangoFont   *font,
 			       PangoGlyph   glyph,
 			       gboolean     create)
 {
   PangoFT2Font *ft2font = (PangoFT2Font *)font;
+  PangoFcFont *fcfont = (PangoFcFont *)font;
   PangoFT2GlyphInfo *info;
-  FT_Glyph_Metrics *gm;
 
   info = g_hash_table_lookup (ft2font->glyph_info, GUINT_TO_POINTER (glyph));
 
   if ((info == NULL) && create)
     {
-      FT_Face face = pango_ft2_font_get_face (font);
-      info = g_new0 (PangoFT2GlyphInfo, 1);
-      
-      if (glyph && (gm = pango_ft2_get_per_char (font, glyph)))
-	{
-	  info->ink_rect.x = PANGO_UNITS_26_6 (gm->horiBearingX);
-	  info->ink_rect.width = PANGO_UNITS_26_6 (gm->width);
-	  info->ink_rect.y = -PANGO_UNITS_26_6 (gm->horiBearingY);
-	  info->ink_rect.height = PANGO_UNITS_26_6 (gm->height);
-	      
-	  info->logical_rect.x = 0;
-	  info->logical_rect.width = PANGO_UNITS_26_6 (gm->horiAdvance);
-	  if (ft2font->load_flags & FT_LOAD_NO_HINTING)
-	    {
-	      FT_Fixed ascender, descender;
+       info = g_new0 (PangoFT2GlyphInfo, 1);
 
-	      ascender = FT_MulFix (face->ascender, face->size->metrics.y_scale);
-	      descender = FT_MulFix (face->descender, face->size->metrics.y_scale);
-
-	      info->logical_rect.y = - PANGO_UNITS_26_6 (ascender);
-	      info->logical_rect.height = PANGO_UNITS_26_6 (ascender - descender);
-	    }
-	  else
-	    {
-	      info->logical_rect.y = - PANGO_UNITS_26_6 (face->size->metrics.ascender);
-	      info->logical_rect.height = PANGO_UNITS_26_6 (face->size->metrics.ascender - face->size->metrics.descender);
-	    }
-	}
-      else
-	{
-	  info->ink_rect.x = 0;
-	  info->ink_rect.width = 0;
-	  info->ink_rect.y = 0;
-	  info->ink_rect.height = 0;
-
-	  info->logical_rect.x = 0;
-	  info->logical_rect.width = 0;
-	  info->logical_rect.y = 0;
-	  info->logical_rect.height = 0;
-	}
+      _pango_fc_font_get_raw_extents (fcfont, ft2font->load_flags,
+				      glyph,
+				      &info->ink_rect,
+				      &info->logical_rect);
 
       g_hash_table_insert (ft2font->glyph_info, GUINT_TO_POINTER(glyph), info);
     }

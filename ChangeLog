@@ -1,3 +1,19 @@
+Sat Jul 10 16:39:44 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pangofc-font.[ch]: Add hinted/transform flags
+	to the font structure to allow efficient conditionalization
+	of behavior rather than repeatedly extracting the information
+	from the FcPattern.
+
+	* pango/pangofc-font.c pango/pangofc-private.h pango/pangoft2.c:
+	Move the glyph metrics computation into a 
+	_pango_fc_font_get_raw_extents() function that can be
+	shared with the Xft backend.
+
+	* pango/pangoxft.c: When a transform is in effect, don't
+	get glyph extents from Xft ... they are device space
+	and not useful, use _pango_fc_font_get_raw_extents() instead.
+
 Fri Jul  9 15:23:39 2004  Manish Singh  <yosh@gimp.org>
 
 	* pango/pango-ot.h: Add declaration for pango_ot_buffer_set_rtl.

@@ -39,6 +39,12 @@ PangoFcDecoder *_pango_fc_font_get_decoder       (PangoFcFont    *font);
 void            _pango_fc_font_set_decoder       (PangoFcFont    *font,
 						  PangoFcDecoder *decoder);
 
+void            _pango_fc_font_get_raw_extents    (PangoFcFont    *font,
+						   FT_Int32        load_flags,
+						   PangoGlyph      glyph,
+						   PangoRectangle *ink_rect,
+						   PangoRectangle *logical_rect);
+
 G_END_DECLS
 
 #endif /* __PANGOFC_PRIVATE_H__ */

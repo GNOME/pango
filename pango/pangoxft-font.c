@@ -25,6 +25,7 @@
 
 #include "pangofc-fontmap.h"
 #include "pangoxft-private.h"
+#include "pangofc-private.h"
 
 #define PANGO_XFT_FONT(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_TYPE_XFT_FONT, PangoXftFont))
 #define PANGO_XFT_FONT_CLASS(klass)      (G_TYPE_CHECK_CLASS_CAST ((klass), PANGO_TYPE_XFT_FONT, PangoXftFontClass))
@@ -434,7 +435,116 @@ pango_xft_font_finalize (GObject *object)
       XftFontClose (display, xfont->xft_font);
     }
 
+  if (xfont->glyph_info)
+    g_hash_table_destroy (xfont->glyph_info);
+
   G_OBJECT_CLASS (parent_class)->finalize (object);
+}
+
+static void
+get_glyph_extents_missing (PangoXftFont    *xfont,
+			   PangoGlyph       glyph,
+			   PangoRectangle  *ink_rect,
+			   PangoRectangle  *logical_rect)
+
+{
+  PangoFont *font = PANGO_FONT (xfont);
+  XftFont *xft_font = xft_font_get_font (font);
+  
+  gint cols = (glyph & ~PANGO_XFT_UNKNOWN_FLAG) > 0xffff ? 3 : 2;
+  
+  get_mini_font (font);
+  
+  if (ink_rect)
+    {
+      ink_rect->x = 0;
+      ink_rect->y = - PANGO_SCALE * xft_font->ascent + (PANGO_SCALE * (xft_font->ascent) + xft_font->descent - xfont->mini_height * 2 - xfont->mini_pad * 5) / 2;
+      ink_rect->width = xfont->mini_width * cols + xfont->mini_pad * (2 * cols + 1);
+      ink_rect->height = xfont->mini_height * 2 + xfont->mini_pad * 5;
+    }
+  
+  if (logical_rect)
+    {
+      logical_rect->x = 0;
+      logical_rect->y = - PANGO_SCALE * xft_font->ascent;
+      logical_rect->width = xfont->mini_width * cols + xfont->mini_pad * (2 * cols + 2);
+      logical_rect->height = (xft_font->ascent + xft_font->descent) * PANGO_SCALE;
+    }
+}
+
+static void
+get_glyph_extents_xft (PangoFcFont      *fcfont,
+		       PangoGlyph        glyph,
+		       PangoRectangle   *ink_rect,
+		       PangoRectangle   *logical_rect)
+{
+  XftFont *xft_font = xft_font_get_font ((PangoFont *)fcfont);
+  XGlyphInfo extents;
+  Display *display;
+  
+  _pango_xft_font_map_get_info (fcfont->fontmap, &display, NULL);
+
+  FT_UInt ft_glyph = glyph;
+  XftGlyphExtents (display, xft_font, &ft_glyph, 1, &extents);
+
+  if (ink_rect)
+    {
+      ink_rect->x = - extents.x * PANGO_SCALE; /* Xft crack-rock sign choice */
+      ink_rect->y = - extents.y * PANGO_SCALE; /*             "              */
+      ink_rect->width = extents.width * PANGO_SCALE;
+      ink_rect->height = extents.height * PANGO_SCALE;
+    }
+  
+  if (logical_rect)
+    {
+      logical_rect->x = 0;
+      logical_rect->y = - xft_font->ascent * PANGO_SCALE;
+      logical_rect->width = extents.xOff * PANGO_SCALE;
+      logical_rect->height = (xft_font->ascent + xft_font->descent) * PANGO_SCALE;
+    }
+}
+
+typedef struct
+{
+  PangoRectangle ink_rect;
+  PangoRectangle logical_rect;
+} Extents;
+
+static void
+get_glyph_extents_raw (PangoXftFont     *xfont,
+		       PangoGlyph        glyph,
+		       PangoRectangle   *ink_rect,
+		       PangoRectangle   *logical_rect)
+{
+  Extents *extents;
+
+  if (!xfont->glyph_info)
+    xfont->glyph_info = g_hash_table_new_full (NULL, NULL,
+					       NULL, (GDestroyNotify)g_free);
+
+  extents = g_hash_table_lookup (xfont->glyph_info,
+				 GUINT_TO_POINTER (glyph));
+
+  if (!extents)
+    {
+      extents = g_new (Extents, 1);
+     
+      _pango_fc_font_get_raw_extents (PANGO_FC_FONT (xfont),
+				      FT_LOAD_NO_BITMAP | FT_LOAD_NO_HINTING,
+				      glyph,
+				      &extents->ink_rect,
+				      &extents->logical_rect);
+
+      g_hash_table_insert (xfont->glyph_info,
+			   GUINT_TO_POINTER (glyph),
+			   extents);
+    }
+  
+  if (ink_rect)
+    *ink_rect = extents->ink_rect;
+
+  if (logical_rect)
+    *logical_rect = extents->logical_rect;
 }
 
 static void
@@ -444,61 +554,24 @@ pango_xft_font_get_glyph_extents (PangoFont        *font,
 				  PangoRectangle   *logical_rect)
 {
   PangoXftFont *xfont = (PangoXftFont *)font;
-  XftFont *xft_font = xft_font_get_font (font);
   PangoFcFont *fcfont = PANGO_FC_FONT (font);
-  XGlyphInfo extents;
-  Display *display;
 
   if (!fcfont->fontmap)		/* Display closed */
     goto fallback;
 
-  _pango_xft_font_map_get_info (fcfont->fontmap, &display, NULL);
-  
   if (glyph == (PangoGlyph)-1)
     glyph = 0;
 
   if (glyph & PANGO_XFT_UNKNOWN_FLAG)
     {
-      gint cols = (glyph & ~PANGO_XFT_UNKNOWN_FLAG) > 0xffff ? 3 : 2;
-
-      get_mini_font (font);
-
-      if (ink_rect)
-	{
-	  ink_rect->x = 0;
-	  ink_rect->y = PANGO_SCALE * (- xft_font->ascent + (xft_font->ascent + xft_font->descent - xfont->mini_height * 2 - xfont->mini_pad * 5) / 2);
-	  ink_rect->width = PANGO_SCALE * (xfont->mini_width * cols + xfont->mini_pad * (2 * cols + 1));
-	  ink_rect->height = PANGO_SCALE * (xfont->mini_height * 2 + xfont->mini_pad * 5);
-	}
-      
-      if (logical_rect)
-	{
-	  logical_rect->x = 0;
-	  logical_rect->y = - PANGO_SCALE * xft_font->ascent;
-	  logical_rect->width = PANGO_SCALE * (xfont->mini_width * cols + xfont->mini_pad * (2 * cols + 2));
-	  logical_rect->height = (xft_font->ascent + xft_font->descent) * PANGO_SCALE;
-	}
+      get_glyph_extents_missing (xfont, glyph, ink_rect, logical_rect);
     }
   else if (glyph)
     {
-      FT_UInt ft_glyph = glyph;
-      XftGlyphExtents (display, xft_font, &ft_glyph, 1, &extents);
-
-      if (ink_rect)
-	{
-	  ink_rect->x = - extents.x * PANGO_SCALE; /* Xft crack-rock sign choice */
-	  ink_rect->y = - extents.y * PANGO_SCALE; /*             "              */
-	  ink_rect->width = extents.width * PANGO_SCALE;
-	  ink_rect->height = extents.height * PANGO_SCALE;
-	}
-      
-      if (logical_rect)
-	{
-	  logical_rect->x = 0;
-	  logical_rect->y = - xft_font->ascent * PANGO_SCALE;
-	  logical_rect->width = extents.xOff * PANGO_SCALE;
-	  logical_rect->height = (xft_font->ascent + xft_font->descent) * PANGO_SCALE;
-	}
+      if (!fcfont->transform)
+	get_glyph_extents_xft (fcfont, glyph, ink_rect, logical_rect);
+      else
+	get_glyph_extents_raw (xfont, glyph, ink_rect, logical_rect);
     }
   else
     {

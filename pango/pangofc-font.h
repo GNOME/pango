@@ -74,6 +74,9 @@ struct _PangoFcFont
   PangoFontDescription *description;
   
   GSList *metrics_by_lang;
+
+  guint hinted : 1;
+  guint transform : 1;
 };
 
 /**
