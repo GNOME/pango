@@ -1,3 +1,23 @@
+Mon Apr 16 19:20:12 2001  Owen Taylor  <otaylor@redhat.com>
+
+	* modules/tamil/tamil-x.c: Remove warning when using fallback
+	shaping.
+
+Mon Apr 16 19:14:00 2001  Owen Taylor  <otaylor@redhat.com>
+
+	[ Patches from Vikram Subramanian to update Tamil shapers ]
+
+	* configure.in modules/tamil/tamil-xft.c modules/tamil/Makefile.am:
+	Xft/TT based Tamil rendering engine. Uses glyphs in the
+	private-use-area instead of proper OpenType tables.
+
+	* examples/HELLO.utf8: Add Tamil line
+	* examples/pangox.aliases: Add tamil fonts
+
+	* modules/tamil/tadefs.h modules/tamil/tamil-x.c: Update
+	to use PANGO_LIGATURE_HACK ligatures from BDF files instead
+	of a fixed encoding.
+
 Mon Apr 16 18:12:06 2001  Owen Taylor  <otaylor@redhat.com>
 
 	* README: Small updates

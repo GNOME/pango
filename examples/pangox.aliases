@@ -8,7 +8,7 @@ sans normal normal normal normal \
    -*-fixed-medium-r-normal--*-*-*-*-*-*-*-*,\
    -kaist-iyagi-bold-r-normal--*-*-*-*-*-*-johab-1,\
    -*-song ti-medium-r-normal--*-*-*-*-*-*-*-*,\
-   -tamil-tscakaram-medium-r-normal--*-*-*-*-*-*-tscii-0,\
+   -freetype-unitamil-medium-r-normal--*-*-*-*-*-*-iso10646-tam,\
    -*-devanagari-medium-r-normal--*-*-*-*-*-*-iso10646-dev,\
    -*-gujarati-medium-r-normal--*-*-*-*-*-*-iso10646-guj,\
    -*-gurmukhi-medium-r-normal--*-*-*-*-*-*-iso10646-gur,\
@@ -25,7 +25,7 @@ sans italic normal normal normal \
    -*-fixed-medium-r-normal--*-*-*-*-*-*-*-*,\
    -kaist-iyagi-bold-r-normal--*-*-*-*-*-*-johab-1,\
    -*-song ti-medium-r-normal--*-*-*-*-*-*-*-*,\
-   -tamil-tscakaram-medium-r-normal--*-*-*-*-*-*-tscii-0,\
+   -freetype-unitamil-medium-r-normal--*-*-*-*-*-*-iso10646-tam,\
    -*-devanagari-medium-r-normal--*-*-*-*-*-*-iso10646-dev,\
    -*-gujarati-medium-r-normal--*-*-*-*-*-*-iso10646-guj,\
    -*-gurmukhi-medium-r-normal--*-*-*-*-*-*-iso10646-gur,\
@@ -42,7 +42,7 @@ sans normal normal bold normal \
    -*-fixed-medium-r-normal--*-*-*-*-*-*-*-*,\
    -kaist-iyagi-bold-r-normal--*-*-*-*-*-*-johab-1,\
    -*-song ti-medium-r-normal--*-*-*-*-*-*-*-*,\
-   -tamil-tscakaram-medium-r-normal--*-*-*-*-*-*-tscii-0,\
+   -freetype-unitamil-medium-r-normal--*-*-*-*-*-*-iso10646-tam,\
    -*-devanagari-medium-r-normal--*-*-*-*-*-*-iso10646-dev,\
    -*-gujarati-medium-r-normal--*-*-*-*-*-*-iso10646-guj,\
    -*-gurmukhi-medium-r-normal--*-*-*-*-*-*-iso10646-gur,\
@@ -59,7 +59,7 @@ sans italic normal bold normal \
    -*-fixed-medium-r-normal--*-*-*-*-*-*-*-*,\
    -kaist-iyagi-bold-r-normal--*-*-*-*-*-*-johab-1,\
    -*-song ti-medium-r-normal--*-*-*-*-*-*-*-*,\
-   -tamil-tscakaram-medium-r-normal--*-*-*-*-*-*-tscii-0,\
+   -freetype-unitamil-medium-r-normal--*-*-*-*-*-*-iso10646-tam,\
    -*-devanagari-medium-r-normal--*-*-*-*-*-*-iso10646-dev,\
    -*-gujarati-medium-r-normal--*-*-*-*-*-*-iso10646-guj,\
    -*-gurmukhi-medium-r-normal--*-*-*-*-*-*-iso10646-gur,\
@@ -77,7 +77,7 @@ serif normal normal normal normal \
    -*-fixed-medium-r-normal--*-*-*-*-*-*-*-*,\
    -kaist-iyagi-bold-r-normal--*-*-*-*-*-*-johab-1,\
    -*-song ti-medium-r-normal--*-*-*-*-*-*-*-*,\
-   -tamil-tscakaram-medium-r-normal--*-*-*-*-*-*-tscii-0,\
+   -freetype-unitamil-medium-r-normal--*-*-*-*-*-*-iso10646-tam,\
    -*-devanagari-medium-r-normal--*-*-*-*-*-*-iso10646-dev,\
    -*-gujarati-medium-r-normal--*-*-*-*-*-*-iso10646-guj,\
    -*-gurmukhi-medium-r-normal--*-*-*-*-*-*-iso10646-gur,\
@@ -94,7 +94,7 @@ serif italic normal normal normal \
    -*-fixed-medium-r-normal--*-*-*-*-*-*-*-*,\
    -kaist-iyagi-bold-r-normal--*-*-*-*-*-*-johab-1,\
    -*-song ti-medium-r-normal--*-*-*-*-*-*-*-*,\
-   -tamil-tscakaram-medium-r-normal--*-*-*-*-*-*-tscii-0,\
+   -freetype-unitamil-medium-r-normal--*-*-*-*-*-*-iso10646-tam,\
    -*-devanagari-medium-r-normal--*-*-*-*-*-*-iso10646-dev,\
    -*-gujarati-medium-r-normal--*-*-*-*-*-*-iso10646-guj,\
    -*-gurmukhi-medium-r-normal--*-*-*-*-*-*-iso10646-gur,\
@@ -111,7 +111,7 @@ serif normal normal bold normal \
    -*-fixed-medium-r-normal--*-*-*-*-*-*-*-*,\
    -kaist-iyagi-bold-r-normal--*-*-*-*-*-*-johab-1,\
    -*-song ti-medium-r-normal--*-*-*-*-*-*-*-*,\
-   -tamil-tscakaram-medium-r-normal--*-*-*-*-*-*-tscii-0,\
+   -freetype-unitamil-medium-r-normal--*-*-*-*-*-*-iso10646-tam,\
    -*-devanagari-medium-r-normal--*-*-*-*-*-*-iso10646-dev,\
    -*-gujarati-medium-r-normal--*-*-*-*-*-*-iso10646-guj,\
    -*-gurmukhi-medium-r-normal--*-*-*-*-*-*-iso10646-gur,\
@@ -128,7 +128,7 @@ serif italic normal bold normal \
    -*-fixed-medium-r-normal--*-*-*-*-*-*-*-*,\
    -kaist-iyagi-bold-r-normal--*-*-*-*-*-*-johab-1,\
    -*-song ti-medium-r-normal--*-*-*-*-*-*-*-*,\
-   -tamil-tscakaram-medium-r-normal--*-*-*-*-*-*-tscii-0,\
+   -freetype-unitamil-medium-r-normal--*-*-*-*-*-*-iso10646-tam,\
    -*-devanagari-medium-r-normal--*-*-*-*-*-*-iso10646-dev,\
    -*-gujarati-medium-r-normal--*-*-*-*-*-*-iso10646-guj,\
    -*-gurmukhi-medium-r-normal--*-*-*-*-*-*-iso10646-gur,\
@@ -145,7 +145,7 @@ monospace normal normal normal normal \
    -*-fixed-medium-r-normal--*-*-*-*-*-*-*-*,\
    -kaist-iyagi-bold-r-normal--*-*-*-*-*-*-johab-1,\
    -*-song ti-medium-r-normal--*-*-*-*-*-*-*-*,\
-   -tamil-tscakaram-medium-r-normal--*-*-*-*-*-*-tscii-0,\
+   -freetype-unitamil-medium-r-normal--*-*-*-*-*-*-iso10646-tam,\
    -*-devanagari-medium-r-normal--*-*-*-*-*-*-iso10646-dev,\
    -*-gujarati-medium-r-normal--*-*-*-*-*-*-iso10646-guj,\
    -*-gurmukhi-medium-r-normal--*-*-*-*-*-*-iso10646-gur,\
@@ -162,7 +162,7 @@ monospace italic normal normal normal \
    -*-fixed-medium-r-normal--*-*-*-*-*-*-*-*,\
    -kaist-iyagi-bold-r-normal--*-*-*-*-*-*-johab-1,\
    -*-song ti-medium-r-normal--*-*-*-*-*-*-*-*,\
-   -tamil-tscakaram-medium-r-normal--*-*-*-*-*-*-tscii-0,\
+   -freetype-unitamil-medium-r-normal--*-*-*-*-*-*-iso10646-tam,\
    -*-devanagari-medium-r-normal--*-*-*-*-*-*-iso10646-dev,\
    -*-gujarati-medium-r-normal--*-*-*-*-*-*-iso10646-guj,\
    -*-gurmukhi-medium-r-normal--*-*-*-*-*-*-iso10646-gur,\
@@ -179,7 +179,7 @@ monospace normal normal bold normal \
    -*-fixed-medium-r-normal--*-*-*-*-*-*-*-*,\
    -kaist-iyagi-bold-r-normal--*-*-*-*-*-*-johab-1,\
    -*-song ti-medium-r-normal--*-*-*-*-*-*-*-*,\
-   -tamil-tscakaram-medium-r-normal--*-*-*-*-*-*-tscii-0,\
+   -freetype-unitamil-medium-r-normal--*-*-*-*-*-*-iso10646-tam,\
    -*-devanagari-medium-r-normal--*-*-*-*-*-*-iso10646-dev,\
    -*-gujarati-medium-r-normal--*-*-*-*-*-*-iso10646-guj,\
    -*-gurmukhi-medium-r-normal--*-*-*-*-*-*-iso10646-gur,\
@@ -196,7 +196,7 @@ monospace italic normal bold normal \
    -*-fixed-medium-r-normal--*-*-*-*-*-*-*-*,\
    -kaist-iyagi-bold-r-normal--*-*-*-*-*-*-johab-1,\
    -*-song ti-medium-r-normal--*-*-*-*-*-*-*-*,\
-   -tamil-tscakaram-medium-r-normal--*-*-*-*-*-*-tscii-0,\
+   -freetype-unitamil-medium-r-normal--*-*-*-*-*-*-iso10646-tam,\
    -*-devanagari-medium-r-normal--*-*-*-*-*-*-iso10646-dev,\
    -*-gujarati-medium-r-normal--*-*-*-*-*-*-iso10646-guj,\
    -*-gurmukhi-medium-r-normal--*-*-*-*-*-*-iso10646-gur,\
