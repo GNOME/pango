@@ -1,3 +1,10 @@
+Tue May 27 16:06:34 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pangox.c (pango_x_render): Patch from Morten
+	Welinder to collect characters into runs of the
+	same font with natural offsets before drawing them. 
+	(#106892, Morten Welinder)
+
 Tue May 27 15:01:24 2003  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pangoxft-font.c (pango_xft_font_get_metrics): 

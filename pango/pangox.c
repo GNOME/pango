@@ -455,6 +455,19 @@ pango_x_load_font (Display    *display,
 
   return (PangoFont *)result;
 }
+
+
+#define FLUSH						\
+  G_STMT_START {					\
+    if (charcount)					\
+      {							\
+	XDrawString16 (display, d, gc,			\
+		       glyph_x0, glyph_y0,		\
+		       xcharbuffer, charcount);		\
+	charcount = 0;					\
+      }							\
+  } G_STMT_END
+
  
 /**
  * pango_x_render:
@@ -477,14 +490,20 @@ pango_x_render  (Display           *display,
 		 int                x, 
 		 int                y)
 {
-  /* Slow initial implementation. For speed, it should really
-   * collect the characters into runs, and draw multiple
-   * characters with each XDrawString16 call.
-   */
   Font old_fid = None;
   XFontStruct *fs;
   int i;
   int x_off = 0;
+
+  /*
+   * We collect the characters in this buffer as long as the font does not
+   * change.  At that time, or when the buffer runs full, or at the end,
+   * then we empty the buffer.
+   */
+  XChar2b xcharbuffer[1000];
+  int glyph_x0 = 0, expected_x = 0; /* x/y initializations are to quiet GCC */
+  int glyph_y0 = 0;
+  int charcount = 0;
 
   g_return_if_fail (display != NULL);
   g_return_if_fail (glyphs != NULL);
@@ -515,7 +534,9 @@ pango_x_render  (Display           *display,
 	  int stroke_thick;
 
           gunichar wc;
-          
+
+	  FLUSH;
+
           x1 = glyph_x;
           y1 = glyph_y - PANGO_PIXELS (metrics->ascent);
           x2 = x1 + PANGO_PIXELS (glyphs->glyphs[i].geometry.width);
@@ -624,34 +645,46 @@ pango_x_render  (Display           *display,
 	  guint16 subfont_index = PANGO_X_GLYPH_SUBFONT (glyph);
 	  PangoXSubfontInfo *subfont;
       
-	  XChar2b c;
-	  
 	  subfont = pango_x_find_subfont (font, subfont_index);
 	  if (subfont)
 	    {
-	      c.byte1 = index / 256;
-	      c.byte2 = index % 256;
-	      
 	      fs = pango_x_get_font_struct (font, subfont);
 	      if (!fs)
 		continue;
 	      
 	      if (fs->fid != old_fid)
 		{
+		  FLUSH;
 		  XSetFont (display, gc, fs->fid);
 		  old_fid = fs->fid;
 		}
-	      
-	      XDrawString16 (display, d, gc,
-			     glyph_x, glyph_y,
-			     &c, 1);
+
+	      if (charcount == G_N_ELEMENTS (xcharbuffer) ||
+		  (charcount > 0 && (glyph_y != glyph_y0 ||
+				     glyph_x != expected_x)))
+		FLUSH;
+
+	      if (charcount == 0)
+		{
+		  glyph_x0 = glyph_x;
+		  glyph_y0 = glyph_y;
+		}
+	      xcharbuffer[charcount].byte1 = index / 256;
+	      xcharbuffer[charcount].byte2 = index % 256;
+
+	      expected_x = glyph_x + XTextWidth16 (fs, &xcharbuffer[charcount], 1);
+
+	      charcount++;
 	    }
 	}
 
     next_glyph:
       x_off += glyphs->glyphs[i].geometry.width;
     }
+  FLUSH;
 }
+
+#undef FLUSH
 
 static void
 pango_x_font_get_glyph_extents  (PangoFont      *font,
