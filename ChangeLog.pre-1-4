@@ -1,3 +1,8 @@
+2001-09-21  Matthias Clasen  <matthiasc@poet.de>
+
+	* pango/fonts.c (append_field, pango_font_description_to_string):
+	replace g_string_sprintfa by g_string_printfa. 
+
 2001-09-21  Hans Breuer  <hans@breuer.org>
 
 	* pango/pango.def : updated externals
