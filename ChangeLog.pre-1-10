@@ -1,3 +1,7 @@
+Mon Apr 24 20:28:31 2000  Owen Taylor  <otaylor@redhat.com>
+
+	* docs/**: Updates for recent API changes.
+
 Mon Apr 24 18:09:29 2000  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pango-layout.c (pango_layout_line_get_empty_extents): Come

@@ -1,4 +1,14 @@
 <!-- ##### FUNCTION pango_layout_line_x_to_cp ##### -->
+=======
+
+
+<!-- ##### FUNCTION pango_x_to_cp ##### -->
+=======
+
+@coverage: 
+
+<!-- ##### FUNCTION pango_cfont_init ##### -->
+>>>>>>> 1.8
 <para>
 
 </para>
@@ -6,27 +16,7 @@
 @line: 
 @x_pos: 
 @char_pos: 
-@trailing: 
-
-<!-- ##### FUNCTION pango_x_to_cp ##### -->
-<para>
-
-</para>
-
-@text: 
-@length: 
-@analysis: 
-@glyphs: 
-@x_pos: 
-@char_pos: 
-@trailing: 
-
-<!-- ##### FUNCTION pango_cfont_init ##### -->
-<para>
-
-</para>
-
-@font: 
+@trailing: <<<<<<< pango-unused.sgml
 
 <!-- ##### STRUCT PangoCFont ##### -->
 <para>
@@ -52,27 +42,16 @@ that may be accessed by derived classes:
 <informaltable pgwide=1 frame="none" role="struct">
 <tgroup cols="2"><colspec colwidth="2*"><colspec colwidth="8*">
 <tbody>
+>>>>>>> 1.8
 
-<row>
-<entry>#PangoCFontClass *klass;</entry>
-<entry>a pointer to the <firstterm>class structure</firstterm>
-       for this font.</entry>
-</row>
-</tbody></tgroup></informaltable>
-</para>
-
-@klass: 
-
-<!-- ##### FUNCTION pango_x_xlfd_get_ranges ##### -->
-<para>
-
+<<<<<<< pango-unused.sgml
 </para>
 
 @font: 
-@xlfd: 
-@ranges: 
-@n_ranges: 
-@Returns: 
+
+<!-- ##### FUNCTION pango_x_xlfd_get_ranges ##### -->
+=======
+
 
 <!-- ##### FUNCTION pango_context_set_size ##### -->
 <para>
@@ -80,7 +59,14 @@ that may be accessed by derived classes:
 </para>
 
 @context: 
-@size: 
+@size: =======
+@text: 
+@length: 
+@analysis: 
+@glyphs: 
+@char_pos: 
+@trailing: 
+@x_pos: >>>>>>> 1.8
 
 <!-- ##### FUNCTION pango_x_glyph_extents ##### -->
 <para>
@@ -120,35 +106,64 @@ indices.
 
 <!-- ##### SECTION ./tmpl/pango-x.sgml:Title ##### -->
 X Rendering
+=======
 
 
 <!-- ##### FUNCTION pango_cfont_ref ##### -->
+>>>>>>> 1.8
 <para>
 
 </para>
 
-@font: 
+<<<<<<< pango-unused.sgml
+
+@coverage: =======
+@font: >>>>>>> 1.8
+
+<<<<<<< pango-unused.sgml
 
 <!-- ##### FUNCTION pango_cfont_unref ##### -->
+>>>>>>> 1.8
 <para>
 
 </para>
+
+<<<<<<< pango-unused.sgml
 
 @font: 
+@xlfd: 
+@ranges: 
+@n_ranges: 
+@Returns: =======
+@font: >>>>>>> 1.8
+
+<<<<<<< pango-unused.sgml
 
 <!-- ##### FUNCTION pango_layout_set_first_line_width ##### -->
+>>>>>>> 1.8
 <para>
 
 </para>
 
+<<<<<<< pango-unused.sgml
+
+@string: =======
 @layout: 
-@width: 
+@width: >>>>>>> 1.8
+
+<<<<<<< pango-unused.sgml
 
 <!-- ##### FUNCTION pango_x_extents ##### -->
+>>>>>>> 1.8
 <para>
 
 </para>
 
+<<<<<<< pango-unused.sgml
+
+@font: 
+@xlfd: 
+@Returns: =======
 @font: 
 @glyphs: 
 @lbearing: 
@@ -157,27 +172,37 @@ X Rendering
 @ascent: 
 @descent: 
 @logical_ascent: 
-@logical_descent: 
+@logical_descent: >>>>>>> 1.8
+
+<<<<<<< pango-unused.sgml
 
 <!-- ##### FUNCTION pango_coverage_destroy ##### -->
 <para>
+>>>>>>> 1.8
 
+<<<<<<< pango-unused.sgml
+=======
 </para>
+>>>>>>> 1.8
 
-@coverage: 
+<<<<<<< pango-unused.sgml
+
 
 <!-- ##### FUNCTION pango_cp_to_x ##### -->
+>>>>>>> 1.8
 <para>
 
 </para>
+
+<<<<<<< pango-unused.sgml
 
 @text: 
 @length: 
 @analysis: 
 @glyphs: 
+@x_pos: 
 @char_pos: 
 @trailing: 
-@x_pos: 
 
 <!-- ##### FUNCTION pango_x_list_cfonts ##### -->
 <para>

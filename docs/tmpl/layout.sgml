@@ -145,6 +145,24 @@ fields.
 @Returns: 
 
 
+<!-- ##### FUNCTION pango_layout_get_spacing ##### -->
+<para>
+
+</para>
+
+@layout: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_layout_set_spacing ##### -->
+<para>
+
+</para>
+
+@layout: 
+@spacing: 
+
+
 <!-- ##### FUNCTION pango_layout_set_justify ##### -->
 <para>
 
@@ -224,6 +242,30 @@ for partial lines.
 @layout: 
 @index: 
 @pos: 
+
+
+<!-- ##### FUNCTION pango_layout_get_cursor_pos ##### -->
+<para>
+
+</para>
+
+@layout: 
+@index: 
+@strong_pos: 
+@weak_pos: 
+
+
+<!-- ##### FUNCTION pango_layout_move_cursor_visually ##### -->
+<para>
+
+</para>
+
+@layout: 
+@old_index: 
+@old_trailing: 
+@direction: 
+@new_index: 
+@new_trailing: 
 
 
 <!-- ##### FUNCTION pango_layout_get_extents ##### -->
@@ -337,6 +379,19 @@ a #PangoLayoutLine.
 @x_pos: 
 @index: 
 @trailing: 
+<!-- # Unused Parameters # -->
 @Returns: 
+
+
+<!-- ##### FUNCTION pango_layout_line_get_x_ranges ##### -->
+<para>
+
+</para>
+
+@line: 
+@start_index: 
+@end_index: 
+@ranges: 
+@n_ranges: 
 
 

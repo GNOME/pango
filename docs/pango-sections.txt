@@ -125,6 +125,7 @@ PangoAttribute
 PangoAttrString
 PangoAttrColor
 PangoAttrInt
+PangoAttrFontDesc
 pango_attr_type_register
 pango_attribute_copy
 pango_attribute_compare
@@ -137,6 +138,7 @@ pango_attr_variant_new
 pango_attr_stretch_new
 pango_attr_weight_new
 pango_attr_size_new
+pango_attr_font_desc_new
 pango_attr_foreground_new
 pango_attr_background_new
 pango_attr_strikethrough_new
@@ -176,6 +178,8 @@ pango_layout_set_width
 pango_layout_get_width
 pango_layout_set_indent
 pango_layout_get_indent
+pango_layout_get_spacing
+pango_layout_set_spacing
 pango_layout_set_justify
 pango_layout_get_justify
 pango_layout_set_alignment
@@ -186,6 +190,8 @@ pango_layout_get_log_attrs
 
 pango_layout_xy_to_index
 pango_layout_index_to_pos
+pango_layout_get_cursor_pos
+pango_layout_move_cursor_visually
 
 pango_layout_get_extents
 pango_layout_get_line_count
@@ -201,6 +207,7 @@ pango_layout_line_unref
 pango_layout_line_get_extents
 pango_layout_line_index_to_x
 pango_layout_line_x_to_index
+pango_layout_line_get_x_ranges
 </SECTION>
 
 <SECTION>

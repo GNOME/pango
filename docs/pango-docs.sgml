@@ -1,4 +1,4 @@
-<!doctype book PUBLIC "-//Davenport//DTD DocBook V3.0//EN" [
+<!doctype book PUBLIC "-//OASIS//DTD DocBook V3.1//EN" [
 <!entity pango-main SYSTEM "sgml/main.sgml">
 <!entity pango-glyphs SYSTEM "sgml/glyphs.sgml">
 <!entity pango-fonts SYSTEM "sgml/fonts.sgml">

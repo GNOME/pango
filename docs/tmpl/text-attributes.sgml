@@ -34,6 +34,7 @@ attribute is listed in parentheses after the description.
 @PANGO_ATTR_VARIANT: font variant (normal or small caps) (#PangoAttrInt)
 @PANGO_ATTR_STRETCH: font stretch (#PangoAttrInt)
 @PANGO_ATTR_SIZE: font size in 1000th's of a point (#PangoAttrInt)
+@PANGO_ATTR_FONT_DESC: 
 @PANGO_ATTR_FOREGROUND: foreground color (#PangoAttrColor)
 @PANGO_ATTR_BACKGROUND: background color (#PangoAttrColor)
 @PANGO_ATTR_UNDERLINE: whether the text has an underline (#PangoAttrInt)
@@ -95,6 +96,15 @@ a integer or enumeration value.
 
 @attr: the common portion of the attribute
 @value: the value of the attribute
+
+<!-- ##### STRUCT PangoAttrFontDesc ##### -->
+<para>
+The #PangoAttrFontDesc structure is used to store an attribute that
+sets all aspects of the font description at once.
+</para>
+
+@attr: the common portion of the attribute
+@desc: the font description which is the value of this attribute
 
 <!-- ##### FUNCTION pango_attr_type_register ##### -->
 <para>
@@ -192,6 +202,15 @@ a integer or enumeration value.
 </para>
 
 @size: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_attr_font_desc_new ##### -->
+<para>
+
+</para>
+
+@desc: 
 @Returns: 
 
 

@@ -65,7 +65,7 @@ the corresponding PangoGetGCFunc. The function used here will
 typically retrieve information from the context with pango_context_set_data().
 </para>
 
-@context: the #PangoContext 
+@context: the #PangoContext
 @gc: the GC to free
 
 
