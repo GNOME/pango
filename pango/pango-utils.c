@@ -1134,20 +1134,23 @@ pango_language_get_sample_string (PangoLanguage *language)
 
 #ifdef HAVE_FRIBIDI
 
-void 
+gboolean
 pango_log2vis_get_embedding_levels (gunichar       *str,
 				    int             len,
 				    PangoDirection *pbase_dir,
 				    guint8         *embedding_level_list)
 {
   FriBidiCharType fribidi_base_dir;
+  gboolean result;
 
   fribidi_base_dir = (*pbase_dir == PANGO_DIRECTION_LTR) ? FRIBIDI_TYPE_L : FRIBIDI_TYPE_R;
 
-  fribidi_log2vis_get_embedding_levels (str, len, &fribidi_base_dir,
-					embedding_level_list);
+  result = fribidi_log2vis_get_embedding_levels (str, len, &fribidi_base_dir,
+						 embedding_level_list);
   
   *pbase_dir = (fribidi_base_dir == FRIBIDI_TYPE_L) ?  PANGO_DIRECTION_LTR : PANGO_DIRECTION_RTL;
+
+  return result;
 }
 
 
