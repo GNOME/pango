@@ -124,12 +124,14 @@ form of a string. It contains the following fields.
 
 <!-- ##### STRUCT PangoGlyphInfo ##### -->
 <para>
-
+The #PangoGlyphInfo structure represents a single glyph together with
+positioning information and visual attributes.
+It contains the following fields.
 </para>
 
-@glyph: 
-@geometry: 
-@attr: 
+@glyph: the glyph itself.
+@geometry: the positional information about the glyph.
+@attr: the visual attributes of the glyph. 
 
 <!-- ##### STRUCT PangoGlyphGeometry ##### -->
 <para>

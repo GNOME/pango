@@ -66,7 +66,7 @@ free_cache_entry (LOGFONT             *logfont,
  * pango_win32_font_cache_free:
  * @cache: a #PangoWin32FontCache
  * 
- * Free a #PangoWin32FontCache and all associated memory. All fonts loaded
+ * Frees a #PangoWin32FontCache and all associated memory. All fonts loaded
  * through this font cache will be freed along with the cache.
  **/
 void
@@ -115,7 +115,7 @@ logfont_equal (gconstpointer   v1,
 /**
  * pango_win32_font_cache_new:
  * 
- * Create a font cache.
+ * Creates a font cache.
  * 
  * Return value: The new font cache. This must be freed with
  * pango_win32_font_cache_free().
@@ -156,7 +156,7 @@ cache_entry_unref (PangoWin32FontCache *cache,
  * @cache: a #PangoWin32FontCache
  * @logfont: a pointer to a LOGFONT structure describing the font to load.
  * 
- * Create a #HFONT from a LOGFONT. The
+ * Creates a #HFONT from a LOGFONT. The
  * result may be newly loaded, or it may have been previously
  * stored
  * 
@@ -327,7 +327,7 @@ pango_win32_font_cache_load (PangoWin32FontCache *cache,
  * @cache: a #PangoWin32FontCache
  * @hfont: the HFONT to unload
  * 
- * Free a font structure previously loaded with pango_win32_font_cache_load()
+ * Frees a font structure previously loaded with pango_win32_font_cache_load().
  **/
 void
 pango_win32_font_cache_unload (PangoWin32FontCache *cache,

@@ -64,7 +64,7 @@ free_cache_entry (char *xlfd, CacheEntry *entry, PangoXFontCache *cache)
  * pango_x_font_cache_free:
  * @cache: a #PangoXFontCache
  * 
- * Free a #PangoXFontCache and all associated memory. All fonts loaded
+ * Frees a #PangoXFontCache and all associated memory. All fonts loaded
  * through this font cache will be freed along with the cache.
  **/
 void
@@ -84,7 +84,7 @@ pango_x_font_cache_free (PangoXFontCache *cache)
  * pango_x_font_cache_new:
  * @display: an X display.
  * 
- * Create a font cache for the specified display.
+ * Creates a font cache for the specified display.
  * 
  * Return value: The new font cache. This must be freed with
  * pango_x_font_cache_free().
@@ -128,9 +128,9 @@ cache_entry_unref (PangoXFontCache *cache, CacheEntry *entry)
  * @cache: a #PangoXFontCache
  * @xlfd: the X Logical Font Description to load.
  * 
- * Load a #XFontStruct from a X Logical Font Description. The
+ * Loads a #XFontStruct from a X Logical Font Description. The
  * result may be newly loaded, or it may have been previously
- * stored
+ * stored.
  * 
  * Return value: The font structure, or %NULL if the font could
  * not be loaded. In order to free this structure, you must call
@@ -227,7 +227,7 @@ pango_x_font_cache_load (PangoXFontCache *cache,
  * @cache: a #PangoXFontCache
  * @fs: the font structure to unload
  * 
- * Free a font structure previously loaded with pango_x_font_cache_load()
+ * Frees a font structure previously loaded with pango_x_font_cache_load().
  **/
 void
 pango_x_font_cache_unload (PangoXFontCache *cache,

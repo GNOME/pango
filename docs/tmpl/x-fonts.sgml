@@ -176,7 +176,8 @@ glyph index.
 
 <!-- ##### STRUCT PangoXFontCache ##### -->
 <para>
-
+A <structname>PangoXFontCache</structname> caches
+<structname>XFontStruct</structname>s for a single display by their XLFD name. 
 </para>
 
 

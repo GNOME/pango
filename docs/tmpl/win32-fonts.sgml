@@ -85,7 +85,8 @@ g_quark_from_string()) is used to identify the renderer in pango_find_map().
 
 <!-- ##### STRUCT PangoWin32FontCache ##### -->
 <para>
-
+A <structname>PangoWin32FontCache</structname> caches
+<structname>HFONT</structname>s by their <structname>LOGFONT</structname> descriptions. 
 </para>
 
 

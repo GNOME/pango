@@ -1,3 +1,16 @@
+2002-03-12  Matthias Clasen  <maclas@gmx.de>
+
+	* pango/pangowin32-fontcache.c, pango/pangox-fontcache.c: Minor doc edits.
+
+	* docs/tmpl/win32-fonts.sgml: Document PangoWin32FontCache.
+
+	* docs/tmpl/x-fonts.sgml: Document PangoXFontCache.
+
+	* docs/tmpl/glyphs.sgml: Document PangoGlyphInfo.
+
+	* docs/tmpl/opentype.sgml: Document PangoOTInfo, PangoOTTag,
+	PangoOTTableType.
+
 Thu Mar  7 22:55:13 2002  Owen Taylor  <otaylor@redhat.com>
 
 	===== Released 1.0.0 =====

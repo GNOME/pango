@@ -16,13 +16,20 @@ OpenType Font Handling
 
 <!-- ##### TYPEDEF PangoOTTag ##### -->
 <para>
-
+The <type>PangoOTTag</type> typedef is used to represent TrueType and OpenType
+four letter tags inside Pango. Use the <function>FT_MAKE_TAG()</function> macro
+defined in the FreeType2 header <filename>freetype/freetype.h</filename> to 
+create <type>PangoOTTag</type>s manually.
 </para>
 
 
 <!-- ##### STRUCT PangoOTInfo ##### -->
 <para>
-
+The <structname>PangoOTInfo</structname> struct contains the various 
+tables associated with an OpenType font. It contains only private fields and
+should only be accessed via the <function>pango_ot_info_*</function> functions
+which are documented below. To obtain a <structname>PangoOTInfo</structname>,
+use pango_ot_info_new().
 </para>
 
 
@@ -34,11 +41,13 @@ OpenType Font Handling
 
 <!-- ##### ENUM PangoOTTableType ##### -->
 <para>
-
+The <type>PangoOTTableType</type> enumeration values are used to
+identify the various OpenType tables in the
+<function>pango_ot_info_*</function> functions.
 </para>
 
-@PANGO_OT_TABLE_GSUB: 
-@PANGO_OT_TABLE_GPOS: 
+@PANGO_OT_TABLE_GSUB: The GSUB table.
+@PANGO_OT_TABLE_GPOS: The GPOS table.
 
 <!-- ##### FUNCTION pango_ot_info_new ##### -->
 <para>
