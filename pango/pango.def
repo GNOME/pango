@@ -32,10 +32,12 @@ EXPORTS
 	pango_attr_size_new
 	pango_attr_size_new_absolute
 	pango_attr_stretch_new
+	pango_attr_strikethrough_color_new
 	pango_attr_strikethrough_new
 	pango_attr_style_new
 	pango_attr_type_get_type
 	pango_attr_type_register
+	pango_attr_underline_color_new
 	pango_attr_underline_new
 	pango_attr_variant_new
 	pango_attr_weight_new
@@ -79,7 +81,6 @@ EXPORTS
 	pango_ellipsize_mode_get_type
 	pango_engine_get_type
 	pango_engine_lang_get_type
-	pango_engine_shape_class_init
 	pango_engine_shape_get_type
 	pango_find_base_dir
 	pango_find_map

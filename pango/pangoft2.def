@@ -3,6 +3,7 @@ EXPORTS
 	pango_fc_decoder_get_glyph
 	pango_fc_font_description_from_pattern
 	pango_fc_font_get_glyph
+	pango_fc_font_get_raw_extents
 	pango_fc_font_get_type
 	pango_fc_font_get_unknown_glyph
 	pango_fc_font_has_char

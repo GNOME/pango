@@ -348,6 +348,7 @@ EXTRA_DIST =					\
 	module-defs-win32.c.win32		\
 	module-defs.h				\
 	pango.def				\
+	pangocairo.def				\
 	pangowin32.def				\
 	pangoft2.def				\
 	makefile.msc				\
