@@ -412,13 +412,3 @@ about the attributes of a single character.
 @font: 
 
 
-<!-- ##### FUNCTION pango_justify ##### -->
-<para>
-
-</para>
-
-@glyphs: 
-@new_line_width: 
-@min_kashida_width: 
-
-

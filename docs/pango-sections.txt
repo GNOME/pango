@@ -44,7 +44,6 @@ pango_default_break
 PangoLogAttr
 <SUBSECTION>
 pango_shape
-pango_justify
 
 <SUBSECTION Private>
 pango_direction_get_type
@@ -221,10 +220,10 @@ pango_attr_iterator_get
 pango_attr_iterator_get_font
 pango_attr_iterator_destroy
 <SUBSECTION Private>
-pango_attr_list_get_type
 pango_attr_type_get_type
-pango_color_get_type
+pango_attr_list_get_type
 pango_underline_get_type
+pango_color_get_type
 </SECTION>
 
 <SECTION>
@@ -339,8 +338,8 @@ PANGO_IS_LAYOUT
 PANGO_LAYOUT_CLASS
 PANGO_IS_LAYOUT_CLASS
 PANGO_LAYOUT_GET_CLASS
-pango_wrap_mode_get_type
 pango_alignment_get_type
+pango_wrap_mode_get_type
 </SECTION>
 
 <SECTION>

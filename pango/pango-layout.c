@@ -446,15 +446,15 @@ pango_layout_get_indent (PangoLayout *layout)
 }
 
 /**
- * pango_layout_set_indent
+ * pango_layout_set_spacing:
  * @layout: a #PangoLayout.
- * @indent: the amount of spacing
+ * @spacing: the amount of spacing
  * 
  * Sets the amount of spacing between the lines of the layout.
  **/
 void
 pango_layout_set_spacing (PangoLayout *layout,
-			 int          spacing)
+                          int          spacing)
 {
   g_return_if_fail (layout != NULL);
 
@@ -508,7 +508,7 @@ pango_layout_set_attributes (PangoLayout   *layout,
  * pango_layout_get_attributes:
  * @layout: a #PangoLayout
  * 
- * Returns the attribute list for the layout, if any
+ * Gets the attribute list for the layout, if any
  * 
  * Return value: a #PangoAttrList
  **/
@@ -743,6 +743,16 @@ pango_layout_get_text (PangoLayout *layout)
   return layout->text;
 }
 
+/**
+ * pango_layout_set_markup:
+ * @layout: a #PangoLayout
+ * @markup: marked-up text
+ * @length: length of marked-up text in bytes, or -1
+ *
+ * Same as pango_layout_set_markup_with_accel(), but
+ * the markup text isn't scanned for accelerators.
+ * 
+ **/
 void
 pango_layout_set_markup (PangoLayout *layout,
                          const char  *markup,
@@ -2814,8 +2824,8 @@ pango_layout_line_unref (PangoLayoutLine *line)
  * character within the text of the layout. If @x_pos is outside the line,
  * the start or end of the line will be stored at @index.
  *
- * Return value: %FALSE if @x_pos was outside the line, %TRUE if inside
- */
+ * Returns: %FALSE if @x_pos was outside the line, %TRUE if inside
+ **/
 gboolean
 pango_layout_line_x_to_index (PangoLayoutLine *line,
 			      int              x_pos,

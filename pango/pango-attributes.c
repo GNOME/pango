@@ -1261,7 +1261,7 @@ pango_attr_iterator_next (PangoAttrIterator *iterator)
 }
 
 /**
- * pango_attr_iterator_destroy:
+ * pango_attr_iterator_copy:
  * @iterator: a #PangoAttrIterator.
  * 
  * Copy a #PangoAttrIterator
@@ -1512,6 +1512,17 @@ pango_color_get_type (void)
   return our_type;
 }
 
+/**
+ * pango_color_copy:
+ * @src: color to copy
+ * 
+ * Creates a copy of @src, which should be freed with
+ * pango_color_free(). Primarily used by language bindings,
+ * not that useful otherwise (since colors can just be copied
+ * by assignment in C).
+ * 
+ * Return value: an allocated #PangoColor
+ **/
 PangoColor*
 pango_color_copy (const PangoColor *src)
 {
@@ -1526,6 +1537,12 @@ pango_color_copy (const PangoColor *src)
   return ret;
 }
 
+/**
+ * pango_color_free:
+ * @color: an allocated #PangoColor
+ * 
+ * Frees a color allocated by pango_color_copy().
+ **/
 void
 pango_color_free (PangoColor *color)
 {

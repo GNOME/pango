@@ -118,11 +118,6 @@ void pango_glyph_string_x_to_index (PangoGlyphString *glyphs,
 				    int              *index,
 				    int              *trailing);
 
-void pango_justify (PangoGlyphString *glyphs,
-                    gint              new_line_width,
-                    gint              min_kashida_width);
-
-
 /* Turn a string of characters into a string of glyphs
  */
 void pango_shape (const gchar      *text,
