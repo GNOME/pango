@@ -22,6 +22,7 @@ EXPORTS
 	pango_ft2_render_layout_line
 	pango_ft2_shutdown_display
 	pango_ot_buffer_add_glyph
+	pango_ot_buffer_clear
 	pango_ot_buffer_destroy
 	pango_ot_buffer_get_glyphs
 	pango_ot_buffer_new

@@ -159,6 +159,7 @@ EXPORTS
 	pango_item_new
 	pango_item_split
 	pango_itemize
+	pango_itemize_with_base_dir
 	pango_language_from_string
 	pango_language_get_sample_string
 	pango_language_get_type
@@ -168,6 +169,7 @@ EXPORTS
 	pango_layout_copy
 	pango_layout_get_alignment
 	pango_layout_get_attributes
+	pango_layout_get_auto_dir
 	pango_layout_get_context
 	pango_layout_get_cursor_pos
 	pango_layout_get_extents
