@@ -1,3 +1,9 @@
+Wed Jun  4 14:32:47 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/glyphstring.c (pango_glyph_string_extents_range): 
+	Improve handling of empty ink rectangles; rework for
+	simplicity. (#103662)
+
 2003-06-04  Tor Lillqvist  <tml@iki.fi>
 
 	* modules/thai/thai-x.c: Need config.h here, too, for
