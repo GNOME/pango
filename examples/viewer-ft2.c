@@ -62,7 +62,7 @@ static void fill_styles_combo (GtkWidget *combo);
 /* Read an entire file into a string
  */
 static char *
-read_file(char *name)
+read_file (char *name)
 {
   GString *inbuf;
   FILE *file;
@@ -146,7 +146,11 @@ split_paragraphs (char *text)
  * within the paragraph of the click.
  */
 gboolean
-xy_to_cp (int width, int x, int y, Paragraph **para_return, int *index)
+xy_to_cp (int         width,
+	  int         x,
+	  int         y,
+	  Paragraph **para_return,
+	  int *index)
 {
   GList *para_list;
   int height = 0;
@@ -179,7 +183,10 @@ xy_to_cp (int width, int x, int y, Paragraph **para_return, int *index)
  * bounding rectangle for the character at the offset.
  */ 
 void
-char_bounds (Paragraph *para, int index, int width, PangoRectangle *rect)
+char_bounds (Paragraph 	   *para,
+	     int       	    index,
+	     int       	    width,
+	     PangoRectangle *rect)
 {
   GList *para_list;
   
@@ -200,6 +207,8 @@ char_bounds (Paragraph *para, int index, int width, PangoRectangle *rect)
 	  rect->width = ABS (pos.width) / 1000;
 	  rect->y = height + pos.y / 1000;
 	  rect->height = pos.height / 1000;
+
+	  return;
 	}
       
       height += cur_para->height;
@@ -210,8 +219,10 @@ char_bounds (Paragraph *para, int index, int width, PangoRectangle *rect)
 /* XOR a rectangle over a given character
  */
 void
-xor_char (GtkWidget *layout, GdkRectangle *clip_rect,
-	  Paragraph *para, int offset)
+xor_char (GtkWidget    *layout,
+	  GdkRectangle *clip_rect,
+	  Paragraph    *para,
+	  int           offset)
 {
   static GdkGC *gc;
   PangoRectangle rect;		/* GdkRectangle in 1.2 is too limited
@@ -243,7 +254,8 @@ xor_char (GtkWidget *layout, GdkRectangle *clip_rect,
  * then queing a redraw
  */
 void
-size_allocate (GtkWidget *layout, GtkAllocation *allocation)
+size_allocate (GtkWidget     *layout,
+	       GtkAllocation *allocation)
 {
   GList *tmp_list;
   int height = 0;
@@ -277,7 +289,8 @@ size_allocate (GtkWidget *layout, GtkAllocation *allocation)
  * the region and reexposing them.
  */
 void
-draw (GtkWidget *layout, GdkRectangle *area)
+draw (GtkWidget    *layout,
+      GdkRectangle *area)
 {
   GList *tmp_list;
   int height = 0;
@@ -341,7 +354,8 @@ draw (GtkWidget *layout, GdkRectangle *area)
 }
 
 gboolean
-expose (GtkWidget *layout, GdkEventExpose *event)
+expose (GtkWidget      *layout,
+	GdkEventExpose *event)
 {
   if (event->window == GTK_LAYOUT (layout)->bin_window)
     draw (layout, &event->area);
@@ -350,7 +364,8 @@ expose (GtkWidget *layout, GdkEventExpose *event)
 }
 
 void
-button_press (GtkWidget *layout, GdkEventButton *event)
+button_press (GtkWidget      *layout,
+	      GdkEventButton *event)
 {
   Paragraph *para = NULL;
   int offset;
@@ -383,7 +398,8 @@ button_press (GtkWidget *layout, GdkEventButton *event)
 }
 
 static void
-checkbutton_toggled (GtkWidget *widget, gpointer data)
+checkbutton_toggled (GtkWidget *widget,
+		     gpointer   data)
 {
   GList *para_list;
   
@@ -402,7 +418,7 @@ checkbutton_toggled (GtkWidget *widget, gpointer data)
 }
 
 static void
-reload_font ()
+reload_font (void)
 {
   GList *para_list;
 
@@ -422,14 +438,16 @@ reload_font ()
 }
 
 void
-set_family (GtkWidget *entry, gpointer data)
+set_family (GtkWidget *entry,
+	    gpointer   data)
 {
   font_description.family_name = gtk_editable_get_chars (GTK_EDITABLE (entry), 0, -1);
   fill_styles_combo (styles_combo);
 }
 
 void
-set_style (GtkWidget *entry, gpointer data)
+set_style (GtkWidget *entry,
+	   gpointer   data)
 {
   char *str = gtk_editable_get_chars (GTK_EDITABLE (entry), 0, -1);
   PangoFontDescription *tmp_desc;
@@ -455,7 +473,8 @@ font_size_changed (GtkAdjustment *adj)
 }
 
 static int
-compare_font_descriptions (const PangoFontDescription *a, const PangoFontDescription *b)
+compare_font_descriptions (const PangoFontDescription *a,
+			   const PangoFontDescription *b)
 {
   int val = strcmp (a->family_name, b->family_name);
   if (val != 0)
@@ -477,7 +496,8 @@ compare_font_descriptions (const PangoFontDescription *a, const PangoFontDescrip
 }
 
 static int
-font_description_sort_func (const void *a, const void *b)
+font_description_sort_func (const void *a,
+			    const void *b)
 {
   return compare_font_descriptions (*(PangoFontDescription **)a, *(PangoFontDescription **)b);
 }
@@ -527,7 +547,7 @@ fill_styles_combo (GtkWidget *combo)
 }
 
 static GtkWidget *
-make_styles_combo ()
+make_styles_combo (void)
 {
   GtkWidget *combo;
 
@@ -545,13 +565,14 @@ make_styles_combo ()
 }
 
 static int
-cmp_strings (const void *a, const void *b)
+cmp_strings (const void *a,
+	     const void *b)
 {
   return strcmp (*(const char **)a, *(const char **)b);
 }
 
 GtkWidget *
-make_families_menu ()
+make_families_menu (void)
 {
   GtkWidget *combo;
   gchar **families;
@@ -582,7 +603,6 @@ make_families_menu ()
 
   return combo;
 }
-
 
 GtkWidget *
 make_font_selector (void)
@@ -636,7 +656,8 @@ make_font_selector (void)
 }
 
 int 
-main (int argc, char **argv)
+main (int    argc,
+      char **argv)
 {
   char *text;
   GtkWidget *window;
@@ -649,7 +670,6 @@ main (int argc, char **argv)
   
   gdk_rgb_init ();
 
-#if 0
   if (argc != 2)
     {
       fprintf (stderr, "Usage: %s FILE\n", g_get_prgname ());
@@ -659,9 +679,6 @@ main (int argc, char **argv)
   /* Create the list of paragraphs from the supplied file
    */
   text = read_file (argv[1]);
-#else
-  text = read_file ("koe2.txt");
-#endif
   if (!text)
     exit(1);
 
@@ -737,6 +754,10 @@ main (int argc, char **argv)
   return 0;
 }
 
+#ifdef G_OS_WIN32
+
+/* In case this program is built as a GUI application */
+
 int _stdcall
 WinMain (struct HINSTANCE__ *hInstance,
 	 struct HINSTANCE__ *hPrevInstance,
@@ -746,3 +767,4 @@ WinMain (struct HINSTANCE__ *hInstance,
   return main (__argc, __argv);
 }
 
+#endif

@@ -39,6 +39,10 @@
 	(EXTRA_DIST): Add FreeType2 backend sources, and
 	makefile.mingw{,.in}
 
+	* pango/pangoft2.def: New file.
+
+	* modules/engine.def: Delete. Was duplicate of module.def.
+
 	* modules/basic/basic-win32.c: Couple of cosmetic changes.
 
 	* modules/basic/Makefile.am: Generate makefile.mingw.
