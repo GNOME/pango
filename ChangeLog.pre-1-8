@@ -1,3 +1,8 @@
+2002-07-28  Michael Natterer  <mitch@gimp.org>
+
+	* modules/thai/thai-xft.c (make_glyph): added missing cast
+	(ThaiFontInfo.info.face is just a gpointer, not an FT_Face)
+
 Sat Jul 27 09:46:51 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* modules/thai/{thai-shaper.[ch],thai-x.c,thai-xft.c}

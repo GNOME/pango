@@ -183,7 +183,7 @@ make_glyph (ThaiFontInfo *font_info, unsigned char c)
   }
 
   index = FT_Get_Char_Index (font_info->info.face, index);
-  if (index && index <= font_info->info.face->num_glyphs)
+  if (index && index <= ((FT_Face) font_info->info.face)->num_glyphs)
     return index;
   else
     return 0;
