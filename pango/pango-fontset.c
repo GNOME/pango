@@ -200,9 +200,10 @@ static PangoFontsetClass *simple_parent_class;	/* Parent class structure for Pan
 /**
  * pango_fontset_simple_new:
  * @language: a #PangoLanguage tag
- * @returns: a newly-allocated #PangoFontsetSimple.
  * 
  * Creates a new #PangoFontsetSimple for the given language.
+ *
+ * Returns: a newly-allocated #PangoFontsetSimple.
  **/
 PangoFontsetSimple *
 pango_fontset_simple_new (PangoLanguage *language)
@@ -307,9 +308,10 @@ pango_fontset_simple_append (PangoFontsetSimple *fontset,
 /**
  * pango_fontset_simple_size:
  * @fontset: a #PangoFontsetSimple.
- * @returns: the size of @fontset.
  *
  * Returns the number of fonts in the fontset. 
+ *
+ * Returns: the size of @fontset.
  **/
 int
 pango_fontset_simple_size (PangoFontsetSimple *fontset)
