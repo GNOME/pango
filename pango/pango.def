@@ -268,6 +268,21 @@ EXPORTS
 	pango_parse_variant
 	pango_parse_weight
 	pango_read_line
+	pango_renderer_activate
+	pango_renderer_deactivate
+	pango_renderer_draw_error_underline
+	pango_renderer_draw_glyph
+	pango_renderer_draw_glyphs
+	pango_renderer_draw_layout
+	pango_renderer_draw_layout_line
+	pango_renderer_draw_rectangle
+	pango_renderer_draw_trapezoid
+	pango_renderer_get_color
+	pango_renderer_get_matrix
+	pango_renderer_get_type
+	pango_renderer_part_changed
+	pango_renderer_set_color
+	pango_renderer_set_matrix
 	pango_reorder_items
 	pango_scan_int
 	pango_scan_string

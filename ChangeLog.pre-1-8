@@ -1,3 +1,12 @@
+2004-09-25  Tor Lillqvist  <tml@iki.fi>
+
+	* pango/pango.def: Add the new pango_renderer_* symbols.
+
+	* modules/basic/basic-win32.c (basic_engine_covers,
+	basic_engine_win32_class_init): Remove the implementation of the
+	covers method. It was wrong anyway, and unnecessary. No need to
+	override the default implementation. (#152997)
+
 Fri Sep 24 15:05:02 2004  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pango-renderer.c (pango_renderer_draw_glyphs): 
