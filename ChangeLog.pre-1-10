@@ -1,3 +1,8 @@
+Mon Sep 20 13:57:35 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* modules/indic/mprefixups.c (indic_mprefixups_apply): 
+	Fix various bugs, make more robust. (#151689)
+
 Mon Sep 13 11:06:47 2004  Owen Taylor  <otaylor@redhat.com>
  
  	* pango/ellipsize.c (init_state): Initialize 
