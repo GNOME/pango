@@ -1,3 +1,14 @@
+2001-07-20  Hans Breuer  <hans@breuer.org>
+
+	* pango/pango-layout.c (pango_layout_line_get_vis2log_map) : 
+	make implementation static too.
+
+	* pango/pango.def pango/pangowin32.def : updated exports
+
+	* pango/pangowin32.c : correct PangoLanguage changes
+
+	* pango/mini-fribidi/fribidi.c : removed gccism for msvc build
+
 Thu Jul 19 16:44:43 2001  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pango-context.c (font_set_load): Don't corrupt the

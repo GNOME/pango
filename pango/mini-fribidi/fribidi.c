@@ -596,7 +596,11 @@ fribidi_analyse_string (	/* input */
   /* Determinate character types */
   DBG ("  Determine character types\n");
   {
+#ifndef _MSC_VER /* just another gccism ... */
     FriBidiCharType char_type[len];
+#else
+    FriBidiCharType* char_type = _alloca(len*sizeof(FriBidiCharType));
+#endif
     for (i = 0; i < len; i++)
       char_type[i] = _pango_fribidi_get_type (str[i]);
 

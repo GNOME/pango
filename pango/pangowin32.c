@@ -80,7 +80,7 @@ struct _PangoWin32SubfontInfo
 
 struct _PangoWin32MetricsInfo
 {
-  PangoLanguage *lang;
+  const char *sample_str;
   PangoFontMetrics metrics;
 };
 
@@ -755,7 +755,7 @@ get_font_metrics_from_string (PangoFont        *font,
 
 static void
 pango_win32_font_get_metrics (PangoFont        *font,
-			      PangoLanguage    *lang,
+			      PangoLanguage    *language,
 			      PangoFontMetrics *metrics)
 {
   PangoWin32MetricsInfo *info;
@@ -788,7 +788,7 @@ pango_win32_font_get_metrics (PangoFont        *font,
 
       win32font->metrics_by_lang = g_slist_prepend (win32font->metrics_by_lang, info);
       
-      get_font_metrics_from_string (font, lang, sample_str, &info->metrics);
+      get_font_metrics_from_string (font, language, sample_str, &info->metrics);
 
       /* lovely copy&paste programming (from pangox.c) */
       /* This is sort of a sledgehammer solution, but we cache this
@@ -796,7 +796,7 @@ pango_win32_font_get_metrics (PangoFont        *font,
        * chars in "0123456789"
        */
       context = pango_win32_get_context ();
-      pango_context_set_language (context, lang);
+      pango_context_set_language (context, language);
       layout = pango_layout_new (context);
       pango_layout_set_text (layout, "0123456789", -1);
 

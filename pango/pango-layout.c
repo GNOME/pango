@@ -1531,7 +1531,7 @@ pango_layout_line_get_range (PangoLayoutLine *line,
     *end = p + line->length;
 }
 
-int *
+static int *
 pango_layout_line_get_vis2log_map (PangoLayoutLine *line,
 				   gboolean         strong)
 {
