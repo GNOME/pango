@@ -3,7 +3,6 @@
 SUBDIRS= pango modules examples docs tools tests
 
 EXTRA_DIST = 		\
-	pango.spec.in	\
 	pango.pc.in	\
 	pangox.pc.in	\
 	pangoxft.pc.in	\
@@ -37,9 +36,6 @@ endif
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = pango.pc $(X_PC) $(XFT_PC) $(FT2_PC) $(WIN32_PC)
-
-dist-hook: pango.spec
-	cp pango.spec $(distdir)
 
 # This is a version of the automake-1.4 distcheck rule modified
 # to pass --enable-gtk-doc to ./configure
