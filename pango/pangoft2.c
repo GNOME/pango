@@ -537,10 +537,10 @@ pango_ft2_font_get_glyph_info (PangoFont   *font,
     {
        info = g_new0 (PangoFT2GlyphInfo, 1);
 
-      _pango_fc_font_get_raw_extents (fcfont, ft2font->load_flags,
-				      glyph,
-				      &info->ink_rect,
-				      &info->logical_rect);
+      pango_fc_font_get_raw_extents (fcfont, ft2font->load_flags,
+				     glyph,
+				     &info->ink_rect,
+				     &info->logical_rect);
 
       g_hash_table_insert (ft2font->glyph_info, GUINT_TO_POINTER(glyph), info);
     }

@@ -698,7 +698,7 @@ get_per_char (FT_Face      face,
 }
 
 /**
- * _pango_fc_font_get_raw_extents:
+ * pango_fc_font_get_raw_extents:
  * @fcfont: a #PangoFcFont
  * @load_flags: flags to pass to FT_Load_Glyph()
  * @glyph: the glyph index to load
@@ -716,11 +716,11 @@ get_per_char (FT_Face      face,
  * caching functionality similar to pango_ft2_font_set_glyph_info().
  **/
 void
-_pango_fc_font_get_raw_extents (PangoFcFont    *fcfont,
-				FT_Int32        load_flags,
-				PangoGlyph      glyph,
-				PangoRectangle *ink_rect,
-				PangoRectangle *logical_rect)
+pango_fc_font_get_raw_extents (PangoFcFont    *fcfont,
+			       FT_Int32        load_flags,
+			       PangoGlyph      glyph,
+			       PangoRectangle *ink_rect,
+			       PangoRectangle *logical_rect)
 {
   FT_Glyph_Metrics *gm;
   FT_Face face;

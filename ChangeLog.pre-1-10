@@ -1,3 +1,10 @@
+Fri Jul 16 10:29:40 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pangofc-font.c pango/pangofc-private.h 
+	(pango_fc_font_get_raw_extents): Need to export this 
+	function as a symbol if not in the header file since 
+	it is used by PangoXft.
+
 Fri Jul 16 07:43:04 2004  Owen Taylor  <otaylor@redhat.com>
 
 	#143601: Felipe Heidrich

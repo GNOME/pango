@@ -503,11 +503,11 @@ get_glyph_extents_raw (PangoXftFont     *xfont,
     {
       extents = g_new (Extents, 1);
      
-      _pango_fc_font_get_raw_extents (PANGO_FC_FONT (xfont),
-				      FT_LOAD_NO_BITMAP | FT_LOAD_NO_HINTING,
-				      glyph,
-				      &extents->ink_rect,
-				      &extents->logical_rect);
+      pango_fc_font_get_raw_extents (PANGO_FC_FONT (xfont),
+				     FT_LOAD_NO_BITMAP | FT_LOAD_NO_HINTING,
+				     glyph,
+				     &extents->ink_rect,
+				     &extents->logical_rect);
 
       g_hash_table_insert (xfont->glyph_info,
 			   GUINT_TO_POINTER (glyph),
@@ -651,7 +651,7 @@ pango_xft_font_real_get_glyph (PangoFcFont *font,
 			       gunichar     wc)
 {
   XftFont *xft_font = xft_font_get_font ((PangoFont *)font);
-  
+
   return XftCharIndex (NULL, xft_font, wc);
 }
 
