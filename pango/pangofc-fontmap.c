@@ -1158,9 +1158,12 @@ pango_fc_face_get_face_name (PangoFontFace *face)
 }
 
 static int
-compare_ints (int a,
-              int b)
+compare_ints (gconstpointer ap,
+              gconstpointer bp)
 {
+  int a = *(int *)ap;
+  int b = *(int *)bp;
+
   if (a == b)
     return 0;
   else if (a > b)
