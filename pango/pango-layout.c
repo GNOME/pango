@@ -2777,7 +2777,8 @@ process_item (PangoLayout     *layout,
       processing_new_item = TRUE;
     }
 
-  if (g_utf8_get_char (layout->text + item->offset) == LINE_SEPARATOR)
+  if (!layout->single_paragraph &&
+      g_utf8_get_char (layout->text + item->offset) == LINE_SEPARATOR)
     {
       insert_run (line, state, item, TRUE);
       state->log_widths_offset += item->num_chars;

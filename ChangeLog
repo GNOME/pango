@@ -1,5 +1,11 @@
 2005-03-01  Owen Taylor  <otaylor@redhat.com>
 
+	* pango/pango-layout.c (process_item): Don't break
+	lines on LINE_SEPARATOR in single-paragraph mode.
+	(#168589, Damon Chaplin)
+
+2005-03-01  Owen Taylor  <otaylor@redhat.com>
+
 	* pango/pangoxft-font.c: Fix a typo in the last
 	commit (Manish Singh)
 
