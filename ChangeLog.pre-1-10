@@ -1,3 +1,12 @@
+2000-11-11  Tor Lillqvist  <tml@iki.fi>
+
+	* pango/pangowin32.c (pango_win32_render): Add code to call
+	SetTextAlign, but commented out.
+
+	* pango/makefile.mingw.in (PANGO_OBJS): Add new objects.
+
+	* pango/pango.def: Add new functions.
+
 2000-11-08  Robert Brady  <rwb197@zepler.org>
 
 	* pango/fonts/devnag.README: Updated to point to the new fonts

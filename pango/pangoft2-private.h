@@ -38,7 +38,7 @@
 (g_print ("%s:%d ", __FILE__, __LINE__),		\
  g_print printlist)
 #endif
-#else
+#else  /* !DEBUGGING */
 #define PING(printlist)
 #endif
 

@@ -78,6 +78,11 @@ EXPORTS
 	pango_glyph_string_new
 	pango_glyph_string_set_size
 	pango_glyph_string_x_to_index
+	pango_int_set_add
+	pango_int_set_add_range
+	pango_int_set_contains
+	pango_int_set_destroy
+	pango_int_set_new
 	pango_item_copy
 	pango_item_free
 	pango_item_new
@@ -122,6 +127,7 @@ EXPORTS
 	pango_layout_xy_to_index
 	pango_map_get_engine
 	pango_map_get_entry
+	pango_parse_markup
 	pango_parse_style
 	pango_parse_variant
 	pango_parse_weight

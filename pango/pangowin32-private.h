@@ -22,7 +22,9 @@
 #ifndef __PANGOWIN32_PRIVATE_H__
 #define __PANGOWIN32_PRIVATE_H__
 
-/* Just for debugging, will be removed */
+#define DEBUGGING 1
+
+#if defined(DEBUGGING) && DEBUGGING
 #ifdef __GNUC__
 #define PING(printlist)					\
 (g_print ("%s:%d ", __PRETTY_FUNCTION__, __LINE__),	\
@@ -33,6 +35,9 @@
 (g_print ("%s:%d ", __FILE__, __LINE__),		\
  g_print printlist,					\
  g_print ("\n"))
+#endif
+#else  /* !DEBUGGING */
+#define PING(printlist)
 #endif
 
 #include "pango-modules.h"

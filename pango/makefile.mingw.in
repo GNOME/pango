@@ -29,8 +29,10 @@ PANGO_OBJS =					\
 	pango-context.o				\
 	pango-coverage.o			\
 	pango-fontmap.o				\
+	pango-intset.o				\
 	pango-item.o				\
 	pango-layout.o				\
+	pango-markup.o				\
 	pango-tabs.o				\
 	pango-utils.o				\
 	reorder-items.o				\

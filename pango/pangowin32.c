@@ -316,6 +316,7 @@ pango_win32_render (HDC                hdc,
   HFONT old_hfont = NULL;
   HFONT orig_hfont = NULL;
   HFONT hfont;
+  UINT orig_align = -1;
   int i;
   int x_off = 0;
 
@@ -344,7 +345,11 @@ pango_win32_render (HDC                hdc,
 		    SelectObject (hdc, hfont);
 		  old_hfont = hfont;
 		}
-	      
+#if 0	      
+	      if (orig_align == (UINT) -1)
+		orig_align =
+		  SetTextAlign (hdc, TA_LEFT|TA_BOTTOM|TA_NOUPDATECP);
+#endif
 	      TextOutW (hdc,
 			x + (x_off + glyphs->glyphs[i].geometry.x_offset) / PANGO_SCALE,
 			y + glyphs->glyphs[i].geometry.y_offset / PANGO_SCALE,
@@ -356,6 +361,10 @@ pango_win32_render (HDC                hdc,
     }
   if (orig_hfont != NULL)
     SelectObject (hdc, orig_hfont);
+#if 0
+  if (orig_align != (UINT) -1)
+    SetTextAlign (hdc, orig_align);
+#endif
 }
 
 /* This table classifies Unicode characters according to the Microsoft
@@ -364,7 +373,7 @@ pango_win32_render (HDC                hdc,
  * but not quite, the same as the official Unicode block table in
  * Blocks.txt from ftp.unicode.org. The bit number field is the bitfield
  * number as in the FONTSIGNATURE struct's fsUsb field.
- * There are some grave bugs in the table in the books. For instance
+ * There are some grave bugs in the table in the book. For instance
  * it claims there are Hangul at U+3400..U+4DFF while this range in
  * fact contains CJK Unified Ideographs Extension A. Also, the whole
  * block of Hangul Syllables U+AC00..U+D7A3 is missing from the book.
