@@ -760,20 +760,19 @@ font_set_load (FontSet              *font_set,
 	       PangoLanguage        *language,
 	       PangoFontDescription *desc)
 {
+  PangoFontDescription tmp_desc = *desc;
   char **families;
-  char *orig_family;
   int j;
 
   font_set_free (font_set);
 
-  orig_family = desc->family_name;
-  families = g_strsplit (orig_family, ",", -1);
+  families = g_strsplit (desc->family_name, ",", -1);
 
   font_set->n_families = 0;
   for (j=0; families[j] && font_set->n_families < MAX_FAMILIES; j++)
     {
-      desc->family_name = families[j];
-      font_set->fonts[font_set->n_families] = pango_context_load_font (context, desc);
+      tmp_desc.family_name = families[j];
+      font_set->fonts[font_set->n_families] = pango_context_load_font (context, &tmp_desc);
       
       if (font_set->fonts[font_set->n_families])
 	{
@@ -783,6 +782,7 @@ font_set_load (FontSet              *font_set,
     }
   
   g_strfreev (families);
+  tmp_desc.family_name = desc->family_name;
 
   /* The font description was completely unloadable, try with
    * family == "Sans"
@@ -791,19 +791,17 @@ font_set_load (FontSet              *font_set,
     {
       char *ctmp1, *ctmp2;
       
-      desc->family_name = orig_family;
-      
       ctmp1 = pango_font_description_to_string (desc);
-      desc->family_name = "Sans";
-      ctmp2 = pango_font_description_to_string (desc);
+      tmp_desc.family_name = "Sans";
+      ctmp2 = pango_font_description_to_string (&tmp_desc);
       
       g_warning ("Couldn't load font \"%s\" falling back to \"%s\"", ctmp1, ctmp2);
       g_free (ctmp1);
       g_free (ctmp2);
       
-      desc->family_name = "Sans";
+      tmp_desc.family_name = "Sans";
       
-      font_set->fonts[0] = pango_context_load_font (context, desc);
+      font_set->fonts[0] = pango_context_load_font (context, &tmp_desc);
       if (font_set->fonts[0])
 	{
 	  font_set->coverages[0] = pango_font_get_coverage (font_set->fonts[0], language);
@@ -817,18 +815,18 @@ font_set_load (FontSet              *font_set,
     {
       char *ctmp1, *ctmp2;
       
-      ctmp1 = pango_font_description_to_string (desc);
-      desc->style = PANGO_STYLE_NORMAL;
-      desc->weight = PANGO_WEIGHT_NORMAL;
-      desc->variant = PANGO_VARIANT_NORMAL;
-      desc->stretch = PANGO_STRETCH_NORMAL;
-      ctmp2 = pango_font_description_to_string (desc);
+      ctmp1 = pango_font_description_to_string (&tmp_desc);
+      tmp_desc.style = PANGO_STYLE_NORMAL;
+      tmp_desc.weight = PANGO_WEIGHT_NORMAL;
+      tmp_desc.variant = PANGO_VARIANT_NORMAL;
+      tmp_desc.stretch = PANGO_STRETCH_NORMAL;
+      ctmp2 = pango_font_description_to_string (&tmp_desc);
       
       g_warning ("Couldn't load font \"%s\" falling back to \"%s\"", ctmp1, ctmp2);
       g_free (ctmp1);
       g_free (ctmp2);
       
-      font_set->fonts[0] = pango_context_load_font (context, desc);
+      font_set->fonts[0] = pango_context_load_font (context, &tmp_desc);
       if (font_set->fonts[0])
 	{
 	  font_set->coverages[0] = pango_font_get_coverage (font_set->fonts[0], language);

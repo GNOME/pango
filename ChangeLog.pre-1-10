@@ -1,3 +1,8 @@
+Thu Jul 19 16:44:43 2001  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-context.c (font_set_load): Don't corrupt the
+	font description passed in.
+
 Fri Jul 13 14:24:59 2001  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/Makefile.am (pango_querymodules_DEPENDENCIES): Fix dependencies
