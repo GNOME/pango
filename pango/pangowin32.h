@@ -31,7 +31,9 @@
 G_BEGIN_DECLS
 
 #define STRICT
+#ifndef _WIN32_WINNT
 #define _WIN32_WINNT 0x0501	/* To get ClearType-related macros */
+#endif
 #include <windows.h>
 #undef STRICT
 
