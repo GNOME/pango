@@ -7,12 +7,14 @@ EXPORTS
 	pango_attr_iterator_copy
 	pango_attr_iterator_destroy
 	pango_attr_iterator_get
+	pango_attr_iterator_get_attrs
 	pango_attr_iterator_get_font
 	pango_attr_iterator_next
 	pango_attr_iterator_range
 	pango_attr_language_new
 	pango_attr_list_change
 	pango_attr_list_copy
+	pango_attr_list_filter
 	pango_attr_list_get_iterator
 	pango_attr_list_get_type
 	pango_attr_list_insert
@@ -141,6 +143,8 @@ EXPORTS
 	pango_get_log_attrs
 	pango_get_mirror_char
 	pango_get_sysconf_subdirectory
+	pango_glyph_item_apply_attrs
+	pango_glyph_item_split
 	pango_glyph_string_copy
 	pango_glyph_string_extents
 	pango_glyph_string_extents_range

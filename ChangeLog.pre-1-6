@@ -1,3 +1,14 @@
+2003-07-20  Hans Breuer  <hans@breuer.org>
+
+	* pango/makefile.msc : updated to generate libtool
+	compatible dll names, define the right PANGO_MODULE_PREFIX,
+	pangoft2 still not build with msvc
+
+	* module/basic-win32.c : some #ifdef's for missing
+	LANG_* constants to make it compile with msvc50
+
+	* pango/pango.def : updated externals
+
 2003-06-25  Matthias Clasen  <maclas@gmx.de>
 
 

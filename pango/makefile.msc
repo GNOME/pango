@@ -6,7 +6,8 @@ PERL = perl
 !ENDIF
 
 # Possibly override Pango version from build/win32/module.defs
-PANGO_VER = 0.24
+PANGO_VER = 1.0
+PANGO_MODULE_VERSION = 1.0.0
 
 # INCLUDES = -I .. -I .
 # DEFINES = -DPACKAGE=\"Pango\" -DVERSION=\"$(PANGO_VER)\"
@@ -31,7 +32,7 @@ sub-one-lib:
 	nmake -nologo -f makefile.msc $(THIS)-$(PANGO_VER)s.lib PACKAGE=$(THIS) OBJS_$(THIS)=1
 
 sub-one-dll:
-	nmake -nologo -f makefile.msc $(THIS)-$(PANGO_VER).dll PACKAGE=$(THIS) OBJS_$(THIS)=1
+	nmake -nologo -f makefile.msc lib$(THIS)-$(PANGO_VER)-0.dll PACKAGE=$(THIS) OBJS_$(THIS)=1
 
 sub-one-exe:
 	nmake -nologo -f makefile.msc $(THIS).exe PACKAGE=$(THIS) OBJS_$(THIS)=1
@@ -45,6 +46,7 @@ PKG_DEF = $(PACKAGE).def
 PKG_CFLAGS = -FImsvc_recommended_pragmas.h -I.. -I. -I$(PRJ_TOP) \
 		-DPACKAGE=\"Pango\" -DVERSION=\"$(PANGO_VER)\" \
 		-DPANGO_ENABLE_BACKEND -DPANGO_ENABLE_ENGINE \
+		-DMODULE_VERSION=\"$(PANGO_MODULE_VERSION)\" \
 		$(GLIB_CFLAGS) $(LIBICONV_CFLAGS) \
 		$(FREETYPE2_CFLAGS) \
 		$(X11_CFLAGS)  -DSYSCONFDIR=\"/etc\"
@@ -61,7 +63,8 @@ PKG_LINK = $(GLIB_LIBS) $(LIBICONV_LIBS) \
 
 !IFDEF OBJS_pangoft2
 PKG_LINK = $(GLIB_LIBS) $(LIBICONV_LIBS) $(FREETYPE2_LIBS) \
-	pango-$(PANGO_VER).lib mini-xft/mini-xft.lib $(DIRENT_LIBS)
+	pango-$(PANGO_VER).lib $(FONTCONFIG_LIBS) 
+# ..\fontconfig\fcwin32.lib
 !ENDIF
 
 !IFDEF OBJS_pangox
@@ -87,12 +90,14 @@ OBJECTS = \
 	pango-coverage.obj \
 	pango-fontset.obj \
 	pango-fontmap.obj \
+	pango-glyph-item.obj \
 	pango-intset.obj \
 	pango-item.obj \
 	pango-markup.obj \
 	pango-layout.obj \
 	pango-tabs.obj \
 	pango-utils.obj \
+	pangofc-font.obj \
 	reorder-items.obj \
 	shape.obj \
 	pango-enum-types.obj \
@@ -101,7 +106,7 @@ OBJECTS = \
 !ENDIF
 
 basic-win32.obj : ..\modules\basic\basic-win32.c
-	$(CC) $(PKG_CFLAGS) -GD -DWIN32_MODULE_PREFIX -c ..\modules\basic\basic-win32.c
+	$(CC) $(PKG_CFLAGS) -GD -DPANGO_MODULE_PREFIX=_pango_basic_win32 -c ..\modules\basic\basic-win32.c
 
 basic-ft2.obj : ..\modules\basic\basic-ft2.c
 	$(CC) $(PKG_CFLAGS) -GD -DFT2_MODULE_PREFIX -c ..\modules\basic\basic-ft2.c
@@ -151,8 +156,11 @@ OBJECTS = \
 OBJECTS = $(PACKAGE).obj
 !ENDIF
 
-module-defs.c : module-defs.c.win32
-	copy module-defs.c.win32 module-defs.c
+module-defs-win32.c : module-defs-win32.c.win32
+	copy module-defs-win32.c.win32 module-defs-win32.c
+
+module-defs-ft2.c : module-defs-ft2.c.win32
+	copy module-defs-ft2.c.win32 module-defs-ft2.c
 
 pango_headers=		   \
 	pango.h		   \
@@ -194,8 +202,9 @@ pango-enum-types.c: $(pango_headers) pango-enum-types.h
 $(PACKAGE)-$(PKG_VER)s.lib : $(OBJECTS) $(PRJ_TOP)\config.h
 	lib /out:$(PACKAGE)-$(PKG_VER)s.lib $(OBJECTS)
 
-$(PACKAGE)-$(PKG_VER).dll : $(OBJECTS) $(PKG_DEF) $(PRJ_TOP)\config.h
-	$(CC) $(CFLAGS) -LD -Fe$(PACKAGE)-$(PKG_VER).dll $(OBJECTS) $(PKG_LINK) user32.lib gdi32.lib advapi32.lib $(LDFLAGS) /def:$(PKG_DEF)
+lib$(PACKAGE)-$(PKG_VER)-0.dll : $(OBJECTS) $(PKG_DEF) $(PRJ_TOP)\config.h
+	$(CC) $(CFLAGS) -LD -Fe$@ $(OBJECTS) $(PKG_LINK) \
+	user32.lib gdi32.lib advapi32.lib $(LDFLAGS) /implib:$(PACKAGE)-$(PKG_VER).lib /def:$(PKG_DEF)
 
 $(PACKAGE).exe : $(PKG_LINK) $(OBJECTS)
 	$(CC) $(CFLAGS) -Fe$(PACKAGE).exe $(OBJECTS) $(PKG_LINK) gdi32.lib user32.lib
@@ -203,10 +212,6 @@ $(PACKAGE).exe : $(PKG_LINK) $(OBJECTS)
 
 $(PRJ_TOP)\config.h: $(PRJ_TOP)\config.h.win32
 	copy $(PRJ_TOP)\config.h.win32 $(PRJ_TOP)\config.h
-
-
-module-defs-win32.c: module-defs-win32.c.win32
-	copy module-defs-win32.c.win32 module-defs-win32.c
 
 
 .c.obj :

@@ -303,23 +303,35 @@ lang_name (int lang)
     {
 #define CASE(n) case LANG_##n: return #n
       CASE (NEUTRAL);
+#ifdef LANG_INVARIANT
       CASE (INVARIANT);
+#endif
       CASE (AFRIKAANS);
       CASE (ALBANIAN);
       CASE (ARABIC);
+#ifdef LANG_ARMENIAN
       CASE (ARMENIAN);
+#endif
+#ifdef LANG_ASSAMESE
       CASE (ASSAMESE);
+#endif
+#ifdef LANG_AZERI
       CASE (AZERI);
+#endif
       CASE (BASQUE);
       CASE (BELARUSIAN);
+#ifdef LANG_BENGALI
       CASE (BENGALI);
+#endif
       CASE (BULGARIAN);
       CASE (CATALAN);
       CASE (CHINESE);
       CASE (CROATIAN);
       CASE (CZECH);
       CASE (DANISH);
+#ifdef LANG_DIVEHI
       CASE (DIVEHI);
+#endif
       CASE (DUTCH);
       CASE (ENGLISH);
       CASE (ESTONIAN);
@@ -327,56 +339,110 @@ lang_name (int lang)
       CASE (FARSI);
       CASE (FINNISH);
       CASE (FRENCH);
+#ifdef LANG_GALICIAN
       CASE (GALICIAN);
+#endif
+#ifdef LANG_GEORGIAN
       CASE (GEORGIAN);
+#endif
       CASE (GERMAN);
       CASE (GREEK);
+#ifdef LANG_GUJARATI
       CASE (GUJARATI);
+#endif
       CASE (HEBREW);
+#ifdef LANG_HINDI
       CASE (HINDI);
+#endif
       CASE (HUNGARIAN);
       CASE (ICELANDIC);
       CASE (INDONESIAN);
       CASE (ITALIAN);
       CASE (JAPANESE);
+#ifdef LANG_KANNADA
       CASE (KANNADA);
+#endif
+#ifdef LANG_KASHMIRI
       CASE (KASHMIRI);
+#endif
+#ifdef LANG_KAZAK
       CASE (KAZAK);
+#endif
+#ifdef LANG_KONKANI
       CASE (KONKANI);
+#endif
       CASE (KOREAN);
+#ifdef LANG_KYRGYZ
       CASE (KYRGYZ);
+#endif
       CASE (LATVIAN);
       CASE (LITHUANIAN);
+#ifdef LANG_MACEDONIAN
       CASE (MACEDONIAN);
+#endif
+#ifdef LANG_MALAY
       CASE (MALAY);
+#endif
+#ifdef LANG_MALAYALAM
       CASE (MALAYALAM);
+#endif
+#ifdef LANG_MANIPURI
       CASE (MANIPURI);
+#endif
+#ifdef LANG_MARATHI
       CASE (MARATHI);
+#endif
+#ifdef LANG_MONGOLIAN
       CASE (MONGOLIAN);
+#endif
+#ifdef LANG_NEPALI
       CASE (NEPALI);
+#endif
       CASE (NORWEGIAN);
+#ifdef LANG_ORIYA
       CASE (ORIYA);
+#endif
       CASE (POLISH);
       CASE (PORTUGUESE);
+#ifdef LANG_PUNJABI
       CASE (PUNJABI);
+#endif
       CASE (ROMANIAN);
       CASE (RUSSIAN);
+#ifdef LANG_SANSKRIT
       CASE (SANSKRIT);
+#endif
+#ifdef LANG_SINDHI
       CASE (SINDHI);
+#endif
       CASE (SLOVAK);
       CASE (SLOVENIAN);
       CASE (SPANISH);
+#ifdef LANG_SWAHILI
       CASE (SWAHILI);
+#endif
       CASE (SWEDISH);
+#ifdef LANG_SYRIAC
       CASE (SYRIAC);
+#endif
+#ifdef LANG_TAMIL
       CASE (TAMIL);
+#endif
+#ifdef LANG_TATAR
       CASE (TATAR);
+#endif
+#ifdef LANG_TELUGU
       CASE (TELUGU);
+#endif
       CASE (THAI);
       CASE (TURKISH);
       CASE (UKRAINIAN);
+#ifdef LANG_URDU
       CASE (URDU);
+#endif
+#ifdef LANG_UZBEK
       CASE (UZBEK);
+#endif
       CASE (VIETNAMESE);
 #undef CASE
     default:
@@ -1066,6 +1132,10 @@ init_uniscribe (void)
     }
 #endif
 } 
+
+/* The following three functions provide the public module API for
+ * Pango
+ */
 
 void
 PANGO_MODULE_ENTRY(list) (PangoEngineInfo **engines,
