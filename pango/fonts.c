@@ -137,18 +137,18 @@ typedef struct
   const char *str;
 } FieldMap;
 
-FieldMap style_map[] = {
+static FieldMap style_map[] = {
   { PANGO_STYLE_NORMAL, NULL },
   { PANGO_STYLE_OBLIQUE, "Oblique" },
   { PANGO_STYLE_ITALIC, "Italic" }
 };
 
-FieldMap variant_map[] = {
+static FieldMap variant_map[] = {
   { PANGO_VARIANT_NORMAL, NULL },
   { PANGO_VARIANT_SMALL_CAPS, "Small-Caps" }
 };
 
-FieldMap weight_map[] = {
+static FieldMap weight_map[] = {
   { 300, "Light" },
   { PANGO_WEIGHT_NORMAL, NULL },
   { 500, "Medium" },
@@ -156,7 +156,7 @@ FieldMap weight_map[] = {
   { PANGO_WEIGHT_BOLD, "Bold" }
 };
 
-FieldMap stretch_map[] = {
+static FieldMap stretch_map[] = {
   { PANGO_STRETCH_ULTRA_CONDENSED, "Ultra-Condensed" },
   { PANGO_STRETCH_EXTRA_CONDENSED, "Extra-Condensed" },
   { PANGO_STRETCH_CONDENSED,       "Condensed" },

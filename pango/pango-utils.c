@@ -1054,7 +1054,7 @@ typedef struct {
   const char *str;
 } LangInfo;
 
-int
+static int
 lang_info_compare (const void *key, const void *val)
 {
   const LangInfo *lang_info = val;
@@ -1067,7 +1067,7 @@ lang_info_compare (const void *key, const void *val)
  * in the following have sufficient text to excercise all the accents for the language, and
  * there are obviously many more languages to include as well.
  */
-LangInfo lang_texts[] = {
+static LangInfo lang_texts[] = {
   { "ar", "Arabic  السلام عليكم" },
   { "cs", "Czech (česky)  Dobrý den" },
   { "da", "Danish (Dansk)  Hej, Goddag" },

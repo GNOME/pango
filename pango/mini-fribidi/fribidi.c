@@ -80,16 +80,6 @@ LevelInfo;
 static gboolean fribidi_debug = FALSE;
 #endif
 
-gboolean
-fribidi_set_debug (gboolean debug)
-{
-#ifdef DEBUG
-  return fribidi_debug = debug;
-#else
-  return 0;
-#endif
-}
-
 #ifndef USE_SIMPLE_MALLOC
 static TypeLink *free_type_links = NULL;
 #endif
@@ -1059,20 +1049,6 @@ free_rl_list (TypeLink *type_rl_list)
 
   DBG ("Leaving free_rl_list()\n");
   return;
-}
-
-static gboolean mirroring = TRUE;
-
-gboolean
-fribidi_mirroring_status (void)
-{
-  return mirroring;
-}
-
-void
-fribidi_set_mirroring (gboolean mirror)
-{
-  mirroring = mirror;
 }
 
 /*======================================================================

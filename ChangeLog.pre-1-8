@@ -1,3 +1,11 @@
+Sun Sep  2 12:08:15 2001  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-layout.c pango/pango-utils.c: Make 
+	a couple of functions static.
+
+	* pango/mini-fribidi/{fribidi_tables.i,fribidi.patch}: 
+	Make data arrays static.
+
 Thu Aug 30 17:34:52 2001  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pango-color.c: New file, move color handling

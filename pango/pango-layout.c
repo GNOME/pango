@@ -2216,7 +2216,7 @@ free_run (PangoLayoutRun *run, gboolean free_item)
   g_free (run);
 }
 
-PangoItem *
+static PangoItem *
 uninsert_run (PangoLayoutLine *line)
 {
   PangoLayoutRun *run;
