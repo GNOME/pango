@@ -32,7 +32,7 @@ module_LTLIBRARIES += pango-basic-x.la
 endif
 endif
 
-pango_basic_x_la_LDFLAGS = -export-dynamic -avoid-version -module
+pango_basic_x_la_LDFLAGS = -export-dynamic -avoid-version -module $(no_undefined)
 pango_basic_x_la_LIBADD = $(pangoxlibs)
 pango_basic_x_la_SOURCES = basic-x.c
 libpango_basic_x_la_SOURCES = basic-x.c
