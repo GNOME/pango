@@ -1,7 +1,7 @@
 Mon Jun  2 10:43:15 PDT 2003 Keith Packard <keithp@keithp.com
 
 	* pango/pangoxft-font.c (pango_xft_font_real_get_kerning):
-	was returning with FT_Face locked.
+	was returning with FT_Face locked. (#114226)
 
 Mon Jun  2 12:10:11 2003  Owen Taylor  <otaylor@redhat.com>
 
@@ -70,7 +70,7 @@ Wed May 28 17:43:16 2003  Owen Taylor  <otaylor@redhat.com>
 Tue May 27 18:37:44 2003  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/mini-fribidi/fribidi.c (fribidi_analyse_string): 
-	Limit the size of the buffers we alloca(). (#104238)
+	Limit the size of the buffers we alloca(). (#104328)
 
 Tue May 27 16:51:32 2003  Owen Taylor  <otaylor@redhat.com>
 
