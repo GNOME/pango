@@ -1,3 +1,10 @@
+Tue Jul 29 09:58:13 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/opentype/ftxgdef.c (Check_Property): Rewrite
+	handling of IGNORE_SPECIAL_MARKS to be properly
+	"ignore marks of attachment type different than
+	specified. (#118456, Kailash C. Chowksey)
+
 Sat Jul 26 09:41:22 2003  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/opentype/ftxgsub.c (Lookup_LigatureSubst):
