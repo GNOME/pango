@@ -168,7 +168,7 @@ pango_tab_array_get_type (void)
  * pango_tab_array_copy:
  * @src: #PangoTabArray to copy
  * 
- * Copy a #PangoTabArray
+ * Copies a #PangoTabArray
  * 
  * Return value: Newly-allocated #PangoTabArray
  **/
@@ -190,7 +190,7 @@ pango_tab_array_copy (PangoTabArray *src)
  * pango_tab_array_free:
  * @tab_array: a #PangoTabArray
  *
- * Free a tab array and associated resources.
+ * Frees a tab array and associated resources.
  * 
  **/
 void
@@ -207,7 +207,7 @@ pango_tab_array_free   (PangoTabArray *tab_array)
  * pango_tab_array_get_size:
  * @tab_array: a #PangoTabArray
  * 
- * Get the number of tab stops in @tab_array.
+ * Gets the number of tab stops in @tab_array.
  * 
  * Return value: the number of tab stops in the array.
  **/

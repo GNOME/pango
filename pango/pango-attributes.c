@@ -1368,7 +1368,7 @@ pango_attr_iterator_get (PangoAttrIterator *iterator,
  *        pango_font_description_set_family_static using values from
  *        an attribute in the #PangoAttrList associated with the iterator,
  *        so if you plan to keep it around, you must call:
- *        pango_font_description_set_family (desc, pango_font_description_get_family (desc)).
+ *        <literal>pango_font_description_set_family (desc, pango_font_description_get_family (desc))</literal>.
  * @language: if non-%NULL, location to store language tag for item, or %NULL
  *            if non is found.
  * @extra_attrs: if non-%NULL, location in which to store a list of non-font
@@ -1509,11 +1509,11 @@ pango_attr_iterator_get_font (PangoAttrIterator     *iterator,
  *        should be filtered out.
  * @data: Data to be passed to @func
  * 
- * Given a PangoAttrList and callback function, removes any elements
+ * Given a #PangoAttrList and callback function, removes any elements
  * of @list for which @func returns %TRUE and inserts them into
  * a new list.
  * 
- * Return value: a newly allocated %PangoAttrList or %NULL if
+ * Return value: a newly allocated #PangoAttrList or %NULL if
  *  no attributes of the given types were found.
  **/
 PangoAttrList *
@@ -1580,7 +1580,7 @@ pango_attr_list_filter (PangoAttrList       *list,
  * iterator.
  * 
  * Return value: a list of all attributes for the current range.
- *   To free this value, call pango_attributes_destroy() on
+ *   To free this value, call pango_attribute_destroy() on
  *   each value and g_slist_free() on the list.
  **/
 GSList *

@@ -200,12 +200,13 @@ has no user-visible fields.
 
 <!-- ##### ENUM PangoWrapMode ##### -->
 <para>
-describes how to wrap the lines of a #PangoLayout to the desired width.
+A PangoWrapMode describes how to wrap the lines of a #PangoLayout to the desired width.
 </para>
 
 @PANGO_WRAP_WORD: wrap lines at word boundaries.
 @PANGO_WRAP_CHAR: wrap lines at character boundaries.
-@PANGO_WRAP_WORD_CHAR: wrap lines at word boundaries, but fall back to character boundaries if there is not enought space for a full word.
+@PANGO_WRAP_WORD_CHAR: wrap lines at word boundaries, but fall back to character boundaries if there is not 
+enough space for a full word.
 
 <!-- ##### MACRO PANGO_TYPE_WRAP_MODE ##### -->
 <para>
@@ -324,7 +325,7 @@ The GObject type for #PangoWrapMode.
 
 <!-- ##### ENUM PangoAlignment ##### -->
 <para>
-describes how to align the lines of a #PangoLayout within the
+A PangoAlignment describes how to align the lines of a #PangoLayout within the
 available space. If the #PangoLayout is set to justify
 using pango_layout_set_justify(), then this only has an effect
 for partial lines.

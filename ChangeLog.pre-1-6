@@ -1,3 +1,12 @@
+2003-06-25  Matthias Clasen  <maclas@gmx.de>
+
+
+	* pango/pango-layout.c: 
+	* pango/pango-tabs.c: 
+	* pango/pango-attributes.c: 
+	* docs/tmpl/layout.sgml: 
+	* docs/tmpl/text-attributes.sgml: Doc markup and typo fixes.
+
 2003-06-17  Matthias Clasen  <maclas@gmx.de>
 
 	* docs/Makefile.am: Add rule to regenerate man pages from 
