@@ -1,3 +1,9 @@
+2000-11-14  Havoc Pennington  <hp@redhat.com>
+
+	* pango/pango-layout.c (pango_layout_get_item_properties): get the 
+	value of any rise attribute
+	(pango_layout_run_get_extents): take rise into account
+
 2000-11-15  Tor Lillqvist  <tml@iki.fi>
 
 	* config.h.win32: Define HAVE_FRIBIDI.

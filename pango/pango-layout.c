@@ -139,6 +139,7 @@ static int *pango_layout_line_get_vis2log_map (PangoLayoutLine  *line,
 
 static void pango_layout_get_item_properties (PangoItem      *item,
 					      PangoUnderline *uline,
+                                              gint           *rise,
 					      PangoRectangle *ink_rect,
 					      PangoRectangle *logical_rect,
 					      gboolean       *shape_set);
@@ -852,7 +853,8 @@ pango_layout_line_index_to_x (PangoLayoutLine  *line,
       PangoLayoutRun *run = run_list->data;
       gboolean shape_set;
       
-      pango_layout_get_item_properties (run->item, NULL, NULL, &logical_rect, &shape_set);
+      pango_layout_get_item_properties (run->item, NULL, NULL, NULL,
+                                        &logical_rect, &shape_set);
 
       if (run->item->offset <= index && run->item->offset + run->item->length > index)
 	{
@@ -2112,7 +2114,8 @@ process_item (PangoLayoutLine *line,
   int length;
   int i;
 
-  pango_layout_get_item_properties (item, NULL, &shape_ink, &shape_logical, &shape_set);
+  pango_layout_get_item_properties (item, NULL, NULL,
+                                    &shape_ink, &shape_logical, &shape_set);
 
   if (shape_set)
     imposed_shape (item->num_chars, &shape_ink, &shape_logical, glyphs);
@@ -2573,7 +2576,8 @@ pango_layout_line_x_to_index (PangoLayoutLine *line,
       PangoLayoutRun *run = tmp_list->data;
       gboolean shape_set;
 
-      pango_layout_get_item_properties (run->item, NULL, NULL, &logical_rect, &shape_set);
+      pango_layout_get_item_properties (run->item, NULL, NULL,
+                                        NULL, &logical_rect, &shape_set);
 
       if (!shape_set)
 	pango_glyph_string_extents (run->glyphs, run->item->analysis.font, NULL, &logical_rect);
@@ -2865,14 +2869,14 @@ pango_layout_run_get_extents (PangoLayoutRun *run,
                               PangoRectangle *run_logical)
 {
   PangoUnderline uline = PANGO_UNDERLINE_NONE;
-
+  int rise = 0;
   PangoRectangle shape_ink;
   PangoRectangle shape_logical;
   PangoRectangle tmp_ink;
   gboolean shape_set;
   gboolean need_ink;
 
-  pango_layout_get_item_properties (run->item, &uline,
+  pango_layout_get_item_properties (run->item, &uline, &rise,
                                     &shape_ink, &shape_logical, &shape_set);
 
   if (shape_setp)
@@ -2913,6 +2917,14 @@ pango_layout_run_get_extents (PangoLayoutRun *run,
       run_logical->height = MAX (run_logical->height,
 				 tmp_ink.y + tmp_ink.height + 2 * PANGO_SCALE - run_logical->y);
       break;
+    }
+
+  if (rise != 0)
+    {
+      if (run_ink)
+        run_ink->y -= rise;
+
+      run_logical->y -= rise;
     }
 }
 
@@ -3159,6 +3171,7 @@ pango_layout_line_postprocess (PangoLayoutLine *line)
 static void
 pango_layout_get_item_properties (PangoItem      *item,
 				  PangoUnderline *uline,
+                                  gint           *rise,
 				  PangoRectangle *ink_rect,
 				  PangoRectangle *logical_rect,
 				  gboolean       *shape_set)
@@ -3167,7 +3180,13 @@ pango_layout_get_item_properties (PangoItem      *item,
 
   if (shape_set)
     *shape_set = FALSE;
-  
+
+  if (rise)
+    *rise = 0;
+
+  if (uline)
+    *uline = PANGO_UNDERLINE_NONE;
+    
   while (tmp_list)
     {
       PangoAttribute *attr = tmp_list->data;
@@ -3178,7 +3197,12 @@ pango_layout_get_item_properties (PangoItem      *item,
 	  if (uline)
 	    *uline = ((PangoAttrInt *)attr)->value;
 	  break;
-	  
+
+        case PANGO_ATTR_RISE:
+	  if (rise)
+	    *rise = ((PangoAttrInt *)attr)->value;
+          break;
+          
 	case PANGO_ATTR_SHAPE:
 	  if (shape_set)
 	    *shape_set = TRUE;
