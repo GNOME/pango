@@ -1,3 +1,8 @@
+2003-11-25  Noah Levitt  <nlevitt@columbia.edu>
+
+	* pango-utils.c (lang_texts[]): Italian is "it"; "iw" is deprecated
+	for Hebrew, should be "he".
+
 Sat Nov  1 09:32:15 2003  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pango-ot.h pango/pangoft2.h modules/indic/indic-ot.h
