@@ -247,11 +247,15 @@ arabic_mule_recode(PangoXSubfont* subfont,int* glyph,PangoXSubfont* mulefonts)
             *subfont = mulefonts[charmap[0].fontindex];
             *glyph   = charmap[0].charindex;
         }
+    else if (letter == 0x61F)
+        { /* question mark */
+            *subfont = mulefonts[1];
+            *glyph   = 0x29; 
+        }
     else
         {
-            *subfont = mulefonts[charmap[1].fontindex];
-            *glyph   = 0x20; /* we don't have this thing -- use a space */
-            /* This has to be something that does not print anything !! */
+            *subfont = mulefonts[1];
+            *glyph   = 0x26; /* we don't have this thing -- use a dot */
         }
 }
 

@@ -67,7 +67,7 @@ static shapestruct chartable [] =
     {0x63D,      0x0000,0}, /* simple       */
     {0x63E,      0x0000,0}, /* indexing     */
     {0x63F,      0x0000,0}, /*  :           */
-    {0x640,      0x0640,1}, /*              */
+    {0x640,      0x0640,4}, /* tatweel      */
     {0x641,      0xFED1,4}, /* FA           */
     {0x642,      0xFED5,4}, /* QAF          */
     {0x643,      0xFED9,4}, /* KAF          */
@@ -89,24 +89,24 @@ static shapestruct chartable [] =
     {0x686,      0xFB7A,4}, /* Persian: Tcheh                    */
     {0x687,      0xFB7E,4}, /* Sindhi:                           */
     {0x68C,      0xFB84,2}, /* Sindhi: DAHAL                     */
-    {0x68D,      0xFB82,2}, /* Sindhi                            */             
+    {0x68D,      0xFB82,2}, /* Sindhi                            */ 
     {0x68E,      0xFB86,2}, /*                                   */
-    {0x691,      0xFB8C,2}, /* Urdu                              */             
+    {0x691,      0xFB8C,2}, /* Urdu                              */
     {0x698,      0xFB8A,2}, /* Persian: JEH                      */
-    {0x6A4,      0xFB6A,4}, /* VEH: latin compatibility          */             
-    {0x6A6,      0xFB6E,4}, /* Sindhi                            */             
+    {0x6A4,      0xFB6A,4}, /* VEH: latin compatibility          */
+    {0x6A6,      0xFB6E,4}, /* Sindhi                            */
     {0x6A9,      0xFB8E,4}, /* Persan K                          */
-    {0x6AA,      0xFB8E,4}, /* extrawide KAF-> Persian KAF       */             
-    {0x6AF,      0xFB92,4}, /* Persian: GAF                      */             
+    {0x6AA,      0xFB8E,4}, /* extrawide KAF-> Persian KAF       */
+    {0x6AF,      0xFB92,4}, /* Persian: GAF                      */
     {0x6B1,      0xFB9A,4}, /* Sindhi:                           */
     {0x6B3,      0xFB97,4}, /*                                   */
     {0x6BA,      0xFB9E,2}, /* Urdu:NUN GHUNNA                   */
-    {0x6BB,      0xFBA0,4}, /* Sindhi:                           */             
+    {0x6BB,      0xFBA0,4}, /* Sindhi:                           */
     {0x6BE,      0xFBAA,4}, /* HA special                        */
-    {0x6C0,      0xFBA4,2}, /* izafet: HA HAMZA                  */             
+    {0x6C0,      0xFBA4,2}, /* izafet: HA HAMZA                  */
     {0x6C1,      0xFBA6,4}, /* Urdu:                             */
     {0x6D2,      0xFBAE,2}, /* YA barree                         */
-    {0x6D3,      0xFBB0,2}, /* YA BARREE HAMZA                   */             
+    {0x6D3,      0xFBB0,2}, /* YA BARREE HAMZA                   */
 
     {0xFEF5,     0xFEF5,2}, /* Lam-Alif Madda  */
     {0xFEF7,     0xFEF7,2}, /* Lam-Alif Hamza  */
@@ -119,8 +119,9 @@ static shapestruct chartable [] =
 #define ALIFMADDA  0x622
 #define LAM        0x644
 #define HAMZA      0x621
+#define TATWEEL    0x640
 
-/* Hmaza below ( saves Kasra and special cases ), Hamza above ( always joins ).
+/* Hamza below ( saves Kasra and special cases ), Hamza above ( always joins ).
  * As I don't know what sHAMZA is good for I don't handle it.
  */
 #define iHAMZA      0x654
@@ -221,11 +222,12 @@ static GUChar4
 charshape(GUChar4 s,short which)
 { /* which 0=alone 1=end 2=start 3=middle */
     int j = 0;
-    if ((s >= chartable[1].basechar)  && (s <= 0x64A)) 
+    if ((s >= chartable[1].basechar)  && (s <= 0x64A) && ( s != TATWEEL)) 
         {   /* basic character */ 
             return chartable[s-chartable[0].basechar].charstart+which;
         } 
-    else if ( (s >= chartable[1].basechar)  && ( s <= 0xFEFB ))
+    else if ( (s >= chartable[1].basechar)  && ( s <= 0xFEFB ) 
+              && (s != TATWEEL))
         {   /* special char or  Lam-Alif */
             while ( chartable[j].basechar < s) j++;
             return chartable[j].charstart+which;
@@ -274,6 +276,9 @@ ligature(GUChar4* string,int si,int len,charstruct* oldchar)
     if (arabic_isvowel(newchar))
         {
             retval = 1;
+            if ((oldchar->vowel != 0)&&(newchar != SHADDA)){
+                retval = 2; /* we eliminate the old vowel .. */
+            }
             switch(newchar)
                 {
                 case SHADDA: oldchar->mark1 = newchar; break;
@@ -436,8 +441,11 @@ shape(int olen,int* len,GUChar4* string,int level)
                     curchar.lignum++;
                 }
             else if ( ( join == 2 )
-		      ||((join == 3)&&(level != 2))  ) 
+                      ||((join == 3)&&(level != 2))  
+                      ||((join == 1)&&(level == 1)
+                         && arabic_isvowel(string[si])) ) 
                 { /*  Lam-Alif in Langbox-font is no ligature */
+                    /*  No vowels in Langbox-font */
                     (*len)--;
                 }
             si--;

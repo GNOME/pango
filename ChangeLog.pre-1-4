@@ -1,3 +1,7 @@
+Mon May  1 11:58:55 2000  Owen Taylor  <otaylor@redhat.com>
+
+	* modules/arabic/*: Misc bug fixes from Karl Koehler.
+
 Wed Apr 26 19:55:40 2000  Owen Taylor  <otaylor@redhat.com>
 
 	* configure.in: Add checks looking for iconv in libiconv.

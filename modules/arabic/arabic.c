@@ -17,7 +17,7 @@
 #include "mulefont.h"
 #include "langboxfont.h"
 
-/*  #define DEBUG   */
+/*  #define DEBUG    */
 #ifdef DEBUG
 #include <stdio.h>
 #endif
@@ -161,9 +161,10 @@ find_unic_font (PangoFont *font,char* charsets[],PangoXSubfont* rfonts)
 }
 
 static char *default_charset[] = {
-      "iso10646-1", 
-      "iso8859-6.8x",
-      "mulearabic-2" 
+    "iso10646-1",  
+    "iso8859-6.8x",
+    /*          "iso8859-6.8x" */
+    "mulearabic-2"    
 };
   
 
@@ -171,7 +172,7 @@ static char *default_charset[] = {
 static void
 set_glyph (PangoGlyphString *glyphs, 
            PangoFont *font, PangoXSubfont subfont,
-           int i, int cluster_start, int glyph)
+           int i, int cluster_start, int glyph, int is_vowel)
 {
     PangoRectangle logical_rect;
 #ifdef DEBUG
@@ -193,7 +194,7 @@ set_glyph (PangoGlyphString *glyphs,
 
     pango_font_get_glyph_extents (font, glyphs->glyphs[i].glyph, NULL, &logical_rect);
     glyphs->log_clusters[i] = cluster_start;
-    if (arabic_isvowel(glyph))
+    if (is_vowel)
         {
             glyphs->glyphs[i].geometry.width = 0;
         }
@@ -248,7 +249,7 @@ arabic_engine_shape (PangoFont        *font,
                 {
                     set_glyph (glyphs, font, 
                                PANGO_X_GLYPH_SUBFONT (unknown_glyph), i, 
-                               p - text, PANGO_X_GLYPH_INDEX (unknown_glyph));
+                               p - text, PANGO_X_GLYPH_INDEX (unknown_glyph),0);
                     p = unicode_next_utf8 (p);
                 }
             return;
@@ -282,6 +283,9 @@ arabic_engine_shape (PangoFont        *font,
     p    = text;
     pold = p;
     i    = n_chars-1;
+#ifdef DEBUG
+    fprintf(stderr,"[ar]: after shaping : %i glyphs ",n_glyph);
+#endif
     while(i >= 0)
         {
             if (wc[i] == 0)
@@ -290,9 +294,11 @@ arabic_engine_shape (PangoFont        *font,
                     i--;
                 }
             else 
-                {
-                    int cluster_start = arabic_isvowel (wc[i]) 
-                        ? pold - text : p - text;
+                {   
+                    int cluster_start ;
+                    int is_vowel      = arabic_isvowel(wc[i]);
+                    cluster_start     = is_vowel ? pold - text : p - text;
+
                     if ( lvl ==  1 )
                         {
 #ifdef DEBUG
@@ -303,22 +309,10 @@ arabic_engine_shape (PangoFont        *font,
                         }
                     else if ( lvl == 2 )
                         {
-#ifdef DEBUG
-                            fprintf(stderr,"[ar] lbox-recoding char %x",
-                                    wc[i]);
-#endif
                             if (( i > 0 )&&(wc[i-1] == 0))
                                 {
                                     arabic_lbox_recode(&subfont,&(wc[i]),
                                                        &(wc[i-1]), arfonts);
-#ifdef DEBUG
-                                    if (wc[i-1] != 0)
-                                        {
-                                            fprintf(stderr,"[ar] lbox-recoded"
-                                                    " special char %x",
-                                                    wc[i-1]);
-                                        }
-#endif
                                 }
                             else 
                                 arabic_lbox_recode(&subfont,&(wc[i]),NULL,
@@ -326,7 +320,7 @@ arabic_engine_shape (PangoFont        *font,
                         }
                     
                     set_glyph(glyphs, font, subfont, n_glyph - 1,
-                              cluster_start, wc[i]);
+                              cluster_start, wc[i], is_vowel);
       
                     pold = p;
                     p    = unicode_next_utf8 (p);

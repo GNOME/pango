@@ -153,7 +153,7 @@ static fontentry charmap [] =
     { 0xFEDD,0xE4  }, /* LAM      */
     { 0xFEDE,0xE4  }, 
     { 0xFEDF,0xFA  }, 
-    { 0xFEE0,0xA6  }, 
+    { 0xFEE0,0xFA  }, 
     { 0xFEE1,0xE5  }, /* MIM      */
     { 0xFEE2,0xE5  }, 
     { 0xFEE3,0xFB  }, 
@@ -181,9 +181,10 @@ arabic_lbox_recode(PangoXSubfont* subfont,int* glyph,int* glyph2,
                    PangoXSubfont* lboxfonts)
 {
     int letter=*glyph;
+    
+    *subfont = lboxfonts[0];
     if ((letter >= 0x660)&&(letter <= 0x669)) /* indic numeral */
         {
-            *subfont = lboxfonts[0];
             *glyph   = letter - 0x660 + 0xB0;
         }
     else if ((letter >= 0xFE80)&&(letter <= 0xFEF4))
@@ -196,17 +197,14 @@ arabic_lbox_recode(PangoXSubfont* subfont,int* glyph,int* glyph2,
                             letter,charmap[letter-0xFE80].unicodechar);
                 }
 #endif
-            *subfont = lboxfonts[0];
             *glyph   = charmap[letter-0xFE80].charindex;
         }
     else if ((letter >= 0x64B)&&(letter <= 0x652))
         { /* a vowel */
-            *subfont = lboxfonts[0];
             *glyph   = letter - 0x64B + 0xA8;
         }
     else if ((letter >= 0xFEF5)&&(letter <= 0xFEFC))
         { /* Lam-Alif. Langbox solved the problem in their own way ... */
-            *subfont = lboxfonts[0];
 #ifdef DEBUG
             fprintf(stderr,"[ar] lbox-recoding chars %x",
                     letter);
@@ -233,17 +231,22 @@ arabic_lbox_recode(PangoXSubfont* subfont,int* glyph,int* glyph2,
         }
     else if (letter == 0x621)
         {
-            *subfont = lboxfonts[0];
             *glyph   = charmap[0].charindex;
+        }
+    else if (letter == 0x640)
+        { /* tatweel */
+            *glyph   = 0xE0;
+        }
+    else if (letter == 0x61F)
+        { /* question mark */
+            *glyph   = 0xBF; 
         }
     else if (letter < 0xB0 )
         {
-            *subfont = lboxfonts[0];
             *glyph   = letter;
         }
     else
         {
-            *subfont = lboxfonts[0];
             *glyph   = 0x20; /* we don't have this thing -- use a space */
             /* This has to be something that does not print anything !! */
         }
