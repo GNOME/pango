@@ -163,7 +163,7 @@ pango_engine_pair_get_engine (PangoEnginePair *pair)
 	      return NULL;
 	    }
 	  
-	  g_module_symbol (module, "script_engine_load", (gpointer)&load);
+	  g_module_symbol (module, "script_engine_load", (gpointer *) &load);
 	  if (!load)
 	    {
 	      fprintf(stderr, "cannot retrieve script_engine_load from %s: %s\n",

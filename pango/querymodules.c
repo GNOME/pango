@@ -62,9 +62,9 @@ query_module (const char *dir, const char *name)
     fprintf(stderr, "Cannot load module %s: %s\n", path, g_module_error());
 	  
   if (module &&
-      g_module_symbol (module, "script_engine_list", (gpointer)&list) &&
-      g_module_symbol (module, "script_engine_load", (gpointer)&load) &&
-      g_module_symbol (module, "script_engine_unload", (gpointer)&unload))
+      g_module_symbol (module, "script_engine_list", (gpointer *) &list) &&
+      g_module_symbol (module, "script_engine_load", (gpointer *) &load) &&
+      g_module_symbol (module, "script_engine_unload", (gpointer *) &unload))
     {
       gint i,j;
       PangoEngineInfo *engines;
