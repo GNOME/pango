@@ -68,7 +68,8 @@ get_glyph (PangoFont *font,
 }
 
 /* This should be extended to support various encodings... */
-gint get_glyph_num(PangoFont *font,
+static gint
+get_glyph_num(PangoFont *font,
 		   gunichar  uch)
 {
   return uch;

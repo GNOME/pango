@@ -1,3 +1,11 @@
+Tue Aug 20 15:06:50 2002  Owen Taylor  <otaylor@redhat.com>
+ 
+ 	* modules/arabic/arabic-xft.c modules/arabic/arabic-ft2.c
+ 	modules/basic/tables-big.i modules/basic/tables-small.i
+ 	modules/hebrew/hebrew-ft2.c modules/hebrew/hebrew-xft.c:
+ 	Patch from Nils Nordman to add various missing 'static'
+ 	(#90353)
+ 
 Mon Aug 19 14:07:02 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pangofc-fontmap.cI (pango_fc_font_map_get_patterns):

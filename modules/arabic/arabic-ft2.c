@@ -49,7 +49,7 @@ static PangoEngineInfo script_engines[] = {
   }
 };
 
-void
+static void
 maybe_add_feature (PangoOTRuleset *ruleset,
 		   PangoOTInfo    *info,
 		   guint           script_index,
