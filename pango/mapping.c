@@ -275,23 +275,53 @@ pango_glyph_string_x_to_index (PangoGlyphString *glyphs,
     }
   else
     {
-      double cp = ((double)(x_pos - start_xpos) * cluster_chars) / (end_xpos - start_xpos); 
+      double cp = ((double)(x_pos - start_xpos) * cluster_chars) / (end_xpos - start_xpos);
 
-      if (index)
+      /* LTR and right-to-left have to be handled separately
+       * here because of the edge condition when we are exactly
+       * at a pixel boundary; end_xpos goes with the next
+       * character for LTR, with the previous character for RTL.
+       */
+      if (start_xpos < end_xpos) /* Left-to-right */
 	{
-	  char *p = text + start_index;
-	  int i = 0;
-
-	  while (i + 1 <= cp)
+	  if (index)
 	    {
-	      p = g_utf8_next_char (p);
-	      i++;
+	      char *p = text + start_index;
+	      int i = 0;
+	      
+	      while (i + 1 <= cp)
+		{
+		  p = g_utf8_next_char (p);
+		  i++;
+		}
+	      
+	      *index = (p - text);
 	    }
-	    
-	  *index = (p - text);
+	  
+	  if (trailing)
+	    *trailing = (cp - (int)cp >= 0.5) ? 1 : 0;
 	}
-
-      if (trailing)
-	*trailing = (cp - (int)cp > 0.5) ? 1 : 0;
+      else /* Right-to-left */
+	{
+	  if (index)
+	    {
+	      char *p = text + start_index;
+	      int i = 0;
+	      
+	      while (i + 1 < cp)
+		{
+		  p = g_utf8_next_char (p);
+		  i++;
+		}
+	      
+	      *index = (p - text);
+	    }
+	  
+	  if (trailing)
+	    {
+	      double cp_flip = cluster_chars - cp;
+	      *trailing = (cp_flip - (int)cp_flip >= 0.5) ? 0 : 1;
+	    }
+	}
     }
 }
