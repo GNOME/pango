@@ -87,6 +87,7 @@ moduledir = $(libdir)/pango/modules
 
 INCLUDES = 			\
 	-DPANGO_ENABLE_ENGINE	\
+	-DG_DISABLE_DEPRECATED	\
 	-I$(top_srcdir) 	\
 	-I$(top_srcdir)/pango/ 	\
 	$(X_CFLAGS) 		\

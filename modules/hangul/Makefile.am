@@ -18,7 +18,7 @@ hangul_x_libadd = $(pangoxlibs)
 endif
 endif
 
-INCLUDES = -DPANGO_ENABLE_ENGINE -I$(top_srcdir) -I$(top_srcdir)/pango/ $(moddefine) $(X_CFLAGS)
+INCLUDES = -DPANGO_ENABLE_ENGINE -DG_DISABLE_DEPRECATED -I$(top_srcdir) -I$(top_srcdir)/pango/ $(moddefine) $(X_CFLAGS)
 
 pango_hangul_x_la_LDFLAGS = -export-dynamic -avoid-version -module
 pango_hangul_x_la_SOURCES = $(sources)

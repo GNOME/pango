@@ -9,7 +9,7 @@ QT_INCLUDES=-I $(QTDIR)/include
 QT_LIBS=-L$(QTDIR)/lib -lqt 
 MOC=$(QTDIR)/bin/moc
 
-INCLUDES = -I$(top_srcdir) $(QT_INCLUDES) $(GLIB_CFLAGS)
+INCLUDES = -DG_DISABLE_DEPRECATED -I$(top_srcdir) $(QT_INCLUDES) $(GLIB_CFLAGS)
 
 bin_PROGRAMS = pango-viewer
 

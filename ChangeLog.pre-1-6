@@ -1,3 +1,13 @@
+2001-12-13  Sebastian Wilhelmi  <wilhelmi@ira.uka.de>
+
+	* examples/Makefile.am, modules/arabic/Makefile.am,
+	modules/basic/Makefile.am, modules/hangul/Makefile.am,
+	modules/hebrew/Makefile.am, modules/indic/Makefile.am,
+	modules/tamil/Makefile.am, modules/thai/Makefile.am,
+	pango/Makefile.am, pango/mini-fribidi/Makefile.am,
+	pango/opentype/Makefile.am, tests/Makefile.am: Compile with
+	-DG_DISABLE_DEPRECATED. See #52790.
+
 2001-12-12  Sven Neumann  <sven@gimp.org>
 
 	* pango/mini-xft/minixftinit.c: include config.h so the definition 
