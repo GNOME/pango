@@ -757,13 +757,14 @@ hangul_engine_shape (PangoFont        *font,
 		}
 	      if (n_jamos == jamos_max)
 		{
-		  gunichar2 *new_jamos;
-		    
 		  jamos_max++;
-		  new_jamos = g_new (gunichar2, jamos_max);
-		  memcpy (new_jamos, jamos, n_jamos * sizeof (gunichar2));
-
-		  jamos = new_jamos;
+		  if (jamos == jamos_static)
+		    {
+		      jamos = g_new(gunichar2, jamos_max);
+		      memcpy (jamos, jamos_static, n_jamos*sizeof(gunichar2));
+		    }
+		  else
+		    jamos = g_renew(gunichar2, jamos, jamos_max);
 		}
 	      jamos[n_jamos++] = wc;
 	    }

@@ -1,3 +1,8 @@
+2002-10-15  Changwoo Ryu  <cwryu@debian.org>
+
+	* modules/hangul/hangul-x.c (hangul_engine_shape): Fixed leaks
+	when the Hangul jamos length >= 6 (#95730).
+
 2002-10-14  Sven Neumann  <sven@gimp.org>
 
 	* modules/arabic/arabic-ft2.c (get_ruleset): unref the PangoOTInfo
