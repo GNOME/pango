@@ -1,0 +1,61 @@
+<!-- ##### SECTION Title ##### -->
+modules
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### STRUCT PangoMap ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### STRUCT PangoMapEntry ##### -->
+<para>
+
+</para>
+
+@info: 
+@is_exact: 
+
+<!-- ##### FUNCTION pango_find_map ##### -->
+<para>
+
+</para>
+
+@lang: 
+@engine_type_id: 
+@render_type_id: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_map_get_entry ##### -->
+<para>
+
+</para>
+
+@map: 
+@wc: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_map_get_engine ##### -->
+<para>
+
+</para>
+
+@map: 
+@wc: 
+@Returns: 
+
+

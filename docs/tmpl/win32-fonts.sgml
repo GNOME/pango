@@ -1,0 +1,310 @@
+<!-- ##### SECTION Title ##### -->
+Win32 Fonts and Rendering
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### MACRO PANGO_RENDER_TYPE_WIN32 ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### FUNCTION pango_win32_get_context ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_win32_load_font ##### -->
+<para>
+
+</para>
+
+@lfps: 
+@n_fonts: 
+@Returns: 
+<!-- # Unused Parameters # -->
+@lfp: 
+
+
+<!-- ##### FUNCTION pango_win32_render ##### -->
+<para>
+
+</para>
+
+@hdc: 
+@font: 
+@glyphs: 
+@x: 
+@y: 
+
+
+<!-- ##### FUNCTION pango_win32_render_layout_line ##### -->
+<para>
+
+</para>
+
+@hdc: 
+@line: 
+@x: 
+@y: 
+
+
+<!-- ##### FUNCTION pango_win32_render_layout ##### -->
+<para>
+
+</para>
+
+@hdc: 
+@layout: 
+@x: 
+@y: 
+
+
+<!-- ##### ENUM PangoWin32UnicodeSubrange ##### -->
+<para>
+
+</para>
+
+@PANGO_WIN32_U_BASIC_LATIN: 
+@PANGO_WIN32_U_LATIN_1_SUPPLEMENT: 
+@PANGO_WIN32_U_LATIN_EXTENDED_A: 
+@PANGO_WIN32_U_LATIN_EXTENDED_B: 
+@PANGO_WIN32_U_IPA_EXTENSIONS: 
+@PANGO_WIN32_U_SPACING_MODIFIER_LETTERS: 
+@PANGO_WIN32_U_COMBINING_DIACRITICAL_MARKS: 
+@PANGO_WIN32_U_BASIC_GREEK: 
+@PANGO_WIN32_U_GREEK_SYMBOLS_AND_COPTIC: 
+@PANGO_WIN32_U_CYRILLIC: 
+@PANGO_WIN32_U_ARMENIAN: 
+@PANGO_WIN32_U_HEBREW_EXTENDED: 
+@PANGO_WIN32_U_BASIC_HEBREW: 
+@PANGO_WIN32_U_BASIC_ARABIC: 
+@PANGO_WIN32_U_ARABIC_EXTENDED: 
+@PANGO_WIN32_U_DEVANAGARI: 
+@PANGO_WIN32_U_BENGALI: 
+@PANGO_WIN32_U_GURMUKHI: 
+@PANGO_WIN32_U_GUJARATI: 
+@PANGO_WIN32_U_ORIYA: 
+@PANGO_WIN32_U_TAMIL: 
+@PANGO_WIN32_U_TELUGU: 
+@PANGO_WIN32_U_KANNADA: 
+@PANGO_WIN32_U_MALAYALAM: 
+@PANGO_WIN32_U_THAI: 
+@PANGO_WIN32_U_LAO: 
+@PANGO_WIN32_U_GEORGIAN_EXTENDED: 
+@PANGO_WIN32_U_BASIC_GEORGIAN: 
+@PANGO_WIN32_U_HANGUL_JAMO: 
+@PANGO_WIN32_U_LATIN_EXTENDED_ADDITIONAL: 
+@PANGO_WIN32_U_GREEK_EXTENDED: 
+@PANGO_WIN32_U_GENERAL_PUNCTUATION: 
+@PANGO_WIN32_U_SUPERSCRIPTS_AND_SUBSCRIPTS: 
+@PANGO_WIN32_U_CURRENCY_SYMBOLS: 
+@PANGO_WIN32_U_COMBINING_DIACRITICAL_MARKS_FOR_SYMBOLS: 
+@PANGO_WIN32_U_LETTERLIKE_SYMBOLS: 
+@PANGO_WIN32_U_NUMBER_FORMS: 
+@PANGO_WIN32_U_ARROWS: 
+@PANGO_WIN32_U_MATHEMATICAL_OPERATORS: 
+@PANGO_WIN32_U_MISCELLANEOUS_TECHNICAL: 
+@PANGO_WIN32_U_CONTROL_PICTURES: 
+@PANGO_WIN32_U_OPTICAL_CHARACTER_RECOGNITION: 
+@PANGO_WIN32_U_ENCLOSED_ALPHANUMERICS: 
+@PANGO_WIN32_U_BOX_DRAWING: 
+@PANGO_WIN32_U_BLOCK_ELEMENTS: 
+@PANGO_WIN32_U_GEOMETRIC_SHAPES: 
+@PANGO_WIN32_U_MISCELLANEOUS_SYMBOLS: 
+@PANGO_WIN32_U_DINGBATS: 
+@PANGO_WIN32_U_CJK_SYMBOLS_AND_PUNCTUATION: 
+@PANGO_WIN32_U_HIRAGANA: 
+@PANGO_WIN32_U_KATAKANA: 
+@PANGO_WIN32_U_BOPOMOFO: 
+@PANGO_WIN32_U_HANGUL_COMPATIBILITY_JAMO: 
+@PANGO_WIN32_U_CJK_MISCELLANEOUS: 
+@PANGO_WIN32_U_ENCLOSED_CJK: 
+@PANGO_WIN32_U_CJK_COMPATIBILITY: 
+@PANGO_WIN32_U_HANGUL: 
+@PANGO_WIN32_U_HANGUL_SUPPLEMENTARY_A: 
+@PANGO_WIN32_U_HANGUL_SUPPLEMENTARY_B: 
+@PANGO_WIN32_U_CJK_UNIFIED_IDEOGRAPHS: 
+@PANGO_WIN32_U_PRIVATE_USE_AREA: 
+@PANGO_WIN32_U_CJK_COMPATIBILITY_IDEOGRAPHS: 
+@PANGO_WIN32_U_ALPHABETIC_PRESENTATION_FORMS: 
+@PANGO_WIN32_U_ARABIC_PRESENTATION_FORMS_A: 
+@PANGO_WIN32_U_COMBINING_HALF_MARKS: 
+@PANGO_WIN32_U_CJK_COMPATIBILITY_FORMS: 
+@PANGO_WIN32_U_SMALL_FORM_VARIANTS: 
+@PANGO_WIN32_U_ARABIC_PRESENTATION_FORMS_B: 
+@PANGO_WIN32_U_SPECIALS: 
+@PANGO_WIN32_U_HALFWIDTH_AND_FULLWIDTH_FORMS: 
+@PANGO_WIN32_U_LAST_PLUS_ONE: 
+
+<!-- ##### FUNCTION pango_win32_unicode_classify ##### -->
+<para>
+
+</para>
+
+@wc: 
+@Returns: 
+
+
+<!-- ##### TYPEDEF PangoWin32Subfont ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### MACRO PANGO_WIN32_MAKE_GLYPH ##### -->
+<para>
+
+</para>
+
+@subfont: 
+@index: 
+
+
+<!-- ##### MACRO PANGO_WIN32_GLYPH_SUBFONT ##### -->
+<para>
+
+</para>
+
+@glyph: 
+
+
+<!-- ##### MACRO PANGO_WIN32_GLYPH_INDEX ##### -->
+<para>
+
+</para>
+
+@glyph: 
+
+
+<!-- ##### FUNCTION pango_win32_list_subfonts ##### -->
+<para>
+
+</para>
+
+@font: 
+@subrange: 
+@subfont_ids: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_win32_has_glyph ##### -->
+<para>
+
+</para>
+
+@font: 
+@glyph: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_win32_get_unknown_glyph ##### -->
+<para>
+
+</para>
+
+@font: 
+@Returns: 
+
+
+<!-- ##### STRUCT PangoWin32FontCache ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### FUNCTION pango_win32_font_cache_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_win32_font_cache_free ##### -->
+<para>
+
+</para>
+
+@cache: 
+
+
+<!-- ##### FUNCTION pango_win32_font_cache_load ##### -->
+<para>
+
+</para>
+
+@cache: 
+@logfont: 
+@Returns: 
+<!-- # Unused Parameters # -->
+@lfp: 
+
+
+<!-- ##### FUNCTION pango_win32_font_cache_unload ##### -->
+<para>
+
+</para>
+
+@cache: 
+@hfont: 
+
+
+<!-- ##### FUNCTION pango_win32_font_map_for_display ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_win32_shutdown_display ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### FUNCTION pango_win32_font_map_get_font_cache ##### -->
+<para>
+
+</para>
+
+@font_map: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_win32_font_subfont_logfont ##### -->
+<para>
+
+</para>
+
+@font: 
+@subfont_id: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_win32_fontmap_dump ##### -->
+<para>
+
+</para>
+
+@indent: 
+@fontmap: 
+
+

@@ -1,0 +1,237 @@
+<!-- ##### SECTION Title ##### -->
+FreeType Fonts and Rendering
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### MACRO PANGO_RENDER_TYPE_FT2 ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### FUNCTION pango_ft2_get_context ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_ft2_load_font ##### -->
+<para>
+
+</para>
+
+@fontmap: 
+@open_args: 
+@face_indices: 
+@n_fonts: 
+@size: 
+@Returns: 
+<!-- # Unused Parameters # -->
+@args: 
+
+
+<!-- ##### FUNCTION pango_ft2_render ##### -->
+<para>
+
+</para>
+
+@bitmap: 
+@font: 
+@glyphs: 
+@x: 
+@y: 
+
+
+<!-- ##### FUNCTION pango_ft2_render_layout_line ##### -->
+<para>
+
+</para>
+
+@bitmap: 
+@line: 
+@x: 
+@y: 
+
+
+<!-- ##### FUNCTION pango_ft2_render_layout ##### -->
+<para>
+
+</para>
+
+@bitmap: 
+@layout: 
+@x: 
+@y: 
+
+
+<!-- ##### TYPEDEF PangoFT2Subfont ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### MACRO PANGO_FT2_MAKE_GLYPH ##### -->
+<para>
+
+</para>
+
+@subfont: 
+@index: 
+
+
+<!-- ##### MACRO PANGO_FT2_GLYPH_SUBFONT ##### -->
+<para>
+
+</para>
+
+@glyph: 
+
+
+<!-- ##### MACRO PANGO_FT2_GLYPH_INDEX ##### -->
+<para>
+
+</para>
+
+@glyph: 
+
+
+<!-- ##### FUNCTION pango_ft2_n_subfonts ##### -->
+<para>
+
+</para>
+
+@font: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_ft2_has_glyph ##### -->
+<para>
+
+</para>
+
+@font: 
+@glyph: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_ft2_get_unknown_glyph ##### -->
+<para>
+
+</para>
+
+@font: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_ft2_font_get_kerning ##### -->
+<para>
+
+</para>
+
+@font: 
+@left: 
+@right: 
+@Returns: 
+
+
+<!-- ##### STRUCT PangoFT2FontCache ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### FUNCTION pango_ft2_font_cache_new ##### -->
+<para>
+
+</para>
+
+@library: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_ft2_font_cache_free ##### -->
+<para>
+
+</para>
+
+@cache: 
+
+
+<!-- ##### FUNCTION pango_ft2_font_cache_load ##### -->
+<para>
+
+</para>
+
+@cache: 
+@args: 
+@face_index: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_ft2_font_cache_unload ##### -->
+<para>
+
+</para>
+
+@cache: 
+@face: 
+
+
+<!-- ##### FUNCTION pango_ft2_font_map_for_display ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_ft2_shutdown_display ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### FUNCTION pango_ft2_font_map_get_font_cache ##### -->
+<para>
+
+</para>
+
+@font_map: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_ft2_font_subfont_open_args ##### -->
+<para>
+
+</para>
+
+@font: 
+@subfont_id: 
+@open_args: 
+@face_index: 
+
+
+<!-- ##### FUNCTION pango_ft2_fontmap_dump ##### -->
+<para>
+
+</para>
+
+@indent: 
+@fontmap: 
+
+
