@@ -841,8 +841,21 @@ pango_xft_font_unlock_face (PangoFont *font)
   XftUnlockFace (xft_font);
 }
 
+/**
+ * pango_xft_font_get_glyph:
+ * @font: a #PangoFont for the Xft backend
+ * @wc: Unicode codepoint to look up
+ * 
+ * Gets the glyph index for a given unicode codepoint
+ * for @font. If you only want to determine
+ * whether the font has the glyph, use pango_xft_font_has_char().
+ * 
+ * Return value: the glyph index, or 0, if the unicode
+ *  codepoint doesn't exist in the font.
+ **/
 guint
-pango_xft_font_get_glyph (PangoFont *font, gunichar wc)
+pango_xft_font_get_glyph (PangoFont *font,
+			  gunichar   wc)
 {
   XftFont *xft_font;
 
@@ -850,5 +863,28 @@ pango_xft_font_get_glyph (PangoFont *font, gunichar wc)
 
   xft_font = pango_xft_font_get_font (font);
   
-  return XftCharIndex (0, xft_font, wc);
+  return XftCharIndex (NULL, xft_font, wc);
 }
+
+/**
+ * pango_xft_font_has_char:
+ * @font: a #PangoFont for the Xft backend
+ * @wc: Unicode codepoint to look up
+ * 
+ * Determines whether @font has a glyph for the codepoint @wc.
+ * 
+ * Return value: %TRUE if @font has the requested codepoint.
+ **/
+gboolean
+pango_xft_font_has_char (PangoFont *font,
+			 gunichar   wc)
+{
+  XftFont *xft_font;
+
+  g_return_val_if_fail (PANGO_XFT_IS_FONT (font), 0);
+
+  xft_font = pango_xft_font_get_font (font);
+  
+  return XftCharExists (NULL, xft_font, wc);
+}
+

@@ -99,7 +99,6 @@ basic_engine_shape (PangoFont        *font,
   int n_chars;
   int i;
   const char *p;
-  FT_Face face;
 
   g_return_if_fail (font != NULL);
   g_return_if_fail (text != NULL);

@@ -80,7 +80,10 @@ GType      pango_xft_font_get_type (void);
 XftFont *     pango_xft_font_get_font          (PangoFont *font);
 FT_Face       pango_xft_font_lock_face         (PangoFont *font);
 void	      pango_xft_font_unlock_face       (PangoFont *font);
-guint	      pango_xft_font_get_glyph	       (PangoFont *font, gunichar wc);
+guint	      pango_xft_font_get_glyph	       (PangoFont *font,
+						gunichar   wc);
+gboolean      pango_xft_font_has_char          (PangoFont *font,
+						gunichar   wc);
 Display *     pango_xft_font_get_display       (PangoFont *font);
 PangoGlyph    pango_xft_font_get_unknown_glyph (PangoFont *font,
 						gunichar   wc);

@@ -1,3 +1,22 @@
+Fri Jul 26 18:48:49 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* configure.in modules/thai/Makefile.am 
+	  modules/thai/thai-shaper.[ch]
+	  modules/thai/thai-xft.c modules/thai/thai-x.c:
+	Patch from Theppitak Karoonboonyanan that factors
+	out common code from thai-x.c and adds a new 
+	Xft shaper for Thai. (#78346)
+
+	* pango/pangoxft.h pango/pangoxft-font.c: Add
+	pango_xft_font_has_char()
+	to optimize for cases where we don't actually need 
+	to load the font.
+
+	* pango/pangoxft.h: Document pango_xft_font_get_glyph().
+
+	* modules/basic/basic-xft.c (basic_engine_shape): Clean
+	up an unused variable warning.
+
 Fri Jul 26 18:11:56 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* Add back non-spurious \$ removed in last commit.
