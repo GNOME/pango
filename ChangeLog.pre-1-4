@@ -1,3 +1,9 @@
+Fri Mar  5 14:56:57 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* modules/indic/indic-ot-class-tables.c (kndaCharClasses): Change
+	U+0CC3/U+0CC4/U+0CD5 to _lm (length mark) so that they get ordered
+	after the below base forms. (#118108, Kailash C. Chowksey)
+
 2004-03-04  Tor Lillqvist  <tml@iki.fi>
 
 	* pango/module-defs-win32.c.win32: Clarify comment.
