@@ -1,3 +1,8 @@
+Thu Feb  5 15:16:04 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-layout.c (pango_layout_check_lines): Fix 
+	stupid cut-and-pasto from last commit.
+
 Thu Feb  5 15:09:58 2004  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pango-layout.c (pango_layout_check_lines):

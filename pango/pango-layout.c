@@ -3028,7 +3028,7 @@ pango_layout_check_lines (PangoLayout *layout)
 
           empty_line = pango_layout_line_new (layout);
           empty_line->start_index = start - layout->text;
-	  line->is_paragraph_start = state->first_line;
+	  empty_line->is_paragraph_start = state->first_line;
 
           layout->lines = g_slist_prepend (layout->lines,
                                            empty_line);
