@@ -1,3 +1,8 @@
+2002-03-05  jacob berkman  <jacob@ximian.com>
+
+	* tests/Makefile.am (*boundaries_LDADD): more $(PANGO_API_VERSION)
+	fixing
+
 Tue Mar  5 15:41:17 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* modules/*/Makefile.am: Fix pangoxft-$(PANGO_API_VERSION).

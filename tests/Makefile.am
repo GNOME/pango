@@ -49,9 +49,9 @@ dump_boundaries_SOURCES = dump-boundaries.c
 
 gen_all_unicode_LDADD = $(GLIB_LIBS)
 
-testboundaries_LDADD = ../pango/libpango.la
+testboundaries_LDADD = ../pango/libpango-$(PANGO_API_VERSION).la
 
-dump_boundaries_LDADD = ../pango/libpango.la
+dump_boundaries_LDADD = ../pango/libpango-$(PANGO_API_VERSION).la
 
 if HAVE_CXX
 CXX_TEST = cxx-test
