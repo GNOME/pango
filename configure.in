@@ -170,7 +170,7 @@ AC_MSG_CHECKING(modules to link statically)
 AC_ARG_WITH(included_modules, [ --with-included-modules=MODULE1,MODULE2,...     Build the given modules into Pango])
 
 indic_modules="gurmukhi-x,bengali-x,gujarati-x,devanagari-x,myanmar-x"
-all_modules="arabic-x,arabic-xft,basic-x,basic-ft2,basic-xft,hangul-x,tamil-x,tamil-xft,thai-x,$indic_modules"
+all_modules="arabic-x,arabic-xft,hebrew-x,basic-x,basic-ft2,basic-xft,hangul-x,tamil-x,tamil-xft,thai-x,$indic_modules"
 
 included_modules=""
 if test "x$with_included_modules" != xno || test "x$with_included_modules" = x ; then
@@ -221,6 +221,7 @@ AM_CONDITIONAL(INCLUDE_HANGUL_X,echo $included_modules | grep '\(^\|,\)hangul-x\
 AM_CONDITIONAL(INCLUDE_TAMIL_X,echo $included_modules | grep '\(^\|,\)tamil-x\($\|,\)' > /dev/null)
 AM_CONDITIONAL(INCLUDE_TAMIL_XFT,echo $included_modules | grep '\(^\|,\)tamil-xft\($\|,\)' > /dev/null)
 AM_CONDITIONAL(INCLUDE_THAI_X,echo $included_modules | grep '\(^\|,\)thai-x\($\|,\)' > /dev/null)
+AM_CONDITIONAL(INCLUDE_HEBREW_X,echo $included_modules | grep '\(^\|,\)hebrew-x\($\|,\)' > /dev/null)
 
 AM_CONDITIONAL(INCLUDE_MYANMAR_X,echo $included_modules | grep '\(^\|,\)myanmar-x\($\|,\)' > /dev/null)
 AM_CONDITIONAL(INCLUDE_GURMUKHI_X,echo $included_modules | grep '\(^\|,\)gurmukhi-x\($\|,\)' > /dev/null)
@@ -463,6 +464,7 @@ modules/hangul/Makefile
 modules/indic/Makefile
 modules/tamil/Makefile
 modules/thai/Makefile
+modules/hebrew/Makefile
 examples/Makefile
 examples/makefile.mingw
 docs/Makefile
