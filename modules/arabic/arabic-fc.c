@@ -315,9 +315,10 @@ arabic_engine_shape (PangoEngineShape *engine,
 	  /* Hack - Microsoft fonts are strange and don't contain the
 	   * correct rules to shape ARABIC LETTER FARSI YEH in
 	   * medial/initial position. It looks identical to ARABIC LETTER
-	   * YEH in these positions, so we substitute
+	   * YEH in these positions, so we substitute if the font contains
+	   * ARABIC LETTER YEH
 	   */
-	  if (wc == 0x6cc && ruleset &&
+	  if (wc == 0x6cc && ruleset && pango_fc_font_get_glyph (fc_font, 0x64a) &&
 	      ((properties[i] & (initial | medial)) != (initial | medial)))
 	    wc = 0x64a;
 	  

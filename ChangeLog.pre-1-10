@@ -1,9 +1,13 @@
+Tue Jul 27 14:14:05 2004  Behdad Esfahbod  <pango@behdad.org>
+	* modules/arabic/arabic-fc.c: Don't substitute FARSI YEH
+	with ARABIC YEH if the font does not have any ARABIC YEH.
+
 Tue Jul 27 12:38:05 2004  Owen Taylor  <otaylor@redhat.com>
- 
- 	* pango/opentype/ftxopen.[ch] pango/opentype/ftxgsub.c
- 	pango/opentype/ftxpos.c: Save the order in which
- 	features were added and use that when applying features.
- 	(Patch from Soheil Hassas Yeganeh, #122330)
+
+	* pango/opentype/ftxopen.[ch] pango/opentype/ftxgsub.c
+	pango/opentype/ftxpos.c: Save the order in which
+	features were added and use that when applying features.
+	(Patch from Soheil Hassas Yeganeh, #122330)
 
 Mon Jul 26 19:11:46 2004  Owen Taylor  <otaylor@redhat.com>
 
@@ -22,11 +26,11 @@ Mon Jul 26 15:16:07 2004  Owen Taylor  <otaylor@redhat.com>
 	the input glyphs (#145174, Aamir Wali)
 
 Mon Jul 19 16:29:45 2004  Owen Taylor  <otaylor@redhat.com>
- 
- 	* pango/opentype/ftxgsub.c pango/opentype/ftxgpos.c:
- 	Fix pervasive buffer overruns when skipping glyphs
-         when matching contexts. (#118592, Kailash C. Chowksey)
- 
+
+	* pango/opentype/ftxgsub.c pango/opentype/ftxgpos.c:
+	Fix pervasive buffer overruns when skipping glyphs
+	when matching contexts. (#118592, Kailash C. Chowksey)
+
 Fri Jul 16 07:43:04 2004  Owen Taylor  <otaylor@redhat.com>
 
 	#143601: Felipe Heidrich
@@ -41,10 +45,10 @@ Fri Jul 16 07:43:04 2004  Owen Taylor  <otaylor@redhat.com>
 	pango_layout_line_x_to_index().
 
 Wed Jul 14 17:42:49 2004  Owen Taylor  <otaylor@redhat.com>
- 
- 	* pango/pango-script.c (pango_language_includes_script): 
- 	Fix problem when we only figured out latin script for 'en'
- 	not for 'en-us'. Fix reversed arguments to bsearch.
+
+	* pango/pango-script.c (pango_language_includes_script): 
+	Fix problem when we only figured out latin script for 'en'
+	not for 'en-us'. Fix reversed arguments to bsearch.
 
 Tue Jul 13 10:07:44 2004  Owen Taylor  <otaylor@redhat.com>
 
@@ -53,10 +57,10 @@ Tue Jul 13 10:07:44 2004  Owen Taylor  <otaylor@redhat.com>
 	the correct installation order. (#146472)
 
 Tue Jul 13 10:02:53 2004  Owen Taylor  <otaylor@redhat.com>
- 
- 	* pango/pango-utils.c (pango_language_get_sample_string):
- 	Make table constant. (#145515, Morten Welinder)
- 
+
+	* pango/pango-utils.c (pango_language_get_sample_string):
+	Make table constant. (#145515, Morten Welinder)
+
 2004-07-12  Changwoo Ryu  <cwryu@debian.org>
 
 	* modules/hangul/hangul-fc.c (render_basic): Render U+00A0
@@ -72,37 +76,37 @@ Fri Jul  9 15:23:39 2004  Manish Singh  <yosh@gimp.org>
 	class. (#145833, Billy Biggs)
 
 Wed Jun 23 17:26:50 2004  Owen Taylor  <otaylor@redhat.com>
- 
- 	* tests/Makefile.am (pango.modules): Don't generate
- 	all-unicode.txt when cross-compiling. (#135503,
- 	J. Ali Harlow)
- 
+
+	* tests/Makefile.am (pango.modules): Don't generate
+	all-unicode.txt when cross-compiling. (#135503,
+	J. Ali Harlow)
+
 Wed Jun 23 16:13:53 2004  Owen Taylor  <otaylor@redhat.com>
- 
- 	#143693, Sayamindu Dasgupta
- 
- 	* pango/opentype/pango-ot-buffer.c (pango_ot_buffer_set_zero_width_marks) pango/opentype/pango-ot-private.h:
- 	Allow setting for whether marks should be given zero width,
- 	defaulting to FALSE.
- 
- 	* modules/arabic/arabic-fc.c (arabic_engine_shape): Turn
- 	on zero-width-marks setting.
- 
+
+	#143693, Sayamindu Dasgupta
+
+	* pango/opentype/pango-ot-buffer.c (pango_ot_buffer_set_zero_width_marks) pango/opentype/pango-ot-private.h:
+	Allow setting for whether marks should be given zero width,
+	defaulting to FALSE.
+
+	* modules/arabic/arabic-fc.c (arabic_engine_shape): Turn
+	on zero-width-marks setting.
+
 Tue Jun 22 14:10:41 2004  Owen Taylor  <otaylor@redhat.com>
- 
- 	* pango/break.c: Handle new Unicode-4.0 WORD_JOINER
- 	and NEXT_LINE classes. (#143436, Jeroen Zwartepoorte)
- 
- 	* pango/break.c (pango_default_break): Handle space
- 	followed by a combining character as called for by
- 	TR 14.
- 
- 	* tests/testboundaries.c (check_line_char): Fix up
- 	for space+combining mark
- 	
- 	* pango/break.c (pango_default_break): Change fixme
- 	for G_UNICODE_BREAK_SURROGATE to g_assert_not_reached().
- 	
+
+	* pango/break.c: Handle new Unicode-4.0 WORD_JOINER
+	and NEXT_LINE classes. (#143436, Jeroen Zwartepoorte)
+
+	* pango/break.c (pango_default_break): Handle space
+	followed by a combining character as called for by
+	TR 14.
+
+	* tests/testboundaries.c (check_line_char): Fix up
+	for space+combining mark
+
+	* pango/break.c (pango_default_break): Change fixme
+	for G_UNICODE_BREAK_SURROGATE to g_assert_not_reached().
+
 Mon Jun 21 16:02:04 2004  Owen Taylor  <otaylor@redhat.com>
 
 	#143556, Noah Misch
@@ -127,12 +131,12 @@ Mon Jun 21 15:26:44 2004  Owen Taylor  <otaylor@redhat.com>
 	Fix typo in doc comment.
 
 Mon Jun 21 14:42:02 2004  Owen Taylor  <otaylor@redhat.com>
- 
- 	* docs/pango_markup.sgml: use x-large instead of 100
- 	in the markup example. (#142355, Doug Quale).
- 	Fix the 'size' documentation to say 1024ths rather
- 	than 1000ths. Document using font_desc='12.5' instead.
- 
+
+	* docs/pango_markup.sgml: use x-large instead of 100
+	in the markup example. (#142355, Doug Quale).
+	Fix the 'size' documentation to say 1024ths rather
+	than 1000ths. Document using font_desc='12.5' instead.
+
 Mon Jun 21 14:31:40 2004  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pangoft2.[ch] (pango_ft2_font_get_face): 
@@ -152,10 +156,10 @@ Mon Jun 21 14:23:05 2004  Owen Taylor  <otaylor@redhat.com>
 
 Mon Jun 21 13:55:17 2004  Owen Taylor  <otaylor@redhat.com>
 
- 	* pango/opentype/otlbuffer.c: Use the gcc-3.3 
- 	strict-aliasing compatible macros from fterrcompat.h
- 	(#140495, reported by Stanislav Brabec)
- 
+	* pango/opentype/otlbuffer.c: Use the gcc-3.3 
+	strict-aliasing compatible macros from fterrcompat.h
+	(#140495, reported by Stanislav Brabec)
+
 Mon Jun 21 11:41:18 2004  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pango-attributes.c (pango_attr_list_change): 
@@ -207,9 +211,9 @@ Thu May 27 16:57:30 2004  Owen Taylor  <otaylor@redhat.com>
 	values. (#139239, Behdad Esfahbod)
 
 Thu May 27 15:42:20 2004  Owen Taylor  <otaylor@redhat.com>
- 
- 	* pango/pangox-fontmap.c pango/pangox.c: Add some missing
- 	statics. (#142299, Morten Welinder)
+
+	* pango/pangox-fontmap.c pango/pangox.c: Add some missing
+	statics. (#142299, Morten Welinder)
 
 2004-05-06  Theppitak Karoonboonyanan  <thep@linux.thai.net>
 
