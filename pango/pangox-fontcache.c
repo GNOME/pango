@@ -189,6 +189,7 @@ pango_x_font_cache_load (PangoXFontCache *cache,
 	  
 	  entry->mru->next = cache->mru;
 	  entry->mru->prev = NULL;
+	  cache->mru->prev = entry->mru;
 	  cache->mru = entry->mru;
 	}
     }

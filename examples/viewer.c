@@ -426,7 +426,7 @@ set_style (GtkWidget *entry, gpointer data)
 void
 font_size_changed (GtkAdjustment *adj)
 {
-  font_description.size = (int)(adj->value * 1000 + 0.5);
+  font_description.size = (int)(adj->value * PANGO_SCALE + 0.5);
   reload_font();
 }
 
@@ -518,6 +518,12 @@ make_styles_combo ()
   fill_styles_combo (combo);
   
   return combo;
+}
+
+static int
+cmp_strings (const void *a, const void *b)
+{
+  return strcmp (*(const char **)a, *(const char **)b);
 }
 
 GtkWidget *

@@ -21,6 +21,7 @@
 
 #include <stdlib.h>
 #include <ctype.h>
+#include <math.h>
 
 #include "pango.h"
 
@@ -244,10 +245,10 @@ pango_font_description_from_string (const char *str)
   if (wordlen != 0)
     {
       char *end;
-      double size = strtod (p, &end);
+      double size = g_strtod (p, &end);
       if (end - p == wordlen) /* word is a valid float */
 	{
-	  desc->size = (int)(size * 1000 + 0.5);
+	  desc->size = (int)(size * PANGO_SCALE + 0.5);
 	  last = p;
 	}
     }
@@ -297,7 +298,7 @@ append_field (GString *str, FieldMap *map, int n_elements, int val)
 	{
 	  if (map[i].str)
 	    {
-	      if (str->len != 0)
+	      if (str->len > 0 && str->str[str->len -1] != ' ')
 		g_string_append_c (str, ' ');
 	      g_string_append (str, map[i].str);
 	    }
@@ -305,7 +306,7 @@ append_field (GString *str, FieldMap *map, int n_elements, int val)
 	}
     }
   
-  if (str->len != 0)
+  if (str->len > 0 || str->str[str->len -1] != ' ')
     g_string_append_c (str, ' ');
   g_string_sprintfa (str, "%d", val);
 }
@@ -350,10 +351,12 @@ pango_font_description_to_string (const PangoFontDescription  *desc)
 
   if (desc->size > 0)
     {
-      if (result->len == 0)
+      if (result->len > 0 || result->str[result->len -1] != ' ')
 	g_string_append_c (result, ' ');
 
-      g_string_sprintfa (result, "%f", desc->size / 1000.);
+      /* FIXME: %g is not right here. We need to always use '.
+       */
+      g_string_sprintfa (result, "%g", (double)desc->size / PANGO_SCALE);
     }
   
   str = result->str;
@@ -443,7 +446,7 @@ pango_font_find_shaper (PangoFont      *font,
  * coordinates extending to the right and down. The macros PANGO_ASCENT(),
  * PANGO_DESCENT(), PANGO_LBEARING(), and PANGO_RBEARING can be used to convert
  * from the extents rectangle to more traditional font metrics. The units
- * of the rectangles are in 1000ths of a device unit.
+ * of the rectangles are in 1/PANGO_SCALE of a device unit.
  **/
 void
 pango_font_get_glyph_extents  (PangoFont      *font,

@@ -1,3 +1,17 @@
+Tue May 30 14:30:24 2000  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/fonts.c (pango_font_description_from_string): Use g_strtod().
+
+	* pango/fonts.c (pango_font_description_to_string): Fix bug
+	where spaces where not properly inserted into font description
+	string. 
+
+	* pango/fonts.c (pango_font_get_glyph_extents): Fix some 
+	1000 <=> PANGO_SCALE bugs.
+
+	* pango/pangox-fontcache.c (pango_x_font_cache_load): Fix list
+	manipulation bug.
+
 Mon May 29 13:22:36 2000  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pangox.c pango/pangox.h (pango_x_font_subfont_xlfd): New
