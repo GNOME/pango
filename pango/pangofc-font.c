@@ -484,12 +484,12 @@ pango_fc_font_real_get_glyph (PangoFcFont *font,
   face = pango_fc_font_lock_face (font);
   
   index = FcFreeTypeCharIndex (face, wc);
-  if (index && index <= face->num_glyphs)
-    return index;
+  if (index > face->num_glyphs)
+    index = 0;
 
   pango_fc_font_unlock_face (font);
 
-  return 0;
+  return index;
 }
 
 /**

@@ -1,5 +1,10 @@
 2005-02-03  Owen Taylor  <otaylor@redhat.com>
 
+	* pango/pangofc-font.c (pango_fc_font_real_get_glyph): Fix unpaired
+	lock/unlock_face().
+
+2005-02-03  Owen Taylor  <otaylor@redhat.com>
+
 	* configure.in: Bump to 1.9.0.
 
 	* pango/pangofc-fontmap.h: Document PangoFcFontMap.create_font()
