@@ -11,8 +11,7 @@
 <!ENTITY pango-Engines SYSTEM "xml/engines.xml">
 <!ENTITY pango-Indic-Engine-Support SYSTEM "xml/pango-indic.xml">
 <!ENTITY pango-Modules SYSTEM "xml/modules.xml">
-<!ENTITY pango-X-Rendering SYSTEM "xml/x-rendering.xml">
-<!ENTITY pango-X-Fonts SYSTEM "xml/x-fonts.xml">
+<!ENTITY pango-X-Fonts-and-Rendering SYSTEM "xml/x-fonts.xml">
 <!ENTITY pango-Win32-Fonts-and-Rendering SYSTEM "xml/win32-fonts.xml">
 <!ENTITY pango-FreeType-Fonts-and-Rendering SYSTEM "xml/freetype-fonts.xml">
 <!ENTITY pango-Xft-Fonts-and-Rendering SYSTEM "xml/xft-fonts.xml">
@@ -39,16 +38,15 @@
 
   <chapter id="rendering">
     <title>Rendering with Pango</title>
-    &pango-X-Fonts;
-    &pango-X-Rendering;
+    &pango-X-Fonts-and-Rendering;
     &pango-Win32-Fonts-and-Rendering;
     &pango-FreeType-Fonts-and-Rendering;
     &pango-Xft-Fonts-and-Rendering;
-    &pango-OpenType-Font-Handling;
   </chapter>
 
   <chapter id="lowlevel">
     <title>Low Level Functionality</title>
+    &pango-OpenType-Font-Handling;
     &pango-Coverage-Maps;
     &pango-Engines;
     &pango-Indic-Engine-Support;

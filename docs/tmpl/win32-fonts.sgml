@@ -2,6 +2,7 @@
 Win32 Fonts and Rendering
 
 <!-- ##### SECTION Short_Description ##### -->
+Functions for shape engines to manipulate Win32 fonts
 
 
 <!-- ##### SECTION Long_Description ##### -->

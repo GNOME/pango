@@ -490,8 +490,8 @@ pango_indic_split_out_characters
 </SECTION>
 
 <SECTION>
-<TITLE>X Rendering</TITLE>
-<FILE>x-rendering</FILE>
+<TITLE>X Fonts and Rendering</TITLE>
+<FILE>x-fonts</FILE>
 PANGO_RENDER_TYPE_X
 pango_x_get_context
 pango_x_context_set_funcs
@@ -500,11 +500,6 @@ PangoFreeGCFunc
 pango_x_render
 pango_x_render_layout_line
 pango_x_render_layout
-</SECTION>
-
-<SECTION>
-<TITLE>X Fonts</TITLE>
-<FILE>x-fonts</FILE>
 PangoXSubfont
 PANGO_X_MAKE_GLYPH
 PANGO_X_GLYPH_SUBFONT

@@ -1,3 +1,27 @@
+2002-12-11  Matthias Clasen  <maclas@gmx.de>
+
+	* docs/tmpl/text-attributes.sgml: 
+	* docs/tmpl/glyphs.sgml: 
+	* docs/tmpl/engines.sgml: 
+	* docs/tmpl/main.sgml: 
+	* docs/tmpl/pango-indic.sgml: 
+	* docs/tmpl/coverage-maps.sgml: 
+	* docs/tmpl/fonts.sgml:
+	* docs/pango_markup.sgml: Cosmetic changes to short descriptions.
+
+	* docs/tmpl/tab-stops.sgml: 
+	* docs/tmpl/modules.sgml: 
+	* docs/tmpl/opentype.sgml: 
+	* docs/tmpl/xft-fonts.sgml: 
+	* docs/tmpl/freetype-fonts.sgml: 
+	* docs/tmpl/win32-fonts.sgml: Add short descriptions.
+
+	* docs/pango-docs.sgml: Move "OpenType Font Handling" to
+	"Low Level Functionality".
+
+	* docs/pango-sections.txt: Combine the "X Fonts" and 
+	"X Rendering" sections.
+
 Tue Dec 10 18:37:19 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* === Released 1.1.5 ===

@@ -1,8 +1,8 @@
 <!-- ##### SECTION Title ##### -->
-modules
+Modules
 
 <!-- ##### SECTION Short_Description ##### -->
-
+Support for loadable modules
 
 <!-- ##### SECTION Long_Description ##### -->
 <para>

@@ -1,4 +1,4 @@
-<refentry id="PangoMarkupFormat" revision="23 Oct 2000">
+<refentry id="PangoMarkupFormat" revision="11 Dec 2002">
 <refmeta>
 <refentrytitle>Pango Text Attribute Markup</refentrytitle>
 <manvolnum>3</manvolnum>
@@ -7,7 +7,7 @@
 
 <refnamediv>
 <refname>Pango Text Attribute Markup</refname><refpurpose>Simple
-markup language to encode text plus a <link linkend="PangoAttrList">PangoAttrList</link></refpurpose>
+markup language to encode text with attributes</refpurpose>
 </refnamediv>
 
 <refsect1>
