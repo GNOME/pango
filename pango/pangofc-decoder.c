@@ -29,12 +29,12 @@ pango_fc_decoder_init (PangoFcDecoder *decoder);
 static void
 pango_fc_decoder_class_init (PangoFcDecoderClass *klass);
 
-void
+static void
 pango_fc_decoder_init (PangoFcDecoder *decoder)
 {
 }
 
-void
+static void
 pango_fc_decoder_class_init (PangoFcDecoderClass *klass)
 {
 }

@@ -91,7 +91,7 @@ int main (int argc, char **argv)
       /* try to load some fonts often hardcoded */
       for (i = 0; i < G_N_ELEMENTS (std_fonts); i++)
         {
-          PangoFontDescription *desc = pango_font_description_from_string("Sans 12");
+          PangoFontDescription *desc = pango_font_description_from_string(std_fonts[i]);
 
           /* spits warnings if font cannot be loaded */
           font = pango_font_map_load_font (fontmap, context, desc);

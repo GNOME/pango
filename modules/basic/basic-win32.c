@@ -1110,9 +1110,20 @@ init_uniscribe (void)
 #endif
 } 
 
+static PangoCoverageLevel
+basic_engine_covers (PangoEngineShape *engine,
+		     PangoFont        *font,
+		     PangoLanguage    *lang,
+		     gunichar          wc)
+{
+  return PANGO_COVERAGE_EXACT;
+  return find_char (font, wc) ? PANGO_COVERAGE_EXACT : PANGO_COVERAGE_NONE;
+}
+
 static void
 basic_engine_win32_class_init (PangoEngineShapeClass *class)
 {
+  class->covers = basic_engine_covers;
   class->script_shape = basic_engine_shape;
 }
 

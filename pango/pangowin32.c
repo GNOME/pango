@@ -213,11 +213,6 @@ pango_win32_font_class_init (PangoWin32FontClass *class)
   pango_win32_get_dc ();
 }
 
-static void
-pango_win32_font_init (PangoWin32Font *win32font)
-{
-}
-
 PangoWin32Font *
 pango_win32_font_new (PangoFontMap  *fontmap,
 		      const LOGFONT *lfp,
@@ -590,7 +585,7 @@ pango_win32_font_dispose (GObject *object)
   if (!win32font->in_cache && win32font->fontmap)
     pango_win32_fontmap_cache_add (win32font->fontmap, win32font);
 
-  G_OBJECT_CLASS (parent_class)->dispose (object);
+  G_OBJECT_CLASS (pango_win32_font_parent_class)->dispose (object);
 }
 
 static void
@@ -609,7 +604,7 @@ pango_win32_font_finalize (GObject *object)
  
   g_object_unref (win32font->fontmap);
 
-  G_OBJECT_CLASS (parent_class)->finalize (object);
+  G_OBJECT_CLASS (pango_win32_font_parent_class)->finalize (object);
 }
 
 static PangoFontDescription *

@@ -1,4 +1,6 @@
 EXPORTS
+	pango_fc_decoder_get_charset
+	pango_fc_decoder_get_glyph
 	pango_fc_font_description_from_pattern
 	pango_fc_font_get_glyph
 	pango_fc_font_get_type
@@ -6,12 +8,12 @@ EXPORTS
 	pango_fc_font_has_char
 	pango_fc_font_kern_glyphs
 	pango_fc_font_lock_face
+	pango_fc_font_map_add_decoder_find_func
 	pango_fc_font_map_cache_clear
 	pango_fc_font_map_create_context
 	pango_fc_font_map_get_type
 	pango_fc_font_map_shutdown
 	pango_fc_font_unlock_face
-	pango_ft2_font_get_cache_glyph_data
 	pango_ft2_font_get_coverage
 	pango_ft2_font_get_face
 	pango_ft2_font_get_kerning
@@ -22,13 +24,14 @@ EXPORTS
 	pango_ft2_font_map_set_default_substitute
 	pango_ft2_font_map_set_resolution
 	pango_ft2_font_map_substitute_changed
-	pango_ft2_font_set_cache_glyph_data
-	pango_ft2_font_set_glyph_cache_destroy
 	pango_ft2_get_context
 	pango_ft2_get_unknown_glyph
 	pango_ft2_render
 	pango_ft2_render_layout
 	pango_ft2_render_layout_line
+	pango_ft2_render_layout_line_subpixel
+	pango_ft2_render_layout_subpixel
+	pango_ft2_render_transformed
 	pango_ft2_shutdown_display
 	pango_ot_buffer_add_glyph
 	pango_ot_buffer_clear
@@ -37,7 +40,6 @@ EXPORTS
 	pango_ot_buffer_new
 	pango_ot_buffer_output
 	pango_ot_buffer_set_rtl
-	pango_ot_buffer_set_zero_width_marks
 	pango_ot_info_find_feature
 	pango_ot_info_find_language
 	pango_ot_info_find_script

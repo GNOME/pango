@@ -83,6 +83,7 @@ OBJECTS = \
 	pango-enum-types.obj \
 	\
 	break.obj \
+	ellipsize.obj \
 	fonts.obj \
 	glyphstring.obj \
 	mapping.obj \
@@ -124,6 +125,7 @@ fribidi_get_type.obj : mini-fribidi\fribidi_get_type.c
 	$(CC) $(PKG_CFLAGS) -GD -c mini-fribidi\fribidi_get_type.c
 
 !IFDEF OBJS_pangowin32
+PKG_CFLAGS = $(PKG_CFLAGS) -DPANGO_MODULE_PREFIX=_pango_basic_win32
 OBJECTS = \
 	module-defs-win32.obj \
 	pangowin32.obj \
@@ -135,10 +137,12 @@ OBJECTS = \
 !IFDEF OBJS_pangoft2 
 OBJECTS = \
 	module-defs-fc.obj \
+	pangofc-decoder.obj \
 	pangofc-font.obj \
 	pangofc-fontmap.obj \
 	pangoft2.obj \
 	pangoft2-fontmap.obj \
+	pangoft2-render.obj \
 	basic-fc.obj
 
 PKG_CFLAGS = $(PKG_CFLAGS) $(FONTCONFIG_CFLAGS) $(FREETYPE2_CFLAGS)

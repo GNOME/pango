@@ -1,3 +1,20 @@
+2004-08-06  Hans Breuer  <hans@breuer.org>
+
+	* pango/pango.def pango/pangoft2.def pango/pangowin32.def
+	  pango/makefile.msc : updated
+
+	* pango/pangofc-decoder.c : static the pango_fc_decoder_*init
+	implementations
+
+	* pango/pangowin32.c : remove the duplicated, empty implementation
+	of pango_win32_font_init(), also replace parent_class variable
+	with pango_win32_font_parent_class as defined by G_DEFINE_TYPE
+
+	* modules/basic/basic-win32.c : implement basic_engine_covers
+
+	* pango/testfonts.c : iterate three common font names as was
+	intended orginally and said in the comment for years
+
 2004-08-06  Tor Lillqvist  <tml@iki.fi>
 
 	* pango/pangowin32-fontmap.c: Typedef PangoWin32FontMapClass.
