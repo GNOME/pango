@@ -1,3 +1,11 @@
+2003-09-25  Matthias Clasen  <maclas@gmx.de>
+
+	* pango/break.c (pango_default_break): Only reset the word 
+	type to WordNone at a word end if it is not also a word 
+	start. Otherwise both 't' and 'e' are classified as word 
+	start in '123test'.  (#122754, Hidetoshi Tajima)
+	
+
 Tue Sep 23 19:43:05 2003  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pango-context.c (itemize_state_add_character): Don't

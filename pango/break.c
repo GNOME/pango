@@ -834,11 +834,9 @@ pango_default_break (const gchar   *text,
             default:
               /* Punctuation, control/format chars, etc. all end a word. */
               attrs[i].is_word_end = TRUE;
+	      current_word_type = WordNone;
               break;
             }
-
-          if (attrs[i].is_word_end)
-            current_word_type = WordNone;
         }
       else
         {
@@ -1548,4 +1546,3 @@ pango_get_log_attrs (const char    *text,
                  log_attrs + chars_broken,
                  attrs_len - chars_broken);
 }
-
