@@ -1,3 +1,9 @@
+Fri Dec  6 23:07:58 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pangoxft-font.c (pango_xft_real_render)
+	  pango/pangox.c (pango_x_render): Roughly clip glyphs
+	into the X coordinate area to avoid wrap-around. (#73199)
+
 Fri Dec  6 17:56:32 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* configure.in: Add missing thai-xft to thai-modules.

@@ -275,8 +275,18 @@ pango_xft_real_render (Display          *display,
   for (i=0; i<glyphs->num_glyphs; i++)
     {
       PangoGlyph glyph = glyphs->glyphs[i].glyph;
+      int glyph_x = x + PANGO_PIXELS (x_off + glyphs->glyphs[i].geometry.x_offset);
+      int glyph_y = y + PANGO_PIXELS (glyphs->glyphs[i].geometry.y_offset);
 
-      if (glyph)
+      /* Clip glyphs into the X coordinate range; we really
+       * want to clip glyphs with an ink rect outside the
+       * [0,32767] x [0,32767] rectangle but looking up
+       * the ink rect here would be a noticeable speed hit.
+       * This is close enough.
+       */
+      if (glyph &&
+	  glyph_x >= -16384 && glyph_x <= 32767 &&
+	  glyph_y >= -16384 && glyph_y <= 32767)
 	{
 	  if (glyph & PANGO_XFT_UNKNOWN_FLAG)
 	    {
@@ -291,11 +301,11 @@ pango_xft_real_render (Display          *display,
       
 	      glyph &= ~PANGO_XFT_UNKNOWN_FLAG;
 
-	      ys[0] = y + PANGO_PIXELS (glyphs->glyphs[i].geometry.y_offset) - xft_font->ascent + (xft_font->ascent + xft_font->descent - xfont->mini_height * 2 - xfont->mini_pad * 5) / 2;
+	      ys[0] = glyph_y - xft_font->ascent + (xft_font->ascent + xft_font->descent - xfont->mini_height * 2 - xfont->mini_pad * 5) / 2;
 	      ys[1] = ys[0] + 2 * xfont->mini_pad + xfont->mini_height;
 	      ys[2] = ys[1] + xfont->mini_height + xfont->mini_pad;
 
-	      xs[0] = x + PANGO_PIXELS (x_off + glyphs->glyphs[i].geometry.x_offset); 
+	      xs[0] = glyph_x;
 	      xs[1] = xs[0] + 2 * xfont->mini_pad;
 	      xs[2] = xs[1] + xfont->mini_width + xfont->mini_pad;
 	      
@@ -323,13 +333,13 @@ pango_xft_real_render (Display          *display,
 	    {
 	      if (draw)
 		XftDrawString32 (draw, color, xft_font,
-				 x + PANGO_PIXELS (x_off + glyphs->glyphs[i].geometry.x_offset),
-				 y + PANGO_PIXELS (glyphs->glyphs[i].geometry.y_offset),
+				 glyph_x,
+				 glyph_y,
 				 &glyph, 1);
 	      else
 		XftRenderString32 (display, src_picture, xft_font->u.ft.font, dest_picture, 0, 0,
-				   x + PANGO_PIXELS (x_off + glyphs->glyphs[i].geometry.x_offset),
-				   y + PANGO_PIXELS (glyphs->glyphs[i].geometry.y_offset),
+				   glyph_x,
+				   glyph_y,
 				   &glyph, 1);
 	    }
 	}

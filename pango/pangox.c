@@ -491,21 +491,35 @@ pango_x_render  (Display           *display,
   
   for (i=0; i<glyphs->num_glyphs; i++)
     {
-      if (glyphs->glyphs[i].glyph &
-          PANGO_X_UNKNOWN_FLAG)
+      PangoGlyph glyph = glyphs->glyphs[i].glyph;
+      int glyph_x = x + PANGO_PIXELS (x_off + glyphs->glyphs[i].geometry.x_offset);
+      int glyph_y = y + PANGO_PIXELS (glyphs->glyphs[i].geometry.y_offset);
+
+      /* Clip glyphs into the X coordinate range; we really
+       * want to clip glyphs with an ink rect outside the
+       * [0,32767] x [0,32767] rectangle but looking up
+       * the ink rect here would be a noticeable speed hit.
+       * This is close enough.
+       */
+      if (!(glyph &&
+	    glyph_x >= -16384 && glyph_x <= 32767 &&
+	    glyph_y >= -16384 && glyph_y <= 32767))
+	goto next_glyph;
+	      
+      if (glyph & PANGO_X_UNKNOWN_FLAG)
         {
           PangoFontMetrics *metrics = pango_font_get_metrics (font, NULL);
           int x1, y1, x2, y2; /* rectangle the character should go inside. */
           int baseline;
           gunichar wc;
           
-          x1 = x + (x_off + glyphs->glyphs[i].geometry.x_offset) / PANGO_SCALE;
-          y1 = y + (glyphs->glyphs[i].geometry.y_offset - metrics->ascent) / PANGO_SCALE;
-          x2 = x1 + glyphs->glyphs[i].geometry.width / PANGO_SCALE;
-          y2 = y1 + (metrics->ascent + metrics->descent) / PANGO_SCALE;
-          baseline = y1 + metrics->ascent / PANGO_SCALE;
+          x1 = glyph_x;
+          y1 = glyph_y - PANGO_PIXELS (metrics->ascent);
+          x2 = x1 + PANGO_PIXELS (glyphs->glyphs[i].geometry.width);
+          y2 = y1 + PANGO_PIXELS (metrics->ascent + metrics->descent);
+          baseline = glyph_y;
           
-          wc = glyphs->glyphs[i].glyph & (~PANGO_X_UNKNOWN_FLAG);
+          wc = glyph & (~PANGO_X_UNKNOWN_FLAG);
 
           switch (wc)
             {
@@ -576,10 +590,10 @@ pango_x_render  (Display           *display,
 
 	  pango_font_metrics_unref (metrics);
         }
-      else if (glyphs->glyphs[i].glyph)
+      else
 	{
-	  guint16 index = PANGO_X_GLYPH_INDEX (glyphs->glyphs[i].glyph);
-	  guint16 subfont_index = PANGO_X_GLYPH_SUBFONT (glyphs->glyphs[i].glyph);
+	  guint16 index = PANGO_X_GLYPH_INDEX (glyph);
+	  guint16 subfont_index = PANGO_X_GLYPH_SUBFONT (glyph);
 	  PangoXSubfontInfo *subfont;
       
 	  XChar2b c;
@@ -601,12 +615,12 @@ pango_x_render  (Display           *display,
 		}
 	      
 	      XDrawString16 (display, d, gc,
-			     x + (x_off + glyphs->glyphs[i].geometry.x_offset) / PANGO_SCALE,
-			     y + glyphs->glyphs[i].geometry.y_offset / PANGO_SCALE,
+			     glyph_x, glyph_y,
 			     &c, 1);
 	    }
 	}
 
+    next_glyph:
       x_off += glyphs->glyphs[i].geometry.width;
     }
 }
