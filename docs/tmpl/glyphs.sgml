@@ -98,6 +98,82 @@ horizontal origin.
 @rect: a #PangoRectangle
 
 
+<!-- ##### STRUCT PangoMatrix ##### -->
+<para>
+
+</para>
+
+@xx: 
+@xy: 
+@yx: 
+@yy: 
+@x0: 
+@y0: 
+
+<!-- ##### MACRO PANGO_MATRIX_INIT ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### FUNCTION pango_matrix_copy ##### -->
+<para>
+
+</para>
+
+@matrix: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_matrix_free ##### -->
+<para>
+
+</para>
+
+@matrix: 
+
+
+<!-- ##### FUNCTION pango_matrix_translate ##### -->
+<para>
+
+</para>
+
+@matrix: 
+@tx: 
+@ty: 
+
+
+<!-- ##### FUNCTION pango_matrix_scale ##### -->
+<para>
+
+</para>
+
+@matrix: 
+@scale_x: 
+@scale_y: 
+
+
+<!-- ##### FUNCTION pango_matrix_rotate ##### -->
+<para>
+
+</para>
+
+@matrix: 
+@degrees: 
+
+
+<!-- ##### FUNCTION pango_matrix_concat ##### -->
+<para>
+
+</para>
+
+@matrix: 
+@new_matrix: 
+<!-- # Unused Parameters # -->
+@new: 
+
+
 <!-- ##### TYPEDEF PangoGlyph ##### -->
 <para>
 A #PangoGlyph represents a single glyph in the output form of a string.

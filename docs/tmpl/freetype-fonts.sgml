@@ -107,7 +107,31 @@ Function type for doing final config tweaking on prepared FcPatterns.
 @y: 
 
 
+<!-- ##### FUNCTION pango_ft2_render_transformed ##### -->
+<para>
+
+</para>
+
+@bitmap: 
+@matrix: 
+@font: 
+@glyphs: 
+@x: 
+@y: 
+
+
 <!-- ##### FUNCTION pango_ft2_render_layout_line ##### -->
+<para>
+
+</para>
+
+@bitmap: 
+@line: 
+@x: 
+@y: 
+
+
+<!-- ##### FUNCTION pango_ft2_render_layout_line_subpixel ##### -->
 <para>
 
 </para>
@@ -129,7 +153,15 @@ Function type for doing final config tweaking on prepared FcPatterns.
 @y: 
 
 
-<<<<<<< freetype-fonts.sgml
+<!-- ##### FUNCTION pango_ft2_render_layout_subpixel ##### -->
+<para>
+
+</para>
+
+@bitmap: 
+@layout: 
+@x: 
+@y: 
 
 
 <!-- ##### FUNCTION pango_ft2_get_unknown_glyph ##### -->
