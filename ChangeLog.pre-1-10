@@ -1,3 +1,15 @@
+2005-03-03  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/opentype/ftxopen.c (Coverage_Index1, Coverage_Index2, 
+	Get_Class2): For all binary searches, handle the case where
+	the number of items is 0. (#162977, Nick Lamb)
+
+	* pango/opentype/ftxgdef.c (TT_GDEF_Build_ClassDefinition):
+	Handle the case where glyph_count == 0 properly. Fix a problem 
+	with cleanups on memory allocation failure.
+	(Get_New_Count, Add_Glyph_Property): Avoid reading off the
+	end of the ClassRangeRecord array.
+
 2005-03-02  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/fonts.c (pango_font_description_from_string_: For
