@@ -46,6 +46,7 @@ EXTRA_DIST=			\
 	viewer-qt.h		\
 	viewer-win32.c		\
 	viewer-ft2.c		\
+	pangoft2topgm.c         \
 	makefile.mingw		\
 	makefile.mingw.in	\
 	HELLO.utf8		\
