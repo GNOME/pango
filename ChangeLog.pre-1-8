@@ -1,3 +1,8 @@
+Mon Jan 26 10:30:06 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/modules/thai/thai-shaper.c: Reapply the patch
+	from #124175 that somehow got reverted.
+	
 Fri Feb 13 10:54:18 2004  Owen Taylor  <otaylor@redhat.com>
 
 	Memory leak fixes from Masatake YAMATO, #130652
@@ -88,7 +93,7 @@ Mon Jan 26 14:20:34 2004  Owen Taylor  <otaylor@redhat.com>
 
 Mon Jan 26 10:30:06 2004  Owen Taylor  <otaylor@redhat.com>
 
-	* pango/modules/thai/thai-c: Fix up glyph addition
+	* pango/modules/thai/thai-shaper.c: Fix up glyph addition
 	code so that it works properly with the typical
 	TrueType fonts that have 0 width for combining
 	characters. (#124175, Theppitak Karoonboonyanan)
