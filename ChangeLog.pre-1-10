@@ -1,3 +1,13 @@
+Sat Aug  2 14:10:31 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/Makefile.am pango/pango-intset.[ch] pango/pango-indic.[ch]: 
+	Remove.
+	
+	* pango/pangox.c (pango_x_apply_ligatures): Make a noop, 
+	remove associated code.
+
+	* pango/pangox-fontmap.c pango/pangox.[ch]: Deprecate everything.
+
 Sat Aug  2 13:17:45 2003  Owen Taylor  <otaylor@redhat.com>
 
 	* configure.in

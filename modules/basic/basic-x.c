@@ -21,9 +21,11 @@
 
 #include <glib.h>
 #include <string.h>
-#include "pangox.h"
 #include "pango-engine.h"
 #include "pango-utils.h"
+
+#undef PANGO_DISABLE_DEPRECATED
+#include "pangox.h"
 
 #include "basic-common.h"
 

@@ -30,6 +30,8 @@ G_BEGIN_DECLS
 
 #include <X11/Xlib.h>
 
+#ifndef PANGO_DISABLE_DEPRECATED
+
 #define PANGO_RENDER_TYPE_X "PangoRenderX"
 
 typedef GC (*PangoGetGCFunc) (PangoContext *context, PangoColor *color, GC base_gc);
@@ -121,6 +123,8 @@ gboolean pango_x_apply_ligatures (PangoFont     *font,
                                   gunichar     **glyphs, 
                                   int           *n_glyphs,
                                   int          **clusters);
+
+#endif /* PANGO_DISABLE_DEPRECATED */
 
 G_END_DECLS
 

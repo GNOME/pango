@@ -32,6 +32,9 @@
 
 #include "pango-fontmap.h"
 #include "pango-utils.h"
+
+#undef PANGO_DISABLE_DEPRECATED
+
 #include "pangox-private.h"
 
 typedef struct _PangoXFamily       PangoXFamily;

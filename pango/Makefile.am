@@ -62,8 +62,6 @@ libpango_1_0_la_SOURCES =  \
 	pango-fontmap.c	   \
 	pango-fontset.c	   \
 	pango-glyph-item.c \
-	pango-intset.c	   \
-	pango-intset.h	   \
 	pango-item.c	   \
 	pango-layout.c	   \
 	pango-markup.c	   \
@@ -86,7 +84,6 @@ pango_headers =		   \
 	pango-fontset.h    \
 	pango-glyph.h	   \
 	pango-glyph-item.h \
-	pango-indic.h	   \
 	pango-item.h	   \
 	pango-layout.h	   \
 	pango-modules.h	   \
@@ -144,8 +141,7 @@ libpangox_1_0_la_SOURCES = \
 	pangox.c	   \
 	pangox-private.h   \
 	pangox-fontcache.c \
-	pangox-fontmap.c   \
-	pango-indic.c
+	pangox-fontmap.c
 
 
 # ------------------- libpangoxft -------------------
