@@ -1,3 +1,8 @@
+2001-03-07  Havoc Pennington  <hp@redhat.com>
+
+	* pango/pangox.c (pango_x_font_get_metrics): fix a cheesy bug in
+	setting approximate_digit_width
+
 Wed Mar  7 09:21:14 2001  Tim Janik  <timj@gtk.org>
 
 	* pango/pango-attributes.c: fixed up g_boxed_type_register_static()

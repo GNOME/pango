@@ -801,8 +801,8 @@ pango_x_font_get_metrics (PangoFont        *font,
       pango_layout_set_text (layout, "0123456789", -1);
 
       pango_layout_get_extents (layout, NULL, &extents);
-
-      metrics->approximate_digit_width = extents.width / 10;
+      
+      info->metrics.approximate_digit_width = extents.width / 10.0;
 
       g_object_unref (G_OBJECT (layout));
       g_object_unref (G_OBJECT (context));
