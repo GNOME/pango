@@ -1,3 +1,8 @@
+2002-07-16  jacob berkman  <jacob@ximian.com>
+
+	* configure.in: use $X_CFLAGS when looking for Xft headers
+	(#88363)
+
 Mon Jul 15 14:59:22 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pangoft2.c (pango_ft2_get_per_char)

@@ -203,7 +203,7 @@ XFT_CFLAGS=""
 if test $have_x = true ; then
   if test $have_freetype = true ; then
     pango_save_cppflags="$CPPFLAGS"
-    CPPFLAGS="$CPPFLAGS $FREETYPE_CFLAGS"
+    CPPFLAGS="$CPPFLAGS $FREETYPE_CFLAGS $X_CFLAGS"
 
     AC_CHECK_LIB(Xrender, XRenderFindFormat, 
       [AC_CHECK_LIB(Xft, XftFontOpen,
