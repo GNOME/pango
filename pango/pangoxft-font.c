@@ -456,7 +456,6 @@ pango_xft_font_get_coverage (PangoFont     *font,
   FT_Face face;
   PangoCoverage *coverage;
   Display *display;
-  int i;
   
   _pango_xft_font_map_get_info (xfont->fontmap, &display, NULL);
 
@@ -467,21 +466,38 @@ pango_xft_font_get_coverage (PangoFont     *font,
   if (coverage)
     return pango_coverage_ref (coverage);
 
-  /* Ugh, this is going to be SLOW */
-
   face = pango_xft_font_get_face (font);
 
   coverage = pango_coverage_new ();
-  for (i = 0; i < G_MAXUSHORT; i++)
-    {
-      FT_UInt glyph = FT_Get_Char_Index (face, i);
-
-      if (glyph && glyph < face->num_glyphs)
-	pango_coverage_set (coverage, i, PANGO_COVERAGE_EXACT);
-    }
+#ifdef HAVE_FT_GET_FIRST_CHAR
+  {
+    FT_ULong gindex;
+    FT_Ulong charcode;
+    
+    charcode = FT_Get_First_Char (face, &gindex);
+    while (gindex)
+      {
+	pango_coverage_set (coverage, charcode, PANGO_COVERAGE_EXACT);
+	charcode = FT_Get_Next_Char (face, charcode, &gindex);
+      }
+  }
+#else  
+  /* Ugh, this is going to be SLOW */
+  {
+    int i;
+    
+    for (i = 0; i < G_MAXUSHORT; i++)
+      {
+	FT_UInt glyph = FT_Get_Char_Index (face, i);
+	
+	if (glyph && glyph < face->num_glyphs)
+	  pango_coverage_set (coverage, i, PANGO_COVERAGE_EXACT);
+      }
+  }
+#endif
 
   _pango_xft_font_map_set_coverage (xfont->fontmap, filename, coverage);
-      
+ 
   return coverage;
 }
 

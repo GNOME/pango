@@ -1,3 +1,7 @@
+Thu Mar 14 20:02:58 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* examples/Makefile.am (EXTRA_DIST): Remove moc_view-qt.cc. (#74725)
+
 Wed Mar 13 10:31:07 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pango-coverage.c (pango_coverage_max): Fix typo

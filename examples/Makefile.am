@@ -61,7 +61,6 @@ pango.modules:
 	fi
 
 EXTRA_DIST=			\
-	moc_viewer-qt.cc	\
 	viewer-qt.cc		\
 	viewer-qt.h		\
 	viewer-win32.c		\
