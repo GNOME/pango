@@ -58,6 +58,7 @@ typedef struct _PangoAttrColor    PangoAttrColor;
 typedef struct _PangoAttrFontDesc PangoAttrFontDesc;
 typedef struct _PangoAttrShape    PangoAttrShape;
 
+#define PANGO_TYPE_ATTR_LIST pango_attr_list_get_type ()
 typedef struct _PangoAttrList     PangoAttrList;
 typedef struct _PangoAttrIterator PangoAttrIterator;
 
@@ -168,6 +169,7 @@ PangoAttribute *pango_attr_shape_new         (const PangoRectangle       *ink_re
 					      const PangoRectangle       *logical_rect);
 PangoAttribute *pango_attr_scale_new         (double                      scale_factor);
 
+GType              pango_attr_list_get_type      (void) G_GNUC_CONST;
 PangoAttrList *    pango_attr_list_new           (void);
 void               pango_attr_list_ref           (PangoAttrList  *list);
 void               pango_attr_list_unref         (PangoAttrList  *list);

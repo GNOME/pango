@@ -1,3 +1,8 @@
+2001-02-28  Alexander Larsson  <alla@lysator.liu.se>
+
+	* pango/pango-attributes.[c]:
+	Added pango_attr_list_get_type, and PANGO_TYPE_ATTR_LIST.
+
 2001-02-20  Havoc Pennington  <hp@pobox.com>
 
         Patch from Soeren Sandmann

@@ -683,6 +683,23 @@ pango_attr_shape_new (const PangoRectangle *ink_rect,
   return (PangoAttribute *)result;
 }
 
+GType
+pango_attr_list_get_type (void)
+{
+  static GType our_type = 0;
+  
+  if (our_type == 0)
+    {
+      g_type_init (0);
+      
+      our_type = g_boxed_type_register_static ("PangoAttrList",
+                                               pango_attr_list_copy,
+                                               pango_attr_list_unref);
+    }
+
+  return our_type;
+}
+
 /**
  * pango_attr_list_new:
  * 
