@@ -153,7 +153,7 @@ endif
 
 libpangoxft_1_0_la_LDFLAGS = -version-info $(LT_VERSION_INFO)
 libpangoxft_1_0_la_LIBADD = libpangoft2-$(PANGO_API_VERSION).la libpango-$(PANGO_API_VERSION).la $(INCLUDED_XFT_MODULES) $(XFT_LIBS) 
-libpangoxft_1_0_la_DEPENDENCIES = libpango-$(PANGO_API_VERSION).la $(INCLUDED_XFT_MODULES)
+libpangoxft_1_0_la_DEPENDENCIES = libpangoft2-$(PANGO_API_VERSION).la libpango-$(PANGO_API_VERSION).la $(INCLUDED_XFT_MODULES)
 
 libpangoxft_1_0_la_SOURCES =   	\
 	pangoxft-font.c		\
