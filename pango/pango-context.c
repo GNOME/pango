@@ -1342,8 +1342,11 @@ update_metrics_from_items (PangoFontMetrics *metrics,
  * @context: a #PangoContext
  * @desc: a #PangoFontDescription structure
  * @language: language tag used to determine which script to get the metrics
- *            for, or %NULL to indicate to get the metrics for the entire
- *            font.
+ *            for. %NULL means that the language tag from the context will
+ *            be used. If no language tag is set on the ccontext, metrics
+ *            large enough to cover a range of languages will be returned.
+ *            The process of determining such metrics is slow, so it is best
+ *            to always make sure some real language tag will be used.
  * 
  * Get overall metric information for a font particular font
  * description.  Since the metrics may be substantially different for
@@ -1373,6 +1376,9 @@ pango_context_get_metrics (PangoContext                 *context,
   
   g_return_val_if_fail (PANGO_IS_CONTEXT (context), NULL);
   g_return_val_if_fail (desc != NULL, NULL);
+
+  if (!language)
+    language = context->language;
 
   current_fonts = pango_font_map_load_fontset (context->font_map, context, desc, language);
   metrics = get_base_metrics (current_fonts);

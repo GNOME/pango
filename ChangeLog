@@ -1,5 +1,11 @@
 2005-03-01  Owen Taylor  <otaylor@redhat.com>
 
+	* pango/pango-context.c (pango_context_get_metrics): Use
+	the language from the context if %NULL is passed in for
+	@language. (#163472)
+	
+2005-03-01  Owen Taylor  <otaylor@redhat.com>
+
 	Build fixes from Andrew P. Lentvorski, Jr, #164655
 
 	* pango/pangoft2-render.c: Duplicate the 
