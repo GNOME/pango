@@ -63,6 +63,8 @@ struct _PangoFontMap
 struct _PangoFontMapClass
 {
   GObjectClass parent_class;
+
+  /*< public >*/
   
   PangoFont *   (*load_font)     (PangoFontMap               *fontmap,
 				  PangoContext               *context,
@@ -74,6 +76,8 @@ struct _PangoFontMapClass
 				  PangoContext               *context,
 				  const PangoFontDescription *desc,
 				  PangoLanguage              *language);
+
+  /*< private >*/
 
   /* Padding for future expansion */
   void (*_pango_reserved1) (void);

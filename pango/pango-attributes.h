@@ -102,6 +102,7 @@ typedef gboolean (*PangoAttrFilterFunc) (PangoAttribute *attribute,
 
 struct _PangoAttrClass
 {
+  /*< public >*/
   PangoAttrType type;
   PangoAttribute * (*copy) (const PangoAttribute *attr);
   void             (*destroy) (PangoAttribute *attr);

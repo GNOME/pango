@@ -210,11 +210,15 @@ struct _PangoFontFamily
 struct _PangoFontFamilyClass
 {
   GObjectClass parent_class;
+
+  /*< public >*/
   
   void  (*list_faces)      (PangoFontFamily  *family,
 		            PangoFontFace  ***faces,
 		            int              *n_faces);
   const char * (*get_name) (PangoFontFamily  *family);
+
+  /*< private >*/
 
   /* Padding for future expansion */
   void (*_pango_reserved1) (void);
@@ -254,9 +258,13 @@ struct _PangoFontFace
 struct _PangoFontFaceClass
 {
   GObjectClass parent_class;
+
+  /*< public >*/
   
   const char           * (*get_face_name) (PangoFontFace *face);
   PangoFontDescription * (*describe)       (PangoFontFace *face);
+
+  /*< private >*/
 
   /* Padding for future expansion */
   void (*_pango_reserved1) (void);
@@ -306,6 +314,8 @@ struct _PangoFont
 struct _PangoFontClass
 {
   GObjectClass parent_class;
+
+  /*< public >*/
   
   PangoFontDescription *(*describe)           (PangoFont      *font);
   PangoCoverage *       (*get_coverage)       (PangoFont      *font,
@@ -319,6 +329,7 @@ struct _PangoFontClass
 					       PangoRectangle *logical_rect);
   PangoFontMetrics *    (*get_metrics)        (PangoFont      *font,
 					       PangoLanguage  *language);
+  /*< private >*/
 
   /* Padding for future expansion */
   void (*_pango_reserved1) (void);

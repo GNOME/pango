@@ -1,6 +1,13 @@
-Tue Dec 10 14:51:01 2002  Owen Taylor  <otaylor@redhat.com>
+Tue Dec 10 18:37:19 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* === Released 1.1.5 ===
+
+	*  pango/pango-attributes.h pango/pango-font.h
+	pango/pango-fontset.h pango/pango-fontmap.h: Add
+	explicit /*< public >*/ /*< private *>/ guards.
+	(See #95398 for gtk-doc changes making this necessary)
+
+Tue Dec 10 14:51:01 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* configure.in: Version 1.1.5, interface age 1.
 
