@@ -8,7 +8,7 @@ ORIGDIR=`pwd`
 cd $srcdir
 PROJECT=Pango
 TEST_TYPE=-f
-FILE=libpango/pango.h
+FILE=pango/pango.h
 
 DIE=0
 

@@ -99,7 +99,7 @@ struct _PangoXFontMap
 
   int n_fonts;
 
-  double resolution;		/* (points / pixel) * 1000 */
+  double resolution;		/* (points / pixel) * PANGO_SCALE */
 };
 
 /* This is the largest field length we will accept. If a fontname has a field
@@ -211,6 +211,8 @@ static gint     pango_x_get_size          (PangoXFontMap *fontmap,
 					   const char    *fontname);
 static void     pango_x_insert_font       (PangoXFontMap *fontmap,
 					   const char    *fontname);
+static void     pango_x_get_item_properties (PangoItem      *item,
+					     PangoUnderline *uline);
 
 static GList *fontmaps;
 
@@ -280,11 +282,12 @@ pango_x_font_map_for_display (Display *display)
 
   fontmaps = g_list_prepend (fontmaps, xfontmap);
 
-  /* This is a little screwed up, since different screens might have different resolutions
+  /* This is a little screwed up, since different screens on the same display
+   * might have different resolutions
    */
   screen = DefaultScreen (xfontmap->display);
-  xfontmap->resolution = (1000. * 72. / 25.4) * ((double) DisplayWidthMM (xfontmap->display, screen) /
-						 DisplayHeight (xfontmap->display, screen));
+  xfontmap->resolution = (PANGO_SCALE * 72.27 / 25.4) * ((double) DisplayWidthMM (xfontmap->display, screen) /
+							 DisplayWidth (xfontmap->display, screen));
 
   return (PangoFontMap *)xfontmap;
 }
@@ -1356,8 +1359,8 @@ pango_x_render  (Display           *display,
 	    }
 	  
 	  XDrawString16 (display, d, gc,
-			 x + (x_off + glyphs->glyphs[i].geometry.x_offset) / 1000,
-			 y + glyphs->glyphs[i].geometry.y_offset / 1000,
+			 x + (x_off + glyphs->glyphs[i].geometry.x_offset) / PANGO_SCALE,
+			 y + glyphs->glyphs[i].geometry.y_offset / PANGO_SCALE,
 			 &c, 1);
 	}
 
@@ -1378,17 +1381,17 @@ pango_x_font_get_glyph_extents  (PangoFont      *font,
     {
       if (ink_rect)
 	{
-	  ink_rect->x = 1000 * cs->lbearing;
-	  ink_rect->width = 1000 * (cs->rbearing - cs->lbearing);
-	  ink_rect->y = 1000 * -cs->ascent;
-	  ink_rect->height = cs->ascent + cs->descent;
+	  ink_rect->x = PANGO_SCALE * cs->lbearing;
+	  ink_rect->width = PANGO_SCALE * (cs->rbearing - cs->lbearing);
+	  ink_rect->y = PANGO_SCALE * -cs->ascent;
+	  ink_rect->height = PANGO_SCALE * (cs->ascent + cs->descent);
 	}
       if (logical_rect)
 	{
 	  logical_rect->x = 0;
-	  logical_rect->width = 1000 * cs->width;
-	  logical_rect->y = - 1000 * subfont->font_struct->ascent;
-	  logical_rect->height = 1000 * (subfont->font_struct->ascent + subfont->font_struct->descent);
+	  logical_rect->width = PANGO_SCALE * cs->width;
+	  logical_rect->y = - PANGO_SCALE * subfont->font_struct->ascent;
+	  logical_rect->height = PANGO_SCALE * (subfont->font_struct->ascent + subfont->font_struct->descent);
 	}
     }
   else
@@ -1526,7 +1529,7 @@ pango_x_make_matching_xlfd (PangoXFontMap *xfontmap, char *xlfd, const char *cha
 
 	      if (!closest_match ||
 		  new_distance < match_distance ||
-		  (new_distance == 0 && match_scaleable && font_size != 0))
+		  (new_distance < PANGO_SCALE && match_scaleable && font_size != 0))
 		{
 		  closest_match = tmp_xlfd;
 		  match_scaleable = (font_size == 0);
@@ -2023,26 +2026,52 @@ pango_x_render_layout_line (Display          *display,
 {
   GSList *tmp_list = line->runs;
   PangoRectangle logical_rect;
+  PangoRectangle ink_rect;
 
   int x_off = 0;
 
   pango_layout_line_get_extents (line,NULL, &logical_rect);
-  y += PANGO_ASCENT (logical_rect) / 1000;
   
   while (tmp_list)
     {
+      PangoUnderline uline = PANGO_UNDERLINE_NONE;
       PangoLayoutRun *run = tmp_list->data;
       tmp_list = tmp_list->next;
 
-      pango_x_render (display, drawable, gc, run->item->analysis.font, run->glyphs,
-		      x + x_off / 1000, y);
+      pango_x_get_item_properties (run->item, &uline);
 
-      if (tmp_list)
+      if (uline == PANGO_UNDERLINE_NONE)
+	pango_glyph_string_extents (run->glyphs, run->item->analysis.font,
+				    NULL, &logical_rect);
+      else
+	pango_glyph_string_extents (run->glyphs, run->item->analysis.font,
+				    &ink_rect, &logical_rect);
+
+      pango_x_render (display, drawable, gc, run->item->analysis.font, run->glyphs,
+		      x + x_off / PANGO_SCALE, y);
+
+      switch (uline)
 	{
-	  pango_glyph_string_extents (run->glyphs, run->item->analysis.font,
-				      NULL, &logical_rect);
-	  x_off += logical_rect.width;
+	case PANGO_UNDERLINE_NONE:
+	  break;
+	case PANGO_UNDERLINE_DOUBLE:
+	  XDrawLine (display, drawable, gc,
+		     x + (x_off + ink_rect.x) / PANGO_SCALE - 1, y + 4,
+		     x + (x_off + ink_rect.x + ink_rect.width) / PANGO_SCALE, y + 4);
+	  /* Fall through */
+	case PANGO_UNDERLINE_SINGLE:
+	  XDrawLine (display, drawable, gc,
+		     x + (x_off + ink_rect.x) -1, y + 2,
+		     x + (x_off + ink_rect.x + ink_rect.width) / PANGO_SCALE, y + 2);
+	  break;
+	case PANGO_UNDERLINE_LOW:
+	  XDrawLine (display, drawable, gc,
+		     x + (x_off + ink_rect.x) / PANGO_SCALE - 1, y + (ink_rect.y + ink_rect.height) / PANGO_SCALE + 2,
+		     x + (x_off + ink_rect.x + ink_rect.width) / PANGO_SCALE, y + (ink_rect.y + ink_rect.height) / PANGO_SCALE + 2);
+	  break;
 	}
+       
+      x_off += logical_rect.width;
     }
 }
 
@@ -2120,9 +2149,35 @@ pango_x_render_layout (Display     *display,
 	}
 	  
       pango_x_render_layout_line (display, drawable, gc,
-				  line, x + x_offset / 1000, y + y_offset / 1000);
+				  line, x + x_offset / PANGO_SCALE, y + (y_offset - logical_rect.y) / PANGO_SCALE);
 
       y_offset += logical_rect.height;
+      tmp_list = tmp_list->next;
+    }
+}
+
+/* This utility function is duplicated here and in pango-layout.c; should it be
+ * public? Trouble is - what is the appropriate set of properties?
+ */
+static void
+pango_x_get_item_properties (PangoItem      *item,
+			     PangoUnderline *uline)
+{
+  GSList *tmp_list = item->extra_attrs;
+
+  while (tmp_list)
+    {
+      PangoAttribute *attr = tmp_list->data;
+
+      switch (attr->klass->type)
+	{
+	case PANGO_ATTR_UNDERLINE:
+	  if (uline)
+	    *uline = ((PangoAttrInt *)attr)->value;
+	  
+	default:
+	  break;
+	}
       tmp_list = tmp_list->next;
     }
 }

@@ -2,7 +2,7 @@
 
 noinst_LTLIBRARIES = pango-arabic.la
 
-INCLUDES = -I$(top_srcdir)/libpango/
+INCLUDES = -I$(top_srcdir) -I$(top_srcdir)/pango/ 
 
 pango_arabic_la_SOURCES = \
 	arabic.c \

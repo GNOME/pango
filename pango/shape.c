@@ -19,7 +19,7 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#include <pango.h>
+#include <pango/pango.h>
 #include "utils.h"
 
 /**
@@ -34,7 +34,7 @@
  * convert the characters into glyphs. You may also pass
  * in only a substring of the item from pango_itemize().
  */
-void pango_shape (gchar            *text, 
+void pango_shape (const gchar      *text, 
 		  gint              length, 
 		  PangoAnalysis    *analysis,
 		  PangoGlyphString *glyphs)

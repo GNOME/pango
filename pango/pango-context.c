@@ -19,7 +19,7 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#include <pango-context.h>
+#include <pango/pango-context.h>
 #include <fribidi/fribidi.h>
 #include <unicode.h>
 #include "iconv.h"
@@ -38,12 +38,13 @@ struct _PangoContext
 };
 
 static void add_engines (PangoContext      *context,
-			 gchar             *text, 
+			 const gchar       *text, 
 			 gint               length,
 			 PangoAttrList     *attrs,
 			 PangoEngineShape **shape_engines,
 			 PangoEngineInfo  **lang_engines,
-			 PangoFont        **fonts);
+			 PangoFont        **fonts,
+			 GSList           **extra_attr_lists);
 
 /**
  * pango_context_new:
@@ -468,7 +469,7 @@ pango_context_get_base_dir (PangoContext *context)
  */
 GList *
 pango_itemize (PangoContext   *context, 
-	       char           *text, 
+	       const char     *text, 
 	       int             length,
 	       PangoAttrList  *attrs)
 {
@@ -478,11 +479,13 @@ pango_itemize (PangoContext   *context,
   FriBidiCharType base_dir;
   gint i;
   PangoItem *item;
-  char *p, *next;
+  const char *p;
+  const char *next;
   GList *result = NULL;
   
   PangoEngineShape **shape_engines;
   PangoEngineInfo  **lang_engines;
+  GSList           **extra_attr_lists;
   PangoFont        **fonts;
 
   g_return_val_if_fail (context != NULL, NULL);
@@ -517,6 +520,7 @@ pango_itemize (PangoContext   *context,
   shape_engines = g_new0 (PangoEngineShape *, n_chars);
   lang_engines = g_new0 (PangoEngineInfo *, n_chars);
   fonts = g_new0 (PangoFont *, n_chars);
+  extra_attr_lists = g_new0 (GSList *, n_chars);
 
   fribidi_log2vis_get_embedding_levels (text_ucs2, n_chars, &base_dir,
 					embedding_levels);
@@ -525,7 +529,8 @@ pango_itemize (PangoContext   *context,
    * each character.
    */
 
-  add_engines (context, text, length, attrs, shape_engines, lang_engines, fonts);
+  add_engines (context, text, length, attrs, shape_engines, lang_engines, fonts,
+	       extra_attr_lists);
 
 
   /* Make a GList of PangoItems out of the above results
@@ -541,7 +546,8 @@ pango_itemize (PangoContext   *context,
 	  embedding_levels[i] != embedding_levels[i-1] ||
 	  shape_engines[i] != shape_engines[i-1] ||
 	  lang_engines[i] != lang_engines[i-1] ||
-	  fonts[i] != fonts[i-1])
+	  fonts[i] != fonts[i-1] ||
+	  extra_attr_lists[i] != extra_attr_lists[i-1])
 	{
 	  item = g_new (PangoItem, 1);
 	  item->offset = p - text;
@@ -557,6 +563,22 @@ pango_itemize (PangoContext   *context,
 
 	  item->analysis.font = fonts[i];
 
+	  /* Copy the extra attribute list if necessary */
+	  if (extra_attr_lists[i] && i != 0 && extra_attr_lists[i] == extra_attr_lists[i-1])
+	    {
+	      GSList *tmp_list = extra_attr_lists[i];
+	      item->extra_attrs = NULL;
+	      while (tmp_list)
+		{
+		  item->extra_attrs = g_slist_prepend (item->extra_attrs,
+						       pango_attribute_copy (tmp_list->data));
+		  tmp_list = tmp_list->next;
+		}
+	      item->extra_attrs = g_slist_reverse (item->extra_attrs);
+	    }
+	  else
+	    item->extra_attrs = extra_attr_lists[i];
+
 	  result = g_list_prepend (result, item);
 	}
       else
@@ -571,6 +593,7 @@ pango_itemize (PangoContext   *context,
   g_free (shape_engines);
   g_free (lang_engines);
   g_free (fonts);
+  g_free (extra_attr_lists);
   
   g_free (text_ucs2);
   
@@ -610,16 +633,18 @@ get_font (PangoFont     **fonts,
 	  
 static void
 add_engines (PangoContext      *context,
-	     gchar             *text, 
+	     const gchar       *text, 
 	     gint               length,
 	     PangoAttrList     *attrs,
 	     PangoEngineShape **shape_engines,
 	     PangoEngineInfo  **lang_engines,
-	     PangoFont        **fonts)
+	     PangoFont        **fonts,
+	     GSList           **extra_attr_lists)
 {
-  char *pos;
+  const char *pos;
   char *lang = NULL;
   int next_index = 0;
+  GSList *extra_attrs = NULL;
   gint n_chars;
   PangoMap *shape_map = NULL;
   PangoMap *lang_map = NULL;
@@ -671,7 +696,7 @@ add_engines (PangoContext      *context,
 					   "PangoRenderX");
 	    }
 
-	  pango_attr_iterator_get_font (iterator, context->font_desc, &next_desc);
+	  pango_attr_iterator_get_font (iterator, context->font_desc, &next_desc, &extra_attrs);
 
 	  if (i == 0 ||
 	      !pango_font_description_compare (&current_desc, &next_desc))
@@ -727,6 +752,8 @@ add_engines (PangoContext      *context,
 	shape_engines[i] = pango_font_find_shaper (fonts[i], lang, wc);
       else
 	shape_engines[i] = NULL;
+
+      extra_attr_lists[i] = extra_attrs;
     }
   
   for (j=0; j<n_families; j++)

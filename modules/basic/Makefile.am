@@ -6,7 +6,7 @@ module_LTLIBRARIES = pango-basic.la
 pango_basic_la_SOURCES = basic.c
 pango_basic_la_LDFLAGS = -rpath $(libdir) -export-dynamic -avoid-version -module
 
-INCLUDES = -I$(top_srcdir)/libpango/
+INCLUDES = -I$(top_srcdir) -I$(top_srcdir)/pango/ 
 
 
 EXTRA_DIST= \

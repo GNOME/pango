@@ -19,7 +19,7 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#include <pango-attributes.h>
+#include <pango/pango-attributes.h>
 
 struct _PangoAttrList
 {
@@ -434,7 +434,7 @@ pango_attr_stretch_new (PangoStretch  stretch)
  * Return value: the new #PangoAttribute.
  **/
 PangoAttribute *
-pango_attr_underline_new (gboolean underline)
+pango_attr_underline_new (PangoUnderline underline)
 {
   static const PangoAttrClass klass = {
     PANGO_ATTR_UNDERLINE,
@@ -866,6 +866,8 @@ pango_attr_iterator_get (PangoAttrIterator *iterator,
 
       if (attr->klass->type == type)
 	return attr;
+
+      tmp_list = tmp_list->next;
     }
 
   return NULL;
@@ -882,35 +884,108 @@ pango_attr_iterator_get (PangoAttrIterator *iterator,
  *           an attribute in the #PangoAttrList associated with the structure,
  *           or with @base. If you want to save this value, you should
  *           allocate it on the stack and then use pango_font_description_copy().
+ * @extra_attrs: if non-%NULL, location in which to store a list of non-font
+ *           attributes at the the current position; only the highest priority
+ *           value of each attribute will be added to this list. In order
+ *           to free this value, you must call pango_attribute_destroy() on
+ *           each member.
+ *
+ * Get the font 
  **/
 void
-pango_attr_iterator_get_font (PangoAttrIterator    *iterator,
-			      PangoFontDescription *base,
-			      PangoFontDescription *current)
+pango_attr_iterator_get_font (PangoAttrIterator     *iterator,
+			      PangoFontDescription  *base,
+			      PangoFontDescription  *current,
+			      GSList               **extra_attrs)
 {
-  PangoAttribute *attr;
+  GList *tmp_list1;
+  GSList *tmp_list2;
+
+  gboolean have_family = FALSE;
+  gboolean have_style = FALSE;
+  gboolean have_variant = FALSE;
+  gboolean have_weight = FALSE;
+  gboolean have_stretch = FALSE;
+  gboolean have_size = FALSE;
 
   g_return_if_fail (iterator != NULL);
 
   *current = *base;
 
-  if ((attr = pango_attr_iterator_get (iterator, PANGO_ATTR_FAMILY)))
-    current->family_name = ((PangoAttrString *)attr)->value;
-
-  if ((attr = pango_attr_iterator_get (iterator, PANGO_ATTR_STYLE)))
-    current->style = ((PangoAttrInt *)attr)->value;
+  if (extra_attrs)
+    *extra_attrs = NULL;
   
-  if ((attr = pango_attr_iterator_get (iterator, PANGO_ATTR_VARIANT)))
-    current->variant = ((PangoAttrInt *)attr)->value;
-  
-  if ((attr = pango_attr_iterator_get (iterator, PANGO_ATTR_WEIGHT)))
-    current->weight = ((PangoAttrInt *)attr)->value;
+  tmp_list1 = iterator->attribute_stack;
+  while (tmp_list1)
+    {
+      PangoAttribute *attr = tmp_list1->data;
+      tmp_list1 = tmp_list1->next;
 
-  if ((attr = pango_attr_iterator_get (iterator, PANGO_ATTR_STRETCH)))
-    current->stretch = ((PangoAttrInt *)attr)->value;
+      switch (attr->klass->type)
+	{
+	case PANGO_ATTR_FAMILY:
+	  if (!have_family)
+	    {
+	      have_family = TRUE;
+	      current->family_name = ((PangoAttrString *)attr)->value;
+	    }
+	  break;
+	case PANGO_ATTR_STYLE:
+	  if (!have_style)
+	    {
+	      have_style = TRUE;
+	      current->style = ((PangoAttrInt *)attr)->value;
+	    }
+	  break;
+	case PANGO_ATTR_VARIANT:
+	  if (!have_variant)
+	    {
+	      have_variant = TRUE;
+	      current->variant = ((PangoAttrInt *)attr)->value;
+	    }
+	  break;
+	case PANGO_ATTR_WEIGHT:
+	  if (!have_weight)
+	    {
+	      have_weight = TRUE;
+	      current->weight = ((PangoAttrInt *)attr)->value;
+	    }
+	  break;
+	case PANGO_ATTR_STRETCH:
+	  if (!have_stretch)
+	    {
+	      have_stretch = TRUE;
+	      current->stretch = ((PangoAttrInt *)attr)->value;
+	    }
+	  break;
+	case PANGO_ATTR_SIZE:
+	  if (!have_size)
+	    {
+	      have_size = TRUE;
+	      current->size = ((PangoAttrInt *)attr)->value;
+	    }
+	  break;
+	default:
+	  if (extra_attrs)
+	    {
+	      gboolean found = FALSE;
+	  
+	      tmp_list2 = *extra_attrs;
+	      while (tmp_list2)
+		{
+		  PangoAttribute *old_attr = tmp_list2->data;
+		  if (attr->klass->type == old_attr->klass->type)
+		    {
+		      found = TRUE;
+		      break;
+		    }
+		}
 
-  if ((attr = pango_attr_iterator_get (iterator, PANGO_ATTR_SIZE)))
-    current->size = ((PangoAttrInt *)attr)->value;
+	      if (!found)
+		*extra_attrs = g_slist_prepend (*extra_attrs, pango_attribute_copy (attr));
+	    }
+	}
+    }
 }
 
 

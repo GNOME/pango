@@ -135,7 +135,7 @@ pango_itemize (PangoContext   *context,
 	{
 	  if (item)
 	    result = g_list_prepend (result, item);
-	  item = g_new (PangoItem, 1);
+	  item = pango_item_new ();
 	  item->offset = p - text;
 	  item->num_chars = 0;
 	  item->analysis.level = embedding_levels[i];

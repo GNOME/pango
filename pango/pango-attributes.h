@@ -22,7 +22,7 @@
 #ifndef __PANGO_ATTRIBUTES_H__
 #define __PANGO_ATTRIBUTES_H__
 
-#include <pango-font.h>
+#include <pango/pango-font.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -52,6 +52,13 @@ typedef enum {
   PANGO_ATTR_STRIKETHROUGH,	/* PangoAttrInt */
   PANGO_ATTR_RISE		/* PangoAttrInt */
 } PangoAttrType;
+
+typedef enum {
+  PANGO_UNDERLINE_NONE,
+  PANGO_UNDERLINE_SINGLE,
+  PANGO_UNDERLINE_DOUBLE,
+  PANGO_UNDERLINE_LOW
+} PangoUnderline;
 
 struct _PangoAttribute
 {
@@ -95,22 +102,22 @@ void             pango_attribute_destroy       (PangoAttribute       *attr);
 gboolean         pango_attribute_compare       (const PangoAttribute *attr1,
 						const PangoAttribute *attr2);
 
-PangoAttribute *pango_attr_lang_new          (const char   *lang);
-PangoAttribute *pango_attr_family_new        (const char   *family);
-PangoAttribute *pango_attr_foreground_new    (guint16       red,
-					      guint16       green,
-					      guint16       blue);
-PangoAttribute *pango_attr_background_new    (guint16       red,
-					      guint16       green,
-					      guint16       blue);
-PangoAttribute *pango_attr_size_new          (int           size);
-PangoAttribute *pango_attr_style_new         (PangoStyle    style);
-PangoAttribute *pango_attr_weight_new        (PangoWeight   weight);
-PangoAttribute *pango_attr_variant_new       (PangoVariant  variant);
-PangoAttribute *pango_attr_stretch_new       (PangoStretch  stretch);
-PangoAttribute *pango_attr_underline_new     (gboolean      underline);
-PangoAttribute *pango_attr_strikethrough_new (gboolean      strikethrough);
-PangoAttribute *pango_attr_rise_new          (int           rise);
+PangoAttribute *pango_attr_lang_new          (const char    *lang);
+PangoAttribute *pango_attr_family_new        (const char    *family);
+PangoAttribute *pango_attr_foreground_new    (guint16        red,
+					      guint16        green,
+					      guint16        blue);
+PangoAttribute *pango_attr_background_new    (guint16        red,
+					      guint16        green,
+					      guint16        blue);
+PangoAttribute *pango_attr_size_new          (int            size);
+PangoAttribute *pango_attr_style_new         (PangoStyle     style);
+PangoAttribute *pango_attr_weight_new        (PangoWeight    weight);
+PangoAttribute *pango_attr_variant_new       (PangoVariant   variant);
+PangoAttribute *pango_attr_stretch_new       (PangoStretch   stretch);
+PangoAttribute *pango_attr_underline_new     (PangoUnderline underline);
+PangoAttribute *pango_attr_strikethrough_new (gboolean       strikethrough);
+PangoAttribute *pango_attr_rise_new          (int            rise);
 
 PangoAttrList *     pango_attr_list_new          (void);
 void                pango_attr_list_ref          (PangoAttrList  *list);
@@ -130,7 +137,8 @@ PangoAttribute *pango_attr_iterator_get      (PangoAttrIterator    *iterator,
 					      PangoAttrType         type);
 void            pango_attr_iterator_get_font (PangoAttrIterator    *iterator,
 					      PangoFontDescription *base,
-					      PangoFontDescription *current);
+					      PangoFontDescription *current,
+					      GSList              **extra_attrs);
 
 #ifdef __cplusplus
 }

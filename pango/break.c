@@ -19,7 +19,7 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#include <pango.h>
+#include "pango.h"
 #include <unicode.h>
 #include "utils.h"
 
@@ -33,15 +33,15 @@
  * Determines possible line, word, and character breaks
  * for a string of Unicode text.
  */
-void pango_break (gchar           *text, 
-                     gint             length, 
-                     PangoAnalysis *analysis, 
-		     PangoLogAttr  *attrs)
+void pango_break (const gchar   *text, 
+		  gint           length, 
+		  PangoAnalysis *analysis, 
+		  PangoLogAttr  *attrs)
 {
   /* Pseudo-implementation */
 
-  gchar *cur = text;
-  gchar *next;
+  const gchar *cur = text;
+  const gchar *next;
   gint i = 0;
   GUChar4 wc;
   

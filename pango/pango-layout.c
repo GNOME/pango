@@ -19,8 +19,9 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#include <pango-layout.h>
-#include <pango.h>		/* For pango_shape() */
+#include <pango/pango-layout.h>
+#include <pango/pango.h>		/* For pango_shape() */
+#include <string.h>
 #include <unicode.h>
 
 #define LINE_IS_VALID(line) ((line)->layout != NULL)
@@ -55,6 +56,9 @@ static void pango_layout_check_lines (PangoLayout *layout);
 
 static PangoLayoutLine * pango_layout_line_new        (PangoLayout     *layout);
 static void              pango_layout_line_reorder    (PangoLayoutLine *line);
+
+static void pango_layout_get_item_properties (PangoItem      *item,
+					      PangoUnderline *uline);
 
 /**
  * pango_layout_new:
@@ -149,8 +153,11 @@ pango_layout_set_width (PangoLayout *layout,
 {
   g_return_if_fail (layout != NULL);
 
-  layout->width = width;
-  pango_layout_clear_lines (layout);
+  if (width != layout->width)
+    {
+      layout->width = width;
+      pango_layout_clear_lines (layout);
+    }
 }
 
 /**
@@ -185,8 +192,11 @@ pango_layout_set_indent (PangoLayout *layout,
 {
   g_return_if_fail (layout != NULL);
 
-  layout->indent = indent;
-  pango_layout_clear_lines (layout);
+  if (indent != layout->indent)
+    {
+      layout->indent = indent;
+      pango_layout_clear_lines (layout);
+    }
 }
 
 /**
@@ -323,6 +333,21 @@ pango_layout_set_text (PangoLayout *layout,
   else
     layout->text = NULL;
 
+  pango_layout_clear_lines (layout);
+}
+
+/**
+ * pango_layout_context_changed:
+ * @layout: a #PangoLayout
+ * 
+ * Forces recomputation of any state in the #PangoLayout that
+ * might depend on the layout's context. This function should
+ * be called if you make changes to the context subsequent
+ * to creating the layout.
+ **/
+void
+pango_layout_context_changed (PangoLayout *layout)
+{
   pango_layout_clear_lines (layout);
 }
 
@@ -754,7 +779,10 @@ insert_run (PangoLayoutLine *line, PangoItem *item, PangoGlyphString *glyphs)
 }
 
 static gboolean
-process_item (PangoLayoutLine *line, PangoItem *item, char *text, int *remaining_width)
+process_item (PangoLayoutLine *line,
+	      PangoItem       *item,
+	      const char      *text,
+	      int             *remaining_width)
 {
   PangoGlyphString *glyphs = pango_glyph_string_new ();
   PangoRectangle logical_rect;
@@ -764,6 +792,12 @@ process_item (PangoLayoutLine *line, PangoItem *item, char *text, int *remaining
     return FALSE;
   
   pango_shape (text + item->offset, item->length, &item->analysis, glyphs);
+  if (*remaining_width < 0)
+    {
+      insert_run (line, item, glyphs);
+      return TRUE;
+    }
+  
   pango_glyph_string_extents (glyphs, item->analysis.font, NULL, &logical_rect);
   width = logical_rect.width;
   
@@ -801,10 +835,10 @@ process_item (PangoLayoutLine *line, PangoItem *item, char *text, int *remaining
       
       if (num_chars != 0)	/* Succesfully broke the item */
 	{
-	  char *p;
+	  const char *p;
 	  gint n;
 
-	  PangoItem *new_item = g_new (PangoItem, 1);
+	  PangoItem *new_item = pango_item_copy (item);
 
 	  /* Determine utf8 length corresponding to num_chars. Slow?
 	   */
@@ -815,13 +849,9 @@ process_item (PangoLayoutLine *line, PangoItem *item, char *text, int *remaining
 	  
 	  length = p - (text + item->offset);
 	  
-	  new_item->offset = item->offset;
 	  new_item->length = length;
 	  new_item->num_chars = num_chars;
 	  
-	  new_item->analysis = item->analysis;
-	  pango_font_ref (new_item->analysis.font);
-
 	  item->offset += length;
 	  item->length -= length;
 	  item->num_chars -= num_chars;
@@ -855,6 +885,8 @@ static void
 pango_layout_check_lines (PangoLayout *layout)
 {
   GList *items, *tmp_list;
+  const char *start;
+  gboolean done = FALSE;
 
   PangoLayoutLine *line;
   int remaining_width;
@@ -862,51 +894,70 @@ pango_layout_check_lines (PangoLayout *layout)
   if (layout->lines)
     return;
   
-  line = pango_layout_line_new (layout);
-  remaining_width = (layout->indent >= 0) ? layout->width - layout->indent : layout->indent;
-
-  /* FIXME, should we force people to set the attrs? */
-  if (layout->attrs)
-    items = pango_itemize (layout->context, layout->text, layout->length, layout->attrs);
-  else
+  start = layout->text;
+  do
     {
-      PangoAttrList *attrs = pango_attr_list_new ();
-      items = pango_itemize (layout->context, layout->text, layout->length, attrs);
-      pango_attr_list_unref (attrs);
-    }
-  
-  tmp_list = items;
+      const char *end = start;
 
-  while (tmp_list)
-    {
-      PangoItem *item = tmp_list->data;
-      gboolean fits;
+      while (end != layout->text + layout->length && *end != '\n')
+	end++;
       
-      fits = process_item (line, item, layout->text, &remaining_width);
+      if (end == layout->text + layout->length)
+	done = TRUE;
+  
+      line = pango_layout_line_new (layout);
+      remaining_width = (layout->indent >= 0) ? layout->width - layout->indent : layout->indent;
 
-      if (fits)
-	tmp_list = tmp_list->next;
-
-      if (!fits)
+      /* FIXME, should we force people to set the attrs? */
+      if (layout->attrs)
+	items = pango_itemize (layout->context, start, end - start, layout->attrs);
+      else
 	{
-	  /* Complete line
-	   */
-	  line->runs = g_slist_reverse (line->runs);
-	  pango_layout_line_reorder (line);
+	  PangoAttrList *attrs = pango_attr_list_new ();
+	  items = pango_itemize (layout->context, start, end - start, attrs);
+	  pango_attr_list_unref (attrs);
+	}
+      
+      tmp_list = items;
+      
+      while (tmp_list)
+	{
+	  PangoItem *item = tmp_list->data;
+	  gboolean fits;
 	  
-	  layout->lines = g_slist_prepend (layout->lines, line);
+	  fits = process_item (line, item, start, &remaining_width);
+	  
+	  if (fits)
+	    tmp_list = tmp_list->next;
+	  
+	  if (!fits)
+	    {
+	      /* Complete line
+	       */
+	      line->runs = g_slist_reverse (line->runs);
+	      pango_layout_line_reorder (line);
+	      
+	      layout->lines = g_slist_prepend (layout->lines, line);
+	      
+	      line = pango_layout_line_new (layout);
+	      remaining_width = (layout->indent >= 0) ? layout->width : layout->indent + layout->indent;
+	    }
+	}
 
-	  line = pango_layout_line_new (layout);
-	  remaining_width = (layout->indent >= 0) ? layout->width : layout->indent + layout->indent;
+      line->runs = g_slist_reverse (line->runs);
+      pango_layout_line_reorder (line);
+      
+      layout->lines = g_slist_prepend (layout->lines, line);
+
+      g_list_free (tmp_list);
+
+      if (!done)
+	{
+	  start = end + 1;
 	}
     }
-
-  line->runs = g_slist_reverse (line->runs);
-  pango_layout_line_reorder (line);
+  while (!done);
   
-  layout->lines = g_slist_prepend (layout->lines, line);
-
-  g_list_free (tmp_list);
   layout->lines = g_slist_reverse (layout->lines);
 }
 
@@ -1073,13 +1124,39 @@ pango_layout_line_get_extents (PangoLayoutLine *line,
     {
       PangoLayoutRun *run = tmp_list->data;
       int new_pos;
+      PangoUnderline uline = PANGO_UNDERLINE_NONE;
       
       PangoRectangle run_ink;
       PangoRectangle run_logical;
-      
+
+      pango_layout_get_item_properties (run->item, &uline);
       pango_glyph_string_extents (run->glyphs, run->item->analysis.font,
-				  ink_rect ? &run_ink : NULL,
+				  (ink_rect || uline != PANGO_UNDERLINE_NONE) ? &run_ink : NULL,
 				  &run_logical);
+
+      switch (uline)
+	{
+	case PANGO_UNDERLINE_NONE:
+	  break;
+	case PANGO_UNDERLINE_SINGLE:
+	  if (ink_rect)
+	    run_ink.height = MAX (run_ink.height, 2 * PANGO_SCALE - run_ink.y);
+	  run_logical.height = MAX (run_logical.height, 2 * PANGO_SCALE - run_logical.y);
+	  break;
+	case PANGO_UNDERLINE_DOUBLE:
+	  if (ink_rect)
+	    run_ink.height = MAX (run_ink.height, 4 * PANGO_SCALE - run_ink.y);
+	  run_logical.height = MAX (run_logical.height, 4 * PANGO_SCALE - run_logical.y);
+	  break;
+	case PANGO_UNDERLINE_LOW:
+	  if (ink_rect)
+	    run_ink.height += 2 * PANGO_SCALE;
+	  
+	  /* FIXME: Should this simply be run_logical.height += 2 * PANGO_SCALE instead?
+	   */
+	  run_logical.height = MAX (run_logical.height, run_ink.y + run_ink.height - run_logical.y);
+	  break;
+	}
        
       if (ink_rect)
 	{
@@ -1203,3 +1280,28 @@ pango_layout_line_reorder (PangoLayoutLine *line)
   g_slist_free (logical_runs);
 }
 
+/* This utility function is duplicated here and in pango-layout.c; should it be
+ * public? Trouble is - what is the appropriate set of properties?
+ */
+static void
+pango_layout_get_item_properties (PangoItem      *item,
+				  PangoUnderline *uline)
+{
+  GSList *tmp_list = item->extra_attrs;
+
+  while (tmp_list)
+    {
+      PangoAttribute *attr = tmp_list->data;
+
+      switch (attr->klass->type)
+	{
+	case PANGO_ATTR_UNDERLINE:
+	  if (uline)
+	    *uline = ((PangoAttrInt *)attr)->value;
+	  
+	default:
+	  break;
+	}
+      tmp_list = tmp_list->next;
+    }
+}

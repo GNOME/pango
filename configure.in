@@ -62,7 +62,7 @@ AM_CONDITIONAL(HAVE_GTK_DOC, test x$gtkdoc = xyes)
 
 AC_OUTPUT([
 Makefile 
-libpango/Makefile
+pango/Makefile
 modules/Makefile
 modules/arabic/Makefile
 modules/basic/Makefile

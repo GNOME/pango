@@ -28,7 +28,7 @@
  * cursor positioning is allowed within clusters or not.
  */
 
-#include <pango.h>
+#include <pango/pango.h>
 #include <unicode.h>
 
 /**

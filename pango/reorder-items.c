@@ -19,7 +19,7 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#include <pango.h>
+#include <pango/pango.h>
 
 /*
  * NB: The contents of the file implement the exact same algorithm

@@ -22,9 +22,9 @@
 #ifndef __PANGO_LAYOUT_H__
 #define __PANGO_LAYOUT_H__
 
-#include <pango-attributes.h>
-#include <pango-context.h>
-#include <pango-glyph.h>
+#include <pango/pango-attributes.h>
+#include <pango/pango-context.h>
+#include <pango/pango-glyph.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -77,6 +77,7 @@ void           pango_layout_set_alignment (PangoLayout    *layout,
 					   PangoAlignment  alignment);
 PangoAlignment pango_layout_get_alignment (PangoLayout    *layout);
 
+void           pango_layout_context_changed (PangoLayout    *layout);
 
 void     pango_layout_index_to_pos (PangoLayout     *layout,
 				    int              index,

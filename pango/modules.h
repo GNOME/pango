@@ -19,7 +19,7 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#include <pango-engine.h>
+#include <pango/pango-engine.h>
 
 #ifndef __MODULES_H__
 #define __MODULES_H__

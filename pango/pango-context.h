@@ -22,8 +22,8 @@
 #ifndef __PANGO_CONTEXT_H__
 #define __PANGO_CONTEXT_H__
 
-#include <pango-font.h>
-#include <pango-attributes.h>
+#include <pango/pango-font.h>
+#include <pango/pango-attributes.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -64,7 +64,7 @@ PangoDirection        pango_context_get_base_dir         (PangoContext          
  * Returns a GList of PangoItem's
  */
 GList *pango_itemize (PangoContext   *context, 
-		      gchar          *text, 
+		      const char     *text, 
 		      gint            length,
 		      PangoAttrList  *attrs);
 

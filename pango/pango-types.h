@@ -30,8 +30,6 @@
 #define G_N_ELEMENTS(arr)		(sizeof(arr) / sizeof((arr)[0]))
 #endif
 
-typedef struct _PangoAnalysis PangoAnalysis;
-typedef struct _PangoItem PangoItem;
 typedef struct _PangoLangRange PangoLangRange;
 typedef struct _PangoLogAttr PangoLogAttr;
 
@@ -56,6 +54,8 @@ struct _PangoRectangle
   int height;
 };
 
+#define PANGO_SCALE 1000
+
 /* Macros to translate from extents rectangles to ascent/descent/lbearing/rbearing
  */
 #define PANGO_ASCENT(rect) (-(rect).y)
@@ -66,20 +66,6 @@ struct _PangoRectangle
 /* Information about a segment of text with a consistent
  * shaping/language engine and bidirectional level
  */
-
-struct _PangoAnalysis {
-  PangoEngineShape *shape_engine;
-  PangoEngineLang  *lang_engine;
-  PangoFont        *font;
-  guint8 level;
-};
-
-struct _PangoItem {
-  gint offset;
-  gint length;
-  gint num_chars;
-  PangoAnalysis analysis;
-};
 
 typedef enum {
   PANGO_DIRECTION_LTR,

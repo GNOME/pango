@@ -24,7 +24,7 @@
 #include <string.h>
 
 #include <gmodule.h>
-#include <pango.h>
+#include <pango/pango.h>
 
 #include "modules.h"
 #include "utils.h"

@@ -20,8 +20,8 @@
  */
 
 #include <glib.h>
-#include <pango-glyph.h>
-#include <pango-font.h>
+#include <pango/pango-glyph.h>
+#include <pango/pango-font.h>
 #include <unicode.h>
 
 /**
@@ -195,7 +195,7 @@ pango_glyph_string_extents (PangoGlyphString *glyphs,
  **/
 void
 pango_glyph_string_get_logical_widths (PangoGlyphString *glyphs,
-				       char             *text,
+				       const char       *text,
 				       int               length,
 				       int               embedding_level,
 				       int              *logical_widths)
@@ -204,7 +204,7 @@ pango_glyph_string_get_logical_widths (PangoGlyphString *glyphs,
   int last_cluster = 0;
   int width = 0;
   int last_cluster_width = 0;
-  char *p = text;
+  const char *p = text;
   
   for (i=0; i<=glyphs->num_glyphs; i++)
     {

@@ -26,8 +26,8 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#include <pango-coverage.h>
-#include <pango-types.h>
+#include <pango/pango-coverage.h>
+#include <pango/pango-types.h>
 
 typedef struct _PangoFontDescription PangoFontDescription;
 typedef struct _PangoFontClass PangoFontClass;

@@ -22,9 +22,10 @@
 #ifndef __PANGO_ENGINE_H__
 #define __PANGO_ENGINE_H__
 
-#include <pango-types.h>
-#include <pango-font.h>
-#include <pango-glyph.h>
+#include <pango/pango-types.h>
+#include <pango/pango-item.h>
+#include <pango/pango-font.h>
+#include <pango/pango-glyph.h>
 
 #ifdef __cplusplus
 extern "C" {

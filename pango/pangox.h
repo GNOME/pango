@@ -23,7 +23,7 @@
 #define __PANGOX_H__
 
 #include <glib.h>
-#include <pango.h>
+#include <pango/pango.h>
 
 #ifdef __cplusplus
 extern "C" {

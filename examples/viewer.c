@@ -23,8 +23,8 @@
 #include <gtk/gtk.h>
 #include <gdk/gdkx.h>
 
-#include "pango.h"
-#include "pangox.h"
+#include <pango/pango.h>
+#include <pango/pangox.h>
 
 #include <unicode.h>
 #include <unistd.h>
@@ -33,8 +33,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-
-#include "utils.h"
 
 #define BUFSIZE 1024
 
@@ -59,6 +57,8 @@ struct _Paragraph {
   int descent;  /* Descent of lines, in pixels */
   int offset;   /* Offset from left margin line, in pixels */
 };
+
+GList *paragraphs;
 
 static PangoFontDescription font_description;
 static Paragraph *highlight_para;
@@ -124,7 +124,7 @@ static GList *
 split_paragraphs (char *text)
 {
   char *p = text;
-  GUChar4 wc;
+  unicode_char_t wc;
   GList *result = NULL;
   char *last_para = text;
   
@@ -162,8 +162,7 @@ split_paragraphs (char *text)
  * within the paragraph of the click.
  */
 gboolean
-xy_to_cp (GList *paragraphs, int width, int x, int y,
-	  Paragraph **para_return, int *index)
+xy_to_cp (int width, int x, int y, Paragraph **para_return, int *index)
 {
   GList *para_list;
   int height = 0;
@@ -196,8 +195,7 @@ xy_to_cp (GList *paragraphs, int width, int x, int y,
  * bounding rectangle for the character at the offset.
  */ 
 void
-char_bounds (GList *paragraphs, Paragraph *para, int index,
-	     int width, PangoRectangle *rect)
+char_bounds (Paragraph *para, int index, int width, PangoRectangle *rect)
 {
   GList *para_list;
   
@@ -229,7 +227,7 @@ char_bounds (GList *paragraphs, Paragraph *para, int index,
  */
 void
 xor_char (GtkWidget *layout, GdkRectangle *clip_rect,
-	  GList *paragraphs, Paragraph *para, int offset)
+	  Paragraph *para, int offset)
 {
   static GdkGC *gc;
   PangoRectangle rect;		/* GdkRectangle in 1.2 is too limited
@@ -247,8 +245,7 @@ xor_char (GtkWidget *layout, GdkRectangle *clip_rect,
 
   gdk_gc_set_clip_rectangle (gc, clip_rect);
 
-  char_bounds (paragraphs, para, offset, layout->allocation.width,
-	       &rect);
+  char_bounds (para, offset, layout->allocation.width, &rect);
 
   rect.y -= GTK_LAYOUT (layout)->yoffset;
 
@@ -262,7 +259,7 @@ xor_char (GtkWidget *layout, GdkRectangle *clip_rect,
  * then queing a redraw
  */
 void
-size_allocate (GtkWidget *layout, GtkAllocation *allocation, GList *paragraphs)
+size_allocate (GtkWidget *layout, GtkAllocation *allocation)
 {
   GList *tmp_list;
   int height = 0;
@@ -296,7 +293,7 @@ size_allocate (GtkWidget *layout, GtkAllocation *allocation, GList *paragraphs)
  * the region and reexposing them.
  */
 void
-draw (GtkWidget *layout, GdkRectangle *area, GList *paragraphs)
+draw (GtkWidget *layout, GdkRectangle *area)
 {
   GList *tmp_list;
   int height = 0;
@@ -327,43 +324,43 @@ draw (GtkWidget *layout, GdkRectangle *area, GList *paragraphs)
   gdk_gc_set_clip_rectangle (layout->style->text_gc[layout->state], NULL);
 
   if (highlight_para)
-    xor_char (layout, area, paragraphs, highlight_para, highlight_offset);
+    xor_char (layout, area, highlight_para, highlight_offset);
 }
 
 gboolean
-expose (GtkWidget *layout, GdkEventExpose *event, GList *paragraphs)
+expose (GtkWidget *layout, GdkEventExpose *event)
 {
   if (event->window == GTK_LAYOUT (layout)->bin_window)
-    draw (layout, &event->area, paragraphs);
+    draw (layout, &event->area);
 
   return TRUE;
 }
 
 void
-button_press (GtkWidget *layout, GdkEventButton *event, GList *paragraphs)
+button_press (GtkWidget *layout, GdkEventButton *event)
 {
   Paragraph *para = NULL;
   int offset;
   gchar *message;
   
-  xy_to_cp (paragraphs, layout->allocation.width,
+  xy_to_cp (layout->allocation.width,
 	    event->x, event->y + GTK_LAYOUT (layout)->yoffset,
 	    &para, &offset);
 
   if (highlight_para)
-    xor_char (layout, NULL, paragraphs, highlight_para, highlight_offset);
+    xor_char (layout, NULL, highlight_para, highlight_offset);
 
   highlight_para = para;
   highlight_offset = offset;
   
   if (para)
     {
-      GUChar4 wc;
+      unicode_char_t wc;
 
       unicode_get_utf8 (para->text + offset, &wc);
       message = g_strdup_printf ("Current char: U%04x", wc);
       
-      xor_char (layout, NULL, paragraphs, highlight_para, highlight_offset);
+      xor_char (layout, NULL, highlight_para, highlight_offset);
     }
   else
     message = g_strdup_printf ("Current char:");
@@ -382,7 +379,18 @@ checkbutton_toggled (GtkWidget *widget, gpointer data)
 static void
 reload_font ()
 {
+  GList *para_list;
+
   pango_context_set_font_description (context, &font_description);
+
+  para_list = paragraphs;
+  while (para_list)
+    {
+      Paragraph *para = para_list->data;
+
+      pango_layout_context_changed (para->layout);
+      para_list = para_list->next;
+    }
 
   if (layout)
     gtk_widget_queue_resize (layout);
@@ -611,7 +619,6 @@ main (int argc, char **argv)
   GtkWidget *vbox, *hbox;
   GtkWidget *frame;
   GtkWidget *checkbutton;
-  GList *paragraphs;
 
   gtk_init (&argc, &argv);
   

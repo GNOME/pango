@@ -21,7 +21,7 @@
 
 #include <string.h>
 
-#include <pango-coverage.h>
+#include <pango/pango-coverage.h>
 
 typedef struct _PangoBlockInfo PangoBlockInfo;
 

@@ -18,10 +18,9 @@ string and produces lines of glyphs.
   multiple paragraphs. This could be done entirely within 
   pango_layout_check_lines()
 
-* Attribute handling needs to be added (fg/bg/underline, etc.)
-  Each PangoItem should have a list of associated non-font
-  attributes ... though this would require a bit more thought
-  as to memory-management of PangoItem, which is currently add-hoc.
+* pango_layout_context_changed() is a hack. Either the context
+  should have change-notification, or else the layout should 
+  make a copy of the context when the context is set.
 
 X rendering
 ===========
@@ -32,8 +31,12 @@ X rendering
   pango_x_get_context() and then have some sort of X specific font 
   loading interface.
 
+* It is not clear that X is interpreting the ink_rect the same way
+  as we are. There is a bit of fudging in the underline drawing
+  code to deal with this and make the underlines look symetric.
+
 Other rendering engines
-======================
+=======================
 
 * Somebody should start working on a libart font-system / renderer
   soon, to make sure that the interfaces are suitable.
@@ -68,15 +71,22 @@ Documentation
 * Much or all of the X Fonts document from pango.org needs to be moved
   into the API reference.
 
+Fonts
+=====
+
+* Add handling for baseline adjustment
+
+* pango_context_list_fonts() does not properly suppress duplicates
+  when multiple font maps are involved
+
 General
 =======
-
-* Move font sizes to 1000ths of a point where they are still doubles.
 
 * Remove the extraneous font argument from the script_shape virtual function
   in ShapeEngine.
 
 * rename pango_context_set_size() to pango_context_set_font_size()
+* settle on either _free or _destroy
 
 * PangoAttrList currently takes the policy of "most recent wins"
   when multiple attributes of the same type are present for a range. 
@@ -88,9 +98,6 @@ General
   to point to module and font alias files, remove the code that
   loads these from the current directory.  (There are security
   implications with the current stuff)
-
-* pango_context_list_fonts() does not properly suppress duplicates
-  when multiple font maps are involved
 
 * Report errors from functions, these errors include such things.
 
@@ -114,3 +121,4 @@ General
 * Underline attribute should be an enumeration (none/single/double/squiggle/low,
   where low is below the ink rect - a style appropriate for underline
   accelerators.)
+

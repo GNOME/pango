@@ -22,7 +22,8 @@
 #ifndef __PANGO_GLYPH_H__
 #define __PANGO_GLYPH_H__
 
-#include <pango-types.h>
+#include <pango/pango-types.h>
+#include <pango/pango-item.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -89,7 +90,7 @@ void              pango_glyph_string_extents  (PangoGlyphString *glyphs,
 					       PangoRectangle   *logical_rect);
 
 void pango_glyph_string_get_logical_widths (PangoGlyphString *glyphs,
-					    char             *text,
+					    const char       *text,
 					    int               length,
 					    int               embedding_level,
 					    int              *logical_widths);

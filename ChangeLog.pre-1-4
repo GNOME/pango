@@ -1,3 +1,40 @@
+Mon Mar 13 10:54:48 2000  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-item.[ch]: Memory management functions for PangoItem.
+
+	* pango/*.[ch]: Random constification.
+	
+	* pango/pangox.c pango/pango-layout.c pango/pango-context.c:
+	Add an extra_attrs field to PangoItem. Use this to handle underlining
+	for PangoLayout.
+
+	* examples/viewer.c (reload_font): Make paragraphs global
+	to save the complexity of passing it around all over the place.
+
+	* pango/pango-layout.[ch] (pango_layout_context_changed): Add
+	a function to reset the layout on changes to the layout's
+	context.
+
+	* pango/pangox.c (pango_x_make_matching_xlfd): Prefer bitmap
+	to scaleable if the discrepancy is < 1 pixel. (Probably not
+	the ideal criterion.)
+
+	* pango/pangox.c (pango_x_font_map_for_display): Fix resolution
+	computation error.
+
+	* pango/pango-layout.c (pango_layout_check_lines): Handle
+	text with embedded newlines.
+
+	* pango/pangox.c (pango_x_render_layout): Fix y to refer
+	to the top of the layout, not the baseline of the first
+	line.
+
+	* pango/pango-layout.c (process_item): Don't wrap if width is
+	set to -1.
+
+	* Makefile.am configure.in **/*.[ch]: move libpango/ directory
+	and fix all headers to install under include/pango/
+
 Thu Mar  9 19:55:21 2000  Owen Taylor  <otaylor@redhat.com>
 
 	* Release pango-0.8

@@ -3,7 +3,7 @@
 moduledir = $(libdir)/pango/modules
 module_LTLIBRARIES = pango-hangul.la
 
-INCLUDES = -I$(top_srcdir)/libpango
+INCLUDES = -I$(top_srcdir) -I$(top_srcdir)/pango/ 
 
 pango_hangul_la_SOURCES = hangul.c
 pango_hangul_la_LDFLAGS = -rpath $(libdir) -export-dynamic -avoid-version -module
