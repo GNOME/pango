@@ -1,3 +1,10 @@
+Sat Jan 19 11:50:32 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* configure.in: Add a AC_TRY_LINK() for	qt, since broken setups
+	seem to be common.
+
+	* configure.in: Save ACLOCAL_FLAGS for --enable-maintainer-mode rebuilds.
+
 2002-01-18  Alexander Larsson  <alla@lysator.liu.se>
 	
         * pango/pangoft2-private.h:

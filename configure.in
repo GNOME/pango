@@ -380,6 +380,24 @@ if test "$CXX" != "" ; then
   fi
 fi
 
+if test x"$QTDIR" != "x" ; then
+  AC_MSG_CHECKING(For working Qt)
+
+  pango_save_libs="$LIBS"
+  pango_save_cppflags="$CPPFLAGS"
+  LIBS="-L$QTDIR/lib -lqt $LIBS"
+  CPPFLAGS="-I $QTDIR/include"
+  AC_LANG_SAVE
+  AC_LANG_CPLUSPLUS
+  AC_TRY_LINK([#include <qapplication.h>],
+              [QApplication a ();], 
+               [AC_MSG_RESULT(yes)],
+               [QTDIR=""; AC_MSG_RESULT(no)])
+  AC_LANG_RESTORE
+  LIBS="$pango_save_libs"
+  CPPFLAGS="$pango_save_cppflags"
+fi
+
 AM_CONDITIONAL(BUILD_QT_TEST, test "x$QTDIR" != x)
 AC_SUBST(QTDIR)
   
@@ -570,6 +588,9 @@ included_modules=$included_modules
 
 AC_HEADER_DIRENT
 AC_CHECK_HEADER(unistd.h, AC_DEFINE(HAVE_UNISTD_H))
+
+# Honor aclocal flags
+ACLOCAL="$ACLOCAL $ACLOCAL_FLAGS"
 
 AC_OUTPUT([
 Makefile 
