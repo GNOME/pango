@@ -1,6 +1,11 @@
-Thu May 29 19:16:38 2003  Owen Taylor  <otaylor@redhat.com>
+Thu May 29 20:05:45 2003  Owen Taylor  <otaylor@redhat.com>
 
 	* === Released 1.2.2 ===
+
+	* pango/pango-glyph-item.c: Fix a stupid bug in the
+	shortcircuit case.
+
+Thu May 29 19:16:38 2003  Owen Taylor  <otaylor@redhat.com>
 
 	* configure.in: Up version to 1.2.2.
 
