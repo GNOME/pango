@@ -21,12 +21,19 @@
  * License along with this library; if not, write to the
  * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
+ *
+ * Note March 9, 2003: I fixed a crash with regards to precomposed
+ * characters, by wraping all of them to be considered as ALEF as
+ * far as consideration about composability is concerned. The rendering
+ * with regards to precomposed characters AND nikud comes out really
+ * bad though, and should be fixed, once I have more time.
  */
 
 #include <glib.h>
 #include "pango-engine.h"
 
-#define ucs2iso8859_8(wc)		(unsigned int)((unsigned int)(wc) - 0x0590 + 0x10)
+/* Wrap all characters above 0xF00 to ALEF. */
+#define ucs2iso8859_8(wc)		(wc>0xF000 ? 0x11 : (unsigned int)((unsigned int)(wc) - 0x0590 + 0x10))
 #define iso8859_8_2uni(c)		((gunichar)(c) - 0x10 + 0x0590)
 
 #define MAX_CLUSTER_CHRS	256
@@ -199,7 +206,9 @@ static const gint Unicode_shape_table[128] = {
               0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000,
 };
 
-#define is_char_class(wc, mask)	(char_class_table[ucs2iso8859_8 ((wc))] & (mask))
+/* Treat all characters above 0xF000 as characters */
+#define is_char_class(wc, mask)	(wc > 0xF000 \
+                                 || char_class_table[ucs2iso8859_8 ((wc))] & (mask))
 #define	is_composible(cur_wc, nxt_wc)	(compose_table[char_type_table[ucs2iso8859_8 (cur_wc)]]\
 						      [char_type_table[ucs2iso8859_8 (nxt_wc)]])
 
