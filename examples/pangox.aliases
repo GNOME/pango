@@ -15,7 +15,9 @@ sans normal normal normal normal "-*-helvetica-medium-r-normal--*-*-*-*-*-*-*-*,
 -*-kannada-medium-r-normal--*-*-*-*-*-*-iso10646-kan,\
 -*-burmese-medium-r-normal--*-*-*-*-*-*-iso10646-brm,\
 -*-buginese-medium-r-normal--*-*-*-*-*-*-iso10646-bgn,\
--*-oriya-medium-r-normal--*-*-*-*-*-*-iso10646-ori"
+-*-oriya-medium-r-normal--*-*-*-*-*-*-iso10646-ori,\
+-daewoo-mincho-medium-r-normal--*-*-*-*-*-*-ksc5601.1987-0"
+
 
 serif normal normal normal normal "-*-times-medium-r-normal--*-*-*-*-*-*-*-*,\
 				  -*-clearlyu-medium-r-normal--*-*-*-*-*-*-iso10646-1,\
@@ -30,7 +32,8 @@ serif normal normal normal normal "-*-times-medium-r-normal--*-*-*-*-*-*-*-*,\
 -*-kannada-medium-r-normal--*-*-*-*-*-*-iso10646-kan,\
 -*-burmese-medium-r-normal--*-*-*-*-*-*-iso10646-brm,\
 -*-buginese-medium-r-normal--*-*-*-*-*-*-iso10646-bgn,\
--*-oriya-medium-r-normal--*-*-*-*-*-*-iso10646-ori"
+-*-oriya-medium-r-normal--*-*-*-*-*-*-iso10646-ori,\
+-daewoo-mincho-medium-r-normal--*-*-*-*-*-*-ksc5601.1987-0"
 
 monospace normal normal normal normal "-*-fixed-medium-r-normal--*-*-*-*-*-*-*-*,\
 				       -*-clearlyu-medium-r-normal--*-*-*-*-*-*-iso10646-1,\
@@ -44,4 +47,5 @@ monospace normal normal normal normal "-*-fixed-medium-r-normal--*-*-*-*-*-*-*-*
 -*-kannada-medium-r-normal--*-*-*-*-*-*-iso10646-kan,\
 -*-burmese-medium-r-normal--*-*-*-*-*-*-iso10646-brm,\
 -*-buginese-medium-r-normal--*-*-*-*-*-*-iso10646-bgn,\
--*-oriya-medium-r-normal--*-*-*-*-*-*-iso10646-ori"
+-*-oriya-medium-r-normal--*-*-*-*-*-*-iso10646-ori,\
+-daewoo-mincho-medium-r-normal--*-*-*-*-*-*-ksc5601.1987-0"

@@ -1,3 +1,9 @@
+Mon Nov 13 02:55:38 2000  Robert Brady  <robert@suse.co.uk>
+
+	* examples/pangox.aliases: Added 
+	-daewoo-mincho-medium-r-normal--*-*-*-*-*-*-ksc5601.1987-0, for 
+	this comes with X.
+
 Mon Nov 13 02:39:44 2000  Robert Brady  <robert@suse.co.uk>
 
 	* pango/modules/hangul/hangul.c: Replace fallback shaper
