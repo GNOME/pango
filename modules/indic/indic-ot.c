@@ -200,200 +200,195 @@ glong indic_ot_reorder(const gunichar *chars, const glong *utf8_offsets, glong c
             guint32 length = vmabove - prev;
             glong lastConsonant = vmabove - 1;
             glong baseLimit = prev;
-            glong baseConsonant, postBase;
+            glong baseConsonant, postBase, postBaseLimit;
+	    gboolean seenVattu, seenBelowBaseForm, supressVattu;
+	    glong bcSpan;
 
             /* Check for REPH at front of syllable */
             if (length > 2 && indic_ot_is_reph(class_table, chars[prev]) && indic_ot_is_virama(class_table, chars[prev + 1])) {
-                baseLimit = prev + 2;
+                baseLimit += 2;
 
                 /* Check for eyelash RA, if the script supports it */
                 if ((class_table->scriptFlags & SF_EYELASH_RA) != 0 &&
-                    chars[prev + 2] == C_SIGN_ZWJ) {
+                    chars[baseLimit] == C_SIGN_ZWJ) {
                     if (length > 3) {
                         baseLimit += 1;
                     } else {
-                        baseLimit = prev;
+                        baseLimit -= 2;
                     }
                 }
             }
 
-            while (lastConsonant >= baseLimit && !indic_ot_is_consonant(class_table, chars[lastConsonant])) {
+            while (lastConsonant > baseLimit && !indic_ot_is_consonant(class_table, chars[lastConsonant])) {
                 lastConsonant -= 1;
             }
 
             baseConsonant = lastConsonant;
             postBase = lastConsonant + 1;
 
-            if (lastConsonant >= prev) {
-                glong postBaseLimit = class_table->scriptFlags & SF_POST_BASE_LIMIT_MASK;
-                gboolean seenVattu = false;
-                gboolean seenBelowBaseForm = false;
-                gboolean supressVattu = true;
-                glong bcSpan;
+	    postBaseLimit = class_table->scriptFlags & SF_POST_BASE_LIMIT_MASK;
+	    seenVattu = false;
+	    seenBelowBaseForm = false;
+	    supressVattu = true;
 
-                while (baseConsonant >= baseLimit) {
-                    IndicOTCharClass charClass = indic_ot_get_char_class(class_table, chars[baseConsonant]);
+	    while (baseConsonant > baseLimit) {
+		IndicOTCharClass charClass = indic_ot_get_char_class(class_table, chars[baseConsonant]);
 
-                    if (IS_CONSONANT(charClass)) {
-                        if (postBaseLimit == 0 || seenVattu ||
-                            (baseConsonant > baseLimit && !indic_ot_is_virama(class_table, chars[baseConsonant - 1])) ||
-                            !HAS_POST_OR_BELOW_BASE_FORM(charClass)) {
-                            break;
-                        }
+		if (IS_CONSONANT(charClass)) {
+		    if (postBaseLimit == 0 || seenVattu ||
+			(baseConsonant > baseLimit && !indic_ot_is_virama(class_table, chars[baseConsonant - 1])) ||
+			!HAS_POST_OR_BELOW_BASE_FORM(charClass)) {
+			break;
+		    }
 
-                        seenVattu = IS_VATTU(charClass);
+		    seenVattu = IS_VATTU(charClass);
 
-                        if (HAS_POST_BASE_FORM(charClass)) {
-                            if (seenBelowBaseForm) {
-                                break;
-                            }
+		    if (HAS_POST_BASE_FORM(charClass)) {
+			if (seenBelowBaseForm) {
+			    break;
+			}
 
-                            postBase = baseConsonant;
-                        } else if (HAS_BELOW_BASE_FORM(charClass)) {
-                            seenBelowBaseForm = true;
-                        }
+			postBase = baseConsonant;
+		    } else if (HAS_BELOW_BASE_FORM(charClass)) {
+			seenBelowBaseForm = true;
+		    }
 
-                        postBaseLimit -= 1;
-                    }
+		    postBaseLimit -= 1;
+		}
 
-                    baseConsonant -= 1;
-                }
+		baseConsonant -= 1;
+	    }
 
-                if (baseConsonant < baseLimit) {
-                    baseConsonant = baseLimit;
-                }
+	    /* Write Mpre */
+	    writeMpre(&output);
 
-                /* Write Mpre */
-                writeMpre(&output);
+	    /* Write eyelash RA */
+	    /* NOTE: baseLimit == prev + 3 iff eyelash RA present... */
+	    if (baseLimit == prev + 3) {
+		writeChar(&output, chars[prev], prev, half_p);
+		writeChar(&output, chars[prev + 1], prev /*+ 1*/, half_p);
+		writeChar(&output, chars[prev + 2], prev /*+ 2*/, half_p);
+	    }
 
-                /* Write eyelash RA */
-                /* NOTE: baseLimit == prev + 3 iff eyelash RA present... */
-                if (baseLimit == prev + 3) {
-                    writeChar(&output, chars[prev], prev, half_p);
-                    writeChar(&output, chars[prev + 1], prev /*+ 1*/, half_p);
-                    writeChar(&output, chars[prev + 2], prev /*+ 2*/, half_p);
-                }
+	    /* write any pre-base consonants */
+	    supressVattu = true;
 
-                /* write any pre-base consonants */
-                supressVattu = true;
+	    for (i = baseLimit; i < baseConsonant; i += 1) {
+		gunichar ch = chars[i];
+		gulong tag = blwf_p;
+		IndicOTCharClass charClass = indic_ot_get_char_class(class_table, ch);
 
-                for (i = baseLimit; i < baseConsonant; i += 1) {
-                    gunichar ch = chars[i];
-                    gulong tag = blwf_p;
-                    IndicOTCharClass charClass = indic_ot_get_char_class(class_table, ch);
+		if (IS_CONSONANT(charClass)) {
+		    if (IS_VATTU(charClass) && supressVattu) {
+			tag = nukt_p;
+		    }
 
-                    if (IS_CONSONANT(charClass)) {
-                        if (IS_VATTU(charClass) && supressVattu) {
-                            tag = nukt_p;
-                        }
+		    supressVattu = IS_VATTU(charClass);
+		} else if (IS_VIRAMA(charClass) && chars[i + 1] == C_SIGN_ZWNJ)
+		{
+		    tag = nukt_p;
+		}
 
-                        supressVattu = IS_VATTU(charClass);
-                    } else if (IS_VIRAMA(charClass) && chars[i + 1] == C_SIGN_ZWNJ)
-                    {
-                        tag = nukt_p;
-                    }
+		writeChar(&output, ch, /*i*/ prev, tag);
+	    }
 
-                    writeChar(&output, ch, /*i*/ prev, tag);
-                }
+	    bcSpan = baseConsonant + 1;
 
-                bcSpan = baseConsonant + 1;
+	    if (bcSpan < vmabove && indic_ot_is_nukta(class_table, chars[bcSpan])) {
+		bcSpan += 1;
+	    }
 
-                if (bcSpan < vmabove && indic_ot_is_nukta(class_table, chars[bcSpan])) {
-                    bcSpan += 1;
-                }
+	    if (baseConsonant == lastConsonant && bcSpan < vmabove && indic_ot_is_virama(class_table, chars[bcSpan])) {
+		bcSpan += 1;
 
-                if (baseConsonant == lastConsonant && bcSpan < vmabove && indic_ot_is_virama(class_table, chars[bcSpan])) {
-                    bcSpan += 1;
+		if (bcSpan < vmabove && chars[bcSpan] == C_SIGN_ZWNJ) {
+		    bcSpan += 1;
+		}
+	    }
 
-                    if (bcSpan < vmabove && chars[bcSpan] == C_SIGN_ZWNJ) {
-                        bcSpan += 1;
-                    }
-                }
+	    /* write base consonant */
+	    for (i = baseConsonant; i < bcSpan; i += 1) {
+		writeChar(&output, chars[i], /*i*/ prev, nukt_p);
+	    }
 
-                /* write base consonant */
-                for (i = baseConsonant; i < bcSpan; i += 1) {
-                    writeChar(&output, chars[i], /*i*/ prev, nukt_p);
-                }
+	    if ((class_table->scriptFlags & SF_MATRAS_AFTER_BASE) != 0) {
+		writeMbelow(&output);
+		writeMabove(&output);
+		writeMpost(&output);
+	    }
 
-                if ((class_table->scriptFlags & SF_MATRAS_AFTER_BASE) != 0) {
-                    writeMbelow(&output);
-                    writeMabove(&output);
-                    writeMpost(&output);
-                }
+	    /* write below-base consonants */
+	    if (baseConsonant != lastConsonant) {
+		for (i = bcSpan + 1; i < postBase; i += 1) {
+		    writeChar(&output, chars[i], /*i*/ prev, blwf_p);
+		}
 
-                /* write below-base consonants */
-                if (baseConsonant != lastConsonant) {
-                    for (i = bcSpan + 1; i < postBase; i += 1) {
-                        writeChar(&output, chars[i], /*i*/ prev, blwf_p);
-                    }
+		if (postBase > lastConsonant) {
+		    /* write halant that was after base consonant */
+		    writeChar(&output, chars[bcSpan], /*bcSpan*/ prev, blwf_p);
+		}
+	    }
 
-                    if (postBase > lastConsonant) {
-                        /* write halant that was after base consonant */
-                        writeChar(&output, chars[bcSpan], /*bcSpan*/ prev, blwf_p);
-                    }
-                }
+	    /* write Mbelow, Mabove */
+	    if ((class_table->scriptFlags & SF_MATRAS_AFTER_BASE) == 0) {
+		writeMbelow(&output);
+		writeMabove(&output);
+	    }
 
-                /* write Mbelow, Mabove */
-                if ((class_table->scriptFlags & SF_MATRAS_AFTER_BASE) == 0) {
-                    writeMbelow(&output);
-                    writeMabove(&output);
-                }
+	   if ((class_table->scriptFlags & SF_REPH_AFTER_BELOW) != 0) {
+		if (baseLimit == prev + 2) {
+		    writeChar(&output, chars[prev], prev, rphf_p);
+		    writeChar(&output, chars[prev + 1], prev /*+ 1*/, rphf_p);
+		}
 
-               if ((class_table->scriptFlags & SF_REPH_AFTER_BELOW) != 0) {
-                    if (baseLimit == prev + 2) {
-                        writeChar(&output, chars[prev], prev, rphf_p);
-                        writeChar(&output, chars[prev + 1], prev /*+ 1*/, rphf_p);
-                    }
+		/* write VMabove */
+		for (i = vmabove; i < vmpost; i += 1) {
+		    writeChar(&output, chars[i], /*i*/ prev, blwf_p);
+		}
+	    }
 
-                    /* write VMabove */
-                    for (i = vmabove; i < vmpost; i += 1) {
-                        writeChar(&output, chars[i], /*i*/ prev, blwf_p);
-                    }
-                }
+	    /* write post-base consonants */
+	    /* FIXME: does this put the right tags on post-base consonants? */
+	    if (baseConsonant != lastConsonant) {
+		if (postBase <= lastConsonant) {
+		    for (i = postBase; i <= lastConsonant; i += 1) {
+			writeChar(&output, chars[i], /*i*/ prev, nukt_p);
+		    }
 
-                /* write post-base consonants */
-                /* FIXME: does this put the right tags on post-base consonants? */
-                if (baseConsonant != lastConsonant) {
-                    if (postBase <= lastConsonant) {
-                        for (i = postBase; i <= lastConsonant; i += 1) {
-                            writeChar(&output, chars[i], /*i*/ prev, nukt_p);
-                        }
+		    /* write halant that was after base consonant */
+		    writeChar(&output, chars[bcSpan], /*bcSpan*/ prev, blwf_p);
+		}
 
-                        /* write halant that was after base consonant */
-                        writeChar(&output, chars[bcSpan], /*bcSpan*/ prev, blwf_p);
-                    }
+		/* write the training halant, if there is one */
+		if (lastConsonant < matra && indic_ot_is_virama(class_table, chars[matra])) {
+		    writeChar(&output, chars[matra], /*matra*/ prev, nukt_p);
+		}
+	    }
 
-                    /* write the training halant, if there is one */
-                    if (lastConsonant < matra && indic_ot_is_virama(class_table, chars[matra])) {
-                        writeChar(&output, chars[matra], /*matra*/ prev, nukt_p);
-                    }
-                }
+	    /* write Mpost */
+	    if ((class_table->scriptFlags & SF_MATRAS_AFTER_BASE) == 0) {
+		writeMpost(&output);
+	    }
 
-                /* write Mpost */
-                if ((class_table->scriptFlags & SF_MATRAS_AFTER_BASE) == 0) {
-                    writeMpost(&output);
-                }
+	    writeLengthMark(&output);
 
-                writeLengthMark(&output);
+	    /* write reph */
+	    if ((class_table->scriptFlags & SF_REPH_AFTER_BELOW) == 0) {
+		if (baseLimit == prev + 2) {
+		    writeChar(&output, chars[prev], prev, rphf_p);
+		    writeChar(&output, chars[prev + 1], prev /*+ 1*/, rphf_p);
+		}
 
-                /* write reph */
-                if ((class_table->scriptFlags & SF_REPH_AFTER_BELOW) == 0) {
-                    if (baseLimit == prev + 2) {
-                        writeChar(&output, chars[prev], prev, rphf_p);
-                        writeChar(&output, chars[prev + 1], prev /*+ 1*/, rphf_p);
-                    }
+		/* write VMabove */
+		for (i = vmabove; i < vmpost; i += 1) {
+		    writeChar(&output, chars[i], /*i*/ prev, blwf_p);
+		}
+	    }
 
-                    /* write VMabove */
-                    for (i = vmabove; i < vmpost; i += 1) {
-                        writeChar(&output, chars[i], /*i*/ prev, blwf_p);
-                    }
-                }
-
-                /* write VMpost */
-                for (i = vmpost; i < syllable; i += 1) {
-                    writeChar(&output, chars[i], /*i*/ prev, blwf_p);
-                }
-            }
+	    /* write VMpost */
+	    for (i = vmpost; i < syllable; i += 1) {
+		writeChar(&output, chars[i], /*i*/ prev, blwf_p);
+	    }
 
             break;
         }
