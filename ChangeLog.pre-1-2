@@ -1,3 +1,7 @@
+Tue Aug 13 00:20:14 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* Released 1.1.0
+
 Thu Aug  8 23:14:27 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pangox-fontmap.c pango/pangoxft-fontmap.c:
