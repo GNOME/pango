@@ -2998,13 +2998,8 @@ pango_layout_line_get_x_ranges (PangoLayoutLine  *line,
 
   /* FIXME it seems to me that width can be -1 here? */
   get_x_offset (line->layout, line, width, logical_rect.width, &x_offset);
-  
-  tmp_list = line->layout->lines;
-  while (tmp_list->data != line)
-    {
-      line_start_index += ((PangoLayoutLine *)tmp_list->data)->length;
-      tmp_list = tmp_list->next;
-    }
+
+  line_start_index = line->start_index;
 
   /* Allocate the maximum possible size */
   if (ranges)
