@@ -604,7 +604,16 @@ hangul_engine_shape (PangoFont        *font,
     if (!find_subfont (font, secondary_charset, G_N_ELEMENTS (secondary_charset), &subfont, &render_func))
       if (!find_subfont (font, fallback_charsets, G_N_ELEMENTS (fallback_charsets), &subfont, &render_func))
 	{
-	  g_warning ("No available Hangul fonts.");
+	  PangoGlyph unknown_glyph = pango_x_get_unknown_glyph (font);
+	  
+	  n_chars = unicode_strlen (text, length);
+	  pango_glyph_string_set_size (glyphs, n_chars);
+
+	  for (i=0; i<n_chars; i++)
+	    set_glyph (glyphs, i, font,
+		       PANGO_X_GLYPH_SUBFONT (unknown_glyph), 
+		       PANGO_X_GLYPH_INDEX (unknown_glyph));
+
 	  return;
 	}
 

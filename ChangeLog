@@ -1,3 +1,11 @@
+Thu Feb 10 20:19:39 2000  Owen Taylor  <otaylor@redhat.com>
+
+	* examples/viewer.c: Fix some runtime and compile-time warnings.
+
+	* modules/hangul/hangul.c (hangul_engine_shape): Shape the
+	  string with the unknown glyph rather than giving a warning
+	  when the font doesn't have any of the necesary charsets.
+
 Thu Feb 10 19:57:27 2000  Owen Taylor  <otaylor@redhat.com>
 
 	* examples/viewer.c: Add style selector, rewrite family

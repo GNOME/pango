@@ -816,7 +816,8 @@ reload_font ()
       font = new_font;
     }
 
-  gtk_widget_queue_resize (layout);
+  if (layout)
+    gtk_widget_queue_resize (layout);
 }
 
 void
@@ -954,7 +955,8 @@ font_description_from_string (PangoFontDescription *desc, const char *name)
   words = g_strsplit (name, " ", -1);
   for (i=0; words[i]; i++)
     {
-      if (!(find_field (style_map, G_N_ELEMENTS (style_map), words[i], (int *)&desc->style) ||
+      if (!(strcasecmp (words[i], "Normal") == 0 ||
+	    find_field (style_map, G_N_ELEMENTS (style_map), words[i], (int *)&desc->style) ||
 	    find_field (variant_map, G_N_ELEMENTS (variant_map), words[i], (int *)&desc->variant) ||
 	    find_field (weight_map, G_N_ELEMENTS (weight_map), words[i], (int *)&desc->weight) || 
 	    find_field (stretch_map, G_N_ELEMENTS (stretch_map), words[i], (int *)&desc->stretch)))
@@ -987,9 +989,9 @@ compare_font_descriptions (const PangoFontDescription *a, const PangoFontDescrip
 }
 
 static int
-font_description_sort_func (const PangoFontDescription **a, const PangoFontDescription **b)
+font_description_sort_func (const void *a, const void *b)
 {
-  return compare_font_descriptions (*a, *b);
+  return compare_font_descriptions (*(PangoFontDescription **)a, *(PangoFontDescription **)b);
 }
 
 typedef struct 
