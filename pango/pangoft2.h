@@ -23,16 +23,31 @@
 #ifndef __PANGOFT2_H__
 #define __PANGOFT2_H__
 
-#include <pango/pango-layout.h>
-
 #include <freetype/freetype.h>
+
+#include <fontconfig/fontconfig.h>
+
+#include <pango/pango-layout.h>
 
 G_BEGIN_DECLS
 
 #define PANGO_RENDER_TYPE_FT2 "PangoRenderFT2"
 
+#define PANGO_TYPE_FT2_FONT_MAP              (pango_ft2_font_map_get_type ())
+#define PANGO_FT2_FONT_MAP(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_TYPE_FT2_FONT_MAP, PangoFT2FontMap))
+#define PANGO_FT2_IS_FONT_MAP(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), PANGO_TYPE_FT2_FONT_MAP))
+
+typedef struct _PangoFT2FontMap      PangoFT2FontMap;
+
+typedef void (*PangoFT2SubstituteFunc) (FcPattern *pattern,
+                                        gpointer   data);
+
 /* Calls for applications */
-PangoContext  *pango_ft2_get_context        (double dpi_x, double dpi_y);
+PangoContext      *pango_ft2_get_context          (double dpi_x,
+						   double dpi_y);
+PangoFontMap      *pango_ft2_font_map_for_display (void);
+void               pango_ft2_shutdown_display     (void);
+
 
 void           pango_ft2_render             (FT_Bitmap        *bitmap,
 					     PangoFont        *font,
@@ -48,8 +63,19 @@ void           pango_ft2_render_layout      (FT_Bitmap        *bitmap,
 					     int               x, 
 					     int               y);
 
-PangoFontMap      *pango_ft2_font_map_for_display    (void);
-void               pango_ft2_shutdown_display        (void);
+GType pango_ft2_font_map_get_type (void);
+
+PangoFontMap *pango_ft2_font_map_new                    (void);
+void          pango_ft2_font_map_set_resolution         (PangoFT2FontMap        *fontmap,
+							 double                  dpi_x,
+							 double                  dpi_y);
+void          pango_ft2_font_map_set_default_substitute (PangoFT2FontMap        *fontmap,
+							 PangoFT2SubstituteFunc  func,
+							 gpointer                data,
+							 GDestroyNotify          notify);
+void          pango_ft2_font_map_substitute_changed     (PangoFT2FontMap         *fontmap);
+PangoContext *pango_ft2_font_map_create_context         (PangoFT2FontMap         *fontmap);
+
 
 /* API for rendering modules
  */

@@ -1,3 +1,18 @@
+Mon Jul  1 19:45:10 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pangoxft-fontmap.c (pango_xft_set_default_substitute): 
+	New function to allow tweaking of FcPattern default
+	substitution (for XSETTINGS support.)
+
+	* pango/pangoft2-fontmap.c pango/pangoft2.[ch]
+	pango/pangoft2-private.h: Rationalize DPI and
+	context creation by adding:
+
+	pango_ft2_font_map_new()
+	pango_ft2_font_map_set_resolution()
+	pango_ft2_font_map_set_default_substitute()
+	pango_ft2_font_map_create_context() 
+
 2002-07-02  Matthias Warkus  <mawarkus@gnome.org>
 
 	* pango/pango-markup.c (span_parse_func): Fixed typo that was

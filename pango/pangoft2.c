@@ -33,7 +33,6 @@
 #include "pango-utils.h"
 #include "pangoft2.h"
 #include "pangoft2-private.h"
-#include "modules.h"
 
 #define PANGO_TYPE_FT2_FONT              (pango_ft2_font_get_type ())
 #define PANGO_FT2_FONT(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_TYPE_FT2_FONT, PangoFT2Font))
@@ -216,49 +215,6 @@ pango_ft2_font_get_face (PangoFont      *font)
     }
   
   return face;
-}
-
-static double pango_ft2_resolution = 75.0;
-
-void
-pango_ft2_default_substitute (FcPattern *pattern)
-{
-  FcValue v;
-  if (FcPatternGet (pattern, FC_DPI, 0, &v) == FcResultNoMatch)
-    FcPatternAddDouble (pattern, FC_DPI, pango_ft2_resolution);
-}
-
-/**
- * pango_ft2_get_context:
- * @dpi_x:  the horizontal dpi of the target device
- * @dpi_y:  the vertical dpi of the target device
- * 
- * Retrieves a #PangoContext appropriate for rendering with the PangoFT2
- * backend.
- * 
- * Return value: the new #PangoContext
- **/
-PangoContext *
-pango_ft2_get_context (double dpi_x, double dpi_y)
-{
-  PangoContext *result;
-  static gboolean registered_modules = FALSE;
-  int i;
-  
-  if (!registered_modules)
-    {
-      registered_modules = TRUE;
-      
-      for (i = 0; _pango_included_ft2_modules[i].list; i++)
-        pango_module_register (&_pango_included_ft2_modules[i]);
-    }
-
-  pango_ft2_resolution = dpi_y;
-  
-  result = pango_context_new ();
-  pango_context_set_font_map (result, pango_ft2_font_map_for_display ());
-
-  return result;
 }
 
 static GType

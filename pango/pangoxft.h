@@ -39,6 +39,9 @@ G_BEGIN_DECLS
 
 #define PANGO_RENDER_TYPE_XFT "PangoRenderXft"
 
+typedef void (*PangoXftSubstituteFunc) (FcPattern *pattern,
+                                        gpointer   data);
+
 /* Calls for applications
  */
 PangoContext *pango_xft_get_context    (Display          *display,
@@ -56,6 +59,14 @@ void          pango_xft_picture_render (Display          *display,
 					PangoGlyphString *glyphs,
 					gint              x,
 					gint              y);
+
+void pango_xft_set_default_substitute (Display                *display,
+				       int                     screen,
+				       PangoXftSubstituteFunc  func,
+				       gpointer                data,
+				       GDestroyNotify          notify);
+void pango_xft_substitute_changed     (Display                *display,
+				       int                     screen);
 
 #define PANGO_TYPE_XFT_FONT              (pango_xft_font_get_type ())
 #define PANGO_XFT_IS_FONT(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), PANGO_TYPE_XFT_FONT))

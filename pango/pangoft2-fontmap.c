@@ -31,22 +31,18 @@
 #include <dirent.h>
 #endif
 
+#include <fontconfig/fontconfig.h>
+
 #include "pango-fontmap.h"
 #include "pango-utils.h"
 #include "pangoft2-private.h"
-
-#include <fontconfig/fontconfig.h>
+#include "modules.h"
 
 #ifdef G_OS_WIN32
 #define STRICT
 #include <windows.h>
 #endif
 
-#define PANGO_TYPE_FT2_FONT_MAP              (pango_ft2_font_map_get_type ())
-#define PANGO_FT2_FONT_MAP(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_TYPE_FT2_FONT_MAP, PangoFT2FontMap))
-#define PANGO_FT2_IS_FONT_MAP(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), PANGO_TYPE_FT2_FONT_MAP))
-
-typedef struct _PangoFT2FontMap      PangoFT2FontMap;
 typedef struct _PangoFT2SizeInfo     PangoFT2SizeInfo;
 typedef struct _PangoFT2PatternSet   PangoFT2PatternSet;
 
@@ -80,6 +76,16 @@ struct _PangoFT2FontMap
   /* List of all families availible */
   PangoFT2Family **families;
   int n_families;		/* -1 == uninitialized */
+
+  double dpi_x;
+  double dpi_y;
+
+  /* Function to call on prepared patterns to do final
+   * config tweaking.
+   */
+  PangoFT2SubstituteFunc substitute_func;
+  gpointer substitute_data;
+  GDestroyNotify substitute_destroy;
 };
 
 struct _PangoFT2PatternSet
@@ -96,7 +102,6 @@ struct _PangoFT2PatternSet
 #define PANGO_FT2_FACE(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_FT2_TYPE_FACE, PangoFT2Face))
 #define PANGO_FT2_IS_FACE(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), PANGO_FT2_TYPE_FACE))
 
-static GType    pango_ft2_font_map_get_type      (void);
 GType           pango_ft2_family_get_type          (void);
 GType           pango_ft2_face_get_type            (void);
 
@@ -124,7 +129,7 @@ static PangoFontClass  *parent_class;	/* Parent class structure for PangoFT2Font
 
 static PangoFT2FontMap *pango_ft2_global_fontmap = NULL;
 
-static GType
+GType
 pango_ft2_font_map_get_type (void)
 {
   static GType object_type = 0;
@@ -190,6 +195,18 @@ pango_ft2_pattern_equal (FcPattern *pattern1,
   return FcPatternEqual (pattern1, pattern2);
 }
 
+static void
+pango_ft2_init_fontset_hash (PangoFT2FontMap *ft2fontmap)
+{
+  if (ft2fontmap->fontset_hash)
+    g_hash_table_destroy (ft2fontmap->fontset_hash);
+
+  ft2fontmap->fontset_hash =
+    g_hash_table_new_full ((GHashFunc)pango_font_description_hash,
+			   (GEqualFunc)pango_font_description_equal,
+			   (GDestroyNotify)pango_font_description_free,
+			   (GDestroyNotify)pango_ft2_font_set_free);
+}
 
 static void 
 pango_ft2_font_map_init (PangoFT2FontMap *ft2fontmap)
@@ -199,12 +216,9 @@ pango_ft2_font_map_init (PangoFT2FontMap *ft2fontmap)
   ft2fontmap->fonts =
     g_hash_table_new ((GHashFunc)pango_ft2_pattern_hash,
 		      (GEqualFunc)pango_ft2_pattern_equal);
-  ft2fontmap->fontset_hash =
-    g_hash_table_new_full ((GHashFunc)pango_font_description_hash,
-			   (GEqualFunc)pango_font_description_equal,
-			   (GDestroyNotify)pango_font_description_free,
-			   (GDestroyNotify)pango_ft2_font_set_free);
-  
+
+  pango_ft2_init_fontset_hash (ft2fontmap);
+
   ft2fontmap->coverage_hash =
     g_hash_table_new_full (g_str_hash, g_str_equal,
 			   (GDestroyNotify)g_free,
@@ -226,9 +240,143 @@ pango_ft2_font_map_class_init (PangoFontMapClass *class)
 }
 
 /**
+ * pango_ft2_font_map_new:
+ * 
+ * Create a new #PangoFT2FontMap object; a fontmap is used
+ * to cache information about available fonts, and holds
+ * certain global parameters such as the resolution and
+ * the default substitute function (see
+ * pango_font_map_set_default_substitute ()).
+ * 
+ * Return value: the newly created fontmap object. Unref
+ * with g_object_unref when you are finished with it.
+ **/
+PangoFontMap *
+pango_ft2_font_map_new (void)
+{
+  static gboolean registered_modules = FALSE;
+  PangoFT2FontMap *ft2fontmap;
+  FT_Error error;
+  
+  if (!registered_modules)
+    {
+      int i;
+      
+      registered_modules = TRUE;
+      
+      /* Make sure that the type system is initialized */
+      g_type_init ();
+  
+      for (i = 0; _pango_included_ft2_modules[i].list; i++)
+        pango_module_register (&_pango_included_ft2_modules[i]);
+    }
+
+  ft2fontmap = g_object_new (PANGO_TYPE_FT2_FONT_MAP, NULL);
+  
+  error = FT_Init_FreeType (&ft2fontmap->library);
+  if (error != FT_Err_Ok)
+    {
+      g_warning ("Error from FT_Init_FreeType: %s",
+		 _pango_ft2_ft_strerror (error));
+      return NULL;
+    }
+
+  return (PangoFontMap *)ft2fontmap;
+}
+
+/**
+ * pango_ft2_font_map_set_resolution:
+ * @fontmap: a #PangoFT2Fontmap 
+ * @dpi_x: dots per inch in the X direction
+ * @dpi_y: dots per inch in the Y direction
+ * 
+ * Sets the horizontal and vertical resolutions for the fontmap.
+ **/
+void
+pango_ft2_font_map_set_resolution (PangoFT2FontMap *fontmap,
+				   double           dpi_x,
+				   double           dpi_y)
+{
+  g_return_if_fail (PANGO_FT2_IS_FONT_MAP (fontmap));
+  
+  fontmap->dpi_x = dpi_x;
+  fontmap->dpi_y = dpi_y;
+
+  pango_ft2_font_map_substitute_changed (fontmap);
+}
+
+/**
+ * pango_ft2_font_map_set_default_substitute:
+ * @fontmap: a #PangoFT2Fontmap
+ * @func: function to call to to do final config tweaking
+ *        on #FcPattern objects.
+ * @data: data to pass to @func
+ * @notify: function to call when @data is no longer used.
+ * 
+ * Sets a function that will be called to do final configuration
+ * substitution on a #FcPattern before it is used to load
+ * the font. This function can be used to do things like set
+ * hinting and antiasing options.
+ **/
+void
+pango_ft2_font_map_set_default_substitute (PangoFT2FontMap        *fontmap,
+					   PangoFT2SubstituteFunc  func,
+					   gpointer                data,
+					   GDestroyNotify          notify)
+{
+  g_return_if_fail (PANGO_FT2_IS_FONT_MAP (fontmap));
+  
+  if (fontmap->substitute_destroy)
+    fontmap->substitute_destroy (fontmap->substitute_data);
+
+  fontmap->substitute_func = func;
+  fontmap->substitute_data = data;
+  fontmap->substitute_destroy = notify;
+  
+  pango_ft2_font_map_substitute_changed (fontmap);
+}
+
+/**
+ * pango_ft2_font_map_substitute_changed:
+ * @fontmap: a #PangoFT2Fontmap
+ * 
+ * Call this function any time the results of the
+ * default substitution function set with
+ * pango_ft2_font_map_set_default_substitute() change.
+ * That is, if your subsitution function will return different
+ * results for the same input pattern, you must call this function.
+ **/
+void
+pango_ft2_font_map_substitute_changed (PangoFT2FontMap *fontmap)
+{
+  pango_ft2_init_fontset_hash (fontmap);
+}
+
+/**
+ * pango_ft2_font_map_create_context:
+ * @fontmap: a #PangoFT2Fontmap
+ * 
+ * Create a #PangoContext for the given fontmap.
+ * 
+ * Return value: the newly created context; free with g_object_unref().
+ **/
+PangoContext *
+pango_ft2_font_map_create_context (PangoFT2FontMap *fontmap)
+{
+  PangoContext *context;
+
+  g_return_val_if_fail (PANGO_FT2_IS_FONT_MAP (fontmap), NULL);
+  
+  context = pango_context_new ();
+  pango_context_set_font_map (context, PANGO_FONT_MAP (fontmap));
+
+  return context;
+}
+
+/**
  * pango_ft2_font_map_for_display:
  *
- * Returns a #PangoFT2FontMap. Font maps are cached and should
+ * Returns a #PangoFT2FontMap. This font map is cached and should
  * not be freed. If the font map is no longer needed, it can
  * be released with pango_ft2_shutdown_display().
  *
@@ -237,31 +385,43 @@ pango_ft2_font_map_class_init (PangoFontMapClass *class)
 PangoFontMap *
 pango_ft2_font_map_for_display (void)
 {
-  FT_Error error;
-
-  /* Make sure that the type system is initialized */
-  g_type_init ();
-  
   if (pango_ft2_global_fontmap != NULL)
     return PANGO_FONT_MAP (pango_ft2_global_fontmap);
 
-  pango_ft2_global_fontmap = (PangoFT2FontMap *)g_object_new (PANGO_TYPE_FT2_FONT_MAP, NULL);
-  
-  error = FT_Init_FreeType (&pango_ft2_global_fontmap->library);
-  if (error != FT_Err_Ok)
-    {
-      g_warning ("Error from FT_Init_FreeType: %s",
-		 _pango_ft2_ft_strerror (error));
-      return NULL;
-    }
+  pango_ft2_global_fontmap = (PangoFT2FontMap *)pango_ft2_font_map_new ();
 
   return PANGO_FONT_MAP (pango_ft2_global_fontmap);
 }
 
 /**
+ * pango_ft2_get_context:
+ * @dpi_x:  the horizontal dpi of the target device
+ * @dpi_y:  the vertical dpi of the target device
+ * 
+ * Retrieves a #PangoContext for the default PangoFT2 fontmap
+ * (see pango_ft2_fontmap_get_for_display()) and sets the resolution
+ * for the default fontmap to @dpi_x by @dpi_y.
+ *
+ * Use of this function is discouraged, see pango_ft2_fontmap_create_context()
+ * instead.
+ * 
+ * Return value: the new #PangoContext
+ **/
+PangoContext *
+pango_ft2_get_context (double dpi_x, double dpi_y)
+{
+  PangoFontMap *fontmap;
+  
+  fontmap = pango_ft2_font_map_for_display ();
+  pango_ft2_font_map_set_resolution (PANGO_FT2_FONT_MAP (fontmap), dpi_x, dpi_y);
+
+  return pango_ft2_font_map_create_context (PANGO_FT2_FONT_MAP (fontmap));
+}
+
+/**
  * pango_ft2_shutdown_display:
  * 
- * Free cached resources.
+ * Free the global fontmap. (See pango_ft2_font_map_for_display())
  **/
 void
 pango_ft2_shutdown_display (void)
@@ -283,6 +443,9 @@ pango_ft2_font_map_finalize (GObject *object)
   g_hash_table_destroy (ft2fontmap->fontset_hash);
   g_hash_table_destroy (ft2fontmap->coverage_hash);
   
+  if (ft2fontmap->substitute_destroy)
+    ft2fontmap->substitute_destroy (ft2fontmap->substitute_data);
+
   FT_Done_FreeType (ft2fontmap->library);
 
   G_OBJECT_CLASS (parent_class)->finalize (object);
@@ -510,6 +673,19 @@ pango_ft2_font_map_load_font (PangoFontMap               *fontmap,
   return font;
 }
 
+static void
+pango_ft2_default_substitute (PangoFT2FontMap *fontmap,
+			      FcPattern       *pattern)
+{
+  FcValue v;
+
+  if (fontmap->substitute_func)
+    fontmap->substitute_func (pattern, fontmap->substitute_data);
+  
+  if (FcPatternGet (pattern, FC_DPI, 0, &v) == FcResultNoMatch)
+    FcPatternAddDouble (pattern, FC_DPI, fontmap->dpi_y);
+}
+
 static PangoFontset *
 pango_ft2_font_map_load_fontset (PangoFontMap                 *fontmap,
 				 PangoContext                 *context,
@@ -540,7 +716,7 @@ pango_ft2_font_map_load_fontset (PangoFontMap                 *fontmap,
 	}
       FcConfigSubstitute (0, pattern, FcMatchPattern);
       FcDefaultSubstitute (pattern);
-      pango_ft2_default_substitute (pattern);
+      pango_ft2_default_substitute (ft2fontmap, pattern);
 
       pattern_copy = FcPatternDuplicate (pattern);
 
