@@ -3,6 +3,7 @@ Makefile
 makefile.mingw
 pango.modules
 pango-viewer
+pangoft2topgm
 moc_viewer-qt.cc
 .deps
 .libs
