@@ -41,11 +41,19 @@
 #define _ND			0
 #define _SP			1
 #define _NS			(1<<1)
+#define	_DA			(1<<2)
 
-#define NormalLetter		_SP
-#define	PointPunc		_NS
+#define	NoDefine		_ND
+#define	SpacingLetter		_SP
+#define	NonSpacingPunc		_NS
 
-#define is_char_type(wc, mask)	(char_type_table[ucs2iso8859_8 ((wc))] & (mask))
+/* Define Hebrew character types */
+#define	__ND			0
+#define	__SP			1
+#define	__NS			2
+#define	__DA			3
+
+#define is_char_class(wc, mask)	(char_class_table[ucs2iso8859_8 ((wc))] & (mask))
 #define	is_composible(cur_wc, nxt_wc)	(compose_table[char_type_table[ucs2iso8859_8 (cur_wc)]]\
 						      [char_type_table[ucs2iso8859_8 (nxt_wc)]])
 
@@ -87,7 +95,7 @@ struct _HebrewFontInfo
   PangoXSubfont subfont;
 };
 
-static const gint char_type_table[128] = {
+static const gint char_class_table[128] = {
   /*       0,   1,   2,   3,   4,   5,   6,   7 */
 
   /*00*/ _ND, _ND, _ND, _ND, _ND, _ND, _ND, _ND,
@@ -98,7 +106,7 @@ static const gint char_type_table[128] = {
   /*20*/ _NS, _NS, _ND, _NS, _NS, _NS, _NS, _NS,
          _NS, _NS, _NS, _NS, _NS, _NS, _NS, _NS,
   /*30*/ _NS, _NS, _NS, _NS, _NS, _NS, _NS, _NS,
-         _NS, _NS, _ND, _NS, _NS, _NS, _SP, _NS,
+         _NS, _NS, _ND, _NS, _DA, _NS, _SP, _NS,
   /*40*/ _SP, _NS, _NS, _SP, _NS, _ND, _ND, _ND,
          _ND, _ND, _ND, _ND, _ND, _ND, _ND, _ND,
   /*50*/ _SP, _SP, _SP, _SP, _SP, _SP, _SP, _SP,
@@ -109,11 +117,34 @@ static const gint char_type_table[128] = {
 	 _ND, _ND, _ND, _ND, _ND, _ND, _ND, _ND,
 };
 
-static const gboolean compose_table[3][3] = {
-      /* Cn */ /*     0,     1,     2 */
-/* Cn-1 00 */	{ FALSE, FALSE, FALSE },
-  /* 10 */      { FALSE, FALSE,  TRUE },
-  /* 20 */      { FALSE, FALSE, FALSE },
+static const gint char_type_table[128] = {
+  /*       0,   1,   2,   3,   4,   5,   6,   7 */
+
+  /*00*/ __ND, __ND, __ND, __ND, __ND, __ND, __ND, __ND,
+         __ND, __ND, __ND, __ND, __ND, __ND, __ND, __ND,
+		
+  /*10*/ __ND, __NS, __NS, __NS, __NS, __NS, __NS, __NS,
+         __NS, __NS, __NS, __NS, __NS, __NS, __NS, __NS,
+  /*20*/ __NS, __NS, __ND, __NS, __NS, __NS, __NS, __NS,
+         __NS, __NS, __NS, __NS, __NS, __NS, __NS, __NS,
+  /*30*/ __NS, __NS, __NS, __NS, __NS, __NS, __NS, __NS,
+         __NS, __NS, __ND, __NS, __DA, __NS, __SP, __NS,
+  /*40*/ __SP, __NS, __NS, __SP, __NS, __ND, __ND, __ND,
+         __ND, __ND, __ND, __ND, __ND, __ND, __ND, __ND,
+  /*50*/ __SP, __SP, __SP, __SP, __SP, __SP, __SP, __SP,
+         __SP, __SP, __SP, __SP, __SP, __SP, __SP, __SP,
+  /*60*/ __SP, __SP, __SP, __SP, __SP, __SP, __SP, __SP,
+         __SP, __SP, __SP, __ND, __ND, __ND, __ND, __ND,
+  /*70*/ __SP, __SP, __SP, __SP, __SP, __ND, __ND, __ND,
+	 __ND, __ND, __ND, __ND, __ND, __ND, __ND, __ND,
+};
+
+static const gboolean compose_table[4][4] = {
+      /* Cn */ /*     0,     1,     2,     3, */
+/* Cn-1 00 */	{ FALSE, FALSE, FALSE, FALSE },
+  /* 10 */      { FALSE, FALSE,  TRUE,  TRUE },
+  /* 20 */      { FALSE, FALSE, FALSE, FALSE },
+  /* 30 */	{ FALSE, FALSE,  TRUE, FALSE },
 };
 
 /* Sun Hebrew Font Layout
@@ -289,7 +320,7 @@ get_adjusted_glyphs_list (HebrewFontInfo *font_info,
   gint i = 0;
 
   if ((num_chrs == 1) &&
-      is_char_type (cluster[0], PointPunc))
+      is_char_class (cluster[0], NonSpacingPunc))
     {
       if (font_info->type == HEBREW_FONT_ISO8859_8)
 	{
@@ -375,10 +406,13 @@ get_next_cluster(const char	*text,
       gunichar current = g_utf8_get_char (p);
       
       if (n_chars == 0 ||
-	  is_composible ((gunichar)(cluster[n_chars - 1]), current))
+	  is_composible ((gunichar)(cluster[n_chars - 1]), current) )
 	{
 	  cluster[n_chars++] = current;
 	  p = g_utf8_next_char (p);
+	  if (n_chars == 1 &&
+	      is_char_class(cluster[0], ~(NoDefine|SpacingLetter)) )
+	      break;
 	}
       else
 	break;
