@@ -1,3 +1,15 @@
+Mon May 28 11:51:45 2001  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/modules.c (map_add_engine): Fix problem with
+	information loss when converting leaves to branches.
+	(Problem found by Toshio MARUYAMA)
+
+Wed May 23 12:59:26 2001  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pangox.c (pango_x_make_font_struct): Load the
+	font struct for "fixed" in the case of a broken font list
+	where fonts listed by XListFonts aren't loadable.
+
 Fri May 18 16:44:25 2001  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pango-layout.c (ensure_tab_width): Use the font

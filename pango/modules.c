@@ -437,13 +437,12 @@ map_add_engine (PangoMapInfo    *info,
 	    {
 	      if (map->submaps[submap].is_leaf)
 		{
+		  PangoMapEntry old_entry = map->submaps[submap].d.entry;
+		  
 		  map->submaps[submap].is_leaf = FALSE;
 		  map->submaps[submap].d.leaves = g_new (PangoMapEntry, 256);
 		  for (j=0; j<256; j++)
-		    {
-		      map->submaps[submap].d.leaves[j].info = NULL;
-		      map->submaps[submap].d.leaves[j].is_exact = FALSE;
-		    }
+		    map->submaps[submap].d.leaves[j] = old_entry;
 		}
 	      
 	      for (j=start; j<=end; j++)

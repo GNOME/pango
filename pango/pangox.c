@@ -219,7 +219,12 @@ pango_x_make_font_struct (PangoFont *font, PangoXSubfontInfo *info)
   
   info->font_struct = pango_x_font_cache_load (cache, info->xlfd);
   if (!info->font_struct)
-    g_warning ("Cannot load font for XLFD '%s\n", info->xlfd);
+    {
+      g_warning ("Cannot load font for XLFD '%s\n", info->xlfd);
+
+      /* Prevent a segfault, but probably not much more */
+      info->font_struct = pango_x_font_cache_load (cache, "fixed");
+    }
   
   info->is_1byte = (info->font_struct->min_byte1 == 0 && info->font_struct->max_byte1 == 0);
   info->range_byte1 = info->font_struct->max_byte1 - info->font_struct->min_byte1 + 1;
