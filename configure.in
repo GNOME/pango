@@ -294,6 +294,23 @@ GLIB_CFLAGS=`$PKG_CONFIG --cflags gmodule-2.0 gthread-2.0`
 AC_SUBST(GLIB_LIBS)
 AC_SUBST(GLIB_CFLAGS)
 
+################################################################
+# Strip -export-dynamic from the link line
+################################################################
+
+#
+# pkg-config --libs gmodule includes the "export_dynamic" flag,
+#  but this flag is only meaningful for executables. For libraries
+#  the effect is undefined; what it causes on Linux is that the
+#  export list from -export-symbols-regex is ignored and everything
+#  is exported
+#	
+export_dynamic=`(./libtool --config; echo eval echo \\$export_dynamic_flag_spec) | sh`
+if test -n "$export_dynamic"; then
+  GLIB_LIBS=`echo $GLIB_LIBS | sed -e "s/$export_dynamic//"`
+fi
+
+
 #
 # The OpenType test programs aren't particularly portable
 #

@@ -1,3 +1,8 @@
+Wed Mar  3 16:00:10 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* configure.in: Strip out the "export-dynamic" libtool
+	option from library link lines. (#124687, James Henstridge)
+
 2004-03-03  Tor Lillqvist  <tml@iki.fi>
 
 	* NEWS: Correct spelling of my name.
