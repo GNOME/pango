@@ -377,6 +377,8 @@ script_for_lang_compare (gconstpointer key,
  * 
  * Return value: %TRUE if @script is one of the scripts used
  * to write @language, or if nothing is known about @language.
+ *
+ * Since: 1.4
  **/
 gboolean
 pango_language_includes_script (PangoLanguage *language,
@@ -428,6 +430,8 @@ pango_language_includes_script (PangoLanguage *language,
  * 
  * Return value: a #PangoLanguage that is representative
  * of the script, or %NULL if no such language exists.
+ *
+ * Since: 1.4
  **/
 PangoLanguage *
 pango_script_get_sample_language (PangoScript script)

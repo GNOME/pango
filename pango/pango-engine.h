@@ -164,7 +164,7 @@ struct _PangoEngineShape
  *   if no rendering is desired for a character, this may involve
  *   inserting glyphs with the #PangoGlyph ID 0, which is guaranteed never
  *   to render.
- * @get_coverage: Returns the characters that this engine can cover
+ * @covers: Returns the characters that this engine can cover
  *   with a given font for a given language. If not overridden, the default
  *   implementation simply returns the coverage information for the
  *   font itself unmodified.

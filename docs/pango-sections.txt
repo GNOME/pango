@@ -192,12 +192,15 @@ PANGO_FONT_MAP_GET_CLASS
 pango_font_map_load_font
 pango_font_map_load_fontset
 pango_font_map_list_families
+pango_font_map_get_shape_engine_type
 <SUBSECTION>
 PangoFontset
 PANGO_TYPE_FONTSET
 PangoFontsetClass
 pango_fontset_get_font
 pango_fontset_get_metrics
+PangoFontsetForeachFunc
+pango_fontset_foreach
 PangoFontsetSimple
 PANGO_TYPE_FONTSET_SIMPLE
 pango_fontset_simple_new
@@ -456,12 +459,15 @@ PangoScriptIter
 PangoScript
 PANGO_TYPE_SCRIPT
 pango_script_for_unichar
+pango_script_get_sample_language
+pango_language_includes_script
 pango_script_iter_new
 pango_script_iter_get_range
 pango_script_iter_next
 pango_script_iter_free
 <SUBSECTION Private>
 pango_script_get_type
+PangoScriptForLang
 </SECTION>
 
 <SECTION>
@@ -532,8 +538,8 @@ PangoIncludedModule
 PangoMap
 PangoMapEntry
 pango_find_map
-pango_map_get_entry
 pango_map_get_engine
+pango_map_get_engines
 pango_module_register
 </SECTION>
 

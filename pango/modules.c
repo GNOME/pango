@@ -679,6 +679,8 @@ append_engines (GSList **engine_list,
  * lists should be fred with g_slist_free, but the engines in the
  * lists are owned by GLib and will be kept around permanently, so
  * they should not be unref'ed.
+ *
+ * Since: 1.4
  **/
 void
 pango_map_get_engines (PangoMap     *map,

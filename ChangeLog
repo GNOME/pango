@@ -1,3 +1,21 @@
+2003-09-30  Matthias Clasen  <maclas@gmx.de>
+
+	* pango/pango-engine.h (struct _PangoEngineShapeClass): Replace
+	get_coverage by covers in the doc comment.
+
+	* pango/pango-script.c (pango_language_includes_script) 
+	(pango_script_get_sample_language): 
+	* pango/pango-fontset.c (pango_fontset_foreach): 
+	* pango/pango-fontmap.c (pango_font_map_get_shape_engine_type): 
+	* pango/modules.c (pango_map_get_engines):
+	* pango/pango-fontset.h (PangoFontsetForEachFunc): Fix typos and 
+	add "Since: 1.4" tags. 
+
+	* docs/pango-sections.txt: Add PangoFontsetForeachFunc,
+	pango_fontset_foreach(), pango_font_map_get_shape_engine_type(),
+	PangoScriptForLang, pango_script_get_sample_language() and
+	pango_language_includes_script(), remove pango_map_get_entry().
+
 Wed Sep 24 18:29:34 2003  Owen Taylor  <otaylor@redhat.com>
 
 	* modules/hebrew/hebrew-shaper.c (hebrew_shaper_get_next_cluster):

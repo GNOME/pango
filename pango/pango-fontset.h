@@ -50,7 +50,9 @@ typedef struct _PangoFontset        PangoFontset;
  * A callback function used by pango_fontset_foreach() when enumerating
  * the fonts in a fontset.
  *
- * Returns: if %TRUE, stop iteration and return immediatlehy.
+ * Returns: if %TRUE, stop iteration and return immediately.
+ *
+ * Since: 1.4
  **/
 typedef gboolean (*PangoFontsetForeachFunc) (PangoFontset  *fontset,
 					     PangoFont     *font,

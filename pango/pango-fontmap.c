@@ -261,6 +261,8 @@ pango_font_map_real_load_fontset (PangoFontMap               *fontmap,
  * Return value: the ID string for shape engines for
  *  this fontmap. Owned by Pango, should not be modified
  *  or freed.
+ *
+ * Since: 1.4
  **/
 const char *
 pango_font_map_get_shape_engine_type (PangoFontMap *fontmap)
