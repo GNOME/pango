@@ -13,6 +13,8 @@
 
 	* examples/makefile.mingw.in: Remove. Not maintained.
 
+	* examples/pangowin32.aliases: Remove. Not used.
+
 	* examples/Makefile.am (EXTRA_DIST): Remove here, too.
 
 	* modules/basic/makefile.mingw.in: Remove. Not maintained.
