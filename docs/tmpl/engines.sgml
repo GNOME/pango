@@ -73,6 +73,12 @@ contains the following fields:
 </tbody></tgroup></informaltable>
 </para>
 
+@id: 
+@engine_type: 
+@render_type: 
+@ranges: 
+@n_ranges: 
+
 <!-- ##### STRUCT PangoEngineRange ##### -->
 <para>
 The PangoEngineRange structure contains
@@ -109,6 +115,10 @@ points. It contains the following fields:
 </tbody></tgroup></informaltable>
 </para>
 
+@start: 
+@end: 
+@langs: 
+
 <!-- ##### STRUCT PangoEngine ##### -->
 <para>
 The #PangoEngine structure contains basic
@@ -140,6 +150,10 @@ contains the following fields:
 </tbody></tgroup></informaltable>
 </para>
 
+@id: 
+@type: 
+@length: 
+
 <!-- ##### STRUCT PangoEngineLang ##### -->
 <para>
 The #PangoEngineLang structure extents the
@@ -164,6 +178,9 @@ of of the rendering pipeline. It contains the following fields:
 
 </tbody></tgroup></informaltable>
 </para>
+
+@engine: 
+@script_break: 
 
 <!-- ##### STRUCT PangoEngineShape ##### -->
 <para>
@@ -190,6 +207,8 @@ of of the rendering pipeline. It contains the following fields:
 </tbody></tgroup></informaltable>
 </para>
 
+@engine: 
+@script_shape: 
 
 <!-- ##### MACRO PANGO_ENGINE_TYPE_LANG ##### -->
 <para>
@@ -209,12 +228,16 @@ These engines have a engine structure of
 type #PangoEngineShape.
 </para>
 
+
+
 <!-- ##### MACRO PANGO_RENDER_TYPE_NONE ##### -->
 <para>
 A string constant defining the render type
 for engines that are not rendering-system 
 specific.
 </para>
+
+
 
 <!-- ##### FUNCTION script_engine_list ##### -->
 <para>

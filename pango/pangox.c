@@ -113,6 +113,7 @@ pango_x_load_font (Display *display,
  * @display: the X display
  * @d:       the drawable on which to draw string
  * @gc:      the graphics context
+ * @font:    the font in which to draw the string
  * @glyphs:  the glyph string to draw
  * @x:       the x position of start of string
  * @y:       the y position of baseline
@@ -175,6 +176,7 @@ pango_x_render  (Display           *display,
 
 /**
  * pango_x_glyph_extents:
+ * @font:     a #PangoFont
  * @glyph:    the glyph to measure
  * @lbearing: left bearing of glyph (result)
  * @rbearing: right bearing of glyph (result)
@@ -240,6 +242,7 @@ pango_x_glyph_extents (PangoFont       *font,
 
 /**
  * pango_x_extents:
+ * @font:     a #PangoFont
  * @glyphs:   the glyph string to measure
  * @lbearing: left bearing of string (result)
  * @rbearing: right bearing of string (result)

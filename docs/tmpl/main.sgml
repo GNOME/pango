@@ -56,6 +56,9 @@ the following fields:
 </tbody></tgroup></informaltable>
 </para>
 
+@lang: 
+@render_type: 
+@direction: 
 
 <!-- ##### STRUCT PangoItem ##### -->
 <para>
@@ -90,6 +93,10 @@ a segment of text. It contains the following fields:
 </tbody></tgroup></informaltable>
 </para>
 
+@offset: 
+@length: 
+@num_chars: 
+@analysis: 
 
 <!-- ##### STRUCT PangoAnalysis ##### -->
 <para>
@@ -119,6 +126,9 @@ fields:
 </tbody></tgroup></informaltable>
 </para>
 
+@shape_engine: 
+@lang_engine: 
+@level: 
 
 <!-- ##### STRUCT PangoLangRange ##### -->
 <para>
@@ -149,6 +159,18 @@ It contains the following fields:
 </tbody></tgroup></informaltable>
 </para>
 
+@start: 
+@length: 
+@lang: 
+
+<!-- ##### ENUM PangoDirection ##### -->
+<para>
+
+</para>
+
+@PANGO_DIRECTION_LTR: 
+@PANGO_DIRECTION_RTL: 
+@PANGO_DIRECTION_TTB: 
 
 <!-- ##### FUNCTION pango_reorder_items ##### -->
 <para>
@@ -176,6 +198,10 @@ The #PangoLogAttr structure stores information
 about the attributes of a single character.
 </para>
 
+@is_break: 
+@is_white: 
+@is_char_stop: 
+@is_word_stop: 
 
 <!-- ##### FUNCTION pango_shape ##### -->
 <para>

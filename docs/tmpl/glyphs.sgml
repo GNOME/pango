@@ -17,7 +17,7 @@ glyphs.
 
 </para>
 
-<!-- ##### STRUCT PangoGlyph ##### -->
+<!-- ##### TYPEDEF PangoGlyph ##### -->
 <para>
 The #PangoGlyph structure represents a single glyph in the output
 form of a string. It contains the following fields.
@@ -41,12 +41,14 @@ form of a string. It contains the following fields.
 </para>
 
 
-<!-- ##### TYPEDEF PangoGlyphIndex ##### -->
+<!-- ##### STRUCT PangoGlyphInfo ##### -->
 <para>
-The #PangoGlyphIndex type is an integral type used to store glyph
-indices.
+
 </para>
 
+@glyph: 
+@geometry: 
+@attr: 
 
 <!-- ##### STRUCT PangoGlyphGeometry ##### -->
 <para>
@@ -76,6 +78,9 @@ information for a single glyph. Distances are in
 </tbody></tgroup></informaltable>
 </para>
 
+@width: 
+@x_offset: 
+@y_offset: 
 
 <!-- ##### TYPEDEF PangoGlyphUnit ##### -->
 <para>
@@ -107,6 +112,7 @@ are still evolving.
 </tbody></tgroup></informaltable>
 </para>
 
+@is_cluster_start: 
 
 <!-- ##### STRUCT PangoGlyphString ##### -->
 <para>
@@ -152,8 +158,11 @@ accessible fields
 </tbody></tgroup></informaltable>
 </para>
 
+@num_glyphs: 
+@glyphs: 
+@log_clusters: 
 
-<!-- ##### FUNCTION g_glyph_string_new ##### -->
+<!-- ##### FUNCTION pango_glyph_string_new ##### -->
 <para>
 
 </para>
@@ -161,7 +170,7 @@ accessible fields
 @Returns: 
 
 
-<!-- ##### FUNCTION g_glyph_string_set_size ##### -->
+<!-- ##### FUNCTION pango_glyph_string_set_size ##### -->
 <para>
 
 </para>
@@ -170,7 +179,7 @@ accessible fields
 @new_len: 
 
 
-<!-- ##### FUNCTION g_glyph_string_free ##### -->
+<!-- ##### FUNCTION pango_glyph_string_free ##### -->
 <para>
 
 </para>

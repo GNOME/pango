@@ -1,0 +1,170 @@
+<!-- ##### FUNCTION pango_cfont_init ##### -->
+<para>
+
+</para>
+
+@font: 
+
+<!-- ##### FUNCTION pango_cfont_ref ##### -->
+<para>
+
+</para>
+
+@font: 
+
+<!-- ##### TYPEDEF PangoGlyphIndex ##### -->
+<para>
+The #PangoGlyphIndex type is an integral type used to store glyph
+indices.
+</para>
+
+
+<!-- ##### FUNCTION pango_x_find_cfont ##### -->
+<para>
+
+</para>
+
+@font: 
+@charset: 
+@Returns: 
+
+<!-- ##### FUNCTION g_glyph_string_set_size ##### -->
+<para>
+
+</para>
+
+@string: 
+@new_len: 
+
+<!-- ##### FUNCTION pango_x_xlfd_get_ranges ##### -->
+<para>
+
+</para>
+
+@font: 
+@xlfd: 
+@ranges: 
+@n_ranges: 
+@Returns: 
+
+<!-- ##### FUNCTION g_glyph_string_free ##### -->
+<para>
+
+</para>
+
+@string: 
+
+<!-- ##### FUNCTION g_glyph_string_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+<!-- ##### FUNCTION pango_x_list_cfonts ##### -->
+<para>
+
+</para>
+
+@font: 
+@charsets: 
+@n_charsets: 
+@xlfds: 
+@n_xlfds: 
+
+<!-- ##### FUNCTION pango_x_load_xlfd ##### -->
+<para>
+
+</para>
+
+@font: 
+@xlfd: 
+@Returns: 
+
+<!-- ##### STRUCT PangoCFontClass ##### -->
+<para>
+The PangoCFontClass structure contains the virtual
+functions for an implementation of a a PangoCFont.
+
+It contains the following member:
+
+<informaltable pgwide=1 frame="none" role="struct">
+<tgroup cols="2"><colspec colwidth="2*"><colspec colwidth="8*">
+<tbody>
+
+<row>
+<entry>void (*destroy) (#PangoFont *font);</entry>
+<entry>a function to free the font structure and associated resources.</entry>
+</row>
+</tbody></tgroup></informaltable>
+</para>
+
+
+<!-- ##### STRUCT PangoXCFont ##### -->
+<para>
+The PangoXCFont represents a component of a
+composite font for the X window system. It
+has the following publically accessible fields:
+
+<informaltable pgwide=1 frame="none" role="struct">
+<tgroup cols="2"><colspec colwidth="2*"><colspec colwidth="8*">
+<tbody>
+
+<row>
+<entry><structname>Display</structname> *display;</entry>
+<entry>the X Display for which this font component was created.</entry>
+</row>
+
+<row>
+<entry><structname>XFontStruct</structname> *font_struct;</entry>
+<entry>the X font information for the corresponding X font.</entry>
+</row>
+
+</tbody></tgroup></informaltable>
+</para>
+
+@display: 
+@font_struct: 
+
+<!-- ##### FUNCTION pango_cfont_unref ##### -->
+<para>
+
+</para>
+
+@font: 
+
+<!-- ##### STRUCT PangoCFont ##### -->
+<para>
+The #PangoCFont structure is used to represent a single componenent
+of a font n a rendering-system-independent matter. A component of a
+font is an opaque object that makes sense only to the rendering
+system. A glyph (the #PangoGlyph structure) is stored as a #PangoCFont
+and a numeric glyph index.
+</para>
+<para>
+To create an implementation of a #PangoCFont,
+the rendering-system specific code should malloc
+a larger structure that contains a nested
+#PangoCFont, fill in the klass member of
+the nested #PangoCFont with a pointer to
+a appropriate #PangoCFontClass, then call
+pango_cfont_init() on the structure.
+</para>
+<para>
+The #PangoCFont structure contains one member
+that may be accessed by derived classes:
+
+<informaltable pgwide=1 frame="none" role="struct">
+<tgroup cols="2"><colspec colwidth="2*"><colspec colwidth="8*">
+<tbody>
+
+<row>
+<entry>#PangoCFontClass *klass;</entry>
+<entry>a pointer to the <firstterm>class structure</firstterm>
+       for this font.</entry>
+</row>
+</tbody></tgroup></informaltable>
+</para>
+
+@klass: 
+

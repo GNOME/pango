@@ -7,6 +7,7 @@ PangoContext
 PangoItem
 PangoAnalysis
 PangoLangRange
+PangoDirection
 pango_reorder_items
 <SUBSECTION>
 pango_break
@@ -23,7 +24,7 @@ pango_x_to_cp
 <TITLE>Glyph Storage</TITLE>
 <FILE>glyphs</FILE>
 PangoGlyph
-PangoGlyphIndex
+PangoGlyphInfo
 PangoGlyphGeometry
 PangoGlyphUnit
 PangoGlyphVisAttr
@@ -43,11 +44,6 @@ pango_font_ref
 pango_font_unref
 pango_font_get_data
 pango_font_set_data
-PangoCFont
-PangoCFontClass
-pango_cfont_init
-pango_cfont_ref
-pango_cfont_unref
 </SECTION>
 
 <SECTION>
@@ -69,15 +65,16 @@ script_engine_unload
 <SECTION>
 <FILE>pango-x</FILE>
 <TITLE>X Rendering</TITLE>
+PangoXSubfont
 PANGO_RENDER_TYPE_X
-PangoXCFont
+PANGO_X_MAKE_GLYPH
+PANGO_X_GLYPH_SUBFONT
+PANGO_X_GLYPH_INDEX
 pango_x_load_font
 pango_x_render
 pango_x_extents
 pango_x_glyph_extents
-pango_x_find_cfont
-pango_x_list_cfonts
-pango_x_load_xlfd
-pango_x_xlfd_get_ranges
+pango_x_has_glyph
+pango_x_list_subfonts
 </SECTION>
 

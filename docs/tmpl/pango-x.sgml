@@ -15,6 +15,12 @@ the X Window system.
 
 </para>
 
+<!-- ##### TYPEDEF PangoXSubfont ##### -->
+<para>
+
+</para>
+
+
 <!-- ##### MACRO PANGO_RENDER_TYPE_X ##### -->
 <para>
 %PANGO_RENDER_TYPE_X is a string constant that
@@ -24,28 +30,29 @@ X Window System.
 
 
 
-<!-- ##### STRUCT PangoXCFont ##### -->
+<!-- ##### MACRO PANGO_X_MAKE_GLYPH ##### -->
 <para>
-The PangoXCFont represents a component of a
-composite font for the X window system. It
-has the following publically accessible fields:
 
-<informaltable pgwide=1 frame="none" role="struct">
-<tgroup cols="2"><colspec colwidth="2*"><colspec colwidth="8*">
-<tbody>
-
-<row>
-<entry><structname>Display</structname> *display;</entry>
-<entry>the X Display for which this font component was created.</entry>
-</row>
-
-<row>
-<entry><structname>XFontStruct</structname> *font_struct;</entry>
-<entry>the X font information for the corresponding X font.</entry>
-</row>
-
-</tbody></tgroup></informaltable>
 </para>
+
+@subfont: 
+@index: 
+
+
+<!-- ##### MACRO PANGO_X_GLYPH_SUBFONT ##### -->
+<para>
+
+</para>
+
+@glyph: 
+
+
+<!-- ##### MACRO PANGO_X_GLYPH_INDEX ##### -->
+<para>
+
+</para>
+
+@glyph: 
 
 
 <!-- ##### FUNCTION pango_x_load_font ##### -->
@@ -66,6 +73,7 @@ has the following publically accessible fields:
 @display: 
 @d: 
 @gc: 
+@font: 
 @glyphs: 
 @x: 
 @y: 
@@ -76,6 +84,7 @@ has the following publically accessible fields:
 
 </para>
 
+@font: 
 @glyphs: 
 @lbearing: 
 @rbearing: 
@@ -91,6 +100,7 @@ has the following publically accessible fields:
 
 </para>
 
+@font: 
 @glyph: 
 @lbearing: 
 @rbearing: 
@@ -101,17 +111,17 @@ has the following publically accessible fields:
 @logical_descent: 
 
 
-<!-- ##### FUNCTION pango_x_find_cfont ##### -->
+<!-- ##### FUNCTION pango_x_has_glyph ##### -->
 <para>
 
 </para>
 
 @font: 
-@charset: 
+@glyph: 
 @Returns: 
 
 
-<!-- ##### FUNCTION pango_x_list_cfonts ##### -->
+<!-- ##### FUNCTION pango_x_list_subfonts ##### -->
 <para>
 
 </para>
@@ -119,29 +129,8 @@ has the following publically accessible fields:
 @font: 
 @charsets: 
 @n_charsets: 
-@xlfds: 
-@n_xlfds: 
-
-
-<!-- ##### FUNCTION pango_x_load_xlfd ##### -->
-<para>
-
-</para>
-
-@font: 
-@xlfd: 
-@Returns: 
-
-
-<!-- ##### FUNCTION pango_x_xlfd_get_ranges ##### -->
-<para>
-
-</para>
-
-@font: 
-@xlfd: 
-@ranges: 
-@n_ranges: 
+@subfont_ids: 
+@subfont_charsets: 
 @Returns: 
 
 
