@@ -1,3 +1,8 @@
+2002-11-09  Changwoo Ryu  <cwryu@debian.org>
+
+	* modules/hangul/hangul-x.c (render_syllable_with_ksx1001johab):
+	Renamed from render_syllable_with_ksx1005 (#95800).
+
 Thu Nov  7 10:05:28 2002  HideToshi Tajima  <hidetoshi.tajima@sun.com>
 
 	* modules/basic/basic-x.c: 

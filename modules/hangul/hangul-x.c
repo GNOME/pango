@@ -320,10 +320,10 @@ render_syllable_with_johab (PangoFont *font, PangoXSubfont subfont,
 }
 
 static void
-render_syllable_with_ksx1005 (PangoFont *font, PangoXSubfont subfont,
-			       gunichar *text, int length,
-			       PangoGlyphString *glyphs,
-			       int *n_glyphs, int cluster_offset)
+render_syllable_with_ksx1001johab (PangoFont *font, PangoXSubfont subfont,
+				   gunichar *text, int length,
+				   PangoGlyphString *glyphs,
+				   int *n_glyphs, int cluster_offset)
 {
   int n_prev_glyphs = *n_glyphs;
   guint16 gindex;
@@ -664,7 +664,7 @@ find_subfont (PangoFont *font, char **charsets, int n_charsets,
       else if (strcmp (charsets[subfont_charsets[i]], "ksc5601.1992-3") == 0)
 	{
 	      *subfont = subfonts[i];
-	      *render_func = render_syllable_with_ksx1005;
+	      *render_func = render_syllable_with_ksx1001johab;
 	      break;
 	}
       else if (strcmp (charsets[subfont_charsets[i]], "ksc5601.1987-0") == 0)
@@ -839,7 +839,7 @@ hangul_engine_get_coverage (PangoFont  *font,
 	  for (i=0; i<KSC5601_HANGUL; i++)
 	    pango_coverage_set (result, __ksc5601_hangul_to_ucs[i], PANGO_COVERAGE_EXACT);
 	}
-      else if (render_func == render_syllable_with_ksx1005)
+      else if (render_func == render_syllable_with_ksx1001johab)
 	{
 	  for (i = 0x1100; i <= 0x11ff; i++)
 	    pango_coverage_set (result, i, PANGO_COVERAGE_EXACT);
