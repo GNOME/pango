@@ -192,7 +192,7 @@ int main (int argc, char **argv)
           PangoGlyphString * glyphs;
           char s[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
                      "abcdefghijklmnopqrstuvwxyz"
-                     "1234567890 -+*/!§$%&()[]{}<>|#=?@";
+                     "1234567890 -+*/!\xc2\xa7$%&()[]{}<>|#=?@";
 
           g_get_current_time (&tv0);
           coverage = pango_font_get_coverage (font, lang);

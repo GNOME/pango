@@ -1339,6 +1339,9 @@ pango_win32_font_calc_coverage (PangoFont     *font,
 	       ch <= end_count[i];
 	       ch++)
 	    {
+	      if (ch == 0xFFFF)
+		break;
+
 	      id = *(id_range_offset[i]/2 +
 		     (ch - start_count[i]) +
 		     &id_range_offset[i]);
