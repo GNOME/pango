@@ -32,7 +32,8 @@ INCLUDES =					\
 	$(X_DEFINES)				\
 	$(XFT_DEFINES)				\
 	$(FT2_DEFINES)				\
-	$(WIN32_DEFINES)
+	$(WIN32_DEFINES)			\
+	-DG_DISABLE_DEPRECATED
 
 TESTS=runtests.sh
 

@@ -3,6 +3,7 @@
 INCLUDES = 					\
 	-DSYSCONFDIR=\"$(sysconfdir)\" 		\
 	-DLIBDIR=\"$(libdir)\" 			\
+	-DG_DISABLE_DEPRECATED			\
 	-I$(top_srcdir)
 
 LDADDS = @STRIP_BEGIN@ 	\

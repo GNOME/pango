@@ -25,6 +25,7 @@ INCLUDES = 					\
 	-DPANGO_ENABLE_ENGINE			\
 	-DSYSCONFDIR=\"$(sysconfdir)\" 		\
 	-DLIBDIR=\"$(libdir)\" 			\
+	-DG_DISABLE_DEPRECATED			\
 	$(X_CFLAGS)				\
 	$(FREETYPE_CFLAGS)			\
 	-I$(top_srcdir)
