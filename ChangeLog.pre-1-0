@@ -1,3 +1,8 @@
+2002-03-08  Tor Lillqvist  <tml@iki.fi>
+
+	* pango/pangoft2.def: Add the pango_ot_* symbols from the static
+	libpango-ot library.
+
 Thu Mar  7 14:42:50 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* configure.in: As we do in other modules, default to
