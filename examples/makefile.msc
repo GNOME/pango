@@ -1,0 +1,65 @@
+TOP = ../..
+!INCLUDE $(TOP)/build/win32/make.msc
+
+# INCLUDES = -I .. -I .
+# DEFINES = 
+# DEPCFLAGS = $(GLIB_CFLAGS) $(LIBICONV_CFLAGS) $(FRIBIDI_CFLAGS) $(FREETYPE2_CFLAGS)
+
+!IFNDEF PACKAGE
+
+EXES = viewer_win32 # viewer_ft2
+
+# The main target
+all : sub-all
+
+sub-all: 
+	for %d in ($(EXES)) do nmake -nologo -f makefile.msc sub-one-exe THIS=%d
+
+sub-one-dll:
+	nmake -nologo -f makefile.msc $(THIS)-$(PANGO_VER).dll PACKAGE=$(THIS) OBJS_$(THIS)=1
+
+sub-one-exe:
+	nmake -nologo -f makefile.msc $(THIS).exe PACKAGE=$(THIS) OBJS_$(THIS)=1
+
+!ELSE
+
+PRJ_TOP = ..
+PKG_VER = $(PANGO_VER)
+PKG_DEF = $(PACKAGE).def
+
+PKG_CFLAGS = -I. -I$(PRJ_TOP) $(GLIB_CFLAGS) $(GTK2_CFLAGS) $(PANGO_CFLAGS) $(LIBICONV_CFLAGS) $(FRIBIDI_CFLAGS) $(FREETYPE2_CFLAGS)
+
+#not yet  $(FREETYPE2_LIBS)
+PKG_LINK = $(GLIB_LIBS)  $(GTK2_LIBS) $(LIBICONV_LIBS) $(FRIBIDI_LIBS) $(PANGOWIN32_LIBS)
+
+!IFDEF OBJS_viewer_win32
+OBJECTS = \
+	viewer-win32.obj
+!ENDIF
+
+!IFDEF OBJS_viewer_ft2
+OBJECTS = \
+	viewer-ft2.obj
+!ENDIF
+
+!IFNDEF OBJECTS
+OBJECTS = $(PACKAGE).obj
+!ENDIF
+
+$(PACKAGE).lib : $(OBJECTS)
+	lib /out:$(PACKAGE).lib $(OBJECTS)
+
+$(PACKAGE)-$(PKG_VER).dll : $(OBJECTS) $(PKG_DEF)
+	$(CC) $(CFLAGS) -LD -Fe$(PACKAGE)-$(PKG_VER).dll $(OBJECTS) $(PKG_LINK) user32.lib gdi32.lib advapi32.lib $(LDFLAGS) /def:$(PKG_DEF)
+
+$(PACKAGE).exe : $(PKG_LINK) $(OBJECTS)
+	$(CC) $(CFLAGS) -Fe$(PACKAGE).exe $(OBJECTS) $(PKG_LINK)
+
+
+$(PRJ_TOP)\config.h: $(PRJ_TOP)\config.h.win32
+	copy $(PRJ_TOP)\config.h.win32 $(PRJ_TOP)\config.h
+
+.c.obj :
+	$(CC) $(CFLAGS) -GD -c $(PKG_CFLAGS) $<
+
+!ENDIF #PACKAGE

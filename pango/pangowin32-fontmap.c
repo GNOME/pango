@@ -239,6 +239,25 @@ pango_win32_font_map_for_display (void)
   logfont.lfCharSet = DEFAULT_CHARSET;
   EnumFontFamiliesEx (pango_win32_hdc, &logfont, (FONTENUMPROC) pango_win32_enum_proc, 0, 0);
 
+  /* There are fonts installed on every system, use these
+   * as fallback. Otherwise Really Bad Things (tm) would 
+   * happen without an alias file ...
+   * (The names are required for Pango and may be resolved
+   *  to different fonts on different systems)
+   */
+  memset (&logfont, 0, sizeof (logfont));
+  strcpy (logfont.lfFaceName, "monospace");
+  logfont.lfPitchAndFamily = FF_MODERN;
+  pango_win32_insert_font (fontmap, &logfont);
+
+  strcpy (logfont.lfFaceName, "sans");
+  logfont.lfPitchAndFamily = FF_SWISS; 
+  pango_win32_insert_font (fontmap, &logfont);
+
+  strcpy (logfont.lfFaceName, "serif");
+  logfont.lfPitchAndFamily = FF_ROMAN; 
+  pango_win32_insert_font (fontmap, &logfont);
+
   pango_win32_font_map_read_aliases (fontmap);
 
   SystemParametersInfo(SPI_GETWORKAREA, 0, &rect, 0);

@@ -29,6 +29,7 @@
 #include "pango-utils.h"
 #include "pangowin32.h"
 #include "pangowin32-private.h"
+#include "modules.h"
 
 #define PANGO_TYPE_WIN32_FONT            (pango_win32_font_get_type ())
 #define PANGO_WIN32_FONT(object)         (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_TYPE_WIN32_FONT, PangoWin32Font))
@@ -171,6 +172,16 @@ PangoContext *
 pango_win32_get_context (void)
 {
   PangoContext *result;
+  static gboolean registered_modules = FALSE;
+  int i;
+
+  if (!registered_modules)
+    {
+      registered_modules = TRUE;
+      
+      for (i = 0; _pango_included_win32_modules[i].list; i++)
+        pango_module_register (&_pango_included_win32_modules[i]);
+    }
 
   result = pango_context_new ();
   pango_context_add_font_map (result, pango_win32_font_map_for_display ());

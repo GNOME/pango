@@ -1,3 +1,15 @@
+2001-02-19  Hans Breuer <hans@breuer.org>
+	* pango/modules.h, pango/pangowin32.c (pango_win32_get_context) : 
+	added _pango_included_win32_modules[] to include modules with plain 
+	win32 build as well.
+
+	* pango/pango.def : added new exported functions
+
+	* pango/pangowin32-fontmap.c : add unspecified fonts for Monospace,
+	Sans and Serif to avoid crashes if no alias file is provided
+
+	* pango/*/makefile.msc : new files to build on windoze with msvc
+
 2001-02-15  Havoc Pennington  <hp@redhat.com>
 
 	* pango/pango-layout.c (pango_layout_line_x_to_index): fix

@@ -96,7 +96,9 @@ EXPORTS
 	pango_item_new
 	pango_itemize
 	pango_layout_context_changed
+	pango_layout_copy
 	pango_layout_get_alignment
+	pango_layout_get_attributes
 	pango_layout_get_context
 	pango_layout_get_cursor_pos
 	pango_layout_get_extents
@@ -128,13 +130,13 @@ EXPORTS
 	pango_layout_iter_get_line_yrange
 	pango_layout_iter_get_run
 	pango_layout_iter_get_run_extents
-	pango_layout_line_get_extents
-	pango_layout_line_get_pixel_extents
-	pango_layout_line_get_x_ranges
 	pango_layout_iter_next_char
 	pango_layout_iter_next_cluster
 	pango_layout_iter_next_line
 	pango_layout_iter_next_run
+	pango_layout_line_get_extents
+	pango_layout_line_get_pixel_extents
+	pango_layout_line_get_x_ranges
 	pango_layout_line_index_to_x
 	pango_layout_line_ref
 	pango_layout_line_unref
@@ -150,6 +152,7 @@ EXPORTS
 	pango_layout_set_tabs
 	pango_layout_set_text
 	pango_layout_set_width
+	pango_layout_set_wrap
 	pango_layout_xy_to_index
 	pango_log2vis_get_embedding_levels
 	pango_map_get_engine

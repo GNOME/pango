@@ -1,0 +1,158 @@
+TOP = ../..
+!INCLUDE $(TOP)/build/win32/make.msc
+
+!IFNDEF PERL
+PERL = perl
+!ENDIF
+
+# Possibly override Pango version from build/win32/module.defs
+PANGO_VER = 0.13
+
+# INCLUDES = -I .. -I .
+# DEFINES = 
+# DEPCFLAGS = $(GLIB_CFLAGS) $(LIBICONV_CFLAGS) $(FRIBIDI_CFLAGS) $(FREETYPE2_CFLAGS)
+
+!IFNDEF PACKAGE
+
+DLLS = pango pangowin32 # pangoft2
+EXES = querymodules testfonts
+#? test1 test2 test3 test4 test5
+
+# The main target
+all : \
+	sub-all
+
+sub-all: 
+	for %d in ($(DLLS)) do nmake -nologo -f makefile.msc sub-one-dll THIS=%d
+	for %d in ($(EXES)) do nmake -nologo -f makefile.msc sub-one-exe THIS=%d
+
+sub-one-dll:
+	nmake -nologo -f makefile.msc $(THIS)-$(PANGO_VER).dll PACKAGE=$(THIS) OBJS_$(THIS)=1
+
+sub-one-exe:
+	nmake -nologo -f makefile.msc $(THIS).exe PACKAGE=$(THIS) OBJS_$(THIS)=1
+
+!ELSE
+
+PRJ_TOP = ..
+PKG_VER = $(PANGO_VER)
+PKG_DEF = $(PACKAGE).def
+
+PKG_CFLAGS = -I.. -I. -I$(PRJ_TOP) $(GLIB_CFLAGS) $(LIBICONV_CFLAGS) $(FRIBIDI_CFLAGS) $(FREETYPE2_CFLAGS)
+
+!IFDEF OBJS_pango
+# don't link with itself
+PKG_LINK = $(GLIB_LIBS) $(FRIBIDI_LIBS)
+!ELSE
+#not yet  $(FREETYPE2_LIBS)
+!IFDEF OBJS_pangowin32
+PKG_LINK = $(GLIB_LIBS) $(LIBICONV_LIBS) $(FRIBIDI_LIBS) \
+	pango-$(PANGO_VER).lib
+!ELSE
+PKG_LINK = $(GLIB_LIBS) $(LIBICONV_LIBS) $(FRIBIDI_LIBS) \
+	pango-$(PANGO_VER).lib pangowin32-$(PANGO_VER).lib
+!ENDIF
+!ENDIF
+
+!IFDEF OBJS_pango
+OBJECTS = \
+	break.obj \
+	fonts.obj \
+	glyphstring.obj \
+	mapping.obj \
+	modules.obj \
+	pango-attributes.obj \
+	pango-context.obj \
+	pango-coverage.obj \
+	pango-fontmap.obj \
+	pango-intset.obj \
+	pango-item.obj \
+	pango-markup.obj \
+	pango-layout.obj \
+	pango-tabs.obj \
+	pango-utils.obj \
+	reorder-items.obj \
+	shape.obj \
+	pango-enum-types.obj \
+	fribidi.obj \
+	fribidi_get_type.obj
+!ENDIF
+
+basic-win32.obj : ..\modules\basic\basic-win32.c
+	$(CC) $(PKG_CFLAGS) -GD -DMODULE_PREFIX -c ..\modules\basic\basic-win32.c
+
+fribidi.obj : mini-fribidi\fribidi.c
+	$(CC) $(PKG_CFLAGS) -GD -c mini-fribidi\fribidi.c
+fribidi_get_type.obj : mini-fribidi\fribidi_get_type.c
+	$(CC) $(PKG_CFLAGS) -GD -c mini-fribidi\fribidi_get_type.c
+
+!IFDEF OBJS_pangowin32
+OBJECTS = \
+	module-defs-win32.obj \
+	pangowin32.obj \
+	pangowin32-fontcache.obj \
+	pangowin32-fontmap.obj \
+	basic-win32.obj
+!ENDIF
+
+!IFDEF OBJS_pangoft2 
+OBJECTS = \
+	pangoft2.obj \
+	pangoft2-fontcache.obj \
+	pangoft2-fontmap.obj
+!ENDIF
+
+!IFDEF OBJS_querymodules
+OBJECTS = \
+	querymodules.obj
+!ENDIF
+
+!IFNDEF OBJECTS
+OBJECTS = $(PACKAGE).obj
+!ENDIF
+
+module-defs.c : module-defs.c.win32
+	copy module-defs.c.win32 module-defs.c
+
+pango_headers=		   \
+	pango.h		   \
+	pango-attributes.h \
+	pango-break.h	   \
+	pango-context.h	   \
+	pango-coverage.h   \
+	pango-engine.h	   \
+	pango-font.h       \
+	pango-fontmap.h	   \
+	pango-glyph.h	   \
+	pango-indic.h	   \
+	pango-item.h	   \
+	pango-layout.h	   \
+	pango-modules.h	   \
+	pango-tabs.h	   \
+	pango-types.h	   \
+	pango-utils.h	   \
+	pangox.h
+
+pango-enum-types.h: $(pango_headers) makeenums.pl
+	$(PERL)	./makeenums.pl include $(pango_headers) > pango-enum-types.h
+
+pango-enum-types.c: $(pango_headers) makeenums.pl pango-enum-types.h
+	$(PERL) ./makeenums.pl cfile $(pango_headers) > pango-enum-types.c
+
+$(PACKAGE).lib : $(OBJECTS) $(PRJ_TOP)\config.h
+	lib /out:$(PACKAGE).lib $(OBJECTS)
+
+$(PACKAGE)-$(PKG_VER).dll : $(OBJECTS) $(PKG_DEF) $(PRJ_TOP)\config.h
+	$(CC) $(CFLAGS) -LD -Fe$(PACKAGE)-$(PKG_VER).dll $(OBJECTS) $(PKG_LINK) user32.lib gdi32.lib advapi32.lib $(LDFLAGS) /def:$(PKG_DEF)
+
+$(PACKAGE).exe : $(PKG_LINK) $(OBJECTS)
+	$(CC) $(CFLAGS) -Fe$(PACKAGE).exe $(OBJECTS) $(PKG_LINK) gdi32.lib user32.lib
+
+
+$(PRJ_TOP)\config.h: $(PRJ_TOP)\config.h.win32
+	copy $(PRJ_TOP)\config.h.win32 $(PRJ_TOP)\config.h
+
+.c.obj :
+	$(CC) $(CFLAGS) -GD -c $(PKG_CFLAGS) -DPANGO_VERSION=\"$(PANGO_VER)\" $<
+
+!ENDIF #PACKAGE
