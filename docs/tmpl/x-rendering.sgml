@@ -2,11 +2,11 @@
 X Rendering
 
 <!-- ##### SECTION Short_Description ##### -->
-Functions for measuring glyphs and rendering X fonts.
+Functions for Rendering Pango objects on X displays.
 
 <!-- ##### SECTION Long_Description ##### -->
 <para>
-The functions in thjis system are used to take the output
+The functions in this system are used to take the output
 of the shaping modules and render that on the screen.
 </para>
 
@@ -47,35 +47,29 @@ X Window System.
 @y: 
 
 
-<!-- ##### FUNCTION pango_x_extents ##### -->
+<!-- ##### FUNCTION pango_x_render_layout_line ##### -->
 <para>
 
 </para>
 
-@font: 
-@glyphs: 
-@lbearing: 
-@rbearing: 
-@width: 
-@ascent: 
-@descent: 
-@logical_ascent: 
-@logical_descent: 
+@display: 
+@drawable: 
+@gc: 
+@line: 
+@x: 
+@y: 
 
 
-<!-- ##### FUNCTION pango_x_glyph_extents ##### -->
+<!-- ##### FUNCTION pango_x_render_layout ##### -->
 <para>
 
 </para>
 
-@font: 
-@glyph: 
-@lbearing: 
-@rbearing: 
-@width: 
-@ascent: 
-@descent: 
-@logical_ascent: 
-@logical_descent: 
+@display: 
+@drawable: 
+@gc: 
+@layout: 
+@x: 
+@y: 
 
 

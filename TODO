@@ -5,25 +5,26 @@ Layout Driver
 =============
 
 The PangoLayout object is a highlevel driver that takes an attributed
-string and produces lines of glyphs. As well as just implementing
-this, there are various improvements that need to be made to 
+string and produces lines of glyphs.
 
 * Figure out better ways of doing line breaks. (This may involve
   implementing the TeX/Raph x0-x1 stuff for line breaks.)
 
+* Add spacing parameter as illustrated; this should be a quick
+  (10 minute) addition.
+
+* Although PangoLayout isn't intended to handle large amounts
+  of text, it should be able to handle embedded "\n" and simple
+  multiple paragraphs. This could be done entirely within 
+  pango_layout_check_lines()
+
+* Attribute handling needs to be added (fg/bg/underline, etc.)
+  Each PangoItem should have a list of associated non-font
+  attributes ... though this would require a bit more thought
+  as to memory-management of PangoItem, which is currently add-hoc.
+
 X rendering
 ===========
-
-* The point-size/pixel size handling is not done right. Right
-  now we are just assuming pixel == point, because trying to
-  use the point-size fields of the X fonts didn't work on
-  systems with both 100 and 75 dpi fonts installed.
-
-  We should query the X server for its actual reported value
-  and use that to translate point size to pixel size.
-
-  (This doesn't really handle the case of optically scaled
-   bitmaps properly, but I think that is an ignorable problem.)
 
 * Right now we assume a single resolution for all fonts on a display;
   but in theory, the resolution could be per-screen. To solve 
@@ -34,8 +35,11 @@ X rendering
 Other rendering engines
 ======================
 
-Somebody should start working on a libart font-system / renderer
-soon, to make sure that the interfaces are suitable.
+* Somebody should start working on a libart font-system / renderer
+  soon, to make sure that the interfaces are suitable.
+
+* FreeType-2.0 support could be very interesting, with the OpenType 
+  that it has.
 
 Engines
 =======
@@ -46,8 +50,10 @@ Engines
 Language Modules
 ================
 
- * It would be nice to have X based renderers for a few more scripts;
-   Arabic in particular is one such script.
+ * It would be nice to have X based shapers for a few more scripts;
+   Hindi is one obvious need. (Actually, there may be a need for
+   a generic framework for Indic shapers to be developed. A
+   libpango-indic...)
 
  * Once we have a libart renderer, porting Raph's devanagari shaper
    to Pango and C (from Perl) would be a cool demo and test case.
@@ -104,3 +110,7 @@ General
   Add the remaining useful functions from utils.c into libunicode.
 
 * s/num_chars/n_chars/ etc. (Always use n_ as enumeration prefix)
+
+* Underline attribute should be an enumeration (none/single/double/squiggle/low,
+  where low is below the ink rect - a style appropriate for underline
+  accelerators.)

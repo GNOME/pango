@@ -23,6 +23,7 @@ sgml:
 html:
 	if ! test -d html ; then mkdir html ; fi
 	-cd html && gtkdoc-mkhtml $(DOC_MODULE) ../$(DOC_MAIN_SGML_FILE)
+	cp layout.gif html
 
 clean-local:
 	rm -f *~ *.bak *.hierarchy *.signals *.args *-unused.txt
@@ -34,7 +35,7 @@ maintainer-clean-local: clean
 
 endif
 
-EXTRA_DIST=pango-sections.txt pango-docs.sgml
+EXTRA_DIST=pango-sections.txt pango-docs.sgml layout.fig layout.eps layout.fig
 
 dist-hook:
 	mkdir $(distdir)/tmpl

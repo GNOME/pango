@@ -3,6 +3,7 @@
 #define __arconv_h_
 #include "../../libpango/utils.h"
 
-void reshape(int len,GUChar4* string);
+void reshape(int* len,GUChar4* string);
+int  arabic_isvowel(GUChar4 s);
 
 #endif

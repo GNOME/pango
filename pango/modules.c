@@ -76,7 +76,7 @@ _pango_find_map (const char *lang,
   if (!map)
     {
       PangoMapInfo *new_info = g_new (PangoMapInfo, 1);
-      new_info->lang = g_strdup (lang);
+      new_info->lang = g_strdup (map_info.lang);
       new_info->engine_type = g_strdup (engine_type);
       new_info->render_type = g_strdup (render_type);
 

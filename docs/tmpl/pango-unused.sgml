@@ -5,6 +5,27 @@
 
 @font: 
 
+<!-- ##### FUNCTION pango_layout_line_x_to_cp ##### -->
+<para>
+
+</para>
+
+@line: 
+@x_pos: 
+@char_pos: 
+@trailing: 
+
+<!-- ##### FUNCTION pango_layout_cp_to_line_x ##### -->
+<para>
+
+</para>
+
+@layout: 
+@char_pos: 
+@trailing: 
+@line: 
+@x_pos: 
+
 <!-- ##### FUNCTION pango_cfont_ref ##### -->
 <para>
 
@@ -26,6 +47,34 @@ indices.
 
 @context: 
 @Returns: 
+
+<!-- ##### FUNCTION pango_x_glyph_extents ##### -->
+<para>
+
+</para>
+
+@font: 
+@glyph: 
+@lbearing: 
+@rbearing: 
+@width: 
+@ascent: 
+@descent: 
+@logical_ascent: 
+@logical_descent: 
+
+<!-- ##### FUNCTION pango_cp_to_x ##### -->
+<para>
+
+</para>
+
+@text: 
+@length: 
+@analysis: 
+@glyphs: 
+@char_pos: 
+@trailing: 
+@x_pos: 
 
 <!-- ##### FUNCTION pango_x_find_cfont ##### -->
 <para>
@@ -78,6 +127,19 @@ indices.
 @xlfd: 
 @Returns: 
 
+<!-- ##### FUNCTION pango_x_to_cp ##### -->
+<para>
+
+</para>
+
+@text: 
+@length: 
+@analysis: 
+@glyphs: 
+@x_pos: 
+@char_pos: 
+@trailing: 
+
 <!-- ##### SECTION ./tmpl/pango-x.sgml:Title ##### -->
 X Rendering
 
@@ -115,6 +177,14 @@ the X Window system.
 </para>
 
 @Returns: 
+
+<!-- ##### FUNCTION pango_layout_set_first_line_width ##### -->
+<para>
+
+</para>
+
+@layout: 
+@width: 
 
 <!-- ##### SECTION ./tmpl/pango-x.sgml:Long_Description ##### -->
 <para>
@@ -219,4 +289,19 @@ that may be accessed by derived classes:
 </para>
 
 @klass: 
+
+<!-- ##### FUNCTION pango_x_extents ##### -->
+<para>
+
+</para>
+
+@font: 
+@glyphs: 
+@lbearing: 
+@rbearing: 
+@width: 
+@ascent: 
+@descent: 
+@logical_ascent: 
+@logical_descent: 
 

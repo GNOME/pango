@@ -29,9 +29,6 @@ PangoLogAttr
 <SUBSECTION>
 pango_shape
 pango_justify
-<SUBSECTION>
-pango_cp_to_x
-pango_x_to_cp
 </SECTION>
 
 <SECTION>
@@ -52,6 +49,9 @@ pango_glyph_string_new
 pango_glyph_string_set_size
 pango_glyph_string_free
 pango_glyph_string_extents
+pango_glyph_string_index_to_x
+pango_glyph_string_x_to_index
+pango_glyph_string_get_logical_widths
 </SECTION>
 
 <SECTION>
@@ -153,8 +153,6 @@ pango_attr_iterator_destroy
 <TITLE>Layout Objects</TITLE>
 <FILE>layout</FILE>
 PangoLayout
-PangoLayoutLine
-PangoLayoutRun
 pango_layout_new
 pango_layout_ref
 pango_layout_unref
@@ -162,17 +160,32 @@ pango_layout_unref
 pango_layout_set_text
 pango_layout_set_attributes
 pango_layout_set_width
-pango_layout_set_first_line_width
+pango_layout_get_width
+pango_layout_set_indent
+pango_layout_get_indent
 pango_layout_set_justify
+pango_layout_get_justify
+pango_layout_set_alignment
+pango_layout_get_alignment
+PangoAlignment
 
-pango_layout_cp_to_line_x
+pango_layout_xy_to_index
+pango_layout_index_to_pos
+
+pango_layout_get_extents
 pango_layout_get_line_count
 pango_layout_get_line
+pango_layout_get_lines
+
+<SUBSECTION>
+PangoLayoutLine
+PangoLayoutRun
 
 pango_layout_line_ref
 pango_layout_line_unref
-pango_layout_line_x_to_cp
 pango_layout_line_get_extents
+pango_layout_line_index_to_x
+pango_layout_line_x_to_index
 </SECTION>
 
 <SECTION>
@@ -197,8 +210,8 @@ script_engine_unload
 PANGO_RENDER_TYPE_X
 pango_x_get_context
 pango_x_render
-pango_x_extents
-pango_x_glyph_extents
+pango_x_render_layout_line
+pango_x_render_layout
 </SECTION>
 
 <SECTION>

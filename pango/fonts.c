@@ -469,7 +469,6 @@ pango_font_get_coverage (PangoFont      *font,
 			 const char     *lang)
 {
   g_return_val_if_fail (font != NULL, NULL);
-  g_return_val_if_fail (lang != NULL, NULL);
 
   return font->klass->get_coverage (font, lang);
 }
@@ -491,7 +490,6 @@ pango_font_find_shaper (PangoFont      *font,
 			guint32         ch)
 {
   g_return_val_if_fail (font != NULL, NULL);
-  g_return_val_if_fail (lang != NULL, NULL);
 
   return font->klass->find_shaper (font, lang, ch);
 }

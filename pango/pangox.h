@@ -46,11 +46,17 @@ void           pango_x_render             (Display          *display,
 					   gint              x,
 					   gint              y);
 void           pango_x_render_layout_line (Display          *display,
-					   Drawable          d,
+					   Drawable          drawable,
 					   GC                gc,
 					   PangoLayoutLine  *line,
 					   int               x,
 					   int               y);
+void           pango_x_render_layout      (Display        *display,
+					   Drawable        drawable,
+					   GC              gc,
+					   PangoLayout    *layout,
+					   int             x, 
+					   int             y);
 
 /* API for rendering modules
  */

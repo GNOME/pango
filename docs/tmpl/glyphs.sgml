@@ -256,3 +256,43 @@ accessible fields
 @logical_rect: 
 
 
+<!-- ##### FUNCTION pango_glyph_string_index_to_x ##### -->
+<para>
+
+</para>
+
+@glyphs: 
+@text: 
+@length: 
+@analysis: 
+@index: 
+@trailing: 
+@x_pos: 
+
+
+<!-- ##### FUNCTION pango_glyph_string_x_to_index ##### -->
+<para>
+
+</para>
+
+@glyphs: 
+@text: 
+@length: 
+@analysis: 
+@x_pos: 
+@index: 
+@trailing: 
+
+
+<!-- ##### FUNCTION pango_glyph_string_get_logical_widths ##### -->
+<para>
+
+</para>
+
+@glyphs: 
+@text: 
+@length: 
+@embedding_level: 
+@logical_widths: 
+
+

@@ -142,10 +142,10 @@ split_paragraphs (char *text)
 	  Paragraph *para = g_new (Paragraph, 1);
 	  para->text = last_para;
 	  para->length = p - last_para;
-	  para->height = 0;
 	  para->layout = pango_layout_new (context);
 	  pango_layout_set_text (para->layout, para->text, para->length);
-	  
+	  para->height = 0;
+
 	  last_para = next;
 	    
 	  result = g_list_prepend (result, para);
@@ -158,42 +158,15 @@ split_paragraphs (char *text)
   return g_list_reverse (result);
 }
 
-/* Break a paragraph into a list of lines which fit into
- * width, and compute the total height of the new paragraph
- */
-void
-layout_paragraph (Paragraph *para, int width)
-{
-  GSList *line_list;
-  PangoRectangle logical_rect;
-  int height = 0;
-  
-  pango_layout_set_width (para->layout, width * 1000);
-  pango_layout_set_first_line_width (para->layout, width * 1000);
-
-  line_list = pango_layout_get_lines (para->layout);
-  while (line_list)
-    {
-      PangoLayoutLine *line = line_list->data;
-      line_list = line_list->next;
-
-      pango_layout_line_get_extents (line, NULL, &logical_rect);
-      height += logical_rect.height;
-    }
-
-  para->height = height / 1000;
-}
-
 /* Given an x-y position, return the paragraph and offset
  * within the paragraph of the click.
  */
 gboolean
 xy_to_cp (GList *paragraphs, int width, int x, int y,
-	  Paragraph **para_return, int *offset)
+	  Paragraph **para_return, int *index)
 {
   GList *para_list;
   int height = 0;
-  PangoDirection base_dir = pango_context_get_base_dir (context);
 
   *para_return = NULL;
 
@@ -204,38 +177,12 @@ xy_to_cp (GList *paragraphs, int width, int x, int y,
       
       if (height + para->height >= y)
 	{
-	  PangoRectangle logical_rect;
-	  GSList *line_list = pango_layout_get_lines (para->layout);
-	  
-	  while (line_list)
-	    {
-	      PangoLayoutLine *line = line_list->data;
-	      int line_y = (y - height) * 1000;
-	      int line_height = 0;
+	  gboolean result = pango_layout_xy_to_index (para->layout, x * 1000, (y - height) * 1000, 
+						      index, NULL);
+	  if (result && para_return)
+	    *para_return = para;
 
-	      pango_layout_line_get_extents (line_list->data, NULL, &logical_rect);
-	      
-	      if (line_height + logical_rect.height >= line_y)
-		{
-		  int x_offset;
-
-		  if (base_dir == PANGO_DIRECTION_RTL)
-		    x_offset = width - logical_rect.width / 1000;
-		  else
-		    x_offset = 0;
-		  
-		  if (pango_layout_line_x_to_index (line, 1000 * (x - x_offset), offset, NULL))
-		    {
-		      *para_return = para;
-		      return TRUE;
-		    }
-		  else
-		    return FALSE;
-		}
-
-	      line_height += logical_rect.height;
-	      line_list = line_list->next;
-	    }
+	  return result;
 	}
       
       height += para->height;
@@ -255,8 +202,6 @@ char_bounds (GList *paragraphs, Paragraph *para, int index,
   GList *para_list;
   
   int height = 0;
-  int bytes_seen = 0;
-  PangoDirection base_dir = pango_context_get_base_dir (context);
   
   para_list = paragraphs;
   while (para_list)
@@ -265,47 +210,14 @@ char_bounds (GList *paragraphs, Paragraph *para, int index,
       
       if (cur_para == para)
 	{
-	  int line_height = 0;
-	  
-	  GSList *line_list = pango_layout_get_lines (para->layout);
-	  while (line_list)
-	    {
-	      PangoLayoutLine *line = line_list->data;
-	      PangoRectangle logical_rect;
+	  PangoRectangle pos;
 
-	      pango_layout_line_get_extents (line_list->data, NULL, &logical_rect);
+	  pango_layout_index_to_pos (cur_para->layout, index, &pos);
 
-	      bytes_seen += line->length;
-	      if (index < bytes_seen)
-		{
-		  int x0, x1;
-
-		  pango_layout_line_index_to_x  (line, index, FALSE, &x0);
-		  pango_layout_line_index_to_x  (line, index, TRUE, &x1);
-
-		  if (x0 <= x1)
-		    {
-		      rect->x = x0 / 1000;
-		      rect->width = (x1 / 1000) - rect->x; 
-		    }
-		  else
-		    {
-		      rect->x = x1 / 1000;
-		      rect->width = (x0 / 1000) - rect->x; 
-		    }
-		  
-		  rect->y = height + line_height / 1000;
-		  rect->height = logical_rect.height / 1000;
-		  
-		  if (base_dir == PANGO_DIRECTION_RTL)
-		    rect->x += width - logical_rect.width / 1000;
-		  
-		  return;
-		}
-
-	      line_height += logical_rect.height;
-	      line_list = line_list->next;
-	    }
+	  rect->x = MIN (pos.x, pos.x + pos.width) / 1000;
+	  rect->width = ABS (pos.width) / 1000;
+	  rect->y = height + pos.y / 1000;
+	  rect->height = pos.height / 1000;
 	}
       
       height += cur_para->height;
@@ -345,39 +257,6 @@ xor_char (GtkWidget *layout, GdkRectangle *clip_rect,
 			rect.x, rect.y, rect.width, rect.height);
 }
 
-
-/* Draw a paragraph on the screen by looping through the list
- * of lines, then for each line, looping through the list of
- * runs for that line and drawing them.
- */
-void
-expose_paragraph (Paragraph *para, GdkDrawable *drawable,
-		  GdkGC *gc, int width, int x, int y)
-{
-  GSList *line_list;
-  int line_height = 0;
-  PangoRectangle logical_rect;
-  PangoDirection base_dir = pango_context_get_base_dir (context);
-
-  line_list = pango_layout_get_lines (para->layout);
-  while (line_list)
-    {
-      PangoLayoutLine *line = line_list->data;
-      line_list = line_list->next;
-
-      pango_layout_line_get_extents (line, NULL, &logical_rect);
-
-      if (base_dir == PANGO_DIRECTION_LTR)
-	pango_x_render_layout_line (GDK_DISPLAY(), GDK_WINDOW_XWINDOW (drawable), GDK_GC_XGC (gc),
-				    line, x, y + line_height / 1000);
-      else
-	pango_x_render_layout_line (GDK_DISPLAY(), GDK_WINDOW_XWINDOW (drawable), GDK_GC_XGC (gc),
-				    line, x + width - logical_rect.width / 1000, y + line_height / 1000);
-      
-      line_height += logical_rect.height;
-    }
-}
-
 /* Handle a size allocation by re-laying-out each paragraph to
  * the new width, setting the new size for the layout and
  * then queing a redraw
@@ -387,14 +266,22 @@ size_allocate (GtkWidget *layout, GtkAllocation *allocation, GList *paragraphs)
 {
   GList *tmp_list;
   int height = 0;
+  PangoDirection base_dir = pango_context_get_base_dir (context);
 
   tmp_list = paragraphs;
   while (tmp_list)
     {
       Paragraph *para = tmp_list->data;
+      PangoRectangle logical_rect;
+	  
       tmp_list = tmp_list->next;
 
-      layout_paragraph (para, allocation->width);
+      pango_layout_set_alignment (para->layout,
+				  base_dir == PANGO_DIRECTION_LTR ? PANGO_ALIGN_LEFT : PANGO_ALIGN_RIGHT);
+      pango_layout_set_width (para->layout, layout->allocation.width * 1000);
+
+      pango_layout_get_extents (para->layout, NULL, &logical_rect);
+      para->height = logical_rect.height / 1000;
       
       height += para->height;
     }
@@ -402,8 +289,7 @@ size_allocate (GtkWidget *layout, GtkAllocation *allocation, GList *paragraphs)
   gtk_layout_set_size (GTK_LAYOUT (layout), allocation->width, height);
 
   if (GTK_LAYOUT (layout)->yoffset + allocation->height > height)
-    gtk_adjustment_set_value (GTK_LAYOUT (layout)->vadjustment,
-			      height - allocation->height);
+    gtk_adjustment_set_value (GTK_LAYOUT (layout)->vadjustment, height - allocation->height);
 }
 
 /* Handle a draw/expose by finding the paragraphs that intersect
@@ -431,12 +317,10 @@ draw (GtkWidget *layout, GdkRectangle *area, GList *paragraphs)
       tmp_list = tmp_list->next;
       
       if (height + para->height >= GTK_LAYOUT (layout)->yoffset + area->y)
-	expose_paragraph (para,
-			  GTK_LAYOUT (layout)->bin_window,
-			  layout->style->text_gc[layout->state],
-			  layout->allocation.width,
-			  0, height - GTK_LAYOUT (layout)->yoffset);
-      
+	pango_x_render_layout (GDK_DISPLAY(), GDK_WINDOW_XWINDOW (GTK_LAYOUT (layout)->bin_window),
+			       GDK_GC_XGC (layout->style->text_gc[GTK_STATE_NORMAL]),
+			       para->layout, 0, height - GTK_LAYOUT (layout)->yoffset);
+
       height += para->height;
     }
 

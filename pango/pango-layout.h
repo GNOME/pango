@@ -34,6 +34,12 @@ typedef struct _PangoLayout     PangoLayout;
 typedef struct _PangoLayoutLine PangoLayoutLine;
 typedef struct _PangoLayoutRun  PangoLayoutRun; 
 
+typedef enum {
+  PANGO_ALIGN_LEFT,
+  PANGO_ALIGN_CENTER,
+  PANGO_ALIGN_RIGHT
+} PangoAlignment;
+
 struct _PangoLayoutLine
 {
   PangoLayout *layout;
@@ -47,29 +53,47 @@ struct _PangoLayoutRun
   PangoGlyphString *glyphs;
 };
 
-PangoLayout *     pango_layout_new                  (PangoContext  *context);
-void              pango_layout_ref                  (PangoLayout   *layout);
-void              pango_layout_unref                (PangoLayout   *layout);
-void              pango_layout_set_width            (PangoLayout   *layout,
-						     int            width);
-void              pango_layout_set_justify          (PangoLayout   *layout,
-						     gboolean       justify);
-void              pango_layout_set_first_line_width (PangoLayout   *layout,
-						     int            width);
-void              pango_layout_set_attributes       (PangoLayout   *layout,
-						     PangoAttrList *attrs);
-void              pango_layout_set_text             (PangoLayout   *layout,
-						     char          *text,
-						     int            length);
-int               pango_layout_get_line_count       (PangoLayout   *layout);
-PangoLayoutLine * pango_layout_get_line             (PangoLayout   *layout,
-						     int            line);
-GSList *          pango_layout_get_lines            (PangoLayout   *layout);
-void              pango_layout_index_to_line_x      (PangoLayout   *layout,
-						     int            index,
-						     gboolean       trailing,
-						     int           *line,
-						     int           *x_pos);
+PangoLayout *pango_layout_new            (PangoContext   *context);
+void         pango_layout_ref            (PangoLayout    *layout);
+void         pango_layout_unref          (PangoLayout    *layout);
+
+
+void           pango_layout_set_attributes (PangoLayout    *layout,
+					    PangoAttrList  *attrs);
+void           pango_layout_set_text       (PangoLayout    *layout,
+					    char           *text,
+					    int             length);
+
+void           pango_layout_set_width     (PangoLayout    *layout,
+					   int             width);
+int            pango_layout_get_width     (PangoLayout    *layout);
+void           pango_layout_set_indent    (PangoLayout    *layout,
+					   int             indent);
+int            pango_layout_get_indent    (PangoLayout    *layout);
+void           pango_layout_set_justify   (PangoLayout    *layout,
+					   gboolean        justify);
+gboolean       pango_layout_get_justify   (PangoLayout    *layout);
+void           pango_layout_set_alignment (PangoLayout    *layout,
+					   PangoAlignment  alignment);
+PangoAlignment pango_layout_get_alignment (PangoLayout    *layout);
+
+
+void     pango_layout_index_to_pos (PangoLayout     *layout,
+				    int              index,
+				    PangoRectangle  *pos);
+gboolean pango_layout_xy_to_index  (PangoLayout     *layout,
+				    int              x,
+				    int              y,
+				    int             *index,
+				    gboolean        *trailing);
+void     pango_layout_get_extents  (PangoLayout     *layout,
+				    PangoRectangle  *ink_rect,
+				    PangoRectangle  *logical_rect);
+
+int              pango_layout_get_line_count       (PangoLayout    *layout);
+PangoLayoutLine *pango_layout_get_line             (PangoLayout    *layout,
+						    int             line);
+GSList *         pango_layout_get_lines            (PangoLayout    *layout);
 
 void     pango_layout_line_ref         (PangoLayoutLine *line);
 void     pango_layout_line_unref       (PangoLayoutLine *line);

@@ -2,7 +2,7 @@
 Layout Objects
 
 <!-- ##### SECTION Short_Description ##### -->
-Layout driver objects for entire paragraphs.
+Highlevel layout driver objects
 
 <!-- ##### SECTION Long_Description ##### -->
 <para>
@@ -23,44 +23,36 @@ at once.
 <para>
 The #PangoLayout structure represents and entire paragraph
 of text. It is initialized with a #PangoContext, UTF-8 string
-and set of attirbutes for that string. Once that is done, the
-set of formatted lines can be extracted from the object.
+and set of attributes for that string. Once that is done, the
+set of formatted lines can be extracted from the object,
+the layout can be rendered, and conversion between logical
+character positions within the layout's text, and the physical
+position of the resulting glyphs can be made.
 </para>
 
-
-<!-- ##### STRUCT PangoLayoutLine ##### -->
 <para>
-The #PangoLayoutLine structure represents one of the lines resulting
-from laying out a paragraph via #PangoLayout. #PangoLayoutLine
-structures are obtained by calling pango_layout_get_line() and
-are only valid until the text, attributes, or settings of the
-parent #PangoLayout are modified.
+There are also a number of parameters to adjust the formatting
+of a #PangoLayout, which are illustrated in <xref linkend="parameters">.
+It is possible, as well, to ignore the 2-D setup, and simply
+treat the results of a #PangoLayout as a list of lines.
 </para>
+
+<figure id="parameters">
+<title>Adjustable parameters for a PangoLayout</title>
+<graphic fileref="layout.gif" format="gif"></graphic>
+</figure>
+
 <para>
-Routines for rendering PangoLayout objects are provided in
-code specific to each rendering system.
+The #PangoLayout structure is opaque, and has no user-visible
+fields.
 </para>
-
-@layout: the parent layout for this line.
-@n_chars: the total number of characters in the line.
-@length: the length of the line in bytes.
-@runs: a list containing the runs of the line in visual order.
-
-<!-- ##### STRUCT PangoLayoutRun ##### -->
-<para>
-The #PangoLayoutRun structure represents a single run within
-a #PangoLayoutLine.
-</para>
-
-@item: a #PangoItem structure that provides information
-       about the segment of text in this run.
-@glyphs: the glyphs obtained by shaping the text for this item.
 
 <!-- ##### FUNCTION pango_layout_new ##### -->
 <para>
 
 </para>
 
+@context: 
 @Returns: 
 
 
@@ -85,6 +77,7 @@ a #PangoLayoutLine.
 
 </para>
 
+@layout: 
 @text: 
 @length: 
 
@@ -107,13 +100,31 @@ a #PangoLayoutLine.
 @width: 
 
 
-<!-- ##### FUNCTION pango_layout_set_first_line_width ##### -->
+<!-- ##### FUNCTION pango_layout_get_width ##### -->
 <para>
 
 </para>
 
 @layout: 
-@width: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_layout_set_indent ##### -->
+<para>
+
+</para>
+
+@layout: 
+@indent: 
+
+
+<!-- ##### FUNCTION pango_layout_get_indent ##### -->
+<para>
+
+</para>
+
+@layout: 
+@Returns: 
 
 
 <!-- ##### FUNCTION pango_layout_set_justify ##### -->
@@ -125,16 +136,76 @@ a #PangoLayoutLine.
 @justify: 
 
 
-<!-- ##### FUNCTION pango_layout_cp_to_line_x ##### -->
+<!-- ##### FUNCTION pango_layout_get_justify ##### -->
 <para>
 
 </para>
 
 @layout: 
-@char_pos: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_layout_set_alignment ##### -->
+<para>
+
+</para>
+
+@layout: 
+@alignment: 
+
+
+<!-- ##### FUNCTION pango_layout_get_alignment ##### -->
+<para>
+
+</para>
+
+@layout: 
+@Returns: 
+
+
+<!-- ##### ENUM PangoAlignment ##### -->
+<para>
+describes how to align the lines of a #PangoLayout within the
+available space. If the #PangoLayout is set to justify
+using pango_layout_set_justify(), then this only has an effect
+for partial lines.
+</para>
+
+@PANGO_ALIGN_LEFT: Put all available space on the right
+@PANGO_ALIGN_CENTER: Center the line within the available space
+@PANGO_ALIGN_RIGHT: Put all available space on the left
+
+<!-- ##### FUNCTION pango_layout_xy_to_index ##### -->
+<para>
+
+</para>
+
+@layout: 
+@x: 
+@y: 
+@index: 
 @trailing: 
-@line: 
-@x_pos: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_layout_index_to_pos ##### -->
+<para>
+
+</para>
+
+@layout: 
+@index: 
+@pos: 
+
+
+<!-- ##### FUNCTION pango_layout_get_extents ##### -->
+<para>
+
+</para>
+
+@layout: 
+@ink_rect: 
+@logical_rect: 
 
 
 <!-- ##### FUNCTION pango_layout_get_line_count ##### -->
@@ -156,6 +227,42 @@ a #PangoLayoutLine.
 @Returns: 
 
 
+<!-- ##### FUNCTION pango_layout_get_lines ##### -->
+<para>
+
+</para>
+
+@layout: 
+@Returns: 
+
+
+<!-- ##### STRUCT PangoLayoutLine ##### -->
+<para>
+The #PangoLayoutLine structure represents one of the lines resulting
+from laying out a paragraph via #PangoLayout. #PangoLayoutLine
+structures are obtained by calling pango_layout_get_line() and
+are only valid until the text, attributes, or settings of the
+parent #PangoLayout are modified.
+</para>
+<para>
+Routines for rendering PangoLayout objects are provided in
+code specific to each rendering system.
+</para>
+
+@layout: the parent layout for this line.
+@length: the length of the line in bytes.
+@runs: a list containing the runs of the line in visual order.
+
+<!-- ##### STRUCT PangoLayoutRun ##### -->
+<para>
+The #PangoLayoutRun structure represents a single run within
+a #PangoLayoutLine.
+</para>
+
+@item: a #PangoItem structure that provides information
+       about the segment of text in this run.
+@glyphs: the glyphs obtained by shaping the text for this item.
+
 <!-- ##### FUNCTION pango_layout_line_ref ##### -->
 <para>
 
@@ -172,17 +279,6 @@ a #PangoLayoutLine.
 @line: 
 
 
-<!-- ##### FUNCTION pango_layout_line_x_to_cp ##### -->
-<para>
-
-</para>
-
-@line: 
-@x_pos: 
-@char_pos: 
-@trailing: 
-
-
 <!-- ##### FUNCTION pango_layout_line_get_extents ##### -->
 <para>
 
@@ -191,5 +287,28 @@ a #PangoLayoutLine.
 @line: 
 @ink_rect: 
 @logical_rect: 
+
+
+<!-- ##### FUNCTION pango_layout_line_index_to_x ##### -->
+<para>
+
+</para>
+
+@line: 
+@index: 
+@trailing: 
+@x_pos: 
+
+
+<!-- ##### FUNCTION pango_layout_line_x_to_index ##### -->
+<para>
+
+</para>
+
+@line: 
+@x_pos: 
+@index: 
+@trailing: 
+@Returns: 
 
 

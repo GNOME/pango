@@ -346,31 +346,3 @@ about the attributes of a single character.
 @min_kashida_width: 
 
 
-<!-- ##### FUNCTION pango_cp_to_x ##### -->
-<para>
-
-</para>
-
-@text: 
-@length: 
-@analysis: 
-@glyphs: 
-@char_pos: 
-@trailing: 
-@x_pos: 
-
-
-<!-- ##### FUNCTION pango_x_to_cp ##### -->
-<para>
-
-</para>
-
-@text: 
-@length: 
-@analysis: 
-@glyphs: 
-@x_pos: 
-@char_pos: 
-@trailing: 
-
-

@@ -1,3 +1,28 @@
+Thu Mar  9 19:55:21 2000  Owen Taylor  <otaylor@redhat.com>
+
+	* Release pango-0.8
+
+	* docs/TEXT/coding-style: Added some notes about coding style
+	within Pango.
+
+	* modules/*.[ch]: New version from Karl Koehler adding support
+	for vowels marks, better ligatures.
+	
+	* docs/tmpl/*: Doc updates
+
+        * libpango/pango-layout.[ch] libpango/pangox/.[ch]: Add functions
+	for handling paragraphs as 2-D objects, not simple lists of lines,
+	to make things easier for people using pango-layout.
+	 
+        * examples/viewer.c: Simplify using the now 2-D layout-capabable
+	PangoLayout.
+	
+	* libpango/fonts.c (pango_font_{get_coverage,find_shaper}): Allow
+	NULL language tag.
+
+	* libpango/modules.c (_pango_find_map): Fix for allowing
+	NULL language tag.
+
 Wed Mar  8 13:34:57 2000  Owen Taylor  <otaylor@redhat.com>
 
 	* libpango/pango-layout.[ch]: First draft of highlevel

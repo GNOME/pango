@@ -36,7 +36,10 @@ struct _PangoLayout
   gchar *text;
   int length;			/* length of text in bytes */
   int width;			/* wrap width, in device units */
-  int first_line_width;		/* wrap width for first line, in device units */
+  int indent;			/* amount by which first line should be shorter */
+
+  guint justify : 1;
+  guint alignment : 2;
 
   GSList *lines;
 };
@@ -80,7 +83,10 @@ pango_layout_new (PangoContext *context)
   layout->text = NULL;
   layout->length = 0;
   layout->width = -1;
-  layout->first_line_width = -1;
+  layout->indent = 0;
+
+  layout->alignment = PANGO_ALIGN_LEFT;
+  layout->justify = FALSE;
 
   layout->lines = NULL;
 
@@ -135,7 +141,7 @@ pango_layout_unref (PangoLayout *layout)
  * @width: the desired width, or -1 to indicate that no wrapping should be
  *         performed.
  * 
- * Set the width to which the lines of the #PangoLayout should be wrapped.
+ * Sets the width to which the lines of the #PangoLayout should be wrapped.
  **/
 void
 pango_layout_set_width (PangoLayout *layout,
@@ -148,22 +154,55 @@ pango_layout_set_width (PangoLayout *layout,
 }
 
 /**
- * pango_layout_set_first_width:
- * @layout: a #PangoLayout.
- * @width: the desired width, or -1 to indicate that it should be the same
- *         as the the width set by pango_layout_set_width().
+ * pango_layout_get_width:
+ * @layout: a #PangoLayout
  * 
- * Set the width to which the first line of the #PangoLayout should be
- * wrapped.
+ * Gets the width to which the lines of the #PangoLayout should be wrapped.
+ * 
+ * Return value: the width
+ **/
+int
+pango_layout_get_width (PangoLayout    *layout)
+{
+  g_return_val_if_fail (layout != NULL, 0);
+  return layout->width;
+}
+
+/**
+ * pango_layout_set_indent
+ * @layout: a #PangoLayout.
+ * @indent: the amount by which to indent
+ * 
+ * Sets the amount by which the first line should be shorter than the
+ * rest of the lines. This may be negative, in which case
+ * the subsequent lines will be shorter than the first line. (However,
+ * in either case, the entire width of the layout will be given by
+ * the value 
  **/
 void
-pango_layout_set_first_line_width (PangoLayout *layout,
-				   int          width)
+pango_layout_set_indent (PangoLayout *layout,
+			 int          indent)
 {
   g_return_if_fail (layout != NULL);
 
-  layout->first_line_width = width;
+  layout->indent = indent;
   pango_layout_clear_lines (layout);
+}
+
+/**
+ * pango_layout_get_indent:
+ * @layout: a #PangoLayout
+ * 
+ * Gets the amount by which the first line should be shorter than the
+ * rest of the lines. 
+ * 
+ * Return value: the indent
+ **/
+int
+pango_layout_get_indent (PangoLayout *layout)
+{
+  g_return_val_if_fail (layout != NULL, 0);
+  return layout->indent;
 }
 
 /**
@@ -171,18 +210,88 @@ pango_layout_set_first_line_width (PangoLayout *layout,
  * @layout: a #PangoLayout
  * @attrs: a #PangoAttrList
  * 
- * Set the text attributes for a layout object
+ * Sets the text attributes for a layout object
  **/
 void
-pango_layout_set_attributes (PangoLayout      *layout,
-			     PangoAttrList    *attrs)
+pango_layout_set_attributes (PangoLayout   *layout,
+			     PangoAttrList *attrs)
 {
+  g_return_if_fail (layout != NULL);
+
   if (layout->attrs)
     pango_attr_list_unref (layout->attrs);
 
   layout->attrs = attrs;
   pango_attr_list_ref (layout->attrs);
   pango_layout_clear_lines (layout);
+}
+
+/**
+ * pango_layout_set_justify:
+ * @layout: a #PangoLayout
+ * @justify: whether the lines in the layout should be justified.
+ * 
+ * Sets whether or not each complete line should be stretched to
+ * fill the entire width of the layout. This stretching is typically
+ * done by adding whitespace, but for some scripts (such as Arabic),
+ * the justification is done by extending the characters.
+ **/
+void
+pango_layout_set_justify (PangoLayout *layout,
+			  gboolean     justify)
+{
+  g_return_if_fail (layout != NULL);
+
+  layout->justify = justify;
+}
+
+/**
+ * pango_layout_get_justify:
+ * @layout: a #PangoLayout
+ * 
+ * Gets whether or not each complete line should be stretched to
+ * fill the entire width of the layout.
+ * 
+ * Return value: the justify
+ **/
+gboolean
+pango_layout_get_justify (PangoLayout *layout)
+{
+  g_return_val_if_fail (layout != NULL, FALSE);
+  return layout->justify;
+}
+
+/**
+ * pango_layout_set_alignment:
+ * @layout: a #PangoLayout
+ * @alignment: the new alignment
+ * 
+ * Sets the alignment for the layout (how partial lines are
+ * positioned within the horizontal space available.)
+ **/
+void
+pango_layout_set_alignment (PangoLayout   *layout,
+			    PangoAlignment alignment)
+{
+  g_return_if_fail (layout != NULL);
+
+  layout->alignment = alignment;
+}
+
+/**
+ * pango_layout_get_alignment:
+ * @layout: a #PangoLayout
+ * 
+ * Sets the alignment for the layout (how partial lines are
+ * positioned within the horizontal space available.)
+ * 
+ * Return value: the alignment value
+ **/
+PangoAlignment
+pango_layout_get_alignment (PangoLayout *layout)
+{
+  g_return_val_if_fail (layout != NULL, PANGO_ALIGN_LEFT);
+  return layout->alignment;
 }
 
 /**
@@ -231,7 +340,6 @@ pango_layout_get_line_count (PangoLayout   *layout)
   g_return_val_if_fail (layout != NULL, 0);
 
   pango_layout_check_lines (layout);
-
   return g_slist_length (layout->lines);
 }
 
@@ -259,7 +367,7 @@ pango_layout_get_lines (PangoLayout *layout)
  * @line: the index of a line, which must be between 0 and
  *        pango_layout_get_line_count(layout) - 1, inclusive.
  * 
- * Retrieve a particular line from a #PangoLayout
+ * Retrieves a particular line from a #PangoLayout
  * 
  * Return value: the requested #PangoLayoutLine, or %NULL if the
  *               index is out of range. This layout line can
@@ -357,7 +465,7 @@ pango_layout_index_to_line_x (PangoLayout *layout,
   int tmp_line = 0;
   int bytes_seen = 0;
 
-  g_return_if_fail (line != NULL);
+  g_return_if_fail (layout != NULL);
 
   pango_layout_check_lines (layout);
 
@@ -383,6 +491,230 @@ pango_layout_index_to_line_x (PangoLayout *layout,
     *line = -1;
   if (x_pos)
     *x_pos = -1;
+}
+
+/**
+ * pango_layout_xy_to_index:
+ * @layout:    a #PangoLayout
+ * @x:         the X offset (in thousandths of a device unit)
+ *             from the left edge of the layout.
+ * @y:         the Y offset (in thousandths of a device unit)
+ *             from the top edge of the layout
+ * @index:     location to store calculated byte index
+ * @trailing:  location to store a integer indicating where
+ *             in the cluster the user clicked. If the script
+ *             allows positioning within the cluster, it is either
+ *             0 or 1; otherwise it is either 0 or the number
+ *             of characters in the cluster. In either case
+ *             0 represents the trailing edge of the cluster.
+ *
+ * Convert from X and Y position within a layout to the byte 
+ * offset to the character at that logical position.
+ * 
+ * Return value: TRUE if the position was within the layout
+ **/
+gboolean
+pango_layout_xy_to_index (PangoLayout *layout,
+			  int          x,
+			  int          y,
+			  int         *index,
+			  gboolean    *trailing)
+{
+  GSList *line_list;
+  int y_offset = 0;
+	  
+  g_return_val_if_fail (layout != NULL, FALSE);
+
+  pango_layout_check_lines (layout);
+
+  line_list = layout->lines;
+  while (line_list)
+    {
+      PangoLayoutLine *line = line_list->data;
+      PangoRectangle logical_rect;
+
+      pango_layout_line_get_extents (line, NULL, &logical_rect);
+	      
+      if (y_offset + logical_rect.height >= y)
+	{
+	  int x_offset;
+	    
+	  if (layout->width != 1 && layout->alignment == PANGO_ALIGN_RIGHT)
+	    x_offset = layout->width - logical_rect.width;
+	  else if (layout->width != 1 && layout->alignment == PANGO_ALIGN_CENTER)
+	    x_offset = (layout->width - logical_rect.width) / 2;
+	  else
+	    x_offset = 0;
+	  
+	  return pango_layout_line_x_to_index (line, x - x_offset, index, trailing);
+	}
+
+      y_offset += logical_rect.height;
+      line_list = line_list->next;
+    }
+
+  return FALSE;
+}
+
+/**
+ * pango_layout_index_to_pos:
+ * @layout: a #PangoLayout
+ * @index: byte index within @layout
+ * @pos: rectangle in which to store the position of the character
+ * 
+ * Convert from an index within a PangoLayout to the onscreen position
+ * corresponding to that character, which is represented as rectangle.
+ * Note that pos->x is always the leading edge of the character. If the
+ * and pos->x + pos->width the trailing edge of the character. If the
+ * directionality of the character is right-to-left, then pos->width
+ * will be negative.
+ **/
+void
+pango_layout_index_to_pos (PangoLayout    *layout,
+			   int             index,
+			   PangoRectangle *pos)
+{
+  PangoRectangle logical_rect;
+  GSList *tmp_list;
+  int bytes_seen = 0;
+  
+  g_return_if_fail (layout != NULL);
+  g_return_if_fail (index >= 0 && index < layout->length);
+
+  pos->y = 0;
+  
+  pango_layout_check_lines (layout);
+
+  tmp_list = layout->lines;
+  while (tmp_list)
+    {
+      PangoLayoutLine *layout_line = tmp_list->data;
+
+      pango_layout_line_get_extents (layout_line, NULL, &logical_rect);
+
+      if (bytes_seen + layout_line->length > index)
+	{
+	  int x_pos;
+	  int x_offset;
+
+	  if (layout->width != 1 && layout->alignment == PANGO_ALIGN_RIGHT)
+	    x_offset = layout->width - logical_rect.width;
+	  else if (layout->width != 1 && layout->alignment == PANGO_ALIGN_CENTER)
+	    x_offset = (layout->width - logical_rect.width) / 2;
+	  else
+	    x_offset = 0;
+	  
+	  pos->height = logical_rect.height;
+
+	  pango_layout_line_index_to_x (layout_line, index, FALSE, &x_pos);
+	  pos->x = x_pos;
+	  
+	  pango_layout_line_index_to_x (layout_line, index, TRUE, &x_pos);
+	  pos->width = x_pos - pos->x;
+
+	  pos->x += x_offset;
+	  
+	  return;
+	}
+
+      tmp_list = tmp_list->next;
+      bytes_seen += layout_line->length;
+      pos->y += logical_rect.height;
+    }
+}
+
+/**
+ * pango_layout_get_extents:
+ * @layout:   a #PangoLayout
+ * @ink_rect: rectangle used to store the extents of the glyph string as drawn
+ *            or %NULL to indicate that the result is not needed.
+ * @logical_rect: rectangle used to store the logical extents of the glyph string
+ *            or %NULL to indicate that the result is not needed.
+ * 
+ * Compute the logical and ink extents of a layout line. See the documentation
+ * for pango_font_get_glyph_extents() for details about the interpretation
+ * of the rectangles.
+ */
+void
+pango_layout_get_extents (PangoLayout    *layout,
+			  PangoRectangle *ink_rect,
+			  PangoRectangle *logical_rect)
+{
+  GSList *line_list;
+  int y_offset = 0;
+	  
+  g_return_if_fail (layout != NULL);
+
+  pango_layout_check_lines (layout);
+
+  line_list = layout->lines;
+  while (line_list)
+    {
+      PangoLayoutLine *line = line_list->data;
+      PangoRectangle line_ink;
+      PangoRectangle line_logical;
+
+      int x_offset;
+      int new_pos;
+	      
+      pango_layout_line_get_extents (line, ink_rect ? &line_ink : NULL, &line_logical);
+
+      if (layout->width != 1 && layout->alignment == PANGO_ALIGN_RIGHT)
+	x_offset = layout->width - line_logical.width;
+      else if (layout->width != 1 && layout->alignment == PANGO_ALIGN_CENTER)
+	x_offset = (layout->width - line_logical.width) / 2;
+      else
+	x_offset = 0;
+	  
+      if (ink_rect)
+	{
+	  if (line_list == layout->lines)
+	    {
+	      ink_rect->x = line_ink.x + x_offset;
+	      ink_rect->y = line_ink.y;
+	      ink_rect->width = line_ink.width;
+	      ink_rect->height = line_ink.height;
+	    }
+	  else
+	    {
+	      new_pos = MIN (ink_rect->x, line_ink.x + x_offset);
+	      ink_rect->width = MAX (ink_rect->x + ink_rect->width,
+				     line_ink.x + line_ink.width + x_offset) - new_pos;
+	      ink_rect->x = new_pos;
+
+	      new_pos = MIN (ink_rect->y, line_ink.y + y_offset);
+	      ink_rect->height = MAX (ink_rect->y + ink_rect->height,
+				      line_ink.y + line_ink.height + y_offset) - new_pos;
+	      ink_rect->y = new_pos;
+	    }
+	}
+
+      if (logical_rect)
+	{
+	  if (line_list == layout->lines)
+	    {
+	      logical_rect->x = line_logical.x + x_offset;
+	      logical_rect->y = line_logical.y;
+	      logical_rect->width = line_logical.width;
+	      logical_rect->height = line_logical.height;
+	    }
+	  else
+	    {
+	      new_pos = MIN (logical_rect->x, line_logical.x + x_offset);
+	      logical_rect->width = MAX (logical_rect->x + logical_rect->width,
+					 line_logical.x + line_logical.width + x_offset) - new_pos;
+	      logical_rect->x = new_pos;
+
+	      new_pos = MIN (logical_rect->y, line_logical.y + y_offset);
+	      logical_rect->height = MAX (logical_rect->y + logical_rect->height,
+					  line_logical.y + line_logical.height + y_offset) - new_pos;
+	      logical_rect->y = new_pos;
+	    }
+	}
+      
+      y_offset += line_logical.height;
+      line_list = line_list->next;
+    }
 }
 
 static void
@@ -531,7 +863,7 @@ pango_layout_check_lines (PangoLayout *layout)
     return;
   
   line = pango_layout_line_new (layout);
-  remaining_width = layout->first_line_width;
+  remaining_width = (layout->indent >= 0) ? layout->width - layout->indent : layout->indent;
 
   /* FIXME, should we force people to set the attrs? */
   if (layout->attrs)
@@ -565,7 +897,7 @@ pango_layout_check_lines (PangoLayout *layout)
 	  layout->lines = g_slist_prepend (layout->lines, line);
 
 	  line = pango_layout_line_new (layout);
-	  remaining_width = layout->width;
+	  remaining_width = (layout->indent >= 0) ? layout->width : layout->indent + layout->indent;
 	}
     }
 
@@ -596,7 +928,7 @@ pango_layout_line_ref (PangoLayoutLine *line)
 
 /**
  * pango_layout_line_unref:
- * @line: 
+ * @line: a #PangoLayoutLine
  * 
  * Decrease the reference count of a #PangoLayoutLine by one.
  * if the result is zero, the line and all associated memory

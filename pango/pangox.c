@@ -2004,19 +2004,18 @@ pango_x_get_unknown_glyph (PangoFont *font)
 
 /**
  * pango_x_render_layout_line:
- * @display: the X display
- * @d:       the drawable on which to draw string
- * @gc:      the graphics context
- * @line:    a #PangoLayoutLine
- * @glyphs:  the glyph string to draw
- * @x:       the x position of start of string (in pixels)
- * @y:       the y position of baseline (in pixels)
+ * @display:  the X display
+ * @drawable: the drawable on which to draw string
+ * @gc:       the graphics context
+ * @line:     a #PangoLayoutLine
+ * @x:        the x position of start of string (in pixels)
+ * @y:        the y position of baseline (in pixels)
  *
  * Render a #PangoLayoutLine onto an X drawable
  */
 void 
 pango_x_render_layout_line (Display          *display,
-			    Drawable          d,
+			    Drawable          drawable,
 			    GC                gc,
 			    PangoLayoutLine  *line,
 			    int               x, 
@@ -2035,7 +2034,7 @@ pango_x_render_layout_line (Display          *display,
       PangoLayoutRun *run = tmp_list->data;
       tmp_list = tmp_list->next;
 
-      pango_x_render (display, d, gc, run->item->analysis.font, run->glyphs,
+      pango_x_render (display, drawable, gc, run->item->analysis.font, run->glyphs,
 		      x + x_off / 1000, y);
 
       if (tmp_list)
@@ -2044,5 +2043,86 @@ pango_x_render_layout_line (Display          *display,
 				      NULL, &logical_rect);
 	  x_off += logical_rect.width;
 	}
+    }
+}
+
+/**
+ * pango_x_render_layout:
+ * @display:  the X display
+ * @drawable: the drawable on which to draw string
+ * @gc:       the graphics context
+ * @layout:   a #PangoLayout
+ * @x:        the X position of the left of the layout (in pixels)
+ * @y:        the Y position of the top of the layout (in pixels)
+ *
+ * Render a #PangoLayoutLine onto an X drawable
+ */
+void 
+pango_x_render_layout (Display     *display,
+		       Drawable     drawable,
+		       GC           gc,
+		       PangoLayout *layout,
+		       int          x, 
+		       int          y)
+{
+  PangoRectangle logical_rect;
+  GSList *tmp_list;
+  PangoAlignment align;
+  int indent;
+  int width;
+  int y_offset = 0;
+
+  gboolean first = FALSE;
+  
+  g_return_if_fail (display != NULL);
+  g_return_if_fail (layout != NULL);
+
+  indent = pango_layout_get_indent (layout);
+  width = pango_layout_get_width (layout);
+  align = pango_layout_get_alignment (layout);
+  
+  tmp_list = pango_layout_get_lines (layout);
+  while (tmp_list)
+    {
+      PangoLayoutLine *line = tmp_list->data;
+      int x_offset;
+      
+      pango_layout_line_get_extents (line, NULL, &logical_rect);
+
+      if (width != 1 && align == PANGO_ALIGN_RIGHT)
+	x_offset = width - logical_rect.width;
+      else if (width != 1 && align == PANGO_ALIGN_CENTER)
+	x_offset = (width - logical_rect.width) / 2;
+      else
+	x_offset = 0;
+
+      if (first)
+	{
+	  if (indent > 0)
+	    {
+	      if (align == PANGO_ALIGN_LEFT)
+		x_offset += indent;
+	      else
+		x_offset -= indent;
+	    }
+
+	  first = FALSE;
+	}
+      else
+	{
+	  if (indent < 0)
+	    {
+	      if (align == PANGO_ALIGN_LEFT)
+		x_offset -= indent;
+	      else
+		x_offset += indent;
+	    }
+	}
+	  
+      pango_x_render_layout_line (display, drawable, gc,
+				  line, x + x_offset / 1000, y + y_offset / 1000);
+
+      y_offset += logical_rect.height;
+      tmp_list = tmp_list->next;
     }
 }

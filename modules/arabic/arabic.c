@@ -136,10 +136,16 @@ set_glyph (PangoGlyphString *glyphs,
   glyphs->glyphs[i].geometry.x_offset = 0;
   glyphs->glyphs[i].geometry.y_offset = 0;
 
-  glyphs->log_clusters[i] = cluster_start;
-
   pango_font_get_glyph_extents (font, glyphs->glyphs[i].glyph, NULL, &logical_rect);
-  glyphs->glyphs[i].geometry.width = logical_rect.width;
+  glyphs->log_clusters[i] = cluster_start;
+  if (arabic_isvowel(glyph))
+      {
+	  glyphs->glyphs[i].geometry.width = 0;
+      }
+  else
+      {
+	  glyphs->glyphs[i].geometry.width = logical_rect.width;
+      }
 }
 
 
@@ -157,6 +163,7 @@ arabic_engine_shape (PangoFont        *font,
   int n_chars, n_glyph;
   int i;
   const char *p;
+  const char *pold;
   const char *next;
   GUChar4     *wc;
 
@@ -189,7 +196,8 @@ arabic_engine_shape (PangoFont        *font,
 
   if (analysis->level % 2 == 0)
     {
-      /* We somehow were called on a LTR directional run; fallback as simply as possible */
+      /* We were called on a LTR directional run (e.g. some numbers); 
+	 fallback as simply as possible */
 
       pango_glyph_string_set_size (glyphs, n_chars);
 
@@ -215,62 +223,40 @@ arabic_engine_shape (PangoFont        *font,
       p = next;
     }
   
-  reshape(n_chars,wc);
-
-  /* The following support for ALIF.LAM ligatures is hackish and should
-   * be moved into arconv.c. (As a rough guess, arconv.c should fill
-   * in a log_clusters[] type array with character offets, that would
-   * then convert to the byte offsets needed for the real log_clusters[])
-   *
-   * The ligature detection below is written in terms of the Unicode
-   * presentation forms, which is almost certainly not the right way
-   * to do things.
-   */
-
-#define ALIF_R     0xFE8E
-#define LAM_L      0xFEDF
-#define LAM_M      0xFEE0
-#define ALIF_LAM_R 0xFEFC
-#define ALIF_LAM_N 0xFEFB
   
-  for (i = n_chars - 1; i >= 1; i--)
-    {
-      if (wc[i-1] == ALIF_R && (wc[i] == LAM_M || wc[i] == LAM_L))
-	n_glyph--;
-    }
+  reshape(&n_glyph,wc);
+/*    raise(2); */
 
   pango_glyph_string_set_size (glyphs, n_glyph);
 
-  p = text;
-  for (i = n_chars - 1; i >= 0; i--)
+  p    = text;
+  pold = p;
+  i    = n_chars-1;
+  while(i >= 0)
     {
-      int ligature = 0;
-
-      if (i > 0)
-	{
-	  if (wc[i-1] == ALIF_R && wc[i] == LAM_M)
-	    {
-	      ligature = ALIF_LAM_R;
-	    }
-	  else if (wc[i-1] == ALIF_R && wc[i] == LAM_L)
-	    {
-	      ligature = ALIF_LAM_N;
-	    }
-	}
-
-      if (ligature != 0)
-	{
-	  set_glyph (glyphs, font, subfont, n_glyph - 1, p - text, ligature);
-	  p = unicode_next_utf8 (p);
-	  i--;
-	}
-      else
-	set_glyph (glyphs, font, subfont, n_glyph - 1, p - text, wc[i]);
+	  if (wc[i] == 0)
+	      {
+		  p = unicode_next_utf8 (p);
+		  i--;
+	      }
+	  else 
+	      {
+		  set_glyph (glyphs, font, subfont, n_glyph - 1, p - text, wc[i]);
+		  if ( arabic_isvowel(wc[i])) 
+		    {
+		      glyphs->log_clusters[n_glyph-1] = pold - text;
+		    }
       
-      p = unicode_next_utf8 (p);
-      n_glyph--;
-    };
+		  pold = p;
+		  p = unicode_next_utf8 (p);
+		  n_glyph--;
+		  i--;
+	      };
+    }
 
+/*    if ((i != 0)||(n_glyph-1 != 0)){ */
+/*      printf(" i= %x , n_glyph = %x "); */
+/*    }; */
   g_free(wc);
 }
 
