@@ -1,3 +1,9 @@
+Sat Feb 23 17:34:26 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* modules/basic/basic-{ft2,x,xft}.c: Patch from Sven Neumann
+	to extend and make consistent the set of zero-width characters
+	that are not displayed. (#71931)
+
 Sat Feb 23 13:07:02 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pango-font.h pango/pango-fontmap.h pango/pango-fontset.h:

@@ -26,6 +26,25 @@
 #include "pango-engine.h"
 #include "pango-utils.h"
 
+
+/* Zero Width characters:
+ *
+ *  200B  ZERO WIDTH SPACE
+ *  200C  ZERO WIDTH NON-JOINER
+ *  200D  ZERO WIDTH JOINER
+ *  200E  LEFT-TO-RIGHT MARK
+ *  200F  RIGHT-TO-LEFT MARK
+ *  202A  LEFT-TO-RIGHT EMBEDDING
+ *  202B  RIGHT-TO-LEFT EMBEDDING
+ *  202C  POP DIRECTIONAL FORMATTING
+ *  202D  LEFT-TO-RIGHT OVERRIDE
+ *  202E  RIGHT-TO-LEFT OVERRIDE
+ */
+
+#define ZERO_WIDTH_CHAR(wc)\
+(((wc) >= 0x200B && (wc) <= 0x200F) || ((wc) >= 0x202A && (wc) <= 0x202E))
+
+
 static PangoEngineRange basic_ranges[] = {
   /* Language characters */
   { 0x0380, 0x058f, "*" },
@@ -142,7 +161,7 @@ basic_engine_shape (PangoFont        *font,
 	    input = buf;
 	  }
 
-      if (wc >= 0x200B && wc <= 0x200F)	/* Zero-width characters */
+      if (ZERO_WIDTH_CHAR (wc))
 	{
 	  set_glyph (font, glyphs, i, p - text, 0);
 	}
