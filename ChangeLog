@@ -1,11 +1,12 @@
 2005-03-20  Tor Lillqvist  <tml@novell.com>
 
-	* modules/basic/basic-win32.c (itemize_shape_and_place): Force
-	fRTL for each item returned from ScriptItemize() to the bidi
-	embedding parity for the whole run. Pango passes us a run that it
-	correctly has analyzed should be of a certain direction, but
-	ScriptItemize() still might split it into items, some of which
-	have neutral direction. (#170931)
+	* modules/basic/basic-win32.c (make_langid): Leave out some
+	languages that don't have any own digits.
+	(itemize_shape_and_place): Force fRTL for each item returned from
+	ScriptItemize() to the bidi embedding parity for the whole
+	run. Pango passes us a run that it correctly has analyzed should
+	be of a certain direction, but ScriptItemize() still might split
+	it into items, some of which have neutral direction. (#170931)
 	(uniscribe_shape, text_is_simple): Use g_utf8_to_utf16().
 
 	Merge from HEAD:
