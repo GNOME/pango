@@ -455,6 +455,7 @@ char *MiniXftConfigtext;
  */
 
 #include <string.h>
+#include <stdlib.h>
 #include "minixftint.h"
 
 #include "minixftgram.h"
@@ -527,7 +528,7 @@ static void unput (char c)
 }
 #endif
 
-#line 531 "lex.MiniXftConfig.c"
+#line 532 "lex.MiniXftConfig.c"
 
 /* Macros after this point can all be overridden by user definitions in
  * section 1.
@@ -681,9 +682,9 @@ YY_DECL
 	register char *MiniXftConfig_cp = NULL, *MiniXftConfig_bp = NULL;
 	register int MiniXftConfig_act;
 
-#line 100 "minixftlex.l"
+#line 101 "minixftlex.l"
 
-#line 687 "lex.MiniXftConfig.c"
+#line 688 "lex.MiniXftConfig.c"
 
 	if ( MiniXftConfig_init )
 		{
@@ -769,167 +770,167 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 101 "minixftlex.l"
+#line 102 "minixftlex.l"
 _MiniXftConfigSkipComment();
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 102 "minixftlex.l"
+#line 103 "minixftlex.l"
 _MiniXftConfigSkipLine();
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 103 "minixftlex.l"
+#line 104 "minixftlex.l"
 return DIR;
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 104 "minixftlex.l"
+#line 105 "minixftlex.l"
 return CACHE;
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 105 "minixftlex.l"
+#line 106 "minixftlex.l"
 return INCLUDE;
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 106 "minixftlex.l"
+#line 107 "minixftlex.l"
 return INCLUDEIF;
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 107 "minixftlex.l"
+#line 108 "minixftlex.l"
 return MATCH;
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 108 "minixftlex.l"
+#line 109 "minixftlex.l"
 return EDIT;
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 109 "minixftlex.l"
+#line 110 "minixftlex.l"
 return TOK_TRUE;
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 110 "minixftlex.l"
+#line 111 "minixftlex.l"
 return TOK_FALSE;
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 111 "minixftlex.l"
+#line 112 "minixftlex.l"
 return TOK_NIL;
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 112 "minixftlex.l"
+#line 113 "minixftlex.l"
 return ANY;
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 113 "minixftlex.l"
+#line 114 "minixftlex.l"
 return ALL;
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 114 "minixftlex.l"
+#line 115 "minixftlex.l"
 return EQUAL;
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 115 "minixftlex.l"
+#line 116 "minixftlex.l"
 return COLON;
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 116 "minixftlex.l"
+#line 117 "minixftlex.l"
 return SEMI;
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 117 "minixftlex.l"
+#line 118 "minixftlex.l"
 return PLUS;
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 118 "minixftlex.l"
+#line 119 "minixftlex.l"
 return MINUS;
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 119 "minixftlex.l"
+#line 120 "minixftlex.l"
 return TIMES;
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 120 "minixftlex.l"
+#line 121 "minixftlex.l"
 return DIVIDE;
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 121 "minixftlex.l"
+#line 122 "minixftlex.l"
 return NOT;
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 122 "minixftlex.l"
+#line 123 "minixftlex.l"
 return ANDAND;
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 123 "minixftlex.l"
+#line 124 "minixftlex.l"
 return OROR;
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 124 "minixftlex.l"
+#line 125 "minixftlex.l"
 return LESS;
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 125 "minixftlex.l"
+#line 126 "minixftlex.l"
 return LESSEQ;
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 126 "minixftlex.l"
+#line 127 "minixftlex.l"
 return EQEQ;
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 127 "minixftlex.l"
+#line 128 "minixftlex.l"
 return MOREEQ;
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 128 "minixftlex.l"
+#line 129 "minixftlex.l"
 return MORE;
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 129 "minixftlex.l"
+#line 130 "minixftlex.l"
 return NOTEQ;
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 130 "minixftlex.l"
+#line 131 "minixftlex.l"
 return QUEST;
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 131 "minixftlex.l"
+#line 132 "minixftlex.l"
 return OS;
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 132 "minixftlex.l"
+#line 133 "minixftlex.l"
 return CS;
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 133 "minixftlex.l"
+#line 134 "minixftlex.l"
 {
     			MiniXftConfigtext[MiniXftConfigleng - 1] = '\0';
 			MiniXftConfiglval.sval = MiniXftConfigtext+1;
@@ -938,7 +939,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 138 "minixftlex.l"
+#line 139 "minixftlex.l"
 {
 		MiniXftConfiglval.ival = strtol (MiniXftConfigtext, 0, 10);
 		return INTEGER;
@@ -946,7 +947,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 142 "minixftlex.l"
+#line 143 "minixftlex.l"
 {
 		MiniXftConfiglval.dval = strtod (MiniXftConfigtext, 0);
 		return DOUBLE;
@@ -954,7 +955,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 146 "minixftlex.l"
+#line 147 "minixftlex.l"
 {
 		if (MiniXftNameConstant (MiniXftConfigtext, &MiniXftConfiglval.ival))
 		    return INTEGER;
@@ -964,20 +965,20 @@ YY_RULE_SETUP
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 152 "minixftlex.l"
+#line 153 "minixftlex.l"
 ;
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
-#line 153 "minixftlex.l"
+#line 154 "minixftlex.l"
 ;
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
-#line 154 "minixftlex.l"
+#line 155 "minixftlex.l"
 ECHO;
 	YY_BREAK
-#line 981 "lex.MiniXftConfig.c"
+#line 982 "lex.MiniXftConfig.c"
 case YY_STATE_EOF(INITIAL):
 	MiniXftConfigterminate();
 
@@ -1860,7 +1861,7 @@ int main()
 	return 0;
 	}
 #endif
-#line 154 "minixftlex.l"
+#line 155 "minixftlex.l"
 
 static void
 _MiniXftConfigSkipComment (void)

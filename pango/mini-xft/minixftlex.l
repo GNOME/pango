@@ -24,6 +24,7 @@
  */
 
 #include <string.h>
+#include <stdlib.h>
 #include "minixftint.h"
 
 #include "minixftgram.h"

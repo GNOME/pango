@@ -1,3 +1,8 @@
+Wed Jul 10 06:12:37 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/mini-xft/minixftlex.l: Add a stdlib include
+	for getenv(). (#85836, David L. Cooper III)
+
 2002-07-02  Matthias Warkus  <mawarkus@gnome.org>
 
 	* pango/pango-markup.c: Fixed typo that was causing markup with
