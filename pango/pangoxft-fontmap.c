@@ -168,11 +168,13 @@ register_display (Display *display)
  * @display: an X display
  * @screen: the screen number of a screen within @display
  * 
- * Returns the PangoXftFontmap for the given display and screen.
+ * Returns the #PangoXftFontmap for the given display and screen.
  * The fontmap is owned by Pango and will be valid until
  * the display is closed.
  * 
  * Return value: a #PangoFontMap object, owned by Pango.
+ *
+ * Since: 1.2
  **/
 PangoFontMap *
 pango_xft_get_font_map (Display *display,
@@ -231,6 +233,8 @@ cleanup_font (gpointer         key,
  * 
  * Release any resources that have been cached for the
  * combination of @display and @screen.
+ *
+ * Since: 1.2
  **/
 void
 pango_xft_shutdown_display (Display *display,
@@ -257,7 +261,7 @@ pango_xft_shutdown_display (Display *display,
 }  
 
 /**
- * pango_xft_font_map_set_default_substitute:
+ * pango_xft_set_default_substitute:
  * @display: an X Display
  * @screen: the screen number of a screen within @display
  * @func: function to call to to do final config tweaking
@@ -269,6 +273,8 @@ pango_xft_shutdown_display (Display *display,
  * substitution on a #FcPattern before it is used to load
  * the font. This function can be used to do things like set
  * hinting and antiasing options.
+ *
+ * Since: 1.2
  **/
 void
 pango_xft_set_default_substitute (Display                *display,
@@ -290,14 +296,16 @@ pango_xft_set_default_substitute (Display                *display,
 }
 
 /**
- * pango_substitute_changed:
+ * pango_xft_substitute_changed:
  * @fontmap: a #PangoXftFontmap
  * 
  * Call this function any time the results of the
  * default substitution function set with
- * pango_xft_font_map_set_default_substitute() change.
+ * pango_xft_set_default_substitute() change.
  * That is, if your subsitution function will return different
  * results for the same input pattern, you must call this function.
+ *
+ * Since: 1.2
  **/
 void
 pango_xft_substitute_changed (Display *display,

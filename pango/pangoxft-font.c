@@ -794,6 +794,8 @@ pango_xft_font_get_unknown_glyph (PangoFont *font,
  * pango_xft_font_unlock_face().
  *
  * Returns: the FreeType FT_Face associated with @font.
+ *
+ * Since: 1.2
  **/
 FT_Face
 pango_xft_font_lock_face (PangoFont *font)
@@ -813,6 +815,8 @@ pango_xft_font_lock_face (PangoFont *font)
  *
  * Releases a font previously obtained with
  * pango_xft_font_lock_face().
+ *
+ * Since: 1.2
  **/
 void
 pango_xft_font_unlock_face (PangoFont *font)
@@ -837,6 +841,8 @@ pango_xft_font_unlock_face (PangoFont *font)
  * 
  * Return value: the glyph index, or 0, if the unicode
  *  codepoint doesn't exist in the font.
+ *
+ * Since: 1.2
  **/
 guint
 pango_xft_font_get_glyph (PangoFont *font,
@@ -859,6 +865,8 @@ pango_xft_font_get_glyph (PangoFont *font,
  * Determines whether @font has a glyph for the codepoint @wc.
  * 
  * Return value: %TRUE if @font has the requested codepoint.
+ *
+ * Since: 1.2
  **/
 gboolean
 pango_xft_font_has_char (PangoFont *font,

@@ -119,10 +119,12 @@ static PangoFT2FontMap *pango_ft2_global_fontmap = NULL;
  * to cache information about available fonts, and holds
  * certain global parameters such as the resolution and
  * the default substitute function (see
- * pango_font_map_set_default_substitute ()).
+ * pango_font_map_set_default_substitute()).
  * 
  * Return value: the newly created fontmap object. Unref
- * with g_object_unref when you are finished with it.
+ * with g_object_unref() when you are finished with it.
+ *
+ * Since: 1.2
  **/
 PangoFontMap *
 pango_ft2_font_map_new (void)
@@ -158,6 +160,37 @@ pango_ft2_font_map_new (void)
 }
 
 /**
+ * pango_ft2_fontmap_set_default_substitute:
+ * @fontmap: a #PangoFT2FontMap
+ * @func: function to call to to do final config tweaking
+ *        on #FcPattern objects.
+ * @data: data to pass to @func
+ * @notify: function to call when @data is no longer used.
+ * 
+ * Sets a function that will be called to do final configuration
+ * substitution on a #FcPattern before it is used to load
+ * the font. This function can be used to do things like set
+ * hinting and antiasing options.
+ *
+ * Since: 1.2
+ **/
+void
+pango_ft2_font_map_set_default_substitute (PangoFT2FontMap        *fontmap,
+					   PangoFT2SubstituteFunc  func,
+					   gpointer                data,
+					   GDestroyNotify          notify)
+{
+  if (fontmap->substitute_destroy)
+    fontmap->substitute_destroy (fontmap->substitute_data);
+
+  fontmap->substitute_func = func;
+  fontmap->substitute_data = data;
+  fontmap->substitute_destroy = notify;
+  
+  pango_fc_clear_fontset_hash_list (fontmap);
+}
+
+/**
  * pango_ft2_font_map_substitute_changed:
  * @fontmap: a #PangoFT2Fontmap
  * 
@@ -166,6 +199,8 @@ pango_ft2_font_map_new (void)
  * pango_ft2_font_map_set_default_substitute() change.
  * That is, if your subsitution function will return different
  * results for the same input pattern, you must call this function.
+ *
+ * Since: 1.2
  **/
 void
 pango_ft2_font_map_substitute_changed (PangoFT2FontMap *fontmap)
@@ -201,6 +236,8 @@ pango_ft2_font_map_set_resolution (PangoFT2FontMap *fontmap,
  * Create a #PangoContext for the given fontmap.
  * 
  * Return value: the newly created context; free with g_object_unref().
+ *
+ * Since: 1.2
  **/
 PangoContext *
 pango_ft2_font_map_create_context (PangoFT2FontMap *fontmap)

@@ -1,3 +1,15 @@
+2002-11-28  Matthias Clasen  <maclas@gmx.de>
+
+	* pango/pangoxft-fontmap.c: 
+	* pango/pangoxft-font.c: 
+	* pango/pangowin32.c: 
+	* pango/pangoft2-fontmap.c: Mark 1.2 API additions, fix some
+	doc comments.
+	
+	* pango/pangoft2-fontmap.c
+	(pango_ft2_font_map_set_default_substitute): Implement this
+	function.  (#99850)
+
 2002-11-26  Sebastian Wilhelmi  <wilhelmi@ira.uka.de>
 
 	* configure.in: Do not add GLIB_CFLAGS to CFLAGS.

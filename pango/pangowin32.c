@@ -203,6 +203,15 @@ pango_win32_get_dc (void)
   return pango_win32_hdc;
 }  
 
+/**
+ * pango_win32_get_debug_flag:
+ *
+ * Returns wether debugging is turned on.
+ * 
+ * Returns: %TRUE if debugging is turned on.
+ * 
+ * Since: 1.2
+ */
 gboolean
 pango_win32_get_debug_flag (void)
 {
