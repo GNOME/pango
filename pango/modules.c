@@ -117,7 +117,8 @@ pango_find_map (const char *lang,
        */
       if (tmp_list->next)
 	tmp_list->next->prev = tmp_list->prev;
-      tmp_list->prev->next = tmp_list->next;
+      if(tmp_list->prev)
+	tmp_list->prev->next = tmp_list->next;
       tmp_list->next = maps;
       tmp_list->prev = NULL;
       maps = tmp_list;

@@ -101,6 +101,7 @@ pango_context_init (PangoContext *context)
   desc.variant = PANGO_VARIANT_NORMAL;
   desc.weight = PANGO_WEIGHT_NORMAL;
   desc.stretch = PANGO_STRETCH_NORMAL;
+  desc.size = 12 * PANGO_SCALE;
 
   context->font_desc = pango_font_description_copy (&desc);
 }
@@ -732,7 +733,7 @@ add_engines (PangoContext      *context,
 		}
 	       
 	      lang_map = pango_find_map (next_lang,
-					  engine_type_id, render_type_id);
+					 engine_type_id, render_type_id);
 	    }
 
 	  pango_attr_iterator_get_font (iterator, context->font_desc, &next_desc, &extra_attrs);
@@ -768,6 +769,14 @@ add_engines (PangoContext      *context,
 
 		  if (current_fonts[j])
 		    current_coverages[j] = pango_font_get_coverage (current_fonts[j], lang);
+		  else
+		    {
+		      char *ctmp;
+
+		      ctmp = pango_font_description_to_string(&next_desc);
+		      g_warning("Couldn't load font \"%s\"", ctmp);
+		      g_free(ctmp);
+		    }
 		}
 
 	      g_strfreev (families);

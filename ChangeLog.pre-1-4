@@ -1,3 +1,11 @@
+2000-08-03  Elliot Lee  <sopwith@redhat.com>
+
+	* pango/modules.c: Fix segfault when tmp_list has no 'prev' pointer.
+	* pango/pango-attributes.c (pango_attr_list_insert_internal): Infinite loops do not fast programs make.
+	* pango/pango-context.c: Set a default font size so that things don't go boom if someone forgets to set it themselves.
+	* pango/pango-layout.c (pango_layout_index_to_pos): Exclude newlines from consideration.
+	(pango_layout_line_index_to_x): Take shape attributes into consideration when determining position.
+
 Wed Aug  2 12:00:53 2000  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pango-layout.c (pango_layout_get_extents):

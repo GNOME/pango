@@ -19,8 +19,8 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#include <pango/pango-layout.h>
 #include <pango/pango.h>		/* For pango_shape() */
+#include <pango/pango-layout.h>
 #include <string.h>
 
 #define LINE_IS_VALID(line) ((line)->layout != NULL)
@@ -642,27 +642,43 @@ pango_layout_line_index_to_x (PangoLayoutLine  *line,
     {
       PangoRectangle logical_rect;
       PangoLayoutRun *run = run_list->data;
+      gboolean shape_set;
       
+      pango_layout_get_item_properties (run->item, NULL, NULL, &logical_rect, &shape_set);
+
       if (run->item->offset <= index && run->item->offset + run->item->length > index)
 	{
-	  pango_glyph_string_index_to_x (run->glyphs,
-					 line->layout->text + run->item->offset,
-					 run->item->length,
-					 &run->item->analysis,
-					 index - run->item->offset, trailing, x_pos);
-	  
-	  if (x_pos)
-	    *x_pos += width;
+	  if (shape_set)
+	    {
+	      if (x_pos)
+		*x_pos = width + (trailing ? logical_rect.width : 0);
+	    }
+	  else
+	    {
+	      pango_glyph_string_index_to_x (run->glyphs,
+					     line->layout->text + run->item->offset,
+					     run->item->length,
+					     &run->item->analysis,
+					     index - run->item->offset, trailing, x_pos);
+
+	      if (x_pos)
+		*x_pos += width;
+	    }
 	  
 	  return;
 	}
       
-      pango_glyph_string_extents (run->glyphs, run->item->analysis.font,
-				  NULL, &logical_rect);
+      if (!shape_set)
+	pango_glyph_string_extents (run->glyphs, run->item->analysis.font,
+				    NULL, &logical_rect);
+
       width += logical_rect.width;
 
       run_list = run_list->next;
     }
+
+  if(x_pos)
+    *x_pos = width;
 }
 	  
 /**
@@ -1017,6 +1033,8 @@ pango_layout_index_to_pos (PangoLayout    *layout,
 
       tmp_list = tmp_list->next;
       bytes_seen += layout_line->length;
+      if (tmp_list && layout->text[bytes_seen] == '\n')
+	bytes_seen++;
       pos->y += logical_rect.height;
     }
 
