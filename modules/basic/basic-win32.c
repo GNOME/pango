@@ -103,14 +103,21 @@ typedef HRESULT (WINAPI *pScriptPlace) (HDC,
 
 typedef HRESULT (WINAPI *pScriptFreeCache) (SCRIPT_CACHE *);
 
+typedef HRESULT (WINAPI *pScriptIsComplex) (WCHAR *,
+					    int,
+					    DWORD);
+
 static pScriptGetProperties script_get_properties;
 static pScriptItemize script_itemize;
 static pScriptShape script_shape;
 static pScriptPlace script_place;
 static pScriptFreeCache script_free_cache;
+static pScriptIsComplex script_is_complex;
 
+#ifdef BASIC_WIN32_DEBUGGING
 static const SCRIPT_PROPERTIES **scripts;
 static int nscripts;
+#endif
 
 #endif
 
@@ -260,6 +267,8 @@ swap_range (PangoGlyphString *glyphs,
 
 #ifdef BASIC_WIN32_DEBUGGING
 
+#if 0
+
 static char *
 charset_name (int charset)
 {
@@ -293,6 +302,8 @@ charset_name (int charset)
       return unk;
     }
 }
+
+#endif
 
 static char *
 lang_name (int lang)
@@ -834,14 +845,13 @@ uniscribe_shape (PangoFont        *font,
   wchar_t *wtext;
   int wlen, i;
   gboolean retval = TRUE;
-  GError *error;
   HGDIOBJ old_font = NULL;
   HFONT hfont = NULL;
   LOGFONT *lf;
   SCRIPT_CACHE script_cache[100];
 
   wtext = (wchar_t *) g_convert (text, length, "UTF-16LE", "UTF-8",
-				 NULL, &wlen, &error);
+				 NULL, &wlen, NULL);
   if (wtext == NULL)
     return FALSE;
 
@@ -902,6 +912,35 @@ uniscribe_shape (PangoFont        *font,
   return retval;
 }
 
+static gboolean
+text_is_simple (const char *text,
+		gint        length)
+{
+  gboolean retval;
+  wchar_t *wtext;
+  int wlen;
+
+  wtext = (wchar_t *) g_convert (text, length, "UTF-16LE", "UTF-8",
+				 NULL, &wlen, NULL);
+
+  if (wtext == NULL)
+    return TRUE;
+
+  wlen /= 2;
+
+  retval = ((*script_is_complex) (wtext, wlen, SIC_COMPLEX) == S_FALSE);
+
+  g_free (wtext);
+
+#ifdef BASIC_WIN32_DEBUGGING
+  if (pango_win32_debug)
+    printf ("text_is_simple: %.*s (%d chars): %s\n",
+	    MIN (length, 10), text, wlen, retval ? "YES" : "NO");
+#endif
+
+  return retval;
+}
+		
 #endif /* HAVE_USP10_H */
 
 static void 
@@ -922,7 +961,9 @@ basic_engine_shape (PangoFont        *font,
 
 #ifdef HAVE_USP10_H
 
-  if (have_uniscribe && uniscribe_shape (font, text, length, analysis, glyphs))
+  if (have_uniscribe &&
+      !text_is_simple (text, length) &&
+      uniscribe_shape (font, text, length, analysis, glyphs))
     return;
 
 #endif
@@ -1040,8 +1081,7 @@ init_uniscribe (void)
 
   have_uniscribe = FALSE;
   
-  if (getenv ("PANGO_WIN32_NO_UNISCRIBE") == NULL &&
-      (usp10_dll = LoadLibrary ("usp10.dll")) != NULL)
+  if ((usp10_dll = LoadLibrary ("usp10.dll")) != NULL)
     {
       (script_get_properties = (pScriptGetProperties)
        GetProcAddress (usp10_dll, "ScriptGetProperties")) &&
@@ -1053,12 +1093,15 @@ init_uniscribe (void)
        GetProcAddress (usp10_dll, "ScriptPlace")) &&
       (script_free_cache = (pScriptFreeCache)
        GetProcAddress (usp10_dll, "ScriptFreeCache")) &&
-	(have_uniscribe = TRUE);
+      (script_is_complex = (pScriptIsComplex)
+       GetProcAddress (usp10_dll, "ScriptIsComplex")) &&
+      (have_uniscribe = TRUE);
     }
   if (have_uniscribe)
     {
+#ifdef BASIC_WIN32_DEBUGGING
       (*script_get_properties) (&scripts, &nscripts);
-      
+#endif
       font_cache = pango_win32_font_map_get_font_cache
 	(pango_win32_font_map_for_display ());
       
