@@ -806,6 +806,18 @@ _pango_fc_font_map_get_coverage (PangoFontMap	      *fontmap,
 	    }
 	}
     }
+  
+  /* Awful hack so Hangul Tone marks get rendered with the same
+   * font and in the same run as other Hangul characters. If a font
+   * covers the first composed Hangul glyph, then it is declared to cover
+   * the Hangul tone marks. This hack probably needs to be formalized
+   * by choosing fonts for scripts rather than individual code points.
+   */
+  if (pango_coverage_get (coverage, 0xac00) == PANGO_COVERAGE_EXACT)
+    {
+      pango_coverage_set (coverage, 0x302e, PANGO_COVERAGE_EXACT);
+      pango_coverage_set (coverage, 0x302f, PANGO_COVERAGE_EXACT);
+    }
 
   pango_fc_font_map_set_coverage (fcfontmap, &key, coverage);
  

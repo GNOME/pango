@@ -1,3 +1,14 @@
+Mon Dec 16 19:28:18 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* modules/hangul/hangul-xft.c (render_isolated_tone):
+	When we get an isolated tone in isolation, do something
+	reasonable rather than just return no glyphs and 
+	causing an assertion failure. (#100625)
+
+	* pango/pangofc-fontmap.cI (_pango_fc_font_map_get_coverage):
+	Add a hack to force Hangul marks to be be rendered
+	in the same font as base Hangul glyphs.
+
 Mon Dec 16 18:10:46 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* modules/basic/basic-xft.c: Add some extra ranges

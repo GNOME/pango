@@ -147,11 +147,38 @@ render_tone (PangoFont *font, gunichar tone, PangoGlyphString *glyphs,
         }
       else 
         set_glyph (font, glyphs, *n_glyphs, cluster_offset,
-                   pango_xft_font_get_unknown_glyph (font, index));
+                   pango_xft_font_get_unknown_glyph (font, tone));
     }
   (*n_glyphs)++;
 }
 
+/* This is a fallback for when we get a tone mark not preceded
+ * by a syllable.
+ */
+static void
+render_isolated_tone (PangoFont *font, gunichar tone, PangoGlyphString *glyphs,
+		      int *n_glyphs, int cluster_offset)
+{
+  /* Find a base character to render the mark on
+   */
+  int index = find_char (font, 0x25cc);	/* DOTTED CIRCLE */
+  if (!index)
+    index = find_char (font, 0x25cb);   /* WHITE CIRCLE, in KSC-5601 */
+  if (!index)
+    index = find_char (font, ' ');      /* Space */
+  if (!index)			        /* Unknown glyph box with 0000 in it */
+    index = find_char (font, pango_xft_font_get_unknown_glyph (font, 0));
+
+  /* Add the base character
+   */
+  pango_glyph_string_set_size (glyphs, *n_glyphs + 1);
+  set_glyph (font, glyphs, *n_glyphs, cluster_offset, index);
+  (*n_glyphs)++;
+
+  /* And the tone mrak
+   */
+  render_tone(font, tone, glyphs, n_glyphs, cluster_offset);
+}
 
 static void
 render_syllable (PangoFont *font, gunichar *text, int length,
@@ -307,7 +334,11 @@ hangul_engine_shape (PangoFont        *font,
 	    jamos[n_jamos++] = T_FROM_S (wc);
 	}
       else if (IS_M (wc) && !n_jamos)
-	;			/* ignore M's which do not follow syllables  */
+	{
+	  /* Tone mark not following syllable */
+	  render_isolated_tone (font, wc, glyphs, &n_glyphs, start - text);
+	  start = g_utf8_next_char (p);
+	}
       else
 	jamos[n_jamos++] = wc;
       p = g_utf8_next_char (p);
