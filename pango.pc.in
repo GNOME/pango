@@ -3,14 +3,11 @@ exec_prefix=@exec_prefix@
 libdir=@libdir@
 includedir=@includedir@
 
-VERSION="@VERSION@"
-REQUIRES="fribidi gobject-2.0 gmodule-2.0"
-CFLAGS=""
-LIBS_PATH="-L${libdir}"
-LIBS_SELF_LIBS="-lpango"
-LIBS_SYSTEM_LIBS=""
-
-#Name: Pango
-#Description: Internationalized text handling
+Name: Pango
+Description: Internationalized text handling
+Version: @VERSION@
+Requires: fribidi,gobject-2.0,gmodule-2.0
+Libs: -L${libdir} -lpango
+Cflags:
 
 
