@@ -435,32 +435,23 @@ make_langid (PangoLanguage *lang)
 #define CASEN(t,p) if (pango_language_matches (lang, t)) return MAKELANGID (LANG_##p, SUBLANG_NEUTRAL)
 
   /* Languages that most probably don't affect Uniscribe have been
-   * left out. Presumably still many of those mentioned below don't
-   * have any effect either.
+   * left out. Uniscribe is documented to use
+   * SCRIPT_CONTROL::uDefaultLanguage only to select digit shapes, so
+   * just leave languages with own digits.
    */
 
-  CASEN ("sq", ALBANIAN);
   CASEN ("ar", ARABIC);
-  CASEN ("az", AZERI);
-  CASEN ("hy", ARMENIAN);
   CASEN ("as", ASSAMESE);
   CASEN ("az", AZERI);
-  CASEN ("eu", BASQUE);
-  CASEN ("be", BELARUSIAN);
   CASEN ("bn", BENGALI);
-  CASEN ("bg", BULGARIAN);
-  CASEN ("ca", CATALAN);
   CASE ("zh-tw", CHINESE, TRADITIONAL);
   CASE ("zh-cn", CHINESE, SIMPLIFIED);
   CASE ("zh-hk", CHINESE, HONGKONG);
   CASE ("zh-sg", CHINESE, SINGAPORE);
   CASE ("zh-mo", CHINESE, MACAU);
-  CASEN ("hr", CROATIAN);
-  CASE ("sr", SERBIAN, CYRILLIC);
   CASEN ("dib", DIVEHI);
   CASEN ("fa", FARSI);
   CASEN ("ka", GEORGIAN);
-  CASEN ("el", GREEK);
   CASEN ("gu", GUJARATI);
   CASEN ("he", HEBREW);
   CASEN ("hi", HINDI);
@@ -487,13 +478,10 @@ make_langid (PangoLanguage *lang)
   CASEN ("tt", TATAR);
   CASEN ("te", TELUGU);
   CASEN ("th", THAI);
-  CASEN ("tr", TURKISH);
-  CASEN ("uk", UKRAINIAN);
   CASE ("ur-pk", URDU, PAKISTAN);
   CASE ("ur-in", URDU, INDIA);
   CASEN ("ur", URDU);
   CASEN ("uz", UZBEK);
-  CASEN ("vi", VIETNAMESE);
 
 #undef CASE
 #undef CASEN
@@ -524,7 +512,8 @@ dump_glyphs_and_log_clusters (gboolean rtl,
     printf ("  log_clusters: ");
     for (j = 0; j < itemlen; j++)
       printf ("%d ", log_clusters[j]);
-    printf ("\n");    nclusters = 0;
+    printf ("\n");
+    nclusters = 0;
     for (j = 0; j < itemlen; j++)
       {
 	if (j == 0 || log_clusters[j-1] != log_clusters[j])
@@ -720,19 +709,24 @@ itemize_shape_and_place (PangoFont        *font,
   control.uDefaultLanguage = make_langid (analysis->language);
   state.uBidiLevel = analysis->level;
   
+#ifdef BASIC_WIN32_DEBUGGING
+  if (pango_win32_debug)
+    printf (G_STRLOC ": ScriptItemize: uDefaultLanguage:%04x uBidiLevel:%d\n",
+	    control.uDefaultLanguage, state.uBidiLevel);
+#endif
   if ((*script_itemize) (wtext, wlen, G_N_ELEMENTS (items), &control, NULL,
 			 items, &nitems))
     {
 #ifdef BASIC_WIN32_DEBUGGING
       if (pango_win32_debug)
-	printf ("pango-basic-win32: ScriptItemize failed\n");
+	printf ("ScriptItemize failed\n");
 #endif
       return FALSE;
     }
 
 #ifdef BASIC_WIN32_DEBUGGING
   if (pango_win32_debug)
-    printf (G_STRLOC ": ScriptItemize: %d items\n", nitems);
+    printf ("%d items:\n", nitems);
 #endif
 
   if (analysis->level % 2)
@@ -778,7 +772,9 @@ itemize_shape_and_place (PangoFont        *font,
 		items[item].iCharPos, items[item+1].iCharPos-1, itemlen);
 #endif
 
-      if ((*script_shape) (hdc, &script_cache[script], wtext + items[item].iCharPos, itemlen,
+      items[item].a.fRTL = analysis->level % 2;
+      if ((*script_shape) (hdc, &script_cache[script],
+			   wtext + items[item].iCharPos, itemlen,
 			   G_N_ELEMENTS (iglyphs),
 			   &items[item].a,
 			   iglyphs,
@@ -865,19 +861,17 @@ uniscribe_shape (PangoFont        *font,
 		 PangoGlyphString *glyphs)
 {
   wchar_t *wtext;
-  int wlen, i;
+  long wlen;
+  int i;
   gboolean retval = TRUE;
   HGDIOBJ old_font = NULL;
   HFONT hfont = NULL;
   LOGFONT *lf;
   SCRIPT_CACHE script_cache[100];
 
-  wtext = (wchar_t *) g_convert (text, length, "UTF-16LE", "UTF-8",
-				 NULL, &wlen, NULL);
+  wtext = (wchar_t *) g_utf8_to_utf16 (text, length, NULL, &wlen, NULL);
   if (wtext == NULL)
     return FALSE;
-
-  wlen /= 2;
 
   lf = pango_win32_font_logfont (font);
   hfont = pango_win32_font_cache_load (font_cache, lf);
@@ -921,7 +915,6 @@ uniscribe_shape (PangoFont        *font,
 	  printf ("\n");
 	}
 #endif
-
     }
 
   g_free (wtext);
@@ -940,15 +933,12 @@ text_is_simple (const char *text,
 {
   gboolean retval;
   wchar_t *wtext;
-  int wlen;
+  long wlen;
 
-  wtext = (wchar_t *) g_convert (text, length, "UTF-16LE", "UTF-8",
-				 NULL, &wlen, NULL);
+  wtext = (wchar_t *) g_utf8_to_utf16 (text, length, NULL, &wlen, NULL);
 
   if (wtext == NULL)
     return TRUE;
-
-  wlen /= 2;
 
   retval = ((*script_is_complex) (wtext, wlen, SIC_COMPLEX) == S_FALSE);
 
@@ -956,7 +946,7 @@ text_is_simple (const char *text,
 
 #ifdef BASIC_WIN32_DEBUGGING
   if (pango_win32_debug)
-    printf ("text_is_simple: %.*s (%d chars): %s\n",
+    printf ("text_is_simple: %.*s (%ld chars): %s\n",
 	    MIN (length, 10), text, wlen, retval ? "YES" : "NO");
 #endif
 

@@ -1,3 +1,23 @@
+2005-03-20  Tor Lillqvist  <tml@novell.com>
+
+	* modules/basic/basic-win32.c (itemize_shape_and_place): Force
+	fRTL for each item returned from ScriptItemize() to the bidi
+	embedding parity for the whole run. Pango passes us a run that it
+	correctly has analyzed should be of a certain direction, but
+	ScriptItemize() still might split it into items, some of which
+	have neutral direction. (#170931)
+	(uniscribe_shape, text_is_simple): Use g_utf8_to_utf16().
+
+	Merge from HEAD:
+
+	* pango/pangowin32-private.h
+	* pango/pangowin32.c (pango_win32_font_get_metrics): Cache metrics
+	by language, like the other backends do. Don't try to get the
+	width of the 0..9 digit string if the font doesn't cover digits.
+
+	* modules/basic/Makefile.am (INCLUDES): Remove extraneous slash
+	that confuses gcc on Win32.
+
 Sat Mar  5 13:51:04 2005  Manish Singh  <yosh@gimp.org>
 
 	* pango/mini-fribidi/fribidi_types.[ch]: const correctness for
