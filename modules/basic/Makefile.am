@@ -18,7 +18,12 @@ module_LTLIBRARIES = $(XFT_MODULES) pango-basic.la
 moduleflags=-rpath $(libdir)
 endif
 
-INCLUDES = -I$(top_srcdir) -I$(top_srcdir)/pango/ $(X_CFLAGS) $(moddefine)
+INCLUDES = 			\
+	-I$(top_srcdir) 	\
+	-I$(top_srcdir)/pango/ 	\
+	$(X_CFLAGS) 		\
+	$(FREETYPE_CFLAGS)	\
+	$(moddefine)
 
 pango_basic_la_LDFLAGS = $(moduleflags) -export-dynamic -avoid-version -module
 pango_basic_la_LIBADD = 

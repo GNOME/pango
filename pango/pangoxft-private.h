@@ -34,6 +34,7 @@ struct _PangoXftFont
   PangoFont *mini_font;
   PangoFontMap *fontmap;
   PangoFontDescription *description;
+  PangoOTInfo *ot_info;
 
   guint16 mini_width;
   guint16 mini_height;

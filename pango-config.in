@@ -84,6 +84,9 @@ if test "$echo_exec_prefix" = "yes"; then
 fi
 if test "$echo_cflags" = "yes"; then
 	cflags="@GLIB_CFLAGS@"
+	if test "$lib_pangoxft" = "yes"; then
+		cflags="@X_CFLAGS@ @FREETYPE_CFLAGS@ $cflags"
+	fi
 	# Put $cflags first, in case $includes contains a
 	# location with GLib 1.2 headers, but we build with GLib 2.0.
 	echo $cflags $includes

@@ -1,18 +1,27 @@
 ## Process this file with automake to create Makefile.in.
 
+if HAVE_FREETYPE
+OPENTYPE_SUBDIR=opentype
+endif
+
 if HAVE_FRIBIDI
 else
-SUBDIRS = mini-fribidi
+FRIBIDI_SUBDIR = mini-fribidi
 endif
+
+SUBDIRS = $(OPENTYPE_SUBDIR) $(FRIBIDI_SUBDIR)
+
+DIST_SUBDIRS = mini-fribidi opentype
 
 INCLUDES = 					\
 	-DSYSCONFDIR=\"$(sysconfdir)\" 		\
 	-DLIBDIR=\"$(libdir)\" 			\
 	$(X_CFLAGS)				\
+	$(FREETYPE_CFLAGS)			\
 	-I$(top_srcdir)
 
 if HAVE_XFT
-XFT_HFILES=pangoxft.h
+XFT_HFILES=pangoxft.h pango-ot.h
 XFT_BUILD_LIBS=libpangoxft.la
 else
 XFT_HFILES=
@@ -75,7 +84,7 @@ libpangoxft_la_SOURCES =   	\
 	pangoxft-font.c		\
 	pangoxft-fontmap.c
 
-libpangoxft_la_LIBADD = $(INCLUDED_MODULES) $(XFT_LIBS)
+libpangoxft_la_LIBADD = $(INCLUDED_MODULES) $(XFT_LIBS) opentype/libpango-ot.la
 libpangoxft_la_LDFLAGS = -release $(VERSION)
 
 pangoincludedir=$(includedir)/pango-1.0/pango

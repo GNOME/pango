@@ -1,3 +1,28 @@
+Tue Dec 19 22:47:16 2000  Owen Taylor  <otaylor@redhat.com>
+
+	* configure.in pango-config.in pangoxft.pc.in
+	modules/basic/Makefile.am: Since Xft may only be available
+	statically without shlib deps, check for FreeType libs explicitly
+	and include them when linking, otherwise things won't work. Also,
+	define FREETYPE_CFLAGS from freetype-config --cflags.
+
+	* modules/basic/basic-xft.c pango/pangoxft-font{,map}.c: Fool
+	Xft into not converting glyph indices by loading the
+	face unencoded then calling FT_Set_Charmap ourselves.
+
+	* pango/Makefile.am pango/pango-ot.h pango/opentype/* :Add start
+	of opentype handling - most of the actually meat of the code here
+	is the OpenType layout code from FreeType 1 ported to freetype2
+	and adapted slighlty for our purposes.  Also, includes a
+	incomplete OpenType-table-dumping code useful for figuring
+	out what is going on.
+
+	* pango/pangoxft.h pango/pangoxft-font.h: Add calls for
+	getting FT_Face and PangoOTInfo from PangoXftFont.
+	
+	* modules/arabic/{Makefile.am,arabic-ot.[ch],arabic-xft.c}: 
+	Initial support for rendering Arabic with OpenType fonts.
+
 2000-12-18  Havoc Pennington  <hp@redhat.com> 
 
         Fix build breakage, reported by Alex Larsson and Yasushi Shoji

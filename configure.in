@@ -47,16 +47,37 @@ fi
 X_LIBS="$X_LIBS -lX11"
 
 #
+# Checks for FreeType
+#
+FREETYPE_LIBS=
+FREETYPE_CFLAGS=
+have_freetype=false
+AC_PATH_PROG(FREETYPE_CONFIG, freetype-config, no)
+if test "x$FREE_CONFIG" != "xno" ; then
+  FREETYPE_CFLAGS=`freetype-config --cflags`
+  FREETYPE_LIBS=`freetype-config --libs`
+
+  AC_CHECK_LIB(freetype, FT_New_Face, have_freetype=true
+	       ,:,$FREETYPE_LIBS)
+fi
+AC_SUBST(FREETYPE_LIBS)
+AC_SUBST(FREETYPE_CFLAGS)
+AM_CONDITIONAL(HAVE_FREETYPE, $have_freetype) 
+
+#
 # Checks for Xft/XRender
 #
 have_xft=false
 XFT_LIBS=""
-AC_CHECK_LIB(Xrender, XRenderFindFormat, 
-  AC_CHECK_LIB(Xft, XftFontOpen, have_xft=true, :, -lXrender $X_LIBS)
-,:,-lXext $X_LIBS)
+XFT_CFLAGS=""
+if test $have_freetype = true ; then
+  AC_CHECK_LIB(Xrender, XRenderFindFormat, 
+    AC_CHECK_LIB(Xft, XftFontOpen, have_xft=true, :, -lXrender -lXext $X_LIBS $FREETYPE_LIBS)
+  ,:,-lXext $X_LIBS)
 
-if $have_xft = 'true' ; then
-  XFT_LIBS="-lXft -lXrender -lXext $X_LIBS"
+  if $have_xft = 'true' ; then
+    XFT_LIBS="-lXft -lXrender -lXext $X_LIBS $FREETYPE_LIBS"
+  fi
 fi
 
 AC_SUBST(XFT_LIBS)
@@ -306,6 +327,7 @@ AC_OUTPUT([
 Makefile 
 pango/Makefile
 pango/mini-fribidi/Makefile
+pango/opentype/Makefile
 pango/makefile.mingw
 pango/pango.rc
 pango/pangoft2.rc

@@ -23,6 +23,8 @@
 #include "pangoxft.h"
 #include "pangoxft-private.h"
 
+#include "X11/Xft/XftFreetype.h"
+
 #define PANGO_TYPE_XFT_FONT_MAP              (pango_xft_font_map_get_type ())
 #define PANGO_XFT_FONT_MAP(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_TYPE_XFT_FONT_MAP, PangoXftFontMap))
 #define PANGO_XFT_FONT_MAP_CLASS(klass)      (G_TYPE_CHECK_CLASS_CAST ((klass), PANGO_TYPE_XFT_FONT_MAP, PangoXftFontMapClass))
@@ -295,6 +297,7 @@ pango_xft_font_map_list_fonts (PangoFontMap           *fontmap,
     fontset = XftListFonts (xfontmap->display, xfontmap->screen,
 			    XFT_ENCODING, XftTypeString, "iso10646-1",
 			    XFT_FAMILY, XftTypeString, family,
+			    XFT_CORE, XftTypeBool, False,
 			    NULL,
 			    XFT_FAMILY,
 			    XFT_STYLE,
@@ -304,6 +307,7 @@ pango_xft_font_map_list_fonts (PangoFontMap           *fontmap,
   else
     fontset = XftListFonts (xfontmap->display, xfontmap->screen,
 			    XFT_ENCODING, XftTypeString, "iso10646-1",
+			    XFT_CORE, XftTypeBool, False,
 			    NULL,
 			    XFT_FAMILY,
 			    XFT_STYLE,
@@ -337,6 +341,7 @@ pango_xft_font_map_list_families (PangoFontMap           *fontmap,
   int i;
 
   fontset = XftListFonts (xfontmap->display, xfontmap->screen,
+			  XFT_CORE, XftTypeBool, False,
 			  XFT_ENCODING, XftTypeString, "iso10646-1",
 			  NULL,
 			  XFT_FAMILY,
@@ -402,7 +407,12 @@ pango_xft_font_map_load_font (PangoFontMap               *fontmap,
   else
     weight = XFT_WEIGHT_BLACK;
 
+  /* To fool Xft into not munging glyph indices, we open it as glyphs-fontspecific
+   * then set the encoding ourself
+   */
   xft_font = XftFontOpen (xfontmap->display, xfontmap->screen,
+			  XFT_ENCODING, XftTypeString, "glyphs-fontspecific",
+			  XFT_CORE, XftTypeBool, False,
 			  XFT_FAMILY, XftTypeString,  description->family_name,
 			  XFT_WEIGHT, XftTypeInteger, weight,
 			  XFT_SLANT,  XftTypeInteger, slant,
@@ -410,11 +420,39 @@ pango_xft_font_map_load_font (PangoFontMap               *fontmap,
 			  NULL);
 
   if (xft_font)
-    font = _pango_xft_font_new (fontmap, description, xft_font);
+    {
+      FT_Face face;
+      FT_Error error;
+      
+      int charmap;
+
+      g_assert (!xft_font->core);
+      
+      face = xft_font->u.ft.font->face;
+
+      for (charmap = 0; charmap < face->num_charmaps; charmap++)
+	if (face->charmaps[charmap]->encoding == ft_encoding_unicode)
+	  break;
+
+      if (charmap == face->num_charmaps)
+	goto error;
+
+      error = FT_Set_Charmap(face, face->charmaps[charmap]);
+      
+      if (error)
+	goto error;
+      
+      font = _pango_xft_font_new (fontmap, description, xft_font);
+    }
   else
     return NULL;
 
   return (PangoFont *)font;
+
+ error:
+
+  XftFontClose (xfontmap->display, xft_font);
+  return NULL;
 }
 
 void
@@ -496,4 +534,5 @@ _pango_xft_font_map_get_info (PangoFontMap *fontmap,
     *display = xfontmap->display;
   if (screen)
     *screen = xfontmap->screen;
+
 }

@@ -1,5 +1,5 @@
 /* Pango
- * basic-xft.h:
+ * arabic-xft.h:
  *
  * Copyright (C) 2000 Red Hat Software
  * Author: Owen Taylor <otaylor@redhat.com>
@@ -22,33 +22,80 @@
 
 #include <string.h>
 
+#include "arabic-ot.h"
+
 #include "pangoxft.h"
 #include "pango-utils.h"
 
-static PangoEngineRange basic_ranges[] = {
+static PangoEngineRange arabic_ranges[] = {
   /* Language characters */
-  { 0x0380, 0x058f, "*" },
-  { 0x0591, 0x05f4, "*" }, /* Hebrew */
-  { 0x060c, 0x06f9, "" }, /* Arabic */
-  { 0x0e01, 0x0e5b, "" },  /* Thai */
-  { 0x10a0, 0x10ff, "*" }, /* Georgian */
-  { 0x1200, 0x16ff, "*" }, /* Ethiopic,Cherokee,Canadian,Ogham,Runic */
-  { 0x1e00, 0x1fff, "*" },
-  { 0x2000, 0x9fff, "*" },
-  { 0xac00, 0xd7a3, "kr" },
-  { 0xf900, 0xfa0b, "kr" },
-  { 0xff00, 0xffe3, "*" },
-  { 0x0000, 0xffff, "" },
+  { 0x060c, 0x06f9, "*" }, /* Arabic */
 };
 
 static PangoEngineInfo script_engines[] = {
   {
-    "BasicScriptEngineXft",
+    "ArabicScriptEngineXft",
     PANGO_ENGINE_TYPE_SHAPE,
     PANGO_RENDER_TYPE_XFT,
-    basic_ranges, G_N_ELEMENTS(basic_ranges)
+    arabic_ranges, G_N_ELEMENTS(arabic_ranges)
   }
 };
+
+void
+maybe_add_feature (PangoOTRuleset *ruleset,
+		   PangoOTInfo    *info,
+		   guint           script_index,
+		   PangoOTTag      tag,
+		   gulong          property_bit)
+{
+  guint feature_index;
+  
+  /* 0xffff == default language system */
+  if (pango_ot_info_find_feature (info, PANGO_OT_TABLE_GSUB,
+				  tag, script_index, 0xffff, &feature_index))
+    pango_ot_ruleset_add_feature (ruleset, PANGO_OT_TABLE_GSUB, feature_index,
+				  property_bit);
+}
+
+static PangoOTRuleset *
+get_ruleset (PangoFont *font)
+{
+  PangoOTRuleset *ruleset;
+  static GQuark ruleset_quark = 0;
+
+  PangoOTInfo *info = pango_xft_font_get_ot_info (font);
+
+  if (!ruleset_quark)
+    ruleset_quark = g_quark_from_string ("pango-arabic-ruleset");
+  
+  if (!info)
+    return NULL;
+
+  ruleset = g_object_get_qdata (G_OBJECT (font), ruleset_quark);
+
+  if (!ruleset)
+    {
+      PangoOTTag arab_tag = FT_MAKE_TAG ('a', 'r', 'a', 'b');
+      guint script_index;
+
+      ruleset = pango_ot_ruleset_new (info);
+
+      if (pango_ot_info_find_script (info, PANGO_OT_TABLE_GSUB,
+				     arab_tag, &script_index))
+	{
+	  maybe_add_feature (ruleset, info, script_index, FT_MAKE_TAG ('i','s','o','l'), isolated);
+	  maybe_add_feature (ruleset, info, script_index, FT_MAKE_TAG ('i','n','i','t'), initial);
+	  maybe_add_feature (ruleset, info, script_index, FT_MAKE_TAG ('m','e','d','i'), medial);
+	  maybe_add_feature (ruleset, info, script_index, FT_MAKE_TAG ('f','i','n','a'), final);
+	  maybe_add_feature (ruleset, info, script_index, FT_MAKE_TAG ('l','i','g','a'), 0xFFFF);
+	}
+
+      g_object_set_qdata_full (G_OBJECT (font), ruleset_quark, ruleset,
+			       (GDestroyNotify)g_object_unref);
+    }
+
+  return ruleset;
+}
 
 static void
 swap_range (PangoGlyphString *glyphs, int start, int end)
@@ -73,17 +120,8 @@ swap_range (PangoGlyphString *glyphs, int start, int end)
 static void
 set_glyph (PangoFont *font, PangoGlyphString *glyphs, int i, int offset, PangoGlyph glyph)
 {
-  PangoRectangle logical_rect;
-
   glyphs->glyphs[i].glyph = glyph;
-  
-  glyphs->glyphs[i].geometry.x_offset = 0;
-  glyphs->glyphs[i].geometry.y_offset = 0;
-
   glyphs->log_clusters[i] = offset;
-
-  pango_font_get_glyph_extents (font, glyphs->glyphs[i].glyph, NULL, &logical_rect);
-  glyphs->glyphs[i].geometry.width = logical_rect.width;
 }
 
 static guint
@@ -98,7 +136,7 @@ find_char (FT_Face face, PangoFont *font, gunichar wc)
 }
 
 static void 
-basic_engine_shape (PangoFont        *font,
+arabic_engine_shape (PangoFont        *font,
 		    const char       *text,
 		    gint              length,
 		    PangoAnalysis    *analysis,
@@ -107,7 +145,10 @@ basic_engine_shape (PangoFont        *font,
   int n_chars;
   int i;
   const char *p;
+  gulong *properties = NULL;
+  gunichar *wcs = NULL;
   FT_Face face;
+  PangoOTRuleset *ruleset;
 
   g_return_if_fail (font != NULL);
   g_return_if_fail (text != NULL);
@@ -116,10 +157,19 @@ basic_engine_shape (PangoFont        *font,
 
   face = pango_xft_font_get_face (font);
   g_assert (face);
-  
+
   n_chars = g_utf8_strlen (text, length);
   pango_glyph_string_set_size (glyphs, n_chars);
 
+  ruleset = get_ruleset (font);
+  if (ruleset)
+    {
+      wcs = g_utf8_to_ucs4 (text, length);
+      properties = g_new0 (gulong, n_chars);
+      
+      Assign_Arabic_Properties (wcs, properties, n_chars);
+    }
+  
   p = text;
   for (i=0; i < n_chars; i++)
     {
@@ -147,29 +197,21 @@ basic_engine_shape (PangoFont        *font,
 	}
       else
 	{
+	  /* Hack - Microsoft fonts are strange and don't contain the
+	   * correct rules to shape ARABIC LETTER FARSI YEH in
+	   * medial/initial position. It looks identical to ARABIC LETTER
+	   * YEH in these positions, so we substitute
+	   */
+	  if (wc == 0x6cc && ruleset &&
+	      ((properties[i] & (initial | medial)) != (initial | medial)))
+	    wc = 0x64a;
+	  
 	  index = find_char (face, font, wc);
 
 	  if (!index)
 	    {
 	      set_glyph (font, glyphs, i, p - text,
 			 pango_xft_font_get_unknown_glyph (font, wc));
-
-#if 0	      
-	      gint j;
-	      char buf[9];
-	      int len = (wc < 65536) ? 6 : 8;
-
-	      sprintf(buf, "[%0*X]", len - 2, wc);
-
-	      n_chars += len - 1;
-	      pango_glyph_string_set_size (glyphs, n_chars);
-	      for (j=0; j < len; j++)
-		{
-		  set_glyph (font, glyphs, i + j,
-			     p - text, find_char (face, font, buf[j]));
-		}
-	      i += len - 1;
-#endif
 	    }
 	  else
 	    {
@@ -179,12 +221,13 @@ basic_engine_shape (PangoFont        *font,
 		{
 		  if (i > 0)
 		    {
+		      glyphs->log_clusters[i] = glyphs->log_clusters[i-1];
+#if 0		      
 		      PangoRectangle logical_rect, ink_rect;
 		      
 		      glyphs->glyphs[i].geometry.width = MAX (glyphs->glyphs[i-1].geometry.width,
 							      glyphs->glyphs[i].geometry.width);
 		      glyphs->glyphs[i-1].geometry.width = 0;
-		      glyphs->log_clusters[i] = glyphs->log_clusters[i-1];
 		      
 		      /* Some heuristics to try to guess how overstrike glyphs are
 		       * done and compensate
@@ -192,6 +235,7 @@ basic_engine_shape (PangoFont        *font,
 		      pango_font_get_glyph_extents (font, glyphs->glyphs[i].glyph, &ink_rect, &logical_rect);
 		      if (logical_rect.width == 0 && ink_rect.x == 0)
 			glyphs->glyphs[i].geometry.x_offset = (glyphs->glyphs[i].geometry.width - ink_rect.width) / 2;
+#endif
 		    }
 		}
 	    }
@@ -200,38 +244,67 @@ basic_engine_shape (PangoFont        *font,
       p = g_utf8_next_char (p);
     }
 
-  /* Simple bidi support... may have separate modules later */
+  ruleset = get_ruleset (font);
+
+  if (ruleset)
+    {
+      pango_ot_ruleset_shape (ruleset, glyphs, properties);
+
+      g_free (wcs);
+      g_free (properties);
+
+    }
+
+  for (i = 0; i < glyphs->num_glyphs; i++)
+    {
+
+      if (glyphs->glyphs[i].glyph)
+	{
+	  PangoRectangle logical_rect;
+	  
+	  pango_font_get_glyph_extents (font, glyphs->glyphs[i].glyph, NULL, &logical_rect);
+	  glyphs->glyphs[i].geometry.width = logical_rect.width;
+	}
+      else
+	glyphs->glyphs[i].geometry.width = 0;
+  
+      glyphs->glyphs[i].geometry.x_offset = 0;
+      glyphs->glyphs[i].geometry.y_offset = 0;
+    }
+
+  /* Simple bidi support */
 
   if (analysis->level % 2)
     {
       int start, end;
 
       /* Swap all glyphs */
-      swap_range (glyphs, 0, n_chars);
+      swap_range (glyphs, 0, glyphs->num_glyphs);
       
       /* Now reorder glyphs within each cluster back to LTR */
-      for (start=0; start<n_chars;)
+      for (start=0; start<glyphs->num_glyphs;)
 	{
 	  end = start;
-	  while (end < n_chars &&
+	  while (end < glyphs->num_glyphs &&
 		 glyphs->log_clusters[end] == glyphs->log_clusters[start])
 	    end++;
-	  
-	  swap_range (glyphs, start, end);
+
+	  if (end > start + 1)
+	    swap_range (glyphs, start, end);
 	  start = end;
 	}
     }
 }
 
 static PangoCoverage *
-basic_engine_get_coverage (PangoFont  *font,
+arabic_engine_get_coverage (PangoFont  *font,
 			   const char *lang)
 {
   return pango_font_get_coverage (font, lang);
 }
 
 static PangoEngine *
-basic_engine_xft_new ()
+arabic_engine_xft_new ()
 {
   PangoEngineShape *result;
   
@@ -240,8 +313,8 @@ basic_engine_xft_new ()
   result->engine.id = PANGO_RENDER_TYPE_XFT;
   result->engine.type = PANGO_ENGINE_TYPE_SHAPE;
   result->engine.length = sizeof (result);
-  result->script_shape = basic_engine_shape;
-  result->get_coverage = basic_engine_get_coverage;
+  result->script_shape = arabic_engine_shape;
+  result->get_coverage = arabic_engine_get_coverage;
 
   return (PangoEngine *)result;
 }
@@ -251,10 +324,10 @@ basic_engine_xft_new ()
  * entry points script_engine_list, etc. But if we are compiling
  * it for inclusion directly in Pango, then we need them to
  * to have distinct names for this module, so we prepend
- * _pango_basic_
+ * _pango_arabic_
  */
 #ifdef MODULE_PREFIX
-#define MODULE_ENTRY(func) _pango_basic_##func
+#define MODULE_ENTRY(func) _pango_arabic_##func
 #else
 #define MODULE_ENTRY(func) func
 #endif
@@ -273,8 +346,8 @@ MODULE_ENTRY(script_engine_list) (PangoEngineInfo **engines, gint *n_engines)
 PangoEngine *
 MODULE_ENTRY(script_engine_load) (const char *id)
 {
-  if (!strcmp (id, "BasicScriptEngineXft"))
-    return basic_engine_xft_new ();
+  if (!strcmp (id, "ArabicScriptEngineXft"))
+    return arabic_engine_xft_new ();
   else
     return NULL;
 }
