@@ -1,3 +1,8 @@
+Thu Nov 16 18:59:21 2000  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/glyphstring.c (pango_glyph_string_extents_range): Test 
+	against	start not zero.
+
 Thu Nov 16 13:23:43 2000  Owen Taylor  <otaylor@redhat.com>
 
 	* docs/pango-sections.txt docs/tmpl/modules.sgml: Add

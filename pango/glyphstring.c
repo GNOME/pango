@@ -142,7 +142,7 @@ pango_glyph_string_extents_range (PangoGlyphString *glyphs,
       
       PangoGlyphGeometry *geometry = &glyphs->glyphs[i].geometry;
 
-      if (i == 0)
+      if (i == start)
 	{
 	  pango_font_get_glyph_extents (font, glyphs->glyphs[i].glyph,
                                         ink_rect, logical_rect);
