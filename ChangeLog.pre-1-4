@@ -1,3 +1,7 @@
+2003-05-30  Tor Lillqvist  <tml@iki.fi>
+
+	* pango/pangoft2.def: Add pango_ft2_font_map_set_default_substitute.
+
 Thu May 29 20:05:45 2003  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pango-glyph-item.c: Fix a stupid bug in the
