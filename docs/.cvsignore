@@ -10,3 +10,4 @@ pango.signals
 pango.args
 pango.hierarchy
 *.stamp
+version.xml
