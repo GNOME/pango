@@ -1,3 +1,9 @@
+2001-04-13  James Henstridge  <james@daa.com.au>
+
+	* configure.in: AC_INIT should be the first statement in the file.
+	Also, use $PANGO_MAJOR_VERSION.$PANGO_MINOR_VERSION as the version
+	passed to AM_INIT_AUTOMAKE.
+
 Tue Apr  3 15:05:19 2001  Owen Taylor  <otaylor@redhat.com>
 
 	* Release 0.14
