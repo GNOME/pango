@@ -68,7 +68,7 @@ else
 WIN32_INCLUDED=
 WIN32_MODULES=pango-basic-win32.la
 WIN32_PREFIX=
-basic_win32_libadd=$(pangowin32libs)
+basic_win32_libadd=$(pangowin32libs) -lgdi32
 endif
 else
 WIN32_INCLUDED=
@@ -113,6 +113,14 @@ pango_basic_win32_la_LDFLAGS = -export-dynamic -avoid-version -module $(no_undef
 pango_basic_win32_la_LIBADD = $(basic_win32_libadd)
 pango_basic_win32_la_SOURCES = basic-win32.c
 libpango_basic_win32_la_SOURCES = basic-win32.c
+
+if HAVE_USP10_H
+basic-win32.lo: usp10.h
+
+# Do it like this to avoid getting other headers from where usp10.h is
+usp10.h: @USP10_H@
+	cp -p @USP10_H@ usp10.h
+endif
 
 EXTRA_DIST =		\
 	basic-common.h	\

@@ -1,5 +1,12 @@
 2002-10-22  Tor Lillqvist  <tml@iki.fi>
 
+	* configure.in: Add --with-usp10 flag to indicate where to find
+	the usp10.h header, for using Uniscribe on Win32. Set USP10_H
+	autoconf variable, HAVE_USP10_H config.h macro and HAVE_USP10_H
+	automake conditional.
+
+	* acconfig.h: Add HAVE_USP10_H.
+
 	* pango/pangowin32-private.h (PANGO_WIN32_DEBUGGING): Change
 	semantics of this flag. If defined, also need to set env var
 	PANGO_WIN32_DEBUG to get the copious debugging output. 
@@ -20,6 +27,17 @@
 
 	* pango/pangowin32-fontmap.c (pango_win32_font_map_class_init):
 	Call pango_win32_get_dc() as mentioned above.
+
+	* modules/basic/Makefile.am: If HAVE_USP10_H, let basic-win32.lo
+	depend on usp10.h.
+
+	* modules/basic/basic-win32.c: If HAVE_USP10_H, and the Uniscribe
+	DLL usp10.dll is present, use Uniscribe.
+	(uniscribe_shape, itemize_shape_and_place,
+	set_up_pango_log_clusters, convert_log_clusters_to_byte_offsets,
+	make_langid): New functions.
+	(dump_glyphs_and_log_clusters, lang_name, charset_name): Debugging
+	functions.
 
 2002-10-15  Changwoo Ryu  <cwryu@debian.org>
 
