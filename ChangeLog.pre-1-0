@@ -1,3 +1,8 @@
+2002-01-13  Havoc Pennington  <hp@pobox.com>
+
+	* pango/fonts.c: fix up docs to be clearer about PANGO_SCALE, 
+	as suggested by Dennis Bjorklund
+
 2002-01-11  Havoc Pennington  <hp@pobox.com>
 
 	* docs/pango_markup.sgml: fix cross-references in here
