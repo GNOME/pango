@@ -196,6 +196,20 @@
       </description>
       <contact>gtk-i18n-list@gnome.org</contact>
     </entry>
+    <entry size="small" status="0%" target="1.0?">
+      <title>Error indicator underline</title>
+      <description>
+	It might be interesting to add an error-indicator underline
+	type. (A red squiggle, as seen for auto-spell
+	checking in products like Microsoft Word.) This would
+	mean adding <code>PANGO_UNDERLINE_ERROR</code> to
+	the <code>PangoUnderline</code> enumeration, and then
+	adding the code to draw it to the various renderers
+	for PangoLayout. (Rendering happens in three places now -
+	pangox.c, gtk+/gtk/gtktextdisplay.c gtk+/gdk/gdkpango.c.)
+      </description>
+      <contact>gtk-i18n-list@gnome.org</contact>
+    </entry>
     <entry size="medium" status="0%" target="1.0?">
       <title>Deal with proper change notification for PangoContext</title>
       <description>
