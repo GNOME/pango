@@ -1,5 +1,12 @@
 2000-11-13  Havoc Pennington  <hp@redhat.com>
 
+	* pango/pango-layout.c (pango_layout_get_cursor_pos): Don't need
+	to check_lines, pango_layout_get_iter() will do that
+	(next_cluster_start): don't ever return a value past the end 
+	of the glyph string
+
+2000-11-13  Havoc Pennington  <hp@redhat.com>
+
 	* examples/pangox.aliases: Add italic/bold variants
 
 2000-11-13  Elliot Lee  <sopwith@redhat.com>

@@ -817,7 +817,7 @@ pango_layout_get_line (PangoLayout *layout,
 
   pango_layout_check_lines (layout);
   list_item = g_slist_nth (layout->lines, line);
-  if(list_item)
+  if (list_item)
     return list_item->data;
   return NULL;
 }
@@ -1414,8 +1414,6 @@ pango_layout_get_cursor_pos (PangoLayout    *layout,
   g_return_if_fail (index >= 0 && index <= layout->length);
   
   base_dir = pango_context_get_base_dir (layout->context);
-
-  pango_layout_check_lines (layout);
 
   iter = pango_layout_get_iter (layout);
   
@@ -3216,7 +3214,7 @@ next_cluster_start (PangoGlyphString *gs,
                     int               cluster_start)
 {
   int i;
-  
+
   i = cluster_start + 1;
   while (i < gs->num_glyphs)
     {
@@ -3226,7 +3224,7 @@ next_cluster_start (PangoGlyphString *gs,
       ++i;
     }
 
-  return i;
+  return gs->num_glyphs;
 }
 
 static int
