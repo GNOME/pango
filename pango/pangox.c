@@ -1590,14 +1590,23 @@ pango_x_make_matching_xlfd (PangoXFontMap *xfontmap, char *xlfd, const char *cha
 
   char *dash_charset;
 
+  dash_charset = g_strconcat ("-", charset, NULL);
+
+  if (!match_end (xlfd, "-*-*") && !match_end (xlfd, dash_charset))
+    {
+      g_free (dash_charset);
+      return NULL;
+    }
+
   identifier = pango_x_get_identifier (xlfd);
   size_info = g_hash_table_lookup (xfontmap->size_infos, identifier);
   g_free (identifier);
 
   if (!size_info)
-    return NULL;
-
-  dash_charset = g_strconcat ("-", charset, NULL);
+    {
+      g_free (dash_charset);
+      return NULL;
+    }
 
   tmp_list = size_info->xlfds;
   while (tmp_list)

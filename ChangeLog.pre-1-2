@@ -1,3 +1,9 @@
+Sat Feb 19 18:51:35 2000  Owen Taylor  <otaylor@redhat.com>
+
+	* libpango/pangox.c (pango_x_make_matching_xlfd): Fix problem
+	  where charsets specified in alias files where being ignored
+	  and treated as wildcards.
+
 Sat Feb 19 17:46:49 2000  Owen Taylor  <otaylor@redhat.com>
 
 	* README: Fix Dov's name.
