@@ -11,6 +11,6 @@ void         _pango_basic_script_engine_unload (PangoEngine      *engine);
 
 
 PangoIncludedModule _pango_included_win32_modules[] = {
- { _pango_basic_script_engine_list,  _pango_basic_script_engine_load,  _pango_basic_script_engine_unload },
+ { _pango_basic_win32_script_engine_list,  _pango_basic_win32_script_engine_load,  _pango_basic_win32_script_engine_unload },
  { NULL, NULL, NULL },
 };

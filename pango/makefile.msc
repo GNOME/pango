@@ -101,7 +101,7 @@ OBJECTS = \
 !ENDIF
 
 basic-win32.obj : ..\modules\basic\basic-win32.c
-	$(CC) $(PKG_CFLAGS) -GD -DMODULE_PREFIX -c ..\modules\basic\basic-win32.c
+	$(CC) $(PKG_CFLAGS) -GD -DWIN32_MODULE_PREFIX -c ..\modules\basic\basic-win32.c
 
 basic-ft2.obj : ..\modules\basic\basic-ft2.c
 	$(CC) $(PKG_CFLAGS) -GD -DFT2_MODULE_PREFIX -c ..\modules\basic\basic-ft2.c

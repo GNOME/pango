@@ -117,9 +117,7 @@ libpango_basic_win32_la_SOURCES = basic-win32.c
 EXTRA_DIST =		\
 	basic-common.h	\
 	tables-big.i	\
-	tables-small.i	\
-	makefile.mingw	\
-	makefile.mingw.in
+	tables-small.i
 
 included-modules: $(noinst_LTLIBRARIES)
 

@@ -1,3 +1,23 @@
+2002-09-23  Tor Lillqvist  <tml@iki.fi>
+
+	* modules/basic/basic-win32.c: Minor spacing fixes, comment the
+	Unicode ranges covered.
+
+	* modules/basic/makefile.mingw.in: Remove. Not maintained.
+
+	* modules/basic/Makefile.am: Remove from here, too.
+
+	* pango/makefile.msc
+	* pango/module-defs-win32.c.win32: Change according to change
+	below so that build also with the manually written makefile for
+	MSVC, which always uses included modules, still works.
+
+Mon Sep 16 12:03:54  2002  Arnaud Charlet <charlet@gnat.com>
+
+	* modules/basic/basic-win32.c: Check for correct macro, use
+	correct module entry name, so that --with-included-modules works
+	with autoconfiscated build for Windows. (#93372)
+
 2002-09-21  Tor Lillqvist  <tml@iki.fi>
 
 	* pango-zip.sh.in: Distribute specifically pango.aliases and
