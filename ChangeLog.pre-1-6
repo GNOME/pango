@@ -1,3 +1,9 @@
+2004-08-22  Tor Lillqvist  <tml@iki.fi>
+
+	* pango/pangowin32-fontmap.c (pango_win32_inner_enum_proc): Ignore
+	synthetic vertical writing versions of East Asian fonts. (#145322,
+	John Ehresman)
+
 Mon Aug 16 13:58:04 2004  Owen Taylor  <otaylor@redhat.com>
 
 	* examples/renderdemo.[ch] examples/pangoft2topgm.c:

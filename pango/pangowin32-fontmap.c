@@ -175,7 +175,11 @@ pango_win32_inner_enum_proc (LOGFONT    *lfp,
 			     DWORD       fontType,
 			     LPARAM      lParam)
 {
-  pango_win32_insert_font (fontmap, lfp);
+  /* Windows generates synthetic vertical writing versions of East
+   * Asian fonts with @ prepended to their name, ignore them.
+   */
+  if (lfp->lfFaceName[0] != '@')
+    pango_win32_insert_font (fontmap, lfp);
 
   return 1;
 }
