@@ -5,8 +5,8 @@ pangoxlibs = $(top_builddir)/pango/libpangox-$(PANGO_API_VERSION).la $(X_LIBS) $
 pangoxftlibs = $(top_builddir)/pango/libpangoxft-$(PANGO_API_VERSION).la $(XFT_LIBS) $(pangolibs)
 pangoft2libs = $(top_builddir)/pango/libpangoft2-$(PANGO_API_VERSION).la $(FREETYPE_LIBS) $(pangolibs)
 
-x_sources = hangul-x.c
-xft_sources = hangul-xft.c
+x_sources = hangul-x.c hangul-defs.h
+xft_sources = hangul-xft.c hangul-defs.h
 
 if HAVE_XFT
 if INCLUDE_HANGUL_XFT
