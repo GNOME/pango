@@ -5,3 +5,7 @@ pango-decl-list.txt
 pango-decl.txt
 Makefile.in
 Makefile
+pango.signals
+pango.args
+pango.hierarchy
+*.stamp
