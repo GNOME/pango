@@ -1,3 +1,6 @@
+/* NOTE: This file has not been maintained, and is out
+ * of date with respect to the rest of the code. 
+ */
 enum {
   ENC_ISO_8859_1 = 1 << 0,
   ENC_ISO_8859_2 = 1 << 1,

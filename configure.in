@@ -147,7 +147,7 @@ AC_MSG_CHECKING(For Qt location)
   
 if test "x$with_qt" = xyes ; then         
 # Search for Qt in various possibly standard ocations
-   for dir in /usr/lib/qt-2.1.0 /usr/lib/qt-2.0.1 /usr/lib/qt-2.0.0 /usr/lib/qt2 ; do
+   for dir in /usr/lib/qt-2.2.0 /usr/lib/qt-2.1.0 /usr/lib/qt-2.0.1 /usr/lib/qt-2.0.0 /usr/lib/qt2 ; do
       if test -x $dir/bin/moc ; then
          QTDIR=$dir
          break

@@ -8,7 +8,7 @@ for i in maps/* ; do
     README | CVS)
 	;;
     *)	
-	cat $i | grep -v '^#' | awk "{ printf \"%s %s:%s\\n\", \$2, \"$name\", \$1 }" >> table.tmp
+	cat $i | grep -v '^#' | sed -e 's/[:space:]*#.*$//' | awk "{ printf \"%s %s:%s\\n\", \$NF, \"$name\", \$1 }" >> table.tmp
 	;;
   esac
 done

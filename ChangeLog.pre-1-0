@@ -1,6 +1,21 @@
+Wed Aug 30 21:42:42 2000  Owen Taylor  <otaylor@redhat.com>
+
+	* configure.in (QTDIR): Add /usr/lib/qt-2.2.0 to the
+	list.
+
+	* modules/basic/tables-big.i: Updated using fixed
+	make-table.sh. Added koi8-r and iso8859-1
+
+	* modules/basic/tables-small.i: Add note noting
+	non-maintainence.
+
+	* tools/make-table.sh: Fix for mapping tables with
+	3 columns provided by KUSANO Takayuki.
+
 2000-08-29  Elliot Lee  <sopwith@redhat.com>
-	* pango/pango-context.h, pango/pango-font.h, pango/pango-fontmap.h, pango/pango-layout.h:
-	Utilize G_GNUC_CONST
+
+	* pango/pango-context.h, pango/pango-font.h,
+	pango/pango-fontmap.h, pango/pango-layout.h: Utilize G_GNUC_CONST
 
 Mon Aug 21 22:02:38 2000  Owen Taylor  <otaylor@redhat.com>
 

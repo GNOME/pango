@@ -1,7 +1,9 @@
 # File defining aliases of PangoFontDescription to X font set
 #
 # family style variant weight stretch   XLFD
-  
+
+fixedjis normal normal normal normal "-*-fixed-medium-r-normal--*-*-*-*-*-*-jisx0208.1983-0"
+
 sans normal normal normal normal "-*-helvetica-medium-r-normal--*-*-*-*-*-*-*-*,\
 				  -*-clearlyu-medium-r-normal--*-*-*-*-*-*-iso10646-1,\
 	                          -*-fixed-medium-r-normal--*-*-*-*-*-*-*-*,\
