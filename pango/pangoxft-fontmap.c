@@ -49,6 +49,8 @@ struct _PangoXftFontMap
   PangoXftSubstituteFunc substitute_func;
   gpointer substitute_data;
   GDestroyNotify substitute_destroy;
+
+  PangoRenderer *renderer;
 };
 
 struct _PangoXftFontMapClass
@@ -87,6 +89,9 @@ pango_xft_font_map_finalize (GObject *object)
 {
   PangoXftFontMap *xftfontmap = PANGO_XFT_FONT_MAP (object);
   
+  if (xftfontmap->renderer)
+    g_object_unref (xftfontmap->renderer);
+
   fontmaps = g_slist_remove (fontmaps, object);
 
   if (xftfontmap->substitute_destroy)
@@ -321,6 +326,24 @@ pango_xft_get_context (Display *display,
 
   fontmap = pango_xft_get_font_map (display, screen);
   return pango_fc_font_map_create_context (PANGO_FC_FONT_MAP (fontmap));
+}
+
+/**
+ * _pango_xft_font_map_get_renderer:
+ * @fontmap: a #PangoXftFontmap
+ * 
+ * Gets the singleton PangoXFTRenderer for this fontmap.
+ * 
+ * Return value: 
+ **/
+PangoRenderer *
+_pango_xft_font_map_get_renderer (PangoXftFontMap *xftfontmap)
+{
+  if (!xftfontmap->renderer)
+    xftfontmap->renderer = pango_xft_renderer_new (xftfontmap->display,
+						   xftfontmap->screen);
+
+  return xftfontmap->renderer;
 }
 
 static void

@@ -35,6 +35,23 @@ pangoft2topgm_LDADD =					\
 	$(FREETYPE_LIBS)
 ###################################################
 
+###################################################
+if HAVE_XFT
+noinst_PROGRAMS += pango-xftview
+endif
+
+pango_xftview_SOURCES =				\
+	xftview.c				\
+	renderdemo.c				\
+	argcontext.c				\
+	argcontext.h
+pango_xftview_LDADD =					\
+	../pango/libpango-$(PANGO_API_VERSION).la	\
+	../pango/libpangoft2-$(PANGO_API_VERSION).la	\
+	../pango/libpangoxft-$(PANGO_API_VERSION).la	\
+	 $(XFT_LIBS)
+###################################################
+
 if CROSS_COMPILING
 else
 all-local: pango.modules

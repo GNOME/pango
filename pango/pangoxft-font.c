@@ -27,12 +27,9 @@
 #include "pangoxft-private.h"
 #include "pangofc-private.h"
 
-#define PANGO_XFT_FONT(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_TYPE_XFT_FONT, PangoXftFont))
 #define PANGO_XFT_FONT_CLASS(klass)      (G_TYPE_CHECK_CLASS_CAST ((klass), PANGO_TYPE_XFT_FONT, PangoXftFontClass))
 #define PANGO_XFT_IS_FONT_CLASS(klass)   (G_TYPE_CHECK_CLASS_TYPE ((klass), PANGO_TYPE_XFT_FONT))
 #define PANGO_XFT_FONT_GET_CLASS(obj)    (G_TYPE_INSTANCE_GET_CLASS ((obj), PANGO_TYPE_XFT_FONT, PangoXftFontClass))
-
-#define PANGO_XFT_UNKNOWN_FLAG 0x10000000
 
 typedef struct _PangoXftFontClass    PangoXftFontClass;
 
@@ -105,11 +102,21 @@ _pango_xft_font_new (PangoXftFontMap *xftfontmap,
   return xfont;
 }
 
-static PangoFont *
-get_mini_font (PangoFont *font)
+/**
+ * _pango_xft_font_get_mini_font:
+ * @xfont: a #PangoXftFont
+ * 
+ * Gets the font used for drawing the digits in the
+ * missing-character hex squares
+ * 
+ * Return value: the PangoFont used for the digits; this
+ *  value is associated with the main font and will be freed
+ *  along with the main font.
+ **/
+PangoFont *
+_pango_xft_font_get_mini_font (PangoXftFont *xfont)
 {
-  PangoXftFont *xfont = (PangoXftFont *)font;
-  PangoFcFont *fcfont = (PangoFcFont *)font;
+  PangoFcFont *fcfont = (PangoFcFont *)xfont;
 
   g_assert (fcfont->fontmap);
 
@@ -142,254 +149,12 @@ get_mini_font (PangoFont *font)
 	}
 
       
-      xfont->mini_width = width;
-      xfont->mini_height = height;
-      xfont->mini_pad = MAX (height / 10, 1);
+      xfont->mini_width = PANGO_SCALE * width;
+      xfont->mini_height = PANGO_SCALE * height;
+      xfont->mini_pad = PANGO_SCALE * MAX (height / 10, 1);
     }
 
   return xfont->mini_font;
-}
-
-static void
-draw_rectangle (Display      *display,
-		Picture       src_picture,
-		Picture       dest_picture,
-		XftDraw      *draw,
-		XftColor     *color,
-		gint          x,
-		gint          y,
-		gint          width,
-		gint          height)
-{
-  if (draw)
-    {
-      XftDrawRect (draw, color, x, y, width, height);
-    }
-  else
-    {
-      XRenderComposite (display, PictOpOver, src_picture, None, dest_picture,
-			0, 0, 0, 0, x, y, width, height);
-    }
-}
-
-static void
-draw_box (Display      *display,
-	  Picture       src_picture,
-	  Picture       dest_picture,
-	  XftDraw      *draw,
-	  XftColor     *color,
-	  PangoXftFont *xfont,
-	  gint          x,
-	  gint          y,
-	  gint          width,
-	  gint          height)
-{
-  draw_rectangle (display, src_picture, dest_picture, draw, color,
-		  x, y, width, xfont->mini_pad);
-  draw_rectangle (display, src_picture, dest_picture, draw, color,
-		  x, y + xfont->mini_pad, xfont->mini_pad, height - xfont->mini_pad * 2);
-  draw_rectangle (display, src_picture, dest_picture, draw, color,
-		  x + width - xfont->mini_pad, y + xfont->mini_pad, xfont->mini_pad, height - xfont->mini_pad * 2);
-  draw_rectangle (display, src_picture, dest_picture, draw, color,
-		  x, y + height - xfont->mini_pad, width, xfont->mini_pad);
-}
-
-/**
- * pango_xft_render:
- * @draw:    the <type>XftDraw</type> object.
- * @color:   the color in which to draw the string
- * @font:    the font in which to draw the string
- * @glyphs:  the glyph string to draw
- * @x:       the x position of start of string (in pixels)
- * @y:       the y position of baseline (in pixels)
- *
- * Renders a #PangoGlyphString onto an <type>XftDraw</type> object wrapping an X drawable.
- */
-static void
-pango_xft_real_render (Display          *display,
-		       Picture           src_picture,
-		       Picture           dest_picture,
-		       XftDraw          *draw,
-		       XftColor         *color,
-		       PangoFont        *font,
-		       PangoGlyphString *glyphs,
-		       gint              x,
-		       gint              y)
-{
-  PangoXftFont *xfont = PANGO_XFT_FONT (font);
-  PangoFcFont *fcfont = PANGO_FC_FONT (font);
-  XftFont *xft_font = xft_font_get_font (font);
-  int i;
-  int x_off = 0;
-#define N_XFT_LOCAL	1024
-  XftGlyphSpec  xft_glyphs[N_XFT_LOCAL];
-  XftCharSpec	chars[6];     /* for unknown */
-  int		n_xft_glyph = 0;
-
-  if (!fcfont->fontmap)		/* Display closed */
-    return;
-
-#define FLUSH_GLYPHS() G_STMT_START {						\
-  if (n_xft_glyph)								\
-    {										\
-       if (draw)								\
-         XftDrawGlyphSpec (draw, color, xft_font, xft_glyphs, n_xft_glyph);	\
-       else									\
-         XftGlyphSpecRender (display, PictOpOver, src_picture, xft_font,	\
-	  		     dest_picture, 0, 0, xft_glyphs, n_xft_glyph);	\
-       n_xft_glyph = 0;								\
-    }										\
-  } G_STMT_END
-
-  if (!display)
-    _pango_xft_font_map_get_info (fcfont->fontmap, &display, NULL);
-
-  for (i=0; i<glyphs->num_glyphs; i++)
-    {
-      PangoGlyph glyph = glyphs->glyphs[i].glyph;
-      int glyph_x = x + PANGO_PIXELS (x_off + glyphs->glyphs[i].geometry.x_offset);
-      int glyph_y = y + PANGO_PIXELS (glyphs->glyphs[i].geometry.y_offset);
-
-      /* Clip glyphs into the X coordinate range; we really
-       * want to clip glyphs with an ink rect outside the
-       * [0,32767] x [0,32767] rectangle but looking up
-       * the ink rect here would be a noticeable speed hit.
-       * This is close enough.
-       */
-      if (glyph &&
-	  glyph_x >= -16384 && glyph_x <= 32767 &&
-	  glyph_y >= -16384 && glyph_y <= 32767)
-	{
-	  if (glyph & PANGO_XFT_UNKNOWN_FLAG)
-	    {
-	      char buf[7];
-	      int ys[3];
-	      int xs[4];
-	      int row, col;
-              int cols;
-	      
-	      PangoFont *mini_font = get_mini_font (font);
-	      XftFont *mini_xft = xft_font_get_font (mini_font);
-      
-	      glyph &= ~PANGO_XFT_UNKNOWN_FLAG;
-	      
-	      ys[0] = glyph_y - xft_font->ascent + (xft_font->ascent + xft_font->descent - xfont->mini_height * 2 - xfont->mini_pad * 5) / 2;
-	      ys[1] = ys[0] + 2 * xfont->mini_pad + xfont->mini_height;
-	      ys[2] = ys[1] + xfont->mini_height + xfont->mini_pad;
-
-	      xs[0] = glyph_x; 
-	      xs[1] = xs[0] + 2 * xfont->mini_pad;
-	      xs[2] = xs[1] + xfont->mini_width + xfont->mini_pad;
-	      xs[3] = xs[2] + xfont->mini_width + xfont->mini_pad;
-
-              if (glyph > 0xffff)
-                {
-                  cols = 3;
-                  g_snprintf (buf, sizeof(buf), "%06X", glyph);
-                }
-              else
-                {
-                  cols = 2;
-                  g_snprintf (buf, sizeof(buf), "%04X", glyph);
-                }
-
-	      draw_box (display, src_picture, dest_picture, draw, color, xfont,
-			xs[0], ys[0],
-			xfont->mini_width * cols + xfont->mini_pad * (2 * cols + 1),
-			xfont->mini_height * 2 + xfont->mini_pad * 5);
-
-	      FLUSH_GLYPHS ();
-	      for (row = 0; row < 2; row++)
-		for (col = 0; col < cols; col++)
-		  {
-		    XftCharSpec *c = &chars[row * cols + col];
-		    c->ucs4 = buf[row * cols + col] & 0xff;
-		    c->x = xs[col+1];
-		    c->y = ys[row+1];
-		  }
-	      if (draw)
-		XftDrawCharSpec (draw, color, mini_xft,
-				 chars, 2 * cols);
-	      else
-		XftCharSpecRender (display, PictOpOver, src_picture,
-				   mini_xft, dest_picture, 0, 0,
-				   chars, 2 * cols);
-	    }
-	  else if (glyph)
-	    {
-	      if (n_xft_glyph == N_XFT_LOCAL)
-		FLUSH_GLYPHS ();
-	      
-	      xft_glyphs[n_xft_glyph].x = glyph_x;
-	      xft_glyphs[n_xft_glyph].y = glyph_y;
-	      xft_glyphs[n_xft_glyph].glyph = glyph;
-	      n_xft_glyph++;
-	    }
-	}
-      
-      x_off += glyphs->glyphs[i].geometry.width;
-    }
-  
-  FLUSH_GLYPHS ();
-
-#undef FLUSH_GLYPHS
-}
-
-/**
- * pango_xft_render:
- * @draw:    the <type>XftDraw</type> object.
- * @color:   the color in which to draw the string
- * @font:    the font in which to draw the string
- * @glyphs:  the glyph string to draw
- * @x:       the x position of start of string (in pixels)
- * @y:       the y position of baseline (in pixels)
- *
- * Renders a #PangoGlyphString onto an <type>XftDraw</type> object wrapping an X drawable.
- */
-void
-pango_xft_render (XftDraw          *draw,
-		  XftColor         *color,
-		  PangoFont        *font,
-		  PangoGlyphString *glyphs,
-		  gint              x,
-		  gint              y)
-{
-  g_return_if_fail (draw != NULL);
-  g_return_if_fail (color != NULL);
-  g_return_if_fail (PANGO_XFT_IS_FONT (font));
-  g_return_if_fail (glyphs != NULL);
-  
-  pango_xft_real_render (NULL, None, None, draw, color, font, glyphs, x, y);
-}
-
-/**
- * pango_xft_picture_render:
- * @display:      an X display
- * @src_picture:  the source picture to draw the string with
- * @dest_picture: the destination picture to draw the strign onto
- * @font:         the font in which to draw the string
- * @glyphs:       the glyph string to draw
- * @x:            the x position of start of string (in pixels)
- * @y:            the y position of baseline (in pixels)
- *
- * Renders a #PangoGlyphString onto an Xrender <type>Picture</type> object.
- */
-void
-pango_xft_picture_render (Display          *display,
-			  Picture           src_picture,
-			  Picture           dest_picture,
-			  PangoFont        *font,
-			  PangoGlyphString *glyphs,
-			  gint              x,
-			  gint              y)
-{
-  g_return_if_fail (display != NULL);
-  g_return_if_fail (src_picture != None);
-  g_return_if_fail (dest_picture != None);
-  g_return_if_fail (PANGO_XFT_IS_FONT (font));
-  g_return_if_fail (glyphs != NULL);
-  
-  pango_xft_real_render (display, src_picture, dest_picture, NULL, NULL, font, glyphs, x, y);
 }
 
 static void
@@ -427,7 +192,7 @@ get_glyph_extents_missing (PangoXftFont    *xfont,
   
   gint cols = (glyph & ~PANGO_XFT_UNKNOWN_FLAG) > 0xffff ? 3 : 2;
   
-  get_mini_font (font);
+  _pango_xft_font_get_mini_font (xfont);
   
   if (ink_rect)
     {

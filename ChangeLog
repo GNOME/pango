@@ -1,3 +1,32 @@
+Fri Sep 24 12:59:22 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* configure.in: Up version to 1.7.0.
+
+	* pango/pango-renderer.[ch] pango/pango.h pango/Makefile.am: 
+	Add PangoRenderer, a base class that is subclassed to produce 
+	rendering drivers for different backends and purposes.
+
+	* pango/pangoft2-private.h pango/pangoft2-render.c 
+	pango/pangoft2.c: Move rendering into pangoft2-render.c,
+	use PangoRenderer.
+
+	* pango/pangoft2-fontmap.c pango/pangoft2-private.h: Add
+	_pango_ft2_font_map_get_renderer() to retrieve a singleton
+	fontmap for the fontmap.
+
+	* pango/pangoxft-render.[ch] pango/pangoxft.c pango/Makefile.am: 
+	Make Xft rendering use PangoRenderer, add publically 
+	visible, subclassable PangoXftRenderer.
+
+	* pango/pangoxft-fontmap.c pango/pangoxft-private.h: Add
+	_pango_xft_font_map_get_renderer() to retrieve a singleton
+	fontmap for the fontmap.
+
+	* examples/xftview.c examples/Makefile.am: Add a test program
+	using the Xft backend.
+
+	* docs/*: Update minimally for PangoRenderer.
+
 Wed Sep 22 16:15:40 2004  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pangoxft-font.c (pango_xft_font_get_glyph_extents): Use

@@ -77,6 +77,7 @@ libpango_1_0_la_SOURCES =      \
 	pango-layout.c	       \
 	pango-layout-private.h	       \
 	pango-markup.c	       \
+	pango-renderer.c       \
 	pango-script.c	       \
 	pango-script-lang-table.h \
 	pango-script-table.h   \
@@ -101,6 +102,7 @@ pango_headers =		   \
 	pango-item.h	   \
 	pango-layout.h	   \
 	pango-modules.h	   \
+	pango-renderer.h   \
 	pango-script.h	   \
 	pango-tabs.h	   \
 	pango-types.h	   \
@@ -195,7 +197,7 @@ pangoft2-win32res.lo: pangoft2.rc
 # ------------------- libpangoxft -------------------
 
 if HAVE_XFT
-pangoinclude_HEADERS += pangoxft.h pango-ot.h
+pangoinclude_HEADERS += pangoxft.h pangoxft-render.h pango-ot.h
 lib_LTLIBRARIES += libpangoxft-1.0.la
 endif
 
@@ -206,7 +208,8 @@ libpangoxft_1_0_la_DEPENDENCIES = libpangoft2-$(PANGO_API_VERSION).la libpango-$
 libpangoxft_1_0_la_SOURCES =   	\
 	pangoxft-font.c		\
 	pangoxft-fontmap.c      \
-	pangoxft-private.h
+	pangoxft-private.h	\
+	pangoxft-render.c
 
 
 # ------------------- libpangowin32 -------------------

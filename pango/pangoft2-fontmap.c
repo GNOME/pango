@@ -60,6 +60,8 @@ struct _PangoFT2FontMap
   PangoFT2SubstituteFunc substitute_func;
   gpointer substitute_data;
   GDestroyNotify substitute_destroy;
+
+  PangoRenderer *renderer;
 };
 
 struct _PangoFT2FontMapClass
@@ -101,6 +103,9 @@ pango_ft2_font_map_finalize (GObject *object)
 {
   PangoFT2FontMap *ft2fontmap = PANGO_FT2_FONT_MAP (object);
   
+  if (ft2fontmap->renderer)
+    g_object_unref (ft2fontmap->renderer);
+
   if (ft2fontmap->substitute_destroy)
     ft2fontmap->substitute_destroy (ft2fontmap->substitute_data);
 
@@ -301,6 +306,24 @@ _pango_ft2_font_map_get_library (PangoFontMap *fontmap)
   PangoFT2FontMap *ft2fontmap = (PangoFT2FontMap *)fontmap;
   
   return ft2fontmap->library;
+}
+
+
+/**
+ * _pango_ft2_font_map_get_renderer:
+ * @fontmap: a #PangoFT2Fontmap
+ * 
+ * Gets the singleton PangoFT2Renderer for this fontmap.
+ * 
+ * Return value: 
+ **/
+PangoRenderer *
+_pango_ft2_font_map_get_renderer (PangoFT2FontMap *ft2fontmap)
+{
+  if (!ft2fontmap->renderer)
+    ft2fontmap->renderer = g_object_new (PANGO_TYPE_FT2_RENDERER, NULL);
+
+  return ft2fontmap->renderer;
 }
 
 static void

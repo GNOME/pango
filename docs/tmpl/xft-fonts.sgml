@@ -14,6 +14,18 @@ Functions for shape engines to manipulate Xft fonts
 
 </para>
 
+<!-- ##### STRUCT PangoXftFont ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### STRUCT PangoXftFontMap ##### -->
+<para>
+
+</para>
+
+
 <!-- ##### MACRO PANGO_RENDER_TYPE_XFT ##### -->
 <para>
 A string constant that was used to identify shape engines that work
@@ -81,33 +93,6 @@ Function type for doing final config tweaking on prepared FcPatterns.
 @screen: 
 
 
-<!-- ##### FUNCTION pango_xft_render ##### -->
-<para>
-
-</para>
-
-@draw: 
-@color: 
-@font: 
-@glyphs: 
-@x: 
-@y: 
-
-
-<!-- ##### FUNCTION pango_xft_picture_render ##### -->
-<para>
-
-</para>
-
-@display: 
-@src_picture: 
-@dest_picture: 
-@font: 
-@glyphs: 
-@x: 
-@y: 
-
-
 <!-- ##### FUNCTION pango_xft_font_get_font ##### -->
 <para>
 
@@ -171,5 +156,112 @@ Function type for doing final config tweaking on prepared FcPatterns.
 @font: 
 @wc: 
 @Returns: 
+
+
+<!-- ##### STRUCT PangoXftRenderer ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### STRUCT PangoXftRendererClass ##### -->
+<para>
+
+</para>
+
+@composite_trapezoids: 
+@composite_glyphs: 
+
+<!-- ##### FUNCTION pango_xft_renderer_new ##### -->
+<para>
+
+</para>
+
+@display: 
+@screen: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_xft_renderer_set_draw ##### -->
+<para>
+
+</para>
+
+@xftrenderer: 
+@draw: 
+
+
+<!-- ##### FUNCTION pango_xft_renderer_set_default_color ##### -->
+<para>
+
+</para>
+
+@xftrenderer: 
+@default_color: 
+
+
+<!-- ##### FUNCTION pango_xft_render ##### -->
+<para>
+
+</para>
+
+@draw: 
+@color: 
+@font: 
+@glyphs: 
+@x: 
+@y: 
+
+
+<!-- ##### FUNCTION pango_xft_picture_render ##### -->
+<para>
+
+</para>
+
+@display: 
+@src_picture: 
+@dest_picture: 
+@font: 
+@glyphs: 
+@x: 
+@y: 
+
+
+<!-- ##### FUNCTION pango_xft_render_transformed ##### -->
+<para>
+
+</para>
+
+@draw: 
+@color: 
+@matrix: 
+@font: 
+@glyphs: 
+@x: 
+@y: 
+
+
+<!-- ##### FUNCTION pango_xft_render_layout_line ##### -->
+<para>
+
+</para>
+
+@draw: 
+@color: 
+@line: 
+@x: 
+@y: 
+
+
+<!-- ##### FUNCTION pango_xft_render_layout ##### -->
+<para>
+
+</para>
+
+@draw: 
+@color: 
+@layout: 
+@x: 
+@y: 
 
 

@@ -24,6 +24,7 @@
 #define __PANGOFT2_PRIVATE_H__
 
 #include "pangoft2.h"
+#include "pango-renderer.h"
 #include <fontconfig/fontconfig.h>
 #include <fontconfig/fcfreetype.h>
 
@@ -55,7 +56,7 @@
 
 typedef struct _PangoFT2Font      PangoFT2Font;
 typedef struct _PangoFT2GlyphInfo PangoFT2GlyphInfo;
-
+typedef struct _PangoFT2Renderer  PangoFT2Renderer;
 
 struct _PangoFT2Font
 {
@@ -110,5 +111,13 @@ void _pango_ft2_draw_error_underline (FT_Bitmap         *bitmap,
 				      int                y,
 				      int                width,
 				      int                height);
+
+#define PANGO_TYPE_FT2_RENDERER            (pango_ft2_renderer_get_type())
+#define PANGO_FT2_RENDERER(object)         (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_TYPE_FT2_RENDERER, PangoFT2Renderer))
+#define PANGO_IS_FT2_RENDERER(object)      (G_TYPE_CHECK_INSTANCE_TYPE ((object), PANGO_TYPE_FT2_RENDERER))
+
+GType pango_ft2_renderer_get_type    (void);
+
+PangoRenderer *_pango_ft2_font_map_get_renderer (PangoFT2FontMap *ft2fontmap);
 
 #endif /* __PANGOFT2_PRIVATE_H__ */

@@ -22,13 +22,12 @@
 #ifndef __PANGOXFT_PRIVATE_H__
 #define __PANGOXFT_PRIVATE_H__
 
-#include <pangoxft.h>
-#include <pango-ot.h>
+#include "pangoxft.h"
+#include "pango-renderer.h"
 
 G_BEGIN_DECLS
 
-typedef struct _PangoXftFont    PangoXftFont;
-typedef struct _PangoXftFontMap PangoXftFontMap;
+#define PANGO_XFT_UNKNOWN_FLAG 0x10000000
 
 struct _PangoXftFont
 {
@@ -49,9 +48,14 @@ struct _PangoXftFont
 
 PangoXftFont *_pango_xft_font_new          (PangoXftFontMap  *xftfontmap,
 					    FcPattern        *pattern);
+
 void          _pango_xft_font_map_get_info (PangoFontMap     *fontmap,
 					    Display         **display,
 					    int              *screen);
+
+PangoRenderer *_pango_xft_font_map_get_renderer (PangoXftFontMap *xftfontmap);
+
+PangoFont *_pango_xft_font_get_mini_font (PangoXftFont *xfont);
 
 G_END_DECLS
 

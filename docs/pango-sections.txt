@@ -581,6 +581,40 @@ pango_module_register
 </SECTION>
 
 <SECTION>
+<FILE>pango-renderer</FILE>
+PangoRenderer
+PangoRenderPart
+PANGO_TYPE_RENDER_PART
+PangoRendererClass
+<TITLE>PangoRenderer</TITLE>
+pango_renderer_draw_layout
+pango_renderer_draw_layout_line
+pango_renderer_draw_glyphs
+pango_renderer_draw_rectangle
+pango_renderer_draw_error_underline
+pango_renderer_draw_trapezoid
+pango_renderer_draw_glyph
+pango_renderer_activate
+pango_renderer_deactivate
+pango_renderer_part_changed
+pango_renderer_set_color
+pango_renderer_get_color
+pango_renderer_set_matrix
+pango_renderer_get_matrix
+<SUBSECTION Standard>
+PANGO_RENDERER
+PANGO_IS_RENDERER
+PANGO_TYPE_RENDERER
+pango_renderer_get_type
+PANGO_RENDERER_CLASS
+PANGO_IS_RENDERER_CLASS
+PANGO_RENDERER_GET_CLASS
+<SUBSECTION Private>
+pango_render_part_get_type
+PangoRendererPrivate
+</SECTION>
+
+<SECTION>
 <TITLE>X Fonts and Rendering</TITLE>
 <FILE>x-fonts</FILE>
 PANGO_RENDER_TYPE_X
@@ -676,6 +710,8 @@ STRICT
 <SECTION>
 <TITLE>Xft Fonts and Rendering</TITLE>
 <FILE>xft-fonts</FILE>
+PangoXftFont
+PangoXftFontMap
 PANGO_RENDER_TYPE_XFT
 pango_xft_get_context
 pango_xft_get_font_map
@@ -683,8 +719,6 @@ pango_xft_set_default_substitute
 PangoXftSubstituteFunc
 pango_xft_substitute_changed
 pango_xft_shutdown_display
-pango_xft_render
-pango_xft_picture_render
 pango_xft_font_get_font
 pango_xft_font_get_display
 pango_xft_font_has_char
@@ -692,13 +726,35 @@ pango_xft_font_lock_face
 pango_xft_font_unlock_face
 pango_xft_font_get_glyph
 pango_xft_font_get_unknown_glyph
-
+PangoXftRenderer
+PangoXftRendererClass
+pango_xft_renderer_new
+pango_xft_renderer_set_draw
+pango_xft_renderer_set_default_color
+pango_xft_render
+pango_xft_picture_render
+pango_xft_render_transformed
+pango_xft_render_layout_line
+pango_xft_render_layout
 <SUBSECTION Standard>
 PANGO_TYPE_XFT_FONT
+PANGO_XFT_FONT
 PANGO_XFT_IS_FONT
+PANGO_TYPE_XFT_FONT_MAP
+PANGO_XFT_FONT_MAP
+PANGO_XFT_IS_FONT_MAP
+PANGO_XFT_RENDERER
+PANGO_IS_XFT_RENDERER
+PANGO_TYPE_XFT_RENDERER
+PANGO_XFT_RENDERER_CLASS
+PANGO_IS_XFT_RENDERER_CLASS
+PANGO_XFT_RENDERER_GET_CLASS
 
 <SUBSECTION Private>
+PangoXftRendererPrivate
 pango_xft_font_get_type
+pango_xft_font_map_get_type
+pango_xft_renderer_get_type
 </SECTION>
 
 <SECTION>

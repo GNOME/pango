@@ -26,21 +26,22 @@
 #include <pango/pango-context.h>
 #include <pango/pango-ot.h>
 #include <pango/pangofc-font.h>
+#include <pango/pango-layout.h>
+#include <pango/pangoxft-render.h>
 
 G_BEGIN_DECLS
-
-#define _XFT_NO_COMPAT
-#define _XFTCOMPAT_H_
-#include <X11/Xlib.h>
-#include <X11/Xft/Xft.h>
-#if defined(XftVersion) && XftVersion >= 20000
-#else
-#error "must have Xft version 2 or newer"
-#endif
 
 #ifndef PANGO_DISABLE_DEPRECATED
 #define PANGO_RENDER_TYPE_XFT "PangoRenderXft"
 #endif
+
+#define PANGO_TYPE_XFT_FONT_MAP              (pango_xft_font_map_get_type ())
+#define PANGO_XFT_FONT_MAP(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_TYPE_XFT_FONT_MAP, PangoXftFontMap))
+#define PANGO_XFT_IS_FONT_MAP(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), PANGO_TYPE_XFT_FONT_MAP))
+
+typedef struct _PangoXftFontMap      PangoXftFontMap;
+
+typedef struct _PangoXftFont    PangoXftFont;
 
 typedef void (*PangoXftSubstituteFunc) (FcPattern *pattern,
                                         gpointer   data);
@@ -54,20 +55,6 @@ PangoContext *pango_xft_get_context      (Display *display,
 void          pango_xft_shutdown_display (Display *display,
 					  int      screen);
 
-void          pango_xft_render         (XftDraw          *draw,
-					XftColor         *color,
-					PangoFont        *font,
-					PangoGlyphString *glyphs,
-					gint              x,
-					gint              y);
-void          pango_xft_picture_render (Display          *display,
-					Picture           src_picture,
-					Picture           dest_picture,
-					PangoFont        *font,
-					PangoGlyphString *glyphs,
-					gint              x,
-					gint              y);
-
 void pango_xft_set_default_substitute (Display                *display,
 				       int                     screen,
 				       PangoXftSubstituteFunc  func,
@@ -76,6 +63,9 @@ void pango_xft_set_default_substitute (Display                *display,
 void pango_xft_substitute_changed     (Display                *display,
 				       int                     screen);
 
+GType pango_xft_font_map_get_type (void);
+
+#define PANGO_XFT_FONT(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_TYPE_XFT_FONT, PangoXftFont))
 #define PANGO_TYPE_XFT_FONT              (pango_xft_font_get_type ())
 #define PANGO_XFT_IS_FONT(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), PANGO_TYPE_XFT_FONT))
 
