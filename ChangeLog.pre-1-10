@@ -1,5 +1,9 @@
 2002-03-06  Tor Lillqvist  <tml@iki.fi>
 
+	* pango/Makefile.am (install-exec-local): Ignore return status
+	from for loop, in case the last test -f happens to fail. Handle
+	also the libpangowin32 .la file.
+
 	* pango/Makefile.am (libpangoft2_1_0_la_LDFLAGS): Use
 	pangoft2_export_symbols, not pangowin32_export_symbols.
 
