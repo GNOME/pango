@@ -25,6 +25,8 @@
 #include "pangox.h"
 #include "pango-engine.h"
 
+#define SCRIPT_ENGINE_NAME "HangulScriptEngineX"
+
 static PangoEngineRange hangul_ranges[] = {
 
   /* Hangul Jamo U+1100 -- U+11FF */
@@ -38,7 +40,7 @@ static PangoEngineRange hangul_ranges[] = {
 
 static PangoEngineInfo script_engines[] = {
   {
-    "HangulScriptEngineX",
+    SCRIPT_ENGINE_NAME,
     PANGO_ENGINE_TYPE_SHAPE,
     PANGO_RENDER_TYPE_X,
     hangul_ranges, G_N_ELEMENTS(hangul_ranges)
@@ -716,7 +718,7 @@ hangul_engine_x_new ()
 
   result = g_new (PangoEngineShape, 1);
 
-  result->engine.id = "HangulScriptEngine";
+  result->engine.id = SCRIPT_ENGINE_NAME;
   result->engine.type = PANGO_ENGINE_TYPE_SHAPE;
   result->engine.length = sizeof (result);
   result->script_shape = hangul_engine_shape;
@@ -747,7 +749,7 @@ MODULE_ENTRY(script_engine_list) (PangoEngineInfo **engines, int *n_engines)
 PangoEngine *
 MODULE_ENTRY(script_engine_load) (const char *id)
 {
-  if (!strcmp (id, "HangulScriptEngineX"))
+  if (!strcmp (id, SCRIPT_ENGINE_NAME))
     return hangul_engine_x_new ();
   else
     return NULL;

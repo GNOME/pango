@@ -33,6 +33,7 @@
 
 #define ISCII_BASED
 #define SCRIPT_STRING "Gujarati"
+#define SCRIPT_ENGINE_NAME SCRIPT_STRING "ScriptEngineX"
 
 #include "pango-indic.h"
 #include "pango-indic-script.h"
@@ -306,7 +307,7 @@ pango_indic_engine_x_new ()
 {
   PangoEngineShape *result;
   result = g_new (PangoEngineShape, 1);
-  result->engine.id = SCRIPT_STRING "ScriptEngine";
+  result->engine.id = SCRIPT_ENGINE_NAME;
   result->engine.type = PANGO_ENGINE_TYPE_SHAPE;
   result->engine.length = sizeof (result);
   result->script_shape = pango_indic_engine_shape;
@@ -330,7 +331,7 @@ MODULE_ENTRY(script_engine_list) (PangoEngineInfo ** engines, int *n_engines)
 PangoEngine *
 MODULE_ENTRY(script_engine_load) (const char *id)
 {
-  if (!strcmp (id, SCRIPT_STRING "ScriptEngineX"))
+  if (!strcmp (id, SCRIPT_ENGINE_NAME))
     return pango_indic_engine_x_new ();
   else
     return NULL;

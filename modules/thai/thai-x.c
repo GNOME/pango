@@ -86,6 +86,8 @@
 #define char_class(wc)		TAC_char_class[(unsigned int)(wc)]
 #define is_char_type(wc, mask)	(char_type_table[ucs2tis ((wc))] & (mask))
 
+#define SCRIPT_ENGINE_NAME "ThaiScriptEngineX"
+
 /* We handle the range U+0e01 to U+0e5b exactly
  */
 static PangoEngineRange thai_ranges[] = {
@@ -94,7 +96,7 @@ static PangoEngineRange thai_ranges[] = {
 
 static PangoEngineInfo script_engines[] = {
   {
-    "ThaiScriptEngineX",
+    SCRIPT_ENGINE_NAME,
     PANGO_ENGINE_TYPE_SHAPE,
     PANGO_RENDER_TYPE_X,
     thai_ranges, G_N_ELEMENTS(thai_ranges)
@@ -854,7 +856,7 @@ thai_engine_x_new ()
   
   result = g_new (PangoEngineShape, 1);
 
-  result->engine.id = "ThaiScriptEngine";
+  result->engine.id = SCRIPT_ENGINE_NAME;
   result->engine.type = PANGO_ENGINE_TYPE_SHAPE;
   result->engine.length = sizeof (result);
   result->script_shape = thai_engine_shape;
@@ -890,7 +892,7 @@ MODULE_ENTRY(script_engine_list) (PangoEngineInfo **engines, gint *n_engines)
 PangoEngine *
 MODULE_ENTRY(script_engine_load) (const char *id)
 {
-  if (!strcmp (id, "ThaiScriptEngineX"))
+  if (!strcmp (id, SCRIPT_ENGINE_NAME))
     return thai_engine_x_new ();
   else
     return NULL;

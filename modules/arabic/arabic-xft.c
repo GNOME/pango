@@ -28,6 +28,8 @@
 #include "pango-engine.h"
 #include "pango-utils.h"
 
+#define SCRIPT_ENGINE_NAME "ArabicScriptEngineXft"
+
 static PangoEngineRange arabic_ranges[] = {
   /* Language characters */
   { 0x060c, 0x06f9, "*" }, /* Arabic */
@@ -35,7 +37,7 @@ static PangoEngineRange arabic_ranges[] = {
 
 static PangoEngineInfo script_engines[] = {
   {
-    "ArabicScriptEngineXft",
+    SCRIPT_ENGINE_NAME,
     PANGO_ENGINE_TYPE_SHAPE,
     PANGO_RENDER_TYPE_XFT,
     arabic_ranges, G_N_ELEMENTS(arabic_ranges)
@@ -311,7 +313,7 @@ arabic_engine_xft_new ()
   
   result = g_new (PangoEngineShape, 1);
 
-  result->engine.id = PANGO_RENDER_TYPE_XFT;
+  result->engine.id = SCRIPT_ENGINE_NAME;
   result->engine.type = PANGO_ENGINE_TYPE_SHAPE;
   result->engine.length = sizeof (result);
   result->script_shape = arabic_engine_shape;
@@ -347,7 +349,7 @@ MODULE_ENTRY(script_engine_list) (PangoEngineInfo **engines, gint *n_engines)
 PangoEngine *
 MODULE_ENTRY(script_engine_load) (const char *id)
 {
-  if (!strcmp (id, "ArabicScriptEngineXft"))
+  if (!strcmp (id, SCRIPT_ENGINE_NAME))
     return arabic_engine_xft_new ();
   else
     return NULL;

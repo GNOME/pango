@@ -26,6 +26,8 @@
 #include "pangoft2.h"
 #include "pango-utils.h"
 
+#define SCRIPT_ENGINE_NAME "BasicScriptEngineFT2"
+
 static PangoEngineRange basic_ranges[] = {
   /* Basic Latin, Latin-1 Supplement, Latin Extended-A, Latin Extended-B,
    * IPA Extensions
@@ -99,7 +101,7 @@ static PangoEngineRange basic_ranges[] = {
 
 static PangoEngineInfo script_engines[] = {
   {
-    "BasicScriptEngineFT2",
+    SCRIPT_ENGINE_NAME,
     PANGO_ENGINE_TYPE_SHAPE,
     PANGO_RENDER_TYPE_FT2,
     basic_ranges, G_N_ELEMENTS(basic_ranges)
@@ -302,7 +304,7 @@ basic_engine_ft2_new (void)
   
   result = g_new (PangoEngineShape, 1);
 
-  result->engine.id = "BasicScriptEngineFT2";
+  result->engine.id = SCRIPT_ENGINE_NAME;
   result->engine.type = PANGO_ENGINE_TYPE_SHAPE;
   result->engine.length = sizeof (result);
   result->script_shape = basic_engine_shape;
@@ -331,7 +333,7 @@ MODULE_ENTRY(script_engine_list) (PangoEngineInfo **engines,
 PangoEngine *
 MODULE_ENTRY(script_engine_load) (const char *id)
 {
-  if (!strcmp (id, "BasicScriptEngineFT2"))
+  if (!strcmp (id, SCRIPT_ENGINE_NAME))
     return basic_engine_ft2_new ();
   else
     return NULL;

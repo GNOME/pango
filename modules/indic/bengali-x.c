@@ -46,6 +46,7 @@
 #include "pango-engine.h"
 
 #define SCRIPT_STRING "Bengali"
+#define SCRIPT_ENGINE_NAME SCRIPT_STRING "ScriptEngineX"
 #define ISCII_BASED
 #define RANGE_START 0x980
 #define RANGE_SIZE 0x80
@@ -277,7 +278,7 @@ pango_indic_engine_x_new ()
 {
   PangoEngineShape *result;
   result = g_new (PangoEngineShape, 1);
-  result->engine.id = SCRIPT_STRING "ScriptEngine";
+  result->engine.id = SCRIPT_ENGINE_NAME;
   result->engine.type = PANGO_ENGINE_TYPE_SHAPE;
   result->engine.length = sizeof (result);
   result->script_shape = pango_indic_engine_shape;
@@ -301,7 +302,7 @@ MODULE_ENTRY(script_engine_list) (PangoEngineInfo ** engines, int *n_engines)
 PangoEngine *
 MODULE_ENTRY(script_engine_load) (const char *id)
 {
-  if (!strcmp (id, SCRIPT_STRING "ScriptEngineX"))
+  if (!strcmp (id, SCRIPT_ENGINE_NAME))
     return pango_indic_engine_x_new ();
   else
     return NULL;

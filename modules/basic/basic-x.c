@@ -36,6 +36,8 @@ typedef PangoGlyph (*ConvFunc) (CharCache   *cache,
 
 #define MAX_CHARSETS 32
 
+#define SCRIPT_ENGINE_NAME "BasicScriptEngineX"
+
 struct _Charset
 {
   int   index;
@@ -96,7 +98,7 @@ static PangoEngineRange basic_ranges[] = {
 
 static PangoEngineInfo script_engines[] = {
   {
-    "BasicScriptEngineX",
+    SCRIPT_ENGINE_NAME,
     PANGO_ENGINE_TYPE_SHAPE,
     PANGO_RENDER_TYPE_X,
     basic_ranges, G_N_ELEMENTS(basic_ranges)
@@ -464,7 +466,7 @@ basic_engine_x_new ()
   
   result = g_new (PangoEngineShape, 1);
 
-  result->engine.id = "BasicScriptEngine";
+  result->engine.id = SCRIPT_ENGINE_NAME;
   result->engine.type = PANGO_ENGINE_TYPE_SHAPE;
   result->engine.length = sizeof (result);
   result->script_shape = basic_engine_shape;
@@ -492,7 +494,7 @@ MODULE_ENTRY(script_engine_list) (PangoEngineInfo **engines, gint *n_engines)
 PangoEngine *
 MODULE_ENTRY(script_engine_load) (const char *id)
 {
-  if (!strcmp (id, "BasicScriptEngineX"))
+  if (!strcmp (id, SCRIPT_ENGINE_NAME))
     return basic_engine_x_new ();
   else
     return NULL;

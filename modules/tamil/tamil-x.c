@@ -12,13 +12,15 @@
 #include "pango-engine.h"
 #include <string.h>
 
+#define SCRIPT_ENGINE_NAME "TamilScriptEngineX"
+
 static PangoEngineRange tamil_range[] = {
   { 0x0b80, 0x0bff, "*" },
 };
 
 static PangoEngineInfo script_engines[] = {
   {
-    "TamilScriptEngineX",
+    SCRIPT_ENGINE_NAME,
     PANGO_ENGINE_TYPE_SHAPE,
     PANGO_RENDER_TYPE_X,
     tamil_range, G_N_ELEMENTS(tamil_range)
@@ -173,7 +175,7 @@ tamil_engine_x_new ()
   
   result = g_new (PangoEngineShape, 1);
 
-  result->engine.id = "TamilScriptEngine";
+  result->engine.id = SCRIPT_ENGINE_NAME;
   result->engine.type = PANGO_ENGINE_TYPE_SHAPE;
   result->engine.length = sizeof (result);
   result->script_shape = tamil_engine_shape;
@@ -202,7 +204,7 @@ MODULE_ENTRY(script_engine_list) (PangoEngineInfo **engines, int *n_engines)
 PangoEngine *
 MODULE_ENTRY(script_engine_load) (const char *id)
 {
-  if (!strcmp (id, "TamilScriptEngineX"))
+  if (!strcmp (id, SCRIPT_ENGINE_NAME))
     return tamil_engine_x_new ();
   else
     return NULL;

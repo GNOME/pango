@@ -23,6 +23,8 @@
 #include "pangowin32.h"
 #include "pango-utils.h"
 
+#define SCRIPT_ENGINE_NAME "BasicScriptEngineWin32"
+
 static PangoEngineRange basic_ranges[] = {
   /* Language characters */
   { 0x0000, 0x02af, "*" },
@@ -40,7 +42,7 @@ static PangoEngineRange basic_ranges[] = {
 
 static PangoEngineInfo script_engines[] = {
   {
-    "BasicScriptEngineWin32",
+    SCRIPT_ENGINE_NAME,
     PANGO_ENGINE_TYPE_SHAPE,
     PANGO_RENDER_TYPE_WIN32,
     basic_ranges, G_N_ELEMENTS(basic_ranges)
@@ -272,7 +274,7 @@ basic_engine_win32_new (void)
   
   result = g_new (PangoEngineShape, 1);
 
-  result->engine.id = "BasicScriptEngine";
+  result->engine.id = SCRIPT_ENGINE_NAME;
   result->engine.type = PANGO_ENGINE_TYPE_SHAPE;
   result->engine.length = sizeof (result);
   result->script_shape = basic_engine_shape;
@@ -301,7 +303,7 @@ MODULE_ENTRY(script_engine_list) (PangoEngineInfo **engines,
 PangoEngine *
 MODULE_ENTRY(script_engine_load) (const char *id)
 {
-  if (!strcmp (id, "BasicScriptEngineWin32"))
+  if (!strcmp (id, SCRIPT_ENGINE_NAME))
     return basic_engine_win32_new ();
   else
     return NULL;

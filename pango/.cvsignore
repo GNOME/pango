@@ -6,7 +6,10 @@ pangoft2.rc
 pangowin32.rc
 pango-enum-types.[ch]
 pango-querymodules
-module-defs.c
+module-defs.h
+module-defs-x.c
+module-defs-xft.c
+module-defs-ft2.c
 *.lo
 *.la
 .deps

@@ -1,3 +1,24 @@
+2001-01-04  Alexander Larsson  <alla@lysator.liu.se>
+
+	* modules/arabic/arabic-x.c:
+	* modules/arabic/arabic-xft.c:
+	* modules/basic/basic-ft2.c:
+	* modules/basic/basic-win32.c:
+	* modules/basic/basic-x.c:
+	* modules/hangul/hangul-x.c:
+	* modules/indic/bengali-x.c:
+	* modules/indic/devanagari-x.c:
+	* modules/indic/gujarati-x.c:
+	* modules/indic/gurmukhi-x.c:
+	* modules/indic/myanmar-x.c:
+	* modules/tamil/tamil-x.c:
+	* modules/thai/thai-x.c:
+	Change all modules to use a define to the script engine name. Also
+	Fixes some errors in the names (they were different in the same module).
+
+	* pango/.cvsignore:
+	add module-defs*.[ch]
+
 2001-01-03  Alexander Larsson  <alexl@redhat.com>
 
 	* configure.in:

@@ -22,6 +22,7 @@
 #include <stdio.h>
 #endif
 
+#define SCRIPT_ENGINE_NAME "ArabicScriptEngineX" 
 
 static PangoEngineRange arabic_range[] = {
     { 0x060B, 0x06D3, "*" }  /* 0x060B, 0x06D3 */
@@ -29,7 +30,7 @@ static PangoEngineRange arabic_range[] = {
 
 static PangoEngineInfo script_engines[] = {
     {
-        "ArabicScriptEngineX",
+        SCRIPT_ENGINE_NAME,
         PANGO_ENGINE_TYPE_SHAPE,
         PANGO_RENDER_TYPE_X,
         arabic_range, G_N_ELEMENTS(arabic_range)
@@ -318,7 +319,7 @@ arabic_engine_x_new ()
   
     result = g_new (PangoEngineShape, 1);
 
-    result->engine.id = "ArabicScriptEngine";
+    result->engine.id = SCRIPT_ENGINE_NAME;
     result->engine.type = PANGO_ENGINE_TYPE_SHAPE;
     result->engine.length = sizeof (result);
     result->script_shape = arabic_engine_shape;
@@ -350,7 +351,7 @@ MODULE_ENTRY(script_engine_list) (PangoEngineInfo **engines, int *n_engines)
 PangoEngine *
 MODULE_ENTRY(script_engine_load) (const char *id)
 {
-  if (!strcmp (id, "ArabicScriptEngineX"))
+  if (!strcmp (id, SCRIPT_ENGINE_NAME))
     return arabic_engine_x_new ();
   else
     return NULL;
