@@ -1,3 +1,10 @@
+Tue Aug 20 16:06:36 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* configure.in: Make the test for VARARGS macros
+	more robust, fixing problem with misbehaving
+	IRIX compiler that doesn't error on #error.
+	(#90267)
+
 Tue Aug 20 15:42:33 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* modules/indic/indic-xft.c (maybe_add_SUB_feature): 
