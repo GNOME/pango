@@ -1,3 +1,11 @@
+Sun Oct 13 12:35:14 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* === Released 1.1.2 ===
+
+	* configure.in: Version 1.1.2, interface age 0.
+
+	* NEWS: Updates.
+
 2002-10-04  Alexander Larsson  <alexl@redhat.com>
 
 	* pango/pango-layout.[ch]:
@@ -241,7 +249,6 @@ Wed Aug 28 15:22:14 2002  Eric Mader   <mader@jtcsv.com>
 	* pango/modules/indic/indic-ot-class-tables.c:
 	Change Punjabi script ('punj') to Gurmukhi ('guru')
 	
->>>>>>> 1.602
 Tue Aug 20 17:31:39 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* Released 1.1.1.
