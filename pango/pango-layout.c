@@ -2447,11 +2447,12 @@ can_break_at (PangoLayout *layout,
 static inline gboolean
 can_break_in (PangoLayout *layout,
 	      int          start_offset,
-	      int          num_chars)
+	      int          num_chars,
+	      gboolean     allow_break_at_start)
 {
   int i;
 
-  for (i = 0; i < num_chars; i++)
+  for (i = allow_break_at_start ? 0 : 1; i < num_chars; i++)
     if (can_break_at (layout, start_offset + i, FALSE))
       return TRUE;
 
@@ -2720,16 +2721,18 @@ process_line (PangoLayout    *layout,
       BreakResult result;
       int old_num_chars;
       int old_remaining_width;
+      gboolean first_item_in_line;
 
       old_num_chars = item->num_chars;
       old_remaining_width = state->remaining_width;
+      first_item_in_line = line->runs != NULL;
       
       result = process_item (layout, line, state, !have_break, FALSE);
 
       switch (result)
 	{
 	case BREAK_ALL_FIT:
-	  if (can_break_in (layout, state->start_offset, old_num_chars))
+	  if (can_break_in (layout, state->start_offset, old_num_chars, first_item_in_line))
 	    {
 	      have_break = TRUE;
 	      break_remaining_width = old_remaining_width;

@@ -1,3 +1,9 @@
+2002-10-23  Alexander Larsson  <alexl@redhat.com>
+
+	* pango/pango-layout.c (can_break_in):
+	Don't break at the first char in the first item on a line.
+	Fixes regression in linebreaking (#95900).
+
 2002-10-22  Tor Lillqvist  <tml@iki.fi>
 
 	* configure.in: Add --with-usp10 flag to indicate where to find
