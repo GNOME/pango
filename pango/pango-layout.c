@@ -720,51 +720,26 @@ pango_layout_set_text (PangoLayout *layout,
 		       const char  *text,
 		       int          length)
 {
+  const gchar *end;
+  
   g_return_if_fail (layout != NULL);
   g_return_if_fail (length == 0 || text != NULL);
+
+  if (!g_utf8_validate (text, length, &end))
+    g_warning ("Invalid UTF8 string passed to pango_layout_set_text()");
   
+  length = end - text;
+
   if (layout->text)
     g_free (layout->text);
 
-  if (length == 0)
-    {
-      layout->text = g_strdup ("");
-      layout->n_chars = 0;
-    }
-  else
-    {
-      const char *p = text;
-      int n_chars = 0;
-      
-      while (*p && (length < 0 || p < text + length))
-	{
-	  if (g_utf8_get_char (p) == (gunichar)-1)
-	    {
-	      g_warning ("Invalid UTF8 string passed to pango_layout_set_text()");
-	      return;
-	    }
-	  p = g_utf8_next_char (p);
-	  n_chars++;
-	}
+  /* NULL-terminate the text for convenience.
+   */
+  layout->text = g_malloc (length + 1);
+  memcpy (layout->text, text, length);
+  layout->text[length] = '\0';
 
-      if (length < 0)
-	length = p - text;
-
-      if (length >= 0 && p != text + length)
-	g_warning ("string passed to pango_layout_set_text() contains embedded NULL");
-
-      length = p - text;
-      
-      /* NULL-terminate the text for convenience.
-       */
-      
-      layout->text = g_malloc (length + 1);
-      memcpy (layout->text, text, length);
-      layout->text[length] = '\0';
-
-      layout->n_chars = n_chars;
-    }
-  
+  layout->n_chars = g_utf8_strlen (layout->text, -1);
   layout->length = length;
 
   pango_layout_clear_lines (layout);

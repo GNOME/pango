@@ -1,3 +1,10 @@
+Wed Aug 22 19:52:18 2001  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-layout.c (pango_layout_set_text): Simply
+	use g_utf8_validate() to validate the text, avoiding
+	problem where layout was left in hosed state for invalid
+	UTF-8, and also a bug with reading one-past length.
+
 2001-08-16  Alexander Larsson  <alexl@redhat.com>
 
 	* pango/pangowin32.c: 
