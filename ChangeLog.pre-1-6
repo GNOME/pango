@@ -1,3 +1,8 @@
+2001-11-18  Alexander Larsson  <alla@lysator.liu.se>
+
+	* pango/pangoxft-fontmap.c:
+	Add XFT_MATRIX and XFT_MINSPACE macro definitions if missing.
+
 2001-11-17  Alexander Larsson  <alla@lysator.liu.se>
 
 	* configure.in:

@@ -29,6 +29,14 @@
 #include "X11/Xft/Xft.h"
 #include "X11/Xft/XftFreetype.h"
 
+#ifndef XFT_MINSPACE
+#define XFT_MINSPACE        "minspace"  /* Bool use minimum line spacing */
+#endif
+
+#ifndef XFT_MATRIX
+#define XFT_MATRIX          "matrix"    /* XftMatrix */
+#endif
+
 /* Number of freed fonts */
 #define MAX_FREED_FONTS 16
 
