@@ -17,8 +17,6 @@
 	* examples/makefile.mingw.in
 	* modules/basic/makefile.mingw.in: Remove. Not maintained.
 
-	* examples/pangowin32.aliases: Remove. Not used.
-
 	* pango/Makefile.am (EXTRA_DIST)
 	* pango/mini-fribidi/Makefile.am (EXTRA_DIST)
 	* pango/opentype/Makefile.am (EXTRA_DIST)
@@ -28,6 +26,8 @@
 
 	* configure.in (AC_OUTPUT): Don't try to output above removed
 	files.
+
+	* examples/pangowin32.aliases: Remove. Not used.
 
 	* modules/basic/basic-win32.c: Minor spacing fixes, comment the
 	Unicode ranges covered.
