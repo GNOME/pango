@@ -31,121 +31,49 @@ function is used when building a catalog of all available modules.
 <para>
 The #PangoEngineInfo structure contains information about a particular
 engine. It contains the following fields:
-
-<informaltable pgwide="1" frame="none" role="struct">
-<tgroup cols="2"><colspec colwidth="2*"/><colspec colwidth="8*"/>
-<tbody>
-
-<row>
-<entry>gchar *id;</entry>
-<entry>a unique string ID for the engine.</entry>
-</row>
-<row>
-<entry>gchar *engine_type;</entry>
-<entry>a string identifying the engine type.</entry>
-</row>
-
-<row>
-<entry>gchar *render type;</entry>
-<entry>a string identifying the render type.</entry>
-</row>
-
-<row>
-<entry>#PangoEngineRange *ranges;</entry>
-<entry>a pointer to an array of #PangoEngineRange
-       structures. Each structure contains information
-       about a range of Unicode code points that
-       this engine handles.</entry>
-</row>
-
-<row>
-<entry>gint n_ranges;</entry>
-<entry>the number of elements in <structfield>ranges</structfield>.</entry>
-</row>
-
-</tbody></tgroup></informaltable>
 </para>
 
-@id: 
-@engine_type: 
-@render_type: 
-@ranges: 
-@n_ranges: 
+@id: a unique string ID for the engine.
+@engine_type: a string identifying the engine type.
+@render_type: a string identifying the render type.
+@ranges: a pointer to an array of #PangoEngineRange
+         structures. Each structure contains information
+         about a range of Unicode code points that
+         this engine handles.
+@n_ranges: the number of elements in <structfield>ranges</structfield>.
 
 <!-- ##### STRUCT PangoEngineRange ##### -->
 <para>
 The PangoEngineRange structure contains
 information about a range of Unicode code
 points. It contains the following fields:
-
-<informaltable pgwide="1" frame="none" role="struct">
-<tgroup cols="2"><colspec colwidth="2*"/><colspec colwidth="8*"/>
-<tbody>
-
-<row>
-<entry>guint32 start;</entry>
-<entry>the first code point in the range.</entry>
-</row>
-
-<row>
-<entry>guint32 end;</entry>
-<entry>the last code point for the range.</entry>
-</row>
-
-<row>
-<entry>gchar *langs;</entry>
-<entry>A semicolon separated list of languages that this
-       engine handles for this range. This may be empty, 
-       in which case the engine is saying that it is a
-       fallback choice for all languages for this range,
-       but should not be used if another engine 
-       indicates that it is specific for the language for
-       a given code point. An entry in this list of "*"
-       indicates that this engine is specific to all
-       languages for this range.</entry>
-</row>
-
-</tbody></tgroup></informaltable>
 </para>
 
-@start: 
-@end: 
-@langs: 
+@start: the first code point in the range.
+@end: the last code point for the range.
+@langs: a semicolon separated list of languages that this
+        engine handles for this range. This may be empty, 
+        in which case the engine is saying that it is a
+        fallback choice for all languages for this range,
+        but should not be used if another engine 
+        indicates that it is specific for the language for
+        a given code point. An entry in this list of "*"
+        indicates that this engine is specific to all
+        languages for this range.
 
 <!-- ##### STRUCT PangoEngine ##### -->
 <para>
 The #PangoEngine structure contains basic
 information common to all script engines. It
 contains the following fields:
-
-<informaltable pgwide="1" frame="none" role="struct">
-<tgroup cols="2"><colspec colwidth="2*"/><colspec colwidth="8*"/>
-<tbody>
-
-<row>
-<entry>gchar *id;</entry>
-<entry>a unique string ID for this language engine.</entry>
-</row>
-
-<row>
-<entry>gchar *type;</entry>
-<entry>The "type" of the engine. (Is this engine type or render type??).</entry>
-</row>
-
-<row>
-<entry>gint length;</entry>
-<entry>the length of the entire structure in bytes. This is 
-       provided so that new functions can be added at the
-       end of subtypes of #PangoEngine without breaking
-       older modules.</entry>
-</row>
-
-</tbody></tgroup></informaltable>
 </para>
 
-@id: 
-@type: 
-@length: 
+@id: a unique string ID for this language engine.
+@type: the "type" of the engine. (Is this engine type or render type??).
+@length: the length of the entire structure in bytes. This is 
+         provided so that new functions can be added at the
+         end of subtypes of #PangoEngine without breaking
+         older modules.
 
 <!-- ##### STRUCT PangoEngineLang ##### -->
 <para>
@@ -153,27 +81,10 @@ The #PangoEngineLang structure extends the
 basic #PangoEngine structure to engines that
 deal with the rendering-system independent part
 of of the rendering pipeline. It contains the following fields:
-
-<informaltable pgwide="1" frame="none" role="struct">
-<tgroup cols="2"><colspec colwidth="2*"/><colspec colwidth="8*"/>
-<tbody>
-
-<row>
-<entry>#PangoEngine engine;</entry>
-<entry>A nested structure containing basic engine data.</entry>
-</row>
-
-<row>
-<entry>void (*script_break) (...);</entry>
-<entry>A function that provides an implementation
-       for pango_break().</entry>
-</row>
-
-</tbody></tgroup></informaltable>
 </para>
 
-@engine: 
-@script_break: 
+@engine: a nested structure containing basic engine data.
+@script_break: a function that provides an implementation for pango_break().
 
 <!-- ##### STRUCT PangoEngineShape ##### -->
 <para>
@@ -181,27 +92,10 @@ The #PangoEngineShape structure extends the
 basic #PangoEngine structure to engines that
 deal with the rendering-system dependent part
 of of the rendering pipeline. It contains the following fields:
-
-<informaltable pgwide="1" frame="none" role="struct">
-<tgroup cols="2"><colspec colwidth="2*"/><colspec colwidth="8*"/>
-<tbody>
-
-<row>
-<entry>#PangoEngine engine;</entry>
-<entry>A nested structure containing basic engine data.</entry>
-</row>
-
-<row>
-<entry> void (*script_shape) (...);</entry>
-<entry>A function that provides an implementation
-       for pango_shape.</entry>
-</row>
-
-</tbody></tgroup></informaltable>
 </para>
 
-@engine: 
-@script_shape: 
+@engine: a nested structure containing basic engine data.
+@script_shape: a function that provides an implementation for pango_shape.
 @get_coverage: 
 
 <!-- ##### MACRO PANGO_ENGINE_TYPE_LANG ##### -->

@@ -1,3 +1,10 @@
+2003-07-25  Noah Levitt  <nlevitt@columbia.edu>
+
+	* docs/tmpl/engines.sgml:
+	* docs/tmpl/glyphs.sgml:
+	* docs/tmpl/main.sgml: Get rid of explicit tables detailing the
+	members of structs, use the automatic things instead. (#117857)
+
 2003-07-25  Sven Neumann  <sven@gimp.org>
 
 	* pango/pangoft2.c (pango_ft2_render_layout_line): removed
