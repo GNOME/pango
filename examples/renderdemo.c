@@ -55,6 +55,7 @@ gboolean opt_waterfall = FALSE;
 int opt_width = -1;
 int opt_indent = 0;
 PangoEllipsizeMode opt_ellipsize = PANGO_ELLIPSIZE_NONE;
+HintMode opt_hinting = HINT_DEFAULT;
 
 /* Text (or markup) to render */
 char *text;
@@ -299,6 +300,23 @@ show_help (ArgContext *context,
   exit (0);
 }
 
+/* This function gets called to convert a matched pattern into what
+ * we'll use to actually load the font. We turn off hinting since we
+ * want metrics that are independent of scale.
+ */
+void
+fc_substitute_func (FcPattern *pattern, gpointer   data)
+{
+  if (opt_hinting != HINT_DEFAULT)
+    {
+      FcPatternDel (pattern, FC_HINTING);
+      FcPatternAddBool (pattern, FC_HINTING, opt_hinting != HINT_NONE);
+      
+      FcPatternDel (pattern, FC_AUTOHINT);
+      FcPatternAddBool (pattern, FC_AUTOHINT, opt_hinting != HINT_AUTO);
+    }
+}
+
 void
 parse_ellipsis (ArgContext *arg_context,
 		const char *name,
@@ -319,6 +337,27 @@ parse_ellipsis (ArgContext *arg_context,
 }
 
 void
+parse_hinting (ArgContext *arg_context,
+	       const char *name,
+	       const char *arg,
+	       gpointer    data)
+{
+  static GEnumClass *class = NULL;
+
+  if (!class)
+    class = g_type_class_ref (PANGO_TYPE_ELLIPSIZE_MODE);
+
+  if (strcmp (arg, "none") == 0)
+    opt_hinting = HINT_NONE;
+  else if (strcmp (arg, "auto") == 0)
+    opt_hinting = HINT_AUTO;
+  else if (strcmp (arg, "full") == 0)
+    opt_hinting = HINT_FULL;
+  else
+    fail ("--hinting option must be one of none/auto/full");
+}
+
+void
 parse_options (int argc, char *argv[])
 {
   static const ArgDesc args[] = {
@@ -336,6 +375,8 @@ parse_options (int argc, char *argv[])
       ARG_BOOL,     &opt_header },
     { "help",       "Show this output",
       ARG_CALLBACK, NULL, show_help, },
+    { "hinting",    "Hinting style [=none/auto/full]",
+      ARG_CALLBACK, NULL, parse_hinting, },
     { "margin",     "Set the margin on the output in pixels",
       ARG_INT,      &opt_margin },
     { "markup",     "Interpret contents as Pango markup",

@@ -1,3 +1,10 @@
+Mon Aug 16 13:42:38 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-ot.h (struct _PangoOTGlyph): Sync with
+	change to OTL_GlyphItemRec.
+	(https://bugzilla.redhat.com/bugzilla/show_bug.cgi?id=129982,
+	Jatin Nansi)
+
 Tue Aug 10 11:51:10 2004  Owen Taylor  <otaylor@redhat.com>
 
 	* modules/arabic/arabic-fc.c (arabic_engine_shape): Fix 

@@ -81,7 +81,9 @@ main(int argc, char *argv[])
     }
 
   fontmap = pango_ft2_font_map_new ();
+
   pango_ft2_font_map_set_resolution (PANGO_FT2_FONT_MAP (fontmap), opt_dpi, opt_dpi);
+  pango_ft2_font_map_set_default_substitute (PANGO_FT2_FONT_MAP (fontmap), fc_substitute_func, NULL, NULL);
   context = pango_ft2_font_map_create_context (PANGO_FT2_FONT_MAP (fontmap));
 
   /* Write contents as pgm file */

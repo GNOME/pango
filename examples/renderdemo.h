@@ -20,6 +20,14 @@
  */
 
 #include <pango/pango-layout.h>
+#include <pango/pangofc-fontmap.h>
+
+typedef enum {
+  HINT_DEFAULT,
+  HINT_NONE,
+  HINT_AUTO,
+  HINT_FULL
+} HintMode;
 
 typedef void (*RenderCallback) (PangoLayout *layout,
 				int          x,
@@ -28,13 +36,15 @@ typedef void (*RenderCallback) (PangoLayout *layout,
 
 void fail (const char *format, ...) G_GNUC_PRINTF (1, 2);
 
-void   parse_options      (int            argc,
-			   char          *argv[]);
-void   do_output          (PangoContext  *context,
-			   RenderCallback render_cb,
-			   gpointer       render_data,
-			   int           *width,
-			   int           *height);
+void   parse_options      (int             argc,
+			   char           *argv[]);
+void   do_output          (PangoContext   *context,
+			   RenderCallback  render_cb,
+			   gpointer        render_data,
+			   int            *width,
+			   int            *height);
+void   fc_substitute_func (FcPattern      *pattern,
+			   gpointer        data);
 gchar *get_options_string (void);
 
 extern char *prog_name;
@@ -54,3 +64,4 @@ extern gboolean opt_waterfall;
 extern int opt_width;
 extern int opt_indent;
 extern PangoEllipsizeMode opt_ellipsize;
+extern HintMode opt_hinting;

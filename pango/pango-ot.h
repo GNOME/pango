@@ -51,6 +51,7 @@ struct _PangoOTGlyph
   guint    cluster;
   gushort  component;
   gushort  ligID;
+  gushort  property_cache;    /* Internal */
 };
 
 PangoOTInfo *pango_ot_info_get (FT_Face face);
