@@ -1,3 +1,9 @@
+Thu Oct 25 11:06:54 2001  Owen Taylor  <otaylor@redhat.com>
+
+	* configure.in: Version 0.21, require GLib-1.3.6
+
+	* NEWS: Updates.
+
 Thu Oct 25 11:05:01 2001  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pango-layout.c (pango_layout_run_get_extents): Allow

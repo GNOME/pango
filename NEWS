@@ -1,3 +1,11 @@
+Changes between 0.20 and 0.21
+
+* Documentation improvements. [Matthias Clasen, Sven Neumann]
+* pango_break() now reports n + 1 attributes for n characters, not n. [Havoc Pennington]
+* Win32 fixes, including support for configure.in on Win32. [Tor Lillqvist]
+* Bug fixes [Tony Graham, Eric Lemings, Manish Singh, Sven Neumann, Matt Wilson, 
+             Frank Belew]
+
 Changes between 0.19 and 0.20
 
 * Change PangoFontDescription to save values for unset fields
