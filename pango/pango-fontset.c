@@ -133,21 +133,23 @@ pango_fontset_real_get_metrics (PangoFontset  *fontset)
 	    {
 	      raw_metrics = pango_font_get_metrics (font, language);
 	      g_hash_table_insert (fonts_seen, font, font);
-	  
+	      
 	      if (count == 0)
 		{
-		  *metrics = *raw_metrics;
+		  metrics->ascent = raw_metrics->ascent;
+		  metrics->descent = raw_metrics->descent;
 		  metrics->approximate_char_width = raw_metrics->approximate_char_width;
 		  metrics->approximate_digit_width = raw_metrics->approximate_digit_width;
 		}
 	      else
-		{
+		{ 
 		  metrics->ascent = MAX (metrics->ascent, raw_metrics->ascent);
 		  metrics->descent = MAX (metrics->descent, raw_metrics->descent);
 		  metrics->approximate_char_width += raw_metrics->approximate_char_width;
 		  metrics->approximate_digit_width += raw_metrics->approximate_digit_width;
 		}
 	      count++;
+	      pango_font_metrics_unref (raw_metrics);
 	    }
 	  else
 	    g_object_unref (font);
