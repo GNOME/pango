@@ -87,6 +87,8 @@ PangoOTTag *pango_ot_info_list_features  (PangoOTInfo      *info,
 PangoOTBuffer *pango_ot_buffer_new        (PangoFcFont       *font);
 void           pango_ot_buffer_destroy    (PangoOTBuffer     *buffer);
 void           pango_ot_buffer_clear      (PangoOTBuffer     *buffer);
+void           pango_ot_buffer_set_rtl    (PangoOTBuffer     *buffer,
+					   gboolean           rtl);
 void           pango_ot_buffer_add_glyph  (PangoOTBuffer     *buffer,
 					   guint              glyph_index,
 					   guint              properties,
