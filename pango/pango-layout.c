@@ -835,6 +835,7 @@ pango_layout_set_markup_with_accel (PangoLayout    *layout,
   pango_layout_set_text (layout, text, -1);
   pango_layout_set_attributes (layout, list);
   pango_attr_list_unref (list);
+  g_free (text);
 }
 
 /**

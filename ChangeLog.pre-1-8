@@ -1,3 +1,8 @@
+2002-01-21  Havoc Pennington  <hp@redhat.com>
+
+	* pango/pango-layout.c (pango_layout_set_markup_with_accel): fix
+	memory leak of "text", reported by Jason Tackaberry
+
 2002-01-20  Alexander Larsson  <alla@lysator.liu.se>
 
 	* pango/pangoft2.c (pango_ft2_draw_hline):
