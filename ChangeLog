@@ -1,3 +1,9 @@
+Thu Jul 24 17:04:21 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/opentype/pango-ot-ruleset.c (pango_ot_ruleset_shape): 
+	Fix uses of g_assert() around statements with side effects.
+	(#115498, patch from David Cuthbert)
+
 Thu Jul 24 16:40:12 2003  Owen Taylor  <otaylor@redhat.com>
 
 	* configure.in tests/runtests.sh.in: Generate
