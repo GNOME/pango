@@ -243,8 +243,9 @@ pango_x_get_font_struct (PangoFont *font, PangoXSubfontInfo *info)
  * pango_x_get_context:
  * @display: an X display (As returned by XOpenDisplay().)
  * 
- * Retrieves a #PangoContext appropriate for rendering with X fonts on the given display.
-  * 
+ * Retrieves a #PangoContext appropriate for rendering with X fonts on the
+ * given display.
+ * 
  * Return value: the new #PangoContext.
  **/
 PangoContext *
@@ -2070,7 +2071,7 @@ pango_x_fallback_shape (PangoFont        *font,
  * unknown character.
  *
  * Return value: a glyph index into @font.
-
+ */
 PangoGlyph
 pango_x_font_get_unknown_glyph (PangoFont *font,
                                 gunichar   wc)

@@ -1,3 +1,7 @@
+Sun Oct 14 18:42:56 2001  Manish Singh  <yosh@gimp.org>
+	
+	* pango/pangox.c: add missing comment end marker to make it compile
+
 2001-10-14  Matthias Clasen  <matthiasc@poet.de>
 
 	* pango/pangox.c, pango/pangoxft-font.c, pango/pangoxft-fontmap.c,

@@ -19,6 +19,7 @@ pangowin32-uninstalled.pc
 pango.spec
 pango-config
 stamp-h
+stamp-h1
 libtool
 ltconfig
 ltmain.sh
