@@ -2765,7 +2765,7 @@ process_item (PangoLayout     *layout,
 	   * account it all on the last
 	   */
 	  if (item->num_chars > 0)
-	    state->log_widths[item->num_chars] += state->properties.letter_spacing;
+	    state->log_widths[item->num_chars - 1] += state->properties.letter_spacing;
 	}
 
     retry_break:

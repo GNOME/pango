@@ -1,3 +1,9 @@
+2004-07-07  Morten Welinder  <terra@gnome.org>
+
+	* pango/pango-layout.c (process_item): Add letter spacing
+	correction to the last character, not the one just beyond the
+	table.  (#145517, self.)
+
 Thu Jun 24 14:07:10 2004  Owen Taylor  <otaylor@redhat.com>
 
 	* === Released 1.5.0 ===
