@@ -1543,11 +1543,12 @@ pango_layout_line_get_vis2log_map (PangoLayoutLine *line,
 {
   PangoLayout *layout = line->layout;
   PangoDirection base_dir = pango_context_get_base_dir (layout->context);
-  PangoDirection prev_dir = base_dir;
+  PangoDirection prev_dir;
+  PangoDirection cursor_dir;
   GSList *tmp_list;
   gchar *start, *end;
   int *result;
-  int pos = 0;
+  int pos;
   int n_chars;
 
   pango_layout_line_get_range (line, &start, &end);
@@ -1556,19 +1557,17 @@ pango_layout_line_get_vis2log_map (PangoLayoutLine *line,
   result = g_new (int, n_chars + 1);
 
   if (strong)
-    {
-      if (base_dir == PANGO_DIRECTION_LTR)
-	{
-	  result[0] = 0;
-	  result[n_chars] = end - start;
-	}
-      else
-	{
-	  result[0] = end - start;
-	  result[n_chars] = 0;
-	}
-    }
-  
+    cursor_dir = base_dir;
+  else
+    cursor_dir = (base_dir == PANGO_DIRECTION_LTR) ? PANGO_DIRECTION_RTL : PANGO_DIRECTION_LTR;
+
+  /* Handle the first visual position
+   */
+  if (base_dir == cursor_dir)
+    result[0] = base_dir == PANGO_DIRECTION_LTR ? 0 : end - start;
+
+  prev_dir = base_dir;
+  pos = 0;
   tmp_list = line->runs;
   while (tmp_list)
     {
@@ -1578,29 +1577,29 @@ pango_layout_line_get_vis2log_map (PangoLayoutLine *line,
       char *p = layout->text + run->item->offset;
       int i;
 
+      /* pos is the visual position at the start of the run */
+      /* p is the logical byte index at the start of the run */
+
       if (run_dir == PANGO_DIRECTION_LTR)
 	{
-	  if ((strong && base_dir == run_dir) ||
-	      (!strong && base_dir != run_dir) ||
+	  if ((cursor_dir == PANGO_DIRECTION_LTR) ||
 	      (prev_dir == run_dir))
 	    result[pos] = p - start;
-
+	  
 	  p = g_utf8_next_char (p);
-
+	  
 	  for (i = 1; i < run_n_chars; i++)
 	    {
 	      result[pos + i] = p - start;
 	      p = g_utf8_next_char (p);
 	    }
-
-	  if ((strong && base_dir == run_dir) ||
-	      (!strong && base_dir != run_dir))
+	  
+	  if (cursor_dir == PANGO_DIRECTION_LTR)
 	    result[pos + run_n_chars] = p - start;
 	}
       else
 	{
-	  if ((strong && base_dir == run_dir) ||
-	      (!strong && base_dir != run_dir))
+	  if (cursor_dir == PANGO_DIRECTION_RTL)
 	    result[pos + run_n_chars] = p - start;
 
 	  p = g_utf8_next_char (p);
@@ -1611,8 +1610,7 @@ pango_layout_line_get_vis2log_map (PangoLayoutLine *line,
 	      p = g_utf8_next_char (p);
 	    }
 
-	  if ((strong && base_dir == run_dir) ||
-	      (!strong && base_dir != run_dir) ||
+	  if ((cursor_dir == PANGO_DIRECTION_RTL) ||
 	      (prev_dir == run_dir))
 	    result[pos] = p - start;
 	}
@@ -1622,6 +1620,11 @@ pango_layout_line_get_vis2log_map (PangoLayoutLine *line,
       tmp_list = tmp_list->next;
     }
 
+  /* And the last visual position
+   */
+  if ((cursor_dir == base_dir) || (prev_dir == base_dir))
+    result[pos] = base_dir == PANGO_DIRECTION_LTR ? end - start : 0;
+      
   return result;
 }
 

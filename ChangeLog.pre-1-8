@@ -1,3 +1,13 @@
+Fri Mar  1 12:11:50 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-layout.c (pango_layout_line_get_vis2log_map):
+	Fix problem with positions at the ends of lines
+	(#63328, reported by Dov Grobgeld.)
+
+2002-02-28  Sven Neumann  <sven@gimp.org>
+
+	* configure.in: align --help output.
+
 2002-02-28  Alex Larsson  <alexl@redhat.com>
 
 	* pango/pangoft2.c (pango_ft2_font_get_face):
