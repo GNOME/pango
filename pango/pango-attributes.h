@@ -45,6 +45,8 @@ GType       pango_color_get_type (void) G_GNUC_CONST;
 
 PangoColor *pango_color_copy     (const PangoColor *src);
 void        pango_color_free     (PangoColor       *color);
+gboolean    pango_color_parse    (PangoColor       *color,
+				  const char       *spec);
 
 /* Attributes */
 

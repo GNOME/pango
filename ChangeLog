@@ -1,3 +1,12 @@
+Thu Aug 30 17:34:52 2001  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-color.c: New file, move color handling
+	here.
+
+	* pango/pango-attributes.[ch] pango/pango-markup.c
+	pango/pango-color.c: Export pango_color_parse, change
+	it to take a PangoColor as its argument.
+
 Fri Aug 24 12:21:50 2001  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pango-layout.c (pango_layout_set_text): Handle

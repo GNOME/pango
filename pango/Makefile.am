@@ -65,6 +65,7 @@ libpango_la_SOURCES = 	   \
 	mapping.c 	   \
 	modules.c 	   \
 	pango-attributes.c \
+	pango-color.c	   \
 	pango-context.c    \
 	pango-coverage.c   \
 	pango-fontmap.c	   \
