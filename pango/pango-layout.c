@@ -2959,7 +2959,8 @@ pango_layout_line_x_to_index (PangoLayoutLine *line,
   gint end_offset;      /* end iterator for line */
   PangoDirection base_dir;
   PangoLayout *layout;
-  gboolean last_trailing;
+  gint last_trailing;
+  gboolean suppress_last_trailing;
 
   g_return_val_if_fail (line != NULL, FALSE);
   g_return_val_if_fail (LINE_IS_VALID (line), FALSE);
@@ -3006,7 +3007,24 @@ pango_layout_line_x_to_index (PangoLayoutLine *line,
   /* This is a HACK. If a program only keeps track if cursor (etc)
    * indices and not the trailing flag, then the trailing index of the
    * last character on a wrapped line is identical to the leading
-   * index of the next line. Actually, any program keeping cursor
+   * index of the next line. So, we fake it and set the trailing flag
+   * to zero.
+   *
+   * That is, if the text is "now is the time", and is broken between
+   * 'now' and 'is'
+   * 
+   * Then when the cursor is actually at:
+   *
+   * n|o|w| |i|s| 
+   *              ^
+   * we lie and say it is at:
+   *
+   * n|o|w| |i|s| 
+   *            ^
+   *
+   * So the cursor won't appear on the next line before 'the'.
+   *
+   * Actually, any program keeping cursor
    * positions with wrapped lines should distinguish leading and
    * trailing cursors.
    */
@@ -3014,8 +3032,11 @@ pango_layout_line_x_to_index (PangoLayoutLine *line,
   while (tmp_list->data != line)
     tmp_list = tmp_list->next;
 
-  if (tmp_list->next)
-    last_trailing = 0;
+  if (tmp_list->next &&
+      line->start_index + line->length == ((PangoLayoutLine *)tmp_list->next->data)->start_index)
+    suppress_last_trailing = TRUE;
+  else
+    suppress_last_trailing = FALSE;
   
   if (x_pos < 0)
     {
@@ -3024,7 +3045,7 @@ pango_layout_line_x_to_index (PangoLayoutLine *line,
 	*index = (base_dir == PANGO_DIRECTION_LTR) ? first_index : last_index;
       /* and its leftmost edge */
       if (trailing)
-	*trailing = (base_dir == PANGO_DIRECTION_LTR) ? 0 : last_trailing;
+	*trailing = (base_dir == PANGO_DIRECTION_LTR || suppress_last_trailing) ? 0 : last_trailing;
       
       return FALSE;
     }
@@ -3046,6 +3067,7 @@ pango_layout_line_x_to_index (PangoLayoutLine *line,
 	{
 	  int offset;
 	  gboolean char_trailing;
+	  int grapheme_start_index;
 	  int grapheme_start_offset;
 	  int grapheme_end_offset;
 	  int pos;
@@ -3073,27 +3095,32 @@ pango_layout_line_x_to_index (PangoLayoutLine *line,
 	  offset = g_utf8_pointer_to_offset (layout->text, layout->text + char_index);
 
 	  grapheme_start_offset = offset;
+	  grapheme_start_index = char_index;
 	  while (grapheme_start_offset > first_offset &&
 		 !layout->log_attrs[grapheme_start_offset].is_cursor_position)
 	    {
-	      char_index = g_utf8_prev_char (layout->text + char_index) - layout->text;
+	      grapheme_start_index = g_utf8_prev_char (layout->text + grapheme_start_index) - layout->text;
 	      grapheme_start_offset--;
 	    }
 	  
+	  grapheme_end_offset = offset;
+	  do
+	    {
+	      grapheme_end_offset++;
+	    }
+	  while (grapheme_end_offset < end_offset &&
+		 !layout->log_attrs[grapheme_end_offset].is_cursor_position);
+
 	  if (index)
-	    *index = char_index;
+	    *index = grapheme_start_index;
+	  
 	  if (trailing)
 	    {
-	      grapheme_end_offset = offset;
-	      do
-		grapheme_end_offset++;
-	      while (grapheme_end_offset < end_offset &&
-		     !layout->log_attrs[grapheme_end_offset].is_cursor_position);
-	      
-	      if (offset + char_trailing > (grapheme_start_offset + grapheme_end_offset) / 2)
-		*trailing = grapheme_end_offset - grapheme_start_offset;
-	      else
+	      if ((grapheme_end_offset == end_offset && suppress_last_trailing) ||
+		  offset + char_trailing <= (grapheme_start_offset + grapheme_end_offset) / 2)
 		*trailing = 0;
+	      else
+		*trailing = grapheme_end_offset - grapheme_start_offset;
 	    }
 
 	  return TRUE;
@@ -3109,7 +3136,7 @@ pango_layout_line_x_to_index (PangoLayoutLine *line,
 
   /* and its rightmost edge */
   if (trailing)
-    *trailing = (base_dir == PANGO_DIRECTION_LTR) ? last_trailing : 0;
+    *trailing = (base_dir == PANGO_DIRECTION_LTR && !suppress_last_trailing) ? last_trailing : 0;
 
   return FALSE;
 }

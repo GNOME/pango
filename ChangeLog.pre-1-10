@@ -1,3 +1,11 @@
+Thu May 31 19:35:27 2001  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-layout.c (pango_layout_line_x_to_index):
+	Make the hack for avoiding the last index of the line more
+	sophisticated in order to deal with newlines internal
+	to the layout and the case where the second half of the 
+	last character is specifically selected. (Fixes #51190)
+
 Thu May 31 12:31:20 2001  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pangox-fontmap.c (pango_x_font_map_for_display):
