@@ -123,10 +123,11 @@ static PangoEngineRange basic_ranges[] = {
   { 0x2000, 0x33ff, "*" },
   { 0x3400, 0x9fa5, "*" }, /* Unihan */
   { 0xa000, 0xa4c6, "*" }, /* Yi */
-  { 0xac00, 0xd7a3, "kr" },
-  { 0xe000, 0xf7ee, "*" }, /* HKSCS */
-  { 0xf900, 0xfa0b, "kr" },
-  { 0xff00, 0xffed, "*" }
+  { 0xac00, 0xd7a3, "" },
+  { 0xe000, 0xf7ee, "*" }, /* HKSCS-1999 */
+  { 0xf900, 0xfa2d, "*" }, /* CJK Compatibility Ideographs */
+  { 0xfe30, 0xfe6b, "*" }, /* CJK Compatibility Forms and Small Form Variants */
+  { 0xff00, 0xffee, "*" }  /* Halfwidth and Fullwidth Forms */
 };
 
 static PangoEngineInfo script_engines[] = {
