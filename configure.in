@@ -743,11 +743,9 @@ Makefile
 pango/Makefile
 pango/mini-fribidi/Makefile
 pango/opentype/Makefile
-pango/makefile.mingw
 pango/pango.rc
 pango/pangoft2.rc
 pango/pangowin32.rc
-pango/opentype/makefile.mingw
 modules/Makefile
 modules/arabic/Makefile
 modules/basic/Makefile

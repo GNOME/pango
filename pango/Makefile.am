@@ -294,8 +294,6 @@ EXTRA_DIST =					\
 	pango.def				\
 	pangowin32.def				\
 	pangoft2.def				\
-	makefile.mingw				\
-	makefile.mingw.in			\
 	makefile.msc				\
 	pango.rc				\
 	pango.rc.in				\
