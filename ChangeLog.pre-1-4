@@ -1,3 +1,9 @@
+Tue Aug 13 16:38:19 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pangoxft-fontmap.c (pango_xft_font_map_get_patterns): 
+	Keep a separate description => fontset hash for each
+	language tag. Pass language tags through to Xft.
+
 Tue Aug 13 00:20:14 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* Released 1.1.0
