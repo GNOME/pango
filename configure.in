@@ -85,23 +85,33 @@ AM_CONDITIONAL(HAVE_FRIBIDI, test x$have_fribidi = xyes)
 #
 # Allow building some or all modules included
 #
+AC_MSG_CHECKING(modules to link statically)
+
 AC_ARG_WITH(included_modules, [ --with-included-modules=MODULE1,MODULE2,...     Build the given modules into Pango])
+
+indic_modules="gurmukhi,bengali,gujarati,devanagari,myanmar"
 
 included_modules=""
 if test "x$with_included_modules" != xno || test "x$with_included_modules" = x ; then
 
    # If no modules specified, include all modules
-   if test "x$with_included_modules" = xyes ; then  
-     included_modules="arabic,basic,hangul,indic,tamil,thai"
+   if test "x$with_included_modules" = xyes ; then
+     included_modules="arabic,basic,hangul,tamil,thai,$indic_modules"
    else
      included_modules="$with_included_modules"
    fi
 fi
 
+AC_MSG_RESULT($included_modules)
+
 INCLUDED_MODULES=
 IFS="${IFS= 	}"; pango_save_ifs="$IFS"; IFS=","
 for module in $included_modules; do
-  INCLUDED_MODULES="$INCLUDED_MODULES \$(top_builddir)/modules/$module/libpango-$module.la"
+  if echo $indic_modules | grep "\(^\| \)$module\(\$\| \)" > /dev/null; then
+    INCLUDED_MODULES="$INCLUDED_MODULES \$(top_builddir)/modules/indic/libpango-$module.la"
+  else
+    INCLUDED_MODULES="$INCLUDED_MODULES \$(top_builddir)/modules/$module/libpango-$module.la"
+  fi
 done
 IFS="$pango_save_ifs"
 
@@ -110,9 +120,25 @@ AC_SUBST(INCLUDED_MODULES)
 AM_CONDITIONAL(INCLUDE_ARABIC,echo $included_modules | grep '\(^\|,\)arabic\($\|,\)' > /dev/null)
 AM_CONDITIONAL(INCLUDE_BASIC,echo $included_modules | grep '\(^\|,\)basic\($\|,\)' > /dev/null)
 AM_CONDITIONAL(INCLUDE_HANGUL,echo $included_modules | grep '\(^\|,\)hangul\($\|,\)' > /dev/null)
-AM_CONDITIONAL(INCLUDE_INDIC,echo $included_modules | grep '\(^\|,\)indic\($\|,\)' > /dev/null)
 AM_CONDITIONAL(INCLUDE_TAMIL,echo $included_modules | grep '\(^\|,\)tamil\($\|,\)' > /dev/null)
 AM_CONDITIONAL(INCLUDE_THAI,echo $included_modules | grep '\(^\|,\)thai\($\|,\)' > /dev/null)
+
+AM_CONDITIONAL(INCLUDE_MYANMAR,echo $included_modules | grep '\(^\|,\)myanmar\($\|,\)' > /dev/null)
+AM_CONDITIONAL(INCLUDE_GURMUKHI,echo $included_modules | grep '\(^\|,\)gurmukhi\($\|,\)' > /dev/null)
+AM_CONDITIONAL(INCLUDE_BENGALI,echo $included_modules | grep '\(^\|,\)bengali\($\|,\)' > /dev/null)
+AM_CONDITIONAL(INCLUDE_GUJARATI,echo $included_modules | grep '\(^\|,\)gujarati\($\|,\)' > /dev/null)
+AM_CONDITIONAL(INCLUDE_DEVANAGARI,echo $included_modules | grep '\(^\|,\)devanagari\($\|,\)' > /dev/null)
+
+have_indic_modules="no"
+IFS="${IFS= 	}"; pango_save_ifs="$IFS"; IFS=","
+for module in $indic_modules; do
+  if echo $included_modules | grep "\(^\| \)$module\(\$\| \)" > /dev/null; then
+    have_indic_modules="yes"
+  fi
+done
+IFS="$pango_save_ifs"
+
+AM_CONDITIONAL(INCLUDE_ANY_INDIC,test $have_indic_modules = yes)
 
 #
 # We use flockfile to implement pango_getline() - should be moved to GLib
@@ -211,7 +237,8 @@ extern PangoEngine *_pango_${module}_script_engine_load (const char *id);
 extern void         _pango_${module}_script_engine_unload (PangoEngine *engine);
 
 EOTEXT
-done
+done 
+
 IFS="$pango_save_ifs"
 
 cat >> pango/module-defs.c <<EOTEXT
@@ -225,6 +252,7 @@ for module in $included_modules; do
  { _pango_${module}_script_engine_list, _pango_${module}_script_engine_load,_pango_${module}_script_engine_unload },
 EOTEXT
 done
+
 IFS="$pango_save_ifs"
 
 cat >> pango/module-defs.c <<EOTEXT

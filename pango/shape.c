@@ -52,4 +52,6 @@ void pango_shape (const gchar      *text,
       
       glyphs->log_clusters[0] = 0;
     }
+
+  g_assert (glyphs->num_glyphs > 0);
 }

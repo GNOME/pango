@@ -18,9 +18,6 @@ libpango_la_SOURCES = 	   \
 	fonts.c 	   \
 	glyphstring.c 	   \
 	mapping.c 	   \
-	modules.c 	   \
-	modules.h 	   \
-	module-defs.c	   \
 	pango-attributes.c \
 	pango-context.c    \
 	pango-coverage.c   \
@@ -36,6 +33,9 @@ libpango_la_SOURCES = 	   \
 	shape.c
 
 libpangox_la_SOURCES = 	   \
+	modules.c 	   \
+	modules.h 	   \
+	module-defs.c	   \
 	pangox.c	   \
 	pangox-private.h   \
 	pangox-fontcache.c \

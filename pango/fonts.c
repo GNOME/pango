@@ -472,9 +472,15 @@ pango_font_find_shaper (PangoFont      *font,
 			const char     *lang,
 			guint32         ch)
 {
+  PangoEngineShape* shaper;
+  
   g_return_val_if_fail (font != NULL, NULL);
 
-  return PANGO_FONT_GET_CLASS (font)->find_shaper (font, lang, ch);
+  shaper = PANGO_FONT_GET_CLASS (font)->find_shaper (font, lang, ch);
+
+  g_assert (shaper != NULL);
+
+  return shaper;
 }
 
 /**

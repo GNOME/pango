@@ -1,3 +1,40 @@
+2000-12-14  Havoc Pennington  <hp@redhat.com>
+
+	* pango/fonts.c (pango_font_find_shaper): add assertion that
+	shaper != NULL to catch engine problems faster
+
+	* pango/Makefile.am (libpangox_la_SOURCES): modules.[hc] and
+	module-defs.c have to go in libpangox for now since the modules
+	use the X stuff, and static linkage won't let you play games here
+
+	* examples/Makefile.am (pango_viewer_LDADD): fix order of link
+
+	* modules/indic/pango-indic-script.h (pango_indic_get_char): make
+	this a macro, so it doesn't collide between modules
+
+	* modules/*/Makefile.am: Fix to work if the module isn't included
+	
+	* examples/Makefile.am: don't query modules if we didn't build any
+
+	* modules/indic/gurmukhi.c (MODULE_ENTRY): fix prefix
+
+	* modules/indic/bengali.c (MODULE_ENTRY): fix prefix
+
+	* modules/indic/gujarati.c (MODULE_ENTRY): fix prefix
+
+	* modules/indic/devanagari.c (MODULE_ENTRY): fix prefix
+
+	* modules/indic/myanmar.c (MODULE_ENTRY): uniquely prefix the functions
+
+	* modules/Makefile.am (MODULES): handle case where there are no
+	modules to query
+
+	* configure.in: Fix up include_modules stuff to work with Indic
+
+	* pango/glyphstring.c (pango_glyph_string_set_size): Just
+	g_error() if the glyph string exceeds maximum integer size, 
+	instead of mysteriously crashing later.
+
 2000-12-15  Tor Lillqvist  <tml@iki.fi>
 
 	* pango/pangoft2.c (pango_ft2_ft_strerror): Update for newest

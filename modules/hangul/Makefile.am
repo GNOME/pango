@@ -8,11 +8,12 @@ moddefine = -DMODULE_PREFIX
 else
 moduledir = $(libdir)/pango/modules
 module_LTLIBRARIES = pango-hangul.la
+moduleflags= -rpath $(libdir)
 endif
 
 INCLUDES = -I$(top_srcdir) -I$(top_srcdir)/pango/ $(moddefine)
 
-pango_hangul_la_LDFLAGS = -rpath $(libdir) -export-dynamic -avoid-version -module
+pango_hangul_la_LDFLAGS = $(moduleflags) -export-dynamic -avoid-version -module
 pango_hangul_la_SOURCES = $(sources)
 
 libpango_hangul_la_SOURCES = $(sources)

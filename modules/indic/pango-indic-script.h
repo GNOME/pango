@@ -22,14 +22,6 @@
   }; \
   static gint n_script_engines = G_N_ELEMENTS (script_engines);
 
-inline gunichar
-pango_indic_get_char (gunichar * chars,
-                      gunichar * end)
-{
-  if (chars >= end)
-    return 0;
-  return *chars;
-}
-
+#define pango_indic_get_char ( (chars) >= (end) ? 0 : *(chars) )
 
 #endif

@@ -54,16 +54,16 @@ void
 pango_glyph_string_set_size (PangoGlyphString *string, gint new_len)
 {
   g_return_if_fail (new_len >= 0);
-  
+
   while (new_len > string->space)
     {
       if (string->space == 0)
-	string->space = 1;
+        string->space = 1;
       else
-	string->space *= 2;
+        string->space *= 2;
       
       if (string->space < 0)
-	string->space = G_MAXINT;
+        g_error ("%s: glyph string length overflows maximum integer size", G_STRLOC);
     }
   
   string->glyphs = g_realloc (string->glyphs, string->space * sizeof (PangoGlyphInfo));

@@ -285,8 +285,8 @@ pango_indic_engine_x_new ()
   return (PangoEngine *) result;
 }
 
-#ifdef MODULE_PREFIX
-#define MODULE_ENTRY(func) _pango_pango_##func
+#ifdef BENGALI_MODULE_PREFIX
+#define MODULE_ENTRY(func) _pango_bengali_##func
 #else
 #define MODULE_ENTRY(func) func
 #endif

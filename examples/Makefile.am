@@ -23,7 +23,7 @@ moc_viewer-qt.cc: viewer-qt.h
 
 BUILT_SOURCES=moc_viewer-qt.cc
 
-pango_viewer_LDADD = ../pango/libpango.la ../pango/libpangox.la $(FRIBIDI_LIBS) $(QT_LIBS)
+pango_viewer_LDADD = ../pango/libpangox.la ../pango/libpango.la $(FRIBIDI_LIBS) $(QT_LIBS)
 
 endif
 ###################################################
@@ -31,8 +31,14 @@ endif
 all-local: pango.modules
 
 pango.modules:
-	( cd ../modules && \
-          ../pango/pango-querymodules `find . -name '*.so'` > ../examples/pango.modules )
+	if find ../modules -name '*.so' | grep -q 'so'; then \
+          echo "Writing a pango.modules file to use when running examples before installing Pango."; \
+	  (cd ../modules && \
+           ../pango/pango-querymodules `find . -name '*.so'` > ../examples/pango.modules ) ;\
+	else \
+          echo "No dynamic modules found; will use only static modules for uninstalled example programs."; \
+	  touch pango.modules; \
+	fi
 
 EXTRA_DIST=			\
 	viewer-win32.c		\

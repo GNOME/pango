@@ -208,8 +208,8 @@ pango_engine_x_new ()
   return (PangoEngine *) result;
 }
 
-#ifdef MODULE_PREFIX
-#define MODULE_ENTRY(func) _pango_pango_##func
+#ifdef MYANMAR_MODULE_PREFIX
+#define MODULE_ENTRY(func) _pango_myanmar_##func
 #else
 #define MODULE_ENTRY(func) func
 #endif
