@@ -619,6 +619,9 @@ update_attr_iterator (ItemizeState *state)
 				&state->lang, &state->extra_attrs);
   state->copy_extra_attrs = FALSE;
 
+  if (!state->lang)
+    state->lang = state->context->language;
+  
   fallback = find_attribute (state->extra_attrs, PANGO_ATTR_FALLBACK);
   state->enable_fallback = (fallback == NULL || ((PangoAttrInt *)fallback)->value);
 
