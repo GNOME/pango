@@ -11,6 +11,7 @@ module-defs.h
 module-defs-x.c
 module-defs-xft.c
 module-defs-ft2.c
+module-defs-win32.c
 *.lo
 *.la
 .deps

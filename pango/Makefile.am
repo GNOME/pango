@@ -182,7 +182,8 @@ pangoinclude_HEADERS = 	   	\
 	$(pango_built_headers)	\
 	$(X_HFILES)		\
 	$(XFT_HFILES)           \
-	$(FT2_HFILES)
+	$(FT2_HFILES)		\
+	$(WIN32_HFILES)
 
 pango-enum-types.h: s-enum-types-h
 	@true
