@@ -51,7 +51,7 @@ typedef struct _PangoFT2MetricsInfo PangoFT2MetricsInfo;
 
 struct _PangoFT2FontClass
 {
-  PangoFontClass parent_class;
+  PangoFcFontClass parent_class;
 };
 
 struct _PangoFT2MetricsInfo
@@ -314,8 +314,8 @@ pango_ft2_font_get_type (void)
         (GInstanceInitFunc) pango_ft2_font_init,
       };
       
-      object_type = g_type_register_static (PANGO_TYPE_FONT,
-                                            "PangoFcFont",
+      object_type = g_type_register_static (PANGO_TYPE_FC_FONT,
+                                            "PangoFT2Font",
                                             &object_info, 0);
     }
   

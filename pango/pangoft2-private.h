@@ -59,7 +59,7 @@ typedef struct _PangoFT2GlyphInfo PangoFT2GlyphInfo;
 
 struct _PangoFT2Font
 {
-  PangoFont font;
+  PangoFcFont font;
 
   FcPattern *font_pattern;
   FT_Face face;

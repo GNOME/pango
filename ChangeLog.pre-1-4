@@ -1,3 +1,8 @@
+Tue Apr 15 00:07:21 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pangoft2.[ch]: Fix some stupid type registration/
+	class size problems from last commit.
+
 Mon Apr 14 06:02:34 2003  Owen Taylor  <otaylor@redhat.com>
 
 	* modules/thai/{thai-fc.c,thai-shaper.c,thai-x.c}:
