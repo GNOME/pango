@@ -386,7 +386,7 @@ xft_font_get_font (PangoFont *font)
 
       _pango_xft_font_map_get_info (fcfont->fontmap, &display, &screen);
 
-      font->xft_font = XftFontOpenPattern (display, pattern);
+      xfont->xft_font = XftFontOpenPattern (display, pattern);
       if (!xfont->xft_font)
 	{
 	  gchar *name = pango_font_description_to_string (fcfont->description);
