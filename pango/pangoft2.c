@@ -418,7 +418,8 @@ pango_ft2_render (FT_Bitmap        *bitmap,
 	  PangoFT2RenderedGlyph *rendered_glyph;
 	  glyph_index = gi->glyph;
 
-	  rendered_glyph = pango_ft2_font_get_cache_glyph_data (font, glyph_index);
+	  rendered_glyph = pango_ft2_font_get_cache_glyph_data (font,
+								glyph_index);
 	  add_glyph_to_cache = FALSE;
 	  if (rendered_glyph == NULL)
 	    {
@@ -430,10 +431,12 @@ pango_ft2_render (FT_Bitmap        *bitmap,
 	  iyoff = y + PANGO_PIXELS (gi->geometry.y_offset);
 	  
 	  x_start = MAX (0, - (ixoff + rendered_glyph->bitmap_left));
-	  x_limit = MIN (rendered_glyph->bitmap.width, bitmap->width - (ixoff + rendered_glyph->bitmap_left));
+	  x_limit = MIN (rendered_glyph->bitmap.width,
+			 bitmap->width - (ixoff + rendered_glyph->bitmap_left));
 
 	  y_start = MAX (0,  - (iyoff - rendered_glyph->bitmap_top));
-	  y_limit = MIN (rendered_glyph->bitmap.rows, bitmap->rows - (iyoff - rendered_glyph->bitmap_top));
+	  y_limit = MIN (rendered_glyph->bitmap.rows,
+			 bitmap->rows - (iyoff - rendered_glyph->bitmap_top));
 
 	  PING (("glyph %d:%d: bitmap: %dx%d, left:%d top:%d",
 		 i, glyph_index,
@@ -442,61 +445,79 @@ pango_ft2_render (FT_Bitmap        *bitmap,
 	  PING (("xstart:%d xlim:%d ystart:%d ylim:%d",
 		 x_start, x_limit, y_start, y_limit));
 
-	  if (rendered_glyph->bitmap.pixel_mode == ft_pixel_mode_grays)
-		for (iy = y_start; iy < y_limit; iy++)
-		  {
-		    dest = bitmap->buffer +
-		      (iyoff - rendered_glyph->bitmap_top + iy) * bitmap->pitch +
-		      ixoff + rendered_glyph->bitmap_left + x_start;
-		    
-		    src = rendered_glyph->bitmap.buffer + 
-                      iy * rendered_glyph->bitmap.pitch + x_start;
+	  src = rendered_glyph->bitmap.buffer +
+	    y_start * rendered_glyph->bitmap.pitch;
 
-		    for (ix = x_start; ix < x_limit; ix++)
-		      {
-                        switch (*src)
-                          {
-                          case 0:
-                            break;
-                          case 0xff:
-                            *dest = 0xff;
-                          default:
-                            *dest = MIN ((gushort) *dest + (gushort) *src, 0xff);
-                            break;
-                          }
-                        dest++;
-			src++;
-		      }
-		  }
-	      else if (rendered_glyph->bitmap.pixel_mode == ft_pixel_mode_mono)
-		for (iy = y_start; iy < y_limit; iy++)
-		  {
-		    dest = bitmap->buffer +
-		      (iyoff - rendered_glyph->bitmap_top + iy) * bitmap->pitch +
-		      ixoff + rendered_glyph->bitmap_left + 
-                      x_start;
-                    
-                    src = rendered_glyph->bitmap.buffer + 
-                      iy*rendered_glyph->bitmap.pitch;
+	  dest = bitmap->buffer +
+	    (y_start + iyoff - rendered_glyph->bitmap_top) * bitmap->pitch +
+	    x_start + ixoff + rendered_glyph->bitmap_left;
 
-		    for (ix = x_start; ix < x_limit; ix++)
-		      {
-			if ((*src) & (1 << (7 - (ix % 8))))
-			  *dest |= 0xff;
-			if ((ix % 8) == 7)
-			  src++;
-			dest++;
-		      }
-		  }
-	      else
-		g_warning ("pango_ft2_render: Unrecognized glyph bitmap pixel mode %d\n",
-			   rendered_glyph->bitmap.pixel_mode);
+	  switch (rendered_glyph->bitmap.pixel_mode)
+	    {
+	    case ft_pixel_mode_grays:
+	      src += x_start;
+	      for (iy = y_start; iy < y_limit; iy++)
+		{
+		  guchar *s = src;
+		  guchar *d = dest;
+
+		  for (ix = x_start; ix < x_limit; ix++)
+		    {
+		      switch (*s)
+			{
+			case 0:
+			  break;
+			case 0xff:
+			  *d = 0xff;
+			default:
+			  *d = MIN ((gushort) *d + (gushort) *s, 0xff);
+			  break;
+			}
+
+		      s++;
+		      d++;
+		    }
+
+		  dest += bitmap->pitch;
+		  src  += rendered_glyph->bitmap.pitch;
+		}
+	      break;
+
+	    case ft_pixel_mode_mono:
+	      src += x_start / 8;
+	      for (iy = y_start; iy < y_limit; iy++)
+		{
+		  guchar *s = src;
+		  guchar *d = dest;
+
+		  for (ix = x_start; ix < x_limit; ix++)
+		    {
+		      if ((*s) & (1 << (7 - (ix % 8))))
+			*d |= 0xff;
+		      
+		      if ((ix % 8) == 7)
+			s++;
+		      d++;
+		    }
+
+		  dest += bitmap->pitch;
+		  src  += rendered_glyph->bitmap.pitch;
+		}
+	      break;
+	      
+	    default:
+	      g_warning ("pango_ft2_render: "
+			 "Unrecognized glyph bitmap pixel mode %d\n",
+			 rendered_glyph->bitmap.pixel_mode);
+	      break;
+	    }
 
 	  if (add_glyph_to_cache)
 	    {
 	      pango_ft2_font_set_glyph_cache_destroy (font,
 						      (GDestroyNotify) pango_ft2_free_rendered_glyph);
-	      pango_ft2_font_set_cache_glyph_data (font, glyph_index, rendered_glyph);
+	      pango_ft2_font_set_cache_glyph_data (font,
+						   glyph_index, rendered_glyph);
 	    }
 	}
 
@@ -849,13 +870,10 @@ pango_ft2_render_layout_line (FT_Bitmap       *bitmap,
 			      int              y)
 {
   GSList *tmp_list = line->runs;
-  PangoRectangle overall_rect;
   PangoRectangle logical_rect;
   PangoRectangle ink_rect;
   int x_off = 0;
 
-  pango_layout_line_get_extents (line, NULL, &overall_rect);
-  
   while (tmp_list)
     {
       PangoUnderline uline = PANGO_UNDERLINE_NONE;
