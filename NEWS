@@ -1,3 +1,10 @@
+Changes between 0.16 and 0.17
+
+* Build/bug fixes
+* Cursor motion is now by graphemes (logical editing units) rather than 
+  by characters
+* Optionally support jumping cursor instead of split cursor
+
 Changes between 0.15 and 0.16
 
 * Ability to make newlines in a PangoLayout display as regular characters
