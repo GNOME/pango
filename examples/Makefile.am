@@ -7,7 +7,7 @@ INCLUDES =				\
 	-DPANGO_DISABLE_DEPRECATED	\
 	$(PANGO_DEBUG_FLAGS)		\
 	-I$(top_srcdir)			\
-	$(QT_INCLUDES)			\
+	$(CAIRO_CFLAGS)			\
 	$(GLIB_CFLAGS)			\
 	$(XFT_CFLAGS)			\
 	$(FREETYPE_CFLAGS)

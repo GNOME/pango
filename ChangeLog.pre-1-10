@@ -1,3 +1,26 @@
+2005-02-03  Owen Taylor  <otaylor@redhat.com>
+
+	* examples/cairosimple.c: Open the file with mode "wb", include
+	cairo-png.h. 
+
+	* examples/xftview.c examples/cairoview.c: Set WM_NORMAL_HINTS to avoid 
+	triggering a metacity bug.
+
+	* examples/cairoview.c: Include cairo-xlib.h.
+
+	* configure.in: Add checks for the Win32 Cairo backend. (not committing
+	the code yet).
+
+	* examples/Makefile.am pango/Makefile.am: add CAIRO_CFLAGS.
+
+	* pango/pangocairo-fc.h pango/pangocairo-fcfont.c
+	pango/pangocairo-fcfontmap.c pango/pangofc-fontmap.[ch]: Rework
+	Cairo/Fontconfig backend to use the current Cairo API. Make
+	some PangoFcFontMap changes to enable that.
+
+	* pango/pango/pangocairo-private.h pango/pangocairo-render.c:
+	Update for cairo_font_t changes.
+
 2005-01-31  Matthias Clasen  <mclasen@redhat.com>
 
 	* modules/hebrew/hebrew-fc.c (get_cluster_glyphs): Show

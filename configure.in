@@ -248,30 +248,6 @@ AM_CONDITIONAL(HAVE_FREETYPE, $have_freetype)
 AM_CONDITIONAL(HAVE_XFT, $have_xft)
 
 #
-# Checks for Cairo
-#
-have_cairo=false
-have_cairo_freetype=false
-
-PKG_CHECK_MODULES(CAIRO, cairo >= 0.2.0, have_cairo=true, :)
-   
-if $have_cairo ; then
-    pango_save_ldflags=$LDFLAGS
-    LDFLAGS="$LDFLAGS $CAIRO_LIBS"
-    AC_CHECK_LIB(cairo, cairo_ft_font_face, have_cairo_freetype=true, :)
-    LDFLAGS=$pango_save_ldflags
-    if $have_cairo_freetype ; then
-      AC_DEFINE(HAVE_CAIRO_FREETYPE, 1, [Whether Cairo uses FreeType for fonts])
-    else
-      AC_MSG_WARN([Disabling Cairo support, no known font system])      
-      have_cairo=false
-    fi
-fi
-
-AM_CONDITIONAL(HAVE_CAIRO, $have_cairo)
-AM_CONDITIONAL(HAVE_CAIRO_FREETYPE, $have_cairo_freetype)
-
-#
 # Checks for Win32 GDI
 #
 have_win32=false
@@ -290,6 +266,35 @@ fi
 
 AC_SUBST(WIN32_LIBS)
 AM_CONDITIONAL(HAVE_WIN32, $have_win32) 
+
+#
+# Checks for Cairo
+#
+have_cairo=false
+have_cairo_freetype=false
+have_cairo_win32=false
+
+PKG_CHECK_MODULES(CAIRO, cairo >= 0.2.0, have_cairo=true, :)
+   
+if $have_cairo ; then
+  pango_save_ldflags=$LDFLAGS
+  LDFLAGS="$LDFLAGS $CAIRO_LIBS"
+  AC_CHECK_LIB(cairo, cairo_win32_font_select_font, have_cairo_win32=true, :)
+  LDFLAGS=$pango_save_ldflags
+  if $have_cairo_win32 && $have_win32; then
+    AC_DEFINE(HAVE_CAIRO_WIN32, 1, [Whether Cairo uses the Win32 GDI for fonts])
+  else			  
+    AC_CHECK_LIB(cairo, cairo_ft_font_lock_face, have_cairo_freetype=true, :)
+    LDFLAGS=$pango_save_ldflags
+    if $have_cairo_freetype && $have_freetype ; then
+      AC_DEFINE(HAVE_CAIRO_FREETYPE, 1, [Whether Cairo uses FreeType for fonts])
+    fi
+  fi
+fi
+
+AM_CONDITIONAL(HAVE_CAIRO, $have_cairo)
+AM_CONDITIONAL(HAVE_CAIRO_WIN32, $have_cairo_win32 && $have_win32)
+AM_CONDITIONAL(HAVE_CAIRO_FREETYPE, $have_cairo_freetype && $have_freetype)
 
 #
 # We must have some backend defined, in order for the pango-querymodules

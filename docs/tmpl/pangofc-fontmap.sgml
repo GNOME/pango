@@ -45,6 +45,7 @@ Fontconfig-based backend involves deriving from both
 @default_substitute: 
 @new_font: 
 @get_render_key: 
+@create_font: 
 
 <!-- ##### FUNCTION pango_fc_font_description_from_pattern ##### -->
 <para>

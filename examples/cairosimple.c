@@ -1,5 +1,6 @@
 #include <math.h>
 #include <pango/pangocairo.h>
+#include <cairo-png.h>
 
 static void
 draw_text (cairo_t *cr)
@@ -64,7 +65,7 @@ int main (int argc, char **argv)
       return 1;
     }
 
-  f = fopen (argv[1], "w");
+  f = fopen (argv[1], "wb");
   if (!f)
     {
       g_printerr ("Usage: cannot open '%s'\n", argv[1]);

@@ -29,6 +29,7 @@
 #include "renderdemo.h"
 
 #include <pango/pangocairo.h>
+#include <cairo-xlib.h>
 
 static pixman_region16_t *update_region = NULL;
 static PangoContext *context;
@@ -204,6 +205,7 @@ int main (int argc, char **argv)
   XEvent xev;
   unsigned long bg;
   int width, height;
+  XSizeHints size_hints;
   RenderData render_data;
   unsigned int quit_keycode;
   unsigned int borders_keycode;
@@ -237,6 +239,13 @@ int main (int argc, char **argv)
   XmbSetWMProperties (display, window,
 		      get_options_string (),
 		      NULL, NULL, 0, NULL, NULL, NULL);
+  
+  memset ((char *)&size_hints, 0, sizeof (XSizeHints));
+  size_hints.flags = PSize | PMaxSize;
+  size_hints.width = width; size_hints.height = height; /* for compat only */
+  size_hints.max_width = width; size_hints.max_height = height;
+  
+  XSetWMNormalHints (display, window, &size_hints);
 
   borders_keycode = XKeysymToKeycode(display, 'B');
   quit_keycode = XKeysymToKeycode(display, 'Q');

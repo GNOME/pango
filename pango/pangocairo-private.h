@@ -56,14 +56,12 @@ struct _PangoCairoFontIface
 {
   GTypeInterface g_iface;
 
-  void (*make_current) (PangoCairoFont *font,
-			cairo_t        *cr);
+  cairo_font_t *(*get_cairo_font) (PangoCairoFont *font);
 };
 
 GType pango_cairo_font_get_type (void);
 
-void _pango_cairo_font_make_current (PangoCairoFont *font,
-				     cairo_t        *cr);
+cairo_font_t *_pango_cairo_font_get_cairo_font (PangoCairoFont *font);
 
 #define PANGO_TYPE_CAIRO_RENDERER            (pango_cairo_renderer_get_type())
 #define PANGO_CAIRO_RENDERER(object)         (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_TYPE_CAIRO_RENDERER, PangoCairoRenderer))

@@ -99,11 +99,24 @@ pango_cairo_fc_font_map_default_substitute (PangoFcFontMap *fcfontmap,
   FcDefaultSubstitute (pattern);
 }
 
-static PangoFcFont *
-pango_cairo_fc_font_map_new_font (PangoFcFontMap  *fcfontmap,
-				  FcPattern       *pattern)
+static gboolean
+pango_cairo_fc_font_map_get_render_key (PangoFcFontMap             *fcfontmap,
+					PangoContext               *context,
+					const PangoFontDescription *desc,
+					int                        *xsize,
+					int                        *ysize,
+					guint                      *flags)
 {
-  return _pango_cairo_fc_font_new (PANGO_CAIRO_FC_FONT_MAP (fcfontmap), pattern);
+  return _pango_cairo_fc_get_render_key (PANGO_CAIRO_FC_FONT_MAP (fcfontmap),
+					 context, desc, xsize, ysize, flags);
+}
+
+static PangoFcFont *
+pango_cairo_fc_font_map_create_font (PangoFcFontMap  *fcfontmap,
+				     PangoContext    *context,
+				     FcPattern       *pattern)
+{
+  return _pango_cairo_fc_font_new (PANGO_CAIRO_FC_FONT_MAP (fcfontmap), context, pattern);
 }
 
 static void
@@ -114,7 +127,8 @@ pango_cairo_fc_font_map_class_init (PangoCairoFcFontMapClass *class)
 
   gobject_class->finalize  = pango_cairo_fc_font_map_finalize;
   fcfontmap_class->default_substitute = pango_cairo_fc_font_map_default_substitute;
-  fcfontmap_class->new_font = pango_cairo_fc_font_map_new_font;
+  fcfontmap_class->get_render_key = pango_cairo_fc_font_map_get_render_key;
+  fcfontmap_class->create_font = pango_cairo_fc_font_map_create_font;
 }
 
 static void

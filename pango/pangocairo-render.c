@@ -91,7 +91,8 @@ pango_cairo_renderer_draw_glyphs (PangoRenderer     *renderer,
       x_position += gi->geometry.width;
     }
 
-  _pango_cairo_font_make_current (PANGO_CAIRO_FONT (font), crenderer->cr);
+  cairo_set_font (crenderer->cr,
+		  _pango_cairo_font_get_cairo_font (PANGO_CAIRO_FONT (font)));
   cairo_show_glyphs (crenderer->cr, cairo_glyphs, glyphs->num_glyphs);
   
   if (glyphs->num_glyphs > MAX_STACK)

@@ -84,6 +84,7 @@ struct _PangoFcFontMapClass
   /*< public >*/
   void         (*default_substitute) (PangoFcFontMap   *fontmap,
 			              FcPattern        *pattern);
+  /* Deprecated in favor of create_font */
   PangoFcFont  *(*new_font)          (PangoFcFontMap  *fontmap,
 			              FcPattern       *pattern);
 
@@ -93,12 +94,14 @@ struct _PangoFcFontMapClass
 				      int                        *xsize,
 				      int                        *ysize,
 				      guint                      *flags);
+  PangoFcFont  *(*create_font)       (PangoFcFontMap             *fontmap,
+				      PangoContext               *context,
+			              FcPattern                  *pattern);
   /*< private >*/
 
   /* Padding for future expansion */
   void (*_pango_reserved1) (void);
   void (*_pango_reserved2) (void);
-  void (*_pango_reserved3) (void);
 };
 
 PangoContext * pango_fc_font_map_create_context (PangoFcFontMap *fcfontmap);

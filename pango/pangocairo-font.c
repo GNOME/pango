@@ -55,15 +55,13 @@ pango_cairo_font_get_type (void)
 /**
  * _pango_cairo_font_get_cairo_font:
  * @font: a #PangoCairoFont
- * @cr: a #CairoConext
  *
- * Install the font and size of @font onto @cr
+ * Get the cairo_font_t for a PangoCairoFont.
  **/
-void
-_pango_cairo_font_make_current (PangoCairoFont *font,
-				cairo_t        *cr)
+cairo_font_t *
+_pango_cairo_font_get_cairo_font (PangoCairoFont *font)
 {
-  g_return_if_fail (PANGO_IS_CAIRO_FONT (font));
+  g_return_val_if_fail (PANGO_IS_CAIRO_FONT (font), NULL);
   
-  return (* PANGO_CAIRO_FONT_GET_IFACE (font)->make_current) (font, cr);
+  return (* PANGO_CAIRO_FONT_GET_IFACE (font)->get_cairo_font) (font);
 }

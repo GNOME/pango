@@ -23,6 +23,7 @@ INCLUDES =						\
 	$(PANGO_DEBUG_FLAGS)				\
 	$(GLIB_CFLAGS)					\
 	$(XFT_CFLAGS)					\
+	$(CAIRO_CFLAGS)					\
 	$(FREETYPE_CFLAGS)				\
 	$(X_CFLAGS)					\
 	-I$(top_srcdir)
