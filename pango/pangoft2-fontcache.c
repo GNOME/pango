@@ -130,6 +130,7 @@ oa_equal (gconstpointer v1,
 
 /**
  * pango_ft2_font_cache_new:
+ * @library:
  * 
  * Create a font cache.
  * 
@@ -173,6 +174,8 @@ cache_entry_unref (PangoFT2FontCache *cache,
 /**
  * pango_ft2_font_cache_load:
  * @cache: a #PangoFT2FontCache
+ * @args: 
+ * @face_index:
  * 
  * Load a #FT_Face from #FT_Open_Args and a face index. The
  * result may be newly loaded, or it may have been previously

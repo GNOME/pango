@@ -36,6 +36,7 @@ PANGO_IS_CONTEXT_CLASS
 PANGO_CONTEXT_GET_CLASS
 <SUBSECTION>
 pango_break
+pango_get_log_attrs
 PangoLogAttr
 <SUBSECTION>
 pango_shape
@@ -80,6 +81,8 @@ pango_coverage_copy
 pango_coverage_get
 pango_coverage_max
 pango_coverage_set
+pango_coverage_to_bytes
+pango_coverage_from_bytes
 </SECTION>
 
 <SECTION>
@@ -138,6 +141,7 @@ PangoAttrString
 PangoAttrColor
 PangoAttrInt
 PangoAttrFontDesc
+PangoAttrShape
 pango_attr_type_register
 pango_attribute_copy
 pango_attribute_compare
@@ -155,6 +159,7 @@ pango_attr_foreground_new
 pango_attr_background_new
 pango_attr_strikethrough_new
 pango_attr_underline_new
+pango_attr_shape_new
 PangoUnderline
 pango_attr_rise_new
 <SUBSECTION>
@@ -166,6 +171,7 @@ pango_attr_list_copy
 pango_attr_list_insert
 pango_attr_list_insert_before
 pango_attr_list_change
+pango_attr_list_splice
 pango_attr_list_get_iterator
 PangoAttrIterator
 pango_attr_iterator_copy
@@ -174,6 +180,23 @@ pango_attr_iterator_range
 pango_attr_iterator_get
 pango_attr_iterator_get_font
 pango_attr_iterator_destroy
+</SECTION>
+
+<SECTION>
+<TITLE>Tab Stops</TITLE>
+<FILE>tab-stops</FILE>
+PangoTabArray
+PangoTabAlign
+pango_tab_array_new
+pango_tab_array_new_with_positions
+pango_tab_array_copy
+pango_tab_array_free
+pango_tab_array_get_size
+pango_tab_array_resize
+pango_tab_array_set_tab
+pango_tab_array_get_tab
+pango_tab_array_get_tabs
+pango_tab_array_get_positions_in_pixels
 </SECTION>
 
 <SECTION>
@@ -198,6 +221,8 @@ pango_layout_set_justify
 pango_layout_get_justify
 pango_layout_set_alignment
 pango_layout_get_alignment
+pango_layout_get_tabs
+pango_layout_set_tabs
 PangoAlignment
 
 pango_layout_get_log_attrs
@@ -255,6 +280,16 @@ script_engine_unload
 </SECTION>
 
 <SECTION>
+<TITLE>Modules</TITLE>
+<FILE>modules</FILE>
+PangoMap
+PangoMapEntry
+pango_find_map
+pango_map_get_entry
+pango_map_get_engine
+</SECTION>
+
+<SECTION>
 <TITLE>X Rendering</TITLE>
 <FILE>x-rendering</FILE>
 PANGO_RENDER_TYPE_X
@@ -287,4 +322,68 @@ pango_x_font_cache_new
 pango_x_font_cache_free
 pango_x_font_cache_load
 pango_x_font_cache_unload
+</SECTION>
+
+<SECTION>
+<TITLE>Win32 Fonts and Rendering</TITLE>
+<FILE>win32-fonts</FILE>
+PANGO_RENDER_TYPE_WIN32
+pango_win32_get_context
+pango_win32_load_font
+pango_win32_render
+pango_win32_render_layout_line
+pango_win32_render_layout
+PangoWin32UnicodeSubrange
+pango_win32_unicode_classify
+PangoWin32Subfont
+PANGO_WIN32_MAKE_GLYPH
+PANGO_WIN32_GLYPH_SUBFONT
+PANGO_WIN32_GLYPH_INDEX
+pango_win32_list_subfonts
+pango_win32_has_glyph
+pango_win32_get_unknown_glyph
+PangoWin32FontCache
+pango_win32_font_cache_new
+pango_win32_font_cache_free
+pango_win32_font_cache_load
+pango_win32_font_cache_unload
+pango_win32_font_map_for_display
+pango_win32_shutdown_display
+pango_win32_font_map_get_font_cache
+pango_win32_font_subfont_logfont
+pango_win32_fontmap_dump
+
+<SUBSECTION Private>
+STRICT
+</SECTION>
+
+<SECTION>
+<TITLE>FreeType Fonts and Rendering</TITLE>
+<FILE>freetype-fonts</FILE>
+PANGO_RENDER_TYPE_FT2
+pango_ft2_get_context
+pango_ft2_load_font
+pango_ft2_render
+pango_ft2_render_layout_line
+pango_ft2_render_layout
+PangoFT2Subfont
+PANGO_FT2_MAKE_GLYPH
+PANGO_FT2_GLYPH_SUBFONT
+PANGO_FT2_GLYPH_INDEX
+pango_ft2_n_subfonts
+pango_ft2_has_glyph
+pango_ft2_get_unknown_glyph
+pango_ft2_font_get_kerning
+PangoFT2FontCache
+pango_ft2_font_cache_new
+pango_ft2_font_cache_free
+pango_ft2_font_cache_load
+pango_ft2_font_cache_unload
+pango_ft2_font_map_for_display
+pango_ft2_shutdown_display
+pango_ft2_font_map_get_font_cache
+pango_ft2_font_subfont_open_args
+pango_ft2_fontmap_dump
+<SUBSECTION Private>
+STRICT
 </SECTION>

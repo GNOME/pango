@@ -104,3 +104,23 @@ point to #PangoCoverageLevel. It is an opaque structure with no public fields.
 @level: 
 
 
+<!-- ##### FUNCTION pango_coverage_to_bytes ##### -->
+<para>
+
+</para>
+
+@coverage: 
+@bytes: 
+@n_bytes: 
+
+
+<!-- ##### FUNCTION pango_coverage_from_bytes ##### -->
+<para>
+
+</para>
+
+@bytes: 
+@n_bytes: 
+@Returns: 
+
+

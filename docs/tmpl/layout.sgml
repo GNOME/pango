@@ -192,6 +192,24 @@ fields.
 @Returns: 
 
 
+<!-- ##### FUNCTION pango_layout_get_tabs ##### -->
+<para>
+
+</para>
+
+@layout: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_layout_set_tabs ##### -->
+<para>
+
+</para>
+
+@layout: 
+@tabs: 
+
+
 <!-- ##### ENUM PangoAlignment ##### -->
 <para>
 describes how to align the lines of a #PangoLayout within the

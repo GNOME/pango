@@ -1,3 +1,16 @@
+Sun Oct 29 01:27:39 2000  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pangoft2-fontcache.c pango/pangoft2.[ch]
+	pango/pangowin32.h: Fix up doc comments not to 
+	have obvious errors that gtk-doc barfs on. Correct
+	parameter descriptions still need to be filled in.
+
+	* configure.in pango/docs/Makefile.am: upgrade to
+	have a real install rule, etc.
+
+	* pango/docs/pango-sections.txt: Add various missing
+	functions.
+
 Wed Oct 25 15:39:49 2000  Tim Janik  <timj@gtk.org>
 
 	* *.c: adapted g_Type_register_*() calls. GLib wants an additional

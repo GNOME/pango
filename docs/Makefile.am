@@ -1,59 +1,125 @@
 ## Process this file with automake to create Makefile.in.
 
-pangoheaders = 	   	   		\
-	../pango/pango.h   		\
-	../pango/pango-attributes.h	\
-	../pango/pango-context.h	\
-	../pango/pango-coverage.h	\
-	../pango/pango-engine.h		\
-	../pango/pango-font.h       	\
-	../pango/pango-fontmap.h	\
-	../pango/pango-glyph.h	   	\
-	../pango/pango-item.h	   	\
-	../pango/pango-layout.h	   	\
-	../pango/pango-types.h	   	\
-	../pango/pangox.h	
-
-if HAVE_GTK_DOC
-
 # The name of the module.
 DOC_MODULE=pango
 
 # The top-level SGML file.
 DOC_MAIN_SGML_FILE=pango-docs.sgml
 
-SOURCE_DIR=../pango
+# The directory containing the source code
+DOC_SOURCE_DIR=$(top_srcdir)/pango
 
-scan:
-	gtkdoc-scan --module=$(DOC_MODULE) $(pangoheaders)
+# Extra options to supply to gtkdoc-fixref
+FIXXREF_OPTIONS=
 
-templates: scan
-	gtkdoc-mktmpl --module=$(DOC_MODULE)
+# Headers to ignore
+IGNORE_HFILES=			\
+	modules.h		\
+	pango-utils.h		\
+	pangoft2-private.h	\
+	pangowin32-private.h	\
+	pangox-private.h
 
-sgml:
-	gtkdoc-mkdb --module=$(DOC_MODULE) --source-dir=$(SOURCE_DIR)
+tmpl_sources =				\
+	tmpl/coverage-maps.sgml		\
+	tmpl/engines.sgml		\
+	tmpl/fonts.sgml			\
+	tmpl/freetype-fonts.sgml	\
+	tmpl/glyphs.sgml		\
+	tmpl/layout.sgml		\
+	tmpl/main.sgml			\
+	tmpl/modules.sgml		\
+	tmpl/tab-stops.sgml		\
+	tmpl/text-attributes.sgml	\
+	tmpl/win32-fonts.sgml		\
+	tmpl/x-fonts.sgml		\
+	tmpl/x-rendering.sgml
 
-html:
-	if ! test -d html ; then mkdir html ; fi
-	-cd html && gtkdoc-mkhtml $(DOC_MODULE) ../$(DOC_MAIN_SGML_FILE)
-	cp layout.gif html
 
-clean-local:
-	rm -f *~ *.bak *.hierarchy *.signals *.args *-unused.txt
+####################################
+# Everything below here is generic #
+####################################
 
-maintainer-clean-local: clean
-	rm -rf sgml html $(DOC_MODULE)-decl-list.txt $(DOC_MODULE)-decl.txt 
+TARGET_DIR=$(HTML_DIR)/$(DOC_MODULE)
 
-.PHONY: scan sgml html templates 
+EXTRA_DIST = 				\
+	$(DOC_MAIN_SGML_FILE)		\
+	$(DOC_MODULE)-decl.txt		\
+	$(DOC_MODULE)-sections.txt	\
+	$(DOC_MODULE)-overrides.txt
 
+if ENABLE_GTK_DOC
+all-local: html/index.html
+
+$(DOC_MODULE)-decl.txt: 
+	$(MAKE) scan
+
+$(tmpl_sources): $(DOC_MODULE)-decl.txt $(DOC_MODULE)-sections.txt $(DOC_MODULE)-overrides.txt
+	$(MAKE) templates
+
+sgml/$(DOC_MODULE)-doc.bottom: $(tmpl_sources) $(DOC_MODULE)-decl.txt
+	$(MAKE) sgml
+
+html/index.html: sgml/$(DOC_MODULE)-doc.bottom $(DOC_MAIN_SGML_FILE)
+	$(MAKE) html
 endif
 
-EXTRA_DIST=pango-sections.txt pango-docs.sgml layout.fig layout.eps layout.fig
+scan:
+	-(cd $(srcdir) \
+	&& gtkdoc-scan --module=$(DOC_MODULE) --source-dir=$(DOC_SOURCE_DIR) --ignore-headers="$(IGNORE_HFILES)" )
 
-dist-hook:
+templates: 
+	cd $(srcdir) && gtkdoc-mktmpl --module=$(DOC_MODULE)
+
+sgml:
+	cd $(srcdir) \
+	&& gtkdoc-mkdb --module=$(DOC_MODULE) --source-dir=$(DOC_SOURCE_DIR)
+
+html:
+	test -d $(srcdir)/html || mkdir $(srcdir)/html
+	-cd $(srcdir)/html && gtkdoc-mkhtml $(DOC_MODULE) ../$(DOC_MAIN_SGML_FILE)
+	@echo '-- Fixing Crossreferences' 
+	cd $(srcdir) && gtkdoc-fixxref --module-dir=html --html-dir=$(HTML_DIR) $(FIXXREF_OPTIONS)
+
+clean-local:
+	rm -f *~ *.bak *.signals *-unused.txt
+
+maintainer-clean-local: clean
+	cd $(srcdir) && rm -rf sgml html $(DOC_MODULE)-decl-list.txt $(DOC_MODULE)-decl.txt
+
+install-data-local:
+	$(mkinstalldirs) $(DESTDIR)$(TARGET_DIR)
+	(installfiles=`echo $(srcdir)/html/*.html`; \
+	if test "$$installfiles" = '$(srcdir)/html/*.html'; \
+	then echo '-- Nothing to install' ; \
+	else \
+	  for i in $$installfiles; do \
+	    echo '-- Installing '$$i ; \
+	    $(INSTALL_DATA) $$i $(DESTDIR)$(TARGET_DIR); \
+	  done; \
+	  echo '-- Installing $(srcdir)/html/index.sgml' ; \
+	  $(INSTALL_DATA) $(srcdir)/html/index.sgml $(DESTDIR)$(TARGET_DIR); \
+	fi)
+
+#
+# Require gtk-doc when making dist
+#
+if ENABLE_GTK_DOC
+dist-check-gtkdoc:
+else
+dist-check-gtkdoc:
+	@echo "*** gtk-doc must be installed and enabled in order to make dist"
+	@false
+endif
+
+dist-hook: dist-check-gtkdoc
 	mkdir $(distdir)/tmpl
-	cp -p $(srcdir)/tmpl/*.sgml $(distdir)/tmpl
-	mkdir $(distdir)/TEXT
-	for i in $(srcdir)/TEXT/* ; do 			\
-	  test -f $$i && cp -p $$i $(distdir)/TEXT ;	\
-        done
+	mkdir $(distdir)/sgml
+	mkdir $(distdir)/html
+	-cp $(srcdir)/tmpl/*.sgml $(distdir)/tmpl
+	-cp $(srcdir)/sgml/*.sgml $(distdir)/sgml
+	-cp $(srcdir)/sgml/*.bottom $(srcdir)/sgml/*.top $(distdir)/sgml
+	-cp $(srcdir)/html/index.sgml $(distdir)/html
+	-cp $(srcdir)/html/*.html $(srcdir)/html/*.css $(distdir)/html
+
+.PHONY : html sgml templates scan

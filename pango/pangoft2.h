@@ -38,7 +38,7 @@ extern "C" {
 PangoContext  *pango_ft2_get_context        (void);
 
 PangoFont     *pango_ft2_load_font          (PangoFontMap     *fontmap,
-					     FT_Open_Args    **args,
+					     FT_Open_Args    **open_args,
 					     FT_Long	      *face_indices,
 					     int               n_fonts,
 					     int               size);

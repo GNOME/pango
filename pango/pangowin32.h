@@ -38,7 +38,7 @@ extern "C" {
  */
 PangoContext * pango_win32_get_context        (void);
 
-PangoFont *    pango_win32_load_font          (LOGFONT          *lfp,
+PangoFont *    pango_win32_load_font          (LOGFONT          *lfps,
 					       int               n_fonts);
 void           pango_win32_render             (HDC               hdc,
 					       PangoFont        *font,
@@ -164,7 +164,7 @@ PangoWin32FontCache *pango_win32_font_cache_new          (void);
 void                 pango_win32_font_cache_free         (PangoWin32FontCache *cache);
  
 HFONT                pango_win32_font_cache_load         (PangoWin32FontCache *cache,
-						          const LOGFONT       *lfp);
+						          const LOGFONT       *logfont);
 void                 pango_win32_font_cache_unload       (PangoWin32FontCache *cache,
 						     	  HFONT                hfont);
 

@@ -40,6 +40,7 @@ attribute is listed in parentheses after the description.
 @PANGO_ATTR_UNDERLINE: whether the text has an underline (#PangoAttrInt)
 @PANGO_ATTR_STRIKETHROUGH: whether the text is struck-through (#PangoAttrInt)
 @PANGO_ATTR_RISE: baseline displacement (#PangoAttrInt)
+@PANGO_ATTR_SHAPE: 
 
 <!-- ##### STRUCT PangoAttrClass ##### -->
 <para>
@@ -105,6 +106,15 @@ sets all aspects of the font description at once.
 
 @attr: the common portion of the attribute
 @desc: the font description which is the value of this attribute
+
+<!-- ##### STRUCT PangoAttrShape ##### -->
+<para>
+
+</para>
+
+@attr: 
+@ink_rect: 
+@logical_rect: 
 
 <!-- ##### FUNCTION pango_attr_type_register ##### -->
 <para>
@@ -254,6 +264,16 @@ sets all aspects of the font description at once.
 @Returns: 
 
 
+<!-- ##### FUNCTION pango_attr_shape_new ##### -->
+<para>
+
+</para>
+
+@ink_rect: 
+@logical_rect: 
+@Returns: 
+
+
 <!-- ##### ENUM PangoUnderline ##### -->
 <para>
 the #PangoUnderline enumeration is used to specify
@@ -354,6 +374,17 @@ for more than one paragraph of text.
 
 @list: 
 @attr: 
+
+
+<!-- ##### FUNCTION pango_attr_list_splice ##### -->
+<para>
+
+</para>
+
+@list: 
+@other: 
+@pos: 
+@len: 
 
 
 <!-- ##### FUNCTION pango_attr_list_get_iterator ##### -->

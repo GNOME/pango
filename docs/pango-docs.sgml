@@ -9,7 +9,7 @@
 <!entity x-fonts SYSTEM "sgml/x-fonts.sgml">
 <!entity x-rendering SYSTEM "sgml/x-rendering.sgml">
 ]>
-<book>
+<book id="index">
   <bookinfo>
     <title>Pango Reference Manual</title>
   </bookinfo>

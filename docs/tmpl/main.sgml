@@ -328,6 +328,18 @@ for text.
 @attrs: 
 
 
+<!-- ##### FUNCTION pango_get_log_attrs ##### -->
+<para>
+
+</para>
+
+@text: 
+@length: 
+@level: 
+@language: 
+@log_attrs: 
+
+
 <!-- ##### STRUCT PangoLogAttr ##### -->
 <para>
 The #PangoLogAttr structure stores information

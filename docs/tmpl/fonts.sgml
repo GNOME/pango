@@ -48,8 +48,12 @@ An enumeration specifying the weight (boldness) of a font. This is a numerical
 value ranging from 100 to 900, but there are two predefined values:
 </para>
 
+@PANGO_WEIGHT_ULTRALIGHT: 
+@PANGO_WEIGHT_LIGHT: 
 @PANGO_WEIGHT_NORMAL: the default weight (= 400)
 @PANGO_WEIGHT_BOLD: the bold weight (= 700)
+@PANGO_WEIGHT_ULTRABOLD: 
+@PANGO_WEIGHT_HEAVY: 
 
 <!-- ##### ENUM PangoVariant ##### -->
 <para>

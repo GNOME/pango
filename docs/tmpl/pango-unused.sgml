@@ -353,13 +353,6 @@ the X Window system.
 @trailing: 
 @x_pos: >>>>>>> 1.8
 
-<!-- ##### TYPEDEF PangoGlyphIndex ##### -->
-<para>
-The #PangoGlyphIndex type is an integral type used to store glyph
-indices.
-</para>
-
-
 <!-- ##### FUNCTION pango_x_glyph_extents ##### -->
 <para>
 
@@ -374,6 +367,13 @@ indices.
 @descent: 
 @logical_ascent: 
 @logical_descent: 
+
+<!-- ##### TYPEDEF PangoGlyphIndex ##### -->
+<para>
+The #PangoGlyphIndex type is an integral type used to store glyph
+indices.
+</para>
+
 
 <!-- ##### SECTION ./tmpl/pango-x.sgml:See_Also ##### -->
 <para>

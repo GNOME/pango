@@ -208,11 +208,16 @@ pango_ft2_font_class_init (PangoFT2FontClass *class)
 
 /**
  * pango_ft2_load_font:
- *
+ * @fontmap: a #PangoFontmap
+ * @open_args: parameters that control loading
+ * @face_indices: 
+ * @n_fonts: 
+ * @size: 
+ * 
  * Loads a logical font based on XXX
- *
- * Returns a new #PangoFont
- */
+ * 
+ * Return value: a new #PangoFont
+ **/
 PangoFont *
 pango_ft2_load_font (PangoFontMap  *fontmap,
 		     FT_Open_Args **open_args,
@@ -251,7 +256,6 @@ pango_ft2_load_font (PangoFontMap  *fontmap,
  
 /**
  * pango_ft2_render:
- *
  * @bitmap:  the FreeType2 bitmap onto which draw the string
  * @font:    the font in which to draw the string
  * @glyphs:  the glyph string to draw
@@ -259,7 +263,7 @@ pango_ft2_load_font (PangoFontMap  *fontmap,
  * @y:       the y position of baseline (in pixels)
  *
  * Render a PangoGlyphString onto a FreeType2 bitmap
- */
+ **/
 void 
 pango_ft2_render (FT_Bitmap        *bitmap,
 		  PangoFont        *font,
@@ -710,7 +714,10 @@ pango_ft2_font_get_metrics (PangoFont        *font,
 /**
  * pango_ft2_n_subfonts:
  * @font: a PangoFont
+ *
  * Returns number of subfonts in a PangoFT2Font.
+ *
+ * Return value: number of subfonts in @font
  **/
 int
 pango_ft2_n_subfonts (PangoFont *font)
@@ -796,6 +803,7 @@ pango_ft2_get_coverage (PangoFont  *font,
 /**
  * pango_ft2_font_subfont_open_args:
  * @font: a #PangoFont which must be from the FT2 backend
+ * @subfont_id: the id of a subfont within the font
  * @open_args: pointer where to store the #FT_Open_Args for this subfont
  * @face_index: pointer where to store the face index for this subfont
  * 
@@ -928,6 +936,7 @@ pango_ft2_get_unknown_glyph (PangoFont *font)
 
 /**
  * pango_ft2_render_layout_line:
+ * @bitmap:    a FT_Bitmap to render the line onto
  * @line:      a #PangoLayoutLine
  * @x:         the x position of start of string (in pixels)
  * @y:         the y position of baseline (in pixels)
@@ -1012,6 +1021,7 @@ pango_ft2_render_layout_line (FT_Bitmap       *bitmap,
 
 /**
  * pango_ft2_render_layout:
+ * @bitmap:    a FT_Bitmap to render the line onto
  * @layout:    a #PangoLayout
  * @x:         the X position of the left of the layout (in pixels)
  * @y:         the Y position of the top of the layout (in pixels)
