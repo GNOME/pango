@@ -42,6 +42,48 @@
 #endif
 #define SOEXT_LEN (strlen (SOEXT))
 
+static gboolean
+string_needs_escape (const char *str)
+{
+  while (TRUE)
+    {
+      char c = *str++;
+
+      if (!c)
+	return FALSE;
+      else if (c == '\"' || g_ascii_isspace (c))
+	return TRUE;
+    }
+}
+
+static char *
+escape_string (const char *str)
+{
+  GString *result = g_string_new ("");
+
+  while (TRUE)
+    {
+      char c = *str++;
+      
+      switch (c)
+	{
+	case '\0':
+	  goto done;
+	case '\n':
+	  g_string_append (result, "\\n");
+	  break;
+	case '\"':
+	  g_string_append (result, "\\\"");
+	  break;
+	default:
+	  g_string_append_c (result, c);
+	}
+    }
+
+ done:
+  return g_string_free (result, FALSE);
+}
+
 void 
 query_module (const char *dir, const char *name)
 {
@@ -78,10 +120,10 @@ query_module (const char *dir, const char *name)
 	  const gchar *quote;
 	  gchar *quoted_path;
 
-	  if (strchr (path, ' ') != NULL)
+	  if (string_needs_escape (path))
 	    {
 	      quote = "\"";
-	      quoted_path = g_strescape (path, NULL);
+	      quoted_path = escape_string (path);
 	    }
 	  else
 	    {
