@@ -1,3 +1,8 @@
+Wed Feb 12 17:20:15 2003  Owen Taylor  <otaylor@redhat.com>
+
+        * configure.in: Simplify 'test x$have_x != xfalse'
+        to $have_x.
+
 Wed Feb 12 17:17:12 2003  Owen Taylor  <otaylor@redhat.com>
 
 	* configure.in: If --without-x is specified, don't
