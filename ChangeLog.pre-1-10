@@ -1,3 +1,7 @@
+2004-03-04  Tor Lillqvist  <tml@iki.fi>
+
+	* pango/module-defs-win32.c.win32: Clarify comment.
+
 2004-03-03  Hans Breuer  <hans@breuer.org>
 
 	* pango/module-defs-win32.c.win32 : if PANGO_MODULE_PREFIX is 

@@ -1,6 +1,6 @@
-/* Hand-written. Once the GNU configure mechanism is used
- * on Win32, too, can be generated.
-*/
+/* Hand-written, for builds using Microsoft's compiler and makefile.msc,
+ * where the configure mechanism isn't used.
+ */
 
 #include "modules.h"
 
