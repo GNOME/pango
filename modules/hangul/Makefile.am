@@ -61,8 +61,6 @@ libpango_hangul_ft2_la_CFLAGS = -DBUILD_FT2 -DPANGO_MODULE_PREFIX=_pango_hangul_
 
 
 EXTRA_DIST =			\
-	tables-ksc5601.i	\
-	tables-johabfont.i	\
 	tables-jamos.i
 
 included-modules: $(noinst_LTLIBRARIES)

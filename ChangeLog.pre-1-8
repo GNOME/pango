@@ -1,3 +1,8 @@
+Sat Aug  2 14:18:20 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* modules/hangul/Makefile.am (EXTRA_DIST): Remove some
+	leftovers.
+
 Sat Aug  2 14:10:31 2003  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/Makefile.am pango/pango-intset.[ch] pango/pango-indic.[ch]: 
