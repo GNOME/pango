@@ -289,6 +289,8 @@ pango_xft_font_get_metrics (PangoFont        *font,
 
   metrics->ascent = PANGO_SCALE * xfont->xft_font->ascent;
   metrics->descent = PANGO_SCALE * xfont->xft_font->descent;
+  metrics->approximate_digit_width = PANGO_SCALE * xfont->xft_font->max_advance_width;
+  metrics->approximate_char_width = PANGO_SCALE * xfont->xft_font->max_advance_width;
   
   return;
 }

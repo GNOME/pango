@@ -1,3 +1,9 @@
+2001-04-20  Alexander Larsson  <alexl@redhat.com>
+
+	* pango/pangoxft-font.c (pango_xft_font_get_metrics):
+	Set approximate_digit_width and approximate_char_width to
+	some cheesy value. Not good, but better than nothing.
+
 Fri Apr 20 11:38:46 2001  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pango-markup.c (pango_parse_markup): Remove some 
