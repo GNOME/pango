@@ -343,7 +343,7 @@ pango_layout_set_attributes (PangoLayout   *layout,
   pango_layout_clear_lines (layout);
 
   if (old_attrs)
-    pango_attr_list_unref (layout->attrs);
+    pango_attr_list_unref (old_attrs);
 }
 
 /**

@@ -1,3 +1,15 @@
+Sun Sep 10 03:01:53 2000  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-layout.c (pango_layout_set_attributes): Fix 
+	bug where wrong attribute list was unreferenced.
+
+	* pango/pango-attributes.[ch]: Add function
+	pango_attr_list_splice() to splice contents of one
+	attribute list into another attribute list.
+
+	* pango/pango-utils.h: Add include of pango-font.h since
+	it now depends on declarations from there.
+
 2000-09-08  Jonathan Blandford  <jrb@redhat.com>
 
 	* pango/pango-attributes.c (pango_attr_list_change): Minor fixes

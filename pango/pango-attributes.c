@@ -898,7 +898,7 @@ pango_attr_list_change (PangoAttrList  *list,
 	    }
 	  else
 	    {
-	      /* Truncate and/or remove the old attribute
+	      /* Split, truncate, or remove the old attribute
 	       */
 	      if (tmp_attr->end_index > attr->end_index)
 		{
@@ -1007,6 +1007,69 @@ pango_attr_list_change (PangoAttrList  *list,
 	}
       
       prev = tmp_list;
+      tmp_list = tmp_list->next;
+    }
+}
+
+/**
+ * pango_attr_list_splice:
+ * @list: a #PangoAttrList
+ * @other: another #PangoAttrList
+ * @pos: the position in @list at which to insert @other
+ * @len: the length of the spliced segment. (Note that this
+ *       must be specified since the attributes in @other
+ *       may only be present at some subsection of this range)
+ * 
+ * This function splices attribute list @other into @list.
+ * This operation is equivalent to stretching every attribute
+ * applies at position @pos in @list by an amount @len,
+ * and then calling pango_attr_list_change() with a copy
+ * of each attributes in @other in sequence (offset in position by @pos).
+ *
+ * This operation proves useful for, for instance, inserting
+ * a preedit string in the middle of an edit buffer.
+ **/
+void
+pango_attr_list_splice (PangoAttrList *list,
+			PangoAttrList *other,
+			gint           pos,
+			gint           len)
+{
+  GSList *tmp_list;
+  
+  g_return_if_fail (list != NULL);
+  g_return_if_fail (other != NULL); 
+  g_return_if_fail (pos >= 0);
+  g_return_if_fail (len >= 0);
+ 
+  tmp_list = list->attributes;
+  while (tmp_list)
+    {
+      PangoAttribute *attr = tmp_list->data;
+
+      if (attr->start_index <= pos)
+	{
+	  if (attr->end_index > pos)
+	    attr->end_index += len;
+	}
+      else
+	{
+	  attr->start_index += len;
+	  attr->end_index += len;
+	}
+
+      tmp_list = tmp_list->next;
+    }
+
+  tmp_list = other->attributes;
+  while (tmp_list)
+    {
+      PangoAttribute *attr = pango_attribute_copy (tmp_list->data);
+      attr->start_index += pos;
+      attr->end_index += pos;
+
+      pango_attr_list_change (list, attr);
+      
       tmp_list = tmp_list->next;
     }
 }

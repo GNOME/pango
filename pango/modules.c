@@ -219,7 +219,6 @@ process_module_file (FILE *module_file)
 	  continue;
 	}
 
-      /* Break line into words on whitespace */
       i = 0;
       while (1)
 	{

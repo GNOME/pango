@@ -21,6 +21,7 @@
 
 #include <stdio.h>
 #include <glib.h>
+#include <pango/pango-font.h>
 
 char    *pango_trim_string     (const char *str);
 char **  pango_split_file_list (const char *str);

@@ -149,6 +149,10 @@ void               pango_attr_list_insert_before (PangoAttrList  *list,
 						  PangoAttribute *attr);
 void               pango_attr_list_change        (PangoAttrList  *list,
 						  PangoAttribute *attr);
+void               pango_attr_list_splice        (PangoAttrList  *list,
+						  PangoAttrList  *other,
+						  gint            pos,
+						  gint            len);
 PangoAttrIterator *pango_attr_list_get_iterator  (PangoAttrList  *list);
 
 void               pango_attr_iterator_range    (PangoAttrIterator     *iterator,
