@@ -41,8 +41,12 @@ void	       pango_context_add_font_map (PangoContext           *context,
 					   PangoFontMap           *font_map);
 
 void           pango_context_list_fonts   (PangoContext           *context,
+					   const char             *family,
 					   PangoFontDescription ***descs,
 					   int                    *n_descs);
+void           pango_context_list_families (PangoContext          *context,
+					    gchar              ***families,
+					    int                   *n_families);
 PangoFont *    pango_context_load_font    (PangoContext           *context,
 					   PangoFontDescription   *desc,
 					   gdouble                 size);

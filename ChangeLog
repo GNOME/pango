@@ -1,3 +1,13 @@
+Thu Feb 10 19:57:27 2000  Owen Taylor  <otaylor@redhat.com>
+
+	* examples/viewer.c: Add style selector, rewrite family
+	  selector to use list_families().
+
+	* libpango/pango-context.[ch] libpango/pango-font.h libpango/pangox.c
+	  libpango/fonts.c: Add calls to list families, modify list_fonts()
+	  call to take an optional "family" parameter for the purpose of
+	  listing the fonts within a family. 
+
 Wed Feb  9 14:04:35 2000  Owen Taylor  <otaylor@redhat.com>
 
 	* TODO: updates.

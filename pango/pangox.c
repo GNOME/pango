@@ -155,15 +155,18 @@ const struct {
   { "condensed",     PANGO_STRETCH_CONDENSED },
 };
 
-static void       pango_x_font_map_destroy      (PangoFontMap           *fontmap);
-static PangoFont *pango_x_font_map_load_font    (PangoFontMap           *fontmap,
-						 PangoFontDescription   *desc,
-						 double                  size);
-static void       pango_x_font_map_list_fonts   (PangoFontMap           *fontmap,
-						 PangoFontDescription ***descs,
-						 int                    *n_descs);
-static void       pango_x_font_map_read_aliases (PangoXFontMap          *xfontmap);
-
+static void       pango_x_font_map_destroy       (PangoFontMap           *fontmap);
+static PangoFont *pango_x_font_map_load_font     (PangoFontMap           *fontmap,
+						  PangoFontDescription   *desc,
+						  double                  size);
+static void       pango_x_font_map_list_fonts    (PangoFontMap           *fontmap,
+						  const gchar            *family,
+						  PangoFontDescription ***descs,
+						  int                    *n_descs);
+static void       pango_x_font_map_list_families (PangoFontMap           *fontmap,
+						  gchar                ***families,
+						  int                    *n_families);
+static void       pango_x_font_map_read_aliases  (PangoXFontMap          *xfontmap);
 
 static void                  pango_x_font_destroy      (PangoFont   *font);
 static PangoFontDescription *pango_x_font_describe     (PangoFont   *font);
@@ -210,7 +213,8 @@ PangoFontClass pango_x_font_class = {
 PangoFontMapClass pango_x_font_map_class = {
   pango_x_font_map_destroy,
   pango_x_font_map_load_font,
-  pango_x_font_map_list_fonts
+  pango_x_font_map_list_fonts,
+  pango_x_font_map_list_families
 };
 
 static PangoFontMap *
@@ -350,7 +354,6 @@ typedef struct
   PangoFontDescription **descs;
 } ListFontsInfo;
 
-
 static void
 list_fonts_foreach (gpointer key, gpointer value, gpointer user_data)
 {
@@ -370,6 +373,7 @@ list_fonts_foreach (gpointer key, gpointer value, gpointer user_data)
 
 static void
 pango_x_font_map_list_fonts (PangoFontMap           *fontmap,
+			     const gchar            *family,
 			     PangoFontDescription ***descs,
 			     int                    *n_descs)
 {
@@ -379,16 +383,84 @@ pango_x_font_map_list_fonts (PangoFontMap           *fontmap,
   if (!n_descs)
     return;
 
-  *n_descs = xfontmap->n_fonts;
-  if (!descs)
+  if (family)
+    {
+      PangoXFamilyEntry *entry = g_hash_table_lookup (xfontmap->families, family);
+      if (entry)
+	{
+	  *n_descs = g_slist_length (entry->font_entries);
+	  if (descs)
+	    {
+	      *descs = g_new (PangoFontDescription *, *n_descs);
+	      
+	      info.descs = *descs;
+	      info.n_found = 0;
+
+	      list_fonts_foreach ((gpointer)family, (gpointer)entry, &info);
+	    }
+	}
+      else
+	{
+	  *n_descs = 0;
+	  if (descs)
+	    *descs = NULL;
+	}
+    }
+  else
+    {
+      *n_descs = xfontmap->n_fonts;
+      if (descs)
+	{
+	  *descs = g_new (PangoFontDescription *, xfontmap->n_fonts);
+	  
+	  info.descs = *descs;
+	  info.n_found = 0;
+	  
+	  g_hash_table_foreach (xfontmap->families, list_fonts_foreach, &info);
+	}
+    }
+}
+
+static void
+list_families_foreach (gpointer key, gpointer value, gpointer user_data)
+{
+  GSList **list = user_data;
+
+  *list = g_slist_prepend (*list, key);
+}
+
+static void
+pango_x_font_map_list_families (PangoFontMap           *fontmap,
+				gchar                ***families,
+				int                    *n_families)
+{
+  GSList *family_list = NULL;
+  GSList *tmp_list;
+  PangoXFontMap *xfontmap = (PangoXFontMap *)fontmap;
+
+  if (!n_families)
     return;
 
-  *descs = g_new (PangoFontDescription *, xfontmap->n_fonts);
+  g_hash_table_foreach (xfontmap->families, list_families_foreach, &family_list);
 
-  info.descs = *descs;
-  info.n_found = 0;
+  *n_families = g_slist_length (family_list);
+
+  if (families)
+    {
+      int i = 0;
+	
+      *families = g_new (gchar *, *n_families);
+
+      tmp_list = family_list;
+      while (tmp_list)
+	{
+	  (*families)[i] = g_strdup (tmp_list->data);
+	  i++;
+	  tmp_list = tmp_list->next;
+	}
+    }
   
-  g_hash_table_foreach (xfontmap->families, list_fonts_foreach, &info);
+  g_slist_free (family_list);
 }
 
 /* Similar to GNU libc's getline, but buffer is g_malloc'd */

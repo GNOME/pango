@@ -63,6 +63,9 @@ Documentation
 General
 =======
 
+* pango_context_list_fonts does not properly suppress duplicates
+  when multiple font maps are involved
+
 * Report errors from functions, these errors include such things.
 
   - Invalid string

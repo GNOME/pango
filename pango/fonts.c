@@ -290,20 +290,62 @@ pango_font_map_load_font  (PangoFontMap         *fontmap,
 /**
  * pango_font_map_list_fonts:
  * @fontmap: a #PangoFontMap
+ * @family: the family for which to list the fonts, or %NULL
+ *          to list fonts in all families.
  * @descs: location to store a pointer to an array of pointers to
  *         #PangoFontDescription. This array should be freed
  *         with pango_font_descriptions_free().
  * @n_descs: location to store the number of elements in @descs
  * 
- * List all fonts in a fontmap.
+ * List all fonts in a fontmap, or the fonts in a particular family.
  **/
 void
 pango_font_map_list_fonts (PangoFontMap           *fontmap,
+			   const char             *family,
 			   PangoFontDescription ***descs,
 			   int                    *n_descs)
 {
   g_return_if_fail (fontmap != NULL);
 
-  fontmap->klass->list_fonts (fontmap, descs, n_descs);
+  fontmap->klass->list_fonts (fontmap, family, descs, n_descs);
 }
 
+/**
+ * pango_font_map_list_families:
+ * @fontmap: a #PangoFontMap
+ * @families: location to store a pointer to an array of strings.
+ *            This array should be freed with pango_font_map_free_families().
+ * @n_families: location to store the number of elements in @descs
+ * 
+ * List all families for a fontmap. 
+ **/
+void
+pango_font_map_list_families (PangoFontMap   *fontmap,
+			      gchar        ***families,
+			      int            *n_families)
+{
+  g_return_if_fail (fontmap != NULL);
+
+  fontmap->klass->list_families (fontmap, families, n_families);
+}
+
+/**
+ * pango_font_map_free_families:
+ * @families: a list of families
+ * @n_families: number of elements in @families
+ * 
+ * Free a list of families returned from pango_font_map_list_families()
+ **/
+void
+pango_font_map_free_families (gchar       **families,
+			      int           n_families)
+{
+  int i;
+  
+  g_return_if_fail (n_families == 0 || families != NULL);
+
+  for (i=0; i<n_families; i++)
+    g_free (families[i]);
+
+  g_free (families);
+}

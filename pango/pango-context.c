@@ -125,6 +125,7 @@ pango_context_add_font_map (PangoContext *context,
  **/
 void
 pango_context_list_fonts (PangoContext           *context,
+			  const char             *family,
 			  PangoFontDescription ***descs,
 			  int                    *n_descs)
 {
@@ -133,21 +134,24 @@ pango_context_list_fonts (PangoContext           *context,
   g_return_if_fail (context != NULL);
   g_return_if_fail (descs == NULL || n_descs != NULL);
 
-  if (n_descs == NULL)
+  if (n_descs == 0)
     return;
   
   n_maps = g_slist_length (context->font_maps);
   
   if (n_maps == 0)
     {
-      if (n_descs)
-	*n_descs = 0;
+      *n_descs = 0;
+      if (descs)
+	*descs = NULL;
       return;
     }
   else if (n_maps == 1)
-    pango_font_map_list_fonts (context->font_maps->data, descs, n_descs);
+    pango_font_map_list_fonts (context->font_maps->data, family, descs, n_descs);
   else
     {
+      /* FIXME: This does not properly suppress duplicate fonts! */
+      
       PangoFontDescription ***tmp_descs;
       int *tmp_n_descs;
       int total_n_descs = 0;
@@ -162,7 +166,7 @@ pango_context_list_fonts (PangoContext           *context,
       tmp_list = context->font_maps;
       for (i = 0; i<n_maps; i++)
 	{
-	  pango_font_map_list_fonts (tmp_list->data, &tmp_descs[i], &tmp_n_descs[i]);
+	  pango_font_map_list_fonts (tmp_list->data, family, &tmp_descs[i], &tmp_n_descs[i]);
 	  *n_descs += tmp_n_descs[i];
 
 	  tmp_list = tmp_list->next;
@@ -188,6 +192,107 @@ pango_context_list_fonts (PangoContext           *context,
 	  
       g_free (tmp_descs);
       g_free (tmp_n_descs);
+    }
+}
+
+typedef struct
+{
+  int n_found;
+  char **families;
+} ListFamiliesInfo;
+
+static void
+list_families_foreach (gpointer key, gpointer value, gpointer user_data)
+{
+  ListFamiliesInfo *info = user_data;
+
+  if (info->families)
+    info->families[info->n_found++] = value;
+
+  g_free (value);
+}
+
+/**
+ * pango_context_list_families:
+ * @fontmap: a #PangoContext
+ * @families: location to store a pointer to an array of strings.
+ *            This array should be freed with pango_font_map_free_families().
+ * @n_families: location to store the number of elements in @descs
+ * 
+ * List all families for a context.
+ **/
+void
+pango_context_list_families (PangoContext          *context,
+			     gchar              ***families,
+			     int                  *n_families)
+{
+  int n_maps;
+  
+  g_return_if_fail (context != NULL);
+  g_return_if_fail (families == NULL || n_families != NULL);
+
+  if (n_families == NULL)
+    return;
+  
+  n_maps = g_slist_length (context->font_maps);
+  
+  if (n_maps == 0)
+    {
+      *n_families = 0;
+      if (families)
+	*families = NULL;
+      
+      return;
+    }
+  else if (n_maps == 1)
+    pango_font_map_list_families (context->font_maps->data, families, n_families);
+  else
+    {
+      GHashTable *family_hash;
+      GSList *tmp_list;
+      ListFamiliesInfo info;
+
+      *n_families = 0;
+
+      family_hash = g_hash_table_new (g_str_hash, g_str_equal);
+
+      tmp_list = context->font_maps;
+      while (tmp_list)
+	{
+	  char **tmp_families;
+	  int tmp_n_families;
+	  int i;
+	  
+	  pango_font_map_list_families (tmp_list->data, &tmp_families, &tmp_n_families);
+
+	  for (i=0; i<*n_families; i++)
+	    {
+	      if (!g_hash_table_lookup (family_hash, tmp_families[i]))
+		{
+		  char *family = g_strdup (tmp_families[i]);
+		  
+		  g_hash_table_insert (family_hash, family, family);
+		  (*n_families)++;
+		}
+	    }
+	  
+	  pango_font_map_free_families (tmp_families, tmp_n_families);
+
+	  tmp_list = tmp_list->next;
+	}
+
+      info.n_found = 0;
+
+      if (families)
+	{
+	  *families = g_new (char *, *n_families);
+	  info.families = *families;
+	}
+      else
+	info.families = NULL;
+	  
+      g_hash_table_foreach (family_hash, list_families_foreach, &info);
+      g_hash_table_destroy (family_hash);
     }
 }
 

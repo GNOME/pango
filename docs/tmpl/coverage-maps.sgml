@@ -20,7 +20,7 @@ to represent that information.
 <!-- ##### ENUM PangoCoverageLevel ##### -->
 <para>
 Used to indicate how well a font can represent a particular ISO 10646
-character point.
+character point for a particular scrpt.
 </para>
 
 @PANGO_COVERAGE_NONE: The character is not representable with the font.
@@ -29,10 +29,10 @@ character point.
                           For instance, a Hangul character represented as a
                           a sequence of Jamos, or a Latin transliteration of
                           a Cyrillic word.
-@PANGO_COVERAGE_APPROXIMATE: The character is represented as the correct graphical
-                             form but not in the ideal fashion.
-@PANGO_COVERAGE_EXACT: The character is represented as the correct graphical form,
-                       in an attractive manner.
+@PANGO_COVERAGE_APPROXIMATE: The character is represented as basically the correct
+                             graphical form, but with a stylistic variant inappropriate for
+                             the current script.
+@PANGO_COVERAGE_EXACT: The character is represented as the correct graphical form.
 
 <!-- ##### STRUCT PangoCoverage ##### -->
 <para>

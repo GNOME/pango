@@ -66,10 +66,15 @@ static PangoFont *font = NULL;
 static Paragraph *highlight_para;
 static int highlight_offset;
 
+GtkWidget *styles_combo;
+
 static GtkWidget *message_label;
 GtkWidget *layout;
 
 PangoContext *context;
+
+static void fill_styles_combo (GtkWidget *combo);
+static void font_description_from_string (PangoFontDescription *desc, const char *name);
 
 /* Read an entire file into a string
  */
@@ -818,6 +823,17 @@ void
 set_family (GtkWidget *entry, gpointer data)
 {
   font_description.family_name = gtk_editable_get_chars (GTK_EDITABLE (entry), 0, -1);
+  fill_styles_combo (styles_combo);
+}
+
+void
+set_style (GtkWidget *entry, gpointer data)
+{
+  char *str = gtk_editable_get_chars (GTK_EDITABLE (entry), 0, -1);
+  
+  font_description_from_string (&font_description, str);
+  g_free (str);
+  
   reload_font ();
 }
 
@@ -828,32 +844,233 @@ font_size_changed (GtkAdjustment *adj)
   reload_font();
 }
 
+typedef struct
+{
+  int value;
+  const char *str;
+} FieldMap;
+
+FieldMap style_map[] = {
+  { PANGO_STYLE_NORMAL, NULL },
+  { PANGO_STYLE_OBLIQUE, "Oblique" },
+  { PANGO_STYLE_ITALIC, "Italic" }
+};
+
+FieldMap variant_map[] = {
+  { PANGO_VARIANT_NORMAL, NULL },
+  { PANGO_VARIANT_SMALL_CAPS, "Small-Caps" }
+};
+
+FieldMap weight_map[] = {
+  { 300, "Light" },
+  { PANGO_WEIGHT_NORMAL, NULL },
+  { 500, "Medium" },
+  { 600, "Semi-Bold" },
+  { PANGO_WEIGHT_BOLD, "Bold" }
+};
+
+FieldMap stretch_map[] = {
+  { PANGO_STRETCH_ULTRA_CONDENSED, "Ultra-Condensed" },
+  { PANGO_STRETCH_EXTRA_CONDENSED, "Extra-Condensed" },
+  { PANGO_STRETCH_CONDENSED,       "Condensed" },
+  { PANGO_STRETCH_SEMI_CONDENSED,  "Semi-Condensed" },
+  { PANGO_STRETCH_NORMAL,          NULL },
+  { PANGO_STRETCH_SEMI_EXPANDED,   "Semi-Expanded" },
+  { PANGO_STRETCH_EXPANDED,        "Expanded" },
+  { PANGO_STRETCH_EXTRA_EXPANDED,  "Extra-Expanded" },
+  { PANGO_STRETCH_ULTRA_EXPANDED,  "Ultra-Expanded" }
+};
+
+static void
+append_field (GString *str, FieldMap *map, int n_elements, int val)
+{
+  int i;
+  for (i=0; i<n_elements; i++)
+    {
+      if (map[i].value == val)
+	{
+	  if (map[i].str)
+	    {
+	      if (str->len != 0)
+		g_string_append_c (str, ' ');
+	      g_string_append (str, map[i].str);
+	    }
+	  return;
+	}
+    }
+  
+  if (str->len != 0)
+    g_string_append_c (str, ' ');
+  g_string_sprintfa (str, "%d", val);
+}
+
+static char *
+font_description_to_string (PangoFontDescription *desc)
+{
+  GString *result = g_string_new (NULL);
+  gchar *str;
+
+  append_field (result, style_map, G_N_ELEMENTS (style_map), desc->style);
+  append_field (result, variant_map, G_N_ELEMENTS (variant_map), desc->variant);
+  append_field (result, weight_map, G_N_ELEMENTS (weight_map), desc->weight);
+  append_field (result, stretch_map, G_N_ELEMENTS (stretch_map), desc->stretch);
+
+  if (result->len == 0)
+    g_string_append (result, "Normal");
+  
+  str = result->str;
+  g_string_free (result, FALSE);
+  return str;
+}
+
+static gboolean
+find_field (FieldMap *map, int n_elements, gchar *str, int *val)
+{
+  int i;
+  
+  for (i=0; i<n_elements; i++)
+    {
+      if (map[i].str && strcasecmp (map[i].str, str) == 0)
+	{
+	  *val = map[i].value;
+	  return TRUE;
+	}
+    }
+
+  return FALSE;
+}
+
+static void
+font_description_from_string (PangoFontDescription *desc, const char *name)
+{
+  gchar **words;
+  int i;
+
+  desc->style = PANGO_STYLE_NORMAL;
+  desc->variant = PANGO_VARIANT_NORMAL;
+  desc->weight = PANGO_WEIGHT_NORMAL;
+  desc->stretch = PANGO_STRETCH_NORMAL;
+  
+  words = g_strsplit (name, " ", -1);
+  for (i=0; words[i]; i++)
+    {
+      if (!(find_field (style_map, G_N_ELEMENTS (style_map), words[i], (int *)&desc->style) ||
+	    find_field (variant_map, G_N_ELEMENTS (variant_map), words[i], (int *)&desc->variant) ||
+	    find_field (weight_map, G_N_ELEMENTS (weight_map), words[i], (int *)&desc->weight) || 
+	    find_field (stretch_map, G_N_ELEMENTS (stretch_map), words[i], (int *)&desc->stretch)))
+	g_warning ("Unknown style modifier '%s'\n", words[i]);
+    }
+
+  g_strfreev (words);
+}
+
+static int
+compare_font_descriptions (const PangoFontDescription *a, const PangoFontDescription *b)
+{
+  int val = strcmp (a->family_name, b->family_name);
+  if (val != 0)
+    return val;
+
+  if (a->style != b->style)
+    return a->style - b->style;
+  
+  if (a->variant != b->variant)
+    return a->variant - b->variant;
+
+  if (a->weight != b->weight)
+    return a->weight - b->weight;
+
+  if (a->stretch != b->stretch)
+    return a->stretch - b->stretch;
+
+  return 0;
+}
+
+static int
+font_description_sort_func (const PangoFontDescription **a, const PangoFontDescription **b)
+{
+  return compare_font_descriptions (*a, *b);
+}
+
+typedef struct 
+{
+  PangoFontDescription **descs;
+  int n_descs;
+} FontDescInfo;
+
+static void
+free_info (FontDescInfo *info)
+{
+  pango_font_descriptions_free (info->descs, info->n_descs);
+}
+
+static void
+fill_styles_combo (GtkWidget *combo)
+{
+  int i;
+  GList *style_list = NULL;
+  
+  FontDescInfo *info = g_new (FontDescInfo, 1);
+  pango_context_list_fonts (context, font_description.family_name, &info->descs, &info->n_descs);
+  gtk_object_set_data_full (GTK_OBJECT (combo), "descs", info, (GtkDestroyNotify)free_info);
+
+  qsort (info->descs, info->n_descs, sizeof(PangoFontDescription *), font_description_sort_func);
+
+  for (i=0; i<info->n_descs; i++)
+    {
+      char *str = font_description_to_string (info->descs[i]);
+      style_list = g_list_prepend (style_list, str);
+    }
+
+  style_list = g_list_reverse (style_list);
+
+  gtk_combo_set_popdown_strings (GTK_COMBO (combo), style_list);
+  g_list_foreach (style_list, (GFunc)g_free, NULL);
+}
+
+static GtkWidget *
+make_styles_combo ()
+{
+  GtkWidget *combo;
+
+  combo = gtk_combo_new ();
+  gtk_combo_set_value_in_list (GTK_COMBO (combo), TRUE, FALSE);
+  gtk_editable_set_editable (GTK_EDITABLE (GTK_COMBO (combo)->entry), FALSE);
+
+  gtk_signal_connect (GTK_OBJECT (GTK_COMBO (combo)->entry), "changed",
+		      GTK_SIGNAL_FUNC (set_style), NULL);
+
+  styles_combo = combo;
+  fill_styles_combo (combo);
+  
+  return combo;
+}
+
+int
+cmp_strings (const void *a, const void *b)
+{
+  return strcmp (*(const char **)a, *(const char **)b);
+}
+
 GtkWidget *
 make_families_menu ()
 {
   GtkWidget *combo;
-  GHashTable *families_hash = g_hash_table_new (g_str_hash, g_str_equal);
-  GList *families = NULL;
+  gchar **families;
+  int n_families;
+  GList *family_list = NULL;
   int i;
   
-  PangoFontDescription **descs;
-  int n_descs;
+  pango_context_list_families (context, &families, &n_families);
+  qsort (families, n_families, sizeof(char *), cmp_strings);
 
-  pango_context_list_fonts (context, &descs, &n_descs);
+  for (i=0; i<n_families; i++)
+    family_list = g_list_prepend (family_list, families[i]);
 
-  for (i=0; i<n_descs; i++)
-    {
-      if (!g_hash_table_lookup (families_hash, descs[i]->family_name))
-	{
-	  g_hash_table_insert (families_hash, descs[i]->family_name, descs[i]);
-	  families = g_list_prepend (families, descs[i]->family_name);
-	}
-    }
-
-  families = g_list_sort (families, (GCompareFunc)strcmp);
+  family_list = g_list_reverse (family_list);
   
   combo = gtk_combo_new ();
-  gtk_combo_set_popdown_strings (GTK_COMBO (combo), families);
+  gtk_combo_set_popdown_strings (GTK_COMBO (combo), family_list);
   gtk_combo_set_value_in_list (GTK_COMBO (combo), TRUE, FALSE);
   gtk_editable_set_editable (GTK_EDITABLE (GTK_COMBO (combo)->entry), FALSE);
 
@@ -862,10 +1079,8 @@ make_families_menu ()
   gtk_signal_connect (GTK_OBJECT (GTK_COMBO (combo)->entry), "changed",
 		      GTK_SIGNAL_FUNC (set_family), NULL);
   
-  g_hash_table_destroy (families_hash);
-  g_list_free (families);
-  
-  pango_font_descriptions_free (descs, n_descs);
+  g_list_free (family_list);
+  pango_font_map_free_families (families, n_families);
 
   return combo;
 }
@@ -887,6 +1102,14 @@ make_font_selector (void)
   label = gtk_label_new ("Family:");
   gtk_box_pack_start (GTK_BOX (util_hbox), label, FALSE, FALSE, 0);
   option_menu = make_families_menu ();
+  gtk_box_pack_start (GTK_BOX (util_hbox), option_menu, FALSE, FALSE, 0);
+  
+  gtk_box_pack_start (GTK_BOX (hbox), util_hbox, FALSE, FALSE, 0);
+
+  util_hbox = gtk_hbox_new (FALSE, 2);
+  label = gtk_label_new ("Style:");
+  gtk_box_pack_start (GTK_BOX (util_hbox), label, FALSE, FALSE, 0);
+  option_menu = make_styles_combo ();
   gtk_box_pack_start (GTK_BOX (util_hbox), option_menu, FALSE, FALSE, 0);
   
   gtk_box_pack_start (GTK_BOX (hbox), util_hbox, FALSE, FALSE, 0);
