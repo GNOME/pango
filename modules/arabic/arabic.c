@@ -9,7 +9,7 @@
 #include <stdio.h>
 #include <glib.h>
 #include <string.h>
-#include "pango.h"
+#include "pango-engine.h"
 #include "pangox.h"
 
 #include "arconv.h" 

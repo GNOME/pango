@@ -7,9 +7,10 @@
 
 #include <stdio.h>
 #include <glib.h>
-#include "pango.h"
 #include "pangox.h"
 #include "taconv.h"
+#include "pango-engine.h"
+#include <string.h>
 
 static PangoEngineRange tamil_range[] = {
   { 0x0b80, 0x0bff, "*" },

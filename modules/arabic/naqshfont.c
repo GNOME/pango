@@ -9,7 +9,6 @@
 
 #include <stdio.h>
 #include <glib.h>
-#include "pango.h"
 #include "pangox.h"
 
 /*  #define DEBUG    */

@@ -104,11 +104,11 @@ pangoinclude_HEADERS = 	   \
 	$(pango_headers)   \
 	$(pango_built_headers)
 
-pango-enum-types.h: $(pango_headers) makeenums.pl
-	makeenums.pl include $(pango_headers) > pango-enum-types.h
+pango-enum-types.h: @REBUILD@ $(pango_headers) makeenums.pl
+	$(PERL)	./makeenums.pl include $(pango_headers) > pango-enum-types.h
 
-pango-enum-types.c: $(pango_headers) makeenums.pl
-	makeenums.pl cfile $(pango_headers) > pango-enum-types.c
+pango-enum-types.c: @REBUILD@ $(pango_headers) makeenums.pl
+	$(PERL) ./makeenums.pl cfile $(pango_headers) > pango-enum-types.c
 
 #
 # As a temporary hack, we pull in libpangox here so that we can link
@@ -122,6 +122,7 @@ pango_querymodules_LDADD = libpangox.la libpango.la $(GLIB_LIBS) $(FRIBIDI_LIBS)
 endif
 
 EXTRA_DIST =			\
+	$(pango_built_headers)	\
 	makeenums.pl		\
 	module-defs.c.win32	\
 	pango.def		\

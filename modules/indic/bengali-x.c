@@ -41,9 +41,9 @@
 #include <glib.h>
 #include <stdio.h>
 
-#include "pango.h"
 #include "pangox.h"
 #include "pango-indic.h"
+#include "pango-engine.h"
 
 #define SCRIPT_STRING "Bengali"
 #define ISCII_BASED

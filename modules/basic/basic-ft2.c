@@ -21,7 +21,7 @@
 
 #include <glib.h>
 
-#include "pango.h"
+#include "pango-layout.h"
 #include "pangoft2.h"
 #include "pango-utils.h"
 

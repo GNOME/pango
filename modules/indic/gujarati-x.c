@@ -26,7 +26,6 @@
 #include <glib.h>
 #include <stdio.h>
 
-#include "pango.h"
 #include "pangox.h"
 
 #define RANGE_START 0xA80
@@ -37,6 +36,7 @@
 
 #include "pango-indic.h"
 #include "pango-indic-script.h"
+#include "pango-engine.h"
 
 static gboolean is_prefixing_vowel (gunichar i);
 static gboolean is_vowel_sign (gunichar i);

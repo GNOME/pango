@@ -20,7 +20,6 @@
  */
 
 #include <glib.h>
-#include "pango.h"
 #include "pangowin32.h"
 #include "pango-utils.h"
 

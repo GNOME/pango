@@ -38,8 +38,8 @@
 #include <glib.h>
 #include <stdio.h>
 
-#include "pango.h"
 #include "pangox.h"
+#include "pango-engine.h"
 
 #define RANGE_START 0x900
 #define RANGE_SIZE 0x80

@@ -6,7 +6,6 @@
  */
 #ifndef __lboxfont_h_
 #define __lboxfont_h_
-#include "pango.h"
 #include "pangox.h"
 #include "arconv.h"
 

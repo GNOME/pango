@@ -6,7 +6,6 @@
  */
 #ifndef __nqfont_h_
 #define __nqfont_h_
-#include "pango.h"
 #include "pangox.h"
 #include "arconv.h"
 

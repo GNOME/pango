@@ -36,9 +36,9 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "pango.h"
 #include "pangox.h"
 #include "pango-indic.h"
+#include "pango-engine.h"
 
 #define RANGE_START 0x1000
 #define RANGE_SIZE 0x80

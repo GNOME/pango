@@ -1,3 +1,18 @@
+2000-12-18  Havoc Pennington  <hp@redhat.com> 
+
+        Fix build breakage, reported by Alex Larsson and Yasushi Shoji
+	
+	* pango/pangox.h: don't include pango.h, just individual headers
+
+	* configure.in: check for perl, add --disable-rebuilds configure
+	option, automatically disable rebuilds if no perl
+	
+	* pango/Makefile.am: use located perl to run makeenums.pl, 
+	and don't try to rebuild if we did --disable-rebuilds
+	(EXTRA_DIST): add built headers
+
+        * modules/*/*.[hc]: don't include pango.h, include specific headers
+	
 2000-12-15  Havoc Pennington  <hp@pobox.com>
 
 	* pango/pango-glyph.h: move pango_shape and pango_reorder_items in

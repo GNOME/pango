@@ -9,7 +9,6 @@
 #define __arconv_h_
 
 #include <glib.h>
-#include "pango.h"
 #include "pangox.h"
 
 /*

@@ -31,8 +31,8 @@
 
 #include <glib.h>
 #include <string.h>
-#include "pango.h"
 #include "pangox.h"
+#include "pango-engine.h"
 
 #define ucs2tis(wc)		(unsigned int)((unsigned int)(wc) - 0x0E00 + 0xA0)
 #define tis2uni(c)		((gunichar)(c) - 0xA0 + 0x0E00)

@@ -6,7 +6,7 @@
  */
 #ifndef __mulefont_h_
 #define __mulefont_h_
-#include "pango.h"
+#include "pango-layout.h"
 #include "pangox.h"
 #include "arconv.h"
 

@@ -21,8 +21,8 @@
 
 #include <glib.h>
 #include <string.h>
-#include "pango.h"
 #include "pangox.h"
+#include "pango-engine.h"
 #include "pango-utils.h"
 
 typedef struct _CharRange CharRange;
