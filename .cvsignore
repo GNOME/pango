@@ -2,8 +2,10 @@ configure
 config.h
 config.h.in
 config.cache
+config.guess
 config.log
 config.status
+config.sub
 pango.pc
 pangox.pc
 pangoxft.pc
@@ -12,7 +14,10 @@ pango.spec
 pango-config
 stamp-h
 libtool
+ltconfig
+ltmain.sh
 Makefile
 Makefile.in
 aclocal.m4
+sgml
 stamp-h.in
