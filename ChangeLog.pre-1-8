@@ -1,3 +1,9 @@
+Tue Dec 14 17:27:14 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* modules/indic/indic-ot-class-tables.c (guruCharClasses): 
+	Add the correct char classes for Unicode-4.0 characters
+	U+A01, U+A03. (#158943, Sukhjinder Sidhu)
+
 2004-12-14  Matthias Clasen  <mclasen@redhat.com>
 
 	* pango.pc.in: Require gmodule-no-export
