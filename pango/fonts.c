@@ -95,13 +95,12 @@ void
 pango_font_description_set_family (PangoFontDescription *desc,
 				   const char           *family)
 {
+  gchar *old_family = NULL;
+	
   g_return_if_fail (desc != NULL);
 
-  if (desc->family_name == family)
-    return;
-  
   if (desc->family_name && !desc->static_family)
-    g_free (desc->family_name);
+    old_family = desc->family_name;
 
   if (family)
     {
@@ -114,6 +113,9 @@ pango_font_description_set_family (PangoFontDescription *desc,
       desc->family_name = NULL;
       desc->mask &= ~PANGO_FONT_MASK_FAMILY;
     }
+
+  if (old_family)
+    g_free (desc->family_name);
 }
 
 /**

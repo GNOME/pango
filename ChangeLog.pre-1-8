@@ -1,3 +1,12 @@
+Tue Apr 15 05:34:05 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/fonts.c (pango_font_description_set_family):
+	Switch around the code so that 
+	pango_font_description_set_family (desc,
+	  pango_font_description_set_family (desc))
+        in the case where desc->static_family is TRUE.
+	(#106964, Morten Welinder)
+
 Tue Apr 15 05:13:56 2003  Owen Taylor  <otaylor@redhat.com>
 
 	* configure.in: Avoid complex quoting mess that
