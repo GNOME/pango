@@ -542,7 +542,7 @@ pango_xft_font_get_coverage (PangoFont     *font,
   Display *display;
   FcChar32  map[FC_CHARSET_MAP_SIZE];
   FcChar32  ucs4, pos;
-  XftFont *xft_font;
+  FcCharSet *charset;
   int i;
   
   _pango_xft_font_map_get_info (xfont->fontmap, &display, NULL);
@@ -554,29 +554,29 @@ pango_xft_font_get_coverage (PangoFont     *font,
   if (coverage)
     return pango_coverage_ref (coverage);
 
+  FcPatternGetCharSet (xfont->font_pattern, FC_CHARSET, 0, &charset);
+  
   coverage = pango_coverage_new ();
-  xft_font = pango_xft_font_get_font (font);
-  for (ucs4 = FcCharSetFirstPage (xft_font->charset, map, &pos);
+  for (ucs4 = FcCharSetFirstPage (charset, map, &pos);
        ucs4 != FC_CHARSET_DONE;
-       ucs4 = FcCharSetNextPage (xft_font->charset, map, &pos))
-  {
-    for (i = 0; i < FC_CHARSET_MAP_SIZE; i++)
+       ucs4 = FcCharSetNextPage (charset, map, &pos))
     {
-      FcChar32  bits = map[i];
-      FcChar32  base = ucs4 + i * 32;
-      int b = 0;
-      bits = map[i];
-      while (bits)
-      {
-	if (bits & 1)
+      for (i = 0; i < FC_CHARSET_MAP_SIZE; i++)
 	{
-	  pango_coverage_set (coverage, base + b, PANGO_COVERAGE_EXACT);
+	  FcChar32  bits = map[i];
+	  FcChar32  base = ucs4 + i * 32;
+	  int b = 0;
+	  bits = map[i];
+	  while (bits)
+	    {
+	      if (bits & 1)
+		pango_coverage_set (coverage, base + b, PANGO_COVERAGE_EXACT);
+
+	      bits >>= 1;
+	      b++;
+	    }
 	}
-	bits >>= 1;
-	b++;
-      }
     }
-  }
 
   _pango_xft_font_map_set_coverage (xfont->fontmap, filename, coverage);
  

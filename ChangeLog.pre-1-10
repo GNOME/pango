@@ -1,3 +1,9 @@
+Mon Jun  3 22:16:35 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pangoxft-font.c (pango_xft_font_get_coverage): 
+	Don't open the font unecessarily, we already have 
+	the FcCharSet.
+
 Mon Jun  3 18:56:09 2002  Owen Taylor  <otaylor@redhat.com>
 
 	Xft2 and fontconfig conversion, based largely on a patch
