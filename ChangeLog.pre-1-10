@@ -1,3 +1,19 @@
+2001-02-12  Havoc Pennington  <hp@redhat.com>
+
+	* pango/pango-attributes.c (pango_attr_list_insert_internal):
+	properly update the tail of the list
+	(pango_attr_list_change): flip order of tmp_list2 =
+	tmp_list2->next and prev2 = tmp_list2 to avoid setting 
+	prev2 and tmp_list2 to the same value thus creating a 
+	mangled list.
+ 
+	* pango/pango-layout.c (pango_layout_xy_to_index): When returning
+	FALSE, set the index/trailing to the nearest location, instead 
+	of setting them to 0.
+	(pango_layout_line_x_to_index): Fix a bug where line->start_index
+	wasn't used. Return boolean for whether we had to clamp the
+	value to get an index.
+
 Mon Feb 12 15:01:38 2001  Owen Taylor  <otaylor@redhat.com>
 
 	* configure.in (gtk_doc_min_version): Add check for

@@ -168,7 +168,7 @@ GSList *         pango_layout_get_lines            (PangoLayout    *layout);
 
 void     pango_layout_line_ref          (PangoLayoutLine  *line);
 void     pango_layout_line_unref        (PangoLayoutLine  *line);
-void     pango_layout_line_x_to_index   (PangoLayoutLine  *line,
+gboolean pango_layout_line_x_to_index   (PangoLayoutLine  *line,
 					 int               x_pos,
 					 int              *index,
 					 int              *trailing);

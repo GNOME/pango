@@ -1231,9 +1231,13 @@ pango_layout_move_cursor_visually (PangoLayout *layout,
  *             0 represents the trailing edge of the cluster.
  *
  * Convert from X and Y position within a layout to the byte 
- * offset to the character at that logical position.
- * 
- * Return value: TRUE if the position was within the layout
+ * index to the character at that logical position. If the
+ * position is not inside the layout, the closest position is chosen
+ * (the x/y position will be clamped inside the layout).
+ * If a closest position is chosen, then the function returns %FALSE;
+ * on an exact hit, it returns %TRUE.
+ *
+ * Return value: %TRUE if the coordinates were inside text
  **/
 gboolean
 pango_layout_xy_to_index (PangoLayout *layout,
@@ -1243,11 +1247,19 @@ pango_layout_xy_to_index (PangoLayout *layout,
 			  gboolean    *trailing)
 {
   PangoLayoutIter *iter;
+  PangoLayoutLine *prev_line = NULL;
+  PangoLayoutLine *found = NULL;
+  int found_line_x = 0;
+  int prev_first = 0;
+  int prev_last = 0;
+  int prev_line_x = 0;
+  gboolean retval = FALSE;
+  gboolean outside = FALSE;
   
-  g_return_val_if_fail (layout != NULL, FALSE);
-
-  iter = pango_layout_get_iter (layout);  
-
+  g_return_val_if_fail (PANGO_IS_LAYOUT (layout), FALSE);
+  
+  iter = pango_layout_get_iter (layout);
+  
   do
     {
       PangoRectangle line_logical;
@@ -1255,21 +1267,59 @@ pango_layout_xy_to_index (PangoLayout *layout,
       
       pango_layout_iter_get_line_extents (iter, NULL, &line_logical);
       pango_layout_iter_get_line_yrange (iter, &first_y, &last_y);
-      
-      if (y >= first_y &&
-          y < last_y)
+
+      if (y < first_y)
         {
-          pango_layout_line_x_to_index (pango_layout_iter_get_line (iter),
-                                        x - line_logical.x,
-                                        index, trailing);
-          pango_layout_iter_free (iter);
-          return TRUE;
+          if (prev_line && y < (prev_last + (first_y - prev_last) / 2))
+            {
+              found = prev_line;
+              found_line_x = prev_line_x;
+            }
+          else
+            {
+              if (prev_line == NULL)
+                outside = TRUE; /* off the top */
+              
+              found = pango_layout_iter_get_line (iter);
+              found_line_x = x - line_logical.x;
+            }
         }
+      else if (y >= first_y &&
+               y < last_y)
+        {
+          found = pango_layout_iter_get_line (iter);
+          found_line_x = x - line_logical.x;
+        }
+
+      prev_line = pango_layout_iter_get_line (iter);
+      prev_first = first_y;
+      prev_last = last_y;
+      prev_line_x = x - line_logical.x;
+
+      if (found != NULL)
+        break;
     }
   while (pango_layout_iter_next_line (iter));
-
+  
   pango_layout_iter_free (iter);
-  return FALSE;
+
+  if (found == NULL)
+    {
+      /* Off the bottom of the layout */
+      outside = TRUE;
+      
+      found = prev_line;
+      found_line_x = prev_line_x;
+    }
+  
+  retval = pango_layout_line_x_to_index (found,
+                                         found_line_x,
+                                         index, trailing);
+
+  if (outside)
+    retval = FALSE;
+
+  return retval;
 }
 
 /**
@@ -2761,12 +2811,12 @@ pango_layout_line_unref (PangoLayoutLine *line)
  *             0 represents the trailing edge of the cluster.
  *
  * Convert from x offset to the byte index of the corresponding
- * character within the text of the layout. If the @x_pos
- * is negative or greater than the length of the line, then
- * then the result will be 0, or the last index in the line
- * depending on the base direction of the layout.
+ * character within the text of the layout. If @x_pos is outside the line,
+ * the start or end of the line will be stored at @index.
+ *
+ * Return value: %FALSE if @x_pos was outside the line, %TRUE if inside
  */
-void
+gboolean
 pango_layout_line_x_to_index (PangoLayoutLine *line,
 			      int              x_pos,
 			      int             *index,
@@ -2774,26 +2824,23 @@ pango_layout_line_x_to_index (PangoLayoutLine *line,
 {
   GSList *tmp_list;
   gint start_pos = 0;
-  gint first_index = 0, last_index;
+  gint first_index = 0; /* line->start_index */
+  gint last_index;      /* last char in line */
+  gint end_index;       /* end iterator for line (one char past last_index) */
   PangoDirection base_dir;
   gboolean last_trailing;
 
-  g_return_if_fail (line != NULL);
-  g_return_if_fail (LINE_IS_VALID (line));
+  g_return_val_if_fail (line != NULL, FALSE);
+  g_return_val_if_fail (LINE_IS_VALID (line), FALSE);
 
   if (!LINE_IS_VALID (line))
-    return;
+    return FALSE;
 
   base_dir = pango_context_get_base_dir (line->layout->context);
 
   /* Find the last index in the line
    */
-  tmp_list = line->layout->lines;
-  while (tmp_list->data != line)
-    {
-      first_index += ((PangoLayoutLine *)tmp_list->data)->length;
-      tmp_list = tmp_list->next;
-    }
+  first_index = line->start_index;
 
   if (line->length == 0)
     {
@@ -2802,16 +2849,13 @@ pango_layout_line_x_to_index (PangoLayoutLine *line,
       if (trailing)
 	*trailing = 0;
       
-      return;
+      return FALSE;
     }
+
+  g_assert (line->length > 0);
   
-  if (line->length > 0)
-    {
-      last_index = first_index + line->length;
-      last_index = g_utf8_prev_char (line->layout->text + last_index) - line->layout->text;
-    }
-  else
-    last_index = first_index;	/* FIXME - does this make sense at all? */
+  end_index = first_index + line->length;
+  last_index = g_utf8_prev_char (line->layout->text + end_index) - line->layout->text;
 
   /* This is a HACK. If a program only keeps track if cursor (etc)
    * indices and not the trailing flag, then the trailing index of the
@@ -2820,16 +2864,22 @@ pango_layout_line_x_to_index (PangoLayoutLine *line,
    * positions with wrapped lines should distinguish leading and
    * trailing cursors.
    */
+  tmp_list = line->layout->lines;
+  while (tmp_list->data != line)
+    tmp_list = tmp_list->next;
+
   last_trailing = tmp_list->next ? 0 : 1;
   
   if (x_pos < 0)
     {
+      /* pick the leftmost char */
       if (index)
 	*index = (base_dir == PANGO_DIRECTION_LTR) ? first_index : last_index;
+      /* and its leftmost edge */
       if (trailing)
 	*trailing = (base_dir == PANGO_DIRECTION_LTR) ? 0 : last_trailing;
       
-      return;
+      return FALSE;
     }
 
   tmp_list = line->runs;
@@ -2868,17 +2918,22 @@ pango_layout_line_x_to_index (PangoLayoutLine *line,
 		*index += pos;
 	    }
 	  
-	  return;
+	  return TRUE;
 	}
 
       start_pos += logical_rect.width;
       tmp_list = tmp_list->next;
     }
 
+  /* pick the rightmost char */
   if (index)
     *index = (base_dir == PANGO_DIRECTION_LTR) ? last_index : first_index;
+
+  /* and its rightmost edge */
   if (trailing)
     *trailing = (base_dir == PANGO_DIRECTION_LTR) ? last_trailing : 0;
+
+  return FALSE;
 }
 
 /**

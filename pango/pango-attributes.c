@@ -803,6 +803,8 @@ pango_attr_list_insert_internal (PangoAttrList  *list,
 	   (!before && ((PangoAttribute *)list->attributes_tail->data)->start_index == start_index))
     {
       g_slist_append (list->attributes_tail, attr);
+      list->attributes_tail = list->attributes_tail->next;
+      g_assert (list->attributes_tail);
     }
   else
     {
@@ -992,6 +994,9 @@ pango_attr_list_change (PangoAttrList  *list,
    * tmp_list points to prev->next.
    */
 
+  g_assert (prev->data == attr);
+  g_assert (prev->next == tmp_list);
+  
   /* We now have the range inserted into the list one way or the
    * other. Fix up the remainder
    */
@@ -1043,8 +1048,8 @@ pango_attr_list_change (PangoAttrList  *list,
 		  if (tmp_attr2->start_index >= tmp_attr->start_index)
 		    break;
 
+                  prev2 = tmp_list2;
 		  tmp_list2 = tmp_list2->next;
-		  prev2 = tmp_list2;
 		}
 
 	      /* Now remove and insert before tmp_list2. We'll
