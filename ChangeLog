@@ -1,3 +1,24 @@
+2002-11-05  Changwoo Ryu  <cwryu@debian.org>
+
+	* modules/hangul/hangul-x.c: No more use of TFILL, the internal
+	trailing consonant filler.
+	(render_syllable_with_*): Appended empty syllable
+	(ex. LFILL+VFILL) rendering case (#96175).
+	(render_syllable_with_ksx1001johab): Renamed from
+	render_syllable_with_ksx1005(). (#95800).
+	(render_syllable_with_ksx1005): Fixed wrong fallback glyphs
+	indices (#95800).
+	(render_syllable_with_ksx1001johab): Checks whether a given L+V+T?
+	jamos are modern ones before rendering as a precomposed syllable
+	(#96179).
+
+2002-11-04  Changwoo Ryu  <cwryu@debian.org>
+
+	* modules/hangul/hangul-x.c: No more use of TFILL, the internal
+	trailing consonant filler.
+	(render_syllable_with_*): Appended empty syllable
+	(ex. LFILL + VFILL) rendering case (#96175).
+
 2002-10-24  Tor Lillqvist  <tml@iki.fi>
 
 	* modules/basic/basic-win32.c: Update the non-Uniscribe ranges to
