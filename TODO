@@ -13,26 +13,12 @@ string and produces lines of glyphs.
 * Add spacing parameter as illustrated; this should be a quick
   (10 minute) addition.
 
-* Although PangoLayout isn't intended to handle large amounts
-  of text, it should be able to handle embedded "\n" and simple
-  multiple paragraphs. This could be done entirely within 
-  pango_layout_check_lines()
-
 * pango_layout_context_changed() is a hack. Either the context
   should have change-notification, or else the layout should 
   make a copy of the context when the context is set.
 
 * optimize right alignment for width == -1 and only a single 
   line. (Currently this causes a useless call to gtk_layout_get_extents.)
-
-* There is currently a serious problem in that every attribute
-  causes items to be broken into separately shaped runs. That means
-  that selections can't be handled as background/foreground attributes.
- 
-  Since, for selections, you need to be able to select partial
-  glyphs, doing this any different would basically mean having to 
-  separate out these attributes from the rest of the attributes,
-  and handle them separately while rendering a layout.
 
 X rendering
 ===========
@@ -53,16 +39,9 @@ X rendering
   This probably means adding a attribute type which contains
   a PangoFont *, and overrides the description.
 
-* pangox.c needs to be split into at least two separate files.
-
-  (
-   Probably along the lines of 
-
-   1) font map
-   2) font 
-   3) rendering
-  )
-
+* we don't handle the case where the set of fonts on the server
+  changes, either for the cached list of fonts, or for for the
+  information cached on the PANGO_COVERAGE_WIN on the X server.
 
 Other rendering engines
 =======================
@@ -81,11 +60,6 @@ Engines
 
 Language Modules
 ================
-
- * It would be nice to have X based shapers for a few more scripts;
-   Hindi is one obvious need. (Actually, there may be a need for
-   a generic framework for Indic shapers to be developed. A
-   libpango-indic...)
 
  * Once we have a libart renderer, porting Raph's devanagari shaper
    to Pango and C (from Perl) would be a cool demo and test case.
@@ -147,9 +121,6 @@ General
   draws a placeholder character ... and does that in
   a way that always works.
 
-* Finish coverting over from utils.c to Tom Tromey's libunicode.
-  Add the remaining useful functions from utils.c into libunicode.
-
 * s/num_chars/n_chars/ etc. (Always use n_ as enumeration prefix)
 
 * Fix handling of 'trailing' in x_to_index() to handle clusters 
@@ -163,3 +134,5 @@ General
   define script tags and put those (optionally?) in the 
   interface?
 
+* pango_glyph_string_set_size() does not handle the fact that 
+  n_glyphs can be less than n_chars!

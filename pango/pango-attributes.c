@@ -548,6 +548,73 @@ pango_attr_rise_new (int rise)
   return pango_attr_int_new (&klass, (int)rise);
 }
 
+static PangoAttribute *
+pango_attr_shape_copy (const PangoAttribute *attr)
+{
+  const PangoAttrShape *shape_attr = (PangoAttrShape *)attr;
+  
+  return pango_attr_shape_new (&shape_attr->ink_rect, &shape_attr->logical_rect);
+}
+
+static void
+pango_attr_shape_destroy (PangoAttribute *attr)
+{
+  g_free (attr);
+}
+
+static gboolean
+pango_attr_shape_compare (const PangoAttribute *attr1,
+			  const PangoAttribute *attr2)
+{
+  const PangoAttrShape *shape_attr1 = (const PangoAttrShape *)attr1;
+  const PangoAttrShape *shape_attr2 = (const PangoAttrShape *)attr2;
+  
+  return (shape_attr1->logical_rect.x == shape_attr2->logical_rect.x &&
+	  shape_attr1->logical_rect.y == shape_attr2->logical_rect.y &&
+	  shape_attr1->logical_rect.width == shape_attr2->logical_rect.width &&
+	  shape_attr1->logical_rect.height == shape_attr2->logical_rect.height &&
+	  shape_attr1->ink_rect.x == shape_attr2->ink_rect.x &&
+	  shape_attr1->ink_rect.y == shape_attr2->ink_rect.y &&
+	  shape_attr1->ink_rect.width == shape_attr2->ink_rect.width &&
+	  shape_attr1->ink_rect.height == shape_attr2->ink_rect.height);
+}
+
+/**
+ * pango_attr_shape_new:
+ * @ink_rect:     ink rectangle to assign to each character
+ * @logical_rect: logical rectangle assign to each character
+ * 
+ * Create a new shape attribute. A shape is used to impose a
+ * particular ink and logical rect on the result of shaping a
+ * particular glyph. This might be used, for instance, for
+ * embedding a picture or a widget inside a PangoLayout.
+ * 
+ * Return value: the newly created attribute
+ **/
+PangoAttribute *
+pango_attr_shape_new (const PangoRectangle *ink_rect,
+		      const PangoRectangle *logical_rect)
+{
+  static const PangoAttrClass klass = {
+    PANGO_ATTR_SHAPE,
+    pango_attr_shape_copy,
+    pango_attr_shape_destroy,
+    pango_attr_shape_compare
+  };
+
+  PangoAttrShape *result;
+
+  g_return_val_if_fail (ink_rect != NULL, NULL);
+  g_return_val_if_fail (logical_rect != NULL, NULL);
+  
+  result = g_new (PangoAttrShape, 1);
+  result->attr.klass = &klass;
+  result->ink_rect = *ink_rect;
+  result->logical_rect = *logical_rect;
+
+  return (PangoAttribute *)result;
+}
+
 /**
  * pango_attr_list_new:
  * 

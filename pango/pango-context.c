@@ -603,14 +603,14 @@ pango_itemize (PangoContext   *context,
 	  if (extra_attr_lists[i] && i != 0 && extra_attr_lists[i] == extra_attr_lists[i-1])
 	    {
 	      GSList *tmp_list = extra_attr_lists[i];
-	      item->extra_attrs = NULL;
+	      GSList *new_list = NULL;
 	      while (tmp_list)
 		{
-		  item->extra_attrs = g_slist_prepend (item->extra_attrs,
-						       pango_attribute_copy (tmp_list->data));
+		  new_list = g_slist_prepend (new_list,
+					      pango_attribute_copy (tmp_list->data));
 		  tmp_list = tmp_list->next;
 		}
-	      item->extra_attrs = g_slist_reverse (item->extra_attrs);
+	      item->extra_attrs = g_slist_reverse (new_list);
 	    }
 	  else
 	    item->extra_attrs = extra_attr_lists[i];

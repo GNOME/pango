@@ -35,6 +35,7 @@ typedef struct _PangoAttrString   PangoAttrString;
 typedef struct _PangoAttrInt      PangoAttrInt;
 typedef struct _PangoAttrColor    PangoAttrColor;
 typedef struct _PangoAttrFontDesc PangoAttrFontDesc;
+typedef struct _PangoAttrShape    PangoAttrShape;
 				  
 typedef struct _PangoAttrList     PangoAttrList;
 typedef struct _PangoAttrIterator PangoAttrIterator;
@@ -52,7 +53,8 @@ typedef enum {
   PANGO_ATTR_BACKGROUND,	/* PangoAttrColor */
   PANGO_ATTR_UNDERLINE,		/* PangoAttrInt */
   PANGO_ATTR_STRIKETHROUGH,	/* PangoAttrInt */
-  PANGO_ATTR_RISE		/* PangoAttrInt */
+  PANGO_ATTR_RISE,		/* PangoAttrInt */
+  PANGO_ATTR_SHAPE		/* PangoAttrShape */
 } PangoAttrType;
 
 typedef enum {
@@ -97,6 +99,13 @@ struct _PangoAttrColor
   guint16 blue;
 };
 
+struct _PangoAttrShape
+{
+  PangoAttribute attr;
+  PangoRectangle ink_rect;
+  PangoRectangle logical_rect;
+};
+
 struct _PangoAttrFontDesc
 {
   PangoAttribute attr;
@@ -127,6 +136,8 @@ PangoAttribute *pango_attr_font_desc_new     (const PangoFontDescription *desc);
 PangoAttribute *pango_attr_underline_new     (PangoUnderline              underline);
 PangoAttribute *pango_attr_strikethrough_new (gboolean                    strikethrough);
 PangoAttribute *pango_attr_rise_new          (int                         rise);
+PangoAttribute *pango_attr_shape_new         (const PangoRectangle       *ink_rect,
+					      const PangoRectangle       *logical_rect);
 
 PangoAttrList *    pango_attr_list_new           (void);
 void               pango_attr_list_ref           (PangoAttrList  *list);

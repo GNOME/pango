@@ -1,3 +1,17 @@
+Fri Jul 21 15:17:26 2000  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-context.c (pango_itemize): A bit of code
+	cleanup.
+
+	* pango/pango-attributes.[ch]: Add a new attribute type
+	PangoAttrShape, for imposing specific shapes on glyphs.
+	This is used for handling embedded pixmaps and similar
+	objects.
+
+	* pango/pango-layout.c: Hnadle PangoAttrShape.
+
+	* pango/pango-context.[ch]: 
+
 Fri Jul 21 09:59:10 2000  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/modules.c (process_module_file): Free buffer strings.

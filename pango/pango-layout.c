@@ -77,7 +77,10 @@ static int *pango_layout_line_get_vis2log_map (PangoLayoutLine  *line,
 					       gboolean          strong);
 
 static void pango_layout_get_item_properties (PangoItem      *item,
-					      PangoUnderline *uline);
+					      PangoUnderline *uline,
+					      PangoRectangle *ink_rect,
+					      PangoRectangle *logical_rect,
+					      gboolean       *shape_set);
 
 static void pango_layout_init        (PangoLayout      *layout);
 static void pango_layout_class_init  (PangoLayoutClass *klass);
@@ -1554,6 +1557,78 @@ pango_layout_clear_lines (PangoLayout *layout)
     }
 }
 
+
+/************************************************
+ * Some functions for handling PANGO_ATTR_SHAPE *
+ ************************************************/
+
+static void
+imposed_shape (gint              n_chars,
+	       PangoRectangle   *shape_ink,
+	       PangoRectangle   *shape_logical,
+	       PangoGlyphString *glyphs)
+{
+  int i;
+  
+  pango_glyph_string_set_size (glyphs, n_chars);
+
+  for (i=0; i < n_chars; i++)
+    {
+      glyphs->glyphs[i].glyph = 0;
+      glyphs->glyphs[i].geometry.x_offset = 0;
+      glyphs->glyphs[i].geometry.y_offset = 0;
+      glyphs->glyphs[i].geometry.width = shape_logical->width;
+      glyphs->glyphs[i].attr.is_cluster_start = 1;
+      
+      glyphs->log_clusters[i] = i;
+    }
+}
+
+static void
+imposed_extents (gint              n_chars,
+		 PangoRectangle   *shape_ink,
+		 PangoRectangle   *shape_logical,
+		 PangoRectangle   *ink_rect,
+		 PangoRectangle   *logical_rect)
+{
+  if (n_chars > 0)
+    {
+      if (ink_rect)
+	{
+	  ink_rect->x = MIN (shape_ink->x, shape_ink->x + shape_logical->width * (n_chars - 1));
+	  ink_rect->width = MAX (shape_ink->width, shape_ink->width + shape_logical->width * (n_chars - 1));
+	  ink_rect->y = shape_ink->y;
+	  ink_rect->height = shape_ink->height;
+	}
+      if (logical_rect)
+	{
+	  logical_rect->x = MIN (shape_logical->x, shape_logical->x + shape_logical->width * (n_chars - 1));
+	  logical_rect->width = MAX (shape_logical->width, shape_logical->width + shape_logical->width * (n_chars - 1));
+	  logical_rect->y = shape_logical->y;
+	  logical_rect->height = shape_logical->height;
+	}
+    }
+  else
+    {
+      if (ink_rect)
+	{
+	  ink_rect->x = 0;
+	  ink_rect->y = 0;
+	  ink_rect->width = 0;
+	  ink_rect->height = 0;
+	}
+      
+      if (logical_rect)
+	{
+	  logical_rect->x = 0;
+	  logical_rect->y = 0;
+	  logical_rect->width = 0;
+	  logical_rect->height = 0;
+	}
+    }
+}
+
+
 /*****************
  * Line Breaking *
  *****************/
@@ -1681,11 +1756,18 @@ process_item (PangoLayoutLine *line,
 	      int             *remaining_width)
 {
   PangoGlyphString *glyphs = pango_glyph_string_new ();
+  PangoRectangle shape_ink;
+  PangoRectangle shape_logical;
+  gboolean shape_set;
   int width;
   int length;
   int i;
 
-  if (text[item->offset] == '\t')
+  pango_layout_get_item_properties (item, NULL, &shape_ink, &shape_logical, &shape_set);
+
+  if (shape_set)
+    imposed_shape (item->num_chars, &shape_ink, &shape_logical, glyphs);
+  else if (text[item->offset] == '\t')
     shape_tab (line, glyphs);
   else
     pango_shape (text + item->offset, item->length, &item->analysis, glyphs);
@@ -1737,8 +1819,11 @@ process_item (PangoLayoutLine *line,
 	  item->offset += length;
 	  item->length -= length;
 	  item->num_chars -= num_chars;
-	  
-	  pango_shape (text + new_item->offset, new_item->length, &new_item->analysis, glyphs);
+
+	  if (shape_set)
+	    imposed_shape (item->num_chars, &shape_ink, &shape_logical, glyphs);
+	  else
+	    pango_shape (text + new_item->offset, new_item->length, &new_item->analysis, glyphs);
 	  
 	  *remaining_width -= width;
 	  insert_run (line, new_item, glyphs);
@@ -2460,11 +2545,19 @@ pango_layout_line_get_extents (PangoLayoutLine *line,
       
       PangoRectangle run_ink;
       PangoRectangle run_logical;
+      PangoRectangle shape_ink;
+      PangoRectangle shape_logical;
+      gboolean shape_set;
 
-      pango_layout_get_item_properties (run->item, &uline);
-      pango_glyph_string_extents (run->glyphs, run->item->analysis.font,
-				  (ink_rect || uline != PANGO_UNDERLINE_NONE) ? &run_ink : NULL,
-				  &run_logical);
+      pango_layout_get_item_properties (run->item, &uline, &shape_ink, &shape_logical, &shape_set);
+
+      if (shape_set)
+	imposed_extents (run->item->num_chars, &shape_ink, &shape_logical,
+			 (ink_rect || uline != PANGO_UNDERLINE_NONE) ? &run_ink : NULL, &run_logical);
+      else
+	pango_glyph_string_extents (run->glyphs, run->item->analysis.font,
+				    (ink_rect || uline != PANGO_UNDERLINE_NONE) ? &run_ink : NULL,
+				    &run_logical);
 
       switch (uline)
 	{
@@ -2668,15 +2761,21 @@ pango_layout_line_postprocess (PangoLayoutLine *line)
   pango_layout_line_reorder (line);
 }
 
-/* This utility function is duplicated here and in pango-layout.c; should it be
+/* This utility function is duplicated here and in pangox.c; should it be
  * public? Trouble is - what is the appropriate set of properties?
  */
 static void
 pango_layout_get_item_properties (PangoItem      *item,
-				  PangoUnderline *uline)
+				  PangoUnderline *uline,
+				  PangoRectangle *ink_rect,
+				  PangoRectangle *logical_rect,
+				  gboolean       *shape_set)
 {
   GSList *tmp_list = item->extra_attrs;
 
+  if (shape_set)
+    *shape_set = FALSE;
+  
   while (tmp_list)
     {
       PangoAttribute *attr = tmp_list->data;
@@ -2686,6 +2785,16 @@ pango_layout_get_item_properties (PangoItem      *item,
 	case PANGO_ATTR_UNDERLINE:
 	  if (uline)
 	    *uline = ((PangoAttrInt *)attr)->value;
+	  break;
+	  
+	case PANGO_ATTR_SHAPE:
+	  if (shape_set)
+	    *shape_set = TRUE;
+	  if (logical_rect)
+	    *logical_rect = ((PangoAttrShape *)attr)->logical_rect;
+	  if (ink_rect)
+	    *ink_rect = ((PangoAttrShape *)attr)->ink_rect;
+	  break;
 	  
 	default:
 	  break;
