@@ -38,8 +38,12 @@ extern FriBidiCharType prop_to_type[];
 FriBidiCharType
 _pango_fribidi_get_type(FriBidiChar uch)
 {
+  FriBidiPropCharType *block;
   int i = uch % 256, j = uch / 256;
-  FriBidiPropCharType *block = FriBidiPropertyBlocks[j];
+  if (j > 256)
+    return FRIBIDI_TYPE_LTR;
+  
+  block = FriBidiPropertyBlocks[j];
   if (block)
 #ifdef MEM_OPTIMIZED
     return prop_to_type[block[i]];

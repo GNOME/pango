@@ -1,3 +1,10 @@
+Fri Mar  1 14:25:22 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/modules.c: Don't crash on out-of-BMP values.
+
+	* pango/mini-fribidi/fribidi_get_type.c (_pango_fribidi_get_type):
+	Return FRIBIDI_TYPE_LTR for all non-BMP characters.
+
 Fri Mar  1 12:11:50 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pango-layout.c (pango_layout_line_get_vis2log_map):

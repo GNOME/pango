@@ -500,7 +500,7 @@ build_map (PangoMapInfo *info)
   init_modules();
 
   info->map = map = g_new (PangoMap, 1);
-  map->n_submaps = 0;
+  map->n_submaps = 256;
   for (i=0; i<256; i++)
     {
       map->submaps[i].is_leaf = TRUE;
@@ -530,8 +530,18 @@ PangoMapEntry *
 pango_map_get_entry (PangoMap   *map,
 		     guint32     wc)
 {
-  PangoSubmap *submap = &map->submaps[wc / 256];
-  return submap->is_leaf ? &submap->d.entry : &submap->d.leaves[wc % 256];
+  int i = wc / 256;
+
+  if (i < map->n_submaps)
+    {
+      PangoSubmap *submap = &map->submaps[i];
+      return submap->is_leaf ? &submap->d.entry : &submap->d.leaves[wc % 256];
+    }
+  else
+    {
+      static PangoMapEntry default_entry = { NULL, FALSE };
+      return &default_entry;
+    }
 }
 
 /**
@@ -549,11 +559,18 @@ PangoEngine *
 pango_map_get_engine (PangoMap *map,
 		      guint32   wc)
 {
-  PangoSubmap *submap = &map->submaps[wc / 256];
-  PangoMapEntry *entry = submap->is_leaf ? &submap->d.entry : &submap->d.leaves[wc % 256];
+  int i = wc / 256;
 
-  if (entry->info)
-    return pango_engine_pair_get_engine ((PangoEnginePair *)entry->info);
+  if (i < map->n_submaps)
+    {
+      PangoSubmap *submap = &map->submaps[i];
+      PangoMapEntry *entry = submap->is_leaf ? &submap->d.entry : &submap->d.leaves[wc % 256];
+      
+      if (entry->info)
+	return pango_engine_pair_get_engine ((PangoEnginePair *)entry->info);
+      else
+	return NULL;
+    }
   else
     return NULL;
 }
