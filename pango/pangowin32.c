@@ -46,10 +46,17 @@ OSVERSIONINFO pango_win32_os_version_info;
 gboolean pango_win32_debug = FALSE;
 
 typedef struct _PangoWin32FontClass   PangoWin32FontClass;
+typedef struct _PangoWin32MetricsInfo PangoWin32MetricsInfo;
 
 struct _PangoWin32FontClass
 {
   PangoFontClass parent_class;
+};
+
+struct _PangoWin32MetricsInfo
+{
+  const char *sample_str;
+  PangoFontMetrics *metrics;
 };
 
 static PangoFontClass *parent_class;	/* Parent class structure for PangoWin32Font */
@@ -176,6 +183,8 @@ pango_win32_font_init (PangoWin32Font *win32font)
   win32font->size = -1;
 
   win32font->glyph_info = g_hash_table_new_full (NULL, NULL, NULL, g_free);
+
+  win32font->metrics_by_lang = NULL;
 }
 
 /**
@@ -513,50 +522,75 @@ pango_win32_font_get_metrics (PangoFont     *font,
   PangoLayout *layout;
   PangoRectangle extents;
   PangoContext *context;
-  PangoFontMetrics *metrics;
+  PangoWin32Font *win32font = (PangoWin32Font *)font;
+  PangoWin32MetricsInfo *info = NULL;
+  GSList *tmp_list;
 
-  metrics = pango_font_metrics_new ();
+  const char *sample_str = pango_language_get_sample_string (language);
   
-  metrics->ascent = 0;
-  metrics->descent = 0;
-  metrics->approximate_digit_width = 0;
-  metrics->approximate_char_width = 0;
-  
-  hfont = pango_win32_get_hfont (font);
-
-  if (hfont != NULL)
+  tmp_list = win32font->metrics_by_lang;
+  while (tmp_list)
     {
-      PangoFontDescription *font_desc;
-	    
-      SelectObject (pango_win32_hdc, hfont);
-      GetTextMetrics (pango_win32_hdc, &tm);
+      info = tmp_list->data;
+      
+      if (info->sample_str == sample_str)    /* We _don't_ need strcmp */
+	break;
 
-      metrics->ascent = tm.tmAscent * PANGO_SCALE;
-      metrics->descent = tm.tmDescent * PANGO_SCALE;
-      metrics->approximate_char_width = tm.tmAveCharWidth * PANGO_SCALE;
-
-      /* lovely copy&paste programming (from pangox.c) FIXME: This is
-       * sort of a sledgehammer solution, if we cached the results,
-       * like the other backends did, it wouldn't big a huge performance
-       * problem.  Get the avg. width of the chars in "0123456789"
-       */
-      context = pango_win32_get_context ();
-      pango_context_set_language (context, language);
-      font_desc = pango_font_describe (font);
-      pango_context_set_font_description (context, font_desc);
-      layout = pango_layout_new (context);
-      pango_layout_set_text (layout, "0123456789", -1);
-
-      pango_layout_get_extents (layout, NULL, &extents);
-   
-      metrics->approximate_digit_width = extents.width / 10.0;
-
-      pango_font_description_free (font_desc);
-      g_object_unref (layout);
-      g_object_unref (context);
+      tmp_list = tmp_list->next;
     }
 
-  return metrics;
+  if (!tmp_list)
+    {
+      info = g_new (PangoWin32MetricsInfo, 1);
+      info->sample_str = sample_str;
+      info->metrics = pango_font_metrics_new ();
+  
+      win32font->metrics_by_lang = g_slist_prepend (win32font->metrics_by_lang, info);
+
+      info->metrics->ascent = 0;
+      info->metrics->descent = 0;
+      info->metrics->approximate_digit_width = 0;
+      info->metrics->approximate_char_width = 0;
+  
+      hfont = pango_win32_get_hfont (font);
+
+      if (hfont != NULL)
+	{
+	  PangoFontDescription *font_desc;
+	  
+	  SelectObject (pango_win32_hdc, hfont);
+	  GetTextMetrics (pango_win32_hdc, &tm);
+
+	  info->metrics->ascent = tm.tmAscent * PANGO_SCALE;
+	  info->metrics->descent = tm.tmDescent * PANGO_SCALE;
+	  info->metrics->approximate_char_width = tm.tmAveCharWidth * PANGO_SCALE;
+
+	  context = pango_win32_get_context ();
+	  pango_context_set_language (context, language);
+	  font_desc = pango_font_describe (font);
+	  pango_context_set_font_description (context, font_desc);
+
+	  layout = pango_layout_new (context);
+
+	  pango_layout_set_text (layout, sample_str, -1);      
+	  pango_layout_get_extents (layout, NULL, &extents);
+      
+	  info->metrics->approximate_char_width = 
+	    extents.width / g_utf8_strlen (sample_str, -1);
+
+	  pango_layout_set_text (layout, "0123456789", -1);
+	  pango_layout_get_extents (layout, NULL, &extents);
+   
+	  info->metrics->approximate_digit_width = extents.width / 10.0;
+
+	  pango_font_description_free (font_desc);
+
+	  g_object_unref (layout);
+	  g_object_unref (context);
+	}
+    }
+
+  return pango_font_metrics_ref (info->metrics);
 }
 
 
@@ -600,6 +634,13 @@ pango_win32_font_dispose (GObject *object)
 }
 
 static void
+free_metrics_info (PangoWin32MetricsInfo *info)
+{
+  pango_font_metrics_unref (info->metrics);
+  g_free (info);
+}
+
+static void
 pango_win32_font_finalize (GObject *object)
 {
   PangoWin32Font *win32font = (PangoWin32Font *)object;
@@ -613,6 +654,9 @@ pango_win32_font_finalize (GObject *object)
  
   g_hash_table_destroy (win32font->glyph_info);
  
+  g_slist_foreach (win32font->metrics_by_lang, (GFunc)free_metrics_info, NULL);
+  g_slist_free (win32font->metrics_by_lang);
+
   g_object_unref (win32font->fontmap);
 
   G_OBJECT_CLASS (parent_class)->finalize (object);

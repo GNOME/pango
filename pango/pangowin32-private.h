@@ -90,6 +90,8 @@ struct _PangoWin32Font
    */
   gboolean in_cache;
   GHashTable *glyph_info;
+
+  GSList *metrics_by_lang;
 };
 
 struct _PangoWin32Face

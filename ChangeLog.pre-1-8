@@ -1,3 +1,9 @@
+2003-07-28  Tor Lillqvist  <tml@iki.fi>
+
+	* pango/pangowin32-private.h
+	* pango/pangowin32.c (pango_win32_font_get_metrics): Use a similar
+	caching mechanism as the other backends. (#76328)
+
 Sat Jul 26 22:30:59 2003  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/opentype/ftxgsub.c (Lookup_ChainContextSubst{1,2,3}):
