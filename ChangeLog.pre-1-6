@@ -1,3 +1,8 @@
+Tue Jul 13 10:02:53 2004  Owen Taylor  <otaylor@redhat.com>
+ 
+ 	* pango/pango-utils.c (pango_language_get_sample_string):
+ 	Make table constant. (#145515, Morten Welinder)
+ 
 2004-07-12  Changwoo Ryu  <cwryu@debian.org>
 
 	* modules/hangul/hangul-fc.c (render_basic): Render U+00A0
