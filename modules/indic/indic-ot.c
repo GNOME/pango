@@ -370,11 +370,10 @@ glong indic_ot_reorder(const gunichar *chars, const glong *utf8_offsets, glong c
 	    }
 
 	    /* write post-base consonants */
-	    /* FIXME: does this put the right tags on post-base consonants? */
 	    if (baseConsonant != lastConsonant) {
 		if (postBase <= lastConsonant) {
 		    for (i = postBase; i <= lastConsonant; i += 1) {
-			writeChar(&output, chars[i], /*i*/ prev, nukt_p);
+			writeChar(&output, chars[i], /*i*/ prev, pstf_p);
 		    }
 
 		    /* write halant that was after base consonant */

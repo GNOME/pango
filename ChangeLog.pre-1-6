@@ -1,3 +1,19 @@
+Thu Jul 29 16:10:06 2004  Owen Taylor  <otaylor@redhat.com>
+
+	Fix Malayalam double-consonant conjuncts: #121671, Rajkumar S
+
+	* modules/indic/indic-ot.[ch]: Add a new feature
+	set pstf_p and use it for post-base consonants, since
+	the existing nukt_p suppressed the pstf feature.
+	(#121671, Rajkumar S)
+
+	* modules/indic/indic-ot-class-tables.c (mlymCharClasses):
+	make U+D2F (MALAYALAM LETTER YA) _pb not _ct.
+
+	* modules/indic/indic-ot-class-tables.c (mlymCharClasses):
+	Classify U/UU/VOCALIC R as _dr not _db since they should
+	be ordered after post-base consonants.
+
 Wed Jul 28 17:00:23 2004  Owen Taylor  <otaylor@redhat.com>
 
 	* modules/indic/mprefixups.c (indic_mprefixups_apply): 

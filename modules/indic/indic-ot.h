@@ -133,6 +133,7 @@ enum indic_glyph_property_
   rphf_p = (junk | dist),
   blwf_p = (junk | dist | rphf),
   half_p = (junk | dist | rphf | blwf),
+  pstf_p = (junk | dist | rphf | blwf | half),
   nukt_p = (junk | dist | rphf | blwf | half | pstf)
 };
 
