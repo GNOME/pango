@@ -3205,7 +3205,7 @@
 
       /* check whether context is too long; it is a first guess only */
 
-      if ( bgc > buffer->in_pos || buffer->in_pos + igc + lgc > buffer->in_length )
+      if ( bgc > buffer->out_pos || buffer->in_pos + igc + lgc > buffer->in_length )
 	goto next_chainsubrule;
 
       if ( bgc )
@@ -3213,9 +3213,9 @@
         /* since we don't know in advance the number of glyphs to inspect,
            we search backwards for matches in the backtrack glyph array    */
 
-        for ( i = 0, j = buffer->in_pos - 1; i < bgc; i++, j-- )
+        for ( i = 0, j = buffer->out_pos - 1; i < bgc; i++, j-- )
         {
-          while ( CHECK_Property( gdef, IN_GLYPH( j ), flags, &property ) )
+          while ( CHECK_Property( gdef, OUT_GLYPH( j ), flags, &property ) )
           {
             if ( error && error != TTO_Err_Not_Covered )
               return error;
@@ -3235,7 +3235,7 @@
                Backtrack offsets -  3  2  1  0
                Lookahead offsets -                    0  1  2  3           */
 
-          if ( IN_GLYPH( j ) != curr_csr.Backtrack[i] )
+          if ( OUT_GLYPH( j ) != curr_csr.Backtrack[i] )
 	    goto next_chainsubrule;
         }
       }
@@ -3371,7 +3371,7 @@
 
       /* check whether context is too long; it is a first guess only */
 
-      if ( bgc > buffer->in_pos || buffer->in_pos + igc + lgc > buffer->in_length )
+      if ( bgc > buffer->out_pos || buffer->in_pos + igc + lgc > buffer->in_length )
 	goto next_chainsubclassrule;
 
       if ( bgc )
@@ -3382,9 +3382,9 @@
 
         bc       = ccsr.Backtrack;
 
-        for ( i = 0, j = buffer->in_pos - 1; i < bgc; i++, j-- )
+        for ( i = 0, j = buffer->out_pos - 1; i < bgc; i++, j-- )
         {
-          while ( CHECK_Property( gdef, IN_GLYPH( j ), flags, &property ) )
+          while ( CHECK_Property( gdef, OUT_GLYPH( j ), flags, &property ) )
           {
             if ( error && error != TTO_Err_Not_Covered )
               goto End1;
@@ -3398,7 +3398,7 @@
           {
             /* Keeps us from having to do this for each rule */
 
-            error = Get_Class( &ccsf2->BacktrackClassDef, IN_GLYPH( j ),
+            error = Get_Class( &ccsf2->BacktrackClassDef, OUT_GLYPH( j ),
                                &backtrack_classes[i], NULL );
             if ( error && error != TTO_Err_Not_Covered )
               goto End1;
@@ -3526,7 +3526,7 @@
 
     /* check whether context is too long; it is a first guess only */
 
-    if ( bgc > buffer->in_pos || buffer->in_pos + igc + lgc > buffer->in_length )
+    if ( bgc > buffer->out_pos || buffer->in_pos + igc + lgc > buffer->in_length )
       return TTO_Err_Not_Covered;
 
     if ( bgc )
@@ -3536,9 +3536,9 @@
 
       bc       = ccsf3->BacktrackCoverage;
 
-      for ( i = 0, j = buffer->in_pos - 1; i < bgc; i++, j-- )
+      for ( i = 0, j = buffer->out_pos - 1; i < bgc; i++, j-- )
       {
-        while ( CHECK_Property( gdef, IN_GLYPH( j ), flags, &property ) )
+        while ( CHECK_Property( gdef, OUT_GLYPH( j ), flags, &property ) )
         {
           if ( error && error != TTO_Err_Not_Covered )
             return error;
@@ -3548,7 +3548,7 @@
 	  j--;
         }
 
-        error = Coverage_Index( &bc[i], IN_GLYPH( j ), &index );
+        error = Coverage_Index( &bc[i], OUT_GLYPH( j ), &index );
         if ( error )
           return error;
       }

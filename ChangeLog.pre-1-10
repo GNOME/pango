@@ -1,3 +1,9 @@
+Mon Jul 26 15:16:07 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/opentype/ftxgsub.c (Lookup_ChainContextSubst[123]):
+	Match backtrack context against the output glyphs not
+	the input glyphs (#145174, Aamir Wali)
+
 Mon Jul 19 16:29:45 2004  Owen Taylor  <otaylor@redhat.com>
  
  	* pango/opentype/ftxgsub.c pango/opentype/ftxgpos.c:
