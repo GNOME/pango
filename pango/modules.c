@@ -515,6 +515,9 @@ init_modules (void)
   else
     init = TRUE;
   
+  /* Make sure that the type system is initialized */
+  g_type_init ();
+  
   read_modules ();
 }
 
