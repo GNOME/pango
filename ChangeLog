@@ -1,3 +1,8 @@
+Mon Jul 19 17:09:11 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/opentype/disasm.c: Add support for 
+	ChainContextSubstFormat3.
+
 Mon Jul 19 16:29:45 2004  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/opentype/ftxgsub.c pango/opentype/ftxgpos.c:
