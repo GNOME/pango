@@ -1,3 +1,15 @@
+Mon Feb 12 15:01:38 2001  Owen Taylor  <otaylor@redhat.com>
+
+	* configure.in (gtk_doc_min_version): Add check for
+	gtk-doc version.
+
+Mon Feb 12 12:45:16 2001  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/Makefile.am: srcdir != build dir fix.
+
+	* docs/Makefile.am: Switching over to the new gtk-doc 
+	Makefile.am.
+
 2001-02-11  Havoc Pennington  <hp@pobox.com>
 
 	* pango/pangox.c (font_struct_get_ligatures): memory leak fix
