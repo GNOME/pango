@@ -1,3 +1,9 @@
+2005-03-23  Tor Lillqvist  <tml@novell.com>
+
+	Merge from HEAD:
+
+	* pango/pango.def: Add missing pango_render_part_get_type. (#165287)
+
 2005-03-20  Tor Lillqvist  <tml@novell.com>
 
 	* modules/basic/basic-win32.c (make_langid): Leave out some
