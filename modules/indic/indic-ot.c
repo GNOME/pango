@@ -31,6 +31,7 @@ struct _Output
     gunichar fLengthMark;
     glong    fMatraIndex;
     gulong   fMatraTags;
+    gboolean fMatraWordStart;
     glong    fMPreOutIndex;
 
     MPreFixups *fMPreFixups;
@@ -71,12 +72,13 @@ static void saveMatra(Output *output, gunichar matra, IndicOTCharClass matraClas
     }
 }
 
-static void initMatra(Output *output, guint32 matraIndex, gulong matraTags)
+static void initMatra(Output *output, guint32 matraIndex, gulong matraTags, gboolean wordStart)
 {
     output->fMpre = output->fMbelow = output->fMabove = output->fMpost = output->fLengthMark = 0;
     output->fMPreOutIndex = -1;
     output->fMatraIndex = matraIndex;
     output->fMatraTags = matraTags;
+    output->fMatraWordStart = wordStart;
 }
 
 static gboolean noteMatra(Output *output, const IndicOTClassTable *classTable, gunichar matra)
@@ -123,8 +125,12 @@ static void writeChar(Output *output, gunichar ch, guint32 charIndex, gulong cha
 static void writeMpre(Output *output)
 {
     if (output->fMpre != 0) {
+        gulong tags = output->fMatraTags;
+	if (output->fMatraWordStart)
+	    tags &= ~init;
+	    
         output->fMPreOutIndex = output->fOutIndex;
-        writeChar(output, output->fMpre, output->fMatraIndex, output->fMatraTags);
+        writeChar(output, output->fMpre, output->fMatraIndex, tags);
     }
 }
 
@@ -169,6 +175,7 @@ glong indic_ot_reorder(const gunichar *chars, const glong *utf8_offsets, glong c
     MPreFixups *mpreFixups = NULL;
     Output output;
     glong i, prev = 0;
+    gboolean last_in_word = FALSE;
 
     if (outMPreFixups && (class_table->scriptFlags & SF_MPRE_FIXUP)) {
 	mpreFixups = indic_mprefixups_new (char_count);
@@ -190,13 +197,16 @@ glong indic_ot_reorder(const gunichar *chars, const glong *utf8_offsets, glong c
         }
 
         matra = vmabove - 1;
-	initMatra(&output, prev, blwf_p);
-	while (noteMatra(&output, class_table, chars[matra]) &&
-	       matra != prev)
-	    matra--;
+	initMatra(&output, prev, blwf_p, !last_in_word);
+        while (noteMatra(&output, class_table, chars[matra]) &&
+               matra != prev)
+            matra--;
 
+	last_in_word = TRUE;
         switch (indic_ot_get_char_class(class_table, chars[prev]) & CF_CLASS_MASK) {
         case CC_RESERVED:
+  	    last_in_word = FALSE;
+	    /* Fall through */
         case CC_INDEPENDENT_VOWEL:
         case CC_ZERO_WIDTH_MARK:
             for (i = prev; i < syllable; i += 1) {

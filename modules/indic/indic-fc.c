@@ -186,6 +186,7 @@ get_gsub_ruleset (FT_Face face, PangoIndicInfo *indic_info)
      if (pango_ot_info_find_script (info, PANGO_OT_TABLE_GSUB,
 				     indic_info->scriptTag, &script_index))
 	{
+	  maybe_add_GSUB_feature (ruleset, info, script_index, FT_MAKE_TAG ('i','n','i','t'), init);
 	  maybe_add_GSUB_feature (ruleset, info, script_index, FT_MAKE_TAG ('n','u','k','t'), nukt);
 	  maybe_add_GSUB_feature (ruleset, info, script_index, FT_MAKE_TAG ('a','k','h','n'), akhn);
 	  maybe_add_GSUB_feature (ruleset, info, script_index, FT_MAKE_TAG ('r','p','h','f'), rphf);

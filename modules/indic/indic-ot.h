@@ -114,7 +114,8 @@ enum indic_glyph_feature_
   blwm = 0x1000,
   abvm = 0x2000,
   dist = 0x4000,
-  junk = 0x8000
+  junk = 0x8000,
+  init = 0x10000
 };
 
 /*
@@ -130,11 +131,11 @@ enum indic_glyph_feature_
  */
 enum indic_glyph_property_
 {
-  rphf_p = (junk | dist),
-  blwf_p = (junk | dist | rphf),
-  half_p = (junk | dist | rphf | blwf),
-  pstf_p = (junk | dist | rphf | blwf | half),
-  nukt_p = (junk | dist | rphf | blwf | half | pstf)
+  rphf_p = (junk | dist | init),
+  blwf_p = (junk | dist | init | rphf),
+  half_p = (junk | dist | init | rphf | blwf),
+  pstf_p = (junk | dist | init | rphf | blwf | half),
+  nukt_p = (junk | dist | init | rphf | blwf | half | pstf)
 };
 
 /*
