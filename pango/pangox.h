@@ -92,7 +92,7 @@ PangoXFontCache *pango_x_font_cache_new     (Display         *display);
 void             pango_x_font_cache_free    (PangoXFontCache *cache);
 
 XFontStruct * pango_x_font_cache_load      (PangoXFontCache *cache,
-					    char            *xlfd);
+					    const char      *xlfd);
 void          pango_x_font_cache_unload    (PangoXFontCache *cache,
 					    XFontStruct     *fs);
 

@@ -65,13 +65,13 @@ gboolean pango_parse_stretch (const char            *str,
  * stored in the registry). The returned string should not be
  * g_free'd.
  */
-char *   pango_get_sysconf_subdirectory (void);
+G_CONST_RETURN char *   pango_get_sysconf_subdirectory (void);
 
 /* Ditto for LIBDIR/pango. On Win32, use the same Pango
  * installation directory. This returned string should not be
  * g_free'd either.
  */
-char *   pango_get_lib_subdirectory (void);
+G_CONST_RETURN char *   pango_get_lib_subdirectory (void);
 
 
 /* A couple of routines from fribidi that we either wrap or

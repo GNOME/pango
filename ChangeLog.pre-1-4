@@ -1,3 +1,14 @@
+2001-02-20  Havoc Pennington  <hp@pobox.com>
+
+        Patch from Soeren Sandmann
+
+	* pango/pangox-fontcache.c (pango_x_font_cache_load): make xlfd
+	arg const
+
+	* pango/pango-utils.c (pango_get_sysconf_subdirectory):
+	G_CONST_RETURN
+	(pango_get_lib_subdirectory): G_CONST_RETURN
+
 2001-02-19  Hans Breuer <hans@breuer.org>
 	* pango/modules.h, pango/pangowin32.c (pango_win32_get_context) : 
 	added _pango_included_win32_modules[] to include modules with plain 

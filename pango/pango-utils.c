@@ -616,7 +616,7 @@ pango_config_key_get (const char *key)
   return g_strdup (g_hash_table_lookup (config_hash, key));
 }
 
-char *
+G_CONST_RETURN char *
 pango_get_sysconf_subdirectory (void)
 {
 #ifdef G_OS_WIN32
@@ -632,7 +632,7 @@ pango_get_sysconf_subdirectory (void)
 #endif
 }
 
-char *
+G_CONST_RETURN char *
 pango_get_lib_subdirectory (void)
 {
 #ifdef G_OS_WIN32

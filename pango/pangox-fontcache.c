@@ -138,7 +138,7 @@ cache_entry_unref (PangoXFontCache *cache, CacheEntry *entry)
  **/
 XFontStruct *
 pango_x_font_cache_load (PangoXFontCache *cache,
-			 char            *xlfd)
+			 const char      *xlfd)
 {
   CacheEntry *entry;
 
