@@ -120,6 +120,74 @@ _pango_ft2_font_new (PangoFontMap    *fontmap,
   return ft2font;
 }
 
+gboolean
+set_unicode_charmap (FT_Face face)
+{
+  int charmap;
+
+  for (charmap = 0; charmap < face->num_charmaps; charmap++)
+    if (face->charmaps[charmap]->encoding == ft_encoding_unicode)
+      {
+	FT_Error error = FT_Set_Charmap(face, face->charmaps[charmap]);
+	return error == FT_Err_Ok;
+      }
+
+  return FALSE;
+}
+
+void
+load_fallback_face (PangoFT2Font *ft2font,
+		    const char   *original_file)
+{
+  MiniXftPattern *sans;
+  MiniXftPattern *matched;
+  MiniXftResult result;
+  FT_Error error;
+  char *filename2 = NULL;
+  gchar *name;
+  int id;
+  
+  sans = MiniXftPatternBuild (0,
+			      XFT_FAMILY, MiniXftTypeString, "sans",
+			      XFT_ENCODING, MiniXftTypeString, "glyphs-fontspecific",
+			      XFT_SIZE, MiniXftTypeDouble, (double)pango_font_description_get_size (ft2font->description)/PANGO_SCALE,
+			      NULL);
+  
+  matched = MiniXftFontMatch ((Display *)1, 0, sans, &result);
+  
+  if (MiniXftPatternGetString (matched, XFT_FILE, 0, &filename2) != MiniXftResultMatch)
+    goto bail1;
+  
+  if (MiniXftPatternGetInteger (matched, XFT_INDEX, 0, &id) != MiniXftResultMatch)
+    goto bail1;
+  
+  error = FT_New_Face (_pango_ft2_font_map_get_library (ft2font->fontmap),
+		       filename2, id, &ft2font->face);
+  
+  if (error)
+    {
+    bail1:
+      name = pango_font_description_to_string (ft2font->description);
+      g_warning ("Unable to open font file %s for font %s, exiting\n", filename2, name);
+      exit (1);
+    }
+  else
+    {
+      name = pango_font_description_to_string (ft2font->description);
+      g_warning ("Unable to open font file %s for font %s, falling back to %s\n", original_file, name, filename2);
+      g_free (name);
+    }
+  
+  if (!set_unicode_charmap (ft2font->face))
+    {
+      g_warning ("Unable to load unicode charmap from file %s, exiting\n", filename2);
+      exit (1);
+    }
+  
+  MiniXftPatternDestroy (sans);
+  MiniXftPatternDestroy (matched);
+
+}
 
 /**
  * pango_ft2_font_get_face:
@@ -152,50 +220,10 @@ pango_ft2_font_get_face (PangoFont      *font)
     
       error = FT_New_Face (_pango_ft2_font_map_get_library (ft2font->fontmap),
 			   filename, id, &ft2font->face);
-      if (error)
+      if (error != FT_Err_Ok)
 	{
-	  MiniXftPattern *sans;
-	  MiniXftPattern *matched;
-	  MiniXftResult result;
-	  char *filename2 = NULL;
-	  gchar *name;
-
 	bail0:
-	  
-	  sans = MiniXftPatternBuild (0,
-				      XFT_FAMILY, MiniXftTypeString, "sans",
-				      XFT_ENCODING, MiniXftTypeString, "glyphs-fontspecific",
-				      XFT_SIZE, MiniXftTypeDouble, (double)pango_font_description_get_size (ft2font->description)/PANGO_SCALE,
-				      NULL);
-
-	  matched = MiniXftFontMatch ((Display *)1, 0, sans, &result);
-
-	  if (MiniXftPatternGetString (matched, XFT_FILE, 0, &filename2) != MiniXftResultMatch)
-	    goto bail1;
-	  
-	  if (MiniXftPatternGetInteger (matched, XFT_INDEX, 0, &id) != MiniXftResultMatch)
-	    goto bail1;
-	  
-	  error = FT_New_Face (_pango_ft2_font_map_get_library (ft2font->fontmap),
-			       filename2, id, &ft2font->face);
-
-	  
-	  if (error)
-	    {
-	    bail1:
-	      name = pango_font_description_to_string (ft2font->description);
-	      g_warning ("Unable to open font file %s for font %s, exiting\n", filename2, name);
-	      exit (1);
-	    }
-	  else
-	    {
-	      name = pango_font_description_to_string (ft2font->description);
-	      g_warning ("Unable to open font file %s for font %s, falling back to %s\n", filename, name, filename2);
-	      g_free (name);
-	    }
-
-	  MiniXftPatternDestroy (sans);
-	  MiniXftPatternDestroy (matched);
+	  load_fallback_face (ft2font, filename);
 	}
       ft2font->face->generic.data = 0;
     }
@@ -203,6 +231,16 @@ pango_ft2_font_get_face (PangoFont      *font)
   g_assert (ft2font->face);
   
   face = ft2font->face;
+
+  if (!set_unicode_charmap (face))
+    {
+      g_warning ("Unable to load unicode charmap from font file %s", filename);
+      
+      FT_Done_Face (ft2font->face);
+      ft2font->face = NULL;
+
+      load_fallback_face (ft2font, filename);
+    }
 
   if (ft2font->size != GPOINTER_TO_UINT (face->generic.data))
     {

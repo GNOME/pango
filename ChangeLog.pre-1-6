@@ -1,3 +1,9 @@
+Wed Jul  3 18:39:45 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pangoft2.c pango/pangoxft-font.c: Be more
+	robust when trying to set the unicode character
+	map on the font. (#86911)
+
 Wed Jul 10 06:12:37 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/mini-xft/minixftlex.l: Add a stdlib include

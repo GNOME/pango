@@ -677,6 +677,52 @@ pango_xft_font_find_shaper (PangoFont     *font,
   return (PangoEngineShape *)pango_map_get_engine (shape_map, ch);
 }
 
+gboolean
+set_unicode_charmap (FT_Face face)
+{
+  int charmap;
+
+  for (charmap = 0; charmap < face->num_charmaps; charmap++)
+    if (face->charmaps[charmap]->encoding == ft_encoding_unicode)
+      {
+	FT_Error error = FT_Set_Charmap(face, face->charmaps[charmap]);
+	return error == FT_Err_Ok;
+      }
+
+  return FALSE;
+}
+
+void
+load_fallback_font (PangoXftFont *xfont)
+{
+  Display *display;
+  int screen;
+  XftFont *xft_font;
+  
+  _pango_xft_font_map_get_info (xfont->fontmap, &display, &screen);
+      
+  xft_font = XftFontOpen (display,  screen,
+                          XFT_FAMILY, XftTypeString, "sans",
+                          XFT_ENCODING, XftTypeString, "glyphs-fontspecific",
+                          XFT_CORE, XftTypeBool, False,
+                          XFT_SIZE, XftTypeDouble, (double)pango_font_description_get_size (xfont->description)/PANGO_SCALE,
+                          NULL);
+  
+  if (!xft_font)
+    {
+      g_warning ("Cannot open fallback font, nothing to do");
+      exit (1);
+    }
+
+  if (!set_unicode_charmap (xft_font->u.ft.font->face))
+    {
+      g_warning ("Cannot set unicode character map for fallback font, nothing to do");
+      exit (1);
+    }
+
+  xfont->xft_font = xft_font;
+}
+
 /**
  * pango_xft_font_get_font:
  * @font: a #PangoFont.
@@ -691,9 +737,6 @@ pango_xft_font_get_font (PangoFont *font)
   PangoXftFont *xfont;
   Display *display;
   int screen;
-  FT_Face face;
-  FT_Error error;
-  int charmap;
 
   g_return_val_if_fail (PANGO_XFT_IS_FONT (font), NULL);
   
@@ -715,31 +758,26 @@ pango_xft_font_get_font (PangoFont *font)
 	  g_warning ("Cannot open font file for font %s", name);
 	  g_free (name);
 	  
-	  xfont->xft_font = XftFontOpen (display,  screen,
-					 XFT_FAMILY, XftTypeString, "sans",
-					 XFT_ENCODING, XftTypeString, "glyphs-fontspecific",
-					 XFT_CORE, XftTypeBool, False,
-					 XFT_SIZE, XftTypeDouble, (double)pango_font_description_get_size (xfont->description)/PANGO_SCALE,
-					 NULL);
+	  load_fallback_font (xfont);
 	}
-      if (!xfont->xft_font)
+      else
 	{
-	  g_warning ("Cannot open fallback font, nothing to do");
-	  exit (1);
+	  /* There should be a unicode encoding, since we queried for it */
+	  if (!set_unicode_charmap (xfont->xft_font->u.ft.font->face))
+	    {
+	      gchar *name = pango_font_description_to_string (xfont->description);
+	      
+	      g_warning ("Cannot load unicode character map for font %s", name);
+	      g_free (name);
+	      
+	      XftFontClose (display, xfont->xft_font);
+	      xfont->xft_font = NULL;
+		
+	      load_fallback_font (xfont);
+	    }
 	}
-
-      face = xfont->xft_font->u.ft.font->face;
-
-      /* There should be a unicode encoding, since we queried for it */
-      for (charmap = 0; charmap < face->num_charmaps; charmap++)
-	if (face->charmaps[charmap]->encoding == ft_encoding_unicode)
-	  break;
-  
-      g_assert (charmap != face->num_charmaps);
-  
-      error = FT_Set_Charmap(face, face->charmaps[charmap]);
     }
-  
+
   return xfont->xft_font;
 }
 
