@@ -1,3 +1,8 @@
+2002-10-15  Matthias Clasen  <maclas@gmx.de>
+
+	* docs/Makefile.am: Dist the xml/*.xml, not
+	sgml/*.sgml.  (#95678, Owen Taylor)
+
 2002-10-14  Matthias Clasen  <maclas@gmx.de>
 
 	* docs/Makefile.am (SCANOBJ_FILES): Add $(DOC_MODULE).interfaces.
