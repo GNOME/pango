@@ -1,3 +1,10 @@
+Tue Aug 20 17:14:13 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pangofc-fontmap.cI: conditionalize 
+	FC_PATTERN usage on #ifdef FC_PATTERN, since
+	it only existed in fontconfig for a brief amount 
+	of time.
+
 Tue Aug 20 16:06:36 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* configure.in: Make the test for VARARGS macros

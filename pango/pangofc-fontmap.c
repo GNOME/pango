@@ -594,10 +594,12 @@ pango_fc_font_map_get_patterns (PangoFontMap               *fontmap,
       {
 	font_pattern = FcFontRenderPrepare (NULL, pattern,
 					    font_patterns->fonts[f]);
+#ifdef FC_PATTERN
 	/* The FC_PATTERN element, which points back to our the original patterm
 	 * defeats our hash tables.
 	 */
 	FcPatternDel (font_pattern, FC_PATTERN);
+#endif /* FC_PATTERN */
 
 	if (font_pattern)
 	  patterns->patterns[patterns->n_patterns++] = uniquify_pattern (fcfontmap, font_pattern);
