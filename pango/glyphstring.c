@@ -214,9 +214,9 @@ pango_glyph_string_extents_range (PangoGlyphString *glyphs,
 	    {
 	      logical_rect->width += geometry->width;
 
-	      new_pos = MIN (logical_rect->y, glyph_logical.y + geometry->y_offset);
+	      new_pos = MIN (logical_rect->y, glyph_logical.y);
 	      logical_rect->height = MAX (logical_rect->y + logical_rect->height,
-					  glyph_logical.y + glyph_logical.height + geometry->y_offset) - new_pos;
+					  glyph_logical.y + glyph_logical.height) - new_pos;
 	      logical_rect->y = new_pos;
 	    }
 	}

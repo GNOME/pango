@@ -1,3 +1,10 @@
+Thu Jan 10 15:04:31 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/glyphstring.c (pango_glyph_string_extents_range): 
+	Don't offset the logical rect by y_offset - this generally
+	is not desired, since it means that the logical height
+	of a line could change if it included accented characters.
+
 2002-01-09  Alex Larsson  <alexl@redhat.com>
 
 	* pango/pangoxft-fontmap.c (pango_xft_font_map_load_fontset):
