@@ -1,3 +1,9 @@
+Overview of changes between 1.3.0 and 1.3.1
+===========================================
+* Fix a problem with iteration by chars [Mariano Suárez-Alvarez]
+* Misc bug and build fixes [Martin Kretzschmar, Padraig O'Briain]
+* Fix header file includes to work with recent FreeType.
+
 Overview of changes between 1.2.x and 1.3.0
 ===========================================
 * Share modules between the FT2 and Xft backend. Export PangoFcFont
