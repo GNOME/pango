@@ -907,8 +907,8 @@ find_color(const char *name,
   if (color)
     {
       color->red = (found->red * 65535) / 255;
-      color->blue = (found->green * 65535) / 255;
-      color->green = (found->blue * 65535) / 255;
+      color->green = (found->green * 65535) / 255;
+      color->blue = (found->blue * 65535) / 255;
     }
 
   return TRUE;
