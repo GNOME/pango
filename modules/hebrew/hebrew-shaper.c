@@ -53,6 +53,7 @@
 #define UNI_GIMMEL              0x05d2
 #define	UNI_DALED		0x05D3
 #define	UNI_KAF			0x05DB
+#define	UNI_FINAL_KAF           0x05DA
 #define UNI_VAV			0x05D5
 #define	UNI_YOD			0x05D9
 #define	UNI_RESH		0x05E8
@@ -243,7 +244,7 @@ hebrew_shaper_get_cluster_kerning(gunichar            *cluster,
 				  gint                y_offset[])
 {
   int i;
-  int base_ink_x_offset, base_ink_width, base_ink_height;
+  int base_ink_x_offset, base_ink_y_offset, base_ink_width, base_ink_height;
   gunichar base_char = cluster[0];
 
   x_offset[0] = 0;
@@ -253,6 +254,7 @@ hebrew_shaper_get_cluster_kerning(gunichar            *cluster,
     return;
 
   base_ink_x_offset = ink_rect[0].x;
+  base_ink_y_offset = ink_rect[0].y;
   base_ink_width = ink_rect[0].width;
   base_ink_height = ink_rect[0].height;
 
@@ -287,10 +289,9 @@ hebrew_shaper_get_cluster_kerning(gunichar            *cluster,
 	      double space = 0.7;
 	      double kern = 0.5;
 
+	      /* Shift all characters to make place for the mapiq */
 	      for (j=0; j<i; j++)
-		{
-		  x_offset[j] += ink_rect[0].width*(1+space-kern);
-		}
+		  x_offset[j] += ink_rect[i].width*(1+space-kern);
 
 	      width[cluster_length-1] += ink_rect[i].width*(1+space-kern);
 	      x_offset[i] -= ink_rect[i].width*(kern);
@@ -331,6 +332,23 @@ hebrew_shaper_get_cluster_kerning(gunichar            *cluster,
 	    - ink_rect[i].x - ink_rect[i].width;
 	}
 
+      /* VOWELS under FINAL KAF are offset centered and offset in
+	 y */
+      else if ((base_char == UNI_FINAL_KAF
+		)
+	       && ((gl >= UNI_SHEVA && gl <= UNI_QAMATS) ||
+		   gl == UNI_QUBUTS)) 
+	{
+	  /* x are at 1/3 to take into accoun the stem */
+	  x_offset[i] = base_ink_x_offset - ink_rect[i].x
+	    + base_ink_width * 1/3 - ink_rect[i].width/2;
+
+	  /* Center in y */
+	  y_offset[i] = base_ink_y_offset - ink_rect[i].y
+	    + base_ink_height * 1/2 - ink_rect[i].height/2;
+	}
+
+      
       /* MAPIQ in PE or FINAL PE */
       else if (gl == UNI_MAPIQ
 	       && (base_char == UNI_PE || base_char == UNI_FINAL_PE))
@@ -356,6 +374,24 @@ hebrew_shaper_get_cluster_kerning(gunichar            *cluster,
 	       && base_char == UNI_YOD)
 	{
 	  x_offset[i]=  base_ink_x_offset - ink_rect[i].x;
+	  
+	  /* Lower left in y */
+	  y_offset[i] = base_ink_y_offset - ink_rect[i].y
+	    + base_ink_height - ink_rect[i].height*1.75;
+
+	  if (base_ink_height > base_ink_width * 2)
+	    {
+	      int j;
+	      double space = 0.7;
+	      double kern = 0.5;
+
+	      /* Shift all cluster characters to make space for mapiq */
+	      for (j=0; j<i; j++)
+		x_offset[j] += ink_rect[i].width*(1+space-kern);
+
+	      width[cluster_length-1] += ink_rect[i].width*(1+space-kern);
+	    }
+	  
 	}
 
       /* VOWEL DOT next to any other character */
