@@ -1,3 +1,13 @@
+Wed Aug  7 12:32:39 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/opentype/ftxgsub.c (TT_Load_GSUB_Table):
+	Offset to MarkAttachClassDef is offset to table,
+	not offset to offset to table.
+
+	* pango/opentype/ftxopen.c (Get_Device): Handle
+	NULL device tables which we represent with
+	d->DeltaValue == NULL.
+
 Wed Aug  7 11:07:10 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* modules/hangul/hangul-xft.c (hangul_engine_shape): Get
