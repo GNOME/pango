@@ -32,7 +32,7 @@ typedef enum
   BREAK_ALREADY_HANDLED,   /* didn't use the table */
   BREAK_PROHIBITED, /* no break, even if spaces intervene */
   BREAK_IF_SPACES,  /* "indirect break" (only if there are spaces) */
-  BREAK_ALLOWED,    /* "direct break" (can always break here) */
+  BREAK_ALLOWED     /* "direct break" (can always break here) */
   /* TR 14 has one more break-opportunity class,
    * "indirect break opportunity for combining marks following a space"
    * but we handle that inline in the code.

@@ -1,3 +1,7 @@
+Tue Jan  4 14:14:28 2005  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/break.c (enum): Fix trailing comma in enum (#162618)
+
 Tue Jan  4 14:11:43 2005  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pango-attributes.c (pango_attr_list_splice): Fix
