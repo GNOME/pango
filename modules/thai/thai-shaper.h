@@ -1,6 +1,8 @@
 #ifndef __THAI_SHAPER_H__
 #define __THAI_SHAPER_H__
 
+#include "config.h"
+
 #ifdef HAVE_X
 #include "pangox.h"
 #endif
