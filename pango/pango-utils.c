@@ -96,7 +96,7 @@ pango_split_file_list (const char *str)
       
       if (file[0] == '~' && file[1] == G_DIR_SEPARATOR)
 	{
-	  char *tmp = g_strconcat (g_get_home_dir(), files + 1, NULL);
+	  char *tmp = g_strconcat (g_get_home_dir(), file + 1, NULL);
 	  g_free (file);
 	  file = tmp;
 	}
