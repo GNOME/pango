@@ -199,6 +199,17 @@ draw_box (XftDraw      *draw,
 	       x, y + height - xfont->mini_pad, width, xfont->mini_pad);
 }
 
+/**
+ * pango_xft_render:
+ * @draw:    the XftDraw object.
+ * @color:   the color in which to draw the string
+ * @font:    the font in which to draw the string
+ * @glyphs:  the glyph string to draw
+ * @x:       the x position of start of string (in pixels)
+ * @y:       the y position of baseline (in pixels)
+ *
+ * Render a PangoGlyphString onto an XftDraw object wrapping an X drawable.
+ */
 void
 pango_xft_render (XftDraw          *draw,
 		  XftColor         *color,
@@ -458,6 +469,13 @@ pango_xft_font_find_shaper (PangoFont     *font,
   return (PangoEngineShape *)pango_map_get_engine (shape_map, ch);
 }
 
+/**
+ * pango_xft_font_get_font:
+ * @font a Pango font.
+ *
+ * Returns the XftFont of a font.
+ *
+ * Returns: the XftFont associated to @font.
 XftFont *
 pango_xft_font_get_font (PangoFont *font)
 {
@@ -470,6 +488,14 @@ pango_xft_font_get_font (PangoFont *font)
   return xfont->xft_font;
 }
 
+/**
+ * pango_xft_font_get_display:
+ * @font a Pango font.
+ *
+ * Returns the X display of the XftFont of a font.
+ *
+ * Returns: the X display of the XftFont associated to @font.
+ **/
 Display *
 pango_xft_font_get_display (PangoFont *font)
 {
@@ -484,6 +510,16 @@ pango_xft_font_get_display (PangoFont *font)
   return display;
 }
 
+/**
+ * pango_xft_get_unknown_glyph:
+ * @font: a #PangoFont
+ * @wc: the Unicode character for which a glyph is needed.
+ *
+ * Return the index of a glyph suitable for drawing @wc as an
+ * unknown character.
+ *
+ * Return value: a glyph index into @font
+ **/
 PangoGlyph
 pango_xft_font_get_unknown_glyph (PangoFont *font,
 				  gunichar   wc)
@@ -493,6 +529,14 @@ pango_xft_font_get_unknown_glyph (PangoFont *font,
   return wc | PANGO_XFT_UNKNOWN_FLAG;
 }
 
+/**
+ * pango_xft_font_get_face:
+ * @font: a Pango font.
+ *
+ * Gets the FreeType FT_Face associated with a font.
+ *
+ * Returns: the FreeType FT_Face associated with @font.
+ **/
 FT_Face
 pango_xft_font_get_face (PangoFont *font)
 {
@@ -508,6 +552,14 @@ pango_xft_font_get_face (PangoFont *font)
     return xfont->xft_font->u.ft.font->face;
 }
 
+/**
+ * pango_xft_font_get_ot_info:
+ * @font: a Pango font.
+ *
+ * Gets the OpenType info of a font as a #PangoOTInfo.
+ * 
+ * Returns: the OpenType info of @font, or %NULL if there is none.
+ **/
 PangoOTInfo *
 pango_xft_font_get_ot_info (PangoFont *font)
 {

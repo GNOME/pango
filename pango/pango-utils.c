@@ -52,9 +52,9 @@
  * pango_trim_string:
  * @str: a string
  * 
- * Trim leading and trailing whitespace from a string.
+ * Trims leading and trailing whitespace from a string.
  * 
- * Return value: A newly allocated string that must be freed with g_free()
+ * Return value: A newly-allocated string that must be freed with g_free()
  **/
 char *
 pango_trim_string (const char *str)
@@ -77,8 +77,8 @@ pango_trim_string (const char *str)
  * pango_split_file_list:
  * @str: a comma separated list of filenames
  * 
- * Split a G_SEARCHPATH_SEPARATOR-separated list of files, stripping
- * white space and subsituting ~/ with $HOME/
+ * Splits a G_SEARCHPATH_SEPARATOR-separated list of files, stripping
+ * white space and subsituting ~/ with $HOME/.
  * 
  * Return value: a list of strings to be freed with g_strfreev()
  **/
@@ -111,7 +111,7 @@ pango_split_file_list (const char *str)
 #ifndef G_OS_WIN32
       /* '~' is a quite normal and common character in file names on
        * Windows, especially in the 8.3 versions of long file names, which
-       * still occur and then. Also, few Windows user are aware of the
+       * still occur now and then. Also, few Windows user are aware of the
        * Unix shell convention that '~' stands for the home directory,
        * even if they happen to have a home directory.
        */
@@ -136,17 +136,17 @@ pango_split_file_list (const char *str)
  * @stream: a stdio stream
  * @str: #GString buffer into which to write the result
  * 
- * Read an entire line from a file into a buffer. Lines may
+ * Reads an entire line from a file into a buffer. Lines may
  * be delimited with '\n', '\r', '\n\r', or '\r\n'. The delimiter
  * is not written into the buffer. Text after a '#' character is treated as
  * a comment and skipped. '\' can be used to escape a # character.
- * '\' proceding a line delimiter combines adjacent lines. A '\' proceding
+ * '\' proceeding a line delimiter combines adjacent lines. A '\' proceeding
  * any other character is ignored and written into the output buffer
  * unmodified.
  * 
- * Return value: 0 if the stream was already at an EOF character, otherwise
+ * Return value: 0 if the stream was already at an %EOF character, otherwise
  *               the number of lines read (this is useful for maintaining
- *               a line number counter which doesn't combine lines with \) 
+ *               a line number counter which doesn't combine lines with '\') 
  **/
 gint
 pango_read_line (FILE *stream, GString *str)
@@ -267,7 +267,7 @@ pango_skip_space (const char **pos)
  * @pos: in/out string position
  * @out: a #GString into which to write the result
  * 
- * Scan a word into a #GString buffer. A word consists
+ * Scans a word into a #GString buffer. A word consists
  * of [A-Za-z_] followed by zero or more [A-Za-z_0-9]
  * Leading white space is skipped.
  * 
@@ -309,7 +309,7 @@ pango_scan_word (const char **pos, GString *out)
  * @pos: in/out string position
  * @out: a #GString into which to write the result
  * 
- * Scan a string into a #GString buffer. The string may either
+ * Scans a string into a #GString buffer. The string may either
  * be a sequence of non-white-space characters, or a quoted
  * string with '"'. Instead a quoted string, '\"' represents
  * a literal quote. Leading white space outside of quotes is skipped.
@@ -392,6 +392,17 @@ pango_scan_string (const char **pos, GString *out)
   return TRUE;
 }
 
+/**
+ * pango_scan_int:
+ * @pos: in/out string position
+ * @out: an int into which to write the result
+ * 
+ * Scans an integer. An integer consists
+ * of up to 31 decimal digits. 
+ * Leading white space is skipped.
+ * 
+ * Return value: %FALSE if a parse error occured.
+ **/
 gboolean
 pango_scan_int (const char **pos, int *out)
 {
@@ -598,7 +609,7 @@ read_config ()
  * pango_config_key_get:
  * @key: Key to look up, in the form "SECTION/KEY".
  * 
- * Look up a key in the pango config database
+ * Looks up a key in the Pango config database
  * (pseudo-win.ini style, read from $sysconfdir/pango/pangorc,
  *  ~/.pangorc, and getenv (PANGO_RC_FILE).)
  * 
@@ -638,6 +649,18 @@ DllMain (HINSTANCE hinstDLL,
 
 #endif /* G_OS_WIN32 */
 
+/**
+ * pango_get_sysconf_subdirectory:
+ *
+ * On Unix, returns the name of the "pango" subdirectory of SYSCONFDIR
+ * (which is set at compile time). On Win32, returns the Pango
+ * installation directory (which is set at installation time, and
+ * stored in the registry). The returned string should not be
+ * freed.
+ *
+ * Return value: the Pango sysconf directory. The returned string should
+ * not be freed. 
+ */
 G_CONST_RETURN char *
 pango_get_sysconf_subdirectory (void)
 {
@@ -654,6 +677,18 @@ pango_get_sysconf_subdirectory (void)
 #endif
 }
 
+/**
+ * pango_get_lib_subdirectory:
+ *
+ * On Unix, returns the name of the "pango" subdirectory of LIBDIR
+ * (which is set at compile time). On Win32, returns the Pango
+ * installation directory (which is set at installation time, and
+ * stored in the registry). The returned string should not be
+ * freed.
+ *
+ * Return value: the Pango lib directory. The returned string should
+ * not be freed. 
+ */
 G_CONST_RETURN char *
 pango_get_lib_subdirectory (void)
 {
@@ -670,6 +705,18 @@ pango_get_lib_subdirectory (void)
 #endif
 }
 
+/**
+ * pango_parse_style:
+ * @str: a string to parse.
+ * @style: a #PangoStyle to store the result in.
+ * @warn: if %TRUE, issue a g_warning() on bad input.
+ * 
+ * Parses a font style. The allowed values are "normal",
+ * "italic" and "oblique", case variations being
+ * ignored.
+ * 
+ * Return value: %TRUE if @str was successfully parsed.
+ **/ 
 gboolean
 pango_parse_style (const char *str,
 		   PangoStyle *style,
@@ -709,6 +756,18 @@ pango_parse_style (const char *str,
   return FALSE;
 }
 
+/**
+ * pango_parse_variant:
+ * @str: a string to parse.
+ * @style: a #PangoVariant to store the result in.
+ * @warn: if %TRUE, issue a g_warning() on bad input.
+ * 
+ * Parses a font variant. The allowed values are "normal"
+ * and "smallcaps" or "small_caps", case variations being
+ * ignored.
+ * 
+ * Return value: %TRUE if @str was successfully parsed.
+ **/ 
 gboolean
 pango_parse_variant (const char   *str,
 		     PangoVariant *variant,
@@ -743,6 +802,18 @@ pango_parse_variant (const char   *str,
   return FALSE;
 }
 
+/**
+ * pango_parse_weight:
+ * @str: a string to parse.
+ * @style: a #PangoWeight to store the result in.
+ * @warn: if %TRUE, issue a g_warning() on bad input.
+ * 
+ * Parses a font weight. The allowed values are "heavy",
+ * "ultrabold", "bold", "normal", "light", "ultraleight" 
+ * and integers. Case variations are ignored.
+ * 
+ * Return value: %TRUE if @str was successfully parsed.
+ **/ 
 gboolean
 pango_parse_weight (const char  *str,
 		    PangoWeight *weight,
@@ -827,6 +898,20 @@ pango_parse_weight (const char  *str,
   return FALSE;
 }
 
+/**
+ * pango_parse_stretch:
+ * @str: a string to parse.
+ * @style: a #PangoStretch to store the result in.
+ * @warn: if %TRUE, issue a g_warning() on bad input.
+ * 
+ * Parses a font stretch. The allowed values are 
+ * "ultra_condensed", "extra_condensed", "condensed", 
+ * "semi_condensed", "normal", "semi_expanded", "expanded", 
+ * "extra_expanded" and "ultra_expanded". Case variations are 
+ * ignored and the '_' characters may be omitted.
+ * 
+ * Return value: %TRUE if @str was successfully parsed.
+ **/ 
 gboolean
 pango_parse_stretch (const char   *str,
 		     PangoStretch *stretch,
@@ -979,11 +1064,11 @@ pango_language_get_type (void)
 }
 
 /**
- * pang_language_from_string:
+ * pango_language_from_string:
  * @language: a string representing a language tag
  * 
  * Take a RFC-3066 format language tag as a string and convert it to a
- * #PangoLang pointer that can be efficiently copied (copy the
+ * #PangoLanguage pointer that can be efficiently copied (copy the
  * pointer) and compared with other language tags (compare the
  * pointer.)
  *
@@ -991,7 +1076,7 @@ pango_language_get_type (void)
  * lowercase, mapping '_' to '-', and stripping all characters other
  * than letters and '-'.
  * 
- * Return value: an opaque pointer to a PangoLang structure.
+ * Return value: an opaque pointer to a #PangoLanguage structure.
  *               this will be valid forever after.
  **/
 PangoLanguage *
@@ -1032,7 +1117,7 @@ pango_language_from_string (const char *language)
  *            %NULL is allowed and matches nothing but '*'
  * @range_list: a list of language ranges, separated by ';' characters.
  *   each element must either be '*', or a RFC 3066 language range
- *   canonicalized as by pango_lang_canonicalize().
+ *   canonicalized as by pango_language_from_string().
  * 
  * Checks if a language tag matches one of the elements in a list of
  * language ranges. A language tag is considered to match a range
