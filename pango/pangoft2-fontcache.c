@@ -215,9 +215,7 @@ pango_ft2_font_cache_load (PangoFT2FontCache *cache,
 	  return NULL;
 	}
       
-#if DEBUGGING
-      g_print ("  = %p\n", face);
-#endif
+      PING (("  = %p\n", face));
 
       entry = g_new (CacheEntry, 1);
 

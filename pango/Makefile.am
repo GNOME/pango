@@ -79,7 +79,23 @@ EXTRA_DIST =			\
 	pangoft2-fontcache.c	\
 	pangoft2-fontmap.c	\
 	makefile.mingw		\
-	makefile.mingw.in
+	makefile.mingw.in	\
+	pango.rc		\
+	pango.rc.in		\
+	pangoft2.rc		\
+	pangoft2.rc.in		\
+	pangowin32.rc		\
+	pangowin32.rc.in
+
 
 makefile.mingw: $(top_builddir)/config.status $(top_srcdir)/pango/makefile.mingw.in
+	cd $(top_builddir) && CONFIG_FILES=pango/$@ CONFIG_HEADERS= $(SHELL) ./config.status
+
+pango2.rc: $(top_builddir)/config.status $(top_srcdir)/pango/pango.rc.in
+	cd $(top_builddir) && CONFIG_FILES=pango/$@ CONFIG_HEADERS= $(SHELL) ./config.status
+
+pangoft2.rc: $(top_builddir)/config.status $(top_srcdir)/pango/pangoft2.rc.in
+	cd $(top_builddir) && CONFIG_FILES=pango/$@ CONFIG_HEADERS= $(SHELL) ./config.status
+
+pangowin32.rc: $(top_builddir)/config.status $(top_srcdir)/pango/pangowin32.rc.in
 	cd $(top_builddir) && CONFIG_FILES=pango/$@ CONFIG_HEADERS= $(SHELL) ./config.status

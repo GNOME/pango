@@ -26,9 +26,9 @@
 #include "pangoft2.h"
 
 /* Debugging... */
-#define DEBUGGING 1
+#define DEBUGGING 0
 
-#ifdef DEBUGGING
+#if defined(DEBUGGING) && DEBUGGING
 #ifdef __GNUC__
 #define PING(printlist)					\
 (g_print ("%s:%d ", __PRETTY_FUNCTION__, __LINE__),	\
