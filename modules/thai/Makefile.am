@@ -31,7 +31,7 @@ module_LTLIBRARIES += pango-thai-fc.la
 endif
 endif
 
-thai_fc_sources = $(common_sources) thai-fc.c 
+thai_fc_sources = $(common_sources) thai-fc.c thai-ot.c thai-ot.h
 
 pango_thai_fc_la_LDFLAGS = -export-dynamic -avoid-version -module $(no_undefined)
 pango_thai_fc_la_LIBADD = $(pangoft2libs)

@@ -1,3 +1,9 @@
+Mon Jun  7 2004  Theppitak Karoonboonyanan  <thep@linux.thai.net>
+
+	* modules/thai/Makefile.am modules/thai/thai-shaper.c
+	(thai_engine_shape) +modules/thai/thai-ot.c +modules/thai/thai-ot.h:
+	Add OpenType support in Thai module. (#141541)
+
 Wed Jun  2 10:07:06 2004  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pango-types.h (PANGO_MATRIX_INIT): Remove 
