@@ -32,6 +32,12 @@ AC_PATH_PROG(FRIBIDI_CONFIG, fribidi-config, no)
 if test x$FRIBIDI_CONFIG = xno ; then
   AC_MSG_ERROR([*** fribidi-config not found])
 fi
+
+if $FRIBID_CONFIG --cflags | grep lib/glib/include ; then
+  AC_MSG_ERROR([*** fribidi appears to be compiled against GLib-1.2.x.
+*** You must compile fribidi with GLib-1.3.1 or better.])
+fi
+ 
 FRIBIDI_CFLAGS="`$FRIBIDI_CONFIG --cflags`"
 CFLAGS="$CFLAGS $FRIBIDI_CFLAGS"
 FRIBIDI_LIBS="`$FRIBIDI_CONFIG --libs`"
@@ -158,7 +164,7 @@ else
   AC_PROG_CXX
 fi
 
-AM_CONDITIONAL(BUILD_QT_TEST, ! test "x$QTDIR" = x)
+AM_CONDITIONAL(BUILD_QT_TEST, test "x$QTDIR" != x)
 AC_SUBST(QTDIR)
   
 #

@@ -1,3 +1,22 @@
+Fri Jul 21 09:59:10 2000  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/modules.c (process_module_file): Free buffer strings.
+
+	* pango/pangox-fontmap.c (pango_x_real_get_coverage_win): Add
+	caching of coverage maps on a persistant subwindow of the
+	root window. This window contains a property for
+	each "lang|xlfd,xlfd" which is the result of pango_coverage_to_bytes.
+
+	* pango/pango-context.c (pango_context_finalize): Free
+	the font description.
+
+	* pango/pango-coverage.c (pango_coverage_to/from_bytes): Added
+	functions to covert a PangoCoverage structure too and
+	from a flat block of bytes.
+
+	* configure.in (X_LIBS): Add a check to detect fribidi being
+	compiled against glib-1.2.x.
+
 2000-07-20  Tor Lillqvist  <tml@iki.fi>
 
 	* examples/pangowin32.aliases: Add some more fonts. Document where

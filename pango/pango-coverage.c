@@ -341,4 +341,150 @@ void pango_coverage_max (PangoCoverage *coverage,
     }
 }
 
+#define PANGO_COVERAGE_MAGIC 0xc89dbd5e
+
+/**
+ * pango_coverage_to_bytes:
+ * @coverage: a #PangoCoverage
+ * @bytes: location to store result (must be freed with g_free())
+ * @n_bytes: location to store size of result
+ * 
+ * Convert a PangoCoverage structure into a flat binary format
+ **/
+void
+pango_coverage_to_bytes   (PangoCoverage  *coverage,
+			   guchar        **bytes,
+			   int            *n_bytes)
+{
+  int i, j;
+  int size = 8 + 4 * coverage->n_blocks;
+  guchar *data;
+  int offset;
+  
+  for (i=0; i<coverage->n_blocks; i++)
+    {
+      if (coverage->blocks[i].data)
+	size += 64;
+    }
+
+  data = g_malloc (size);
+
+  *(guint32 *)&data[0] = g_htonl (PANGO_COVERAGE_MAGIC); /* Magic */
+  *(guint32 *)&data[4] = g_htonl (coverage->n_blocks);
+  offset = 8;
+  
+  for (i=0; i<coverage->n_blocks; i++)
+    {
+      guint32 header_val;
+
+      /* Check for solid blocks. This is a sort of random place
+       * to do the optimization, but we care most about getting
+       * it right when storing it somewhere persistant.
+       */
+      if (coverage->blocks[i].data != NULL)
+	{
+	  guchar *data = coverage->blocks[i].data;
+	  guchar first_val = data[0];
+	  
+	  for (j = 1 ; j < 64; j++)
+	    if (data[j] != first_val)
+	      break;
+
+	  if (j == 64)
+	    {
+	      g_free (data);
+	      coverage->blocks[i].data = NULL;
+	      coverage->blocks[i].level = first_val & 0x3;
+	    }
+	}
+
+      if (coverage->blocks[i].data != NULL)
+	header_val = (guint32)-1;
+      else
+	header_val = coverage->blocks[i].level;
+
+      *(guint32 *)&data[offset] = g_htonl (header_val);
+      offset += 4;
+
+      if (coverage->blocks[i].data)
+	{
+	  memcpy (data + offset, coverage->blocks[i].data, 64);
+	  offset += 64;
+	}
+    }
+
+  *bytes = data;
+  *n_bytes = size;
+}
+
+static guint32
+pango_coverage_get_uint32 (guchar **ptr)
+{
+  guint32 val;
+
+  memcpy (&val, *ptr, 4);
+  *ptr += 4;
+
+  return g_ntohl (val);
+}
+
+/**
+ * pango_coverage_from_bytes:
+ * @bytes: binary data representing a #PangoCoverage
+ * @n_bytes: the size of @bytes in bytes
+ * 
+ * Convert data generated from pango_converage_to_bytes() back
+ * to a #PangoCoverage
+ * 
+ * Return value: a newly allocated #PangoCoverage, or NULL if
+ *               the data was invalid.
+ **/
+PangoCoverage *
+pango_coverage_from_bytes (guchar *bytes,
+			   int     n_bytes)
+{
+  PangoCoverage *coverage = g_new0 (PangoCoverage, 1);
+  guchar *ptr = bytes;
+ int i;
+
+  coverage->ref_count = 1;
+  
+  if (n_bytes < 8)
+    goto error;
+
+  if (pango_coverage_get_uint32 (&ptr) != PANGO_COVERAGE_MAGIC)
+    goto error;
+    
+  coverage->n_blocks = pango_coverage_get_uint32 (&ptr);
+  coverage->blocks = g_new0 (PangoBlockInfo, coverage->n_blocks);
+
+  for (i = 0; i < coverage->n_blocks; i++)
+    {
+      guint val;
+      
+      if (ptr + 4 > bytes + n_bytes)
+	goto error;
+
+      val = pango_coverage_get_uint32 (&ptr);
+      if (val == (guint32)-1)
+	{
+	  if (ptr + 64 > bytes + n_bytes)
+	    goto error;
+	  
+	  coverage->blocks[i].data = g_new (guchar, 64);
+	  memcpy (coverage->blocks[i].data, ptr, 64);
+	  ptr += 64;
+	}
+      else
+	coverage->blocks[i].level = val;
+    }
+  
+  return coverage;
+
+ error:
+
+  pango_coverage_unref (coverage);
+  return NULL;
+}
+  
 

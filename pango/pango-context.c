@@ -19,8 +19,10 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#include <pango/pango-context.h>
+#include <string.h>
+
 #include <fribidi/fribidi.h>
+#include <pango/pango-context.h>
 #include "iconv.h"
 
 #include "pango-modules.h"
@@ -125,6 +127,8 @@ pango_context_finalize (GObject *object)
   
   g_slist_foreach (context->font_maps, (GFunc)g_object_unref, NULL);
   g_slist_free (context->font_maps);
+
+  pango_font_description_free (context->font_desc);
   
   G_OBJECT_CLASS (parent_class)->finalize (object);
 }

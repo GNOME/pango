@@ -25,6 +25,8 @@
 #include <string.h>
 #include <errno.h>
 
+#include <X11/Xatom.h>
+
 #include "pango-fontmap.h"
 #include "pango-utils.h"
 #include "pangox-private.h"
@@ -84,6 +86,8 @@ struct _PangoXFontMap
   int n_fonts;
 
   double resolution;		/* (points / pixel) * PANGO_SCALE */
+
+  Window coverage_win;
 };
 
 struct _PangoXFontMapClass
@@ -546,6 +550,270 @@ pango_x_font_map_load_font (PangoFontMap               *fontmap,
   g_free (name);
   return result;
 }
+
+
+/************************
+ * Coverage Map Caching *
+ ************************/
+
+/* We need to be robust against errors accessing the coverage
+ * cache window, since it is not our window. So we temporarily
+ * set this error handler while accessing it. The error_occured
+ * global allows us to tell whether an error occured for
+ * XChangeProperty
+ */
+static gboolean error_occured;
+
+static int 
+ignore_error (Display *d, XErrorEvent *e)
+{
+  return 0;
+}
+
+/* Retrieve the coverage window for the given display.
+ * We look for a property on the root window, and then
+ * check that the window that property points to also
+ * has the same property pointing to itself. The second
+ * check allows us to make sure that a stale property
+ * isn't just pointing to some other apps window
+ */
+static Window
+pango_x_real_get_coverage_win (Display *display)
+{
+  Atom type;
+  int format;
+  gulong n_items;
+  gulong bytes_after;
+  Atom *data;
+  Window retval = None;
+  int (*old_handler) (Display *, XErrorEvent *);
+  
+  Atom coverage_win_atom = XInternAtom (display,
+					"PANGO_COVERAGE_WIN",
+					False);
+  
+  XGetWindowProperty (display,
+		      DefaultRootWindow (display),
+		      coverage_win_atom,
+		      0, 4,
+		      False, XA_WINDOW,
+		      &type, &format, &n_items, &bytes_after,
+		      (guchar **)&data);
+  
+  if (type == XA_WINDOW)
+    {
+      if (format == 32 && n_items == 1 && bytes_after == 0)
+	retval = *data;
+      
+      XFree (data);
+    }
+
+  old_handler= XSetErrorHandler (ignore_error);
+
+  if (XGetWindowProperty (display,
+			  retval,
+			  coverage_win_atom,
+			  0, 4,
+			  False, XA_WINDOW,
+			  &type, &format, &n_items, &bytes_after,
+			  (guchar **)&data) == Success &&
+      type == XA_WINDOW)
+    {
+      if (format != 32 || n_items != 1 || bytes_after != 0 ||
+	  *data != retval)
+	retval = None;
+      
+      XFree (data);
+    }
+  else
+    retval = None;
+
+  XSync (display, False);
+  XSetErrorHandler (old_handler);
+
+  return retval;
+}
+
+/* Find or create the peristant window for caching font coverage
+ * information.
+ *
+ * To assure atomic creation, we first look for the window, then if we
+ * don't find it, grab the server, look for it again, and then if that
+ * still didn't find it, create it and ungrab.
+ */
+static Window
+pango_x_get_coverage_win (PangoXFontMap *xfontmap)
+{
+  if (!xfontmap->coverage_win)
+    xfontmap->coverage_win = pango_x_real_get_coverage_win (xfontmap->display);
+
+  if (!xfontmap->coverage_win)
+    {
+      Display *persistant_display;
+
+      persistant_display = XOpenDisplay (DisplayString (xfontmap->display));
+      if (!persistant_display)
+	{
+	  g_warning ("Cannot create or retrieve display for font coverage cache");
+	  return None;
+	}
+
+      XGrabServer (persistant_display);
+
+      xfontmap->coverage_win = pango_x_real_get_coverage_win (xfontmap->display);
+      if (!xfontmap->coverage_win)
+	{
+	  XSetWindowAttributes attr;
+	  
+	  attr.override_redirect = True;
+	  
+	  XSetCloseDownMode (persistant_display, RetainPermanent);
+	  
+	  xfontmap->coverage_win = 
+	    XCreateWindow (persistant_display,
+			   DefaultRootWindow (persistant_display),
+			   -100, -100, 10, 10, 0, 0,
+			   InputOnly, CopyFromParent,
+			   CWOverrideRedirect, &attr);
+	  
+	  XChangeProperty (persistant_display,
+			   DefaultRootWindow (persistant_display),
+			   XInternAtom (persistant_display,
+					"PANGO_COVERAGE_WIN",
+					FALSE),
+			   XA_WINDOW,
+			   32, PropModeReplace,
+			   (guchar *)&xfontmap->coverage_win, 1);
+	  
+
+	  XChangeProperty (persistant_display,
+			   xfontmap->coverage_win,
+			   XInternAtom (persistant_display,
+					"PANGO_COVERAGE_WIN",
+					FALSE),
+			   XA_WINDOW,
+			   32, PropModeReplace,
+			   (guchar *)&xfontmap->coverage_win, 1);
+	}
+      
+      XUngrabServer (persistant_display);
+      
+      XSync (persistant_display, False);
+      XCloseDisplay (persistant_display);
+    }
+
+  return xfontmap->coverage_win;
+}
+
+/* Find the cached value for the coverage map on the
+ * coverage cache window, if it exists. *atom is set
+ * to the interned value of str for later use in storing
+ * the property if the lookup fails
+ */
+static PangoCoverage *
+pango_x_get_cached_coverage (PangoXFontMap *xfontmap,
+			     const char    *str,
+			     Atom          *atom)
+{
+  int (*old_handler) (Display *, XErrorEvent *);
+  Window coverage_win;
+  PangoCoverage *result = NULL;
+
+  Atom type;
+  int format;
+  int tries = 5;
+  gulong n_items;
+  gulong bytes_after;
+  guchar *data;
+
+  *atom = XInternAtom (xfontmap->display, str, False);
+      
+  while (tries--)
+    {
+      coverage_win = pango_x_get_coverage_win (xfontmap);
+      
+      if (!coverage_win)
+	return NULL;
+      
+      old_handler= XSetErrorHandler (ignore_error);
+      
+      if (XGetWindowProperty (xfontmap->display,
+			      coverage_win, *atom,
+			      0, G_MAXLONG,
+			      False, XA_STRING,
+			      &type, &format, &n_items, &bytes_after,
+			      &data) == Success
+	  && type == XA_STRING)
+	{
+	  if (format == 8 && bytes_after == 0)
+	    result = pango_coverage_from_bytes (data, n_items);
+	  
+	  XSetErrorHandler (old_handler);
+	  XFree (data);
+	  break;
+	}
+      else
+	{
+	  /* Window disappeared out from under us */
+	  XSetErrorHandler (old_handler);
+	  xfontmap->coverage_win = None;
+	}
+
+    }
+      
+  return result;
+}
+
+/* Store the given coverage map on the coverage cache window.
+ * atom is the intern'ed value of the string that identifies
+ * the cache entry.
+ */
+static void
+pango_x_store_cached_coverage (PangoXFontMap *xfontmap,
+			       Atom           atom,
+			       PangoCoverage *coverage)
+{
+  int (*old_handler) (Display *, XErrorEvent *);
+  guchar *bytes;
+  gint size;
+
+  int tries = 5;
+  
+  pango_coverage_to_bytes (coverage, &bytes, &size);
+
+  while (tries--)
+    {
+      Window coverage_win = pango_x_get_coverage_win (xfontmap);
+
+      if (!coverage_win)
+	break;
+
+      old_handler = XSetErrorHandler (ignore_error);
+      error_occured = False;
+  
+      XChangeProperty (xfontmap->display,
+		       coverage_win,
+		       atom, 
+		       XA_STRING,
+		       8, PropModeReplace,
+		       bytes, size);
+      
+      XSync (xfontmap->display, False);
+      XSetErrorHandler (old_handler);
+
+      if (!error_occured)
+	break;
+      else
+	{
+	  /* Window disappeared out from under us */
+	  XSetErrorHandler (old_handler);
+	  xfontmap->coverage_win = None;
+	}	  
+    }
+  
+  g_free (bytes);
+}
+
 
 static void
 pango_x_font_map_read_alias_file (PangoXFontMap *xfontmap,
@@ -1090,39 +1358,57 @@ pango_x_font_entry_get_coverage (PangoXFontEntry *entry,
 				 PangoFont       *font,
 				 const char      *lang)
 {
-  guint32 ch;
-  PangoMap *shape_map;
-  PangoCoverage *coverage;
-  PangoCoverage *result;
-  PangoCoverageLevel font_level;
-  PangoMapEntry *map_entry;
+  PangoXFont *xfont;
+  PangoXFontMap *xfontmap = NULL; /* Quiet gcc */
+  PangoCoverage *result = NULL;
   GHashTable *coverage_hash;
+  Atom atom = None;
 
   if (entry)
-    if (entry->coverage)
-      {
-	pango_coverage_ref (entry->coverage);
-	return entry->coverage;
-      }
-
-  result = pango_coverage_new ();
-
-  coverage_hash = g_hash_table_new (g_str_hash, g_str_equal);
-  
-  shape_map = pango_x_get_shaper_map (lang);
-
-  for (ch = 0; ch < 65536; ch++)
     {
-      map_entry = pango_map_get_entry (shape_map, ch);
-      if (map_entry->info)
+      if (entry->coverage)
 	{
-	  coverage = g_hash_table_lookup (coverage_hash, map_entry->info->id);
-	  if (!coverage)
+	  pango_coverage_ref (entry->coverage);
+	  return entry->coverage;
+	}
+      
+      xfont = (PangoXFont *)font;
+      
+      xfontmap = (PangoXFontMap *)pango_x_font_map_for_display (xfont->display);
+      if (entry->xlfd)
+	{
+	  char *str = g_strconcat (lang ? lang : "*", "|", entry->xlfd, NULL);
+	  result = pango_x_get_cached_coverage (xfontmap, str, &atom);
+	  g_free (str);
+	}
+    }
+
+  if (!result)
+    {
+      guint32 ch;
+      PangoMap *shape_map;
+      PangoCoverage *coverage;
+      PangoCoverageLevel font_level;
+      PangoMapEntry *map_entry;
+      
+      result = pango_coverage_new ();
+      
+      coverage_hash = g_hash_table_new (g_str_hash, g_str_equal);
+      
+      shape_map = pango_x_get_shaper_map (lang);
+      
+      for (ch = 0; ch < 65536; ch++)
+	{
+	  map_entry = pango_map_get_entry (shape_map, ch);
+	  if (map_entry->info)
 	    {
-	      PangoEngineShape *engine = (PangoEngineShape *)pango_map_get_engine (shape_map, ch);
-	      coverage = engine->get_coverage (font, lang);
-	      g_hash_table_insert (coverage_hash, map_entry->info->id, coverage);
-	    }
+	      coverage = g_hash_table_lookup (coverage_hash, map_entry->info->id);
+	      if (!coverage)
+		{
+		  PangoEngineShape *engine = (PangoEngineShape *)pango_map_get_engine (shape_map, ch);
+		  coverage = engine->get_coverage (font, lang);
+		  g_hash_table_insert (coverage_hash, map_entry->info->id, coverage);
+		}
 	  
 	  font_level = pango_coverage_get (coverage, ch);
 	  if (font_level == PANGO_COVERAGE_EXACT && !map_entry->is_exact)
@@ -1130,18 +1416,22 @@ pango_x_font_entry_get_coverage (PangoXFontEntry *entry,
 
 	  if (font_level != PANGO_COVERAGE_NONE)
 	    pango_coverage_set (result, ch, font_level);
+	    }
 	}
+      
+      g_hash_table_foreach (coverage_hash, free_coverages_foreach, NULL);
+      g_hash_table_destroy (coverage_hash);
+
+      if (atom)
+	pango_x_store_cached_coverage (xfontmap, atom, result);
     }
-
-  g_hash_table_foreach (coverage_hash, free_coverages_foreach, NULL);
-  g_hash_table_destroy (coverage_hash);
-
+      
   if (entry)
     {
       entry->coverage = result;
       pango_coverage_ref (result);
     }
-
+      
   return result;
 }
 

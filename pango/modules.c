@@ -301,11 +301,14 @@ process_module_file (FILE *module_file)
       if (have_error)
 	{
 	  g_free(pair);
-	  return FALSE;
+	  break;
 	}
     }
 
-  return TRUE;
+  g_string_free (line_buf, TRUE);
+  g_string_free (tmp_buf, TRUE);
+
+  return !have_error;
 }
 
 static void

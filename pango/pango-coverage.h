@@ -49,10 +49,18 @@ void               pango_coverage_set     (PangoCoverage      *coverage,
 void               pango_coverage_max     (PangoCoverage      *coverage,
 					   PangoCoverage      *other);
 
+void           pango_coverage_to_bytes   (PangoCoverage  *coverage,
+					  guchar        **bytes,
+					  int            *n_bytes);
+PangoCoverage *pango_coverage_from_bytes (guchar         *bytes,
+					  int             n_bytes);
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
 
 #endif /* __PANGO_COVERAGE_H__ */
+
+
 
 
