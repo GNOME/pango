@@ -92,4 +92,17 @@ void  pango_ft2_font_set_cache_glyph_data    (PangoFont      *font,
 void  pango_ft2_font_set_glyph_cache_destroy (PangoFont      *font,
 					      GDestroyNotify  destroy_notify);
 
+void _pango_ft2_draw_rect            (FT_Bitmap   *bitmap,
+				      PangoMatrix *matrix,
+				      int          x,
+				      int          y,
+				      int          width,
+				      int          height);
+void _pango_ft2_draw_error_underline (FT_Bitmap   *bitmap,
+				      PangoMatrix *matrix,
+				      int          x,
+				      int          y,
+				      int          width,
+				      int          height);
+
 #endif /* __PANGOFT2_PRIVATE_H__ */

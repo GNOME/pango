@@ -40,7 +40,7 @@ endif
 lib_LTLIBRARIES = libpango-1.0.la
 
 libpango_1_0_la_LDFLAGS = -version-info $(LT_VERSION_INFO) $(no_undefined)
-libpango_1_0_la_LIBADD = $(GLIB_LIBS) mini-fribidi/libmini-fribidi.la
+libpango_1_0_la_LIBADD = $(GLIB_LIBS) mini-fribidi/libmini-fribidi.la -lm
 libpango_1_0_la_DEPENDENCIES = mini-fribidi/libmini-fribidi.la
 
 if OS_WIN32
@@ -189,6 +189,7 @@ libpangoft2_1_0_la_SOURCES =   	\
 	pangoft2.c		\
 	pangoft2-private.h	\
 	pangoft2-fontmap.c	\
+	pangoft2-render.c	\
 	module-defs-fc.c
 
 if OS_WIN32

@@ -1,3 +1,25 @@
+Fri May 28 11:39:39 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-types.h pango/pango-utils.c: Add PangoMatrix
+	type for affine transforms.
+	
+	* configure.in pango.pc.in pango/Makefile.am: Add a -lm
+	dependency for PangoMatrix operations.
+
+	* pango/pango-context.[ch]: Add pango_context_set/get_matrix().
+
+	* pango/pangoft2-render.c pango/pangoft2-private.h: Add
+	code for drawing antialiased transformed rectangles and
+	squiggly error underlines.
+
+	* pango/pangoft2.[ch]: Add pango_ft2_render_transformed(),
+	pango_ft2_render_layout_subpixel(), 
+	pango_ft2_render_layout_line_subpixel(), implement transformed
+	rendering.
+
+	* pango/pangofc-font.c: Pass any transformation matrix on to
+	fontconfig when creating the pattern for a PangoFcFont.
+
 Fri May 28 2004  Theppitak Karoonboonyanan  <thep@linux.thai.net>
 
 	* pango/opentype/pango-ot-buffer.c (apply_gpos_ltr): Negate y offset

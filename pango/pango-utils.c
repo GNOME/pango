@@ -20,6 +20,7 @@
  */
 
 #include <errno.h>
+#include <math.h>
 #include <string.h>
 #include <stdlib.h>
 
@@ -984,6 +985,141 @@ pango_parse_stretch (const char   *str,
   if (warn)
     g_warning ("Stretch must be ultra_condensed, extra_condensed, condensed, semi_condensed, normal, semi_expanded, expanded, extra_expanded, or ultra_expanded");
   return FALSE;
+}
+
+/**
+ * pango_matrix_copy:
+ * @matrix: a #PangoMatrix
+ * 
+ * Copies a #PangoMatrix.
+ * 
+ * Return value: a copy of @matrix. The result must be freed with
+ *  pango_matrix_free().
+ **/
+PangoMatrix *
+pango_matrix_copy (PangoMatrix *matrix)
+{
+  g_return_val_if_fail (matrix != NULL, NULL);
+
+  return g_memdup (matrix, sizeof (PangoMatrix));
+}
+
+/**
+ * pango_matrix_free:
+ * @matrix: a #PangoMatrix
+ * 
+ * Free a #PangoMatrix created with pango_matrix_copy().
+ **/
+void
+pango_matrix_free (PangoMatrix *matrix)
+{
+  g_return_if_fail (matrix != NULL);
+  
+  g_free (matrix);
+}
+
+/**
+ * pango_matrix_translate:
+ * @matrix: a #PangoMatrix
+ * @tx: amount to translate in the X direction
+ * @ty: amount to translate in the Y direction
+ * 
+ * Changes the transformation represented by @matrix to be the
+ * transformation given by first translating by (@tx, @ty)
+ * then applying the original transformation.
+ **/
+void
+pango_matrix_translate (PangoMatrix *matrix,
+			double       tx,
+			double       ty)
+{
+  g_return_if_fail (matrix != NULL);
+
+  matrix->x0  = matrix->xx * tx + matrix->xy * ty + matrix->x0;
+  matrix->y0  = matrix->yx * tx + matrix->yy * ty + matrix->y0;
+}
+
+/**
+ * pango_matrix_scale:
+ * @matrix: a #PangoMatrix
+ * @scale_x: amount to scale by in X direction
+ * @scale_y: amount to scale by in Y direction
+ * 
+ * Changes the transformation represented by @matrix to be the
+ * transformation given by first scaling by @sx in the X direction
+ * and @sy in the Y direction then applying the original
+ * transformation.
+ **/
+void
+pango_matrix_scale (PangoMatrix *matrix,
+		    double       scale_x,
+		    double       scale_y)
+{
+  g_return_if_fail (matrix != NULL);
+
+  matrix->xx *= scale_x;
+  matrix->xy *= scale_y;
+  matrix->yx *= scale_x;
+  matrix->yy *= scale_y;
+}
+
+/**
+ * pango_matrix_rotate:
+ * @matrix: a #PangoMatrix
+ * @degrees: degrees to rotate counter-clockwise
+ * 
+ * Changes the transformation represented by @matrix to be the
+ * transformation given by first rotating by @degrees degrees
+ * counter-clokwise then applying the original transformation.
+ **/
+void
+pango_matrix_rotate (PangoMatrix *matrix,
+		     double       degrees)
+{
+  PangoMatrix tmp;
+  gdouble r, s, c;
+
+  g_return_if_fail (matrix != NULL);
+
+  r = degrees * (G_PI / 180.);
+  s = sin (r);
+  c = cos (r);
+
+  tmp.xx = c;
+  tmp.xy = s;
+  tmp.yx = -s;
+  tmp.yy = c;
+  tmp.x0 = 0;
+  tmp.y0 = 0;
+
+  pango_matrix_concat (matrix, &tmp);
+}
+
+/**
+ * pango_matrix_concat:
+ * @matrix: a #PangoMatrix
+ * @new: a #PangoMatrix
+ * 
+ * Changes the transformation represented by @matrix to be the
+ * transformation given by first applying transformation
+ * given by @new then applying the original transformation.
+ **/
+void
+pango_matrix_concat (PangoMatrix *matrix,
+		     PangoMatrix *new)
+{
+  PangoMatrix tmp;
+  
+  g_return_if_fail (matrix != NULL);
+
+  tmp = *matrix;
+
+  matrix->xx = tmp.xx * new->xx + tmp.xy * new->yx;
+  matrix->xy = tmp.xx * new->xy + tmp.xy * new->yy;
+  matrix->yx = tmp.yx * new->xx + tmp.yy * new->yx;
+  matrix->yy = tmp.yx * new->xy + tmp.yy * new->yy;
+  matrix->x0  = tmp.xx * new->x0 + tmp.xy * new->y0 + tmp.x0;
+  matrix->y0  = tmp.yx * new->y0 + tmp.yy * new->y0 + tmp.y0;
 }
 
 static const char canon_map[256] = {

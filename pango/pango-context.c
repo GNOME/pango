@@ -37,6 +37,8 @@ struct _PangoContext
   PangoDirection base_dir;
   PangoFontDescription *font_desc;
 
+  PangoMatrix *matrix;
+
   PangoFontMap *font_map;
 };
 
@@ -117,6 +119,8 @@ pango_context_finalize (GObject *object)
     g_object_unref (context->font_map);
 
   pango_font_description_free (context->font_desc);
+  if (context->matrix)
+    pango_matrix_free (context->matrix);
   
   G_OBJECT_CLASS (parent_class)->finalize (object);
 }
@@ -149,6 +153,51 @@ pango_context_new (void)
   context = g_object_new (PANGO_TYPE_CONTEXT, NULL);
   
   return context;
+}
+
+/**
+ * pango_context_set_matrix:
+ * @context: a #PangoContext
+ * @matrix: a #PangoMatrix, or %NULL to unset any existing matrix.
+ *  (No matrix set is the same as setting the identity matrix.)
+ * 
+ * Sets the transformation matrix that will be applied when rendering
+ * with this context. Note that reported metrics are in the user space
+ * coordinates before the application of the matrix, not device-space
+ * coordiantes after the application of the matrix. So, they don't scale
+ * with the matrix, though they may change slightly for different
+ * matrices, depending on how the text is fit to the pixel grid.
+ **/
+void
+pango_context_set_matrix (PangoContext *context,
+			  PangoMatrix  *matrix)
+{
+  g_return_if_fail (PANGO_IS_CONTEXT (context));
+
+  if (context->matrix)
+    pango_matrix_free (context->matrix);
+  if (matrix)
+    context->matrix = pango_matrix_copy (matrix);
+}
+
+/**
+ * pango_context_get_matrix:
+ * @context: a #PangoContext
+ *
+ * Gets the transformation matrix that will be applied when
+ * rendering with this context. See pango_context_set_matrix().
+ *
+ * Returns: the matrix, or %NULL if no matrix has been set
+ *  (which is the same as the identity matrix). The returned
+ *  matrix is owned by Pango and must not be modified or
+ *  freed.
+ **/
+PangoMatrix *
+pango_context_get_matrix (PangoContext *context)
+{
+  g_return_val_if_fail (PANGO_IS_CONTEXT (context), NULL);
+
+  return context->matrix;
 }
 
 /**

@@ -158,6 +158,25 @@ load_fallback_face (PangoFT2Font *ft2font,
   FcPatternDestroy (matched);
 }
 
+static void
+set_transform (PangoFT2Font *ft2font)
+{
+  PangoFcFont *fcfont = (PangoFcFont *)ft2font;
+  FcMatrix *fc_matrix;
+
+  if (FcPatternGetMatrix (fcfont->font_pattern, FC_MATRIX, 0, &fc_matrix) == FcResultMatch)
+    {
+      FT_Matrix ft_matrix;
+      
+      ft_matrix.xx = 0x10000L * fc_matrix->xx;
+      ft_matrix.yy = 0x10000L * fc_matrix->yy;
+      ft_matrix.xy = 0x10000L * fc_matrix->xy;
+      ft_matrix.yx = 0x10000L * fc_matrix->yx;
+
+      FT_Set_Transform (ft2font->face, &ft_matrix, NULL);
+    }
+}
+
 /**
  * pango_ft2_font_get_face:
  * @font: a #PangoFont
@@ -227,6 +246,8 @@ pango_ft2_font_get_face (PangoFont *font)
 	}
 
       g_assert (ft2font->face);
+
+      set_transform (ft2font);
 
       error = FT_Set_Char_Size (ft2font->face,
 				PANGO_PIXELS_26_6 (ft2font->size),
@@ -337,23 +358,45 @@ pango_ft2_font_render_glyph (PangoFont *font,
   return rendered;
 }
 
+static void
+transform_point (PangoMatrix *matrix,
+		 int          x,
+		 int          y,
+		 int         *x_out_pixels,
+		 int         *y_out_pixels)
+{
+  double x_out = (matrix->xx * x + matrix->xy * y) / PANGO_SCALE + matrix->x0;
+  double y_out = (matrix->yx * x + matrix->yy * y) / PANGO_SCALE + matrix->y0;
+
+  *x_out_pixels = floor (x_out + 0.5);
+  *y_out_pixels = floor (y_out + 0.5);
+}
 
 /**
- * pango_ft2_render:
+ * pango_ft2_render_transformed:
  * @bitmap:  the FreeType2 bitmap onto which to draw the string
  * @font:    the font in which to draw the string
+ * @matrix: a #PangoMatrix, or %NULL to use an identity transformation
  * @glyphs:  the glyph string to draw
- * @x:       the x position of the start of the string (in pixels)
- * @y:       the y position of the baseline (in pixels)
+ * @x:       the x position of the start of the string (in Pango
+ *           units in user space coordinates)
+ * @y:       the y position of the baseline (in Pango units
+ *           in user space coordinates)
  *
- * Renders a PangoGlyphString onto a FreeType2 bitmap.
+ * Renders a #PangoGlyphString onto a FreeType2 bitmap, possibly
+ * transforming the layed-out coordinates through a transformation
+ * matrix. Note that the transformation matrix for @font is not
+ * changed, so to produce correct rendering results, the @font
+ * must have been loaded using a #PangoContext with an identical
+ * transformation matrix to that passed in to this function.
  **/
 void 
-pango_ft2_render (FT_Bitmap        *bitmap,
-		  PangoFont        *font,
-		  PangoGlyphString *glyphs,
-		  int               x, 
-		  int               y)
+pango_ft2_render_transformed (FT_Bitmap        *bitmap,
+			      PangoMatrix      *matrix,
+			      PangoFont        *font,
+			      PangoGlyphString *glyphs,
+			      int               x, 
+			      int               y)
 {
   FT_UInt glyph_index;
   int i;
@@ -384,9 +427,19 @@ pango_ft2_render (FT_Bitmap        *bitmap,
 	      rendered_glyph = pango_ft2_font_render_glyph (font, glyph_index);
 	      add_glyph_to_cache = TRUE;
 	    }
-	  
-	  ixoff = x + PANGO_PIXELS (x_position + gi->geometry.x_offset);
-	  iyoff = y + PANGO_PIXELS (gi->geometry.y_offset);
+
+	  if (matrix)
+	    {
+	      transform_point (matrix,
+			       x + x_position + gi->geometry.x_offset,
+			       y + gi->geometry.y_offset,
+			       &ixoff, &iyoff);
+	    }
+	  else
+	    {
+	      ixoff = PANGO_PIXELS (x + x_position + gi->geometry.x_offset);
+	      iyoff =  PANGO_PIXELS (y + gi->geometry.y_offset);
+	    }
 	  
 	  x_start = MAX (0, - (ixoff + rendered_glyph->bitmap_left));
 	  x_limit = MIN (rendered_glyph->bitmap.width,
@@ -481,6 +534,26 @@ pango_ft2_render (FT_Bitmap        *bitmap,
 
       x_position += glyphs->glyphs[i].geometry.width;
     }
+}
+
+/**
+ * pango_ft2_render:
+ * @bitmap:  the FreeType2 bitmap onto which to draw the string
+ * @font:    the font in which to draw the string
+ * @glyphs:  the glyph string to draw
+ * @x:       the x position of the start of the string (in pixels)
+ * @y:       the y position of the baseline (in pixels)
+ *
+ * Renders a #PangoGlyphString onto a FreeType2 bitmap.
+ **/
+void 
+pango_ft2_render (FT_Bitmap        *bitmap,
+		  PangoFont        *font,
+		  PangoGlyphString *glyphs,
+		  int               x, 
+		  int               y)
+{
+  pango_ft2_render_transformed (bitmap, NULL, font, glyphs, x * PANGO_SCALE, y * PANGO_SCALE);
 }
 
 static FT_Glyph_Metrics *
@@ -715,33 +788,161 @@ pango_ft2_get_unknown_glyph (PangoFont *font)
   return 0;
 }
 
+static void
+draw_underline (FT_Bitmap         *bitmap,
+		PangoMatrix       *matrix,
+		PangoFontMetrics  *metrics,
+		PangoUnderline     uline,
+		int                x,
+		int                width,
+		int                base_y,
+		int                descent)
+{
+  int underline_thickness = pango_font_metrics_get_underline_thickness (metrics);
+  int underline_position = pango_font_metrics_get_underline_position (metrics);
+  int y_off = 0;		/* Quiet GCC */
+
+  switch (uline)
+    {
+    case PANGO_UNDERLINE_NONE:
+      g_assert_not_reached();
+      break;
+    case PANGO_UNDERLINE_SINGLE:
+      y_off = - underline_position;
+      break;
+    case PANGO_UNDERLINE_DOUBLE:
+      y_off = - underline_position;
+      break;
+    case PANGO_UNDERLINE_LOW:
+      y_off = underline_thickness + descent;
+      break;
+    case PANGO_UNDERLINE_ERROR:
+      {
+	_pango_ft2_draw_error_underline (bitmap, matrix,
+					 x,
+					 base_y - underline_position,
+					 width,
+					 3 * underline_thickness);
+	return;
+      }
+    }
+
+  _pango_ft2_draw_rect (bitmap, matrix,
+			x,
+			base_y + y_off,
+			width,
+			underline_thickness);
+
+  if (uline == PANGO_UNDERLINE_DOUBLE)
+    {
+      y_off += 2 * underline_thickness;
+      
+      _pango_ft2_draw_rect (bitmap, matrix,
+			    x,
+			    base_y + y_off,
+			    width,
+			    underline_thickness);
+    }
+}
 
 static void
-pango_ft2_draw_hline (FT_Bitmap *bitmap,
-		      int        y,
-		      int        start,
-		      int        end)
+draw_strikethrough (FT_Bitmap        *bitmap,
+		    PangoMatrix      *matrix,
+		    PangoFontMetrics *metrics,
+		    int               x,
+		    int               width,
+		    int               base_y)
 {
-  unsigned char *p;
-  int ix;
+  int strikethrough_thickness = pango_font_metrics_get_strikethrough_thickness (metrics);
+  int strikethrough_position = pango_font_metrics_get_strikethrough_position (metrics);
 
-  if (y < 0 || y >= bitmap->rows)
-    return;
-
-  if (end <= 0 || start >= bitmap->width)
-    return;
-  
-  if (start < 0)
-    start = 0;
-
-  if (end >= bitmap->width)
-    end = bitmap->width;
-
-  p = bitmap->buffer + y * bitmap->pitch + start;
-	      
-  for (ix = 0; ix < end - start; ix++)
-    *p++ = 0xff;
+  _pango_ft2_draw_rect (bitmap, matrix,
+			x,
+			base_y - strikethrough_position,
+			width,
+			strikethrough_thickness);
 }
+
+/**
+ * pango_ft2_render_layout_line_subpixel:
+ * @bitmap:    a FT_Bitmap to render the line onto
+ * @line:      a #PangoLayoutLine
+ * @x:         the x position of start of string (in pango units)
+ * @y:         the y position of baseline (in pango units)
+ *
+ * Render a #PangoLayoutLine onto a FreeType2 bitmap, with he
+ * location specified in fixed-point pango units rather than
+ * pixels. (Using this will avoid extra inaccuracies from
+ * rounding to integer pixels multiple times, even if the
+ * final glyph positions are integers.)
+ */
+void 
+pango_ft2_render_layout_line_subpixel (FT_Bitmap       *bitmap,
+				       PangoLayoutLine *line,
+				       int              x, 
+				       int              y)
+{
+  GSList *tmp_list = line->runs;
+  PangoRectangle logical_rect;
+  PangoRectangle ink_rect;
+  int x_off = 0;
+  PangoMatrix *matrix;
+
+  matrix = pango_context_get_matrix (pango_layout_get_context (line->layout));
+
+  while (tmp_list)
+    {
+      PangoUnderline uline = PANGO_UNDERLINE_NONE;
+      gboolean strike, shape_set;
+      gint rise;
+      PangoLayoutRun *run = tmp_list->data;
+
+      tmp_list = tmp_list->next;
+
+      pango_ft2_get_item_properties (run->item,
+				     &uline, &strike, &rise,
+				     &shape_set, &ink_rect, &logical_rect);
+
+      if (!shape_set)
+	{
+	  if (uline == PANGO_UNDERLINE_NONE && !strike)
+	    pango_glyph_string_extents (run->glyphs, run->item->analysis.font,
+					NULL, &logical_rect);
+	  else
+	    pango_glyph_string_extents (run->glyphs, run->item->analysis.font,
+					&ink_rect, &logical_rect);
+	  
+	  pango_ft2_render_transformed (bitmap, matrix,
+					run->item->analysis.font, run->glyphs,
+					x + x_off, y - rise);
+
+	  if (uline != PANGO_UNDERLINE_NONE || strike)
+	    {
+	      PangoFontMetrics *metrics = pango_font_get_metrics (run->item->analysis.font,
+								  run->item->analysis.language);
+	      
+	      if (uline != PANGO_UNDERLINE_NONE)
+		draw_underline (bitmap, matrix, metrics,
+				uline,
+				x_off + ink_rect.x,
+				ink_rect.width,
+				y - rise,
+				ink_rect.y + ink_rect.height);
+	      
+	      if (strike)
+		draw_strikethrough (bitmap, matrix, metrics,
+				    x_off + ink_rect.x,
+				    ink_rect.width,
+				    y - rise);
+
+	      pango_font_metrics_unref (metrics);
+	    }
+	}
+
+      x_off += logical_rect.width;
+    }
+}
+
 
 /**
  * pango_ft2_render_layout_line:
@@ -758,110 +959,28 @@ pango_ft2_render_layout_line (FT_Bitmap       *bitmap,
 			      int              x, 
 			      int              y)
 {
-  GSList *tmp_list = line->runs;
-  PangoRectangle logical_rect;
-  PangoRectangle ink_rect;
-  int x_off = 0;
-
-  while (tmp_list)
-    {
-      PangoUnderline uline = PANGO_UNDERLINE_NONE;
-      gboolean strike, shape_set;
-      gint rise, risen_y;
-      PangoLayoutRun *run = tmp_list->data;
-
-      tmp_list = tmp_list->next;
-
-      pango_ft2_get_item_properties (run->item,
-				     &uline, &strike, &rise,
-				     &shape_set, &ink_rect, &logical_rect);
-
-      risen_y = y - PANGO_PIXELS (rise);
-
-      if (!shape_set)
-	{
-	  if (uline == PANGO_UNDERLINE_NONE)
-	    pango_glyph_string_extents (run->glyphs, run->item->analysis.font,
-					NULL, &logical_rect);
-	  else
-	    pango_glyph_string_extents (run->glyphs, run->item->analysis.font,
-					&ink_rect, &logical_rect);
-
-	  pango_ft2_render (bitmap, run->item->analysis.font, run->glyphs,
-			    x + PANGO_PIXELS (x_off), risen_y);
-	}
-
-      switch (uline)
-	{
-	case PANGO_UNDERLINE_NONE:
-	  break;
-	case PANGO_UNDERLINE_DOUBLE:
-	  pango_ft2_draw_hline (bitmap,
-				risen_y + 4,
-				x + PANGO_PIXELS (x_off + ink_rect.x),
-				x + PANGO_PIXELS (x_off + ink_rect.x + ink_rect.width));
-	  /* Fall through */
-	case PANGO_UNDERLINE_SINGLE:
-	  pango_ft2_draw_hline (bitmap,
-				risen_y + 2,
-				x + PANGO_PIXELS (x_off + ink_rect.x),
-				x + PANGO_PIXELS (x_off + ink_rect.x + ink_rect.width));
-	  break;
-	case PANGO_UNDERLINE_ERROR:
-          {
-            int point_x;
-            int counter = 0;
-	    int end_x = x + PANGO_PIXELS (x_off + ink_rect.x + ink_rect.width);
-
-            for (point_x = x + PANGO_PIXELS (x_off + ink_rect.x) - 1;
-                 point_x <= end_x;
-                 point_x += 2)
-	      {
-		if (counter)
-		  pango_ft2_draw_hline (bitmap,
-					risen_y + 2,
-					point_x, MIN (point_x + 1, end_x));
-		else
-		  pango_ft2_draw_hline (bitmap,
-					risen_y + 3,
-					point_x, MIN (point_x + 1, end_x));
-		
-		counter = (counter + 1) % 2;
-	      }
-          }
-	  break;
-	case PANGO_UNDERLINE_LOW:
-	  pango_ft2_draw_hline (bitmap,
-				risen_y + PANGO_PIXELS (ink_rect.y + ink_rect.height),
-				x + PANGO_PIXELS (x_off + ink_rect.x),
-				x + PANGO_PIXELS (x_off + ink_rect.x + ink_rect.width));
-	  break;
-	}
-
-      if (strike)
-	pango_ft2_draw_hline (bitmap,
-			      risen_y + PANGO_PIXELS (logical_rect.y + logical_rect.height / 2),
-			      x + PANGO_PIXELS (x_off + logical_rect.x),
-			      x + PANGO_PIXELS (x_off + logical_rect.x + logical_rect.width));
-
-      x_off += logical_rect.width;
-    }
+  pango_ft2_render_layout_line_subpixel (bitmap, line, x * PANGO_SCALE, y * PANGO_SCALE);
 }
 
+
 /**
- * pango_ft2_render_layout:
+ * pango_ft2_render_layout_subpixel:
  * @bitmap:    a FT_Bitmap to render the layout onto
  * @layout:    a #PangoLayout
- * @x:         the X position of the left of the layout (in pixels)
- * @y:         the Y position of the top of the layout (in pixels)
+ * @x:         the X position of the left of the layout (in Pango units)
+ * @y:         the Y position of the top of the layout (in Pango units)
  *
- * Render a #PangoLayout onto a FreeType2 bitmap
+ * Render a #PangoLayout onto a FreeType2 bitmap, with he
+ * location specified in fixed-point pango units rather than
+ * pixels. (Using this will avoid extra inaccuracies from
+ * rounding to integer pixels multiple times, even if the
+ * final glyph positions are integers.)
  */
 void 
-pango_ft2_render_layout (FT_Bitmap   *bitmap,
-			 PangoLayout *layout,
-			 int          x, 
-			 int          y)
+pango_ft2_render_layout_subpixel (FT_Bitmap   *bitmap,
+				  PangoLayout *layout,
+				  int          x, 
+				  int          y)
 {
   PangoLayoutIter *iter;
 
@@ -880,15 +999,33 @@ pango_ft2_render_layout (FT_Bitmap   *bitmap,
       
       pango_layout_iter_get_line_extents (iter, NULL, &logical_rect);
       baseline = pango_layout_iter_get_baseline (iter);
-      
-      pango_ft2_render_layout_line (bitmap,
-                                    line,
-				    x + PANGO_PIXELS (logical_rect.x),
-				    y + PANGO_PIXELS (baseline));
+
+      pango_ft2_render_layout_line_subpixel (bitmap,
+					     line,
+					     x + logical_rect.x,
+					     y + baseline);
     }
   while (pango_layout_iter_next_line (iter));
 
   pango_layout_iter_free (iter);
+}
+
+/**
+ * pango_ft2_render_layout:
+ * @bitmap:    a FT_Bitmap to render the layout onto
+ * @layout:    a #PangoLayout
+ * @x:         the X position of the left of the layout (in pixels)
+ * @y:         the Y position of the top of the layout (in pixels)
+ *
+ * Render a #PangoLayout onto a FreeType2 bitmap
+ */
+void 
+pango_ft2_render_layout (FT_Bitmap   *bitmap,
+			 PangoLayout *layout,
+			 int          x, 
+			 int          y)
+{
+  pango_ft2_render_layout_subpixel (bitmap, layout, x * PANGO_SCALE, y * PANGO_SCALE);
 }
 
 /* This utility function is duplicated here and in pango-layout.c; should it be

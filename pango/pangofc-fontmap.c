@@ -359,7 +359,6 @@ pango_fc_font_map_add (PangoFcFontMap *fcfontmap,
 
   g_assert (fcfont->fontmap == NULL);
 	
-  fcfont->fontmap = g_object_ref (fcfontmap);
   g_hash_table_insert (priv->fonts,
 		       fcfont->font_pattern,
 		       fcfont);
@@ -588,10 +587,12 @@ pango_fc_make_pattern (const PangoFontDescription *description)
 
 static PangoFont *
 pango_fc_font_map_new_font (PangoFontMap  *fontmap,
-			    FcPattern      *match)
+			    PangoMatrix   *pango_matrix,
+			    FcPattern     *match)
 {
   PangoFcFontMap *fcfontmap = (PangoFcFontMap *)fontmap;
   PangoFcFontMapPrivate *priv = fcfontmap->priv;
+  FcPattern *pattern;
   PangoFcFont *fcfont;
 
   /* Returning NULL here actually violates a contract
@@ -604,14 +605,40 @@ pango_fc_font_map_new_font (PangoFontMap  *fontmap,
     return NULL;
   
   /* Look up cache */
-  fcfont = g_hash_table_lookup (priv->fonts, match);
+  if (!pango_matrix)
+    {
+      fcfont = g_hash_table_lookup (priv->fonts, match);
   
-  if (fcfont)
-    return g_object_ref (fcfont);
+      if (fcfont)
+	return g_object_ref (fcfont);
+    }
 
-  fcfont = PANGO_FC_FONT_MAP_GET_CLASS (fontmap)->new_font (fcfontmap, match);
+  if (pango_matrix)
+    {
+      FcMatrix fc_matrix;
 
-  pango_fc_font_map_add (fcfontmap, fcfont);
+      /* FontConfig has the Y axis pointing up, Pango, down.
+       */
+      fc_matrix.xx = pango_matrix->xx;
+      fc_matrix.xy = - pango_matrix->xy;
+      fc_matrix.yx = - pango_matrix->yx;
+      fc_matrix.yy = pango_matrix->yy;
+      
+      pattern = FcPatternDuplicate (match);
+      FcPatternAddMatrix (pattern, FC_MATRIX, &fc_matrix);
+    }
+  else
+    pattern = match;
+
+  fcfont = PANGO_FC_FONT_MAP_GET_CLASS (fontmap)->new_font (fcfontmap, pattern);
+
+  if (!pango_matrix)
+    pango_fc_font_map_add (fcfontmap, fcfont);
+
+  if (pango_matrix)
+    FcPatternDestroy (pattern);
+
+  fcfont->fontmap = g_object_ref (fcfontmap);
 
   return (PangoFont *)fcfont;
 }
@@ -736,15 +763,19 @@ pango_fc_font_map_get_patterns (PangoFontMap               *fontmap,
 
 static PangoFont *
 pango_fc_font_map_load_font (PangoFontMap               *fontmap,
-			      PangoContext               *context,
-			      const PangoFontDescription *description)
+			     PangoContext               *context,
+			     const PangoFontDescription *description)
 {
   PangoFcPatternSet *patterns = pango_fc_font_map_get_patterns (fontmap, context, description, NULL);
   if (!patterns)
     return NULL;
 
   if (patterns->n_patterns > 0)
-    return pango_fc_font_map_new_font (fontmap, patterns->patterns[0]);
+    {
+      return pango_fc_font_map_new_font (fontmap,
+					 context ? pango_context_get_matrix (context) : NULL,
+					 patterns->patterns[0]);
+    }
   
   return NULL;
 }
@@ -809,35 +840,51 @@ pango_fc_font_map_load_fontset (PangoFontMap                 *fontmap,
   PangoFcPatternSet *patterns = pango_fc_font_map_get_patterns (fontmap, context, desc, language);
   PangoFcFontMap *fcfontmap = PANGO_FC_FONT_MAP (fontmap);
   PangoFcFontMapPrivate *priv = fcfontmap->priv;
+  PangoFontset *result;
+  PangoMatrix *matrix;
   int i;
   
   if (!patterns)
     return NULL;
 
-  if (!patterns->fontset)
+  if (context)
+    matrix = pango_context_get_matrix (context);
+  else
+    matrix = NULL;
+
+  /* We never cache fontsets when a transformation is in place
+   */
+  if (!patterns->fontset || matrix)
     {
       PangoFontsetSimple *simple;
       simple = pango_fontset_simple_new (language);
+      result = PANGO_FONTSET (simple);
       
       for (i = 0; i < patterns->n_patterns; i++)
 	{
-	  PangoFont *font = pango_fc_font_map_new_font (fontmap, patterns->patterns[i]);
+	  PangoFont *font;
+
+	  font = pango_fc_font_map_new_font (fontmap, matrix, patterns->patterns[i]);
 	  if (font)
 	    pango_fontset_simple_append (simple, font);
 	}
-  
-      patterns->fontset = PANGO_FONTSET (simple);
-      g_object_add_weak_pointer (G_OBJECT (patterns->fontset),
-				 (gpointer *)&patterns->fontset);
+
+      if (!matrix)
+	{
+	  patterns->fontset = PANGO_FONTSET (simple);
+	  g_object_add_weak_pointer (G_OBJECT (patterns->fontset),
+				     (gpointer *)&patterns->fontset);
+	}
     }
   else
-    g_object_ref (patterns->fontset);
+    result = g_object_ref (patterns->fontset);
   
-  if (!patterns->cache_link ||
-      patterns->cache_link != priv->fontset_cache->head)
+  if (!matrix &&
+      (!patterns->cache_link ||
+       patterns->cache_link != priv->fontset_cache->head))
     pango_fc_font_map_cache_fontset (fcfontmap, patterns);
 
-  return patterns->fontset;
+  return result;
 }
 
 static void

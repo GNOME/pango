@@ -27,6 +27,7 @@
 #define DEFAULT_FONT_SIZE 18
 
 #include <errno.h>
+#include <math.h>
 #include <stdarg.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -54,6 +55,7 @@ static char *opt_output = NULL;
 static int opt_margin = 10;
 static int opt_markup = FALSE;
 static gboolean opt_rtl = FALSE;
+static int opt_rotate = 0;
 static gboolean opt_auto_dir = TRUE;
 static char *opt_text = NULL;
 static  gboolean opt_waterfall = FALSE;
@@ -149,6 +151,65 @@ get_options_string (void)
 }
 
 static void
+transform_point (PangoMatrix *matrix,
+		 double       x_in,
+		 double       y_in,
+		 double      *x_out,
+		 double      *y_out)
+{
+  *x_out = x_in * matrix->xx + y_in * matrix->xy + matrix->x0;
+  *y_out = x_in * matrix->yx + y_in * matrix->yy + matrix->y0;
+}
+
+static void
+output_body (PangoContext *context,
+	     const char   *text,
+	     FT_Bitmap    *bitmap,
+	     PangoMatrix  *matrix,
+	     int          *width,
+	     int          *height)
+{
+  PangoLayout *layout;
+  PangoRectangle logical_rect;
+  int size, start_size, end_size, increment;
+  int dy;
+  
+  if (opt_waterfall)
+    {
+      start_size = 8;
+      end_size = 48;
+      increment = 4;
+    }
+  else
+    {
+      start_size = end_size = -1;
+      increment = 1;
+    }
+
+  *width = 0;
+  *height = 0;
+  dy = 0;
+  
+  for (size = start_size; size <= end_size; size += increment)
+    {
+      pango_context_set_matrix (context, matrix);
+      
+      layout = make_layout (context, text, size);
+      pango_layout_get_extents (layout, NULL, &logical_rect);
+      
+      *width = MAX (*width, PANGO_PIXELS (logical_rect.width));
+      *height += PANGO_PIXELS (logical_rect.height);
+
+      if (bitmap)
+	pango_ft2_render_layout (bitmap, layout, 0, dy);
+      
+      dy += PANGO_PIXELS (logical_rect.height);
+
+      g_object_unref (layout);
+    }
+}
+
+static void
 do_output (PangoContext *context,
 	   const char   *text,
 	   FT_Bitmap    *bitmap,
@@ -157,9 +218,16 @@ do_output (PangoContext *context,
 {
   PangoLayout *layout;
   PangoRectangle logical_rect;
+  PangoMatrix matrix = PANGO_MATRIX_INIT;
+  int rotated_width, rotated_height;
   int x = opt_margin;
   int y = opt_margin;
-  int size, start_size, end_size, increment;
+  double p1x, p1y;
+  double p2x, p2y;
+  double p3x, p3y;
+  double p4x, p4y;
+  double minx, miny;
+  double maxx, maxy;
   
   *width = 0;
   *height = 0;
@@ -181,35 +249,31 @@ do_output (PangoContext *context,
       g_object_unref (layout);
       g_free (options_string);
     }
-  
-  if (opt_waterfall)
-    {
-      start_size = 8;
-      end_size = 48;
-      increment = 4;
-    }
-  else
-    {
-      start_size = end_size = -1;
-      increment = 1;
-    }
 
-  for (size = start_size; size <= end_size; size += increment)
-    {
-      layout = make_layout (context, text, size);
-      pango_layout_get_extents (layout, NULL, &logical_rect);
-      
-      *width = MAX (*width, PANGO_PIXELS (logical_rect.width));
-      *height += PANGO_PIXELS (logical_rect.height);
-      
-      if (bitmap)
-	pango_ft2_render_layout (bitmap, layout, x, y);
-      
-      y += PANGO_PIXELS (logical_rect.height);
+  output_body (context, text, NULL, NULL, &rotated_width, &rotated_height);
 
-      g_object_unref (layout);
-    }
+  pango_matrix_rotate (&matrix, opt_rotate);
   
+  transform_point (&matrix, 0,             0,              &p1x, &p1y);
+  transform_point (&matrix, rotated_width, 0,              &p2x, &p2y);
+  transform_point (&matrix, rotated_width, rotated_height, &p3x, &p3y);
+  transform_point (&matrix, 0,             rotated_height, &p4x, &p4y);
+
+  minx = MIN (MIN (p1x, p2x), MIN (p3x, p4x));
+  miny = MIN (MIN (p1y, p2y), MIN (p3y, p4y));
+
+  maxx = MAX (MAX (p1x, p2x), MAX (p3x, p4x));
+  maxy = MAX (MAX (p1y, p2y), MAX (p3y, p4y));
+
+  matrix.x0 = x - minx;
+  matrix.y0 = y - miny;
+
+  if (bitmap)
+    output_body (context, text, bitmap, &matrix, &rotated_width, &rotated_height);
+
+  *width = MAX (*width, maxx - minx);
+  *height += maxy - miny;
+
   *width += 2 * opt_margin;
   *height += 2 * opt_margin;
 }
@@ -263,6 +327,8 @@ int main(int argc, char *argv[])
       ARG_STRING,   &opt_output },
     { "rtl",        "Set base dir to RTL",
       ARG_BOOL,     &opt_rtl },
+    { "rotate",     "Angle at which to rotate results",
+      ARG_INT,      &opt_rotate },
     { "text",       "Text to display (instead of a file)",
       ARG_STRING,   &opt_text },
     { "waterfall",  "Create a waterfall display",
@@ -390,7 +456,7 @@ int main(int argc, char *argv[])
       memset (buf, 0x00, bitmap.pitch * bitmap.rows);
 
       do_output (context, text, &bitmap, &width, &height);
-      
+
       /* Invert bitmap to get black text on white background */
       {
 	int pix_idx;
