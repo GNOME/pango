@@ -51,6 +51,7 @@ moduledir = $(libdir)/pango/$(PANGO_MODULE_VERSION)/modules
 INCLUDES =			\
 	-DPANGO_ENABLE_ENGINE	\
 	-DG_DISABLE_DEPRECATED	\
+	$(PANGO_DEBUG_FLAGS)	\
 	-I$(top_srcdir)		\
 	-I$(top_srcdir)/pango/	\
 	$(moddefine)		\

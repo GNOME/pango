@@ -44,14 +44,10 @@ struct _PangoXftFont
   guint16 mini_width;		    /* metrics for missing glyph drawing */
   guint16 mini_height;
   guint16 mini_pad; 
-  
-  gboolean in_cache;
 };
 
 PangoXftFont * _pango_xft_font_new              (PangoFontMap                *font,
 						 FcPattern                  *pattern);
-void           _pango_xft_font_map_cache_add    (PangoFontMap                *fontmap,
-						 PangoXftFont                *xfont);
 void           _pango_xft_font_map_add          (PangoFontMap                *fontmap,
 						 PangoXftFont                *xfont);
 void           _pango_xft_font_map_remove       (PangoFontMap                *fontmap,

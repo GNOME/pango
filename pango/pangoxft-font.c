@@ -53,7 +53,6 @@ static PangoFontClass *parent_class;	/* Parent class structure for PangoXftFont 
 
 static void pango_xft_font_class_init (PangoXftFontClass *class);
 static void pango_xft_font_init       (PangoXftFont      *xfont);
-static void pango_xft_font_dispose    (GObject         *object);
 static void pango_xft_font_finalize   (GObject         *object);
 
 static PangoFontDescription *pango_xft_font_describe          (PangoFont        *font);
@@ -103,7 +102,6 @@ static void
 pango_xft_font_init (PangoXftFont *xfont)
 {
   xfont->metrics_by_lang = NULL;
-  xfont->in_cache = FALSE;
 }
 
 static void
@@ -115,7 +113,6 @@ pango_xft_font_class_init (PangoXftFontClass *class)
   parent_class = g_type_class_peek_parent (class);
   
   object_class->finalize = pango_xft_font_finalize;
-  object_class->dispose = pango_xft_font_dispose;
   
   font_class->describe = pango_xft_font_describe;
   font_class->get_coverage = pango_xft_font_get_coverage;
@@ -492,21 +489,6 @@ pango_xft_font_get_metrics (PangoFont     *font,
     }
 
   return pango_font_metrics_ref (info->metrics);
-}
-
-static void
-pango_xft_font_dispose (GObject *object)
-{
-  PangoXftFont *xfont = PANGO_XFT_FONT (object);
-
-  /* If the font is not already in the freed-fonts cache, add it,
-   * if it is already there, do nothing and the font will be
-   * freed.
-   */
-  if (!xfont->in_cache && xfont->fontmap)
-    _pango_xft_font_map_cache_add (xfont->fontmap, xfont);
-
-  G_OBJECT_CLASS (parent_class)->dispose (object);
 }
 
 static void

@@ -24,6 +24,7 @@ INCLUDES =						\
 	-DLIBDIR=\"$(libdir)\"				\
 	-DMODULE_VERSION=\"$(PANGO_MODULE_VERSION)\"	\
 	-DG_DISABLE_DEPRECATED				\
+	$(PANGO_DEBUG_FLAGS)				\
 	$(GLIB_CFLAGS)					\
 	$(XFT_CFLAGS)					\
 	$(FONTCONFIG_CFLAGS)				\
