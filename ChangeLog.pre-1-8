@@ -1,3 +1,9 @@
+Sat Jun 15 23:26:41 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* modules/arabic/arabic-ot.c: Support new Arabic
+	characters in Unicode 3.2. (Patch from Roozbeh
+	Pournader.)
+
 Thu Jun 13 16:39:01 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pango-markup.c (pango_parse_markup):
