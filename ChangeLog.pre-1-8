@@ -1,3 +1,10 @@
+2002-10-15  Changwoo Ryu  <cwryu@debian.org>
+
+	* modules/hangul/hangul-xft.c (hangul_engine_shape): 
+	* modules/hangul/hangul-x.c (hangul_engine_shape): Added missing
+	memcpy() from the static jamo buffer to allocated jamo buffer
+	(#95569).  Thanks to Jungshik Shin.
+
 Mon Oct 14 15:39:41 2002  Manish Singh  <yosh@gimp.org>
 
 	* pango/pango-context.c pango/pango-layout.c pango/pangoft2.c

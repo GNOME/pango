@@ -759,7 +759,10 @@ hangul_engine_shape (PangoFont        *font,
 		{
 		  max_jamos++;
 		  if (jamos == jamos_static)
-		    jamos = g_new (gunichar2, max_jamos);
+		    {
+		      jamos = g_new (gunichar2, max_jamos);
+		      memcpy(jamos, jamos_static, n_jamos*sizeof(gunichar2));
+		    }
 		  else
 		    jamos = g_renew (gunichar2, jamos, max_jamos);
 		}
