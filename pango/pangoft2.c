@@ -120,7 +120,7 @@ _pango_ft2_font_new (PangoFontMap    *fontmap,
   return ft2font;
 }
 
-gboolean
+static gboolean
 set_unicode_charmap (FT_Face face)
 {
   int charmap;
@@ -135,7 +135,7 @@ set_unicode_charmap (FT_Face face)
   return FALSE;
 }
 
-void
+static void
 load_fallback_face (PangoFT2Font *ft2font,
 		    const char   *original_file)
 {
