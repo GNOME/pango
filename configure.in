@@ -1,7 +1,7 @@
 dnl Process this file with autoconf to create configure.
 
 PANGO_MAJOR_VERSION=0
-PANGO_MINOR_VERSION=12
+PANGO_MINOR_VERSION=13
 
 AC_SUBST(PANGO_MAJOR_VERSION)
 AC_SUBST(PANGO_MINOR_VERSION)
@@ -51,6 +51,7 @@ AC_ARG_WITH(fribidi, [ --with-fribidi     Use external fribidi library ],,with_f
 
 FRIBIDI_LIBS=""
 FRIBIDI_CFLAGS=""
+FRIBIDI_PC=""
 have_fribidi=no
 
 if test "x$with_fribidi" = "xyes" ; then
@@ -67,6 +68,7 @@ if test "x$with_fribidi" = "xyes" ; then
    FRIBIDI_CFLAGS="`$FRIBIDI_CONFIG --cflags`"
    CFLAGS="$CFLAGS $FRIBIDI_CFLAGS"
    FRIBIDI_LIBS="`$FRIBIDI_CONFIG --libs`"
+   FRIBIDI_PC="fribidi,"	
 
    AC_CHECK_LIB(fribidi, fribidi_get_mirror_char, :,
 	        AC_MSG_ERROR([*** libfribidi not found.]), $FRIBIDI_LIBS)
@@ -77,6 +79,7 @@ fi
 
 AC_SUBST(FRIBIDI_LIBS)
 AC_SUBST(FRIBIDI_CFLAGS)
+AC_SUBST(FRIBIDI_PC)
 AM_CONDITIONAL(HAVE_FRIBIDI, test x$have_fribidi = xyes)
 
 #

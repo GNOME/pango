@@ -24,6 +24,10 @@ endif
 
 INCLUDES = -I$(top_srcdir) -I$(top_srcdir)/pango/ $(moddefine)
 
+
+EXTRA_DIST = \
+	pango-indic-script.h
+
 pango_devanagari_la_LDFLAGS = -rpath $(libdir) -export-dynamic -avoid-version -module
 pango_devanagari_la_SOURCES = devanagari.c
 
@@ -42,16 +46,10 @@ pango_gurmukhi_la_SOURCES = gurmukhi.c
 libpango_gurmukhi_la_SOURCES = gurmukhi.c
 
 
-
-
 pango_bengali_la_LDFLAGS = -rpath $(libdir) -export-dynamic -avoid-version -module
 pango_bengali_la_SOURCES = bengali.c
 
 libpango_bengali_la_SOURCES = bengali.c
-
-
-
-
 
 
 pango_gujarati_la_LDFLAGS = -rpath $(libdir) -export-dynamic -avoid-version -module

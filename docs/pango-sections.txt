@@ -212,6 +212,7 @@ pango_layout_get_context
 pango_layout_context_changed
 
 pango_layout_set_text
+pango_layout_get_text
 pango_layout_set_markup
 pango_layout_set_markup_with_accel
 pango_layout_set_attributes
@@ -286,6 +287,18 @@ script_engine_unload
 </SECTION>
 
 <SECTION>
+<FILE>pango-indic</FILE>
+<TITLE>Indic Engine Support</TITLE>
+ZERO_WIDTH_NON_JOINER
+ZERO_WIDTH_JOINER
+PangoIndicScript
+pango_indic_shift_vowels
+pango_indic_compact
+pango_indic_convert_vowels
+pango_indic_split_out_characters
+</SECTION>
+
+<SECTION>
 <TITLE>Modules</TITLE>
 <FILE>modules</FILE>
 PangoMap
@@ -323,6 +336,9 @@ pango_x_font_map_for_display
 pango_x_shutdown_display
 pango_x_font_map_get_font_cache
 pango_x_font_subfont_xlfd
+pango_x_find_first_subfont
+pango_x_apply_ligatures
+pango_x_fallback_shape
 PangoXFontCache
 pango_x_font_cache_new
 pango_x_font_cache_free

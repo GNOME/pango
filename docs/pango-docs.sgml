@@ -1,13 +1,18 @@
 <!doctype book PUBLIC "-//OASIS//DTD DocBook V3.1//EN" [
-<!entity pango-main SYSTEM "sgml/main.sgml">
-<!entity pango-glyphs SYSTEM "sgml/glyphs.sgml">
-<!entity pango-fonts SYSTEM "sgml/fonts.sgml">
-<!entity pango-text-attributes SYSTEM "sgml/text-attributes.sgml">
-<!entity pango-layout SYSTEM "sgml/layout.sgml">
-<!entity pango-coverage-maps SYSTEM "sgml/coverage-maps.sgml">
-<!entity pango-engines SYSTEM "sgml/engines.sgml">
-<!entity x-fonts SYSTEM "sgml/x-fonts.sgml">
-<!entity x-rendering SYSTEM "sgml/x-rendering.sgml">
+<!entity pango-Text-Processing SYSTEM "sgml/main.sgml">
+<!entity pango-Glyph-Storage SYSTEM "sgml/glyphs.sgml">
+<!entity pango-Coverage-Maps SYSTEM "sgml/coverage-maps.sgml">
+<!entity pango-Fonts SYSTEM "sgml/fonts.sgml">
+<!entity pango-Text-Attributes SYSTEM "sgml/text-attributes.sgml">
+<!entity pango-Tab-Stops SYSTEM "sgml/tab-stops.sgml">
+<!entity pango-Layout-Objects SYSTEM "sgml/layout.sgml">
+<!entity pango-Engines SYSTEM "sgml/engines.sgml">
+<!entity pango-Indic-Engine-Support SYSTEM "sgml/pango-indic.sgml">
+<!entity pango-Modules SYSTEM "sgml/modules.sgml">
+<!entity pango-X-Rendering SYSTEM "sgml/x-rendering.sgml">
+<!entity pango-X-Fonts SYSTEM "sgml/x-fonts.sgml">
+<!entity pango-Win32-Fonts-and-Rendering SYSTEM "sgml/win32-fonts.sgml">
+<!entity pango-FreeType-Fonts-and-Rendering SYSTEM "sgml/freetype-fonts.sgml">
 <!entity markup-format SYSTEM "pango_markup.sgml">
 ]>
 <book id="index">
@@ -17,19 +22,28 @@
 
   <chapter id="pango">
     <title>Basic Pango Interfaces</title>
-    &pango-main;
-    &pango-glyphs;
-    &pango-fonts;
-    &pango-text-attributes;
+    &pango-Text-Processing;
+    &pango-Glyph-Storage;
+    &pango-Fonts;
+    &pango-Text-Attributes;
+    &pango-Tab-Stops;
     &markup-format;
-    &pango-layout;
-    &pango-coverage-maps;
-    &pango-engines;
+    &pango-Layout-Objects;
   </chapter>
 
-  <chapter id="pango-x">
-    <title>Rendering under X with Pango</title>
-    &x-fonts;
-    &x-rendering;
+  <chapter id="rendering">
+    <title>Rendering with Pango</title>
+    &pango-X-Fonts;
+    &pango-X-Rendering;
+    &pango-Win32-Fonts-and-Rendering;
+    &pango-FreeType-Fonts-and-Rendering;
+    </chapter>
+
+  <chapter id="lowlevel">
+    <title>Low Level Functionality</title>
+    &pango-Coverage-Maps;
+    &pango-Engines;
+    &pango-Indic-Engine-Support;
+    &pango-Modules;
     </chapter>
 </book>

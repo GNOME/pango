@@ -1,3 +1,25 @@
+Mon Nov 13 09:17:34 2000  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pangox.c: Remove fribidi include.
+
+	* pango.pc.in (Requires): Substitute fribidi reference only
+	when necessary
+
+	* Makefile.am (pkgconfigdir): pkgconfigdir is $(libdir)/pkgconfig
+
+	* modules/indic/Makefile.am (EXTRA_DIST): Add pango-indic-script.h
+
+	* fonts/Makefile.am (EXTRA_DIST): Remove devnag*
+
+        * configure.in: Up version to 0.13
+	
+	* docs/pango-docs.sgml: Reorganize, add all new chapters.
+
+	* docs/pango-sections.txt: Update
+
+	* docs/Makefile.am (IGNORE_HFILES): add mini-fribidi
+	pango-intset.h
+
 2000-11-13  Sebastian Wilhelmi  <wilhelmi@ira.uka.de>
 
 	* pango/pango-attributes.c, pango/pango-attributes.h: Renamed
@@ -122,7 +144,8 @@ Sun Nov 12 16:07:06 2000  Owen Taylor  <otaylor@redhat.com>
 	
 Thu Nov  2 16:21:22 2000  Owen Taylor  <otaylor@redhat.com>
 
-	* New Arabic shaper from Karl Koehler.
+	* pango/modules/arabic: new version of Arabic shaper from Karl
+  	  Koehler.
 
 2000-11-01  Havoc Pennington  <hp@redhat.com>
 

@@ -14,7 +14,9 @@ FIXXREF_OPTIONS=
 
 # Headers to ignore
 IGNORE_HFILES=			\
+	mini-fribidi		\
 	modules.h		\
+	pango-intset.h		\
 	pango-utils.h		\
 	pangoft2-private.h	\
 	pangowin32-private.h	\

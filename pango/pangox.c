@@ -25,7 +25,6 @@
 #include <math.h>
 
 #include <X11/Xlib.h>
-#include <fribidi/fribidi.h>
 #include "pangox.h"
 #include "pango-utils.h"
 #include "pangox-private.h"
@@ -684,7 +683,7 @@ pango_x_font_get_metrics (PangoFont        *font,
 			  const gchar      *lang,
 			  PangoFontMetrics *metrics)
 {
-  PangoXMetricsInfo *info;
+  PangoXMetricsInfo *info = NULL; /* Quiet gcc */
   PangoXFont *xfont = (PangoXFont *)font;
   GSList *tmp_list;
       
