@@ -910,7 +910,7 @@ pango_font_description_to_string (const PangoFontDescription  *desc)
   GString *result = g_string_new (NULL);
   char *str;
 
-  if (desc->family_name)
+  if (desc->family_name && desc->mask & PANGO_FONT_MASK_FAMILY)
     {
       const char *p;
       size_t wordlen;

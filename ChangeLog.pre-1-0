@@ -1,3 +1,11 @@
+2001-10-03  Sven Neumann  <sven@gimp.org>
+
+	* pango/fonts.c (pango_font_description_to_string): don't include
+	family name if PANGO_FONT_MASK_FAMILY is not set.
+
+	* pango/pangoft2-fontmap.c: make it compile with DEBUGGING being
+	defined.
+
 2001-10-03  Tor Lillqvist  <tml@iki.fi>
 
 	Add the Win32 GDI Pango backend to autoconfiguration:

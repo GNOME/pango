@@ -700,7 +700,7 @@ pango_print_desc (PangoFontDescription *desc)
   PangoStretch stretch = pango_font_description_get_stretch (desc);
   
   g_print ("%s%s%s%s%s",
-	   pango_font_get_family (desc),
+	   pango_font_description_get_family (desc),
 	   (style == PANGO_STYLE_NORMAL ? "" :
 	    (style == PANGO_STYLE_OBLIQUE ? " OBLIQUE" :
 	     (style == PANGO_STYLE_ITALIC ? " ITALIC" : " ???"))),
