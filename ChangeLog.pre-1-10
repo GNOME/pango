@@ -1,3 +1,9 @@
+Tue Jan  4 14:05:13 2005  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-renderer.c (pango_renderer_draw_trapezoid): Rename
+	y1 parameters to y1_ to avoid conflicts with the math.h Bessel
+	function. (#161969)
+
 Fri Dec 31 10:20:55 2004  Owen Taylor  <otaylor@redhat.com>
  
  	* pango/pangofc-fontmap.c (pango_fc_convert_weight_to_pango): 

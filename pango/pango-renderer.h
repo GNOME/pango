@@ -145,7 +145,7 @@ struct _PangoRendererClass
    */
   void (*draw_trapezoid) (PangoRenderer  *renderer,
 			  PangoRenderPart part,
-			  double          y1,
+			  double          y1_,
 			  double          x11,
 			  double          x21,
 			  double          y2,
@@ -209,7 +209,7 @@ void pango_renderer_draw_error_underline (PangoRenderer    *renderer,
 					  int               height);
 void pango_renderer_draw_trapezoid       (PangoRenderer    *renderer,
 					  PangoRenderPart   part,
-					  double            y1,
+					  double            y1_,
 					  double            x11,
 					  double            x21,
 					  double            y2,
