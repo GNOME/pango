@@ -71,7 +71,7 @@ enum
 /*
  * Character class tables
  */
-static IndicOTCharClass devaCharClasses[] =
+static const IndicOTCharClass devaCharClasses[] =
 {
     _xx, _ma, _ma, _mp, _xx, _iv, _iv, _iv, _iv, _iv, _iv, _iv, _iv, _iv, _iv, _iv, /* 0900 - 090F */
     _iv, _iv, _iv, _iv, _iv, _ct, _ct, _ct, _ct, _ct, _ct, _ct, _ct, _ct, _ct, _ct, /* 0910 - 091F */
@@ -88,7 +88,7 @@ static IndicOTCharClass devaCharClasses[] =
  * right behavior for the sequences "a halant ya aa" and
  * "e halant ya aa".
  */
-static IndicOTCharClass bengCharClasses[] =
+static const IndicOTCharClass bengCharClasses[] =
 {
     _xx, _ma, _mp, _mp, _xx, _ct, _iv, _iv, _iv, _iv, _iv, _iv, _iv, _xx, _xx, _ct, /* 0980 - 098F */
     _iv, _xx, _xx, _iv, _iv, _ct, _ct, _ct, _ct, _ct, _ct, _ct, _ct, _ct, _ct, _ct, /* 0990 - 099F */
@@ -100,7 +100,7 @@ static IndicOTCharClass bengCharClasses[] =
     _ct, _ct, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx                           /* 09F0 - 09FA */
 };
 
-static IndicOTCharClass guruCharClasses[] =
+static const IndicOTCharClass guruCharClasses[] =
 {
     _xx, _ma, _ma, _mp, _xx, _iv, _iv, _iv, _iv, _iv, _iv, _xx, _xx, _xx, _xx, _iv, /* 0A00 - 0A0F */
     _iv, _xx, _xx, _iv, _iv, _ct, _ct, _ct, _ct, _ct, _ct, _ct, _ct, _ct, _ct, _ct, /* 0A10 - 0A1F */
@@ -112,7 +112,7 @@ static IndicOTCharClass guruCharClasses[] =
     _ma, _ma, _ct, _ct, _xx                                                         /* 0A70 - 0A74 */
 };
 
-static IndicOTCharClass gujrCharClasses[] =
+static const IndicOTCharClass gujrCharClasses[] =
 {
     _xx, _ma, _ma, _mp, _xx, _iv, _iv, _iv, _iv, _iv, _iv, _iv, _xx, _iv, _xx, _iv, /* 0A80 - 0A8F */
     _iv, _iv, _xx, _iv, _iv, _ct, _ct, _ct, _ct, _ct, _ct, _ct, _ct, _ct, _ct, _ct, /* 0A90 - 0A9F */
@@ -123,7 +123,7 @@ static IndicOTCharClass gujrCharClasses[] =
     _iv, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx  /* 0AE0 - 0AEF */
 };
 
-static IndicOTCharClass oryaCharClasses[] =
+static const IndicOTCharClass oryaCharClasses[] =
 {
     _xx, _ma, _ma, _mp, _xx, _iv, _iv, _iv, _iv, _iv, _iv, _iv, _iv, _xx, _xx, _iv, /* 0B00 - 0B0F */
     _iv, _xx, _xx, _iv, _iv, _ct, _ct, _ct, _ct, _ct, _ct, _ct, _ct, _ct, _ct, _ct, /* 0B10 - 0B1F */
@@ -135,7 +135,7 @@ static IndicOTCharClass oryaCharClasses[] =
     _xx                                                                             /* 0B70        */
 };
 
-static IndicOTCharClass tamlCharClasses[] =
+static const IndicOTCharClass tamlCharClasses[] =
 {
     _xx, _xx, _ma, _mp, _xx, _iv, _iv, _iv, _iv, _iv, _iv, _xx, _xx, _xx, _iv, _iv, /* 0B80 - 0B8F */
     _iv, _xx, _iv, _iv, _iv, _ct, _xx, _xx, _xx, _ct, _ct, _xx, _ct, _xx, _ct, _ct, /* 0B90 - 0B9F */
@@ -148,7 +148,7 @@ static IndicOTCharClass tamlCharClasses[] =
 };
 
 /* FIXME: Should some of the bb's be pb's? (KA, NA, MA, YA, VA, etc. (approx 13)) */
-static IndicOTCharClass teluCharClasses[] =
+static const IndicOTCharClass teluCharClasses[] =
 {
     _xx, _mp, _mp, _mp, _xx, _iv, _iv, _iv, _iv, _iv, _iv, _iv, _iv, _xx, _iv, _iv, /* 0C00 - 0C0F */
     _iv, _xx, _iv, _iv, _iv, _bb, _bb, _bb, _bb, _bb, _bb, _bb, _bb, _bb, _bb, _bb, /* 0C10 - 0C1F */
@@ -167,7 +167,7 @@ static IndicOTCharClass teluCharClasses[] =
  *
  *  http://brahmi.sourceforge.net/docs/KannadaComputing.html
  */
-static IndicOTCharClass kndaCharClasses[] =
+static const IndicOTCharClass kndaCharClasses[] =
 {
     _xx, _xx, _mp, _mp, _xx, _iv, _iv, _iv, _iv, _iv, _iv, _iv, _iv, _iv, _xx, _iv, /* 0C80 - 0C8F */
     _iv, _xx, _iv, _iv, _iv, _bb, _bb, _bb, _bb, _bb, _bb, _bb, _bb, _bb, _bb, _bb, /* 0C90 - 0C9F */
@@ -182,7 +182,7 @@ static IndicOTCharClass kndaCharClasses[] =
  * FIXME: this is correct for old-style Malayalam (MAL) but not for reformed Malayalam (MLR)
  * FIXME: should there be a REPH for old-style Malayalam?
  */
-static IndicOTCharClass mlymCharClasses[] =
+static const IndicOTCharClass mlymCharClasses[] =
 {
     _xx, _xx, _mp, _mp, _xx, _iv, _iv, _iv, _iv, _iv, _iv, _iv, _iv, _xx, _iv, _iv, /* 0D00 - 0D0F */
     _iv, _xx, _iv, _iv, _iv, _ct, _ct, _ct, _ct, _ct, _ct, _ct, _ct, _ct, _ct, _bb, /* 0D10 - 0D1F */
@@ -193,7 +193,7 @@ static IndicOTCharClass mlymCharClasses[] =
     _iv, _iv, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx  /* 0D60 - 0D6F */
 };
 
-static IndicOTCharClass sinhCharClasses[] =
+static const IndicOTCharClass sinhCharClasses[] =
 {
     _xx, _xx, _mp, _mp, _xx, _iv, _iv, _iv, _iv, _iv, _iv, _iv, _iv, _iv, _iv, _iv, /* 0D80 - 0D8F */
     _iv, _iv, _iv, _iv, _iv, _iv, _iv, _xx, _xx, _xx, _ct, _ct, _ct, _ct, _ct, _ct, /* 0D90 - 0D9F */
@@ -249,25 +249,25 @@ static const IndicOTSplitMatra sinhSplitTable[] = {{0x0DD9, 0x0DCA}, {0x0DD9, 0x
 /*
  * Indic Class Tables
  */
-IndicOTClassTable deva_class_table = {0x0900, 0x0970, 2, DEVA_SCRIPT_FLAGS, devaCharClasses, NULL};
+const IndicOTClassTable deva_class_table = {0x0900, 0x0970, 2, DEVA_SCRIPT_FLAGS, devaCharClasses, NULL};
 
-IndicOTClassTable beng_class_table = {0x0980, 0x09FA, 3, BENG_SCRIPT_FLAGS, bengCharClasses, bengSplitTable};
+const IndicOTClassTable beng_class_table = {0x0980, 0x09FA, 3, BENG_SCRIPT_FLAGS, bengCharClasses, bengSplitTable};
 
-IndicOTClassTable guru_class_table = {0x0A00, 0x0A74, 2, GURU_SCRIPT_FLAGS, guruCharClasses, NULL};
+const IndicOTClassTable guru_class_table = {0x0A00, 0x0A74, 2, GURU_SCRIPT_FLAGS, guruCharClasses, NULL};
 
-IndicOTClassTable gujr_class_table = {0x0A80, 0x0AEF, 2, GUJR_SCRIPT_FLAGS, gujrCharClasses, NULL};
+const IndicOTClassTable gujr_class_table = {0x0A80, 0x0AEF, 2, GUJR_SCRIPT_FLAGS, gujrCharClasses, NULL};
 
-IndicOTClassTable orya_class_table = {0x0B00, 0x0B70, 3, ORYA_SCRIPT_FLAGS, oryaCharClasses, oryaSplitTable};
+const IndicOTClassTable orya_class_table = {0x0B00, 0x0B70, 3, ORYA_SCRIPT_FLAGS, oryaCharClasses, oryaSplitTable};
 
-IndicOTClassTable taml_class_table = {0x0B80, 0x0BF2, 3, TAML_SCRIPT_FLAGS, tamlCharClasses, tamlSplitTable};
+const IndicOTClassTable taml_class_table = {0x0B80, 0x0BF2, 3, TAML_SCRIPT_FLAGS, tamlCharClasses, tamlSplitTable};
 
-IndicOTClassTable telu_class_table = {0x0C00, 0x0C6F, 3, TELU_SCRIPT_FLAGS, teluCharClasses, teluSplitTable};
+const IndicOTClassTable telu_class_table = {0x0C00, 0x0C6F, 3, TELU_SCRIPT_FLAGS, teluCharClasses, teluSplitTable};
 
-IndicOTClassTable knda_class_table = {0x0C80, 0x0CEF, 4, KNDA_SCRIPT_FLAGS, kndaCharClasses, kndaSplitTable};
+const IndicOTClassTable knda_class_table = {0x0C80, 0x0CEF, 4, KNDA_SCRIPT_FLAGS, kndaCharClasses, kndaSplitTable};
 
-IndicOTClassTable mlym_class_table = {0x0D00, 0x0D6F, 3, MLYM_SCRIPT_FLAGS, mlymCharClasses, mlymSplitTable};
+const IndicOTClassTable mlym_class_table = {0x0D00, 0x0D6F, 3, MLYM_SCRIPT_FLAGS, mlymCharClasses, mlymSplitTable};
 
-IndicOTClassTable sinh_class_table = {0x0D80, 0x0DF4, 3, SINH_SCRIPT_FLAGS, sinhCharClasses, sinhSplitTable};
+const IndicOTClassTable sinh_class_table = {0x0D80, 0x0DF4, 3, SINH_SCRIPT_FLAGS, sinhCharClasses, sinhSplitTable};
 
 const IndicOTSplitMatra *indic_ot_get_split_matra(const IndicOTClassTable *class_table, IndicOTCharClass char_class)
 {

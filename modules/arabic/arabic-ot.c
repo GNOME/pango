@@ -33,7 +33,7 @@
  *
  */
 
-joining_class  arabic[] =
+static const joining_class  arabic[] =
 {
   /* U+0620 */
   none, none, right, right,

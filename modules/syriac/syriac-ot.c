@@ -30,7 +30,7 @@
  *
  *     All other characters are given the joining class `none'.
  */
-JoiningClass syriac[] =
+static const JoiningClass syriac[] =
 {
   /* U+0700 */
   none, none, none, none,

@@ -3087,7 +3087,7 @@ static gboolean
 no_shape_filter_func (PangoAttribute *attribute,
 		      gpointer        data)
 {
-  static PangoAttrType no_shape_types[] = {
+  static const PangoAttrType no_shape_types[] = {
     PANGO_ATTR_FOREGROUND,
     PANGO_ATTR_BACKGROUND,
     PANGO_ATTR_UNDERLINE,

@@ -174,7 +174,7 @@ get_ruleset (FT_Face face)
 {
   PangoOTRuleset *ruleset;
   static GQuark ruleset_quark = 0;
-  static PangoOTTag hebr_tag = FT_MAKE_TAG ('h', 'e', 'b', 'r');
+  static const PangoOTTag hebr_tag = FT_MAKE_TAG ('h', 'e', 'b', 'r');
   guint script_index;
 
   PangoOTInfo *info = pango_ot_info_get (face);

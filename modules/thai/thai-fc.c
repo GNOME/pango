@@ -61,7 +61,7 @@ static PangoEngineInfo script_engines[] = {
 
 /* TIS-to-Unicode glyph maps for characters 0x80-0xff
  */
-static int tis620_0[128] = {
+static const int tis620_0[128] = {
     /**/ 0,      0,      0,      0,      0,      0,      0,      0, 
     /**/ 0,      0,      0,      0,      0,      0,      0,      0, 
     /**/ 0,      0,      0,      0,      0,      0,      0,      0, 
@@ -80,7 +80,7 @@ static int tis620_0[128] = {
     0x0e58, 0x0e59, 0x0e5a, 0x0e5b,      0,      0,      0,      0
 };
 
-static int tis620_1[128] = {
+static const int tis620_1[128] = {
     /**/ 0,      0,      0, 0xf88c, 0xf88f, 0xf892, 0xf895, 0xf898,
     0xf88b, 0xf88e, 0xf891, 0xf894, 0xf897,      0,      0, 0xf899,
     /**/ 0,      0, 0xf884, 0xf889, 0xf885, 0xf886, 0xf887, 0xf888,
@@ -99,7 +99,7 @@ static int tis620_1[128] = {
     0x0e58, 0x0e59,      0,      0,      0,      0,      0,      0
 };
 
-static int tis620_2[128] = {
+static const int tis620_2[128] = {
     0xf700, 0xf701, 0xf702, 0xf703, 0xf704, 0x2026, 0xf705, 0xf706,
     0xf707, 0xf708, 0xf709, 0xf70a, 0xf70b, 0xf70c, 0xf70d, 0xf70e,
     0xf70f, 0x2018, 0x2019, 0x201c, 0x201d, 0x2022, 0x2013, 0x2014,
@@ -118,7 +118,7 @@ static int tis620_2[128] = {
     0x0e58, 0x0e59, 0x0e5a, 0x0e5b, 0xf718, 0xf719, 0xf71a,      0
 };
 
-static int lao_0[128] = {
+static const int lao_0[128] = {
     /**/ 0,      0,      0,      0,      0,      0,      0,      0, 
     /**/ 0,      0,      0,      0,      0,      0,      0,      0, 
     /**/ 0,      0,      0,      0,      0,      0,      0,      0, 

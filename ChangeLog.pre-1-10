@@ -1,5 +1,27 @@
 2005-03-04  Owen Taylor  <otaylor@redhat.com>
 
+	Reduce non-shared data (#168899, inspired by patches
+	from Tommi Komulainen and Ross Burton)
+
+	* pango/pango-color.c pango/pango-color-table.h 
+	tools/gen-color-table.pl: Redo storage of colors to
+	use offsets into a static string rather than embedded
+	strings. (Inspired by a patch from Tommi Komulainen,
+	#168899)
+
+	* pango/break.c pango/fonts.c pango/pango-color.c 
+	pango/pango-layout.c pango/pango-markup.c 
+	pango/pango-script-lang-table.h
+	pango/mini-fribidi/fribidi_types.c 
+	tools/gen-script-for-lang.c: Add const in various places
+
+	* modules/arabic/arabic-fc.c  modules/hebrew/hebrew-fc.c:
+	modules/indic/{indic-fc.c,indic-ot-class-tables.c,
+	indic-ot.h} modules/syriac/syriac-ot.c (syriac): Further
+	addition of const.
+	
+2005-03-04  Owen Taylor  <otaylor@redhat.com>
+
 	* NEWS: Updates from stable branch.
 
 2005-03-03  Owen Taylor  <otaylor@redhat.com>
