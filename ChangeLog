@@ -1,3 +1,8 @@
+Tue Jul 27 09:11:40 2004  Behdad Esfahbod  <pango@behdad.org>
+
+	* pango/opentype/ftxgpos.c: Remove the unused parameter
+	from the IN_CURITEM() and IN_CURGLYPH macros.
+
 Tue Jul 27 06:35:25 2004  Behdad Esfahbod  <pango@behdad.org>
 
 	* pango/opentype/otlbuffer.c (otl_buffer_copy_output_glyph):
