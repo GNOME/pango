@@ -1,3 +1,9 @@
+Sun Jul  1 22:59:02 2001  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-markup.c (text_handler): Use gssize,
+	not size_t, gssize isn't defined here on all
+	systems.
+
 2001-06-29  Havoc Pennington  <hp@redhat.com>
 
 	* configure.in (QTDIR): don't get confused by qt3
