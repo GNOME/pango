@@ -1813,9 +1813,9 @@ pango_attr_list_filter (PangoAttrList       *list,
 
 /**
  * pango_attr_iterator_get_attrs:
- * @iterator: a #PangAttrIterator
+ * @iterator: a #PangoAttrIterator
  * 
- * Gets a list all attributes a the current position of the
+ * Gets a list of all attributes at the current position of the
  * iterator.
  * 
  * Return value: a list of all attributes for the current range.
