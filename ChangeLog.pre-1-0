@@ -1,3 +1,15 @@
+Mon Feb  7 16:49:32 2000  Owen Taylor  <otaylor@redhat.com>
+
+	* examples/viewer.c (make_families_menu): Switch the option
+	menu for a combo box.
+
+	* examples/pangox_aliases: Add a demo alias file.
+
+	* libpango/pangox.c: Add a font-alias mechanism allowing.
+
+	* examples/viewer.c (make_font_selector): Added a spin-button for
+	size.
+
 Wed Feb  2 20:49:21 2000  Owen Taylor  <otaylor@redhat.com>
 
 	* libpango/pangox.c (pango_x_get_unknown_glyph): Add a call to get

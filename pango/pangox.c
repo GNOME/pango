@@ -25,7 +25,11 @@
 #include <ctype.h>
 #include <math.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
+#include <errno.h>
+
+#include <config.h>
 
 typedef struct _PangoXFont PangoXFont;
 typedef struct _PangoXFontMap PangoXFontMap;
@@ -36,7 +40,7 @@ typedef struct _PangoXFontEntry PangoXFontEntry;
 
 struct _PangoXFontEntry
 {
-  char *xlfd_prefix;
+  char *xlfd;
   PangoFontDescription description;
 };
 
@@ -142,13 +146,15 @@ const struct {
   { "condensed",     PANGO_STRETCH_CONDENSED },
 };
 
-static void       pango_x_font_map_destroy    (PangoFontMap           *fontmap);
-static PangoFont *pango_x_font_map_load_font  (PangoFontMap           *fontmap,
-					       PangoFontDescription   *desc,
-					       double                  size);
-static void       pango_x_font_map_list_fonts (PangoFontMap           *fontmap,
-					       PangoFontDescription ***descs,
-					       int                    *n_descs);
+static void       pango_x_font_map_destroy      (PangoFontMap           *fontmap);
+static PangoFont *pango_x_font_map_load_font    (PangoFontMap           *fontmap,
+						 PangoFontDescription   *desc,
+						 double                  size);
+static void       pango_x_font_map_list_fonts   (PangoFontMap           *fontmap,
+						 PangoFontDescription ***descs,
+						 int                    *n_descs);
+static void       pango_x_font_map_read_aliases (PangoXFontMap          *xfontmap);
+
 
 static void                  pango_x_font_destroy      (PangoFont   *font);
 static PangoFontDescription *pango_x_font_describe     (PangoFont   *font);
@@ -170,6 +176,7 @@ static gboolean            pango_x_find_glyph      (PangoFont          *font,
 static XFontStruct *       pango_x_get_font_struct (PangoFont          *font,
 						    PangoXSubfontInfo  *info);
 
+static char *pango_x_names_for_size (char *font_list, double size);
 static gboolean pango_x_is_xlfd_font_name (const char *fontname);
 static char *  pango_x_get_xlfd_field    (const char *fontname,
 					   FontField    field_num,
@@ -236,6 +243,8 @@ pango_x_font_map_for_display (Display *display)
     }
   
   XFreeFontNames (xfontnames);
+
+  pango_x_font_map_read_aliases (xfontmap);
   
   return (PangoFontMap *)xfontmap;
 }
@@ -248,6 +257,23 @@ pango_x_font_map_destroy (PangoFontMap *fontmap)
   g_free (fontmap);
 }
 
+static PangoXFamilyEntry *
+pango_x_get_family_entry (PangoXFontMap *xfontmap,
+			   const char    *family_name)
+{
+  PangoXFamilyEntry *family_entry = g_hash_table_lookup (xfontmap->families, family_name);
+  if (!family_entry)
+    {
+      family_entry = g_new (PangoXFamilyEntry, 1);
+      family_entry->family_name = g_strdup (family_name);
+      family_entry->font_entries = NULL;
+      
+      g_hash_table_insert (xfontmap->families, family_entry->family_name, family_entry);
+    }
+
+  return family_entry;
+}
+
 static PangoFont *
 pango_x_font_map_load_font (PangoFontMap         *fontmap,
 			    PangoFontDescription *description,
@@ -255,45 +281,47 @@ pango_x_font_map_load_font (PangoFontMap         *fontmap,
 {
   PangoXFontMap *xfontmap = (PangoXFontMap *)fontmap;
   PangoXFamilyEntry *family_entry;
-  PangoXFontEntry *font_entry;
   PangoFont *result = NULL;
   GSList *tmp_list;
   gchar *name;
-  int size_decipoints;
 
   g_return_val_if_fail (size > 0, NULL);
   
   name = g_strdup (description->family_name);
   g_strdown (name);
 
-  size_decipoints = floor(size*10 + 0.5);
-
   family_entry = g_hash_table_lookup (xfontmap->families, name);
   if (family_entry)
     {
+      PangoXFontEntry *best_match = NULL;
+      
       tmp_list = family_entry->font_entries;
       while (tmp_list)
 	{
-	  font_entry = tmp_list->data;
+	  PangoXFontEntry *font_entry = tmp_list->data;
 	  
 	  if (font_entry->description.style == description->style &&
 	      font_entry->description.variant == description->variant &&
-	      font_entry->description.weight == description->weight &&
 	      font_entry->description.stretch == description->stretch)
 	    {
-	      /* Construct and XLFD for the sized font. The first 5 fields of the
-	       * XLFD are stored in the xlfd_prefix.
-	       */
+	      int distance = abs(font_entry->description.weight - description->weight);
+	      int old_distance = best_match ? abs(best_match->description.weight - description->weight) : G_MAXINT;
 
-	      char *xlfd = g_strdup_printf ("%s*-%d-*-*-*-*-*-*", font_entry->xlfd_prefix, size_decipoints);
-	      /* FIXME: cache fonts */
-	      result = pango_x_load_font (xfontmap->display, xlfd);
-	      g_free (xlfd);
-	      
-	      break;
+	      if (distance < old_distance)
+		best_match = font_entry;
 	    }
-	  
+
 	  tmp_list = tmp_list->next;
+	}
+
+      if (best_match)
+	{
+	  /* Construct an XLFD for the sized font. The first 5 fields of the
+	   */
+	  char *font_list = pango_x_names_for_size (best_match->xlfd, size);
+	  /* FIXME: cache fonts */
+	  result = pango_x_load_font (xfontmap->display, font_list);
+	  g_free (font_list);
 	}
     }
 
@@ -347,6 +375,420 @@ pango_x_font_map_list_fonts (PangoFontMap           *fontmap,
   
   g_hash_table_foreach (xfontmap->families, list_fonts_foreach, &info);
 }
+
+/* Similar to GNU libc's getline, but buffer is g_malloc'd */
+static size_t
+pango_getline (char **lineptr, size_t *n, FILE *stream)
+{
+#define EXPAND_CHUNK 16
+
+  int n_read = 0;
+  int result = -1;
+
+  g_return_val_if_fail (lineptr != NULL, -1);
+  g_return_val_if_fail (n != NULL, -1);
+  g_return_val_if_fail (*lineptr != NULL || *n == 0, -1);
+  
+#ifdef HAVE_FLOCKFILE
+  flockfile (stream);
+#endif  
+  
+  while (1)
+    {
+      int c;
+      
+#ifdef HAVE_FLOCKFILE
+      c = getc_unlocked (stream);
+#else
+      c = getc (stream);
+#endif      
+
+      if (c == EOF)
+	{
+	  if (n_read > 0)
+	    {
+	      result = n_read;
+	      (*lineptr)[n_read] = '\0';
+	    }
+	  break;
+	}
+
+      if (n_read + 2 >= *n)
+	{
+	  *n += EXPAND_CHUNK;
+	  *lineptr = g_realloc (*lineptr, *n);
+	}
+
+      (*lineptr)[n_read] = c;
+      n_read++;
+
+      if (c == '\n' || c == '\r')
+	{
+	  result = n_read;
+	  (*lineptr)[n_read] = '\0';
+	  break;
+	}
+    }
+
+#ifdef HAVE_FLOCKFILE
+  funlockfile (stream);
+#endif
+
+  return n_read - 1;
+}
+
+static int
+find_tok (char **start, char **tok)
+{
+  char *p = *start;
+  
+  while (*p && (*p == ' ' || *p == '\t'))
+    p++;
+
+  if (*p == 0 || *p == '\n' || *p == '\r')
+    return -1;
+
+  if (*p == '"')
+    {
+      p++;
+      *tok = p;
+
+      while (*p && *p != '"')
+	p++;
+
+      if (*p != '"')
+	return -1;
+
+      *start = p + 1;
+      return p - *tok;
+    }
+  else
+    {
+      *tok = p;
+      
+      while (*p && *p != ' ' && *p != '\t' && *p != '\r' && *p != '\n')
+	p++;
+
+      *start = p;
+      return p - *tok;
+    }
+}
+
+static gboolean
+get_style (char *tok, int toksize, PangoFontDescription *desc)
+{
+  if (toksize == 0)
+    return FALSE;
+
+  switch (tok[0])
+    {
+    case 'n':
+    case 'N':
+      if (strncasecmp (tok, "normal", toksize) == 0)
+	{
+	  desc->style = PANGO_STYLE_NORMAL;
+	  return TRUE;
+	}
+      break;
+    case 'i':
+      if (strncasecmp (tok, "italic", toksize) == 0)
+	{
+	  desc->style = PANGO_STYLE_ITALIC;
+	  return TRUE;
+	}
+      break;
+    case 'o':
+      if (strncasecmp (tok, "oblique", toksize) == 0)
+	{
+	  desc->style = PANGO_STYLE_OBLIQUE;
+	  return TRUE;
+	}
+      break;
+    }
+  g_warning ("Style must be normal, italic, or oblique");
+  
+  return FALSE;
+}
+
+static gboolean
+get_variant (char *tok, int toksize, PangoFontDescription *desc)
+{
+  if (toksize == 0)
+    return FALSE;
+
+  switch (tok[0])
+    {
+    case 'n':
+    case 'N':
+      if (strncasecmp (tok, "normal", toksize) == 0)
+	{
+	  desc->variant = PANGO_VARIANT_NORMAL;
+	  return TRUE;
+	}
+      break;
+    case 's':
+    case 'S':
+      if (strncasecmp (tok, "small_caps", toksize) == 0)
+	{
+	  desc->variant = PANGO_VARIANT_SMALL_CAPS;
+	  return TRUE;
+	}
+      break;
+    }
+  
+  g_warning ("Variant must be normal, or small_caps");
+  return FALSE;
+}
+
+static gboolean
+get_weight (char *tok, int toksize, PangoFontDescription *desc)
+{
+  if (toksize == 0)
+    return FALSE;
+
+  switch (tok[0])
+    {
+    case 'n':
+    case 'N':
+      if (strncasecmp (tok, "normal", toksize) == 0)
+	{
+	  desc->weight = PANGO_WEIGHT_NORMAL;
+	  return TRUE;
+	}
+      break;
+    case 'b':
+    case 'B':
+      if (strncasecmp (tok, "bold", toksize) == 0)
+	{
+	  desc->weight = PANGO_WEIGHT_BOLD;
+	  return TRUE;
+	}
+      break;
+    case '0':
+    case '1':
+    case '2':
+    case '3':
+    case '4':
+    case '5':
+    case '6':
+    case '7':
+    case '8':
+    case '9':
+      {
+	char *numstr, *end;
+
+	numstr = g_strndup (tok, toksize);
+
+	desc->weight = strtol (numstr, &end, 0);
+	if (*end != '\0')
+	  {
+	    g_warning ("Cannot parse numerical weight '%s'", numstr);
+	    g_free (numstr);
+	    return FALSE;
+	  }
+
+	g_free (numstr);
+	return TRUE;
+      }
+    }
+  
+  g_warning ("Weight must be normal, bold, or an integer");
+  return FALSE;
+}
+
+static gboolean
+get_stretch (char *tok, int toksize, PangoFontDescription *desc)
+{
+  if (toksize == 0)
+    return FALSE;
+
+  switch (tok[0])
+    { 
+    case 'c':
+    case 'C':
+      if (strncasecmp (tok, "condensed", toksize) == 0)
+	{
+	  desc->stretch = PANGO_STRETCH_CONDENSED;
+	  return TRUE;
+	}
+      break;
+    case 'e':
+    case 'E':
+      if (strncasecmp (tok, "extra_condensed", toksize) == 0)
+	{
+	  desc->stretch = PANGO_STRETCH_EXTRA_CONDENSED;
+	  return TRUE;
+	}
+     if (strncasecmp (tok, "extra_expanded", toksize) == 0)
+	{
+	  desc->stretch = PANGO_STRETCH_EXTRA_EXPANDED;
+	  return TRUE;
+	}
+      if (strncasecmp (tok, "expanded", toksize) == 0)
+	{
+	  desc->stretch = PANGO_STRETCH_EXPANDED;
+	  return TRUE;
+	}
+      break;
+    case 'n':
+    case 'N':
+      if (strncasecmp (tok, "normal", toksize) == 0)
+	{
+	  desc->stretch = PANGO_STRETCH_NORMAL;
+	  return TRUE;
+	}
+      break;
+    case 's':
+    case 'S':
+      if (strncasecmp (tok, "semi_condensed", toksize) == 0)
+	{
+	  desc->stretch = PANGO_STRETCH_SEMI_CONDENSED;
+	  return TRUE;
+	}
+      if (strncasecmp (tok, "semi_expanded", toksize) == 0)
+	{
+	  desc->stretch = PANGO_STRETCH_SEMI_EXPANDED;
+	  return TRUE;
+	}
+      break;
+    case 'u':
+    case 'U':
+      if (strncasecmp (tok, "ultra_condensed", toksize) == 0)
+	{
+	  desc->stretch = PANGO_STRETCH_ULTRA_CONDENSED;
+	  return TRUE;
+	}
+      if (strncasecmp (tok, "ultra_expanded", toksize) == 0)
+	{
+	  desc->variant = PANGO_STRETCH_ULTRA_EXPANDED;
+	  return TRUE;
+	}
+      break;
+    }
+
+  g_warning ("Stretch must be ultra_condensed, extra_condensed, condensed, semi_condensed, normal, semi_expanded, expanded, extra_expanded, or ultra_expanded");
+  return FALSE;
+}
+
+static void
+pango_x_font_map_read_alias_file (PangoXFontMap *xfontmap,
+				  const char   *filename)
+{
+  FILE *infile;
+  char *buf = NULL;
+  size_t bufsize = 0;
+  int lineno = 0;
+  PangoXFontEntry *font_entry = NULL;
+
+  infile = fopen (filename, "r");
+  if (infile)
+    {
+      while (pango_getline (&buf, &bufsize, infile) != EOF)
+	{
+	  PangoXFamilyEntry *family_entry;
+
+	  char *tok;
+	  char *p = buf;
+	  
+	  int toksize;
+	  lineno++;
+
+	  while (*p && (*p == ' ' || *p == '\t'))
+	    p++;
+
+	  if (*p == 0 || *p == '#' || *p == '\n' || *p == '\r')
+	    continue;
+
+	  toksize = find_tok (&p, &tok);
+	  if (toksize == -1)
+	    goto error;
+
+	  font_entry = g_new (PangoXFontEntry, 1);
+	  font_entry->description.family_name = g_strndup (tok, toksize);
+	  g_strdown (font_entry->description.family_name);
+
+	  toksize = find_tok (&p, &tok);
+	  if (toksize == -1)
+	    goto error;
+
+	  if (!get_style (tok, toksize, &font_entry->description))
+	    goto error;
+
+	  toksize = find_tok (&p, &tok);
+	  if (toksize == -1)
+	    goto error;
+
+	  if (!get_variant (tok, toksize, &font_entry->description))
+	    goto error;
+
+	  toksize = find_tok (&p, &tok);
+	  if (toksize == -1)
+	    goto error;
+
+	  if (!get_weight (tok, toksize, &font_entry->description))
+	    goto error;
+	  
+	  toksize = find_tok (&p, &tok);
+	  if (toksize == -1)
+	    goto error;
+
+	  if (!get_stretch (tok, toksize, &font_entry->description))
+	    goto error;
+
+	  toksize = find_tok (&p, &tok);
+	  if (toksize == -1)
+	    goto error;
+
+	  font_entry->xlfd = g_strndup (tok, toksize);
+
+	  /* Insert the font entry into our structures */
+
+	  family_entry = pango_x_get_family_entry (xfontmap, font_entry->description.family_name);
+	  family_entry->font_entries = g_slist_prepend (family_entry->font_entries, font_entry);
+	  xfontmap->n_fonts++;
+
+	  g_free (font_entry->description.family_name);
+	  font_entry->description.family_name = family_entry->family_name;
+	}
+
+      if (ferror (infile))
+	g_warning ("Error reading '%s': %s", filename, g_strerror(errno));
+
+      goto out;
+
+    error:
+      if (font_entry)
+	{
+	  if (font_entry->description.family_name)
+	    g_free (font_entry->description.family_name);
+	  g_free (font_entry);
+	}
+
+      g_warning ("Error parsing line %d of alias file '%s'", lineno, filename);
+
+    out:
+      g_free (buf);
+      fclose (infile);
+      return;
+    }
+
+}
+
+static void
+pango_x_font_map_read_aliases (PangoXFontMap *xfontmap)
+{
+  char *filename;
+
+  pango_x_font_map_read_alias_file (xfontmap, SYSCONFDIR "/pango/pangox_aliases");
+
+  filename = g_strconcat (g_get_home_dir(), "/.pangox_aliases", NULL);
+  pango_x_font_map_read_alias_file (xfontmap, filename);
+  g_free (filename);
+
+  /* FIXME: Remove this one */
+  pango_x_font_map_read_alias_file (xfontmap, "pangox_aliases");
+}
+
 
 /*
  * Returns TRUE if the fontname is a valid XLFD.
@@ -497,15 +939,7 @@ pango_x_insert_font (PangoXFontMap *xfontmap,
   else
     strcpy (set_width_buffer, "*");
 
-  family_entry = g_hash_table_lookup (xfontmap->families, description.family_name);
-  if (!family_entry)
-    {
-      family_entry = g_new (PangoXFamilyEntry, 1);
-      family_entry->family_name = g_strdup (description.family_name);
-      family_entry->font_entries = NULL;
-
-      g_hash_table_insert (xfontmap->families, family_entry->family_name, family_entry);
-    }
+  family_entry = pango_x_get_family_entry (xfontmap, description.family_name);
 
   tmp_list = family_entry->font_entries;
   while (tmp_list)
@@ -525,16 +959,16 @@ pango_x_insert_font (PangoXFontMap *xfontmap,
   font_entry->description = description;
   font_entry->description.family_name = family_entry->family_name;
 
-  font_entry->xlfd_prefix = g_strconcat ("-*-",
-					 family_buffer,
-					 "-",
-					 weight_buffer,
-					 "-",
-					 slant_buffer,
-					 "-",
-					 set_width_buffer,
-					 "--",
-					 NULL);
+  font_entry->xlfd = g_strconcat ("-*-",
+				  family_buffer,
+				  "-",
+				  weight_buffer,
+				  "-",
+				  slant_buffer,
+				  "-",
+				  set_width_buffer,
+				  "--*-*-*-*-*-*-*-*",
+				  NULL);
 
   family_entry->font_entries = g_slist_append (family_entry->font_entries, font_entry);
   xfontmap->n_fonts++;
@@ -882,6 +1316,81 @@ name_for_charset (char *xlfd, char *charset)
 
   g_free (dash_charset);
   return result;
+}
+
+/* Substitute in a size into an XLFD, return the
+ * (g_malloc'd) new name, or a copy of the old name
+ * if the XLFD is already sized.
+ */
+static char *
+pango_x_name_for_size (char *xlfd, double size)
+{
+  int n_dashes = 0;
+  char *p;
+  char *prefix_end;
+  char *prefix_copy;
+  char *result;
+  
+  if (!pango_x_is_xlfd_font_name)
+    return g_strdup (xlfd);
+
+  p = xlfd;
+  while (n_dashes < 7)
+    {
+      if (*p == '-')
+	n_dashes++;
+      p++;
+    }
+
+  prefix_end = p;
+  
+  if (*p != '*' || *(p + 1) != '-')
+    return g_strdup (xlfd);
+
+  p += 2;
+  
+  while (n_dashes < 8)
+    {
+      if (*p == '-')
+	n_dashes++;
+      p++;
+    }
+
+  if (*p != '*' || *(p + 1) != '-')
+    return g_strdup (xlfd);
+
+  prefix_copy = g_strndup (xlfd, prefix_end - xlfd);
+  result = g_strdup_printf ("%s*-%d-*-*-*-*-*-*", prefix_copy, (int)floor(size*10 + 0.5));
+  g_free (prefix_copy);
+
+  return result;
+}
+
+/* Substitute sizes into a font list, returning a new malloced font list.
+ * FIXME - concatenating the names back together here is a waste - we are
+ * just going to break them apart again in pango_x_load_font
+ */
+static char *
+pango_x_names_for_size (char *font_list, double size)
+{
+  GString *result = g_string_new (NULL);
+  int i;
+  char **fonts = g_strsplit(font_list, ",", -1);
+  char *result_str;
+
+  for (i=0; fonts[i]; i++)
+    {
+      char *xlfd = pango_x_name_for_size (fonts[i], size);
+      if (i != 0)
+	g_string_append_c (result, ',');
+      g_string_append (result, xlfd);
+      g_free (xlfd);
+    }
+
+  result_str = result->str;
+  g_string_free (result, FALSE);
+
+  return result_str;
 }
 
 static PangoXSubfont
@@ -1266,3 +1775,4 @@ pango_x_get_unknown_glyph (PangoFont *font)
 
   return 0;
 }
+

@@ -60,7 +60,8 @@ struct _Line {
   int offset;   /* Offset from left margin line, in pixels */
 };
 
-PangoFontDescription font_description;
+static PangoFontDescription font_description;
+static double font_size = 16;
 static PangoFont *font = NULL;
 static Paragraph *highlight_para;
 static int highlight_offset;
@@ -802,7 +803,7 @@ reload_font ()
 {
   PangoFont *new_font;
 
-  new_font = pango_context_load_font (context, &font_description, 16.);
+  new_font = pango_context_load_font (context, &font_description, font_size);
 
   if (new_font)
     {
@@ -814,28 +815,29 @@ reload_font ()
 }
 
 void
-set_family (GtkWidget *menu_item, gpointer data)
+set_family (GtkWidget *entry, gpointer data)
 {
-  char *label = gtk_object_get_data (GTK_OBJECT (menu_item), "family");
-
-  g_free (font_description.family_name);
-  font_description.family_name = g_strdup (label);
-
+  font_description.family_name = gtk_editable_get_chars (GTK_EDITABLE (entry), 0, -1);
   reload_font ();
+}
+
+void
+font_size_changed (GtkAdjustment *adj)
+{
+  font_size = adj->value;
+  reload_font();
 }
 
 GtkWidget *
 make_families_menu ()
 {
-  GtkWidget *menu, *menu_item, *option_menu;
+  GtkWidget *combo;
   GHashTable *families_hash = g_hash_table_new (g_str_hash, g_str_equal);
-  GSList *families = NULL;
-  GSList *tmp_list;
+  GList *families = NULL;
   int i;
   
   PangoFontDescription **descs;
   int n_descs;
-  int index, active = -1;
 
   pango_context_list_fonts (context, &descs, &n_descs);
 
@@ -844,46 +846,28 @@ make_families_menu ()
       if (!g_hash_table_lookup (families_hash, descs[i]->family_name))
 	{
 	  g_hash_table_insert (families_hash, descs[i]->family_name, descs[i]);
-	  families = g_slist_prepend (families, descs[i]->family_name);
+	  families = g_list_prepend (families, descs[i]->family_name);
 	}
     }
 
-  families = g_slist_reverse (families);
+  families = g_list_reverse (families);
   
-  menu = gtk_menu_new ();
+  combo = gtk_combo_new ();
+  gtk_combo_set_popdown_strings (GTK_COMBO (combo), families);
+  gtk_combo_set_value_in_list (GTK_COMBO (combo), TRUE, FALSE);
+  gtk_editable_set_editable (GTK_EDITABLE (GTK_COMBO (combo)->entry), FALSE);
 
-  tmp_list = families;
-  index = 0;
-  while (tmp_list)
-    {
-      if (strcmp (tmp_list->data, font_description.family_name) == 0)
-	active = index; 
-      
-      menu_item = gtk_menu_item_new_with_label (tmp_list->data);
-      gtk_object_set_data_full (GTK_OBJECT (menu_item), "family",
-				g_strdup (tmp_list->data), (GtkDestroyNotify)g_free);
-      
-      gtk_signal_connect (GTK_OBJECT (menu_item), "activate",
-			  GTK_SIGNAL_FUNC (set_family), NULL);
-      gtk_widget_show (menu_item);
-      gtk_menu_append (GTK_MENU (menu), menu_item);
-      
-      tmp_list = tmp_list->next;
-      index++;
-    }
+  gtk_entry_set_text (GTK_ENTRY (GTK_COMBO (combo)->entry), font_description.family_name);
+
+  gtk_signal_connect (GTK_OBJECT (GTK_COMBO (combo)->entry), "changed",
+		      GTK_SIGNAL_FUNC (set_family), NULL);
   
   g_hash_table_destroy (families_hash);
-  g_slist_free (families);
+  g_list_free (families);
   
   pango_font_descriptions_free (descs, n_descs);
 
-  option_menu = gtk_option_menu_new ();
-  gtk_option_menu_set_menu (GTK_OPTION_MENU (option_menu), menu);
-
-  if (active != -1)
-    gtk_option_menu_set_history (GTK_OPTION_MENU (option_menu), active);
-  
-  return option_menu;
+  return combo;
 }
 
 
@@ -894,6 +878,8 @@ make_font_selector (void)
   GtkWidget *util_hbox;
   GtkWidget *label;
   GtkWidget *option_menu;
+  GtkWidget *spin_button;
+  GtkAdjustment *adj;
   
   hbox = gtk_hbox_new (FALSE, 4);
   
@@ -905,6 +891,26 @@ make_font_selector (void)
   
   gtk_box_pack_start (GTK_BOX (hbox), util_hbox, FALSE, FALSE, 0);
 
+  util_hbox = gtk_hbox_new (FALSE, 2);
+  label = gtk_label_new ("Size:");
+  gtk_box_pack_start (GTK_BOX (util_hbox), label, FALSE, FALSE, 0);
+  spin_button = gtk_spin_button_new (NULL, 1., 0);
+  gtk_box_pack_start (GTK_BOX (util_hbox), spin_button, FALSE, FALSE, 0);
+
+  gtk_box_pack_start (GTK_BOX (hbox), util_hbox, FALSE, FALSE, 0);
+
+  adj = gtk_spin_button_get_adjustment (GTK_SPIN_BUTTON (spin_button));
+  adj->value = font_size;
+  adj->lower = 0;
+  adj->upper = 1024;
+  adj->step_increment = 1;
+  adj->page_size = 10;
+  gtk_adjustment_changed (adj);
+  gtk_adjustment_value_changed (adj);
+
+  gtk_signal_connect (GTK_OBJECT (adj), "value_changed",
+		      GTK_SIGNAL_FUNC (font_size_changed), NULL);
+  
   return hbox;
 }
 
@@ -939,13 +945,13 @@ main (int argc, char **argv)
   pango_context_set_lang (context, "en_US");
   pango_context_set_base_dir (context, PANGO_DIRECTION_LTR);
 
-  font_description.family_name = g_strdup ("fixed");
+  font_description.family_name = g_strdup ("sans");
   font_description.style = PANGO_STYLE_NORMAL;
   font_description.variant = PANGO_VARIANT_NORMAL;
   font_description.weight = 500;
   font_description.stretch = PANGO_STRETCH_NORMAL;
 
-  font = pango_context_load_font (context, &font_description, 16.);
+  font = pango_context_load_font (context, &font_description, font_size);
   
 #if 0
   /* We hard code a font globally for now
