@@ -7,7 +7,7 @@
  */
 
 #include "indic-ot.h"
-
+#include "mprefixups.h"
 /*
  * FIXME: should the IndicOutput stuff be moved
  * to a spereate .h and .c file just to keep the
@@ -29,13 +29,16 @@ struct _Output
     gunichar fMabove;
     gunichar fMpost;
     gunichar fLengthMark;
-    glong   fMatraIndex;
+    glong    fMatraIndex;
     gulong   fMatraTags;
+    glong    fMPreOutIndex;
+
+    MPreFixups *fMPreFixups;
 };
 
 typedef struct _Output Output;
 
-static void initOutput(Output *output, const glong *originalOffsets, gunichar *outChars, glong *charIndices, gulong *charTags)
+static void initOutput(Output *output, const glong *originalOffsets, gunichar *outChars, glong *charIndices, gulong *charTags, MPreFixups *mpreFixups)
 {
     output->fOriginalOffsets = originalOffsets;
 
@@ -47,6 +50,9 @@ static void initOutput(Output *output, const glong *originalOffsets, gunichar *o
     output->fMatraTags   = 0;
 
     output->fMpre = output->fMbelow = output->fMabove = output->fMpost = output->fLengthMark = 0;
+
+    output->fMPreOutIndex = -1;
+    output->fMPreFixups = mpreFixups;
 }
 
 static void saveMatra(Output *output, gunichar matra, IndicOTCharClass matraClass)
@@ -70,6 +76,7 @@ static void noteMatra(Output *output, const IndicOTClassTable *classTable, gunic
     IndicOTCharClass matraClass = indic_ot_get_char_class(classTable, matra);
 
     output->fMpre = output->fMbelow = output->fMabove = output->fMpost = output->fLengthMark = 0;
+    output->fMPreOutIndex = -1;
     output->fMatraIndex = matraIndex;
     output->fMatraTags = matraTags;
 
@@ -90,6 +97,12 @@ static void noteMatra(Output *output, const IndicOTClassTable *classTable, gunic
     }
 }
 
+static void noteBaseConsonant(Output *output)
+{
+    if (output->fMPreFixups && output->fMPreOutIndex >= 0) {
+        indic_mprefixups_add(output->fMPreFixups, output->fOutIndex, output->fMPreOutIndex);
+    }
+}
 static void writeChar(Output *output, gunichar ch, guint32 charIndex, gulong charTags)
 {
     if (output->fOutChars != NULL) {
@@ -104,6 +117,7 @@ static void writeChar(Output *output, gunichar ch, guint32 charIndex, gulong cha
 static void writeMpre(Output *output)
 {
     if (output->fMpre != 0) {
+        output->fMPreOutIndex = output->fOutIndex;
         writeChar(output, output->fMpre, output->fMatraIndex, output->fMatraTags);
     }
 }
@@ -144,12 +158,17 @@ static glong getOutputIndex(Output *output)
 #define false 0
 #define true  1
 
-glong indic_ot_reorder(const gunichar *chars, const glong *utf8_offsets, glong char_count, const IndicOTClassTable *class_table, gunichar *out_chars, glong *char_indices, gulong *char_tags)
+glong indic_ot_reorder(const gunichar *chars, const glong *utf8_offsets, glong char_count, const IndicOTClassTable *class_table, gunichar *out_chars, glong *char_indices, gulong *char_tags, MPreFixups **outMPreFixups)
 {
+    MPreFixups *mpreFixups = NULL;
     Output output;
     glong i, prev = 0;
 
-    initOutput(&output, utf8_offsets, out_chars, char_indices, char_tags);
+    if (outMPreFixups && (class_table->scriptFlags & SF_MPRE_FIXUP)) {
+	mpreFixups = indic_mprefixups_new (char_count);
+    }
+
+    initOutput(&output, utf8_offsets, out_chars, char_indices, char_tags, mpreFixups);
 
     while (prev < char_count) {
         glong syllable = indic_ot_find_syllable(class_table, chars, prev, char_count);
@@ -306,6 +325,9 @@ glong indic_ot_reorder(const gunichar *chars, const glong *utf8_offsets, glong c
 		}
 	    }
 
+            /* note the base consonant for post-GSUB fixups */
+	    noteBaseConsonant(&output);
+	    
 	    /* write base consonant */
 	    for (i = baseConsonant; i < bcSpan; i += 1) {
 		writeChar(&output, chars[i], /*i*/ prev, nukt_p);
@@ -401,6 +423,9 @@ glong indic_ot_reorder(const gunichar *chars, const glong *utf8_offsets, glong c
         prev = syllable;
     }
 
+    if (mpreFixups) {
+	*outMPreFixups = mpreFixups;
+    }
+    
     return getOutputIndex(&output);
 }
-

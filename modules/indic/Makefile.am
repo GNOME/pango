@@ -171,7 +171,9 @@ ft2_sources =		 	\
 	indic-ft2.c		\
 	indic-ot-class-tables.c	\
 	indic-ot.c		\
-	indic-ot.h
+	indic-ot.h		\
+	mprefixups.c		\
+	mprefixups.h
 
 pango_indic_ft2_la_LDFLAGS = -export-dynamic -avoid-version -module $(no_undefined)
 pango_indic_ft2_la_LIBADD = $(indic_ft2_libadd)

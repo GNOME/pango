@@ -12,6 +12,7 @@
 #include <freetype/freetype.h>
 #include <pango/pango-glyph.h>
 #include <pango/pango-types.h>
+#include "mprefixups.h"
 
 G_BEGIN_DECLS
 
@@ -241,7 +242,7 @@ gboolean indic_ot_has_below_base_form(const IndicOTClassTable *class_table, guni
 
 glong indic_ot_find_syllable(const IndicOTClassTable *class_table, const gunichar *chars, glong prev, glong char_count);
 
-glong indic_ot_reorder(const gunichar *chars, const glong *utf8_offsets, glong char_count, const IndicOTClassTable *class_table, gunichar *out_chars, glong *char_indices, gulong *char_tags);
+glong indic_ot_reorder(const gunichar *chars, const glong *utf8_offsets, glong char_count, const IndicOTClassTable *class_table, gunichar *out_chars, glong *char_indices, gulong *char_tags, MPreFixups **outMPreFixups);
 
 #endif /* PANGO_ENABLE_ENGINE */
 
