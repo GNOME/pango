@@ -1,3 +1,15 @@
+Tue Mar 16 11:24:46 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* === Released 1.4.0 ===
+
+	* configure.in: Version 1.4.0, interface ago 0. Require
+	glib-2.4.0.
+
+	* NEWS: Updates.
+
+	* README: Some updates; include details about the FreeType
+	license of the OpenType code.
+
 Thu Mar 11 17:28:06 2004  Manish Singh  <yosh@gimp.org>
 
 	* pango/pangofc-fontmap.c: Convert PangoStretch to and from FC_WIDTH,

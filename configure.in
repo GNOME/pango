@@ -21,8 +21,8 @@ dnl
 
 dnl The triplet 
 m4_define([pango_major_version], [1])
-m4_define([pango_minor_version], [3])
-m4_define([pango_micro_version], [6])
+m4_define([pango_minor_version], [4])
+m4_define([pango_micro_version], [0])
 m4_define([pango_version],
           [pango_major_version.pango_minor_version.pango_micro_version])
 dnl The X.Y in -lpango-X.Y line. This is expected to stay 1.0 until Pango 2.
@@ -281,7 +281,7 @@ fi
 #
 # Checks for GLib
 #
-GLIB_REQUIRED_VERSION=2.3.1
+GLIB_REQUIRED_VERSION=2.4.0
 
 AM_PATH_GLIB_2_0($GLIB_REQUIRED_VERSION, :,
   AC_MSG_ERROR([
