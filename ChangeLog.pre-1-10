@@ -1,3 +1,9 @@
+2002-03-18  Changwoo Ryu  <cwryu@debian.org>
+
+	* modules/basic/tables-big.i: Enabled ksc5601 fonts for the Hangul
+	compatibility jamos, the CJK unified ideographs, and the CJK
+	compatibility ideographs areas.
+
 2002-03-17  Tor Lillqvist  <tml@iki.fi>
 
 	* pango/pangowin32-private.h: Add pango_win32_os_version_info
