@@ -1,3 +1,9 @@
+Thu Aug 23 19:44:34 2001  Tim Janik  <timj@gtk.org>
+
+	* pango/pango-layout.c (pango_layout_check_lines): pass ""
+	as default text into pango_layout_set_text() as NULL isn't
+	allowed anymore.
+
 Wed Aug 22 19:52:18 2001  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pango-layout.c (pango_layout_set_text): Simply
