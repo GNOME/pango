@@ -931,7 +931,7 @@ uniscribe_shape (PangoFont        *font,
   if (hfont != NULL)
     pango_win32_font_cache_unload (font_cache, hfont);
 
-  return retval;
+  return retval && glyphs->num_glyphs > 0;
 }
 
 static gboolean

@@ -1,3 +1,9 @@
+Wed Dec 15 23:13:57 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* modules/basic/basic-win32.c (uniscribe_shape): Emergency
+	fix for #151068... if uniscribe shaping comes up with
+	no glyphs, fall back to non-uniscribe shaping.
+
 Wed Dec 15 22:09:42 2004  Owen Taylor  <otaylor@redhat.com>
 
 	Add pixel sizes for fonts (#119081, patch from Chris Lahey)
