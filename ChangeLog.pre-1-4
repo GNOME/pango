@@ -1,5 +1,10 @@
 2001-10-03  Havoc Pennington  <hp@redhat.com>
 
+	* pango/break.c (MAYBE_START_NEW_SENTENCE): remove assertion I
+	shouldn't have put in there
+
+2001-10-03  Havoc Pennington  <hp@redhat.com>
+
 	* pango/break.c (pango_default_break): try to fix up the sentence
 	breaking a bit, specifically for sentences that started at the end
 	of a previous sentence we were messing things up.

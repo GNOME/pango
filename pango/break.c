@@ -864,7 +864,6 @@ pango_default_break (const gchar   *text,
        */
 
 #define MAYBE_START_NEW_SENTENCE                                \
-              g_assert (sentence_state != STATE_SENTENCE_BODY); \
               switch (type)                                     \
                 {                                               \
                 case G_UNICODE_LINE_SEPARATOR:                  \
