@@ -178,6 +178,13 @@ pango_win32_font_init (PangoWin32Font *win32font)
   win32font->glyph_info = g_hash_table_new_full (NULL, NULL, NULL, g_free);
 }
 
+/**
+ * pango_win32_get_dc:
+ * 
+ * Obtains a handle to the Windows device context that is used by Pango.
+ * 
+ * Return value: A handle to the Windows device context that is used by Pango.
+ **/
 HDC
 pango_win32_get_dc (void)
 {

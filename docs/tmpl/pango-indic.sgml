@@ -6,7 +6,7 @@ Indic support for legacy shaper engines.
 
 <!-- ##### SECTION Long_Description ##### -->
 <para>
-The <function>pango_indic_*</function> functiosn are used to
+The <function>pango_indic_*</function> functions are used to
 implement indic shaping support for certain legacy shaping engines,
 in particular the shaping engines for bitmap X fonts.
 These are basically internal routines and should not be
@@ -34,15 +34,21 @@ The Unicode character 'ZERO WIDTH JOINER', 0x200d.
 
 <!-- ##### STRUCT PangoIndicScript ##### -->
 <para>
-
+The <structname>PangoIndicScript</structname> struct contains a few 
+script-dependent functions which are used by the 
+<function>pango_indic_*</function> functions.
+Renderers must provide a suitable <structname>PangoIndicScript</structname>
+struct.
 </para>
 
-@name: 
-@is_prefixing_vowel: 
-@is_vowel_sign: 
-@vowel_sign_to_matra: 
-@is_vowel_half: 
-@vowel_split: 
+@name: the name of the script.
+@is_prefixing_vowel: determines whether a vowel is left-joining.
+@is_vowel_sign: determines whether the given character is a vowel sign.
+@vowel_sign_to_matra: converts a vowel sign to a matra (abbreviated form).
+@is_vowel_half: determines whether the given character is part of a two-part
+vowel. This is an optional function.
+@vowel_split: returns whether the given vowel can be split and the pieces in
+which it can be split. This is an optional function. 
 
 <!-- ##### FUNCTION pango_indic_shift_vowels ##### -->
 <para>

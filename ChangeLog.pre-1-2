@@ -1,3 +1,11 @@
+2002-12-08  Matthias Clasen  <maclas@gmx.de>
+
+	* docs/tmpl/pango-indic.sgml: Document PangoIndicScript.
+
+2002-12-07  Matthias Clasen  <maclas@gmx.de>
+
+	* pango/pangowin32.c (pango_win32_get_dc): Document.
+
 Sat Dec  7 01:05:25 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pangofc-fontmap.cI (pango_fc_font_map_get_patterns):
