@@ -855,7 +855,7 @@ pango_ft2_font_finalize (GObject *object)
   PangoFT2FontCache *cache = pango_ft2_font_map_get_font_cache (ft2font->fontmap);
   int i;
 
-  PING ((""));
+  PING ((" "));
 
   for (i = 0; i < ft2font->n_fonts; i++)
     {
@@ -1178,14 +1178,13 @@ ft_error_compare (const void *pkey,
 const char *
 pango_ft2_ft_strerror (FT_Error error)
 {
-#undef FTERRORS_H
+#undef __FTERRORS_H__
 #define FT_ERRORDEF( e, v, s )  { e, s },
 #define FT_ERROR_START_LIST  {
-#define FT_ERROR_END_LIST    { 0, 0 } }
+#define FT_ERROR_END_LIST    { 0, 0 } };
 
   const ft_error_description ft_errors[] =
-#include <freetype/fterrors.h>
-  ;
+#include FT_ERRORS_H
 
 #undef FT_ERRORDEF
 #undef FT_ERROR_START_LIST

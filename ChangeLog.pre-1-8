@@ -1,3 +1,10 @@
+2000-12-15  Tor Lillqvist  <tml@iki.fi>
+
+	* pango/pangoft2.c (pango_ft2_ft_strerror): Update for newest
+	FreeType2.
+	(pango_ft2_font_finalize): gcc warns about empty format strings,
+	so use just a space...
+
 2000-12-11  Havoc Pennington  <hp@redhat.com>
 
 	* tests/boundaries.utf8: Add some jamo and viramas and unicode
