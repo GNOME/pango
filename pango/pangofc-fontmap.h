@@ -82,13 +82,17 @@ struct _PangoFcFontMapClass
   PangoFcFont  *(*new_font)          (PangoFcFontMap  *fontmap,
 			              FcPattern       *pattern);
 
+  gboolean     (*get_rendered_size)  (PangoFcFontMap             *fcfontmap,
+				      PangoContext               *context,
+				      const PangoFontDescription *desc,
+				      int                        *xsize,
+				      int                        *ysize);
   /*< private >*/
 
   /* Padding for future expansion */
   void (*_pango_reserved1) (void);
   void (*_pango_reserved2) (void);
   void (*_pango_reserved3) (void);
-  void (*_pango_reserved4) (void);
 };
 
 PangoContext * pango_fc_font_map_create_context (PangoFcFontMap *fcfontmap);

@@ -1,3 +1,7 @@
+Thu Dec 16 14:03:32 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* docs/tmpl/pango-renderer.sgml: Add short and long descriptions.
+
 Wed Dec 15 23:49:14 2004  Owen Taylor  <otaylor@redhat.com>
 
         * === Released 1.8.0 ===

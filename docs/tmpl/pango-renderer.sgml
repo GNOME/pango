@@ -2,11 +2,15 @@
 PangoRenderer
 
 <!-- ##### SECTION Short_Description ##### -->
-
+Rendering driver base class
 
 <!-- ##### SECTION Long_Description ##### -->
 <para>
-
+#PangoRenderer is a base class that contains the necessary logic for
+rendering a PangoLayout or PangoLayoutLine. By subclassing
+PangoRenderer and overriding operations such as @draw_glyphs and
+@draw_rectangle, renderers for particular font backends and
+destinations can be created.
 </para>
 
 <!-- ##### SECTION See_Also ##### -->
