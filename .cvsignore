@@ -7,6 +7,7 @@ config.status
 pango.pc
 pangox.pc
 pangoxft.pc
+pangoft2.pc
 pango.spec
 pango-config
 stamp-h

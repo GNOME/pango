@@ -1,3 +1,14 @@
+2001-01-05  Alexander Larsson  <alla@lysator.liu.se>
+
+	* .cvsignore: Add pangoft2.pc
+
+	* Makefile.am:
+	* configure.in:
+	Build and install pangoft2.pc
+
+	* pangoft2.pc:
+	New file.
+
 2001-01-04  Havoc Pennington  <hp@redhat.com>
 
 	* modules/indic/Makefile.am (INCLUDES): add X_CFLAGS

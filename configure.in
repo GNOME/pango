@@ -450,6 +450,7 @@ tests/Makefile
 pango.spec
 pango.pc
 pangox.pc
+pangoft2.pc
 pangoxft.pc
 ],[case "$CONFIG_FILES" in
 *pango-config*)chmod +x pango-config;;
