@@ -1,3 +1,8 @@
+2002-06-10  Matthias Clasen  <maclas@gmx.de>
+
+	* pango/pango-fontset.c (pango_fontset_real_get_metrics): Don't
+	leak raw_metrics and don't copy refcounts.  (#84533)
+
 2002-06-03  Sven Neumann  <sven@gimp.org>
 
 	* pango/pangoft2-fontmap.c (pango_ft2_font_map_list_families): set
