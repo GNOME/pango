@@ -1,3 +1,8 @@
+2000-06-07  Havoc Pennington  <hp@redhat.com>
+
+	* pango/pango-attributes.c (pango_attr_iterator_copy): New
+	function to copy a PangoAttrIterator.
+
 Mon Jun  5 20:45:12 2000  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pangox-fontmap.c (pango_x_shutdown_display): Add

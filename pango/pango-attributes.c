@@ -880,9 +880,33 @@ pango_attr_iterator_next (PangoAttrIterator *iterator)
 
 /**
  * pango_attr_iterator_destroy:
- * @iterator: a #PangoIterator.
+ * @iterator: a #PangoAttrIterator.
  * 
- * Destroy a #PangoIterator and free all associated memory.
+ * Copy a #PangoAttrIterator
+ *
+ * Return value: Copy of @iterator
+ **/
+PangoAttrIterator *
+pango_attr_iterator_copy (PangoAttrIterator *iterator)
+{
+  PangoAttrIterator *copy;
+
+  g_return_val_if_fail (iterator != NULL, NULL);
+
+  copy = g_new (PangoAttrIterator, 1);
+
+  *copy = *iterator;
+
+  copy->attribute_stack = g_list_copy (iterator->attribute_stack);
+
+  return copy;
+}
+
+/**
+ * pango_attr_iterator_destroy:
+ * @iterator: a #PangoAttrIterator.
+ * 
+ * Destroy a #PangoAttrIterator and free all associated memory.
  **/
 void
 pango_attr_iterator_destroy (PangoAttrIterator *iterator)
@@ -895,7 +919,7 @@ pango_attr_iterator_destroy (PangoAttrIterator *iterator)
 
 /**
  * pango_attr_iterator_get:
- * @iterator: a #PangoIterator
+ * @iterator: a #PangoAttrIterator
  * @type: the type of attribute to find.
  * 
  * Find the current attribute of a particular type at the iterator
@@ -931,7 +955,7 @@ pango_attr_iterator_get (PangoAttrIterator *iterator,
 
 /**
  * pango_attr_iterator_get_font:
- * @iterator: a #PangoIterator
+ * @iterator: a #PangoAttrIterator
  * @base: the default values to use for fields not currently overridden.
  * @current: a #PangoFontDescription to fill in with the current values. This
  *           #PangoFontDescription structure cannot be freed with
