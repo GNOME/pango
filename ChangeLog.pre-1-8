@@ -1,3 +1,8 @@
+2004-07-08  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/break.c: Add missing row for the WORD_JOINER
+	class. (#145833, Billy Biggs)
+
 Thu Jul  8 15:25:29 2004  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pango-context.[ch]: Add pango_context_get_font_map()
