@@ -1,4 +1,4 @@
-	## Process this file with automake to create Makefile.in.
+## Process this file with automake to create Makefile.in.
 
 INCLUDES = 					\
 	-DSYSCONFDIR=\"$(sysconfdir)\" 		\
@@ -22,6 +22,7 @@ libpango_la_SOURCES = 	   \
 	pango-fontmap.c	   \
 	pango-item.c	   \
 	pango-layout.c	   \
+	pango-tabs.c	   \
 	pango-utils.c	   \
 	reorder-items.c    \
 	shape.c
@@ -55,6 +56,7 @@ pangoinclude_HEADERS = 	   \
 	pango-item.h	   \
 	pango-layout.h	   \
 	pango-modules.h	   \
+	pango-tabs.h	   \
 	pango-types.h	   \
 	pango-utils.h	   \
 	pangox.h	

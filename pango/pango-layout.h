@@ -25,6 +25,7 @@
 #include <pango/pango-attributes.h>
 #include <pango/pango-context.h>
 #include <pango/pango-glyph.h>
+#include <pango/pango-tabs.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -33,7 +34,7 @@ extern "C" {
 typedef struct _PangoLayout      PangoLayout;
 typedef struct _PangoLayoutClass PangoLayoutClass;
 typedef struct _PangoLayoutLine  PangoLayoutLine;
-typedef struct _PangoLayoutRun   PangoLayoutRun; 
+typedef struct _PangoLayoutRun   PangoLayoutRun;
 
 typedef enum {
   PANGO_ALIGN_LEFT,
@@ -94,6 +95,11 @@ gboolean       pango_layout_get_justify          (PangoLayout                *la
 void           pango_layout_set_alignment        (PangoLayout                *layout,
 						  PangoAlignment              alignment);
 PangoAlignment pango_layout_get_alignment        (PangoLayout                *layout);
+
+void           pango_layout_set_tabs             (PangoLayout                *layout,
+                                                  PangoTabArray              *tabs);
+
+PangoTabArray* pango_layout_get_tabs             (PangoLayout                *layout);
 
 void           pango_layout_context_changed (PangoLayout    *layout);
 

@@ -55,6 +55,8 @@ struct _PangoLayout
 
   int tab_width;		/* Cached width of a tab. -1 == not yet calculated */
 
+  PangoTabArray *tabs;
+  
   GSList *lines;
 };
 
@@ -164,6 +166,9 @@ pango_layout_finalize (GObject *object)
 
   if (layout->font_desc)
     pango_font_description_free (layout->font_desc);
+
+  if (layout->tabs)
+    pango_tab_array_free (layout->tabs);
   
   G_OBJECT_CLASS (parent_class)->finalize (object);
 }
@@ -440,6 +445,51 @@ pango_layout_get_alignment (PangoLayout *layout)
 {
   g_return_val_if_fail (layout != NULL, PANGO_ALIGN_LEFT);
   return layout->alignment;
+}
+
+
+/**
+ * pango_layout_set_tabs:
+ * @layout: a #PangoLayout 
+ * @tabs: a #PangoTabArray
+ * 
+ * Sets the tabs to use for @layout, overriding the default tabs
+ * (by default, tabs are every 8 spaces). If @tabs is %NULL, the default
+ * tabs are reinstated. @tabs is copied into the layout; you must
+ * free your copy of @tabs yourself.
+ **/
+void
+pango_layout_set_tabs (PangoLayout   *layout,
+                       PangoTabArray *tabs)
+{
+  g_return_if_fail (PANGO_IS_LAYOUT (layout));
+  
+  if (layout->tabs)
+    pango_tab_array_free (layout->tabs);
+
+  layout->tabs = tabs ? pango_tab_array_copy (tabs) : NULL;
+}
+
+/**
+ * pango_layout_get_tabs:
+ * @layout: a #PangoLayout
+ * 
+ * Get the current #PangoTabArray used by this layout. If no
+ * #PangoTabArray has been set, then the default tabs are in use
+ * and %NULL is returned. Default tabs are every 8 spaces.
+ * The return value should be freed with pango_tab_array_free().
+ * 
+ * Return value: a copy of the tabs for this layout, or %NULL
+ **/
+PangoTabArray*
+pango_layout_get_tabs (PangoLayout *layout)
+{
+  g_return_val_if_fail (PANGO_IS_LAYOUT (layout), NULL);
+
+  if (layout->tabs)
+    return pango_tab_array_copy (layout->tabs);
+  else
+    return NULL;
 }
 
 /**
@@ -1677,46 +1727,104 @@ free_run (PangoLayoutRun *run, gboolean free_item)
   g_free (run);
 }
 
+/* For now we only need the tab position, we assume
+ * all tabs are left-aligned.
+ */
 static int
 get_tab_pos (PangoLayout *layout, int index)
 {
-  if (layout->tab_width == -1)
+  gint n_tabs;
+  gboolean in_pixels;
+
+  if (layout->tabs)
     {
-      /* Find out how wide 8 spaces are in the context's default font. Utter
-       * performance killer. :-( 
-       */
-      PangoGlyphString *glyphs = pango_glyph_string_new ();
-      PangoItem *item;
-      GList *items;
-      int i;
-
-      PangoAttrList *attrs = pango_attr_list_new ();
-      if (layout->font_desc)
-	{
-	  PangoAttribute *attr = pango_attr_font_desc_new (layout->font_desc);
-	  attr->start_index = 0;
-	  attr->end_index = layout->length;
-	  
-	  pango_attr_list_insert_before (attrs, attr);
-	}
-
-      items = pango_itemize (layout->context, " ", 1, attrs);
-      pango_attr_list_unref (attrs);
-
-      item = items->data;
-      pango_shape ("        ", 8, &item->analysis, glyphs);
-      
-      pango_item_free (item);
-      g_list_free (items);
-
-      layout->tab_width = 0;
-      for (i=0; i < glyphs->num_glyphs; i++)
-	layout->tab_width += glyphs->glyphs[i].geometry.width;
-
-      pango_glyph_string_free (glyphs);
+      n_tabs = pango_tab_array_get_size (layout->tabs);
+      in_pixels = pango_tab_array_get_positions_in_pixels (layout->tabs);
+    }
+  else
+    {
+      n_tabs = 0;
+      in_pixels = FALSE;
     }
   
-  return layout->tab_width * index;
+  if (index < n_tabs)
+    {
+      gint pos = 0;
+
+      pango_tab_array_get_tab (layout->tabs, index, NULL, &pos);
+
+      if (in_pixels)
+        return pos * PANGO_SCALE;
+      else
+        return pos;
+    }
+
+  if (n_tabs > 0)
+    {
+      /* Extrapolate tab position, repeating the last tab gap to
+       * infinity.
+       */
+      
+      gint last_pos = 0;
+      gint next_to_last_pos = 0;
+      gint pos;
+      
+      pango_tab_array_get_tab (layout->tabs, n_tabs - 1, NULL, &last_pos);
+
+      if (n_tabs > 1)
+        pango_tab_array_get_tab (layout->tabs, n_tabs - 2, NULL, &next_to_last_pos);
+      else
+        next_to_last_pos = 0;
+
+      pos = last_pos + ((last_pos - next_to_last_pos) * (index - n_tabs + 1));
+
+      if (in_pixels)
+        return pos * PANGO_SCALE;
+      else
+        return pos;
+    }
+  else
+    {
+      /* No tab array set, so use default tab width */
+      
+      if (layout->tab_width == -1)
+        {
+          /* Find out how wide 8 spaces are in the context's default
+           * font. Utter performance killer. :-(
+           */
+          PangoGlyphString *glyphs = pango_glyph_string_new ();
+          PangoItem *item;
+          GList *items;
+          int i;
+
+          PangoAttrList *attrs = pango_attr_list_new ();
+          if (layout->font_desc)
+            {
+              PangoAttribute *attr = pango_attr_font_desc_new (layout->font_desc);
+              attr->start_index = 0;
+              attr->end_index = layout->length;
+	  
+              pango_attr_list_insert_before (attrs, attr);
+            }
+
+          items = pango_itemize (layout->context, " ", 1, attrs);
+          pango_attr_list_unref (attrs);
+
+          item = items->data;
+          pango_shape ("        ", 8, &item->analysis, glyphs);
+      
+          pango_item_free (item);
+          g_list_free (items);
+
+          layout->tab_width = 0;
+          for (i=0; i < glyphs->num_glyphs; i++)
+            layout->tab_width += glyphs->glyphs[i].geometry.width;
+
+          pango_glyph_string_free (glyphs);
+        }
+
+      return layout->tab_width * index;
+    }
 }
 
 static void
