@@ -299,33 +299,36 @@ pango_tab_array_get_tab  (PangoTabArray *tab_array,
 /**
  * pango_tab_array_get_tabs:
  * @tab_array: a #PangoTabArray
- * @alignments: array to fill with tab stop alignments
- * @locations: array to fill with tab stop positions
+ * @alignments: location to store an array of tab stop alignments
+ * @locations: location to store an array of tab positions
  *
- * @alignments and @locations must be arrays with
- * one member for each tab stop in @tab_array (i.e. the
- * size of @alignments and @locations should match
- * the result of pango_tab_array_get_size()). The arrays
- * will be filled with the alignment and location of
- * each tab stop.
+ * If non-NULL, @alignments and @locations are filled with allocated
+ * arrays of length pango_tab_array_get_size(). You must free the
+ * returned array.
  * 
  **/
 void
 pango_tab_array_get_tabs (PangoTabArray *tab_array,
-                          PangoTabAlign *alignments,
-                          gint          *locations)
+                          PangoTabAlign **alignments,
+                          gint          **locations)
 {
   gint i;
   
   g_return_if_fail (tab_array != NULL);
 
+  if (alignments)
+    *alignments = g_new (PangoTabAlign, tab_array->size);
+
+  if (locations)
+    *locations = g_new (gint, tab_array->size);
+  
   i = 0;
   while (i < tab_array->size)
     {
       if (alignments)
-        alignments[i] = tab_array->tabs[i].alignment;
+        (*alignments)[i] = tab_array->tabs[i].alignment;
       if (locations)
-        locations[i] = tab_array->tabs[i].location;
+        (*locations)[i] = tab_array->tabs[i].location;
 
       ++i;
     }

@@ -64,8 +64,8 @@ void            pango_tab_array_get_tab             (PangoTabArray *tab_array,
                                                      PangoTabAlign *alignment,
                                                      gint          *location);
 void            pango_tab_array_get_tabs            (PangoTabArray *tab_array,
-                                                     PangoTabAlign *alignments,
-                                                     gint          *locations);
+                                                     PangoTabAlign **alignments,
+                                                     gint          **locations);
 
 gboolean        pango_tab_array_get_positions_in_pixels (PangoTabArray *tab_array);
 
