@@ -1,6 +1,11 @@
 This directory holds a stripped down version of Dov Grobgeld's FriBidi
 library. The fribidi version that fribidi.patch is against was
-obtained with "cvs up -D '4/16/2001'" from the fribidi cvs repository.
+obtained with "cvs up -D '2003-07-14'" from the fribidi cvs repository.
+
+00:18:24 < behdad> please write somewhere in bold huge red font that
+                   you have grabbed fribidi from CVS dated X, with
+                   fribidi_env patch, and you dropped env stuff
+                   yourself.
 
 Like Pango, FriBidi is licensed under the terms of the GNU Lesser
 General Public License - see the file COPYING in the toplevel
@@ -8,6 +13,8 @@ directory of the Pango distribution.
 
 12 November 2000, 18 October 2001
 Owen Taylor
+14 July 2003
+Noah Levitt
 
 
 From the README of Fribidi:
@@ -40,23 +47,3 @@ The latest version of FriBidi may be found at:
 
    http://fribidi.sourceforge.net
 
-Notes
-=====
-
-- shell fragment to generate fribidi.patch:
-
- echo -n "" > fribidi.patch
- for i in fribidi.c fribidi_get_type.c fribidi_tables.i fribidi_types.h ; do
-   diff -u ~/cvs/fribidi/$i $i >> fribidi.patch
- done
-
-- Shell fragment to update from fribidi
-
- for i in fribidi.c fribidi_get_type.c fribidi_tables.i fribidi_types.h ; do
-   cp ~/cvs/fribidi/$i .
- done
- patch < fribidi.patch
- 
- (And fix rejects)
-
-- Current fribidi.patch is against fribidi CVS with -D "15 Apr 2001"

@@ -1,3 +1,17 @@
+2003-11-20  Noah Levitt  <nlevitt@columbia.edu>
+
+	* pango/pango-utils.c:
+	* pango/mini-fribidi/Makefile.am:
+	* pango/mini-fribidi/README:
+	* pango/mini-fribidi/fribidi.c:
+	* pango/mini-fribidi/fribidi.patch:
+	* pango/mini-fribidi/fribidi_char_type.c:
+	* pango/mini-fribidi/fribidi_tab_char_type_2.i:
+	* pango/mini-fribidi/fribidi_types.c:
+	* pango/mini-fribidi/fribidi_types.h:
+	* pango/mini-fribidi/fribidi_types.i: Update to latest fribidi.
+	(#68435)
+
 2003-11-18  Noah Levitt  <nlevitt@columbia.edu>
 
 	* pango/pangxft-font.c (pango_xft_real_render): Draw 6-digit hex boxes

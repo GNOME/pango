@@ -18,11 +18,13 @@ LDADDS = @STRIP_BEGIN@ 	\
 noinst_LTLIBRARIES = libmini-fribidi.la
 
 libmini_fribidi_la_SOURCES =    \
-	fribidi_types.h		\
-	fribidi_get_type.c	\
-	fribidi.c
+	fribidi.c		\
+	fribidi_char_type.c 	\
+	fribidi_types.c 	\
+	fribidi_types.h
 
 EXTRA_DIST = 			\
-	README			\
-	fribidi_tables.i	\
-	fribidi.patch
+	README	                \
+	fribidi_tab_char_type_2.i \
+        fribidi_types.i
+

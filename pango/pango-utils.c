@@ -1253,15 +1253,14 @@ pango_log2vis_get_embedding_levels (gunichar       *str,
   return result;
 }
 
+#endif /* HAVE_FRIBIDI */
 
 gboolean 
 pango_get_mirror_char (gunichar        ch,
 		       gunichar       *mirrored_ch)
 {
-  return fribidi_get_mirror_char (ch, mirrored_ch); 
+  return g_unichar_get_mirror_char (ch, mirrored_ch); 
 }
-
-#endif /* HAVE_FRIBIDI */
 
 
 static guint
