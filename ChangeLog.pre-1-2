@@ -1,3 +1,14 @@
+Wed Nov 21 12:54:39 2001  Owen Taylor  <otaylor@redhat.com>
+
+	* configure.in (PANGO_MINOR_VERSION): Version 0.22.
+
+	* NEWS: Updated
+
+	* docs/pango-sections.txt Makefile.am: Update.
+
+	* pango/pango-layout.c (process_item): Don't look
+	like a doc comment.
+
 2001-11-22  Tor Lillqvist  <tml@iki.fi>
 
 	* pango/pangowin32-fontcache.c (pango_win32_font_cache_load):

@@ -206,6 +206,15 @@ The GObject type for #PangoDirection.
 @Returns: 
 
 
+<!-- ##### FUNCTION pango_context_set_font_map ##### -->
+<para>
+
+</para>
+
+@context: 
+@font_map: 
+
+
 <!-- ##### FUNCTION pango_context_get_font_description ##### -->
 <para>
 
@@ -267,6 +276,17 @@ The GObject type for #PangoDirection.
 
 @context: 
 @desc: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_context_load_fontset ##### -->
+<para>
+
+</para>
+
+@context: 
+@desc: 
+@language: 
 @Returns: 
 
 

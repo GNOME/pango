@@ -1,3 +1,15 @@
+Changes between 0.21 and 0.22
+
+* Documentation improvements [Matthias Clasen]
+* Win32 fixes [Tor Lillqvist, Hans Breuer]
+* Improve line-breaking algorithm to not be O(n^2) [Alex Larsson]
+* API addition to render to Xrender drawable
+* Restructure so that "font sets" are handled by the core 
+  for all backends [Alex]
+* Use the Xft font configuration scheme for the FT2 backend as well [Alex]
+
+Other Contributors: Darin Alder, Sven Neumann, Raymond Wan
+
 Changes between 0.20 and 0.21
 
 * Documentation improvements. [Matthias Clasen, Sven Neumann]

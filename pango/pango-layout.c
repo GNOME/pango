@@ -2509,8 +2509,7 @@ insert_run (PangoLayoutLine *line,
   line->length += run_item->length;
 }
 
-/**
- * Tries to insert as much as possible of the item at the head of
+/* Tries to insert as much as possible of the item at the head of
  * state->items onto @line. Three results are possible:
  *
  *  BREAK_NONE_FIT: Could
@@ -2527,7 +2526,7 @@ insert_run (PangoLayoutLine *line,
  * returned even everything fits; the run will be broken earlier,
  * or BREAK_NONE_FIT returned. This is used when the end of the
  * run is not a break position.
- **/
+ */
 static BreakResult
 process_item (PangoLayout     *layout,
 	      PangoLayoutLine *line,

@@ -733,6 +733,18 @@ Returns the type of a #PangoFontMap.
 @Returns: 
 
 
+<!-- ##### FUNCTION pango_font_map_load_fontset ##### -->
+<para>
+
+</para>
+
+@fontmap: 
+@context: 
+@desc: 
+@language: 
+@Returns: 
+
+
 <!-- ##### FUNCTION pango_font_map_list_families ##### -->
 <para>
 
@@ -741,5 +753,111 @@ Returns the type of a #PangoFontMap.
 @fontmap: 
 @families: 
 @n_families: 
+
+
+<!-- ##### STRUCT PangoFontset ##### -->
+<para>
+
+</para>
+
+@parent_instance: 
+
+<!-- ##### FUNCTION pango_fontset_get_font ##### -->
+<para>
+
+</para>
+
+@fontset: 
+@wc: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_fontset_get_metrics ##### -->
+<para>
+
+</para>
+
+@fontset: 
+@Returns: 
+
+
+<!-- ##### STRUCT PangoFontsetClass ##### -->
+<para>
+
+</para>
+
+@parent_class: 
+@get_font: 
+@get_metrics: 
+@get_language: 
+
+<!-- ##### MACRO PANGO_TYPE_FONTSET_SIMPLE ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO PANGO_FONTSET_SIMPLE ##### -->
+<para>
+
+</para>
+
+@object: 
+
+
+<!-- ##### MACRO PANGO_IS_FONTSET_SIMPLE ##### -->
+<para>
+
+</para>
+
+@object: 
+
+
+<!-- ##### STRUCT PangoFontsetSimple ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### STRUCT PangoFontsetSimpleClass ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### FUNCTION pango_fontset_simple_get_type ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_fontset_simple_new ##### -->
+<para>
+
+</para>
+
+@language: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_fontset_simple_append ##### -->
+<para>
+
+</para>
+
+@fontset: 
+@font: 
+
+
+<!-- ##### FUNCTION pango_fontset_simple_size ##### -->
+<para>
+
+</para>
+
+@fontset: 
+@Returns: 
 
 

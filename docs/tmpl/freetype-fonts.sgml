@@ -88,6 +88,25 @@ g_quark_from_string()) is used to identify the renderer in pango_find_map().
 @Returns: 
 
 
+<!-- ##### FUNCTION pango_ft2_font_get_face ##### -->
+<para>
+
+</para>
+
+@font: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_ft2_font_get_coverage ##### -->
+<para>
+
+</para>
+
+@font: 
+@language: 
+@Returns: 
+
+
 <!-- ##### FUNCTION pango_ft2_font_map_for_display ##### -->
 <para>
 

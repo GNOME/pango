@@ -25,6 +25,7 @@ CFILE_GLOB=$(top_srcdir)/pango/*.c
 # Headers to ignore
 IGNORE_HFILES=			\
 	mini-fribidi		\
+	mini-xft		\
 	opentype		\
 	modules.h		\
 	pango-intset.h		\

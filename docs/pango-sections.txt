@@ -16,7 +16,7 @@ pango_item_split
 pango_reorder_items
 <SUBSECTION>
 pango_context_new
-pango_context_add_font_map
+pango_context_set_font_map
 pango_context_get_font_description
 pango_context_set_font_description
 pango_context_get_language
@@ -24,6 +24,7 @@ pango_context_set_language
 pango_context_get_base_dir
 pango_context_set_base_dir
 pango_context_load_font
+pango_context_load_fontset
 pango_context_get_metrics
 pango_context_list_families
 <SUBSECTION Standard>
@@ -186,7 +187,22 @@ PANGO_FONT_MAP_CLASS
 PANGO_IS_FONT_MAP_CLASS
 PANGO_FONT_MAP_GET_CLASS
 pango_font_map_load_font
+pango_font_map_load_fontset
 pango_font_map_list_families
+<SUBSECTION>
+PangoFontset
+pango_fontset_get_font
+pango_fontset_get_metrics
+PangoFontsetClass
+PANGO_TYPE_FONTSET_SIMPLE
+PANGO_FONTSET_SIMPLE
+PANGO_IS_FONTSET_SIMPLE
+PangoFontsetSimple
+PangoFontsetSimpleClass
+pango_fontset_simple_get_type
+pango_fontset_simple_new
+pango_fontset_simple_append
+pango_fontset_simple_size
 
 <SUBSECTION Standard>
 PANGO_FONT_FACE_CLASS
@@ -201,6 +217,15 @@ PangoFontClass
 PANGO_FONT_FAMILY_GET_CLASS
 PANGO_FONT_FAMILY_CLASS
 PANGO_IS_FONT_FACE_CLASS
+PANGO_FONTSET
+PANGO_IS_FONTSET
+PANGO_TYPE_FONTSET
+PANGO_FONTSET_CLASS
+PANGO_IS_FONTSET_CLASS
+PANGO_FONTSET_GET_CLASS
+PANGO_TYPE_FONTSET_SIMPLE
+PANGO_FONTSET_SIMPLE
+PANGO_IS_FONTSET_SIMPLE
 
 <SUBSECTION Private>
 pango_font_metrics_new
@@ -215,6 +240,8 @@ pango_font_map_get_type
 pango_font_face_get_type
 pango_font_family_get_type
 pango_font_metrics_get_type
+pango_fontset_get_type
+pango_fontset_simple_get_type
 </SECTION>
 
 <SECTION>
@@ -528,29 +555,15 @@ STRICT
 <FILE>freetype-fonts</FILE>
 PANGO_RENDER_TYPE_FT2
 pango_ft2_get_context
-pango_ft2_load_font
 pango_ft2_render
 pango_ft2_render_layout_line
 pango_ft2_render_layout
-PangoFT2Subfont
-PANGO_FT2_MAKE_GLYPH
-PANGO_FT2_GLYPH_SUBFONT
-PANGO_FT2_GLYPH_INDEX
-pango_ft2_n_subfonts
 pango_ft2_get_unknown_glyph
 pango_ft2_font_get_kerning
-pango_ft2_get_coverage
-pango_ft2_get_face
-PangoFT2FontCache
-pango_ft2_font_cache_new
-pango_ft2_font_cache_free
-pango_ft2_font_cache_load
-pango_ft2_font_cache_unload
+pango_ft2_font_get_face
+pango_ft2_font_get_coverage
 pango_ft2_font_map_for_display
 pango_ft2_shutdown_display
-pango_ft2_font_map_get_font_cache
-pango_ft2_font_subfont_open_args
-pango_ft2_fontmap_dump
 <SUBSECTION Private>
 STRICT
 </SECTION>
@@ -559,9 +572,9 @@ STRICT
 <TITLE>Xft Fonts and Rendering</TITLE>
 <FILE>xft-fonts</FILE>
 PANGO_RENDER_TYPE_XFT
-PangoXftFont
 pango_xft_get_context
 pango_xft_render
+pango_xft_picture_render
 pango_xft_font_get_font
 pango_xft_font_get_face
 pango_xft_font_get_ot_info
