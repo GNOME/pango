@@ -1565,9 +1565,6 @@ get_line_extents_layout_coords (PangoLayout     *layout,
   pango_layout_line_get_extents (line, line_ink_layout ? &line_ink : NULL,
                                  &line_logical);
   
-  /* layout_width can be -1 in which case we just get a bogus x/y for
-   * the line
-   */
   get_x_offset (layout, line, layout_width, line_logical.width, &x_offset);
   
   /* Convert the line's extents into layout coordinates */
@@ -1610,8 +1607,12 @@ pango_layout_get_extents_internal (PangoLayout    *layout,
 
   pango_layout_check_lines (layout);
 
+  /* When we are not wrapping, we need the overall width of the layout to figure
+   * out the x_offsets of each line. However, we only need the x_offsets if
+   * we are computing the ink_rect or individual line extents.
+   */
   width = layout->width;
-  if (width == -1 && layout->alignment != PANGO_ALIGN_LEFT && ink_rect != NULL)
+  if (width == -1 && layout->alignment != PANGO_ALIGN_LEFT && (ink_rect || line_extents))
     {
       PangoRectangle overall_logical;
       

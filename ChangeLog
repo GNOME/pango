@@ -1,3 +1,9 @@
+Wed Nov 15 15:04:00 2000  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-layout.c (pango_layout_get_extents_internal):
+	Fix problem where right-aligned lines weren't getting properly
+	offset because width was left as -1.
+
 Tue Nov 14 18:45:24 2000  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/shape.c (pango_shape): Every character must
