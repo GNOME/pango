@@ -1,3 +1,8 @@
+Tue Apr 15 04:39:48 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-coverage.c (pango_coverage_set): Fix
+	off-by-one error. (#108620, Noah Levitt)
+
 Tue Apr 15 03:54:01 2003  Owen Taylor  <otaylor@redhat.com>
 
 	* modules/hangul/hangul-{x,xft}.c: Fix out-of-bounds read
