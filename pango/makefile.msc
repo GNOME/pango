@@ -7,7 +7,7 @@ PERL = perl
 
 # Possibly override Pango version from build/win32/module.defs
 PANGO_VER = 1.0
-PANGO_MODULE_VERSION = 1.0.0
+PANGO_MODULE_VERSION = 1.2.0
 
 # INCLUDES = -I .. -I .
 # DEFINES = -DPACKAGE=\"Pango\" -DVERSION=\"$(PANGO_VER)\"
@@ -76,7 +76,7 @@ PKG_LINK = $(GLIB_LIBS) $(LIBICONV_LIBS) \
 !IFDEF OBJS_pangocairo
 PKG_LINK = $(GLIB_LIBS) $(LIBICONV_LIBS) \
 	pango-$(PANGO_VER).lib $(CAIRO_LIBS) \
-	pangoft2-$(PANGO_VER).lib $(FREETYPE2_LIBS) $(FONTCONFIG_LIBS) 
+	pangowin32-$(PANGO_VER).lib pangoft2-$(PANGO_VER).lib $(FREETYPE2_LIBS) $(FONTCONFIG_LIBS) 
 !ENDIF
 
 !IF DEFINED (OBJS_querymodules) || DEFINED (OBJS_testfonts)
@@ -166,16 +166,19 @@ OBJECTS = \
 	basic-x.obj
 !ENDIF
 
+# -DHAVE_CAIRO_FREETYPE
 !IFDEF OBJS_pangocairo
 PKG_CFLAGS = \
 	$(PKG_CFLAGS) $(FONTCONFIG_CFLAGS) $(FREETYPE2_CFLAGS) \
-	-DHAVE_CAIRO_FREETYPE $(CAIRO_CFLAGS)
+	-DHAVE_CAIRO_WIN32 $(CAIRO_CFLAGS)
 OBJECTS = \
-        pangocairo-fcfont.obj \
-        pangocairo-fcfontmap.obj \
         pangocairo-font.obj \
         pangocairo-fontmap.obj \
         pangocairo-render.obj \
+        pangocairo-win32font.obj \
+        pangocairo-win32fontmap.obj \
+        pangocairo-fcfont.obj \
+        pangocairo-fcfontmap.obj \
 !ENDIF
 
 !IFDEF OBJS_querymodules

@@ -178,10 +178,10 @@ pango_cairo_win32_font_get_metrics (PangoFont        *font,
 
   if (!cwfont->metrics)
     {
+      double height;
       cairo_font_t *cairo_font;
       cairo_font_extents_t font_extents;
       cwfont->metrics = pango_font_metrics_new ();
-      double height;
 
       cairo_font = pango_cairo_win32_font_get_cairo_font (PANGO_CAIRO_FONT (font));
 

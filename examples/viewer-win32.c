@@ -46,7 +46,7 @@ struct _Paragraph {
 
 GList *paragraphs;
 
-static PangoFontDescription font_description;
+static PangoFontDescription *font_description;
 static Paragraph *highlight_para;
 static int highlight_offset;
 
@@ -248,7 +248,7 @@ void
 size_allocate (GtkWidget *layout, GtkAllocation *allocation)
 {
   GList *tmp_list;
-  int height = 0;
+  guint height = 0;
   PangoDirection base_dir = pango_context_get_base_dir (context);
 
   tmp_list = paragraphs;
@@ -272,7 +272,7 @@ size_allocate (GtkWidget *layout, GtkAllocation *allocation)
   gtk_layout_set_size (GTK_LAYOUT (layout), allocation->width, height);
 
   if (GTK_LAYOUT (layout)->yoffset + allocation->height > height)
-    gtk_adjustment_set_value (GTK_LAYOUT (layout)->vadjustment, height - allocation->height);
+    gtk_adjustment_set_value (GTK_LAYOUT (layout)->vadjustment, (float)(height - allocation->height));
 }
 
 /* Handle a draw/expose by finding the paragraphs that intersect
@@ -282,7 +282,7 @@ void
 draw (GtkWidget *layout, GdkRectangle *area)
 {
   GList *tmp_list;
-  int height = 0;
+  guint height = 0;
   HDC hdc;
   const GdkGCValuesMask mask = GDK_GC_FOREGROUND|GDK_GC_BACKGROUND|GDK_GC_FONT;
   
@@ -385,7 +385,7 @@ reload_font ()
 {
   GList *para_list;
 
-  pango_context_set_font_description (context, &font_description);
+  pango_context_set_font_description (context, font_description);
 
   para_list = paragraphs;
   while (para_list)
@@ -403,7 +403,10 @@ reload_font ()
 void
 set_family (GtkWidget *entry, gpointer data)
 {
-  font_description.family_name = gtk_editable_get_chars (GTK_EDITABLE (entry), 0, -1);
+  gchar *family_name = gtk_editable_get_chars (GTK_EDITABLE (entry), 0, -1);
+  if (!family_name || family_name[0] == '\0')
+    return;
+  pango_font_description_set_family(font_description, family_name);
   fill_styles_combo (styles_combo);
 }
 
@@ -415,10 +418,10 @@ set_style (GtkWidget *entry, gpointer data)
   
   tmp_desc = pango_font_description_from_string (str);
 
-  font_description.style = tmp_desc->style;
-  font_description.variant = tmp_desc->variant;
-  font_description.weight = tmp_desc->weight;
-  font_description.stretch = tmp_desc->stretch;
+  pango_font_description_set_style(font_description, pango_font_description_get_style(tmp_desc));
+  pango_font_description_set_variant(font_description, pango_font_description_get_variant(tmp_desc));
+  pango_font_description_set_weight(font_description, pango_font_description_get_weight(tmp_desc));
+  pango_font_description_set_stretch(font_description, pango_font_description_get_stretch(tmp_desc));
 
   pango_font_description_free (tmp_desc);
   g_free (str);
@@ -429,28 +432,28 @@ set_style (GtkWidget *entry, gpointer data)
 void
 font_size_changed (GtkAdjustment *adj)
 {
-  font_description.size = (int)(adj->value * PANGO_SCALE + 0.5);
+  pango_font_description_set_size(font_description, (int)(adj->value * PANGO_SCALE + 0.5));
   reload_font();
 }
 
 static int
 compare_font_descriptions (const PangoFontDescription *a, const PangoFontDescription *b)
 {
-  int val = strcmp (a->family_name, b->family_name);
+  int val = strcmp (pango_font_description_get_family(a), pango_font_description_get_family(b));
   if (val != 0)
     return val;
 
-  if (a->weight != b->weight)
-    return a->weight - b->weight;
+  if (pango_font_description_get_weight(a) != pango_font_description_get_weight(b))
+    return pango_font_description_get_weight(a) - pango_font_description_get_weight(b);
 
-  if (a->style != b->style)
-    return a->style - b->style;
+  if (pango_font_description_get_style(a) != pango_font_description_get_style(b))
+    return pango_font_description_get_style(a) - pango_font_description_get_style(b);
   
-  if (a->stretch != b->stretch)
-    return a->stretch - b->stretch;
+  if (pango_font_description_get_stretch(a) != pango_font_description_get_stretch(b))
+    return pango_font_description_get_stretch(a) - pango_font_description_get_stretch(b);
 
-  if (a->variant != b->variant)
-    return a->variant - b->variant;
+  if (pango_font_description_get_stretch(a) != pango_font_description_get_stretch(b))
+    return pango_font_description_get_stretch(a) - pango_font_description_get_stretch(b);
 
   return 0;
 }
@@ -478,9 +481,39 @@ fill_styles_combo (GtkWidget *combo)
 {
   int i;
   GList *style_list = NULL;
-  
-  FontDescInfo *info = g_new (FontDescInfo, 1);
-  pango_context_list_fonts (context, font_description.family_name, &info->descs, &info->n_descs);
+  PangoFontFace **faces;
+  PangoFontFamily *family, **families;
+  FontDescInfo *info;
+  int n_families;
+  const char *family_name = pango_font_description_get_family(font_description);
+
+  /* 
+   * Now map back the given family name to the family. There are more efficient
+   * ways to handle this but it should not matter much ...
+   */
+  pango_context_list_families (context, &families, &n_families);
+  g_assert(n_families > 0);
+  family = families[0]; /* just in case */
+  for (i = 0; i < n_families; i++)
+    {
+      if (0 == g_strcasecmp(pango_font_family_get_name(families[i]), family_name))
+        {
+	  family = families[i];
+	  break;
+	}
+    }
+  g_free (families);
+
+  info = g_new (FontDescInfo, 1);
+  pango_font_family_list_faces (family, &faces, &info->n_descs);
+
+  info->descs = g_new0 (PangoFontDescription*, info->n_descs);
+  for (i = 0; i < info->n_descs; i++)
+    {
+      info->descs[i] = pango_font_face_describe(faces[i]);
+    }
+  g_free (faces);
+
   gtk_object_set_data_full (GTK_OBJECT (combo), "descs", info, (GtkDestroyNotify)free_info);
 
   qsort (info->descs, info->n_descs, sizeof(PangoFontDescription *), font_description_sort_func);
@@ -489,13 +522,13 @@ fill_styles_combo (GtkWidget *combo)
     {
       char *str;
 	
-      PangoFontDescription tmp_desc;
+      PangoFontDescription *tmp_desc;
 
-      tmp_desc = *info->descs[i];
-      tmp_desc.family_name = NULL;
-      tmp_desc.size = 0;
+      tmp_desc = info->descs[i];
+      pango_font_description_set_family(tmp_desc, NULL);
+      pango_font_description_unset_fields(tmp_desc, PANGO_FONT_MASK_SIZE);
       
-      str = pango_font_description_to_string (&tmp_desc);
+      str = pango_font_description_to_string (tmp_desc);
       style_list = g_list_prepend (style_list, str);
     }
 
@@ -524,25 +557,25 @@ make_styles_combo ()
 }
 
 static int
-cmp_strings (const void *a, const void *b)
+cmp_families (const PangoFontFamily** a, const PangoFontFamily** b)
 {
-  return strcmp (*(const char **)a, *(const char **)b);
+  return strcmp (pango_font_family_get_name (*a), pango_font_family_get_name (*b));
 }
 
 GtkWidget *
 make_families_menu ()
 {
   GtkWidget *combo;
-  gchar **families;
   int n_families;
+  PangoFontFamily **families;
   GList *family_list = NULL;
   int i;
   
   pango_context_list_families (context, &families, &n_families);
-  qsort (families, n_families, sizeof(char *), cmp_strings);
+  qsort (families, n_families, sizeof(char *), cmp_families);
 
   for (i=0; i<n_families; i++)
-    family_list = g_list_prepend (family_list, families[i]);
+    family_list = g_list_prepend (family_list, pango_font_family_get_name (families[i]));
 
   family_list = g_list_reverse (family_list);
   
@@ -551,13 +584,12 @@ make_families_menu ()
   gtk_combo_set_value_in_list (GTK_COMBO (combo), TRUE, FALSE);
   gtk_editable_set_editable (GTK_EDITABLE (GTK_COMBO (combo)->entry), FALSE);
 
-  gtk_entry_set_text (GTK_ENTRY (GTK_COMBO (combo)->entry), font_description.family_name);
+  gtk_entry_set_text (GTK_ENTRY (GTK_COMBO (combo)->entry), pango_font_description_get_family(font_description));
 
   gtk_signal_connect (GTK_OBJECT (GTK_COMBO (combo)->entry), "changed",
 		      GTK_SIGNAL_FUNC (set_family), NULL);
   
   g_list_free (family_list);
-  pango_font_map_free_families (families, n_families);
 
   return combo;
 }
@@ -600,7 +632,7 @@ make_font_selector (void)
   gtk_box_pack_start (GTK_BOX (hbox), util_hbox, FALSE, FALSE, 0);
 
   adj = gtk_spin_button_get_adjustment (GTK_SPIN_BUTTON (spin_button));
-  adj->value = PANGO_PIXELS (font_description.size);
+  adj->value = PANGO_PIXELS (pango_font_description_get_size(font_description));
   adj->lower = 0;
   adj->upper = 1024;
   adj->step_increment = 1;
@@ -642,17 +674,20 @@ main (int argc, char **argv)
 
   paragraphs = split_paragraphs (text);
 
-  pango_context_set_lang (context, "en_US");
+  pango_context_set_language (context, pango_language_from_string ("en_US"));
   pango_context_set_base_dir (context, PANGO_DIRECTION_LTR);
 
-  font_description.family_name = g_strdup ("sans");
+  font_description = pango_font_description_new ();
+  pango_font_description_set_family(font_description, "sans");
+  pango_font_description_set_size(font_description, 16 * PANGO_SCALE);
+#if 0 /* default init ok? */
   font_description.style = PANGO_STYLE_NORMAL;
   font_description.variant = PANGO_VARIANT_NORMAL;
   font_description.weight = 500;
   font_description.stretch = PANGO_STRETCH_NORMAL;
-  font_description.size = 16 * PANGO_SCALE;
+#endif
 
-  pango_context_set_font_description (context, &font_description);
+  pango_context_set_font_description (context, font_description);
 
   /* Create the user interface
    */
