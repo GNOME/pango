@@ -61,15 +61,19 @@
 #define UNI_SHIN		0x05E9
 #define UNI_FINAL_PE		0x05E3
 #define UNI_PE			0x05E4
+#define UNI_QOF                 0x05E7
 #define	UNI_TAV			0x05EA
 #define UNI_SHIN_DOT		0x05C1
 #define UNI_SIN_DOT		0x05C2
 #define UNI_MAPIQ		0x05BC
 #define	UNI_SHEVA		0x05B0
-#define	UNI_QAMATS		0x05B8
 #define	UNI_HOLAM		0x05B9
 #define	UNI_QUBUTS		0x05BB
-
+#define UNI_HATAF_SEGOL         0x05B1
+#define UNI_HATAF_QAMATZ        0x05B3
+#define UNI_TSERE               0x05B5
+#define UNI_QAMATS              0x05B8
+#define UNI_QUBUTS              0x05BB
 
 /*======================================================================
 //  In the tables below all Hebrew characters are categorized to
@@ -419,6 +423,18 @@ hebrew_shaper_get_cluster_kerning(gunichar            *cluster,
 	{
 	  x_offset[i] = base_ink_x_offset - ink_rect[i].x
 	    + base_ink_width * 3/8 - ink_rect[i].width/2;
+	}
+
+      /* Right align wide nikud under QOF */
+      else if (base_char == UNI_QOF &&
+	       ( (gl >= UNI_HATAF_SEGOL
+		  && gl <= UNI_HATAF_QAMATZ)
+		 || (gl >= UNI_TSERE
+		     && gl<= UNI_QAMATS)
+		 || (gl == UNI_QUBUTS)))
+	{
+	  x_offset[i] = base_ink_x_offset + base_ink_width
+	    - ink_rect[i].x - ink_rect[i].width;
 	}
 
       /* Center by default */
