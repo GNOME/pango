@@ -639,9 +639,10 @@ code specific to each rendering system.
 </para>
 
 @layout: the parent layout for this line.
-@start_index: 
+@start_index: the start of the line as byte index into @layout->text.
 @length: the length of the line in bytes.
 @runs: a list containing the runs of the line in visual order.
+@is_paragraph_start: %TRUE if this is the first line of the paragraph.
 
 <!-- ##### TYPEDEF PangoLayoutRun ##### -->
 <para>
