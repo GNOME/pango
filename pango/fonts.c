@@ -618,6 +618,24 @@ pango_font_description_equal (const PangoFontDescription  *desc1,
 	   (desc1->family_name && desc2->family_name && g_ascii_strcasecmp (desc1->family_name, desc2->family_name) == 0)));
 }
 
+#define TOLOWER(c) \
+  (((c) >= 'A' && (c) <= 'Z') ? (c) - 'A' + 'a' : (c))
+
+static guint
+case_insensitive_hash (const char *key)
+{
+  const char *p = key;
+  guint h = TOLOWER (*p);
+
+  if (h)
+    {
+      for (p += 1; *p != '\0'; p++)
+	h = (h << 5) - h + TOLOWER (*p);
+    }
+
+  return h;
+}
+
 /**
  * pango_font_description_hash:
  * @desc: a #PangoFontDescription
@@ -635,7 +653,7 @@ pango_font_description_hash (const PangoFontDescription *desc)
   hash = desc->mask;
   
   if (desc->mask & PANGO_FONT_MASK_FAMILY)
-    hash = g_str_hash (desc->family_name);
+    hash = case_insensitive_hash (desc->family_name);
   if (desc->mask & PANGO_FONT_MASK_SIZE)
     hash ^= desc->size;
   if (desc->mask & PANGO_FONT_MASK_STYLE)
