@@ -40,5 +40,23 @@ The latest version of FriBidi may be found at:
 
    http://imagic.weizmann.ac.il/~dov/freesw/FriBidi
 
+Notes
+=====
 
+- shell fragment to generate fribidi.patch:
 
+ echo -n "" > fribidi.patch
+ for i in fribidi.c fribidi_get_type.c fribidi_tables.i fribidi_types.h ; do
+   diff -u ~/cvs/fribidi/$i $i >> fribidi.patch
+ done
+
+- Shell fragment to update from fribidi
+
+ for i in fribidi.c fribidi_get_type.c fribidi_tables.i fribidi_types.h ; do
+   cp ~/cvs/fribidi/$i .
+ done
+ patch < fribidi.patch
+ 
+ (And fix rejects)
+
+- Current fribidi.patch is against fribidi CVS with -D "15 Apr 2001"

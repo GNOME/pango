@@ -33,8 +33,8 @@ extern FriBidiCharType prop_to_type[];
 #endif
 
 /*======================================================================
-//  fribidi_get_type() returns the bidi type of a character.
-//----------------------------------------------------------------------*/
+ *  fribidi_get_type() returns the bidi type of a character.
+ *----------------------------------------------------------------------*/
 FriBidiCharType
 _pango_fribidi_get_type(FriBidiChar uch)
 {
@@ -82,13 +82,14 @@ _pango_fribidi_get_type(FriBidiChar uch)
     }
 }
 
-gboolean pango_get_mirror_char (	/* Input */
-				   FriBidiChar ch,
-				   /* Output */
-				   FriBidiChar * mirrored_ch)
+gboolean
+pango_get_mirror_char (	/* Input */
+		       FriBidiChar ch,
+		       /* Output */
+		       FriBidiChar * mirrored_ch)
 {
   int pos, step;
-  gboolean found = FALSE;
+  gboolean found;
 
   pos = step = (nFriBidiMirroredChars / 2) + 1;
 
@@ -116,6 +117,11 @@ gboolean pango_get_mirror_char (	/* Input */
     {
       *mirrored_ch = FriBidiMirroredChars[pos].mirrored_ch;
       found = TRUE;
+    }
+  else
+    {
+      *mirrored_ch = ch;
+      found = FALSE;
     }
   return found;
 }

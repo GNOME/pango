@@ -25,28 +25,33 @@
 #include "pango/pango-utils.h"
 #include "fribidi_types.h"
 
-#undef DEBUG
-
 #ifdef DEBUG
 #include <stdio.h>
 #endif
 
-#ifdef DEBUG
-#define DBG(s) if (fribidi_debug) { fprintf(stderr, s); }
-#else
-#define DBG(s)
+#ifndef FRIBIDI_CHUNK_SIZE
+#define FRIBIDI_CHUNK_SIZE 128
 #endif
 
 #ifdef DEBUG
-// for easier test with the reference code only.
+#define DBG(s) if (fribidi_debug) { fprintf(stderr, s); }
+#define DBG2(s, t) if (fribidi_debug) { fprintf(stderr, s, t); }
+#else
+#define DBG(s)
+#define DBG2(s, t)
+#endif
+
+#ifdef DEBUG
+/* for easier test with the reference code only */
 #define MAX_LEVEL 15
 #else
-// default value.
+/* default value */
 #define MAX_LEVEL 61
 #endif
+
 /*======================================================================
-// Typedef for the run-length list.
-//----------------------------------------------------------------------*/
+ * Typedef for the run-length list.
+ *----------------------------------------------------------------------*/
 typedef struct _TypeLink TypeLink;
 
 struct _TypeLink
@@ -66,23 +71,17 @@ struct _TypeLink
 
 typedef struct
 {
-  FriBidiChar key;
-  FriBidiChar value;
-}
-key_value_t;
-
-typedef struct
-{
   FriBidiCharType override;	/* only L, R and N are valid */
   gint level;
 }
-level_info;
+LevelInfo;
 
 #ifdef DEBUG
 static gboolean fribidi_debug = FALSE;
 #endif
 
-gboolean fribidi_set_debug (gboolean debug)
+gboolean
+fribidi_set_debug (gboolean debug)
 {
 #ifdef DEBUG
   return fribidi_debug = debug;
@@ -90,19 +89,6 @@ gboolean fribidi_set_debug (gboolean debug)
   return 0;
 #endif
 }
-
-#ifdef DEBUG
-static gint
-bidi_string_strlen (FriBidiChar * str)
-{
-  gint len = 0;
-
-  while (*str++)
-    len++;
-
-  return len;
-}
-#endif
 
 #ifndef USE_SIMPLE_MALLOC
 static TypeLink *free_type_links = NULL;
@@ -115,7 +101,7 @@ new_type_link (void)
 
 #ifdef USE_SIMPLE_MALLOC
   link = g_malloc (sizeof (TypeLink));
-#else
+#else /* !USE_SIMPLE_MALLOC */
   if (free_type_links)
     {
       link = free_type_links;
@@ -126,13 +112,12 @@ new_type_link (void)
       static GMemChunk *mem_chunk = NULL;
 
       if (!mem_chunk)
-	mem_chunk = g_mem_chunk_new ("TypeLinkList",
-				     sizeof (TypeLink),
-				     sizeof (TypeLink) * 128, G_ALLOC_ONLY);
+	mem_chunk =
+	  g_mem_chunk_create (TypeLink, FRIBIDI_CHUNK_SIZE, G_ALLOC_ONLY);
 
       link = g_chunk_new (TypeLink, mem_chunk);
     }
-#endif
+#endif /* !USE_SIMPLE_MALLOC */
 
   link->len = 0;
   link->pos = 0;
@@ -143,7 +128,7 @@ new_type_link (void)
 }
 
 static void
-free_type_link (TypeLink * link)
+free_type_link (TypeLink *link)
 {
 #ifdef USE_SIMPLE_MALLOC
   g_free (link);
@@ -154,13 +139,12 @@ free_type_link (TypeLink * link)
 }
 
 static TypeLink *
-run_length_encode_types (FriBidiCharType * char_type, gint type_len)
+run_length_encode_types (FriBidiCharType *char_type, gint type_len)
 {
-  TypeLink *list = NULL, *last, *link;
+  TypeLink *list, *last, *link;
   TypeLink current;
 
-  FriBidiCharType type;
-  gint len, pos, i;
+  gint i;
 
   /* Add the starting link */
   list = new_type_link ();
@@ -214,9 +198,9 @@ run_length_encode_types (FriBidiCharType * char_type, gint type_len)
    the override_list.
 */
 static void
-init_list (TypeLink ** start, TypeLink ** end)
+init_list (TypeLink **start, TypeLink **end)
 {
-  TypeLink *list = NULL;
+  TypeLink *list;
   TypeLink *link;
 
   /* Add the starting link */
@@ -244,8 +228,8 @@ init_list (TypeLink ** start, TypeLink ** end)
    assuming that p have both prev and next or none of them, also update
    the list that p is currently in, if any.
 */
-void
-move_element_before (TypeLink * p, TypeLink * list)
+static void
+move_element_before (TypeLink *p, TypeLink *list)
 {
   if (p->prev)
     {
@@ -272,8 +256,8 @@ move_element_before (TypeLink * p, TypeLink * list)
 
    TBD: use some explanatory names instead of p, q, ...
 */
-void
-override_list (TypeLink * base, TypeLink * over)
+static void
+override_list (TypeLink *base, TypeLink *over)
 {
   TypeLink *p = base, *q, *r, *s, *t;
   gint pos = 0, pos2;
@@ -375,7 +359,7 @@ override_list (TypeLink * base, TypeLink * over)
 #define RL_LEVEL(list) (list)->level
 
 static void
-compact_list (TypeLink * list)
+compact_list (TypeLink *list)
 {
   if (list->next)
     {
@@ -399,7 +383,7 @@ compact_list (TypeLink * list)
 }
 
 static void
-compact_neutrals (TypeLink * list)
+compact_neutrals (TypeLink *list)
 {
   if (list->next)
     {
@@ -410,8 +394,8 @@ compact_neutrals (TypeLink * list)
 	      &&
 	      ((RL_TYPE
 		(list->prev) == RL_TYPE (list)
-		|| FRIBIDI_IS_NEUTRAL (RL_TYPE (list->prev))
-		&& FRIBIDI_IS_NEUTRAL (RL_TYPE (list)))))
+		|| (FRIBIDI_IS_NEUTRAL (RL_TYPE (list->prev))
+		    && FRIBIDI_IS_NEUTRAL (RL_TYPE (list))))))
 	    {
 	      TypeLink *next = list->next;
 	      list->prev->next = list->next;
@@ -427,8 +411,8 @@ compact_neutrals (TypeLink * list)
 }
 
 /*=======================================================
-// define macros for push and pop the status in to / out of the stack
-//-------------------------------------------------------*/
+ * define macros for push and pop the status in to / out of the stack
+ *-------------------------------------------------------*/
 
 /* There's some little points in pushing and poping into the status stack:
    1. when the embedding level is not valid (more than MAX_LEVEL=61),
@@ -460,9 +444,8 @@ compact_neutrals (TypeLink * list)
         { \
           if (level == MAX_LEVEL - 1) \
             first_interval = over_pushed; \
-          status_stack->level = level; \
-          status_stack->override = override; \
-          status_stack++; \
+          status_stack[stack_size].level = level; \
+          status_stack[stack_size].override = override; \
           stack_size++; \
           level = new_level; \
           override = new_override; \
@@ -483,33 +466,36 @@ compact_neutrals (TypeLink * list)
           { \
             if (over_pushed == first_interval) \
               first_interval = 0; \
-            status_stack--; \
             stack_size--; \
-            level = status_stack->level; \
-            override = status_stack->override; \
+            level = status_stack[stack_size].level; \
+            override = status_stack[stack_size].override; \
           } \
       } \
     }
 
 /*==========================================================================
-// There was no support for sor and eor in the absence of Explicit Embedding
-// Levels, so define macros, to support them, with as less change as needed.
-//--------------------------------------------------------------------------*/
+ * There was no support for sor and eor in the absence of Explicit Embedding
+ * Levels, so define macros, to support them, with as less change as needed.
+ *--------------------------------------------------------------------------*/
 
 /* Return the type of previous char or the sor, if already at the start of
    a run level. */
 #define PREV_TYPE_OR_SOR(pp) \
-    (RL_LEVEL(pp->prev)==RL_LEVEL(pp) ? RL_TYPE(pp->prev) : FRIBIDI_LEVEL_TO_DIR( \
-      (RL_LEVEL(pp->prev)>RL_LEVEL(pp) ? RL_LEVEL(pp->prev) : RL_LEVEL(pp)) \
-    ))
+    (RL_LEVEL(pp->prev) == RL_LEVEL(pp) ? \
+      RL_TYPE(pp->prev) : \
+      FRIBIDI_LEVEL_TO_DIR(MAX(RL_LEVEL(pp->prev), RL_LEVEL(pp))) \
+    )
 
 /* Return the type of next char or the eor, if already at the end of
    a run level. */
 #define NEXT_TYPE_OR_EOR(pp) \
-    (!pp->next ? FRIBIDI_LEVEL_TO_DIR(RL_LEVEL(pp)) : \
-    (RL_LEVEL(pp->next)==RL_LEVEL(pp) ? RL_TYPE(pp->next) : FRIBIDI_LEVEL_TO_DIR( \
-      (RL_LEVEL(pp->next)>RL_LEVEL(pp) ? RL_LEVEL(pp->next) : RL_LEVEL(pp)) \
-    )))
+    (!pp->next ? \
+      FRIBIDI_LEVEL_TO_DIR(RL_LEVEL(pp)) : \
+      (RL_LEVEL(pp->next) == RL_LEVEL(pp) ? \
+        RL_TYPE(pp->next) : \
+        FRIBIDI_LEVEL_TO_DIR(MAX(RL_LEVEL(pp->next), RL_LEVEL(pp))) \
+      ) \
+    )
 
 
 /* Return the embedding direction of a link. */
@@ -518,11 +504,11 @@ compact_neutrals (TypeLink * list)
 
 #ifdef DEBUG
 /*======================================================================
-//  For debugging, define some functions for printing the types and the
-//  levels.
-//----------------------------------------------------------------------*/
+ *  For debugging, define some functions for printing the types and the
+ *  levels.
+ *----------------------------------------------------------------------*/
 
-static guchar char_from_level_array[] = {
+static gchar char_from_level_array[] = {
   'e',				/* FRIBIDI_LEVEL_REMOVED, internal error, this level shouldn't be viewed.  */
   '_',				/* FRIBIDI_LEVEL_START or _END, indicating start of string and end of string. */
   /* 0-9,A-F are the only valid levels in debug mode and before resolving
@@ -536,9 +522,9 @@ static guchar char_from_level_array[] = {
 #define fribidi_char_from_level(level) char_from_level_array[(level) + 2]
 
 static void
-print_types_re (TypeLink * pp)
+print_types_re (TypeLink *pp)
 {
-  fprintf (stderr, "Run types  : ");
+  fprintf (stderr, "  Run types  : ");
   while (pp)
     {
       fprintf (stderr, "%d:l%d(%s)[%d] ",
@@ -549,9 +535,9 @@ print_types_re (TypeLink * pp)
 }
 
 static void
-print_resolved_levels (TypeLink * pp)
+print_resolved_levels (TypeLink *pp)
 {
-  fprintf (stderr, "Res. levels: ");
+  fprintf (stderr, "  Res. levels: ");
   while (pp)
     {
       gint i;
@@ -563,9 +549,9 @@ print_resolved_levels (TypeLink * pp)
 }
 
 static void
-print_resolved_types (TypeLink * pp)
+print_resolved_types (TypeLink *pp)
 {
-  fprintf (stderr, "Res. types : ");
+  fprintf (stderr, "  Res. types : ");
   while (pp)
     {
       gint i;
@@ -576,12 +562,14 @@ print_resolved_types (TypeLink * pp)
   fprintf (stderr, "\n");
 }
 
+/* Here, only for test porpuses, we have assumed that a fribidi_string
+   ends with a 0 character */
 static void
-print_bidi_string (FriBidiChar * str)
+print_bidi_string (FriBidiChar *str)
 {
   gint i;
-  fprintf (stderr, "Org. types : ");
-  for (i = 0; i < bidi_string_strlen (str); i++)
+  fprintf (stderr, "  Org. types : ");
+  for (i = 0; str[i]; i++)
     fprintf (stderr, "%c",
 	     fribidi_char_from_type (_pango_fribidi_get_type (str[i])));
   fprintf (stderr, "\n");
@@ -589,34 +577,38 @@ print_bidi_string (FriBidiChar * str)
 #endif
 
 /*======================================================================
-//  This function should follow the Unicode specification closely!
-//----------------------------------------------------------------------*/
+ *  This function should follow the Unicode specification closely!
+ *----------------------------------------------------------------------*/
 static void
 fribidi_analyse_string (	/* input */
-			 FriBidiChar * str,
-			 gint len, FriBidiCharType * pbase_dir,
+			 FriBidiChar *str,
+			 gint len, FriBidiCharType *pbase_dir,
 			 /* output */
-			 TypeLink ** ptype_rl_list, gint * pmax_level)
+			 TypeLink **ptype_rl_list, gint *pmax_level)
 {
   gint base_level, base_dir;
   gint max_level;
   gint i;
-  gint prev_last_strong, last_strong;
-  FriBidiCharType *char_type;
   TypeLink *type_rl_list, *explicits_list, *explicits_list_end, *pp;
 
-  /* Determinate character types */
-  char_type = g_new (FriBidiCharType, len);
-  for (i = 0; i < len; i++)
-    char_type[i] = _pango_fribidi_get_type (str[i]);
+  DBG ("Entering fribidi_analyse_string()\n");
 
-  /* Run length encode the character types */
-  type_rl_list = run_length_encode_types (char_type, len);
-  g_free (char_type);
+  /* Determinate character types */
+  DBG ("  Determine character types\n");
+  {
+    FriBidiCharType char_type[len];
+    for (i = 0; i < len; i++)
+      char_type[i] = _pango_fribidi_get_type (str[i]);
+
+    /* Run length encode the character types */
+    type_rl_list = run_length_encode_types (char_type, len);
+  }
+  DBG ("  Determine character types, Done\n");
 
   init_list (&explicits_list, &explicits_list_end);
 
-  /* Find the base level */
+  /* Find base level */
+  DBG ("  Finding the base level\n");
   if (FRIBIDI_IS_STRONG (*pbase_dir))
     base_level = FRIBIDI_DIR_TO_LEVEL (*pbase_dir);
   /* P2. P3. Search for first strong character and use its direction as
@@ -639,36 +631,36 @@ fribidi_analyse_string (	/* input */
 	base_level = FRIBIDI_DIR_TO_LEVEL (*pbase_dir);
     }
   base_dir = FRIBIDI_LEVEL_TO_DIR (base_level);
+  DBG2 ("  Base level : %c\n", fribidi_char_from_level (base_level));
+  DBG2 ("  Base dir   : %c\n", fribidi_char_from_type (base_dir));
+  DBG ("  Finding the base level, Done\n");
 
 #ifdef DEBUG
   if (fribidi_debug)
     {
-      fprintf (stderr, "Base level : %c\n",
-	       fribidi_char_from_level (base_level));
-      fprintf (stderr, "Base dir   : %c\n",
-	       fribidi_char_from_type (base_dir));
       print_types_re (type_rl_list);
     }
 #endif
 
   /* Explicit Levels and Directions */
-  DBG ("Explicit Levels and Directions.\n");
+  DBG ("Explicit Levels and Directions\n");
   {
     /* X1. Begin by setting the current embedding level to the paragraph
        embedding level. Set the directional override status to neutral.
        Process each character iteratively, applying rules X2 through X9.
        Only embedding levels from 0 to 61 are valid in this phase. */
-    gint level = base_level;
-    gint override = FRIBIDI_TYPE_ON;
-    gint new_level, new_override;
-    /* stack */
-    gint stack_size = 0;
-    gint over_pushed = 0;
-    gint first_interval = 0;
-    level_info *status_stack = g_new (level_info, MAX_LEVEL + 2);
-    TypeLink *temp_link = new_type_link ();
+    gint level, override, new_level, new_override, i;
+    gint stack_size, over_pushed, first_interval;
+    LevelInfo *status_stack;
+    TypeLink temp_link;
 
-    gint i;
+    level = base_level;
+    override = FRIBIDI_TYPE_ON;
+    /* stack */
+    stack_size = 0;
+    over_pushed = 0;
+    first_interval = 0;
+    status_stack = g_new(LevelInfo, MAX_LEVEL + 2);
 
     for (pp = type_rl_list->next; pp->next; pp = pp->next)
       {
@@ -702,10 +694,10 @@ fribidi_analyse_string (	/* input */
 	      }
 	    /* X9. Remove all RLE, LRE, RLO, LRO, PDF, and BN codes. */
 	    /* Remove element and add it to explicits_list */
-	    temp_link->next = pp->next;
+	    temp_link.next = pp->next;
 	    pp->level = FRIBIDI_LEVEL_REMOVED;
 	    move_element_before (pp, explicits_list_end);
-	    pp = temp_link;
+	    pp = &temp_link;
 	  }
 	else
 	  {
@@ -729,12 +721,10 @@ fribidi_analyse_string (	/* input */
     /* Implementing X8. It has no effect on a single paragraph! */
     level = base_level;
     override = FRIBIDI_TYPE_ON;
-    status_stack -= stack_size;
     stack_size = 0;
     over_pushed = 0;
 
-    free_type_link (temp_link);
-    g_free (status_stack);
+    g_free(status_stack);
   }
   /* X10. The remaining rules are applied to each run of characters at the
      same level. For each run, determine the start-of-level-run (sor) and
@@ -759,7 +749,7 @@ fribidi_analyse_string (	/* input */
 #endif
 
   /* 4. Resolving weak types */
-  DBG ("Resolving weak types.\n");
+  DBG ("Resolving weak types\n");
   {
     gint last_strong, prev_type_org, w4;
 
@@ -881,10 +871,8 @@ fribidi_analyse_string (	/* input */
 #endif
 
   /* 5. Resolving Neutral Types */
-  DBG ("Resolving neutral types.\n");
+  DBG ("Resolving neutral types\n");
   {
-    gint prev_type, next_type;
-
     /* N1. and N2.
        For each neutral, resolve it. */
     for (pp = type_rl_list->next; pp->next; pp = pp->next)
@@ -915,7 +903,7 @@ fribidi_analyse_string (	/* input */
 #endif
 
   /* 6. Resolving implicit levels */
-  DBG ("Resolving implicit levels.\n");
+  DBG ("Resolving implicit levels\n");
   {
     max_level = base_level;
 
@@ -952,7 +940,7 @@ fribidi_analyse_string (	/* input */
 
 /* Reinsert the explicit codes & bn's that already removed, from the
    explicits_list to type_rl_list. */
-  DBG ("Reinserting explicit codes.\n");
+  DBG ("Reinserting explicit codes\n");
   {
     TypeLink *p;
 
@@ -974,7 +962,7 @@ fribidi_analyse_string (	/* input */
     }
 #endif
 
-  DBG ("Reset the embedding levels.\n");
+  DBG ("Reset the embedding levels\n");
   {
     gint j, k, state, pos;
     TypeLink *p, *q, *list, *list_end;
@@ -984,24 +972,23 @@ fribidi_analyse_string (	/* input */
     q = list_end;
     state = 1;
     pos = len - 1;
-    for (j = len - 1; j >= 0; j--)
+    for (j = len - 1; j >= -1; j--)
       {
-	k = _pango_fribidi_get_type (str[j]);
+	/* if state is on at the very first of string, do this too. */
+	if (j >= 0)
+	  k = _pango_fribidi_get_type (str[j]);
+	else
+	  k = FRIBIDI_TYPE_ON;
 	if (!state && FRIBIDI_IS_SEPARATOR (k))
 	  {
 	    state = 1;
 	    pos = j;
 	  }
-	else
-	  if (state
-	      && !(j && FRIBIDI_IS_EXPLICIT_OR_SEPARATOR_OR_BN_OR_WS (k)))
+	else if (state && !FRIBIDI_IS_EXPLICIT_OR_SEPARATOR_OR_BN_OR_WS (k))
 	  {
-	    /* if state is on at the very first of string, do this too. */
-	    if (!j)
-	      j--;
 	    state = 0;
 	    p = new_type_link ();
-	    p->prev = p->next = 0;
+	    p->prev = p->next = NULL;
 	    p->pos = j + 1;
 	    p->len = pos - j;
 	    p->type = base_dir;
@@ -1025,37 +1012,55 @@ fribidi_analyse_string (	/* input */
   *ptype_rl_list = type_rl_list;
   *pmax_level = max_level;
   *pbase_dir = base_dir;
+
+  DBG ("Leaving fribidi_analyse_string()\n");
+  return;
 }
 
 /*======================================================================
-//  Frees up the rl_list, must be called after each call to
-//  fribidi_analyse_string(), after the list is not needed anymore.
-//----------------------------------------------------------------------*/
-void
-free_rl_list (TypeLink * type_rl_list)
+ *  Frees up the rl_list, must be called after each call to
+ *  fribidi_analyse_string(), after the list is not needed anymore.
+ *----------------------------------------------------------------------*/
+static void
+free_rl_list (TypeLink *type_rl_list)
 {
 
-  TypeLink *p, *pp;
+  TypeLink *pp;
+
+  DBG ("Entering free_rl_list()\n");
+
   if (!type_rl_list)
-    return;
-#ifdef USE_SIMPLE_MALLOC
-  for (pp = type_rl_list; pp; pp = pp->next)
     {
-      p = pp->next;
-      g_free (pp);
+      DBG ("Leaving free_rl_list()\n");
+      return;
+    }
+
+#ifdef USE_SIMPLE_MALLOC
+  pp = type_rl_list;
+  while (pp)
+    {
+      TypeLink *p;
+
+      p = pp;
+      pp = pp->next;
+      free_type_link (p);
     };
 #else
   for (pp = type_rl_list->next; pp->next; pp = pp->next)
-    /*Nothing */ ;
+    /* Nothing */ ;
   pp->next = free_type_links;
   free_type_links = type_rl_list;
   type_rl_list = NULL;
 #endif
+
+  DBG ("Leaving free_rl_list()\n");
+  return;
 }
 
 static gboolean mirroring = TRUE;
 
-gboolean fribidi_mirroring_status (void)
+gboolean
+fribidi_mirroring_status (void)
 {
   return mirroring;
 }
@@ -1067,30 +1072,33 @@ fribidi_set_mirroring (gboolean mirror)
 }
 
 /*======================================================================
-//  Here starts the exposed front end functions.
-//----------------------------------------------------------------------*/
+ *  Here starts the exposed front end functions.
+ *----------------------------------------------------------------------*/
 
 /*======================================================================
-//  fribidi_embedding_levels() is used in order to just get the
-//  embedding levels.
-//----------------------------------------------------------------------*/
-void
-pango_log2vis_get_embedding_levels (
-				       /* input */
-				       gunichar * str,
-				       int len,
-				       PangoDirection *pbase_dir,
+ *  fribidi_log2vis_get_embedding_levels() is used in order to just get
+ *  the embedding levels.
+ *----------------------------------------------------------------------*/
+gboolean
+pango_log2vis_get_embedding_levels (	/* input */
+				       gunichar *str,
+				       int len, PangoDirection *pbase_dir,
 				       /* output */
-				       guint8 * embedding_level_list)
+				       guint8 *embedding_level_list)
 {
   TypeLink *type_rl_list, *pp;
   gint max_level;
   FriBidiCharType fribidi_base_dir;
- 
+
+  DBG ("Entering fribidi_log2vis_get_embedding_levels()\n");
+
   fribidi_base_dir = (*pbase_dir == PANGO_DIRECTION_LTR) ? FRIBIDI_TYPE_L : FRIBIDI_TYPE_R;
-    
+
   if (len == 0)
-    return;
+    {
+      DBG ("Leaving fribidi_log2vis_get_embedding_levels()\n");
+      return TRUE;
+    }
 
   fribidi_analyse_string (str, len, &fribidi_base_dir,
 			  /* output */
@@ -1107,6 +1115,9 @@ pango_log2vis_get_embedding_levels (
     }
 
   free_rl_list (type_rl_list);
-   
+    
   *pbase_dir = (fribidi_base_dir == FRIBIDI_TYPE_L) ?  PANGO_DIRECTION_LTR : PANGO_DIRECTION_RTL;
+
+  DBG ("Leaving fribidi_log2vis_get_embedding_levels()\n");
+  return TRUE;
 }

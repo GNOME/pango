@@ -3,7 +3,7 @@ examples, and a couple of basic language engines.
 
 For more information about Pango, see:
 
- http://www.labs.redhat.com/~otaylor/pango/index.html
+ http://www.pango.org
 
 Dependencies
 ============
@@ -15,7 +15,7 @@ GNU C library version 2.1
 Pango can optionally be compiled to use Dov Grobgeld's FriBidi
 library. This is available from:
 
- http://imagic.weizmann.ac.il/~dov/freesw/FriBidi/
+ http://fribidi.sourceforge.net
 
 If the --with-fribidi option is not given to configure, then
 Pango will use internal copies of the FriBidi routines.

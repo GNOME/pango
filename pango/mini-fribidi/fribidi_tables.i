@@ -1,7 +1,8 @@
 /*========================================================================
-//  This file was automatically created from PropList.txt, version 3.0.1,
-//  and BidiMirroring.txt, version 1, by the perl script CreateGetType.pl.
-//----------------------------------------------------------------------*/
+ *  This file was automatically created from PropList.txt, version 3.0.1,
+ *  and BidiMirroring.txt, version 1, by the perl script CreateGetType.pl.
+ *----------------------------------------------------------------------*/
+/* *INDENT-OFF* */
 
 #define WS FRIBIDI_PROP_TYPE_WS
 #define BS FRIBIDI_PROP_TYPE_BS
@@ -1097,3 +1098,6 @@ struct {
 };
 
 gint nFriBidiMirroredChars = 140;
+
+
+/* *INDENT-ON* */

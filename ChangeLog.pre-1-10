@@ -1,3 +1,13 @@
+Mon Apr 16 18:12:06 2001  Owen Taylor  <otaylor@redhat.com>
+
+	* README: Small updates
+
+	* examples/HELLO.utf8: Insert a RLM on the Yiddish line
+	to correct for fixes to the bidi algorithm.
+
+	* pango/mini-fribidi/*: Update to CVS fribidi which
+	has various bug fixes.
+
 Mon Apr 16 14:26:54 2001  Owen Taylor  <otaylor@redhat.com>
 
 	* docs/pango-sections.txt: Update.

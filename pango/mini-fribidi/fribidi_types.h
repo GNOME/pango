@@ -60,8 +60,6 @@ typedef enum
   /* Can be on only if FRIBIDI_MASK_EXPLICIT is also on. */
   FRIBIDI_MASK_OVERRIDE = 0x00004000,	/* Is explicit override: LRO, RLO */
 
-  /* Can be on for SOT and EOT sentinels only, not a valid char if is on. */
-
   /* The following must be to make types pairwise different, some of them can
      be removed but are here because of efficiency (make queries faster). */
 
@@ -223,9 +221,9 @@ FriBidiCharType;
                               FRIBIDI_TYPE_ON)
 
 
-guchar fribidi_char_from_type (FriBidiCharType c);
+gchar fribidi_char_from_type (FriBidiCharType c);
 
-guchar *fribidi_type_name (FriBidiCharType c);
+gchar *fribidi_type_name (FriBidiCharType c);
 
 
 /* Define character types that fribidi_tables.i uses. if MEM_OPTIMIZED
