@@ -1,3 +1,9 @@
+Mon Jul 19 16:29:45 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/opentype/ftxgsub.c pango/opentype/ftxgpos.c:
+	Fix pervasive buffer overruns when skipping glyphs
+        when matching contexts. (#118592, Kailash C. Chowksey)
+
 Fri Jul 16 10:29:40 2004  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pangofc-font.c pango/pangofc-private.h 
