@@ -30,7 +30,7 @@ Wed Mar  3 16:00:10 2004  Owen Taylor  <otaylor@redhat.com>
 	* NEWS: Correct spelling of my name.
 
 	* pango/Makefile.am (libpango_1_0_la_DEPENDENCIES): Add
-	pango-win32res.lo.
+	pango-win32res.lo. (135581, J. Ali Harlow)
 
 	* configure.in: Move check for native Win32 (mingw) a bit
 	earlier. If Win32, disable static builds (like GLib does).
