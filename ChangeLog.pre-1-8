@@ -1,3 +1,8 @@
+2003-11-18  Morten Welinder  <terra@gnome.org>
+
+	* pango/pango-attributes.c (pango_attr_iterator_get_font): Fix
+	_SCALE semantics.  Fixes bug 121543; patch from Owen.
+
 2003-11-18  Sven Neumann  <sven@gimp.org>
 
 	* pango/pangoft2-fontmap.c: removed the set_unicode_charmap() call.
