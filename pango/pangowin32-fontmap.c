@@ -736,6 +736,7 @@ pango_win32_insert_font (PangoWin32FontMap *win32fontmap,
   stretch = PANGO_STRETCH_NORMAL;
 
   font_family = pango_win32_get_font_family (win32fontmap, family_name);
+  g_free (family_name);
 
   tmp_list = font_family->font_entries;
   while (tmp_list)
