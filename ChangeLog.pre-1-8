@@ -1,3 +1,9 @@
+Tue Jul 30 20:19:15 2002  Owen Taylor  <otaylor@redhat.com>
+ 
+ 	* pango/shape.c (pango_shape): Set is_cluster_start
+ 	attributes based on the log_clusters[] set by the shape
+ 	engine. (Fix for #84307, reported by Alex Larsson, others.)
+ 
 2002-07-28  Michael Natterer  <mitch@gimp.org>
 
 	* modules/thai/thai-xft.c (make_glyph): added missing cast
