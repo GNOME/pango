@@ -31,6 +31,7 @@
 
 #include <glib.h>
 #include "pango-engine.h"
+#include "pangoxft.h"
 #include "thai-shaper.h"
 
 #define SCRIPT_ENGINE_NAME "ThaiScriptEngineXft"
@@ -186,6 +187,12 @@ make_glyph (ThaiFontInfo *font_info, unsigned char c)
     return index;
   else
     return 0;
+}
+
+PangoGlyph
+make_unknown_glyph (ThaiFontInfo *font_info, unsigned char c)
+{
+  return pango_xft_font_get_unknown_glyph (font_info->font, c);
 }
 
 static PangoCoverage *

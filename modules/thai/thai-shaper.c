@@ -30,7 +30,6 @@
 #include <string.h>
 
 #include <glib.h>
-#include "pangoxft.h"
 #include "pango-engine.h"
 #include "thai-shaper.h"
 
@@ -570,7 +569,7 @@ get_glyphs_list (ThaiFontInfo	*font_info,
     {
       case THAI_FONT_NONE:
         for (i=0; i < num_chrs; i++)
-	  glyph_lists[i] = pango_xft_font_get_unknown_glyph (font_info->font, glyph_lists[i]);
+	  glyph_lists[i] = make_unknown_glyph (font_info, glyph_lists[i]);
         return num_chrs;
 
       case THAI_FONT_XTIS:
