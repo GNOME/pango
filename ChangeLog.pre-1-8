@@ -1,3 +1,12 @@
+Mon May  1 15:04:02 PDT 2000 Manish Singh <yosh@gimp.org>
+
+	* configure.in: add support for fribidi-config (needs fribidi v0.1.10
+	or higher). Also actually use the FOO_CONFIG variable filled by
+	AC_PATH_PROG for --cflags and --libs.
+
+	* examples/Makefile.am
+	* pango/Makefile.am: use $(FRIBIDI_LIBS)
+
 Mon May  1 11:58:55 2000  Owen Taylor  <otaylor@redhat.com>
 
 	* modules/arabic/*: Misc bug fixes from Karl Koehler.

@@ -24,8 +24,18 @@ AM_PATH_GTK(1.2.0,
 
 AM_CONDITIONAL(BUILD_TESTS, test x$gtk_works = xyes)
 
+AC_PATH_PROG(FRIBIDI_CONFIG, fribidi-config, no)
+if test x$FRIBIDI_CONFIG = xno ; then
+  AC_MSG_ERROR([*** fribidi-config not found])
+fi
+FRIBIDI_CFLAGS="`$FRIBIDI_CONFIG --cflags`"
+CFLAGS="$CFLAGS $UNICODE_CFLAGS"
+FRIBIDI_LIBS="`$FRIBIDI_CONFIG --libs`"
+AC_SUBST(FRIBIDI_LIBS)
+AC_SUBST(FRIBIDI_CFLAGS)
+
 AC_CHECK_LIB(fribidi, fribidi_map_range, :,
-	     AC_MSG_ERROR([*** libfribidi not found.]), -lglib)
+	     AC_MSG_ERROR([*** libfribidi not found.]), $FRIBIDI_LIBS)
 
 
 # We run glib-config separately to get the gmodule cflags so we
@@ -35,9 +45,9 @@ AC_PATH_PROG(GLIB_CONFIG, glib-config, no)
 if test x$GLIB_CONFIG = xno ; then
   AC_MSG_ERROR([*** glib-config not found])
 fi
-GLIB_CFLAGS="`glib-config --cflags gmodule`"
+GLIB_CFLAGS="`$GLIB_CONFIG --cflags gmodule`"
 CFLAGS="$CFLAGS $GLIB_CFLAGS"
-GLIB_LIBS="`glib-config --libs gmodule`"
+GLIB_LIBS="`$GLIB_CONFIG --libs gmodule`"
 AC_SUBST(GLIB_LIBS)
 AC_SUBST(GLIB_CFLAGS)
 
@@ -46,14 +56,15 @@ AC_PATH_PROG(UNICODE_CONFIG, unicode-config, no)
 if test x$UNICODE_CONFIG = xno ; then
   AC_MSG_ERROR([*** unicode-config not found])
 fi
-UNICODE_CFLAGS="`unicode-config --cflags`"
+UNICODE_CFLAGS="`$UNICODE_CONFIG --cflags`"
 CFLAGS="$CFLAGS $UNICODE_CFLAGS"
-UNICODE_LIBS="`unicode-config --libs`"
+UNICODE_LIBS="`$UNICODE_CONFIG --libs`"
 AC_SUBST(UNICODE_LIBS)
 AC_SUBST(UNICODE_CFLAGS)
 
 AC_CHECK_LIB(unicode, unicode_type, :,
 	     AC_MSG_ERROR([*** libunicode not found.]), $UNICODE_LIBS)
+
 
 #
 # Checks for iconv
