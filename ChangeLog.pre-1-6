@@ -1,7 +1,7 @@
 2003-11-20  Manish Singh  <yosh@gimp.org>
 
 	* pango/pangoft2-private.h: #include <fontconfig/fcfreetype.h> for
-	FreeTypeCharIndex().
+	FcFreeTypeCharIndex().
 
 2003-11-20  Sven Neumann  <sven@gimp.org>
 
