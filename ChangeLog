@@ -1,3 +1,16 @@
+Fri Jul 16 07:43:04 2004  Owen Taylor  <otaylor@redhat.com>
+
+	#143601: Felipe Heidrich
+
+	* pango/pango-layout.c (pango_layout_line_x_to_index): 
+	Go into painful detail about the behavior for X positions
+	outside the line.
+
+	* pango/pango-layout.c (pango_layout_xy_to_index):
+	Add some more details about handling of positions
+	outside the layout, reference
+	pango_layout_line_x_to_index().
+
 Thu Jul 15 10:48:01 2004  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pangofc-font.c (pango_fc_font_get_glyph): Replace

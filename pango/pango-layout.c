@@ -1421,10 +1421,12 @@ pango_layout_move_cursor_visually (PangoLayout *layout,
  *
  * Converts from X and Y position within a layout to the byte 
  * index to the character at that logical position. If the
- * position is not inside the layout, the closest position is chosen
- * (the x/y position will be clamped inside the layout).
- * If a closest position is chosen, then the function returns %FALSE;
- * on an exact hit, it returns %TRUE.
+ * Y position is not inside the layout, the closest position is chosen
+ * (the position will be clamped inside the layout). If the
+ * X position is not within the layout, then the start or the
+ * end of the line is chosen as  described for pango_layout_x_to_index().
+ * If either the X or Y positions were not inside the layout, then the
+ * function returns %FALSE; on an exact hit, it returns %TRUE.
  *
  * Return value: %TRUE if the coordinates were inside text
  **/
@@ -3288,16 +3290,23 @@ pango_layout_line_unref (PangoLayoutLine *line)
  * @line:      a #PangoLayoutLine
  * @x_pos:     the x offset (in #PangoGlyphUnit)
  *             from the left edge of the line.
- * @index_:    location to store calculated byte offset for
+ * @index_:    location to store calculated byte index for
  *             the grapheme in which the user clicked.
  * @trailing:  location to store a integer indicating where
  *             in the grapheme the user clicked. It will either
  *             be zero, or the number of characters in the
- *             grapheme. 0 represents the trailing edge of the cluster.
+ *             grapheme. 0 represents the trailing edge of the grapheme.
  *
  * Converts from x offset to the byte index of the corresponding
  * character within the text of the layout. If @x_pos is outside the line,
- * the start or end of the line will be stored at @index_.
+ * @index_ and @trailing will point to the very first or very last position
+ * in the line. This determination is based on the resolved direction
+ * of the paragraph; for example, if the resolved direction is
+ * right-to-left, then an X position to the right of the line (after it)
+ * results in 0 being stored in @index_ and @trailing. An X position to the
+ * left of the line results in @index_ pointing to the (logical) last
+ * grapheme in the line and @trailing being set to the number of characters
+ * in that grapheme. The reverse is true for a left-to-right line.
  *
  * Returns: %FALSE if @x_pos was outside the line, %TRUE if inside
  **/
