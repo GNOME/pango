@@ -1,3 +1,15 @@
+Changes between 1.1.2 and 1.1.3
+
+* Hangul module bug fixes and improvements [Changwoo Ryu, Jungshik Shin]
+  - Move rendering of precomposed characters to hangul-xft shaper
+  - Handle Hangul tone marks
+* Win32 improvements [Tor Lillqvist]
+  - Use Uniscribe when present
+* Some doc build fixes [Matthias Clasen]
+* Code cleanup [Manish Singh]
+* Fix assertion failure in PangoLayout [Alex Larsson]
+* Fix memory leak when freeing fontmaps [Sven Neumann]
+
 Changes between 1.1.1 and 1.1.2
 
 * Add a new wrap mode for PangoLayout - PANGO_WRAP_WORD_CHAR [Alex Larsson]

@@ -532,6 +532,8 @@ pango_win32_render_layout_line
 pango_win32_render_layout
 pango_win32_get_unknown_glyph
 pango_win32_font_get_glyph_index
+pango_win32_get_debug_flag
+pango_win32_get_dc
 PangoWin32FontCache
 pango_win32_font_cache_new
 pango_win32_font_cache_free

@@ -640,6 +640,7 @@ pango_fc_font_set_free (PangoFcPatternSet *font_set)
   for (i = 0; i < font_set->n_patterns; i++)
     FcPatternDestroy (font_set->patterns[i]);
 
+  g_free (font_set->patterns);
   g_free (font_set);
 }
 
