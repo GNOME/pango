@@ -26,6 +26,7 @@ libpango_la_SOURCES = 	   \
 
 libpangox_la_SOURCES = 	   \
 	pangox.c	   \
+	pangox-private.h   \
 	pangox-fontcache.c \
 	pangox-fontmap.c 
 

@@ -1,3 +1,13 @@
+Wed May 31 10:46:53 2000  Owen Taylor  <otaylor@redhat.com>
+
+	* configure.in: Release 0.11
+
+	* pango.spec.in: Add missing make command.
+
+	* modules/basic/Makefile.am (EXTRA_DIST): Fix up extra-dist.
+
+	* pango/Makefile.am (libpangox_la_SOURCES): Add pangox-private.h
+
 Tue May 30 14:30:24 2000  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/fonts.c (pango_font_description_from_string): Use g_strtod().
@@ -99,7 +109,6 @@ Thu May 18 17:30:00 2000  Robert Brady  <rwb197@zepler.org>
 
 	* fonts/devnag18.bdf: Fix advance widths of some glyphs.
 
->>>>>>> 1.65
 Tue May  9 22:09:42 2000  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pango-types.h (PANGO_SCALE): Change PANGO_SCALE

@@ -18,3 +18,6 @@ pango_basic_la_SOURCES = $(sources)
 
 libpango_basic_la_SOURCES = $(sources)
 
+EXTRA_DIST =		\
+	tables-big.i	\
+	tables-small.i

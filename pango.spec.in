@@ -36,6 +36,7 @@ pango.
 
 %build
 CFLAGS="$RPM_OPT_FLAGS" ./configure --prefix=%{prefix} --sysconfdir=/etc --localstatedir=/var
+make
 
 %install
 rm -rf $RPM_BUILD_ROOT
