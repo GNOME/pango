@@ -23,7 +23,7 @@ moc_viewer-qt.cc: viewer-qt.h
 
 BUILT_SOURCES=moc_viewer-qt.cc
 
-pango_viewer_LDADD = ../pango/libpango.la ../pango/libpangox.la $(FRIBIDI_LIBS) $(UNICODE_LIBS) $(QT_LIBS)
+pango_viewer_LDADD = ../pango/libpango.la ../pango/libpangox.la $(FRIBIDI_LIBS) $(QT_LIBS)
 
 endif
 ###################################################
@@ -33,7 +33,7 @@ all-local: pango.modules
 pango.modules:
 	( cd ../modules && \
           ../pango/pango-querymodules `find . -name '*.so'` > ../examples/pango.modules )
-          
+
 EXTRA_DIST=			\
 	viewer-win32.c		\
 	viewer-ft2.c		\

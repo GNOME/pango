@@ -1,3 +1,13 @@
+2000-11-12  Havoc Pennington  <hp@pobox.com>
+
+	* pango-config.in: Remove UNICODE_LIBS UNICODE_CFLAGS
+	
+	* modules/thai/Makefile.am (pango_thai_la_LIBADD): ditto
+
+	* modules/basic/Makefile.am: ditto
+
+	* pango/Makefile.am: ditto
+
 Mon Nov 13 02:55:38 2000  Robert Brady  <robert@suse.co.uk>
 
 	* examples/pangox.aliases: Added 

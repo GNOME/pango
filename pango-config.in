@@ -82,13 +82,13 @@ if test "$echo_exec_prefix" = "yes"; then
 	echo $exec_prefix
 fi
 if test "$echo_cflags" = "yes"; then
-	cflags="@UNICODE_CFLAGS@ @GLIB_CFLAGS@"
+	cflags="@GLIB_CFLAGS@"
 	# Put $cflags first, in case $includes contains a
 	# location with GLib 1.2 headers, but we build with GLib 2.0.
 	echo $cflags $includes
 fi
 if test "$echo_libs" = "yes"; then
-	libs="-lpango @FRIBIDI_LIBS@ @UNICODE_LIBS@ @GLIB_LIBS@"
+	libs="-lpango @FRIBIDI_LIBS@ @GLIB_LIBS@"
 	if test "$lib_pangox" = "yes"; then
 		libs="@X_LIBS@ -lpangox $libs"
 	fi

@@ -80,7 +80,7 @@ pangoinclude_HEADERS = 	   \
 #
 pango_querymodules_SOURCES = \
 	querymodules.c
-pango_querymodules_LDADD = libpangox.la libpango.la $(GLIB_LIBS) $(FRIBIDI_LIBS) $(UNICODE_LIBS) $(X_LIBS)
+pango_querymodules_LDADD = libpangox.la libpango.la $(GLIB_LIBS) $(FRIBIDI_LIBS) $(X_LIBS)
 
 EXTRA_DIST =			\
 	module-defs.c.win32	\
