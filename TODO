@@ -63,6 +63,11 @@ Documentation
 General
 =======
 
+* Remove the extraneous font argument from the script_shape vfunc
+  in ShapeEngine.
+
+* rename pango_context_set_size() to pango_context_set_font_size()
+
 * PangoAttrList currently takes the policy of "most recent wins"
   when multiple attributes of the same type are present for a range. 
   It would map better on the TkText tag-based API if attributes

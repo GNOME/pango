@@ -23,6 +23,7 @@
 #define __PANGO_CONTEXT_H__
 
 #include <pango-font.h>
+#include <pango-attributes.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -33,31 +34,43 @@ extern "C" {
  */
 typedef struct _PangoContext PangoContext;
 
-PangoContext * pango_context_new          (void);
-void           pango_context_ref          (PangoContext           *context);
-void           pango_context_unref        (PangoContext           *context);
+PangoContext *pango_context_new           (void);
+void          pango_context_ref           (PangoContext                 *context);
+void          pango_context_unref         (PangoContext                 *context);
+void          pango_context_add_font_map  (PangoContext                 *context,
+					   PangoFontMap                 *font_map);
+void          pango_context_list_fonts    (PangoContext                 *context,
+					   const char                   *family,
+					   PangoFontDescription       ***descs,
+					   int                          *n_descs);
+void          pango_context_list_families (PangoContext                 *context,
+					   gchar                      ***families,
+					   int                          *n_families);
+PangoFont *   pango_context_load_font     (PangoContext                 *context,
+					   const PangoFontDescription   *desc,
+					   gdouble                       size);
 
-void	       pango_context_add_font_map (PangoContext           *context,
-					   PangoFontMap           *font_map);
+void                  pango_context_set_font_description (PangoContext               *context,
+							  const PangoFontDescription *desc);
+PangoFontDescription *pango_context_get_font_description (PangoContext               *context);
+char *                pango_context_get_lang             (PangoContext               *context);
+void                  pango_context_set_lang             (PangoContext               *context,
+							  const char                 *lang);
+int                   pango_context_get_size             (PangoContext               *context);
+void                  pango_context_set_size             (PangoContext               *context,
+							  int                         size);
+void                  pango_context_set_base_dir         (PangoContext               *context,
+							  PangoDirection              direction);
+PangoDirection        pango_context_get_base_dir         (PangoContext               *context);
 
-void           pango_context_list_fonts   (PangoContext           *context,
-					   const char             *family,
-					   PangoFontDescription ***descs,
-					   int                    *n_descs);
-void           pango_context_list_families (PangoContext          *context,
-					    gchar              ***families,
-					    int                   *n_families);
-PangoFont *    pango_context_load_font    (PangoContext           *context,
-					   PangoFontDescription   *desc,
-					   gdouble                 size);
-
-void           pango_context_set_lang     (PangoContext           *context,
-					   const char             *lang);
-char *         pango_context_get_lang     (PangoContext           *context);
-void           pango_context_set_base_dir (PangoContext           *context,
-					   PangoDirection          direction);
-PangoDirection pango_context_get_base_dir (PangoContext           *context);
-
+/* Break a string of Unicode characters into segments with
+ * consistent shaping/language engine and bidrectional level.
+ * Returns a GList of PangoItem's
+ */
+GList *pango_itemize (PangoContext   *context, 
+		      gchar          *text, 
+		      gint            length,
+		      PangoAttrList  *attrs);
 
 #ifdef __cplusplus
 }

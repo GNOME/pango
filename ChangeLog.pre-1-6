@@ -1,3 +1,35 @@
+Wed Feb 16 16:39:46 2000  Owen Taylor  <otaylor@redhat.com>
+
+	* libpango/pango-coverage.c (pango_coverage_get): Make refcounted.
+
+	* libpango/modules.c (struct _PangoEnginePair): Since we don't
+	  currently unload engines, cache loaded engines. (Not really
+	  quite satisfactory, but should work OK)
+
+	* libpango/pango-context.c (pango_context_get_font_description):
+	  Added a global font description.
+
+	* libpango/modules.c (_pango_find_map): Allow NULL
+	  language tags.
+
+	* libpango/pango-context.c (pango_itemize) examples/viewer.c:
+	  Switch itemize over to take a PangoAttrList.
+
+	* examples/viewer.c: Conform to changes in itemization interface
+
+	* libpango/font.[ch]: Add a compare function for FontDescription
+
+	* libpango/pango-attributes.[ch]: Change the iteration iterface
+	  to be more convenient.
+
+	* libpango/pango-context.[ch]: Add the ability to set a default font.
+
+	* libpango/pango-context.[ch]: Take the font for itemization from
+	  the attributes on the text.
+
+        * libpango/pangox.c: Cache currently loaded fonts, and cache
+	  coverages.
+
 Tue Feb 15 02:35:56 2000  Owen Taylor  <otaylor@redhat.com>
 
 	* docs/**: Add documentation for attributes.
@@ -17,6 +49,7 @@ Fri Feb 11 16:04:50 2000  Owen Taylor  <otaylor@redhat.com>
 	
 	* examples/HELLO.utf8: Change Maltese to a different
 	  phrase to include some unique Maltese characters.
+	  (Suggestion from Steven R. Loomis)
 
 	* libpango/Makefile.am modules/Makefile.am libpango/modules.c:
 	  Move pango.modules file to /var

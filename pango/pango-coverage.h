@@ -38,8 +38,9 @@ typedef enum {
 } PangoCoverageLevel;
 
 PangoCoverage *    pango_coverage_new     (void);
+void               pango_coverage_ref     (PangoCoverage      *coverage);
+void               pango_coverage_unref   (PangoCoverage      *coverage);
 PangoCoverage *    pango_coverage_copy    (PangoCoverage      *coverage);
-void               pango_coverage_destroy (PangoCoverage      *coverage);
 PangoCoverageLevel pango_coverage_get     (PangoCoverage      *coverage,
 					   int                 index);
 void               pango_coverage_set     (PangoCoverage      *coverage,
@@ -53,3 +54,5 @@ void               pango_coverage_max     (PangoCoverage      *coverage,
 #endif /* __cplusplus */
 
 #endif __PANGO_COVERAGE_H__
+
+

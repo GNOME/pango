@@ -61,8 +61,7 @@ struct _Line {
 };
 
 static PangoFontDescription font_description;
-static double font_size = 16;
-static PangoFont *font = NULL;
+static double font_size = 16000;
 static Paragraph *highlight_para;
 static int highlight_offset;
 
@@ -146,6 +145,7 @@ split_paragraphs (char *text)
 	  para->text = last_para;
 	  para->length = p - last_para;
 	  para->height = 0;
+	  para->lines = NULL;
 	  last_para = next;
 	    
 	  result = g_list_prepend (result, para);
@@ -220,8 +220,8 @@ break_run (char         *text,
 
   buf = pango_glyph_string_new();
   
-  pango_shape (font, text + item->offset, item->length, &item->analysis, buf);
-  pango_x_extents (font, buf, NULL, NULL, &width, NULL, NULL, logical_ascent, logical_descent);
+  pango_shape (text + item->offset, item->length, &item->analysis, buf);
+  pango_x_extents (item->analysis.font, buf, NULL, NULL, &width, NULL, NULL, logical_ascent, logical_descent);
 
   result = FALSE;
   *new_item = NULL;
@@ -272,6 +272,7 @@ break_run (char         *text,
 	  (*new_item)->length = item->length - length;
 	  (*new_item)->num_chars = item->num_chars - num_chars;
 	  (*new_item)->analysis = item->analysis;
+	  pango_font_ref ((*new_item)->analysis.font);
 	  
 	  item->length = length;
 	  item->num_chars = num_chars;
@@ -291,6 +292,29 @@ break_run (char         *text,
   return result;
 }
 
+static void
+free_item (PangoItem *item)
+{
+  pango_font_unref (item->analysis.font);
+  g_free (item);
+}
+
+static void
+free_line (Line *line)
+{
+  g_list_foreach (line->runs, (GFunc)free_item, NULL);
+  g_list_free (line->runs);
+  g_free (line);
+}
+
+static void
+para_free_lines (Paragraph *para)
+{
+  g_list_foreach (para->lines, (GFunc)free_line, NULL);
+  g_list_free (para->lines);
+  para->lines = NULL;
+}
+
 /* Break a paragraph into a list of lines which fit into
  * width, and compute the total height of the new paragraph
  */
@@ -302,11 +326,16 @@ layout_paragraph (Paragraph *para, int width)
   int remaining_width;
   int height = 0;
   PangoDirection base_dir = pango_context_get_base_dir (context);
+  PangoAttrList *attrs;
   
   /* Break paragraph into runs with consistent shaping engine
    * and direction
    */
-  runs = pango_itemize (context, para->text, para->length, NULL, 0);
+  attrs = pango_attr_list_new ();
+  runs = pango_itemize (context, para->text, para->length, attrs);
+  pango_attr_list_unref (attrs);
+
+  para_free_lines (para);
 
   /* Break runs to fit on each line
    */
@@ -410,8 +439,8 @@ runs_x_to_cp (char *text, GList *runs, int x, int *offset)
     {
       PangoItem *item = runs->data;
 
-      pango_shape (font, text + item->offset, item->length, &item->analysis, buf);
-      pango_x_extents (font, buf, NULL, NULL, &width, NULL, NULL, NULL, NULL);
+      pango_shape (text + item->offset, item->length, &item->analysis, buf);
+      pango_x_extents (item->analysis.font, buf, NULL, NULL, &width, NULL, NULL, NULL, NULL);
 
       if (x >= pixels && x < pixels + width)
 	{
@@ -505,8 +534,8 @@ runs_char_bounds (char *text, GList *runs, int offset, int *x, int *width)
     {
       PangoItem *item = runs->data;
       
-      pango_shape (font, text + item->offset, item->length, &item->analysis, buf);
-      pango_x_extents (font, buf, NULL, NULL, &run_width, NULL, NULL, NULL, NULL);
+      pango_shape (text + item->offset, item->length, &item->analysis, buf);
+      pango_x_extents (item->analysis.font, buf, NULL, NULL, &run_width, NULL, NULL, NULL, NULL);
 
       if (offset >= item->offset &&
 	  offset < item->offset + item->length)
@@ -659,21 +688,20 @@ expose_paragraph (Paragraph *para, GdkDrawable *drawable,
 	  int width;
 
 	  /* Convert the item into glyphs */
-	  pango_shape (font,
-		       para->text + item->offset, item->length,
+	  pango_shape (para->text + item->offset, item->length,
 		       &item->analysis,
 		       buf);
 
 	  /* Render the glyphs to the screen */
 	  pango_x_render (GDK_DISPLAY(), GDK_WINDOW_XWINDOW (drawable),
-			  GDK_GC_XGC (gc), font, buf, x + x_off,
+			  GDK_GC_XGC (gc), item->analysis.font, buf, x + x_off,
 			  y + line->ascent);
 
 	  /* Advance to next x position
 	   */
 	  if (run_list->next)
 	    {
-	      pango_x_extents (font, buf, NULL, NULL, &width, NULL, NULL, NULL, NULL);
+	      pango_x_extents (item->analysis.font, buf, NULL, NULL, &width, NULL, NULL, NULL, NULL);
 
 	      x_off += width;
 	    }
@@ -697,7 +725,7 @@ size_allocate (GtkWidget *layout, GtkAllocation *allocation, GList *paragraphs)
 {
   GList *tmp_list;
   int height = 0;
-  
+
   tmp_list = paragraphs;
   while (tmp_list)
     {
@@ -806,15 +834,8 @@ checkbutton_toggled (GtkWidget *widget, gpointer data)
 static void
 reload_font ()
 {
-  PangoFont *new_font;
-
-  new_font = pango_context_load_font (context, &font_description, font_size);
-
-  if (new_font)
-    {
-      pango_font_unref (font);
-      font = new_font;
-    }
+  pango_context_set_font_description (context, &font_description);
+  pango_context_set_size (context, font_size);
 
   if (layout)
     gtk_widget_queue_resize (layout);
@@ -841,7 +862,7 @@ set_style (GtkWidget *entry, gpointer data)
 void
 font_size_changed (GtkAdjustment *adj)
 {
-  font_size = adj->value;
+  font_size = (int)(adj->value * 1000 + 0.5);
   reload_font();
 }
 
@@ -1125,7 +1146,7 @@ make_font_selector (void)
   gtk_box_pack_start (GTK_BOX (hbox), util_hbox, FALSE, FALSE, 0);
 
   adj = gtk_spin_button_get_adjustment (GTK_SPIN_BUTTON (spin_button));
-  adj->value = font_size;
+  adj->value = font_size / 1000.;
   adj->lower = 0;
   adj->upper = 1024;
   adj->step_increment = 1;
@@ -1176,20 +1197,9 @@ main (int argc, char **argv)
   font_description.weight = 500;
   font_description.stretch = PANGO_STRETCH_NORMAL;
 
-  font = pango_context_load_font (context, &font_description, font_size);
-  if (!font)
-    {
-      g_free (font_description.family_name);
-      font_description.family_name = g_strdup ("fixed");
-      font = pango_context_load_font (context, &font_description, font_size);
+  pango_context_set_font_description (context, &font_description);
+  pango_context_set_size (context, font_size);
 
-      if (!font)
-	{
-	  g_warning ("Can't load an initial font!\n");
-	  exit (1);
-	}
-    }
-  
   /* Create the user interface
    */
   window = gtk_window_new (GTK_WINDOW_TOPLEVEL);

@@ -121,7 +121,10 @@ void                pango_attr_list_change       (PangoAttrList  *list,
 						  PangoAttribute *attr);
 PangoAttrIterator * pango_attr_list_get_iterator (PangoAttrList  *list);
 
-int             pango_attr_iterator_next     (PangoAttrIterator    *iterator);
+void            pango_attr_iterator_range    (PangoAttrIterator    *iterator,
+					      gint                 *start,
+					      gint                 *end);
+gboolean        pango_attr_iterator_next     (PangoAttrIterator    *iterator);
 void            pango_attr_iterator_destroy  (PangoAttrIterator    *iterator);
 PangoAttribute *pango_attr_iterator_get      (PangoAttrIterator    *iterator,
 					      PangoAttrType         type);

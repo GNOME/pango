@@ -39,6 +39,7 @@ struct _PangoBlockInfo
 
 struct _PangoCoverage
 {
+  guint ref_count;
   int n_blocks;
   int data_size;
   
@@ -50,7 +51,8 @@ struct _PangoCoverage
  * 
  * Create a new #PangoCoverage
  * 
- * Return value: a new PangoCoverage object, initialized to PANGO_COVERAGE_NONE
+ * Return value: a new PangoCoverage object, initialized to %PANGO_COVERAGE_NONE
+ *               with a reference count of 0.
  **/
 PangoCoverage *
 pango_coverage_new (void)
@@ -60,6 +62,7 @@ pango_coverage_new (void)
 
   coverage->n_blocks = N_BLOCKS_INCREMENT;
   coverage->blocks = g_new (PangoBlockInfo, coverage->n_blocks);
+  coverage->ref_count = 1;
 
   for (i=0; i<coverage->n_blocks; i++)
     {
@@ -74,9 +77,11 @@ pango_coverage_new (void)
  * pango_coverage_copy:
  * @coverage: a #PangoCoverage
  * 
- * Copy an existing #PangoCoverage
+ * Copy an existing #PangoCoverage. (This function may now be unecessary 
+ * since we refcount the structure. Mail otaylor@redhat.com if you
+ * use it.)
  * 
- * Return value: a copy of @coverage
+ * Return value: a copy of @coverage with a reference count of 1
  **/
 PangoCoverage *
 pango_coverage_copy (PangoCoverage *coverage)
@@ -88,6 +93,7 @@ pango_coverage_copy (PangoCoverage *coverage)
   
   result->n_blocks = coverage->n_blocks;
   result->blocks = g_new (PangoBlockInfo, coverage->n_blocks);
+  result->ref_count = 1;
 
   for (i=0; i<coverage->n_blocks; i++)
     {
@@ -106,24 +112,47 @@ pango_coverage_copy (PangoCoverage *coverage)
 }
 
 /**
- * pango_coverage_destroy:
+ * pango_coverage_ref:
  * @coverage: a #PangoCoverage
  * 
- * Destroy a #PangoCoverage object, freeing associated memory
+ * Increase the reference count on the #PangoCoverage by one
  **/
-void pango_coverage_destroy (PangoCoverage *coverage)
+void
+pango_coverage_ref (PangoCoverage *coverage)
+{
+  g_return_if_fail (coverage != NULL);
+
+  coverage->ref_count++;
+}
+
+/**
+ * pango_coverage_unref:
+ * @coverage: a #PangoCoverage
+ * 
+ * Increase the reference count on the #PangoCoverage by one.
+ * if the result is zero, free the coverage and all associated memory.
+ **/
+void
+pango_coverage_unref (PangoCoverage *coverage)
 {
   int i;
   
   g_return_if_fail (coverage != NULL);
+  g_return_if_fail (coverage->ref_count > 0);
 
-  for (i=0; i<coverage->n_blocks; i++)
+  coverage->ref_count--;
+
+  if (coverage->ref_count == 0)
     {
-      if (coverage->blocks[i].data)
-	g_free (coverage->blocks[i].data);
+      for (i=0; i<coverage->n_blocks; i++)
+	{
+	  if (coverage->blocks[i].data)
+	    g_free (coverage->blocks[i].data);
+	}
+      
+      g_free (coverage->blocks);
+      g_free (coverage);
     }
-
-  g_free (coverage);
 }
 
 /**

@@ -34,15 +34,16 @@ typedef struct _PangoEnginePair PangoEnginePair;
 
 struct _PangoMapInfo
 {
-  gchar *lang;
-  gchar *engine_type;
-  gchar *render_type;
+  const gchar *lang;
+  const gchar *engine_type;
+  const gchar *render_type;
 };
 
 struct _PangoEnginePair
 {
-  gchar *module;
   PangoEngineInfo info;
+  gchar *module;
+  PangoEngine *engine;
 };
 
 GList *engines;
@@ -67,9 +68,9 @@ _pango_find_map (const char *lang,
     map_hash = g_hash_table_new ((GHashFunc)map_info_hash,
 				 (GCompareFunc)map_info_equal);
 
-  map_info.lang = (char *)lang;
-  map_info.engine_type = (char *)engine_type;
-  map_info.render_type = (char *)render_type;
+  map_info.lang = lang ? lang : "NONE";
+  map_info.engine_type = engine_type;
+  map_info.render_type = render_type;
 
   map = g_hash_table_lookup (map_hash, &map_info);
   if (!map)
@@ -103,28 +104,30 @@ _pango_load_engine (const char *id)
 	{
 	  GModule *module;
 	  PangoEngine *(*load) (const gchar *id);
-	  PangoEngine *engine;
-  
-	  module = g_module_open (pair->module, 0);
-	  if (!module)
+
+	  if (!pair->engine)
 	    {
-	      fprintf(stderr, "Cannot load module %s: %s\n",
-		      pair->module, g_module_error());
-	      return NULL;
+	      module = g_module_open (pair->module, 0);
+	      if (!module)
+		{
+		  fprintf(stderr, "Cannot load module %s: %s\n",
+			  pair->module, g_module_error());
+		  return NULL;
+		}
+	      
+	      g_module_symbol (module, "script_engine_load", (gpointer)&load);
+	      if (!load)
+		{
+		  fprintf(stderr, "cannot retrieve script_engine_load from %s: %s\n",
+			  pair->module, g_module_error());
+		  g_module_close (module);
+		  return NULL;
+		}
+
+	      pair->engine = (*load) (id);
 	    }
 
-	  g_module_symbol (module, "script_engine_load", (gpointer)&load);
-	  if (!load)
-	    {
-	      fprintf(stderr, "cannot retrieve script_engine_load from %s: %s\n",
-		      pair->module, g_module_error());
-	      g_module_close (module);
-	      return NULL;
-	    }
-
-	  engine = (*load) (id);
-	  
-	  return engine;
+	  return pair->engine;
 	}
     }
 
@@ -290,6 +293,8 @@ read_modules (void)
       g_list_foreach (ranges, (GFunc)g_free, NULL);
       g_list_free (ranges);
       g_free (line);
+
+      pair->engine = NULL;
 
       engines = g_list_prepend (engines, pair);
     }

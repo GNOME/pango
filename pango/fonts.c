@@ -31,7 +31,7 @@
  *               must be freed using pango_font_description_free().
  **/
 PangoFontDescription *
-pango_font_description_copy  (PangoFontDescription  *desc)
+pango_font_description_copy  (const PangoFontDescription  *desc)
 {
   PangoFontDescription *result = g_new (PangoFontDescription, 1);
 
@@ -40,6 +40,32 @@ pango_font_description_copy  (PangoFontDescription  *desc)
   result->family_name = g_strdup (result->family_name);
 
   return result;
+}
+
+/**
+ * pango_font_description_compare:
+ * @desc1: a #PangoFontDescription
+ * @desc2: another #PangoFontDescription
+ * 
+ * Compare two font descriptions for equality.
+ * 
+ * Return value: %TRUE if the two font descriptions are proveably
+ *               identical. (Two font descriptions may result in
+ *               identical fonts being loaded, but still compare
+ *                %FALSE.)
+ **/
+gboolean
+pango_font_description_compare (const PangoFontDescription  *desc1,
+				const PangoFontDescription  *desc2)
+{
+  g_return_val_if_fail (desc1 != NULL, FALSE);
+  g_return_val_if_fail (desc2 != NULL, FALSE);
+
+  return (desc1->style == desc2->style &&
+	  desc1->variant == desc2->variant &&
+	  desc1->weight == desc2->weight &&
+	  desc1->stretch == desc2->stretch &&
+	  g_strcasecmp (desc1->family_name, desc2->family_name));
 }
 
 /**
@@ -278,9 +304,9 @@ pango_font_map_unref (PangoFontMap *fontmap)
  * Returns the font loaded, or %NULL if no font matched.
  **/
 PangoFont *
-pango_font_map_load_font  (PangoFontMap         *fontmap,
-			   PangoFontDescription *desc,
-			   double                size)
+pango_font_map_load_font  (PangoFontMap               *fontmap,
+			   const PangoFontDescription *desc,
+			   double                      size)
 {
   g_return_val_if_fail (fontmap != NULL, NULL);
 

@@ -38,13 +38,16 @@ typedef struct _PangoLogAttr PangoLogAttr;
 typedef struct _PangoEngineLang PangoEngineLang;
 typedef struct _PangoEngineShape PangoEngineShape;
 
+typedef struct _PangoFont PangoFont;
+
 /* Information about a segment of text with a consistent
  * shaping/language engine and bidirectional level
  */
 
 struct _PangoAnalysis {
   PangoEngineShape *shape_engine;
-  PangoEngineLang *lang_engine;
+  PangoEngineLang  *lang_engine;
+  PangoFont        *font;
   guint8 level;
 };
 

@@ -24,7 +24,6 @@
 
 /**
  * pango_shape:
- * @font:      font to use for shaping
  * @text:      the text to process
  * @length:    the length (in bytes) of @text
  * @analysis:  #PangoAnalysis structure from PangoItemize
@@ -35,14 +34,13 @@
  * convert the characters into glyphs. You may also pass
  * in only a substring of the item from pango_itemize().
  */
-void pango_shape (PangoFont      *font, 
-                     gchar            *text, 
-                     gint              length, 
-                     PangoAnalysis  *analysis,
-                     PangoGlyphString     *glyphs)
+void pango_shape (gchar            *text, 
+		  gint              length, 
+		  PangoAnalysis    *analysis,
+		  PangoGlyphString *glyphs)
 {
   if (analysis->shape_engine)
-    analysis->shape_engine->script_shape (font, text, length, analysis, glyphs);
+    analysis->shape_engine->script_shape (analysis->font, text, length, analysis, glyphs);
   else
     pango_glyph_string_set_size (glyphs, 0);
 }

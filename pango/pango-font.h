@@ -30,7 +30,6 @@ extern "C" {
 #include <pango-types.h>
 
 typedef struct _PangoFontDescription PangoFontDescription;
-typedef struct _PangoFont PangoFont;
 typedef struct _PangoFontClass PangoFontClass;
 typedef struct _PangoFontMap PangoFontMap;
 typedef struct _PangoFontMapClass PangoFontMapClass;
@@ -72,10 +71,12 @@ struct _PangoFontDescription {
   PangoStretch stretch;
 };
 
-PangoFontDescription *pango_font_description_copy  (PangoFontDescription  *desc);
-void                  pango_font_description_free  (PangoFontDescription  *desc);
-void                  pango_font_descriptions_free (PangoFontDescription **descs,
-						    int                    n_descs);
+PangoFontDescription *pango_font_description_copy    (const PangoFontDescription  *desc);
+gboolean              pango_font_description_compare (const PangoFontDescription  *desc1,
+						      const PangoFontDescription  *desc2);
+void                  pango_font_description_free    (PangoFontDescription        *desc);
+void                  pango_font_descriptions_free   (PangoFontDescription       **descs,
+						      int                          n_descs);
 
 /* Logical fonts
   */
@@ -130,25 +131,25 @@ struct _PangoFontMap
 
 struct _PangoFontMapClass
 {
-  void       (*destroy)       (PangoFontMap           *fontmap);
-  PangoFont *(*load_font)     (PangoFontMap           *fontmap,
-			       PangoFontDescription   *desc,
-			       double                  size);
-  void       (*list_fonts)    (PangoFontMap           *fontmap,
-			       const gchar            *family,
-			       PangoFontDescription ***descs,
-			       int                    *n_descs);
-  void       (*list_families) (PangoFontMap           *fontmap,
-			       gchar                ***families,
-			       int                    *n_families);
+  void       (*destroy)       (PangoFontMap               *fontmap);
+  PangoFont *(*load_font)     (PangoFontMap               *fontmap,
+			       const PangoFontDescription *desc,
+			       double                      size);
+  void       (*list_fonts)    (PangoFontMap               *fontmap,
+			       const gchar                *family,
+			       PangoFontDescription     ***descs,
+			       int                        *n_descs);
+  void       (*list_families) (PangoFontMap               *fontmap,
+			       gchar                    ***families,
+			       int                        *n_families);
 };
 
-void       pango_font_map_init          (PangoFontMap           *fontmap);
-void       pango_font_map_ref           (PangoFontMap           *fontmap);
-void       pango_font_map_unref         (PangoFontMap           *fontmap);
-PangoFont *pango_font_map_load_font     (PangoFontMap           *fontmap,
-					 PangoFontDescription   *desc,
-					 double                  size);
+void       pango_font_map_init      (PangoFontMap               *fontmap);
+void       pango_font_map_ref       (PangoFontMap               *fontmap);
+void       pango_font_map_unref     (PangoFontMap               *fontmap);
+PangoFont *pango_font_map_load_font (PangoFontMap               *fontmap,
+				     const PangoFontDescription *desc,
+				     double                      size);
 
 void       pango_font_map_list_fonts    (PangoFontMap           *fontmap,
 					 const gchar            *family,

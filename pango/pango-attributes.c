@@ -32,6 +32,8 @@ struct _PangoAttrIterator
 {
   GSList *next_attribute;
   GList *attribute_stack;
+  int start_index;
+  int end_index;
 };
 
 static PangoAttribute *pango_attr_color_new  (const PangoAttrClass *klass,
@@ -550,6 +552,8 @@ pango_attr_list_unref (PangoAttrList *list)
 	}
 
       g_slist_free (list->attributes);
+
+      g_free (list);
     }
 }
 
@@ -726,22 +730,42 @@ pango_attr_list_change (PangoAttrList  *list,
 PangoAttrIterator *
 pango_attr_list_get_iterator (PangoAttrList  *list)
 {
-  PangoAttrIterator *result;
+  PangoAttrIterator *iterator;
 
   g_return_val_if_fail (list != NULL, NULL);
 
-  result = g_new (PangoAttrIterator, 1);
-  result->next_attribute = list->attributes;
-  result->attribute_stack = NULL;
+  iterator = g_new (PangoAttrIterator, 1);
+  iterator->next_attribute = list->attributes;
+  iterator->attribute_stack = NULL;
 
-  while (result->next_attribute &&
-	 ((PangoAttribute *)result->next_attribute->data)->start_index == 0)
-    {
-      result->attribute_stack = g_list_prepend (result->attribute_stack, result->next_attribute->data);
-      result->next_attribute = result->next_attribute->next;
-    }
+  iterator->start_index = 0;
+  iterator->end_index = 0;
 
-  return result;
+  if (!pango_attr_iterator_next (iterator))
+    iterator->end_index = G_MAXINT;
+
+  return iterator;
+}
+
+/**
+ * pango_attr_iterator_range:
+ * @iterator: a #PangoAttrIterator
+ * @start: location to store the start of the range
+ * @end: location to store the end of the range
+ * 
+ * Get the range of the current segment.
+ **/
+void
+pango_attr_iterator_range (PangoAttrIterator *iterator,
+			   gint              *start,
+			   gint              *end)
+{
+  g_return_if_fail (iterator != NULL);
+
+  if (start)
+    *start = iterator->start_index;
+  if (end)
+    *end = iterator->end_index;
 }
 
 /**
@@ -750,63 +774,52 @@ pango_attr_list_get_iterator (PangoAttrList  *list)
  * 
  * Advance the iterator until the next change of style.
  * 
- * Return value: the index of the next change of position, or -1 if iterator
- *               is at the end of the list.
+ * Return value: %FALSE if the iterator is at the end of the list, otherwise %TRUE
  **/
-int
+gboolean
 pango_attr_iterator_next (PangoAttrIterator *iterator)
 {
-  int next_index = G_MAXINT;
   GList *tmp_list;
 
   g_return_val_if_fail (iterator != NULL, -1);
 
   if (!iterator->next_attribute && !iterator->attribute_stack)
-    return -1;
+    return FALSE;
+
+  iterator->start_index = iterator->end_index;
+  iterator->end_index = G_MAXINT;
   
   tmp_list = iterator->attribute_stack;
-  while (tmp_list)
-    {
-      PangoAttribute *attr = tmp_list->data;
-      if (attr->end_index < next_index)
-	next_index = attr->end_index;
-    }
-
-  tmp_list = iterator->attribute_stack;
-  
-  if (iterator->next_attribute)
-    {
-      int next_start = ((PangoAttribute *)iterator->next_attribute->data)->start_index;
-
-      if (next_start <= next_index)
-	{
-	  do
-	    {
-	      iterator->attribute_stack = g_list_prepend (iterator->attribute_stack, iterator->next_attribute->data);
-	      iterator->next_attribute = iterator->next_attribute->next;
-	    }
-	  while (iterator->next_attribute &&
-		 ((PangoAttribute *)iterator->next_attribute->data)->start_index == next_start);
-	}
-
-      if (next_start < next_index)
-	return next_start;
-    }
-
   while (tmp_list)
     {
       GList *next = tmp_list->next;
+      PangoAttribute *attr = tmp_list->data;
 
-      if (((PangoAttribute *)tmp_list->data)->start_index == next_index)
+      if (attr->end_index == iterator->start_index)
 	{
 	  iterator->attribute_stack = g_list_remove_link (iterator->attribute_stack, tmp_list);
 	  g_list_free_1 (tmp_list);
 	}
+      else
+	{
+	  iterator->end_index = MIN (iterator->end_index, attr->end_index);
+	}
       
       tmp_list = next;
     }
-  
-  return next_index;
+
+  while (iterator->next_attribute &&
+	 ((PangoAttribute *)iterator->next_attribute->data)->start_index == iterator->start_index)
+    {
+      iterator->attribute_stack = g_list_prepend (iterator->attribute_stack, iterator->next_attribute->data);
+      iterator->end_index = MIN (iterator->end_index, ((PangoAttribute *)iterator->next_attribute->data)->end_index);
+      iterator->next_attribute = iterator->next_attribute->next;
+    }
+
+  if (iterator->next_attribute)
+    iterator->end_index = MIN (iterator->end_index, ((PangoAttribute *)iterator->next_attribute->data)->start_index);
+
+  return TRUE;
 }
 
 /**

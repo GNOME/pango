@@ -28,6 +28,7 @@
 extern "C" {
 #endif /* __cplusplus */
 
+#include <pango-attributes.h>
 #include <pango-context.h>
 #include <pango-coverage.h>
 #include <pango-engine.h>
@@ -35,16 +36,6 @@ extern "C" {
 #include <pango-glyph.h>
 #include <pango-layout.h>
 #include <pango-types.h>
-
-/* Break a string of Unicode characters into segments with
- * consistent shaping/language engine and bidrectional level.
- * Returns a GList of PangoItem's
- */
-GList *pango_itemize (PangoContext   *context, 
-		      gchar          *text, 
-		      gint            length,
-		      PangoLangRange *lang_info,
-		      gint            n_langs);
 
 /* Logical attributes of a character
  */
@@ -66,8 +57,7 @@ void pango_break (gchar           *text,
 
 /* Turn a string of characters into a string of glyphs
  */
-void pango_shape (PangoFont        *font,
-		  gchar            *text,
+void pango_shape (gchar            *text,
 		  gint              length,
 		  PangoAnalysis    *analysis,
 		  PangoGlyphString *glyphs);
