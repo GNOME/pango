@@ -8,10 +8,33 @@ sources =		 	\
 	devanagari-x.c		\
 	pango-indic-script.h
 
+xft_sources =		 	\
+	indic-xft.c		\
+	indic-ot-class-tables.c	\
+	indic-ot.c		\
+	indic-ot.h
+
 pangolibs = $(top_builddir)/pango/libpango-$(PANGO_API_VERSION).la $(FRIBIDI_LIBS) $(GLIB_LIBS)
 pangoxlibs = $(top_builddir)/pango/libpangox-$(PANGO_API_VERSION).la $(X_LIBS) $(pangolibs)
 pangoxftlibs = $(top_builddir)/pango/libpangoxft-$(PANGO_API_VERSION).la $(XFT_LIBS) $(pangolibs)
 pangoft2libs = $(top_builddir)/pango/libpangoft2-$(PANGO_API_VERSION).la $(FREETYPE_LIBS) $(pangolibs)
+
+if HAVE_XFT
+if INCLUDE_INDIC_XFT
+indic_xft_inst=
+indic_xft_noinst=libpango-indic-xft.la
+indic_xft_cflags=-DXFT_MODULE_PREFIX $(FREETYPE_CFLAGS)
+else
+indic_xft_inst=pango-indic-xft.la
+indic_xft_noinst=
+indic_xft_cflags= $(FREETYPE_CFLAGS)
+indic_xft_libadd=$(pangoxftlibs)
+endif
+else
+indic_xft_inst=
+indic_xft_noints=
+indic_xft_cflags=
+endif
 
 if HAVE_X
 
@@ -55,14 +78,14 @@ gujarati_x_inst=pango-gujarati-x.la
 gujarati_x_libadd=$(pangoxlibs)
 endif
 
-noinst_LTLIBRARIES = $(myanmar_x_noinst) $(gurmukhi_x_noinst) $(bengali_x_noinst) $(devanagari_x_noinst) $(gujarati_x_noinst)
+noinst_LTLIBRARIES = $(myanmar_x_noinst) $(gurmukhi_x_noinst) $(bengali_x_noinst) $(devanagari_x_noinst) $(gujarati_x_noinst) $(indic_xft_noinst)
 
 moduledir = $(libdir)/pango/$(PANGO_MODULE_VERSION)/modules
-module_LTLIBRARIES = $(myanmar_x_inst) $(gurmukhi_x_inst) $(bengali_x_inst) $(devanagari_x_inst) $(gujarati_x_inst)
+module_LTLIBRARIES = $(myanmar_x_inst) $(gurmukhi_x_inst) $(bengali_x_inst) $(devanagari_x_inst) $(gujarati_x_inst) $(indic_xft_inst)
 
 endif
 
-INCLUDES = -DPANGO_ENABLE_ENGINE -DG_DISABLE_DEPRECATED -I$(top_srcdir) -I$(top_srcdir)/pango/ $(X_CFLAGS) $(myanmar_x_cflags) $(gurmukhi_x_cflags) $(bengali_x_cflags) $(devanagari_x_cflags) $(gujarati_x_cflags)
+INCLUDES = -DPANGO_ENABLE_ENGINE -DG_DISABLE_DEPRECATED -I$(top_srcdir) -I$(top_srcdir)/pango/ $(X_CFLAGS) $(myanmar_x_cflags) $(gurmukhi_x_cflags) $(bengali_x_cflags) $(devanagari_x_cflags) $(gujarati_x_cflags) $(indic_xft_cflags)
 
 EXTRA_DIST = \
 	pango-indic-script.h
@@ -106,6 +129,12 @@ libpango_gujarati_x_la_SOURCES = gujarati-x.c
 else
 pango_gujarati_x_la_SOURCES = gujarati-x.c
 endif
+
+pango_indic_xft_la_LDFLAGS = -export-dynamic -avoid-version -module
+pango_indic_xft_la_LIBADD = $(indic_xft_libadd)
+pango_indic_xft_la_SOURCES = $(xft_sources)
+
+libpango_indic_xft_la_SOURCES = $(xft_sources)
 
 included-modules: $(noinst_LTLIBRARIES)
 

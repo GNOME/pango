@@ -1,3 +1,12 @@
+Mon May 06 15:07:39 2002 Eric Mader <mader@jtcsv.com>
+	* Add modules modules/indic/indic-xft.c, indic-ot.c, indic-ot.h, indic-ot-class-tables.c
+
+	* pango/opentype/ftxgdef.c: Compute full offset for mark attachment class table
+
+	* pango/opentype/ftxgpos.c: Only return TTO_Err_Not_Covered if nothing matches
+
+	* pango/opentype/pango-ot-ruleset.c: enable GPOS processing
+	
 2002-05-02  Matthias Clasen  <maclas@gmx.de>
 
 	* docs/Makefile.am (GTKDOC_CFLAGS, GTKDOC_LIBS): Set these. 
