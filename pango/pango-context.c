@@ -641,7 +641,8 @@ itemize_state_init (ItemizeState      *state,
 		    int                start_index,
 		    int                length,
 		    PangoAttrList     *attrs,
-		    PangoAttrIterator *cached_iter)
+		    PangoAttrIterator *cached_iter,
+		    const PangoFontDescription *desc)
 {
   gunichar *text_ucs4;
   long n_chars;
@@ -675,17 +676,35 @@ itemize_state_init (ItemizeState      *state,
       state->attr_iter = cached_iter;
       state->free_attr_iter = FALSE;
     }
-  else
+  else if (attrs)
     {
       state->attr_iter = pango_attr_list_get_iterator (attrs);
       state->free_attr_iter = TRUE;
     }
+  else
+    {
+      state->attr_iter = NULL;
+      state->free_attr_iter = FALSE;
+    }
 
-  state->font_desc = NULL;
-  state->lang = NULL;
+  if (state->attr_iter)
+    {
+      state->font_desc = NULL;
+      state->lang = NULL;
 
-  advance_attr_iterator_to (state->attr_iter, start_index);
-  update_attr_iterator (state);
+      advance_attr_iterator_to (state->attr_iter, start_index);
+      update_attr_iterator (state);
+    }
+  else
+    {
+      state->font_desc = pango_font_description_copy_static (desc ? desc : state->context->font_desc);
+      state->lang = state->context->language;
+      state->extra_attrs = NULL;
+      state->copy_extra_attrs = FALSE;
+  
+      state->attr_end = state->end;
+      state->enable_fallback = TRUE;
+    }
 
   /* Initialize the script iterator
    */
@@ -1162,7 +1181,31 @@ pango_itemize_with_base_dir (PangoContext      *context,
     return NULL;
 
   itemize_state_init (&state, context, text, base_dir, start_index, length,
-		      attrs, cached_iter);
+		      attrs, cached_iter, NULL);
+  
+  do 
+    itemize_state_process_run (&state);
+  while (itemize_state_next (&state));
+
+  itemize_state_finish (&state);
+  
+  return g_list_reverse (state.result);
+}
+
+static GList *
+itemize_with_font (PangoContext               *context, 
+		   const char                 *text,
+		   int                         start_index,
+		   int                         length,
+		   const PangoFontDescription *desc)
+{
+  ItemizeState state;
+
+  if (length == 0)
+    return NULL;
+
+  itemize_state_init (&state, context, text, context->base_dir, start_index, length,
+		      NULL, NULL, desc);
 
   do 
     itemize_state_process_run (&state);
@@ -1215,6 +1258,85 @@ pango_itemize (PangoContext      *context,
 				      text, start_index, length, attrs, cached_iter);
 }
 
+static gboolean
+get_first_metrics_foreach (PangoFontset  *fontset,
+			   PangoFont     *font,
+			   gpointer       data)
+{
+  PangoFontMetrics *fontset_metrics = data;
+  PangoLanguage *language = PANGO_FONTSET_GET_CLASS (fontset)->get_language (fontset);
+  PangoFontMetrics *font_metrics = pango_font_get_metrics (font, language);
+  guint save_ref_count;
+
+  /* Initialize the fontset metrics to metrics of the first font in the
+   * fontset; saving the refcount and restoring it is a bit of hack but avoids
+   * having to update this code for each metrics addition.
+   */
+  save_ref_count = fontset_metrics->ref_count;
+  *fontset_metrics = *font_metrics;
+  fontset_metrics->ref_count = save_ref_count;
+
+  pango_font_metrics_unref (font_metrics);
+
+  return TRUE;			/* Stops iteration */
+}
+
+static PangoFontMetrics *
+get_base_metrics (PangoFontset *fontset)
+{
+  PangoFontMetrics *metrics = pango_font_metrics_new ();
+
+  /* Initialize the metrics from the first font in the fontset */
+  pango_fontset_foreach (fontset, get_first_metrics_foreach, metrics);
+
+  return metrics;
+}
+
+static void
+update_metrics_from_items (PangoFontMetrics *metrics,
+			   PangoLanguage    *language,
+			   GList            *items)
+			   
+{
+  GHashTable *fonts_seen = g_hash_table_new (NULL, NULL);
+  int count = 0;
+  GList *l;
+
+  for (l = items; l; l = l->next)
+    {
+      PangoItem *item = l->data;
+      PangoFont *font = item->analysis.font;
+
+      if (g_hash_table_lookup (fonts_seen, font) == NULL)
+	{
+	  PangoFontMetrics *raw_metrics = pango_font_get_metrics (font, language);
+	  g_hash_table_insert (fonts_seen, font, font);
+
+	  /* metrics will already be initialized from the first font in the fontset */
+	  metrics->ascent = MAX (metrics->ascent, raw_metrics->ascent);
+	  metrics->descent = MAX (metrics->descent, raw_metrics->descent);
+	  
+	  if (count == 0)
+	    {
+	      metrics->approximate_char_width = raw_metrics->approximate_char_width;
+	      metrics->approximate_digit_width = raw_metrics->approximate_digit_width;
+	    }
+	  else
+	    { 
+	      metrics->approximate_char_width += raw_metrics->approximate_char_width;
+	      metrics->approximate_digit_width += raw_metrics->approximate_digit_width;
+	    }
+	  count++;
+	  pango_font_metrics_unref (raw_metrics);
+	}
+    }
+  
+  g_hash_table_destroy (fonts_seen);
+  
+  metrics->approximate_char_width /= count;
+  metrics->approximate_digit_width /= count;
+}
+
 /**
  * pango_context_get_metrics:
  * @context: a #PangoContext
@@ -1246,13 +1368,22 @@ pango_context_get_metrics (PangoContext                 *context,
 {
   PangoFontset *current_fonts = NULL;
   PangoFontMetrics *metrics;
-
+  const char *sample_str;
+  GList *items;
+  
   g_return_val_if_fail (PANGO_IS_CONTEXT (context), NULL);
   g_return_val_if_fail (desc != NULL, NULL);
 
   current_fonts = pango_font_map_load_fontset (context->font_map, context, desc, language);
+  metrics = get_base_metrics (current_fonts);
+  
+  sample_str = pango_language_get_sample_string (language);
+  items = itemize_with_font (context, sample_str, 0, strlen (sample_str), desc);
 
-  metrics = pango_fontset_get_metrics (current_fonts);
+  update_metrics_from_items (metrics, language, items);  
+
+  g_list_foreach (items, (GFunc)pango_item_free, NULL);
+  g_list_free (items);
   
   g_object_unref (current_fonts);
 

@@ -1,3 +1,10 @@
+Sun Nov 21 10:52:03 2004  Owen Taylor  <otaylor@redhat.com>
+ 
+ 	* pango/pango-context.c: Don't just call pango_fontset_get_metrics()
+ 	to implement pango_context_get_metrics(), since that skips our 
+ 	normal font selection algorithm. Rather itemize the sample string
+ 	and get the metrics from that. (#149438, Felipe Heidrich)
+ 
 Sun Nov 21 10:46:34 2004  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pango-layout.c (pango_layout_set_text): Fix UTF8 => UTF-8
