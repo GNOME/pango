@@ -1,3 +1,11 @@
+2004-10-12  Theppitak Karoonboonyanan  <thep@linux.thai.net>
+
+	* modules/thai/thai-shaper.h (thai_get_glyph_tis,
+	thai_make_glyph_tis): Use guchar instead of gchar as argument type.
+
+	* modules/thai/thai-fc.c (thai_get_glyph_tis, thai_make_glyph_tis):
+	Make *_tis functions wrappers to *_uni functions.
+
 2004-10-09  Theppitak Karoonboonyanan  <thep@linux.thai.net>
 
 	Explicitly handle dangling upper/lower marks by optionally using

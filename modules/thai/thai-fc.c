@@ -169,8 +169,8 @@ thai_get_font_info (PangoFont *font)
   return font_info;
 }
 
-static gint
-thai_get_glyph_index (ThaiFontInfo *font_info, gchar c)
+static gunichar
+get_glyph_index_tis (ThaiFontInfo *font_info, guchar c)
 {
   switch (font_info->font_set) {
     case THAI_FONT_TIS:     return (c & 0x80) ? tis620_0[c & 0x7f] : c;
@@ -181,25 +181,15 @@ thai_get_glyph_index (ThaiFontInfo *font_info, gchar c)
 }
 
 PangoGlyph
-thai_get_glyph_tis (ThaiFontInfo *font_info, gchar c)
+thai_get_glyph_tis (ThaiFontInfo *font_info, guchar c)
 {
-  return pango_fc_font_get_glyph ((PangoFcFont *)font_info->font,
-                                  thai_get_glyph_index (font_info, c));
+  return thai_get_glyph_uni (font_info, get_glyph_index_tis (font_info, c));
 }
 
 PangoGlyph
-thai_make_glyph_tis (ThaiFontInfo *font_info, gchar c)
+thai_make_glyph_tis (ThaiFontInfo *font_info, guchar c)
 {
-  gint index;
-  PangoGlyph result;
-  PangoFcFont *fc_font = (PangoFcFont *)font_info->font;
-
-  index = thai_get_glyph_index (font_info, c);
-  result = pango_fc_font_get_glyph (fc_font, index);
-  if (result)
-    return result;
-  else
-    return pango_fc_font_get_unknown_glyph (fc_font, index);
+  return thai_make_glyph_uni (font_info, get_glyph_index_tis (font_info, c));
 }
 
 PangoGlyph

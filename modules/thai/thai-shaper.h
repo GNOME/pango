@@ -34,10 +34,10 @@ ThaiFontInfo *
 thai_get_font_info (PangoFont *font);
 
 PangoGlyph
-thai_get_glyph_tis (ThaiFontInfo *font_info, gchar c);
+thai_get_glyph_tis (ThaiFontInfo *font_info, guchar c);
 
 PangoGlyph
-thai_make_glyph_tis (ThaiFontInfo *font_info, gchar c);
+thai_make_glyph_tis (ThaiFontInfo *font_info, guchar c);
 
 PangoGlyph
 thai_get_glyph_uni (ThaiFontInfo *font_info, gunichar uc);
