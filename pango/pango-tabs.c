@@ -242,8 +242,8 @@ pango_tab_array_resize (PangoTabArray *tab_array,
       while (new_size > tab_array->allocated)
         tab_array->allocated = tab_array->allocated * 2;
       
-      tab_array->tabs = g_realloc (tab_array->tabs,
-                                   tab_array->allocated);
+      tab_array->tabs = g_renew (PangoTab, tab_array->tabs,
+				 tab_array->allocated);
       
       init_tabs (tab_array, current_end, tab_array->allocated);
     }

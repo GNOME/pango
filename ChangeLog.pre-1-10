@@ -1,3 +1,15 @@
+Tue Feb 10 14:13:04 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-tabs.c (pango_tab_array_resize): Fix
+	the amount of memory being allocated. (#132994,
+	Torsten Schoenfeld)
+
+Mon Feb  9 09:52:24 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-attributes.c (pango_attr_iterator_next): Fix
+	infinite loop introduced with last change. (#133749,
+	reported by Mariano Suárez-Alvarez)
+
 Thu Feb  5 16:30:46 2004  Owen Taylor  <otaylor@redhat.com>
 
 	Fix problem with empty markup tags (#128102, Christian Persch)
