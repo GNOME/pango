@@ -1,3 +1,9 @@
+Thu Aug  1 10:41:26 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* configure.in: Fix check for having any backend
+	HAVE_XFT => have_xft, etc. (Problem reported
+	by Andreas J Guelzow)
+
 Thu Aug  1 08:17:31 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* Released 1.0.4
