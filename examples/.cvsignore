@@ -5,6 +5,7 @@ pango.modules
 pango-viewer
 pangoft2topgm
 moc_viewer-qt.cc
+pango-xftview
 .deps
 .libs
 *.lo
