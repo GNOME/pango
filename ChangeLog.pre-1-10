@@ -1,3 +1,8 @@
+Sat Feb 21 11:31:16 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-layout.c (pango_layout_set_justify): Add
+	a docs note about non-implementedness. (#64538)
+
 Sat Feb 21 09:49:23 2004  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/opentype/pango-ot-ruleset.c (pango_ot_ruleset_shape): 

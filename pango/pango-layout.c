@@ -562,6 +562,8 @@ pango_layout_set_font_description (PangoLayout                 *layout,
  * fill the entire width of the layout. This stretching is typically
  * done by adding whitespace, but for some scripts (such as Arabic),
  * the justification is done by extending the characters.
+ *
+ * Note that as of Pango-1.4, this functionality is not yet implemented.
  **/
 void
 pango_layout_set_justify (PangoLayout *layout,
