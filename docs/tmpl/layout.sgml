@@ -48,6 +48,12 @@ fields.
 </para>
 
 
+<!-- ##### STRUCT PangoLayoutIter ##### -->
+<para>
+
+</para>
+
+
 <!-- ##### FUNCTION pango_layout_new ##### -->
 <para>
 
@@ -385,6 +391,163 @@ for partial lines.
 
 @layout: 
 @Returns: 
+
+
+<!-- ##### FUNCTION pango_layout_get_iter ##### -->
+<para>
+
+</para>
+
+@layout: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_layout_iter_free ##### -->
+<para>
+
+</para>
+
+@iter: 
+
+
+<!-- ##### FUNCTION pango_layout_iter_next_run ##### -->
+<para>
+
+</para>
+
+@iter: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_layout_iter_next_char ##### -->
+<para>
+
+</para>
+
+@iter: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_layout_iter_next_cluster ##### -->
+<para>
+
+</para>
+
+@iter: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_layout_iter_next_line ##### -->
+<para>
+
+</para>
+
+@iter: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_layout_iter_at_last_line ##### -->
+<para>
+
+</para>
+
+@iter: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_layout_iter_get_index ##### -->
+<para>
+
+</para>
+
+@iter: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_layout_iter_get_baseline ##### -->
+<para>
+
+</para>
+
+@iter: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_layout_iter_get_run ##### -->
+<para>
+
+</para>
+
+@iter: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_layout_iter_get_line ##### -->
+<para>
+
+</para>
+
+@iter: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_layout_iter_get_char_extents ##### -->
+<para>
+
+</para>
+
+@iter: 
+@logical_rect: 
+
+
+<!-- ##### FUNCTION pango_layout_iter_get_cluster_extents ##### -->
+<para>
+
+</para>
+
+@iter: 
+@ink_rect: 
+@logical_rect: 
+
+
+<!-- ##### FUNCTION pango_layout_iter_get_run_extents ##### -->
+<para>
+
+</para>
+
+@iter: 
+@ink_rect: 
+@logical_rect: 
+
+
+<!-- ##### FUNCTION pango_layout_iter_get_line_yrange ##### -->
+<para>
+
+</para>
+
+@iter: 
+@y0: 
+@y1: 
+
+
+<!-- ##### FUNCTION pango_layout_iter_get_line_extents ##### -->
+<para>
+
+</para>
+
+@iter: 
+@ink_rect: 
+@logical_rect: 
+
+
+<!-- ##### FUNCTION pango_layout_iter_get_layout_extents ##### -->
+<para>
+
+</para>
+
+@iter: 
+@ink_rect: 
+@logical_rect: 
 
 
 <!-- ##### STRUCT PangoLayoutLine ##### -->

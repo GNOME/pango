@@ -70,9 +70,10 @@ struct _PangoGlyphString {
 
   PangoGlyphInfo *glyphs;
 
-  /* This is a memory inefficient way of representing the
-   * information here - each value gives the character index
-   * of the start of the cluster to which the glyph belongs.
+  /* This is a memory inefficient way of representing the information
+   * here - each value gives the byte index within the text
+   * corresponding to the glyph string of the start of the cluster to
+   * which the glyph belongs.
    */
   gint *log_clusters;
 
@@ -88,6 +89,13 @@ void              pango_glyph_string_extents  (PangoGlyphString *glyphs,
 					       PangoFont        *font,
 					       PangoRectangle   *ink_rect,
 					       PangoRectangle   *logical_rect);
+
+void              pango_glyph_string_extents_range  (PangoGlyphString *glyphs,
+                                                     int               start,
+                                                     int               end,
+                                                     PangoFont        *font,
+                                                     PangoRectangle   *ink_rect,
+                                                     PangoRectangle   *logical_rect);
 
 void pango_glyph_string_get_logical_widths (PangoGlyphString *glyphs,
 					    const char       *text,

@@ -185,6 +185,8 @@ void
 pango_tab_array_free   (PangoTabArray *tab_array)
 {
   g_return_if_fail (tab_array != NULL);
+
+  g_free (tab_array->tabs);
   
   g_free (tab_array);
 }

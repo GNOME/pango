@@ -86,28 +86,35 @@ pango_glyph_string_free (PangoGlyphString *string)
 }
 
 /**
- * pango_glyph_string_extents:
+ * pango_glyph_string_extents_range:
  * @glyphs:   a #PangoGlyphString
+ * @start:    start index
+ * @end:      end index
  * @font:     a #PangoFont
- * @ink_rect: rectangle used to store the extents of the glyph string as drawn
+ * @ink_rect: rectangle used to store the extents of the glyph string range as drawn
  *            or %NULL to indicate that the result is not needed.
- * @logical_rect: rectangle used to store the logical extents of the glyph string
+ * @logical_rect: rectangle used to store the logical extents of the glyph string range
  *            or %NULL to indicate that the result is not needed.
- * 
- * Compute the logical and ink extents of a glyph string. See the documentation
- * for pango_font_get_glyph_extents() for details about the interpretation
- * of the rectangles.
- */
-void 
-pango_glyph_string_extents (PangoGlyphString *glyphs,
-			    PangoFont        *font,
-			    PangoRectangle   *ink_rect,
-			    PangoRectangle   *logical_rect)
+ *
+ * Computes the extents of a sub-portion of a glyph string. The extents are
+ * relative to the start of the glyph string range (the origin of their
+ * coordinate system is at the start of the range, not at the start of the entire
+ * glyph string).
+ **/
+void
+pango_glyph_string_extents_range (PangoGlyphString *glyphs,
+                                  int               start,
+                                  int               end,
+                                  PangoFont        *font,
+                                  PangoRectangle   *ink_rect,
+                                  PangoRectangle   *logical_rect)
 {
   int x_pos = 0;
   int i;
 
-  if (glyphs->num_glyphs == 0)
+  g_return_if_fail (start <= end);
+
+  if (end - start == 0)
     {
       if (ink_rect)
 	{
@@ -128,7 +135,7 @@ pango_glyph_string_extents (PangoGlyphString *glyphs,
       return;
     }
   
-  for (i=0; i<glyphs->num_glyphs; i++)
+  for (i = start; i < end; i++)
     {
       PangoRectangle glyph_ink;
       PangoRectangle glyph_logical;
@@ -137,7 +144,8 @@ pango_glyph_string_extents (PangoGlyphString *glyphs,
 
       if (i == 0)
 	{
-	  pango_font_get_glyph_extents (font, glyphs->glyphs[i].glyph, ink_rect, logical_rect);
+	  pango_font_get_glyph_extents (font, glyphs->glyphs[i].glyph,
+                                        ink_rect, logical_rect);
 
 	  if (logical_rect)
 	    {
@@ -179,6 +187,30 @@ pango_glyph_string_extents (PangoGlyphString *glyphs,
 
       x_pos += geometry->width;
     }
+
+}
+     
+/**
+ * pango_glyph_string_extents:
+ * @glyphs:   a #PangoGlyphString
+ * @font:     a #PangoFont
+ * @ink_rect: rectangle used to store the extents of the glyph string as drawn
+ *            or %NULL to indicate that the result is not needed.
+ * @logical_rect: rectangle used to store the logical extents of the glyph string
+ *            or %NULL to indicate that the result is not needed.
+ * 
+ * Compute the logical and ink extents of a glyph string. See the documentation
+ * for pango_font_get_glyph_extents() for details about the interpretation
+ * of the rectangles.
+ */
+void 
+pango_glyph_string_extents (PangoGlyphString *glyphs,
+			    PangoFont        *font,
+			    PangoRectangle   *ink_rect,
+			    PangoRectangle   *logical_rect)
+{
+  pango_glyph_string_extents_range (glyphs, 0, glyphs->num_glyphs,
+                                    font, ink_rect, logical_rect);
 }
 
 /**

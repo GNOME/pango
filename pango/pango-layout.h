@@ -178,6 +178,43 @@ void     pango_layout_line_get_pixel_extents (PangoLayoutLine *layout_line,
 					      PangoRectangle  *ink_rect,
 					      PangoRectangle  *logical_rect);
 
+typedef struct _PangoLayoutIter PangoLayoutIter;
+
+PangoLayoutIter *pango_layout_get_iter  (PangoLayout     *layout);
+void             pango_layout_iter_free (PangoLayoutIter *iter);
+
+int              pango_layout_iter_get_index (PangoLayoutIter *iter);
+PangoLayoutRun  *pango_layout_iter_get_run   (PangoLayoutIter *iter);
+PangoLayoutLine *pango_layout_iter_get_line  (PangoLayoutIter *iter);
+gboolean         pango_layout_iter_at_last_line (PangoLayoutIter *iter);
+
+gboolean pango_layout_iter_next_char    (PangoLayoutIter *iter);
+gboolean pango_layout_iter_next_cluster (PangoLayoutIter *iter);
+gboolean pango_layout_iter_next_run     (PangoLayoutIter *iter);
+gboolean pango_layout_iter_next_line    (PangoLayoutIter *iter);
+
+void pango_layout_iter_get_char_extents    (PangoLayoutIter *iter,
+                                            PangoRectangle  *logical_rect);
+void pango_layout_iter_get_cluster_extents (PangoLayoutIter *iter,
+                                            PangoRectangle  *ink_rect,
+                                            PangoRectangle  *logical_rect);
+void pango_layout_iter_get_run_extents     (PangoLayoutIter *iter,
+                                            PangoRectangle  *ink_rect,
+                                            PangoRectangle  *logical_rect);
+void pango_layout_iter_get_line_extents    (PangoLayoutIter *iter,
+                                            PangoRectangle  *ink_rect,
+                                            PangoRectangle  *logical_rect);
+/* All the yranges meet, unlike the logical_rect's (i.e. the yranges
+ * assign between-line spacing to the nearest line)
+ */
+void pango_layout_iter_get_line_yrange     (PangoLayoutIter *iter,
+                                            int             *y0,
+                                            int             *y1);
+void pango_layout_iter_get_layout_extents  (PangoLayoutIter *iter,
+                                            PangoRectangle  *ink_rect,
+                                            PangoRectangle  *logical_rect);
+int  pango_layout_iter_get_baseline        (PangoLayoutIter *iter);
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

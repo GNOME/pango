@@ -25,6 +25,65 @@
 
 #define LINE_IS_VALID(line) ((line)->layout != NULL)
 
+typedef struct _Extents Extents;
+
+struct _Extents
+{
+  /* Vertical position of the line's baseline in layout coords */
+  int baseline;
+  
+  /* Line extents in layout coords */
+  PangoRectangle ink_rect;
+  PangoRectangle logical_rect;
+};
+
+struct _PangoLayoutIter
+{
+  PangoLayout *layout;
+  GSList *line_list_link;
+  PangoLayoutLine *line;
+
+  /* If run is NULL, it means we're on a "virtual run"
+   * at the end of the line with 0 width
+   */
+  GSList *run_list_link;
+  PangoLayoutRun *run; /* FIXME nuke this, just keep the link */
+  int index;
+
+  /* layout extents in layout coordinates */
+  PangoRectangle logical_rect;
+
+  /* list of Extents for each line in layout coordinates */
+  GSList *line_extents;
+  GSList *line_extents_link;
+  
+  /* X position of the current run */
+  int run_x;
+
+  /* Does the run have a shape attribute */
+  gboolean run_is_shaped;
+  
+  /* Extents of the current run */
+  PangoRectangle run_logical_rect;
+
+  /* this run is left-to-right */
+  gboolean ltr;
+
+  /* X position where cluster begins, where "begins" means left or
+   * right side according to text direction
+   */
+  int cluster_x;
+
+  /* Byte index of the cluster start from the run start */
+  int cluster_index;
+  
+  /* Glyph offset to the current cluster start */
+  int cluster_start;
+
+  /* The next cluster_start */
+  int next_cluster_start;
+};
+
 typedef struct _PangoLayoutLinePrivate PangoLayoutLinePrivate;
 
 struct _PangoLayoutLinePrivate
@@ -1061,48 +1120,33 @@ pango_layout_xy_to_index (PangoLayout *layout,
 			  int         *index,
 			  gboolean    *trailing)
 {
-  GSList *line_list;
-  PangoRectangle logical_rect;
-  int y_offset = 0;
-  int width;
-	  
+  PangoLayoutIter *iter;
+  
   g_return_val_if_fail (layout != NULL, FALSE);
 
-  pango_layout_check_lines (layout);
+  iter = pango_layout_get_iter (layout);  
 
-  width = layout->width;
-  if (width == -1 && layout->alignment != PANGO_ALIGN_LEFT)
+  do
     {
-      pango_layout_get_extents (layout, NULL, &logical_rect);
-      width = logical_rect.width;
+      PangoRectangle line_logical;
+      int first_y, last_y;
+      
+      pango_layout_iter_get_line_extents (iter, NULL, &line_logical);
+      pango_layout_iter_get_line_yrange (iter, &first_y, &last_y);
+      
+      if (y >= first_y &&
+          y < last_y)
+        {
+          pango_layout_line_x_to_index (pango_layout_iter_get_line (iter),
+                                        x - line_logical.x,
+                                        index, trailing);
+          pango_layout_iter_free (iter);
+          return TRUE;
+        }
     }
-  
-  line_list = layout->lines;
-  while (line_list)
-    {
-      PangoLayoutLine *line = line_list->data;
+  while (pango_layout_iter_next_line (iter));
 
-      pango_layout_line_get_extents (line, NULL, &logical_rect);
-	      
-      if (y_offset + logical_rect.height >= y)
-	{
-	  int x_offset;
-	    
-	  if (layout->alignment == PANGO_ALIGN_RIGHT)
-	    x_offset = width - logical_rect.width;
-	  else if (layout->alignment == PANGO_ALIGN_CENTER)
-	    x_offset = (width - logical_rect.width) / 2;
-	  else
-	    x_offset = 0;
-	  
-	  pango_layout_line_x_to_index (line, x - x_offset, index, trailing);
-	  return TRUE;
-	}
-
-      y_offset += logical_rect.height;
-      line_list = line_list->next;
-    }
-
+  pango_layout_iter_free (iter);
   return FALSE;
 }
 
@@ -1125,96 +1169,53 @@ pango_layout_index_to_pos (PangoLayout    *layout,
 			   PangoRectangle *pos)
 {
   PangoRectangle logical_rect;
-  GSList *tmp_list;
   int bytes_seen = 0;
-  int width;
-  PangoDirection base_dir;
-  int x_offset;
+  PangoLayoutIter *iter;
   
   g_return_if_fail (layout != NULL);
   g_return_if_fail (index >= 0);
+  g_return_if_fail (pos != NULL);
   
-  pos->y = 0;
+  iter = pango_layout_get_iter (layout);
   
-  pango_layout_check_lines (layout);
-
-  width = layout->width;
-  if (width == -1 && layout->alignment != PANGO_ALIGN_LEFT)
+  do
     {
-      pango_layout_get_extents (layout, NULL, &logical_rect);
-      width = logical_rect.width;
-    }
-  
-  tmp_list = layout->lines;
-  while (tmp_list)
-    {
-      PangoLayoutLine *layout_line = tmp_list->data;
+      PangoLayoutLine *layout_line = pango_layout_iter_get_line (iter);
 
-      pango_layout_line_get_extents (layout_line, NULL, &logical_rect);
+      pango_layout_iter_get_line_extents (iter, NULL, &logical_rect);
 
       if (bytes_seen + layout_line->length > index)
 	{
 	  int x_pos;
 
-	  if (layout->alignment == PANGO_ALIGN_RIGHT)
-	    x_offset = width - logical_rect.width;
-	  else if (layout->alignment == PANGO_ALIGN_CENTER)
-	    x_offset = (width - logical_rect.width) / 2;
-	  else
-	    x_offset = 0;
-	  
+	  pos->y = logical_rect.y;
 	  pos->height = logical_rect.height;
 
 	  pango_layout_line_index_to_x (layout_line, index, FALSE, &x_pos);
-	  pos->x = x_pos;
+	  pos->x = logical_rect.x + x_pos;
 	  
 	  pango_layout_line_index_to_x (layout_line, index, TRUE, &x_pos);
-	  pos->width = x_pos - pos->x;
+	  pos->width = (logical_rect.x + x_pos) - pos->x;
 
-	  pos->x += x_offset;
-	  
+          pango_layout_iter_free (iter);
+          
 	  return;
 	}
 
-      tmp_list = tmp_list->next;
       bytes_seen += layout_line->length;
-      if (tmp_list && layout->text[bytes_seen] == '\n')
+      if (bytes_seen < layout->length && layout->text[bytes_seen] == '\n')
 	bytes_seen++;
-      pos->y += logical_rect.height;
     }
+  while (pango_layout_iter_next_line (iter));
 
-  /* Return a zero-width rectangle on the left or right side of the
-   * last line.
+  /* Iterator should now be on the "NULL" run at the end of the last
+   * line, which is a zero-width rectangle. Return the extents of
+   * that run.
    */
-  g_assert (index >= layout->length);
 
-  pos->y -= logical_rect.height;
-  pos->height = logical_rect.height;
-  pos->width = 0;
-  
-  base_dir = pango_context_get_base_dir (layout->context);
+  pango_layout_iter_get_run_extents (iter, NULL, pos);
 
-  if (layout->alignment == PANGO_ALIGN_RIGHT)
-    x_offset = width - logical_rect.width;
-  else if (layout->alignment == PANGO_ALIGN_CENTER)
-    x_offset = (width - logical_rect.width) / 2;
-  else
-    x_offset = 0;
-  
-  switch (base_dir)
-    {
-    case PANGO_DIRECTION_LTR:
-      pos->x = x_offset + logical_rect.width;
-      break;
-
-    case PANGO_DIRECTION_RTL:
-      pos->x = x_offset;
-      break;
-
-    default:
-      g_assert_not_reached ();
-      break;
-    }
+  pango_layout_iter_free (iter);
 }
 
 static void
@@ -1398,56 +1399,47 @@ pango_layout_get_cursor_pos (PangoLayout    *layout,
 {
   PangoDirection base_dir;
   PangoDirection dir1, dir2;
-  PangoRectangle logical_rect;
+  PangoRectangle line_rect;
   PangoLayoutLine *layout_line = NULL; /* Quiet GCC */
   int x1_trailing;
   int x2;
-  GSList *tmp_list;
-  int width;
-  int x_offset;
-  int y_offset = 0;
   int bytes_seen = 0;
+  PangoLayoutIter *iter;
   
   g_return_if_fail (layout != NULL);
   g_return_if_fail (index >= 0 && index <= layout->length);
   
   base_dir = pango_context_get_base_dir (layout->context);
 
-  pango_layout_check_lines (layout);
-
-  width = layout->width;
-  if (width == -1 && layout->alignment != PANGO_ALIGN_LEFT)
-    {
-      pango_layout_get_extents (layout, NULL, &logical_rect);
-      width = logical_rect.width;
-    }
+  iter = pango_layout_get_iter (layout);
   
   /* Find the line */
-  tmp_list = layout->lines;
-  while (tmp_list)
+  do 
     {
-      layout_line = tmp_list->data;
+      layout_line = pango_layout_iter_get_line (iter);
       
-      pango_layout_line_get_extents (layout_line, NULL, &logical_rect);
-      layout_line = tmp_list->data;
+      pango_layout_iter_get_line_extents (iter, NULL, &line_rect);
 
       if (bytes_seen + layout_line->length > index)
 	break;
 
-      tmp_list = tmp_list->next;
-
-      if (tmp_list)		/* Want last line of layout for trailing position */
-	{
-	  y_offset += logical_rect.height;
-	  bytes_seen += layout_line->length;
-	}
+      /* Want last line of layout for trailing position */
+      if (!pango_layout_iter_at_last_line (iter))
+        bytes_seen += layout_line->length;
     }
+  while (pango_layout_iter_next_line (iter));
 
+  pango_layout_iter_free (iter);
+  iter = NULL;
+  
   /* Examine the trailing edge of the character before the cursor */
   if (index == bytes_seen)
     {
       dir1 = base_dir;
-      x1_trailing = (base_dir == PANGO_DIRECTION_LTR) ? 0 : logical_rect.width;
+      if (base_dir == PANGO_DIRECTION_LTR)
+        x1_trailing = 0;
+      else
+        x1_trailing = line_rect.width;
     }
   else
     {
@@ -1460,44 +1452,255 @@ pango_layout_get_cursor_pos (PangoLayout    *layout,
   if (index == bytes_seen + layout_line->length)
     {
       dir2 = base_dir;
-      x2 = (base_dir == PANGO_DIRECTION_LTR) ? logical_rect.width : 0;
+      if (base_dir == PANGO_DIRECTION_LTR)
+        x2 = line_rect.width;
+      else
+        x2 = 0;
     }
   else
     {
       dir2 = pango_layout_line_get_char_direction (layout_line, index);
       pango_layout_line_index_to_x (layout_line, index, FALSE, &x2);
     }
-
-  if (layout->alignment == PANGO_ALIGN_RIGHT)
-    x_offset = width - logical_rect.width;
-  else if (layout->alignment == PANGO_ALIGN_CENTER)
-    x_offset = (width - logical_rect.width) / 2;
-  else
-    x_offset = 0;
 	  
   if (strong_pos)
     {
+      strong_pos->x = line_rect.x;
+      
       if (dir1 == base_dir)
-	strong_pos->x = x_offset + x1_trailing;
+	strong_pos->x += x1_trailing;
       else
-	strong_pos->x = x_offset + x2;
+	strong_pos->x += x2;
 
-      strong_pos->y = y_offset;
+      strong_pos->y = line_rect.y;
       strong_pos->width = 0;
-      strong_pos->height = logical_rect.height;
+      strong_pos->height = line_rect.height;
     }
 
   if (weak_pos)
     {
+      weak_pos->x = line_rect.x;
+      
       if (dir1 == base_dir)
-	weak_pos->x = x_offset + x2;
+	weak_pos->x += x2;
       else
-	weak_pos->x = x_offset + x1_trailing;
+	weak_pos->x += x1_trailing;
 
-      weak_pos->y = y_offset;
+      weak_pos->y = line_rect.y;
       weak_pos->width = 0;
-      weak_pos->height = logical_rect.height;
+      weak_pos->height = line_rect.height;
     }
+}
+
+static void
+get_x_offset (PangoLayout     *layout,
+              PangoLayoutLine *line,
+              int              layout_width,
+              int              line_width,
+              int             *x_offset)
+{
+  /* Alignment */
+  if (layout->alignment == PANGO_ALIGN_RIGHT)
+    *x_offset = layout_width - line_width;
+  else if (layout->alignment == PANGO_ALIGN_CENTER)
+    *x_offset = (layout_width - line_width) / 2;
+  else
+    *x_offset = 0;
+
+  /* Indentation */
+
+
+  /* For center, we ignore indentation; I think I've seen word
+   * processors that still do the indentation here as if it were
+   * indented left/right, though we can't sensibly do that without
+   * knowing whether left/right is the "normal" thing for this text
+   */
+   
+  if (layout->alignment == PANGO_ALIGN_CENTER)
+    return;
+  
+  if (line == layout->lines->data)
+    {
+      /* First line */
+      if (layout->indent > 0)
+        {
+          if (layout->alignment == PANGO_ALIGN_LEFT)
+            *x_offset += layout->indent;
+          else
+            *x_offset -= layout->indent;
+        }
+    }
+  else
+    {
+      if (layout->indent < 0)
+        {
+          if (layout->alignment == PANGO_ALIGN_LEFT)
+            *x_offset -= layout->indent;
+          else
+            *x_offset += layout->indent;
+        }
+    }
+}
+
+static void
+get_line_extents_layout_coords (PangoLayout     *layout,
+                                PangoLayoutLine *line,
+                                int              layout_width,
+                                int              y_offset,
+                                int             *baseline,
+                                PangoRectangle  *line_ink_layout,
+                                PangoRectangle  *line_logical_layout)
+{
+  int x_offset;
+  /* Line extents in line coords (origin at line baseline) */
+  PangoRectangle line_ink;
+  PangoRectangle line_logical;
+  
+  pango_layout_line_get_extents (line, line_ink_layout ? &line_ink : NULL,
+                                 &line_logical);
+  
+  /* layout_width can be -1 in which case we just get a bogus x/y for
+   * the line
+   */
+  get_x_offset (layout, line, layout_width, line_logical.width, &x_offset);
+  
+  /* Convert the line's extents into layout coordinates */
+  if (line_ink_layout)
+    {
+      *line_ink_layout = line_ink;
+      line_ink_layout->x = line_ink.x + x_offset;
+  
+      if (line == layout->lines->data)
+        line_ink_layout->y = line_ink.y;
+      else
+        line_ink_layout->y = y_offset - line_logical.y + line_ink.y;
+    }
+
+  if (line_logical_layout)
+    {
+      *line_logical_layout = line_logical;
+      line_logical_layout->x = line_logical.x + x_offset;
+      line_logical_layout->y = y_offset;
+    }
+
+  if (baseline)
+    *baseline = y_offset - line_logical.y;
+}
+
+/* if non-NULL line_extents returns a list of line extents
+ * in layout coordinates
+ */
+static void
+pango_layout_get_extents_internal (PangoLayout    *layout,
+                                   PangoRectangle *ink_rect,
+                                   PangoRectangle *logical_rect,
+                                   GSList        **line_extents)
+{
+  GSList *line_list;
+  int y_offset = 0;
+  int width;
+  
+  g_return_if_fail (layout != NULL);
+
+  pango_layout_check_lines (layout);
+
+  width = layout->width;
+  if (width == -1 && layout->alignment != PANGO_ALIGN_LEFT && ink_rect != NULL)
+    {
+      PangoRectangle overall_logical;
+      
+      pango_layout_get_extents (layout, NULL, &overall_logical);
+      width = overall_logical.width;
+    }
+  
+  line_list = layout->lines;
+  while (line_list)
+    {
+      PangoLayoutLine *line = line_list->data;
+      /* Line extents in layout coords (origin at 0,0 of the layout) */
+      PangoRectangle line_ink_layout;
+      PangoRectangle line_logical_layout;
+      
+      int new_pos;
+
+      /* This block gets the line extents in layout coords */
+      {
+        int baseline;
+        
+        get_line_extents_layout_coords (layout, line,
+                                        width, y_offset,
+                                        &baseline,
+                                        ink_rect ? &line_ink_layout : NULL,
+                                        &line_logical_layout);
+        
+        if (line_extents)
+          {
+            Extents *ext = g_new (Extents, 1);
+            ext->baseline = baseline;
+            ext->ink_rect = line_ink_layout;
+            ext->logical_rect = line_logical_layout;
+            *line_extents = g_slist_prepend (*line_extents, ext);
+          }
+      }
+      
+      if (ink_rect)
+	{
+          /* Compute the union of the current ink_rect with
+           * line_ink_layout
+           */
+          
+	  if (line_list == layout->lines)
+	    {
+              *ink_rect = line_ink_layout;
+	    }
+	  else
+	    {
+	      new_pos = MIN (ink_rect->x, line_ink_layout.x);
+	      ink_rect->width =
+                MAX (ink_rect->x + ink_rect->width,
+                     line_ink_layout.x + line_ink_layout.width) - new_pos;
+	      ink_rect->x = new_pos;
+
+	      new_pos = MIN (ink_rect->y, line_ink_layout.y);
+	      ink_rect->height =
+                MAX (ink_rect->y + ink_rect->height,
+                     line_ink_layout.y + line_ink_layout.height) - new_pos;
+	      ink_rect->y = new_pos;
+            }
+	}
+
+      if (logical_rect)
+	{
+          /* Compute union of line_logical_layout with
+           * current logical_rect
+           */
+          
+	  if (line_list == layout->lines)
+	    {
+              *logical_rect = line_logical_layout;
+	    }
+	  else
+	    {
+	      new_pos = MIN (logical_rect->x, line_logical_layout.x);
+	      logical_rect->width =
+                MAX (logical_rect->x + logical_rect->width,
+                     line_logical_layout.x + line_logical_layout.width) - new_pos;
+	      logical_rect->x = new_pos;
+
+	      logical_rect->height += line_logical_layout.height;
+	    }
+
+          /* No space after the last line, of course. */
+          if (line_list->next != NULL)
+            logical_rect->height += layout->spacing;
+	}
+      
+      y_offset += line_logical_layout.height + layout->spacing;
+      line_list = line_list->next;
+    }
+
+  if (line_extents)
+    *line_extents = g_slist_reverse (*line_extents);
 }
 
 /**
@@ -1516,90 +1719,10 @@ void
 pango_layout_get_extents (PangoLayout    *layout,
 			  PangoRectangle *ink_rect,
 			  PangoRectangle *logical_rect)
-{
-  GSList *line_list;
-  int y_offset = 0;
-  int width;
-	  
+{	  
   g_return_if_fail (layout != NULL);
 
-  pango_layout_check_lines (layout);
-
-  width = layout->width;
-  if (width == -1 && layout->alignment != PANGO_ALIGN_LEFT && ink_rect != NULL)
-    {
-      PangoRectangle overall_logical;
-      
-      pango_layout_get_extents (layout, NULL, &overall_logical);
-      width = overall_logical.width;
-    }
-  
-  line_list = layout->lines;
-  while (line_list)
-    {
-      PangoLayoutLine *line = line_list->data;
-      PangoRectangle line_ink;
-      PangoRectangle line_logical;
-
-      int x_offset;
-      int new_pos;
-	      
-      pango_layout_line_get_extents (line, ink_rect ? &line_ink : NULL, &line_logical);
-
-      if (layout->alignment == PANGO_ALIGN_RIGHT)
-	x_offset = width - line_logical.width;
-      else if (layout->alignment == PANGO_ALIGN_CENTER)
-	x_offset = (width - line_logical.width) / 2;
-      else
-	x_offset = 0;
-
-      if (ink_rect)
-	{
-	  if (line_list == layout->lines)
-	    {
-	      ink_rect->x = line_ink.x + x_offset;
-	      ink_rect->y = line_ink.y;
-	      ink_rect->width = line_ink.width;
-	      ink_rect->height = line_ink.height;
-	    }
-	  else
-	    {
-	      new_pos = MIN (ink_rect->x, line_ink.x + x_offset);
-	      ink_rect->width = MAX (ink_rect->x + ink_rect->width,
-				     line_ink.x + line_ink.width + x_offset) - new_pos;
-	      ink_rect->x = new_pos;
-
-	      new_pos = MIN (ink_rect->y,
-			     y_offset - line_logical.y + line_ink.y);
-	      ink_rect->height = MAX (ink_rect->y + ink_rect->height,
-				      y_offset - line_logical.y + line_ink.y + line_ink.height) - new_pos;
-	      ink_rect->y = new_pos;
-	    }
-	}
-
-      if (logical_rect)
-	{
-	  if (line_list == layout->lines)
-	    {
-	      logical_rect->x = line_logical.x;
-	      logical_rect->y = 0;
-	      logical_rect->width = line_logical.width;
-	      logical_rect->height = line_logical.height;
-	    }
-	  else
-	    {
-	      new_pos = MIN (logical_rect->x, line_logical.x);
-	      logical_rect->width = MAX (logical_rect->x + logical_rect->width,
-					 line_logical.x + line_logical.width) - new_pos;
-	      logical_rect->x = new_pos;
-
-	      logical_rect->height += line_logical.height;
-	    }
-	}
-      
-      y_offset += line_logical.height;
-      line_list = line_list->next;
-    }
+  pango_layout_get_extents_internal (layout, ink_rect, logical_rect, NULL);
 }
 
 /**
@@ -2183,7 +2306,6 @@ pango_layout_check_lines (PangoLayout *layout)
       
       if (end == layout->text + layout->length)
 	done = TRUE;
-  
 
       items = pango_itemize (layout->context,
                              layout->text,
@@ -2209,6 +2331,7 @@ pango_layout_check_lines (PangoLayout *layout)
 				 (line->runs == NULL) || last_cant_end,
 				 current_cant_end,
 				 &remaining_width);
+
 	  current_cant_end = FALSE;
 	  
 	  if (result == BREAK_ALL_FIT)
@@ -2299,6 +2422,8 @@ pango_layout_check_lines (PangoLayout *layout)
     }
   while (!done);
 
+  pango_attr_iterator_destroy (iter);
+  
   if (attrs != layout->attrs)
     pango_attr_list_unref (attrs);
   
@@ -2545,13 +2670,9 @@ pango_layout_line_get_x_ranges (PangoLayoutLine  *line,
    */
   pango_layout_line_get_extents (line, NULL, &logical_rect);
 
-  if (line->layout->alignment == PANGO_ALIGN_RIGHT)
-    x_offset = width - logical_rect.width;
-  else if (line->layout->alignment == PANGO_ALIGN_CENTER)
-    x_offset = (width - logical_rect.width) / 2;
-  else
-    x_offset = 0;
-	  
+  /* FIXME it seems to me that width can be -1 here? */
+  get_x_offset (line->layout, line, width, logical_rect.width, &x_offset);
+  
   tmp_list = line->layout->lines;
   while (tmp_list->data != line)
     {
@@ -2733,6 +2854,57 @@ pango_layout_line_get_empty_extents (PangoLayoutLine *line,
     }
 }
 
+static void
+pango_layout_run_get_extents (PangoLayoutRun *run,
+                              gboolean       *shape_setp,
+                              PangoRectangle *run_ink,
+                              PangoRectangle *run_logical)
+{
+  PangoUnderline uline = PANGO_UNDERLINE_NONE;
+
+  PangoRectangle shape_ink;
+  PangoRectangle shape_logical;
+  gboolean shape_set;
+
+  pango_layout_get_item_properties (run->item, &uline,
+                                    &shape_ink, &shape_logical, &shape_set);
+
+  if (shape_setp)
+    *shape_setp = shape_set;
+  
+  if (shape_set)
+    imposed_extents (run->item->num_chars, &shape_ink, &shape_logical,
+                     (uline != PANGO_UNDERLINE_NONE) ? run_ink : NULL, run_logical);
+  else
+    pango_glyph_string_extents (run->glyphs, run->item->analysis.font,
+                                (uline != PANGO_UNDERLINE_NONE) ? run_ink : NULL,
+                                run_logical);
+
+  switch (uline)
+    {
+    case PANGO_UNDERLINE_NONE:
+      break;
+    case PANGO_UNDERLINE_SINGLE:
+      if (run_ink)
+        run_ink->height = MAX (run_ink->height, 2 * PANGO_SCALE - run_ink->y);
+      run_logical->height = MAX (run_logical->height, 2 * PANGO_SCALE - run_logical->y);
+      break;
+    case PANGO_UNDERLINE_DOUBLE:
+      if (run_ink)
+        run_ink->height = MAX (run_ink->height, 4 * PANGO_SCALE - run_ink->y);
+      run_logical->height = MAX (run_logical->height, 4 * PANGO_SCALE - run_logical->y);
+      break;
+    case PANGO_UNDERLINE_LOW:
+      if (run_ink)
+        run_ink->height += 2 * PANGO_SCALE;
+	  
+      /* FIXME: Should this simply be run_logical->height += 2 * PANGO_SCALE instead?
+       */
+      run_logical->height = MAX (run_logical->height, run_ink->y + run_ink->height - run_logical->y);
+      break;
+    }
+}
+
 /**
  * pango_layout_line_get_extents:
  * @line:     a #PangoLayoutLine
@@ -2785,48 +2957,13 @@ pango_layout_line_get_extents (PangoLayoutLine *line,
     {
       PangoLayoutRun *run = tmp_list->data;
       int new_pos;
-      PangoUnderline uline = PANGO_UNDERLINE_NONE;
-      
       PangoRectangle run_ink;
       PangoRectangle run_logical;
-      PangoRectangle shape_ink;
-      PangoRectangle shape_logical;
-      gboolean shape_set;
 
-      pango_layout_get_item_properties (run->item, &uline, &shape_ink, &shape_logical, &shape_set);
-
-      if (shape_set)
-	imposed_extents (run->item->num_chars, &shape_ink, &shape_logical,
-			 (ink_rect || uline != PANGO_UNDERLINE_NONE) ? &run_ink : NULL, &run_logical);
-      else
-	pango_glyph_string_extents (run->glyphs, run->item->analysis.font,
-				    (ink_rect || uline != PANGO_UNDERLINE_NONE) ? &run_ink : NULL,
-				    &run_logical);
-
-      switch (uline)
-	{
-	case PANGO_UNDERLINE_NONE:
-	  break;
-	case PANGO_UNDERLINE_SINGLE:
-	  if (ink_rect)
-	    run_ink.height = MAX (run_ink.height, 2 * PANGO_SCALE - run_ink.y);
-	  run_logical.height = MAX (run_logical.height, 2 * PANGO_SCALE - run_logical.y);
-	  break;
-	case PANGO_UNDERLINE_DOUBLE:
-	  if (ink_rect)
-	    run_ink.height = MAX (run_ink.height, 4 * PANGO_SCALE - run_ink.y);
-	  run_logical.height = MAX (run_logical.height, 4 * PANGO_SCALE - run_logical.y);
-	  break;
-	case PANGO_UNDERLINE_LOW:
-	  if (ink_rect)
-	    run_ink.height += 2 * PANGO_SCALE;
-	  
-	  /* FIXME: Should this simply be run_logical.height += 2 * PANGO_SCALE instead?
-	   */
-	  run_logical.height = MAX (run_logical.height, run_ink.y + run_ink.height - run_logical.y);
-	  break;
-	}
-       
+      pango_layout_run_get_extents (run, NULL,
+                                    ink_rect ? &run_ink : NULL,
+                                    &run_logical);
+      
       if (ink_rect)
 	{
 	  new_pos = MIN (ink_rect->x, x_pos + run_ink.x);
@@ -3045,4 +3182,798 @@ pango_layout_get_item_properties (PangoItem      *item,
 	}
       tmp_list = tmp_list->next;
     }
+}
+
+static gboolean
+check_invalid (PangoLayoutIter *iter,
+               const char      *loc)
+{
+  if (iter->line->layout == NULL)
+    {
+      g_warning ("%s: PangoLayout changed since PangoLayoutIter was created, iterator invalid", loc);
+      return TRUE;
+    }
+  else
+    {
+      return FALSE;
+    }
+}
+
+#ifdef G_DISABLE_CHECKS
+#define IS_INVALID(iter) FALSE
+#else
+#define IS_INVALID(iter) check_invalid ((iter), G_STRLOC)
+#endif
+
+static int
+next_cluster_start (PangoGlyphString *gs,
+                    int               cluster_start)
+{
+  int i;
+  
+  i = cluster_start + 1;
+  while (i < gs->num_glyphs)
+    {
+      if (gs->glyphs[i].attr.is_cluster_start)
+        return i;
+      
+      ++i;
+    }
+
+  return i;
+}
+
+static int
+cluster_end_index (PangoLayoutIter *iter)
+{
+  PangoGlyphString *gs;
+  
+  gs = iter->run->glyphs;
+  
+  if (iter->next_cluster_start == gs->num_glyphs)
+    {
+      /* Use the left or right end of the run */
+      if (iter->ltr)
+        return iter->run->item->offset + iter->run->item->length;
+      else
+        return iter->run->item->offset;
+    }
+  else
+    {
+      return  gs->log_clusters[iter->next_cluster_start];
+    }
+}
+
+static inline void
+offset_y (PangoLayoutIter *iter,
+          int             *y)
+{
+  Extents *line_ext;
+
+  line_ext = (Extents*)iter->line_extents_link->data;
+
+  *y += line_ext->baseline;
+}
+
+static void
+update_run (PangoLayoutIter *iter)
+{
+  int old_run_width;
+  Extents *line_ext;
+
+  line_ext = (Extents*)iter->line_extents_link->data;
+  
+  /* Note that in iter_new() the old_run_width is garbage,
+   * but we don't use it since we're on the first run of
+   * a line.
+   */
+  old_run_width = iter->run_logical_rect.width;
+
+  if (iter->line_extents_link == iter->line_extents)
+    iter->run_x = line_ext->logical_rect.x;
+  else
+    iter->run_x += old_run_width;
+  
+  if (iter->run)
+    {
+      pango_layout_run_get_extents (iter->run,
+                                    &iter->run_is_shaped,
+                                    NULL,
+                                    &iter->run_logical_rect);
+
+      /* Fix coordinates of the run extents */
+      iter->run_logical_rect.x += iter->run_x;
+      
+      offset_y (iter, &iter->run_logical_rect.y);
+    }
+  else
+    {
+      iter->run_is_shaped = FALSE;
+      
+      iter->run_logical_rect.x = iter->run_x;
+      iter->run_logical_rect.y = line_ext->logical_rect.y;
+      iter->run_logical_rect.width = 0;
+      iter->run_logical_rect.height = line_ext->logical_rect.height;
+    }
+
+  if (iter->run)
+    iter->ltr = (iter->run->item->analysis.level % 2) == 0;
+  else
+    iter->ltr = TRUE;
+  
+  if (iter->ltr)    
+    iter->cluster_x = iter->run_logical_rect.x;
+  else
+    iter->cluster_x = iter->run_logical_rect.x +
+      iter->run_logical_rect.width;
+  
+  iter->cluster_start = 0;
+
+  if (iter->run)
+    iter->next_cluster_start = next_cluster_start (iter->run->glyphs,
+                                                   iter->cluster_start);
+  else
+    iter->next_cluster_start = 0;
+  
+  /* Index of the first cluster in the glyph string, relative
+   * to the start of the run
+   */
+  if (iter->run)
+    iter->cluster_index = iter->run->glyphs->log_clusters[0];
+  else
+    iter->cluster_index = iter->index;
+  
+  /* Get an overall index, leaving it unchanged for
+   * a the NULL run
+   */
+  if (iter->run)
+    iter->index = iter->cluster_index + iter->run->item->offset;
+}
+
+
+/**
+ * pango_layout_get_iter:
+ * @layout: a #PangoLayout
+ * 
+ * Returns an iterator to iterate over the visual extents of the layout.
+ * 
+ * Return value: a new #PangoLayoutIter
+ **/
+PangoLayoutIter*
+pango_layout_get_iter (PangoLayout *layout)
+{
+  PangoLayoutIter *iter;
+  
+  g_return_val_if_fail (PANGO_IS_LAYOUT (layout), NULL);
+  
+  iter = g_new (PangoLayoutIter, 1);
+
+  iter->layout = layout;
+  g_object_ref (G_OBJECT (iter->layout));
+
+  pango_layout_check_lines (layout);
+  
+  iter->line_list_link = layout->lines;
+  iter->line = iter->line_list_link->data;
+  pango_layout_line_ref (iter->line);
+
+  iter->run_list_link = iter->line->runs;
+
+  if (iter->run_list_link)
+    iter->run = iter->run_list_link->data;
+  else
+    iter->run = NULL;
+
+  if (iter->run)
+    iter->index = iter->run->item->offset;
+  else
+    iter->index = 0;
+  
+  iter->line_extents = NULL;  
+  pango_layout_get_extents_internal (layout,
+                                     NULL,
+                                     &iter->logical_rect,
+                                     &iter->line_extents);  
+
+  iter->line_extents_link = iter->line_extents;
+
+  update_run (iter);
+
+  return iter;
+}
+
+/**
+ * pango_layout_iter_free:
+ * @iter: a #PangoLayoutIter
+ * 
+ * Frees an iterator that's no longer in use.
+ **/
+void
+pango_layout_iter_free (PangoLayoutIter *iter)
+{
+  g_return_if_fail (iter != NULL);
+
+  g_slist_foreach (iter->line_extents, (GFunc) g_free, NULL);
+  g_slist_free (iter->line_extents);
+  pango_layout_line_unref (iter->line);
+  g_object_unref (G_OBJECT (iter->layout));
+  g_free (iter);
+}
+
+/**
+ * pango_layout_iter_get_index:
+ * @iter: a #PangoLayoutIter
+ * 
+ * Gets the current byte index. Note that iterating forward by char
+ * moves in visual order, not logical order, so indexes may not be
+ * sequential.
+ * 
+ * Return value: current byte index
+ **/
+int
+pango_layout_iter_get_index (PangoLayoutIter *iter)
+{
+  if (IS_INVALID (iter))
+    return 0;
+  
+  return iter->index;
+}
+
+/**
+ * pango_layout_iter_get_run:
+ * @iter: a #PangoLayoutIter
+ * 
+ * Gets the current run.
+ * 
+ * Return value: the current run
+ **/
+PangoLayoutRun*
+pango_layout_iter_get_run (PangoLayoutIter *iter)
+{
+  if (IS_INVALID (iter))
+    return NULL;
+
+  return iter->run;
+}
+
+/**
+ * pango_layout_iter_get_line:
+ * @iter: a #PangoLayoutIter
+ * 
+ * Gets the current line.
+ * 
+ * Return value: the current line
+ **/
+PangoLayoutLine*
+pango_layout_iter_get_line (PangoLayoutIter *iter)
+{
+  if (IS_INVALID (iter))
+    return NULL;
+
+  return iter->line;
+}
+
+/**
+ * pango_layout_iter_at_last_line:
+ * @iter: a #PangoLayoutIter
+ * 
+ * Determines whether @iter is on the last line of the layout.
+ * 
+ * Return value: %TRUE if @iter is on the last line
+ **/
+gboolean
+pango_layout_iter_at_last_line (PangoLayoutIter *iter)
+{
+  if (IS_INVALID (iter))
+    return FALSE;
+
+  return iter->line_extents_link->next == NULL;
+}
+
+/**
+ * pango_layout_iter_next_char:
+ * @iter: a #PangoLayoutIter
+ * 
+ * Moves @iter forward to the next character in visual order. If @iter was already at
+ * the end of the layout, returns %FALSE.
+ * 
+ * Return value: whether motion was possible
+ **/
+gboolean
+pango_layout_iter_next_char (PangoLayoutIter *iter)
+{
+  const char *p;
+  const char *oldp;
+  const char *item_end;
+  int new_index;
+  int next_cluster_index;
+  PangoGlyphString *gs;
+  
+  if (IS_INVALID (iter))
+    return FALSE;
+
+  if (iter->run == NULL)
+    return pango_layout_iter_next_line (iter);
+  
+  gs = iter->run->glyphs;
+
+  next_cluster_index = cluster_end_index (iter);
+  
+  oldp = iter->layout->text + iter->index;
+
+  if (iter->ltr)
+    {
+      item_end = iter->layout->text +
+        iter->run->item->offset +
+        iter->run->item->length;
+      p = g_utf8_next_char (oldp);
+    }
+  else
+    {
+      item_end = iter->layout->text + iter->run->item->offset;
+      p = g_utf8_prev_char (oldp);
+    }
+
+  new_index = iter->index + (p - oldp);
+
+  /* Make sure we don't go past the next cluster index */
+  g_assert ((iter->ltr && (new_index <= next_cluster_index)) ||
+            (!iter->ltr && (new_index >= next_cluster_index)));
+  
+  if (new_index == next_cluster_index)
+    return pango_layout_iter_next_cluster (iter);
+  else
+    {
+      iter->index = new_index;
+      return TRUE;
+    }
+}
+
+/**
+ * pango_layout_iter_next_cluster:
+ * @iter: a #PangoLayoutIter
+ * 
+ * Moves @iter forward to the next cluster in visual order. If @iter
+ * was already at the end of the layout, returns %FALSE.
+ * 
+ * Return value: whether motion was possible
+ **/
+gboolean
+pango_layout_iter_next_cluster (PangoLayoutIter *iter)
+{
+  PangoGlyphString *gs;
+  
+  if (IS_INVALID (iter))
+    return FALSE;
+
+  if (iter->run == NULL)
+    return pango_layout_iter_next_line (iter);
+  
+  gs = iter->run->glyphs;
+  
+  if (iter->next_cluster_start == gs->num_glyphs)
+    return pango_layout_iter_next_run (iter);
+  else
+    {
+      if (iter->ltr)
+        iter->cluster_x += gs->glyphs[iter->cluster_start].geometry.width;
+      else
+        iter->cluster_x -= gs->glyphs[iter->cluster_start].geometry.width;
+        
+      iter->cluster_start = iter->next_cluster_start;
+      iter->next_cluster_start = next_cluster_start (gs, iter->cluster_start);
+      iter->cluster_index = gs->log_clusters[iter->cluster_start];
+      return TRUE;
+    }
+}
+
+/**
+ * pango_layout_iter_next_run:
+ * @iter: a #PangoLayoutIter
+ * 
+ * Moves @iter forward to the next run in visual order. If @iter was
+ * already at the end of the layout, returns %FALSE.
+ * 
+ * Return value: whether motion was possible
+ **/
+gboolean
+pango_layout_iter_next_run (PangoLayoutIter *iter)
+{
+  GSList *next_link;
+  
+  if (IS_INVALID (iter))
+    return FALSE;
+
+  if (iter->run == NULL)
+    return pango_layout_iter_next_line (iter);
+  
+  next_link = iter->run_list_link->next;
+
+  if (next_link == NULL)
+    {
+      /* Moving on to the zero-width "virtual run" at the end of each
+       * line
+       */
+      iter->run = NULL;
+      iter->run_list_link = NULL;
+    }
+  else
+    {
+      iter->run_list_link = next_link;
+      iter->run = iter->run_list_link->data;
+    }
+  
+  update_run (iter);
+  
+  return TRUE;
+}
+
+/**
+ * pango_layout_iter_next_line:
+ * @iter: a #PangoLayoutIter
+ * 
+ * Moves @iter forward to the start of the next line. If @iter is
+ * already on the last line, returns %FALSE.
+ * 
+ * Return value: whether motion was possible
+ **/
+gboolean
+pango_layout_iter_next_line (PangoLayoutIter *iter)
+{
+  GSList *next_link;
+  
+  if (IS_INVALID (iter))
+    return FALSE;
+
+  next_link = iter->line_list_link->next;
+
+  if (next_link == NULL)
+    return FALSE;
+
+  iter->line_list_link = next_link;
+
+  pango_layout_line_unref (iter->line);
+  
+  iter->line = iter->line_list_link->data;
+
+  pango_layout_line_ref (iter->line);
+
+  iter->run_list_link = iter->line->runs;
+
+  if (iter->run_list_link)
+    iter->run = iter->run_list_link->data;
+  else
+    iter->run = NULL;
+
+  /* If we move on to an empty line (no runs), it means the empty line
+   * represents a '\n' in layout->text, so advance iter->index
+   */
+  if (iter->run == NULL)
+    iter->index += 1; /* 1 is the length of '\n' in UTF-8 */
+
+  /* update_run() will set the index if we aren't on an empty line */
+  
+  iter->line_extents_link = iter->line_extents_link->next;
+  g_assert (iter->line_extents_link != NULL);  
+
+  update_run (iter);
+  
+  return TRUE;
+}
+
+/**
+ * pango_layout_iter_get_char_extents:
+ * @iter: a #PangoLayoutIter
+ * @logical_rect: rectangle to fill with logical extents
+ * 
+ * Gets the extents of the current character, in layout coordinates
+ * (origin is the top left of the entire layout). Only logical extents
+ * can sensibly be obtained for characters; ink extents make sense only
+ * down to the level of clusters.
+ * 
+ **/
+void
+pango_layout_iter_get_char_extents (PangoLayoutIter *iter,
+                                    PangoRectangle  *logical_rect)
+{
+  PangoRectangle cluster_rect;
+  int end_index;
+  int start_index;
+  const char *p;
+  const char *end;
+  const char *current;
+  int char_count;
+  int cluster_offset;
+  double char_width;
+  
+  if (IS_INVALID (iter))
+    return;
+
+  if (logical_rect == NULL)
+    return;
+
+  pango_layout_iter_get_cluster_extents (iter, NULL, &cluster_rect);
+
+  if (iter->run == NULL)
+    {
+      /* When on the NULL run, cluster, char, and run all have the
+       * same extents
+       */
+      *logical_rect = cluster_rect;
+      return;
+    }
+  
+  /* count chars in the cluster */
+  end_index = iter->run->item->offset + cluster_end_index (iter);
+  start_index = iter->run->item->offset + iter->cluster_index;
+
+  if (end_index < start_index)
+    {
+      int tmp = end_index;
+      end_index = start_index;
+      start_index = tmp;
+    }
+  
+  p = iter->layout->text + start_index;
+  current = iter->layout->text + iter->index;
+  end = iter->layout->text + end_index;
+
+  g_assert (p < end);
+  g_assert (p <= current);
+  g_assert (current < end);
+  
+  char_count = 0;
+  cluster_offset = 0;
+  while (p != end)
+    {
+      if (p < current)
+        ++cluster_offset;
+      ++char_count;
+      p = g_utf8_next_char (p);
+    }
+
+  char_width = ((double)cluster_rect.width) / char_count;
+  logical_rect->width = char_width;
+  logical_rect->height = cluster_rect.height;
+  logical_rect->y = cluster_rect.y;
+  
+  if (iter->ltr)
+    logical_rect->x = cluster_rect.x + char_width * cluster_offset;
+  else
+    logical_rect->x = cluster_rect.x + cluster_rect.width - char_width * cluster_offset;
+}
+
+/**
+ * pango_layout_iter_get_cluster_extents:
+ * @iter: a #PangoLayoutIter
+ * @ink_rect: rectangle to fill with ink extents
+ * @logical_rect: rectangle to fill with logical extents
+ *
+ * Gets the extents of the current cluster, in layout coordinates
+ * (origin is the top left of the entire layout).
+ * 
+ **/
+void
+pango_layout_iter_get_cluster_extents (PangoLayoutIter *iter,
+                                       PangoRectangle  *ink_rect,
+                                       PangoRectangle  *logical_rect)
+{
+  if (IS_INVALID (iter))
+    return;
+
+  if (iter->run == NULL)
+    {
+      /* When on the NULL run, cluster, char, and run all have the
+       * same extents
+       */
+      pango_layout_iter_get_run_extents (iter, ink_rect, logical_rect);
+      return;
+    }
+  
+  pango_glyph_string_extents_range (iter->run->glyphs,
+                                    iter->cluster_start,
+                                    iter->next_cluster_start,
+                                    iter->run->item->analysis.font,
+                                    ink_rect,
+                                    logical_rect);
+
+  if (ink_rect)
+    {
+      ink_rect->x += iter->cluster_x;
+      offset_y (iter, &ink_rect->y);
+    }
+
+  if (logical_rect)
+    {
+      logical_rect->x += iter->cluster_x;
+      offset_y (iter, &logical_rect->y);
+    }
+}
+
+/**
+ * pango_layout_iter_get_run_extents:
+ * @iter: a #PangoLayoutIter
+ * @ink_rect: rectangle to fill with ink extents
+ * @logical_rect: rectangle to fill with logical extents
+ * 
+ * Gets the extents of the current run in layout coordinates
+ * (origin is the top left of the entire layout).
+ * 
+ **/
+void
+pango_layout_iter_get_run_extents (PangoLayoutIter *iter,
+                                   PangoRectangle  *ink_rect,
+                                   PangoRectangle  *logical_rect)
+{
+  IS_INVALID (iter);
+
+  if (ink_rect)
+    {
+      if (iter->run)
+        {
+          pango_layout_run_get_extents (iter->run, NULL, ink_rect, NULL);
+          offset_y (iter, &ink_rect->y);
+          ink_rect->x += iter->run_x;
+        }
+      else
+        {
+          PangoRectangle line_ink;
+
+          pango_layout_iter_get_line_extents (iter, &line_ink, NULL);
+          
+          ink_rect->x = iter->run_x;          
+          ink_rect->y = line_ink.y;
+          ink_rect->width = 0;
+          ink_rect->height = line_ink.height;
+        }
+    }
+      
+  if (logical_rect)
+    *logical_rect = iter->run_logical_rect;
+}
+
+/**
+ * pango_layout_iter_get_line_extents:
+ * @iter: a #PangoLayoutIter
+ * @ink_rect: rectangle to fill with ink extents
+ * @logical_rect: rectangle to fill with logical extents
+ *
+ * Obtains the extents of the current line. @ink_rect or @logical_rect
+ * can be NULL if you aren't interested in them. Extents are in layout
+ * coordinates (origin is the top-left corner of the entire
+ * #PangoLayout).  Thus the extents returned by this function will be
+ * the same width/height but not at the same x/y as the extents
+ * returned from pango_layout_line_get_extents().
+ * 
+ **/
+void
+pango_layout_iter_get_line_extents (PangoLayoutIter *iter,
+                                    PangoRectangle  *ink_rect,
+                                    PangoRectangle  *logical_rect)
+{
+  Extents *ext;
+  
+  if (IS_INVALID (iter))
+    return;
+
+  ext = iter->line_extents_link->data;
+
+  if (ink_rect)
+    {
+      get_line_extents_layout_coords (iter->layout, iter->line,
+                                      iter->logical_rect.width,
+                                      ext->logical_rect.y,
+                                      NULL,
+                                      ink_rect,
+                                      NULL);
+    }
+      
+  if (logical_rect)
+    *logical_rect = ext->logical_rect;
+}
+
+/**
+ * pango_layout_iter_get_line_yrange:
+ * @iter: a #PangoLayoutIter
+ * @y0: start of line 
+ * @y1: end of line
+ *
+ * Divides the vertical space in the #PangoLayout being iterated over
+ * between the lines in the layout, and returns the space belonging to
+ * the current line.  A line's range includes the line's logical
+ * extents, plus half of the spacing above and below the line, if
+ * pango_layout_set_spacing() has been called to set layout spacing.
+ * The y positions are in layout coordinates (origin at top left of the
+ * entire layout).
+ * 
+ **/
+void
+pango_layout_iter_get_line_yrange (PangoLayoutIter *iter,
+                                   int             *y0,
+                                   int             *y1)
+{
+  Extents *ext;
+  int half_spacing;
+  
+  IS_INVALID (iter);
+
+  ext = iter->line_extents_link->data;
+
+  half_spacing = iter->layout->spacing / 2;
+
+  /* Note that if layout->spacing is odd, the remainder spacing goes
+   * above the line (this is pretty arbitrary of course)
+   */
+  
+  if (y0)
+    {
+      /* No spacing above the first line */
+      
+      if (iter->line_extents_link == iter->line_extents)
+        *y0 = ext->logical_rect.y;
+      else
+        *y0 = ext->logical_rect.y - (iter->layout->spacing - half_spacing);
+    }
+
+  if (y1)
+    {
+      /* No spacing below the last line */
+      if (iter->line_extents_link->next == NULL)
+        *y1 = ext->logical_rect.y + ext->logical_rect.height;
+      else
+        *y1 = ext->logical_rect.y + ext->logical_rect.height + half_spacing;
+    }
+}
+
+/**
+ * pango_layout_iter_get_baseline:
+ * @iter: a #PangoLayoutIter
+ * 
+ * Gets the y position of the current line's baseline, in layout
+ * coordinates (origin at top left of the entire layout).
+ * 
+ * Return value: baseline of current line
+ **/
+int
+pango_layout_iter_get_baseline (PangoLayoutIter *iter)
+{
+  Extents *ext;
+  
+  if (IS_INVALID (iter))
+    return 0;
+
+  ext = iter->line_extents_link->data;
+
+  return ext->baseline;
+}
+
+/**
+ * pango_layout_iter_get_layout_extents:
+ * @iter: a #PangoLayoutIter
+ * @ink_rect: rectangle to fill with ink extents
+ * @logical_rect: rectangle to fill with logical extents
+ *
+ * Obtains the extents of the #PangoLayout being iterated
+ * over. @ink_rect or @logical_rect can be NULL if you
+ * aren't interested in them.
+ * 
+ **/
+void
+pango_layout_iter_get_layout_extents  (PangoLayoutIter *iter,
+                                       PangoRectangle  *ink_rect,
+                                       PangoRectangle  *logical_rect)
+{
+  if (IS_INVALID (iter))
+    return;
+
+  if (ink_rect)
+    {
+      /* expensive recomputation, woo-hoo */
+      pango_layout_get_extents (iter->layout,
+                                ink_rect,
+                                NULL);
+    }
+
+  if (logical_rect)
+    *logical_rect = iter->logical_rect;
 }

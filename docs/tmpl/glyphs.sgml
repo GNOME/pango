@@ -275,6 +275,19 @@ accessible fields
 @logical_rect: 
 
 
+<!-- ##### FUNCTION pango_glyph_string_extents_range ##### -->
+<para>
+
+</para>
+
+@glyphs: 
+@start: 
+@end: 
+@font: 
+@ink_rect: 
+@logical_rect: 
+
+
 <!-- ##### FUNCTION pango_glyph_string_index_to_x ##### -->
 <para>
 
