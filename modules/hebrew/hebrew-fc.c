@@ -74,6 +74,9 @@ get_cluster_glyphs(PangoFont      *font,
 	  wc = mirrored_ch;
 	
       glyph_num[i] = pango_fc_font_get_glyph ((PangoFcFont *)font, wc);
+      if (!glyph_num[i])
+	glyph_num[i] = pango_fc_font_get_unknown_glyph ((PangoFcFont *)font, wc);
+
       glyph[i] = glyph_num[i];
 
       pango_font_get_glyph_extents (font,
