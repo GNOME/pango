@@ -3977,7 +3977,6 @@ static void
 update_run (PangoLayoutIter *iter,
 	    int              run_start_index)
 {
-  int old_run_width;
   Extents *line_ext;
 
   line_ext = (Extents*)iter->line_extents_link->data;
