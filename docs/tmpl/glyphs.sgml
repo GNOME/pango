@@ -17,6 +17,64 @@ glyphs.
 
 </para>
 
+<!-- ##### STRUCT PangoRectangle ##### -->
+<para>
+The #PangoRectangle structure represents a rectangle. It is frequently
+used to represent the logical or ink extents of a single glyph or section
+of text. (See, for instance, pango_font_get_glyph_extents())
+</para>
+
+@x: X coordinate of the left side of the rectangle.
+@y: Y coordinate of the the top side of the rectangle.
+@width: width of the rectangle.
+@height: height of the rectangle.
+
+<!-- ##### MACRO PANGO_ASCENT ##### -->
+<para>
+Extracts the <firstterm>ascent</firstterm> from a #PangoRectangle
+representing glyph extents. The ascent is the distance from the
+baseline to the highest point of the character. This is positive if the
+glyph ascends above the baseline.
+</para>
+
+@rect: a #PangoRectangle
+
+
+<!-- ##### MACRO PANGO_DESCENT ##### -->
+<para>
+Extracts the <firstterm>descent</firstterm> from a #PangoRectangle
+representing glyph extents. The descent is the distance from the
+baseline to the lowest point of the character. This is positive if the
+glyph descends below the baseline.
+</para>
+
+@rect: a #PangoRectangle
+
+
+<!-- ##### MACRO PANGO_LBEARING ##### -->
+<para>
+Extracts the <firstterm>left bearing</firstterm> from a #PangoRectangle
+representing glyph extents. The descent is the distance from the
+horizontal origin to the farthest left point of the character.
+This is positive for characters drawn completely to the right of the
+glyph origin.
+</para>
+
+@rect: a #PangoRectangle
+
+
+<!-- ##### MACRO PANGO_RBEARING ##### -->
+<para>
+Extracts the <firstterm>left bearing</firstterm> from a #PangoRectangle
+representing glyph extents. The descent is the distance from the
+horizontal origin to the farthest left point of the character.
+This is positive except for characters drawn completely to the left of the
+horizontal origin.
+</para>
+
+@rect: a #PangoRectangle
+
+
 <!-- ##### TYPEDEF PangoGlyph ##### -->
 <para>
 The #PangoGlyph structure represents a single glyph in the output
@@ -185,5 +243,16 @@ accessible fields
 </para>
 
 @string: 
+
+
+<!-- ##### FUNCTION pango_glyph_string_extents ##### -->
+<para>
+
+</para>
+
+@glyphs: 
+@font: 
+@ink_rect: 
+@logical_rect: 
 
 

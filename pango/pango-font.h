@@ -98,13 +98,17 @@ struct _PangoFont
 
 struct _PangoFontClass
 {
-  void                  (*destroy)      (PangoFont   *font);
-  PangoFontDescription *(*describe)     (PangoFont   *font);
-  PangoCoverage *       (*get_coverage) (PangoFont   *font,
-					 const char  *lang);
-  PangoEngineShape *    (*find_shaper)  (PangoFont   *font,
-					 const char  *lang,
-					 guint32      ch);
+  void                  (*destroy)            (PangoFont      *font);
+  PangoFontDescription *(*describe)           (PangoFont      *font);
+  PangoCoverage *       (*get_coverage)       (PangoFont      *font,
+					      const char      *lang);
+  PangoEngineShape *    (*find_shaper)        (PangoFont      *font,
+					       const char     *lang,
+					       guint32         ch);
+  void                  (*get_glyph_extents)  (PangoFont      *font,
+					       PangoGlyph      glyph,
+					       PangoRectangle *ink_rect,
+					       PangoRectangle *logical_rect);
 };
 
 void                  pango_font_init         (PangoFont      *font);
@@ -123,6 +127,10 @@ PangoCoverage *       pango_font_get_coverage (PangoFont      *font,
 PangoEngineShape *    pango_font_find_shaper  (PangoFont      *font,
 					       const char     *lang,
 					       guint32         ch);
+void                  pango_font_get_glyph_extents  (PangoFont      *font,
+						     PangoGlyph      glyph,
+						     PangoRectangle *ink_rect,
+						     PangoRectangle *logical_rect);
 
 /*
  * Font Map

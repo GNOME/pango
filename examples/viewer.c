@@ -165,18 +165,26 @@ get_logical_widths (char *text, PangoItem *item,
   int last_cluster = 0;
   int width = 0;
   int last_cluster_width = 0;
+  char *p = text + item->offset;
   
   for (i=0; i<=glyphs->num_glyphs; i++)
     {
       int index = (item->analysis.level % 2 == 0) ? i : glyphs->num_glyphs - i;
       
       if (index == glyphs->num_glyphs ||
-	  glyphs->log_clusters[index] != last_cluster)
+	  p != text + item->offset + glyphs->log_clusters[index])
 	{
 	  gint next_cluster;
 	  
 	  if (index < glyphs->num_glyphs)
-	    next_cluster = glyphs->log_clusters[index];
+	    {
+	      next_cluster = last_cluster;
+	      while (p < text + item->offset + glyphs->log_clusters[index])
+		{
+		  next_cluster++;
+		  p = unicode_next_utf8 (p);
+		}
+	    }
 	  else
 	    next_cluster = item->num_chars;
 	  
@@ -199,16 +207,17 @@ get_logical_widths (char *text, PangoItem *item,
  */
 
 gboolean 
-break_run (char         *text,
+break_run (char       *text,
 	   PangoItem  *item,
-	   int         *remaining_width,
+	   int        *remaining_width,
 	   PangoItem **new_item,
-	   int         *logical_ascent,
-	   int         *logical_descent)
+	   int        *logical_ascent,
+	   int        *logical_descent)
 {
   PangoGlyphString *buf;
-  int width;
   gboolean result;
+  PangoRectangle logical_rect;
+  int width;
 
   /* First try the entire string to see if it fits. If it
    * doesn't, call GStringBreak, then chop off pieces
@@ -219,12 +228,13 @@ break_run (char         *text,
   buf = pango_glyph_string_new();
   
   pango_shape (text + item->offset, item->length, &item->analysis, buf);
-  pango_x_extents (item->analysis.font, buf, NULL, NULL, &width, NULL, NULL, logical_ascent, logical_descent);
+  pango_glyph_string_extents (buf, item->analysis.font, NULL, &logical_rect);
+  width = logical_rect.width;
 
   result = FALSE;
   *new_item = NULL;
 
-  if (width <= *remaining_width)
+  if (width <= 1000 * *remaining_width)
     {
       result = TRUE;
     }
@@ -246,8 +256,8 @@ break_run (char         *text,
 	{
 	  /* Shorten the item by one line break
 	   */
-	  width -= log_widths[num_chars] / 72;
-	  if (log_attrs[num_chars].is_break && width <= *remaining_width)
+	  width -= log_widths[num_chars];
+	  if (log_attrs[num_chars].is_break && width <= 1000 * *remaining_width)
 	    break;
 	}
 
@@ -281,9 +291,15 @@ break_run (char         *text,
       g_free (log_attrs);
       g_free (log_widths);
     }
+ 
+  pango_shape (text + item->offset, item->length, &item->analysis, buf);
+  pango_glyph_string_extents (buf, item->analysis.font, NULL, &logical_rect);
+
+  *logical_ascent = PANGO_ASCENT (logical_rect) / 1000;
+  *logical_descent = PANGO_DESCENT (logical_rect) / 1000;
 
   if (result)
-    *remaining_width -= width;
+    *remaining_width -= logical_rect.width / 1000;
 
   pango_glyph_string_free (buf);
  
@@ -428,7 +444,6 @@ gboolean
 runs_x_to_cp (char *text, GList *runs, int x, int *offset)
 {
   PangoGlyphString *buf;
-  int width;
   int pixels = 0;
 
   buf = pango_glyph_string_new();
@@ -436,29 +451,23 @@ runs_x_to_cp (char *text, GList *runs, int x, int *offset)
   while (runs)
     {
       PangoItem *item = runs->data;
+      PangoRectangle logical_rect;
 
       pango_shape (text + item->offset, item->length, &item->analysis, buf);
-      pango_x_extents (item->analysis.font, buf, NULL, NULL, &width, NULL, NULL, NULL, NULL);
+      pango_glyph_string_extents (buf, item->analysis.font, NULL, &logical_rect);
 
-      if (x >= pixels && x < pixels + width)
+      if (x >= pixels && x < pixels + logical_rect.width / 1000)
 	{
-	  int pos;
-	  char *p;
-	  
-	  pango_x_to_cp (text + item->offset, item->length,
-			 &item->analysis, buf, (x - pixels) * 72,
-			 &pos, NULL);
+	  pango_glyph_string_x_to_index (buf, text + item->offset, item->length,
+					 &item->analysis, (x - pixels) * 1000,
+					 offset, NULL);
+	  if (offset)
+	    *offset += item->offset;
 
-	  /* Converter the character position to byte offset */
-	  p = text + item->offset;
-	  while (pos--)
-	    p = unicode_next_utf8 (p);
-
-	  *offset = p - text;
 	  return TRUE;
 	}
 
-      pixels += width;
+      pixels += logical_rect.width / 1000;
       runs = runs->next;
     }
 
@@ -523,7 +532,6 @@ runs_char_bounds (char *text, GList *runs, int offset, int *x, int *width)
 {
   int start_x;
   int end_x;
-  int run_width;
   int pixels = 0;
 
   PangoGlyphString *buf = pango_glyph_string_new();
@@ -531,39 +539,35 @@ runs_char_bounds (char *text, GList *runs, int offset, int *x, int *width)
   while (runs)
     {
       PangoItem *item = runs->data;
+      PangoRectangle logical_rect;
       
       pango_shape (text + item->offset, item->length, &item->analysis, buf);
-      pango_x_extents (item->analysis.font, buf, NULL, NULL, &run_width, NULL, NULL, NULL, NULL);
 
       if (offset >= item->offset &&
 	  offset < item->offset + item->length)
 	{
-	  int char_pos;
-
-	  /* Convert byte position into character position */
-	  char_pos = _pango_utf8_len (text + item->offset, offset - item->offset);
-
 	  /* Find bounds */
-	  pango_cp_to_x (text + item->offset, item->length,
-			 &item->analysis, buf, char_pos, FALSE, &start_x);
-	  pango_cp_to_x (text + item->offset, item->length,
-			 &item->analysis, buf, char_pos, TRUE, &end_x);
+	  pango_glyph_string_index_to_x (buf, text + item->offset, item->length,
+					 &item->analysis, offset - item->offset, FALSE, &start_x);
+	  pango_glyph_string_index_to_x (buf, text + item->offset, item->length,
+					 &item->analysis, offset - item->offset, TRUE, &end_x);
 	  
 	  if (start_x < end_x)
 	    {
-	      *x = pixels + start_x / 72;
-	      *width = (end_x - start_x) / 72;
+	      *x = pixels + start_x / 1000;
+	      *width = (end_x - start_x) / 1000;
 	    }
 	  else
 	    {
-	      *x = pixels + end_x / 72;
-	      *width = (start_x - end_x) / 72;
+	      *x = pixels + end_x / 1000;
+	      *width = (start_x - end_x) / 1000;
 	    }
 	    
 	  break;
 	}
 
-      pixels += run_width;
+      pango_glyph_string_extents (buf, item->analysis.font, NULL, &logical_rect);
+      pixels += logical_rect.width / 1000;
       runs = runs->next;
     }
 
@@ -668,6 +672,7 @@ expose_paragraph (Paragraph *para, GdkDrawable *drawable,
   GList *line_list;
   GList *run_list;
   PangoGlyphString *buf;
+  PangoRectangle logical_rect;
 
   int x_off;
 
@@ -683,7 +688,6 @@ expose_paragraph (Paragraph *para, GdkDrawable *drawable,
       while (run_list)
 	{
 	  PangoItem *item = run_list->data;
-	  int width;
 
 	  /* Convert the item into glyphs */
 	  pango_shape (para->text + item->offset, item->length,
@@ -699,9 +703,9 @@ expose_paragraph (Paragraph *para, GdkDrawable *drawable,
 	   */
 	  if (run_list->next)
 	    {
-	      pango_x_extents (item->analysis.font, buf, NULL, NULL, &width, NULL, NULL, NULL, NULL);
+	      pango_glyph_string_extents (buf, item->analysis.font, NULL, &logical_rect);
 
-	      x_off += width;
+	      x_off += logical_rect.width / 1000;
 	    }
 	  
 	  run_list = run_list = run_list->next;

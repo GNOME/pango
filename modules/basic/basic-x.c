@@ -278,20 +278,19 @@ find_char (CharCache *cache, PangoFont *font, GUChar4 wc, const char *input)
 }
 
 static void
-set_glyph (PangoFont *font, PangoGlyphString *glyphs, gint i, PangoGlyph glyph)
+set_glyph (PangoFont *font, PangoGlyphString *glyphs, int i, int offset, PangoGlyph glyph)
 {
-  gint width;
+  PangoRectangle logical_rect;
 
   glyphs->glyphs[i].glyph = glyph;
   
   glyphs->glyphs[i].geometry.x_offset = 0;
   glyphs->glyphs[i].geometry.y_offset = 0;
 
-  glyphs->log_clusters[i] = i;
+  glyphs->log_clusters[i] = offset;
 
-  pango_x_glyph_extents (font, glyphs->glyphs[i].glyph,
-			 NULL, NULL, &width, NULL, NULL, NULL, NULL);
-  glyphs->glyphs[i].geometry.width = width * 72;
+  pango_font_get_glyph_extents (font, glyphs->glyphs[i].glyph, NULL, &logical_rect);
+  glyphs->glyphs[i].geometry.width = logical_rect.width;
 }
 
 static iconv_t
@@ -445,7 +444,7 @@ basic_engine_shape (PangoFont        *font,
       index = find_char (cache, font, wc, p);
       if (index)
 	{
-	  set_glyph (font, glyphs, i, index);
+	  set_glyph (font, glyphs, i, p - text, index);
 
 	  if (unicode_type (wc) == UNICODE_NON_SPACING_MARK)
 	    {
@@ -459,7 +458,7 @@ basic_engine_shape (PangoFont        *font,
 	    }
 	}
       else
-	set_glyph (font, glyphs, i, pango_x_get_unknown_glyph (font));
+	set_glyph (font, glyphs, i, p - text, pango_x_get_unknown_glyph (font));
       
       p = next;
     }

@@ -87,19 +87,21 @@ hangul_engine_lang_new ()
  */
 
 static void
-set_glyph (PangoGlyphString *glyphs, int i,
-	   PangoFont *font, PangoXSubfont subfont, guint16 gindex)
+set_glyph (PangoGlyphString *glyphs,
+	   int               i,
+	   PangoFont        *font,
+	   PangoXSubfont     subfont,
+	   guint16           gindex)
 {
-  int width;
+  PangoRectangle logical_rect;
 
   glyphs->glyphs[i].glyph = PANGO_X_MAKE_GLYPH (subfont, gindex);
   
   glyphs->glyphs[i].geometry.x_offset = 0;
   glyphs->glyphs[i].geometry.y_offset = 0;
 
-  pango_x_glyph_extents (font, glyphs->glyphs[i].glyph,
-			 NULL, NULL, &width, NULL, NULL, NULL, NULL);
-  glyphs->glyphs[i].geometry.width = width * 72;
+  pango_font_get_glyph_extents (font, glyphs->glyphs[i].glyph, NULL, &logical_rect);
+  glyphs->glyphs[i].geometry.width = logical_rect.width;
 }
 
 
@@ -134,7 +136,7 @@ set_glyph (PangoGlyphString *glyphs, int i,
 typedef void (* RenderSyllableFunc) (PangoFont *font, PangoXSubfont subfont,
 				     GUChar2 *text, int length,
 				     PangoGlyphString *glyphs,
-				     int *n_glyphs, int n_clusters);
+				     int *n_glyphs, int cluster_offset);
 
 
 
@@ -210,7 +212,7 @@ typedef void (* RenderSyllableFunc) (PangoFont *font, PangoXSubfont subfont,
 		}							      \
 	      pango_glyph_string_set_size (glyphs, *n_glyphs + 1);	      \
 	      set_glyph (glyphs, *n_glyphs, font, subfont, gindex);	      \
-	      glyphs->log_clusters[*n_glyphs] = n_clusters;		      \
+	      glyphs->log_clusters[*n_glyphs] = cluster_offset;		      \
 	      (*n_glyphs)++;						      \
 	    }								      \
 									      \
@@ -230,7 +232,7 @@ typedef void (* RenderSyllableFunc) (PangoFont *font, PangoXSubfont subfont,
   									      \
 	      pango_glyph_string_set_size (glyphs, *n_glyphs + 1);	      \
 	      set_glyph (glyphs, *n_glyphs, font, subfont, gindex);	      \
-	      glyphs->log_clusters[*n_glyphs] = n_clusters;		      \
+	      glyphs->log_clusters[*n_glyphs] = cluster_offset;		      \
 	      (*n_glyphs)++;						      \
 	    }								      \
 									      \
@@ -240,7 +242,7 @@ typedef void (* RenderSyllableFunc) (PangoFont *font, PangoXSubfont subfont,
 		__jongseong_map[v - VBASE];				      \
 	      pango_glyph_string_set_size (glyphs, *n_glyphs + 1);	      \
 	      set_glyph (glyphs, *n_glyphs, font, subfont, gindex);	      \
-	      glyphs->log_clusters[*n_glyphs] = n_clusters;		      \
+	      glyphs->log_clusters[*n_glyphs] = cluster_offset;		      \
 	      (*n_glyphs)++;						      \
 	    }								      \
 									      \
@@ -248,7 +250,7 @@ typedef void (* RenderSyllableFunc) (PangoFont *font, PangoXSubfont subfont,
 	    {								      \
 	      pango_glyph_string_set_size (glyphs, *n_glyphs + 1);	      \
 	      set_glyph (glyphs, *n_glyphs, font, subfont, JOHAB_FILLER);     \
-	      glyphs->log_clusters[*n_glyphs] = n_clusters;		      \
+	      glyphs->log_clusters[*n_glyphs] = cluster_offset;		      \
 	      (*n_glyphs)++;						      \
 	    }								      \
 									      \
@@ -260,7 +262,7 @@ static void
 render_syllable_with_johabs (PangoFont *font, PangoXSubfont subfont,
 			     GUChar2 *text, int length,
 			     PangoGlyphString *glyphs,
-			     int *n_glyphs, int n_clusters)
+			     int *n_glyphs, int cluster_offset)
 {
 JOHAB_COMMON
 
@@ -289,7 +291,7 @@ JOHAB_COMMON
 	      
 	      pango_glyph_string_set_size (glyphs, *n_glyphs + 1);
 	      set_glyph (glyphs, *n_glyphs, font, subfont, gindex);
-	      glyphs->log_clusters[*n_glyphs] = n_clusters;
+	      glyphs->log_clusters[*n_glyphs] = cluster_offset;
 	      (*n_glyphs)++;
 	    }
 	  else
@@ -302,7 +304,7 @@ static void
 render_syllable_with_johab (PangoFont *font, PangoXSubfont subfont,
 			    GUChar2 *text, int length,
 			    PangoGlyphString *glyphs,
-			    int *n_glyphs, int n_clusters)
+			    int *n_glyphs, int cluster_offset)
 {
 JOHAB_COMMON
 
@@ -318,13 +320,13 @@ JOHAB_COMMON
 	  pango_glyph_string_set_size (glyphs, *n_glyphs + 1);
 	  set_glyph (glyphs, *n_glyphs, font, subfont,
 		     __jamo_to_johabfont[wc - LBASE][j]);
-	  glyphs->log_clusters[*n_glyphs] = n_clusters;
+	  glyphs->log_clusters[*n_glyphs] = cluster_offset;
 	  (*n_glyphs)++;
 	  if (IS_L (wc))
 	    {
 	      pango_glyph_string_set_size (glyphs, *n_glyphs + 1);
 	      set_glyph (glyphs, *n_glyphs, font, subfont, JOHAB_FILLER);
-	      glyphs->log_clusters[*n_glyphs] = n_clusters;
+	      glyphs->log_clusters[*n_glyphs] = cluster_offset;
 	      (*n_glyphs)++;
 	    }
 	}
@@ -335,7 +337,7 @@ static void
 render_syllable_with_iso10646 (PangoFont *font, PangoXSubfont subfont,
 			       GUChar2 *text, int length,
 			       PangoGlyphString *glyphs,
-			       int *n_glyphs, int n_clusters)
+			       int *n_glyphs, int cluster_offset)
 {
   guint16 gindex;
   int i;
@@ -382,7 +384,7 @@ render_syllable_with_iso10646 (PangoFont *font, PangoXSubfont subfont,
 	  /* easy for composed syllables. */
 	  pango_glyph_string_set_size (glyphs, *n_glyphs + 1);
 	  set_glyph (glyphs, *n_glyphs, font, subfont, gindex);
-	  glyphs->log_clusters[*n_glyphs] = n_clusters;
+	  glyphs->log_clusters[*n_glyphs] = cluster_offset;
 	  (*n_glyphs)++;
 	  return;
 	}
@@ -394,7 +396,7 @@ render_syllable_with_iso10646 (PangoFont *font, PangoXSubfont subfont,
       gindex = text[i];
       pango_glyph_string_set_size (glyphs, *n_glyphs + 1);
       set_glyph (glyphs, *n_glyphs, font, subfont, gindex);
-      glyphs->log_clusters[*n_glyphs] = n_clusters;
+      glyphs->log_clusters[*n_glyphs] = cluster_offset;
       (*n_glyphs)++;
     }
 }
@@ -403,7 +405,7 @@ static void
 render_syllable_with_ksc5601 (PangoFont *font, PangoXSubfont subfont,
 			      GUChar2 *text, int length,
 			      PangoGlyphString *glyphs,
-			      int *n_glyphs, int n_clusters)
+			      int *n_glyphs, int cluster_offset)
 {
   guint16 sindex;
   guint16 gindex;
@@ -468,7 +470,7 @@ render_syllable_with_ksc5601 (PangoFont *font, PangoXSubfont subfont,
 
 		  pango_glyph_string_set_size (glyphs, *n_glyphs + 1);
 		  set_glyph (glyphs, *n_glyphs, font, subfont, gindex);
-		  glyphs->log_clusters[*n_glyphs] = n_clusters;
+		  glyphs->log_clusters[*n_glyphs] = cluster_offset;
 		  (*n_glyphs)++;
 		  return;
 		}
@@ -486,7 +488,7 @@ render_syllable_with_ksc5601 (PangoFont *font, PangoXSubfont subfont,
 	  pango_glyph_string_set_size (glyphs, *n_glyphs + 1);
 	  set_glyph (glyphs, *n_glyphs, font, subfont,
 		     __jamo_to_ksc5601[gindex - LBASE][j]);
-	  glyphs->log_clusters[*n_glyphs] = n_clusters;
+	  glyphs->log_clusters[*n_glyphs] = cluster_offset;
 	  (*n_glyphs)++;
 	}
     }
@@ -589,7 +591,7 @@ hangul_engine_shape (PangoFont        *font,
   GUChar2 jamos[4];
   int n_jamos = 0;
 
-  int n_glyphs = 0, n_clusters = 0;
+  int n_glyphs = 0, cluster_offset = 0;
 
   g_return_if_fail (font != NULL);
   g_return_if_fail (text != NULL);
@@ -641,15 +643,15 @@ hangul_engine_shape (PangoFont        *font,
 	  if (n_jamos > 0)
 	    {
 	      (*render_func) (font, subfont, jamos, n_jamos,
-			      glyphs, &n_glyphs, n_clusters);
-	      n_clusters++;
+			      glyphs, &n_glyphs, cluster_offset);
+	      cluster_offset = next - text;
 	      n_jamos = 0;
 	    }
 
 	  /* Draw a syllable.  */
 	  (*render_func) (font, subfont, wcs, 3,
-			  glyphs, &n_glyphs, n_clusters);
-	  n_clusters++;
+			  glyphs, &n_glyphs, cluster_offset);
+	  cluster_offset = next - text;
 	  /* Clear.  */
 	}
       else if (wc4 >= 0x1100 && wc4 <= 0x11ff)
@@ -669,8 +671,8 @@ hangul_engine_shape (PangoFont        *font,
 		{
 		  /* Draw a syllable.  */
 		  (*render_func) (font, subfont, jamos, n_jamos,
-				  glyphs, &n_glyphs, n_clusters);
-		  n_clusters++;
+				  glyphs, &n_glyphs, cluster_offset);
+		  cluster_offset = next - text;
 		  /* Clear.  */
 		  n_jamos = 0;
 		}
@@ -690,8 +692,8 @@ hangul_engine_shape (PangoFont        *font,
   if (n_jamos > 0)
     {
       (*render_func) (font, subfont, jamos, n_jamos,
-		      glyphs, &n_glyphs, n_clusters);
-      n_clusters++;
+		      glyphs, &n_glyphs, cluster_offset);
+      cluster_offset = next - text;
       n_jamos = 0;
     }
 }

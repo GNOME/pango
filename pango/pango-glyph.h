@@ -22,6 +22,8 @@
 #ifndef __PANGO_GLYPH_H__
 #define __PANGO_GLYPH_H__
 
+#include <pango-types.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
@@ -31,12 +33,8 @@ typedef struct _PangoGlyphVisAttr PangoGlyphVisAttr;
 typedef struct _PangoGlyphInfo PangoGlyphInfo;
 typedef struct _PangoGlyphString PangoGlyphString;
 
-/* 64'ths of a point - 1/4608 in, 5.51 * 10^-5 in. */
-typedef guint32 PangoGlyphUnit;
-
-/* A index of a glyph into a font. Rendering system dependent
- */
-typedef guint32 PangoGlyph;
+/* 1000ths of a device unit */
+typedef gint32 PangoGlyphUnit;
 
 /* Positioning information about a glyph
  */
@@ -85,21 +83,25 @@ PangoGlyphString *pango_glyph_string_new      (void);
 void              pango_glyph_string_set_size (PangoGlyphString *string,
 					       gint              new_len);
 void              pango_glyph_string_free     (PangoGlyphString *string);
+void              pango_glyph_string_extents  (PangoGlyphString *glyphs,
+					       PangoFont        *font,
+					       PangoRectangle   *ink_rect,
+					       PangoRectangle   *logical_rect);
 
-void pango_cp_to_x (gchar            *text,
-		    gint              length,
-		    PangoAnalysis    *analysis,
-		    PangoGlyphString *glyphs,
-		    gint              char_pos,
-		    gboolean          trailing,
-		    gint             *x_pos);
-void pango_x_to_cp (gchar            *text,
-		    gint              length,
-		    PangoAnalysis    *analysis,
-		    PangoGlyphString *glyphs,
-		    gint              x_pos,
-		    gint             *char_pos,
-		    gint             *trailing);
+void pango_glyph_string_index_to_x (PangoGlyphString *glyphs,
+				    char             *text,
+				    int               length,
+				    PangoAnalysis    *analysis,
+				    int               index,
+				    gboolean          trailing,
+				    int              *x_pos);
+void pango_glyph_string_x_to_index (PangoGlyphString *glyphs,
+				    char             *text,
+				    int               length,
+				    PangoAnalysis    *analysis,
+				    int               x_pos,
+				    int              *index,
+				    int              *trailing);
 
 void pango_justify (PangoGlyphString *glyphs,
                     gint              new_line_width,

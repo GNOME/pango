@@ -54,6 +54,8 @@ Language Modules
   
  * The clusters set by the current modules need to be set.
 
+ * Tamil module should be switched over to libunicode from utils.c stuff.
+
 Documentation
 =============
 
@@ -100,3 +102,5 @@ General
 
 * Finish coverting over from utils.c to Tom Tromey's libunicode.
   Add the remaining useful functions from utils.c into libunicode.
+
+* s/num_chars/n_chars/ etc. (Always use n_ as enumeration prefix)

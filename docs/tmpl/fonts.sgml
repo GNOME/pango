@@ -32,6 +32,7 @@ the characteristics of a font to load.
 @variant: the variant (normal or small caps) of the font.
 @weight: the weight (boldness) of the font.
 @stretch: the relative width of the font.
+@size: 
 
 <!-- ##### ENUM PangoStyle ##### -->
 <para>
@@ -112,6 +113,24 @@ within a family.
 @desc: 
 
 
+<!-- ##### FUNCTION pango_font_description_from_string ##### -->
+<para>
+
+</para>
+
+@str: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_font_description_to_string ##### -->
+<para>
+
+</para>
+
+@desc: 
+@Returns: 
+
+
 <!-- ##### STRUCT PangoFont ##### -->
 <para>
 The #PangoFont structure is used to represent
@@ -159,6 +178,7 @@ It contains the following member:
                See pango_font_get_coverage().
 @find_shaper: A function to find the shaper for a particular character 
               point. See pango_font_find_shaper.
+@get_glyph_extents: 
 
 <!-- ##### FUNCTION pango_font_init ##### -->
 <para>
@@ -214,6 +234,17 @@ It contains the following member:
 @font: 
 @lang: 
 @Returns: 
+
+
+<!-- ##### FUNCTION pango_font_get_glyph_extents ##### -->
+<para>
+
+</para>
+
+@font: 
+@glyph: 
+@ink_rect: 
+@logical_rect: 
 
 
 <!-- ##### FUNCTION pango_font_get_data ##### -->
@@ -300,8 +331,9 @@ a particular #PangoFontMap implementation.
 
 @fontmap: 
 @desc: 
-@size: 
 @Returns: 
+<!-- # Unused Parameters # -->
+@size: 
 
 
 <!-- ##### FUNCTION pango_font_map_list_families ##### -->

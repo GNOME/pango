@@ -26,15 +26,55 @@
 extern "C" {
 #endif /* __cplusplus */
 
-typedef struct _PangoLayout PangoLayout;
+typedef struct _PangoLayout     PangoLayout;
+typedef struct _PangoLayoutLine PangoLayoutLine;
+typedef struct _PangoLayoutRun  PangoLayoutRun; 
 
-  /*
-  pango_layout_new (char *text, int length);
-  pango_layout_get_glyph_strings ();
-  pango_layout_cp_to_xy ();
-  pango_layout_xy_to_cp ();
-  pango_layout_justify ();
-  */
+struct _PangoLayoutLine
+{
+  PangoLayout *layout;
+  gint         n_chars;		/* length of line in characters */
+  gint         length;		/* length of line in bytes*/
+  GSList      *runs;
+};
+
+struct _PangoLayoutRun
+{
+  PangoItem        *item;
+  PangoGlyphString *glyphs;
+};
+
+PangoLayout *    pango_layout_new                  (void);
+void             pango_layout_ref                  (PangoLayout   *layout);
+void             pango_layout_unref                (PangoLayout   *layout);
+void             pango_layout_set_width            (PangoLayout   *layout,
+						    int            width);
+void             pango_layout_set_justify          (PangoLayout   *layout,
+						    gboolean       justify);
+void             pango_layout_set_first_line_width (PangoLayout   *layout,
+						    int            width);
+void             pango_layout_set_attributes       (PangoLayout   *layout,
+						    PangoAttrList *attrs);
+void             pango_layout_set_text             (char          *text,
+						    int            length);
+int              pango_layout_get_line_count       (PangoLayout   *layout);
+PangoLayoutLine *pango_layout_get_line             (PangoLayout   *layout,
+						    int            line);
+void             pango_layout_cp_to_line_x         (PangoLayout   *layout,
+						    gint           char_pos,
+						    gboolean       trailing,
+						    gint          *line,
+						    gint          *x_pos);
+
+void pango_layout_line_ref         (PangoLayoutLine *line);
+void pango_layout_line_unref       (PangoLayoutLine *line);
+void pango_layout_line_x_to_cp     (PangoLayoutLine *line,
+				    gint             x_pos,
+				    gint            *char_pos,
+				    gint            *trailing);
+void pango_layout_line_get_extents (PangoLayoutLine *line,
+				    PangoRectangle  *ink_rect,
+				    PangoRectangle  *logical_rect);
 
 #ifdef __cplusplus
 }

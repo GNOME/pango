@@ -513,7 +513,7 @@ pango_attr_list_new (void)
  * pango_attr_list_ref:
  * @list: a #PangoAttrList
  * 
- * Increase the reference count on the given attribute list by one.
+ * Increase the reference count of the given attribute list by one.
  **/
 void
 pango_attr_list_ref (PangoAttrList *list)
@@ -527,7 +527,7 @@ pango_attr_list_ref (PangoAttrList *list)
  * pango_attr_list_unref:
  * @list: a #PangoAttrList
  * 
- * Decrease the reference count on the given attribute list by one.
+ * Decrease the reference count of the given attribute list by one.
  * If the result is zero, free the attribute list and the attributes
  * it contains.
  **/

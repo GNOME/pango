@@ -174,13 +174,17 @@ static void       pango_x_font_map_list_families (PangoFontMap                 *
 						  int                          *n_families);
 static void       pango_x_font_map_read_aliases  (PangoXFontMap                *xfontmap);
 
-static void                  pango_x_font_destroy      (PangoFont   *font);
-static PangoFontDescription *pango_x_font_describe     (PangoFont   *font);
-static PangoCoverage *       pango_x_font_get_coverage (PangoFont   *font,
-							const char  *lang);
-static PangoEngineShape *    pango_x_font_find_shaper  (PangoFont   *font,
-							const char  *lang,
-							guint32      ch);
+static void                  pango_x_font_destroy           (PangoFont      *font);
+static PangoFontDescription *pango_x_font_describe          (PangoFont      *font);
+static PangoCoverage *       pango_x_font_get_coverage      (PangoFont      *font,
+							     const char     *lang);
+static PangoEngineShape *    pango_x_font_find_shaper       (PangoFont      *font,
+							     const char     *lang,
+							     guint32         ch);
+static void                  pango_x_font_get_glyph_extents (PangoFont      *font,
+							     PangoGlyph      glyph,
+							     PangoRectangle *ink_rect,
+							     PangoRectangle *logical_rect);
 
 static PangoXSubfontInfo * pango_x_find_subfont    (PangoFont          *font,
 						    PangoXSubfont       subfont_index);
@@ -214,7 +218,8 @@ PangoFontClass pango_x_font_class = {
   pango_x_font_destroy,
   pango_x_font_describe,
   pango_x_font_get_coverage,
-  pango_x_font_find_shaper
+  pango_x_font_find_shaper,
+  pango_x_font_get_glyph_extents
 };
 
 PangoFontMapClass pango_x_font_map_class = {
@@ -1300,8 +1305,8 @@ pango_x_load_font_with_size (Display *display,
  * @gc:      the graphics context
  * @font:    the font in which to draw the string
  * @glyphs:  the glyph string to draw
- * @x:       the x position of start of string
- * @y:       the y position of baseline
+ * @x:       the x position of start of string (in pixels)
+ * @y:       the y position of baseline (in pixels)
  *
  * Render a PangoGlyphString onto an X drawable
  */
@@ -1321,6 +1326,7 @@ pango_x_render  (Display           *display,
   Font old_fid = None;
   XFontStruct *fs;
   int i;
+  int x_off = 0;
 
   g_return_if_fail (display != NULL);
   g_return_if_fail (glyphs != NULL);
@@ -1350,172 +1356,58 @@ pango_x_render  (Display           *display,
 	    }
 	  
 	  XDrawString16 (display, d, gc,
-			 x + glyphs->glyphs[i].geometry.x_offset / 72,
-			 y + glyphs->glyphs[i].geometry.y_offset / 72,
+			 x + (x_off + glyphs->glyphs[i].geometry.x_offset) / 1000,
+			 y + glyphs->glyphs[i].geometry.y_offset / 1000,
 			 &c, 1);
 	}
 
-      x += glyphs->glyphs[i].geometry.width / 72;
+      x_off += glyphs->glyphs[i].geometry.width;
     }
 }
 
-/**
- * pango_x_glyph_extents:
- * @font:     a #PangoFont
- * @glyph:    the glyph to measure
- * @lbearing: left bearing of glyph (result)
- * @rbearing: right bearing of glyph (result)
- * @width:    width of glyph (result)
- * @ascent:   ascent of glyph (result)
- * @descent:  descent of glyph (result)
- * @logical_ascent: The vertical distance from the baseline to the
- *                  bottom of the line above.
- * @logical_descent: The vertical distance from the baseline to the
- *                   top of the line below.
- *
- * Compute the measurements of a single glyph in pixels.
- */
-void 
-pango_x_glyph_extents (PangoFont       *font,
-		       PangoGlyph       glyph,
-		       int            *lbearing, 
-		       int            *rbearing,
-		       int            *width, 
-		       int            *ascent, 
-		       int            *descent,
-		       int            *logical_ascent,
-		       int            *logical_descent)
+static void
+pango_x_font_get_glyph_extents  (PangoFont      *font,
+				 PangoGlyph      glyph,
+				 PangoRectangle *ink_rect,
+				 PangoRectangle *logical_rect)
 {
   XCharStruct *cs;
   PangoXSubfontInfo *subfont;
 
   if (pango_x_find_glyph (font, glyph, &subfont, &cs))
     {
-      if (lbearing)
-	*lbearing = cs->lbearing;
-      if (rbearing)
-	*rbearing = cs->rbearing;
-      if (width)
-	*width = cs->width;
-      if (ascent)
-	*ascent = cs->ascent;
-      if (descent)
-	*descent = cs->descent;
-      if (logical_ascent)
-	*logical_ascent = subfont->font_struct->ascent;
-      if (logical_descent)
-	*logical_descent = subfont->font_struct->descent;
+      if (ink_rect)
+	{
+	  ink_rect->x = 1000 * cs->lbearing;
+	  ink_rect->width = 1000 * (cs->rbearing - cs->lbearing);
+	  ink_rect->y = 1000 * -cs->ascent;
+	  ink_rect->height = cs->ascent + cs->descent;
+	}
+      if (logical_rect)
+	{
+	  logical_rect->x = 0;
+	  logical_rect->width = 1000 * cs->width;
+	  logical_rect->y = - 1000 * subfont->font_struct->ascent;
+	  logical_rect->height = 1000 * (subfont->font_struct->ascent + subfont->font_struct->descent);
+	}
     }
   else
     {
-      if (lbearing)
-	*lbearing = 0;
-      if (rbearing)
-	*rbearing = 0;
-      if (width)
-	*width = 0;
-      if (ascent)
-	*ascent = 0;
-      if (descent)
-	*descent = 0;
-      if (logical_ascent)
-	*logical_ascent = 0;
-      if (logical_descent)
-	*logical_descent = 0;
-    }
-}
-
-/**
- * pango_x_extents:
- * @font:     a #PangoFont
- * @glyphs:   the glyph string to measure
- * @lbearing: left bearing of string (result)
- * @rbearing: right bearing of string (result)
- * @width:    width of string (result)
- * @ascent:   ascent of string (result)
- * @descent:  descent of string (result)
- * @logical_ascent: The vertical distance from the baseline to the
- *                  bottom of the line above.
- * @logical_descent: The vertical distance from the baseline to the
- *                   top of the line below.
- *
- * Compute the measurements of a glyph string in pixels.
- * The number of parameters here is clunky - it might be
- * nicer to use structures as in XmbTextExtents.
- */
-void 
-pango_x_extents (PangoFont        *font,
-		 PangoGlyphString *glyphs,
-		 int             *lbearing, 
-		 int             *rbearing,
-		 int             *width, 
-		 int             *ascent, 
-		 int             *descent,
-		 int             *logical_ascent,
-		 int             *logical_descent)
-{
-  PangoXSubfontInfo *subfont;
-  XCharStruct *cs;
-
-  int i;
-
-  int t_lbearing = 0;
-  int t_rbearing = 0;
-  int t_ascent = 0;
-  int t_descent = 0;
-  int t_logical_ascent = 0;
-  int t_logical_descent = 0;
-  int t_width = 0;
-
-  g_return_if_fail (font != NULL);
-  g_return_if_fail (glyphs != NULL);
-  
-  for (i=0; i<glyphs->num_glyphs; i++)
-    {
-      PangoGlyphGeometry *geometry = &glyphs->glyphs[i].geometry;
-      
-      if (pango_x_find_glyph (font, glyphs->glyphs[i].glyph, &subfont, &cs))
+      if (ink_rect)
 	{
-	  if (i == 0)
-	    {
-	      t_lbearing = cs->lbearing - geometry->x_offset / 72;
-	      t_rbearing = cs->rbearing + geometry->x_offset / 72;
-	      t_ascent = cs->ascent + geometry->y_offset / 72;
-	      t_descent = cs->descent - geometry->y_offset / 72;
-	      
-	      t_logical_ascent = subfont->font_struct->ascent + geometry->y_offset / 72;
-	      t_logical_descent = subfont->font_struct->descent - geometry->y_offset / 72;
-	    }
-	  else
-	    {
-	      t_lbearing = MAX (t_lbearing,
-				cs->lbearing - geometry->x_offset / 72 - t_width);
-	      t_rbearing = MAX (t_rbearing,
-				t_width + cs->rbearing + geometry->x_offset / 72);
-	      t_ascent = MAX (t_ascent, cs->ascent + geometry->y_offset / 72);
-	      t_descent = MAX (t_descent, cs->descent - geometry->y_offset / 72);
-	      t_logical_ascent = MAX (t_logical_ascent, subfont->font_struct->ascent + geometry->y_offset / 72);
-	      t_logical_descent = MAX (t_logical_descent, subfont->font_struct->descent - geometry->y_offset / 72);
-	    }
+	  ink_rect->x = 0;
+	  ink_rect->width = 0;
+	  ink_rect->y = 0;
+	  ink_rect->height = 0;
 	}
-      
-      t_width += geometry->width / 72;
+      if (logical_rect)
+	{
+	  logical_rect->x = 0;
+	  logical_rect->width = 0;
+	  logical_rect->y = 0;
+	  logical_rect->height = 0;
+	}
     }
-
-  if (lbearing)
-    *lbearing = t_lbearing;
-  if (rbearing)
-    *rbearing = t_rbearing;
-  if (width)
-    *width = t_width;
-  if (ascent)
-    *ascent = t_ascent;
-  if (descent)
-    *descent = t_descent;
-  if (logical_ascent)
-    *logical_ascent = t_logical_ascent;
-  if (logical_descent)
-    *logical_descent = t_logical_descent;
 }
 
 /* Compare the tail of a to b */

@@ -11,6 +11,7 @@
 #include "pangox.h"
 #include "utils.h"
 #include "taconv.h"
+#include <unicode.h>
 
 static PangoEngineRange tamil_range[] = {
   { 0x0b80, 0x0bff, "*" },
@@ -94,21 +95,21 @@ tamil_engine_lang_new ()
  * But we can live with this for time being 
  */
 static void
-set_glyph (PangoGlyphString *glyphs, int i,
+set_glyph (PangoGlyphString *glyphs, int i, int cluster_start,
 	   PangoFont *font, PangoXSubfont subfont, guint16 gindex)
 {
   int width;
+  PangoRectangle logical_rect;
 
   glyphs->glyphs[i].glyph = PANGO_X_MAKE_GLYPH (subfont, gindex);
   
   glyphs->glyphs[i].geometry.x_offset = 0;
   glyphs->glyphs[i].geometry.y_offset = 0;
 
-  glyphs->log_clusters[i] = i;
+  glyphs->log_clusters[i] = cluster_start;
 
-  pango_x_glyph_extents (font, glyphs->glyphs[i].glyph,
-			 NULL, NULL, &width, NULL, NULL, NULL, NULL);
-  glyphs->glyphs[i].geometry.width = width * 72;
+  pango_font_get_glyph_extents (font, glyphs->glyphs[i].glyph, NULL, &logical_rect);
+  glyphs->glyphs[i].geometry.width = logical_rect.width;
 }
 
 static PangoXSubfont
@@ -140,6 +141,7 @@ tamil_engine_shape (PangoFont        *font,
 {
   int n_chars, n_glyph;
   int i, j;
+  const char *cluster_start;
   const char *p;
   const char *next;
   GUChar4 *wc, *uni_str;
@@ -177,6 +179,7 @@ tamil_engine_shape (PangoFont        *font,
   n_glyph = 0;
   uni_str = wc;
 
+  cluster_start = text;
   j = 0;
   while (j < n_chars)
     {
@@ -186,17 +189,19 @@ tamil_engine_shape (PangoFont        *font,
       /* We need to differentiate between different return codes later */
       if (res != TA_SUCCESS)
         {
-          set_glyph (glyphs, n_glyph, font, tscii_font, ' ');
+          set_glyph (glyphs, n_glyph, cluster_start - text, font, tscii_font, ' ');
           n_glyph++;
           j = j + nuni;
 	  continue; 
         }
       for (i = 0; i < ntsc; i++)
         {
-          set_glyph (glyphs, n_glyph, font, tscii_font, (PangoGlyph) tsc_str[i]);
+          set_glyph (glyphs, n_glyph, cluster_start - text, font, tscii_font, (PangoGlyph) tsc_str[i]);
           n_glyph++;
         }
       j = j + nuni;
+      while (nuni--)
+	cluster_start = unicode_next_utf8 (cluster_start);
     }
 	  
   pango_glyph_string_set_size (glyphs, n_glyph);

@@ -1,3 +1,29 @@
+Mon Mar  6 20:55:32 2000  Owen Taylor  <otaylor@redhat.com>
+
+	* libpango/mapping.c example/viewer.c: 
+	* modules/hangul/hangul.c modules/basic/basic.c modules/tamil/tamil.c:
+	
+	Convert log_clusters[] use from char offsets to byte offset - should
+	make it easier to have all interface deal with stuff in byte offsets.
+
+	* libpango/mapping.c libpango/pango-glyph.h: Rename x_to_cp and cp_to_x
+	to make them "member functions" of glyph_string.
+	
+	* libpango/pango-types.h: Add a rectangle type for use in storing
+	glyph/glyph-string extents, plus macros for extracting ascent/descent.
+	
+	* libpango/fonts.c libpango/pango-font.h libpango/pangox.c: Virtualize
+	glyph extents function into the font.
+
+	* libpango/pangox.c modules/*/*.c examples/viewer.c: Convert over to
+	new rationalized unit system - everything in 1000ths of a point
+	or 1000ths of a glyph unit.
+
+	* libpango/pango-glyph.h libpango/glyphstring.c: Add function to get
+	extents of a glyph string. (We may want to fastpath the width in
+	the future, since getting the width seems to be a very common 
+	and time-critical operation)
+
 Mon Feb 28 19:46:35 2000  Owen Taylor  <otaylor@redhat.com>
 
 	* libpango/fonts.c libpango/pango-fonts.h: Add functions

@@ -39,6 +39,29 @@ typedef struct _PangoEngineLang PangoEngineLang;
 typedef struct _PangoEngineShape PangoEngineShape;
 
 typedef struct _PangoFont PangoFont;
+typedef struct _PangoRectangle PangoRectangle;
+
+/* A index of a glyph into a font. Rendering system dependent
+ */
+typedef guint32 PangoGlyph;
+
+/* A rectangle. Used to store logical and physical extents of glyphs,
+ * runs, strings, etc.
+ */
+struct _PangoRectangle
+{
+  int x;
+  int y;
+  int width;
+  int height;
+};
+
+/* Macros to translate from extents rectangles to ascent/descent/lbearing/rbearing
+ */
+#define PANGO_ASCENT(rect) (-(rect).y)
+#define PANGO_DESCENT(rect) ((rect).y + (rect).height)
+#define PANGO_LBEARING(rect) ((rect).x)
+#define PANGO_RBEARING(rect) ((rect).x + (rect).width)
 
 /* Information about a segment of text with a consistent
  * shaping/language engine and bidirectional level

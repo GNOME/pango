@@ -32,12 +32,12 @@
 #include <unicode.h>
 
 /**
- * pango_cp_to_x:
+ * pango_glyph_string_index_to_x:
+ * @glyphs:    the glyphs return from pango_shape()
  * @text:      the text for the run
  * @length:    the number of bytes (not characters) in @text.
  * @analysis:  the analysis information return from pango_itemize()
- * @glyphs:    the glyphs return from pango_shape()
- * @char_pos:  the character position
+ * @index:     the byte index within @text
  * @trailing:  whether we should compute the result for the beginning
  *             or end of the character (or cluster - the decision
  *             for which may be script dependent).
@@ -48,22 +48,27 @@
  */
 
 void
-pango_cp_to_x (gchar            *text,
-	       gint              length,
-	       PangoAnalysis    *analysis,
-	       PangoGlyphString *glyphs,
-	       gint              char_pos,
-	       gboolean          trailing,
-	       gint             *x_pos)
+pango_glyph_string_index_to_x (PangoGlyphString *glyphs,
+			       char             *text,
+			       int               length,
+			       PangoAnalysis    *analysis,
+			       int               index,
+			       gboolean          trailing,
+			       int              *x_pos)
 {
-  gint i;
-  gint start_xpos = 0;
-  gint end_xpos = 0;
-  gint width = 0;
+  int i;
+  int start_xpos = 0;
+  int end_xpos = 0;
+  int width = 0;
 
-  gint start_char = -1;
-  gint end_char = -1;
+  int start_index = -1;
+  int end_index = -1;
 
+  int cluster_chars = 0;
+  int cluster_offset = 0;
+
+  char *p;
+  
   g_return_if_fail (glyphs != NULL);
   g_return_if_fail (length >= 0);
   g_return_if_fail (length == 0 || text != NULL);
@@ -87,16 +92,16 @@ pango_cp_to_x (gchar            *text,
 
       for (i = glyphs->num_glyphs - 1; i >= 0; i--)
 	{
-	  if (glyphs->log_clusters[i] > char_pos)
+	  if (glyphs->log_clusters[i] > index)
 	    {
-	      end_char = glyphs->log_clusters[i];
+	      end_index = glyphs->log_clusters[i];
 	      end_xpos = width;
 	      break;
 	    }
 
-	  if (start_char == -1 || glyphs->log_clusters[i] != start_char)
+	  if (glyphs->log_clusters[i] != start_index)
 	    {
-	      start_char = glyphs->log_clusters[i];
+	      start_index = glyphs->log_clusters[i];
 	      start_xpos = width;
 	    }
 
@@ -107,16 +112,16 @@ pango_cp_to_x (gchar            *text,
     {
       for (i = 0; i < glyphs->num_glyphs; i++)
 	{
-	  if (glyphs->log_clusters[i] > char_pos)
+	  if (glyphs->log_clusters[i] > index)
 	    {
-	      end_char = glyphs->log_clusters[i];
+	      end_index = glyphs->log_clusters[i];
 	      end_xpos = width;
 	      break;
 	    }
 
-	  if (start_char == -1 || glyphs->log_clusters[i] != start_char)
+	  if (glyphs->log_clusters[i] != start_index)
 	    {
-	      start_char = glyphs->log_clusters[i];
+	      start_index = glyphs->log_clusters[i];
 	      start_xpos = width;
 	    }
 	  
@@ -124,36 +129,43 @@ pango_cp_to_x (gchar            *text,
 	}
     }
 
-  /* We need the character index of one past the end of the
-   * string, and so we have to recalculate the entire length
-   * of the string...
-   */
-  if (end_char == -1)
+  if (end_index == -1)
     {
-      end_char = unicode_strlen (text, length);
+      end_index = length;
       end_xpos = (analysis->level % 2) ? 0 : width;
     }
 
+  /* Calculate offset of character within cluster */
+
+  p = text + start_index;
+  while (p < text + end_index)
+    {
+      p = unicode_next_utf8 (p);
+      if (p < text + index)
+	cluster_offset++;
+      cluster_chars++;
+    }
+  
   /* Now interpolate the result. For South Asian languages
    * we actually shouldn't iterpolate
    */
 
   if (trailing)
-    char_pos += 1;
+    cluster_offset += 1;
 
-  *x_pos = (((double)(end_char - char_pos)) * start_xpos +
-	    ((double)(char_pos - start_char)) * end_xpos) /
-    (end_char - start_char);
+  *x_pos = (((double)(cluster_chars - cluster_offset)) * start_xpos +
+	    ((double)cluster_offset) * end_xpos) /
+    cluster_chars;
 }
 
 /**
- * pango_x_to_cp:
+ * pango_glyph_string_x_to_index:
+ * @glyphs:    the glyphs return from pango_shape()
  * @text:      the text for the run
  * @length:    the number of bytes (not characters) in text.
  * @analysis:  the analysis information return from pango_itemize()
- * @glyphs:    the glyphs return from pango_shape()
- * @x_pos:     location to store the returned x character position
- * @char_pos:  location to store calculated character position.
+ * @x_pos:     the x offset (in thousands of a device unit)
+ * @index:     location to store calculated byte index within @text
  * @trailing:  location to store a integer indicating where
  *             in the cluster the user clicked. If the script
  *             allows positioning within the cluster, it is either
@@ -161,25 +173,27 @@ pango_cp_to_x (gchar            *text,
  *             of characters in the cluster. In either case
  *             0 represents the trailing edge of the cluster.
  *
- * Converts from x position to x character. (X position
- * is measured from the left edge of the run)
+ * Convert from x offset to position. 
  */
 void 
-pango_x_to_cp (gchar           *text,
-		  gint             length,
-		  PangoAnalysis *analysis,
-		  PangoGlyphString    *glyphs,
-		  gint             x_pos,
-		  gint            *char_pos, 
-		  gint            *trailing)
+pango_glyph_string_x_to_index (PangoGlyphString *glyphs,
+			       char             *text,
+			       int               length,
+			       PangoAnalysis    *analysis,
+			       int               x_pos,
+			       int              *index, 
+			       int              *trailing)
 {
-  gint i;
-  gint start_xpos = 0;
-  gint end_xpos = 0;
-  gint width = 0;
+  int i;
+  int start_xpos = 0;
+  int end_xpos = 0;
+  int width = 0;
 
-  gint start_char = -1;
-  gint end_char = -1;
+  int start_index = -1;
+  int end_index = -1;
+
+  int cluster_chars = 0;
+  char *p;
 
   gboolean found = FALSE;
 
@@ -194,17 +208,17 @@ pango_x_to_cp (gchar           *text,
 
       for (i = glyphs->num_glyphs - 1; i >= 0; i--)
 	{
-	  if (start_char == -1 || glyphs->log_clusters[i] != start_char)
+	  if (glyphs->log_clusters[i] != start_index)
 	    {
 	      if (found)
 		{
-		  end_char = glyphs->log_clusters[i];
+		  end_index = glyphs->log_clusters[i];
 		  end_xpos = width;
 		  break;
 		}
 	      else
 		{
-		  start_char = glyphs->log_clusters[i];
+		  start_index = glyphs->log_clusters[i];
 		  start_xpos = width;
 		}
 	    }
@@ -219,17 +233,17 @@ pango_x_to_cp (gchar           *text,
     {
       for (i = 0; i < glyphs->num_glyphs; i++)
 	{
-	  if (start_char == -1 || glyphs->log_clusters[i] != start_char)
+	  if (glyphs->log_clusters[i] != start_index)
 	    {
 	      if (found)
 		{
-		  end_char = glyphs->log_clusters[i];
+		  end_index = glyphs->log_clusters[i];
 		  end_xpos = width;
 		  break;
 		}
 	      else
 		{
-		  start_char = glyphs->log_clusters[i];
+		  start_index = glyphs->log_clusters[i];
 		  start_xpos = width;
 		}
 	    }
@@ -241,31 +255,44 @@ pango_x_to_cp (gchar           *text,
 	}
     }
 
-  /* We need the character index of one past the end of the
-   * string, and so we have to recalculate the entire length
-   * of the string...
-   */
-  if (end_char == -1)
+  if (end_index == -1)
     {
-      end_char = unicode_strlen (text, length);
+      end_index = length;
       end_xpos = (analysis->level % 2) ? 0 : width;
     }
 
+  /* Calculate number of chars within cluster */
+  p = text + start_index;
+  while (p < text + end_index)
+    {
+      p = unicode_next_utf8 (p);
+      cluster_chars++;
+    }
+  
   if (start_xpos == end_xpos)
     {
-      if (char_pos)
-	*char_pos = start_char;
+      if (index)
+	*index = start_index;
       if (trailing)
 	trailing = 0;
     }
   else
     {
-      double cp = (((double)(end_xpos - x_pos)) * start_char +
-		   ((double)(x_pos - start_xpos)) * end_char) /
-	(end_xpos - start_xpos); 
+      double cp = ((double)(x_pos - start_xpos) * cluster_chars) / (end_xpos - start_xpos); 
 
-      if (char_pos)
-	*char_pos = (int)cp;
+      if (index)
+	{
+	  char *p = text + start_index;
+	  int i = 0;
+
+	  while (i + 1 < cp)
+	    {
+	      p = unicode_next_utf8 (p);
+	      i++;
+	    }
+	    
+	  *index = (p - text);
+	}
       if (trailing)
 	*trailing = (cp - (int)cp) > 0.5 ? 1 : 0;
     }

@@ -20,7 +20,8 @@
  */
 
 #include <glib.h>
-#include <pango.h>
+#include <pango-glyph.h>
+#include <pango-font.h>
 
 /**
  * pango_glyph_string_new:
@@ -83,3 +84,97 @@ pango_glyph_string_free (PangoGlyphString *string)
   g_free (string->log_clusters);
   g_free (string);
 }
+
+/**
+ * pango_glyph_string_extents:
+ * @glyphs:   a #PangoGlyphString
+ * @font:     a #PangoFont
+ * @ink_rect: rectangle used to store the extents of the glyph string as drawn
+ *            or %NULL to indicate that the result is not needed.
+ * @logical_rect: rectangle used to store the logical extents of the glyph string
+ *            or %NULL to indicate that the result is not needed.
+ * 
+ * Compute the logical and ink extents of a glyph string. See the documentation
+ * for pango_font_get_glyph_extents() for details about the interpretation
+ * of the rectangles.
+ */
+void 
+pango_glyph_string_extents (PangoGlyphString *glyphs,
+			    PangoFont        *font,
+			    PangoRectangle   *ink_rect,
+			    PangoRectangle   *logical_rect)
+{
+  int x_pos = 0;
+  int i;
+
+  if (glyphs->num_glyphs == 0)
+    {
+      if (ink_rect)
+	{
+	  ink_rect->x = 0;
+	  ink_rect->y = 0;
+	  ink_rect->width = 0;
+	  ink_rect->height = 0;
+	}
+      
+      if (logical_rect)
+	{
+	  logical_rect->x = 0;
+	  logical_rect->y = 0;
+	  logical_rect->width = 0;
+	  logical_rect->height = 0;
+	}
+
+      return;
+    }
+  
+  for (i=0; i<glyphs->num_glyphs; i++)
+    {
+      PangoRectangle glyph_ink;
+      PangoRectangle glyph_logical;
+      
+      PangoGlyphGeometry *geometry = &glyphs->glyphs[i].geometry;
+
+      if (i == 0)
+	{
+	  pango_font_get_glyph_extents (font, glyphs->glyphs[i].glyph, ink_rect, logical_rect);
+	}
+      else
+	{
+	  int new_pos;
+	  
+	  pango_font_get_glyph_extents (font, glyphs->glyphs[i].glyph,
+					ink_rect ? &glyph_ink : NULL,
+					logical_rect ? &glyph_logical : NULL);
+
+	  if (ink_rect)
+	    {
+	      new_pos = MIN (ink_rect->x, x_pos + glyph_ink.x + geometry->x_offset);
+	      ink_rect->width = MAX (ink_rect->x + ink_rect->width,
+				     x_pos + glyph_ink.x + glyph_ink.width + geometry->x_offset) - ink_rect->x;
+	      ink_rect->x = new_pos;
+
+	      new_pos = MIN (ink_rect->y, glyph_ink.y + geometry->y_offset);
+	      ink_rect->height = MAX (ink_rect->y + ink_rect->height,
+				      glyph_ink.y + glyph_ink.height + geometry->y_offset) - ink_rect->y;
+	      ink_rect->y = new_pos;
+	    }
+
+	  if (logical_rect)
+	    {
+	      new_pos = MIN (logical_rect->x, x_pos + glyph_logical.x + geometry->x_offset);
+	      logical_rect->width = MAX (logical_rect->x + logical_rect->width,
+				     x_pos + glyph_logical.x + glyph_logical.width + geometry->x_offset) - logical_rect->x;
+	      logical_rect->x = new_pos;
+
+	      new_pos = MIN (logical_rect->y, glyph_logical.y + geometry->y_offset);
+	      logical_rect->height = MAX (logical_rect->y + logical_rect->height,
+				      glyph_logical.y + glyph_logical.height + geometry->y_offset) - logical_rect->y;
+	      logical_rect->y = new_pos;
+	    }
+	}
+
+      x_pos += geometry->width;
+    }
+}
+

@@ -214,24 +214,6 @@ It contains the following fields:
 @font_map: 
 
 
-<!-- ##### FUNCTION pango_context_get_size ##### -->
-<para>
-
-</para>
-
-@context: 
-@Returns: 
-
-
-<!-- ##### FUNCTION pango_context_set_size ##### -->
-<para>
-
-</para>
-
-@context: 
-@size: 
-
-
 <!-- ##### FUNCTION pango_context_get_font_description ##### -->
 <para>
 
@@ -293,8 +275,9 @@ It contains the following fields:
 
 @context: 
 @desc: 
-@size: 
 @Returns: 
+<!-- # Unused Parameters # -->
+@size: 
 
 
 <!-- ##### FUNCTION pango_context_list_families ##### -->

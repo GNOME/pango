@@ -19,6 +19,14 @@ indices.
 </para>
 
 
+<!-- ##### FUNCTION pango_context_get_size ##### -->
+<para>
+
+</para>
+
+@context: 
+@Returns: 
+
 <!-- ##### FUNCTION pango_x_find_cfont ##### -->
 <para>
 
@@ -84,6 +92,14 @@ X Rendering
 Functions for rendering and measuring glyphs on
 the X Window system.
 
+
+<!-- ##### FUNCTION pango_context_set_size ##### -->
+<para>
+
+</para>
+
+@context: 
+@size: 
 
 <!-- ##### FUNCTION pango_attribute_register_type ##### -->
 <para>

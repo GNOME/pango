@@ -3,6 +3,7 @@
 <!entity pango-glyphs SYSTEM "sgml/glyphs.sgml">
 <!entity pango-fonts SYSTEM "sgml/fonts.sgml">
 <!entity pango-text-attributes SYSTEM "sgml/text-attributes.sgml">
+<!entity pango-layout SYSTEM "sgml/layout.sgml">
 <!entity pango-coverage-maps SYSTEM "sgml/coverage-maps.sgml">
 <!entity pango-engines SYSTEM "sgml/engines.sgml">
 <!entity x-fonts SYSTEM "sgml/x-fonts.sgml">
@@ -19,6 +20,7 @@
     &pango-glyphs;
     &pango-fonts;
     &pango-text-attributes;
+    &pango-layout;
     &pango-coverage-maps;
     &pango-engines;
   </chapter>

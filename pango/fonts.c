@@ -495,8 +495,35 @@ pango_font_find_shaper (PangoFont      *font,
 
   return font->klass->find_shaper (font, lang, ch);
 }
-     
 
+/**
+ * pango_font_get_glyph_extents:
+ * @font: a #PangoFont
+ * @glyph: the glyph index
+ * @ink_rect: rectangle used to store the extents of the glyph as drawn
+ *            or %NULL to indicate that the result is not needed.
+ * @logical_rect: rectangle used to store the logical extents of the glyph
+ *            or %NULL to indicate that the result is not needed.
+ * 
+ * Get the logical and ink extents of a glyph within a font. The
+ * coordinate system for each rectangle has its origin at the
+ * base line and horizontal origin of the character with increasing
+ * coordinates extending to the right and down. The macros PANGO_ASCENT(),
+ * PANGO_DESCENT(), PANGO_LBEARING(), and PANGO_RBEARING can be used to convert
+ * from the extents rectangle to more traditional font metrics. The units
+ * of the rectangles are in 1000ths of a device unit.
+ **/
+void
+pango_font_get_glyph_extents  (PangoFont      *font,
+			       PangoGlyph      glyph,
+			       PangoRectangle *ink_rect,
+			       PangoRectangle *logical_rect)
+{
+  g_return_if_fail (font != NULL);
+
+  font->klass->get_glyph_extents (font, glyph, ink_rect, logical_rect);
+}
+     
 /**
  * pango_font_map_init:
  * @fontmap:    a #PangoFontMap
