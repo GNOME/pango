@@ -1,3 +1,10 @@
+2001-05-06  Alexander Larsson  <alla@lysator.liu.se>
+
+	* configure.in:
+	Fix Xft detection by setting CPPFLAGS before trying
+	the Xft/XftFreetyp.h header file.
+	Use CPPFLAGS instead of CFLAGS.
+
 2001-01-06  Hans Breuer  <hans@breuer.org>
 
 	* pango/makefile.msc : reflect new version number, removed
