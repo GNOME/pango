@@ -1,3 +1,12 @@
+Fri Jul 25 22:25:48 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/opentype/ftxgsub.c (Lookup_ContextSubst2,
+	Lookup_ChainContextSubst2): Fix a couple of
+	places where TTO_Err_Not_Covered wasn't considered
+	a successful return from Get_Class -- it means
+	use class index 0. (From FreeType, Werner Lemberg,
+	2001-08-06)
+
 Fri Jul 25 12:07:21 2003  Owen Taylor  <otaylor@redhat.com>
 
 	* modules/indic/mprefixups.[ch] modules/indic/indic-ot.[ch]
