@@ -1,3 +1,14 @@
+Mon Aug 21 22:02:38 2000  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-context.c (load_font): Don't produce a warning
+	unless loading all fonts fails, if loading all fonts fails,
+	try with "Sans [style]", if that fails, try with "Sans",
+	if that fails, exit - we are completely screwed.
+
+	* pango/pangox-fontmap.c (pango_x_font_map_load_font): Equate
+	PANGO_STYLE_OBLIQUE and PANGO_STYLE_ITALIC, but with a big
+	penalty.
+
 2000-08-21  Tor Lillqvist  <tml@iki.fi>
 
 	* pango/pangoft2-fontmap.c: Get font directory path with

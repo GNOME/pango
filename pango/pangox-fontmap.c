@@ -492,22 +492,37 @@ pango_x_font_map_load_font (PangoFontMap               *fontmap,
   if (family_entry)
     {
       PangoXFontEntry *best_match = NULL;
+      int best_distance = G_MAXINT;
       
       tmp_list = family_entry->font_entries;
       while (tmp_list)
 	{
 	  PangoXFontEntry *font_entry = tmp_list->data;
 	  
-	  if (font_entry->description.style == description->style &&
-	      font_entry->description.variant == description->variant &&
+	  if (font_entry->description.variant == description->variant &&
 	      font_entry->description.stretch == description->stretch)
 	    {
-	      int distance = abs(font_entry->description.weight - description->weight);
-	      int old_distance = best_match ? abs(best_match->description.weight - description->weight) : G_MAXINT;
-
-	      if (distance < old_distance)
+	      if (font_entry->description.style == description->style)
 		{
-		  best_match = font_entry;
+		  int distance = abs(font_entry->description.weight - description->weight);
+		  if (distance < best_distance)
+		    {
+		      best_match = font_entry;
+		      best_distance = distance;
+		    }
+		}
+	      else if (font_entry->description.style != PANGO_STYLE_NORMAL &&
+		       description->style != PANGO_STYLE_NORMAL)
+		{
+		  /* Equate oblique and italic, but with a big penalty
+		   */
+		  int distance = PANGO_SCALE * 1000 + abs(font_entry->description.weight - description->weight);
+
+		  if (distance < best_distance)
+		    {
+		      best_match = font_entry;
+		      best_distance = distance;
+		    }
 		}
 	    }
 

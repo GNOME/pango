@@ -20,6 +20,7 @@
  */
 
 #include <string.h>
+#include <stdlib.h>
 
 #include <fribidi/fribidi.h>
 #include <pango/pango-context.h>
@@ -667,7 +668,110 @@ get_font (PangoFont     **fonts,
       
   return result;
 }
-	  
+
+/* FIXME: Remove this artificial limit */
+#define MAX_FAMILIES 16
+
+static void
+load_font (PangoContext          *context,
+	   char                  *lang,
+	   PangoFontDescription  *desc,
+	   PangoFont            **current_fonts,
+	   PangoCoverage        **current_coverages,
+	   int                   *n_families)
+{
+  char **families;
+  char *orig_family;
+  int j;
+  
+  for (j=0; j < *n_families; j++)
+    {
+      if (current_fonts[j])
+	{
+	  g_object_unref (G_OBJECT (current_fonts[j]));
+	  pango_coverage_unref (current_coverages[j]);
+	}
+    }
+
+  orig_family = desc->family_name;
+  families = g_strsplit (orig_family, ",", -1);
+
+  *n_families = 0;
+  for (j=0; families[j] && *n_families < MAX_FAMILIES; j++)
+    {
+      desc->family_name = families[j];
+      current_fonts[*n_families] = pango_context_load_font (context, desc);
+      
+      if (current_fonts[*n_families])
+	{
+	  current_coverages[*n_families] = pango_font_get_coverage (current_fonts[*n_families], lang);
+	  (*n_families)++;
+	}
+    }
+  
+  g_strfreev (families);
+
+  /* The font description was completely unloadable, try with
+   * family == "Sans"
+   */
+  if (*n_families == 0)
+    {
+      char *ctmp1, *ctmp2;
+      
+      desc->family_name = orig_family;
+      
+      ctmp1 = pango_font_description_to_string (desc);
+      desc->family_name = "Sans";
+      ctmp2 = pango_font_description_to_string (desc);
+      
+      g_warning ("Couldn't load font \"%s\" falling back to \"%s\"", ctmp1, ctmp2);
+      g_free (ctmp1);
+      g_free (ctmp2);
+      
+      desc->family_name = "Sans";
+      
+      current_fonts[0] = pango_context_load_font (context, desc);
+      if (current_fonts[0])
+	{
+	  current_coverages[0] = pango_font_get_coverage (current_fonts[0], lang);
+	  *n_families = 1;
+	}
+    }
+  
+  /* We couldn't try with Sans and the specified style. Try Sans Normal
+   */
+  if (*n_families == 0)
+    {
+      char *ctmp1, *ctmp2;
+      
+      ctmp1 = pango_font_description_to_string (desc);
+      desc->style = PANGO_STYLE_NORMAL;
+      desc->weight = PANGO_WEIGHT_NORMAL;
+      desc->variant = PANGO_VARIANT_NORMAL;
+      desc->stretch = PANGO_STRETCH_NORMAL;
+      ctmp2 = pango_font_description_to_string (desc);
+      
+      g_warning ("Couldn't load font \"%s\" falling back to \"%s\"", ctmp1, ctmp2);
+      g_free (ctmp1);
+      g_free (ctmp2);
+      
+      current_fonts[0] = pango_context_load_font (context, desc);
+      if (current_fonts[0])
+	{
+	  current_coverages[0] = pango_font_get_coverage (current_fonts[0], lang);
+	  *n_families = 1;
+	}
+    }
+
+  /* Everything failed, we are screwed, there is no way to continue
+   */
+  if (n_families == 0)
+    {
+      g_warning ("All font failbacks failed!!!!");
+      exit (1);
+    }
+}
+
 static void
 add_engines (PangoContext      *context,
 	     const gchar       *text, 
@@ -686,10 +790,7 @@ add_engines (PangoContext      *context,
   PangoMap *lang_map = NULL;
   PangoFontDescription current_desc = { 0 };
 
-  /* FIXME: Remove this artificial limit */
-
   int n_families = 0;
-#define MAX_FAMILIES 16
   PangoFont *current_fonts[MAX_FAMILIES];
   PangoCoverage *current_coverages[MAX_FAMILIES];
   
@@ -741,45 +842,10 @@ add_engines (PangoContext      *context,
 	  if (i == 0 ||
 	      !pango_font_description_compare (&current_desc, &next_desc))
 	    {
-	      char **families;
-	      
 	      current_desc = next_desc;
 
-	      for (j=0; j<n_families; j++)
-		{
-		  if (current_fonts[j])
-		    {
-		      g_object_unref (G_OBJECT (current_fonts[j]));
-		      pango_coverage_unref (current_coverages[j]);
-		    }
-		}
-
-	      families = g_strsplit (current_desc.family_name, ",", -1);
-	      n_families = 0;
-	      while (families[n_families])
-		n_families++;
-
-	      if (n_families > MAX_FAMILIES)
-		n_families = MAX_FAMILIES;
-
-	      for (j=0; j<n_families; j++)
-		{
-		  next_desc.family_name = families[j];
-		  current_fonts[j] = pango_context_load_font (context, &next_desc);
-
-		  if (current_fonts[j])
-		    current_coverages[j] = pango_font_get_coverage (current_fonts[j], lang);
-		  else
-		    {
-		      char *ctmp;
-
-		      ctmp = pango_font_description_to_string (&next_desc);
-		      g_warning ("Couldn't load font \"%s\"", ctmp);
-		      g_free (ctmp);
-		    }
-		}
-
-	      g_strfreev (families);
+	      load_font (context, lang, &current_desc,
+			 current_fonts, current_coverages, &n_families);
 	    }
 
 	  pango_attr_iterator_range (iterator, NULL, &next_index);
