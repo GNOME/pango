@@ -2993,7 +2993,7 @@ pango_layout_get_effective_attributes (PangoLayout *layout)
   return attrs;
 }
 
-gboolean
+static gboolean
 no_shape_filter_func (PangoAttribute *attribute,
 		      gpointer        data)
 {

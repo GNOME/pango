@@ -76,8 +76,6 @@ fribidi_char_from_type (FriBidiCharType c)
     }
 };
 
-#endif
-
 char *
 fribidi_type_name (FriBidiCharType c)
 {
@@ -115,6 +113,8 @@ fribidi_type_name (FriBidiCharType c)
     }
 #undef _FRIBIDI_CASE
 }
+
+#endif
 
 /* Map fribidi_prop_types to fribidi_types. */
 static FriBidiCharType fribidi_prop_to_type_array[] = {

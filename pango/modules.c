@@ -652,7 +652,7 @@ pango_map_get_engine (PangoMap   *map,
     return NULL;
 }
 
-void
+static void
 append_engines (GSList **engine_list,
 		GSList  *pair_list)
 {
