@@ -3394,7 +3394,7 @@ update_run (PangoLayoutIter *iter)
    */
   old_run_width = iter->run_logical_rect.width;
 
-  if (iter->line_extents_link == iter->line_extents)
+  if (iter->run_list_link == iter->line->runs)
     iter->run_x = line_ext->logical_rect.x;
   else
     iter->run_x += old_run_width;
