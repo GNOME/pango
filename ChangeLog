@@ -1,3 +1,9 @@
+Mon Feb  7 20:27:35 2000  Owen Taylor  <otaylor@redhat.com>
+
+	* libpango/pangox.c (pango_x_names_for_size): Start at reworking
+	code to do size and charset lookups simultaneously. twill compile
+	once I get home.
+
 Mon Feb  7 16:49:32 2000  Owen Taylor  <otaylor@redhat.com>
 
 	* examples/viewer.c (make_families_menu): Switch the option

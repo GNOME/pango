@@ -35,8 +35,15 @@ typedef struct _PangoXFont PangoXFont;
 typedef struct _PangoXFontMap PangoXFontMap;
 typedef struct _PangoXSubfontInfo PangoXSubfontInfo;
 
+typedef struct _PangoXSizeInfo PangoXSizeInfo;
 typedef struct _PangoXFamilyEntry PangoXFamilyEntry;
 typedef struct _PangoXFontEntry PangoXFontEntry;
+
+struct _PangoXSizeInfo
+{
+  char *identifier;
+  GSList *xlfds;
+};
 
 struct _PangoXFontEntry
 {
@@ -82,6 +89,7 @@ struct _PangoXFontMap
   Display *display;
 
   GHashTable *families;
+  GHashTable *size_infos;
 
   int n_fonts;
 };
@@ -176,13 +184,16 @@ static gboolean            pango_x_find_glyph      (PangoFont          *font,
 static XFontStruct *       pango_x_get_font_struct (PangoFont          *font,
 						    PangoXSubfontInfo  *info);
 
-static char *pango_x_names_for_size (char *font_list, double size);
+static char *pango_x_names_for_size (PangoXFontMap *fontmap, const char *font_list, double size);
 static gboolean pango_x_is_xlfd_font_name (const char *fontname);
 static char *  pango_x_get_xlfd_field    (const char *fontname,
 					   FontField    field_num,
 					   char       *buffer);
+static char *pango_x_get_identifer (const char *fontname);
+static gint  pango_x_get_size (const char *fontname);
+
 static void     pango_x_insert_font       (PangoXFontMap *fontmap,
-					   char       *fontname);
+					   const char    *fontname);
 
 static GList *fontmaps;
 
@@ -223,6 +234,7 @@ pango_x_font_map_for_display (Display *display)
   xfontmap->fontmap.klass = &pango_x_font_map_class;
   xfontmap->display = display;
   xfontmap->families = g_hash_table_new (g_str_hash, g_str_equal);
+  xfontmap->size_infos = g_hash_table_new (g_str_hash, g_str_equal);
   xfontmap->n_fonts = 0;
 
   pango_font_map_init ((PangoFontMap *)xfontmap);
@@ -318,7 +330,7 @@ pango_x_font_map_load_font (PangoFontMap         *fontmap,
 	{
 	  /* Construct an XLFD for the sized font. The first 5 fields of the
 	   */
-	  char *font_list = pango_x_names_for_size (best_match->xlfd, size);
+	  char *font_list = pango_x_names_for_size (xfontmap, best_match->xlfd, size);
 	  /* FIXME: cache fonts */
 	  result = pango_x_load_font (xfontmap->display, font_list);
 	  g_free (font_list);
@@ -704,6 +716,7 @@ pango_x_font_map_read_alias_file (PangoXFontMap *xfontmap,
 	    goto error;
 
 	  font_entry = g_new (PangoXFontEntry, 1);
+	  font_entry->xlfd = NULL;
 	  font_entry->description.family_name = g_strndup (tok, toksize);
 	  g_strdown (font_entry->description.family_name);
 
@@ -740,6 +753,11 @@ pango_x_font_map_read_alias_file (PangoXFontMap *xfontmap,
 	    goto error;
 
 	  font_entry->xlfd = g_strndup (tok, toksize);
+	  if (!pango_x_is_xlfd_font_name (font_entry->xlfd))
+	    {
+	      g_warning ("XLFD must be complete (14 fields)");
+	      goto error;
+	    }
 
 	  /* Insert the font entry into our structures */
 
@@ -759,6 +777,8 @@ pango_x_font_map_read_alias_file (PangoXFontMap *xfontmap,
     error:
       if (font_entry)
 	{
+	  if (font_entry->xlfd)
+	    g_free (font_entry->xlfd);
 	  if (font_entry->description.family_name)
 	    g_free (font_entry->description.family_name);
 	  g_free (font_entry);
@@ -817,6 +837,58 @@ pango_x_is_xlfd_font_name (const char *fontname)
   return (i == 14) ? TRUE : FALSE;
 }
 
+static int
+pango_x_get_size (const char *fontname)
+{
+  char size_buffer[XLFD_MAX_FIELD_LEN];
+  int size;
+
+  if (!pango_x_get_xlfd_field (fontname, XLFD_POINTS, size_buffer))
+    return -1;
+
+  size = atoi (size_buffer);
+  if (size != 0)
+    return size;
+  else
+    {
+      /* We use the trick that scaled bitmaps have a non-zero RESOLUTION_X, while
+       * actual scaleable fonts have a zero RESOLUTION_X */
+      if (!pango_x_get_xlfd_field (fontname, XLFD_RESOLUTION_X, size_buffer))
+	return -1;
+
+      if (atoi (size_buffer) == 0)
+	return 0;
+      else
+	return -1;
+    }
+}
+
+static char *
+pango_x_get_identifer (const char *fontname)
+{
+  const char *p = fontname;
+  const char *start;
+  int n_dashes = 0;
+
+  while (n_dashes < 2)
+    {
+      if (*p == '-')
+	n_dashes++;
+      p++;
+    }
+
+  start = p;
+
+  while (n_dashes < 6)
+    {
+      if (*p == '-')
+	n_dashes++;
+      p++;
+    }
+
+  return g_strndup (start, (p - 1 - start));
+}
+
 /*
  * This fills the buffer with the specified field from the X Logical Font
  * Description name, and returns it. If fontname is NULL or the field is
@@ -872,7 +944,7 @@ pango_x_get_xlfd_field (const char *fontname,
    is created and inserted in alphabetical order in the table. */
 static void
 pango_x_insert_font (PangoXFontMap *xfontmap,
-		     char  *fontname)
+		     const char  *fontname)
 {
   PangoFontDescription description;
   char family_buffer[XLFD_MAX_FIELD_LEN];
@@ -882,8 +954,27 @@ pango_x_insert_font (PangoXFontMap *xfontmap,
   GSList *tmp_list;
   PangoXFamilyEntry *family_entry;
   PangoXFontEntry *font_entry;
+  PangoXSizeInfo *size_info;
+  char *identifier;
   int i;
 
+  /* First insert the XLFD into the list of XLFDs for the "identifier" - which
+   * is the 2-4th fields of the XLFD
+   */
+
+  identifier = pango_x_get_identifer (fontname);
+  size_info = g_hash_table_lookup (xfontmap->size_infos, identifier);
+  if (!size_info)
+    {
+      size_info = g_new (PangoXSizeInfo, 1);
+      size_info->identifier = identifier;
+      size_info->xlfds = NULL;
+    }
+  else
+    g_free (identifier);
+
+  size_info->xlfds = g_list_prepend (size_info->xlfds, g_strdup (fontname));
+  
   /* Convert the XLFD into a PangoFontDescription */
   
   description.family_name = pango_x_get_xlfd_field (fontname, XLFD_FAMILY, family_buffer);
@@ -1318,51 +1409,105 @@ name_for_charset (char *xlfd, char *charset)
   return result;
 }
 
-/* Substitute in a size into an XLFD, return the
- * (g_malloc'd) new name, or a copy of the old name
- * if the XLFD is already sized.
+/* Given a xlfd, charset and size, find the best matching installed X font.
+ * The XLFD must be a full XLFD (14 fields)
  */
 static char *
-pango_x_name_for_size (char *xlfd, double size)
+pango_x_make_matching_xlfd (PangoXFontMap *xfontmap, char *xlfd, const char *charset, double size)
 {
-  int n_dashes = 0;
-  char *p;
-  char *prefix_end;
-  char *prefix_copy;
-  char *result;
-  
-  if (!pango_x_is_xlfd_font_name)
-    return g_strdup (xlfd);
+  int size_decipoints = floor (size*10 + 0.5);
+  GSList *tmp_list;
+  PangoXSizeInfo *size_info;
+  char *identifier;
+  char *closest_match = NULL;
+  gint match_distance = 0;
+  gboolean match_scaleable = FALSE;
+  char *result = NULL;
 
-  p = xlfd;
-  while (n_dashes < 7)
+  char *dash_charset;
+
+  identifier = pango_x_get_identifier (xlfd);
+  size_info = g_hash_table_lookup (xfontmap->size_infos, identifier);
+  g_free (identifier);
+
+  if (!size_info)
+    return NULL;
+
+  dash_charset = g_strconcat ("-", charset, NULL);
+
+  tmp_list = size_info->xlfds;
+  while (tmp_list)
     {
-      if (*p == '-')
-	n_dashes++;
-      p++;
+      char *tmp_xlfd = tmp_list->data;
+      
+      if (match_end (tmp_xlfd, "-*-*") || match_end (tmp_xlfd, dash_charset))
+	{
+	  int size = pango_x_get_size (xlfd);
+	  int new_distance = (size == 0) ? 0 : abs (size - size_decipoints);
+
+	  if (!closest_match ||
+	      new_distance < match_distance ||
+	      ((new_distance == 0 && match_scaleable && size != 0)))
+	    {
+	      closest_match = tmp_xlfd;
+	      match_scaleable = (size == 0);
+	      match_distance = new_distance;
+	    }
+	}
     }
 
-  prefix_end = p;
-  
-  if (*p != '*' || *(p + 1) != '-')
-    return g_strdup (xlfd);
-
-  p += 2;
-  
-  while (n_dashes < 8)
+  if (closest_match)
     {
-      if (*p == '-')
-	n_dashes++;
-      p++;
+      char *prefix_end, *p;
+      char *size_end;
+      int n_dashes;
+      char *result;
+      
+      /* OK, we have a match; let's modify it to fit this size and charset */
+
+      p = closest_match;
+      while (n_dashes < 6)
+	{
+	  if (*p == '-')
+	    n_dashes++;
+	  p++;
+	}
+
+      prefix_end = p - 1;
+
+      p = closest_match;
+      while (n_dashes < 9)
+	{
+	  if (*p == '-')
+	    n_dashes++;
+	  p++;
+	}
+
+      size_end = p = 1;
+
+      p = closest_match;
+      while (n_dashes < 12)
+	{
+	  if (*p == '-')
+	    n_dashes++;
+	  p++;
+	}
+
+      if (match_scaleable == 0)
+	{
+	  char *prefix = g_strndup (closest_match, prefix_end - closest_match);
+	  result  = g_strdup_printf ("%s--*-%d-*-*-*-*-%s", prefix, size_decipoints, charset);
+	  g_free (prefix);
+	}
+      else
+	{
+	  char *prefix = g_strndup (closest_match, size_end - closest_match);
+	  result = g_strconcat (prefix, "-*-*-*-*-", charset, NULL);
+	  g_free (prefix);
+	}
     }
 
-  if (*p != '*' || *(p + 1) != '-')
-    return g_strdup (xlfd);
-
-  prefix_copy = g_strndup (xlfd, prefix_end - xlfd);
-  result = g_strdup_printf ("%s*-%d-*-*-*-*-*-*", prefix_copy, (int)floor(size*10 + 0.5));
-  g_free (prefix_copy);
-
+  g_free (dash_charset);
   return result;
 }
 
@@ -1371,7 +1516,7 @@ pango_x_name_for_size (char *xlfd, double size)
  * just going to break them apart again in pango_x_load_font
  */
 static char *
-pango_x_names_for_size (char *font_list, double size)
+pango_x_names_for_size (PangoXFontMap *xfontmap, const char *font_list, double size)
 {
   GString *result = g_string_new (NULL);
   int i;
@@ -1380,7 +1525,7 @@ pango_x_names_for_size (char *font_list, double size)
 
   for (i=0; fonts[i]; i++)
     {
-      char *xlfd = pango_x_name_for_size (fonts[i], size);
+      char *xlfd = pango_x_name_for_size (xfontmap, fonts[i], size);
       if (i != 0)
 	g_string_append_c (result, ',');
       g_string_append (result, xlfd);
