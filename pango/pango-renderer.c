@@ -273,10 +273,10 @@ handle_line_state_change (PangoRenderer  *renderer,
       state->strikethrough)
     {
       PangoRectangle *rect = &state->strikethrough_rect;
-      
+
       rect->width = state->logical_rect_end - rect->x;
-      draw_underline (renderer, state);
-      state->underline = renderer->underline;
+      draw_strikethrough (renderer, state);
+      state->strikethrough = renderer->strikethrough;
       rect->x = state->logical_rect_end;
       rect->width = 0;
     }
@@ -285,102 +285,88 @@ handle_line_state_change (PangoRenderer  *renderer,
 static void
 add_underline (PangoRenderer    *renderer,
 	       LineState        *state,
-	       PangoFontMetrics *metrics, /* NULL if no underline */
+	       PangoFontMetrics *metrics,
 	       int               base_x,
 	       int               base_y,
 	       PangoRectangle   *ink_rect,
 	       PangoRectangle   *logical_rect)
 {
-  if (renderer->underline == PANGO_UNDERLINE_NONE)
+  PangoRectangle *current_rect = &state->underline_rect;
+  PangoRectangle new_rect;
+      
+  int underline_thickness = pango_font_metrics_get_underline_thickness (metrics);
+  int underline_position = pango_font_metrics_get_underline_position (metrics);
+
+  new_rect.x = base_x + ink_rect->x;
+  new_rect.width = ink_rect->width;
+  new_rect.height = underline_thickness;
+  
+  switch (renderer->underline)
     {
-      draw_underline (renderer, state);
+    case PANGO_UNDERLINE_NONE:
+      g_assert_not_reached ();
+      break;
+    case PANGO_UNDERLINE_SINGLE:
+    case PANGO_UNDERLINE_DOUBLE:
+    case PANGO_UNDERLINE_ERROR:
+      new_rect.y = base_y - underline_position;
+      break;
+    case PANGO_UNDERLINE_LOW:
+      new_rect.y = base_y + ink_rect->y + ink_rect->height + underline_thickness;
+      break;
+    }
+  
+  if (renderer->underline == state->underline &&
+      new_rect.y == current_rect->y &&
+      new_rect.height == current_rect->height)
+    {
+      current_rect->y = new_rect.y;
+      current_rect->width = new_rect.x + new_rect.width - current_rect->x;
+      current_rect->height = new_rect.height;
     }
   else
     {
-      PangoRectangle *current_rect = &state->underline_rect;
-      PangoRectangle new_rect;
+      draw_underline (renderer, state);
       
-      int underline_thickness = pango_font_metrics_get_underline_thickness (metrics);
-      int underline_position = pango_font_metrics_get_underline_position (metrics);
-
-      new_rect.x = base_x + ink_rect->x;
-      new_rect.width = ink_rect->width;
-      new_rect.height = underline_thickness;
-      
-      switch (renderer->underline)
-	{
-	case PANGO_UNDERLINE_NONE:
-	  g_assert_not_reached ();
-	  break;
-	case PANGO_UNDERLINE_SINGLE:
-	case PANGO_UNDERLINE_DOUBLE:
-	case PANGO_UNDERLINE_ERROR:
-	  new_rect.y = base_y - underline_position;
-	  break;
-	case PANGO_UNDERLINE_LOW:
-	  new_rect.y = base_y + ink_rect->y + ink_rect->height + underline_thickness;
-	  break;
-	}
-
-      if (renderer->underline == state->underline &&
-	  new_rect.y == current_rect->y &&
-	  new_rect.height == current_rect->height)
-	{
-	  current_rect->y = new_rect.y;
-	  current_rect->width = new_rect.x + new_rect.width - current_rect->x;
-	  current_rect->height = new_rect.height;
-	}
-      else
-	{
-	  draw_underline (renderer, state);
-
-	  *current_rect = new_rect;
-	  state->underline = renderer->underline;
-	}
+      *current_rect = new_rect;
+      state->underline = renderer->underline;
     }
 }
 
 static void
 add_strikethrough (PangoRenderer    *renderer,
 		   LineState        *state,
-		   PangoFontMetrics *metrics, /* NULL if no strikethrough */
+		   PangoFontMetrics *metrics,
 		   int               base_x,
 		   int               base_y,
 		   PangoRectangle   *ink_rect,
 		   PangoRectangle   *logical_rect)
 {
-  if (!renderer->strikethrough)
+  PangoRectangle *current_rect = &state->strikethrough_rect;
+  PangoRectangle new_rect;
+  
+  int strikethrough_thickness = pango_font_metrics_get_strikethrough_thickness (metrics);
+  int strikethrough_position = pango_font_metrics_get_strikethrough_position (metrics);
+  
+  new_rect.x = base_x + ink_rect->x;
+  new_rect.width = ink_rect->width;
+  new_rect.y = base_y - strikethrough_position;
+  new_rect.height = strikethrough_thickness;
+  
+  if (state->strikethrough &&
+      new_rect.y == current_rect->y &&
+      new_rect.height == current_rect->height)
     {
-      draw_strikethrough (renderer, state);
+      current_rect->y = new_rect.y;
+      current_rect->width = new_rect.x + new_rect.width - current_rect->x;
+      current_rect->height = new_rect.height;
     }
   else
     {
-      PangoRectangle *current_rect = &state->strikethrough_rect;
-      PangoRectangle new_rect;
+      draw_strikethrough (renderer, state);
       
-      int strikethrough_thickness = pango_font_metrics_get_strikethrough_thickness (metrics);
-      int strikethrough_position = pango_font_metrics_get_strikethrough_position (metrics);
-
-      new_rect.x = base_x + ink_rect->x;
-      new_rect.width = ink_rect->width;
-      new_rect.y = base_y - strikethrough_position;
-      new_rect.height = strikethrough_thickness;
-      
-      if (state->strikethrough &&
-	  new_rect.y == current_rect->y &&
-	  new_rect.height == current_rect->height)
-	{
-	  current_rect->y = new_rect.y;
-	  current_rect->width = new_rect.x + new_rect.width - current_rect->x;
-	  current_rect->height = new_rect.height;
-	}
-      else
-	{
-	  draw_strikethrough (renderer, state);
-
-	  *current_rect = new_rect;
-	  state->strikethrough = TRUE;
-	}
+      *current_rect = new_rect;
+      state->strikethrough = TRUE;
     }
 }
 
@@ -562,6 +548,13 @@ pango_renderer_draw_layout_line (PangoRenderer    *renderer,
 	  
 	  pango_font_metrics_unref (metrics);
 	}
+
+      if (renderer->underline == PANGO_UNDERLINE_NONE &&
+	  state.underline != PANGO_UNDERLINE_NONE)
+	draw_underline (renderer, &state);
+
+      if (!renderer->strikethrough && state.strikethrough)
+	draw_strikethrough (renderer, &state);
 
       x_off += logical_rect.width;
     }
@@ -837,11 +830,11 @@ pango_renderer_draw_error_underline (PangoRenderer *renderer,
 #define HEIGHT_SQUARES 2.5
 
 static void
-get_total_matrix (PangoMatrix  *total,
-		  PangoMatrix  *global,
-		  int           x,
-		  int           y,
-		  int           square)
+get_total_matrix (PangoMatrix       *total,
+		  const PangoMatrix *global,
+		  int                x,
+		  int                y,
+		  int                square)
 {
   PangoMatrix local;
   gdouble scale = 0.5 * square;
@@ -1148,6 +1141,8 @@ pango_renderer_default_prepare_run (PangoRenderer  *renderer,
 {
   PangoColor *fg_color = NULL;
   PangoColor *bg_color = NULL;
+  PangoColor *underline_color = NULL;
+  PangoColor *strikethrough_color = NULL;
   GSList *l;
 
   renderer->underline = PANGO_UNDERLINE_NONE;
@@ -1175,15 +1170,29 @@ pango_renderer_default_prepare_run (PangoRenderer  *renderer,
 	  bg_color = &((PangoAttrColor *)attr)->color;
 	  break;
 	  
+	case PANGO_ATTR_UNDERLINE_COLOR:
+	  underline_color = &((PangoAttrColor *)attr)->color;
+	  break;
+	  
+	case PANGO_ATTR_STRIKETHROUGH_COLOR:
+	  strikethrough_color = &((PangoAttrColor *)attr)->color;
+	  break;
+	  
 	default:
 	  break;
 	}
     }
 
+  if (!underline_color)
+    underline_color = fg_color;
+
+  if (!strikethrough_color)
+    strikethrough_color = fg_color;
+
   pango_renderer_set_color (renderer, PANGO_RENDER_PART_FOREGROUND, fg_color);
   pango_renderer_set_color (renderer, PANGO_RENDER_PART_UNDERLINE, fg_color);
-  pango_renderer_set_color (renderer, PANGO_RENDER_PART_STRIKETHROUGH, fg_color);
-  pango_renderer_set_color (renderer, PANGO_RENDER_PART_BACKGROUND, bg_color);
+  pango_renderer_set_color (renderer, PANGO_RENDER_PART_UNDERLINE, underline_color);
+  pango_renderer_set_color (renderer, PANGO_RENDER_PART_STRIKETHROUGH, strikethrough_color);
 }
 
 /**

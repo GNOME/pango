@@ -42,6 +42,19 @@ g_quark_from_string()) is used to identify the renderer in pango_find_map().
 @y: 
 
 
+<!-- ##### FUNCTION pango_win32_render_transformed ##### -->
+<para>
+
+</para>
+
+@hdc: 
+@matrix: 
+@font: 
+@glyphs: 
+@x: 
+@y: 
+
+
 <!-- ##### FUNCTION pango_win32_render_layout_line ##### -->
 <para>
 

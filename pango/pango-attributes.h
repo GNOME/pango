@@ -82,7 +82,9 @@ typedef enum
   PANGO_ATTR_SHAPE,		/* PangoAttrShape */
   PANGO_ATTR_SCALE,             /* PangoAttrFloat */
   PANGO_ATTR_FALLBACK,          /* PangoAttrInt */
-  PANGO_ATTR_LETTER_SPACING     /* PangoAttrInt */
+  PANGO_ATTR_LETTER_SPACING,    /* PangoAttrInt */
+  PANGO_ATTR_UNDERLINE_COLOR,	 /* PangoAttrColor */
+  PANGO_ATTR_STRIKETHROUGH_COLOR /* PangoAttrColor */
 } PangoAttrType;
 
 typedef enum {
@@ -182,8 +184,16 @@ PangoAttribute *pango_attr_weight_new        (PangoWeight                 weight
 PangoAttribute *pango_attr_variant_new       (PangoVariant                variant);
 PangoAttribute *pango_attr_stretch_new       (PangoStretch                stretch);
 PangoAttribute *pango_attr_font_desc_new     (const PangoFontDescription *desc);
-PangoAttribute *pango_attr_underline_new     (PangoUnderline              underline);
-PangoAttribute *pango_attr_strikethrough_new (gboolean                    strikethrough);
+
+PangoAttribute *pango_attr_underline_new           (PangoUnderline underline);
+PangoAttribute *pango_attr_underline_color_new     (guint16        red,
+						    guint16        green,
+						    guint16        blue);
+PangoAttribute *pango_attr_strikethrough_new       (gboolean       strikethrough);
+PangoAttribute *pango_attr_strikethrough_color_new (guint16        red,
+						    guint16        green,
+						    guint16        blue);
+
 PangoAttribute *pango_attr_rise_new          (int                         rise);
 PangoAttribute *pango_attr_scale_new         (double                      scale_factor);
 PangoAttribute *pango_attr_fallback_new      (gboolean                    enable_fallback);

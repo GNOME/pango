@@ -69,7 +69,7 @@ Synonym for font_family
 
 <varlistentry><term>size</term>
 <listitem><para>
-Font size in 1024ths of a point, one of the absolute sizes 
+Font size in 1024ths of a point, or one of the absolute sizes 
 'xx-small', 'x-small', 'small', 'medium', 'large', 'x-large',
 'xx-large', or one of the relative sizes 'smaller' or 'larger'.
 If you want to specify a absolute size, it's usually easier
@@ -127,6 +127,14 @@ One of 'single', 'double', 'low', 'none'
 </para></listitem>
 </varlistentry>
 
+<varlistentry><term>underline_col
+or</term>
+<listitem><para>
+The color of underlines; an RGB color specification such as '#00FF00'
+or a color name such as 'red'
+</para></listitem>
+</varlistentry>
+
 <varlistentry><term>rise</term>
 <listitem><para>
 Vertical displacement, in 10000ths of an em. Can be negative for 
@@ -137,6 +145,13 @@ subscript, positive for superscript.
 <varlistentry><term>strikethrough</term>
 <listitem><para>
 'true' or 'false' whether to strike through the text
+</para></listitem>
+</varlistentry>
+
+<varlistentry><term>strikethrough_color</term>
+<listitem><para>
+The color of strikethrough lines; an RGB color specification such as
+'#00FF00' or a color name such as 'red'
 </para></listitem>
 </varlistentry>
 

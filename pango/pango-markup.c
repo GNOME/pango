@@ -855,7 +855,9 @@ span_parse_func     (MarkupData            *md,
   const char *foreground = NULL;
   const char *background = NULL;
   const char *underline = NULL;
+  const char *underline_color = NULL;
   const char *strikethrough = NULL;
+  const char *strikethrough_color = NULL;
   const char *rise = NULL;
   const char *letter_spacing = NULL;
   const char *lang = NULL;
@@ -919,10 +921,20 @@ span_parse_func     (MarkupData            *md,
           CHECK_DUPLICATE (underline);
           underline = values[i];
         }
+      else if (strcmp (names[i], "underline_color") == 0)
+        {
+          CHECK_DUPLICATE (underline_color);
+          underline_color = values[i];
+        }
       else if (strcmp (names[i], "strikethrough") == 0)
         {
           CHECK_DUPLICATE (strikethrough);
           strikethrough = values[i];
+        }
+      else if (strcmp (names[i], "strikethrough_color") == 0)
+        {
+          CHECK_DUPLICATE (strikethrough_color);
+          strikethrough_color = values[i];
         }
       else if (strcmp (names[i], "rise") == 0)
         {
@@ -1177,6 +1189,24 @@ span_parse_func     (MarkupData            *md,
       add_attribute (tag, pango_attr_underline_new (ul));
     }
 
+  if (underline_color)
+    {
+      PangoColor color;
+
+      if (!pango_color_parse (&color, underline_color))
+        {
+          g_set_error (error,
+                       G_MARKUP_ERROR,
+                       G_MARKUP_ERROR_INVALID_CONTENT,
+                       _("Could not parse underline_color color specification "
+                         "'%s' on line %d"),
+                       underline_color, line_number);
+          goto error;
+        }
+
+      add_attribute (tag, pango_attr_underline_color_new (color.red, color.green, color.blue));
+    }
+
   if (strikethrough)
     {
       if (strcmp (strikethrough, "true") == 0)
@@ -1194,6 +1224,24 @@ span_parse_func     (MarkupData            *md,
                        line_number, strikethrough);
           goto error;
         }
+    }
+
+  if (strikethrough_color)
+    {
+      PangoColor color;
+
+      if (!pango_color_parse (&color, strikethrough_color))
+        {
+          g_set_error (error,
+                       G_MARKUP_ERROR,
+                       G_MARKUP_ERROR_INVALID_CONTENT,
+                       _("Could not parse strikethrough_color color specification "
+                         "'%s' on line %d"),
+                       strikethrough_color, line_number);
+          goto error;
+        }
+
+      add_attribute (tag, pango_attr_strikethrough_color_new (color.red, color.green, color.blue));
     }
 
   if (fallback)

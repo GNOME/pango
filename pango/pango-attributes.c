@@ -578,6 +578,33 @@ pango_attr_underline_new (PangoUnderline underline)
 }
 
 /**
+ * pango_attr_underline_color_new:
+ * @red: the red value (ranging from 0 to 65535)
+ * @green: the green value
+ * @blue: the blue value
+ * 
+ * Create a new underline color attribute. This attribute
+ * modifies the color of underlines. If not set, underlines
+ * will use the foreground color.
+ * 
+ * Return value: the new #PangoAttribute.
+ **/
+PangoAttribute *
+pango_attr_underline_color_new (guint16 red,
+				guint16 green,
+				guint16 blue)
+{
+  static const PangoAttrClass klass = {
+    PANGO_ATTR_UNDERLINE_COLOR,
+    pango_attr_color_copy,
+    pango_attr_color_destroy,
+    pango_attr_color_equal
+  };
+
+  return pango_attr_color_new (&klass, red, green, blue);
+}
+
+/**
  * pango_attr_strikethrough_new:
  * @strikethrough: %TRUE if the text should be struck-through.
  * 
@@ -596,6 +623,33 @@ pango_attr_strikethrough_new (gboolean strikethrough)
   };
 
   return pango_attr_int_new (&klass, (int)strikethrough);
+}
+
+/**
+ * pango_attr_strikethrough_color_new:
+ * @red: the red value (ranging from 0 to 65535)
+ * @green: the green value
+ * @blue: the blue value
+ * 
+ * Create a new strikethrough color attribute. This attribute
+ * modifies the color of strikethrough lines. If not set, strikethrough
+ * lines will use the foreground color.
+ * 
+ * Return value: the new #PangoAttribute.
+ **/
+PangoAttribute *
+pango_attr_strikethrough_color_new (guint16 red,
+				    guint16 green,
+				    guint16 blue)
+{
+  static const PangoAttrClass klass = {
+    PANGO_ATTR_STRIKETHROUGH_COLOR,
+    pango_attr_color_copy,
+    pango_attr_color_destroy,
+    pango_attr_color_equal
+  };
+
+  return pango_attr_color_new (&klass, red, green, blue);
 }
 
 /**

@@ -303,7 +303,9 @@ pango_attr_font_desc_new
 pango_attr_foreground_new
 pango_attr_background_new
 pango_attr_strikethrough_new
+pango_attr_strikethrough_color_new
 pango_attr_underline_new
+pango_attr_underline_color_new
 PangoUnderline
 PANGO_TYPE_UNDERLINE
 pango_attr_shape_new
@@ -656,6 +658,7 @@ pango_x_font_cache_unload
 PANGO_RENDER_TYPE_WIN32
 pango_win32_get_context
 pango_win32_render
+pango_win32_render_transformed
 pango_win32_render_layout_line
 pango_win32_render_layout
 pango_win32_get_unknown_glyph

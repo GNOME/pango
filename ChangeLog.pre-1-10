@@ -1,3 +1,24 @@
+Tue Nov 23 10:23:43 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-attributes.[ch]: Add underline_color
+	and strikethrough_color attribute types. (#147616, Morten 
+	Welinder)
+
+	* pango/pango-markup.c docs/pango_markup.sgml: Add
+	corresponding 'underline_color' and 
+	'strikethrough_color' attributes for <span>.
+
+	* pango/pango-renderer.c (pango_renderer_default_prepare_run):
+	Implement underline and strikethrough colors.
+
+	* pango/pango-renderer.c: Fix some bigs with updating
+	underlines/strikethrough state.
+
+	* pango/pango-renderer.c (get_total_matrix): Fix a const
+	warning.
+
+	* docs/pango-sections.txt: Update
+	
 Mon Nov 22 15:53:37 2004  Manish Singh  <yosh@gimp.org>
 
 	* modules/thai/Makefile.am: Remove stray 'x' character.
