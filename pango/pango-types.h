@@ -94,7 +94,7 @@ struct _PangoMatrix
  * pango_matrix_rotate (&amp;matrix, 45.);
  * </programlisting></informalexample>
  **/
-#define PANGO_MATRIX_INIT { 1., 0., 0., 1., 0., 0. };
+#define PANGO_MATRIX_INIT { 1., 0., 0., 1., 0., 0. }
 
 PangoMatrix *pango_matrix_copy   (PangoMatrix *matrix);
 void         pango_matrix_free   (PangoMatrix *matrix);

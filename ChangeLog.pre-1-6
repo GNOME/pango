@@ -1,3 +1,8 @@
+Wed Jun  2 10:07:06 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-types.h (PANGO_MATRIX_INIT): Remove 
+	stray semi-colon. (#143516, Morten Welinder)
+
 Mon May 31 07:39:01 2004  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pango-utils.c pango/pango-types.h (pango_matrix_concat): 
