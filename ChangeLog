@@ -1,3 +1,10 @@
+Tue Feb 17 23:15:13 2004  Laszlo Peter  <laca@sun.com>
+
+	* pango-uninstalled.pc.in: use @PANGO_API_VERSION@
+	* pangoft2-uninstalled.pc.in: use @PANGO_API_VERSION@
+	* pangox-uninstalled.pc.in: use @PANGO_API_VERSION@
+	* pangoxft-uninstalled.pc.in: use @PANGO_API_VERSION@
+
 Mon Jan 26 10:30:06 2004  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/modules/thai/thai-shaper.c: Reapply the patch
