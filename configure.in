@@ -682,6 +682,7 @@ docs/Makefile
 docs/version.xml
 tools/Makefile
 tests/Makefile
+tests/runtests.sh
 pango.pc
 pangox.pc
 pangowin32.pc
