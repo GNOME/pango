@@ -1,3 +1,11 @@
+Thu Jun 13 16:57:59 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* Released 1.0.3.
+
+	* configure.in: Version 1.0.3, binary, interface age 3.
+
+	* NEWS: Updates.
+
 Thu Jun 13 16:39:01 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pango-markup.c (pango_parse_markup):

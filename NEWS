@@ -1,3 +1,13 @@
+Changes between 1.0.2 and 1.0.3
+
+* Change algorithm for mapping points to pixels on
+  Windows to match the system method. [Joaquin Cuenca Abela,
+  Tor Lillqvist]
+* Fix family listing for the FT2 backend. [Sven Neumann]
+* Fix memory leak in pango_font_real_get_metrics() [Matthias Clasen]
+* Some compilation warning fixes. [David L. Cooper II]
+* Fix passing attr_list == NULL to pango_parse_markip [Andreas J. Guelzow]
+
 Changes between 1.0.1 and 1.0.2
 
 * Support building with FreeType 2.1.0
