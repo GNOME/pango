@@ -1,3 +1,10 @@
+Fri Sep 27 13:10:25 2002  HideToshi Tajima  <hidetoshi.tajima@sun.com>
+
+	* modules/basic/tables-big.i: make charset ordering of
+	chinese character sets differently for chinese locales -
+	e.g., GB18030 is used first in zh-cn locales.
+	(#89937 James Su, Brian Yuan.)
+
 2002-09-25  Tor Lillqvist  <tml@iki.fi>
 
 	* pango/Makefile.am: INCLUDED_WIN32_MODULES was missing from a
