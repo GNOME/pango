@@ -2,8 +2,11 @@
 
 SUBDIRS=libpango modules examples docs tools fonts
 
-EXTRA_DIST = \
-	pango.spec.in
+bin_SCRIPTS = pango-config
+
+EXTRA_DIST = 		\
+	pango.spec.in	\
+	pango-config.in
 
 dist-hook: pango.spec
 	cp pango.spec $(distdir)

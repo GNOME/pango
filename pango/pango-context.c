@@ -33,7 +33,6 @@ struct _PangoContext
   char *lang;
   PangoDirection base_dir;
   PangoFontDescription *font_desc;
-  int size;
 
   GSList *font_maps;
 };
@@ -322,7 +321,6 @@ pango_context_list_families (PangoContext          *context,
  * pango_context_load_font:
  * @context: a #PangoContext
  * @desc: a #PangoFontDescription describing the font to load
- * @size: the size at which to load the font (in points) 
  * 
  * Loads the font in one of the fontmaps in the context
  * that is the closest match for @desc.
@@ -331,8 +329,7 @@ pango_context_list_families (PangoContext          *context,
  **/
 PangoFont *
 pango_context_load_font (PangoContext               *context,
-			 const PangoFontDescription *desc,
-			 gdouble                     size)
+			 const PangoFontDescription *desc)
 {
   GSList *tmp_list;
 
@@ -343,7 +340,7 @@ pango_context_load_font (PangoContext               *context,
     {
       PangoFont *font;
       
-      font = pango_font_map_load_font (tmp_list->data, desc, size);
+      font = pango_font_map_load_font (tmp_list->data, desc);
       if (font)
 	return font;
       
@@ -421,38 +418,6 @@ pango_context_get_lang (PangoContext *context)
   g_return_val_if_fail (context != NULL, NULL);
 
   return g_strdup (context->lang);
-}
-
-/**
- * pango_context_get_size:
- * @context: a #PangoContext
- * 
- * Retrieves the default font size for the context.
- * 
- * Return value: the default font size in 1000ths of a point.
- **/
-int
-pango_context_get_size (PangoContext *context)
-{
-  g_return_val_if_fail (context != NULL, 0);
-
-  return context->size;
-}
-
-/**
- * pango_context_set_size:
- * @context: a #PangoContext
- * @size: the new default font size in points in 1000ths of a point.
- * 
- * Sets the default font size for the context.
- **/
-void
-pango_context_set_size (PangoContext *context,
-			int          size)
-{
-  g_return_if_fail (context != NULL);
-
-  context->size = size;
 }
 
 /**
@@ -657,8 +622,6 @@ add_engines (PangoContext      *context,
   PangoMap *shape_map = NULL;
   PangoMap *lang_map = NULL;
   PangoFontDescription current_desc = { 0 };
-  int current_size = 0;
-  int next_size = 0;
 
   /* FIXME: Remove this artificial limit */
 
@@ -708,20 +671,12 @@ add_engines (PangoContext      *context,
 
 	  pango_attr_iterator_get_font (iterator, context->font_desc, &next_desc);
 
-	  attr = pango_attr_iterator_get (iterator, PANGO_ATTR_SIZE);
-	  if (attr)
-	    next_size = ((PangoAttrInt *)attr)->value;
-	  else
-	    next_size = context->size;
-	  
 	  if (i == 0 ||
-	      !pango_font_description_compare (&current_desc, &next_desc) ||
-	      current_size != next_size)
+	      !pango_font_description_compare (&current_desc, &next_desc))
 	    {
 	      char **families;
 	      
 	      current_desc = next_desc;
-	      current_size = next_size;
 
 	      for (j=0; j<n_families; j++)
 		{
@@ -743,7 +698,7 @@ add_engines (PangoContext      *context,
 	      for (j=0; j<n_families; j++)
 		{
 		  next_desc.family_name = families[j];
-		  current_fonts[j] = pango_context_load_font (context, &next_desc, next_size / 1000.);
+		  current_fonts[j] = pango_context_load_font (context, &next_desc);
 
 		  if (current_fonts[j])
 		    current_coverages[j] = pango_font_get_coverage (current_fonts[j], lang);

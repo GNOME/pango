@@ -1,13 +1,16 @@
 ## Process this file with automake to create Makefile.in.
 
-bin_PROGRAMS = pango-viewer
 aliasdir = $(sysconfdir)/pango
 
 INCLUDES = -I$(top_srcdir)/libpango/
 
+if BUILD_TESTS
+bin_PROGRAMS = pango-viewer
+
 pango_viewer_SOURCES = \
 	viewer.c
 pango_viewer_LDADD = ../libpango/libpango.la ../libpango/libpangox.la $(GTK_LIBS) -lfribidi $(UNICODE_LIBS)
+endif
 
 all-local: pango.modules
 

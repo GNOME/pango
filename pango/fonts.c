@@ -65,6 +65,7 @@ pango_font_description_compare (const PangoFontDescription  *desc1,
 	  desc1->variant == desc2->variant &&
 	  desc1->weight == desc2->weight &&
 	  desc1->stretch == desc2->stretch &&
+	  desc1->size == desc2->size &&
 	  g_strcasecmp (desc1->family_name, desc2->family_name));
 }
 
@@ -297,7 +298,6 @@ pango_font_map_unref (PangoFontMap *fontmap)
  * pango_font_map_load_font:
  * @fontmap: a #PangoFontMap
  * @desc: a #PangoFontDescription describing the font to load
- * @size: the size at which to load the font (in points) 
  * 
  * Load the font in the fontmap that is the closest match for @desc.
  *
@@ -305,12 +305,11 @@ pango_font_map_unref (PangoFontMap *fontmap)
  **/
 PangoFont *
 pango_font_map_load_font  (PangoFontMap               *fontmap,
-			   const PangoFontDescription *desc,
-			   double                      size)
+			   const PangoFontDescription *desc)
 {
   g_return_val_if_fail (fontmap != NULL, NULL);
 
-  return fontmap->klass->load_font (fontmap, desc, size);
+  return fontmap->klass->load_font (fontmap, desc);
 }
 
 /**

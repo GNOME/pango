@@ -44,5 +44,5 @@ include_HEADERS = 	   \
 
 pango_querymodules_SOURCES = \
 	querymodules.c
-pango_querymodules_LDADD = libpango.la $(GTK_LIBS) -lfribidi $(UNICODE_LIBS)
+pango_querymodules_LDADD = libpango.la $(GLIB_LIBS) -lfribidi $(UNICODE_LIBS)
 

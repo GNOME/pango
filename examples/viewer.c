@@ -61,7 +61,6 @@ struct _Line {
 };
 
 static PangoFontDescription font_description;
-static double font_size = 16000;
 static Paragraph *highlight_para;
 static int highlight_offset;
 
@@ -835,7 +834,6 @@ static void
 reload_font ()
 {
   pango_context_set_font_description (context, &font_description);
-  pango_context_set_size (context, font_size);
 
   if (layout)
     gtk_widget_queue_resize (layout);
@@ -862,7 +860,7 @@ set_style (GtkWidget *entry, gpointer data)
 void
 font_size_changed (GtkAdjustment *adj)
 {
-  font_size = (int)(adj->value * 1000 + 0.5);
+  font_description.size = (int)(adj->value * 1000 + 0.5);
   reload_font();
 }
 
@@ -1146,7 +1144,7 @@ make_font_selector (void)
   gtk_box_pack_start (GTK_BOX (hbox), util_hbox, FALSE, FALSE, 0);
 
   adj = gtk_spin_button_get_adjustment (GTK_SPIN_BUTTON (spin_button));
-  adj->value = font_size / 1000.;
+  adj->value = font_description.size / 1000.;
   adj->lower = 0;
   adj->upper = 1024;
   adj->step_increment = 1;
@@ -1196,9 +1194,9 @@ main (int argc, char **argv)
   font_description.variant = PANGO_VARIANT_NORMAL;
   font_description.weight = 500;
   font_description.stretch = PANGO_STRETCH_NORMAL;
+  font_description.size = 16000;
 
   pango_context_set_font_description (context, &font_description);
-  pango_context_set_size (context, font_size);
 
   /* Create the user interface
    */

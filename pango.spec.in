@@ -59,13 +59,15 @@ fi
 %doc README AUTHORS COPYING ChangeLog TODO
 %doc examples/HELLO.utf8
 %{prefix}/lib/libpango*-*.so
-%{prefix}/bin/*
+%{prefix}/bin/pango-querymodules
+%{prefix}/bin/pango-viewer
 %{prefix}/lib/pango/modules/*
 %config /etc/pango/pangox_aliases
 
 %files devel
 %defattr(-, root, root)
 %{prefix}/lib/libpango*.so
+%{prefix}/bin/pango-config
 %{prefix}/lib/libpango*.a
 %{prefix}/include/*
 

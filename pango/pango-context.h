@@ -47,8 +47,7 @@ void          pango_context_list_families (PangoContext                 *context
 					   gchar                      ***families,
 					   int                          *n_families);
 PangoFont *   pango_context_load_font     (PangoContext                 *context,
-					   const PangoFontDescription   *desc,
-					   gdouble                       size);
+					   const PangoFontDescription   *desc);
 
 void                  pango_context_set_font_description (PangoContext               *context,
 							  const PangoFontDescription *desc);
@@ -56,9 +55,6 @@ PangoFontDescription *pango_context_get_font_description (PangoContext          
 char *                pango_context_get_lang             (PangoContext               *context);
 void                  pango_context_set_lang             (PangoContext               *context,
 							  const char                 *lang);
-int                   pango_context_get_size             (PangoContext               *context);
-void                  pango_context_set_size             (PangoContext               *context,
-							  int                         size);
 void                  pango_context_set_base_dir         (PangoContext               *context,
 							  PangoDirection              direction);
 PangoDirection        pango_context_get_base_dir         (PangoContext               *context);

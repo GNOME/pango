@@ -62,13 +62,16 @@ typedef enum {
   PANGO_STRETCH_ULTRA_EXPANDED
 } PangoStretch;
 
-struct _PangoFontDescription {
-  gchar *family_name;
+struct _PangoFontDescription
+{
+  char *family_name;
 
   PangoStyle style;
   PangoVariant variant;
   PangoWeight weight;
   PangoStretch stretch;
+
+  int size;
 };
 
 PangoFontDescription *pango_font_description_copy    (const PangoFontDescription  *desc);
@@ -133,8 +136,7 @@ struct _PangoFontMapClass
 {
   void       (*destroy)       (PangoFontMap               *fontmap);
   PangoFont *(*load_font)     (PangoFontMap               *fontmap,
-			       const PangoFontDescription *desc,
-			       double                      size);
+			       const PangoFontDescription *desc);
   void       (*list_fonts)    (PangoFontMap               *fontmap,
 			       const gchar                *family,
 			       PangoFontDescription     ***descs,
@@ -148,8 +150,7 @@ void       pango_font_map_init      (PangoFontMap               *fontmap);
 void       pango_font_map_ref       (PangoFontMap               *fontmap);
 void       pango_font_map_unref     (PangoFontMap               *fontmap);
 PangoFont *pango_font_map_load_font (PangoFontMap               *fontmap,
-				     const PangoFontDescription *desc,
-				     double                      size);
+				     const PangoFontDescription *desc);
 
 void       pango_font_map_list_fonts    (PangoFontMap           *fontmap,
 					 const gchar            *family,

@@ -1,3 +1,23 @@
+Fri Feb 25 15:04:21 2000  Owen Taylor  <otaylor@redhat.com>
+
+	* libpango/{fonts.c,pango-font.h,pango-context.[ch],pangox.c,
+	  pango-attributes.c,examples/viewer.c: Add size to the 
+	  font description structure instead of continually passing
+	  it around as an extra argument.
+
+	* libpango/pangox.c: Take screen resolution into account when
+	  choosing fonts, instead of assumming point == pixel.
+
+Fri Feb 25 12:32:01 2000  Owen Taylor  <otaylor@redhat.com>
+
+	* configure.in examples/Makefile.am: If GTK+ test fails,
+	just skip the example program.
+
+	* pango-config.in pango.spec.in: Add a simple pango-config
+	script to the build. (pango-config --libs pangox really
+	should add the X libraries, but we'll omit that for the
+	moment.)
+
 Sat Feb 19 18:51:35 2000  Owen Taylor  <otaylor@redhat.com>
 
 	* libpango/pangox.c (pango_x_make_matching_xlfd): Fix problem

@@ -908,6 +908,9 @@ pango_attr_iterator_get_font (PangoAttrIterator    *iterator,
 
   if ((attr = pango_attr_iterator_get (iterator, PANGO_ATTR_STRETCH)))
     current->stretch = ((PangoAttrInt *)attr)->value;
+
+  if ((attr = pango_attr_iterator_get (iterator, PANGO_ATTR_SIZE)))
+    current->size = ((PangoAttrInt *)attr)->value;
 }
 
 
