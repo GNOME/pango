@@ -303,26 +303,28 @@ hangul_engine_shape (PangoFont        *font,
 
   for (i = 0; i < n_chars; i++)
     {
-      gunichar prev = jamos[n_jamos - 1];
       gunichar wc;
 
       wc = g_utf8_get_char (p);
 
       /* Check syllable boundaries. */
-      if (n_jamos &&
-	  ((!IS_L (prev) && IS_S (wc)) ||
-	   (IS_T (prev) && IS_L (wc)) ||
-	   (IS_V (prev) && IS_L (wc)) ||
-	   (IS_T (prev) && IS_V (wc)) ||
-	   IS_M(prev)))
+      if (n_jamos)
 	{
-	  /* Draw a syllable. */
-	  render_syllable (font, jamos, n_jamos, glyphs,
-			   &n_glyphs, start - text);
-	  n_jamos = 0;
-	  start = p;
+	  gunichar prev = jamos[n_jamos - 1];
+	  if ((!IS_L (prev) && IS_S (wc)) ||
+	      (IS_T (prev) && IS_L (wc)) ||
+	      (IS_V (prev) && IS_L (wc)) ||
+	      (IS_T (prev) && IS_V (wc)) ||
+	      IS_M(prev))
+	    {
+	      /* Draw a syllable. */
+	      render_syllable (font, jamos, n_jamos, glyphs,
+			       &n_glyphs, start - text);
+	      n_jamos = 0;
+	      start = p;
+	    }
 	}
-
+	  
       if (n_jamos == max_jamos)
 	{
 	  max_jamos += 3;	/* at most 3 for each syllable code (L+V+T) */
