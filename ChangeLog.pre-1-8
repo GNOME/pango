@@ -1,3 +1,8 @@
+2003-06-13  Tor Lillqvist  <tml@iki.fi>
+
+	* pango-zip.sh.in (DLLDIR): libtool 1.5 installs DLLs in the bin
+	directory, so look there, too. Include the gtk-doc directory.
+
 Thu Jun  5 14:53:40 2003  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pango-layout.c (pango_layout_move_cursor_visually):
