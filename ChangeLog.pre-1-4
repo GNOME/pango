@@ -1,34 +1,3 @@
-2004-05-06  Theppitak Karoonboonyanan  <thep@linux.thai.net>
-
-	* pango/break.c (pango_break):
-	Fix incorrect casts to get the class object of lang engine. (#141931)
-
-2004-04-29  Tor Lillqvist  <tml@iki.fi>
-
-	* pango/pangowin32-fontmap.c (pango_win32_font_map_for_display):
-	Use floating-point math in resolution calculation. (#141229, John
-	Ehresman)
-
-	* pango/pangowin32-fontmap.c (pango_win32_insert_font): Don't leak
-	family_name. (#140772, John Ehresman)
-
-2004-04-20  Theppitak Karoonboonyanan  <thep@linux.thai.net>
-
-	* modules/thai/thai-shaper.c (get_adjusted_glyphs_list):
-	* modules/thai/thai-fc.c (tis620_2):
-	Use dottedcircle as the base for individual combining characters.
-
-2004-04-18  Changwoo Ryu  <cwryu@debian.org>
-
-	* modules/hangul/hangul-defs.h (IS_JAMO): 
-	* modules/hangul/hangul-fc.c (hangul_engine_shape, render_basic):
-	handle non-Hangul unicode chars, fixes #129741,	#137347.
-
-2004-04-05  Anders Carlsson  <andersca@gnome.org>
-
-	* examples/argcontext.c (arg_context_parse): 
-	Handle '--' correctly.
-
 Tue Mar 16 11:24:46 2004  Owen Taylor  <otaylor@redhat.com>
 
 	* === Released 1.4.0 ===
