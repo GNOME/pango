@@ -51,11 +51,23 @@ static PangoEngineInfo script_engines[] = {
   }
 };
 
+static PangoGlyph
+thai_x_make_glyph (ThaiFontInfo *font_info, unsigned int c)
+{
+  return PANGO_X_MAKE_GLYPH (font_info->subfont, c);
+}
+
+static PangoGlyph
+thai_x_make_unknown_glyph (ThaiFontInfo *font_info, unsigned int c)
+{
+  return pango_x_get_unknown_glyph (font_info->font);
+}
+
 /* Returns a structure with information we will use to rendering given the
  * #PangoFont. This is computed once per font and cached for later retrieval.
  */
-ThaiFontInfo *
-thai_get_font_info (PangoFont *font)
+static ThaiFontInfo *
+thai_x_get_font_info (PangoFont *font)
 {
   static const char *charsets[] = {
     "tis620-2",
@@ -120,30 +132,35 @@ thai_get_font_info (PangoFont *font)
 
       g_free (subfont_ids);
       g_free (subfont_charsets);
+
+      font_info->make_glyph = thai_x_make_glyph;
+      font_info->make_unknown_glyph = thai_x_make_unknown_glyph;
     }
 
   return font_info;
 }
 
-PangoGlyph
-thai_make_glyph (ThaiFontInfo *font_info, unsigned int c)
+static void 
+thai_engine_x_shape (PangoFont        *font,
+		     const char       *text,
+		     gint              length,
+		     PangoAnalysis    *analysis,
+		     PangoGlyphString *glyphs)
 {
-  return PANGO_X_MAKE_GLYPH (font_info->subfont, c);
+  ThaiFontInfo *font_info;
+
+  font_info = thai_x_get_font_info (font);
+  thai_engine_shape(font_info, text, length, analysis, glyphs);
 }
 
-PangoGlyph
-thai_make_unknown_glyph (ThaiFontInfo *font_info, unsigned int c)
-{
-  return pango_x_get_unknown_glyph (font_info->font);
-}
 
 static PangoCoverage *
-thai_engine_get_coverage (PangoFont  *font,
+thai_engine_x_get_coverage (PangoFont  *font,
 			   PangoLanguage *lang)
 {
   PangoCoverage *result = pango_coverage_new ();
   
-  ThaiFontInfo *font_info = thai_get_font_info (font);
+  ThaiFontInfo *font_info = thai_x_get_font_info (font);
   
   if (font_info->font_set != THAI_FONT_NONE)
     {
@@ -168,8 +185,8 @@ thai_engine_x_new ()
   result->engine.id = SCRIPT_ENGINE_NAME;
   result->engine.type = PANGO_ENGINE_TYPE_SHAPE;
   result->engine.length = sizeof (result);
-  result->script_shape = thai_engine_shape;
-  result->get_coverage = thai_engine_get_coverage;
+  result->script_shape = thai_engine_x_shape;
+  result->get_coverage = thai_engine_x_get_coverage;
 
   return (PangoEngine *)result;
 }

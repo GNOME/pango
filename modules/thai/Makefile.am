@@ -3,6 +3,7 @@
 common_sources = thai-shaper.c thai-shaper.h
 thai_x_sources = $(common_sources) thai-x.c 
 thai_xft_sources = $(common_sources) thai-xft.c 
+thai_ft2_sources = $(common_sources) thai-ft2.c 
 
 pangolibs = $(top_builddir)/pango/libpango-$(PANGO_API_VERSION).la $(FRIBIDI_LIBS) $(GLIB_LIBS)
 pangoxlibs = $(top_builddir)/pango/libpangox-$(PANGO_API_VERSION).la $(X_LIBS) $(pangolibs)
@@ -43,9 +44,30 @@ X_INCLUDED=
 X_PREFIX=
 endif
 
-noinst_LTLIBRARIES = $(X_INCLUDED) $(XFT_INCLUDED)
-module_LTLIBRARIES = $(X_MODULES) $(XFT_MODULES)
-moddefine = $(X_PREFIX) $(XFT_PREFIX)
+if HAVE_FREETYPE
+if INCLUDE_THAI_FT2
+FT2_MODULES=
+FT2_INCLUDED=libpango-thai-ft2.la
+FT2_PREFIX=-DFT2_MODULE_PREFIX
+else
+FT2_MODULES=pango-thai-ft2.la
+FT2_INCLUDED=
+FT2_PREFIX=
+thai_ft2_libadd=$(pangoft2libs)
+endif
+else
+FT2_MODULES=
+FT2_INCLUDED=
+FT2_PREFIX=
+endif
+
+if PLATFORM_WIN32
+no_undefined = -no-undefined
+endif
+
+noinst_LTLIBRARIES = $(X_INCLUDED) $(XFT_INCLUDED) $(FT2_INCLUDED)
+module_LTLIBRARIES = $(X_MODULES) $(XFT_MODULES) $(FT2_MODULES)
+moddefine = $(X_PREFIX) $(XFT_PREFIX) $(FT2_PREFIX)
 moduledir = $(libdir)/pango/$(PANGO_MODULE_VERSION)/modules
 
 INCLUDES =			\
@@ -71,6 +93,12 @@ pango_thai_xft_la_LIBADD = $(thai_xft_libadd)
 pango_thai_xft_la_SOURCES = $(thai_xft_sources)
 
 libpango_thai_xft_la_SOURCES = $(thai_xft_sources)
+
+pango_thai_ft2_la_LDFLAGS = -export-dynamic -avoid-version -module $(no_undefined)
+pango_thai_ft2_la_LIBADD = $(thai_ft2_libadd)
+pango_thai_ft2_la_SOURCES = $(thai_ft2_sources)
+
+libpango_thai_ft2_la_SOURCES = $(thai_ft2_sources)
 
 included-modules: $(noinst_LTLIBRARIES)
 

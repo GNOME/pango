@@ -1,3 +1,11 @@
+Wed Apr 30 18:43:59 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* configure.in modules/thai/Makefile.am modules
+	modules/thai/thai-ft2.c modules/thai/thai-shaper.[ch]
+	modules/thai/thai-x.c modules/thai/thai-xft.c: Patch
+	from Theppitak Karoonboonyanan to add FT2 shaper
+	for Thai. (#108582)
+
 Wed Apr 30 16:46:52 2003  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/fonts.c (pango_font_description_hash): Hash

@@ -29,25 +29,19 @@ struct _ThaiFontInfo
   PangoFont       *font;
   ThaiFontSet      font_set;
   PangoXSubfont    subfont; /* For X backend */
+
+  PangoGlyph
+  (*make_glyph) (ThaiFontInfo *font_info, unsigned int c);
+
+  PangoGlyph
+  (*make_unknown_glyph) (ThaiFontInfo *font_info, unsigned int c);
 };
-
-/*
- * Abstract methods (implemented by each shaper module)
- */
-ThaiFontInfo *
-thai_get_font_info (PangoFont *font);
-
-PangoGlyph
-thai_make_glyph (ThaiFontInfo *font_info, unsigned int c);
-
-PangoGlyph
-thai_make_unknown_glyph (ThaiFontInfo *font_info, unsigned int c);
 
 /*
  * Public functions
  */
 void
-thai_engine_shape (PangoFont        *font,
+thai_engine_shape (ThaiFontInfo     *font_info,
                    const char       *text,
                    gint              length,
                    PangoAnalysis    *analysis,

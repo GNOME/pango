@@ -1,5 +1,5 @@
 /* Pango
- * thai-xft.c:
+ * thai-ft2.c:
  *
  * Copyright (C) 1999 Red Hat Software
  * Author: Owen Taylor <otaylor@redhat.com>
@@ -31,10 +31,10 @@
 
 #include <glib.h>
 #include "pango-engine.h"
-#include "pangoxft.h"
+#include "pangoft2.h"
 #include "thai-shaper.h"
 
-#define SCRIPT_ENGINE_NAME "ThaiScriptEngineXft"
+#define SCRIPT_ENGINE_NAME "ThaiScriptEngineFT2"
 
 /* We handle the range U+0e01 to U+0e5b exactly
  */
@@ -46,7 +46,7 @@ static PangoEngineInfo script_engines[] = {
   {
     SCRIPT_ENGINE_NAME,
     PANGO_ENGINE_TYPE_SHAPE,
-    PANGO_RENDER_TYPE_XFT,
+    PANGO_RENDER_TYPE_FT2,
     thai_ranges, G_N_ELEMENTS(thai_ranges)
   }
 };
@@ -114,12 +114,15 @@ static int
 contain_glyphs(PangoFont *font, const int glyph_map[128])
 {
   unsigned char c;
+  FT_Face face;
+
+  face = pango_ft2_font_get_face (font);
 
   for (c = 0; c < 0x80; c++)
     {
       if (glyph_map[c])
         {
-	  if (!pango_xft_font_has_char (font, glyph_map[c]))
+	  if (!FT_Get_Char_Index (face, glyph_map[c]))
             return 0;
         }
     }
@@ -127,7 +130,7 @@ contain_glyphs(PangoFont *font, const int glyph_map[128])
 }
 
 static PangoGlyph
-thai_xft_make_glyph (ThaiFontInfo *font_info, unsigned int c)
+thai_ft2_make_glyph (ThaiFontInfo *font_info, unsigned int c)
 {
   int index;
   PangoGlyph result;
@@ -140,24 +143,24 @@ thai_xft_make_glyph (ThaiFontInfo *font_info, unsigned int c)
     default:                index = 0; break;
   }
   
-  result = pango_xft_font_get_glyph (font_info->font, index);
+  result = FT_Get_Char_Index (pango_ft2_font_get_face (font_info->font), index);
   if (result)
     return result;
   else
-    return pango_xft_font_get_unknown_glyph (font_info->font, index);
+    return pango_ft2_get_unknown_glyph (font_info->font);
 }
 
 static PangoGlyph
-thai_xft_make_unknown_glyph (ThaiFontInfo *font_info, unsigned int c)
+thai_ft2_make_unknown_glyph (ThaiFontInfo *font_info, unsigned int c)
 {
-  return pango_xft_font_get_unknown_glyph (font_info->font, c);
+  return pango_ft2_get_unknown_glyph (font_info->font);
 }
 
 /* Returns a structure with information we will use to rendering given the
  * #PangoFont. This is computed once per font and cached for later retrieval.
  */
 static ThaiFontInfo *
-thai_xft_get_font_info (PangoFont *font)
+thai_ft2_get_font_info (PangoFont *font)
 {
   ThaiFontInfo *font_info;
   GQuark info_id = g_quark_from_string ("thai-font-info");
@@ -182,8 +185,8 @@ thai_xft_get_font_info (PangoFont *font)
       else
         font_info->font_set = THAI_FONT_ISO10646;
   
-      font_info->make_glyph = thai_xft_make_glyph;
-      font_info->make_unknown_glyph = thai_xft_make_unknown_glyph;
+      font_info->make_glyph = thai_ft2_make_glyph;
+      font_info->make_unknown_glyph = thai_ft2_make_unknown_glyph;
 
       g_object_set_qdata_full (G_OBJECT (font), info_id, font_info, (GDestroyNotify)g_free);
     }
@@ -192,7 +195,7 @@ thai_xft_get_font_info (PangoFont *font)
 }
 
 static void 
-thai_engine_xft_shape (PangoFont        *font,
+thai_engine_ft2_shape (PangoFont        *font,
 		       const char       *text,
 		       gint              length,
 		       PangoAnalysis    *analysis,
@@ -200,19 +203,19 @@ thai_engine_xft_shape (PangoFont        *font,
 {
   ThaiFontInfo *font_info;
 
-  font_info = thai_xft_get_font_info (font);
+  font_info = thai_ft2_get_font_info (font);
   thai_engine_shape(font_info, text, length, analysis, glyphs);
 }
 
 static PangoCoverage *
-thai_engine_xft_get_coverage (PangoFont  *font,
+thai_engine_ft2_get_coverage (PangoFont  *font,
 			      PangoLanguage *lang)
 {
   return pango_font_get_coverage (font, lang);
 }
 
 static PangoEngine *
-thai_engine_xft_new ()
+thai_engine_ft2_new ()
 {
   PangoEngineShape *result;
   
@@ -221,21 +224,21 @@ thai_engine_xft_new ()
   result->engine.id = SCRIPT_ENGINE_NAME;
   result->engine.type = PANGO_ENGINE_TYPE_SHAPE;
   result->engine.length = sizeof (result);
-  result->script_shape = thai_engine_xft_shape;
-  result->get_coverage = thai_engine_xft_get_coverage;
+  result->script_shape = thai_engine_ft2_shape;
+  result->get_coverage = thai_engine_ft2_get_coverage;
 
   return (PangoEngine *)result;
 }
 
 /* The following three functions provide the public module API for
- * Pango. If we are compiling it is a module, then we name the
+ * Pango. If we are compiling it as a module, then we name the
  * entry points script_engine_list, etc. But if we are compiling
  * it for inclusion directly in Pango, then we need them to
  * to have distinct names for this module, so we prepend
- * _pango_thai_xft_
+ * _pango_thai_ft2_
  */
-#ifdef XFT_MODULE_PREFIX
-#define MODULE_ENTRY(func) _pango_thai_xft_##func
+#ifdef FT2_MODULE_PREFIX
+#define MODULE_ENTRY(func) _pango_thai_ft2_##func
 #else
 #define MODULE_ENTRY(func) func
 #endif
@@ -255,7 +258,7 @@ PangoEngine *
 MODULE_ENTRY(script_engine_load) (const char *id)
 {
   if (!strcmp (id, SCRIPT_ENGINE_NAME))
-    return thai_engine_xft_new ();
+    return thai_engine_ft2_new ();
   else
     return NULL;
 }
