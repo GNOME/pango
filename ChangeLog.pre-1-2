@@ -1,3 +1,8 @@
+Wed Aug  7 10:57:49 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* modules/hangul/Makefile.am modules/thai/Makefile.am:
+	Add missing XFT_CFLAGS to INCLUDES. (Joe Yandle)
+
 Mon Aug  5 23:57:59 2002  Owen Taylor  <otaylor@redhat.com>
 	 
 	* pango/pangoxft-fontmap.c (pango_xft_pattern_hash): Use
