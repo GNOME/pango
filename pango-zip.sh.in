@@ -6,14 +6,17 @@ ZIP=/tmp/pango-@PANGO_VERSION@-`date +%Y%m%d`.zip
 DEVZIP=/tmp/pango-dev-@PANGO_VERSION@-`date +%Y%m%d`.zip
 cd @prefix@
 
+DLLDIR=lib
+[ -f bin/libpango-@PANGO_API_VERSION@-@LT_CURRENT_MINUS_AGE@.dll ] && DLLDIR=bin
+
 rm $ZIP
 zip $ZIP -@ <<EOF
 bin/pango-querymodules.exe
 etc/pango/pango.aliases
 etc/pango/pango.modules
-lib/libpango-@PANGO_API_VERSION@-@LT_CURRENT_MINUS_AGE@.dll
-lib/libpangoft2-@PANGO_API_VERSION@-@LT_CURRENT_MINUS_AGE@.dll
-lib/libpangowin32-@PANGO_API_VERSION@-@LT_CURRENT_MINUS_AGE@.dll
+$DLLDIR/libpango-@PANGO_API_VERSION@-@LT_CURRENT_MINUS_AGE@.dll
+$DLLDIR/libpangoft2-@PANGO_API_VERSION@-@LT_CURRENT_MINUS_AGE@.dll
+$DLLDIR/libpangowin32-@PANGO_API_VERSION@-@LT_CURRENT_MINUS_AGE@.dll
 EOF
 
 zip $ZIP lib/pango/@PANGO_MODULE_VERSION@/modules/*.dll
@@ -30,4 +33,5 @@ lib/pangowin32-@PANGO_API_VERSION@.lib
 lib/pkgconfig/pango.pc
 lib/pkgconfig/pangowin32.pc
 lib/pkgconfig/pangoft2.pc
+share/gtk-doc/html/pango
 EOF

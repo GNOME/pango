@@ -1,3 +1,13 @@
+2003-06-13  Tor Lillqvist  <tml@iki.fi>
+
+	* README.win32: Updates.
+
+	* pango-zip.sh.in (DLLDIR): libtool 1.5 installs DLLs in the bin
+	directory, so look there, too. Include the gtk-doc directory.
+
+	* pango/pangoft2.def: Add pango_ft2_font_map_new and
+	pango_ot_info_get. Remove pango_ot_info_new.
+
 Mon Jun  9 00:23:34 2003  Owen Taylor  <otaylor@redhat.com>
 
 	* === Released 1.2.3 ===

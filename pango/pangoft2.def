@@ -3,6 +3,7 @@ EXPORTS
 	pango_ft2_font_get_face
 	pango_ft2_font_get_kerning
 	pango_ft2_font_map_for_display
+	pango_ft2_font_map_new
 	pango_ft2_get_context
 	pango_ft2_get_unknown_glyph
 	pango_ft2_render
@@ -12,10 +13,10 @@ EXPORTS
 	pango_ot_info_find_feature
 	pango_ot_info_find_language
 	pango_ot_info_find_script
+	pango_ot_info_get
 	pango_ot_info_list_features
 	pango_ot_info_list_languages
 	pango_ot_info_list_scripts
-	pango_ot_info_new
 	pango_ot_ruleset_add_feature
 	pango_ot_ruleset_new
 	pango_ot_ruleset_shape
