@@ -43,6 +43,7 @@
 
 HDC pango_win32_hdc;
 OSVERSIONINFO pango_win32_os_version_info;
+gboolean pango_win32_debug = FALSE;
 
 typedef struct _PangoWin32FontClass   PangoWin32FontClass;
 
@@ -177,6 +178,37 @@ pango_win32_font_init (PangoWin32Font *win32font)
   win32font->glyph_info = g_hash_table_new_full (NULL, NULL, NULL, g_free);
 }
 
+HDC
+pango_win32_get_dc (void)
+{
+  if (pango_win32_hdc == NULL)
+    {
+      pango_win32_hdc = CreateDC ("DISPLAY", NULL, NULL, NULL);
+      memset (&pango_win32_os_version_info, 0,
+	      sizeof (pango_win32_os_version_info));
+      pango_win32_os_version_info.dwOSVersionInfoSize =
+	sizeof (OSVERSIONINFO);
+      GetVersionEx (&pango_win32_os_version_info);
+
+      /* Also do some generic pangowin32 initialisations... this function
+       * is a suitable place for those as it is called from a couple
+       * of class_init functions.
+       */
+#ifdef PANGO_WIN32_DEBUGGING
+      if (getenv ("PANGO_WIN32_DEBUG") != NULL)
+	pango_win32_debug = TRUE;
+#endif      
+    }
+
+  return pango_win32_hdc;
+}  
+
+gboolean
+pango_win32_get_debug_flag (void)
+{
+  return pango_win32_debug;
+}
+
 static void
 pango_win32_font_class_init (PangoWin32FontClass *class)
 {
@@ -194,15 +226,7 @@ pango_win32_font_class_init (PangoWin32FontClass *class)
   font_class->get_glyph_extents = pango_win32_font_get_glyph_extents;
   font_class->get_metrics = pango_win32_font_get_metrics;
 
-  if (pango_win32_hdc == NULL)
-    {
-      pango_win32_hdc = CreateDC ("DISPLAY", NULL, NULL, NULL);
-      memset (&pango_win32_os_version_info, 0,
-	      sizeof (pango_win32_os_version_info));
-      pango_win32_os_version_info.dwOSVersionInfoSize =
-	sizeof (OSVERSIONINFO);
-      GetVersionEx (&pango_win32_os_version_info);
-    }
+  pango_win32_get_dc ();
 }
 
 PangoWin32Font *
@@ -244,15 +268,33 @@ pango_win32_render (HDC               hdc,
 		    int               x, 
 		    int               y)
 {
-  HFONT old_hfont = NULL;
-  HFONT hfont;
-  int i, num_valid_glyphs;
+  HFONT hfont, old_hfont = NULL;
+  int i, j, num_valid_glyphs;
   guint16 *glyph_indexes;
   gint *dX;
-  gint last_x = 0;
-  PangoGlyphUnit start_x_offset = 0, x_offset = 0;
+  gint this_x;
+  PangoGlyphUnit start_x_offset, x_offset, next_x_offset, cur_y_offset;
 
   g_return_if_fail (glyphs != NULL);
+
+#ifdef PANGO_WIN32_DEBUGGING
+  if (pango_win32_debug)
+    {
+      PING (("num_glyphs:%d", glyphs->num_glyphs));
+      for (i = 0; i < glyphs->num_glyphs; i++)
+	{
+	  printf (" %d:%d", glyphs->glyphs[i].glyph, glyphs->glyphs[i].geometry.width);
+	  if (glyphs->glyphs[i].geometry.x_offset != 0 || 
+	      glyphs->glyphs[i].geometry.y_offset != 0)
+	    printf (":%d,%d", glyphs->glyphs[i].geometry.x_offset,
+		    glyphs->glyphs[i].geometry.y_offset);
+	}
+      printf ("\n");
+    }
+#endif
+
+  if (glyphs->num_glyphs == 0)
+    return;
 
   hfont = pango_win32_get_hfont (font);
   if (!hfont)
@@ -263,66 +305,107 @@ pango_win32_render (HDC               hdc,
   glyph_indexes = g_new (guint16, glyphs->num_glyphs);
   dX = g_new (INT, glyphs->num_glyphs);
 
+  /* Render glyphs using one ExtTextOutW() call for each run of glyphs
+   * that have the same y offset. The big majoroty of glyphs will have
+   * y offset of zero, so in general, the whole glyph string will be
+   * rendered by one call to ExtTextOutW().
+   *
+   * In order to minimize buildup of rounding errors, we keep track of
+   * where the glyphs should be rendered in PangoGlyphUnits, and round
+   * to pixels separately for each glyph,
+   */
+
+  i = 0;
+
+  /* Outer loop through all glyphs in string */
+  while (i < glyphs->num_glyphs)
+    {
+      cur_y_offset = glyphs->glyphs[i].geometry.y_offset;
+      num_valid_glyphs = 0;
+      x_offset = 0;
+      start_x_offset = glyphs->glyphs[i].geometry.x_offset;
+      this_x = PANGO_PIXELS (start_x_offset);
+
+      /* Inner loop through glyphs with the same y offset, or code
+       * point zero (just spacing).
+       */
+      while (i < glyphs->num_glyphs &&
+	     (glyphs->glyphs[i].glyph == 0 || cur_y_offset == glyphs->glyphs[i].geometry.y_offset))
+	{
+	  if (glyphs->glyphs[i].glyph == 0)
+	    {
+	      /* Code point 0 glyphs should not be rendered, but their
+	       * indicated width (set up by PangoLayout) should be taken
+	       * into account.
+	       */
+
+	      /* If the string starts with spacing, must shift the
+	       * starting point for the glyphs actually rendered.  For
+	       * spacing in the middle of the glyph string, add to the dX
+	       * of the previous glyph to be rendered.
+	       */
+	      if (num_valid_glyphs == 0)
+		start_x_offset += glyphs->glyphs[i].geometry.width;
+	      else
+		{
+		  x_offset += glyphs->glyphs[i].geometry.width;
+		  dX[num_valid_glyphs-1] = PANGO_PIXELS (x_offset) - this_x;
+		}
+	    }
+	  else
+	    {
+	      if (glyphs->glyphs[i].glyph & PANGO_WIN32_UNKNOWN_FLAG)
+		{
+		  /* Glyph index is actually the char value that doesn't
+		   * have any glyph (ORed with the flag). We should really
+		   * do the same that pango_xft_real_render() does: render
+		   * a box with the char value in hex inside it in a tiny
+		   * font. Later. For now, use the TrueType invalid glyph
+		   * at 0.
+		   */
+		  glyph_indexes[num_valid_glyphs] = 0;
+		}
+	      else
+		glyph_indexes[num_valid_glyphs] = glyphs->glyphs[i].glyph;
+
+	      x_offset += glyphs->glyphs[i].geometry.width;
+
+	      /* If the next glyph has an X offset, take that into consideration now */
+	      if (i < glyphs->num_glyphs - 1)
+		next_x_offset = glyphs->glyphs[i+1].geometry.x_offset;
+	      else
+		next_x_offset = 0;
+
+	      dX[num_valid_glyphs] = PANGO_PIXELS (x_offset + next_x_offset) - this_x;
+
+	      /* Prepare for next glyph */
+	      this_x += dX[num_valid_glyphs];
+	      num_valid_glyphs++;
+	    }
+	  i++;
+	}
 #ifdef PANGO_WIN32_DEBUGGING
-  PING (("num_glyphs:%d", glyphs->num_glyphs));
-  printf (" ");
-  for (i = 0; i <glyphs->num_glyphs; i++)
-    printf ("%d:%d ", glyphs->glyphs[i].glyph, glyphs->glyphs[i].geometry.width);
-  printf ("\n");
+      if (pango_win32_debug)
+	{
+	  printf ("ExtTextOutW at %d,%d deltas:",
+		  x + PANGO_PIXELS (start_x_offset),
+		  y + PANGO_PIXELS (cur_y_offset));
+	  for (j = 0; j < num_valid_glyphs; j++)
+	    printf (" %d", dX[j]);
+	  printf ("\n");
+	}
 #endif
 
-  num_valid_glyphs = 0;
-  for (i = 0; i <glyphs->num_glyphs; i++)
-    {
-      if (glyphs->glyphs[i].glyph == 0)
-	{
-	  /* Code point 0 glyphs should not be rendered, but their
-	   * indicated width (set up by PangoLayout) should be taken
-	   * into account.
-	   */
-
-	  /* If the string starts with spacing, must shift the
-	   * starting point for the glyphs actually rendered.  For
-	   * spacing in the middle of the glyph string, add to the dX
-	   * of the previous glyph to be rendered.
-	   */
-	  if (num_valid_glyphs == 0)
-	    start_x_offset += glyphs->glyphs[i].geometry.width;
-	  else
-	    {
-	      x_offset += glyphs->glyphs[i].geometry.width;
-	      dX[num_valid_glyphs-1] = PANGO_PIXELS (x_offset) - last_x;
-	    }
-	}
-      else
-        {
-	  if (glyphs->glyphs[i].glyph & PANGO_WIN32_UNKNOWN_FLAG)
-	    {
-	      /* Glyph index is actually the char value that doesn't
-	       * have any glyph (ORed with the flag). We should really
-	       * do the same that pango_xft_real_render() does: render
-	       * a box with the char value in hex inside it in a tiny
-	       * font. Later.  For now, use the TrueType invalid glyph
-	       * at 0.
-	       */
-	      glyph_indexes[num_valid_glyphs] = 0;
-	    }
-	  else
-	    glyph_indexes[num_valid_glyphs] = glyphs->glyphs[i].glyph;
-
-	  if (num_valid_glyphs > 0)
-	    last_x += dX[num_valid_glyphs-1];
-	  x_offset += glyphs->glyphs[i].geometry.width;
-	  dX[num_valid_glyphs] = PANGO_PIXELS (x_offset) - last_x;
-	  num_valid_glyphs++;
-	}
+      ExtTextOutW (hdc,
+		   x + PANGO_PIXELS (start_x_offset),
+		   y + PANGO_PIXELS (cur_y_offset),
+		   ETO_GLYPH_INDEX,
+		   NULL,
+		   glyph_indexes, num_valid_glyphs,
+		   dX);
+      x += this_x;
     }
 
-  ExtTextOutW (hdc, x + PANGO_PIXELS (start_x_offset), y,
-	       ETO_GLYPH_INDEX,
-	       NULL,
-	       glyph_indexes, num_valid_glyphs,
-	       dX);
 
   SelectObject (hdc, old_hfont); /* restore */
   g_free (glyph_indexes);
@@ -581,8 +664,10 @@ pango_win32_font_find_shaper (PangoFont     *font,
 /**
  * pango_win32_get_unknown_glyph:
  * @font: a #PangoFont
+ * @wc: the Unicode character for which a glyph is needed.
  * 
- * Return the index of a glyph suitable for drawing unknown characters.
+ * Returns the index of a glyph suitable for drawing @wc as an
+ * unknown character.
  * 
  * Return value: a glyph index into @font
  **/
@@ -1229,10 +1314,13 @@ pango_win32_font_calc_coverage (PangoFont     *font,
       if (id_range_offset[i] == 0)
 	{
 #ifdef PANGO_WIN32_DEBUGGING
-	  if (end_count[i] == start_count[i])
-	    printf ("%04x ", start_count[i]);
-	  else
-	    printf ("%04x:%04x ", start_count[i], end_count[i]);
+	  if (pango_win32_debug)
+	    {
+	      if (end_count[i] == start_count[i])
+		printf ("%04x ", start_count[i]);
+	      else
+		printf ("%04x:%04x ", start_count[i], end_count[i]);
+	    }
 #endif	  
 	  for (ch = start_count[i]; 
 	       ch <= end_count[i];
@@ -1268,10 +1356,13 @@ pango_win32_font_calc_coverage (PangoFont     *font,
 #ifdef PANGO_WIN32_DEBUGGING
 	      else if (ch0 < G_MAXUINT)
 		{
-		  if (ch > ch0 + 2)
-		    printf ("%04x:%04x ", ch0, ch - 1);
-		  else
-		    printf ("%04x ", ch0);
+		  if (pango_win32_debug)
+		    {
+		      if (ch > ch0 + 2)
+			printf ("%04x:%04x ", ch0, ch - 1);
+		      else
+			printf ("%04x ", ch0);
+		    }
 		  ch0 = G_MAXUINT;
 		}
 #endif
@@ -1279,15 +1370,19 @@ pango_win32_font_calc_coverage (PangoFont     *font,
 #ifdef PANGO_WIN32_DEBUGGING
 	  if (ch0 < G_MAXUINT)
 	    {
-	      if (ch > ch0 + 2)
-		printf ("%04x:%04x ", ch0, ch - 1);
-	      else
-		printf ("%04x ", ch0);
+	      if (pango_win32_debug)
+		{
+		  if (ch > ch0 + 2)
+		    printf ("%04x:%04x ", ch0, ch - 1);
+		  else
+		    printf ("%04x ", ch0);
+		}
 	    }
 #endif
 	}
     }
 #ifdef PANGO_WIN32_DEBUGGING
-  printf ("\n");
+  if (pango_win32_debug)
+    printf ("\n");
 #endif
 }

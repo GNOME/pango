@@ -68,6 +68,10 @@ PangoGlyph     pango_win32_get_unknown_glyph  (PangoFont        *font,
 gint	      pango_win32_font_get_glyph_index(PangoFont        *font,
 					       gunichar          wc);
 
+HDC            pango_win32_get_dc             (void);
+
+gboolean       pango_win32_get_debug_flag     (void);
+
 #endif
 
 /* API for libraries that want to use PangoWin32 mixed with classic

@@ -429,6 +429,35 @@ AM_CONDITIONAL(INCLUDE_INDIC_XFT,echo $included_modules | egrep '(^|,)indic-xft(
 AC_CHECK_FUNCS(flockfile strtok_r)
 
 #
+# Check for the Uniscribe header usp10.h for Win32
+#
+
+AC_ARG_WITH(usp10, 
+[  --with-usp10=DIRECTORY  where to find the usp10.h header file for Win32
+                          (typically the Include directory in the
+                          Platform SDK)])
+
+USP10_H=no
+if test "${with_usp10+set}" = set && test "$with_usp10" != no; then
+  AC_MSG_CHECKING([for usp10.h])
+  if test -f "$with_usp10"/usp10.h; then
+    AC_MSG_RESULT(yes)
+    USP10_H="$with_usp10"/usp10.h
+    AC_DEFINE(HAVE_USP10_H)
+  else
+    if test -f "$with_usp10"/include/usp10.h; then
+      AC_MSG_RESULT(yes)
+      USP10_H="$with_usp10"/include/usp10.h
+      AC_DEFINE(HAVE_USP10_H)
+    else
+      AC_MSG_RESULT(no)
+    fi
+  fi
+fi
+AC_SUBST(USP10_H)
+AM_CONDITIONAL(HAVE_USP10_H, test "$USP10_H" != no)    
+
+#
 # Check for Qt - which we use for building the viewer example, if
 # present
 #
