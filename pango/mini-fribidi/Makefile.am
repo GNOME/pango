@@ -21,5 +21,6 @@ libmini_fribidi_la_SOURCES =    \
 
 EXTRA_DIST = 			\
 	README			\
+	makefile.mingw		\
 	fribidi_tables.i	\
 	fribidi-0.1.12.patch

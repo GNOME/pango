@@ -1,3 +1,16 @@
+2001-03-18  Tor Lillqvist  <tml@iki.fi>
+
+	* pango/makefile.mingw.in
+	* pango/pango.def: Update.
+
+	* pango/module-defs-win32.c.win32: New file.
+
+	* pango/Makefile.am (EXTRA_DIST): Add here.
+
+	* pango/mini-fribidi/makefile.mingw: New file.
+
+	* pango/mini-fribidi/makefile.mingw (EXTRA_DIST): Add here.
+
 Fri Mar  9 11:57:46 2001  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pangox.c (pango_x_find_subfont): Remove a lot of 

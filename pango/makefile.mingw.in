@@ -45,6 +45,7 @@ PANGO_OBJS =					\
 	shape.o
 
 PANGOWIN32_OBJS =				\
+	module-defs-win32.o			\
 	pangowin32.o				\
 	pangowin32-fontcache.o			\
 	pangowin32-fontmap.o
@@ -77,6 +78,9 @@ pango_headers=		   \
 	pango-utils.h
 
 ../config.h : ../config.h.win32
+	cp $< $@
+
+module-defs-win32.c : module-defs-win32.c.win32
 	cp $< $@
 
 module-defs-ft2.c : module-defs-ft2.c.win32
