@@ -56,11 +56,11 @@ g_quark_from_string()) is used to identify the renderer in pango_find_map().
 
 <!-- ##### USER_FUNCTION PangoXftSubstituteFunc ##### -->
 <para>
-
+Function type for doing final config tweaking on prepared FcPatterns.
 </para>
 
-@pattern: 
-@data: 
+@pattern: the FcPattern to tweak.
+@data: user data.
 
 
 <!-- ##### FUNCTION pango_xft_substitute_changed ##### -->

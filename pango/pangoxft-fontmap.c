@@ -297,7 +297,8 @@ pango_xft_set_default_substitute (Display                *display,
 
 /**
  * pango_xft_substitute_changed:
- * @fontmap: a #PangoXftFontmap
+ * @display: an X Display
+ * @screen: the screen number of a screen within @display
  * 
  * Call this function any time the results of the
  * default substitution function set with

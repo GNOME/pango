@@ -16,7 +16,7 @@ FreeType Fonts and Rendering
 
 <!-- ##### STRUCT PangoFT2FontMap ##### -->
 <para>
-
+The #PangoFT2FontMap is the #PangoFontMap implementation for FreeType fonts.
 </para>
 
 
@@ -57,11 +57,11 @@ g_quark_from_string()) is used to identify the renderer in pango_find_map().
 
 <!-- ##### USER_FUNCTION PangoFT2SubstituteFunc ##### -->
 <para>
-
+Function type for doing final config tweaking on prepared FcPatterns.
 </para>
 
-@pattern: 
-@data: 
+@pattern: the FcPattern to tweak.
+@data: user data.
 
 
 <!-- ##### FUNCTION pango_ft2_font_map_set_default_substitute ##### -->

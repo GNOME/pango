@@ -1,3 +1,13 @@
+2002-11-29  Matthias Clasen  <maclas@gmx.de>
+
+	* docs/tmpl/xft-fonts.sgml: 
+	* docs/tmpl/freetype-fonts.sgml: Add docs.
+
+	* pango/pangoxft-fontmap.c (pango_xft_substitute_changed): 
+	* pango/pangoft2-fontmap.c
+	(pango_ft2_font_map_set_default_substitute):
+	Fix doc typos.
+
 2002-11-28  Matthias Clasen  <maclas@gmx.de>
 
 	* pango/pangoxft-fontmap.c: 

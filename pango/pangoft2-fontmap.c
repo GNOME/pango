@@ -119,7 +119,7 @@ static PangoFT2FontMap *pango_ft2_global_fontmap = NULL;
  * to cache information about available fonts, and holds
  * certain global parameters such as the resolution and
  * the default substitute function (see
- * pango_font_map_set_default_substitute()).
+ * pango_ft2_font_map_set_default_substitute()).
  * 
  * Return value: the newly created fontmap object. Unref
  * with g_object_unref() when you are finished with it.
@@ -160,7 +160,7 @@ pango_ft2_font_map_new (void)
 }
 
 /**
- * pango_ft2_fontmap_set_default_substitute:
+ * pango_ft2_font_map_set_default_substitute:
  * @fontmap: a #PangoFT2FontMap
  * @func: function to call to to do final config tweaking
  *        on #FcPattern objects.
