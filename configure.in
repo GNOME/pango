@@ -269,12 +269,16 @@ AC_MSG_CHECKING(For Qt location)
   
 if test "x$with_qt" = xyes ; then         
 # Search for Qt in a common location. The ls -r is an attempt to find the newest 
-   dirs=`ls -d -r /usr/lib/qt*`
+   dirs=`cd /usr/lib && ls -d -r qt*`
    for dir in $dirs ; do
-      if test -x $dir/bin/moc ; then
-         QTDIR=$dir
-         break
-      fi
+      case $dir in
+        qt2*|qt-2*)
+          if test -x /usr/lib/$dir/bin/moc ; then
+            QTDIR=/usr/lib/$dir
+           break
+          fi
+        ;;
+      esac      
    done
 
 else
