@@ -1,3 +1,10 @@
+Fri Jul 30 17:17:05 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/opentype/ftxgpos.[ch] pango/opentype/ftxgsub.[ch]
+	pango/opentype/ftxopen.[ch]: Finish extending properties
+	flags from FT_UShort => FT_UInt. (OTLBuffer was already
+	using an FT_UInt)
+
 Fri Jul 30 14:05:25 2004  Owen Taylor  <otaylor@redhat.com>
 
 	Improve handling of decomposed two-part vowels 
