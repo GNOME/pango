@@ -1,3 +1,12 @@
+2003-12-08  Tor Lillqvist  <tml@iki.fi>
+
+	* modules/basic/basic-win32.c (convert_log_clusters_to_byte_offsets):
+	Simplify.
+
+	(itemize_shape_and_place): Fix problem with RTL scripts: If
+	ScriptItemize() returns several items, must handle them in reverse
+	order. (#128812, reported by Shoshannah Forbes)
+
 Mon Dec  8 12:57:03 2003  Owen Taylor  <otaylor@redhat.com>
 
 	* === Released 1.3.1 ===
