@@ -1,3 +1,20 @@
+2002-10-24  Tor Lillqvist  <tml@iki.fi>
+
+	* modules/basic/basic-win32.c: Update the non-Uniscribe ranges to
+	cover some more simple scripts.
+
+	(itemize_shape_and_place): Handle unknown glyphs.
+
+	(script_engine_list): Only return the "everything" range if
+	Uniscribe is available. It would be nice to build up a more
+	specific range list based on the information ScriptGetProperties()
+	returns. That function lists information about each script the
+	Uniscribe version used can handle. Unfortunately, though, the
+	information is severely limited. It doesn't tell what Unicode
+	blocks a script covers. It only gives one language that uses
+	that script, and sometimes an charset number, but for most scripts
+	just the totally useless DEFAULT_CHARSET.
+
 2002-10-23  Alexander Larsson  <alexl@redhat.com>
 
 	* pango/pango-layout.c (can_break_in):
