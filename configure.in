@@ -269,7 +269,7 @@ AM_CONDITIONAL(BUILD_OT_TESTS, test $have_varargs = yes)
 #
 AC_MSG_CHECKING(modules to link statically)
 
-AC_ARG_WITH(included_modules, [ --with-included-modules=MODULE1,MODULE2,...   build the given modules into Pango])
+AC_ARG_WITH(included_modules, [  --with-included-modules=MODULE1,MODULE2,...   build the given modules into Pango])
 
 arabic_modules="arabic-ft2,arabic-x,arabic-xft"
 basic_modules="basic-ft2,basic-win32,basic-x,basic-xft"
@@ -363,7 +363,7 @@ AC_CHECK_FUNCS(flockfile)
 # present
 #
 
-AC_ARG_WITH(qt, [ --with-qt=DIR            location where Qt is installed],,with_qt=yes)
+AC_ARG_WITH(qt, [  --with-qt=DIR           location where Qt is installed],,with_qt=yes)
 
 if test "$CXX" != "" ; then
   AC_MSG_CHECKING(For Qt location)
