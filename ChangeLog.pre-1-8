@@ -1,3 +1,9 @@
+Tue Apr 15 05:00:39 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/opentype/pango-ot-info.c (synthesize_class_def): 
+	Fix infinite loop in the case where the charmap contains
+	a character > 65535. (#106550, Morten Welinder.)
+
 Tue Apr 15 04:53:56 2003  Owen Taylor  <otaylor@redhat.com>
 
 	* modules/indic/indic-ot.h (enum): Cast some enumeration
