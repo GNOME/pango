@@ -24,24 +24,6 @@ noinst_LTLIBRARIES =
 common_sources = thai-shaper.c thai-shaper.h
 
 
-if HAVE_X
-INCLUDES += $(X_CFLAGS)
-if INCLUDE_THAI_X
-noinst_LTLIBRARIES += libpango-thai-x.la
-else
-module_LTLIBRARIES += pango-thai-x.la
-endif
-endif
-
-thai_x_sources = $(common_sources) thai-x.c 
-
-pango_thai_x_la_LDFLAGS = -export-dynamic -avoid-version -module
-pango_thai_x_la_LIBADD = $(pangoxlibs)
-pango_thai_x_la_SOURCES = $(thai_x_sources)
-libpango_thai_x_la_SOURCES = $(thai_x_sources)
-libpango_thai_x_la_CFLAGS =  -DPANGO_MODULE_PREFIX=_pango_thai_x
-
-
 if HAVE_XFT
 INCLUDES += $(XFT_CFLAGS)
 if INCLUDE_THAI_XFT

@@ -22,33 +22,6 @@ no_undefined = -no-undefined
 endif
 
 
-if HAVE_X
-INCLUDES += $(X_CFLAGS)
-if INCLUDE_ARABIC_X
-noinst_LTLIBRARIES += libpango-arabic-x.la
-else
-module_LTLIBRARIES += pango-arabic-x.la
-endif
-endif
-
-x_sources = \
-	arabic-x.c \
-	arconv.c \
-	mulefont.c \
-	mulefont.h \
-	langboxfont.c \
-	langboxfont.h \
-	naqshfont.c \
-	naqshfont.h \
-	arconv.h 
-
-pango_arabic_x_la_LDFLAGS = -export-dynamic -avoid-version -module
-pango_arabic_x_la_LIBADD = $(pangoxlibs)
-pango_arabic_x_la_SOURCES = $(x_sources)
-libpango_arabic_x_la_SOURCES = $(x_sources)
-libpango_arabic_x_la_CFLAGS = -DPANGO_MODULE_PREFIX=_pango_arabic_x
-
-
 if HAVE_XFT
 INCLUDES += $(XFT_CFLAGS)
 if INCLUDE_ARABIC_XFT

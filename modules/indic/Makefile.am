@@ -21,69 +21,6 @@ moduledir = $(libdir)/pango/$(PANGO_MODULE_VERSION)/modules
 module_LTLIBRARIES =
 noinst_LTLIBRARIES =
 
-if HAVE_X
-INCLUDES += $(X_CFLAGS)
-if INCLUDE_MYANMAR_X
-noinst_LTLIBRARIES += libpango-myanmar-x.la
-else
-module_LTLIBRARIES += pango-myanmar-x.la
-endif
-
-if INCLUDE_GURMUKHI_X
-noinst_LTLIBRARIES += libpango-gurmukhi-x.la
-else
-module_LTLIBRARIES += pango-gurmukhi-x.la
-endif
-
-if INCLUDE_BENGALI_X
-noinst_LTLIBRARIES += libpango-bengali-x.la
-else
-module_LTLIBRARIES += pango-bengali-x.la
-endif
-
-if INCLUDE_DEVANAGARI_X
-noinst_LTLIBRARIES += libpango-devanagari-x.la
-else
-module_LTLIBRARIES += pango-devanagari-x.la
-endif
-
-if INCLUDE_GUJARATI_X
-noinst_LTLIBRARIES += libpango-gujarati-x.la
-else
-module_LTLIBRARIES += pango-gujarati-x.la
-endif
-endif
-
-pango_devanagari_x_la_LDFLAGS = -export-dynamic -avoid-version -module
-pango_devanagari_x_la_LIBADD = $(pangoxlibs)
-pango_devanagari_x_la_SOURCES = devanagari-x.c pango-indic-script.h
-libpango_devanagari_x_la_SOURCES = devanagari-x.c pango-indic-script.h
-libpango_devanagari_x_la_CFLAGS = -DPANGO_MODULE_PREFIX=_pango_devanagari_x
-
-pango_myanmar_x_la_LDFLAGS = -export-dynamic -avoid-version -module
-pango_myanmar_x_la_LIBADD = $(pangoxlibs)
-pango_myanmar_x_la_SOURCES = myanmar-x.c pango-indic-script.h
-libpango_myanmar_x_la_SOURCES = myanmar-x.c pango-indic-script.h
-libpango_myanmar_x_la_CFLAGS = -DPANGO_MODULE_PREFIX=_pango_myanmar_x
-
-pango_gurmukhi_x_la_LDFLAGS = -export-dynamic -avoid-version -module
-pango_gurmukhi_x_la_LIBADD = $(pangoxlibs)
-pango_gurmukhi_x_la_SOURCES = gurmukhi-x.c pango-indic-script.h
-libpango_gurmukhi_x_la_SOURCES = gurmukhi-x.c pango-indic-script.h
-libpango_gurmukhi_x_la_CFLAGS = -DPANGO_MODULE_PREFIX=_pango_gurmukhi_x
-
-pango_bengali_x_la_LDFLAGS = -export-dynamic -avoid-version -module
-pango_bengali_x_la_LIBADD = $(pangoxlibs)
-pango_bengali_x_la_SOURCES = bengali-x.c pango-indic-script.h
-libpango_bengali_x_la_SOURCES = bengali-x.c pango-indic-script.h
-libpango_bengali_x_la_CFLAGS = -DPANGO_MODULE_PREFIX=_pango_bengali_x
-
-pango_gujarati_x_la_LDFLAGS = -export-dynamic -avoid-version -module
-pango_gujarati_x_la_LIBADD = $(pangoxlibs)
-pango_gujarati_x_la_SOURCES = gujarati-x.c pango-indic-script.h
-libpango_gujarati_x_la_SOURCES = gujarati-x.c pango-indic-script.h
-libpango_gujarati_x_la_CFLAGS = -DPANGO_MODULE_PREFIX=_pango_gujarati_x
-
 
 if HAVE_XFT
 INCLUDES += $(XFT_CFLAGS)

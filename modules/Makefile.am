@@ -5,7 +5,6 @@ SUBDIRS = 		\
 	basic 		\
 	hangul 		\
 	indic           \
-	tamil 		\
 	thai		\
 	hebrew
 

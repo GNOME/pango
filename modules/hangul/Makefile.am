@@ -21,23 +21,6 @@ moduledir = $(libdir)/pango/$(PANGO_MODULE_VERSION)/modules
 module_LTLIBRARIES =
 noinst_LTLIBRARIES =
 
-if HAVE_X
-INCLUDES += $(X_CFLAGS)
-if INCLUDE_HANGUL_X
-noinst_LTLIBRARIES += libpango-hangul-x.la
-else
-module_LTLIBRARIES += pango-hangul-x.la
-endif
-endif
-
-x_sources = hangul-x.c hangul-defs.h
-
-pango_hangul_x_la_LDFLAGS = -export-dynamic -avoid-version -module
-pango_hangul_x_la_LIBADD = $(pangoxlibs)
-pango_hangul_x_la_SOURCES = $(x_sources)
-libpango_hangul_x_la_SOURCES = $(x_sources)
-libpango_hangul_x_la_CFLAGS = -DPANGO_MODULE_PREFIX=_pango_hangul_x
-
 
 if HAVE_XFT
 INCLUDES += $(XFT_CFLAGS)

@@ -1,3 +1,16 @@
+Sat Aug  2 13:17:45 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* configure.in
+	modules/arabic/{Makefile.am arconv.[ch],langboxfont.[ch],
+	mulefont.[ch],naqshfont.[ch],arabic-x.c}
+	modules/hangul/{Makefile.am,hangul-x.c,tables-johabfont.i,
+	tables-ksc5601.i}
+	modules/hebrew/{Makefile.am,hebrew-x.c}
+	modules/indic/{Makefile.am,*-x.c}
+	modules/tamil
+	modules/thai/{Makefile.am,thai-x.c}:
+        Remove old X font shapers.
+
 Sat Aug  2 16:40:19 2003  Soeren Sandmann  <sandmann@daimi.au.dk>
 
 	Add API to kern a complete glyph string. Remove API to kern

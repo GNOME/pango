@@ -19,23 +19,6 @@ noinst_LTLIBRARIES =
 
 common_sources = hebrew-shaper.c hebrew-shaper.h
 
-if HAVE_X
-INCLUDES += $(X_CFLAGS)
-if INCLUDE_HEBREW_X
-noinst_LTLIBRARIES += libpango-hebrew-x.la
-else
-module_LTLIBRARIES += pango-hebrew-x.la
-endif
-endif
-
-hebrew_x_sources = $(common_sources) hebrew-x.c 
-
-pango_hebrew_x_la_LDFLAGS = -export-dynamic -avoid-version -module
-pango_hebrew_x_la_LIBADD = $(pangoxlibs)
-pango_hebrew_x_la_SOURCES = $(hebrew_x_sources)
-libpango_hebrew_x_la_SOURCES = $(hebrew_x_sources)
-libpango_hebrew_x_la_CFLAGS = -DPANGO_MODULE_PREFIX=_pango_hebrew_x
-
 
 if HAVE_XFT
 INCLUDES += $(XFT_CFLAGS)
