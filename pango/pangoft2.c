@@ -97,7 +97,7 @@ _pango_ft2_font_new (PangoFontMap    *fontmap,
   ft2font->font_pattern = pattern;
   
   g_object_ref (G_OBJECT (fontmap));
-  ft2font->description = _pango_ft2_font_desc_from_pattern (pattern);
+  ft2font->description = _pango_ft2_font_desc_from_pattern (pattern, TRUE);
   ft2font->face = NULL;
 
   if (MiniXftPatternGetDouble (pattern, XFT_PIXEL_SIZE, 0, &d) == MiniXftResultMatch)
@@ -573,7 +573,6 @@ pango_ft2_font_describe (PangoFont *font)
   ft2font = PANGO_FT2_FONT (font);
 
   desc = pango_font_description_copy (ft2font->description);
-  pango_font_description_set_size (desc, ft2font->size);
 
   return desc;
 }

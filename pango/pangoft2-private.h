@@ -112,6 +112,7 @@ void           _pango_ft2_font_map_add            (PangoFontMap      *fontmap,
 void           _pango_ft2_font_map_remove         (PangoFontMap      *fontmap,
 						   PangoFT2Font      *ft2font);
 const char    *_pango_ft2_ft_strerror             (FT_Error           error);
-PangoFontDescription *_pango_ft2_font_desc_from_pattern (MiniXftPattern *pattern);
+PangoFontDescription *_pango_ft2_font_desc_from_pattern (MiniXftPattern *pattern,
+							 gboolean        include_size);
 
 #endif /* __PANGOFT2_PRIVATE_H__ */

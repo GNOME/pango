@@ -64,7 +64,8 @@ void           _pango_xft_font_map_get_info     (PangoFontMap                *fo
 						 Display                    **display,
 						 int                         *screen);
 
-PangoFontDescription * _pango_xft_font_desc_from_pattern (XftPattern *pattern);
+PangoFontDescription * _pango_xft_font_desc_from_pattern (XftPattern *pattern,
+							  gboolean    include_size);
 
 G_END_DECLS
 

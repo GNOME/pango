@@ -653,11 +653,13 @@ pango_ft2_font_map_cache_clear (PangoFT2FontMap *ft2fontmap)
  */
 
 PangoFontDescription *
-_pango_ft2_font_desc_from_pattern (MiniXftPattern *pattern)
+_pango_ft2_font_desc_from_pattern (MiniXftPattern *pattern,
+				   gboolean        include_size)
 {
   PangoFontDescription *desc;
   PangoStyle style;
   PangoWeight weight;
+  double size;
   
   char *s;
   int i;
@@ -700,6 +702,9 @@ _pango_ft2_font_desc_from_pattern (MiniXftPattern *pattern)
   else
     weight = PANGO_WEIGHT_NORMAL;
 
+  if (include_size && MiniXftPatternGetDouble (pattern, XFT_SIZE, 0, &size) == MiniXftResultMatch)
+      pango_font_description_set_size (desc, size * PANGO_SCALE);
+  
   pango_font_description_set_weight (desc, weight);
   
   pango_font_description_set_variant (desc, PANGO_VARIANT_NORMAL);
@@ -730,7 +735,7 @@ pango_ft2_face_describe (PangoFontFace *face)
   result_pattern = MiniXftFontMatch ((Display *)1, 0, match_pattern, &res);
   if (result_pattern)
     {
-      desc = _pango_ft2_font_desc_from_pattern (result_pattern);
+      desc = _pango_ft2_font_desc_from_pattern (result_pattern, FALSE);
       MiniXftPatternDestroy (result_pattern);
     }
 

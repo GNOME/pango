@@ -125,7 +125,7 @@ _pango_xft_font_new (PangoFontMap               *fontmap,
   xfont->font_pattern = pattern;
   
   g_object_ref (G_OBJECT (fontmap));
-  xfont->description = _pango_xft_font_desc_from_pattern (pattern);
+  xfont->description = _pango_xft_font_desc_from_pattern (pattern, TRUE);
   xfont->xft_font = NULL;
 
   _pango_xft_font_map_add (xfont->fontmap, xfont);

@@ -1,3 +1,21 @@
+2001-11-27  Alex Larsson  <alexl@redhat.com>
+
+	* pango/pangoft2-private.h
+	* pango/pangoft2-fontmap.c (_pango_ft2_font_desc_from_pattern):
+	Take extra parameter include_size that determines if the
+	descriptor includes the size.
+	
+	* pango/pangoft2.c (_pango_ft2_font_new):
+	Include size in ft2font->description.
+
+	* pango/pangoxft-private.h
+	* pango/pangoxft-fontmap.c (_pango_xft_font_desc_from_pattern):
+	Take extra parameter include_size that determines if the
+	descriptor includes the size.
+	
+	* pango/pangoxft-font.c:
+	Include size in xfont->description.
+
 Mon Nov 26 19:24:21 2001  Owen Taylor  <otaylor@redhat.com>
 
 	* configure.in tests/Makefile.am tests/cxx-test.C: Add
