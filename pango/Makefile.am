@@ -72,6 +72,10 @@ pango_export_symbols = -export-symbols pango.def
 pangowin32_export_symbols = -export-symbols pangowin32.def
 pangoft2_export_symbols = -export-symbols pangoft2.def
 
+pango_win32res = pango-win32res.lo
+pangowin32_win32res = pangowin32-win32res.lo
+pangoft2_win32res = pangoft2-win32res.lo
+
 install-libtool-import-lib:
 	$(INSTALL) .libs/libpango-$(PANGO_API_VERSION).dll.a $(DESTDIR)$(libdir)
 if HAVE_FREETYPE
@@ -154,13 +158,18 @@ libpango_1_0_la_LDFLAGS =			\
 	$(no_undefined) $(pango_export_symbols)
 
 if HAVE_FRIBIDI
+libpango_1_0_la_LIBADD = $(pango_win32res)
 else
-libpango_1_0_la_LIBADD = mini-fribidi/libmini-fribidi.la
+libpango_1_0_la_LIBADD = mini-fribidi/libmini-fribidi.la $(pango_win32res)
 endif
+libpango_1_0_la_DEPENDENCIES = $(pango_win32res)
 
 libpangox_1_0_la_LDFLAGS = -version-info $(LT_VERSION_INFO)
 libpangox_1_0_la_LIBADD = libpango-$(PANGO_API_VERSION).la $(INCLUDED_X_MODULES) $(X_LIBS) $(X_EXTRA_LIBS)
 libpangox_1_0_la_DEPENDENCIES = $(INCLUDED_X_MODULES) libpango-$(PANGO_API_VERSION).la
+
+pango-win32res.lo : pango.rc
+	$(top_srcdir)/../glib/build/win32/lt-compile-resource pango.rc pango-win32res.lo
 
 libpangowin32_1_0_la_SOURCES =	\
 	pangowin32.h		\
@@ -173,9 +182,11 @@ libpangowin32_1_0_la_SOURCES =	\
 libpangowin32_1_0_la_LDFLAGS = -version-info $(LT_VERSION_INFO)	\
 	$(GLIB_LIBS)						\
 	$(no_undefined) $(pangowin32_export_symbols)
-libpangowin32_1_0_la_LIBADD = libpango-$(PANGO_API_VERSION).la $(INCLUDED_WIN32_MODULES) $(WIN32_LIBS) 
-libpangowin32_1_0_la_DEPENDENCIES = libpango-$(PANGO_API_VERSION).la
+libpangowin32_1_0_la_LIBADD = libpango-$(PANGO_API_VERSION).la $(INCLUDED_WIN32_MODULES) $(WIN32_LIBS) $(pangowin32_win32res)
+libpangowin32_1_0_la_DEPENDENCIES = libpango-$(PANGO_API_VERSION).la $(pangowin32_win32res)
 
+pangowin32-win32res.lo : pangowin32.rc
+	$(top_srcdir)/../glib/build/win32/lt-compile-resource pangowin32.rc pangowin32-win32res.lo
 
 libpangoxft_1_0_la_SOURCES =   	\
 	pangoxft-font.c		\
@@ -197,8 +208,11 @@ libpangoft2_1_0_la_SOURCES =   	\
 libpangoft2_1_0_la_LDFLAGS = -version-info $(LT_VERSION_INFO)	\
 	$(GLIB_LIBS)						\
 	$(no_undefined) $(pangoft2_export_symbols)
-libpangoft2_1_0_la_LIBADD = mini-xft/libmini-xft.la opentype/libpango-ot.la libpango-$(PANGO_API_VERSION).la $(INCLUDED_FT2_MODULES) $(FREETYPE_LIBS) 
-libpangoft2_1_0_la_DEPENDENCIES = $(INCLUDED_FT2_MODULES) libpango-$(PANGO_API_VERSION).la
+libpangoft2_1_0_la_LIBADD = mini-xft/libmini-xft.la opentype/libpango-ot.la libpango-$(PANGO_API_VERSION).la $(INCLUDED_FT2_MODULES) $(FREETYPE_LIBS) $(pangoft2_win32res)
+libpangoft2_1_0_la_DEPENDENCIES = $(INCLUDED_FT2_MODULES) libpango-$(PANGO_API_VERSION).la $(pangoft2_win32res)
+
+pangoft2-win32res.lo : pangoft2.rc
+	$(top_srcdir)/../glib/build/win32/lt-compile-resource pangoft2.rc pangoft2-win32res.lo
 
 pangoincludedir=$(includedir)/pango-1.0/pango
 

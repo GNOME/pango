@@ -244,7 +244,6 @@ PangoFontMap *
 pango_win32_font_map_for_display (void)
 {
   LOGFONT logfont;
-  RECT rect;
 
   /* Make sure that the type system is initialized */
   g_type_init ();
@@ -265,10 +264,7 @@ pango_win32_font_map_for_display (void)
   pango_win32_font_map_read_aliases (fontmap);
 #endif
 
-  SystemParametersInfo(SPI_GETWORKAREA, 0, &rect, 0);
-  fontmap->resolution =
-    (PANGO_SCALE * 72.27 / 25.4) * ((double) GetDeviceCaps (pango_win32_hdc, HORZSIZE) /
-				    (rect.right - rect.left));
+  fontmap->resolution = PANGO_SCALE / GetDeviceCaps (pango_win32_hdc, LOGPIXELSY) * 72.0;
 
   return PANGO_FONT_MAP (fontmap);
 }
@@ -888,7 +884,7 @@ pango_win32_make_matching_logfont (PangoFontMap  *fontmap,
   while (tmp_list)
     {
       LOGFONT *tmp_logfont = tmp_list->data;
-      int font_size = tmp_logfont->lfHeight;
+      int font_size = abs (tmp_logfont->lfHeight);
 
       if (size != -1)
 	{
@@ -911,7 +907,7 @@ pango_win32_make_matching_logfont (PangoFontMap  *fontmap,
       /* OK, we have a match; let's modify it to fit this size */
 
       *out = *closest_match;
-      out->lfHeight = (int)((double)size / win32fontmap->resolution + 0.5);
+      out->lfHeight = -(int)((double)size / win32fontmap->resolution + 0.5);
       out->lfWidth = 0;
     }
   else

@@ -91,7 +91,7 @@ logfont_hash (gconstpointer v)
     lfp->lfItalic +
     lfp->lfWeight/10 +
     lfp->lfOrientation +
-    lfp->lfHeight * 10;
+    abs (lfp->lfHeight) * 10;
 }
 
 static gint
