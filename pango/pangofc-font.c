@@ -26,14 +26,9 @@
 #include "pango-modules.h"
 #include "pango-utils.h"
 
-#include FT_TRUETYPE_TABLES_H
+#include <fontconfig/fcfreetype.h>
 
-#define PANGO_SCALE_26_6 (PANGO_SCALE / (1<<6))
-#define PANGO_PIXELS_26_6(d)				\
-  (((d) >= 0) ?						\
-   ((d) + PANGO_SCALE_26_6 / 2) / PANGO_SCALE_26_6 :	\
-   ((d) - PANGO_SCALE_26_6 / 2) / PANGO_SCALE_26_6)
-#define PANGO_UNITS_26_6(d) (PANGO_SCALE_26_6 * (d))
+#include FT_TRUETYPE_TABLES_H
 
 typedef struct _PangoFcMetricsInfo  PangoFcMetricsInfo;
 
@@ -57,6 +52,11 @@ struct _PangoFcFontPrivate
   PangoFcDecoder *decoder;
 };
 
+static gboolean pango_fc_font_real_has_char  (PangoFcFont *font,
+					      gunichar     wc);
+static guint    pango_fc_font_real_get_glyph (PangoFcFont *font,
+					      gunichar     wc);
+
 static void                  pango_fc_font_finalize     (GObject          *object);
 static void                  pango_fc_font_set_property (GObject          *object,
 							 guint             prop_id,
@@ -78,6 +78,9 @@ pango_fc_font_class_init (PangoFcFontClass *class)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (class);
   PangoFontClass *font_class = PANGO_FONT_CLASS (class);
+
+  class->has_char = pango_fc_font_real_has_char;
+  class->get_glyph = pango_fc_font_real_get_glyph;
   
   object_class->finalize = pango_fc_font_finalize;
   object_class->set_property = pango_fc_font_set_property;
@@ -456,6 +459,37 @@ pango_fc_font_get_metrics (PangoFont     *font,
     }
 
   return pango_font_metrics_ref (info->metrics);
+}
+
+static gboolean
+pango_fc_font_real_has_char (PangoFcFont *font,
+			     gunichar     wc)
+{
+  FcCharSet *charset;
+
+  if (FcPatternGetCharSet (font->font_pattern,
+                           FC_CHARSET, 0, &charset) != FcResultMatch)
+    return FALSE;
+
+  return FcCharSetHasChar (charset, wc);
+}
+
+static guint
+pango_fc_font_real_get_glyph (PangoFcFont *font,
+			      gunichar     wc)
+{
+  FT_Face face;
+  FT_UInt index;
+
+  face = pango_fc_font_lock_face (font);
+  
+  index = FcFreeTypeCharIndex (face, wc);
+  if (index && index <= face->num_glyphs)
+    return index;
+
+  pango_fc_font_unlock_face (font);
+
+  return 0;
 }
 
 /**

@@ -93,7 +93,7 @@ main(int argc, char *argv[])
       int row;
       int width, height;
 
-      do_output (context, NULL, NULL, &width, &height);
+      do_output (context, NULL, NULL, NULL, &width, &height);
       
       bitmap.width = width;
       bitmap.pitch = (bitmap.width + 3) & ~3;
@@ -103,7 +103,7 @@ main(int argc, char *argv[])
       bitmap.pixel_mode = ft_pixel_mode_grays;
       memset (buf, 0x00, bitmap.pitch * bitmap.rows);
 
-      do_output (context, ft2_render, &bitmap, &width, &height);
+      do_output (context, ft2_render, NULL, &bitmap, &width, &height);
 
       /* Invert bitmap to get black text on white background */
       {

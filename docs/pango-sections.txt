@@ -769,6 +769,28 @@ pango_xft_renderer_get_type
 </SECTION>
 
 <SECTION>
+<TITLE>Cairo Rendering</TITLE>
+<FILE>pangocairo</FILE>
+PangoCairoFontMap
+pango_cairo_font_map_new
+pango_cairo_font_map_get_default
+pango_cairo_font_map_set_resolution
+pango_cairo_font_map_get_resolution
+pango_cairo_font_map_create_context
+pango_cairo_update_context
+pango_cairo_create_layout
+pango_cairo_update_layout
+pango_cairo_show_glyphs
+pango_cairo_show_layout_line
+pango_cairo_show_layout
+<SUBSECTION Standard>
+PANGO_CAIRO_FONT_MAP
+PANGO_IS_CAIRO_FONT_MAP
+PANGO_TYPE_CAIRO_FONT_MAP
+pango_cairo_font_map_get_type
+</SECTION>
+
+<SECTION>
 <FILE>pangofc-fontmap</FILE>
 <TITLE>PangoFcFontMap</TITLE>
 PangoFcFontMap

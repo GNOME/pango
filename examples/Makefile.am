@@ -53,6 +53,39 @@ pango_xftview_LDADD =					\
 	 $(XFT_LIBS)
 ###################################################
 
+###################################################
+if HAVE_CAIRO
+if HAVE_X
+noinst_PROGRAMS += pango-cairoview
+endif
+endif
+
+pango_cairoview_SOURCES =			\
+	cairoview.c				\
+	renderdemo.c				\
+	argcontext.c				\
+	argcontext.h
+pango_cairoview_LDADD =					\
+	../pango/libpango-$(PANGO_API_VERSION).la	\
+	../pango/libpangoft2-$(PANGO_API_VERSION).la	\
+	../pango/libpangocairo-$(PANGO_API_VERSION).la	\
+	 $(CAIRO_LIBS)					\
+	 $(X_LIBS)
+###################################################
+
+###################################################
+if HAVE_CAIRO
+noinst_PROGRAMS += cairosimple
+endif
+
+cairosimple_SOURCES =					\
+	cairosimple.c
+cairosimple_LDADD =					\
+	../pango/libpango-$(PANGO_API_VERSION).la	\
+	../pango/libpangocairo-$(PANGO_API_VERSION).la	\
+	 $(CAIRO_LIBS)
+###################################################
+
 if CROSS_COMPILING
 else
 all-local: pango.modules

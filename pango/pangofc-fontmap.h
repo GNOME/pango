@@ -68,6 +68,11 @@ struct _PangoFcFontMap
  *  pattern of the appropriate type for this font map. The
  *  @pattern argument must be passed to the "pattern" property
  *  of #PangoFcFont when you call g_object_new()
+ * @get_render_key: Given a context and font description,
+ *  calculate a "key" of X and Y sizes and a flags word
+ *  that can be used to hash the results of loading a font
+ *  with that information. If %NULL, a default implementation
+    is used.
  *
  * Class structure for #PangoFcFontMap.
  **/
@@ -82,11 +87,12 @@ struct _PangoFcFontMapClass
   PangoFcFont  *(*new_font)          (PangoFcFontMap  *fontmap,
 			              FcPattern       *pattern);
 
-  gboolean     (*get_rendered_size)  (PangoFcFontMap             *fcfontmap,
+  gboolean     (*get_render_key)     (PangoFcFontMap             *fcfontmap,
 				      PangoContext               *context,
 				      const PangoFontDescription *desc,
 				      int                        *xsize,
-				      int                        *ysize);
+				      int                        *ysize,
+				      guint                      *flags);
   /*< private >*/
 
   /* Padding for future expansion */

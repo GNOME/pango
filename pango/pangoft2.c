@@ -58,10 +58,6 @@ static void                   pango_ft2_font_get_glyph_extents (PangoFont      *
 
 static FT_Face    pango_ft2_font_real_lock_face         (PangoFcFont      *font);
 static void       pango_ft2_font_real_unlock_face       (PangoFcFont      *font);
-static gboolean   pango_ft2_font_real_has_char          (PangoFcFont      *font,
-							 gunichar          wc);
-static guint      pango_ft2_font_real_get_glyph         (PangoFcFont      *font,
-							 gunichar          wc);
 static PangoGlyph pango_ft2_font_real_get_unknown_glyph (PangoFcFont      *font,
 							 gunichar          wc);
 
@@ -263,8 +259,6 @@ pango_ft2_font_class_init (PangoFT2FontClass *class)
   
   fc_font_class->lock_face = pango_ft2_font_real_lock_face;
   fc_font_class->unlock_face = pango_ft2_font_real_unlock_face;
-  fc_font_class->has_char = pango_ft2_font_real_has_char;
-  fc_font_class->get_glyph = pango_ft2_font_real_get_glyph;
   fc_font_class->get_unknown_glyph = pango_ft2_font_real_get_unknown_glyph;
 }
 
@@ -364,34 +358,6 @@ pango_ft2_font_real_lock_face (PangoFcFont *font)
 static void
 pango_ft2_font_real_unlock_face (PangoFcFont *font)
 {
-}
-
-static gboolean
-pango_ft2_font_real_has_char (PangoFcFont *font,
-			      gunichar     wc)
-{
-  FcCharSet *charset;
-
-  if (FcPatternGetCharSet (font->font_pattern,
-                           FC_CHARSET, 0, &charset) != FcResultMatch)
-    return FALSE;
-
-  return FcCharSetHasChar (charset, wc);
-}
-
-static guint
-pango_ft2_font_real_get_glyph (PangoFcFont *font,
-			       gunichar     wc)
-{
-  FT_Face face;
-  FT_UInt index;
-
-  face = pango_ft2_font_get_face ((PangoFont *)font);
-  index = FcFreeTypeCharIndex (face, wc);
-  if (index && index <= face->num_glyphs)
-    return index;
-
-  return 0;
 }
 
 static PangoGlyph

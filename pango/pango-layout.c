@@ -3917,15 +3917,22 @@ pango_layout_line_get_extents (PangoLayoutLine *line,
       
       if (ink_rect)
 	{
-	  new_pos = MIN (ink_rect->x, x_pos + run_ink.x);
-	  ink_rect->width = MAX (ink_rect->x + ink_rect->width,
-				 x_pos + run_ink.x + run_ink.width) - new_pos;
-	  ink_rect->x = new_pos;
+	  if (tmp_list == line->runs)
+	    {
+	      *ink_rect = run_ink;
+	    }
+	  else
+	    {
+	      new_pos = MIN (ink_rect->x, x_pos + run_ink.x);
+	      ink_rect->width = MAX (ink_rect->x + ink_rect->width,
+				     x_pos + run_ink.x + run_ink.width) - new_pos;
+	      ink_rect->x = new_pos;
 	  
-	  new_pos = MIN (ink_rect->y, run_ink.y);
-	  ink_rect->height = MAX (ink_rect->y + ink_rect->height,
-				  run_ink.y + run_ink.height) - new_pos;
-	  ink_rect->y = new_pos;
+	      new_pos = MIN (ink_rect->y, run_ink.y);
+	      ink_rect->height = MAX (ink_rect->y + ink_rect->height,
+				      run_ink.y + run_ink.height) - new_pos;
+	      ink_rect->y = new_pos;
+	    }
 	}
       
       if (logical_rect)

@@ -10,7 +10,7 @@ The Xft library is a library for displaying fonts on the X window
 system; internally it uses the fontconfig library to locate font
 files, and the FreeType library to load and render fonts. The
 Xft backend is the recommended Pango font backend for screen
-display with X.
+display with X. (The <link linkend="pango-Cairo-Rendering">Cairo back end</link> is another possibility.)
 </para>
 <para>
 Using the Xft backend is generally straightforward;

@@ -246,6 +246,7 @@ struct _FontsetHashKey {
   PangoFontDescription *desc;
   int x_size;
   int y_size;
+  guint flags;
 };
 
 static gboolean
@@ -254,6 +255,7 @@ fontset_hash_key_equal (const FontsetHashKey *key_a,
 {
   if (key_a->x_size == key_b->x_size &&
       key_a->y_size == key_b->y_size &&
+      key_a->flags == key_b->flags &&
       pango_font_description_equal (key_a->desc, key_b->desc))
     return TRUE;
   else
@@ -263,7 +265,7 @@ fontset_hash_key_equal (const FontsetHashKey *key_a,
 static guint
 fontset_hash_key_hash (const FontsetHashKey *key)
 {
-  return (key->x_size << 16) ^ (key->y_size) ^ pango_font_description_hash (key->desc);
+  return (key->x_size << 16) ^ (key->y_size) ^ (key->flags) ^ pango_font_description_hash (key->desc);
 }
 
 static void
@@ -280,6 +282,7 @@ fontset_hash_key_copy (FontsetHashKey *old)
   
   key->x_size = old->x_size;
   key->y_size = old->y_size;
+  key->flags = old->flags;
   key->desc = pango_font_description_copy (old->desc);
 
   return key;
@@ -803,14 +806,15 @@ transformed_length (const PangoMatrix *matrix,
 }
 
 static gboolean
-pango_fc_font_map_get_rendered_size (PangoFcFontMap              *fcfontmap,
-				     PangoContext                *context,
-				     const PangoFontDescription  *desc,
-				     int                         *x_size,
-				     int                         *y_size)
+pango_fc_font_map_get_render_key (PangoFcFontMap              *fcfontmap,
+				  PangoContext                *context,
+				  const PangoFontDescription  *desc,
+				  int                         *x_size,
+				  int                         *y_size,
+				  guint                       *flags)
 {
-  if (PANGO_FC_FONT_MAP_GET_CLASS (fcfontmap)->get_rendered_size)
-    return PANGO_FC_FONT_MAP_GET_CLASS (fcfontmap)->get_rendered_size (fcfontmap, context, desc, x_size, y_size);
+  if (PANGO_FC_FONT_MAP_GET_CLASS (fcfontmap)->get_render_key)
+    return PANGO_FC_FONT_MAP_GET_CLASS (fcfontmap)->get_render_key (fcfontmap, context, desc, x_size, y_size, flags);
   else
     {
       int size = pango_font_description_get_size (desc);
@@ -841,6 +845,8 @@ pango_fc_font_map_get_rendered_size (PangoFcFontMap              *fcfontmap,
 	    retval = FALSE;
 	}
 
+      *flags = 0;
+
       return retval;
     }
 }
@@ -865,11 +871,11 @@ pango_fc_font_map_get_patterns (PangoFontMap               *fontmap,
   if (!language && context)
     language = pango_context_get_language (context);
   
-  fontset_hash = pango_fc_get_fontset_hash (fcfontmap, language);
+ fontset_hash = pango_fc_get_fontset_hash (fcfontmap, language);
   key.desc = pango_font_description_copy_static (desc);
   pango_font_description_unset_fields (key.desc, PANGO_FONT_MASK_SIZE);
   
-  cache = pango_fc_font_map_get_rendered_size (fcfontmap, context, desc, &key.x_size, &key.y_size);
+  cache = pango_fc_font_map_get_render_key (fcfontmap, context, desc, &key.x_size, &key.y_size, &key.flags);
   if (cache_out)
     *cache_out = cache;
   

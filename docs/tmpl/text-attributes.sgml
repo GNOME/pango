@@ -47,6 +47,7 @@ attribute is listed in parentheses after the description.
 @PANGO_ATTR_LETTER_SPACING: 
 @PANGO_ATTR_UNDERLINE_COLOR: 
 @PANGO_ATTR_STRIKETHROUGH_COLOR: 
+@PANGO_ATTR_ABSOLUTE_SIZE: 
 
 <!-- ##### MACRO PANGO_TYPE_ATTR_TYPE ##### -->
 <para>
@@ -151,12 +152,17 @@ impose shape restrictions.
 
 <!-- ##### STRUCT PangoAttrSize ##### -->
 <para>
-
+The #PangoAttrShape structure is used to represent attributes which
+set font size.
 </para>
 
-@attr: 
-@size: 
-@absolute: 
+@attr: the common portion of the attribute
+@size: size of font, in units of 1/PANGO_SCALE of a point (for
+  PANGO_ATTR_SIZE) or of a device uni (for PANGO_ATTR_ABSOLUTE_SIZE)
+@absolute: whether the font size is in device units or points.
+   This field is only present for compatibility with Pango-1.8.0
+   (PANGO_ATTR_ABSOLUTE_SIZE was added in 1.8.1); and always will
+   be %FALSE for PANGO_ATTR_SIZE and %TRUE for PANGO_ATTR_ABSOLUTE_SIZE.
 
 <!-- ##### FUNCTION pango_parse_markup ##### -->
 <para>

@@ -1,3 +1,40 @@
+Sat Jan  8 16:46:37 2005  Owen Taylor  <otaylor@redhat.com>
+
+	* configure.in: Add checks for Cairo
+
+	* pango/Makefile.am: Add libpangocairo.
+
+	* pango/pangocairo-font.c pango/pangocairo-fontmap.c
+	pango/pangocairo.h pango/pangocairo-private.h 
+	pango/pangocairo-fcfont.c pango/pangocairo-fcfontmap.c
+	pango/pangocairo-fc.h: Start of a Cairo/FreeType backend.
+
+	* pango/pangofc-fontmap.[ch]: Add a "get_render_key" 
+	virtual function to allow subclasses to specialize the
+	details of how caching works. Add a default implementation
+	that's a little more sophisticated than what was there
+	before.
+
+	* pango/pangoft2-private.h pangofc-font.c pangoft2.c:
+	Move default implementations of has_char(), get_glyph()
+	to the base class.
+
+	* pango/pangofc-private.h pango/pangoft2-private.h:
+	Move PANGO_UNITS_26_6 and friends to pango/pangofc-private.h.
+
+	* examples/renderdemo.[ch] examples/pangoft2topgm.c 
+	examples/xftview.c: Allow passing in a custom function
+	to transform drawing.
+
+	* examples/Makefile.am examples/cairoview.c: Add a
+	Cairo/Xlib example program.
+
+	* examples/cairosimple.c: Simple Cairo example with
+	output to a PNG.
+
+	* pango/pango-layout.c (pango_layout_line_get_extents): Fix
+	bug where line ink rect was always including 0, 0.
+
 Thu Jan  6 12:29:31 2005  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pango-attributes.c (pango_attr_iterator_get_font): 

@@ -26,7 +26,6 @@
 #include "pangoft2.h"
 #include "pango-renderer.h"
 #include <fontconfig/fontconfig.h>
-#include <fontconfig/fcfreetype.h>
 
 /* Debugging... */
 /*#define DEBUGGING 1*/
@@ -46,13 +45,6 @@
 #else  /* !DEBUGGING */
 #define PING(printlist)
 #endif
-
-#define PANGO_SCALE_26_6 (PANGO_SCALE / (1<<6))
-#define PANGO_PIXELS_26_6(d)				\
-  (((d) >= 0) ?						\
-   ((d) + PANGO_SCALE_26_6 / 2) / PANGO_SCALE_26_6 :	\
-   ((d) - PANGO_SCALE_26_6 / 2) / PANGO_SCALE_26_6)
-#define PANGO_UNITS_26_6(d) (PANGO_SCALE_26_6 * (d))
 
 typedef struct _PangoFT2Font      PangoFT2Font;
 typedef struct _PangoFT2GlyphInfo PangoFT2GlyphInfo;

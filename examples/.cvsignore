@@ -2,10 +2,11 @@ Makefile.in
 Makefile
 makefile.mingw
 pango.modules
-pango-viewer
+cairosimple
+pango-cairoview
+pango-xftview
 pangoft2topgm
 moc_viewer-qt.cc
-pango-xftview
 .deps
 .libs
 *.lo

@@ -248,6 +248,30 @@ AM_CONDITIONAL(HAVE_FREETYPE, $have_freetype)
 AM_CONDITIONAL(HAVE_XFT, $have_xft)
 
 #
+# Checks for Cairo
+#
+have_cairo=false
+have_cairo_freetype=false
+
+PKG_CHECK_MODULES(CAIRO, cairo >= 0.2.0, have_cairo=true, :)
+   
+if $have_cairo ; then
+    pango_save_ldflags=$LDFLAGS
+    LDFLAGS="$LDFLAGS $CAIRO_LIBS"
+    AC_CHECK_LIB(cairo, cairo_ft_font_face, have_cairo_freetype=true, :)
+    LDFLAGS=$pango_save_ldflags
+    if $have_cairo_freetype ; then
+      AC_DEFINE(HAVE_CAIRO_FREETYPE, 1, [Whether Cairo uses FreeType for fonts])
+    else
+      AC_MSG_WARN([Disabling Cairo support, no known font system])      
+      have_cairo=false
+    fi
+fi
+
+AM_CONDITIONAL(HAVE_CAIRO, $have_cairo)
+AM_CONDITIONAL(HAVE_CAIRO_FREETYPE, $have_cairo_freetype)
+
+#
 # Checks for Win32 GDI
 #
 have_win32=false
@@ -680,6 +704,7 @@ backends=""
 if $have_freetype && $have_fontconfig ; then backends="$backends FreeType"; fi
 if $have_x ; then backends="$backends X"; fi
 if $have_xft ; then backends="$backends Xft"; fi
+if $have_cairo ; then backends="$backends Cairo"; fi
 if $have_win32 ; then backends="$backends Win32"; fi
    
 echo "configuration:

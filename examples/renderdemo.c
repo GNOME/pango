@@ -156,13 +156,12 @@ transform_point (PangoMatrix *matrix,
 }
 
 static void
-output_body (PangoContext  *context,
-	     const char    *text,
-	     RenderCallback render_cb,
-	     gpointer       render_data,
-	     PangoMatrix   *matrix,
-	     int           *width,
-	     int           *height)
+output_body (PangoContext   *context,
+	     const char     *text,
+	     RenderCallback  render_cb,
+	     gpointer        cb_data,
+	     int            *width,
+	     int            *height)
 {
   PangoLayout *layout;
   PangoRectangle logical_rect;
@@ -187,8 +186,6 @@ output_body (PangoContext  *context,
   
   for (size = start_size; size <= end_size; size += increment)
     {
-      pango_context_set_matrix (context, matrix);
-      
       layout = make_layout (context, text, size);
       pango_layout_get_extents (layout, NULL, &logical_rect);
       
@@ -196,7 +193,7 @@ output_body (PangoContext  *context,
       *height += PANGO_PIXELS (logical_rect.height);
 
       if (render_cb)
-	(*render_cb) (layout, 0, dy, render_data);
+	(*render_cb) (layout, 0, dy, cb_data);
       
       dy += PANGO_PIXELS (logical_rect.height);
 
@@ -204,12 +201,25 @@ output_body (PangoContext  *context,
     }
 }
 
+static void
+set_transform (PangoContext     *context,
+	       TransformCallback transform_cb,
+	       gpointer          cb_data,
+	       PangoMatrix      *matrix)
+{
+  if (transform_cb)
+    (*transform_cb) (context, matrix, cb_data);
+  else
+    pango_context_set_matrix (context, matrix);
+}
+
 void
-do_output (PangoContext  *context,
-	   RenderCallback render_cb,
-	   gpointer       render_data,
-	   int           *width_out,
-	   int           *height_out)
+do_output (PangoContext     *context,
+	   RenderCallback    render_cb,
+	   TransformCallback transform_cb,
+	   gpointer          cb_data,
+	   int              *width_out,
+	   int              *height_out)
 {
   PangoLayout *layout;
   PangoRectangle logical_rect;
@@ -228,6 +238,8 @@ do_output (PangoContext  *context,
   width = 0;
   height = 0;
 
+  set_transform (context, transform_cb, cb_data, NULL);
+  
   pango_context_set_language (context, pango_language_from_string ("en_US"));
   pango_context_set_base_dir (context,
 			      opt_rtl ? PANGO_DIRECTION_RTL : PANGO_DIRECTION_LTR);
@@ -242,7 +254,7 @@ do_output (PangoContext  *context,
       height += PANGO_PIXELS (logical_rect.height);
       
       if (render_cb)
-	(*render_cb) (layout, x, y, render_data);
+	(*render_cb) (layout, x, y, cb_data);
       
       y += PANGO_PIXELS (logical_rect.height);
       
@@ -250,9 +262,11 @@ do_output (PangoContext  *context,
       g_free (options_string);
     }
 
-  output_body (context, text, NULL, NULL, NULL, &rotated_width, &rotated_height);
-
   pango_matrix_rotate (&matrix, opt_rotate);
+
+  set_transform (context, transform_cb, cb_data, &matrix);
+  
+  output_body (context, text, NULL, NULL, &rotated_width, &rotated_height);
   
   transform_point (&matrix, 0,             0,              &p1x, &p1y);
   transform_point (&matrix, rotated_width, 0,              &p2x, &p2y);
@@ -268,8 +282,10 @@ do_output (PangoContext  *context,
   matrix.x0 = x - minx;
   matrix.y0 = y - miny;
 
+  set_transform (context, transform_cb, cb_data, &matrix);
+  
   if (render_cb)
-    output_body (context, text, render_cb, render_data, &matrix, &rotated_width, &rotated_height);
+    output_body (context, text, render_cb, cb_data, &rotated_width, &rotated_height);
 
   width = MAX (width, maxx - minx);
   height += maxy - miny;
@@ -421,11 +437,8 @@ parse_options (int argc, char *argv[])
       exit (1);
     }
   
-  if (!opt_display && !opt_output)
-    {
-      g_printerr ("%s: --output not specified, assuming --display\n", prog_name);
-      opt_display = TRUE;
-    }
+  if (!opt_output)
+    opt_display = TRUE;
 
   /* Get the text
    */

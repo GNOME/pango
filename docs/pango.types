@@ -1,4 +1,5 @@
 #include <pango/pango.h>
+#include <pango/pangocairo.h>
 #include <pango/pangofc-font.h>
 #include <pango/pangofc-fontmap.h>
 #include <pango/pangoft2.h>
@@ -19,5 +20,5 @@ pango_fc_font_map_get_type
 pango_fc_decoder_get_type
 pango_ft2_font_map_get_type
 pango_xft_font_get_type
-
+pango_cairo_font_map_get_type
 

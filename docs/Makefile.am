@@ -25,6 +25,8 @@ IGNORE_HFILES=			\
 	module-defs.h		\
 	opentype		\
 	modules.h		\
+	pangocairo-private.h	\
+	pangocairo-fc.h		\
 	pango-engine-private.h	\
 	pango-impl-utils.h	\
 	pango-glyph-item-private.h	\
@@ -55,6 +57,9 @@ INCLUDES =               	\
 GTKDOC_LIBS =						\
 	$(top_builddir)/pango/libpangoxft-1.0.la
 
+if HAVE_CAIRO
+GTKDOC_LIBS += $(top_builddir)/pango/libpangocairo-1.0.la
+endif
 
 # Extra options to supply to gtkdoc-mkdb
 MKDB_OPTIONS=--sgml-mode --output-format=xml
@@ -68,7 +73,8 @@ content_files =				\
 
 # Images to copy into HTML directory
 HTML_IMAGES =				\
-	layout.gif
+	layout.gif			\
+	rotated-text.png
 
 # Extra options to supply to gtkdoc-fixref
 FIXXREF_OPTIONS=

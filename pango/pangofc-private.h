@@ -27,6 +27,13 @@
 
 G_BEGIN_DECLS
 
+#define PANGO_SCALE_26_6 (PANGO_SCALE / (1<<6))
+#define PANGO_PIXELS_26_6(d)				\
+  (((d) >= 0) ?						\
+   ((d) + PANGO_SCALE_26_6 / 2) / PANGO_SCALE_26_6 :	\
+   ((d) - PANGO_SCALE_26_6 / 2) / PANGO_SCALE_26_6)
+#define PANGO_UNITS_26_6(d) (PANGO_SCALE_26_6 * (d))
+
 void _pango_fc_font_shutdown (PangoFcFont *fcfont);
 
 void           _pango_fc_font_map_remove          (PangoFcFontMap *fcfontmap,

@@ -402,8 +402,11 @@ static PangoAttribute *
 pango_attr_size_copy (const PangoAttribute *attr)
 {
   const PangoAttrSize *size_attr = (PangoAttrSize *)attr;
-  
-  return pango_attr_size_new_internal (size_attr->size, size_attr->absolute);
+
+  if (attr->klass->type == PANGO_ATTR_ABSOLUTE_SIZE)
+    return pango_attr_size_new_absolute (size_attr->size);
+  else
+    return pango_attr_size_new (size_attr->size);
 }
 
 static void
@@ -419,8 +422,7 @@ pango_attr_size_equal (const PangoAttribute *attr1,
   const PangoAttrSize *size_attr1 = (const PangoAttrSize *)attr1;
   const PangoAttrSize *size_attr2 = (const PangoAttrSize *)attr2;
   
-  return (size_attr1->size == size_attr2->size &&
-	  size_attr1->absolute == size_attr2->absolute);
+  return size_attr1->size == size_attr2->size;
 }
 
 static PangoAttribute *
@@ -428,15 +430,22 @@ pango_attr_size_new_internal (int size,
 			      gboolean absolute)
 {
   PangoAttrSize *result;
+  
   static const PangoAttrClass klass = {
     PANGO_ATTR_SIZE,
     pango_attr_size_copy,
     pango_attr_size_destroy,
     pango_attr_size_equal
   };
+  static const PangoAttrClass absolute_klass = {
+    PANGO_ATTR_ABSOLUTE_SIZE,
+    pango_attr_size_copy,
+    pango_attr_size_destroy,
+    pango_attr_size_equal
+  };
 
   result = g_new (PangoAttrSize, 1);
-  result->attr.klass = &klass;
+  result->attr.klass = absolute ? &absolute_klass : &klass;
   result->size = size;
   result->absolute = absolute;
 
@@ -458,8 +467,8 @@ pango_attr_size_new (int size)
 }
 
 /**
- * pango_attr_size_absolute_new:
- * @size: the font size, in #PANGO_SCALE<!-- -->ths of a device units.
+ * pango_attr_size_new_absolute:
+ * @size: the font size, in #PANGO_SCALE<!-- -->ths of a device unit.
  * 
  * Create a new font-size attribute in device units.
  * 
@@ -1676,10 +1685,14 @@ pango_attr_iterator_get_font (PangoAttrIterator     *iterator,
 	  if (!(mask & PANGO_FONT_MASK_SIZE))
 	    {
 	      mask |= PANGO_FONT_MASK_SIZE;
-	      if (((PangoAttrSize *)attr)->absolute)
-		pango_font_description_set_absolute_size (desc, ((PangoAttrSize *)attr)->size);
-	      else
-		pango_font_description_set_size (desc, ((PangoAttrSize *)attr)->size);
+	      pango_font_description_set_size (desc, ((PangoAttrSize *)attr)->size);
+	    }
+	  break;
+	case PANGO_ATTR_ABSOLUTE_SIZE:
+	  if (!(mask & PANGO_FONT_MASK_SIZE))
+	    {
+	      mask |= PANGO_FONT_MASK_SIZE;
+	      pango_font_description_set_absolute_size (desc, ((PangoAttrSize *)attr)->size);
 	    }
 	  break;
         case PANGO_ATTR_SCALE:

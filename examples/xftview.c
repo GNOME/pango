@@ -69,7 +69,7 @@ update ()
   XftDrawRect (draw, &color,
 	       area.x, area.y, area.width, area.height);
 
-  do_output (context, xft_render, draw, NULL, NULL);
+  do_output (context, xft_render, NULL, draw, NULL, NULL);
 }
 
 void
@@ -111,7 +111,7 @@ int main (int argc, char **argv)
   bg = WhitePixel (display, screen);
 
   context = pango_xft_get_context (display, screen);
-  do_output (context, NULL, NULL, &width, &height);
+  do_output (context, NULL, NULL, NULL, &width, &height);
 
   window = XCreateSimpleWindow (display, DefaultRootWindow (display),
 				0, 0, width, height, 0,

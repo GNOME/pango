@@ -85,7 +85,8 @@ typedef enum
   PANGO_ATTR_FALLBACK,          /* PangoAttrInt */
   PANGO_ATTR_LETTER_SPACING,    /* PangoAttrInt */
   PANGO_ATTR_UNDERLINE_COLOR,	 /* PangoAttrColor */
-  PANGO_ATTR_STRIKETHROUGH_COLOR /* PangoAttrColor */
+  PANGO_ATTR_STRIKETHROUGH_COLOR, /* PangoAttrColor */
+  PANGO_ATTR_ABSOLUTE_SIZE      /* PangoAttrSize */
 } PangoAttrType;
 
 typedef enum {

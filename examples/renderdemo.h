@@ -33,18 +33,22 @@ typedef void (*RenderCallback) (PangoLayout *layout,
 				int          x,
 				int          y,
 				gpointer     data);
+typedef void (*TransformCallback) (PangoContext *context,
+				   PangoMatrix  *transform,
+				   gpointer      data);
 
 void fail (const char *format, ...) G_GNUC_PRINTF (1, 2);
 
-void   parse_options      (int             argc,
-			   char           *argv[]);
-void   do_output          (PangoContext   *context,
-			   RenderCallback  render_cb,
-			   gpointer        render_data,
-			   int            *width,
-			   int            *height);
-void   fc_substitute_func (FcPattern      *pattern,
-			   gpointer        data);
+void   parse_options      (int               argc,
+			   char             *argv[]);
+void   do_output          (PangoContext     *context,
+			   RenderCallback    render_cb,
+			   TransformCallback transform_cb,
+			   gpointer          cb_data,
+			   int              *width,
+			   int              *height);
+void   fc_substitute_func (FcPattern        *pattern,
+			   gpointer          data);
 gchar *get_options_string (void);
 
 extern char *prog_name;
