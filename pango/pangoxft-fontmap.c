@@ -182,6 +182,16 @@ pango_xft_get_font_map (Display *display,
   return PANGO_FONT_MAP (xfontmap);
 }
 
+/**
+ * pango_xft_get_context:
+ * @display: an X display.
+ * @screen: an X screen.
+ *
+ * Retrieves a #PangoContext appropriate for rendering with
+ * Xft fonts on the given screen of the given display. 
+ *
+ * Return value: the new #PangoContext. 
+ **/
 PangoContext *
 pango_xft_get_context (Display *display,
 		       int      screen)

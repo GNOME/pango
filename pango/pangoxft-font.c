@@ -512,13 +512,13 @@ pango_xft_font_get_display (PangoFont *font)
 
 /**
  * pango_xft_get_unknown_glyph:
- * @font: a #PangoFont
+ * @font: a #PangoFont.
  * @wc: the Unicode character for which a glyph is needed.
  *
- * Return the index of a glyph suitable for drawing @wc as an
+ * Returns the index of a glyph suitable for drawing @wc as an
  * unknown character.
  *
- * Return value: a glyph index into @font
+ * Return value: a glyph index into @font.
  **/
 PangoGlyph
 pango_xft_font_get_unknown_glyph (PangoFont *font,

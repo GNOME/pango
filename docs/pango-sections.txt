@@ -205,7 +205,6 @@ PANGO_FONT_FACE_GET_CLASS
 PangoFontFamilyClass
 pango_font_metrics_new
 PangoFontFaceClass
-pango_x_font_get_unknown_glyph
 PANGO_FONT_GET_CLASS
 PANGO_FONT_CLASS
 PANGO_IS_FONT_FAMILY_CLASS
@@ -485,6 +484,7 @@ pango_x_shutdown_display
 pango_x_font_map_get_font_cache
 pango_x_font_subfont_xlfd
 pango_x_find_first_subfont
+pango_x_font_get_unknown_glyph
 pango_x_apply_ligatures
 pango_x_fallback_shape
 PangoXFontCache

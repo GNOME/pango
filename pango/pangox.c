@@ -1,5 +1,4 @@
-/* Pango
- * gscriptx.c: Routines for handling X fonts
+/* pangox.c: Routines for handling X fonts
  *
  * Copyright (C) 1999 Red Hat Software
  * Copyright (C) 2000 SuSE Linux Ltd
@@ -246,7 +245,7 @@ pango_x_get_font_struct (PangoFont *font, PangoXSubfontInfo *info)
  * 
  * Retrieves a #PangoContext appropriate for rendering with X fonts on the given display.
   * 
- * Return value: the new #PangoContext
+ * Return value: the new #PangoContext.
  **/
 PangoContext *
 pango_x_get_context (Display *display)
@@ -391,13 +390,13 @@ pango_x_font_new (PangoFontMap *fontmap, const char *spec, int size)
 
 /**
  * pango_x_load_font:
- * @display: the X display
- * @spec:    a comma-separated list of XLFD's
+ * @display: the X display.
+ * @spec:    a comma-separated list of XLFD's.
  *
  * Loads up a logical font based on a "fontset" style
  * text specification.
  *
- * Returns a new #PangoFont
+ * Returns a new #PangoFont.
  */
 PangoFont *
 pango_x_load_font (Display *display,
@@ -415,15 +414,15 @@ pango_x_load_font (Display *display,
  
 /**
  * pango_x_render:
- * @display: the X display
- * @d:       the drawable on which to draw string
- * @gc:      the graphics context
- * @font:    the font in which to draw the string
- * @glyphs:  the glyph string to draw
- * @x:       the x position of start of string (in pixels)
- * @y:       the y position of baseline (in pixels)
+ * @display: the X display.
+ * @d:       the drawable on which to draw string.
+ * @gc:      the graphics context.
+ * @font:    the font in which to draw the string.
+ * @glyphs:  the glyph string to draw.
+ * @x:       the x position of start of string (in pixels).
+ * @y:       the y position of baseline (in pixels).
  *
- * Render a PangoGlyphString onto an X drawable
+ * Renders a #PangoGlyphString onto an X drawable.
  */
 void 
 pango_x_render  (Display           *display,
@@ -1007,15 +1006,18 @@ pango_x_insert_subfont (PangoFont *font, const char *xlfd)
 
 /**
  * pango_x_list_subfonts:
- * @font: a PangoFont
+ * @font: a #PangoFont.
  * @charsets: the charsets to list subfonts for.
- * @n_charsets: the number of charsets in @charsets
- * @subfont_ids: location to store a pointer to an array of subfont IDs for each found subfont
- *               the result must be freed using g_free()
- * @subfont_charsets: location to store a pointer to an array of subfont IDs for each found subfont
- *               the result must be freed using g_free()
+ * @n_charsets: the number of charsets in @charsets.
+ * @subfont_ids: location to store a pointer to an array of subfont IDs for each found subfont;
+ *               the result must be freed using g_free().
+ * @subfont_charsets: location to store a pointer to an array of subfont IDs for each found subfont;
+ *               the result must be freed using g_free().
  * 
- * Returns number of charsets found
+ * Lists the subfonts of a given font.
+ *
+ * Return value: length of the arrays stored in @subfont_ids and 
+ * @subfont_charsets.
  **/
 int
 pango_x_list_subfonts (PangoFont        *font,
@@ -1108,9 +1110,9 @@ pango_x_list_subfonts (PangoFont        *font,
  * pango_x_has_glyph:
  * @font: a #PangoFont which must be from the X backend.
  * @glyph: the index of a glyph in the font. (Formed
- *         using the PANGO_X_MAKE_GLYPH macro)
+ *         using the #PANGO_X_MAKE_GLYPH macro)
  * 
- * Check if the given glyph is present in a X font.
+ * Checks if the given glyph is present in a X font.
  * 
  * Return value: %TRUE if the glyph is present.
  **/
@@ -1138,13 +1140,13 @@ pango_x_has_glyph (PangoFont  *font,
 
 /**
  * pango_x_font_subfont_xlfd:
- * @font: a #PangoFont which must be from the X backend
+ * @font: a #PangoFont which must be from the X backend.
  * @subfont_id: the id of a subfont within the font.
  * 
- * Determine the X Logical Font Description for the specified
+ * Determines the X Logical Font Description for the specified
  * subfont.
  * 
- * Return value: A newly allocated string containing the XLFD for the
+ * Return value: A newly-allocated string containing the XLFD for the
  * subfont. This string must be freed with g_free().
  **/
 char *
@@ -1373,11 +1375,11 @@ pango_x_find_glyph (PangoFont *font,
 
 /**
  * pango_x_get_unknown_glyph:
- * @font: a #PangoFont
+ * @font: a #PangoFont.
  * 
- * Return the index of a glyph suitable for drawing unknown characters.
+ * Returns the index of a glyph suitable for drawing unknown characters.
  * 
- * Return value: a glyph index into @font
+ * Return value: a glyph index into @font.
  **/
 PangoGlyph
 pango_x_get_unknown_glyph (PangoFont *font)
@@ -1415,14 +1417,14 @@ pango_x_get_unknown_glyph (PangoFont *font)
 
 /**
  * pango_x_render_layout_line:
- * @display:   the X display
- * @drawable:  the drawable on which to draw string
- * @gc:        GC to use for uncolored drawing
- * @line:      a #PangoLayoutLine
- * @x:         the x position of start of string (in pixels)
- * @y:         the y position of baseline (in pixels)
+ * @display:   the X display.
+ * @drawable:  the drawable on which to draw.
+ * @gc:        GC to use for uncolored drawing.
+ * @line:      a #PangoLayoutLine.
+ * @x:         the x position of start of string (in pixels).
+ * @y:         the y position of baseline (in pixels).
  *
- * Render a #PangoLayoutLine onto an X drawable
+ * Renders a #PangoLayoutLine onto an X drawable.
  */
 void 
 pango_x_render_layout_line (Display          *display,
@@ -1516,14 +1518,14 @@ pango_x_render_layout_line (Display          *display,
 
 /**
  * pango_x_render_layout:
- * @display:   the X display
- * @drawable:  the drawable on which to draw string
- * @gc:        GC to use for uncolored drawing
- * @layout:    a #PangoLayout
- * @x:         the X position of the left of the layout (in pixels)
- * @y:         the Y position of the top of the layout (in pixels)
+ * @display:   the X display.
+ * @drawable:  the drawable on which to draw.
+ * @gc:        GC to use for uncolored drawing.
+ * @layout:    a #PangoLayout.
+ * @x:         the x position of the left of the layout (in pixels).
+ * @y:         the y position of the top of the layout (in pixels).
  *
- * Render a #PangoLayoutLine onto an X drawable
+ * Renders a #PangoLayoutLine onto an X drawable.
  */
 void 
 pango_x_render_layout (Display         *display,
@@ -1871,8 +1873,8 @@ font_struct_get_ligatures (PangoFontMap *fontmap,
 
 /**
  * pango_x_apply_ligatures:
- * @font: a #PangoFont
- * @subfont: a #PangoXSubFont
+ * @font: a #PangoFont.
+ * @subfont: a #PangoXSubFont.
  * @glyphs: a pointer to a pointer to an array of
  *          glyph indices. This holds the input glyphs
  *          on entry, and ligation will be performed
@@ -1883,14 +1885,14 @@ font_struct_get_ligatures (PangoFontMap *fontmap,
  * @n_glyphs: a pointer to the number of glyphs
  *            *@n_glyphs is the number of original glyphs
  *            on entry and the number of resulting glyphs
- *            upon return
+ *            upon return.
  * @clusters: a pointer to the cluster information.
  *
  * Does subfont-specific ligation.  This involves replacing
  * groups of glyphs in @chars with alternate groups of glyphs
  * based on information provided in the X font.
  *
- * Return value: TRUE if any ligations were performed.
+ * Return value: %TRUE if any ligations were performed.
  */
 gboolean
 pango_x_apply_ligatures (PangoFont     *font, 
@@ -1978,15 +1980,15 @@ pango_x_apply_ligatures (PangoFont     *font,
   
 /**
  * pango_x_find_first_subfont:
- * @font: A #PangoFont
- * @rfont: A pointer to a #PangoXSubfont
+ * @font: A #PangoFont.
+ * @rfont: A pointer to a #PangoXSubfont.
  * @charsets: An array of charsets.
  * @n_charsets: The number of charsets in @charsets.
  * 
  * Looks for subfonts with the @charset charset,
- * in @font, and puts the first one in *@rfont
+ * in @font, and puts the first one in *@rfont.
  *
- * Return value: TRUE if *@rfont now contains a font.
+ * Return value: %TRUE if *@rfont now contains a font.
  */
 gboolean
 pango_x_find_first_subfont (PangoFont      *font, 
@@ -2019,10 +2021,10 @@ pango_x_find_first_subfont (PangoFont      *font,
 
 /**
  * pango_x_fallback_shape:
- * @font: A #PangoFont
- * @glyphs: A pointer to a #PangoGlyphString
- * @text: UTF-8 string
- * @n_chars: Number of UTF-8 seqs in @text
+ * @font: A #PangoFont.
+ * @glyphs: A pointer to a #PangoGlyphString.
+ * @text: UTF-8 string.
+ * @n_chars: Number of UTF-8 seqs in @text.
  * 
  * This is a simple fallback shaper, that can be used
  * if no subfont that supports a given script is found. 
@@ -2058,6 +2060,16 @@ pango_x_fallback_shape (PangoFont        *font,
       p = g_utf8_next_char (p);
     }
 }
+
+/**
+ * pango_x_font_get_unknown_glyph:
+ * @font: a #PangoFont.
+ * @wc: the Unicode character for which a glyph is needed.
+ *
+ * Returns the index of a glyph suitable for drawing @wc as an
+ * unknown character.
+ *
+ * Return value: a glyph index into @font.
 
 PangoGlyph
 pango_x_font_get_unknown_glyph (PangoFont *font,

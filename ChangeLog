@@ -1,3 +1,8 @@
+2001-10-14  Matthias Clasen  <matthiasc@poet.de>
+
+	* pango/pangox.c, pango/pangoxft-font.c, pango/pangoxft-fontmap.c,
+	docs/pango-sections.txt, docs/tmpl/fonts.sgml: Documentation updates.  
+
 2001-10-13  Matthias Clasen  <matthiasc@poet.de>
 
 	* pango/pango-utils.c, pango/pangoxft-font.c: Documentation updates.
