@@ -26,6 +26,7 @@ INCLUDES = 						\
 	-DG_DISABLE_DEPRECATED				\
 	$(XFT_CFLAGS)					\
 	$(FONTCONFIG_CFLAGS)				\
+	$(FREETYPE_CFLAGS)				\
 	$(X_CFLAGS)					\
 	-I$(top_srcdir)
 
