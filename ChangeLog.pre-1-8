@@ -1,3 +1,9 @@
+2003-02-23  Noah Levitt  <nlevitt@columbia.edu>
+
+	* pango/fonts.c (pango_font_face_list_sizes):
+	* pango/pangofc-fontmap.c (pango_fc_face_list_sizes): Handle
+	NULL for sizes and n_sizes.
+
 2003-02-22  Noah Levitt  <nlevitt@columbia.edu>
 
 	* pango/pangofc-fontmap.c (pango_fc_face_list_sizes): Handle

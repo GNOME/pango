@@ -1448,11 +1448,15 @@ pango_font_face_get_face_name (PangoFontFace *face)
  * Since: 1.4
  **/
 void
-pango_font_face_list_sizes     (PangoFontFace  *face, 
-                                int           **sizes, 
-                                int            *n_sizes)
+pango_font_face_list_sizes (PangoFontFace  *face, 
+                            int           **sizes, 
+                            int            *n_sizes)
 {
-  g_return_val_if_fail (PANGO_IS_FONT_FACE (face), NULL);
+  g_return_if_fail (PANGO_IS_FONT_FACE (face));
+  g_return_if_fail (sizes == NULL || n_sizes != NULL);
+
+  if (n_sizes == NULL)
+    return;
 
   if (PANGO_FONT_FACE_GET_CLASS (face)->list_sizes != NULL)
     PANGO_FONT_FACE_GET_CLASS (face)->list_sizes (face, sizes, n_sizes);

@@ -1173,7 +1173,7 @@ pango_fc_face_list_sizes (PangoFontFace  *face,
     {
       GArray *size_array;
       double size, dpi = -1.0;
-      int i;
+      int i, size_i;
       
       size_array = g_array_new (FALSE, FALSE, sizeof (int));
 
@@ -1186,12 +1186,15 @@ pango_fc_face_list_sizes (PangoFontFace  *face,
                   FcPattern *tmp = FcPatternDuplicate (fontset->fonts[i]);
                   pango_fc_default_substitute (fcface->family->fontmap, tmp);
                   if (FcPatternGetDouble (tmp, FC_DPI, 0, &dpi) != FcResultMatch)
-                    dpi = 72.0;
+                    {
+                      g_warning ("Error getting DPI from fontconfig, using 72.0");
+                      dpi = 72.0;
+                    }
                   FcPatternDestroy (tmp);
                 }
 
-              int sizi = (int) (PANGO_SCALE * size * 72.0 / dpi);
-              g_array_append_val (size_array, sizi);
+              size_i = (int) (PANGO_SCALE * size * 72.0 / dpi);
+              g_array_append_val (size_array, size_i);
             }
         }
 
@@ -1199,23 +1202,30 @@ pango_fc_face_list_sizes (PangoFontFace  *face,
       
       if (size_array->len == 0)
         {
-          *sizes = NULL;
           *n_sizes = 0;
+          if (sizes)
+            *sizes = NULL;
           g_array_free (size_array, TRUE);
         }
       else
         {
           *n_sizes = size_array->len;
-          *sizes = (int *) size_array->data;
-          g_array_free (size_array, FALSE);
+          if (sizes)
+            {
+              *sizes = (int *) size_array->data;
+              g_array_free (size_array, FALSE);
+            }
+          else
+            g_array_free (size_array, TRUE);
         }
 
       FcFontSetDestroy (fontset);
     }
   else
     {
-      *sizes = NULL;
       *n_sizes = 0;
+      if (sizes)
+        *sizes = NULL;
     }
 
   FcPatternDestroy (pattern);
