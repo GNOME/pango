@@ -20,4 +20,5 @@
 #undef HAVE_USP10_H
 
 #undef MINI_XFTCONFIG_DIR
+#undef HAVE_X
 #undef HAVE_XFT2

@@ -1,7 +1,9 @@
 #ifndef __THAI_SHAPER_H__
 #define __THAI_SHAPER_H__
 
+#ifdef HAVE_X
 #include "pangox.h"
+#endif
 
 #define ucs2tis(wc)     (unsigned int)((unsigned int)(wc) - 0x0E00 + 0xA0)
 #define tis2uni(c)      ((gunichar)(c) - 0xA0 + 0x0E00)
@@ -28,7 +30,9 @@ struct _ThaiFontInfo
 {
   PangoFont       *font;
   ThaiFontSet      font_set;
+#ifdef HAVE_X
   PangoXSubfont    subfont; /* For X backend */
+#endif
 
   PangoGlyph
   (*make_glyph) (ThaiFontInfo *font_info, unsigned int c);

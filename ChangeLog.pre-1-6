@@ -1,3 +1,24 @@
+2003-06-15  Tor Lillqvist  <tml@iki.fi>
+
+	Merge from HEAD:
+
+	* acconfig.h: Add HAVE_X.
+
+	* configure.in: Set HAVE_X.
+
+	* modules/indic/Makefile.am: Use -no-undefined on Windows.
+
+	* modules/thai/thai-shaper.h: Don't include pangox.h unless
+	HAVE_X. Also leave out the PangoXSubfont field unless HAVE_X.
+
+	* modules/thai/thai-shaper.c
+	* modules/thai/thai-x.c: Include config.h for HAVE_X.
+
+	* modules/thai/thai-shaper.c (get_glyphs_list): Bypass
+	THAI_FONT_XTIS case unless HAVE_X.
+
+	* pango/pangoft2.def: Add some missing entries.
+	
 2003-06-13  Tor Lillqvist  <tml@iki.fi>
 
 	* README.win32: Updates.

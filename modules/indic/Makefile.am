@@ -89,6 +89,9 @@ endif
 
 endif
 
+if PLATFORM_WIN32
+no_undefined = -no-undefined
+endif
 
 noinst_LTLIBRARIES = $(myanmar_x_noinst) $(gurmukhi_x_noinst) $(bengali_x_noinst) $(devanagari_x_noinst) $(gujarati_x_noinst) $(indic_xft_noinst) $(indic_ft2_noinst)
 
@@ -170,7 +173,7 @@ ft2_sources =		 	\
 	indic-ot.c		\
 	indic-ot.h
 
-pango_indic_ft2_la_LDFLAGS = -export-dynamic -avoid-version -module
+pango_indic_ft2_la_LDFLAGS = -export-dynamic -avoid-version -module $(no_undefined)
 pango_indic_ft2_la_LIBADD = $(indic_ft2_libadd)
 pango_indic_ft2_la_SOURCES = $(ft2_sources)
 libpango_indic_ft2_la_SOURCES = $(ft2_sources)

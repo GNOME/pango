@@ -25,7 +25,7 @@
  * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-
+#include "config.h"
 
 #include <string.h>
 
@@ -572,6 +572,7 @@ get_glyphs_list (ThaiFontInfo	*font_info,
 	  glyph_lists[i] = (*font_info->make_unknown_glyph) (font_info, glyph_lists[i]);
         return num_chrs;
 
+#ifdef HAVE_X
       case THAI_FONT_XTIS:
         /* If we are rendering with an XTIS font, we try to find a precomposed
          * glyph for the cluster.
@@ -591,6 +592,7 @@ get_glyphs_list (ThaiFontInfo	*font_info,
 	      (*font_info->make_glyph) (font_info,
 			0x100 * (cluster[i] - 0xe00 + 0x20) + 0x30);
         return num_chrs;
+#endif
       
       case THAI_FONT_TIS:
 	/* TIS620-0 + Wtt2.0 Extension
