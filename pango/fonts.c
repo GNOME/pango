@@ -889,7 +889,7 @@ append_field (GString *str, FieldMap *map, int n_elements, int val)
   
   if (str->len > 0 || str->str[str->len -1] != ' ')
     g_string_append_c (str, ' ');
-  g_string_printfa (str, "%d", val);
+  g_string_append_printf (str, "%d", val);
 }
 
 /**
@@ -937,7 +937,7 @@ pango_font_description_to_string (const PangoFontDescription  *desc)
 
       /* FIXME: %g is not right here. We need to always use '.
        */
-      g_string_printfa (result, "%g", (double)desc->size / PANGO_SCALE);
+      g_string_append_printf (result, "%g", (double)desc->size / PANGO_SCALE);
     }
   
   str = result->str;

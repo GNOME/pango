@@ -1,3 +1,7 @@
+Mon Oct  1 16:02:54 2001  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/fonts.c: g_string_printfa => g_string_append_printf.
+
 Sat Sep 29 12:21:44 2001  Manish Singh  <yosh@gimp.org>
 
 	* pango/pangoft2-fontmap.c (pango_ft2_font_map_for_display):
