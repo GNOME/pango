@@ -1,3 +1,8 @@
+2004-07-12  Morten Welinder  <terra@gnome.org>
+
+	* pango/pangoxft-font.c (get_glyph_extents_xft): Fix C99ism.
+	(#147415, self.)
+
 2004-07-12  Changwoo Ryu  <cwryu@debian.org>
 
 	* modules/hangul/hangul-fc.c (render_basic): Render U+00A0

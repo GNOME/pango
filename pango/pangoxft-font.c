@@ -455,10 +455,10 @@ get_glyph_extents_xft (PangoFcFont      *fcfont,
   XftFont *xft_font = xft_font_get_font ((PangoFont *)fcfont);
   XGlyphInfo extents;
   Display *display;
+  FT_UInt ft_glyph = glyph;
   
   _pango_xft_font_map_get_info (fcfont->fontmap, &display, NULL);
 
-  FT_UInt ft_glyph = glyph;
   XftGlyphExtents (display, xft_font, &ft_glyph, 1, &extents);
 
   if (ink_rect)
