@@ -1,3 +1,13 @@
+Mon Sep 15 17:16:59 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/opentype/fterrcompat.h: Fix gcc-3.3 versions of 
+	macros to have the right return value.
+
+Mon Sep 15 17:07:58 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/Makefile.am: Add property dependencies on mini-fribidi
+	and opentype convenience libraries.
+
 Tue Sep  9 12:21:02 2003  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pangofc-fontmap.c (pango_fc_font_description_from_pattern): 
