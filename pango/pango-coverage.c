@@ -304,7 +304,7 @@ pango_coverage_max (PangoCoverage *coverage,
 		MAX (byte1 & 0x3, byte2 & 0x3) |
 		MAX (byte1 & 0xc, byte2 & 0xc) |
 		MAX (byte1 & 0x30, byte2 & 0x30) |
-		MAX (byte1 & 0xc0, byte2 & 0xc00);
+		MAX (byte1 & 0xc0, byte2 & 0xc0);
 	    }
 	}
       else
@@ -336,7 +336,7 @@ pango_coverage_max (PangoCoverage *coverage,
 		MAX (byte1 & 0x3, byte2 & 0x3) |
 		MAX (byte1 & 0xc, byte2 & 0xc) |
 		MAX (byte1 & 0x30, byte2 & 0x30) |
-		MAX (byte1 & 0xc0, byte2 & 0xc00);
+		MAX (byte1 & 0xc0, byte2 & 0xc0);
 	    }
 	}
     }

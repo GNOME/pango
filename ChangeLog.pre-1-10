@@ -1,3 +1,9 @@
+Wed Mar 13 10:31:07 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-coverage.c (pango_coverage_max): Fix typo
+	when computing maximums of sub-byte fields. (Stefan Israelsson,
+	#74518)
+
 2002-03-12  Matthias Clasen  <maclas@gmx.de>
 
 	* pango/pangowin32-fontcache.c, pango/pangox-fontcache.c: Minor doc edits.
