@@ -318,7 +318,7 @@ pangowin32-$(PANGO_API_VERSION).lib: libpangowin32-$(PANGO_API_VERSION).la pango
 install-data-local: install-ms-lib install-libtool-import-lib
 
 if DISABLE_EXPLICIT_DEPS
-install-exec-local: 
+install-exec-hook: 
 	-for i in libpangoft2-$(PANGO_API_VERSION).la libpangoxft-$(PANGO_API_VERSION).la libpangox-$(PANGO_API_VERSION).la libpangowin32-$(PANGO_API_VERSION).la; do \
 	  test -f $(DESTDIR)$(libdir)/$$i && $(SHELL) $(top_srcdir)/sanitize-la.sh $(DESTDIR)$(libdir)/$$i ; \
 	done
