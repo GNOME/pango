@@ -1,3 +1,9 @@
+Mon Mar  1 09:43:38 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pangofc-fontmap.c (pango_fc_font_map_finalize):
+	Remove the INSTANCE_PRIVATE_DATA_WORKS #ifdefs,
+	since it does work now.
+
 Sun Feb 29 15:54:51 2004  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pangowin32.c pango/pangox.c pango/pangoft2.c:

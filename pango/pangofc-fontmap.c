@@ -27,9 +27,6 @@
 #include "pangofc-private.h"
 #include "modules.h"
 
-/* Currently broken */
-#undef INSTANCE_PRIVATE_DATA_WORKS
-
 typedef struct _PangoFcCoverageKey  PangoFcCoverageKey;
 typedef struct _PangoFcFace         PangoFcFace;
 typedef struct _PangoFcFamily       PangoFcFamily;
@@ -164,13 +161,9 @@ pango_fc_font_map_init (PangoFcFontMap *fcfontmap)
   static gboolean registered_modules = FALSE;
   PangoFcFontMapPrivate *priv = fcfontmap->priv;
 
-#if INSTANCE_PRIVATE_DATA_WORKS
   priv = fcfontmap->priv = G_TYPE_INSTANCE_GET_PRIVATE (fcfontmap,
 							PANGO_TYPE_FC_FONT_MAP,
 							PangoFcFontMapPrivate);
-#else
-  priv = fcfontmap->priv = g_new0 (PangoFcFontMapPrivate, 1);
-#endif  
 
   if (!registered_modules)
     {
@@ -205,9 +198,7 @@ pango_fc_font_map_class_init (PangoFontMapClass *class)
   class->list_families = pango_fc_font_map_list_families;
   class->shape_engine_type = PANGO_RENDER_TYPE_FC;
 
-#ifdef INSTANCE_PRIVATE_DATA_WORKS
-  g_type_class_add_private (object_class, sizeof (PangoFontMapClass));
-#endif  
+  g_type_class_add_private (object_class, sizeof (PangoFontMapPrivate));
 }
 
 static guint
@@ -355,10 +346,6 @@ pango_fc_font_map_finalize (GObject *object)
   if (priv->pattern_hash)
     g_hash_table_destroy (priv->pattern_hash);
 
-#ifndef INSTANCE_PRIVATE_DATA_WORKS
-  g_free (priv);
-#endif  
-  
   G_OBJECT_CLASS (parent_class)->finalize (object);
 }
 
