@@ -6,7 +6,7 @@ INCLUDES = -I$(top_srcdir)/libpango/
 
 pango_viewer_SOURCES = \
 	viewer.c
-pango_viewer_LDADD = ../libpango/libpango.la $(GTK_LIBS) -lfribidi $(UNICODE_LIBS)
+pango_viewer_LDADD = ../libpango/libpango.la ../libpango/libpangox.la $(GTK_LIBS) -lfribidi $(UNICODE_LIBS)
 
 all-local: pango.modules
 

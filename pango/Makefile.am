@@ -2,23 +2,25 @@
 
 INCLUDES=-DSYSCONFDIR=\"$(sysconfdir)\"
 
-lib_LTLIBRARIES = libpango.la
+lib_LTLIBRARIES = libpango.la libpangox.la
 bin_PROGRAMS = pango-querymodules
 
-libpango_la_SOURCES = \
-	break.c \
-	fonts.c \
-	glyphstring.c \
-	pangox.c \
-	mapping.c \
-	modules.c \
-	modules.h \
-	pango-context.c \
+libpango_la_SOURCES = 	 \
+	break.c 	 \
+	fonts.c 	 \
+	glyphstring.c 	 \
+	mapping.c 	 \
+	modules.c 	 \
+	modules.h 	 \
+	pango-context.c  \
 	pango-coverage.c \
-	reorder-items.c \
-	shape.c \
-	utils.c \
+	reorder-items.c  \
+	shape.c 	 \
+	utils.c  	 \
 	utils.h
+
+libpangox_la_SOURCES = 	 \
+	pangox.c
 
 # We use the -release flag for now until the API settles
 # down at which point we'll either use the GTK+ versioning
@@ -26,7 +28,15 @@ libpango_la_SOURCES = \
 #
 libpango_la_LDFLAGS = -release $(VERSION)
 
-include_HEADERS = pango.h pangox.h
+include_HEADERS = 	 \
+	pango.h		 \
+	pango-context.h	 \
+	pango-coverage.h \
+	pango-engine.h	 \
+	pango-font.h     \
+	pango-glyph.h	 \
+	pango-layout.h	 \
+	pangox.h	
 
 pango_querymodules_SOURCES = \
 	querymodules.c

@@ -1177,6 +1177,18 @@ main (int argc, char **argv)
   font_description.stretch = PANGO_STRETCH_NORMAL;
 
   font = pango_context_load_font (context, &font_description, font_size);
+  if (!font)
+    {
+      g_free (font_description.family_name);
+      font_description.family_name = g_strdup ("fixed");
+      font = pango_context_load_font (context, &font_description, font_size);
+
+      if (!font)
+	{
+	  g_warning ("Can't load an initial font!\n");
+	  exit (1);
+	}
+    }
   
   /* Create the user interface
    */

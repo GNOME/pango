@@ -172,21 +172,6 @@ readline(FILE *file)
     return g_strdup (bufstring->str);
 }
 
-static char *
-my_strdupn (char *p, gint n)
-{
-  gchar *result;
-  
-  if (n == 0)
-    return NULL;
-  
-  result = g_malloc (n + 1);
-  strncpy (result, p, n);
-  result[n] = '\0';
-
-  return result;
-}
-
 static void
 read_modules (void)
 {
@@ -198,12 +183,19 @@ read_modules (void)
     return;
   else
     init = TRUE;
-  
+
+  /* FIXME FIXME FIXME - this is a potential security problem from leaving
+   * pango.modules files scattered around to trojan modules.
+   */
   module_file = fopen ("pango.modules", "r");
   if (!module_file)
     {
-      fprintf(stderr, "Cannot load module file!\n");
-      return;			/* FIXME: Error */
+      module_file = fopen (SYSCONFDIR "/pango/pango.modules", "r");
+      if (!module_file)
+	{
+	  fprintf(stderr, "Cannot load module file!\n");
+	  return;			/* FIXME: Error */
+	}
     }
 
   engines = NULL;
@@ -231,16 +223,16 @@ read_modules (void)
 	      switch (i)
 		{
 		case 0:
-		  pair->module = my_strdupn (q, p-q);
+		  pair->module = g_strndup (q, p-q);
 		  break;
 		case 1:
-		  pair->info.id = my_strdupn (q, p-q);
+		  pair->info.id = g_strndup (q, p-q);
 		  break;
 		case 2:
-		  pair->info.engine_type = my_strdupn (q, p-q);
+		  pair->info.engine_type = g_strndup (q, p-q);
 		  break;
 		case 3:
-		  pair->info.render_type = my_strdupn (q, p-q);
+		  pair->info.render_type = g_strndup (q, p-q);
 		  break;
 		default:
 		  range = g_new (PangoEngineRange, 1);
@@ -258,7 +250,7 @@ read_modules (void)
 		  q++;
 		  range->start = start;
 		  range->end = end;
-		  range->langs = my_strdupn (q, p-q);
+		  range->langs = g_strndup (q, p-q);
 
 		  ranges = g_list_prepend (ranges, range);
 		}

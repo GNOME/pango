@@ -63,6 +63,11 @@ Documentation
 General
 =======
 
+* Add a "make test" target to examples/, add environment variables
+  to point to module and font alias files, remove the code that
+  loads these from the current directory.  (There are security
+  implications with the current stuff)
+
 * pango_context_list_fonts does not properly suppress duplicates
   when multiple font maps are involved
 

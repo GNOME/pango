@@ -1,6 +1,7 @@
 ## Process this file with automake to create Makefile.in.
 
-noinst_LTLIBRARIES = pango-hangul.la
+moduledir = $(libdir)/pango/modules
+module_LTLIBRARIES = pango-hangul.la
 
 INCLUDES = -I$(top_srcdir)/libpango
 
