@@ -1,6 +1,6 @@
 ## Process this file with automake to create Makefile.in.
 
-common_sources = hebrew-shaper.c
+common_sources = hebrew-shaper.c hebrew-shaper.h
 hebrew_x_sources = $(common_sources) hebrew-x.c 
 hebrew_xft_sources = $(common_sources) hebrew-xft.c 
 hebrew_ft2_sources = $(common_sources) hebrew-ft2.c 
