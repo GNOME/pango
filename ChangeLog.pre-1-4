@@ -1,3 +1,13 @@
+Thu May 29 19:16:38 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* === Released 1.2.2 ===
+
+	* configure.in: Up version to 1.2.2.
+
+	* NEWS: Updated.
+
+	* tools/Makefile.am (EXTRA_DIST): Remove make-table.sh.
+
 Thu May 29 18:49:00 2003  Owen Taylor  <otaylor@redhat.com>
 
 	* modules/indic/indic-{xft,ft2}.c: Use the correct tags at
@@ -313,7 +323,7 @@ Wed Feb 12 16:41:03 2003  Owen Taylor  <otaylor@redhat.com>
 
 Thu Jan 30 16:41:46 2003  Owen Taylor  <otaylor@redhat.com>
 
-        * Makefile.am (EXTRA_DIST): Remove spec.spec.in from
+        * Makefile.am (EXTRA_DIST): Remove pango.spec.in from
         EXTRA_DIST, and from dist rules. (#102231)
 
         * configure.in: Don't generate pango.spec.

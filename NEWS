@@ -1,3 +1,26 @@
+Overview of Changes in Pango 1.2.2
+==================================
+
+* Cache fontsets for the Xft and FT2 backends, a large speedup for short 
+  strings [Owen Taylor, Soeren Sandmann]
+* Make built in rendering functions, especially the FT2 one,
+   work more like the GDK implementation [Sven Neumann]
+* Add an indic-ft2 module [Kapil Chowskey], 
+  Add a thai-ft2 module [Theppitak Karoonboonyanan]
+* Optimize pango_x_render() by drawing multiple character with
+  a single request when possible [Morten Welinder]
+* Change the handling of attributes that cover only partial glyphs
+  [Owen, Taneem Ahmed, Sunil Mohan Adapa]
+* Fix problems with Arial Unicode and the Opentype code [Owen, Noah Levitt]
+* Fix common crash for fonts missing a GDEF table
+* Fix common portability problem with informative output at end 
+  of configure.
+* Build cleanups and fixes [Tim Mooney, Chris Ross, Akira Tagoh, 
+  Will Partain, James Su]
+* Miscellaneous bug fixes and cleanups [Simon Budig, Rick Jones, 
+  Noah, Padraig O'Briain, Benjamin Otte, Andrey Panov, Federic Zhang]
+* Documentation fixes [Tim, Sven]
+
 Overview of Changes in Pango 1.2.1
 ==================================
 * Handle older TrueType Open Arabic fonts.
