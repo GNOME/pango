@@ -429,7 +429,7 @@ pango_win32_get_font_family (PangoWin32FontMap *win32fontmap,
 
 static PangoFont *
 pango_win32_font_map_load_font (PangoFontMap               *fontmap,
-				angoContext                *context,
+				PangoContext               *context,
 				const PangoFontDescription *description)
 {
   PangoWin32FontMap *win32fontmap = (PangoWin32FontMap *)fontmap;
