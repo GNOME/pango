@@ -1,4 +1,14 @@
-Sun May  7 00:00:00 2000  Owen Taylor  <otaylor@redhat.com>
+Mon May  8 16:19:22 2000  Owen Taylor  <otaylor@redhat.com>
+
+	* modules/thai/* modules/Makefile.am configure.in:
+	Add a simple Thai shaper. (Reasonably complete but
+	intended mostly for an example for the shape docs
+	right now.)
+
+	* pango/pangox.h (PANGO_X_GLYPH_INDEX): Protect
+	arguments to macros.
+
+Sun May  7 06:15:34 2000  Owen Taylor  <otaylor@redhat.com>
 
 	* modules/basic/basic.c (basic_engine_shape): When
 	handling overstrikes, try to guess a bit better

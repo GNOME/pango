@@ -112,7 +112,7 @@ if ! test "x$with_included_modules" = xno || test "x$with_included_modules" = x 
 
    # If no modules specified, include all modules
    if test "x$with_included_modules" = xyes ; then  
-     included_modules="arabic,devanagari,basic,hangul,tamil"
+     included_modules="arabic,devanagari,basic,hangul,tamil,thai"
    else
      included_modules="$with_included_modules"
    fi
@@ -132,6 +132,7 @@ AM_CONDITIONAL(INCLUDE_BASIC,echo $included_modules | grep '\(^\|,\)basic\($\|,\
 AM_CONDITIONAL(INCLUDE_DEVANAGARI,echo $included_modules | grep '\(^\|,\)devanagari\($\|,\)' > /dev/null)
 AM_CONDITIONAL(INCLUDE_HANGUL,echo $included_modules | grep '\(^\|,\)hangul\($\|,\)' > /dev/null)
 AM_CONDITIONAL(INCLUDE_TAMIL,echo $included_modules | grep '\(^\|,\)tamil\($\|,\)' > /dev/null)
+AM_CONDITIONAL(INCLUDE_THAI,echo $included_modules | grep '\(^\|,\)thai\($\|,\)' > /dev/null)
 
 #
 # We use flockfile to implement pango_getline() - should be moved to GLib
@@ -191,6 +192,7 @@ modules/basic/Makefile
 modules/devanagari/Makefile
 modules/hangul/Makefile
 modules/tamil/Makefile
+modules/thai/Makefile
 examples/Makefile
 docs/Makefile
 tools/Makefile

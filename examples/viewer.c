@@ -372,7 +372,7 @@ button_press (GtkWidget *layout, GdkEventButton *event)
 static void
 checkbutton_toggled (GtkWidget *widget, gpointer data)
 {
-  GSList *para_list;
+  GList *para_list;
   
   pango_context_set_base_dir (context, GTK_TOGGLE_BUTTON (widget)->active ? PANGO_DIRECTION_RTL : PANGO_DIRECTION_LTR);
 

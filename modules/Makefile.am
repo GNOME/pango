@@ -5,7 +5,8 @@ SUBDIRS = 		\
 	devanagari 	\
 	basic 		\
 	hangul 		\
-	tamil 
+	tamil 		\
+	thai
 
 install-data-local:
 	$(mkinstalldirs) $(DESTDIR)$(localstatedir)/lib/pango
