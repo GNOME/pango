@@ -77,21 +77,23 @@ void           pango_layout_set_text       (PangoLayout    *layout,
 					    const char     *text,
 					    int             length);
 
-void           pango_layout_set_width     (PangoLayout    *layout,
-					   int             width);
-int            pango_layout_get_width     (PangoLayout    *layout);
-void           pango_layout_set_indent    (PangoLayout    *layout,
-					   int             indent);
-int            pango_layout_get_indent    (PangoLayout    *layout);
-void           pango_layout_set_spacing   (PangoLayout    *layout,
-					   int             spacing);
-int            pango_layout_get_spacing   (PangoLayout    *layout);
-void           pango_layout_set_justify   (PangoLayout    *layout,
-					   gboolean        justify);
-gboolean       pango_layout_get_justify   (PangoLayout    *layout);
-void           pango_layout_set_alignment (PangoLayout    *layout,
-					   PangoAlignment  alignment);
-PangoAlignment pango_layout_get_alignment (PangoLayout    *layout);
+void           pango_layout_set_font_description (PangoLayout                *layout,
+						  const PangoFontDescription *desc);
+void           pango_layout_set_width            (PangoLayout                *layout,
+						  int                         width);
+int            pango_layout_get_width            (PangoLayout                *layout);
+void           pango_layout_set_indent           (PangoLayout                *layout,
+						  int                         indent);
+int            pango_layout_get_indent           (PangoLayout                *layout);
+void           pango_layout_set_spacing          (PangoLayout                *layout,
+						  int                         spacing);
+int            pango_layout_get_spacing          (PangoLayout                *layout);
+void           pango_layout_set_justify          (PangoLayout                *layout,
+						  gboolean                    justify);
+gboolean       pango_layout_get_justify          (PangoLayout                *layout);
+void           pango_layout_set_alignment        (PangoLayout                *layout,
+						  PangoAlignment              alignment);
+PangoAlignment pango_layout_get_alignment        (PangoLayout                *layout);
 
 void           pango_layout_context_changed (PangoLayout    *layout);
 

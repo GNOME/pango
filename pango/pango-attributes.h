@@ -128,15 +128,17 @@ PangoAttribute *pango_attr_underline_new     (PangoUnderline              underl
 PangoAttribute *pango_attr_strikethrough_new (gboolean                    strikethrough);
 PangoAttribute *pango_attr_rise_new          (int                         rise);
 
-PangoAttrList *     pango_attr_list_new          (void);
-void                pango_attr_list_ref          (PangoAttrList  *list);
-void                pango_attr_list_unref        (PangoAttrList  *list);
-PangoAttrList *     pango_attr_list_copy         (PangoAttrList  *list);
-void                pango_attr_list_insert       (PangoAttrList  *list,
+PangoAttrList *    pango_attr_list_new           (void);
+void               pango_attr_list_ref           (PangoAttrList  *list);
+void               pango_attr_list_unref         (PangoAttrList  *list);
+PangoAttrList *    pango_attr_list_copy          (PangoAttrList  *list);
+void               pango_attr_list_insert        (PangoAttrList  *list,
 						  PangoAttribute *attr);
-void                pango_attr_list_change       (PangoAttrList  *list,
+void               pango_attr_list_insert_before (PangoAttrList  *list,
 						  PangoAttribute *attr);
-PangoAttrIterator * pango_attr_list_get_iterator (PangoAttrList  *list);
+void               pango_attr_list_change        (PangoAttrList  *list,
+						  PangoAttribute *attr);
+PangoAttrIterator *pango_attr_list_get_iterator  (PangoAttrList  *list);
 
 void               pango_attr_iterator_range    (PangoAttrIterator     *iterator,
                                                  gint                  *start,

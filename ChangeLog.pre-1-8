@@ -1,3 +1,13 @@
+Sun Jul  2 17:59:56 2000  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-attributes.[ch] (pango_attr_list_insert_before): New
+	function that inserts before other attributes with matching
+	start index.
+
+	* pango/pango-layout.[ch] (pango_layout_set_font_description): Add
+	the ability to set a default font description on the layout, overriding
+	the font description from the context.
+
 Sun Jul  2 17:19:11 2000  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pango-types.h: Add a PANGO_PIXELS macro to convert

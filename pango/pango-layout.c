@@ -39,6 +39,8 @@ struct _PangoLayout
 
   PangoContext *context;
   PangoAttrList *attrs;
+  PangoFontDescription *font_desc;
+  
   gchar *text;
   int length;			/* length of text in bytes */
   int width;			/* wrap width, in device units */
@@ -115,6 +117,7 @@ static void
 pango_layout_init (PangoLayout *layout)
 {
   layout->attrs = NULL;
+  layout->font_desc = NULL;
   layout->text = NULL;
   layout->length = 0;
   layout->width = -1;
@@ -331,6 +334,34 @@ pango_layout_set_attributes (PangoLayout   *layout,
 
   layout->attrs = attrs;
   pango_attr_list_ref (layout->attrs);
+  pango_layout_clear_lines (layout);
+}
+
+/**
+ * pango_layout_set_font_description:
+ * @layout: a #PangoLayout
+ * @desc: the new pango font description, or %NULL to unset the
+ *        current font description.
+ * 
+ * Set the default font description for the layout. If no font 
+ * description is set on the layout, the font description from
+ * the layout's context is used.
+ **/
+void
+pango_layout_set_font_description (PangoLayout                 *layout,
+				    const PangoFontDescription *desc)
+{
+  g_return_if_fail (layout != NULL);
+  g_return_if_fail (desc != NULL);
+
+  if (layout->font_desc)
+    pango_font_description_free (layout->font_desc);
+  
+  if (desc)
+    layout->font_desc = pango_font_description_copy (desc);
+  else
+    layout->font_desc = NULL;
+
   pango_layout_clear_lines (layout);
 }
 
@@ -1758,6 +1789,8 @@ pango_layout_check_lines (PangoLayout *layout)
   do
     {
       PangoLayoutLine *line;
+      PangoAttrList *attrs;
+      
       GList *items, *tmp_list;
       gboolean last_cant_end = FALSE;
       gboolean current_cant_end = FALSE;
@@ -1776,15 +1809,33 @@ pango_layout_check_lines (PangoLayout *layout)
       if (end == layout->text + layout->length)
 	done = TRUE;
   
-      /* FIXME, should we force people to set the attrs? */
       if (layout->attrs)
-	items = pango_itemize (layout->context, start, end - start, layout->attrs);
-      else
 	{
-	  PangoAttrList *attrs = pango_attr_list_new ();
-	  items = pango_itemize (layout->context, start, end - start, attrs);
-	  pango_attr_list_unref (attrs);
+	  /* If we were being clever, we'd try to catch the case here
+	   * where the set font desc doesn't change the font for any
+	   * characters.
+	   */
+	  if (layout->font_desc)
+	    attrs = pango_attr_list_copy (layout->attrs);
+	  else
+	    attrs = layout->attrs;
 	}
+      else
+	attrs = pango_attr_list_new ();
+
+      if (layout->font_desc)
+	{
+	  PangoAttribute *attr = pango_attr_font_desc_new (layout->font_desc);
+	  attr->start_index = 0;
+	  attr->end_index = layout->length;
+	  
+	  pango_attr_list_insert_before (attrs, attr);
+	}
+
+      items = pango_itemize (layout->context, start, end - start, attrs);
+
+      if (attrs != layout->attrs)
+	  pango_attr_list_unref (attrs);
 
       get_para_log_attrs (start, items, layout->log_attrs + start_offset);
 
@@ -2260,8 +2311,15 @@ pango_layout_line_get_empty_extents (PangoLayoutLine *line,
 	      
 	      if (start <= index && index < end)
 		{
+		  PangoFontDescription *base_font_desc;
+
+		  if (layout->font_desc)
+		    base_font_desc = layout->font_desc;
+		  else
+		    base_font_desc = pango_context_get_font_description (layout->context);
+		    
 		  pango_attr_iterator_get_font (iter,
-						pango_context_get_font_description (layout->context),
+						base_font_desc,
 						&font_desc,
 						NULL);
 		  break;
@@ -2274,7 +2332,10 @@ pango_layout_line_get_empty_extents (PangoLayoutLine *line,
 	}
       else
 	{
-	  font_desc = *pango_context_get_font_description (layout->context);
+	  if (layout->font_desc)
+	    font_desc = *layout->font_desc;
+	  else
+	    font_desc = *pango_context_get_font_description (layout->context);
 	}
 
       font = pango_context_load_font (layout->context, &font_desc);

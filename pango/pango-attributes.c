@@ -649,31 +649,21 @@ pango_attr_list_copy (PangoAttrList *list)
   return new;
 }
 
-/**
- * pango_attr_list_insert:
- * @list: a #PangoAttrList
- * @attr: the attribute to insert. Ownership of this value is
- *        assumed by the list.
- * 
- * Insert the given attribute into the #PangoAttrList. It will
- * be inserted after all other attributes with a matching
- * @start_index.
- **/
-void
-pango_attr_list_insert (PangoAttrList  *list,
-			PangoAttribute *attr)
+static void
+pango_attr_list_insert_internal (PangoAttrList  *list,
+				 PangoAttribute *attr,
+				 gboolean        before)
 {
   GSList *tmp_list, *prev, *link;
   gint start_index = attr->start_index;
   
-  g_return_if_fail (list != NULL);
-
   if (!list->attributes)
     {
       list->attributes = g_slist_prepend (NULL, attr);
       list->attributes_tail = list->attributes;
     }
-  else if (((PangoAttribute *)list->attributes_tail->data)->start_index <= start_index)
+  else if (((PangoAttribute *)list->attributes_tail->data)->start_index < start_index ||
+	   (!before && ((PangoAttribute *)list->attributes_tail->data)->start_index == start_index))
     {
       g_slist_append (list->attributes_tail, attr);
     }
@@ -685,7 +675,8 @@ pango_attr_list_insert (PangoAttrList  *list,
 	{
 	  PangoAttribute *tmp_attr = tmp_list->data;
 	  
-	  if (tmp_attr->start_index > start_index)
+	  if (tmp_attr->start_index > start_index ||
+	      (before && tmp_attr->start_index == start_index))
 	    {
 	      link = g_slist_alloc ();
 	      link->next = tmp_list;
@@ -704,6 +695,46 @@ pango_attr_list_insert (PangoAttrList  *list,
 	  tmp_list = tmp_list->next;
 	}
     }
+}
+
+/**
+ * pango_attr_list_insert:
+ * @list: a #PangoAttrList
+ * @attr: the attribute to insert. Ownership of this value is
+ *        assumed by the list.
+ * 
+ * Insert the given attribute into the #PangoAttrList. It will
+ * be inserted after all other attributes with a matching
+ * @start_index.
+ **/
+void
+pango_attr_list_insert (PangoAttrList  *list,
+			PangoAttribute *attr)
+{
+  g_return_if_fail (list != NULL);
+  g_return_if_fail (attr != NULL);
+
+  pango_attr_list_insert_internal (list, attr, FALSE);
+}
+
+/**
+ * pango_attr_list_insert_before:
+ * @list: a #PangoAttrList
+ * @attr: the attribute to insert. Ownership of this value is
+ *        assumed by the list.
+ * 
+ * Insert the given attribute into the #PangoAttrList. It will
+ * be inserted before all other attributes with a matching
+ * @start_index.
+ **/
+void
+pango_attr_list_insert_before (PangoAttrList  *list,
+			       PangoAttribute *attr)
+{
+  g_return_if_fail (list != NULL);
+  g_return_if_fail (attr != NULL);
+
+  pango_attr_list_insert_internal (list, attr, TRUE);
 }
 
 /**
