@@ -310,6 +310,8 @@ pango_x_shutdown_display (Display *display)
 	  fontmaps = g_list_delete_link (fontmaps, tmp_list);
 	  pango_x_fontmap_cache_clear (xfontmap);
 	  g_object_unref (G_OBJECT (xfontmap));
+
+	  return;
 	}
 
       tmp_list = tmp_list->next;
