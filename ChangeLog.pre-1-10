@@ -1,5 +1,11 @@
 2005-03-03  Owen Taylor  <otaylor@redhat.com>
 
+	* pango/pango-fontmap.c (pango_font_map_load_font): Add
+	a g_return_if_fail() if desc doesn't have a family.
+	(#165866, Kees Cook)
+	
+2005-03-03  Owen Taylor  <otaylor@redhat.com>
+
 	* pango/pangoxft-render.c (pango_xft_renderer_draw_glyphs):
 	Call XftCharIndex() on the right font. (#163511)
 
