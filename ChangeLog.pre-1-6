@@ -1,3 +1,10 @@
+Thu Mar  7 14:42:50 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* configure.in: As we do in other modules, default to
+	--disable-gtk-doc, and run the check we used to do
+	for the default when the --enable-gtk-doc is specified.
+	(Alain Rouge)
+
 Thu Mar  7 10:51:16 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* configure.in: Fix some problems with setting 
