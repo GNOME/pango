@@ -3954,13 +3954,13 @@ cluster_end_index (PangoLayoutIter *iter)
     {
       /* Use the left or right end of the run */
       if (iter->ltr)
-        return iter->run->item->offset + iter->run->item->length;
+        return iter->run->item->length;
       else
-        return iter->run->item->offset;
+        return 0;
     }
   else
     {
-      return iter->run->item->offset + gs->log_clusters[iter->next_cluster_start];
+      return gs->log_clusters[iter->next_cluster_start];
     }
 }
 
@@ -4213,7 +4213,7 @@ pango_layout_iter_next_char (PangoLayoutIter *iter)
   
   gs = iter->run->glyphs;
 
-  next_cluster_index = cluster_end_index (iter);
+  next_cluster_index = iter->run->item->offset + cluster_end_index (iter);
   
   oldp = iter->layout->text + iter->index;
 
