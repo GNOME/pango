@@ -55,11 +55,11 @@ XFT_BUILD_LIBS=
 endif
 
 if HAVE_FREETYPE
+FT2_HFILES=pangoft2.h pango-ot.h
 FT2_BUILD_LIBS=libpangoft2.la
-FT2_HFILES=pangoft2.h
 else
-FT2_BUILD_LIBS=
 FT2_HFILES=
+FT2_BUILD_LIBS=
 endif
 
 if PLATFORM_WIN32
@@ -191,7 +191,7 @@ libpangoft2_la_SOURCES =   	\
 	pangoft2-fontmap.c	\
 	module-defs-ft2.c
 
-libpangoft2_la_LIBADD = mini-xft/libmini-xft.la libpango.la $(INCLUDED_FT2_MODULES) $(FREETYPE_LIBS) 
+libpangoft2_la_LIBADD = mini-xft/libmini-xft.la opentype/libpango-ot.la libpango.la $(INCLUDED_FT2_MODULES) $(FREETYPE_LIBS) 
 libpangoft2_la_LDFLAGS = -release $(VERSION) $(GLIB_LIBS) $(no_undefined) $(pangoft2_export_symbols)
 libpangoft2_la_DEPENDENCIES = $(INCLUDED_FT2_MODULES) libpango.la
 

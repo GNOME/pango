@@ -3,7 +3,7 @@
 pangolibs = $(top_builddir)/pango/libpango.la $(FRIBIDI_LIBS) $(GLIB_LIBS)
 pangoxlibs = $(top_builddir)/pango/libpangox.la $(X_LIBS) $(pangolibs)
 pangoxftlibs = $(top_builddir)/pango/libpangoxft.la $(XFT_LIBS) $(pangolibs)
-pangoft2libs = $(top_builddir)/pango/libpangoft2.la $(top_builddir)/pango/opentype/libpango-ot.la $(FREETYPE_LIBS) $(pangolibs)
+pangoft2libs = $(top_builddir)/pango/libpangoft2.la $(FREETYPE_LIBS) $(pangolibs)
 
 if HAVE_XFT
 if INCLUDE_ARABIC_XFT
