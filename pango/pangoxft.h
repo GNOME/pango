@@ -45,6 +45,11 @@ void           pango_xft_render           (XftDraw          *draw,
 					   gint              x,
 					   gint              y);
 
+#define PANGO_TYPE_XFT_FONT              (pango_xft_font_get_type ())
+#define PANGO_XFT_IS_FONT(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), PANGO_TYPE_XFT_FONT))
+
+GType      pango_xft_font_get_type (void);
+
 /* For shape engines
  */
 

@@ -1,3 +1,8 @@
+Thu Dec 14 20:34:18 2000  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pangoxft.h pango/pangoxft-font.c: (PANGO_TYPE_XFT_FONT): Add
+	PANGO_XFT_IS_FONT to the public header.
+
 Thu Dec 14 19:00:46 2000  Owen Taylor  <otaylor@redhat.com>
 
 	* modules/indic/pango-indic-script.h: Fix macro breakage.
