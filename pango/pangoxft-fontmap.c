@@ -447,6 +447,17 @@ _pango_xft_font_map_remove (PangoFontMap *fontmap,
 		       xfont->font_pattern);
 }
 
+static PangoXftFamily *
+create_family (PangoXftFontMap *xfontmap,
+	       const char      *family_name)
+{
+  PangoXftFamily *family = g_object_new (PANGO_XFT_TYPE_FAMILY, NULL);
+  family->fontmap = xfontmap;
+  family->family_name = g_strdup (family_name);
+
+  return family;
+}
+
 static void
 pango_xft_font_map_list_families (PangoFontMap           *fontmap,
 				  PangoFontFamily      ***families,
@@ -455,6 +466,7 @@ pango_xft_font_map_list_families (PangoFontMap           *fontmap,
   PangoXftFontMap *xfontmap = PANGO_XFT_FONT_MAP (fontmap);
   XftFontSet *fontset;
   int i;
+  int count;
 
   if (xfontmap->n_families < 0)
     {
@@ -465,9 +477,9 @@ pango_xft_font_map_list_families (PangoFontMap           *fontmap,
 			      XFT_FAMILY,
 			      NULL);
 
-      xfontmap->n_families = fontset->nfont;
-      xfontmap->families = g_new (PangoXftFamily *, xfontmap->n_families);
+      xfontmap->families = g_new (PangoXftFamily *, fontset->nfont + 3); /* 3 standard aliases */
 
+      count = 0;
       for (i = 0; i < fontset->nfont; i++)
 	{
 	  char *s;
@@ -475,15 +487,22 @@ pango_xft_font_map_list_families (PangoFontMap           *fontmap,
 	  
 	  res = XftPatternGetString (fontset->fonts[i], XFT_FAMILY, 0, &s);
 	  g_assert (res == XftResultMatch);
-	  
-	  xfontmap->families[i] = g_object_new (PANGO_XFT_TYPE_FAMILY, NULL);
-	  xfontmap->families[i]->family_name = g_strdup (s);
-	  xfontmap->families[i]->fontmap = xfontmap;
+
+	  if (strcmp (s, "sans") != 0 &&
+	      strcmp (s, "serif") != 0 &&
+	      strcmp (s, "monospace") != 0)
+	    xfontmap->families[count++] = create_family (xfontmap, s);
 	}
 
       XftFontSetDestroy (fontset);
+
+      xfontmap->families[count++] = create_family (xfontmap, "sans");
+      xfontmap->families[count++] = create_family (xfontmap, "serif");
+      xfontmap->families[count++] = create_family (xfontmap, "monospace");
+      
+      xfontmap->n_families = count;
     }
-  
+
   if (n_families)
     *n_families = xfontmap->n_families;
   
@@ -940,6 +959,17 @@ pango_xft_face_get_type (void)
 /*
  * PangoXFontFamily
  */
+static PangoXftFace *
+create_face (PangoXftFamily *xfamily,
+	     const char     *style)
+{
+  PangoXftFace *face = g_object_new (PANGO_XFT_TYPE_FACE, NULL);
+  face->style = g_strdup (style);
+  face->family = xfamily;
+
+  return face;
+}
+
 static void
 pango_xft_family_list_faces (PangoFontFamily  *family,
 			     PangoFontFace  ***faces,
@@ -952,33 +982,47 @@ pango_xft_family_list_faces (PangoFontFamily  *family,
     {
       XftFontSet *fontset;
       int i;
-      
-      fontset = XftListFonts (xfontmap->display, xfontmap->screen,
-			      XFT_ENCODING, XftTypeString, "iso10646-1",
-			      XFT_FAMILY, XftTypeString, xfamily->family_name,
-			      XFT_CORE, XftTypeBool, False,
-			      NULL,
-			      XFT_STYLE,
-			      NULL);
-      
-      xfamily->n_faces = fontset->nfont;
-      xfamily->faces = g_new (PangoXftFace *, xfamily->n_faces);
 
-      for (i = 0; i < fontset->nfont; i++)
+      if (strcmp (xfamily->family_name, "sans") == 0 ||
+	  strcmp (xfamily->family_name, "serif") == 0 ||
+	  strcmp (xfamily->family_name, "monospace") == 0)
 	{
-	  char *s;
-	  XftResult res;
-	  
-	  res = XftPatternGetString (fontset->fonts[i], XFT_STYLE, 0, &s);
-	  if (res != XftResultMatch)
-	    s = "Regular";
-	  
-	  xfamily->faces[i] = g_object_new (PANGO_XFT_TYPE_FACE, NULL);
-	  xfamily->faces[i]->style = g_strdup (s);
-	  xfamily->faces[i]->family = xfamily;
+	  xfamily->n_faces = 4;
+	  xfamily->faces = g_new (PangoXftFace *, xfamily->n_faces);
+
+	  i = 0;
+	  xfamily->faces[i++] = create_face (xfamily, "Regular");
+	  xfamily->faces[i++] = create_face (xfamily, "Bold");
+	  xfamily->faces[i++] = create_face (xfamily, "Italic");
+	  xfamily->faces[i++] = create_face (xfamily, "Bold Italic");
 	}
-      
-      XftFontSetDestroy (fontset);
+      else
+	{
+	  fontset = XftListFonts (xfontmap->display, xfontmap->screen,
+				  XFT_ENCODING, XftTypeString, "iso10646-1",
+				  XFT_FAMILY, XftTypeString, xfamily->family_name,
+				  XFT_CORE, XftTypeBool, False,
+				  NULL,
+				  XFT_STYLE,
+				  NULL);
+	  
+	  xfamily->n_faces = fontset->nfont;
+	  xfamily->faces = g_new (PangoXftFace *, xfamily->n_faces);
+	  
+	  for (i = 0; i < fontset->nfont; i++)
+	    {
+	      char *s;
+	      XftResult res;
+	      
+	      res = XftPatternGetString (fontset->fonts[i], XFT_STYLE, 0, &s);
+	      if (res != XftResultMatch)
+		s = "Regular";
+	      
+	      xfamily->faces[i] = create_face (xfamily, s);
+	    }
+
+	  XftFontSetDestroy (fontset);
+	}
     }
   
   if (n_faces)

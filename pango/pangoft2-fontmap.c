@@ -370,6 +370,18 @@ _pango_ft2_font_map_remove (PangoFontMap *fontmap,
 		       ft2font->font_pattern);
 }
 
+static PangoFT2Family *
+create_family (PangoFT2FontMap *xfontmap,
+	       const char      *family_name)
+{
+  PangoFT2Family *family = g_object_new (PANGO_FT2_TYPE_FAMILY, NULL);
+  family->fontmap = xfontmap;
+  family->family_name = g_strdup (family_name);
+  family->n_faces = -1;
+
+  return family;
+}
+
 static void
 pango_ft2_font_map_list_families (PangoFontMap           *fontmap,
 				  PangoFontFamily      ***families,
@@ -378,6 +390,7 @@ pango_ft2_font_map_list_families (PangoFontMap           *fontmap,
   PangoFT2FontMap *ft2fontmap = (PangoFT2FontMap *)fontmap;
   MiniXftFontSet *fontset;
   int i;
+  int count;
 
   if (ft2fontmap->n_families < 0)
     {
@@ -388,9 +401,9 @@ pango_ft2_font_map_list_families (PangoFontMap           *fontmap,
 				  XFT_FAMILY,
 				  NULL);
 
-      ft2fontmap->n_families = fontset->nfont;
-      ft2fontmap->families = g_new (PangoFT2Family *, ft2fontmap->n_families);
+      ft2fontmap->families = g_new (PangoFT2Family *, fontset->nfont + 3); /* 3 standard aliases */
 
+      count = 0;
       for (i = 0; i < fontset->nfont; i++)
 	{
 	  char *s;
@@ -399,10 +412,11 @@ pango_ft2_font_map_list_families (PangoFontMap           *fontmap,
 	  res = MiniXftPatternGetString (fontset->fonts[i], XFT_FAMILY, 0, &s);
 	  g_assert (res == MiniXftResultMatch);
 	  
-	  ft2fontmap->families[i] = g_object_new (PANGO_FT2_TYPE_FAMILY, NULL);
-	  ft2fontmap->families[i]->family_name = g_strdup (s);
-	  ft2fontmap->families[i]->fontmap = ft2fontmap;
-          ft2fontmap->families[i]->n_faces = -1;
+ 
+ 	  if (strcmp (s, "sans") != 0 &&
+ 	      strcmp (s, "serif") != 0 &&
+ 	      strcmp (s, "monospace") != 0)
+	    ft2fontmap->families[count++] = create_family (ft2fontmap, s);
 	}
 
       MiniXftFontSetDestroy (fontset);
@@ -834,9 +848,19 @@ _pango_ft2_font_map_get_library (PangoFontMap *fontmap)
 }
 
 /*
- * PangoXFontFamily
+ * PangoFT2FontFamily
  */
+static PangoFT2Face *
+create_face (PangoFT2Family *ft2family,
+ 	     const char     *style)
+{
+  PangoFT2Face *face = g_object_new (PANGO_FT2_TYPE_FACE, NULL);
+  face->style = g_strdup (style);
+  face->family = ft2family;
 
+  return face;
+}
+ 
 static void
 pango_ft2_family_list_faces (PangoFontFamily  *family,
 			     PangoFontFace  ***faces,
@@ -848,32 +872,46 @@ pango_ft2_family_list_faces (PangoFontFamily  *family,
     {
       MiniXftFontSet *fontset;
       int i;
-      
-      fontset = MiniXftListFonts ((Display *)1, 0,
-				  XFT_ENCODING, MiniXftTypeString, "iso10646-1",
-				  XFT_FAMILY, MiniXftTypeString, ft2family->family_name,
-				  XFT_CORE, MiniXftTypeBool, False,
-				  NULL,
-				  XFT_STYLE,
-				  NULL);
-      
-      ft2family->n_faces = fontset->nfont;
-      ft2family->faces = g_new (PangoFT2Face *, ft2family->n_faces);
 
-      for (i = 0; i < fontset->nfont; i++)
-	{
-	  char *s;
-	  MiniXftResult res;
-	  
-	  res = MiniXftPatternGetString (fontset->fonts[i], XFT_STYLE, 0, &s);
-	  g_assert (res == MiniXftResultMatch);
-	  
-	  ft2family->faces[i] = g_object_new (PANGO_FT2_TYPE_FACE, NULL);
-	  ft2family->faces[i]->style = g_strdup (s);
-	  ft2family->faces[i]->family = ft2family;
+      if (strcmp (ft2family->family_name, "sans") == 0 ||
+	  strcmp (ft2family->family_name, "serif") == 0 ||
+	  strcmp (ft2family->family_name, "monospace") == 0)
+  	{
+ 	  ft2family->n_faces = 4;
+ 	  ft2family->faces = g_new (PangoFT2Face *, ft2family->n_faces);
+ 
+ 	  i = 0;
+ 	  ft2family->faces[i++] = create_face (ft2family, "Regular");
+ 	  ft2family->faces[i++] = create_face (ft2family, "Bold");
+ 	  ft2family->faces[i++] = create_face (ft2family, "Italic");
+ 	  ft2family->faces[i++] = create_face (ft2family, "Bold Italic");
 	}
-      
-      MiniXftFontSetDestroy (fontset);
+      else
+	{
+	  fontset = MiniXftListFonts ((Display *)1, 0,
+				      XFT_ENCODING, MiniXftTypeString, "iso10646-1",
+				      XFT_FAMILY, MiniXftTypeString, ft2family->family_name,
+				      XFT_CORE, MiniXftTypeBool, False,
+				      NULL,
+				      XFT_STYLE,
+				      NULL);
+	  
+	  ft2family->n_faces = fontset->nfont;
+	  ft2family->faces = g_new (PangoFT2Face *, ft2family->n_faces);
+	  
+	  for (i = 0; i < fontset->nfont; i++)
+	    {
+	      char *s;
+	      MiniXftResult res;
+	      
+	      res = MiniXftPatternGetString (fontset->fonts[i], XFT_STYLE, 0, &s);
+	      g_assert (res == MiniXftResultMatch);
+	      
+	      ft2family->faces[i] = create_face (ft2family, s);
+	    }
+	  
+	  MiniXftFontSetDestroy (fontset);
+	}
     }
   
   if (n_faces)
