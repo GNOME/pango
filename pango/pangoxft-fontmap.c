@@ -520,59 +520,19 @@ pango_xft_font_map_new_font (PangoFontMap  *fontmap,
   return  (PangoFont *)_pango_xft_font_new (fontmap, XftPatternDuplicate (match));
 }
 
-static PangoFont *
-pango_xft_font_map_load_font (PangoFontMap               *fontmap,
-			      PangoContext               *context,
-			      const PangoFontDescription *description)
-{
-  PangoXftFontMap *xfontmap = (PangoXftFontMap *)fontmap;
-  XftPattern *pattern, *match;
-  XftResult res;
-  PangoFont *font = NULL;
-  
-  pattern = pango_xft_make_pattern (description);
-      
-  match = XftFontMatch (xfontmap->display, xfontmap->screen, pattern, &res);
-  
-  XftPatternDestroy (pattern);
-  
-  if (match)
-    {
-      font = pango_xft_font_map_new_font (fontmap, match);
-      XftPatternDestroy (match);
-    }
-  
-  return font;
-}
-
-
-static void
-pango_xft_font_set_free (PangoXftPatternSet *font_set)
-{
-  int i;
-  
-  for (i = 0; i < font_set->n_patterns; i++)
-    XftPatternDestroy (font_set->patterns[i]);
-
-  g_free (font_set);
-}
-
-static PangoFontset *
-pango_xft_font_map_load_fontset (PangoFontMap                 *fontmap,
-				 PangoContext                 *context,
-				 const PangoFontDescription   *desc,
-				 PangoLanguage                *language)
+static PangoXftPatternSet *
+pango_xft_font_map_get_patterns (PangoFontMap               *fontmap,
+				 PangoContext               *context,
+				 const PangoFontDescription *desc)
 {
   PangoXftFontMap *xfontmap = (PangoXftFontMap *)fontmap;
   XftPattern *pattern, *pattern_copy;
   XftPattern *match;
-  int i;
   char *family, *family_res;
   XftResult res;
   int id;
   GPtrArray *array;
   PangoXftPatternSet *patterns;
-  PangoFontsetSimple *simple;
 
   patterns = g_hash_table_lookup (xfontmap->fontset_hash, desc);
 
@@ -642,7 +602,44 @@ pango_xft_font_map_load_fontset (PangoFontMap                 *fontmap,
 			   patterns);
     }
 
+  return patterns;
+}
+
+static PangoFont *
+pango_xft_font_map_load_font (PangoFontMap               *fontmap,
+			      PangoContext               *context,
+			      const PangoFontDescription *description)
+{
+  PangoXftPatternSet *patterns = pango_xft_font_map_get_patterns (fontmap, context, description);
+
+  if (patterns->n_patterns > 0)
+    return pango_xft_font_map_new_font (fontmap, patterns->patterns[0]);
   
+  return NULL;
+}
+
+static void
+pango_xft_font_set_free (PangoXftPatternSet *font_set)
+{
+  int i;
+  
+  for (i = 0; i < font_set->n_patterns; i++)
+    XftPatternDestroy (font_set->patterns[i]);
+
+  g_free (font_set);
+}
+
+
+static PangoFontset *
+pango_xft_font_map_load_fontset (PangoFontMap                 *fontmap,
+				 PangoContext                 *context,
+				 const PangoFontDescription   *desc,
+				 PangoLanguage                *language)
+{
+  PangoFontsetSimple *simple;
+  int i;
+  PangoXftPatternSet *patterns = pango_xft_font_map_get_patterns (fontmap, context, desc);
+	  
   simple = pango_fontset_simple_new (language);
 
   for (i = 0; i < patterns->n_patterns; i++)
