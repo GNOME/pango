@@ -112,7 +112,7 @@ bin_PROGRAMS = pango-querymodules
 pango_built_headers = pango-enum-types.h
 pango_built_cfiles = pango-enum-types.c
 
-$(OBJECTS): $(pango_built_headers)
+$(OBJECTS) $(libpango_la_OBJECTS): $(pango_built_headers)
 
 libpango_la_SOURCES = 	   \
 	break.c 	   \

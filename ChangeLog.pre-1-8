@@ -1,3 +1,9 @@
+Mon Nov 26 11:31:01 2001  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/Makefile.am: Workaround to work a little better with 
+	automake-1.5 - make $(libpango_la_OBJECTS) as well as $(OBJECTS)
+	depend on pango_built_headers.
+
 Sun Nov 25 22:35:46 2001  Owen Taylor  <otaylor@redhat.com>
 
 	* configure.in (have_fribidi) README: Disable --with-fribidi; it offers
