@@ -364,9 +364,10 @@ typedef enum
 /**
  * pango_default_break:
  * @text: text to break
- * @length: length of text in bytes (or -1 is allowed if text is nul-terminated)
- * @analysis: a #PangoAnalysis for the text
+ * @length: length of text in bytes (may be -1 if @text is nul-terminated)
+ * @analysis: a #PangoAnalysis for the @text
  * @attrs: logical attributes to fill in
+ * @attrs_len: size of the array passed as @attrs
  *
  * This is the default break algorithm, used if no language
  * engine overrides it. Normally you should use pango_break()
@@ -1277,9 +1278,11 @@ pango_default_break (const gchar   *text,
 /**
  * pango_break:
  * @text:      the text to process
- * @length:    the length (in bytes) of @text
- * @analysis:  #PangoAnalysis structure from PangoItemize
+ * @length:    length of @text in bytes (may be -1 if @text is nul-terminated)
+ * @analysis:  #PangoAnalysis structure from pango_itemize()
  * @attrs:     an array to store character information in
+ * @attrs_len: size of the array passed as @attrs
+
  *
  * Determines possible line, word, and character breaks
  * for a string of Unicode text.

@@ -694,7 +694,8 @@ pango_layout_set_single_paragraph_mode (PangoLayout *layout,
  * 
  * Obtains the value set by pango_layout_set_single_paragraph_mode().
  * 
- * Return value: %TRUE if the layout does not break paragraphs at paragraph separator characters
+ * Return value: %TRUE if the layout does not break paragraphs at 
+ * paragraph separator characters
  **/
    
 gboolean
@@ -755,7 +756,7 @@ pango_layout_set_text (PangoLayout *layout,
  * Gets the text in the layout. The returned text should not
  * be freed or modified.
  * 
- * Return value: the text in the layout
+ * Return value: the text in the @layout
  **/
 const char*
 pango_layout_get_text (PangoLayout *layout)
@@ -786,7 +787,8 @@ pango_layout_set_markup (PangoLayout *layout,
 /**
  * pango_layout_set_markup_with_accel:
  * @layout: a #PangoLayout
- * @markup: some marked-up text (see <link linkend="PangoMarkupFormat">markup format</link>)
+ * @markup: some marked-up text 
+ * (see <link linkend="PangoMarkupFormat">markup format</link>)
  * @length: length of @markup in bytes
  * @accel_marker: marker for accelerators in the text
  * @accel_char: return location for any located accelerators
@@ -860,7 +862,7 @@ pango_layout_context_changed (PangoLayout *layout)
  *           of characters in the layout.)
  * 
  * Retrieve an array of logical attributes for each character in
- * the layout. 
+ * the @layout. 
  **/
 void
 pango_layout_get_log_attrs (PangoLayout    *layout,
@@ -886,7 +888,7 @@ pango_layout_get_log_attrs (PangoLayout    *layout,
  * pango_layout_get_line_count:
  * @layout: #PangoLayout
  * 
- * Retrieve the count of lines for the #PangoLayout
+ * Retrieve the count of lines for the @layout.
  * 
  * Return value: the line count
  **/
@@ -903,7 +905,7 @@ pango_layout_get_line_count (PangoLayout   *layout)
  * pango_layout_get_lines:
  * @layout: a #PangoLayout
  * 
- * Return the lines of the layout as a list
+ * Return the lines of the @layout as a list.
  * 
  * Return value: a #GSList containing the lines in the layout. This
  * points to internal data of the #PangoLayout and must be used with
@@ -923,7 +925,7 @@ pango_layout_get_lines (PangoLayout *layout)
  * @line: the index of a line, which must be between 0 and
  *        pango_layout_get_line_count(layout) - 1, inclusive.
  * 
- * Retrieves a particular line from a #PangoLayout
+ * Retrieves a particular line from a #PangoLayout.
  * 
  * Return value: the requested #PangoLayoutLine, or %NULL if the
  *               index is out of range. This layout line can
@@ -950,15 +952,14 @@ pango_layout_get_line (PangoLayout *layout,
 
 /**
  * pango_layout_line_index_to_x:
- * @line:         a #PangoLayoutLine
- * @index:        byte offset of a grapheme within the layout
- * @trailing: an integer indicating the edge of the grapheme to retrieve the position
- *            of. If 0, the trailing edge of the grapheme, if > 0, the leading
- *            of the grapheme.
+ * @line:     a #PangoLayoutLine
+ * @index:    byte offset of a grapheme within the layout
+ * @trailing: an integer indicating the edge of the grapheme to retrieve 
+ *            the position of. If 0, the trailing edge of the grapheme, 
+ *            if > 0, the leading of the grapheme.
  * @x_pos: location to store the x_offset (in thousandths of a device unit)
  * 
- * Convert index within a line to X pos
- *
+ * Converts an index within a line to a X position.
  *
  **/
 void
@@ -1117,15 +1118,15 @@ pango_layout_index_to_line_and_extents (PangoLayout     *layout,
  * pango_layout_index_to_line_x:
  * @layout:    a #PangoLayout
  * @index:     the byte index of a grapheme within the layout.
- * @trailing:  an integer indicating the edge of the grapheme to retrieve the position
- *             of. If 0, the trailing edge of the grapheme, if > 0, the leading
- *             of the grapheme.
+ * @trailing:  an integer indicating the edge of the grapheme to retrieve the 
+ *             position of. If 0, the trailing edge of the grapheme, if > 0, 
+ *             the leading of the grapheme.
  * @line:      location to store resulting line index. (which will
  *             between 0 and pango_layout_get_line_count(layout) - 1)
  * @x_pos:     location to store resulting position within line
  *             (in thousandths of a device unit)
  *
- * Converts from byte index within the layout to line and X position.
+ * Converts from byte @index within the @layout to line and X position.
  * (X position is measured from the left edge of the line)
  */
 void
@@ -1876,9 +1877,9 @@ pango_layout_get_extents_internal (PangoLayout    *layout,
 
   pango_layout_check_lines (layout);
 
-  /* When we are not wrapping, we need the overall width of the layout to figure
-   * out the x_offsets of each line. However, we only need the x_offsets if
-   * we are computing the ink_rect or individual line extents.
+  /* When we are not wrapping, we need the overall width of the layout to 
+   * figure out the x_offsets of each line. However, we only need the 
+   * x_offsets if we are computing the ink_rect or individual line extents.
    */
   width = layout->width;
   if (width == -1 && layout->alignment != PANGO_ALIGN_LEFT && (ink_rect || line_extents))
@@ -1984,10 +1985,10 @@ pango_layout_get_extents_internal (PangoLayout    *layout,
  * @layout:   a #PangoLayout
  * @ink_rect: rectangle used to store the extents of the glyph string as drawn
  *            or %NULL to indicate that the result is not needed.
- * @logical_rect: rectangle used to store the logical extents of the glyph string
- *            or %NULL to indicate that the result is not needed.
+ * @logical_rect: rectangle used to store the logical extents of the glyph 
+ *            string or %NULL to indicate that the result is not needed.
  * 
- * Compute the logical and ink extents of a layout. See the documentation
+ * Compute the logical and ink extents of @layout. See the documentation
  * for pango_font_get_glyph_extents() for details about the interpretation
  * of the rectangles.
  */
@@ -2006,10 +2007,10 @@ pango_layout_get_extents (PangoLayout    *layout,
  * @layout:   a #PangoLayout
  * @ink_rect: rectangle used to store the extents of the glyph string as drawn
  *            or %NULL to indicate that the result is not needed.
- * @logical_rect: rectangle used to store the logical extents of the glyph string
- *            or %NULL to indicate that the result is not needed.
+ * @logical_rect: rectangle used to store the logical extents of the glyph 
+ *            string or %NULL to indicate that the result is not needed.
  * 
- * Compute the logical and ink extents of a layout. See the documentation
+ * Compute the logical and ink extents of @layout. See the documentation
  * for pango_font_get_glyph_extents() for details about the interpretation
  * of the rectangles. The returned rectangles are in device units, as
  * opposed to pango_layout_get_extents(), which returns the extents in

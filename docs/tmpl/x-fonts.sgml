@@ -140,6 +140,16 @@ glyph index.
 @Returns: 
 
 
+<!-- ##### FUNCTION pango_x_font_get_unknown_glyph ##### -->
+<para>
+
+</para>
+
+@font: 
+@wc: 
+@Returns: 
+
+
 <!-- ##### FUNCTION pango_x_apply_ligatures ##### -->
 <para>
 

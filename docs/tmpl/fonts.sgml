@@ -447,6 +447,13 @@ within a family.
 @Returns: 
 
 
+<!-- ##### MACRO PANGO_TYPE_FONT_METRICS ##### -->
+<para>
+
+</para>
+
+
+
 <!-- ##### STRUCT PangoFont ##### -->
 <para>
 The #PangoFont structure is used to represent

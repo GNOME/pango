@@ -471,11 +471,12 @@ pango_xft_font_find_shaper (PangoFont     *font,
 
 /**
  * pango_xft_font_get_font:
- * @font a Pango font.
+ * @font: a #PangoFont.
  *
  * Returns the XftFont of a font.
  *
  * Returns: the XftFont associated to @font.
+ **/
 XftFont *
 pango_xft_font_get_font (PangoFont *font)
 {
@@ -490,7 +491,7 @@ pango_xft_font_get_font (PangoFont *font)
 
 /**
  * pango_xft_font_get_display:
- * @font a Pango font.
+ * @font: a #PangoFont.
  *
  * Returns the X display of the XftFont of a font.
  *
@@ -531,7 +532,7 @@ pango_xft_font_get_unknown_glyph (PangoFont *font,
 
 /**
  * pango_xft_font_get_face:
- * @font: a Pango font.
+ * @font: a #PangoFont.
  *
  * Gets the FreeType FT_Face associated with a font.
  *
@@ -554,7 +555,7 @@ pango_xft_font_get_face (PangoFont *font)
 
 /**
  * pango_xft_font_get_ot_info:
- * @font: a Pango font.
+ * @font: a #PangoFont.
  *
  * Gets the OpenType info of a font as a #PangoOTInfo.
  * 

@@ -101,6 +101,17 @@ pango_ft2_open_args_describe (PangoFT2OA *oa)
     return g_strdup_printf ("open_args at %p, face_index %ld", oa->open_args, oa->face_index);
 }
 
+/**
+ * pango_ft2_get_face:
+ * @font: a #PangoFont
+ * @subfont_index: the index of a subfont
+ * 
+ * Looks up a subfont in a #PangoFT2Font and returns a pointer to the 
+ * native FreeType2 FT_Face structure. This may be useful if you want
+ * to use FreeType2 functions directly.
+ * 
+ * Return value: a pointer to a #FT_Face structure.
+ **/
 FT_Face
 pango_ft2_get_face (PangoFont      *font,
 		    PangoFT2Subfont subfont_index)
@@ -147,8 +158,9 @@ pango_ft2_get_face (PangoFont      *font,
 /**
  * pango_ft2_get_context:
  * 
- * Retrieves a #PangoContext appropriate for rendering with Pango fonts.
-  * 
+ * Retrieves a #PangoContext appropriate for rendering with the PangoFT2
+ * backend.
+ * 
  * Return value: the new #PangoContext
  **/
 PangoContext *
@@ -282,13 +294,13 @@ pango_ft2_load_font (PangoFontMap  *fontmap,
  
 /**
  * pango_ft2_render:
- * @bitmap:  the FreeType2 bitmap onto which draw the string
+ * @bitmap:  the FreeType2 bitmap onto which to draw the string
  * @font:    the font in which to draw the string
  * @glyphs:  the glyph string to draw
- * @x:       the x position of start of string (in pixels)
- * @y:       the y position of baseline (in pixels)
+ * @x:       the x position of the start of the string (in pixels)
+ * @y:       the y position of the baseline (in pixels)
  *
- * Render a PangoGlyphString onto a FreeType2 bitmap
+ * Renders a PangoGlyphString onto a FreeType2 bitmap.
  **/
 void 
 pango_ft2_render (FT_Bitmap        *bitmap,
@@ -476,6 +488,17 @@ pango_ft2_font_get_glyph_extents (PangoFont      *font,
     *logical_rect = info->logical_rect;
 }
 
+/**
+ * pango_ft2_font_get_kerning:
+ * @font: a #PangoFont
+ * @left: the left #PangoGlyph
+ * @right: the right #PangoGlyph
+ * 
+ * Retrieves kerning information for a combination of two glyphs.
+ * 
+ * Return value: The amount of kerning (in Pango units) to apply for 
+ * the given combination of glyphs.
+ **/
 int
 pango_ft2_font_get_kerning (PangoFont *font,
 			    PangoGlyph left,
@@ -670,11 +693,11 @@ pango_ft2_font_get_metrics (PangoFont        *font,
 
 /**
  * pango_ft2_n_subfonts:
- * @font: a PangoFont
+ * @font: a #PangoFont
  *
- * Returns number of subfonts in a PangoFT2Font.
+ * Returns the number of subfonts in a #PangoFT2Font.
  *
- * Return value: number of subfonts in @font
+ * Return value: the number of subfonts in @font
  **/
 int
 pango_ft2_n_subfonts (PangoFont *font)
@@ -718,7 +741,7 @@ pango_ft2_get_coverage (PangoFont     *font,
 /**
  * pango_ft2_font_subfont_open_args:
  * @font: a #PangoFont which must be from the FT2 backend
- * @subfont_id: the id of a subfont within the font
+ * @subfont_id: the id of a subfont within the @font
  * @open_args: pointer where to store the #FT_Open_Args for this subfont
  * @face_index: pointer where to store the face index for this subfont
  * 

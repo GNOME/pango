@@ -1,3 +1,15 @@
+2001-10-15  Sven Neumann  <sven@gimp.org>
+
+	* pango/pangoxft-font.c: another missing comment end marker and some
+	fixes in gtk-doc comments.
+
+	* pango/break.c
+	* pango/pango-layout.c
+	* pango/pangoft2.c
+	* docs/pango-sections.txt
+	* docs/tmpl/fonts.sgml
+	* docs/tmpl/x-fonts.sgml: documentation updates.
+
 Sun Oct 14 18:42:56 2001  Manish Singh  <yosh@gimp.org>
 	
 	* pango/pangox.c: add missing comment end marker to make it compile
