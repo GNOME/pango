@@ -1,3 +1,8 @@
+Wed Dec 15 08:38:52 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* modules/indic/indic-ot-class-tables.c: Split
+	U+DDE as U+DD9, U+DDF.
+
 Tue Dec 14 20:44:53 2004  Owen Taylor  <otaylor@redhat.com>
 
 	Sinhala support (#153517, Anuradha Ratnaweera)
