@@ -73,40 +73,43 @@ static void pango_ft2_font_class_init (PangoFT2FontClass *class);
 static void pango_ft2_font_init       (PangoFT2Font      *ft2font);
 static void pango_ft2_font_finalize   (GObject         *object);
 
-static PangoFontDescription *pango_ft2_font_describe          (PangoFont            *font);
+static PangoFontDescription * pango_ft2_font_describe          (PangoFont      *font);
 
-static PangoEngineShape *    pango_ft2_font_find_shaper       (PangoFont            *font,
-							       PangoLanguage        *language,
-							       guint32               ch);
+static PangoEngineShape *     pango_ft2_font_find_shaper       (PangoFont      *font,
+								PangoLanguage  *language,
+								guint32         ch);
 
-static void                  pango_ft2_font_get_glyph_extents (PangoFont            *font,
-							       PangoGlyph            glyph,
-							       PangoRectangle       *ink_rect,
-							       PangoRectangle       *logical_rect);
+static void                   pango_ft2_font_get_glyph_extents (PangoFont      *font,
+								PangoGlyph      glyph,
+								PangoRectangle *ink_rect,
+								PangoRectangle *logical_rect);
 
-static PangoFontMetrics *    pango_ft2_font_get_metrics       (PangoFont            *font,
-							       PangoLanguage        *language);
+static PangoFontMetrics *     pango_ft2_font_get_metrics       (PangoFont      *font,
+								PangoLanguage  *language);
   
-static FT_Face    pango_ft2_font_real_lock_face         (PangoFcFont *font);
-static void       pango_ft2_font_real_unlock_face       (PangoFcFont *font);
-static gboolean   pango_ft2_font_real_has_char          (PangoFcFont *font,
-							 gunichar     wc);
-static guint      pango_ft2_font_real_get_glyph         (PangoFcFont *font,
-							 gunichar     wc);
-static PangoGlyph pango_ft2_font_real_get_unknown_glyph (PangoFcFont *font,
-							 gunichar     wc);
-static int        pango_ft2_font_real_get_kerning       (PangoFcFont *font,
-							 PangoGlyph   left,
-							 PangoGlyph   right);
 
-static void                  pango_ft2_get_item_properties    (PangoItem      	    *item,
-							       PangoUnderline 	    *uline,
-							       PangoAttrColor 	    *fg_color,
-							       gboolean       	    *fg_set,
-							       PangoAttrColor 	    *bg_color,
-							       gboolean       	    *bg_set);
+static FT_Face    pango_ft2_font_real_lock_face         (PangoFcFont    *font);
+static void       pango_ft2_font_real_unlock_face       (PangoFcFont    *font);
+static gboolean   pango_ft2_font_real_has_char          (PangoFcFont    *font,
+							 gunichar        wc);
+static guint      pango_ft2_font_real_get_glyph         (PangoFcFont    *font,
+							 gunichar        wc);
+static PangoGlyph pango_ft2_font_real_get_unknown_glyph (PangoFcFont    *font,
+							 gunichar        wc);
+static int        pango_ft2_font_real_get_kerning       (PangoFcFont    *font,
+							 PangoGlyph      left,
+							 PangoGlyph      right);
 
-static GType pango_ft2_font_get_type (void);
+static GType      pango_ft2_font_get_type               (void);
+
+static void       pango_ft2_get_item_properties         (PangoItem      *item,
+							 PangoUnderline *uline,
+							 gboolean       *strikethrough,
+							 gint           *rise,
+							 gboolean       *shape_set,
+							 PangoRectangle *ink_rect,
+							 PangoRectangle *logical_rect);
+
 
 PangoFT2Font *
 _pango_ft2_font_new (PangoFontMap    *fontmap,
@@ -931,49 +934,65 @@ pango_ft2_render_layout_line (FT_Bitmap       *bitmap,
   PangoRectangle ink_rect;
   int x_off = 0;
 
-  pango_layout_line_get_extents (line,NULL, &overall_rect);
+  pango_layout_line_get_extents (line, NULL, &overall_rect);
   
   while (tmp_list)
     {
       PangoUnderline uline = PANGO_UNDERLINE_NONE;
+      gboolean strike, shape_set;
+      gint rise, risen_y;
       PangoLayoutRun *run = tmp_list->data;
-      PangoAttrColor fg_color, bg_color;
-      gboolean fg_set, bg_set;
-      
+
       tmp_list = tmp_list->next;
 
-      pango_ft2_get_item_properties (run->item, &uline, &fg_color, &fg_set, &bg_color, &bg_set);
+      pango_ft2_get_item_properties (run->item,
+				     &uline, &strike, &rise,
+				     &shape_set, &ink_rect, &logical_rect);
 
-      if (uline == PANGO_UNDERLINE_NONE)
-	pango_glyph_string_extents (run->glyphs, run->item->analysis.font,
-				    NULL, &logical_rect);
-      else
-	pango_glyph_string_extents (run->glyphs, run->item->analysis.font,
-				    &ink_rect, &logical_rect);
+      risen_y = y - PANGO_PIXELS (rise);
 
-      pango_ft2_render (bitmap, run->item->analysis.font, run->glyphs,
-			x + PANGO_PIXELS (x_off), y);
+      if (!shape_set)
+	{
+	  if (uline == PANGO_UNDERLINE_NONE)
+	    pango_glyph_string_extents (run->glyphs, run->item->analysis.font,
+					NULL, &logical_rect);
+	  else
+	    pango_glyph_string_extents (run->glyphs, run->item->analysis.font,
+					&ink_rect, &logical_rect);
+
+	  pango_ft2_render (bitmap, run->item->analysis.font, run->glyphs,
+			    x + PANGO_PIXELS (x_off), risen_y);
+	}
 
       switch (uline)
 	{
 	case PANGO_UNDERLINE_NONE:
 	  break;
 	case PANGO_UNDERLINE_DOUBLE:
-	  pango_ft2_draw_hline (bitmap, y + 4,
+	  pango_ft2_draw_hline (bitmap,
+				risen_y + 4,
 				x + PANGO_PIXELS (x_off + ink_rect.x),
 				x + PANGO_PIXELS (x_off + ink_rect.x + ink_rect.width));
 	  /* Fall through */
 	case PANGO_UNDERLINE_SINGLE:
-	  pango_ft2_draw_hline (bitmap, y + 2,
+	  pango_ft2_draw_hline (bitmap,
+				risen_y + 2,
 				x + PANGO_PIXELS (x_off + ink_rect.x),
 				x + PANGO_PIXELS (x_off + ink_rect.x + ink_rect.width));
 	  break;
 	case PANGO_UNDERLINE_LOW:
-	  pango_ft2_draw_hline (bitmap, y + PANGO_PIXELS (ink_rect.y + ink_rect.height),
+	  pango_ft2_draw_hline (bitmap,
+				risen_y + PANGO_PIXELS (ink_rect.y + ink_rect.height),
 				x + PANGO_PIXELS (x_off + ink_rect.x),
 				x + PANGO_PIXELS (x_off + ink_rect.x + ink_rect.width));
 	  break;
 	}
+
+      if (strike)
+	pango_ft2_draw_hline (bitmap,
+			      risen_y + PANGO_PIXELS (logical_rect.y + logical_rect.height / 2),
+			      x + PANGO_PIXELS (x_off + logical_rect.x),
+			      x + PANGO_PIXELS (x_off + logical_rect.x + logical_rect.width));
 
       x_off += logical_rect.width;
     }
@@ -1028,19 +1047,23 @@ pango_ft2_render_layout (FT_Bitmap   *bitmap,
 static void
 pango_ft2_get_item_properties (PangoItem      *item,
 			       PangoUnderline *uline,
-			       PangoAttrColor *fg_color,
-			       gboolean       *fg_set,
-			       PangoAttrColor *bg_color,
-			       gboolean       *bg_set)
+			       gboolean       *strikethrough,
+                               gint           *rise,
+			       gboolean       *shape_set,
+			       PangoRectangle *ink_rect,
+			       PangoRectangle *logical_rect)
 {
   GSList *tmp_list = item->analysis.extra_attrs;
 
-  if (fg_set)
-    *fg_set = FALSE;
-  
-  if (bg_set)
-    *bg_set = FALSE;
-  
+  if (strikethrough)
+    *strikethrough = FALSE;
+
+  if (rise)
+    *rise = 0;
+
+  if (shape_set)
+    *shape_set = FALSE;
+
   while (tmp_list)
     {
       PangoAttribute *attr = tmp_list->data;
@@ -1052,25 +1075,29 @@ pango_ft2_get_item_properties (PangoItem      *item,
 	    *uline = ((PangoAttrInt *)attr)->value;
 	  break;
 	  
-	case PANGO_ATTR_FOREGROUND:
-	  if (fg_color)
-	    *fg_color = *((PangoAttrColor *)attr);
-	  if (fg_set)
-	    *fg_set = TRUE;
-	  
+	case PANGO_ATTR_STRIKETHROUGH:
+	  if (strikethrough)
+	    *strikethrough = ((PangoAttrInt *)attr)->value;
 	  break;
-	  
-	case PANGO_ATTR_BACKGROUND:
-	  if (bg_color)
-	    *bg_color = *((PangoAttrColor *)attr);
-	  if (bg_set)
-	    *bg_set = TRUE;
-	  
+
+	case PANGO_ATTR_SHAPE:
+	  if (shape_set)
+	    *shape_set = TRUE;
+	  if (logical_rect)
+	    *logical_rect = ((PangoAttrShape *)attr)->logical_rect;
+	  if (ink_rect)
+	    *ink_rect = ((PangoAttrShape *)attr)->ink_rect;
 	  break;
-	  
+
+        case PANGO_ATTR_RISE:
+          if (rise)
+            *rise = ((PangoAttrInt *)attr)->value;
+          break;
+
 	default:
 	  break;
 	}
+
       tmp_list = tmp_list->next;
     }
 }
