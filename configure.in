@@ -188,6 +188,12 @@ CPPFLAGS="$CPPFLAGS $FREETYPE_CFLAGS"
 AC_CHECK_HEADER(freetype/internal/tterrors.h, AC_DEFINE(HAVE_FREETYPE_2_0_3))
 CPPFLAGS="$pango_save_cppflags"
 
+## Check to see whether we have FT_Get_First_Char(), new in 2.0.9
+pango_save_libs=$LIBS
+LIBS="$LIBS $FREETYPE_LIBS"
+AC_CHECK_FUNCS(FT_Get_First_Char)
+LIBS=$pango_save_libs
+
 #
 # Checks for Xft/XRender
 #

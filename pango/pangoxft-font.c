@@ -19,6 +19,8 @@
  * Boston, MA 02111-1307, USA.
  */
 
+#include "config.h"
+
 #include <stdlib.h>
 
 #include "pangoxft-private.h"
@@ -471,8 +473,8 @@ pango_xft_font_get_coverage (PangoFont     *font,
   coverage = pango_coverage_new ();
 #ifdef HAVE_FT_GET_FIRST_CHAR
   {
-    FT_ULong gindex;
-    FT_Ulong charcode;
+    FT_UInt gindex;
+    FT_ULong charcode;
     
     charcode = FT_Get_First_Char (face, &gindex);
     while (gindex)
@@ -484,14 +486,14 @@ pango_xft_font_get_coverage (PangoFont     *font,
 #else  
   /* Ugh, this is going to be SLOW */
   {
-    int i;
+    gunichar wc;
     
-    for (i = 0; i < G_MAXUSHORT; i++)
+    for (wc = 0; wc < G_MAXUSHORT; wc++)
       {
-	FT_UInt glyph = FT_Get_Char_Index (face, i);
+	FT_UInt glyph = FT_Get_Char_Index (face, wc);
 	
 	if (glyph && glyph < face->num_glyphs)
-	  pango_coverage_set (coverage, i, PANGO_COVERAGE_EXACT);
+	  pango_coverage_set (coverage, wc, PANGO_COVERAGE_EXACT);
       }
   }
 #endif

@@ -599,19 +599,40 @@ static PangoCoverage *
 pango_ft2_calc_coverage (PangoFont     *font,
 			 PangoLanguage *language)
 {
-  PangoCoverage *result;
+  PangoCoverage *coverage;
   FT_Face face;
-  gunichar wc;
 
-  result = pango_coverage_new ();
+  coverage = pango_coverage_new ();
   face = pango_ft2_font_get_face (font);
-  for (wc = 0; wc < 65536; wc++)
-    {
-      if (FT_Get_Char_Index (face, wc))
-	pango_coverage_set (result, wc, PANGO_COVERAGE_EXACT);
-    }
 
-  return result;
+#ifdef HAVE_FT_GET_FIRST_CHAR
+  {
+    FT_UInt gindex;
+    FT_ULong charcode;
+    
+    charcode = FT_Get_First_Char (face, &gindex);
+    while (gindex)
+      {
+	pango_coverage_set (coverage, charcode, PANGO_COVERAGE_EXACT);
+	charcode = FT_Get_Next_Char (face, charcode, &gindex);
+      }
+  }
+#else  
+  /* Ugh, this is going to be SLOW */
+  {
+    gunichar wc;
+    
+    for (wc = 0; wc < G_MAXUSHORT; wc++)
+      {
+	FT_UInt glyph = FT_Get_Char_Index (face, wc);
+	
+	if (glyph && glyph < face->num_glyphs)
+	  pango_coverage_set (coverage, wc, PANGO_COVERAGE_EXACT);
+      }
+  }
+#endif
+
+  return coverage;
 }
 
 static void
