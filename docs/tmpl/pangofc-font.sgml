@@ -37,6 +37,11 @@ Fontconfig-based backend involves deriving from both
 </para>
 
 
+<!-- ##### ARG PangoFcFont:pattern ##### -->
+<para>
+
+</para>
+
 <!-- ##### STRUCT PangoFcFontClass ##### -->
 <para>
 
@@ -111,9 +116,4 @@ Fontconfig-based backend involves deriving from both
 @font: 
 @glyphs: 
 
-
-<!-- ##### ARG PangoFcFont:pattern ##### -->
-<para>
-
-</para>
 

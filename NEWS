@@ -1,3 +1,16 @@
+Overview of changes between 1.3.2 and 1.3.3
+===========================================
+
+* Add pango_font_face_list_sizes() [Noah Levitt]
+* Add pango_font_family_is_monospace [Noah]
+* Do OpenType processing for CFF fonts [Manjunath Sripadarao]
+* Fix wrong sign for GPOS vertical positioning
+* Fix up -uninstalled .pc files [Laszlo Peter]
+* Misc bug and build fixes fixes [Rodney Dawes, Theppitak Karoonboonyanan,
+  Noah, Kjartan Maraas, Julio M. Merino Vidal, Christian Persch, 
+  Torsten Schoenfeld, Manish Singh, Mariano Suárez-Alvarez, Morten Welinder,
+  Masatake YAMATO]
+
 Overview of changes between 1.3.1 and 1.3.2
 ===========================================
 * Correct a mixup between ZWJ and ZWNJ in the Arabic

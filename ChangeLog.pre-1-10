@@ -1,3 +1,11 @@
+Tue Feb 24 14:29:26 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* === Released 1.3.3 ===
+
+	* configure.in: Version 1.3.3, interface age 3.
+
+	* NEWS: Updates
+
 2003-02-23  Noah Levitt  <nlevitt@columbia.edu>
 
 	* pango/pangowin32-fontmap.c: 
@@ -30,7 +38,7 @@ Sat Feb 21 11:31:16 2004  Owen Taylor  <otaylor@redhat.com>
 	a docs note about non-implementedness. (#64538)
 
 Sat Feb 21 09:49:23 2004  Owen Taylor  <otaylor@redhat.com>
-
+	
 	* pango/opentype/pango-ot-ruleset.c (pango_ot_ruleset_shape): 
 	Sign convention for y offsets is opposite between 
 	PangoGlyphString and FT code. (#132591)
@@ -147,7 +155,7 @@ Wed Jan 28 17:47:52 2004  Owen Taylor  <otaylor@redhat.com>
 
 Mon Jan 26 14:20:34 2004  Owen Taylor  <otaylor@redhat.com>
 
-	* pango/opentype/pango-ot-info.c (is_truetype): Suport
+	* pango/opentype/pango-ot-info.c (is_truetype): Support
 	CFF fonts as well. (#131202, Manjunath Sripadarao)
 
 Mon Jan 26 10:30:06 2004  Owen Taylor  <otaylor@redhat.com>
