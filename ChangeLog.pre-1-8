@@ -1,5 +1,10 @@
 2002-01-11  Havoc Pennington  <hp@redhat.com>
 
+	* pango/pango-layout.c (pango_layout_set_attributes): allow
+	setting attrs to NULL
+
+2002-01-11  Havoc Pennington  <hp@redhat.com>
+
 	* pango/pango-layout.c (pango_layout_iter_get_index): docs tweak
 	(pango_layout_iter_next_cluster): update iter->index here
 

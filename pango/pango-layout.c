@@ -501,7 +501,8 @@ pango_layout_set_attributes (PangoLayout   *layout,
   old_attrs = layout->attrs;
 
   layout->attrs = attrs;
-  pango_attr_list_ref (layout->attrs);
+  if (layout->attrs)
+    pango_attr_list_ref (layout->attrs);
   pango_layout_clear_lines (layout);
 
   if (old_attrs)
