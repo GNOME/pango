@@ -89,27 +89,27 @@ query_module (const char *dir, const char *name)
 	      quoted_path = g_strdup (path);
 	    }
 	  
-	  g_print ("%s%s%s %s %s %s ", quote, quoted_path, quote,
-		   engines[i].id, engines[i].engine_type, engines[i].render_type);
+	  printf ("%s%s%s %s %s %s ", quote, quoted_path, quote,
+		  engines[i].id, engines[i].engine_type, engines[i].render_type);
 	  g_free (quoted_path);
 
 	  for (j=0; j < engines[i].n_ranges; j++)
 	    {
 	      if (j != 0)
-		g_print (" ");
-	      g_print ("%d-%d:%s",
-		       engines[i].ranges[j].start,
-		       engines[i].ranges[j].end,
-		       engines[i].ranges[j].langs);
+		printf (" ");
+	      printf ("%d-%d:%s",
+		      engines[i].ranges[j].start,
+		      engines[i].ranges[j].end,
+		      engines[i].ranges[j].langs);
 	    }
-	  g_print ("\n");
-	  }
+	  printf ("\n");
+	}
     }
   else
     {
       fprintf (stderr, "%s does not export Pango module API\n", path);
     }
-
+  
   g_free (path);
   if (module)
     g_module_close (module);

@@ -1,3 +1,13 @@
+Mon May 13 14:58:12 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pangox.c configure.in: Add a implementation
+	of strtok_r (copied from glibc) for machines that don't
+	have it. (#79472, Jacob Berkman.)
+
+	* pango/querymodules.c: Use printf() rather than
+	g_print, since we don't want encoding conversion.
+	(#77341)
+
 Tue Apr 23 16:15:07 2002  Owen Taylor  <otaylor@redhat.com>
  
  	* pango/opentype/fterrcompat.h: Add compatibility 
