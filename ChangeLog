@@ -1,3 +1,9 @@
+2002-02-10  Hans Breuer  <hans@breuer.org>
+
+	* pango/makefile.msc : update version, 
+	use -FImsvc_recommended_pragmas.h and add $(DIRENT_LIBS) to
+	pangoft2 linking
+
 2002-02-09  Darin Adler  <darin@bentspoon.com>
 
 	* pango/fonts.c: (getword): isspace -> g_ascii_isspace

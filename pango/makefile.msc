@@ -6,7 +6,7 @@ PERL = perl
 !ENDIF
 
 # Possibly override Pango version from build/win32/module.defs
-PANGO_VER = 0.23
+PANGO_VER = 0.24
 
 # INCLUDES = -I .. -I .
 # DEFINES = -DPACKAGE=\"Pango\" -DVERSION=\"$(PANGO_VER)\"
@@ -42,7 +42,7 @@ PRJ_TOP = ..
 PKG_VER = $(PANGO_VER)
 PKG_DEF = $(PACKAGE).def
 
-PKG_CFLAGS = -I.. -I. -I$(PRJ_TOP) \
+PKG_CFLAGS = -FImsvc_recommended_pragmas.h -I.. -I. -I$(PRJ_TOP) \
 		-DPACKAGE=\"Pango\" -DVERSION=\"$(PANGO_VER)\" \
 		-DPANGO_ENABLE_BACKEND -DPANGO_ENABLE_ENGINE \
 		$(GLIB_CFLAGS) $(LIBICONV_CFLAGS) \
@@ -61,7 +61,7 @@ PKG_LINK = $(GLIB_LIBS) $(LIBICONV_LIBS) \
 
 !IFDEF OBJS_pangoft2
 PKG_LINK = $(GLIB_LIBS) $(LIBICONV_LIBS) $(FREETYPE2_LIBS) \
-	pango-$(PANGO_VER).lib mini-xft/mini-xft.lib
+	pango-$(PANGO_VER).lib mini-xft/mini-xft.lib $(DIRENT_LIBS)
 !ENDIF
 
 !IFDEF OBJS_pangox
