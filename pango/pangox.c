@@ -128,11 +128,9 @@ static void
 pango_x_make_font_struct (PangoFont *font, PangoXSubfontInfo *info)
 {
   PangoXFont *xfont = (PangoXFont *)font;
-  PangoFontMap *fontmap;
   PangoXFontCache *cache;
 
-  fontmap = pango_x_font_map_for_display (xfont->display);
-  cache = pango_x_font_map_get_font_cache (fontmap);
+  cache = pango_x_font_map_get_font_cache (xfont->fontmap);
   
   info->font_struct = pango_x_font_cache_load (cache, info->xlfd);
   if (!info->font_struct)
@@ -266,16 +264,18 @@ pango_x_font_class_init (PangoXFontClass *class)
 }
 
 PangoXFont *
-pango_x_font_new (Display *display, const char *spec, int size)
+pango_x_font_new (PangoFontMap *fontmap, const char *spec, int size)
 {
   PangoXFont *result;
 
-  g_return_val_if_fail (display != NULL, NULL);
+  g_return_val_if_fail (fontmap != NULL, NULL);
   g_return_val_if_fail (spec != NULL, NULL);
 
   result = (PangoXFont *)g_type_create_instance (PANGO_TYPE_X_FONT);
   
-  result->display = display;
+  result->fontmap = fontmap;
+  g_object_ref (G_OBJECT (fontmap));
+  result->display = pango_x_fontmap_get_display (fontmap);
 
   result->fonts = g_strsplit(spec, ",", -1);
   for (result->n_fonts = 0; result->fonts[result->n_fonts]; result->n_fonts++)
@@ -305,7 +305,7 @@ pango_x_load_font (Display *display,
   g_return_val_if_fail (display != NULL, NULL);
   g_return_val_if_fail (spec != NULL, NULL);
   
-  result = pango_x_font_new (display, spec, -1);
+  result = pango_x_font_new (pango_x_font_map_for_display (display), spec, -1);
 
   return (PangoFont *)result;
 }
@@ -916,7 +916,7 @@ pango_x_font_shutdown (GObject *object)
    * if it is already there, do nothing and the font will be
    * freed.
    */
-  if (!xfont->in_cache)
+  if (!xfont->in_cache && xfont->fontmap)
     pango_x_fontmap_cache_add (xfont->fontmap, xfont);
 
   G_OBJECT_CLASS (parent_class)->shutdown (object);
@@ -934,8 +934,7 @@ static void
 pango_x_font_finalize (GObject *object)
 {
   PangoXFont *xfont = (PangoXFont *)object;
-  PangoFontMap *fontmap = pango_x_font_map_for_display (xfont->display);
-  PangoXFontCache *cache = pango_x_font_map_get_font_cache (fontmap);
+  PangoXFontCache *cache = pango_x_font_map_get_font_cache (xfont->fontmap);
 
   int i;
 
@@ -961,6 +960,8 @@ pango_x_font_finalize (GObject *object)
   
   if (xfont->entry)
     pango_x_font_entry_remove (xfont->entry, (PangoFont *)xfont);
+
+  g_object_unref (G_OBJECT (xfont->fontmap));
 
   g_strfreev (xfont->fonts);
 

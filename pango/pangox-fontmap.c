@@ -161,7 +161,8 @@ static void       pango_x_font_map_list_families (PangoFontMap                 *
 						  gchar                      ***families,
 						  int                          *n_families);
 
-static void pango_x_font_map_read_aliases (PangoXFontMap *xfontmap);
+static void     pango_x_fontmap_cache_clear (PangoXFontMap   *xfontmap);
+static void     pango_x_font_map_read_aliases (PangoXFontMap *xfontmap);
 
 static gint     pango_x_get_size            (PangoXFontMap      *fontmap,
 					     const char         *fontname);
@@ -172,6 +173,8 @@ static char *   pango_x_get_xlfd_field      (const char         *fontname,
 					     FontField           field_num,
 					     char               *buffer);
 static char *   pango_x_get_identifier      (const char         *fontname);
+
+static PangoFontClass *parent_class;	/* Parent class structure for PangoXFontMap */
 
 static GType
 pango_x_font_map_get_type (void)
@@ -215,6 +218,8 @@ pango_x_font_map_class_init (PangoXFontMapClass *class)
   GObjectClass *object_class = G_OBJECT_CLASS (class);
   PangoFontMapClass *font_map_class = PANGO_FONT_MAP_CLASS (class);
   
+  parent_class = g_type_class_peek_parent (class);
+  
   object_class->finalize = pango_x_font_map_finalize;
   font_map_class->load_font = pango_x_font_map_load_font;
   font_map_class->list_fonts = pango_x_font_map_list_fonts;
@@ -232,6 +237,8 @@ pango_x_font_map_for_display (Display *display)
   int num_fonts, i;
   int screen;
 
+  g_return_val_if_fail (display != NULL, NULL);
+  
   /* Make sure that the type system is initialized */
   g_type_init();
   
@@ -240,9 +247,7 @@ pango_x_font_map_for_display (Display *display)
       xfontmap = tmp_list->data;
 
       if (xfontmap->display == display)
-	{
-	  return PANGO_FONT_MAP (xfontmap);
-	}
+	return PANGO_FONT_MAP (xfontmap);
     }
 
   xfontmap = (PangoXFontMap *)g_type_create_instance (PANGO_TYPE_X_FONT_MAP);
@@ -270,7 +275,6 @@ pango_x_font_map_for_display (Display *display)
 
   pango_x_font_map_read_aliases (xfontmap);
 
-  g_object_ref (G_OBJECT (xfontmap));
   fontmaps = g_list_prepend (fontmaps, xfontmap);
 
   /* This is a little screwed up, since different screens on the same display
@@ -279,7 +283,37 @@ pango_x_font_map_for_display (Display *display)
   screen = DefaultScreen (xfontmap->display);
   xfontmap->resolution = (PANGO_SCALE * 72.27 / 25.4) * ((double) DisplayWidthMM (xfontmap->display, screen) /
 							 DisplayWidth (xfontmap->display, screen));
+
   return PANGO_FONT_MAP (xfontmap);
+}
+
+/**
+ * pango_x_shutdown_display:
+ * @display: an X #Display
+ * 
+ * Free cached resources for the given X display structure.
+ **/
+void
+pango_x_shutdown_display (Display *display)
+{
+  GList *tmp_list;
+
+  g_return_if_fail (display != NULL);
+
+  tmp_list = fontmaps;
+  while (tmp_list)
+    {
+      PangoXFontMap *xfontmap = tmp_list->data;
+
+      if (xfontmap->display == display)
+	{
+	  fontmaps = g_list_delete_link (fontmaps, tmp_list);
+	  pango_x_fontmap_cache_clear (xfontmap);
+	  g_object_unref (G_OBJECT (xfontmap));
+	}
+
+      tmp_list = tmp_list->next;
+    }
 }
 
 static void
@@ -287,13 +321,16 @@ pango_x_font_map_finalize (GObject *object)
 {
   PangoXFontMap *xfontmap = PANGO_X_FONT_MAP (object);
   
-  pango_x_font_cache_free (xfontmap->font_cache);
   g_list_foreach (xfontmap->freed_fonts->head, (GFunc)g_object_unref, NULL);
   g_queue_free (xfontmap->freed_fonts);
   
+  pango_x_font_cache_free (xfontmap->font_cache);
+
   /* FIXME: Lots more here */
+
+  fontmaps = g_list_remove (fontmaps, xfontmap);
   
-  fontmaps = g_list_remove (fontmaps, object);
+  G_OBJECT_CLASS (parent_class)->finalize (object);
 }
 
 typedef struct
@@ -492,7 +529,7 @@ pango_x_font_map_load_font (PangoFontMap               *fontmap,
 
 	  if (!result)
 	    {
-	      PangoXFont *xfont = pango_x_font_new (xfontmap->display, best_match->xlfd, description->size);
+	      PangoXFont *xfont = pango_x_font_new (fontmap, best_match->xlfd, description->size);
 	      
 	      xfont->fontmap = fontmap;
 	      xfont->entry = best_match;
@@ -1412,6 +1449,15 @@ pango_x_font_map_get_font_cache (PangoFontMap *font_map)
   return PANGO_X_FONT_MAP (font_map)->font_cache;
 }
 
+Display *
+pango_x_fontmap_get_display (PangoFontMap    *fontmap)
+{
+  g_return_val_if_fail (fontmap != NULL, NULL);
+  g_return_val_if_fail (PANGO_X_IS_FONT_MAP (fontmap), NULL);
+
+  return PANGO_X_FONT_MAP (fontmap)->display;
+}
+
 void
 pango_x_fontmap_cache_add (PangoFontMap    *fontmap,
 			   PangoXFont      *xfont)
@@ -1449,3 +1495,14 @@ pango_x_fontmap_cache_remove (PangoFontMap    *fontmap,
 
   g_object_unref (G_OBJECT (xfont));
 }
+
+static void
+pango_x_fontmap_cache_clear (PangoXFontMap   *xfontmap)
+{
+  g_list_foreach (xfontmap->freed_fonts->head, (GFunc)g_object_unref, NULL);
+  g_list_free (xfontmap->freed_fonts->head);
+  xfontmap->freed_fonts->head = NULL;
+  xfontmap->freed_fonts->tail = NULL;
+  xfontmap->freed_fonts->length = 0;
+}
+

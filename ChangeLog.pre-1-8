@@ -1,10 +1,22 @@
-Mon Jun  5 15:35:03 2000  Owen Taylor  <otaylor@redhat.com>
+Mon Jun  5 20:45:12 2000  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pangox-fontmap.c (pango_x_shutdown_display): Add
+	a function to free cached information for a particular
+	display. (This is basically pango_x_fontmap_destroy())
+
+	* pango/pangox.c pango/pangox-private.h pango/pangox-fontmap.c:
+	Make a XFont always keep a pointer to (and ref) a fontmap.
+
+Mon Jun  5 15:56:25 2000  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pangox-fontmap.c (pango_x_font_map_for_display): Remove
+	excessive ref.
 
 	* pango/pangox-fontcache.c (pango_x_font_cache_unload): Fix
 	problem with unloading fonts.
 
 	* pango/pangox-fontmap.c pango/pangox-private.h pangox/pangox.c:
-	Add a simple PangoXFont; get rid of the eternal caching of
+	Add a simple cache for PangoXFonts; get rid of the eternal caching of
 	all fonts.
 
 Wed May 31 16:11:46 2000  Owen Taylor  <otaylor@redhat.com>

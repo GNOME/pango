@@ -60,7 +60,7 @@ struct _PangoXFont
   PangoXFontEntry *entry;	/* Used to remove cached fonts */
 };
 
-PangoXFont *   pango_x_font_new                (Display         *display,
+PangoXFont *   pango_x_font_new                (PangoFontMap    *fontmap,
 						const char      *spec,
 						int              size);
 PangoMap *     pango_x_get_shaper_map          (const char      *lang);
@@ -74,6 +74,7 @@ PangoCoverage *pango_x_font_entry_get_coverage (PangoXFontEntry *entry,
 void           pango_x_font_entry_remove       (PangoXFontEntry *entry,
 						PangoFont       *font);
 
+Display *      pango_x_fontmap_get_display     (PangoFontMap    *fontmap);
 void           pango_x_fontmap_cache_add       (PangoFontMap    *fontmap,
 						PangoXFont      *xfont);
 void           pango_x_fontmap_cache_remove    (PangoFontMap    *fontmap,

@@ -95,7 +95,8 @@ XFontStruct * pango_x_font_cache_load      (PangoXFontCache *cache,
 void          pango_x_font_cache_unload    (PangoXFontCache *cache,
 					    XFontStruct     *fs);
 
-PangoFontMap *   pango_x_font_map_for_display    (Display      *display);
+PangoFontMap *   pango_x_font_map_for_display  (Display     *display);
+void             pango_x_shutdown_display      (Display     *display);
 PangoXFontCache *pango_x_font_map_get_font_cache (PangoFontMap *font_map);
 
 char *pango_x_font_subfont_xlfd (PangoFont     *font,
