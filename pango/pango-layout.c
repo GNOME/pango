@@ -2472,7 +2472,8 @@ typedef enum
   BREAK_NONE_FIT,
   BREAK_SOME_FIT,
   BREAK_ALL_FIT,
-  BREAK_EMPTY_FIT
+  BREAK_EMPTY_FIT,
+  BREAK_LINE_SEPARATOR
 } BreakResult;
 
 typedef struct _ParaBreakState ParaBreakState;
@@ -2561,6 +2562,10 @@ process_item (PangoLayout     *layout,
   int i;
   gboolean processing_new_item = FALSE;
 
+  /* Only one character has type G_UNICODE_LINE_SEPARATOR in Unicode 4.0;
+   * update this if that changes. */
+#define LINE_SEPARATOR 0x2028
+
   if (!state->glyphs)
     {
       state->glyphs = pango_glyph_string_new ();
@@ -2582,8 +2587,15 @@ process_item (PangoLayout     *layout,
 
       processing_new_item = TRUE;
     }
+
+  if (g_utf8_get_char (layout->text + item->offset) == LINE_SEPARATOR)
+    {
+      insert_run (line, state, layout->text, item, TRUE);
+      state->log_widths_offset += item->num_chars;
+      return BREAK_LINE_SEPARATOR;
+    }
   
-  if (state->remaining_width < 0 && !no_break_at_end)	/* Wrapping off */
+  if (state->remaining_width < 0 && !no_break_at_end)  /* Wrapping off */
     {
       insert_run (line, state, layout->text, item, TRUE);
 
@@ -2735,7 +2747,7 @@ process_line (PangoLayout    *layout,
       old_num_chars = item->num_chars;
       old_remaining_width = state->remaining_width;
       first_item_in_line = line->runs != NULL;
-      
+
       result = process_item (layout, line, state, !have_break, FALSE);
 
       switch (result)
@@ -2779,6 +2791,11 @@ process_line (PangoLayout    *layout,
 	  state->start_offset += old_num_chars - item->num_chars;
 	  
 	  goto done;
+
+        case BREAK_LINE_SEPARATOR:
+          state->items = g_list_delete_link (state->items, state->items);
+          state->start_offset += old_num_chars;
+          goto done;
 	}
     }
 

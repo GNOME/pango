@@ -933,7 +933,11 @@ static void
 itemize_state_process_run (ItemizeState *state)
 {
   const char *p;
-  gboolean last_was_tab = FALSE;
+  gboolean last_was_forced_break = FALSE;
+
+  /* Only one character has type G_UNICODE_LINE_SEPARATOR in Unicode 4.0;
+   * update this if that changes. */
+#define LINE_SEPARATOR 0x2028
 
   itemize_state_update_for_new_run (state);
 
@@ -942,7 +946,7 @@ itemize_state_process_run (ItemizeState *state)
        p = g_utf8_next_char (p))
     {
       gunichar wc = g_utf8_get_char (p);
-      gboolean is_tab = wc == '\t';
+      gboolean is_forced_break = (wc == '\t' || wc == LINE_SEPARATOR);
       PangoEngineShape *shape_engine;
       PangoFont *font;
 
@@ -956,10 +960,10 @@ itemize_state_process_run (ItemizeState *state)
 	
       itemize_state_add_character (state,
 				   shape_engine, font,
-				   is_tab || last_was_tab,
+				   is_forced_break || last_was_forced_break,
 				   p);
       
-      last_was_tab = is_tab;
+      last_was_forced_break = is_forced_break;
     }
 
   /* Finish the final item from the current segment */

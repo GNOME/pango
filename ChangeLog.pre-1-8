@@ -1,3 +1,8 @@
+2003-12-04  Noah Levitt  <nlevitt@columbia.edu>
+
+	* pango/pango-context.c:
+	* pango/pango-layout.c: Honor U+2028 LINE SEPARATOR. (#85745)
+
 2003-11-25  Noah Levitt  <nlevitt@columbia.edu>
 
 	* examples/pangoft2topgm.c: Add --indent=n option.
