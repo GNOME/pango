@@ -74,6 +74,12 @@ struct _PangoFontMapClass
 				  PangoContext               *context,
 				  const PangoFontDescription *desc,
 				  PangoLanguage              *language);
+
+  /* Padding for future expansion */
+  void (*_pango_reserved1) (void);
+  void (*_pango_reserved2) (void);
+  void (*_pango_reserved3) (void);
+  void (*_pango_reserved4) (void);
 };
 
 #endif /* PANGO_ENABLE_BACKEND */

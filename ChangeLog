@@ -1,3 +1,8 @@
+Sat Feb 23 13:07:02 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-font.h pango/pango-fontmap.h pango/pango-fontset.h:
+	Add some class padding for future expansion.
+
 Wed Feb 20 16:58:24 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* modules/arabic/{naqshfont.[ch],mulefont.[ch],langboxfont.[ch]}:

@@ -215,6 +215,12 @@ struct _PangoFontFamilyClass
 		            PangoFontFace  ***faces,
 		            int              *n_faces);
   const char * (*get_name) (PangoFontFamily  *family);
+
+  /* Padding for future expansion */
+  void (*_pango_reserved1) (void);
+  void (*_pango_reserved2) (void);
+  void (*_pango_reserved3) (void);
+  void (*_pango_reserved4) (void);
 };
 
 #endif /* PANGO_ENABLE_BACKEND */
@@ -251,6 +257,12 @@ struct _PangoFontFaceClass
   
   const char           * (*get_face_name) (PangoFontFace *face);
   PangoFontDescription * (*describe)       (PangoFontFace *face);
+
+  /* Padding for future expansion */
+  void (*_pango_reserved1) (void);
+  void (*_pango_reserved2) (void);
+  void (*_pango_reserved3) (void);
+  void (*_pango_reserved4) (void);
 };
 
 #endif /* PANGO_ENABLE_BACKEND */
@@ -307,6 +319,12 @@ struct _PangoFontClass
 					       PangoRectangle *logical_rect);
   PangoFontMetrics *    (*get_metrics)        (PangoFont      *font,
 					       PangoLanguage  *language);
+
+  /* Padding for future expansion */
+  void (*_pango_reserved1) (void);
+  void (*_pango_reserved2) (void);
+  void (*_pango_reserved3) (void);
+  void (*_pango_reserved4) (void);
 };
 
 #endif /* PANGO_ENABLE_BACKEND */

@@ -67,6 +67,12 @@ struct _PangoFontsetClass
 
   PangoFontMetrics *(*get_metrics)  (PangoFontset  *fontset);
   PangoLanguage *   (*get_language) (PangoFontset  *fontset);
+
+  /* Padding for future expansion */
+  void (*_pango_reserved1) (void);
+  void (*_pango_reserved2) (void);
+  void (*_pango_reserved3) (void);
+  void (*_pango_reserved4) (void);
 };
 
 /*
