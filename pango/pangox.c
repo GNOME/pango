@@ -1507,7 +1507,7 @@ pango_x_render_layout_line (Display          *display,
 	    int end_x = x + (x_off + ink_rect.x + ink_rect.width) / PANGO_SCALE;
 
             for (point_x = x + PANGO_PIXELS (x_off + ink_rect.x) - 1;
-                 point_x < end_x;
+                 point_x <= end_x;
                  point_x += 2)
 	      {
 		if (counter)

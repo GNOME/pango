@@ -814,7 +814,7 @@ pango_ft2_render_layout_line (FT_Bitmap       *bitmap,
 	    int end_x = x + PANGO_PIXELS (x_off + ink_rect.x + ink_rect.width);
 
             for (point_x = x + PANGO_PIXELS (x_off + ink_rect.x) - 1;
-                 point_x < end_x;
+                 point_x <= end_x;
                  point_x += 2)
 	      {
 		if (counter)
