@@ -277,7 +277,7 @@ static PangoCoverage *
 basic_engine_get_coverage (PangoFont  *font,
 			   PangoLanguage *lang)
 {
-  return pango_ft2_font_get_coverage (font, lang);
+  return pango_font_get_coverage (font, lang);
 }
 
 static PangoEngine *

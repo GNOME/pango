@@ -593,6 +593,14 @@ pango_ft2_get_shaper_map (PangoLanguage *language)
   return pango_find_map (language, engine_type_id, render_type_id);
 }
 
+/**
+ * pango_ft2_font_get_coverage:
+ * @font: a #PangoFT2Font.
+ * @language: a language tag.
+ * @returns: a #PangoCoverage.
+ * 
+ * Should not be called directly, use pango_font_get_coverage() instead.
+ **/
 PangoCoverage *
 pango_ft2_font_get_coverage (PangoFont     *font,
 			     PangoLanguage *language)

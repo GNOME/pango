@@ -1,3 +1,10 @@
+2001-11-26  Matthias Clasen  <matthiasc@poet.de>
+
+	* pango/pangoft2.c (pango_ft2_font_get_coverage): Documentation.
+	
+	* modules/basic/basic-ft2.c (basic_engine_get_coverage): Use 
+	pango_font_get_coverage().
+
 Mon Nov 26 11:31:01 2001  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/Makefile.am: Workaround to work a little better with 
