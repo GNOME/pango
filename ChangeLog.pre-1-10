@@ -1,3 +1,14 @@
+Fri Aug 16 17:49:38 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pangofc-fontmap.cI pango/pangoxft-fontmap.c 
+	pango/pangoft2-fontmap.c pango/pangoxft-private.h 
+	pango/pangoft2-private.h pango/pangoxft-font.c 
+	pango/pangoft2.h: Move the common code between PangoXftFontmap
+	and PangoFT2Fontmap into a new file that is included from both
+	with appropriate #defines. This provides most of the
+	recent Xft backend improvements for the FT2 backend
+	as well.
+
 Tue Aug 13 16:38:19 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pangoxft-fontmap.c (pango_xft_font_map_get_patterns): 

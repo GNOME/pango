@@ -28,7 +28,6 @@
 G_BEGIN_DECLS
 
 typedef struct _PangoXftFont PangoXftFont;
-typedef struct _PangoXftCoverageKey PangoXftCoverageKey;
 
 struct _PangoXftFont
 {
@@ -49,12 +48,6 @@ struct _PangoXftFont
   gboolean in_cache;
 };
 
-struct _PangoXftCoverageKey
-{
-  char *filename;	
-  int id;            /* needed to handle TTC files with multiple faces */
-};
-
 PangoXftFont * _pango_xft_font_new              (PangoFontMap                *font,
 						 FcPattern                  *pattern);
 void           _pango_xft_font_map_cache_add    (PangoFontMap                *fontmap,
@@ -63,11 +56,8 @@ void           _pango_xft_font_map_add          (PangoFontMap                *fo
 						 PangoXftFont                *xfont);
 void           _pango_xft_font_map_remove       (PangoFontMap                *fontmap,
 						 PangoXftFont                *xfont);
-void           _pango_xft_font_map_set_coverage (PangoFontMap                *fontmap,
-						 const PangoXftCoverageKey   *key,
-						 PangoCoverage               *coverage);
 PangoCoverage *_pango_xft_font_map_get_coverage (PangoFontMap                *fontmap,
-						 const PangoXftCoverageKey   *key);
+						 FcPattern                   *pattern);
 void           _pango_xft_font_map_get_info     (PangoFontMap                *fontmap,
 						 Display                    **display,
 						 int                         *screen);

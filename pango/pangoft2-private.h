@@ -55,8 +55,6 @@
 
 typedef struct _PangoFT2Font      PangoFT2Font;
 typedef struct _PangoFT2GlyphInfo PangoFT2GlyphInfo;
-typedef struct _PangoFT2Face      PangoFT2Face;
-typedef struct _PangoFT2Family    PangoFT2Family;
 
 
 struct _PangoFT2Font
@@ -89,24 +87,11 @@ struct _PangoFT2GlyphInfo
   void *cached_glyph;
 };
 
-struct _PangoFT2Face
-{
-  PangoFontFace parent_instance;
-  
-  PangoFT2Family *family;
-  char *style;
-};
-
 PangoFT2Font * _pango_ft2_font_new                (PangoFontMap                *font,
 						   FcPattern              *pattern);
 PangoMap      *_pango_ft2_get_shaper_map          (PangoLanguage     *language);
-void           _pango_ft2_font_map_set_coverage   (PangoFontMap                *fontmap,
-						   const char                  *name,
-						   PangoCoverage               *coverage);
 PangoCoverage *_pango_ft2_font_map_get_coverage   (PangoFontMap                *fontmap,
-						   const char                  *name);
-void           _pango_ft2_face_remove             (PangoFT2Face      *face,
-						   PangoFont         *font);
+						   FcPattern                   *pattern);
 FT_Library     _pango_ft2_font_map_get_library    (PangoFontMap      *fontmap);
 void           _pango_ft2_font_map_cache_add      (PangoFontMap      *fontmap,
 						   PangoFT2Font      *ft2font);

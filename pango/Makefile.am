@@ -290,12 +290,13 @@ EXTRA_DIST =					\
 	module-defs-ft2.c.win32			\
 	module-defs-win32.c.win32		\
 	module-defs.h				\
+	pangofc-fontmap.cI			\
 	pango.def				\
 	pangowin32.def				\
 	pangoft2.def				\
 	makefile.mingw				\
 	makefile.mingw.in			\
-	makefile.msc			\
+	makefile.msc				\
 	pango.rc				\
 	pango.rc.in				\
 	pangoft2.rc				\

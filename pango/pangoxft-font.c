@@ -551,68 +551,8 @@ pango_xft_font_get_coverage (PangoFont     *font,
 			     PangoLanguage *language)
 {
   PangoXftFont *xfont = (PangoXftFont *)font;
-  PangoXftCoverageKey key;
-  PangoCoverage *coverage;
-  Display *display;
-  FcChar32  map[FC_CHARSET_MAP_SIZE];
-  FcChar32  ucs4, pos;
-  FcCharSet *charset;
-  int i;
-  
-  _pango_xft_font_map_get_info (xfont->fontmap, &display, NULL);
 
-  /*
-   * Assume that coverage information is identified by
-   * a filename/index pair; there shouldn't be any reason
-   * this isn't true, but it's not specified anywhere
-   */
-  if (FcPatternGetString (xfont->font_pattern, FC_FILE, 0, (FcChar8 **) &key.filename) != FcResultMatch)
-    return NULL;
-
-  if (FcPatternGetInteger (xfont->font_pattern, FC_INDEX, 0, &key.id) != FcResultMatch)
-    return NULL;
-  
-  coverage = _pango_xft_font_map_get_coverage (xfont->fontmap, &key);
-
-  if (coverage)
-    return pango_coverage_ref (coverage);
-
-  /*
-   * Pull the coverage out of the pattern, this
-   * doesn't require loading the font
-   */
-  if (FcPatternGetCharSet (xfont->font_pattern, FC_CHARSET, 0, &charset) != FcResultMatch)
-    return NULL;
-  
-  /*
-   * Convert an Fc CharSet into a pango coverage structure.  Sure
-   * would be nice to just use the Fc structure in place...
-   */
-  coverage = pango_coverage_new ();
-  for (ucs4 = FcCharSetFirstPage (charset, map, &pos);
-       ucs4 != FC_CHARSET_DONE;
-       ucs4 = FcCharSetNextPage (charset, map, &pos))
-    {
-      for (i = 0; i < FC_CHARSET_MAP_SIZE; i++)
-	{
-	  FcChar32  bits = map[i];
-	  FcChar32  base = ucs4 + i * 32;
-	  int b = 0;
-	  bits = map[i];
-	  while (bits)
-	    {
-	      if (bits & 1)
-		pango_coverage_set (coverage, base + b, PANGO_COVERAGE_EXACT);
-
-	      bits >>= 1;
-	      b++;
-	    }
-	}
-    }
-
-  _pango_xft_font_map_set_coverage (xfont->fontmap, &key, coverage);
- 
-  return coverage;
+  return _pango_xft_font_map_get_coverage (xfont->fontmap, xfont->font_pattern);
 }
 
 static void

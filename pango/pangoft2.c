@@ -677,46 +677,6 @@ pango_ft2_font_get_metrics (PangoFont     *font,
   return pango_font_metrics_ref (info->metrics);
 }
 
-static PangoCoverage *
-pango_ft2_calc_coverage (PangoFont     *font,
-			 PangoLanguage *language)
-{
-  PangoCoverage *coverage;
-  FT_Face face;
-
-  coverage = pango_coverage_new ();
-  face = pango_ft2_font_get_face (font);
-
-#ifdef HAVE_FT_GET_FIRST_CHAR
-  {
-    FT_UInt gindex;
-    FT_ULong charcode;
-    
-    charcode = FT_Get_First_Char (face, &gindex);
-    while (gindex)
-      {
-	pango_coverage_set (coverage, charcode, PANGO_COVERAGE_EXACT);
-	charcode = FT_Get_Next_Char (face, charcode, &gindex);
-      }
-  }
-#else  
-  /* Ugh, this is going to be SLOW */
-  {
-    gunichar wc;
-    
-    for (wc = 0; wc < G_MAXUSHORT; wc++)
-      {
-	FT_UInt glyph = FT_Get_Char_Index (face, wc);
-	
-	if (glyph && glyph < face->num_glyphs)
-	  pango_coverage_set (coverage, wc, PANGO_COVERAGE_EXACT);
-      }
-  }
-#endif
-
-  return coverage;
-}
-
 static void
 pango_ft2_font_dispose (GObject *object)
 {
@@ -822,26 +782,8 @@ pango_ft2_font_get_coverage (PangoFont     *font,
 			     PangoLanguage *language)
 {
   PangoFT2Font *ft2font = (PangoFT2Font *)font;
-  FcChar8 *filename = NULL;
-  FT_Face face;
-  PangoCoverage *coverage;
-  
-  FcPatternGetString (ft2font->font_pattern, FC_FILE, 0, &filename);
-  
-  coverage = _pango_ft2_font_map_get_coverage (ft2font->fontmap, filename);
 
-  if (coverage)
-    return pango_coverage_ref (coverage);
-
-  /* Ugh, this is going to be SLOW */
-
-  face = pango_ft2_font_get_face (font);
-
-  coverage = pango_ft2_calc_coverage (font, language);
-
-  _pango_ft2_font_map_set_coverage (ft2font->fontmap, filename, coverage);
-      
-  return coverage;
+  return _pango_ft2_font_map_get_coverage (ft2font->fontmap, ft2font->font_pattern);
 }
 
 static PangoEngineShape *
