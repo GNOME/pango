@@ -1,3 +1,11 @@
+2003-11-18  Sven Neumann  <sven@gimp.org>
+
+	* pango/pangoft2-fontmap.c: removed the set_unicode_charmap() call.
+	Made pango_ft2_font_real_get_glyph() use FcFreeTypeCharIndex() rather
+	than than FT_Get_Char_Index(). Made pango_ft2_font_real_has_char()
+	use FcCharSetHasChar().  This allows to use PangoFT2 with all font
+	encodings supported by fontconfig and fixes bug #101856.
+
 Sat Nov 15 16:03:30 2003  Owen Taylor  <otaylor@redhat.com>
 
 	* === Released 1.3.1 ===

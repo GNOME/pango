@@ -68,6 +68,7 @@ struct _PangoFT2FontMapClass
 };
 
 static void          pango_ft2_font_map_class_init          (PangoFT2FontMapClass *class);
+static void          pango_ft2_font_map_init                (PangoFT2FontMap      *fontmap);
 static void          pango_ft2_font_map_finalize            (GObject              *object);
 static void          pango_ft2_font_map_default_substitute  (PangoFcFontMap       *fcfontmap,
 							     FcPattern            *pattern);
@@ -95,9 +96,9 @@ pango_ft2_font_map_get_type (void)
         NULL,           /* class_data */
         sizeof (PangoFT2FontMap),
         0,              /* n_preallocs */
-        (GInstanceInitFunc) NULL,
+        (GInstanceInitFunc) pango_ft2_font_map_init,
       };
-      
+
       object_type = g_type_register_static (PANGO_TYPE_FC_FONT_MAP,
                                             "PangoFT2FontMap",
                                             &object_info, 0);
@@ -117,6 +118,14 @@ pango_ft2_font_map_class_init (PangoFT2FontMapClass *class)
   gobject_class->finalize = pango_ft2_font_map_finalize;
   fcfontmap_class->default_substitute = pango_ft2_font_map_default_substitute;
   fcfontmap_class->new_font = pango_ft2_font_map_new_font;
+}
+
+static void
+pango_ft2_font_map_init (PangoFT2FontMap *fontmap)
+{
+  fontmap->library = NULL;
+  fontmap->dpi_x   = 72.0;
+  fontmap->dpi_y   = 72.0;
 }
 
 static void
