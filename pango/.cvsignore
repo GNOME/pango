@@ -1,6 +1,7 @@
 Makefile.in
 Makefile
 pango-querymodules
+module-defs.c
 *.lo
 *.la
 .deps
