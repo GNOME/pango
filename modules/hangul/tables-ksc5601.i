@@ -706,3 +706,53 @@ static guint16 __jamo_to_ksc5601[0x100][3] =
   {0, 0, 0}
 };
 
+
+/* mapping table used to convert indexes to JOHAB
+bit 43210  초 성	중 성		종 성
+00000	   no code	no code		no code
+00001      file code	no code		file code
+00010      ㄱ		file code	ㄱ
+00011      ㄲ		ㅏ		ㄲ
+00100      ㄴ		ㅐ		ㄳ
+00101      ㄷ		ㅑ		ㄴ
+00110      ㄸ		ㅒ		ㄵ
+00111      ㄹ		ㅓ		ㄶ
+01000      ㅁ		no code		ㄷ
+01001      ㅂ		no code		ㄹ
+01010      ㅃ		ㅔ		ㄺ
+01011      ㅅ		ㅕ		ㄻ
+01100      ㅆ		ㅖ		ㄼ
+01101      ㅇ		ㅗ		ㄽ
+01110      ㅈ		ㅘ		ㄾ
+01111      ㅉ		ㅙ		ㄿ
+10000      ㅊ		no code		ㅀ
+10001      ㅋ		no code		ㅁ
+10010      ㅌ		ㅚ		no code
+10011      ㅍ		ㅛ		ㅂ
+10100      ㅎ		ㅜ		ㅄ
+10101      no code	ㅝ		ㅅ
+10110      no code	ㅞ		ㅆ
+10111      no code	ㅟ		ㅇ
+11000      no code	no code		ㅈ
+11001      no code	no code		ㅊ
+11010      no code	ㅠ		ㅋ
+11011      no code	ㅡ		ㅌ
+11100      no code	ㅢ		ㅍ
+11101      no code	ㅣ		ㅎ
+11110      no code	no code		no code
+11111      no code	no code		no code
+*/
+/* The following arrays are based on the above table: */
+static guint16 larray[32]=
+{
+2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,0,0,0,0,0,0,0,0,0,0,0,0,0
+};
+static guint16 varray[32]=
+{
+3,4,5,6,7,10,11,12,13,14,15,18,19,20,21,22,23,26,27,28,29,0,0,0,0,0,0,0,0,0,0,0
+};
+static guint16 tarray[32]=
+{
+1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,19,20,21,22,23,24,25,26,27,28,29,30,0,0
+};
+

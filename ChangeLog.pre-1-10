@@ -1,3 +1,9 @@
+Fri Jul 26 19:23:58 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* modules/hangul/hangul-x.c modules/hangul/tables-ksc5601.1:
+	Patch from Qingjiang (Brian) Yuan and Changwoo Ryu
+	to add support for ksc5601.1992-3 fonts.
+
 Fri Jul 26 18:48:49 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* configure.in modules/thai/Makefile.am 
