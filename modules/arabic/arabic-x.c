@@ -178,7 +178,7 @@ arabic_engine_shape (PangoFont        *font,
                      PangoGlyphString *glyphs)
 {
     PangoXSubfont   subfont;
-    int             n_chars;
+    long            n_chars;
     int             i;
     ArabicFontInfo *fs;
     const char     *p;

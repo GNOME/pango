@@ -56,7 +56,7 @@ struct _MarkupData
   PangoAttrList *attr_list;
   GString *text;
   GSList *tag_stack;
-  gint index;
+  size_t index;
   GSList *to_apply;
   gunichar accel_marker;
   gunichar accel_char;
@@ -67,7 +67,7 @@ typedef struct _OpenTag OpenTag;
 struct _OpenTag
 {
   GSList *attrs;
-  gint start_index;
+  size_t start_index;
   /* Current total scale level; reset whenever
    * an absolute size is set.
    * Each "larger" ups it 1, each "smaller" decrements it 1
@@ -421,7 +421,7 @@ end_element_handler    (GMarkupParseContext *context,
 static void
 text_handler           (GMarkupParseContext *context,
                         const gchar         *text,
-                        gint                 text_len,
+                        size_t               text_len,
                         gpointer             user_data,
                         GError             **error)
 {
@@ -443,8 +443,8 @@ text_handler           (GMarkupParseContext *context,
       const gchar *range_start;
       const gchar *range_end;
       gboolean just_saw_marker;
-      gint uline_index = -1;
-      gint uline_len = -1;
+      ssize_t uline_index = -1;
+      size_t uline_len = -1;
       
       range_end = NULL;
       range_start = text;

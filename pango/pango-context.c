@@ -520,7 +520,7 @@ pango_itemize (PangoContext      *context,
                PangoAttrIterator *cached_iter)
 {
   gunichar *text_ucs4;
-  int n_chars, i;
+  long n_chars, i;
   guint8 *embedding_levels;
   PangoDirection base_dir;
   PangoItem *item;

@@ -1378,9 +1378,9 @@ pango_win32_font_entry_get_coverage (PangoWin32FontEntry *entry,
   PangoCoverage *result = NULL;
   PangoFontDescription *description;
   FILE *cache_file;
-  gchar *cache_file_name;
+  char *cache_file_name;
   guchar *buf;
-  int buflen;
+  size_t buflen;
 
   if (entry->coverage)
     {

@@ -779,7 +779,7 @@ get_font_metrics_from_string (PangoFont        *font,
   PangoEngineShape *shaper, *last_shaper;
   int last_level;
   gunichar *text_ucs4;
-  int n_chars, i;
+  long n_chars, i;
   guint8 *embedding_levels;
   PangoDirection base_dir = PANGO_DIRECTION_LTR;
   GSList *subfonts = NULL;

@@ -49,10 +49,10 @@ lib_LTLIBRARIES = libpango.la $(X_BUILD_LIBS) $(XFT_BUILD_LIBS) $(FT2_BUILD_LIBS
 
 bin_PROGRAMS = pango-querymodules
 
-pango_built_headers= pango-enum-types.h
-pango_built_cfiles= pango-enum-types.c
+pango_built_headers = pango-enum-types.h
+pango_built_cfiles = pango-enum-types.c
 
-BUILT_SOURCES=$(pango_built_headers) $(pango_built_cfiles)
+$(OBJECTS): $(pango_built_headers)
 
 libpango_la_SOURCES = 	   \
 	break.c 	   \
@@ -147,13 +147,34 @@ pangoinclude_HEADERS = 	   	\
 	$(XFT_HFILES)           \
 	$(FT2_HFILES)
 
-pango-enum-types.h: @REBUILD@ $(pango_headers) makeenums.pl
-	cd $(srcdir) \
-	&& $(PERL) ./makeenums.pl include $(pango_headers) > pango-enum-types.h
+pango-enum-types.h: s-enum-types-h
+	@true
+ 
+s-enum-types-h: @REBUILD@ $(pango_headers) Makefile
+	( cd $(srcdir) && glib-mkenums \
+			--fhead "#ifndef __PANGO_ENUM_TYPES_H__\n#define __PANGO_ENUM_TYPES_H__\n" \
+			--fprod "/* enumerations from \"@filename@\" */\n" \
+			--vhead "GType @enum_name@_get_type (void);\n#define PANGO_TYPE_@ENUMSHORT@ (@enum_name@_get_type())\n" 	\
+			--ftail "#endif /* __PANGO_ENUM_TYPES_H__ */" \
+		$(pango_headers) ) > tmp-pango-enum-types.h \
+	&& (cmp -s tmp-pango-enum-types.h $(srcdir)/pango-enum-types.h || cp tmp-pango-enum-types.h $(srcdir)/pango-enum-types.h ) \
+	&& rm -f tmp-pango-enum-types.h	\
+	&& echo timestamp > $(@F)
 
-pango-enum-types.c: @REBUILD@ $(pango_headers) makeenums.pl
-	cd $(srcdir) \
-	&& $(PERL) ./makeenums.pl cfile $(pango_headers) > pango-enum-types.c
+pango-enum-types.c: s-enum-types-c
+	@true
+
+s-enum-types-c: @REBUILD@ $(pango_headers) Makefile
+	( cd $(srcdir) && glib-mkenums \
+			--fhead "#include <pango.h>" \
+			--fprod "\n/* enumerations from \"@filename@\" */" \
+			--vhead "GType\n@enum_name@_get_type (void)\n{\n  static GType etype = 0;\n  if (etype == 0) {\n    static const GEnumValue values[] = {" 	\
+			--vprod "      { @VALUENAME@, \"@VALUENAME@\", \"@valuenick@\" }," \
+			--vtail "      { 0, NULL, NULL }\n    };\n    etype = g_enum_register_static (\"@EnumName@\", values);\n  }\n  return etype;\n}\n" \
+		$(pango_headers) ) > tmp-pango-enum-types.c \
+	&& (cmp -s tmp-pango-enum-types.c $(srcdir)/pango-enum-types.c || cp tmp-pango-enum-types.c $(srcdir)/pango-enum-types.c ) \
+	&& rm -f tmp-pango-enum-types.c \
+	&& echo timestamp > $(@F)
 
 #
 # As a temporary hack, we pull in libpangox here so that we can link
@@ -169,7 +190,6 @@ endif
 
 EXTRA_DIST =			\
 	$(pango_built_headers)	\
-	makeenums.pl		\
 	module-defs-ft2.c.win32	\
 	module-defs-win32.c.win32 \
 	module-defs.h	        \
@@ -201,3 +221,8 @@ $(INCLUDED_X_MODULES) $(INCLUDED_XFT_MODULES) $(INCLUDED_FT2_MODULES): included-
 .PHONY: included-modules
 endif
 
+CLEANFILES =					\
+	pango-enum-types.h			\
+	s-pango-enum-types.h			\
+	pango-enum-types.c			\
+	s-pango-enum-types.c

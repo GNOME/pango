@@ -965,10 +965,10 @@ pango_ft2_font_entry_get_coverage (PangoFT2FontEntry *entry,
   GHashTable *coverage_hash;
   PangoFontDescription *description;
   FILE *cache_file;
-  gchar *cache_file_name;
-  gchar *font_as_filename;
+  char *cache_file_name;
+  char *font_as_filename;
   guchar *buf;
-  int buflen;
+  size_t buflen;
 
   if (entry)
     if (entry->coverage)
