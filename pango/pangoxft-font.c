@@ -473,6 +473,7 @@ pango_xft_font_get_metrics (PangoFont     *font,
       PangoContext *context;
       XftFont *xft_font;
       Display *display;
+      int screen;
 
       info = g_new0 (PangoXftMetricsInfo, 1);
       xfont->metrics_by_lang = g_slist_prepend (xfont->metrics_by_lang, 
@@ -483,8 +484,8 @@ pango_xft_font_get_metrics (PangoFont     *font,
 	{
 	  xft_font = xft_font_get_font (font);
       
-	  _pango_xft_font_map_get_info (xfont->fontmap, &display, NULL);
-	  context = pango_xft_get_context (display, 0);
+	  _pango_xft_font_map_get_info (xfont->fontmap, &display, &screen);
+	  context = pango_xft_get_context (display, screen);
 
 	  info->sample_str = sample_str;
 	  info->metrics = pango_font_metrics_new ();
