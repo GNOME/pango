@@ -650,7 +650,7 @@ main (int argc, char **argv)
   font_description.variant = PANGO_VARIANT_NORMAL;
   font_description.weight = 500;
   font_description.stretch = PANGO_STRETCH_NORMAL;
-  font_description.size = 16000;
+  font_description.size = 16 * PANGO_SCALE;
 
   pango_context_set_font_description (context, &font_description);
 

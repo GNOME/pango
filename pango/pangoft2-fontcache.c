@@ -21,6 +21,8 @@
 
 #include "pangoft2-private.h"
 
+#include <string.h>
+
 /* Font cache
  */
 

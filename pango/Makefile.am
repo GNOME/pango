@@ -67,6 +67,7 @@ pango_querymodules_SOURCES = \
 pango_querymodules_LDADD = libpangox.la libpango.la $(GLIB_LIBS) $(FRIBIDI_LIBS) $(UNICODE_LIBS) $(X_LIBS)
 
 EXTRA_DIST =			\
+	module-defs.c.win32	\
 	pangowin32.h		\
 	pangowin32.c		\
 	pangowin32-private.h	\

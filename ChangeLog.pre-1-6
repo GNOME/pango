@@ -1,3 +1,10 @@
+2000-08-21  Tor Lillqvist  <tml@iki.fi>
+
+	* pango/pangoft2.c (pango_ft2_render): Handle also ft_pixel_mode_mono
+	glyphs.
+
+	* pango/pangoft2*: Portability enhancements (non-gcc).
+
 Sun Aug 20 13:45:08 2000  Owen Taylor  <otaylor@redhat.com>
 
 	* TODO.xml TODO: Move most all of the TODO items here to the XML file. 
@@ -44,7 +51,8 @@ Sun Aug 20 13:45:08 2000  Owen Taylor  <otaylor@redhat.com>
 	(EXTRA_DIST): Add FreeType2 backend sources, and
 	makefile.mingw{,.in}
 
-	* pango/pangoft2.def: New file.
+	* pango/module-defs.c.win32
+	* pango/pangoft2.def: New files.
 
 	* modules/engine.def: Delete. Was duplicate of module.def.
 

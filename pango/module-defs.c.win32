@@ -1,0 +1,7 @@
+/* Hand-written for Win32. */
+
+#include "modules.h"
+
+PangoIncludedModule _pango_included_modules[] = {
+ { NULL, NULL, NULL },
+};

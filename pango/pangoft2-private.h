@@ -29,9 +29,15 @@
 #define DEBUGGING 1
 
 #ifdef DEBUGGING
+#ifdef __GNUC__
 #define PING(printlist)					\
 (g_print ("%s:%d ", __PRETTY_FUNCTION__, __LINE__),	\
  g_print printlist)
+#else
+#define PING(printlist)					\
+(g_print ("%s:%d ", __FILE__, __LINE__),		\
+ g_print printlist)
+#endif
 #else
 #define PING(printlist)
 #endif

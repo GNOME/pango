@@ -317,21 +317,45 @@ pango_ft2_render (FT_Bitmap        *bitmap,
 	      PING (("xstart:%d xlim:%d ystart:%d ylim:%d\n",
 		     x_start, x_limit, y_start, y_limit));
 
-	      for (iy = y_start; iy < y_limit; iy++)
-		{
-		  p = bitmap->buffer +
-		    (iyoff - face->glyph->bitmap_top + iy) * bitmap->pitch +
-		    ixoff +
-		    face->glyph->bitmap_left + x_start;
-
-		  q = face->glyph->bitmap.buffer + iy*face->glyph->bitmap.pitch;
-		  for (ix = x_start; ix < x_limit; ix++)
-		    {
-		      *p = MIN (*p, 0xFF - *q);
-		      q++;
-		      p++;
-		    }
-		}
+	      if (face->glyph->bitmap.pixel_mode == ft_pixel_mode_grays)
+		for (iy = y_start; iy < y_limit; iy++)
+		  {
+		    p = bitmap->buffer +
+		      (iyoff - face->glyph->bitmap_top + iy) * bitmap->pitch +
+		      ixoff +
+		      face->glyph->bitmap_left + x_start;
+		    
+		    q = face->glyph->bitmap.buffer + iy*face->glyph->bitmap.pitch;
+		    for (ix = x_start; ix < x_limit; ix++)
+		      {
+			*p = MIN (*p, 0xFF - *q);
+			q++;
+			p++;
+		      }
+		  }
+	      else if (face->glyph->bitmap.pixel_mode == ft_pixel_mode_mono)
+		for (iy = y_start; iy < y_limit; iy++)
+		  {
+		    p = bitmap->buffer +
+		      (iyoff - face->glyph->bitmap_top + iy) * bitmap->pitch +
+		      ixoff +
+		      face->glyph->bitmap_left + x_start;
+		    
+		    q = face->glyph->bitmap.buffer + iy*face->glyph->bitmap.pitch;
+		    for (ix = x_start; ix < x_limit; ix++)
+		      {
+			if ((*q) & (1 << (7 - (ix%8))))
+			  *p = 0;
+			else
+			  *p = MIN (*p, 0xFF);
+			if ((ix%8) == 7)
+			  q++;
+			p++;
+		      }
+		  }
+	      else
+		g_warning ("pango_ft2_render: Unrecognized glyph bitmap pixel mode %d\n",
+			   face->glyph->bitmap.pixel_mode);
 
 	      prev_face = face;
 	      prev_index = glyph_index;

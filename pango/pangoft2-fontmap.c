@@ -21,6 +21,7 @@
 
 #include "config.h"
 
+#include <glib.h>
 #include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -34,6 +35,12 @@
 #include "pango-fontmap.h"
 #include "pango-utils.h"
 #include "pangoft2-private.h"
+
+#ifdef G_OS_WIN32
+#ifndef S_ISREG
+#define S_ISREG(mode) ((mode) & _S_IFREG)
+#endif
+#endif
 
 #define PANGO_TYPE_FT2_FONT_MAP              (pango_ft2_font_map_get_type ())
 #define PANGO_FT2_FONT_MAP(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_TYPE_FT2_FONT_MAP, PangoFT2FontMap))

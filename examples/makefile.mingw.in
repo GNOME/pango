@@ -14,7 +14,7 @@ DEPCFLAGS = $(GTK_CFLAGS) $(GLIB_CFLAGS) $(FREETYPE2_CFLAGS)
 all : \
 	../config.h \
 	viewer-win32.exe \
-	viewer-ft2.exe \
+	viewer-ft2.exe
 
 ../config.h : ../config.h.win32
 	cp $< $@
@@ -23,7 +23,7 @@ viewer-win32.exe : viewer-win32.o
 	$(CC) -o $@ $< $(OPTIMIZE) -L ../pango -lpango-$(PANGO_VER) -lpangowin32-$(PANGO_VER) $(GTK_LIBS) $(GLIB_LIBS) -gdi32
 
 viewer-ft2.exe : viewer-ft2.o
-	$(CC) -mwindows -o $@ $< $(OPTIMIZE) -L ../pango -lpango-$(PANGO_VER) -lpangoft2-$(PANGO_VER) $(FREETYPE2_LIBS) $(GTK_LIBS) $(GLIB_LIBS)
+	$(CC) -o $@ $< $(OPTIMIZE) -L ../pango -lpango-$(PANGO_VER) -lpangoft2-$(PANGO_VER) $(FREETYPE2_LIBS) $(GTK_LIBS) $(GLIB_LIBS)
 
 # Hack to get an updated makefile.mingw automatically after updating
 # makefile.mingw.in. Only for developer use.
