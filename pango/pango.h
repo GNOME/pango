@@ -57,6 +57,12 @@ void pango_break (const gchar   *text,
 		  PangoAnalysis *analysis, 
 		  PangoLogAttr  *attrs);
 
+void pango_get_log_attrs (const char    *text,
+                          int            length,
+                          int            level,
+                          const char    *language,
+                          PangoLogAttr  *log_attrs);
+
 /* Turn a string of characters into a string of glyphs
  */
 void pango_shape (const gchar      *text,
