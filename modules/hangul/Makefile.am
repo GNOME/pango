@@ -63,7 +63,8 @@ libpango_hangul_xft_la_SOURCES = $(xft_sources)
 
 EXTRA_DIST =			\
 	tables-ksc5601.i	\
-	tables-johabfont.i
+	tables-johabfont.i	\
+	tables-jamos.i
 
 included-modules: $(noinst_LTLIBRARIES)
 

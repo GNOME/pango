@@ -1,7 +1,7 @@
 2002-08-08  jacob berkman  <jacob@ximian.com>
 
-	* modules/hangul/Makefile.am (xft_sources): add hangul-defs.h so
-	it gets disted
+	* modules/hangul/Makefile.am (EXTRA_DIST): add tables-jamos.i
+	(xft_sources): add hangul-defs.h so it gets disted
 
 Wed Aug  7 14:35:13 2002  Owen Taylor  <otaylor@redhat.com>
 
