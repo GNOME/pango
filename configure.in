@@ -187,47 +187,51 @@ fi
 AM_CONDITIONAL(HAVE_X, $have_x) 
 
 #
-# Checks for FreeType
-#
-FREETYPE_LIBS=
-FREETYPE_CFLAGS=
-have_freetype=false
-AC_PATH_PROG(FREETYPE_CONFIG, freetype-config, no)
-if test "x$FREETYPE_CONFIG" != "xno" ; then
-  FREETYPE_CFLAGS=`$FREETYPE_CONFIG --cflags`
-  FREETYPE_LIBS=`$FREETYPE_CONFIG --libs`
-
-  pango_save_ldflags=$LDFLAGS
-  LDFLAGS="$LDFLAGS $FREETYPE_LIBS"
-  AC_CHECK_LIB(freetype, FT_Get_Next_Char, have_freetype=true, :)
-  LDFLAGS=$pango_save_ldflags
-fi
-
-#
 # Check for fontconfig
 #
 have_fontconfig=false
+have_freetype=false
+have_xft=false
 
 PKG_CHECK_MODULES(FONTCONFIG, fontconfig >= 1.0.1, have_fontconfig=true, :)
 
-FREETYPE_LIBS="$FONTCONFIG_LIBS $FREETYPE_LIBS"
-FREETYPE_CFLAGS="$FONTCONFIG_CFLAGS $FREETYPE_CFLAGS"
+if $have_fontconfig ; then
+  #
+  # Checks for FreeType
+  #
+  FREETYPE_LIBS=
+  FREETYPE_CFLAGS=
+  AC_PATH_PROG(FREETYPE_CONFIG, freetype-config, no)
+  if test "x$FREETYPE_CONFIG" != "xno" ; then
+    FREETYPE_CFLAGS=`$FREETYPE_CONFIG --cflags`
+    FREETYPE_LIBS=`$FREETYPE_CONFIG --libs`
 
-AC_SUBST(FREETYPE_LIBS)
-AC_SUBST(FREETYPE_CFLAGS)
-	
-AM_CONDITIONAL(HAVE_FREETYPE, $have_freetype && $have_fontconfig)
-#
-# Checks for Xft/XRender
-#
-have_xft=false
+    pango_save_ldflags=$LDFLAGS
+    LDFLAGS="$LDFLAGS $FREETYPE_LIBS"
+    AC_CHECK_LIB(freetype, FT_Get_Next_Char, have_freetype=true, :)
+    LDFLAGS=$pango_save_ldflags
+  fi
 
-if $have_x && $have_freetype ; then
-  PKG_CHECK_MODULES(XFT, xft >= 2.0.0, have_xft=true, :)
+  FREETYPE_LIBS="$FONTCONFIG_LIBS $FREETYPE_LIBS"
+  FREETYPE_CFLAGS="$FONTCONFIG_CFLAGS $FREETYPE_CFLAGS"
+
+  AC_SUBST(FREETYPE_LIBS)
+  AC_SUBST(FREETYPE_CFLAGS)
+
+  #
+  # Checks for Xft/XRender
+  #
+  if $have_x && $have_freetype ; then
+    PKG_CHECK_MODULES(XFT, xft >= 2.0.0, have_xft=true, :)
+  fi
+
+  AC_SUBST(XFT_LIBS)
+  AC_SUBST(XFT_CFLAGS)
+else
+  AC_MSG_WARN([No fontconfig found, skipping tests for FreeType and Xft])
 fi
 
-AC_SUBST(XFT_LIBS)
-AC_SUBST(XFT_CFLAGS)
+AM_CONDITIONAL(HAVE_FREETYPE, $have_freetype)
 AM_CONDITIONAL(HAVE_XFT, $have_xft)
 
 #

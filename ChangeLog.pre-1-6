@@ -1,3 +1,13 @@
+Tue May 27 16:51:32 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* configure.in: Clean up so that tests for Xft/FreeType
+	are only run when we find fontconfig. (#112027,
+	Tim Mooney)
+
+	* README: Rewrite the text about fontconfig dependencies
+	to be clearer and not to have stale links to 
+	http://keithp.com/fonts/. (#112027, Tim Mooney)
+
 Tue May 27 16:06:34 2003  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pangox.c (pango_x_render): Patch from Morten
