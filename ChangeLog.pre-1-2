@@ -1,3 +1,19 @@
+Thu Aug  8 19:00:49 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pangoxft-fontmap.c: Up MAX_FREED_FONTS to 128
+
+	* pango/pangoxft-fontmap.c (pango_xft_pattern_equal):
+	Short-circuit pattern1 == pattern2.
+
+	* pango/pangoxft-fontmap.c (pango_xft_font_map_get_patterns):
+	Patch from Keith Packard to use PangoFontSetSort rather
+	than our previous substitute-and-split-the-substitution
+	hack; this means that if any font on the system has the 
+	character, it will be used.
+
+	* pango/pangoxft-fontmap.c (_pango_xft_font_map_cache_add):
+	Reorder so that it works with MAX_FREED_FONTS == 0.
+
 Thu Aug  8 18:55:21 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* examples/Makefile.am (INCLUDES): Add FONTCONFIG_CFLAGS

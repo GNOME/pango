@@ -27,7 +27,7 @@
 #include "modules.h"
 
 /* Number of freed fonts */
-#define MAX_FREED_FONTS 16
+#define MAX_FREED_FONTS 128
 
 typedef struct _PangoXftFontMap      PangoXftFontMap;
 typedef struct _PangoXftFamily       PangoXftFamily;
@@ -178,7 +178,7 @@ static GSList *fontmaps = NULL;
 guint
 pango_xft_pattern_hash (FcPattern *pattern)
 {
-#if 1  
+#if 1
   return FcPatternHash (pattern);
 #else
   /* Hashing only part of the pattern can improve speed a bit.
@@ -206,7 +206,10 @@ gboolean
 pango_xft_pattern_equal (FcPattern *pattern1,
 			 FcPattern *pattern2)
 {
-  return FcPatternEqual (pattern1, pattern2);
+  if (pattern1 == pattern2)
+    return TRUE;
+  else
+    return FcPatternEqual (pattern1, pattern2);
 }
 
 static guint
@@ -659,8 +662,9 @@ pango_xft_font_map_new_font (PangoFontMap  *fontmap,
 
       return (PangoFont *)font;
     }
-  
-  return  (PangoFont *)_pango_xft_font_new (fontmap, FcPatternDuplicate (match));
+
+  FcPatternReference (match);
+  return  (PangoFont *)_pango_xft_font_new (fontmap, match);
 }
 
 static PangoXftPatternSet *
@@ -669,13 +673,11 @@ pango_xft_font_map_get_patterns (PangoFontMap               *fontmap,
 				 const PangoFontDescription *desc)
 {
   PangoXftFontMap *xfontmap = (PangoXftFontMap *)fontmap;
-  FcPattern *pattern, *pattern_copy;
-  FcPattern *match;
-  char *family, *family_res;
+  FcPattern *pattern, *font_pattern;
   FcResult res;
-  int id;
-  GPtrArray *array;
+  int f;
   PangoXftPatternSet *patterns;
+  FcFontSet *font_patterns;
 
   patterns = g_hash_table_lookup (xfontmap->fontset_hash, desc);
 
@@ -683,53 +685,33 @@ pango_xft_font_map_get_patterns (PangoFontMap               *fontmap,
     {
       pattern = pango_xft_make_pattern (desc);
 
-      FcConfigSubstitute (0, pattern, FcMatchPattern);
+      FcConfigSubstitute (NULL, pattern, FcMatchPattern);
       if (xfontmap->substitute_func)
 	xfontmap->substitute_func (pattern, xfontmap->substitute_data);
       XftDefaultSubstitute (xfontmap->display, xfontmap->screen, pattern);
 
-      pattern_copy = FcPatternDuplicate (pattern);
+      font_patterns = FcFontSort (NULL, pattern, FcTrue, 0, &res);
 
-      array = g_ptr_array_new ();
+      if (!font_patterns)
+	return NULL;
+
       patterns = g_new (PangoXftPatternSet, 1);
+      patterns->patterns = g_new (FcPattern *, font_patterns->nfont);
+      patterns->n_patterns = 0;
 
-      match = NULL;
-      id = 0;
-      while (FcPatternGetString (pattern, FC_FAMILY, id++, (FcChar8 **) &family) == FcResultMatch)
-	{
-	  FcPatternDel (pattern_copy, FC_FAMILY);
-	  FcPatternAddString (pattern_copy, FC_FAMILY, family);
-	  
-	  match = FcFontMatch (NULL, pattern_copy, &res);
-	  
-	  if (match &&
-	      FcPatternGetString (match, FC_FAMILY, 0, (FcChar8 **) &family_res) == FcResultMatch &&
-	      g_ascii_strcasecmp (family, family_res) == 0)
-	    {
-	      g_ptr_array_add (array, match);
-	      match = NULL;
-	    }
-	  if (match)
-	    FcPatternDestroy (match);
-	}
+      for (f = 0; f < font_patterns->nfont; f++)
+      {
+	font_pattern = FcFontRenderPrepare (NULL, pattern,
+					    font_patterns->fonts[f]);
+	
+	if (font_pattern)
+	  patterns->patterns[patterns->n_patterns++] = font_pattern;
+      }
       
-      if (array->len == 0)
-	{
-	  match = XftFontMatch (xfontmap->display, xfontmap->screen,
-				pattern, &res);
-	  if (match == NULL)
-	    g_error ("Failed to match any font. This could be due to a broken Xft "
-		     "configuration, or if you run XFree 4.1.0 due to a bug in libXrender. "
-		     "For more information about this, read http://bugzilla.gnome.org/show_bug.cgi?id=68030\n");
-	  g_ptr_array_add (array, match);
-	}
-
       FcPatternDestroy (pattern);
-      FcPatternDestroy (pattern_copy);
-
-      patterns->n_patterns = array->len;
-      patterns->patterns = (FcPattern **)g_ptr_array_free (array, FALSE);
       
+      FcFontSetSortDestroy (font_patterns);
+
       g_hash_table_insert (xfontmap->fontset_hash,
 			   pango_font_description_copy (desc),
 			   patterns);
@@ -796,15 +778,15 @@ _pango_xft_font_map_cache_add (PangoFontMap *fontmap,
 {
   PangoXftFontMap *xfontmap = PANGO_XFT_FONT_MAP (fontmap);
 
-  if (xfontmap->freed_fonts->length == MAX_FREED_FONTS)
+  g_object_ref (G_OBJECT (xfont));
+  g_queue_push_head (xfontmap->freed_fonts, xfont);
+  xfont->in_cache = TRUE;
+
+  if (xfontmap->freed_fonts->length > MAX_FREED_FONTS)
     {
       GObject *old_font = g_queue_pop_tail (xfontmap->freed_fonts);
       g_object_unref (old_font);
     }
-
-  g_object_ref (G_OBJECT (xfont));
-  g_queue_push_head (xfontmap->freed_fonts, xfont);
-  xfont->in_cache = TRUE;
 }
 
 static void
