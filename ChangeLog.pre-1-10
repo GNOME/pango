@@ -1,3 +1,10 @@
+Tue Jul 27 12:38:05 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/opentype/ftxopen.[ch] pango/opentype/ftxgsub.c
+	pango/opentype/ftxpos.c: Save the order in which
+	features were added and use that when applying features.
+	(Patch from Soheil Hassas Yeganeh, #122330)
+
 Tue Jul 27 09:11:40 2004  Behdad Esfahbod  <pango@behdad.org>
 
 	* pango/opentype/ftxgpos.c: Remove the unused parameter
