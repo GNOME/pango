@@ -122,8 +122,9 @@ pango_font_map_load_fontset (PangoFontMap                 *fontmap,
 			     const PangoFontDescription   *desc,
 			     PangoLanguage                *language)
 {
-  g_return_val_if_fail (fontmap != NULL, 0);
-
+  g_return_val_if_fail (fontmap != NULL, NULL);
+  g_return_val_if_fail (pango_font_description_get_family (desc) != NULL, NULL);
+  
   return PANGO_FONT_MAP_GET_CLASS (fontmap)->load_fontset (fontmap, context, desc, language);
 }
 

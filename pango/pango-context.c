@@ -235,6 +235,7 @@ pango_context_load_fontset (PangoContext               *context,
 			     PangoLanguage             *language)
 {
   g_return_val_if_fail (context != NULL, NULL);
+  g_return_val_if_fail (pango_font_description_get_family (desc) != NULL, NULL);
 
   return pango_font_map_load_fontset (context->font_map, context, desc, language);
 }
