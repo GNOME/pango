@@ -38,6 +38,7 @@
 #define PANGO_WIN32_IS_FONT_MAP(object)     (G_TYPE_CHECK_INSTANCE_TYPE ((object), PANGO_TYPE_WIN32_FONT_MAP))
 
 typedef struct _PangoWin32FontMap      PangoWin32FontMap;
+typedef struct _PangoWin32FontMapClass PangoWin32FontMapClass;
 typedef struct _PangoWin32Family       PangoWin32Family;
 typedef struct _PangoWin32SizeInfo     PangoWin32SizeInfo;
 
@@ -153,14 +154,15 @@ pango_win32_font_map_init (PangoWin32FontMap *win32fontmap)
 }
 
 static void
-pango_win32_font_map_class_init (PangoFontMapClass *class)
+pango_win32_font_map_class_init (PangoWin32FontMapClass *class)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (class);
+  PangoFontMapClass *fontmap_class = PANGO_FONT_MAP_CLASS (class);
   
   object_class->finalize = pango_win32_font_map_finalize;
-  class->load_font = pango_win32_font_map_load_font;
-  class->list_families = pango_win32_font_map_list_families;
-  class->shape_engine_type = PANGO_RENDER_TYPE_WIN32;
+  fontmap_class->load_font = pango_win32_font_map_load_font;
+  fontmap_class->list_families = pango_win32_font_map_list_families;
+  fontmap_class->shape_engine_type = PANGO_RENDER_TYPE_WIN32;
   
   pango_win32_get_dc ();
 }
