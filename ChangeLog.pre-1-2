@@ -1,3 +1,7 @@
+Wed Aug  7 09:14:00 2002  Michael Meeks  <michael@ximian.com>
+
+	* configure.in: echo status at end.
+
 Wed Aug  7 12:32:39 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/opentype/ftxgsub.c (TT_Load_GSUB_Table):
