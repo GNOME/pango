@@ -1,3 +1,9 @@
+Mon Jan 28 20:23:59 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-markup.c (pango_parse_markup): Fix problem
+	with detected root node. (Based on patch from Matthias Clasen,
+	#69600)
+
 Mon Jan 28 19:41:20 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pango-context.c (pango_context_load_font[set]): Add some

@@ -617,8 +617,8 @@ pango_parse_markup (const char                 *markup_text,
   while (p != end && isspace (*p))
     ++p;
 
-  if (strncmp (p, "<markup>", end - p) == 0)
-    needs_root = FALSE;
+  if (end - p >= 8 && strncmp (p, "<markup>", 8) == 0)
+     needs_root = FALSE;
 
   if (needs_root)
     if (!g_markup_parse_context_parse (context,
