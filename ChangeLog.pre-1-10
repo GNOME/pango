@@ -1,3 +1,10 @@
+2003-09-02  Noah Levitt  <nlevitt@columbia.edu>
+
+	* tests/.cvsignore:
+	* tests/Makefile.am:
+	* tests/pangorc: Fix tests so that can be run before "make install"
+	has been. (#119831)
+
 Mon Aug 25 10:17:21 2003  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/opentype/ftxgsub.c (Lookup_ChainContextSubst3)
