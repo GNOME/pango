@@ -69,10 +69,13 @@ struct _PangoEnginePair
 };
 
 static GList *maps = NULL;
-static GList *engines = NULL;
 
-static void      build_map      (PangoMapInfo       *info);
-static void      init_modules   (void);
+static GSList *builtin_engines = NULL;
+static GSList *registered_engines = NULL;
+static GSList *dlloaded_engines = NULL;
+
+static void build_map    (PangoMapInfo *info);
+static void init_modules (void);
 
 /**
  * pango_find_map:
@@ -179,34 +182,37 @@ pango_engine_pair_get_engine (PangoEnginePair *pair)
 }
 
 static void
-handle_included_module (PangoIncludedModule *mod)
+handle_included_module (PangoIncludedModule *module,
+			GSList              **engine_list)
 {
   PangoEngineInfo *engine_info;
   int n_engines;
-  int j;
-  
-  mod->list (&engine_info, &n_engines);
+  int i;
 
-  for (j = 0; j < n_engines; j++)
+  module->list (&engine_info, &n_engines);
+
+  for (i = 0; i < n_engines; i++)
     {
       PangoEnginePair *pair = g_new (PangoEnginePair, 1);
 
-      pair->info = engine_info[j];
+      pair->info = engine_info[i];
       pair->included = TRUE;
-      pair->load_info = mod;
+      pair->load_info = module;
       pair->engine = NULL;
 
-      engines = g_list_prepend (engines, pair);
+      *engine_list = g_slist_prepend (*engine_list, pair);
     }
 }
 
 static void
-add_included_modules (void)
+add_builtin_modules (void)
 {
-  int i, j;
+  int i;
 
   for (i = 0; _pango_included_modules[i].list; i++)
-    handle_included_module                         (&_pango_included_modules[i]);
+    handle_included_module (&_pango_included_modules[i], &builtin_engines);
+
+  builtin_engines = g_slist_reverse (builtin_engines);
 }
 
 static gboolean /* Returns true if succeeded, false if failed */
@@ -309,7 +315,7 @@ process_module_file (FILE *module_file)
 
       pair->engine = NULL;
       
-      engines = g_list_prepend (engines, pair);
+      dlloaded_engines = g_slist_prepend (dlloaded_engines, pair);
 
     error:
       g_list_foreach (ranges, (GFunc)g_free, NULL);
@@ -362,6 +368,8 @@ read_modules (void)
 
   g_strfreev (files);
   g_free (file_str);
+
+  dlloaded_engines = g_slist_reverse (dlloaded_engines);
 }
 
 static void
@@ -385,23 +393,110 @@ init_modules (void)
   else
     init = TRUE;
 
-  engines = NULL;
+  add_builtin_modules ();
+  read_modules ();
+}
 
-  add_included_modules();
-  read_modules();
+static void
+map_add_engine (PangoMapInfo    *info,
+		PangoEnginePair *pair)
+{
+  int submap;
+  int i, j;
+  PangoMap *map = info->map;
+ 
+  for (i=0; i<pair->info.n_ranges; i++)
+    {
+      gchar **langs;
+      gboolean is_exact = FALSE;
+      
+      if (pair->info.ranges[i].langs)
+	{
+	  langs = g_strsplit (pair->info.ranges[i].langs, ";", -1);
+	  for (j=0; langs[j]; j++)
+	    if (strcmp (langs[j], "*") == 0 ||
+		strcmp (langs[j], info->lang) == 0)
+	      {
+		is_exact = TRUE;
+		break;
+	      }
+	  g_strfreev (langs);
+	}
+      
+      for (submap = pair->info.ranges[i].start / 256;
+	   submap <= pair->info.ranges[i].end / 256;
+	   submap ++)
+	{
+	  gunichar start;
+	  gunichar end;
+	  
+	  if (submap == pair->info.ranges[i].start / 256)
+	    start = pair->info.ranges[i].start % 256;
+	  else
+	    start = 0;
+	  
+	  if (submap == pair->info.ranges[i].end / 256)
+	    end = pair->info.ranges[i].end % 256;
+	  else
+	    end = 255;
+	  
+	  if (map->submaps[submap].is_leaf &&
+	      start == 0 && end == 255)
+	    {
+	      set_entry (&map->submaps[submap].d.entry,
+			 is_exact, &pair->info);
+	    }
+	  else
+	    {
+	      if (map->submaps[submap].is_leaf)
+		{
+		  map->submaps[submap].is_leaf = FALSE;
+		  map->submaps[submap].d.leaves = g_new (PangoMapEntry, 256);
+		  for (j=0; j<256; j++)
+		    {
+		      map->submaps[submap].d.leaves[j].info = NULL;
+		      map->submaps[submap].d.leaves[j].is_exact = FALSE;
+		    }
+		}
+	      
+	      for (j=start; j<=end; j++)
+		set_entry (&map->submaps[submap].d.leaves[j],
+			   is_exact, &pair->info);
+	      
+	    }
+	}
+    }
+}
 
-  engines = g_list_reverse (engines);
+static void
+map_add_engine_list (PangoMapInfo *info,
+		     GSList       *engines,
+		     const char   *engine_type,
+		     const char   *render_type)  
+{
+  GSList *tmp_list = engines;
+
+  while (tmp_list)
+    {
+      PangoEnginePair *pair = tmp_list->data;
+      tmp_list = tmp_list->next;
+
+      if (strcmp (pair->info.engine_type, engine_type) == 0 &&
+	  strcmp (pair->info.render_type, render_type) == 0)
+	{
+	  map_add_engine (info, pair);
+	}
+    }
 }
 
 static void
 build_map (PangoMapInfo *info)
 {
-  GList *tmp_list;
-  int i, j;
+  int i;
   PangoMap *map;
 
-  char *engine_type = g_quark_to_string (info->engine_type_id);
-  char *render_type = g_quark_to_string (info->render_type_id);
+  const char *engine_type = g_quark_to_string (info->engine_type_id);
+  const char *render_type = g_quark_to_string (info->render_type_id);
   
   init_modules();
 
@@ -413,81 +508,10 @@ build_map (PangoMapInfo *info)
       map->submaps[i].d.entry.info = NULL;
       map->submaps[i].d.entry.is_exact = FALSE;
     }
-  
-  tmp_list = engines;
-  while (tmp_list)
-    {
-      PangoEnginePair *pair = tmp_list->data;
-      tmp_list = tmp_list->next;
 
-      if (strcmp (pair->info.engine_type, engine_type) == 0 &&
-	  strcmp (pair->info.render_type, render_type) == 0)
-	{
-	  int submap;
-
-	  for (i=0; i<pair->info.n_ranges; i++)
-	    {
-	      gchar **langs;
-	      gboolean is_exact = FALSE;
-
-	      if (pair->info.ranges[i].langs)
-		{
-		  langs = g_strsplit (pair->info.ranges[i].langs, ";", -1);
-		  for (j=0; langs[j]; j++)
-		    if (strcmp (langs[j], "*") == 0 ||
-			strcmp (langs[j], info->lang) == 0)
-		      {
-			is_exact = TRUE;
-			break;
-		      }
-		  g_strfreev (langs);
-		}
-
-	      for (submap = pair->info.ranges[i].start / 256;
-		   submap <= pair->info.ranges[i].end / 256;
-		   submap ++)
-		{
-		  gunichar start;
-		  gunichar end;
-		  
-		  if (submap == pair->info.ranges[i].start / 256)
-		    start = pair->info.ranges[i].start % 256;
-		  else
-		    start = 0;
-		  
-		  if (submap == pair->info.ranges[i].end / 256)
-		    end = pair->info.ranges[i].end % 256;
-		  else
-		    end = 255;
-		  
-		  if (map->submaps[submap].is_leaf &&
-		      start == 0 && end == 255)
-		    {
-		      set_entry (&map->submaps[submap].d.entry,
-				 is_exact, &pair->info);
-		    }
-		  else
-		    {
-		      if (map->submaps[submap].is_leaf)
-			{
-			  map->submaps[submap].is_leaf = FALSE;
-			  map->submaps[submap].d.leaves = g_new (PangoMapEntry, 256);
-			  for (j=0; j<256; j++)
-			    {
-			      map->submaps[submap].d.leaves[j].info = NULL;
-			      map->submaps[submap].d.leaves[j].is_exact = FALSE;
-			    }
-			}
-		      
-		      for (j=start; j<=end; j++)
-			set_entry (&map->submaps[submap].d.leaves[j],
-				   is_exact, &pair->info);
-		      
-		    }
-		}
-	    }
-	}
-    }
+  map_add_engine_list (info, dlloaded_engines, engine_type, render_type);  
+  map_add_engine_list (info, registered_engines, engine_type, render_type);  
+  map_add_engine_list (info, builtin_engines, engine_type, render_type);  
 }
 
 /**
@@ -537,13 +561,20 @@ pango_map_get_engine (PangoMap *map,
 
 /**
  * pango_module_register:
- * @mod: a PangoIncludedModule
+ * @module: a #PangoIncludedModule
  * 
- * Registers a PangoIncludedModlue
- * 
+ * Registers a statically linked module with Pango. The
+ * #PangoIncludedModule structure that is passed in contains the
+ * functions that would otherwise be loaded from a dynamically loaded
+ * module.
  **/
 void
-pango_module_register (PangoIncludedModule *mod)
+pango_module_register (PangoIncludedModule *module)
 {
-  handle_included_module (mod);
+  GSList *tmp_list = NULL;
+  
+  handle_included_module (module, &tmp_list);
+
+  registered_engines = g_slist_concat (registered_engines,
+				       g_slist_reverse (tmp_list)); 
 }

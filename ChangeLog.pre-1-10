@@ -1,3 +1,18 @@
+Thu Nov 16 13:23:43 2000  Owen Taylor  <otaylor@redhat.com>
+
+	* docs/pango-sections.txt docs/tmpl/modules.sgml: Add
+	pango_module_register ().
+
+	* pango/modules.c: Make ordering of module lookup
+	predictable.
+
+	* pango/modules.c (pango_module_register): Add a
+	useful doc comment. 
+
+	* pango/pango-modules.[ch]: Fix indentation.
+
+	* .cvsusers: Added
+	
 2000-11-16  Havoc Pennington  <hp@redhat.com>
 
 	* pango/modules.c (handle_included_module): Declare variable j so

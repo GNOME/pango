@@ -14,6 +14,20 @@ modules
 
 </para>
 
+<!-- ##### STRUCT PangoIncludedModule ##### -->
+<para>
+The #PangoIncludedModule structure holds information used
+to register a module that is built in to a library instead
+of dynamically loaded. The three functions it holds are
+used instead of the symbols script_engine_load(),
+script_engine_unload() and script_engine_list() in a
+dynamically loaded module.
+</para>
+
+@list: lists the engines this module implements
+@load: does initialization for this module
+@unload: unitializes the module
+
 <!-- ##### STRUCT PangoMap ##### -->
 <para>
 
@@ -57,5 +71,13 @@ modules
 @map: 
 @wc: 
 @Returns: 
+
+
+<!-- ##### FUNCTION pango_module_register ##### -->
+<para>
+
+</para>
+
+@module: 
 
 

@@ -321,11 +321,13 @@ pango_indic_split_out_characters
 <SECTION>
 <TITLE>Modules</TITLE>
 <FILE>modules</FILE>
+PangoIncludedModule
 PangoMap
 PangoMapEntry
 pango_find_map
 pango_map_get_entry
 pango_map_get_engine
+pango_module_register
 </SECTION>
 
 <SECTION>
