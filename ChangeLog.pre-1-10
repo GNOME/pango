@@ -1,3 +1,14 @@
+2002-09-28  Tor Lillqvist  <tml@iki.fi>
+
+	* pango/pangowin32-fontmap.c (pango_win32_insert_font): Revert
+	change from 2002-09-21: Don't bypass the code that automatically
+	adds fonts to the families "monospace", "serif" and "sans". I
+	thought it would be unnecessary if you have a pango.aliases that
+	sets up aliases for these family names, but apparently
+	not. Without this code, pango_layout_line_get_empty_extents()
+	thinks empty lines have zero height, as it tries to use a font
+	called "sans" for instance, and no aliases get used.
+
 Fri Sep 27 17:50:51 2002  Owen Taylor  <otaylor@redhat.com>
  
  	(Based on GTK+ patch by J. Ali Harlow in #87774)

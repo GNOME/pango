@@ -442,6 +442,7 @@ pango_win32_font_map_load_font (PangoFontMap               *fontmap,
     {
       PangoWin32Face *best_match = NULL;
       
+      PING (("got win32family"));
       tmp_list = win32family->font_entries;
       while (tmp_list)
 	{
@@ -460,13 +461,14 @@ pango_win32_font_map_load_font (PangoFontMap               *fontmap,
 	  GSList *tmp_list = best_match->cached_fonts;
 	  gint size = pango_font_description_get_size (description);
 
-	  PING(("got best match:%s",best_match->logfont.lfFaceName));
+	  PING(("got best match:%s size=%d",best_match->logfont.lfFaceName,size));
 
 	  while (tmp_list)
 	    {
 	      PangoWin32Font *win32font = tmp_list->data;
 	      if (win32font->size == size)
 		{
+		  PING (("size matches"));
 		  result = (PangoFont *)win32font;
 
 		  g_object_ref (G_OBJECT (result));
@@ -771,7 +773,7 @@ pango_win32_insert_font (PangoWin32FontMap *win32fontmap,
   font_family->font_entries = g_slist_append (font_family->font_entries, win32face);
   win32fontmap->n_fonts++;
 
-#if 0 /* Use pango.aliases instead */
+#if 1 /* Thought pango.aliases would make this code unnecessary, but no. */
   /*
    * There are magic family names coming from the X implementation.
    * They can be simply mapped to lfPitchAndFamily flag of the logfont
