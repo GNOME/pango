@@ -16,20 +16,19 @@ dnl set PANGO_BINARY_AGE _and_ PANGO_INTERFACE_AGE to 0.
 
 dnl The triplet 
 PANGO_MAJOR_VERSION=1
-PANGO_MINOR_VERSION=0
-PANGO_MICRO_VERSION=1
+PANGO_MINOR_VERSION=1
+PANGO_MICRO_VERSION=0
 PANGO_VERSION=$PANGO_MAJOR_VERSION.$PANGO_MINOR_VERSION.$PANGO_MICRO_VERSION
 
 dnl The X.Y in -lpango-X.Y line. This is expected to stay 1.0 until Pango 2.
 PANGO_API_VERSION=1.0
 
 dnl Number of releases since we've added interfaces
-PANGO_INTERFACE_AGE=1
+PANGO_INTERFACE_AGE=0
 
-dnl Number of releases since we've broken binary compatibility. Should equal
-dnl PANGO_MICRO_VERSION for a stable release
+dnl Number of releases since we've broken binary compatibility.
 # PANGO_BINARY_AGE=0
-PANGO_BINARY_AGE=$PANGO_MICRO_VERSION
+PANGO_BINARY_AGE=`expr 100 '*' $PANGO_MINOR_VERSION + $PANGO_MICRO_VERSION`
 
 dnl This is the last version with which we have compatibility with
 dnl with the modules for; it isn't the same as
@@ -47,7 +46,7 @@ AC_SUBST(PANGO_BINARY_AGE)
 AC_SUBST(PANGO_MODULE_VERSION)
 
 dnl libtool versioning
-lt_current=`expr $PANGO_MICRO_VERSION - $PANGO_INTERFACE_AGE`
+lt_current=`expr 100 '*' $PANGO_MINOR_VERSION + $PANGO_MICRO_VERSION - $PANGO_INTERFACE_AGE`
 lt_revision=$PANGO_INTERFACE_AGE
 lt_age=`expr $PANGO_BINARY_AGE - $PANGO_INTERFACE_AGE`
 LT_VERSION_INFO="$lt_current:$lt_revision:$lt_age"

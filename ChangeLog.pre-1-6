@@ -1,3 +1,8 @@
+Thu Jun  6 08:54:26 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* configure.in: Update the versioning to reflect '1.1.x'
+	(Use the 100 * minor + micro convention.)
+
 Thu Jun  6 08:42:32 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* configure.in: Provide : as the fourth argument
