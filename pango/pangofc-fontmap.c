@@ -22,8 +22,6 @@
 /* Size of fontset cache */
 #define FONTSET_CACHE_SIZE 16
 
-#include <math.h>
-
 #include "pango-context.h"
 #include "pangofc-fontmap.h"
 #include "pangofc-private.h"
@@ -235,55 +233,11 @@ pango_fc_coverage_key_equal (PangoFcCoverageKey *key1,
 }
 
 typedef struct _FontsetHashListNode FontsetHashListNode;
-typedef struct _FontsetHashKey      FontsetHashKey;
 
 struct _FontsetHashListNode {
   GHashTable    *fontset_hash;
   PangoLanguage *language;
 };
-
-struct _FontsetHashKey {
-  PangoFontDescription *desc;
-  int x_size;
-  int y_size;
-};
-
-static gboolean
-fontset_hash_key_equal (const FontsetHashKey *key_a,
-			const FontsetHashKey *key_b)
-{
-  if (key_a->x_size == key_b->x_size &&
-      key_a->y_size == key_b->y_size &&
-      pango_font_description_equal (key_a->desc, key_b->desc))
-    return TRUE;
-  else
-    return FALSE;
-}
-
-static guint
-fontset_hash_key_hash (const FontsetHashKey *key)
-{
-  return (key->x_size << 16) ^ (key->y_size) ^ pango_font_description_hash (key->desc);
-}
-
-static void
-fontset_hash_key_free (FontsetHashKey *key)
-{
-  pango_font_description_free (key->desc);
-  g_free (key);
-}
-
-static FontsetHashKey *
-fontset_hash_key_copy (FontsetHashKey *old)
-{
-  FontsetHashKey *key = g_new (FontsetHashKey, 1);
-  
-  key->x_size = old->x_size;
-  key->y_size = old->y_size;
-  key->desc = pango_font_description_copy (old->desc);
-
-  return key;
-}
 
 /* Get the description => fontset map for a particular
  * language tag.
@@ -326,9 +280,9 @@ pango_fc_get_fontset_hash (PangoFcFontMap *fcfontmap,
     priv->fontset_hash_list = g_list_prepend (priv->fontset_hash_list, node);
     
     node->fontset_hash =
-      g_hash_table_new_full ((GHashFunc)fontset_hash_key_hash,
-			     (GEqualFunc)fontset_hash_key_equal,
-			     (GDestroyNotify)fontset_hash_key_free,
+      g_hash_table_new_full ((GHashFunc)pango_font_description_hash,
+			     (GEqualFunc)pango_font_description_equal,
+			     (GDestroyNotify)pango_font_description_free,
 			     (GDestroyNotify)pango_fc_pattern_set_free);
     node->language = language;
 
@@ -791,66 +745,11 @@ pango_fc_default_substitute (PangoFcFontMap    *fontmap,
     PANGO_FC_FONT_MAP_GET_CLASS (fontmap)->default_substitute (fontmap, pattern);
 }
 
-static double
-transformed_length (const PangoMatrix *matrix,
-		    double             dx,
-		    double             dy)
-{
-  double tx = (dx * matrix->xx + dy * matrix->xy);
-  double ty = (dx * matrix->yx + dy * matrix->yy);
-
-  return sqrt (tx * tx + ty * ty);
-}
-
-static gboolean
-pango_fc_font_map_get_rendered_size (PangoFcFontMap              *fcfontmap,
-				     PangoContext                *context,
-				     const PangoFontDescription  *desc,
-				     int                         *x_size,
-				     int                         *y_size)
-{
-  if (PANGO_FC_FONT_MAP_GET_CLASS (fcfontmap)->get_rendered_size)
-    return PANGO_FC_FONT_MAP_GET_CLASS (fcfontmap)->get_rendered_size (fcfontmap, context, desc, x_size, y_size);
-  else
-    {
-      int size = pango_font_description_get_size (desc);
-      const PangoMatrix *matrix;
-      gboolean retval = TRUE;
-
-      if (context)
-	matrix = pango_context_get_matrix (context);
-      else
-	matrix = NULL;
-
-      *x_size = size;
-      *y_size = size;
-      
-      if (matrix)
-	{
-	  double xl = transformed_length (matrix, 1., 0.);
-	  double yl = transformed_length (matrix, 0., 1.);
-
-	  if (xl != 0. && yl != 0.)
-	    {
-	      *x_size = (int)(xl * *x_size + 0.5);
-	      *y_size = (int)(yl * *y_size + 0.5);
-
-	      retval = (matrix->yx / xl < 1 / 65536. && matrix->xy / yl < 1 / 65536.);
-	    }
-	  else
-	    retval = FALSE;
-	}
-
-      return retval;
-    }
-}
-
 static PangoFcPatternSet *
 pango_fc_font_map_get_patterns (PangoFontMap               *fontmap,
-				PangoContext               *context,
-				const PangoFontDescription *desc,
-				PangoLanguage              *language,
-				gboolean                   *cache_out)
+				 PangoContext               *context,
+				 const PangoFontDescription *desc,
+				 PangoLanguage              *language)
 {
   PangoFcFontMap *fcfontmap = (PangoFcFontMap *)fontmap;
   FcPattern *pattern, *font_pattern;
@@ -859,21 +758,12 @@ pango_fc_font_map_get_patterns (PangoFontMap               *fontmap,
   PangoFcPatternSet *patterns;
   FcFontSet *font_patterns;
   GHashTable *fontset_hash;
-  FontsetHashKey key;
-  gboolean cache;
 
   if (!language && context)
     language = pango_context_get_language (context);
   
   fontset_hash = pango_fc_get_fontset_hash (fcfontmap, language);
-  key.desc = pango_font_description_copy_static (desc);
-  pango_font_description_unset_fields (key.desc, PANGO_FONT_MASK_SIZE);
-  
-  cache = pango_fc_font_map_get_rendered_size (fcfontmap, context, desc, &key.x_size, &key.y_size);
-  if (cache_out)
-    *cache_out = cache;
-  
-  patterns = g_hash_table_lookup (fontset_hash, &key);
+  patterns = g_hash_table_lookup (fontset_hash, desc);
 
   if (patterns == NULL)
     {
@@ -930,11 +820,9 @@ pango_fc_font_map_get_patterns (PangoFontMap               *fontmap,
       FcFontSetSortDestroy (font_patterns);
 
       g_hash_table_insert (fontset_hash,
-			   fontset_hash_key_copy (&key),
+			   pango_font_description_copy (desc),
 			   patterns);
     }
-
-  pango_font_description_free (key.desc);
 
   return patterns;
 }
@@ -944,7 +832,7 @@ pango_fc_font_map_load_font (PangoFontMap               *fontmap,
 			     PangoContext               *context,
 			     const PangoFontDescription *description)
 {
-  PangoFcPatternSet *patterns = pango_fc_font_map_get_patterns (fontmap, context, description, NULL, NULL);
+  PangoFcPatternSet *patterns = pango_fc_font_map_get_patterns (fontmap, context, description, NULL);
   if (!patterns)
     return NULL;
 
@@ -1015,27 +903,28 @@ pango_fc_font_map_load_fontset (PangoFontMap                 *fontmap,
 				const PangoFontDescription   *desc,
 				PangoLanguage                *language)
 {
-  gboolean cache;
-  PangoFcPatternSet *patterns = pango_fc_font_map_get_patterns (fontmap, context, desc, language, &cache);
+  PangoFcPatternSet *patterns = pango_fc_font_map_get_patterns (fontmap, context, desc, language);
   PangoFcFontMap *fcfontmap = PANGO_FC_FONT_MAP (fontmap);
   PangoFcFontMapPrivate *priv = fcfontmap->priv;
   PangoFontset *result;
+  const PangoMatrix *matrix;
   int i;
   
   if (!patterns)
     return NULL;
 
-  if (!patterns->fontset || !cache)
+  if (context)
+    matrix = pango_context_get_matrix (context);
+  else
+    matrix = NULL;
+
+  /* We never cache fontsets when a transformation is in place
+   */
+  if (!patterns->fontset || matrix)
     {
       PangoFontsetSimple *simple;
-      const PangoMatrix *matrix;
       simple = pango_fontset_simple_new (language);
       result = PANGO_FONTSET (simple);
-
-      if (context)
-	matrix = pango_context_get_matrix (context);
-      else
-	matrix = NULL;
       
       for (i = 0; i < patterns->n_patterns; i++)
 	{
@@ -1046,7 +935,7 @@ pango_fc_font_map_load_fontset (PangoFontMap                 *fontmap,
 	    pango_fontset_simple_append (simple, font);
 	}
 
-      if (cache)
+      if (!matrix)
 	{
 	  patterns->fontset = PANGO_FONTSET (simple);
 	  g_object_add_weak_pointer (G_OBJECT (patterns->fontset),
@@ -1056,7 +945,7 @@ pango_fc_font_map_load_fontset (PangoFontMap                 *fontmap,
   else
     result = g_object_ref (patterns->fontset);
   
-  if (cache &&
+  if (!matrix &&
       (!patterns->cache_link ||
        patterns->cache_link != priv->fontset_cache->head))
     pango_fc_font_map_cache_fontset (fcfontmap, patterns);
