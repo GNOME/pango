@@ -1,3 +1,11 @@
+Tue Apr 15 11:49:39 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/opentype/ftxg{sub/pos}.c: When loading
+	in Load_Chain{Sub,Pos}ClassRule, the limit we
+	have only applies to the input ClassDef table.
+	Fixes problem with Arial Unicode. Much help from 
+	Noah Levitt in tracing this down.
+
 Tue Apr 15 09:19:21 2003  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/fonts.c (pango_font_description_set_family): 
