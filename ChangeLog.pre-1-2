@@ -1,3 +1,8 @@
+2000-11-12  Robert Brady  <robert@suse.co.uk>
+
+	* pango/pango-indic.c (pango_shift_vowels): Don't corrupt the 
+	array.
+
 2000-11-12  Havoc Pennington  <hp@pobox.com>
 
 	* pango/pango-layout.c (pango_layout_get_text): Add accessor to 

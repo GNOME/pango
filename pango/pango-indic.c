@@ -43,15 +43,16 @@ pango_indic_shift_vowels (PangoIndicScript *script,
 {
   int length = end - chars;
   int i, j;
-    
+  
   for (i = 1 ; i < length ; i++)
     {
       if (script->is_prefixing_vowel (chars[i]))
         {
            gunichar tmp = chars[i];
-   
-           for (j = 1; j < i; j++)
-             chars[j + 1] = chars[j];
+           
+           for (j = i; j > 0; j--) {
+             chars[j] = chars[j - 1];
+           }
 
            chars[0] = tmp;
         }
