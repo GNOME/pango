@@ -41,6 +41,7 @@ lib_LTLIBRARIES = libpango-1.0.la
 
 libpango_1_0_la_LDFLAGS = -version-info $(LT_VERSION_INFO) $(no_undefined)
 libpango_1_0_la_LIBADD = $(GLIB_LIBS) mini-fribidi/libmini-fribidi.la
+libpango_1_0_la_DEPENDENCIES = mini-fribidi/libmini-fribidi.la
 
 if OS_WIN32
 libpango_1_0_la_LDFLAGS += -export-symbols pango.def
@@ -175,7 +176,7 @@ endif
 
 libpangoft2_1_0_la_LDFLAGS = -version-info $(LT_VERSION_INFO) $(no_undefined)
 libpangoft2_1_0_la_LIBADD = opentype/libpango-ot.la libpango-$(PANGO_API_VERSION).la $(INCLUDED_FT2_MODULES) $(FREETYPE_LIBS) $(GLIB_LIBS)
-libpangoft2_1_0_la_DEPENDENCIES = libpango-$(PANGO_API_VERSION).la $(INCLUDED_FT2_MODULES)
+libpangoft2_1_0_la_DEPENDENCIES = opentype/libpango-ot.la libpango-$(PANGO_API_VERSION).la $(INCLUDED_FT2_MODULES)
 
 libpangoft2_1_0_la_SOURCES =   	\
 	pangofc-font.c	   	\
