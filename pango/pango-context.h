@@ -62,16 +62,15 @@ void          pango_context_list_families (PangoContext                 *context
 PangoFont *   pango_context_load_font     (PangoContext                 *context,
 					   const PangoFontDescription   *desc);
 
-void                  pango_context_set_font_description (PangoContext               *context,
-							  const PangoFontDescription *desc);
-PangoFontDescription *pango_context_get_font_description (PangoContext               *context);
-char *                pango_context_get_lang             (PangoContext               *context);
-void                  pango_context_set_lang             (PangoContext               *context,
-							  const char                 *lang);
-void                  pango_context_set_base_dir         (PangoContext               *context,
-							  PangoDirection              direction);
-PangoDirection        pango_context_get_base_dir         (PangoContext               *context);
-
+void                      pango_context_set_font_description (PangoContext               *context,
+							      const PangoFontDescription *desc);
+PangoFontDescription *    pango_context_get_font_description (PangoContext               *context);
+PangoLanguage            *pango_context_get_language         (PangoContext               *context);
+void                      pango_context_set_language         (PangoContext               *context,
+							      PangoLanguage              *language);
+void                      pango_context_set_base_dir         (PangoContext               *context,
+							      PangoDirection              direction);
+PangoDirection            pango_context_get_base_dir         (PangoContext               *context);
 
 /* Break a string of Unicode characters into segments with
  * consistent shaping/language engine and bidrectional level.

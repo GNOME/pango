@@ -33,6 +33,9 @@ typedef struct _PangoEngineShape PangoEngineShape;
 typedef struct _PangoFont PangoFont;
 typedef struct _PangoRectangle PangoRectangle;
 
+/* Dummy typedef - internally it's a 'const char *' */
+typedef struct _PangoLanguage PangoLanguage;
+
 /* A index of a glyph into a font. Rendering system dependent
  */
 typedef guint32 PangoGlyph;
@@ -71,14 +74,11 @@ typedef enum {
   PANGO_DIRECTION_TTB_RTL
 } PangoDirection;
 
-/* Language tagging information
- */
-struct _PangoLangRange
-{
-  gint start;
-  gint length;
-  gchar *lang;
-};
+PangoLanguage *pango_language_from_string (const char *language);
+#define pango_language_to_string(language) ((const char *)language)
+
+gboolean      pango_language_matches  (PangoLanguage *language,
+				       const char *range_list);
 
 #ifdef __cplusplus
 extern "C" {

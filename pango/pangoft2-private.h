@@ -110,10 +110,10 @@ struct _PangoFT2FontEntry
   GSList *cached_fonts;
 };
 
-PangoMap      *pango_ft2_get_shaper_map          (const char        *lang);
+PangoMap      *pango_ft2_get_shaper_map          (PangoLanguage     *language);
 PangoCoverage *pango_ft2_font_entry_get_coverage (PangoFT2FontEntry *entry,
 						  PangoFont         *font,
-						  const char        *lang);
+						  PangoLanguage     *language);
 void           pango_ft2_font_entry_remove       (PangoFT2FontEntry *entry,
 						  PangoFont         *font);
 FT_Library    *pango_ft2_fontmap_get_library     (PangoFontMap      *fontmap);

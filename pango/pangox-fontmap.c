@@ -1349,7 +1349,7 @@ free_coverages_foreach (gpointer key,
 PangoCoverage *
 pango_x_font_entry_get_coverage (PangoXFontEntry *entry,
 				 PangoFont       *font,
-				 const char      *lang)
+				 PangoLanguage   *language)
 {
   PangoXFont *xfont;
   PangoXFontMap *xfontmap = NULL; /* Quiet gcc */
@@ -1370,7 +1370,9 @@ pango_x_font_entry_get_coverage (PangoXFontEntry *entry,
       xfontmap = (PangoXFontMap *)pango_x_font_map_for_display (xfont->display);
       if (entry->xlfd)
 	{
-	  char *str = g_strconcat (lang ? lang : "*", "|", entry->xlfd, NULL);
+	  const char *lang_str = language ? pango_language_to_string (language) : "*";
+	  
+	  char *str = g_strconcat (lang_str, "|", entry->xlfd, NULL);
 	  result = pango_x_get_cached_coverage (xfontmap, str, &atom);
 	  g_free (str);
 	}
@@ -1388,7 +1390,7 @@ pango_x_font_entry_get_coverage (PangoXFontEntry *entry,
       
       coverage_hash = g_hash_table_new (g_str_hash, g_str_equal);
       
-      shape_map = pango_x_get_shaper_map (lang);
+      shape_map = pango_x_get_shaper_map (language);
       
       for (ch = 0; ch < 65536; ch++)
 	{
@@ -1399,7 +1401,7 @@ pango_x_font_entry_get_coverage (PangoXFontEntry *entry,
 	      if (!coverage)
 		{
 		  PangoEngineShape *engine = (PangoEngineShape *)pango_map_get_engine (shape_map, ch);
-		  coverage = engine->get_coverage (font, lang);
+		  coverage = engine->get_coverage (font, language);
 		  g_hash_table_insert (coverage_hash, map_entry->info->id, coverage);
 		}
 	  

@@ -36,8 +36,10 @@ struct _PangoAnalysis
 {
   PangoEngineShape *shape_engine;
   PangoEngineLang  *lang_engine;
-  PangoFont        *font;
+  PangoFont *font;
   guint8 level;
+  PangoLanguage *language;
+  GSList *extra_attrs;
 };
 
 struct _PangoItem
@@ -45,7 +47,6 @@ struct _PangoItem
   gint offset;
   gint length;
   gint num_chars;
-  GSList *extra_attrs;
   PangoAnalysis analysis;
 };
 

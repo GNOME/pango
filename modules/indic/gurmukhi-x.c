@@ -67,7 +67,7 @@ static PangoEngineRange pango_indic_range[] =
 SCRIPT_ENGINE_DEFINITION
 
 static PangoCoverage *
-pango_indic_engine_get_coverage (PangoFont * font, const char *lang)
+pango_indic_engine_get_coverage (PangoFont * font, PangoLanguage *lang)
 {
   gunichar i;
   PangoCoverage *result = pango_coverage_new ();

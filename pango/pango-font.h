@@ -139,16 +139,16 @@ struct _PangoFontClass
   
   PangoFontDescription *(*describe)           (PangoFont      *font);
   PangoCoverage *       (*get_coverage)       (PangoFont      *font,
-					      const char      *lang);
+					       PangoLanguage  *lang);
   PangoEngineShape *    (*find_shaper)        (PangoFont      *font,
-					       const char     *lang,
+					       PangoLanguage  *lang,
 					       guint32         ch);
   void                  (*get_glyph_extents)  (PangoFont      *font,
 					       PangoGlyph      glyph,
 					       PangoRectangle *ink_rect,
 					       PangoRectangle *logical_rect);
   void                  (*get_metrics)        (PangoFont        *font,
-					       const gchar      *lang,
+					       PangoLanguage    *language,
 					       PangoFontMetrics *metrics);
 };
 
@@ -156,12 +156,12 @@ GType                 pango_font_get_type          (void) G_GNUC_CONST;
 
 PangoFontDescription *pango_font_describe          (PangoFont        *font);
 PangoCoverage *       pango_font_get_coverage      (PangoFont        *font,
-						    const char       *lang);
+						    PangoLanguage    *language);
 PangoEngineShape *    pango_font_find_shaper       (PangoFont        *font,
-						    const char       *lang,
+						    PangoLanguage    *language,
 						    guint32           ch);
 void                  pango_font_get_metrics       (PangoFont        *font,
-						    const gchar      *lang,
+						    PangoLanguage    *language,
 						    PangoFontMetrics *metrics);
 void                  pango_font_get_glyph_extents (PangoFont        *font,
 						    PangoGlyph        glyph,

@@ -46,7 +46,7 @@ struct _PangoIncludedModule
   void (*unload) (PangoEngine *engine);
 };
 
-PangoMap *     pango_find_map        (const char          *lang,
+PangoMap *     pango_find_map        (PangoLanguage       *language,
 				      guint                engine_type_id,
 				      guint                render_type_id);
 PangoMapEntry *pango_map_get_entry   (PangoMap            *map,

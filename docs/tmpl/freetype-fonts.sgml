@@ -144,8 +144,10 @@ FreeType Fonts and Rendering
 </para>
 
 @font: 
-@lang: 
+@language: 
 @Returns: 
+<!-- # Unused Parameters # -->
+@lang: 
 
 
 <!-- ##### FUNCTION pango_ft2_get_face ##### -->

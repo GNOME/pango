@@ -83,7 +83,7 @@ struct _PangoEngineShape
 			PangoAnalysis    *analysis,
 			PangoGlyphString *glyphs);
   PangoCoverage *(*get_coverage) (PangoFont        *font,
-				  const char       *lang);
+				  PangoLanguage    *language);
 };
 
 /* A module should export the following functions */

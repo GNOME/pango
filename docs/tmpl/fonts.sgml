@@ -245,10 +245,11 @@ a font. It contains the following members:
 </para>
 
 @font: 
-@lang: 
+@language: 
 @ch: 
 @Returns: 
 <!-- # Unused Parameters # -->
+@lang: 
 @char: 
 
 
@@ -267,8 +268,10 @@ a font. It contains the following members:
 </para>
 
 @font: 
-@lang: 
+@language: 
 @Returns: 
+<!-- # Unused Parameters # -->
+@lang: 
 
 
 <!-- ##### FUNCTION pango_font_get_glyph_extents ##### -->
@@ -288,8 +291,10 @@ a font. It contains the following members:
 </para>
 
 @font: 
-@lang: 
+@language: 
 @metrics: 
+<!-- # Unused Parameters # -->
+@lang: 
 
 
 <!-- ##### MACRO PANGO_TYPE_FONT ##### -->

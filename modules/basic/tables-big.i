@@ -42,6 +42,13 @@ Charset charsets[] = {
   { 18, "ISO-10646",    "iso10646-1",      conv_ucs4 }
 };
 
+CharsetOrdering charset_orderings[] = {
+	{ "zh-cn", { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 16, 18, 15, 17 } },
+	{ "zh-tw", { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 16, 18, 15, 17 } },
+	{ "ja", { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 18, 16, 17 } },
+	{ NULL, { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 18, 15, 16, 17 } },
+};
+
 const guint32 char_mask_map[] = {
   0,
   ENC_ISO_8859_10|ENC_ISO_8859_1|ENC_ISO_8859_13|ENC_ISO_8859_14|ENC_ISO_8859_15|ENC_ISO_8859_2|ENC_ISO_8859_3|ENC_ISO_8859_4|ENC_ISO_8859_5|ENC_ISO_8859_6|ENC_ISO_8859_7|ENC_ISO_8859_8|ENC_ISO_8859_9|ENC_KOI8_R,

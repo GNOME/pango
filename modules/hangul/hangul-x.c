@@ -661,7 +661,7 @@ hangul_engine_shape (PangoFont        *font,
 
 static PangoCoverage *
 hangul_engine_get_coverage (PangoFont  *font,
-			     const char *lang)
+			     PangoLanguage *lang)
 {
   PangoCoverage *result = pango_coverage_new ();
   PangoXSubfont subfont;

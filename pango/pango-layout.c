@@ -2274,20 +2274,29 @@ ensure_tab_width (PangoLayout *layout)
       PangoAttrList *tmp_attrs;
       PangoAttrIterator *iter;
       PangoFontDescription font_desc;
+      PangoLanguage *language;
       int i;
 
       layout_attrs = pango_layout_get_effective_attributes (layout);
       iter = pango_attr_list_get_iterator (layout_attrs);
       pango_attr_iterator_get_font (iter, pango_context_get_font_description (layout->context),
-				    &font_desc, NULL);
+				    &font_desc, &language, NULL);
       
       tmp_attrs = pango_attr_list_new ();
+
       attr = pango_attr_font_desc_new (&font_desc);
       attr->start_index = 0;
       attr->end_index = 1;
-	  
       pango_attr_list_insert_before (tmp_attrs, attr);
       
+      if (language)
+	{
+	  attr = pango_attr_language_new (language);
+	  attr->start_index = 0;
+	  attr->end_index = 1;
+	  pango_attr_list_insert_before (tmp_attrs, attr);
+	}
+	  
       items = pango_itemize (layout->context, " ", 0, 1, tmp_attrs, NULL);
 
       pango_attr_iterator_destroy (iter);
@@ -3345,6 +3354,7 @@ pango_layout_line_get_empty_extents (PangoLayoutLine *line,
 		  pango_attr_iterator_get_font (iter,
 						base_font_desc,
 						&font_desc,
+						NULL,
 						NULL);
 		  break;
 		}
@@ -3365,9 +3375,9 @@ pango_layout_line_get_empty_extents (PangoLayoutLine *line,
       font = pango_context_load_font (layout->context, &font_desc);
       if (font)
 	{
-	  char *lang = pango_context_get_lang (layout->context);
-	  pango_font_get_metrics (font, lang, &metrics);
-	  g_free (lang);
+	  pango_font_get_metrics (font,
+				  pango_context_get_language (layout->context),
+				  &metrics);
 
 	  logical_rect->y = - metrics.ascent;
 	  logical_rect->height = metrics.ascent + metrics.descent;
@@ -3701,7 +3711,7 @@ pango_layout_get_item_properties (PangoItem      *item,
 				  PangoRectangle *logical_rect,
 				  gboolean       *shape_set)
 {
-  GSList *tmp_list = item->extra_attrs;
+  GSList *tmp_list = item->analysis.extra_attrs;
 
   if (shape_set)
     *shape_set = FALSE;

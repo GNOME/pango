@@ -48,7 +48,7 @@ typedef struct _PangoFT2ContextInfo PangoFT2ContextInfo;
 
 struct _PangoFT2MetricsInfo
 {
-  const char *lang;
+  PangoLanguage *language;
   PangoFontMetrics metrics;
 };
 
@@ -67,10 +67,10 @@ static void pango_ft2_font_finalize   (GObject         *object);
 static PangoFontDescription *pango_ft2_font_describe          (PangoFont            *font);
 
 static PangoCoverage *       pango_ft2_font_get_coverage      (PangoFont            *font,
-							       const char           *lang);
+							       PangoLanguage        *language);
 
 static PangoEngineShape *    pango_ft2_font_find_shaper       (PangoFont            *font,
-							       const char           *lang,
+							       PangoLanguage        *language,
 							       guint32               ch);
 
 static void                  pango_ft2_font_get_glyph_extents (PangoFont            *font,
@@ -79,7 +79,7 @@ static void                  pango_ft2_font_get_glyph_extents (PangoFont        
 							       PangoRectangle       *logical_rect);
 
 static void                  pango_ft2_font_get_metrics       (PangoFont            *font,
-							       const gchar          *lang,
+							       PangoLanguage        *language,
 							       PangoFontMetrics     *metrics);
   
 static void                  pango_ft2_get_item_properties    (PangoItem      	    *item,
@@ -553,7 +553,7 @@ get_font_metrics_from_subfonts (PangoFont        *font,
  */
 static void
 get_font_metrics_from_string (PangoFont        *font,
-			      const char       *lang,
+			      PangoLanguage    *language,
 			      const char       *str,
 			      PangoFontMetrics *metrics)
 {
@@ -586,7 +586,7 @@ get_font_metrics_from_string (PangoFont        *font,
       gunichar wc = g_utf8_get_char (p);
       p = g_utf8_next_char (p);
 	  
-      shaper = pango_font_find_shaper (font, lang, wc);
+      shaper = pango_font_find_shaper (font, language, wc);
       if (p > start &&
 	  (shaper != last_shaper || last_level != embedding_levels[i]))
 	{
@@ -670,36 +670,38 @@ LangInfo lang_texts[] = {
 
 static void
 pango_ft2_font_get_metrics (PangoFont        *font,
-			    const gchar      *lang,
+			    PangoLanguage    *language,
 			    PangoFontMetrics *metrics)
 {
-  PangoFT2MetricsInfo *info;
+  PangoFT2MetricsInfo *info = NULL; /* Quiet GCC */
   PangoFT2Font *ft2font = (PangoFT2Font *)font;
   GSList *tmp_list;
       
-  const char *lookup_lang;
+  PangoLanguage *lookup_lang;
   const char *str;
 
-  if (lang)
+  if (language)
     {
-      LangInfo *lang_info = bsearch (lang, lang_texts,
+      const char *lang_str = pango_language_to_string (language);
+      
+      LangInfo *lang_info = bsearch (lang_str, lang_texts,
 				     G_N_ELEMENTS (lang_texts), sizeof (LangInfo),
 				     lang_info_compare);
 
       if (lang_info)
 	{
-	  lookup_lang = lang_info->lang;
+	  lookup_lang = pango_language_from_string (lang_info->lang);
 	  str = lang_info->str;
 	}
       else
 	{
-	  lookup_lang = "UNKNOWN";
+	  lookup_lang = pango_language_from_string ("UNKNOWN");
 	  str = "French (Français)";     /* Assume iso-8859-1 */
 	}
     }
   else
     {
-      lookup_lang = "NONE";
+      lookup_lang = pango_language_from_string ("NONE");
 
       /* Complete junk
        */
@@ -711,7 +713,7 @@ pango_ft2_font_get_metrics (PangoFont        *font,
     {
       info = tmp_list->data;
       
-      if (info->lang == lookup_lang)        /* We _don't_ need strcmp */
+      if (info->language == lookup_lang)        /* We _don't_ need strcmp */
 	break;
 
       tmp_list = tmp_list->next;
@@ -720,11 +722,11 @@ pango_ft2_font_get_metrics (PangoFont        *font,
   if (!tmp_list)
     {
       info = g_new (PangoFT2MetricsInfo, 1);
-      info->lang = lookup_lang;
+      info->language = lookup_lang;
 
       ft2font->metrics_by_lang = g_slist_prepend (ft2font->metrics_by_lang, info);
       
-      get_font_metrics_from_string (font, lang, str, &info->metrics);
+      get_font_metrics_from_string (font, language, str, &info->metrics);
     }
       
   *metrics = info->metrics;
@@ -749,8 +751,8 @@ pango_ft2_n_subfonts (PangoFont *font)
 }
 
 PangoCoverage *
-pango_ft2_get_coverage (PangoFont  *font,
-			const char *lang)
+pango_ft2_get_coverage (PangoFont     *font,
+			PangoLanguage *language)
 {
   PangoFT2Font *ft2font = (PangoFT2Font *)font;
   PangoCoverage *result = pango_coverage_new ();
@@ -878,7 +880,7 @@ pango_ft2_font_describe (PangoFont *font)
 }
 
 PangoMap *
-pango_ft2_get_shaper_map (const char *lang)
+pango_ft2_get_shaper_map (PangoLanguage *language)
 {
   static guint engine_type_id = 0;
   static guint render_type_id = 0;
@@ -889,26 +891,26 @@ pango_ft2_get_shaper_map (const char *lang)
       render_type_id = g_quark_from_static_string (PANGO_RENDER_TYPE_FT2);
     }
   
-  return pango_find_map (lang, engine_type_id, render_type_id);
+  return pango_find_map (language, engine_type_id, render_type_id);
 }
 
 static PangoCoverage *
-pango_ft2_font_get_coverage (PangoFont  *font,
-			     const char *lang)
+pango_ft2_font_get_coverage (PangoFont     *font,
+			     PangoLanguage *language)
 {
   PangoFT2Font *ft2font = (PangoFT2Font *)font;
 
-  return pango_ft2_font_entry_get_coverage (ft2font->entry, font, lang);
+  return pango_ft2_font_entry_get_coverage (ft2font->entry, font, language);
 }
 
 static PangoEngineShape *
-pango_ft2_font_find_shaper (PangoFont   *font,
-			    const gchar *lang,
-			    guint32      ch)
+pango_ft2_font_find_shaper (PangoFont     *font,
+			    PangoLanguage *language,
+			    guint32        ch)
 {
   PangoMap *shape_map = NULL;
 
-  shape_map = pango_ft2_get_shaper_map (lang);
+  shape_map = pango_ft2_get_shaper_map (language);
   return (PangoEngineShape *)pango_map_get_engine (shape_map, ch);
 }
 
@@ -1107,7 +1109,7 @@ pango_ft2_get_item_properties (PangoItem      *item,
 			       PangoAttrColor *bg_color,
 			       gboolean       *bg_set)
 {
-  GSList *tmp_list = item->extra_attrs;
+  GSList *tmp_list = item->analysis.extra_attrs;
 
   if (fg_set)
     *fg_set = FALSE;

@@ -116,7 +116,7 @@ struct _PangoXSubfontInfo
 
 struct _PangoXMetricsInfo
 {
-  const char *lang;
+  PangoLanguage *language;
   PangoFontMetrics metrics;
 };
 
@@ -158,16 +158,16 @@ static void pango_x_font_finalize   (GObject         *object);
 
 static PangoFontDescription *pango_x_font_describe          (PangoFont        *font);
 static PangoCoverage *       pango_x_font_get_coverage      (PangoFont        *font,
-							     const char       *lang);
+							     PangoLanguage    *language);
 static PangoEngineShape *    pango_x_font_find_shaper       (PangoFont        *font,
-							     const char       *lang,
+							     PangoLanguage    *language,
 							     guint32           ch);
 static void                  pango_x_font_get_glyph_extents (PangoFont        *font,
 							     PangoGlyph        glyph,
 							     PangoRectangle   *ink_rect,
 							     PangoRectangle   *logical_rect);
 static void                  pango_x_font_get_metrics       (PangoFont        *font,
-							     const gchar      *lang,
+							     PangoLanguage    *language,
 							     PangoFontMetrics *metrics);
 
 static PangoXSubfontInfo * pango_x_find_subfont    (PangoFont          *font,
@@ -770,7 +770,7 @@ get_font_metrics_from_subfonts (PangoFont        *font,
  */
 static void
 get_font_metrics_from_string (PangoFont        *font,
-			      const char       *lang,
+			      PangoLanguage    *language,
 			      const char       *str,
 			      PangoFontMetrics *metrics)
 {
@@ -806,7 +806,7 @@ get_font_metrics_from_string (PangoFont        *font,
       if (*p)
 	{
 	  wc = g_utf8_get_char (p);
-	  shaper = pango_font_find_shaper (font, lang, wc);
+	  shaper = pango_font_find_shaper (font, language, wc);
 	}
       else
 	{
@@ -824,7 +824,9 @@ get_font_metrics_from_string (PangoFont        *font,
 	  analysis.shape_engine = last_shaper;
 	  analysis.lang_engine = NULL;
 	  analysis.font = font;
+	  analysis.language = language;
 	  analysis.level = last_level;
+	  analysis.extra_attrs = NULL;
 	  
 	  pango_shape (start, p - start, &analysis, glyph_str);
 
@@ -900,36 +902,37 @@ LangInfo lang_texts[] = {
 
 static void
 pango_x_font_get_metrics (PangoFont        *font,
-			  const gchar      *lang,
+			  PangoLanguage    *language,
 			  PangoFontMetrics *metrics)
 {
   PangoXMetricsInfo *info = NULL; /* Quiet gcc */
   PangoXFont *xfont = (PangoXFont *)font;
   GSList *tmp_list;
+  const char *lang_str = pango_language_to_string (language);
       
-  const char *lookup_lang;
+  PangoLanguage *lookup_lang;
   const char *str;
 
-  if (lang)
+  if (language)
     {
-      LangInfo *lang_info = bsearch (lang, lang_texts,
+      LangInfo *lang_info = bsearch (lang_str, lang_texts,
 				     G_N_ELEMENTS (lang_texts), sizeof (LangInfo),
 				     lang_info_compare);
 
       if (lang_info)
 	{
-	  lookup_lang = lang_info->lang;
+	  lookup_lang = pango_language_from_string (lang_info->lang);
 	  str = lang_info->str;
 	}
       else
 	{
-	  lookup_lang = "UNKNOWN";
+	  lookup_lang = pango_language_from_string ("UNKNOWN");
 	  str = "French (Français)";     /* Assume iso-8859-1 */
 	}
     }
   else
     {
-      lookup_lang = "NONE";
+      lookup_lang = pango_language_from_string ("NONE");
 
       /* Complete junk
        */
@@ -941,7 +944,7 @@ pango_x_font_get_metrics (PangoFont        *font,
     {
       info = tmp_list->data;
       
-      if (info->lang == lookup_lang)        /* We _don't_ need strcmp */
+      if (info->language == lookup_lang)    /* We _don't_ need strcmp */
 	break;
 
       tmp_list = tmp_list->next;
@@ -954,7 +957,7 @@ pango_x_font_get_metrics (PangoFont        *font,
       PangoContext *context;
       
       info = g_new (PangoXMetricsInfo, 1);
-      info->lang = lookup_lang;
+      info->language = lookup_lang;
 
       xfont->metrics_by_lang = g_slist_prepend (xfont->metrics_by_lang, info);
       
@@ -965,7 +968,7 @@ pango_x_font_get_metrics (PangoFont        *font,
        * chars in "0123456789"
        */
       context = pango_x_get_context (pango_x_fontmap_get_display (xfont->fontmap));
-      pango_context_set_lang (context, lookup_lang);
+      pango_context_set_language (context, lookup_lang);
       layout = pango_layout_new (context);
       pango_layout_set_text (layout, "0123456789", -1);
 
@@ -1326,7 +1329,7 @@ pango_x_font_describe (PangoFont *font)
 }
 
 PangoMap *
-pango_x_get_shaper_map (const char *lang)
+pango_x_get_shaper_map (PangoLanguage *language)
 {
   static guint engine_type_id = 0;
   static guint render_type_id = 0;
@@ -1337,26 +1340,26 @@ pango_x_get_shaper_map (const char *lang)
       render_type_id = g_quark_from_static_string (PANGO_RENDER_TYPE_X);
     }
   
-  return pango_find_map (lang, engine_type_id, render_type_id);
+  return pango_find_map (language, engine_type_id, render_type_id);
 }
 
 static PangoCoverage *
-pango_x_font_get_coverage (PangoFont  *font,
-			   const char *lang)
+pango_x_font_get_coverage (PangoFont     *font,
+			   PangoLanguage *language)
 {
   PangoXFont *xfont = (PangoXFont *)font;
 
-  return pango_x_font_entry_get_coverage (xfont->entry, font, lang);
+  return pango_x_font_entry_get_coverage (xfont->entry, font, language);
 }
 
 static PangoEngineShape *
-pango_x_font_find_shaper (PangoFont   *font,
-			  const gchar *lang,
-			  guint32      ch)
+pango_x_font_find_shaper (PangoFont     *font,
+			  PangoLanguage *language,
+			  guint32        ch)
 {
   PangoMap *shape_map = NULL;
 
-  shape_map = pango_x_get_shaper_map (lang);
+  shape_map = pango_x_get_shaper_map (language);
   return (PangoEngineShape *)pango_map_get_engine (shape_map, ch);
 }
 
@@ -1675,7 +1678,7 @@ pango_x_get_item_properties (PangoItem      *item,
 			     PangoAttrColor *bg_color,
 			     gboolean       *bg_set)
 {
-  GSList *tmp_list = item->extra_attrs;
+  GSList *tmp_list = item->analysis.extra_attrs;
 
   if (fg_set)
     *fg_set = FALSE;

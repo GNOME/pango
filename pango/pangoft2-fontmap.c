@@ -750,14 +750,13 @@ pango_ft2_font_map_read_aliases (PangoFT2FontMap *ft2fontmap)
 {
   char **files;
   char *files_str = pango_config_key_get ("PangoFT2/AliasFiles");
-  char *home;
   char *tmp_str;
   int n;
   gboolean read_aliasfile;
 
   if (!files_str)
     {
-      home = g_get_home_dir ();
+      const char *home = g_get_home_dir ();
       if (home && *home)
 	files_str = g_strconcat
 	  (home,
@@ -955,7 +954,7 @@ free_coverages_foreach (gpointer key,
 PangoCoverage *
 pango_ft2_font_entry_get_coverage (PangoFT2FontEntry *entry,
 				   PangoFont         *font,
-				   const char        *lang)
+				   PangoLanguage     *language)
 {
   guint32 ch;
   PangoMap *shape_map;
@@ -984,14 +983,14 @@ pango_ft2_font_entry_get_coverage (PangoFT2FontEntry *entry,
 				 G_DIR_SEPARATOR_S "cache.ft2" G_DIR_SEPARATOR_S,
 				 font_as_filename,
 				 ".",
-				 lang ? lang : "",
+				 language ? pango_language_to_string (language) : "",
 				 NULL);
   g_free (font_as_filename);
   pango_font_description_free (description);
 
   PING (("trying to load %s", cache_file_name));
   result = NULL;
-  if (g_file_get_contents (cache_file_name, &buf, &buflen, NULL))
+  if (g_file_get_contents (cache_file_name, (char **)&buf, &buflen, NULL))
     {
       result = pango_coverage_from_bytes (buf, buflen);
       g_free (buf);
@@ -1003,7 +1002,7 @@ pango_ft2_font_entry_get_coverage (PangoFT2FontEntry *entry,
 
       coverage_hash = g_hash_table_new (g_str_hash, g_str_equal);
   
-      shape_map = pango_ft2_get_shaper_map (lang);
+      shape_map = pango_ft2_get_shaper_map (language);
 
       for (ch = 0; ch < 65536; ch++)
 	{
@@ -1014,7 +1013,7 @@ pango_ft2_font_entry_get_coverage (PangoFT2FontEntry *entry,
 	      if (!coverage)
 		{
 		  PangoEngineShape *engine = (PangoEngineShape *)pango_map_get_engine (shape_map, ch);
-		  coverage = engine->get_coverage (font, lang);
+		  coverage = engine->get_coverage (font, language);
 		  g_hash_table_insert (coverage_hash, map_entry->info->id, coverage);
 		}
 	      

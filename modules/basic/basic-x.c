@@ -28,7 +28,9 @@
 
 typedef struct _CharRange CharRange;
 typedef struct _Charset Charset;
+typedef struct _CharsetOrdering CharsetOrdering;
 typedef struct _CharCache CharCache;
+typedef struct _CharCachePointer CharCachePointer;
 typedef struct _MaskTable MaskTable;
 
 typedef PangoGlyph (*ConvFunc) (CharCache   *cache,
@@ -45,6 +47,12 @@ struct _Charset
   char *id;
   char *x_charset;
   ConvFunc conv_func;
+};
+
+struct _CharsetOrdering
+{
+  const char *langs;
+  char charsets[MAX_CHARSETS];
 };
 
 struct _CharRange
@@ -64,8 +72,16 @@ struct _MaskTable
 
 struct _CharCache 
 {
+  guint ref_count;
+  CharsetOrdering *ordering;
   MaskTable *mask_tables[256];
   GIConv converters[MAX_CHARSETS];
+};
+
+struct _CharCachePointer
+{
+  PangoLanguage *lang;
+  CharCache *cache;
 };
 
 static PangoGlyph conv_8bit (CharCache  *cache,
@@ -112,17 +128,37 @@ static gint n_script_engines = G_N_ELEMENTS (script_engines);
  * X window system script engine portion
  */
 
+/* Structure of our cache:
+ *
+ * PangoFont => CharCachePointer  ===\
+ *                    |               \
+ *              CharCachePointer  ======> CharCache => CharsetOrdering
+ *                    |                       |======> MaskTable[0]    => {subfonts,charset}[n_subfonts], 
+ *                    |                       |======> MaskTable[1]    => {subfonts,charset}[n_subfonts], 
+ *                    |                       \======> MaskTable[...]  => {subfonts,charset}[n_subfonts]
+ *                    |
+ *              CharCachePointer  ======> CharCache => CharsetOrdering
+ *                                            |======> MaskTable[0]    => {subfonts,charset}[n_subfonts], 
+ *                                            |======> MaskTable[1]    => {subfonts,charset}[n_subfonts], 
+ *                                            \======> MaskTable[...]  => {subfonts,charset}[n_subfonts]
+ * 
+ * A CharCache structure caches the lookup of what subfonts can be used for what characters for a pair of a Font
+ * and CharsetOrdering. Multiple language tags can share the same CharsetOrdering - the list of CharCachePointer
+ * structures that is attached to the font as object data provides lookups from language tag to charcache.
+ */
 static CharCache *
-char_cache_new (void)
+char_cache_new (CharsetOrdering *ordering)
 {
   CharCache *result;
   int i;
 
   result = g_new0 (CharCache, 1);
 
+  result->ref_count = 1;
+  result->ordering = ordering;
   for (i=0; i<MAX_CHARSETS; i++)
     result->converters[i] = (GIConv)-1;
-
+  
   return result;
 }
 
@@ -188,10 +224,12 @@ find_char (CharCache *cache, PangoFont *font, gunichar wc, const char *input)
 
       for (i=0; i<G_N_ELEMENTS(charsets); i++)
 	{
-	  if (mask & (1 << i))
+	  int charset_index = cache->ordering->charsets[i];
+	  
+	  if (mask & (1 << charset_index))
 	    {
-	      charset_names[n_charsets] = charsets[i].x_charset;
-	      charsets_map[n_charsets] = &charsets[i];
+	      charset_names[n_charsets] = charsets[charset_index].x_charset;
+	      charsets_map[n_charsets] = &charsets[charset_index];
 	      
 	      n_charsets++;
 	    }
@@ -329,18 +367,89 @@ swap_range (PangoGlyphString *glyphs, int start, int end)
     }
 }
 
+static void
+char_caches_free (GSList *caches)
+{
+  GSList *tmp_list = caches;
+  while (tmp_list)
+    {
+      CharCachePointer *pointer = tmp_list->data;
+      
+      pointer->cache->ref_count--;
+      if (pointer->cache->ref_count == 0)
+	char_cache_free (pointer->cache);
+      g_free (pointer);
+      
+      tmp_list = tmp_list->next;
+    }
+  g_slist_free (caches);
+}
+
+static CharsetOrdering *
+ordering_for_lang (PangoLanguage *lang)
+{
+  int i;
+
+  for (i = 0; i < G_N_ELEMENTS (charset_orderings) - 1; i++)
+    {
+      if (pango_language_matches (lang, charset_orderings[i].langs))
+	return &charset_orderings[i];
+    }
+  
+  return &charset_orderings[i];
+}
+
 static CharCache *
-get_char_cache (PangoFont *font)
+get_char_cache (PangoFont     *font,
+		PangoLanguage *lang)
 {
   GQuark cache_id = g_quark_from_string ("basic-char-cache");
-  
-  CharCache *cache = g_object_get_qdata (G_OBJECT (font), cache_id);
-  if (!cache)
+  CharCache *cache = NULL;
+  CharCachePointer *pointer;
+  CharsetOrdering *ordering;
+  GSList *caches;
+  GSList *tmp_list;
+
+  caches = g_object_get_qdata (G_OBJECT (font), cache_id);
+  tmp_list = caches;
+  while (tmp_list)
     {
-      cache = char_cache_new ();
-      g_object_set_qdata_full (G_OBJECT (font), cache_id, 
-			       cache, (GDestroyNotify)char_cache_free);
+      pointer = tmp_list->data;
+      if (pointer->lang == lang)
+	return pointer->cache;
+
+      tmp_list = tmp_list->next;
     }
+
+  ordering = ordering_for_lang (lang);
+
+  tmp_list = caches;
+  while (tmp_list)
+    {
+      pointer = tmp_list->data;
+      if (pointer->cache->ordering == ordering)
+	{
+	  cache = pointer->cache;
+	  break;
+	}
+
+      tmp_list = tmp_list->next;
+    }
+
+  if (!cache)
+    cache = char_cache_new (ordering);
+  else
+    cache->ref_count++;
+
+  pointer = g_new (CharCachePointer, 1);
+  pointer->lang = lang;
+  pointer->cache = cache;
+
+  caches = g_slist_prepend (caches, pointer);
+  
+  g_object_steal_qdata (G_OBJECT (font), cache_id);
+  g_object_set_qdata_full (G_OBJECT (font), cache_id, 
+			   caches, (GDestroyNotify)char_caches_free);
 
   return cache;
 }
@@ -363,7 +472,7 @@ basic_engine_shape (PangoFont        *font,
   g_return_if_fail (length >= 0);
   g_return_if_fail (analysis != NULL);
 
-  cache = get_char_cache (font);
+  cache = get_char_cache (font, analysis->language);
 
   n_chars = g_utf8_strlen (text, length);
   pango_glyph_string_set_size (glyphs, n_chars);
@@ -451,10 +560,10 @@ basic_engine_shape (PangoFont        *font,
 }
 
 static PangoCoverage *
-basic_engine_get_coverage (PangoFont  *font,
-			   const char *lang)
+basic_engine_get_coverage (PangoFont     *font,
+			   PangoLanguage *lang)
 {
-  CharCache *cache = get_char_cache (font);
+  CharCache *cache = get_char_cache (font, lang);
   PangoCoverage *result = pango_coverage_new ();
   gunichar wc;
 

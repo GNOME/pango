@@ -84,7 +84,7 @@ void pango_find_paragraph_boundary (const gchar *text,
 void pango_get_log_attrs (const char    *text,
                           int            length,
                           int            level,
-                          const char    *language,
+                          PangoLanguage *language,
                           PangoLogAttr  *log_attrs);
 
 /* This is the default break algorithm, used if no language

@@ -98,14 +98,14 @@ GType    pango_x_font_map_get_type   (void);
 PangoXFont *   pango_x_font_new                (PangoFontMap    *fontmap,
 						const char      *spec,
 						int              size);
-PangoMap *     pango_x_get_shaper_map          (const char      *lang);
+PangoMap *     pango_x_get_shaper_map          (PangoLanguage   *language);
 char *         pango_x_make_matching_xlfd      (PangoFontMap    *fontmap,
 						char            *xlfd,
 						const char      *charset,
 						int              size);
 PangoCoverage *pango_x_font_entry_get_coverage (PangoXFontEntry *entry,
 						PangoFont       *font,
-						const char      *lang);
+						PangoLanguage   *language);
 void           pango_x_font_entry_remove       (PangoXFontEntry *entry,
 						PangoFont       *font);
 

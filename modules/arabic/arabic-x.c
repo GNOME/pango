@@ -298,7 +298,7 @@ arabic_engine_shape (PangoFont        *font,
 
 static PangoCoverage *
 arabic_engine_get_coverage (PangoFont  *font,
-                            const char *lang)
+                            PangoLanguage *lang)
 {
     gunichar i;
     PangoCoverage *result = pango_coverage_new ();

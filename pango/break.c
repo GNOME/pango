@@ -1376,7 +1376,7 @@ pango_find_paragraph_boundary (const gchar *text,
  * @text: text to process
  * @length: length in bytes of @text
  * @level: embedding level, or -1 if unknown
- * @language: language code
+ * @language: language tag
  * @log_attrs: array with one PangoLogAttr per character in @text, to be filled in
  *
  * Computes a PangoLogAttr for each character in @text
@@ -1385,7 +1385,7 @@ void
 pango_get_log_attrs (const char    *text,
                      int            length,
                      int            level,
-                     const char    *language,
+                     PangoLanguage *language,
                      PangoLogAttr  *log_attrs)
 {
   int n_chars;

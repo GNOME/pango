@@ -27,6 +27,7 @@
 #include "pango-types.h"
 #include "pango-font.h"
 #include "pango-fontmap.h"
+#include "pango-utils.h"
 
 /**
  * pango_font_description_copy:
@@ -443,25 +444,25 @@ pango_font_describe (PangoFont      *font)
 /**
  * pango_font_get_coverage:
  * @font: a #PangoFont
- * @lang: the language tag (in the form of "en_US")
+ * @lang: the language tag
  * 
  * Compute the coverage map for a given font and language tag.
  * 
  * Return value: a newly allocated #PangoContext object.
  **/
 PangoCoverage *
-pango_font_get_coverage (PangoFont      *font,
-			 const char     *lang)
+pango_font_get_coverage (PangoFont     *font,
+			 PangoLanguage *language)
 {
   g_return_val_if_fail (font != NULL, NULL);
 
-  return PANGO_FONT_GET_CLASS (font)->get_coverage (font, lang);
+  return PANGO_FONT_GET_CLASS (font)->get_coverage (font, language);
 }
 
 /**
  * pango_font_find_shaper:
  * @font: a #PangoFont
- * @lang: the language tag (in the form of "en_US")
+ * @language: the language tag
  * @ch: the ISO-10646 character code.
  * 
  * Find the best matching shaper for a font for a particular
@@ -470,15 +471,15 @@ pango_font_get_coverage (PangoFont      *font,
  * Return value: the best matching shaper.
  **/
 PangoEngineShape *
-pango_font_find_shaper (PangoFont      *font,
-			const char     *lang,
-			guint32         ch)
+pango_font_find_shaper (PangoFont     *font,
+			PangoLanguage *language,
+			guint32        ch)
 {
   PangoEngineShape* shaper;
   
   g_return_val_if_fail (font != NULL, NULL);
 
-  shaper = PANGO_FONT_GET_CLASS (font)->find_shaper (font, lang, ch);
+  shaper = PANGO_FONT_GET_CLASS (font)->find_shaper (font, language, ch);
 
   return shaper;
 }
@@ -514,9 +515,9 @@ pango_font_get_glyph_extents  (PangoFont      *font,
 /**
  * pango_font_get_metrics:
  * @font: a #PangoFont
- * @lang: language tag used to determine which script to get the metrics
- *        for, or %NULL to indicate to get the metrics for the entire
- *        font.
+ * @language: language tag used to determine which script to get the metrics
+ *            for, or %NULL to indicate to get the metrics for the entire
+ *            font.
  * @metrics: Structure to fill in with the metrics of the font
  * 
  * Get overall metric information for a font. Since the metrics may be
@@ -527,10 +528,8 @@ pango_font_get_glyph_extents  (PangoFont      *font,
      
 void
 pango_font_get_metrics (PangoFont        *font,
-			const gchar      *lang,
+			PangoLanguage    *language,
 			PangoFontMetrics *metrics)
 {
-  g_return_if_fail (font != NULL);
-
-  PANGO_FONT_GET_CLASS (font)->get_metrics (font, lang, metrics);
+  PANGO_FONT_GET_CLASS (font)->get_metrics (font, language, metrics);
 }

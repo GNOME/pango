@@ -1,4 +1,4 @@
-/* Pango
+/* pango
  * pango-attributes.c: Attributed text
  *
  * Copyright (C) 2000 Red Hat Software
@@ -21,7 +21,8 @@
 
 #include <string.h>
 
-#include <pango/pango-attributes.h>
+#include "pango-attributes.h"
+#include "pango-utils.h"
 
 struct _PangoAttrList
 {
@@ -159,29 +160,6 @@ pango_attr_string_new (const PangoAttrClass *klass,
 }
 
 /**
- * pango_attr_lang_new:
- * @lang: language tag (in the form "en_US")
- * 
- * Create a new language tag attribute. 
- * 
- * Return value: the new #PangoAttribute.
- **/
-PangoAttribute *
-pango_attr_lang_new (const char *lang)
-{
-  static const PangoAttrClass klass = {
-    PANGO_ATTR_LANG,
-    pango_attr_string_copy,
-    pango_attr_string_destroy,
-    pango_attr_string_equal
-  };
-
-  g_return_val_if_fail (lang != NULL, NULL);
-  
-  return pango_attr_string_new (&klass, lang);
-}
-
-/**
  * pango_attr_family_new:
  * @family: the family or comma separated list of families
  * 
@@ -202,6 +180,55 @@ pango_attr_family_new (const char *family)
   g_return_val_if_fail (family != NULL, NULL);
   
   return pango_attr_string_new (&klass, family);
+}
+
+static PangoAttribute *
+pango_attr_language_copy (const PangoAttribute *attr)
+{
+  return g_memdup (attr, sizeof (PangoAttrLanguage));
+}
+
+static void
+pango_attr_language_destroy (PangoAttribute *attr)
+{
+  g_free (attr);
+}
+
+static gboolean
+pango_attr_language_equal (const PangoAttribute *attr1,
+			   const PangoAttribute *attr2)
+{
+  return ((PangoAttrLanguage *)attr1)->value == ((PangoAttrLanguage *)attr2)->value;
+}
+
+/**
+ * pango_attr_language_new:
+ * @language: language tag
+ * 
+ * Create a new language tag attribute. 
+ * 
+ * Return value: the new #PangoAttribute.
+ **/
+PangoAttribute *
+pango_attr_language_new (PangoLanguage *language)
+{
+  PangoAttrLanguage *result;
+  
+  static const PangoAttrClass klass = {
+    PANGO_ATTR_LANGUAGE,
+    pango_attr_language_copy,
+    pango_attr_language_destroy,
+    pango_attr_language_equal
+  };
+
+  g_return_val_if_fail (language != NULL, NULL);
+  
+  result = g_new (PangoAttrLanguage, 1);
+
+  result->attr.klass = &klass;
+  result->value = language;
+
+  return (PangoAttribute *)result;
 }
 
 static PangoAttribute *
@@ -1346,18 +1373,21 @@ pango_attr_iterator_get (PangoAttrIterator *iterator,
  *           an attribute in the #PangoAttrList associated with the structure,
  *           or with @base. If you want to save this value, you should
  *           allocate it on the stack and then use pango_font_description_copy().
+ * @language: if non-%NULl, location to store language tag for item, or %NULL
+ *            if non is found.
  * @extra_attrs: if non-%NULL, location in which to store a list of non-font
  *           attributes at the the current position; only the highest priority
  *           value of each attribute will be added to this list. In order
  *           to free this value, you must call pango_attribute_destroy() on
  *           each member.
  *
- * Get the font 
+ * Get the font and other attributes at the current iterator position.
  **/
 void
 pango_attr_iterator_get_font (PangoAttrIterator     *iterator,
 			      PangoFontDescription  *base,
 			      PangoFontDescription  *current,
+			      PangoLanguage        **language,
 			      GSList               **extra_attrs)
 {
   GList *tmp_list1;
@@ -1369,6 +1399,7 @@ pango_attr_iterator_get_font (PangoAttrIterator     *iterator,
   gboolean have_weight = FALSE;
   gboolean have_stretch = FALSE;
   gboolean have_size = FALSE;
+  gboolean have_language = FALSE;
 
   g_return_if_fail (iterator != NULL);
   g_return_if_fail (base != NULL);
@@ -1376,6 +1407,9 @@ pango_attr_iterator_get_font (PangoAttrIterator     *iterator,
   
   *current = *base;
 
+  if (language)
+    *language = NULL;
+  
   if (extra_attrs)
     *extra_attrs = NULL;
   
@@ -1471,7 +1505,16 @@ pango_attr_iterator_get_font (PangoAttrIterator     *iterator,
 	      current->size = ((PangoAttrFloat *)attr)->value * base->size;
 	    }
           break;
-          
+	case PANGO_ATTR_LANGUAGE:
+	  if (language)
+	    {
+	      if (!have_language)
+		{
+		  have_language = TRUE;
+		  *language = ((PangoAttrLanguage *)attr)->value;
+		}
+	    }
+	  break;
 	default:
 	  if (extra_attrs)
 	    {

@@ -377,7 +377,7 @@ tamil_engine_shape (PangoFont        *font,
 
 static PangoCoverage *
 tamil_engine_get_coverage (PangoFont  *font,
-			   const char *lang)
+			   PangoLanguage *lang)
 {
   return pango_font_get_coverage (font, lang);
 }

@@ -28,7 +28,7 @@ attribute is listed in parentheses after the description.
 </para>
 
 @PANGO_ATTR_INVALID: 
-@PANGO_ATTR_LANG: language tag (#PangoAttrString)
+@PANGO_ATTR_LANGUAGE: 
 @PANGO_ATTR_FAMILY: font family name list (#PangoAttrString)
 @PANGO_ATTR_STYLE: font slant style (#PangoAttrInt)
 @PANGO_ATTR_WEIGHT: font weight (#PangoAttrInt)
@@ -180,15 +180,6 @@ sets all aspects of the font description at once.
 </para>
 
 @attr: 
-
-
-<!-- ##### FUNCTION pango_attr_lang_new ##### -->
-<para>
-
-</para>
-
-@lang: 
-@Returns: 
 
 
 <!-- ##### FUNCTION pango_attr_family_new ##### -->
@@ -589,7 +580,10 @@ attributes currently in effect can be queried.
 @iterator: 
 @base: 
 @current: 
+@language: 
 @extra_attrs: 
+<!-- # Unused Parameters # -->
+@lang: 
 
 
 <!-- ##### FUNCTION pango_attr_iterator_destroy ##### -->

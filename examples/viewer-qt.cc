@@ -150,7 +150,7 @@ ViewerView::ViewerView (QWidget *parent, QStatusBar *status) : QScrollView (pare
   setHScrollBarMode (QScrollView::AlwaysOff);
 
   context_ = pango_x_get_context (x11Display());
-  pango_context_set_lang (context_, "en_US");
+  pango_context_set_language (context_, pango_language_from_string ("en-us"));
 
   highlight_para_ = NULL;
   highlight_index_ = 0;

@@ -80,7 +80,6 @@ a segment of text. It contains the following fields:
 @offset: 
 @length: 
 @num_chars: 
-@extra_attrs: 
 @analysis: 
 
 <!-- ##### STRUCT PangoAnalysis ##### -->
@@ -115,6 +114,8 @@ fields:
 @lang_engine: 
 @font: 
 @level: 
+@language: 
+@extra_attrs: 
 
 <!-- ##### STRUCT PangoLangRange ##### -->
 <para>
@@ -145,9 +146,6 @@ It contains the following fields:
 </tbody></tgroup></informaltable>
 </para>
 
-@start: 
-@length: 
-@lang: 
 
 <!-- ##### ENUM PangoDirection ##### -->
 <para>
@@ -284,24 +282,6 @@ for text.
 
 @context: 
 @direction: 
-
-
-<!-- ##### FUNCTION pango_context_get_lang ##### -->
-<para>
-
-</para>
-
-@context: 
-@Returns: 
-
-
-<!-- ##### FUNCTION pango_context_set_lang ##### -->
-<para>
-
-</para>
-
-@context: 
-@lang: 
 
 
 <!-- ##### FUNCTION pango_context_load_font ##### -->

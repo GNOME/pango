@@ -52,6 +52,7 @@ typedef struct _PangoAttribute    PangoAttribute;
 typedef struct _PangoAttrClass    PangoAttrClass;
 				  
 typedef struct _PangoAttrString   PangoAttrString;
+typedef struct _PangoAttrLanguage PangoAttrLanguage;
 typedef struct _PangoAttrInt      PangoAttrInt;
 typedef struct _PangoAttrFloat    PangoAttrFloat;
 typedef struct _PangoAttrColor    PangoAttrColor;
@@ -65,7 +66,7 @@ typedef struct _PangoAttrIterator PangoAttrIterator;
 typedef enum
 {
   PANGO_ATTR_INVALID,           /* 0 is an invalid attribute type */
-  PANGO_ATTR_LANG,		/* PangoAttrString */
+  PANGO_ATTR_LANGUAGE,		/* PangoAttrLanguage */
   PANGO_ATTR_FAMILY,		/* PangoAttrString */
   PANGO_ATTR_STYLE,		/* PangoAttrInt */
   PANGO_ATTR_WEIGHT,		/* PangoAttrInt */
@@ -110,6 +111,12 @@ struct _PangoAttrString
   char *value;
 };
 
+struct _PangoAttrLanguage
+{
+  PangoAttribute attr;
+  PangoLanguage *value;
+};
+
 struct _PangoAttrInt
 {
   PangoAttribute attr;
@@ -148,7 +155,7 @@ void             pango_attribute_destroy       (PangoAttribute       *attr);
 gboolean         pango_attribute_equal         (const PangoAttribute *attr1,
 						const PangoAttribute *attr2);
 
-PangoAttribute *pango_attr_lang_new          (const char                 *lang);
+PangoAttribute *pango_attr_language_new      (PangoLanguage              *language);
 PangoAttribute *pango_attr_family_new        (const char                 *family);
 PangoAttribute *pango_attr_foreground_new    (guint16                     red,
 					      guint16                     green,
@@ -197,6 +204,7 @@ PangoAttribute *   pango_attr_iterator_get      (PangoAttrIterator     *iterator
 void               pango_attr_iterator_get_font (PangoAttrIterator     *iterator,
                                                  PangoFontDescription  *base,
                                                  PangoFontDescription  *current,
+						 PangoLanguage        **language,
                                                  GSList               **extra_attrs);
 
 

@@ -31,7 +31,7 @@ struct _PangoContext
 {
   GObject parent_instance;
 
-  char *lang;
+  PangoLanguage *language;
   PangoDirection base_dir;
   PangoFontDescription *font_desc;
 
@@ -51,10 +51,7 @@ static void add_engines (PangoContext      *context,
 			 PangoAttrList     *attrs,
                          PangoAttrIterator *cached_iter,
                          gint               n_chars,
-			 PangoEngineShape **shape_engines,
-			 PangoEngineLang  **lang_engines,
-			 PangoFont        **fonts,
-			 GSList           **extra_attr_lists);
+			 PangoAnalysis     *analyses);
 
 static void pango_context_init        (PangoContext      *context);
 static void pango_context_class_init  (PangoContextClass *klass);
@@ -96,7 +93,7 @@ pango_context_init (PangoContext *context)
   PangoFontDescription desc;  
 
   context->base_dir = PANGO_DIRECTION_LTR;
-  context->lang = NULL;
+  context->language = NULL;
   context->font_maps = NULL;
 
   desc.family_name = "serif";
@@ -126,9 +123,6 @@ pango_context_finalize (GObject *object)
 
   context = PANGO_CONTEXT (object);
 
-  if (context->lang)
-    g_free (context->lang);
-  
   g_slist_foreach (context->font_maps, (GFunc)g_object_unref, NULL);
   g_slist_free (context->font_maps);
 
@@ -429,38 +423,35 @@ pango_context_get_font_description (PangoContext *context)
 }
 
 /**
- * pango_context_set_lang:
+ * pango_context_set_language:
  * @context: a #PangoContext
- * @lang: the new language tag.
+ * @language: the new language tag.
  * 
  * Sets the global language tag for the context.
  **/
 void
-pango_context_set_lang (PangoContext *context,
-			const char   *lang)
+pango_context_set_language (PangoContext *context,
+			    PangoLanguage    *language)
 {
   g_return_if_fail (context != NULL);
 
-  if (context->lang)
-    g_free (context->lang);
-
-  context->lang = g_strdup (lang);
+  context->language = language;
 }
 
 /**
- * pango_context_get_lang:
+ * pango_context_get_language:
  * @context: a #PangoContext
  * 
  * Retrieves the global language tag for the context.
  * 
- * Return value: the global language tag. This value must be freed with g_free().
+ * Return value: the global language tag.
  **/
-char *
-pango_context_get_lang (PangoContext *context)
+PangoLanguage *
+pango_context_get_language (PangoContext *context)
 {
   g_return_val_if_fail (context != NULL, NULL);
 
-  return g_strdup (context->lang);
+  return context->language;
 }
 
 /**
@@ -536,11 +527,8 @@ pango_itemize (PangoContext      *context,
   const char *p;
   const char *next;
   GList *result = NULL;
-  
-  PangoEngineShape **shape_engines;
-  PangoEngineLang  **lang_engines;
-  GSList           **extra_attr_lists;
-  PangoFont        **fonts;
+
+  PangoAnalysis *analyses;
 
   g_return_val_if_fail (context != NULL, NULL);
   g_return_val_if_fail (start_index >= 0, NULL);
@@ -565,14 +553,11 @@ pango_itemize (PangoContext      *context,
   pango_log2vis_get_embedding_levels (text_ucs4, n_chars, &base_dir,
                                       embedding_levels);
 
-  /* Storing these as ranges would be a lot more efficient,
-   * but also more complicated... we take the simple
-   * approach for now.
+  /* Storing ranges would be more efficient, but also more
+   * complicated... we take the simple approach for now.
    */
-  shape_engines = g_new0 (PangoEngineShape *, n_chars);
-  lang_engines = g_new0 (PangoEngineLang *, n_chars);
-  fonts = g_new0 (PangoFont *, n_chars);
-  extra_attr_lists = g_new0 (GSList *, n_chars);
+
+  analyses = g_new0 (PangoAnalysis, n_chars);
 
   /* Now, fill in the appropriate shapers, language engines and fonts for
    * each character.
@@ -581,8 +566,7 @@ pango_itemize (PangoContext      *context,
   add_engines (context, text, start_index, length, attrs,
                cached_iter,
                n_chars,
-               shape_engines, lang_engines, fonts,
-	       extra_attr_lists);
+	       analyses);
 
   /* Make a GList of PangoItems out of the above results
    */
@@ -591,15 +575,19 @@ pango_itemize (PangoContext      *context,
   p = text + start_index;
   for (i=0; i<n_chars; i++)
     {
+      PangoAnalysis *analysis = &analyses[i];
+      PangoAnalysis *last_analysis = i > 0 ? &analyses[i-1] : 0;
+      
       next = g_utf8_next_char (p);
       
       if (i == 0 ||
 	  text_ucs4[i] == '\t' || text_ucs4[i-1] == '\t' ||
 	  embedding_levels[i] != embedding_levels[i-1] ||
-	  shape_engines[i] != shape_engines[i-1] ||
-	  lang_engines[i] != lang_engines[i-1] ||
-	  fonts[i] != fonts[i-1] ||
-	  extra_attr_lists[i] != extra_attr_lists[i-1])
+	  analysis->shape_engine != last_analysis->shape_engine ||
+	  analysis->lang_engine != last_analysis->lang_engine ||
+	  analysis->font != last_analysis->font ||
+	  analysis->language != last_analysis->language ||
+	  analysis->extra_attrs != last_analysis->extra_attrs)
 	{
           /* assert that previous item got at least one char */
           g_assert (item == NULL || item->length > 0);
@@ -610,15 +598,16 @@ pango_itemize (PangoContext      *context,
 	  item->num_chars = 0;
 	  item->analysis.level = embedding_levels[i];
 	  
-	  item->analysis.shape_engine = shape_engines[i];
-	  item->analysis.lang_engine = lang_engines[i];
+	  item->analysis.shape_engine = analysis->shape_engine;
+	  item->analysis.lang_engine = analysis->lang_engine;
 
-	  item->analysis.font = fonts[i];
+	  item->analysis.font = analysis->font;
+	  item->analysis.language = analysis->language;
 
 	  /* Copy the extra attribute list if necessary */
-	  if (extra_attr_lists[i] && i != 0 && extra_attr_lists[i] == extra_attr_lists[i-1])
+	  if (analysis->extra_attrs && i != 0 && analysis->extra_attrs == last_analysis->extra_attrs)
 	    {
-	      GSList *tmp_list = extra_attr_lists[i];
+	      GSList *tmp_list = analysis->extra_attrs;
 	      GSList *new_list = NULL;
 	      while (tmp_list)
 		{
@@ -626,27 +615,23 @@ pango_itemize (PangoContext      *context,
 					      pango_attribute_copy (tmp_list->data));
 		  tmp_list = tmp_list->next;
 		}
-	      item->extra_attrs = g_slist_reverse (new_list);
+	      item->analysis.extra_attrs = g_slist_reverse (new_list);
 	    }
 	  else
-	    item->extra_attrs = extra_attr_lists[i];
+	    item->analysis.extra_attrs = analysis->extra_attrs;
 
 	  result = g_list_prepend (result, item);
 	}
       else
-	g_object_unref (G_OBJECT (fonts[i]));
+	g_object_unref (analysis->font);
 
       item->length = (next - text) - item->offset;
       item->num_chars++;
       p = next;
     }  
 
+  g_free (analyses);
   g_free (embedding_levels);
-  g_free (shape_engines);
-  g_free (lang_engines);
-  g_free (fonts);
-  g_free (extra_attr_lists);
-  
   g_free (text_ucs4);
   
   return g_list_reverse (result);
@@ -689,8 +674,8 @@ fallback_engine_shape (PangoFont        *font,
 }
 
 static PangoCoverage*
-fallback_engine_get_coverage (PangoFont  *font,
-                              const char *lang)
+fallback_engine_get_coverage (PangoFont      *font,
+                              PangoLanguage  *lang)
 {
   PangoCoverage *result = pango_coverage_new ();
 
@@ -738,7 +723,7 @@ get_font (PangoFont     **fonts,
     }
 
   if (result)
-    g_object_ref (G_OBJECT (result));
+    g_object_ref (result);
       
   return result;
 }
@@ -748,7 +733,7 @@ get_font (PangoFont     **fonts,
 
 static void
 load_font (PangoContext          *context,
-	   char                  *lang,
+	   PangoLanguage         *language,
 	   PangoFontDescription  *desc,
 	   PangoFont            **current_fonts,
 	   PangoCoverage        **current_coverages,
@@ -762,7 +747,7 @@ load_font (PangoContext          *context,
     {
       if (current_fonts[j])
 	{
-	  g_object_unref (G_OBJECT (current_fonts[j]));
+	  g_object_unref (current_fonts[j]);
 	  pango_coverage_unref (current_coverages[j]);
 	}
     }
@@ -778,7 +763,7 @@ load_font (PangoContext          *context,
       
       if (current_fonts[*n_families])
 	{
-	  current_coverages[*n_families] = pango_font_get_coverage (current_fonts[*n_families], lang);
+	  current_coverages[*n_families] = pango_font_get_coverage (current_fonts[*n_families], language);
 	  (*n_families)++;
 	}
     }
@@ -807,7 +792,7 @@ load_font (PangoContext          *context,
       current_fonts[0] = pango_context_load_font (context, desc);
       if (current_fonts[0])
 	{
-	  current_coverages[0] = pango_font_get_coverage (current_fonts[0], lang);
+	  current_coverages[0] = pango_font_get_coverage (current_fonts[0], language);
 	  *n_families = 1;
 	}
     }
@@ -832,7 +817,7 @@ load_font (PangoContext          *context,
       current_fonts[0] = pango_context_load_font (context, desc);
       if (current_fonts[0])
 	{
-	  current_coverages[0] = pango_font_get_coverage (current_fonts[0], lang);
+	  current_coverages[0] = pango_font_get_coverage (current_fonts[0], language);
 	  *n_families = 1;
 	}
     }
@@ -876,13 +861,10 @@ add_engines (PangoContext      *context,
 	     PangoAttrList     *attrs,
              PangoAttrIterator *cached_iter,
              gint               n_chars,
-	     PangoEngineShape **shape_engines,
-	     PangoEngineLang  **lang_engines,
-	     PangoFont        **fonts,
-	     GSList           **extra_attr_lists)
+	     PangoAnalysis     *analyses)
 {
   const char *pos;
-  char *lang = NULL;
+  PangoLanguage *language = NULL;
   int next_index;
   GSList *extra_attrs = NULL;
   PangoMap *lang_map = NULL;
@@ -891,7 +873,6 @@ add_engines (PangoContext      *context,
   PangoFont *current_fonts[MAX_FAMILIES];
   PangoCoverage *current_coverages[MAX_FAMILIES];  
   PangoAttrIterator *iterator;
-  PangoAttribute *attr;
   gboolean first_iteration = TRUE;
   gunichar wc;
   int i = 0, j;
@@ -908,9 +889,11 @@ add_engines (PangoContext      *context,
   pos = text + start_index;
   for (i=0; i<n_chars; i++)
     {
+      PangoAnalysis *analysis = &analyses[i];
+      
       if (first_iteration || pos - text == next_index)
 	{
-	  char *next_lang;
+	  PangoLanguage *next_language;
 	  PangoFontDescription next_desc;
 
           first_iteration = FALSE;
@@ -924,20 +907,18 @@ add_engines (PangoContext      *context,
               pango_attr_iterator_range (iterator, NULL, &next_index);
             }
           
-	  attr = pango_attr_iterator_get (iterator, PANGO_ATTR_LANG);
-	  if (attr)
-	    next_lang = ((PangoAttrString *)attr)->value;
-	  else
-	    next_lang = context->lang;
+	  pango_attr_iterator_get_font (iterator, context->font_desc,
+                                        &next_desc, &next_language, &extra_attrs);
 
-	  if (i == 0 ||
-	      (lang != next_lang &&
-	       (lang == NULL || next_lang == NULL || strcmp (lang, next_lang) != 0)))
+          if (!next_language)
+	    next_language = context->language;
+
+	  if (i == 0 || language != next_language)
 	    {
 	      static guint engine_type_id = 0;
 	      static guint render_type_id = 0;
 	      
-	      lang = next_lang;
+	      language = next_language;
 
 	      if (engine_type_id == 0)
 		{
@@ -945,39 +926,37 @@ add_engines (PangoContext      *context,
 		  render_type_id = g_quark_from_static_string (PANGO_RENDER_TYPE_NONE);
 		}
 	       
-	      lang_map = pango_find_map (next_lang,
+	      lang_map = pango_find_map (next_language,
 					 engine_type_id, render_type_id);
 	    }
 
-	  pango_attr_iterator_get_font (iterator, context->font_desc,
-                                        &next_desc, &extra_attrs);
-          
 	  if (i == 0 ||
 	      !pango_font_description_equal (&current_desc, &next_desc))
 	    {
 	      current_desc = next_desc;
 
-	      load_font (context, lang, &current_desc,
+	      load_font (context, language, &current_desc,
 			 current_fonts, current_coverages, &n_families);
 	    }
         }
 
       wc = g_utf8_get_char (pos);
       pos = g_utf8_next_char (pos);
-	  
-      lang_engines[i] = (PangoEngineLang *)pango_map_get_engine (lang_map, wc);
-      fonts[i] = get_font (current_fonts, current_coverages, n_families, wc);
-
-      /* FIXME: handle reference counting properly on the shapers */
-      if (fonts[i])
-	shape_engines[i] = pango_font_find_shaper (fonts[i], lang, wc);
-      else
-	shape_engines[i] = NULL;
-
-      if (shape_engines[i] == NULL)
-        shape_engines[i] = &fallback_shaper;
       
-      extra_attr_lists[i] = extra_attrs;
+      analysis->lang_engine = (PangoEngineLang *)pango_map_get_engine (lang_map, wc);
+      analysis->font = get_font (current_fonts, current_coverages, n_families, wc);
+      analysis->language = language;
+      
+      /* FIXME: handle reference counting properly on the shapers */
+      if (analysis->font)
+	analysis->shape_engine = pango_font_find_shaper (analysis->font, language, wc);
+      else
+	analysis->shape_engine = NULL;
+      
+      if (analysis->shape_engine == NULL)
+        analysis->shape_engine = &fallback_shaper;
+      
+      analysis->extra_attrs = extra_attrs;
     }
 
   g_assert (pos - text == start_index + length);
@@ -986,7 +965,7 @@ add_engines (PangoContext      *context,
     {
       if (current_fonts[j])
 	{
-	  g_object_unref (G_OBJECT (current_fonts[j]));
+	  g_object_unref (current_fonts[j]);
 	  pango_coverage_unref (current_coverages[j]);
 	}
     }

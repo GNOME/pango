@@ -570,7 +570,8 @@ read_config ()
   if (!config_hash)
     {
       char *filename;
-      char *home;
+      const char *home;
+      const char *envvar;
       
       config_hash = g_hash_table_new (g_str_hash, g_str_equal);
       filename = g_strconcat (pango_get_sysconf_subdirectory (),
@@ -589,9 +590,9 @@ read_config ()
 	  g_free (filename);
 	}
 
-      filename = g_getenv ("PANGO_RC_FILE");
-      if (filename)
-	read_config_file (filename, TRUE);
+      envvar = g_getenv ("PANGO_RC_FILE");
+      if (envvar)
+	read_config_file (envvar, TRUE);
     }
 }
 
@@ -885,6 +886,140 @@ pango_parse_stretch (const char            *str,
 
   if (warn)
     g_warning ("Stretch must be ultra_condensed, extra_condensed, condensed, semi_condensed, normal, semi_expanded, expanded, extra_expanded, or ultra_expanded");
+  return FALSE;
+}
+
+static const char canon_map[256] = {
+   0,   0,   0,   0,   0,   0,   0,   0,    0,   0,   0,   0,   0,   0,   0,   0, 
+   0,   0,   0,   0,   0,   0,   0,   0,    0,   0,   0,   0,   0,   0,   0,   0, 
+   0,   0,   0,   0,   0,   0,   0,   0,    0,   0,   0,   0,   0,  '-',  0,   0, 
+   0,   0,   0,   0,   0,   0,   0,   0,    0,   0,   0,   0,   0,   0,   0,   0, 
+   0,  'a', 'b', 'c', 'd', 'e', 'f', 'g',  'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o',
+  'p', 'q', 'r', 's', 't', 'u', 'v', 'w',  'x', 'y', 'z',  0,   0,   0,   0,  '-',
+   0,  'a', 'b', 'c', 'd', 'e', 'f', 'g',  'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o',
+  'p', 'q', 'r', 's', 't', 'u', 'v', 'w',  'x', 'y', 'z',  0,   0,   0,   0,   0
+};
+   
+static gboolean
+lang_equal (gconstpointer v1,
+	    gconstpointer v2)
+{
+  const guchar *p1 = v1;
+  const guchar *p2 = v2;
+
+  while (*p2)
+    {
+      guchar value = canon_map[*p2];
+      if (value && value != *p1++)
+	return FALSE;
+      p2++;
+    }
+
+  return (*p1 == '\0');
+}
+
+static guint
+lang_hash (gconstpointer key)
+{
+  const guchar *p = key;
+  guint h = 0;
+  while (*p)
+    {
+      guchar value = canon_map[*p];
+      if (value)
+	h = (h << 5) - h + value;
+      p++;
+    }
+
+  return h;
+}
+
+/**
+ * pang_language_from_string:
+ * @language: a string representing a language tag
+ * 
+ * Take a RFC-3066 format language tag as a string and convert it to a
+ * #PangoLang pointer that can be efficiently copied (copy the
+ * pointer) and compared with other language tags (compare the
+ * pointer.)
+ *
+ * This function first canonicalizes the string by by converting it to
+ * lowercase, mapping '_' to '-', and stripping all characters other
+ * than letters and '-'.
+ * 
+ * Return value: an opaque pointer to a PangoLang structure.
+ *               this will be valid forever after.
+ **/
+PangoLanguage *
+pango_language_from_string (const char *language)
+{
+  static GHashTable *hash = NULL;
+  char *result;
+  int len;
+  char *p;
+
+  if (!hash)
+    hash = g_hash_table_new (lang_hash, lang_equal);
+
+  result = g_hash_table_lookup (hash, language);
+  if (result)
+    return (PangoLanguage *)result;
+
+  len = strlen (language);
+  result = g_malloc (len + 1);
+
+  p = result;
+  while (*language)
+    {
+      char value = canon_map[*(guchar *)language++];
+      if (value)
+	*(p++) = value;
+    }
+  *p++ = '\0';
+
+  g_hash_table_insert (hash, result, result);
+
+  return (PangoLanguage *)result;
+}
+
+/**
+ * pango_language_matches:
+ * @language: a language tag (see pango_language_from_string())
+ * @range_list: a list of language ranges, separated by ';' characters.
+ *   each element must either be '*', or a RFC 3066 language range
+ *   canonicalized as by pango_lang_canonicalize().
+ * 
+ * Checks if a language tag matches one of the elements in a list of
+ * language ranges. A language tag is considered to match a range
+ * in the list if the range is '*', the range is exactly the tag,
+ * or the range is a prefix of the tag, and the character after the
+ * tag is '-'.
+ **/
+gboolean
+pango_language_matches (PangoLanguage *language,
+			const char    *range_list)
+{
+  const char *lang_str = pango_language_to_string (language);
+  const char *p = range_list;
+  gboolean done = FALSE;
+
+  while (!done)
+    {
+      const char *end = strchr (p, ';');
+      if (!end)
+	{
+	  end = p + strlen (p);
+	  done = TRUE;
+	}
+
+      if (strncmp (p, "*", 1) == 0 ||
+	  (strncmp (lang_str, p, end - p) == 0 &&
+	   (lang_str[end - p] == '\0' || lang_str[end - p] == '-')))
+	return TRUE;
+
+      p = end;
+    }
+
   return FALSE;
 }
 

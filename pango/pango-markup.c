@@ -1193,7 +1193,8 @@ span_parse_func     (MarkupData            *md,
 
   if (lang)
     {
-      add_attribute (tag, pango_attr_lang_new (lang));
+      add_attribute (tag,
+		     pango_attr_language_new (pango_language_from_string (lang)));
     }
   
   return TRUE;

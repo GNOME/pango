@@ -53,7 +53,7 @@ struct _PangoMap
 
 struct _PangoMapInfo
 {
-  const gchar *lang;
+  PangoLanguage *language;
   guint engine_type_id;
   guint render_type_id;
   PangoMap *map;
@@ -78,8 +78,7 @@ static void init_modules (void);
 
 /**
  * pango_find_map:
- * @lang: the language tag for which to find the map (in the form
- *        en or en_US)
+ * @language: the language tag for which to find the map
  * @engine_type_id: the render type for the map to find
  * @render_type_id: the engine type for the map to find
  * 
@@ -90,9 +89,9 @@ static void init_modules (void);
  * Return value: 
  **/
 PangoMap *
-pango_find_map (const char *lang,
-		guint       engine_type_id,
-		guint       render_type_id)
+pango_find_map (PangoLanguage *language,
+		guint          engine_type_id,
+		guint          render_type_id)
 {
   GList *tmp_list = maps;
   PangoMapInfo *map_info = NULL;
@@ -104,7 +103,7 @@ pango_find_map (const char *lang,
       if (map_info->engine_type_id == engine_type_id &&
 	  map_info->render_type_id == render_type_id)
 	{
-	  if (strcmp (map_info->lang, lang) == 0)
+	  if (map_info->language == language)
 	    break;
 	  else
 	    found_earlier = TRUE;
@@ -116,7 +115,7 @@ pango_find_map (const char *lang,
   if (!tmp_list)
     {
       map_info = g_new (PangoMapInfo, 1);
-      map_info->lang = g_strdup (lang);
+      map_info->language = language;
       map_info->engine_type_id = engine_type_id;
       map_info->render_type_id = render_type_id;
 
@@ -394,20 +393,12 @@ map_add_engine (PangoMapInfo    *info,
  
   for (i=0; i<pair->info.n_ranges; i++)
     {
-      gchar **langs;
       gboolean is_exact = FALSE;
-      
+
       if (pair->info.ranges[i].langs)
 	{
-	  langs = g_strsplit (pair->info.ranges[i].langs, ";", -1);
-	  for (j=0; langs[j]; j++)
-	    if (strcmp (langs[j], "*") == 0 ||
-		strcmp (langs[j], info->lang) == 0)
-	      {
-		is_exact = TRUE;
-		break;
-	      }
-	  g_strfreev (langs);
+	  if (pango_language_matches (info->language, pair->info.ranges[i].langs))
+	    is_exact = TRUE;
 	}
       
       for (submap = pair->info.ranges[i].start / 256;

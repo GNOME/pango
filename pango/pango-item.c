@@ -55,18 +55,18 @@ pango_item_copy (PangoItem *item)
   result->length = item->length;
   result->num_chars = item->num_chars;
 
+  result->analysis = item->analysis;
+  g_object_ref (result->analysis.font);
+  
   extra_attrs = NULL;
-  tmp_list = item->extra_attrs;
+  tmp_list = item->analysis.extra_attrs;
   while (tmp_list)
     {
       extra_attrs = g_slist_prepend (extra_attrs, pango_attribute_copy (tmp_list->data));
       tmp_list = tmp_list->next;
     }
 
-  result->extra_attrs = g_slist_reverse (extra_attrs);
-	  
-  result->analysis = item->analysis;
-  g_object_ref (G_OBJECT (result->analysis.font));
+  result->analysis.extra_attrs = g_slist_reverse (extra_attrs);
 
   return result;
 }
@@ -80,13 +80,13 @@ pango_item_copy (PangoItem *item)
 void
 pango_item_free (PangoItem *item)
 {
-  if (item->extra_attrs)
+  if (item->analysis.extra_attrs)
     {
-      g_slist_foreach (item->extra_attrs, (GFunc)pango_attribute_destroy, NULL);
-      g_slist_free (item->extra_attrs);
+      g_slist_foreach (item->analysis.extra_attrs, (GFunc)pango_attribute_destroy, NULL);
+      g_slist_free (item->analysis.extra_attrs);
     }
-  
-  g_object_unref (G_OBJECT (item->analysis.font));
+
+  g_object_unref (item->analysis.font);
 
   g_free (item);
 }

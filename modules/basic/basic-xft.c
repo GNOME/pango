@@ -226,7 +226,7 @@ basic_engine_shape (PangoFont        *font,
 
 static PangoCoverage *
 basic_engine_get_coverage (PangoFont  *font,
-			   const char *lang)
+			   PangoLanguage *lang)
 {
   return pango_font_get_coverage (font, lang);
 }
