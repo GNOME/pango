@@ -1,3 +1,12 @@
+Mon Jun 21 11:29:39 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pangoft2-fontmap.c (pango_ft2_font_map_new):
+	For cleanliness, unref the fontmap if we get an error
+	from FreeType. (#143524, Morten Welinder)
+	
+	* pango/pangoft2-fontmap.c (pango_ft2_font_map_finalize): 
+	Deal with NULL ft2fontmap->library.
+
 Mon Jun  7 2004  Theppitak Karoonboonyanan  <thep@linux.thai.net>
 
 	* modules/thai/Makefile.am modules/thai/thai-shaper.c
