@@ -850,7 +850,7 @@ get_font_metrics_from_subfonts (PangoFont        *font,
     metrics->approximate_char_width = 10 * PANGO_SCALE;
 }
 
-void
+static void
 get_subfonts_foreach (PangoFont      *font,
 		      PangoGlyphInfo *glyph_info,
 		      gpointer        data)
@@ -882,7 +882,7 @@ get_font_metrics_from_string (PangoFont        *font,
   g_slist_free (subfonts);
 }
 
-void
+static void
 average_width_foreach (PangoFont      *font,
 		       PangoGlyphInfo *glyph_info,
 		       gpointer        data)

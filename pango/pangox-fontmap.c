@@ -96,7 +96,7 @@ struct _PangoXSizeInfo
   GSList *xlfds;
 };
 
-const struct {
+static const struct {
   const gchar *text;
   PangoWeight value;
 } weights_map[] = {
@@ -113,7 +113,7 @@ const struct {
   { "black",     900 }
 };
 
-const struct {
+static const struct {
   const gchar *text;
   PangoStyle value;
 } styles_map[] = {
@@ -122,7 +122,7 @@ const struct {
   { "o", PANGO_STYLE_OBLIQUE }
 };
 
-const struct {
+static const struct {
   const gchar *text;
   PangoStretch value;
 } stretches_map[] = {

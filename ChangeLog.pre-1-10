@@ -1,3 +1,8 @@
+Thu May 27 15:42:20 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pangox-fontmap.c pango/pangox.c: Add some missing
+	statics. (#142299, Morten Welinder)
+
 Thu May 27 15:32:03 2004  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pango-font.h pango/fonts.c: Add underline and
