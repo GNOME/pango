@@ -1,3 +1,12 @@
+Mon Aug  5 23:57:59 2002  Owen Taylor  <otaylor@redhat.com>
+	 
+	* pango/pangoxft-fontmap.c (pango_xft_pattern_hash): Use
+	FcPatternHash instead of rolling our own. (Slight speed
+	decrease) (Keith Packard)
+
+	* pango/pangoxft-fontmap.c (pango_xft_get_font_map):
+	Remove accidentally deleted call to init_fontset_hash().
+
 Mon Aug  5 23:12:13 2002  Owen Taylor  <otaylor@redhat.com>
 
 	Patch from Keith Packard:

@@ -178,11 +178,16 @@ static GSList *fontmaps = NULL;
 guint
 pango_xft_pattern_hash (FcPattern *pattern)
 {
+#if 1  
+  return FcPatternHash (pattern);
+#else
+  /* Hashing only part of the pattern can improve speed a bit.
+   */
   char *str;
   int i;
   double d;
   guint hash = 0;
-  
+
   FcPatternGetString (pattern, FC_FILE, 0, (FcChar8 **) &str);
   if (str)
     hash = g_str_hash (str);
@@ -194,6 +199,7 @@ pango_xft_pattern_hash (FcPattern *pattern)
     hash ^= (guint) (d*1000.0);
 
   return hash;
+#endif  
 }
 
 gboolean
@@ -297,6 +303,7 @@ pango_xft_get_font_map (Display *display,
   xfontmap->fonts = g_hash_table_new ((GHashFunc)pango_xft_pattern_hash,
 				      (GEqualFunc)pango_xft_pattern_equal);
 
+  pango_xft_init_fontset_hash (xfontmap);
   xfontmap->coverage_hash = g_hash_table_new_full ((GHashFunc)pango_xft_coverage_key_hash,
 						   (GEqualFunc)pango_xft_coverage_key_equal,
 						   (GDestroyNotify)g_free,
