@@ -10,6 +10,10 @@ pango.pc
 pangox.pc
 pangoxft.pc
 pangoft2.pc
+pango-uninstalled.pc
+pangox-uninstalled.pc
+pangoxft-uninstalled.pc
+pangoft2-uninstalled.pc
 pango.spec
 pango-config
 stamp-h
