@@ -366,21 +366,7 @@ pango_ft2_render (FT_Bitmap        *bitmap,
                           case 0xff:
                             *p = 0xff;
                           default:
-                            switch (*p)
-                              {
-                              case 0:
-                                *p = *q;
-                                break;
-                              case 0xff:
-                                break;
-                              default:
-                                {
-                                  gushort pixel = *(q);
-                                  gushort s = (*p)+1;
-                                  *(p) = (pixel * (256-s) + s) >> 8;
-                                }
-                                break;
-                              }
+                            *p = MIN ((gushort) *p + (gushort) *q, 0xff);
                             break;
                           }
                         q++;

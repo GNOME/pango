@@ -1,5 +1,10 @@
 2001-08-14  Sven Neumann  <sven@gimp.org>
 
+	* pango/pangoft2.c (pango_ft2_render): composite with "saturate"
+	semantics instead of "over" so joining glyphs get drawn correctly.
+
+2001-08-14  Sven Neumann  <sven@gimp.org>
+
 	* pango/pangoft2.c (pango_ft2_render): composite glyphs over the 
 	buffer instead of simply copying into it so glyphs with overlapping 
 	ink rectangles do not overwrite each other.
