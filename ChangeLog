@@ -1,5 +1,11 @@
 2005-02-03  Owen Taylor  <otaylor@redhat.com>
 
+	* configure.in: Bump to 1.9.0.
+
+	* pango/pangofc-fontmap.h: Document PangoFcFontMap.create_font()
+
+2005-02-03  Owen Taylor  <otaylor@redhat.com>
+
 	* examples/cairosimple.c: Open the file with mode "wb", include
 	cairo-png.h. 
 
