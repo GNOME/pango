@@ -1,3 +1,12 @@
+2004-10-08  Theppitak Karoonboonyanan  <thep@linux.thai.net>
+
+	* modules/thai/thai-ot.c (thai_ot_get_ruleset): Return NULL if ruleset
+	is empty, to indicate the lack of OT features.
+
+	* modules/thai/thai-fc.c (tis620_1): Fix the PUA glyph table, after
+	actually checked with sample OSX (Jaguar) fonts. This actually turns
+	on PUA-based shaping with Thai OSX fonts in Pango.
+
 2004-10-07  Theppitak Karoonboonyanan  <thep@linux.thai.net>
 
 	* modules/thai/thai-shaper.c (groups, group1_map, group2_map):

@@ -9,7 +9,7 @@
 
 #include "thai-ot.h"
 
-static void
+static gint
 maybe_add_gsub_feature (PangoOTRuleset *ruleset,
 			PangoOTInfo    *info,
 			guint           script_index,
@@ -24,10 +24,12 @@ maybe_add_gsub_feature (PangoOTRuleset *ruleset,
     {
       pango_ot_ruleset_add_feature (ruleset, PANGO_OT_TABLE_GSUB, feature_index,
 				    property_bit);
+      return 1;
     }
+  return 0;
 }
 
-static void
+static gint
 maybe_add_gpos_feature (PangoOTRuleset *ruleset,
 		        PangoOTInfo    *info,
 			guint           script_index,
@@ -41,7 +43,9 @@ maybe_add_gpos_feature (PangoOTRuleset *ruleset,
     {
       pango_ot_ruleset_add_feature (ruleset, PANGO_OT_TABLE_GPOS, feature_index,
 				    property_bit);
+      return 1;
     }
+  return 0;
 }
 
 PangoOTRuleset *
@@ -71,31 +75,43 @@ thai_ot_get_ruleset (PangoFont *font)
         {
           PangoOTTag thai_tag = FT_MAKE_TAG ('t', 'h', 'a', 'i');
           guint      script_index;
+          gint       n = 0;
 
           ruleset = pango_ot_ruleset_new (info);
 
           if (pango_ot_info_find_script (info, PANGO_OT_TABLE_GSUB,
 				         thai_tag, &script_index))
 	    {
-	      maybe_add_gsub_feature (ruleset, info, script_index,
-			              FT_MAKE_TAG ('c','c','m','p'), 0xFFFF);
-	      maybe_add_gsub_feature (ruleset, info, script_index,
-			              FT_MAKE_TAG ('l','i','g','a'), 0xFFFF);
+	      n += maybe_add_gsub_feature (ruleset, info, script_index,
+			                   FT_MAKE_TAG ('c','c','m','p'),
+					   0xFFFF);
+	      n += maybe_add_gsub_feature (ruleset, info, script_index,
+			                   FT_MAKE_TAG ('l','i','g','a'),
+					   0xFFFF);
 	    }
 
           if (pango_ot_info_find_script (info, PANGO_OT_TABLE_GPOS,
 				         thai_tag, &script_index))
 	    {
-	      maybe_add_gpos_feature (ruleset, info, script_index,
-			              FT_MAKE_TAG ('k','e','r','n'), 0xFFFF);
-	      maybe_add_gpos_feature (ruleset, info, script_index,
-			              FT_MAKE_TAG ('m','a','r','k'), 0xFFFF);
-	      maybe_add_gpos_feature (ruleset, info, script_index,
-			              FT_MAKE_TAG ('m','k','m','k'), 0xFFFF);
+	      n += maybe_add_gpos_feature (ruleset, info, script_index,
+			                   FT_MAKE_TAG ('k','e','r','n'),
+					   0xFFFF);
+	      n += maybe_add_gpos_feature (ruleset, info, script_index,
+			                   FT_MAKE_TAG ('m','a','r','k'),
+					   0xFFFF);
+	      n += maybe_add_gpos_feature (ruleset, info, script_index,
+			                   FT_MAKE_TAG ('m','k','m','k'),
+					   0xFFFF);
 	    }
 
-          g_object_set_qdata_full (G_OBJECT (info), ruleset_quark, ruleset,
-			           (GDestroyNotify)g_object_unref);
+	  if (n > 0)
+            g_object_set_qdata_full (G_OBJECT (info), ruleset_quark, ruleset,
+	    		             (GDestroyNotify)g_object_unref);
+	  else
+	    {
+	      g_object_unref (ruleset);
+	      ruleset = NULL;
+	    }
         }
     }
 
