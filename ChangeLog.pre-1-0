@@ -1,3 +1,7 @@
+Tue May 29 17:41:44 2001  Owen Taylor  <otaylor@redhat.com>
+
+	* configure.in: Use $PKG_CONFIG, not pkg-config.
+
 Mon May 28 18:15:55 2001  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pango-layout.c (pango_layout_move_cursor_visually): 
