@@ -398,7 +398,7 @@ pango_attr_float_new  (const PangoAttrClass *klass,
 
 /**
  * pango_attr_size_new:
- * @size: the font size, in 1000ths of a point.
+ * @size: the font size, in #PANGO_SCALE<!-- -->ths of a point.
  * 
  * Create a new font-size attribute.
  * 
