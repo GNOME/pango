@@ -12,32 +12,7 @@ INCLUDES =				\
 
 ###################################################
 
-if BUILD_QT_TEST
-
-QT_INCLUDES=-I$(QTDIR)/include
-QT_LIBS=-L$(QTDIR)/lib -lqt 
-MOC=$(QTDIR)/bin/moc
-
-viewer_programs = pango-viewer
-
-BUILT_SOURCES=moc_viewer-qt.cc
-
-moc_viewer-qt.cc: viewer-qt.h
-	$(MOC) $< -o $@
-
-endif
-
-pango_viewer_SOURCES =		\
-	viewer-qt.cc		\
-	viewer-qt.h
-
-CLEANFILES = moc_viewer-qt.cc pango.modules
-pango_viewer_LDADD =					\
-	../pango/libpangox-$(PANGO_API_VERSION).la	\
-	../pango/libpango-$(PANGO_API_VERSION).la	\
-	$(FRIBIDI_LIBS)					\
-	$(QT_LIBS)					\
-	moc_viewer-qt.$(OBJEXT)
+CLEANFILES = pango.modules
 ###################################################
 
 ###################################################
@@ -52,7 +27,6 @@ pangoft2topgm_LDADD =					\
 	$(FREETYPE_LIBS)
 ###################################################
 
-bin_PROGRAMS = $(viewer_programs)
 noinst_PROGRAMS =  $(ft2_programs)
 
 if CROSS_COMPILING
@@ -71,8 +45,6 @@ pango.modules:
 	fi
 
 EXTRA_DIST=			\
-	viewer-qt.cc		\
-	viewer-qt.h		\
 	viewer-win32.c		\
 	pangoft2topgm.c         \
 	makefile.msc		\
