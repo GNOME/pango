@@ -1,3 +1,8 @@
+Tue Sep 23 19:43:05 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-context.c (itemize_state_add_character): Don't
+	break runs when we hit neutral characters.
+
 Tue Sep 23 18:03:57 2003  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pango-engines.[ch] pango/pango-engines-private.h: 

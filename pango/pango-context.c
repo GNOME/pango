@@ -702,6 +702,16 @@ itemize_state_add_character (ItemizeState     *state,
 {
   if (state->item)
     {
+      if (!state->item->analysis.shape_engine && shape_engine)
+	{
+	  itemize_state_fill_shaper (state, shape_engine, font);
+	}
+      else if (state->item->analysis.shape_engine && !shape_engine)
+	{
+	  font = state->item->analysis.font;
+	  shape_engine = state->item->analysis.shape_engine;
+	}
+
       if (!force_break &&
 	  state->item->analysis.lang_engine == state->lang_engine &&
 	  state->item->analysis.shape_engine == shape_engine &&
@@ -712,16 +722,6 @@ itemize_state_add_character (ItemizeState     *state,
 	}
 
       state->item->length = (pos - state->text) - state->item->offset;
-
-      if (!state->item->analysis.shape_engine && shape_engine)
-	{
-	  itemize_state_fill_shaper (state, shape_engine, font);
-	}
-      else if (state->item->analysis.shape_engine && !shape_engine)
-	{
-	  font = state->item->analysis.font;
-	  shape_engine = state->item->analysis.shape_engine;
-	}
     }
 
   state->item = pango_item_new ();
