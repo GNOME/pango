@@ -539,6 +539,8 @@ update_attr_iterator (ItemizeState *state)
     state->attr_end = state->end;
 
   old_lang = state->lang;
+  if (state->font_desc)
+    pango_font_description_free (state->font_desc);
   state->font_desc = pango_font_description_copy_static (state->context->font_desc);
   pango_attr_iterator_get_font (state->attr_iter, state->font_desc,
 				&state->lang, &state->extra_attrs);

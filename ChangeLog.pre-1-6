@@ -1,3 +1,9 @@
+Tue Feb 10 14:28:41 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-context.c (update_attr_iterator): Fix
+	a leak of a font descriptor. (#131909, Kjartan Maraas, 
+	Christian Persch)
+
 Tue Feb 10 14:13:04 2004  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pango-tabs.c (pango_tab_array_resize): Fix
