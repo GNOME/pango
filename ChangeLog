@@ -1,3 +1,16 @@
+2002-10-14  Sven Neumann  <sven@gimp.org>
+
+	* modules/arabic/arabic-ft2.c (get_ruleset): unref the PangoOTInfo
+	after extracting the ruleset from it (#91541).
+
+	* pango/pangoft2-fontmap.c (pango_ft2_font_map_finalize)
+	* pango_pangoxft-fontmap.c (pango_xft_font_map_finalize): destroy
+	the fonts hash_table (#91697).
+
+	* pango/pangoft2-fontmap.c (pango_ft2_font_set_free)
+	* pango_pangoxft-fontmap.c (pango_xft_font_set_free): free the
+	pattern array (#91698).
+
 Sun Oct 13 12:34:41 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* === Released 1.0.5 ===

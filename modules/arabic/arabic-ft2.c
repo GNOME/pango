@@ -91,10 +91,11 @@ get_ruleset (PangoFont *font)
         }
 	    
       info = pango_ot_info_new (face);
+
       ruleset = pango_ot_ruleset_new (info);
-      
-      if (!info)
-        return NULL;
+
+      /* the ruleset holds a reference on info */
+      g_object_unref (info);
 
       if (pango_ot_info_find_script (info, PANGO_OT_TABLE_GSUB,
                                      arab_tag, &script_index))

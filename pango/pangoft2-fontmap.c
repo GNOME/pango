@@ -160,6 +160,7 @@ pango_ft2_font_set_free (PangoFT2PatternSet *font_set)
   for (i = 0; i < font_set->n_patterns; i++)
     MiniXftPatternDestroy (font_set->patterns[i]);
 
+  g_free (font_set->patterns);
   g_free (font_set);
 }
 
@@ -344,7 +345,8 @@ pango_ft2_font_map_finalize (GObject *object)
   g_queue_free (ft2fontmap->freed_fonts);
   g_hash_table_destroy (ft2fontmap->fontset_hash);
   g_hash_table_destroy (ft2fontmap->coverage_hash);
-  
+  g_hash_table_destroy (ft2fontmap->fonts);
+
   FT_Done_FreeType (ft2fontmap->library);
 
   G_OBJECT_CLASS (parent_class)->finalize (object);

@@ -419,6 +419,7 @@ pango_xft_font_map_finalize (GObject *object)
   g_queue_free (xfontmap->freed_fonts);
   g_hash_table_destroy (xfontmap->fontset_hash);
   g_hash_table_destroy (xfontmap->coverage_hash);
+  g_hash_table_destroy (xfontmap->fonts);
   
   G_OBJECT_CLASS (parent_class)->finalize (object);
 }
@@ -726,6 +727,7 @@ pango_xft_font_set_free (PangoXftPatternSet *font_set)
   for (i = 0; i < font_set->n_patterns; i++)
     XftPatternDestroy (font_set->patterns[i]);
 
+  g_free (font_set->patterns);
   g_free (font_set);
 }
 
