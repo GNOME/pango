@@ -1,3 +1,14 @@
+Mon Jul 15 14:56:34 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pangoft2.c (pango_ft2_font_get_face): Move
+	setting of load_flags before we do any checks for the 
+	font so they apply to the fallback font as well.
+
+	* pango/pangoft2.c (pango_ft2_font_get_face): Supply
+	FT_LOAD_NO_BITMAP as temporary workaround for problems
+	with embedded bitmaps, since we can't render bitmap fonts 
+	at the moment.
+
 Wed Jul  3 18:54:14 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pangoft2.c: Fix some typos.

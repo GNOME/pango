@@ -211,13 +211,10 @@ pango_ft2_font_get_face (PangoFont      *font)
 
   if (!ft2font->face)
     {
-      if (FcPatternGetString (pattern, FC_FILE, 0, &filename) != FcResultMatch)
-	goto bail0;
-    
-      if (FcPatternGetInteger (pattern, FC_INDEX, 0, &id) != FcResultMatch)
-	goto bail0;
-
-      ft2font->load_flags = FT_LOAD_DEFAULT;
+      /* If we add support for not antialising, then we should
+       * need to conditionalize NO_BITMAP on that.
+       */
+      ft2font->load_flags = FT_LOAD_NO_BITMAP;
 
       /* disable hinting if requested */
       if (FcPatternGetBool (pattern, FC_HINTING, 0, &hinting) != FcResultMatch)
@@ -232,6 +229,12 @@ pango_ft2_font_get_face (PangoFont      *font)
 
       if (autohint)
         ft2font->load_flags |= FT_LOAD_FORCE_AUTOHINT;
+
+      if (FcPatternGetString (pattern, FC_FILE, 0, &filename) != FcResultMatch)
+	      goto bail0;
+      
+      if (FcPatternGetInteger (pattern, FC_INDEX, 0, &id) != FcResultMatch)
+	      goto bail0;
 
       error = FT_New_Face (_pango_ft2_font_map_get_library (ft2font->fontmap),
 			   (char *) filename, id, &ft2font->face);
