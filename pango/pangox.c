@@ -1695,7 +1695,7 @@ font_struct_get_ligatures (PangoFontMap *fontmap,
       list = g_list_next (list);
     }
 
-  g_list_free (list);
+  g_list_free (list_start);
   
   info->n_ligs = n_linfo;
   info->ligs = linfo;

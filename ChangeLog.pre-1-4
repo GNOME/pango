@@ -1,3 +1,7 @@
+2001-02-11  Havoc Pennington  <hp@pobox.com>
+
+	* pango/pangox.c (font_struct_get_ligatures): memory leak fix
+
 2001-02-10  Tor Lillqvist  <tml@iki.fi>
 
 	* pango/pango-utils.c (pango_get_sysconf_subdirectory,
