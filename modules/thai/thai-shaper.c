@@ -330,7 +330,7 @@ get_adjusted_glyphs_list (ThaiFontInfo *font_info,
 	    if (font_info->font_set == THAI_FONT_TIS)
 	      glyph_lists[0] = thai_make_glyph (font_info, 0x20);
 	    else
-	      glyph_lists[0] = thai_make_glyph (font_info, 0x7F);
+	      glyph_lists[0] = thai_make_glyph (font_info, 0xDD);
             glyph_lists[1] =
 		thai_make_glyph (font_info, ucs2tis (cluster[0]));
 	    return 2;
@@ -432,7 +432,7 @@ get_adjusted_glyphs_list (ThaiFontInfo *font_info,
 	    if (font_info->font_set == THAI_FONT_TIS)
 	      glyph_lists[0] = thai_make_glyph (font_info, 0x20);
 	    else
-	      glyph_lists[0] = thai_make_glyph (font_info, 0x7F);
+	      glyph_lists[0] = thai_make_glyph (font_info, 0xDD);
 	    glyph_lists[1] =
 		thai_make_glyph (font_info, ucs2tis (cluster[0]));
 	    glyph_lists[2] =

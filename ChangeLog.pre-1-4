@@ -1,3 +1,9 @@
+2004-04-20  Theppitak Karoonboonyanan  <thep@linux.thai.net>
+
+	* modules/thai/thai-shaper.c (get_adjusted_glyphs_list):
+	* modules/thai/thai-fc.c (tis620_2):
+	Use dottedcircle as the base for individual combining characters.
+
 2004-04-18  Changwoo Ryu  <cwryu@debian.org>
 
 	* modules/hangul/hangul-defs.h (IS_JAMO): 
