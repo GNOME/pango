@@ -1,3 +1,9 @@
+2002-10-04  Alexander Larsson  <alexl@redhat.com>
+
+	* pango/pango-layout.[ch]:
+	* docs/tmpl/layout.sgml:
+	Add, implement and document PANGO_WRAP_WORD_CHAR
+
 Sun Sep 29 14:55:36 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/opentype/ftxgpos.c: ligatures can be also used in 

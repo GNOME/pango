@@ -205,6 +205,7 @@ describes how to wrap the lines of a #PangoLayout to the desired width.
 
 @PANGO_WRAP_WORD: wrap lines at word boundaries.
 @PANGO_WRAP_CHAR: wrap lines at character boundaries.
+@PANGO_WRAP_WORD_CHAR: wrap lines at word boundaries, but fall back to character boundaries if there is not enought space for a full word.
 
 <!-- ##### MACRO PANGO_TYPE_WRAP_MODE ##### -->
 <para>

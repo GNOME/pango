@@ -2418,17 +2418,24 @@ shape_tab (PangoLayoutLine  *line,
 
 static inline gboolean
 can_break_at (PangoLayout *layout,
-	      gint         offset)
+	      gint         offset,
+	      gboolean     always_wrap_char)
 {
+  PangoWrapMode wrap;
   /* We probably should have a mode where we treat all white-space as
    * of fungible width - appropriate for typography but not for
    * editing.
    */
+  wrap = layout->wrap;
+  
+  if (wrap == PANGO_WRAP_WORD_CHAR)
+    wrap = always_wrap_char ? PANGO_WRAP_CHAR : PANGO_WRAP_WORD;
+  
   if (offset == layout->n_chars)
     return TRUE;
-  else if (layout->wrap == PANGO_WRAP_WORD)
+  else if (wrap == PANGO_WRAP_WORD)
     return layout->log_attrs[offset].is_line_break;
-  else if (layout->wrap == PANGO_WRAP_CHAR)
+  else if (wrap == PANGO_WRAP_CHAR)
     return layout->log_attrs[offset].is_char_break;
   else
     {
@@ -2444,8 +2451,8 @@ can_break_in (PangoLayout *layout,
 {
   int i;
 
-  for (i = 1; i < num_chars; i++)
-    if (can_break_at (layout, start_offset + i))
+  for (i = 0; i < num_chars; i++)
+    if (can_break_at (layout, start_offset + i, FALSE))
       return TRUE;
 
   return FALSE;
@@ -2455,7 +2462,8 @@ typedef enum
 {
   BREAK_NONE_FIT,
   BREAK_SOME_FIT,
-  BREAK_ALL_FIT
+  BREAK_ALL_FIT,
+  BREAK_EMPTY_FIT
 } BreakResult;
 
 typedef struct _ParaBreakState ParaBreakState;
@@ -2513,15 +2521,15 @@ insert_run (PangoLayoutLine *line,
 /* Tries to insert as much as possible of the item at the head of
  * state->items onto @line. Three results are possible:
  *
- *  BREAK_NONE_FIT: Could
+ *  BREAK_NONE_FIT: Couldn't fit anything
  *  BREAK_SOME_FIT: The item was broken in the middle
  *  BREAK_ALL_FIT: Everything fit.
+ *  BREAK_EMPTY_FIT: Nothing fit, but that was ok, as we can break at the first char.
  *
- * If @no_break_at_start is TRUE, then BREAK_NONE_FIT will never
+ * If @force_fit is TRUE, then BREAK_NONE_FIT will never
  * be returned, a run will be added even if inserting the minimum amount
- * will cause the line to overflow. This is used when we've discovered
- * we can't break the line at all and have to backtrack and try again
- * allowing overflow.
+ * will cause the line to overflow. This is used at the start of a line
+ * and until we've found at least some place to break.
  *
  * If @no_break_at_end is TRUE, then BREAK_ALL_FIT will never be
  * returned even everything fits; the run will be broken earlier,
@@ -2532,7 +2540,7 @@ static BreakResult
 process_item (PangoLayout     *layout,
 	      PangoLayoutLine *line,
 	      ParaBreakState  *state,
-	      gboolean         no_break_at_start,
+	      gboolean         force_fit,
 	      gboolean         no_break_at_end)
 {
   PangoRectangle shape_ink;
@@ -2584,10 +2592,12 @@ process_item (PangoLayout     *layout,
       for (i = 0; i < item->num_chars; i++)
 	width += state->log_widths[state->log_widths_offset + i];
     }
-  
-  if (width <= state->remaining_width && !no_break_at_end)
+
+  if ((width <= state->remaining_width || (item->num_chars == 1 && !line->runs)) &&
+      !no_break_at_end)
     {
       state->remaining_width -= width;
+      state->remaining_width = MAX (state->remaining_width, 0);
       insert_run (line, state, layout->text, item, TRUE);
 
       return BREAK_ALL_FIT;
@@ -2597,6 +2607,8 @@ process_item (PangoLayout     *layout,
       int num_chars = item->num_chars;
       int break_num_chars = num_chars;
       int break_width = width;
+      int orig_width = width;
+      gboolean retrying_with_char_breaks = FALSE;
 
       if (processing_new_item)
 	{
@@ -2605,32 +2617,54 @@ process_item (PangoLayout     *layout,
 						 layout->text + item->offset, item->length, item->analysis.level,
 						 state->log_widths);
 	}
+
+    retry_break:
       
       /* Shorten the item by one line break
        */
-      while (--num_chars > 0)
- {
+      while (--num_chars >= 0)
+	{
 	  width -= (state->log_widths)[state->log_widths_offset + num_chars];
-	  
-	  if (can_break_at (layout, state->start_offset + num_chars))
+
+	  /* If there are no previous runs we have to take care to grab at least one char. */
+	  if (can_break_at (layout, state->start_offset + num_chars, retrying_with_char_breaks) &&
+	      (num_chars > 0 || line->runs))
 	    {
 	      break_num_chars = num_chars;
 	      break_width = width;
 	      
-	      if (width <= state->remaining_width)
+	      if (width <= state->remaining_width || (num_chars == 1 && !line->runs))
 		break;
 	    }
 	}
-      
-      if (no_break_at_start || break_width <= state->remaining_width)	/* Succesfully broke the item */
+
+      if (layout->wrap == PANGO_WRAP_WORD_CHAR && force_fit && break_width > state->remaining_width && !retrying_with_char_breaks)
 	{
-	  state->remaining_width -= break_width;
+	  retrying_with_char_breaks = TRUE;
+	  num_chars = item->num_chars;
+	  width = orig_width;
+	  break_num_chars = num_chars;
+	  break_width = width;
+	  goto retry_break;
+	}
+
+      if (force_fit || break_width <= state->remaining_width)	/* Succesfully broke the item */
+	{
+	  if (state->remaining_width >= 0)
+	    {
+	      state->remaining_width -= break_width;
+	      state->remaining_width = MAX (state->remaining_width, 0);
+	    }
 	  
 	  if (break_num_chars == item->num_chars)
 	    {
 	      insert_run (line, state, layout->text, item, TRUE);
 
 	      return BREAK_ALL_FIT;
+	    }
+	  else if (break_num_chars == 0)
+	    {
+	      return BREAK_EMPTY_FIT;
 	    }
 	  else
 	    {
@@ -2668,14 +2702,13 @@ process_line (PangoLayout    *layout,
   PangoLayoutLine *line;
   
   gboolean have_break = FALSE;      /* If we've seen a possible break yet */
-  gboolean break_at_start = FALSE;  /* If that break is at the start of a run */
   int break_remaining_width = 0;    /* Remaining width before adding run with break */
   int break_start_offset = 0;	    /* Start width before adding run with break */
   GSList *break_link = NULL;        /* Link holding run before break */
   
   line = pango_layout_line_new (layout);
   line->start_index = state->line_start_index;
-  
+
   if (state->first_line)
     state->remaining_width = (layout->indent >= 0) ? layout->width - layout->indent : layout->width;
   else
@@ -2688,18 +2721,6 @@ process_line (PangoLayout    *layout,
       int old_num_chars;
       int old_remaining_width;
 
-      if (line->runs && can_break_at (layout, state->start_offset))
-	{
-	  if (state->remaining_width == 0)
-	    goto done;
-
-	  have_break = TRUE;
-	  break_at_start = TRUE;
-	  break_remaining_width = state->remaining_width;
-	  break_start_offset = state->start_offset;
-	  break_link = line->runs;
-	}
-
       old_num_chars = item->num_chars;
       old_remaining_width = state->remaining_width;
       
@@ -2711,7 +2732,6 @@ process_line (PangoLayout    *layout,
 	  if (can_break_in (layout, state->start_offset, old_num_chars))
 	    {
 	      have_break = TRUE;
-	      break_at_start = FALSE;
 	      break_remaining_width = old_remaining_width;
 	      break_start_offset = state->start_offset;
 	      break_link = line->runs->next;
@@ -2719,7 +2739,11 @@ process_line (PangoLayout    *layout,
 	  
 	  state->items = g_list_delete_link (state->items, state->items);
 	  state->start_offset += old_num_chars;
+
 	  break;
+
+	case BREAK_EMPTY_FIT:
+	  goto done;
 	  
 	case BREAK_SOME_FIT:
 	  state->start_offset += old_num_chars - item->num_chars;
@@ -2733,18 +2757,15 @@ process_line (PangoLayout    *layout,
 	  state->start_offset = break_start_offset;
 	  state->remaining_width = break_remaining_width;
 
-	  if (!break_at_start)
-	    {
-	      /* Reshape run to break */
-	      item = state->items->data;
-	      
-	      old_num_chars = item->num_chars;
-	      result = process_item (layout, line, state, TRUE, TRUE);
-	      g_assert (result == BREAK_SOME_FIT);
-
-	      state->start_offset += old_num_chars - item->num_chars; 
-	    }
-
+	  /* Reshape run to break */
+	  item = state->items->data;
+	  
+	  old_num_chars = item->num_chars;
+	  result = process_item (layout, line, state, TRUE, TRUE);
+	  g_assert (result == BREAK_SOME_FIT || result == BREAK_EMPTY_FIT);
+	  
+	  state->start_offset += old_num_chars - item->num_chars;
+	  
 	  goto done;
 	}
     }

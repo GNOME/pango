@@ -42,7 +42,8 @@ typedef enum {
 
 typedef enum {
   PANGO_WRAP_WORD,
-  PANGO_WRAP_CHAR
+  PANGO_WRAP_CHAR,
+  PANGO_WRAP_WORD_CHAR
 } PangoWrapMode;
 
 struct _PangoLayoutLine
