@@ -793,8 +793,7 @@ getword (const char *str, const char *last, size_t *wordlen)
  * default values. If SIZE is missing, the size in the resulting font
  * description will be set to 0.
  * 
- * Return value: a new #PangoFontDescription, or %NULL if the 
- * string could not be parsed. 
+ * Return value: a new #PangoFontDescription. 
  **/
 PangoFontDescription *
 pango_font_description_from_string (const char *str)

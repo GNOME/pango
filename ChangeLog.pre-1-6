@@ -1,3 +1,8 @@
+2002-03-25  Sven Neumann  <sven@gimp.org>
+
+	* pango/fonts.c (pango_font_description_from_string): this function
+	may never return NULL, so we shouldn't say so in the comment.
+
 Wed Mar 20 18:40:34 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/modules.c (build_map): Add an informative
