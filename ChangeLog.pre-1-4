@@ -1,3 +1,7 @@
+2001-08-15  Jens Finke <jens@gnome.org>
+
+	* pango.spec.in: Updated to match gpp standard.
+
 2001-08-14  Sven Neumann  <sven@gimp.org>
 
 	* pango/pangoft2.c (pango_ft2_render): composite with "saturate"
