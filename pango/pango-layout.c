@@ -961,10 +961,12 @@ pango_layout_index_to_pos (PangoLayout    *layout,
   GSList *tmp_list;
   int bytes_seen = 0;
   int width;
+  PangoDirection base_dir;
+  int x_offset;
   
   g_return_if_fail (layout != NULL);
-  g_return_if_fail (index >= 0 && index < layout->length);
-
+  g_return_if_fail (index >= 0);
+  
   pos->y = 0;
   
   pango_layout_check_lines (layout);
@@ -986,7 +988,6 @@ pango_layout_index_to_pos (PangoLayout    *layout,
       if (bytes_seen + layout_line->length > index)
 	{
 	  int x_pos;
-	  int x_offset;
 
 	  if (layout->alignment == PANGO_ALIGN_RIGHT)
 	    x_offset = width - logical_rect.width;
@@ -1011,6 +1012,39 @@ pango_layout_index_to_pos (PangoLayout    *layout,
       tmp_list = tmp_list->next;
       bytes_seen += layout_line->length;
       pos->y += logical_rect.height;
+    }
+
+  /* Return a zero-width rectangle on the left or right side of the
+   * last line.
+   */
+  g_assert (index >= layout->length);
+
+  pos->y -= logical_rect.height;
+  pos->height = logical_rect.height;
+  pos->width = 0;
+  
+  base_dir = pango_context_get_base_dir (layout->context);
+
+  if (layout->alignment == PANGO_ALIGN_RIGHT)
+    x_offset = width - logical_rect.width;
+  else if (layout->alignment == PANGO_ALIGN_CENTER)
+    x_offset = (width - logical_rect.width) / 2;
+  else
+    x_offset = 0;
+  
+  switch (base_dir)
+    {
+    case PANGO_DIRECTION_LTR:
+      pos->x = x_offset + logical_rect.width;
+      break;
+
+    case PANGO_DIRECTION_RTL:
+      pos->x = x_offset;
+      break;
+
+    default:
+      g_assert_not_reached ();
+      break;
     }
 }
 
