@@ -1,3 +1,8 @@
+2002-11-01  Changwoo Ryu  <cwryu@debian.org>
+
+	* modules/hangul/hangul-defs.h modules/hangul/hangul-xft.c:
+	Added Hangul Tone Marks rendering by Jungshik Shin (#96299).
+
 2002-10-31  Changwoo Ryu  <cwryu@debian.org>
 
 	* modules/hangul/hangul-xft.c (hangul_engine_get_coverage):

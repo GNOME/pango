@@ -46,9 +46,13 @@
 #define VFILL 0x1160
 #define TFILL 0x11A7
 
+#define HTONE1 0x302E
+#define HTONE2 0x302F
+
 #define IS_L(wc) (wc >= LBASE && wc <= LEND)
 #define IS_V(wc) (wc >= VFILL && wc <= VEND)
 #define IS_T(wc) (wc >= TBASE && wc <= TEND)
+#define IS_M(wc) (wc == HTONE1 || wc == HTONE2)
 
 /* jamo which can be composited as a Hangul syllable */
 #define IS_L_S(wc) (wc >= LBASE && wc < LBASE + LCOUNT)

@@ -34,6 +34,7 @@
 static PangoEngineRange hangul_ranges[] = {
   /* Language characters */
   { 0x1100, 0x11ff, "*" }, /* Hangul Jamo */
+  { 0x302e, 0x302f, "*" }, /* Hangul Tone Marks */
   { 0xac00, 0xd7a3, "*" }, /* Hangul Syllables */
 };
 
@@ -60,15 +61,113 @@ set_glyph (PangoFont *font, PangoGlyphString *glyphs, int i, int offset, PangoGl
   glyphs->glyphs[i].geometry.width = logical_rect.width;
 }
 
+/* Add a Hangul tone mark glyph in a glyph string.
+ * Non-spacing glyph works pretty much automatically.
+ * Spacing-glyph takes some care:
+ *   1. Make a room for a tone mark at the beginning(leftmost end) of a cluster 
+ *   to attach it to.
+ *   2. Adjust x_offset so that it is drawn to the left of a cluster.
+ *   3. Set the logical width to zero. 
+ */
+
+static void
+set_glyph_tone (PangoFont *font, PangoGlyphString *glyphs, int i,
+		            int offset, PangoGlyph glyph)
+{
+  PangoRectangle logical_rect, ink_rect;
+  PangoRectangle logical_rect_cluster;
+
+  glyphs->glyphs[i].glyph = glyph;
+  glyphs->glyphs[i].geometry.y_offset = 0;
+  glyphs->log_clusters[i] = offset;
+
+  pango_font_get_glyph_extents (font, glyphs->glyphs[i].glyph, 
+				&ink_rect, &logical_rect);
+
+  /* tone mark is not the first in a glyph string. We have info. on the 
+   * preceding glyphs in a glyph string 
+   */
+    {
+      int j = i - 1;
+      /* search for the beg. of the preceding cluster */
+      while (j >= 0 && glyphs->log_clusters[j] == glyphs->log_clusters[i - 1]) 
+	j--;
+
+      /* In .._extents_range(...,start,end,...), to my surprise  start is 
+       * inclusive but end is exclusive !! 
+       */
+      pango_glyph_string_extents_range (glyphs, j + 1, i, font, 
+					NULL, &logical_rect_cluster); 
+
+      /* logical_rect_cluster.width is all the offset we need so that the
+       * inherent x_offset in the glyph (ink_rect.x) should be canceled out.
+       */
+      glyphs->glyphs[i].geometry.x_offset = - logical_rect_cluster.width
+					    - ink_rect.x ; 
+					    
+
+      /* make an additional room for a tone mark if it has a spacing glyph
+       * because that's likely to be an indication that glyphs for other 
+       * characters in the font are not designed for combining with tone marks.
+       */
+      if (logical_rect.width)
+	{
+	  glyphs->glyphs[i].geometry.x_offset -= ink_rect.width;
+          glyphs->glyphs[j + 1].geometry.width += ink_rect.width;
+          glyphs->glyphs[j + 1].geometry.x_offset += ink_rect.width;
+	}
+    }
+
+  glyphs->glyphs[i].geometry.width = 0;
+}
+
+
 #define find_char pango_xft_font_get_glyph
+
+
+static void
+render_tone (PangoFont *font, gunichar tone, PangoGlyphString *glyphs,
+             int *n_glyphs, int cluster_offset)
+{
+  int index;
+
+  index = find_char (font, tone);
+  pango_glyph_string_set_size (glyphs, *n_glyphs + 1);
+  if (index)
+    {
+      set_glyph_tone (font, glyphs, *n_glyphs, cluster_offset, index);
+    }
+  else 
+    {
+      /* fall back : HTONE1(0x302e) => middle-dot, HTONE2(0x302f) => colon */
+      index = find_char (font, tone == HTONE1 ? 0x00b7 : 0x003a);
+      if (index)
+        {
+          set_glyph_tone (font, glyphs, *n_glyphs, cluster_offset, index);
+        }
+      else 
+        set_glyph (font, glyphs, *n_glyphs, cluster_offset,
+                   pango_xft_font_get_unknown_glyph (font, index));
+    }
+  (*n_glyphs)++;
+}
+
 
 static void
 render_syllable (PangoFont *font, gunichar *text, int length,
 		 PangoGlyphString *glyphs, int *n_glyphs, int cluster_offset)
 {
   int index;
-  gunichar wc;
+  gunichar wc, tone;
   int i, j, composed;
+
+  if (IS_M (text[length - 1]))
+    {
+      tone = text[length - 1];
+      length--;
+    }
+  else
+    tone = 0;
 
   if (length >= 3 && IS_L_S(text[0]) && IS_V_S(text[1]) && IS_T_S(text[2]))
     composed = 3;
@@ -125,6 +224,8 @@ render_syllable (PangoFont *font, gunichar *text, int length,
 	  (*n_glyphs)++;
 	}
     }
+  if (tone)
+    render_tone(font, tone, glyphs, n_glyphs, cluster_offset);
 }
 
 static void 
@@ -156,11 +257,12 @@ hangul_engine_shape (PangoFont        *font,
       wc = g_utf8_get_char (p);
 
       /* Check syllable boundaries. */
-      if (n_jamos != 0 &&
+      if (n_jamos &&
 	  ((!IS_L (prev) && IS_S (wc)) ||
 	   (IS_T (prev) && IS_L (wc)) ||
 	   (IS_V (prev) && IS_L (wc)) ||
-	   (IS_T (prev) && IS_V (wc))))
+	   (IS_T (prev) && IS_V (wc)) ||
+	   IS_M(prev)))
 	{
 	  /* Draw a syllable. */
 	  render_syllable (font, jamos, n_jamos, glyphs,
@@ -168,7 +270,7 @@ hangul_engine_shape (PangoFont        *font,
 	  n_jamos = 0;
 	  start = p;
 	}
-      
+
       if (n_jamos == max_jamos)
 	{
 	  max_jamos += 3;	/* at most 3 for each syllable code (L+V+T) */
@@ -188,6 +290,8 @@ hangul_engine_shape (PangoFont        *font,
 	  if (S_HAS_T (wc))
 	    jamos[n_jamos++] = T_FROM_S (wc);
 	}
+      else if (IS_M (wc) && !n_jamos)
+	;			/* ignore M's which do not follow syllables  */
       else
 	jamos[n_jamos++] = wc;
       p = g_utf8_next_char (p);
@@ -212,6 +316,8 @@ hangul_engine_get_coverage (PangoFont  *font,
      _exactly_, I sure.  */
   for (i = 0x1100; i <= 0x11ff; i++)
     pango_coverage_set (result, i, PANGO_COVERAGE_FALLBACK);
+  pango_coverage_set (result, 0x302e, PANGO_COVERAGE_FALLBACK);
+  pango_coverage_set (result, 0x302f, PANGO_COVERAGE_FALLBACK);
   for (i = 0xac00; i <= 0xd7a3; i++)
     pango_coverage_set (result, i, PANGO_COVERAGE_EXACT);
   return result;
