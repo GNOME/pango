@@ -48,12 +48,11 @@ PKG_CFLAGS = -FImsvc_recommended_pragmas.h -I.. -I. -I$(PRJ_TOP) \
 		-DPANGO_ENABLE_BACKEND -DPANGO_ENABLE_ENGINE \
 		-DMODULE_VERSION=\"$(PANGO_MODULE_VERSION)\" \
 		$(GLIB_CFLAGS) $(LIBICONV_CFLAGS) \
-		$(FREETYPE2_CFLAGS) \
 		$(X11_CFLAGS)  -DSYSCONFDIR=\"/etc\"
 
 !IFDEF OBJS_pango
 # don't link with itself
-PKG_LINK = $(GLIB_LIBS)
+PKG_LINK = $(GLIB_LIBS) $(FONTCONFIG_LIBS)
 !ENDIF
 
 !IFDEF OBJS_pangowin32
@@ -62,9 +61,11 @@ PKG_LINK = $(GLIB_LIBS) $(LIBICONV_LIBS) \
 !ENDIF
 
 !IFDEF OBJS_pangoft2
-PKG_LINK = $(GLIB_LIBS) $(LIBICONV_LIBS) $(FREETYPE2_LIBS) \
-	pango-$(PANGO_VER).lib $(FONTCONFIG_LIBS) 
-# ..\fontconfig\fcwin32.lib
+PKG_CFLAGS = $(PKG_CFLAGS) $(FREETYPE2_CFLAGS) $(FONTCONFIG_CFLAGS) \
+	-DPANGO_MODULE_PREFIX=_pango_basic_ft2
+
+PKG_LINK = $(GLIB_LIBS) $(LIBICONV_LIBS) $(FREETYPE2_LIBS) $(FONTCONFIG_LIBS) \
+	pango-$(PANGO_VER).lib opentype\pango-ot.lib
 !ENDIF
 
 !IFDEF OBJS_pangox
@@ -79,28 +80,30 @@ PKG_LINK = $(GLIB_LIBS) $(LIBICONV_LIBS) \
 
 !IFDEF OBJS_pango
 OBJECTS = \
+	pango-enum-types.obj \
+	\
 	break.obj \
 	fonts.obj \
 	glyphstring.obj \
 	mapping.obj \
 	modules.obj \
 	pango-attributes.obj \
+	pango-engine.obj \
 	pango-color.obj \
 	pango-context.obj \
 	pango-coverage.obj \
 	pango-fontset.obj \
 	pango-fontmap.obj \
 	pango-glyph-item.obj \
-	pango-intset.obj \
 	pango-item.obj \
 	pango-markup.obj \
 	pango-layout.obj \
+	pango-script.obj \
 	pango-tabs.obj \
 	pango-utils.obj \
-	pangofc-font.obj \
 	reorder-items.obj \
 	shape.obj \
-	pango-enum-types.obj \
+	\
 	fribidi.obj \
 	fribidi_get_type.obj
 !ENDIF
@@ -108,11 +111,11 @@ OBJECTS = \
 basic-win32.obj : ..\modules\basic\basic-win32.c
 	$(CC) $(PKG_CFLAGS) -GD -DPANGO_MODULE_PREFIX=_pango_basic_win32 -c ..\modules\basic\basic-win32.c
 
-basic-ft2.obj : ..\modules\basic\basic-ft2.c
-	$(CC) $(PKG_CFLAGS) -GD -DFT2_MODULE_PREFIX -c ..\modules\basic\basic-ft2.c
+basic-fc.obj : ..\modules\basic\basic-fc.c
+	$(CC) $(PKG_CFLAGS) -GD -DPANGO_MODULE_PREFIX=_pango_basic_ft2 -c ..\modules\basic\basic-fc.c
 
 basic-x.obj : ..\modules\basic\basic-x.c
-	$(CC) $(PKG_CFLAGS) -GD -DX_MODULE_PREFIX -c ..\modules\basic\basic-x.c
+	$(CC) $(PKG_CFLAGS) -GD -DPANGO_MODULE_PREFIX=_pango_basic_xs -c ..\modules\basic\basic-x.c
 
 
 fribidi.obj : mini-fribidi\fribidi.c
@@ -131,10 +134,14 @@ OBJECTS = \
 
 !IFDEF OBJS_pangoft2 
 OBJECTS = \
-	module-defs-ft2.obj \
+	module-defs-fc.obj \
+	pangofc-font.obj \
+	pangofc-fontmap.obj \
 	pangoft2.obj \
 	pangoft2-fontmap.obj \
-	basic-ft2.obj
+	basic-fc.obj
+
+PKG_CFLAGS = $(PKG_CFLAGS) $(FONTCONFIG_CFLAGS) $(FREETYPE2_CFLAGS)
 !ENDIF
 
 !IFDEF OBJS_pangox
@@ -159,8 +166,8 @@ OBJECTS = $(PACKAGE).obj
 module-defs-win32.c : module-defs-win32.c.win32
 	copy module-defs-win32.c.win32 module-defs-win32.c
 
-module-defs-ft2.c : module-defs-ft2.c.win32
-	copy module-defs-ft2.c.win32 module-defs-ft2.c
+module-defs-fc.c : module-defs-fc.c.win32
+	copy module-defs-fc.c.win32 module-defs-fc.c
 
 pango_headers=		   \
 	pango.h		   \
@@ -171,27 +178,29 @@ pango_headers=		   \
 	pango-engine.h	   \
 	pango-font.h       \
 	pango-fontmap.h	   \
+	pango-fontset.h    \
 	pango-glyph.h	   \
-	pango-indic.h	   \
+	pango-glyph-item.h \
 	pango-item.h	   \
 	pango-layout.h	   \
 	pango-modules.h	   \
+	pango-script.h	   \
 	pango-tabs.h	   \
 	pango-types.h	   \
 	pango-utils.h	   \
-	pangox.h
+	pangofc-font.h	   \
+	pangofc-fontmap.h
 
-
-pango-enum-types.h: $(pango_headers) 
-	$(PERL) ..\..\glib\gobject\glib-mkenums  \
-		--fhead "#ifndef __PANGO_ENUM_TYPES_H__\n#define __PANGO_ENUM_TYPES_H__\n" \
+pango-enum-types.h: $(pango_headers) makefile.msc
+	$(PERL) $(GLIB)\gobject\glib-mkenums  \
+		--fhead "#ifndef __PANGO_ENUM_TYPES_H__\n#define __PANGO_ENUM_TYPES_H__\n\n#include <glib-object.h>\n\nG_BEGIN_DECLS\n" \
 		--fprod "/* enumerations from \"@filename@\" */\n" \
 		--vhead "GType @enum_name@_get_type (void);\n#define PANGO_TYPE_@ENUMSHORT@ (@enum_name@_get_type())\n" 	\
-		--ftail "#endif /* __PANGO_ENUM_TYPES_H__ */" \
-		$(pango_headers) ) > pango-enum-types.h
+		--ftail "G_END_DECLS\n#endif /* __PANGO_ENUM_TYPES_H__ */" \
+		$(pango_headers) > pango-enum-types.h
 
-pango-enum-types.c: $(pango_headers) pango-enum-types.h
-	$(PERL) ..\..\glib\gobject\glib-mkenums  \
+pango-enum-types.c: $(pango_headers) pango-enum-types.h makefile.msc
+	$(PERL) $(GLIB)\gobject\glib-mkenums  \
 		--fhead "#include <pango.h>" \
 		--fprod "\n/* enumerations from \"@filename@\" */" \
 		--vhead "GType\n@enum_name@_get_type (void)\n{\n  static GType etype = 0;\n  if (etype == 0) {\n    static const GEnumValue values[] = {" 	\

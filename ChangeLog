@@ -1,3 +1,27 @@
+2003-12-13  Hans Breuer  <hans@breuer.org>
+
+	* pango/pango.def pangoft2.def : moved pango_fc_*
+	to the latter where they live on *nix too.
+
+	* pango/makefile.msc : make it build again (including
+	the Ft2 backend)
+
+	* pango/module-defs-fc.c.win32 : if PANGO_MODULE_PREFIX is defined
+	include the basic backend shaper
+
+	* pango/pangowin32.c (pango_win32_render_layout) : 
+	initialize iter before first usage to avoid immediate crashing
+
+	* pango/opentype/makefile.msc
+            pango/modules/makefile.msc : finally build with mscv, too.
+	[completely untested cause I'm not able to type, write or read
+	any of these languages]
+
+	* modules/modules.def : follow module function renaming/changes
+
+	* modules/basic/basic-win32.c : register the right engine, i.e.
+	make it compile
+
 2003-12-08  Tor Lillqvist  <tml@iki.fi>
 
 	* modules/basic/basic-win32.c (convert_log_clusters_to_byte_offsets):

@@ -818,6 +818,8 @@ pango_win32_render_layout (HDC          hdc,
   g_return_if_fail (hdc != NULL);
   g_return_if_fail (PANGO_IS_LAYOUT (layout));
 
+  iter = pango_layout_get_iter (layout);
+
   do
     {
       PangoRectangle   logical_rect;

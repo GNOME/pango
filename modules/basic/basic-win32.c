@@ -1127,7 +1127,7 @@ PANGO_MODULE_ENTRY(init) (GTypeModule *module)
   if (pango_win32_get_debug_flag ())
     pango_win32_debug = TRUE;
 
-  basic_engine_register_type (module);
+  basic_engine_win32_register_type (module);
 }
 
 void 

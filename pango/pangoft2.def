@@ -1,4 +1,11 @@
 EXPORTS
+	pango_fc_font_get_glyph
+	pango_fc_font_get_type
+	pango_fc_font_get_unknown_glyph
+	pango_fc_font_has_char
+	pango_fc_font_kern_glyphs
+	pango_fc_font_lock_face
+	pango_fc_font_unlock_face
 	pango_ft2_font_get_coverage
 	pango_ft2_font_get_face
 	pango_ft2_font_get_kerning

@@ -69,13 +69,7 @@ EXPORTS
 	pango_coverage_unref
 	pango_default_break
 	pango_direction_get_type
-	pango_fc_font_get_glyph
-	pango_fc_font_get_kerning
-	pango_fc_font_get_type
-	pango_fc_font_get_unknown_glyph
-	pango_fc_font_has_char
-	pango_fc_font_lock_face
-	pango_fc_font_unlock_face
+	pango_engine_shape_get_type
 	pango_find_map
 	pango_find_paragraph_boundary
 	pango_font_describe
@@ -155,11 +149,6 @@ EXPORTS
 	pango_glyph_string_new
 	pango_glyph_string_set_size
 	pango_glyph_string_x_to_index
-	pango_int_set_add
-	pango_int_set_add_range
-	pango_int_set_contains
-	pango_int_set_destroy
-	pango_int_set_new
 	pango_item_copy
 	pango_item_free
 	pango_item_new
@@ -237,7 +226,6 @@ EXPORTS
 	pango_log2vis_get_embedding_levels
 	pango_lookup_aliases
 	pango_map_get_engine
-	pango_map_get_entry
 	pango_module_register
 	pango_parse_markup
 	pango_parse_stretch
@@ -249,6 +237,7 @@ EXPORTS
 	pango_scan_int
 	pango_scan_string
 	pango_scan_word
+	pango_script_get_type
 	pango_shape
 	pango_skip_space
 	pango_split_file_list
