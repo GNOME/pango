@@ -443,6 +443,8 @@ pango_font_description_merge (PangoFontDescription       *desc,
     desc->stretch = desc_to_merge->stretch;
   if (new_mask & PANGO_FONT_MASK_SIZE)
     desc->size = desc_to_merge->size;
+
+  desc->mask |= new_mask;
 }
 
 /**
@@ -484,6 +486,8 @@ pango_font_description_merge_static (PangoFontDescription       *desc,
     desc->stretch = desc_to_merge->stretch;
   if (new_mask & PANGO_FONT_MASK_SIZE)
     desc->size = desc_to_merge->size;
+
+  desc->mask |= new_mask;
 }
 
 static gint

@@ -1,3 +1,8 @@
+Tue Jan  1 20:52:00 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/fonts.c (pango_font_description_merge[_static]):
+	Update the field mask in the merged description.
+
 2002-01-02  Tor Lillqvist  <tml@iki.fi>
 
 	* pango/pangowin32.c (pango_win32_render_layout_line): Silence gcc
