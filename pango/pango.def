@@ -30,6 +30,7 @@ EXPORTS
 	pango_attr_shape_new
 	pango_attr_shape_new_with_data
 	pango_attr_size_new
+	pango_attr_size_new_absolute
 	pango_attr_stretch_new
 	pango_attr_strikethrough_new
 	pango_attr_style_new
@@ -93,6 +94,7 @@ EXPORTS
 	pango_font_description_get_family
 	pango_font_description_get_set_fields
 	pango_font_description_get_size
+	pango_font_description_get_size_is_absolute
 	pango_font_description_get_stretch
 	pango_font_description_get_style
 	pango_font_description_get_type
@@ -102,6 +104,7 @@ EXPORTS
 	pango_font_description_merge
 	pango_font_description_merge_static
 	pango_font_description_new
+	pango_font_description_set_absolute_size
 	pango_font_description_set_family
 	pango_font_description_set_family_static
 	pango_font_description_set_size
