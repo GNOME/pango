@@ -22,6 +22,12 @@
 #ifndef __PANGOWIN32_PRIVATE_H__
 #define __PANGOWIN32_PRIVATE_H__
 
+/* Just for debugging, will be removed */
+#define PING(printlist)					\
+(g_print ("%s:%d ", __PRETTY_FUNCTION__, __LINE__),	\
+ g_print printlist,					\
+ g_print ("\n"))
+
 #include "pango-modules.h"
 #include "pangowin32.h"
 

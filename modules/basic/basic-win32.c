@@ -128,7 +128,7 @@ find_char (CharCache *cache, PangoFont *font, gunichar wc)
 
   n_subfonts = pango_win32_list_subfonts (font, subrange, &subfonts);
 
-  for (i=0; i<n_subfonts; i++)
+  for (i = 0; i < n_subfonts; i++)
     {
       PangoGlyph glyph;
 
@@ -217,7 +217,7 @@ basic_engine_shape (PangoFont        *font,
   pango_glyph_string_set_size (glyphs, n_chars);
 
   p = text;
-  for (i=0; i < n_chars; i++)
+  for (i = 0; i < n_chars; i++)
     {
       gunichar wc;
       FriBidiChar mirrored_ch;
@@ -285,7 +285,7 @@ basic_engine_shape (PangoFont        *font,
       swap_range (glyphs, 0, n_chars);
       
       /* Now reorder glyphs within each cluster back to LTR */
-      for (start=0; start<n_chars;)
+      for (start = 0; start < n_chars;)
 	{
 	  end = start;
 	  while (end < n_chars &&

@@ -204,9 +204,9 @@ static PangoWin32FontMap *fontmap = NULL;
 
 static int CALLBACK
 pango_win32_inner_enum_proc (LOGFONT    *lfp,
-			TEXTMETRIC *metrics,
-			DWORD       fontType,
-			LPARAM      lParam)
+			     TEXTMETRIC *metrics,
+			     DWORD       fontType,
+			     LPARAM      lParam)
 {
   pango_win32_insert_font (fontmap, lfp);
 
@@ -235,7 +235,6 @@ PangoFontMap *
 pango_win32_font_map_for_display (void)
 {
   LOGFONT logfont;
-  int screen;
 
   /* Make sure that the type system is initialized */
   g_type_init();
@@ -496,300 +495,6 @@ pango_win32_font_map_load_font (PangoFontMap               *fontmap,
 
   g_free (name);
   return result;
-}
-
-/* Similar to GNU libc's getline, but buffer is g_malloc'd */
-static size_t
-pango_getline (char **lineptr, size_t *n, FILE *stream)
-{
-#define EXPAND_CHUNK 16
-
-  int n_read = 0;
-  int result = -1;
-
-  g_return_val_if_fail (lineptr != NULL, -1);
-  g_return_val_if_fail (n != NULL, -1);
-  g_return_val_if_fail (*lineptr != NULL || *n == 0, -1);
-  
-#ifdef HAVE_FLOCKFILE
-  flockfile (stream);
-#endif  
-  
-  while (1)
-    {
-      int c;
-      
-#ifdef HAVE_FLOCKFILE
-      c = getc_unlocked (stream);
-#else
-      c = getc (stream);
-#endif      
-
-      if (c == EOF)
-	{
-	  if (n_read > 0)
-	    {
-	      result = n_read;
-	      (*lineptr)[n_read] = '\0';
-	    }
-	  break;
-	}
-
-      if (n_read + 2 >= *n)
-	{
-	  *n += EXPAND_CHUNK;
-	  *lineptr = g_realloc (*lineptr, *n);
-	}
-
-      (*lineptr)[n_read] = c;
-      n_read++;
-
-      if (c == '\n' || c == '\r')
-	{
-	  result = n_read;
-	  (*lineptr)[n_read] = '\0';
-	  break;
-	}
-    }
-
-#ifdef HAVE_FLOCKFILE
-  funlockfile (stream);
-#endif
-
-  return n_read - 1;
-}
-
-static int
-find_tok (char **start, char **tok)
-{
-  char *p = *start;
-  
-  while (*p && (*p == ' ' || *p == '\t'))
-    p++;
-
-  if (*p == 0 || *p == '\n' || *p == '\r')
-    return -1;
-
-  if (*p == '"')
-    {
-      p++;
-      *tok = p;
-
-      while (*p && *p != '"')
-	p++;
-
-      if (*p != '"')
-	return -1;
-
-      *start = p + 1;
-      return p - *tok;
-    }
-  else
-    {
-      *tok = p;
-      
-      while (*p && *p != ' ' && *p != '\t' && *p != '\r' && *p != '\n')
-	p++;
-
-      *start = p;
-      return p - *tok;
-    }
-}
-
-static gboolean
-get_style (GString *str, PangoFontDescription *desc)
-{
-  if (str->len == 0)
-    return FALSE;
-
-  switch (str->str[0])
-    {
-    case 'n':
-    case 'N':
-      if (strncasecmp (str->str, "normal", str->len) == 0)
-	{
-	  desc->style = PANGO_STYLE_NORMAL;
-	  return TRUE;
-	}
-      break;
-    case 'i':
-      if (strncasecmp (str->str, "italic", str->len) == 0)
-	{
-	  desc->style = PANGO_STYLE_ITALIC;
-	  return TRUE;
-	}
-      break;
-    case 'o':
-      if (strncasecmp (str->str, "oblique", str->len) == 0)
-	{
-	  desc->style = PANGO_STYLE_OBLIQUE;
-	  return TRUE;
-	}
-      break;
-    }
-  g_warning ("Style must be normal, italic, or oblique");
-  
-  return FALSE;
-}
-
-static gboolean
-get_variant (GString *str, PangoFontDescription *desc)
-{
-  if (str->len == 0)
-    return FALSE;
-
-  switch (str->str[0])
-    {
-    case 'n':
-    case 'N':
-      if (strncasecmp (str->str, "normal", str->len) == 0)
-	{
-	  desc->variant = PANGO_VARIANT_NORMAL;
-	  return TRUE;
-	}
-      break;
-    case 's':
-    case 'S':
-      if (strncasecmp (str->str, "small_caps", str->len) == 0)
-	{
-	  desc->variant = PANGO_VARIANT_SMALL_CAPS;
-	  return TRUE;
-	}
-      break;
-    }
-  
-  g_warning ("Variant must be normal, or small_caps");
-  return FALSE;
-}
-
-static gboolean
-get_weight (GString *str, PangoFontDescription *desc)
-{
-  if (str->len == 0)
-    return FALSE;
-
-  switch (str->str[0])
-    {
-    case 'n':
-    case 'N':
-      if (strncasecmp (str->str, "normal", str->len) == 0)
-	{
-	  desc->weight = PANGO_WEIGHT_NORMAL;
-	  return TRUE;
-	}
-      break;
-    case 'b':
-    case 'B':
-      if (strncasecmp (str->str, "bold", str->len) == 0)
-	{
-	  desc->weight = PANGO_WEIGHT_BOLD;
-	  return TRUE;
-	}
-      break;
-    case '0':
-    case '1':
-    case '2':
-    case '3':
-    case '4':
-    case '5':
-    case '6':
-    case '7':
-    case '8':
-    case '9':
-      {
-	char *numstr, *end;
-
-	numstr = g_strndup (str->str, str->len);
-
-	desc->weight = strtol (numstr, &end, 0);
-	if (*end != '\0')
-	  {
-	    g_warning ("Cannot parse numerical weight '%s'", numstr);
-	    g_free (numstr);
-	    return FALSE;
-	  }
-
-	g_free (numstr);
-	return TRUE;
-      }
-    }
-  
-  g_warning ("Weight must be normal, bold, or an integer");
-  return FALSE;
-}
-
-static gboolean
-get_stretch (GString *str, PangoFontDescription *desc)
-{
-  if (str->len == 0)
-    return FALSE;
-
-  switch (str->str[0])
-    { 
-    case 'c':
-    case 'C':
-      if (strncasecmp (str->str, "condensed", str->len) == 0)
-	{
-	  desc->stretch = PANGO_STRETCH_CONDENSED;
-	  return TRUE;
-	}
-      break;
-    case 'e':
-    case 'E':
-      if (strncasecmp (str->str, "extra_condensed", str->len) == 0)
-	{
-	  desc->stretch = PANGO_STRETCH_EXTRA_CONDENSED;
-	  return TRUE;
-	}
-     if (strncasecmp (str->str, "extra_expanded", str->len) == 0)
-	{
-	  desc->stretch = PANGO_STRETCH_EXTRA_EXPANDED;
-	  return TRUE;
-	}
-      if (strncasecmp (str->str, "expanded", str->len) == 0)
-	{
-	  desc->stretch = PANGO_STRETCH_EXPANDED;
-	  return TRUE;
-	}
-      break;
-    case 'n':
-    case 'N':
-      if (strncasecmp (str->str, "normal", str->len) == 0)
-	{
-	  desc->stretch = PANGO_STRETCH_NORMAL;
-	  return TRUE;
-	}
-      break;
-    case 's':
-    case 'S':
-      if (strncasecmp (str->str, "semi_condensed", str->len) == 0)
-	{
-	  desc->stretch = PANGO_STRETCH_SEMI_CONDENSED;
-	  return TRUE;
-	}
-      if (strncasecmp (str->str, "semi_expanded", str->len) == 0)
-	{
-	  desc->stretch = PANGO_STRETCH_SEMI_EXPANDED;
-	  return TRUE;
-	}
-      break;
-    case 'u':
-    case 'U':
-      if (strncasecmp (str->str, "ultra_condensed", str->len) == 0)
-	{
-	  desc->stretch = PANGO_STRETCH_ULTRA_CONDENSED;
-	  return TRUE;
-	}
-      if (strncasecmp (str->str, "ultra_expanded", str->len) == 0)
-	{
-	  desc->variant = PANGO_STRETCH_ULTRA_EXPANDED;
-	  return TRUE;
-	}
-      break;
-    }
-
-  g_warning ("Stretch must be ultra_condensed, extra_condensed, condensed, semi_condensed, normal, semi_expanded, expanded, extra_expanded, or ultra_expanded");
-  return FALSE;
 }
 
 static gboolean
@@ -1286,25 +991,25 @@ pango_win32_font_map_read_alias_file (PangoWin32FontMap *win32fontmap,
 	  if (!pango_scan_string (&p, tmp_buf))
 	    goto error;
 
-	  if (!get_style (tmp_buf, &font_entry->description))
+	  if (!pango_parse_style (tmp_buf, &font_entry->description))
 	    goto error;
 
 	  if (!pango_scan_string (&p, tmp_buf))
 	    goto error;
 
-	  if (!get_variant (tmp_buf, &font_entry->description))
+	  if (!pango_parse_variant (tmp_buf, &font_entry->description))
 	    goto error;
 
 	  if (!pango_scan_string (&p, tmp_buf))
 	    goto error;
 
-	  if (!get_weight (tmp_buf, &font_entry->description))
+	  if (!pango_parse_weight (tmp_buf, &font_entry->description))
 	    goto error;
 	  
 	  if (!pango_scan_string (&p, tmp_buf))
 	    goto error;
 
-	  if (!get_stretch (tmp_buf, &font_entry->description))
+	  if (!pango_parse_stretch (tmp_buf, &font_entry->description))
 	    goto error;
 
 	  if (!pango_scan_string (&p, tmp_buf))
@@ -1326,6 +1031,37 @@ pango_win32_font_map_read_alias_file (PangoWin32FontMap *win32fontmap,
 	  for (i=0; i<nfaces; i++)
 	    {
 	      strcpy (font_entry->lfp[i].lfFaceName, faces[i]);
+
+	      /* Set LOGFONT properties based on the PangoFontDescription */
+	      if (font_entry->description.style == PANGO_STYLE_OBLIQUE ||
+		  font_entry->description.style == PANGO_STYLE_ITALIC)
+		font_entry->lfp[i].lfItalic = TRUE;
+
+	      /* Quantize weight */
+	      if (font_entry->description.weight <=
+		  (PANGO_WEIGHT_ULTRALIGHT + PANGO_WEIGHT_LIGHT) / 2)
+		font_entry->lfp[i].lfWeight = FW_ULTRALIGHT;
+	      else if (font_entry->description.weight <=
+		       (PANGO_WEIGHT_LIGHT + PANGO_WEIGHT_NORMAL) / 2)
+		font_entry->lfp[i].lfWeight = FW_LIGHT;
+	      else if (font_entry->description.weight <=
+		       (PANGO_WEIGHT_NORMAL + PANGO_WEIGHT_BOLD) / 2)
+		font_entry->lfp[i].lfWeight = FW_NORMAL;
+	      else if (font_entry->description.weight <=
+		       (PANGO_WEIGHT_BOLD + PANGO_WEIGHT_ULTRABOLD) / 2)
+		font_entry->lfp[i].lfWeight = FW_BOLD;
+	      else if (font_entry->description.weight <=
+		       (PANGO_WEIGHT_ULTRABOLD + PANGO_WEIGHT_HEAVY) / 2)
+		font_entry->lfp[i].lfWeight = FW_ULTRABOLD;
+	      else
+		font_entry->lfp[i].lfWeight = FW_HEAVY;
+
+	      /* Stretch ? */
+
+	      /* Charset is ignored anyway when used with the widechar
+	       * API?
+	       */
+	      font_entry->lfp[i].lfCharSet = DEFAULT_CHARSET;
 	    }
 	  g_strfreev (faces);
 	  
@@ -1418,33 +1154,33 @@ pango_win32_insert_font (PangoWin32FontMap *win32fontmap,
   PangoWin32SizeInfo *size_info;
   int i;
 
+  PING(("lfp.face=%s,wt=%d,ht=%d",lfp->lfFaceName,lfp->lfWeight,lfp->lfHeight));
   description.size = 0;
   
   /* First insert the LOGFONT into the list of LOGFONTs for the typeface name
    */
+  lfp2 = g_new (LOGFONT, 1);
+  *lfp2 = *lfp;
+  g_strdown (lfp2->lfFaceName);
   size_info = g_hash_table_lookup (win32fontmap->size_infos, lfp);
   if (!size_info)
     {
+      PING(("SizeInfo not found"));
       size_info = g_new (PangoWin32SizeInfo, 1);
-      pango_win32_setup_signature (win32fontmap, lfp, &size_info->signature);
+      pango_win32_setup_signature (win32fontmap, lfp2,
+				   &size_info->signature);
       size_info->logfonts = NULL;
 
-      g_hash_table_insert (win32fontmap->size_infos, lfp, size_info);
+      g_hash_table_insert (win32fontmap->size_infos, lfp2, size_info);
     }
 
-  lfp2 = g_new (LOGFONT, 1);
-  *lfp2 = *lfp;
   size_info->logfonts = g_slist_prepend (size_info->logfonts, lfp2);
   
   /* Convert the LOGFONT into a PangoFontDescription */
   
-  description.family_name = g_strdup (lfp->lfFaceName);
-  g_strdown (description.family_name);
+  description.family_name = g_strdup (lfp2->lfFaceName);
   
-  if (!description.family_name[0])
-    return;
-
-  if (!lfp->lfItalic)
+  if (!lfp2->lfItalic)
     description.style = PANGO_STYLE_NORMAL;
   else
     description.style = PANGO_STYLE_ITALIC;
@@ -1452,12 +1188,23 @@ pango_win32_insert_font (PangoWin32FontMap *win32fontmap,
   description.variant = PANGO_VARIANT_NORMAL;
   
   /* The PangoWeight values PANGO_WEIGHT_* map exactly do Windows FW_* values.
-   * Is this on purpose?
+   * Is this on purpose? Quantize the weight to exact PANGO_WEIGHT_*
+   * values. Is this a good idea?
    */
-  if (lfp->lfWeight == FW_DONTCARE)
+  if (lfp2->lfWeight == FW_DONTCARE)
     description.weight = PANGO_WEIGHT_NORMAL;
+  else if (lfp2->lfWeight <= (FW_ULTRALIGHT + FW_LIGHT) / 2)
+    description.weight = PANGO_WEIGHT_ULTRALIGHT;
+  else if (lfp2->lfWeight <= (FW_LIGHT + FW_NORMAL) / 2)
+    description.weight = PANGO_WEIGHT_LIGHT;
+  else if (lfp2->lfWeight <= (FW_NORMAL + FW_BOLD) / 2)
+    description.weight = PANGO_WEIGHT_NORMAL;
+  else if (lfp2->lfWeight <= (FW_BOLD + FW_ULTRABOLD) / 2)
+    description.weight = PANGO_WEIGHT_BOLD;
+  else if (lfp2->lfWeight <= (FW_ULTRABOLD + FW_HEAVY) / 2)
+    description.weight = PANGO_WEIGHT_ULTRABOLD;
   else
-    description.weight = lfp->lfWeight;
+    description.weight = PANGO_WEIGHT_HEAVY;
 
   /* XXX No idea how to figure out the stretch */
   description.stretch = PANGO_STRETCH_NORMAL;
@@ -1512,21 +1259,25 @@ pango_win32_logfont_has_subrange (PangoFontMap              *fontmap,
   PangoWin32FontMap *win32fontmap;
   PangoWin32SizeInfo *size_info;
 
+  PING(("lfp.face=%s,wt=%d,ht=%d,subr:%d",lfp->lfFaceName,lfp->lfWeight,lfp->lfHeight,subrange));
   win32fontmap = PANGO_WIN32_FONT_MAP (fontmap);
   size_info = g_hash_table_lookup (win32fontmap->size_infos, lfp);
   if (!size_info)
-    return FALSE;
+    {
+      PING(("SizeInfo not found"));
+      return FALSE;
+    }
 
-  return size_info->signature.fsUsb[subrange/32] & (1 << subrange % 32);
+  return ((size_info->signature.fsUsb[subrange/32] & (1 << subrange % 32)) != 0);
 }
 
 /* Given a LOGFONT and size, make a matching LOGFONT corresponding to
  * an installed font.
  */
 LOGFONT *
-pango_win32_make_matching_logfont (PangoFontMap             *fontmap,
-				   LOGFONT                   *lfp,
-				   int                       size)
+pango_win32_make_matching_logfont (PangoFontMap *fontmap,
+				   LOGFONT      *lfp,
+				   int           size)
 {
   PangoWin32FontMap *win32fontmap;
   GSList *tmp_list;
@@ -1535,12 +1286,16 @@ pango_win32_make_matching_logfont (PangoFontMap             *fontmap,
   LOGFONT *result = NULL;
   gint match_distance = 0;
 
+  PING(("lfp.face=%s,wt=%d,ht=%d,size:%d",lfp->lfFaceName,lfp->lfWeight,lfp->lfHeight,size));
   win32fontmap = PANGO_WIN32_FONT_MAP (fontmap);
   
   size_info = g_hash_table_lookup (win32fontmap->size_infos, lfp);
 
   if (!size_info)
-    return NULL;
+    {
+      PING(("SizeInfo not found"));
+      return NULL;
+    }
 
   tmp_list = size_info->logfonts;
   while (tmp_list)

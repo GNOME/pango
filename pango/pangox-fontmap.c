@@ -547,202 +547,6 @@ pango_x_font_map_load_font (PangoFontMap               *fontmap,
   return result;
 }
 
-static gboolean
-get_style (GString *str, PangoFontDescription *desc)
-{
-  if (str->len == 0)
-    return FALSE;
-
-  switch (str->str[0])
-    {
-    case 'n':
-    case 'N':
-      if (strncasecmp (str->str, "normal", str->len) == 0)
-	{
-	  desc->style = PANGO_STYLE_NORMAL;
-	  return TRUE;
-	}
-      break;
-    case 'i':
-      if (strncasecmp (str->str, "italic", str->len) == 0)
-	{
-	  desc->style = PANGO_STYLE_ITALIC;
-	  return TRUE;
-	}
-      break;
-    case 'o':
-      if (strncasecmp (str->str, "oblique", str->len) == 0)
-	{
-	  desc->style = PANGO_STYLE_OBLIQUE;
-	  return TRUE;
-	}
-      break;
-    }
-  g_warning ("Style must be normal, italic, or oblique");
-  
-  return FALSE;
-}
-
-static gboolean
-get_variant (GString *str, PangoFontDescription *desc)
-{
-  if (str->len == 0)
-    return FALSE;
-
-  switch (str->str[0])
-    {
-    case 'n':
-    case 'N':
-      if (strncasecmp (str->str, "normal", str->len) == 0)
-	{
-	  desc->variant = PANGO_VARIANT_NORMAL;
-	  return TRUE;
-	}
-      break;
-    case 's':
-    case 'S':
-      if (strncasecmp (str->str, "small_caps", str->len) == 0)
-	{
-	  desc->variant = PANGO_VARIANT_SMALL_CAPS;
-	  return TRUE;
-	}
-      break;
-    }
-  
-  g_warning ("Variant must be normal, or small_caps");
-  return FALSE;
-}
-
-static gboolean
-get_weight (GString *str, PangoFontDescription *desc)
-{
-  if (str->len == 0)
-    return FALSE;
-
-  switch (str->str[0])
-    {
-    case 'n':
-    case 'N':
-      if (strncasecmp (str->str, "normal", str->len) == 0)
-	{
-	  desc->weight = PANGO_WEIGHT_NORMAL;
-	  return TRUE;
-	}
-      break;
-    case 'b':
-    case 'B':
-      if (strncasecmp (str->str, "bold", str->len) == 0)
-	{
-	  desc->weight = PANGO_WEIGHT_BOLD;
-	  return TRUE;
-	}
-      break;
-    case '0':
-    case '1':
-    case '2':
-    case '3':
-    case '4':
-    case '5':
-    case '6':
-    case '7':
-    case '8':
-    case '9':
-      {
-	char *numstr, *end;
-
-	numstr = g_strndup (str->str, str->len);
-
-	desc->weight = strtol (numstr, &end, 0);
-	if (*end != '\0')
-	  {
-	    g_warning ("Cannot parse numerical weight '%s'", numstr);
-	    g_free (numstr);
-	    return FALSE;
-	  }
-
-	g_free (numstr);
-	return TRUE;
-      }
-    }
-  
-  g_warning ("Weight must be normal, bold, or an integer");
-  return FALSE;
-}
-
-static gboolean
-get_stretch (GString *str, PangoFontDescription *desc)
-{
-  if (str->len == 0)
-    return FALSE;
-
-  switch (str->str[0])
-    { 
-    case 'c':
-    case 'C':
-      if (strncasecmp (str->str, "condensed", str->len) == 0)
-	{
-	  desc->stretch = PANGO_STRETCH_CONDENSED;
-	  return TRUE;
-	}
-      break;
-    case 'e':
-    case 'E':
-      if (strncasecmp (str->str, "extra_condensed", str->len) == 0)
-	{
-	  desc->stretch = PANGO_STRETCH_EXTRA_CONDENSED;
-	  return TRUE;
-	}
-     if (strncasecmp (str->str, "extra_expanded", str->len) == 0)
-	{
-	  desc->stretch = PANGO_STRETCH_EXTRA_EXPANDED;
-	  return TRUE;
-	}
-      if (strncasecmp (str->str, "expanded", str->len) == 0)
-	{
-	  desc->stretch = PANGO_STRETCH_EXPANDED;
-	  return TRUE;
-	}
-      break;
-    case 'n':
-    case 'N':
-      if (strncasecmp (str->str, "normal", str->len) == 0)
-	{
-	  desc->stretch = PANGO_STRETCH_NORMAL;
-	  return TRUE;
-	}
-      break;
-    case 's':
-    case 'S':
-      if (strncasecmp (str->str, "semi_condensed", str->len) == 0)
-	{
-	  desc->stretch = PANGO_STRETCH_SEMI_CONDENSED;
-	  return TRUE;
-	}
-      if (strncasecmp (str->str, "semi_expanded", str->len) == 0)
-	{
-	  desc->stretch = PANGO_STRETCH_SEMI_EXPANDED;
-	  return TRUE;
-	}
-      break;
-    case 'u':
-    case 'U':
-      if (strncasecmp (str->str, "ultra_condensed", str->len) == 0)
-	{
-	  desc->stretch = PANGO_STRETCH_ULTRA_CONDENSED;
-	  return TRUE;
-	}
-      if (strncasecmp (str->str, "ultra_expanded", str->len) == 0)
-	{
-	  desc->variant = PANGO_STRETCH_ULTRA_EXPANDED;
-	  return TRUE;
-	}
-      break;
-    }
-
-  g_warning ("Stretch must be ultra_condensed, extra_condensed, condensed, semi_condensed, normal, semi_expanded, expanded, extra_expanded, or ultra_expanded");
-  return FALSE;
-}
-
 static void
 pango_x_font_map_read_alias_file (PangoXFontMap *xfontmap,
 				  const char   *filename)
@@ -781,25 +585,25 @@ pango_x_font_map_read_alias_file (PangoXFontMap *xfontmap,
 	  if (!pango_scan_string (&p, tmp_buf))
 	    goto error;
 
-	  if (!get_style (tmp_buf, &font_entry->description))
+	  if (!pango_parse_style (tmp_buf, &font_entry->description))
 	    goto error;
 
 	  if (!pango_scan_string (&p, tmp_buf))
 	    goto error;
 
-	  if (!get_variant (tmp_buf, &font_entry->description))
+	  if (!pango_parse_variant (tmp_buf, &font_entry->description))
 	    goto error;
 
 	  if (!pango_scan_string (&p, tmp_buf))
 	    goto error;
 
-	  if (!get_weight (tmp_buf, &font_entry->description))
+	  if (!pango_parse_weight (tmp_buf, &font_entry->description))
 	    goto error;
 	  
 	  if (!pango_scan_string (&p, tmp_buf))
 	    goto error;
 
-	  if (!get_stretch (tmp_buf, &font_entry->description))
+	  if (!pango_parse_stretch (tmp_buf, &font_entry->description))
 	    goto error;
 
 	  if (!pango_scan_string (&p, tmp_buf))

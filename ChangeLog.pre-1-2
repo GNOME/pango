@@ -1,3 +1,37 @@
+2000-07-16  Tor Lillqvist  <tml@iki.fi>
+
+	* pango/pango-utils.h
+	* pango/pango-utils.c
+	* pango/pangox-fontmap.c
+	* pango/pangowin32-fontmap.c: Move the get_{style,variant,
+	weight,stretch} functions to pango-utils.c, and rename
+	them to pango_parse_*. Would otherwise be duplicated in
+	pangox and angowin32.
+
+	* pango/pango.def: Export them.
+
+	* pango/pango-font.h: Add PANGO_WEIGHT_ULTRALIGHT,
+	PANGO_WEIGHT_LIGHT, PANGO_WEIGHT_EXTRABOLD and PANGO_WEIGHT_HEAVY
+	values to PangoWeight.
+	* pango/pango-utils.c: Recognize the new weight strings.
+
+	* pango/pangowin32.c (pango_win32_list_subfonts): Don't g_free the
+	subfont_list from the subfonts_by_subrange hash table...
+
+	* pango/pangowin32-fontmap.c (pango_win32_font_map_read_alias_file): 
+	Also set the other properties in the LOGFONT, not only the face name.
+
+	(pango_win32_insert_font): Insert a pointer to a freshly allocated
+	LOGFONT in the hash table, not the one passed in as a parameter,
+	which could be (and in fact, *is*) a pointer to an auto
+	variable. Quantize the description weight values to exact
+	PANGO_WEIGHT_* values.
+	(pango_win32_get_unknown_glyph): Use subfont 1.
+
+	* examples/viewer-win32.c: (split_paragraphs): Don't include the
+	newline.
+	(draw): Correct 1st parameter to gdk_win32_hdc_{get,release}.
+
 2000-07-15  Tor Lillqvist  <tml@iki.fi>
 
 	* pango/pangowin32.h

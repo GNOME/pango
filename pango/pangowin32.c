@@ -260,7 +260,7 @@ pango_win32_font_new (PangoFontMap  *fontmap,
   result->fontmap = fontmap;
   g_object_ref (G_OBJECT (fontmap));
 
-  result -> n_fonts = n_fonts;
+  result->n_fonts = n_fonts;
   result->fonts = g_new (LOGFONT, n_fonts);
   memcpy (result->fonts, lfp, sizeof (LOGFONT) * n_fonts);
   result->size = size;
@@ -320,7 +320,7 @@ pango_win32_render (HDC                hdc,
 
   g_return_if_fail (glyphs != NULL);
   
-  for (i=0; i<glyphs->num_glyphs; i++)
+  for (i = 0; i <glyphs->num_glyphs; i++)
     {
       if (glyphs->glyphs[i].glyph)
 	{
@@ -874,7 +874,7 @@ pango_win32_list_subfonts (PangoFont                 *font,
   PangoWin32Subfont *subfont_list;
   PangoFontMap *fontmap;
   int i, j;
-  int n_subfonts = 0;
+  int n_subfonts;
 
   g_return_val_if_fail (font != NULL, 0);
 
@@ -906,6 +906,7 @@ pango_win32_list_subfonts (PangoFont                 *font,
       g_hash_table_insert (win32font->subfonts_by_subrange, (gpointer) subrange, subfont_list);
     }
   
+  n_subfonts = 0;
   for (i = 0; i < win32font->n_fonts; i++)
     if (subfont_list[i])
       n_subfonts++;
@@ -913,15 +914,12 @@ pango_win32_list_subfonts (PangoFont                 *font,
   *subfont_ids = g_new (PangoWin32Subfont, n_subfonts);
 
   n_subfonts = 0;
-
-  for (i=0; i<win32font->n_fonts; i++)
+  for (i = 0; i < win32font->n_fonts; i++)
     if (subfont_list[i])
       {
 	(*subfont_ids)[n_subfonts] = subfont_list[i];
 	n_subfonts++;
       }
-
-  g_free (subfont_list);
 
   return n_subfonts;
 }
@@ -1096,7 +1094,7 @@ pango_win32_font_finalize (GObject *object)
   PangoWin32FontCache *cache = pango_win32_font_map_get_font_cache (win32font->fontmap);
   int i;
 
-  for (i=0; i<win32font->n_subfonts; i++)
+  for (i = 0; i < win32font->n_subfonts; i++)
     {
       PangoWin32SubfontInfo *info = win32font->subfonts[i];
 
@@ -1219,7 +1217,7 @@ pango_win32_find_glyph (PangoFont              *font,
 PangoGlyph
 pango_win32_get_unknown_glyph (PangoFont *font)
 {
-  return PANGO_WIN32_MAKE_GLYPH (0, 0);	/* XXX */
+  return PANGO_WIN32_MAKE_GLYPH (1, 0);	/* XXX */
 }
 
 /**

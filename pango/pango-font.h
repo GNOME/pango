@@ -54,8 +54,12 @@ typedef enum {
 } PangoVariant;
 
 typedef enum {
+  PANGO_WEIGHT_ULTRALIGHT = 200,
+  PANGO_WEIGHT_LIGHT = 300,
   PANGO_WEIGHT_NORMAL = 400,
-  PANGO_WEIGHT_BOLD = 700
+  PANGO_WEIGHT_BOLD = 700,
+  PANGO_WEIGHT_ULTRABOLD = 800,
+  PANGO_WEIGHT_HEAVY = 900
 } PangoWeight;
 
 typedef enum {

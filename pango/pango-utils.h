@@ -38,6 +38,20 @@ gboolean pango_scan_int       (const char **pos,
 
 char *   pango_config_key_get (const char  *key);
 
+/* Functions for parsing textual representations
+ * of PangoFontDescription fields. They return TRUE if the input string
+ * contains a valid value, which then has been assigned to the corresponding
+ * field in the PangoFontDescription.
+ */
+gboolean pango_parse_style   (GString              *str,
+			      PangoFontDescription *desc);
+gboolean pango_parse_variant (GString               *str,
+			      PangoFontDescription *desc);
+gboolean pango_parse_weight  (GString               *str,
+			      PangoFontDescription *desc);
+gboolean pango_parse_stretch (GString               *str,
+			      PangoFontDescription *desc);
+
 /* On Unix, return the name of the "pango" subdirectory of SYSCONFDIR
  * (which is set at compile time). On Win32, return the Pango
  * installation directory (which is set at installation time, and
@@ -51,3 +65,4 @@ char *   pango_get_sysconf_subdirectory (void);
  * g_free'd either.
  */
 char *   pango_get_lib_subdirectory (void);
+

@@ -1,4 +1,3 @@
-#define PING() g_print ("%s:%d\n", __PRETTY_FUNCTION__, __LINE__)
 /* Pango
  * viewer-win32.c: Example program to view a UTF-8 encoding file
  *                 using Pango to render result.
@@ -70,7 +69,6 @@ read_file(char *name)
   char *text;
   char buffer[BUFSIZE];
 
-  PING();
   file = fopen (name, "r");
   if (!file)
     {
@@ -128,6 +126,9 @@ split_paragraphs (char *text)
 	  Paragraph *para = g_new (Paragraph, 1);
 	  para->text = last_para;
 	  para->length = p - last_para;
+	  /* Don't include the newline */
+	  if (wc == '\n')
+	    para->length--;
 	  para->layout = pango_layout_new (context);
 	  pango_layout_set_text (para->layout, para->text, para->length);
 	  para->height = 0;
@@ -155,7 +156,6 @@ xy_to_cp (int width, int x, int y, Paragraph **para_return, int *index)
 
   *para_return = NULL;
 
-  PING();
   para_list = paragraphs;
   while (para_list && height < y)
     {
@@ -174,7 +174,6 @@ xy_to_cp (int width, int x, int y, Paragraph **para_return, int *index)
       height += para->height;
       para_list = para_list->next;
     }
-  PING();
 
   return FALSE;
 }
@@ -253,7 +252,6 @@ size_allocate (GtkWidget *layout, GtkAllocation *allocation)
   int height = 0;
   PangoDirection base_dir = pango_context_get_base_dir (context);
 
-  PING();
   tmp_list = paragraphs;
   while (tmp_list)
     {
@@ -287,7 +285,6 @@ draw (GtkWidget *layout, GdkRectangle *area)
   GList *tmp_list;
   int height = 0;
   
-  PING();
   gdk_draw_rectangle (GTK_LAYOUT (layout)->bin_window,
 		      layout->style->base_gc[layout->state],
 		      TRUE,
@@ -296,7 +293,6 @@ draw (GtkWidget *layout, GdkRectangle *area)
   
   gdk_gc_set_clip_rectangle (layout->style->text_gc[layout->state], area);
 
-  PING();
   tmp_list = paragraphs;
   while (tmp_list &&
 	 height < area->y + area->height + GTK_LAYOUT (layout)->yoffset)
@@ -304,18 +300,17 @@ draw (GtkWidget *layout, GdkRectangle *area)
       Paragraph *para = tmp_list->data;
       tmp_list = tmp_list->next;
       
-  PING();
       if (height + para->height >= GTK_LAYOUT (layout)->yoffset + area->y)
 	{
 	  GdkGCValuesMask mask = GDK_GC_FOREGROUND|GDK_GC_BACKGROUND;
-	  HDC hdc = gdk_win32_hdc_get (GDK_WINDOW_XWINDOW (GTK_LAYOUT (layout)->bin_window),
-				       layout->style->text_gc[GTK_STATE_NORMAL],
-				       mask);
-	  
+	  HDC hdc;
+
+	  hdc = gdk_win32_hdc_get (GTK_LAYOUT (layout)->bin_window,
+				   layout->style->text_gc[GTK_STATE_NORMAL],
+				   mask);
 	  pango_win32_render_layout (hdc, para->layout,
 				     0, height - GTK_LAYOUT (layout)->yoffset);
-
-	  gdk_win32_hdc_release (GDK_WINDOW_XWINDOW (GTK_LAYOUT (layout)->bin_window),
+	  gdk_win32_hdc_release (GTK_LAYOUT (layout)->bin_window,
 				 layout->style->text_gc[GTK_STATE_NORMAL],
 				 mask);
 	}
@@ -323,18 +318,15 @@ draw (GtkWidget *layout, GdkRectangle *area)
       height += para->height;
     }
 
-  PING();
   gdk_gc_set_clip_rectangle (layout->style->text_gc[layout->state], NULL);
 
   if (highlight_para)
     xor_char (layout, area, highlight_para, highlight_offset);
-  PING();
 }
 
 gboolean
 expose (GtkWidget *layout, GdkEventExpose *event)
 {
-  PING();
   if (event->window == GTK_LAYOUT (layout)->bin_window)
     draw (layout, &event->area);
 
@@ -348,7 +340,6 @@ button_press (GtkWidget *layout, GdkEventButton *event)
   int offset;
   gchar *message;
   
-  PING();
   xy_to_cp (layout->allocation.width,
 	    event->x, event->y + GTK_LAYOUT (layout)->yoffset,
 	    &para, &offset);
@@ -371,7 +362,6 @@ button_press (GtkWidget *layout, GdkEventButton *event)
   else
     message = g_strdup_printf ("Current char:");
 
-  PING();
   gtk_label_set_text (GTK_LABEL (message_label), message);
   g_free (message);
 }
@@ -381,7 +371,6 @@ checkbutton_toggled (GtkWidget *widget, gpointer data)
 {
   GList *para_list;
   
-  PING();
   pango_context_set_base_dir (context, GTK_TOGGLE_BUTTON (widget)->active ? PANGO_DIRECTION_RTL : PANGO_DIRECTION_LTR);
 
   para_list = paragraphs;
@@ -401,7 +390,6 @@ reload_font ()
 {
   GList *para_list;
 
-  PING();
   pango_context_set_font_description (context, &font_description);
 
   para_list = paragraphs;
@@ -415,7 +403,6 @@ reload_font ()
 
   if (layout)
     gtk_widget_queue_resize (layout);
-  PING();
 }
 
 void
@@ -431,7 +418,6 @@ set_style (GtkWidget *entry, gpointer data)
   char *str = gtk_editable_get_chars (GTK_EDITABLE (entry), 0, -1);
   PangoFontDescription *tmp_desc;
   
-  PING();
   tmp_desc = pango_font_description_from_string (str);
 
   font_description.style = tmp_desc->style;
@@ -448,7 +434,6 @@ set_style (GtkWidget *entry, gpointer data)
 void
 font_size_changed (GtkAdjustment *adj)
 {
-  PING();
   font_description.size = (int)(adj->value * PANGO_SCALE + 0.5);
   reload_font();
 }
@@ -500,14 +485,11 @@ fill_styles_combo (GtkWidget *combo)
   GList *style_list = NULL;
   
   FontDescInfo *info = g_new (FontDescInfo, 1);
-  PING();
   pango_context_list_fonts (context, font_description.family_name, &info->descs, &info->n_descs);
   gtk_object_set_data_full (GTK_OBJECT (combo), "descs", info, (GtkDestroyNotify)free_info);
-  PING();
 
   qsort (info->descs, info->n_descs, sizeof(PangoFontDescription *), font_description_sort_func);
 
-  PING();
   for (i=0; i<info->n_descs; i++)
     {
       char *str;
@@ -524,7 +506,6 @@ fill_styles_combo (GtkWidget *combo)
 
   style_list = g_list_reverse (style_list);
 
-  PING();
   gtk_combo_set_popdown_strings (GTK_COMBO (combo), style_list);
   g_list_foreach (style_list, (GFunc)g_free, NULL);
 }
@@ -534,7 +515,6 @@ make_styles_combo ()
 {
   GtkWidget *combo;
 
-  PING();
   combo = gtk_combo_new ();
   gtk_combo_set_value_in_list (GTK_COMBO (combo), TRUE, FALSE);
   gtk_editable_set_editable (GTK_EDITABLE (GTK_COMBO (combo)->entry), FALSE);
@@ -545,7 +525,6 @@ make_styles_combo ()
   styles_combo = combo;
   fill_styles_combo (combo);
   
-  PING();
   return combo;
 }
 
@@ -564,11 +543,9 @@ make_families_menu ()
   GList *family_list = NULL;
   int i;
   
-  PING();
   pango_context_list_families (context, &families, &n_families);
   qsort (families, n_families, sizeof(char *), cmp_strings);
 
-  PING();
   for (i=0; i<n_families; i++)
     family_list = g_list_prepend (family_list, families[i]);
 
@@ -587,7 +564,6 @@ make_families_menu ()
   g_list_free (family_list);
   pango_font_map_free_families (families, n_families);
 
-  PING();
   return combo;
 }
 
@@ -722,7 +698,6 @@ main (int argc, char **argv)
   gtk_frame_set_shadow_type (GTK_FRAME (frame), GTK_SHADOW_IN);
   gtk_box_pack_start (GTK_BOX (vbox), frame, FALSE, FALSE, 0);
 
-  PING();
   message_label = gtk_label_new ("Current char:");
   gtk_misc_set_padding (GTK_MISC (message_label), 1, 1);
   gtk_misc_set_alignment (GTK_MISC (message_label), 0.0, 0.5);
@@ -735,7 +710,6 @@ main (int argc, char **argv)
 
   gtk_widget_show_all (window);
 
-  PING();
   gtk_main ();
   
   return 0;
