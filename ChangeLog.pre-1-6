@@ -1,12 +1,21 @@
+Mon Feb 28 19:46:35 2000  Owen Taylor  <otaylor@redhat.com>
+
+	* libpango/fonts.c libpango/pango-fonts.h: Add functions
+	to convert font descriptions to and from human-readable
+	strings.
+
+	* examples/viewer.c: Use functions from libpango instead
+	of rolling our own font-description conversion functions.
+
 Fri Feb 25 15:04:21 2000  Owen Taylor  <otaylor@redhat.com>
 
 	* libpango/{fonts.c,pango-font.h,pango-context.[ch],pangox.c,
-	  pango-attributes.c,examples/viewer.c: Add size to the 
-	  font description structure instead of continually passing
-	  it around as an extra argument.
+	pango-attributes.c,examples/viewer.c: Add size to the 
+	font description structure instead of continually passing
+	it around as an extra argument.
 
 	* libpango/pangox.c: Take screen resolution into account when
-	  choosing fonts, instead of assumming point == pixel.
+	choosing fonts, instead of assumming point == pixel.
 
 Fri Feb 25 12:32:01 2000  Owen Taylor  <otaylor@redhat.com>
 

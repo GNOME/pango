@@ -25,6 +25,12 @@ X rendering
   (This doesn't really handle the case of optically scaled
    bitmaps properly, but I think that is an ignorable problem.)
 
+* Right now we assume a single resolution for all fonts on a display;
+  but in theory, the resolution could be per-screen. To solve 
+  this, we would probably want to add a window argument to 
+  pango_x_get_context() and then have some sort of X specific font 
+  loading interface.
+
 Other rendering engines
 ======================
 

@@ -72,7 +72,6 @@ GtkWidget *layout;
 PangoContext *context;
 
 static void fill_styles_combo (GtkWidget *combo);
-static void font_description_from_string (PangoFontDescription *desc, const char *name);
 
 /* Read an entire file into a string
  */
@@ -850,8 +849,16 @@ void
 set_style (GtkWidget *entry, gpointer data)
 {
   char *str = gtk_editable_get_chars (GTK_EDITABLE (entry), 0, -1);
+  PangoFontDescription *tmp_desc;
   
-  font_description_from_string (&font_description, str);
+  tmp_desc = pango_font_description_from_string (str);
+
+  font_description.style = tmp_desc->style;
+  font_description.variant = tmp_desc->variant;
+  font_description.weight = tmp_desc->weight;
+  font_description.stretch = tmp_desc->stretch;
+
+  pango_font_description_free (tmp_desc);
   g_free (str);
   
   reload_font ();
@@ -864,127 +871,6 @@ font_size_changed (GtkAdjustment *adj)
   reload_font();
 }
 
-typedef struct
-{
-  int value;
-  const char *str;
-} FieldMap;
-
-FieldMap style_map[] = {
-  { PANGO_STYLE_NORMAL, NULL },
-  { PANGO_STYLE_OBLIQUE, "Oblique" },
-  { PANGO_STYLE_ITALIC, "Italic" }
-};
-
-FieldMap variant_map[] = {
-  { PANGO_VARIANT_NORMAL, NULL },
-  { PANGO_VARIANT_SMALL_CAPS, "Small-Caps" }
-};
-
-FieldMap weight_map[] = {
-  { 300, "Light" },
-  { PANGO_WEIGHT_NORMAL, NULL },
-  { 500, "Medium" },
-  { 600, "Semi-Bold" },
-  { PANGO_WEIGHT_BOLD, "Bold" }
-};
-
-FieldMap stretch_map[] = {
-  { PANGO_STRETCH_ULTRA_CONDENSED, "Ultra-Condensed" },
-  { PANGO_STRETCH_EXTRA_CONDENSED, "Extra-Condensed" },
-  { PANGO_STRETCH_CONDENSED,       "Condensed" },
-  { PANGO_STRETCH_SEMI_CONDENSED,  "Semi-Condensed" },
-  { PANGO_STRETCH_NORMAL,          NULL },
-  { PANGO_STRETCH_SEMI_EXPANDED,   "Semi-Expanded" },
-  { PANGO_STRETCH_EXPANDED,        "Expanded" },
-  { PANGO_STRETCH_EXTRA_EXPANDED,  "Extra-Expanded" },
-  { PANGO_STRETCH_ULTRA_EXPANDED,  "Ultra-Expanded" }
-};
-
-static void
-append_field (GString *str, FieldMap *map, int n_elements, int val)
-{
-  int i;
-  for (i=0; i<n_elements; i++)
-    {
-      if (map[i].value == val)
-	{
-	  if (map[i].str)
-	    {
-	      if (str->len != 0)
-		g_string_append_c (str, ' ');
-	      g_string_append (str, map[i].str);
-	    }
-	  return;
-	}
-    }
-  
-  if (str->len != 0)
-    g_string_append_c (str, ' ');
-  g_string_sprintfa (str, "%d", val);
-}
-
-static char *
-font_description_to_string (PangoFontDescription *desc)
-{
-  GString *result = g_string_new (NULL);
-  gchar *str;
-
-  append_field (result, style_map, G_N_ELEMENTS (style_map), desc->style);
-  append_field (result, variant_map, G_N_ELEMENTS (variant_map), desc->variant);
-  append_field (result, weight_map, G_N_ELEMENTS (weight_map), desc->weight);
-  append_field (result, stretch_map, G_N_ELEMENTS (stretch_map), desc->stretch);
-
-  if (result->len == 0)
-    g_string_append (result, "Normal");
-  
-  str = result->str;
-  g_string_free (result, FALSE);
-  return str;
-}
-
-static gboolean
-find_field (FieldMap *map, int n_elements, gchar *str, int *val)
-{
-  int i;
-  
-  for (i=0; i<n_elements; i++)
-    {
-      if (map[i].str && strcasecmp (map[i].str, str) == 0)
-	{
-	  *val = map[i].value;
-	  return TRUE;
-	}
-    }
-
-  return FALSE;
-}
-
-static void
-font_description_from_string (PangoFontDescription *desc, const char *name)
-{
-  gchar **words;
-  int i;
-
-  desc->style = PANGO_STYLE_NORMAL;
-  desc->variant = PANGO_VARIANT_NORMAL;
-  desc->weight = PANGO_WEIGHT_NORMAL;
-  desc->stretch = PANGO_STRETCH_NORMAL;
-  
-  words = g_strsplit (name, " ", -1);
-  for (i=0; words[i]; i++)
-    {
-      if (!(strcasecmp (words[i], "Normal") == 0 ||
-	    find_field (style_map, G_N_ELEMENTS (style_map), words[i], (int *)&desc->style) ||
-	    find_field (variant_map, G_N_ELEMENTS (variant_map), words[i], (int *)&desc->variant) ||
-	    find_field (weight_map, G_N_ELEMENTS (weight_map), words[i], (int *)&desc->weight) || 
-	    find_field (stretch_map, G_N_ELEMENTS (stretch_map), words[i], (int *)&desc->stretch)))
-	g_warning ("Unknown style modifier '%s'\n", words[i]);
-    }
-
-  g_strfreev (words);
-}
-
 static int
 compare_font_descriptions (const PangoFontDescription *a, const PangoFontDescription *b)
 {
@@ -992,17 +878,17 @@ compare_font_descriptions (const PangoFontDescription *a, const PangoFontDescrip
   if (val != 0)
     return val;
 
-  if (a->style != b->style)
-    return a->style - b->style;
-  
-  if (a->variant != b->variant)
-    return a->variant - b->variant;
-
   if (a->weight != b->weight)
     return a->weight - b->weight;
 
+  if (a->style != b->style)
+    return a->style - b->style;
+  
   if (a->stretch != b->stretch)
     return a->stretch - b->stretch;
+
+  if (a->variant != b->variant)
+    return a->variant - b->variant;
 
   return 0;
 }
@@ -1039,7 +925,15 @@ fill_styles_combo (GtkWidget *combo)
 
   for (i=0; i<info->n_descs; i++)
     {
-      char *str = font_description_to_string (info->descs[i]);
+      char *str;
+	
+      PangoFontDescription tmp_desc;
+
+      tmp_desc = *info->descs[i];
+      tmp_desc.family_name = NULL;
+      tmp_desc.size = 0;
+      
+      str = pango_font_description_to_string (&tmp_desc);
       style_list = g_list_prepend (style_list, str);
     }
 

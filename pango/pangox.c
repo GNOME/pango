@@ -1081,10 +1081,11 @@ pango_x_insert_font (PangoXFontMap *xfontmap,
   char *identifier;
   int i;
 
+  description.size = 0;
+  
   /* First insert the XLFD into the list of XLFDs for the "identifier" - which
    * is the 2-4th fields of the XLFD
    */
-
   identifier = pango_x_get_identifier (fontname);
   size_info = g_hash_table_lookup (xfontmap->size_infos, identifier);
   if (!size_info)

@@ -74,12 +74,16 @@ struct _PangoFontDescription
   int size;
 };
 
-PangoFontDescription *pango_font_description_copy    (const PangoFontDescription  *desc);
-gboolean              pango_font_description_compare (const PangoFontDescription  *desc1,
-						      const PangoFontDescription  *desc2);
-void                  pango_font_description_free    (PangoFontDescription        *desc);
-void                  pango_font_descriptions_free   (PangoFontDescription       **descs,
-						      int                          n_descs);
+PangoFontDescription *pango_font_description_copy        (const PangoFontDescription  *desc);
+gboolean              pango_font_description_compare     (const PangoFontDescription  *desc1,
+							  const PangoFontDescription  *desc2);
+void                  pango_font_description_free        (PangoFontDescription        *desc);
+void                  pango_font_descriptions_free       (PangoFontDescription       **descs,
+							  int                          n_descs);
+
+PangoFontDescription *pango_font_description_from_string (const char                  *str);
+char *                pango_font_description_to_string   (const PangoFontDescription  *desc);
+
 
 /* Logical fonts
   */
