@@ -1,3 +1,11 @@
+Thu May 29 18:37:58 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-glyph-item.c (pango_glyph_item_apply_attrs):
+	When applying attribute to a glyph item, handle attributes
+	that split clusters by giving the cluster all the attributes
+	that apply to it. (Previously caused a crash, #104976
+	Taneem Ahmed, Sunil Mohan Adapa)
+
 Wed May 28 17:43:16 2003  Owen Taylor  <otaylor@redhat.com>
 
 	(#107630, Federic Zhang)
