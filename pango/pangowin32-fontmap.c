@@ -254,7 +254,7 @@ pango_win32_font_map_for_display (void)
   logfont.lfCharSet = DEFAULT_CHARSET;
   EnumFontFamiliesExA (pango_win32_hdc, &logfont, (FONTENUMPROC) pango_win32_enum_proc, 0, 0);
 
-  fontmap->resolution = PANGO_SCALE / GetDeviceCaps (pango_win32_hdc, LOGPIXELSY) * 72.0;
+  fontmap->resolution = (PANGO_SCALE / (double) GetDeviceCaps (pango_win32_hdc, LOGPIXELSY)) * 72.0;
 
   return PANGO_FONT_MAP (fontmap);
 }
