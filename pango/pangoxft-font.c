@@ -248,7 +248,7 @@ pango_xft_real_render (Display          *display,
   int x_off = 0;
 #define N_XFT_LOCAL	1024
   XftGlyphSpec  xft_glyphs[N_XFT_LOCAL];
-  XftCharSpec	chars[4];     /* for unknown */
+  XftCharSpec	chars[6];     /* for unknown */
   int		n_xft_glyph = 0;
 
   if (!fcfont->fontmap)		/* Display closed */
@@ -287,10 +287,11 @@ pango_xft_real_render (Display          *display,
 	{
 	  if (glyph & PANGO_XFT_UNKNOWN_FLAG)
 	    {
-	      char buf[5];
+	      char buf[7];
 	      int ys[3];
-	      int xs[3];
-	      int j, k;
+	      int xs[4];
+	      int row, col;
+              int cols;
 	      
 	      PangoFont *mini_font = get_mini_font (font);
 	      XftFont *mini_xft = xft_font_get_font (mini_font);
@@ -304,30 +305,40 @@ pango_xft_real_render (Display          *display,
 	      xs[0] = glyph_x; 
 	      xs[1] = xs[0] + 2 * xfont->mini_pad;
 	      xs[2] = xs[1] + xfont->mini_width + xfont->mini_pad;
-	      
+	      xs[3] = xs[2] + xfont->mini_width + xfont->mini_pad;
+
+              if (glyph > 0xffff)
+                {
+                  cols = 3;
+                  g_snprintf (buf, sizeof(buf), "%06X", glyph);
+                }
+              else
+                {
+                  cols = 2;
+                  g_snprintf (buf, sizeof(buf), "%04X", glyph);
+                }
+
 	      draw_box (display, src_picture, dest_picture, draw, color, xfont,
 			xs[0], ys[0],
-			xfont->mini_width * 2 + xfont->mini_pad * 5,
+			xfont->mini_width * cols + xfont->mini_pad * (2 * cols + 1),
 			xfont->mini_height * 2 + xfont->mini_pad * 5);
-	      
-	      g_snprintf (buf, sizeof(buf), "%04X", glyph);
 
 	      FLUSH_GLYPHS ();
-	      for (j = 0; j < 2; j++)
-		for (k = 0; k < 2; k++)
+	      for (row = 0; row < 2; row++)
+		for (col = 0; col < cols; col++)
 		  {
-		    XftCharSpec *c = &chars[j * 2 + k];
-		    c->ucs4 = buf[j * 2 + k] & 0xff;
-		    c->x = xs[k+1];
-		    c->y = ys[j+1];
+		    XftCharSpec *c = &chars[row * cols + col];
+		    c->ucs4 = buf[row * cols + col] & 0xff;
+		    c->x = xs[col+1];
+		    c->y = ys[row+1];
 		  }
 	      if (draw)
 		XftDrawCharSpec (draw, color, mini_xft,
-				 chars, 4);
+				 chars, 2 * cols);
 	      else
 		XftCharSpecRender (display, PictOpOver, src_picture,
 				   mini_xft, dest_picture, 0, 0,
-				   chars, 4);
+				   chars, 2 * cols);
 	    }
 	  else if (glyph)
 	    {
@@ -448,13 +459,15 @@ pango_xft_font_get_glyph_extents (PangoFont        *font,
 
   if (glyph & PANGO_XFT_UNKNOWN_FLAG)
     {
+      gint cols = (glyph & ~PANGO_XFT_UNKNOWN_FLAG) > 0xffff ? 3 : 2;
+
       get_mini_font (font);
-      
+
       if (ink_rect)
 	{
 	  ink_rect->x = 0;
 	  ink_rect->y = PANGO_SCALE * (- xft_font->ascent + (xft_font->ascent + xft_font->descent - xfont->mini_height * 2 - xfont->mini_pad * 5) / 2);
-	  ink_rect->width = PANGO_SCALE * (xfont->mini_width * 2 + xfont->mini_pad * 5);
+	  ink_rect->width = PANGO_SCALE * (xfont->mini_width * cols + xfont->mini_pad * (2 * cols + 1));
 	  ink_rect->height = PANGO_SCALE * (xfont->mini_height * 2 + xfont->mini_pad * 5);
 	}
       
@@ -462,7 +475,7 @@ pango_xft_font_get_glyph_extents (PangoFont        *font,
 	{
 	  logical_rect->x = 0;
 	  logical_rect->y = - PANGO_SCALE * xft_font->ascent;
-	  logical_rect->width = PANGO_SCALE * (xfont->mini_width * 2 + xfont->mini_pad * 6);
+	  logical_rect->width = PANGO_SCALE * (xfont->mini_width * cols + xfont->mini_pad * (2 * cols + 2));
 	  logical_rect->height = (xft_font->ascent + xft_font->descent) * PANGO_SCALE;
 	}
     }

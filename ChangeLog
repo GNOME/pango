@@ -1,3 +1,8 @@
+2003-11-18  Noah Levitt  <nlevitt@columbia.edu>
+
+	* pango/pangxft-font.c (pango_xft_real_render): Draw 6-digit hex boxes
+	for > U+FFFF. (#101081)
+
 2003-11-18  Morten Welinder  <terra@gnome.org>
 
 	* pango/pango-attributes.c (pango_attr_iterator_get_font): Fix
