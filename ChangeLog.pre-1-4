@@ -1,3 +1,11 @@
+2003-02-22  Noah Levitt  <nlevitt@columbia.edu>
+
+	* pango/pango-font.h:
+	* pango/pangofc-fontmap.c:
+	* pango/pangowin32-fontmap.c: 
+	* pango/fonts.c (pango_font_face_list_sizes): New API for
+	getting available sizes for a bitmap font face.
+
 Sat Feb 21 11:31:16 2004  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pango-layout.c (pango_layout_set_justify): Add

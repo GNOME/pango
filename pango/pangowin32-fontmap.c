@@ -933,6 +933,17 @@ pango_win32_face_class_init (PangoFontFaceClass *class)
 {
   class->describe = pango_win32_face_describe;
   class->get_face_name = pango_win32_face_get_face_name;
+  class->list_sizes = pango_win32_face_list_sizes;
+}
+
+static void
+pango_win32_face_list_sizes (PangoFontFace  *face,
+                             int           **sizes,
+                             int            *n_sizes)
+{
+  g_warning ("font_face_list_sizes not implemented for win32 backend");
+  *sizes = NULL;
+  *n_sizes = 0;
 }
 
 GType

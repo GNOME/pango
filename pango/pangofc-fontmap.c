@@ -1138,11 +1138,95 @@ pango_fc_face_get_face_name (PangoFontFace *face)
   return fcface->style;
 }
 
+static int
+compare_ints (int a,
+              int b)
+{
+  if (a == b)
+    return 0;
+  else if (a > b)
+    return 1;
+  else
+    return -1;
+}
+
+static void
+pango_fc_face_list_sizes (PangoFontFace  *face,
+                          int           **sizes,
+                          int            *n_sizes)
+{
+  PangoFcFace *fcface = PANGO_FC_FACE (face);
+  FcPattern *pattern;
+  FcFontSet *fontset;
+  FcObjectSet *objectset;
+
+  pattern = FcPatternCreate ();
+  FcPatternAddString (pattern, FC_FAMILY, fcface->family->family_name);
+  FcPatternAddString (pattern, FC_STYLE, fcface->style);
+
+  objectset = FcObjectSetCreate ();
+  FcObjectSetAdd (objectset, FC_PIXEL_SIZE);
+
+  fontset = FcFontList (NULL, pattern, objectset);
+
+  if (fontset)
+    {
+      GArray *size_array;
+      double size, dpi = -1.0;
+      int i;
+      
+      size_array = g_array_new (FALSE, FALSE, sizeof (int));
+
+      for (i = 0; i < fontset->nfont; i++)
+        {
+          if (FcPatternGetDouble (fontset->fonts[i], FC_PIXEL_SIZE, 0, &size) == FcResultMatch)
+            {
+              if (dpi < 0)
+                {
+                  FcPattern *tmp = FcPatternDuplicate (fontset->fonts[i]);
+                  pango_fc_default_substitute (fcface->family->fontmap, tmp);
+                  FcPatternGetDouble (tmp, FC_DPI, 0, &dpi);
+                  FcPatternDestroy (tmp);
+                }
+
+              int sizi = (int) (PANGO_SCALE * size * 72.0 / dpi);
+              g_array_append_val (size_array, sizi);
+            }
+        }
+
+      g_array_sort (size_array, compare_ints);
+      
+      if (size_array->len == 0)
+        {
+          *sizes = NULL;
+          *n_sizes = 0;
+          g_array_free (size_array, TRUE);
+        }
+      else
+        {
+          *n_sizes = size_array->len;
+          *sizes = (int *) size_array->data;
+          g_array_free (size_array, FALSE);
+        }
+
+      FcFontSetDestroy (fontset);
+    }
+  else
+    {
+      *sizes = NULL;
+      *n_sizes = 0;
+    }
+
+  FcPatternDestroy (pattern);
+  FcObjectSetDestroy (objectset);
+}
+
 static void
 pango_fc_face_class_init (PangoFontFaceClass *class)
 {
   class->describe = pango_fc_face_describe;
   class->get_face_name = pango_fc_face_get_face_name;
+  class->list_sizes = pango_fc_face_list_sizes;
 }
 
 static GType

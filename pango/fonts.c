@@ -1432,3 +1432,33 @@ pango_font_face_get_face_name (PangoFontFace *face)
 
   return PANGO_FONT_FACE_GET_CLASS (face)->get_face_name (face);
 }
+
+/**
+ * pango_font_face_list_sizes:
+ * @face: a #PangoFontFace.
+ * @sizes: location to store a pointer to an array of int. This array
+ *         should be freed with g_free().
+ * @n_sizes: location to store the number of elements in @sizes
+ * 
+ * List the available sizes for a font. This is only applicable to bitmap
+ * fonts. For scalable fonts, stores %NULL at the location pointed to by
+ * @sizes and 0 at the location pointed to by @n_sizes. The sizes returned
+ * are in pango units and are sorted in ascending order.
+ *
+ * Since: 1.4
+ **/
+void
+pango_font_face_list_sizes     (PangoFontFace  *face, 
+                                int           **sizes, 
+                                int            *n_sizes)
+{
+  g_return_val_if_fail (PANGO_IS_FONT_FACE (face), NULL);
+
+  if (PANGO_FONT_FACE_GET_CLASS (face)->list_sizes != NULL)
+    PANGO_FONT_FACE_GET_CLASS (face)->list_sizes (face, sizes, n_sizes);
+  else
+    {
+      *sizes = NULL;
+      *n_sizes = 0;
+    }
+}

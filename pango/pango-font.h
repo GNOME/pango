@@ -241,6 +241,9 @@ GType      pango_font_face_get_type       (void) G_GNUC_CONST;
 
 PangoFontDescription *pango_font_face_describe       (PangoFontFace *face);
 G_CONST_RETURN char  *pango_font_face_get_face_name (PangoFontFace *face);
+void                  pango_font_face_list_sizes     (PangoFontFace  *face, 
+                                                      int           **sizes, 
+                                                      int            *n_sizes);
 
 #ifdef PANGO_ENABLE_BACKEND
 
@@ -263,11 +266,13 @@ struct _PangoFontFaceClass
   
   const char           * (*get_face_name) (PangoFontFace *face);
   PangoFontDescription * (*describe)       (PangoFontFace *face);
+  void                   (*list_sizes)     (PangoFontFace  *face, 
+                                            int           **sizes, 
+                                            int            *n_sizes);
 
   /*< private >*/
 
   /* Padding for future expansion */
-  void (*_pango_reserved1) (void);
   void (*_pango_reserved2) (void);
   void (*_pango_reserved3) (void);
   void (*_pango_reserved4) (void);
