@@ -526,12 +526,18 @@ get_font_metrics_from_subfonts (PangoFont        *font,
 	{
 	  metrics->ascent = PANGO_UNITS_26_6 (face->size->metrics.ascender);
 	  metrics->descent = PANGO_UNITS_26_6 (-face->size->metrics.descender);
+	  metrics->approximate_digit_width = PANGO_UNITS_26_6 (face->size->metrics.max_advance);
+	  metrics->approximate_char_width = PANGO_UNITS_26_6 (face->size->metrics.max_advance);
 	  first = FALSE;
 	}
       else
 	{
 	  metrics->ascent = MAX (PANGO_UNITS_26_6 (face->size->metrics.ascender), metrics->ascent);
 	  metrics->descent = MAX (PANGO_UNITS_26_6 (-face->size->metrics.descender), metrics->descent);
+	  metrics->approximate_digit_width =
+	    MAX (PANGO_UNITS_26_6 (face->size->metrics.max_advance), metrics->approximate_digit_width);
+	  metrics->approximate_char_width =
+	    MAX (PANGO_UNITS_26_6 (face->size->metrics.max_advance), metrics->approximate_char_width);
 	}
 
       tmp_list = tmp_list->next;

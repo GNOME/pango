@@ -1,3 +1,9 @@
+2001-05-04  Alex Larsson  <alla@lysator.liu.se>
+
+	* pango/pangoft2.c (get_font_metrics_from_subfonts):
+	Set approximate_digit_width and approximate_char_width. The
+	digit one could be done better (see bug 53425).
+
 2001-05-03  Michael Natterer  <mitch@convergence.de>
 
 	* configure.in: also check for the the Xft header.
