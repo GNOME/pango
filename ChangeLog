@@ -1,3 +1,9 @@
+2002-08-01  Changwoo Ryu  <cwryu@debian.org>
+
+	* modules/hangul/hangul-x.c (render_syllable_with_ksx1005):
+	Renders the prefix of uncomposable Hangul syllable in the way of
+	other font encoding code.
+
 Wed Jul 31 16:00:20 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* modules/thai/thai-xft.c (make_glyph): Minor tweak

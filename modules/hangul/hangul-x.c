@@ -322,36 +322,25 @@ render_syllable_with_ksx1005 (PangoFont *font, PangoXSubfont subfont,
 			       int *n_glyphs, int cluster_offset)
 {
   guint16 gindex;
-  int i;
+  int i, composed;
 
-  /*
-   * Check if there are one CHOSEONG, one JUNGSEONG, and no more
-   * than one JONGSEONG.
-   */
-  int n_cho = 0, n_jung = 0, n_jong = 0;
-  i = 0;
-  while (i < length && IS_L (text[i]))
-    {
-      n_cho++;
-      i++;
-    }
-  while (i < length && IS_V (text[i]))
-    {
-      n_jung++;
-      i++;
-    }
-  while (i < length && IS_T (text[i]))
-    {
-      n_jong++;
-      i++;
-    }
-  if (n_cho == 1 && n_jung == 1 && n_jong <= 1)
+  if (length >= 3 && IS_L_S(text[0]) && IS_V_S(text[1]) && IS_T_S(text[2]))
+    composed = 3;
+  else if (length >= 2 && IS_L_S(text[0]) && IS_V_S(text[1]))
+    composed = 2;
+  else
+    composed = 0;
+
+  if (composed)
     {
       int lindex, vindex, tindex;
 
       lindex = text[0] - LBASE;
       vindex = text[1] - VBASE;
-      tindex = text[2] - TBASE;
+      if (composed == 3)
+	tindex = text[2] - TBASE;
+      else
+	tindex = 0;
 
       /* convert to JOHAB */
  
@@ -361,8 +350,8 @@ render_syllable_with_ksx1005 (PangoFont *font, PangoXSubfont subfont,
       set_glyph (glyphs, *n_glyphs, font, subfont, gindex);
       glyphs->log_clusters[*n_glyphs] = cluster_offset;
       (*n_glyphs)++;
-
-      return;
+      text += composed;
+      length -= composed;
     }
 
   /* Render as uncomposed forms as a fallback.  */
