@@ -63,7 +63,7 @@ joining_class  arabic[] =
   none, none, none, none,
   none, none, none, none,
   none, none, none, none,
-  none, none, none, none,
+  none, none, dual, dual,
 
   /* U+0670 */
   transparent, right, right, right,

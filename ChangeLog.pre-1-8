@@ -1,3 +1,9 @@
+Sat Jun 15 23:26:41 2002  Owen Taylor  <otaylor@redhat.com>
+ 
+ 	* modules/arabic/arabic-ot.c: Support new Arabic
+ 	characters in Unicode 3.2. (Patch from Roozbeh
+ 	Pournader.)
+ 
 Thu Jun 13 16:57:59 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* Released 1.0.3.
