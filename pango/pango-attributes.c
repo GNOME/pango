@@ -210,7 +210,9 @@ pango_attr_color_copy (const PangoAttribute *attr)
   const PangoAttrColor *color_attr = (PangoAttrColor *)attr;
   
   return pango_attr_color_new (attr->klass,
-			       color_attr->red, color_attr->green, color_attr->blue);
+			       color_attr->color.red,
+                               color_attr->color.green,
+                               color_attr->color.blue);
 }
 
 static void
@@ -225,10 +227,10 @@ pango_attr_color_equal (const PangoAttribute *attr1,
 {
   const PangoAttrColor *color_attr1 = (const PangoAttrColor *)attr1;
   const PangoAttrColor *color_attr2 = (const PangoAttrColor *)attr2;
-  
-  return (color_attr1->red == color_attr2->red &&
-	  color_attr1->blue == color_attr2->blue &&
-	  color_attr1->green == color_attr2->green);
+
+  return (color_attr1->color.red == color_attr2->color.red &&
+	  color_attr1->color.blue == color_attr2->color.blue &&
+	  color_attr1->color.green == color_attr2->color.green);
 }
 
 static PangoAttribute *
@@ -239,9 +241,9 @@ pango_attr_color_new (const PangoAttrClass *klass,
 {
   PangoAttrColor *result = g_new (PangoAttrColor, 1);
   result->attr.klass = klass;
-  result->red = red;
-  result->green = green;
-  result->blue = blue;
+  result->color.red = red;
+  result->color.green = green;
+  result->color.blue = blue;
 
   return (PangoAttribute *)result;
 }
@@ -1473,4 +1475,43 @@ pango_attr_iterator_get_font (PangoAttrIterator     *iterator,
 	    }
 	}
     }
+}
+
+GType
+pango_color_get_type (void)
+{
+  static GType our_type = 0;
+  
+  if (our_type == 0)
+    {
+      g_type_init ();
+      
+      our_type = g_boxed_type_register_static ("PangoColor",
+                                               pango_color_copy,
+                                               pango_color_free);
+    }
+
+  return our_type;
+}
+
+PangoColor*
+pango_color_copy (const PangoColor *src)
+{
+  PangoColor *ret;
+
+  g_return_val_if_fail (src != NULL, NULL);
+  
+  ret = g_new (PangoColor, 1);
+
+  *ret = *src;
+
+  return ret;
+}
+
+void
+pango_color_free (PangoColor *color)
+{
+  g_return_if_fail (color != NULL);
+
+  g_free (color);
 }

@@ -1,3 +1,18 @@
+2001-01-26  Havoc Pennington  <hp@redhat.com>
+
+	* pango/pangox.h (PangoGetGCFunc): take a PangoColor not a
+	PangoAttrColor
+
+	* pango/pango-attributes.h: add PangoColor, add PANGO_ATTR_INVALID
+	as a placeholder for zero in the PangoAttrType enum, corresponds
+	to G_TYPE_INVALID.	
+
+	* pango/pango-attributes.c: Add PangoColor type, use for
+	PangoAttrColor
+	(pango_color_get_type): new function
+	(pango_color_copy): new function
+	(pango_color_free): new function
+
 Thu Jan 25 14:47:17 2001  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pango-sections.txt pango/pango-docs.sgml pango/tmpl/*:

@@ -23,10 +23,30 @@
 #define __PANGO_ATTRIBUTES_H__
 
 #include <pango/pango-font.h>
+#include <glib-object.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
+
+/* PangoColor */
+
+typedef struct _PangoColor PangoColor;
+
+struct _PangoColor
+{
+  guint16 red;
+  guint16 green;
+  guint16 blue;
+};
+
+#define PANGO_TYPE_COLOR pango_color_get_type ()
+GType       pango_color_get_type (void) G_GNUC_CONST;
+
+PangoColor *pango_color_copy     (const PangoColor *src);
+void        pango_color_free     (PangoColor       *color);
+
+/* Attributes */
 
 typedef struct _PangoAttribute    PangoAttribute;
 typedef struct _PangoAttrClass    PangoAttrClass;
@@ -43,6 +63,7 @@ typedef struct _PangoAttrIterator PangoAttrIterator;
 
 typedef enum
 {
+  PANGO_ATTR_INVALID,           /* 0 is an invalid attribute type */
   PANGO_ATTR_LANG,		/* PangoAttrString */
   PANGO_ATTR_FAMILY,		/* PangoAttrString */
   PANGO_ATTR_STYLE,		/* PangoAttrInt */
@@ -103,9 +124,7 @@ struct _PangoAttrFloat
 struct _PangoAttrColor
 {
   PangoAttribute attr;
-  guint16 red;
-  guint16 green;
-  guint16 blue;
+  PangoColor color;
 };
 
 struct _PangoAttrShape

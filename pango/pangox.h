@@ -34,7 +34,7 @@ extern "C" {
 
 #define PANGO_RENDER_TYPE_X "PangoRenderX"
 
-typedef GC (*PangoGetGCFunc) (PangoContext *context, PangoAttrColor *color, GC base_gc);
+typedef GC (*PangoGetGCFunc) (PangoContext *context, PangoColor *color, GC base_gc);
 typedef void (*PangoFreeGCFunc) (PangoContext *context, GC gc);
 
 /* Calls for applications

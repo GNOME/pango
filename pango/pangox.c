@@ -1290,7 +1290,7 @@ pango_x_render_layout_line (Display          *display,
       pango_x_get_item_properties (run->item, &uline, &fg_color, &fg_set, &bg_color, &bg_set);
 
       if (fg_set && info->get_gc_func)
-	fg_gc = info->get_gc_func (context, &fg_color, gc);
+	fg_gc = info->get_gc_func (context, &fg_color.color, gc);
       else
 	fg_gc = gc;
 
@@ -1303,7 +1303,7 @@ pango_x_render_layout_line (Display          *display,
 
       if (bg_set && info->get_gc_func)
 	{
-	  GC bg_gc = info->get_gc_func (context, &bg_color, gc);
+	  GC bg_gc = info->get_gc_func (context, &bg_color.color, gc);
 
 	  XFillRectangle (display, drawable, bg_gc,
 			  x + (x_off + logical_rect.x) / PANGO_SCALE,
