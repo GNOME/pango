@@ -216,8 +216,9 @@ check_line_char (gunichar      wc,
   if (break_type == G_UNICODE_BREAK_SPACE)
     {
       if (attr->is_line_break && prev_attr != NULL &&
-          !attr->is_mandatory_break)
-        fail ("can't break lines before a space unless a mandatory break char precedes it; prev char was " CHFORMAT, prev_wc);
+          !attr->is_mandatory_break &&
+	  !(next_wc && g_unichar_break_type (next_wc) == G_UNICODE_BREAK_COMBINING_MARK))
+        fail ("can't break lines before a space unless a mandatory break char precedes it or a combining mark follows; prev char was " CHFORMAT, prev_wc);
     }
 
   if (attr->is_mandatory_break && !attr->is_line_break)
