@@ -891,7 +891,7 @@ add_engines (PangoContext      *context,
                                         &next_desc, &extra_attrs);
           
 	  if (i == 0 ||
-	      !pango_font_description_compare (&current_desc, &next_desc))
+	      !pango_font_description_equal (&current_desc, &next_desc))
 	    {
 	      current_desc = next_desc;
 

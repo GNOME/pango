@@ -93,7 +93,7 @@ struct _PangoFontMetrics
 };
 
 PangoFontDescription *pango_font_description_copy        (const PangoFontDescription  *desc);
-gboolean              pango_font_description_compare     (const PangoFontDescription  *desc1,
+gboolean              pango_font_description_equal       (const PangoFontDescription  *desc1,
 							  const PangoFontDescription  *desc2);
 void                  pango_font_description_free        (PangoFontDescription        *desc);
 void                  pango_font_descriptions_free       (PangoFontDescription       **descs,

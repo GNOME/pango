@@ -89,7 +89,7 @@ within a family.
 @Returns: 
 
 
-<!-- ##### FUNCTION pango_font_description_compare ##### -->
+<!-- ##### FUNCTION pango_font_description_equal ##### -->
 <para>
 
 </para>

@@ -94,7 +94,7 @@ PangoWeight
 PangoVariant
 PangoStretch
 pango_font_description_copy
-pango_font_description_compare
+pango_font_description_equal
 pango_font_descriptions_free
 pango_font_description_free
 pango_font_description_from_string
@@ -146,7 +146,7 @@ PangoAttrShape
 pango_parse_markup
 pango_attr_type_register
 pango_attribute_copy
-pango_attribute_compare
+pango_attribute_equal
 pango_attribute_destroy
 <SUBSECTION>
 pango_attr_lang_new

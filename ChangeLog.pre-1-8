@@ -1,3 +1,17 @@
+2000-11-13  Sebastian Wilhelmi  <wilhelmi@ira.uka.de>
+
+	* pango/pango-attributes.c, pango/pango-attributes.h: Renamed
+	pango_attribute_compare to pango_attribute_equal. Renamed compare
+	member of PangoAttrClass to equal. Renamed some static functions
+	from ..._compare to ..._equal.
+	
+	* pango/fonts.c, pango/pango-font.h, pango/pango-context.c:
+	Renamed pango_font_description_compare to
+	pango_font_description_equal.
+
+	* docs/pango-sections.txt, docs/tmpl/fonts.sgml,
+	docs/tmpl/text-attributes.sgml: Changed accordingly.
+
 2000-11-12  Havoc Pennington  <hp@pobox.com>
 
 	* pango-config.in: Remove UNICODE_LIBS UNICODE_CFLAGS

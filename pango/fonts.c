@@ -48,7 +48,7 @@ pango_font_description_copy  (const PangoFontDescription  *desc)
 }
 
 /**
- * pango_font_description_compare:
+ * pango_font_description_equal:
  * @desc1: a #PangoFontDescription
  * @desc2: another #PangoFontDescription
  * 
@@ -60,8 +60,8 @@ pango_font_description_copy  (const PangoFontDescription  *desc)
  *                %FALSE.)
  **/
 gboolean
-pango_font_description_compare (const PangoFontDescription  *desc1,
-				const PangoFontDescription  *desc2)
+pango_font_description_equal (const PangoFontDescription  *desc1,
+			      const PangoFontDescription  *desc2)
 {
   g_return_val_if_fail (desc1 != NULL, FALSE);
   g_return_val_if_fail (desc2 != NULL, FALSE);

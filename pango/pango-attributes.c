@@ -103,7 +103,7 @@ pango_attribute_destroy (PangoAttribute *attr)
 }
 
 /**
- * pango_attribute_compare:
+ * pango_attribute_equal:
  * @attr1: a #PangoAttribute
  * @attr2: another #PangoAttribute
  * 
@@ -114,8 +114,8 @@ pango_attribute_destroy (PangoAttribute *attr)
  * Return value: %TRUE if the two attributes have the same value.
  **/
 gboolean
-pango_attribute_compare (const PangoAttribute *attr1,
-			 const PangoAttribute *attr2)
+pango_attribute_equal (const PangoAttribute *attr1,
+		       const PangoAttribute *attr2)
 {
   g_return_val_if_fail (attr1 != NULL, FALSE);
   g_return_val_if_fail (attr2 != NULL, FALSE);
@@ -123,7 +123,7 @@ pango_attribute_compare (const PangoAttribute *attr1,
   if (attr1->klass->type != attr2->klass->type)
     return FALSE;
 
-  return attr1->klass->compare (attr1, attr2);
+  return attr1->klass->equal (attr1, attr2);
 }
 
 static PangoAttribute *
@@ -140,8 +140,8 @@ pango_attr_string_destroy (PangoAttribute *attr)
 }
 
 static gboolean
-pango_attr_string_compare (const PangoAttribute *attr1,
-			   const PangoAttribute *attr2)
+pango_attr_string_equal (const PangoAttribute *attr1,
+			 const PangoAttribute *attr2)
 {
   return strcmp (((PangoAttrString *)attr1)->value, ((PangoAttrString *)attr2)->value) == 0;
 }
@@ -173,7 +173,7 @@ pango_attr_lang_new (const char *lang)
     PANGO_ATTR_LANG,
     pango_attr_string_copy,
     pango_attr_string_destroy,
-    pango_attr_string_compare
+    pango_attr_string_equal
   };
 
   g_return_val_if_fail (lang != NULL, NULL);
@@ -196,7 +196,7 @@ pango_attr_family_new (const char *family)
     PANGO_ATTR_FAMILY,
     pango_attr_string_copy,
     pango_attr_string_destroy,
-    pango_attr_string_compare
+    pango_attr_string_equal
   };
 
   g_return_val_if_fail (family != NULL, NULL);
@@ -220,8 +220,8 @@ pango_attr_color_destroy (PangoAttribute *attr)
 }
 
 static gboolean
-pango_attr_color_compare (const PangoAttribute *attr1,
-			  const PangoAttribute *attr2)
+pango_attr_color_equal (const PangoAttribute *attr1,
+			const PangoAttribute *attr2)
 {
   const PangoAttrColor *color_attr1 = (const PangoAttrColor *)attr1;
   const PangoAttrColor *color_attr2 = (const PangoAttrColor *)attr2;
@@ -265,7 +265,7 @@ pango_attr_foreground_new (guint16 red,
     PANGO_ATTR_FOREGROUND,
     pango_attr_color_copy,
     pango_attr_color_destroy,
-    pango_attr_color_compare
+    pango_attr_color_equal
   };
 
   return pango_attr_color_new (&klass, red, green, blue);
@@ -290,7 +290,7 @@ pango_attr_background_new (guint16 red,
     PANGO_ATTR_BACKGROUND,
     pango_attr_color_copy,
     pango_attr_color_destroy,
-    pango_attr_color_compare
+    pango_attr_color_equal
   };
 
   return pango_attr_color_new (&klass, red, green, blue);
@@ -311,8 +311,8 @@ pango_attr_int_destroy (PangoAttribute *attr)
 }
 
 static gboolean
-pango_attr_int_compare (const PangoAttribute *attr1,
-			  const PangoAttribute *attr2)
+pango_attr_int_equal (const PangoAttribute *attr1,
+		      const PangoAttribute *attr2)
 {
   const PangoAttrInt *int_attr1 = (const PangoAttrInt *)attr1;
   const PangoAttrInt *int_attr2 = (const PangoAttrInt *)attr2;
@@ -346,8 +346,8 @@ pango_attr_float_destroy (PangoAttribute *attr)
 }
 
 static gboolean
-pango_attr_float_compare (const PangoAttribute *attr1,
-			  const PangoAttribute *attr2)
+pango_attr_float_equal (const PangoAttribute *attr1,
+			const PangoAttribute *attr2)
 {
   const PangoAttrFloat *float_attr1 = (const PangoAttrFloat *)attr1;
   const PangoAttrFloat *float_attr2 = (const PangoAttrFloat *)attr2;
@@ -381,7 +381,7 @@ pango_attr_size_new (int size)
     PANGO_ATTR_SIZE,
     pango_attr_int_copy,
     pango_attr_int_destroy,
-    pango_attr_int_compare
+    pango_attr_int_equal
   };
 
   return pango_attr_int_new (&klass, size);
@@ -402,7 +402,7 @@ pango_attr_style_new (PangoStyle style)
     PANGO_ATTR_STYLE,
     pango_attr_int_copy,
     pango_attr_int_destroy,
-    pango_attr_int_compare
+    pango_attr_int_equal
   };
 
   return pango_attr_int_new (&klass, (int)style);
@@ -423,7 +423,7 @@ pango_attr_weight_new (PangoWeight weight)
     PANGO_ATTR_WEIGHT,
     pango_attr_int_copy,
     pango_attr_int_destroy,
-    pango_attr_int_compare
+    pango_attr_int_equal
   };
 
   return pango_attr_int_new (&klass, (int)weight);
@@ -444,7 +444,7 @@ pango_attr_variant_new (PangoVariant variant)
     PANGO_ATTR_VARIANT,
     pango_attr_int_copy,
     pango_attr_int_destroy,
-    pango_attr_int_compare
+    pango_attr_int_equal
   };
 
   return pango_attr_int_new (&klass, (int)variant);
@@ -465,7 +465,7 @@ pango_attr_stretch_new (PangoStretch  stretch)
     PANGO_ATTR_STRETCH,
     pango_attr_int_copy,
     pango_attr_int_destroy,
-    pango_attr_int_compare
+    pango_attr_int_equal
   };
 
   return pango_attr_int_new (&klass, (int)stretch);
@@ -489,13 +489,13 @@ pango_attr_font_desc_destroy (PangoAttribute *attr)
 }
 
 static gboolean
-pango_attr_font_desc_compare (const PangoAttribute *attr1,
-			      const PangoAttribute *attr2)
+pango_attr_font_desc_equal (const PangoAttribute *attr1,
+			    const PangoAttribute *attr2)
 {
   const PangoAttrFontDesc *desc_attr1 = (const PangoAttrFontDesc *)attr1;
   const PangoAttrFontDesc *desc_attr2 = (const PangoAttrFontDesc *)attr2;
   
-  return pango_font_description_compare (&desc_attr1->desc, &desc_attr2->desc);
+  return pango_font_description_equal (&desc_attr1->desc, &desc_attr2->desc);
 }
 
 /**
@@ -515,7 +515,7 @@ pango_attr_font_desc_new (const PangoFontDescription *desc)
     PANGO_ATTR_FONT_DESC,
     pango_attr_font_desc_copy,
     pango_attr_font_desc_destroy,
-    pango_attr_font_desc_compare
+    pango_attr_font_desc_equal
   };
 
   PangoAttrFontDesc *result = g_new (PangoAttrFontDesc, 1);
@@ -542,7 +542,7 @@ pango_attr_underline_new (PangoUnderline underline)
     PANGO_ATTR_UNDERLINE,
     pango_attr_int_copy,
     pango_attr_int_destroy,
-    pango_attr_int_compare
+    pango_attr_int_equal
   };
 
   return pango_attr_int_new (&klass, (int)underline);
@@ -563,7 +563,7 @@ pango_attr_strikethrough_new (gboolean strikethrough)
     PANGO_ATTR_STRIKETHROUGH,
     pango_attr_int_copy,
     pango_attr_int_destroy,
-    pango_attr_int_compare
+    pango_attr_int_equal
   };
 
   return pango_attr_int_new (&klass, (int)strikethrough);
@@ -586,7 +586,7 @@ pango_attr_rise_new (int rise)
     PANGO_ATTR_RISE,
     pango_attr_int_copy,
     pango_attr_int_destroy,
-    pango_attr_int_compare
+    pango_attr_int_equal
   };
 
   return pango_attr_int_new (&klass, (int)rise);
@@ -608,7 +608,7 @@ pango_attr_scale_new (double scale_factor)
     PANGO_ATTR_SCALE,
     pango_attr_float_copy,
     pango_attr_float_destroy,
-    pango_attr_float_compare
+    pango_attr_float_equal
   };
 
   return pango_attr_float_new (&klass, scale_factor);
@@ -629,8 +629,8 @@ pango_attr_shape_destroy (PangoAttribute *attr)
 }
 
 static gboolean
-pango_attr_shape_compare (const PangoAttribute *attr1,
-			  const PangoAttribute *attr2)
+pango_attr_shape_equal (const PangoAttribute *attr1,
+			const PangoAttribute *attr2)
 {
   const PangoAttrShape *shape_attr1 = (const PangoAttrShape *)attr1;
   const PangoAttrShape *shape_attr2 = (const PangoAttrShape *)attr2;
@@ -665,7 +665,7 @@ pango_attr_shape_new (const PangoRectangle *ink_rect,
     PANGO_ATTR_SHAPE,
     pango_attr_shape_copy,
     pango_attr_shape_destroy,
-    pango_attr_shape_compare
+    pango_attr_shape_equal
   };
 
   PangoAttrShape *result;
@@ -934,7 +934,7 @@ pango_attr_list_change (PangoAttrList  *list,
 	  tmp_attr->end_index >= start_index)
 	{
 	  /* We overlap with an existing attribute */
-	  if (pango_attribute_compare (tmp_attr, attr))
+	  if (pango_attribute_equal (tmp_attr, attr))
 	    {
 	      /* We can merge the new attribute with this attribute
 	       */
@@ -1002,7 +1002,7 @@ pango_attr_list_change (PangoAttrList  *list,
       else if (tmp_attr->klass->type == attr->klass->type)
 	{
 	  if (tmp_attr->end_index <= attr->end_index ||
-	      pango_attribute_compare (tmp_attr, attr))
+	      pango_attribute_equal (tmp_attr, attr))
 	    {
 	      /* We can merge the new attribute with this attribute.
 	       */

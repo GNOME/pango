@@ -79,7 +79,7 @@ struct _PangoAttrClass
   PangoAttrType type;
   PangoAttribute * (*copy) (const PangoAttribute *attr);
   void             (*destroy) (PangoAttribute *attr);
-  gboolean         (*compare) (const PangoAttribute *attr1, const PangoAttribute *attr2);
+  gboolean         (*equal) (const PangoAttribute *attr1, const PangoAttribute *attr2);
 };
 
 struct _PangoAttrString
@@ -125,7 +125,7 @@ PangoAttrType    pango_attr_type_register (const gchar          *name);
 
 PangoAttribute * pango_attribute_copy          (const PangoAttribute *attr);
 void             pango_attribute_destroy       (PangoAttribute       *attr);
-gboolean         pango_attribute_compare       (const PangoAttribute *attr1,
+gboolean         pango_attribute_equal         (const PangoAttribute *attr1,
 						const PangoAttribute *attr2);
 
 PangoAttribute *pango_attr_lang_new          (const char                 *lang);
