@@ -90,13 +90,13 @@ PangoFT2Font * _pango_ft2_font_new                (PangoFT2FontMap   *ft2fontmap
 FT_Library     _pango_ft2_font_map_get_library    (PangoFontMap      *fontmap);
 const char    *_pango_ft2_ft_strerror             (FT_Error           error);
 
-void *pango_ft2_font_get_cache_glyph_data    (PangoFont      *font,
-					      int             glyph_index);
-void  pango_ft2_font_set_cache_glyph_data    (PangoFont      *font,
-					      int             glyph_index,
-					      void           *cached_glyph);
-void  pango_ft2_font_set_glyph_cache_destroy (PangoFont      *font,
-					      GDestroyNotify  destroy_notify);
+void *_pango_ft2_font_get_cache_glyph_data    (PangoFont      *font,
+					       int             glyph_index);
+void  _pango_ft2_font_set_cache_glyph_data    (PangoFont      *font,
+					       int             glyph_index,
+					       void           *cached_glyph);
+void  _pango_ft2_font_set_glyph_cache_destroy (PangoFont      *font,
+					       GDestroyNotify  destroy_notify);
 
 void _pango_ft2_draw_rect            (FT_Bitmap         *bitmap,
 				      const PangoMatrix *matrix,

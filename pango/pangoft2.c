@@ -385,8 +385,8 @@ pango_ft2_render_transformed (FT_Bitmap         *bitmap,
 	  PangoFT2RenderedGlyph *rendered_glyph;
 	  glyph_index = gi->glyph;
 
-	  rendered_glyph = pango_ft2_font_get_cache_glyph_data (font,
-								glyph_index);
+	  rendered_glyph = _pango_ft2_font_get_cache_glyph_data (font,
+								 glyph_index);
 	  add_glyph_to_cache = FALSE;
 	  if (rendered_glyph == NULL)
 	    {
@@ -491,10 +491,10 @@ pango_ft2_render_transformed (FT_Bitmap         *bitmap,
 
 	  if (add_glyph_to_cache)
 	    {
-	      pango_ft2_font_set_glyph_cache_destroy (font,
-						      (GDestroyNotify) pango_ft2_free_rendered_glyph);
-	      pango_ft2_font_set_cache_glyph_data (font,
-						   glyph_index, rendered_glyph);
+	      _pango_ft2_font_set_glyph_cache_destroy (font,
+						       (GDestroyNotify) pango_ft2_free_rendered_glyph);
+	      _pango_ft2_font_set_cache_glyph_data (font,
+						    glyph_index, rendered_glyph);
 	    }
 	}
 
@@ -1064,7 +1064,7 @@ _pango_ft2_ft_strerror (FT_Error error)
 
 
 void *
-pango_ft2_font_get_cache_glyph_data (PangoFont *font,
+_pango_ft2_font_get_cache_glyph_data (PangoFont *font,
 				     int        glyph_index)
 {
   PangoFT2GlyphInfo *info;
@@ -1080,7 +1080,7 @@ pango_ft2_font_get_cache_glyph_data (PangoFont *font,
 }
 
 void
-pango_ft2_font_set_cache_glyph_data (PangoFont     *font,
+_pango_ft2_font_set_cache_glyph_data (PangoFont     *font,
 				     int            glyph_index,
 				     void          *cached_glyph)
 {
@@ -1096,8 +1096,8 @@ pango_ft2_font_set_cache_glyph_data (PangoFont     *font,
 }
 
 void
-pango_ft2_font_set_glyph_cache_destroy (PangoFont      *font,
-					GDestroyNotify  destroy_notify)
+_pango_ft2_font_set_glyph_cache_destroy (PangoFont      *font,
+					 GDestroyNotify  destroy_notify)
 {
   g_return_if_fail (PANGO_FT2_IS_FONT (font));
   

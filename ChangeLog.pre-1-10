@@ -1,3 +1,9 @@
+Sat Jul 10 17:45:05 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pangoft2-private.h: Add _pango prefix for
+	_pango_ft2_font_get_cache_glyph_data and friends
+	defined only in private header file.
+
 Sat Jul 10 17:33:38 2004  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pangoft2-private.h pango/pangoft2-render.c
