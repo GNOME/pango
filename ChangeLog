@@ -1,3 +1,8 @@
+2004-07-08  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/break.c: Add missing row for the WORD_JOINER
+	class. (#145833, Billy Biggs)
+
 Wed Jun 23 17:26:50 2004  Owen Taylor  <otaylor@redhat.com>
  
  	* tests/Makefile.am (pango.modules): Don't generate
