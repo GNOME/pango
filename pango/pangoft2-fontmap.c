@@ -521,7 +521,7 @@ pango_ft2_font_map_read_alias_file (PangoFT2FontMap *ft2fontmap,
 	  if (!pango_scan_string (&p, tmp_buf))
 	    goto error;
 
-	  face = g_new (PangoFT2Face, 1);
+	  face = g_object_new (PANGO_FT2_TYPE_FACE, NULL);
 	  face->n_fonts = 0;
 	  face->open_args = NULL;
 	  face->face_indices = NULL;

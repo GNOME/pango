@@ -1,3 +1,9 @@
+2001-10-04  Sven Neumann  <sven@gimp.org>
+
+	* pango/pangoft2-fontmap.c (pango_ft2_font_map_read_alias_file): 
+	use g_object_new() instead of g_new() to create a PangoFT2Face.
+	Fixes bug #61603.
+
 2001-10-04  Tor Lillqvist  <tml@iki.fi>
 
 	* configure.in: Retract my change to Xrender+Xft+Xft+FreeType.h
