@@ -1,3 +1,8 @@
+Tue Apr 15 09:19:21 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/fonts.c (pango_font_description_set_family): 
+	Free the right string.
+
 Tue Apr 15 07:03:19 2003  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pangofc-font.h: Always include freetype.h
