@@ -36,7 +36,6 @@
 
 
 #include <glib.h>
-#include <stdio.h>
 #include <string.h>
 
 #include "pangox.h"
@@ -183,7 +182,7 @@ shuffle_one_along (gunichar *start, gunichar *end)
 {
   end--;
   if (*end != 0) 
-    fprintf (stderr, "pango devanagari error, please report. bad shuffle!\n");
+    g_printerr ("pango devanagari error, please report. bad shuffle!\n");
   while (end > start)
     {
       end[0] = end[-1];

@@ -22,6 +22,7 @@
 
 #include <string.h>
 
+#include <glib/gprintf.h>
 #include "pangoxft.h"
 #include "pango-engine.h"
 #include "pango-utils.h"
@@ -142,7 +143,7 @@ basic_engine_shape (PangoFont        *font,
 	      char buf[9];
 	      int len = (wc < 65536) ? 6 : 8;
 
-	      sprintf(buf, "[%0*X]", len - 2, wc);
+	      g_sprintf (buf, "[%0*X]", len - 2, wc);
 
 	      n_chars += len - 1;
 	      pango_glyph_string_set_size (glyphs, n_chars);

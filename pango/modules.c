@@ -21,7 +21,6 @@
 
 #include "config.h"
 
-#include <stdio.h>
 #include <string.h>
 #include <limits.h>
 #include <errno.h>
@@ -157,16 +156,16 @@ pango_engine_pair_get_engine (PangoEnginePair *pair)
 	  module = g_module_open (module_name, 0);
 	  if (!module)
 	    {
-	      fprintf(stderr, "Cannot load module %s: %s\n",
-		      module_name, g_module_error());
+	      g_printerr ("Cannot load module %s: %s\n",
+			  module_name, g_module_error());
 	      return NULL;
 	    }
 	  
 	  g_module_symbol (module, "script_engine_load", (gpointer *) &load);
 	  if (!load)
 	    {
-	      fprintf(stderr, "cannot retrieve script_engine_load from %s: %s\n",
-		      module_name, g_module_error());
+	      g_printerr ("cannot retrieve script_engine_load from %s: %s\n",
+			  module_name, g_module_error());
 	      g_module_close (module);
 	      return NULL;
 	    }
@@ -279,14 +278,14 @@ process_module_file (FILE *module_file)
 	      range = g_new (PangoEngineRange, 1);
 	      if (sscanf(tmp_buf->str, "%d-%d:", &start, &end) != 2)
 		{
-		  fprintf(stderr, "Error reading modules file");
+		  g_printerr ("Error reading modules file");
 		  have_error = TRUE;
 		  goto error;
 		}
 	      q = strchr (tmp_buf->str, ':');
 	      if (!q)
 		{
-		  fprintf(stderr, "Error reading modules file");
+		  g_printerr ( "Error reading modules file");
 		  have_error = TRUE;
 		  goto error;
 		}
@@ -306,7 +305,7 @@ process_module_file (FILE *module_file)
       
       if (i<3)
 	{
-	  fprintf(stderr, "Error reading modules file");
+	  g_printerr ("Error reading modules file");
 	  have_error = TRUE;
 	  goto error;
 	}

@@ -24,9 +24,9 @@
 
 #include <string.h>
 #include <stdlib.h>
-#include <stdio.h>
 #include <math.h>
 #include <glib.h>
+#include <glib/gprintf.h>
 
 #include <freetype/freetype.h>
 
@@ -1088,7 +1088,7 @@ _pango_ft2_ft_strerror (FT_Error error)
     {
       static char default_msg[100];
 
-      sprintf (default_msg, "Unknown FreeType2 error %#x", error);
+      g_sprintf (default_msg, "Unknown FreeType2 error %#x", error);
       return default_msg;
     }
 }

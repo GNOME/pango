@@ -462,8 +462,8 @@ read_config_file (const char *filename, gboolean enoent_error)
   if (!file)
     {
       if (errno != ENOENT || enoent_error)
-	fprintf (stderr, "Pango:%s: Error opening config file: %s\n",
-		 filename, g_strerror (errno));
+	g_printerr ("Pango:%s: Error opening config file: %s\n",
+		    filename, g_strerror (errno));
       return;
     }
   
@@ -573,7 +573,7 @@ read_config_file (const char *filename, gboolean enoent_error)
 
   if (errstring)
     {
-      fprintf (stderr, "Pango:%s:%d: %s\n", filename, line, errstring);
+      g_printerr ("Pango:%s:%d: %s\n", filename, line, errstring);
       g_free (errstring);
     }
       
@@ -1415,7 +1415,7 @@ read_alias_file (const char *filename)
 
   if (errstring)
     {
-      fprintf (stderr, "Pango:%s:%d: %s\n", filename, line, errstring);
+      g_printerr ("Pango:%s:%d: %s\n", filename, line, errstring);
       g_free (errstring);
     }
       

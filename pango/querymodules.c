@@ -33,7 +33,7 @@
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
-#include <stdio.h>
+#include <glib/gprintf.h>
 
 #if USE_LA_MODULES
 #define SOEXT ".la"
@@ -102,7 +102,7 @@ query_module (const char *dir, const char *name)
   module = g_module_open (path, 0);
 
   if (!module)
-    fprintf(stderr, "Cannot load module %s: %s\n", path, g_module_error());
+    g_printerr ("Cannot load module %s: %s\n", path, g_module_error ());
 	  
   if (module &&
       g_module_symbol (module, "script_engine_list", (gpointer *) &list) &&
@@ -131,25 +131,25 @@ query_module (const char *dir, const char *name)
 	      quoted_path = g_strdup (path);
 	    }
 	  
-	  printf ("%s%s%s %s %s %s ", quote, quoted_path, quote,
-		  engines[i].id, engines[i].engine_type, engines[i].render_type);
+	  g_printf ("%s%s%s %s %s %s ", quote, quoted_path, quote,
+		    engines[i].id, engines[i].engine_type, engines[i].render_type);
 	  g_free (quoted_path);
 
 	  for (j=0; j < engines[i].n_ranges; j++)
 	    {
 	      if (j != 0)
-		printf (" ");
-	      printf ("%d-%d:%s",
+		g_printf (" ");
+	      g_printf ("%d-%d:%s",
 		      engines[i].ranges[j].start,
 		      engines[i].ranges[j].end,
 		      engines[i].ranges[j].langs);
 	    }
-	  printf ("\n");
+	  g_printf ("\n");
 	}
     }
   else
     {
-      fprintf (stderr, "%s does not export Pango module API\n", path);
+      g_printerr ("%s does not export Pango module API\n", path);
     }
   
   g_free (path);
@@ -163,9 +163,9 @@ int main (int argc, char **argv)
   int i;
   char *path;
 
-  printf ("# Pango Modules file\n"
-	  "# Automatically generated file, do not edit\n"
-	  "#\n");
+  g_printf ("# Pango Modules file\n"
+	    "# Automatically generated file, do not edit\n"
+	    "#\n");
 
   if (argc == 1)		/* No arguments given */
     {
@@ -179,7 +179,7 @@ int main (int argc, char **argv)
 				 "modules",
 				 NULL);
 
-      printf ("# ModulesPath = %s\n#\n", path);
+      g_printf ("# ModulesPath = %s\n#\n", path);
 
       dirs = pango_split_file_list (path);
 

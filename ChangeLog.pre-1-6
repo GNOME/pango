@@ -1,3 +1,13 @@
+Fri Dec  6 18:07:48 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* modules/indic/devanagari-x.c, pango/modules.c
+	pango/pango-utils.c pango/pangoft2.c pango/querymodules.c:
+	Convert [sf]printf to g_[sf]printf, or, where
+	appropriate g_printerr(). (Based on patch from
+	Matthias Clasen, #99321)
+
+	* configure.in: Require glib-2.1.3.
+
 Fri Dec  6 17:56:32 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* configure.in: Add missing thai-xft to thai-modules.
