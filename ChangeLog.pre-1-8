@@ -1,3 +1,8 @@
+Sun Nov 21 11:40:03 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-layout.c (pango_layout_get_log_attrs): Return n+1
+	logical attributes not n logical attributes (#155912)
+
 Sun Nov 21 10:52:03 2004  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pango-context.c: Don't just call pango_fontset_get_metrics()

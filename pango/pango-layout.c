@@ -917,8 +917,10 @@ pango_layout_context_changed (PangoLayout *layout)
  * @attrs: location to store a pointer to an array of logical attributes
  *         This value must be freed with g_free().
  * @n_attrs: location to store the number of the attributes in the
- *           array. (The stored value will be equal to the total number
- *           of characters in the layout.)
+ *           array. (The stored value will be one more than the total number
+ *           of characters in the layout, since there need to be attributes
+ *           corresponding to both the position before the first character
+ *           and the position after the last character.)
  * 
  * Retrieves an array of logical attributes for each character in
  * the @layout. 
@@ -934,12 +936,12 @@ pango_layout_get_log_attrs (PangoLayout    *layout,
 
   if (attrs)
     {
-      *attrs = g_new (PangoLogAttr, layout->n_chars);
-      memcpy (*attrs, layout->log_attrs, sizeof(PangoLogAttr) * layout->n_chars);
+      *attrs = g_new (PangoLogAttr, layout->n_chars + 1);
+      memcpy (*attrs, layout->log_attrs, sizeof(PangoLogAttr) * (layout->n_chars + 1));
     }
   
   if (n_attrs)
-    *n_attrs = layout->n_chars;
+    *n_attrs = layout->n_chars + 1;
 }
 
 
