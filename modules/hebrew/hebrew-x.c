@@ -113,7 +113,7 @@ typedef struct _HebrewFontInfo HebrewFontInfo;
 typedef enum {
   HEBREW_FONT_NONE,
   HEBREW_FONT_ISO8859_8,
-  HEBREW_FONT_ISO10646,
+  HEBREW_FONT_ISO10646
 } HebrewFontType;
 
 struct _HebrewFontInfo

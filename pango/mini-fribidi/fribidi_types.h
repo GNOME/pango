@@ -72,7 +72,7 @@ typedef enum
 
   FRIBIDI_MASK_BS = 0x00200000,
   FRIBIDI_MASK_SS = 0x00400000,
-  FRIBIDI_MASK_WS = 0x00800000,
+  FRIBIDI_MASK_WS = 0x00800000
 }
 FriBidiMaskType;
 
@@ -138,7 +138,7 @@ typedef enum
   FRIBIDI_TYPE_SOT =		/* Start of text */
     FRIBIDI_MASK_SENTINEL,
   FRIBIDI_TYPE_EOT =		/* End of text */
-    FRIBIDI_MASK_SENTINEL + FRIBIDI_MASK_RTL,
+    FRIBIDI_MASK_SENTINEL + FRIBIDI_MASK_RTL
 }
 FriBidiCharType;
 
@@ -261,7 +261,7 @@ enum
   _FRIBIDI_PROP (WL),		/* Weak left to right */
   _FRIBIDI_PROP (WR),		/* Weak right to left */
   _FRIBIDI_PROP (SOT),		/* Start of text */
-  _FRIBIDI_PROP (EOT),		/* End of text */
+  _FRIBIDI_PROP (EOT)		/* End of text */
 };
 #undef _FRIBIDI_PROP
 

@@ -1,3 +1,9 @@
+Mon Feb 25 16:36:47 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* modules/hebrew/hebrew-x.c pango/mini-fribidi/fribidi-types.h:
+	Fix trailing , on enumerations.
+	(#72572, Miroslaw Dobrzanski-Neumann)
+
 Sun Feb 24 13:40:55 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pangoxft-fontmap.c (pango_xft_pattern_equal):
