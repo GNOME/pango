@@ -586,12 +586,21 @@ fribidi_analyse_string (	/* input */
   /* Determinate character types */
   DBG ("  Determine character types\n");
   {
-    FriBidiCharType* char_type = g_alloca (len*sizeof(FriBidiCharType));
+    FriBidiCharType* char_type;
+
+    if (len < 512)
+      char_type = g_alloca (len*sizeof(FriBidiCharType));
+    else
+      char_type = g_malloc (len*sizeof(FriBidiCharType));
+    
     for (i = 0; i < len; i++)
       char_type[i] = _pango_fribidi_get_type (str[i]);
 
     /* Run length encode the character types */
     type_rl_list = run_length_encode_types (char_type, len);
+
+    if (len >= 512)
+      g_free (char_type);
   }
   DBG ("  Determine character types, Done\n");
 
