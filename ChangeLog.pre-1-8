@@ -1,3 +1,9 @@
+Thu Jul 24 16:40:12 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* configure.in tests/runtests.sh.in: Generate
+	runtest.sh so we can use ECHO_C, ECHO_N, SHELL
+	(#114944)
+
 Thu Jul 24 16:11:25 2003  Owen Taylor  <otaylor@redhat.com>
 
 	* modules/thai/thai-x.c modules/thai/thai-shaper.[ch]:
