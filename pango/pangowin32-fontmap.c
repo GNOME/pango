@@ -645,6 +645,14 @@ pango_win32_insert_font (PangoWin32FontMap *win32fontmap,
 
   PING(("face=%s,charset=%d,it=%d,wt=%ld,ht=%ld",lfp->lfFaceName,lfp->lfCharSet,lfp->lfItalic,lfp->lfWeight,lfp->lfHeight));
   
+  /* Ignore Symbol fonts (which don't have any Unicode mapping
+   * table). We could also be fancy and use the PostScript glyph name
+   * table for such if present, and build a Unicode map by mapping
+   * each PostScript glyph name to Unicode character. Oh well.
+   */
+  if (lfp->lfCharSet == SYMBOL_CHARSET)
+    return;
+
   /* First insert the LOGFONT into the list of LOGFONTs for the typeface name
    */
   size_info = g_hash_table_lookup (win32fontmap->size_infos, lfp);
