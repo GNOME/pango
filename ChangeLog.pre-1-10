@@ -1,3 +1,16 @@
+2003-08-05  Tor Lillqvist  <tml@iki.fi>
+
+	* modules/basic/basic-win32.c (text_is_simple): New function. Uses
+	the Uniscribe ScriptIsSimple() function to check if Uniscribe
+	shaping is needed for a piece of text.
+
+	(basic_engine_shape): Use it, to avoid calling Uniscribe to shape
+	non-complex text. Produces dramatic speedup according to tests by
+	Hans Breuer.
+
+	(init_uniscribe): No need for the PANGO_WIN32_NO_UNISCRIBE
+	environment variable any longer.
+
 Mon Aug  4 01:12:35 2003  Soeren Sandmann  <sandmann@daimi.au.dk>
 
 	* tools/gen-script-for-lang.c (get_script_name): Fix C99 variable
