@@ -54,7 +54,7 @@ struct _PangoRectangle
   int height;
 };
 
-#define PANGO_SCALE 1000
+#define PANGO_SCALE 1024
 
 /* Macros to translate from extents rectangles to ascent/descent/lbearing/rbearing
  */

@@ -70,6 +70,9 @@ struct _PangoXSubfontInfo
 {
   char *xlfd;
   XFontStruct *font_struct;
+  gboolean     is_1byte;
+  int          range_byte1;
+  int          range_byte2;
 };
 
 struct _PangoXMetricsInfo
@@ -258,6 +261,44 @@ PangoFontMapClass pango_x_font_map_class = {
   pango_x_font_map_list_fonts,
   pango_x_font_map_list_families
 };
+
+static inline PangoXSubfontInfo *
+pango_x_find_subfont (PangoFont  *font,
+		      PangoXSubfont subfont_index)
+{
+  PangoXFont *xfont = (PangoXFont *)font;
+  
+  if (subfont_index < 1 || subfont_index > xfont->n_subfonts)
+    {
+      g_warning ("Invalid subfont %d", subfont_index);
+      return NULL;
+    }
+  
+  return xfont->subfonts[subfont_index-1];
+}
+
+static void
+pango_x_make_font_struct (PangoFont *font, PangoXSubfontInfo *info)
+{
+  PangoXFont *xfont = (PangoXFont *)font;
+  
+  info->font_struct = XLoadQueryFont (xfont->display, info->xlfd);
+  if (!info->font_struct)
+    g_warning ("Cannot load font for XLFD '%s\n", info->xlfd);
+  
+  info->is_1byte = (info->font_struct->min_byte1 == 0 && info->font_struct->max_byte1 == 0);
+  info->range_byte1 = info->font_struct->max_byte1 - info->font_struct->min_byte1 + 1;
+  info->range_byte2 = info->font_struct->max_char_or_byte2 - info->font_struct->min_char_or_byte2 + 1;
+}
+
+static inline XFontStruct *
+pango_x_get_font_struct (PangoFont *font, PangoXSubfontInfo *info)
+{
+  if (!info->font_struct)
+    pango_x_make_font_struct (font, info);
+  
+  return info->font_struct;
+}
 
 static PangoFontMap *
 pango_x_font_map_for_display (Display *display)
@@ -2025,9 +2066,22 @@ gboolean
 pango_x_has_glyph (PangoFont  *font,
 		   PangoGlyph  glyph)
 {
-  g_return_val_if_fail (font != NULL, FALSE);
+  PangoXSubfontInfo *subfont;
+  XCharStruct *cs;
 
-  return pango_x_find_glyph (font, glyph, NULL, NULL);
+  guint16 char_index = PANGO_X_GLYPH_INDEX (glyph);
+  guint16 subfont_index = PANGO_X_GLYPH_SUBFONT (glyph);
+
+  subfont = pango_x_find_subfont (font, subfont_index);
+  if (!subfont)
+    return FALSE;
+  
+  cs = pango_x_get_per_char (font, subfont, char_index);
+
+  if (cs && (cs->lbearing != cs->rbearing || cs->width != 0))
+    return TRUE;
+  else
+    return FALSE;
 }
 
 static void
@@ -2172,36 +2226,6 @@ pango_x_font_find_shaper (PangoFont   *font,
 
 /* Utility functions */
 
-static XFontStruct *
-pango_x_get_font_struct (PangoFont *font, PangoXSubfontInfo *info)
-{
-  PangoXFont *xfont = (PangoXFont *)font;
-  
-  if (!info->font_struct)
-    {
-      info->font_struct = XLoadQueryFont (xfont->display, info->xlfd);
-      if (!info->font_struct)
-	g_warning ("Cannot load font for XLFD '%s\n", info->xlfd);
-    }
-  
-  return info->font_struct;
-}
-
-static PangoXSubfontInfo *
-pango_x_find_subfont (PangoFont  *font,
-		      PangoXSubfont subfont_index)
-{
-  PangoXFont *xfont = (PangoXFont *)font;
-  
-  if (subfont_index < 1 || subfont_index > xfont->n_subfonts)
-    {
-      g_warning ("Invalid subfont %d", subfont_index);
-      return NULL;
-    }
-  
-  return xfont->subfonts[subfont_index-1];
-}
-
 static XCharStruct *
 pango_x_get_per_char (PangoFont         *font,
 		      PangoXSubfontInfo *subfont,
@@ -2210,32 +2234,30 @@ pango_x_get_per_char (PangoFont         *font,
   XFontStruct *fs;
 
   int index;
-  guint8 byte1;
-  guint8 byte2;
-
-  byte1 = char_index / 256;
-  byte2 = char_index % 256;
+  int byte1;
+  int byte2;
 
   fs = pango_x_get_font_struct (font, subfont);
   if (!fs)
     return NULL;
-	  
-  if ((fs->min_byte1 == 0) && (fs->max_byte1 == 0))
+
+  if (subfont->is_1byte)
     {
-      if (byte2 < fs->min_char_or_byte2 || byte2 > fs->max_char_or_byte2)
+      index = (int)char_index - fs->min_char_or_byte2;
+      if (index < 0 || index >= subfont->range_byte2)
 	return NULL;
-      
-      index = byte2 - fs->min_char_or_byte2;
     }
   else
     {
-      if (byte1 < fs->min_byte1 || byte1 > fs->max_byte1 ||
-	  byte2 < fs->min_char_or_byte2 || byte2 > fs->max_char_or_byte2)
-	return FALSE;
-      
-      index = ((byte1 - fs->min_byte1) *
-	       (fs->max_char_or_byte2 - fs->min_char_or_byte2 + 1)) +
-	byte2 - fs->min_char_or_byte2;
+      byte1 = (int)(char_index / 256) - fs->min_byte1;
+      if (byte1 < 0 || byte1 >= subfont->range_byte1)
+	return NULL;
+	  
+      byte2 = (int)(char_index % 256) - fs->min_char_or_byte2;
+      if (byte2 < 0 || byte2 >= subfont->range_byte2)
+	return NULL;
+
+      index = byte1 * subfont->range_byte2 + byte2;
     }
   
   if (fs->per_char)

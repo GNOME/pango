@@ -1,3 +1,17 @@
+Tue May  9 22:09:42 2000  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-types.h (PANGO_SCALE): Change PANGO_SCALE
+	from 1000 to 1024. Wee! Optimization! Actual performance
+	increase is ~1-2% probably not worth keeping it 1024,
+	but I'll leave it this way for a little bit. 
+
+	* pango/pango-layout.c (pango_layout_unref): Free the 
+	actual layout structure as well.
+
+	* pango/pangox.c: Various optimizations of the code for
+	looking up characters. (mark a few functions inline,
+	precompute signficiant quantities)
+
 Tue May  9 03:22:11 2000  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pango-layout.c (pango_layout_check_lines): Fix

@@ -150,6 +150,8 @@ pango_layout_unref (PangoLayout *layout)
 	pango_attr_list_unref (layout->attrs);
       if (layout->text)
 	g_free (layout->text);
+
+      g_free (layout);
     }
 }
 
