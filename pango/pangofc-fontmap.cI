@@ -24,8 +24,8 @@
  * after making appropriate #defines for public symbols.
  */
 
-/* Number of freed fonts  to keep around */
-#define MAX_FREED_FONTS 128
+/* Size of fontset cache */
+#define FONTSET_CACHE_SIZE 16
 
 typedef struct _PangoFcCoverageKey PangoFcCoverageKey;
 typedef struct _PangoFcFace         PangoFcFace;
@@ -68,6 +68,8 @@ struct _PangoFcPatternSet
 {
   int n_patterns;
   FcPattern **patterns;
+  PangoFontset *fontset;
+  GList *cache_link;
 };
 
 GType           pango_fc_font_map_get_type   (void);
@@ -89,11 +91,9 @@ static void          pango_fc_font_map_list_families (PangoFontMap              
 						       int                          *n_families);
 
 
-static void pango_fc_font_set_free         (PangoFcPatternSet *font_set);
+static void pango_fc_pattern_set_free      (PangoFcPatternSet *patterns);
 
 static void pango_fc_font_map_cache_clear  (PangoFcFontMap    *fcfontmap);
-static void pango_fc_font_map_cache_remove (PangoFontMap       *fontmap,
-					     PangoFcFont       *xfont);
 static void pango_fc_default_substitute    (PangoFcFontMap    *fontmap,
 					     FcPattern          *pattern);
 static void pango_fc_do_finalize           (PangoFcFontMap    *fontmap);
@@ -145,9 +145,8 @@ pango_fc_font_map_init (PangoFcFontMap *fcfontmap)
 						     (GEqualFunc)pango_fc_coverage_key_equal,
 						     (GDestroyNotify)g_free,
 						     (GDestroyNotify)pango_coverage_unref);
-  fcfontmap->freed_fonts = g_queue_new ();
+  fcfontmap->fontset_cache = g_queue_new ();
 }
-
 static void
 pango_fc_font_map_class_init (PangoFontMapClass *class)
 {
@@ -262,7 +261,7 @@ pango_fc_get_fontset_hash (PangoFcFontMap *fcfontmap,
       g_hash_table_new_full ((GHashFunc)pango_font_description_hash,
 			     (GEqualFunc)pango_font_description_equal,
 			     (GDestroyNotify)pango_font_description_free,
-			     (GDestroyNotify)pango_fc_font_set_free);
+			     (GDestroyNotify)pango_fc_pattern_set_free);
     node->language = language;
 
     return node->fontset_hash;
@@ -270,9 +269,11 @@ pango_fc_get_fontset_hash (PangoFcFontMap *fcfontmap,
 }
 
 static void
-pango_fc_clear_fontset_hash_list (PangoFcFontMap *fcfontmap)
+pango_fc_clear_pattern_hashes (PangoFcFontMap *fcfontmap)
 {
-  GList *tmp_list = fcfontmap->fontset_hash_list;
+  GList *tmp_list;
+
+  tmp_list = fcfontmap->fontset_hash_list;
   while (tmp_list)
     {
       FontsetHashListNode *node = tmp_list->data;
@@ -298,8 +299,7 @@ pango_fc_font_map_finalize (GObject *object)
     fcfontmap->substitute_destroy (fcfontmap->substitute_data);
 
   pango_fc_font_map_cache_clear (fcfontmap);
-  g_queue_free (fcfontmap->freed_fonts);
-  pango_fc_clear_fontset_hash_list (fcfontmap);
+  g_queue_free (fcfontmap->fontset_cache);
   g_hash_table_destroy (fcfontmap->coverage_hash);
 
   if (fcfontmap->fonts)
@@ -512,15 +512,7 @@ pango_fc_font_map_new_font (PangoFontMap  *fontmap,
   font = g_hash_table_lookup (fcfontmap->fonts, match);
   
   if (font)
-    {
-      g_object_ref (font);
-
-      /* Revive font from cache */
-      if (font->in_cache)
-	pango_fc_font_map_cache_remove (fontmap, font);
-
-      return (PangoFont *)font;
-    }
+    return g_object_ref (font);
 
   FcPatternReference (match);
   return  (PangoFont *)_pango_fc_font_new (fontmap, match);
@@ -602,6 +594,8 @@ pango_fc_font_map_get_patterns (PangoFontMap               *fontmap,
       patterns = g_new (PangoFcPatternSet, 1);
       patterns->patterns = g_new (FcPattern *, font_patterns->nfont);
       patterns->n_patterns = 0;
+      patterns->fontset = NULL;
+      patterns->cache_link = NULL;
 
       for (f = 0; f < font_patterns->nfont; f++)
       {
@@ -646,89 +640,119 @@ pango_fc_font_map_load_font (PangoFontMap               *fontmap,
 }
 
 static void
-pango_fc_font_set_free (PangoFcPatternSet *font_set)
+pango_fc_pattern_set_free (PangoFcPatternSet *patterns)
 {
   int i;
-  
-  for (i = 0; i < font_set->n_patterns; i++)
-    FcPatternDestroy (font_set->patterns[i]);
 
-  g_free (font_set->patterns);
-  g_free (font_set);
+  if (patterns->fontset)
+    g_object_remove_weak_pointer (G_OBJECT (patterns->fontset),
+				  (gpointer *)&patterns->fontset);
+  
+  for (i = 0; i < patterns->n_patterns; i++)
+    FcPatternDestroy (patterns->patterns[i]);
+
+  g_free (patterns->patterns);
+  g_free (patterns);
 }
 
+static void
+pango_fc_font_map_cache_fontset (PangoFcFontMap    *fcfontmap,
+				 PangoFcPatternSet *patterns)
+{
+  GQueue *cache = fcfontmap->fontset_cache;
+  
+  if (patterns->cache_link)
+    {
+      /* Already in cache, move to head
+       */
+      if (patterns->cache_link == cache->tail)
+	cache->tail = patterns->cache_link->prev;
+
+      cache->head = g_list_remove_link (cache->head, patterns->cache_link);
+      cache->length--;
+    }
+  else
+    {
+      /* Add to cache initially
+       */
+      if (cache->length == FONTSET_CACHE_SIZE)
+	{
+	  PangoFcPatternSet *tmp_patterns = g_queue_pop_tail (cache);
+	  tmp_patterns->cache_link = NULL;
+	  g_object_unref (tmp_patterns->fontset);
+	}
+	
+      g_object_ref (patterns->fontset);
+      patterns->cache_link = g_list_prepend (NULL, patterns);
+    }
+
+  g_queue_push_head_link (cache, patterns->cache_link);
+}
 
 static PangoFontset *
 pango_fc_font_map_load_fontset (PangoFontMap                 *fontmap,
-				 PangoContext                 *context,
-				 const PangoFontDescription   *desc,
-				 PangoLanguage                *language)
+				PangoContext                 *context,
+				const PangoFontDescription   *desc,
+				PangoLanguage                *language)
 {
-  PangoFontsetSimple *simple;
   int i;
   PangoFcPatternSet *patterns = pango_fc_font_map_get_patterns (fontmap, context, desc, language);
+  PangoFcFontMap *fcfontmap = PANGO_FC_FONT_MAP (fontmap);
   if (!patterns)
     return NULL;
-	  
-  simple = pango_fontset_simple_new (language);
 
-  for (i = 0; i < patterns->n_patterns; i++)
+  if (!patterns->fontset)
     {
-      PangoFont *font = pango_fc_font_map_new_font (fontmap, patterns->patterns[i]);
-      if (font)
-	pango_fontset_simple_append (simple, font);
-    }
+      PangoFontsetSimple *simple;
+      simple = pango_fontset_simple_new (language);
+      
+      for (i = 0; i < patterns->n_patterns; i++)
+	{
+	  PangoFont *font = pango_fc_font_map_new_font (fontmap, patterns->patterns[i]);
+	  if (font)
+	    pango_fontset_simple_append (simple, font);
+	}
   
-  return PANGO_FONTSET (simple);
-}
-
-
-void
-_pango_fc_font_map_cache_add (PangoFontMap *fontmap,
-			       PangoFcFont *xfont)
-{
-  PangoFcFontMap *fcfontmap = PANGO_FC_FONT_MAP (fontmap);
-
-  g_object_ref (G_OBJECT (xfont));
-  g_queue_push_head (fcfontmap->freed_fonts, xfont);
-  xfont->in_cache = TRUE;
-
-  if (fcfontmap->freed_fonts->length > MAX_FREED_FONTS)
-    {
-      GObject *old_font = g_queue_pop_tail (fcfontmap->freed_fonts);
-      g_object_unref (old_font);
+      patterns->fontset = PANGO_FONTSET (simple);
+      g_object_add_weak_pointer (G_OBJECT (patterns->fontset),
+				 (gpointer *)&patterns->fontset);
     }
+  else
+    g_object_ref (patterns->fontset);
+  
+  if (!patterns->cache_link ||
+      patterns->cache_link != fcfontmap->fontset_cache->head)
+    pango_fc_font_map_cache_fontset (fcfontmap, patterns);
+
+  return patterns->fontset;
 }
 
 static void
-pango_fc_font_map_cache_remove (PangoFontMap *fontmap,
-				 PangoFcFont *xfont)
+uncache_patterns (PangoFcPatternSet *patterns)
 {
-  PangoFcFontMap *fcfontmap = PANGO_FC_FONT_MAP (fontmap);
-
-  GList *link = g_list_find (fcfontmap->freed_fonts->head, xfont);
-  if (link == fcfontmap->freed_fonts->tail)
-    {
-      fcfontmap->freed_fonts->tail = fcfontmap->freed_fonts->tail->prev;
-      if (fcfontmap->freed_fonts->tail)
-	fcfontmap->freed_fonts->tail->next = NULL;
-    }
-  
-  fcfontmap->freed_fonts->head = g_list_delete_link (fcfontmap->freed_fonts->head, link);
-  fcfontmap->freed_fonts->length--;
-  xfont->in_cache = FALSE;
-
-  g_object_unref (G_OBJECT (xfont));
+  g_object_unref (patterns->fontset);
 }
 
 static void
-pango_fc_font_map_cache_clear (PangoFcFontMap   *fcfontmap)
+pango_fc_font_map_clear_fontset_cache (PangoFcFontMap   *fcfontmap)
 {
-  g_list_foreach (fcfontmap->freed_fonts->head, (GFunc)g_object_unref, NULL);
-  g_list_free (fcfontmap->freed_fonts->head);
-  fcfontmap->freed_fonts->head = NULL;
-  fcfontmap->freed_fonts->tail = NULL;
-  fcfontmap->freed_fonts->length = 0;
+  GQueue *cache = fcfontmap->fontset_cache;
+  
+  g_list_foreach (cache->head, (GFunc)uncache_patterns, NULL);
+  g_list_free (cache->head);
+  cache->head = NULL;
+  cache->tail = NULL;
+  cache->length = 0;
+}
+
+static void
+pango_fc_font_map_cache_clear (PangoFcFontMap *fcfontmap)
+{
+  /* Clear the fontset cache first, since any entries
+   * in the fontset_cache must also be in the pattern cache.
+   */
+  pango_fc_font_map_clear_fontset_cache (fcfontmap);
+  pango_fc_clear_pattern_hashes (fcfontmap);
 }
 
 static void

@@ -1,3 +1,28 @@
+Mon Feb 17 13:06:39 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* configure.in **/Makefile.am: Add an --enable-debug
+	configure argument defaulting to 'yes' for unstable
+	releases and 'minimum' for stable releases. 
+	For minimum, -DG_DISABLE_CAST_CHECKS.
+
+	* pango/pangofc-fontmap.cI pango/pangoft2-fontmap.c
+	pango/pangoxft-fontmap.c: Add caching of fontsets
+	(#104495, initial patch and review by Soeren Sandmann)
+
+	* pango/pangofc-fontmap.cI pango/pangoft2-fontmap.c
+	pango/pangoxft-fontmap.c pango/pangoft2-private.h
+	pango/pangoxft-private.h: Remove cache of recently freed 
+	fonts; not necessary now that we cache fontsets.
+
+	* pango/pangofc-fontmap.cI (pango_fc_pattern_set_free):
+	Rename from pango_fc_font_set_free to reflect
+	what it actually does.
+	
+	* pango/pangofc-fontmap.cI pango/pangoft-fontmap.c
+	pango/pangoxft-fontmap.c: Combine clear-the-cache
+	functions; we didn't need separate clear-the-font-cache
+	and clear-the-pattern-cache functions.
+
 Sun Feb 16 09:10:12 2003  Chema Celorio  <chema@celorio.com>
 
 	* pango/pangoft2.c (pango_ft2_render_layout): fix a typo

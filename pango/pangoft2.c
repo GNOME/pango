@@ -66,7 +66,6 @@ static PangoFontClass *parent_class;	/* Parent class structure for PangoFT2Font 
 
 static void pango_ft2_font_class_init (PangoFT2FontClass *class);
 static void pango_ft2_font_init       (PangoFT2Font      *ft2font);
-static void pango_ft2_font_dispose    (GObject         *object);
 static void pango_ft2_font_finalize   (GObject         *object);
 
 static PangoFontDescription *pango_ft2_font_describe          (PangoFont            *font);
@@ -315,7 +314,6 @@ pango_ft2_font_class_init (PangoFT2FontClass *class)
   parent_class = g_type_class_peek_parent (class);
   
   object_class->finalize = pango_ft2_font_finalize;
-  object_class->dispose = pango_ft2_font_dispose;
   
   font_class->describe = pango_ft2_font_describe;
   font_class->get_coverage = pango_ft2_font_get_coverage;
@@ -667,22 +665,6 @@ pango_ft2_font_get_metrics (PangoFont     *font,
 
   return pango_font_metrics_ref (info->metrics);
 }
-
-static void
-pango_ft2_font_dispose (GObject *object)
-{
-  PangoFT2Font *ft2font = PANGO_FT2_FONT (object);
-
-  /* If the font is not already in the freed-fonts cache, add it,
-   * if it is already there, do nothing and the font will be
-   * freed.
-   */
-  if (!ft2font->in_cache && ft2font->fontmap)
-    _pango_ft2_font_map_cache_add (ft2font->fontmap, ft2font);
-
-  G_OBJECT_CLASS (parent_class)->dispose (object);
-}
-
 
 static gboolean
 pango_ft2_free_glyph_info_callback (gpointer key, gpointer value, gpointer data)

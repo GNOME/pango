@@ -72,10 +72,6 @@ struct _PangoFT2Font
   
   GSList *metrics_by_lang;
 
-  /* If TRUE, font is in cache of recently unused fonts and not otherwise
-   * in use. */
-  gboolean in_cache;
-
   GHashTable *glyph_info;
   GDestroyNotify glyph_cache_destroy;
 };
@@ -93,10 +89,6 @@ PangoMap      *_pango_ft2_get_shaper_map          (PangoLanguage     *language);
 PangoCoverage *_pango_ft2_font_map_get_coverage   (PangoFontMap                *fontmap,
 						   FcPattern                   *pattern);
 FT_Library     _pango_ft2_font_map_get_library    (PangoFontMap      *fontmap);
-void           _pango_ft2_font_map_cache_add      (PangoFontMap      *fontmap,
-						   PangoFT2Font      *ft2font);
-void           _pango_ft2_font_map_cache_remove    (PangoFontMap      *fontmap,
-						   PangoFT2Font      *ft2font);
 void           _pango_ft2_font_map_add            (PangoFontMap      *fontmap,
 						   PangoFT2Font      *ft2font);
 void           _pango_ft2_font_map_remove         (PangoFontMap      *fontmap,

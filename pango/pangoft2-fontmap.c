@@ -62,7 +62,8 @@ struct _PangoFT2FontMap
   GHashTable *coverage_hash; /* Maps font file name -> PangoCoverage */
 
   GHashTable *fonts; /* Maps XftPattern -> PangoFT2Font */
-  GQueue *freed_fonts; /* Fonts in fonts that has been freed */
+	
+  GQueue *fontset_cache;	/* Recently used fontsets */
 
   /* List of all families availible */
   PangoFT2Family **families;
@@ -95,8 +96,6 @@ struct _PangoFT2FontMap
 #define pango_fc_font_map_get_type pango_ft2_font_map_get_type
 #define _pango_fc_font_map_add _pango_ft2_font_map_add
 #define _pango_fc_font_map_remove _pango_ft2_font_map_remove
-#define _pango_fc_font_map_cache_add _pango_ft2_font_map_cache_add
-#define _pango_fc_font_map_cache_remove _pango_ft2_font_map_cache_remove
 #define _pango_fc_font_map_get_coverage _pango_ft2_font_map_get_coverage
 #define _pango_fc_font_map_set_coverage _pango_ft2_font_map_set_coverage
 #define _pango_fc_font_desc_from_pattern _pango_ft2_font_desc_from_pattern
@@ -187,7 +186,7 @@ pango_ft2_font_map_set_default_substitute (PangoFT2FontMap        *fontmap,
   fontmap->substitute_data = data;
   fontmap->substitute_destroy = notify;
   
-  pango_fc_clear_fontset_hash_list (fontmap);
+  pango_fc_font_map_cache_clear (fontmap);
 }
 
 /**
@@ -205,7 +204,7 @@ pango_ft2_font_map_set_default_substitute (PangoFT2FontMap        *fontmap,
 void
 pango_ft2_font_map_substitute_changed (PangoFT2FontMap *fontmap)
 {
-  pango_fc_clear_fontset_hash_list (fontmap);
+  pango_fc_font_map_cache_clear (fontmap);
 }
 
 /**
