@@ -10,7 +10,7 @@ Source: http://www.pango.org/download/pango-%{version}.tar.gz
 BuildRoot: /var/tmp/pango-%{PACKAGE_VERSION}-root
 
 %description
-A library to handle unicode strings
+System for layout and rendering of internationalized text.
 
 %package devel
 Summary:  System for layout and rendering of internationalized text
@@ -57,9 +57,11 @@ fi
 
 %files
 %doc README AUTHORS COPYING ChangeLog TODO
+%doc examples/HELLO.utf8
 %{prefix}/lib/libpango*-*.so
-%{prefix}/bin/pango-querymodules
+%{prefix}/bin/*
 %{prefix}/lib/pango/modules/*
+%config /etc/pango/pangox_aliases
 
 %files devel
 %defattr(-, root, root)

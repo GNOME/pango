@@ -1,3 +1,15 @@
+Wed Feb 16 19:55:05 2000  Owen Taylor  <otaylor@redhat.com>
+
+	* configure.in: Release 0.7
+
+	* examples/Makefile.am (aliasdir): Install example
+	  pangox_aliases file.
+
+	* examples/Makefile.am (bin_PROGRAMS): Install 
+	  pango-viewer.
+
+	* docs/tmpl/*: Updated templates.
+
 Wed Feb 16 16:39:46 2000  Owen Taylor  <otaylor@redhat.com>
 
 	* libpango/pango-coverage.c (pango_coverage_get): Make refcounted.

@@ -25,9 +25,11 @@ various steps of this process.
 @context: 
 @text: 
 @length: 
+@attrs: 
+@Returns: 
+<!-- # Unused Parameters # -->
 @lang_info: 
 @n_langs: 
-@Returns: 
 
 
 <!-- ##### STRUCT PangoContext ##### -->
@@ -125,6 +127,7 @@ fields:
 
 @shape_engine: 
 @lang_engine: 
+@font: 
 @level: 
 
 <!-- ##### STRUCT PangoLangRange ##### -->
@@ -209,6 +212,42 @@ It contains the following fields:
 
 @context: 
 @font_map: 
+
+
+<!-- ##### FUNCTION pango_context_get_size ##### -->
+<para>
+
+</para>
+
+@context: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_context_set_size ##### -->
+<para>
+
+</para>
+
+@context: 
+@size: 
+
+
+<!-- ##### FUNCTION pango_context_get_font_description ##### -->
+<para>
+
+</para>
+
+@context: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_context_set_font_description ##### -->
+<para>
+
+</para>
+
+@context: 
+@desc: 
 
 
 <!-- ##### FUNCTION pango_context_get_base_dir ##### -->
@@ -306,11 +345,12 @@ about the attributes of a single character.
 
 </para>
 
-@font: 
 @text: 
 @length: 
 @analysis: 
 @glyphs: 
+<!-- # Unused Parameters # -->
+@font: 
 
 
 <!-- ##### FUNCTION pango_justify ##### -->

@@ -85,6 +85,16 @@ within a family.
 @Returns: 
 
 
+<!-- ##### FUNCTION pango_font_description_compare ##### -->
+<para>
+
+</para>
+
+@desc1: 
+@desc2: 
+@Returns: 
+
+
 <!-- ##### FUNCTION pango_font_descriptions_free ##### -->
 <para>
 

@@ -14,6 +14,10 @@ pango_context_new
 pango_context_ref
 pango_context_unref
 pango_context_add_font_map
+pango_context_get_size
+pango_context_set_size
+pango_context_get_font_description
+pango_context_set_font_description
 pango_context_get_base_dir
 pango_context_set_base_dir
 pango_context_get_lang
@@ -53,8 +57,9 @@ PangoCoverageLevel
 PangoCoverage
 <SUBSECTION>
 pango_coverage_new
+pango_coverage_ref
+pango_coverage_unref
 pango_coverage_copy
-pango_coverage_destroy
 pango_coverage_get
 pango_coverage_max
 pango_coverage_set
@@ -69,6 +74,7 @@ PangoWeight
 PangoVariant
 PangoStretch
 pango_font_description_copy
+pango_font_description_compare
 pango_font_descriptions_free
 pango_font_description_free
 <SUBSECTION>
@@ -130,6 +136,7 @@ pango_attr_list_change
 pango_attr_list_get_iterator
 PangoAttrIterator
 pango_attr_iterator_next
+pango_attr_iterator_range
 pango_attr_iterator_get
 pango_attr_iterator_get_font
 pango_attr_iterator_destroy

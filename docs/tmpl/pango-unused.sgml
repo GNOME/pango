@@ -36,6 +36,13 @@ indices.
 @string: 
 @new_len: 
 
+<!-- ##### FUNCTION pango_coverage_destroy ##### -->
+<para>
+
+</para>
+
+@coverage: 
+
 <!-- ##### FUNCTION pango_x_xlfd_get_ranges ##### -->
 <para>
 

@@ -49,6 +49,22 @@ point to #PangoCoverageLevel. It is an opaque structure with no public fields.
 @Returns: 
 
 
+<!-- ##### FUNCTION pango_coverage_ref ##### -->
+<para>
+
+</para>
+
+@coverage: 
+
+
+<!-- ##### FUNCTION pango_coverage_unref ##### -->
+<para>
+
+</para>
+
+@coverage: 
+
+
 <!-- ##### FUNCTION pango_coverage_copy ##### -->
 <para>
 
@@ -56,14 +72,6 @@ point to #PangoCoverageLevel. It is an opaque structure with no public fields.
 
 @coverage: 
 @Returns: 
-
-
-<!-- ##### FUNCTION pango_coverage_destroy ##### -->
-<para>
-
-</para>
-
-@coverage: 
 
 
 <!-- ##### FUNCTION pango_coverage_get ##### -->

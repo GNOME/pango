@@ -318,8 +318,8 @@ iterator through a #PangoList. A new iterator is created
 with pango_attr_list_get_iterator(). Once the iterator
 is created, it can be advanced through the style changes
 in the text using pango_attr_iterator_next(). At each
-style change, the attributes currently in effect can
-be queried.
+style change, the range of the current style segment and the
+attributes currently in effect can be queried.
 </para>
 
 
@@ -332,6 +332,16 @@ be queried.
 @Returns: 
 
 
+<!-- ##### FUNCTION pango_attr_iterator_range ##### -->
+<para>
+
+</para>
+
+@iterator: 
+@start: 
+@end: 
+
+
 <!-- ##### FUNCTION pango_attr_iterator_get ##### -->
 <para>
 
@@ -342,14 +352,6 @@ be queried.
 @Returns: 
 
 
-<!-- ##### FUNCTION pango_attr_iterator_destroy ##### -->
-<para>
-
-</para>
-
-@iterator: 
-
-
 <!-- ##### FUNCTION pango_attr_iterator_get_font ##### -->
 <para>
 
@@ -358,5 +360,13 @@ be queried.
 @iterator: 
 @base: 
 @current: 
+
+
+<!-- ##### FUNCTION pango_attr_iterator_destroy ##### -->
+<para>
+
+</para>
+
+@iterator: 
 
 

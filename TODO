@@ -1,9 +1,6 @@
 Shaping
 =======
 
-* Use the new PangoCoverage stuff for looking up fonts,
-  and implement pango_font_get_shaper().
-
 Layout Driver
 =============
 
@@ -13,9 +10,6 @@ this, there are various improvements that need to be made to
 
 * Figure out better ways of doing line breaks. (This may involve
   implementing the TeX/Raph x0-x1 stuff for line breaks.)
-
-* Add attributes data structures, feed attributed strings
-  into pango_itemize() (? is this necessary)
 
 X rendering
 ===========
@@ -63,7 +57,9 @@ Documentation
 General
 =======
 
-* Remove the extraneous font argument from the script_shape vfunc
+* Move font sizes to 1000ths of a point where they are still doubles.
+
+* Remove the extraneous font argument from the script_shape virtual function
   in ShapeEngine.
 
 * rename pango_context_set_size() to pango_context_set_font_size()
@@ -79,7 +75,7 @@ General
   loads these from the current directory.  (There are security
   implications with the current stuff)
 
-* pango_context_list_fonts does not properly suppress duplicates
+* pango_context_list_fonts() does not properly suppress duplicates
   when multiple font maps are involved
 
 * Report errors from functions, these errors include such things.

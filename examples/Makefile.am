@@ -1,6 +1,7 @@
 ## Process this file with automake to create Makefile.in.
 
-noinst_PROGRAMS = pango-viewer
+bin_PROGRAMS = pango-viewer
+aliasdir = $(sysconfdir)/pango
 
 INCLUDES = -I$(top_srcdir)/libpango/
 
@@ -14,4 +15,7 @@ pango.modules:
 	( cd ../modules && \
           ../libpango/pango-querymodules `find . -name '*.so'` > ../examples/pango.modules )
           
-EXTRA_DIST=HELLO.utf8 muru.utf
+EXTRA_DIST=HELLO.utf8 muru.utf pangox_aliases
+
+alias_DATA = pangox_aliases
+

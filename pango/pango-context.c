@@ -442,7 +442,7 @@ pango_context_get_size (PangoContext *context)
 /**
  * pango_context_set_size:
  * @context: a #PangoContext
- * @lang: the new default font size in points in 1000ths of a point.
+ * @size: the new default font size in points in 1000ths of a point.
  * 
  * Sets the default font size for the context.
  **/
@@ -494,7 +494,7 @@ pango_context_get_base_dir (PangoContext *context)
  * @text:      the text to itemize.
  * @length:    the number of bytes (not characters) in text.
  *             This must be >= 0.
- * @attr:      the set of attributes that apply to @text.
+ * @attrs:     the set of attributes that apply to @text.
  *
  * Breaks a piece of text into segments with consistent
  * directional level and shaping engine.
