@@ -1,3 +1,9 @@
+Wed Jul 24 23:07:43 2002  Owen Taylor  <otaylor@redhat.com>
+ 
+ 	* pango/pango-layout.c: Fix wrong assertion that was
+ 	dying on lines separated by PS (U+2029). (#88824,
+	Choe Hwangjin)
+ 
 2002-07-22  Sven Neumann  <sven@gimp.org>
 
 	* pango/pangoft2.c (pango_ft2_font_get_face): don't access the old
