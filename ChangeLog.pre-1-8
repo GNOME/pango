@@ -1,3 +1,13 @@
+Sat Jul 26 10:52:20 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/opentype/ftxgpos.c (Lookup_ContextPos2): 
+	* pango/opentype/ftxgsub.c (Lookup_ContextSubst2): Move
+	allocation afer initial checks, fixing memory leak.
+
+	* pango/opentype/ftxgsub.c (Lookup_ChainContextSubst2): 
+	Fix some more error return memory leaks that weren't
+	fixed in the Qt changes.
+
 Sat Jul 26 10:43:20 2003  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/opentype/ftxgsub.c pango/opentype/ftxgpos.c:
