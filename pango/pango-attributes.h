@@ -34,6 +34,7 @@ typedef struct _PangoAttrClass    PangoAttrClass;
 typedef struct _PangoAttrString   PangoAttrString;
 typedef struct _PangoAttrInt      PangoAttrInt;
 typedef struct _PangoAttrColor    PangoAttrColor;
+typedef struct _PangoAttrFontDesc PangoAttrFontDesc;
 				  
 typedef struct _PangoAttrList     PangoAttrList;
 typedef struct _PangoAttrIterator PangoAttrIterator;
@@ -46,6 +47,7 @@ typedef enum {
   PANGO_ATTR_VARIANT,		/* PangoAttrInt */
   PANGO_ATTR_STRETCH,		/* PangoAttrInt */
   PANGO_ATTR_SIZE,		/* PangoAttrSize */
+  PANGO_ATTR_FONT_DESC,		/* PangoAttrFontDesc */
   PANGO_ATTR_FOREGROUND,	/* PangoAttrColor */
   PANGO_ATTR_BACKGROUND,	/* PangoAttrColor */
   PANGO_ATTR_UNDERLINE,		/* PangoAttrInt */
@@ -95,6 +97,12 @@ struct _PangoAttrColor
   guint16 blue;
 };
 
+struct _PangoAttrFontDesc
+{
+  PangoAttribute attr;
+  PangoFontDescription desc;
+};
+
 PangoAttrType    pango_attr_type_register (const gchar          *name);
 
 PangoAttribute * pango_attribute_copy          (const PangoAttribute *attr);
@@ -102,22 +110,23 @@ void             pango_attribute_destroy       (PangoAttribute       *attr);
 gboolean         pango_attribute_compare       (const PangoAttribute *attr1,
 						const PangoAttribute *attr2);
 
-PangoAttribute *pango_attr_lang_new          (const char    *lang);
-PangoAttribute *pango_attr_family_new        (const char    *family);
-PangoAttribute *pango_attr_foreground_new    (guint16        red,
-					      guint16        green,
-					      guint16        blue);
-PangoAttribute *pango_attr_background_new    (guint16        red,
-					      guint16        green,
-					      guint16        blue);
-PangoAttribute *pango_attr_size_new          (int            size);
-PangoAttribute *pango_attr_style_new         (PangoStyle     style);
-PangoAttribute *pango_attr_weight_new        (PangoWeight    weight);
-PangoAttribute *pango_attr_variant_new       (PangoVariant   variant);
-PangoAttribute *pango_attr_stretch_new       (PangoStretch   stretch);
-PangoAttribute *pango_attr_underline_new     (PangoUnderline underline);
-PangoAttribute *pango_attr_strikethrough_new (gboolean       strikethrough);
-PangoAttribute *pango_attr_rise_new          (int            rise);
+PangoAttribute *pango_attr_lang_new          (const char                 *lang);
+PangoAttribute *pango_attr_family_new        (const char                 *family);
+PangoAttribute *pango_attr_foreground_new    (guint16                     red,
+					      guint16                     green,
+					      guint16                     blue);
+PangoAttribute *pango_attr_background_new    (guint16                     red,
+					      guint16                     green,
+					      guint16                     blue);
+PangoAttribute *pango_attr_size_new          (int                         size);
+PangoAttribute *pango_attr_style_new         (PangoStyle                  style);
+PangoAttribute *pango_attr_weight_new        (PangoWeight                 weight);
+PangoAttribute *pango_attr_variant_new       (PangoVariant                variant);
+PangoAttribute *pango_attr_stretch_new       (PangoStretch                stretch);
+PangoAttribute *pango_attr_font_desc_new     (const PangoFontDescription *desc);
+PangoAttribute *pango_attr_underline_new     (PangoUnderline              underline);
+PangoAttribute *pango_attr_strikethrough_new (gboolean                    strikethrough);
+PangoAttribute *pango_attr_rise_new          (int                         rise);
 
 PangoAttrList *     pango_attr_list_new          (void);
 void                pango_attr_list_ref          (PangoAttrList  *list);

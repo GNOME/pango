@@ -25,6 +25,15 @@ string and produces lines of glyphs.
 * optimize right alignment for width == -1 and only a single 
   line. (Currently this causes a useless call to gtk_layout_get_extents.)
 
+* There is currently a serious problem in that every attribute
+  causes items to be broken into separately shaped runs. That means
+  that selections can't be handled as background/foreground attributes.
+ 
+  Since, for selections, you need to be able to select partial
+  glyphs, doing this any different would basically mean having to 
+  separate out these attributes from the rest of the attributes,
+  and handle them separately while rendering a layout.
+
 X rendering
 ===========
 

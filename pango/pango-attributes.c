@@ -425,6 +425,62 @@ pango_attr_stretch_new (PangoStretch  stretch)
   return pango_attr_int_new (&klass, (int)stretch);
 }
 
+static PangoAttribute *
+pango_attr_font_desc_copy (const PangoAttribute *attr)
+{
+  const PangoAttrFontDesc *desc_attr = (const PangoAttrFontDesc *)attr;
+  
+  return pango_attr_font_desc_new (&desc_attr->desc);
+}
+
+static void
+pango_attr_font_desc_destroy (PangoAttribute *attr)
+{
+  PangoAttrFontDesc *desc_attr = (PangoAttrFontDesc *)attr;
+
+  g_free (desc_attr->desc.family_name);
+  g_free (attr);
+}
+
+static gboolean
+pango_attr_font_desc_compare (const PangoAttribute *attr1,
+			      const PangoAttribute *attr2)
+{
+  const PangoAttrFontDesc *desc_attr1 = (const PangoAttrFontDesc *)attr1;
+  const PangoAttrFontDesc *desc_attr2 = (const PangoAttrFontDesc *)attr2;
+  
+  return pango_font_description_compare (&desc_attr1->desc, &desc_attr2->desc);
+}
+
+/**
+ * pango_attr_font_desc_new:
+ * @desc: 
+ * 
+ * Create a new font description attribute. (This attribute
+ * allows setting family, style, weight, variant, stretch,
+ * and size simultaneously.)
+ * 
+ * Return value: 
+ **/
+PangoAttribute *
+pango_attr_font_desc_new (const PangoFontDescription *desc)
+{
+  static const PangoAttrClass klass = {
+    PANGO_ATTR_FONT_DESC,
+    pango_attr_font_desc_copy,
+    pango_attr_font_desc_destroy,
+    pango_attr_font_desc_compare
+  };
+
+  PangoAttrFontDesc *result = g_new (PangoAttrFontDesc, 1);
+  result->attr.klass = &klass;
+  result->desc = *desc;
+  result->desc.family_name = g_strdup (desc->family_name);
+
+  return (PangoAttribute *)result;
+}
+
+
 /**
  * pango_attr_underline_new:
  * @underline: the underline style.
@@ -923,6 +979,40 @@ pango_attr_iterator_get_font (PangoAttrIterator     *iterator,
 
       switch (attr->klass->type)
 	{
+	case PANGO_ATTR_FONT_DESC:
+	  {
+	  if (!have_family)
+	    {
+	      have_family = TRUE;
+	      current->family_name = ((PangoAttrFontDesc *)attr)->desc.family_name;
+	    }
+	  if (!have_style)
+	    {
+	      have_style = TRUE;
+	      current->style = ((PangoAttrFontDesc *)attr)->desc.style;
+	    }
+	  if (!have_variant)
+	    {
+	      have_variant = TRUE;
+	      current->variant = ((PangoAttrFontDesc *)attr)->desc.variant;
+	    }
+	  if (!have_weight)
+	    {
+	      have_weight = TRUE;
+	      current->weight = ((PangoAttrFontDesc *)attr)->desc.weight;
+	    }
+	  if (!have_stretch)
+	    {
+	      have_stretch = TRUE;
+	      current->stretch = ((PangoAttrFontDesc *)attr)->desc.stretch;
+	    }
+	  if (!have_size)
+	    {
+	      have_size = TRUE;
+	      current->size = ((PangoAttrFontDesc *)attr)->desc.size;
+	    }
+	}
+	  
 	case PANGO_ATTR_FAMILY:
 	  if (!have_family)
 	    {
@@ -989,7 +1079,3 @@ pango_attr_iterator_get_font (PangoAttrIterator     *iterator,
 	}
     }
 }
-
-
-
-

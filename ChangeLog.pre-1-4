@@ -1,3 +1,33 @@
+Mon Apr 17 12:04:20 2000  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-layout.[ch]: Add a function pango_layout_line_get_x_ranges(),
+	to allow handling selections not as attributes. Which is necessary,
+	since currently setting the background/foreground results in
+	splitting shaped runs.
+
+Fri Apr 14 13:20:05 2000  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-layout.c (pango_layout_check_lines): Fix bug with
+	indent handling.
+
+	* pango/pango-layout.c (process_item): Never break a line at
+	a non-break position, even if that position ends an item.
+
+Fri Apr 14 10:43:09 2000  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pangox.c (pango_x_render_layout_line): Fix a missing
+	PANGO_SCALE factor for UNDERLINE_SINGLE.
+
+	* pango/pango-layout.c (pango_layout_get_cursor_pos): New function
+	to determine cursor positions corresponding to a particular
+	index.
+
+Wed Apr 12 15:44:22 2000  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-attributes.[ch]: Add PANGO_ATTR_FONT_DESC, which
+	allows an entire font description to be specified as a single
+	attribute, instead of as 6 separate attributes.
+
 Wed Apr 12 13:59:22 2000  Owen Taylor  <otaylor@redhat.com>
 
 	* configure.in modules/Makefile.am modules/devanagari/*: Added Devanagari

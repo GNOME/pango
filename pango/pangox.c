@@ -409,7 +409,11 @@ pango_x_font_map_load_font (PangoFontMap               *fontmap,
 	      ((PangoXFont *)result)->entry = best_match;
 	      best_match->cached_fonts = g_slist_prepend (best_match->cached_fonts, result);
 	    }
-	      
+
+	  /* HORRIBLE performance hack until some better caching scheme is arrived at
+	   */
+	  if (result)
+	    pango_font_ref (result);
 	}
     }
 
@@ -2393,7 +2397,7 @@ pango_x_render_layout_line (Display          *display,
 	  /* Fall through */
 	case PANGO_UNDERLINE_SINGLE:
 	  XDrawLine (display, drawable, fg_gc,
-		     x + (x_off + ink_rect.x) -1, y + 2,
+		     x + (x_off + ink_rect.x) / PANGO_SCALE - 1, y + 2,
 		     x + (x_off + ink_rect.x + ink_rect.width) / PANGO_SCALE, y + 2);
 	  break;
 	case PANGO_UNDERLINE_LOW:

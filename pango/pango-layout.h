@@ -72,6 +72,9 @@ int            pango_layout_get_width     (PangoLayout    *layout);
 void           pango_layout_set_indent    (PangoLayout    *layout,
 					   int             indent);
 int            pango_layout_get_indent    (PangoLayout    *layout);
+void           pango_layout_set_spacing   (PangoLayout    *layout,
+					   int             spacing);
+int            pango_layout_get_spacing   (PangoLayout    *layout);
 void           pango_layout_set_justify   (PangoLayout    *layout,
 					   gboolean        justify);
 gboolean       pango_layout_get_justify   (PangoLayout    *layout);
@@ -85,36 +88,45 @@ void     pango_layout_get_log_attrs (PangoLayout    *layout,
 				     PangoLogAttr  **attrs,
 				     gint           *n_attrs);
 
-void     pango_layout_index_to_pos (PangoLayout     *layout,
-				    int              index,
-				    PangoRectangle  *pos);
-gboolean pango_layout_xy_to_index  (PangoLayout     *layout,
-				    int              x,
-				    int              y,
-				    int             *index,
-				    gboolean        *trailing);
-void     pango_layout_get_extents  (PangoLayout     *layout,
-				    PangoRectangle  *ink_rect,
-				    PangoRectangle  *logical_rect);
+void     pango_layout_index_to_pos   (PangoLayout            *layout,
+				      int                     index,
+				      PangoRectangle         *pos);
+void     pango_layout_get_cursor_pos (PangoLayout            *layout,
+				      int                     index,
+				      PangoRectangle         *strong_pos,
+				      PangoRectangle         *weak_pos);
+gboolean pango_layout_xy_to_index    (PangoLayout            *layout,
+				      int                     x,
+				      int                     y,
+				      int                    *index,
+				      gboolean               *trailing);
+void     pango_layout_get_extents    (PangoLayout            *layout,
+				      PangoRectangle         *ink_rect,
+				      PangoRectangle         *logical_rect);
 
 int              pango_layout_get_line_count       (PangoLayout    *layout);
 PangoLayoutLine *pango_layout_get_line             (PangoLayout    *layout,
 						    int             line);
 GSList *         pango_layout_get_lines            (PangoLayout    *layout);
 
-void     pango_layout_line_ref         (PangoLayoutLine *line);
-void     pango_layout_line_unref       (PangoLayoutLine *line);
-gboolean pango_layout_line_x_to_index  (PangoLayoutLine *line,
-					int              x_pos,
-					int             *index,
-					int             *trailing);
-void     pango_layout_line_index_to_x  (PangoLayoutLine *line,
-					int              index,
-					gboolean         trailing,
-					int             *x_pos);
-void     pango_layout_line_get_extents (PangoLayoutLine *line,
-					PangoRectangle  *ink_rect,
-					PangoRectangle  *logical_rect);
+void     pango_layout_line_ref          (PangoLayoutLine  *line);
+void     pango_layout_line_unref        (PangoLayoutLine  *line);
+gboolean pango_layout_line_x_to_index   (PangoLayoutLine  *line,
+					 int               x_pos,
+					 int              *index,
+					 int              *trailing);
+void     pango_layout_line_index_to_x   (PangoLayoutLine  *line,
+					 int               index,
+					 gboolean          trailing,
+					 int              *x_pos);
+void     pango_layout_line_get_x_ranges (PangoLayoutLine  *line,
+					 int               start_index,
+					 int               end_index,
+					 int             **ranges,
+					 int              *n_ranges);
+void     pango_layout_line_get_extents  (PangoLayoutLine  *line,
+					 PangoRectangle   *ink_rect,
+					 PangoRectangle   *logical_rect);
 
 #ifdef __cplusplus
 }

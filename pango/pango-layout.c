@@ -38,6 +38,7 @@ struct _PangoLayout
   int length;			/* length of text in bytes */
   int width;			/* wrap width, in device units */
   int indent;			/* amount by which first line should be shorter */
+  int spacing;			/* spacing between lines */
 
   guint justify : 1;
   guint alignment : 2;
@@ -156,7 +157,7 @@ pango_layout_unref (PangoLayout *layout)
 PangoContext *
 pango_layout_get_context (PangoLayout *layout)
 {
-  g_return_if_fail (layout != NULL);
+  g_return_val_if_fail (layout != NULL, NULL);
 
   return layout->context;
 }
@@ -235,6 +236,41 @@ pango_layout_get_indent (PangoLayout *layout)
 {
   g_return_val_if_fail (layout != NULL, 0);
   return layout->indent;
+}
+
+/**
+ * pango_layout_set_indent
+ * @layout: a #PangoLayout.
+ * @indent: the amount of spacing
+ * 
+ * Sets the amount of spacing between the lines of the layout.
+ **/
+void
+pango_layout_set_spacing (PangoLayout *layout,
+			 int          spacing)
+{
+  g_return_if_fail (layout != NULL);
+
+  if (spacing != layout->spacing)
+    {
+      layout->spacing = spacing;
+      pango_layout_clear_lines (layout);
+    }
+}
+
+/**
+ * pango_layout_get_spacing:
+ * @layout: a #PangoLayout
+ * 
+ * Gets the amount of spacing between the lines of the layout.
+ * 
+ * Return value: the spacing (in thousandths of a device unit)
+ **/
+int
+pango_layout_get_spacing (PangoLayout *layout)
+{
+  g_return_val_if_fail (layout != NULL, 0);
+  return layout->spacing;
 }
 
 /**
@@ -743,6 +779,154 @@ pango_layout_index_to_pos (PangoLayout    *layout,
     }
 }
 
+static PangoDirection
+pango_layout_line_get_char_direction (PangoLayoutLine *layout_line,
+				      int              index)
+{
+  GSList *run_list;
+
+  run_list = layout_line->runs;
+  while (run_list)
+    {
+      PangoLayoutRun *run = run_list->data;
+      
+      if (run->item->offset <= index && run->item->offset + run->item->length > index)
+	return run->item->analysis.level % 2 ? PANGO_DIRECTION_RTL : PANGO_DIRECTION_LTR;
+
+      run_list = run_list->next;
+    }
+
+  g_assert_not_reached ();
+
+  return PANGO_DIRECTION_LTR;
+}
+
+/**
+ * pango_layout_get_cursor_pos:
+ * @layout: a #PangoLayout
+ * @index: the byte index of the cursor
+ * @strong_pos: location to store the strong cursor position (may be %NULL)
+ * @weak_pos: location to store the weak cursor position (may be %NULL)
+ * 
+ * Given an index within a layout, determine the positions that of the
+ * strong and weak cursors if the insertion point is at that
+ * index. The position of each cursor is stored as a zero-width
+ * rectangle. The strong cursor location is the location where
+ * characters of the directionality equal to the base direction of the
+ * layout are inserted.  The weak cursor location is the location
+ * where characters of the directionality opposite to the base
+ * direction of the layout are inserted.
+ **/
+void
+pango_layout_get_cursor_pos (PangoLayout    *layout,
+			     int             index,
+			     PangoRectangle *strong_pos,
+			     PangoRectangle *weak_pos)
+{
+  PangoDirection base_dir;
+  PangoDirection dir1, dir2;
+  PangoRectangle logical_rect;
+  PangoLayoutLine *layout_line = NULL; /* Quiet GCC */
+  int x1_trailing;
+  int x2;
+  GSList *tmp_list;
+  int width;
+  int x_offset;
+  int y_offset = 0;
+  int bytes_seen = 0;
+  
+  g_return_if_fail (layout != NULL);
+  g_return_if_fail (index >= 0 && index <= layout->length);
+  
+  base_dir = pango_context_get_base_dir (layout->context);
+
+  pango_layout_check_lines (layout);
+
+  width = layout->width;
+  if (width == -1 && layout->alignment != PANGO_ALIGN_LEFT)
+    {
+      pango_layout_get_extents (layout, NULL, &logical_rect);
+      width = logical_rect.width;
+    }
+  
+  /* Find the line */
+  tmp_list = layout->lines;
+  while (tmp_list)
+    {
+      layout_line = tmp_list->data;
+      
+      pango_layout_line_get_extents (layout_line, NULL, &logical_rect);
+      layout_line = tmp_list->data;
+
+      if (bytes_seen + layout_line->length > index)
+	break;
+
+      tmp_list = tmp_list->next;
+
+      if (tmp_list)		/* Want last line of layout for trailing position */
+	{
+	  y_offset += logical_rect.height;
+	  bytes_seen += layout_line->length;
+	}
+    }
+
+  /* Examine the trailing edge of the character before the cursor */
+  if (index == bytes_seen)
+    {
+      dir1 = base_dir;
+      x1_trailing = (base_dir == PANGO_DIRECTION_LTR) ? 0 : logical_rect.width;
+    }
+  else
+    {
+      gint prev_index = unicode_previous_utf8 (layout->text, layout->text + index) - layout->text;
+      dir1 = pango_layout_line_get_char_direction (layout_line, prev_index);
+      pango_layout_line_index_to_x (layout_line, prev_index, TRUE, &x1_trailing);
+    }
+
+  /* Examine the leading edge of the character after the cursor */
+  if (index == bytes_seen + layout_line->length)
+    {
+      dir2 = base_dir;
+      x2 = (base_dir == PANGO_DIRECTION_LTR) ? logical_rect.width : 0;
+    }
+  else
+    {
+      dir2 = pango_layout_line_get_char_direction (layout_line, index);
+      pango_layout_line_index_to_x (layout_line, index, FALSE, &x2);
+    }
+
+  if (layout->alignment == PANGO_ALIGN_RIGHT)
+    x_offset = width - logical_rect.width;
+  else if (layout->alignment == PANGO_ALIGN_CENTER)
+    x_offset = (width - logical_rect.width) / 2;
+  else
+    x_offset = 0;
+	  
+  if (strong_pos)
+    {
+      if (dir1 == base_dir)
+	strong_pos->x = x_offset + x1_trailing;
+      else
+	strong_pos->x = x_offset + x2;
+
+      strong_pos->y = y_offset;
+      strong_pos->width = 0;
+      strong_pos->height = logical_rect.height;
+    }
+
+  if (weak_pos)
+    {
+      if (dir1 == base_dir)
+	weak_pos->x = x_offset + x2;
+      else
+	weak_pos->x = x_offset + x1_trailing;
+
+      weak_pos->y = y_offset;
+      weak_pos->width = 0;
+      weak_pos->height = logical_rect.height;
+    }
+}
+
 /**
  * pango_layout_get_extents:
  * @layout:   a #PangoLayout
@@ -889,11 +1073,25 @@ insert_run (PangoLayoutLine *line, PangoItem *item, PangoGlyphString *glyphs)
   line->length += item->length;
 }
 
+static void
+free_run (PangoLayoutRun *run, gboolean free_item)
+{
+  if (free_item)
+    {
+      pango_font_unref (run->item->analysis.font);
+      g_free (run->item);
+    }
+
+  pango_glyph_string_free (run->glyphs);
+  g_free (run);
+}
+
 static gboolean
 process_item (PangoLayoutLine *line,
 	      PangoItem       *item,
 	      const char      *text,
 	      PangoLogAttr    *log_attrs,
+	      gboolean         no_break_at_end,
 	      int             *remaining_width)
 {
   PangoGlyphString *glyphs = pango_glyph_string_new ();
@@ -909,11 +1107,15 @@ process_item (PangoLayoutLine *line,
       insert_run (line, item, glyphs);
       return TRUE;
     }
-  
+
+  /* We special-case the case where the whole item fits. Removing this special
+   * case would simplify the code, speed up the break case, and wouldn't
+   * slow things down much for the non-break case.
+   */
   pango_glyph_string_extents (glyphs, item->analysis.font, NULL, &logical_rect);
   width = logical_rect.width;
-  
-  if (logical_rect.width < *remaining_width)
+
+  if (logical_rect.width < *remaining_width && !no_break_at_end)
     {
       *remaining_width -= width;
       insert_run (line, item, glyphs);
@@ -1037,13 +1239,9 @@ get_para_log_attrs (const char   *text,
 static void
 pango_layout_check_lines (PangoLayout *layout)
 {
-  GList *items, *tmp_list;
   const char *start;
   gboolean done = FALSE;
-  int para_chars, start_offset;
-
-  PangoLayoutLine *line;
-  int remaining_width;
+  int start_offset;
 
   if (layout->lines)
     return;
@@ -1056,9 +1254,16 @@ pango_layout_check_lines (PangoLayout *layout)
   start = layout->text;
   do
     {
-      const char *end = start;
+      PangoLayoutLine *line;
+      GList *items, *tmp_list;
+      gboolean last_cant_end = FALSE;
+      gboolean current_cant_end = FALSE;
+      int remaining_width;
+      int last_remaining_width = 0;	/* Quiet GCC */
 
-      para_chars = 0;
+      const char *end = start;
+      int para_chars = 0;
+
       while (end != layout->text + layout->length && *end != '\n')
 	{
 	  end = unicode_next_utf8 (end);
@@ -1081,7 +1286,7 @@ pango_layout_check_lines (PangoLayout *layout)
       get_para_log_attrs (start, items, layout->log_attrs + start_offset);
 
       line = pango_layout_line_new (layout);
-      remaining_width = (layout->indent >= 0) ? layout->width - layout->indent : layout->indent;
+      remaining_width = (layout->indent >= 0) ? layout->width - layout->indent : layout->width;
 
       tmp_list = items;
       while (tmp_list)
@@ -1089,28 +1294,71 @@ pango_layout_check_lines (PangoLayout *layout)
 	  PangoItem *item = tmp_list->data;
 	  gboolean fits;
 	  int old_num_chars = item->num_chars;
-	  
-	  fits = process_item (line, item, start, layout->log_attrs + start_offset, &remaining_width);
+
+	  fits = process_item (line, item, start,
+			       layout->log_attrs + start_offset, current_cant_end,
+			       &remaining_width);
+	  current_cant_end = FALSE;
 	  
 	  if (fits)
 	    {
 	      tmp_list = tmp_list->next;
 	      start_offset += old_num_chars;
-	    }
-	  
-	  if (!fits)
-	    {
-	      /* Complete line
-	       */
-	      line->runs = g_slist_reverse (line->runs);
-	      pango_layout_line_reorder (line);
-	      
-	      layout->lines = g_slist_prepend (layout->lines, line);
-	      
-	      line = pango_layout_line_new (layout);
-	      remaining_width = (layout->indent >= 0) ? layout->width : layout->indent + layout->indent;
 
-	      start_offset += old_num_chars - item->num_chars;
+	      if (start_offset < layout->n_chars && !layout->log_attrs[start_offset].is_break)
+		last_cant_end = TRUE;
+	      else
+		{
+		  last_cant_end = FALSE;
+		  last_remaining_width = remaining_width;
+		}
+	    }
+	  else
+	    {
+	      /* Handle the case where the last item wasn't broken, but ended in a non-break
+	       * and we didn't manage to get any of this item in the line. In that case
+	       * we need to back up and break the last item.
+	       */
+
+	      if (last_cant_end && old_num_chars - item->num_chars == 0)
+		{
+		  GSList *tmp_node;
+		  
+		  /* Back up
+		   */
+		  tmp_list = tmp_list->prev;
+		  item = tmp_list->data;
+		  
+		  start_offset -= item->num_chars;
+		  remaining_width = last_remaining_width;
+		  
+		  current_cant_end = TRUE;
+
+		  /* Remove last run from line
+		   */
+		  tmp_node = line->runs;
+		  line->runs = tmp_node->next;
+		  
+		  free_run (tmp_node->data, FALSE);
+		  g_slist_free_1 (tmp_node);
+
+		  line->length -= item->length;
+		}
+	      else
+		{
+		  line->runs = g_slist_reverse (line->runs);
+		  pango_layout_line_reorder (line);
+		  
+		  layout->lines = g_slist_prepend (layout->lines, line);
+		  
+		  line = pango_layout_line_new (layout);
+		  remaining_width = (layout->indent >= 0) ? layout->width : layout->indent + layout->indent;
+		  
+		  start_offset += old_num_chars - item->num_chars;
+		}
+	      
+	      last_cant_end = FALSE;
+	      last_remaining_width = remaining_width;
 	    }
 	}
 
@@ -1174,16 +1422,9 @@ pango_layout_line_unref (PangoLayoutLine *line)
   if (private->ref_count == 0)
     {
       GSList *tmp_list = line->runs;
-
       while (tmp_list)
 	{
-	  PangoLayoutRun *run = tmp_list->data;
-
-	  pango_font_unref (run->item->analysis.font);
-	  g_free (run->item);
-
-	  pango_glyph_string_free (run->glyphs);
-	  
+	  free_run (tmp_list->data, TRUE);
 	  tmp_list = tmp_list->next;
 	}
 
@@ -1253,6 +1494,164 @@ pango_layout_line_x_to_index (PangoLayoutLine *line,
     }
 
   return FALSE;
+}
+
+/**
+ * pango_layout_line_get_x_ranges:
+ * @line:        a #PangoLayoutLine
+ * @start_index: Start byte index of the logical range. If this value
+ *               is less than the start index for the line, then
+ *               the first range will extend all the way to the leading
+ *               edge of the layout. Otherwise it will start at the
+ *               leading edge of the first character.
+ * @end_index:   Ending byte index of the logical range. If this value
+ *               is greater than the end index for the line, then
+ *               the last range will extend all the way to the trailing
+ *               edge of the layout. Otherwise, it will end at the
+ *               trailing edge of the last character.
+ * @ranges:      location to store a pointer to an array of arranges.
+ *               The array will be of length 2*@n_ranges, with each
+ *               range including the pixels from (*ranges)[2*n] to
+ *               (*ranges)[2*n + 1] - 1. This array must be freed
+ *               with g_free.
+ * @n_ranges: The number of ranges stored in @ranges.
+ * 
+ * Get a list of visual ranges corresponding to a given logical range.
+ * This list is not necessarily minimal - there may be consecutive
+ * ranges which are adjacent. The ranges will be sorted from left to
+ * right.
+ **/
+void
+pango_layout_line_get_x_ranges (PangoLayoutLine  *line,
+				int               start_index,
+				int               end_index,
+				int             **ranges,
+				int              *n_ranges)
+{
+  PangoDirection base_dir;
+  PangoRectangle logical_rect;
+  gint line_start_index = 0;
+  GSList *tmp_list;
+  int range_count = 0;
+  int accumulated_width = 0;
+  int x_offset;
+  int width;
+  
+  g_return_if_fail (line != NULL);
+  g_return_if_fail (line->layout != NULL);
+  g_return_if_fail (start_index <= end_index);
+
+  base_dir = pango_context_get_base_dir (line->layout->context);
+
+  width = line->layout->width;
+  if (width == -1 && line->layout->alignment != PANGO_ALIGN_LEFT)
+    {
+      pango_layout_get_extents (line->layout, NULL, &logical_rect);
+      width = logical_rect.width;
+    }
+
+  /* FIXME: The computations here could be optimized, by moving the
+   * computations of the x_offset after we go through and figure
+   * out where each range is.
+   */
+  pango_layout_line_get_extents (line, NULL, &logical_rect);
+
+  if (line->layout->alignment == PANGO_ALIGN_RIGHT)
+    x_offset = width - logical_rect.width;
+  else if (line->layout->alignment == PANGO_ALIGN_CENTER)
+    x_offset = (width - logical_rect.width) / 2;
+  else
+    x_offset = 0;
+	  
+  tmp_list = line->layout->lines;
+  while (tmp_list->data != line)
+    {
+      line_start_index += ((PangoLayoutLine *)tmp_list->data)->length;
+      tmp_list = tmp_list->next;
+    }
+
+  /* Allocate the maximum possible size */
+  if (ranges)
+    *ranges = g_new (int, 2 * (2 + g_slist_length (line->runs)));
+    
+  if (x_offset > 0 &&
+      ((base_dir == PANGO_DIRECTION_LTR && start_index < line_start_index) ||
+       (base_dir == PANGO_DIRECTION_RTL && end_index > line_start_index + line->length)))
+    {
+      if (ranges)
+	{
+	  (*ranges)[2*range_count] = 0;
+	  (*ranges)[2*range_count + 1] = x_offset;
+	}
+      
+      range_count ++;
+    }
+
+  tmp_list = line->runs;
+  while (tmp_list)
+    {
+      PangoLayoutRun *run = (PangoLayoutRun *)tmp_list->data;
+
+      if ((start_index < run->item->offset + run->item->length &&
+	   end_index > run->item->offset))
+	{
+	  if (ranges)
+	    {
+	      int run_start_index = MAX (start_index, run->item->offset);
+	      int run_end_index = MIN (end_index, run->item->offset + run->item->length);
+	      int run_start_x, run_end_x;
+
+	      /* Back the end_index off one since we want to find the trailing edge of the preceding character */
+
+	      run_end_index = unicode_previous_utf8 (line->layout->text, line->layout->text + run_end_index) - line->layout->text;
+
+	      pango_glyph_string_index_to_x (run->glyphs,
+					     line->layout->text + run->item->offset,
+					     run->item->length,
+					     &run->item->analysis,
+					     run_start_index - run->item->offset, FALSE,
+					     &run_start_x);
+	      pango_glyph_string_index_to_x (run->glyphs,
+					     line->layout->text + run->item->offset,
+					     run->item->length,
+					     &run->item->analysis,
+					     run_end_index - run->item->offset, TRUE,
+					     &run_end_x);
+
+	      (*ranges)[2*range_count] = x_offset + accumulated_width + MIN (run_start_x, run_end_x);
+	      (*ranges)[2*range_count + 1] = x_offset + accumulated_width + MAX (run_start_x, run_end_x);
+	    }
+
+	  range_count++;
+	}
+
+      if (tmp_list->next)
+	{
+	  PangoRectangle run_logical;
+	  
+	  pango_glyph_string_extents (run->glyphs, run->item->analysis.font,
+				      NULL, &run_logical);
+	  accumulated_width += run_logical.width;
+	}
+
+      tmp_list = tmp_list->next;
+    }
+
+  if (x_offset + logical_rect.width < line->layout->width &&
+      ((base_dir == PANGO_DIRECTION_LTR && end_index > line_start_index + line->length) ||
+       (base_dir == PANGO_DIRECTION_RTL && start_index < line_start_index)))
+    {
+      if (ranges)
+	{
+	  (*ranges)[2*range_count] = x_offset + logical_rect.width;
+	  (*ranges)[2*range_count + 1] = line->layout->width;
+	}
+      
+      range_count ++;
+    }
+
+  if (n_ranges)
+    *n_ranges = range_count;
 }
 
 /**
