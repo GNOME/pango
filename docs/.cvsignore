@@ -2,6 +2,7 @@
 Makefile
 Makefile.in
 html
+deprecated
 pango-decl-list.txt
 pango-decl.txt
 pango-undocumented.txt
