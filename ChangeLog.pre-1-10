@@ -1,3 +1,8 @@
+Tue May 27 18:37:44 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/mini-fribidi/fribidi.c (fribidi_analyse_string): 
+	Limit the size of the buffers we alloca(). (#104238)
+
 Tue May 27 16:51:32 2003  Owen Taylor  <otaylor@redhat.com>
 
 	* configure.in: Clean up so that tests for Xft/FreeType
