@@ -27,6 +27,9 @@
 
 #include <X11/Xatom.h>
 
+/* For XExtSetCloseDisplay */
+#include <X11/Xlibint.h>
+
 #include "pango-fontmap.h"
 #include "pango-utils.h"
 #include "pangox-private.h"
@@ -215,6 +218,39 @@ pango_x_font_map_class_init (PangoFontMapClass *class)
   class->list_families = pango_x_font_map_list_families;
 }
 
+/*
+ * Hackery to set up notification when a Display is closed
+ */
+static GSList *registered_displays;
+
+static int
+close_display_cb (Display   *display,
+		  XExtCodes *extcodes)
+{
+  pango_x_shutdown_display (display);
+  registered_displays = g_slist_remove (registered_displays, display);
+
+  return 0;
+}
+
+static void
+register_display (Display *display)
+{
+  XExtCodes *extcodes;
+  GSList *tmp_list;
+
+  for (tmp_list = registered_displays; tmp_list; tmp_list = tmp_list->next)
+    {
+      if (tmp_list->data == display)
+	return;
+    }
+
+  registered_displays = g_slist_prepend (registered_displays, display);
+    
+  extcodes = XAddExtension (display);
+  XESetCloseDisplay (display, extcodes->extension, close_display_cb);
+}
+
 static GList *fontmaps = NULL;
 
 /**
@@ -284,6 +320,8 @@ pango_x_font_map_for_display (Display *display)
   screen = DefaultScreen (xfontmap->display);
   xfontmap->resolution = (PANGO_SCALE * 72.27 / 25.4) * ((double) DisplayWidthMM (xfontmap->display, screen) /
 							 DisplayWidth (xfontmap->display, screen));
+
+  register_display (xfontmap->display);
 
   return PANGO_FONT_MAP (xfontmap);
 }

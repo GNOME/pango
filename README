@@ -29,34 +29,42 @@ Dependencies
 Pango depends on version 2.0.0 of the GLib library; more information
 about GLib can be found at http://www.gtk.org/.
 
-To build optional the PangoFT2 backend you'll need the FreeType
-library from http://www.freetype.org. You'll need at least version
-2.0.1.
+The recommended font backend for X in Pango-1.2 is the Xft backend
+which uses version 2 of the Xft library to manage client
+side fonts. Benefits of the Xft backend include, performance,
+support for OpenType fonts, and antialiasing. Version 2 of
+Xft is available from http://keithp.com/fonts/. The 'fcpackage'
+tarball includes both Xft, and it's dependency, 'fontconfig'.
+(see below.)
 
-To build the PangoX backend, you'll need the libraries from the X
-window system are needed to build Pango and GTK+. You should already
-have these installed on your system, but it's possible that you'll
-need to install the development environment for these libraries that
-your operating system vendor provides.
+Note that an earlier version of Xft is shipped with version
+of XFree86 up to 4.2. This version does not work with Pango-1.2;
+Pango-1.2 requires version 2 of Xft.
 
-If you have a recent version of the XFree86 system, such as 4.2.0,
-then the PangoXft backend will built, which provides anti-aliased and
-scaleable fonts in a much more sophisticated fashion then the support
-for core X fonts.
+Both Xft and the optional PangoFT2 backend look up fonts via
+the fontconfig library, available along with Xft in the
+'fcpackage' tarball from http://keithp.com/fonts. They
+also require at least version 2.0.1 of the FreeType
+library. (http://www.freetype.org)
+
+There is also a backend that uses core X protocol fonts. This
+backend only requires the standard libraries from the X window 
+system. You should already have these installed on your system, but 
+it's possible that you'll need to install the development environment 
+for these libraries that your operating system vendor provides.
+
+Installation of Pango on Win32 is possible, but is not documented
+here. See http://www.gimp.org/~tml/win32/downloads.html.
 
 Notes
 =====
 
- - A bug in older versions of Xft will cause random crashes with
-   the PangoXft backend. If you want to use the Xft backend, you 
-   should have at least XFree86 4.2.
-
  - By default, Pango tries to build itself so that no explicit
    dependency on Xft or FreeType will be introduced in apps that
-   link to Pango. This is to avoid compatibility problems when
-   Xft version 2 is introduced. Specifying --enable-explicit-deps
-   or --enable-static when configuring Pango will defeat this
-   and should be avoided if possible.
+   link to Pango. This is to avoid compatibility problems with
+   changes in the Xft or FreeType API's or ABI's. Specifying 
+   --enable-explicit-deps or --enable-static when configuring Pango 
+   will defeat this and should be avoided if possible.
 
 License
 =======
@@ -67,4 +75,4 @@ COPYING for details.
 
 Owen Taylor
 otaylor@redhat.com
-7 March 2002
+8 August 2002

@@ -1,3 +1,16 @@
+Thu Aug  8 23:14:27 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pangox-fontmap.c pango/pangoxft-fontmap.c:
+	use XAddExtension() magic to automatically clean
+	up our information when XCloseDisplay() is called.
+
+	* NEWS: Some updates for 1.1.x features.
+
+	* README: Update a bit.
+
+	* configure.in: Print Xft for the Xft backend, not Xft2
+	when printing summary.
+
 Thu Aug  8 21:37:48 2002  Owen Taylor  <otaylor@redhat.com>
 
          Some fixes from #90267

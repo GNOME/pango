@@ -776,5 +776,5 @@ esac])
 echo "configuration:
 	backends: `if $have_freetype ; then echo " FreeType"; fi \
 	``if $have_x ; then echo " X"; fi \
-	``if $have_xft ; then echo " Xft2"; fi \
+	``if $have_xft ; then echo " Xft"; fi \
 	``if $have_win32 ; then echo " Win32"; fi`"

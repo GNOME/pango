@@ -1,3 +1,44 @@
+Changes between 1.0.x and 1.1.0
+
+* Support for version 2 of the Xft library. [Keith Packard]
+* Convert the freetype backend over to using fontconfig,
+  instead of MiniXft for font cataloging.
+* A port of the Indic OpenType code from ICU to Pango. [Eric Mader]
+* A new hangul-xft [Changwoo Ryu]
+* Bug-fixes to the OpenType handling code.
+* Various cleanups to the PangoXft and PangoFT2 public APIs.
+
+============================================================
+
+Changes between 1.0.3 and 1.0.4
+
+* Add Thai shaper for Xft  [Theppitak Karoonboonyanan]
+* Support GB-18030, BIG5-HKSCS, CNS-11643, GBK encodings for
+  basic-x shaper [Qingjiang (Brian) Yuan]
+* Support ksc5601.1992-3 fonts in hangul-x shpaer 
+  [Qingjiang (Brian) Yuan, Changwoo Ryu]
+* Support new Arabic characters in Unicode 3.2 [Roozbeh Pournader]
+* Bug fixes [Jacob Berkman, Arnaud Charlet, David L. Cooper II, 
+  Choe Hwangjin, Alex Larsson, Sven Neumann, Matthias Warkus, Yao Zhang]
+
+Changes between 1.0.2 and 1.0.3
+
+* Change algorithm for mapping points to pixels on
+  Windows to match the system method. [Joaquin Cuenca Abela,
+  Tor Lillqvist]
+* Fix family listing for the FT2 backend. [Sven Neumann]
+* Fix memory leak in pango_font_real_get_metrics() [Matthias Clasen]
+* Some compilation warning fixes. [David L. Cooper II]
+* Fix passing attr_list == NULL to pango_parse_markip [Andreas J. Guelzow]
+
+Changes between 1.0.1 and 1.0.2
+
+* Support building with FreeType 2.1.0
+* List Sans,Serif,Monospace when listing fonts for the
+  Xft and FT2 backends. (Xavier Cho)
+* Portability fixes. (David L. Cooper III, Jacob Berkman)
+* Fix problem with pango-querymodules using g_print().
+
 Changes between 1.0.0 and 1.0.1
 
 * Documentation improvements [Matthias Clasen]

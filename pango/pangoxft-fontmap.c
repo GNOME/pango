@@ -26,6 +26,9 @@
 #include "pangoxft-private.h"
 #include "modules.h"
 
+/* For XExtSetCloseDisplay */
+#include <X11/Xlibint.h>
+
 /* Number of freed fonts */
 #define MAX_FREED_FONTS 128
 
@@ -260,6 +263,50 @@ pango_xft_find_font_map (Display *display,
   return NULL;
 }
 
+/*
+ * Hackery to set up notification when a Display is closed
+ */
+static GSList *registered_displays;
+
+static int
+close_display_cb (Display   *display,
+		  XExtCodes *extcodes)
+{
+  GSList *tmp_list;
+  
+  tmp_list = fontmaps;
+  while (tmp_list)
+    {
+      PangoXftFontMap *xfontmap = tmp_list->data;
+      tmp_list = tmp_list->next;
+
+      if (xfontmap->display == display)
+	pango_xft_shutdown_display (display, xfontmap->screen);
+    }
+
+  registered_displays = g_slist_remove (registered_displays, display);
+
+  return 0;
+}
+
+static void
+register_display (Display *display)
+{
+  XExtCodes *extcodes;
+  GSList *tmp_list;
+
+  for (tmp_list = registered_displays; tmp_list; tmp_list = tmp_list->next)
+    {
+      if (tmp_list->data == display)
+	return;
+    }
+
+  registered_displays = g_slist_prepend (registered_displays, display);
+    
+  extcodes = XAddExtension (display);
+  XESetCloseDisplay (display, extcodes->extension, close_display_cb);
+}
+
 /**
  * pango_xft_get_font_map:
  * @display: an X display
@@ -312,6 +359,8 @@ pango_xft_get_font_map (Display *display,
 						   (GDestroyNotify)g_free,
 						   (GDestroyNotify)pango_coverage_unref);
   xfontmap->freed_fonts = g_queue_new ();
+
+  register_display (display);
 
   fontmaps = g_slist_prepend (fontmaps, xfontmap);
 
