@@ -170,27 +170,28 @@ get_font_info (PangoFont *font)
 }
 
 PangoGlyph
-make_glyph (ThaiFontInfo *font_info, unsigned char c)
+make_glyph (ThaiFontInfo *font_info, unsigned int c)
 {
   int index;
+  PangoGlyph result;
 
   switch (font_info->font_set) {
-    case THAI_FONT_ISO10646:
+    case THAI_FONT_ISO10646:index = c; break;
     case THAI_FONT_TIS:     index = (c & 0x80) ? tis620_0[c & 0x7f] : c; break;
     case THAI_FONT_TIS_MAC: index = (c & 0x80) ? tis620_1[c & 0x7f] : c; break;
     case THAI_FONT_TIS_WIN: index = (c & 0x80) ? tis620_2[c & 0x7f] : c; break;
     default:                index = 0; break;
   }
 
-  index = FT_Get_Char_Index (font_info->info.face, index);
-  if (index && index <= ((FT_Face) font_info->info.face)->num_glyphs)
-    return index;
+  result = FT_Get_Char_Index (font_info->info.face, index);
+  if (result && result <= ((FT_Face) font_info->info.face)->num_glyphs)
+    return result;
   else
-    return 0;
+    return pango_xft_font_get_unknown_glyph (font_info->font, index);
 }
 
 PangoGlyph
-make_unknown_glyph (ThaiFontInfo *font_info, unsigned char c)
+make_unknown_glyph (ThaiFontInfo *font_info, unsigned int c)
 {
   return pango_xft_font_get_unknown_glyph (font_info->font, c);
 }
