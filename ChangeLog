@@ -1,3 +1,8 @@
+Tue Jan 28 15:18:24 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* autogen.sh (have_automake): Fix version in complaint
+	message about automake. (#104366, Rich Burridge)
+
 2003-01-20  Padraig O'Briain  <padraig.obriain@sun.com>
 
 	* pango/fonts.c (pango_font_description_from_string): Avoid crash
