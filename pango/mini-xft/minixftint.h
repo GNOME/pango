@@ -45,9 +45,9 @@ typedef struct _MiniXftSymbolic {
 typedef struct _MiniXftDisplayInfo {
     struct _MiniXftDisplayInfo  *next;
     Display		    *display;
-  //    XExtCodes		    *codes;
+	/*    XExtCodes		    *codes; */
     MiniXftPattern		    *defaults;
-  //    MiniXftFontSet		    *coreFonts;
+	/*    MiniXftFontSet		    *coreFonts; */
     Bool		    hasRender;
 } MiniXftDisplayInfo;
 

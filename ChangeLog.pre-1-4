@@ -1,3 +1,13 @@
+Tue Feb 26 19:06:07 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/mini-xft/minixftint.h: Fix some C++ style
+	comments. (David L. Cooper II)
+
+Tue Feb 26 16:43:05 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/Makefile.am (pango-enum-types.c): Make
+	pango-enum-types.c depend on pango-enum-types.h
+
 Tue Feb 26 15:50:35 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pangoxft-font.c (pango_xft_font_get_font): Try
