@@ -1,3 +1,8 @@
+2004-09-18  Tor Lillqvist  <tml@iki.fi>
+
+	* pango/pango.def: Add pango_context_set_matrix. (#152883, Ivan
+	Wong)
+
 2004-09-15  Tor Lillqvist  <tml@iki.fi>
 
 	* pango/pangowin32-fontmap.c (pango_win32_insert_font): Ignore

@@ -61,7 +61,7 @@ EXPORTS
 	pango_context_set_font_description
 	pango_context_set_font_map
 	pango_context_set_language
-	pango_context_get_metrics
+	pango_context_set_matrix
 	pango_coverage_copy
 	pango_coverage_from_bytes
 	pango_coverage_get
@@ -303,4 +303,3 @@ EXPORTS
 	pango_variant_get_type
 	pango_weight_get_type
 	pango_wrap_mode_get_type
-
