@@ -253,9 +253,20 @@ hebrew_shaper_get_cluster_kerning(gunichar            *cluster,
 
   x_offset[0] = 0;
   y_offset[0] = 0;
-  
+
   if (cluster_length == 1)
-    return;
+    {
+      /* Make lone 'vav dot' have zero width */
+      if (base_char == UNI_SHIN_DOT
+	  || base_char == UNI_SIN_DOT
+	  || base_char == UNI_HOLAM
+	  ) {
+	x_offset[0] = -ink_rect[0].x - ink_rect[0].width;
+	width[0] = 0;
+      }
+	
+      return;
+    }
 
   base_ink_x_offset = ink_rect[0].x;
   base_ink_y_offset = ink_rect[0].y;
@@ -323,14 +334,18 @@ hebrew_shaper_get_cluster_kerning(gunichar            *cluster,
 	  x_offset[i] = base_ink_x_offset -ink_rect[i].x - ink_rect[i].width * 3/ 2;
 	}
       
-      /* VOWELS under resh or vav are right aligned */
+      /* VOWELS under resh or vav are right aligned, if they are
+	 narrower than the characters. Otherwise they are centered.
+       */
       else if ((base_char == UNI_VAV
 		|| base_char == UNI_RESH
 		|| base_char == UNI_YOD
 		|| base_char == UNI_DALED
 		)
 	       && ((gl >= UNI_SHEVA && gl <= UNI_QAMATS) ||
-		   gl == UNI_QUBUTS)) 
+		   gl == UNI_QUBUTS)
+	       && width[i] < width[0]
+	       ) 
 	{
 	  x_offset[i] = base_ink_x_offset + base_ink_width
 	    - ink_rect[i].x - ink_rect[i].width;
