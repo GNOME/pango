@@ -2904,7 +2904,7 @@ pango_layout_line_x_to_index (PangoLayoutLine *line,
 
 	  if (shape_set)
 	    {
-	      *trailing = FALSE;
+	      *trailing = 0;
 	    }
 	  else
 	    {
@@ -2953,13 +2953,14 @@ pango_layout_line_x_to_index (PangoLayoutLine *line,
  *               The array will be of length 2*@n_ranges, with each
  *               range including the pixels from (*ranges)[2*n] to
  *               (*ranges)[2*n + 1] - 1. This array must be freed
- *               with g_free.
+ *               with g_free. The pixels are in layout coordinates.
  * @n_ranges: The number of ranges stored in @ranges.
  * 
  * Get a list of visual ranges corresponding to a given logical range.
  * This list is not necessarily minimal - there may be consecutive
  * ranges which are adjacent. The ranges will be sorted from left to
- * right.
+ * right. The ranges are with respect to the left edge of the entire
+ * layout, not with respect to the line.
  **/
 void
 pango_layout_line_get_x_ranges (PangoLayoutLine  *line,
