@@ -398,14 +398,12 @@ pango_default_break (const gchar   *text,
    */
 
   const gchar *next;
-  const gchar *end;
-  gint i = 0;
+  gint i;
   gunichar prev_wc;
   gunichar next_wc;
   GUnicodeType prev_type;
   GUnicodeBreakType prev_break_type; /* skips spaces */
   gboolean prev_was_break_space;
-  gboolean prev_was_end = FALSE;
   WordType current_word_type = WordNone;
   gunichar last_word_letter = 0;
   SentenceState sentence_state = STATE_SENTENCE_OUTSIDE;
@@ -415,45 +413,45 @@ pango_default_break (const gchar   *text,
   gint possible_sentence_end = -1;
   /* possible sentence break before Open* after a period-ended sentence */
   gint possible_sentence_boundary = -1;
+  gint n_chars;
 
   g_return_if_fail (text != NULL);
   g_return_if_fail (attrs != NULL);
 
-  if (length < 0)
-    length = strlen (text);
-  
-  next = text;
-  end = text + length;
-  
-  if (next == end)
-    return;
+  n_chars = g_utf8_strlen (text, length);
 
+  next = text;
+  
+  /* + 1 because of the extra newline we stick on the end */
+  if (attrs_len < n_chars + 1)
+    {
+      g_warning ("pango_default_break(): the array of PangoLogAttr passed in must have at least N+1 elements, if there are N characters in the text being broken");
+      return;
+    }
+      
   prev_type = (GUnicodeType) -1;
   prev_break_type = G_UNICODE_BREAK_UNKNOWN;
   prev_was_break_space = FALSE;
   prev_wc = 0;
 
-  next_wc = g_utf8_get_char (next);
+  if (n_chars)
+    {
+      next_wc = g_utf8_get_char (next);
+      g_assert (next_wc != 0);
+    }
+  else
+    next_wc = '\n';
 
-  g_assert (next_wc != 0);
-
-  while (next_wc != 0)
+  for (i = 0; i <= n_chars; i++)
     {
       GUnicodeType type;
       gunichar wc;
       GUnicodeBreakType break_type;
       BreakOpportunity break_op;
 
-      /* >, not >=, because of the extra newline we stick on the end */
-      if (i > attrs_len)
-        {
-          g_warning ("pango_default_break(): the array of PangoLogAttr passed in must have at least N+1 elements, if there are N characters in the text being broken");
-          return;
-        }
-      
       wc = next_wc;
 
-      if (prev_was_end)
+      if (i == n_chars)
         {
           /*
            * If we have already reached the end of @text g_utf8_next_char()
@@ -465,13 +463,12 @@ pango_default_break (const gchar   *text,
         {
           next = g_utf8_next_char (next);
 
-          if (next == end)
+          if (i == n_chars - 1)
             {
               /* This is how we fill in the last element (end position) of the
                * attr array - assume there's a newline off the end of @text.
                */
               next_wc = '\n';
-              prev_was_end = TRUE;
             }
           else
             {
@@ -1280,7 +1277,6 @@ pango_default_break (const gchar   *text,
 
       prev_type = type;
       prev_wc = wc;
-      ++i;
     }
 }
 

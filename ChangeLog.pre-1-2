@@ -1,3 +1,13 @@
+Thu Dec  6 12:10:53 2001  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/break.c (pango_default_break): Simplify by
+	being lazy and calling g_utf8_strlen() (causes a
+	two passes over the array but shouldn't be a huge
+	performance loss). Fix bug where attributes weren't
+	set correctly for empty strings. Handle internal
+	NULLs consistently with other functions (truncate)
+	rather than dying with an assertion failure. (#65183)
+
 Thu Dec  6 10:03:49 2001  HideToshi Tajima  <hidetoshi.tajima@sun.com>
 
 	* modules/basic/basic-x.c
@@ -29,6 +39,7 @@ Thu Dec  6 10:03:49 2001  HideToshi Tajima  <hidetoshi.tajima@sun.com>
 
 	* pango/pango-fontset.c: Documentation updates.
 
+>>>>>>> 1.391
 Thu Nov 29 11:40:51 2001  Owen Taylor  <otaylor@redhat.com>
 
 	* examples/viewer-qt.cc: Include qpainter.h - apparently
