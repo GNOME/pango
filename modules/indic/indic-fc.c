@@ -250,7 +250,7 @@ get_gpos_ruleset (FT_Face face, PangoIndicInfo *indic_info)
 }
 
 static void
-set_glyphs (PangoFont *font, FT_Face face, const gunichar *wcs, gulong *tags, glong n_glyphs, PangoOTBuffer *buffer)
+set_glyphs (PangoFont *font, FT_Face face, const gunichar *wcs, gulong *tags, glong n_glyphs, PangoOTBuffer *buffer, gboolean process_zwj)
 {
   gint i;
 
@@ -260,7 +260,8 @@ set_glyphs (PangoFont *font, FT_Face face, const gunichar *wcs, gulong *tags, gl
     {
       guint glyph;
 
-      if (ZERO_WIDTH_CHAR (wcs[i]))
+      if (ZERO_WIDTH_CHAR (wcs[i]) &&
+	  (!process_zwj || wcs[i] != 0x200D))
 	glyph = 0;
       else
 	glyph = FT_Get_Char_Index (face, wcs[i]);
@@ -347,7 +348,9 @@ indic_engine_shape (PangoEngineShape *engine,
   
   pango_glyph_string_set_size (glyphs, n_glyphs);
   buffer = pango_ot_buffer_new (fc_font);
-  set_glyphs(font, face, wc_out, tags, n_glyphs, buffer);
+
+  set_glyphs(font, face, wc_out, tags, n_glyphs, buffer,
+	     (indic_info->classTable->scriptFlags & SF_PROCESS_ZWJ) != 0);
 
   /* do gsub processing */
   gsub_ruleset = get_gsub_ruleset (face, indic_info);

@@ -1,5 +1,21 @@
 2005-03-03  Owen Taylor  <otaylor@redhat.com>
 
+	* modules/indic/indic-ot.[ch] modules/indic-ot-class-tables.c:
+	Split out handling of sinhala al-lakuna character from
+	handling of Virama in the state table to avoid implicit
+	formation of conjucts for Sinhala. (Patch from 
+	Harshula, ##161981)
+
+	* modules/indic/indic-fc.c modules/indic/indic-ot.h:
+	Add a new script flag SF_PROCESS_ZWJ indicating
+	whether zero width characters should be passed to
+	gsub/gpos.
+
+	* modules/indic/indic-ot-class-tables.c: Set SF_PROCESS_ZWJ
+	for Sinhala. (#161981, Harshula)
+
+2005-03-03  Owen Taylor  <otaylor@redhat.com>
+
 	* pango/pango-fontmap.c (pango_font_map_load_font): Add
 	a g_return_if_fail() if desc doesn't have a family.
 	(#165866, Kees Cook)

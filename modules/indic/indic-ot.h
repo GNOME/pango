@@ -47,7 +47,8 @@ typedef enum
   CC_DEPENDENT_VOWEL      = 7,
   CC_VIRAMA               = 8,
   CC_ZERO_WIDTH_MARK      = 9,
-  CC_COUNT                = 10
+  CC_AL_LAKUNA            = 10,
+  CC_COUNT                = 11
 } IndicOTCharClassValues;
 
 /*
@@ -89,6 +90,7 @@ typedef enum
   SF_REPH_AFTER_BELOW     = 0x40000000,
   SF_EYELASH_RA           = 0x20000000,
   SF_MPRE_FIXUP           = 0x10000000,
+  SF_PROCESS_ZWJ          = 0x08000000,
 
   SF_POST_BASE_LIMIT_MASK = 0x0000FFFF,
   SF_NO_POST_BASE_LIMIT   = 0x00007FFF
@@ -152,6 +154,8 @@ enum indic_glyph_property_
 #define IS_NUKTA(charClass) ((charClass & CF_CLASS_MASK) == CC_NUKTA)
 
 #define IS_VIRAMA(charClass) ((charClass & CF_CLASS_MASK) == CC_VIRAMA)
+
+#define IS_AL_LAKUNA(charClass) ((charClass & CF_CLASS_MASK) == CC_AL_LAKUNA)
 
 #define IS_VATTU(charClass) ((charClass & CF_VATTU) != 0)
 
@@ -227,6 +231,7 @@ gboolean indic_ot_is_vm_post(const IndicOTClassTable *class_table, gunichar ch);
 gboolean indic_ot_is_consonant(const IndicOTClassTable *class_table, gunichar ch);
 gboolean indic_ot_is_reph(const IndicOTClassTable *class_table, gunichar ch);
 gboolean indic_ot_is_virama(const IndicOTClassTable *class_table, gunichar ch);
+gboolean indic_ot_is_al_lakuna(const IndicOTClassTable *class_table, gunichar ch);
 gboolean indic_ot_is_nukta(const IndicOTClassTable *class_table, gunichar ch);
 gboolean indic_ot_is_vattu(const IndicOTClassTable *class_table, gunichar ch);
 gboolean indic_ot_is_matra(const IndicOTClassTable *class_table, gunichar ch);
