@@ -1,3 +1,9 @@
+Fri Dec 17 12:28:56 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-layout.c (pango_layout_get_extents_internal): Fix 
+	bug in computing logical_rect.x when layout->width == -1.
+	(#161510, Morten Welinder)
+
 Thu Dec 16 14:03:32 2004  Owen Taylor  <otaylor@redhat.com>
 
 	* docs/tmpl/pango-renderer.sgml: Add short and long descriptions.
