@@ -1,5 +1,12 @@
 2005-03-02  Owen Taylor  <otaylor@redhat.com>
 
+	* pango/fonts.c (pango_font_description_from_string_: For
+	family names that add in numbers add a , to distinguish
+	them from family+size (#166540, debugging/testing by
+	Manish Singh)
+
+2005-03-02  Owen Taylor  <otaylor@redhat.com>
+
 	* pango/pango-attributes.c (pango_attr_iterator_get_attrs):
 	Fix various typos in the docs (#163244, Morten Welinder)
 

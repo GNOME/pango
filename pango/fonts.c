@@ -859,6 +859,25 @@ getword (const char *str, const char *last, size_t *wordlen)
   return result;
 }
 
+static gboolean
+parse_size (const char *word,
+	    size_t      wordlen,
+	    int        *pango_size)
+{
+  char *end;
+  double size = g_ascii_strtod (word, &end);
+
+  if (end - word == wordlen) /* word is a valid float */
+    {
+      if (pango_size)
+	*pango_size = (int)(size * PANGO_SCALE + 0.5);
+
+      return TRUE;
+    }
+
+  return FALSE;
+}
+
 /**
  * pango_font_description_from_string:
  * @str: string representation of a font description.
@@ -912,13 +931,10 @@ pango_font_description_from_string (const char *str)
    */
   if (wordlen != 0)
     {
-      char *end;
-      double size = g_ascii_strtod (p, &end);
-      if (end - p == wordlen) /* word is a valid float */
+      if (parse_size (p, wordlen, &desc->size))
 	{
-	  desc->size = (int)(size * PANGO_SCALE + 0.5);
 	  desc->mask |= PANGO_FONT_MASK_SIZE;
-	  last = p;	  
+	  last = p;
 	}
     }
 
@@ -1006,9 +1022,20 @@ pango_font_description_to_string (const PangoFontDescription  *desc)
       size_t wordlen;
 
       g_string_append (result, desc->family_name);
-      
+
+      /* We need to add a trailing comma if the family name ends
+       * in a keyword like "Bold", or if the family name ends in
+       * a number and no keywords will be added.
+       */
       p = getword (desc->family_name, desc->family_name + strlen(desc->family_name), &wordlen);
-      if (wordlen != 0 && find_field_any (p, wordlen, NULL))
+      if (wordlen != 0 &&
+	  (find_field_any (p, wordlen, NULL) ||
+	   (parse_size (p, wordlen, NULL) &&
+	    desc->weight == PANGO_WEIGHT_NORMAL &&
+	    desc->style == PANGO_STYLE_NORMAL &&
+	    desc->stretch == PANGO_STRETCH_NORMAL &&
+	    desc->variant == PANGO_VARIANT_NORMAL &&
+	    (desc->mask & PANGO_FONT_MASK_SIZE) == 0)))
 	g_string_append_c (result, ',');
     }
 
