@@ -1,3 +1,12 @@
+Thu Mar 30 16:49:06 2000  Owen Taylor  <otaylor@redhat.com>
+
+	* modules/basic/basic.c pango/utils.c (find_converter): Use
+	"UTF-8" with the dash as the charset name for utf-8. 
+	(Change suggested by Adrian Havill <havill@turbolinux.co.jp>)
+
+	* pango/pango-layout.[ch]: Add function to get logical attributes
+	of the text string.
+
 Mon Mar 13 11:47:53 2000  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pango-layout.c pango/pangox.c (pango_x_render_layout): Handle right 

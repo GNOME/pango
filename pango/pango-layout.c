@@ -42,6 +42,9 @@ struct _PangoLayout
   guint justify : 1;
   guint alignment : 2;
 
+  gint n_chars;		        /* Total number of characters in layout */
+  PangoLogAttr *log_attrs;	/* Logical attributes for layout's text */
+
   GSList *lines;
 };
 
@@ -92,6 +95,7 @@ pango_layout_new (PangoContext *context)
   layout->alignment = PANGO_ALIGN_LEFT;
   layout->justify = FALSE;
 
+  layout->log_attrs = NULL;
   layout->lines = NULL;
 
   return layout;
@@ -323,15 +327,42 @@ pango_layout_set_text (PangoLayout *layout,
   if (layout->text)
     g_free (layout->text);
 
-  layout->length = length;
-
   if (length > 0)
     {
-      layout->text = g_malloc (length);
+      int n_chars = unicode_strlen (text, length);
+      unicode_char_t junk;
+      char *p = text;
+      int i;
+      
+      /* FIXME: Do better validation */
+
+      for (i=0; i<n_chars; i++)
+	{
+	  p = unicode_get_utf8 (p, &junk);
+	  if (!p)
+	    {
+	      g_warning ("Invalid UTF8 string passed to pango_layout_set_text()");
+	      return;
+	    }
+	}
+      
+      /* NULL-terminate the text, since we currently use unicode_next_utf8()
+       * in quite a few places, and for convenience.
+       */
+      
+      layout->text = g_malloc (length + 1);
       memcpy (layout->text, text, length);
+      layout->text[length] = '\0';
+
+      layout->n_chars = n_chars;
     }
   else
-    layout->text = NULL;
+    {
+      layout->text = NULL;
+      layout->n_chars = 0;
+    }
+  
+  layout->length = length;
 
   pango_layout_clear_lines (layout);
 }
@@ -350,6 +381,38 @@ pango_layout_context_changed (PangoLayout *layout)
 {
   pango_layout_clear_lines (layout);
 }
+
+/**
+ * pango_layout_get_log_attrs:
+ * @layout: a #PangoLayout
+ * @attrs: location to store a pointer to an array of logical attributes
+ *         This value must be freed with g_free().
+ * @n_attrs: location to store the number of the attributes in the
+ *           array. (The stored value will be equal to the total number
+ *           of characters in the layout.)
+ * 
+ * Retrieve an array of logical attributes for each character in
+ * the layout. 
+ **/
+void
+pango_layout_get_log_attrs (PangoLayout    *layout,
+			    PangoLogAttr  **attrs,
+			    gint           *n_attrs)
+{
+  g_return_if_fail (layout != NULL);
+
+  pango_layout_check_lines (layout);
+
+  if (attrs)
+    {
+      *attrs = g_new (PangoLogAttr, layout->n_chars);
+      memcpy (*attrs, layout->log_attrs, sizeof(PangoLogAttr) * layout->n_chars);
+    }
+  
+  if (n_attrs)
+    *n_attrs = layout->n_chars;
+}
+
 
 /**
  * pango_layout_get_line_count:
@@ -785,6 +848,12 @@ pango_layout_clear_lines (PangoLayout *layout)
       
       g_slist_free (layout->lines);
       layout->lines = NULL;
+
+      /* This could be handled separately, since we don't need to
+       * recompute log_attrs on a width change, but this is easiest
+       */
+      g_free (layout->log_attrs);
+      layout->log_attrs = NULL;
     }
 }
 
@@ -808,6 +877,7 @@ static gboolean
 process_item (PangoLayoutLine *line,
 	      PangoItem       *item,
 	      const char      *text,
+	      PangoLogAttr    *log_attrs,
 	      int             *remaining_width)
 {
   PangoGlyphString *glyphs = pango_glyph_string_new ();
@@ -840,10 +910,8 @@ process_item (PangoLayoutLine *line,
       int num_chars = item->num_chars;
       int new_width;
       
-      PangoLogAttr *log_attrs = g_new (PangoLogAttr, item->num_chars);
       PangoGlyphUnit *log_widths = g_new (PangoGlyphUnit, item->num_chars);
 
-      pango_break (text + item->offset, item->length, &item->analysis, log_attrs);
       pango_glyph_string_get_logical_widths (glyphs, text + item->offset, item->length, item->analysis.level, log_widths);
       
       new_width = 0;
@@ -856,7 +924,6 @@ process_item (PangoLayoutLine *line,
 	    break;
 	}
 
-      g_free (log_attrs);
       g_free (log_widths);
       
       if (num_chars != 0)	/* Succesfully broke the item */
@@ -908,32 +975,83 @@ process_item (PangoLayoutLine *line,
 }
 
 static void
+get_para_log_attrs (const char   *text,
+		    GList        *items,
+		    PangoLogAttr *log_attrs)
+{
+  int offset = 0;
+  int index = 0;
+  
+  while (items)
+    {
+      PangoItem tmp_item = *(PangoItem *)items->data;
+
+      /* Accumulate all the consecutive items that match in language
+       * characteristics, ignoring font, style tags, etc.
+       */
+      while (items->next)
+	{
+	  PangoItem *next_item = items->next->data;
+
+	  /* FIXME: Handle language tags */
+	  if (next_item->analysis.level != tmp_item.analysis.level ||
+	      (next_item->analysis.lang_engine != tmp_item.analysis.lang_engine &&
+	       (!next_item->analysis.lang_engine || !tmp_item.analysis.lang_engine ||
+		strcmp (next_item->analysis.lang_engine->engine.id,
+			tmp_item.analysis.lang_engine->engine.id) != 0)))
+	    break;
+	  else
+	    {
+	      tmp_item.length += next_item->length;
+	      tmp_item.num_chars += next_item->num_chars;
+	    }
+
+	  items = items->next;
+	}
+
+      pango_break (text + index, tmp_item.length, &tmp_item.analysis, log_attrs + offset);
+
+      offset += tmp_item.num_chars;
+      index += tmp_item.length;
+      
+      items = items->next;
+    }
+}
+
+static void
 pango_layout_check_lines (PangoLayout *layout)
 {
   GList *items, *tmp_list;
   const char *start;
   gboolean done = FALSE;
+  int para_chars, start_offset;
 
   PangoLayoutLine *line;
   int remaining_width;
 
   if (layout->lines)
     return;
+
+  g_assert (!layout->log_attrs);
+
+  layout->log_attrs = g_new (PangoLogAttr, layout->n_chars);
   
+  start_offset = 0;
   start = layout->text;
   do
     {
       const char *end = start;
 
+      para_chars = 0;
       while (end != layout->text + layout->length && *end != '\n')
-	end++;
+	{
+	  end = unicode_next_utf8 (end);
+	  para_chars++;
+	}
       
       if (end == layout->text + layout->length)
 	done = TRUE;
   
-      line = pango_layout_line_new (layout);
-      remaining_width = (layout->indent >= 0) ? layout->width - layout->indent : layout->indent;
-
       /* FIXME, should we force people to set the attrs? */
       if (layout->attrs)
 	items = pango_itemize (layout->context, start, end - start, layout->attrs);
@@ -943,15 +1061,19 @@ pango_layout_check_lines (PangoLayout *layout)
 	  items = pango_itemize (layout->context, start, end - start, attrs);
 	  pango_attr_list_unref (attrs);
 	}
-      
+
+      get_para_log_attrs (start, items, layout->log_attrs + start_offset);
+
+      line = pango_layout_line_new (layout);
+      remaining_width = (layout->indent >= 0) ? layout->width - layout->indent : layout->indent;
+
       tmp_list = items;
-      
       while (tmp_list)
 	{
 	  PangoItem *item = tmp_list->data;
 	  gboolean fits;
 	  
-	  fits = process_item (line, item, start, &remaining_width);
+	  fits = process_item (line, item, start, layout->log_attrs + start_offset, &remaining_width);
 	  
 	  if (fits)
 	    tmp_list = tmp_list->next;
@@ -968,6 +1090,8 @@ pango_layout_check_lines (PangoLayout *layout)
 	      line = pango_layout_line_new (layout);
 	      remaining_width = (layout->indent >= 0) ? layout->width : layout->indent + layout->indent;
 	    }
+
+	  start_offset += item->num_chars;
 	}
 
       line->runs = g_slist_reverse (line->runs);
@@ -979,6 +1103,13 @@ pango_layout_check_lines (PangoLayout *layout)
 
       if (!done)
 	{
+	  /* Handle newline */
+	  layout->log_attrs[start_offset].is_break = TRUE;
+	  layout->log_attrs[start_offset].is_white = TRUE;
+	  layout->log_attrs[start_offset].is_char_stop = TRUE;
+	  layout->log_attrs[start_offset].is_word_stop = TRUE;
+	  start_offset += 1;
+
 	  start = end + 1;
 	}
     }

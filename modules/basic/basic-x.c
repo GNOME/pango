@@ -299,7 +299,7 @@ find_converter (CharCache *cache, const char *id)
   iconv_t cd = g_hash_table_lookup (cache->converters, id);
   if (!cd)
     {
-      cd = iconv_open  (id, "utf8");
+      cd = iconv_open  (id, "UTF-8");
       g_hash_table_insert (cache->converters, g_strdup(id), (gpointer)cd);
     }
 

@@ -79,6 +79,10 @@ PangoAlignment pango_layout_get_alignment (PangoLayout    *layout);
 
 void           pango_layout_context_changed (PangoLayout    *layout);
 
+void     pango_layout_get_log_attrs (PangoLayout    *layout,
+				     PangoLogAttr  **attrs,
+				     gint           *n_attrs);
+
 void     pango_layout_index_to_pos (PangoLayout     *layout,
 				    int              index,
 				    PangoRectangle  *pos);

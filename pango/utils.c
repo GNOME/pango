@@ -123,10 +123,10 @@ _pango_utf8_to_ucs2 (const char *str, int len)
 
   gint count;
 
-  cd = iconv_open (UCS2_CHARSET, "UTF8");
+  cd = iconv_open (UCS2_CHARSET, "UTF-8");
   
   if (cd == (iconv_t)-1)
-    g_error ("No converter from UTF8 to " UCS2_CHARSET);
+    g_error ("No converter from UTF-8 to " UCS2_CHARSET);
 
   if (len < 0)
     len = strlen (str);

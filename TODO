@@ -85,6 +85,11 @@ Fonts
 General
 =======
 
+* unicode_next_utf8() is extensively used on strings which are not
+  guaranteed to be NULL terminated. This is a BUG. Once I agree
+  with Tom Tromey on a change to libunicode to make the operation
+  more efficient, these need to be gone through one-by-one.
+
 * Remove the extraneous font argument from the script_shape virtual function
   in ShapeEngine.
 
