@@ -1,3 +1,19 @@
+* Switch engines to be indentified by properties, instead
+  of hardcoded role/language. (?)
+
+* Get rid of PangoCFont, switch GlyphString to only have one
+  array - an array of PangoGlyphInfo that includes
+  index, geometry, visattrs
+
+* Add a PangoLayout highlevel driver
+
+* Add attributes data structures, feed attributed strings
+  into pango_itemize() (? is this necessary)
+
+* Rethink subsetting algorithms for X - the properties stuff
+  is just _slow_. (Are we loading the same fonts too many
+  times? Look into performance in general)
+
 * Return error codes from all functions. Possible errors include
  - Invalid string
  - Font does not match 
@@ -10,4 +26,3 @@
 
 * Convert over from utils.c to Tom Tromey's libunicode.
 
-* Add accent composition to basic engine.
