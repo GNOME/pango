@@ -184,31 +184,31 @@ pango_win32_font_cache_load (PangoWin32FontCache *cache,
     }
   else
     {
-      BOOL aa = TRUE; /* turn on anti-aliasing */
+      BOOL aa;
       lf = *lfp;
       SystemParametersInfo (SPI_GETFONTSMOOTHING, 0, &aa, 0);
       lf.lfQuality = (aa ? ANTIALIASED_QUALITY : DEFAULT_QUALITY);
+      lf.lfCharSet = DEFAULT_CHARSET;
       for (tries = 0; ; tries++)
 	{
-#if 0
-	  PANGO_NOTE
-	    (g_print
-	     ("... trying CreateFontIndirect, "
-	      "height=%d,width=%d,escapement=%d,orientation=%d,"
-	      "weight=%d,%s%s%s"
-	      "charset=%d,outprecision=%d,clipprecision=%d,"
-	      "quality=%d,pitchandfamily=%#.02x,facename=\"%s\")\n",
-	      lf.lfHeight, lf.lfWidth, lf.lfEscapement, lf.lfOrientation,
-	      lf.lfWeight, (lf.lfItalic ? "italic," : ""),
-	      (lf.lfUnderline ? "underline," : ""),
-	      (lf.lfStrikeOut ? "strikeout," : ""),
-	      lf.lfCharSet, lf.lfOutPrecision, lf.lfClipPrecision,
-	      lf.lfQuality, lf.lfPitchAndFamily, lf.lfFaceName));
-#endif
+	  PING (("... trying CreateFontIndirect "
+		 "height=%ld,width=%ld,escapement=%ld,orientation=%ld,"
+		 "weight=%ld,%s%s%s"
+		 "charset=%d,outprecision=%d,clipprecision=%d,"
+		 "quality=%d,pitchandfamily=%#.02x,facename=\"%s\")",
+		 lf.lfHeight, lf.lfWidth, lf.lfEscapement, lf.lfOrientation,
+		 lf.lfWeight, (lf.lfItalic ? "italic," : ""),
+		 (lf.lfUnderline ? "underline," : ""),
+		 (lf.lfStrikeOut ? "strikeout," : ""),
+		 lf.lfCharSet, lf.lfOutPrecision, lf.lfClipPrecision,
+		 lf.lfQuality, lf.lfPitchAndFamily, lf.lfFaceName));
 	  hfont = CreateFontIndirect (&lf);
 
 	  if (hfont != NULL)
-	    break;
+	    {
+	      PING (("Success!\n"));
+	      break;
+	    }
 	  
 	  /* If we fail, try some similar fonts often found on Windows. */
 	  if (tries == 0)

@@ -155,10 +155,12 @@ static guint
 logfont_nosize_hash (gconstpointer v)
 {
   const LOGFONT *lfp = v;
+  gchar *face = g_ascii_strdown (lfp->lfFaceName, -1);
+  guint result = g_str_hash (face) + lfp->lfItalic + lfp->lfWeight;
 
-  return g_str_hash (lfp->lfFaceName) +
-    lfp->lfItalic +
-    lfp->lfWeight;
+  g_free (face);
+
+  return result;
 }
 
 /* Ditto comparison function */
@@ -168,7 +170,7 @@ logfont_nosize_equal (gconstpointer v1,
 {
   const LOGFONT *lfp1 = v1, *lfp2 = v2;
 
-  return (strcmp (lfp1->lfFaceName, lfp2->lfFaceName) == 0
+  return (g_ascii_strcasecmp (lfp1->lfFaceName, lfp2->lfFaceName) == 0
 	  && lfp1->lfItalic == lfp2->lfItalic
 	  && lfp1->lfWeight == lfp2->lfWeight);
 }
@@ -722,7 +724,7 @@ pango_win32_insert_font (PangoWin32FontMap *win32fontmap,
   PangoStretch stretch;
   int i;
 
-  PING(("lfp.face=%s,wt=%ld,ht=%ld",lfp->lfFaceName,lfp->lfWeight,lfp->lfHeight));
+  PING(("lfp.face=%s,charset=%d,it=%d,wt=%ld,ht=%ld",lfp->lfFaceName,lfp->lfCharSet,lfp->lfItalic,lfp->lfWeight,lfp->lfHeight));
   
   /* First insert the LOGFONT into the list of LOGFONTs for the typeface name
    */
