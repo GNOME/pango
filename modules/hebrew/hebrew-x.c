@@ -33,169 +33,14 @@
 #include <string.h>
 #include "pangox.h"
 #include "pango-engine.h"
+#include "hebrew-shaper.h"
 
 #define ucs2iso8859_8(wc)		(unsigned int)((unsigned int)(wc) - 0x0590 + 0x10)
 #define iso8859_8_2uni(c)		((gunichar)(c) - 0x10 + 0x0590)
 
-#define MAX_CLUSTER_CHRS	256
-#define MAX_GLYPHS		256
-
-/* Define Hebrew character classes */
-#define _ND			0
-#define _SP			1
-#define _NS			(1<<1)
-#define	_DA			(1<<2)	/* only for dagesh... */
-
-#define	NoDefine		_ND
-#define	SpacingLetter		_SP
-#define	NonSpacingPunc		_NS
-
-/* Define Hebrew character types */
-#define	__ND			0
-#define	__SP			1
-#define	__NS			2
-#define	__DA			3
-
-/* Unicode definitions needed in logics below... */
-#define	UNI_BET			0x05D1
-#define	UNI_DALED		0x05D3
-#define	UNI_KAF			0x05DB
-#define UNI_VAV			0x05D5
-#define	UNI_YOD			0x05D9
-#define	UNI_RESH		0x05E8
-#define UNI_LAMED		0x05DC
-#define UNI_SHIN		0x05E9
-#define UNI_FINAL_PE		0x05E3
-#define UNI_PE			0x05E4
-#define	UNI_TAV			0x05EA
-#define UNI_SHIN_DOT		0x05C1
-#define UNI_SIN_DOT		0x05C2
-#define UNI_MAPIQ		0x05BC
-#define	UNI_SHEVA		0x05B0
-#define	UNI_QAMATS		0x05B8
-#define	UNI_HOLAM		0x05B9
-#define	UNI_QUBUTS		0x05BB
-
-#define is_char_class(wc, mask)	(char_class_table[ucs2iso8859_8 ((wc))] & (mask))
-#define	is_composible(cur_wc, nxt_wc)	(compose_table[char_type_table[ucs2iso8859_8 (cur_wc)]]\
-						      [char_type_table[ucs2iso8859_8 (nxt_wc)]])
-
 #define SCRIPT_ENGINE_NAME "HebrewScriptEngineX"
+#define MAX_CLUSTER_CHRS	20
 
-/* We handle the range U+0591 to U+05f4 exactly
- */
-static PangoEngineRange hebrew_ranges[] = {
-  { 0x0591, 0x05f4, "*" },  /* Hebrew */
-};
-
-static PangoEngineInfo script_engines[] = {
-  {
-    SCRIPT_ENGINE_NAME,
-    PANGO_ENGINE_TYPE_SHAPE,
-    PANGO_RENDER_TYPE_X,
-    hebrew_ranges, G_N_ELEMENTS(hebrew_ranges)
-  }
-};
-
-/*
- * X window system script engine portion
- */
-
-typedef struct _HebrewFontInfo HebrewFontInfo;
-
-/* The type of encoding that we will use
- */
-typedef enum {
-  HEBREW_FONT_NONE,
-  HEBREW_FONT_ISO8859_8,
-  HEBREW_FONT_ISO10646,
-} HebrewFontType;
-
-struct _HebrewFontInfo
-{
-  PangoFont   *font;
-  HebrewFontType type;
-  PangoXSubfont subfont;
-};
-
-/*======================================================================
-//  In the tables below all Hebrew characters are categorized to
-//  one of the following four classes:
-//
-//      non used entries              Not defined  (ND)
-//      accents, points               Non spacing  (NS)
-//      punctuation and characters    Spacing characters (SP)
-//      dagesh                        "Dagesh"    (DA)
-//----------------------------------------------------------------------*/
-static const gint char_class_table[128] = {
-  /*       0,   1,   2,   3,   4,   5,   6,   7 */
-
-  /*00*/ _ND, _ND, _ND, _ND, _ND, _ND, _ND, _ND,
-         _ND, _ND, _ND, _ND, _ND, _ND, _ND, _ND,
-		
-  /*10*/ _ND, _NS, _NS, _NS, _NS, _NS, _NS, _NS,
-         _NS, _NS, _NS, _NS, _NS, _NS, _NS, _NS,
-  /*20*/ _NS, _NS, _ND, _NS, _NS, _NS, _NS, _NS,
-         _NS, _NS, _NS, _NS, _NS, _NS, _NS, _NS,
-  /*30*/ _NS, _NS, _NS, _NS, _NS, _NS, _NS, _NS,
-         _NS, _NS, _ND, _NS, _DA, _NS, _SP, _NS,
-  /*40*/ _SP, _NS, _NS, _SP, _NS, _ND, _ND, _ND,
-         _ND, _ND, _ND, _ND, _ND, _ND, _ND, _ND,
-  /*50*/ _SP, _SP, _SP, _SP, _SP, _SP, _SP, _SP,
-         _SP, _SP, _SP, _SP, _SP, _SP, _SP, _SP,
-  /*60*/ _SP, _SP, _SP, _SP, _SP, _SP, _SP, _SP,
-         _SP, _SP, _SP, _ND, _ND, _ND, _ND, _ND,
-  /*70*/ _SP, _SP, _SP, _SP, _SP, _ND, _ND, _ND,
-	 _ND, _ND, _ND, _ND, _ND, _ND, _ND, _ND,
-};
-
-static const gint char_type_table[128] = {
-  /*       0,   1,   2,   3,   4,   5,   6,   7 */
-
-  /*00*/ __ND, __ND, __ND, __ND, __ND, __ND, __ND, __ND,
-         __ND, __ND, __ND, __ND, __ND, __ND, __ND, __ND,
-		
-  /*10*/ __ND, __NS, __NS, __NS, __NS, __NS, __NS, __NS,
-         __NS, __NS, __NS, __NS, __NS, __NS, __NS, __NS,
-  /*20*/ __NS, __NS, __ND, __NS, __NS, __NS, __NS, __NS,
-         __NS, __NS, __NS, __NS, __NS, __NS, __NS, __NS,
-  /*30*/ __NS, __NS, __NS, __NS, __NS, __NS, __NS, __NS,
-         __NS, __NS, __ND, __NS, __DA, __NS, __SP, __NS,
-  /*40*/ __SP, __NS, __NS, __SP, __NS, __ND, __ND, __ND,
-         __ND, __ND, __ND, __ND, __ND, __ND, __ND, __ND,
-  /*50*/ __SP, __SP, __SP, __SP, __SP, __SP, __SP, __SP,
-         __SP, __SP, __SP, __SP, __SP, __SP, __SP, __SP,
-  /*60*/ __SP, __SP, __SP, __SP, __SP, __SP, __SP, __SP,
-         __SP, __SP, __SP, __ND, __ND, __ND, __ND, __ND,
-  /*70*/ __SP, __SP, __SP, __SP, __SP, __ND, __ND, __ND,
-	 __ND, __ND, __ND, __ND, __ND, __ND, __ND, __ND,
-};
-
-/*======================================================================
-//  The following table answers the question whether two characters
-//  are composible or not. The decision is made by looking at the
-//  char_type_table values for the first character in a cluster
-//  vs a following charactrer. The only three combinations that
-//  are composible in Hebrew according to the table are:
-//
-//     1. a spacing character followed by non-spacing character
-//     2. a spacing character followed by a dagesh.
-//     3. a dagesh followed by a non-spacing character.
-//
-//  Note that a spacing character may be followed by several non-spacing
-//  accents, as the decision is always made on the base character of
-//  a combination.
-//----------------------------------------------------------------------*/
-static const gboolean compose_table[4][4] = {
-      /* Cn */ /*     0,     1,     2,     3, */
-/* Cn-1 00 */	{ FALSE, FALSE, FALSE, FALSE },
-  /* 10 */      { FALSE, FALSE,  TRUE,  TRUE },
-  /* 20 */      { FALSE, FALSE, FALSE, FALSE },
-  /* 30 */	{ FALSE, FALSE,  TRUE, FALSE },
-};
-
-/* ISO 8859_8 Hebrew Font Layout. Does not include any accents.
- */
 static const gint iso_8859_8_shape_table[128] = {
   0x00, 0x00, 0x00, 0x00,  0x00, 0x00, 0x00, 0x00,
   0x00, 0x00, 0x00, 0x00,  0x00, 0x00, 0x00, 0x00,
@@ -240,6 +85,42 @@ static const gint Unicode_shape_table[128] = {
               0x05E8, 0x05E9, 0x05EA, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000,
   /* 70 */    0x05F0, 0x05F1, 0x05F2, 0x05F3, 0x05F4, 0x0000, 0x0000, 0x0000,
               0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000,
+};
+
+/* We handle the range U+0591 to U+05f4 exactly
+ */
+static PangoEngineRange hebrew_ranges[] = {
+  { 0x0591, 0x05f4, "*" },  /* Hebrew */
+};
+
+static PangoEngineInfo script_engines[] = {
+  {
+    SCRIPT_ENGINE_NAME,
+    PANGO_ENGINE_TYPE_SHAPE,
+    PANGO_RENDER_TYPE_X,
+    hebrew_ranges, G_N_ELEMENTS(hebrew_ranges)
+  }
+};
+
+/*
+ * X window system script engine portion
+ */
+
+typedef struct _HebrewFontInfo HebrewFontInfo;
+
+/* The type of encoding that we will use
+ */
+typedef enum {
+  HEBREW_FONT_NONE,
+  HEBREW_FONT_ISO8859_8,
+  HEBREW_FONT_ISO10646,
+} HebrewFontType;
+
+struct _HebrewFontInfo
+{
+  PangoFont   *font;
+  HebrewFontType type;
+  PangoXSubfont subfont;
 };
 
 /* Returns a structure with information we will use to rendering given the
@@ -302,7 +183,6 @@ get_font_info (PangoFont *font)
 	      break;
 	    }
 	}
-
       g_free (subfont_ids);
       g_free (subfont_charsets);
     }
@@ -315,9 +195,12 @@ add_glyph (HebrewFontInfo   *font_info,
 	   PangoGlyphString *glyphs, 
 	   gint              cluster_start, 
 	   PangoGlyph        glyph,
-	   gboolean          is_combining)
+	   gboolean          is_combining,
+	   gint              width,
+	   gint              x_offset,
+	   gint              y_offset
+	   )
 {
-  PangoRectangle ink_rect, logical_rect;
   gint index = glyphs->num_glyphs;
 
   pango_glyph_string_set_size (glyphs, index + 1);
@@ -327,347 +210,96 @@ add_glyph (HebrewFontInfo   *font_info,
   
   glyphs->log_clusters[index] = cluster_start;
 
-  pango_font_get_glyph_extents (font_info->font,
-				glyphs->glyphs[index].glyph, &ink_rect, &logical_rect);
+  glyphs->glyphs[index].geometry.x_offset = x_offset;
+  glyphs->glyphs[index].geometry.y_offset = y_offset;
+  glyphs->glyphs[index].geometry.width = width;
 
-  if (is_combining)
-    {
-      if (font_info->type == HEBREW_FONT_ISO8859_8)
-	{
-	  /* There are no accents in 8859_8 so this should never be
-	     called... Therefore I have't even checked his. */
-          glyphs->glyphs[index].geometry.width =
-		logical_rect.width + glyphs->glyphs[index - 1].geometry.width;
-          if (logical_rect.width > 0)
-	      glyphs->glyphs[index].geometry.x_offset = glyphs->glyphs[index - 1].geometry.width;
-          else
-	      glyphs->glyphs[index].geometry.x_offset = glyphs->glyphs[index].geometry.width;
-	  glyphs->glyphs[index - 1].geometry.width = 0;
-	}
-      else
-        {
-	  /* Unicode. Always make width of cluster according to the width
-	     of the base character and never take the punctuation into
-	     consideration.
-	   */
-	  glyphs->glyphs[index].geometry.width =
-		MAX (logical_rect.width, glyphs->glyphs[index -1].geometry.width);
-	  /* Dov's new logic... */
-	  glyphs->glyphs[index].geometry.width =  glyphs->glyphs[index -1].geometry.width;
+#if 0
+  {
+    PangoRectangle ink_rect, logical_rect;
+    
+    pango_font_get_glyph_extents (font_info->font,
+				  glyphs->glyphs[index].glyph, &ink_rect, &logical_rect);
 
-	  glyphs->glyphs[index - 1].geometry.width = 0;
-
-	  /* Here we should put in heuristics to center nikud. */
-	  glyphs->glyphs[index].geometry.x_offset = 0;
-        }
-    }
-  else
-    {
-      glyphs->glyphs[index].geometry.x_offset = 0;
-      glyphs->glyphs[index].geometry.width = logical_rect.width;
-    }
-  
-  glyphs->glyphs[index].geometry.y_offset = 0;
+    printf("width logical_rect.width x_offset y_offset = %d %d %d %d\n", width, logical_rect.width, x_offset, y_offset);
+    glyphs->glyphs[index].geometry.x_offset = 0;
+    glyphs->glyphs[index].geometry.y_offset = 0;
+    glyphs->glyphs[index].geometry.width = width;
+  }
+#endif
 }
 
-static gint
-get_adjusted_glyphs_list (HebrewFontInfo *font_info,
-			  gunichar *cluster,
-			  gint num_chrs,
-			  PangoGlyph *glyph_lists,
-			  const gint *shaping_table)
+static PangoGlyph
+get_glyph(HebrewFontInfo *font_info,
+	  int glyph_num)
 {
-  gint i = 0;
-
-  if ((num_chrs == 1) &&
-      is_char_class (cluster[0], NonSpacingPunc))
-    {
-      if (font_info->type == HEBREW_FONT_ISO8859_8)
-	{
-	  glyph_lists[0] = PANGO_X_MAKE_GLYPH (font_info->subfont, 0x20);
-	  glyph_lists[1] = PANGO_X_MAKE_GLYPH (font_info->subfont,
-			shaping_table[ucs2iso8859_8 (cluster[0])]);
-	  return 2;
-	}
-      else
-	{
-	  glyph_lists[0] = PANGO_X_MAKE_GLYPH (font_info->subfont,
-			shaping_table[ucs2iso8859_8 (cluster[0])]);
-	  return 1;
-	}
-    }
-  else
-    {
-      while (i < num_chrs) {
-	glyph_lists[i] = PANGO_X_MAKE_GLYPH (font_info->subfont,
-				shaping_table[ucs2iso8859_8 (cluster[i])]);
-	i++;
-      }
-      return num_chrs;
-    }
-}
-
-static gint
-get_glyphs_list (HebrewFontInfo	*font_info,
-		 gunichar	*cluster,
-		 gint		num_chrs,
-		 PangoGlyph	*glyph_lists)
-{
-  gint i;
-
-  switch (font_info->type)
-    {
-      case HEBREW_FONT_NONE:
-        for (i=0; i < num_chrs; i++)
-	  glyph_lists[i] = pango_x_get_unknown_glyph (font_info->font);
-        return num_chrs;
-
-      case HEBREW_FONT_ISO8859_8:
-        return get_adjusted_glyphs_list (font_info, cluster,
-			num_chrs, glyph_lists, iso_8859_8_shape_table);
-      
-      case HEBREW_FONT_ISO10646:
-        return get_adjusted_glyphs_list (font_info, cluster,
-			num_chrs, glyph_lists, Unicode_shape_table);
-    }
-  return 0;
+  return PANGO_X_MAKE_GLYPH (font_info->subfont, glyph_num);
 }
 
 static void
-add_cluster (HebrewFontInfo	*font_info,
-	     PangoGlyphString	*glyphs,
-	     gint		cluster_start,
-	     gunichar		*cluster,
-	     gint		num_chrs)
-	     
+add_cluster(HebrewFontInfo   *font_info,
+	    PangoFont        *font,
+	    PangoGlyphString *glyphs,
+	    int              cluster_size,
+	    int              cluster_start,
+	    int              glyph_num[],
+	    PangoGlyph       glyph[],
+	    int              width[],
+	    int              x_offset[],
+	    int              y_offset[])
 {
-  PangoGlyph glyphs_list[MAX_GLYPHS];
-  gint num_glyphs;
-  gint i;
-  
-  num_glyphs = get_glyphs_list(font_info, cluster, num_chrs, glyphs_list);
+  int i;
 
-  for (i=0; i<num_glyphs; i++)
-       add_glyph (font_info, glyphs, cluster_start, glyphs_list[i],
-	    		i == 0 ? FALSE : TRUE);
-
-  /* Here the fun starts. Post process the positions of glyphs in the
-     cluster in order to make nikud look nice... The following is based
-     on lots of heuristic rules and could probably be improved. Especially
-     we could improve things considerably if we would access the rendered
-     bitmap and move nikud to avoid collisions etc.
-
-     Todo:
-     
-     * Take care of several points and accents below the characters.
-     
-     * Figure out what to do with dot inside vav if it the vav does
-       not have a "roof". (Happens e.g. in Ariel).
-  */
-  if (num_glyphs > 1)
+  for (i=0; i<cluster_size; i++)
     {
-      int i;
-      int cluster_start_idx = glyphs->num_glyphs - num_glyphs;
-      
-      if (font_info->type == HEBREW_FONT_ISO10646)
-	{
-	  PangoRectangle ink_rect, logical_rect;
-	  int base_char = glyphs_list[0] & 0x0fff;
-	  int base_ink_x_offset;
-	  int base_ink_width, base_ink_height;
-	  
-	  pango_font_get_glyph_extents (font_info->font,
-					glyphs->glyphs[cluster_start_idx].glyph, &ink_rect, &logical_rect);
-	  base_ink_x_offset = ink_rect.x;
-	  base_ink_width = ink_rect.width;
-	  base_ink_height = ink_rect.height;
-	  
-	  for (i=1; i<num_glyphs; i++)
-	    {
-	      int gl = glyphs_list[i] & 0x0fff;
-
-	      /* Check if it is a point */
-	      if (gl < 0x5B0 || gl >= 0x05D0)
-		continue;
-	      
-	      pango_font_get_glyph_extents (font_info->font,
-					    glyphs->glyphs[cluster_start_idx+i].glyph, &ink_rect, &logical_rect);
-
-	      /* The list of logical rules */
-
-	      /* Center dot of VAV */
-	      if (gl == UNI_MAPIQ && base_char == UNI_VAV)
-		{   
-		  glyphs->glyphs[cluster_start_idx+i].geometry.x_offset
-		    = base_ink_x_offset - ink_rect.x;
-
-		  /* If VAV is a vertical bar without a roof, then we
-		     need to make room for the dot by increasing the
-		     cluster width. But how can I check if that is the
-		     case??
-		  */
-		  /* This is wild, but it does the job of differentiating
-		     between two M$ fonts... Base the decision on the
-		     aspect ratio of the vav...
-		  */
-		  if (base_ink_height > base_ink_width * 3.5)
-		    {
-		      int j;
-		      double space = 0.7;
-		      double kern = 0.5;
-
-		      for (j=0; j<i; j++)
-			{
-			  glyphs->glyphs[cluster_start_idx+j].geometry.x_offset
-			    += ink_rect.width*(1+space-kern);
-			}
-		      
-		      glyphs->glyphs[cluster_start_idx+i].geometry.width
-			+= ink_rect.width*(1+space-kern);
-		      glyphs->glyphs[cluster_start_idx+i].geometry.x_offset
-			-= ink_rect.width*(kern);
-		    }
-		}
-
-	      /* Dot over SHIN */
-	      else if (gl == UNI_SHIN_DOT && base_char == UNI_SHIN)
-		{   
-		  glyphs->glyphs[cluster_start_idx+i].geometry.x_offset
-		    = base_ink_x_offset + base_ink_width
-		    - ink_rect.x - ink_rect.width;
-		}
-
-	      /* Dot over SIN */
-	      else if (gl == UNI_SIN_DOT && base_char == UNI_SHIN)
-		{  
-		  glyphs->glyphs[cluster_start_idx+i].geometry.x_offset
-		    = base_ink_x_offset -ink_rect.x;
-		}
-
-	      /* VOWEL DOT above to any other character than
-	         SHIN or VAV should stick out a bit to the left. */
-	      else if ((gl == UNI_SIN_DOT || gl == UNI_HOLAM)
-		       && base_char != UNI_SHIN && base_char != UNI_VAV)
-		{  
-		  glyphs->glyphs[cluster_start_idx+i].geometry.x_offset
-		    = base_ink_x_offset -ink_rect.x - 2*ink_rect.width;
-		}
-
-	      /* VOWELS under resh or vav are right aligned */
-	      else if ((base_char == UNI_VAV || base_char == UNI_RESH
-			|| base_char == UNI_YOD)
-		       && ((gl >= UNI_SHEVA && gl <= UNI_QAMATS) ||
-			   gl == UNI_QUBUTS)) 
-		{
-		  glyphs->glyphs[cluster_start_idx+i].geometry.x_offset
-		    = base_ink_x_offset + base_ink_width
-		    - ink_rect.x - ink_rect.width;
-		}
-
-	      /* MAPIQ in PE or FINAL PE */
-	      else if (gl == UNI_MAPIQ
-		       && (base_char == UNI_PE || base_char == UNI_FINAL_PE))
-		{
-		  glyphs->glyphs[cluster_start_idx+i].geometry.x_offset
-		    = base_ink_x_offset - ink_rect.x
-		    + base_ink_width * 2/3 - ink_rect.width/2;
-
-		  /* Another option is to offset the MAPIQ in y...
-		     glyphs->glyphs[cluster_start_idx+i].geometry.y_offset
-		     -= base_ink_height/5; */
-		}
-
-	      /* VOWEL DOT next to any other character */
-	      else if ((gl == UNI_SIN_DOT || gl == UNI_HOLAM)
-		       && (base_char != UNI_VAV))
-		{   
-		  glyphs->glyphs[cluster_start_idx+i].geometry.x_offset
-		    = base_ink_x_offset -ink_rect.x;
-		}
-
-	      /* Move nikud of taf a bit ... */
-	      else if (base_char == UNI_TAV)
-		{
-		  glyphs->glyphs[cluster_start_idx+i].geometry.x_offset
-		    = base_ink_x_offset - ink_rect.x
-		    + base_ink_width * 5/8 - ink_rect.width/2;
-		}
-
-	      /* Move center dot of characters with a right stem and no
-		 left stem. */
-	      else if (gl == UNI_MAPIQ &&
-		       (base_char == UNI_BET
-			|| base_char == UNI_DALED
-			|| base_char == UNI_KAF
-			))
-		{
-		  glyphs->glyphs[cluster_start_idx+i].geometry.x_offset
-		    = base_ink_x_offset - ink_rect.x
-		    + base_ink_width * 3/8 - ink_rect.width/2;
-		}
-
-	      /* Center by default */
-	      else
-		{  
-		  glyphs->glyphs[cluster_start_idx+i].geometry.x_offset
-		    = base_ink_x_offset - ink_rect.x
-		    + base_ink_width/2 - ink_rect.width/2;
-		}
-	    }
-	}
+      add_glyph (font_info, glyphs, cluster_start, glyph[i],
+		 i == 0 ? FALSE : TRUE, width[i], x_offset[i], y_offset[i]);
     }
 }
 
-static const char *
-get_next_cluster(const char	*text,
-		 gint		length,
-		 gunichar       *cluster,
-		 gint		*num_chrs)
-{  
-  const char *p;
-  gint n_chars = 0;
-  
-  p = text;
-  /* What is the maximum size of a Hebrew cluster? It is certainly
-     bigger than two characters... */
-  while (p < text + length && n_chars < MAX_CLUSTER_CHRS)  
+gint get_glyph_num(HebrewFontInfo *font_info,
+		   PangoFont *font,
+		   gunichar  uch)
+{
+  if (font_info->type == HEBREW_FONT_ISO8859_8)
     {
-      gunichar current = g_utf8_get_char (p);
-      
-      if (n_chars == 0 ||
-	  is_composible ((gunichar)(cluster[0]), current) )
-	{
-	  cluster[n_chars++] = current;
-	  p = g_utf8_next_char (p);
-	  if (n_chars == 1 &&
-	      is_char_class(cluster[0], ~(NoDefine|SpacingLetter)) )
-	      break;
-	}
-      else
-	break;
+      return iso_8859_8_shape_table[ucs2iso8859_8(uch)];
     }
-
-  *num_chrs = n_chars;
-  return p;
+  else
+    {
+      return Unicode_shape_table[ucs2iso8859_8(uch)];
+    }
 }
 
 static void
-swap_range (PangoGlyphString *glyphs, int start, int end)
+get_cluster_glyphs(HebrewFontInfo *font_info,
+		   PangoFont      *font,
+		   gunichar       cluster[],
+		   gint           cluster_size,
+		   /* output */
+		   gint           glyph_num[],
+		   PangoGlyph     glyph[],
+		   gint           widths[],
+		   PangoRectangle ink_rects[])
 {
-  int i, j;
-
-  for (i = start, j = end - 1; i < j; i++, j--)
+  int i;
+  for (i=0; i<cluster_size; i++)
     {
-      PangoGlyphInfo glyph_info;
-      gint log_cluster;
+      PangoRectangle logical_rect;
+      glyph_num[i] = get_glyph_num(font_info, font, cluster[i]);
+      glyph[i] = get_glyph(font_info, glyph_num[i]);
 
-      glyph_info = glyphs->glyphs[i];
-      glyphs->glyphs[i] = glyphs->glyphs[j];
-      glyphs->glyphs[j] = glyph_info;
-
-      log_cluster = glyphs->log_clusters[i];
-      glyphs->log_clusters[i] = glyphs->log_clusters[j];
-      glyphs->log_clusters[j] = log_cluster;
+      pango_font_get_glyph_extents (font_info->font,
+				    glyph[i], &ink_rects[i], &logical_rect);
+      
+      /* Assign the base char width to the last character in the cluster */
+      if (i==0)
+	{
+	  widths[i] = 0;
+	  widths[cluster_size-1] = logical_rect.width;
+	}
+      else if (i < cluster_size-1)
+	widths[i] = 0;
     }
 }
 
@@ -682,7 +314,11 @@ hebrew_engine_shape (PangoFont        *font,
   const char *p;
   const char *log_cluster;
   gunichar cluster[MAX_CLUSTER_CHRS];
-  gint num_chrs;
+  gint cluster_size;
+  gint glyph_num[MAX_CLUSTER_CHRS];
+  gint glyph_width[MAX_CLUSTER_CHRS], x_offset[MAX_CLUSTER_CHRS], y_offset[MAX_CLUSTER_CHRS];
+  PangoRectangle ink_rects[MAX_CLUSTER_CHRS];
+  PangoGlyph glyph[MAX_CLUSTER_CHRS];
 
   pango_glyph_string_set_size (glyphs, 0);
 
@@ -692,31 +328,58 @@ hebrew_engine_shape (PangoFont        *font,
   while (p < text + length)
     {
 	log_cluster = p;
-	p = get_next_cluster (p, text + length - p, cluster, &num_chrs);
-	add_cluster (font_info, glyphs, log_cluster - text, cluster, num_chrs);
+	p = hebrew_shaper_get_next_cluster (p, text + length - p,
+					    /* output */
+					    cluster, &cluster_size);
+	get_cluster_glyphs(font_info,
+			   font,
+			   cluster,
+			   cluster_size,
+			   /* output */
+			   glyph_num,
+			   glyph,
+			   glyph_width,
+			   ink_rects);
+#if 0
+	{
+	  int i;
+	  for (i=0; i< cluster_size; i++)
+	    {
+	      printf("cluster %d: U+%04x %d\n", i, glyph_num[i], glyph_width[i]);
+	    }
+	}
+#endif
+	
+	/* Kern the glyphs! */
+	hebrew_shaper_get_cluster_kerning(cluster,
+					  cluster_size,
+					  /* Input and output */
+					  ink_rects,
+					  glyph_width,
+					  /* output */
+					  x_offset,
+					  y_offset);
+
+
+#if 0
+	old_add_cluster (font_info, glyphs, log_cluster - text, cluster, cluster_size);
+#endif
+	add_cluster(font_info,
+		    font,
+		    glyphs,
+		    cluster_size,
+		    log_cluster - text,
+		    glyph_num,
+		    glyph,
+		    glyph_width,
+		    x_offset,
+		    y_offset);
+
     }
 
   /* Simple bidi support */
   if (analysis->level % 2)
-    {
-      int start, end;
-
-      /* Swap all glyphs */
-      swap_range (glyphs, 0, glyphs->num_glyphs);
-
-      /* Now reorder glyphs within each cluster back to LTR */
-      for (start=0; start<glyphs->num_glyphs;)
-  	{
-	  end = start;
-	  while (end < glyphs->num_glyphs &&
-		 glyphs->log_clusters[end] == glyphs->log_clusters[start])
-	    end++;
-
-	  if (end > start + 1)
-	    swap_range (glyphs, start, end);
-	  start = end;
-  	}
-    }
+    hebrew_shaper_bidi_reorder(glyphs);
 }
 
 static PangoCoverage *
