@@ -178,6 +178,8 @@ pango_context_set_matrix (PangoContext *context,
     pango_matrix_free (context->matrix);
   if (matrix)
     context->matrix = pango_matrix_copy (matrix);
+  else
+    context->matrix = NULL;
 }
 
 /**
@@ -223,6 +225,23 @@ pango_context_set_font_map (PangoContext *context,
     g_object_unref (context->font_map);
 
   context->font_map = font_map;
+}
+
+/**
+ * pango_context_get_font_map:
+ * @context: a #PangoContext
+ * 
+ * Gets the #PangoFontmap used to look up fonts for this context.
+ * 
+ * Return value: the font map for the #PangoContext. This value
+ *  is owned by Pango and should not be unreferenced.
+ **/
+PangoFontMap *
+pango_context_get_font_map (PangoContext *context)
+{
+  g_return_val_if_fail (PANGO_IS_CONTEXT (context), NULL);
+
+  return context->font_map;
 }
 
 /**
@@ -1231,7 +1250,7 @@ pango_itemize (PangoContext      *context,
  * be a composite of the metrics for the fonts loaded for the
  * individual families.
  *
- * Returns: a #PangoMetrics object. The caller must call pango_font_metrics_unref()
+ * Returns: a #PangoFontMetrics object. The caller must call pango_font_metrics_unref()
  *   when finished using the object.
  **/
 PangoFontMetrics *

@@ -54,6 +54,7 @@ PangoContext *pango_context_new           (void);
 void          pango_context_set_font_map  (PangoContext                 *context,
 					   PangoFontMap                 *font_map);
 #endif /* PANGO_ENABLE_BACKEND */
+PangoFontMap *pango_context_get_font_map  (PangoContext                 *context);
 
 void          pango_context_list_families (PangoContext                 *context,
 					   PangoFontFamily            ***families,

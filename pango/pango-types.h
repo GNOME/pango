@@ -111,9 +111,13 @@ void pango_matrix_concat    (PangoMatrix *matrix,
 			     PangoMatrix *new_matrix);
 
 #define PANGO_SCALE 1024
-#define PANGO_PIXELS(d) (((d) >= 0) ?                             \
-                         ((d) + PANGO_SCALE / 2) / PANGO_SCALE :  \
-                         ((d) - PANGO_SCALE / 2) / PANGO_SCALE)
+#define PANGO_PIXELS(d) (((int)(d) + 512) >> 10)
+/* The above expression is just slightly wrong for floating point d;
+ * We'd expect -512.5 => -1 but instead we get 0. That's unlikely
+ * to matter for practical use and the expression is much more
+ * compact and faster than alternatives that work exactly for both
+ * integers and floating point.
+ */
 
 /* Macros to translate from extents rectangles to ascent/descent/lbearing/rbearing
  */

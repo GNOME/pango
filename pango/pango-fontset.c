@@ -67,7 +67,7 @@ pango_fontset_get_font (PangoFontset  *fontset,
  * 
  * Get overall metric information for the fonts in the fontset.
  *
- * Returns: a #PangoMetrics object. The caller must call pango_font_metrics_unref()
+ * Returns: a #PangoFontMetrics object. The caller must call pango_font_metrics_unref()
  *   when finished using the object.
  **/
 PangoFontMetrics *
