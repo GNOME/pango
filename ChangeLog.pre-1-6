@@ -1,3 +1,8 @@
+Thu Nov 29 11:40:51 2001  Owen Taylor  <otaylor@redhat.com>
+
+	* examples/viewer-qt.cc: Include qpainter.h - apparently
+	needed for Qt 3. (Patch from Dennis Dementiev)
+
 2001-11-27  Alex Larsson  <alexl@redhat.com>
 
 	* pango/pangoft2-private.h

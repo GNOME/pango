@@ -30,6 +30,7 @@
 #include <qfile.h>
 #include <qfileinfo.h>
 #include <qmenubar.h>
+#include <qpainter.h>
 #include <qpopupmenu.h>
 #include <qspinbox.h>
 #include <qscrollview.h>
