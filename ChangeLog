@@ -1,3 +1,6 @@
+2000-06-08 Elliot Lee <sopwith@redhat.com>
+	* pango-config.in: Include X_LIBS in libraries for 'pangox' target.
+
 2000-06-07  Havoc Pennington  <hp@redhat.com>
 
 	* pango/pango-attributes.c (pango_attr_iterator_copy): New

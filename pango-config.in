@@ -88,7 +88,7 @@ fi
 if test "$echo_libs" = "yes"; then
 	libs="-lpango -lfribidi @UNICODE_LIBS@ @GLIB_LIBS@"
 	if test "$lib_pangox" = "yes"; then
-		libs="-lpangox $libs"
+		libs="@X_LIBS@ -lpangox $libs"
 	fi
 	echo -L@libdir@ $libs 
 fi
