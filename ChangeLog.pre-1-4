@@ -1,3 +1,8 @@
+Mon Jan 26 14:20:34 2004  Owen Taylor  <otaylor@redhat.com>
+ 
+ 	* pango/opentype/pango-ot-info.c (is_truetype): Suport
+ 	CFF fonts as well. (#131202, Manjunath Sripadarao)
+ 
 2003-12-08  Tor Lillqvist  <tml@iki.fi>
 
 	* modules/basic/basic-win32.c (convert_log_clusters_to_byte_offsets):
