@@ -1,4 +1,10 @@
+2000-12-11  Havoc Pennington  <hp@redhat.com>
+
+	* tests/boundaries.utf8: Add some jamo and viramas and unicode
+	para separators and \r\n and so on, crashes the text widget nicely
+
 2000-12-11 Elliot Lee <sopwith@redhat.com>
+
 	* modules/thai/thai.c, pango/break.c: #include <string.h>
 
 Mon Dec 11 15:20:24 2000  Owen Taylor  <otaylor@redhat.com>
