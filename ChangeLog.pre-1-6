@@ -1,3 +1,9 @@
+Mon Nov 13 02:39:44 2000  Robert Brady  <robert@suse.co.uk>
+
+	* pango/modules/hangul/hangul.c: Replace fallback shaper
+	with a call to pango_x_fallback_shape, this sets the
+	cluster array properly.
+
 Sun Nov 12 18:36:38 2000  Owen Taylor  <otaylor@redhat.com>
 
 	* configure.in (included_modules): Remove checks
