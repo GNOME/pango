@@ -14,10 +14,11 @@ PangoScript script_for_file (const char *base_dir,
 const char *get_script_name (PangoScript script)
 {
   static GEnumClass *class = NULL;
+  GEnumValue *value;
   if (!class)
     class = g_type_class_ref (PANGO_TYPE_SCRIPT);
   
-  GEnumValue *value = g_enum_get_value (class, script);
+  value = g_enum_get_value (class, script);
   g_assert (value);
 
   return value->value_name;

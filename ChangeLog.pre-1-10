@@ -1,3 +1,8 @@
+Mon Aug  4 01:12:35 2003  Soeren Sandmann  <sandmann@daimi.au.dk>
+
+	* tools/gen-script-for-lang.c (get_script_name): Fix C99 variable
+	declaration.
+
 Sun Aug  3 18:37:46 2003  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pangofc-font.c (get_face_metrics): Fix sign 
