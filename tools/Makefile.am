@@ -12,6 +12,8 @@ noinst_PROGRAMS = gen-script-for-lang
 EXTRA_DIST= 			\
 	add-copyright 		\
 	compress-table.pl 	\
+	gen-color-table.pl	\
+	gen-script-table.pl	\
 	maps/README		\
 	maps/tis-620
 
