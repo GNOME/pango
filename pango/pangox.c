@@ -750,7 +750,10 @@ get_font_metrics_from_subfonts (PangoFont        *font,
     }
 
   /* This is pretty darn bogus. */
-  metrics->approximate_char_width = total_avg_widths / n_avg_widths;
+  if (n_avg_widths)
+    metrics->approximate_char_width = total_avg_widths / n_avg_widths;
+  else
+    metrics->approximate_char_width = 10 * PANGO_SCALE;
 }
 
 /* Get composite font metrics for all subfonts resulting from shaping
@@ -775,6 +778,7 @@ get_font_metrics_from_string (PangoFont        *font,
   guint8 *embedding_levels;
   PangoDirection base_dir = PANGO_DIRECTION_LTR;
   GSList *subfonts = NULL;
+  gboolean finished = FALSE;
   
   text_ucs4 = g_utf8_to_ucs4_fast (str, -1, &n_chars);
   if (!text_ucs4)
@@ -790,19 +794,29 @@ get_font_metrics_from_string (PangoFont        *font,
 
   i = 0;
   p = start = str;
-  while (*p)
+  while (*p || !finished)
     {
-      gunichar wc = g_utf8_get_char (p);
-      p = g_utf8_next_char (p);
+      gunichar wc;
+
+      if (*p)
+	{
+	  wc = g_utf8_get_char (p);
+	  shaper = pango_font_find_shaper (font, lang, wc);
+	}
+      else
+	{
+	  finished = TRUE;
+	  shaper = NULL;
+	}
 	  
-      shaper = pango_font_find_shaper (font, lang, wc);
-      if (p > start &&
-	  (shaper != last_shaper || last_level != embedding_levels[i]))
+      if (p > start && 
+	  (finished ||
+	   (shaper != last_shaper || last_level != embedding_levels[i])))
 	{
 	  PangoAnalysis analysis;
 	  int j;
 
-	  analysis.shape_engine = shaper;
+	  analysis.shape_engine = last_shaper;
 	  analysis.lang_engine = NULL;
 	  analysis.font = font;
 	  analysis.level = last_level;
@@ -818,6 +832,9 @@ get_font_metrics_from_string (PangoFont        *font,
 	  
 	  start = p;
 	}
+
+      if (!finished)
+	p = g_utf8_next_char (p);
 
       last_shaper = shaper;
       last_level = embedding_levels[i];

@@ -642,7 +642,7 @@ hangul_engine_shape (PangoFont        *font,
 	}
       else
 	{
-	  g_warning ("Character not handled by Hangul shaper: 0x04%x", wc4);
+	  g_warning ("Character not handled by Hangul shaper: %#04x", wc4);
 	  continue;
 	}
 

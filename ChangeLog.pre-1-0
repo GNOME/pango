@@ -1,3 +1,11 @@
+Tue May  1 23:30:53 2001  Owen Taylor  <otaylor@redhat.com>
+
+	* modules/hangul/hangul-x.c (hangul_engine_shape): Fix numeric
+	format in warning.
+
+	* pango/pangox.c (get_font_metrics_from_string): Fix assorted
+	brokenness.
+
 Tue May  1 19:27:00 2001  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pangox.c (pango_x_render): Rewrite the newline
