@@ -1,3 +1,7 @@
+Mon Nov 22 15:53:37 2004  Manish Singh  <yosh@gimp.org>
+
+	* modules/thai/Makefile.am: Remove stray 'x' character.
+
 Mon Nov 22 18:30:14 2004  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/opentype/Makefile.am pango/Makefile.am
