@@ -209,6 +209,7 @@ of of the rendering pipeline. It contains the following fields:
 
 @engine: 
 @script_shape: 
+@get_coverage: 
 
 <!-- ##### MACRO PANGO_ENGINE_TYPE_LANG ##### -->
 <para>

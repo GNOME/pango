@@ -1,0 +1,86 @@
+<!-- ##### SECTION Title ##### -->
+Coverage Maps
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### STRUCT PangoCoverage ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### ENUM PangoCoverageLevel ##### -->
+<para>
+
+</para>
+
+@PANGO_COVERAGE_NONE: 
+@PANGO_COVERAGE_FALLBACK: 
+@PANGO_COVERAGE_APPROXIMATE: 
+@PANGO_COVERAGE_EXACT: 
+
+<!-- ##### FUNCTION pango_coverage_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_coverage_copy ##### -->
+<para>
+
+</para>
+
+@coverage: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_coverage_destroy ##### -->
+<para>
+
+</para>
+
+@coverage: 
+
+
+<!-- ##### FUNCTION pango_coverage_get ##### -->
+<para>
+
+</para>
+
+@coverage: 
+@index: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_coverage_max ##### -->
+<para>
+
+</para>
+
+@coverage: 
+@other: 
+
+
+<!-- ##### FUNCTION pango_coverage_set ##### -->
+<para>
+
+</para>
+
+@coverage: 
+@index: 
+@level: 
+
+

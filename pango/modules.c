@@ -48,15 +48,15 @@ struct _PangoEnginePair
 GList *engines;
 
 static PangoMap *build_map      (PangoMapInfo       *info);
-static void        read_modules   (void);
-static guint       map_info_hash  (const PangoMapInfo *map);
-static gboolean    map_info_equal (const PangoMapInfo *map_a, 
-				   const PangoMapInfo *map_b);
+static void      read_modules   (void);
+static guint     map_info_hash  (const PangoMapInfo *map);
+static gboolean  map_info_equal (const PangoMapInfo *map_a, 
+				 const PangoMapInfo *map_b);
 
 PangoMap *
-_pango_find_map (gchar *lang,
-		    gchar *engine_type,
-		    gchar *render_type)
+_pango_find_map (const char *lang,
+		 const char *engine_type,
+		 const char *render_type)
 {
   PangoMapInfo map_info;
   PangoMap *map;
@@ -67,16 +67,18 @@ _pango_find_map (gchar *lang,
     map_hash = g_hash_table_new ((GHashFunc)map_info_hash,
 				 (GCompareFunc)map_info_equal);
 
-  map_info.lang = lang;
-  map_info.engine_type = engine_type;
-  map_info.render_type = render_type;
+  map_info.lang = (char *)lang;
+  map_info.engine_type = (char *)engine_type;
+  map_info.render_type = (char *)render_type;
 
   map = g_hash_table_lookup (map_hash, &map_info);
   if (!map)
     {
       PangoMapInfo *new_info = g_new (PangoMapInfo, 1);
-      *new_info = map_info;
-      
+      new_info->lang = g_strdup (lang);
+      new_info->engine_type = g_strdup (engine_type);
+      new_info->render_type = g_strdup (render_type);
+
       map = build_map (new_info);
       g_hash_table_insert (map_hash, new_info, map);
     }
@@ -85,7 +87,7 @@ _pango_find_map (gchar *lang,
 }
 
 PangoEngine *
-_pango_load_engine (gchar *id)
+_pango_load_engine (const char *id)
 {
   GList *tmp_list;
   

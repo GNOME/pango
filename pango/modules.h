@@ -49,9 +49,9 @@ struct _PangoMap
   PangoSubmap submaps[256];
 };
 
-PangoMap *_pango_find_map (gchar *lang,
-				gchar *engine_type,
-				gchar *render_type);
-PangoEngine *_pango_load_engine (gchar *id);
+PangoMap *_pango_find_map (const char *lang,
+			   const char *engine_type,
+			   const char *render_type);
+PangoEngine *_pango_load_engine (const char *id);
 
 #endif /* __MODULES_H__ */

@@ -1,3 +1,16 @@
+Wed Feb  2 20:49:21 2000  Owen Taylor  <otaylor@redhat.com>
+
+	* libpango/pangox.c (pango_x_get_unknown_glyph): Add a call to get
+	a glyph for unknown an unknown char.
+
+	* modules/basic/basic.c: use pango_x_get_unknown_glyph.
+
+	* libpango/utils.[ch] (_pango_guchar4_to_utf8): Added util function
+	for coverting wide chars to utf8.
+
+	* libpango/pangox.c (pango_x_font_get_coverage pango_x_font_get_shaper):
+	Initial implementations.
+
 Wed Feb  2 11:12:12 2000  Owen Taylor  <otaylor@redhat.com>
 
         * libpango/pango-types.h: Conditionally define G_N_ELEMENTS() when

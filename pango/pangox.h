@@ -73,13 +73,14 @@ typedef guint16 PangoXSubfont;
 #define PANGO_X_GLYPH_SUBFONT(glyph) (glyph>>16)
 #define PANGO_X_GLYPH_INDEX(glyph) (glyph & 0xffff)
 
-int      pango_x_list_subfonts (PangoFont      *font,
-				char          **charsets,
-				int             n_charsets,
-				PangoXSubfont **subfont_ids,
-				int           **subfont_charsets);
-gboolean pango_x_has_glyph     (PangoFont      *font,
-				PangoGlyph      glyph);
+int        pango_x_list_subfonts     (PangoFont      *font,
+				      char          **charsets,
+				      int             n_charsets,
+				      PangoXSubfont **subfont_ids,
+				      int           **subfont_charsets);
+gboolean   pango_x_has_glyph         (PangoFont      *font,
+				      PangoGlyph      glyph);
+PangoGlyph pango_x_get_unknown_glyph (PangoFont      *font);
 
 #ifdef __cplusplus
 }

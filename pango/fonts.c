@@ -175,6 +175,47 @@ pango_font_get_data (PangoFont *font,
   return g_datalist_get_data (&font->data, key);
 }
 
+/**
+ * pango_font_get_coverage:
+ * @font: a #PangoFont
+ * @lang: the language tag (in the form of "en_US")
+ * 
+ * Compute the coverage map for a given font and language tag.
+ * 
+ * Return value: a newly allocated #PangoContext object.
+ **/
+PangoCoverage *
+pango_font_get_coverage (PangoFont      *font,
+			 const char     *lang)
+{
+  g_return_val_if_fail (font != NULL, NULL);
+  g_return_val_if_fail (lang != NULL, NULL);
+
+  return font->klass->get_coverage (font, lang);
+}
+
+/**
+ * pango_font_find_shaper:
+ * @font: a #PangoFont
+ * @lang: the language tag (in the form of "en_US")
+ * @ch: the ISO-10646 character code.
+ * 
+ * Find the best matching shaper for a font for a particular
+ * language tag and character point.
+ * 
+ * Return value: the best matching shaper.
+ **/
+PangoEngineShape *
+pango_font_find_shaper (PangoFont      *font,
+			const char     *lang,
+			guint32         ch)
+{
+  g_return_val_if_fail (font != NULL, NULL);
+  g_return_val_if_fail (lang != NULL, NULL);
+
+  return font->klass->find_shaper (font, lang, ch);
+}
+     
 
 /**
  * pango_font_map_init:
@@ -265,3 +306,4 @@ pango_font_map_list_fonts (PangoFontMap           *fontmap,
 
   fontmap->klass->list_fonts (fontmap, descs, n_descs);
 }
+

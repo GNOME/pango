@@ -19,6 +19,8 @@
  * Boston, MA 02111-1307, USA.
  */
 
+#include <string.h>
+
 #include <pango-coverage.h>
 
 typedef struct _PangoBlockInfo PangoBlockInfo;
@@ -176,7 +178,7 @@ void pango_coverage_set (PangoCoverage     *coverage,
   guchar *data;
   
   g_return_if_fail (coverage != NULL);
-  g_return_if_fail (level < 0 || level > 3);
+  g_return_if_fail (level >= 0 || level <= 3);
 
   block_index = index / 256;
 
@@ -189,15 +191,25 @@ void pango_coverage_set (PangoCoverage     *coverage,
   data = coverage->blocks[block_index].data;
   if (!data)
     {
+      guchar byte;
+      
       if (level == coverage->blocks[block_index].level)
 	return;
       
-      data = g_new0 (guchar, 64);
+      data = g_new (guchar, 64);
       coverage->blocks[block_index].data = data;
+
+      byte = coverage->blocks[block_index].level |
+	(coverage->blocks[block_index].level << 2) |
+	(coverage->blocks[block_index].level << 4) |
+        (coverage->blocks[block_index].level << 6);
+      
+      for (i=0; i<64; i++)
+	memset (data, byte, 64);
     }
 
   i = index % 256;
-  data[i] |= level << ((i % 4) * 2);
+  data[i/4] |= level << ((i % 4) * 2);
 }
 
 /**

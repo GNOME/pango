@@ -417,7 +417,6 @@ basic_engine_shape (PangoFont        *font,
   const char *p;
   const char *next;
 
-  PangoXSubfont fallback_subfont = 0;
   CharCache *cache;
 
   g_return_if_fail (font != NULL);
@@ -460,30 +459,7 @@ basic_engine_shape (PangoFont        *font,
 	    }
 	}
       else
-	{
-	  if (!fallback_subfont)
-	    {
-	      static char *charset_names[] = { "iso8859-1" };
-	      PangoXSubfont *subfonts;
-	      int *subfont_charsets;
-	      int n_subfonts;
-	      
-	      n_subfonts = pango_x_list_subfonts (font, charset_names, 1, &subfonts, &subfont_charsets);
-
-	      if (n_subfonts == 0)
-		{
-		  g_warning ("No fallback character found\n");
-		  continue;
-		}
-
-	      fallback_subfont = subfonts[0];
-
-	      g_free (subfont_charsets);
-	      g_free (subfonts);
-	    }
-	  
-	  set_glyph (font, glyphs, i, PANGO_X_MAKE_GLYPH (fallback_subfont, ' '));
-	}
+	set_glyph (font, glyphs, i, pango_x_get_unknown_glyph (font));
       
       p = next;
     }
@@ -519,28 +495,13 @@ basic_engine_get_coverage (PangoFont  *font,
   PangoCoverage *result = pango_coverage_new ();
   GUChar4 wc;
 
-  iconv_t utf8_conv = (iconv_t)-1;
-
-  if (utf8_conv == (iconv_t)-1)
-    {
-      utf8_conv = iconv_open ("utf-8", "ucs-4");
-      if (utf8_conv == (iconv_t)-1)
-	g_error ("Could not open coverter from ucs-4 to utf-8!");
-    }
-
   for (wc = 0; wc < 65536; wc++)
     {
-      char buf[4];
-      const char *inbuf = (const char *)&wc;
-      size_t inbytes_left = 4;
-      char *outbuf = buf;
-      size_t outbytes_left = 4;
-      
-      iconv (utf8_conv, &inbuf, &inbytes_left, &outbuf, &outbytes_left);
+      char buf[6];
 
+      _pango_guchar4_to_utf8 (wc, buf);
       if (find_char (cache, font, wc, buf))
 	pango_coverage_set (result, wc, PANGO_COVERAGE_EXACT);
-
     }
 
   return result;
