@@ -16,7 +16,7 @@ main (int argc, char **argv)
 	{
 	  if (g_unichar_validate (i))
 	    {
-	      guchar buffer[7];
+	      gchar buffer[7];
 	      int len = g_unichar_to_utf8 (i, buffer);
 	      buffer[len] = '\0';
 

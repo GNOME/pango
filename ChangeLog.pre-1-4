@@ -1,4 +1,13 @@
-Wed Jun 12 11:08:35 2002  Owen Taylor  <otaylor@redhat.com>
+Wed Jun 12 11:19:08 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* modules/tamil/tamil-x.c: Use unsigned char for
+	bitfield array. (#83257, David L. Cooper II)
+
+	* tests/gen-all-unicode.c (main): Used char,
+	not guchar for array of characters. (#83258,
+	David L. Cooper II.)
+
+-Wed Jun 12 11:08:35 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* modules/arabic/langboxfont.[ch] modules/arabic/naqshfont.[ch]:
 	Change @glyph2 parameter of arabic_*_recode() to be a gunichar*

@@ -39,7 +39,7 @@ static char *default_charset = "iso10646-tam";
 
 /* Bitmap to test whether a char is a consonant     */
 /** Remember to change this when adding KSHA later **/
-static const char cons_map[] = {0xB1, 0xC6, 0x38, 0xFE, 0x1D};
+static const unsigned char cons_map[] = {0xB1, 0xC6, 0x38, 0xFE, 0x1D};
 
 static PangoEngineRange tamil_range[] = {
   { 0x0b80, 0x0bff, "*" },
