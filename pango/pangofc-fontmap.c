@@ -1288,7 +1288,7 @@ pango_fc_convert_weight_to_pango (int fc_weight)
     return PANGO_WEIGHT_ULTRALIGHT;
   else if (fc_weight < (FC_WEIGHT_LIGHT + FC_WEIGHT_REGULAR) / 2)
     return PANGO_WEIGHT_LIGHT;
-  else if (fc_weight < (FC_WEIGHT_REGULAR + FC_WEIGHT_MEDIUM) / 2)
+  else if (fc_weight < (FC_WEIGHT_REGULAR + FC_WEIGHT_DEMIBOLD) / 2)
     return PANGO_WEIGHT_NORMAL;
   /* We group the 500/MEDIUM weight with normal to reduce confusion
    *

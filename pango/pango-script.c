@@ -172,7 +172,7 @@ pango_script_iter_free (PangoScriptIter *iter)
  * @script: location to store script for range, or %NULL
  * 
  * Gets information about the range to which @iter currently points.
- * The range is the is the set of locations p where *start <= p < *end.
+ * The range is the set of locations p where *start <= p < *end.
  * (That is, it doesn't include the character stored at *end)
  **/
 void

@@ -155,7 +155,7 @@ void pango_matrix_concat    (PangoMatrix       *matrix,
  * Unicode bidirectional algorithm; not every value in this
  * enumeration makes sense for every usage of #PangoDirection;
  * for example, the return value of pango_unichar_direction()
- * and pango_find_base_direction() cannot be %PANGO_DIRECTION_WEAK_LTR
+ * and pango_find_base_dir() cannot be %PANGO_DIRECTION_WEAK_LTR
  * or %PANGO_DIRECTION_WEAK_RTL, since every character is either
  * neutral or has a strong direction; on the other hand
  * %PANGO_DIRECTION_NEUTRAL doesn't make sense to pass
