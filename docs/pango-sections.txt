@@ -471,9 +471,11 @@ PANGO_IS_LAYOUT
 PANGO_LAYOUT_CLASS
 PANGO_IS_LAYOUT_CLASS
 PANGO_LAYOUT_GET_CLASS
+PANGO_TYPE_LAYOUT_ITER
 
 <SUBSECTION Private>
 pango_layout_get_type
+pango_layout_iter_get_type
 pango_alignment_get_type
 pango_wrap_mode_get_type
 </SECTION>
