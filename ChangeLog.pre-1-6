@@ -1,5 +1,12 @@
 2003-02-23  Noah Levitt  <nlevitt@columbia.edu>
 
+	* pango/pangowin32-fontmap.c: 
+	* pango/pangofc-fontmap.c:
+	* pango/pango-font.h:
+	* pango/fonts.c: New API pango_font_family_is_monospace. (#108728)
+
+2003-02-23  Noah Levitt  <nlevitt@columbia.edu>
+
 	* pango/fonts.c (pango_font_face_list_sizes):
 	* pango/pangofc-fontmap.c (pango_fc_face_list_sizes): Handle
 	NULL for sizes and n_sizes.

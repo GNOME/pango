@@ -89,6 +89,8 @@ struct _PangoFcFamily
 
   PangoFcFace **faces;
   int n_faces;		/* -1 == uninitialized */
+
+  int spacing;  /* FC_SPACING */
 };
 
 struct _PangoFcPatternSet
@@ -391,11 +393,13 @@ _pango_fc_font_map_remove (PangoFcFontMap *fcfontmap,
 
 static PangoFcFamily *
 create_family (PangoFcFontMap *fcfontmap,
-	       const char      *family_name)
+	       const char     *family_name,
+               int             spacing)
 {
   PangoFcFamily *family = g_object_new (PANGO_FC_TYPE_FAMILY, NULL);
   family->fontmap = fcfontmap;
   family->family_name = g_strdup (family_name);
+  family->spacing = spacing;
 
   return family;
 }
@@ -440,34 +444,49 @@ pango_fc_font_map_list_families (PangoFontMap      *fontmap,
 
   if (priv->n_families < 0)
     {
-      FcObjectSet *os = FcObjectSetBuild (FC_FAMILY, NULL);
+      FcObjectSet *os = FcObjectSetBuild (FC_FAMILY, FC_SPACING, NULL);
       FcPattern *pat = FcPatternCreate ();
-      
+      /* use hash table to avoid duplicate listings if different faces in
+       * the same family have different spacing values */
+      GHashTable *temp_family_hash;
+
       fontset = FcFontList (NULL, pat, os);
       
       FcPatternDestroy (pat);
       FcObjectSetDestroy (os);
       
       priv->families = g_new (PangoFcFamily *, fontset->nfont + 3); /* 3 standard aliases */
+      temp_family_hash = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
 
       count = 0;
       for (i = 0; i < fontset->nfont; i++)
 	{
 	  FcChar8 *s;
 	  FcResult res;
+          int spacing;
 	  
 	  res = FcPatternGetString (fontset->fonts[i], FC_FAMILY, 0, (FcChar8 **) &s);
 	  g_assert (res == FcResultMatch);
+
+          res = FcPatternGetInteger (fontset->fonts[i], FC_SPACING, 0, &spacing);
+          g_assert (res == FcResultMatch || res == FcResultNoMatch);
+          if (res == FcResultNoMatch)
+            spacing = FC_PROPORTIONAL;
 	  
-	  if (!is_alias_family (s))
-	    priv->families[count++] = create_family (fcfontmap, (gchar *)s);
+	  if (!is_alias_family (s) && !g_hash_table_lookup (temp_family_hash, s))
+            {
+              PangoFcFamily *temp_family = create_family (fcfontmap, (gchar *)s, spacing);
+              g_hash_table_insert (temp_family_hash, g_strdup (s), s);
+              priv->families[count++] = temp_family;
+            }
 	}
 
       FcFontSetDestroy (fontset);
+      g_hash_table_destroy (temp_family_hash);
 
-      priv->families[count++] = create_family (fcfontmap, "Sans");
-      priv->families[count++] = create_family (fcfontmap, "Serif");
-      priv->families[count++] = create_family (fcfontmap, "Monospace");
+      priv->families[count++] = create_family (fcfontmap, "Sans", FC_PROPORTIONAL);
+      priv->families[count++] = create_family (fcfontmap, "Serif", FC_PROPORTIONAL);
+      priv->families[count++] = create_family (fcfontmap, "Monospace", FC_MONO);
       
       priv->n_families = count;
     }
@@ -1232,6 +1251,18 @@ pango_fc_face_list_sizes (PangoFontFace  *face,
   FcObjectSetDestroy (objectset);
 }
 
+static gboolean
+pango_fc_family_is_monospace (PangoFontFamily *family)
+{
+  PangoFcFamily *fcfamily = PANGO_FC_FAMILY (family);
+
+  return fcfamily->spacing == FC_MONO || 
+#ifdef FC_DUAL
+         fcfamily->spacing == FC_DUAL ||
+#endif
+         fcfamily->spacing == FC_CHARCELL;
+}
+
 static void
 pango_fc_face_class_init (PangoFontFaceClass *class)
 {
@@ -1358,6 +1389,7 @@ pango_fc_family_class_init (PangoFontFamilyClass *class)
 {
   class->list_faces = pango_fc_family_list_faces;
   class->get_name = pango_fc_family_get_name;
+  class->is_monospace = pango_fc_family_is_monospace;
 }
 
 static void

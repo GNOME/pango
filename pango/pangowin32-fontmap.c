@@ -324,11 +324,20 @@ pango_win32_family_get_name (PangoFontFamily  *family)
   return win32family->family_name;
 }
 
+static gboolean
+pango_win32_family_is_monospace (PangoFontFamily *family)
+{
+  /* FIXME: implement me */
+  g_warning ("is_monospace not implemented for win32 backend");
+  return FALSE;
+}
+
 static void
 pango_win32_family_class_init (PangoFontFamilyClass *class)
 {
   class->list_faces = pango_win32_family_list_faces;
   class->get_name = pango_win32_family_get_name;
+  class->is_monospace = pango_win32_family_is_monospace;
 }
 
 GType

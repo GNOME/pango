@@ -1361,6 +1361,36 @@ pango_font_family_list_faces (PangoFontFamily  *family,
   PANGO_FONT_FAMILY_GET_CLASS (family)->list_faces (family, faces, n_faces);
 }
 
+/**
+ * pango_font_family_is_monospace:
+ * @family: a #PangoFontFamily
+ *
+ * A monospace font is a font designed for text display where the the
+ * characters form a regular grid. For Western languages this would
+ * mean that the advance width of all characters are the same, but
+ * this categorization also includes Asian fonts which include
+ * double-width characters: characters that occupy two grid cells.
+ * g_unichar_iswide() returns a result that indicates whether a
+ * character is typically double-width in a monospace font.
+ * 
+ * The best way to find out the grid-cell size is to call
+ * pango_font_metrics_get_approximate_digit_width(), since the results
+ * of pango_font_metrics_get_approximate_char_width() may be affected
+ * by double-width characters.  
+ * 
+ * Return value: TRUE if the family is monospace.
+ **/
+gboolean 
+pango_font_family_is_monospace (PangoFontFamily  *family)
+{
+  g_return_val_if_fail (PANGO_IS_FONT_FAMILY (family), FALSE);
+
+  if (PANGO_FONT_FAMILY_GET_CLASS (family)->is_monospace)
+    return PANGO_FONT_FAMILY_GET_CLASS (family)->is_monospace (family);
+  else
+    return FALSE;
+}
+
 /*
  * PangoFontFace
  */
