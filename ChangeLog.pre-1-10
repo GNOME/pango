@@ -1,3 +1,11 @@
+2005-02-06  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pangocairo.h pango/pangocairo-render.c docs/pango-sections.txt:
+	Rename pango_cairo_show_glyphs() to pango_cairo_show_glyph_string().
+	Add pango_cairo_{glyph_string,layout_line,layout}_path()
+
+	* docs/Makefile.am (INCLUDES): Add CAIRO_CFLAGS.
+
 2005-02-06  Hans Breuer  <hans@breuer.org>
 
 	* pango/makefile.msc pango/*.def pango/pangocairo.def : updated to

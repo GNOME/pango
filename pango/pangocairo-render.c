@@ -32,6 +32,8 @@ struct _PangoCairoRenderer
   PangoRenderer parent_instance;
 
   cairo_t *cr;
+  gboolean do_path;
+  double x_offset, y_offset;
 };
 
 struct _PangoCairoRendererClass
@@ -46,7 +48,7 @@ set_color (PangoCairoRenderer *crenderer,
 	   PangoRenderPart     part)
 {
   PangoColor *color = pango_renderer_get_color (PANGO_RENDERER (crenderer), part);
-
+  
   if (color)
     cairo_set_rgb_color (crenderer->cr,
 			 color->red / 65535.,
@@ -71,9 +73,12 @@ pango_cairo_renderer_draw_glyphs (PangoRenderer     *renderer,
   cairo_glyph_t *cairo_glyphs;
   cairo_glyph_t stack_glyphs[MAX_STACK];
 
-  cairo_save (crenderer->cr);
+  if (!crenderer->do_path)
+    {
+      cairo_save (crenderer->cr);
 
-  set_color (crenderer, PANGO_RENDER_PART_FOREGROUND);
+      set_color (crenderer, PANGO_RENDER_PART_FOREGROUND);
+    }
 
   if (glyphs->num_glyphs > MAX_STACK)
     cairo_glyphs = g_new (cairo_glyph_t, glyphs->num_glyphs);
@@ -85,20 +90,25 @@ pango_cairo_renderer_draw_glyphs (PangoRenderer     *renderer,
       PangoGlyphInfo *gi = &glyphs->glyphs[i];
 
       cairo_glyphs[i].index = gi->glyph;
-      cairo_glyphs[i].x = (double)(x + x_position + gi->geometry.x_offset) / PANGO_SCALE;
-      cairo_glyphs[i].y = (double)(y + gi->geometry.y_offset) / PANGO_SCALE;
+      cairo_glyphs[i].x = crenderer->x_offset + (double)(x + x_position + gi->geometry.x_offset) / PANGO_SCALE;
+      cairo_glyphs[i].y = crenderer->y_offset + (double)(y + gi->geometry.y_offset) / PANGO_SCALE;
 
       x_position += gi->geometry.width;
     }
 
   cairo_set_font (crenderer->cr,
 		  _pango_cairo_font_get_cairo_font (PANGO_CAIRO_FONT (font)));
-  cairo_show_glyphs (crenderer->cr, cairo_glyphs, glyphs->num_glyphs);
+  
+  if (crenderer->do_path)
+    cairo_glyph_path (crenderer->cr, cairo_glyphs, glyphs->num_glyphs);
+  else
+    cairo_show_glyphs (crenderer->cr, cairo_glyphs, glyphs->num_glyphs);
   
   if (glyphs->num_glyphs > MAX_STACK)
     g_free (cairo_glyphs);
 
-  cairo_restore (crenderer->cr);
+  if (!crenderer->do_path)
+    cairo_restore (crenderer->cr);
   
 #undef MAX_STACK
 }
@@ -113,16 +123,22 @@ pango_cairo_renderer_draw_rectangle (PangoRenderer     *renderer,
 {
   PangoCairoRenderer *crenderer = PANGO_CAIRO_RENDERER (renderer);
 
-  cairo_save (crenderer->cr);
+  if (!crenderer->do_path)
+    {
+      cairo_save (crenderer->cr);
 
-  set_color (crenderer, part);
+      set_color (crenderer, part);
+    }
 
   cairo_rectangle (crenderer->cr,
-		   (double)x / PANGO_SCALE, (double)y / PANGO_SCALE, 
+		   crenderer->x_offset + (double)x / PANGO_SCALE,
+		   crenderer->y_offset + (double)y / PANGO_SCALE, 
 		   (double)width / PANGO_SCALE, (double)height / PANGO_SCALE);
-  cairo_fill (crenderer->cr);
+  if (!crenderer->do_path)
+    cairo_fill (crenderer->cr);
   
-  cairo_restore (crenderer->cr);
+  if (!crenderer->do_path)
+    cairo_restore (crenderer->cr);
 }
 
 /* Draws an error underline that looks like one of:
@@ -160,16 +176,19 @@ pango_cairo_renderer_draw_error_underline (PangoRenderer *renderer,
   int width_units = (width + unit_width / 2) / unit_width;
   double y_top, y_bottom;
   int i;
-  
-  cairo_save (cr);
 
-  set_color (crenderer, PANGO_RENDER_PART_UNDERLINE);
+  if (!crenderer->do_path)
+    {
+      cairo_save (cr);
+
+      set_color (crenderer, PANGO_RENDER_PART_UNDERLINE);
+      
+      cairo_new_path (cr);
+    }
 
   x += (width - width_units * unit_width);
   width = width_units * unit_width;
-  
-  cairo_new_path (cr);
-  
+
   y_top = y + height;
   y_bottom = y;
   
@@ -210,9 +229,13 @@ pango_cairo_renderer_draw_error_underline (PangoRenderer *renderer,
     }
   
   cairo_close_path (cr);
-  cairo_fill (cr);
+  
+  if (!crenderer->do_path)
+    {
+      cairo_fill (cr);
 
-  cairo_restore (cr);
+      cairo_restore (cr);
+    }
 }
 
 static void
@@ -230,17 +253,8 @@ pango_cairo_renderer_class_init (PangoCairoRendererClass *klass)
   renderer_class->draw_error_underline = pango_cairo_renderer_draw_error_underline;
 }
 
-static void
-current_point_to_origin (cairo_t *cr)
-{
-  double x, y;
-
-  cairo_current_point (cr, &x, &y);
-  cairo_translate (cr, x, y);
-}
-
 /**
- * pango_cairo_show_glyphs:
+ * pango_cairo_show_glyph_string:
  * @cr: a Cairo context
  * @font: a #PangoFont
  * @glyphs: a #PangoGlyphString
@@ -252,9 +266,9 @@ current_point_to_origin (cairo_t *cr)
  * Since: 1.10
  **/
 void
-pango_cairo_show_glyphs (cairo_t          *cr,
-			 PangoFont        *font,
-			 PangoGlyphString *glyphs)
+pango_cairo_show_glyph_string (cairo_t          *cr,
+			       PangoFont        *font,
+			       PangoGlyphString *glyphs)
 {
   PangoFontMap *fontmap;
   PangoCairoRenderer *crenderer;
@@ -269,11 +283,16 @@ pango_cairo_show_glyphs (cairo_t          *cr,
   crenderer = PANGO_CAIRO_RENDERER (renderer);
 
   cairo_save (cr);
-  current_point_to_origin (cr);
 
   crenderer->cr = cr;
+  crenderer->do_path = FALSE;
+  cairo_current_point (cr, &crenderer->x_offset, &crenderer->y_offset);
+  
   pango_renderer_draw_glyphs (renderer, font, glyphs, 0, 0);
+  
   crenderer->cr = NULL;
+  crenderer->x_offset = 0.;
+  crenderer->y_offset = 0.;
   
   cairo_restore (cr);
 }
@@ -307,11 +326,16 @@ pango_cairo_show_layout_line (cairo_t          *cr,
   crenderer = PANGO_CAIRO_RENDERER (renderer);
 
   cairo_save (cr);
-  current_point_to_origin (cr);
 
   crenderer->cr = cr;
+  crenderer->do_path = FALSE;
+  cairo_current_point (cr, &crenderer->x_offset, &crenderer->y_offset);
+
   pango_renderer_draw_layout_line (renderer, line, 0, 0);
+  
   crenderer->cr = NULL;
+  crenderer->x_offset = 0.;
+  crenderer->y_offset = 0.;
   
   cairo_restore (cr);
 }
@@ -345,11 +369,144 @@ pango_cairo_show_layout (cairo_t     *cr,
   crenderer = PANGO_CAIRO_RENDERER (renderer);
   
   cairo_save (cr);
-  current_point_to_origin (cr);
 
   crenderer->cr = cr;
+  crenderer->do_path = FALSE;
+  cairo_current_point (cr, &crenderer->x_offset, &crenderer->y_offset);
+
   pango_renderer_draw_layout (renderer, layout, 0, 0);
+  
   crenderer->cr = NULL;
+  crenderer->x_offset = 0.;
+  crenderer->y_offset = 0.;
   
   cairo_restore (cr);
 }
+
+/**
+ * pango_cairo_glyph_string_path
+ * @cr: a Cairo context
+ * @font: a #PangoFont
+ * @glyphs: a #PangoGlyphString
+ * 
+ * Adds the glyphs in @glyphs to the current path in the specified
+ * cairo context. The origin of the glyphs (the left edge of the baseline)
+ * will be at the current point of the cairo context.
+ *
+ * Since: 1.10
+ **/
+void
+pango_cairo_glyph_string_path (cairo_t          *cr,
+			       PangoFont        *font,
+			       PangoGlyphString *glyphs)
+{
+  PangoFontMap *fontmap;
+  PangoCairoRenderer *crenderer;
+  PangoRenderer *renderer;
+
+  g_return_if_fail (cr != NULL);
+  g_return_if_fail (PANGO_IS_CAIRO_FONT (font));
+  g_return_if_fail (glyphs != NULL);
+
+  fontmap = PANGO_FC_FONT (font)->fontmap;
+  renderer = _pango_cairo_font_map_get_renderer (PANGO_CAIRO_FONT_MAP (fontmap));
+  crenderer = PANGO_CAIRO_RENDERER (renderer);
+
+  crenderer->cr = cr;
+  crenderer->do_path = TRUE;
+  cairo_current_point (cr, &crenderer->x_offset, &crenderer->y_offset);
+  
+  pango_renderer_draw_glyphs (renderer, font, glyphs, 0, 0);
+  
+  crenderer->cr = NULL;
+  crenderer->do_path = FALSE;
+  crenderer->x_offset = 0.;
+  crenderer->y_offset = 0.;
+  
+  cairo_set_font (cr, NULL);
+}
+
+/**
+ * pango_cairo_layout_line_path:
+ * @cr: a Cairo context
+ * @line: a #PangoLayoutLine
+ * 
+ * Adds the text in #PangoLayoutLine to the current path in the
+ * specified cairo context.  The origin of the glyphs (the left edge
+ * of the line) will be at the current point of the cairo context.
+ *
+ * Since: 1.10
+ **/
+void
+pango_cairo_layout_line_path (cairo_t          *cr,
+			      PangoLayoutLine  *line)
+{
+  PangoContext *context;
+  PangoFontMap *fontmap;
+  PangoRenderer *renderer;
+  PangoCairoRenderer *crenderer;
+  
+  g_return_if_fail (cr != NULL);
+  g_return_if_fail (line != NULL);
+
+  context = pango_layout_get_context (line->layout);
+  fontmap = pango_context_get_font_map (context);
+  renderer = _pango_cairo_font_map_get_renderer (PANGO_CAIRO_FONT_MAP (fontmap));
+  crenderer = PANGO_CAIRO_RENDERER (renderer);
+
+  crenderer->cr = cr;
+  crenderer->do_path = TRUE;
+  cairo_current_point (cr, &crenderer->x_offset, &crenderer->y_offset);
+
+  pango_renderer_draw_layout_line (renderer, line, 0, 0);
+  
+  crenderer->cr = NULL;
+  crenderer->do_path = FALSE;
+  crenderer->x_offset = 0.;
+  crenderer->y_offset = 0.;
+  
+  cairo_set_font (cr, NULL);
+}
+
+/**
+ * pango_cairo_layout_path:
+ * @cr: a Cairo context
+ * @layout: a Pango layout
+ * 
+ * Adds the text in a #PangoLayoutLine to the current path in the
+ * specified cairo context.  The top-left corner of the #PangoLayout
+ * will be at the current point of the cairo context.
+ *
+ * Since: 1.10
+ **/
+void
+pango_cairo_layout_path (cairo_t     *cr,
+			 PangoLayout *layout)
+{
+  PangoContext *context;
+  PangoFontMap *fontmap;
+  PangoRenderer *renderer;
+  PangoCairoRenderer *crenderer;
+
+  g_return_if_fail (cr != NULL);
+  g_return_if_fail (PANGO_IS_LAYOUT (layout));
+
+  context = pango_layout_get_context (layout);
+  fontmap = pango_context_get_font_map (context);
+  renderer = _pango_cairo_font_map_get_renderer (PANGO_CAIRO_FONT_MAP (fontmap));
+  crenderer = PANGO_CAIRO_RENDERER (renderer);
+  
+  crenderer->cr = cr;
+  crenderer->do_path = TRUE;
+  cairo_current_point (cr, &crenderer->x_offset, &crenderer->y_offset);
+
+  pango_renderer_draw_layout (renderer, layout, 0, 0);
+  
+  crenderer->cr = NULL;
+  crenderer->do_path = FALSE;
+  crenderer->x_offset = 0.;
+  crenderer->y_offset = 0.;
+  
+  cairo_set_font (cr, NULL);
+}
+

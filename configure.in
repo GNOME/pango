@@ -360,11 +360,12 @@ basic_modules="basic-fc,basic-win32,basic-x"
 hangul_modules="hangul-fc"
 hebrew_modules="hebrew-fc"
 indic_modules="indic-fc"
+khmer_modules="khmer-fc"
 syriac_modules="syriac-fc"
 thai_modules="thai-fc"
 tibetan_modules="tibetan-fc"
 
-all_modules="$arabic_modules,$basic_modules,$hangul_modules,$hebrew_modules,$indic_modules,$syriac_modules,$thai_modules,$tibetan_modules"
+all_modules="$arabic_modules,$basic_modules,$hangul_modules,$hebrew_modules,$indic_modules,$khmer_modules,$syriac_modules,$thai_modules,$tibetan_modules"
 
 included_modules=""
 if test "x$with_included_modules" != xno || test "x$with_included_modules" = x ; then
@@ -418,7 +419,9 @@ AM_CONDITIONAL(INCLUDE_HANGUL_FC,echo $included_modules | egrep '(^|,)hangul-fc(
 AM_CONDITIONAL(INCLUDE_HEBREW_FC,echo $included_modules | egrep '(^|,)hebrew-fc($|,)' > /dev/null)
 
 AM_CONDITIONAL(INCLUDE_INDIC_FC,echo $included_modules | egrep '(^|,)indic-fc($|,)' > /dev/null)
-				     
+
+AM_CONDITIONAL(INCLUDE_KHMER_FC,echo $included_modules | grep '(^|,)khmer-fc($|,)' > /dev/null)
+
 AM_CONDITIONAL(INCLUDE_SYRIAC_FC,echo $included_modules | egrep '(^|,)syriac-fc($|,)' > /dev/null)
 
 AM_CONDITIONAL(INCLUDE_THAI_FC,echo $included_modules | egrep '(^|,)thai-fc($|,)' > /dev/null)
@@ -688,6 +691,7 @@ modules/basic/Makefile
 modules/hangul/Makefile
 modules/hebrew/Makefile
 modules/indic/Makefile
+modules/khmer/Makefile
 modules/syriac/Makefile
 modules/thai/Makefile
 modules/tibetan/Makefile
