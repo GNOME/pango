@@ -40,7 +40,7 @@ Charset charsets[] = {
   { 13, "KOI8-R",       "koi8-r",          conv_8bit },
   { 14, "TIS-620",      "tis620.2529-1",   conv_8bit },
   { 15, "EUC-JP",       "jisx0208.1983-0", conv_eucjp },
-  { 16, "EUC-CN",       "gb2312.1980-0",   conv_16bit },
+  { 16, "GB2312",       "gb2312.1980-0",   conv_16bit },
   { 17, "EUC-KR",       "ksc5601.1987-0",  conv_16bit },
   { 18, "EUC-JP",       "jisx0201.1976-0", conv_eucjp },
   { 19, "EUC-JP",       "jisx0212.1990-0", conv_eucjp },

@@ -1,3 +1,9 @@
+Mon Dec 10 14:22:22 2001  HideToshi Tajima  <hidetoshi.tajima@sun.com>
+
+	* modules/basic/tables-big.i: change "EUC-CN" to "GB2312" which
+	is the canonical name for gb2312.1980 charset used in libcharset.
+	(#66174)
+
 Mon Dec 10 09:18:09 2001  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pango-layout.c (pango_layout_index_to_pos): 
