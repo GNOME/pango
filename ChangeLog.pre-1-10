@@ -1,3 +1,8 @@
+Thu Nov 21 17:35:08 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* modules/basic/basic-ft2.c: Remove duplicate
+	include of basic-common.h (#97667, Tony Graham)
+
 Thu Nov 21 00:26:40 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* configure.in: Use some shell magic rather than 
@@ -6,6 +11,17 @@ Thu Nov 21 00:26:40 2002  Owen Taylor  <otaylor@redhat.com>
 	Make checks handle 0.10 > 0.9. (#99120, Dan Mills)
 	Check for 0.10, since we need that for 
 	--output-format=xml.
+
+Sun Nov 17 23:28:26 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-layout.c (imposed_shape): Fix bytes/chars
+	problem for glyph->log_clusters.
+
+	* pango/pango-layout.c (cluster_end_index)
+	* pango/pango-layout.c (pango_layout_iter_next_cluster): Fix 
+	confusion between global indices and run-relative indices.
+
+	* docs/tmpl/glyphs.sgml: Improve docs for log_clusters.
 
 2002-11-12  Tor Lillqvist  <tml@iki.fi>
 

@@ -31,8 +31,6 @@
 
 #define SCRIPT_ENGINE_NAME "BasicScriptEngineFT2"
 
-#include "basic-common.h"
-
 
 static PangoEngineRange basic_ranges[] = {
   /* Basic Latin, Latin-1 Supplement, Latin Extended-A, Latin Extended-B,
