@@ -190,7 +190,7 @@ read_modules (void)
   module_file = fopen ("pango.modules", "r");
   if (!module_file)
     {
-      module_file = fopen (SYSCONFDIR "/pango/pango.modules", "r");
+      module_file = fopen (LOCALSTATEDIR "/lib/pango/pango.modules", "r");
       if (!module_file)
 	{
 	  fprintf(stderr, "Cannot load module file!\n");

@@ -51,4 +51,5 @@ examples/Makefile
 docs/Makefile
 tools/Makefile
 fonts/Makefile
+pango.spec
 ])

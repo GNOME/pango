@@ -3,5 +3,6 @@
 SUBDIRS=basic hangul tamil
 
 install-data-local:
-	$(mkinstalldirs) $(DESTDIR)$(sysconfdir)/pango
-	$(top_builddir)/libpango/pango-querymodules $(DESTDIR)$(libdir)/pango/modules/*.so > $(DESTDIR)$(sysconfdir)/pango/pango.modules
+	$(mkinstalldirs) $(DESTDIR)$(localstatedir)/lib/pango
+	$(top_builddir)/libpango/pango-querymodules $(DESTDIR)$(libdir)/pango/modules/*.so > $(DESTDIR)$(localstatedir)/lib/pango/pango.modules
+

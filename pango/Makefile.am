@@ -1,6 +1,6 @@
 	## Process this file with automake to create Makefile.in.
 
-INCLUDES=-DSYSCONFDIR=\"$(sysconfdir)\"
+INCLUDES=-DSYSCONFDIR=\"$(sysconfdir)\" -DLOCALSTATEDIR=\"$(localstatedir)\"
 
 lib_LTLIBRARIES = libpango.la libpangox.la
 bin_PROGRAMS = pango-querymodules
@@ -27,6 +27,7 @@ libpangox_la_SOURCES = 	 \
 # scheme or the standard libtool scheme.
 #
 libpango_la_LDFLAGS = -release $(VERSION)
+libpangox_la_LDFLAGS = -release $(VERSION)
 
 include_HEADERS = 	 \
 	pango.h		 \
@@ -36,6 +37,7 @@ include_HEADERS = 	 \
 	pango-font.h     \
 	pango-glyph.h	 \
 	pango-layout.h	 \
+	pango-types.h	 \
 	pangox.h	
 
 pango_querymodules_SOURCES = \

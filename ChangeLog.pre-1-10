@@ -1,3 +1,15 @@
+Fri Feb 11 16:04:50 2000  Owen Taylor  <otaylor@redhat.com>
+
+        * libpango/Makefile.am: make dist fixups.
+	
+        * Makefile.am pango.spec.in: Add a spec file
+	
+	* examples/HELLO.utf8: Change Maltese to a different
+	  phrase to include some unique Maltese characters.
+
+	* libpango/Makefile.am modules/Makefile.am libpango/modules.c:
+	  Move pango.modules file to /var
+
 Thu Feb 10 23:45:49 2000  Owen Taylor  <otaylor@redhat.com>
 
 	* docs/**: Added recent API changes.

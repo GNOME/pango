@@ -4,6 +4,7 @@ config.h.in
 config.cache
 config.log
 config.status
+pango.spec
 stamp-h
 libtool
 Makefile
