@@ -1,3 +1,9 @@
+Fri Aug  8 12:59:42 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pangoft2-fontmap.c (pango_ft2_font_map_default_substitute):
+	Move DPI substitution before FcDefaultSubstitute so
+	it actually works.
+
 Fri Aug  8 11:45:15 2003  Owen Taylor  <otaylor@redhat.com>
 
 	* examples/pangoft2topgm.c: Replace --family/--scale

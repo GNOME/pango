@@ -342,9 +342,9 @@ pango_ft2_font_map_default_substitute (PangoFcFontMap *fcfontmap,
   if (ft2fontmap->substitute_func)
     ft2fontmap->substitute_func (pattern, ft2fontmap->substitute_data);
 
-  FcDefaultSubstitute (pattern);
   if (FcPatternGet (pattern, FC_DPI, 0, &v) == FcResultNoMatch)
     FcPatternAddDouble (pattern, FC_DPI, ft2fontmap->dpi_y);
+  FcDefaultSubstitute (pattern);
 }
 
 static PangoFcFont *
