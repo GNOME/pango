@@ -360,19 +360,19 @@ INCLUDED_FT2_MODULES=
 INCLUDED_WIN32_MODULES=
 IFS="${IFS= 	}"; pango_save_ifs="$IFS"; IFS=","
 for module in $included_modules; do
-  if echo $indic_modules | grep "\(^\| \)$module\(\$\| \)" > /dev/null; then
+  if echo $indic_modules | egrep "(^| )$module(\$| )" > /dev/null; then
     dir=indic
   else
     dir=`echo $module | sed "s/-.*//"`
   fi
 
-  if echo $module | grep -- "-xft\($\|,\)" > /dev/null; then
+  if echo $module | egrep -- "-xft($|,)" > /dev/null; then
     INCLUDED_XFT_MODULES="$INCLUDED_XFT_MODULES \$(top_builddir)/modules/$dir/libpango-$module.la"
-  elif echo $module | grep -- "-ft2\($\|,\)" > /dev/null; then
+  elif echo $module | egrep -- "-ft2($|,)" > /dev/null; then
     INCLUDED_FT2_MODULES="$INCLUDED_FT2_MODULES \$(top_builddir)/modules/$dir/libpango-$module.la"
-  elif echo $module | grep -- "-x\($\|,\)" > /dev/null; then
+  elif echo $module | egrep -- "-x($|,)" > /dev/null; then
     INCLUDED_X_MODULES="$INCLUDED_X_MODULES \$(top_builddir)/modules/$dir/libpango-$module.la"
-  elif echo $module | grep -- "-win32\($\|,\)" > /dev/null; then
+  elif echo $module | egrep -- "-win32($|,)" > /dev/null; then
     INCLUDED_WIN32_MODULES="$INCLUDED_WIN32_MODULES \$(top_builddir)/modules/$dir/libpango-$module.la"
   else
     AC_MSG_ERROR([the specified module $module does not exist])
@@ -385,32 +385,32 @@ AC_SUBST(INCLUDED_XFT_MODULES)
 AC_SUBST(INCLUDED_FT2_MODULES)
 AC_SUBST(INCLUDED_WIN32_MODULES)
 
-AM_CONDITIONAL(INCLUDE_ARABIC_FT2,echo $included_modules | grep '\(^\|,\)arabic-ft2\($\|,\)' > /dev/null)
-AM_CONDITIONAL(INCLUDE_ARABIC_X,echo $included_modules | grep '\(^\|,\)arabic-x\($\|,\)' > /dev/null)
-AM_CONDITIONAL(INCLUDE_ARABIC_XFT,echo $included_modules | grep '\(^\|,\)arabic-xft\($\|,\)' > /dev/null)
+AM_CONDITIONAL(INCLUDE_ARABIC_FT2,echo $included_modules | egrep '(^|,)arabic-ft2($|,)' > /dev/null)
+AM_CONDITIONAL(INCLUDE_ARABIC_X,echo $included_modules | egrep '(^|,)arabic-x($|,)' > /dev/null)
+AM_CONDITIONAL(INCLUDE_ARABIC_XFT,echo $included_modules | egrep '(^|,)arabic-xft($|,)' > /dev/null)
 
-AM_CONDITIONAL(INCLUDE_BASIC_FT2,echo $included_modules | grep '\(^\|,\)basic-ft2\($\|,\)' > /dev/null)
-AM_CONDITIONAL(INCLUDE_BASIC_WIN32,echo $included_modules | grep '\(^\|,\)basic-win32\($\|,\)' > /dev/null)
-AM_CONDITIONAL(INCLUDE_BASIC_XFT,echo $included_modules | grep '\(^\|,\)basic-xft\($\|,\)' > /dev/null)
-AM_CONDITIONAL(INCLUDE_BASIC_X,echo $included_modules | grep '\(^\|,\)basic-x\($\|,\)' > /dev/null)
+AM_CONDITIONAL(INCLUDE_BASIC_FT2,echo $included_modules | egrep '(^|,)basic-ft2($|,)' > /dev/null)
+AM_CONDITIONAL(INCLUDE_BASIC_WIN32,echo $included_modules | egrep '(^|,)basic-win32($|,)' > /dev/null)
+AM_CONDITIONAL(INCLUDE_BASIC_XFT,echo $included_modules | egrep '(^|,)basic-xft($|,)' > /dev/null)
+AM_CONDITIONAL(INCLUDE_BASIC_X,echo $included_modules | egrep '(^|,)basic-x($|,)' > /dev/null)
 
-AM_CONDITIONAL(INCLUDE_HANGUL_X,echo $included_modules | grep '\(^\|,\)hangul-x\($\|,\)' > /dev/null)
+AM_CONDITIONAL(INCLUDE_HANGUL_X,echo $included_modules | egrep '(^|,)hangul-x($|,)' > /dev/null)
 
-AM_CONDITIONAL(INCLUDE_HEBREW_FT2,echo $included_modules | grep '\(^\|,\)hebrew-ft2\($\|,\)' > /dev/null)
-AM_CONDITIONAL(INCLUDE_HEBREW_X,echo $included_modules | grep '\(^\|,\)hebrew-x\($\|,\)' > /dev/null)
-AM_CONDITIONAL(INCLUDE_HEBREW_XFT,echo $included_modules | grep '\(^\|,\)hebrew-xft\($\|,\)' > /dev/null)
+AM_CONDITIONAL(INCLUDE_HEBREW_FT2,echo $included_modules | egrep '(^|,)hebrew-ft2($|,)' > /dev/null)
+AM_CONDITIONAL(INCLUDE_HEBREW_X,echo $included_modules | egrep '(^|,)hebrew-x($|,)' > /dev/null)
+AM_CONDITIONAL(INCLUDE_HEBREW_XFT,echo $included_modules | egrep '(^|,)hebrew-xft($|,)' > /dev/null)
 
-AM_CONDITIONAL(INCLUDE_BENGALI_X,echo $included_modules | grep '\(^\|,\)bengali-x\($\|,\)' > /dev/null)
-AM_CONDITIONAL(INCLUDE_DEVANAGARI_X,echo $included_modules | grep '\(^\|,\)devanagari-x\($\|,\)' > /dev/null)
-AM_CONDITIONAL(INCLUDE_GUJARATI_X,echo $included_modules | grep '\(^\|,\)gujarati-x\($\|,\)' > /dev/null)
-AM_CONDITIONAL(INCLUDE_GURMUKHI_X,echo $included_modules | grep '\(^\|,\)gurmukhi-x\($\|,\)' > /dev/null)
-AM_CONDITIONAL(INCLUDE_MYANMAR_X,echo $included_modules | grep '\(^\|,\)myanmar-x\($\|,\)' > /dev/null)
+AM_CONDITIONAL(INCLUDE_BENGALI_X,echo $included_modules | egrep '(^|,)bengali-x($|,)' > /dev/null)
+AM_CONDITIONAL(INCLUDE_DEVANAGARI_X,echo $included_modules | egrep '(^|,)devanagari-x($|,)' > /dev/null)
+AM_CONDITIONAL(INCLUDE_GUJARATI_X,echo $included_modules | egrep '(^|,)gujarati-x($|,)' > /dev/null)
+AM_CONDITIONAL(INCLUDE_GURMUKHI_X,echo $included_modules | egrep '(^|,)gurmukhi-x($|,)' > /dev/null)
+AM_CONDITIONAL(INCLUDE_MYANMAR_X,echo $included_modules | egrep '(^|,)myanmar-x($|,)' > /dev/null)
 
-AM_CONDITIONAL(INCLUDE_TAMIL_X,echo $included_modules | grep '\(^\|,\)tamil-x\($\|,\)' > /dev/null)
+AM_CONDITIONAL(INCLUDE_TAMIL_X,echo $included_modules | egrep '(^|,)tamil-x($|,)' > /dev/null)
 
-AM_CONDITIONAL(INCLUDE_THAI_X,echo $included_modules | grep '\(^\|,\)thai-x\($\|,\)' > /dev/null)
+AM_CONDITIONAL(INCLUDE_THAI_X,echo $included_modules | egrep '(^|,)thai-x($|,)' > /dev/null)
 
-AM_CONDITIONAL(INCLUDE_INDIC_XFT,echo $included_modules | grep '\(^\|,\)indic-xft\($\|,\)' > /dev/null)
+AM_CONDITIONAL(INCLUDE_INDIC_XFT,echo $included_modules | egrep '(^|,)indic-xft($|,)' > /dev/null)
 
 #
 # We use flockfile to implement pango_getline() - should be moved to GLib
@@ -625,7 +625,7 @@ EOTEXT
 
 IFS="${IFS= 	}"; pango_save_ifs="$IFS"; IFS=","
 for module in $included_modules; do
-  if echo $module | grep -- "-x\($\|,\)" > /dev/null; then  
+  if echo $module | egrep -- "-x($|,)" > /dev/null; then  
     module_c=`echo $module | sed s/-/_/`
     cat >> pango/module-defs-x.c <<EOTEXT
  { _pango_${module_c}_script_engine_list, _pango_${module_c}_script_engine_load,_pango_${module_c}_script_engine_unload },
@@ -652,7 +652,7 @@ EOTEXT
 
 IFS="${IFS= 	}"; pango_save_ifs="$IFS"; IFS=","
 for module in $included_modules; do
-  if echo $module | grep -- "-xft\($\|,\)" > /dev/null; then
+  if echo $module | egrep -- "-xft($|,)" > /dev/null; then
     module_c=`echo $module | sed s/-/_/`
     cat >> pango/module-defs-xft.c <<EOTEXT
  { _pango_${module_c}_script_engine_list, _pango_${module_c}_script_engine_load,_pango_${module_c}_script_engine_unload },
@@ -679,7 +679,7 @@ EOTEXT
 
 IFS="${IFS= 	}"; pango_save_ifs="$IFS"; IFS=","
 for module in $included_modules; do
-  if echo $module | grep -- "-ft2\($\|,\)" > /dev/null; then
+  if echo $module | egrep -- "-ft2($|,)" > /dev/null; then
     module_c=`echo $module | sed s/-/_/`
     cat >> pango/module-defs-ft2.c <<EOTEXT
  { _pango_${module_c}_script_engine_list, _pango_${module_c}_script_engine_load,_pango_${module_c}_script_engine_unload },
@@ -705,7 +705,7 @@ EOTEXT
 
 IFS="${IFS= 	}"; pango_save_ifs="$IFS"; IFS=","
 for module in $included_modules; do
-  if echo $module | grep -- "-win32\($\|,\)" > /dev/null; then
+  if echo $module | egrep -- "-win32($|,)" > /dev/null; then
     module_c=`echo $module | sed s/-/_/`
     cat >> pango/module-defs-win32.c <<EOTEXT
  { _pango_${module_c}_script_engine_list, _pango_${module_c}_script_engine_load,_pango_${module_c}_script_engine_unload },
