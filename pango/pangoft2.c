@@ -34,6 +34,11 @@
 #include "pangoft2.h"
 #include "pangoft2-private.h"
 
+/* for compatibility with older freetype versions */
+#ifndef FT_LOAD_TARGET_MONO
+#define FT_LOAD_TARGET_MONO  FT_LOAD_MONOCHROME
+#endif
+
 #define PANGO_TYPE_FT2_FONT              (pango_ft2_font_get_type ())
 #define PANGO_FT2_FONT(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_TYPE_FT2_FONT, PangoFT2Font))
 #define PANGO_FT2_FONT_CLASS(klass)      (G_TYPE_CHECK_CLASS_CAST ((klass), PANGO_TYPE_FT2_FONT, PangoFT2FontClass))
@@ -196,33 +201,42 @@ load_fallback_face (PangoFT2Font *ft2font,
  * Return value: a pointer to a #FT_Face structure, with the size set correctly
  **/
 FT_Face
-pango_ft2_font_get_face (PangoFont      *font)
+pango_ft2_font_get_face (PangoFont *font)
 {
   PangoFT2Font *ft2font = (PangoFT2Font *)font;
   FT_Error error;
   FcPattern *pattern;
   FcChar8 *filename;
-  FcBool hinting, autohint;
+  FcBool antialias, hinting, autohint;
   int id;
 
   pattern = ft2font->font_pattern;
 
   if (!ft2font->face)
     {
-      /* If we add support for not antialising, then we should
-       * need to conditionalize NO_BITMAP on that.
-       */
-      ft2font->load_flags = FT_LOAD_NO_BITMAP;
+      ft2font->load_flags = 0;
+
+      /* disable antialiasing if requested */
+      if (FcPatternGetBool (pattern,
+                            FC_ANTIALIAS, 0, &antialias) != FcResultMatch)
+	antialias = FcTrue;
+
+      if (antialias)
+        ft2font->load_flags |= FT_LOAD_NO_BITMAP;
+      else
+	ft2font->load_flags |= FT_LOAD_TARGET_MONO;
 
       /* disable hinting if requested */
-      if (FcPatternGetBool (pattern, FC_HINTING, 0, &hinting) != FcResultMatch)
+      if (FcPatternGetBool (pattern,
+                            FC_HINTING, 0, &hinting) != FcResultMatch)
 	hinting = FcTrue;
 
       if (!hinting)
         ft2font->load_flags |= FT_LOAD_NO_HINTING;
 
       /* force autohinting if requested */
-      if (FcPatternGetBool (pattern, FC_AUTOHINT, 0, &autohint) != FcResultMatch)
+      if (FcPatternGetBool (pattern,
+                            FC_AUTOHINT, 0, &autohint) != FcResultMatch)
 	autohint = FcFalse;
 
       if (autohint)
@@ -246,7 +260,8 @@ pango_ft2_font_get_face (PangoFont      *font)
       
       if (!set_unicode_charmap (ft2font->face))
 	{
-	  g_warning ("Unable to load unicode charmap from font file %s", filename);
+	  g_warning ("Unable to load unicode charmap from font file %s",
+                     filename);
 	  
 	  FT_Done_Face (ft2font->face);
 	  ft2font->face = NULL;
@@ -342,11 +357,13 @@ pango_ft2_font_render_glyph (PangoFont *font,
   
   if (face)
     {
-      PangoFT2Font *ft2font = (PangoFT2Font *)font;
-	    
+      PangoFT2Font *ft2font = (PangoFT2Font *) font;
+
       /* Draw glyph */
       FT_Load_Glyph (face, glyph_index, ft2font->load_flags);
-      FT_Render_Glyph (face->glyph, ft_render_mode_normal);
+      FT_Render_Glyph (face->glyph,
+		       (ft2font->load_flags & FT_LOAD_TARGET_MONO ?
+			ft_render_mode_mono : ft_render_mode_normal));
 
       rendered->bitmap = face->glyph->bitmap;
       rendered->bitmap.buffer = g_memdup (face->glyph->bitmap.buffer,
@@ -463,7 +480,7 @@ pango_ft2_render (FT_Bitmap        *bitmap,
 		    for (ix = x_start; ix < x_limit; ix++)
 		      {
 			if ((*src) & (1 << (7 - (ix % 8))))
-			  *dest |= (1 << (7 - (ix % 8)));
+			  *dest |= 0xff;
 			if ((ix % 8) == 7)
 			  src++;
 			dest++;

@@ -1,3 +1,12 @@
+2003-04-03  Sven Neumann  <sven@gimp.org>
+
+	* pango/pangoft2.c (pango_ft2_font_get_face)
+	(pango_ft2_font_render_glyph): disable antialiasing if requested.
+	Fixes bug #109370.
+
+	* pango/pangoft2.c (pango_ft2_render): fixed rendering of
+	monochrome bitmaps.
+
 2003-04-02  Sven Neumann  <sven@gimp.org>
 
 	* pango/pangoft2.c (pango_ft2_render_layout)
