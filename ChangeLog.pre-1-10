@@ -1,3 +1,8 @@
+Tue Apr 15 05:13:56 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* configure.in: Avoid complex quoting mess that
+	didn't work with all shells. (#108001)
+
 Tue Apr 15 05:00:39 2003  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/opentype/pango-ot-info.c (synthesize_class_def): 

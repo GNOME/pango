@@ -814,8 +814,12 @@ pango-zip.sh
 ],[case "$CONFIG_FILES" in
 *pango-config*)chmod +x pango-config;;
 esac])
+	
+backends=""
+if $have_freetype && $have_fontconfig ; then backends="$backends FreeType"; fi
+if $have_x ; then backends="$backends X"; fi
+if $have_xft ; then backends="$backends Xft"; fi
+if $have_win32 ; then backends="$backends Win32"; fi
+   
 echo "configuration:
-	backends: `if $have_freetype && $have_fontconfig; then echo " FreeType"; fi \
-	``if $have_x ; then echo " X"; fi \
-	``if $have_xft ; then echo " Xft"; fi \
-	``if $have_win32 ; then echo " Win32"; fi`"
+	backends:$backends"
