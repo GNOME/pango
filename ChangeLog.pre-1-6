@@ -1,3 +1,11 @@
+Mon Aug  2 17:09:47 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* === Released 1.5.2 ==
+
+	* configure.in: Version 1.5.2
+
+	* NEWS: Updates
+
 Mon Aug  2 17:00:19 2004  Owen Taylor  <otaylor@redhat.com>
 
 	* modules/indic/indic-fc.c modules/indic/indic-ot.[ch]:

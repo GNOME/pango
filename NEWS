@@ -1,3 +1,10 @@
+Overview of changes between 1.5.1 and 1.5.2
+===========================================
+* Support 'init' feature for Bengali [Sayamindu Dasgupta]
+* Allow 32-bit property fields in OpenType code
+* Optimize repeated property lookups in OpenType code
+* Misc bug fixes [Behdad, Keith Sharp, Morten Welinder]
+
 Overview of changes between 1.5.0 and 1.5.1
 ===========================================
 * Add ellipsization support to PangoLayout
@@ -20,6 +27,23 @@ Overview of changes between 1.4.x and 1.5.0
 * Add Add PANGO_TYPE_LAYOUT_ITER [Johan Dahlin]
 
 ============================================================
+
+Overview of changes between 1.4.0 and 1.4.1
+===========================================
+* Win32 bug fixes [Tor Lillqvist, John Ehresman]
+* Thai rendering improvements including OpenType support
+  [Theppitak Karoonboonyanan]
+* Fix common crash in Hangul shaper [Changwoo Ryu]
+* Fix various problems with language tag selection [Frederic Zhang]
+* Documentation improvements [Felipe Heidrich, Doug Quale]
+* Fix crash in line break code [Jeroen Zwartepoorte, Billy Biggs]
+* Build fixes [J. Ali Harlow, Noah Misch]
+* OpenType engine fixes [Kailash C. Chowksey, Sayamindu Dasgupta, Aamir Wali,
+  Masatake YAMATO, Soheil Hassas Yeganeh]
+* Indic module bug fixes [Chris Blizzard, Rajkumar S, Taneem Ahmed,
+  Jungshik Shin]
+* Misc bug fixes [Stanislav Brabec, Anders Carlsson, Behdad Esfahbod, 
+  Jody Goldberg, Theppitak, Sven Neumann, Manish Singh, Morten Welinder]
 
 Overview of changes between 1.3.6 and 1.4.0
 ===========================================
