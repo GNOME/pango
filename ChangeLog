@@ -1,3 +1,9 @@
+Fri May 28 2004  Theppitak Karoonboonyanan  <thep@linux.thai.net>
+
+	* pango/opentype/pango-ot-buffer.c (apply_gpos_ltr): Negate y offset
+	according to different conventions between PangoGlyphString and OTL
+	(#142544)
+
 Thu May 27 17:54:24 2004  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/opentype/otlbuffer.c: Revert error return changes
