@@ -197,7 +197,6 @@ pango_fontset_get_font
 pango_fontset_get_metrics
 PangoFontsetSimple
 PANGO_TYPE_FONTSET_SIMPLE
-PangoFontsetSimpleClass
 pango_fontset_simple_new
 pango_fontset_simple_append
 pango_fontset_simple_size
@@ -222,6 +221,7 @@ PANGO_IS_FONTSET_CLASS
 PANGO_FONTSET_GET_CLASS
 PANGO_FONTSET_SIMPLE
 PANGO_IS_FONTSET_SIMPLE
+PangoFontsetSimpleClass
 
 <SUBSECTION Private>
 pango_font_metrics_new

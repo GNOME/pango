@@ -520,9 +520,9 @@ build_map (PangoMapInfo *info)
  * @wc:  an ISO-10646 codepoint
  * 
  * Returns the entry in the map for a given codepoint. The entry
- * contains information about engine that should be used for
+ * contains information about the engine that should be used for
  * the codepoint and also whether the engine matches the language
- * tag for the map was created exactly or just approximately.
+ * tag for which the map was created exactly or just approximately.
  * 
  * Return value: the #PangoMapEntry for the codepoint. This value
  *   is owned by the #PangoMap and should not be freed.

@@ -16,7 +16,9 @@ modules
 
 <!-- ##### STRUCT PangoIncludedModule ##### -->
 <para>
-
+The #PangoIncludedModule structure for a statically linked module 
+contains the functions that would otherwise be loaded from a dynamically 
+loaded module.
 </para>
 
 @list: 
@@ -25,13 +27,16 @@ modules
 
 <!-- ##### STRUCT PangoMap ##### -->
 <para>
-
+A #PangoMap structure can be used to determine the engine to
+use for each character.
 </para>
 
 
 <!-- ##### STRUCT PangoMapEntry ##### -->
 <para>
-
+A #PangoMapEntry contains information about the engine that should be used 
+for the codepoint to which this entry belongs and also whether the engine 
+matches the language tag for this entry's map exactly or just approximately.
 </para>
 
 @info: 

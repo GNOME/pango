@@ -386,7 +386,8 @@ The GObject type for #PangoFontMask.
 
 <!-- ##### STRUCT PangoFontMetrics ##### -->
 <para>
-
+A #PangoFontMetrics structure holds the overall metric information
+for a font (possibly restricted to a script). 
 </para>
 
 @ref_count: 
@@ -550,7 +551,9 @@ Returns %TRUE if @object is a #PangoFont.
 
 <!-- ##### STRUCT PangoFontFamily ##### -->
 <para>
-
+The #PangoFontFamily structure is used to represent a family of related 
+font faces. The faces in a family share a common design, but differ in 
+slant, weight, width and other aspects.
 </para>
 
 @parent_instance: 
@@ -599,7 +602,8 @@ Returns %TRUE if @object is a #PangoFontFamily.
 
 <!-- ##### STRUCT PangoFontFace ##### -->
 <para>
-
+The #PangoFontFace structure is used to represent a group of fonts with 
+the same family, slant, weight, width, but varying sizes.
 </para>
 
 @parent_instance: 
@@ -771,13 +775,17 @@ The GObject type for #PangoFontset.
 
 <!-- ##### STRUCT PangoFontsetClass ##### -->
 <para>
-
+The #PangoFontsetClass structure holds the virtual functions for
+a particular #PangoFontset implementation.
 </para>
 
 @parent_class: 
-@get_font: 
-@get_metrics: 
-@get_language: 
+@get_font: a function to get the font in the fontset that contains the 
+   best glyph for the given unicode character; see pango_fontset_get_font().
+@get_metrics: a function to get overall metric information for the fonts 
+   in the fontset; see pango_fontset_get_metrics().
+@get_language: a function to get the language of the fontset.
+
 
 <!-- ##### FUNCTION pango_fontset_get_font ##### -->
 <para>
@@ -807,13 +815,6 @@ The GObject type for #PangoFontset.
 <!-- ##### MACRO PANGO_TYPE_FONTSET_SIMPLE ##### -->
 <para>
 The GObject type for #PangoFontsetSimple.
-</para>
-
-
-
-<!-- ##### STRUCT PangoFontsetSimpleClass ##### -->
-<para>
-
 </para>
 
 

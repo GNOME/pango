@@ -1,3 +1,10 @@
+2001-12-03  Matthias Clasen  <matthiasc@poet.de>
+
+	* docs/pango-sections.txt, docs/tmpl/fonts.sgml, 
+	docs/tmpl/modules.sgml: Updates.
+
+	* pango/modules.c: Documentation fixes.
+
 2001-12-04  Sven Neumann  <sven@gimp.org>
 
 	* pango/pangoft2-fontmap.c
