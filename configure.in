@@ -129,13 +129,12 @@ if test $have_x = true ; then
     pango_save_cppflags="$CPPFLAGS"
     CPPFLAGS="$CPPFLAGS $FREETYPE_CFLAGS"
 
-    AC_CHECK_LIB(Xrender, XRenderFindFormat, have_lib_xrender = true, have_lib_xrender = false, -lXext $X_LIBS)
-   if test $have_lib_xrender = true; then
-      AC_CHECK_LIB(Xft, XftFontOpen, have_lib_xft = true, have_lib_xft = false, -lXrender -lXext $X_LIBS $FREETYPE_LIBS)
-      if test $have_lib_xft = true; then
-	AC_CHECK_HEADER(X11/Xft/XftFreetype.h, have_xft=true, :)
-      fi
-    fi
+    AC_CHECK_LIB(Xrender, XRenderFindFormat, 
+      [AC_CHECK_LIB(Xft, XftFontOpen,
+	[AC_CHECK_HEADER(X11/Xft/XftFreetype.h,
+	  have_xft=true,:)],
+	:,-lXrender -lXext $X_LIBS $FREETYPE_LIBS)]
+    ,:,-lXext $X_LIBS)
 
     CPPFLAGS="$pango_save_cppflags"
     
