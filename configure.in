@@ -1,5 +1,6 @@
 dnl Process this file with autoconf to create configure.
 
+AC_PREREQ(2.53)
 AC_INIT(ChangeLog)
 
 dnl ==========================================================================

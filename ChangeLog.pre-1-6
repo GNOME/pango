@@ -1,3 +1,7 @@
+Thu Dec 12 13:59:43 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* configure.in: Require autoconf-2.53.
+
 2002-12-11  Matthias Clasen  <maclas@gmx.de>
 
 	* docs/tmpl/text-attributes.sgml: 
