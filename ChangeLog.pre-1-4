@@ -1,3 +1,14 @@
+2002-02-07  Tor Lillqvist  <tml@iki.fi>
+
+	* examples/pangoft2topgm.c (main): Accept also outfile name on
+	command line, fopen it separately then. Needed on Windows where
+	stdout is in text mode.
+
+	* modules/arabic/Makefile.am
+ 	* modules/hebrew/Makefile.am: Use -no-undefined on Windows,
+	otherwise libtool won't produce DLLs, and there will be no such to
+	install
+
 Sat Feb  2 18:27:38 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/Makefile.am (pango_querymodules_LDADD): Try removing

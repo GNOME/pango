@@ -134,6 +134,7 @@ split_paragraphs (char *text)
 
 int main(int argc, char *argv[])
 {
+  FILE *outfile;
   int dpi_x = 100, dpi_y = 100;
   char *init_family = "sans";
   int init_scale = 24;
@@ -190,9 +191,9 @@ int main(int argc, char *argv[])
       exit(1);
     }
 
-  if (argp + 1 != argc)
+  if (argp + 1 != argc && argp + 2 != argc)
     {
-      fprintf (stderr, "Usage: %s [options] FILE\n", prog_name);
+      fprintf (stderr, "Usage: %s [options] FILE [OUTFILE]\n", prog_name);
       exit(1);
     }
 
@@ -201,6 +202,13 @@ int main(int argc, char *argv[])
   text = read_file (argv[argp++]);
   if (!text)
     exit(1);
+
+  if (argp < argc)
+    outfile = fopen (argv[argp++], "wb");
+  else
+    outfile = stdout;		/* Problematic if freetype outputs warnings
+				 * to stdout...
+				 */
 
   context = pango_ft2_get_context (dpi_x, dpi_y);
 
@@ -260,10 +268,11 @@ int main(int argc, char *argv[])
 	  }
 
 	  /* Write it as pgm to output */
-	  printf("P5\n"
-		 "%d %d\n"
-		 "255\n", bitmap.width, bitmap.rows);
-	  fwrite(bitmap.buffer, 1, bitmap.width * bitmap.rows, stdout);
+	  fprintf(outfile,
+		  "P5\n"
+		  "%d %d\n"
+		  "255\n", bitmap.width, bitmap.rows);
+	  fwrite(bitmap.buffer, 1, bitmap.width * bitmap.rows, outfile);
 	  g_free (buf);
 	}
     }

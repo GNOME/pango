@@ -77,6 +77,10 @@ FT2_INCLUDED=
 FT2_PREFIX=
 endif
 
+if PLATFORM_WIN32
+no_undefined = -no-undefined
+endif
+
 noinst_LTLIBRARIES = $(X_INCLUDED) $(XFT_INCLUDED) $(FT2_INCLUDED)
 module_LTLIBRARIES = $(X_MODULES) $(XFT_MODULES) $(FT2_MODULES)
 moddefine = $(X_PREFIX) $(XFT_PREFIX) $(FT2_PREFIX)
@@ -96,7 +100,7 @@ pango_arabic_xft_la_SOURCES = $(xft_sources)
 
 libpango_arabic_xft_la_SOURCES = $(xft_sources)
 
-pango_arabic_ft2_la_LDFLAGS = -export-dynamic -avoid-version -module
+pango_arabic_ft2_la_LDFLAGS = -export-dynamic -avoid-version -module $(no_undefined)
 pango_arabic_ft2_la_LIBADD = $(arabic_ft2_libadd)
 pango_arabic_ft2_la_SOURCES = $(ft2_sources)
 

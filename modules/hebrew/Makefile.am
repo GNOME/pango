@@ -61,6 +61,10 @@ FT2_INCLUDED=
 FT2_PREFIX=
 endif
 
+if PLATFORM_WIN32
+no_undefined = -no-undefined
+endif
+
 noinst_LTLIBRARIES = $(X_INCLUDED) $(FT2_INCLUDED) $(XFT_INCLUDED)
 module_LTLIBRARIES = $(X_MODULES) $(FT2_MODULES) $(XFT_MODULES)
 moddefine = $(X_PREFIX) $(FT2_PREFIX) $(XFT_PREFIX)
