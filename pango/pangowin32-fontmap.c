@@ -1397,12 +1397,17 @@ pango_win32_font_entry_get_coverage (PangoWin32FontEntry *entry,
       g_hash_table_destroy (coverage_hash);
 
       cache_file = fopen (cache_file_name, "wb");
-      pango_coverage_to_bytes (result, &buf, &buflen);
-      PING (("saving %d bytes to %s", buflen, cache_file_name));
-      fwrite (buf, buflen, 1, cache_file);
-      fclose (cache_file);
+      if (cache_file)
+        {
+	  pango_coverage_to_bytes (result, &buf, &buflen);
+	  PING (("saving %d bytes to %s", buflen, cache_file_name));
+	  fwrite (buf, buflen, 1, cache_file);
+	  fclose (cache_file);
+	  g_free (buf);
+	}
+      else
+       g_warning ("Unable to open %s for writing", cache_file_name);
       g_free (cache_file_name);
-      g_free (buf);
     }
   
   entry->coverage = result;

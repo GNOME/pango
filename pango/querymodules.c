@@ -38,6 +38,14 @@
 
 #ifdef G_OS_WIN32
 #define SOEXT ".dll"
+#ifndef PATH_MAX
+#include <stdlib.h>
+#define PATH_MAX _MAX_PATH
+#endif /* PATH_MAX */
+#ifdef _MSC_VER
+#include <direct.h>
+#define getcwd _getcwd
+#endif
 #else
 #define SOEXT ".so"
 #endif

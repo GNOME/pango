@@ -41,6 +41,12 @@
 
 #ifdef G_OS_WIN32
 
+#include <sys/types.h>
+#include <sys/stat.h>
+#ifndef S_ISDIR
+#define S_ISDIR(mode) ((mode)&_S_IFDIR)
+#endif
+
 #define STRICT
 #include <windows.h>
 
@@ -618,7 +624,12 @@ pango_get_sysconf_subdirectory (void)
   /* On Windows we don't hardcode any paths (SYSCONFDIR) in the DLL,
    * but rely on an installation program to store the installation
    * directory in the registry. If no installation program has been
-   * used, punt and assume the Pango directory is %WINDIR%\Pango.
+   * used, assume the Pango directory is %WINDIR%\Pango.
+   *
+   * If the latter doesn't exist either, fall back to the directory
+   * the pango-$PANGO_VERSION.dll comes from, to stop polluting
+   * neither the Registry nor the windows directory (which may be
+   * write protected with Win2K anyway).
    */
 
   static gboolean been_here = FALSE;
@@ -627,6 +638,7 @@ pango_get_sysconf_subdirectory (void)
   HKEY reg_key = NULL;
   DWORD type;
   DWORD nbytes = sizeof (pango_sysconf_dir);
+  struct stat st;
 
   if (been_here)
     return pango_sysconf_dir;
@@ -642,6 +654,26 @@ pango_get_sysconf_subdirectory (void)
       /* Uh oh. Use %WinDir%\Pango */
       GetWindowsDirectory (win_dir, sizeof (win_dir));
       sprintf (pango_sysconf_dir, "%s\\pango", win_dir);
+
+      if (!stat (pango_sysconf_dir, &st) || !S_ISDIR (st.st_mode))
+        {
+           /* Oops. %WinDir%\pango does not exist */
+           HMODULE hm = NULL;
+           gchar* libname = g_strdup_printf ("pango-%s.dll", PANGO_VERSION);
+           hm = GetModuleHandle (libname);
+           if (!hm)
+             g_warning ("Can't find myself (%s)", libname);
+           else
+             {
+               GetModuleFileName (hm,
+                                  pango_sysconf_dir,
+                                  sizeof(pango_sysconf_dir));
+               /* strip dll name */
+               if (strrchr (pango_sysconf_dir, '\\'))
+                 *strrchr (pango_sysconf_dir, '\\') = 0;
+             }
+           g_free (libname);
+        }
     }
 
   if (reg_key != NULL)

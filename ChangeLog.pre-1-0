@@ -1,3 +1,34 @@
+2000-11-30  Tor Lillqvist  <tml@iki.fi>
+
+	* pango/makefile.mingw.in (DEFINES): Define PANGO_VERSION.
+
+	Changes by Hans Breuer:
+
+	* pango/pango-layout.c (shape_tab): Add a FIXME comment.
+
+	* pango/pango-markup.c (compare_xcolor_entries): Use g_strcasecmp.
+
+	* pango/pango-utils.c (pango_get_sysconf_subdirectory): Use second
+	fallback location if there is no pango subdir in the Windows
+	directory.
+
+	* pango/pangowin32-fontmap.c
+	(pango_win32_font_entry_get_coverage): Check if fopen succeeded.
+
+	* pango/pangowin32-private.h (DEBUGGING): Turn off.
+
+	* pango/pangowin32.c (pango_win32_unicode_classify): We can in
+	fact get out of the loop. Return invalid value in that case.
+	(subfont_has_glyph): Improve performance a bit.
+
+	* pango/querymodules.c: Small change for MSVC build.
+
+	* modules/basic/basic-win32.c (basic_engine_get_coverage):
+	Performance improvement.
+
+	* examples/viewer-win32.c (main): Disable double buffering on the
+	layout widget.
+
 Wed Nov 29 11:08:52 2000  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/mini-fribidi/fribidi.c pango/mini-fribidi/fribidi-tables.i:

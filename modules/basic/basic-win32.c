@@ -98,6 +98,9 @@ find_char (PangoFont *font,
 
   subrange = pango_win32_unicode_classify (wc);
 
+  if (PANGO_WIN32_U_LAST_PLUS_ONE == subrange)
+      return 0;
+
   n_subfonts = pango_win32_list_subfonts (font, subrange, &subfonts);
 
   for (i = 0; i < n_subfonts; i++)
@@ -254,10 +257,44 @@ basic_engine_get_coverage (PangoFont  *font,
 {
   PangoCoverage *result = pango_coverage_new ();
   gunichar wc;
+  gint found = 0;
+  gint tested = 0;
+  gint irange = 0;
+  gunichar last;
+#if DEBUGGING
+  GTimeVal tv0, tv1;
+  g_get_current_time (&tv0);
+#endif
 
-  for (wc = 0; wc < 65536; wc++)
-    if (find_char (font, wc))
-      pango_coverage_set (result, wc, PANGO_COVERAGE_EXACT);
+  for (irange = 0; irange < G_N_ELEMENTS(basic_ranges); irange++)
+    {
+      for (wc = basic_ranges[irange].start; wc <= basic_ranges[irange].end; wc++)
+        {
+          if (find_char (font, wc))
+            {
+              pango_coverage_set (result, wc, PANGO_COVERAGE_EXACT);
+              found++;
+              last = wc;
+            }
+          tested++;
+        }
+    }
+
+#if DEBUGGING
+  {
+    PangoFontDescription *desc = pango_font_describe(font);
+
+    g_get_current_time (&tv1);
+    if (tv1.tv_usec < tv0.tv_usec)
+      tv1.tv_sec--, tv1.tv_usec += 1000000L;
+    g_print ("\"%s\" (%d) found: %d tested: %d last: %d time: %ld.%06ld s\n",
+		desc->family_name, desc->weight, 
+		found, tested, last,
+            tv1.tv_sec - tv0.tv_sec, tv1.tv_usec - tv0.tv_usec);
+
+    pango_font_description_free (desc);
+  }
+#endif
 
   return result;
 }

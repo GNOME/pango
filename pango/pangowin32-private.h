@@ -23,7 +23,7 @@
 #ifndef __PANGOWIN32_PRIVATE_H__
 #define __PANGOWIN32_PRIVATE_H__
 
-#define DEBUGGING 1
+#define DEBUGGING 0
 
 #if defined(DEBUGGING) && DEBUGGING
 #ifdef __GNUC__

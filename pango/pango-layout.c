@@ -2100,6 +2100,10 @@ shape_tab (PangoLayoutLine  *line,
   
   glyphs->log_clusters[0] = 0;
 
+  /* FIXME: this is making an endless loop under certain continditions.
+   * It happens with get_tab_pos () returning 0, cause there are no tabs. 
+   * HB: condition (i < line->layout->length) seems *not* to fix it.
+   */
   for (i=0;;i++)
     {
       int tab_pos = get_tab_pos (line->layout, i);

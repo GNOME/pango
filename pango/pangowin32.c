@@ -557,8 +557,7 @@ pango_win32_unicode_classify (wchar_t wc)
       else
 	return -1;
     }
-  /* NOTREACHED */
-  return 0;
+  return PANGO_WIN32_U_LAST_PLUS_ONE;
 }
 
 static void
@@ -989,13 +988,18 @@ subfont_has_glyph (PangoFont             *font,
 {
   TEXTMETRIC tm;
   PangoWin32Font *win32font = (PangoWin32Font *) font;
+  PangoWin32UnicodeSubrange subrange;
   wchar_t default_wc;
 #ifdef HEAVY_DEBUGGING
   static int dispx = 5, dispy = 0;
 #endif
 
+  subrange = pango_win32_unicode_classify (wc);
+  if (PANGO_WIN32_U_LAST_PLUS_ONE == subrange)
+    return FALSE;
+
   if (!pango_win32_logfont_has_subrange (win32font->fontmap, &info->logfont,
-					 pango_win32_unicode_classify (wc)))
+					 subrange))
     return FALSE;
 
   if (info->buf_hbm == NULL)
@@ -1043,6 +1047,19 @@ subfont_has_glyph (PangoFont             *font,
 				  tm.tmMaxCharWidth, tm.tmHeight);
       SelectObject (info->buf_hdc, info->buf_hbm);
     }
+
+
+#if 0 /* This doesn't work either */
+  /* GetTextMetricsW unsupported on Win9x, questionable results
+   * on NT 4.0
+   */
+  if (GetTextMetricsW (info->buf_hdc, &tmw) 
+      && ((tmw.tmLastChar < wc) || (wc < tmw.tmFirstChar)))
+  {
+    //g_print("ShortCut %d %d %d\n", wc, tmw.tmFirstChar, tmw.tmLastChar);
+    return FALSE;
+  }
+#endif
 
   /* Draw character into our bitmap; compare with the bitmap for
    * the default character. If they are identical, this character
