@@ -1500,6 +1500,27 @@ pango_x_render_layout_line (Display          *display,
 		     x + (x_off + ink_rect.x) / PANGO_SCALE - 1, y + 2,
 		     x + (x_off + ink_rect.x + ink_rect.width) / PANGO_SCALE, y + 2);
 	  break;
+	case PANGO_UNDERLINE_ERROR:
+          {
+            int point_x;
+            int counter = 0;
+	    int end_x = x + (x_off + ink_rect.x + ink_rect.width) / PANGO_SCALE;
+
+            for (point_x = x + PANGO_PIXELS (x_off + ink_rect.x) - 1;
+                 point_x < end_x;
+                 point_x += 2)
+	      {
+		if (counter)
+		  XDrawLine (display, drawable, gc,
+			     point_x, y + 2, MIN (point_x + 1, end_x), y + 2);
+		else
+		  XDrawLine (display, drawable, gc,
+			     point_x, y + 3, MIN (point_x + 1, end_x), y + 3);
+		
+		counter = (counter + 1) % 2;
+	      }
+          }
+	  break;
 	case PANGO_UNDERLINE_LOW:
 	  XDrawLine (display, drawable, fg_gc,
 		     x + (x_off + ink_rect.x) / PANGO_SCALE - 1, y + (ink_rect.y + ink_rect.height) / PANGO_SCALE + 2,

@@ -1,3 +1,16 @@
+Sun Feb 29 15:31:09 2004  Owen Taylor  <otaylor@redhat.com>
+
+	Patch from Nicolas Setton, #114237
+
+	* pango/pango-attributes.h pango/pango-markup.c: Add a 
+	new underline type, PANGO_UNDERLINE_ERROR.
+
+	* pango/pangowin32.c pango/pangox.c pango/pangoft2.c:
+	Implement drawing of PANGO_UNDERLINE_ERROR.
+
+	* pango/pango-layout.c (pango_layout_run_get_extents):
+	Handle PANGO_UNDERLINE_ERROR.
+
 2003-02-29  Noah Levitt  <nlevitt@columbia.edu>
 
 	* docs/pango_markup.sgml:

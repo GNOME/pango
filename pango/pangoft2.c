@@ -807,6 +807,29 @@ pango_ft2_render_layout_line (FT_Bitmap       *bitmap,
 				x + PANGO_PIXELS (x_off + ink_rect.x),
 				x + PANGO_PIXELS (x_off + ink_rect.x + ink_rect.width));
 	  break;
+	case PANGO_UNDERLINE_ERROR:
+          {
+            int point_x;
+            int counter = 0;
+	    int end_x = x + PANGO_PIXELS (x_off + ink_rect.x + ink_rect.width);
+
+            for (point_x = x + PANGO_PIXELS (x_off + ink_rect.x) - 1;
+                 point_x < end_x;
+                 point_x += 2)
+	      {
+		if (counter)
+		  pango_ft2_draw_hline (bitmap,
+					risen_y + 2,
+					point_x, MIN (point_x + 1, end_x));
+		else
+		  pango_ft2_draw_hline (bitmap,
+					risen_y + 3,
+					point_x, MIN (point_x + 1, end_x));
+		
+		counter = (counter + 1) % 2;
+	      }
+          }
+	  break;
 	case PANGO_UNDERLINE_LOW:
 	  pango_ft2_draw_hline (bitmap,
 				risen_y + PANGO_PIXELS (ink_rect.y + ink_rect.height),

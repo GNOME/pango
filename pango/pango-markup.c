@@ -1151,6 +1151,8 @@ span_parse_func     (MarkupData            *md,
         ul = PANGO_UNDERLINE_DOUBLE;
       else if (strcmp (underline, "low") == 0)
         ul = PANGO_UNDERLINE_LOW;
+      else if (strcmp (underline, "error") == 0)
+        ul = PANGO_UNDERLINE_ERROR;
       else if (strcmp (underline, "none") == 0)
         ul = PANGO_UNDERLINE_NONE;
       else

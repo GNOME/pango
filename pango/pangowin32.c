@@ -801,6 +801,29 @@ pango_win32_render_layout_line (HDC              hdc,
 	  points[0].y = points[1].y = y + 2;
 	  Polyline (hdc, points, 2);
 	  break;
+	case PANGO_UNDERLINE_ERROR:
+          {
+            int point_x;
+            int counter = 0;
+	    int end_x = x + PANGO_PIXELS (x_off + ink_rect.x + ink_rect.width);
+
+            for (point_x = x + PANGO_PIXELS (x_off + ink_rect.x) - 1;
+                 point_x < end_x;
+                 point_x += 2)
+            {
+	      points[0].x = point_x;
+	      points[1].x = MAX (point_x + 1, end_x);
+
+              if (counter)
+	        points[0].y = points[1].y = y + 2;
+              else
+	        points[0].y = points[1].y = y + 3;
+
+	      Polyline (hdc, points, 2);
+              counter = (counter + 1) % 2;
+            }
+          }
+	  break;
 	case PANGO_UNDERLINE_LOW:
 	  points[0].x = x + PANGO_PIXELS (x_off + ink_rect.x) - 1;
 	  points[0].y = points[1].y = y + PANGO_PIXELS (ink_rect.y + ink_rect.height) + 2;

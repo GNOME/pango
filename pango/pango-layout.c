@@ -3595,6 +3595,12 @@ pango_layout_run_get_extents (PangoLayoutRun *run,
     {
     case PANGO_UNDERLINE_NONE:
       break;
+    case PANGO_UNDERLINE_ERROR:
+      if (run_ink)
+        run_ink->height = MAX (run_ink->height, 3 * PANGO_SCALE - run_ink->y);
+      if (run_logical)
+	run_logical->height = MAX (run_logical->height, 3 * PANGO_SCALE - run_logical->y);
+      break;
     case PANGO_UNDERLINE_SINGLE:
       if (run_ink)
         run_ink->height = MAX (run_ink->height, 2 * PANGO_SCALE - run_ink->y);
