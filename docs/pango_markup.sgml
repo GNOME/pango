@@ -35,7 +35,7 @@ You can parse a marked-up string into the string text plus a
 
 <para>
 A simple example of a marked-up string might be:
-<literal>"&lt;span foreground="blue" size="100"&gt;Blue text&lt;/span&gt; is &lt;i&gt;cool&lt;/i&gt;!"</literal>
+<literal>"&lt;span foreground="blue" size="x-large"&gt;Blue text&lt;/span&gt; is &lt;i&gt;cool&lt;/i&gt;!"</literal>
 </para>
 
 <para>
@@ -69,9 +69,14 @@ Synonym for font_family
 
 <varlistentry><term>size</term>
 <listitem><para>
-Font size in 1000ths of a point, one of the absolute sizes 
+Font size in 1024ths of a point, one of the absolute sizes 
 'xx-small', 'x-small', 'small', 'medium', 'large', 'x-large',
 'xx-large', or one of the relative sizes 'smaller' or 'larger'.
+If you want to specify a absolute size, it's usually easier
+to take advantage of the ability to specify a partial
+font description using 'font_desc'; you can use
+<literal>font_desc='12.5'</literal> rather than
+<literal>size='12800'</literal>.
 </para></listitem>
 </varlistentry>
 
