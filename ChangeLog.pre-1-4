@@ -1,9 +1,17 @@
+Sat Jul 26 09:41:22 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/opentype/ftxgsub.c (Lookup_LigatureSubst):
+	If applying a ligature lookup makes adjacent two glyphs
+	that were not originally adjacent, avoid making
+	subsequent ligatures between those glyphs.
+	(From FreeType, Werner Lemberg, 2001-08-22, 2001-08-23)
+
 Sat Jul 26 09:16:57 2003  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/opentype/ftxgpos.c pango/opentype/ftxopen.c:
 	Fix some FreeType1 variable declarations that snuck
 	in from the last commits (Christophe Fergeau, 
-	118363)
+	#118363)
 
 Fri Jul 25 23:38:07 2003  Owen Taylor  <otaylor@redhat.com>
 
