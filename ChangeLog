@@ -1,3 +1,8 @@
+Fri Dec 17 12:44:10 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* configure.in: Fix a couple of typos in the handling of
+	tibetan for --with-included-modules. (#161501, Sebastien Bacher)
+
 Fri Dec 17 12:28:56 2004  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pango-layout.c (pango_layout_get_extents_internal): Fix 
