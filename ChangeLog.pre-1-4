@@ -1,3 +1,8 @@
+2002-09-25  Tor Lillqvist  <tml@iki.fi>
+
+	* pango/Makefile.am: INCLUDED_WIN32_MODULES was missing from a
+	couple of places. (#93372)
+
 2002-09-24  Tor Lillqvist  <tml@iki.fi>
 
 	* pango/pangowin32.c: Use PANGO_PIXELS macro throughout instead of

@@ -183,7 +183,7 @@ libpangowin32_1_0_la_LDFLAGS = -version-info $(LT_VERSION_INFO)	\
 	$(GLIB_LIBS)						\
 	$(no_undefined) $(pangowin32_export_symbols)
 libpangowin32_1_0_la_LIBADD = libpango-$(PANGO_API_VERSION).la $(INCLUDED_WIN32_MODULES) $(WIN32_LIBS) $(pangowin32_win32res)
-libpangowin32_1_0_la_DEPENDENCIES = libpango-$(PANGO_API_VERSION).la $(pangowin32_win32res)
+libpangowin32_1_0_la_DEPENDENCIES = $(INCLUDED_WIN32_MODULES) libpango-$(PANGO_API_VERSION).la $(pangowin32_win32res)
 
 pangowin32-win32res.lo : pangowin32.rc
 	$(top_srcdir)/../glib/build/win32/lt-compile-resource pangowin32.rc pangowin32-win32res.lo
@@ -314,7 +314,7 @@ if HAVE_INCLUDED_MODULES
 included-modules:
 	@cd $(top_builddir)/modules && $(MAKE) $(AM_MAKEFLAGS) included-modules
 
-$(INCLUDED_X_MODULES) $(INCLUDED_XFT_MODULES) $(INCLUDED_FT2_MODULES): included-modules
+$(INCLUDED_X_MODULES) $(INCLUDED_XFT_MODULES) $(INCLUDED_FT2_MODULES) $(INCLUDED_WIN32_MODULES): included-modules
 	@true
 
 .PHONY: included-modules
