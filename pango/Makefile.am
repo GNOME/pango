@@ -66,9 +66,43 @@ if OS_WIN32
 pango_export_symbols = -export-symbols pango.def
 pangowin32_export_symbols = -export-symbols pangowin32.def
 pangoft2_export_symbols = -export-symbols pangoft2.def
+
+install-libtool-import-lib:
+	$(INSTALL) .libs/libpango.dll.a $(DESTDIR)$(libdir)
+if HAVE_FREETYPE
+	$(INSTALL) .libs/libpangoft2.dll.a $(DESTDIR)$(libdir)
+endif
+	$(INSTALL) .libs/libpangowin32.dll.a $(DESTDIR)$(libdir)
+uninstall-libtool-import-lib:
+	-rm $(DESTDIR)$(libdir)/libpango.dll.a
+	-rm $(DESTDIR)$(libdir)/libpangoft2.dll.a
+	-rm $(DESTDIR)$(libdir)/libpangowin32.dll.a
+else
+install-libtool-import-lib:
+uninstall-libtool-import-lib:
+
 endif
 
 lib_LTLIBRARIES = libpango.la $(X_BUILD_LIBS) $(WIN32_BUILD_LIBS) $(XFT_BUILD_LIBS) $(FT2_BUILD_LIBS)
+
+if MS_LIB_AVAILABLE
+noinst_DATA = pango.lib pangoft2.lib pangowin32.lib
+
+install-ms-lib:
+	$(INSTALL) pango.lib $(DESTDIR)$(libdir)
+if HAVE_FREETYPE
+	$(INSTALL) pangoft2.lib $(DESTDIR)$(libdir)
+endif
+	$(INSTALL) pangowin32.lib $(DESTDIR)$(libdir)
+
+uninstall-ms-lib:
+	-rm $(DESTDIR)$(libdir)/pango.lib
+	-rm $(DESTDIR)$(libdir)/pangoft2.lib
+	-rm $(DESTDIR)$(libdir)/pangowin32.lib
+else
+install-ms-lib:
+uninstall-ms-lib:
+endif
 
 bin_PROGRAMS = pango-querymodules
 
@@ -261,3 +295,16 @@ CLEANFILES =					\
 	s-enum-types-h				\
 	pango-enum-types.c			\
 	s-enum-types-c
+
+pango.lib: libpango.la pango.def
+	lib -name:libpango-@PANGO_MAJOR_VERSION@-@PANGO_MINOR_VERSION@.dll -def:pango.def -out:$@
+
+pangoft2.lib: libpangoft2.la pangoft2.def
+	lib -name:libpangoft2-@PANGO_MAJOR_VERSION@-@PANGO_MINOR_VERSION@.dll -def:pangoft2.def -out:$@
+
+pangowin32.lib: libpangowin32.la pangowin32.def
+	lib -name:libpangowin32-@PANGO_MAJOR_VERSION@-@PANGO_MINOR_VERSION@.dll -def:pangowin32.def -out:$@
+
+install-data-local: install-ms-lib install-libtool-import-lib
+
+uninstall-local: uninstall-ms-lib uninstall-libtool-import-lib

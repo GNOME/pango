@@ -40,6 +40,11 @@ esac
 AC_MSG_RESULT([$pango_os_win32])
 AM_CONDITIONAL(OS_WIN32, test "$pango_os_win32" = "yes")
 
+if test "$pango_os_win32" = "yes"; then
+  AC_CHECK_PROG(ms_librarian, lib.exe, yes, no)
+fi
+AM_CONDITIONAL(MS_LIB_AVAILABLE, test x$ms_librarian = xyes)
+
 changequote(,)dnl
 if test "x$GCC" = "xyes"; then
   case " $CFLAGS " in
@@ -579,6 +584,7 @@ pangox-uninstalled.pc
 pangowin32-uninstalled.pc
 pangoft2-uninstalled.pc
 pangoxft-uninstalled.pc
+pango-zip.sh
 ],[case "$CONFIG_FILES" in
 *pango-config*)chmod +x pango-config;;
 esac])

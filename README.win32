@@ -3,3 +3,12 @@ pangoft2. Pangowin32 uses the Win32 GDI font API. Pangoft2 uses
 FreeType2. Neither one is even close to being as useable as the X11
 backend. They are buggy and slow, and print copious amounts of
 debugging output.
+
+There are two supported ways to build Pango for Win32:
+
+1) Use autoconfiscation. I.e., aclocal, automake, autoconf and
+configure to build makefiles etc. The generated makefiles use libtool
+and gcc (mingw) to do the compilation. This is what tml@iki.fi uses.
+
+2) Use MSVC and nmake. Use the makefile.msc makefiles. These makefiles
+are supported by Hans Breuer.

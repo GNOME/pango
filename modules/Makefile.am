@@ -1,5 +1,11 @@
 ## Process this file with automake to create Makefile.in.
 
+if PLATFORM_WIN32
+SOSUFFIX=dll
+else
+SOSUFFIX=so
+endif
+
 SUBDIRS = 		\
 	arabic		\
 	basic 		\
@@ -14,9 +20,9 @@ EXTRA_DIST =		\
 
 install-data-local:
 	($(mkinstalldirs) $(DESTDIR)$(sysconfdir)/pango; \
-	if ls $(DESTDIR)$(libdir)/pango/modules/*.so | grep 'so' > /dev/null ; then \
+	if ls $(DESTDIR)$(libdir)/pango/modules/*.$(SOSUFFIX) | grep '$(SOSUFFIX)' > /dev/null ; then \
           echo "Wrote $(DESTDIR)$(sysconfdir)/pango/pango.modules."; \
-          $(top_builddir)/pango/pango-querymodules $(DESTDIR)$(libdir)/pango/modules/*.so \
+          $(top_builddir)/pango/pango-querymodules $(DESTDIR)$(libdir)/pango/modules/*.$(SOSUFFIX) \
 		> $(DESTDIR)$(sysconfdir)/pango/pango.modules; \
         else \
           echo "No dynamic modules were installed; all modules were linked statically."; \

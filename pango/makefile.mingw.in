@@ -1,3 +1,5 @@
+# Out-of-date. Use autoconf,automake etc to build! 
+
 TOP = ../..
 
 include $(TOP)/build/win32/make.mingw

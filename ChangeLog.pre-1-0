@@ -1,3 +1,24 @@
+2001-10-29  Tor Lillqvist  <tml@iki.fi>
+
+	* pango-zip.sh.in: New file, used to build distribution package
+	for Windows.
+
+	* Makefile.am (EXTRA_DIST): Add pango-zip.sh.
+
+	* configure.in: Check for lib.exe, set MS_LIB_AVAILABLE. Generate
+	pango-zip.sh.
+
+	* README.win32: Mention the ways to build Pango on Windows.
+
+	* modules/Makefile.am
+	* examples/Makefile.am: Se SOSUFFIX to so on Unix, dll on Windows.
+
+	* pango/Makefile.am: Add rules to create MSVC import library if
+	MS_LIB_AVAILABLE. Add rules to install and uninstall mingw and
+	MSVC import libraries.
+
+	* tests/Makefile.am: Link with libpangox.la only on Unix. 
+
 2001-10-27  Matthias Clasen  <matthiasc@poet.de>
 
 	* pango/modules.c: Typo fix.

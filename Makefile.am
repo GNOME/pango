@@ -15,7 +15,8 @@ EXTRA_DIST = 		\
 	pangoft2-uninstalled.pc.in	\
 	pangowin32-uninstalled.pc.in	\
 	TODO.xml	\
-	README.win32
+	README.win32	\
+	pango-zip.sh
 
 if HAVE_X
 X_PC=pangox.pc
