@@ -1,3 +1,12 @@
+Sat Jul 26 22:30:59 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/opentype/ftxgsub.c (Lookup_ChainContextSubst{1,2,3}):
+	Check for lookahead glyphs in the right place. (Patch
+	from #116860)
+
+	* pango/opentype/ftxgpos.c (Lookup_ChainContextPos{1,2,3}):
+	Same fix here.
+
 Sat Jul 26 22:12:46 2003  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/opentype/ftxgsub.c (Do_String_Lookup,
