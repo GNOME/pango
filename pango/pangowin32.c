@@ -364,21 +364,24 @@ pango_win32_font_get_metrics (PangoFont        *font,
 
   if (hfont != NULL)
     {
+      PangoFontDescription *font_desc;
+	    
       SelectObject (pango_win32_hdc, hfont);
       GetTextMetrics (pango_win32_hdc, &tm);
 
       metrics->ascent = tm.tmAscent * PANGO_SCALE;
       metrics->descent = tm.tmDescent * PANGO_SCALE;
-      metrics->approximate_digit_width = /* really an approximation ... */
       metrics->approximate_char_width = tm.tmAveCharWidth * PANGO_SCALE;
 
-      /* lovely copy&paste programming (from pangox.c) */
-      /* This is sort of a sledgehammer solution, but we cache this
-       * stuff so not a huge deal hopefully. Get the avg. width of the
-       * chars in "0123456789"
+      /* lovely copy&paste programming (from pangox.c) FIXME: This is
+       * sort of a sledgehammer solution, if we cached the results,
+       * like the other backends did, it wouldn't big a huge performance
+       * problem.  Get the avg. width of the chars in "0123456789"
        */
       context = pango_win32_get_context ();
       pango_context_set_language (context, language);
+      font_desc = pango_font_describe (font);
+      pango_context_set_font_description (context, font_desc);
       layout = pango_layout_new (context);
       pango_layout_set_text (layout, "0123456789", -1);
 
@@ -386,6 +389,7 @@ pango_win32_font_get_metrics (PangoFont        *font,
    
       metrics->approximate_digit_width = extents.width / 10.0;
 
+      pango_font_description_free (font_desc);
       g_object_unref (G_OBJECT (layout));
       g_object_unref (G_OBJECT (context));
     }

@@ -1,3 +1,8 @@
+Mon Mar 25 15:31:17 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pangowin32.c (pango_win32_font_get_metrics): Set
+	the right font when computing the average digit width.
+
 Mon Mar 25 14:52:29 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pangox.c (pango_x_font_get_metrics): Rewrite
