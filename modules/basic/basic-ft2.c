@@ -314,8 +314,8 @@ basic_engine_ft2_new (void)
 /* The following three functions provide the public module API for
  * Pango
  */
-#ifdef MODULE_PREFIX
-#define MODULE_ENTRY(func) _pango_basic_##func
+#ifdef FT2_MODULE_PREFIX
+#define MODULE_ENTRY(func) _pango_basic_ft2_##func
 #else
 #define MODULE_ENTRY(func) func
 #endif

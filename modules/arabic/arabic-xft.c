@@ -327,8 +327,8 @@ arabic_engine_xft_new ()
  * to have distinct names for this module, so we prepend
  * _pango_arabic_
  */
-#ifdef MODULE_PREFIX
-#define MODULE_ENTRY(func) _pango_arabic_##func
+#ifdef XFT_MODULE_PREFIX
+#define MODULE_ENTRY(func) _pango_arabic_xft_##func
 #else
 #define MODULE_ENTRY(func) func
 #endif

@@ -22,6 +22,7 @@
 #include "pango-fontmap.h"
 #include "pangoxft.h"
 #include "pangoxft-private.h"
+#include "modules.h"
 
 #include "X11/Xft/XftFreetype.h"
 
@@ -183,9 +184,19 @@ pango_xft_get_context (Display *display,
 		       int      screen)
 {
   PangoContext *result;
+  int i;
+  static gboolean registered_modules = FALSE;
 
   g_return_val_if_fail (display != NULL, NULL);
 
+  if (!registered_modules)
+    {
+      registered_modules = TRUE;
+      
+      for (i = 0; _pango_included_xft_modules[i].list; i++)
+        pango_module_register (&_pango_included_xft_modules[i]);
+    }
+  
   result = pango_context_new ();
   pango_context_add_font_map (result, pango_xft_get_font_map (display, screen));
 

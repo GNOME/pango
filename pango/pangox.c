@@ -256,8 +256,8 @@ pango_x_get_context (Display *display)
     {
       registered_modules = TRUE;
       
-      for (i = 0; _pango_included_modules[i].list; i++)
-        pango_module_register (&_pango_included_modules[i]);
+      for (i = 0; _pango_included_x_modules[i].list; i++)
+        pango_module_register (&_pango_included_x_modules[i]);
     }
   
   result = pango_context_new ();

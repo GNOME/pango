@@ -25,6 +25,8 @@
 #ifndef __MODULES_H__
 #define __MODULES_H__
 
-extern PangoIncludedModule _pango_included_modules[];
+extern PangoIncludedModule _pango_included_x_modules[];
+extern PangoIncludedModule _pango_included_xft_modules[];
+extern PangoIncludedModule _pango_included_ft2_modules[];
 
 #endif /* __MODULES_H__ */

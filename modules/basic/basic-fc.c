@@ -252,10 +252,10 @@ basic_engine_xft_new ()
  * entry points script_engine_list, etc. But if we are compiling
  * it for inclusion directly in Pango, then we need them to
  * to have distinct names for this module, so we prepend
- * _pango_basic_
+ * _pango_basic_xft_
  */
-#ifdef MODULE_PREFIX
-#define MODULE_ENTRY(func) _pango_basic_##func
+#ifdef XFT_MODULE_PREFIX
+#define MODULE_ENTRY(func) _pango_basic_xft_##func
 #else
 #define MODULE_ENTRY(func) func
 #endif

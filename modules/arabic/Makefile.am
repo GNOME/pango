@@ -2,8 +2,17 @@
 
 if HAVE_XFT
 XFT_MODULES=pango-arabic-xft.la
+if INCLUDE_ARABIC_XFT
+XFT_INCLUDED=libpango-arabic-xft.la
+XFT_PREFIX=-DXFT_MODULE_PREFIX
+else
+XFT_INCLUDED=
+XFT_PREFIX=
+endif
 else
 XFT_MODULES=
+XFT_INCLUDED=
+XFT_PREFIX=
 endif
 
 sources = \
@@ -17,14 +26,27 @@ sources = \
 	naqshfont.h \
 	arconv.h 
 
+xft_sources = \
+	arabic-xft.c \
+	arabic-ot.c \
+	arabic-ot.h
+
 if INCLUDE_ARABIC
-noinst_LTLIBRARIES = libpango-arabic.la
-moddefine = -DMODULE_PREFIX
+X_MODULES=
+X_INCLUDED=libpango-arabic.la
+X_PREFIX=-DMODULE_PREFIX
 else
-moduledir = $(libdir)/pango/modules
-module_LTLIBRARIES = $(XFT_MODULES) pango-arabic.la
-moduleflags = -rpath $(libdir)
+X_MODULES=pango-arabic.la
+X_INCLUDED=
+X_PREFIX=
 endif
+
+
+noinst_LTLIBRARIES = $(X_INCLUDED) $(XFT_INCLUDED)
+module_LTLIBRARIES = $(X_MODULES) $(XFT_MODULES)
+moddefine = $(X_PREFIX) $(XFT_PREFIX)
+moduledir = $(libdir)/pango/modules
+moduleflags=-rpath $(libdir)
 
 INCLUDES = -I$(top_srcdir) -I$(top_srcdir)/pango/ $(moddefine) $(X_CFLAGS) $(FREETYPE_CFLAGS)
 
@@ -33,8 +55,8 @@ pango_arabic_la_SOURCES = $(sources)
 
 libpango_arabic_la_SOURCES = $(sources)
 
-
 pango_arabic_xft_la_LDFLAGS = -rpath $(libdir) -export-dynamic -avoid-version -module
 pango_arabic_xft_la_LIBADD = 
-pango_arabic_xft_la_SOURCES = arabic-xft.c arabic-ot.c arabic-ot.h
+pango_arabic_xft_la_SOURCES = $(xft_sources)
 
+libpango_arabic_xft_la_SOURCES = $(xft_sources)

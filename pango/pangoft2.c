@@ -33,6 +33,7 @@
 #include "pango-utils.h"
 #include "pangoft2.h"
 #include "pangoft2-private.h"
+#include "modules.h"
 
 #define PANGO_TYPE_FT2_FONT              (pango_ft2_font_get_type ())
 #define PANGO_FT2_FONT(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_TYPE_FT2_FONT, PangoFT2Font))
@@ -155,7 +156,17 @@ PangoContext *
 pango_ft2_get_context (void)
 {
   PangoContext *result;
-
+  static gboolean registered_modules = FALSE;
+  int i;
+  
+  if (!registered_modules)
+    {
+      registered_modules = TRUE;
+      
+      for (i = 0; _pango_included_ft2_modules[i].list; i++)
+        pango_module_register (&_pango_included_ft2_modules[i]);
+    }
+  
   result = pango_context_new ();
   pango_context_add_font_map (result, pango_ft2_font_map_for_display ());
 

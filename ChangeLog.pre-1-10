@@ -1,3 +1,37 @@
+2001-01-03  Alexander Larsson  <alexl@redhat.com>
+
+	* configure.in:
+	Update the default list of included modules for
+	--with-included-modules=yes to include all new modules.
+	Split INCLUDED_MODULES and module-defs.c into per shaper
+	engine type lists.
+
+	* modules/arabic/Makefile.am:
+	Build libpango-arabic-xft.la if INCLUDE_ARABIC_XFT.
+
+	* modules/arabic/arabic-xft.c:
+	Change module prefix to _pango_arabic_xft_
+
+	* modules/basic/Makefile.am:
+	Build static libs for all included modules.
+
+	* modules/basic/basic-ft2.c:
+	Change module prefix to _pango_basic_ft2_
+
+	* modules/basic/basic-xft.c:
+	Change module prefix to _pango_basic_xft_
+
+	* pango/Makefile.am:
+	Include correct module-defs-XXX in libs.
+
+	* pango/modules.h:
+	Split _pango_included_modules[] into separate lists.
+
+	* pango/pangox.c:
+	* pango/pangoft2.c:
+	* pango/pangoxft-fontmap.c:
+	Register built in modules.
+
 2000-12-22  Alexander Larsson  <alla@lysator.liu.se>
 
 	* pango/pangoft2.c:

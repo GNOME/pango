@@ -69,7 +69,7 @@ libpango_la_SOURCES = 	   \
 
 libpangox_la_SOURCES = 	   \
 	modules.h 	   \
-	module-defs.c	   \
+	module-defs-x.c	   \
 	pangox.c	   \
 	pangox-private.h   \
 	pangox-fontcache.c \
@@ -87,13 +87,13 @@ libpango_la_LIBADD = mini-fribidi/libmini-fribidi.la
 endif
 
 libpangox_la_LDFLAGS = -release $(VERSION)
-libpangox_la_LIBADD = $(INCLUDED_MODULES) $(X_LIBS)
-
+libpangox_la_LIBADD =  $(X_LIBS) $(INCLUDED_X_MODULES)
 libpangoxft_la_SOURCES =   	\
 	pangoxft-font.c		\
-	pangoxft-fontmap.c
+	pangoxft-fontmap.c      \
+	module-defs-xft.c
 
-libpangoxft_la_LIBADD = $(INCLUDED_MODULES) $(XFT_LIBS) opentype/libpango-ot.la
+libpangoxft_la_LIBADD = $(INCLUDED_XFT_MODULES) $(XFT_LIBS) opentype/libpango-ot.la
 libpangoxft_la_LDFLAGS = -release $(VERSION)
 
 libpangoft2_la_SOURCES =   	\
@@ -101,10 +101,11 @@ libpangoft2_la_SOURCES =   	\
 	pangoft2.c		\
 	pangoft2-private.h	\
 	pangoft2-fontcache.c	\
-	pangoft2-fontmap.c	
+	pangoft2-fontmap.c	\
+	module-defs-ft2.c
 
-libpangoxft_la_LIBADD = $(INCLUDED_MODULES) $(FREETYPE_LIBS)
-libpangoxft_la_LDFLAGS = -release $(VERSION)
+libpangoft2_la_LIBADD = $(INCLUDED_FT2_MODULES) $(FREETYPE_LIBS)
+libpangoft2_la_LDFLAGS = -release $(VERSION)
 
 pangoincludedir=$(includedir)/pango-1.0/pango
 
@@ -155,6 +156,7 @@ EXTRA_DIST =			\
 	$(pango_built_headers)	\
 	makeenums.pl		\
 	module-defs.c.win32	\
+	module-defs.h	        \
 	pango.def		\
 	pangowin32.def		\
 	pangowin32.h		\
