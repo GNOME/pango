@@ -1,3 +1,13 @@
+Wed Sep 22 16:15:40 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pangoxft-font.c (pango_xft_font_get_glyph_extents): Use
+	get_glyph_extents_raw() when hinting is disabled as well
+	as when we are transforming. (#152529, Vincent Noel)
+
+	* pango/pangofc-font.c (pango_fc_font_get_raw_extents): Duplicate
+	the fix for non-scalable fonts from get_face_metrics() here as
+	well.
+
 Wed Sep 22 15:57:30 2004  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pango-layout.c (pango_layout_get_ellipsize): Fix

@@ -747,7 +747,8 @@ pango_fc_font_get_raw_extents (PangoFcFont    *fcfont,
 	{
 	  logical_rect->x = 0;
 	  logical_rect->width = PANGO_UNITS_26_6 (gm->horiAdvance);
-	  if (fcfont->is_hinted)
+	  if (fcfont->is_hinted ||
+	      (face->face_flags & FT_FACE_FLAG_SCALABLE) == 0)
 	    {
 	      logical_rect->y = - PANGO_UNITS_26_6 (face->size->metrics.ascender);
 	      logical_rect->height = PANGO_UNITS_26_6 (face->size->metrics.ascender - face->size->metrics.descender);
