@@ -1,3 +1,14 @@
+Changes between 1.0.3 and 1.0.4
+
+* Add Thai shaper for Xft  [Theppitak Karoonboonyanan]
+* Support GB-18030, BIG5-HKSCS, CNS-11643, GBK encodings for
+  basic-x shaper [Qingjiang (Brian) Yuan]
+* Support ksc5601.1992-3 fonts in hangul-x shpaer 
+  [Qingjiang (Brian) Yuan, Changwoo Ryu]
+* Support new Arabic characters in Unicode 3.2 [Roozbeh Pournader]
+* Bug fixes [Jacob Berkman, Arnaud Charlet, David L. Cooper II, 
+  Choe Hwangjin, Alex Larsson, Sven Neumann, Matthias Warkus, Yao Zhang]
+
 Changes between 1.0.2 and 1.0.3
 
 * Change algorithm for mapping points to pixels on

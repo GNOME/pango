@@ -1,3 +1,11 @@
+Wed Jul 31 15:12:46 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* Released 1.0.4
+
+	* NEWS: Updated.
+
+	* configure.in: Version 1.0.4, binary, interface age 4.
+
 Wed Jul 31 15:43:39 2002  Owen Taylor  <otaylor@redhat.com>
  
  	* modules/thai/{thai-shaper.h,thai-x.c,thai-xft.c}:
