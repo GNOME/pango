@@ -1,3 +1,15 @@
+Fri Dec 31 10:20:55 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pangofc-fontmap.c (pango_fc_convert_weight_to_pango): 
+	Fix problem where MEDIUM was getting grouped with SEMIBOLD
+	rather than NORMAL. 
+	(http://bugzilla.redhat.com/bugzilla/show_bug.cgi?id=143832)
+
+Wed Dec 22 13:21:01 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-script.c pango/pango-types.h: Fix a couple
+	of documentation typos (#161647, Torsten Schoenfeld)
+
 2004-12-18  Tor Lillqvist  <tml@iki.fi>
 
 	* pango/pangowin32-private.h
