@@ -1,5 +1,17 @@
 2005-03-01  Owen Taylor  <otaylor@redhat.com>
- 
+
+	Build fixes from Andrew P. Lentvorski, Jr, #164655
+
+	* pango/pangoft2-render.c: Duplicate the 
+	FT_LOAD_TARGET_MONO/FT_LOAD_MONOCHROME back-compat
+	define from pangoft2.c here
+
+	* examples/Makefile.am (pango_xftview_LDADD): Add
+	X_LIBS to pango_xftview_LDADD since some old versions
+	of xft.pc didn't add -lX11.
+
+2005-03-01  Owen Taylor  <otaylor@redhat.com>
+
 	* configure.in: Use PKG_CHECK_MODULES not AM_PATH_GLIB_2_0
 	to avoid a problem where older verisons of AM_PATH_GLIB_2_0
 	silently ignored gmodule-no-export causing mysterious

@@ -24,6 +24,11 @@
 
 #include "pangoft2-private.h"
 
+/* for compatibility with older freetype versions */
+#ifndef FT_LOAD_TARGET_MONO
+#define FT_LOAD_TARGET_MONO  FT_LOAD_MONOCHROME
+#endif
+
 typedef struct _PangoFT2RendererClass PangoFT2RendererClass;
 
 #define PANGO_FT2_RENDERER_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST ((klass), PANGO_TYPE_FT2_RENDERER, PangoFT2RendererClass))
