@@ -151,6 +151,8 @@ get_mini_font (PangoFont *font)
 {
   PangoXftFont *xfont = (PangoXftFont *)font;
 
+  g_assert (xfont->fontmap);
+
   if (!xfont->mini_font)
     {
       Display *display;
@@ -262,6 +264,9 @@ pango_xft_real_render (Display          *display,
   XftGlyphSpec  xft_glyphs[N_XFT_LOCAL];
   XftCharSpec	chars[4];     /* for unknown */
   int		n_xft_glyph = 0;
+
+  if (!xfont->fontmap)		/* Display closed */
+    return;
 
 #define FLUSH_GLYPHS() G_STMT_START {						\
   if (n_xft_glyph)								\
@@ -435,42 +440,48 @@ pango_xft_font_get_metrics (PangoFont     *font,
       PangoLayout *layout;
       PangoRectangle extents;
       PangoContext *context;
-      XftFont *xft_font = pango_xft_font_get_font (font);
+      XftFont *xft_font;
       Display *display;
-  
-      _pango_xft_font_map_get_info (xfont->fontmap, &display, NULL);
-      context = pango_xft_get_context (display, 0);
 
-      info = g_new (PangoXftMetricsInfo, 1);
-      info->sample_str = sample_str;
-      info->metrics = pango_font_metrics_new ();
-
-      info->metrics->ascent = PANGO_SCALE * xft_font->ascent;
-      info->metrics->descent = PANGO_SCALE * xft_font->descent;
-      info->metrics->approximate_char_width = 
-        info->metrics->approximate_digit_width = 
-        PANGO_SCALE * xft_font->max_advance_width;
-
+      info = g_new0 (PangoXftMetricsInfo, 1);
       xfont->metrics_by_lang = g_slist_prepend (xfont->metrics_by_lang, 
                                                 info);
 
-      pango_context_set_language (context, language);
-      layout = pango_layout_new (context);
-      pango_layout_set_font_description (layout, xfont->description);
-
-      pango_layout_set_text (layout, sample_str, -1);      
-      pango_layout_get_extents (layout, NULL, &extents);
+	  
+      if (xfont->fontmap)
+	{
+	  xft_font = pango_xft_font_get_font (font);
       
-      info->metrics->approximate_char_width = 
-        extents.width / g_utf8_strlen (sample_str, -1);
+	  _pango_xft_font_map_get_info (xfont->fontmap, &display, NULL);
+	  context = pango_xft_get_context (display, 0);
 
-      pango_layout_set_text (layout, "0123456789", -1);      
-      pango_layout_get_extents (layout, NULL, &extents);
+	  info->sample_str = sample_str;
+	  info->metrics = pango_font_metrics_new ();
+
+	  info->metrics->ascent = PANGO_SCALE * xft_font->ascent;
+	  info->metrics->descent = PANGO_SCALE * xft_font->descent;
+	  info->metrics->approximate_char_width = 
+	    info->metrics->approximate_digit_width = 
+	    PANGO_SCALE * xft_font->max_advance_width;
+
+	  pango_context_set_language (context, language);
+	  layout = pango_layout_new (context);
+	  pango_layout_set_font_description (layout, xfont->description);
+
+	  pango_layout_set_text (layout, sample_str, -1);      
+	  pango_layout_get_extents (layout, NULL, &extents);
       
-      info->metrics->approximate_digit_width = extents.width / 10;
+	  info->metrics->approximate_char_width = 
+	    extents.width / g_utf8_strlen (sample_str, -1);
 
-      g_object_unref (G_OBJECT (layout));
-      g_object_unref (G_OBJECT (context));
+	  pango_layout_set_text (layout, "0123456789", -1);      
+	  pango_layout_get_extents (layout, NULL, &extents);
+      
+	  info->metrics->approximate_digit_width = extents.width / 10;
+
+	  g_object_unref (G_OBJECT (layout));
+	  g_object_unref (G_OBJECT (context));
+	}
     }
 
   return pango_font_metrics_ref (info->metrics);
@@ -502,11 +513,9 @@ static void
 pango_xft_font_finalize (GObject *object)
 {
   PangoXftFont *xfont = (PangoXftFont *)object;
-  Display *display;
-  
-  _pango_xft_font_map_get_info (xfont->fontmap, &display, NULL);
 
-  _pango_xft_font_map_remove (xfont->fontmap, xfont);
+  if (xfont->fontmap)
+    _pango_xft_font_map_remove (xfont->fontmap, xfont);
 
   if (xfont->mini_font)
     g_object_unref (xfont->mini_font);
@@ -517,7 +526,12 @@ pango_xft_font_finalize (GObject *object)
   g_slist_free (xfont->metrics_by_lang);  
 
   if (xfont->xft_font)
-    XftFontClose (display, xfont->xft_font);
+    {
+      Display *display;
+      
+      _pango_xft_font_map_get_info (xfont->fontmap, &display, NULL);
+      XftFontClose (display, xfont->xft_font);
+    }
 
   FcPatternDestroy (xfont->font_pattern);
 
@@ -594,6 +608,9 @@ pango_xft_font_get_glyph_extents (PangoFont        *font,
   XGlyphInfo extents;
   Display *display;
 
+  if (!xfont->fontmap)		/* Display closed */
+    goto fallback;
+
   _pango_xft_font_map_get_info (xfont->fontmap, &display, NULL);
   
   if (glyph == (PangoGlyph)-1)
@@ -642,6 +659,8 @@ pango_xft_font_get_glyph_extents (PangoFont        *font,
     }
   else
     {
+    fallback:
+      
       if (ink_rect)
 	{
 	  ink_rect->x = 0;

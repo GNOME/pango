@@ -237,7 +237,18 @@ pango_xft_find_font_map (Display *display,
   return NULL;
 }
 
-static PangoFontMap *
+/**
+ * pango_xft_get_font_map:
+ * @display: an X display
+ * @screen: the screen number of a screen within @display
+ * 
+ * Returns the PangoXftFontmap for the given display and screen.
+ * The fontmap is owned by Pango and will be valid until
+ * the display is closed.
+ * 
+ * Return value: a #PangoFontMap object, owned by Pango.
+ **/
+PangoFontMap *
 pango_xft_get_font_map (Display *display,
 			int      screen)
 {
@@ -282,6 +293,17 @@ pango_xft_get_font_map (Display *display,
   return PANGO_FONT_MAP (xfontmap);
 }
 
+static void
+cleanup_font (gpointer         key,
+	      PangoXftFont    *xfont,
+	      PangoXftFontMap *xfontmap)
+{
+  if (xfont->xft_font)
+    XftFontClose (xfontmap->display, xfont->xft_font);
+  
+  xfont->fontmap = NULL;
+}
+
 /**
  * pango_xft_shutdown_display:
  * @display: an X display
@@ -295,11 +317,20 @@ pango_xft_shutdown_display (Display *display,
 			    int      screen)
 {
   PangoFontMap *fontmap;
-
+  
   fontmap = pango_xft_find_font_map (display, screen);
   if (fontmap)
     {
+      PangoXftFontMap *xfontmap = PANGO_XFT_FONT_MAP (fontmap);
+	    
       fontmaps = g_slist_remove (fontmaps, fontmap);
+      pango_xft_font_map_cache_clear (xfontmap);
+      
+      g_hash_table_foreach (xfontmap->fonts, (GHFunc)cleanup_font, fontmap);
+      g_hash_table_destroy (xfontmap->fonts);
+      xfontmap->fonts = NULL;
+      
+      xfontmap->display = NULL;
       g_object_unref (G_OBJECT (fontmap));
     }
 }  
@@ -394,6 +425,9 @@ pango_xft_font_map_finalize (GObject *object)
   g_queue_free (xfontmap->freed_fonts);
   g_hash_table_destroy (xfontmap->fontset_hash);
   g_hash_table_destroy (xfontmap->coverage_hash);
+
+  if (xfontmap->fonts)
+    g_hash_table_destroy (xfontmap->fonts);
   
   G_OBJECT_CLASS (parent_class)->finalize (object);
 }
@@ -459,6 +493,16 @@ pango_xft_font_map_list_families (PangoFontMap           *fontmap,
   FcFontSet *fontset;
   int i;
   int count;
+
+  if (!xfontmap->display)
+    {
+      if (families)
+	*families = NULL;
+      if (n_families)
+	n_families = 0;
+
+      return;
+    }
 
   if (xfontmap->n_families < 0)
     {
@@ -573,6 +617,15 @@ pango_xft_font_map_new_font (PangoFontMap  *fontmap,
 {
   PangoXftFontMap *xfontmap = (PangoXftFontMap *)fontmap;
   PangoXftFont *font;
+
+  /* Returning NULL here actually violates a contract
+   * that loading load_font() will never return NULL.
+   * We probably should actually create a dummy
+   * font that doesn't draw anything and has empty
+   * metrics.
+   */
+  if (!xfontmap->display)
+    return NULL;
   
   /* Look up cache */
   font = g_hash_table_lookup (xfontmap->fonts, match);
@@ -672,6 +725,8 @@ pango_xft_font_map_load_font (PangoFontMap               *fontmap,
 			      const PangoFontDescription *description)
 {
   PangoXftPatternSet *patterns = pango_xft_font_map_get_patterns (fontmap, context, description);
+  if (!patterns)
+    return NULL;
 
   if (patterns->n_patterns > 0)
     return pango_xft_font_map_new_font (fontmap, patterns->patterns[0]);
@@ -700,12 +755,17 @@ pango_xft_font_map_load_fontset (PangoFontMap                 *fontmap,
   PangoFontsetSimple *simple;
   int i;
   PangoXftPatternSet *patterns = pango_xft_font_map_get_patterns (fontmap, context, desc);
+  if (!patterns)
+    return NULL;
 	  
   simple = pango_fontset_simple_new (language);
 
   for (i = 0; i < patterns->n_patterns; i++)
-    pango_fontset_simple_append (simple,
-				 pango_xft_font_map_new_font (fontmap, patterns->patterns[i]));
+    {
+      PangoFont *font = pango_xft_font_map_new_font (fontmap, patterns->patterns[i]);
+      if (font)
+	pango_fontset_simple_append (simple, font);
+    }
   
   return PANGO_FONTSET (simple);
 }
@@ -790,7 +850,6 @@ _pango_xft_font_map_get_info (PangoFontMap *fontmap,
     *display = xfontmap->display;
   if (screen)
     *screen = xfontmap->screen;
-
 }
 
 
@@ -986,7 +1045,7 @@ pango_xft_family_list_faces (PangoFontFamily  *family,
       FcFontSet *fontset;
       int i;
       
-      if (is_alias_family (xfamily->family_name))
+      if (is_alias_family (xfamily->family_name) || !xfontmap->display)
 	{
 	  xfamily->n_faces = 4;
 	  xfamily->faces = g_new (PangoXftFace *, xfamily->n_faces);

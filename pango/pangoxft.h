@@ -44,6 +44,8 @@ typedef void (*PangoXftSubstituteFunc) (FcPattern *pattern,
 
 /* Calls for applications
  */
+PangoFontMap *pango_xft_get_font_map     (Display *display,
+					  int      screen);
 PangoContext *pango_xft_get_context      (Display *display,
 					  int      screen);
 void          pango_xft_shutdown_display (Display *display,

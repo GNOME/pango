@@ -157,13 +157,15 @@ void
 pango_context_set_font_map (PangoContext *context,
 			    PangoFontMap *font_map)
 {
-  g_return_if_fail (context != NULL);
-  g_return_if_fail (font_map != NULL);
+  g_return_if_fail (PANGO_IS_CONTEXT (context));
+  g_return_if_fail (!font_map || PANGO_IS_FONT_MAP (font_map));
 
   if (context->font_map)
     g_object_unref (G_OBJECT (context->font_map));
 
-  g_object_ref (G_OBJECT (font_map));
+  if (font_map)
+    g_object_ref (G_OBJECT (font_map));
+
   context->font_map = font_map;
 }
 

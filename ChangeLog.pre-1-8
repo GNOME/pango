@@ -1,3 +1,15 @@
+Mon Aug  5 21:54:21 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pangoxft-fontmap.c (pango_xft_get_font_map): Export.
+
+	* pango/pango-context.[ch]: Add pango_context_get_fontmap(),
+	allow fontmap = NULL for pango_context_set_fontmap().
+
+	* pango/pangoxft-font.c pango/pangoxft-fontmap.c
+	(pango_xft_font_get_metrics): More work on allowing
+	displays to be shut down, while leaving basically
+	working fonts behind.
+
 Fri Aug  2 12:12:34 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pangoxft.h pango/pangoxft-fontmap.c
