@@ -31,6 +31,12 @@ dnl PANGO_MICRO_VERSION for a stable release
 # PANGO_BINARY_AGE=0
 PANGO_BINARY_AGE=$PANGO_MICRO_VERSION
 
+dnl This is the last version with which we have compatibility with
+dnl with the modules for; it isn't the same as
+dnl PANGO_API_VERSION.'PANGO_MICRO_VERSION - PANGO_BINARY_AGE' since we have
+dnl engine only API    
+PANGO_MODULE_VERSION=1.0.0
+
 AC_SUBST(PANGO_MAJOR_VERSION)
 AC_SUBST(PANGO_MINOR_VERSION)
 AC_SUBST(PANGO_VERSION)
@@ -38,6 +44,7 @@ AC_SUBST(PANGO_API_VERSION)
 AC_SUBST(PANGO_MICRO_VERSION)
 AC_SUBST(PANGO_INTERFACE_AGE)
 AC_SUBST(PANGO_BINARY_AGE)
+AC_SUBST(PANGO_MODULE_VERSION)
 
 dnl libtool versioning
 lt_current=`expr $PANGO_MICRO_VERSION - $PANGO_INTERFACE_AGE`
@@ -549,7 +556,7 @@ AC_MSG_CHECKING([Whether to write dependencies into .pc files])
 case $enable_explicit_deps in
   auto)
     deplib_check_method=`(./libtool --config; echo eval echo \\$deplib_check_method) | sh`
-    if test "X$deplib_check_method" == Xnone || test "x$enable_static" = xyes ; then
+    if test "X$deplib_check_method" = Xnone || test "x$enable_static" = xyes ; then
       enable_explicit_deps=yes  
     else
       enable_explicit_deps=no  

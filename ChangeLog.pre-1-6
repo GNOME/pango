@@ -1,4 +1,25 @@
-Tue Mar  5 21:39:37 2002  Owen Taylor  <otaylor@redhat.com>
+Wed Mar  6 11:43:46 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* configure.in: Fix problem where == was used instead if =.
+	(#73694, Martin Gansser)
+
+	* modules/Makefile.am (install-data-local): Simplify
+	the rule to create the pango.modules file to avoid
+	problems with differing shared library suffixes.
+	pango-querymodules run without any arguments does the
+	right thing by default. (#73694, Martin Gansser)
+
+	* configure.in: Add a PANGO_MODULE_VERSION variable
+	defining the subdir in which modules are installed.
+
+	* pango/querymodules.c pango/modules.c modules/*/*.am: 
+	Install modules in lib/pango/MODULE_VERSION/modules
+
+	* pango.pc.in (pango_module_version): Export pango_module_version
+	variable so that 3rd parties can determine where to install 
+	libraries.
+
+Wed Mar  6 11:40:45 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* Pango 1.0.0 rc1.
 

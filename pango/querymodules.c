@@ -133,6 +133,7 @@ int main (int argc, char **argv)
       path = pango_config_key_get ("Pango/ModulesPath");
       if (!path)
 	path = g_build_filename (pango_get_lib_subdirectory (),
+				 MODULE_VERSION,
 				 "modules",
 				 NULL);
 

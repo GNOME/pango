@@ -245,8 +245,8 @@ process_module_file (FILE *module_file)
 	      pair->load_info = g_strdup (tmp_buf->str);
 #if defined(G_OS_WIN32) && defined(LIBDIR)
 	      if (strncmp (pair->load_info,
-			   LIBDIR "/pango/modules/",
-			   strlen (LIBDIR "/pango/modules/")) == 0)
+			   LIBDIR "/pango/" MODULE_VERSION "/modules/",
+			   strlen (LIBDIR "/pango/" MODULE_VERSION "/modules/")) == 0)
 		{
 		  /* This is an entry put there by make install on the
 		   * packager's system. On Windows a prebuilt Pango
@@ -258,8 +258,8 @@ process_module_file (FILE *module_file)
 		  gchar *tem = pair->load_info;
 		  pair->load_info =
 		    g_strconcat (pango_get_lib_subdirectory (),
-				 "\\modules\\",
-				 tem + strlen (LIBDIR "/pango/modules/"),
+				 "\\" MODULE_VERSION "\\modules\\",
+				 tem + strlen (LIBDIR "/pango/" MODULE_VERSION "/modules/"),
 				 NULL);
 		  g_free (tem);
 		}

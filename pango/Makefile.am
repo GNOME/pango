@@ -20,14 +20,15 @@ SUBDIRS = $(OPENTYPE_SUBDIR) $(FRIBIDI_SUBDIR) $(XFT_SUBDIR)
 
 DIST_SUBDIRS = mini-fribidi mini-xft opentype
 
-INCLUDES = 					\
-	-DPANGO_ENABLE_BACKEND			\
-	-DPANGO_ENABLE_ENGINE			\
-	-DSYSCONFDIR=\"$(sysconfdir)\" 		\
-	-DLIBDIR=\"$(libdir)\" 			\
-	-DG_DISABLE_DEPRECATED			\
-	$(X_CFLAGS)				\
-	$(FREETYPE_CFLAGS)			\
+INCLUDES = 						\
+	-DPANGO_ENABLE_BACKEND				\
+	-DPANGO_ENABLE_ENGINE				\
+	-DSYSCONFDIR=\"$(sysconfdir)\" 			\
+	-DLIBDIR=\"$(libdir)\" 				\
+	-DMODULE_VERSION=\"$(PANGO_MODULE_VERSION)\"	\
+	-DG_DISABLE_DEPRECATED				\
+	$(X_CFLAGS)					\
+	$(FREETYPE_CFLAGS)				\
 	-I$(top_srcdir)
 
 if HAVE_X

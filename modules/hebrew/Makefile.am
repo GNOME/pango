@@ -68,7 +68,7 @@ endif
 noinst_LTLIBRARIES = $(X_INCLUDED) $(FT2_INCLUDED) $(XFT_INCLUDED)
 module_LTLIBRARIES = $(X_MODULES) $(FT2_MODULES) $(XFT_MODULES)
 moddefine = $(X_PREFIX) $(FT2_PREFIX) $(XFT_PREFIX)
-moduledir = $(libdir)/pango/modules
+moduledir = $(libdir)/pango/$(PANGO_MODULE_VERSION)/modules
 
 INCLUDES = 			\
 	-DPANGO_ENABLE_ENGINE	\

@@ -12,7 +12,7 @@ if INCLUDE_HANGUL_X
 noinst_LTLIBRARIES = libpango-hangul-x.la
 moddefine = -DX_MODULE_PREFIX
 else
-moduledir = $(libdir)/pango/modules
+moduledir = $(libdir)/pango/$(PANGO_MODULE_VERSION)/modules
 module_LTLIBRARIES = pango-hangul-x.la
 hangul_x_libadd = $(pangoxlibs)
 endif
