@@ -7,7 +7,7 @@ exec_prefix_set=no
 usage()
 {
 	cat <<EOF
-Usage: glib-config [OPTIONS] [LIBRARIES]
+Usage: pango-config [OPTIONS] [LIBRARIES]
 Options:
 	[--prefix[=DIR]]
 	[--exec-prefix[=DIR]]
@@ -17,6 +17,8 @@ Options:
 Libraries:
 	pango
 	pangox
+	pangoxft
+	pangoft2
 EOF
 	exit $1
 }
@@ -69,6 +71,9 @@ while test $# -gt 0; do
     pangoxft)
       lib_pangoxft=yes
       ;;
+    pangoft2)
+      lib_pangoft2=yes
+      ;;
     *)
       usage 1 1>&2
       ;;
@@ -87,6 +92,9 @@ if test "$echo_cflags" = "yes"; then
 	if test "$lib_pangoxft" = "yes"; then
 		cflags="@X_CFLAGS@ @FREETYPE_CFLAGS@ $cflags"
 	fi
+	if test "$lib_pangoft2" = "yes"; then
+		cflags="@FREETYPE_CFLAGS@ $cflags"
+	fi
 	# Put $cflags first, in case $includes contains a
 	# location with GLib 1.2 headers, but we build with GLib 2.0.
 	echo $cflags $includes
@@ -98,6 +106,9 @@ if test "$echo_libs" = "yes"; then
 	fi
 	if test "$lib_pangoxft" = "yes"; then
 		libs="@XFT_LIBS@ -lpangoxft $libs"
+	fi
+	if test "$lib_pangoft2" = "yes"; then
+		libs="@FREETYPE_LIBS@ -lpangoft2 $libs"
 	fi
 	echo -L@libdir@ $libs 
 fi

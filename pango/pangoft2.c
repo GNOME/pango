@@ -101,12 +101,14 @@ pango_ft2_open_args_describe (PangoFT2OA *oa)
     return g_strdup_printf ("open_args at %p, face_index %ld", oa->open_args, oa->face_index);
 }
 
-static inline FT_Face
+FT_Face
 pango_ft2_get_face (PangoFont      *font,
 		    PangoFT2Subfont subfont_index)
 {
   PangoFT2Font *ft2font = (PangoFT2Font *)font;
   PangoFT2FontCache *cache;
+  FT_Face face;
+  FT_Error error;
 
   if (subfont_index < 1 || subfont_index > ft2font->n_fonts)
     {
@@ -127,7 +129,19 @@ pango_ft2_get_face (PangoFont      *font,
 	g_warning ("Cannot load font for %s",
 		   pango_ft2_open_args_describe (ft2font->oa[subfont_index-1]));
     }
-  return ft2font->faces[subfont_index-1];
+
+  face = ft2font->faces[subfont_index-1];
+
+  if (ft2font->size != GPOINTER_TO_UINT (face->generic.data))
+    {
+      face->generic.data = GUINT_TO_POINTER (ft2font->size);
+
+      error = FT_Set_Char_Size (face, 0, PANGO_PIXELS_26_6 (ft2font->size), 72, 72);
+      if (error)
+	g_warning ("Error in FT_Set_Char_Size: %d", error);
+    }
+  
+  return face;
 }
 
 /**
@@ -187,6 +201,7 @@ pango_ft2_font_init (PangoFT2Font *ft2font)
   ft2font->metrics_by_lang = NULL;
 
   ft2font->entry = NULL;
+  ft2font->glyph_info = g_hash_table_new (NULL, NULL);
 }
 
 static void
@@ -234,7 +249,7 @@ pango_ft2_load_font (PangoFontMap  *fontmap,
   g_return_val_if_fail (face_indices != NULL, NULL);
   g_return_val_if_fail (n_fonts > 0, NULL);
 
-  result = (PangoFT2Font *)g_type_create_instance (PANGO_TYPE_FT2_FONT);
+  result = (PangoFT2Font *)g_object_new (PANGO_TYPE_FT2_FONT, NULL);
   
   result->fontmap = fontmap;
   g_object_ref (G_OBJECT (result->fontmap));
@@ -278,7 +293,6 @@ pango_ft2_render (FT_Bitmap        *bitmap,
   int i;
   int x_position = 0;
   int ix, iy, ixoff, iyoff, y_start, y_limit, x_start, x_limit;
-  guint16 char_index;
   PangoFT2Subfont subfont_index;
   PangoGlyphInfo *gi;
   guchar *p, *q;
@@ -293,14 +307,13 @@ pango_ft2_render (FT_Bitmap        *bitmap,
     {
       if (gi->glyph)
 	{
-	  char_index = PANGO_FT2_GLYPH_INDEX (gi->glyph);
+	  glyph_index = PANGO_FT2_GLYPH_INDEX (gi->glyph);
 	  subfont_index = PANGO_FT2_GLYPH_SUBFONT (gi->glyph);
 	  face = pango_ft2_get_face (font, subfont_index);
 
 	  if (face)
 	    {
 	      /* Draw glyph */
-	      glyph_index = FT_Get_Char_Index (face, char_index);
 	      /* FIXME hint or not? */ 
 	      FT_Load_Glyph (face, glyph_index, FT_LOAD_DEFAULT);
 	      FT_Render_Glyph (face->glyph, ft_render_mode_normal);
@@ -374,23 +387,12 @@ pango_ft2_render (FT_Bitmap        *bitmap,
 static FT_Glyph_Metrics *
 pango_ft2_get_per_char (PangoFont       *font,
 			PangoFT2Subfont  subfont_index,
-			guint16          char_index)
+			guint32          glyph_index)
 {
-  PangoFT2Font *ft2font = (PangoFT2Font *)font;
   FT_Face face;
-  FT_UInt glyph_index;
-  FT_Error error;
 
   if (!(face = pango_ft2_get_face (font, subfont_index)))
     return NULL;
-
-  glyph_index = FT_Get_Char_Index (face, char_index);
-  if (!glyph_index)
-    return NULL;
-
-  error = FT_Set_Pixel_Sizes (face, PANGO_PIXELS (ft2font->size), 0);
-  if (error)
-    g_warning ("Error in FT_Set_Pixel_Sizes: %d", error);
 
   FT_Load_Glyph (face, glyph_index, FT_LOAD_DEFAULT);
   return &face->glyph->metrics;
@@ -402,50 +404,55 @@ pango_ft2_font_get_glyph_extents (PangoFont      *font,
 				  PangoRectangle *ink_rect,
 				  PangoRectangle *logical_rect)
 {
-  guint16 char_index = PANGO_FT2_GLYPH_INDEX (glyph);
-  PangoFT2Subfont subfont_index = PANGO_FT2_GLYPH_SUBFONT (glyph);
+  PangoFT2Font *ft2font = (PangoFT2Font *)font;
+  PangoFT2GlyphInfo *info;
+  PangoFT2Subfont subfont_index;
+  FT_UInt glyph_index;
   FT_Glyph_Metrics *gm;
 
-  if (glyph && (gm = pango_ft2_get_per_char (font, subfont_index, char_index)))
+  info = g_hash_table_lookup (ft2font->glyph_info, GUINT_TO_POINTER (glyph));
+
+  if (!info)
     {
-      if (ink_rect)
-	{
-	  ink_rect->x = PANGO_UNITS_26_6 (gm->horiBearingX);
-	  ink_rect->width = PANGO_UNITS_26_6 (gm->width);
-	  ink_rect->y = -PANGO_UNITS_26_6 (gm->horiBearingY);
-	  ink_rect->height = PANGO_UNITS_26_6 (gm->height);
-	}
-      if (logical_rect)
+      info = g_new (PangoFT2GlyphInfo, 1);
+      glyph_index = PANGO_FT2_GLYPH_INDEX (glyph);
+      subfont_index = PANGO_FT2_GLYPH_SUBFONT (glyph);
+      
+      if (glyph && (gm = pango_ft2_get_per_char (font, subfont_index, glyph_index)))
 	{
 	  FT_Face face = pango_ft2_get_face (font, subfont_index);
-
-	  logical_rect->x = 0;
-	  logical_rect->width = PANGO_UNITS_26_6 (gm->horiAdvance);
-	  logical_rect->y = -PANGO_UNITS_26_6 (face->size->metrics.ascender + 64);
+	  
+	  info->ink_rect.x = PANGO_UNITS_26_6 (gm->horiBearingX);
+	  info->ink_rect.width = PANGO_UNITS_26_6 (gm->width);
+	  info->ink_rect.y = -PANGO_UNITS_26_6 (gm->horiBearingY);
+	  info->ink_rect.height = PANGO_UNITS_26_6 (gm->height);
+	      
+	  info->logical_rect.x = 0;
+	  info->logical_rect.width = PANGO_UNITS_26_6 (gm->horiAdvance);
+	  info->logical_rect.y = -PANGO_UNITS_26_6 (face->size->metrics.ascender + 64);
 	  /* Some fonts report negative descender, some positive ! (?) */
-	  logical_rect->height = PANGO_UNITS_26_6 (face->size->metrics.ascender + ABS (face->size->metrics.descender) + 128);
+	  info->logical_rect.height = PANGO_UNITS_26_6 (face->size->metrics.ascender + ABS (face->size->metrics.descender) + 128);
 	}
-      PING (("glyph:%d logical: %dx%d@%d+%d",
-	     char_index, logical_rect->width, logical_rect->height,
-	     logical_rect->x, logical_rect->y));
-    }
-  else
-    {
-      if (ink_rect)
+      else
 	{
-	  ink_rect->x = 0;
-	  ink_rect->width = 0;
-	  ink_rect->y = 0;
-	  ink_rect->height = 0;
+	  info->ink_rect.x = 0;
+	  info->ink_rect.width = 0;
+	  info->ink_rect.y = 0;
+	  info->ink_rect.height = 0;
+
+	  info->logical_rect.x = 0;
+	  info->logical_rect.width = 0;
+	  info->logical_rect.y = 0;
+	  info->logical_rect.height = 0;
 	}
-      if (logical_rect)
-	{
-	  logical_rect->x = 0;
-	  logical_rect->width = 0;
-	  logical_rect->y = 0;
-	  logical_rect->height = 0;
-	}
+
+      g_hash_table_insert (ft2font->glyph_info, GUINT_TO_POINTER(glyph), info);
     }
+  
+  if (ink_rect)
+    *ink_rect = info->ink_rect;
+  if (logical_rect)
+    *logical_rect = info->logical_rect;
 }
 
 int
@@ -454,8 +461,6 @@ pango_ft2_font_get_kerning (PangoFont *font,
 			    PangoGlyph right)
 {
   PangoFT2Subfont subfont_index;
-  guint16 left_char_index;
-  guint16 right_char_index;
   FT_Face face;
   FT_UInt left_glyph_index, right_glyph_index;
   FT_Error error;
@@ -472,12 +477,10 @@ pango_ft2_font_get_kerning (PangoFont *font,
   if (!FT_HAS_KERNING (face))
     return 0;
 
-  left_char_index = PANGO_FT2_GLYPH_INDEX (left);
-  right_char_index = PANGO_FT2_GLYPH_INDEX (right);
+  left_glyph_index = PANGO_FT2_GLYPH_INDEX (left);
+  right_glyph_index = PANGO_FT2_GLYPH_INDEX (right);
 
-  left_glyph_index = FT_Get_Char_Index (face, left_char_index);
-  right_glyph_index = FT_Get_Char_Index (face, right_char_index);
-  if (!left_glyph_index || !right_char_index)
+  if (!left_glyph_index || !right_glyph_index)
     return 0;
 
   error = FT_Get_Kerning (face, left_glyph_index, right_glyph_index,
@@ -730,33 +733,6 @@ pango_ft2_n_subfonts (PangoFont *font)
   return ft2font->n_fonts;
 }
 
-/**
- * pango_ft2_has_glyph:
- * @font: a #PangoFont which must be from the FreeType2 backend.
- * @glyph: the index of a glyph in the font. (Formed
- *         using the PANGO_FT2_MAKE_GLYPH macro)
- * 
- * Check if the given glyph is present in a FT2 font.
- * 
- * Return value: %TRUE if the glyph is present.
- **/
-gboolean
-pango_ft2_has_glyph (PangoFont  *font,
-		     PangoGlyph  glyph)
-{
-  guint16 char_index = PANGO_FT2_GLYPH_INDEX (glyph);
-  PangoFT2Subfont subfont_index = PANGO_FT2_GLYPH_SUBFONT (glyph);
-  FT_Face face = pango_ft2_get_face (font, subfont_index);
-
-  if (!face)
-    return FALSE;
-  
-  if (FT_Get_Char_Index (face, char_index) == 0)
-    return FALSE;
-  else
-    return TRUE;
-}
-
 PangoCoverage *
 pango_ft2_get_coverage (PangoFont  *font,
 			const char *lang)
@@ -848,6 +824,13 @@ pango_ft2_font_shutdown (GObject *object)
 }
 
 
+static gboolean
+pango_ft2_free_glyph_info_callback (gpointer key, gpointer value, gpointer data)
+{
+  g_free (value);
+  return TRUE;
+}
+
 static void
 pango_ft2_font_finalize (GObject *object)
 {
@@ -874,6 +857,9 @@ pango_ft2_font_finalize (GObject *object)
 
   g_object_unref (G_OBJECT (ft2font->fontmap));
 
+  g_hash_table_foreach_remove (ft2font->glyph_info, pango_ft2_free_glyph_info_callback, NULL);
+  g_hash_table_destroy (ft2font->glyph_info);
+  
   G_OBJECT_CLASS (parent_class)->finalize (object);
 }
 

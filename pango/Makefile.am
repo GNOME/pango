@@ -28,7 +28,16 @@ XFT_HFILES=
 XFT_BUILD_LIBS=
 endif
 
-lib_LTLIBRARIES = libpango.la libpangox.la $(XFT_BUILD_LIBS)
+if HAVE_FREETYPE
+FT2_BUILD_LIBS=libpangoft2.la
+FT2_HFILES=pangoft2.h
+else
+FT2_BUILD_LIBS=
+FT2_HFILES=
+endif
+
+
+lib_LTLIBRARIES = libpango.la libpangox.la $(XFT_BUILD_LIBS) $(FT2_BUILD_LIBS)
 
 bin_PROGRAMS = pango-querymodules
 
@@ -87,6 +96,16 @@ libpangoxft_la_SOURCES =   	\
 libpangoxft_la_LIBADD = $(INCLUDED_MODULES) $(XFT_LIBS) opentype/libpango-ot.la
 libpangoxft_la_LDFLAGS = -release $(VERSION)
 
+libpangoft2_la_SOURCES =   	\
+	pangoft2.h		\
+	pangoft2.c		\
+	pangoft2-private.h	\
+	pangoft2-fontcache.c	\
+	pangoft2-fontmap.c	
+
+libpangoxft_la_LIBADD = $(INCLUDED_MODULES) $(FREETYPE_LIBS)
+libpangoxft_la_LDFLAGS = -release $(VERSION)
+
 pangoincludedir=$(includedir)/pango-1.0/pango
 
 pango_headers=		   \
@@ -111,7 +130,8 @@ pango_headers=		   \
 pangoinclude_HEADERS = 	   	\
 	$(pango_headers)   	\
 	$(pango_built_headers)	\
-	$(XFT_HFILES)
+	$(XFT_HFILES)           \
+	$(FT2_HFILES)
 
 pango-enum-types.h: @REBUILD@ $(pango_headers) makeenums.pl
 	$(PERL)	./makeenums.pl include $(pango_headers) > pango-enum-types.h
@@ -124,10 +144,11 @@ pango-enum-types.c: @REBUILD@ $(pango_headers) makeenums.pl
 #
 pango_querymodules_SOURCES = \
 	querymodules.c
+
 if HAVE_XFT
-pango_querymodules_LDADD = libpangox.la libpangoxft.la libpango.la $(GLIB_LIBS) $(FRIBIDI_LIBS) $(XFT_LIBS)
+pango_querymodules_LDADD = $(FT2_BUILD_LIBS) libpangox.la libpangoxft.la libpango.la $(GLIB_LIBS) $(FRIBIDI_LIBS) $(XFT_LIBS) $(FREETYPE_LIBS)
 else
-pango_querymodules_LDADD = libpangox.la libpango.la $(GLIB_LIBS) $(FRIBIDI_LIBS) $(X_LIBS)
+pango_querymodules_LDADD = $(FT2_BUILD_LIBS) libpangox.la libpango.la $(GLIB_LIBS) $(FRIBIDI_LIBS) $(X_LIBS) $(FREETYPE_LIBS)
 endif
 
 EXTRA_DIST =			\
@@ -142,11 +163,6 @@ EXTRA_DIST =			\
 	pangowin32-fontcache.c	\
 	pangowin32-fontmap.c	\
 	pangoft2.def		\
-	pangoft2.h		\
-	pangoft2.c		\
-	pangoft2-private.h	\
-	pangoft2-fontcache.c	\
-	pangoft2-fontmap.c	\
 	makefile.mingw		\
 	makefile.mingw.in	\
 	pango.rc		\
@@ -155,3 +171,4 @@ EXTRA_DIST =			\
 	pangoft2.rc.in		\
 	pangowin32.rc		\
 	pangowin32.rc.in
+

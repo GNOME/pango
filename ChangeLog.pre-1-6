@@ -1,3 +1,43 @@
+2000-12-21  Alexander Larsson  <alexl@redhat.com>
+
+	* pango-config.in:
+	Change usage to say pango-config instead of glib-config.
+	Add support for pangoft2.
+
+	* modules/basic/Makefile.am:
+	Compile and install pango-basic-ft2 if freetype was found.
+
+	* modules/basic/basic-ft2.c:
+	Remove lang engine. Make the glyph from the glyph index instead
+	of the unicode index. The id is really BasicScriptEngineFT2.
+
+	* pango/Makefile.am:
+	Compile and install pangoft2 if freetype was found.
+
+	* pango/pangoft2-fontcache.c (pango_ft2_font_cache_load):
+	Init face->generic.data to 0, since this field will be used
+	to cache the current size of the face.
+
+	* pango/pangoft2-fontmap.c (pango_ft2_font_map_for_display):
+	Use g_object_new instead of g_type_create_instance.
+	(pango_ft2_font_entry_get_coverage): Use G_DIR_SEPARATOR_S
+	instead of \\. (pango_ft2_font_entry_get_coverage): Init result
+	to NULL. Don't write to file if open failed.
+
+	* pango/pangoft2-private.h:
+	Add PangoFT2GlyphInfo.
+	
+	* pango/pangoft2.c (pango_ft2_get_face): Export function, and make
+	sure it sets the correct face size. (pango_ft2_load_font,
+	pango_ft2_get_per_char, pango_ft2_font_get_kerning):
+	PANGO_FT2_GLYPH_INDEX stores the glyph index, not the unicode value.
+	(pango_ft2_font_get_glyph_extents): Cache glyph extents.
+	(pango_ft2_has_glyph): Remove function.
+	(pango_ft2_font_finalize): Free glyph info cache.
+
+	* pango/pangoft2.h:
+	Export pango_ft2_get_face, remove pango_ft2_has_glyph.
+
 Wed Dec 20 19:53:09 2000  Owen Taylor  <otaylor@redhat.com>
 
 	* docs/Makefile.am (IGNORE_HFILES): Add opentype/.

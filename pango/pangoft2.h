@@ -66,13 +66,15 @@ typedef guint16 PangoFT2Subfont;
 #define PANGO_FT2_GLYPH_SUBFONT(glyph) ((glyph)>>16)
 #define PANGO_FT2_GLYPH_INDEX(glyph) ((glyph) & 0xFFFF)
 
-int        pango_ft2_n_subfonts        (PangoFont          *font);
-gboolean   pango_ft2_has_glyph         (PangoFont          *font,
-				        PangoGlyph          glyph);
-PangoGlyph pango_ft2_get_unknown_glyph (PangoFont          *font);
-int        pango_ft2_font_get_kerning  (PangoFont          *font,
-					PangoGlyph          left,
-					PangoGlyph          right);
+int            pango_ft2_n_subfonts        (PangoFont  *font);
+PangoGlyph     pango_ft2_get_unknown_glyph (PangoFont  *font);
+int            pango_ft2_font_get_kerning  (PangoFont  *font,
+					    PangoGlyph  left,
+					    PangoGlyph  right);
+PangoCoverage *pango_ft2_get_coverage      (PangoFont  *font,
+					    const char *lang);
+FT_Face        pango_ft2_get_face          (PangoFont      *font,
+					    PangoFT2Subfont subfont_index);
 
 /* API for libraries that want to use PangoFT2 mixed with classic
  * FT2 fonts.

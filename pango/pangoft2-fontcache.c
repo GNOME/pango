@@ -218,7 +218,8 @@ pango_ft2_font_cache_load (PangoFT2FontCache *cache,
 		     pango_ft2_ft_strerror (error));
 	  return NULL;
 	}
-      
+
+      face->generic.data = 0;
       PING (("  = %p", face));
 
       entry = g_new (CacheEntry, 1);

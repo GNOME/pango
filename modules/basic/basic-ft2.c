@@ -20,6 +20,7 @@
  */
 
 #include <glib.h>
+#include <string.h>
 
 #include "pango-layout.h"
 #include "pangoft2.h"
@@ -122,12 +123,13 @@ find_char (PangoFont *font,
 
   for (i = 0; i < n_subfonts; i++)
     {
-      PangoGlyph glyph;
+      FT_Face face;
+      FT_UInt index;
 
-      glyph = PANGO_FT2_MAKE_GLYPH (i+1, wc);
-
-      if (pango_ft2_has_glyph (font, glyph))
-	return glyph;	  
+      face = pango_ft2_get_face (font, i+1);
+      index = FT_Get_Char_Index (face, wc);
+      if (index && index <= face->num_glyphs)
+	return PANGO_FT2_MAKE_GLYPH (i+1, index);
     }
 
   return 0;
@@ -281,9 +283,9 @@ basic_engine_get_coverage (PangoFont  *font,
 			   const char *lang)
 {
   PangoCoverage *result = pango_coverage_new ();
-  gunichar wc;
-
 #if 0
+  gunichar wc;
+  
   for (wc = 0; wc < 65536; wc++)
     if (find_char (font, wc))
       pango_coverage_set (result, wc, PANGO_COVERAGE_EXACT);
@@ -300,7 +302,7 @@ basic_engine_ft2_new (void)
   
   result = g_new (PangoEngineShape, 1);
 
-  result->engine.id = "BasicScriptEngine";
+  result->engine.id = "BasicScriptEngineFT2";
   result->engine.type = PANGO_ENGINE_TYPE_SHAPE;
   result->engine.length = sizeof (result);
   result->script_shape = basic_engine_shape;
@@ -329,9 +331,7 @@ MODULE_ENTRY(script_engine_list) (PangoEngineInfo **engines,
 PangoEngine *
 MODULE_ENTRY(script_engine_load) (const char *id)
 {
-  if (!strcmp (id, "BasicScriptEngineLangFT2"))
-    return basic_engine_lang_new ();
-  else if (!strcmp (id, "BasicScriptEngineFT2"))
+  if (!strcmp (id, "BasicScriptEngineFT2"))
     return basic_engine_ft2_new ();
   else
     return NULL;

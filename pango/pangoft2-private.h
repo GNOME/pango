@@ -54,6 +54,7 @@
 
 typedef struct _PangoFT2OA PangoFT2OA;
 typedef struct _PangoFT2Font PangoFT2Font;
+typedef struct _PangoFT2GlyphInfo PangoFT2GlyphInfo;
 typedef struct _PangoFT2FontEntry PangoFT2FontEntry;
 typedef struct _PangoFT2SubfontInfo PangoFT2SubfontInfo;
 
@@ -88,6 +89,14 @@ struct _PangoFT2Font
   gboolean in_cache;
   
   PangoFT2FontEntry *entry;
+
+  GHashTable *glyph_info;
+};
+
+struct _PangoFT2GlyphInfo
+{
+  PangoRectangle logical_rect;
+  PangoRectangle ink_rect;
 };
 
 struct _PangoFT2FontEntry

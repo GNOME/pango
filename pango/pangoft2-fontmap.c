@@ -311,7 +311,7 @@ pango_ft2_font_map_for_display (void)
   if (pango_ft2_global_fontmap != NULL)
     return PANGO_FONT_MAP (pango_ft2_global_fontmap);
 
-  pango_ft2_global_fontmap = (PangoFT2FontMap *)g_type_create_instance (PANGO_TYPE_FT2_FONT_MAP);
+  pango_ft2_global_fontmap = (PangoFT2FontMap *)g_object_new (PANGO_TYPE_FT2_FONT_MAP, NULL);
   
   error = FT_Init_FreeType (&pango_ft2_global_fontmap->library);
   if (error != FT_Err_Ok)
@@ -953,7 +953,7 @@ pango_ft2_font_entry_get_coverage (PangoFT2FontEntry *entry,
 
   description = pango_font_describe (font);
   cache_file_name = g_strconcat (pango_get_sysconf_subdirectory (),
-				 "\\cache.ft2\\",
+				 G_DIR_SEPARATOR_S "cache.ft2" G_DIR_SEPARATOR_S,
 				 pango_font_description_to_filename (description),
 				 ".",
 				 lang ? lang : "",
@@ -961,6 +961,7 @@ pango_ft2_font_entry_get_coverage (PangoFT2FontEntry *entry,
   pango_font_description_free (description);
 
   PING (("trying to load %s", cache_file_name));
+  result = NULL;
   if (g_file_get_contents (cache_file_name, &buf, &buflen, NULL))
     {
       result = pango_coverage_from_bytes (buf, buflen);
@@ -1001,12 +1002,15 @@ pango_ft2_font_entry_get_coverage (PangoFT2FontEntry *entry,
       g_hash_table_destroy (coverage_hash);
 
       cache_file = fopen (cache_file_name, "wb");
-      pango_coverage_to_bytes (result, &buf, &buflen);
-      PING (("saving %d bytes to %s", buflen, cache_file_name));
-      fwrite (buf, buflen, 1, cache_file);
-      fclose (cache_file);
-      g_free (cache_file_name);
-      g_free (buf);
+      if (cache_file)
+	{
+	  pango_coverage_to_bytes (result, &buf, &buflen);
+	  PING (("saving %d bytes to %s", buflen, cache_file_name));
+	  fwrite (buf, buflen, 1, cache_file);
+	  fclose (cache_file);
+	  g_free (cache_file_name);
+	  g_free (buf);
+	}
     }
 
   if (entry)
