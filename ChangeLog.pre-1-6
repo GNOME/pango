@@ -1,3 +1,7 @@
+Thu May 27 15:08:32 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* configure.in: Increment version to 1.5 for devel branch.
+
 2004-05-06  Theppitak Karoonboonyanan  <thep@linux.thai.net>
 
 	* pango/break.c (pango_break):
