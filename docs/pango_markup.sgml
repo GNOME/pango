@@ -135,6 +135,16 @@ subscript, positive for superscript.
 </para></listitem>
 </varlistentry>
 
+<varlistentry><term>fallback</term>
+<listitem><para>
+'true' or 'false' whether to enable fallback. If disabled, then characters
+will only be used from the closest matching font on the system. No fallback
+will be done to other fonts on the system that might contain the characters
+in the text.  Fallback is enabled by default. Most applications should not
+disable fallback.
+</para></listitem>
+</varlistentry>
+
 <varlistentry><term>lang</term>
 <listitem><para>
 A language code, indicating the text language

@@ -43,6 +43,7 @@ attribute is listed in parentheses after the description.
 @PANGO_ATTR_RISE: baseline displacement (#PangoAttrInt)
 @PANGO_ATTR_SHAPE: shape (#PangoAttrShape)
 @PANGO_ATTR_SCALE: font size scale factor (#PangoAttrScale)
+@PANGO_ATTR_FALLBACK: whether fallback is enabled (#PangoAttrInt)
 
 <!-- ##### MACRO PANGO_TYPE_ATTR_TYPE ##### -->
 <para>

@@ -80,7 +80,8 @@ typedef enum
   PANGO_ATTR_STRIKETHROUGH,	/* PangoAttrInt */
   PANGO_ATTR_RISE,		/* PangoAttrInt */
   PANGO_ATTR_SHAPE,		/* PangoAttrShape */
-  PANGO_ATTR_SCALE              /* PangoAttrFloat */
+  PANGO_ATTR_SCALE,             /* PangoAttrFloat */
+  PANGO_ATTR_FALLBACK,          /* PangoAttrInt */
 } PangoAttrType;
 
 typedef enum {
@@ -179,6 +180,7 @@ PangoAttribute *pango_attr_rise_new          (int                         rise);
 PangoAttribute *pango_attr_shape_new         (const PangoRectangle       *ink_rect,
 					      const PangoRectangle       *logical_rect);
 PangoAttribute *pango_attr_scale_new         (double                      scale_factor);
+PangoAttribute *pango_attr_fallback_new      (gboolean                    enable_fallback);
 
 GType              pango_attr_list_get_type      (void) G_GNUC_CONST;
 PangoAttrList *    pango_attr_list_new           (void);

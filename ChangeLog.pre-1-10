@@ -1,3 +1,13 @@
+2003-02-29  Noah Levitt  <nlevitt@columbia.edu>
+
+	* docs/pango_markup.sgml:
+	* docs/tmpl/text-attributes.sgml:
+	* pango/pango-attributes.c:
+	* pango/pango-attributes.h:
+	* pango/pango-context.c:
+	* pango/pango-markup.c: New attribute to turn font fallback on or off.
+	(#105553)
+
 Sun Feb 29 10:54:55 2004  Owen Taylor  <otaylor@redhat.com>
 
 	* modules/arabic/arabic-ot.c (arabic): Add joining

@@ -643,6 +643,33 @@ pango_attr_scale_new (double scale_factor)
   return pango_attr_float_new (&klass, scale_factor);
 }
 
+/**
+ * pango_attr_fallback_new:
+ * @enable_fallback: %TRUE if we should fall back on other fonts 
+ *                   for characters the active font is missing.
+ * 
+ * Create a new font fallback attribute.
+ *
+ * If fallback is disabled, characters will only be used from the
+ * closest matching font on the system. No fallback will be done to
+ * other fonts on the system that might contain the characters in the
+ * text.
+ * 
+ * Return value: the new #PangoAttribute.
+ **/
+PangoAttribute *
+pango_attr_fallback_new (gboolean enable_fallback)
+{
+  static const PangoAttrClass klass = {
+    PANGO_ATTR_FALLBACK,
+    pango_attr_int_copy,
+    pango_attr_int_destroy,
+    pango_attr_int_equal,
+  };
+
+  return pango_attr_int_new (&klass, (int)enable_fallback);
+}
+
 static PangoAttribute *
 pango_attr_shape_copy (const PangoAttribute *attr)
 {

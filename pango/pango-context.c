@@ -515,6 +515,8 @@ struct _ItemizeState
   
   PangoFontset *current_fonts;
   ShaperFontCache *cache;
+  PangoFont *base_font;
+  gboolean enable_fallback;
   
   GSList *exact_engines;
   GSList *fallback_engines;
@@ -534,10 +536,24 @@ update_embedding_end (ItemizeState *state)
   state->changed |= EMBEDDING_CHANGED;
 }
 
+static PangoAttribute *
+find_attribute (GSList        *attr_list,
+                PangoAttrType  type)
+{
+  GSList *node;
+  
+  for (node = attr_list; node; node = node->next)
+    if (((PangoAttribute *) node->data)->klass->type == type)
+      return (PangoAttribute *) node->data;
+
+  return NULL;
+}
+
 static void
 update_attr_iterator (ItemizeState *state)
 {
   PangoLanguage *old_lang;
+  PangoAttribute *fallback;
   int end_index;
   
   pango_attr_iterator_range (state->attr_iter, NULL, &end_index);
@@ -553,6 +569,9 @@ update_attr_iterator (ItemizeState *state)
   pango_attr_iterator_get_font (state->attr_iter, state->font_desc,
 				&state->lang, &state->extra_attrs);
   state->copy_extra_attrs = FALSE;
+
+  fallback = find_attribute (state->extra_attrs, PANGO_ATTR_FALLBACK);
+  state->enable_fallback = (fallback == NULL || ((PangoAttrInt *)fallback)->value);
 
   state->changed |= FONT_CHANGED;
   if (state->lang != old_lang)
@@ -639,6 +658,7 @@ itemize_state_init (ItemizeState      *state,
   state->cache = NULL;
   state->exact_engines = NULL;
   state->fallback_engines = NULL;
+  state->base_font = NULL;
   
   state->changed = EMBEDDING_CHANGED | SCRIPT_CHANGED | LANG_CHANGED | FONT_CHANGED;
 }
@@ -813,6 +833,16 @@ get_shaper_and_font_foreach (PangoFontset *fontset,
   return FALSE;
 }
 
+static PangoFont *
+get_base_font (ItemizeState *state)
+{
+  if (!state->base_font)
+    state->base_font = pango_font_map_load_font (state->context->font_map,
+                                                 state->context,
+                                                 state->font_desc);
+  return state->base_font;
+}
+
 static gboolean
 get_shaper_and_font (ItemizeState      *state,
 		     gunichar           wc,
@@ -821,7 +851,9 @@ get_shaper_and_font (ItemizeState      *state,
 {
   GetShaperFontInfo info;
 
-  if (shaper_font_cache_get (state->cache, wc, shape_engine, font))
+  /* We'd need a separate cache when fallback is disabled, but since lookup
+   * with fallback disabled is faster anyways, we just skip caching */
+  if (state->enable_fallback && shaper_font_cache_get (state->cache, wc, shape_engine, font))
     return *shape_engine != NULL;
 
   if (!state->exact_engines && !state->fallback_engines)
@@ -834,24 +866,35 @@ get_shaper_and_font (ItemizeState      *state,
   info.font = NULL;
 
   info.engines = state->exact_engines;
-  pango_fontset_foreach (state->current_fonts, get_shaper_and_font_foreach, &info);
+  if (state->enable_fallback)
+    pango_fontset_foreach (state->current_fonts, get_shaper_and_font_foreach, &info);
+  else 
+    get_shaper_and_font_foreach (NULL, get_base_font (state), &info);
+
   if (info.shape_engine)
     {
       *shape_engine = info.shape_engine;
       *font = info.font;
 
-      shaper_font_cache_insert (state->cache, wc, *shape_engine, *font);
+      /* skip caching if fallback disabled (see above) */
+      if (state->enable_fallback)
+        shaper_font_cache_insert (state->cache, wc, *shape_engine, *font);
 
       return TRUE;
     }
 
   info.engines = state->fallback_engines;
-  pango_fontset_foreach (state->current_fonts, get_shaper_and_font_foreach, &info);
+  if (state->enable_fallback)
+    pango_fontset_foreach (state->current_fonts, get_shaper_and_font_foreach, &info);
+  else 
+    get_shaper_and_font_foreach (NULL, get_base_font (state), &info);
 
   *shape_engine = info.shape_engine;
   *font = info.font;
 
-  shaper_font_cache_insert (state->cache, wc, *shape_engine, *font);
+  /* skip caching if fallback disabled (see above) */
+  if (state->enable_fallback)
+    shaper_font_cache_insert (state->cache, wc, *shape_engine, *font);
       
   return *shape_engine != NULL;
 }
@@ -944,6 +987,12 @@ itemize_state_update_for_new_run (ItemizeState *state)
 							  state->font_desc,
 							  state->derived_lang);
       state->cache = get_shaper_font_cache (state->current_fonts);
+    }
+
+  if ((state->changed & FONT_CHANGED) && state->base_font)
+    {
+      g_object_unref (state->base_font);
+      state->base_font = NULL;
     }
 }
 

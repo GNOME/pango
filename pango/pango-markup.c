@@ -858,6 +858,7 @@ span_parse_func     (MarkupData            *md,
   const char *strikethrough = NULL;
   const char *rise = NULL;
   const char *lang = NULL;
+  const char *fallback = NULL;
   
   g_markup_parse_context_get_position (context,
                                        &line_number, &char_number);
@@ -931,6 +932,11 @@ span_parse_func     (MarkupData            *md,
         {
           CHECK_DUPLICATE (lang);
           lang = values[i];
+        }
+      else if (strcmp (names[i], "fallback") == 0)
+        {
+          CHECK_DUPLICATE (fallback);
+          fallback = values[i];
         }
       else
         {
@@ -1178,6 +1184,25 @@ span_parse_func     (MarkupData            *md,
                          "line %d should have one of the values "
                          "'true' or 'false': '%s' is not valid"),
                        line_number, strikethrough);
+          goto error;
+        }
+    }
+
+  if (fallback)
+    {
+      if (strcmp (fallback, "true") == 0)
+        add_attribute (tag, pango_attr_fallback_new (TRUE));
+      else if (strcmp (fallback, "false") == 0)
+        add_attribute (tag, pango_attr_fallback_new (FALSE));
+      else
+        {
+          g_set_error (error,
+                       G_MARKUP_ERROR,
+                       G_MARKUP_ERROR_INVALID_CONTENT,
+                       _("'fallback' attribute on <span> tag "
+                         "line %d should have one of the values "
+                         "'true' or 'false': '%s' is not valid"),
+                       line_number, fallback);
           goto error;
         }
     }
