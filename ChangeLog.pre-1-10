@@ -1,3 +1,14 @@
+2002-11-23  Matthias Clasen  <maclas@gmx.de>
+
+	* docs/version.xml.in: New file to let configure dump the version in.
+
+	* docs/pango-docs.sgml: Add version information.
+
+	* docs/Makefile.am (extra_files): Add version.xml.in.
+	(content_files): Add version.xml.
+
+	* configure.in: Generate docs/version.xml.
+
 Thu Nov 21 17:35:08 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* modules/basic/basic-ft2.c: Remove duplicate

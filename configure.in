@@ -797,6 +797,7 @@ modules/thai/Makefile
 modules/hebrew/Makefile
 examples/Makefile
 docs/Makefile
+docs/version.xml
 tools/Makefile
 tests/Makefile
 pango.spec
