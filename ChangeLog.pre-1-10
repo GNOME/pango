@@ -1,3 +1,15 @@
+Thu Mar 30 17:06:39 2000  Owen Taylor  <otaylor@redhat.com>
+
+	* modules/arabic/*.[ch]: New version of Arabic module
+	from Karl Koehler, supporting:
+
+	- More extensive ligatures
+	- Some Hamza handling
+	- Vowel marks
+	- mule-arabic font
+	- LangBox font
+	- Persian (farsi) (needs testing)
+
 Thu Mar 30 16:49:06 2000  Owen Taylor  <otaylor@redhat.com>
 
 	* modules/basic/basic.c pango/utils.c (find_converter): Use
