@@ -301,9 +301,7 @@ MODULE_ENTRY(script_engine_list) (PangoEngineInfo **engines,
 PangoEngine *
 MODULE_ENTRY(script_engine_load) (const char *id)
 {
-  if (!strcmp (id, "BasicScriptEngineLangWin32"))
-    return basic_engine_lang_new ();
-  else if (!strcmp (id, "BasicScriptEngineWin32"))
+  if (!strcmp (id, "BasicScriptEngineWin32"))
     return basic_engine_win32_new ();
   else
     return NULL;

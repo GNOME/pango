@@ -11,8 +11,14 @@ INCLUDES = -I .. -I .
 DEFINES = -DPANGO_VERSION=\"$(PANGO_VER)\"
 DEPCFLAGS = $(GLIB_CFLAGS) $(LIBICONV_CFLAGS) $(FRIBIDI_CFLAGS) $(FREETYPE2_CFLAGS)
 
+pango_built_headers= pango-enum-types.h
+pango_built_cfiles= pango-enum-types.c
+
+BUILT_SOURCES=$(pango_built_headers) $(pango_built_cfiles)
+
 all :						\
 	../config.h				\
+	$(BUILT_SOURCES)			\
 	pango-$(PANGO_VER).dll			\
 	pangowin32-$(PANGO_VER).dll		\
 	pangoft2-$(PANGO_VER).dll		\
@@ -28,6 +34,7 @@ PANGO_OBJS =					\
 	pango-attributes.o			\
 	pango-context.o				\
 	pango-coverage.o			\
+	pango-enum-types.o			\
 	pango-fontmap.o				\
 	pango-intset.o				\
 	pango-item.o				\
@@ -51,6 +58,24 @@ PANGOFT2_OBJS =					\
 PANGO_QUERYMODULES_OBJS =			\
 	querymodules.o
 
+pango_headers=		   \
+	pango.h		   \
+	pango-attributes.h \
+	pango-break.h	   \
+	pango-context.h	   \
+	pango-coverage.h   \
+	pango-engine.h	   \
+	pango-font.h       \
+	pango-fontmap.h	   \
+	pango-glyph.h	   \
+	pango-indic.h	   \
+	pango-item.h	   \
+	pango-layout.h	   \
+	pango-modules.h	   \
+	pango-tabs.h	   \
+	pango-types.h	   \
+	pango-utils.h
+
 ../config.h : ../config.h.win32
 	cp $< $@
 
@@ -68,6 +93,12 @@ pangoft2-$(PANGO_VER).dll : $(PANGOFT2_OBJS) pangoft2.def
 
 pango-querymodules.exe : $(PANGO_QUERYMODULES_OBJS) pango-$(PANGO_VER).dll
 	$(CC) -o $@ $(PANGO_QUERYMODULES_OBJS) -L . -lpango-$(PANGO_VER) $(GLIB_LIBS)
+
+pango-enum-types.h: $(pango_headers) makeenums.pl
+	perl makeenums.pl include $(pango_headers) > pango-enum-types.h
+
+pango-enum-types.c: $(pango_headers) makeenums.pl
+	perl makeenums.pl cfile $(pango_headers) > pango-enum-types.c
 
 test1.exe : test1.o pango-$(PANGO_VER).dll pangowin32-$(PANGO_VER).dll
 	$(CC) -o $@ $(CFLAGS) test1.o -L . -lpango-$(PANGO_VER) -lpangowin32-$(PANGO_VER) $(GLIB_LIBS) $(FRIBIDI_LIBS) -lgdi32

@@ -1,3 +1,21 @@
+2000-12-21  Tor Lillqvist  <tml@iki.fi>
+
+	* modules/basic/basic-win32.c (script_engine_load): Only a script
+	engine here.
+
+	* pango/makefile.mingw.in: Add the built pango-enum-types.[ch].
+
+	* pango/pango.def
+	* pango/pangoft2.def: Update.
+
+	* pango/opentype/pango-ot.def
+	* pango/opentype/makefile.mingw.in: New files.
+
+	* pango/opentype/Makefile.am (EXTRA_DIST): Add them.
+
+	* configure.in (included_modules): Generate
+	pango/opentype/makefile.mingw.
+
 2000-12-21  Alexander Larsson  <alexl@redhat.com>
 
 	* pango-config.in:

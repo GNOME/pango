@@ -56,6 +56,7 @@ EXPORTS
 	pango_coverage_to_bytes
 	pango_coverage_unref
 	pango_find_map
+	pango_find_paragraph_boundary
 	pango_font_describe
 	pango_font_description_copy
 	pango_font_description_equal
@@ -166,6 +167,8 @@ EXPORTS
 	pango_shape
 	pango_skip_space
 	pango_split_file_list
+	pango_stretch_get_type
+	pango_style_get_type
 	pango_tab_array_copy
 	pango_tab_array_free
 	pango_tab_array_get_size
@@ -177,3 +180,5 @@ EXPORTS
 	pango_tab_array_resize
 	pango_tab_array_set_tab
 	pango_trim_string
+	pango_underline_get_type
+	pango_variant_get_type

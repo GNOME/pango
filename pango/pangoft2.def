@@ -11,8 +11,8 @@ EXPORTS
 	pango_ft2_ft_strerror
 	pango_ft2_get_context
 	pango_ft2_get_coverage
+	pango_ft2_get_face
 	pango_ft2_get_unknown_glyph
-	pango_ft2_has_glyph
 	pango_ft2_load_font
 	pango_ft2_n_subfonts
 	pango_ft2_render
