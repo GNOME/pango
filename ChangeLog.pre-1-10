@@ -1,3 +1,9 @@
+Tue Dec 14 18:32:46 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/Makefile.am (libpangoft2_1_0_la_LIBADD): Add $(libm),
+	needed for no-undefined platforms like AIX. (#160773,
+	Vincent Berger)
+
 Tue Dec 14 17:27:14 2004  Owen Taylor  <otaylor@redhat.com>
  
  	* modules/indic/indic-ot-class-tables.c (guruCharClasses): 
