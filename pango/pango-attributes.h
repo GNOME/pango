@@ -131,6 +131,7 @@ PangoAttribute *pango_attr_rise_new          (int                         rise);
 PangoAttrList *     pango_attr_list_new          (void);
 void                pango_attr_list_ref          (PangoAttrList  *list);
 void                pango_attr_list_unref        (PangoAttrList  *list);
+PangoAttrList *     pango_attr_list_copy         (PangoAttrList  *list);
 void                pango_attr_list_insert       (PangoAttrList  *list,
 						  PangoAttribute *attr);
 void                pango_attr_list_change       (PangoAttrList  *list,

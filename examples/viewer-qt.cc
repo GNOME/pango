@@ -52,7 +52,7 @@ ViewerPara::ViewerPara (PangoContext *context, const QString &text)
 
 ViewerPara::~ViewerPara ()
 {
-  pango_layout_unref (layout_);
+  g_object_unref (G_OBJECT (layout_));
 }
 
 void
@@ -159,7 +159,7 @@ ViewerView::ViewerView (QWidget *parent, QStatusBar *status) : QScrollView (pare
 
 ViewerView::~ViewerView ()
 {
-  pango_context_unref (context_);
+  g_object_unref (G_OBJECT (context_));
 }
 
 void

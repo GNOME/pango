@@ -28,9 +28,15 @@
 
 typedef struct _PangoLayoutLinePrivate PangoLayoutLinePrivate;
 
+struct _PangoLayoutLinePrivate
+{
+  PangoLayoutLine line;
+  guint ref_count;
+};
+
 struct _PangoLayout
 {
-  guint ref_count;
+  GObject parent_instance;
 
   PangoContext *context;
   PangoAttrList *attrs;
@@ -51,10 +57,11 @@ struct _PangoLayout
   GSList *lines;
 };
 
-struct _PangoLayoutLinePrivate
+struct _PangoLayoutClass
 {
-  PangoLayoutLine line;
-  guint ref_count;
+  GObjectClass parent_class;
+
+
 };
 
 static void pango_layout_clear_lines (PangoLayout *layout);
@@ -70,6 +77,89 @@ static int *pango_layout_line_get_vis2log_map (PangoLayoutLine  *line,
 
 static void pango_layout_get_item_properties (PangoItem      *item,
 					      PangoUnderline *uline);
+
+static void pango_layout_init        (PangoLayout      *layout);
+static void pango_layout_class_init  (PangoLayoutClass *klass);
+static void pango_layout_finalize    (GObject          *object);
+
+static gpointer parent_class;
+
+GType
+pango_layout_get_type (void)
+{
+  static GType object_type = 0;
+
+  if (!object_type)
+    {
+      static const GTypeInfo object_info =
+      {
+        sizeof (PangoLayoutClass),
+        (GBaseInitFunc) NULL,
+        (GBaseFinalizeFunc) NULL,
+        (GClassInitFunc) pango_layout_class_init,
+        NULL,           /* class_finalize */
+        NULL,           /* class_data */
+        sizeof (PangoLayout),
+        0,              /* n_preallocs */
+        (GInstanceInitFunc) pango_layout_init,
+      };
+      
+      object_type = g_type_register_static (G_TYPE_OBJECT,
+                                            "PangoLayout",
+                                            &object_info);
+    }
+  
+  return object_type;
+}
+
+static void
+pango_layout_init (PangoLayout *layout)
+{
+  layout->attrs = NULL;
+  layout->text = NULL;
+  layout->length = 0;
+  layout->width = -1;
+  layout->indent = 0;
+
+  layout->alignment = PANGO_ALIGN_LEFT;
+  layout->justify = FALSE;
+
+  layout->log_attrs = NULL;
+  layout->lines = NULL;
+
+  layout->tab_width = -1;  
+}
+
+static void
+pango_layout_class_init (PangoLayoutClass *klass)
+{
+  GObjectClass *object_class = G_OBJECT_CLASS (klass);
+  
+  parent_class = g_type_class_peek_parent (klass);
+  
+  object_class->finalize = pango_layout_finalize;
+}
+
+static void
+pango_layout_finalize (GObject *object)
+{
+  PangoLayout *layout;
+
+  layout = PANGO_LAYOUT (object);
+
+  pango_layout_clear_lines (layout);
+  
+  if (layout->context)
+    g_object_unref (G_OBJECT (layout->context));
+  
+  if (layout->attrs)
+    pango_attr_list_unref (layout->attrs);
+  if (layout->text)
+    g_free (layout->text);
+  
+  G_OBJECT_CLASS (parent_class)->finalize (object);
+}
+
 
 /**
  * pango_layout_new:
@@ -87,72 +177,12 @@ pango_layout_new (PangoContext *context)
 
   g_return_val_if_fail (context != NULL, NULL);
 
-  layout = g_new (PangoLayout, 1);
-
-  layout->ref_count = 1;
+  layout = PANGO_LAYOUT (g_type_create_instance (pango_layout_get_type ()));
 
   layout->context = context;
-  pango_context_ref (context);
-  
-  layout->attrs = NULL;
-  layout->text = NULL;
-  layout->length = 0;
-  layout->width = -1;
-  layout->indent = 0;
-
-  layout->alignment = PANGO_ALIGN_LEFT;
-  layout->justify = FALSE;
-
-  layout->log_attrs = NULL;
-  layout->lines = NULL;
-
-  layout->tab_width = -1;
+  g_object_ref (G_OBJECT (context));
 
   return layout;
-}
-
-/**
- * pango_layout_ref:
- * @layout: a #PangoLayout
- * 
- * Increase the reference count of the #PangoLayout by one.
- **/
-void
-pango_layout_ref (PangoLayout *layout)
-{
-  g_return_if_fail (layout != NULL);
-  
-  layout->ref_count++;
-}
-
-/**
- * pango_layout_unref:
- * @layout: 
- * 
- * Decrease the reference count of the #PangoLayout by one. If the
- * result is zero, free the #PangoLayout and all associated memory.
- **/
-void
-pango_layout_unref (PangoLayout *layout)
-{
-  g_return_if_fail (layout != NULL);
-  g_return_if_fail (layout->ref_count > 0);
-
-  layout->ref_count--;
-  if (layout->ref_count == 0)
-    {
-      pango_layout_clear_lines (layout);
-
-      if (layout->context)
-	pango_context_unref (layout->context);
-	
-      if (layout->attrs)
-	pango_attr_list_unref (layout->attrs);
-      if (layout->text)
-	g_free (layout->text);
-
-      g_free (layout);
-    }
 }
 
 /**

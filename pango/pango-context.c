@@ -29,14 +29,19 @@
 
 struct _PangoContext
 {
-  gint ref_count;
+  GObject parent_instance;
 
   char *lang;
   PangoDirection base_dir;
   PangoFontDescription *font_desc;
 
   GSList *font_maps;
-  GData *data;
+};
+
+struct _PangoContextClass
+{
+  GObjectClass parent_class;
+  
 };
 
 static void add_engines (PangoContext      *context,
@@ -48,6 +53,85 @@ static void add_engines (PangoContext      *context,
 			 PangoFont        **fonts,
 			 GSList           **extra_attr_lists);
 
+static void pango_context_init        (PangoContext      *context);
+static void pango_context_class_init  (PangoContextClass *klass);
+static void pango_context_finalize    (GObject           *object);
+
+static gpointer parent_class;
+
+GType
+pango_context_get_type (void)
+{
+  static GType object_type = 0;
+
+  if (!object_type)
+    {
+      static const GTypeInfo object_info =
+      {
+        sizeof (PangoContextClass),
+        (GBaseInitFunc) NULL,
+        (GBaseFinalizeFunc) NULL,
+        (GClassInitFunc) pango_context_class_init,
+        NULL,           /* class_finalize */
+        NULL,           /* class_data */
+        sizeof (PangoContext),
+        0,              /* n_preallocs */
+        (GInstanceInitFunc) pango_context_init,
+      };
+      
+      object_type = g_type_register_static (G_TYPE_OBJECT,
+                                            "PangoContext",
+                                            &object_info);
+    }
+  
+  return object_type;
+}
+
+static void
+pango_context_init (PangoContext *context)
+{
+  PangoFontDescription desc;  
+
+  context->base_dir = PANGO_DIRECTION_LTR;
+  context->lang = NULL;
+  context->font_maps = NULL;
+
+  desc.family_name = "serif";
+  desc.style = PANGO_STYLE_NORMAL;
+  desc.variant = PANGO_VARIANT_NORMAL;
+  desc.weight = PANGO_WEIGHT_NORMAL;
+  desc.stretch = PANGO_STRETCH_NORMAL;
+
+  context->font_desc = pango_font_description_copy (&desc);
+}
+
+static void
+pango_context_class_init (PangoContextClass *klass)
+{
+  GObjectClass *object_class = G_OBJECT_CLASS (klass);
+  
+  parent_class = g_type_class_peek_parent (klass);
+  
+  object_class->finalize = pango_context_finalize;
+}
+
+static void
+pango_context_finalize (GObject *object)
+{
+  PangoContext *context;
+
+  context = PANGO_CONTEXT (object);
+
+  if (context->lang)
+    g_free (context->lang);
+  
+  g_slist_foreach (context->font_maps, (GFunc)g_object_unref, NULL);
+  g_slist_free (context->font_maps);
+  
+  G_OBJECT_CLASS (parent_class)->finalize (object);
+}
+
+
 /**
  * pango_context_new:
  * 
@@ -58,63 +142,13 @@ static void add_engines (PangoContext      *context,
 PangoContext *
 pango_context_new (void)
 {
-  PangoContext *result = g_new (PangoContext, 1);
-  PangoFontDescription desc;
+  PangoContext *context;
+
+  g_type_init ();
   
-  result->ref_count = 1;
-  result->base_dir = PANGO_DIRECTION_LTR;
-  result->lang = NULL;
-  result->font_maps = NULL;
-  result->data = NULL;
-
-  desc.family_name = "serif";
-  desc.style = PANGO_STYLE_NORMAL;
-  desc.variant = PANGO_VARIANT_NORMAL;
-  desc.weight = PANGO_WEIGHT_NORMAL;
-  desc.stretch = PANGO_STRETCH_NORMAL;
-
-  result->font_desc = pango_font_description_copy (&desc);
+  context = PANGO_CONTEXT (g_type_create_instance (pango_context_get_type ()));
   
-  return result;
-}
-
-/**
- * pango_context_ref:
- * @context: a #PangoContext
- * 
- * Increases the reference count of a #PangoContext.
- **/
-void
-pango_context_ref (PangoContext *context)
-{
-  g_return_if_fail (context != NULL);
-
-  context->ref_count++;
-}
-
-
-/**
- * pango_context_unref:
- * @context: a #PangoContext
- *
- * Decreases the reference count of a #PangoContext.
- * if the result is zero, destroy the context
- * and free the associated memory.
- */
-void
-pango_context_unref (PangoContext *context)
-{
-  g_return_if_fail (context != NULL);
-
-  context->ref_count--;
-  if (context->ref_count == 0)
-    {
-      if (context->lang)
-	g_free (context->lang);
-
-      g_slist_foreach (context->font_maps, (GFunc)g_object_unref, NULL);
-      g_slist_free (context->font_maps);
-    }
+  return context;
 }
 
 /**
@@ -455,44 +489,6 @@ pango_context_get_base_dir (PangoContext *context)
   g_return_val_if_fail (context != NULL, PANGO_DIRECTION_LTR);
 
   return context->base_dir;
-}
-
-/**
- * pango_context_set_data:
- * @context:      a #PangoContext
- * @key:          the string key that identifies the data
- * @data:         the data to store
- * @destroy_func: the function to free @data when it is no longer needed (may be %NULL)
- * 
- * Adds user data to a #PangoContext.
- **/
-void
-pango_context_set_data (PangoContext  *context,
-			const char    *key,
-			gpointer       data,
-			GDestroyNotify destroy_func)
-{
-  g_return_if_fail (context != NULL);
-  
-  g_datalist_set_data_full (&context->data, key, data, destroy_func);
-}
-
-/**
- * pango_context_get_data:
- * @context: a #PangoContext
- * @key:     the string key that identifies the data
- * 
- * Retrieves user data from a #PangoContext
- * 
- * Return value: the data, if @key was found, or %NULL.
- **/
-gpointer
-pango_context_get_data (PangoContext  *context,
-			const char    *key)
-{
-  g_return_val_if_fail (context != NULL, NULL);
-  
-  return g_datalist_get_data (&context->data, key);
 }
 
 /**

@@ -30,9 +30,10 @@
 extern "C" {
 #endif /* __cplusplus */
 
-typedef struct _PangoLayout     PangoLayout;
-typedef struct _PangoLayoutLine PangoLayoutLine;
-typedef struct _PangoLayoutRun  PangoLayoutRun; 
+typedef struct _PangoLayout      PangoLayout;
+typedef struct _PangoLayoutClass PangoLayoutClass;
+typedef struct _PangoLayoutLine  PangoLayoutLine;
+typedef struct _PangoLayoutRun   PangoLayoutRun; 
 
 typedef enum {
   PANGO_ALIGN_LEFT,
@@ -53,10 +54,20 @@ struct _PangoLayoutRun
   PangoGlyphString *glyphs;
 };
 
-PangoLayout *pango_layout_new            (PangoContext   *context);
-void         pango_layout_ref            (PangoLayout    *layout);
-void         pango_layout_unref          (PangoLayout    *layout);
+#define PANGO_TYPE_LAYOUT              (pango_layout_get_type ())
+#define PANGO_LAYOUT(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_TYPE_LAYOUT, PangoLayout))
+#define PANGO_LAYOUT_CLASS(klass)      (G_TYPE_CHECK_CLASS_CAST ((klass), PANGO_TYPE_LAYOUT, PangoLayoutClass))
+#define PANGO_IS_LAYOUT(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), PANGO_TYPE_LAYOUT))
+#define PANGO_IS_LAYOUT_CLASS(klass)   (G_TYPE_CHECK_CLASS_TYPE ((klass), PANGO_TYPE_LAYOUT))
+#define PANGO_LAYOUT_GET_CLASS(obj)    (G_TYPE_INSTANCE_GET_CLASS ((obj), PANGO_TYPE_LAYOUT, PangoLayoutClass))
 
+
+/* The PangoLayout and PangoLayoutClass structs are private; if you
+ * need to create a subclass of these, mail otaylor@redhat.com
+ */
+
+GType        pango_layout_get_type       (void);
+PangoLayout *pango_layout_new            (PangoContext   *context);
 
 PangoContext  *pango_layout_get_context    (PangoLayout    *layout);
 

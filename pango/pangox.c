@@ -171,7 +171,9 @@ pango_x_get_context (Display *display)
   info = g_new (PangoXContextInfo, 1);
   info->get_gc_func = NULL;
   info->free_gc_func = NULL;
-  pango_context_set_data (result, "pango-x-info", info, (GDestroyNotify)g_free);
+  g_object_set_qdata_full (G_OBJECT (result),
+                           g_quark_from_static_string ("pango-x-info"),
+                           info, (GDestroyNotify)g_free);
   
   pango_context_add_font_map (result, pango_x_font_map_for_display (display));
 
@@ -196,7 +198,8 @@ pango_x_context_set_funcs  (PangoContext     *context,
   
   g_return_if_fail (context != NULL);
 
-  info = pango_context_get_data (context, "pango-x-info");
+  info = g_object_get_qdata (G_OBJECT (context),
+                             g_quark_from_static_string ("pango-x-info"));
 
   info->get_gc_func = get_gc_func;
   info->free_gc_func = free_gc_func;
@@ -1150,7 +1153,9 @@ pango_x_render_layout_line (Display          *display,
   PangoRectangle logical_rect;
   PangoRectangle ink_rect;
   PangoContext *context = pango_layout_get_context (line->layout);
-  PangoXContextInfo *info = pango_context_get_data (context, "pango-x-info");
+  PangoXContextInfo *info =
+    g_object_get_qdata (G_OBJECT (context),
+                        g_quark_from_static_string ("pango-x-info"));
   
   int x_off = 0;
 

@@ -614,6 +614,42 @@ pango_attr_list_unref (PangoAttrList *list)
 }
 
 /**
+ * pango_attr_list_copy:
+ * @list: a #PangoAttrList
+ * 
+ * Copy @list and return an identical, new list.
+ *
+ * Return value: new attribute list
+ **/
+PangoAttrList *
+pango_attr_list_copy (PangoAttrList *list)
+{
+  PangoAttrList *new;
+  GSList *iter;
+  GSList *new_attrs;
+  
+  g_return_val_if_fail (list != NULL, NULL);
+
+  new = pango_attr_list_new ();
+
+  iter = list->attributes;
+  new_attrs = NULL;
+  while (iter != NULL)
+    {
+      new_attrs = g_slist_prepend (new_attrs,
+                                   pango_attribute_copy (iter->data));
+
+      iter = g_slist_next (iter);
+    }
+
+  /* we're going to reverse the nodes, so head becomes tail */
+  new->attributes_tail = new_attrs;
+  new->attributes = g_slist_reverse (new_attrs);
+  
+  return new;
+}
+
+/**
  * pango_attr_list_insert:
  * @list: a #PangoAttrList
  * @attr: the attribute to insert. Ownership of this value is

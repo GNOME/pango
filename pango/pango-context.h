@@ -33,11 +33,23 @@ extern "C" {
 /* Sort of like a GC - application set information about how
  * to handle scripts
  */
-typedef struct _PangoContext PangoContext;
+typedef struct _PangoContext      PangoContext;
+typedef struct _PangoContextClass PangoContextClass;
 
+#define PANGO_TYPE_CONTEXT              (pango_context_get_type ())
+#define PANGO_CONTEXT(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_TYPE_CONTEXT, PangoContext))
+#define PANGO_CONTEXT_CLASS(klass)      (G_TYPE_CHECK_CLASS_CAST ((klass), PANGO_TYPE_CONTEXT, PangoContextClass))
+#define PANGO_IS_CONTEXT(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), PANGO_TYPE_CONTEXT))
+#define PANGO_IS_CONTEXT_CLASS(klass)   (G_TYPE_CHECK_CLASS_TYPE ((klass), PANGO_TYPE_CONTEXT))
+#define PANGO_CONTEXT_GET_CLASS(obj)    (G_TYPE_INSTANCE_GET_CLASS ((obj), PANGO_TYPE_CONTEXT, PangoContextClass))
+
+
+/* The PangoContext and PangoContextClass structs are private; if you
+ * need to create a subclass of these, mail otaylor@redhat.com
+ */
+
+GType         pango_context_get_type      (void);
 PangoContext *pango_context_new           (void);
-void          pango_context_ref           (PangoContext                 *context);
-void          pango_context_unref         (PangoContext                 *context);
 void          pango_context_add_font_map  (PangoContext                 *context,
 					   PangoFontMap                 *font_map);
 void          pango_context_list_fonts    (PangoContext                 *context,
@@ -60,12 +72,6 @@ void                  pango_context_set_base_dir         (PangoContext          
 							  PangoDirection              direction);
 PangoDirection        pango_context_get_base_dir         (PangoContext               *context);
 
-void                  pango_context_set_data             (PangoContext  *context,
-							  const char    *key,
-							  gpointer       data,
-							  GDestroyNotify destroy_func);
-gpointer              pango_context_get_data             (PangoContext  *context,
-							  const char    *key);
 
 /* Break a string of Unicode characters into segments with
  * consistent shaping/language engine and bidrectional level.

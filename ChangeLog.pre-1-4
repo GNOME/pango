@@ -1,3 +1,14 @@
+2000-06-14  Havoc Pennington  <hp@redhat.com>
+
+	* pango/pango-attributes.c (pango_attr_list_copy): Function to
+	copy the attribute list.
+
+2000-06-13  Havoc Pennington  <hp@redhat.com>
+
+	* pango/pango-layout.h: Convert PangoLayout to GObject
+
+	* pango/pango-context.h: Convert to PangoContext to GObject
+
 2000-06-11  Elliot Lee  <sopwith@redhat.com>
 
 	* pango/fonts.c (pango_font_description_compare): g_strcasecmp returns 0 when strings are equal - negate return value.
