@@ -577,7 +577,11 @@ pango_renderer_draw_glyphs (PangoRenderer    *renderer,
 {
   g_return_if_fail (PANGO_IS_RENDERER (renderer));
   
+  pango_renderer_activate (renderer);
+
   PANGO_RENDERER_GET_CLASS (renderer)->draw_glyphs (renderer, font, glyphs, x, y);
+  
+  pango_renderer_deactivate (renderer);
 }
 
 static void
@@ -630,6 +634,7 @@ pango_renderer_draw_rectangle (PangoRenderer   *renderer,
 {
   g_return_if_fail (PANGO_IS_RENDERER (renderer));
   g_return_if_fail (IS_VALID_PART (part));
+  g_return_if_fail (renderer->active_count > 0);
   
   PANGO_RENDERER_GET_CLASS (renderer)->draw_rectangle (renderer, part, x, y, width, height);
 }
@@ -765,6 +770,7 @@ pango_renderer_draw_error_underline (PangoRenderer *renderer,
 				     int            height)
 {
   g_return_if_fail (PANGO_IS_RENDERER (renderer));
+  g_return_if_fail (renderer->active_count > 0);
   
   PANGO_RENDERER_GET_CLASS (renderer)->draw_error_underline (renderer, x, y, width, height);
 }
@@ -913,6 +919,7 @@ pango_renderer_draw_trapezoid (PangoRenderer  *renderer,
 			       double          x22)
 {
   g_return_if_fail (PANGO_IS_RENDERER (renderer));
+  g_return_if_fail (renderer->active_count > 0);
   
   PANGO_RENDERER_GET_CLASS (renderer)->draw_trapezoid (renderer, part,
 						       y1, x11, x21,
@@ -939,7 +946,8 @@ pango_renderer_draw_glyph (PangoRenderer *renderer,
 			   double         y)
 {
   g_return_if_fail (PANGO_IS_RENDERER (renderer));
-
+  g_return_if_fail (renderer->active_count > 0);
+	  
   if (glyph == 0)		/* glyph 0 never renders */
     return;
   
@@ -1056,7 +1064,7 @@ pango_renderer_get_color (PangoRenderer   *renderer,
 {
   g_return_val_if_fail (PANGO_IS_RENDERER (renderer), NULL);
   g_return_val_if_fail (IS_VALID_PART (part), NULL);
-
+  
   if (renderer->priv->color_set[part])
     return &renderer->priv->color[part];
   else
@@ -1090,7 +1098,8 @@ pango_renderer_part_changed (PangoRenderer    *renderer,
 {
   g_return_if_fail (PANGO_IS_RENDERER (renderer));
   g_return_if_fail (IS_VALID_PART (part));
-
+  g_return_if_fail (renderer->active_count > 0);
+  
   handle_line_state_change (renderer, part);
 
   if (PANGO_RENDERER_GET_CLASS (renderer)->part_changed)

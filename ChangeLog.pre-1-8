@@ -1,3 +1,13 @@
+Fri Sep 24 15:05:02 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-renderer.c (pango_renderer_draw_glyphs): 
+	Activate the renderer.
+
+	* pango/pango-renderer.c (pango_renderer_get_color,
+	pango_renderer_draw_rectangle, pango_renderer_draw_trapezoid,
+	pango_renderer_draw_error_underline, pango_renderer_draw_glyph): 
+	Require the renderer to be active.
+
 Fri Sep 24 12:59:22 2004  Owen Taylor  <otaylor@redhat.com>
 
 	* configure.in: Up version to 1.7.0.
