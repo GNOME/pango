@@ -53,6 +53,6 @@ void               pango_coverage_max     (PangoCoverage      *coverage,
 }
 #endif /* __cplusplus */
 
-#endif __PANGO_COVERAGE_H__
+#endif /* __PANGO_COVERAGE_H__ */
 
 

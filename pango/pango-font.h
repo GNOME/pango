@@ -155,4 +155,4 @@ void                  pango_font_get_glyph_extents (PangoFont        *font,
 }
 #endif /* __cplusplus */
 
-#endif __PANGO_FONT_H__
+#endif /* __PANGO_FONT_H__ */

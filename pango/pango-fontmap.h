@@ -76,4 +76,4 @@ void       pango_font_map_free_families (gchar                       **families,
 }
 #endif /* __cplusplus */
 
-#endif __PANGO_FONTMAP_H__
+#endif /* __PANGO_FONTMAP_H__ */

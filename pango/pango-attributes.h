@@ -156,4 +156,4 @@ void               pango_attr_iterator_get_font (PangoAttrIterator     *iterator
 }
 #endif /* __cplusplus */
 
-#endif __PANGO_ATTRIBUTES_H__
+#endif /* __PANGO_ATTRIBUTES_H__ */

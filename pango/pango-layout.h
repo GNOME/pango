@@ -138,5 +138,5 @@ void     pango_layout_line_get_extents  (PangoLayoutLine  *line,
 }
 #endif /* __cplusplus */
 
-#endif __PANGO_LAYOUT_H__
+#endif /* __PANGO_LAYOUT_H__ */
 

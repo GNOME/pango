@@ -80,4 +80,4 @@ GList *pango_itemize (PangoContext   *context,
 }
 #endif /* __cplusplus */
 
-#endif __PANGO_CONTEXT_H__
+#endif /* __PANGO_CONTEXT_H__ */

@@ -118,4 +118,4 @@ void pango_justify (PangoGlyphString *glyphs,
 }
 #endif /* __cplusplus */
 
-#endif __PANGO_GLYPH_H__
+#endif /* __PANGO_GLYPH_H__ */

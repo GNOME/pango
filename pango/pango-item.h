@@ -57,4 +57,4 @@ void       pango_item_free (PangoItem *item);
 }
 #endif /* __cplusplus */
 
-#endif __PANGO_ITEM_H__
+#endif /* __PANGO_ITEM_H__ */

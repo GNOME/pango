@@ -98,4 +98,4 @@ void         script_engine_unload (PangoEngine      *engine);
 }
 #endif /* __cplusplus */
 
-#endif __PANGO_ENGINE_H__
+#endif /* __PANGO_ENGINE_H__ */
