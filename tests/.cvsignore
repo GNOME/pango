@@ -3,5 +3,7 @@
 runtests.log
 testboundaries
 dump-boundaries
+gen-all-unicode
+all-unicode.txt
 Makefile.in
 Makefile
