@@ -34,13 +34,17 @@ if PLATFORM_WIN32
 no_undefined = -no-undefined
 endif
 
+if OS_WIN32
+else
+libm = -lm
+endif
 
 # ------------------- libpango -------------------
 
 lib_LTLIBRARIES = libpango-1.0.la
 
 libpango_1_0_la_LDFLAGS = -version-info $(LT_VERSION_INFO) $(no_undefined)
-libpango_1_0_la_LIBADD = $(GLIB_LIBS) mini-fribidi/libmini-fribidi.la -lm
+libpango_1_0_la_LIBADD = $(GLIB_LIBS) mini-fribidi/libmini-fribidi.la $(libm)
 libpango_1_0_la_DEPENDENCIES = mini-fribidi/libmini-fribidi.la
 
 if OS_WIN32
@@ -159,10 +163,7 @@ libpangox_1_0_la_SOURCES = \
 # ------------------- libpangoft2 -------------------
 
 if HAVE_FREETYPE
-pangoinclude_HEADERS += \
-	pangoft2.h \
-	pango-ot.h \
-	pangofc-decoder.h
+pangoinclude_HEADERS += pangoft2.h pango-ot.h pangofc-decoder.h
 lib_LTLIBRARIES += libpangoft2-1.0.la
 endif
 

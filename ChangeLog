@@ -1,3 +1,13 @@
+2004-08-26  Tor Lillqvist  <tml@iki.fi>
+
+	* pango/pangoft2.def: Add pango_ot_buffer_set_zero_width_marks,
+	again.
+
+	* pango/Makefile.am: Don't use -lm on Windows.
+	(pangoinclude_HEADERS): Put them on one line, automake 1.8 (at
+	least on Windows) otherwise drops the backslashes but still
+	outputs separate lines.
+
 2004-08-26  Dov Grobgeld  <dov.grobgeld@weizmann.ac.il>
 
 	* modules/hebrew/hebrew-fc.c (hebrew_engine_shape): Added 
