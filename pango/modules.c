@@ -74,6 +74,19 @@ GList *engines;
 static void      build_map      (PangoMapInfo       *info);
 static void      init_modules   (void);
 
+/**
+ * pango_find_map:
+ * @lang: the language tag for which to find the map (in the form
+ *        en or en_US)
+ * @engine_type_id: the render type for the map to find
+ * @render_type_id: the engine type for the map to find
+ * 
+ * Locate a #PangoMap for a particular engine type and render
+ * type. The resulting map can be used to determine the engine
+ * for each character.
+ * 
+ * Return value: 
+ **/
 PangoMap *
 pango_find_map (const char *lang,
 		guint       engine_type_id,
@@ -472,6 +485,19 @@ build_map (PangoMapInfo *info)
     }
 }
 
+/**
+ * pango_map_get_entry:
+ * @map: a #PangoMap
+ * @wc:  an ISO-10646 codepoint
+ * 
+ * Returns the entry in the map for a given codepoint. The entry
+ * contains information about engine that should be used for
+ * the codepoint and also whether the engine matches the language
+ * tag for the map was created exactly or just approximately.
+ * 
+ * Return value: the #PangoMapEntry for the codepoint. This value
+ *   is owned by the #PangoMap and should not be freed.
+ **/
 PangoMapEntry *
 pango_map_get_entry (PangoMap   *map,
 		     guint32     wc)
@@ -480,6 +506,17 @@ pango_map_get_entry (PangoMap   *map,
   return submap->is_leaf ? &submap->d.entry : &submap->d.leaves[wc % 256];
 }
 
+/**
+ * pango_map_get_engine:
+ * @map: a #PangoMap
+ * @wc:  an ISO-10646 codepoint
+ * 
+ * Returns the engine listed in the map for a given codepoint. 
+ * 
+ * Return value: the engine, if one is listed for the codepoint,
+ *    or %NULL. The lookup may cause the engine to be loaded;
+ *    once an engine is loaded
+ **/
 PangoEngine *
 pango_map_get_engine (PangoMap *map,
 		      guint32   wc)

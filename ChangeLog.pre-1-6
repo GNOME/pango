@@ -1,3 +1,14 @@
+Tue Sep 12 10:21:08 2000  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/modules.c (pango_map_get_entry): Added docs
+	for the publically exported functions in this module,
+	even though they are really only semi-public
+	(for people implementing new types of #PangoFont),
+	not public
+
+	* pango/pango-utils.c (pango_read_line): Minor bug
+	tweak.
+
 Sun Oct 29 01:27:39 2000  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pangoft2-fontcache.c pango/pangoft2.[ch]
