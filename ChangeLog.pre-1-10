@@ -1,3 +1,9 @@
+Mon Jul 26 15:24:11 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/opentype/ftxgsub.c (ADD_Glyph): Remove the
+	unused parameter from the IN_CURITEM() and IN_CURGLYPH
+	macros.
+
 Mon Jul 26 15:21:23 2004  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/opentype/ftxgsub.c: Add missing macro to make the 
