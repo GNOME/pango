@@ -1,3 +1,14 @@
+Fri Jul 25 11:06:14 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* modules/indic/indic-ot.[ch]: Port of some fixes from
+	ICU.
+	
+	   "Fixed problems w/ backing off the front of a syllable if 
+	    all consonants have post-base form... Fix tag list for base 
+	    consonant so that it doesn't have 'pstf'""
+
+	Based on patch from Taneem Ahmed (#118297)
+
 2003-07-25  Noah Levitt  <nlevitt@columbia.edu>
 
 	* docs/tmpl/engines.sgml:
