@@ -215,6 +215,7 @@ pango_context_load_font (PangoContext               *context,
 {
   g_return_val_if_fail (context != NULL, NULL);
   g_return_val_if_fail (pango_font_description_get_family (desc) != NULL, NULL);
+  g_return_val_if_fail (pango_font_description_get_size (desc) != 0, NULL);
   
   return pango_font_map_load_font (context->font_map, context, desc);
 }
@@ -237,6 +238,7 @@ pango_context_load_fontset (PangoContext               *context,
 {
   g_return_val_if_fail (context != NULL, NULL);
   g_return_val_if_fail (pango_font_description_get_family (desc) != NULL, NULL);
+  g_return_val_if_fail (pango_font_description_get_size (desc) != 0, NULL);
 
   return pango_font_map_load_fontset (context->font_map, context, desc, language);
 }

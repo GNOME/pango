@@ -1,3 +1,8 @@
+Mon Jan 28 19:41:20 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-context.c (pango_context_load_font[set]): Add some
+	return-if-fails to catch loading size 0 fonts.
+
 Thu Jan 24 18:05:54 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pango-layout.c (get_items_log_attrs): Fix problems with
