@@ -99,6 +99,10 @@ struct _PangoLayout
 {
   GObject parent_instance;
 
+  /* If you add fields to PangoLayout, be sure to update both
+   * the _copy function
+   */
+  
   PangoContext *context;
   PangoAttrList *attrs;
   PangoFontDescription *font_desc;
@@ -261,6 +265,50 @@ pango_layout_new (PangoContext *context)
 
   layout->context = context;
   g_object_ref (G_OBJECT (context));
+
+  return layout;
+}
+
+/**
+ * pango_layout_copy:
+ * @src: a #PangoLayout
+ * 
+ * Does a deep copy-by-value of the @src layout. The attribute list,
+ * tab array, and text from the original layout are all copied by
+ * value.
+ * 
+ * Return value: a new #PangoLayout identical to @src
+ **/
+PangoLayout*
+pango_layout_copy (PangoLayout *src)
+{
+  PangoLayout *layout;
+  
+  g_return_val_if_fail (PANGO_IS_LAYOUT (src), NULL);
+
+  layout = pango_layout_new (src->context);
+
+  if (src->attrs)
+    layout->attrs = pango_attr_list_copy (src->attrs);
+
+  if (src->font_desc)
+    layout->font_desc = pango_font_description_copy (src->font_desc);
+
+  layout->text = g_strdup (src->text);
+  layout->length = src->length;
+  layout->width = src->width;
+  layout->indent = src->indent;
+  layout->spacing = src->spacing;
+  layout->justify = src->justify;
+  layout->alignment = src->alignment;
+  layout->n_chars = src->n_chars;
+  layout->tab_width = src->tab_width;
+
+  if (src->tabs)
+    layout->tabs = pango_tab_array_copy (src->tabs);
+  layout->wrap = src->wrap;  
+  
+  /* log_attrs, lines fields are updated by check_lines */
 
   return layout;
 }
@@ -3675,7 +3723,10 @@ pango_layout_iter_get_index (PangoLayoutIter *iter)
  * pango_layout_iter_get_run:
  * @iter: a #PangoLayoutIter
  * 
- * Gets the current run.
+ * Gets the current run. When iterating by run, at the end of each
+ * line, there's a position with a %NULL run, so this function can return
+ * %NULL. The %NULL run at the end of each line ensures that all lines have
+ * at least one run, even lines consisting of only a newline.
  * 
  * Return value: the current run
  **/

@@ -1,4 +1,8 @@
-2001-01-23    <alla@lysator.liu.se>
+2001-01-23  Havoc Pennington  <hp@redhat.com>
+
+	* pango/pango-layout.c (pango_layout_copy): New function
+
+2001-01-23 Alex Larsson <alla@lysator.liu.se>
 
 	* pango/pango-item.c (pango_item_free):
 	Free item->extra_attrs list.
@@ -33,7 +37,7 @@
 	* pango/pango-break.h (struct _PangoLogAttr): rename is_break 
 	is_line_break, add is_char_break field
 
-2001-01-18    <alla@lysator.liu.se>
+2001-01-18  Alex Larsson <alla@lysator.liu.se>
 
 	* pango/pangoft2.c (get_font_metrics_from_subfonts):
 	Use correct font metrics information.
