@@ -1,3 +1,16 @@
+Overview of changes between 1.7.0 and 1.7.1
+===========================================
+* Add Sinhala support to the Indic module [Anuradha Ratnaweera]
+* Add Tibetan module [G Karunakar, Pema Geyleg]
+* Support pixel sizes for fonts [Chris Lahey]
+* Add pango_layout_get_font_description() [Morten Welinder]
+* Add PANGO_WEIGHT_SEMIBOLD [Lars Clausen]
+* Report underline metrics on Win32 [Tor]
+* Handle GLib-2.6.0 win32 filename encoding changes [Tor Lillqvist,
+  Robert Ögren]
+* Fix crash when drawing long strings
+* Misc fixes [Matthias Clasen, Dan Winship]
+
 Overview of changes between 1.6.x and 1.7.0
 ===========================================
 
@@ -21,8 +34,9 @@ Overview of changes since 1.6.0
 * Fix several problem when computing font and selecting fonts
   metrics for CJK [Felipe Heidrich, Federic Zhang]
 * Win32 bug fixes [Tor Lillqvist, Kazuki Iwamoto, Ivan Wong]
-* Misc bug fixes [Paolo Borelli, Behdad Esfahbod, Leon Ho, Arun M, 
-  Kjartan Maraas, Vincent Noel, Christian Persch, Enrico Scholz]
+* Misc bug fixes [Vincent Berger, Paolo Borelli, Behdad Esfahbod, 
+  Leon Ho, Arun M, Kjartan Maraas, Vincent Noel, Christian Persch, 
+  Enrico Scholz, Sukhjinder Sidhu, Morten Welinder]
 
 Overview of changes between 1.5.2 and 1.6.0
 ===========================================

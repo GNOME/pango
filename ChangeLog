@@ -1,3 +1,13 @@
+Wed Dec 15 23:49:14 2004  Owen Taylor  <otaylor@redhat.com>
+
+        * === Released 1.8.0 ===
+	
+	* configure.in: Version 1.8.0
+
+	* NEWS: Update.
+
+	* README: Updates.
+
 Wed Dec 15 23:13:57 2004  Owen Taylor  <otaylor@redhat.com>
 
 	* modules/basic/basic-win32.c (uniscribe_shape): Emergency
@@ -96,7 +106,7 @@ Tue Dec 14 17:27:14 2004  Owen Taylor  <otaylor@redhat.com>
 Mon Dec 13 14:44:40 2004  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pango-layout.[ch] pango/pango.def docs/pango-sections.txt: 
-	Add. (#153548, Morten Welinder)
+	Add pango_layout_get_font_description. (#153548, Morten Welinder)
 
 	* pango/pango-layout.c (pango_layout_set_font_description):
 	Guard against the same description being set back.
