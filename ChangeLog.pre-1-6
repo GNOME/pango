@@ -1,3 +1,10 @@
+Wed Feb 12 16:48:46 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-layout.c (pango_layout_set_text):
+	Guard against 
+	pango_layout_set_text (pango_layout_get_text (layout));
+	(#105612, Morten Welinder)
+
 Wed Feb 12 16:44:05 2003  Owen Taylor  <otaylor@redhat.com>
 
 	* examples/viewer-qt.cc: Remove call to
