@@ -1,3 +1,11 @@
+2001-02-28  Havoc Pennington  <hp@redhat.com>
+
+	* pango/pango-font.h (struct _PangoFontMetrics): Add
+	approximate_char_width field
+
+	* pango/pangox.c (get_font_metrics_from_subfonts): "compute" the
+	approximate char width. Other backends need to add this.
+	
 2001-02-28  Alexander Larsson  <alla@lysator.liu.se>
 
 	* pango/pango-attributes.[c]:

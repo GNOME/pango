@@ -522,6 +522,30 @@ pango_x_font_get_glyph_extents  (PangoFont      *font,
     }
 }
 
+static gboolean
+get_int_prop (Atom         atom,
+              XFontStruct *fs,
+              gint        *val)
+{
+  gint i;
+
+  *val = 0;
+  
+  i = 0;
+  while (i < fs->n_properties)
+    {
+      if (fs->properties[i].name == atom)
+        {
+          *val = fs->properties[i].card32;
+          return TRUE;
+        }
+
+      ++i;
+    }
+
+  return FALSE;
+}
+
 /* Get composite font metrics for all subfonts in list
  */
 static void
@@ -529,8 +553,15 @@ get_font_metrics_from_subfonts (PangoFont        *font,
 				GSList           *subfonts,
 				PangoFontMetrics *metrics)
 {
+  PangoXFont *xfont = (PangoXFont *)font;
   GSList *tmp_list = subfonts;
   gboolean first = TRUE;
+  gint total_avg_widths = 0;
+  gint n_avg_widths = 0;
+  Atom avg_width_atom;
+
+  avg_width_atom = pango_x_fontmap_atom_from_name (xfont->fontmap,
+                                                   "AVERAGE_WIDTH");
   
   metrics->ascent = 0;
   metrics->descent = 0;
@@ -542,6 +573,8 @@ get_font_metrics_from_subfonts (PangoFont        *font,
       if (subfont)
 	{
 	  XFontStruct *fs = pango_x_get_font_struct (font, subfont);
+          gint avg_width;
+          
 	  if (fs)
 	    {
 	      if (first)
@@ -556,12 +589,21 @@ get_font_metrics_from_subfonts (PangoFont        *font,
 		  metrics->descent = MAX (fs->descent * PANGO_SCALE, metrics->descent);
 		}
 	    }
+
+          if (!get_int_prop (avg_width_atom, fs, &avg_width))
+            avg_width = (fs->min_bounds.width + fs->max_bounds.width) / 2;
+
+          total_avg_widths += avg_width;
+          n_avg_widths += 1;
 	}
       else
 	g_warning ("Error parsing ligature info: Invalid subfont %d in get_font_metrics_from_subfonts", GPOINTER_TO_UINT (tmp_list->data));
 	  
       tmp_list = tmp_list->next;
     }
+
+  /* This is pretty darn bogus. */
+  metrics->approximate_char_width = total_avg_widths / n_avg_widths;
 }
 
 /* Get composite font metrics for all subfonts resulting from shaping

@@ -90,6 +90,7 @@ struct _PangoFontMetrics
 {
   int ascent;
   int descent;
+  int approximate_char_width;
 };
 
 PangoFontDescription *pango_font_description_copy        (const PangoFontDescription  *desc);

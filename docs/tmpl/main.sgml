@@ -164,6 +164,13 @@ for text.
                           top-to-bottom, with the rows ordered from
                           right to left.
 
+<!-- ##### MACRO PANGO_TYPE_DIRECTION ##### -->
+<para>
+
+</para>
+
+
+
 <!-- ##### FUNCTION pango_itemize ##### -->
 <para>
 
