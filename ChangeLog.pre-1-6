@@ -1,3 +1,10 @@
+Sat Jul 26 22:12:46 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/opentype/ftxgsub.c (Do_String_Lookup,
+	TT_GSUB_Apply_String): Fix return value to only
+	contain TTO_Err_Not_Covered if *no* lookups
+	matched. Fix memory leaks on error in Apply_String().
+
 Sat Jul 26 22:09:44 2003  Owen Taylor  <otaylor@redhat.com>
 
 	* modules/indic/indic-ot.c (indic_ot_reorder): 
