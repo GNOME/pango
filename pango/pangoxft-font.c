@@ -46,16 +46,16 @@ static void pango_xft_font_finalize   (GObject         *object);
 
 static PangoFontDescription *pango_xft_font_describe          (PangoFont        *font);
 static PangoCoverage *       pango_xft_font_get_coverage      (PangoFont        *font,
-							       const char       *lang);
+							       PangoLanguage    *language);
 static PangoEngineShape *    pango_xft_font_find_shaper       (PangoFont        *font,
-							       const char       *lang,
+							       PangoLanguage    *language,
 							       guint32           ch);
 static void                  pango_xft_font_get_glyph_extents (PangoFont        *font,
 							       PangoGlyph        glyph,
 							       PangoRectangle   *ink_rect,
 							       PangoRectangle   *logical_rect);
 static void                  pango_xft_font_get_metrics       (PangoFont        *font,
-							       const gchar      *lang,
+							       PangoLanguage    *language,
 							       PangoFontMetrics *metrics);
 
 
@@ -282,7 +282,7 @@ pango_xft_render (XftDraw          *draw,
 
 static void
 pango_xft_font_get_metrics (PangoFont        *font,
-			    const gchar      *lang,
+			    PangoLanguage    *language,
 			    PangoFontMetrics *metrics)
 {
   PangoXftFont *xfont = (PangoXftFont *)font;
@@ -291,8 +291,6 @@ pango_xft_font_get_metrics (PangoFont        *font,
   metrics->descent = PANGO_SCALE * xfont->xft_font->descent;
   metrics->approximate_digit_width = PANGO_SCALE * xfont->xft_font->max_advance_width;
   metrics->approximate_char_width = PANGO_SCALE * xfont->xft_font->max_advance_width;
-  
-  return;
 }
 
 static void
@@ -335,8 +333,8 @@ pango_xft_font_describe (PangoFont *font)
 }
 
 static PangoCoverage *
-pango_xft_font_get_coverage (PangoFont  *font,
-			     const char *lang)
+pango_xft_font_get_coverage (PangoFont     *font,
+			     PangoLanguage *language)
 {
   PangoXftFont *xfont = (PangoXftFont *)font;
   FT_Face face;
@@ -428,7 +426,7 @@ pango_xft_font_get_glyph_extents (PangoFont        *font,
 }
 
 static PangoMap *
-pango_xft_get_shaper_map (const char *lang)
+pango_xft_get_shaper_map (PangoLanguage *language)
 {
   static guint engine_type_id = 0;
   static guint render_type_id = 0;
@@ -439,17 +437,17 @@ pango_xft_get_shaper_map (const char *lang)
       render_type_id = g_quark_from_static_string (PANGO_RENDER_TYPE_XFT);
     }
   
-  return pango_find_map (lang, engine_type_id, render_type_id);
+  return pango_find_map (language, engine_type_id, render_type_id);
 }
 
 static PangoEngineShape *
-pango_xft_font_find_shaper (PangoFont   *font,
-			  const gchar *lang,
-			  guint32      ch)
+pango_xft_font_find_shaper (PangoFont     *font,
+			    PangoLanguage *language,
+			    guint32        ch)
 {
   PangoMap *shape_map = NULL;
 
-  shape_map = pango_xft_get_shaper_map (lang);
+  shape_map = pango_xft_get_shaper_map (language);
   return (PangoEngineShape *)pango_map_get_engine (shape_map, ch);
 }
 

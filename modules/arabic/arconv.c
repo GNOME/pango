@@ -147,7 +147,7 @@ static shapestruct chartable [] =
 #define LAM_ALIFMADDA   0xFEF5
 
 
-void 
+static void 
 charstruct_init(charstruct* s)
 {
     s->basechar       = 0;
@@ -158,7 +158,7 @@ charstruct_init(charstruct* s)
     s->numshapes      = 1;
 }
  
-void
+static void
 copycstostring(gunichar* string,int* i,charstruct* s,arabic_level level)
 { /* s is a shaped charstruct; i is the index into the string */
     if (s->basechar == 0) return;
@@ -280,7 +280,8 @@ shapecount(gunichar s)
         }
 }
 
-int unligature(charstruct* curchar,arabic_level level)
+static int
+unligature(charstruct* curchar,arabic_level level)
 {
     int result = 0;
     if (level & ar_naqshfont){
@@ -299,7 +300,7 @@ int unligature(charstruct* curchar,arabic_level level)
     return result;
 }
 
-int 
+static int 
 ligature(gunichar newchar,charstruct* oldchar)
 { /* no ligature possible --> return 0; 1 == vowel; 2 = two chars 
    * 3 = Lam-Alif
@@ -424,7 +425,7 @@ ligature(gunichar newchar,charstruct* oldchar)
 }
 
 static void 
-shape(int* len,const char* text,gunichar* string,arabic_level level)
+shape(long* len,const char* text,gunichar* string,arabic_level level)
 {
     /* string is assumed to be empty an big enough.
     ** text is the original text.
@@ -523,7 +524,7 @@ shape(int* len,const char* text,gunichar* string,arabic_level level)
 }
 
 static void 
-doublelig(int* len,gunichar* string,arabic_level level)
+doublelig(long* len,gunichar* string,arabic_level level)
 { /* Ok. We have presentation ligatures in our font. */
     int         olen = *len;
     int         j = 0, si = 1;
@@ -637,12 +638,9 @@ doublelig(int* len,gunichar* string,arabic_level level)
 }
 
 void 
-arabic_reshape(int* len,const char* text,gunichar* string,arabic_level level)
+arabic_reshape(long* len,const char* text,gunichar* string,arabic_level level)
 {
     shape(len,text ,string,level);
     if ( level & ( ar_composedtashkeel | ar_lig ) )
         doublelig(len,string,level);
 }
-
-
-

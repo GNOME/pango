@@ -37,7 +37,7 @@ typedef struct
  *  string: original-string
  *  text  : output-text
  */
-void arabic_reshape(int* len,const char* text,gunichar* string,arabic_level level);
+void arabic_reshape(long* len,const char* text,gunichar* string,arabic_level level);
 int  arabic_isvowel(gunichar s);
 
 #endif

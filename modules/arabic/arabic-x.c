@@ -229,7 +229,7 @@ arabic_engine_shape (PangoFont        *font,
             n_chars = length;
             arabic_reshape(&n_chars,text,wc,fs->level);
             pango_glyph_string_set_size (glyphs, n_chars);
-        };
+        }
 
 
     p    = text;

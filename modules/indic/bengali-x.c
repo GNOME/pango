@@ -40,6 +40,7 @@
 
 #include <glib.h>
 #include <stdio.h>
+#include <string.h>
 
 #include "pangox.h"
 #include "pango-indic.h"
@@ -162,11 +163,10 @@ pango_indic_make_ligs (gunichar * start, gunichar * end)
   int num = end - start;
   int i;
 
-  for (i = 0; i < (end - start); i++)
+  for (i = 0; i < num; i++)
     {
       gunichar t0 = pango_indic_get_char (start + i, end);
       gunichar t1 = pango_indic_get_char (start + 1 + i, end);
-      gunichar t2 = pango_indic_get_char (start + 2 + i, end);
 
        if ((t0 == VIRAMA) && (t1 == 0x9af)) 
 	 {
@@ -182,7 +182,7 @@ pango_indic_make_ligs (gunichar * start, gunichar * end)
        start[2] = RA_SUPERSCRIPT;
      }
    
-   for (i = 0; i < (end - start - 1); i++) 
+   for (i = 0; i < (num - 1); i++) 
      {
        if (start[i] == VIRAMA) 
 	 {
@@ -207,8 +207,7 @@ pango_indic_engine_shape (PangoFont * font,
 
   int n_chars, n_glyph;
   int lvl;
-  const char *p;
-  int i, k;
+  int i;
   gunichar *wc;
   int sb;
   int n_syls;

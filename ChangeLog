@@ -1,3 +1,46 @@
+2001-07-12  Darin Adler  <darin@bentspoon.com>
+
+	* modules/arabic/arabic-x.c: (arabic_engine_shape): Remove stray
+	semicolon.
+	
+	* modules/arabic/arconv.h:
+	* modules/arabic/arconv.c: (shape), (doublelig), (arabic_reshape):
+	Use long* instead of int* for parameter to match what's passed in.
+	
+	* modules/indic/bengali-x.c: Add missing <string.h> include.
+	(pango_indic_make_ligs): Use local variable that was added but not
+	ever used.
+	(pango_indic_engine_shape): Remove unused locals.
+	
+	* modules/indic/devanagari-x.c: Add missing <string.h> include.
+	(pango_indic_engine_shape): Remove unused local.
+	
+	* modules/indic/gujarati-x.c: Add missing <string.h> include.
+	(pango_indic_engine_shape): Remove unused local
+	
+	* modules/tamil/tamil-x.c: (tamil_engine_shape): Initialize a
+	variable to quiet the compiler's unused warning.
+	
+	* pango/.cvsignore: Ignore more generated files.
+	
+	* pango/opentype/ftxgpos.c: (Get_Anchor): Add code to set up the
+	ap variable. The old code would just use the uninitialized value.
+	
+	* pango/opentype/ftxopen.c: (Load_Coverage): Remove unused local.
+	
+	* pango/opentype/pango-ot-ruleset.c: (pango_ot_ruleset_shape):
+	Remove unused local.
+	
+	* pango/pango-attributes.c: (pango_attr_list_get_type),
+	(pango_color_get_type): Add needed function type casts (just
+	warnings under gcc, but could be errors in other compilers).
+	
+	* pango/pangoxft-font.c: (pango_xft_font_get_metrics),
+	(pango_xft_font_get_coverage), (pango_xft_get_shaper_map),
+	(pango_xft_font_find_shaper): Switch from lang char* to
+	PangoLanguage*. The code was still compiling, but would not have
+	worked.
+
 2001-07-02  James Henstridge  <james@daa.com.au>
 
 	* pango/glyphstring.c (pango_glyph_string_copy): copy function.

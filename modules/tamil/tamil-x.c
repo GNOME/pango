@@ -205,7 +205,8 @@ tamil_engine_shape (PangoFont        *font,
   int i;
   const char *cluster_start;
   const char *p;
-  gunichar *wc, prevchar,currchar;  
+  gunichar *wc, prevchar;
+  gunichar currchar = 0; /* Quiet compiler */
   int complete; /* Whether the prev char is gauranteed to be complete 
 		   i.e not modified by modifiers */
   int nuni;     /* No. of unicode characters in a cluster */
