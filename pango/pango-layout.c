@@ -117,6 +117,7 @@ struct _PangoLayout
   guint alignment : 2;
 
   guint single_paragraph : 1;
+  guint auto_dir : 1;
   
   gint n_chars;		        /* Total number of characters in layout */
   PangoLogAttr *log_attrs;	/* Logical attributes for layout's text */
@@ -203,6 +204,7 @@ pango_layout_init (PangoLayout *layout)
 
   layout->alignment = PANGO_ALIGN_LEFT;
   layout->justify = FALSE;
+  layout->auto_dir = TRUE;
 
   layout->log_attrs = NULL;
   layout->lines = NULL;
@@ -588,6 +590,63 @@ pango_layout_get_justify (PangoLayout *layout)
 {
   g_return_val_if_fail (layout != NULL, FALSE);
   return layout->justify;
+}
+
+/**
+ * pango_layout_set_auto_dir:
+ * @layout: a #PangoLayout
+ * @auto_dir: if %TRUE, compute the bidirectional base direction
+ *   from the layout's contents.
+ * 
+ * Sets whether to calculate the bidirectional base direction
+ * for the layout according to the contents of the layout;
+ * when this flag is on (the default), then paragraphs in
+   @layout that begin with strong right-to-left characters
+ * (Arabic and Hebrew principally), will have right-to-left
+ * layout, paragraphs with letters from other scripts will
+ * have left-to-right layout. Paragraphs with only neutral
+ * characters get their direction from the surrounding paragraphs.
+ *
+ * When %FALSE, the choice between left-to-right and
+ * right-to-left layout is done by according to the base direction
+ * of the layout's #PangoContext. (See pango_context_set_base_dir()).
+ *
+ * When the auto-computed direction or a paragraph differs from the
+ * base direction of the context, then the interpretation of
+ * %PANGO_ALIGN_LEFT and %PANGO_ALIGN_RIGHT are swapped. 
+ **/
+void
+pango_layout_set_auto_dir (PangoLayout *layout,
+			   gboolean     auto_dir)
+{
+  g_return_if_fail (PANGO_IS_LAYOUT (layout));
+
+  auto_dir = auto_dir != FALSE;
+
+  if (auto_dir != layout->auto_dir)
+    {
+      layout->auto_dir = auto_dir;
+      pango_layout_clear_lines (layout);
+    }
+}
+
+/**
+ * pango_layout_get_auto_dir:
+ * @layout: a #PangoLayout
+ * 
+ * Gets whether to calculate the bidirectional base direction
+ * for the layout according to the contents of the layout.
+ * See pango_layout_set_auto_dir().
+ * 
+ * Return value: if %TRUE, the bidirectional base direction
+ *   is computed from the layout's contents.
+ **/
+gboolean
+pango_layout_get_auto_dir (PangoLayout *layout)
+{
+  g_return_val_if_fail (PANGO_IS_LAYOUT (layout), FALSE);
+  
+  return layout->auto_dir;
 }
 
 /**
@@ -1222,7 +1281,6 @@ pango_layout_move_cursor_visually (PangoLayout *layout,
 				   int         *new_index,
 				   int         *new_trailing)
 {
-  PangoDirection base_dir;
   PangoLayoutLine *line = NULL;
   PangoLayoutLine *prev_line;
   PangoLayoutLine *next_line;
@@ -1243,12 +1301,10 @@ pango_layout_move_cursor_visually (PangoLayout *layout,
 
   pango_layout_check_lines (layout);
 
-  base_dir = pango_context_get_base_dir (layout->context);
-
   /* Find the line the old cursor is on */
   line = pango_layout_index_to_line (layout, old_index,
 				     NULL, &prev_line, &next_line);
-  
+
   start_offset = g_utf8_pointer_to_offset (layout->text, layout->text + line->start_index);
 
   while (old_trailing--)
@@ -1267,14 +1323,14 @@ pango_layout_move_cursor_visually (PangoLayout *layout,
   /* Handling movement between lines */
   if (vis_pos == 0 && direction < 0)
     {
-      if (base_dir == PANGO_DIRECTION_LTR)
+      if (line->resolved_dir == PANGO_DIRECTION_LTR)
 	off_start = TRUE;
       else
 	off_end = TRUE;
     }
   else if (vis_pos == n_vis && direction > 0)
     {
-      if (base_dir == PANGO_DIRECTION_LTR)
+      if (line->resolved_dir == PANGO_DIRECTION_LTR)
 	off_end = TRUE;
       else
 	off_start = TRUE;
@@ -1550,7 +1606,6 @@ pango_layout_line_get_vis2log_map (PangoLayoutLine *line,
 				   gboolean         strong)
 {
   PangoLayout *layout = line->layout;
-  PangoDirection base_dir = pango_context_get_base_dir (layout->context);
   PangoDirection prev_dir;
   PangoDirection cursor_dir;
   GSList *tmp_list;
@@ -1565,16 +1620,16 @@ pango_layout_line_get_vis2log_map (PangoLayoutLine *line,
   result = g_new (int, n_chars + 1);
 
   if (strong)
-    cursor_dir = base_dir;
+    cursor_dir = line->resolved_dir;
   else
-    cursor_dir = (base_dir == PANGO_DIRECTION_LTR) ? PANGO_DIRECTION_RTL : PANGO_DIRECTION_LTR;
+    cursor_dir = (line->resolved_dir == PANGO_DIRECTION_LTR) ? PANGO_DIRECTION_RTL : PANGO_DIRECTION_LTR;
 
   /* Handle the first visual position
    */
-  if (base_dir == cursor_dir)
-    result[0] = base_dir == PANGO_DIRECTION_LTR ? 0 : end - start;
+  if (line->resolved_dir == cursor_dir)
+    result[0] = line->resolved_dir == PANGO_DIRECTION_LTR ? 0 : end - start;
 
-  prev_dir = base_dir;
+  prev_dir = line->resolved_dir;
   pos = 0;
   tmp_list = line->runs;
   while (tmp_list)
@@ -1630,8 +1685,8 @@ pango_layout_line_get_vis2log_map (PangoLayoutLine *line,
 
   /* And the last visual position
    */
-  if ((cursor_dir == base_dir) || (prev_dir == base_dir))
-    result[pos] = base_dir == PANGO_DIRECTION_LTR ? end - start : 0;
+  if ((cursor_dir == line->resolved_dir) || (prev_dir == line->resolved_dir))
+    result[pos] = line->resolved_dir == PANGO_DIRECTION_LTR ? end - start : 0;
       
   return result;
 }
@@ -1704,7 +1759,6 @@ pango_layout_get_cursor_pos (PangoLayout    *layout,
 			     PangoRectangle *strong_pos,
 			     PangoRectangle *weak_pos)
 {
-  PangoDirection base_dir;
   PangoDirection dir1, dir2;
   PangoRectangle line_rect;
   PangoLayoutLine *layout_line = NULL; /* Quiet GCC */
@@ -1714,8 +1768,6 @@ pango_layout_get_cursor_pos (PangoLayout    *layout,
   g_return_if_fail (layout != NULL);
   g_return_if_fail (index >= 0 && index <= layout->length);
   
-  base_dir = pango_context_get_base_dir (layout->context);
-
   layout_line = pango_layout_index_to_line_and_extents (layout, index,
 							&line_rect);
 
@@ -1724,8 +1776,8 @@ pango_layout_get_cursor_pos (PangoLayout    *layout,
   /* Examine the trailing edge of the character before the cursor */
   if (index == layout_line->start_index)
     {
-      dir1 = base_dir;
-      if (base_dir == PANGO_DIRECTION_LTR)
+      dir1 = layout_line->resolved_dir;
+      if (layout_line->resolved_dir == PANGO_DIRECTION_LTR)
         x1_trailing = 0;
       else
         x1_trailing = line_rect.width;
@@ -1740,8 +1792,8 @@ pango_layout_get_cursor_pos (PangoLayout    *layout,
   /* Examine the leading edge of the character after the cursor */
   if (index >= layout_line->start_index + layout_line->length)
     {
-      dir2 = base_dir;
-      if (base_dir == PANGO_DIRECTION_LTR)
+      dir2 = layout_line->resolved_dir;
+      if (layout_line->resolved_dir == PANGO_DIRECTION_LTR)
         x2 = line_rect.width;
       else
         x2 = 0;
@@ -1756,7 +1808,7 @@ pango_layout_get_cursor_pos (PangoLayout    *layout,
     {
       strong_pos->x = line_rect.x;
       
-      if (dir1 == base_dir)
+      if (dir1 == layout_line->resolved_dir)
 	strong_pos->x += x1_trailing;
       else
 	strong_pos->x += x2;
@@ -1770,7 +1822,7 @@ pango_layout_get_cursor_pos (PangoLayout    *layout,
     {
       weak_pos->x = line_rect.x;
       
-      if (dir1 == base_dir)
+      if (dir1 == layout_line->resolved_dir)
 	weak_pos->x += x2;
       else
 	weak_pos->x += x1_trailing;
@@ -1781,6 +1833,24 @@ pango_layout_get_cursor_pos (PangoLayout    *layout,
     }
 }
 
+static PangoAlignment
+get_alignment (PangoLayout     *layout,
+	       PangoLayoutLine *line)
+{
+  PangoAlignment alignment = layout->alignment;
+	
+  if (line->layout->auto_dir &&
+      line->resolved_dir != pango_context_get_base_dir (layout->context))
+    {
+      if (alignment == PANGO_ALIGN_LEFT)
+	alignment = PANGO_ALIGN_RIGHT;
+      else if (alignment == PANGO_ALIGN_RIGHT)
+	alignment = PANGO_ALIGN_LEFT;
+    }
+
+  return alignment;
+}
+
 static void
 get_x_offset (PangoLayout     *layout,
               PangoLayoutLine *line,
@@ -1788,10 +1858,12 @@ get_x_offset (PangoLayout     *layout,
               int              line_width,
               int             *x_offset)
 {
+  PangoAlignment alignment = get_alignment (layout, line);
+
   /* Alignment */
-  if (layout->alignment == PANGO_ALIGN_RIGHT)
+  if (alignment == PANGO_ALIGN_RIGHT)
     *x_offset = layout_width - line_width;
-  else if (layout->alignment == PANGO_ALIGN_CENTER)
+  else if (alignment == PANGO_ALIGN_CENTER)
     *x_offset = (layout_width - line_width) / 2;
   else
     *x_offset = 0;
@@ -1805,14 +1877,14 @@ get_x_offset (PangoLayout     *layout,
    * knowing whether left/right is the "normal" thing for this text
    */
    
-  if (layout->alignment == PANGO_ALIGN_CENTER)
+  if (alignment == PANGO_ALIGN_CENTER)
     return;
   
   if (line->is_paragraph_start)
     {
       if (layout->indent > 0)
         {
-          if (layout->alignment == PANGO_ALIGN_LEFT)
+          if (alignment == PANGO_ALIGN_LEFT)
             *x_offset += layout->indent;
           else
             *x_offset -= layout->indent;
@@ -1822,7 +1894,7 @@ get_x_offset (PangoLayout     *layout,
     {
       if (layout->indent < 0)
         {
-          if (layout->alignment == PANGO_ALIGN_LEFT)
+          if (alignment == PANGO_ALIGN_LEFT)
             *x_offset -= layout->indent;
           else
             *x_offset += layout->indent;
@@ -1880,7 +1952,8 @@ pango_layout_get_extents_internal (PangoLayout    *layout,
   GSList *line_list;
   int y_offset = 0;
   int width;
-  
+  gboolean need_width = FALSE;
+
   g_return_if_fail (layout != NULL);
 
   pango_layout_check_lines (layout);
@@ -1890,7 +1963,28 @@ pango_layout_get_extents_internal (PangoLayout    *layout,
    * x_offsets if we are computing the ink_rect or individual line extents.
    */
   width = layout->width;
-  if (width == -1 && layout->alignment != PANGO_ALIGN_LEFT && (ink_rect || line_extents))
+
+  /* If one of the lines of the layout is not left aligned, then we need
+   * the width of the width to calculate line x-offsets; this requires
+   * looping through the lines for layout->auto_dir.
+  */
+  if (layout->auto_dir)
+    {
+      line_list = layout->lines;
+      while (line_list)
+	{
+	  PangoLayoutLine *line = line_list->data;
+
+	  if (get_alignment (layout, line) != PANGO_ALIGN_LEFT)
+	    need_width = TRUE;
+
+	  line_list = line_list->next;
+	}
+    }
+  else if (layout->alignment != PANGO_ALIGN_LEFT)
+    need_width = TRUE;
+  
+  if (width == -1 && need_width && (ink_rect || line_extents))
     {
       PangoRectangle overall_logical;
       
@@ -2482,6 +2576,7 @@ typedef struct _ParaBreakState ParaBreakState;
 struct _ParaBreakState
 {
   GList *items;			/* This paragraph turned into items */
+  PangoDirection base_dir;	/* Current resolved base direction */
   gboolean first_line;		/* TRUE if this is the first line of the paragraph */
   int line_start_index;		/* Start index of line in layout->text */
 
@@ -2731,6 +2826,7 @@ process_line (PangoLayout    *layout,
   line = pango_layout_line_new (layout);
   line->start_index = state->line_start_index;
   line->is_paragraph_start = state->first_line;
+  line->resolved_dir = state->base_dir;
 
   if (state->first_line)
     state->remaining_width = (layout->indent >= 0) ? layout->width - layout->indent : layout->width;
@@ -2945,6 +3041,7 @@ pango_layout_check_lines (PangoLayout *layout)
   PangoAttrList *attrs;
   PangoAttrList *no_shape_attrs;
   PangoAttrIterator *iter;
+  PangoDirection prev_base_dir = PANGO_DIRECTION_NEUTRAL, base_dir = PANGO_DIRECTION_NEUTRAL;
   
   if (layout->lines)
     return;
@@ -2965,6 +3062,16 @@ pango_layout_check_lines (PangoLayout *layout)
   
   start_offset = 0;
   start = layout->text;
+  
+  /* Find the first strong direction of the text */
+  if (layout->auto_dir)
+    {
+      prev_base_dir = pango_find_base_dir (layout->text, layout->length);
+      if (prev_base_dir == PANGO_DIRECTION_NEUTRAL)
+	prev_base_dir = pango_context_get_base_dir (layout->context);
+    }
+  else
+    base_dir = pango_context_get_base_dir (layout->context);
 
   do
     {
@@ -2987,7 +3094,18 @@ pango_layout_check_lines (PangoLayout *layout)
         }
 
       g_assert (next_para_index >= delimiter_index);
-      
+
+      if (layout->auto_dir)
+	{
+	  base_dir = pango_find_base_dir (start, delimiter_index);
+	  
+	  /* Propagate the base direction for neutral paragraphs */
+	  if (base_dir == PANGO_DIRECTION_NEUTRAL)
+	    base_dir = prev_base_dir;
+	  else
+	    prev_base_dir = base_dir;
+	}
+
       end = start + delimiter_index;
       
       delim_len = next_para_index - delimiter_index;
@@ -3000,12 +3118,13 @@ pango_layout_check_lines (PangoLayout *layout)
       g_assert (delim_len < 4);	/* PS is 3 bytes */
       g_assert (delim_len >= 0);
 
-      state.items = pango_itemize (layout->context,
-				   layout->text,
-				   start - layout->text,
-				   end - start,
-				   attrs,
-				   iter);
+      state.items = pango_itemize_with_base_dir (layout->context,
+						 base_dir,
+						 layout->text,
+						 start - layout->text,
+						 end - start,
+						 attrs,
+						 iter);
 
       get_items_log_attrs (start, state.items,
                            layout->log_attrs + start_offset,
@@ -3014,6 +3133,7 @@ pango_layout_check_lines (PangoLayout *layout)
       if (state.items)
 	{
 	  state.first_line = TRUE;
+	  state.base_dir = base_dir;
 	  state.start_offset = start_offset;
           state.line_start_index = start - layout->text;
 
@@ -3029,7 +3149,8 @@ pango_layout_check_lines (PangoLayout *layout)
 
           empty_line = pango_layout_line_new (layout);
           empty_line->start_index = start - layout->text;
-	  empty_line->is_paragraph_start = TRUE;
+	  empty_line->is_paragraph_start = TRUE;	  
+	  empty_line->resolved_dir = base_dir;
 
           layout->lines = g_slist_prepend (layout->lines,
                                            empty_line);
@@ -3133,7 +3254,6 @@ pango_layout_line_x_to_index (PangoLayoutLine *line,
   gint last_offset;
   gint end_index;       /* end iterator for line */
   gint end_offset;      /* end iterator for line */
-  PangoDirection base_dir;
   PangoLayout *layout;
   gint last_trailing;
   gboolean suppress_last_trailing;
@@ -3145,8 +3265,6 @@ pango_layout_line_x_to_index (PangoLayoutLine *line,
     return FALSE;
 
   layout = line->layout;
-
-  base_dir = pango_context_get_base_dir (layout->context);
 
   /* Find the last index in the line
    */
@@ -3218,10 +3336,10 @@ pango_layout_line_x_to_index (PangoLayoutLine *line,
     {
       /* pick the leftmost char */
       if (index)
-	*index = (base_dir == PANGO_DIRECTION_LTR) ? first_index : last_index;
+	*index = (line->resolved_dir == PANGO_DIRECTION_LTR) ? first_index : last_index;
       /* and its leftmost edge */
       if (trailing)
-	*trailing = (base_dir == PANGO_DIRECTION_LTR || suppress_last_trailing) ? 0 : last_trailing;
+	*trailing = (line->resolved_dir == PANGO_DIRECTION_LTR || suppress_last_trailing) ? 0 : last_trailing;
       
       return FALSE;
     }
@@ -3308,11 +3426,11 @@ pango_layout_line_x_to_index (PangoLayoutLine *line,
 
   /* pick the rightmost char */
   if (index)
-    *index = (base_dir == PANGO_DIRECTION_LTR) ? last_index : first_index;
+    *index = (line->resolved_dir == PANGO_DIRECTION_LTR) ? last_index : first_index;
 
   /* and its rightmost edge */
   if (trailing)
-    *trailing = (base_dir == PANGO_DIRECTION_LTR && !suppress_last_trailing) ? last_trailing : 0;
+    *trailing = (line->resolved_dir == PANGO_DIRECTION_LTR && !suppress_last_trailing) ? last_trailing : 0;
 
   return FALSE;
 }
@@ -3351,7 +3469,6 @@ pango_layout_line_get_x_ranges (PangoLayoutLine  *line,
 				int             **ranges,
 				int              *n_ranges)
 {
-  PangoDirection base_dir;
   PangoRectangle logical_rect;
   gint line_start_index = 0;
   GSList *tmp_list;
@@ -3359,15 +3476,16 @@ pango_layout_line_get_x_ranges (PangoLayoutLine  *line,
   int accumulated_width = 0;
   int x_offset;
   int width;
-  
+  PangoAlignment alignment;
+
   g_return_if_fail (line != NULL);
   g_return_if_fail (line->layout != NULL);
   g_return_if_fail (start_index <= end_index);
 
-  base_dir = pango_context_get_base_dir (line->layout->context);
+  alignment = get_alignment (line->layout, line);
 
   width = line->layout->width;
-  if (width == -1 && line->layout->alignment != PANGO_ALIGN_LEFT)
+  if (width == -1 && alignment != PANGO_ALIGN_LEFT)
     {
       pango_layout_get_extents (line->layout, NULL, &logical_rect);
       width = logical_rect.width;
@@ -3389,8 +3507,8 @@ pango_layout_line_get_x_ranges (PangoLayoutLine  *line,
     *ranges = g_new (int, 2 * (2 + g_slist_length (line->runs)));
     
   if (x_offset > 0 &&
-      ((base_dir == PANGO_DIRECTION_LTR && start_index < line_start_index) ||
-       (base_dir == PANGO_DIRECTION_RTL && end_index > line_start_index + line->length)))
+      ((line->resolved_dir == PANGO_DIRECTION_LTR && start_index < line_start_index) ||
+       (line->resolved_dir == PANGO_DIRECTION_RTL && end_index > line_start_index + line->length)))
     {
       if (ranges)
 	{
@@ -3454,8 +3572,8 @@ pango_layout_line_get_x_ranges (PangoLayoutLine  *line,
     }
 
   if (x_offset + logical_rect.width < line->layout->width &&
-      ((base_dir == PANGO_DIRECTION_LTR && end_index > line_start_index + line->length) ||
-       (base_dir == PANGO_DIRECTION_RTL && start_index < line_start_index)))
+      ((line->resolved_dir == PANGO_DIRECTION_LTR && end_index > line_start_index + line->length) ||
+       (line->resolved_dir == PANGO_DIRECTION_RTL && start_index < line_start_index)))
     {
       if (ranges)
 	{
@@ -3735,8 +3853,9 @@ pango_layout_line_new (PangoLayout *layout)
   private->line.runs = 0;
   private->line.length = 0;
 
-  /* Note that we leave start_index and is_paragraph_start uninitialized */
-  
+  /* Note that we leave start_index, resolved_dir, and is_paragraph_start
+   *  uninitialized */
+
   return (PangoLayoutLine *) private;
 }
 

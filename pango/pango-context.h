@@ -82,13 +82,19 @@ PangoDirection            pango_context_get_base_dir         (PangoContext      
  * consistent shaping/language engine and bidrectional level.
  * Returns a GList of PangoItem's
  */
-GList *pango_itemize (PangoContext      *context,
-                      const char        *text,
-                      int                start_index,
-                      int                length,
-                      PangoAttrList     *attrs,
-                      PangoAttrIterator *cached_iter);
-
+GList *pango_itemize                (PangoContext      *context,
+				     const char        *text,
+				     int                start_index,
+				     int                length,
+				     PangoAttrList     *attrs,
+				     PangoAttrIterator *cached_iter);
+GList *pango_itemize_with_base_dir  (PangoContext      *context,
+				     PangoDirection     base_dir,
+				     const char        *text,
+				     int                start_index,
+				     int                length,
+				     PangoAttrList     *attrs,
+				     PangoAttrIterator *cached_iter);
 
 G_END_DECLS
 

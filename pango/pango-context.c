@@ -592,12 +592,12 @@ static void
 itemize_state_init (ItemizeState      *state,
 		    PangoContext      *context, 
 		    const char        *text,
+		    PangoDirection     base_dir,
 		    int                start_index,
 		    int                length,
 		    PangoAttrList     *attrs,
 		    PangoAttrIterator *cached_iter)
 {
-  PangoDirection base_dir;
   gunichar *text_ucs4;
   long n_chars;
 
@@ -613,8 +613,6 @@ itemize_state_init (ItemizeState      *state,
   /* First, apply the bidirectional algorithm to break
    * the text into directional runs.
    */
-  base_dir = context->base_dir;
-
   text_ucs4 = g_utf8_to_ucs4_fast (text + start_index, length, &n_chars);
   state->embedding_levels = g_new (guint8, n_chars);
   pango_log2vis_get_embedding_levels (text_ucs4, n_chars, &base_dir,
@@ -1069,10 +1067,61 @@ itemize_state_finish (ItemizeState *state)
 }
 
 /**
+ * pango_itemize_with_base_dir:
+ * @context:   a structure holding information that affects
+               the itemization process.
+ * @text:      the text to itemize.
+ * @start_index: first byte in @text to process
+ * @length:    the number of bytes (not characters) to process
+ *             after @start_index.
+ *             This must be >= 0.
+ * @base_dir:  base direction to use for bidirectional processing
+ * @attrs:     the set of attributes that apply to @text.
+ * @cached_iter:      Cached attribute iterator, or NULL
+ *
+ * Like pango_itemize(), but the base direction to use when
+ * computing bidirectional levels (see pango_context_set_base_dir ()),
+ * is specified explicitely rather than gotten from the #PangoContext.
+ *
+ * Return value: a GList of PangoItem structures.
+ */
+GList *
+pango_itemize_with_base_dir (PangoContext      *context, 
+			     PangoDirection     base_dir,
+			     const char        *text,
+			     int                start_index,
+			     int                length,
+			     PangoAttrList     *attrs,
+			     PangoAttrIterator *cached_iter)
+{
+  ItemizeState state;
+
+  g_return_val_if_fail (context != NULL, NULL);
+  g_return_val_if_fail (start_index >= 0, NULL);
+  g_return_val_if_fail (length >= 0, NULL);
+  g_return_val_if_fail (length == 0 || text != NULL, NULL);
+
+  if (length == 0)
+    return NULL;
+
+  itemize_state_init (&state, context, text, base_dir, start_index, length,
+		      attrs, cached_iter);
+
+  do 
+    itemize_state_process_run (&state);
+  while (itemize_state_next (&state));
+
+  itemize_state_finish (&state);
+  
+  return g_list_reverse (state.result);
+}
+
+/**
  * pango_itemize:
  * @context:   a structure holding information that affects
                the itemization process.
  * @text:      the text to itemize.
+ * @base_dir:  base direction to use for BiDi algorithm.
  * @start_index: first byte in @text to process
  * @length:    the number of bytes (not characters) to process
  *             after @start_index.
@@ -1101,26 +1150,13 @@ pango_itemize (PangoContext      *context,
 	       PangoAttrList     *attrs,
                PangoAttrIterator *cached_iter)
 {
-  ItemizeState state;
-
   g_return_val_if_fail (context != NULL, NULL);
   g_return_val_if_fail (start_index >= 0, NULL);
   g_return_val_if_fail (length >= 0, NULL);
   g_return_val_if_fail (length == 0 || text != NULL, NULL);
 
-  if (length == 0)
-    return NULL;
-
-  itemize_state_init (&state, context, text, start_index, length,
-		      attrs, cached_iter);
-
-  do 
-    itemize_state_process_run (&state);
-  while (itemize_state_next (&state));
-
-  itemize_state_finish (&state);
-  
-  return g_list_reverse (state.result);
+  return pango_itemize_with_base_dir (context, context->base_dir,
+				      text, start_index, length, attrs, cached_iter);
 }
 
 /**

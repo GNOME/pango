@@ -198,7 +198,7 @@ pango_fc_font_map_class_init (PangoFontMapClass *class)
   class->list_families = pango_fc_font_map_list_families;
   class->shape_engine_type = PANGO_RENDER_TYPE_FC;
 
-  g_type_class_add_private (object_class, sizeof (PangoFontMapPrivate));
+  g_type_class_add_private (object_class, sizeof (PangoFcFontMapPrivate));
 }
 
 static guint

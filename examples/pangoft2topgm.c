@@ -54,6 +54,7 @@ static char *opt_output = NULL;
 static int opt_margin = 10;
 static int opt_markup = FALSE;
 static gboolean opt_rtl = FALSE;
+static gboolean opt_auto_dir = TRUE;
 static char *opt_text = NULL;
 static  gboolean opt_waterfall = FALSE;
 static  int opt_width = -1;
@@ -106,6 +107,8 @@ make_layout(PangoContext *context,
   else
     pango_layout_set_text (layout, text, -1);
 
+  pango_layout_set_auto_dir (layout, opt_auto_dir);
+  
   font_description = get_font_description ();
   if (size > 0)
     pango_font_description_set_size (font_description, size * PANGO_SCALE);
@@ -240,6 +243,8 @@ int main(int argc, char *argv[])
   gboolean do_convert = FALSE;
   
   static const ArgDesc args[] = {
+    { "no-auto-dir","Don't set layout direction according to contents",
+      ARG_NOBOOL,   &opt_auto_dir },
     { "display",    "Show output using ImageMagick",
       ARG_BOOL,     &opt_display },
     { "dpi",        "Set the dpi'",

@@ -1,3 +1,24 @@
+Fri Feb 27 11:23:21 2004  Owen Taylor  <otaylor@redhat.com>
+ 
+ 	Patch from Dov Grobgeld to add auto-direction to PangoLayout
+ 	(more of #70451)
+ 
+ 	* examples/pangofttopgm.c: Add --no-auto-dir argument.
+ 
+	* pango-layout.[ch]: Add pango_layout_set_auto_dir()
+ 	defaulting to TRUE; resolve paragraph direction within
+ 	a layout by propagating base direction downwards
+ 	from paragraph to paragraph.
+ 
+	* pango-context.[ch]: Add pango_itemize_with_base_dir()
+ 	which overrides the base direction from the PangoContext.
+ 
+Mon Mar  1 10:01:58 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* docs/tmpl/text-attributes.sgml: Document %PANGO_UNDERLINE_ERROR.
+
+	* pango/pangofc-fontmap.c: Pango*Fc*FontmapPrivate. Make compile.
+
 2004-03-01  Murray Cumming  <murrayc@murrayc.com>
 
 	* pango/pango-attributes.h: Removed trailing commas from the

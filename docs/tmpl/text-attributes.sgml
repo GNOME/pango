@@ -322,6 +322,11 @@ of underlining.
                       single characters, such as for keyboard
                       accelerators. %PANGO_UNDERLINE_SINGLE should
                       be used for extended portions of text.
+@PANGO_UNDERLINE_ERROR: a wavy underline should be drawn below.
+                        This underline is typically used to indicate
+                        an error such as a possilble mispelling; in some
+                        cases an contrasting color may automatically
+                        be used.
 
 <!-- ##### MACRO PANGO_TYPE_UNDERLINE ##### -->
 <para>
