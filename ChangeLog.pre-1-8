@@ -1,3 +1,8 @@
+2003-11-25  Noah Levitt  <nlevitt@columbia.edu>
+
+	* pango-utils.c (lang_texts[]): Italian is "it"; "iw" is deprecated
+	for Hebrew, should be "he".
+
 2003-11-20  Manish Singh  <yosh@gimp.org>
 
 	* pango/pangoft2-private.h: #include <fontconfig/fcfreetype.h> for
