@@ -1,3 +1,8 @@
+2005-01-29  Tor Lillqvist  <tml@novell.com>
+
+	* pango/pango.def: Add missing pango_render_part_get_type. 
+	(#165287, Cedric Gustin)
+
 2005-01-25  Tor Lillqvist  <tml@novell.com>
 
 	* pango/pango.def: Add a missing entry point.

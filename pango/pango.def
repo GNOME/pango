@@ -273,6 +273,7 @@ EXPORTS
 	pango_parse_variant
 	pango_parse_weight
 	pango_read_line
+	pango_render_part_get_type
 	pango_renderer_activate
 	pango_renderer_deactivate
 	pango_renderer_draw_error_underline
