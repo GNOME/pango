@@ -46,7 +46,7 @@ pango.modules:
 	if find ../modules -name '*.so' | grep 'so' > /dev/null ; then \
           echo "Writing a pango.modules file to use when running examples before installing Pango."; \
 	  (cd ../modules && \
-           ../pango/pango-querymodules `find . -name '*.so'` > ../examples/pango.modules ) ;\
+           ../pango/pango-querymodules `find . -name '*.la' | grep -v \.libs` > ../examples/pango.modules ) ;\
 	else \
           echo "No dynamic modules found; will use only static modules for uninstalled example programs."; \
 	  touch pango.modules; \

@@ -480,6 +480,21 @@ dnl NOTE: We need to use a separate automake conditional for this
 dnl       to make this work with the tarballs.
 AM_CONDITIONAL(ENABLE_GTK_DOC, test x$enable_gtk_doc = xyes)
 
+dnl ********************************************************
+dnl * See whether we need to load our modules as .la files *
+dnl ********************************************************
+
+use_la_modules=false
+case $host in
+  *-aix*) use_la_modules=true
+esac
+
+if $use_la_modules ; then
+   AC_DEFINE(USE_LA_MODULES, 1, [Whether to load modules via .la files rather than directly])
+fi
+
+echo ================= $host ==================
+
 dnl ******************************************************
 dnl * See whether to include shared library dependencies *
 dnl ******************************************************

@@ -35,11 +35,12 @@
 #endif
 #include <stdio.h>
 
-#ifdef G_OS_WIN32
-#define SOEXT ".dll"
+#if USE_LA_MODULES
+#define SOEXT ".la"
 #else
-#define SOEXT ".so"
+#define SOEXT ("." G_MODULE_SUFFIX)
 #endif
+#define SOEXT_LEN (strlen (SOEXT))
 
 void 
 query_module (const char *dir, const char *name)
@@ -149,7 +150,7 @@ int main (int argc, char **argv)
 	      while ((dent = g_dir_read_name (dir)))
 		{
 		  int len = strlen (dent);
-		  if (len > 3 && strcmp (dent + len - strlen (SOEXT), SOEXT) == 0)
+		  if (len > SOEXT_LEN && strcmp (dent + len - SOEXT_LEN, SOEXT) == 0)
 		    query_module (dirs[i], dent);
 		}
 	      
