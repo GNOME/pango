@@ -1,3 +1,10 @@
+2004-12-17  Tor Lillqvist  <tml@iki.fi>
+
+	* pango/Makefile.am: Make the .la files depend on the
+	corresponding .def files.
+
+	* pango/pango.def: Add a couple of missing functions.
+
 Fri Dec 17 14:37:49 2004  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pangofc-fontmap.c (pango_fc_convert_weight_to_fc): Use

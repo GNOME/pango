@@ -51,7 +51,7 @@ libpango_1_0_la_DEPENDENCIES = mini-fribidi/libmini-fribidi.la
 if OS_WIN32
 libpango_1_0_la_LDFLAGS += -export-symbols $(srcdir)/pango.def
 libpango_1_0_la_LIBADD += pango-win32res.lo
-libpango_1_0_la_DEPENDENCIES += pango-win32res.lo
+libpango_1_0_la_DEPENDENCIES += pango-win32res.lo pango.def
 endif
 pango-win32res.lo: pango.rc
 	$(top_srcdir)/../glib/build/win32/lt-compile-resource $< $@
@@ -189,7 +189,7 @@ libpangoft2_1_0_la_SOURCES =   	\
 if OS_WIN32
 libpangoft2_1_0_la_LDFLAGS += -export-symbols $(srcdir)/pangoft2.def
 libpangoft2_1_0_la_LIBADD += pangoft2-win32res.lo
-libpangoft2_1_0_la_DEPENDENCIES += pangoft2-win32res.lo
+libpangoft2_1_0_la_DEPENDENCIES += pangoft2-win32res.lo pangoft2.def
 endif
 pangoft2-win32res.lo: pangoft2.rc
 	$(top_srcdir)/../glib/build/win32/lt-compile-resource $< $@
@@ -235,7 +235,7 @@ libpangowin32_1_0_la_SOURCES =	\
 if OS_WIN32
 libpangowin32_1_0_la_LDFLAGS += -export-symbols $(srcdir)/pangowin32.def
 libpangowin32_1_0_la_LIBADD += pangowin32-win32res.lo
-libpangowin32_1_0_la_DEPENDENCIES += pangowin32-win32res.lo
+libpangowin32_1_0_la_DEPENDENCIES += pangowin32-win32res.lo pangowin32.def
 endif
 pangowin32-win32res.lo: pangowin32.rc
 	$(top_srcdir)/../glib/build/win32/lt-compile-resource $< $@
