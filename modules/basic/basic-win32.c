@@ -1163,8 +1163,8 @@ PANGO_MODULE_ENTRY(list) (PangoEngineInfo **engines,
       script_engines[0].ranges = ranges;
       script_engines[0].n_ranges = ranges->len;
 #else
-      script_engines[0].ranges = uniscribe_ranges;
-      script_engines[0].n_ranges = G_N_ELEMENTS (uniscribe_ranges);
+      script_engines[0].scripts = uniscribe_scripts;
+      script_engines[0].n_scripts = G_N_ELEMENTS (uniscribe_scripts);
 #endif
     }
 #endif
