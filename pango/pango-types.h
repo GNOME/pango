@@ -72,6 +72,8 @@ struct _PangoRectangle
  * x_device = x_user * matrix->xx + y_user * matrix->xy + matrix->x0;
  * y_device = x_user * matrix->yx + y_user * matrix->yy + matrix->y0;
  * </programlisting>
+ *
+ * Since: 1.6
  **/
 struct _PangoMatrix
 {
@@ -100,6 +102,8 @@ struct _PangoMatrix
  * PangoMatrix matrix = PANGO_MATRIX_INIT;
  * pango_matrix_rotate (&amp;matrix, 45.);
  * </programlisting></informalexample>
+ *
+ * Since: 1.6
  **/
 #define PANGO_MATRIX_INIT { 1., 0., 0., 1., 0., 0. }
 

@@ -1008,6 +1008,8 @@ pango_matrix_get_type (void)
  * 
  * Return value: a copy of @matrix. The result must be freed with
  *  pango_matrix_free().
+ *
+ * Since: 1.6
  **/
 PangoMatrix *
 pango_matrix_copy (const PangoMatrix *matrix)
@@ -1022,6 +1024,8 @@ pango_matrix_copy (const PangoMatrix *matrix)
  * @matrix: a #PangoMatrix
  * 
  * Free a #PangoMatrix created with pango_matrix_copy().
+ *
+ * Since: 1.6
  **/
 void
 pango_matrix_free (PangoMatrix *matrix)
@@ -1040,6 +1044,8 @@ pango_matrix_free (PangoMatrix *matrix)
  * Changes the transformation represented by @matrix to be the
  * transformation given by first translating by (@tx, @ty)
  * then applying the original transformation.
+ *
+ * Since: 1.6
  **/
 void
 pango_matrix_translate (PangoMatrix *matrix,
@@ -1062,6 +1068,8 @@ pango_matrix_translate (PangoMatrix *matrix,
  * transformation given by first scaling by @sx in the X direction
  * and @sy in the Y direction then applying the original
  * transformation.
+ *
+ * Since: 1.6
  **/
 void
 pango_matrix_scale (PangoMatrix *matrix,
@@ -1084,6 +1092,8 @@ pango_matrix_scale (PangoMatrix *matrix,
  * Changes the transformation represented by @matrix to be the
  * transformation given by first rotating by @degrees degrees
  * counter-clokwise then applying the original transformation.
+ *
+ * Since: 1.6
  **/
 void
 pango_matrix_rotate (PangoMatrix *matrix,
@@ -1116,6 +1126,8 @@ pango_matrix_rotate (PangoMatrix *matrix,
  * Changes the transformation represented by @matrix to be the
  * transformation given by first applying transformation
  * given by @new_matrix then applying the original transformation.
+ *
+ * Since: 1.6
  **/
 void
 pango_matrix_concat (PangoMatrix       *matrix,

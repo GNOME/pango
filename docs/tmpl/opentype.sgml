@@ -49,6 +49,7 @@ use pango_ot_info_new().
 @cluster: 
 @component: 
 @ligID: 
+@property_cache: 
 
 <!-- ##### STRUCT PangoOTRuleset ##### -->
 <para>

@@ -135,6 +135,8 @@ pango_context_new (void)
  * coordiantes after the application of the matrix. So, they don't scale
  * with the matrix, though they may change slightly for different
  * matrices, depending on how the text is fit to the pixel grid.
+ *
+ * Since: 1.6
  **/
 void
 pango_context_set_matrix (PangoContext       *context,
@@ -161,6 +163,8 @@ pango_context_set_matrix (PangoContext       *context,
  *  (which is the same as the identity matrix). The returned
  *  matrix is owned by Pango and must not be modified or
  *  freed.
+ *
+ * Since: 1.6
  **/
 G_CONST_RETURN PangoMatrix *
 pango_context_get_matrix (PangoContext *context)
@@ -203,6 +207,8 @@ pango_context_set_font_map (PangoContext *context,
  * 
  * Return value: the font map for the #PangoContext. This value
  *  is owned by Pango and should not be unreferenced.
+ *
+ * Since: 1.6
  **/
 PangoFontMap *
 pango_context_get_font_map (PangoContext *context)

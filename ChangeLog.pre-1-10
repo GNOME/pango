@@ -1,3 +1,18 @@
+Mon Sep 13 17:38:58 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* === Released 1.6.0 ===
+
+	* configure.in: Update versions for 1.6.0 
+
+	* NEWS: Update.
+
+	* README: Minor tweak.
+
+	* pango/fonts.c pango/pango-context.c pango/pango-types.h
+	pango/pango-utils.c pango/pangoft2.c pango/pango-layout.c
+	pango/opentype/pango-ot-buffer.c: Add a bunch of missing
+	Since: 1.6.
+	
 Mon Aug 16 14:17:56 2004  Owen Taylor  <otaylor@redhat.com>
 
 	* examples/renderdemo.c (fc_substitute_func): Fix reversed

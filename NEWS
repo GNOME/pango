@@ -1,3 +1,9 @@
+Overview of changes between 1.5.2 and 1.6.0
+===========================================
+* Add OpenType support for Hebrew [Dov Grobgeld]
+* Win32 bug and build fixes [Tor Lillqvist, Hans Breuer, John Ehresman]
+* Misc bug fixes [Behdad Esfahbod, Jatin Nansi]
+
 Overview of changes between 1.5.1 and 1.5.2
 ===========================================
 * Support 'init' feature for Bengali [Sayamindu Dasgupta]

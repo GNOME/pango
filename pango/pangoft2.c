@@ -355,6 +355,8 @@ transform_point (const PangoMatrix *matrix,
  * changed, so to produce correct rendering results, the @font
  * must have been loaded using a #PangoContext with an identical
  * transformation matrix to that passed in to this function.
+ *
+ * Since: 1.6
  **/
 void 
 pango_ft2_render_transformed (FT_Bitmap         *bitmap,
@@ -806,6 +808,8 @@ draw_strikethrough (FT_Bitmap         *bitmap,
  * pixels. (Using this will avoid extra inaccuracies from
  * rounding to integer pixels multiple times, even if the
  * final glyph positions are integers.)
+ *
+ * Since: 1.6
  */
 void 
 pango_ft2_render_layout_line_subpixel (FT_Bitmap       *bitmap,
@@ -906,6 +910,8 @@ pango_ft2_render_layout_line (FT_Bitmap       *bitmap,
  * pixels. (Using this will avoid extra inaccuracies from
  * rounding to integer pixels multiple times, even if the
  * final glyph positions are integers.)
+ *
+ * Since: 1.6
  */
 void 
 pango_ft2_render_layout_subpixel (FT_Bitmap   *bitmap,
