@@ -1016,10 +1016,12 @@ pango_fc_font_description_from_pattern (FcPattern *pattern, gboolean include_siz
   
   FcChar8 *s;
   int i;
+  FcResult res;
 
   desc = pango_font_description_new ();
 
-  g_assert (FcPatternGetString (pattern, FC_FAMILY, 0, (FcChar8 **) &s) == FcResultMatch);
+  res = FcPatternGetString (pattern, FC_FAMILY, 0, (FcChar8 **) &s);
+  g_assert (res == FcResultMatch);
 
   pango_font_description_set_family (desc, (gchar *)s);
   

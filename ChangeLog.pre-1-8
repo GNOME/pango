@@ -1,3 +1,8 @@
+Tue Sep  9 12:21:02 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pangofc-fontmap.c (pango_fc_font_description_from_pattern): 
+	Fix a g_assert() with a side-effect. (Maybe #121742?)
+
 Mon Sep 15 15:48:25 2003  Owen Taylor  <otaylor@redhat.com>
 
 	* examples/Makefile.am examples/argcontext.c examples/argcontext.h:
