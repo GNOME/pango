@@ -22,6 +22,8 @@
  * PERFORMANCE OF THIS SOFTWARE.
  */
 
+#include "config.h"
+
 #include <stdlib.h>
 
 #include <glib.h>
@@ -29,7 +31,7 @@
 #include "minixftint.h"
 
 MiniXftFontSet  *_MiniXftFontSet;
-Bool	    _MiniXftConfigInitialized;
+Bool	         _MiniXftConfigInitialized;
 
 Bool
 MiniXftInit (char *config)
@@ -83,7 +85,7 @@ mini_xft_get_default_path (void)
 				       "..",
 				       NULL);
 
-  for (i = 0; i < (sizeof(paths) / sizeof(paths[0])); i++)
+  for (i = 0; i < G_N_ELEMENTS (paths); i++)
     {
       if (result)
 	g_free (result);
