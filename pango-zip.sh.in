@@ -15,7 +15,7 @@ lib/libpangoft2-@PANGO_API_VERSION@-@LT_CURRENT_MINUS_AGE@.dll
 lib/libpangowin32-@PANGO_API_VERSION@-@LT_CURRENT_MINUS_AGE@.dll
 EOF
 
-zip $ZIP lib/pango/modules/*.dll
+zip $ZIP lib/pango/@PANGO_MODULE_VERSION@/modules/*.dll
 
 rm $DEVZIP
 zip -r $DEVZIP -@ <<EOF

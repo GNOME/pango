@@ -1,5 +1,7 @@
 2002-03-08  Tor Lillqvist  <tml@iki.fi>
 
+	* pango-zip.sh.in: Use PANGO_MODULE_VERSION in modules path.
+
 	* pango/pangoft2.def: Add the pango_ot_* symbols from the static
 	libpango-ot library.
 
