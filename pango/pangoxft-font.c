@@ -722,7 +722,7 @@ pango_xft_font_find_shaper (PangoFont     *font,
   return (PangoEngineShape *)pango_map_get_engine (shape_map, ch);
 }
 
-gboolean
+static gboolean
 set_unicode_charmap (FT_Face face)
 {
   int charmap;
@@ -737,7 +737,7 @@ set_unicode_charmap (FT_Face face)
   return FALSE;
 }
 
-void
+static void
 load_fallback_font (PangoXftFont *xfont)
 {
   Display *display;

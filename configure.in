@@ -34,7 +34,7 @@ dnl This is the last version with which we have compatibility with
 dnl with the modules for; it isn't the same as
 dnl PANGO_API_VERSION.'PANGO_MICRO_VERSION - PANGO_BINARY_AGE' since we have
 dnl engine only API    
-PANGO_MODULE_VERSION=1.0.0
+PANGO_MODULE_VERSION=1.1.0
 
 AC_SUBST(PANGO_MAJOR_VERSION)
 AC_SUBST(PANGO_MINOR_VERSION)

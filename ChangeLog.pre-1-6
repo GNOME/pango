@@ -1,3 +1,11 @@
+Thu Aug  8 19:14:09 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pangoxft-font.c (load_fallback_font): Fix
+	accidentally exported set_unicode_charmap() and
+	load_fallback_face/font(). (Jacob Berkman, #90245)
+
+	* configure.in: Up PANGO_MODULE_VERSION to 1.1.0.
+
 Thu Aug  8 19:00:49 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pangoxft-fontmap.c: Up MAX_FREED_FONTS to 128
