@@ -2037,6 +2037,14 @@ pango_layout_get_extents_internal (PangoLayout    *layout,
       pango_layout_get_extents (layout, NULL, &overall_logical);
       width = overall_logical.width;
     }
+
+  if (logical_rect)
+    {
+      logical_rect->x = 0;
+      logical_rect->y = 0;
+      logical_rect->width = 0;
+      logical_rect->height = 0;
+    }
   
   line_list = layout->lines;
   while (line_list)
@@ -2096,24 +2104,35 @@ pango_layout_get_extents_internal (PangoLayout    *layout,
 
       if (logical_rect)
 	{
-          /* Compute union of line_logical_layout with
-           * current logical_rect
-           */
-          
-	  if (line_list == layout->lines)
+	  if (layout->width == -1)
 	    {
-              *logical_rect = line_logical_layout;
+	      /* When no width is set on layout, we can just compute the max of the
+	       * line lengths to get the horizontal extents ... logical_rect.x = 0.
+	       */
+	      logical_rect->width = MAX (logical_rect->width, line_logical_layout.width);
 	    }
 	  else
 	    {
-	      new_pos = MIN (logical_rect->x, line_logical_layout.x);
-	      logical_rect->width =
-                MAX (logical_rect->x + logical_rect->width,
-                     line_logical_layout.x + line_logical_layout.width) - new_pos;
-	      logical_rect->x = new_pos;
-
-	      logical_rect->height += line_logical_layout.height;
+	      /* When a width is set, we have to compute the union of the horizontal
+	       * extents of all the lines.
+	       */
+	      if (line_list == layout->lines)
+		{
+		  logical_rect->x = line_logical_layout.x;
+		  logical_rect->width = line_logical_layout.width;
+		}
+	      else
+		{
+		  new_pos = MIN (logical_rect->x, line_logical_layout.x);
+		  logical_rect->width =
+		    MAX (logical_rect->x + logical_rect->width,
+			 line_logical_layout.x + line_logical_layout.width) - new_pos;
+		  logical_rect->x = new_pos;
+		  
+		}
 	    }
+	  
+	  logical_rect->height += line_logical_layout.height;
 
           /* No space after the last line, of course. */
           if (line_list->next != NULL)
