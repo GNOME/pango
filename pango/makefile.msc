@@ -15,7 +15,7 @@ PANGO_VER = 0.17
 !IFNDEF PACKAGE
 
 DLLS = pango pangowin32 # pangoft2
-EXES = querymodules testfonts
+EXES = querymodules # testfonts
 #? test1 test2 test3 test4 test5
 
 # The main target
@@ -133,11 +133,23 @@ pango_headers=		   \
 	pango-utils.h	   \
 	pangox.h
 
-pango-enum-types.h: $(pango_headers) makeenums.pl
-	$(PERL)	./makeenums.pl include $(pango_headers) > pango-enum-types.h
 
-pango-enum-types.c: $(pango_headers) makeenums.pl pango-enum-types.h
-	$(PERL) ./makeenums.pl cfile $(pango_headers) > pango-enum-types.c
+pango-enum-types.h: $(pango_headers) 
+	$(PERL) ..\..\glib\gobject\glib-mkenums  \
+		--fhead "#ifndef __PANGO_ENUM_TYPES_H__\n#define __PANGO_ENUM_TYPES_H__\n" \
+		--fprod "/* enumerations from \"@filename@\" */\n" \
+		--vhead "GType @enum_name@_get_type (void);\n#define PANGO_TYPE_@ENUMSHORT@ (@enum_name@_get_type())\n" 	\
+		--ftail "#endif /* __PANGO_ENUM_TYPES_H__ */" \
+		$(pango_headers) ) > pango-enum-types.h
+
+pango-enum-types.c: $(pango_headers) pango-enum-types.h
+	$(PERL) ..\..\glib\gobject\glib-mkenums  \
+		--fhead "#include <pango.h>" \
+		--fprod "\n/* enumerations from \"@filename@\" */" \
+		--vhead "GType\n@enum_name@_get_type (void)\n{\n  static GType etype = 0;\n  if (etype == 0) {\n    static const GEnumValue values[] = {" 	\
+		--vprod "      { @VALUENAME@, \"@VALUENAME@\", \"@valuenick@\" }," \
+		--vtail "      { 0, NULL, NULL }\n    };\n    etype = g_enum_register_static (\"@EnumName@\", values);\n  }\n  return etype;\n}\n" \
+		$(pango_headers) > pango-enum-types.c
 
 $(PACKAGE).lib : $(OBJECTS) $(PRJ_TOP)\config.h
 	lib /out:$(PACKAGE).lib $(OBJECTS)
@@ -151,6 +163,11 @@ $(PACKAGE).exe : $(PKG_LINK) $(OBJECTS)
 
 $(PRJ_TOP)\config.h: $(PRJ_TOP)\config.h.win32
 	copy $(PRJ_TOP)\config.h.win32 $(PRJ_TOP)\config.h
+
+
+module-defs-win32.c: module-defs-win32.c.win32
+	copy module-defs-win32.c.win32 module-defs-win32.c
+
 
 .c.obj :
 	$(CC) $(CFLAGS) -GD -c $(PKG_CFLAGS) -DPANGO_VERSION=\"$(PANGO_VER)\" $<

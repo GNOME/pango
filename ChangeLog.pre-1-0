@@ -5,7 +5,7 @@
 	Use glib-mkenums instead of the old mkenums.pl
 	copy module-defs-win32.c.win32 to module-defs-win32.c
 
-	* module-defs-win32.c.win32:
+	* pango/module-defs-win32.c.win32:
 	Include the built in basic-win32 stuff.
 	
 2001-07-27  Darin Adler  <darin@bentspoon.com>
