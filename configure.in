@@ -325,15 +325,19 @@ fi
 # The OpenType test programs aren't particularly portable
 #
 have_varargs=no
+pango_saved_cppflags=$CPPFLAGS
+CPPFLAGS="$CPPFLAGS $GLIB_CFLAGS"
 AC_MSG_CHECKING(Whether to build OpenType test programs)
-pango_save_cppflags="$CPPFLAGS"
-AC_TRY_COMPILE([#include <glib.h>],[
-#if !(defined(G_HAVE_ISO_VARARGS) || defined(G_HAVE_GNUC_VARARGS))
-#error "No varargs macro definitions"
+AC_EGREP_CPP(pango_configure_test_yes, [
+#include <glib.h>
+
+#if defined(G_HAVE_ISO_VARARGS) || defined(G_HAVE_GNUC_VARARGS)
+pango_configure_test_yes
 #endif
 ],have_varargs=yes)
 AC_MSG_RESULT($have_varargs)
 AM_CONDITIONAL(BUILD_OT_TESTS, test $have_varargs = yes)
+CPPFLAGS=$pango_saved_cppflags
 
 #
 # Allow building some or all modules included
