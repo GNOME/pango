@@ -1,3 +1,9 @@
+Mon Nov 26 19:24:21 2001  Owen Taylor  <otaylor@redhat.com>
+
+	* configure.in tests/Makefile.am tests/cxx-test.C: Add
+	a test program that includes all headers in a C++ program.
+	(#52606)
+
 2001-11-26  Alex Larsson  <alexl@redhat.com>
 
 	* pango/pangoxft-font.c (pango_xft_font_get_coverage):

@@ -13,11 +13,23 @@ AM_INIT_AUTOMAKE(pango, $PANGO_MAJOR_VERSION.$PANGO_MINOR_VERSION)
 AM_CONFIG_HEADER(config.h)
 
 AC_PROG_CC
+	
+dnl 
+dnl Check for a working C++ compiler, but do not bail out, if none is found.
+dnl We use this for an automated test for C++ header correctness.
+dnl 
+AC_CHECK_PROGS(CXX, $CCC c++ g++ gcc CC cxx cc++ cl, gcc)
+AC_LANG_SAVE
+AC_LANG_CPLUSPLUS
+AC_TRY_COMPILE(,[class a { int b; } c;], ,CXX=)
+AM_CONDITIONAL(HAVE_CXX, test "$CXX" != "")
+AC_LANG_RESTORE
+
 AC_LIBTOOL_WIN32_DLL
 AM_PROG_LIBTOOL
 AM_PROG_LEX
 AC_PROG_YACC
-	
+
 AC_MSG_CHECKING([for some Win32 platform])
 case "$host" in
   *-*-mingw*|*-*-cygwin*)
@@ -337,36 +349,35 @@ AC_CHECK_FUNCS(flockfile)
 AC_ARG_WITH(qt, [ --with-qt=DIR    Location where Qt is installed],,with_qt=yes)
 
 QTDIR=
-AC_MSG_CHECKING(For Qt location)
+if test "$CXX" != "" ; then
+  AC_MSG_CHECKING(For Qt location)
   
-if test "x$with_qt" = xyes ; then         
-# Search for Qt in a common location. The ls -r is an attempt to find the newest 
-   dirs=`cd /usr/lib && ls -d -r qt*`
-   for dir in $dirs ; do
-      case $dir in
-        qt2*|qt-2*)
-          if test -x /usr/lib/$dir/bin/moc ; then
-            QTDIR=/usr/lib/$dir
-           break
-          fi
-        ;;
-      esac      
-   done
+  if test "x$with_qt" = xyes ; then         
+  # Search for Qt in a common location. The ls -r is an attempt to find the newest 
+     dirs=`cd /usr/lib && ls -d -r qt*`
+     for dir in $dirs ; do
+        case $dir in
+          qt2*|qt-2*)
+            if test -x /usr/lib/$dir/bin/moc ; then
+              QTDIR=/usr/lib/$dir
+             break
+	    fi
+	  ;;
+	esac      
+     done
+  else
+     if test "x$with_qt" != xno ; then
+	if test -x $with_qt/bin/moc ; then
+	   QTDIR=$with_qt
+	fi
+     fi
+  fi
 
-else
-   if test "x$with_qt" != xno ; then
-      if test -x $with_qt/bin/moc ; then
-         QTDIR=$with_qt
-      fi
-   fi
-fi
-
-if test "x$QTDIR" = x ; then
-  AC_MSG_RESULT(none)
-else
-  AC_MSG_RESULT($QTDIR)
-  
-  AC_PROG_CXX
+  if test "x$QTDIR" = x ; then
+    AC_MSG_RESULT(none)
+  else
+    AC_MSG_RESULT($QTDIR)
+  fi
 fi
 
 AM_CONDITIONAL(BUILD_QT_TEST, test "x$QTDIR" != x)
