@@ -142,6 +142,7 @@ void     pango_layout_get_cursor_pos       (PangoLayout    *layout,
 					    PangoRectangle *strong_pos,
 					    PangoRectangle *weak_pos);
 void     pango_layout_move_cursor_visually (PangoLayout    *layout,
+					    gboolean        strong,
 					    int             old_index,
 					    int             old_trailing,
 					    int             direction,

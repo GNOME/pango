@@ -385,6 +385,7 @@ for partial lines.
 </para>
 
 @layout: 
+@strong: 
 @old_index: 
 @old_trailing: 
 @direction: 

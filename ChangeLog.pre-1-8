@@ -1,3 +1,9 @@
+Thu Jun  7 14:06:25 2001  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-layout.c (pango_layout_move_cursor_visually): 
+	Add a 'strong' parameter to allow moving either the strong
+	or the weak cursor visually, instead of the strong cursor.
+
 2001-06-07  Havoc Pennington  <hp@redhat.com>
 
 	* pango/Makefile.am: add libpango.la to _DEPENDENCIES for the

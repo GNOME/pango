@@ -1135,6 +1135,9 @@ pango_layout_index_to_line_x (PangoLayout *layout,
 /**
  * pango_layout_move_cursor_visually:
  * @layout:       a #PangoLayout.
+ * @strong:       whether the moving cursor is the strong cursor or the
+ *                weak cursor. The strong cursor is the cursor corresponding
+ *                to text insertion in the base direction for the layout.
  * @old_index:    the byte index of the grapheme for the old index
  * @old_trailing: if 0, the cursor was at the trailing edge of the 
  *                grapheme indicated by @old_index, if > 0, the cursor
@@ -1171,6 +1174,7 @@ pango_layout_index_to_line_x (PangoLayout *layout,
  **/
 void
 pango_layout_move_cursor_visually (PangoLayout *layout,
+				   gboolean     strong,
 				   int          old_index,
 				   int          old_trailing,
 				   int          direction,
@@ -1228,7 +1232,7 @@ pango_layout_move_cursor_visually (PangoLayout *layout,
   while (old_trailing--)
     old_index = g_utf8_next_char (layout->text + old_index) - layout->text;
 
-  log2vis_map = pango_layout_line_get_log2vis_map (line, TRUE);
+  log2vis_map = pango_layout_line_get_log2vis_map (line, strong);
   n_vis = g_utf8_strlen (layout->text + line->start_index, line->length);
 
   /* Clamp old_index to fit on the line */
@@ -1289,7 +1293,7 @@ pango_layout_move_cursor_visually (PangoLayout *layout,
       vis_pos = 0;
     }
 
-  vis2log_map = pango_layout_line_get_vis2log_map (line, TRUE);
+  vis2log_map = pango_layout_line_get_vis2log_map (line, strong);
 
   do
     {
