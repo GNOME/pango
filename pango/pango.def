@@ -69,7 +69,7 @@ EXPORTS
 	pango_font_map_list_fonts
 	pango_font_map_load_font
 	pango_get_lib_subdirectory
-	pango_get_log_attr
+	pango_get_log_attrs
 	pango_get_sysconf_subdirectory
 	pango_glyph_string_extents
 	pango_glyph_string_free
