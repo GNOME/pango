@@ -56,7 +56,8 @@ pango_item_copy (PangoItem *item)
   result->num_chars = item->num_chars;
 
   result->analysis = item->analysis;
-  g_object_ref (result->analysis.font);
+  if (result->analysis.font)
+    g_object_ref (result->analysis.font);
   
   extra_attrs = NULL;
   tmp_list = item->analysis.extra_attrs;
@@ -86,7 +87,8 @@ pango_item_free (PangoItem *item)
       g_slist_free (item->analysis.extra_attrs);
     }
 
-  g_object_unref (item->analysis.font);
+  if (result->analysis.font)
+    g_object_unref (item->analysis.font);
 
   g_free (item);
 }
