@@ -110,15 +110,22 @@ static pScriptPlace script_place;
 static pScriptFreeCache script_free_cache;
 
 static const SCRIPT_PROPERTIES **scripts;
-int nscripts;
+static int nscripts;
 
 #endif
 
-static PangoEngineRange basic_ranges[] = {
 #ifdef HAVE_USP10_H
+static PangoEngineRange uniscribe_ranges[] = {
   /* We claim to cover everything ;-) */
   { 0x0020, 0xffee, "*" }
-#else
+};
+#endif
+
+static PangoEngineRange basic_ranges[] = {
+  /* Those characters that can be rendered legibly without Uniscribe.
+   * I am not certain this list is correct.
+   */
+
   /* Basic Latin, Latin-1 Supplement, Latin Extended-A, Latin Extended-B,
    * IPA Extensions
    */
@@ -145,28 +152,35 @@ static PangoEngineRange basic_ranges[] = {
   /* Thai */
   { 0x0e01, 0x0e5b, "" },
 
-  /* Not covered: Lao, Tibetan, Myanmar, Georgian, Hangul Jamo, Ethiopic,
-   * Cherokee, Unified Canadian Aboriginal Syllabics, Ogham, Runic,
-   * Khmer, Mongolian
-   */
+  /* Not covered: Lao, Tibetan, Myanmar */
+
+  /* Georgian */
+  { 0x10a0, 0x10ff, "*" },
+
+  /* Not covered: Hangul Jamo */
+
+  /* Ethiopic, Cherokee, Unified Canadian Aboriginal Syllabics, Ogham,
+   * Runic */
+  { 0x1200, 0x16ff, "*" },
+
+  /* Not covered: Khmer, Mongolian */
 
   /* Latin Extended Additional, Greek Extended */
   { 0x1e00, 0x1fff, "*" },
 
-  /* General Punctuation, Superscripts and Subscripts, Currency Symbols,
-   * Combining Marks for Symbols, Letterlike Symbols, Number Forms,
-   * Arrows, Mathematical Operators, Miscellaneous Technical,
-   * Control Pictures, Optical Character Recognition, Enclosed Alphanumerics,
-   * Box Drawing, Block Elements, Geometric Shapes, Miscellaneous Symbols,
-   * Dingbats, Braille Patterns, CJK Radicals Supplement, Kangxi Radicals,
-   * Ideographic Description Characters, CJK Symbols and Punctuation,
-   * Hiragana, Katakana, Bopomofo, Hangul Compatibility Jamo, Kanbun,
-   * Bopomofo Extended, Enclosed CJK Letters and Months, CJK Compatibility,
-   * CJK Unified Ideographs Extension A, CJK Unified Ideographs
+  /* General Punctuation, Superscripts and Subscripts, Currency
+   * Symbols, Combining Marks for Symbols, Letterlike Symbols, Number
+   * Forms, Arrows, Mathematical Operators, Miscellaneous Technical,
+   * Control Pictures, Optical Character Recognition, Enclosed
+   * Alphanumerics, Box Drawing, Block Elements, Geometric Shapes,
+   * Miscellaneous Symbols, Dingbats, Braille Patterns, CJK Radicals
+   * Supplement, Kangxi Radicals, Ideographic Description Characters,
+   * CJK Symbols and Punctuation, Hiragana, Katakana, Bopomofo, Hangul
+   * Compatibility Jamo, Kanbun, Bopomofo Extended, Enclosed CJK
+   * Letters and Months, CJK Compatibility, CJK Unified Ideographs
+   * Extension A, CJK Unified Ideographs, Yi Syllables, Yi Radicals
    */
-  { 0x2000, 0x9fff, "*" },
-
-  /* Not covered: Yi Syllables, Yi Radicals */
+  { 0x2000, 0xa4c6, "*" },
 
   /* Hangul Syllables */
   { 0xac00, 0xd7a3, "kr" },
@@ -176,16 +190,14 @@ static PangoEngineRange basic_ranges[] = {
   /* CJK Compatibility Ideographs (partly) */
   { 0xf900, 0xfa0b, "kr" },
 
-  /* Not covered: CJK Compatibility Ideographs (partly),
-   * Alphabetic Presentation Forms, Arabic Presentation Forms-A,
-   * Combining Half Marks, CJK Compatibility Forms,
-   * Small Form Variants, Arabic Presentation Forms-B,
-   * Specials
+  /* Not covered: CJK Compatibility Ideographs (partly), Alphabetic
+   * Presentation Forms, Arabic Presentation Forms-A, Combining Half
+   * Marks, CJK Compatibility Forms, Small Form Variants, Arabic
+   * Presentation Forms-B, Specials
    */
 
-  /* Halfwidth and Fullwidth Forms (partly) */
-  { 0xff00, 0xffe3, "*" }
-#endif
+  /* Halfwidth and Fullwidth Forms */
+  { 0xff00, 0xffed, "*" }
 };
 
 static PangoEngineInfo script_engines[] = {
@@ -193,15 +205,9 @@ static PangoEngineInfo script_engines[] = {
     SCRIPT_ENGINE_NAME,
     PANGO_ENGINE_TYPE_SHAPE,
     PANGO_RENDER_TYPE_WIN32,
-    basic_ranges, G_N_ELEMENTS(basic_ranges)
+    NULL, 0
   }
 };
-
-static gint n_script_engines = G_N_ELEMENTS (script_engines);
-
-/*
- * Win32 system script engine portion
- */
 
 static PangoGlyph 
 find_char (PangoFont *font,
@@ -456,6 +462,8 @@ make_langid (PangoLanguage *lang)
   return MAKELANGID (LANG_NEUTRAL, SUBLANG_NEUTRAL);
 }
 
+#ifdef BASIC_WIN32_DEBUGGING
+
 static void
 dump_glyphs_and_log_clusters (gboolean rtl,
 			      int      itemlen,
@@ -540,6 +548,8 @@ dump_glyphs_and_log_clusters (gboolean rtl,
       }
   }
 }
+
+#endif /* BASIC_WIN32_DEBUGGING */
 
 static void
 set_up_pango_log_clusters (gboolean rtl,
@@ -666,7 +676,8 @@ convert_log_clusters_to_byte_offsets (const char       *text,
 }
 
 static gboolean
-itemize_shape_and_place (HDC               hdc,
+itemize_shape_and_place (PangoFont        *font,
+			 HDC               hdc,
 			 wchar_t          *wtext,
 			 int               wlen,
 			 PangoAnalysis    *analysis,
@@ -774,10 +785,28 @@ itemize_shape_and_place (HDC               hdc,
 
       for (glyphix = 0; glyphix < nglyphs; glyphix++)
 	{
-	  glyphs->glyphs[ng+glyphix].glyph = iglyphs[glyphix];
-	  glyphs->glyphs[ng+glyphix].geometry.width = PANGO_SCALE * advances[glyphix];
-	  glyphs->glyphs[ng+glyphix].geometry.x_offset = PANGO_SCALE * offsets[glyphix].du;
-	  glyphs->glyphs[ng+glyphix].geometry.y_offset = PANGO_SCALE * offsets[glyphix].dv;
+	  if (iglyphs[glyphix] != 0)
+	    {
+	      glyphs->glyphs[ng+glyphix].glyph = iglyphs[glyphix];
+	      glyphs->glyphs[ng+glyphix].geometry.width = PANGO_SCALE * advances[glyphix];
+	      glyphs->glyphs[ng+glyphix].geometry.x_offset = PANGO_SCALE * offsets[glyphix].du;
+	      glyphs->glyphs[ng+glyphix].geometry.y_offset = PANGO_SCALE * offsets[glyphix].dv;
+	    }
+	  else
+	    {
+	      PangoRectangle logical_rect;
+	      /* Should pass actual char that was not found to
+	       * pango_win32_get_unknown_glyph(), but a bit hard to
+	       * find out that at this point, so cheat and use 0.
+	       */
+	      PangoGlyph unk = pango_win32_get_unknown_glyph (font, 0);
+
+	      glyphs->glyphs[ng+glyphix].glyph = unk;
+	      pango_font_get_glyph_extents (font, unk, NULL, &logical_rect);
+	      glyphs->glyphs[ng+glyphix].geometry.width = logical_rect.width;
+	      glyphs->glyphs[ng+glyphix].geometry.x_offset = 0;
+	      glyphs->glyphs[ng+glyphix].geometry.y_offset = 0;
+	    }
 	}
       nc += itemlen;
     }
@@ -831,7 +860,7 @@ uniscribe_shape (PangoFont        *font,
   if (retval)
     {
       memset (script_cache, 0, sizeof (script_cache));
-      retval = itemize_shape_and_place (hdc, wtext, wlen, analysis, glyphs, script_cache);
+      retval = itemize_shape_and_place (font, hdc, wtext, wlen, analysis, glyphs, script_cache);
       for (i = 0; i < G_N_ELEMENTS (script_cache); i++)
 	if (script_cache[i])
 	  (*script_free_cache)(&script_cache[i]);
@@ -1035,12 +1064,42 @@ init_uniscribe (void)
 #define MODULE_ENTRY(func) func
 #endif
 
-void 
+void
 MODULE_ENTRY(script_engine_list) (PangoEngineInfo **engines,
 				  gint             *n_engines)
 {
+  init_uniscribe ();
+
+  script_engines[0].ranges = basic_ranges;
+  script_engines[0].n_ranges = G_N_ELEMENTS (basic_ranges);
+
+#ifdef HAVE_USP10_H
+  if (have_uniscribe)
+    {
+#if 0
+      int i;
+      GArray *ranges = g_array_new (FALSE, FALSE, sizeof (PangoEngineRange));
+
+      /* Walk through scripts supported by the Uniscribe implementation on this
+       * machine, and mark corresponding Unicode ranges.
+       */
+      for (i = 0; i < nscripts; i++)
+	{
+	}
+
+      /* Sort range array */
+      g_array_sort (ranges, compare_range);
+      script_engines[0].ranges = ranges;
+      script_engines[0].n_ranges = ranges->len;
+#else
+      script_engines[0].ranges = uniscribe_ranges;
+      script_engines[0].n_ranges = G_N_ELEMENTS (uniscribe_ranges);
+#endif
+    }
+#endif
+
   *engines = script_engines;
-  *n_engines = n_script_engines;
+  *n_engines = G_N_ELEMENTS (script_engines);
 }
 
 PangoEngine *
