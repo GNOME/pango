@@ -3,7 +3,7 @@
 pangolibs = $(top_builddir)/pango/libpango.la $(FRIBIDI_LIBS) $(GLIB_LIBS)
 pangoxlibs = $(top_builddir)/pango/libpangox.la $(X_LIBS) $(pangolibs)
 pangoxftlibs = $(top_builddir)/pango/libpangoxft.la $(XFT_LIBS) $(pangolibs)
-pangoft2libs = $(top_builddir)/pango/libpangoft2.la $(FREETYPE_LIBS) $(pangolibs)
+pangoft2libs = $(top_builddir)/pango/libpangoft2.la $(top_builddir)/pango/opentype/libpango-ot.la $(FREETYPE_LIBS) $(pangolibs)
 
 if HAVE_XFT
 if INCLUDE_ARABIC_XFT
@@ -38,6 +38,11 @@ xft_sources = \
 	arabic-ot.c \
 	arabic-ot.h
 
+ft2_sources = \
+	arabic-ft2.c \
+	arabic-ot.c \
+	arabic-ot.h
+
 if HAVE_X
 if INCLUDE_ARABIC_X
 X_MODULES=
@@ -55,9 +60,26 @@ X_INCLUDED=
 X_PREFIX=
 endif
 
-noinst_LTLIBRARIES = $(X_INCLUDED) $(XFT_INCLUDED)
-module_LTLIBRARIES = $(X_MODULES) $(XFT_MODULES)
-moddefine = $(X_PREFIX) $(XFT_PREFIX)
+if HAVE_FREETYPE
+if INCLUDE_ARABIC_FT2
+FT2_MODULES=
+FT2_INCLUDED=libpango-arabic-ft2.la
+FT2_PREFIX=-DFT2_MODULE_PREFIX
+else
+FT2_MODULES=pango-arabic-ft2.la
+FT2_INCLUDED=
+FT2_PREFIX=
+arabic_ft2_libadd=$(pangoft2libs)
+endif
+else
+FT2_MODULES=
+FT2_INCLUDED=
+FT2_PREFIX=
+endif
+
+noinst_LTLIBRARIES = $(X_INCLUDED) $(XFT_INCLUDED) $(FT2_INCLUDED)
+module_LTLIBRARIES = $(X_MODULES) $(XFT_MODULES) $(FT2_MODULES)
+moddefine = $(X_PREFIX) $(XFT_PREFIX) $(FT2_PREFIX)
 moduledir = $(libdir)/pango/modules
 
 INCLUDES = -DPANGO_ENABLE_ENGINE -DG_DISABLE_DEPRECATED -I$(top_srcdir) -I$(top_srcdir)/pango/ $(moddefine) $(X_CFLAGS) $(FREETYPE_CFLAGS)
@@ -73,6 +95,12 @@ pango_arabic_xft_la_LIBADD = $(arabic_xft_libadd)
 pango_arabic_xft_la_SOURCES = $(xft_sources)
 
 libpango_arabic_xft_la_SOURCES = $(xft_sources)
+
+pango_arabic_ft2_la_LDFLAGS = -export-dynamic -avoid-version -module
+pango_arabic_ft2_la_LIBADD = $(arabic_ft2_libadd)
+pango_arabic_ft2_la_SOURCES = $(ft2_sources)
+
+libpango_arabic_ft2_la_SOURCES = $(ft2_sources)
 
 included-modules: $(noinst_LTLIBRARIES)
 

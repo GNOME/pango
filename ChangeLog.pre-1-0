@@ -1,3 +1,10 @@
+2002-01-24  Sven Neumann  <sven@gimp.org>
+
+	* configure.in
+	* modules/arabic/Makefile.am
+	* modules/arabic/arabic-ft2.c: added arabic shaper for FT2 ported 
+	from arabic-xft.c by Andreas Bogk <andreas@convergence.de>.
+
 Wed Jan 23 16:49:24 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* examples/viewer-ft2.c: Remove this file; pangofttopgm
