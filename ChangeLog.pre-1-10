@@ -1,3 +1,16 @@
+Sun Oct 13 12:34:41 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* === Released 1.0.5 ===
+
+	* configure.in: Version 1.0.5.
+
+	* NEWS: Updates
+
+Sun Oct 13 12:46:32 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pangowin32.c (pango_win32_get_unknown_glyph): 
+	Fix the doc comment.
+
 2002-10-01  Tor Lillqvist  <tml@iki.fi>
 
 	* pango/mini-xft/minixftdir.c (MiniXftDirScan) [Win32]: Recognize

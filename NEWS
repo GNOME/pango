@@ -1,3 +1,20 @@
+Changes between 1.0.4 and 1.0.5
+
+* Win32 work [Tor Lillqvist]
+  - Handle choosing the right font for CJK languages based on language tags. 
+  - Fix boxes showing up for tabs [Florent Duguet]
+  - Better handling of finding ASCII font names.
+  - Cygwin compilation fix [Masahiro Sakai]
+  - Fix --with-included-modules on win32 [Arnaud Charlet]
+  - Various build fixes and cleanups
+  - Make mini-xft find windows font directory automatically
+* Bug fix for pango_scan_int() needed for recent GTK+.
+* Improve language specific charset ordering basic-x11 [James Su, Brian Yuan]
+* Fix symbols that shouldn't have been exported [Jacob Berkman, Nils Nordman]
+* Some cross-compiling fixes [J. Ali Harlow]
+* Various build fixes [Havoc Pennington, others]
+* Fix check for no-backend being found. [Andreas J. Guezlow]
+
 Changes between 1.0.3 and 1.0.4
 
 * Add Thai shaper for Xft  [Theppitak Karoonboonyanan]

@@ -581,8 +581,10 @@ pango_win32_font_find_shaper (PangoFont     *font,
 /**
  * pango_win32_get_unknown_glyph:
  * @font: a #PangoFont
+ * @wc: the Unicode character for which a glyph is needed.
  * 
- * Return the index of a glyph suitable for drawing unknown characters.
+ * Returns the index of a glyph suitable for drawing @wc as an
+ * unknown character.
  * 
  * Return value: a glyph index into @font
  **/
