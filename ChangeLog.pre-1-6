@@ -1,3 +1,8 @@
+2004-07-23  Morten Welinder  <terra@gnome.org>
+
+	* examples/renderdemo.c (parse_ellipsis): Fix C99ism.  I am clearly
+	the last man stuck in the dark age of C.
+
 Tue Jul 20 12:10:42 2004  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pango-script.c (pango_language_includes_script): 
