@@ -1,3 +1,12 @@
+2004-12-12  Tor Lillqvist  <tml@iki.fi>
+
+	* pango/modules.c (read_modules)
+	* pango/pango-utils.c (read_alias_file,read_config_file): Use
+	gstdio wrappers. (#16111, Robert Ögren)
+
+	* pango/pangoft2-fontmap.c: Remove unneded includes of <dirent.h>
+	and <windows.h>.
+
 Fri Dec 10 16:30:40 2004  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pangoxft-render.c (draw_glyph): Fix problem

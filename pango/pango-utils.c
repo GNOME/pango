@@ -29,6 +29,8 @@
 #include "pango-font.h"
 #include "pango-utils.h"
 
+#include <glib/gstdio.h>
+
 #ifdef HAVE_FRIBIDI
 #include <fribidi/fribidi.h>
 #endif
@@ -459,7 +461,7 @@ read_config_file (const char *filename, gboolean enoent_error)
   char *section = NULL;
   int line = 0;
 
-  file = fopen (filename, "r");
+  file = g_fopen (filename, "r");
   if (!file)
     {
       if (errno != ENOENT || enoent_error)
@@ -1485,7 +1487,7 @@ read_alias_file (const char *filename)
   int n_new;
   int i;
 
-  file = fopen (filename, "r");
+  file = g_fopen (filename, "r");
   if (!file)
     return;
 

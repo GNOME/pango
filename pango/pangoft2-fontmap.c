@@ -27,20 +27,12 @@
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
-#ifdef HAVE_DIRENT_H
-#include <dirent.h>
-#endif
 
 #include <fontconfig/fontconfig.h>
 
 #include "pango-utils.h"
 #include "pangoft2-private.h"
 #include "pangofc-fontmap.h"
-
-#ifdef G_OS_WIN32
-#define STRICT
-#include <windows.h>
-#endif
 
 typedef struct _PangoFT2Family       PangoFT2Family;
 typedef struct _PangoFT2FontMapClass PangoFT2FontMapClass;

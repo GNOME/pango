@@ -26,6 +26,7 @@
 #include <errno.h>
 
 #include <gmodule.h>
+#include <glib/gstdio.h>
 
 #include "pango-enum-types.h"
 #include "pango-modules.h"
@@ -494,7 +495,7 @@ read_modules (void)
 
   while (n-- > 0)
     {
-      module_file = fopen (files[n], "r");
+      module_file = g_fopen (files[n], "r");
       if (module_file)
 	{
 	  process_module_file(module_file);
