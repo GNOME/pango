@@ -14,10 +14,20 @@ dnl if any functions have been added, set PANGO_INTERFACE_AGE to 0.
 dnl if backwards compatibility has been broken,
 dnl set PANGO_BINARY_AGE _and_ PANGO_INTERFACE_AGE to 0.
 
+dnl
+dnl We do the version number components as m4 macros
+dnl so that we can base configure --help output off
+dnl of them.
+dnl
+
 dnl The triplet 
-PANGO_MAJOR_VERSION=1
-PANGO_MINOR_VERSION=2
-PANGO_MICRO_VERSION=0
+m4_define([pango_major_version],1)
+m4_define([pango_minor_version],2)
+m4_define([pango_micro_version],1)
+
+PANGO_MAJOR_VERSION=pango_major_version()
+PANGO_MINOR_VERSION=pango_minor_version()
+PANGO_MICRO_VERSION=pango_micro_version()
 PANGO_VERSION=$PANGO_MAJOR_VERSION.$PANGO_MINOR_VERSION.$PANGO_MICRO_VERSION
 
 dnl The X.Y in -lpango-X.Y line. This is expected to stay 1.0 until Pango 2.
@@ -115,6 +125,25 @@ if test "x$GCC" = "xyes"; then
   esac
 fi
 changequote([,])dnl
+
+dnl declare --enable-* args and collect ac_help strings
+
+m4_define([debug_default],dnl
+m4_if(m4_bregexp(pango_minor_version(),[[13579]]),-1,minimum,yes))
+
+AC_ARG_ENABLE(debug, [  --enable-debug=[no/minimum/yes] turn on debugging @<:@default=]debug_default()[@:>@],,enable_debug=debug_default())
+
+if test "x$enable_debug" = "xyes"; then
+  PANGO_DEBUG_FLAGS="-DPANGO_ENABLE_DEBUG"
+else
+  PANGO_DEBUG_FLAGS="-DG_DISABLE_CAST_CHECKS"
+
+  if test "x$enable_debug" = "xno"; then
+    PANGO_DEBUG_FLAGS="$GLIB_DEBUG_FLAGS -DG_DISABLE_ASSERT -DG_DISABLE_CHECKS"
+  fi
+fi
+
+AC_SUBST(PANGO_DEBUG_FLAGS)
 
 AC_ARG_ENABLE(rebuilds, [  --disable-rebuilds      disable all source autogeneration rules],,enable_rebuilds=yes)
 
