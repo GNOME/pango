@@ -1,3 +1,9 @@
+Fri Dec 10 16:30:40 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pangoxft-render.c (draw_glyph): Fix problem
+	where the font would get unset after flushing at MAX_GLYPHS.
+	(#160978)
+
 Thu Dec  2 15:47:44 2004  Owen Taylor  <otaylor@redhat.com>
 
 	* === Released 1.7.0 ===

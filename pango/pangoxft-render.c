@@ -240,15 +240,13 @@ draw_glyph (PangoRenderer *renderer,
     xftrenderer->priv->glyphs = g_array_new (FALSE, FALSE,
 					     sizeof (XftGlyphSpec));
   
-  if (xftrenderer->priv->glyph_font != font)
+  if (xftrenderer->priv->glyph_font != font ||
+      xftrenderer->priv->glyphs->len == MAX_GLYPHS)
     {
       flush_glyphs (xftrenderer);
       
       xftrenderer->priv->glyph_font = g_object_ref (font);
     }
-
-  if (xftrenderer->priv->glyphs->len == MAX_GLYPHS)
-    flush_glyphs (xftrenderer);
 
   gs.x = pixel_x;
   gs.y = pixel_y;
