@@ -257,6 +257,7 @@ arabic_engine_shape (PangoEngineShape *engine,
   PangoOTRuleset *ruleset;
   PangoOTBuffer *buffer;
   PangoFcFont *fc_font;
+  int cluster = 0;
 
   g_return_if_fail (font != NULL);
   g_return_if_fail (text != NULL);
@@ -292,7 +293,6 @@ arabic_engine_shape (PangoEngineShape *engine,
       PangoGlyph index;
       char buf[6];
       const char *input;
-      int cluster = 0;
 
       wc = g_utf8_get_char (p);
 
