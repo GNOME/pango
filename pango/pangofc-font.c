@@ -304,10 +304,20 @@ get_face_metrics (PangoFcFont      *fcfont,
       FT_Vector_Transform (&vector, &ft_matrix);
       metrics->ascent = PANGO_UNITS_26_6 (vector.y);
     }
-  else
+  else if (hinting)
     {
       metrics->descent = - PANGO_UNITS_26_6 (face->size->metrics.descender);
       metrics->ascent = PANGO_UNITS_26_6 (face->size->metrics.ascender);
+    }
+  else
+    {
+      FT_Fixed ascender, descender;
+
+      descender = FT_MulFix (face->descender, face->size->metrics.y_scale);
+      metrics->descent = - PANGO_UNITS_26_6 (descender);
+
+      ascender = FT_MulFix (face->ascender, face->size->metrics.y_scale);
+      metrics->ascent = PANGO_UNITS_26_6 (ascender);
     }
 
   /* Versions of FreeType < 2.1.8 get underline thickness wrong

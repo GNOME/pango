@@ -136,7 +136,8 @@ pango_ft2_font_map_finalize (GObject *object)
   if (ft2fontmap->substitute_destroy)
     ft2fontmap->substitute_destroy (ft2fontmap->substitute_data);
 
-  FT_Done_FreeType (ft2fontmap->library);
+  if (ft2fontmap->library)
+    FT_Done_FreeType (ft2fontmap->library);
 
   parent_class->finalize (object);
 }
@@ -171,6 +172,7 @@ pango_ft2_font_map_new (void)
     {
       g_warning ("Error from FT_Init_FreeType: %s",
 		 _pango_ft2_ft_strerror (error));
+      g_object_unref (ft2fontmap);
       return NULL;
     }
 

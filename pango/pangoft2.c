@@ -594,9 +594,21 @@ pango_ft2_font_get_glyph_info (PangoFont   *font,
 	      
 	  info->logical_rect.x = 0;
 	  info->logical_rect.width = PANGO_UNITS_26_6 (gm->horiAdvance);
-	  info->logical_rect.y = -PANGO_UNITS_26_6 (face->size->metrics.ascender + 64);
-	  /* Some fonts report negative descender, some positive ! (?) */
-	  info->logical_rect.height = PANGO_UNITS_26_6 (face->size->metrics.ascender + ABS (face->size->metrics.descender) + 128);
+	  if (ft2font->load_flags & FT_LOAD_NO_HINTING)
+	    {
+	      FT_Fixed ascender, descender;
+
+	      ascender = FT_MulFix (face->ascender, face->size->metrics.y_scale);
+	      descender = FT_MulFix (face->descender, face->size->metrics.y_scale);
+
+	      info->logical_rect.y = - PANGO_UNITS_26_6 (ascender);
+	      info->logical_rect.height = PANGO_UNITS_26_6 (ascender - descender);
+	    }
+	  else
+	    {
+	      info->logical_rect.y = - PANGO_UNITS_26_6 (face->size->metrics.ascender);
+	      info->logical_rect.height = PANGO_UNITS_26_6 (face->size->metrics.ascender - face->size->metrics.descender);
+	    }
 	}
       else
 	{
