@@ -747,7 +747,7 @@ pango_layout_set_ellipsize (PangoLayout        *layout,
  * @layout: a #PangoLayout
  * 
  * Gets the type of ellipsization being performed for @layout.
- * See pango_layout_get_ellipsize()
+ * See pango_layout_set_ellipsize()
  * 
  * Return value: the current ellipsization mode for @layout
  *

@@ -1,3 +1,8 @@
+Wed Sep 22 15:57:30 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-layout.c (pango_layout_get_ellipsize): Fix
+	typo in docs. (#153390, Paolo Borelli)
+
 Wed Sep 22 14:07:47 2004  Owen Taylor  <otaylor@redhat.com>
 
 	Cleanups from 'sparse', #149922, Kjartan Maraas
