@@ -549,7 +549,14 @@ STRICT
 <SECTION>
 <TITLE>FreeType Fonts and Rendering</TITLE>
 <FILE>freetype-fonts</FILE>
+PangoFT2FontMap
 PANGO_RENDER_TYPE_FT2
+pango_ft2_font_map_new
+pango_ft2_font_map_set_resolution
+pango_ft2_font_map_create_context
+PangoFT2SubstituteFunc
+pango_ft2_font_map_set_default_substitute
+pango_ft2_font_map_substitute_changed
 pango_ft2_get_context
 pango_ft2_render
 pango_ft2_render_layout_line
@@ -560,7 +567,12 @@ pango_ft2_font_get_face
 pango_ft2_font_get_coverage
 pango_ft2_font_map_for_display
 pango_ft2_shutdown_display
+<SUBSECTION Standard>
+PANGO_TYPE_FT2_FONT_MAP
+PANGO_FT2_FONT_MAP
+PANGO_FT2_IS_FONT_MAP
 <SUBSECTION Private>
+pango_ft2_font_map_get_type
 STRICT
 </SECTION>
 
@@ -569,12 +581,19 @@ STRICT
 <FILE>xft-fonts</FILE>
 PANGO_RENDER_TYPE_XFT
 pango_xft_get_context
+pango_xft_get_font_map
+pango_xft_set_default_substitute
+PangoXftSubstituteFunc
+pango_xft_substitute_changed
+pango_xft_shutdown_display
 pango_xft_render
 pango_xft_picture_render
 pango_xft_font_get_font
-pango_xft_font_get_face
-pango_xft_font_get_ot_info
 pango_xft_font_get_display
+pango_xft_font_has_char
+pango_xft_font_lock_face
+pango_xft_font_unlock_face
+pango_xft_font_get_glyph
 pango_xft_font_get_unknown_glyph
 
 <SUBSECTION Standard>
@@ -592,7 +611,7 @@ PangoOTTag
 PangoOTInfo
 PangoOTRuleset
 PangoOTTableType
-pango_ot_info_new
+pango_ot_info_get
 pango_ot_info_find_script
 pango_ot_info_find_language
 pango_ot_info_find_feature

@@ -1,3 +1,16 @@
+Tue Aug 20 17:31:39 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* Released 1.1.1.
+
+	* configure.in: Update versions numbers.
+
+	* NEWS: Updated.
+
+	* docs/pango-sections.txt: Updated.
+
+	* pango/pangoxft-font.c (pango_xft_font_[un]lock_face): 
+	Fix docs.
+
 Tue Aug 20 17:14:13 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pangofc-fontmap.cI: conditionalize 

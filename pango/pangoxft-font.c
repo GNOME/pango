@@ -786,10 +786,12 @@ pango_xft_font_get_unknown_glyph (PangoFont *font,
 }
 
 /**
- * pango_xft_font_get_face:
+ * pango_xft_font_lock_face:
  * @font: a #PangoFont.
  *
- * Gets the FreeType FT_Face associated with a font.
+ * Gets the FreeType FT_Face associated with a font,
+ * This face will be kept around until you call
+ * pango_xft_font_unlock_face().
  *
  * Returns: the FreeType FT_Face associated with @font.
  **/
@@ -809,9 +811,8 @@ pango_xft_font_lock_face (PangoFont *font)
  * pango_xft_font_unlock_face:
  * @font: a #PangoFont.
  *
- * Gets the FreeType FT_Face associated with a font.
- *
- * Returns: the FreeType FT_Face associated with @font.
+ * Releases a font previously obtained with
+ * pango_xft_font_lock_face().
  **/
 void
 pango_xft_font_unlock_face (PangoFont *font)

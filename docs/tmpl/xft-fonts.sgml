@@ -32,6 +32,55 @@ g_quark_from_string()) is used to identify the renderer in pango_find_map().
 @Returns: 
 
 
+<!-- ##### FUNCTION pango_xft_get_font_map ##### -->
+<para>
+
+</para>
+
+@display: 
+@screen: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_xft_set_default_substitute ##### -->
+<para>
+
+</para>
+
+@display: 
+@screen: 
+@func: 
+@data: 
+@notify: 
+
+
+<!-- ##### USER_FUNCTION PangoXftSubstituteFunc ##### -->
+<para>
+
+</para>
+
+@pattern: 
+@data: 
+
+
+<!-- ##### FUNCTION pango_xft_substitute_changed ##### -->
+<para>
+
+</para>
+
+@display: 
+@screen: 
+
+
+<!-- ##### FUNCTION pango_xft_shutdown_display ##### -->
+<para>
+
+</para>
+
+@display: 
+@screen: 
+
+
 <!-- ##### FUNCTION pango_xft_render ##### -->
 <para>
 
@@ -74,6 +123,43 @@ g_quark_from_string()) is used to identify the renderer in pango_find_map().
 </para>
 
 @font: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_xft_font_has_char ##### -->
+<para>
+
+</para>
+
+@font: 
+@wc: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_xft_font_lock_face ##### -->
+<para>
+
+</para>
+
+@font: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_xft_font_unlock_face ##### -->
+<para>
+
+</para>
+
+@font: 
+
+
+<!-- ##### FUNCTION pango_xft_font_get_glyph ##### -->
+<para>
+
+</para>
+
+@font: 
+@wc: 
 @Returns: 
 
 

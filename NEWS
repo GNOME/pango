@@ -1,3 +1,10 @@
+Changes between 1.1.0 and 1.1.1
+
+* Merge a lot of the code between the Xft and FT2 backend,
+  so that the FT2 backend gets the recent improvements to Xft.
+* Add proper language tag support to the Xft/FT2 backends.
+* Various effienciency fixes for the Xft/FT2 backends.
+
 Changes between 1.0.x and 1.1.0
 
 * Support for version 2 of the Xft library. [Keith Packard]
@@ -7,6 +14,7 @@ Changes between 1.0.x and 1.1.0
 * A new hangul-xft [Changwoo Ryu]
 * Bug-fixes to the OpenType handling code.
 * Various cleanups to the PangoXft and PangoFT2 public APIs.
+* Docs switched over to DocBook XML. [Matthias Clasen]
 
 ============================================================
 
