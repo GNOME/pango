@@ -279,7 +279,7 @@ box_in_bounds (PangoRenderer *renderer,
   if (!renderer->matrix)
     {
 #define COORD_MIN (PANGO_SCALE * -16384 - PANGO_SCALE / 2)
-#define COORD_MAX (PANGO_SCALE * -32767 + PANGO_SCALE / 2 - 1)
+#define COORD_MAX (PANGO_SCALE * 32767 + PANGO_SCALE / 2 - 1)
       return (x >= COORD_MIN && x + width <= COORD_MAX &&
 	      y >= COORD_MIN && y + width <= COORD_MAX);
 #undef COORD_MIN
@@ -348,7 +348,7 @@ pango_xft_renderer_draw_glyphs (PangoRenderer    *renderer,
 	      
 	      glyph &= ~PANGO_XFT_UNKNOWN_FLAG;
 	      
-	      ys[0] = glyph_y - PANGO_SCALE * xft_font->ascent + (PANGO_SCALE * (xft_font->ascent + xft_font->descent) - xfont->mini_height * 2 - xfont->mini_pad * 5) / 2;
+	      ys[0] = glyph_y - PANGO_SCALE * xft_font->ascent + PANGO_SCALE * (((xft_font->ascent + xft_font->descent) - (xfont->mini_height * 2 + xfont->mini_pad * 5 + PANGO_SCALE / 2) / PANGO_SCALE) / 2);
 	      ys[1] = ys[0] + 2 * xfont->mini_pad + xfont->mini_height;
 	      ys[2] = ys[1] + xfont->mini_height + xfont->mini_pad;
 

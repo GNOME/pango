@@ -1,3 +1,15 @@
+Sat Nov 20 23:50:40 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pangoxft-font.c (get_glyph_extents_missing): Fix double
+	multiplication by PANGO_SCALE. (#157419, Matthias Clasen)
+
+	* pango/pangoxft-render.c (box_in_bounds): Fix sign typo.
+
+	* pango/pangoxft-render.c (pango_xft_renderer_draw_glyphs): 
+	* pango/pangoxft-font.c (get_glyph_extents_missing): 
+	Adjust vertical positioning so that we get integral positioning of 
+	the box without a transform.
+
 Fri Nov 19 18:45:24 2004  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pango-renderer.c (pango_renderer_default_draw_error_underline):

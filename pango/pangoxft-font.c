@@ -197,16 +197,16 @@ get_glyph_extents_missing (PangoXftFont    *xfont,
   if (ink_rect)
     {
       ink_rect->x = 0;
-      ink_rect->y = PANGO_SCALE * (- xft_font->ascent + (xft_font->ascent + xft_font->descent - xfont->mini_height * 2 - xfont->mini_pad * 5) / 2);
-      ink_rect->width = PANGO_SCALE * (xfont->mini_width * cols + xfont->mini_pad * (2 * cols + 1));
-      ink_rect->height = PANGO_SCALE * (xfont->mini_height * 2 + xfont->mini_pad * 5);
+      ink_rect->y = - PANGO_SCALE * xft_font->ascent + PANGO_SCALE * (((xft_font->ascent + xft_font->descent) - (xfont->mini_height * 2 + xfont->mini_pad * 5 + PANGO_SCALE / 2) / PANGO_SCALE) / 2);
+      ink_rect->width = xfont->mini_width * cols + xfont->mini_pad * (2 * cols + 1);
+      ink_rect->height = xfont->mini_height * 2 + xfont->mini_pad * 5;
     }
   
   if (logical_rect)
     {
       logical_rect->x = 0;
       logical_rect->y = - PANGO_SCALE * xft_font->ascent;
-      logical_rect->width = PANGO_SCALE * (xfont->mini_width * cols + xfont->mini_pad * (2 * cols + 2));
+      logical_rect->width = xfont->mini_width * cols + xfont->mini_pad * (2 * cols + 2);
       logical_rect->height = (xft_font->ascent + xft_font->descent) * PANGO_SCALE;
     }
 }
