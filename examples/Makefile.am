@@ -35,11 +35,11 @@ else
 all-local: pango.modules
 endif
 
-pango.modules:
+pango.modules: $(top_builddir)/pango/pango-querymodules
 	if find ../modules -name '*.so' | grep 'so' > /dev/null ; then \
           echo "Writing a pango.modules file to use when running examples before installing Pango."; \
 	  (cd ../modules && \
-           ../pango/pango-querymodules `find . -name '*.la' | grep -v \.libs` > ../examples/pango.modules ) ;\
+           $(top_builddir)/pango/pango-querymodules `find . -name '*.la' | grep -v \.libs` > ../examples/pango.modules ) ;\
 	else \
           echo "No dynamic modules found; will use only static modules for uninstalled example programs."; \
 	  touch pango.modules; \
