@@ -20,16 +20,18 @@
  */
 
 #include <pango/pango-glyph.h>		/* For pango_shape() */
-#include <pango/pango-layout.h>
 #include <pango/pango-break.h>
 #include <pango/pango-item.h>
 #include <pango/pango-engine.h>
 #include <string.h>
 
+#include "pango-layout-private.h"
+
 #define LINE_IS_VALID(line) ((line)->layout != NULL)
 
 typedef struct _Extents Extents;
 typedef struct _ItemProperties ItemProperties;
+typedef struct _ParaBreakState ParaBreakState;
 
 struct _Extents
 {
@@ -103,42 +105,6 @@ struct _PangoLayoutLinePrivate
   guint ref_count;
 };
 
-struct _PangoLayout
-{
-  GObject parent_instance;
-
-  /* If you add fields to PangoLayout, be sure to update both
-   * the _copy function
-   */
-  
-  PangoContext *context;
-  PangoAttrList *attrs;
-  PangoFontDescription *font_desc;
-  
-  gchar *text;
-  int length;			/* length of text in bytes */
-  int width;			/* wrap width, in device units */
-  int indent;			/* amount by which first line should be shorter */
-  int spacing;			/* spacing between lines */
-
-  guint justify : 1;
-  guint alignment : 2;
-
-  guint single_paragraph : 1;
-  guint auto_dir : 1;
-  
-  gint n_chars;		        /* Total number of characters in layout */
-  PangoLogAttr *log_attrs;	/* Logical attributes for layout's text */
-
-  int tab_width;		/* Cached width of a tab. -1 == not yet calculated */
-
-  PangoTabArray *tabs;
-  
-  GSList *lines;
-
-  PangoWrapMode wrap;
-};
-
 struct _PangoLayoutClass
 {
   GObjectClass parent_class;
@@ -152,7 +118,8 @@ static void pango_layout_check_lines (PangoLayout *layout);
 static PangoAttrList *pango_layout_get_effective_attributes (PangoLayout *layout);
 
 static PangoLayoutLine * pango_layout_line_new         (PangoLayout     *layout);
-static void              pango_layout_line_postprocess (PangoLayoutLine *line);
+static void              pango_layout_line_postprocess (PangoLayoutLine *line,
+							ParaBreakState  *state);
 
 static int *pango_layout_line_get_log2vis_map (PangoLayoutLine  *line,
 					       gboolean          strong);
@@ -186,6 +153,7 @@ pango_layout_init (PangoLayout *layout)
   layout->tab_width = -1;
 
   layout->wrap = PANGO_WRAP_WORD;
+  layout->ellipsize = PANGO_ELLIPSIZE_NONE;
 }
 
 static void
@@ -285,6 +253,7 @@ pango_layout_copy (PangoLayout *src)
   if (src->tabs)
     layout->tabs = pango_tab_array_copy (src->tabs);
   layout->wrap = src->wrap;  
+  layout->ellipsize = src->ellipsize;
   
   /* log_attrs, lines fields are updated by check_lines */
 
@@ -715,11 +684,17 @@ pango_layout_set_single_paragraph_mode (PangoLayout *layout,
                                         gboolean     setting)
 {
   g_return_if_fail (PANGO_IS_LAYOUT (layout));
-  
-  layout->single_paragraph = setting;
 
-  pango_layout_clear_lines (layout);
+  setting = setting != FALSE;
+
+  if (layout->single_paragraph != setting)
+    {
+      layout->single_paragraph = setting;
+
+      pango_layout_clear_lines (layout);
+    }
 }
+
 /**
  * pango_layout_get_single_paragraph_mode:
  * @layout: a #PangoLayout
@@ -729,13 +704,59 @@ pango_layout_set_single_paragraph_mode (PangoLayout *layout,
  * Return value: %TRUE if the layout does not break paragraphs at 
  * paragraph separator characters
  **/
-   
 gboolean
 pango_layout_get_single_paragraph_mode (PangoLayout *layout)
 {
   g_return_val_if_fail (PANGO_IS_LAYOUT (layout), FALSE);
 
   return layout->single_paragraph;
+}
+
+/**
+ * pango_layout_get_ellipsize:
+ * @layout: a #PangoLayout
+ * @ellipsize: the new ellipsization mode for @layout
+ * 
+ * Sets the type of ellipsization being performed for @layout.
+ * Depending on the ellipsization mode @ellipsize text is
+ * removed from the start, middle, or end of lines so they
+ * fit within the width of layout set with pango_layout_set_width ().
+ *
+ * If the layout contains characters such as newlines that
+ * force it to be layed out in multiple lines, then each line
+ * is ellipsized separately.
+ * 
+ * Return value: Gets the current ellipsization mode for the layout.
+ **/
+void
+pango_layout_set_ellipsize (PangoLayout        *layout,
+			    PangoEllipsizeMode  ellipsize)
+{
+  g_return_if_fail (PANGO_IS_LAYOUT (layout));
+
+  if (ellipsize != layout->ellipsize)
+    {
+      layout->ellipsize = ellipsize;
+      
+      pango_layout_clear_lines (layout);
+    }
+}
+
+/**
+ * pango_layout_get_ellipsize:
+ * @layout: a #PangoLayout
+ * 
+ * Gets the type of ellipsization being performed for @layout.
+ * See pango_layout_get_ellipsize()
+ * 
+ * Return value: the current ellipsization mode for @layout
+ **/
+PangoEllipsizeMode
+pango_layout_get_ellipsize (PangoLayout *layout)
+{
+  g_return_val_if_fail (PANGO_IS_LAYOUT (layout), PANGO_ELLIPSIZE_NONE);
+
+  return layout->ellipsize;
 }
 
 /**
@@ -2473,28 +2494,35 @@ get_tab_pos (PangoLayout *layout, int index)
     }
 }
 
+static int
+line_width (PangoLayoutLine *line)
+{
+  GSList *l;
+  int i;
+  int width = 0;
+  
+  /* Compute the width of the line currently - inefficient, but easier
+   * than keeping the current width of the line up to date everywhere
+   */
+  for (l = line->runs; l; l = l->next)
+    {
+      PangoLayoutRun *run = l->data;
+      
+      for (i=0; i < run->glyphs->num_glyphs; i++)
+	width += run->glyphs->glyphs[i].geometry.width;
+    }
+
+  return width;
+}
+
 static void
 shape_tab (PangoLayoutLine  *line,
 	   PangoGlyphString *glyphs)
 {
   int i;
-  GSList *tmp_list;
 
-  int current_width = 0;
+  int current_width = line_width (line);
 
-  /* Compute the width of the line currently - inefficient, but easier
-   * than keeping the current width of the line up to date everywhere
-   */
-  tmp_list = line->runs;
-  while (tmp_list)
-    {
-      PangoLayoutRun *run = tmp_list->data;
-      for (i=0; i < run->glyphs->num_glyphs; i++)
-	current_width += run->glyphs->glyphs[i].geometry.width;
-      
-      tmp_list = tmp_list->next;
-    }
-  
   pango_glyph_string_set_size (glyphs, 1);
   
   glyphs->glyphs[0].glyph = 0;
@@ -2567,10 +2595,9 @@ typedef enum
   BREAK_LINE_SEPARATOR
 } BreakResult;
 
-typedef struct _ParaBreakState ParaBreakState;
-
 struct _ParaBreakState
 {
+  PangoAttrList *attrs;		/* Attributes being used for itemization */
   GList *items;			/* This paragraph turned into items */
   PangoDirection base_dir;	/* Current resolved base direction */
   gboolean first_line;		/* TRUE if this is the first line of the paragraph */
@@ -2853,13 +2880,15 @@ process_line (PangoLayout    *layout,
   int break_remaining_width = 0;    /* Remaining width before adding run with break */
   int break_start_offset = 0;	    /* Start width before adding run with break */
   GSList *break_link = NULL;        /* Link holding run before break */
-  
+
   line = pango_layout_line_new (layout);
   line->start_index = state->line_start_index;
   line->is_paragraph_start = state->first_line;
   line->resolved_dir = state->base_dir;
 
-  if (state->first_line)
+  if (layout->ellipsize != PANGO_ELLIPSIZE_NONE)
+    state->remaining_width = -1;
+  else if (state->first_line)
     state->remaining_width = (layout->indent >= 0) ? layout->width - layout->indent : layout->width;
   else
     state->remaining_width = (layout->indent >= 0) ? layout->width : layout->width + layout->indent;
@@ -2928,7 +2957,7 @@ process_line (PangoLayout    *layout,
     }
 
  done:  
-  pango_layout_line_postprocess (line);
+  pango_layout_line_postprocess (line, state);
   layout->lines = g_slist_prepend (layout->lines, line);
   state->first_line = FALSE;
   state->line_start_index += line->length;
@@ -3149,6 +3178,7 @@ pango_layout_check_lines (PangoLayout *layout)
       g_assert (delim_len < 4);	/* PS is 3 bytes */
       g_assert (delim_len >= 0);
 
+      state.attrs = attrs;
       state.items = pango_itemize_with_base_dir (layout->context,
 						 base_dir,
 						 layout->text,
@@ -4116,7 +4146,8 @@ adjust_line_letter_spacing (PangoLayoutLine *line)
 }
 
 static void
-pango_layout_line_postprocess (PangoLayoutLine *line)
+pango_layout_line_postprocess (PangoLayoutLine *line,
+			       ParaBreakState  *state)
 {
   /* NB: the runs are in reverse order at this point, since we prepended them to the list
    */
@@ -4125,6 +4156,10 @@ pango_layout_line_postprocess (PangoLayoutLine *line)
    */
   line->runs = g_slist_reverse (line->runs);
 
+  /* Ellipsize the line if necessary
+   */
+  _pango_layout_line_ellipsize (line, state->attrs);
+  
   /* Now convert logical to visual order
    */
   pango_layout_line_reorder (line);

@@ -53,6 +53,7 @@ pango-win32res.lo: pango.rc
 
 libpango_1_0_la_SOURCES =      \
 	break.c 	       \
+	ellipsize.c     	\
 	fonts.c 	       \
 	glyphstring.c 	       \
 	mapping.c 	       \
@@ -66,9 +67,11 @@ libpango_1_0_la_SOURCES =      \
 	pango-fontmap.c	       \
 	pango-fontset.c	       \
 	pango-glyph-item.c     \
+	pango-glyph-item-private.h     \
 	pango-impl-utils.h     \
 	pango-item.c	       \
 	pango-layout.c	       \
+	pango-layout-private.h	       \
 	pango-markup.c	       \
 	pango-script.c	       \
 	pango-script-lang-table.h \

@@ -18,6 +18,7 @@ pango_reorder_items
 <SUBSECTION>
 pango_context_new
 pango_context_set_font_map
+pango_context_get_font_map
 pango_context_get_font_description
 pango_context_set_font_description
 pango_context_get_language
@@ -95,9 +96,11 @@ pango_glyph_string_get_logical_widths
 pango_glyph_item_split
 pango_glyph_item_apply_attrs
 pango_glyph_item_letter_space
+pango_glyph_item_free
 
 <SUBSECTION Private>
 pango_glyph_string_get_type
+pango_matrix_get_type
 </SECTION>
 
 <SECTION>
@@ -402,6 +405,10 @@ pango_layout_set_wrap
 pango_layout_get_wrap
 PangoWrapMode
 PANGO_TYPE_WRAP_MODE
+pango_layout_set_ellipsize
+pango_layout_get_ellipsize
+PangoEllipsizeMode
+PANGO_TYPE_ELLIPSIZE_MODE
 pango_layout_set_indent
 pango_layout_get_indent
 pango_layout_get_spacing
@@ -479,6 +486,7 @@ pango_layout_get_type
 pango_layout_iter_get_type
 pango_alignment_get_type
 pango_wrap_mode_get_type
+pango_ellipsize_mode_get_type
 </SECTION>
 
 <SECTION>

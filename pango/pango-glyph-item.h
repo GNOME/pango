@@ -41,6 +41,7 @@ struct _PangoGlyphItem
 PangoGlyphItem *pango_glyph_item_split        (PangoGlyphItem *orig,
 					       const char     *text,
 					       int             split_index);
+void            pango_glyph_item_free         (PangoGlyphItem *glyph_item);
 GSList *        pango_glyph_item_apply_attrs  (PangoGlyphItem *glyph_item,
 					       const char     *text,
 					       PangoAttrList  *list);

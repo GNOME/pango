@@ -1,3 +1,19 @@
+Wed Jul 14 17:47:38 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-layout.[ch] pango/ellipsize.c pango/Makefile.am:
+	Add PangoEllipsizeMode, pango_layout_set_ellipsize(), implement.
+	(#59071)
+
+	* pango/pango-layout-private.h pango/pango-layout.c:
+	Move PangoLayout structure into a separate header file.
+
+	* pango/pango-glyph-item.[ch]: Add pango_glyph_item_free().
+
+	* pango/pango-glyph-item-private.h pango/pango-glyph-item.c:
+	Internally export the PangoGlyphItemIter functionality.
+
+	* examples/renderdemo.[ch]: Add --ellipsize option.
+
 Wed Jul 14 17:42:49 2004  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pango-script.c (pango_language_includes_script): 

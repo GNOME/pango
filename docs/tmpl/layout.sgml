@@ -215,6 +215,41 @@ The GObject type for #PangoWrapMode.
 
 
 
+<!-- ##### FUNCTION pango_layout_set_ellipsize ##### -->
+<para>
+
+</para>
+
+@layout: 
+@ellipsize: 
+
+
+<!-- ##### FUNCTION pango_layout_get_ellipsize ##### -->
+<para>
+
+</para>
+
+@layout: 
+@Returns: 
+
+
+<!-- ##### ENUM PangoEllipsizeMode ##### -->
+<para>
+
+</para>
+
+@PANGO_ELLIPSIZE_NONE: 
+@PANGO_ELLIPSIZE_START: 
+@PANGO_ELLIPSIZE_MIDDLE: 
+@PANGO_ELLIPSIZE_END: 
+
+<!-- ##### MACRO PANGO_TYPE_ELLIPSIZE_MODE ##### -->
+<para>
+The GObject type for #PangoEllipsizeMode.
+</para>
+
+
+
 <!-- ##### FUNCTION pango_layout_set_indent ##### -->
 <para>
 

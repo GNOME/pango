@@ -54,6 +54,7 @@ char *opt_text = NULL;
 gboolean opt_waterfall = FALSE;
 int opt_width = -1;
 int opt_indent = 0;
+PangoEllipsizeMode opt_ellipsize = PANGO_ELLIPSIZE_NONE;
 
 /* Text (or markup) to render */
 char *text;
@@ -101,7 +102,8 @@ make_layout(PangoContext *context,
     pango_layout_set_text (layout, text, -1);
 
   pango_layout_set_auto_dir (layout, opt_auto_dir);
-  
+  pango_layout_set_ellipsize (layout, opt_ellipsize);
+
   font_description = get_font_description ();
   if (size > 0)
     pango_font_description_set_size (font_description, size * PANGO_SCALE);
@@ -298,6 +300,24 @@ show_help (ArgContext *context,
 }
 
 void
+parse_ellipsis (ArgContext *arg_context,
+		const char *name,
+		const char *arg,
+		gpointer    data)
+{
+  static GEnumClass *class = NULL;
+
+  if (!class)
+    class = g_type_class_ref (PANGO_TYPE_ELLIPSIZE_MODE);
+  
+  GEnumValue *value = g_enum_get_value_by_nick (class, arg);
+  if (!value)
+    fail ("--ellipsize option must be one of none/start/middle/end");
+
+  opt_ellipsize = value->value;
+}
+
+void
 parse_options (int argc, char *argv[])
 {
   static const ArgDesc args[] = {
@@ -307,6 +327,8 @@ parse_options (int argc, char *argv[])
       ARG_BOOL,     &opt_display },
     { "dpi",        "Set the dpi'",
       ARG_INT,      &opt_dpi },
+    { "ellipsize",  "Ellipsization mode [=none/start/middle/end]",
+      ARG_CALLBACK, NULL, parse_ellipsis },
     { "font",       "Set the font name",
       ARG_STRING,   &opt_font },
     { "header",     "Display the options in the output",

@@ -53,3 +53,4 @@ extern char *opt_text;
 extern gboolean opt_waterfall;
 extern int opt_width;
 extern int opt_indent;
+extern PangoEllipsizeMode opt_ellipsize;

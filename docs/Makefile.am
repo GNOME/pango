@@ -27,6 +27,8 @@ IGNORE_HFILES=			\
 	modules.h		\
 	pango-engine-private.h	\
 	pango-impl-utils.h	\
+	pango-glyph-item-private.h	\
+	pango-layout-private.h	\
 	pango-script-table.h	\
 	pango-utils.h		\
 	pangofc-private.h	\
