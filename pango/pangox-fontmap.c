@@ -1328,14 +1328,6 @@ pango_x_make_matching_xlfd (PangoFontMap *fontmap, char *xlfd, const char *chars
   return result;
 }
 
-static void
-free_coverages_foreach (gpointer key,
-			gpointer value,
-			gpointer data)
-{
-  pango_coverage_unref (value);
-}
-
 /**
  * pango_x_font_map_get_font_cache:
  * @font_map: a #PangoXFontMap.

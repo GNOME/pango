@@ -1,3 +1,13 @@
+Thu Mar 11 17:28:06 2004  Manish Singh  <yosh@gimp.org>
+
+	* pango/pangofc-fontmap.c: Convert PangoStretch to and from FC_WIDTH,
+	so we can actually get fontconfig to match on condensed and expanded
+	versions of fonts, and have the info survive a pango_fc_face_describe
+	roundtrip. Fixes #131561.
+
+	* pango/pangox-fontmap.c: Remove unused function
+	free_coverages_foreach.
+
 Tue Mar  9 09:21:07 2004  Owen Taylor  <otaylor@redhat.com>
 
 	* === Released 1.3.6 ===

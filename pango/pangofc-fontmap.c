@@ -486,60 +486,95 @@ pango_fc_font_map_list_families (PangoFontMap      *fontmap,
 }
 
 static int
-pango_fc_convert_weight (PangoWeight pango_weight)
+pango_fc_convert_weight_to_fc (PangoWeight pango_weight)
 {
-  int weight;
-  
   if (pango_weight < (PANGO_WEIGHT_NORMAL + PANGO_WEIGHT_LIGHT) / 2)
-    weight = FC_WEIGHT_LIGHT;
+    return FC_WEIGHT_LIGHT;
   else if (pango_weight < (PANGO_WEIGHT_NORMAL + 600) / 2)
-    weight = FC_WEIGHT_MEDIUM;
+    return FC_WEIGHT_MEDIUM;
   else if (pango_weight < (600 + PANGO_WEIGHT_BOLD) / 2)
-    weight = FC_WEIGHT_DEMIBOLD;
+    return FC_WEIGHT_DEMIBOLD;
   else if (pango_weight < (PANGO_WEIGHT_BOLD + PANGO_WEIGHT_ULTRABOLD) / 2)
-    weight = FC_WEIGHT_BOLD;
+    return FC_WEIGHT_BOLD;
   else
-    weight = FC_WEIGHT_BLACK;
-  
-  return weight;
+    return FC_WEIGHT_BLACK;
 }
 
 static int
-pango_fc_convert_slant (PangoStyle pango_style)
+pango_fc_convert_slant_to_fc (PangoStyle pango_style)
 {
-  int slant;
-  
-  if (pango_style == PANGO_STYLE_ITALIC)
-    slant = FC_SLANT_ITALIC;
-  else if (pango_style == PANGO_STYLE_OBLIQUE)
-    slant = FC_SLANT_OBLIQUE;
-  else
-    slant = FC_SLANT_ROMAN;
-  
-  return slant;
+  switch (pango_style)
+    {
+    case PANGO_STYLE_NORMAL:
+      return FC_SLANT_ROMAN;
+    case PANGO_STYLE_ITALIC:
+      return FC_SLANT_ITALIC;
+    case PANGO_STYLE_OBLIQUE:
+      return FC_SLANT_OBLIQUE;
+    default:
+      return FC_SLANT_ROMAN;
+    }
 }
 
+#ifdef FC_WIDTH
+static int
+pango_fc_convert_width_to_fc (PangoStretch pango_stretch)
+{
+  switch (pango_stretch)
+    {
+    case PANGO_STRETCH_NORMAL:
+      return FC_WIDTH_NORMAL;
+    case PANGO_STRETCH_ULTRA_CONDENSED:
+      return FC_WIDTH_ULTRACONDENSED;
+    case PANGO_STRETCH_EXTRA_CONDENSED:
+      return FC_WIDTH_EXTRACONDENSED;
+    case PANGO_STRETCH_CONDENSED:
+      return FC_WIDTH_CONDENSED;
+    case PANGO_STRETCH_SEMI_CONDENSED:
+      return FC_WIDTH_SEMICONDENSED;
+    case PANGO_STRETCH_SEMI_EXPANDED:
+      return FC_WIDTH_SEMIEXPANDED;
+    case PANGO_STRETCH_EXPANDED:
+      return FC_WIDTH_EXPANDED;
+    case PANGO_STRETCH_EXTRA_EXPANDED:
+      return FC_WIDTH_EXTRAEXPANDED;
+    case PANGO_STRETCH_ULTRA_EXPANDED:
+      return FC_WIDTH_ULTRAEXPANDED;
+    default:
+      return FC_WIDTH_NORMAL;
+    }
+}
+#endif
 
 static FcPattern *
 pango_fc_make_pattern (const PangoFontDescription *description)
 {
   FcPattern *pattern;
-  PangoStyle pango_style;
   int slant;
   int weight;
+  double size;
   char **families;
   int i;
+#ifdef FC_WIDTH
+  int width;
+#endif
 
-  pango_style = pango_font_description_get_style (description);
+  slant = pango_fc_convert_slant_to_fc (pango_font_description_get_style (description));
+  weight = pango_fc_convert_weight_to_fc (pango_font_description_get_weight (description));
+#ifdef FC_WIDTH
+  width = pango_fc_convert_width_to_fc (pango_font_description_get_stretch (description));
+#endif
 
-  slant = pango_fc_convert_slant (pango_style);
-  weight = pango_fc_convert_weight (pango_font_description_get_weight (description));
+  size = (double) pango_font_description_get_size (description) / PANGO_SCALE;
   
   pattern = FcPatternBuild (0,
-			     FC_WEIGHT, FcTypeInteger, weight,
-			     FC_SLANT,  FcTypeInteger, slant,
-			     FC_SIZE, FcTypeDouble, (double)pango_font_description_get_size (description)/PANGO_SCALE,
-			     NULL);
+			    FC_WEIGHT, FcTypeInteger, weight,
+			    FC_SLANT,  FcTypeInteger, slant,
+#ifdef FC_WIDTH
+			    FC_WIDTH,  FcTypeInteger, width,
+#endif
+			    FC_SIZE,   FcTypeDouble,  size,
+			    NULL);
 
   families = g_strsplit (pango_font_description_get_family (description), ",", -1);
   
@@ -670,19 +705,22 @@ pango_fc_font_map_get_patterns (PangoFontMap               *fontmap,
       patterns->cache_link = NULL;
 
       for (f = 0; f < font_patterns->nfont; f++)
-      {
-	font_pattern = FcFontRenderPrepare (NULL, pattern,
-					    font_patterns->fonts[f]);
+	{
+	  font_pattern = FcFontRenderPrepare (NULL, pattern,
+					      font_patterns->fonts[f]);
+
+	  if (font_pattern)
+	    {
 #ifdef FC_PATTERN
-	/* The FC_PATTERN element, which points back to our the original patterm
-	 * defeats our hash tables.
-	 */
-	FcPatternDel (font_pattern, FC_PATTERN);
+	      /* The FC_PATTERN element, which points back to our the original
+	       * pattern defeats our hash tables.
+	       */
+	      FcPatternDel (font_pattern, FC_PATTERN);
 #endif /* FC_PATTERN */
 
-	if (font_pattern)
-	  patterns->patterns[patterns->n_patterns++] = uniquify_pattern (fcfontmap, font_pattern);
-      }
+	      patterns->patterns[patterns->n_patterns++] = uniquify_pattern (fcfontmap, font_pattern);
+	    }
+	}
       
       FcPatternDestroy (pattern);
       
@@ -995,7 +1033,70 @@ pango_fc_font_map_shutdown (PangoFcFontMap *fcfontmap)
   g_hash_table_destroy (priv->fonts);
   priv->fonts = NULL;
   priv->closed = TRUE;
-}  
+}
+
+static PangoWeight
+pango_fc_convert_weight_to_pango (int fc_weight)
+{
+  if (fc_weight < FC_WEIGHT_LIGHT)
+    return PANGO_WEIGHT_ULTRALIGHT;
+  else if (fc_weight < (FC_WEIGHT_LIGHT + FC_WEIGHT_MEDIUM) / 2)
+    return PANGO_WEIGHT_LIGHT;
+  else if (fc_weight < (FC_WEIGHT_MEDIUM + FC_WEIGHT_DEMIBOLD) / 2)
+    return PANGO_WEIGHT_NORMAL;
+  else if (fc_weight < (FC_WEIGHT_DEMIBOLD + FC_WEIGHT_BOLD) / 2)
+    return 600;
+  else if (fc_weight < (FC_WEIGHT_BOLD + FC_WEIGHT_BLACK) / 2)
+    return PANGO_WEIGHT_BOLD;
+  else
+    return PANGO_WEIGHT_ULTRABOLD;
+}
+
+static PangoStyle
+pango_fc_convert_slant_to_pango (int fc_style)
+{
+  switch (fc_style)
+    {
+    case FC_SLANT_ROMAN:
+      return PANGO_STYLE_NORMAL;
+    case FC_SLANT_ITALIC:
+      return PANGO_STYLE_ITALIC;
+    case FC_SLANT_OBLIQUE:
+      return PANGO_STYLE_OBLIQUE;
+    default:
+      return PANGO_STYLE_NORMAL;
+    }
+}
+
+#ifdef FC_WIDTH
+static PangoStretch
+pango_fc_convert_width_to_pango (int fc_stretch)
+{
+  switch (fc_stretch)
+    {
+    case FC_WIDTH_NORMAL:
+      return PANGO_STRETCH_NORMAL;
+    case FC_WIDTH_ULTRACONDENSED:
+      return PANGO_STRETCH_ULTRA_CONDENSED;
+    case FC_WIDTH_EXTRACONDENSED:
+      return PANGO_STRETCH_EXTRA_CONDENSED;
+    case FC_WIDTH_CONDENSED:
+      return PANGO_STRETCH_CONDENSED;
+    case FC_WIDTH_SEMICONDENSED:
+      return PANGO_STRETCH_SEMI_CONDENSED;
+    case FC_WIDTH_SEMIEXPANDED:
+      return PANGO_STRETCH_SEMI_EXPANDED;
+    case FC_WIDTH_EXPANDED:
+      return PANGO_STRETCH_EXPANDED;
+    case FC_WIDTH_EXTRAEXPANDED:
+      return PANGO_STRETCH_EXTRA_EXPANDED;
+    case FC_WIDTH_ULTRAEXPANDED:
+      return PANGO_STRETCH_ULTRA_EXPANDED;
+    default:
+      return PANGO_STRETCH_NORMAL;
+    }
+}
+#endif
 
 /**
  * pango_fc_font_description_from_pattern:
@@ -1019,6 +1120,7 @@ pango_fc_font_description_from_pattern (FcPattern *pattern, gboolean include_siz
   PangoFontDescription *desc;
   PangoStyle style;
   PangoWeight weight;
+  PangoStretch stretch;
   double size;
   
   FcChar8 *s;
@@ -1033,44 +1135,32 @@ pango_fc_font_description_from_pattern (FcPattern *pattern, gboolean include_siz
   pango_font_description_set_family (desc, (gchar *)s);
   
   if (FcPatternGetInteger (pattern, FC_SLANT, 0, &i) == FcResultMatch)
-    {
-      if (i == FC_SLANT_ROMAN)
-	style = PANGO_STYLE_NORMAL;
-      else if (i == FC_SLANT_OBLIQUE)
-	style = PANGO_STYLE_OBLIQUE;
-      else
-	style = PANGO_STYLE_ITALIC;
-    }
+    style = pango_fc_convert_slant_to_pango (i);
   else
     style = PANGO_STYLE_NORMAL;
 
   pango_font_description_set_style (desc, style);
 
   if (FcPatternGetInteger (pattern, FC_WEIGHT, 0, &i) == FcResultMatch)
-    { 
-     if (i < FC_WEIGHT_LIGHT)
-	weight = PANGO_WEIGHT_ULTRALIGHT;
-      else if (i < (FC_WEIGHT_LIGHT + FC_WEIGHT_MEDIUM) / 2)
-	weight = PANGO_WEIGHT_LIGHT;
-      else if (i < (FC_WEIGHT_MEDIUM + FC_WEIGHT_DEMIBOLD) / 2)
-	weight = PANGO_WEIGHT_NORMAL;
-      else if (i < (FC_WEIGHT_DEMIBOLD + FC_WEIGHT_BOLD) / 2)
-	weight = 600;
-      else if (i < (FC_WEIGHT_BOLD + FC_WEIGHT_BLACK) / 2)
-	weight = PANGO_WEIGHT_BOLD;
-      else
-	weight = PANGO_WEIGHT_ULTRABOLD;
-    }
+    weight = pango_fc_convert_weight_to_pango (i);
   else
     weight = PANGO_WEIGHT_NORMAL;
-
-  if (include_size && FcPatternGetDouble (pattern, FC_SIZE, 0, &size) == FcResultMatch)
-      pango_font_description_set_size (desc, size * PANGO_SCALE);
   
   pango_font_description_set_weight (desc, weight);
+
+#ifdef FC_WIDTH
+  if (FcPatternGetInteger (pattern, FC_WIDTH, 0, &i) == FcResultMatch)
+    stretch = pango_fc_convert_width_to_pango (i);
+  else
+#endif
+    stretch = PANGO_STRETCH_NORMAL;
+
+  pango_font_description_set_stretch (desc, stretch);
   
   pango_font_description_set_variant (desc, PANGO_VARIANT_NORMAL);
-  pango_font_description_set_stretch (desc, PANGO_STRETCH_NORMAL);
+
+  if (include_size && FcPatternGetDouble (pattern, FC_SIZE, 0, &size) == FcResultMatch)
+    pango_font_description_set_size (desc, size * PANGO_SCALE);
 
   return desc;
 }
@@ -1111,7 +1201,7 @@ pango_fc_face_describe (PangoFontFace *face)
 	return make_alias_description (fcfamily, FALSE, FALSE);
       else if (strcmp (fcface->style, "Bold") == 0)
 	return make_alias_description (fcfamily, TRUE, FALSE); 
-     else if (strcmp (fcface->style, "Italic") == 0)
+      else if (strcmp (fcface->style, "Italic") == 0)
 	return make_alias_description (fcfamily, FALSE, TRUE);
       else			/* Bold Italic */
 	return make_alias_description (fcfamily, TRUE, TRUE);
