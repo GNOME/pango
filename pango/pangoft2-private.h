@@ -27,7 +27,7 @@
 #include "pangoft2.h"
 
 /* Debugging... */
-#define DEBUGGING 1
+/*#define DEBUGGING 1*/
 
 #if defined(DEBUGGING) && DEBUGGING
 #ifdef __GNUC__

@@ -1,3 +1,8 @@
+2000-12-22  Alexander Larsson  <alla@lysator.liu.se>
+
+	* pango/pangoft2-private.h:
+	Disable debug.
+
 2000-12-21  Tor Lillqvist  <tml@iki.fi>
 
 	* modules/basic/basic-win32.c (script_engine_load): Only a script
