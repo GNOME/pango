@@ -325,11 +325,14 @@ pango_ft2_font_map_for_display (void)
 void
 pango_ft2_shutdown_display (void)
 {
-  pango_ft2_font_map_cache_clear (pango_ft2_global_fontmap);
-
-  g_object_unref (G_OBJECT (pango_ft2_global_fontmap));
-
-  pango_ft2_global_fontmap = NULL;
+  if (pango_ft2_global_fontmap)
+    {
+      pango_ft2_font_map_cache_clear (pango_ft2_global_fontmap);
+      
+      g_object_unref (G_OBJECT (pango_ft2_global_fontmap));
+      
+      pango_ft2_global_fontmap = NULL;
+    }
 }
 
 

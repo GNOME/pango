@@ -277,8 +277,13 @@ pango_win32_font_map_for_display (void)
 void
 pango_win32_shutdown_display (void)
 {
-  pango_win32_fontmap_cache_clear (fontmap);
-  g_object_unref (G_OBJECT (fontmap));
+  if (fontmap)
+    {
+      pango_win32_fontmap_cache_clear (fontmap);
+      g_object_unref (G_OBJECT (fontmap));
+
+      fontmap = NULL;
+    }
 }
 
 static void
