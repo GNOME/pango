@@ -1,3 +1,9 @@
+Fri Jul 30 13:33:49 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* modules/indic/indic-ot.c (indic_ot_reorder): Suppress
+	blwf on the first consonant in a syllable. (#118301,
+	Taneem Ahmed)
+
 Thu Jul 29 16:10:06 2004  Owen Taylor  <otaylor@redhat.com>
 
 	Fix Malayalam double-consonant conjuncts: #121671, Rajkumar S

@@ -294,7 +294,10 @@ glong indic_ot_reorder(const gunichar *chars, const glong *utf8_offsets, glong c
 
 	    for (i = baseLimit; i < baseConsonant; i += 1) {
 		gunichar ch = chars[i];
-		gulong tag = blwf_p;
+		/* Applying blwf to the first consonant doesn't makes sense
+		 * since the below-form follows the consonant that it is
+		 * put under */
+		gulong tag = (i == baseLimit) ? half_p : blwf_p;
 		IndicOTCharClass charClass = indic_ot_get_char_class(class_table, ch);
 
 		if (IS_CONSONANT(charClass)) {
