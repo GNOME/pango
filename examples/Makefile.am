@@ -74,6 +74,7 @@ EXTRA_DIST=			\
 	HELLO.utf8		\
 	dev-example.utf		\
 	muru.utf		\
+	syriac.utf		\
 	pangorc			\
 	pangox.aliases
 

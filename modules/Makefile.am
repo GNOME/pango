@@ -6,7 +6,8 @@ SUBDIRS = 		\
 	hangul 		\
 	indic           \
 	thai		\
-	hebrew
+	hebrew		\
+	syriac
 
 EXTRA_DIST =		\
 	module.def
