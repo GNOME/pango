@@ -1,3 +1,8 @@
+Fri May  2 14:21:20 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-layout.c (update_run): Fix a harmless
+	uninitialized memory read. (#109625, Rich Burridge)
+
 Wed Apr 30 16:46:52 2003  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/fonts.c (pango_font_description_hash): Hash
