@@ -1,3 +1,11 @@
+Fri Jul 25 22:59:13 2003  Owen Taylor  <otaylor@redhat.com>
+
+        * pango/opentype/ftx{gpos,gsub}.h pango/opentype/ftxgdef.c:
+        Add GPOS_LOOKUP_EXTENSION, GSUB_LOOKUP_EXTENSION, which
+        allow lookup information to be stored at 32-bit offets
+        via a double indirection. (From FreeType, Werner Lemberg,
+	2001-08-08)
+
 Fri Jul 25 22:25:48 2003  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/opentype/ftxgsub.c (Lookup_ContextSubst2,
