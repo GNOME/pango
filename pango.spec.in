@@ -4,10 +4,10 @@ Version:	@VERSION@
 Release:	1
 License:	LGPL
 Group:		System Environment/Libraries
-Source:		http://www.pango.org/download/%{name}-%{version}.tar.gz
+Source:		ftp://ftp.gimp.org/pub/gtk/v1.3/%{name}-%{version}.tar.gz
 BuildRoot:	/var/tmp/%{name}-%{version}-root
-Requires:	glib
-BuildRequires:	glib-devel
+Requires:	glib2
+BuildRequires:	glib2-devel
 
 %description
 System for layout and rendering of internationalized text.
@@ -75,6 +75,10 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/gtk-doc/html/pango
 
 %changelog
+* Mon Aug 27 2001 Jens Finke <jens@gnome.org>
+- glib2 package required
+- updated source url
+
 * Wed Aug 16 2001 Jens Finke <jens@gnome.org>
 - Updated spec file to match GPP standard:
  - Removed %define for prefix
