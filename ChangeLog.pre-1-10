@@ -1,3 +1,8 @@
+2003-03-28  Sven Neumann  <sven@gimp.org>
+
+	* pango/pangoft2-fontmap.c
+	* pango/pangoxft-fontmap.c: fixed typos in inline docs.
+
 2003-03-09  James Henstridge  <james@daa.com.au>
 
 	* autogen.sh: make similar changes to the ones on glib head (call
