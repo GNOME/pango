@@ -1,3 +1,9 @@
+Mon Jun 21 11:41:18 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-attributes.c (pango_attr_list_change): 
+	Fix leak when inserting an empty attributes. (#140771,
+	Morten Welinder)
+
 Mon Jun 21 11:38:22 2004  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pango-context.c (pango_context_set_font_map): 

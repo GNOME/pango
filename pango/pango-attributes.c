@@ -972,7 +972,10 @@ pango_attr_list_change (PangoAttrList  *list,
   g_return_if_fail (list != NULL);
 
   if (start_index == end_index)	/* empty, nothing to do */
-    return;
+    {
+      pango_attribute_destroy (attr);
+      return;
+    }
   
   tmp_list = list->attributes;
   prev = NULL;
