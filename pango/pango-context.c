@@ -216,11 +216,11 @@ pango_context_set_font_map (PangoContext *context,
   g_return_if_fail (PANGO_IS_CONTEXT (context));
   g_return_if_fail (!font_map || PANGO_IS_FONT_MAP (font_map));
 
-  if (context->font_map)
-    g_object_unref (context->font_map);
-
   if (font_map)
     g_object_ref (font_map);
+
+  if (context->font_map)
+    g_object_unref (context->font_map);
 
   context->font_map = font_map;
 }
