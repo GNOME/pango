@@ -1,3 +1,8 @@
+Sun Jul  2 18:06:01 2000  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-layout.c (get_tab_pos): Fix up set_font_description()
+	for tab spaces.
+
 Sun Jul  2 17:59:56 2000  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pango-attributes.[ch] (pango_attr_list_insert_before): New

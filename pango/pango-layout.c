@@ -1560,6 +1560,15 @@ get_tab_pos (PangoLayout *layout, int index)
       int i;
 
       PangoAttrList *attrs = pango_attr_list_new ();
+      if (layout->font_desc)
+	{
+	  PangoAttribute *attr = pango_attr_font_desc_new (layout->font_desc);
+	  attr->start_index = 0;
+	  attr->end_index = layout->length;
+	  
+	  pango_attr_list_insert_before (attrs, attr);
+	}
+
       items = pango_itemize (layout->context, " ", 1, attrs);
       pango_attr_list_unref (attrs);
 
