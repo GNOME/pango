@@ -1,3 +1,19 @@
+Sat Jun 23 10:01:20 2001  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pangowin32-fontmap.c (pango_win32_font_entry_get_coverage): 
+	* pango/pangoft2-fontmap.c (pango_ft2_font_entry_get_coverage):
+	  pango/pango-markup.c:
+	  modules/arabic/arabic-xft.c (arabic_engine_shape):
+	  modules/arabic/arabic-x.c (arabic_engine_shape):
+	  pango/pango-context.c (pango_itemize): 
+	  pango/pangox.c (get_font_metrics_from_string):
+	  pango/pangoft2.c (get_font_metrics_from_string):
+	Adapt to 64-bit changes in glib.
+
+	* pango/Makefile.am: Modify generation rules to
+	use glib-mkenums (ugh, loong command lines), and
+	to reduce rebuilding by using stamp files.
+
 2001-06-22  Hans Breuer  <hans@breuer.org>
 
 	* pango/makefile.msc : changed version to 0.17
