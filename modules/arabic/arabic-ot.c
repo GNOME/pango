@@ -111,13 +111,13 @@ joining_class  arabic[] =
   transparent, transparent, transparent, transparent,
   transparent, none, none, transparent,
   transparent, none, transparent, transparent,
-  transparent, transparent, none, none,
+  transparent, transparent, right, right,
 
   /* U+06F0 */
   none, none, none, none,
   none, none, none, none,
   none, none, dual, dual,
-  dual, none, none, none
+  dual, none, none, dual
 };
 
 #if 0

@@ -1,3 +1,9 @@
+Sun Feb 29 10:54:55 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* modules/arabic/arabic-ot.c (arabic): Add joining
+	classes for new Unicode-4.0 characters U+06EE, U+06EF, U+06FF.
+	(Patch by Roozbeh Pournader from #117282)
+
 Sun Feb 29 09:25:13 2004  Owen Taylor  <otaylor@redhat.com>
 
 	Rework opentype interfaces and other changes to make GPOS
