@@ -57,6 +57,7 @@ static gboolean opt_rtl = FALSE;
 static char *opt_text = NULL;
 static  gboolean opt_waterfall = FALSE;
 static  int opt_width = -1;
+static  int opt_indent = 0;
 
 static void fail (const char *format, ...)  G_GNUC_PRINTF (1, 2);
 
@@ -111,6 +112,9 @@ make_layout(PangoContext *context,
     
   if (opt_width > 0)
     pango_layout_set_width (layout, (opt_width * opt_dpi * PANGO_SCALE + 32) / 72);
+
+  if (opt_indent != 0)
+    pango_layout_set_indent (layout, (opt_indent * opt_dpi * PANGO_SCALE + 32) / 72);
 
   base_dir = pango_context_get_base_dir (context);
   pango_layout_set_alignment (layout,
@@ -260,6 +264,8 @@ int main(int argc, char *argv[])
       ARG_BOOL,     &opt_waterfall },
     { "width",      "Width in points to which to wrap output",
       ARG_INT,      &opt_width },
+    { "indent",     "Width in points to indent paragraphs",
+      ARG_INT,      &opt_indent },
     { NULL }
   };
 

@@ -54,6 +54,7 @@ struct _PangoLayoutLine
   gint         start_index;     /* start of line as byte index into layout->text */
   gint         length;		/* length of line in bytes */
   GSList      *runs;
+  guint        is_paragraph_start : 1;  /* TRUE if this is the first line of the paragraph */ 
 };
 
 #define PANGO_TYPE_LAYOUT              (pango_layout_get_type ())

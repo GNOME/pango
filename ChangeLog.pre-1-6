@@ -1,5 +1,12 @@
 2003-11-25  Noah Levitt  <nlevitt@columbia.edu>
 
+	* examples/pangoft2topgm.c: Add --indent=n option.
+
+	* pango/pango-layout.[ch]: Indent the first line of every paragraph,
+	not just the first line in the layout. (#66626)
+
+2003-11-25  Noah Levitt  <nlevitt@columbia.edu>
+
 	* pango-utils.c (lang_texts[]): Italian is "it"; "iw" is deprecated
 	for Hebrew, should be "he".
 

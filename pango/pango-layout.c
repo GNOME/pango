@@ -414,11 +414,10 @@ pango_layout_get_wrap (PangoLayout *layout)
  * @layout: a #PangoLayout.
  * @indent: the amount by which to indentset
  * 
- * Sets the amount by which the first line should be shorter than the
- * rest of the lines. This may be negative, in which case
- * the subsequent lines will be shorter than the first line. (However,
- * in either case, the entire width of the layout will be given by
- * the value.) 
+ * Sets the width in pango units to indent each paragraph. A negative value
+ * of @indent will produce a hanging indent. That is, the first line will
+ * have the full width, and subsequent lines will be indented by the
+ * absolute value of @indent.
  **/
 void
 pango_layout_set_indent (PangoLayout *layout,
@@ -437,8 +436,8 @@ pango_layout_set_indent (PangoLayout *layout,
  * pango_layout_get_indent:
  * @layout: a #PangoLayout
  * 
- * Gets the amount by which the first line should be shorter than the
- * rest of the lines. 
+ * Gets the paragraph indent width in pango units. A negative value
+ * indicates a hanging indent.
  * 
  * Return value: the indent
  **/
@@ -1808,9 +1807,8 @@ get_x_offset (PangoLayout     *layout,
   if (layout->alignment == PANGO_ALIGN_CENTER)
     return;
   
-  if (line == layout->lines->data)
+  if (line->is_paragraph_start)
     {
-      /* First line */
       if (layout->indent > 0)
         {
           if (layout->alignment == PANGO_ALIGN_LEFT)
@@ -2719,6 +2717,7 @@ process_line (PangoLayout    *layout,
   
   line = pango_layout_line_new (layout);
   line->start_index = state->line_start_index;
+  line->is_paragraph_start = state->first_line;
 
   if (state->first_line)
     state->remaining_width = (layout->indent >= 0) ? layout->width - layout->indent : layout->width;
