@@ -1,3 +1,9 @@
+Tue Apr 24 11:45:55 2001  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/opentype/ftxgdef.c (TT_Load_GDEF_Table): Remove
+	excess call to DONE_Stream left over from conversion
+	from FT1. (reported by Michael Jansson)
+
 2001-04-20  Alexander Larsson  <alexl@redhat.com>
 
 	* pango/pangoxft-font.c (pango_xft_font_get_metrics):
