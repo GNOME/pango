@@ -1282,7 +1282,6 @@ pango_default_break (const gchar   *text,
  * @analysis:  #PangoAnalysis structure from pango_itemize()
  * @attrs:     an array to store character information in
  * @attrs_len: size of the array passed as @attrs
-
  *
  * Determines possible line, word, and character breaks
  * for a string of Unicode text.
@@ -1320,7 +1319,7 @@ pango_break (const gchar   *text,
  * return-newline pair, or Unicode paragraph separator character.  The
  * index of the run of delimiters is returned in
  * @paragraph_delimiter_index. The index of the start of the paragraph
- * (index after all delimiters) is stored in @paragraph_start.
+ * (index after all delimiters) is stored in @next_paragraph_start.
  *
  * If no delimiters are found, both @paragraph_delimiter_index and
  * @next_paragraph_start are filled with the length of @text (an index one
@@ -1413,7 +1412,7 @@ pango_find_paragraph_boundary (const gchar *text,
  * @log_attrs: array with one #PangoLogAttr per character in @text, plus one extra, to be filled in
  * @attrs_len: length of @log_attrs array
  *
- * Computes a PangoLogAttr for each character in @text. The @log_attrs
+ * Computes a #PangoLogAttr for each character in @text. The @log_attrs
  * array must have one #PangoLogAttr for each position in @text; if
  * @text contains N characters, it has N+1 positions, including the
  * last position at the end of the text. @text should be an entire
