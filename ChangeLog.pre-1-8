@@ -1,3 +1,7 @@
+2003-04-23  Matthias Clasen  <maclas@gmx.de>
+
+	* docs/tmpl/glyphs.sgml: Remove outdated information about PangoGlyph.
+
 Wed Apr 16 03:46:42 2003  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/opentype/pango-ot-info.c (synthesize_class_def):
