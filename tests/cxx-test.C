@@ -6,6 +6,10 @@
 
 #include <pango/pango.h>
 
+#ifdef HAVE_WIN32
+#include <pango/pangowin32.h>
+#endif
+
 #ifdef HAVE_X
 #include <pango/pangox.h>
 #endif
@@ -16,10 +20,6 @@
 
 #ifdef HAVE_FREETYPE
 #include <pango/pangoft2.h>
-#endif
-
-#ifdef HAVE_WIN32
-#include <pango/pangowin32.h>
 #endif
 
 int

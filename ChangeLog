@@ -1,3 +1,8 @@
+2005-03-01  Tor Lillqvist  <tml@novell.com>
+
+	* tests/cxx-test.C: Include pangowin32.h first to avoid
+	a namespace collision. (#163584)
+
 2005-02-21  Owen Taylor  <otaylor@redhat.com>
 
 
