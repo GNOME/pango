@@ -1,0 +1,10 @@
+Fri Jan 10 18:56:36 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/opentype/ftxgdef.c: Export TT_New_GDEF_Table
+	to create an empty GDEF table.
+
+	* pango/opentype/pango-ot-info.c: If the font doesn't
+	have a class definition table, synthesize one using
+	the charmap and the unicode properties of characters
+	in the charmap. (Needed to make things work with various
+	old Arabic fonts, such as the KACST fonts)
