@@ -1,3 +1,17 @@
+pOverview of changes between 1.8.0 and 1.8.1
+===========================================
+* Fix several problems with conjuct formation in Sinhala [Harshula]
+* Fix problems that were causing fonts to be missized and
+  not print in GtkHTML [Ross Burton]
+* Fix compilation with old fontconfig [Vincent Noel] and
+  old FreeType [Andrew P. Lentvorski, Jr]
+* Work around problem with glyphs in monospace fonts being truncated
+  by Xft [Billy Biggs]
+* Misc bug fixes [Damon Chaplin, Matthias Clasen, Kees Cook, Nick Lamb, 
+  Adam Sampson,Manish Singh, Morten Welinder]
+* Misc build fixes [Sebastien Bacher, Matthias Clasen, Tor Lillquist]
+* Doc improvements [Torsten Schoenfeld, Billy Biggs, Morten Welinder]
+
 Overview of changes between 1.7.0 and 1.8.0
 ===========================================
 * Add Sinhala support to the Indic module [Anuradha Ratnaweera]

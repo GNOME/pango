@@ -1,3 +1,7 @@
+2005-03-04  Owen Taylor  <otaylor@redhat.com>
+
+	* NEWS: Updates from stable branch.
+
 2005-03-03  Owen Taylor  <otaylor@redhat.com>
 
 	* modules/indic/indic-ot.[ch] modules/indic-ot-class-tables.c:
