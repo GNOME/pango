@@ -1,3 +1,11 @@
+Tue Aug 20 15:06:50 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* modules/arabic/arabic-xft.c modules/arabic/arabic-ft2.c
+	modules/basic/tables-big.i modules/basic/tables-small.i
+	modules/hebrew/hebrew-ft2.c modules/hebrew/hebrew-xft.c:
+	Patch from Nils Nordman to add various missing 'static'
+	(#90353)
+
 2002-08-18  Havoc Pennington  <hp@pobox.com>
 
 	* autogen.sh: hardcode aclocal-1.4/automake-1.4 so that users with

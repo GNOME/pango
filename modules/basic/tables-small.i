@@ -14,7 +14,7 @@ enum {
   ENC_ISO_10646  = 1 << 12
 };
 
-Charset charsets[] = {
+static Charset charsets[] = {
   { 0, NULL,         "iso8859-1", conv_ucs4 },
   { 1, "ISO-8859-2", "iso8859-2", conv_8bit },
   { 2, "ISO-8859-3", "iso8859-3", conv_8bit },
@@ -36,7 +36,7 @@ static PangoEngineRange basic_ranges[] = {
   { 0x2015, 0x2017, "*" },
 };
 
-const guint32 char_mask_map[] = {
+static const guint32 char_mask_map[] = {
   0,
   ENC_ISO_8859_1|ENC_ISO_8859_2|ENC_ISO_8859_3|ENC_ISO_8859_4|ENC_ISO_8859_5|ENC_ISO_8859_6|ENC_ISO_8859_7|ENC_ISO_8859_8|ENC_ISO_8859_9,
   ENC_ISO_8859_1|ENC_ISO_8859_2|ENC_ISO_8859_3|ENC_ISO_8859_4|ENC_ISO_8859_5|ENC_ISO_8859_7|ENC_ISO_8859_8|ENC_ISO_8859_9,
@@ -69,7 +69,7 @@ const guint32 char_mask_map[] = {
   ENC_ISO_8859_6
 };
 
-const guchar char_masks[] = {
+static const guchar char_masks[] = {
   0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
   0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
   1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,
