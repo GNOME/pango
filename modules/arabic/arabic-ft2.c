@@ -214,7 +214,7 @@ arabic_engine_shape (PangoFont        *font,
       wcs = g_utf8_to_ucs4_fast (text, length, NULL);
       properties = g_new0 (gulong, n_chars);
       
-      Assign_Arabic_Properties (wcs, properties, n_chars);
+      Arabic_Assign_Properties (wcs, properties, n_chars);
     }
   
   p = text;

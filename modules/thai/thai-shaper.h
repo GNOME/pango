@@ -32,16 +32,16 @@ struct _ThaiFontInfo
 };
 
 /*
- * Abstract methods
+ * Abstract methods (implemented by each shaper module)
  */
 ThaiFontInfo *
-get_font_info (PangoFont *font);
+thai_get_font_info (PangoFont *font);
 
 PangoGlyph
-make_glyph (ThaiFontInfo *font_info, unsigned int c);
+thai_make_glyph (ThaiFontInfo *font_info, unsigned int c);
 
 PangoGlyph
-make_unknown_glyph (ThaiFontInfo *font_info, unsigned int c);
+thai_make_unknown_glyph (ThaiFontInfo *font_info, unsigned int c);
 
 /*
  * Public functions

@@ -258,9 +258,10 @@ add_cluster(HebrewFontInfo   *font_info,
     }
 }
 
-gint get_glyph_num(HebrewFontInfo *font_info,
-		   PangoFont *font,
-		   gunichar  uch)
+static gint
+get_glyph_num(HebrewFontInfo *font_info,
+	      PangoFont *font,
+	      gunichar  uch)
 {
   if (font_info->type == HEBREW_FONT_ISO8859_8)
     {

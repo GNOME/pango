@@ -1,3 +1,19 @@
+Tue Aug 20 15:42:33 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* modules/indic/indic-xft.c (maybe_add_SUB_feature): 
+	  modules/indic/indic-xft.c (maybe_add_GPOS_feature): 
+	  modules/indic/indic-ot.c (getOutputIndex)
+	  modules/hebrew/hebrew-x.c (get_glyph_num)
+	  modules/basic/basic-x.c (find_char): Fix missing
+	 statics.
+
+	* modules/thai/{thai-shaper.[ch] thai-xft.c thai-x.c}:
+	Namespace the "abstract functions" that thai-xft/thai-x.c
+	export to thai-shaper.c.
+
+	* modules/arabic/arabic-{ot.[ch],ft2.c,xft.c}: 
+	Rename Assign_Arabic_Properties to Arabic_Assign_Properties.
+
 Tue Aug 20 15:06:50 2002  Owen Taylor  <otaylor@redhat.com>
  
  	* modules/arabic/arabic-xft.c modules/arabic/arabic-ft2.c

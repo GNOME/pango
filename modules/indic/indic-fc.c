@@ -118,7 +118,7 @@ static PangoIndicInfo indic_info[] = {
   PANGO_INDIC_INFO(telu), PANGO_INDIC_INFO(knda), PANGO_INDIC_INFO(mlym)
 };
 
-void
+static void
 maybe_add_GSUB_feature (PangoOTRuleset *ruleset,
 			PangoOTInfo    *info,
 			guint           script_index,
@@ -140,11 +140,11 @@ maybe_add_GSUB_feature (PangoOTRuleset *ruleset,
     }
 }
 
-void maybe_add_GPOS_feature (PangoOTRuleset *ruleset,
-			     PangoOTInfo    *info,
-			     guint           script_index,
-			     PangoOTTag      feature_tag,
-			     gulong          property_bit)
+static void maybe_add_GPOS_feature (PangoOTRuleset *ruleset,
+				    PangoOTInfo    *info,
+				    guint           script_index,
+				    PangoOTTag      feature_tag,
+				    gulong          property_bit)
 {
   guint feature_index;
 

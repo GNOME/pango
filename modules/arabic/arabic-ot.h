@@ -59,7 +59,7 @@ enum  joining_class_
 typedef enum joining_class_  joining_class;
 
 
-FT_Error  Assign_Arabic_Properties (gunichar   *string,
+FT_Error  Arabic_Assign_Properties (gunichar   *string,
 				    gulong     *properties,
 				    int         length);
 #if 0

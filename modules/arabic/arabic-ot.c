@@ -283,7 +283,7 @@ static joining_class  Get_Joining_Class (gunichar*   string,
 }
 
 
-FT_Error  Assign_Arabic_Properties (gunichar    *string,
+FT_Error  Arabic_Assign_Properties (gunichar    *string,
 				    gulong      *properties,
 				    int          length)
 {

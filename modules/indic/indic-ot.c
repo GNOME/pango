@@ -136,7 +136,7 @@ static void writeLengthMark(Output *output)
     }
 }
 
-glong getOutputIndex(Output *output)
+static glong getOutputIndex(Output *output)
 {
     return output->fOutIndex;
 }
