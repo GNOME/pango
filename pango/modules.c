@@ -115,12 +115,9 @@ pango_find_map (const char *lang,
        * for speed next time around if we had to do
        * any failing strcmps.
        */
-      if (tmp_list->next)
-	tmp_list->next->prev = tmp_list->prev;
-      tmp_list->prev->next = tmp_list->next;
-      tmp_list->next = maps;
-      tmp_list->prev = NULL;
-      maps = tmp_list;
+      maps = g_list_remove_link(maps, tmp_list);
+      maps = g_list_prepend(maps, tmp_list->data);
+      g_list_free_1(tmp_list);
     }
   
   return map_info->map;

@@ -2234,21 +2234,35 @@ pango_layout_line_x_to_index (PangoLayoutLine *line,
     {
       PangoRectangle logical_rect;
       PangoLayoutRun *run = tmp_list->data;
-      
-      pango_glyph_string_extents (run->glyphs, run->item->analysis.font, NULL, &logical_rect);
+      gboolean shape_set;
+
+      pango_layout_get_item_properties (run->item, NULL, NULL, &logical_rect, &shape_set);
+
+      if (!shape_set)
+	pango_glyph_string_extents (run->glyphs, run->item->analysis.font, NULL, &logical_rect);
 
       if (x_pos >= start_pos && x_pos < start_pos + logical_rect.width)
 	{
 	  int pos;
-	  
-	  pango_glyph_string_x_to_index (run->glyphs,
-					 line->layout->text + run->item->offset, run->item->length,
-					 &run->item->analysis,
-					 x_pos - start_pos,
-					 &pos, trailing);
 
 	  if (index)
-	    *index = pos + run->item->offset;
+	    *index = run->item->offset;
+
+	  if (shape_set)
+	    {
+	      *trailing = FALSE;
+	    }
+	  else
+	    {
+	      pango_glyph_string_x_to_index (run->glyphs,
+					     line->layout->text + run->item->offset, run->item->length,
+					     &run->item->analysis,
+					     x_pos - start_pos,
+					     &pos, trailing);
+
+	      if (index)
+		*index += pos;
+	    }
 	  
 	  return;
 	}
