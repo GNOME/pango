@@ -1,3 +1,10 @@
+Thu Nov  7 10:05:28 2002  HideToshi Tajima  <hidetoshi.tajima@sun.com>
+
+	* modules/basic/basic-x.c: 
+	Fix #96781: changes for basic X shaper's code range for
+	compatibility Ideographs characters (0xFA0C - 0xFA2D)
+	(by federic.zhang@sun.com)
+
 2002-11-06  Changwoo Ryu  <cwryu@debian.org>
 
 	* modules/hangul/hangul-x.c (hangul_engine_shape): Applied some of
