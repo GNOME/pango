@@ -1,3 +1,8 @@
+Tue Mar  5 15:41:17 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* modules/*/Makefile.am: Fix pangoxft-$(PANGO_API_VERSION).
+	(Reported by Manish Singh.)
+
 Tue Mar  5 11:00:20 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* configure.in **/Makefile.am *.pc.in: Switch over to 
