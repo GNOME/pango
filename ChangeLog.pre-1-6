@@ -1,3 +1,14 @@
+Fri Oct 31 12:32:38 2003  Owen Taylor  <otaylor@redhat.com>
+
+	Fix one problem with iteration by chars (Part of
+	#89541, Mariano Suárez-Alvarez)
+
+	* Pango/pango-layout.c (cluster_end_index): Fix to 
+	be item relative, like iter->cluster_index.
+
+	* pango/pango-layout.c (pango_layout_iter_next_char): 
+	Adapt.
+
 Tue Oct 14 19:00:17 2003  Owen Taylor  <otaylor@redhat.com>
 
 	* modules/hebrew/hebrew-xft.c (hebrew_engine_shape): 
