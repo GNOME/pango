@@ -1,3 +1,13 @@
+Mon Dec 16 21:16:31 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* === Released 1.1.6 ===
+
+	* NEWS: Updated.
+
+	* configure.in: Version 1.1.6, interface age 2.
+
+	* configure.in: Bump PANGO_MODULE_VERSION to 1.2.0.
+
 Mon Dec 16 19:28:18 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* modules/hangul/hangul-xft.c (render_isolated_tone):

@@ -18,14 +18,14 @@ dnl set PANGO_BINARY_AGE _and_ PANGO_INTERFACE_AGE to 0.
 dnl The triplet 
 PANGO_MAJOR_VERSION=1
 PANGO_MINOR_VERSION=1
-PANGO_MICRO_VERSION=5
+PANGO_MICRO_VERSION=6
 PANGO_VERSION=$PANGO_MAJOR_VERSION.$PANGO_MINOR_VERSION.$PANGO_MICRO_VERSION
 
 dnl The X.Y in -lpango-X.Y line. This is expected to stay 1.0 until Pango 2.
 PANGO_API_VERSION=1.0
 
 dnl Number of releases since we've added interfaces
-PANGO_INTERFACE_AGE=1
+PANGO_INTERFACE_AGE=2
 
 dnl Number of releases since we've broken binary compatibility.
 # PANGO_BINARY_AGE=0
@@ -35,7 +35,7 @@ dnl This is the last version with which we have compatibility with
 dnl with the modules for; it isn't the same as
 dnl PANGO_API_VERSION.'PANGO_MICRO_VERSION - PANGO_BINARY_AGE' since we have
 dnl engine only API    
-PANGO_MODULE_VERSION=1.1.0
+PANGO_MODULE_VERSION=1.2.0
 
 AC_SUBST(PANGO_MAJOR_VERSION)
 AC_SUBST(PANGO_MINOR_VERSION)

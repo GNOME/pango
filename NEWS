@@ -1,3 +1,10 @@
+Changes between 1.1.5 and 1.1.6
+
+* Fix crash with isolated Hangul tone marks.
+* Improve font solection for Hangul tone marks
+* Improve range definitions for basic-xft [Jungshik Shin]
+* Docs improvements [Matthias Clasen]
+
 Changes between 1.1.4 and 1.1.5
 
 * Fix wrap-around coordinate problems for X, Xt.

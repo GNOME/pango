@@ -691,7 +691,6 @@ The #PangoFontMapClass structure holds the virtual functions for
 a particular #PangoFontMap implementation.
 </para>
 
-@parent_class: 
 @load_font: a function to load a font with a given description. See
             pango_font_map_load_font()
 @list_families: A function to list available font families. See
@@ -779,7 +778,6 @@ The #PangoFontsetClass structure holds the virtual functions for
 a particular #PangoFontset implementation.
 </para>
 
-@parent_class: 
 @get_font: a function to get the font in the fontset that contains the 
    best glyph for the given unicode character; see pango_fontset_get_font().
 @get_metrics: a function to get overall metric information for the fonts 
