@@ -32,6 +32,7 @@
 #include <glib.h>
 #include "pango-engine.h"
 #include "thai-shaper.h"
+#include "thai-ot.h"
 
 #define MAX_CLUSTER_CHRS	256
 #define MAX_GLYPHS		256
@@ -703,5 +704,6 @@ thai_engine_shape (PangoEngineShape *engine,
 	p = get_next_cluster (p, text + length - p, cluster, &num_chrs);
 	add_cluster (font_info, glyphs, log_cluster - text, cluster, num_chrs);
     }
+  thai_ot_shape (font, glyphs);
 }
 
