@@ -66,7 +66,7 @@ struct _PangoLayoutRun
  * need to create a subclass of these, mail otaylor@redhat.com
  */
 
-GType        pango_layout_get_type       (void);
+GType        pango_layout_get_type       (void) G_GNUC_CONST;
 PangoLayout *pango_layout_new            (PangoContext   *context);
 
 PangoContext  *pango_layout_get_context    (PangoLayout    *layout);

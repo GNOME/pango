@@ -59,7 +59,7 @@ struct _PangoFontMapClass
 			       int                        *n_families);
 };
 
-GType      pango_font_map_get_type       (void);
+GType      pango_font_map_get_type       (void) G_GNUC_CONST;
 PangoFont *pango_font_map_load_font     (PangoFontMap                 *fontmap,
 					 const PangoFontDescription   *desc);
 void       pango_font_map_list_fonts    (PangoFontMap                 *fontmap,

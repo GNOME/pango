@@ -139,7 +139,7 @@ struct _PangoFontClass
 					       PangoFontMetrics *metrics);
 };
 
-GType                 pango_font_get_type          (void);
+GType                 pango_font_get_type          (void) G_GNUC_CONST;
 
 PangoFontDescription *pango_font_describe          (PangoFont        *font);
 PangoCoverage *       pango_font_get_coverage      (PangoFont        *font,

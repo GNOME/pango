@@ -48,7 +48,7 @@ typedef struct _PangoContextClass PangoContextClass;
  * need to create a subclass of these, mail otaylor@redhat.com
  */
 
-GType         pango_context_get_type      (void);
+GType         pango_context_get_type      (void) G_GNUC_CONST;
 PangoContext *pango_context_new           (void);
 void          pango_context_add_font_map  (PangoContext                 *context,
 					   PangoFontMap                 *font_map);

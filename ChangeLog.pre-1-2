@@ -1,3 +1,7 @@
+2000-08-29  Elliot Lee  <sopwith@redhat.com>
+	* pango/pango-context.h, pango/pango-font.h, pango/pango-fontmap.h, pango/pango-layout.h:
+	Utilize G_GNUC_CONST
+
 Mon Aug 21 22:02:38 2000  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pango-context.c (load_font): Don't produce a warning
