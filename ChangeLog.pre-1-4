@@ -4,6 +4,9 @@
 	Use floating-point math in resolution calculation. (#141229, John
 	Ehresman)
 
+	* pango/pangowin32-fontmap.c (pango_win32_insert_font): Don't leak
+	family_name. (#140772, John Ehresman)
+
 2004-04-20  Theppitak Karoonboonyanan  <thep@linux.thai.net>
 
 	* modules/thai/thai-shaper.c (get_adjusted_glyphs_list):
