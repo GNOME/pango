@@ -1,3 +1,9 @@
+Sat Jul 26 22:09:44 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* modules/indic/indic-ot.c (indic_ot_reorder): 
+	Fix problem where NULL mpreFixups wasn't getting
+	returned properly.
+
 Sat Jul 26 21:06:26 2003  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/opentype/ftxgsub.c (Load_EmptyOrClassDefinition):

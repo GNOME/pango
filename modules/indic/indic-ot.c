@@ -423,7 +423,7 @@ glong indic_ot_reorder(const gunichar *chars, const glong *utf8_offsets, glong c
         prev = syllable;
     }
 
-    if (mpreFixups) {
+    if (outMPreFixups) {
 	*outMPreFixups = mpreFixups;
     }
     
