@@ -206,7 +206,7 @@ pango_win32_font_cache_load (PangoWin32FontCache *cache,
 
 	  if (hfont != NULL)
 	    {
-	      PING (("Success!\n"));
+	      PING (("Success!"));
 	      break;
 	    }
 	  

@@ -1,5 +1,8 @@
 2002-01-02  Tor Lillqvist  <tml@iki.fi>
 
+	* pango/pangowin32.c (pango_win32_render_layout_line): Silence gcc
+	-Wall, initialise a couple of variables.
+
 	* pango/pangowin32-fontcache.c (pango_win32_font_cache_load): Set
 	lfCharSet to DEFAULT_CHARSET always. Conditional debugging output
 	with the PING() macro.
@@ -12,6 +15,9 @@
 	(logfont_nosize_hash): Lowercase face name before calculating
 	hash.
 	(logfont_nosize_equal): Compare face names ignoring case.
+	(pango_win32_insert_font): Store "courier new" also under the name
+	"courier", as that is what gtk-demo (and presumably often other
+	applications, too?) looks for.
 
 Thu Dec 27 14:19:46 2001  Owen Taylor  <otaylor@redhat.com>
 

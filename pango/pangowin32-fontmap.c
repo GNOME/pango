@@ -444,6 +444,8 @@ pango_win32_font_map_load_font (PangoFontMap               *fontmap,
   
   name = g_ascii_strdown (pango_font_description_get_family (description), -1);
 
+  PING(("name=%s", name));
+
   win32family = g_hash_table_lookup (win32fontmap->families, name);
   if (win32family)
     {
@@ -467,6 +469,8 @@ pango_win32_font_map_load_font (PangoFontMap               *fontmap,
 	  GSList *tmp_list = best_match->cached_fonts;
 	  gint size = pango_font_description_get_size (description);
 
+	  PING(("got best match:%s",best_match->logfont.lfFaceName));
+
 	  while (tmp_list)
 	    {
 	      PangoWin32Font *win32font = tmp_list->data;
@@ -487,6 +491,7 @@ pango_win32_font_map_load_font (PangoFontMap               *fontmap,
 	    {
 	      PangoWin32Font *win32font;
 	      
+	      PING((""));
 	      win32font = pango_win32_font_new (fontmap, &best_match->logfont, size);
 	      win32font->fontmap = fontmap;
 	      win32font->entry = best_match;
@@ -842,6 +847,15 @@ pango_win32_insert_font (PangoWin32FontMap *win32fontmap,
       break;
     }
 
+  /* Some other magic names */
+
+  /* Recognize just "courier" for "courier new" */
+  if (g_ascii_strcasecmp (win32face->logfont.lfFaceName, "courier new") == 0)
+    {
+      font_family = pango_win32_get_font_family (win32fontmap, "courier");
+      font_family->font_entries = g_slist_append (font_family->font_entries, win32face);
+      win32fontmap->n_fonts++;
+    }
 }
 
 /* Given a LOGFONT and size, make a matching LOGFONT corresponding to

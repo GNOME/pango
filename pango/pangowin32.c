@@ -543,8 +543,8 @@ pango_win32_render_layout_line (HDC               hdc,
   
   while (tmp_list)
     {
-      HBRUSH oldfg;
-      HBRUSH brush;
+      HBRUSH oldfg = NULL;
+      HBRUSH brush = NULL;
       POINT points[2];
       PangoUnderline uline = PANGO_UNDERLINE_NONE;
       PangoLayoutRun *run = tmp_list->data;
