@@ -26,6 +26,7 @@
 #include <errno.h>
 
 #include "pango-fontmap.h"
+#include "pango-utils.h"
 #include "pangox-private.h"
 
 #define PANGO_TYPE_X_FONT_MAP              (pango_x_font_map_get_type ())
@@ -546,129 +547,31 @@ pango_x_font_map_load_font (PangoFontMap               *fontmap,
   return result;
 }
 
-/* Similar to GNU libc's getline, but buffer is g_malloc'd */
-static size_t
-pango_getline (char **lineptr, size_t *n, FILE *stream)
-{
-#define EXPAND_CHUNK 16
-
-  int n_read = 0;
-  int result = -1;
-
-  g_return_val_if_fail (lineptr != NULL, -1);
-  g_return_val_if_fail (n != NULL, -1);
-  g_return_val_if_fail (*lineptr != NULL || *n == 0, -1);
-  
-#ifdef HAVE_FLOCKFILE
-  flockfile (stream);
-#endif  
-  
-  while (1)
-    {
-      int c;
-      
-#ifdef HAVE_FLOCKFILE
-      c = getc_unlocked (stream);
-#else
-      c = getc (stream);
-#endif      
-
-      if (c == EOF)
-	{
-	  if (n_read > 0)
-	    {
-	      result = n_read;
-	      (*lineptr)[n_read] = '\0';
-	    }
-	  break;
-	}
-
-      if (n_read + 2 >= *n)
-	{
-	  *n += EXPAND_CHUNK;
-	  *lineptr = g_realloc (*lineptr, *n);
-	}
-
-      (*lineptr)[n_read] = c;
-      n_read++;
-
-      if (c == '\n' || c == '\r')
-	{
-	  result = n_read;
-	  (*lineptr)[n_read] = '\0';
-	  break;
-	}
-    }
-
-#ifdef HAVE_FLOCKFILE
-  funlockfile (stream);
-#endif
-
-  return n_read - 1;
-}
-
-static int
-find_tok (char **start, char **tok)
-{
-  char *p = *start;
-  
-  while (*p && (*p == ' ' || *p == '\t'))
-    p++;
-
-  if (*p == 0 || *p == '\n' || *p == '\r')
-    return -1;
-
-  if (*p == '"')
-    {
-      p++;
-      *tok = p;
-
-      while (*p && *p != '"')
-	p++;
-
-      if (*p != '"')
-	return -1;
-
-      *start = p + 1;
-      return p - *tok;
-    }
-  else
-    {
-      *tok = p;
-      
-      while (*p && *p != ' ' && *p != '\t' && *p != '\r' && *p != '\n')
-	p++;
-
-      *start = p;
-      return p - *tok;
-    }
-}
-
 static gboolean
-get_style (char *tok, int toksize, PangoFontDescription *desc)
+get_style (GString *str, PangoFontDescription *desc)
 {
-  if (toksize == 0)
+  if (str->len == 0)
     return FALSE;
 
-  switch (tok[0])
+  switch (str->str[0])
     {
     case 'n':
     case 'N':
-      if (strncasecmp (tok, "normal", toksize) == 0)
+      if (strncasecmp (str->str, "normal", str->len) == 0)
 	{
 	  desc->style = PANGO_STYLE_NORMAL;
 	  return TRUE;
 	}
       break;
     case 'i':
-      if (strncasecmp (tok, "italic", toksize) == 0)
+      if (strncasecmp (str->str, "italic", str->len) == 0)
 	{
 	  desc->style = PANGO_STYLE_ITALIC;
 	  return TRUE;
 	}
       break;
     case 'o':
-      if (strncasecmp (tok, "oblique", toksize) == 0)
+      if (strncasecmp (str->str, "oblique", str->len) == 0)
 	{
 	  desc->style = PANGO_STYLE_OBLIQUE;
 	  return TRUE;
@@ -681,16 +584,16 @@ get_style (char *tok, int toksize, PangoFontDescription *desc)
 }
 
 static gboolean
-get_variant (char *tok, int toksize, PangoFontDescription *desc)
+get_variant (GString *str, PangoFontDescription *desc)
 {
-  if (toksize == 0)
+  if (str->len == 0)
     return FALSE;
 
-  switch (tok[0])
+  switch (str->str[0])
     {
     case 'n':
     case 'N':
-      if (strncasecmp (tok, "normal", toksize) == 0)
+      if (strncasecmp (str->str, "normal", str->len) == 0)
 	{
 	  desc->variant = PANGO_VARIANT_NORMAL;
 	  return TRUE;
@@ -698,7 +601,7 @@ get_variant (char *tok, int toksize, PangoFontDescription *desc)
       break;
     case 's':
     case 'S':
-      if (strncasecmp (tok, "small_caps", toksize) == 0)
+      if (strncasecmp (str->str, "small_caps", str->len) == 0)
 	{
 	  desc->variant = PANGO_VARIANT_SMALL_CAPS;
 	  return TRUE;
@@ -711,16 +614,16 @@ get_variant (char *tok, int toksize, PangoFontDescription *desc)
 }
 
 static gboolean
-get_weight (char *tok, int toksize, PangoFontDescription *desc)
+get_weight (GString *str, PangoFontDescription *desc)
 {
-  if (toksize == 0)
+  if (str->len == 0)
     return FALSE;
 
-  switch (tok[0])
+  switch (str->str[0])
     {
     case 'n':
     case 'N':
-      if (strncasecmp (tok, "normal", toksize) == 0)
+      if (strncasecmp (str->str, "normal", str->len) == 0)
 	{
 	  desc->weight = PANGO_WEIGHT_NORMAL;
 	  return TRUE;
@@ -728,7 +631,7 @@ get_weight (char *tok, int toksize, PangoFontDescription *desc)
       break;
     case 'b':
     case 'B':
-      if (strncasecmp (tok, "bold", toksize) == 0)
+      if (strncasecmp (str->str, "bold", str->len) == 0)
 	{
 	  desc->weight = PANGO_WEIGHT_BOLD;
 	  return TRUE;
@@ -747,7 +650,7 @@ get_weight (char *tok, int toksize, PangoFontDescription *desc)
       {
 	char *numstr, *end;
 
-	numstr = g_strndup (tok, toksize);
+	numstr = g_strndup (str->str, str->len);
 
 	desc->weight = strtol (numstr, &end, 0);
 	if (*end != '\0')
@@ -767,16 +670,16 @@ get_weight (char *tok, int toksize, PangoFontDescription *desc)
 }
 
 static gboolean
-get_stretch (char *tok, int toksize, PangoFontDescription *desc)
+get_stretch (GString *str, PangoFontDescription *desc)
 {
-  if (toksize == 0)
+  if (str->len == 0)
     return FALSE;
 
-  switch (tok[0])
+  switch (str->str[0])
     { 
     case 'c':
     case 'C':
-      if (strncasecmp (tok, "condensed", toksize) == 0)
+      if (strncasecmp (str->str, "condensed", str->len) == 0)
 	{
 	  desc->stretch = PANGO_STRETCH_CONDENSED;
 	  return TRUE;
@@ -784,17 +687,17 @@ get_stretch (char *tok, int toksize, PangoFontDescription *desc)
       break;
     case 'e':
     case 'E':
-      if (strncasecmp (tok, "extra_condensed", toksize) == 0)
+      if (strncasecmp (str->str, "extra_condensed", str->len) == 0)
 	{
 	  desc->stretch = PANGO_STRETCH_EXTRA_CONDENSED;
 	  return TRUE;
 	}
-     if (strncasecmp (tok, "extra_expanded", toksize) == 0)
+     if (strncasecmp (str->str, "extra_expanded", str->len) == 0)
 	{
 	  desc->stretch = PANGO_STRETCH_EXTRA_EXPANDED;
 	  return TRUE;
 	}
-      if (strncasecmp (tok, "expanded", toksize) == 0)
+      if (strncasecmp (str->str, "expanded", str->len) == 0)
 	{
 	  desc->stretch = PANGO_STRETCH_EXPANDED;
 	  return TRUE;
@@ -802,7 +705,7 @@ get_stretch (char *tok, int toksize, PangoFontDescription *desc)
       break;
     case 'n':
     case 'N':
-      if (strncasecmp (tok, "normal", toksize) == 0)
+      if (strncasecmp (str->str, "normal", str->len) == 0)
 	{
 	  desc->stretch = PANGO_STRETCH_NORMAL;
 	  return TRUE;
@@ -810,12 +713,12 @@ get_stretch (char *tok, int toksize, PangoFontDescription *desc)
       break;
     case 's':
     case 'S':
-      if (strncasecmp (tok, "semi_condensed", toksize) == 0)
+      if (strncasecmp (str->str, "semi_condensed", str->len) == 0)
 	{
 	  desc->stretch = PANGO_STRETCH_SEMI_CONDENSED;
 	  return TRUE;
 	}
-      if (strncasecmp (tok, "semi_expanded", toksize) == 0)
+      if (strncasecmp (str->str, "semi_expanded", str->len) == 0)
 	{
 	  desc->stretch = PANGO_STRETCH_SEMI_EXPANDED;
 	  return TRUE;
@@ -823,12 +726,12 @@ get_stretch (char *tok, int toksize, PangoFontDescription *desc)
       break;
     case 'u':
     case 'U':
-      if (strncasecmp (tok, "ultra_condensed", toksize) == 0)
+      if (strncasecmp (str->str, "ultra_condensed", str->len) == 0)
 	{
 	  desc->stretch = PANGO_STRETCH_ULTRA_CONDENSED;
 	  return TRUE;
 	}
-      if (strncasecmp (tok, "ultra_expanded", toksize) == 0)
+      if (strncasecmp (str->str, "ultra_expanded", str->len) == 0)
 	{
 	  desc->variant = PANGO_STRETCH_ULTRA_EXPANDED;
 	  return TRUE;
@@ -846,8 +749,6 @@ pango_x_font_map_read_alias_file (PangoXFontMap *xfontmap,
 {
   FILE *infile;
   char **xlfds;
-  char *buf = NULL;
-  size_t bufsize = 0;
   int lineno = 0;
   int i;
   PangoXFontEntry *font_entry = NULL;
@@ -855,78 +756,74 @@ pango_x_font_map_read_alias_file (PangoXFontMap *xfontmap,
   infile = fopen (filename, "r");
   if (infile)
     {
-      while (pango_getline (&buf, &bufsize, infile) != EOF)
+      GString *line_buf = g_string_new (NULL);
+      GString *tmp_buf = g_string_new (NULL);
+
+      while (pango_read_line (infile, line_buf))
 	{
 	  PangoXFamilyEntry *family_entry;
 
-	  char *tok;
-	  char *p = buf;
+	  const char *p = line_buf->str;
 	  
-	  int toksize;
 	  lineno++;
 
-	  while (*p && (*p == ' ' || *p == '\t'))
-	    p++;
-
-	  if (*p == 0 || *p == '#' || *p == '\n' || *p == '\r')
+	  if (!pango_skip_space (&p))
 	    continue;
 
-	  toksize = find_tok (&p, &tok);
-	  if (toksize == -1)
+	  if (!pango_scan_string (&p, tmp_buf))
 	    goto error;
 
 	  font_entry = g_new (PangoXFontEntry, 1);
 	  font_entry->xlfd = NULL;
-	  font_entry->description.family_name = g_strndup (tok, toksize);
+	  font_entry->description.family_name = g_strdup (tmp_buf->str);
 	  g_strdown (font_entry->description.family_name);
 
-	  toksize = find_tok (&p, &tok);
-	  if (toksize == -1)
+	  if (!pango_scan_string (&p, tmp_buf))
 	    goto error;
 
-	  if (!get_style (tok, toksize, &font_entry->description))
+	  if (!get_style (tmp_buf, &font_entry->description))
 	    goto error;
 
-	  toksize = find_tok (&p, &tok);
-	  if (toksize == -1)
+	  if (!pango_scan_string (&p, tmp_buf))
 	    goto error;
 
-	  if (!get_variant (tok, toksize, &font_entry->description))
+	  if (!get_variant (tmp_buf, &font_entry->description))
 	    goto error;
 
-	  toksize = find_tok (&p, &tok);
-	  if (toksize == -1)
+	  if (!pango_scan_string (&p, tmp_buf))
 	    goto error;
 
-	  if (!get_weight (tok, toksize, &font_entry->description))
+	  if (!get_weight (tmp_buf, &font_entry->description))
 	    goto error;
 	  
-	  toksize = find_tok (&p, &tok);
-	  if (toksize == -1)
+	  if (!pango_scan_string (&p, tmp_buf))
 	    goto error;
 
-	  if (!get_stretch (tok, toksize, &font_entry->description))
+	  if (!get_stretch (tmp_buf, &font_entry->description))
 	    goto error;
 
-	  toksize = find_tok (&p, &tok);
-	  if (toksize == -1)
+	  if (!pango_scan_string (&p, tmp_buf))
 	    goto error;
 
-	  font_entry->xlfd = g_strndup (tok, toksize);
+	  /* Remove excess whitespace and check for complete fields */
 
-	  /* Check for complete fields */
-
-	  xlfds = g_strsplit (font_entry->xlfd, ",", -1);
+	  xlfds = g_strsplit (tmp_buf->str, ",", -1);
 	  for (i=0; xlfds[i]; i++)
-	    if (!pango_x_is_xlfd_font_name (xlfds[i]))
-	      {
-		g_warning ("XLFD '%s' must be complete (14 fields)", xlfds[i]);
-		g_strfreev (xlfds);
-		goto error;
-	      }
+	    {
+	      char *trimmed = pango_trim_string (xlfds[i]);
+	      g_free (xlfds[i]);
+	      xlfds[i] = trimmed;
+	      
+	      if (!pango_x_is_xlfd_font_name (xlfds[i]))
+		{
+		  g_warning ("XLFD '%s' must be complete (14 fields)", xlfds[i]);
+		  g_strfreev (xlfds);
+		  goto error;
+		}
+	    }
 
+	  font_entry->xlfd = g_strjoinv (",", xlfds);
 	  g_strfreev (xlfds);
-	  
 
 	  /* Insert the font entry into our structures */
 
@@ -958,9 +855,10 @@ pango_x_font_map_read_alias_file (PangoXFontMap *xfontmap,
       g_warning ("Error parsing line %d of alias file '%s'", lineno, filename);
 
     out:
-      g_free (buf);
+      g_string_free (tmp_buf, TRUE);
+      g_string_free (line_buf, TRUE);
+
       fclose (infile);
-      return;
     }
 
 }
@@ -968,16 +866,24 @@ pango_x_font_map_read_alias_file (PangoXFontMap *xfontmap,
 static void
 pango_x_font_map_read_aliases (PangoXFontMap *xfontmap)
 {
-  char *filename;
+  char **files;
+  char *files_str = pango_config_key_get ("PangoX/AliasFiles");
+  int n;
 
-  pango_x_font_map_read_alias_file (xfontmap, SYSCONFDIR "/pango/pangox_aliases");
+  if (!files_str)
+    files_str = g_strdup ("~/.pangox_aliases:" SYSCONFDIR "/pango/pangox.aliases");
 
-  filename = g_strconcat (g_get_home_dir(), "/.pangox_aliases", NULL);
-  pango_x_font_map_read_alias_file (xfontmap, filename);
-  g_free (filename);
+  files = pango_split_file_list (files_str);
+  
+  n = 0;
+  while (files[n])
+    n++;
 
-  /* FIXME: Remove this one */
-  pango_x_font_map_read_alias_file (xfontmap, "pangox_aliases");
+  while (n-- > 0)
+    pango_x_font_map_read_alias_file (xfontmap, files[n]);
+
+  g_strfreev (files);
+  g_free (files_str);
 }
 
 /*

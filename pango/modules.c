@@ -22,12 +22,13 @@
 #include <ctype.h>
 #include <stdio.h>
 #include <string.h>
-#include <dirent.h>
 #include <limits.h>
+#include <errno.h>
 
 #include <gmodule.h>
 
 #include "pango-modules.h"
+#include "pango-utils.h"
 #include "modules.h"
 
 typedef struct _PangoMapInfo PangoMapInfo;
@@ -165,31 +166,6 @@ pango_engine_pair_get_engine (PangoEnginePair *pair)
   return pair->engine;
 }
 
-
-static char *
-readline(FILE *file)
-{
-  static GString *bufstring = NULL;
-  int c;
-
-  if (!bufstring)
-    bufstring = g_string_new (NULL);
-  else
-    g_string_truncate (bufstring, 0);
-
-  while ((c = getc(file)) != EOF)
-    {
-      g_string_append_c (bufstring, c);
-      if (c == '\n')
-	break;
-    }
-
-  if (bufstring->len == 0)
-    return NULL;
-  else
-    return g_strdup (bufstring->str);
-}
-
 static void
 add_included_modules (void)
 {
@@ -217,87 +193,88 @@ add_included_modules (void)
 }
 
 static gboolean /* Returns true if succeeded, false if failed */
-process_module_file(FILE *module_file)
+process_module_file (FILE *module_file)
 {
-  char *line;
+  GString *line_buf = g_string_new (NULL);
+  GString *tmp_buf = g_string_new (NULL);
+  gboolean have_error = FALSE;
 
-  while ((line = readline (module_file)))
+  while (pango_read_line (module_file, line_buf))
     {
       PangoEnginePair *pair = g_new (PangoEnginePair, 1);
       PangoEngineRange *range;
-      GList *ranges;
+      GList *ranges = NULL;
       GList *tmp_list;
-      char *p, *q;
+
+      const char *p, *q;
       int i;
-      int start;
-      int end;
+      int start, end;
 
       pair->included = FALSE;
       
-      p = line;
-      q = line;
-      ranges = NULL;
+      p = line_buf->str;
+
+      if (!pango_skip_space (&p))
+	continue;
 
       /* Break line into words on whitespace */
       i = 0;
       while (1)
 	{
-	  if (!*p || isspace(*p))
+	  if (!pango_scan_string (&p, tmp_buf))
 	    {
-	      switch (i)
-		{
-		case 0:
-		  pair->load_info = g_strndup (q, p-q);
-		  break;
-		case 1:
-		  pair->info.id = g_strndup (q, p-q);
-		  break;
-		case 2:
-		  pair->info.engine_type = g_strndup (q, p-q);
-		  break;
-		case 3:
-		  pair->info.render_type = g_strndup (q, p-q);
-		  break;
-		default:
-		  range = g_new (PangoEngineRange, 1);
-		  if (sscanf(q, "%d-%d:", &start, &end) != 2)
-		    {
-		      fprintf(stderr, "Error reading pango.modules");
-		      return FALSE;
-		    }
-		  q = strchr (q, ':');
-		  if (!q)
-		    {
-		      fprintf(stderr, "Error reading pango.modules");
-		      return FALSE;
-		    }
-		  q++;
-		  range->start = start;
-		  range->end = end;
-		  range->langs = g_strndup (q, p-q);
-
-		  ranges = g_list_prepend (ranges, range);
-		}
-	      
-	      i++;
-
-	      do
-		p++;
-	      while (*p && isspace(*p));
-
-	      if (!*p)
-		break;
-
-	      q = p;
+	      have_error = TRUE;
+	      goto error;
 	    }
-	  else
-	    p++;
-	}
 
+	  switch (i)
+	    {
+	    case 0:
+	      pair->load_info = g_strdup (tmp_buf->str);
+	      break;
+	    case 1:
+	      pair->info.id = g_strdup (tmp_buf->str);
+	      break;
+	    case 2:
+	      pair->info.engine_type = g_strdup (tmp_buf->str);
+	      break;
+	    case 3:
+	      pair->info.render_type = g_strdup (tmp_buf->str);
+	      break;
+	    default:
+	      range = g_new (PangoEngineRange, 1);
+	      if (sscanf(tmp_buf->str, "%d-%d:", &start, &end) != 2)
+		{
+		  fprintf(stderr, "Error reading modules file");
+		  have_error = TRUE;
+		  goto error;
+		}
+	      q = strchr (tmp_buf->str, ':');
+	      if (!q)
+		{
+		  fprintf(stderr, "Error reading modules file");
+		  have_error = TRUE;
+		  goto error;
+		}
+	      q++;
+	      range->start = start;
+	      range->end = end;
+	      range->langs = g_strdup (tmp_buf->str);
+	      
+	      ranges = g_list_prepend (ranges, range);
+	    }
+
+	  if (!pango_skip_space (&p))
+	    break;
+	  
+	  i++;
+	}
+      
       if (i<3)
 	{
-	  fprintf(stderr, "Error reading pango.modules");
-	  return FALSE;
+	  fprintf(stderr, "Error reading modules file");
+	  have_error = TRUE;
+	  goto error;
 	}
       
       ranges = g_list_reverse (ranges);
@@ -311,13 +288,19 @@ process_module_file(FILE *module_file)
 	  tmp_list = tmp_list->next;
 	}
 
+      pair->engine = NULL;
+      
+      engines = g_list_prepend (engines, pair);
+
+    error:
       g_list_foreach (ranges, (GFunc)g_free, NULL);
       g_list_free (ranges);
-      g_free (line);
 
-      pair->engine = NULL;
-
-      engines = g_list_prepend (engines, pair);
+      if (have_error)
+	{
+	  g_free(pair);
+	  return FALSE;
+	}
     }
 
   return TRUE;
@@ -327,57 +310,32 @@ static void
 read_modules (void)
 {
   FILE *module_file;
-  gboolean read_module_file = FALSE;
 
-  /* FIXME FIXME FIXME - this is a potential security problem from leaving
-   * pango.modules files scattered around to trojan modules.
-   */
-  module_file = fopen ("pango.modules", "r");
-  if(module_file)
+  char *file_str =  pango_config_key_get ("Pango/ModuleFiles");
+  char **files;
+  int n;
+
+  if (!file_str)
+    file_str = g_strdup (SYSCONFDIR "/pango/pango.modules");
+
+  files = pango_split_file_list (file_str);
+
+  n = 0;
+  while (files[n])
+    n++;
+
+  while (n-- > 0)
     {
-      read_module_file = read_module_file || process_module_file(module_file);
+      module_file = fopen (files[n], "r");
+      if (!module_file)
+	g_warning ("Error opening module file '%s': %s\n", files[n], g_strerror (errno));
+
       process_module_file(module_file);
       fclose(module_file);
     }
-  else
-    {
-      DIR *dirh;
 
-      dirh = opendir(DOTMODULEDIR);
-      if(dirh)
-	{
-	  struct dirent *dent;
-
-	  while((dent = readdir(dirh)))
-	    {
-	      char fullfn[PATH_MAX];
-	      char *ctmp;
-
-	      if(dent->d_name[0] == '.')
-		continue;
-
-	      ctmp = strrchr(dent->d_name, '.');
-	      if(!ctmp || strcmp(ctmp, ".modules") != 0)
-		continue;
-
-	      g_snprintf(fullfn, sizeof(fullfn), DOTMODULEDIR "/%s", dent->d_name);
-	      module_file = fopen(fullfn, "r");
-	      if(module_file)
-		{
-		  read_module_file = read_module_file || process_module_file(module_file);
-		  fclose(module_file);
-		}
-	    }
-	}
-
-      closedir(dirh);
-    }
-
-  if (!read_module_file)
-    {
-      fprintf(stderr, "Could not load any module files!\n");
-      /* FIXME: Error */
-    }
+  g_strfreev (files);
+  g_free (file_str);
 }
 
 static void

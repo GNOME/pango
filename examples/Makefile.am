@@ -34,7 +34,7 @@ pango.modules:
 	( cd ../modules && \
           ../pango/pango-querymodules `find . -name '*.so'` > ../examples/pango.modules )
           
-EXTRA_DIST=HELLO.utf8 muru.utf pangox_aliases
+EXTRA_DIST=HELLO.utf8 muru.utf pangox.aliases
 
-alias_DATA = pangox_aliases
+alias_DATA = pangox.aliases
 

@@ -1,3 +1,27 @@
+Fri Jun 30 16:46:31 2000  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-utils.[ch] Makefile.am: A bunch of simple functions
+	for reading from files, manipulating strings as necessary for
+	config files. Also, a simple gnome-config/win.ini style
+	config file reader.
+
+	* pango/modules.c: Remove DOTFILES stuff. Instead, read names
+	of modules file from pangorc. (Which can be set from PANGO_RC_FILE).
+	Rewrite parsing code using pango-utils.c.
+
+	* pango/pangox-fontmap.c: Read list of files from
+	PangoX/AliasFiles key. Rewrite parsing code for alias files using
+	pango-utils.c.
+	
+	* examples/pangox.aliases: Move to new name from pangox_aliases,
+	reformat using new parsing code.
+	
+	* examples/pangorc (AliasFiles) examples/pango-viewer: Add a
+	pangorc file for in-place testing.
+
+	* pango/querymodules.c (main): Add comment to the top of 
+	the output indicating that the file should not be hand-edited.
+
 Thu Jun 29 18:13:47 2000  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pango-coverage.c: Fix various aspects of expanding

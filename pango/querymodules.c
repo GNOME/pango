@@ -20,8 +20,10 @@
  */
 
 #include <glib.h>
+#include <dirent.h>
 #include <gmodule.h>
 #include "pango.h"
+#include "pango-utils.h"
 
 #include <errno.h>
 #include <string.h>
@@ -29,13 +31,27 @@
 #include <stdio.h>
 
 void 
-query_module (GModule *module, gchar *name)
+query_module (const char *dir, const char *name)
 {
   void (*list) (PangoEngineInfo **engines, gint *n_engines);
   PangoEngine *(*load) (const gchar *id);
   void (*unload) (PangoEngine *engine);
+
+  GModule *module;
+  gchar *path;
+
+  if (name[0] == G_DIR_SEPARATOR)
+    path = g_strdup (name);
+  else
+    path = g_strconcat (dir, G_DIR_SEPARATOR_S, name, NULL);
   
-  if (g_module_symbol (module, "script_engine_list", (gpointer)&list) &&
+  module = g_module_open (path, 0);
+
+  if (!module)
+    fprintf(stderr, "Cannot load module %s: %s\n", path, g_module_error());
+	  
+  if (module &&
+      g_module_symbol (module, "script_engine_list", (gpointer)&list) &&
       g_module_symbol (module, "script_engine_load", (gpointer)&load) &&
       g_module_symbol (module, "script_engine_unload", (gpointer)&unload))
     {
@@ -47,7 +63,7 @@ query_module (GModule *module, gchar *name)
 
       for (i=0; i<n_engines; i++)
 	{
-	  g_print ("%s %s %s %s ", name, engines[i].id, engines[i].engine_type, engines[i].render_type);
+	  g_print ("%s %s %s %s ", path, engines[i].id, engines[i].engine_type, engines[i].render_type);
 	  for (j=0; j < engines[i].n_ranges; j++)
 	    {
 	      if (j != 0)
@@ -62,40 +78,60 @@ query_module (GModule *module, gchar *name)
     }
   else
     {
-      fprintf (stderr, "%s does not export Pango module API\n", name);
+      fprintf (stderr, "%s does not export Pango module API\n", path);
     }
+
+  g_free (path);
+  g_module_close (module);
 }		       
 
 int main (int argc, char **argv)
 {
   char cwd[PATH_MAX];
   int i;
+  char *path;
 
-  getcwd (cwd, PATH_MAX);
+  printf ("# Pango Modules file\n"
+	  "# Automatically generated file, do not edit\n"
+	  "#\n");
 
-  for (i=1; i<argc; i++)
+  if (argc == 1)		/* No arguments given */
     {
-      GModule *module;
-      gchar *tmp;
+      char **dirs;
+      int i;
       
-      if (argv[i][0] == '/')
-	tmp = g_strdup (argv[i]);
-      else
-	tmp = g_strconcat (cwd, "/", argv[i], NULL);
+      path = pango_config_key_get ("Pango/ModulesPath");
+      if (!path)
+	path = g_strdup (LIBDIR "/pango/modules");
 
-      module = g_module_open (tmp, 0);
-      if (module)
+      printf ("# ModulesPath = %s\n#\n", path);
+
+      dirs = pango_split_file_list (path);
+
+      for (i=0; dirs[i]; i++)
 	{
-	  query_module (module, tmp);
-	  g_module_close (module);
+	  DIR *dir = opendir (dirs[i]);
+	  if (dir)
+	    {
+	      struct dirent *dent;
+
+	      while ((dent = readdir (dir)))
+		{
+		  int len = strlen (dent->d_name);
+		  if (len > 3 && strcmp (dent->d_name + len - 3, ".so") == 0)
+		    query_module (dirs[i], dent->d_name);
+		}
+	      
+	      closedir (dir);
+	    }
 	}
-      else
-	{
-	  fprintf(stderr, "Cannot load module %s: %s\n",
-		  tmp, g_module_error());
-	}
+    }
+  else
+    {
+      getcwd (cwd, PATH_MAX);
       
-      g_free (tmp);
+      for (i=1; i<argc; i++)
+	query_module (cwd, argv[i]);
     }
   
   return 0;

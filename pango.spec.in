@@ -49,10 +49,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %post
 /sbin/ldconfig
-if ! test -d /var/lib/pango ; then
-  mkdir -p /var/lib/pango/
-fi
-/usr/bin/pango-querymodules /usr/lib/pango/modules/*.so > /var/lib/pango/pango.modules
+/usr/bin/pango-querymodules > /etc/pango/pango.modules
 
 %postun -p /sbin/ldconfig
 
@@ -63,7 +60,7 @@ fi
 %{prefix}/bin/pango-querymodules
 %{prefix}/bin/pango-viewer
 %{prefix}/lib/pango/modules/*
-%config /etc/pango/pangox_aliases
+%config /etc/pango/pangox.aliases
 
 %files devel
 %defattr(-, root, root)

@@ -27,6 +27,7 @@
 #include <qcdestyle.h>
 #include <qcombobox.h>
 #include <qfile.h>
+#include <qfileinfo.h>
 #include <qmenubar.h>
 #include <qpopupmenu.h>
 #include <qspinbox.h>
@@ -502,6 +503,9 @@ main (int argc, char **argv)
 
   QApplication::setStyle (new QCDEStyle());
 
+  if (QFileInfo ("./pangorc").exists ())
+    putenv ("PANGO_RC_FILE=./pangorc");
+  
   ViewerWindow *vw = new ViewerWindow ();
 
   vw->show();

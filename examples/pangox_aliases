@@ -1,8 +1,0 @@
-# File defining aliases of PangoFontDescription to X font set
-#
-# family style variant weight stretch   XLFD
-  
-sans normal normal normal normal "-*-helvetica-medium-r-normal--*-*-*-*-*-*-*-*,-*-fixed-medium-r-normal--*-*-*-*-*-*-*-*,-kaist-iyagi-bold-r-normal--*-*-*-*-*-*-johab-1,-*-song ti-medium-r-normal--*-*-*-*-*-*-*-*,-tamil-tscakaram-medium-r-normal--*-*-*-*-*-*-tscii-0,-*-devanagari-medium-r-normal--*-*-*-*-*-*-iso10646-dev"
-serif normal normal normal normal "-*-times-medium-r-normal--*-*-*-*-*-*-*-*,-*-fixed-medium-r-normal--*-*-*-*-*-*-*-*,-kaist-iyagi-bold-r-normal--*-*-*-*-*-*-johab-1,-*-song ti-medium-r-normal--*-*-*-*-*-*-*-*,-tamil-tscakaram-medium-r-normal--*-*-*-*-*-*-tscii-0,-*-devanagari-medium-r-normal--*-*-*-*-*-*-iso10646-dev"
-monospace normal normal normal normal "-*-fixed-medium-r-normal--*-*-*-*-*-*-*-*,-kaist-iyagi-bold-r-normal--*-*-*-*-*-*-johab-1,-*-song ti-medium-r-normal--*-*-*-*-*-*-*-*,-tamil-tscakaram-medium-r-normal--*-*-*-*-*-*-tscii-0,-*-devanagari-medium-r-normal--*-*-*-*-*-*-iso10646-dev"
-
