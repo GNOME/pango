@@ -277,7 +277,7 @@ AM_PATH_GLIB_2_0($GLIB_REQUIRED_VERSION, :,
 *** Glib is always available from ftp://ftp.gtk.org/.]),
   gobject gmodule)
 
-GLIB_CFLAGS=`$PKG_CONFIG --cflags gthread-2.0`
+GLIB_CFLAGS=`$PKG_CONFIG --cflags gmodule-2.0 gthread-2.0`
 
 AC_SUBST(GLIB_LIBS)
 AC_SUBST(GLIB_CFLAGS)
