@@ -282,17 +282,16 @@ fi
 # Checks for GLib
 #
 GLIB_REQUIRED_VERSION=2.5.7
+GLIB_MODULES="glib-2.0 >= $GLIB_REQUIRED_VERSION gobject-2.0 gmodule-no-export-2.0"
 
-AM_PATH_GLIB_2_0($GLIB_REQUIRED_VERSION, :,
+PKG_CHECK_MODULES(GLIB, $GLIB_MODULES, :,
   AC_MSG_ERROR([
 *** Glib $GLIB_REQUIRED_VERSION or better is required. The latest version of 
-*** Glib is always available from ftp://ftp.gtk.org/.]),
-  gobject gmodule-no-export)
+*** Glib is always available from ftp://ftp.gtk.org/.]))
 
-GLIB_CFLAGS=`$PKG_CONFIG --cflags gmodule-no-export-2.0 gthread-2.0`
-
-AC_SUBST(GLIB_LIBS)
-AC_SUBST(GLIB_CFLAGS)
+# Add in gthread-2.0 to CFLAGS but not to LIBS so we get any
+# necesary defines for thread-safety.
+GLIB_CFLAGS=`$PKG_CONFIG --cflags $GLIB_MODULES gthread-2.0`
 
 #
 # The OpenType test programs aren't particularly portable

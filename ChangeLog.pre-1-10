@@ -1,10 +1,19 @@
+2005-03-01  Owen Taylor  <otaylor@redhat.com>
+
+	* configure.in: Use PKG_CHECK_MODULES not AM_PATH_GLIB_2_0
+	to avoid a problem where older verisons of AM_PATH_GLIB_2_0
+	silently ignored gmodule-no-export causing mysterious
+	build failures. (#161786)
+
+	* pango/Makefile.am (DISTCLEANFILES): Move some 
+	configure.in output files from CLEANFILES to DISTCLEANFILES.
+
 2005-03-01  Tor Lillqvist  <tml@novell.com>
 
 	* tests/cxx-test.C: Include pangowin32.h first to avoid
 	a namespace collision. (#163584)
 
 2005-02-21  Owen Taylor  <otaylor@redhat.com>
-
 
 	* pango/fonts.c (pango_font_get_glyph_extents): 
 	* pango/shape.c (pango_shape): Minor doc fixes.

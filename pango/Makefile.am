@@ -355,12 +355,13 @@ CLEANFILES =			\
 	pango-enum-types.h	\
 	s-enum-types-h		\
 	pango-enum-types.c	\
-	s-enum-types-c		\
+	s-enum-types-c
+
+DISTCLEANFILES = 		\
 	module-defs.h		\
 	module-defs-x.c		\
 	module-defs-fc.c	\
 	module-defs-win32.c
-
 
 install-data-local: install-ms-lib install-libtool-import-lib
 
