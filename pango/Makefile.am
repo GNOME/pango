@@ -288,6 +288,11 @@ endif
 
 EXTRA_DIST =					\
 	$(pango_built_headers)			\
+	pangoft2.h				\
+	pango-ot.h				\
+	pangox.h				\
+	pangoxft.h				\
+	pangowin32.h				\
 	module-defs-ft2.c.win32			\
 	module-defs-win32.c.win32		\
 	module-defs.h				\
@@ -296,7 +301,7 @@ EXTRA_DIST =					\
 	pangoft2.def				\
 	makefile.mingw				\
 	makefile.mingw.in			\
-	makefile.msc			\
+	makefile.msc				\
 	pango.rc				\
 	pango.rc.in				\
 	pangoft2.rc				\

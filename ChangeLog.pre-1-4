@@ -1,6 +1,12 @@
-Wed Jul 31 15:12:46 2002  Owen Taylor  <otaylor@redhat.com>
+Thu Aug  1 08:17:31 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* Released 1.0.4
+
+	* pango/Makefile.am (EXTRA_DIST): List hfiles ofr
+	conditionally built hfiles here so that they get picked up if
+	the corresponding library isn't there at dist time.
+
+Wed Jul 31 15:12:46 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* NEWS: Updated.
 
