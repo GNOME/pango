@@ -679,6 +679,9 @@ pango_parse_markup (const char                 *markup_text,
   if (text)
     *text = g_string_free (md->text, FALSE);
 
+  if (accel_char)
+    *accel_char = md->accel_char;
+  
   g_assert (md->tag_stack == NULL);
   
   g_free (md);

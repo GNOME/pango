@@ -1,5 +1,10 @@
 2000-11-01  Havoc Pennington  <hp@redhat.com>
 
+	* pango/pango-markup.c (pango_parse_markup): Return the accel
+	keyval
+
+2000-11-01  Havoc Pennington  <hp@redhat.com>
+
 	* pango/pango-markup.c (text_handler): Fix bug where not all text
 	was appended when parsing accelerators
 
