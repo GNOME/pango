@@ -1,3 +1,7 @@
+Tue May  2 19:16:17 PDT 2000 Manish Singh <yosh@gimp.org>
+
+	* examples/Makefile.am: typo fix
+
 Mon May  1 15:04:02 PDT 2000 Manish Singh <yosh@gimp.org>
 
 	* configure.in: add support for fribidi-config (needs fribidi v0.1.10

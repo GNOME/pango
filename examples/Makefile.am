@@ -9,7 +9,7 @@ bin_PROGRAMS = pango-viewer
 
 pango_viewer_SOURCES = \
 	viewer.c
-pango_viewer_LDADD = ../pango/libpango.la ../pango/libpangox.la $(GTK_LIBS) $(FRIBID_LIBS) $(UNICODE_LIBS)
+pango_viewer_LDADD = ../pango/libpango.la ../pango/libpangox.la $(GTK_LIBS) $(FRIBIDI_LIBS) $(UNICODE_LIBS)
 endif
 
 all-local: pango.modules
