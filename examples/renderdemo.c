@@ -1,8 +1,6 @@
-/* Pango
- * pangoft2topgm.c: Example program to view a UTF-8 encoding file
- *                  using Pango to render result.
+/* renderdemo.c: Common code for rendering demos
  *
- * Copyright (C) 1999 Red Hat Software
+ * Copyright (C) 1999, 2004 Red Hat Software
  * Copyright (C) 2001 Sun Microsystems
  *
  * This library is free software; you can redistribute it and/or
@@ -21,8 +19,6 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#define BUFSIZE 1024
-#define MALLOCSIZE 1024
 #define DEFAULT_FONT_FAMILY "Sans"
 #define DEFAULT_FONT_SIZE 18
 
@@ -36,35 +32,33 @@
 #include "argcontext.h"
 
 #include <pango/pango.h>
-#include <pango/pangoft2.h>
+
+#include "renderdemo.h"
 
 #define _MAKE_FONT_NAME(family, size) family " " #size
 #define MAKE_FONT_NAME(family, size) _MAKE_FONT_NAME(family, size)
 
-static char *prog_name;
-static PangoContext *context;
+char *prog_name;
 
-static char *tmpfile_name;
-static char *outfile_name;
+gboolean opt_display = FALSE;
+int opt_dpi = 96;
+char *opt_font = MAKE_FONT_NAME (DEFAULT_FONT_FAMILY, DEFAULT_FONT_SIZE);
+gboolean opt_header = FALSE;
+char *opt_output = NULL;
+int opt_margin = 10;
+int opt_markup = FALSE;
+gboolean opt_rtl = FALSE;
+int opt_rotate = 0;
+gboolean opt_auto_dir = TRUE;
+char *opt_text = NULL;
+gboolean opt_waterfall = FALSE;
+int opt_width = -1;
+int opt_indent = 0;
 
-static gboolean opt_display = FALSE;
-static int opt_dpi = 96;
-static char *opt_font = MAKE_FONT_NAME (DEFAULT_FONT_FAMILY, DEFAULT_FONT_SIZE);
-static gboolean opt_header = FALSE;
-static char *opt_output = NULL;
-static int opt_margin = 10;
-static int opt_markup = FALSE;
-static gboolean opt_rtl = FALSE;
-static int opt_rotate = 0;
-static gboolean opt_auto_dir = TRUE;
-static char *opt_text = NULL;
-static  gboolean opt_waterfall = FALSE;
-static  int opt_width = -1;
-static  int opt_indent = 0;
+/* Text (or markup) to render */
+char *text;
 
-static void fail (const char *format, ...)  G_GNUC_PRINTF (1, 2);
-
-static void
+void
 fail (const char *format, ...)
 {
   const char *msg;
@@ -73,9 +67,6 @@ fail (const char *format, ...)
   va_start (vap, format);
   msg = g_strdup_vprintf (format, vap);
   g_printerr ("%s: %s\n", prog_name, msg);
-
-  if (outfile_name && !opt_output)
-    remove (outfile_name);
   
   exit (1);
 }
@@ -132,7 +123,7 @@ make_layout(PangoContext *context,
   return layout;
 }
 
-static gchar *
+gchar *
 get_options_string (void)
 {
   PangoFontDescription *font_description = get_font_description ();
@@ -162,12 +153,13 @@ transform_point (PangoMatrix *matrix,
 }
 
 static void
-output_body (PangoContext *context,
-	     const char   *text,
-	     FT_Bitmap    *bitmap,
-	     PangoMatrix  *matrix,
-	     int          *width,
-	     int          *height)
+output_body (PangoContext  *context,
+	     const char    *text,
+	     RenderCallback render_cb,
+	     gpointer       render_data,
+	     PangoMatrix   *matrix,
+	     int           *width,
+	     int           *height)
 {
   PangoLayout *layout;
   PangoRectangle logical_rect;
@@ -200,8 +192,8 @@ output_body (PangoContext *context,
       *width = MAX (*width, PANGO_PIXELS (logical_rect.width));
       *height += PANGO_PIXELS (logical_rect.height);
 
-      if (bitmap)
-	pango_ft2_render_layout (bitmap, layout, 0, dy);
+      if (render_cb)
+	(*render_cb) (layout, 0, dy, render_data);
       
       dy += PANGO_PIXELS (logical_rect.height);
 
@@ -209,12 +201,12 @@ output_body (PangoContext *context,
     }
 }
 
-static void
-do_output (PangoContext *context,
-	   const char   *text,
-	   FT_Bitmap    *bitmap,
-	   int          *width,
-	   int          *height)
+void
+do_output (PangoContext  *context,
+	   RenderCallback render_cb,
+	   gpointer       render_data,
+	   int           *width_out,
+	   int           *height_out)
 {
   PangoLayout *layout;
   PangoRectangle logical_rect;
@@ -228,21 +220,26 @@ do_output (PangoContext *context,
   double p4x, p4y;
   double minx, miny;
   double maxx, maxy;
+  int width, height;
   
-  *width = 0;
-  *height = 0;
+  width = 0;
+  height = 0;
 
+  pango_context_set_language (context, pango_language_from_string ("en_US"));
+  pango_context_set_base_dir (context,
+			      opt_rtl ? PANGO_DIRECTION_RTL : PANGO_DIRECTION_LTR);
+  
   if (opt_header)
     {
       char *options_string = get_options_string ();
       layout = make_layout (context, options_string, 10);
       pango_layout_get_extents (layout, NULL, &logical_rect);
       
-      *width = MAX (*width, PANGO_PIXELS (logical_rect.width));
-      *height += PANGO_PIXELS (logical_rect.height);
+      width = MAX (width, PANGO_PIXELS (logical_rect.width));
+      height += PANGO_PIXELS (logical_rect.height);
       
-      if (bitmap)
-	pango_ft2_render_layout (bitmap, layout, x, y);
+      if (render_cb)
+	(*render_cb) (layout, x, y, render_data);
       
       y += PANGO_PIXELS (logical_rect.height);
       
@@ -250,7 +247,7 @@ do_output (PangoContext *context,
       g_free (options_string);
     }
 
-  output_body (context, text, NULL, NULL, &rotated_width, &rotated_height);
+  output_body (context, text, NULL, NULL, NULL, &rotated_width, &rotated_height);
 
   pango_matrix_rotate (&matrix, opt_rotate);
   
@@ -268,14 +265,19 @@ do_output (PangoContext *context,
   matrix.x0 = x - minx;
   matrix.y0 = y - miny;
 
-  if (bitmap)
-    output_body (context, text, bitmap, &matrix, &rotated_width, &rotated_height);
+  if (render_cb)
+    output_body (context, text, render_cb, render_data, &matrix, &rotated_width, &rotated_height);
 
-  *width = MAX (*width, maxx - minx);
-  *height += maxy - miny;
+  width = MAX (width, maxx - minx);
+  height += maxy - miny;
 
-  *width += 2 * opt_margin;
-  *height += 2 * opt_margin;
+  width += 2 * opt_margin;
+  height += 2 * opt_margin;
+
+  if (width_out)
+    *width_out = width;
+  if (height_out)
+    *height_out = height;
 }
 
 static void
@@ -284,7 +286,7 @@ show_help (ArgContext *context,
 	   const char *arg,
 	   gpointer    data)
 {
-  g_print ("%s - An example viewer for the pango ft2 extension\n"
+  g_print ("%s - An example viewer for Pango\n"
 	   "\n"
 	   "Syntax:\n"
 	   "    %s [options] FILE\n"
@@ -295,17 +297,9 @@ show_help (ArgContext *context,
   exit (0);
 }
 
-int main(int argc, char *argv[])
+void
+parse_options (int argc, char *argv[])
 {
-  FILE *outfile;
-  char *text;
-  size_t len;
-  char *p;
-  PangoFontMap *fontmap;
-  GError *error = NULL;
-  ArgContext *arg_context;
-  gboolean do_convert = FALSE;
-  
   static const ArgDesc args[] = {
     { "no-auto-dir","Don't set layout direction according to contents",
       ARG_NOBOOL,   &opt_auto_dir },
@@ -340,12 +334,12 @@ int main(int argc, char *argv[])
     { NULL }
   };
 
-  prog_name = g_path_get_basename (argv[0]);
-  
-  g_type_init();
+  ArgContext *arg_context;
+  GError *error = NULL;
+  size_t len;
+  char *p;
 
-  if (g_file_test ("./pangorc", G_FILE_TEST_EXISTS))
-    putenv ("PANGO_RC_FILE=./pangorc");
+  prog_name = g_path_get_basename (argv[0]);
   
   arg_context = arg_context_new (NULL);
   arg_context_add_table (arg_context, args);
@@ -362,7 +356,7 @@ int main(int argc, char *argv[])
       g_printerr ("Usage: %s [options] FILE\n", prog_name);
       exit (1);
     }
-
+  
   if (!opt_display && !opt_output)
     {
       g_printerr ("%s: --output not specified, assuming --display\n", prog_name);
@@ -403,128 +397,4 @@ int main(int argc, char *argv[])
   if (opt_markup &&
       !pango_parse_markup (text, -1, 0, NULL, NULL, NULL, &error))
     fail ("Cannot parse input as markup: %s", error->message);
-
-  if (opt_output)
-    {
-      if (!(g_str_has_suffix (opt_output, ".pgm") ||
-	    g_str_has_suffix (opt_output, ".PGM")))
-	do_convert = TRUE;
-    }
-
-  if (opt_output && !do_convert)
-    {
-      outfile = fopen (opt_output, "wb");
-
-      if (!outfile)
-	fail ("Cannot open output file %s: %s\n",
-	      opt_output, g_strerror (errno));
-    }
-  else				/* --display */
-    {
-      /* This may need to be G_OS_UNIX guarded for fdopen */
-      int fd = g_file_open_tmp ("pangoft2pgmXXXXXX", &tmpfile_name, &error);
-      if (fd == 1)
-	fail ("Cannot open temporary file: %s\n", error->message);
-      outfile = fdopen (fd, "wb");
-      if (!outfile)
-	fail ("Cannot open temporary file: %s\n", g_strerror (errno));
-    }
-
-  fontmap = pango_ft2_font_map_new ();
-  pango_ft2_font_map_set_resolution (PANGO_FT2_FONT_MAP (fontmap), opt_dpi, opt_dpi);
-  context = pango_ft2_font_map_create_context (PANGO_FT2_FONT_MAP (fontmap));
-
-  pango_context_set_language (context, pango_language_from_string ("en_US"));
-  pango_context_set_base_dir (context,
-			      opt_rtl ? PANGO_DIRECTION_RTL : PANGO_DIRECTION_LTR);
-
-  /* Write contents as pgm file */
-  {
-      FT_Bitmap bitmap;
-      guchar *buf;
-      int row;
-      int width, height;
-
-      do_output (context, text, NULL, &width, &height);
-      
-      bitmap.width = width;
-      bitmap.pitch = (bitmap.width + 3) & ~3;
-      bitmap.rows = height;
-      buf = bitmap.buffer = g_malloc (bitmap.pitch * bitmap.rows);
-      bitmap.num_grays = 256;
-      bitmap.pixel_mode = ft_pixel_mode_grays;
-      memset (buf, 0x00, bitmap.pitch * bitmap.rows);
-
-      do_output (context, text, &bitmap, &width, &height);
-
-      /* Invert bitmap to get black text on white background */
-      {
-	int pix_idx;
-	for (pix_idx=0; pix_idx<bitmap.pitch * bitmap.rows; pix_idx++)
-	  {
-	    buf[pix_idx] = 255-buf[pix_idx];
-	  }
-      }
-      
-      /* Write it as pgm to output */
-      fprintf(outfile,
-	      "P5\n"
-	      "%d %d\n"
-	      "255\n", bitmap.width, bitmap.rows);
-      for (row = 0; row < bitmap.rows; row++)
-	fwrite(bitmap.buffer + row * bitmap.pitch,
-	       1, bitmap.width,
-	       outfile);
-      g_free (buf);
-      if (fclose(outfile) == EOF)
-	fail ("Error writing output file: %s\n", g_strerror (errno));
-
-      /* Convert to a different format, if necessary */
-      if (do_convert)
-	{
-	  int exit_status;
-	  
-	  gchar *command = g_strdup_printf ("convert %s %s",
-					    tmpfile_name,
-					    opt_output);
-	  if (!g_spawn_command_line_sync (command, NULL, NULL, &exit_status, &error))
-	    fail ("When running ImageMagick 'convert' command: %s\n",
-		  error->message);
-
-	  if (tmpfile_name)
-	    {
-	      remove (tmpfile_name);
-	      tmpfile_name = NULL;
-	    }
-	  
-	  if (exit_status)
-	    exit (1);
-	}
-
-      if (opt_display)
-	{
-	  int exit_status;
-	  gchar *title = get_options_string ();
-	  gchar *title_quoted = g_shell_quote (title);
-	  
-	  gchar *command = g_strdup_printf ("display -title %s %s",
-					    title_quoted,
-					    opt_output ? opt_output: tmpfile_name);
-	  if (!g_spawn_command_line_sync (command, NULL, NULL, &exit_status, &error))
-	    fail ("When running ImageMagick 'display' command: %s\n",
-		  error->message);
-
-	  g_free (command);
-	  g_free (title);
-	  g_free (title_quoted);
-	  
-	  if (tmpfile_name)
-	    remove (tmpfile_name);
-	  
-	  if (exit_status)
-	    exit (1);
-	}
-    }
-
-  return 0;
 }

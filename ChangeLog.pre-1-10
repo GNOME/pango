@@ -1,3 +1,11 @@
+Sat Jul 10 18:06:21 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* examples/renderdemo.[ch] examples/Makefile.am
+	examples/pangoft2topgm.c: Split most of the guts
+	of pangoft2topgm.c into separate source files
+	to allow creation of new rendering demos for 
+	different backends.
+
 Sat Jul 10 18:03:58 2004  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pangofc-fontmap.c (pango_fc_font_map_new_font): 

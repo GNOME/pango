@@ -16,13 +16,17 @@ INCLUDES =				\
 CLEANFILES = pango.modules
 ###################################################
 
+noinst_PROGRAMS =
+
 ###################################################
 if HAVE_FREETYPE
-ft2_programs = pangoft2topgm
+noinst_PROGRAMS += pangoft2topgm
 endif
 
 pangoft2topgm_SOURCES =				\
 	pangoft2topgm.c				\
+	renderdemo.c				\
+	renderdemo.h				\
 	argcontext.c				\
 	argcontext.h
 pangoft2topgm_LDADD =					\
@@ -30,8 +34,6 @@ pangoft2topgm_LDADD =					\
 	../pango/libpangoft2-$(PANGO_API_VERSION).la	\
 	$(FREETYPE_LIBS)
 ###################################################
-
-noinst_PROGRAMS =  $(ft2_programs)
 
 if CROSS_COMPILING
 else
