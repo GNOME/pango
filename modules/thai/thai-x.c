@@ -294,6 +294,17 @@ typedef struct {
 #define shiftdown_bv_bd(c,tbl)        ((tbl)->ShiftDown_BV_BD[(c)-0xD8])
 #define tailcutcons(c,tbl)            ((tbl)->TailCutCons[(c)-0xAD])
 
+/* No adjusted vowel/tonemark glyphs (tis620-0)
+ */
+static const ThaiShapeTable tis620_0_shape_table = {
+    { 0xE7, 0xE8, 0xE9, 0xEA, 0xEB, 0xEC, 0xED, 0xEE },
+    { 0xE7, 0xE8, 0xE9, 0xEA, 0xEB, 0xEC, 0xED, 0xEE },
+    { 0xE7, 0xE8, 0xE9, 0xEA, 0xEB, 0xEC, 0xED, 0xEE },
+    { 0xD1, 0x00, 0x00, 0xD4, 0xD5, 0xD6, 0xD7 },
+    { 0xD8, 0xD9, 0xDA },
+    { 0xAD, 0x00, 0x00, 0xB0 }
+};
+
 /* Macintosh
  */
 static const ThaiShapeTable Mac_shape_table = {
@@ -453,10 +464,13 @@ get_adjusted_glyphs_list (ThaiFontInfo *font_info,
       case 1:
         if (is_char_type (cluster[0], BelowVowel|BelowDiac|AboveVowel|AboveDiac|Tone))
 	  {
-            glyph_lists[0] = PANGO_X_MAKE_GLYPH (font_info->subfont, 0x7F);
+	    if (font_info->type == THAI_FONT_TIS)
+	      glyph_lists[0] = PANGO_X_MAKE_GLYPH (font_info->subfont, 0x20);
+	    else
+	      glyph_lists[0] = PANGO_X_MAKE_GLYPH (font_info->subfont, 0x7F);
             glyph_lists[1] =
 		PANGO_X_MAKE_GLYPH (font_info->subfont, ucs2tis (cluster[0]));
-            return 2;
+	    return 2;
           }
 	else
 	  {
@@ -552,8 +566,10 @@ get_adjusted_glyphs_list (ThaiFontInfo *font_info,
 	  }
 	else
 	  {
-	    glyph_lists[0] =
-		PANGO_X_MAKE_GLYPH (font_info->subfont, 0x7F);
+	    if (font_info->type == THAI_FONT_TIS)
+	      glyph_lists[0] = PANGO_X_MAKE_GLYPH (font_info->subfont, 0x20);
+	    else
+	      glyph_lists[0] = PANGO_X_MAKE_GLYPH (font_info->subfont, 0x7F);
 	    glyph_lists[1] =
 		PANGO_X_MAKE_GLYPH (font_info->subfont, ucs2tis (cluster[0]));
 	    glyph_lists[2] =
@@ -703,9 +719,10 @@ get_glyphs_list (ThaiFontInfo	*font_info,
         return num_chrs;
       
       case THAI_FONT_TIS:
-        for (i=0; i < num_chrs; i++)
-          glyph_lists[i] =
-              PANGO_X_MAKE_GLYPH (font_info->subfont, ucs2tis (cluster[i]));
+	/* TIS620-0 + Wtt2.0 Extension
+	 */
+        return get_adjusted_glyphs_list (font_info, cluster,
+			num_chrs, glyph_lists, &tis620_0_shape_table);
         return num_chrs;
       
       case THAI_FONT_TIS_MAC:
