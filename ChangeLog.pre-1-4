@@ -1,3 +1,13 @@
+Fri Feb 13 10:54:18 2004  Owen Taylor  <otaylor@redhat.com>
+
+	Memory leak fixes from Masatake YAMATO, #130652
+
+	* pango/opentype/ftxgdef.c (TT_Done_GDEF_Table):
+	Free the gdef table as well as the contained data.
+
+	* pango/opentype/ftxgdef.c (TT_GDEF_Build_ClassDefinition): 
+	Set gcd->loaded, so that the contents get freed later.
+
 Fri Feb 13 10:19:16 2004  Owen Taylor  <otaylor@redhat.com>
 
 	* configure.in: Skip the xslt and stylesheet checks
