@@ -922,10 +922,10 @@ find_color(const char *name,
  * Fill in the fields of a color from a string specification. The
  * string can either one of a large set of standard names. (Taken
  * from the X11 <filename>rgb.txt</filename> file), or it can be a hex value in the
- * form '&hash;rgb' '&hash;rrggbb' '&hash;rrrgggbbb' or '&hash;rrrrggggbbbb' where
+ * form '&num;rgb' '&num;rrggbb' '&num;rrrgggbbb' or '&num;rrrrggggbbbb' where
  * 'r', 'g' and 'b' are hex digits of the red, green, and blue
  * components of the color, respectively. (White in the four
- * forms is '&hash;fff' '&hash;ffffff' '&hash;fffffffff' and '&hash;ffffffffffff')
+ * forms is '&num;fff' '&num;ffffff' '&num;fffffffff' and '&num;ffffffffffff')
  *
  * Return value: %TRUE if parsing of the specifier succeeded,
  *   otherwise false.

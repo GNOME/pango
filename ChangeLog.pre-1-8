@@ -1,3 +1,12 @@
+2002-06-03  Matthias Clasen  <maclas@gmx.de>
+
+	* pango/fonts.c (pango_font_description_better_match): Typo fix.
+
+	* pango/pango-color.c (pango_color_parse): 
+	* docs/pango-docs.sgml: Replace homegrown "nbsp", "hash"
+	and "mdash" entities by standard ISO entities "nbsp", "num" and
+	"mdash". 
+
 2002-06-03  Sven Neumann  <sven@gimp.org>
 
 	* pango/pangoft2-fontmap.c (pango_ft2_font_map_list_families): set

@@ -1,9 +1,6 @@
 <?xml version="1.0"?>
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN" 
                "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd" [
-<!ENTITY hash "#">
-<!ENTITY nbsp "&#x00a0;">
-<!ENTITY mdash "&#8212;">
 <!ENTITY pango-Text-Processing SYSTEM "xml/main.xml">
 <!ENTITY pango-Glyph-Storage SYSTEM "xml/glyphs.xml">
 <!ENTITY pango-Coverage-Maps SYSTEM "xml/coverage-maps.xml">
