@@ -1232,6 +1232,8 @@ pango_layout_move_cursor_visually (PangoLayout *layout,
   int n_vis;
   int vis_pos, log_pos;
   int start_offset;
+  gboolean off_start = FALSE;
+  gboolean off_end = FALSE;
 
   g_return_if_fail (layout != NULL);
   g_return_if_fail (old_index >= 0 && old_index <= layout->length);
@@ -1261,48 +1263,31 @@ pango_layout_move_cursor_visually (PangoLayout *layout,
   
   vis_pos = log2vis_map[old_index - line->start_index];
   g_free (log2vis_map);
-  
+
+  /* Handling movement between lines */
   if (vis_pos == 0 && direction < 0)
     {
       if (base_dir == PANGO_DIRECTION_LTR)
-	{
-	  if (!prev_line)
-	    {
-	      *new_index = -1;
-	      *new_trailing = 0;
-	      return;
-	    }
-	  line = prev_line;
-	}
+	off_start = TRUE;
       else
-	{
-	  if (!next_line)
-	    {
-	      *new_index = G_MAXINT;
-	      *new_trailing = 0;
-	      return;
-	    }
-	  line = next_line;
-	}
-
-      /* Handle paragraph separators as an extra position */
-      vis_pos = g_utf8_strlen (layout->text + line->start_index, line->length);
-      if (line->start_index + line->length != old_index)
-	vis_pos++;
+	off_end = TRUE;
     }
   else if (vis_pos == n_vis && direction > 0)
     {
       if (base_dir == PANGO_DIRECTION_LTR)
-	{
-	  if (!next_line)
-	    {
-	      *new_index = G_MAXINT;
-	      *new_trailing = 0;
-	      return;
-	    }
-	  line = next_line;
-	}
+	off_end = TRUE;
       else
+	off_start = TRUE;
+    }
+
+  if (off_start || off_end)
+    {
+      /* If we move over a paragraph boundary, count that as
+       * an extra position in the motion
+       */
+      gboolean paragraph_boundary;
+
+      if (off_start)
 	{
 	  if (!prev_line)
 	    {
@@ -1311,12 +1296,32 @@ pango_layout_move_cursor_visually (PangoLayout *layout,
 	      return;
 	    }
 	  line = prev_line;
+	  paragraph_boundary = (line->start_index + line->length != old_index);
 	}
-      
-      /* Handle paragraph separators as an extra position */
-      vis_pos = 0;
-      if (line->start_index != old_index)
-	vis_pos--;
+      else
+	{
+	  if (!next_line)
+	    {
+	      *new_index = G_MAXINT;
+	      *new_trailing = 0;
+	      return;
+	    }
+	  line = next_line;
+	  paragraph_boundary = (line->start_index != old_index);
+	}
+
+      if (vis_pos == 0 && direction < 0)
+	{
+	  vis_pos = g_utf8_strlen (layout->text + line->start_index, line->length);
+	  if (paragraph_boundary)
+	    vis_pos++;
+	}
+      else /* (vis_pos == n_vis && direction > 0) */
+	{
+	  vis_pos = 0;
+	  if (paragraph_boundary)
+	    vis_pos--;
+	}
     }
 
   vis2log_map = pango_layout_line_get_vis2log_map (line, strong);

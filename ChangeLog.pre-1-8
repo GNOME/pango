@@ -1,8 +1,14 @@
+Thu Jun  5 14:53:40 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-layout.c (pango_layout_move_cursor_visually):
+	Fix bug in determining when we cross line boundaries.
+	(#103421, Matthias Clasen)
+
 Wed Jun  4 14:32:47 2003  Owen Taylor  <otaylor@redhat.com>
  
  	* pango/glyphstring.c (pango_glyph_string_extents_range): 
  	Improve handling of empty ink rectangles; rework for
- 	simplicity.
+ 	simplicity. (#103662)
 	
 Mon Jun  2 12:10:11 2003  Owen Taylor  <otaylor@redhat.com>
 
