@@ -1,3 +1,8 @@
+Mon Jul 26 19:11:46 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/opentype/ftxgdef.c: Fix allocation and indexing
+	in NewGlyphClasses array. (#130661, Masatake YAMATO)
+
 Mon Jul 26 15:21:23 2004  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/opentype/ftxgsub.c: Add missing macro to make the 
