@@ -1,3 +1,12 @@
+Thu Jul 24 15:09:22 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* configure.in examples/Makefile.am examples/viewer-qt.{cc,h}:
+	Remove Qt-based example; it was only testing the obsolete
+	pango-x backend, and was causing more problems for people
+	trying to configure Pango then it was worth.
+
+	* examples/viewer.c: Remove obsolete test case from CVS.
+
 Thu Jul 24 15:02:56 2003  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/glyphstring.c (pango_glyph_string_get_logical_widths): 
