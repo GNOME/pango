@@ -1,3 +1,12 @@
+2004-03-03  Tor Lillqvist  <tml@iki.fi>
+
+	* pango/pango.def
+	* pango/pangoft2.def: Add some missing symbols. (#135945, Cedric
+	Gustin)
+
+	* pango/pangowin32-fontmap.c (pango_win32_family_get_name): Can be
+	static.
+
 Mon Mar  1 19:24:09 2004  Owen Taylor  <otaylor@redhat.com>
 
 	 * === Released 1.3.5 ===

@@ -21,6 +21,12 @@ EXPORTS
 	pango_ft2_render_layout
 	pango_ft2_render_layout_line
 	pango_ft2_shutdown_display
+	pango_ot_buffer_add_glyph
+	pango_ot_buffer_destroy
+	pango_ot_buffer_get_glyphs
+	pango_ot_buffer_new
+	pango_ot_buffer_output
+	pango_ot_buffer_set_rtl
 	pango_ot_info_find_feature
 	pango_ot_info_find_language
 	pango_ot_info_find_script
@@ -30,4 +36,5 @@ EXPORTS
 	pango_ot_info_list_scripts
 	pango_ot_ruleset_add_feature
 	pango_ot_ruleset_new
-	pango_ot_ruleset_shape
+	pango_ot_ruleset_position
+	pango_ot_ruleset_substitute

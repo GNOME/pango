@@ -323,7 +323,7 @@ pango_win32_family_list_faces (PangoFontFamily  *family,
     }
 }
 
-const char *
+static const char *
 pango_win32_family_get_name (PangoFontFamily  *family)
 {
   PangoWin32Family *win32family = PANGO_WIN32_FAMILY (family);

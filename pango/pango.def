@@ -214,6 +214,7 @@ EXPORTS
 	pango_layout_line_x_to_index
 	pango_layout_move_cursor_visually
 	pango_layout_new
+	pango_layout_set_auto_dir
 	pango_layout_set_alignment
 	pango_layout_set_attributes
 	pango_layout_set_font_description
