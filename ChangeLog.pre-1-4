@@ -1,3 +1,9 @@
+Thu Feb  5 15:09:58 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-layout.c (pango_layout_check_lines):
+	Set is_paragraph_start here too. (#131356, 
+	Morten Welinder)
+
 Wed Jan 28 17:47:52 2004  Owen Taylor  <otaylor@redhat.com>
 
 	* configure.in: Require GLib-2.3.1. (#132695,
