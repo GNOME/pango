@@ -33,11 +33,15 @@
 #include <stdio.h>
 #include <string.h>
 
+static char *prog_name;
 static PangoContext *context;
 
+static gboolean opt_display = FALSE;
+static int opt_dpi = 96;
 static char *opt_family = "sans";
 static  PangoDirection opt_dir = PANGO_DIRECTION_LTR;
-static int opt_dpi = 96;
+static char *outfile_name;
+static char *opt_output = NULL;
 static int opt_margin = 10;
 static int opt_markup = FALSE;
 static int opt_scale = 24;
@@ -53,7 +57,10 @@ fail (const char *format, ...)
   va_list vap;
   va_start (vap, format);
   msg = g_strdup_vprintf (format, vap);
-  g_printerr ("%s\n", msg);
+  g_printerr ("%s: %s\n", prog_name, msg);
+
+  if (outfile_name && !opt_output)
+    remove (outfile_name);
   
   exit (1);
 }
@@ -150,15 +157,15 @@ int int_arg (const char *arg_name, const char *arg)
 
 int main(int argc, char *argv[])
 {
-  char *outfile_name;
   FILE *outfile;
   char *text;
   size_t len;
   char *p;
   int argp;
-  char *prog_name = g_path_get_basename (argv[0]);
   PangoFontMap *fontmap;
   GError *error = NULL;
+
+  prog_name = g_path_get_basename (argv[0]);
   
   g_type_init();
 
@@ -178,16 +185,23 @@ int main(int argc, char *argv[])
 		 "    %s [--family f] [--scale s] file\n"
 		 "\n"
 		 "Options:\n"
+ 		 "    --display    Show output using ImageMagick rather than writing to a file.\n"
 		 "    --dpi d      Set the dpi.Default is '%d'.\n"
 		 "    --family f   Set the family. Default is '%s'.\n"
 		 "    --margin m   Set the margin on the output in pixels. Default is %d.\n"
 		 "    --markup     Interpret contents as Pango markup.\n"
+ 		 "    --output f   Name of output file [short form, -o].\n"
 		 "    --scale s    Set the scale. Default is %d.\n"
 		 "    --rtl        Set base dir to RTL. Default is LTR.\n"
 		 "    --waterfall  Create a waterfall display."
 		 "    --width      Width of drawing window. Default is 500.\n",
 		 prog_name, prog_name, opt_dpi, opt_family, opt_margin, opt_scale);
 	  exit(0);
+	}
+      if (strcmp(opt, "--display") == 0)
+	{
+	  opt_display = TRUE;
+	  continue;
 	}
       if (strcmp(opt, "--dpi") == 0)
 	{
@@ -209,6 +223,12 @@ int main(int argc, char *argv[])
 	  opt_markup = TRUE;
 	  continue;
 	}
+      if (strcmp(opt, "--output") == 0 ||
+	  strcmp(opt, "-o") == 0)
+	{
+	  opt_output = argv[argp++];
+	  continue;
+	}
       if (strcmp(opt, "--waterfall") == 0)
 	{
 	  opt_waterfall = TRUE;
@@ -226,9 +246,17 @@ int main(int argc, char *argv[])
 	}
       fail ("Unknown option %s!\n", opt);
     }
+  if (!opt_display && !opt_output)
+    {
+      g_printerr ("%s: --output not specified, assuming --display\n", prog_name);
+      opt_display = TRUE;
+    }
 
-  if (argp + 1 != argc && argp + 2 != argc)
-    fail ("Usage: %s [options] FILE [OUTFILE]\n", prog_name);
+  if (argp + 1 != argc)
+    {
+      g_printerr ("Usage: %s [options] FILE\n", prog_name);
+      exit (1);
+    }
 
   /* Get the text in the supplied file
    */
@@ -257,18 +285,25 @@ int main(int argc, char *argv[])
       !pango_parse_markup (text, -1, 0, NULL, NULL, NULL, &error))
     fail ("Cannot parse input as markup: %s", error->message);
 
-  if (argp < argc)
+  if (opt_output)
     {
-      outfile_name = argv[argp++];
-      outfile = fopen (outfile_name, "wb");
+      outfile_name = opt_output;
+      outfile = fopen (opt_output, "wb");
 
       if (!outfile)
 	fail ("Cannot open output file %s: %s\n",
-	      outfile_name, g_strerror (errno));
+	      opt_output, g_strerror (errno));
     }
-  else
-    outfile = stdout;
-  
+  else				/* --display */
+    {
+      /* This may need to be G_OS_UNIX guarded for fdopen */
+      int fd = g_file_open_tmp ("pangoft2pgmXXXXXX", &outfile_name, &error);
+      if (fd == 1)
+	fail ("Cannot open temporary file: %s\n", error->message);
+      outfile = fdopen (fd, "wb");
+      if (!outfile)
+	fail ("Cannot open temporary file: %s\n", g_strerror (errno));
+    }
 
   fontmap = pango_ft2_font_map_new ();
   pango_ft2_font_map_set_resolution (PANGO_FT2_FONT_MAP (fontmap), opt_dpi, opt_dpi);
@@ -315,6 +350,24 @@ int main(int argc, char *argv[])
 	       1, bitmap.width,
 	       outfile);
       g_free (buf);
+      if (fclose(outfile) == EOF)
+	fail ("Error writing output file: %s\n", g_strerror (errno));
+
+      if (opt_display)
+	{
+	  int exit_status;
+	  gchar *command = g_strdup_printf ("display %s", outfile_name);
+	  if (!g_spawn_command_line_sync (command, NULL, NULL, &exit_status, &error))
+	    fail ("When running ImageMagick 'display' command: %s\n",
+		  error->message);
+
+	  g_free (command);
+	  if (!opt_output)
+	    remove (outfile_name);
+	  
+	  if (exit_status)
+	    exit (1);
+	}
     }
 
   return 0;

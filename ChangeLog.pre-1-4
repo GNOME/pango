@@ -1,3 +1,9 @@
+Fri Aug  8 11:33:24 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* examples/pangoft2topgm.c: Add option to run 'display'
+	on the output as well as/instead of specifying output
+	file name.
+
 Fri Aug  8 10:33:31 2003  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pangoft2.h: Deprecate pango_ft2_get_context(),
