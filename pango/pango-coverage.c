@@ -217,7 +217,7 @@ pango_coverage_set (PangoCoverage     *coverage,
       int old_n_blocks = coverage->n_blocks;
 
       coverage->n_blocks =
-	N_BLOCKS_INCREMENT * ((block_index + N_BLOCKS_INCREMENT - 1) / N_BLOCKS_INCREMENT);
+	N_BLOCKS_INCREMENT * ((block_index + N_BLOCKS_INCREMENT) / N_BLOCKS_INCREMENT);
       
       coverage->blocks = g_renew (PangoBlockInfo, coverage->blocks, coverage->n_blocks);
       memset (coverage->blocks + old_n_blocks, 0,
