@@ -860,9 +860,15 @@ pango_ft2_font_finalize (GObject *object)
 static PangoFontDescription *
 pango_ft2_font_describe (PangoFont *font)
 {
-  PangoFT2Font *ft2font = PANGO_FT2_FONT (font);
+  PangoFT2Font         *ft2font;
+  PangoFontDescription *desc;
 
-  return pango_font_description_copy (&ft2font->entry->description);
+  ft2font = PANGO_FT2_FONT (font);
+
+  desc = pango_font_description_copy (&ft2font->entry->description);
+  desc->size = ft2font->size;
+
+  return desc;
 }
 
 PangoMap *

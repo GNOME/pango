@@ -1,3 +1,7 @@
+2001-03-12  Sven Neumann  <sven@gimp.org>
+
+	* pango/pangoft2.c (pango_ft2_font_describe): set the size field
+	
 2001-03-07  Havoc Pennington  <hp@redhat.com>
 
 	* pango/pangox.c (pango_x_font_get_metrics): fix a cheesy bug in
