@@ -1,7 +1,7 @@
 2005-03-01  Tor Lillqvist  <tml@novell.com>
 
-	* tests/cxx-test.C: Include pangowin32.h first to avoind
-	namespace collision. (#163584)
+	* tests/cxx-test.C: Include pangowin32.h first to avoid
+	a namespace collision. (#163584)
 
 Fri Feb 25 12:14:24 2005  Manish Singh  <yosh@gimp.org>
 
