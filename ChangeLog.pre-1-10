@@ -1,3 +1,10 @@
+Thu Jan  6 12:29:31 2005  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-attributes.c (pango_attr_iterator_get_font): 
+	Fix reversed test on attr->absolute that was causing 
+	pixels sizes to be used inappropriately. (#163105, 
+	Ross Burton)
+
 Tue Jan  4 14:14:28 2005  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/break.c (enum): Fix trailing comma in enum (#162618)

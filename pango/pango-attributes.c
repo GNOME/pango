@@ -1677,9 +1677,9 @@ pango_attr_iterator_get_font (PangoAttrIterator     *iterator,
 	    {
 	      mask |= PANGO_FONT_MASK_SIZE;
 	      if (((PangoAttrSize *)attr)->absolute)
-		pango_font_description_set_size (desc, ((PangoAttrSize *)attr)->size);
-	      else
 		pango_font_description_set_absolute_size (desc, ((PangoAttrSize *)attr)->size);
+	      else
+		pango_font_description_set_size (desc, ((PangoAttrSize *)attr)->size);
 	    }
 	  break;
         case PANGO_ATTR_SCALE:
