@@ -1,3 +1,21 @@
+2001-01-07  Tor Lillqvist  <tml@iki.fi>
+
+	* pango/fonts.c (pango_font_description_to_filename): Allow '+' in
+	the filename.
+
+	* pango/pangowin32.c (get_font_metrics_from_string): Adopt to new
+	prototype for g_utf8_to_ucs4).
+
+	* pango/module-defs.c.win32: Removed.
+
+	* pango/module-defs-ft2.c.win32: New file, hand-written until GNU
+	configure is used on Win32, too.
+
+	* pango/makefile.mingw.in
+	* pango/Makefile.am (EXTRA_DIST): Corresponding changes.
+
+	* pango/pango.def: Update.
+
 Sat Jan  6 20:23:54 2001  Owen Taylor  <otaylor@redhat.com>
 
 	* modules/arabic/arabic-x.c (arabic_engine_shape): Adapt

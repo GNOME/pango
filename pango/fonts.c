@@ -388,7 +388,7 @@ pango_font_description_to_filename (const PangoFontDescription  *desc)
   p = result;
   while (*p)
     {
-      if (strchr ("-_.", *p) == NULL && !isalnum (*p))
+      if (strchr ("-+_.", *p) == NULL && !isalnum (*p))
 	*p = '_';
       p++;
     }

@@ -679,7 +679,7 @@ get_font_metrics_from_string (PangoFont        *font,
   
   n_chars = g_utf8_strlen (str, -1);
 
-  text_ucs4 = g_utf8_to_ucs4 (str, strlen (str));
+  text_ucs4 = g_utf8_to_ucs4 (str, strlen (str), NULL, NULL, NULL);
   if (!text_ucs4)
     return;
 

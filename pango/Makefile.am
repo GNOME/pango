@@ -155,7 +155,7 @@ endif
 EXTRA_DIST =			\
 	$(pango_built_headers)	\
 	makeenums.pl		\
-	module-defs.c.win32	\
+	module-defs-ft2.c.win32	\
 	module-defs.h	        \
 	pango.def		\
 	pangowin32.def		\

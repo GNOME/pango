@@ -30,7 +30,6 @@ PANGO_OBJS =					\
 	glyphstring.o				\
 	mapping.o				\
 	modules.o				\
-	module-defs.o				\
 	pango-attributes.o			\
 	pango-context.o				\
 	pango-coverage.o			\
@@ -51,6 +50,7 @@ PANGOWIN32_OBJS =				\
 	pangowin32-fontmap.o
 
 PANGOFT2_OBJS =					\
+	module-defs-ft2.o			\
 	pangoft2.o				\
 	pangoft2-fontcache.o			\
 	pangoft2-fontmap.o
@@ -79,7 +79,7 @@ pango_headers=		   \
 ../config.h : ../config.h.win32
 	cp $< $@
 
-module-defs.c : module-defs.c.win32
+module-defs-ft2.c : module-defs-ft2.c.win32
 	cp $< $@
 
 pango-$(PANGO_VER).dll : $(PANGO_OBJS) pango.def

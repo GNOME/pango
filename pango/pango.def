@@ -154,6 +154,7 @@ EXPORTS
 	pango_log2vis_get_embedding_levels
 	pango_map_get_engine
 	pango_map_get_entry
+	pango_module_register
 	pango_parse_markup
 	pango_parse_style
 	pango_parse_variant

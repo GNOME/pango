@@ -1,0 +1,9 @@
+/* Hand-written. Once the GNU configure mechanism is used
+ * on Win32, too, can be generated.
+*/
+
+#include "modules.h"
+
+PangoIncludedModule _pango_included_ft2_modules[] = {
+ { NULL, NULL, NULL },
+};
