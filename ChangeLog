@@ -1,3 +1,11 @@
+Fri Apr 13 14:55:20 2001  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/mini-fribidi/{fribidi.c,fribidi_get_type.c,fribidi_tables.i}:
+	Update to correspond to FriBidi-0.9.0 (with some small fixes)
+
+	* pango/mini-fribidi/fribidi-0.9.0.patch: Update patch for
+	Fribidi-0.9.0.
+
 2001-04-13  Havoc Pennington  <hp@redhat.com>
 
 	* pango/pango-font.h: Add macros for CSS font scale factors

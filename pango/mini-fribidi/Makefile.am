@@ -23,4 +23,4 @@ EXTRA_DIST = 			\
 	README			\
 	makefile.mingw		\
 	fribidi_tables.i	\
-	fribidi-0.1.12.patch
+	fribidi-0.9.0.patch
