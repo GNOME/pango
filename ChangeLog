@@ -1,3 +1,10 @@
+2004-12-18  Tor Lillqvist  <tml@iki.fi>
+
+	* pango/pangowin32-private.h
+	* pango/pangowin32.c (pango_win32_font_get_metrics): Cache metrics
+	by language, like the other backends do. Don't try to get the
+	width of the 0..9 digit string if the font doesn't cover digits.
+
 2004-12-17  Tor Lillqvist  <tml@iki.fi>
 
 	* pango/Makefile.am: Make the .la files depend on the
