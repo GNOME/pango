@@ -1,3 +1,8 @@
+2001-05-02  Sven Neumann  <sven@convergence.de>
+
+	* configure.in: do not try to build modules using Xft if X is not
+	available or was explicitely disabled.
+
 Tue May  1 23:30:53 2001  Owen Taylor  <otaylor@redhat.com>
 
 	* modules/hangul/hangul-x.c (hangul_engine_shape): Fix numeric

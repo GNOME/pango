@@ -87,13 +87,15 @@ AM_CONDITIONAL(HAVE_FREETYPE, $have_freetype)
 have_xft=false
 XFT_LIBS=""
 XFT_CFLAGS=""
-if test $have_freetype = true ; then
-  AC_CHECK_LIB(Xrender, XRenderFindFormat, 
-    AC_CHECK_LIB(Xft, XftFontOpen, have_xft=true, :, -lXrender -lXext $X_LIBS $FREETYPE_LIBS)
-  ,:,-lXext $X_LIBS)
+if test $have_x = true ; then
+  if test $have_freetype = true ; then
+    AC_CHECK_LIB(Xrender, XRenderFindFormat, 
+      AC_CHECK_LIB(Xft, XftFontOpen, have_xft=true, :, -lXrender -lXext $X_LIBS $FREETYPE_LIBS)
+    ,:,-lXext $X_LIBS)
 
-  if $have_xft = 'true' ; then
-    XFT_LIBS="-lXft -lXrender -lXext $X_LIBS $FREETYPE_LIBS"
+    if $have_xft = 'true' ; then
+      XFT_LIBS="-lXft -lXrender -lXext $X_LIBS $FREETYPE_LIBS"
+    fi
   fi
 fi
 
