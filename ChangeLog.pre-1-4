@@ -1,3 +1,11 @@
+2000-11-20  Tor Lillqvist  <tml@iki.fi>
+
+	* Makefile.am (EXTRA_DIST): Add README.win32.
+
+	* examples/pangoft2.aliases: Add this file to CVS.
+
+	* examples/Makefile.am (EXTRA_DIST): Add it here.
+
 2000-11-21 Elliot Lee <sopwith@redhat.com>
 	* modules/*/*.c: Fix warnings - mostly include string.h for strcmp.
 

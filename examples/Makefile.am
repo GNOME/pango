@@ -44,6 +44,7 @@ EXTRA_DIST=			\
 	muru.utf		\
 	pangorc			\
 	pangox.aliases		\
+	pangoft2.aliases	\
 	pangowin32.aliases
 
 alias_DATA = pangox.aliases

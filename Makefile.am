@@ -9,7 +9,8 @@ EXTRA_DIST = 		\
 	pango-config.in	\
 	pango.pc.in	\
 	pangox.pc.in	\
-	TODO.xml
+	TODO.xml	\
+	README.win32
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = pango.pc pangox.pc
