@@ -67,6 +67,7 @@ PANGO_DESCENT
 PANGO_LBEARING
 PANGO_RBEARING
 PangoMatrix
+PANGO_TYPE_MATRIX
 PANGO_MATRIX_INIT
 pango_matrix_copy
 pango_matrix_free

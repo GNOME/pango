@@ -84,6 +84,13 @@ struct _PangoMatrix
 };
 
 /**
+ * PANGO_TYPE_MATRIX
+ *
+ * The GObject type for #PangoMatrix
+ **/
+#define PANGO_TYPE_MATRIX (pango_matrix_get_type ())
+
+/**
  * PANGO_MATRIX_INIT
  *
  * Constant that can be used to initialize a PangoMatrix to
@@ -95,6 +102,8 @@ struct _PangoMatrix
  * </programlisting></informalexample>
  **/
 #define PANGO_MATRIX_INIT { 1., 0., 0., 1., 0., 0. }
+
+GType pango_matrix_get_type (void);
 
 PangoMatrix *pango_matrix_copy   (const PangoMatrix *matrix);
 void         pango_matrix_free   (PangoMatrix *matrix);

@@ -987,6 +987,19 @@ pango_parse_stretch (const char   *str,
   return FALSE;
 }
 
+GType
+pango_matrix_get_type (void)
+{
+  static GType our_type = 0;
+  
+  if (our_type == 0)
+    our_type = g_boxed_type_register_static ("PangoMatrix",
+					     (GBoxedCopyFunc) pango_matrix_copy,
+					     (GBoxedFreeFunc) pango_matrix_free);
+
+  return our_type;
+}
+
 /**
  * pango_matrix_copy:
  * @matrix: a #PangoMatrix

@@ -1,3 +1,9 @@
+Tue Jul 13 16:23:15 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-types.h pango/pango-utils.c
+	docs/pango-sections.txt: Add a GType for PangoMatrix
+	(#145532, Torsten Schoenfeld)
+
 Tue Jul 13 14:12:06 2004  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pangoft2-render.c (compare_points): Make
