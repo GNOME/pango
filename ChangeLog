@@ -1,3 +1,8 @@
+Mon May  8 16:39:48 2000  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-layout.c (free_run): Call pango_item_free
+	to free items properly including attributes.
+
 Mon May  8 16:19:22 2000  Owen Taylor  <otaylor@redhat.com>
 
 	* modules/thai/* modules/Makefile.am configure.in:

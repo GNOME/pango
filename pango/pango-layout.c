@@ -1377,10 +1377,7 @@ static void
 free_run (PangoLayoutRun *run, gboolean free_item)
 {
   if (free_item)
-    {
-      pango_font_unref (run->item->analysis.font);
-      g_free (run->item);
-    }
+    pango_item_free (run->item);
 
   pango_glyph_string_free (run->glyphs);
   g_free (run);
