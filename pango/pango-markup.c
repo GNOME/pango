@@ -1175,7 +1175,7 @@ span_parse_func     (MarkupData            *md,
       char *end = NULL;
       glong n;
       
-      n = strtol (weight, &end, 10);
+      n = strtol (rise, &end, 10);
 
       if (*end != '\0')
         {
