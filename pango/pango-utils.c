@@ -1105,8 +1105,8 @@ pango_matrix_rotate (PangoMatrix *matrix,
  * given by @new_matrix then applying the original transformation.
  **/
 void
-pango_matrix_concat (PangoMatrix *matrix,
-		     PangoMatrix *new_matrix)
+pango_matrix_concat (PangoMatrix       *matrix,
+		     const PangoMatrix *new_matrix)
 {
   PangoMatrix tmp;
   

@@ -1,3 +1,8 @@
+Sat Jul 10 17:55:03 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-types.h pango/pango-utils.c (pango_matrix_concat):
+	One more constification.
+
 Sat Jul 10 17:45:05 2004  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pangoft2-private.h: Add _pango prefix for
