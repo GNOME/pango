@@ -160,7 +160,9 @@ xy_to_cp (int width, int x, int y, Paragraph **para_return, int *index)
       
       if (height + para->height >= y)
 	{
-	  gboolean result = pango_layout_xy_to_index (para->layout, x * 1000, (y - height) * 1000, 
+	  gboolean result = pango_layout_xy_to_index (para->layout,
+						      x * PANGO_SCALE,
+						      (y - height) * PANGO_SCALE, 
 						      index, NULL);
 	  if (result && para_return)
 	    *para_return = para;
@@ -196,10 +198,10 @@ char_bounds (Paragraph *para, int index, int width, PangoRectangle *rect)
 
 	  pango_layout_index_to_pos (cur_para->layout, index, &pos);
 
-	  rect->x = MIN (pos.x, pos.x + pos.width) / 1000;
-	  rect->width = ABS (pos.width) / 1000;
-	  rect->y = height + pos.y / 1000;
-	  rect->height = pos.height / 1000;
+	  rect->x = PANGO_PIXELS (MIN (pos.x, pos.x + pos.width));
+	  rect->width = PANGO_PIXELS (ABS (pos.width));
+	  rect->y = height + PANGO_PIXELS (pos.y);
+	  rect->height = PANGO_PIXELS (pos.height);
 	}
       
       height += cur_para->height;
@@ -259,10 +261,10 @@ size_allocate (GtkWidget *layout, GtkAllocation *allocation)
 
       pango_layout_set_alignment (para->layout,
 				  base_dir == PANGO_DIRECTION_LTR ? PANGO_ALIGN_LEFT : PANGO_ALIGN_RIGHT);
-      pango_layout_set_width (para->layout, layout->allocation.width * 1000);
+      pango_layout_set_width (para->layout, layout->allocation.width * PANGO_SCALE);
 
       pango_layout_get_extents (para->layout, NULL, &logical_rect);
-      para->height = logical_rect.height / 1000;
+      para->height = PANGO_PIXELS (logical_rect.height);
       
       height += para->height;
     }
@@ -598,7 +600,7 @@ make_font_selector (void)
   gtk_box_pack_start (GTK_BOX (hbox), util_hbox, FALSE, FALSE, 0);
 
   adj = gtk_spin_button_get_adjustment (GTK_SPIN_BUTTON (spin_button));
-  adj->value = font_description.size / 1000.;
+  adj->value = PANGO_PIXELS (font_description.size);
   adj->lower = 0;
   adj->upper = 1024;
   adj->step_increment = 1;

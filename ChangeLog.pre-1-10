@@ -59,8 +59,12 @@ Sun Aug 20 13:45:08 2000  Owen Taylor  <otaylor@redhat.com>
 	* modules/basic/makefile.mingw.in: New file. Add rule for
 	basic-ft2. Add FreeType2 CFLAGS and LIBS.
 
-	* examples/viewer-win32.c (read_file): Fix error messages.
+	* examples/viewer-win32.c: Replace division or multiplication with
+	1000 (which was the old PANGO_SCALE value) to use PANGO_SCALE and
+	PANGO_PIXELS instead. 
+	(read_file): Fix error messages.
 	(draw): Get HDC from GDK once for all paragraphs.
+	* examples/viewer-win32.c: 
 
 	* examples/viewer-ft2.c: New file. The FT_Bitmap (256-level
 	bitmap) produced by the FreeType2 backend is copied to the
