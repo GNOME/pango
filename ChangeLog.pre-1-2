@@ -1,3 +1,7 @@
+Tue Apr 23 15:20:33 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* README: Fix typo. (#79574)
+
 Wed Mar 27 19:30:35 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* Released 1.0.1
