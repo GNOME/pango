@@ -1,3 +1,15 @@
+Mon Jul 26 14:49:22 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* ftxgdef.[ch] otlbuffer.[ch]: Make Check_Property() take a 
+	OTL_GlyphItem, add a gproperties field to OTLGlyphItem,
+	and use that to cache the properties for a glyph.
+
+	* ftxgsub.c ftxgdef.c: Adapt to Check_Property() changes.
+
+	* otlbuffer.[ch] ftxgsub.c: Add otl_buffer_copy_output_glyph()
+	to use when we are copying an unmodified glyph from input
+	to output that preserves the cached properties.
+
 2004-07-23  Morten Welinder  <terra@gnome.org>
 
 	* examples/renderdemo.c (parse_ellipsis): Fix C99ism.  I am clearly
