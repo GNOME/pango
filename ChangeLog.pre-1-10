@@ -1,3 +1,8 @@
+Sat Jun  3 06:01:38  Pablo Saratxaga <pablo@mandrakesoft.com>
+
+	* modules/thai/thai.c: added other common X11 font encoding
+	names fortis-620 fonts.
+
 Thu Jun  1 13:04:06 CEST 2000 Paolo Molaro <lupus@debian.org>
 
 	* configure.in: look for qt also in /usr/lib/qt2.

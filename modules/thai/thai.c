@@ -142,13 +142,17 @@ get_font_info (PangoFont *font)
   static const char *charsets[] = {
     "xtis620.2529-1",
     "xtis-0",
+    "tis620.2533-1",
     "tis620.2529-1",
+    "iso8859-11",
     "iso10646-1",
   };
 
   static const int charset_types[] = {
     THAI_FONT_XTIS,
     THAI_FONT_XTIS,
+    THAI_FONT_TIS,
+    THAI_FONT_TIS,
     THAI_FONT_TIS,
     THAI_FONT_ISO10646
   };
