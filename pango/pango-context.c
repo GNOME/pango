@@ -657,6 +657,63 @@ pango_itemize (PangoContext      *context,
   return g_list_reverse (result);
 }
 
+static void 
+fallback_engine_shape (PangoFont        *font,
+                       const char       *text,
+                       gint              length,
+                       PangoAnalysis    *analysis,
+                       PangoGlyphString *glyphs)
+{
+  int n_chars;
+  int i;
+  char *p;
+  
+  g_return_if_fail (font != NULL);
+  g_return_if_fail (text != NULL);
+  g_return_if_fail (length >= 0);
+  g_return_if_fail (analysis != NULL);
+
+  n_chars = g_utf8_strlen (text, length);
+  pango_glyph_string_set_size (glyphs, n_chars);
+
+  p = text;
+  for (i = 0; i < n_chars; i++)
+    {
+      glyphs->glyphs[i].glyph = 0;
+      
+      glyphs->glyphs[i].geometry.x_offset = 0;
+      glyphs->glyphs[i].geometry.y_offset = 0;
+      glyphs->glyphs[i].geometry.width = 0;
+
+      glyphs->log_clusters[i] = p - text;
+      
+      ++i;
+      p = g_utf8_next_char (p);
+    }
+}
+
+static PangoCoverage*
+fallback_engine_get_coverage (PangoFont  *font,
+                              const char *lang)
+{
+  PangoCoverage *result = pango_coverage_new ();
+
+  /* We return an empty coverage (this function won't get
+   * called, but if it is, empty coverage will keep
+   * it from being used).
+   */
+  
+  return result;
+}
+
+static PangoEngineShape fallback_shaper = {
+  "FallbackScriptEngine",
+  PANGO_ENGINE_TYPE_SHAPE,
+  sizeof (PangoEngineShape),
+  fallback_engine_shape,
+  fallback_engine_get_coverage
+};
+
 static PangoFont *
 get_font (PangoFont     **fonts,
 	  PangoCoverage **coverages,
@@ -919,6 +976,9 @@ add_engines (PangoContext      *context,
       else
 	shape_engines[i] = NULL;
 
+      if (shape_engines[i] == NULL)
+        shape_engines[i] = &fallback_shaper;
+      
       extra_attr_lists[i] = extra_attrs;
     }
 

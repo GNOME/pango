@@ -1,3 +1,18 @@
+2000-12-14  Havoc Pennington  <hp@redhat.com>
+
+	* pango/pango-context.c (add_engines): Use a fallback shaper if
+	no engine is found for a range, the fallback shaper shapes to
+	glyphs of 0. This is just to let other code depend on the
+	invariant that there's a shape engine for all characters.
+
+	* tests/all-unicode.txt: Huge file containing all Unicode
+	characters, for robustness testing. Not in EXTRA_DIST
+        for now, not sure we should torture people that way...
+
+        * pango/fonts.c (pango_font_find_shaper): remove the assert that 
+        we found a shaper, and instead let things fall back to the fallback
+        shaper
+	
 Thu Dec 14 20:34:18 2000  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pangoxft.h pango/pangoxft-font.c: (PANGO_TYPE_XFT_FONT): Add

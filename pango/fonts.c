@@ -478,8 +478,6 @@ pango_font_find_shaper (PangoFont      *font,
 
   shaper = PANGO_FONT_GET_CLASS (font)->find_shaper (font, lang, ch);
 
-  g_assert (shaper != NULL);
-
   return shaper;
 }
 
