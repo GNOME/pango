@@ -14,3 +14,75 @@ Indic Engine Support
 
 </para>
 
+<!-- ##### MACRO ZERO_WIDTH_NON_JOINER ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO ZERO_WIDTH_JOINER ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### STRUCT PangoIndicScript ##### -->
+<para>
+
+</para>
+
+@name: 
+@is_prefixing_vowel: 
+@is_vowel_sign: 
+@vowel_sign_to_matra: 
+@is_vowel_half: 
+@vowel_split: 
+
+<!-- ##### FUNCTION pango_indic_shift_vowels ##### -->
+<para>
+
+</para>
+
+@script: 
+@chars: 
+@end: 
+
+
+<!-- ##### FUNCTION pango_indic_compact ##### -->
+<para>
+
+</para>
+
+@script: 
+@num: 
+@chars: 
+@cluster: 
+
+
+<!-- ##### FUNCTION pango_indic_convert_vowels ##### -->
+<para>
+
+</para>
+
+@script: 
+@in_middle: 
+@num: 
+@chars: 
+@has_standalone_vowels: 
+
+
+<!-- ##### FUNCTION pango_indic_split_out_characters ##### -->
+<para>
+
+</para>
+
+@script: 
+@text: 
+@n_chars: 
+@wc: 
+@n_glyph: 
+@glyphs: 
+
+

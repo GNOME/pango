@@ -48,12 +48,27 @@ fields.
 </para>
 
 
+<!-- ##### STRUCT PangoLayoutIter ##### -->
+<para>
+
+</para>
+
+
 <!-- ##### FUNCTION pango_layout_new ##### -->
 <para>
 
 </para>
 
 @context: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_layout_copy ##### -->
+<para>
+
+</para>
+
+@src: 
 @Returns: 
 
 
@@ -84,6 +99,37 @@ fields.
 @length: 
 
 
+<!-- ##### FUNCTION pango_layout_get_text ##### -->
+<para>
+
+</para>
+
+@layout: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_layout_set_markup ##### -->
+<para>
+
+</para>
+
+@layout: 
+@markup: 
+@length: 
+
+
+<!-- ##### FUNCTION pango_layout_set_markup_with_accel ##### -->
+<para>
+
+</para>
+
+@layout: 
+@markup: 
+@length: 
+@accel_marker: 
+@accel_char: 
+
+
 <!-- ##### FUNCTION pango_layout_set_attributes ##### -->
 <para>
 
@@ -91,6 +137,15 @@ fields.
 
 @layout: 
 @attrs: 
+
+
+<!-- ##### FUNCTION pango_layout_get_attributes ##### -->
+<para>
+
+</para>
+
+@layout: 
+@Returns: 
 
 
 <!-- ##### FUNCTION pango_layout_set_font_description ##### -->
@@ -119,6 +174,32 @@ fields.
 @layout: 
 @Returns: 
 
+
+<!-- ##### FUNCTION pango_layout_set_wrap ##### -->
+<para>
+
+</para>
+
+@layout: 
+@wrap: 
+
+
+<!-- ##### FUNCTION pango_layout_get_wrap ##### -->
+<para>
+
+</para>
+
+@layout: 
+@Returns: 
+
+
+<!-- ##### ENUM PangoWrapMode ##### -->
+<para>
+
+</para>
+
+@PANGO_WRAP_WORD: 
+@PANGO_WRAP_CHAR: 
 
 <!-- ##### FUNCTION pango_layout_set_indent ##### -->
 <para>
@@ -221,6 +302,13 @@ for partial lines.
 @PANGO_ALIGN_LEFT: Put all available space on the right
 @PANGO_ALIGN_CENTER: Center the line within the available space
 @PANGO_ALIGN_RIGHT: Put all available space on the left
+
+<!-- ##### MACRO PANGO_TYPE_ALIGNMENT ##### -->
+<para>
+
+</para>
+
+
 
 <!-- ##### FUNCTION pango_layout_get_log_attrs ##### -->
 <para>
@@ -347,6 +435,163 @@ for partial lines.
 @Returns: 
 
 
+<!-- ##### FUNCTION pango_layout_get_iter ##### -->
+<para>
+
+</para>
+
+@layout: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_layout_iter_free ##### -->
+<para>
+
+</para>
+
+@iter: 
+
+
+<!-- ##### FUNCTION pango_layout_iter_next_run ##### -->
+<para>
+
+</para>
+
+@iter: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_layout_iter_next_char ##### -->
+<para>
+
+</para>
+
+@iter: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_layout_iter_next_cluster ##### -->
+<para>
+
+</para>
+
+@iter: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_layout_iter_next_line ##### -->
+<para>
+
+</para>
+
+@iter: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_layout_iter_at_last_line ##### -->
+<para>
+
+</para>
+
+@iter: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_layout_iter_get_index ##### -->
+<para>
+
+</para>
+
+@iter: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_layout_iter_get_baseline ##### -->
+<para>
+
+</para>
+
+@iter: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_layout_iter_get_run ##### -->
+<para>
+
+</para>
+
+@iter: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_layout_iter_get_line ##### -->
+<para>
+
+</para>
+
+@iter: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_layout_iter_get_char_extents ##### -->
+<para>
+
+</para>
+
+@iter: 
+@logical_rect: 
+
+
+<!-- ##### FUNCTION pango_layout_iter_get_cluster_extents ##### -->
+<para>
+
+</para>
+
+@iter: 
+@ink_rect: 
+@logical_rect: 
+
+
+<!-- ##### FUNCTION pango_layout_iter_get_run_extents ##### -->
+<para>
+
+</para>
+
+@iter: 
+@ink_rect: 
+@logical_rect: 
+
+
+<!-- ##### FUNCTION pango_layout_iter_get_line_yrange ##### -->
+<para>
+
+</para>
+
+@iter: 
+@y0: 
+@y1: 
+
+
+<!-- ##### FUNCTION pango_layout_iter_get_line_extents ##### -->
+<para>
+
+</para>
+
+@iter: 
+@ink_rect: 
+@logical_rect: 
+
+
+<!-- ##### FUNCTION pango_layout_iter_get_layout_extents ##### -->
+<para>
+
+</para>
+
+@iter: 
+@ink_rect: 
+@logical_rect: 
+
+
 <!-- ##### STRUCT PangoLayoutLine ##### -->
 <para>
 The #PangoLayoutLine structure represents one of the lines resulting
@@ -361,6 +606,7 @@ code specific to each rendering system.
 </para>
 
 @layout: the parent layout for this line.
+@start_index: 
 @length: the length of the line in bytes.
 @runs: a list containing the runs of the line in visual order.
 
@@ -430,7 +676,6 @@ a #PangoLayoutLine.
 @x_pos: 
 @index: 
 @trailing: 
-<!-- # Unused Parameters # -->
 @Returns: 
 
 

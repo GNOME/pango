@@ -14,3 +14,95 @@ Xft Fonts and Rendering
 
 </para>
 
+<!-- ##### MACRO PANGO_RENDER_TYPE_XFT ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### STRUCT PangoXftFont ##### -->
+<para>
+
+</para>
+
+@parent_instance: 
+@xft_font: 
+@mini_font: 
+@fontmap: 
+@description: 
+@ot_info: 
+@mini_width: 
+@mini_height: 
+@mini_pad: 
+@in_cache: 
+
+<!-- ##### FUNCTION pango_xft_get_context ##### -->
+<para>
+
+</para>
+
+@display: 
+@screen: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_xft_render ##### -->
+<para>
+
+</para>
+
+@draw: 
+@color: 
+@font: 
+@glyphs: 
+@x: 
+@y: 
+
+
+<!-- ##### FUNCTION pango_xft_font_get_font ##### -->
+<para>
+
+</para>
+
+@font: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_xft_font_get_face ##### -->
+<para>
+
+</para>
+
+@font: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_xft_font_get_ot_info ##### -->
+<para>
+
+</para>
+
+@font: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_xft_font_get_display ##### -->
+<para>
+
+</para>
+
+@font: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_xft_font_get_unknown_glyph ##### -->
+<para>
+
+</para>
+
+@font: 
+@wc: 
+@Returns: 
+
+

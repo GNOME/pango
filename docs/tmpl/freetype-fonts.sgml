@@ -138,6 +138,26 @@ FreeType Fonts and Rendering
 @Returns: 
 
 
+<!-- ##### FUNCTION pango_ft2_get_coverage ##### -->
+<para>
+
+</para>
+
+@font: 
+@lang: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_ft2_get_face ##### -->
+<para>
+
+</para>
+
+@font: 
+@subfont_index: 
+@Returns: 
+
+
 <!-- ##### STRUCT PangoFT2FontCache ##### -->
 <para>
 

@@ -27,6 +27,7 @@ values are given below. The type of structure used to store the
 attribute is listed in parentheses after the description.
 </para>
 
+@PANGO_ATTR_INVALID: 
 @PANGO_ATTR_LANG: language tag (#PangoAttrString)
 @PANGO_ATTR_FAMILY: font family name list (#PangoAttrString)
 @PANGO_ATTR_STYLE: font slant style (#PangoAttrInt)
@@ -41,6 +42,14 @@ attribute is listed in parentheses after the description.
 @PANGO_ATTR_STRIKETHROUGH: whether the text is struck-through (#PangoAttrInt)
 @PANGO_ATTR_RISE: baseline displacement (#PangoAttrInt)
 @PANGO_ATTR_SHAPE: 
+@PANGO_ATTR_SCALE: 
+
+<!-- ##### MACRO PANGO_TYPE_ATTR_TYPE ##### -->
+<para>
+
+</para>
+
+
 
 <!-- ##### STRUCT PangoAttrClass ##### -->
 <para>
@@ -53,7 +62,7 @@ provided for #PangoAttribute.
 @type: the type ID for this attribute
 @copy: function to duplicate an attribute of this type (see pango_attribute_copy())
 @destroy: function to free an attribute of this type (see pango_attribute_destroy())
-@compare: 
+@equal: 
 
 <!-- ##### STRUCT PangoAttribute ##### -->
 <para>
@@ -85,9 +94,7 @@ are colors.
 </para>
 
 @attr: the common portion of the attribute
-@red: the red value, in the range 0 to 65535
-@green: the green value
-@blue: the blue value
+@color: 
 
 <!-- ##### STRUCT PangoAttrInt ##### -->
 <para>
@@ -97,6 +104,14 @@ a integer or enumeration value.
 
 @attr: the common portion of the attribute
 @value: the value of the attribute
+
+<!-- ##### STRUCT PangoAttrFloat ##### -->
+<para>
+
+</para>
+
+@attr: 
+@value: 
 
 <!-- ##### STRUCT PangoAttrFontDesc ##### -->
 <para>
@@ -116,6 +131,21 @@ sets all aspects of the font description at once.
 @ink_rect: 
 @logical_rect: 
 
+<!-- ##### FUNCTION pango_parse_markup ##### -->
+<para>
+
+</para>
+
+@markup_text: 
+@length: 
+@accel_marker: 
+@attr_list: 
+@text: 
+@accel_char: 
+@error: 
+@Returns: 
+
+
 <!-- ##### FUNCTION pango_attr_type_register ##### -->
 <para>
 
@@ -131,6 +161,16 @@ sets all aspects of the font description at once.
 </para>
 
 @attr: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_attribute_equal ##### -->
+<para>
+
+</para>
+
+@attr1: 
+@attr2: 
 @Returns: 
 
 
@@ -264,6 +304,15 @@ sets all aspects of the font description at once.
 @Returns: 
 
 
+<!-- ##### FUNCTION pango_attr_scale_new ##### -->
+<para>
+
+</para>
+
+@scale_factor: 
+@Returns: 
+
+
 <!-- ##### ENUM PangoUnderline ##### -->
 <para>
 the #PangoUnderline enumeration is used to specify
@@ -280,6 +329,13 @@ of underlining.
                       single characters, such as for keyboard
                       accelerators. %PANGO_UNDERLINE_SINGLE should
                       be used for extended portions of text.
+
+<!-- ##### MACRO PANGO_TYPE_UNDERLINE ##### -->
+<para>
+
+</para>
+
+
 
 <!-- ##### FUNCTION pango_attr_rise_new ##### -->
 <para>

@@ -1,3 +1,11 @@
+Fri Mar  9 11:57:46 2001  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pangox.c (pango_x_find_subfont): Remove a lot of 
+	instances of "Error parsing ligature info" that somehow
+	crept in.
+
+	* docs/*: Some makefile tweaks, structure updates.
+
 2001-03-15  Sven Neumann  <sven@gimp.org>
 
 	* Makefile.am

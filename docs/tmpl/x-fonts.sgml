@@ -129,6 +129,42 @@ glyph index.
 @Returns: 
 
 
+<!-- ##### FUNCTION pango_x_find_first_subfont ##### -->
+<para>
+
+</para>
+
+@font: 
+@charsets: 
+@n_charsets: 
+@rfont: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_x_apply_ligatures ##### -->
+<para>
+
+</para>
+
+@font: 
+@subfont: 
+@glyphs: 
+@n_glyphs: 
+@clusters: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_x_fallback_shape ##### -->
+<para>
+
+</para>
+
+@font: 
+@glyphs: 
+@text: 
+@n_chars: 
+
+
 <!-- ##### STRUCT PangoXFontCache ##### -->
 <para>
 

@@ -200,7 +200,7 @@ pango_x_find_subfont (PangoFont  *font,
   
   if (subfont_index < 1 || subfont_index > xfont->n_subfonts)
     {
-      g_warning ("Error parsing ligature info: Invalid subfont %d", subfont_index);
+      g_warning ("Invalid subfont %d", subfont_index);
       return NULL;
     }
   
@@ -217,7 +217,7 @@ pango_x_make_font_struct (PangoFont *font, PangoXSubfontInfo *info)
   
   info->font_struct = pango_x_font_cache_load (cache, info->xlfd);
   if (!info->font_struct)
-    g_warning ("Error parsing ligature info: Cannot load font for XLFD '%s\n", info->xlfd);
+    g_warning ("Cannot load font for XLFD '%s\n", info->xlfd);
   
   info->is_1byte = (info->font_struct->min_byte1 == 0 && info->font_struct->max_byte1 == 0);
   info->range_byte1 = info->font_struct->max_byte1 - info->font_struct->min_byte1 + 1;
@@ -597,7 +597,7 @@ get_font_metrics_from_subfonts (PangoFont        *font,
           n_avg_widths += 1;
 	}
       else
-	g_warning ("Error parsing ligature info: Invalid subfont %d in get_font_metrics_from_subfonts", GPOINTER_TO_UINT (tmp_list->data));
+	g_warning ("Invalid subfont %d in get_font_metrics_from_subfonts", GPOINTER_TO_UINT (tmp_list->data));
 	  
       tmp_list = tmp_list->next;
     }
@@ -1060,7 +1060,7 @@ pango_x_font_subfont_xlfd (PangoFont     *font,
   subfont = pango_x_find_subfont (font, subfont_id);
   if (!subfont)
     {
-      g_warning ("Error parsing ligature info: pango_x_font_subfont_xlfd: Invalid subfont_id specified");
+      g_warning ("pango_x_font_subfont_xlfd: Invalid subfont_id specified");
       return NULL;
     }
 
