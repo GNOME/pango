@@ -1,3 +1,11 @@
+Mon Jun  9 00:23:34 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* === Released 1.2.3 ===
+
+	* NEWS: Updated
+
+	* configure.in: Version 1.2.3, interface age 3.
+
 Thu Jun  5 14:53:40 2003  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pango-layout.c (pango_layout_move_cursor_visually):

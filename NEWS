@@ -1,6 +1,11 @@
 Overview of Changes in Pango 1.2.2
 ==================================
+* Fix operation with --disable-debug [Jeff Waugh]
+* Improve handling of ink rectangle extents for empty runs
+* Fix problem with keynav at line boundaries for RTL text [Matthias Clasen]
 
+Overview of Changes in Pango 1.2.2
+==================================
 * Cache fontsets for the Xft and FT2 backends, a large speedup for short 
   strings [Owen Taylor, Soeren Sandmann]
 * Make built in rendering functions, especially the FT2 one,
