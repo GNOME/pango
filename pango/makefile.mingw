@@ -65,3 +65,9 @@ test2.exe : test2.o
 test3.exe : test3.o
 	$(CC) -o $@ $(CFLAGS) test3.o -lgdi32
 
+test4.exe : test4.o pango-$(PANGO_VER).dll pangowin32-$(PANGO_VER).dll
+	$(CC) -o $@ $(CFLAGS) test4.o -L . -lpango-$(PANGO_VER) -lpangowin32-$(PANGO_VER) $(GLIB_LIBS)
+
+test5.exe : test5.o
+	$(CC) -o $@ $(CFLAGS) test5.o -lgdi32
+

@@ -591,6 +591,11 @@ pango_win32_guess_subranges (UINT           charset,
     {
       /* ??? */
       set_bit (BASIC_LATIN);
+      set_bit (LATIN_1_SUPPLEMENT);
+      set_bit (CURRENCY_SYMBOLS);
+      set_bit (LATIN_EXTENDED_A);
+      set_bit (LATIN_EXTENDED_B);
+      set_bit (LATIN_EXTENDED_ADDITIONAL);
       retval = TRUE;
     }
   if (check_cp (THAI))

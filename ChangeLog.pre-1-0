@@ -1,3 +1,13 @@
+2000-07-20  Tor Lillqvist  <tml@iki.fi>
+
+	* pango/pangowin32.c (subfont_has_glyph): Use 0xFFFE to produce
+	the default glyph.
+	(create_bitmap_dibsection): Zero out the bitmap.
+
+	* pango/pangowin32-fontmap.c (pango_win32_guess_subranges): Set
+	some additional Unicode subranges for fonts that claim covering
+	the Vietnamese codepage.
+
 2000-07-19  Tor Lillqvist  <tml@iki.fi>
 
 	* configure.in: Don't try to use the ! command, not available in all

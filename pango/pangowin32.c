@@ -954,11 +954,11 @@ create_bitmap_dibsection (HDC    hdc,
       
   result = CreateDIBSection (hdc, (BITMAPINFO *)&bmi, DIB_RGB_COLORS,
 			     (PVOID *)bits, NULL, 0);
+  GetObject (result, sizeof (ds), &ds);
   if (size != NULL)
-    {
-      GetObject (result, sizeof (ds), &ds);
-      *size = ds.dsBmih.biSizeImage;
-    }
+    *size = ds.dsBmih.biSizeImage;
+  memset (*bits, 0, ds.dsBmih.biSizeImage);
+  
   return result;
 }
 
@@ -972,7 +972,7 @@ subfont_has_glyph (PangoFont             *font,
   PangoWin32Font *win32font = (PangoWin32Font *) font;
   wchar_t default_wc;
 #ifdef HEAVY_DEBUGGING
-  static int dispx = 0, dispy = 0;
+  static int dispx = 5, dispy = 0;
 #endif
 
   if (!pango_win32_logfont_has_subrange (win32font->fontmap, &info->logfont,
@@ -1001,19 +1001,21 @@ subfont_has_glyph (PangoFont             *font,
       info->buf_y = tm.tmHeight - tm.tmDescent;
       FillRect (info->buf_hdc, &info->buf_rect, white_brush);
 
-      default_wc = tm.tmDefaultChar;
+      /* Outputting tm.tmDefaultChar does *not* output the same
+       * "unknown" glyph as outputting a char that is not present in
+       * the font. Sigh. Use 0xFFFE instead, experimentation indicates
+       * that for all fonts, ouputting that char produces the same
+       * glyph as outputting a char not present.
+       */
+      default_wc = 0xFFFE;
       TextOutW (info->buf_hdc, info->buf_x, info->buf_y, &default_wc, 1);
 #ifdef HEAVY_DEBUGGING
-      if (wc < 256)
-	{
-	  BitBlt (pango_win32_hdc,dispx,dispy,tm.tmMaxCharWidth,tm.tmHeight,info->buf_hdc,0,0,SRCCOPY);
-	  dispx += tm.tmMaxCharWidth + 5;
-	  if (dispx > 1000)
-	    {
-	      dispx = 0;
-	      dispy += tm.tmHeight + 5;
-	    }
-	}
+      {
+	char *msg = g_strdup_printf ("%s", info->logfont.lfFaceName);
+      BitBlt (pango_win32_hdc,dispx,dispy,tm.tmMaxCharWidth,tm.tmHeight,info->buf_hdc,0,0,SRCCOPY);
+      TextOut (pango_win32_hdc, dispx+tm.tmMaxCharWidth, dispy, msg, strlen(msg));
+      dispy += tm.tmHeight + 5;
+      }
 #endif
 
       info->buf_hbm =
@@ -1030,15 +1032,12 @@ subfont_has_glyph (PangoFont             *font,
   FillRect (info->buf_hdc, &info->buf_rect, white_brush);
   TextOutW (info->buf_hdc, info->buf_x, info->buf_y, &wc, 1);
 #ifdef HEAVY_DEBUGGING
-  if (wc < 256)
+  if (wc)
     {
+      char *msg = g_strdup_printf ("%04X", wc);
       BitBlt (pango_win32_hdc,dispx,dispy,info->buf_rect.right,info->buf_rect.bottom,info->buf_hdc,0,0,SRCCOPY);
-      dispx += info->buf_rect.right + 5;
-      if (dispx > 1000)
-	{
-	  dispx = 0;
-	  dispy += info->buf_rect.bottom + 5;
-	}
+      TextOut (pango_win32_hdc, dispx+info->buf_rect.right, dispy, msg, strlen(msg));
+      dispy += tm.tmHeight + 5;
     }
 #endif
 
