@@ -1301,7 +1301,7 @@ lang_info_compare (const void *key, const void *val)
  * in the following have sufficient text to excercise all the accents for the language, and
  * there are obviously many more languages to include as well.
  */
-static LangInfo lang_texts[] = {
+static const LangInfo lang_texts[] = {
   { "ar", "Arabic  \330\247\331\204\330\263\331\204\330\247\331\205 \330\271\331\204\331\212\331\203\331\205" },
   { "cs", "Czech (\304\215esky)  Dobr\303\275 den" },
   { "da", "Danish (Dansk)  Hej, Goddag" },

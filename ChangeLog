@@ -1,3 +1,8 @@
+Tue Jul 13 10:02:53 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-utils.c (pango_language_get_sample_string):
+	Make table constant. (#145515, Morten Welinder)
+
 2004-07-12  Morten Welinder  <terra@gnome.org>
 
 	* pango/pangoxft-font.c (get_glyph_extents_xft): Fix C99ism.
