@@ -95,7 +95,7 @@ pango_tab_array_new (gint initial_size,
 }
 
 /**
- * pango_tab_array_new_with_defaults:
+ * pango_tab_array_new_with_positions:
  * @size: number of tab stops in the array
  * @positions_in_pixels: whether positions are in pixel units
  * @first_alignment: alignment of first tab stop
@@ -110,11 +110,11 @@ pango_tab_array_new (gint initial_size,
  * Return value: a new #PangoTabArray
  **/
 PangoTabArray  *
-pango_tab_array_new_with_defaults (gint           size,
-                                   gboolean       positions_in_pixels,
-                                   PangoTabAlign  first_alignment,
-                                   gint           first_position,
-                                   ...)
+pango_tab_array_new_with_positions (gint           size,
+                                    gboolean       positions_in_pixels,
+                                    PangoTabAlign  first_alignment,
+                                    gint           first_position,
+                                    ...)
 {
   PangoTabArray *array;
   va_list args;

@@ -1,3 +1,9 @@
+2000-09-28  Havoc Pennington  <hp@pobox.com>
+
+	* pango/pango-tabs.c (pango_tab_array_new_with_positions): was 
+	pango_tab_array_new_with_defaults; apparently I didn't check in
+	the modified version at work
+
 2000-09-27  Havoc Pennington  <hp@redhat.com>
 
 	* pango/pango-tabs.c (pango_tab_array_get_tabs): Change to return
