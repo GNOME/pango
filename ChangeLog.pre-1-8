@@ -1,3 +1,9 @@
+Tue Jan 29 11:35:11 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* configure.in: Version 0.24
+
+	* NEWS: Updates
+
 Mon Jan 28 20:23:59 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pango-markup.c (pango_parse_markup): Fix problem

@@ -1,3 +1,18 @@
+Changes between 0.23 and 0.24
+
+* Win32 backend improvements [Tor Lillqvist]
+* Doc improvements [Havoc Pennington, Dennis Bjorklund]
+* Fix problem where "foo\n" was treated as one paragraph by pango-layout,
+  not two. [Arjan J. Molenaar, Owen Taylor]
+* Add glyph caching to FT2 backend [Alex Larsson]
+* Try to make configure checks for Qt-based example more robust [Owen]
+* New example program for FT2 backend [Dov Grobgeld]
+* Arabic shaper for FT2 backend [Andreas Bogk, Sven Neumann]
+* Bug fixes
+
+Other contributors: Mikael Hermansson, Darin Adler, Hidetoshi Tajima, Zack Rusin, 
+  Jacob Berkman, Jason Tackaberry, Evan Martin, Matthias Clasen
+
 Changes between 0.22 and 0.23
 
 * Documentation improvements [Matthias Clasen]
