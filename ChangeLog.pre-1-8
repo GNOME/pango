@@ -1,3 +1,10 @@
+Tue Nov 14 18:45:24 2000  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/shape.c (pango_shape): Every character must
+	be part of some cluster, so when we dont' have an engine
+	at all (pathalogical, happens now for formatting characters),
+	create a cluster with one glyph=0 and 0 size.
+
 Wed Nov 15 10:50:38 2000  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pango-layout.c (process_line): Rewrite of good
