@@ -246,6 +246,7 @@ pango_layout_copy (PangoLayout *src)
   layout->indent = src->indent;
   layout->spacing = src->spacing;
   layout->justify = src->justify;
+  layout->auto_dir = src->auto_dir;
   layout->alignment = src->alignment;
   layout->n_chars = src->n_chars;
   layout->tab_width = src->tab_width;
