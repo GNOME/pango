@@ -1,3 +1,8 @@
+2004-09-15  Tor Lillqvist  <tml@iki.fi>
+
+	* pango/querymodules.c (string_needs_escape, escape_string):
+	Escape also backslashes. (#152607, Kazuki Iwamoto)
+
 2004-08-22  Tor Lillqvist  <tml@iki.fi>
 
 	* pango/pangowin32-fontmap.c (pango_win32_inner_enum_proc): Ignore

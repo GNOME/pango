@@ -52,7 +52,7 @@ string_needs_escape (const char *str)
 
       if (!c)
 	return FALSE;
-      else if (c == '\"' || g_ascii_isspace (c))
+      else if (c == '\"' || c == '\\' || g_ascii_isspace (c))
 	return TRUE;
     }
 }
@@ -75,6 +75,9 @@ escape_string (const char *str)
 	  break;
 	case '\"':
 	  g_string_append (result, "\\\"");
+	  break;
+	case '\\':
+	  g_string_append (result, "\\\\");
 	  break;
 	default:
 	  g_string_append_c (result, c);
