@@ -21,6 +21,11 @@
 
 #include <pango.h>
 
+/*
+ * NB: The contents of the file implement the exact same algorithm
+ *     pango-layout.c:pango_layout_line_reorder().
+ */
+
 static GList *reorder_items_recurse (GList *items, int n_items);
 
 /**
@@ -32,6 +37,11 @@ static GList *reorder_items_recurse (GList *items, int n_items);
  * The original list is unmodified.
  *
  * Returns a GList of PangoItem structures in visual order.
+ *
+ * (Please mail otaylor@redhat.com if you use this function.
+ *  It is not a particularly convenient interface, and the code
+ *  is duplicated elsewhere in Pango for that reason.)
+ *   
  */
 GList *
 pango_reorder_items (GList *logical_items)

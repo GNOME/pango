@@ -88,6 +88,12 @@ void              pango_glyph_string_extents  (PangoGlyphString *glyphs,
 					       PangoRectangle   *ink_rect,
 					       PangoRectangle   *logical_rect);
 
+void pango_glyph_string_get_logical_widths (PangoGlyphString *glyphs,
+					    char             *text,
+					    int               length,
+					    int               embedding_level,
+					    int              *logical_widths);
+
 void pango_glyph_string_index_to_x (PangoGlyphString *glyphs,
 				    char             *text,
 				    int               length,

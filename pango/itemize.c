@@ -52,10 +52,10 @@ static void add_engines (PangoContext     *context,
  */
 GList *
 pango_itemize (PangoContext   *context, 
-		  gchar            *text, 
-		  gint              length,
-		  PangoLangRange *lang_info,
-		  gint              n_langs)
+	       gchar          *text, 
+	       gint            length,
+	       PangoLangRange *lang_info,
+	       gint            n_langs)
 {
   guint16 *text_ucs2;
   gint n_chars;
@@ -70,9 +70,10 @@ pango_itemize (PangoContext   *context,
   PangoEngineInfo  **lang_engines;
 
   g_return_val_if_fail (context != NULL, NULL);
-  g_return_val_if_fail (text != NULL, NULL);
-  g_return_val_if_fail (length >= 0, NULL);
+  g_return_val_if_fail (length == 0 || text != NULL, NULL);
 
+  if (length == 0)
+    return NULL;
 
   if (context->direction == PANGO_DIRECTION_RTL)
     base_dir = FRIBIDI_TYPE_RTL;

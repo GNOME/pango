@@ -1,3 +1,46 @@
+Wed Mar  8 13:34:57 2000  Owen Taylor  <otaylor@redhat.com>
+
+	* libpango/pango-layout.[ch]: First draft of highlevel
+	driver. It currently only handles a paragraph as a list
+	of lines, but it is probably necessary to make it handle
+	2D layout for a paragraph as well
+
+	* examples/viewer.c: Move over to new layout driver
+	(much of the code moved into pango-layout.c)
+
+	* libpango/glyphs.c libpango/pango-glyphs.h: Fixes to get_extents(),
+	add pango_glyph_string_get_logical_widths.
+
+	* libpango/pango-itemize.c: Handle 0-length text properly.
+
+	* libpango/pangox.c: When loading particular sized fonts,
+	use the original XLFD, since XFree86 doesn't handle wildcards
+	in aliases properly.
+
+	* libpango/pangox.[ch] (pango_x_render_layout_line): Add function
+	to render an entire PangoLayoutLine.
+
+	* libpango/reorder-items.c: Add a note to the effect
+	that pango_reorder_items() is basically replaced by a
+	similar function in PangoLayout.
+
+Wed Mar  8 10:58:56 2000  Owen Taylor  <otaylor@redhat.com>
+
+	* modules/arabic/arconv.c (shapecount): Fix from Karl
+	Koehler to joining behavior.
+
+	* modules/Makefile.am modules/arabic/*: Added arabic
+	shaper from Karl Koehler <koehler@or.uni-bonn.de>
+
+	* modules/basic/tables-{small,big}.i: Remove arabic
+	from the ranges that the basic shaper marks as "exact".
+
+	* examples/HELLO.utf8: Partially alphabetize, add arabic.
+
+Mon Mar  6 21:03:28 2000  Owen Taylor  <otaylor@redhat.com>
+
+	* libpango/pango-layout.[ch]: Started work on highlevel layout driver.
+
 Mon Mar  6 20:55:32 2000  Owen Taylor  <otaylor@redhat.com>
 
 	* libpango/mapping.c example/viewer.c: 

@@ -140,10 +140,10 @@ pango_glyph_string_index_to_x (PangoGlyphString *glyphs,
   p = text + start_index;
   while (p < text + end_index)
     {
-      p = unicode_next_utf8 (p);
       if (p < text + index)
 	cluster_offset++;
       cluster_chars++;
+      p = unicode_next_utf8 (p);
     }
   
   /* Now interpolate the result. For South Asian languages

@@ -5,6 +5,7 @@ config.cache
 config.log
 config.status
 pango.spec
+pango-config
 stamp-h
 libtool
 Makefile

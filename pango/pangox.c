@@ -1316,8 +1316,8 @@ pango_x_render  (Display           *display,
 		 GC                 gc,
 		 PangoFont         *font,
 		 PangoGlyphString  *glyphs,
-		 int               x, 
-		 int               y)
+		 int                x, 
+		 int                y)
 {
   /* Slow initial implementation. For speed, it should really
    * collect the characters into runs, and draw multiple
@@ -1540,43 +1540,43 @@ pango_x_make_matching_xlfd (PangoXFontMap *xfontmap, char *xlfd, const char *cha
 
   if (closest_match)
     {
-      char *prefix_end, *p;
-      char *size_end;
-      int n_dashes = 0;
-      
-      /* OK, we have a match; let's modify it to fit this size and charset */
-
-      p = closest_match;
-      while (n_dashes < 6)
-	{
-	  if (*p == '-')
-	    n_dashes++;
-	  p++;
-	}
-
-      prefix_end = p - 1;
-
-      while (n_dashes < 9)
-	{
-	  if (*p == '-')
-	    n_dashes++;
-	  p++;
-	}
-
-      size_end = p - 1;
-
       if (match_scaleable)
 	{
-	  int target_size = (int)((double)size / xfontmap->resolution + 0.5);
-	  char *prefix = g_strndup (closest_match, prefix_end - closest_match);
+	  char *prefix_end, *p;
+	  char *size_end;
+	  int n_dashes = 0;
+	  int target_size;
+	  char *prefix;
+	  
+	  /* OK, we have a match; let's modify it to fit this size and charset */
+
+	  p = closest_match;
+	  while (n_dashes < 6)
+	    {
+	      if (*p == '-')
+		n_dashes++;
+	      p++;
+	    }
+	  
+	  prefix_end = p - 1;
+	  
+	  while (n_dashes < 9)
+	    {
+	      if (*p == '-')
+		n_dashes++;
+	      p++;
+	    }
+	  
+	  size_end = p - 1;
+
+	  target_size = (int)((double)size / xfontmap->resolution + 0.5);
+	  prefix = g_strndup (closest_match, prefix_end - closest_match);
 	  result  = g_strdup_printf ("%s--%d-*-*-*-*-*-%s", prefix, target_size, charset);
 	  g_free (prefix);
 	}
       else
 	{
-	  char *prefix = g_strndup (closest_match, size_end - closest_match);
-	  result = g_strconcat (prefix, "-*-*-*-*-", charset, NULL);
-	  g_free (prefix);
+	  result = g_strdup (closest_match);
 	}
     }
 
@@ -2002,3 +2002,47 @@ pango_x_get_unknown_glyph (PangoFont *font)
   return 0;
 }
 
+/**
+ * pango_x_render_layout_line:
+ * @display: the X display
+ * @d:       the drawable on which to draw string
+ * @gc:      the graphics context
+ * @line:    a #PangoLayoutLine
+ * @glyphs:  the glyph string to draw
+ * @x:       the x position of start of string (in pixels)
+ * @y:       the y position of baseline (in pixels)
+ *
+ * Render a #PangoLayoutLine onto an X drawable
+ */
+void 
+pango_x_render_layout_line (Display          *display,
+			    Drawable          d,
+			    GC                gc,
+			    PangoLayoutLine  *line,
+			    int               x, 
+			    int               y)
+{
+  GSList *tmp_list = line->runs;
+  PangoRectangle logical_rect;
+
+  int x_off = 0;
+
+  pango_layout_line_get_extents (line,NULL, &logical_rect);
+  y += PANGO_ASCENT (logical_rect) / 1000;
+  
+  while (tmp_list)
+    {
+      PangoLayoutRun *run = tmp_list->data;
+      tmp_list = tmp_list->next;
+
+      pango_x_render (display, d, gc, run->item->analysis.font, run->glyphs,
+		      x + x_off / 1000, y);
+
+      if (tmp_list)
+	{
+	  pango_glyph_string_extents (run->glyphs, run->item->analysis.font,
+				      NULL, &logical_rect);
+	  x_off += logical_rect.width;
+	}
+    }
+}

@@ -1,0 +1,195 @@
+<!-- ##### SECTION Title ##### -->
+Layout Objects
+
+<!-- ##### SECTION Short_Description ##### -->
+Layout driver objects for entire paragraphs.
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+While complete access to the layout capabilities of Pango is provided
+using the detailed interfaces for itemization and shaping, using
+that functionality directly involves writing a fairly large amount
+of code. The objects and functions in this structure provide a
+high-level driver for formatting entire paragraphs of text
+at once.
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### STRUCT PangoLayout ##### -->
+<para>
+The #PangoLayout structure represents and entire paragraph
+of text. It is initialized with a #PangoContext, UTF-8 string
+and set of attirbutes for that string. Once that is done, the
+set of formatted lines can be extracted from the object.
+</para>
+
+
+<!-- ##### STRUCT PangoLayoutLine ##### -->
+<para>
+The #PangoLayoutLine structure represents one of the lines resulting
+from laying out a paragraph via #PangoLayout. #PangoLayoutLine
+structures are obtained by calling pango_layout_get_line() and
+are only valid until the text, attributes, or settings of the
+parent #PangoLayout are modified.
+</para>
+<para>
+Routines for rendering PangoLayout objects are provided in
+code specific to each rendering system.
+</para>
+
+@layout: the parent layout for this line.
+@n_chars: the total number of characters in the line.
+@length: the length of the line in bytes.
+@runs: a list containing the runs of the line in visual order.
+
+<!-- ##### STRUCT PangoLayoutRun ##### -->
+<para>
+The #PangoLayoutRun structure represents a single run within
+a #PangoLayoutLine.
+</para>
+
+@item: a #PangoItem structure that provides information
+       about the segment of text in this run.
+@glyphs: the glyphs obtained by shaping the text for this item.
+
+<!-- ##### FUNCTION pango_layout_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_layout_ref ##### -->
+<para>
+
+</para>
+
+@layout: 
+
+
+<!-- ##### FUNCTION pango_layout_unref ##### -->
+<para>
+
+</para>
+
+@layout: 
+
+
+<!-- ##### FUNCTION pango_layout_set_text ##### -->
+<para>
+
+</para>
+
+@text: 
+@length: 
+
+
+<!-- ##### FUNCTION pango_layout_set_attributes ##### -->
+<para>
+
+</para>
+
+@layout: 
+@attrs: 
+
+
+<!-- ##### FUNCTION pango_layout_set_width ##### -->
+<para>
+
+</para>
+
+@layout: 
+@width: 
+
+
+<!-- ##### FUNCTION pango_layout_set_first_line_width ##### -->
+<para>
+
+</para>
+
+@layout: 
+@width: 
+
+
+<!-- ##### FUNCTION pango_layout_set_justify ##### -->
+<para>
+
+</para>
+
+@layout: 
+@justify: 
+
+
+<!-- ##### FUNCTION pango_layout_cp_to_line_x ##### -->
+<para>
+
+</para>
+
+@layout: 
+@char_pos: 
+@trailing: 
+@line: 
+@x_pos: 
+
+
+<!-- ##### FUNCTION pango_layout_get_line_count ##### -->
+<para>
+
+</para>
+
+@layout: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_layout_get_line ##### -->
+<para>
+
+</para>
+
+@layout: 
+@line: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_layout_line_ref ##### -->
+<para>
+
+</para>
+
+@line: 
+
+
+<!-- ##### FUNCTION pango_layout_line_unref ##### -->
+<para>
+
+</para>
+
+@line: 
+
+
+<!-- ##### FUNCTION pango_layout_line_x_to_cp ##### -->
+<para>
+
+</para>
+
+@line: 
+@x_pos: 
+@char_pos: 
+@trailing: 
+
+
+<!-- ##### FUNCTION pango_layout_line_get_extents ##### -->
+<para>
+
+</para>
+
+@line: 
+@ink_rect: 
+@logical_rect: 
+
+

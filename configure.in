@@ -1,7 +1,7 @@
 dnl Process this file with autoconf to create configure.
 
 AC_INIT(ChangeLog)
-AM_INIT_AUTOMAKE(pango, 0.7)
+AM_INIT_AUTOMAKE(pango, 0.8)
 
 AM_CONFIG_HEADER(config.h)
 
@@ -64,6 +64,7 @@ AC_OUTPUT([
 Makefile 
 libpango/Makefile
 modules/Makefile
+modules/arabic/Makefile
 modules/basic/Makefile
 modules/hangul/Makefile
 modules/tamil/Makefile

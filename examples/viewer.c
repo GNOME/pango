@@ -47,12 +47,12 @@ struct _Paragraph {
   char *text;
   int length;
   int height;   /* Height, in pixels */
-  GList *lines;
+  PangoLayout *layout;
 };
 
 /* Structure representing a line
  */
-struct _Line {
+ struct _Line {
   /* List of PangoItems for this paragraph in visual order */
   GList *runs;
   int ascent;   /* Ascent of line, in pixels */
@@ -143,7 +143,9 @@ split_paragraphs (char *text)
 	  para->text = last_para;
 	  para->length = p - last_para;
 	  para->height = 0;
-	  para->lines = NULL;
+	  para->layout = pango_layout_new (context);
+	  pango_layout_set_text (para->layout, para->text, para->length);
+	  
 	  last_para = next;
 	    
 	  result = g_list_prepend (result, para);
@@ -156,335 +158,42 @@ split_paragraphs (char *text)
   return g_list_reverse (result);
 }
 
-static void
-get_logical_widths (char *text, PangoItem *item,
-		    PangoGlyphString *glyphs,
-		    PangoGlyphUnit *logical_widths)
-{
-  int i, j;
-  int last_cluster = 0;
-  int width = 0;
-  int last_cluster_width = 0;
-  char *p = text + item->offset;
-  
-  for (i=0; i<=glyphs->num_glyphs; i++)
-    {
-      int index = (item->analysis.level % 2 == 0) ? i : glyphs->num_glyphs - i;
-      
-      if (index == glyphs->num_glyphs ||
-	  p != text + item->offset + glyphs->log_clusters[index])
-	{
-	  gint next_cluster;
-	  
-	  if (index < glyphs->num_glyphs)
-	    {
-	      next_cluster = last_cluster;
-	      while (p < text + item->offset + glyphs->log_clusters[index])
-		{
-		  next_cluster++;
-		  p = unicode_next_utf8 (p);
-		}
-	    }
-	  else
-	    next_cluster = item->num_chars;
-	  
-	  for (j=last_cluster; j<next_cluster; j++)
-	    logical_widths[j] = (width - last_cluster_width) / (next_cluster - last_cluster);
-	  
-	  last_cluster = next_cluster;
-	  last_cluster_width = width;
-	}
-      
-      if (i < glyphs->num_glyphs)
-	width += glyphs->glyphs[i].geometry.width;
-    }
-}
-
-/* Break an item into a piece that fits on the current line
- * and the remainder. (The remainder, if any is stored into
- * 'new_item'. If no piece of the item fits on the current line,
- * returns FALSE.
- */
-
-gboolean 
-break_run (char       *text,
-	   PangoItem  *item,
-	   int        *remaining_width,
-	   PangoItem **new_item,
-	   int        *logical_ascent,
-	   int        *logical_descent)
-{
-  PangoGlyphString *buf;
-  gboolean result;
-  PangoRectangle logical_rect;
-  int width;
-
-  /* First try the entire string to see if it fits. If it
-   * doesn't, call GStringBreak, then chop off pieces
-   * from the end until it fits. If it still doesn't
-   * fit, give up and return FALSE.
-   */
-
-  buf = pango_glyph_string_new();
-  
-  pango_shape (text + item->offset, item->length, &item->analysis, buf);
-  pango_glyph_string_extents (buf, item->analysis.font, NULL, &logical_rect);
-  width = logical_rect.width;
-
-  result = FALSE;
-  *new_item = NULL;
-
-  if (width <= 1000 * *remaining_width)
-    {
-      result = TRUE;
-    }
-  else
-    {
-      int length;
-      int num_chars = item->num_chars;
-      int new_width;
-
-      PangoLogAttr *log_attrs = g_new (PangoLogAttr, item->num_chars);
-      PangoGlyphUnit *log_widths = g_new (PangoGlyphUnit, item->num_chars);
-
-      pango_break (text + item->offset, item->length, &item->analysis,
-		   log_attrs);
-      get_logical_widths (text, item, buf, log_widths);
-
-      new_width = 0;
-      while (--num_chars > 0)
-	{
-	  /* Shorten the item by one line break
-	   */
-	  width -= log_widths[num_chars];
-	  if (log_attrs[num_chars].is_break && width <= 1000 * *remaining_width)
-	    break;
-	}
-
-      if (num_chars != 0)
-	{
-	  char *p;
-	  gint n;
-
-	  /* Determine utf8 length corresponding to num_chars. Slow?
-	   */
-	  n = num_chars;
-	  p = text + item->offset;
-	  while (n-- > 0)
-	    p = unicode_next_utf8 (p);
-	  
-	  length = p - (text + item->offset);
-
-	  *new_item = g_new (PangoItem, 1);
-	  (*new_item)->offset = item->offset + length;
-	  (*new_item)->length = item->length - length;
-	  (*new_item)->num_chars = item->num_chars - num_chars;
-	  (*new_item)->analysis = item->analysis;
-	  pango_font_ref ((*new_item)->analysis.font);
-	  
-	  item->length = length;
-	  item->num_chars = num_chars;
-
-	  result = TRUE;
-	}
-
-      g_free (log_attrs);
-      g_free (log_widths);
-    }
- 
-  pango_shape (text + item->offset, item->length, &item->analysis, buf);
-  pango_glyph_string_extents (buf, item->analysis.font, NULL, &logical_rect);
-
-  *logical_ascent = PANGO_ASCENT (logical_rect) / 1000;
-  *logical_descent = PANGO_DESCENT (logical_rect) / 1000;
-
-  if (result)
-    *remaining_width -= logical_rect.width / 1000;
-
-  pango_glyph_string_free (buf);
- 
-  return result;
-}
-
-static void
-free_item (PangoItem *item)
-{
-  pango_font_unref (item->analysis.font);
-  g_free (item);
-}
-
-static void
-free_line (Line *line)
-{
-  g_list_foreach (line->runs, (GFunc)free_item, NULL);
-  g_list_free (line->runs);
-  g_free (line);
-}
-
-static void
-para_free_lines (Paragraph *para)
-{
-  g_list_foreach (para->lines, (GFunc)free_line, NULL);
-  g_list_free (para->lines);
-  para->lines = NULL;
-}
-
 /* Break a paragraph into a list of lines which fit into
  * width, and compute the total height of the new paragraph
  */
 void
 layout_paragraph (Paragraph *para, int width)
 {
-  Line *line = NULL;
-  GList *runs;
-  int remaining_width;
+  GSList *line_list;
+  PangoRectangle logical_rect;
   int height = 0;
-  PangoDirection base_dir = pango_context_get_base_dir (context);
-  PangoAttrList *attrs;
   
-  /* Break paragraph into runs with consistent shaping engine
-   * and direction
-   */
-  attrs = pango_attr_list_new ();
-  runs = pango_itemize (context, para->text, para->length, attrs);
-  pango_attr_list_unref (attrs);
+  pango_layout_set_width (para->layout, width * 1000);
+  pango_layout_set_first_line_width (para->layout, width * 1000);
 
-  para_free_lines (para);
-
-  /* Break runs to fit on each line
-   */
-  remaining_width = width;
-  para->lines = NULL;
-  while (runs)
+  line_list = pango_layout_get_lines (para->layout);
+  while (line_list)
     {
-      PangoItem *new_item;
-      gboolean fits;
-      int logical_ascent;
-      int logical_descent;
+      PangoLayoutLine *line = line_list->data;
+      line_list = line_list->next;
 
-      fits = break_run (para->text, runs->data, &remaining_width, &new_item,
-			&logical_ascent, &logical_descent);
-      
-      if (new_item) 
-	{
-	  /* The item was split, add the remaining portion into our
-	   * lists of runs
-	   */
-	  GList *node = g_list_alloc();
-	  
-	  node->data = new_item;
-	  node->next = runs->next;
-	  if (node->next)
-	    node->next->prev = node;
-	  node->prev = runs;
-
-	  runs->next = node;
-	}
-      
-      if (fits || !line)
-	{
-	  /* Either we have a portion that fits on our line,
-	   * or the initial unbreakable portion of the run
-	   * doesn't fit on a complete line, so we just
-	   * add it in anyways.
-	   */
-	  GList *tmp_list = runs->next;
-
-	  if (!line)
-	    {
-	      line = g_new (Line, 1);
-	      line->runs = NULL;
-	      line->ascent = 0;
-	      line->descent = 0;
-	    }
-	  
-	  if (line->runs)
-	    line->runs->prev = runs;
-	  runs->next = line->runs;
-	  line->runs = runs;
-
-	  line->ascent = MAX (line->ascent, logical_ascent);
-	  line->descent = MAX (line->descent, logical_descent);
-
-	  runs = tmp_list;
-	  if (runs)
-	    runs->prev = NULL;
-	}
-
-      if (!runs || !fits || remaining_width == 0)
-	{
-	  /* A complete line, add to our list of lines
-	   */
-	  GList *visual_list;
-	  
-	  line->offset = (base_dir == PANGO_DIRECTION_RTL) ? remaining_width : 0;
-	  line->runs = g_list_reverse (line->runs);
-	  remaining_width = width;
-	  height += line->ascent + line->descent;
-
-	  /* Reorder the runs from logical to visual order
-	   */
-	  visual_list = pango_reorder_items (line->runs);
-	  g_list_free (line->runs);
-	  line->runs = visual_list;
-	  
-	  para->lines = g_list_append (para->lines, line);
-
-	  line = NULL;
-	}
+      pango_layout_line_get_extents (line, NULL, &logical_rect);
+      height += logical_rect.height;
     }
 
-  para->height = height;
-}
-
-/* Given a x position within a run, determine the corresponding
- * character offset.
- */ 
-gboolean
-runs_x_to_cp (char *text, GList *runs, int x, int *offset)
-{
-  PangoGlyphString *buf;
-  int pixels = 0;
-
-  buf = pango_glyph_string_new();
-  
-  while (runs)
-    {
-      PangoItem *item = runs->data;
-      PangoRectangle logical_rect;
-
-      pango_shape (text + item->offset, item->length, &item->analysis, buf);
-      pango_glyph_string_extents (buf, item->analysis.font, NULL, &logical_rect);
-
-      if (x >= pixels && x < pixels + logical_rect.width / 1000)
-	{
-	  pango_glyph_string_x_to_index (buf, text + item->offset, item->length,
-					 &item->analysis, (x - pixels) * 1000,
-					 offset, NULL);
-	  if (offset)
-	    *offset += item->offset;
-
-	  return TRUE;
-	}
-
-      pixels += logical_rect.width / 1000;
-      runs = runs->next;
-    }
-
-  pango_glyph_string_free (buf);
-
-  return FALSE;
+  para->height = height / 1000;
 }
 
 /* Given an x-y position, return the paragraph and offset
  * within the paragraph of the click.
  */
 gboolean
-xy_to_cp (GList *paragraphs, int x, int y,
+xy_to_cp (GList *paragraphs, int width, int x, int y,
 	  Paragraph **para_return, int *offset)
 {
-  GList *para_list, *line_list;
+  GList *para_list;
   int height = 0;
+  PangoDirection base_dir = pango_context_get_base_dir (context);
 
   *para_return = NULL;
 
@@ -495,16 +204,27 @@ xy_to_cp (GList *paragraphs, int x, int y,
       
       if (height + para->height >= y)
 	{
-	  line_list = para->lines;
+	  PangoRectangle logical_rect;
+	  GSList *line_list = pango_layout_get_lines (para->layout);
+	  
 	  while (line_list)
 	    {
-	      Line *line = line_list->data;
+	      PangoLayoutLine *line = line_list->data;
+	      int line_y = (y - height) * 1000;
+	      int line_height = 0;
+
+	      pango_layout_line_get_extents (line_list->data, NULL, &logical_rect);
 	      
-	      if (height + line->ascent + line->descent >= y)
+	      if (line_height + logical_rect.height >= line_y)
 		{
-		  if (runs_x_to_cp (para->text, line->runs,
-				    x - line->offset,
-				    offset))
+		  int x_offset;
+
+		  if (base_dir == PANGO_DIRECTION_RTL)
+		    x_offset = width - logical_rect.width / 1000;
+		  else
+		    x_offset = 0;
+		  
+		  if (pango_layout_line_x_to_index (line, 1000 * (x - x_offset), offset, NULL))
 		    {
 		      *para_return = para;
 		      return TRUE;
@@ -512,7 +232,8 @@ xy_to_cp (GList *paragraphs, int x, int y,
 		  else
 		    return FALSE;
 		}
-	      height += line->ascent + line->descent;
+
+	      line_height += logical_rect.height;
 	      line_list = line_list->next;
 	    }
 	}
@@ -524,67 +245,17 @@ xy_to_cp (GList *paragraphs, int x, int y,
   return FALSE;
 }
 
-/* Given a character position within a run, determine the corresponding
- * limits of that character in the x position.
- */ 
-void
-runs_char_bounds (char *text, GList *runs, int offset, int *x, int *width)
-{
-  int start_x;
-  int end_x;
-  int pixels = 0;
-
-  PangoGlyphString *buf = pango_glyph_string_new();
-
-  while (runs)
-    {
-      PangoItem *item = runs->data;
-      PangoRectangle logical_rect;
-      
-      pango_shape (text + item->offset, item->length, &item->analysis, buf);
-
-      if (offset >= item->offset &&
-	  offset < item->offset + item->length)
-	{
-	  /* Find bounds */
-	  pango_glyph_string_index_to_x (buf, text + item->offset, item->length,
-					 &item->analysis, offset - item->offset, FALSE, &start_x);
-	  pango_glyph_string_index_to_x (buf, text + item->offset, item->length,
-					 &item->analysis, offset - item->offset, TRUE, &end_x);
-	  
-	  if (start_x < end_x)
-	    {
-	      *x = pixels + start_x / 1000;
-	      *width = (end_x - start_x) / 1000;
-	    }
-	  else
-	    {
-	      *x = pixels + end_x / 1000;
-	      *width = (start_x - end_x) / 1000;
-	    }
-	    
-	  break;
-	}
-
-      pango_glyph_string_extents (buf, item->analysis.font, NULL, &logical_rect);
-      pixels += logical_rect.width / 1000;
-      runs = runs->next;
-    }
-
-  pango_glyph_string_free (buf);
-
-}
-
 /* Given a paragraph and offset in that paragraph, find the
  * bounding rectangle for the character at the offset.
  */ 
 void
-char_bounds (GList *paragraphs, Paragraph *para, int offset,
-	     int *x, int *y, int *width, int *height)
+char_bounds (GList *paragraphs, Paragraph *para, int index,
+	     int width, PangoRectangle *rect)
 {
-  GList *para_list, *line_list, *run_list;
-  int pixels = 0;
-  int chars_seen = 0;
+  GList *para_list;
+  
+  int height = 0;
+  int bytes_seen = 0;
   PangoDirection base_dir = pango_context_get_base_dir (context);
   
   para_list = paragraphs;
@@ -594,36 +265,50 @@ char_bounds (GList *paragraphs, Paragraph *para, int offset,
       
       if (cur_para == para)
 	{
-	  line_list = para->lines;
+	  int line_height = 0;
+	  
+	  GSList *line_list = pango_layout_get_lines (para->layout);
 	  while (line_list)
 	    {
-	      Line *line = line_list->data;
-	      
-	      run_list = line->runs;
-	      while (run_list)
-		{
-		  chars_seen += ((PangoItem *)run_list->data)->length;
-		  run_list = run_list->next;
-		}
+	      PangoLayoutLine *line = line_list->data;
+	      PangoRectangle logical_rect;
 
-	      if (offset < chars_seen)
+	      pango_layout_line_get_extents (line_list->data, NULL, &logical_rect);
+
+	      bytes_seen += line->length;
+	      if (index < bytes_seen)
 		{
-		  runs_char_bounds (para->text, line->runs, offset,
-				    x, width);
-		  *y = pixels;
-		  *height = line->ascent + line->descent;
+		  int x0, x1;
+
+		  pango_layout_line_index_to_x  (line, index, FALSE, &x0);
+		  pango_layout_line_index_to_x  (line, index, TRUE, &x1);
+
+		  if (x0 <= x1)
+		    {
+		      rect->x = x0 / 1000;
+		      rect->width = (x1 / 1000) - rect->x; 
+		    }
+		  else
+		    {
+		      rect->x = x1 / 1000;
+		      rect->width = (x0 / 1000) - rect->x; 
+		    }
+		  
+		  rect->y = height + line_height / 1000;
+		  rect->height = logical_rect.height / 1000;
+		  
 		  if (base_dir == PANGO_DIRECTION_RTL)
-		    *x += line->offset;
+		    rect->x += width - logical_rect.width / 1000;
 		  
 		  return;
 		}
 
-	      pixels += line->ascent + line->descent;
+	      line_height += logical_rect.height;
 	      line_list = line_list->next;
 	    }
 	}
       
-      pixels += cur_para->height;
+      height += cur_para->height;
       para_list = para_list->next;
     }
 }
@@ -635,8 +320,8 @@ xor_char (GtkWidget *layout, GdkRectangle *clip_rect,
 	  GList *paragraphs, Paragraph *para, int offset)
 {
   static GdkGC *gc;
-  int x, y, width, height;
-
+  PangoRectangle rect;		/* GdkRectangle in 1.2 is too limited
+				 */
   if (!gc)
     {
       GdkGCValues values;
@@ -650,14 +335,14 @@ xor_char (GtkWidget *layout, GdkRectangle *clip_rect,
 
   gdk_gc_set_clip_rectangle (gc, clip_rect);
 
-  char_bounds (paragraphs, para, offset, 
-	       &x, &y, &width, &height);
+  char_bounds (paragraphs, para, offset, layout->allocation.width,
+	       &rect);
 
-  y -= GTK_LAYOUT (layout)->yoffset;
+  rect.y -= GTK_LAYOUT (layout)->yoffset;
 
-  if ((y + height >= 0) && (y < layout->allocation.height))
+  if ((rect.y + rect.height >= 0) && (rect.y < layout->allocation.height))
     gdk_draw_rectangle (GTK_LAYOUT (layout)->bin_window, gc, TRUE,
-			x, y, width, height);
+			rect.x, rect.y, rect.width, rect.height);
 }
 
 
@@ -667,55 +352,30 @@ xor_char (GtkWidget *layout, GdkRectangle *clip_rect,
  */
 void
 expose_paragraph (Paragraph *para, GdkDrawable *drawable,
-		  GdkGC *gc, int x, int y)
+		  GdkGC *gc, int width, int x, int y)
 {
-  GList *line_list;
-  GList *run_list;
-  PangoGlyphString *buf;
+  GSList *line_list;
+  int line_height = 0;
   PangoRectangle logical_rect;
+  PangoDirection base_dir = pango_context_get_base_dir (context);
 
-  int x_off;
-
-  buf = pango_glyph_string_new();
-
-  line_list = para->lines;
+  line_list = pango_layout_get_lines (para->layout);
   while (line_list)
     {
-      Line *line = line_list->data;
-
-      x_off = line->offset;
-      run_list = line->runs;
-      while (run_list)
-	{
-	  PangoItem *item = run_list->data;
-
-	  /* Convert the item into glyphs */
-	  pango_shape (para->text + item->offset, item->length,
-		       &item->analysis,
-		       buf);
-
-	  /* Render the glyphs to the screen */
-	  pango_x_render (GDK_DISPLAY(), GDK_WINDOW_XWINDOW (drawable),
-			  GDK_GC_XGC (gc), item->analysis.font, buf, x + x_off,
-			  y + line->ascent);
-
-	  /* Advance to next x position
-	   */
-	  if (run_list->next)
-	    {
-	      pango_glyph_string_extents (buf, item->analysis.font, NULL, &logical_rect);
-
-	      x_off += logical_rect.width / 1000;
-	    }
-	  
-	  run_list = run_list = run_list->next;
-	}
-      
-      y += line->ascent + line->descent;
+      PangoLayoutLine *line = line_list->data;
       line_list = line_list->next;
-    }
 
-  pango_glyph_string_free (buf);
+      pango_layout_line_get_extents (line, NULL, &logical_rect);
+
+      if (base_dir == PANGO_DIRECTION_LTR)
+	pango_x_render_layout_line (GDK_DISPLAY(), GDK_WINDOW_XWINDOW (drawable), GDK_GC_XGC (gc),
+				    line, x, y + line_height / 1000);
+      else
+	pango_x_render_layout_line (GDK_DISPLAY(), GDK_WINDOW_XWINDOW (drawable), GDK_GC_XGC (gc),
+				    line, x + width - logical_rect.width / 1000, y + line_height / 1000);
+      
+      line_height += logical_rect.height;
+    }
 }
 
 /* Handle a size allocation by re-laying-out each paragraph to
@@ -774,6 +434,7 @@ draw (GtkWidget *layout, GdkRectangle *area, GList *paragraphs)
 	expose_paragraph (para,
 			  GTK_LAYOUT (layout)->bin_window,
 			  layout->style->text_gc[layout->state],
+			  layout->allocation.width,
 			  0, height - GTK_LAYOUT (layout)->yoffset);
       
       height += para->height;
@@ -801,7 +462,8 @@ button_press (GtkWidget *layout, GdkEventButton *event, GList *paragraphs)
   int offset;
   gchar *message;
   
-  xy_to_cp (paragraphs, event->x, event->y + GTK_LAYOUT (layout)->yoffset,
+  xy_to_cp (paragraphs, layout->allocation.width,
+	    event->x, event->y + GTK_LAYOUT (layout)->yoffset,
 	    &para, &offset);
 
   if (highlight_para)
@@ -1081,9 +743,10 @@ main (int argc, char **argv)
   if (!text)
     exit(1);
 
+  context = pango_x_get_context (GDK_DISPLAY());
+
   paragraphs = split_paragraphs (text);
 
-  context = pango_x_get_context (GDK_DISPLAY());
   pango_context_set_lang (context, "en_US");
   pango_context_set_base_dir (context, PANGO_DIRECTION_LTR);
 

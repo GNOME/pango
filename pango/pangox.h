@@ -35,35 +35,22 @@ extern "C" {
 
 /* Calls for applications
  */
-PangoContext *pango_x_get_context (Display         *display);  
-
-PangoFont *pango_x_load_font     (Display          *display,
-				  gchar            *spec);
-void       pango_x_render        (Display          *display,
-				  Drawable          d,
-				  GC                gc,
-				  PangoFont        *font,
-				  PangoGlyphString *glyphs,
-				  gint              x,
-				  gint              y);
-void       pango_x_extents       (PangoFont        *font,
-				  PangoGlyphString *glyphs,
-				  gint             *lbearing,
-				  gint             *rbearing,
-				  gint             *width,
-				  gint             *ascent,
-				  gint             *descent,
-				  gint             *logical_ascent,
-				  gint             *logical_descent);
-void       pango_x_glyph_extents (PangoFont        *font,
-				  PangoGlyph        glyph,
-				  gint             *lbearing,
-				  gint             *rbearing,
-				  gint             *width,
-				  gint             *ascent,
-				  gint             *descent,
-				  gint             *logical_ascent,
-				  gint             *logical_descent);
+PangoContext * pango_x_get_context        (Display          *display);
+PangoFont *    pango_x_load_font          (Display          *display,
+					   gchar            *spec);
+void           pango_x_render             (Display          *display,
+					   Drawable          d,
+					   GC                gc,
+					   PangoFont        *font,
+					   PangoGlyphString *glyphs,
+					   gint              x,
+					   gint              y);
+void           pango_x_render_layout_line (Display          *display,
+					   Drawable          d,
+					   GC                gc,
+					   PangoLayoutLine  *line,
+					   int               x,
+					   int               y);
 
 /* API for rendering modules
  */

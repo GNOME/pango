@@ -468,8 +468,8 @@ pango_context_get_base_dir (PangoContext *context)
  */
 GList *
 pango_itemize (PangoContext   *context, 
-	       gchar          *text, 
-	       gint            length,
+	       char           *text, 
+	       int             length,
 	       PangoAttrList  *attrs)
 {
   guint16 *text_ucs2;
@@ -486,9 +486,11 @@ pango_itemize (PangoContext   *context,
   PangoFont        **fonts;
 
   g_return_val_if_fail (context != NULL, NULL);
-  g_return_val_if_fail (text != NULL, NULL);
   g_return_val_if_fail (length >= 0, NULL);
+  g_return_val_if_fail (length == 0 || text != NULL, NULL);
 
+  if (length == 0)
+    return NULL;
 
   if (context->base_dir == PANGO_DIRECTION_RTL)
     base_dir = FRIBIDI_TYPE_RTL;

@@ -15,6 +15,7 @@ libpango_la_SOURCES = 	   \
 	pango-attributes.c \
 	pango-context.c    \
 	pango-coverage.c   \
+	pango-layout.c	   \
 	reorder-items.c    \
 	shape.c 	   \
 	utils.c  	   \
