@@ -1,3 +1,18 @@
+Tue Jul 29 09:58:13 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/opentype/ftxgdef.c (Check_Property): Rewrite
+	handling of IGNORE_SPECIAL_MARKS to be properly
+	"ignore marks of attachment type different than
+	specified. (#118456, Kailash C. Chowksey)
+
+Sat Jul 26 09:41:22 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/opentype/ftxgsub.c (Lookup_LigatureSubst):
+	Revert back out the FreeType patch preventing
+	ligatures of not-originally adjacent glyphs;
+	it doesn't work for all scripts. (#118472,
+	Kailash C. Chowksey)
+
 2003-07-28  Tor Lillqvist  <tml@iki.fi>
 
 	* pango/pangowin32-private.h
@@ -8,7 +23,7 @@ Sat Jul 26 22:30:59 2003  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/opentype/ftxgsub.c (Lookup_ChainContextSubst{1,2,3}):
 	Check for lookahead glyphs in the right place. (Patch
-	from #116860)
+	from Kailash C. Chowksey, #116860)
 
 	* pango/opentype/ftxgpos.c (Lookup_ChainContextPos{1,2,3}):
 	Same fix here.
