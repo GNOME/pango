@@ -332,7 +332,7 @@ AC_ARG_WITH(included_modules, [  --with-included-modules=MODULE1,MODULE2,...   b
 
 arabic_modules="arabic-ft2,arabic-x,arabic-xft"
 basic_modules="basic-ft2,basic-win32,basic-x,basic-xft"
-hangul_modules="hangul-x"
+hangul_modules="hangul-x,hangul-xft"
 hebrew_modules="hebrew-ft2,hebrew-x,hebrew-xft"
 indic_modules="bengali-x,devanagari-x,gurmukhi-x,gujarati-x,myanmar-x,indic-xft"
 tamil_modules="tamil-x"
@@ -395,6 +395,7 @@ AM_CONDITIONAL(INCLUDE_BASIC_XFT,echo $included_modules | egrep '(^|,)basic-xft(
 AM_CONDITIONAL(INCLUDE_BASIC_X,echo $included_modules | egrep '(^|,)basic-x($|,)' > /dev/null)
 
 AM_CONDITIONAL(INCLUDE_HANGUL_X,echo $included_modules | egrep '(^|,)hangul-x($|,)' > /dev/null)
+AM_CONDITIONAL(INCLUDE_HANGUL_XFT,echo $included_modules | egrep '(^|,)hangul-xft($|,)' > /dev/null)
 
 AM_CONDITIONAL(INCLUDE_HEBREW_FT2,echo $included_modules | egrep '(^|,)hebrew-ft2($|,)' > /dev/null)
 AM_CONDITIONAL(INCLUDE_HEBREW_X,echo $included_modules | egrep '(^|,)hebrew-x($|,)' > /dev/null)

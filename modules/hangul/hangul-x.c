@@ -1,7 +1,7 @@
 /* Pango
  * hangul.c:
  *
- * Copyright (C) 1999 Changwoo Ryu
+ * Copyright (C) 1999, 2002 Changwoo Ryu
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -96,33 +96,8 @@ set_unknown_glyph (PangoGlyphString *glyphs,
   glyphs->log_clusters[i] = cluster_offset;
 }
 
-/*
- * From 3.10 of the Unicode 2.0 Book; used for combining Jamos.
- */
 
-#define SBASE 0xAC00
-#define LBASE 0x1100
-#define VBASE 0x1161
-#define TBASE 0x11A7
-#define SCOUNT 11172
-#define LCOUNT 19
-#define VCOUNT 21
-#define TCOUNT 28
-#define NCOUNT (VCOUNT * TCOUNT)
-
-/*
- * Unicode 2.0 doesn't define the fill for trailing consonants, but
- * I'll use 0x11A7 as that purpose internally.
- */
-
-#define LFILL 0x115F
-#define VFILL 0x1160
-#define TFILL 0x11A7
-
-#define IS_L(wc) (wc >= 0x1100 && wc < 0x115F)
-#define IS_V(wc) (wc >= 0x1160 && wc < 0x11A2)
-#define IS_T(wc) (wc >= 0x11A7 && wc < 0x11F9)
-
+#include "hangul-defs.h"
 
 typedef void (* RenderSyllableFunc) (PangoFont *font, PangoXSubfont subfont,
 				     gunichar2 *text, int length,
@@ -133,6 +108,7 @@ typedef void (* RenderSyllableFunc) (PangoFont *font, PangoXSubfont subfont,
 
 #include "tables-johabfont.i"
 #include "tables-ksc5601.i"
+#include "tables-jamos.i"
 
 #define JOHAB_COMMON							      \
   int i;								      \
@@ -160,8 +136,9 @@ typedef void (* RenderSyllableFunc) (PangoFont *font, PangoXSubfont subfont,
       i++;								      \
     }									      \
 									      \
-  if (n_cho <= 1 && n_jung <= 1 && n_jong <= 1)				      \
+  if (n_cho <= 1 && n_jung <= 1)					      \
     {									      \
+      int composed = 0;							      \
       gunichar2 l, v, t;						      \
 									      \
       if (n_cho > 0)							      \
@@ -179,10 +156,19 @@ typedef void (* RenderSyllableFunc) (PangoFont *font, PangoXSubfont subfont,
       else								      \
 	t = TFILL;							      \
 									      \
-      /* COMPOSABLE */							      \
       if ((__choseong_johabfont_base[l - LBASE] != 0 || l == LFILL) &&	      \
 	  (__jungseong_johabfont_base[v - VBASE] != 0 || v == VFILL) &&	      \
 	  (__jongseong_johabfont_base[t - TBASE] != 0 || t == TFILL))	      \
+	composed = n_cho + n_jung + ((n_jong > 0) ? 1 : 0);		      \
+      else if ((__choseong_johabfont_base[l - LBASE] != 0 || l == LFILL) &&   \
+	       (__jungseong_johabfont_base[v - VBASE] != 0 || v == VFILL))    \
+	{								      \
+	  composed = n_cho + n_jung;					      \
+	  t = TFILL;							      \
+	}								      \
+									      \
+      /* COMPOSABLE */							      \
+      if (composed)							      \
 	{								      \
 	  if (l != LFILL)						      \
 	    {								      \
@@ -245,7 +231,8 @@ typedef void (* RenderSyllableFunc) (PangoFont *font, PangoXSubfont subfont,
 	      (*n_glyphs)++;						      \
 	    }								      \
 									      \
-	  return;							      \
+	  text += composed;						      \
+	  length -= composed;						      \
 	}								      \
     }
 
@@ -255,42 +242,40 @@ render_syllable_with_johabs (PangoFont *font, PangoXSubfont subfont,
 			     PangoGlyphString *glyphs,
 			     int *n_glyphs, int cluster_offset)
 {
-JOHAB_COMMON
+  JOHAB_COMMON
 
   /* Render as uncomposed forms as a fallback.  */
   for (i = 0; i < length; i++)
     {
       int j;
 
+      if (text[i] == LFILL || text[i] == VFILL || text[i] == TFILL)
+	continue;
       /*
        * Uses KSC5601 symbol glyphs which johabS-1 has; they're
        * not in the normal johab-1.  The glyphs are better than composable
        * components. 
        */
-      for (j = 0; j < 3; j++)
+      for (j = 0; j < 3 && (__jamo_to_ksc5601[text[i] - LBASE][j] != 0); j++)
 	{
 	  gindex = __jamo_to_ksc5601[text[i] - LBASE][j];
-	  
-	  if (gindex != 0)
-	    {
-	      if ((gindex >= 0x2421) && (gindex <= 0x247f))
-		gindex += (0x032b - 0x2420);
-	      else if ((gindex >= 0x2421) && (gindex <= 0x247f))
-		gindex += (0x02cd - 0x2321);
-	      else
-		break;
-	      
-	      pango_glyph_string_set_size (glyphs, *n_glyphs + 1);
-	      set_glyph (glyphs, *n_glyphs, font, subfont, gindex);
-	      glyphs->log_clusters[*n_glyphs] = cluster_offset;
-	      (*n_glyphs)++;
-	    }
+
+	  if ((gindex >= 0x2421) && (gindex <= 0x247f))
+	    gindex += (0x032b - 0x2421);
+	  else if ((gindex >= 0x2321) && (gindex <= 0x2420))
+	    gindex += (0x02cd - 0x2321);
 	  else
 	    break;
+	      
+	  pango_glyph_string_set_size (glyphs, *n_glyphs + 1);
+	  set_glyph (glyphs, *n_glyphs, font, subfont, gindex);
+	  glyphs->log_clusters[*n_glyphs] = cluster_offset;
+	  (*n_glyphs)++;
 	}
       if (j == 0)
 	set_unknown_glyph (glyphs, n_glyphs, font, text[i], cluster_offset);
     }
+
 }
 
 static void
@@ -299,23 +284,23 @@ render_syllable_with_johab (PangoFont *font, PangoXSubfont subfont,
 			    PangoGlyphString *glyphs,
 			    int *n_glyphs, int cluster_offset)
 {
-JOHAB_COMMON
+  JOHAB_COMMON
 
   /* Render as uncomposed forms as a fallback.  */
   for (i = 0; i < length; i++)
     {
       int j;
-      gunichar2 wc;
 
-      wc = text[i];
-      for (j = 0; (j < 3) && (__jamo_to_johabfont[wc-LBASE][j] != 0); j++)
+      if (text[i] == LFILL || text[i] == VFILL || text[i] == TFILL)
+	continue;
+      for (j = 0; (j < 3) && (__jamo_to_johabfont[text[i]-LBASE][j] != 0); j++)
 	{
 	  pango_glyph_string_set_size (glyphs, *n_glyphs + 1);
 	  set_glyph (glyphs, *n_glyphs, font, subfont,
-		     __jamo_to_johabfont[wc - LBASE][j]);
+		     __jamo_to_johabfont[text[i] - LBASE][j]);
 	  glyphs->log_clusters[*n_glyphs] = cluster_offset;
 	  (*n_glyphs)++;
-	  if (IS_L (wc))
+	  if (IS_L (text[i]) || IS_T (text[i]))
 	    {
 	      pango_glyph_string_set_size (glyphs, *n_glyphs + 1);
 	      set_glyph (glyphs, *n_glyphs, font, subfont, JOHAB_FILLER);
@@ -324,8 +309,10 @@ JOHAB_COMMON
 	    }
 	}
       if (j == 0)
-	set_unknown_glyph (glyphs, n_glyphs, font, wc, cluster_offset);
+	set_unknown_glyph (glyphs, n_glyphs, font, text[i], cluster_offset);
     }
+  if (*n_glyphs == 0)
+    set_unknown_glyph (glyphs, n_glyphs, font, 0, cluster_offset);
 }
 
 static void
@@ -411,56 +398,29 @@ render_syllable_with_iso10646 (PangoFont *font, PangoXSubfont subfont,
 			       int *n_glyphs, int cluster_offset)
 {
   guint16 gindex;
-  int i;
-  
-  /*
-   * Check if there are one CHOSEONG, one JUNGSEONG, and no more
-   * than one JONGSEONG.
-   */
-  int n_cho = 0, n_jung = 0, n_jong = 0;
-  i = 0;
-  while (i < length && IS_L (text[i]))
-    {
-      n_cho++;
-      i++;
-    }
-  while (i < length && IS_V (text[i]))
-    {
-      n_jung++;
-      i++;
-    }
-  while (i < length && IS_T (text[i]))
-    {
-      n_jong++;
-      i++;
-    }
-  
-  if (n_cho == 1 && n_jung == 1 && n_jong <= 1)
-    {
-      int lindex, vindex, tindex;
+  int i, composed;
 
-      lindex = text[0] - LBASE;
-      vindex = text[1] - VBASE;
-      if (n_jong > 0)
-	tindex = text[2] - TBASE;
+  if (length >= 3 && IS_L_S(text[0]) && IS_V_S(text[1]) && IS_T_S(text[2]))
+    composed = 3;
+  else if (length >= 2 && IS_L_S(text[0]) && IS_V_S(text[1]))
+    composed = 2;
+  else
+    composed = 0;
+
+  if (composed)
+    {
+      if (composed == 3)
+	gindex = S_FROM_LVT(text[0], text[1], text[2]);
       else
-	tindex = 0;
-
-      /* COMPOSABLE */
-      if (lindex >= 0 && lindex < LCOUNT &&
-	  vindex >= 0 && vindex < VCOUNT &&
-	  tindex >= 0 && tindex < TCOUNT)
-	{
-	  gindex = (lindex * VCOUNT + vindex) * TCOUNT + tindex + SBASE;
-	  /* easy for composed syllables. */
-	  pango_glyph_string_set_size (glyphs, *n_glyphs + 1);
-	  set_glyph (glyphs, *n_glyphs, font, subfont, gindex);
-	  glyphs->log_clusters[*n_glyphs] = cluster_offset;
-	  (*n_glyphs)++;
-	  return;
-	}
+	gindex = S_FROM_LV(text[0], text[1]);
+      pango_glyph_string_set_size (glyphs, *n_glyphs + 1);
+      set_glyph (glyphs, *n_glyphs, font, subfont, gindex);
+      glyphs->log_clusters[*n_glyphs] = cluster_offset;
+      (*n_glyphs)++;
+      text += composed;
+      length -= composed;
     }
-
+  
   /* Render as uncomposed forms as a fallback.  */
   for (i = 0; i < length; i++)
     {
@@ -472,81 +432,134 @@ render_syllable_with_iso10646 (PangoFont *font, PangoXSubfont subfont,
     }
 }
 
+static int
+find_ksc5601 (gunichar2 ucs)
+{
+  int l = 0;
+  int u = KSC5601_HANGUL - 1;
+  int index;
+
+  guint16 try;
+
+  /* Do binary search. */
+  while (l <= u)
+    {
+      int m = (l + u) / 2;
+      try = __ksc5601_hangul_to_ucs[m];
+      if (try > ucs)
+	u = m - 1;
+      else if (try < ucs)
+	l = m + 1;
+      else
+	{
+	  /* equation to find the index in ksc5601 font. */
+	  index = (((m / 94) + 0x30) << 8) | ((m % 94) + 0x21);
+	  return index;
+	}
+    }
+  return 0;
+}
+
+static gboolean
+try_decompose_jongseong(gunichar2 jong, gunichar2 *jong1, gunichar2 *jong2)
+{
+  static gunichar2 table[][2] = {
+    {0, 0},
+    /* U+11A8- */
+    {0, 0}, {0, 0}, {0x11A8, 0x11BA}, {0, 0},
+    {0x11AB, 0x11BD}, {0x11AB, 0x11C2}, {0, 0}, {0, 0},
+    /* U+11B0- */
+    {0x11AF, 0x11A8}, {0x11AF, 0x11B7}, {0x11AF, 0x11B8}, {0x11AF, 0x11BA},
+    {0x11AF, 0x11C0}, {0x11AF, 0x11C1}, {0x11AF, 0x11C2}, {0, 0},
+    {0, 0}, {0x11B8, 0x11BA}, {0, 0}, {0, 0},
+    {0, 0}, {0, 0}, {0, 0}, {0, 0},
+    /* U+11C0- */
+    {0, 0}, {0, 0}, {0, 0}, {0, 0},
+    {0, 0}, {0, 0}, {0, 0}, {0, 0},
+    {0, 0}, {0, 0}, {0, 0}, {0, 0},
+    {0, 0}, {0, 0}, {0, 0}, {0, 0},
+    /* U+11D0- */
+    {0, 0}, {0, 0}, {0, 0}, {0, 0},
+    {0, 0}, {0, 0}, {0, 0}, {0, 0},
+    {0, 0}, {0, 0}, {0, 0}, {0, 0},
+    {0, 0}, {0, 0}, {0, 0}, {0, 0},
+    /* U+11E0- */
+    {0, 0}, {0, 0}, {0, 0}, {0, 0},
+    {0, 0}, {0, 0}, {0, 0}, {0, 0},
+    {0, 0}, {0, 0}, {0, 0}, {0, 0},
+    {0, 0}, {0, 0}, {0, 0}, {0, 0},
+    /* U+11F0- */
+    {0, 0}, {0, 0}, {0, 0}, {0, 0},
+    {0, 0}, {0, 0}, {0, 0}, {0, 0},
+    {0, 0}, {0, 0}, {0, 0}, {0, 0},
+    {0, 0}, {0, 0}, {0, 0}, {0, 0}
+  };
+
+  if (IS_T(jong) && table[jong - TBASE][0])
+    {
+      *jong1 = table[jong - TBASE][0];
+      *jong2 = table[jong - TBASE][1];
+      return TRUE;
+    }
+  else
+    return FALSE;
+}
+
 static void
 render_syllable_with_ksc5601 (PangoFont *font, PangoXSubfont subfont,
 			      gunichar2 *text, int length,
 			      PangoGlyphString *glyphs,
 			      int *n_glyphs, int cluster_offset)
 {
-  guint16 sindex;
-  guint16 gindex;
+  int gindex = 0, composed = 0;
+  gunichar2 jong1, jong2 = 0;
   int i;
 
-  /*
-   * Check if there are one CHOSEONG, one JUNGSEONG, and no more
-   * than one JONGSEONG.
-   */
-  int n_cho = 0, n_jung = 0, n_jong = 0;
-  i = 0;
-  while (i < length && IS_L (text[i]))
+  if (length >= 3 && IS_L_S(text[0]) && IS_V_S(text[1]) && IS_T_S(text[2]))
     {
-      n_cho++;
-      i++;
-    }
-  while (i < length && IS_V (text[i]))
-    {
-      n_jung++;
-      i++;
-    }
-  while (i < length && IS_T (text[i]))
-    {
-      n_jong++;
-      i++;
-    }
-  
-  if (n_cho == 1 && n_jung == 1 && n_jong <= 1)
-    {
-      int lindex, vindex, tindex;
-
-      lindex = text[0] - LBASE;
-      vindex = text[1] - VBASE;
-      if (n_jong > 0)
-	tindex = text[2] - TBASE;
+      gindex = find_ksc5601(S_FROM_LVT(text[0], text[1], text[2]));
+      if (gindex)
+	composed = 3;
       else
-	tindex = 0;
-
-      /* COMPOSABLE */
-      if (lindex >= 0 && lindex < LCOUNT &&
-	  vindex >= 0 && vindex < VCOUNT &&
-	  tindex >= 0 && tindex < TCOUNT)
 	{
-	  int l = 0;
-	  int u = KSC5601_HANGUL - 1;
-	  guint16 try;
-
-	  sindex = (lindex * VCOUNT + vindex) * TCOUNT + tindex + SBASE;
-
-	  /* Do binary search. */
-	  while (l <= u)
+	  if (try_decompose_jongseong(text[2], &jong1, &jong2))
 	    {
-	      int m = (l + u) / 2;
-	      try = __ksc5601_hangul_to_ucs[m];
-	      if (try > sindex)
-		u = m - 1;
-	      else if (try < sindex)
-		l = m + 1;
-	      else
-		{
-		  gindex = (((m / 94) + 0x30) << 8) | ((m % 94) + 0x21);
-
-		  pango_glyph_string_set_size (glyphs, *n_glyphs + 1);
-		  set_glyph (glyphs, *n_glyphs, font, subfont, gindex);
-		  glyphs->log_clusters[*n_glyphs] = cluster_offset;
-		  (*n_glyphs)++;
-		  return;
-		}
+	      gindex = find_ksc5601(S_FROM_LVT(text[0], text[1], jong1));
+	      composed = 3;
 	    }
 	}
+    }
+  if (!composed && length >= 2 && IS_L_S(text[0]) && IS_V_S(text[1]))
+    {
+      gindex = find_ksc5601(S_FROM_LV(text[0], text[1]));
+      if (gindex)
+	composed = 2;
+    }
+
+  if (composed)
+    {
+      pango_glyph_string_set_size (glyphs, *n_glyphs + 1);
+      set_glyph (glyphs, *n_glyphs, font, subfont, gindex);
+      glyphs->log_clusters[*n_glyphs] = cluster_offset;
+      (*n_glyphs)++;
+      text += composed;
+      length -= composed;
+    }
+
+  if (jong2)
+    {
+      int i;
+      
+      for (i = 0; (i < 3) && (__jamo_to_ksc5601[jong2 - LBASE][i] != 0); i++)
+	{
+	  pango_glyph_string_set_size (glyphs, *n_glyphs + 1);
+	  set_glyph (glyphs, *n_glyphs, font, subfont,
+		     __jamo_to_ksc5601[jong2 - LBASE][i]);
+	  glyphs->log_clusters[*n_glyphs] = cluster_offset;
+	  (*n_glyphs)++;
+	}
+      if (i == 0)
+	set_unknown_glyph (glyphs, n_glyphs, font, gindex, cluster_offset);
     }
 
   for (i = 0; i < length; i++)
@@ -600,7 +613,8 @@ find_subfont (PangoFont *font, char **charsets, int n_charsets,
 
   for (i=0; i<n_subfonts; i++)
     {
-      if (strcmp (charsets[subfont_charsets[i]], "johabs-1") == 0)
+      if (strcmp (charsets[subfont_charsets[i]], "johabs-1") == 0 ||
+	  strcmp (charsets[subfont_charsets[i]], "johabsh-1") == 0)
 	{
 	  *subfont = subfonts[i];
 	  *render_func = render_syllable_with_johabs;
@@ -669,7 +683,7 @@ hangul_engine_shape (PangoFont        *font,
   const char *next;
   int i, n_chars;
   gunichar2 jamos_static[4];
-  guint jamos_max = G_N_ELEMENTS (jamos_static);
+  guint max_jamos = G_N_ELEMENTS (jamos_static);
   gunichar2 *jamos = jamos_static;
   int n_jamos = 0;
 
@@ -752,15 +766,13 @@ hangul_engine_shape (PangoFont        *font,
 		  /* Clear.  */
 		  n_jamos = 0;
 		}
-	      if (n_jamos == jamos_max)
+	      if (n_jamos == max_jamos)
 		{
-		  gunichar2 *new_jamos;
-		    
-		  jamos_max++;
-		  new_jamos = g_new (gunichar2, jamos_max);
-		  memcpy (new_jamos, jamos, n_jamos * sizeof (gunichar2));
-
-		  jamos = new_jamos;
+		  max_jamos++;
+		  if (jamos == jamos_static)
+		    jamos = g_new (gunichar2, max_jamos);
+		  else
+		    jamos = g_renew (gunichar2, jamos, max_jamos);
 		}
 	      jamos[n_jamos++] = wc;
 	    }

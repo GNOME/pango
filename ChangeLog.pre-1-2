@@ -1,3 +1,34 @@
+Sat Jul 27 18:18:20 2002  Owen Taylor  <otaylor@redhat.com>
+
+	Patch from Changwoo Ryu  <cwryu@debian.org> (#86591)
+
+	* configure.in, modules/hangul/Makefile.am: : Added hangul-xft
+	module.
+
+	* modules/hangul/hangul-xft.c: New file, shaping Hangul Jamos
+	(U+1100-U+11FF) with Xft.
+
+	* modules/hangul/hangul-x.c (JOHAB_COMMON): Render any prefix of
+	uncommposable Hangul syllable as a syllable, and render remains as
+	uncomposed form.  This looks better than completely uncomposed
+	jamo glyphs.
+	(render_syllable_with_iso10646): Likewise.
+	(render_syllable_with_ksc5601): Likewise.
+	(hangul_engine_shape): Fixed memory leak on shaping a syllable
+	with >= 6 jamos.
+
+	* modules/hangul/tables-jamos.i, modules/hangul/tables-ksc5601.i:
+	Separated Hangul Jamo mapping table from ksx1001 <=> unicode
+	table.
+
+	* modules/hangul/hangul-defs.h: New file with some common defines
+	and macros.
+
+	* modules/hangul/hangul-x.c (render_syllable_with_johabs): Fixed
+	wrong font index around fallback display with johabs.
+	(find_subfont): Uses "johabsh-1" (johabs-1 font with Hanja) in the
+	same way with "johabs-1".
+
 Wed Jul 31 14:41:07 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pangox.c (pango_x_list_subfonts): Make charset
