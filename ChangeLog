@@ -1,3 +1,10 @@
+Tue Aug 10 11:51:10 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* modules/arabic/arabic-fc.c (arabic_engine_shape): Fix 
+	bug where cluster was getting set to 0 for non-spacing
+	marks rather than to the cluster of the base character.
+	(#149126, Behdad Esfahbod)
+
 2004-08-06  Hans Breuer  <hans@breuer.org>
 
 	* pango/pango.def pango/pangoft2.def pango/pangowin32.def
