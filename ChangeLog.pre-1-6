@@ -1,3 +1,8 @@
+Wed Aug  7 11:07:10 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* modules/hangul/hangul-xft.c (hangul_engine_shape): Get
+	rid of direct access to FT_Face.
+
 Wed Aug  7 10:57:49 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* modules/hangul/Makefile.am modules/thai/Makefile.am:

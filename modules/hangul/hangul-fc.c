@@ -59,19 +59,10 @@ set_glyph (PangoFont *font, PangoGlyphString *glyphs, int i, int offset, PangoGl
   glyphs->glyphs[i].geometry.width = logical_rect.width;
 }
 
-static guint
-find_char (FT_Face face, PangoFont *font, gunichar wc)
-{
-  int index = FT_Get_Char_Index (face, wc);
-
-  if (index && index <= face->num_glyphs)
-    return index;
-  else
-    return 0;
-}
+#define find_char pango_xft_font_get_glyph
 
 static void
-render_syllable (FT_Face face, PangoFont *font, gunichar *text, int length,
+render_syllable (PangoFont *font, gunichar *text, int length,
 		 PangoGlyphString *glyphs, int *n_glyphs, int cluster_offset)
 {
   int index;
@@ -91,7 +82,7 @@ render_syllable (FT_Face face, PangoFont *font, gunichar *text, int length,
 	wc = S_FROM_LVT(text[0], text[1], text[2]);
       else
 	wc = S_FROM_LV(text[0], text[1]);
-      index = find_char (face, font, wc);
+      index = find_char (font, wc);
       pango_glyph_string_set_size (glyphs, *n_glyphs + 1);
       if (!index)
 	set_glyph (font, glyphs, *n_glyphs, cluster_offset,
@@ -108,7 +99,7 @@ render_syllable (FT_Face face, PangoFont *font, gunichar *text, int length,
     {
       int jindex;
 
-      index = find_char (face, font, text[i]);
+      index = find_char (font, text[i]);
       if (index)
 	{
 	  pango_glyph_string_set_size (glyphs, *n_glyphs + 1);
@@ -123,7 +114,7 @@ render_syllable (FT_Face face, PangoFont *font, gunichar *text, int length,
       for (j = 0; j < 3 && (__jamo_to_ksc5601[jindex][j] != 0); j++)
 	{
 	  wc = __jamo_to_ksc5601[jindex][j] - KSC_JAMOBASE + UNI_JAMOBASE;
-	  index = (wc >= 0x3131) ? find_char (face, font, wc) : 0;
+	  index = (wc >= 0x3131) ? find_char (font, wc) : 0;
 	  pango_glyph_string_set_size (glyphs, *n_glyphs + 1);
 	  if (!index)
 	    set_glyph (font, glyphs, *n_glyphs, cluster_offset,
@@ -145,15 +136,11 @@ hangul_engine_shape (PangoFont        *font,
   int n_chars, n_glyphs;
   int i;
   const char *p, *start;
-  FT_Face face;
 
   gunichar jamos_static[3];
   guint max_jamos = G_N_ELEMENTS (jamos_static);
   gunichar *jamos = jamos_static;
   int n_jamos;
-
-  face = pango_xft_font_get_face (font);
-  g_assert (face);
 
   n_chars = g_utf8_strlen (text, length);
   n_glyphs = 0;
@@ -173,7 +160,7 @@ hangul_engine_shape (PangoFont        *font,
 	   (IS_T (jamos[n_jamos - 1]) && IS_V (wc))))
 	{
 	  /* Draw a syllable. */
-	  render_syllable (face, font, jamos, n_jamos, glyphs,
+	  render_syllable (font, jamos, n_jamos, glyphs,
 			   &n_glyphs, start - text);
 	  n_jamos = 0;
 	  start = p;
@@ -193,7 +180,7 @@ hangul_engine_shape (PangoFont        *font,
     }
 
   if (n_jamos != 0)
-    render_syllable (face, font, jamos, n_jamos, glyphs, &n_glyphs,
+    render_syllable (font, jamos, n_jamos, glyphs, &n_glyphs,
 		     start - text);
 
   if (jamos != jamos_static)
