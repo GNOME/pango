@@ -37,8 +37,6 @@ pango_glyph_string_new (void)
   string->num_glyphs = 0;
   string->space = 0;
   string->glyphs = NULL;
-  string->geometry = NULL;
-  string->attrs = NULL;
   string->log_clusters = NULL;
 
   return string;
@@ -67,9 +65,7 @@ pango_glyph_string_set_size (PangoGlyphString *string, gint new_len)
 	string->space = G_MAXINT;
     }
   
-  string->glyphs = g_realloc (string->glyphs, string->space * sizeof (PangoGlyph));
-  string->geometry = g_realloc (string->geometry, string->space * sizeof (PangoGlyphGeometry));
-  string->attrs = g_realloc (string->attrs, string->space * sizeof (PangoGlyphVisAttr));
+  string->glyphs = g_realloc (string->glyphs, string->space * sizeof (PangoGlyphInfo));
   string->log_clusters = g_realloc (string->log_clusters, string->space * sizeof (gint));
   string->num_glyphs = new_len;
 }
@@ -84,8 +80,6 @@ void
 pango_glyph_string_free (PangoGlyphString *string)
 {
   g_free (string->glyphs);
-  g_free (string->geometry);
-  g_free (string->attrs);
   g_free (string->log_clusters);
   g_free (string);
 }

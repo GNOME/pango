@@ -164,11 +164,11 @@ pango_x_render  (Display           *display,
 	    }
 	  
 	  XDrawString16 (display, d, gc,
-			 x + glyphs->geometry[i].x_offset / 72,
-			 y + glyphs->geometry[i].y_offset / 72,
+			 x + glyphs->glyphs[i].geometry.x_offset / 72,
+			 y + glyphs->glyphs[i].geometry.y_offset / 72,
 			 &c, 1);
 
-	  x += glyphs->geometry[i].width / 72;
+	  x += glyphs->glyphs[i].geometry.width / 72;
 	}
     }
 }
@@ -190,7 +190,7 @@ pango_x_render  (Display           *display,
  */
 void 
 pango_x_glyph_extents (PangoFont       *font,
-		       PangoGlyphIndex  glyph,
+		       PangoGlyph  glyph,
 		       gint            *lbearing, 
 		       gint            *rbearing,
 		       gint            *width, 
@@ -301,7 +301,7 @@ pango_x_extents (PangoFont        *font,
       guint16 index = PANGO_X_GLYPH_INDEX (glyphs->glyphs[i].glyph);
       guint16 charset = PANGO_X_GLYPH_CHARSET (glyphs->glyphs[i].glyph);
       
-      PangoGlyphGeometry *geometry = &glyphs->geometry[i];
+      PangoGlyphGeometry *geometry = &glyphs->glyphs[i].geometry;
       PangoXCFont *cfont = pango_x_find_cfont (xfont, charset, index, &cs);
 
       if (cfont)
@@ -499,7 +499,7 @@ pango_x_find_charset (PangoFont *font,
 
 gboolean
 pango_x_has_glyph (PangoFont       *font,
-		   PangoGlyphIndex  glyph)
+		   PangoGlyph  glyph)
 {
   PangoXFont *xfont = (PangoXFont *)font;
   

@@ -96,7 +96,7 @@ tamil_engine_lang_new ()
  * But we can live with this for time being 
  */
 static void
-set_glyph (PangoGlyphString *glyphs, gint i, PangoCFont *cfont, PangoGlyphIndex glyph)
+set_glyph (PangoGlyphString *glyphs, gint i, PangoCFont *cfont, PangoGlyph glyph)
 {
   gint width;
 
@@ -170,7 +170,7 @@ tamil_engine_shape (PangoFont     *font,
         }
       for (i = 0; i < ntsc; i++)
         {
-          set_glyph (glyphs, n_glyph, tscii_font, (PangoGlyphIndex) tsc_str[i]);
+          set_glyph (glyphs, n_glyph, tscii_font, (PangoGlyph) tsc_str[i]);
           n_glyph++;
         }
       j = j + nuni;

@@ -47,9 +47,9 @@ typedef struct _PangoLogAttr PangoLogAttr;
 typedef struct _PangoFont PangoFont;
 typedef struct _PangoFontClass PangoFontClass;
 
-typedef struct _PangoGlyph PangoGlyph;
 typedef struct _PangoGlyphGeometry PangoGlyphGeometry;
 typedef struct _PangoGlyphVisAttr PangoGlyphVisAttr;
+typedef struct _PangoGlyphInfo PangoGlyphInfo;
 typedef struct _PangoGlyphString PangoGlyphString;
 
 typedef struct _PangoEngineInfo PangoEngineInfo;
@@ -161,16 +161,9 @@ void     pango_font_set_data (PangoFont      *font,
  * GLYPH STORAGE
  */
 
-/* A index of a glyph into a PangoCFont. Rendering system dependent
+/* A index of a glyph into a font. Rendering system dependent
  */
-typedef guint32 PangoGlyphIndex;
-
-/* A single glyph 
- */
-struct _PangoGlyph
-{
-  PangoGlyphIndex  glyph;
-};
+typedef guint32 PangoGlyph;
 
 /* Positioning information about a glyph
  */
@@ -188,14 +181,22 @@ struct _PangoGlyphVisAttr
   guint is_cluster_start : 1;
 };
 
+/* A single glyph 
+ */
+struct _PangoGlyphInfo
+{
+  PangoGlyph    glyph;
+  PangoGlyphGeometry geometry;
+  PangoGlyphVisAttr  attr;
+};
+
 /* A string of glyphs with positional information and visual attributes -
  * ready for drawing
  */
 struct _PangoGlyphString {
   gint num_glyphs;
-  PangoGlyph *glyphs;
-  PangoGlyphGeometry *geometry;
-  PangoGlyphVisAttr *attrs;
+
+  PangoGlyphInfo *glyphs;
 
   /* This is a memory inefficient way of representing the
    * information here - each value gives the character index

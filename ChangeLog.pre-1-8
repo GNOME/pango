@@ -1,3 +1,12 @@
+Sat Jan 15 03:17:35 2000  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/glyphstring.c pango/mapping.c pango/pangox.c
+	  modules/basic.c examples/viewer.c:
+
+	  Switch GlyphStrings to have a single array of
+	  PangoGlyphInfo instead of multiple arrays. Rename
+	  PangoGlyphIndex to PangoGlyph.
+
 Sat Jan 15 01:06:45 2000  Owen Taylor  <otaylor@redhat.com>
 
 	* libpango/pangox.c libpango/pangox.h libpango/fonts.c

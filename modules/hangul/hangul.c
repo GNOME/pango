@@ -90,7 +90,7 @@ hangul_engine_lang_new ()
 
 static void
 set_glyph (PangoGlyphString *glyphs, gint i, PangoCFont *cfont,
-	   PangoGlyphIndex glyph)
+	   PangoGlyph glyph)
 {
   gint width;
 
@@ -146,7 +146,7 @@ typedef void (* RenderSyllableFunc) (PangoCFont *cfont,
 
 #define JOHAB_COMMON							      \
   int i;								      \
-  PangoGlyphIndex gindex;							      \
+  PangoGlyph gindex;							      \
 									      \
   /*									      \
    * Check if there are one CHOSEONG, one JUNGSEONG, and no more	      \
@@ -340,7 +340,7 @@ render_syllable_with_iso10646 (PangoCFont *cfont,
 			       PangoGlyphString *glyphs,
 			       int *n_glyphs, int n_clusters)
 {
-  PangoGlyphIndex gindex;
+  PangoGlyph gindex;
   int i;
   
   /*
@@ -409,7 +409,7 @@ render_syllable_with_ksc5601 (PangoCFont *cfont,
 			      int *n_glyphs, int n_clusters)
 {
   guint16 sindex;
-  PangoGlyphIndex gindex;
+  PangoGlyph gindex;
   int i;
 
   /*
@@ -495,19 +495,6 @@ render_syllable_with_ksc5601 (PangoCFont *cfont,
     }
 }
 
-/* Compare the tail of a to b */
-static gboolean
-match_end (char *a, char *b)
-{
-  size_t len_a = strlen (a);
-  size_t len_b = strlen (b);
-
-  if (len_b > len_a)
-    return FALSE;
-  else
-    return (strcmp (a + len_a - len_b, b) == 0);
-}
-
 static gboolean
 ranges_include_korean (int *ranges,
 		       int  n_ranges)
@@ -530,8 +517,8 @@ ranges_include_korean (int *ranges,
 }
 
 static gboolean
-find_cfont (PangoFont *font, gchar **charsets, gint n_charsets,
-	    PangoCFont **cfont, RenderSyllableFunc *render_func)
+find_charset (PangoFont *font, gchar **charsets, gint n_charsets,
+	      PangoXCharset *charset, RenderSyllableFunc *render_func)
 {
   int i;
   char **xlfds;
@@ -587,13 +574,13 @@ find_cfont (PangoFont *font, gchar **charsets, gint n_charsets,
 }
 
 static void 
-hangul_engine_shape (PangoFont     *font,
-		     gchar           *text,
-		     gint             length,
-		     PangoAnalysis *analysis,
-		     PangoGlyphString    *glyphs)
+hangul_engine_shape (PangoFont        *font,
+		     gchar            *text,
+		     gint              length,
+		     PangoAnalysis    *analysis,
+		     PangoGlyphString *glyphs)
 {
-  PangoCFont *cfont;
+  PangoXCharset *charset_id;
   RenderSyllableFunc render_func = NULL;
 
   char *ptr, *next;
@@ -625,9 +612,9 @@ hangul_engine_shape (PangoFont     *font,
    * otherwise use iso-10646 or KSC font depending on the ordering
    * of the fontlist.
    */
-  if (!find_cfont (font, default_charset, 1, &cfont, &render_func))
-    if (!find_cfont (font, secondary_charset, 1, &cfont, &render_func))
-      if (!find_cfont (font, fallback_charsets, 2, &cfont, &render_func))
+  if (!find_charset (font, default_charset, 1, &cfont, &render_func))
+    if (!find_charset (font, secondary_charset, 1, &cfont, &render_func))
+      if (!find_charset (font, fallback_charsets, 2, &cfont, &render_func))
 	{
 	  g_warning ("No available Hangul fonts.");
 	  return;

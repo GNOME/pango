@@ -183,7 +183,7 @@ get_logical_widths (char *text, PangoItem *item,
 	}
       
       if (i < glyphs->num_glyphs)
-	width += glyphs->geometry[index].width;
+	width += glyphs->glyphs[i].geometry.width;
     }
 }
 

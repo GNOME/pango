@@ -1,22 +1,52 @@
+General
+=======
+
 * Switch engines to be indentified by properties, instead
   of hardcoded role/language. (?)
-
-* Get rid of PangoCFont, switch GlyphString to only have one
-  array - an array of PangoGlyphInfo that includes
-  index, geometry, visattrs
 
 * Add a PangoLayout highlevel driver
 
 * Add attributes data structures, feed attributed strings
   into pango_itemize() (? is this necessary)
 
-* Rethink subsetting algorithms for X - the properties stuff
-  is just _slow_. (Are we loading the same fonts too many
-  times? Look into performance in general)
-
 * Return error codes from all functions. Possible errors include
  - Invalid string
  - Font does not match 
+
+  I think a good general way of doing this is to always
+  have an error object as a parameter to each function, but
+  allow that error object to be NULL, in which case a
+  global error object is used.
+
+  So, either
+
+    
+    err = PANGO_ERROR_INIT;
+    pango_shape (..., &err);
+    if (PANGO_ERROR_CODE (&err) != NO_ERROR) 
+      {
+        g_print ("An error %s occurred\n", PANGO_ERROR_STRING (&err));
+        pango_error_free (&err);
+      }
+
+  or:
+
+    pango_shape (..., NULL);
+    if (PANGO_ERROR_CODE (NULL) != NO_ERROR) 
+      g_print ("An error %s occurred\n", PANGO_ERROR_STRING (NULL));
+
+  Also, whenever possible, the return value of each Pango function
+  will be a gboolean success code (and also, a pango function that
+  returns a pointer that cannot otherwise be NULL, will return NULL),
+  so we can write instead of the last one:
+    
+    if (!pango_shape (..., NULL))
+      g_print ("An error %s occurred\n", PANGO_ERROR_STRING (NULL));
+
+  This always people who write non-threaded code to write conveniently,
+  while those who write threaded code can avoid pollution of return
+  values.
+  
 
 * Allow UTF8 strings with embedded NULLs.
 
@@ -25,4 +55,34 @@
   a way that always works.
 
 * Convert over from utils.c to Tom Tromey's libunicode.
+
+X fonts
+=======
+
+* Currently, for X, a language module must use a fixed priority
+  for the various encodings it can use; it can't distinguish:
+
+   good-unicode-subset-font
+   good-ksc-font
+   bad-unicode-full-fallback
+
+  from:
+
+   good-unicode-subset-font
+   bad-unicode-full-fallback
+   good-ksc-font
+
+  In either case if queried if a particular Unicode code-point, exists
+  in the font, it will return YES, and the bad-unicode-full-fallback
+  will be used.
+
+  void pango_x_list_subfonts (font, charsets, n_charsets, &subfonts_xlfds,
+                              &subfont_charsets, &subfont_ids, &n_subfonts);
+
+  Note that this call adds the queried subfonts to an internal list for
+  the font. Subfonts once queried take up a small amount of memory
+  (enough for the name), subfonts, once accessed, will retain the full
+  amount of memory for the X font until the entire font is freed.
+
+  Then for each mask, we assemble a list of subfont-ids ordered.
 

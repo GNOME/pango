@@ -35,7 +35,7 @@ typedef struct _Charset Charset;
 typedef struct _CharCache CharCache;
 typedef struct _MaskTable MaskTable;
 
-typedef PangoGlyphIndex (*ConvFunc) (CharCache *cache,
+typedef PangoGlyph (*ConvFunc) (CharCache *cache,
 				     gchar     *id,
 				     gchar     *input);
 
@@ -68,13 +68,13 @@ struct _CharCache
   GHashTable *converters;
 };
 
-static PangoGlyphIndex conv_8bit (CharCache *cache,
+static PangoGlyph conv_8bit (CharCache *cache,
 				  gchar  *id,
 				  char   *input);
-static PangoGlyphIndex conv_euc (CharCache *cache,
+static PangoGlyph conv_euc (CharCache *cache,
 				 gchar     *id,
 				 char      *input);
-static PangoGlyphIndex conv_ucs4 (CharCache *cache,
+static PangoGlyph conv_ucs4 (CharCache *cache,
 				  gchar     *id,
 				  char      *input);
 
@@ -205,7 +205,7 @@ char_cache_free (CharCache *cache)
   g_free (cache);
 }
 
-PangoGlyphIndex 
+PangoGlyph 
 find_char (CharCache *cache, PangoFont *font, GUChar4 wc, char *input)
 {
   guint mask = find_char_mask (wc);
@@ -262,8 +262,8 @@ find_char (CharCache *cache, PangoFont *font, GUChar4 wc, char *input)
 
   for (i=0; i < mask_table->n_charsets; i++)
     {
-      PangoGlyphIndex index;
-      PangoGlyphIndex glyph;
+      PangoGlyph index;
+      PangoGlyph glyph;
 
       index = (*mask_table->charsets[i]->conv_func) (cache, mask_table->charsets[i]->id, input);
 
@@ -277,20 +277,20 @@ find_char (CharCache *cache, PangoFont *font, GUChar4 wc, char *input)
 }
 
 static void
-set_glyph (PangoFont *font, PangoGlyphString *glyphs, gint i, PangoGlyphIndex glyph)
+set_glyph (PangoFont *font, PangoGlyphString *glyphs, gint i, PangoGlyph glyph)
 {
   gint width;
 
   glyphs->glyphs[i].glyph = glyph;
   
-  glyphs->geometry[i].x_offset = 0;
-  glyphs->geometry[i].y_offset = 0;
+  glyphs->glyphs[i].geometry.x_offset = 0;
+  glyphs->glyphs[i].geometry.y_offset = 0;
 
   glyphs->log_clusters[i] = i;
 
   pango_x_glyph_extents (font, glyphs->glyphs[i].glyph,
 			 NULL, NULL, &width, NULL, NULL, NULL, NULL);
-  glyphs->geometry[i].width = width * 72;
+  glyphs->glyphs[i].geometry.width = width * 72;
 }
 
 static iconv_t
@@ -306,7 +306,7 @@ find_converter (CharCache *cache, gchar *id)
   return cd;
 }
 
-static PangoGlyphIndex
+static PangoGlyph
 conv_8bit (CharCache *cache,
 	   gchar     *id,
 	   char      *input)
@@ -331,7 +331,7 @@ conv_8bit (CharCache *cache,
   return (guchar)outbuf;
 }
 
-static PangoGlyphIndex
+static PangoGlyph
 conv_euc (CharCache *cache,
 	  gchar     *id,
 	  char      *input)
@@ -359,7 +359,7 @@ conv_euc (CharCache *cache,
     return ((guchar)outbuf[0] & 0x7f) * 256 + ((guchar)outbuf[1] & 0x7f);
 }
 
-static PangoGlyphIndex
+static PangoGlyph
 conv_ucs4 (CharCache *cache,
 	   gchar     *id,
 	   char      *input)
@@ -377,22 +377,12 @@ swap_range (PangoGlyphString *glyphs, int start, int end)
   
   for (i = start, j = end - 1; i < j; i++, j--)
     {
-      PangoGlyph glyph;
-      PangoGlyphGeometry geometry;
-      PangoGlyphVisAttr attr;
+      PangoGlyphInfo glyph_info;
       gint log_cluster;
       
-      glyph = glyphs->glyphs[i];
+      glyph_info = glyphs->glyphs[i];
       glyphs->glyphs[i] = glyphs->glyphs[j];
-      glyphs->glyphs[j] = glyph;
-      
-      geometry = glyphs->geometry[i];
-      glyphs->geometry[i] = glyphs->geometry[j];
-      glyphs->geometry[j] = geometry;
-      
-      attr = glyphs->attrs[i];
-      glyphs->attrs[i] = glyphs->attrs[j];
-      glyphs->attrs[j] = attr;
+      glyphs->glyphs[j] = glyph_info;
       
       log_cluster = glyphs->log_clusters[i];
       glyphs->log_clusters[i] = glyphs->log_clusters[j];
@@ -435,7 +425,7 @@ basic_engine_shape (PangoFont        *font,
     {
       GUChar4 wc;
       FriBidiChar mirrored_ch;
-      PangoGlyphIndex index;
+      PangoGlyph index;
 
       _pango_utf8_iterate (p, &next, &wc);
 
@@ -452,9 +442,9 @@ basic_engine_shape (PangoFont        *font,
 	    {
 	      if (i > 0)
 		{
-		  glyphs->geometry[i].width = MAX (glyphs->geometry[i-1].width,
-						   glyphs->geometry[i].width);
-		  glyphs->geometry[i-1].width = 0;
+		  glyphs->glyphs[i].geometry.width = MAX (glyphs->glyphs[i-1].geometry.width,
+							  glyphs->glyphs[i].geometry.width);
+		  glyphs->glyphs[i-1].geometry.width = 0;
 		  glyphs->log_clusters[i] = glyphs->log_clusters[i-1];
 		}
 	    }

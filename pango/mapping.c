@@ -48,13 +48,13 @@
  */
 
 void
-pango_cp_to_x (gchar           *text,
-		  gint             length,
-		  PangoAnalysis *analysis,
-		  PangoGlyphString    *glyphs,
-		  gint             char_pos,
-		  gboolean         trailing,
-		  gint            *x_pos)
+pango_cp_to_x (gchar            *text,
+	       gint              length,
+	       PangoAnalysis    *analysis,
+	       PangoGlyphString *glyphs,
+	       gint              char_pos,
+	       gboolean          trailing,
+	       gint             *x_pos)
 {
   gint i;
   gint start_xpos = 0;
@@ -83,7 +83,7 @@ pango_cp_to_x (gchar           *text,
   if (analysis->level % 2) /* Right to left */
     {
       for (i = glyphs->num_glyphs - 1; i >= 0; i--)
-	width += glyphs->geometry[i].width;
+	width += glyphs->glyphs[i].geometry.width;
 
       for (i = glyphs->num_glyphs - 1; i >= 0; i--)
 	{
@@ -100,7 +100,7 @@ pango_cp_to_x (gchar           *text,
 	      start_xpos = width;
 	    }
 
-	  width -= glyphs->geometry[i].width;
+	  width -= glyphs->glyphs[i].geometry.width;
 	}
     }
   else /* Left to right */
@@ -120,7 +120,7 @@ pango_cp_to_x (gchar           *text,
 	      start_xpos = width;
 	    }
 	  
-	  width += glyphs->geometry[i].width;
+	  width += glyphs->glyphs[i].geometry.width;
 	}
     }
 
@@ -190,7 +190,7 @@ pango_x_to_cp (gchar           *text,
   if (analysis->level % 2) /* Right to left */
     {
       for (i = glyphs->num_glyphs - 1; i >= 0; i--)
-	width += glyphs->geometry[i].width;
+	width += glyphs->glyphs[i].geometry.width;
 
       for (i = glyphs->num_glyphs - 1; i >= 0; i--)
 	{
@@ -209,9 +209,9 @@ pango_x_to_cp (gchar           *text,
 		}
 	    }
 
-	  width -= glyphs->geometry[i].width;
+	  width -= glyphs->glyphs[i].geometry.width;
 
-	  if (width <= x_pos && x_pos < width + glyphs->geometry[i].width)
+	  if (width <= x_pos && x_pos < width + glyphs->glyphs[i].geometry.width)
 	    found = TRUE;
 	}
     }
@@ -234,10 +234,10 @@ pango_x_to_cp (gchar           *text,
 		}
 	    }
 	  
-	  if (width <= x_pos && x_pos < width + glyphs->geometry[i].width)
+	  if (width <= x_pos && x_pos < width + glyphs->glyphs[i].geometry.width)
 	    found = TRUE;
 	  
-	  width += glyphs->geometry[i].width;
+	  width += glyphs->glyphs[i].geometry.width;
 	}
     }
 
