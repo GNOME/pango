@@ -120,6 +120,8 @@ struct _PangoLayout
   PangoTabArray *tabs;
   
   GSList *lines;
+
+  PangoWrapMode wrap;
 };
 
 struct _PangoLayoutClass
@@ -197,7 +199,9 @@ pango_layout_init (PangoLayout *layout)
   layout->log_attrs = NULL;
   layout->lines = NULL;
 
-  layout->tab_width = -1;  
+  layout->tab_width = -1;
+
+  layout->wrap = PANGO_WRAP_WORD;
 }
 
 static void
@@ -313,6 +317,44 @@ pango_layout_get_width (PangoLayout    *layout)
 {
   g_return_val_if_fail (layout != NULL, 0);
   return layout->width;
+}
+
+/**
+ * pango_layout_set_wrap:
+ * @layout: a #PangoLayout
+ * @wrap: wrap mode
+ * 
+ * Sets the wrap style; the wrap style only has an effect if a width
+ * is set on the layout with pango_layout_set_width(). To turn off wrapping,
+ * set the width to -1.
+ **/
+void
+pango_layout_set_wrap (PangoLayout  *layout,
+                       PangoWrapMode wrap)
+{
+  g_return_if_fail (PANGO_IS_LAYOUT (layout));
+
+  if (layout->wrap != wrap)
+    {
+      pango_layout_clear_lines (layout);
+      layout->wrap = wrap;
+    }
+}
+
+/**
+ * pango_layout_get_wrap:
+ * @layout: a #PangoLayout
+ * 
+ * Get the wrap mode for the layout.
+ * 
+ * Return value: Active wrap mode.
+ **/
+PangoWrapMode
+pango_layout_get_wrap (PangoLayout *layout)
+{
+  g_return_val_if_fail (PANGO_IS_LAYOUT (layout), 0);
+  
+  return layout->wrap;
 }
 
 /**
@@ -2183,13 +2225,20 @@ can_break_at (PangoLayout *layout,
 	      gint         offset)
 {
   /* We probably should have a mode where we treat all white-space as
-   * of fungeable width - appropriate for typography but not for
+   * of fungible width - appropriate for typography but not for
    * editing.
    */
   if (offset == layout->n_chars)
     return TRUE;
+  else if (layout->wrap == PANGO_WRAP_WORD)
+    return layout->log_attrs[offset].is_line_break;
+  else if (layout->wrap == PANGO_WRAP_CHAR)
+    return layout->log_attrs[offset].is_char_break;
   else
-    return layout->log_attrs[offset].is_break;
+    {
+      g_warning (G_STRLOC": broken PangoLayout");
+      return TRUE;
+    }
 }
 
 static inline gboolean

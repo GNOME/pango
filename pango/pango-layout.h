@@ -42,6 +42,11 @@ typedef enum {
   PANGO_ALIGN_RIGHT
 } PangoAlignment;
 
+typedef enum {
+  PANGO_WRAP_WORD,
+  PANGO_WRAP_CHAR
+} PangoWrapMode;
+
 struct _PangoLayoutLine
 {
   PangoLayout *layout;
@@ -97,6 +102,9 @@ void           pango_layout_set_font_description (PangoLayout                *la
 void           pango_layout_set_width            (PangoLayout                *layout,
 						  int                         width);
 int            pango_layout_get_width            (PangoLayout                *layout);
+void           pango_layout_set_wrap             (PangoLayout                *layout,
+                                                  PangoWrapMode               wrap);
+PangoWrapMode  pango_layout_get_wrap             (PangoLayout                *layout);
 void           pango_layout_set_indent           (PangoLayout                *layout,
 						  int                         indent);
 int            pango_layout_get_indent           (PangoLayout                *layout);

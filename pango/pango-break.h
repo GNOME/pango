@@ -34,9 +34,11 @@ extern "C" {
  */
 struct _PangoLogAttr
 {
-  guint is_break : 1;           /* Can break line in front of character */
+  guint is_line_break : 1;      /* Can break line in front of character */
 
   guint is_mandatory_break : 1; /* Must break line in front of character */
+
+  guint is_char_break : 1;      /* Can break here when doing char wrap */
   
   guint is_white : 1;           /* Whitespace character */
 

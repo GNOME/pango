@@ -202,25 +202,25 @@ check_line_char (gunichar      wc,
     {
       if (prev_wc == '\r')
         {
-          if (attr->is_break)
+          if (attr->is_line_break)
             fail ("line break between \\r and \\n");
         }
       
-      if (next_attr && !next_attr->is_break)
+      if (next_attr && !next_attr->is_line_break)
         fail ("no line break after \\n");
     }
   
-  if (attr->is_break && prev_wc == 0)
+  if (attr->is_line_break && prev_wc == 0)
     fail ("first char in string should not be marked as a line break");
 
   if (break_type == G_UNICODE_BREAK_SPACE)
     {
-      if (attr->is_break && prev_attr != NULL &&
+      if (attr->is_line_break && prev_attr != NULL &&
           !attr->is_mandatory_break)
         fail ("can't break lines before a space unless a mandatory break char precedes it; prev char was " CHFORMAT, prev_wc);
     }
 
-  if (attr->is_mandatory_break && !attr->is_break)
+  if (attr->is_mandatory_break && !attr->is_line_break)
     fail ("mandatory breaks must also be marked as regular breaks");
 
   
@@ -232,19 +232,19 @@ check_line_char (gunichar      wc,
   
   if (break_type == G_UNICODE_BREAK_OPEN_PUNCTUATION &&
       prev_break_type == G_UNICODE_BREAK_OPEN_PUNCTUATION &&
-      attr->is_break &&
+      attr->is_line_break &&
       !attr->is_mandatory_break)
     fail ("can't break between two open punctuation chars");
 
   if (break_type == G_UNICODE_BREAK_CLOSE_PUNCTUATION &&
       prev_break_type == G_UNICODE_BREAK_CLOSE_PUNCTUATION &&
-      attr->is_break &&
+      attr->is_line_break &&
       !attr->is_mandatory_break)
     fail ("can't break between two close punctuation chars");
 
   if (break_type == G_UNICODE_BREAK_QUOTATION &&
       prev_break_type == G_UNICODE_BREAK_ALPHABETIC &&
-      attr->is_break &&
+      attr->is_line_break &&
       !attr->is_mandatory_break)
     fail ("can't break letter-quotemark sequence");  
 }

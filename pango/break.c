@@ -573,25 +573,31 @@ pango_default_break (const gchar   *text,
 
       g_assert (prev_break_type != G_UNICODE_BREAK_SPACE);
 
-      attrs[i].is_break = FALSE;
+      attrs[i].is_line_break = FALSE;
       attrs[i].is_mandatory_break = FALSE;
-
+      
       if (attrs[i].is_cursor_position) /* If it's not a grapheme boundary,
                                         * it's not a line break either
                                         */
         {
+          /* Unicode doesn't specify char wrap; we wrap around all chars
+           * except where a line break is prohibited, which means we
+           * effectively break everywhere except inside runs of spaces.
+           */
+          attrs[i].is_char_break = TRUE;          
+          
           switch (prev_break_type)
             {
             case G_UNICODE_BREAK_MANDATORY:
             case G_UNICODE_BREAK_LINE_FEED:
-              attrs[i].is_break = TRUE;
+              attrs[i].is_line_break = TRUE;
               attrs[i].is_mandatory_break = TRUE;
               break;
 
             case G_UNICODE_BREAK_CARRIAGE_RETURN:
               if (wc != '\n')
                 {
-                  attrs[i].is_break = TRUE;
+                  attrs[i].is_line_break = TRUE;
                   attrs[i].is_mandatory_break = TRUE;
                 }
               break;
@@ -686,17 +692,18 @@ pango_default_break (const gchar   *text,
               switch (break_op)
                 {
                 case BREAK_PROHIBITED:
-                  /* nothing, can't break here */
+                  /* can't break here */                  
+                  attrs[i].is_char_break = FALSE;
                   break;
 
                 case BREAK_IF_SPACES:
                   /* break if prev char was space */
-                  if (prev_was_break_space)
-                    attrs[i].is_break = TRUE;
+                  if (prev_was_break_space)                    
+                    attrs[i].is_line_break = TRUE;
                   break;
 
                 case BREAK_ALLOWED:
-                  attrs[i].is_break = TRUE;
+                  attrs[i].is_line_break = TRUE;
                   break;
 
                 default:

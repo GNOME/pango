@@ -1,3 +1,16 @@
+2001-01-22  Havoc Pennington  <hp@redhat.com>
+
+	* tests/testboundaries.c (check_line_char): s/is_break/is_line_break/g;
+
+	* pango/pango-layout.c, pango/pango-layout.h: Add PangoWrapMode
+	for PangoLayout
+
+	* pango/break.c (pango_default_break): implement char break log
+	attr
+
+	* pango/pango-break.h (struct _PangoLogAttr): rename is_break 
+	is_line_break, add is_char_break field
+
 2001-01-18    <alla@lysator.liu.se>
 
 	* pango/pangoft2.c (get_font_metrics_from_subfonts):
