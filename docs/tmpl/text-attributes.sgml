@@ -75,9 +75,9 @@ applies.
 </para>
 
 @klass: the class structure holding information about the type of the attribute
-@start_index: the start index of the range.
-@end_index: end index of the range. The character at this index is not
-            included in the range.
+@start_index: the start index of the range (in bytes).
+@end_index: end index of the range. The character containing this byte index is
+	not included in the range.
 
 <!-- ##### STRUCT PangoAttrString ##### -->
 <para>

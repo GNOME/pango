@@ -1833,6 +1833,24 @@ pango_layout_get_cursor_pos (PangoLayout    *layout,
     }
 }
 
+static inline int
+direction_simple (PangoDirection d)
+{
+  switch (d)
+    {
+    case PANGO_DIRECTION_LTR :	    return 1;
+    case PANGO_DIRECTION_RTL :	    return -1;
+    case PANGO_DIRECTION_TTB_LTR :  return 1;
+    case PANGO_DIRECTION_TTB_RTL :  return -1;
+    case PANGO_DIRECTION_WEAK_LTR : return 1;
+    case PANGO_DIRECTION_WEAK_RTL : return -1;
+    case PANGO_DIRECTION_NEUTRAL :  return 0;
+    /* no default compiler should complain if a new values is added */
+    }
+  /* not reached */
+  return 0;
+}
+
 static PangoAlignment
 get_alignment (PangoLayout     *layout,
 	       PangoLayoutLine *line)
@@ -1840,7 +1858,8 @@ get_alignment (PangoLayout     *layout,
   PangoAlignment alignment = layout->alignment;
 	
   if (line->layout->auto_dir &&
-      line->resolved_dir != pango_context_get_base_dir (layout->context))
+      direction_simple (line->resolved_dir) ==
+      -direction_simple (pango_context_get_base_dir (layout->context)))
     {
       if (alignment == PANGO_ALIGN_LEFT)
 	alignment = PANGO_ALIGN_RIGHT;

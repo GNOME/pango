@@ -95,8 +95,8 @@ typedef enum {
 struct _PangoAttribute
 {
   const PangoAttrClass *klass;
-  guint start_index;
-  guint end_index;
+  guint start_index;	/* in bytes */
+  guint end_index;	/* the character containing this byte is not included */
 };
 
 typedef gboolean (*PangoAttrFilterFunc) (PangoAttribute *attribute,
