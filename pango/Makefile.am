@@ -191,7 +191,7 @@ libpangoft2_la_SOURCES =   	\
 	pangoft2-fontmap.c	\
 	module-defs-ft2.c
 
-libpangoft2_la_LIBADD = $(INCLUDED_FT2_MODULES) $(FREETYPE_LIBS) mini-xft/libmini-xft.la libpango.la
+libpangoft2_la_LIBADD = mini-xft/libmini-xft.la libpango.la $(INCLUDED_FT2_MODULES) $(FREETYPE_LIBS) 
 libpangoft2_la_LDFLAGS = -release $(VERSION) $(GLIB_LIBS) $(no_undefined) $(pangoft2_export_symbols)
 libpangoft2_la_DEPENDENCIES = $(INCLUDED_FT2_MODULES) libpango.la
 

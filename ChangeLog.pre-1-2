@@ -1,3 +1,10 @@
+Wed Feb 27 11:10:07 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/Makefile.am (libpangoft2_la_LIBADD): Move .la
+	files to beginning of link line ... may prevent some
+	problems with linking to installed libraries.
+	(#61359, Abel Cheung)
+
 Wed Feb 27 08:55:32 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/Makefile.am (pango_querymodules_LDADD): Add
