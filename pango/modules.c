@@ -499,6 +499,26 @@ build_map (PangoMapInfo *info)
   
   init_modules();
 
+  if (!dlloaded_engines && !registered_engines && !builtin_engines)
+    {
+      static gboolean no_module_warning = FALSE;
+      if (!no_module_warning)
+	{
+	  gchar *filename = g_build_filename (pango_get_sysconf_subdirectory (),
+					      "pango.modules",
+					      NULL);
+	  g_warning ("No builtin or dynamically loaded modules\n"
+		     "were found. Pango will not work correctly. This probably means\n"
+		     "there was an error in the creation of:\n"
+		     "  '%s'\n"
+		     "You may be able to recreate this file by running pango-querymodules.",
+		     filename);
+	  g_free (filename);
+	  
+	  no_module_warning = TRUE;
+	}
+    }
+  
   info->map = map = g_new (PangoMap, 1);
   map->n_submaps = 256;
   for (i=0; i<256; i++)
