@@ -384,7 +384,9 @@ pango_default_break (const gchar   *text,
                      PangoLogAttr  *attrs,
                      int            attrs_len)
 {
-  /* The rationale for all this is in section 5.15 of the Unicode 3.0 book */
+  /* The rationale for all this is in section 5.15 of the Unicode 3.0 book,
+   * the line breaking stuff is also in TR14 on unicode.org
+   */
 
   /* This is a default break implementation that should work for nearly all
    * languages. Language engines can override it optionally.
@@ -847,7 +849,7 @@ pango_default_break (const gchar   *text,
         }
 
       /* ---- Sentence breaks ---- */
-
+      
       /* The Unicode spec specifies sentence breakpoints, so that a piece of
        * text would be partitioned into sentences, and all characters would
        * be inside some sentence. This code implements that for is_sentence_boundary,
@@ -861,13 +863,31 @@ pango_default_break (const gchar   *text,
        * so am allowing one to be tacked onto a sentence ending in period.
        */
 
+#define MAYBE_START_NEW_SENTENCE                                \
+              g_assert (sentence_state != STATE_SENTENCE_BODY); \
+              switch (type)                                     \
+                {                                               \
+                case G_UNICODE_LINE_SEPARATOR:                  \
+                case G_UNICODE_PARAGRAPH_SEPARATOR:             \
+                case G_UNICODE_CONTROL:                         \
+                case G_UNICODE_FORMAT:                          \
+                case G_UNICODE_SPACE_SEPARATOR:                 \
+                  sentence_state = STATE_SENTENCE_OUTSIDE;      \
+                  break;                                        \
+                                                                \
+                default:                                        \
+                  sentence_state = STATE_SENTENCE_BODY;         \
+                  attrs[i].is_sentence_start = TRUE;            \
+                  break;                                        \
+                }
+      
       /* No sentence break at the start of the text */
 
       /* default to not a sentence breakpoint */
       attrs[i].is_sentence_boundary = FALSE;
       attrs[i].is_sentence_start = FALSE;
       attrs[i].is_sentence_end = FALSE;
-
+      
       /* FIXME the Unicode spec lumps control/format chars with
        * line/para separators in descriptive text, but not in the
        * character class specs, in table 5-6, so who knows whether you
@@ -944,7 +964,8 @@ pango_default_break (const gchar   *text,
           if (attrs[i].is_sentence_boundary)
             {
               attrs[i].is_sentence_end = TRUE;
-              sentence_state = STATE_SENTENCE_OUTSIDE;
+
+              MAYBE_START_NEW_SENTENCE;
             }
           else
             {
@@ -974,7 +995,8 @@ pango_default_break (const gchar   *text,
                 {
                   attrs[i].is_sentence_end = TRUE;
                   attrs[i].is_sentence_boundary = TRUE;
-                  sentence_state = STATE_SENTENCE_OUTSIDE;
+
+                  MAYBE_START_NEW_SENTENCE;
                 }
               break;
 
@@ -992,7 +1014,9 @@ pango_default_break (const gchar   *text,
             default:
               attrs[i].is_sentence_end = TRUE;
               attrs[i].is_sentence_boundary = TRUE;
-              sentence_state = STATE_SENTENCE_OUTSIDE;
+
+              MAYBE_START_NEW_SENTENCE;
+
               break;
             }
           break;
@@ -1016,7 +1040,8 @@ pango_default_break (const gchar   *text,
                 {
                   attrs[i].is_sentence_end = TRUE;
                   attrs[i].is_sentence_boundary = TRUE;
-                  sentence_state = STATE_SENTENCE_OUTSIDE;
+
+                  MAYBE_START_NEW_SENTENCE;
                 }
               break;
 
@@ -1041,7 +1066,9 @@ pango_default_break (const gchar   *text,
             default:
               attrs[i].is_sentence_end = TRUE;
               attrs[i].is_sentence_boundary = TRUE;
-              sentence_state = STATE_SENTENCE_OUTSIDE;
+
+              MAYBE_START_NEW_SENTENCE;
+
               break;
             }
           break;
@@ -1070,7 +1097,9 @@ pango_default_break (const gchar   *text,
 
             default:
               attrs[i].is_sentence_boundary = TRUE;
-              sentence_state = STATE_SENTENCE_OUTSIDE;
+
+              MAYBE_START_NEW_SENTENCE;
+
               break;
             }
           break;
@@ -1083,7 +1112,9 @@ pango_default_break (const gchar   *text,
            */
           if (!(prev_wc == '\r' && wc == '\n'))
             attrs[i].is_sentence_boundary = TRUE;
-          sentence_state = STATE_SENTENCE_OUTSIDE;
+
+          MAYBE_START_NEW_SENTENCE;
+
           break;
 
         case STATE_SENTENCE_DOT:
@@ -1107,7 +1138,7 @@ pango_default_break (const gchar   *text,
                 {
                   attrs[i].is_sentence_end = TRUE;
 
-                  sentence_state = STATE_SENTENCE_OUTSIDE;
+                  MAYBE_START_NEW_SENTENCE;
                 }
               else
                 sentence_state = STATE_SENTENCE_BODY;
@@ -1132,7 +1163,7 @@ pango_default_break (const gchar   *text,
                 {
                   attrs[i].is_sentence_end = TRUE;
 
-                  sentence_state = STATE_SENTENCE_OUTSIDE;
+                  MAYBE_START_NEW_SENTENCE;
                 }
               else
                 sentence_state = STATE_SENTENCE_BODY;
@@ -1173,21 +1204,8 @@ pango_default_break (const gchar   *text,
               possible_sentence_end = -1;
               possible_sentence_boundary = -1;
 
-              switch (type)
-                {
-                case G_UNICODE_LINE_SEPARATOR:
-                case G_UNICODE_PARAGRAPH_SEPARATOR:
-                case G_UNICODE_CONTROL:
-                case G_UNICODE_FORMAT:
-                  sentence_state = STATE_SENTENCE_OUTSIDE;
-                  break;
-
-                default:
-                  g_assert (type != G_UNICODE_SPACE_SEPARATOR);
-                  sentence_state = STATE_SENTENCE_BODY;
-                  attrs[i].is_sentence_start = TRUE;
-                  break;
-                }
+              MAYBE_START_NEW_SENTENCE;
+              
               break;
             }
           break;
@@ -1218,21 +1236,8 @@ pango_default_break (const gchar   *text,
               possible_sentence_end = -1;
               possible_sentence_boundary = -1;
 
-              switch (type)
-                {
-                case G_UNICODE_LINE_SEPARATOR:
-                case G_UNICODE_PARAGRAPH_SEPARATOR:
-                case G_UNICODE_CONTROL:
-                case G_UNICODE_FORMAT:
-                  sentence_state = STATE_SENTENCE_OUTSIDE;
-                  break;
+              MAYBE_START_NEW_SENTENCE;
 
-                default:
-                  g_assert (type != G_UNICODE_SPACE_SEPARATOR);
-                  sentence_state = STATE_SENTENCE_BODY;
-                  attrs[i].is_sentence_start = TRUE;
-                  break;
-                }
               break;
             }
           break;
@@ -1245,7 +1250,6 @@ pango_default_break (const gchar   *text,
            */
           if (!(prev_wc == '\r' && wc == '\n'))
             attrs[i].is_sentence_boundary = TRUE;
-          sentence_state = STATE_SENTENCE_OUTSIDE;
 
           g_assert (possible_sentence_end >= 0);
           g_assert (possible_sentence_boundary >= 0);
@@ -1254,6 +1258,9 @@ pango_default_break (const gchar   *text,
 
           possible_sentence_end = -1;
           possible_sentence_boundary = -1;
+
+          MAYBE_START_NEW_SENTENCE;
+
           break;
 
         default:
