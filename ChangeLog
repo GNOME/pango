@@ -1,3 +1,11 @@
+Fri Dec 20 12:18:43 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* === Released 1.2.0 ===
+
+	* configure.in: Version 1.2.0, interface age 0.
+
+	* NEWS: Updated
+
 Fri Dec 20 11:59:22 2002  Owen Taylor  <otaylor@redhat.com>
 
 	Some unit fixups (#96335)
