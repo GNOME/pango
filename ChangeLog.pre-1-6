@@ -1,3 +1,10 @@
+Fri Jul 25 23:38:07 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/opentype/ftxgpos.c pango/opentype/ftxgsub.c:
+	OpenType-1.4 update: backtrack information is stored with the
+	item closest to the input first (From FreeType,
+	Werner Lemberg,	2002-09-26)
+
 Fri Jul 25 23:07:06 2003  Owen Taylor  <otaylor@redhat.com>
 
 	Update of GPOS and GSUB support to OpenType 1.3 
