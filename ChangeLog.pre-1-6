@@ -1,3 +1,10 @@
+2003-09-02  Noah Levitt  <nlevitt@columbia.edu>
+
+	* tests/.cvsignore:
+	* tests/Makefile.am:
+	* tests/pangorc: Fix tests so that can be run before "make install"
+	has been. (#119831)
+
 Tue Aug 26 16:38:22 2003  Owen Taylor  <otaylor@redhat.com>
 
 	* modules/indic/Makefile.am (xft_sources): Add mprefixups.[ch]

@@ -39,6 +39,10 @@ INCLUDES =					\
 
 TESTS=runtests.sh
 
+TESTS_ENVIRONMENT =                    \
+   srcdir=$(srcdir)                    \
+   PANGO_RC_FILE=./pangorc
+
 noinst_PROGRAMS = gen-all-unicode dump-boundaries
 
 check_PROGRAMS = testboundaries testcolor $(CXX_TEST)
@@ -66,6 +70,22 @@ else
 CXX_TEST =
 endif
 
+if CROSS_COMPILING
+all-local: all-unicode.txt
+else
+all-local: all-unicode.txt pango.modules
+endif
+
+pango.modules:
+	if find ../modules -name '*.so' | grep 'so' > /dev/null ; then \
+          echo "Writing a pango.modules file to use when running tests before installing Pango."; \
+	  (cd ../modules && \
+           ../pango/pango-querymodules `find . -name '*.la' | grep -v \.libs` > ../tests/pango.modules ) ;\
+	else \
+          echo "No dynamic modules found; will use only static modules for uninstalled test programs."; \
+	  touch pango.modules; \
+	fi
+
 EXTRA_DIST = 			\
 	all-unicode.txt		\
 	boundaries.utf8		\
@@ -73,6 +93,4 @@ EXTRA_DIST = 			\
 
 all-unicode.txt: gen-all-unicode
 	./gen-all-unicode > all-unicode.txt
-
-all-local: all-unicode.txt
 
