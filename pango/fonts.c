@@ -1121,6 +1121,20 @@ pango_font_get_metrics (PangoFont        *font,
   return PANGO_FONT_GET_CLASS (font)->get_metrics (font, language);
 }
 
+GType
+pango_font_metrics_get_type (void)
+{
+  static GType our_type = 0;
+  
+  if (our_type == 0)
+    our_type = g_boxed_type_register_static ("PangoFontMetrics",
+					     (GBoxedCopyFunc)pango_font_metrics_ref,
+					     (GBoxedFreeFunc)pango_font_metrics_unref);
+
+  return our_type;
+}
+
+
 /**
  * pango_font_metrics_new:
  * 

@@ -1,3 +1,14 @@
+2001-09-20  James Henstridge  <james@daa.com.au>
+
+	* pango/Makefile.am (s-enum-types-c): fix rule so that flags get
+	registered as flags and rather than enums (enums still get
+	registered as enums).
+
+	* pango/pango-font.h: add get_type routine to header.
+
+	* pango/fonts.c (pango_font_metrics_get_type): add get_type()
+	routine.
+
 Wed Sep 19 19:28:52 2001  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pango-fontmap.c: Remove pango_font_map_free_families,

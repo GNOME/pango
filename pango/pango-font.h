@@ -150,6 +150,9 @@ char *                pango_font_description_to_filename (const PangoFontDescrip
 /*
  * PangoFontMetrics
  */
+
+#define PANGO_TYPE_FONT_METRICS  (pango_font_metrics_get_type ())
+GType             pango_font_metrics_get_type                    (void);
 PangoFontMetrics *pango_font_metrics_ref                         (PangoFontMetrics *metrics);
 void              pango_font_metrics_unref                       (PangoFontMetrics *metrics);
 int               pango_font_metrics_get_ascent                  (PangoFontMetrics *metrics);
