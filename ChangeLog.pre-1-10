@@ -1,3 +1,9 @@
+Wed Jul 28 17:00:23 2004  Owen Taylor  <otaylor@redhat.com>
+ 
+ 	* modules/indic/mprefixups.c (indic_mprefixups_apply): 
+ 	Check glyphs[mpreLimit] not glyphs[mpreIndex]. (Found
+ 	by Chris Blizzard)
+	
 Tue Jul 27 14:14:05 2004  Behdad Esfahbod  <pango@behdad.org>
 	* modules/arabic/arabic-fc.c: Don't substitute FARSI YEH
 	with ARABIC YEH if the font does not have any ARABIC YEH.
