@@ -1,3 +1,9 @@
+2004-04-29  Tor Lillqvist  <tml@iki.fi>
+
+	* pango/pangowin32-fontmap.c (pango_win32_font_map_for_display):
+	Use floating-point math in resolution calculation. (#141229, John
+	Ehresman)
+
 2004-04-20  Theppitak Karoonboonyanan  <thep@linux.thai.net>
 
 	* modules/thai/thai-shaper.c (get_adjusted_glyphs_list):
