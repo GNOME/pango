@@ -28,6 +28,7 @@
 
 #include <glib.h>
 #include <stdio.h>
+#include <string.h>
 
 #include "pango.h"
 #include "pangox.h"
@@ -150,8 +151,7 @@ pango_indic_engine_shape (PangoFont * font,
 
   int n_chars, n_glyph;
   int lvl;
-  const char *p;
-  int i, k;
+  int i;
   gunichar *wc;
   int sb;
   int n_syls;

@@ -20,6 +20,7 @@
  */
 
 #include <glib.h>
+#include <string.h>
 
 #include "pango.h"
 #include "pangox.h"

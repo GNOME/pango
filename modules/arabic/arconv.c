@@ -250,10 +250,9 @@ charshape(gunichar s,short which)
             case 3: return 0xFEF4;
             }
         }
-    else 
-        {
-            return s;
-        }
+
+    /* else */
+    return s;
 }
 
 
