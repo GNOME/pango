@@ -1,3 +1,8 @@
+Sun Feb 16 09:10:12 2003  Chema Celorio  <chema@celorio.com>
+
+	* pango/pangoft2.c (pango_ft2_render_layout): fix a typo
+	in the @bitmap argument description. s/line/layout
+
 Wed Feb 12 17:20:15 2003  Owen Taylor  <otaylor@redhat.com>
 
 	* configure.in: Simplify 'test x$have_x != xfalse'
