@@ -387,7 +387,10 @@ The GObject type for #PangoFontMask.
 <!-- ##### STRUCT PangoFontMetrics ##### -->
 <para>
 A #PangoFontMetrics structure holds the overall metric information
-for a font (possibly restricted to a script). 
+for a font (possibly restricted to a script). The fields of this
+structure are private to implementations of a font backend. See
+the documentation of the corresponding getters for documentation
+of their meaning.
 </para>
 
 @ref_count: 
@@ -395,6 +398,10 @@ for a font (possibly restricted to a script).
 @descent: 
 @approximate_char_width: 
 @approximate_digit_width: 
+@underline_position: 
+@underline_thickness: 
+@strikethrough_position: 
+@strikethrough_thickness: 
 
 <!-- ##### MACRO PANGO_TYPE_FONT_METRICS ##### -->
 <para>
@@ -448,6 +455,42 @@ The GObject type for #PangoFontMetrics.
 
 
 <!-- ##### FUNCTION pango_font_metrics_get_approximate_digit_width ##### -->
+<para>
+
+</para>
+
+@metrics: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_font_metrics_get_underline_thickness ##### -->
+<para>
+
+</para>
+
+@metrics: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_font_metrics_get_underline_position ##### -->
+<para>
+
+</para>
+
+@metrics: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_font_metrics_get_strikethrough_thickness ##### -->
+<para>
+
+</para>
+
+@metrics: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_font_metrics_get_strikethrough_position ##### -->
 <para>
 
 </para>

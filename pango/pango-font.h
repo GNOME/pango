@@ -159,6 +159,10 @@ int               pango_font_metrics_get_ascent                  (PangoFontMetri
 int               pango_font_metrics_get_descent                 (PangoFontMetrics *metrics);
 int               pango_font_metrics_get_approximate_char_width  (PangoFontMetrics *metrics);
 int               pango_font_metrics_get_approximate_digit_width (PangoFontMetrics *metrics);
+int               pango_font_metrics_get_underline_position      (PangoFontMetrics *metrics);
+int               pango_font_metrics_get_underline_thickness     (PangoFontMetrics *metrics);
+int               pango_font_metrics_get_strikethrough_position  (PangoFontMetrics *metrics);
+int               pango_font_metrics_get_strikethrough_thickness (PangoFontMetrics *metrics);
 
 #ifdef PANGO_ENABLE_BACKEND
 
@@ -172,6 +176,10 @@ struct _PangoFontMetrics
   int descent;
   int approximate_char_width;
   int approximate_digit_width;
+  int underline_position;
+  int underline_thickness;
+  int strikethrough_position;
+  int strikethrough_thickness;
 };
 
 #endif /* PANGO_ENABLE_BACKEND */

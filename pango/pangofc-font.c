@@ -26,6 +26,8 @@
 #include "pango-modules.h"
 #include "pango-utils.h"
 
+#include FT_TRUETYPE_TABLES_H
+
 #define PANGO_SCALE_26_6 (PANGO_SCALE / (1<<6))
 #define PANGO_PIXELS_26_6(d)				\
   (((d) >= 0) ?						\
@@ -209,6 +211,28 @@ pango_fc_font_get_coverage (PangoFont     *font,
 					  fcfont->font_pattern);
 }
 
+static void
+quantize_position (int *thickness,
+		   int *position)
+{
+  int thickness_pixels = (*thickness + PANGO_SCALE / 2) / PANGO_SCALE;
+  if (thickness_pixels == 0)
+    thickness_pixels = 1;
+  
+  if (thickness_pixels & 1)
+    {
+      int new_center = ((*position - *thickness / 2) & ~(PANGO_SCALE - 1)) + PANGO_SCALE / 2;
+      *position = new_center + (PANGO_SCALE * thickness_pixels) / 2;
+    }
+  else
+    {
+      int new_center = ((*position - *thickness / 2 + PANGO_SCALE / 2) & ~(PANGO_SCALE - 1));
+      *position = new_center + (PANGO_SCALE * thickness_pixels) / 2;
+    }
+
+  *thickness = thickness_pixels * PANGO_SCALE;
+}
+
 /* For Xft, it would be slightly more efficient to simply to
  * call Xft, and also more robust against changes in Xft.
  * But for now, we simply use the same code for all backends.
@@ -220,10 +244,16 @@ static void
 get_face_metrics (PangoFcFont      *fcfont,
 		  PangoFontMetrics *metrics)
 {
+  FcBool hinting;
   FT_Face face = pango_fc_font_lock_face (fcfont);
   FcMatrix *fc_matrix;
   FT_Matrix ft_matrix;
+  TT_OS2 *os2;
   gboolean have_transform = FALSE;
+
+  if (FcPatternGetBool (fcfont->font_pattern,
+			FC_HINTING, 0, &hinting) != FcResultMatch)
+    hinting = FcTrue;
   
   if  (FcPatternGetMatrix (fcfont->font_pattern,
 			   FC_MATRIX, 0, &fc_matrix) == FcResultMatch)
@@ -255,6 +285,51 @@ get_face_metrics (PangoFcFont      *fcfont,
     {
       metrics->descent = - PANGO_UNITS_26_6 (face->size->metrics.descender);
       metrics->ascent = PANGO_UNITS_26_6 (face->size->metrics.ascender);
+    }
+
+  /* Versions of FreeType < 2.1.8 get underline thickness wrong
+   * for Postscript fonts (always zero), so we need a fallback
+   */
+  if (face->underline_thickness == 0)
+    {
+      metrics->underline_thickness = (PANGO_SCALE * face->size->metrics.y_ppem) / 14;
+      metrics->underline_position = - metrics->underline_thickness;
+    }
+  else
+    {
+      FT_Fixed ft_thickness, ft_position;
+      
+      ft_thickness = FT_MulFix (face->underline_thickness, face->size->metrics.y_scale);
+      metrics->underline_thickness = PANGO_UNITS_26_6 (ft_thickness);
+
+      ft_position = FT_MulFix (face->underline_position, face->size->metrics.y_scale);
+      metrics->underline_position = PANGO_UNITS_26_6 (ft_position);
+    }
+
+  os2 = FT_Get_Sfnt_Table (face, ft_sfnt_os2);
+  if (os2 && os2->version != 0xFFFF && os2->yStrikeoutSize != 0)
+    {
+      FT_Fixed ft_thickness, ft_position;
+      
+      ft_thickness = FT_MulFix (os2->yStrikeoutSize, face->size->metrics.y_scale);
+      metrics->strikethrough_thickness = PANGO_UNITS_26_6 (ft_thickness);
+
+      ft_position = FT_MulFix (os2->yStrikeoutPosition, face->size->metrics.y_scale);
+      metrics->strikethrough_position = PANGO_UNITS_26_6 (ft_position);
+    }
+  else
+    {
+      metrics->strikethrough_thickness = metrics->underline_thickness;
+      metrics->strikethrough_position = (PANGO_SCALE * face->size->metrics.y_ppem) / 4;
+    }
+
+  /* If hinting is on for this font, quantize the underline and strikethrough position
+   * to integer values.
+   */
+  if (hinting)
+    {
+      quantize_position (&metrics->underline_thickness, &metrics->underline_position);
+      quantize_position (&metrics->strikethrough_thickness, &metrics->strikethrough_position);
     }
   
   pango_fc_font_unlock_face (fcfont);

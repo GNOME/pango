@@ -1,3 +1,15 @@
+Thu May 27 15:32:03 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-font.h pango/fonts.c: Add underline and
+	strikethrough position and thickness metrics.
+
+	* pango/pangofc-font.c: Implement underline and strikethrough
+	position and thickness metrics.
+
+	* pango/pango-fontset.c (pango_fontset_real_get_metrics):
+	Initialize metrics from the metrics of the first font
+	in the fontset.
+
 Thu May 27 15:08:32 2004  Owen Taylor  <otaylor@redhat.com>
 
 	* configure.in: Increment version to 1.5 for devel branch.

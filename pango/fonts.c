@@ -1288,6 +1288,76 @@ pango_font_metrics_get_approximate_digit_width (PangoFontMetrics *metrics)
   return metrics->approximate_digit_width;
 }
 
+/**
+ * pango_font_metrics_get_underline_position:
+ * @metrics: a #PangoFontMetrics structure
+ * 
+ * Gets the suggested position to draw the underline.
+ * The value returned is the distance <emphasis>above</emphasis> the
+ * baseline of the top of the underline. Since most fonts have
+ * underline positions beneath the baseline, this value is typically
+ * negative.
+ * 
+ * Return value: the suggested underline position, in Pango units.
+ **/
+int
+pango_font_metrics_get_underline_position (PangoFontMetrics *metrics)
+{
+  g_return_val_if_fail (metrics != NULL, 0);
+
+  return metrics->underline_position;
+}
+
+/**
+ * pango_font_metrics_get_underline_thickness:
+ * @metrics: a #PangoFontMetrics structure
+ * 
+ * Gets the suggested thickness to draw for the underline.
+ * 
+ * Return value: the suggested underline thickness, in Pango units.
+ **/
+int
+pango_font_metrics_get_underline_thickness (PangoFontMetrics *metrics)
+{
+  g_return_val_if_fail (metrics != NULL, 0);
+
+  return metrics->underline_thickness;
+}
+
+/**
+ * pango_font_metrics_get_strikethrough_position:
+ * @metrics: a #PangoFontMetrics structure
+ * 
+ * Gets the suggested position to draw the strikethrough.
+ * The value returned is the distance <emphasis>above</emphasis> the
+ * baseline of the top of the strikethrough.
+ * 
+ * Return value: the suggested strikethrough position, in Pango units.
+ **/
+int
+pango_font_metrics_get_strikethrough_position (PangoFontMetrics *metrics)
+{
+  g_return_val_if_fail (metrics != NULL, 0);
+
+  return metrics->strikethrough_position;
+}
+
+/**
+ * pango_font_metrics_get_strikethrough_thickness:
+ * @metrics: a #PangoFontMetrics structure
+ * 
+ * Gets the suggested thickness to draw for the strikethrough.
+ * 
+ * Return value: the suggested strikethrough thickness, in Pango units.
+ **/
+int
+pango_font_metrics_get_strikethrough_thickness (PangoFontMetrics *metrics)
+{
+  g_return_val_if_fail (metrics != NULL, 0);
+
+  return metrics->strikethrough_thickness;
+}
+
 /*
  * PangoFontFamily
  */
