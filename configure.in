@@ -46,6 +46,20 @@ fi
 
 X_LIBS="$X_LIBS -lX11"
 
+
+#
+# Find pkg-config
+#
+AC_PATH_PROG(PKG_CONFIG, pkg-config, no)
+if test x$PKG_CONFIG = xno ; then
+  AC_MSG_ERROR([*** pkg-config not found. See http://pkgconfig.sourceforge.net])
+fi
+
+if ! pkg-config --atleast-pkgconfig-version 0.5 ; then
+  AC_MSG_ERROR([*** pkg-config too old; version 0.5 or better required.])
+fi
+
+
 #
 # Checks for FreeType
 #
@@ -86,17 +100,24 @@ AM_CONDITIONAL(HAVE_XFT, $have_xft)
 #
 # Checks for GLib
 #
-AM_PATH_GLIB_2_0(1.3.1,,
-                 AC_MSG_ERROR([GLib 1.3.1 is required for building Pango]),
-	         gmodule gobject)
+GLIB_PACKAGES="gobject-2.0 gmodule-2.0"
+GLIB_REQUIRED_VERSION=1.3.2
 
-AC_PATH_PROG(GLIB_CONFIG, glib-config-2.0, no)
-if test x$GLIB_CONFIG = xno ; then
-  AC_MSG_ERROR([*** glib-config-2.0 not found])
+AC_MSG_CHECKING(GLib flags)
+if $PKG_CONFIG --atleast-version $GLIB_REQUIRED_VERSION glib-2.0 ; then
+      GLIB_CFLAGS=`$PKG_CONFIG --cflags $GLIB_PACKAGES`
+      GLIB_LIBS=`$PKG_CONFIG --libs $GLIB_PACKAGES`
+
+      AC_MSG_RESULT($GLIB_CFLAGS $GLIB_LIBS)
+else
+      AC_MSG_ERROR([
+*** GLIB $GLIB_REQUIRED_VERSION or newer is required. The latest version of GLIB
+*** is always available from ftp://ftp.gtk.org/.
+  ])
 fi
-GLIB_CFLAGS="`$GLIB_CONFIG --cflags gmodule gobject`"
+
 CFLAGS="$CFLAGS $GLIB_CFLAGS"
-GLIB_LIBS="`$GLIB_CONFIG --libs gmodule gobject`"
+
 AC_SUBST(GLIB_LIBS)
 AC_SUBST(GLIB_CFLAGS)
 
@@ -427,7 +448,6 @@ tools/Makefile
 fonts/Makefile
 tests/Makefile
 pango.spec
-pango-config
 pango.pc
 pangox.pc
 pangoxft.pc

@@ -1,3 +1,18 @@
+2001-01-04  Havoc Pennington  <hp@redhat.com>
+
+	* pango/Makefile.am (install-data-local): put creation of module
+	file here. Fixes problem if you 'make install' with no preceding
+	'make' reported by Michael Meeks.
+
+	* modules/Makefile.am (install-data-local): remove creation of module file
+	from here
+
+	* Makefile.am (SUBDIRS): remove pango-config
+
+	* configure.in: use pkg-config to detect GLib cflags/libs
+
+	* pangoxft.pc (Description): fix name/description
+
 2001-01-04  Alexander Larsson  <alla@lysator.liu.se>
 
 	* modules/arabic/arabic-x.c:

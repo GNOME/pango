@@ -174,3 +174,14 @@ EXTRA_DIST =			\
 	pangowin32.rc		\
 	pangowin32.rc.in
 
+
+install-data-local:
+	($(mkinstalldirs) $(DESTDIR)$(sysconfdir)/pango; \
+	if ls $(DESTDIR)$(libdir)/pango/modules/*.so | grep -q 'so'; then \
+          echo "Wrote $(DESTDIR)$(sysconfdir)/pango/pango.modules."; \
+          $(top_builddir)/pango/pango-querymodules $(DESTDIR)$(libdir)/pango/modules/*.so \
+		> $(DESTDIR)$(sysconfdir)/pango/pango.modules; \
+        else \
+          echo "No dynamic modules were installed; all modules were linked statically."; \
+	  echo "# This is an empty file, because Pango was installed with no dynamic modules" > $(DESTDIR)$(sysconfdir)/pango/pango.modules; \
+        fi)

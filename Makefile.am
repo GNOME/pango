@@ -2,11 +2,8 @@
 
 SUBDIRS=modules pango examples docs tools fonts
 
-bin_SCRIPTS = pango-config
-
 EXTRA_DIST = 		\
 	pango.spec.in	\
-	pango-config.in	\
 	pango.pc.in	\
 	pangox.pc.in	\
 	pangoxft.pc.in	\
