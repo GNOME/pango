@@ -403,6 +403,7 @@ pango_layout_set_markup_with_accel
 pango_layout_set_attributes
 pango_layout_get_attributes
 pango_layout_set_font_description
+pango_layout_get_font_description
 pango_layout_set_width
 pango_layout_get_width
 pango_layout_set_wrap

@@ -190,6 +190,7 @@ EXPORTS
 	pango_layout_get_cursor_pos
 	pango_layout_get_ellipsize
 	pango_layout_get_extents
+	pango_layout_get_font_description
 	pango_layout_get_indent
 	pango_layout_get_iter
 	pango_layout_get_justify

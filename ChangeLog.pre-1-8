@@ -1,3 +1,11 @@
+Mon Dec 13 14:44:40 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-layout.[ch] pango/pango.def docs/pango-sections.txt: 
+	Add. (#153548, Morten Welinder)
+
+	* pango/pango-layout.c (pango_layout_set_font_description):
+	Guard against the same description being set back.
+
 2004-12-12  Tor Lillqvist  <tml@iki.fi>
 
 	* pango/modules.c (read_modules)

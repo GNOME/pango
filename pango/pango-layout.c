@@ -484,16 +484,38 @@ pango_layout_set_font_description (PangoLayout                 *layout,
 {
   g_return_if_fail (layout != NULL);
 
-  if (layout->font_desc)
-    pango_font_description_free (layout->font_desc);
-  
-  if (desc)
-    layout->font_desc = pango_font_description_copy (desc);
-  else
-    layout->font_desc = NULL;
+  if (desc != layout->font_desc)
+    {
+      if (layout->font_desc)
+	pango_font_description_free (layout->font_desc);
+      
+      if (desc)
+	layout->font_desc = pango_font_description_copy (desc);
+      else
+	layout->font_desc = NULL;
+      
+      pango_layout_clear_lines (layout);
+      layout->tab_width = -1;
+    }
+}
 
-  pango_layout_clear_lines (layout);
-  layout->tab_width = -1;
+/**
+ * pango_layout_get_font_description:
+ * @layout: a #PangoLayout
+ * 
+ * Gets the font description for the layout, if any.
+ * 
+ * Return value: a pointer to the layout's font description,
+ *  or %NULL if the font description from the layout's
+ *  context is inherited. This value is owned by the layout
+ *  and must not be modified or freed.
+ **/
+G_CONST_RETURN PangoFontDescription *
+pango_layout_get_font_description (PangoLayout *layout)
+{
+  g_return_val_if_fail (PANGO_IS_LAYOUT (layout), NULL);
+
+  return layout->font_desc;
 }
 
 /**
