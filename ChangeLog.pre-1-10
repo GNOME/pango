@@ -1,3 +1,7 @@
+2004-08-05  Tor Lillqvist  <tml@iki.fi>
+
+	* pango/pangoft2.def: Add pango_ot_buffer_set_zero_width_marks.
+
 Mon Aug  2 17:09:47 2004  Owen Taylor  <otaylor@redhat.com>
 
 	* === Released 1.5.2 ==
