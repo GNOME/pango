@@ -1,3 +1,25 @@
+2001-04-27  Havoc Pennington  <hp@redhat.com>
+
+	* pango/pangox-fontmap.c: Move some fontmap stuff to
+	pangox-private.h to access fontmap->resolution in pangox.c
+
+	* pango/pangox.c (get_font_metrics_from_subfonts): multiply
+	avg. width by PANGO_SCALE, and consider that avg width from X is
+	in decipoints
+
+	* modules/basic/basic-x.c: mark some chars unknown when shaping, 
+	with a flag PANGO_X_UNKNOWN_FLAG
+
+	* pango/pangox.c (pango_x_font_get_metrics): use lookup_lang not
+	lang when calling get_font_metrics_from_string
+	(pango_x_render): render unknown chars
+
+	* pango/pango-layout.c:
+	(pango_layout_set_single_paragraph_mode): add mode where we don't
+	break on para separators, instead we shape them and display glyphs
+	(pango_layout_get_single_paragraph_mode): getter for above
+	(pango_layout_check_lines): handle single paragraph mode
+
 Tue Apr 24 11:45:55 2001  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/opentype/ftxgdef.c (TT_Load_GDEF_Table): Remove

@@ -31,6 +31,8 @@
 #include "pango-intset.h"
 #include "modules.h"
 
+#define PANGO_X_UNKNOWN_FLAG 0x10000000
+
 #define PANGO_LIGATURE_HACK_DEBUG
 
 #include <config.h>
@@ -442,7 +444,106 @@ pango_x_render  (Display           *display,
   
   for (i=0; i<glyphs->num_glyphs; i++)
     {
-      if (glyphs->glyphs[i].glyph)
+      if (glyphs->glyphs[i].glyph &
+          PANGO_X_UNKNOWN_FLAG)
+        {
+          int x1, y1, x2, y2; /* rectangle the character should go inside. */
+          int baseline;
+          PangoFontMetrics metrics;
+          gunichar wc;
+          
+          pango_font_get_metrics (font, NULL, &metrics);
+          
+          x1 = (x_off + glyphs->glyphs[i].geometry.x_offset) / PANGO_SCALE;
+          y1 = y + (glyphs->glyphs[i].geometry.y_offset - metrics.ascent) / PANGO_SCALE;
+          x2 = x1 + glyphs->glyphs[i].geometry.width / PANGO_SCALE;
+          y2 = y1 + (metrics.ascent + metrics.descent) / PANGO_SCALE;
+          baseline = y1 + metrics.ascent / PANGO_SCALE;
+          
+          wc = glyphs->glyphs[i].glyph & (~PANGO_X_UNKNOWN_FLAG);
+
+          switch (wc)
+            {
+            case '\n':
+            case '\r':
+            case 0x2028: /* Line separator */
+            case 0x2029: /* Paragraph separator */
+              {
+                /* Draw a carriage-return thingy */
+                PangoRectangle up_stroke;
+                PangoRectangle across_stroke;
+                int arrowhead_top_x, arrowhead_top_y;
+                int arrowhead_bottom_x, arrowhead_bottom_y;
+                int arrowhead_point_x, arrowhead_point_y;
+                int xoff;
+                double slope;
+                int h;
+                
+                up_stroke.width = (x2 - x1) * 0.125;
+                if ((up_stroke.width % 2) == 0)
+                  up_stroke.width -= 1;
+                up_stroke.height = (y2 - y1) * 0.275;
+                up_stroke.x = x2 - up_stroke.width;
+                up_stroke.y = baseline - up_stroke.height - up_stroke.width / 2 - 1;
+
+                across_stroke.width = (x2 - x1) * 0.5;
+                across_stroke.height = up_stroke.width;
+                across_stroke.x = up_stroke.x - across_stroke.width;
+                across_stroke.y = up_stroke.y + up_stroke.height - across_stroke.height;
+
+                h = across_stroke.height * 3.2;
+                arrowhead_top_x = across_stroke.x;
+                arrowhead_top_y = across_stroke.y - h; 
+                arrowhead_bottom_x = across_stroke.x;
+                arrowhead_bottom_y = across_stroke.y + across_stroke.height + h;
+
+                arrowhead_point_x = x1 + (x2 - x1) * 0.14;
+                arrowhead_point_y = across_stroke.y + across_stroke.height / 2;
+
+                /* require odd size, to line up with the odd-sized stroke */
+                if (((arrowhead_top_y - arrowhead_point_y) % 2) == 0)
+                  arrowhead_top_y -= 1;
+                
+                XFillRectangle (display, d, gc,
+                                up_stroke.x, up_stroke.y,
+                                up_stroke.width, up_stroke.height);
+
+                XFillRectangle (display, d, gc,
+                                across_stroke.x, across_stroke.y,
+                                across_stroke.width, across_stroke.height);
+
+                slope =
+                  (double)(arrowhead_top_x - arrowhead_point_x) /
+                  (double)(arrowhead_top_y - arrowhead_point_y);
+                
+                xoff = arrowhead_point_x;
+                while (xoff <= arrowhead_top_x)
+                  {
+                    int half_height = ((xoff - arrowhead_point_x) / slope);
+                    
+                    XDrawLine (display, d, gc,
+                               xoff,
+                               arrowhead_point_y - half_height,
+                               xoff,
+                               arrowhead_point_y + half_height);
+
+                    ++xoff;
+                  }
+              }
+              break;
+
+            default:
+
+              /* Here we should draw the box-with-numbers as in the
+               * Xft backend. The shaper never gives us a glyph that
+               * activates this case at the moment though, so also
+               * needs hacking.
+               */
+              
+              break;
+            }
+        }
+      else if (glyphs->glyphs[i].glyph)
 	{
 	  guint16 index = PANGO_X_GLYPH_INDEX (glyphs->glyphs[i].glyph);
 	  guint16 subfont_index = PANGO_X_GLYPH_SUBFONT (glyphs->glyphs[i].glyph);
@@ -486,7 +587,52 @@ pango_x_font_get_glyph_extents  (PangoFont      *font,
   XCharStruct *cs;
   PangoXSubfontInfo *subfont;
 
-  if (glyph && pango_x_find_glyph (font, glyph, &subfont, &cs))
+  if (glyph & PANGO_X_UNKNOWN_FLAG)
+    {
+      gunichar wc;
+      
+      wc = glyph & (~PANGO_X_UNKNOWN_FLAG);
+          
+      switch (wc)
+        {
+        case '\n':
+        case '\r':
+        case 0x2028: /* Line separator */
+        case 0x2029: /* Paragraph separator */
+          {
+            /* Size of carriage-return thingy */
+            PangoFontMetrics metrics;
+            int w;
+
+            pango_font_get_metrics (font, NULL, &metrics);
+            
+#define MAGIC_FACTOR 2.1
+            
+            w = metrics.approximate_char_width * MAGIC_FACTOR;
+            
+            if (ink_rect)
+              {
+                ink_rect->x = 0;
+                ink_rect->width = w;
+                ink_rect->y = - metrics.ascent;
+                ink_rect->height = metrics.ascent + metrics.descent;
+              }
+            if (logical_rect)
+              {
+                logical_rect->x = 0;
+                logical_rect->width = w;
+                logical_rect->y = - metrics.ascent;
+                logical_rect->height = metrics.ascent + metrics.descent;
+              }
+          }
+          break;
+          
+        default:
+              
+          break;
+        }
+    }
+  else if (glyph && pango_x_find_glyph (font, glyph, &subfont, &cs))
     {
       if (ink_rect)
 	{
@@ -557,7 +703,7 @@ get_font_metrics_from_subfonts (PangoFont        *font,
   GSList *tmp_list = subfonts;
   gboolean first = TRUE;
   int total_avg_widths = 0;
-  int n_avg_widths = 0;
+  int n_avg_widths = 0;  
   Atom avg_width_atom;
 
   avg_width_atom = pango_x_fontmap_atom_from_name (xfont->fontmap,
@@ -590,9 +736,28 @@ get_font_metrics_from_subfonts (PangoFont        *font,
 		}
 	    }
 
-          if (!get_int_prop (avg_width_atom, fs, &avg_width))
-            avg_width = (fs->min_bounds.width + fs->max_bounds.width) / 2;
+          if (get_int_prop (avg_width_atom, fs, &avg_width))
+            {
+              /* convert decipoints --> pango units.
+               * Resolution is in (points * PANGO_SCALE) / pixel,
+               * avg_width in decipoints.
+               * We want pixels * PANGO_SCALE
+               */
 
+              /* Convert to points */
+              avg_width = ((double) avg_width) / (double) 10.0;
+              /* points * PANGO_SCALE */
+              avg_width *= PANGO_SCALE;
+              /* Convert to pixels */
+              avg_width /= (double) PANGO_X_FONT_MAP (PANGO_X_FONT (font)->fontmap)->resolution;
+              /* Convert to pixels * PANGO_SCALE */
+              avg_width *= PANGO_SCALE;
+            }
+          else
+            {
+              avg_width = PANGO_SCALE * ((fs->min_bounds.width + fs->max_bounds.width) / 2);
+            }
+          
           total_avg_widths += avg_width;
           n_avg_widths += 1;
 	}
@@ -640,7 +805,7 @@ get_font_metrics_from_string (PangoFont        *font,
 
   last_shaper = NULL;
   last_level = 0;
-  
+
   i = 0;
   p = start = str;
   while (*p)
@@ -789,14 +954,14 @@ pango_x_font_get_metrics (PangoFont        *font,
 
       xfont->metrics_by_lang = g_slist_prepend (xfont->metrics_by_lang, info);
       
-      get_font_metrics_from_string (font, lang, str, &info->metrics);
+      get_font_metrics_from_string (font, lookup_lang, str, &info->metrics);
 
       /* This is sort of a sledgehammer solution, but we cache this
        * stuff so not a huge deal hopefully. Get the avg. width of the
        * chars in "0123456789"
        */
       context = pango_x_get_context (pango_x_fontmap_get_display (xfont->fontmap));
-      pango_context_set_lang (context, lang);
+      pango_context_set_lang (context, lookup_lang);
       layout = pango_layout_new (context);
       pango_layout_set_text (layout, "0123456789", -1);
 
@@ -1950,5 +2115,25 @@ pango_x_fallback_shape (PangoFont        *font,
       glyphs->log_clusters[i] = 0;
       
       p = g_utf8_next_char (p);
+    }
+}
+
+PangoGlyph
+pango_x_font_get_unknown_glyph (PangoFont *font,
+                                gunichar   wc)
+{
+  g_return_val_if_fail (PANGO_IS_FONT (font), 0);
+
+  switch (wc)
+    {
+    case '\n':
+    case '\r':
+    case 0x2028: /* Line separator */
+    case 0x2029: /* Paragraph separator */
+      return PANGO_X_UNKNOWN_FLAG | wc;
+      break;
+    default:
+      return 0;
+      break;
     }
 }

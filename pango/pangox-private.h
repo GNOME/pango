@@ -60,6 +60,41 @@ struct _PangoXFont
   PangoXFontEntry *entry;	/* Used to remove cached fonts */
 };
 
+
+#define PANGO_TYPE_X_FONT_MAP              (pango_x_font_map_get_type ())
+#define PANGO_X_FONT_MAP(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_TYPE_X_FONT_MAP, PangoXFontMap))
+#define PANGO_X_FONT_MAP_CLASS(klass)      (G_TYPE_CHECK_CLASS_CAST ((klass), PANGO_TYPE_X_FONT_MAP, PangoXFontMapClass))
+#define PANGO_X_IS_FONT_MAP(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), PANGO_TYPE_X_FONT_MAP))
+#define PANGO_X_IS_FONT_MAP_CLASS(klass)   (G_TYPE_CHECK_CLASS_TYPE ((klass), PANGO_TYPE_X_FONT_MAP))
+#define PANGO_X_FONT_MAP_GET_CLASS(obj)    (G_TYPE_INSTANCE_GET_CLASS ((obj), PANGO_TYPE_X_FONT_MAP, PangoXFontMapClass))
+
+typedef struct _PangoXFontMap      PangoXFontMap;
+typedef struct _PangoXFontMapClass PangoXFontMapClass;
+
+struct _PangoXFontMap
+{
+  PangoFontMap parent_instance;
+
+  Display *display;
+
+  PangoXFontCache *font_cache;
+  GQueue *freed_fonts;
+
+  GHashTable *families;
+  GHashTable *size_infos;
+
+  GHashTable *to_atom_cache;
+  GHashTable *from_atom_cache;
+
+  int n_fonts;
+
+  double resolution;		/* (points / pixel) * PANGO_SCALE */
+
+  Window coverage_win;
+};
+
+GType    pango_x_font_map_get_type   (void);
+
 PangoXFont *   pango_x_font_new                (PangoFontMap    *fontmap,
 						const char      *spec,
 						int              size);
@@ -85,6 +120,7 @@ Atom           pango_x_fontmap_atom_from_name (PangoFontMap *fontmap,
 const char    *pango_x_fontmap_name_from_atom  (PangoFontMap *fontmap,
                                                 Atom          atom);
 
-
+PangoGlyph     pango_x_font_get_unknown_glyph  (PangoFont    *font,
+                                                gunichar      wc);
 
 #endif /* __PANGOX_PRIVATE_H__ */

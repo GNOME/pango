@@ -116,6 +116,8 @@ struct _PangoLayout
   guint justify : 1;
   guint alignment : 2;
 
+  guint single_paragraph : 1;
+  
   gint n_chars;		        /* Total number of characters in layout */
   PangoLogAttr *log_attrs;	/* Logical attributes for layout's text */
 
@@ -659,6 +661,44 @@ pango_layout_get_tabs (PangoLayout *layout)
     return pango_tab_array_copy (layout->tabs);
   else
     return NULL;
+}
+
+/**
+ * pango_layout_set_single_paragraph_mode:
+ * @layout: a #PangoLayout
+ * @setting: new setting
+ * 
+ * If @setting is %TRUE, do not treat newlines and similar characters
+ * as paragraph separators; instead, keep all text in a single paragraph,
+ * and display a glyph for paragraph separator characters. Used when
+ * you want to allow editing of newlines on a single text line.
+ * 
+ **/
+void
+pango_layout_set_single_paragraph_mode (PangoLayout *layout,
+                                        gboolean     setting)
+{
+  g_return_if_fail (PANGO_IS_LAYOUT (layout));
+  
+  layout->single_paragraph = setting;
+
+  pango_layout_clear_lines (layout);
+}
+/**
+ * pango_layout_get_single_paragraph_mode:
+ * @layout: a #PangoLayout
+ * 
+ * Obtains the value set by pango_layout_set_single_paragraph_mode().
+ * 
+ * Return value: %TRUE if the layout does not break paragraphs at paragraph separator characters
+ **/
+   
+gboolean
+pango_layout_get_single_paragraph_mode (PangoLayout *layout)
+{
+  g_return_val_if_fail (PANGO_IS_LAYOUT (layout), FALSE);
+
+  return layout->single_paragraph;
 }
 
 /**
@@ -2693,11 +2733,19 @@ pango_layout_check_lines (PangoLayout *layout)
       const char *end;
       int delimiter_index, next_para_index;
       ParaBreakState state;
-      
-      pango_find_paragraph_boundary (start,
-                                     (layout->text + layout->length) - start,
-                                     &delimiter_index,
-                                     &next_para_index);
+
+      if (layout->single_paragraph)
+        {
+          delimiter_index = layout->length;
+          next_para_index = layout->length;
+        }
+      else
+        {
+          pango_find_paragraph_boundary (start,
+                                         (layout->text + layout->length) - start,
+                                         &delimiter_index,
+                                         &next_para_index);
+        }
 
       g_assert (next_para_index >= delimiter_index);
       

@@ -124,6 +124,10 @@ void           pango_layout_set_tabs             (PangoLayout                *la
 
 PangoTabArray* pango_layout_get_tabs             (PangoLayout                *layout);
 
+void           pango_layout_set_single_paragraph_mode (PangoLayout                *layout,
+                                                       gboolean                    setting);
+gboolean       pango_layout_get_single_paragraph_mode (PangoLayout                *layout);
+
 void           pango_layout_context_changed (PangoLayout    *layout);
 
 void     pango_layout_get_log_attrs (PangoLayout    *layout,

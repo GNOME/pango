@@ -32,16 +32,7 @@
 #include "pango-utils.h"
 #include "pangox-private.h"
 
-#define PANGO_TYPE_X_FONT_MAP              (pango_x_font_map_get_type ())
-#define PANGO_X_FONT_MAP(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_TYPE_X_FONT_MAP, PangoXFontMap))
-#define PANGO_X_FONT_MAP_CLASS(klass)      (G_TYPE_CHECK_CLASS_CAST ((klass), PANGO_TYPE_X_FONT_MAP, PangoXFontMapClass))
-#define PANGO_X_IS_FONT_MAP(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), PANGO_TYPE_X_FONT_MAP))
-#define PANGO_X_IS_FONT_MAP_CLASS(klass)   (G_TYPE_CHECK_CLASS_TYPE ((klass), PANGO_TYPE_X_FONT_MAP))
-#define PANGO_X_FONT_MAP_GET_CLASS(obj)    (G_TYPE_INSTANCE_GET_CLASS ((obj), PANGO_TYPE_X_FONT_MAP, PangoXFontMapClass))
-
 typedef struct _PangoXFamilyEntry  PangoXFamilyEntry;
-typedef struct _PangoXFontMap      PangoXFontMap;
-typedef struct _PangoXFontMapClass PangoXFontMapClass;
 typedef struct _PangoXSizeInfo     PangoXSizeInfo;
 
 /* Number of freed fonts */
@@ -71,28 +62,6 @@ typedef enum
   XLFD_CHARSET		= 12,
   XLFD_NUM_FIELDS     
 } FontField;
-
-struct _PangoXFontMap
-{
-  PangoFontMap parent_instance;
-
-  Display *display;
-
-  PangoXFontCache *font_cache;
-  GQueue *freed_fonts;
-
-  GHashTable *families;
-  GHashTable *size_infos;
-
-  GHashTable *to_atom_cache;
-  GHashTable *from_atom_cache;
-
-  int n_fonts;
-
-  double resolution;		/* (points / pixel) * PANGO_SCALE */
-
-  Window coverage_win;
-};
 
 struct _PangoXFontMapClass
 {
@@ -155,7 +124,6 @@ const struct {
   { "condensed",     PANGO_STRETCH_CONDENSED },
 };
 
-static GType    pango_x_font_map_get_type   (void);
 static void     pango_x_font_map_init       (PangoXFontMap      *fontmap);
 static void     pango_x_font_map_class_init (PangoXFontMapClass *class);
 
@@ -186,7 +154,7 @@ static char *   pango_x_get_identifier      (const char         *fontname);
 
 static PangoFontClass *parent_class;	/* Parent class structure for PangoXFontMap */
 
-static GType
+GType
 pango_x_font_map_get_type (void)
 {
   static GType object_type = 0;

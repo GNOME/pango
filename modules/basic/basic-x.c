@@ -22,6 +22,7 @@
 #include <glib.h>
 #include <string.h>
 #include "pangox.h"
+#include "pangox-private.h"
 #include "pango-engine.h"
 #include "pango-utils.h"
 
@@ -153,6 +154,16 @@ find_char (CharCache *cache, PangoFont *font, gunichar wc, const char *input)
   MaskTable *mask_table;
   int i;
 
+  switch (wc)
+    {
+    case '\n':
+    case '\r':
+    case 0x2028: /* Line separator */
+    case 0x2029: /* Paragraph separator */
+      return pango_x_font_get_unknown_glyph (font, wc);
+      break;
+    }
+  
   if (wc >= G_N_ELEMENTS (char_masks))
     mask_index = 0;
   else
