@@ -214,7 +214,7 @@ static fontentry charmap [] =
 };             
 
 void 
-arabic_mule_recode(PangoXSubfont* subfont,int* glyph,PangoXSubfont* mulefonts)
+arabic_mule_recode(PangoXSubfont* subfont,gunichar* glyph,PangoXSubfont* mulefonts)
 {
     int letter=*glyph;
     if ((letter >= 0x660)&&(letter <= 0x669)) /* indic numeral */

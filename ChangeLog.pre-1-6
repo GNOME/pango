@@ -1,3 +1,9 @@
+Wed Feb 20 16:58:24 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* modules/arabic/{naqshfont.[ch],mulefont.[ch],langboxfont.[ch]}:
+	Fix recode functions to take gunichar * since we pass that in.
+	(#72059, reported by Miroslaw Dobrzanski-Neumann)
+
 Sun Feb 17 18:50:30 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* configure.in: Version 0.25

@@ -172,7 +172,7 @@ static fontentry charmap [] =
 };             
 
 void 
-arabic_lbox_recode(PangoXSubfont* subfont,int* glyph,int* glyph2,
+arabic_lbox_recode(PangoXSubfont* subfont,gunichar* glyph,int* glyph2,
                    PangoXSubfont* lboxfonts)
 {
     int letter=*glyph;

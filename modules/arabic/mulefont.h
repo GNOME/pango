@@ -18,6 +18,6 @@ ArabicFontInfo*
 arabic_muleinit(PangoFont  *font);
 
 void 
-arabic_mule_recode(PangoXSubfont* subfont,int* glyph,PangoXSubfont* mulefonts);
+arabic_mule_recode(PangoXSubfont* subfont,gunichar* glyph,PangoXSubfont* mulefonts);
 
 #endif
