@@ -58,13 +58,17 @@ void           pango_win32_render_layout      (HDC               hdc,
 					       int               y);
 
 
+#ifdef PANGO_ENABLE_ENGINE
 
-/* API for rendering modules
+/* For shape engines
  */
 
-PangoGlyph             pango_win32_get_unknown_glyph    (PangoFont        *font);
-gint                   pango_win32_font_get_glyph_index (PangoFont        *font,
-							 gunichar          wc);
+PangoGlyph     pango_win32_get_unknown_glyph  (PangoFont        *font,
+					       gunichar          wc);
+gint	      pango_win32_font_get_glyph_index(PangoFont        *font,
+					       gunichar          wc);
+
+#endif
 
 /* API for libraries that want to use PangoWin32 mixed with classic
  * Win32 fonts.

@@ -39,6 +39,8 @@
 #define PANGO_WIN32_IS_FONT_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), PANGO_TYPE_WIN32_FONT))
 #define PANGO_WIN32_FONT_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS ((obj), PANGO_TYPE_WIN32_FONT, PangoWin32FontClass))
 
+#define PANGO_WIN32_UNKNOWN_FLAG 0x10000000
+
 HDC pango_win32_hdc;
 OSVERSIONINFO pango_win32_os_version_info;
 
@@ -244,9 +246,11 @@ pango_win32_render (HDC               hdc,
 {
   HFONT old_hfont = NULL;
   HFONT hfont;
-  int i;
+  int i, num_valid_glyphs;
   guint16 *glyph_indexes;
-  INT *dX;
+  gint *dX;
+  gint last_x = 0;
+  PangoGlyphUnit start_x_offset = 0, x_offset = 0;
 
   g_return_if_fail (glyphs != NULL);
 
@@ -259,16 +263,64 @@ pango_win32_render (HDC               hdc,
   glyph_indexes = g_new (guint16, glyphs->num_glyphs);
   dX = g_new (INT, glyphs->num_glyphs);
 
+#ifdef PANGO_WIN32_DEBUGGING
+  PING (("num_glyphs:%d", glyphs->num_glyphs));
+  printf (" ");
+  for (i = 0; i <glyphs->num_glyphs; i++)
+    printf ("%d:%d ", glyphs->glyphs[i].glyph, glyphs->glyphs[i].geometry.width);
+  printf ("\n");
+#endif
+
+  num_valid_glyphs = 0;
   for (i = 0; i <glyphs->num_glyphs; i++)
     {
-      glyph_indexes[i] = glyphs->glyphs[i].glyph;
-      dX[i] = glyphs->glyphs[i].geometry.width / PANGO_SCALE;
+      if (glyphs->glyphs[i].glyph == 0)
+	{
+	  /* Code point 0 glyphs should not be rendered, but their
+	   * indicated width (set up by PangoLayout) should be taken
+	   * into account.
+	   */
+
+	  /* If the string starts with spacing, must shift the
+	   * starting point for the glyphs actually rendered.  For
+	   * spacing in the middle of the glyph string, add to the dX
+	   * of the previous glyph to be rendered.
+	   */
+	  if (num_valid_glyphs == 0)
+	    start_x_offset += glyphs->glyphs[i].geometry.width;
+	  else
+	    {
+	      x_offset += glyphs->glyphs[i].geometry.width;
+	      dX[num_valid_glyphs-1] = PANGO_PIXELS (x_offset) - last_x;
+	    }
+	}
+      else
+        {
+	  if (glyphs->glyphs[i].glyph & PANGO_WIN32_UNKNOWN_FLAG)
+	    {
+	      /* Glyph index is actually the char value that doesn't
+	       * have any glyph (ORed with the flag). We should really
+	       * do the same that pango_xft_real_render() does: render
+	       * a box with the char value in hex inside it in a tiny
+	       * font. Later.  For now, use the TrueType invalid glyph
+	       * at 0.
+	       */
+	      glyph_indexes[num_valid_glyphs] = 0;
+	    }
+	  else
+	    glyph_indexes[num_valid_glyphs] = glyphs->glyphs[i].glyph;
+
+	  last_x = PANGO_PIXELS (x_offset);
+	  x_offset += glyphs->glyphs[i].geometry.width;
+	  dX[num_valid_glyphs] = PANGO_PIXELS (x_offset) - last_x;
+	  num_valid_glyphs++;
+	}
     }
 
-  ExtTextOutW (hdc, x, y,
+  ExtTextOutW (hdc, x + PANGO_PIXELS (start_x_offset), y,
 	       ETO_GLYPH_INDEX,
 	       NULL,
-	       glyph_indexes, glyphs->num_glyphs,
+	       glyph_indexes, num_valid_glyphs,
 	       dX);
 
   SelectObject (hdc, old_hfont); /* restore */
@@ -289,6 +341,9 @@ pango_win32_font_get_glyph_extents (PangoFont      *font,
   HFONT hfont;
   MAT2 m = {{0,1}, {0,0}, {0,0}, {0,1}};
   PangoWin32GlyphInfo *info;
+
+  if (glyph & PANGO_WIN32_UNKNOWN_FLAG)
+    glyph_index = glyph = 0;
 
   info = g_hash_table_lookup (win32font->glyph_info, GUINT_TO_POINTER (glyph));
   
@@ -321,9 +376,12 @@ pango_win32_font_get_glyph_extents (PangoFont      *font,
   
       if (res == GDI_ERROR)
 	{
-	  guint32 error = GetLastError ();
-	  g_warning ("GetGlyphOutline() failed with error: %d\n", error);
-	  return;
+	  gchar *error = g_win32_error_message (GetLastError ());
+	  g_warning ("GetGlyphOutline(%04X) failed: %s\n",
+		     glyph_index, error);
+	  g_free (error);
+
+	  /* Don't just return now, use the still zeroed out gm */
 	}
 
       info->ink_rect.x = PANGO_SCALE * gm.gmptGlyphOrigin.x;
@@ -528,9 +586,10 @@ pango_win32_font_find_shaper (PangoFont     *font,
  * Return value: a glyph index into @font
  **/
 PangoGlyph
-pango_win32_get_unknown_glyph (PangoFont *font)
+pango_win32_get_unknown_glyph (PangoFont *font,
+			       gunichar   wc)
 {
-  return 0;
+  return wc | PANGO_WIN32_UNKNOWN_FLAG;
 }
 
 /**
@@ -586,10 +645,10 @@ pango_win32_render_layout_line (HDC              hdc,
 					 (bg_color.color.green + 128) >> 8,
 					 (bg_color.color.blue + 128) >> 8));
 	  oldbrush = SelectObject (hdc, brush);
-	  Rectangle (hdc, x + (x_off + logical_rect.x) / PANGO_SCALE,
-			  y + overall_rect.y / PANGO_SCALE,
-			  logical_rect.width / PANGO_SCALE,
-			  overall_rect.height / PANGO_SCALE);
+	  Rectangle (hdc, x + PANGO_PIXELS (x_off + logical_rect.x),
+			  y + PANGO_PIXELS (overall_rect.y),
+			  PANGO_PIXELS (logical_rect.width),
+			  PANGO_PIXELS (overall_rect.height));
 	  SelectObject (hdc, oldbrush);
 	  DeleteObject (brush);
 	}
@@ -603,16 +662,16 @@ pango_win32_render_layout_line (HDC              hdc,
 	}
 
       pango_win32_render (hdc, run->item->analysis.font, run->glyphs,
-			  x + x_off / PANGO_SCALE, y);
+			  x + PANGO_PIXELS (x_off), y);
 
       switch (uline)
 	{
 	case PANGO_UNDERLINE_NONE:
 	  break;
 	case PANGO_UNDERLINE_DOUBLE:
-	  points[0].x = x + (x_off + ink_rect.x) / PANGO_SCALE - 1;
+	  points[0].x = x + PANGO_PIXELS (x_off + ink_rect.x) - 1;
 	  points[0].y = points[1].y = y + 4;
-	  points[1].x = x + (x_off + ink_rect.x + ink_rect.width) / PANGO_SCALE;
+	  points[1].x = x + PANGO_PIXELS (x_off + ink_rect.x + ink_rect.width);
 	  Polyline (hdc, points, 2);
 	  /* Fall through */
 	case PANGO_UNDERLINE_SINGLE:
@@ -620,9 +679,9 @@ pango_win32_render_layout_line (HDC              hdc,
 	  Polyline (hdc, points, 2);
 	  break;
 	case PANGO_UNDERLINE_LOW:
-	  points[0].x = x + (x_off + ink_rect.x) / PANGO_SCALE - 1;
-	  points[0].y = points[1].y = y + (ink_rect.y + ink_rect.height) / PANGO_SCALE + 2;
-	  points[1].x = x + (x_off + ink_rect.x + ink_rect.width) / PANGO_SCALE;
+	  points[0].x = x + PANGO_PIXELS (x_off + ink_rect.x) - 1;
+	  points[0].y = points[1].y = y + PANGO_PIXELS (ink_rect.y + ink_rect.height) + 2;
+	  points[1].x = x + PANGO_PIXELS (x_off + ink_rect.x + ink_rect.width);
 	  Polyline (hdc, points, 2);
 	  break;
 	}
@@ -712,8 +771,8 @@ pango_win32_render_layout (HDC          hdc,
 	}
 	  
       pango_win32_render_layout_line (hdc, line,
-				      x + x_offset / PANGO_SCALE,
-				      y + (y_offset - logical_rect.y) / PANGO_SCALE);
+				      x + PANGO_PIXELS (x_offset),
+				      y + PANGO_PIXELS (y_offset - logical_rect.y));
 
       y_offset += logical_rect.height;
       tmp_list = tmp_list->next;
@@ -1163,15 +1222,16 @@ pango_win32_font_calc_coverage (PangoFont     *font,
   start_count = get_start_count (table);
   id_range_offset = get_id_range_offset (table);
 
+  PING (("coverage:"));
   for (i = 0; i < seg_count; i++)
     {
       if (id_range_offset[i] == 0)
 	{
 #ifdef PANGO_WIN32_DEBUGGING
 	  if (end_count[i] == start_count[i])
-	    PING (("\\u%04x", start_count[i]));
+	    printf ("%04x ", start_count[i]);
 	  else
-	    PING (("\\u%04x:\\u%04x", start_count[i], end_count[i]));
+	    printf ("%04x:%04x ", start_count[i], end_count[i]);
 #endif	  
 	  for (ch = start_count[i]; 
 	       ch <= end_count[i];
@@ -1208,9 +1268,9 @@ pango_win32_font_calc_coverage (PangoFont     *font,
 	      else if (ch0 < G_MAXUINT)
 		{
 		  if (ch > ch0 + 2)
-		    PING (("\\u%04x:\\u%04x", ch0, ch - 1));
+		    printf ("%04x:%04x ", ch0, ch - 1);
 		  else
-		    PING (("\\u%04x", ch0));
+		    printf ("%04x ", ch0);
 		  ch0 = G_MAXUINT;
 		}
 #endif
@@ -1219,11 +1279,14 @@ pango_win32_font_calc_coverage (PangoFont     *font,
 	  if (ch0 < G_MAXUINT)
 	    {
 	      if (ch > ch0 + 2)
-		PING (("\\u%04x:\\u%04x", ch0, ch - 1));
+		printf ("%04x:%04x ", ch0, ch - 1);
 	      else
-		PING (("\\u%04x", ch0));
+		printf ("%04x ", ch0);
 	    }
 #endif
 	}
     }
+#ifdef PANGO_WIN32_DEBUGGING
+  printf ("\n");
+#endif
 }

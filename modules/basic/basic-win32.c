@@ -230,7 +230,7 @@ basic_engine_shape (PangoFont        *font,
 		}
 	    }
 	  else
-	    set_glyph (font, glyphs, i, p - text, pango_win32_get_unknown_glyph (font));
+	    set_glyph (font, glyphs, i, p - text, pango_win32_get_unknown_glyph (font, wc));
 	}
       
       p = g_utf8_next_char (p);
