@@ -11,13 +11,16 @@
 
 2002-09-23  Tor Lillqvist  <tml@iki.fi>
 
-	* examples/makefile.mingw.in: Remove. Not maintained.
-
-	* examples/Makefile.am (EXTRA_DIST): Remove here, too.
-
+	* pango/mini-fribidi/makefile.mingw
+	* pango/opentype/makefile.mingw.in
+	* examples/makefile.mingw.in
 	* modules/basic/makefile.mingw.in: Remove. Not maintained.
 
-	* modules/basic/Makefile.am (EXTRA_DIST): Remove from here, too.
+	* pango/mini-fribidi/Makefile.am (EXTRA_DIST)
+	* pango/opentype/Makefile.am (EXTRA_DIST)
+	* examples/Makefile.am (EXTRA_DIST)
+	* modules/basic/Makefile.am (EXTRA_DIST): Remove
+	makefile.mingw(.in) from here, too.
 
 	* configure.in (AC_OUTPUT): Don't try to output above removed
 	files.
