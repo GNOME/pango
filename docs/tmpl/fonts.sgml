@@ -762,6 +762,23 @@ Returns the type of a #PangoFontMap.
 
 @parent_instance: 
 
+<!-- ##### MACRO PANGO_TYPE_FONTSET ##### -->
+<para>
+The GObject type for #PangoFontset.
+</para>
+
+
+
+<!-- ##### STRUCT PangoFontsetClass ##### -->
+<para>
+
+</para>
+
+@parent_class: 
+@get_font: 
+@get_metrics: 
+@get_language: 
+
 <!-- ##### FUNCTION pango_fontset_get_font ##### -->
 <para>
 
@@ -781,15 +798,11 @@ Returns the type of a #PangoFontMap.
 @Returns: 
 
 
-<!-- ##### STRUCT PangoFontsetClass ##### -->
+<!-- ##### STRUCT PangoFontsetSimple ##### -->
 <para>
 
 </para>
 
-@parent_class: 
-@get_font: 
-@get_metrics: 
-@get_language: 
 
 <!-- ##### MACRO PANGO_TYPE_FONTSET_SIMPLE ##### -->
 <para>
@@ -797,47 +810,11 @@ The GObject type for #PangoFontsetSimple.
 </para>
 
 
-<!-- ##### MACRO PANGO_TYPE_FONTSET ##### -->
-<para>
-The GObject type for #PangoFontset.
-</para>
-
-
-
-<!-- ##### MACRO PANGO_FONTSET_SIMPLE ##### -->
-<para>
-
-</para>
-
-@object: 
-
-
-<!-- ##### MACRO PANGO_IS_FONTSET_SIMPLE ##### -->
-<para>
-
-</para>
-
-@object: 
-
-
-<!-- ##### STRUCT PangoFontsetSimple ##### -->
-<para>
-
-</para>
-
 
 <!-- ##### STRUCT PangoFontsetSimpleClass ##### -->
 <para>
 
 </para>
-
-
-<!-- ##### FUNCTION pango_fontset_simple_get_type ##### -->
-<para>
-
-</para>
-
-@Returns: 
 
 
 <!-- ##### FUNCTION pango_fontset_simple_new ##### -->

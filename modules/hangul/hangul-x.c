@@ -20,6 +20,7 @@
  */
 
 #include <glib.h>
+#include <stdlib.h>
 #include <string.h>
 
 #include "pangox.h"
@@ -71,6 +72,29 @@ set_glyph (PangoGlyphString *glyphs,
   glyphs->glyphs[i].geometry.width = logical_rect.width;
 }
 
+static void
+set_unknown_glyph (PangoGlyphString *glyphs,
+		   int              *n_glyphs,
+		   PangoFont        *font,
+		   gunichar          wc,
+		   int               cluster_offset)
+{
+  PangoRectangle logical_rect;
+  gint i = *n_glyphs;
+
+  (*n_glyphs)++;
+  pango_glyph_string_set_size (glyphs, *n_glyphs);
+
+  glyphs->glyphs[i].glyph = pango_x_get_unknown_glyph (font);
+  
+  glyphs->glyphs[i].geometry.x_offset = 0;
+  glyphs->glyphs[i].geometry.y_offset = 0;
+
+  pango_font_get_glyph_extents (font, glyphs->glyphs[i].glyph, NULL, &logical_rect);
+  glyphs->glyphs[i].geometry.width = logical_rect.width;
+
+  glyphs->log_clusters[i] = cluster_offset;
+}
 
 /*
  * From 3.10 of the Unicode 2.0 Book; used for combining Jamos.
@@ -264,6 +288,8 @@ JOHAB_COMMON
 	  else
 	    break;
 	}
+      if (j == 0)
+	set_unknown_glyph (glyphs, n_glyphs, font, text[i], cluster_offset);
     }
 }
 
@@ -297,6 +323,8 @@ JOHAB_COMMON
 	      (*n_glyphs)++;
 	    }
 	}
+      if (j == 0)
+	set_unknown_glyph (glyphs, n_glyphs, font, wc, cluster_offset);
     }
 }
 
@@ -458,6 +486,8 @@ render_syllable_with_ksc5601 (PangoFont *font, PangoXSubfont subfont,
 	  glyphs->log_clusters[*n_glyphs] = cluster_offset;
 	  (*n_glyphs)++;
 	}
+      if (j == 0)
+	set_unknown_glyph (glyphs, n_glyphs, font, gindex, cluster_offset);
     }
 }
 
@@ -555,7 +585,9 @@ hangul_engine_shape (PangoFont        *font,
   const char *ptr;
   const char *next;
   int i, n_chars;
-  gunichar2 jamos[4];
+  gunichar2 jamos_static[4];
+  guint jamos_max = G_N_ELEMENTS (jamos_static);
+  gunichar2 *jamos = jamos_static;
   int n_jamos = 0;
 
   int n_glyphs = 0, cluster_offset = 0;
@@ -637,6 +669,16 @@ hangul_engine_shape (PangoFont        *font,
 		  /* Clear.  */
 		  n_jamos = 0;
 		}
+	      if (n_jamos == jamos_max)
+		{
+		  gunichar2 *new_jamos;
+		    
+		  jamos_max++;
+		  new_jamos = g_new (gunichar2, jamos_max);
+		  memcpy (new_jamos, jamos, n_jamos * sizeof (gunichar2));
+
+		  jamos = new_jamos;
+		}
 	      jamos[n_jamos++] = wc;
 	    }
 	}
@@ -657,6 +699,9 @@ hangul_engine_shape (PangoFont        *font,
       cluster_offset = next - text;
       n_jamos = 0;
     }
+
+  if (jamos != jamos_static)
+    g_free (jamos);
 }
 
 static PangoCoverage *

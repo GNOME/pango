@@ -157,7 +157,7 @@ libpango_la_LIBADD = mini-fribidi/libmini-fribidi.la
 endif
 
 libpangox_la_LDFLAGS = -release $(VERSION)
-libpangox_la_LIBADD =  $(INCLUDED_X_MODULES) $(X_LIBS) libpango.la
+libpangox_la_LIBADD = libpango.la $(INCLUDED_X_MODULES) $(X_LIBS) 
 libpangox_la_DEPENDENCIES = $(INCLUDED_X_MODULES) libpango.la
 
 libpangowin32_la_SOURCES =	\
@@ -169,7 +169,7 @@ libpangowin32_la_SOURCES =	\
 	module-defs-win32.c
 
 libpangowin32_la_LDFLAGS = -release $(VERSION) $(GLIB_LIBS) $(no_undefined) $(pangowin32_export_symbols)
-libpangowin32_la_LIBADD = $(INCLUDED_WIN32_MODULES) $(WIN32_LIBS) libpango.la
+libpangowin32_la_LIBADD = libpango.la $(INCLUDED_WIN32_MODULES) $(WIN32_LIBS) 
 libpangowin32_la_DEPENDENCIES = libpango.la
 
 
@@ -179,7 +179,7 @@ libpangoxft_la_SOURCES =   	\
 	pangoxft-private.h	\
 	module-defs-xft.c
 
-libpangoxft_la_LIBADD = $(INCLUDED_XFT_MODULES) $(XFT_LIBS) opentype/libpango-ot.la libpango.la
+libpangoxft_la_LIBADD = opentype/libpango-ot.la libpango.la $(INCLUDED_XFT_MODULES) $(XFT_LIBS) 
 libpangoxft_la_LDFLAGS = -release $(VERSION)
 libpangoxft_la_DEPENDENCIES = $(INCLUDED_XFT_MODULES) libpango.la
 
