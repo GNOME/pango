@@ -131,6 +131,12 @@ make_glyph (ThaiFontInfo *font_info, unsigned char c)
   return PANGO_X_MAKE_GLYPH (font_info->subfont, c);
 }
 
+PangoGlyph
+make_unknown_glyph (ThaiFontInfo *font_info, unsigned char c)
+{
+  return pango_x_get_unknown_glyph (font_info->font);
+}
+
 static PangoCoverage *
 thai_engine_get_coverage (PangoFont  *font,
 			   PangoLanguage *lang)

@@ -1,3 +1,10 @@
+Sat Jul 27 09:46:51 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* modules/thai/{thai-shaper.[ch],thai-x.c,thai-xft.c}
+	(make_unknown_glyph): Fix problem where 
+	pango_xft_get_unknown_glyph() was being used for X
+	fonts. (reported by Jacob Berkman)
+
 Fri Jul 26 19:46:45 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* modules/basic/basic-x.c modules/basic/tables-big.i:
