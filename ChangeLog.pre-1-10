@@ -1,3 +1,26 @@
+2002-10-22  Tor Lillqvist  <tml@iki.fi>
+
+	* pango/pangowin32-private.h (PANGO_WIN32_DEBUGGING): Change
+	semantics of this flag. If defined, also need to set env var
+	PANGO_WIN32_DEBUG to get the copious debugging output. 
+	Change PING() macro accordingly. Add variable pango_win32_debug.
+
+	* pango/pangowin32.c (pango_win32_get_dc): New function. Code
+	factored out from pango_win32_font_class_init() and
+	pango_win32_font_map_class_init().
+	(pango_win32_get_debug_flag): New function.
+	(pango_win32_render): Handle y offsets, too. Potentially need to
+	call ExtTextOutW several times, one for each run of sequential
+	glyphs with the same y offset.
+		
+	* pango/pangowin32.h: Declare above new functions, in the part
+	only for shaper engine use.
+
+	* pango/pangowin32.def: Export above new functions.
+
+	* pango/pangowin32-fontmap.c (pango_win32_font_map_class_init):
+	Call pango_win32_get_dc() as mentioned above.
+
 2002-10-15  Changwoo Ryu  <cwryu@debian.org>
 
 	* modules/hangul/hangul-x.c (hangul_engine_shape): Fixed leaks

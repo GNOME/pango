@@ -188,8 +188,7 @@ pango_win32_font_map_class_init (PangoFontMapClass *class)
   class->load_font = pango_win32_font_map_load_font;
   class->list_families = pango_win32_font_map_list_families;
 
-  if (pango_win32_hdc == NULL)
-    pango_win32_hdc = CreateDC ("DISPLAY", NULL, NULL, NULL);
+  pango_win32_get_dc ();
 }
 
 static PangoWin32FontMap *fontmap = NULL;
@@ -782,7 +781,7 @@ pango_win32_insert_font (PangoWin32FontMap *win32fontmap,
    * same entry at the moment and it isn't crashing on g_free () ???
    * Maybe a memory leak ...
    */
-  switch (lfp->lfPitchAndFamily & (0x0F << 4)) /* bit 4...7 */
+  switch (lfp->lfPitchAndFamily & 0xF0)
     { 
     case FF_MODERN : /* monospace */
       PING(("monospace"));

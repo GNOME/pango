@@ -24,20 +24,27 @@
 #ifndef __PANGOWIN32_PRIVATE_H__
 #define __PANGOWIN32_PRIVATE_H__
 
-/* Define if you want copious debugging output. */
-/* #define PANGO_WIN32_DEBUGGING 1 */
+/* Define if you want the possibility to get copious debugging output.
+ * (You still need to set the PANGO_WIN32_DEBUG environment variable
+ * to get it.)
+ */
+#define PANGO_WIN32_DEBUGGING 1
 
 #ifdef PANGO_WIN32_DEBUGGING
 #ifdef __GNUC__
 #define PING(printlist)					\
-(printf ("%s:%d ", __PRETTY_FUNCTION__, __LINE__),	\
- printf printlist,					\
- printf ("\n"))
+(pango_win32_debug ?					\
+ (printf ("%s:%d ", __PRETTY_FUNCTION__, __LINE__),	\
+  printf printlist,					\
+  printf ("\n")) :					\
+ 0)
 #else
 #define PING(printlist)					\
-(printf ("%s:%d ", __FILE__, __LINE__),			\
- printf printlist,					\
- printf ("\n"))
+(pango_win32_debug ?					\
+ (printf ("%s:%d ", __FILE__, __LINE__),		\
+  printf printlist,					\
+  printf ("\n")) :					\
+ 0)
 #endif
 #else  /* !PANGO_WIN32_DEBUGGING */
 #define PING(printlist)
@@ -72,9 +79,9 @@ struct _PangoWin32Font
 
   /* Written by pango_win32_get_hfont: */
   HFONT hfont;
-  gint   tm_ascent;     
-  gint   tm_descent;
-  gint   tm_overhang;
+  gint tm_ascent;     
+  gint tm_descent;
+  gint tm_overhang;
 
   PangoWin32Face *win32face;
 
@@ -198,5 +205,6 @@ gboolean	pango_win32_get_name_record         (HDC                 hdc,
 
 extern HDC pango_win32_hdc;
 extern OSVERSIONINFO pango_win32_os_version_info;
+extern gboolean pango_win32_debug;
 
 #endif /* __PANGOWIN32_PRIVATE_H__ */
