@@ -396,6 +396,41 @@ pango_win32_render (HDC               hdc,
   g_free (dX);
 }
 
+void 
+pango_win32_render_transformed (HDC         hdc,
+			      const PangoMatrix *matrix,
+			      PangoFont         *font,
+			      PangoGlyphString  *glyphs,
+			      int                x, 
+			      int                y)
+{
+  XFORM xForm;
+  XFORM xFormPrev = {1.0, 0.0, 0.0, 1.0, 0.0, 0.0};
+  int   mode = GetGraphicsMode (hdc);
+
+  if (!SetGraphicsMode (hdc, GM_ADVANCED))
+    g_warning ("SetGraphicsMode() failed");
+  else if (!GetWorldTransform (hdc, &xFormPrev))
+    g_warning ("GetWorldTransform() failed");
+  else if (matrix)
+    {
+      xForm.eM11 = matrix->xx;
+      xForm.eM12 = matrix->xy;
+      xForm.eM21 = matrix->yx;
+      xForm.eM22 = matrix->yy;
+      xForm.eDx = matrix->x0;
+      xForm.eDy = matrix->y0;
+      if (!SetWorldTransform (hdc, &xForm))
+        g_warning ("GetWorldTransform() failed");
+    }
+
+  pango_win32_render (hdc, font, glyphs, x/PANGO_SCALE, y/PANGO_SCALE);
+
+  /* restore */
+  SetWorldTransform (hdc, &xFormPrev);
+  SetGraphicsMode (hdc, mode);
+}
+
 static void
 pango_win32_font_get_glyph_extents (PangoFont      *font,
 				    PangoGlyph      glyph,

@@ -22,3 +22,4 @@ EXPORTS
 	pango_win32_render_layout
 	pango_win32_render_layout_line
 	pango_win32_shutdown_display
+	pango_win32_render_transformed

@@ -99,6 +99,7 @@ OBJECTS = \
 	pango-item.obj \
 	pango-markup.obj \
 	pango-layout.obj \
+	pango-renderer.obj \
 	pango-script.obj \
 	pango-tabs.obj \
 	pango-utils.obj \
@@ -131,6 +132,7 @@ OBJECTS = \
 	pangowin32.obj \
 	pangowin32-fontcache.obj \
 	pangowin32-fontmap.obj \
+#	pangowin32-render.obj \
 	basic-win32.obj
 !ENDIF
 

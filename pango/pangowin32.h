@@ -57,6 +57,12 @@ void           pango_win32_render_layout      (HDC               hdc,
 					       int               x, 
 					       int               y);
 
+void           pango_win32_render_transformed (HDC         hdc,
+                                               const PangoMatrix *matrix,
+                                               PangoFont         *font,
+                                               PangoGlyphString  *glyphs,
+                                               int                x, 
+                                               int                y);
 
 #ifdef PANGO_ENABLE_ENGINE
 
