@@ -147,16 +147,56 @@ pango_ft2_font_get_face (PangoFont      *font)
     
       error = FT_New_Face (_pango_ft2_font_map_get_library (ft2font->fontmap),
 			   filename, id, &ft2font->face);
+      if (error)
+	{
+	  MiniXftPattern *sans;
+	  MiniXftPattern *matched;
+	  MiniXftResult result;
+	  char *filename2 = NULL;
+	  gchar *name;
+
+	bail0:
+	  
+	  sans = MiniXftPatternBuild (0,
+				      XFT_FAMILY, MiniXftTypeString, "sans",
+				      XFT_ENCODING, MiniXftTypeString, "glyphs-fontspecific",
+				      XFT_SIZE, MiniXftTypeDouble, (double)pango_font_description_get_size (ft2font->description)/PANGO_SCALE,
+				      NULL);
+
+	  matched = MiniXftFontMatch ((Display *)1, 0, sans, &result);
+
+	  if (MiniXftPatternGetString (matched, XFT_FILE, 0, &filename2) != MiniXftResultMatch)
+	    goto bail1;
+	  
+	  if (MiniXftPatternGetInteger (matched, XFT_INDEX, 0, &id) != MiniXftResultMatch)
+	    goto bail1;
+	  
+	  error = FT_New_Face (_pango_ft2_font_map_get_library (ft2font->fontmap),
+			       filename2, id, &ft2font->face);
+
+	  
+	  if (error)
+	    {
+	    bail1:
+	      name = pango_font_description_to_string (ft2font->description);
+	      g_warning ("Unable to open font file %s for font %s, exiting\n", filename2, name);
+	      exit (1);
+	    }
+	  else
+	    {
+	      name = pango_font_description_to_string (ft2font->description);
+	      g_warning ("Unable to open font file %s for font %s, falling back to %s\n", filename, name, filename2);
+	      g_free (name);
+	    }
+
+	  MiniXftPatternDestroy (sans);
+	  MiniXftPatternDestroy (matched);
+	}
       ft2font->face->generic.data = 0;
     }
- bail0:
-  
-  if (!ft2font->face)
-    {
-      g_warning ("Cannot load font\n");
-      return NULL;
-    }
 
+  g_assert (ft2font->face);
+  
   face = ft2font->face;
 
   if (ft2font->size != GPOINTER_TO_UINT (face->generic.data))

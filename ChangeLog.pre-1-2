@@ -1,3 +1,9 @@
+2002-02-28  Alex Larsson  <alexl@redhat.com>
+
+	* pango/pangoft2.c (pango_ft2_font_get_face):
+	Check for errors when loading font face, fall back to sans,
+	exit with warning if no font found.
+
 2002-02-28  Sven Neumann  <sven@gimp.org>
 
 	* modules/arabic/Makefile.am: don't link libpango-ot into the module.
