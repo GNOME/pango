@@ -1,3 +1,7 @@
+Tue Jun  4 11:52:10 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* pangoxft.pc.in (Cflags): Fix to have @XFT_CFLAGS@
+
 Mon Jun  3 22:16:35 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pangoxft-font.c (pango_xft_font_get_coverage): 
