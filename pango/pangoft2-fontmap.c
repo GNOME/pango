@@ -169,7 +169,7 @@ pango_ft2_font_map_new (void)
  * Sets a function that will be called to do final configuration
  * substitution on a #FcPattern before it is used to load
  * the font. This function can be used to do things like set
- * hinting and antiasing options.
+ * hinting and antialiasing options.
  *
  * Since: 1.2
  **/

@@ -1,3 +1,8 @@
+2003-03-28  Sven Neumann  <sven@gimp.org>
+
+	* pango/pangoft2-fontmap.c
+	* pango/pangoxft-fontmap.c: fixed typos in inline docs.
+
 Mon Feb 17 13:06:39 2003  Owen Taylor  <otaylor@redhat.com>
 
 	* configure.in **/Makefile.am: Add an --enable-debug
