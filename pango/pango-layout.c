@@ -1948,6 +1948,26 @@ free_run (PangoLayoutRun *run, gboolean free_item)
   g_free (run);
 }
 
+PangoItem *
+uninsert_run (PangoLayoutLine *line)
+{
+  PangoLayoutRun *run;
+  PangoItem *item;
+  
+  GSList *tmp_node = line->runs;
+
+  run = tmp_node->data;
+  item = run->item;
+  
+  line->runs = tmp_node->next;
+  line->length -= item->length;
+  
+  g_slist_free_1 (tmp_node);
+  free_run (run, FALSE);
+
+  return item;
+}
+
 /* For now we only need the tab position, we assume
  * all tabs are left-aligned.
  */
@@ -2090,6 +2110,40 @@ shape_tab (PangoLayoutLine  *line,
     }
 }
 
+static inline gboolean
+can_break_at (PangoLayout *layout,
+	      gint         offset)
+{
+  /* While a break between a letter and following whitespace is *
+   * legimate, we disallow it here to avoid lines starting with *
+   * whitespace. We probably should have a mode where we treat all
+   * white-space as of fungeable width - appropriate for typography
+   * but not for editing.
+   */
+  if (offset == 0)
+    return FALSE;
+  else if (offset == layout->n_chars)
+    return TRUE;
+  else  
+    return (layout->log_attrs[offset].is_break &&
+	    (layout->log_attrs[offset - 1].is_white ||
+	     !layout->log_attrs[offset].is_white));
+}
+
+static inline gboolean
+can_break_in (PangoLayout *layout,
+	      int          start_offset,
+	      int          num_chars)
+{
+  int i;
+
+  for (i = 1; i < num_chars; i++)
+    if (can_break_at (layout, start_offset + i))
+      return TRUE;
+
+  return FALSE;
+}
+
 typedef enum 
 {
   BREAK_NONE_FIT,
@@ -2098,10 +2152,11 @@ typedef enum
 } BreakResult;
 
 static BreakResult
-process_item (PangoLayoutLine *line,
+process_item (PangoLayout     *layout,
+	      PangoLayoutLine *line,
 	      PangoItem       *item,
 	      const char      *text,
-	      PangoLogAttr    *log_attrs,
+	      int              start_offset,
 	      gboolean         no_break_at_start,
 	      gboolean         no_break_at_end,
 	      int             *remaining_width)
@@ -2153,7 +2208,8 @@ process_item (PangoLayoutLine *line,
 	{
 	  width -= log_widths[num_chars];
 	  
-	  if (log_attrs[num_chars].is_break && width <= *remaining_width)
+	  if (can_break_at (layout, start_offset + num_chars) &&
+	      width <= *remaining_width)
 	    break;
 	}
 
@@ -2198,6 +2254,115 @@ process_item (PangoLayoutLine *line,
 	    }
 	}
     }
+}
+
+typedef struct _ParaBreakState ParaBreakState;
+
+struct _ParaBreakState
+{
+  GList *items;
+  gboolean first_line;
+  const char *text;
+  gint start_offset;
+};
+
+static void
+process_line (PangoLayout    *layout,
+	      ParaBreakState *state)
+{
+  PangoLayoutLine *line;
+  gint remaining_width;
+  
+  gboolean have_break = FALSE;      /* If we've seen a possible break yet */
+  gboolean break_at_start = FALSE;  /* If that break is at the start of a run */
+  int break_remaining_width = 0;    /* Remaining width before adding run with break */
+  int break_start_offset = 0;	    /* Start width before adding run with break */
+  GSList *break_link = NULL;        /* Link holding run before break */
+  
+  line = pango_layout_line_new (layout);
+
+  if (state->first_line)
+    remaining_width = (layout->indent >= 0) ? layout->width - layout->indent : layout->width;
+  else
+    remaining_width = (layout->indent >= 0) ? layout->width : layout->width + layout->indent;
+
+  while (state->items)
+    {
+      PangoItem *item = state->items->data;
+      BreakResult result;
+      int old_num_chars;
+      int old_remaining_width;
+
+      if (line->runs && can_break_at (layout, state->start_offset))
+	{
+	  if (remaining_width == 0)
+	    goto done;
+
+	  have_break = TRUE;
+	  break_at_start = TRUE;
+	  break_remaining_width = remaining_width;
+	  break_start_offset = state->start_offset;
+	  break_link = line->runs;
+	}
+
+      old_num_chars = item->num_chars;
+      old_remaining_width = remaining_width;
+      
+      result = process_item (layout, line, item, layout->text,
+			     state->start_offset,
+			     !have_break, FALSE,
+			     &remaining_width);
+
+      switch (result)
+	{
+	case BREAK_ALL_FIT:
+	  if (can_break_in (layout, state->start_offset, old_num_chars))
+	    {
+	      have_break = TRUE;
+	      break_at_start = FALSE;
+	      break_remaining_width = old_remaining_width;
+	      break_start_offset = state->start_offset;
+	      break_link = line->runs->next;
+	    }
+	  
+	  state->items = g_list_delete_link (state->items, state->items);
+	  state->start_offset += old_num_chars;
+	  break;
+	  
+	case BREAK_SOME_FIT:
+	  state->start_offset += old_num_chars - item->num_chars;
+	  goto done;
+	  
+	case BREAK_NONE_FIT:
+	  /* Back up over unused runs to run where there is a break */
+	  while (line->runs && line->runs != break_link)
+	    state->items = g_list_prepend (state->items, uninsert_run (line));
+
+	  state->start_offset = break_start_offset;
+
+	  if (!break_at_start)
+	    {
+	      /* Reshape run to break */
+	      PangoItem *item = state->items->data;
+
+	      old_num_chars = item->num_chars;
+	      result = process_item (layout, line, item, layout->text,
+				     state->start_offset,
+				     TRUE, TRUE,
+				     &break_remaining_width);
+	      g_assert (result == BREAK_SOME_FIT);
+
+	      state->start_offset += old_num_chars - item->num_chars; 
+	    }
+
+	  goto done;
+	}
+    }
+
+ done:  
+  pango_layout_line_postprocess (line);
+  layout->lines = g_slist_prepend (layout->lines, line);
+  state->first_line = FALSE;
 }
 
 static void
@@ -2295,16 +2460,10 @@ pango_layout_check_lines (PangoLayout *layout)
   start = layout->text;
   do
     {
-      PangoLayoutLine *line;      
-      GList *items, *tmp_list;
-      gboolean last_cant_end = FALSE;
-      gboolean current_cant_end = FALSE;
-      int remaining_width;
-      int last_remaining_width = 0;	/* Quiet GCC */
-
-      const char *end = start;
       int para_chars = 0;
-
+      const char *end = start;
+      ParaBreakState state;
+  
       while (end != layout->text + layout->length && *end != '\n')
 	{
 	  end = g_utf8_next_char (end);
@@ -2314,106 +2473,29 @@ pango_layout_check_lines (PangoLayout *layout)
       if (end == layout->text + layout->length)
 	done = TRUE;
 
-      items = pango_itemize (layout->context,
-                             layout->text,
-                             start - layout->text,
-                             end - start,
-                             attrs,
-                             iter);
+      state.items = pango_itemize (layout->context,
+				   layout->text,
+				   start - layout->text,
+				   end - start,
+				   attrs,
+				   iter);
 
-      get_para_log_attrs (start, items, layout->log_attrs + start_offset);
+      get_para_log_attrs (start, state.items, layout->log_attrs + start_offset);
 
-      line = pango_layout_line_new (layout);
-      remaining_width = (layout->indent >= 0) ? layout->width - layout->indent : layout->width;
-
-      tmp_list = items;
-      while (tmp_list)
+      if (state.items)
 	{
-	  PangoItem *item = tmp_list->data;
-	  BreakResult result;
- 	  int old_num_chars = item->num_chars;
-
-	  result = process_item (line, item, layout->text,
-				 layout->log_attrs + start_offset,
-				 (line->runs == NULL) || last_cant_end,
-				 current_cant_end,
-				 &remaining_width);
-
-	  current_cant_end = FALSE;
+	  state.first_line = TRUE;
+	  state.start_offset = start_offset;
+	  state.text = start;
 	  
-	  if (result == BREAK_ALL_FIT)
-	    {
-	      tmp_list = tmp_list->next;
-	      start_offset += old_num_chars;
-
-	      /* We prohibit breaking a line between a non-whitespace char and the whitespace char afterwards
-	       * because this would result in the possibility of normal wrapped paragraphs with leading
-	       * white-space at the front of lines. We probably should have a mode where we treat all
-	       * white-space as zero width - appropriate for typography but not for editing.
-	       */
-	      if (start_offset < layout->n_chars &&
-		  (!layout->log_attrs[start_offset].is_break ||
-		   (!layout->log_attrs[start_offset-1].is_white && layout->log_attrs[start_offset].is_white)))
-		last_cant_end = TRUE;
-	      else
-		{
-		  last_cant_end = FALSE;
-		  last_remaining_width = remaining_width;
-		}
-	    }
-	  else
-	    {
-	      /* Handle the case where the last item wasn't broken, but ended in a non-break
-	       * and we didn't manage to get any of this item in the line. In that case
-	       * we need to back up and break the last item.
-	       */
-
-	      if (last_cant_end && result == BREAK_NONE_FIT)
-		{
-		  GSList *tmp_node;
-		  
-		  /* Back up
-		   */
-		  tmp_list = tmp_list->prev;
-		  item = tmp_list->data;
-		  
-		  start_offset -= item->num_chars;
-		  remaining_width = last_remaining_width;
-		  
-		  current_cant_end = TRUE;
-
-		  /* Remove last run from line
-		   */
-		  tmp_node = line->runs;
-		  line->runs = tmp_node->next;
-		  
-		  free_run (tmp_node->data, FALSE);
-		  g_slist_free_1 (tmp_node);
-
-		  line->length -= item->length;
-		}
-	      else
-		{
-		  start_offset += old_num_chars - item->num_chars;
-		  
-		  pango_layout_line_postprocess (line);
-		  
-		  layout->lines = g_slist_prepend (layout->lines, line);
-		  
-		  line = pango_layout_line_new (layout);
-		  remaining_width = (layout->indent >= 0) ? layout->width : layout->indent + layout->indent;
-		}
-	      
-	      last_cant_end = FALSE;
-	      last_remaining_width = remaining_width;
-	    }
+	  while (state.items)
+	    process_line (layout, &state);
 	}
-
-      pango_layout_line_postprocess (line);
+      else
+	layout->lines = g_slist_prepend (layout->lines,
+					 pango_layout_line_new (layout));
       
-      layout->lines = g_slist_prepend (layout->lines, line);
-
-      g_list_free (items);
+      start_offset += para_chars;
 
       if (!done)
 	{

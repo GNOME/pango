@@ -1,3 +1,9 @@
+Wed Nov 15 10:50:38 2000  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-layout.c (process_line): Rewrite of good
+	portions of line-break code to be more readable, work
+	better, and maybe even be a little faster.
+
 2000-11-14  Havoc Pennington  <hp@redhat.com>
 
 	* pango/pango-layout.c (pango_layout_get_item_properties): get the 
