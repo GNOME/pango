@@ -832,6 +832,7 @@ pango_default_break (const gchar   *text,
             case G_UNICODE_COMBINING_MARK:
             case G_UNICODE_ENCLOSING_MARK:
             case G_UNICODE_NON_SPACING_MARK:
+	    case G_UNICODE_FORMAT:
               /* nothing, we just eat these up as part of the word */
               break;
 
