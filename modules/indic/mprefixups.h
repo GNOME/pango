@@ -26,6 +26,7 @@
 
 #include <pango/pango-types.h>
 #include <pango/pango-glyph.h>
+#include <pango/pango-ot.h>
 
 G_BEGIN_DECLS
 
@@ -41,7 +42,7 @@ typedef struct _MPreFixups MPreFixups;
 MPreFixups *indic_mprefixups_new(glong char_count);
 void        indic_mprefixups_free(MPreFixups *mprefixups);
 void        indic_mprefixups_add(MPreFixups *mprefixups, glong baseIndex, glong mpreIndex);
-void        indic_mprefixups_apply(MPreFixups *mprefixups, PangoGlyphString *glyphs);
+void        indic_mprefixups_apply(MPreFixups *mprefixups, PangoOTBuffer *buffer);
  
 
 G_END_DECLS

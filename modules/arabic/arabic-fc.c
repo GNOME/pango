@@ -49,11 +49,11 @@ static PangoEngineInfo script_engines[] = {
 };
 
 static void
-maybe_add_feature (PangoOTRuleset *ruleset,
-		   PangoOTInfo    *info,
-		   guint           script_index,
-		   PangoOTTag      tag,
-		   gulong          property_bit)
+maybe_add_gsub_feature (PangoOTRuleset *ruleset,
+			PangoOTInfo    *info,
+			guint           script_index,
+			PangoOTTag      tag,
+			gulong          property_bit)
 {
   guint feature_index;
   
@@ -61,6 +61,22 @@ maybe_add_feature (PangoOTRuleset *ruleset,
   if (pango_ot_info_find_feature (info, PANGO_OT_TABLE_GSUB,
 				  tag, script_index, 0xffff, &feature_index))
     pango_ot_ruleset_add_feature (ruleset, PANGO_OT_TABLE_GSUB, feature_index,
+				  property_bit);
+}
+
+static void
+maybe_add_gpos_feature (PangoOTRuleset *ruleset,
+			PangoOTInfo    *info,
+			guint           script_index,
+			PangoOTTag      tag,
+			gulong          property_bit)
+{
+  guint feature_index;
+  
+  /* 0xffff == default language system */
+  if (pango_ot_info_find_feature (info, PANGO_OT_TABLE_GPOS,
+				  tag, script_index, 0xffff, &feature_index))
+    pango_ot_ruleset_add_feature (ruleset, PANGO_OT_TABLE_GPOS, feature_index,
 				  property_bit);
 }
 
@@ -90,11 +106,24 @@ get_ruleset (FT_Face face)
       if (pango_ot_info_find_script (info, PANGO_OT_TABLE_GSUB,
 				     arab_tag, &script_index))
 	{
-	  maybe_add_feature (ruleset, info, script_index, FT_MAKE_TAG ('i','s','o','l'), isolated);
-	  maybe_add_feature (ruleset, info, script_index, FT_MAKE_TAG ('i','n','i','t'), initial);
-	  maybe_add_feature (ruleset, info, script_index, FT_MAKE_TAG ('m','e','d','i'), medial);
-	  maybe_add_feature (ruleset, info, script_index, FT_MAKE_TAG ('f','i','n','a'), final);
-	  maybe_add_feature (ruleset, info, script_index, FT_MAKE_TAG ('l','i','g','a'), 0xFFFF);
+	  maybe_add_gsub_feature (ruleset, info, script_index, FT_MAKE_TAG ('c','c','m','p'), 0xFFFF);
+	  maybe_add_gsub_feature (ruleset, info, script_index, FT_MAKE_TAG ('i','s','o','l'), isolated);
+	  maybe_add_gsub_feature (ruleset, info, script_index, FT_MAKE_TAG ('f','i','n','a'), final);
+	  maybe_add_gsub_feature (ruleset, info, script_index, FT_MAKE_TAG ('m','e','d','i'), medial);
+	  maybe_add_gsub_feature (ruleset, info, script_index, FT_MAKE_TAG ('i','n','i','t'), initial);
+	  maybe_add_gsub_feature (ruleset, info, script_index, FT_MAKE_TAG ('r','l','i','g'), 0xFFFF);
+	  maybe_add_gsub_feature (ruleset, info, script_index, FT_MAKE_TAG ('c','a','l','t'), 0xFFFF);
+	  maybe_add_gsub_feature (ruleset, info, script_index, FT_MAKE_TAG ('l','i','g','a'), 0xFFFF);
+	  maybe_add_gsub_feature (ruleset, info, script_index, FT_MAKE_TAG ('m','s','e','t'), 0xFFFF);
+	}
+
+      if (pango_ot_info_find_script (info, PANGO_OT_TABLE_GPOS,
+				     arab_tag, &script_index))
+	{
+	  maybe_add_gpos_feature (ruleset, info, script_index, FT_MAKE_TAG ('c','u','r','s'), 0xFFFF);
+	  maybe_add_gpos_feature (ruleset, info, script_index, FT_MAKE_TAG ('k','e','r','n'), 0xFFFF);
+	  maybe_add_gpos_feature (ruleset, info, script_index, FT_MAKE_TAG ('m','a','r','k'), 0xFFFF);
+	  maybe_add_gpos_feature (ruleset, info, script_index, FT_MAKE_TAG ('m','k','m','k'), 0xFFFF);
 	}
 
       g_object_set_qdata_full (G_OBJECT (info), ruleset_quark, ruleset,
@@ -132,45 +161,22 @@ set_glyph (PangoFont *font, PangoGlyphString *glyphs, int i, int offset, PangoGl
 }
 
 static void 
-arabic_engine_shape (PangoEngineShape *engine,
-		     PangoFont        *font,
-		     const char       *text,
-		     gint              length,
-		     PangoAnalysis    *analysis,
-		     PangoGlyphString *glyphs)
+fallback_shape (PangoEngineShape *engine,
+		PangoFont        *font,
+		const char       *text,
+		gint              length,
+		PangoAnalysis    *analysis,
+		PangoGlyphString *glyphs)
 {
-  int n_chars;
-  int i;
+  PangoFcFont *fc_font = PANGO_FC_FONT (font);
+  glong n_chars;
+  gunichar *wcs = g_utf8_to_ucs4_fast (text, length, &n_chars);
   const char *p;
-  gulong *properties = NULL;
-  gunichar *wcs = NULL;
-  FT_Face face;
-  PangoOTRuleset *ruleset;
-  PangoFcFont *fc_font;
-
-  g_return_if_fail (font != NULL);
-  g_return_if_fail (text != NULL);
-  g_return_if_fail (length >= 0);
-  g_return_if_fail (analysis != NULL);
-
-  fc_font = PANGO_FC_FONT (font);
-
-  face = pango_fc_font_lock_face (fc_font);
-  g_assert (face);
-
-  n_chars = g_utf8_strlen (text, length);
-  pango_glyph_string_set_size (glyphs, n_chars);
-
-  ruleset = get_ruleset (face);
-  if (ruleset)
-    {
-      wcs = g_utf8_to_ucs4_fast (text, length, NULL);
-      properties = g_new0 (gulong, n_chars);
-      
-      Arabic_Assign_Properties (wcs, properties, n_chars);
-    }
+  int i;
   
+  pango_glyph_string_set_size (glyphs, n_chars);
   p = text;
+  
   for (i=0; i < n_chars; i++)
     {
       gunichar wc;
@@ -197,6 +203,113 @@ arabic_engine_shape (PangoEngineShape *engine,
 	}
       else
 	{
+	  index = pango_fc_font_get_glyph (fc_font, wc);
+
+	  if (!index)
+	    index = pango_fc_font_get_unknown_glyph (fc_font, wc);
+
+	  set_glyph (font, glyphs, i, p - text, index);
+	}
+      
+      p = g_utf8_next_char (p);
+    }
+
+  /* Apply default positioning */
+  for (i = 0; i < glyphs->num_glyphs; i++)
+    {
+      if (glyphs->glyphs[i].glyph)
+	{
+	  PangoRectangle logical_rect;
+	  
+	  pango_font_get_glyph_extents (font, glyphs->glyphs[i].glyph, NULL, &logical_rect);
+	  glyphs->glyphs[i].geometry.width = logical_rect.width;
+	}
+      else
+	glyphs->glyphs[i].geometry.width = 0;
+      
+      glyphs->glyphs[i].geometry.x_offset = 0;
+      glyphs->glyphs[i].geometry.y_offset = 0;
+    }
+  
+  if (analysis->level % 2 != 0)
+    {
+      /* Swap all glyphs */
+      swap_range (glyphs, 0, glyphs->num_glyphs);
+    }
+
+  g_free (wcs);
+}
+
+static void 
+arabic_engine_shape (PangoEngineShape *engine,
+		     PangoFont        *font,
+		     const char       *text,
+		     gint              length,
+		     PangoAnalysis    *analysis,
+		     PangoGlyphString *glyphs)
+{
+  glong n_chars;
+  gunichar *wcs;
+  int i;
+  const char *p;
+  gulong *properties = NULL;
+  FT_Face face;
+  PangoOTRuleset *ruleset;
+  PangoOTBuffer *buffer;
+  PangoFcFont *fc_font;
+
+  g_return_if_fail (font != NULL);
+  g_return_if_fail (text != NULL);
+  g_return_if_fail (length >= 0);
+  g_return_if_fail (analysis != NULL);
+
+  fc_font = PANGO_FC_FONT (font);
+
+  face = pango_fc_font_lock_face (fc_font);
+  g_assert (face);
+
+  ruleset = get_ruleset (face);
+  if (!ruleset)
+    {
+      fallback_shape (engine, font, text, length, analysis, glyphs);
+      goto out;
+    }
+
+  buffer = pango_ot_buffer_new (fc_font);
+  pango_ot_buffer_set_rtl (buffer, analysis->level % 2 != 0);
+    
+  wcs = g_utf8_to_ucs4_fast (text, length, &n_chars);
+  properties = g_new0 (gulong, n_chars);
+      
+  Arabic_Assign_Properties (wcs, properties, n_chars);
+  
+  p = text;
+  for (i=0; i < n_chars; i++)
+    {
+      gunichar wc;
+      gunichar mirrored_ch;
+      PangoGlyph index;
+      char buf[6];
+      const char *input;
+
+      wc = g_utf8_get_char (p);
+
+      input = p;
+      if (analysis->level % 2)
+	if (pango_get_mirror_char (wc, &mirrored_ch))
+	  {
+	    wc = mirrored_ch;
+	    
+	    g_unichar_to_utf8 (wc, buf);
+	    input = buf;
+	  }
+
+      if (wc >= 0x200B && wc <= 0x200F)	/* Zero-width characters */
+	{
+	  pango_ot_buffer_add_glyph (buffer, 0, properties[i], p - text);
+	}
+      else
+	{
 	  /* Hack - Microsoft fonts are strange and don't contain the
 	   * correct rules to shape ARABIC LETTER FARSI YEH in
 	   * medial/initial position. It looks identical to ARABIC LETTER
@@ -210,33 +323,18 @@ arabic_engine_shape (PangoEngineShape *engine,
 
 	  if (!index)
 	    {
-	      set_glyph (font, glyphs, i, p - text,
-			 pango_fc_font_get_unknown_glyph (fc_font, wc));
+	      pango_ot_buffer_add_glyph (buffer, pango_fc_font_get_unknown_glyph (fc_font, wc),
+					 properties[i], p - text);
 	    }
 	  else
 	    {
-	      set_glyph (font, glyphs, i, p - text, index);
+	      pango_ot_buffer_add_glyph (buffer, index,
+					 properties[i], p - text);
 	      
 	      if (g_unichar_type (wc) == G_UNICODE_NON_SPACING_MARK)
 		{
 		  if (i > 0)
-		    {
-		      glyphs->log_clusters[i] = glyphs->log_clusters[i-1];
-#if 0		      
-		      PangoRectangle logical_rect, ink_rect;
-		      
-		      glyphs->glyphs[i].geometry.width = MAX (glyphs->glyphs[i-1].geometry.width,
-							      glyphs->glyphs[i].geometry.width);
-		      glyphs->glyphs[i-1].geometry.width = 0;
-		      
-		      /* Some heuristics to try to guess how overstrike glyphs are
-		       * done and compensate
-		       */
-		      pango_font_get_glyph_extents (font, glyphs->glyphs[i].glyph, &ink_rect, &logical_rect);
-		      if (logical_rect.width == 0 && ink_rect.x == 0)
-			glyphs->glyphs[i].geometry.x_offset = (glyphs->glyphs[i].geometry.width - ink_rect.width) / 2;
-#endif
-		    }
+		    glyphs->log_clusters[i] = glyphs->log_clusters[i-1];
 		}
 	    }
 	}
@@ -244,57 +342,15 @@ arabic_engine_shape (PangoEngineShape *engine,
       p = g_utf8_next_char (p);
     }
 
-  ruleset = get_ruleset (face);
-
-  if (ruleset)
-    {
-      pango_ot_ruleset_shape (ruleset, glyphs, properties);
-
-      g_free (wcs);
-      g_free (properties);
-
-    }
-
-  for (i = 0; i < glyphs->num_glyphs; i++)
-    {
-
-      if (glyphs->glyphs[i].glyph)
-	{
-	  PangoRectangle logical_rect;
-	  
-	  pango_font_get_glyph_extents (font, glyphs->glyphs[i].glyph, NULL, &logical_rect);
-	  glyphs->glyphs[i].geometry.width = logical_rect.width;
-	}
-      else
-	glyphs->glyphs[i].geometry.width = 0;
+  pango_ot_ruleset_substitute (ruleset, buffer);
+  pango_ot_ruleset_position (ruleset, buffer);
+  pango_ot_buffer_output (buffer, glyphs);
   
-      glyphs->glyphs[i].geometry.x_offset = 0;
-      glyphs->glyphs[i].geometry.y_offset = 0;
-    }
+  g_free (wcs);
+  g_free (properties);
+  pango_ot_buffer_destroy (buffer);
 
-  /* Simple bidi support */
-
-  if (analysis->level % 2)
-    {
-      int start, end;
-
-      /* Swap all glyphs */
-      swap_range (glyphs, 0, glyphs->num_glyphs);
-      
-      /* Now reorder glyphs within each cluster back to LTR */
-      for (start=0; start<glyphs->num_glyphs;)
-	{
-	  end = start;
-	  while (end < glyphs->num_glyphs &&
-		 glyphs->log_clusters[end] == glyphs->log_clusters[start])
-	    end++;
-
-	  if (end > start + 1)
-	    swap_range (glyphs, start, end);
-	  start = end;
-	}
-    }
-  
+ out:
   pango_fc_font_unlock_face (fc_font);
 }
 

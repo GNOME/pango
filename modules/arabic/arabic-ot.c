@@ -54,8 +54,8 @@ joining_class  arabic[] =
   transparent, transparent, transparent, transparent,
 
   /* U+0650 */
-  transparent, transparent, transparent, none,
-  none, none, none, none,
+  transparent, transparent, transparent, transparent,
+  transparent, transparent, transparent, transparent,
   none, none, none, none,
   none, none, none, none,
 

@@ -10,7 +10,7 @@
 #include "mprefixups.h"
 /*
  * FIXME: should the IndicOutput stuff be moved
- * to a spereate .h and .c file just to keep the
+ * to a separate .h and .c file just to keep the
  * clutter down here? (it's not really usefull
  * anyplace else, is it?)
  */

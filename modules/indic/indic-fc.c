@@ -241,20 +241,18 @@ get_gpos_ruleset (FT_Face face, PangoIndicInfo *indic_info)
   return ruleset;
 }
 static void
-set_glyphs (PangoFont *font, FT_Face face, const gunichar *wcs, glong n_glyphs, PangoGlyphString *glyphs)
+set_glyphs (PangoFont *font, FT_Face face, const gunichar *wcs, gulong *tags, glong n_glyphs, PangoOTBuffer *buffer)
 {
   gint i;
 
   g_assert (face);
 
-  pango_glyph_string_set_size (glyphs, n_glyphs);
-
   for (i = 0; i < n_glyphs; i += 1)
     {
-      PangoGlyph glyph = FT_Get_Char_Index (face, wcs[i]);
-
-      glyphs->glyphs[i].glyph = glyph;
-      glyphs->log_clusters[i] = i;
+      pango_ot_buffer_add_glyph (buffer,
+				 FT_Get_Char_Index (face, wcs[i]),
+				 tags[i],
+				 i);
     }
 }
 
@@ -305,6 +303,7 @@ indic_engine_shape (PangoEngineShape *engine,
   glong *indices = NULL;
   FT_Face face;
   PangoOTRuleset *gsub_ruleset = NULL, *gpos_ruleset = NULL;
+  PangoOTBuffer *buffer;
   IndicEngineFc *indic_shape_engine = NULL;
   PangoIndicInfo *indic_info = NULL;
   PangoFcFont *fc_font;
@@ -334,55 +333,27 @@ indic_engine_shape (PangoEngineShape *engine,
   n_glyphs  = indic_ot_reorder (wc_in, utf8_offsets, n_chars, indic_info->classTable, wc_out, indices, tags, &mprefixups);
   
   pango_glyph_string_set_size (glyphs, n_glyphs);
-  set_glyphs(font, face, wc_out, n_glyphs, glyphs);
+  buffer = pango_ot_buffer_new (fc_font);
+  set_glyphs(font, face, wc_out, tags, n_glyphs, buffer);
 
   /* do gsub processing */
   gsub_ruleset = get_gsub_ruleset (face, indic_info);
   if (gsub_ruleset != NULL)
-    {
-      pango_ot_ruleset_shape (gsub_ruleset, glyphs, tags);
-    }
+    pango_ot_ruleset_substitute (gsub_ruleset, buffer);
 
   /* Fix pre-modifiers for some scripts before base consonant */
   if (mprefixups)
     {
-      indic_mprefixups_apply (mprefixups, glyphs);
+      indic_mprefixups_apply (mprefixups, buffer);
       indic_mprefixups_free (mprefixups);
-    }
-
-  /* apply default positioning */
-  for (i = 0; i < glyphs->num_glyphs; i += 1)
-    {
-      if (glyphs->glyphs[i].glyph != 0)
-	{
-	  PangoRectangle logical_rect;
-
-	  pango_font_get_glyph_extents (font, glyphs->glyphs[i].glyph, NULL, &logical_rect);
-	  glyphs->glyphs[i].geometry.width = logical_rect.width;
-	}
-      else
-	{
-	  glyphs->glyphs[i].geometry.width = 0;
-	}
-
-      glyphs->glyphs[i].geometry.x_offset = 0;
-      glyphs->glyphs[i].geometry.y_offset = 0;
     }
 
   /* do gpos processing */
   gpos_ruleset = get_gpos_ruleset (face, indic_info);
   if (gpos_ruleset != NULL)
-    {
-      gulong *tags_after_gsub;
-      
-      tags_after_gsub = g_new (gulong, glyphs->num_glyphs);
-      for (i = 0; i < glyphs->num_glyphs; i += 1)
-	tags_after_gsub[i] = tags[glyphs->log_clusters[i]];
+    pango_ot_ruleset_position (gpos_ruleset, buffer);
 
-      pango_ot_ruleset_shape (gpos_ruleset, glyphs, tags_after_gsub);
-      
-      g_free (tags_after_gsub);
-    }
+  pango_ot_buffer_output (buffer, glyphs);
 
   /* Get the right log_clusters values */
   for (i = 0; i < glyphs->num_glyphs; i += 1)
@@ -390,6 +361,7 @@ indic_engine_shape (PangoEngineShape *engine,
 
   pango_fc_font_unlock_face (fc_font);
 
+  pango_ot_buffer_destroy (buffer);
   g_free (tags);
   g_free (indices);
   g_free (wc_out);

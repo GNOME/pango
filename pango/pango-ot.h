@@ -22,9 +22,9 @@
 #ifndef __PANGO_OT_H__
 #define __PANGO_OT_H__
 
-#include <ft2build.h>
-#include FT_FREETYPE_H
+#include <pango/pangofc-font.h>
 #include <pango/pango-glyph.h>
+#include <pango/pango-font.h>
 
 G_BEGIN_DECLS
 
@@ -33,6 +33,8 @@ G_BEGIN_DECLS
 typedef guint32  PangoOTTag;
 
 typedef struct _PangoOTInfo    PangoOTInfo;
+typedef struct _PangoOTBuffer  PangoOTBuffer;
+typedef struct _PangoOTGlyph   PangoOTGlyph;
 typedef struct _PangoOTRuleset PangoOTRuleset;
 
 typedef enum 
@@ -40,6 +42,16 @@ typedef enum
   PANGO_OT_TABLE_GSUB,
   PANGO_OT_TABLE_GPOS
 } PangoOTTableType;
+
+/* Note that this much match OTLGlyphItem */
+struct _PangoOTGlyph
+{
+  guint    glyph;
+  guint    properties;
+  guint    cluster;
+  gushort  component;
+  gushort  ligID;
+};
 
 PangoOTInfo *pango_ot_info_get (FT_Face face);
 
@@ -72,15 +84,31 @@ PangoOTTag *pango_ot_info_list_features  (PangoOTInfo      *info,
 					  guint             script_index,
 					  guint             language_index);
 
+PangoOTBuffer *pango_ot_buffer_new        (PangoFcFont       *font);
+void           pango_ot_buffer_destroy    (PangoOTBuffer     *buffer);
+void           pango_ot_buffer_clear      (PangoOTBuffer     *buffer);
+void           pango_ot_buffer_add_glyph  (PangoOTBuffer     *buffer,
+					   guint              glyph_index,
+					   guint              properties,
+					   guint              cluster);
+void           pango_ot_buffer_set_rtl    (PangoOTBuffer     *buffer,
+					   gboolean           rtl);
+void           pango_ot_buffer_get_glyphs (PangoOTBuffer     *buffer,
+					   PangoOTGlyph     **glyphs,
+					   int               *n_glyphs);
+void           pango_ot_buffer_output     (PangoOTBuffer     *buffer,
+					   PangoGlyphString  *glyphs);
+
 PangoOTRuleset *pango_ot_ruleset_new (PangoOTInfo       *info);
 
 void            pango_ot_ruleset_add_feature (PangoOTRuleset   *ruleset,
 					      PangoOTTableType  table_type,
 					      guint             feature_index,
 					      gulong            property_bit);
-void            pango_ot_ruleset_shape       (PangoOTRuleset   *ruleset,
-					      PangoGlyphString *glyphs,
-					      gulong           *properties);
+void            pango_ot_ruleset_substitute  (PangoOTRuleset   *ruleset,
+					      PangoOTBuffer    *buffer);
+void            pango_ot_ruleset_position    (PangoOTRuleset   *ruleset,
+					      PangoOTBuffer    *buffer);
 
 #endif /* PANGO_ENABLE_ENGINE */
 

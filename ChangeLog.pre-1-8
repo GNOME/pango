@@ -1,3 +1,37 @@
+Sun Feb 29 09:25:13 2004  Owen Taylor  <otaylor@redhat.com>
+
+	Rework opentype interfaces and other changes to make GPOS
+	work for Arabic. (Most of #117282, #121060)
+
+	* pango/opentype/otlbuffer.[ch]: OTL_Buffer that
+	acts as a replacement for the separate GSUB and
+	GPOS string structures and hides many of the internal
+	details.
+
+	* pango/opentype/ftxgsub.[ch] pango/opentype/ftxgpos.[ch]:
+	Adapt to OTL_Buffer.
+
+	* pango/opentype/ftxgpos.c: Redo handling of cursive
+	chains so that it actually works.
+
+	* pango/pango-ot.h pango/opentype/pango-ot-buffer.c:
+	Pango wrapper around OTL_Buffer.
+
+	* pango/pango-ot.h pango/pango-ot-ruleset.c pango/pango-ot-buffer.c:
+	Split pango_ot_ruleset_shape() into pango_ot_ruleset_substitute(),
+	pango_ot_ruleset_position(), make them act on
+	PangoOTBuffer, add a separate pango_ot_buffer_output()
+	which does the default positioning and writes to a 
+	PangoGlyphString.
+
+	* modules/arabic/arabic-fc.c modules/indic/indic-fc.c
+	modules/indic/mprefixups.[ch]: Adapt to new OpenType
+	interfaces; add GPOS features for Arabic.
+
+	* pango/opentype/pango-ot-info.c: Don't derive class information
+	from Unicode properties for Arabic presentation forms,
+	let the shaping process derive the properties.
+
 2004-02-28  Hans Breuer  <hans@breuer.org>
 
 	* pango/modules/basic/basic-win32.c : use uniscribe_scripts instead of

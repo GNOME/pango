@@ -59,7 +59,7 @@ void indic_mprefixups_add (MPreFixups *mprefixups, glong baseIndex, glong mpreIn
     }
 }
 
-void indic_mprefixups_apply(MPreFixups *mprefixups, PangoGlyphString *glyphs)
+void indic_mprefixups_apply(MPreFixups *mprefixups, PangoOTBuffer *buffer)
 {
     glong fixup;
 
@@ -68,17 +68,22 @@ void indic_mprefixups_apply(MPreFixups *mprefixups, PangoGlyphString *glyphs)
 	glong mpreIndex = mprefixups->fFixupData[fixup].fMPreIndex;
 	glong mpreLimit, mpreCount, moveCount, mpreDest;
 	glong i;
-	PangoGlyph *mpreSave;
+	PangoOTGlyph *glyphs;
+	int n_glyphs;
+	PangoOTGlyph *mpreSave;
 	int *clusterSave;
 
 	/* determine post GSUB location of baseIndex and mpreIndex */
 	gboolean no_base = TRUE;
-	for (i = 0; i<glyphs->num_glyphs; i++) {
-	    if (glyphs->log_clusters[i] == baseIndex) {
+
+	pango_ot_buffer_get_glyphs (buffer, &glyphs, &n_glyphs);
+	
+	for (i = 0; i < n_glyphs; i++) {
+	    if (glyphs[i].cluster == baseIndex) {
 		baseIndex = i + 1;
 		no_base = FALSE;
 	    }
-	    if (glyphs->log_clusters[i] == mpreIndex)
+	    if (glyphs[i].cluster == mpreIndex)
 		mpreIndex = i;
 	}
 	if (no_base)
@@ -86,11 +91,11 @@ void indic_mprefixups_apply(MPreFixups *mprefixups, PangoGlyphString *glyphs)
 
 	mpreLimit = mpreIndex + 1;
 
-	while (glyphs->glyphs[baseIndex].glyph == 0xFFFF || glyphs->glyphs[baseIndex].glyph == 0xFFFE) {
+	while (glyphs[baseIndex].glyph == 0xFFFF || glyphs[baseIndex].glyph == 0xFFFE) {
 	    baseIndex -= 1;
 	}
 
-	while (glyphs->glyphs[mpreIndex].glyph == 0xFFFF || glyphs->glyphs[mpreIndex].glyph == 0xFFFE) {
+	while (glyphs[mpreIndex].glyph == 0xFFFF || glyphs[mpreIndex].glyph == 0xFFFE) {
 	    mpreLimit += 1;
 	}
       
@@ -102,22 +107,19 @@ void indic_mprefixups_apply(MPreFixups *mprefixups, PangoGlyphString *glyphs)
 	moveCount  = baseIndex - mpreLimit;
 	mpreDest   = baseIndex - mpreCount - 1;
 
-	mpreSave    = g_new (PangoGlyph, mpreCount);
+	mpreSave    = g_new (PangoOTGlyph, mpreCount);
 	clusterSave = g_new (int, mpreCount);
 
 	for (i = 0; i < mpreCount; i += 1) {
-	    mpreSave[i] = glyphs->glyphs[mpreIndex + i].glyph;
-	    clusterSave[i] = glyphs->log_clusters[mpreIndex + i];
+	    mpreSave[i] = glyphs[mpreIndex + i];
 	}
 
 	for (i = 0; i < moveCount; i += 1) {
-	    glyphs->glyphs[mpreIndex + i].glyph = glyphs->glyphs[mpreLimit + i].glyph;
-	    glyphs->log_clusters[mpreIndex + i] = glyphs->log_clusters[mpreLimit + i];
+	    glyphs[mpreIndex + i] = glyphs[mpreLimit + i];
 	}
 
 	for (i = 0; i < mpreCount; i += 1) {
-	    glyphs->glyphs[mpreDest + i].glyph = mpreSave[i];
-	    glyphs->log_clusters[mpreDest + i] = clusterSave[i];
+	    glyphs[mpreDest + i] = mpreSave[i];
 	}
  
 	g_free(mpreSave);
