@@ -141,7 +141,6 @@ hebrew_engine_shape (PangoEngineShape *engine,
   gint glyph_width[MAX_CLUSTER_CHRS], x_offset[MAX_CLUSTER_CHRS], y_offset[MAX_CLUSTER_CHRS];
   PangoRectangle ink_rects[MAX_CLUSTER_CHRS];
   PangoGlyph glyph[MAX_CLUSTER_CHRS];
-  FT_Face face;
 
   g_return_if_fail (font != NULL);
   g_return_if_fail (text != NULL);
