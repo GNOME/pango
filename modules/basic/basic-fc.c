@@ -37,8 +37,8 @@ static PangoEngineRange basic_ranges[] = {
   { 0x10a0, 0x10ff, "*" }, /* Georgian */
   { 0x1200, 0x16ff, "*" }, /* Ethiopic,Cherokee,Canadian,Ogham,Runic */
   { 0x1e00, 0x1fff, "*" },
-  { 0x2000, 0x9fff, "*" },
-  { 0xac00, 0xd7a3, "kr" },
+  { 0x2000, 0x302d, "*" },
+  { 0x3030, 0x9fff, "*" },
   { 0xf900, 0xfa0b, "kr" },
   { 0xff00, 0xffe3, "*" },
   { 0x0000, 0xffff, "" },

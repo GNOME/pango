@@ -1,3 +1,8 @@
+2002-11-03  Changwoo Ryu  <cwryu@debian.org>
+
+	* modules/basic/basic-xft.c: Removed hangul syllables and hangul
+	tonemarks ranges.  Now hangul-xft is responsible for these ranges.
+
 2002-11-01  Changwoo Ryu  <cwryu@debian.org>
 
 	* modules/hangul/hangul-defs.h modules/hangul/hangul-xft.c:
