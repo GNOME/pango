@@ -1,3 +1,17 @@
+Fri Jul 25 23:07:06 2003  Owen Taylor  <otaylor@redhat.com>
+
+	Update of GPOS and GSUB support to OpenType 1.3 
+	(From FreeType, Werner Lemberg,	2001-08-08)
+
+	* pango/opentype/ftxopen.h: Add RIGHT_TO_LEFT LookupFlag
+
+	* pango/opentype/ftxgpos.c (GPOS_Instance): Add 'first'
+	member to mark the beginning of a chain of cursive connections.
+	
+	* pango/opentype/ftxgpos.c (Do_String_Lookup): If the
+	RIGHT_TO_FLAG flag is set, shift cursive chain up so
+	last glyph is on the baseline.
+
 Fri Jul 25 22:59:13 2003  Owen Taylor  <otaylor@redhat.com>
 
         * pango/opentype/ftx{gpos,gsub}.h pango/opentype/ftxgdef.c:
