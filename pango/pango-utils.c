@@ -1142,7 +1142,8 @@ pango_language_matches (PangoLanguage *language,
 	   (lang_str[end - p] == '\0' || lang_str[end - p] == '-')))
 	return TRUE;
 
-      p = end;
+      if (!done)
+	p = end + 1;
     }
 
   return FALSE;
