@@ -33,19 +33,22 @@ The recommended font backend for X in Pango-1.2 is the Xft backend
 which uses version 2 of the Xft library to manage client
 side fonts. Benefits of the Xft backend include, performance,
 support for OpenType fonts, and antialiasing. Version 2 of
-Xft is available from http://keithp.com/fonts/. The 'fcpackage'
-tarball includes both Xft, and it's dependency, 'fontconfig'.
-(see below.)
+Xft is available from http://fontconfig.org/. Along with
+Xft, you'll need to install its dependency fontconfig, and 
+possibly also the Xrender library, if that doesn't come with 
+your system. Both of these libraries are available from
+the same place as fontconfig.
 
 Note that an earlier version of Xft is shipped with version
 of XFree86 up to 4.2. This version does not work with Pango-1.2;
-Pango-1.2 requires version 2 of Xft.
+Pango-1.2 requires version 2 of Xft, which is present in XFree86-4.3.
 
-Both Xft and the optional PangoFT2 backend look up fonts via
-the fontconfig library, available along with Xft in the
-'fcpackage' tarball from http://keithp.com/fonts. They
-also require at least version 2.0.9 of the FreeType
-library. (http://www.freetype.org)
+Both Xft and the optional PangoFT2 backend require the fontconfig
+library (http://www.fontconfig.org) to look up fonts. At least version 
+2.0.9 of the FreeType font handling library (http://www.freetype.org) 
+is also required. If fontconfig and FreeType are not found at
+configure time, or FreeType is too old, then neither the Xft nor the 
+FT2 backend is will be built.
 
 After installing fontconfig, it may be necessary to edit
 the fonts.conf file, found at $(sysconfdir)/fonts/fonts.conf
