@@ -1,3 +1,22 @@
+2005-03-15  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pangofc-fontmap.c: Include the effect of the
+	CTM in the FC_PIXEL_SIZE we set in the FcPattern.
+	(Fixes problems with getting the wrong font when drawing
+	the same font at multiple scales. Reported by Keith
+	Packard.)
+
+	* pango/pangofc-fontmap.h pango/pangocairo-fcfontmap.c
+	pango/pangocairo-fc.h pango/pangocairo-fontfont.c: Add
+	the PangoFontDescription to create_font() ... we need it
+	to get the right pixel size to combine with the CTM.
+
+	* pango/pangofc-fontmap.c (pango_fc_fontmap_get_dpi): 
+	Extract out the logic for finding the DPI from the 
+	size-listing code.
+	(pango_fc_font_map_get_render_key): Handle mix of
+	absolute and not sizes correctly.
+
 Sat Mar  5 13:51:04 2005  Manish Singh  <yosh@gimp.org>
 
 	* pango/mini-fribidi/fribidi_types.[ch]: const correctness for

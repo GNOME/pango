@@ -63,6 +63,8 @@ struct _PangoFcFontMapPrivate
   PangoFcFamily **families;
   int n_families;		/* -1 == uninitialized */
 
+  double dpi;
+
   /* Decoders */
   GSList *findfuncs;
 
@@ -167,6 +169,7 @@ pango_fc_font_map_init (PangoFcFontMap *fcfontmap)
 					       (GDestroyNotify)g_free,
 					       (GDestroyNotify)pango_coverage_unref);
   priv->fontset_cache = g_queue_new ();
+  priv->dpi = -1;
 }
 
 static void
@@ -641,7 +644,9 @@ pango_fc_convert_width_to_fc (PangoStretch pango_stretch)
 #endif
 
 static FcPattern *
-pango_fc_make_pattern (const PangoFontDescription *description)
+pango_fc_make_pattern (const  PangoFontDescription *description,
+		       PangoLanguage               *language,
+		       double                       pixel_size)
 {
   FcPattern *pattern;
   int slant;
@@ -669,7 +674,7 @@ pango_fc_make_pattern (const PangoFontDescription *description)
 #ifdef FC_WIDTH
 			    FC_WIDTH,  FcTypeInteger, width,
 #endif
- 			    (size_is_absolute ? FC_PIXEL_SIZE : FC_SIZE),  FcTypeDouble,  size,
+ 			    FC_PIXEL_SIZE,  FcTypeDouble,  pixel_size,
 			    NULL);
 
   families = g_strsplit (pango_font_description_get_family (description), ",", -1);
@@ -679,14 +684,18 @@ pango_fc_make_pattern (const PangoFontDescription *description)
 
   g_strfreev (families);
 
+  if (language)
+    FcPatternAddString (pattern, FC_LANG, (FcChar8 *) pango_language_to_string (language));
+  
   return pattern;
 }
 
 static PangoFont *
-pango_fc_font_map_new_font (PangoFontMap *fontmap,
-			    PangoContext *context,
-			    FcPattern    *match,
-			    gboolean      cache)
+pango_fc_font_map_new_font (PangoFontMap               *fontmap,
+			    PangoContext               *context,
+			    const PangoFontDescription *description,
+			    FcPattern                  *match,
+			    gboolean                    cache)
 {
   PangoFcFontMapClass *class;
   PangoFcFontMap *fcfontmap = (PangoFcFontMap *)fontmap;
@@ -719,6 +728,7 @@ pango_fc_font_map_new_font (PangoFontMap *fontmap,
     {
       fcfont = PANGO_FC_FONT_MAP_GET_CLASS (fontmap)->create_font (fcfontmap,
 								   context,
+								   description,
 								   match);
     }
   else
@@ -814,6 +824,33 @@ pango_fc_default_substitute (PangoFcFontMap    *fontmap,
     PANGO_FC_FONT_MAP_GET_CLASS (fontmap)->default_substitute (fontmap, pattern);
 }
 
+static gdouble
+pango_fc_font_map_get_dpi (PangoFcFontMap *fcfontmap)
+{
+  if (fcfontmap->priv->dpi < 0)
+    {
+      FcResult result = FcResultNoMatch;
+      FcPattern *tmp = FcPatternBuild (NULL,
+				       FC_FAMILY, FcTypeString, "Sans",
+				       FC_SIZE,   FcTypeDouble, 10.,
+				       NULL);
+      if (tmp)
+	{
+	  pango_fc_default_substitute (fcfontmap, tmp);
+	  result = FcPatternGetDouble (tmp, FC_DPI, 0, &fcfontmap->priv->dpi);
+	  FcPatternDestroy (tmp);
+	}
+      
+      if (result != FcResultMatch)
+	{
+	  g_warning ("Error getting DPI from fontconfig, using 72.0");
+	  fcfontmap->priv->dpi = 72.0;
+	}
+    }
+
+  return fcfontmap->priv->dpi;
+}
+
 static double
 transformed_length (const PangoMatrix *matrix,
 		    double             dx,
@@ -837,10 +874,15 @@ pango_fc_font_map_get_render_key (PangoFcFontMap              *fcfontmap,
     return PANGO_FC_FONT_MAP_GET_CLASS (fcfontmap)->get_render_key (fcfontmap, context, desc, x_size, y_size, flags);
   else
     {
-      int size = pango_font_description_get_size (desc);
+      double size;
       const PangoMatrix *matrix;
       gboolean retval = TRUE;
-
+      
+      if (pango_font_description_get_size_is_absolute (desc))
+	size = pango_font_description_get_size (desc);
+      else
+	size = pango_fc_font_map_get_dpi (fcfontmap) * pango_font_description_get_size (desc) / 72.;
+      
       if (context)
 	matrix = pango_context_get_matrix (context);
       else
@@ -903,9 +945,7 @@ pango_fc_font_map_get_patterns (PangoFontMap               *fontmap,
 
   if (patterns == NULL)
     {
-      pattern = pango_fc_make_pattern (desc);
-      if (language)
-	FcPatternAddString (pattern, FC_LANG, (FcChar8 *) pango_language_to_string (language));
+      pattern = pango_fc_make_pattern (desc, language, key.y_size / 1024.);
 
       pango_fc_default_substitute (fcfontmap, pattern);
       
@@ -976,7 +1016,7 @@ pango_fc_font_map_load_font (PangoFontMap               *fontmap,
 
   if (patterns->n_patterns > 0)
     {
-      return pango_fc_font_map_new_font (fontmap, context, 
+      return pango_fc_font_map_new_font (fontmap, context, description,
 					 patterns->patterns[0], FALSE);
     }
   
@@ -1060,7 +1100,8 @@ pango_fc_font_map_load_fontset (PangoFontMap                 *fontmap,
 	{
 	  PangoFont *font;
 
-	  font = pango_fc_font_map_new_font (fontmap, context, patterns->patterns[i], cache);
+	  font = pango_fc_font_map_new_font (fontmap, context, desc,
+					     patterns->patterns[i], cache);
 	  if (font)
 	    pango_fontset_simple_append (simple, font);
 	}
@@ -1118,6 +1159,8 @@ pango_fc_font_map_clear_fontset_cache (PangoFcFontMap *fcfontmap)
 void
 pango_fc_font_map_cache_clear (PangoFcFontMap *fcfontmap)
 {
+  fcfontmap->priv->dpi = -1;
+  
   /* Clear the fontset cache first, since any entries
    * in the fontset_cache must also be in the pattern cache.
    */
@@ -1566,17 +1609,8 @@ pango_fc_face_list_sizes (PangoFontFace  *face,
           if (FcPatternGetDouble (fontset->fonts[i], FC_PIXEL_SIZE, 0, &size) == FcResultMatch)
             {
               if (dpi < 0)
-                {
-                  FcPattern *tmp = FcPatternDuplicate (fontset->fonts[i]);
-                  pango_fc_default_substitute (fcface->family->fontmap, tmp);
-                  if (FcPatternGetDouble (tmp, FC_DPI, 0, &dpi) != FcResultMatch)
-                    {
-                      g_warning ("Error getting DPI from fontconfig, using 72.0");
-                      dpi = 72.0;
-                    }
-                  FcPatternDestroy (tmp);
-                }
-
+		dpi = pango_fc_font_map_get_dpi (fcface->family->fontmap);
+	      
               size_i = (int) (PANGO_SCALE * size * 72.0 / dpi);
               g_array_append_val (size_array, size_i);
             }

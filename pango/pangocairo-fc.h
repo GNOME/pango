@@ -45,9 +45,10 @@ struct _PangoCairoFcFontMap
 
 GType pango_cairo_fc_font_map_get_type (void);
 
-PangoFcFont *_pango_cairo_fc_font_new (PangoCairoFcFontMap *cffontmap,
-				       PangoContext        *context,
-				       FcPattern	   *pattern);
+PangoFcFont *_pango_cairo_fc_font_new (PangoCairoFcFontMap        *cffontmap,
+				       PangoContext               *context,
+				       const PangoFontDescription *desc,
+				       FcPattern	          *pattern);
 
 gboolean _pango_cairo_fc_get_render_key (PangoCairoFcFontMap        *cffontmap,
 					 PangoContext               *context,

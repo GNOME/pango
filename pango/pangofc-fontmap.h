@@ -103,6 +103,7 @@ struct _PangoFcFontMapClass
 				      guint                      *flags);
   PangoFcFont  *(*create_font)       (PangoFcFontMap             *fontmap,
 				      PangoContext               *context,
+				      const PangoFontDescription *desc,
 			              FcPattern                  *pattern);
   /*< private >*/
 

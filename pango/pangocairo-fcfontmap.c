@@ -112,11 +112,13 @@ pango_cairo_fc_font_map_get_render_key (PangoFcFontMap             *fcfontmap,
 }
 
 static PangoFcFont *
-pango_cairo_fc_font_map_create_font (PangoFcFontMap  *fcfontmap,
-				     PangoContext    *context,
-				     FcPattern       *pattern)
+pango_cairo_fc_font_map_create_font (PangoFcFontMap             *fcfontmap,
+				     PangoContext               *context,
+				     const PangoFontDescription *desc,
+				     FcPattern                  *pattern)
 {
-  return _pango_cairo_fc_font_new (PANGO_CAIRO_FC_FONT_MAP (fcfontmap), context, pattern);
+  return _pango_cairo_fc_font_new (PANGO_CAIRO_FC_FONT_MAP (fcfontmap),
+				   context, desc, pattern);
 }
 
 static void
