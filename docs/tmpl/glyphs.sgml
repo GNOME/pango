@@ -118,34 +118,12 @@ It contains the following fields.
 <!-- ##### STRUCT PangoGlyphGeometry ##### -->
 <para>
 The #PangoGlyphGeometry structure contains width and positioning
-information for a single glyph. Distances are in
-1/64ths of a point.
-
-<informaltable pgwide="1" frame="none" role="struct">
-<tgroup cols="2"><colspec colwidth="2*"/><colspec colwidth="8*"/>
-<tbody>
-
-<row>
-<entry>#PangoGlyphUnit width;</entry>
-<entry>the logical width to use for the the character.</entry>
-</row>
-
-<row>
-<entry>#PangoCFont *x_offset;</entry>
-<entry>horizontal offset from nominal character position.</entry>
-</row>
-
-<row>
-<entry>#PangoCFont *y_offset;</entry>
-<entry>vertical offset from nominal character position.</entry>
-</row>
-
-</tbody></tgroup></informaltable>
+information for a single glyph. 
 </para>
 
-@width: 
-@x_offset: 
-@y_offset: 
+@width: the logical width to use for the the character.
+@x_offset: horizontal offset from nominal character position.
+@y_offset: vertical offset from nominal character position.
 
 <!-- ##### TYPEDEF PangoGlyphUnit ##### -->
 <para>
@@ -191,37 +169,12 @@ of glyphs with geometry and visual attribute information.
 The storage for the glyph information is owned
 by the structure which simplifies memory management.
 </para>
-<para>
-#PangoGlyphString contains the following publically
-accessible fields
 
-<informaltable pgwide="1" frame="none" role="struct">
-<tgroup cols="2"><colspec colwidth="2*"/><colspec colwidth="8*"/>
-<tbody>
-
-<row>
-<entry>gint #num_glyphs;</entry>
-<entry>the number of glyphs in the string.</entry>
-</row>
-
-<row>
-<entry>PangoGlyphInfo *#glyphs;</entry>
-<entry>an array of #PangoGlyphInfo structures of length <structfield>num_glyphs</structfield>.</entry>
-</row>
-
-<row>
-<entry>gint *#log_clusters;</entry>
-<entry>for each glyph, byte index of the starting character for the
+@num_glyphs: the number of glyphs in the string.
+@glyphs: an array of #PangoGlyphInfo structures of length <structfield>num_glyphs</structfield>. 
+@log_clusters: for each glyph, byte index of the starting character for the
 cluster. The indices are relative to the start of the text
-corresponding to the PangoGlyphString.</entry>
-</row>
-
-</tbody></tgroup></informaltable>
-</para>
-
-@num_glyphs: 
-@glyphs: 
-@log_clusters: 
+corresponding to the PangoGlyphString.
 
 <!-- ##### STRUCT PangoGlyphItem ##### -->
 <para>
