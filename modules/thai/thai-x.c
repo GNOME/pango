@@ -423,32 +423,25 @@ add_glyph (ThaiFontInfo     *font_info,
 
   if (combining)
     {
-      if (font_info->type == THAI_FONT_TIS ||
-	  font_info->type == THAI_FONT_TIS_MAC ||
-	  font_info->type == THAI_FONT_TIS_WIN)
-	{
-          glyphs->glyphs[index].geometry.width =
-		logical_rect.width + glyphs->glyphs[index - 1].geometry.width;
-          if (logical_rect.width > 0)
-	      glyphs->glyphs[index].geometry.x_offset = glyphs->glyphs[index - 1].geometry.width;
-          else
-	      glyphs->glyphs[index].geometry.x_offset = glyphs->glyphs[index].geometry.width;
-	  glyphs->glyphs[index - 1].geometry.width = 0;
-	}
-      else
-        {
-	  glyphs->glyphs[index].geometry.width =
-		MAX (logical_rect.width, glyphs->glyphs[index - 1].geometry.width);
-	  glyphs->glyphs[index - 1].geometry.width = 0;
-	  glyphs->glyphs[index].geometry.x_offset = 0;
-        }
+      glyphs->glyphs[index].geometry.x_offset =
+	glyphs->glyphs[index - 1].geometry.width;
+      glyphs->glyphs[index].geometry.width =
+	logical_rect.width + glyphs->glyphs[index - 1].geometry.width;
+      glyphs->glyphs[index - 1].geometry.width = 0;
     }
   else
     {
-      glyphs->glyphs[index].geometry.x_offset = 0;
-      glyphs->glyphs[index].geometry.width = logical_rect.width;
+      if (logical_rect.width > 0)
+        {
+	 glyphs->glyphs[index].geometry.x_offset = 0;
+	 glyphs->glyphs[index].geometry.width = logical_rect.width;
+	}
+      else
+        {
+	 glyphs->glyphs[index].geometry.x_offset = ink_rect.width;
+	 glyphs->glyphs[index].geometry.width = ink_rect.width;
+        }
     }
-  
   glyphs->glyphs[index].geometry.y_offset = 0;
 }
 
