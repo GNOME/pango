@@ -308,6 +308,11 @@ _pango_cairo_win32_font_new (PangoCairoWin32FontMap     *cwfontmap,
     }
   else
     cairo_matrix_copy (cwfont->total_matrix, cwfont->font_matrix);
+  
+  pango_win32_make_matching_logfont (win32font->fontmap,
+				     &face->logfont,
+				     win32font->size,
+				     &win32font->logfont);
 
   return PANGO_FONT (cwfont);
 }
