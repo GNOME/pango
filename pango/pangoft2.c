@@ -28,8 +28,6 @@
 #include <glib.h>
 #include <glib/gprintf.h>
 
-#include <freetype/freetype.h>
-
 #include "pangoft2.h"
 #include "pangoft2-private.h"
 #include "pangofc-fontmap.h"

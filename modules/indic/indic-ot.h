@@ -9,7 +9,6 @@
 #ifndef __INDIC_OT_H__
 #define __INDIC_OT_H__
 
-#include <freetype/freetype.h>
 #include <pango/pango-glyph.h>
 #include <pango/pango-types.h>
 #include "mprefixups.h"
