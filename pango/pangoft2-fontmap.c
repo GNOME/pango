@@ -545,6 +545,9 @@ pango_ft2_font_map_load_fontset (PangoFontMap                 *fontmap,
     {
       pattern = pango_ft2_make_pattern (desc);
 
+      MiniXftInit (0);
+      MiniXftInitFtLibrary ();
+	  
       MiniXftConfigSubstitute (pattern);
       MiniXftDefaultSubstitute ((Display *)1, 0, pattern);
 
@@ -553,9 +556,6 @@ pango_ft2_font_map_load_fontset (PangoFontMap                 *fontmap,
       array = g_ptr_array_new ();
       patterns = g_new (PangoFT2PatternSet, 1);
 
-      MiniXftInit (0);
-      MiniXftInitFtLibrary ();
-	  
       match = NULL;
       id = 0;
       while (MiniXftPatternGetString (pattern, XFT_FAMILY, id++, &family) == MiniXftResultMatch)

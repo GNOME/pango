@@ -50,7 +50,7 @@ MiniXftDirScan (MiniXftFontSet *set, const char *dir, Bool force)
     base = file + strlen (file);
     if (!force)
     {
-	strcpy (base, "MiniXftCache");
+	strcpy (base, "XftCache");
 	
 	if (MiniXftFileCacheReadDir (set, file))
 	{
@@ -128,7 +128,7 @@ MiniXftDirSave (MiniXftFontSet *set, const char *dir)
     strcpy (file, dir);
     strcat (file, "/");
     base = file + strlen (file);
-    strcpy (base, "MiniXftCache");
+    strcpy (base, "XftCache");
     ret = MiniXftFileCacheWriteDir (set, file);
     free (file);
     return ret;

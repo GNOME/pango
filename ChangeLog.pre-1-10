@@ -1,3 +1,12 @@
+2001-12-12  Alexander Larsson  <alla@lysator.liu.se>
+
+	* pango/pangoft2-fontmap.c (pango_ft2_font_map_load_fontset):
+	Initialize MiniXft library before calling MiniXftConfigSubstitute.
+
+	* pango/mini-xft/minixftdir.c (MiniXftDirScan):
+	Changed back filename from MiniXftCache to XftCache for
+	compat with Xft.
+
 2001-12-11  Alex Larsson  <alexl@redhat.com>
 
 	* pango/pangoft2.c (pango_ft2_render):
