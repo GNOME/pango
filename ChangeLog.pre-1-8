@@ -1,3 +1,11 @@
+Mon Jul  2 06:12:18 2001  Tim Janik  <timj@gtk.org>
+
+	* pango/pangoxft-font.c: 
+	* pango/pangox.c: 
+	* pango/pangowin32.c: 
+	* pango/pangoft2.c: s/shutdown/dispose/ to adapt to
+	GObject changes.
+
 Sun Jul  1 22:59:02 2001  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pango-markup.c (text_handler): Use gssize,

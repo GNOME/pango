@@ -61,7 +61,7 @@ static PangoFontClass *parent_class;	/* Parent class structure for PangoFT2Font 
 
 static void pango_ft2_font_class_init (PangoFT2FontClass *class);
 static void pango_ft2_font_init       (PangoFT2Font      *xfont);
-static void pango_ft2_font_shutdown   (GObject         *object);
+static void pango_ft2_font_dispose    (GObject         *object);
 static void pango_ft2_font_finalize   (GObject         *object);
 
 static PangoFontDescription *pango_ft2_font_describe          (PangoFont            *font);
@@ -224,7 +224,7 @@ pango_ft2_font_class_init (PangoFT2FontClass *class)
   parent_class = g_type_class_peek_parent (class);
   
   object_class->finalize = pango_ft2_font_finalize;
-  object_class->shutdown = pango_ft2_font_shutdown;
+  object_class->dispose = pango_ft2_font_dispose;
   
   font_class->describe = pango_ft2_font_describe;
   font_class->get_coverage = pango_ft2_font_get_coverage;
@@ -736,7 +736,7 @@ pango_ft2_font_subfont_open_args (PangoFont        *font,
 }
 
 static void
-pango_ft2_font_shutdown (GObject *object)
+pango_ft2_font_dispose (GObject *object)
 {
   PangoFT2Font *ft2font = PANGO_FT2_FONT (object);
 
@@ -747,7 +747,7 @@ pango_ft2_font_shutdown (GObject *object)
   if (!ft2font->in_cache && ft2font->fontmap)
     pango_ft2_fontmap_cache_add (ft2font->fontmap, ft2font);
 
-  G_OBJECT_CLASS (parent_class)->shutdown (object);
+  G_OBJECT_CLASS (parent_class)->dispose (object);
 }
 
 

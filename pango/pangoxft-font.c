@@ -41,7 +41,7 @@ static PangoFontClass *parent_class;	/* Parent class structure for PangoXftFont 
 
 static void pango_xft_font_class_init (PangoXftFontClass *class);
 static void pango_xft_font_init       (PangoXftFont      *xfont);
-static void pango_xft_font_shutdown   (GObject         *object);
+static void pango_xft_font_dispose    (GObject         *object);
 static void pango_xft_font_finalize   (GObject         *object);
 
 static PangoFontDescription *pango_xft_font_describe          (PangoFont        *font);
@@ -102,7 +102,7 @@ pango_xft_font_class_init (PangoXftFontClass *class)
   parent_class = g_type_class_peek_parent (class);
   
   object_class->finalize = pango_xft_font_finalize;
-  object_class->shutdown = pango_xft_font_shutdown;
+  object_class->dispose = pango_xft_font_dispose;
   
   font_class->describe = pango_xft_font_describe;
   font_class->get_coverage = pango_xft_font_get_coverage;
@@ -296,7 +296,7 @@ pango_xft_font_get_metrics (PangoFont        *font,
 }
 
 static void
-pango_xft_font_shutdown (GObject *object)
+pango_xft_font_dispose (GObject *object)
 {
   PangoXftFont *xfont = PANGO_XFT_FONT (object);
 
@@ -307,7 +307,7 @@ pango_xft_font_shutdown (GObject *object)
   if (!xfont->in_cache && xfont->fontmap)
     _pango_xft_font_map_cache_add (xfont->fontmap, xfont);
 
-  G_OBJECT_CLASS (parent_class)->shutdown (object);
+  G_OBJECT_CLASS (parent_class)->dispose (object);
 }
 
 static void

@@ -93,7 +93,7 @@ static PangoFontClass *parent_class;	/* Parent class structure for PangoWin32Fon
 
 static void pango_win32_font_class_init (PangoWin32FontClass *class);
 static void pango_win32_font_init       (PangoWin32Font      *win32font);
-static void pango_win32_font_shutdown   (GObject             *object);
+static void pango_win32_font_dispose    (GObject             *object);
 static void pango_win32_font_finalize   (GObject             *object);
 
 static PangoFontDescription *pango_win32_font_describe      (PangoFont        *font);
@@ -247,7 +247,7 @@ pango_win32_font_class_init (PangoWin32FontClass *class)
   parent_class = g_type_class_peek_parent (class);
   
   object_class->finalize = pango_win32_font_finalize;
-  object_class->shutdown = pango_win32_font_shutdown;
+  object_class->dispose = pango_win32_font_dispose;
   
   font_class->describe = pango_win32_font_describe;
   font_class->get_coverage = pango_win32_font_get_coverage;
@@ -1135,7 +1135,7 @@ pango_win32_font_subfont_logfont (PangoFont         *font,
 }
 
 static void
-pango_win32_font_shutdown (GObject *object)
+pango_win32_font_dispose (GObject *object)
 {
   PangoWin32Font *win32font = PANGO_WIN32_FONT (object);
 
@@ -1146,7 +1146,7 @@ pango_win32_font_shutdown (GObject *object)
   if (!win32font->in_cache && win32font->fontmap)
     pango_win32_fontmap_cache_add (win32font->fontmap, win32font);
 
-  G_OBJECT_CLASS (parent_class)->shutdown (object);
+  G_OBJECT_CLASS (parent_class)->dispose (object);
 }
 
 static void
