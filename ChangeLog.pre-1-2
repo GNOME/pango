@@ -1,3 +1,10 @@
+Thu Mar 14 23:05:18 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/opentype/ftxopen.c: Uncomment GPOS parts.
+
+	* pango/opentype/disasm.c: Start adding some GPOS
+	dumping.
+
 Thu Mar 14 20:28:59 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* configure.in: Check for FT_Get_First_Char from
