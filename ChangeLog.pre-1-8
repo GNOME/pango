@@ -1,3 +1,8 @@
+Tue Dec 14 18:36:57 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-layout.c (pango_layout_copy): Copy 
+	layout->auto_dir. (#153547, Morten Welinder)
+
 Tue Dec 14 18:32:46 2004  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/Makefile.am (libpangoft2_1_0_la_LIBADD): Add $(libm),
