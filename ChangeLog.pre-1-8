@@ -1,3 +1,16 @@
+Mon Jun 21 16:02:04 2004  Owen Taylor  <otaylor@redhat.com>
+
+	#143556, Noah Misch
+
+	* pango/Makefile.am: Add $(no_undefined) when building libpangox,
+	libpangoxft for cygwin builds.
+
+	* modules/basic/Makefile.am (pango_basic_x_la_LDFLAGS):
+	Add $(no_undefined) for basic-x module.
+
+	* pango/Makefile.am: Add $(GLIB_LIBS) for pangox, pangoxft,
+	for benefit of cygwin, AIX, etc.
+	
 Mon Jun 21 15:26:44 2004  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pango-context.c (update_attr_iterator): Initialize

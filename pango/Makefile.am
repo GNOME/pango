@@ -140,8 +140,8 @@ pangoinclude_HEADERS += pangox.h
 lib_LTLIBRARIES += libpangox-1.0.la
 endif
 
-libpangox_1_0_la_LDFLAGS = -version-info $(LT_VERSION_INFO)
-libpangox_1_0_la_LIBADD = libpango-$(PANGO_API_VERSION).la $(INCLUDED_X_MODULES) $(X_LIBS) $(X_EXTRA_LIBS)
+libpangox_1_0_la_LDFLAGS = -version-info $(LT_VERSION_INFO) $(no_undefined)
+libpangox_1_0_la_LIBADD = libpango-$(PANGO_API_VERSION).la $(INCLUDED_X_MODULES) $(X_LIBS) $(X_EXTRA_LIBS) $(GLIB_LIBS)
 libpangox_1_0_la_DEPENDENCIES = libpango-$(PANGO_API_VERSION).la $(INCLUDED_X_MODULES)
 
 libpangox_1_0_la_SOURCES = \
@@ -160,8 +160,8 @@ pangoinclude_HEADERS += pangoxft.h pango-ot.h
 lib_LTLIBRARIES += libpangoxft-1.0.la
 endif
 
-libpangoxft_1_0_la_LDFLAGS = -version-info $(LT_VERSION_INFO)
-libpangoxft_1_0_la_LIBADD = libpangoft2-$(PANGO_API_VERSION).la libpango-$(PANGO_API_VERSION).la $(XFT_LIBS) 
+libpangoxft_1_0_la_LDFLAGS = -version-info $(LT_VERSION_INFO) $(no_undefined)
+libpangoxft_1_0_la_LIBADD = libpangoft2-$(PANGO_API_VERSION).la libpango-$(PANGO_API_VERSION).la $(XFT_LIBS) $(GLIB_LIBS)
 libpangoxft_1_0_la_DEPENDENCIES = libpangoft2-$(PANGO_API_VERSION).la libpango-$(PANGO_API_VERSION).la
 
 libpangoxft_1_0_la_SOURCES =   	\
