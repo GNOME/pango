@@ -312,7 +312,7 @@ pango_ft2_font_map_for_display (void)
     }
 
   if (!read_font)
-    g_warning ("No fonts found by pangft2. Things will probably not work");
+    g_warning ("No fonts found by pangoft2. Things will probably not work");
   
   pango_ft2_font_map_read_aliases (pango_ft2_global_fontmap);
 
