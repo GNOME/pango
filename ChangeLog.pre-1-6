@@ -1,4 +1,7 @@
-Fri Nov 6 15:41:28 Eric Mader	<mader@jtcsv.com>
+Mon Sep 9 11:09:18 Eric Mader	<mader@jtcsv.com>
+	* pango/pango/opentype/pango-to-ruleset.c: correctly handle back, new_advance.
+
+Fri Sep 6 15:41:28 Eric Mader	<mader@jtcsv.com>
 	* pango/pango/opentype/ftxopen.c:
 	* pango/pango/opentype/ftxopen.h: don't fail on an empty script
 	
