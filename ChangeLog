@@ -1,3 +1,14 @@
+Sat Jan  6 20:23:54 2001  Owen Taylor  <otaylor@redhat.com>
+
+	* modules/arabic/arabic-x.c (arabic_engine_shape): Adapt
+	to new g_utf8_to_ucs4() prototype.
+
+	* modules/basic/basic-ft2.c: Include pango-engine.h
+
+	* pango/pangoft2.h: Don't include pango.h, which would
+	pull in pango-enums.h and thus break module building, 
+	just include neeeded pango-layout.h
+
 Fri Jan  5 16:12:37 2001  Owen Taylor  <otaylor@redhat.com>
 
 	* modules/arabic/{arabic-xft,arabic}.c pango/{pango-context.c,pangoft.c,pangox.c}:

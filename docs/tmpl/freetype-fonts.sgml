@@ -118,16 +118,6 @@ FreeType Fonts and Rendering
 @Returns: 
 
 
-<!-- ##### FUNCTION pango_ft2_has_glyph ##### -->
-<para>
-
-</para>
-
-@font: 
-@glyph: 
-@Returns: 
-
-
 <!-- ##### FUNCTION pango_ft2_get_unknown_glyph ##### -->
 <para>
 

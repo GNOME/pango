@@ -23,6 +23,7 @@
 #include <string.h>
 
 #include "pango-layout.h"
+#include "pango-engine.h"
 #include "pangoft2.h"
 #include "pango-utils.h"
 

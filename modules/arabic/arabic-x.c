@@ -216,8 +216,7 @@ arabic_engine_shape (PangoFont        *font,
     p = text;
     if (analysis->level % 2 == 0)
         {
-            wc      = g_utf8_to_ucs4(text,length);
-            n_chars = g_utf8_strlen(text,length);
+            wc      = g_utf8_to_ucs4_fast (text,length,&n_chars);
             /* We were called on a LTR directional run (e.g. some numbers); 
                fallback as simple as possible */
             pango_glyph_string_set_size (glyphs, n_chars);
