@@ -740,7 +740,7 @@ pango_attr_list_insert_internal (PangoAttrList  *list,
     {
       prev = NULL;
       tmp_list = list->attributes;
-      while (tmp_list)
+      while (1)
 	{
 	  PangoAttribute *tmp_attr = tmp_list->data;
 	  
@@ -758,6 +758,8 @@ pango_attr_list_insert_internal (PangoAttrList  *list,
 
 	      if (!tmp_list)
 		list->attributes_tail = link;
+
+	      break;
 	    }
 	  
 	  prev = tmp_list;

@@ -217,7 +217,10 @@ process_module_file (FILE *module_file)
       p = line_buf->str;
 
       if (!pango_skip_space (&p))
-	continue;
+	{
+	  g_free (pair);
+	  continue;
+	}
 
       /* Break line into words on whitespace */
       i = 0;

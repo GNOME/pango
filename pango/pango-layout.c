@@ -333,14 +333,17 @@ void
 pango_layout_set_attributes (PangoLayout   *layout,
 			     PangoAttrList *attrs)
 {
+  PangoAttrList *old_attrs;
   g_return_if_fail (layout != NULL);
 
-  if (layout->attrs)
-    pango_attr_list_unref (layout->attrs);
+  old_attrs = layout->attrs;
 
   layout->attrs = attrs;
   pango_attr_list_ref (layout->attrs);
   pango_layout_clear_lines (layout);
+
+  if (old_attrs)
+    pango_attr_list_unref (layout->attrs);
 }
 
 /**

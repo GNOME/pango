@@ -1,3 +1,11 @@
+2000-08-07  Elliot Lee  <sopwith@redhat.com>
+
+	* pango/modules.c: If the first pango_skip_space fails, remember to free enginepair before continuing.
+	* pango/pango-layout.c (pango_layout_set_attributes): unref old attr list after reffing
+	  new one.
+	* pango/pango-attributes.c (pango_attr_list_insert_internal): Proper fix from Owen for the
+	  infinite loop.
+
 2000-08-03  Elliot Lee  <sopwith@redhat.com>
 
 	* pango/modules.c: Fix segfault when tmp_list has no 'prev' pointer.
