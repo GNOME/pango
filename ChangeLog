@@ -1,3 +1,10 @@
+Mon Nov 25 19:57:02 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/fonts.c (pango_font_description_free): Remove
+	some confusing left over verbiage in API docs about what 
+	font descriptions could be freed. (#96558, 
+	Michael R. Walton.)
+
 Mon Nov 25 19:24:29 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/mini-fribidi/fribidi_get_type.c (_pango_fribidi_get_type): 

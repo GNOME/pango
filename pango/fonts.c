@@ -652,8 +652,7 @@ pango_font_description_hash (const PangoFontDescription *desc)
  * pango_font_description_free:
  * @desc: a #PangoFontDescription
  * 
- * Frees a font description returned from pango_font_describe()
- * or pango_font_description_copy().
+ * Frees a font description.
  **/
 void 
 pango_font_description_free  (PangoFontDescription  *desc)
