@@ -4,6 +4,7 @@
 
 sans normal normal normal normal \
   "-*-helvetica-medium-r-normal--*-*-*-*-*-*-*-*,\
+   -*-gulim-medium-r-normal--*-*-*-*-*-*-ksc5601.1987-0,\
    -*-clearlyu-medium-r-normal--*-*-*-*-*-*-iso10646-1,\
    -*-fixed-medium-r-normal--*-*-*-*-*-*-*-*,\
    -kaist-iyagi-bold-r-normal--*-*-*-*-*-*-johab-1,\
@@ -21,6 +22,7 @@ sans normal normal normal normal \
 
 sans italic normal normal normal \
   "-*-helvetica-medium-o-normal--*-*-*-*-*-*-*-*,\
+   -*-gulim-medium-o-normal--*-*-*-*-*-*-ksc5601.1987-0,\
    -*-clearlyu-medium-r-normal--*-*-*-*-*-*-iso10646-1,\
    -*-fixed-medium-r-normal--*-*-*-*-*-*-*-*,\
    -kaist-iyagi-bold-r-normal--*-*-*-*-*-*-johab-1,\
@@ -38,6 +40,7 @@ sans italic normal normal normal \
 
 sans normal normal bold normal \
   "-*-helvetica-bold-r-normal--*-*-*-*-*-*-*-*,\
+   -*-gulim-bold-r-normal--*-*-*-*-*-*-ksc5601.1987-0,\
    -*-clearlyu-medium-r-normal--*-*-*-*-*-*-iso10646-1,\
    -*-fixed-medium-r-normal--*-*-*-*-*-*-*-*,\
    -kaist-iyagi-bold-r-normal--*-*-*-*-*-*-johab-1,\
@@ -55,6 +58,7 @@ sans normal normal bold normal \
 
 sans italic normal bold normal \
   "-*-helvetica-bold-o-normal--*-*-*-*-*-*-*-*,\
+   -*-gulim-bold-o-normal--*-*-*-*-*-*-ksc5601.1987-0,\
    -*-clearlyu-medium-r-normal--*-*-*-*-*-*-iso10646-1,\
    -*-fixed-medium-r-normal--*-*-*-*-*-*-*-*,\
    -kaist-iyagi-bold-r-normal--*-*-*-*-*-*-johab-1,\
@@ -73,6 +77,7 @@ sans italic normal bold normal \
 
 serif normal normal normal normal \
   "-*-times-medium-r-normal--*-*-*-*-*-*-*-*,\
+   -*-batang-medium-r-normal--*-*-*-*-*-*-ksc5601.1987-0,\
    -*-clearlyu-medium-r-normal--*-*-*-*-*-*-iso10646-1,\
    -*-fixed-medium-r-normal--*-*-*-*-*-*-*-*,\
    -kaist-iyagi-bold-r-normal--*-*-*-*-*-*-johab-1,\
@@ -90,6 +95,7 @@ serif normal normal normal normal \
 
 serif italic normal normal normal \
   "-*-times-medium-i-normal--*-*-*-*-*-*-*-*,\
+   -*-batang-medium-r-normal--*-*-*-*-*-*-ksc5601.1987-0,\
    -*-clearlyu-medium-r-normal--*-*-*-*-*-*-iso10646-1,\
    -*-fixed-medium-r-normal--*-*-*-*-*-*-*-*,\
    -kaist-iyagi-bold-r-normal--*-*-*-*-*-*-johab-1,\
@@ -107,6 +113,7 @@ serif italic normal normal normal \
 
 serif normal normal bold normal \
   "-*-times-bold-r-normal--*-*-*-*-*-*-*-*,\
+   -*-batang-bold-r-normal--*-*-*-*-*-*-ksc5601.1987-0,\
    -*-clearlyu-medium-r-normal--*-*-*-*-*-*-iso10646-1,\
    -*-fixed-medium-r-normal--*-*-*-*-*-*-*-*,\
    -kaist-iyagi-bold-r-normal--*-*-*-*-*-*-johab-1,\
@@ -124,6 +131,7 @@ serif normal normal bold normal \
 
 serif italic normal bold normal \
   "-*-times-bold-i-normal--*-*-*-*-*-*-*-*,\
+   -*-batang-bold-r-normal--*-*-*-*-*-*-ksc5601.1987-0,\
    -*-clearlyu-medium-r-normal--*-*-*-*-*-*-iso10646-1,\
    -*-fixed-medium-r-normal--*-*-*-*-*-*-*-*,\
    -kaist-iyagi-bold-r-normal--*-*-*-*-*-*-johab-1,\
@@ -141,6 +149,7 @@ serif italic normal bold normal \
 
 monospace normal normal normal normal \
   "-*-fixed-medium-r-normal--*-*-*-*-*-*-*-*,\
+   -*-dotum-medium-r-normal--*-*-*-*-*-*-ksc5601.1987-0,\
    -*-clearlyu-medium-r-normal--*-*-*-*-*-*-iso10646-1,\
    -*-fixed-medium-r-normal--*-*-*-*-*-*-*-*,\
    -kaist-iyagi-bold-r-normal--*-*-*-*-*-*-johab-1,\
@@ -158,6 +167,7 @@ monospace normal normal normal normal \
 
 monospace italic normal normal normal \
   "-*-fixed-medium-i-normal--*-*-*-*-*-*-*-*,\
+   -*-dotum-medium-r-normal--*-*-*-*-*-*-ksc5601.1987-0,\
    -*-clearlyu-medium-r-normal--*-*-*-*-*-*-iso10646-1,\
    -*-fixed-medium-r-normal--*-*-*-*-*-*-*-*,\
    -kaist-iyagi-bold-r-normal--*-*-*-*-*-*-johab-1,\
@@ -175,6 +185,7 @@ monospace italic normal normal normal \
 
 monospace normal normal bold normal \
   "-*-fixed-bold-r-normal--*-*-*-*-*-*-*-*,\
+   -*-dotum-bold-r-normal--*-*-*-*-*-*-ksc5601.1987-0,\
    -*-clearlyu-medium-r-normal--*-*-*-*-*-*-iso10646-1,\
    -*-fixed-medium-r-normal--*-*-*-*-*-*-*-*,\
    -kaist-iyagi-bold-r-normal--*-*-*-*-*-*-johab-1,\
@@ -192,6 +203,7 @@ monospace normal normal bold normal \
 
 monospace italic normal bold normal \
   "-*-fixed-bold-i-normal--*-*-*-*-*-*-*-*,\
+   -*-dotum-bold-r-normal--*-*-*-*-*-*-ksc5601.1987-0,\
    -*-clearlyu-medium-r-normal--*-*-*-*-*-*-iso10646-1,\
    -*-fixed-medium-r-normal--*-*-*-*-*-*-*-*,\
    -kaist-iyagi-bold-r-normal--*-*-*-*-*-*-johab-1,\
