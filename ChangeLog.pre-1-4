@@ -1,3 +1,8 @@
+Mon Apr 14 07:52:25 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* configure.in. modules/indic/Makefile.am modules/indic-ft2.c:
+	Add indic-ft2 module from Kapil Chowskey.
+
 2003-04-03  Sven Neumann  <sven@gimp.org>
 
 	* pango/pangoft2.c (pango_ft2_font_get_face)

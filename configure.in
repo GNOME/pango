@@ -340,7 +340,7 @@ arabic_modules="arabic-ft2,arabic-x,arabic-xft"
 basic_modules="basic-ft2,basic-win32,basic-x,basic-xft"
 hangul_modules="hangul-x,hangul-xft"
 hebrew_modules="hebrew-ft2,hebrew-x,hebrew-xft"
-indic_modules="bengali-x,devanagari-x,gurmukhi-x,gujarati-x,myanmar-x,indic-xft"
+indic_modules="bengali-x,devanagari-x,gurmukhi-x,gujarati-x,myanmar-x,indic-xft,indic-ft2"
 tamil_modules="tamil-x"
 thai_modules="thai-x,thai-xft"
 
@@ -419,6 +419,8 @@ AM_CONDITIONAL(INCLUDE_THAI_X,echo $included_modules | egrep '(^|,)thai-x($|,)' 
 AM_CONDITIONAL(INCLUDE_THAI_XFT,echo $included_modules | egrep '(^|,)thai-xft($|,)' > /dev/null)
 
 AM_CONDITIONAL(INCLUDE_INDIC_XFT,echo $included_modules | egrep '(^|,)indic-xft($|,)' > /dev/null)
+
+AM_CONDITIONAL(INCLUDE_INDIC_FT2,echo $included_modules | egrep '(^|,)indic-ft2($|,)' > /dev/null)
 
 #
 # We use flockfile to implement pango_getline() - should be moved to GLib

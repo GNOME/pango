@@ -150,6 +150,27 @@ pango_indic_xft_la_SOURCES = $(xft_sources)
 
 libpango_indic_xft_la_SOURCES = $(xft_sources)
 
+if HAVE_FREETYPE
+INCLUDES += $(FREETYPE_CFLAGS)
+if INCLUDE_INDIC_FT2
+noinst_LTLIBRARIES += libpango-indic-ft2.la
+INCLUDES += -DFREETYPE_MODULE_PREFIX
+else
+module_LTLIBRARIES += pango-indic-ft2.la
+endif
+endif
+
+ft2_sources =		 	\
+	indic-ft2.c		\
+	indic-ot-class-tables.c	\
+	indic-ot.c		\
+	indic-ot.h
+
+pango_indic_ft2_la_LDFLAGS = -export-dynamic -avoid-version -module
+pango_indic_ft2_la_LIBADD = $(pangoft2libs)
+pango_indic_ft2_la_SOURCES = $(ft2_sources)
+libpango_indic_ft2_la_SOURCES = $(ft2_sources)
+
 included-modules: $(noinst_LTLIBRARIES)
 
 .PHONY: included-modules
