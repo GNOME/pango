@@ -217,12 +217,33 @@ pango_xft_init_fontset_hash (PangoXftFontMap *xfontmap)
 }
 
 static PangoFontMap *
+pango_xft_find_font_map (Display *display,
+			 int      screen)
+{
+  GSList *tmp_list;
+  
+  tmp_list = fontmaps;
+  while (tmp_list)
+    {
+      PangoXftFontMap *xfontmap = tmp_list->data;
+
+      if (xfontmap->display == display &&
+	  xfontmap->screen == screen) 
+	return PANGO_FONT_MAP (xfontmap);
+
+      tmp_list = tmp_list->next;
+    }
+
+  return NULL;
+}
+
+static PangoFontMap *
 pango_xft_get_font_map (Display *display,
 			int      screen)
 {
   static gboolean registered_modules = FALSE;
+  PangoFontMap *fontmap;
   PangoXftFontMap *xfontmap;
-  GSList *tmp_list;
 
   g_return_val_if_fail (display != NULL, NULL);
   
@@ -239,18 +260,10 @@ pango_xft_get_font_map (Display *display,
         pango_module_register (&_pango_included_xft_modules[i]);
     }
 
-  tmp_list = fontmaps;
-  while (tmp_list)
-    {
-      xfontmap = tmp_list->data;
-
-      if (xfontmap->display == display &&
-	  xfontmap->screen == screen) 
-	return PANGO_FONT_MAP (xfontmap);
-
-      tmp_list = tmp_list->next;
-    }
-
+  fontmap = pango_xft_find_font_map (display, screen);
+  if (fontmap)
+    return fontmap;
+  
   xfontmap = (PangoXftFontMap *)g_object_new (PANGO_TYPE_XFT_FONT_MAP, NULL);
   
   xfontmap->display = display;
@@ -270,8 +283,31 @@ pango_xft_get_font_map (Display *display,
 }
 
 /**
+ * pango_xft_shutdown_display:
+ * @display: an X display
+ * @screen: the screen number of a screen within @display
+ * 
+ * Release any resources that have been cached for the
+ * combination of @display and @screen.
+ **/
+void
+pango_xft_shutdown_display (Display *display,
+			    int      screen)
+{
+  PangoFontMap *fontmap;
+
+  fontmap = pango_xft_find_font_map (display, screen);
+  if (fontmap)
+    {
+      fontmaps = g_slist_remove (fontmaps, fontmap);
+      g_object_unref (G_OBJECT (fontmap));
+    }
+}  
+
+/**
  * pango_xft_font_map_set_default_substitute:
- * @fontmap: a #PangoXFTFontmap
+ * @display: an X Display
+ * @screen: the screen number of a screen within @display
  * @func: function to call to to do final config tweaking
  *        on #FcPattern objects.
  * @data: data to pass to @func
@@ -354,6 +390,7 @@ pango_xft_font_map_finalize (GObject *object)
   if (xfontmap->substitute_destroy)
     xfontmap->substitute_destroy (xfontmap->substitute_data);
 
+  pango_xft_font_map_cache_clear (xfontmap);
   g_queue_free (xfontmap->freed_fonts);
   g_hash_table_destroy (xfontmap->fontset_hash);
   g_hash_table_destroy (xfontmap->coverage_hash);
