@@ -147,6 +147,9 @@ pango_ft2_font_map_new (void)
 
   ft2fontmap = g_object_new (PANGO_TYPE_FT2_FONT_MAP, NULL);
   
+  ft2fontmap->dpi_x = 72.0;
+  ft2fontmap->dpi_y = 72.0;
+
   error = FT_Init_FreeType (&ft2fontmap->library);
   if (error != FT_Err_Ok)
     {

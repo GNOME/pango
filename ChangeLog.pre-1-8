@@ -1,3 +1,8 @@
+2003-12-05  Sven Neumann  <sven@gimp.org>
+
+	* pango/pangoft2-fontmap.c (pango_ft2_font_map_new): merged fix
+	for bug #123602 from HEAD branch (initialize fontmap resolution).
+
 2003-11-25  Noah Levitt  <nlevitt@columbia.edu>
 
 	* pango-utils.c (lang_texts[]): Italian is "it"; "iw" is deprecated
