@@ -31,221 +31,88 @@
 
 #include <glib.h>
 #include "pango-engine.h"
+#include "thai-charprop.h"
 #include "thai-shaper.h"
 #include "thai-ot.h"
 
 #define MAX_CLUSTER_CHRS	256
 #define MAX_GLYPHS		256
 
-/* Define TACTIS character classes */
-#define CTRL			0
-#define NON			1
-#define CONS			2
-#define LV			3
-#define FV1			4
-#define FV2			5
-#define FV3			6
-#define BV1			7
-#define BV2			8
-#define BD			9
-#define TONE			10
-#define AD1			11
-#define AD2			12
-#define AD3			13
-#define AV1			14
-#define AV2			15
-#define AV3			16
-
-#define _ND			0
-#define _NC			1
-#define _UC			(1<<1)
-#define _BC			(1<<2)
-#define _SC			(1<<3)
-#define _AV			(1<<4)
-#define _BV			(1<<5)
-#define _TN			(1<<6)
-#define _AD			(1<<7)
-#define _BD			(1<<8)
-#define _AM			(1<<9)
-
-#define NoTailCons		_NC
-#define UpTailCons		_UC
-#define BotTailCons		_BC
-#define SpltTailCons		_SC
-#define Cons			(NoTailCons|UpTailCons|BotTailCons|SpltTailCons)
-#define AboveVowel		_AV
-#define BelowVowel		_BV
-#define Tone			_TN
-#define AboveDiac		_AD
-#define BelowDiac		_BD
-#define SaraAm			_AM
-
-#define char_class(wc)		TAC_char_class[(unsigned int)(wc)]
-#define is_char_type(wc, mask)	(char_type_table[ucs2tis ((wc))] & (mask))
-
-static const gint char_type_table[256] = {
-  /*       0,   1,   2,   3,   4,   5,   6,   7,
-           8,   9,   A,   B,   C,   D,   E,   F  */
-
-  /*00*/ _ND, _ND, _ND, _ND, _ND, _ND, _ND, _ND,
-         _ND, _ND, _ND, _ND, _ND, _ND, _ND, _ND,
-  /*10*/ _ND, _ND, _ND, _ND, _ND, _ND, _ND, _ND,
-         _ND, _ND, _ND, _ND, _ND, _ND, _ND, _ND,
-  /*20*/ _ND, _ND, _ND, _ND, _ND, _ND, _ND, _ND,
-         _ND, _ND, _ND, _ND, _ND, _ND, _ND, _ND,
-  /*30*/ _ND, _ND, _ND, _ND, _ND, _ND, _ND, _ND,
-         _ND, _ND, _ND, _ND, _ND, _ND, _ND, _ND,
-  /*40*/ _ND, _ND, _ND, _ND, _ND, _ND, _ND, _ND,
-         _ND, _ND, _ND, _ND, _ND, _ND, _ND, _ND,
-  /*50*/ _ND, _ND, _ND, _ND, _ND, _ND, _ND, _ND,
-         _ND, _ND, _ND, _ND, _ND, _ND, _ND, _ND,
-  /*60*/ _ND, _ND, _ND, _ND, _ND, _ND, _ND, _ND,
-         _ND, _ND, _ND, _ND, _ND, _ND, _ND, _ND,
-  /*70*/ _ND, _ND, _ND, _ND, _ND, _ND, _ND, _ND,
-         _ND, _ND, _ND, _ND, _ND, _ND, _ND, _ND,
-  /*80*/ _ND, _ND, _ND, _ND, _ND, _ND, _ND, _ND,
-         _ND, _ND, _ND, _ND, _ND, _ND, _ND, _ND,
-  /*90*/ _ND, _ND, _ND, _ND, _ND, _ND, _ND, _ND,
-         _ND, _ND, _ND, _ND, _ND, _ND, _ND, _ND,
-		
-  /*A0*/ _ND, _NC, _NC, _NC, _NC, _NC, _NC, _NC,
-         _NC, _NC, _NC, _NC, _NC, _SC, _BC, _BC,
-  /*B0*/ _SC, _NC, _NC, _NC, _NC, _NC, _NC, _NC,
-         _NC, _NC, _NC, _UC, _NC, _UC, _NC, _UC,
-  /*C0*/ _NC, _NC, _NC, _NC, _ND, _NC, _ND, _NC,
-         _NC, _NC, _NC, _NC, _UC, _NC, _NC, _ND,
-  /*D0*/ _ND, _AV, _ND, _AM, _AV, _AV, _AV, _AV,
-         _BV, _BV, _BD, _ND, _ND, _ND, _ND, _ND,
-  /*E0*/ _ND, _ND, _ND, _ND, _ND, _ND, _ND, _AD,
-         _TN, _TN, _TN, _TN, _AD, _AD, _AD, _ND,
-  /*F0*/ _ND, _ND, _ND, _ND, _ND, _ND, _ND, _ND,
-         _ND, _ND, _ND, _ND, _ND, _ND, _ND, _ND,
-};
-
-static const gint TAC_char_class[256] = {
-  /*	   0,   1,   2,   3,   4,   5,   6,   7,
-           8,   9,   A,   B,   C,   D,   E,   F  */
-
-  /*00*/ CTRL,CTRL,CTRL,CTRL,CTRL,CTRL,CTRL,CTRL,
-         CTRL,CTRL,CTRL,CTRL,CTRL,CTRL,CTRL,CTRL,
-  /*10*/ CTRL,CTRL,CTRL,CTRL,CTRL,CTRL,CTRL,CTRL,
-         CTRL,CTRL,CTRL,CTRL,CTRL,CTRL,CTRL,CTRL,
-  /*20*/  NON, NON, NON, NON, NON, NON, NON, NON,
-          NON, NON, NON, NON, NON, NON, NON, NON,
-  /*30*/  NON, NON, NON, NON, NON, NON, NON, NON,
-          NON, NON, NON, NON, NON, NON, NON, NON,
-  /*40*/  NON, NON, NON, NON, NON, NON, NON, NON,
-          NON, NON, NON, NON, NON, NON, NON, NON,
-  /*50*/  NON, NON, NON, NON, NON, NON, NON, NON,
-          NON, NON, NON, NON, NON, NON, NON, NON,
-  /*60*/  NON, NON, NON, NON, NON, NON, NON, NON,
-          NON, NON, NON, NON, NON, NON, NON, NON,
-  /*70*/  NON, NON, NON, NON, NON, NON, NON, NON,
-          NON, NON, NON, NON, NON, NON, NON,CTRL,
-  /*80*/ CTRL,CTRL,CTRL,CTRL,CTRL,CTRL,CTRL,CTRL,
-         CTRL,CTRL,CTRL,CTRL,CTRL,CTRL,CTRL,CTRL,
-  /*90*/ CTRL,CTRL,CTRL,CTRL,CTRL,CTRL,CTRL,CTRL,
-         CTRL,CTRL,CTRL,CTRL,CTRL,CTRL,CTRL,CTRL,
-  /*A0*/  NON,CONS,CONS,CONS,CONS,CONS,CONS,CONS,
-         CONS,CONS,CONS,CONS,CONS,CONS,CONS,CONS,
-  /*B0*/ CONS,CONS,CONS,CONS,CONS,CONS,CONS,CONS,
-         CONS,CONS,CONS,CONS,CONS,CONS,CONS,CONS,
-  /*C0*/ CONS,CONS,CONS,CONS, FV3,CONS, FV3,CONS,
-         CONS,CONS,CONS,CONS,CONS,CONS,CONS, NON,
-  /*D0*/  FV1, AV2, FV1, FV1, AV1, AV3, AV2, AV3,
-          BV1, BV2,  BD, NON, NON, NON, NON, NON,
-  /*E0*/   LV,  LV,  LV,  LV,  LV, FV2, NON, AD2,
-         TONE,TONE,TONE,TONE, AD1, AD1, AD3, NON,
-  /*F0*/  NON, NON, NON, NON, NON, NON, NON, NON,
-          NON, NON, NON, NON, NON, NON, NON,CTRL,
-};
-
-static const gchar TAC_compose_and_input_check_type_table[17][17] = {
-      /* Cn */ /* 0,   1,   2,   3,   4,   5,   6,   7,
-                  8,   9,   A,   B,   C,   D,   E,   F       */
-  /* Cn-1 00 */	{ 'X', 'A', 'A', 'A', 'A', 'A', 'A', 'R',
-                'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R' },
-  /* 10 */      { 'X', 'A', 'A', 'A', 'S', 'S', 'A', 'R',
-                'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R' },
-  /* 20 */      { 'X', 'A', 'A', 'A', 'A', 'S', 'A', 'C',
-                'C', 'C', 'C', 'C', 'C', 'C', 'C', 'C', 'C' },
-  /* 30 */      {'X', 'S', 'A', 'S', 'S', 'S', 'S', 'R',
-                'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R' },
-  /* 40 */      { 'X', 'S', 'A', 'A', 'S', 'S', 'A', 'R',
-                'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R' },
-  /* 50 */      { 'X', 'A', 'A', 'A', 'A', 'S', 'A', 'R',
-                'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R' },
-  /* 60 */      { 'X', 'A', 'A', 'A', 'S', 'A', 'S', 'R',
-                'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R' },
-  /* 70 */      { 'X', 'A', 'A', 'A', 'S', 'S', 'A', 'R',
-                'R', 'R', 'C', 'C', 'R', 'R', 'R', 'R', 'R' },
-  /* 80 */      { 'X', 'A', 'A', 'A', 'S', 'S', 'A', 'R',
-                'R', 'R', 'C', 'R', 'R', 'R', 'R', 'R', 'R' },
-  /* 90 */      { 'X', 'A', 'A', 'A', 'S', 'S', 'A', 'R',
-                'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R' },
-  /* A0 */      { 'X', 'A', 'A', 'A', 'A', 'A', 'A', 'R',
-                'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R' },
-  /* B0 */      { 'X', 'A', 'A', 'A', 'S', 'S', 'A', 'R',
-                'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R' },
-  /* C0 */      { 'X', 'A', 'A', 'A', 'S', 'S', 'A', 'R',
-                'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R' },
-  /* D0 */      { 'X', 'A', 'A', 'A', 'S', 'S', 'A', 'R',
-                'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R' },
-  /* E0 */      { 'X', 'A', 'A', 'A', 'S', 'S', 'A', 'R',
-                'R', 'R', 'C', 'C', 'R', 'R', 'R', 'R', 'R' },
-  /* F0 */      { 'X', 'A', 'A', 'A', 'S', 'S', 'A', 'R',
-                'R', 'R', 'C', 'R', 'R', 'R', 'R', 'R', 'R' },
-                { 'X', 'A', 'A', 'A', 'S', 'S', 'A', 'R',
- 	        'R', 'R', 'C', 'R', 'C', 'R', 'R', 'R', 'R' }
-};
 
 typedef struct {
-  gint ShiftDown_TONE_AD[8];
-  gint ShiftDownLeft_TONE_AD[8];
-  gint ShiftLeft_TONE_AD[8];
-  gint ShiftLeft_AV[7];
-  gint ShiftDown_BV_BD[3];
-  gint TailCutCons[4];
+  guchar Start_TONE_AD, Start_AV, Start_BV_BD, Start_TailCutCons;
+
+  guchar ShiftDown_TONE_AD[8];
+  guchar ShiftDownLeft_TONE_AD[8];
+  guchar ShiftLeft_TONE_AD[8];
+  guchar ShiftLeft_AV[7];
+  guchar ShiftDown_BV_BD[3];
+  guchar TailCutCons[4];
+
+  guchar AmComp[2];  /* Sara Am components */
 } ThaiShapeTable;
 
-#define shiftdown_tone_ad(c,tbl)      ((tbl)->ShiftDown_TONE_AD[(c)-0xE7])
-#define shiftdownleft_tone_ad(c,tbl)  ((tbl)->ShiftDownLeft_TONE_AD[(c)-0xE7])
-#define shiftleft_tone_ad(c,tbl)      ((tbl)->ShiftLeft_TONE_AD[(c)-0xE7])
-#define shiftleft_av(c,tbl)           ((tbl)->ShiftLeft_AV[(c)-0xD1])
-#define shiftdown_bv_bd(c,tbl)        ((tbl)->ShiftDown_BV_BD[(c)-0xD8])
-#define tailcutcons(c,tbl)            ((tbl)->TailCutCons[(c)-0xAD])
+#define shiftdown_tone_ad(c,tbl) \
+	((tbl)->ShiftDown_TONE_AD[(c)-(tbl)->Start_TONE_AD])
+#define shiftdownleft_tone_ad(c,tbl) \
+	((tbl)->ShiftDownLeft_TONE_AD[(c)-(tbl)->Start_TONE_AD])
+#define shiftleft_tone_ad(c,tbl) \
+	((tbl)->ShiftLeft_TONE_AD[(c)-(tbl)->Start_TONE_AD])
+#define shiftleft_av(c,tbl) \
+	((tbl)->ShiftLeft_AV[(c)-(tbl)->Start_AV])
+#define shiftdown_bv_bd(c,tbl) \
+	((tbl)->ShiftDown_BV_BD[(c)-(tbl)->Start_BV_BD])
+#define tailcutcons(c,tbl) \
+	((tbl)->TailCutCons[(c)-(tbl)->Start_TailCutCons])
 
 /* No adjusted vowel/tonemark glyphs (tis620-0)
  */
 static const ThaiShapeTable tis620_0_shape_table = {
+    0xE7, 0xD1, 0xD8, 0xAD,
     { 0xE7, 0xE8, 0xE9, 0xEA, 0xEB, 0xEC, 0xED, 0xEE },
     { 0xE7, 0xE8, 0xE9, 0xEA, 0xEB, 0xEC, 0xED, 0xEE },
     { 0xE7, 0xE8, 0xE9, 0xEA, 0xEB, 0xEC, 0xED, 0xEE },
     { 0xD1, 0x00, 0x00, 0xD4, 0xD5, 0xD6, 0xD7 },
     { 0xD8, 0xD9, 0xDA },
-    { 0xAD, 0x00, 0x00, 0xB0 }
+    { 0xAD, 0x00, 0x00, 0xB0 },
+    { 0xED, 0xD2 }
 };
 
 /* Macintosh
  */
 static const ThaiShapeTable Mac_shape_table = {
+  0xE7, 0xD1, 0xD8, 0xAD,
   { 0xE7, 0x88, 0x89, 0x8A, 0x8B, 0x8C, 0xED, 0xEE },
   { 0x93, 0x83, 0x84, 0x85, 0x86, 0x87, 0x8F, 0xEE },
   { 0x93, 0x98, 0x99, 0x9A, 0x9B, 0x9C, 0x8F, 0xEE },
   { 0x92, 0x00, 0x00, 0x94, 0x95, 0x96, 0x97 },
   { 0xD8, 0xD9, 0xDA },
-  { 0xAD, 0x00, 0x00, 0xB0 }
+  { 0xAD, 0x00, 0x00, 0xB0 },
+  { 0xED, 0xD2 }
 };
 
 /* Microsoft Window
  */
 static const ThaiShapeTable Win_shape_table = {
+    0xE7, 0xD1, 0xD8, 0xAD,
     { 0xE7, 0x8B, 0x8C, 0x8D, 0x8E, 0x8F, 0xED, 0xEE },
     { 0x9A, 0x86, 0x87, 0x88, 0x89, 0x8A, 0x99, 0xEE },
     { 0x9A, 0x9B, 0x9C, 0x9D, 0x9E, 0x9F, 0x99, 0xEE },
     { 0x98, 0x00, 0x00, 0x81, 0x82, 0x83, 0x84 },
     { 0xFC, 0xFD, 0xFE },
-    { 0x90, 0x00, 0x00, 0x80 }
+    { 0x90, 0x00, 0x00, 0x80 },
+    { 0xED, 0xD2 }
+};
+
+static const ThaiShapeTable Lao_shape_table = {
+  0x67, 0x51, 0x58, 0x2D,
+  { 0x67, 0x68, 0x69, 0x6A, 0x6B, 0x6C, 0x6D, 0x6E },
+  { 0x67, 0x68, 0x69, 0x6A, 0x6B, 0x6C, 0x6D, 0x6E },
+  { 0x67, 0x68, 0x69, 0x6A, 0x6B, 0x6C, 0x6D, 0x6E },
+  { 0x51, 0x00, 0x00, 0x54, 0x55, 0x56, 0x57 },
+  { 0x58, 0x59, 0x00 },
+  { 0x2D, 0x00, 0x00, 0x30 },
+  { 0x6D, 0x52 }
 };
 
 static void
@@ -297,7 +164,8 @@ get_adjusted_glyphs_list (ThaiFontInfo *font_info,
   switch (num_chrs)
     {
       case 1:
-        if (is_char_type (cluster[0], BelowVowel|BelowDiac|AboveVowel|AboveDiac|Tone))
+        if (is_char_type (cluster[0],
+                          BelowVowel|BelowDiac|AboveVowel|AboveDiac|Tone|SaraAm))
 	  {
 	    gint n;
 	    glyph_lists[0] = get_null_base_glyph (font_info);
@@ -320,8 +188,8 @@ get_adjusted_glyphs_list (ThaiFontInfo *font_info,
 	  {
             glyph_lists[0] =
 		thai_make_glyph_tis (font_info, ucs2tis (cluster[0]));
-            glyph_lists[1] = thai_make_glyph_tis (font_info, 0xED);
-            glyph_lists[2] = thai_make_glyph_tis (font_info, 0xD2);
+            glyph_lists[1] = thai_make_glyph_tis (font_info, shaping_table->AmComp[0]);
+            glyph_lists[2] = thai_make_glyph_tis (font_info, shaping_table->AmComp[1]);
             return 3;
           }
 	else if (is_char_type (cluster[0], UpTailCons) &&
@@ -330,8 +198,8 @@ get_adjusted_glyphs_list (ThaiFontInfo *font_info,
 	    glyph_lists[0] =
 		thai_make_glyph_tis (font_info, ucs2tis (cluster[0]));
             glyph_lists[1] = thai_make_glyph_tis (font_info,
-					shiftleft_tone_ad (0xED, shaping_table));
-            glyph_lists[2] = thai_make_glyph_tis (font_info, 0xD2);
+					shiftleft_tone_ad (shaping_table->AmComp[0], shaping_table));
+            glyph_lists[2] = thai_make_glyph_tis (font_info, shaping_table->AmComp[1]);
             return 3;
           }
 	else if (is_char_type (cluster[0], NoTailCons|BotTailCons|SpltTailCons) &&
@@ -418,10 +286,10 @@ get_adjusted_glyphs_list (ThaiFontInfo *font_info,
 	  {
             glyph_lists[0] =
 		thai_make_glyph_tis (font_info, ucs2tis (cluster[0]));
-            glyph_lists[1] = thai_make_glyph_tis (font_info, 0xED);
+            glyph_lists[1] = thai_make_glyph_tis (font_info, shaping_table->AmComp[0]);
             glyph_lists[2] =
 		thai_make_glyph_tis (font_info, ucs2tis (cluster[1]));
-            glyph_lists[3] = thai_make_glyph_tis (font_info, 0xD2);
+            glyph_lists[3] = thai_make_glyph_tis (font_info, shaping_table->AmComp[1]);
             return 4;
           }
 	else if (is_char_type (cluster[0], UpTailCons) &&
@@ -431,10 +299,10 @@ get_adjusted_glyphs_list (ThaiFontInfo *font_info,
 	    glyph_lists[0] =
 		thai_make_glyph_tis (font_info, ucs2tis (cluster[0]));
 	    glyph_lists[1] = thai_make_glyph_tis (font_info,
-				shiftleft_tone_ad (0xED, shaping_table));
+				shiftleft_tone_ad (shaping_table->AmComp[0], shaping_table));
 	    glyph_lists[2] = thai_make_glyph_tis (font_info,
 		    		shiftleft_tone_ad (ucs2tis (cluster[1]), shaping_table));
-	    glyph_lists[3] = thai_make_glyph_tis (font_info, 0xD2);
+	    glyph_lists[3] = thai_make_glyph_tis (font_info, shaping_table->AmComp[1]);
 	    return 4;
 	  }
 	else if (is_char_type (cluster[0], UpTailCons) &&
@@ -509,6 +377,14 @@ get_adjusted_glyphs_list (ThaiFontInfo *font_info,
 	    return 3;
 	  }
       break;
+
+      default: /* e.g. Lao cluster with below cons + upper/lower vowel + tone */
+        {
+          gint i;
+          for (i = 0; i < num_chrs; i++)
+            glyph_lists[i] = thai_make_glyph_tis (font_info, ucs2tis (cluster[i]));
+          return num_chrs;
+        }
     }
 
     return 0;
@@ -522,30 +398,45 @@ get_glyphs_list (ThaiFontInfo	*font_info,
 {
   gint i;
 
-  switch (font_info->font_set)
+  switch (pango_script_for_unichar (cluster[0]))
     {
-      case THAI_FONT_NONE:
-        for (i=0; i < num_chrs; i++)
-	  glyph_lists[i] = thai_make_unknown_glyph (font_info, glyph_lists[i]);
-        return num_chrs;
+      case PANGO_SCRIPT_THAI:
+        switch (font_info->font_set)
+          {
+            default:
+            case THAI_FONT_NONE:
+              for (i=0; i < num_chrs; i++)
+	        glyph_lists[i] = thai_make_unknown_glyph (font_info, cluster[i]);
+              return num_chrs;
 
-      case THAI_FONT_TIS:
-	/* TIS620-0 + Wtt2.0 Extension
-	 */
-        return get_adjusted_glyphs_list (font_info, cluster,
-		num_chrs, glyph_lists, &tis620_0_shape_table);
+            case THAI_FONT_TIS:
+	      /* TIS620-0 + Wtt2.0 Extension
+	       */
+              return get_adjusted_glyphs_list (font_info, cluster,
+		      num_chrs, glyph_lists, &tis620_0_shape_table);
       
-      case THAI_FONT_TIS_MAC:
-	/* MacIntosh Extension
-	 */
-        return get_adjusted_glyphs_list (font_info, cluster,
-		num_chrs, glyph_lists, &Mac_shape_table);
+            case THAI_FONT_TIS_MAC:
+	      /* MacIntosh Extension
+	       */
+              return get_adjusted_glyphs_list (font_info, cluster,
+		      num_chrs, glyph_lists, &Mac_shape_table);
       
-      case THAI_FONT_TIS_WIN:
-	/* Microsoft Extension
-	 */
+            case THAI_FONT_TIS_WIN:
+	      /* Microsoft Extension
+	       */
+              return get_adjusted_glyphs_list (font_info, cluster,
+		      num_chrs, glyph_lists, &Win_shape_table);
+          }
+	break;
+
+      case PANGO_SCRIPT_LAO:
         return get_adjusted_glyphs_list (font_info, cluster,
-		num_chrs, glyph_lists, &Win_shape_table);
+	        num_chrs, glyph_lists, &Lao_shape_table);
+
+      default:
+        for (i=0; i < num_chrs; i++)
+	  glyph_lists[i] = thai_make_unknown_glyph (font_info, cluster[i]);
+        return num_chrs;
     }
 
   return 0;			/* Quiet GCC */
@@ -562,27 +453,33 @@ add_cluster (ThaiFontInfo	*font_info,
   gint num_glyphs;
   gint i;
 
-  if (!isthai (cluster[0]))
-    {
-      g_assert (num_chrs == 1);
-      add_glyph (font_info, glyphs, cluster_start,
-		 thai_make_glyph_uni (font_info, cluster[0]),
-		 FALSE);
-    }
-  else
+  if (isthai (cluster[0]))
     {
       num_glyphs = get_glyphs_list(font_info, cluster, num_chrs, glyphs_list);
       for (i=0; i<num_glyphs; i++)
 	add_glyph (font_info, glyphs, cluster_start, glyphs_list[i],
 		   i == 0 ? FALSE : TRUE);
     }
+  else if (islao (cluster[0]))
+    {
+      num_glyphs = get_glyphs_list(font_info, cluster, num_chrs, glyphs_list);
+      for (i=0; i<num_glyphs; i++)
+	add_glyph (font_info, glyphs, cluster_start, glyphs_list[i],
+		   i == 0 ? FALSE : TRUE);
+    }
+  else
+    {
+      g_assert (num_chrs == 1);
+      add_glyph (font_info, glyphs, cluster_start,
+		 thai_make_glyph_uni (font_info, cluster[0]),
+		 FALSE);
+    }
 }
 
 static gboolean
 is_wtt_composible (gunichar cur_wc, gunichar nxt_wc)
 {
-  switch (TAC_compose_and_input_check_type_table[char_class (ucs2tis (cur_wc))]
-						[char_class (ucs2tis (nxt_wc))])
+  switch (TAC_compose_input(cur_wc, nxt_wc))
     {
       case 'A':
       case 'S':
@@ -603,40 +500,23 @@ get_next_cluster(const char	*text,
 		 gint		length,
 		 gunichar       *cluster,
 		 gint		*num_chrs)
-{  
+{
+  PangoScript cluster_script = PANGO_SCRIPT_INVALID_CODE, cur_script;
   const char *p;
   gint n_chars = 0;
+  gunichar current;
   
-  p = text;
-  while (p < text + length && n_chars < 3)  
+  for (p = text; p < text + length; p = g_utf8_next_char (p))
     {
-      gunichar current = g_utf8_get_char (p);
-
-      /* Non-thai characters get split into a single character cluster */
-      if (!isthai (current))
-	{
-	  if (n_chars == 0)
-	    {
-	      cluster[n_chars++] = current;
-	      p = g_utf8_next_char (p);
-	    }
-	  break;
-	}
-      else if (n_chars == 0 ||
-	       is_wtt_composible ((gunichar)(cluster[n_chars - 1]), current) ||
-	       (n_chars == 1 &&
-		is_char_type (cluster[0], Cons) && 
-		is_char_type (current, SaraAm)) ||
-	       (n_chars == 2 &&
-		is_char_type (cluster[0], Cons) &&
-		is_char_type (cluster[1], Tone) &&
-		is_char_type (current, SaraAm)))
-	{
-	  cluster[n_chars++] = current;
-	  p = g_utf8_next_char (p);
-	}
-      else
-	break;
+      current = g_utf8_get_char (p);
+      cur_script = pango_script_for_unichar (current);
+      if (cluster_script == PANGO_SCRIPT_INVALID_CODE)
+        cluster_script = cur_script;
+      if (cur_script != cluster_script ||
+          (n_chars > 0 &&
+           !is_wtt_composible (cluster[n_chars - 1], current)))
+        break;
+      cluster[n_chars++] = current;
     }
 
   *num_chrs = n_chars;

@@ -1,10 +1,6 @@
 #ifndef __THAI_SHAPER_H__
 #define __THAI_SHAPER_H__
 
-#define isthai(wc)      (wc >= 0xE00 && wc < 0xE80)
-#define ucs2tis(wc)     (unsigned int)((unsigned int)(wc) - 0x0E00 + 0xA0)
-#define tis2uni(c)      ((gunichar)(c) - 0xA0 + 0x0E00)
-
 typedef struct _ThaiFontInfo ThaiFontInfo;
 
 /* Font encodings we will use

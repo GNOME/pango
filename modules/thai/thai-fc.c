@@ -46,7 +46,8 @@ typedef PangoEngineShapeClass ThaiEngineFcClass ;
 /* We handle the range U+0e01 to U+0e5b exactly
  */
 static PangoEngineScriptInfo thai_scripts[] = {
-  { PANGO_SCRIPT_THAI, "*" }
+  { PANGO_SCRIPT_THAI, "*" },
+  { PANGO_SCRIPT_LAO,  "*" },
 };
 
 static PangoEngineInfo script_engines[] = {
@@ -117,6 +118,24 @@ static int tis620_2[128] = {
     0x0e58, 0x0e59, 0x0e5a, 0x0e5b, 0xf718, 0xf719, 0xf71a,      0
 };
 
+static int lao_0[128] = {
+    /**/ 0,      0,      0,      0,      0,      0,      0,      0, 
+    /**/ 0,      0,      0,      0,      0,      0,      0,      0, 
+    /**/ 0,      0,      0,      0,      0,      0,      0,      0, 
+    /**/ 0,      0,      0,      0,      0,      0,      0,      0, 
+    0x0020, 0x0e81, 0x0e82,      0, 0x0e84,      0,      0, 0x0e87,
+    0x0e88,      0, 0x0e8a,      0,      0, 0x0e8d,      0,      0,
+         0,      0,      0,      0, 0x0e94, 0x0e95, 0x0e96, 0x0e97,
+    /**/ 0, 0x0e99, 0x0e9a, 0x0e9b, 0x0e9c, 0x0e9d, 0x0e9e, 0x0e9f,
+    /**/ 0, 0x0ea1, 0x0ea2, 0x0ea3,      0, 0x0ea5,      0, 0x0ea7,
+    /**/ 0,      0, 0x0eaa, 0x0eab,      0, 0x0ead, 0x0eae, 0x0eaf,
+    0x0eb0, 0x0eb1, 0x0eb2, 0x0eb3, 0x0eb4, 0x0eb5, 0x0eb6, 0x0eb7,
+    0x0eb8, 0x0eb9,      0, 0x0ebb, 0x0ebc, 0x0ebd,      0,      0,
+    0x0ec0, 0x0ec1, 0x0ec2, 0x0ec3, 0x0ec4,      0, 0x0ec6,      0,
+    0x0ec8, 0x0ec9, 0x0eca, 0x0ecb, 0x0ecc, 0x0ecd,      0,      0,
+    0x0ed0, 0x0ed1, 0x0ed2, 0x0ed3, 0x0ed4, 0x0ed5, 0x0ed6, 0x0ed7,
+    0x0ed8, 0x0ed9,      0,      0, 0x0edc, 0x0edd,      0,      0
+};
 static int
 contain_glyphs(PangoFont *font, const int glyph_map[128])
 {
@@ -172,10 +191,13 @@ thai_get_font_info (PangoFont *font)
 static gunichar
 get_glyph_index_tis (ThaiFontInfo *font_info, guchar c)
 {
+  if (!(c & 0x80))
+    return lao_0[c];
+
   switch (font_info->font_set) {
-    case THAI_FONT_TIS:     return (c & 0x80) ? tis620_0[c & 0x7f] : c;
-    case THAI_FONT_TIS_MAC: return (c & 0x80) ? tis620_1[c & 0x7f] : c;
-    case THAI_FONT_TIS_WIN: return (c & 0x80) ? tis620_2[c & 0x7f] : c;
+    case THAI_FONT_TIS:     return tis620_0[c & 0x7f];
+    case THAI_FONT_TIS_MAC: return tis620_1[c & 0x7f];
+    case THAI_FONT_TIS_WIN: return tis620_2[c & 0x7f];
     default:                return 0;
   }
 }

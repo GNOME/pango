@@ -20,7 +20,7 @@ moduledir = $(libdir)/pango/$(PANGO_MODULE_VERSION)/modules
 module_LTLIBRARIES =
 noinst_LTLIBRARIES =
 
-common_sources = thai-shaper.c thai-shaper.h
+common_sources = thai-charprop.c thai-charprop.h thai-shaper.c thai-shaper.h
 
 
 if HAVE_FREETYPE

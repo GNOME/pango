@@ -1,3 +1,38 @@
+2004-11-28  Theppitak Karoonboonyanan  <thep@linux.thai.net>
+
+	Add Lao support to Thai module. (#156781)
+
+	* modules/thai/Makefile.am modules/thai/thai-shaper.[ch]
+	+modules/thai/thai-charprop.[ch]: Split WTT tables into a separate
+	source. Extend the tables for Lao. 3 new classes are added (AM for
+	SaraAm, AD4 for Nikkhahit, BCON for Lao semivowels). Now the range
+	0x00-0x7f in TIS is used to store Lao characters. Rewrite ucs2tis()
+	et al macros accordingly.
+
+	* modules/thai/thai-shaper.c (get_next_cluster): Rewrite the
+	clusterization code, so it's not specific to Thai-English texts. (Note
+	that the special case of SaraAm is now handled by the new WTT character
+	class. So, the extra checks are now eliminated.)
+
+	* modules/thai/thai-shaper.c (get_glyphs_list, add_cluster):
+	Add glyph calculation for Lao clusters.
+
+	* modules/thai/thai-shaper.c (ThaiShapeTable structs,
+	get_adjusted_glyphs_list): Generalize the shaping maps according to
+	the new 8-bit internal encoding scheme. Now the character ranges are
+	relocatable rather than hard-coded.  Add Lao shaping table.
+
+	* modules/thai/thai-shaper.c (get_adjusted_glyphs_list): Add special
+	case for Lao, where clusters can be longer than those of Thai.
+
+	* modules/thai/thai-fc.c (get_glyph_index_tis): Add Lao glyphs lookup.
+
+	* modules/thai/thai-ot.c (thai_ot_shape, +lao_ot_get_ruleset): Add Lao
+	OT rulesets retrieval.
+
+	* modules/thai/thai-fc.c (PangoEngineScriptInfo thai_scripts[]):
+	Add Lao script entry.
+
 Thu Nov 25 14:10:53 2004  Manish Singh  <yosh@gimp.org>
 
 	* autogen.sh: rm autom4te.cache, since it might interfere with
