@@ -40,6 +40,9 @@ pango_shape (const gchar      *text,
              PangoAnalysis    *analysis,
              PangoGlyphString *glyphs)
 {
+  int i;
+  int last_cluster = -1;
+  
   if (analysis->shape_engine)
     analysis->shape_engine->script_shape (analysis->font, text, length, analysis, glyphs);
   else
@@ -55,5 +58,18 @@ pango_shape (const gchar      *text,
       glyphs->log_clusters[0] = 0;
     }
 
+  /* Set glyphs[i].attr.is_cluster_start based on log_clusters[]
+   */
+  for (i = 0; i < glyphs->num_glyphs; i++)
+    {
+      if (glyphs->log_clusters[i] != last_cluster)
+	{
+	  glyphs->glyphs[i].attr.is_cluster_start = TRUE;
+	  last_cluster = glyphs->log_clusters[i];
+	}
+      else
+	glyphs->glyphs[i].attr.is_cluster_start = FALSE;
+    }
+	    
   g_assert (glyphs->num_glyphs > 0);
 }
