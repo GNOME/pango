@@ -1,3 +1,11 @@
+2005-04-04  Theppitak Karoonboonyanan  <thep@linux.thai.net>
+
+	Merge from HEAD:
+
+	* modules/thai/thai-fc.c (tis620_1), modules/thai/thai-shaper.c
+	(Mac_shape_table): Added more MacThai PUA glyphs that are not defined
+	in vendor data at Unicode.org, but just available in actual fonts.
+
 2005-03-23  Tor Lillqvist  <tml@novell.com>
 
 	Merge from HEAD:
