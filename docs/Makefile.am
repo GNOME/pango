@@ -40,6 +40,11 @@ tmpl_sources =				\
 content_files =				\
 	pango_markup.sgml
 
+extra_files =				\
+	layout.gif			\
+	layout.fig			\
+	layout.eps
+
 
 ####################################
 # Everything below here is generic #
@@ -49,6 +54,7 @@ TARGET_DIR=$(HTML_DIR)/$(DOC_MODULE)
 
 EXTRA_DIST = 				\
 	$(content_files)		\
+	$(extra_files)			\
 	$(DOC_MAIN_SGML_FILE)		\
 	$(DOC_MODULE)-decl.txt		\
 	$(DOC_MODULE)-sections.txt	\
@@ -127,5 +133,9 @@ dist-hook: dist-check-gtkdoc
 	-cp $(srcdir)/sgml/*.bottom $(srcdir)/sgml/*.top $(distdir)/sgml
 	-cp $(srcdir)/html/index.sgml $(distdir)/html
 	-cp $(srcdir)/html/*.html $(srcdir)/html/*.css $(distdir)/html
+	mkdir $(distdir)/TEXT;          \
+	for f in $(srcdir)/TEXT/* ; do  \
+	  test -f $$f && cp -p $$f $(distdir)/TEXT; \
+	done
 
 .PHONY : html sgml templates scan

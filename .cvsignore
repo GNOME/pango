@@ -4,6 +4,8 @@ config.h.in
 config.cache
 config.log
 config.status
+pango.pc
+pangox.pc
 pango.spec
 pango-config
 stamp-h

@@ -8,7 +8,8 @@ EXTRA_DIST = 		\
 	pango.spec.in	\
 	pango-config.in	\
 	pango.pc.in	\
-	pangox.pc.in
+	pangox.pc.in	\
+	TODO.xml
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = pango.pc pangox.pc

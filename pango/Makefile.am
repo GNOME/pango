@@ -84,11 +84,14 @@ pango_querymodules_LDADD = libpangox.la libpango.la $(GLIB_LIBS) $(FRIBIDI_LIBS)
 
 EXTRA_DIST =			\
 	module-defs.c.win32	\
+	pango.def		\
+	pangowin32.def		\
 	pangowin32.h		\
 	pangowin32.c		\
 	pangowin32-private.h	\
 	pangowin32-fontcache.c	\
 	pangowin32-fontmap.c	\
+	pangoft2.def		\
 	pangoft2.h		\
 	pangoft2.c		\
 	pangoft2-private.h	\

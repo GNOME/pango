@@ -1,5 +1,6 @@
 Makefile.in
 Makefile
+makefile.mingw
 pango.modules
 pango-viewer
 moc_viewer-qt.cc

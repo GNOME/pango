@@ -40,8 +40,11 @@ EXTRA_DIST=			\
 	makefile.mingw		\
 	makefile.mingw.in	\
 	HELLO.utf8		\
+	dev-example.utf		\
 	muru.utf		\
-	pangox.aliases
+	pangorc			\
+	pangox.aliases		\
+	pangowin32.aliases
 
 alias_DATA = pangox.aliases
 

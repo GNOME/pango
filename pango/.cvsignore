@@ -1,5 +1,9 @@
 Makefile.in
 Makefile
+makefile.mingw
+pango.rc
+pangoft2.rc
+pangowin32.rc
 pango-querymodules
 module-defs.c
 *.lo
