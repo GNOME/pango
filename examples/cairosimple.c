@@ -73,14 +73,16 @@ int main (int argc, char **argv)
     }
 
   cr = cairo_create();
-  cairo_set_target_png (cr, f,
-			 CAIRO_FORMAT_ARGB32,
-			 2 * RADIUS, 2 * RADIUS);
+  cairo_set_target_image_no_data (cr,
+				  CAIRO_FORMAT_ARGB32,
+				  2 * RADIUS, 2 * RADIUS);
 
   cairo_set_rgb_color (cr, 1.0, 1.0, 1.0);
   cairo_rectangle (cr, 0, 0, 2 * RADIUS, 2 * RADIUS);
   cairo_fill (cr);
   draw_text (cr);
+  
+  cairo_surface_write_png (cairo_get_target_surface (cr), f);
   
   cairo_destroy (cr);
   fclose (f);

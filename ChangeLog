@@ -1,3 +1,8 @@
+2005-04-01  Carl Worth  <cworth@cworth.org>
+
+	* examples/cairosimple.c: (main): Update to track removal of
+	cairo_set_target_png from cairo.
+
 2005-03-24  Theppitak Karoonboonyanan  <thep@linux.thai.net>
 
 	* modules/thai/thai-fc.c (tis620_1), modules/thai/thai-shaper.c
