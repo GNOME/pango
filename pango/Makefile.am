@@ -106,12 +106,12 @@ pango_headers=		   \
 	pango-tabs.h	   \
 	pango-types.h	   \
 	pango-utils.h	   \
-	pangox.h	   \
-	$(XFT_HFILES)
+	pangox.h
 
-pangoinclude_HEADERS = 	   \
-	$(pango_headers)   \
-	$(pango_built_headers)
+pangoinclude_HEADERS = 	   	\
+	$(pango_headers)   	\
+	$(pango_built_headers)	\
+	$(XFT_HFILES)
 
 pango-enum-types.h: @REBUILD@ $(pango_headers) makeenums.pl
 	$(PERL)	./makeenums.pl include $(pango_headers) > pango-enum-types.h

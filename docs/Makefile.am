@@ -15,6 +15,7 @@ FIXXREF_OPTIONS=
 # Headers to ignore
 IGNORE_HFILES=			\
 	mini-fribidi		\
+	opentype		\
 	modules.h		\
 	pango-intset.h		\
 	pango-utils.h		\

@@ -23,7 +23,7 @@
 #ifndef __PANGOXFT_H__
 #define __PANGOXFT_H__
 
-#include <pango/pango.h>
+#include <pango/pango-context.h>
 #include <pango/pango-ot.h>
 
 #ifdef __cplusplus

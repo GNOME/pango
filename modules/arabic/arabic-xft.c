@@ -25,6 +25,7 @@
 #include "arabic-ot.h"
 
 #include "pangoxft.h"
+#include "pango-engine.h"
 #include "pango-utils.h"
 
 static PangoEngineRange arabic_ranges[] = {

@@ -23,6 +23,7 @@
 #include <string.h>
 
 #include "pangoxft.h"
+#include "pango-engine.h"
 #include "pango-utils.h"
 
 static PangoEngineRange basic_ranges[] = {
