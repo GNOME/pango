@@ -598,6 +598,8 @@ pango_parse_markup (const char                 *markup_text,
    */
   if (attr_list)
     md->attr_list = pango_attr_list_new ();
+  else
+    md->attr_list = NULL;
 
   md->text = g_string_new ("");
   

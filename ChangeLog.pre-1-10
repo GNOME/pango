@@ -1,3 +1,9 @@
+Thu Jun 13 16:39:01 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-markup.c (pango_parse_markup):
+	Fix problem with attr_list == NULL. (#85079,
+	Andreas J. Guelzow)
+
 Wed Jun 12 11:19:08 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* modules/tamil/tamil-x.c: Use unsigned char for
