@@ -1,3 +1,12 @@
+Overview of Changes in Pango 1.2.1
+==================================
+* Handle older TrueType Open Arabic fonts.
+* Make Win32 backend handle a common TrueType font bug [Tor Lillqvist]
+* Fix crash with some non-BMP characters [Morten Welinder]
+* Avoid crashing on font descriptions like " 12" [Padraig O'Briain]
+* Minor build fixes [Rich Burridge, Sven Neumann]
+
+============================================================
 Changes between 1.1.6 and 1.2.0
 
 * Documentation fixes

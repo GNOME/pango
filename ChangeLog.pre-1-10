@@ -1,3 +1,11 @@
+Wed Jan 29 12:47:47 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* === Released 1.2.1 ===
+
+	* Pango-1.2.1, interface age 1
+
+	* NEWS: Updates.
+
 2003-01-29  Tor Lillqvist  <tml@iki.fi>
 
 	* pango/pango-coverage.c (pango_coverage_get/set):
@@ -23,7 +31,8 @@ Tue Jan 28 15:18:24 2003  Owen Taylor  <otaylor@redhat.com>
 
 2003-01-20  Sven Neumann  <sven@gimp.org>
 
-	* configure.in: merged fix for bug #103917 from HEAD branch.
+	* configure.in: fixed configure output which was wrong in case
+	freetype is available but fontconfig isn't (bug #103917).
 
 2003-01-20  Padraig O'Briain  <padraig.obriain@sun.com>
 
