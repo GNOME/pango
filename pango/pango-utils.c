@@ -42,10 +42,6 @@
 #ifdef G_OS_WIN32
 
 #include <sys/types.h>
-#include <sys/stat.h>
-#ifndef S_ISDIR
-#define S_ISDIR(mode) ((mode)&_S_IFDIR)
-#endif
 
 #define STRICT
 #include <windows.h>
@@ -638,7 +634,6 @@ pango_get_sysconf_subdirectory (void)
   HKEY reg_key = NULL;
   DWORD type;
   DWORD nbytes = sizeof (pango_sysconf_dir);
-  struct stat st;
 
   if (been_here)
     return pango_sysconf_dir;
@@ -655,7 +650,7 @@ pango_get_sysconf_subdirectory (void)
       GetWindowsDirectory (win_dir, sizeof (win_dir));
       sprintf (pango_sysconf_dir, "%s\\pango", win_dir);
 
-      if (!stat (pango_sysconf_dir, &st) || !S_ISDIR (st.st_mode))
+      if (!g_file_test (pango_sysconf_dir, G_FILE_TEST_IS_DIR))
         {
            /* Oops. %WinDir%\pango does not exist */
            HMODULE hm = NULL;

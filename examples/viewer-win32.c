@@ -686,9 +686,9 @@ main (int argc, char **argv)
 		      GTK_SIGNAL_FUNC (draw), paragraphs);
   gtk_signal_connect (GTK_OBJECT (layout), "button_press_event",
 		      GTK_SIGNAL_FUNC (button_press), paragraphs);
-
+#if GTK_CHECK_VERSION (1,3,2)
   gtk_widget_set_double_buffered (layout, FALSE);
-
+#endif
   gtk_container_add (GTK_CONTAINER (scrollwin), layout);
 
   frame = gtk_frame_new (NULL);
