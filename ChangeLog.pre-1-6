@@ -1,3 +1,9 @@
+2003-04-21  Sven Neumann  <sven@gimp.org>
+
+	* modules/indic/Makefile.am: handle the new indic-ft2 module like
+	all the others instead of doing in the new spiffy automake-1.7
+	style of Pango-HEAD (#111132).
+
 Wed Apr 16 03:46:42 2003  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/opentype/pango-ot-info.c (synthesize_class_def):

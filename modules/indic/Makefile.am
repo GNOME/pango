@@ -30,10 +30,6 @@ indic_xft_noinst=
 indic_xft_cflags= $(FREETYPE_CFLAGS)
 indic_xft_libadd=$(pangoxftlibs)
 endif
-else
-indic_xft_inst=
-indic_xft_noints=
-indic_xft_cflags=
 endif
 
 if HAVE_X
@@ -78,12 +74,27 @@ gujarati_x_inst=pango-gujarati-x.la
 gujarati_x_libadd=$(pangoxlibs)
 endif
 
-noinst_LTLIBRARIES = $(myanmar_x_noinst) $(gurmukhi_x_noinst) $(bengali_x_noinst) $(devanagari_x_noinst) $(gujarati_x_noinst) $(indic_xft_noinst)
+endif
 
-moduledir = $(libdir)/pango/$(PANGO_MODULE_VERSION)/modules
-module_LTLIBRARIES = $(myanmar_x_inst) $(gurmukhi_x_inst) $(bengali_x_inst) $(devanagari_x_inst) $(gujarati_x_inst) $(indic_xft_inst)
+
+if HAVE_FREETYPE
+
+if INCLUDE_INDIC_FT2
+indic_ft2_noinst=libpango-indic-ft2.la
+indic_ft2_cflags=-DFREETYPE_MODULE_PREFIX
+else
+indic_ft2_inst=pango-indic-ft2.la
+indic_ft2_libadd=$(pangoft2libs)
+endif
 
 endif
+
+
+noinst_LTLIBRARIES = $(myanmar_x_noinst) $(gurmukhi_x_noinst) $(bengali_x_noinst) $(devanagari_x_noinst) $(gujarati_x_noinst) $(indic_xft_noinst) $(indic_ft2_noinst)
+
+moduledir = $(libdir)/pango/$(PANGO_MODULE_VERSION)/modules
+module_LTLIBRARIES = $(myanmar_x_inst) $(gurmukhi_x_inst) $(bengali_x_inst) $(devanagari_x_inst) $(gujarati_x_inst) $(indic_xft_inst) $(indic_ft2_inst)
+
 
 INCLUDES =					\
 	-DPANGO_ENABLE_ENGINE			\
@@ -93,13 +104,15 @@ INCLUDES =					\
 	-I$(top_srcdir)/pango/			\
 	$(GLIB_CFLAGS)				\
 	$(XFT_CFLAGS)				\
+	$(FREETYPE_CFLAGS)			\
 	$(X_CFLAGS)				\
 	$(myanmar_x_cflags)			\
 	$(gurmukhi_x_cflags)			\
 	$(bengali_x_cflags)			\
 	$(devanagari_x_cflags)			\
 	$(gujarati_x_cflags)			\
-	$(indic_xft_cflags)
+	$(indic_xft_cflags)			\
+	$(indic_ft2_cflags)
 
 EXTRA_DIST = \
 	pango-indic-script.h
@@ -150,15 +163,6 @@ pango_indic_xft_la_SOURCES = $(xft_sources)
 
 libpango_indic_xft_la_SOURCES = $(xft_sources)
 
-if HAVE_FREETYPE
-INCLUDES += $(FREETYPE_CFLAGS)
-if INCLUDE_INDIC_FT2
-noinst_LTLIBRARIES += libpango-indic-ft2.la
-INCLUDES += -DFREETYPE_MODULE_PREFIX
-else
-module_LTLIBRARIES += pango-indic-ft2.la
-endif
-endif
 
 ft2_sources =		 	\
 	indic-ft2.c		\
@@ -167,7 +171,7 @@ ft2_sources =		 	\
 	indic-ot.h
 
 pango_indic_ft2_la_LDFLAGS = -export-dynamic -avoid-version -module
-pango_indic_ft2_la_LIBADD = $(pangoft2libs)
+pango_indic_ft2_la_LIBADD = $(indic_ft2_libadd)
 pango_indic_ft2_la_SOURCES = $(ft2_sources)
 libpango_indic_ft2_la_SOURCES = $(ft2_sources)
 
