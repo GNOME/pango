@@ -7,7 +7,8 @@
  *        knowledge. Bad examples from the book are 'ALEF.LAM'-ligature,
  *        ( one also sais fi-ligature, not if-ligature ) and HAMZA handling.
  *        There is only _one_ letter HAMZA, and so four (!) forms of HAMZA in
- *        the basic section seem .. strange.
+ *        the basic section seem .. strange ( maybe I just have not understood
+ *        the sense of them, though ).
  */
 
 #include "arconv.h"
@@ -332,13 +333,13 @@ ligature(GUChar4* string,int si,int len,charstruct* oldchar)
             switch (newchar)
                 {
                 case ALIF:      oldchar->basechar = LAM_ALIF; 
-                    oldchar->numshapes = 2;  retval = 2; break;
+                    oldchar->numshapes = 2;  retval = 3; break;
                 case ALIFHAMZA: oldchar->basechar = LAM_ALIFHAMZA; 
-                    oldchar->numshapes = 2;  retval = 2; break;
+                    oldchar->numshapes = 2;  retval = 3; break;
                 case ALIFIHAMZA:oldchar->basechar = LAM_ALIFIHAMZA;
-                    oldchar->numshapes = 2;  retval = 2; break;
+                    oldchar->numshapes = 2;  retval = 3; break;
                 case ALIFMADDA: oldchar->basechar = LAM_ALIFMADDA ;
-                    oldchar->numshapes = 2;  retval = 2; break;
+                    oldchar->numshapes = 2;  retval = 3; break;
                 }
             break;
         case ALIF:
@@ -434,8 +435,9 @@ shape(int olen,int* len,GUChar4* string,int level)
                     curchar.numshapes = nc;
                     curchar.lignum++;
                 }
-            else if ( join == 2 )
-                {
+            else if ( ( join == 2 )
+		      ||((join == 3)&&(level != 2))  ) 
+                { /*  Lam-Alif in Langbox-font is no ligature */
                     (*len)--;
                 }
             si--;
@@ -488,7 +490,7 @@ doublelig(int olen,int* len,GUChar4* string,int level)
                     if (string[si-1]==SHADDA) lapresult = 0xFC61;
                     break;
                 case 0xFEDF: /* LAM initial */
-                    if (level > 3){
+                    if (level > 13){
                         switch(string[si-1]){
                         case 0xFE9E : lapresult = 0xFC3F; break; /* DJEEM final*/
                         case 0xFEA0 : lapresult = 0xFCC9; break;
@@ -502,7 +504,7 @@ doublelig(int olen,int* len,GUChar4* string,int level)
                     }
                     break;
                 case 0xFE97: /* TA inital */
-                    if (level > 3){
+                    if (level > 13){
                         switch(string[si-1]){
                         case 0xFEA0 : lapresult = 0xFCA1; break; /* DJ init */
                         case 0xFEA4 : lapresult = 0xFCA2; break; /* .HA */
@@ -511,7 +513,7 @@ doublelig(int olen,int* len,GUChar4* string,int level)
                     }
                     break;
                 case 0xFE91: /* BA inital */
-                    if (level > 3){
+                    if (level > 13){
                         switch(string[si-1]){
                         case 0xFEA0 : lapresult = 0xFC9C; break; /* DJ init */
                         case 0xFEA4 : lapresult = 0xFC9D; break; /* .HA */
@@ -520,7 +522,7 @@ doublelig(int olen,int* len,GUChar4* string,int level)
                     }
                     break;
                 case 0xFEE7: /* NUN inital */
-                    if (level > 3) {
+                    if (level > 13) {
                         switch(string[si-1]){
                         case 0xFEA0 : lapresult = 0xFCD2; break; /* DJ init */
                         case 0xFEA4 : lapresult = 0xFCD3; break; /* .HA */
@@ -548,7 +550,7 @@ arabic_reshape(int* len,GUChar4* string,int level)
         string[i] = unshape(string[i]);
     }
     shape(olen,len,string,level);
-    if (level > 2)
+    if (level > 10)
         doublelig(olen,len,string,level);
 }
 

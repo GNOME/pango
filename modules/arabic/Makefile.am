@@ -10,6 +10,8 @@ pango_arabic_la_SOURCES = \
 	arconv.c \
 	mulefont.c \
 	mulefont.h \
+	langboxfont.c \
+	langboxfont.h \
 	arconv.h 
 
 pango_arabic_la_LDFLAGS = -rpath $(libdir) -export-dynamic -avoid-version -module

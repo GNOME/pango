@@ -15,6 +15,7 @@
 
 #include "arconv.h" 
 #include "mulefont.h"
+#include "langboxfont.h"
 
 /*  #define DEBUG   */
 #ifdef DEBUG
@@ -112,7 +113,7 @@ find_unic_font (PangoFont *font,char* charsets[],PangoXSubfont* rfonts)
     int            i;
     int            result = 0;
 
-    n_subfonts = pango_x_list_subfonts (font, charsets, 2, 
+    n_subfonts = pango_x_list_subfonts (font, charsets, 3, 
                                         &subfonts, &subfont_charsets);
     
     for (i=0; i < n_subfonts; i++)
@@ -123,26 +124,32 @@ find_unic_font (PangoFont *font,char* charsets[],PangoXSubfont* rfonts)
                     result = 1; /* we know we have a mulearabic-font ... */
                     break;
                 }
+            else if ( (strcmp (charsets[subfont_charsets[i]], "iso8859-6.8x") == 0)
+                      && arabic_lboxinit(font,rfonts) )
+                {
+                    result = 2;
+                    break;
+                } 
             else
                 { /* test if the font has Alif-Madda; if so assume it is ok */
                     if ( pango_x_has_glyph /* Alif-Madda */
                          (font,PANGO_X_MAKE_GLYPH(subfonts[i],0xFE81)))
                         {
                             rfonts[0] = subfonts[i];
-                            result   = 2;
-			    break;
+                            result   = 12;
+                            break;
                         }
                     if ( pango_x_has_glyph /* Shadda+Kasra */
                          (font,PANGO_X_MAKE_GLYPH(subfonts[i],0xFC62)))
                         {
-                            result = 3; /* extra vowels in font, hopefully */
-			    break;
+                            result = 13; /* extra vowels in font, hopefully */
+                            break;
                         }
                     if ( pango_x_has_glyph /* Lam-Min alone */
                          (font,PANGO_X_MAKE_GLYPH(subfonts[i],0xFC42)))
                         {
-                            result = 4; /* extra ligatures in font, hopefully */
-			    break;
+                            result = 14; /* extra ligatures in font, hopefully */
+                            break;
                         }
                 }
         }
@@ -154,8 +161,9 @@ find_unic_font (PangoFont *font,char* charsets[],PangoXSubfont* rfonts)
 }
 
 static char *default_charset[] = {
-    "iso10646-1",
-    "mulearabic-2"
+      "iso10646-1", 
+      "iso8859-6.8x",
+      "mulearabic-2" 
 };
   
 
@@ -238,33 +246,14 @@ arabic_engine_shape (PangoFont        *font,
             p = text;
             for (i=0; i<n_chars; i++)
                 {
-                    set_glyph (glyphs, font, PANGO_X_GLYPH_SUBFONT (unknown_glyph), i, 
+                    set_glyph (glyphs, font, 
+                               PANGO_X_GLYPH_SUBFONT (unknown_glyph), i, 
                                p - text, PANGO_X_GLYPH_INDEX (unknown_glyph));
                     p = unicode_next_utf8 (p);
                 }
             return;
         }
     subfont = arfonts[0];
-
-    if (analysis->level % 2 == 0)
-        {
-            /* We were called on a LTR directional run (e.g. some numbers); 
-               fallback as simple as possible */
-
-            pango_glyph_string_set_size (glyphs, n_chars);
-
-            p = text;
-            for (i=0; i < n_chars; i++)
-                {
-                    GUChar4 tmp_char;
-          
-                    _pango_utf8_iterate (p, &next, &tmp_char);
-                    set_glyph (glyphs, font, subfont, i, p - text, tmp_char);
-                    p = next;
-                }
-
-            return;
-        }
 
     wc = (GUChar4 *)g_malloc(sizeof(GUChar4)*n_chars);  
 
@@ -276,9 +265,19 @@ arabic_engine_shape (PangoFont        *font,
         }
   
   
-    arabic_reshape(&n_glyph,wc,lvl);
+    if (analysis->level % 2 == 0)
+        {
+            /* We were called on a LTR directional run (e.g. some numbers); 
+               fallback as simple as possible */
+            pango_glyph_string_set_size (glyphs, n_chars);
 
-    pango_glyph_string_set_size (glyphs, n_glyph);
+        }
+    else 
+        {
+            arabic_reshape(&n_glyph,wc,lvl);
+            pango_glyph_string_set_size (glyphs, n_glyph);
+        };
+
 
     p    = text;
     pold = p;
@@ -302,7 +301,30 @@ arabic_engine_shape (PangoFont        *font,
 #endif
                             arabic_mule_recode(&subfont,&(wc[i]),arfonts);
                         }
-
+                    else if ( lvl == 2 )
+                        {
+#ifdef DEBUG
+                            fprintf(stderr,"[ar] lbox-recoding char %x",
+                                    wc[i]);
+#endif
+                            if (( i > 0 )&&(wc[i-1] == 0))
+                                {
+                                    arabic_lbox_recode(&subfont,&(wc[i]),
+                                                       &(wc[i-1]), arfonts);
+#ifdef DEBUG
+                                    if (wc[i-1] != 0)
+                                        {
+                                            fprintf(stderr,"[ar] lbox-recoded"
+                                                    " special char %x",
+                                                    wc[i-1]);
+                                        }
+#endif
+                                }
+                            else 
+                                arabic_lbox_recode(&subfont,&(wc[i]),NULL,
+                                                   arfonts);
+                        }
+                    
                     set_glyph(glyphs, font, subfont, n_glyph - 1,
                               cluster_start, wc[i]);
       
