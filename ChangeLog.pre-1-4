@@ -1,3 +1,9 @@
+Fri Feb 13 10:19:16 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* configure.in: Skip the xslt and stylesheet checks
+	unless --enable-man is specified. (#134133, 
+	Julio M. Merino Vidal)
+
 Tue Feb 10 19:03:44 2004  Manish Singh  <yosh@gimp.org>
 
 	* pango/pango-context.c (itemize_state_init): initialize font_desc
