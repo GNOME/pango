@@ -8,12 +8,7 @@ if HAVE_FREETYPE
 OPENTYPE_SUBDIR=opentype
 endif
 
-if HAVE_FRIBIDI
-else
-FRIBIDI_SUBDIR = mini-fribidi
-endif
-
-SUBDIRS = $(OPENTYPE_SUBDIR) $(FRIBIDI_SUBDIR)
+SUBDIRS = $(OPENTYPE_SUBDIR) mini-fribidi
 
 DIST_SUBDIRS = mini-fribidi opentype
 
@@ -45,10 +40,7 @@ endif
 lib_LTLIBRARIES = libpango-1.0.la
 
 libpango_1_0_la_LDFLAGS = -version-info $(LT_VERSION_INFO) $(no_undefined)
-libpango_1_0_la_LIBADD = $(GLIB_LIBS)
-if !HAVE_FRIBIDI
-libpango_1_0_la_LIBADD += mini-fribidi/libmini-fribidi.la
-endif
+libpango_1_0_la_LIBADD = $(GLIB_LIBS) mini-fribidi/libmini-fribidi.la
 
 if OS_WIN32
 libpango_1_0_la_LDFLAGS += -export-symbols pango.def
