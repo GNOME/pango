@@ -48,6 +48,7 @@
 #define HTONE1 0x302E
 #define HTONE2 0x302F
 
+#define IS_JAMO(wc) (wc >= LBASE && wc <= TEND)
 #define IS_L(wc) (wc >= LBASE && wc <= LEND)
 #define IS_V(wc) (wc >= VFILL && wc <= VEND)
 #define IS_T(wc) (wc > TBASE && wc <= TEND)

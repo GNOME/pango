@@ -1,3 +1,9 @@
+2004-04-18  Changwoo Ryu  <cwryu@debian.org>
+
+	* modules/hangul/hangul-defs.h (IS_JAMO): 
+	* modules/hangul/hangul-fc.c (hangul_engine_shape, render_basic):
+	handle non-Hangul unicode chars, fixes #129741,	#137347.
+
 2004-04-05  Anders Carlsson  <andersca@gnome.org>
 
 	* examples/argcontext.c (arg_context_parse): 
