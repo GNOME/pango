@@ -50,6 +50,12 @@ struct _PangoWin32SubfontInfo
   LOGFONT logfont;
   HFONT hfont;
 
+  gchar *glyphs_avail; /* cache info if a glyph is available */
+
+  gint   tm_ascent;     /* some info cached from GetTextMetrics */
+  gint   tm_descent;
+  gint   tm_overhang;
+
   /* The following fields are used only to check whether a glyph is
    * present in the subfont. On NT, there is the API GetGlyphIndices
    * that can be used to do this very simply. But on Win9x,
@@ -359,7 +365,7 @@ pango_win32_render (HDC                hdc,
 #if 0	      
 	      if (orig_align == (UINT) -1)
 		orig_align =
-		  SetTextAlign (hdc, TA_LEFT|TA_BOTTOM|TA_NOUPDATECP);
+		  SetTextAlign (hdc, TA_LEFT|TA_BASELINE|TA_NOUPDATECP);
 #endif
 	      TextOutW (hdc,
 			x + (x_off + glyphs->glyphs[i].geometry.x_offset) / PANGO_SCALE,
@@ -580,20 +586,20 @@ pango_win32_font_get_glyph_extents (PangoFont      *font,
 
   if (glyph && pango_win32_find_glyph (font, glyph, &info, &size))
     {
-      /* This is totally bogus */
+      /* This is partly bogus */
       if (ink_rect)
 	{
-	  ink_rect->x = PANGO_SCALE * size.cx;
-	  ink_rect->width = ink_rect->x;
-	  ink_rect->y = PANGO_SCALE * -size.cy;
+	  ink_rect->x = PANGO_SCALE * info->tm_overhang;
+	  ink_rect->width = PANGO_SCALE * (ink_rect->x - info->tm_overhang);
+	  ink_rect->y = PANGO_SCALE * -info->tm_ascent;
 	  ink_rect->height = PANGO_SCALE * size.cy;
 	}
       if (logical_rect)
 	{
 	  logical_rect->x = 0;
 	  logical_rect->width = PANGO_SCALE * size.cx;
-	  logical_rect->y = - PANGO_SCALE * size.cy;
-	  logical_rect->height = PANGO_SCALE * size.cy;
+	  logical_rect->y = -PANGO_SCALE * info->tm_ascent;
+	  logical_rect->height = PANGO_SCALE * (info->tm_ascent + info->tm_descent);
 	}
     }
   else
@@ -863,6 +869,7 @@ pango_win32_insert_subfont (PangoFont     *font,
   info->logfont = *lfp;
   info->hfont = NULL;
   info->buf_hbm = NULL;
+  info->glyphs_avail = g_new0 (gchar, 16384);
 
   win32font->n_subfonts++;
   
@@ -1002,6 +1009,7 @@ subfont_has_glyph (PangoFont             *font,
 #ifdef HEAVY_DEBUGGING
   static int dispx = 5, dispy = 0;
 #endif
+  gint has_glyph = 0; /* 1=yes, 2=no */
 
   subrange = pango_win32_unicode_classify (wc);
   if (PANGO_WIN32_U_LAST_PLUS_ONE == subrange)
@@ -1011,12 +1019,27 @@ subfont_has_glyph (PangoFont             *font,
 					 subrange))
     return FALSE;
 
+  /*
+   * This is the main performance bottleneck, so lets
+   * cache the info once got ...
+   */
+  has_glyph = (info->glyphs_avail[wc / 4] >> ((wc % 4) * 2)) & 0x03;
+  if (1 == has_glyph)
+    return TRUE;
+  else if (2 == has_glyph)
+    return FALSE;
+
   if (info->buf_hbm == NULL)
     {
       info->buf_hdc = CreateCompatibleDC (pango_win32_hdc);
       info->oldfont = SelectObject (info->buf_hdc, info->hfont);
       SetTextAlign (info->buf_hdc, TA_LEFT|TA_BASELINE|TA_NOUPDATECP);
       GetTextMetrics (info->buf_hdc, &tm);
+
+      info->tm_overhang = tm.tmOverhang;
+      info->tm_descent  = tm.tmDescent;
+      info->tm_ascent   = tm.tmAscent;
+
       PING(("wt:%ld,ht:%ld",tm.tmMaxCharWidth,tm.tmHeight));
 
       info->default_char_hbm =
@@ -1086,7 +1109,11 @@ subfont_has_glyph (PangoFont             *font,
     }
 #endif
 
-  return (memcmp (info->buf, info->default_char_buf, info->buf_size) != 0);
+  has_glyph = (0 != memcmp (info->buf, info->default_char_buf, info->buf_size) ? 1 : 2);
+
+  info->glyphs_avail[wc / 4] |= (has_glyph << ((wc % 4) * 2));
+
+  return (1 == has_glyph);
 }
 
 /**
@@ -1197,6 +1224,7 @@ pango_win32_font_finalize (GObject *object)
 	  DeleteObject (info->default_char_hbm);
 	  DeleteDC (info->buf_hdc);
 	}
+      g_free (info->glyphs_avail);
       g_free (info);
     }
 
@@ -1283,6 +1311,21 @@ pango_win32_find_glyph (PangoFont              *font,
     return FALSE;
 
   GetTextExtentPoint32W (info->buf_hdc, &char_index, 1, &size);
+
+#if 0
+  {
+      GLYPHMETRICS gm;
+      MAT2 mat2 = {{0, 1}, {0, 0}, {0,0 }, {0,1 }};
+      //HFONT hfont;
+
+      //hfont = SelectObject (info->buf_hdc, info->hfont);
+      if (GDI_ERROR == GetGlyphOutline (info->buf_hdc,
+                                        glyph, GGO_NATIVE,
+                                        &gm, 0, NULL, &mat2))
+        memset (&gm, 0, sizeof (GLYPHMETRICS));
+      //SelectObject (info->buf_hdc, hfont); /* restore */
+  }
+#endif
 
   if (subfont_return)
     *subfont_return = info;

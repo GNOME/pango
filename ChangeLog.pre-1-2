@@ -1,3 +1,17 @@
+2001-04-14  Hans Breuer  <hans@breuer.org>
+
+	* pango/pangowin32-fontmap.c : instead of simply adding one
+	matching font for the magic font names (sans, serif, monospace)
+	stuff any mathing font in the respective family entries
+	(pango_win32_font_map_load_font) : do the same approximation for
+	oblique and italic as the X version does 
+
+	* pango/pangowin32.c (pango_win32_font_get_glyph_extents) :
+	initialize ink_rect and logical_rect to some more appropriate values 
+	(subfont_has_glyph) : implement glyph availability caching. IMO it
+	needs to be done different to the other backends, because even the
+	decision if a font has a specific glyph is increadeable slow on win32
+	
 Fri Apr 13 14:55:20 2001  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/mini-fribidi/{fribidi.c,fribidi_get_type.c,fribidi_tables.i}:

@@ -239,25 +239,6 @@ pango_win32_font_map_for_display (void)
   logfont.lfCharSet = DEFAULT_CHARSET;
   EnumFontFamiliesEx (pango_win32_hdc, &logfont, (FONTENUMPROC) pango_win32_enum_proc, 0, 0);
 
-  /* There are fonts installed on every system, use these
-   * as fallback. Otherwise Really Bad Things (tm) would 
-   * happen without an alias file ...
-   * (The names are required for Pango and may be resolved
-   *  to different fonts on different systems)
-   */
-  memset (&logfont, 0, sizeof (logfont));
-  strcpy (logfont.lfFaceName, "monospace");
-  logfont.lfPitchAndFamily = FF_MODERN;
-  pango_win32_insert_font (fontmap, &logfont);
-
-  strcpy (logfont.lfFaceName, "sans");
-  logfont.lfPitchAndFamily = FF_SWISS; 
-  pango_win32_insert_font (fontmap, &logfont);
-
-  strcpy (logfont.lfFaceName, "serif");
-  logfont.lfPitchAndFamily = FF_ROMAN; 
-  pango_win32_insert_font (fontmap, &logfont);
-
   pango_win32_font_map_read_aliases (fontmap);
 
   SystemParametersInfo(SPI_GETWORKAREA, 0, &rect, 0);
@@ -455,15 +436,28 @@ pango_win32_font_map_load_font (PangoFontMap               *fontmap,
 	{
 	  PangoWin32FontEntry *font_entry = tmp_list->data;
 	  
-	  if (font_entry->description.style == description->style &&
-	      font_entry->description.variant == description->variant &&
+	  if (font_entry->description.variant == description->variant &&
 	      font_entry->description.stretch == description->stretch)
 	    {
-	      int distance = abs(font_entry->description.weight - description->weight);
 	      int old_distance = best_match ? abs(best_match->description.weight - description->weight) : G_MAXINT;
 
-	      if (distance < old_distance)
-		best_match = font_entry;
+	      if (font_entry->description.style == description->style)
+	        {
+		  int distance = abs(font_entry->description.weight - description->weight);
+
+		  if (distance < old_distance)
+		    best_match = font_entry;
+		}
+	      else if (font_entry->description.style != PANGO_STYLE_NORMAL &&
+		       description->style != PANGO_STYLE_NORMAL)
+		{
+		  /* Equate oblique and italic, but with a big penalty
+		   */
+		  int distance = PANGO_SCALE * 1000 + abs(font_entry->description.weight - description->weight);
+
+		  if (distance < old_distance)
+		    best_match = font_entry;
+		}
 	    }
 
 	  tmp_list = tmp_list->next;
@@ -1252,6 +1246,34 @@ pango_win32_insert_font (PangoWin32FontMap *win32fontmap,
   g_strdown (font_entry->lfp->lfFaceName);
   family_entry->font_entries = g_slist_append (family_entry->font_entries, font_entry);
   win32fontmap->n_fonts++;
+
+  /*
+   * There are magic family names coming from the X implementation.
+   * They can be simply mapped to lfPitchAndFamily flag of the logfont
+   * struct. These additional entries should probably only be references
+   * to the respective entry created above. Thy are simply using the
+   * same entry at the moment and it isn't crashing on g_free () ???
+   * Maybe a memory leak ...
+   */
+  switch (lfp->lfPitchAndFamily & (0x0F << 4)) /* bit 4...7 */
+    { 
+    case FF_MODERN : /* monospace */
+      family_entry = pango_win32_get_family_entry (win32fontmap, "monospace");
+      family_entry->font_entries = g_slist_append (family_entry->font_entries, font_entry);
+      win32fontmap->n_fonts++;
+      break;
+    case FF_ROMAN : /* serif */
+      family_entry = pango_win32_get_family_entry (win32fontmap, "serif");
+      family_entry->font_entries = g_slist_append (family_entry->font_entries, font_entry);
+      win32fontmap->n_fonts++;
+      break;
+    case  FF_SWISS  : /* sans */
+      family_entry = pango_win32_get_family_entry (win32fontmap, "sans");
+      family_entry->font_entries = g_slist_append (family_entry->font_entries, font_entry);
+      win32fontmap->n_fonts++;
+      break;
+    }
+
 }
 
 gboolean
