@@ -79,12 +79,6 @@ static PangoGlyph conv_ucs4 (CharCache  *cache,
 
 static PangoEngineInfo script_engines[] = {
   {
-    "BasicScriptEngineLang",
-    PANGO_ENGINE_TYPE_LANG,
-    PANGO_RENDER_TYPE_NONE,
-    basic_ranges, G_N_ELEMENTS(basic_ranges)
-  },
-  {
     "BasicScriptEngineX",
     PANGO_ENGINE_TYPE_SHAPE,
     PANGO_RENDER_TYPE_X,
@@ -93,33 +87,6 @@ static PangoEngineInfo script_engines[] = {
 };
 
 static gint n_script_engines = G_N_ELEMENTS (script_engines);
-
-/*
- * Language script engine
- */
-
-static void 
-basic_engine_break (const char     *text,
-		    gint            len,
-		    PangoAnalysis  *analysis,
-		    PangoLogAttr   *attrs)
-{
-}
-
-static PangoEngine *
-basic_engine_lang_new ()
-{
-  PangoEngineLang *result;
-  
-  result = g_new (PangoEngineLang, 1);
-
-  result->engine.id = "BasicScriptEngine";
-  result->engine.type = PANGO_ENGINE_TYPE_LANG;
-  result->engine.length = sizeof (result);
-  result->script_break = basic_engine_break;
-
-  return (PangoEngine *)result;
-}
 
 /*
  * X window system script engine portion
@@ -481,7 +448,7 @@ basic_engine_x_new ()
   result = g_new (PangoEngineShape, 1);
 
   result->engine.id = "BasicScriptEngine";
-  result->engine.type = PANGO_ENGINE_TYPE_LANG;
+  result->engine.type = PANGO_ENGINE_TYPE_SHAPE;
   result->engine.length = sizeof (result);
   result->script_shape = basic_engine_shape;
   result->get_coverage = basic_engine_get_coverage;
@@ -508,9 +475,7 @@ MODULE_ENTRY(script_engine_list) (PangoEngineInfo **engines, gint *n_engines)
 PangoEngine *
 MODULE_ENTRY(script_engine_load) (const char *id)
 {
-  if (!strcmp (id, "BasicScriptEngineLang"))
-    return basic_engine_lang_new ();
-  else if (!strcmp (id, "BasicScriptEngineX"))
+  if (!strcmp (id, "BasicScriptEngineX"))
     return basic_engine_x_new ();
   else
     return NULL;

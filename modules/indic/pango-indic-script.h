@@ -15,11 +15,6 @@
   static PangoEngineInfo script_engines[] = \
   { \
     { \
-      SCRIPT_STRING "ScriptEngineLang", \
-      PANGO_ENGINE_TYPE_LANG, \
-      PANGO_RENDER_TYPE_NONE, \
-      pango_indic_range, G_N_ELEMENTS (pango_indic_range)}, \
-    { \
       SCRIPT_STRING "ScriptEngineX", \
       PANGO_ENGINE_TYPE_SHAPE, \
       PANGO_RENDER_TYPE_X, \

@@ -38,12 +38,6 @@ static PangoEngineRange hangul_ranges[] = {
 
 static PangoEngineInfo script_engines[] = {
   {
-    "HangulScriptEngineLang",
-    PANGO_ENGINE_TYPE_LANG,
-    PANGO_RENDER_TYPE_NONE,
-    hangul_ranges, G_N_ELEMENTS(hangul_ranges)
-  },
-  {
     "HangulScriptEngineX",
     PANGO_ENGINE_TYPE_SHAPE,
     PANGO_RENDER_TYPE_X,
@@ -52,34 +46,6 @@ static PangoEngineInfo script_engines[] = {
 };
 
 static int n_script_engines = G_N_ELEMENTS (script_engines);
-
-/*
- * Language script engine
- */
-
-static void 
-hangul_engine_break (const char    *text,
-		     int            len,
-		     PangoAnalysis *analysis,
-		     PangoLogAttr  *attrs)
-{
-  /* (FIXME) */
-}
-
-static PangoEngine *
-hangul_engine_lang_new ()
-{
-  PangoEngineLang *result;
-
-  result = g_new (PangoEngineLang, 1);
-
-  result->engine.id = "HangulScriptEngine";
-  result->engine.type = PANGO_ENGINE_TYPE_LANG;
-  result->engine.length = sizeof (result);
-  result->script_break = hangul_engine_break;
-
-  return (PangoEngine *) result;
-}
 
 /*
  * X window system script engine portion
@@ -751,7 +717,7 @@ hangul_engine_x_new ()
   result = g_new (PangoEngineShape, 1);
 
   result->engine.id = "HangulScriptEngine";
-  result->engine.type = PANGO_ENGINE_TYPE_LANG;
+  result->engine.type = PANGO_ENGINE_TYPE_SHAPE;
   result->engine.length = sizeof (result);
   result->script_shape = hangul_engine_shape;
   result->get_coverage = hangul_engine_get_coverage;
@@ -781,9 +747,7 @@ MODULE_ENTRY(script_engine_list) (PangoEngineInfo **engines, int *n_engines)
 PangoEngine *
 MODULE_ENTRY(script_engine_load) (const char *id)
 {
-  if (!strcmp (id, "HangulScriptEngineLang"))
-    return hangul_engine_lang_new ();
-  else if (!strcmp (id, "HangulScriptEngineX"))
+  if (!strcmp (id, "HangulScriptEngineX"))
     return hangul_engine_x_new ();
   else
     return NULL;

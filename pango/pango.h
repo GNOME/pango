@@ -39,14 +39,40 @@ extern "C" {
 #include <pango/pango-layout.h>
 #include <pango/pango-types.h>
 
-/* Logical attributes of a character
+/* Logical attributes of a character.
  */
 struct _PangoLogAttr
 {
-  guint is_break : 1;  /* Break in front of character */
-  guint is_white : 1;
-  guint is_char_stop : 1;
-  guint is_word_stop : 1;
+  guint is_break : 1;           /* Can break line in front of character */
+
+  guint is_mandatory_break : 1; /* Must break line in front of character */
+  
+  guint is_white : 1;           /* Whitespace character */
+
+  /* cursor can appear in front of character (i.e. this is a grapheme
+   * boundary, or the first character in the text)
+   */
+  guint is_cursor_position : 1;
+  
+  /* Note that in degenerate cases, you could have both start/end set on
+   * some text, most likely for sentences (e.g. no space after a period, so
+   * the next sentence starts right away)
+   */
+  
+  guint is_word_start : 1;      /* first character in a word */
+  guint is_word_end   : 1;      /* is first non-word char after a word */
+
+  /* There are two ways to divide sentences. The first assigns all
+   * intersentence whitespace/control/format chars to some sentence,
+   * so all chars are in some sentence; is_sentence_boundary denotes
+   * the boundaries there. The second way doesn't assign
+   * between-sentence spaces, etc. to any sentence, so
+   * is_sentence_start/is_sentence_end mark the boundaries of those
+   * sentences.
+   */
+  guint is_sentence_boundary : 1;
+  guint is_sentence_start : 1;  /* first character in a sentence */
+  guint is_sentence_end : 1;    /* first non-sentence char after a sentence */
 };
 
 /* Determine information about cluster/word/line breaks in a string
@@ -56,6 +82,11 @@ void pango_break (const gchar   *text,
 		  gint           length, 
 		  PangoAnalysis *analysis, 
 		  PangoLogAttr  *attrs);
+
+void pango_find_paragraph_boundary (const gchar *text,
+                                    gint         length,
+                                    gint        *paragraph_delimiter_index,
+                                    gint        *next_paragraph_start);
 
 void pango_get_log_attrs (const char    *text,
                           int            length,
@@ -71,6 +102,16 @@ void pango_shape (const gchar      *text,
 		  PangoGlyphString *glyphs);
 
 GList *pango_reorder_items (GList *logical_items);
+
+/* This is the default break algorithm, used if no language
+ * engine overrides it. Normally you should use pango_break()
+ * instead; this function is mostly useful for chaining up
+ * from a language engine override.
+ */
+void pango_default_break (const gchar   *text,
+                          gint           length,
+                          PangoAnalysis *analysis,
+                          PangoLogAttr  *attrs);
 
 #ifdef __cplusplus
 }

@@ -41,12 +41,6 @@ static PangoEngineRange basic_ranges[] = {
 
 static PangoEngineInfo script_engines[] = {
   {
-    "BasicScriptEngineLangWin32",
-    PANGO_ENGINE_TYPE_LANG,
-    PANGO_RENDER_TYPE_NONE,
-    basic_ranges, G_N_ELEMENTS(basic_ranges)
-  },
-  {
     "BasicScriptEngineWin32",
     PANGO_ENGINE_TYPE_SHAPE,
     PANGO_RENDER_TYPE_WIN32,
@@ -55,33 +49,6 @@ static PangoEngineInfo script_engines[] = {
 };
 
 static gint n_script_engines = G_N_ELEMENTS (script_engines);
-
-/*
- * Language script engine
- */
-
-static void 
-basic_engine_break (const char     *text,
-		    gint            len,
-		    PangoAnalysis  *analysis,
-		    PangoLogAttr   *attrs)
-{
-}
-
-static PangoEngine *
-basic_engine_lang_new (void)
-{
-  PangoEngineLang *result;
-  
-  result = g_new (PangoEngineLang, 1);
-
-  result->engine.id = "BasicScriptEngine";
-  result->engine.type = PANGO_ENGINE_TYPE_LANG;
-  result->engine.length = sizeof (result);
-  result->script_break = basic_engine_break;
-
-  return (PangoEngine *)result;
-}
 
 /*
  * Win32 system script engine portion
@@ -307,7 +274,7 @@ basic_engine_win32_new (void)
   result = g_new (PangoEngineShape, 1);
 
   result->engine.id = "BasicScriptEngine";
-  result->engine.type = PANGO_ENGINE_TYPE_LANG;
+  result->engine.type = PANGO_ENGINE_TYPE_SHAPE;
   result->engine.length = sizeof (result);
   result->script_shape = basic_engine_shape;
   result->get_coverage = basic_engine_get_coverage;

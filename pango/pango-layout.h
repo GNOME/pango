@@ -45,7 +45,8 @@ typedef enum {
 struct _PangoLayoutLine
 {
   PangoLayout *layout;
-  gint         length;		/* length of line in bytes*/
+  gint         start_index;     /* start of line as byte index into layout->text */
+  gint         length;		/* length of line in bytes */
   GSList      *runs;
 };
 

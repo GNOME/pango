@@ -1,0 +1,69 @@
+Testing sentence boundaries - this is a sentence ending in several exclamation points!!!    Several spaces there. Abbreviations such as Mr. or Mrs. should not result in sentence breaks, should they?! (Parentheses should be included in a sentence.) (((Even nested parentheses, with funny punctuation inside!!?!!...))) Anyhow, this should be enough testing.
+
+This text has carriage returns
+all over the  freaking place 
+ such as herehereand here
+     
+but not at the end of this line.
+
+This is some "quoted" text e.g. "this is some stuff in quotes" and 
+'this is some other stuff in single quotes' and ""this is some stuff with 
+two levels of double quotes"" and so on.
+
+Big string of Arabic:
+وقد بدأ ثلاث من أكثر المؤسسات تقدما في شبكة اكسيون برامجها كمنظمات لا تسعى للربح، ثم تحولت في السنوات الخمس الماضية إلى مؤسسات مالية منظمة، وباتت جزءا من النظام المالي في بلدانها، ولكنها تتخصص في خدمة قطاع المشروعات الصغيرة. وأحد أكثر هذه المؤسسات نجاحا هو »بانكوسول« في بوليفيا.
+
+
+Παν語
+
+This is a list of ways to say hello in various languages. Its purpose is to illustrate a number of scripts.
+
+(Converted into UTF-8)
+
+---------------------------------------------------------
+Arabic	السلام عليكم 
+Bengali (বাঙ্লা)	ষাগতোম
+Burmese (မ္ရန္မာ)
+Cherokee	(ᏣᎳᎩ)	ᎣᏏᏲ
+Czech	(česky)	Dobrý den
+Danish	(Dansk)	Hej, Goddag
+English	Hello
+Esperanto	Saluton
+Estonian	Tere, Tervist
+FORTRAN	PROGRAM
+Finnish	(Suomi)	Hei
+French	(Français)	Bonjour, Salut
+German	(Deutsch Nord)	Guten Tag
+German	(Deutsch Süd)	Grüß Gott
+Georgian	(ქართველი)	გამარჯობა
+Gujarati     (ગુજરાતિ)
+Greek	(Ελληνικά)	Γειά σας
+Hebrew	שלום
+Hindi	नमस्ते, नमस्कार।
+Italiano	Ciao, Buon giorno
+ɪŋglɪʃ       hɛləʊ
+Maltese	Ċaw, Saħħa
+Nederlands, Vlaams	Hallo, Dag
+Norwegian	(Norsk)	Hei, God dag
+Punjabi     (ੁਪੁਂਜਾਬਿ)
+Polish	Dzień dobry, Hej
+Russian	(Русский)	Здравствуйте!
+Slovak	Dobrý deň
+Spanish	(Español)	‎¡Hola!‎
+Swedish	(Svenska)	Hej, Goddag
+Thai	(ภาษาไทย)	สวัสดีครับ, สวัสดีค่ะ
+Turkish	(Türkçe)	Merhaba
+Vietnamese	(Tiếng Việt)	Xin Chào
+Yiddish	(ײַדישע) דאָס הײַזעלע 
+
+Japanese	(日本語)	こんにちは, ｺﾝﾆﾁﾊ
+Chinese	(中文,普通话,汉语)	你好
+Cantonese	(粵語,廣東話)	早晨, 你好
+Korean	(한글)	안녕하세요, 안녕하십니까
+
+Difference among chinese characters in GB, JIS, KSC, BIG5:‎
+ GB	--	元气	开发
+ JIS	--	元気	開発
+ KSC	--	元氣	開發
+ BIG5	--	元氣	開發
+

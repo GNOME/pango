@@ -201,53 +201,10 @@ pango_engine_x_new ()
   PangoEngineShape *result;
   result = g_new (PangoEngineShape, 1);
   result->engine.id = SCRIPT_STRING "ScriptEngine";
-  result->engine.type = PANGO_ENGINE_TYPE_LANG;
+  result->engine.type = PANGO_ENGINE_TYPE_SHAPE;
   result->engine.length = sizeof (result);
   result->script_shape = pango_engine_shape;
   result->get_coverage = pango_engine_get_coverage;
-  return (PangoEngine *) result;
-}
-
-static void
-pango_engine_break (const char *text,
-			 int len,
-			 PangoAnalysis * analysis, PangoLogAttr * attrs)
-{
-  const char *cur = text;
-  gint i = 0;
-  gunichar wc;
-
-  while (*cur && cur - text < len)
-    {
-      wc = g_utf8_get_char (cur);
-      if (wc == (gunichar)-1)
-	break;			/* FIXME: ERROR */
-
-      attrs[i].is_white = (wc == ' ' || wc == '\t' || wc == 'n') ? 1 : 0;
-      attrs[i].is_break = (i > 0 && attrs[i - 1].is_white) ||
-	attrs[i].is_white;
-      attrs[i].is_char_stop = 1;
-      attrs[i].is_word_stop = (i == 0) || attrs[i - 1].is_white;
-      /* actually, is_word_stop in not correct, but simple and good enough. */
-
-      i++;
-      cur = g_utf8_next_char (cur);
-    }
-}
-
-
-static PangoEngine *
-pango_engine_lang_new ()
-{
-  PangoEngineLang *result;
-
-  result = g_new (PangoEngineLang, 1);
-
-  result->engine.id = SCRIPT_STRING "ScriptEngine";
-  result->engine.type = PANGO_ENGINE_TYPE_LANG;
-  result->engine.length = sizeof (result);
-  result->script_break = pango_engine_break;
-
   return (PangoEngine *) result;
 }
 
@@ -267,9 +224,7 @@ MODULE_ENTRY(script_engine_list) (PangoEngineInfo ** engines, int *n_engines)
 PangoEngine *
 MODULE_ENTRY(script_engine_load) (const char *id)
 {
-  if (!strcmp (id, SCRIPT_STRING "ScriptEngineLang"))
-    return pango_engine_lang_new ();
-  else if (!strcmp (id, SCRIPT_STRING "ScriptEngineX"))
+  if (!strcmp (id, SCRIPT_STRING "ScriptEngineX"))
     return pango_engine_x_new ();
   else
     return NULL;

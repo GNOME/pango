@@ -510,7 +510,10 @@ pango_context_get_base_dir (PangoContext *context)
  * @cached_iter:      Cached attribute iterator, or NULL
  *
  * Breaks a piece of text into segments with consistent
- * directional level and shaping engine.
+ * directional level and shaping engine. Each byte of @text will
+ * be contained in exactly one of the items in the returned list;
+ * the generated list of items will be in logical order (the start
+ * offsets of the items are ascending).
  *
  * @cached_iter should be an iterator over @attrs currently positioned at a
  * range before or containing @start_index; @cached_iter will be advanced to
@@ -565,7 +568,7 @@ pango_itemize (PangoContext      *context,
   embedding_levels = g_new (guint8, n_chars);
 
   pango_log2vis_get_embedding_levels (text_ucs4, n_chars, &base_dir,
-					embedding_levels);
+                                      embedding_levels);
 
   /* Storing these as ranges would be a lot more efficient,
    * but also more complicated... we take the simple
@@ -603,7 +606,11 @@ pango_itemize (PangoContext      *context,
 	  fonts[i] != fonts[i-1] ||
 	  extra_attr_lists[i] != extra_attr_lists[i-1])
 	{
-	  item = g_new (PangoItem, 1);
+          /* assert that previous item got at least one char */
+          g_assert (item == NULL || item->length > 0);
+          g_assert (item == NULL || item->num_chars > 0);
+          
+	  item = pango_item_new ();
 	  item->offset = p - text;
 	  item->num_chars = 0;
 	  item->analysis.level = embedding_levels[i];

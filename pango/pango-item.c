@@ -88,3 +88,45 @@ pango_item_free (PangoItem *item)
   g_free (item);
 }
 
+/**
+ * pango_item_split:
+ * @orig: a #PangoItem
+ * @split_index: byte index of position to split item, relative to the start of the item
+ * @split_offset: number of chars between start of @orig and @split_index
+ * 
+ * Modifies @orig to cover only the text after @split_index, and
+ * returns a new item that covers the text before @split_index that
+ * used to be in @orig. You can think of @split_index as the length of
+ * the returned item. @split_index may not be 0, and it may not be
+ * greater than or equal to the length of @orig (that is, there must
+ * be at least one byte assigned to each item, you can't create a
+ * zero-length item). @split_offset is the length of the first item in
+ * chars, and must be provided because the text used to generate the
+ * item isn't available, so pango_item_split() can't count the char
+ * length of the split items itself.
+ * 
+ * Return value: new item representing text before @split_index
+ **/
+PangoItem*
+pango_item_split (PangoItem  *orig,
+                  int         split_index,
+                  int         split_offset)
+{
+  PangoItem *new_item = pango_item_copy (orig);
+
+  g_return_val_if_fail (orig != NULL, NULL);
+  g_return_val_if_fail (orig->length > 0, NULL);
+  g_return_val_if_fail (split_index > 0, NULL);
+  g_return_val_if_fail (split_index < orig->length, NULL);
+  g_return_val_if_fail (split_offset > 0, NULL);
+  g_return_val_if_fail (split_offset < orig->num_chars, NULL);
+  
+  new_item->length = split_index;
+  new_item->num_chars = split_offset;
+  
+  orig->offset += split_index;
+  orig->length -= split_index;
+  orig->num_chars -= split_offset;
+  
+  return new_item;
+}

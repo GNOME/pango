@@ -49,9 +49,12 @@ struct _PangoItem
   PangoAnalysis analysis;
 };
 
-PangoItem *pango_item_new  (void);
-PangoItem *pango_item_copy (PangoItem *item);
-void       pango_item_free (PangoItem *item);
+PangoItem *pango_item_new   (void);
+PangoItem *pango_item_copy  (PangoItem  *item);
+void       pango_item_free  (PangoItem  *item);
+PangoItem *pango_item_split (PangoItem  *orig,
+                             int         split_index,
+                             int         split_offset);
 
 #ifdef __cplusplus
 }

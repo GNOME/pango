@@ -17,12 +17,6 @@ static PangoEngineRange tamil_range[] = {
 
 static PangoEngineInfo script_engines[] = {
   {
-    "TamilScriptEngineLang",
-    PANGO_ENGINE_TYPE_LANG,
-    PANGO_RENDER_TYPE_NONE,
-    tamil_range, G_N_ELEMENTS(tamil_range)
-  },
-  {
     "TamilScriptEngineX",
     PANGO_ENGINE_TYPE_SHAPE,
     PANGO_RENDER_TYPE_X,
@@ -31,55 +25,6 @@ static PangoEngineInfo script_engines[] = {
 };
 
 static gint n_script_engines = G_N_ELEMENTS (script_engines);
-
-/*
- * Language script engine
- */
-
-static void 
-tamil_engine_break (const char   *text,
-		    int            len,
-		    PangoAnalysis *analysis,
-		    PangoLogAttr  *attrs)
-{
-/* Most of the code comes from pango_break
- * only difference is char stop based on modifiers
- */
-
-  const char *cur = text;
-  gint i = 0;
-  gunichar wc;
-
-  while (*cur && cur - text < len)
-    {
-      wc = g_utf8_get_char (cur);
-      if (wc == (gunichar)-1)
-	break;           /* FIXME: ERROR */
-
-      attrs[i].is_white = (wc == ' ' || wc == '\t' || wc == 'n') ? 1 : 0;
-      attrs[i].is_break = (i > 0 && attrs[i-1].is_white) || attrs[i].is_white;
-      attrs[i].is_char_stop = (is_uni_modi(wc)) ? 0 : 1;
-      attrs[i].is_word_stop = (i == 0) || attrs[i-1].is_white;
-
-      i++;
-      cur = g_utf8_next_char (cur);
-    }
-}
-
-static PangoEngine *
-tamil_engine_lang_new ()
-{
-  PangoEngineLang *result;
-  
-  result = g_new (PangoEngineLang, 1);
-
-  result->engine.id = "TamilScriptEngine";
-  result->engine.type = PANGO_ENGINE_TYPE_LANG;
-  result->engine.length = sizeof (result);
-  result->script_break = tamil_engine_break;
-
-  return (PangoEngine *)result;
-}
 
 /*
  * X window system script engine portion
@@ -228,7 +173,7 @@ tamil_engine_x_new ()
   result = g_new (PangoEngineShape, 1);
 
   result->engine.id = "TamilScriptEngine";
-  result->engine.type = PANGO_ENGINE_TYPE_LANG;
+  result->engine.type = PANGO_ENGINE_TYPE_SHAPE;
   result->engine.length = sizeof (result);
   result->script_shape = tamil_engine_shape;
   result->get_coverage = tamil_engine_get_coverage;
@@ -256,9 +201,7 @@ MODULE_ENTRY(script_engine_list) (PangoEngineInfo **engines, int *n_engines)
 PangoEngine *
 MODULE_ENTRY(script_engine_load) (const char *id)
 {
-  if (!strcmp (id, "TamilScriptEngineLang"))
-    return tamil_engine_lang_new ();
-  else if (!strcmp (id, "TamilScriptEngineX"))
+  if (!strcmp (id, "TamilScriptEngineX"))
     return tamil_engine_x_new ();
   else
     return NULL;

@@ -91,45 +91,12 @@ static PangoEngineRange thai_ranges[] = {
 
 static PangoEngineInfo script_engines[] = {
   {
-    "ThaiScriptEngineLang",
-    PANGO_ENGINE_TYPE_LANG,
-    PANGO_RENDER_TYPE_NONE,
-    thai_ranges, G_N_ELEMENTS(thai_ranges)
-  },
-  {
     "ThaiScriptEngineX",
     PANGO_ENGINE_TYPE_SHAPE,
     PANGO_RENDER_TYPE_X,
     thai_ranges, G_N_ELEMENTS(thai_ranges)
   }
 };
-
-/*
- * Language script engine
- */
-
-static void 
-thai_engine_break (const char     *text,
-		    gint            len,
-		    PangoAnalysis  *analysis,
-		    PangoLogAttr   *attrs)
-{
-}
-
-static PangoEngine *
-thai_engine_lang_new ()
-{
-  PangoEngineLang *result;
-  
-  result = g_new (PangoEngineLang, 1);
-
-  result->engine.id = "ThaiScriptEngine";
-  result->engine.type = PANGO_ENGINE_TYPE_LANG;
-  result->engine.length = sizeof (result);
-  result->script_break = thai_engine_break;
-
-  return (PangoEngine *)result;
-}
 
 /*
  * X window system script engine portion
@@ -840,6 +807,11 @@ thai_engine_shape (PangoFont        *font,
   gunichar cluster[MAX_CLUSTER_CHRS];
   gint num_chrs;
 
+  gunichar base = 0;
+  gunichar group1 = 0;
+  gunichar group2 = 0;
+  int cluster_start = 0;
+
   pango_glyph_string_set_size (glyphs, 0);
 
   font_info = get_font_info (font);
@@ -917,9 +889,7 @@ MODULE_ENTRY(script_engine_list) (PangoEngineInfo **engines, gint *n_engines)
 PangoEngine *
 MODULE_ENTRY(script_engine_load) (const char *id)
 {
-  if (!strcmp (id, "ThaiScriptEngineLang"))
-    return thai_engine_lang_new ();
-  else if (!strcmp (id, "ThaiScriptEngineX"))
+  if (!strcmp (id, "ThaiScriptEngineX"))
     return thai_engine_x_new ();
   else
     return NULL;

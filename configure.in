@@ -259,6 +259,7 @@ examples/makefile.mingw
 docs/Makefile
 tools/Makefile
 fonts/Makefile
+tests/Makefile
 pango.spec
 pango-config
 pango.pc
