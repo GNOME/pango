@@ -88,21 +88,27 @@ void     pango_layout_get_log_attrs (PangoLayout    *layout,
 				     PangoLogAttr  **attrs,
 				     gint           *n_attrs);
 
-void     pango_layout_index_to_pos   (PangoLayout            *layout,
-				      int                     index,
-				      PangoRectangle         *pos);
-void     pango_layout_get_cursor_pos (PangoLayout            *layout,
-				      int                     index,
-				      PangoRectangle         *strong_pos,
-				      PangoRectangle         *weak_pos);
-gboolean pango_layout_xy_to_index    (PangoLayout            *layout,
-				      int                     x,
-				      int                     y,
-				      int                    *index,
-				      gboolean               *trailing);
-void     pango_layout_get_extents    (PangoLayout            *layout,
-				      PangoRectangle         *ink_rect,
-				      PangoRectangle         *logical_rect);
+void     pango_layout_index_to_pos         (PangoLayout    *layout,
+					    int             index,
+					    PangoRectangle *pos);
+void     pango_layout_get_cursor_pos       (PangoLayout    *layout,
+					    int             index,
+					    PangoRectangle *strong_pos,
+					    PangoRectangle *weak_pos);
+void     pango_layout_move_cursor_visually (PangoLayout    *layout,
+					    int             old_index,
+					    int             old_trailing,
+					    int             direction,
+					    int            *new_index,
+					    int            *new_trailing);
+gboolean pango_layout_xy_to_index          (PangoLayout    *layout,
+					    int             x,
+					    int             y,
+					    int            *index,
+					    gboolean       *trailing);
+void     pango_layout_get_extents          (PangoLayout    *layout,
+					    PangoRectangle *ink_rect,
+					    PangoRectangle *logical_rect);
 
 int              pango_layout_get_line_count       (PangoLayout    *layout);
 PangoLayoutLine *pango_layout_get_line             (PangoLayout    *layout,
@@ -111,7 +117,7 @@ GSList *         pango_layout_get_lines            (PangoLayout    *layout);
 
 void     pango_layout_line_ref          (PangoLayoutLine  *line);
 void     pango_layout_line_unref        (PangoLayoutLine  *line);
-gboolean pango_layout_line_x_to_index   (PangoLayoutLine  *line,
+void     pango_layout_line_x_to_index   (PangoLayoutLine  *line,
 					 int               x_pos,
 					 int              *index,
 					 int              *trailing);

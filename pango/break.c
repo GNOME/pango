@@ -49,7 +49,7 @@ void pango_break (const gchar   *text,
     {
       next = unicode_get_utf8 (cur, &wc);
       if (!next)
-	return;			/* FIXME: ERROR */
+	break;			/* FIXME: ERROR */
       if (cur == next)
 	break;
       if ((next - text) > length)
@@ -57,7 +57,7 @@ void pango_break (const gchar   *text,
       cur = next;
 
       attrs[i].is_white = (wc == ' ' || wc == '\t' || wc == '\n') ? 1 : 0;
-      attrs[i].is_break = (i > 0 && attrs[i-1].is_white) || attrs[i].is_white;
+      attrs[i].is_break = i == 0 || attrs[i-1].is_white || attrs[i].is_white;
       attrs[i].is_char_stop = 1;
       attrs[i].is_word_stop = (i == 0) || attrs[i-1].is_white;
       

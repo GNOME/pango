@@ -58,8 +58,13 @@ struct _PangoLayoutLinePrivate
 static void pango_layout_clear_lines (PangoLayout *layout);
 static void pango_layout_check_lines (PangoLayout *layout);
 
-static PangoLayoutLine * pango_layout_line_new        (PangoLayout     *layout);
-static void              pango_layout_line_reorder    (PangoLayoutLine *line);
+static PangoLayoutLine * pango_layout_line_new         (PangoLayout     *layout);
+static void              pango_layout_line_postprocess (PangoLayoutLine *line);
+
+static int *pango_layout_line_get_log2vis_map (PangoLayoutLine  *line,
+					       gboolean          strong);
+static int *pango_layout_line_get_vis2log_map (PangoLayoutLine  *line,
+					       gboolean          strong);
 
 static void pango_layout_get_item_properties (PangoItem      *item,
 					      PangoUnderline *uline);
@@ -634,6 +639,160 @@ pango_layout_index_to_line_x (PangoLayout *layout,
 }
 
 /**
+ * pango_layout_move_cursor_visually:
+ * @layout:       a #PangoLayout.
+ * @old_index:    the old cursor byte index
+ * @old_trailing: 
+ * @direction:    direction to move cursor. A negative
+ *                value indicates motion to the left.
+ * @new_index:    location to store the new cursor byte index. A value of -1 
+ *                indicates that the cursor has been moved off the beginning
+ *                of the layout. A value of G_MAXINT indicates that
+ *                the cursor has been moved off the end of the layout.
+ * @new_trailing: 
+ * 
+ * Computes a new cursor position from an old position and
+ * a count of positions to move visually. If @count is positive,
+ * then the new strong cursor position will be one position
+ * to the right of the old cursor position. If @count is position
+ * then the new strong cursor position will be one position
+ * to the left of the old cursor position. 
+ *
+ * In the presence of bidirection text, the correspondence
+ * between logical and visual order will depend on the direction
+ * of the current run, and there may be jumps when the cursor
+ * is moved off of the end of a run.
+ **/
+void
+pango_layout_move_cursor_visually (PangoLayout *layout,
+				   int          old_index,
+				   int          old_trailing,
+				   int          direction,
+				   int         *new_index,
+				   int         *new_trailing)
+{
+  int bytes_seen = 0;
+  PangoDirection base_dir;
+  PangoLayoutLine *line = NULL;
+  PangoLayoutLine *prev_line = NULL;
+  PangoLayoutLine *next_line;
+  GSList *tmp_list;
+
+  int *log2vis_map;
+  int *vis2log_map;
+  int n_vis;
+  int vis_pos;
+
+  g_return_if_fail (layout != NULL);
+  g_return_if_fail (old_index >= 0 && old_index <= layout->length);
+  g_return_if_fail (old_index < layout->length || old_trailing == 0);
+  g_return_if_fail (new_index != NULL);
+  g_return_if_fail (new_trailing != NULL);
+
+  pango_layout_check_lines (layout);
+
+  base_dir = pango_context_get_base_dir (layout->context);
+
+  /* Find the line the old cursor is on
+   */
+  tmp_list = layout->lines;
+  while (tmp_list)
+    {
+      line = tmp_list->data;
+
+      if (bytes_seen + line->length > old_index || !tmp_list->next)
+	break;
+
+      tmp_list = tmp_list->next;
+      prev_line = line;
+      bytes_seen += line->length;
+    }
+
+  if (tmp_list->next)
+    next_line = tmp_list->next->data;
+  else
+    next_line = NULL;
+
+  if (old_trailing)
+    old_index = unicode_next_utf8 (layout->text + old_index) - layout->text;
+
+  log2vis_map = pango_layout_line_get_log2vis_map (line, TRUE);
+  n_vis = unicode_strlen (layout->text + bytes_seen, line->length);
+
+  vis_pos = log2vis_map[old_index - bytes_seen];
+  g_free (log2vis_map);
+  
+  if (vis_pos == 0 && count < 0)
+    {
+      if (base_dir == PANGO_DIRECTION_LTR)
+	{
+	  if (!prev_line)
+	    {
+	      *new_index = -1;
+	      *new_trailing = 0;
+	      return;
+	    }
+	  line = prev_line;
+	  bytes_seen -= line->length;
+	}
+      else
+	{
+	  if (!next_line)
+	    {
+	      *new_index = G_MAXINT;
+	      *new_trailing = 0;
+	      return;
+	    }
+	  bytes_seen += line->length;
+	  line = next_line;
+	}
+      
+      vis_pos = unicode_strlen (layout->text + bytes_seen, line->length);
+    }
+  else if (vis_pos == n_vis && count > 0)
+    {
+      if (base_dir == PANGO_DIRECTION_LTR)
+	{
+	  if (!next_line)
+	    {
+	      *new_index = G_MAXINT;
+	      *new_trailing = 0;
+	      return;
+	    }
+	  bytes_seen += line->length;
+	  line = next_line;
+	}
+      else
+	{
+	  if (!prev_line)
+	    {
+	      *new_index = -1;
+	      *new_trailing = 0;
+	      return;
+	    }
+	  line = prev_line;
+	  bytes_seen -= line->length;
+	}
+      
+      vis_pos = 0;
+    }
+
+  vis_pos += (count > 0) ? 1 : -1;
+  
+  vis2log_map = pango_layout_line_get_vis2log_map (line, TRUE);
+  *new_index = bytes_seen + vis2log_map[vis_pos];
+  g_free (vis2log_map);
+
+  if (*new_index == bytes_seen + line->length)
+    {
+      *new_index = unicode_previous_utf8 (layout->text, layout->text + *new_index) - layout->text;
+      *new_trailing = 1;
+    }
+  else
+    *new_trailing = 0;
+}
+
+/**
  * pango_layout_xy_to_index:
  * @layout:    a #PangoLayout
  * @x:         the X offset (in thousandths of a device unit)
@@ -694,7 +853,8 @@ pango_layout_xy_to_index (PangoLayout *layout,
 	  else
 	    x_offset = 0;
 	  
-	  return pango_layout_line_x_to_index (line, x - x_offset, index, trailing);
+	  pango_layout_line_x_to_index (line, x - x_offset, index, trailing);
+	  return TRUE;
 	}
 
       y_offset += logical_rect.height;
@@ -777,6 +937,141 @@ pango_layout_index_to_pos (PangoLayout    *layout,
       bytes_seen += layout_line->length;
       pos->y += logical_rect.height;
     }
+}
+
+static void
+pango_layout_line_get_range (PangoLayoutLine *line,
+			     char           **start,
+			     char           **end)
+{
+  char *p;
+  GSList *tmp_list;
+  
+  p = line->layout->text;
+  tmp_list = line->layout->lines;
+  
+  while (tmp_list->data != line)
+    {
+      p += ((PangoLayoutLine *)tmp_list->data)->length;
+      tmp_list = tmp_list->next;
+    }
+
+  if (start)
+    *start = p;
+  if (end)
+    *end = p + line->length;
+}
+
+int *
+pango_layout_line_get_vis2log_map (PangoLayoutLine *line,
+				   gboolean         strong)
+{
+  PangoLayout *layout = line->layout;
+  PangoDirection base_dir = pango_context_get_base_dir (layout->context);
+  PangoDirection prev_dir = base_dir;
+  GSList *tmp_list;
+  gchar *start, *end;
+  int *result;
+  int pos = 0;
+  int n_chars;
+
+  pango_layout_line_get_range (line, &start, &end);
+  n_chars = unicode_strlen (start, end - start);
+  
+  result = g_new (int, n_chars + 1);
+
+  if (strong)
+    {
+      if (base_dir == PANGO_DIRECTION_LTR)
+	{
+	  result[0] = 0;
+	  result[n_chars] = end - start;
+	}
+      else
+	{
+	  result[0] = end - start;
+	  result[n_chars] = 0;
+	}
+    }
+  
+  tmp_list = line->runs;
+  while (tmp_list)
+    {
+      PangoLayoutRun *run = tmp_list->data;
+      int run_n_chars = run->item->num_chars;
+      PangoDirection run_dir = (run->item->analysis.level % 2) ? PANGO_DIRECTION_RTL : PANGO_DIRECTION_LTR;
+      char *p = layout->text + run->item->offset;
+      int i;
+
+      if (run_dir == PANGO_DIRECTION_LTR)
+	{
+	  if ((strong && base_dir == run_dir) ||
+	      (!strong && base_dir != run_dir) ||
+	      (prev_dir == run_dir))
+	    result[pos] = p - start;
+
+	  p = unicode_next_utf8 (p);
+
+	  for (i = 1; i < run_n_chars; i++)
+	    {
+	      result[pos + i] = p - start;
+	      p = unicode_next_utf8 (p);
+	    }
+
+	  if ((strong && base_dir == run_dir) ||
+	      (!strong && base_dir != run_dir))
+	    result[pos + run_n_chars] = p - start;
+	}
+      else
+	{
+	  if ((strong && base_dir == run_dir) ||
+	      (!strong && base_dir != run_dir))
+	    result[pos + run_n_chars] = p - start;
+
+	  p = unicode_next_utf8 (p);
+
+	  for (i = 1; i < run_n_chars; i++)
+	    {
+	      result[pos + run_n_chars - i] = p - start;
+	      p = unicode_next_utf8 (p);
+	    }
+
+	  if ((strong && base_dir == run_dir) ||
+	      (!strong && base_dir != run_dir) ||
+	      (prev_dir == run_dir))
+	    result[pos] = p - start;
+	}
+
+      pos += run_n_chars;
+      prev_dir = run_dir;
+      tmp_list = tmp_list->next;
+    }
+
+  return result;
+}
+
+static int *
+pango_layout_line_get_log2vis_map (PangoLayoutLine *line,
+				   gboolean         strong)
+{
+  gchar *start, *end;
+  int *reverse_map;
+  int *result;
+  int i;
+  int n_chars;
+
+  pango_layout_line_get_range (line, &start, &end);
+  n_chars = unicode_strlen (start, end - start);
+  result = g_new0 (int, end - start + 1);
+
+  reverse_map = pango_layout_line_get_vis2log_map (line, strong);
+
+  for (i=0; i <= n_chars; i++)
+    result[reverse_map[i]] = i;
+
+  g_free (reverse_map);
+
+  return result;
 }
 
 static PangoDirection
@@ -1102,6 +1397,7 @@ process_item (PangoLayoutLine *line,
     return FALSE;
   
   pango_shape (text + item->offset, item->length, &item->analysis, glyphs);
+
   if (*remaining_width < 0)
     {
       insert_run (line, item, glyphs);
@@ -1126,39 +1422,28 @@ process_item (PangoLayoutLine *line,
     {
       int length;
       int num_chars = item->num_chars;
-      int new_width;
       
       PangoGlyphUnit *log_widths = g_new (PangoGlyphUnit, item->num_chars);
 
       pango_glyph_string_get_logical_widths (glyphs, text + item->offset, item->length, item->analysis.level, log_widths);
       
-      new_width = 0;
+      /* Shorten the item by one line break
+       */
       while (--num_chars > 0)
 	{
-	  /* Shorten the item by one line break
-	   */
 	  width -= log_widths[num_chars];
+	  
 	  if (log_attrs[num_chars].is_break && width <= *remaining_width)
 	    break;
 	}
 
       g_free (log_widths);
       
-      if (num_chars != 0)	/* Succesfully broke the item */
+      if (num_chars > 0)	/* Succesfully broke the item */
 	{
-	  const char *p;
-	  gint n;
-
 	  PangoItem *new_item = pango_item_copy (item);
-
-	  /* Determine utf8 length corresponding to num_chars. Slow?
-	   */
-	  n = num_chars;
-	  p = text + item->offset;
-	  while (n-- > 0)
-	    p = unicode_next_utf8 (p);
 	  
-	  length = p - (text + item->offset);
+	  length = unicode_offset_to_index (text + item->offset, num_chars);
 	  
 	  new_item->length = length;
 	  new_item->num_chars = num_chars;
@@ -1166,9 +1451,9 @@ process_item (PangoLayoutLine *line,
 	  item->offset += length;
 	  item->length -= length;
 	  item->num_chars -= num_chars;
-
+	  
 	  pango_shape (text + new_item->offset, new_item->length, &new_item->analysis, glyphs);
-
+	  
 	  *remaining_width -= width;
 	  insert_run (line, new_item, glyphs);
 
@@ -1305,7 +1590,14 @@ pango_layout_check_lines (PangoLayout *layout)
 	      tmp_list = tmp_list->next;
 	      start_offset += old_num_chars;
 
-	      if (start_offset < layout->n_chars && !layout->log_attrs[start_offset].is_break)
+	      /* We prohibit breaking a line between a non-whitespace char and the whitespace char afterwards
+	       * because this would result in the possibility of normal wrapped paragraphs with leading
+	       * white-space at the front of lines. We probably should have a mode where we treat all
+	       * white-space as zero width - appropriate for typography but not for editing.
+	       */
+	      if (start_offset < layout->n_chars &&
+		  (!layout->log_attrs[start_offset].is_break ||
+		   (!layout->log_attrs[start_offset-1].is_white && layout->log_attrs[start_offset].is_white)))
 		last_cant_end = TRUE;
 	      else
 		{
@@ -1346,15 +1638,14 @@ pango_layout_check_lines (PangoLayout *layout)
 		}
 	      else
 		{
-		  line->runs = g_slist_reverse (line->runs);
-		  pango_layout_line_reorder (line);
+		  start_offset += old_num_chars - item->num_chars;
+		  
+		  pango_layout_line_postprocess (line);
 		  
 		  layout->lines = g_slist_prepend (layout->lines, line);
 		  
 		  line = pango_layout_line_new (layout);
 		  remaining_width = (layout->indent >= 0) ? layout->width : layout->indent + layout->indent;
-		  
-		  start_offset += old_num_chars - item->num_chars;
 		}
 	      
 	      last_cant_end = FALSE;
@@ -1362,8 +1653,7 @@ pango_layout_check_lines (PangoLayout *layout)
 	    }
 	}
 
-      line->runs = g_slist_reverse (line->runs);
-      pango_layout_line_reorder (line);
+      pango_layout_line_postprocess (line);
       
       layout->lines = g_slist_prepend (layout->lines, line);
 
@@ -1447,11 +1737,12 @@ pango_layout_line_unref (PangoLayoutLine *line)
  *             0 represents the trailing edge of the cluster.
  *
  * Convert from x offset to the byte index of the corresponding
- * character within the text of the layout.
- *
- * Return value: %TRUE if the x index was within the line
+ * character within the text of the layout. If the @x_pos
+ * is negative or greater than the length of the line, then
+ * then the result will be 0, or the last index in the line
+ * depending on the base direction of the layout.
  */
-gboolean
+void
 pango_layout_line_x_to_index (PangoLayoutLine *line,
 			      int              x_pos,
 			      int             *index,
@@ -1459,11 +1750,48 @@ pango_layout_line_x_to_index (PangoLayoutLine *line,
 {
   GSList *tmp_list;
   gint start_pos = 0;
+  gint first_index = 0, last_index;
+  PangoDirection base_dir;
+  gboolean last_trailing;
 
-  g_return_val_if_fail (LINE_IS_VALID (line), FALSE);
+  g_return_if_fail (line != NULL);
+  g_return_if_fail (LINE_IS_VALID (line));
 
   if (!LINE_IS_VALID (line))
-    return FALSE;
+    return;
+
+  base_dir = pango_context_get_base_dir (line->layout->context);
+
+  /* Find the last index in the line
+   */
+  tmp_list = line->layout->lines;
+  while (tmp_list->data != line)
+    {
+      first_index += ((PangoLayoutLine *)tmp_list->data)->length;
+      tmp_list = tmp_list->next;
+    }
+
+  last_index = first_index + line->length;
+  last_index = unicode_previous_utf8 (line->layout->text + first_index, line->layout->text + last_index) - line->layout->text;
+
+  /* This is a HACK. If a program only keeps track if cursor (etc)
+   * indices and not the trailing flag, then the trailing index of the
+   * last character on a wrapped line is identical to the leading
+   * index of the next line. Actually, any program keeping cursor
+   * positions with wrapped lines should distinguish leading and
+   * trailing cursors.
+   */
+  last_trailing = tmp_list->next ? 0 : 1;
+  
+  if (x_pos < 0)
+    {
+      if (index)
+	*index = (base_dir == PANGO_DIRECTION_LTR) ? first_index : last_index;
+      if (trailing)
+	*trailing = (base_dir == PANGO_DIRECTION_LTR) ? 0 : last_trailing;
+      
+      return;
+    }
 
   tmp_list = line->runs;
   while (tmp_list)
@@ -1486,14 +1814,17 @@ pango_layout_line_x_to_index (PangoLayoutLine *line,
 	  if (index)
 	    *index = pos + run->item->offset;
 	  
-	  return TRUE;
+	  return;
 	}
 
       start_pos += logical_rect.width;
       tmp_list = tmp_list->next;
     }
 
-  return FALSE;
+  if (index)
+    *index = (base_dir == PANGO_DIRECTION_LTR) ? last_index : first_index;
+  if (trailing)
+    *trailing = (base_dir == PANGO_DIRECTION_LTR) ? last_trailing : 0;
 }
 
 /**
@@ -1780,7 +2111,7 @@ pango_layout_line_new (PangoLayout *layout)
 
 
 /*
- * NB: The contents of the file implement the exact same algorithm
+ * NB: This implement the exact same algorithm as
  *     reorder-items.c:pango_reorder_items().
  */
 
@@ -1854,6 +2185,21 @@ pango_layout_line_reorder (PangoLayoutLine *line)
   GSList *logical_runs = line->runs;
   line->runs = reorder_runs_recurse (logical_runs, g_slist_length (logical_runs));
   g_slist_free (logical_runs);
+}
+
+static void
+pango_layout_line_postprocess (PangoLayoutLine *line)
+{
+  /* NB: the runs are in reverse order at this point, since we prepended them to the list
+   */
+  
+  /* Reverse the runs
+   */
+  line->runs = g_slist_reverse (line->runs);
+
+  /* Now convert logical to visual order
+   */
+  pango_layout_line_reorder (line);
 }
 
 /* This utility function is duplicated here and in pango-layout.c; should it be

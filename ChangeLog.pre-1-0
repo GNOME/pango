@@ -1,3 +1,32 @@
+Sun Apr 23 23:33:10 2000  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-layout.c (pango_layout_move_cursor_visually): New
+	function for visual (left-right, not forward-back) cursor
+	navigation within a layout.
+
+Thu Apr 20 22:16:39 2000  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-layout.c (pango_layout_line_x_to_index): As a hack,
+	for x-positions at the edge of a line, fudge the position to be
+	one before the line end (which is, for programs that don't properly
+	handle the trailing flag), instead of at the end of the line.
+	This works fine for whitespace-broken languages, but won't work
+	right for languages that don't use whitespace to break lines.
+	(GtkText* needs to keep track of whether a cursor is trailing
+	or not)
+
+	* pango/pango-layout.c (pango_layout_check_lines): Prohibit breaking
+	a line at a non-whitespace -> space transition. (So that we
+	never put wrap single character of whitespace at the beginning of
+	a line)
+
+	* pango/break.c (pango_break): Always allow a break before
+	the first char.
+
+	* pango/pango-layout.c (pango_layout_line_x_to_index): Remove the return
+	value from the function, make it return the appropriate index
+	depending on the base direction of the layoutt.
+
 Fri Apr  7 03:08:09 2000  Owen Taylor  <otaylor@redhat.com>
 
 	* configure.in (UNICODE_LIBS): Add back in flockfile
