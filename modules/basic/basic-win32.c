@@ -2,6 +2,7 @@
  * basic-win32.c:
  *
  * Copyright (C) 1999 Red Hat Software
+ * Copyright (C) 2001 Alexander Larsson
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -33,6 +34,8 @@ static PangoEngineRange basic_ranges[] = {
   { 0x0591, 0x05f4, "*" }, /* Hebrew */
   { 0x060c, 0x06f9, "" }, /* Arabic */
   { 0x0e01, 0x0e5b, "" },  /* Thai */
+  { 0x10a0, 0x10ff, "*" }, /* Georgian */
+  { 0x1200, 0x16ff, "*" }, /* Ethiopic,Cherokee,Canadian,Ogham,Runic */
   { 0x1e00, 0x1fff, "*" },
   { 0x2000, 0x9fff, "*" },
   { 0xac00, 0xd7a3, "kr" },
@@ -59,29 +62,7 @@ static PangoGlyph
 find_char (PangoFont *font,
 	   gunichar   wc)
 {
-  PangoWin32UnicodeSubrange subrange;
-  PangoWin32Subfont *subfonts;
-  int i;
-  int n_subfonts;
-
-  subrange = pango_win32_unicode_classify (wc);
-
-  if (PANGO_WIN32_U_LAST_PLUS_ONE == subrange)
-      return 0;
-
-  n_subfonts = pango_win32_list_subfonts (font, subrange, &subfonts);
-
-  for (i = 0; i < n_subfonts; i++)
-    {
-      PangoGlyph glyph;
-
-      glyph = PANGO_WIN32_MAKE_GLYPH (subfonts[i], wc);
-
-      if (pango_win32_has_glyph (font, glyph))
-	return glyph;	  
-    }
-
-  return 0;
+  return  pango_win32_font_get_glyph_index (font, wc);
 }
 
 static void
@@ -183,6 +164,7 @@ basic_engine_shape (PangoFont        *font,
 		      /* Some heuristics to try to guess how overstrike glyphs are
 		       * done and compensate
 		       */
+		      /* FIXME: (alex) Is this double call to get_glyph_extents really necessary? */
 		      pango_font_get_glyph_extents (font, glyphs->glyphs[i].glyph, &ink_rect, &logical_rect);
 		      if (logical_rect.width == 0 && ink_rect.x == 0)
 			glyphs->glyphs[i].geometry.x_offset = (glyphs->glyphs[i].geometry.width - ink_rect.width) / 2;
@@ -223,48 +205,7 @@ static PangoCoverage *
 basic_engine_get_coverage (PangoFont  *font,
 			   PangoLanguage *lang)
 {
-  PangoCoverage *result = pango_coverage_new ();
-  gunichar wc;
-  gint found = 0;
-  gint tested = 0;
-  gint irange = 0;
-  gunichar last;
-#if DEBUGGING
-  GTimeVal tv0, tv1;
-  g_get_current_time (&tv0);
-#endif
-
-  for (irange = 0; irange < G_N_ELEMENTS(basic_ranges); irange++)
-    {
-      for (wc = basic_ranges[irange].start; wc <= basic_ranges[irange].end; wc++)
-        {
-          if (find_char (font, wc))
-            {
-              pango_coverage_set (result, wc, PANGO_COVERAGE_EXACT);
-              found++;
-              last = wc;
-            }
-          tested++;
-        }
-    }
-
-#if DEBUGGING
-  {
-    PangoFontDescription *desc = pango_font_describe(font);
-
-    g_get_current_time (&tv1);
-    if (tv1.tv_usec < tv0.tv_usec)
-      tv1.tv_sec--, tv1.tv_usec += 1000000L;
-    g_print ("\"%s\" (%d) found: %d tested: %d last: %d time: %ld.%06ld s\n",
-		desc->family_name, desc->weight, 
-		found, tested, last,
-            tv1.tv_sec - tv0.tv_sec, tv1.tv_usec - tv0.tv_usec);
-
-    pango_font_description_free (desc);
-  }
-#endif
-
-  return result;
+  return pango_font_get_coverage (font, lang);
 }
 
 static PangoEngine *

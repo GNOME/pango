@@ -1,3 +1,13 @@
+2001-08-09  Alexander Larsson <alexl@redhat.com>
+
+	* pango/pangowin32.h:
+	* pango/pangowin32-private.h:
+	* pango/pangowin32.c:
+	* pango/pangowin32-fontmap.c:
+	* modules/basic/basic-win32.c:
+	* pango/pangowin32.def:
+	
+
 2001-08-04  Alexander Larsson  <alexl@redhat.com>
 
 	* pango/makefile.msc:

@@ -3,6 +3,7 @@
  *
  * Copyright (C) 1999 Red Hat Software
  * Copyright (C) 2000 Tor Lillqvist
+ * Copyright (C) 2001 Alexander Larsson
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -50,61 +51,61 @@
 
 typedef struct _PangoWin32Font PangoWin32Font;
 typedef struct _PangoWin32FontEntry PangoWin32FontEntry;
-typedef struct _PangoWin32SubfontInfo PangoWin32SubfontInfo;
+typedef struct _PangoWin32GlyphInfo PangoWin32GlyphInfo;
 
 struct _PangoWin32Font
 {
   PangoFont font;
 
-  LOGFONT *logfonts;
-  int n_logfonts;
+  LOGFONT logfont;
   int size;
 
-  /* hash table mapping from Unicode subranges to array of PangoWin32Subfont
-   * ids, of length n_subfonts
-   */
-  GHashTable *subfonts_by_subrange;
-  
-  PangoWin32SubfontInfo **subfonts;
-
-  int n_subfonts;
-  int max_subfonts;
-
-  GSList *metrics_by_lang;
-
   PangoFontMap *fontmap;
+
+  /* Written by pango_win32_get_hfont: */
+  HFONT hfont;
+  gint   tm_ascent;     
+  gint   tm_descent;
+  gint   tm_overhang;
+
+  PangoWin32FontEntry *entry;
+
   /* If TRUE, font is in cache of recently unused fonts and not otherwise
    * in use.
    */
   gboolean in_cache;
-  
-  PangoWin32FontEntry *entry;
+  GHashTable *glyph_info;
 };
 
 struct _PangoWin32FontEntry
 {
-  LOGFONT *lfp;
-  int n_fonts;
+  LOGFONT logfont;
   PangoFontDescription description;
   PangoCoverage *coverage;
+
+  gpointer unicode_table;
 
   GSList *cached_fonts;
 };
 
+struct _PangoWin32GlyphInfo
+{
+  PangoRectangle logical_rect;
+  PangoRectangle ink_rect;
+};
+
+
 PangoWin32Font *pango_win32_font_new                (PangoFontMap    	 *fontmap,
 						     const LOGFONT     	 *lfp,
-						     int                  n_fonts,
 						     int             	  size);
 PangoMap *      pango_win32_get_shaper_map          (PangoLanguage   	 *lang);
-gboolean	pango_win32_logfont_has_subrange    (PangoFontMap        *fontmap,
-						     LOGFONT		 *lfp,
-						     PangoWin32UnicodeSubrange subrange);
-LOGFONT *       pango_win32_make_matching_logfont   (PangoFontMap    	 *fontmap,
-						     LOGFONT             *lfp,
-						     int             	  size);
-PangoCoverage * pango_win32_font_entry_get_coverage (PangoWin32FontEntry *entry,
-						     PangoFont       	 *font,
-						     PangoLanguage   	 *lang);
+void            pango_win32_make_matching_logfont   (PangoFontMap    	 *fontmap,
+						     const LOGFONT       *lfp,
+						     int             	  size,
+						     LOGFONT             *out);
+PangoCoverage * pango_win32_font_entry_get_coverage (PangoWin32FontEntry *entry);
+void            pango_win32_font_entry_set_coverage (PangoWin32FontEntry *entry,
+						     PangoCoverage       *coverage);
 void            pango_win32_font_entry_remove       (PangoWin32FontEntry *entry,
 						     PangoFont           *font);
 

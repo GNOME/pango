@@ -3,6 +3,7 @@
  *
  * Copyright (C) 2000 Red Hat Software
  * Copyright (C) 2000 Tor Lillqvist
+ * Copyright (C) 2001 Alexander Larsson
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -80,7 +81,6 @@ struct _PangoWin32FamilyEntry
 
 struct _PangoWin32SizeInfo
 {
-  FONTSIGNATURE signature;
   GSList *logfonts;
 };
 
@@ -100,8 +100,11 @@ static void       pango_win32_font_map_list_families (PangoFontMap              
 						      int                          *n_families);
   
 static void       pango_win32_fontmap_cache_clear    (PangoWin32FontMap            *win32fontmap);
+
+#ifdef _WE_WANT_GLOBAL_ALIASES_
 static void       pango_win32_font_map_read_aliases  (PangoWin32FontMap            *win32fontmap);
-  
+#endif 
+
 static void       pango_win32_insert_font            (PangoWin32FontMap            *fontmap,
 						      LOGFONT                      *lfp);
 
@@ -239,7 +242,9 @@ pango_win32_font_map_for_display (void)
   logfont.lfCharSet = DEFAULT_CHARSET;
   EnumFontFamiliesEx (pango_win32_hdc, &logfont, (FONTENUMPROC) pango_win32_enum_proc, 0, 0);
 
+#ifdef _WE_WANT_GLOBAL_ALIASES_
   pango_win32_font_map_read_aliases (fontmap);
+#endif
 
   SystemParametersInfo(SPI_GETWORKAREA, 0, &rect, 0);
   fontmap->resolution =
@@ -336,6 +341,8 @@ pango_win32_font_map_list_fonts (PangoFontMap           *fontmap,
     }
   else
     {
+      /* FIXME: (Alex) What the heck is this? I think it should just be removed */
+      g_assert_not_reached ();
       *n_descs = win32fontmap->n_fonts;
       if (descs)
 	{
@@ -487,8 +494,7 @@ pango_win32_font_map_load_font (PangoFontMap               *fontmap,
 	    {
 	      PangoWin32Font *win32font;
 	      
-	      g_assert (best_match->lfp != NULL);
-	      win32font = pango_win32_font_new (fontmap, best_match->lfp, best_match->n_fonts, description->size);
+	      win32font = pango_win32_font_new (fontmap, &best_match->logfont, description->size);
 	      win32font->fontmap = fontmap;
 	      win32font->entry = best_match;
 	      best_match->cached_fonts = g_slist_prepend (best_match->cached_fonts, win32font);
@@ -502,466 +508,7 @@ pango_win32_font_map_load_font (PangoFontMap               *fontmap,
   return result;
 }
 
-static gboolean
-pango_win32_guess_subranges (UINT           charset,
-			     FONTSIGNATURE *fsp)
-{
-  gint i;
-  gboolean retval = FALSE;
-
-  /* If the fsUsb bit array has at least one of the bits set, trust it */
-  for (i = 0; i < PANGO_WIN32_U_LAST_PLUS_ONE; i++)
-    if (i != PANGO_WIN32_U_PRIVATE_USE_AREA &&
-	(fsp->fsUsb[i/32] & (1 << (i % 32))))
-      return FALSE;
-
-  /* Otherwise, guess what subranges there should be in the font */
-  fsp->fsUsb[0] = fsp->fsUsb[1] = fsp->fsUsb[2] = fsp->fsUsb[3] = 0;
-
-  /* Set Unicode subrange bits based on code pages supported.
-   * This is mostly just guesswork. No harm is done even if a bit is set,
-   * and the font after all doesn't cover that subrange completely.
-   * The bits are used just as a first approximation on font coverage.
-   */
-
-#define check_cp(bit) (fsp->fsCsb[0] & (FS_##bit))
-
-#define set_bit(bitno) (fsp->fsUsb[(PANGO_WIN32_U_##bitno)/32] |= (1 << ((PANGO_WIN32_U_##bitno) % 32)))
-
-  if (check_cp(LATIN1))
-    {
-      set_bit (BASIC_LATIN);
-      set_bit (LATIN_1_SUPPLEMENT);
-      set_bit (CURRENCY_SYMBOLS);
-      retval = TRUE;
-    }
-  if (check_cp (LATIN2))
-    {
-      set_bit (BASIC_LATIN);
-      set_bit (LATIN_1_SUPPLEMENT);
-      set_bit (LATIN_EXTENDED_A);
-      set_bit (CURRENCY_SYMBOLS);
-      retval = TRUE;
-    }
-  if (check_cp (CYRILLIC))
-    {
-      set_bit (BASIC_LATIN);
-      set_bit (CYRILLIC);
-      retval = TRUE;
-    }
-  if (check_cp (GREEK))
-    {
-      set_bit (BASIC_LATIN);
-      set_bit (BASIC_GREEK);
-      retval = TRUE;
-    }
-  if (check_cp (TURKISH))
-    {
-      set_bit (BASIC_LATIN);
-      set_bit (LATIN_1_SUPPLEMENT);
-      set_bit (LATIN_EXTENDED_A);
-      set_bit (CURRENCY_SYMBOLS);
-      retval = TRUE;
-    }
-  if (check_cp (HEBREW))
-    {
-      set_bit (BASIC_LATIN);
-      set_bit (CURRENCY_SYMBOLS);
-      set_bit (BASIC_HEBREW);
-      set_bit (HEBREW_EXTENDED);
-      retval = TRUE;
-    }
-  if (check_cp (ARABIC))
-    {
-      set_bit (BASIC_LATIN);
-      set_bit (CURRENCY_SYMBOLS);
-      set_bit (BASIC_ARABIC);
-      set_bit (ARABIC_EXTENDED);
-      retval = TRUE;
-    }
-  if (check_cp (BALTIC))
-    {
-      set_bit (BASIC_LATIN);
-      set_bit (LATIN_1_SUPPLEMENT);
-      set_bit (CURRENCY_SYMBOLS);
-      set_bit (LATIN_EXTENDED_A);
-      set_bit (LATIN_EXTENDED_B);
-      retval = TRUE;
-    }
-  if (check_cp (VIETNAMESE))
-    {
-      /* ??? */
-      set_bit (BASIC_LATIN);
-      set_bit (LATIN_1_SUPPLEMENT);
-      set_bit (CURRENCY_SYMBOLS);
-      set_bit (LATIN_EXTENDED_A);
-      set_bit (LATIN_EXTENDED_B);
-      set_bit (LATIN_EXTENDED_ADDITIONAL);
-      retval = TRUE;
-    }
-  if (check_cp (THAI))
-    {
-      set_bit (BASIC_LATIN);
-      set_bit (THAI);
-      retval = TRUE;
-    }
-  if (check_cp (JISJAPAN))
-    {
-      /* Based on what's in the MS Gothic font */
-      set_bit (BASIC_LATIN);
-      set_bit (CJK_SYMBOLS_AND_PUNCTUATION);
-      set_bit (HIRAGANA);
-      set_bit (KATAKANA);
-      set_bit (CJK_UNIFIED_IDEOGRAPHS);
-      set_bit (HALFWIDTH_AND_FULLWIDTH_FORMS);
-      retval = TRUE;
-    }
-  if (check_cp (CHINESESIMP))
-    {
-      /* Based on what's in the MS Hei font */
-      set_bit (BASIC_LATIN);
-      set_bit (HIRAGANA);
-      set_bit (KATAKANA);
-      set_bit (BOPOMOFO);
-      set_bit (CJK_UNIFIED_IDEOGRAPHS);
-      retval = TRUE;
-    }
-  if (check_cp (WANSUNG)
-      || check_cp (JOHAB))	/* ??? */
-    {
-      /* Based on the GulimChe font. I wonder if all Korean fonts
-       * really support this large range of Unicode subranges?
-       */
-      set_bit (BASIC_LATIN);
-      set_bit (LATIN_1_SUPPLEMENT);
-      set_bit (LATIN_EXTENDED_A);
-      set_bit (SPACING_MODIFIER_LETTERS);
-      set_bit (BASIC_GREEK);
-      set_bit (CYRILLIC);
-      set_bit (HANGUL_JAMO);
-      set_bit (GENERAL_PUNCTUATION);
-      set_bit (SUPERSCRIPTS_AND_SUBSCRIPTS);
-      set_bit (CURRENCY_SYMBOLS);
-      set_bit (LETTERLIKE_SYMBOLS);
-      set_bit (NUMBER_FORMS);
-      set_bit (ARROWS);
-      set_bit (MATHEMATICAL_OPERATORS);
-      set_bit (MISCELLANEOUS_TECHNICAL);
-      set_bit (ENCLOSED_ALPHANUMERICS);
-      set_bit (BOX_DRAWING);
-      set_bit (BLOCK_ELEMENTS);
-      set_bit (GEOMETRIC_SHAPES);
-      set_bit (MISCELLANEOUS_SYMBOLS);
-      set_bit (CJK_SYMBOLS_AND_PUNCTUATION);
-      set_bit (HIRAGANA);
-      set_bit (KATAKANA);
-      set_bit (HANGUL_COMPATIBILITY_JAMO);
-      set_bit (ENCLOSED_CJK);
-      set_bit (CJK_COMPATIBILITY_FORMS);
-      set_bit (HANGUL);
-      set_bit (CJK_UNIFIED_IDEOGRAPHS);
-      set_bit (CJK_COMPATIBILITY_IDEOGRAPHS);
-      set_bit (HALFWIDTH_AND_FULLWIDTH_FORMS);
-      retval = TRUE;
-    }
-  if (check_cp (CHINESETRAD))
-    {
-      /* Based on the MingLiU font */
-      set_bit (BASIC_LATIN);
-      set_bit (GENERAL_PUNCTUATION);
-      set_bit (BOX_DRAWING);
-      set_bit (BLOCK_ELEMENTS);
-      set_bit (CJK_SYMBOLS_AND_PUNCTUATION);
-      set_bit (BOPOMOFO);
-      set_bit (CJK_UNIFIED_IDEOGRAPHS);
-      set_bit (CJK_COMPATIBILITY_IDEOGRAPHS);
-      set_bit (SMALL_FORM_VARIANTS);
-      set_bit (HALFWIDTH_AND_FULLWIDTH_FORMS);
-      retval = TRUE;
-    }
-  if (check_cp (SYMBOL) || charset == MAC_CHARSET)
-    {
-      /* Non-Unicode encoding, I guess. Pretend it covers
-       * the single-byte range of values.
-       */
-      set_bit (BASIC_LATIN);
-      set_bit (LATIN_1_SUPPLEMENT);
-      retval = TRUE;
-    }
-
-  if (retval)
-    return TRUE;
-
-  /* Sigh. Not even any code page bits were set. Guess based on
-   * charset, then. These somewhat optimistic guesses are based on the
-   * table in Appendix M in the book "Developing ..."  mentioned
-   * above.
-   */
-  switch (charset)
-    {
-    case ANSI_CHARSET:
-      set_bit (BASIC_LATIN);
-      set_bit (LATIN_1_SUPPLEMENT);
-      set_bit (LATIN_EXTENDED_A);
-      set_bit (LATIN_EXTENDED_B);
-      set_bit (SPACING_MODIFIER_LETTERS);
-      set_bit (COMBINING_DIACRITICAL_MARKS);
-      set_bit (GENERAL_PUNCTUATION);
-      set_bit (SUPERSCRIPTS_AND_SUBSCRIPTS);
-      set_bit (CURRENCY_SYMBOLS);
-#if 0 /* I find this too hard to believe... */
-      set_bit (BASIC_GREEK);
-      set_bit (CYRILLIC);
-      set_bit (BASIC_HEBREW);
-      set_bit (HEBREW_EXTENDED);
-      set_bit (BASIC_ARABIC);
-      set_bit (ARABIC_EXTENDED);
-      set_bit (LETTERLIKE_SYMBOLS);
-      set_bit (NUMBER_FORMS);
-      set_bit (ARROWS);
-      set_bit (MATHEMATICAL_OPERATORS);
-      set_bit (MISCELLANEOUS_TECHNICAL);
-      set_bit (ENCLOSED_ALPHANUMERICS);
-      set_bit (BOX_DRAWING);
-      set_bit (BLOCK_ELEMENTS);
-      set_bit (GEOMETRIC_SHAPES);
-      set_bit (MISCELLANEOUS_SYMBOLS);
-      set_bit (HIRAGANA);
-      set_bit (KATAKANA);
-      set_bit (BOPOMOFO);
-      set_bit (HANGUL_COMPATIBILITY_JAMO);
-      set_bit (CJK_MISCELLANEOUS);
-      set_bit (CJK_COMPATIBILITY);
-      set_bit (HANGUL);
-      set_bit (HANGUL_SUPPLEMENTARY_A);
-      set_bit (CJK_COMPATIBILITY_IDEOGRAPHS);
-      set_bit (ALPHABETIC_PRESENTATION_FORMS);
-      set_bit (SMALL_FORM_VARIANTS);
-      set_bit (ARABIC_PRESENTATION_FORMS_B);
-      set_bit (HALFWIDTH_AND_FULLWIDTH_FORMS);
-      set_bit (SPECIALS);
-#endif
-      retval = TRUE;
-      break;
-    case SYMBOL_CHARSET:
-      /* Unggh */
-      set_bit (BASIC_LATIN);
-      set_bit (LATIN_1_SUPPLEMENT);
-      retval = TRUE;
-      break;
-    case SHIFTJIS_CHARSET:
-    case HANGEUL_CHARSET:
-    case GB2312_CHARSET:
-    case CHINESEBIG5_CHARSET:
-    case JOHAB_CHARSET:
-      /* The table really does claim these "locales" (it doesn't
-       * talk about charsets per se) cover the same Unicode
-       * subranges
-       */
-      set_bit (BASIC_LATIN);
-      set_bit (LATIN_1_SUPPLEMENT);
-      set_bit (LATIN_EXTENDED_A);
-      set_bit (LATIN_EXTENDED_B);
-      set_bit (SPACING_MODIFIER_LETTERS);
-      set_bit (COMBINING_DIACRITICAL_MARKS_FOR_SYMBOLS);
-      set_bit (BASIC_GREEK);
-      set_bit (CYRILLIC);
-      set_bit (HANGUL_JAMO);
-      set_bit (GENERAL_PUNCTUATION);
-      set_bit (SUPERSCRIPTS_AND_SUBSCRIPTS);
-      set_bit (CURRENCY_SYMBOLS);
-      set_bit (LETTERLIKE_SYMBOLS);
-      set_bit (NUMBER_FORMS);
-      set_bit (ARROWS);
-      set_bit (MATHEMATICAL_OPERATORS);
-      set_bit (MISCELLANEOUS_TECHNICAL);
-      set_bit (ENCLOSED_ALPHANUMERICS);
-      set_bit (BOX_DRAWING);
-      set_bit (BLOCK_ELEMENTS);
-      set_bit (GEOMETRIC_SHAPES);
-      set_bit (MISCELLANEOUS_SYMBOLS);
-      set_bit (CJK_SYMBOLS_AND_PUNCTUATION);
-      set_bit (HIRAGANA);
-      set_bit (KATAKANA);
-      set_bit (BOPOMOFO);
-      set_bit (HANGUL_COMPATIBILITY_JAMO);
-      set_bit (CJK_MISCELLANEOUS);
-      set_bit (CJK_COMPATIBILITY);
-      set_bit (HANGUL);
-      set_bit (HANGUL_SUPPLEMENTARY_A);
-      set_bit (CJK_UNIFIED_IDEOGRAPHS);
-      set_bit (CJK_COMPATIBILITY_IDEOGRAPHS);
-      set_bit (ALPHABETIC_PRESENTATION_FORMS);
-      set_bit (SMALL_FORM_VARIANTS);
-      set_bit (ARABIC_PRESENTATION_FORMS_B);
-      set_bit (SPECIALS);
-      retval = TRUE;
-      break;
-    case HEBREW_CHARSET:
-      set_bit (BASIC_LATIN);
-      set_bit (LATIN_1_SUPPLEMENT);
-      set_bit (LATIN_EXTENDED_B);
-      set_bit (SPACING_MODIFIER_LETTERS);
-      set_bit (BASIC_HEBREW);
-      set_bit (HEBREW_EXTENDED);
-      set_bit (GENERAL_PUNCTUATION);
-      set_bit (LETTERLIKE_SYMBOLS);
-      retval = TRUE; 
-      break;
-    case ARABIC_CHARSET:
-      set_bit (BASIC_LATIN);
-      set_bit (LATIN_1_SUPPLEMENT);
-      set_bit (LATIN_EXTENDED_A);
-      set_bit (LATIN_EXTENDED_B);
-      set_bit (SPACING_MODIFIER_LETTERS);
-      set_bit (BASIC_GREEK);
-      set_bit (BASIC_ARABIC);
-      set_bit (ARABIC_EXTENDED);
-      set_bit (GENERAL_PUNCTUATION);
-      set_bit (LETTERLIKE_SYMBOLS);
-      set_bit (ARROWS);
-      set_bit (MATHEMATICAL_OPERATORS);
-      set_bit (MISCELLANEOUS_TECHNICAL);
-      set_bit (BOX_DRAWING);
-      set_bit (BLOCK_ELEMENTS);
-      set_bit (GEOMETRIC_SHAPES);
-      set_bit (MISCELLANEOUS_SYMBOLS);
-      set_bit (HALFWIDTH_AND_FULLWIDTH_FORMS);
-      retval = TRUE;
-      break;
-    case GREEK_CHARSET:
-      set_bit (BASIC_LATIN);
-      set_bit (LATIN_1_SUPPLEMENT);
-      set_bit (LATIN_EXTENDED_B);
-      set_bit (BASIC_GREEK);
-      set_bit (GENERAL_PUNCTUATION);
-      set_bit (SUPERSCRIPTS_AND_SUBSCRIPTS);
-      set_bit (LETTERLIKE_SYMBOLS);
-      set_bit (ARROWS);
-      set_bit (MATHEMATICAL_OPERATORS);
-      set_bit (MISCELLANEOUS_TECHNICAL);
-      set_bit (BOX_DRAWING);
-      set_bit (BLOCK_ELEMENTS);
-      set_bit (GEOMETRIC_SHAPES);
-      set_bit (MISCELLANEOUS_SYMBOLS);
-      retval = TRUE;
-      break;
-    case TURKISH_CHARSET:
-      set_bit (BASIC_LATIN);
-      set_bit (LATIN_1_SUPPLEMENT);
-      set_bit (LATIN_EXTENDED_A);
-      set_bit (LATIN_EXTENDED_B);
-      set_bit (SPACING_MODIFIER_LETTERS);
-      set_bit (BASIC_GREEK);
-      set_bit (GENERAL_PUNCTUATION);
-      set_bit (SUPERSCRIPTS_AND_SUBSCRIPTS);
-      set_bit (CURRENCY_SYMBOLS);
-      set_bit (LETTERLIKE_SYMBOLS);
-      set_bit (ARROWS);
-      set_bit (MATHEMATICAL_OPERATORS);
-      set_bit (MISCELLANEOUS_TECHNICAL);
-      set_bit (BOX_DRAWING);
-      set_bit (BLOCK_ELEMENTS);
-      set_bit (GEOMETRIC_SHAPES);
-      set_bit (MISCELLANEOUS_SYMBOLS);
-      retval = TRUE;
-      break;
-    case VIETNAMESE_CHARSET:
-    case THAI_CHARSET:
-      /* These are not in the table, so I have no idea */
-      break;
-    case BALTIC_CHARSET:
-      set_bit (BASIC_LATIN);
-      set_bit (LATIN_1_SUPPLEMENT);
-      set_bit (LATIN_EXTENDED_A);
-      set_bit (LATIN_EXTENDED_B);
-      set_bit (SPACING_MODIFIER_LETTERS);
-      set_bit (BASIC_GREEK);
-      set_bit (GENERAL_PUNCTUATION);
-      set_bit (SUPERSCRIPTS_AND_SUBSCRIPTS);
-      set_bit (CURRENCY_SYMBOLS);
-      set_bit (LETTERLIKE_SYMBOLS);
-      set_bit (ARROWS);
-      set_bit (MATHEMATICAL_OPERATORS);
-      set_bit (MISCELLANEOUS_TECHNICAL);
-      set_bit (BOX_DRAWING);
-      set_bit (BLOCK_ELEMENTS);
-      set_bit (GEOMETRIC_SHAPES);
-      set_bit (MISCELLANEOUS_SYMBOLS);
-      retval = TRUE;
-      break;
-    case EASTEUROPE_CHARSET:
-      set_bit (BASIC_LATIN);
-      set_bit (LATIN_1_SUPPLEMENT);
-      set_bit (LATIN_EXTENDED_A);
-      set_bit (LATIN_EXTENDED_B);
-      set_bit (SPACING_MODIFIER_LETTERS);
-      set_bit (BASIC_GREEK);
-      set_bit (GENERAL_PUNCTUATION);
-      set_bit (SUPERSCRIPTS_AND_SUBSCRIPTS);
-      set_bit (CURRENCY_SYMBOLS);
-      set_bit (LETTERLIKE_SYMBOLS);
-      set_bit (ARROWS);
-      set_bit (MATHEMATICAL_OPERATORS);
-      set_bit (MISCELLANEOUS_TECHNICAL);
-      set_bit (BOX_DRAWING);
-      set_bit (BLOCK_ELEMENTS);
-      set_bit (GEOMETRIC_SHAPES);
-      set_bit (MISCELLANEOUS_SYMBOLS);
-      retval = TRUE;
-      break;
-    case RUSSIAN_CHARSET:
-      set_bit (BASIC_LATIN);
-      set_bit (LATIN_1_SUPPLEMENT);
-      set_bit (CYRILLIC);
-      set_bit (GENERAL_PUNCTUATION);
-      set_bit (LETTERLIKE_SYMBOLS);
-      set_bit (ARROWS);
-      set_bit (MATHEMATICAL_OPERATORS);
-      set_bit (MISCELLANEOUS_TECHNICAL);
-      set_bit (BOX_DRAWING);
-      set_bit (BLOCK_ELEMENTS);
-      set_bit (GEOMETRIC_SHAPES);
-      set_bit (MISCELLANEOUS_SYMBOLS);
-      retval = TRUE;
-      break;
-    }
-#undef check_cp
-#undef set_bit
-
-  return retval;
-}
-
-static void
-pango_win32_setup_signature (PangoWin32FontMap   *win32fontmap,
-			     LOGFONT		 *lfp,
-			     FONTSIGNATURE       *sigp)
-{
-  LOGFONT logfont;
-  HFONT hfont;
-  HGDIOBJ oldfont;
-  int charset;
-
-  logfont = *lfp;
-  logfont.lfHeight = 40;
-  hfont = pango_win32_font_cache_load (win32fontmap->font_cache,
-				       &logfont);
-  if (!hfont)
-    {
-      g_warning ("font \"%s\" (%sweight:%ld) not available",
-		 logfont.lfFaceName,
-		 (logfont.lfItalic ? "italic," : ""),
-		 logfont.lfWeight);
-      return;
-    }
-  oldfont = SelectObject (pango_win32_hdc, hfont);
-  memset (sigp, 0, sizeof (*sigp));
-  charset = GetTextCharsetInfo (pango_win32_hdc, sigp, 0);
-  SelectObject (pango_win32_hdc, oldfont);
-  pango_win32_guess_subranges (charset, sigp);
-  pango_win32_font_cache_unload (win32fontmap->font_cache, hfont);
-}
-
+#if _WE_WANT_GLOBAL_ALIASES_
 static void
 pango_win32_font_map_read_alias_file (PangoWin32FontMap *win32fontmap,
 				      const char        *filename)
@@ -1026,6 +573,7 @@ pango_win32_font_map_read_alias_file (PangoWin32FontMap *win32fontmap,
 
 	  /* Remove excess whitespace and check for complete fields */
 
+	  
 	  faces = g_strsplit (tmp_buf->str, ",", -1);
 	  nfaces = 0;
 	  for (i = 0; faces[i]; i++)
@@ -1148,6 +696,8 @@ pango_win32_font_map_read_aliases (PangoWin32FontMap *win32fontmap)
   g_free (files_str);
 }
 
+#endif /* __WE_WANT_GLOVAL_ALIASES__ */
+
 /* This inserts the given font into the SizeInfo table.
  * If a SizeInfo already exists with the same typeface name, then the
  * fontname is added to the SizeInfos list of fontnames, else a new SizeInfo
@@ -1177,8 +727,6 @@ pango_win32_insert_font (PangoWin32FontMap *win32fontmap,
     {
       PING(("SizeInfo not found"));
       size_info = g_new (PangoWin32SizeInfo, 1);
-      pango_win32_setup_signature (win32fontmap, lfp2,
-				   &size_info->signature);
       size_info->logfonts = NULL;
 
       g_hash_table_insert (win32fontmap->size_infos, lfp2, size_info);
@@ -1240,10 +788,9 @@ pango_win32_insert_font (PangoWin32FontMap *win32fontmap,
   font_entry->description.family_name = family_entry->family_name;
   font_entry->cached_fonts = NULL;
   font_entry->coverage = NULL;
-  font_entry->lfp = g_new (LOGFONT, 1);
-  font_entry->n_fonts = 1;
-  *font_entry->lfp = *lfp;
-  g_strdown (font_entry->lfp->lfFaceName);
+  font_entry->logfont = *lfp;
+  font_entry->unicode_table = NULL;
+  g_strdown (font_entry->logfont.lfFaceName);
   family_entry->font_entries = g_slist_append (family_entry->font_entries, font_entry);
   win32fontmap->n_fonts++;
 
@@ -1276,38 +823,19 @@ pango_win32_insert_font (PangoWin32FontMap *win32fontmap,
 
 }
 
-gboolean
-pango_win32_logfont_has_subrange (PangoFontMap              *fontmap,
-				  LOGFONT		    *lfp,
-				  PangoWin32UnicodeSubrange  subrange)
-{
-  PangoWin32FontMap *win32fontmap;
-  PangoWin32SizeInfo *size_info;
-
-  win32fontmap = PANGO_WIN32_FONT_MAP (fontmap);
-  size_info = g_hash_table_lookup (win32fontmap->size_infos, lfp);
-  if (!size_info)
-    {
-      PING(("SizeInfo not found"));
-      return FALSE;
-    }
-
-  return ((size_info->signature.fsUsb[subrange/32] & (1 << subrange % 32)) != 0);
-}
-
 /* Given a LOGFONT and size, make a matching LOGFONT corresponding to
  * an installed font.
  */
-LOGFONT *
-pango_win32_make_matching_logfont (PangoFontMap *fontmap,
-				   LOGFONT      *lfp,
-				   int           size)
+void
+pango_win32_make_matching_logfont (PangoFontMap  *fontmap,
+				   const LOGFONT *lfp,
+				   int            size,
+				   LOGFONT       *out)
 {
   PangoWin32FontMap *win32fontmap;
   GSList *tmp_list;
   PangoWin32SizeInfo *size_info;
   LOGFONT *closest_match = NULL;
-  LOGFONT *result = NULL;
   gint match_distance = 0;
 
   PING(("lfp.face=%s,wt=%ld,ht=%ld,size:%d",lfp->lfFaceName,lfp->lfWeight,lfp->lfHeight,size));
@@ -1318,7 +846,7 @@ pango_win32_make_matching_logfont (PangoFontMap *fontmap,
   if (!size_info)
     {
       PING(("SizeInfo not found"));
-      return NULL;
+      return;
     }
 
   tmp_list = size_info->logfonts;
@@ -1347,13 +875,12 @@ pango_win32_make_matching_logfont (PangoFontMap *fontmap,
     {
       /* OK, we have a match; let's modify it to fit this size */
 
-      result = g_new (LOGFONT, 1);
-      *result = *closest_match;
-      result->lfHeight = (int)((double)size / win32fontmap->resolution + 0.5);
-      result->lfWidth = 0;
+      *out = *closest_match;
+      out->lfHeight = (int)((double)size / win32fontmap->resolution + 0.5);
+      out->lfWidth = 0;
     }
-
-  return result;
+  else
+    *out = *lfp; /* Whatever. We need to pass something... */
 }
 
 static void
@@ -1364,97 +891,23 @@ free_coverages_foreach (gpointer key,
   pango_coverage_unref (value);
 }
 
-PangoCoverage *
-pango_win32_font_entry_get_coverage (PangoWin32FontEntry *entry,
-				     PangoFont           *font,
-				     PangoLanguage       *lang)
+void
+pango_win32_font_entry_set_coverage (PangoWin32FontEntry *entry,
+				     PangoCoverage       *coverage)
 {
-  guint32 ch;
-  PangoMap *shape_map;
-  PangoCoverage *coverage;
-  PangoCoverageLevel font_level;
-  PangoMapEntry *map_entry;
-  GHashTable *coverage_hash;
-  PangoCoverage *result = NULL;
-  PangoFontDescription *description;
-  FILE *cache_file;
-  char *cache_file_name;
-  guchar *buf;
-  size_t buflen;
+  entry->coverage = pango_coverage_ref (coverage);
+}
 
+PangoCoverage *
+pango_win32_font_entry_get_coverage (PangoWin32FontEntry *entry)
+{
   if (entry->coverage)
     {
       pango_coverage_ref (entry->coverage);
       return entry->coverage;
     }
 
-  description = pango_font_describe (font);
-  cache_file_name = g_strconcat (pango_get_sysconf_subdirectory (),
-				 "\\cache.win32\\",
-				 pango_font_description_to_filename (description),
-				 ".",
-				 lang ? pango_language_to_string (lang) : "",
-				 NULL);
-  pango_font_description_free (description);
-
-  PING (("trying to load %s", cache_file_name));
-  if (g_file_get_contents (cache_file_name, &buf, &buflen, NULL))
-    {
-      result = pango_coverage_from_bytes (buf, buflen);
-      g_free (buf);
-    }
-
-  if (!result)
-    {
-      result = pango_coverage_new ();
-
-      coverage_hash = g_hash_table_new (g_str_hash, g_str_equal);
-  
-      shape_map = pango_win32_get_shaper_map (lang);
-
-      for (ch = 0; ch < 65536; ch++)
-	{
-	  map_entry = pango_map_get_entry (shape_map, ch);
-	  if (map_entry->info)
-	    {
-	      coverage = g_hash_table_lookup (coverage_hash, map_entry->info->id);
-	      if (!coverage)
-		{
-		  PangoEngineShape *engine = (PangoEngineShape *)pango_map_get_engine (shape_map, ch);
-		  coverage = engine->get_coverage (font, lang);
-		  g_hash_table_insert (coverage_hash, map_entry->info->id, coverage);
-		}
-	      
-	      font_level = pango_coverage_get (coverage, ch);
-	      if (font_level == PANGO_COVERAGE_EXACT && !map_entry->is_exact)
-		font_level = PANGO_COVERAGE_APPROXIMATE;
-	      
-	      if (font_level != PANGO_COVERAGE_NONE)
-		pango_coverage_set (result, ch, font_level);
-	    }
-	}
-      
-      g_hash_table_foreach (coverage_hash, free_coverages_foreach, NULL);
-      g_hash_table_destroy (coverage_hash);
-
-      cache_file = fopen (cache_file_name, "wb");
-      if (cache_file)
-        {
-	  pango_coverage_to_bytes (result, &buf, &buflen);
-	  PING (("saving %d bytes to %s", buflen, cache_file_name));
-	  fwrite (buf, buflen, 1, cache_file);
-	  fclose (cache_file);
-	  g_free (buf);
-	}
-      else
-       g_warning ("Unable to open %s for writing", cache_file_name);
-      g_free (cache_file_name);
-    }
-  
-  entry->coverage = result;
-  pango_coverage_ref (result);
-
-  return result;
+  return NULL;
 }
 
 void
@@ -1519,79 +972,4 @@ pango_win32_fontmap_cache_clear (PangoWin32FontMap *win32fontmap)
   win32fontmap->freed_fonts->head = NULL;
   win32fontmap->freed_fonts->tail = NULL;
   win32fontmap->freed_fonts->length = 0;
-}
-
-static void
-pango_win32_font_entry_dump (int                  indent,
-			     PangoWin32FontEntry *font_entry)
-{
-  int i;
-
-  printf ("%*sPangoWin32FontEntry@%p:\n"
-	  "%*s  lfp:\n",
-	  indent, "", font_entry,
-	  indent, "");
-  
-  for (i = 0; i < font_entry->n_fonts; i++)
-    printf ("%*s    LOGFONT:%s\n",
-	    indent, "", font_entry->lfp[i].lfFaceName);
-  
-  printf ("%*s  description:\n"
-	  "%*s    family_name: %s\n"
-	  "%*s    style: %d\n"
-	  "%*s    variant: %d\n"
-	  "%*s    weight: %d\n"
-	  "%*s    stretch: %d\n"
-	  "%*s  coverage: %p\n",
-	  indent, "",
-	  indent, "", font_entry->description.family_name,
-	  indent, "", font_entry->description.style,
-	  indent, "", font_entry->description.variant,
-	  indent, "", font_entry->description.weight,
-	  indent, "", font_entry->description.stretch,
-	  indent, "", font_entry->coverage);
-}
-
-static void
-pango_win32_family_entry_dump (int                    indent,
-			       PangoWin32FamilyEntry *entry)
-{
-  GSList *tmp_list = entry->font_entries;
-  
-  printf ("%*sPangoWin32FamilyEntry@%p:\n"
-	  "%*s  family_name: %s\n"
-	  "%*s  font_entries:\n",
-	  indent, "", entry,
-	  indent, "", entry->family_name,
-	  indent, "");
-
-  while (tmp_list)
-    {
-      PangoWin32FontEntry *font_entry = tmp_list->data;
-      
-      pango_win32_font_entry_dump (indent + 2, font_entry);
-      tmp_list = tmp_list->next;
-    }
-}
-
-static void
-dump_family (gpointer key,
-	     gpointer value,
-	     gpointer user_data)
-{
-  PangoWin32FamilyEntry *entry = value;
-  int indent = (int) user_data;
-
-  pango_win32_family_entry_dump (indent, entry);
-}
-
-void
-pango_win32_fontmap_dump (int           indent,
-			  PangoFontMap *fontmap)
-{
-  PangoWin32FontMap *win32fontmap = PANGO_WIN32_FONT_MAP (fontmap);
-
-  printf ("%*sPangoWin32FontMap@%p:\n",
-	  indent, "", win32fontmap);
-  g_hash_table_foreach (win32fontmap->families, dump_family, (gpointer) (indent + 2));
 }
