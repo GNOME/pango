@@ -36,7 +36,7 @@ dnl This is the last version with which we have compatibility with
 dnl with the modules for; it isn't the same as
 dnl PANGO_API_VERSION.'PANGO_MICRO_VERSION - PANGO_BINARY_AGE' since we have
 dnl engine only API    
-m4_define([pango_module_version], [1.2.0])
+m4_define([pango_module_version], [1.4.0])
 
 
 AC_INIT(pango, [pango_version],
@@ -313,15 +313,14 @@ AC_ARG_WITH(included_modules,
 [  --with-included-modules=MODULE1,MODULE2,...
                           build the given modules into Pango])
 
-arabic_modules="arabic-ft2,arabic-x,arabic-xft"
-basic_modules="basic-ft2,basic-win32,basic-x,basic-xft"
-hangul_modules="hangul-ft2,hangul-x,hangul-xft"
-hebrew_modules="hebrew-ft2,hebrew-x,hebrew-xft"
-indic_modules="bengali-x,devanagari-x,gurmukhi-x,gujarati-x,myanmar-x,indic-ft2,indic-xft"
-tamil_modules="tamil-x"
-thai_modules="thai-ft2,thai-x,thai-xft"
+arabic_modules="arabic-fc"
+basic_modules="basic-fc,basic-win32,basic-x"
+hangul_modules="hangul-fc"
+hebrew_modules="hebrew-fc"
+indic_modules="indic-fc"
+thai_modules="thai-fc"
 
-all_modules="$arabic_modules,$basic_modules,$hangul_modules,$hebrew_modules,$indic_modules,$tamil_modules,$thai_modules"
+all_modules="$arabic_modules,$basic_modules,$hangul_modules,$hebrew_modules,$indic_modules,$thai_modules"
 
 included_modules=""
 if test "x$with_included_modules" != xno || test "x$with_included_modules" = x ; then
@@ -338,8 +337,7 @@ AC_MSG_RESULT($included_modules)
 AM_CONDITIONAL(HAVE_INCLUDED_MODULES, test "x$included_modules" != x)
 
 INCLUDED_X_MODULES=
-INCLUDED_XFT_MODULES=
-INCLUDED_FT2_MODULES=
+INCLUDED_FC_MODULES=
 INCLUDED_WIN32_MODULES=
 IFS="${IFS= 	}"; pango_save_ifs="$IFS"; IFS=","
 for module in $included_modules; do
@@ -349,10 +347,8 @@ for module in $included_modules; do
     dir=`echo $module | sed "s/-.*//"`
   fi
 
-  if echo $module | egrep -- "-xft($|,)" > /dev/null; then
-    INCLUDED_XFT_MODULES="$INCLUDED_XFT_MODULES \$(top_builddir)/modules/$dir/libpango-$module.la"
-  elif echo $module | egrep -- "-ft2($|,)" > /dev/null; then
-    INCLUDED_FT2_MODULES="$INCLUDED_FT2_MODULES \$(top_builddir)/modules/$dir/libpango-$module.la"
+  if echo $module | egrep -- "-fc($|,)" > /dev/null; then
+    INCLUDED_FC_MODULES="$INCLUDED_FC_MODULES \$(top_builddir)/modules/$dir/libpango-$module.la"
   elif echo $module | egrep -- "-x($|,)" > /dev/null; then
     INCLUDED_X_MODULES="$INCLUDED_X_MODULES \$(top_builddir)/modules/$dir/libpango-$module.la"
   elif echo $module | egrep -- "-win32($|,)" > /dev/null; then
@@ -364,29 +360,22 @@ done
 IFS="$pango_save_ifs"
 
 AC_SUBST(INCLUDED_X_MODULES)
-AC_SUBST(INCLUDED_XFT_MODULES)
-AC_SUBST(INCLUDED_FT2_MODULES)
+AC_SUBST(INCLUDED_FC_MODULES)
 AC_SUBST(INCLUDED_WIN32_MODULES)
 
-AM_CONDITIONAL(INCLUDE_ARABIC_FT2,echo $included_modules | egrep '(^|,)arabic-ft2($|,)' > /dev/null)
-AM_CONDITIONAL(INCLUDE_ARABIC_XFT,echo $included_modules | egrep '(^|,)arabic-xft($|,)' > /dev/null)
+AM_CONDITIONAL(INCLUDE_ARABIC_FC,echo $included_modules | egrep '(^|,)arabic-fc($|,)' > /dev/null)
 
-AM_CONDITIONAL(INCLUDE_BASIC_FT2,echo $included_modules | egrep '(^|,)basic-ft2($|,)' > /dev/null)
+AM_CONDITIONAL(INCLUDE_BASIC_FC,echo $included_modules | egrep '(^|,)basic-fc($|,)' > /dev/null)
 AM_CONDITIONAL(INCLUDE_BASIC_WIN32,echo $included_modules | egrep '(^|,)basic-win32($|,)' > /dev/null)
-AM_CONDITIONAL(INCLUDE_BASIC_XFT,echo $included_modules | egrep '(^|,)basic-xft($|,)' > /dev/null)
 AM_CONDITIONAL(INCLUDE_BASIC_X,echo $included_modules | egrep '(^|,)basic-x($|,)' > /dev/null)
 
-AM_CONDITIONAL(INCLUDE_HANGUL_FT2,echo $included_modules | egrep '(^|,)hangul-ft2($|,)' > /dev/null)
-AM_CONDITIONAL(INCLUDE_HANGUL_XFT,echo $included_modules | egrep '(^|,)hangul-xft($|,)' > /dev/null)
+AM_CONDITIONAL(INCLUDE_HANGUL_FC,echo $included_modules | egrep '(^|,)hangul-fc($|,)' > /dev/null)
 
-AM_CONDITIONAL(INCLUDE_HEBREW_FT2,echo $included_modules | egrep '(^|,)hebrew-ft2($|,)' > /dev/null)
-AM_CONDITIONAL(INCLUDE_HEBREW_XFT,echo $included_modules | egrep '(^|,)hebrew-xft($|,)' > /dev/null)
+AM_CONDITIONAL(INCLUDE_HEBREW_FC,echo $included_modules | egrep '(^|,)hebrew-fc($|,)' > /dev/null)
 
-AM_CONDITIONAL(INCLUDE_THAI_FT2,echo $included_modules | egrep '(^|,)thai-ft2($|,)' > /dev/null)
-AM_CONDITIONAL(INCLUDE_THAI_XFT,echo $included_modules | egrep '(^|,)thai-xft($|,)' > /dev/null)
+AM_CONDITIONAL(INCLUDE_THAI_FC,echo $included_modules | egrep '(^|,)thai-fc($|,)' > /dev/null)
 
-AM_CONDITIONAL(INCLUDE_INDIC_FT2,echo $included_modules | egrep '(^|,)indic-ft2($|,)' > /dev/null)
-AM_CONDITIONAL(INCLUDE_INDIC_XFT,echo $included_modules | egrep '(^|,)indic-xft($|,)' > /dev/null)
+AM_CONDITIONAL(INCLUDE_INDIC_FC,echo $included_modules | egrep '(^|,)indic-fc($|,)' > /dev/null)
 
 #
 # We use flockfile to implement pango_getline() - should be moved to GLib
@@ -555,22 +544,22 @@ cat >> pango/module-defs-x.c <<EOTEXT
 EOTEXT
 ])
 
-AC_CONFIG_COMMANDS([pango/module-defs-xft.c],
+AC_CONFIG_COMMANDS([pango/module-defs-fc.c],
 [
-### XFT modules
-cat > pango/module-defs-xft.c <<EOTEXT
+### FC modules
+cat > pango/module-defs-fc.c <<EOTEXT
 /* Autogenerated by configure. Do not edit */
 
 #include "module-defs.h"
 
-PangoIncludedModule _pango_included_xft_modules@<:@@:>@ = {
+PangoIncludedModule _pango_included_fc_modules@<:@@:>@ = {
 EOTEXT
 
 IFS="${IFS= 	}"; pango_save_ifs="$IFS"; IFS=","
 for module in $included_modules; do
-  if echo $module | egrep -- "-xft($|,)" > /dev/null; then
+  if echo $module | egrep -- "-fc($|,)" > /dev/null; then
     module_c=`echo $module | sed s/-/_/`
-    cat >> pango/module-defs-xft.c <<EOTEXT
+    cat >> pango/module-defs-fc.c <<EOTEXT
  { _pango_${module_c}_script_engine_list, _pango_${module_c}_script_engine_load,_pango_${module_c}_script_engine_unload },
 EOTEXT
   fi
@@ -578,36 +567,7 @@ done
 
 IFS="$pango_save_ifs"
 
-cat >> pango/module-defs-xft.c <<EOTEXT
- { NULL, NULL, NULL },
-};
-EOTEXT
-])
-
-AC_CONFIG_COMMANDS([pango/module-defs-ft2.c],
-[
-### FT2 modules
-cat > pango/module-defs-ft2.c <<EOTEXT
-/* Autogenerated by configure. Do not edit */
-
-#include "module-defs.h"
-
-PangoIncludedModule _pango_included_ft2_modules@<:@@:>@ = {
-EOTEXT
-
-IFS="${IFS= 	}"; pango_save_ifs="$IFS"; IFS=","
-for module in $included_modules; do
-  if echo $module | egrep -- "-ft2($|,)" > /dev/null; then
-    module_c=`echo $module | sed s/-/_/`
-    cat >> pango/module-defs-ft2.c <<EOTEXT
- { _pango_${module_c}_script_engine_list, _pango_${module_c}_script_engine_load,_pango_${module_c}_script_engine_unload },
-EOTEXT
-  fi
-done
-
-IFS="$pango_save_ifs"
-
-cat >> pango/module-defs-ft2.c <<EOTEXT
+cat >> pango/module-defs-fc.c <<EOTEXT
  { NULL, NULL, NULL },
 };
 EOTEXT

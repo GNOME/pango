@@ -26,6 +26,7 @@ IGNORE_HFILES=			\
 	modules.h		\
 	pango-intset.h		\
 	pango-utils.h		\
+	pangofc-private.h	\
 	pangoft2-private.h	\
 	pangowin32-private.h	\
 	pangox-private.h	\
@@ -36,9 +37,17 @@ IGNORE_HFILES=			\
 INCLUDES =               	\
 	-DPANGO_ENABLE_BACKEND	\
 	-I$(top_srcdir)		\
-	$(GLIB_CFLAGS)
+	$(GLIB_CFLAGS)		\
+	$(XFT_CFLAGS)		\
+	$(FREETYPE_CFLAGS)	\
+	$(X_CFLAGS)
 
-GTKDOC_LIBS = $(top_builddir)/pango/libpango-1.0.la
+# libpangoxft.la pulls in libpango.la and libpangoft2.la;
+# We're assuming here that we'll only regenerate the
+# HTML docs on Unix. We don't get introspection on Win32
+# specific types, but that isn't a bug deal.
+GTKDOC_LIBS =						\
+	$(top_builddir)/pango/libpangoxft-1.0.la
 
 
 # Extra options to supply to gtkdoc-mkdb

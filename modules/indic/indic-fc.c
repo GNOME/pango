@@ -46,15 +46,9 @@ struct _PangoIndicInfo
   gchar             *gposQuarkName;
 };
 
-#ifdef BUILD_XFT
-#include "pangoxft.h"
-#define ENGINE_SUFFIX "ScriptEngineXft"
-#define RENDER_TYPE PANGO_RENDER_TYPE_XFT
-#else
-#include "pangoft2.h"
-#define ENGINE_SUFFIX "ScriptEngineFT2"
-#define RENDER_TYPE PANGO_RENDER_TYPE_FT2
-#endif
+#include "pangofc-font.h"
+#define ENGINE_SUFFIX "ScriptEngineFc"
+#define RENDER_TYPE PANGO_RENDER_TYPE_FC
 
 #define INDIC_ENGINE_INFO(script) {#script ENGINE_SUFFIX, PANGO_ENGINE_TYPE_SHAPE, RENDER_TYPE, script##_ranges, G_N_ELEMENTS(script##_ranges)}
 

@@ -38,7 +38,9 @@ G_BEGIN_DECLS
 #error "must have Xft version 2 or newer"
 #endif
 
+#ifndef PANGO_DISABLE_DEPRECATED
 #define PANGO_RENDER_TYPE_XFT "PangoRenderXft"
+#endif
 
 typedef void (*PangoXftSubstituteFunc) (FcPattern *pattern,
                                         gpointer   data);

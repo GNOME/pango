@@ -28,15 +28,9 @@
 
 #include "basic-common.h"
 
-#ifdef BUILD_XFT
-#include "pangoxft.h"
-#define SCRIPT_ENGINE_NAME "BasicScriptEngineXft"
-#define RENDER_TYPE PANGO_RENDER_TYPE_XFT
-#else /* FT2 */
-#include "pangoft2.h"
-#define SCRIPT_ENGINE_NAME "BasicScriptEngineFt2"
-#define RENDER_TYPE PANGO_RENDER_TYPE_FT2
-#endif
+#include "pangofc-font.h"
+#define SCRIPT_ENGINE_NAME "BasicScriptEngineFc"
+#define RENDER_TYPE PANGO_RENDER_TYPE_FC
 
 static PangoEngineRange basic_ranges[] = {
   /* Basic Latin, Latin-1 Supplement, Latin Extended-A, Latin Extended-B,

@@ -9,12 +9,13 @@
 <!ENTITY pango-Tab-Stops SYSTEM "xml/tab-stops.xml">
 <!ENTITY pango-Layout-Objects SYSTEM "xml/layout.xml">
 <!ENTITY pango-Engines SYSTEM "xml/engines.xml">
-<!ENTITY pango-Indic-Engine-Support SYSTEM "xml/pango-indic.xml">
 <!ENTITY pango-Modules SYSTEM "xml/modules.xml">
 <!ENTITY pango-X-Fonts-and-Rendering SYSTEM "xml/x-fonts.xml">
 <!ENTITY pango-Win32-Fonts-and-Rendering SYSTEM "xml/win32-fonts.xml">
 <!ENTITY pango-FreeType-Fonts-and-Rendering SYSTEM "xml/freetype-fonts.xml">
 <!ENTITY pango-Xft-Fonts-and-Rendering SYSTEM "xml/xft-fonts.xml">
+<!ENTITY PangoFcFontMap SYSTEM "xml/pangofc-fontmap.xml">
+<!ENTITY PangoFcFont SYSTEM "xml/pangofc-font.xml">
 <!ENTITY pango-OpenType-Font-Handling SYSTEM "xml/opentype.xml">
 <!ENTITY markup-format SYSTEM "pango_markup.sgml">
 <!ENTITY pango-querymodules SYSTEM "pango-querymodules.xml">
@@ -47,10 +48,11 @@
 
   <chapter id="lowlevel">
     <title>Low Level Functionality</title>
+    &PangoFcFontMap;
+    &PangoFcFont;
     &pango-OpenType-Font-Handling;
     &pango-Coverage-Maps;
     &pango-Engines;
-    &pango-Indic-Engine-Support;
     &pango-Modules;
     </chapter>
 

@@ -33,15 +33,9 @@
 #include "pango-engine.h"
 #include "thai-shaper.h"
 
-#ifdef BUILD_XFT
-#include "pangoxft.h"
-#define SCRIPT_ENGINE_NAME "ThaiScriptEngineXft"
-#define RENDER_TYPE PANGO_RENDER_TYPE_XFT
-#else
-#include "pangoft2.h"
-#define SCRIPT_ENGINE_NAME "ThaiScriptEngineFT2"
-#define RENDER_TYPE PANGO_RENDER_TYPE_FT2
-#endif
+#include "pangofc-font.h"
+#define SCRIPT_ENGINE_NAME "ThaiScriptEngineFc"
+#define RENDER_TYPE PANGO_RENDER_TYPE_FC
 
 /* We handle the range U+0e01 to U+0e5b exactly
  */

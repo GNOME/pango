@@ -28,15 +28,9 @@
 #include "hangul-defs.h"
 #include "tables-jamos.i"
 
-#ifdef BUILD_XFT
-#include "pangoxft.h"
-#define SCRIPT_ENGINE_NAME "HangulScriptEngineXft"
-#define RENDER_TYPE PANGO_RENDER_TYPE_XFT
-#else
-#include "pangoft2.h"
-#define SCRIPT_ENGINE_NAME "HangulScriptEngineFT2"
-#define RENDER_TYPE PANGO_RENDER_TYPE_FT2
-#endif
+#include "pangofc-font.h"
+#define SCRIPT_ENGINE_NAME "HangulScriptEngineFc"
+#define RENDER_TYPE PANGO_RENDER_TYPE_FC
 
 static PangoEngineRange hangul_ranges[] = {
   /* Language characters */

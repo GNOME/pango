@@ -1,3 +1,28 @@
+Sat Aug  2 14:33:28 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/Makefile.am (libpangoxft_1_0_la_LIBADD): Make
+	pangoxft depend on pangoft2.
+
+	* pango/pangofc-fontmap.[ch]: Make pangofc-fontmap.cI
+	into a real base class.
+
+	* pango/pangofc-font.[ch]: Move some of the pangoxft/
+	pangoft2 implementation here.
+
+	* pango/pangoft2.c pango/pangoft2-fontmap.c
+	pango/pangoft2-private.h pango/pangoxft-font.c
+	pango/pangoxft2-fontmap.c pango/pangoxft-private.h: Adapt
+	to the new scheme
+
+	* modules/*/Makefile.am Modules/*/*/*-fc.c: Don't build
+	separate FT2 and Xft shapers, just build one Fc shaper.
+
+	* docs/pango-sections.txt docs/pango-docs.sgml
+	docs/tmpl/pangofc-font{,map}.sgml: Basic docs for
+	the new stuff.
+
+	* configure.in: Up pango_module_version to 1.4.0.
+
 Sat Aug  2 14:18:20 2003  Owen Taylor  <otaylor@redhat.com>
 
 	* modules/hangul/Makefile.am (EXTRA_DIST): Remove some

@@ -463,6 +463,8 @@ PANGO_RENDER_TYPE_NONE
 script_engine_list
 script_engine_load
 script_engine_unload
+<SUBSECTION Private>
+PANGO_MODULE_ENTRY
 </SECTION>
 
 <SECTION>
@@ -475,18 +477,6 @@ pango_find_map
 pango_map_get_entry
 pango_map_get_engine
 pango_module_register
-</SECTION>
-
-<SECTION>
-<FILE>pango-indic</FILE>
-<TITLE>Indic Engine Support</TITLE>
-PANGO_ZERO_WIDTH_NON_JOINER
-PANGO_ZERO_WIDTH_JOINER
-PangoIndicScript
-pango_indic_shift_vowels
-pango_indic_compact
-pango_indic_convert_vowels
-pango_indic_split_out_characters
 </SECTION>
 
 <SECTION>
@@ -605,6 +595,51 @@ PANGO_XFT_IS_FONT
 
 <SUBSECTION Private>
 pango_xft_font_get_type
+</SECTION>
+
+<SECTION>
+<FILE>pangofc-fontmap</FILE>
+<TITLE>PangoFcFontMap</TITLE>
+PangoFcFontMap
+PangoFcFontMapClass
+pango_fc_font_description_from_pattern
+pango_fc_font_map_cache_clear
+pango_fc_font_map_create_context
+pango_fc_font_map_shutdown
+<SUBSECTION Standard>
+PANGO_FC_FONT_MAP
+PANGO_IS_FC_FONT_MAP
+PANGO_TYPE_FC_FONT_MAP
+PANGO_FC_FONT_MAP_CLASS
+PANGO_IS_FC_FONT_MAP_CLASS
+PANGO_FC_FONT_MAP_GET_CLASS
+
+<SUBSECTION Private>
+PangoFcFontMapPrivate
+pango_fc_font_map_get_type
+</SECTION>
+
+<SECTION>
+<FILE>pangofc-font</FILE>
+<TITLE>PangoFcFont</TITLE>
+PangoFcFont
+PangoFcFontClass
+PANGO_RENDER_TYPE_FC
+pango_fc_font_lock_face
+pango_fc_font_unlock_face
+pango_fc_font_has_char
+pango_fc_font_get_glyph
+pango_fc_font_get_unknown_glyph
+pango_fc_font_kern_glyphs
+<SUBSECTION Standard>
+PANGO_FC_FONT
+PANGO_IS_FC_FONT
+PANGO_TYPE_FC_FONT
+PANGO_FC_FONT_CLASS
+PANGO_IS_FC_FONT_CLASS
+PANGO_FC_FONT_GET_CLASS
+<SUBSECTION Private>
+pango_fc_font_get_type
 </SECTION>
 
 <SECTION>

@@ -1,5 +1,5 @@
 /* Pango
- * pangofc-font.h: Shared interfaces for fontconfig-based backends
+ * pangofc-font.h: Base fontmap type for fontconfig-based backends
  *
  * Copyright (C) 2003 Red Hat Software
  *
@@ -23,10 +23,10 @@
 #define __PANGO_FC_FONT_H__
 
 #include <freetype/freetype.h>
+#include <fontconfig/fontconfig.h>
 #include <pango/pango-font.h>
+#include <pango/pango-fontmap.h>
 #include <pango/pango-glyph.h>
-
-#if defined(PANGO_ENABLE_ENGINE) || defined(PANGO_ENABLE_BACKEND)
 
 G_BEGIN_DECLS
 
@@ -37,19 +37,68 @@ G_BEGIN_DECLS
 typedef struct _PangoFcFont      PangoFcFont;
 typedef struct _PangoFcFontClass PangoFcFontClass;
 
+#if defined(PANGO_ENABLE_ENGINE) || defined(PANGO_ENABLE_BACKEND)
+
+/**
+ * PANGO_RENDER_TYPE_FC:
+ * 
+ * A string constant used to identify shape engines that work
+ * with the fontconfig based backends. See the @engine_type field
+ * of #PangoEngineInfo.
+ **/
+#define PANGO_RENDER_TYPE_FC "PangoRenderFc"
+
 #ifdef PANGO_ENABLE_BACKEND
 
 #define PANGO_FC_FONT_CLASS(klass)      (G_TYPE_CHECK_CLASS_CAST ((klass), PANGO_TYPE_FC_FONT, PangoFcFontClass))
 #define PANGO_IS_FC_FONT_CLASS(klass)   (G_TYPE_CHECK_CLASS_TYPE ((klass), PANGO_TYPE_FC_FONT))
 #define PANGO_FC_FONT_GET_CLASS(obj)    (G_TYPE_INSTANCE_GET_CLASS ((obj), PANGO_TYPE_FC_FONT, PangoFcFontClass))
 
+/**
+ * PangoFcFont:
+ * 
+ * #PangoFcFontMap is a base class for font implementations
+ * using the FontConfig and FreeType libraries and is used in
+ * conjunction with #PangoFcFontMap. When deriving from this
+ * class, you need to implement all of its virtual functions
+ * other than shutdown() along with the get_glyph_extents()
+ * virtual function from #PangoFont.
+ **/
 struct _PangoFcFont
 {
   PangoFont parent_instance;
+
+  FcPattern *font_pattern;	    /* fully resolved pattern */
+  PangoFontMap *fontmap;	    /* associated map */
+  PangoFontDescription *description;
+  
+  GSList *metrics_by_lang;
 };
 
+/**
+ * PangoFcFontClass:
+ * @lock_face: Returns the FT_Face of the font and increases
+ *  the reference count for the face by one.
+ * @unlock_face: Decreases the reference count for the
+ *  FT_Face of the font by one. When the count is zero,
+ *  the #PangoFcFont subclass is allowed to free the
+ *  FT_Face.
+ * @has_char: Return %TRUE if the the font contains a glyph
+ *   corresponding to the specified character.
+ * @get_glyph: Gets the glyph that corresponds to the given
+ *   Unicode character.
+ * @get_unknown_glyph: Gets the glyph that should be used to
+ *   display an unknown-glyph indication for the specified
+ *   unicode character.
+ * @shutdown: Performs any font-specific shutdown code that
+ *   needs to be done when pango_fc_font_map_shutdown is called.
+ *   May be %NULL.
+ *
+ * Class structure for #PangoFcFont.
+ **/
 struct _PangoFcFontClass
 {
+  /*< private >*/
   PangoFontClass parent_class;
 
   /*< public >*/
@@ -61,8 +110,7 @@ struct _PangoFcFontClass
 				   gunichar          wc);
   PangoGlyph (*get_unknown_glyph) (PangoFcFont      *font,
 				   gunichar          wc);
-  void	     (*kern_glyphs)       (PangoFcFont      *font,
-				   PangoGlyphString *glyphs);
+  void       (*shutdown)          (PangoFcFont      *font);
   /*< private >*/
 
   /* Padding for future expansion */
@@ -73,8 +121,6 @@ struct _PangoFcFontClass
 };
 
 #endif /* PANGO_ENABLE_BACKEND */
-
-GType      pango_fc_font_get_type (void);
 
 FT_Face    pango_fc_font_lock_face         (PangoFcFont      *font);
 void       pango_fc_font_unlock_face       (PangoFcFont      *font);
@@ -87,8 +133,10 @@ PangoGlyph pango_fc_font_get_unknown_glyph (PangoFcFont      *font,
 void       pango_fc_font_kern_glyphs       (PangoFcFont      *font,
 					    PangoGlyphString *glyphs);
 
-G_END_DECLS
-
 #endif /* PANGO_ENABLE_ENGINE || PANGO_ENABLE_BACKEND */
+
+GType      pango_fc_font_get_type (void);
+
+G_END_DECLS
 
 #endif /* __PANGO_FC_FONT_H__ */

@@ -16,8 +16,8 @@ Functions for shape engines to manipulate Xft fonts
 
 <!-- ##### MACRO PANGO_RENDER_TYPE_XFT ##### -->
 <para>
-A string constant identifying the Xft renderer. The associated quark (see
-g_quark_from_string()) is used to identify the renderer in pango_find_map().
+A string constant that was used to identify shape engines that work
+with the Xft backend. See %PANGO_RENDER_TYPE_FC for the replacement.
 </para>
 
 

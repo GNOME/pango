@@ -30,7 +30,9 @@
 
 G_BEGIN_DECLS
 
+#ifndef PANGO_DISABLE_DEPRECATED
 #define PANGO_RENDER_TYPE_FT2 "PangoRenderFT2"
+#endif
 
 #define PANGO_TYPE_FT2_FONT_MAP              (pango_ft2_font_map_get_type ())
 #define PANGO_FT2_FONT_MAP(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_TYPE_FT2_FONT_MAP, PangoFT2FontMap))

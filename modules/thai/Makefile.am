@@ -1,8 +1,6 @@
 ## Process this file with automake to create Makefile.in.
 
 pangolibs = $(top_builddir)/pango/libpango-$(PANGO_API_VERSION).la $(GLIB_LIBS)
-pangoxlibs = $(top_builddir)/pango/libpangox-$(PANGO_API_VERSION).la $(X_LIBS) $(pangolibs)
-pangoxftlibs = $(top_builddir)/pango/libpangoxft-$(PANGO_API_VERSION).la $(XFT_LIBS) $(pangolibs)
 pangoft2libs = $(top_builddir)/pango/libpangoft2-$(PANGO_API_VERSION).la $(FREETYPE_LIBS) $(pangolibs)
 
 INCLUDES =			\
@@ -24,42 +22,22 @@ noinst_LTLIBRARIES =
 common_sources = thai-shaper.c thai-shaper.h
 
 
-if HAVE_XFT
-INCLUDES += $(XFT_CFLAGS)
-if INCLUDE_THAI_XFT
-noinst_LTLIBRARIES += libpango-thai-xft.la
-else
-module_LTLIBRARIES += pango-thai-xft.la
-endif
-endif
-
-thai_xft_sources = $(common_sources) thai-fc.c 
-
-pango_thai_xft_la_LDFLAGS = -export-dynamic -avoid-version -module
-pango_thai_xft_la_LIBADD = $(pangoxftlibs)
-pango_thai_xft_la_SOURCES = $(thai_xft_sources)
-pango_thai_xft_la_CFLAGS = -DBUILD_XFT
-libpango_thai_xft_la_SOURCES = $(thai_xft_sources)
-libpango_thai_xft_la_CFLAGS = -DBUILD_XFT -DPANGO_MODULE_PREFIX=_pango_thai_xft
-
-
 if HAVE_FREETYPE
 INCLUDES += $(FREETYPE_CFLAGS)
-if INCLUDE_THAI_FT2
-noinst_LTLIBRARIES += libpango-thai-ft2.la
+if INCLUDE_THAI_FC
+noinst_LTLIBRARIES += libpango-thai-fc.la
 else
-module_LTLIBRARIES += pango-thai-ft2.la
+module_LTLIBRARIES += pango-thai-fc.la
 endif
 endif
 
-thai_ft2_sources = $(common_sources) thai-fc.c 
+thai_fc_sources = $(common_sources) thai-fc.c 
 
-pango_thai_ft2_la_LDFLAGS = -export-dynamic -avoid-version -module $(no_undefined)
-pango_thai_ft2_la_LIBADD = $(pangoft2libs)
-pango_thai_ft2_la_SOURCES = $(thai_ft2_sources)
-pango_thai_ft2_la_CFLAGS = -DBUILD_FT2
-libpango_thai_ft2_la_SOURCES = $(thai_ft2_sources)
-libpango_thai_ft2_la_CFLAGS = -DBUILD_FT2 -DPANGO_MODULE_PREFIX=_pango_thai_ft2
+pango_thai_fc_la_LDFLAGS = -export-dynamic -avoid-version -module $(no_undefined)
+pango_thai_fc_la_LIBADD = $(pangoft2libs)
+pango_thai_fc_la_SOURCES = $(thai_fc_sources)
+libpango_thai_fc_la_SOURCES = $(thai_fc_sources)
+libpango_thai_fc_la_CFLAGS = -DPANGO_MODULE_PREFIX=_pango_thai_fc
 
 
 included-modules: $(noinst_LTLIBRARIES)

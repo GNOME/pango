@@ -67,7 +67,6 @@ libpango_1_0_la_SOURCES =  \
 	pango-markup.c	   \
 	pango-tabs.c	   \
 	pango-utils.c	   \
-	pangofc-font.c	   \
 	reorder-items.c    \
 	shape.c	           \
 	pango-enum-types.c
@@ -90,7 +89,8 @@ pango_headers =		   \
 	pango-tabs.h	   \
 	pango-types.h	   \
 	pango-utils.h	   \
-	pangofc-font.h
+	pangofc-font.h	   \
+	pangofc-fontmap.h
 
 pangoinclude_HEADERS =	   \
 	$(pango_headers)   \
@@ -152,14 +152,13 @@ lib_LTLIBRARIES += libpangoxft-1.0.la
 endif
 
 libpangoxft_1_0_la_LDFLAGS = -version-info $(LT_VERSION_INFO)
-libpangoxft_1_0_la_LIBADD = opentype/libpango-ot.la libpango-$(PANGO_API_VERSION).la $(INCLUDED_XFT_MODULES) $(XFT_LIBS) 
+libpangoxft_1_0_la_LIBADD = libpangoft2-$(PANGO_API_VERSION).la libpango-$(PANGO_API_VERSION).la $(INCLUDED_XFT_MODULES) $(XFT_LIBS) 
 libpangoxft_1_0_la_DEPENDENCIES = libpango-$(PANGO_API_VERSION).la $(INCLUDED_XFT_MODULES)
 
 libpangoxft_1_0_la_SOURCES =   	\
 	pangoxft-font.c		\
 	pangoxft-fontmap.c      \
-	pangoxft-private.h	\
-	module-defs-xft.c
+	pangoxft-private.h
 
 
 # ------------------- libpangoft2 -------------------
@@ -174,11 +173,14 @@ libpangoft2_1_0_la_LIBADD = opentype/libpango-ot.la libpango-$(PANGO_API_VERSION
 libpangoft2_1_0_la_DEPENDENCIES = libpango-$(PANGO_API_VERSION).la $(INCLUDED_FT2_MODULES)
 
 libpangoft2_1_0_la_SOURCES =   	\
+	pangofc-font.c	   	\
+	pangofc-fontmap.c	\
+	pangofc-private.h	\
 	pangoft2.h		\
 	pangoft2.c		\
 	pangoft2-private.h	\
 	pangoft2-fontmap.c	\
-	module-defs-ft2.c
+	module-defs-fc.c
 
 if OS_WIN32
 libpangoft2_1_0_la_LDFLAGS += -export-symbols pangoft2.def
@@ -292,10 +294,9 @@ pango_querymodules_LDADD += libpango-$(PANGO_API_VERSION).la $(GLIB_LIBS)
 
 EXTRA_DIST =					\
 	pango-enum-types.h			\
-	module-defs-ft2.c.win32			\
+	module-defs-fc.c.win32			\
 	module-defs-win32.c.win32		\
 	module-defs.h				\
-	pangofc-fontmap.cI			\
 	pango.def				\
 	pangowin32.def				\
 	pangoft2.def				\
@@ -322,9 +323,7 @@ module-defs.h: $(top_builddir)/config.status
 	cd $(top_builddir) && $(SHELL) ./config.status pango/$@
 module-defs-x.c: $(top_builddir)/config.status
 	cd $(top_builddir) && $(SHELL) ./config.status pango/$@
-module-defs-xft.c: $(top_builddir)/config.status
-	cd $(top_builddir) && $(SHELL) ./config.status pango/$@
-module-defs-ft2.c: $(top_builddir)/config.status
+module-defs-fc.c: $(top_builddir)/config.status
 	cd $(top_builddir) && $(SHELL) ./config.status pango/$@
 module-defs-win32.c: $(top_builddir)/config.status
 	cd $(top_builddir) && $(SHELL) ./config.status pango/$@
@@ -336,8 +335,7 @@ CLEANFILES =			\
 	s-enum-types-c		\
 	module-defs.h		\
 	module-defs-x.c		\
-	module-defs-xft.c	\
-	module-defs-ft2.c	\
+	module-defs-fc.c	\
 	module-defs-win32.c
 
 

@@ -34,15 +34,9 @@ static PangoEngineRange hebrew_ranges[] = {
   { 0xfb1d, 0xfb4f, "*" }  /* Hebrew presentation forms */
 };
 
-#ifdef BUILD_XFT2	  
-#include "pangoxft.h"
-#define SCRIPT_ENGINE_NAME "HebrewScriptEngineXft"
-#define RENDER_TYPE PANGO_RENDER_TYPE_XFT
-#else
-#include "pangoft2.h"
-#define SCRIPT_ENGINE_NAME "HebrewScriptEngineFt2"
-#define RENDER_TYPE PANGO_RENDER_TYPE_FT2
-#endif
+#include "pangofc-font.h"
+#define SCRIPT_ENGINE_NAME "HebrewScriptEngineFc"
+#define RENDER_TYPE PANGO_RENDER_TYPE_FC
 
 static PangoEngineInfo script_engines[] = {
   {

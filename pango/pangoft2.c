@@ -30,9 +30,9 @@
 
 #include <freetype/freetype.h>
 
-#include "pango-utils.h"
 #include "pangoft2.h"
 #include "pangoft2-private.h"
+#include "pangofc-fontmap.h"
 
 /* for compatibility with older freetype versions */
 #ifndef FT_LOAD_TARGET_MONO
@@ -47,17 +47,10 @@
 #define PANGO_FT2_FONT_GET_CLASS(obj)    (G_TYPE_INSTANCE_GET_CLASS ((obj), PANGO_TYPE_FT2_FONT, PangoFT2FontClass))
 
 typedef struct _PangoFT2FontClass   PangoFT2FontClass;
-typedef struct _PangoFT2MetricsInfo PangoFT2MetricsInfo;
 
 struct _PangoFT2FontClass
 {
   PangoFcFontClass parent_class;
-};
-
-struct _PangoFT2MetricsInfo
-{
-  const char       *sample_str;
-  PangoFontMetrics *metrics;
 };
 
 typedef struct
@@ -73,20 +66,10 @@ static void pango_ft2_font_class_init (PangoFT2FontClass *class);
 static void pango_ft2_font_init       (PangoFT2Font      *ft2font);
 static void pango_ft2_font_finalize   (GObject         *object);
 
-static PangoFontDescription * pango_ft2_font_describe          (PangoFont      *font);
-
-static PangoEngineShape *     pango_ft2_font_find_shaper       (PangoFont      *font,
-								PangoLanguage  *language,
-								guint32         ch);
-
 static void                   pango_ft2_font_get_glyph_extents (PangoFont      *font,
 								PangoGlyph      glyph,
 								PangoRectangle *ink_rect,
 								PangoRectangle *logical_rect);
-
-static PangoFontMetrics *     pango_ft2_font_get_metrics       (PangoFont      *font,
-								PangoLanguage  *language);
-  
 
 static FT_Face    pango_ft2_font_real_lock_face         (PangoFcFont      *font);
 static void       pango_ft2_font_real_unlock_face       (PangoFcFont      *font);
@@ -96,8 +79,6 @@ static guint      pango_ft2_font_real_get_glyph         (PangoFcFont      *font,
 							 gunichar          wc);
 static PangoGlyph pango_ft2_font_real_get_unknown_glyph (PangoFcFont      *font,
 							 gunichar          wc);
-static void       pango_ft2_font_real_kern_glyphs       (PangoFcFont      *font,
-							 PangoGlyphString *glyphs);
 
 static GType      pango_ft2_font_get_type               (void);
 
@@ -111,28 +92,22 @@ static void       pango_ft2_get_item_properties         (PangoItem      *item,
 
 
 PangoFT2Font *
-_pango_ft2_font_new (PangoFontMap    *fontmap,
-		     FcPattern  *pattern)
+_pango_ft2_font_new (PangoFT2FontMap *ft2fontmap,
+		     FcPattern       *pattern)
 {
+  PangoFontMap *fontmap = PANGO_FONT_MAP (ft2fontmap);
   PangoFT2Font *ft2font;
   double d;
 
   g_return_val_if_fail (fontmap != NULL, NULL);
   g_return_val_if_fail (pattern != NULL, NULL);
 
-  ft2font = (PangoFT2Font *)g_object_new (PANGO_TYPE_FT2_FONT, NULL);
-
-  ft2font->fontmap = fontmap;
-  ft2font->font_pattern = pattern;
-  
-  g_object_ref (fontmap);
-  ft2font->description = _pango_ft2_font_desc_from_pattern (pattern, TRUE);
-  ft2font->face = NULL;
+  ft2font = (PangoFT2Font *)g_object_new (PANGO_TYPE_FT2_FONT,
+					  "pattern", pattern,
+					  NULL);
 
   if (FcPatternGetDouble (pattern, FC_PIXEL_SIZE, 0, &d) == FcResultMatch)
     ft2font->size = d*PANGO_SCALE;
-
-  _pango_ft2_font_map_add (ft2font->fontmap, ft2font);
 
   return ft2font;
 }
@@ -156,6 +131,7 @@ static void
 load_fallback_face (PangoFT2Font *ft2font,
 		    const char   *original_file)
 {
+  PangoFcFont *fcfont = PANGO_FC_FONT (ft2font);
   FcPattern *sans;
   FcPattern *matched;
   FcResult result;
@@ -166,7 +142,7 @@ load_fallback_face (PangoFT2Font *ft2font,
   
   sans = FcPatternBuild (NULL,
 			 FC_FAMILY, FcTypeString, "sans",
-			 FC_SIZE, FcTypeDouble, (double)pango_font_description_get_size (ft2font->description)/PANGO_SCALE,
+			 FC_SIZE, FcTypeDouble, (double)pango_font_description_get_size (fcfont->description)/PANGO_SCALE,
 			 NULL);
   
   matched = FcFontMatch (0, sans, &result);
@@ -177,20 +153,20 @@ load_fallback_face (PangoFT2Font *ft2font,
   if (FcPatternGetInteger (matched, FC_INDEX, 0, &id) != FcResultMatch)
     goto bail1;
   
-  error = FT_New_Face (_pango_ft2_font_map_get_library (ft2font->fontmap),
+  error = FT_New_Face (_pango_ft2_font_map_get_library (fcfont->fontmap),
 		       (char *) filename2, id, &ft2font->face);
   
   
   if (error)
     {
     bail1:
-      name = pango_font_description_to_string (ft2font->description);
+      name = pango_font_description_to_string (fcfont->description);
       g_warning ("Unable to open font file %s for font %s, exiting\n", filename2, name);
       exit (1);
     }
   else
     {
-      name = pango_font_description_to_string (ft2font->description);
+      name = pango_font_description_to_string (fcfont->description);
       g_warning ("Unable to open font file %s for font %s, falling back to %s\n", original_file, name, filename2);
       g_free (name);
     }
@@ -220,13 +196,14 @@ FT_Face
 pango_ft2_font_get_face (PangoFont *font)
 {
   PangoFT2Font *ft2font = (PangoFT2Font *)font;
+  PangoFcFont *fcfont = (PangoFcFont *)font;
   FT_Error error;
   FcPattern *pattern;
   FcChar8 *filename;
   FcBool antialias, hinting, autohint;
   int id;
 
-  pattern = ft2font->font_pattern;
+  pattern = fcfont->font_pattern;
 
   if (!ft2font->face)
     {
@@ -264,7 +241,7 @@ pango_ft2_font_get_face (PangoFont *font)
       if (FcPatternGetInteger (pattern, FC_INDEX, 0, &id) != FcResultMatch)
 	      goto bail0;
 
-      error = FT_New_Face (_pango_ft2_font_map_get_library (ft2font->fontmap),
+      error = FT_New_Face (_pango_ft2_font_map_get_library (fcfont->fontmap),
 			   (char *) filename, id, &ft2font->face);
       if (error != FT_Err_Ok)
 	{
@@ -331,8 +308,6 @@ pango_ft2_font_init (PangoFT2Font *ft2font)
 
   ft2font->size = 0;
 
-  ft2font->metrics_by_lang = NULL;
-
   ft2font->glyph_info = g_hash_table_new (NULL, NULL);
 }
 
@@ -347,18 +322,13 @@ pango_ft2_font_class_init (PangoFT2FontClass *class)
   
   object_class->finalize = pango_ft2_font_finalize;
   
-  font_class->describe = pango_ft2_font_describe;
-  font_class->get_coverage = pango_ft2_font_get_coverage;
-  font_class->find_shaper = pango_ft2_font_find_shaper;
   font_class->get_glyph_extents = pango_ft2_font_get_glyph_extents;
-  font_class->get_metrics = pango_ft2_font_get_metrics;
   
   fc_font_class->lock_face = pango_ft2_font_real_lock_face;
   fc_font_class->unlock_face = pango_ft2_font_real_unlock_face;
   fc_font_class->has_char = pango_ft2_font_real_has_char;
   fc_font_class->get_glyph = pango_ft2_font_real_get_glyph;
   fc_font_class->get_unknown_glyph = pango_ft2_font_real_get_unknown_glyph;
-  fc_font_class->kern_glyphs = pango_ft2_font_real_kern_glyphs;
 }
 
 static void
@@ -669,71 +639,6 @@ pango_ft2_font_get_kerning (PangoFont *font,
   return PANGO_UNITS_26_6 (kerning.x);
 }
 
-static PangoFontMetrics *
-pango_ft2_font_get_metrics (PangoFont     *font,
-			    PangoLanguage *language)
-{
-  PangoFT2Font *ft2font = PANGO_FT2_FONT (font);
-  PangoFT2MetricsInfo *info = NULL; /* Quiet gcc */
-  GSList *tmp_list;      
-
-  const char *sample_str = pango_language_get_sample_string (language);
-  
-  tmp_list = ft2font->metrics_by_lang;
-  while (tmp_list)
-    {
-      info = tmp_list->data;
-      
-      if (info->sample_str == sample_str)    /* We _don't_ need strcmp */
-	break;
-
-      tmp_list = tmp_list->next;
-    }
-
-  if (!tmp_list)
-    {
-      PangoContext *context;
-      PangoLayout *layout;
-      PangoRectangle extents;
-      FT_Face face = pango_ft2_font_get_face (font);
-
-      info = g_new (PangoFT2MetricsInfo, 1);
-      info->sample_str = sample_str;
-      info->metrics = pango_font_metrics_new ();
-
-      info->metrics->ascent = PANGO_UNITS_26_6 (face->size->metrics.ascender);
-      info->metrics->descent = PANGO_UNITS_26_6 (- face->size->metrics.descender);
-      info->metrics->approximate_char_width = 
-        info->metrics->approximate_digit_width = 
-        PANGO_UNITS_26_6 (face->size->metrics.max_advance);
-
-      ft2font->metrics_by_lang = g_slist_prepend (ft2font->metrics_by_lang, info);
-
-      context = pango_context_new ();
-      pango_context_set_font_map (context, ft2font->fontmap);
-      pango_context_set_language (context, language);
-      
-      layout = pango_layout_new (context);
-      pango_layout_set_font_description (layout, ft2font->description);
-
-      pango_layout_set_text (layout, sample_str, -1);      
-      pango_layout_get_extents (layout, NULL, &extents);
-      
-      info->metrics->approximate_char_width = 
-        extents.width / g_utf8_strlen (sample_str, -1);
-
-      pango_layout_set_text (layout, "0123456789", -1);      
-      pango_layout_get_extents (layout, NULL, &extents);
-      
-      info->metrics->approximate_digit_width = extents.width / 10;
-
-      g_object_unref (layout);
-      g_object_unref (context);
-    }
-
-  return pango_font_metrics_ref (info->metrics);
-}
-
 static FT_Face
 pango_ft2_font_real_lock_face (PangoFcFont *font)
 {
@@ -779,40 +684,6 @@ pango_ft2_font_real_get_unknown_glyph (PangoFcFont *font,
   return 0;
 }
 
-static void
-pango_ft2_font_real_kern_glyphs (PangoFcFont      *font,
-				 PangoGlyphString *glyphs)
-{ 
-  FT_Face face;
-  FT_Error error;
-  FT_Vector kerning;
-  int i;
-
-  face = pango_fc_font_lock_face (font);
-  if (!face)
-    return;
-
-  if (!FT_HAS_KERNING (face))
-    {
-      pango_fc_font_unlock_face (font);
-      return;
-    }
-  
-  for (i = 1; i < glyphs->num_glyphs; ++i)
-    {
-      error = FT_Get_Kerning (face,
-			      glyphs->glyphs[i-1].glyph,
-			      glyphs->glyphs[i].glyph,
-			      ft_kerning_default,
-			      &kerning);
-
-      if (error == FT_Err_Ok)
-	glyphs->glyphs[i-1].geometry.width += PANGO_UNITS_26_6 (kerning.x);
-    }
-  
-  pango_fc_font_unlock_face (font);
-}
-
 static gboolean
 pango_ft2_free_glyph_info_callback (gpointer key, gpointer value, gpointer data)
 {
@@ -827,32 +698,15 @@ pango_ft2_free_glyph_info_callback (gpointer key, gpointer value, gpointer data)
 }
 
 static void
-free_metrics_info (PangoFT2MetricsInfo *info)
-{
-  pango_font_metrics_unref (info->metrics);
-  g_free (info);
-}
-
-static void
 pango_ft2_font_finalize (GObject *object)
 {
   PangoFT2Font *ft2font = (PangoFT2Font *)object;
-
-  _pango_ft2_font_map_remove (ft2font->fontmap, ft2font);
 
   if (ft2font->face)
     {
       FT_Done_Face (ft2font->face);
       ft2font->face = NULL;
     }
-
-  pango_font_description_free (ft2font->description);
-  FcPatternDestroy (ft2font->font_pattern);
-  
-  g_object_unref (ft2font->fontmap);
-
-  g_slist_foreach (ft2font->metrics_by_lang, (GFunc)free_metrics_info, NULL);
-  g_slist_free (ft2font->metrics_by_lang);  
 
   g_hash_table_foreach_remove (ft2font->glyph_info,
 			       pango_ft2_free_glyph_info_callback, object);
@@ -861,60 +715,19 @@ pango_ft2_font_finalize (GObject *object)
   G_OBJECT_CLASS (parent_class)->finalize (object);
 }
 
-static PangoFontDescription *
-pango_ft2_font_describe (PangoFont *font)
-{
-  PangoFT2Font         *ft2font;
-  PangoFontDescription *desc;
-
-  ft2font = PANGO_FT2_FONT (font);
-
-  desc = pango_font_description_copy (ft2font->description);
-
-  return desc;
-}
-
-PangoMap *
-pango_ft2_get_shaper_map (PangoLanguage *language)
-{
-  static guint engine_type_id = 0;
-  static guint render_type_id = 0;
-  
-  if (engine_type_id == 0)
-    {
-      engine_type_id = g_quark_from_static_string (PANGO_ENGINE_TYPE_SHAPE);
-      render_type_id = g_quark_from_static_string (PANGO_RENDER_TYPE_FT2);
-    }
-  
-  return pango_find_map (language, engine_type_id, render_type_id);
-}
-
 /**
  * pango_ft2_font_get_coverage:
  * @font: a #PangoFT2Font.
  * @language: a language tag.
  * @returns: a #PangoCoverage.
  * 
- * Should not be called directly, use pango_font_get_coverage() instead.
+ * Gets the #PangoCoverage for a #PangoFT2Font. Use pango_font_get_coverage() instead.
  **/
 PangoCoverage *
 pango_ft2_font_get_coverage (PangoFont     *font,
 			     PangoLanguage *language)
 {
-  PangoFT2Font *ft2font = (PangoFT2Font *)font;
-
-  return _pango_ft2_font_map_get_coverage (ft2font->fontmap, ft2font->font_pattern);
-}
-
-static PangoEngineShape *
-pango_ft2_font_find_shaper (PangoFont     *font,
-			    PangoLanguage *language,
-			    guint32        ch)
-{
-  PangoMap *shape_map = NULL;
-
-  shape_map = pango_ft2_get_shaper_map (language);
-  return (PangoEngineShape *)pango_map_get_engine (shape_map, ch);
+  return pango_font_get_coverage (font, language);
 }
 
 /* Utility functions */

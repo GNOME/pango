@@ -1,7 +1,8 @@
 /* Pango
- * modules.h:
+ * pangofc-private.h: Private routines and declarations for generic
+ *  fontconfig operation
  *
- * Copyright (C) 1999 Red Hat Software
+ * Copyright (C) 2003 Red Hat Software
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -19,14 +20,20 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#include <pango/pango-engine.h>
-#include <pango/pango-modules.h>
+#ifndef __PANGOFC_PRIVATE_H__
+#define __PANGOFC_PRIVATE_H__
 
-#ifndef __MODULES_H__
-#define __MODULES_H__
+#include <pangofc-fontmap.h>
 
-extern PangoIncludedModule _pango_included_x_modules[];
-extern PangoIncludedModule _pango_included_fc_modules[];
-extern PangoIncludedModule _pango_included_win32_modules[];
+G_BEGIN_DECLS
 
-#endif /* __MODULES_H__ */
+void _pango_fc_font_shutdown (PangoFcFont *fcfont);
+
+void           _pango_fc_font_map_remove         (PangoFcFontMap *fcfontmap,
+						  PangoFcFont    *fcfont);
+PangoCoverage *_pango_fc_font_map_get_coverage   (PangoFcFontMap *fcfontmap,
+						  FcPattern      *pattern);
+
+G_END_DECLS
+
+#endif /* __PANGOFC_PRIVATE_H__ */

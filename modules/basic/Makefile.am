@@ -4,7 +4,6 @@ basic_sources = basic-x.c
 
 pangolibs = $(top_builddir)/pango/libpango-$(PANGO_API_VERSION).la $(GLIB_LIBS)
 pangoxlibs = $(top_builddir)/pango/libpangox-$(PANGO_API_VERSION).la $(X_LIBS) $(pangolibs)
-pangoxftlibs = $(top_builddir)/pango/libpangoxft-$(PANGO_API_VERSION).la $(XFT_LIBS) $(pangolibs)
 pangoft2libs = $(top_builddir)/pango/libpangoft2-$(PANGO_API_VERSION).la $(FREETYPE_LIBS) $(pangolibs)
 pangowin32libs = $(top_builddir)/pango/libpangowin32-$(PANGO_API_VERSION).la $(pangolibs)
 
@@ -40,38 +39,20 @@ libpango_basic_x_la_SOURCES = basic-x.c
 libpango_basic_x_la_CFLAGS = -DPANGO_MODULE_PREFIX=_pango_basic_x
 
 
-if HAVE_XFT
-INCLUDES += $(XFT_CFLAGS)
-if INCLUDE_BASIC_XFT
-noinst_LTLIBRARIES += libpango-basic-xft.la
-else
-module_LTLIBRARIES += pango-basic-xft.la
-endif
-endif
-
-pango_basic_xft_la_LDFLAGS = -export-dynamic -avoid-version -module
-pango_basic_xft_la_LIBADD = $(pangoxftlibs)
-pango_basic_xft_la_SOURCES = basic-fc.c
-pango_basic_xft_la_CFLAGS = -DBUILD_XFT
-libpango_basic_xft_la_SOURCES = basic-fc.c
-libpango_basic_xft_la_CFLAGS = -DBUILD_XFT -DPANGO_MODULE_PREFIX=_pango_basic_xft
-
-
 if HAVE_FREETYPE
 INCLUDES += $(FREETYPE_CFLAGS)
-if INCLUDE_BASIC_FT2
-noinst_LTLIBRARIES += libpango-basic-ft2.la
+if INCLUDE_BASIC_FC
+noinst_LTLIBRARIES += libpango-basic-fc.la
 else
-module_LTLIBRARIES += pango-basic-ft2.la
+module_LTLIBRARIES += pango-basic-fc.la
 endif
 endif
 
-pango_basic_ft2_la_LDFLAGS = -export-dynamic -avoid-version -module $(no_undefined)
-pango_basic_ft2_la_LIBADD = $(pangoft2libs)
-pango_basic_ft2_la_SOURCES = basic-fc.c
-pango_basic_ft2_la_CFLAGS = -DBUILD_FT2
-libpango_basic_ft2_la_SOURCES = basic-fc.c
-libpango_basic_ft2_la_CFLAGS = -DBUILD_FT2 -DPANGO_MODULE_PREFIX=_pango_basic_ft2
+pango_basic_fc_la_LDFLAGS = -export-dynamic -avoid-version -module $(no_undefined)
+pango_basic_fc_la_LIBADD = $(pangoft2libs)
+pango_basic_fc_la_SOURCES = basic-fc.c
+libpango_basic_fc_la_SOURCES = basic-fc.c
+libpango_basic_fc_la_CFLAGS = -DPANGO_MODULE_PREFIX=_pango_basic_fc
 
 
 if HAVE_WIN32

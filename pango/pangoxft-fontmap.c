@@ -1,7 +1,7 @@
 /* Pango
  * pangoxft-fontmap.c: Xft font handling
  *
- * Copyright (C) 2000 Red Hat Software
+ * Copyright (C) 2000-2003 Red Hat Software
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -22,16 +22,15 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "pango-fontmap.h"
+#include "pangofc-fontmap.h"
 #include "pangoxft.h"
 #include "pangoxft-private.h"
-#include "modules.h"
 
 /* For XExtSetCloseDisplay */
 #include <X11/Xlibint.h>
 
 typedef struct _PangoXftFamily       PangoXftFamily;
-typedef struct _PangoXftFontMap      PangoXftFontMap;
+typedef struct _PangoXftFontMapClass PangoXftFontMapClass;
 
 #define PANGO_TYPE_XFT_FONT_MAP              (pango_xft_font_map_get_type ())
 #define PANGO_XFT_FONT_MAP(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_TYPE_XFT_FONT_MAP, PangoXftFontMap))
@@ -39,29 +38,10 @@ typedef struct _PangoXftFontMap      PangoXftFontMap;
 
 struct _PangoXftFontMap
 {
-  PangoFontMap parent_instance;
-
-  /* We have one map from  PangoFontDescription -> PangoXftPatternSet
-   * per language tag.
-   */
-  GList *fontset_hash_list; 
-  /* pattern_hash is used to make sure we only store one copy of
-   * each identical pattern. (Speeds up lookup).
-   */
-  GHashTable *pattern_hash; 
-  GHashTable *coverage_hash; /* Maps font file name/id -> PangoCoverage */
-
-  GHashTable *fonts; /* Maps XftPattern -> PangoXftFont */
-
-  GQueue *fontset_cache;	/* Recently used fontsets */
-
-  /* List of all families availible */
-  PangoXftFamily **families;
-  int n_families;		/* -1 == uninitialized */
+  PangoFcFontMap parent_instance;
 
   Display *display;
   int screen;
-  guint closed : 1;
   
   /* Function to call on prepared patterns to do final
    * config tweaking.
@@ -71,32 +51,76 @@ struct _PangoXftFontMap
   GDestroyNotify substitute_destroy;
 };
 
-/************************************************************
- *              Code shared with PangoFT2                   *
- ************************************************************/
+struct _PangoXftFontMapClass
+{
+  PangoFcFontMapClass parent_class;
+};
 
-#define PangoFcFamily      PangoXftFamily
-#define _PangoFcFamily      _PangoXftFamily
-#define PangoFcFontMap     PangoXftFontMap
-#define PangoFcFont     PangoXftFont
+static void          pango_xft_font_map_class_init         (PangoXftFontMapClass *class);
+static void          pango_xft_font_map_default_substitute (PangoFcFontMap       *fcfontmap,
+							    FcPattern            *pattern);
+static PangoFcFont * pango_xft_font_map_new_font           (PangoFcFontMap       *fcfontmap,
+							    FcPattern            *pattern);
+static void          pango_xft_font_map_finalize           (GObject              *object);
 
-#define PANGO_FC_FONT_MAP PANGO_XFT_FONT_MAP
+static GObjectClass *parent_class;
 
-#define pango_fc_font_map_get_type pango_xft_font_map_get_type
-#define _pango_fc_font_map_add _pango_xft_font_map_add
-#define _pango_fc_font_map_remove _pango_xft_font_map_remove
-#define _pango_fc_font_map_get_coverage _pango_xft_font_map_get_coverage
-#define _pango_fc_font_map_set_coverage _pango_xft_font_map_set_coverage
-#define _pango_fc_font_desc_from_pattern _pango_xft_font_desc_from_pattern
-#define _pango_fc_font_new               _pango_xft_font_new
+static GSList *fontmaps = NULL;
 
-#define PANGO_FC_NAME "PangoXft"
+GType
+pango_xft_font_map_get_type (void)
+{
+  static GType object_type = 0;
 
-#include "pangofc-fontmap.cI"
+  if (!object_type)
+    {
+      static const GTypeInfo object_info =
+      {
+        sizeof (PangoXftFontMapClass),
+        (GBaseInitFunc) NULL,
+        (GBaseFinalizeFunc) NULL,
+        (GClassInitFunc) pango_xft_font_map_class_init,
+        NULL,           /* class_finalize */
+        NULL,           /* class_data */
+        sizeof (PangoXftFontMap),
+        0,              /* n_preallocs */
+        (GInstanceInitFunc) NULL,
+      };
+      
+      object_type = g_type_register_static (PANGO_TYPE_FC_FONT_MAP,
+                                            "PangoXftFontMap",
+                                            &object_info, 0);
+    }
+  
+  return object_type;
+}
 
-/*************************************************************
- *                      Xft specific code                    *
- *************************************************************/
+static void
+pango_xft_font_map_class_init (PangoXftFontMapClass *class)
+{
+  GObjectClass *gobject_class = G_OBJECT_CLASS (class);
+  PangoFcFontMapClass *fcfontmap_class = PANGO_FC_FONT_MAP_CLASS (class);
+
+  parent_class = g_type_class_peek_parent (class);
+
+  gobject_class->finalize  = pango_xft_font_map_finalize;
+  fcfontmap_class->default_substitute = pango_xft_font_map_default_substitute;
+  fcfontmap_class->new_font = pango_xft_font_map_new_font;
+}
+
+static void
+pango_xft_font_map_finalize (GObject *object)
+{
+  PangoXftFontMap *xftfontmap = PANGO_XFT_FONT_MAP (object);
+  
+  fontmaps = g_slist_remove (fontmaps, object);
+
+  if (xftfontmap->substitute_destroy)
+    xftfontmap->substitute_destroy (xftfontmap->substitute_data);
+
+  parent_class->finalize (object);
+}
+
 
 static PangoFontMap *
 pango_xft_find_font_map (Display *display,
@@ -180,29 +204,18 @@ PangoFontMap *
 pango_xft_get_font_map (Display *display,
 			int      screen)
 {
-  static gboolean registered_modules = FALSE;
   PangoFontMap *fontmap;
   PangoXftFontMap *xftfontmap;
 
   g_return_val_if_fail (display != NULL, NULL);
   
-  if (!registered_modules)
-    {
-      int i;
-      
-      registered_modules = TRUE;
-      
-      /* Make sure that the type system is initialized */
-      g_type_init ();
-  
-      for (i = 0; _pango_included_xft_modules[i].list; i++)
-        pango_module_register (&_pango_included_xft_modules[i]);
-    }
-
   fontmap = pango_xft_find_font_map (display, screen);
   if (fontmap)
     return fontmap;
   
+  /* Make sure that the type system is initialized */
+  g_type_init ();
+
   xftfontmap = (PangoXftFontMap *)g_object_new (PANGO_TYPE_XFT_FONT_MAP, NULL);
   
   xftfontmap->display = display;
@@ -213,17 +226,6 @@ pango_xft_get_font_map (Display *display,
   fontmaps = g_slist_prepend (fontmaps, xftfontmap);
 
   return PANGO_FONT_MAP (xftfontmap);
-}
-
-static void
-cleanup_font (gpointer         key,
-	      PangoXftFont    *xfont,
-	      PangoXftFontMap *xftfontmap)
-{
-  if (xfont->xft_font)
-    XftFontClose (xftfontmap->display, xfont->xft_font);
-  
-  xfont->fontmap = NULL;
 }
 
 /**
@@ -246,16 +248,11 @@ pango_xft_shutdown_display (Display *display,
   if (fontmap)
     {
       PangoXftFontMap *xftfontmap = PANGO_XFT_FONT_MAP (fontmap);
-	    
+
       fontmaps = g_slist_remove (fontmaps, fontmap);
-      pango_fc_font_map_cache_clear (xftfontmap);
-      
-      g_hash_table_foreach (xftfontmap->fonts, (GHFunc)cleanup_font, fontmap);
-      g_hash_table_destroy (xftfontmap->fonts);
-      xftfontmap->fonts = NULL;
+      pango_fc_font_map_shutdown (PANGO_FC_FONT_MAP (fontmap));
       
       xftfontmap->display = NULL;
-      xftfontmap->closed = TRUE;
       g_object_unref (fontmap);
     }
 }  
@@ -292,7 +289,7 @@ pango_xft_set_default_substitute (Display                *display,
   xftfontmap->substitute_data = data;
   xftfontmap->substitute_destroy = notify;
   
-  pango_fc_font_map_cache_clear (xftfontmap);
+  pango_fc_font_map_cache_clear (PANGO_FC_FONT_MAP (xftfontmap));
 }
 
 /**
@@ -314,7 +311,7 @@ pango_xft_substitute_changed (Display *display,
 {
   PangoXftFontMap *xftfontmap = (PangoXftFontMap *)pango_xft_get_font_map (display, screen);
   
-  pango_fc_font_map_cache_clear (xftfontmap);
+  pango_fc_font_map_cache_clear (PANGO_FC_FONT_MAP (xftfontmap));
 }
 
 void
@@ -344,29 +341,29 @@ PangoContext *
 pango_xft_get_context (Display *display,
 		       int      screen)
 {
-  PangoContext *result;
+  PangoFontMap *fontmap;
 
   g_return_val_if_fail (display != NULL, NULL);
 
-  result = pango_context_new ();
-  pango_context_set_font_map (result, pango_xft_get_font_map (display, screen));
-
-  return result;
+  fontmap = pango_xft_get_font_map (display, screen);
+  return pango_fc_font_map_create_context (PANGO_FC_FONT_MAP (fontmap));
 }
 
 static void
-pango_fc_do_finalize (PangoXftFontMap *fontmap)
+pango_xft_font_map_default_substitute (PangoFcFontMap *fcfontmap,
+				       FcPattern      *pattern)
 {
-  if (fontmap->substitute_destroy)
-    fontmap->substitute_destroy (fontmap->substitute_data);
+  PangoXftFontMap *xftfontmap = PANGO_XFT_FONT_MAP (fcfontmap);
+	
+  FcConfigSubstitute (NULL, pattern, FcMatchPattern);
+  if (xftfontmap->substitute_func)
+    xftfontmap->substitute_func (pattern, xftfontmap->substitute_data);
+  XftDefaultSubstitute (xftfontmap->display, xftfontmap->screen, pattern);
 }
 
-static void
-pango_fc_default_substitute (PangoXftFontMap *fontmap,
+static PangoFcFont *
+pango_xft_font_map_new_font (PangoFcFontMap  *fcfontmap,
 			     FcPattern       *pattern)
 {
-  FcConfigSubstitute (NULL, pattern, FcMatchPattern);
-  if (fontmap->substitute_func)
-    fontmap->substitute_func (pattern, fontmap->substitute_data);
-  XftDefaultSubstitute (fontmap->display, fontmap->screen, pattern);
+  return (PangoFcFont *)_pango_xft_font_new (PANGO_XFT_FONT_MAP (fcfontmap), pattern);
 }

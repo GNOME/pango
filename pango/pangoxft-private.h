@@ -27,39 +27,26 @@
 
 G_BEGIN_DECLS
 
-typedef struct _PangoXftFont PangoXftFont;
+typedef struct _PangoXftFont    PangoXftFont;
+typedef struct _PangoXftFontMap PangoXftFontMap;
 
 struct _PangoXftFont
 {
   PangoFcFont parent_instance;
 
-  FcPattern *font_pattern;	    /* fully resolved pattern */
   XftFont *xft_font;		    /* created on demand */
   PangoFont *mini_font;		    /* font used to display missing glyphs */
-  PangoFontMap *fontmap;	    /* associated map */
-  PangoFontDescription *description;
-
-  GSList *metrics_by_lang;
 
   guint16 mini_width;		    /* metrics for missing glyph drawing */
   guint16 mini_height;
   guint16 mini_pad; 
 };
 
-PangoXftFont * _pango_xft_font_new              (PangoFontMap                *font,
-						 FcPattern                  *pattern);
-void           _pango_xft_font_map_add          (PangoFontMap                *fontmap,
-						 PangoXftFont                *xfont);
-void           _pango_xft_font_map_remove       (PangoFontMap                *fontmap,
-						 PangoXftFont                *xfont);
-PangoCoverage *_pango_xft_font_map_get_coverage (PangoFontMap                *fontmap,
-						 FcPattern                   *pattern);
-void           _pango_xft_font_map_get_info     (PangoFontMap                *fontmap,
-						 Display                    **display,
-						 int                         *screen);
-
-PangoFontDescription * _pango_xft_font_desc_from_pattern (FcPattern *pattern,
-							  gboolean    include_size);
+PangoXftFont *_pango_xft_font_new          (PangoXftFontMap  *xftfontmap,
+					    FcPattern        *pattern);
+void          _pango_xft_font_map_get_info (PangoFontMap     *fontmap,
+					    Display         **display,
+					    int              *screen);
 
 G_END_DECLS
 

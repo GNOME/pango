@@ -23,7 +23,6 @@
 #ifndef __PANGOFT2_PRIVATE_H__
 #define __PANGOFT2_PRIVATE_H__
 
-#include "pango-modules.h"
 #include "pangoft2.h"
 #include <fontconfig/fontconfig.h>
 
@@ -61,15 +60,11 @@ struct _PangoFT2Font
 {
   PangoFcFont font;
 
-  FcPattern *font_pattern;
   FT_Face face;
   int load_flags;
 
   int size;
 
-  PangoFontMap *fontmap;
-  PangoFontDescription *description;
-  
   GSList *metrics_by_lang;
 
   GHashTable *glyph_info;
@@ -83,19 +78,10 @@ struct _PangoFT2GlyphInfo
   void *cached_glyph;
 };
 
-PangoFT2Font * _pango_ft2_font_new                (PangoFontMap                *font,
-						   FcPattern              *pattern);
-PangoMap      *_pango_ft2_get_shaper_map          (PangoLanguage     *language);
-PangoCoverage *_pango_ft2_font_map_get_coverage   (PangoFontMap                *fontmap,
-						   FcPattern                   *pattern);
+PangoFT2Font * _pango_ft2_font_new                (PangoFT2FontMap   *ft2fontmap,
+						   FcPattern         *pattern);
 FT_Library     _pango_ft2_font_map_get_library    (PangoFontMap      *fontmap);
-void           _pango_ft2_font_map_add            (PangoFontMap      *fontmap,
-						   PangoFT2Font      *ft2font);
-void           _pango_ft2_font_map_remove         (PangoFontMap      *fontmap,
-						   PangoFT2Font      *ft2font);
 const char    *_pango_ft2_ft_strerror             (FT_Error           error);
-PangoFontDescription *_pango_ft2_font_desc_from_pattern (FcPattern *pattern,
-							 gboolean        include_size);
 
 void *pango_ft2_font_get_cache_glyph_data    (PangoFont      *font,
 					      int             glyph_index);

@@ -27,15 +27,9 @@
 #include "pango-engine.h"
 #include "pango-utils.h"
 
-#ifdef BUILD_XFT
-#include "pangoxft.h"
-#define SCRIPT_ENGINE_NAME "ArabicScriptEngineXft"
-#define RENDER_TYPE PANGO_RENDER_TYPE_XFT
-#else
-#include "pangoft2.h"
-#define SCRIPT_ENGINE_NAME "ArabicScriptEngineFt2"
-#define RENDER_TYPE PANGO_RENDER_TYPE_FT2
-#endif
+#include "pangofc-font.h"
+#define SCRIPT_ENGINE_NAME "ArabicScriptEngineFc"
+#define RENDER_TYPE PANGO_RENDER_TYPE_FC
 
 static PangoEngineRange arabic_ranges[] = {
   /* Language characters */
