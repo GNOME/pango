@@ -310,7 +310,8 @@ pango_win32_render (HDC               hdc,
 	  else
 	    glyph_indexes[num_valid_glyphs] = glyphs->glyphs[i].glyph;
 
-	  last_x = PANGO_PIXELS (x_offset);
+	  if (num_valid_glyphs > 0)
+	    last_x += dX[num_valid_glyphs-1];
 	  x_offset += glyphs->glyphs[i].geometry.width;
 	  dX[num_valid_glyphs] = PANGO_PIXELS (x_offset) - last_x;
 	  num_valid_glyphs++;
