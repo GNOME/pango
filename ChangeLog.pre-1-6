@@ -1,3 +1,8 @@
+Fri Dec  6 17:56:32 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* configure.in: Add missing thai-xft to thai-modules.
+	(#99883, Tony Graham)
+
 Mon Nov 25 19:24:29 2002  Owen Taylor  <otaylor@redhat.com>
  
  	* pango/mini-fribidi/fribidi_get_type.c (_pango_fribidi_get_type): 

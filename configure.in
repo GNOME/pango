@@ -354,7 +354,7 @@ hangul_modules="hangul-x"
 hebrew_modules="hebrew-ft2,hebrew-x,hebrew-xft"
 indic_modules="bengali-x,devanagari-x,gurmukhi-x,gujarati-x,myanmar-x"
 tamil_modules="tamil-x,tamil-xft"
-thai_modules="thai-x"
+thai_modules="thai-x,thai-xft"
 
 all_modules="$arabic_modules,$basic_modules,$hangul_modules,$hebrew_modules,$indic_modules,$tamil_modules,$thai_modules"
 
