@@ -1,3 +1,8 @@
+Thu Jan 10 16:27:24 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/mini-fribidi/fribidi.c: Fix read of unitialized
+	memory (#66067, Hidetoshi Tajima)
+
 Thu Jan 10 15:04:31 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/glyphstring.c (pango_glyph_string_extents_range): 

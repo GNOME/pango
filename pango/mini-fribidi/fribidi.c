@@ -150,7 +150,7 @@ run_length_encode_types (FriBidiCharType *char_type, gint type_len)
   current.pos = -1;
   for (i = 0; i <= type_len; i++)
     {
-      if (char_type[i] != current.type || i == type_len)
+      if (i == type_len || char_type[i] != current.type)
 	{
 	  if (current.pos >= 0)
 	    {
