@@ -1,3 +1,21 @@
+2005-03-02  Owen Taylor  <otaylor@redhat.com>
+
+	[ ChangeLog entry for some changes accidentally committed
+	  a while ago ]
+
+	Redo the handling of absolute sizes for PangoAttribute
+	to work around compatibility problems with GtkHTML which
+	was counting on the details of the implementation of
+	size attributes. (#163154)
+
+	* pango/pango-attributes.[ch] docs/tmpl/text-attributes.sgml:
+	Split PANGO_ATTR_SIZE into PANGO_ATTR_SIZE and 
+	PANGO_ATTR_ABSOLUTE_SIZE, and use that distinction
+	rather than the boolean field in PangoAttrSize to
+	distinguish between attributes created 
+	pango_attr_size_new_absolute() and
+	pango_attr_size_new()
+
 2005-03-01  Owen Taylor  <otaylor@redhat.com>
   
 	* pango/pango-layout.c (process_item): Don't break
