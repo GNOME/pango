@@ -1,3 +1,8 @@
+Thu Feb  5 15:28:44 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-layout.c (pango_layout_set_font_description):
+	Accept NULL for desc as documented. (#133001, Torsten Schoenfeld)
+
 Thu Feb  5 15:21:49 2004  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pango-layout.c (pango_layout_check_lines): 

@@ -540,7 +540,6 @@ pango_layout_set_font_description (PangoLayout                 *layout,
 				    const PangoFontDescription *desc)
 {
   g_return_if_fail (layout != NULL);
-  g_return_if_fail (desc != NULL);
 
   if (layout->font_desc)
     pango_font_description_free (layout->font_desc);
