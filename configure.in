@@ -197,7 +197,7 @@ LIBS=$pango_save_libs
 #
 have_fontconfig=false
 
-PKG_CHECK_MODULES(FONTCONFIG, fontconfig >= 1.0.1, have_fontconfig=true)
+PKG_CHECK_MODULES(FONTCONFIG, fontconfig >= 1.0.1, have_fontconfig=true, :)
 
 AC_SUBST(FONTCONFIG_LIBS)
 AC_SUBST(FONTCONFIG_CFLAGS)
@@ -208,7 +208,7 @@ AM_CONDITIONAL(HAVE_FONTCONFIG, $have_fontconfig)
 #
 have_xft=false
 
-PKG_CHECK_MODULES(XFT, xft >= 2.0.0, have_xft=true)
+PKG_CHECK_MODULES(XFT, xft >= 2.0.0, have_xft=true, :)
 
 AC_SUBST(XFT_LIBS)
 AC_SUBST(XFT_CFLAGS)

@@ -1,3 +1,9 @@
+Thu Jun  6 08:42:32 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* configure.in: Provide : as the fourth argument
+	whne checking for fontconfig, xft, so we don't error out 
+	if they aren't found. (#84333, HideToshi Tajima)
+
 Tue Jun  4 11:52:10 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* pangoxft.pc.in (Cflags): Fix to have @XFT_CFLAGS@
