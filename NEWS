@@ -1,3 +1,11 @@
+Changes between 1.0.1 and 1.0.2
+
+* Support building with FreeType 2.1.0
+* List Sans,Serif,Monospace when listing fonts for the
+  Xft and FT2 backends. (Xavier Cho)
+* Portability fixes. (David L. Cooper III, Jacob Berkman)
+* Fix problem with pango-querymodules using g_print().
+
 Changes between 1.0.0 and 1.0.1
 
 * Documentation improvements [Matthias Clasen]

@@ -1,3 +1,7 @@
+Wed May 22 16:07:16 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* configure.in: Version 1.0.2, interface, binary age 2.
+
 Tue May 21 15:27:41 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* modules/basic/tables-big.i: Fix C++ comment.
