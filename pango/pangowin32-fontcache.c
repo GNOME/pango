@@ -184,10 +184,37 @@ pango_win32_font_cache_load (PangoWin32FontCache *cache,
     }
   else
     {
-      BOOL aa;
+      BOOL font_smoothing;
       lf = *lfp;
-      SystemParametersInfo (SPI_GETFONTSMOOTHING, 0, &aa, 0);
-      lf.lfQuality = (aa ? ANTIALIASED_QUALITY : DEFAULT_QUALITY);
+      SystemParametersInfo (SPI_GETFONTSMOOTHING, 0, &font_smoothing, 0);
+      /* If on XP or better, try to use ClearType if the global system
+       * settings ask for it.
+       */
+      if (font_smoothing &&
+	  (pango_win32_os_version_info.dwMajorVersion > 5 ||
+	   (pango_win32_os_version_info.dwMajorVersion == 5 &&
+	    pango_win32_os_version_info.dwMinorVersion >= 1)))
+	{
+	  UINT smoothing_type;
+
+#ifndef SPI_GETFONTSMOOTHINGTYPE 
+#define SPI_GETFONTSMOOTHINGTYPE 0x200a
+#endif
+#ifndef FE_FONTSMOOTHINGCLEARTYPE
+#define FE_FONTSMOOTHINGCLEARTYPE 2
+#endif
+#ifndef CLEARTYPE_QUALITY
+#define CLEARTYPE_QUALITY 5
+#endif
+	  SystemParametersInfo (SPI_GETFONTSMOOTHINGTYPE, 0, &smoothing_type, 0);
+	  lf.lfQuality =
+	    (font_smoothing ?
+	     (smoothing_type == FE_FONTSMOOTHINGCLEARTYPE ?
+	      CLEARTYPE_QUALITY : ANTIALIASED_QUALITY) :
+	     DEFAULT_QUALITY);
+	}
+      else
+	lf.lfQuality = (font_smoothing ? ANTIALIASED_QUALITY : DEFAULT_QUALITY);
       lf.lfCharSet = DEFAULT_CHARSET;
       for (tries = 0; ; tries++)
 	{

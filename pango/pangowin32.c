@@ -40,6 +40,7 @@
 #define PANGO_WIN32_FONT_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS ((obj), PANGO_TYPE_WIN32_FONT, PangoWin32FontClass))
 
 HDC pango_win32_hdc;
+OSVERSIONINFO pango_win32_os_version_info;
 
 typedef struct _PangoWin32FontClass   PangoWin32FontClass;
 
@@ -188,7 +189,14 @@ pango_win32_font_class_init (PangoWin32FontClass *class)
   font_class->get_metrics = pango_win32_font_get_metrics;
 
   if (pango_win32_hdc == NULL)
-    pango_win32_hdc = CreateDC ("DISPLAY", NULL, NULL, NULL);
+    {
+      pango_win32_hdc = CreateDC ("DISPLAY", NULL, NULL, NULL);
+      memset (&pango_win32_os_version_info, 0,
+	      sizeof (pango_win32_os_version_info));
+      pango_win32_os_version_info.dwOSVersionInfoSize =
+	sizeof (OSVERSIONINFO);
+      GetVersionEx (&pango_win32_os_version_info);
+    }
 }
 
 PangoWin32Font *

@@ -31,7 +31,9 @@
 G_BEGIN_DECLS
 
 #define STRICT
+#define _WIN32_WINNT 0x0501	/* To get ClearType-related macros */
 #include <windows.h>
+#undef STRICT
 
 #define PANGO_RENDER_TYPE_WIN32 "PangoRenderWin32"
 

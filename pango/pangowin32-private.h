@@ -119,5 +119,6 @@ void            pango_win32_fontmap_cache_remove    (PangoFontMap    	 *fontmap,
 						     PangoWin32Font  	 *xfont);
 
 extern HDC pango_win32_hdc;
+extern OSVERSIONINFO pango_win32_os_version_info;
 
 #endif /* __PANGOWIN32_PRIVATE_H__ */

@@ -1,3 +1,18 @@
+2002-03-17  Tor Lillqvist  <tml@iki.fi>
+
+	* pango/pangowin32-private.h: Add pango_win32_os_version_info
+	variable, an OSVERSIONINFO struct.
+
+	* pango/pangowin32.c: Initialise it.
+
+	* pango/pangowin32.h: Set _WIN32_WINNT to 0x0501 before including
+	<windows.h> to get the ClearType-related macros defined (if recent
+	enough headers are used).
+
+	* pango/pangowin32-fontcache.c (pango_win32_font_cache_load): Set
+	desired font quality to CLEARTYPE_QUALITY if on XP (or later), and
+	the system settings ask for ClearType.
+
 2002-03-16  Sven Neumann  <sven@gimp.org>
 
 	* configure.in (GLIB_CFLAGS): use CFLAGS from gthread-2.0 to assure
