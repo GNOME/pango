@@ -117,7 +117,7 @@ fribidi_type_name (FriBidiCharType c)
 #endif
 
 /* Map fribidi_prop_types to fribidi_types. */
-static FriBidiCharType fribidi_prop_to_type_array[] = {
+static const FriBidiCharType fribidi_prop_to_type_array[] = {
 #define _FRIBIDI_ADD_TYPE(TYPE) FRIBIDI_TYPE_##TYPE,
 #include "fribidi_types.i"
 #undef _FRIBIDI_ADD_TYPE

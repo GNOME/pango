@@ -38,15 +38,15 @@ typedef PangoEngineShapeClass IndicEngineFcClass ; /* No extra fields needed */
 struct _IndicEngineFc
 {
   PangoEngineShape shapeEngine;
-  PangoIndicInfo  *indicInfo;
+  const PangoIndicInfo  *indicInfo;
 };
 
 struct _PangoIndicInfo
 {
-  PangoOTTag         scriptTag; 
-  IndicOTClassTable *classTable;
-  gchar             *gsubQuarkName;
-  gchar             *gposQuarkName;
+  PangoOTTag               scriptTag; 
+  const IndicOTClassTable *classTable;
+  gchar                   *gsubQuarkName;
+  gchar                   *gposQuarkName;
 };
 
 #define ENGINE_SUFFIX "ScriptEngineFc"
@@ -122,7 +122,7 @@ static PangoEngineInfo script_engines[] = {
  * in a macro that calls a body macro that can be redefined, or by
  * putting the pointers to the PangoEngineInfo in PangoIndicInfo...
  */
-static PangoIndicInfo indic_info[] = {
+static const PangoIndicInfo indic_info[] = {
   PANGO_INDIC_INFO(deva), PANGO_INDIC_INFO(beng), PANGO_INDIC_INFO(guru),
   PANGO_INDIC_INFO(gujr), PANGO_INDIC_INFO(orya), PANGO_INDIC_INFO(taml),
   PANGO_INDIC_INFO(telu), PANGO_INDIC_INFO(knda), PANGO_INDIC_INFO(mlym),
@@ -173,7 +173,7 @@ maybe_add_GPOS_feature (PangoOTRuleset *ruleset,
 }
 
 static PangoOTRuleset *
-get_gsub_ruleset (FT_Face face, PangoIndicInfo *indic_info)
+get_gsub_ruleset (FT_Face face, const PangoIndicInfo *indic_info)
 {
   PangoOTInfo    *info = pango_ot_info_get (face);
   GQuark          ruleset_quark = g_quark_from_string (indic_info->gsubQuarkName);
@@ -217,7 +217,7 @@ get_gsub_ruleset (FT_Face face, PangoIndicInfo *indic_info)
 
 
 static PangoOTRuleset *
-get_gpos_ruleset (FT_Face face, PangoIndicInfo *indic_info)
+get_gpos_ruleset (FT_Face face, const PangoIndicInfo *indic_info)
 {
   PangoOTInfo    *info = pango_ot_info_get (face);
   GQuark          ruleset_quark = g_quark_from_string (indic_info->gposQuarkName);
@@ -319,7 +319,7 @@ indic_engine_shape (PangoEngineShape *engine,
   PangoOTRuleset *gsub_ruleset = NULL, *gpos_ruleset = NULL;
   PangoOTBuffer *buffer;
   IndicEngineFc *indic_shape_engine = NULL;
-  PangoIndicInfo *indic_info = NULL;
+  const PangoIndicInfo *indic_info = NULL;
   PangoFcFont *fc_font;
   MPreFixups *mprefixups;
 

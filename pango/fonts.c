@@ -776,18 +776,18 @@ typedef struct
   const char *str;
 } FieldMap;
 
-static FieldMap style_map[] = {
+static const FieldMap style_map[] = {
   { PANGO_STYLE_NORMAL, NULL },
   { PANGO_STYLE_OBLIQUE, "Oblique" },
   { PANGO_STYLE_ITALIC, "Italic" }
 };
 
-static FieldMap variant_map[] = {
+static const FieldMap variant_map[] = {
   { PANGO_VARIANT_NORMAL, NULL },
   { PANGO_VARIANT_SMALL_CAPS, "Small-Caps" }
 };
 
-static FieldMap weight_map[] = {
+static const FieldMap weight_map[] = {
   { PANGO_WEIGHT_ULTRALIGHT, "Ultra-Light" },
   { PANGO_WEIGHT_LIGHT, "Light" },
   { PANGO_WEIGHT_NORMAL, NULL },
@@ -798,7 +798,7 @@ static FieldMap weight_map[] = {
   { PANGO_WEIGHT_HEAVY, "Heavy" }
 };
 
-static FieldMap stretch_map[] = {
+static const FieldMap stretch_map[] = {
   { PANGO_STRETCH_ULTRA_CONDENSED, "Ultra-Condensed" },
   { PANGO_STRETCH_EXTRA_CONDENSED, "Extra-Condensed" },
   { PANGO_STRETCH_CONDENSED,       "Condensed" },
@@ -811,7 +811,7 @@ static FieldMap stretch_map[] = {
 };
 
 static gboolean
-find_field (FieldMap *map, int n_elements, const char *str, int len, int *val)
+find_field (const FieldMap *map, int n_elements, const char *str, int len, int *val)
 {
   int i;
   
@@ -977,7 +977,7 @@ pango_font_description_from_string (const char *str)
 }
 
 static void
-append_field (GString *str, FieldMap *map, int n_elements, int val)
+append_field (GString *str, const FieldMap *map, int n_elements, int val)
 {
   int i;
   for (i=0; i<n_elements; i++)

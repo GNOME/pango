@@ -204,23 +204,23 @@ struct _IndicOTClassTable
   gunichar	      lastChar;
   glong  	      worstCaseExpansion;
   IndicOTScriptFlags  scriptFlags;
-  IndicOTCharClass   *charClasses;
 
+  const IndicOTCharClass  *charClasses;
   const IndicOTSplitMatra *splitMatraTable;
 };
 
 typedef struct _IndicOTClassTable IndicOTClassTable;
 
-extern IndicOTClassTable deva_class_table;
-extern IndicOTClassTable beng_class_table;
-extern IndicOTClassTable guru_class_table;
-extern IndicOTClassTable gujr_class_table;
-extern IndicOTClassTable orya_class_table;
-extern IndicOTClassTable taml_class_table;
-extern IndicOTClassTable telu_class_table;
-extern IndicOTClassTable knda_class_table;
-extern IndicOTClassTable mlym_class_table;
-extern IndicOTClassTable sinh_class_table;
+extern const IndicOTClassTable deva_class_table;
+extern const IndicOTClassTable beng_class_table;
+extern const IndicOTClassTable guru_class_table;
+extern const IndicOTClassTable gujr_class_table;
+extern const IndicOTClassTable orya_class_table;
+extern const IndicOTClassTable taml_class_table;
+extern const IndicOTClassTable telu_class_table;
+extern const IndicOTClassTable knda_class_table;
+extern const IndicOTClassTable mlym_class_table;
+extern const IndicOTClassTable sinh_class_table;
 
 const IndicOTSplitMatra *indic_ot_get_split_matra(const IndicOTClassTable *class_table, IndicOTCharClass char_class);
 

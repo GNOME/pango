@@ -269,7 +269,7 @@ int main (int argc, char **argv)
 	   "  PangoScript scripts[%d];\n"
 	   "} PangoScriptForLang;\n"
 	   "\n"
-	   "PangoScriptForLang pango_script_for_lang[] = {\n",
+	   "static const PangoScriptForLang pango_script_for_lang[] = {\n",
 	   max_lang_len,
 	   MAX_SCRIPTS);
   

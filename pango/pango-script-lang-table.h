@@ -10,7 +10,7 @@ typedef struct {
   PangoScript scripts[3];
 } PangoScriptForLang;
 
-PangoScriptForLang pango_script_for_lang[] = {
+static const PangoScriptForLang pango_script_for_lang[] = {
   { "aa", { PANGO_SCRIPT_LATIN, PANGO_SCRIPT_INVALID_CODE, PANGO_SCRIPT_INVALID_CODE } },
   { "ab", { PANGO_SCRIPT_CYRILLIC, PANGO_SCRIPT_INVALID_CODE, PANGO_SCRIPT_INVALID_CODE } },
   { "af", { PANGO_SCRIPT_LATIN, PANGO_SCRIPT_INVALID_CODE, PANGO_SCRIPT_INVALID_CODE } },

@@ -539,7 +539,7 @@ xml_isspace (char c)
   return c == ' ' || c == '\t' || c == '\n' || c == '\r';
 }
 
-static GMarkupParser pango_markup_parser = {
+static const GMarkupParser pango_markup_parser = {
   start_element_handler,
   end_element_handler,
   text_handler,
