@@ -21,9 +21,6 @@
 
 #include "pango-fontmap.h"
 
-static void pango_font_map_init       (PangoFontMap      *fontmap);
-static void pango_font_map_class_init (PangoFontMapClass *class);
-
 GType
 pango_font_map_get_type (void)
 {
@@ -36,12 +33,12 @@ pango_font_map_get_type (void)
         sizeof (PangoFontMapClass),
         (GBaseInitFunc) NULL,
         (GBaseFinalizeFunc) NULL,
-        (GClassInitFunc) pango_font_map_class_init,
+        NULL,           /* class_init */
         NULL,           /* class_finalize */
         NULL,           /* class_data */
         sizeof (PangoFontMap),
         0,              /* n_preallocs */
-        (GInstanceInitFunc) pango_font_map_init,
+	NULL            /* init */
       };
       
       object_type = g_type_register_static (G_TYPE_OBJECT,
@@ -50,16 +47,6 @@ pango_font_map_get_type (void)
     }
   
   return object_type;
-}
-
-static void 
-pango_font_map_init (PangoFontMap *fontmap)
-{
-}
-
-static void
-pango_font_map_class_init (PangoFontMapClass *class)
-{
 }
 
 /**

@@ -466,7 +466,7 @@ pango_x_font_map_load_font (PangoFontMap               *fontmap,
 	      if (xfont->size == description->size)
 		{
 		  result = (PangoFont *)xfont;
-		  pango_font_ref (result);
+		  g_object_ref (G_OBJECT (result));
 		  break;
 		}
 	      tmp_list = tmp_list->next;
@@ -474,7 +474,7 @@ pango_x_font_map_load_font (PangoFontMap               *fontmap,
 
 	  if (!result)
 	    {
-	      result = pango_x_load_font_with_size (xfontmap->display, best_match->xlfd, description->size);
+	      result = (PangoFont *)pango_x_font_new (xfontmap->display, best_match->xlfd, description->size);
 	      ((PangoXFont *)result)->entry = best_match;
 	      best_match->cached_fonts = g_slist_prepend (best_match->cached_fonts, result);
 	    }
@@ -482,7 +482,7 @@ pango_x_font_map_load_font (PangoFontMap               *fontmap,
 	  /* HORRIBLE performance hack until some better caching scheme is arrived at
 	   */
 	  if (result)
-	    pango_font_ref (result);
+	    g_object_ref (G_OBJECT (result));
 	}
     }
 

@@ -345,12 +345,14 @@ swap_range (PangoGlyphString *glyphs, int start, int end)
 static CharCache *
 get_char_cache (PangoFont *font)
 {
-  CharCache *cache = pango_font_get_data (font, "basic-char-cache");
+  GQuark cache_id = g_quark_from_string ("basic-char-cache");
+  
+  CharCache *cache = g_object_get_qdata (G_OBJECT (font), cache_id);
   if (!cache)
     {
       cache = char_cache_new ();
-      pango_font_set_data (font, "basic-char-cache",
-			   cache, (GDestroyNotify)char_cache_free);
+      g_object_set_qdata_full (G_OBJECT (font), cache_id, 
+			       cache, (GDestroyNotify)char_cache_free);
     }
 
   return cache;

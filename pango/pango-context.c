@@ -618,7 +618,7 @@ pango_itemize (PangoContext   *context,
 	  result = g_list_prepend (result, item);
 	}
       else
-	pango_font_unref (fonts[i]);
+	g_object_unref (G_OBJECT (fonts[i]));
 
       item->length = (next - text) - item->offset;
       item->num_chars++;
@@ -662,7 +662,7 @@ get_font (PangoFont     **fonts,
     }
 
   if (result)
-    pango_font_ref (result);
+    g_object_ref (G_OBJECT (result));
       
   return result;
 }
@@ -748,7 +748,7 @@ add_engines (PangoContext      *context,
 		{
 		  if (current_fonts[j])
 		    {
-		      pango_font_unref (current_fonts[j]);
+		      g_object_unref (G_OBJECT (current_fonts[j]));
 		      pango_coverage_unref (current_coverages[j]);
 		    }
 		}
@@ -795,7 +795,7 @@ add_engines (PangoContext      *context,
     {
       if (current_fonts[j])
 	{
-	  pango_font_unref (current_fonts[j]);
+	  g_object_unref (G_OBJECT (current_fonts[j]));
 	  pango_coverage_unref (current_coverages[j]);
 	}
     }

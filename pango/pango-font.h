@@ -29,8 +29,9 @@ extern "C" {
 #include <pango/pango-coverage.h>
 #include <pango/pango-types.h>
 
+#include <glib-object.h>
+
 typedef struct _PangoFontDescription PangoFontDescription;
-typedef struct _PangoFontClass PangoFontClass;
 typedef struct _PangoFontMetrics PangoFontMetrics;
 
 typedef enum {
@@ -92,18 +93,25 @@ char *                pango_font_description_to_string   (const PangoFontDescrip
 
 /* Logical fonts
   */
+
+typedef struct _PangoFontClass PangoFontClass;
+
+#define PANGO_TYPE_FONT              (pango_font_get_type ())
+#define PANGO_FONT(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_TYPE_FONT, PangoFont))
+#define PANGO_FONT_CLASS(klass)      (G_TYPE_CHECK_CLASS_CAST ((klass), PANGO_TYPE_FONT, PangoFontClass))
+#define PANGO_IS_FONT(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), PANGO_TYPE_FONT))
+#define PANGO_IS_FONT_CLASS(klass)   (G_TYPE_CHECK_CLASS_TYPE ((klass), PANGO_TYPE_FONT))
+#define PANGO_FONT_GET_CLASS(obj)    (G_TYPE_INSTANCE_GET_CLASS ((obj), PANGO_TYPE_FONT, PangoFontClass))
+
 struct _PangoFont
 {
-  PangoFontClass *klass;
-
-  /*< private >*/
-  gint ref_count;
-  GData *data;
+  GObject parent_instance;
 };
 
 struct _PangoFontClass
 {
-  void                  (*destroy)            (PangoFont      *font);
+  GObjectClass parent_class;
+  
   PangoFontDescription *(*describe)           (PangoFont      *font);
   PangoCoverage *       (*get_coverage)       (PangoFont      *font,
 					      const char      *lang);
@@ -119,16 +127,7 @@ struct _PangoFontClass
 					       PangoFontMetrics *metrics);
 };
 
-void                  pango_font_init         (PangoFont      *font);
-void                  pango_font_ref          (PangoFont      *font);
-void                  pango_font_unref        (PangoFont      *font);
-gpointer              pango_font_get_data     (PangoFont      *font,
-					       const gchar    *key);
-void                  pango_font_set_data     (PangoFont      *font,
-					       const gchar    *key,
-					       gpointer        data,
-					       GDestroyNotify  destroy_func);
-
+GType                 pango_font_get_type          (void);
 
 PangoFontDescription *pango_font_describe          (PangoFont        *font);
 PangoCoverage *       pango_font_get_coverage      (PangoFont        *font,
@@ -143,10 +142,6 @@ void                  pango_font_get_glyph_extents (PangoFont        *font,
 						    PangoGlyph        glyph,
 						    PangoRectangle   *ink_rect,
 						    PangoRectangle   *logical_rect);
-
-/*
- * Font Map
- */
 
 #ifdef __cplusplus
 }

@@ -1,3 +1,12 @@
+Sat May 27 21:06:13 2000  Owen Taylor  <otaylor@redhat.com>
+
+	* modules/thai/thai.c modules/basic/basic: 
+	s/pango_font_set_data/g_object_set_qdata/
+
+	* pango/*.c: s/pango_font_[un]ref/g_object_un[ref]
+
+	* pango/pango-font.h fonts.c: GObject'ify PangoFont.
+
 Sat May 27 20:36:56 2000  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/Makefile.am configure.in: Add libgobject.

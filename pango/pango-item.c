@@ -66,7 +66,7 @@ pango_item_copy (PangoItem *item)
   result->extra_attrs = g_slist_reverse (extra_attrs);
 	  
   result->analysis = item->analysis;
-  pango_font_ref (result->analysis.font);
+  g_object_ref (G_OBJECT (result->analysis.font));
 
   return result;
 }
@@ -83,7 +83,7 @@ pango_item_free (PangoItem *item)
   if (item->extra_attrs)
     g_slist_foreach (item->extra_attrs, (GFunc)pango_attribute_destroy, NULL);
   
-  pango_font_unref (item->analysis.font);
+  g_object_unref (G_OBJECT (item->analysis.font));
 
   g_free (item);
 }

@@ -54,8 +54,8 @@ struct _PangoXFont
   PangoXFontEntry *entry;	/* Used to remove cached fonts */
 };
 
-PangoFont *    pango_x_load_font_with_size     (Display         *display,
-					        char            *spec,
+PangoXFont *   pango_x_font_new                (Display         *display,
+						const char      *spec,
 						int              size);
 PangoMap *     pango_x_get_shaper_map          (const char      *lang);
 char *         pango_x_make_matching_xlfd      (PangoFontMap    *fontmap,

@@ -154,8 +154,9 @@ get_font_info (PangoFont *font)
   };
   
   ThaiFontInfo *font_info;
+  GQuark info_id = g_quark_from_string ("thai-font-info");
   
-  font_info = pango_font_get_data (font, "thai-font-info");
+  font_info = g_object_get_qdata (G_OBJECT (font), info_id);
   if (!font_info)
     {
       /* No cached information not found, so we need to compute it
@@ -169,7 +170,7 @@ get_font_info (PangoFont *font)
       font_info->font = font;
       font_info->type = THAI_FONT_NONE;
       
-      pango_font_set_data (font, "thai-font-info", font_info, (GDestroyNotify)g_free);
+      g_object_set_qdata_full (G_OBJECT (font), info_id, font_info, (GDestroyNotify)g_free);
       
       n_subfonts = pango_x_list_subfonts (font, (char **)charsets, G_N_ELEMENTS (charsets),
 					  &subfont_ids, &subfont_charsets);

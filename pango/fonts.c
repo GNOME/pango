@@ -361,102 +361,32 @@ pango_font_description_to_string (const PangoFontDescription  *desc)
   return str;
 }
 
-/**
- * pango_font_init:
- * @font:    a #PangoFont
- *
- * Initialize a #PangoFont structure. This should
- * only be called from the "new" routine of code which
- * is implementing  a "subclass" of #PangoFont
- */
-void 
-pango_font_init (PangoFont *font)
+GType
+pango_font_get_type (void)
 {
-  g_return_if_fail (font != NULL);
+  static GType object_type = 0;
 
-  g_datalist_init (&font->data);
-  font->ref_count = 1;
-}
-
-/**
- * pango_font_ref:
- * @font:    a #PangoFont
- *
- * Increase the reference count of a #PangoFont.
- */
-void 
-pango_font_ref (PangoFont *font)
-{
-  g_return_if_fail (font != NULL);
-
-  font->ref_count++;
-}
-
-
-/**
- * pango_font_unref:
- * @font: a #PangoFont
- *
- * Decrease the reference count of a #PangoFont.
- * if the result is zero, destroy the font
- * and free the associated memory.
- */
-void 
-pango_font_unref (PangoFont *font)
-{
-  g_return_if_fail (font != NULL);
-  g_return_if_fail (font->ref_count > 0);
-  
-  font->ref_count--;
-  if (font->ref_count == 0)
+  if (!object_type)
     {
-      g_datalist_clear (&font->data);
-      font->klass->destroy (font);
+      static const GTypeInfo object_info =
+      {
+        sizeof (PangoFontClass),
+        (GBaseInitFunc) NULL,
+        (GBaseFinalizeFunc) NULL,
+        NULL,           /* class_init */
+        NULL,           /* class_finalize */
+        NULL,           /* class_data */
+        sizeof (PangoFont),
+        0,              /* n_preallocs */
+	NULL            /* init */
+      };
+      
+      object_type = g_type_register_static (G_TYPE_OBJECT,
+                                            "PangoFont",
+                                            &object_info);
     }
-}
-
-/**
- * pango_font_set_data:
- * @font:         a #PangoFont
- * @key:          a string identifying the type of user data.
- * @data:         the data to store. If %NULL, the current
- *                data for the key will be removed.
- * @destroy_func: a function to call when the data is no
- *                longer stored, either because the font has
- *                been destroyed, or because the data has
- *                been replaced. This can be %NULL, in which
- *                case no function will be called.
- *
- * Associate user data, tagged with a string id, with a particular
- * font. 
- */
-void
-pango_font_set_data (PangoFont     *font,
-		     const gchar   *key,
-		     gpointer       data,
-		     GDestroyNotify destroy_func)
-{
-  g_return_if_fail (font != NULL);
-
-  g_datalist_set_data_full (&font->data, key, data, destroy_func);
-}
-
-/**
- * pango_font_get_data:
- * @font:    a #PangoFont
- * @key:     a string identifying the type of user data.
- *
- * Look up user data tagged with a particular key.
- * 
- * Returns the data, or NULL if that key does not exist.
- */
-gpointer
-pango_font_get_data (PangoFont   *font,
-		     const gchar *key)
-{
-  g_return_val_if_fail (font != NULL, NULL);
-
-  return g_datalist_get_data (&font->data, key);
+  
+  return object_type;
 }
 
 /**
@@ -474,7 +404,7 @@ pango_font_get_coverage (PangoFont      *font,
 {
   g_return_val_if_fail (font != NULL, NULL);
 
-  return font->klass->get_coverage (font, lang);
+  return PANGO_FONT_GET_CLASS (font)->get_coverage (font, lang);
 }
 
 /**
@@ -495,7 +425,7 @@ pango_font_find_shaper (PangoFont      *font,
 {
   g_return_val_if_fail (font != NULL, NULL);
 
-  return font->klass->find_shaper (font, lang, ch);
+  return PANGO_FONT_GET_CLASS (font)->find_shaper (font, lang, ch);
 }
 
 /**
@@ -523,7 +453,7 @@ pango_font_get_glyph_extents  (PangoFont      *font,
 {
   g_return_if_fail (font != NULL);
 
-  font->klass->get_glyph_extents (font, glyph, ink_rect, logical_rect);
+  PANGO_FONT_GET_CLASS (font)->get_glyph_extents (font, glyph, ink_rect, logical_rect);
 }
 
 /**
@@ -547,5 +477,5 @@ pango_font_get_metrics (PangoFont        *font,
 {
   g_return_if_fail (font != NULL);
 
-  font->klass->get_metrics (font, lang, metrics);
+  PANGO_FONT_GET_CLASS (font)->get_metrics (font, lang, metrics);
 }

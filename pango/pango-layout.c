@@ -2153,7 +2153,7 @@ pango_layout_line_get_empty_extents (PangoLayoutLine *line,
 	  logical_rect->y = - metrics.ascent;
 	  logical_rect->height = metrics.ascent + metrics.descent;
 
-	  pango_font_unref (font);
+	  g_object_unref (G_OBJECT (font));
 	}
       else
 	{

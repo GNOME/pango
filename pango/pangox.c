@@ -32,8 +32,15 @@
 
 #include <config.h>
 
-typedef struct _PangoXMetricsInfo PangoXMetricsInfo;
+#define PANGO_TYPE_X_FONT              (pango_x_font_get_type ())
+#define PANGO_X_FONT(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_TYPE_X_FONT, PangoXFont))
+#define PANGO_X_FONT_CLASS(klass)      (G_TYPE_CHECK_CLASS_CAST ((klass), PANGO_TYPE_X_FONT, PangoXFontClass))
+#define PANGO_IS_X_FONT(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), PANGO_TYPE_X_FONT))
+#define PANGO_IS_X_FONT_CLASS(klass)   (G_TYPE_CHECK_CLASS_TYPE ((klass), PANGO_TYPE_X_FONT))
+#define PANGO_X_FONT_GET_CLASS(obj)    (G_TYPE_INSTANCE_GET_CLASS ((obj), PANGO_TYPE_X_FONT, PangoXFontClass))
 
+typedef struct _PangoXFontClass   PangoXFontClass;
+typedef struct _PangoXMetricsInfo PangoXMetricsInfo;
 typedef struct _PangoXContextInfo PangoXContextInfo;
 
 struct _PangoXSubfontInfo
@@ -57,7 +64,15 @@ struct _PangoXContextInfo
   PangoFreeGCFunc free_gc_func;
 };
 
-static void                  pango_x_font_destroy           (PangoFont        *font);
+struct _PangoXFontClass
+{
+  PangoFontClass parent_class;
+};
+
+static void pango_x_font_class_init (PangoXFontClass *class);
+static void pango_x_font_init       (PangoXFont      *xfont);
+static void pango_x_font_finalize   (GObject         *object);
+
 static PangoFontDescription *pango_x_font_describe          (PangoFont        *font);
 static PangoCoverage *       pango_x_font_get_coverage      (PangoFont        *font,
 							     const char       *lang);
@@ -90,15 +105,6 @@ static void     pango_x_get_item_properties (PangoItem      *item,
 					     gboolean       *fg_set,
 					     PangoAttrColor *bg_color,
 					     gboolean       *bg_set);
-
-PangoFontClass pango_x_font_class = {
-  pango_x_font_destroy,
-  pango_x_font_describe,
-  pango_x_font_get_coverage,
-  pango_x_font_find_shaper,
-  pango_x_font_get_glyph_extents,
-  pango_x_font_get_metrics
-};
 
 static inline PangoXSubfontInfo *
 pango_x_find_subfont (PangoFont  *font,
@@ -190,6 +196,84 @@ pango_x_context_set_funcs  (PangoContext     *context,
   info->free_gc_func = free_gc_func;
 }
 
+static GType
+pango_x_font_get_type (void)
+{
+  static GType object_type = 0;
+
+  if (!object_type)
+    {
+      static const GTypeInfo object_info =
+      {
+        sizeof (PangoXFontClass),
+        (GBaseInitFunc) NULL,
+        (GBaseFinalizeFunc) NULL,
+        (GClassInitFunc) pango_x_font_class_init,
+        NULL,           /* class_finalize */
+        NULL,           /* class_data */
+        sizeof (PangoXFont),
+        0,              /* n_preallocs */
+        (GInstanceInitFunc) pango_x_font_init,
+      };
+      
+      object_type = g_type_register_static (PANGO_TYPE_FONT,
+                                            "PangoXFont",
+                                            &object_info);
+    }
+  
+  return object_type;
+}
+
+static void 
+pango_x_font_init (PangoXFont *xfont)
+{
+  xfont->subfonts_by_charset = g_hash_table_new (g_str_hash, g_str_equal);
+  xfont->subfonts = g_new (PangoXSubfontInfo *, 1);
+
+  xfont->n_subfonts = 0;
+  xfont->max_subfonts = 1;
+
+  xfont->metrics_by_lang = NULL;
+
+  xfont->size = -1;
+  xfont->entry = NULL;
+}
+
+static void
+pango_x_font_class_init (PangoXFontClass *class)
+{
+  GObjectClass *object_class = G_OBJECT_CLASS (class);
+  PangoFontClass *font_class = PANGO_FONT_CLASS (class);
+  
+  object_class->finalize = pango_x_font_finalize;
+  font_class->describe = pango_x_font_describe;
+  font_class->get_coverage = pango_x_font_get_coverage;
+  font_class->find_shaper = pango_x_font_find_shaper;
+  font_class->get_glyph_extents = pango_x_font_get_glyph_extents;
+  font_class->get_metrics = pango_x_font_get_metrics;
+}
+
+PangoXFont *
+pango_x_font_new (Display *display, const char *spec, int size)
+{
+  PangoXFont *result;
+
+  g_return_val_if_fail (display != NULL, NULL);
+  g_return_val_if_fail (spec != NULL, NULL);
+
+  result = (PangoXFont *)g_type_create_instance (PANGO_TYPE_X_FONT);
+  
+  result->display = display;
+
+  result->fonts = g_strsplit(spec, ",", -1);
+  for (result->n_fonts = 0; result->fonts[result->n_fonts]; result->n_fonts++)
+    ; /* Nothing */
+
+  result->size = size;
+
+  return result;
+}
+
 /**
  * pango_x_load_font:
  * @display: the X display
@@ -209,76 +293,8 @@ pango_x_load_font (Display *display,
   g_return_val_if_fail (display != NULL, NULL);
   g_return_val_if_fail (spec != NULL, NULL);
   
-  result = g_new (PangoXFont, 1);
+  result = pango_x_font_new (display, spec, -1);
 
-  result->display = display;
-
-  pango_font_init (&result->font);
-  result->font.klass = &pango_x_font_class;
-
-  result->fonts = g_strsplit(spec, ",", -1);
-
-  for (result->n_fonts = 0; result->fonts[result->n_fonts]; result->n_fonts++)
-    ; /* Nothing */
-
-  result->subfonts_by_charset = g_hash_table_new (g_str_hash, g_str_equal);
-  result->subfonts = g_new (PangoXSubfontInfo *, 1);
-
-  result->n_subfonts = 0;
-  result->max_subfonts = 1;
-
-  result->metrics_by_lang = NULL;
-
-  result->size = -1;
-  result->entry = NULL;
-  
-  return (PangoFont *)result;
-}
- 
-/**
- * pango_x_load_font_with_size:
- * @display: the X display
- * @spec:    a comma-separated list of XLFD's, unsized
- * @size:    the size at which to load the font
- *
- * Load up a logical font based on a "fontset" style
- * text specification.
- *
- * Returns a new #PangoFont
- */
-PangoFont *
-pango_x_load_font_with_size (Display *display,
-			     char    *spec,
-			     int      size)
-{
-  PangoXFont *result;
-
-  g_return_val_if_fail (display != NULL, NULL);
-  g_return_val_if_fail (spec != NULL, NULL);
-  
-  result = g_new (PangoXFont, 1);
-
-  result->display = display;
-
-  pango_font_init (&result->font);
-  result->font.klass = &pango_x_font_class;
-
-  result->fonts = g_strsplit(spec, ",", -1);
-
-  for (result->n_fonts = 0; result->fonts[result->n_fonts]; result->n_fonts++)
-    ; /* Nothing */
-
-  result->subfonts_by_charset = g_hash_table_new (g_str_hash, g_str_equal);
-  result->subfonts = g_new (PangoXSubfontInfo *, 1);
-
-  result->n_subfonts = 0;
-  result->max_subfonts = 1;
-
-  result->metrics_by_lang = NULL;
-
-  result->size = size;
-  result->entry = NULL;
-  
   return (PangoFont *)result;
 }
  
@@ -847,9 +863,9 @@ subfonts_foreach (gpointer key, gpointer value, gpointer data)
 }
 
 static void
-pango_x_font_destroy (PangoFont *font)
+pango_x_font_finalize (GObject *object)
 {
-  PangoXFont *xfont = (PangoXFont *)font;
+  PangoXFont *xfont = (PangoXFont *)object;
   int i;
 
   for (i=0; i<xfont->n_subfonts; i++)
@@ -872,10 +888,9 @@ pango_x_font_destroy (PangoFont *font)
   g_slist_free (xfont->metrics_by_lang);
   
   if (xfont->entry)
-    pango_x_font_entry_remove (xfont->entry, font);
+    pango_x_font_entry_remove (xfont->entry, (PangoFont *)xfont);
 
   g_strfreev (xfont->fonts);
-  g_free (font);
 }
 
 static PangoFontDescription *
