@@ -2792,7 +2792,10 @@ get_items_log_attrs (const char   *text,
 
       /* Break the paragraph delimiters with the last item */
       if (items->next == NULL)
-        tmp_item.length += para_delimiter_len;
+	{
+	  tmp_item.length += para_delimiter_len;
+	  tmp_item.num_chars += g_utf8_strlen (text + index, para_delimiter_len);
+	}
 
       pango_break (text + index, tmp_item.length, &tmp_item.analysis,
                    log_attrs + offset, tmp_item.num_chars + 1);

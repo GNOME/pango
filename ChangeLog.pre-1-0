@@ -1,3 +1,9 @@
+Thu Dec  6 19:07:31 2001  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-layout.c (get_items_log_attrs): Fix problem
+	where length passed in didn't get adjusted for paragraph
+	delimiters.
+
 Thu Dec  6 12:10:53 2001  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/break.c (pango_default_break): Simplify by
