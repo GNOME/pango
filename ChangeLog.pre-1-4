@@ -1,3 +1,8 @@
+Tue Apr 15 05:47:35 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* configure.in: Don't look for Xft unless we found
+	FreeType. (#109753)
+
 Tue Apr 15 05:34:05 2003  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/fonts.c (pango_font_description_set_family):
