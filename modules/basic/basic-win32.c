@@ -643,47 +643,31 @@ set_up_pango_log_clusters (gboolean rtl,
 static void
 convert_log_clusters_to_byte_offsets (const char       *text,
 				      gint              length,
-				      PangoAnalysis    *analysis,
 				      PangoGlyphString *glyphs)
 {
   const char *p;
   int charix, glyphix;
+  int n_chars = g_utf8_strlen (text, length);
+  int *byte_offset = g_new (int, n_chars);
 
-  /* Convert char indexes in the log_clusters array to byte offsets in
-   * the UTF-8 text.
-   */
   p = text;
   charix = 0;
-  if (analysis->level % 2)
+  while (p < text + length)
     {
-      glyphix = glyphs->num_glyphs - 1;
-      while (p < text + length)
-	{
-	  while (glyphix >= 0 &&
-		 glyphs->log_clusters[glyphix] == charix)
-	    {
-	      glyphs->log_clusters[glyphix] = p - text;
-	      glyphix--;
-	    }
-	  charix++;
-	  p = g_utf8_next_char (p);
-	}
+      byte_offset[charix] = p - text;
+      charix++;
+      p = g_utf8_next_char (p);
     }
-  else
+
+  /* Convert char indexes in the log_clusters array to byte offsets.
+   */
+  for (glyphix = 0; glyphix < glyphs->num_glyphs; glyphix++)
     {
-      glyphix = 0;
-      while (p < text + length)
-	{
-	  while (glyphix < glyphs->num_glyphs &&
-		 glyphs->log_clusters[glyphix] == charix)
-	    {
-	      glyphs->log_clusters[glyphix] = p - text;
-	      glyphix++;
-	    }
-	  charix++;
-	  p = g_utf8_next_char (p);
-	}
+      g_assert (glyphs->log_clusters[glyphix] < n_chars);
+      glyphs->log_clusters[glyphix] = byte_offset[glyphs->log_clusters[glyphix]];
     }
+  
+  g_free (byte_offset);
 }
 
 static gboolean
@@ -695,9 +679,9 @@ itemize_shape_and_place (PangoFont        *font,
 			 PangoGlyphString *glyphs,
 			 SCRIPT_CACHE     *script_cache)
 {
-  int item, nitems;
+  int i;
+  int item, nitems, item_step;
   int itemlen, glyphix, nglyphs;
-  int nc;
   SCRIPT_CONTROL control;
   SCRIPT_STATE state;
   SCRIPT_ITEM items[100];
@@ -723,8 +707,18 @@ itemize_shape_and_place (PangoFont        *font,
     printf (G_STRLOC ": ScriptItemize: %d items\n", nitems);
 #endif
 
-  nc = 0;
-  for (item = 0; item < nitems; item++)
+  if (analysis->level % 2)
+    {
+      item = nitems - 1;
+      item_step = -1;
+    }
+  else
+    {
+      item = 0;
+      item_step = 1;
+    }
+
+  for (i = 0; i < nitems; i++, item += item_step)
     {
       WORD iglyphs[1000];
       WORD log_clusters[1000];
@@ -781,7 +775,8 @@ itemize_shape_and_place (PangoFont        *font,
       pango_glyph_string_set_size (glyphs, ng + nglyphs);
       
       set_up_pango_log_clusters (items[item].a.fRTL, itemlen, log_clusters,
-				 nglyphs, glyphs->log_clusters + ng, nc);
+				 nglyphs, glyphs->log_clusters + ng,
+				 items[item].iCharPos);
 
       if ((*script_place) (hdc, &script_cache[script], iglyphs, nglyphs,
 			   visattrs, &items[item].a,
@@ -819,13 +814,12 @@ itemize_shape_and_place (PangoFont        *font,
 	      glyphs->glyphs[ng+glyphix].geometry.y_offset = 0;
 	    }
 	}
-      nc += itemlen;
     }
 
 #ifdef BASIC_WIN32_DEBUGGING
   if (pango_win32_debug)
     {
-      printf ("  Pango log_clusters, char index:");
+      printf ("  Pango log_clusters (%d), char index:", analysis->level);
       for (glyphix = 0; glyphix < glyphs->num_glyphs; glyphix++)
 	printf ("%d ", glyphs->log_clusters[glyphix]);
       printf ("\n");
@@ -887,7 +881,7 @@ uniscribe_shape (PangoFont        *font,
   
   if (retval)
     {
-      convert_log_clusters_to_byte_offsets (text, length, analysis, glyphs);
+      convert_log_clusters_to_byte_offsets (text, length, glyphs);
 #ifdef BASIC_WIN32_DEBUGGING
       if (pango_win32_debug)
 	{

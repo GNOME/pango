@@ -1,3 +1,12 @@
+2003-12-08  Tor Lillqvist  <tml@iki.fi>
+
+	* modules/basic/basic-win32.c (convert_log_clusters_to_byte_offsets):
+	Simplify.
+
+	(itemize_shape_and_place): Fix problem with RTL scripts: If
+	ScriptItemize() returns several items, must handle them in reverse
+	order. (#128812, reported by Shoshannah Forbes)
+
 2003-12-07  Tor Lillqvist  <tml@iki.fi>
 
 	* pango/Makefile.am: Fix problems when building outside srcdir for
