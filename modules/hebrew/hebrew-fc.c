@@ -3,6 +3,7 @@
  *
  * Copyright (C) 2000 Red Hat Software
  * Author: Owen Taylor <otaylor@redhat.com>
+ *         Dov Grobgeld <dov.grobgeld@weizmann.ac.il> OpenType support.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -22,6 +23,7 @@
 
 #include <string.h>
 
+#include <pango/pango-ot.h>
 #include "pango-engine.h"
 #include "pango-utils.h"
 #include "pangofc-font.h"
@@ -132,14 +134,100 @@ add_cluster(PangoFont        *font,
     }
 }
 
+static void
+maybe_add_gsub_feature (PangoOTRuleset *ruleset,
+			PangoOTInfo    *info,
+			guint           script_index,
+			PangoOTTag      tag,
+			gulong          property_bit)
+{
+  guint feature_index;
+  
+  /* 0xffff == default language system */
+  if (pango_ot_info_find_feature (info, PANGO_OT_TABLE_GSUB,
+				  tag, script_index, 0xffff, &feature_index))
+    pango_ot_ruleset_add_feature (ruleset, PANGO_OT_TABLE_GSUB, feature_index,
+				  property_bit);
+}
+
+static void
+maybe_add_gpos_feature (PangoOTRuleset *ruleset,
+			PangoOTInfo    *info,
+			guint           script_index,
+			PangoOTTag      tag,
+			gulong          property_bit)
+{
+  guint feature_index;
+  
+  /* 0xffff == default language system */
+  if (pango_ot_info_find_feature (info, PANGO_OT_TABLE_GPOS,
+				  tag, script_index, 0xffff, &feature_index))
+    pango_ot_ruleset_add_feature (ruleset, PANGO_OT_TABLE_GPOS, feature_index,
+				  property_bit);
+}
+
+static PangoOTRuleset *
+get_ruleset (FT_Face face)
+{
+  PangoOTRuleset *ruleset;
+  static GQuark ruleset_quark = 0;
+  static PangoOTTag hebr_tag = FT_MAKE_TAG ('h', 'e', 'b', 'r');
+  guint script_index;
+
+  PangoOTInfo *info = pango_ot_info_get (face);
+
+  if (!ruleset_quark)
+    ruleset_quark = g_quark_from_string ("pango-hebrew-ruleset");
+  
+  if (!info)
+    return NULL;
+
+  ruleset = g_object_get_qdata (G_OBJECT (info), ruleset_quark);
+
+  if (!ruleset)
+    {
+      if (pango_ot_info_find_script (info, PANGO_OT_TABLE_GPOS,
+				     hebr_tag, &script_index))
+	{
+	  ruleset = pango_ot_ruleset_new (info);
+
+	  /* Again, tags from the SBL font. */
+	  maybe_add_gpos_feature (ruleset, info, script_index,
+				  FT_MAKE_TAG ('k','e','r','n'), 0xFFFF);
+	  maybe_add_gpos_feature (ruleset, info, script_index,
+				  FT_MAKE_TAG ('m','a','r','k'), 0xFFFF);
+	}
+      else
+	/* Return NULL to trigger use of heuristics if there is no
+	 * GPOS table in the font.
+	 */
+	return NULL;
+
+      if (pango_ot_info_find_script (info, PANGO_OT_TABLE_GSUB,
+				     hebr_tag, &script_index))
+	{
+	  /* Add the features that we want */
+	  maybe_add_gsub_feature (ruleset, info, script_index,
+				  FT_MAKE_TAG ('c','c','m','p'), 0xFFFF);
+
+	  maybe_add_gsub_feature (ruleset, info, script_index,
+				  FT_MAKE_TAG ('r','l','i','g'), 0xFFFF);
+	}
+
+      g_object_set_qdata_full (G_OBJECT (info), ruleset_quark, ruleset,
+			       (GDestroyNotify)g_object_unref);
+    }
+
+  return ruleset;
+}
 
 static void 
-hebrew_engine_shape (PangoEngineShape *engine,
-		     PangoFont        *font,
-		     const char       *text,
-		     gint              length,
-		     PangoAnalysis    *analysis,
-		     PangoGlyphString *glyphs)
+fallback_shape (PangoEngineShape *engine,
+		PangoFont        *font,
+		const char       *text,
+		gint              length,
+		PangoAnalysis    *analysis,
+		PangoGlyphString *glyphs)
 {
   const char *p;
   const char *log_cluster;
@@ -149,11 +237,6 @@ hebrew_engine_shape (PangoEngineShape *engine,
   gint glyph_width[MAX_CLUSTER_CHRS], x_offset[MAX_CLUSTER_CHRS], y_offset[MAX_CLUSTER_CHRS];
   PangoRectangle ink_rects[MAX_CLUSTER_CHRS];
   PangoGlyph glyph[MAX_CLUSTER_CHRS];
-
-  g_return_if_fail (font != NULL);
-  g_return_if_fail (text != NULL);
-  g_return_if_fail (length >= 0);
-  g_return_if_fail (analysis != NULL);
 
   pango_glyph_string_set_size (glyphs, 0);
 
@@ -198,6 +281,96 @@ hebrew_engine_shape (PangoEngineShape *engine,
 
   if (analysis->level % 2)
     hebrew_shaper_bidi_reorder(glyphs);
+}
+
+static void 
+hebrew_engine_shape (PangoEngineShape *engine,
+		     PangoFont        *font,
+		     const char       *text,
+		     gint              length,
+		     PangoAnalysis    *analysis,
+		     PangoGlyphString *glyphs)
+{
+  const gchar *p;
+  gint i;
+  glong n_chars;
+  gint unknown_property = 0;
+  FT_Face face;
+  PangoOTRuleset *ruleset;
+  PangoOTBuffer *buffer;
+  PangoFcFont *fc_font;
+
+  g_return_if_fail (font != NULL);
+  g_return_if_fail (text != NULL);
+  g_return_if_fail (length >= 0);
+  g_return_if_fail (analysis != NULL);
+
+  fc_font = PANGO_FC_FONT (font);
+
+  face = pango_fc_font_lock_face (fc_font);
+  g_assert (face);
+
+  ruleset = get_ruleset (face);
+  if (!ruleset)
+    {
+      fallback_shape (engine, font, text, length, analysis, glyphs);
+      goto out;
+    }
+
+  buffer = pango_ot_buffer_new (fc_font);
+  pango_ot_buffer_set_rtl (buffer, analysis->level % 2 != 0);
+    
+  n_chars = g_utf8_strlen (text, length);
+      
+  p = text;
+
+  for (i=0; i < n_chars; i++)
+    {
+      gunichar wc;
+      gunichar mirrored_ch;
+      PangoGlyph index;
+      char buf[6];
+      const char *input;
+      int cluster = 0;
+
+      wc = g_utf8_get_char (p);
+      input = p;
+      if (analysis->level % 2)
+	if (pango_get_mirror_char (wc, &mirrored_ch))
+	  {
+	    wc = mirrored_ch;
+	    
+	    g_unichar_to_utf8 (wc, buf);
+	    input = buf;
+	  }
+
+      index = pango_fc_font_get_glyph (fc_font, wc);
+      
+      if (!index)
+	{
+	  pango_ot_buffer_add_glyph (buffer, pango_fc_font_get_unknown_glyph (fc_font, wc),
+				     unknown_property, p - text);
+	}
+      else
+	{
+	  cluster = p - text;
+	  
+	  pango_ot_buffer_add_glyph (buffer, index,
+				     unknown_property, cluster);
+	}
+      
+      p = g_utf8_next_char (p);
+    }
+  
+
+  pango_ot_ruleset_substitute (ruleset, buffer);
+  pango_ot_ruleset_position (ruleset, buffer);
+  pango_ot_buffer_output (buffer, glyphs);
+
+  pango_ot_buffer_destroy (buffer);
+  
+ out:
+  pango_fc_font_unlock_face (fc_font);
 }
 
 static void
