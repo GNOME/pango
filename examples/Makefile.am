@@ -49,7 +49,10 @@ pangoft2topgm_LDADD =					\
 bin_PROGRAMS = $(viewer_programs)
 noinst_PROGRAMS =  $(ft2_programs)
 
+if CROSS_COMPILING
+else
 all-local: pango.modules
+endif
 
 pango.modules:
 	if find ../modules -name '*.so' | grep 'so' > /dev/null ; then \
