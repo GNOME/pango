@@ -82,9 +82,14 @@ static IndicOTCharClass devaCharClasses[] =
     _xx                                                                             /* 0970        */
 };
 
+/* As a hack, BENGALI LETTER A (U+0985) and BENGALI LETTER E (U+098F)
+ * are marked as consonants below; this gives approximately the
+ * right behavior for the sequences "a halant ya aa" and
+ * "e halant ya aa".
+ */
 static IndicOTCharClass bengCharClasses[] =
 {
-    _xx, _ma, _mp, _mp, _xx, _iv, _iv, _iv, _iv, _iv, _iv, _iv, _iv, _xx, _xx, _iv, /* 0980 - 098F */
+    _xx, _ma, _mp, _mp, _xx, _ct, _iv, _iv, _iv, _iv, _iv, _iv, _iv, _xx, _xx, _ct, /* 0980 - 098F */
     _iv, _xx, _xx, _iv, _iv, _ct, _ct, _ct, _ct, _ct, _ct, _ct, _ct, _ct, _ct, _ct, /* 0990 - 099F */
     _ct, _ct, _ct, _ct, _ct, _ct, _ct, _ct, _ct, _xx, _ct, _ct, _bb, _ct, _ct, _pb, /* 09A0 - 09AF */
     _rv, _xx, _ct, _xx, _xx, _xx, _ct, _ct, _ct, _ct, _xx, _xx, _nu, _xx, _dr, _dl, /* 09B0 - 09BF */
