@@ -1,3 +1,8 @@
+Tue Jul 27 14:07:44 2004  Behdad Esfahbod  <pango@behdad.org>
+
+	* modules/arabic/arabic-fc.c: Don't substitute FARSI YEH
+	with ARABIC YEH if the font does not have any ARABIC YEH.
+
 Tue Jul 27 12:38:05 2004  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/opentype/ftxopen.[ch] pango/opentype/ftxgsub.c
