@@ -1,3 +1,9 @@
+Tue Apr 15 03:47:37 2003  Owen Taylor  <otaylor@redhat.com>
+ 
+        * pango/pango-attributes.c (pango_attr_iterator_next): Return 
+ 	FALSE, not -1 in g_return_val_if_fail(). (#107666, Morten
+ 	Welinder.)
+ 
 Tue Apr 15 03:43:54 2003  Owen Taylor  <otaylor@redhat.com>
 
 	* modules/indic/bengali-x.c (vowel_split): Fix missing

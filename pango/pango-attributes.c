@@ -1243,7 +1243,7 @@ pango_attr_iterator_next (PangoAttrIterator *iterator)
 {
   GList *tmp_list;
 
-  g_return_val_if_fail (iterator != NULL, -1);
+  g_return_val_if_fail (iterator != NULL, FALSE);
 
   if (!iterator->next_attribute && !iterator->attribute_stack)
     return FALSE;
