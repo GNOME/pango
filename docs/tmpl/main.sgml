@@ -349,9 +349,14 @@ about the attributes of a single character.
 </para>
 
 @is_break: 
+@is_mandatory_break: 
 @is_white: 
-@is_char_stop: 
-@is_word_stop: 
+@is_cursor_position: 
+@is_word_start: 
+@is_word_end: 
+@is_sentence_boundary: 
+@is_sentence_start: 
+@is_sentence_end: 
 
 <!-- ##### FUNCTION pango_shape ##### -->
 <para>

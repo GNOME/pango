@@ -1,3 +1,8 @@
+Fri Jan  5 16:12:37 2001  Owen Taylor  <otaylor@redhat.com>
+
+	* modules/arabic/{arabic-xft,arabic}.c pango/{pango-context.c,pangoft.c,pangox.c}:
+	Adopt to new prototype for g_utf8_to_ucs4 (etc.).
+
 2001-01-05  Alexander Larsson  <alla@lysator.liu.se>
 
 	* .cvsignore: Add pangoft2.pc

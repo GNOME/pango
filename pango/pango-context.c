@@ -560,11 +560,8 @@ pango_itemize (PangoContext      *context,
   /* First, apply the bidirectional algorithm to break
    * the text into directional runs.
    */
-  text_ucs4 = g_utf8_to_ucs4 (text + start_index, length);
-  if (!text_ucs4)
-    return NULL;
+  text_ucs4 = g_utf8_to_ucs4_fast (text + start_index, length, &n_chars);
 
-  n_chars = g_utf8_strlen (text + start_index, length);
   embedding_levels = g_new (guint8, n_chars);
 
   pango_log2vis_get_embedding_levels (text_ucs4, n_chars, &base_dir,
