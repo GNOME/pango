@@ -281,35 +281,18 @@ fi
 #
 # Checks for GLib
 #
-GLIB_REQUIRED_VERSION=2.4.0
+GLIB_REQUIRED_VERSION=2.5.7
 
 AM_PATH_GLIB_2_0($GLIB_REQUIRED_VERSION, :,
   AC_MSG_ERROR([
 *** Glib $GLIB_REQUIRED_VERSION or better is required. The latest version of 
 *** Glib is always available from ftp://ftp.gtk.org/.]),
-  gobject gmodule)
+  gobject gmodule-no-export)
 
-GLIB_CFLAGS=`$PKG_CONFIG --cflags gmodule-2.0 gthread-2.0`
+GLIB_CFLAGS=`$PKG_CONFIG --cflags gmodule-no-export-2.0 gthread-2.0`
 
 AC_SUBST(GLIB_LIBS)
 AC_SUBST(GLIB_CFLAGS)
-
-################################################################
-# Strip -export-dynamic from the link line
-################################################################
-
-#
-# pkg-config --libs gmodule includes the "export_dynamic" flag,
-#  but this flag is only meaningful for executables. For libraries
-#  the effect is undefined; what it causes on Linux is that the
-#  export list from -export-symbols-regex is ignored and everything
-#  is exported
-#	
-export_dynamic=`(./libtool --config; echo eval echo \\$export_dynamic_flag_spec) | sh`
-if test -n "$export_dynamic"; then
-  GLIB_LIBS=`echo $GLIB_LIBS | sed -e "s/$export_dynamic//"`
-fi
-
 
 #
 # The OpenType test programs aren't particularly portable
