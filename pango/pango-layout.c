@@ -1980,14 +1980,15 @@ pango_layout_get_extents_internal (PangoLayout    *layout,
 /**
  * pango_layout_get_extents:
  * @layout:   a #PangoLayout
- * @ink_rect: rectangle used to store the extents of the glyph string as drawn
+ * @ink_rect: rectangle used to store the extents of the layout as drawn
  *            or %NULL to indicate that the result is not needed.
- * @logical_rect: rectangle used to store the logical extents of the glyph 
- *            string or %NULL to indicate that the result is not needed.
+ * @logical_rect: rectangle used to store the logical extents of the layout 
+                 or %NULL to indicate that the result is not needed.
  * 
- * Compute the logical and ink extents of @layout. See the documentation
- * for pango_font_get_glyph_extents() for details about the interpretation
- * of the rectangles.
+ * Compute the logical and ink extents of @layout. Logical extents
+ * are usually what you want for positioning things. The extents
+ * are given in layout coordinates; layout coordinates begin at the
+ * top left corner of the layout. 
  */
 void
 pango_layout_get_extents (PangoLayout    *layout,
@@ -2002,16 +2003,15 @@ pango_layout_get_extents (PangoLayout    *layout,
 /**
  * pango_layout_get_pixel_extents:
  * @layout:   a #PangoLayout
- * @ink_rect: rectangle used to store the extents of the glyph string as drawn
+ * @ink_rect: rectangle used to store the extents of the layout as drawn
  *            or %NULL to indicate that the result is not needed.
- * @logical_rect: rectangle used to store the logical extents of the glyph 
- *            string or %NULL to indicate that the result is not needed.
+ * @logical_rect: rectangle used to store the logical extents of the 
+ *              layout or %NULL to indicate that the result is not needed.
  * 
- * Compute the logical and ink extents of @layout. See the documentation
- * for pango_font_get_glyph_extents() for details about the interpretation
- * of the rectangles. The returned rectangles are in device units, as
- * opposed to pango_layout_get_extents(), which returns the extents in
- * units of device unit / PANGO_SCALE.
+ * Compute the logical and ink extents of @layout in device units.
+ * See pango_layout_get_extents(); this function just calls
+ * pango_layout_get_extents() and then converts the extents to
+ * pixels using the #PANGO_SCALE factor.
  **/
 void
 pango_layout_get_pixel_extents (PangoLayout *layout,

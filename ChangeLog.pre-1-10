@@ -1,3 +1,14 @@
+2002-01-14  Havoc Pennington  <hp@pobox.com>
+
+	* pango/pango-layout.c: slight correction to
+	pango_layout_get_extents(), docs still need to be clearer, but 
+	at least they aren't a cut-and-paste of glyph string docs now. 
+	
+	* docs/tmpl/glyphs.sgml: add note about special-case use of
+	PANGO_SCALE with font sizes
+
+	* pango/fonts.c: fix docs to be correct about PANGO_SCALE
+
 2002-01-13  Havoc Pennington  <hp@pobox.com>
 
 	* pango/fonts.c: fix up docs to be clearer about PANGO_SCALE, 

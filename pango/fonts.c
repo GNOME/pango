@@ -331,7 +331,7 @@ pango_font_description_get_stretch (const PangoFontDescription *desc)
  * pango_font_description_set_size:
  * @desc: a #PangoFontDescription
  * @size: the size for the font description in pango units.
- *        There are #PANGO_SCALE Pango units in one device unit (pixel/point).
+ *        There are #PANGO_SCALE Pango units in one device unit (device unit is a point, for font sizes).
  * 
  * Sets the size field of a font description.
  **/
@@ -354,7 +354,7 @@ pango_font_description_set_size (PangoFontDescription *desc,
  * 
  * Return value: the size field for the font description in pango
  *   units.  (There are #PANGO_SCALE pango units in one device unit &mdash;
- *   pixels or points.) Returns 0 if the stretch field has not
+ *   for fonts, font points are the device unit.) Returns 0 if the stretch field has not
  *   previously been set.  pango_font_description_get_set_fields() to
  *   find out if the field was explicitely set or not.
  **/
@@ -1196,7 +1196,7 @@ pango_font_metrics_unref (PangoFontMetrics *metrics)
  * actual drawn ink. It is necessary to lay out the text to figure
  * where the ink will be.)
  * 
- * Return value: the ascent, in pango units. (1 point/pixel == #PANGO_SCALE pango units.)
+ * Return value: the ascent, in pango units. (1 point == #PANGO_SCALE pango units.)
  **/
 int
 pango_font_metrics_get_ascent (PangoFontMetrics *metrics)
@@ -1216,7 +1216,7 @@ pango_font_metrics_get_ascent (PangoFontMetrics *metrics)
  * actual drawn ink. It is necessary to lay out the text to figure
  * where the ink will be.)
  * 
- * Return value: the descent, in pango units. (1 point/pixel == #PANGO_SCALE pango units.)
+ * Return value: the descent, in pango units. (1 point == #PANGO_SCALE pango units.)
  **/
 int
 pango_font_metrics_get_descent (PangoFontMetrics *metrics)
@@ -1235,7 +1235,7 @@ pango_font_metrics_get_descent (PangoFontMetrics *metrics)
  * determining the initial size for a window. Actual characters in
  * text will be wider and narrower than this.
  * 
- * Return value: the character width, in pango units. (1 point/pixel == #PANGO_SCALE pango units.)
+ * Return value: the character width, in pango units. (1 point == #PANGO_SCALE pango units.)
  **/
 int
 pango_font_metrics_get_approximate_char_width (PangoFontMetrics *metrics)
@@ -1256,7 +1256,7 @@ pango_font_metrics_get_approximate_char_width (PangoFontMetrics *metrics)
  * is generally somewhat more accurate than the result of
  * pango_font_metrics_get_approximate_digit_width().
  * 
- * Return value: the digit width, in pango units. (1 point/pixel == #PANGO_SCALE pango units.)
+ * Return value: the digit width, in pango units. (1 point == #PANGO_SCALE pango units.)
  **/
 int
 pango_font_metrics_get_approximate_digit_width (PangoFontMetrics *metrics)
