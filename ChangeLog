@@ -1,3 +1,12 @@
+Tue May  7 19:20:05 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* modules/tamil/Makefile.am (EXTRA_LTLIBRARIES): Temporarily
+	remove tamil-xft from the build until we figure out
+	what to do with it. (Obscures the OpenType Tamil engine.)
+
+	* examples/HELLO.utf8: Fix spelling of Punjabi, removing
+	stray vowel.
+	
 Mon May 06 15:07:39 2002 Eric Mader <mader@jtcsv.com>
 	* Add modules modules/indic/indic-xft.c, indic-ot.c, indic-ot.h, indic-ot-class-tables.c
 

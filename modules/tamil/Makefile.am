@@ -8,10 +8,10 @@ pangoft2libs = $(top_builddir)/pango/libpangoft2-$(PANGO_API_VERSION).la $(FREET
 if HAVE_XFT
 if INCLUDE_TAMIL_XFT
 XFT_MODULES=
-XFT_INCLUDED=libpango-tamil-xft.la
+XFT_INCLUDED=#libpango-tamil-xft.la
 XFT_PREFIX=-DXFT_MODULE_PREFIX
 else
-XFT_MODULES=pango-tamil-xft.la
+XFT_MODULES=#pango-tamil-xft.la
 XFT_INCLUDED=
 XFT_PREFIX=
 tamil_xft_libadd=$(pangoxftlibs)
@@ -49,6 +49,7 @@ endif
 
 noinst_LTLIBRARIES = $(X_INCLUDED) $(XFT_INCLUDED)
 module_LTLIBRARIES = $(X_MODULES) $(XFT_MODULES)
+EXTRA_LTLIBRARIES = libpango-tamil-xft.la pango-tamil-xft.la
 moddefine = $(X_PREFIX) $(XFT_PREFIX)
 moduledir = $(libdir)/pango/$(PANGO_MODULE_VERSION)/modules
 

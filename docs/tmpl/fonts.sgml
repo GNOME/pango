@@ -473,7 +473,6 @@ The #PangoFont structure contains one member
 which the implementation fills in:
 </para>
 
-@parent_instance: 
 
 <!-- ##### MACRO PANGO_TYPE_FONT ##### -->
 <para>
@@ -556,7 +555,6 @@ font faces. The faces in a family share a common design, but differ in
 slant, weight, width and other aspects.
 </para>
 
-@parent_instance: 
 
 <!-- ##### MACRO PANGO_TYPE_FONT_FAMILY ##### -->
 <para>
@@ -606,7 +604,6 @@ The #PangoFontFace structure is used to represent a group of fonts with
 the same family, slant, weight, width, but varying sizes.
 </para>
 
-@parent_instance: 
 
 <!-- ##### MACRO PANGO_TYPE_FONT_FACE ##### -->
 <para>
@@ -664,7 +661,6 @@ pango_font_map_init() on the structure.
 The #PangoFont structure contains one member which the implementation fills in:
 </para>
 
-@parent_instance: 
 
 <!-- ##### MACRO PANGO_TYPE_FONT_MAP ##### -->
 <para>
@@ -768,7 +764,6 @@ Returns the type of a #PangoFontMap.
 
 </para>
 
-@parent_instance: 
 
 <!-- ##### MACRO PANGO_TYPE_FONTSET ##### -->
 <para>
