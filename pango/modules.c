@@ -244,7 +244,7 @@ process_module_file (FILE *module_file)
 	    {
 	    case 0:
 	      pair->load_info = g_strdup (tmp_buf->str);
-#ifdef G_OS_WIN32
+#if defined(G_OS_WIN32) && defined(LIBDIR)
 	      if (strncmp (pair->load_info,
 			   LIBDIR "/pango/modules/",
 			   strlen (LIBDIR "/pango/modules/")) == 0)

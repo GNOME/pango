@@ -1,3 +1,16 @@
+2001-11-03  Hans Breuer  <hans@breuer.org>
+
+	* pango/modules.c : don't bother with module dir
+	recalculation if LIBDIR isn't defined
+
+	* pango/pangowin32-fontmap.c : make it compile again
+	after the g_ascii_* change below. Use EnumFontFamiliesExA
+	to ensure to use the ascii version, though defining
+	UNICODE for G_OS_WIN32 will break at other place anyway.
+
+	* pango/makefile.msc : use (hopefully temporary) DIRENT_CFLAGS
+	and DIRENT_LIBS (see #63667)
+
 Fri Nov  2 13:56:58 2001  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pango-layout.c: Patch from Alex Larsson to improve

@@ -223,7 +223,7 @@ pango_win32_enum_proc (LOGFONT    *lfp,
 
   lf = *lfp;
 
-  EnumFontFamiliesEx (pango_win32_hdc, &lf, (FONTENUMPROC) pango_win32_inner_enum_proc, lParam, 0);
+  EnumFontFamiliesExA (pango_win32_hdc, &lf, (FONTENUMPROC) pango_win32_inner_enum_proc, lParam, 0);
 
   return 1;
 }
@@ -256,7 +256,7 @@ pango_win32_font_map_for_display (void)
 
   memset (&logfont, 0, sizeof (logfont));
   logfont.lfCharSet = DEFAULT_CHARSET;
-  EnumFontFamiliesEx (pango_win32_hdc, &logfont, (FONTENUMPROC) pango_win32_enum_proc, 0, 0);
+  EnumFontFamiliesExA (pango_win32_hdc, &logfont, (FONTENUMPROC) pango_win32_enum_proc, 0, 0);
 
 #ifdef _WE_WANT_GLOBAL_ALIASES_
   pango_win32_font_map_read_aliases (fontmap);
@@ -718,6 +718,7 @@ pango_win32_insert_font (PangoWin32FontMap *win32fontmap,
   PangoVariant variant;
   PangoWeight weight;
   PangoStretch stretch;
+  int i;
 
   PING(("lfp.face=%s,wt=%ld,ht=%ld",lfp->lfFaceName,lfp->lfWeight,lfp->lfHeight));
   
@@ -725,7 +726,9 @@ pango_win32_insert_font (PangoWin32FontMap *win32fontmap,
    */
   lfp2 = g_new (LOGFONT, 1);
   *lfp2 = *lfp;
-  lfp2->lfFaceName = g_ascii_strdown (lfp2->lfFaceName, -1);
+  /* lfp2->lfFaceName is an array of CHAR, change inplace */
+  for (i = 0; i < LF_FACESIZE; i++)
+    lfp2->lfFaceName[i] = g_ascii_tolower (lfp2->lfFaceName[i]);
   size_info = g_hash_table_lookup (win32fontmap->size_infos, lfp);
   if (!size_info)
     {
@@ -803,7 +806,8 @@ pango_win32_insert_font (PangoWin32FontMap *win32fontmap,
   win32face->coverage = NULL;
   win32face->logfont = *lfp;
   win32face->unicode_table = NULL;
-  win32face->logfont.lfFaceName = g_ascii_strdown (lfp->lfFaceName, -1);
+  for (i = 0; i < LF_FACESIZE; i++)
+    win32face->logfont.lfFaceName[i] = g_ascii_tolower (win32face->logfont.lfFaceName[i]);
   font_family->font_entries = g_slist_append (font_family->font_entries, win32face);
   win32fontmap->n_fonts++;
 
