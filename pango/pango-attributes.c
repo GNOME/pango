@@ -199,7 +199,7 @@ pango_attr_color_copy (const PangoAttribute *attr)
   const PangoAttrColor *color_attr = (PangoAttrColor *)attr;
   
   return pango_attr_color_new (attr->klass,
-			       color_attr->red, color_attr->blue, color_attr->green);
+			       color_attr->red, color_attr->green, color_attr->blue);
 }
 
 static void
@@ -979,6 +979,8 @@ pango_attr_iterator_get_font (PangoAttrIterator     *iterator,
 		      found = TRUE;
 		      break;
 		    }
+
+		  tmp_list2 = tmp_list2->next;
 		}
 
 	      if (!found)

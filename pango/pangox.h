@@ -33,6 +33,9 @@ extern "C" {
 
 #define PANGO_RENDER_TYPE_X "PangoRenderX"
 
+typedef GC (*PangoGetGCFunc) (PangoAttrColor *color, void *user_data);
+typedef void (*PangoFreeGCFunc) (GC gc, void *user_data);
+
 /* Calls for applications
  */
 PangoContext * pango_x_get_context        (Display          *display);
@@ -47,16 +50,20 @@ void           pango_x_render             (Display          *display,
 					   gint              y);
 void           pango_x_render_layout_line (Display          *display,
 					   Drawable          drawable,
-					   GC                gc,
 					   PangoLayoutLine  *line,
 					   int               x,
-					   int               y);
-void           pango_x_render_layout      (Display        *display,
-					   Drawable        drawable,
-					   GC              gc,
-					   PangoLayout    *layout,
-					   int             x, 
-					   int             y);
+					   int               y,
+					   PangoGetGCFunc    get_gc,
+					   PangoFreeGCFunc   free_gc,
+					   gpointer          user_data);
+void           pango_x_render_layout      (Display          *display,
+					   Drawable          drawable,
+					   PangoLayout      *layout,
+					   int               x, 
+					   int               y,
+					   PangoGetGCFunc    get_gc,
+					   PangoFreeGCFunc   free_gc,
+					   gpointer          user_data);
 
 /* API for rendering modules
  */

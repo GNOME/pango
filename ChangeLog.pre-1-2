@@ -1,3 +1,24 @@
+Mon Apr  3 15:16:06 2000  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/glyphstring.c (pango_glyph_string_get_logical_widths):
+	Fix off-by-one error for RTL runs.
+
+	* configure.in: Add -lglib to AC_CHECK_LIB(fribidi...)
+        (How did this work?) From Matt Wilson.
+
+	* pango/pango-layout.c (pango_layout_check_lines): Correctly deal
+	with handling character offsets when breaking lines.
+
+	* modules/arabic/arabic.c (arabic_engine_shape): Fix problem with 
+	setting unknown glyph when no arabic-capable font found.
+
+Fri Mar 31 11:29:47 2000  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pangox.[ch] (pango_x_render_layout[_line]) examples/viewer.c: Add
+	capability to render foreground / background colors. The interfaces
+	here are possibly certainly not right, or convenient, but
+	they should be a start.
+
 Thu Mar 30 17:06:39 2000  Owen Taylor  <otaylor@redhat.com>
 
 	* modules/arabic/*.[ch]: New version of Arabic module

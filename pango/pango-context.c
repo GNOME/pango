@@ -673,7 +673,7 @@ add_engines (PangoContext      *context,
       PangoSubmap *submap;
       PangoMapEntry *entry;
 
-      if (i == next_index)
+      if (pos - text == next_index)
 	{
 	  char *next_lang;
 	  PangoFontDescription next_desc;

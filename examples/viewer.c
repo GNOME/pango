@@ -289,6 +289,17 @@ size_allocate (GtkWidget *layout, GtkAllocation *allocation)
     gtk_adjustment_set_value (GTK_LAYOUT (layout)->vadjustment, height - allocation->height);
 }
 
+GC
+get_gc_func (PangoAttrColor *fg_color, void *data)
+{
+  return GDK_GC_XGC (data);
+}
+
+void
+free_gc_func (GC gc, void *data)
+{
+}
+ 
 /* Handle a draw/expose by finding the paragraphs that intersect
  * the region and reexposing them.
  */
@@ -315,8 +326,8 @@ draw (GtkWidget *layout, GdkRectangle *area)
       
       if (height + para->height >= GTK_LAYOUT (layout)->yoffset + area->y)
 	pango_x_render_layout (GDK_DISPLAY(), GDK_WINDOW_XWINDOW (GTK_LAYOUT (layout)->bin_window),
-			       GDK_GC_XGC (layout->style->text_gc[GTK_STATE_NORMAL]),
-			       para->layout, 0, height - GTK_LAYOUT (layout)->yoffset);
+			       para->layout, 0, height - GTK_LAYOUT (layout)->yoffset,
+			       get_gc_func, free_gc_func, layout->style->text_gc[GTK_STATE_NORMAL]);
 
       height += para->height;
     }

@@ -236,8 +236,8 @@ arabic_engine_shape (PangoFont        *font,
             p = text;
             for (i=0; i<n_chars; i++)
                 {
-                    set_glyph (glyphs, font, arfonts[0], i, 
-                               p - text, unknown_glyph);
+                    set_glyph (glyphs, font, PANGO_X_GLYPH_SUBFONT (unknown_glyph), i, 
+                               p - text, PANGO_X_GLYPH_INDEX (unknown_glyph));
                     p = unicode_next_utf8 (p);
                 }
             return;

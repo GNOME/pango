@@ -214,7 +214,7 @@ pango_glyph_string_get_logical_widths (PangoGlyphString *glyphs,
 	{
 	  int next_cluster = last_cluster;
 	  
-	  if (glyph_index < glyphs->num_glyphs)
+	  if (glyph_index > 0 && glyph_index < glyphs->num_glyphs)
 	    {
 	      while (p < text + glyphs->log_clusters[glyph_index])
 		{

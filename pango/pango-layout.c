@@ -334,12 +334,10 @@ pango_layout_set_text (PangoLayout *layout,
       char *p = text;
       int i;
       
-      /* FIXME: Do better validation */
-
       for (i=0; i<n_chars; i++)
 	{
 	  p = unicode_get_utf8 (p, &junk);
-	  if (!p)
+	  if (!p || !junk)
 	    {
 	      g_warning ("Invalid UTF8 string passed to pango_layout_set_text()");
 	      return;
@@ -1072,11 +1070,15 @@ pango_layout_check_lines (PangoLayout *layout)
 	{
 	  PangoItem *item = tmp_list->data;
 	  gboolean fits;
+	  int old_num_chars = item->num_chars;
 	  
 	  fits = process_item (line, item, start, layout->log_attrs + start_offset, &remaining_width);
 	  
 	  if (fits)
-	    tmp_list = tmp_list->next;
+	    {
+	      tmp_list = tmp_list->next;
+	      start_offset += old_num_chars;
+	    }
 	  
 	  if (!fits)
 	    {
@@ -1089,9 +1091,9 @@ pango_layout_check_lines (PangoLayout *layout)
 	      
 	      line = pango_layout_line_new (layout);
 	      remaining_width = (layout->indent >= 0) ? layout->width : layout->indent + layout->indent;
-	    }
 
-	  start_offset += item->num_chars;
+	      start_offset += old_num_chars - item->num_chars;
+	    }
 	}
 
       line->runs = g_slist_reverse (line->runs);

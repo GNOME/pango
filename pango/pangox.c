@@ -202,17 +202,21 @@ static PangoFont *pango_x_load_font_with_size (Display *display,
 					       char    *spec,
 					       int      size);
 
-static gboolean pango_x_is_xlfd_font_name (const char    *fontname);
-static char *   pango_x_get_xlfd_field    (const char    *fontname,
-					   FontField      field_num,
-					   char          *buffer);
-static char *   pango_x_get_identifier    (const char    *fontname);
-static gint     pango_x_get_size          (PangoXFontMap *fontmap,
-					   const char    *fontname);
-static void     pango_x_insert_font       (PangoXFontMap *fontmap,
-					   const char    *fontname);
+static gboolean pango_x_is_xlfd_font_name   (const char     *fontname);
+static char *   pango_x_get_xlfd_field      (const char     *fontname,
+					     FontField       field_num,
+					     char           *buffer);
+static char *   pango_x_get_identifier      (const char     *fontname);
+static gint     pango_x_get_size            (PangoXFontMap  *fontmap,
+					     const char     *fontname);
+static void     pango_x_insert_font         (PangoXFontMap  *fontmap,
+					     const char     *fontname);
 static void     pango_x_get_item_properties (PangoItem      *item,
-					     PangoUnderline *uline);
+					     PangoUnderline *uline,
+					     PangoAttrColor *fg_color,
+					     gboolean       *fg_set,
+					     PangoAttrColor *bg_color,
+					     gboolean       *bg_set);
 
 static GList *fontmaps;
 
@@ -1949,7 +1953,7 @@ pango_x_find_glyph (PangoFont *font,
   
   cs = pango_x_get_per_char (font, subfont, char_index);
 
-  if (cs && (cs->lbearing != cs->rbearing))
+  if (cs && (cs->lbearing != cs->rbearing || cs->width != 0))
     {
       if (subfont_return)
 	*subfont_return = subfont;
@@ -2007,27 +2011,31 @@ pango_x_get_unknown_glyph (PangoFont *font)
 
 /**
  * pango_x_render_layout_line:
- * @display:  the X display
- * @drawable: the drawable on which to draw string
- * @gc:       the graphics context
- * @line:     a #PangoLayoutLine
- * @x:        the x position of start of string (in pixels)
- * @y:        the y position of baseline (in pixels)
+ * @display:   the X display
+ * @drawable:  the drawable on which to draw string
+ * @line:      a #PangoLayoutLine
+ * @x:         the x position of start of string (in pixels)
+ * @y:         the y position of baseline (in pixels)
+ * @get_gc:    function to call to retrieve a GC for a particular color
+ * @free_gc:   function to call to free a GC retrieved from get_gc
+ * @user_data: extra data to pass to get_gc and free_gc
  *
  * Render a #PangoLayoutLine onto an X drawable
  */
 void 
 pango_x_render_layout_line (Display          *display,
 			    Drawable          drawable,
-			    GC                gc,
 			    PangoLayoutLine  *line,
 			    int               x, 
-			    int               y)
+			    int               y,
+                            PangoGetGCFunc    get_gc,
+			    PangoFreeGCFunc   free_gc,
+			    gpointer          user_data)
 {
   GSList *tmp_list = line->runs;
   PangoRectangle logical_rect;
   PangoRectangle ink_rect;
-
+  
   int x_off = 0;
 
   pango_layout_line_get_extents (line,NULL, &logical_rect);
@@ -2036,9 +2044,18 @@ pango_x_render_layout_line (Display          *display,
     {
       PangoUnderline uline = PANGO_UNDERLINE_NONE;
       PangoLayoutRun *run = tmp_list->data;
+      PangoAttrColor fg_color, bg_color;
+      gboolean fg_set, bg_set;
+      GC fg_gc;
+      
       tmp_list = tmp_list->next;
 
-      pango_x_get_item_properties (run->item, &uline);
+      pango_x_get_item_properties (run->item, &uline, &fg_color, &fg_set, &bg_color, &bg_set);
+
+      if (fg_set)
+	fg_gc = (*get_gc) (&fg_color, user_data);
+      else
+	fg_gc = (*get_gc) (NULL, user_data);
 
       if (uline == PANGO_UNDERLINE_NONE)
 	pango_glyph_string_extents (run->glyphs, run->item->analysis.font,
@@ -2047,7 +2064,20 @@ pango_x_render_layout_line (Display          *display,
 	pango_glyph_string_extents (run->glyphs, run->item->analysis.font,
 				    &ink_rect, &logical_rect);
 
-      pango_x_render (display, drawable, gc, run->item->analysis.font, run->glyphs,
+      if (bg_set)
+	{
+	  GC bg_gc = (*get_gc) (&bg_color, user_data);
+
+	  XFillRectangle (display, drawable, bg_gc,
+			  x + (x_off + logical_rect.x) / PANGO_SCALE,
+			  y + logical_rect.y / PANGO_SCALE,
+			  logical_rect.width / PANGO_SCALE,
+			  logical_rect.height / PANGO_SCALE);
+
+	  (*free_gc) (bg_gc, user_data);
+	}
+
+      pango_x_render (display, drawable, fg_gc, run->item->analysis.font, run->glyphs,
 		      x + x_off / PANGO_SCALE, y);
 
       switch (uline)
@@ -2055,44 +2085,50 @@ pango_x_render_layout_line (Display          *display,
 	case PANGO_UNDERLINE_NONE:
 	  break;
 	case PANGO_UNDERLINE_DOUBLE:
-	  XDrawLine (display, drawable, gc,
+	  XDrawLine (display, drawable, fg_gc,
 		     x + (x_off + ink_rect.x) / PANGO_SCALE - 1, y + 4,
 		     x + (x_off + ink_rect.x + ink_rect.width) / PANGO_SCALE, y + 4);
 	  /* Fall through */
 	case PANGO_UNDERLINE_SINGLE:
-	  XDrawLine (display, drawable, gc,
+	  XDrawLine (display, drawable, fg_gc,
 		     x + (x_off + ink_rect.x) -1, y + 2,
 		     x + (x_off + ink_rect.x + ink_rect.width) / PANGO_SCALE, y + 2);
 	  break;
 	case PANGO_UNDERLINE_LOW:
-	  XDrawLine (display, drawable, gc,
+	  XDrawLine (display, drawable, fg_gc,
 		     x + (x_off + ink_rect.x) / PANGO_SCALE - 1, y + (ink_rect.y + ink_rect.height) / PANGO_SCALE + 2,
 		     x + (x_off + ink_rect.x + ink_rect.width) / PANGO_SCALE, y + (ink_rect.y + ink_rect.height) / PANGO_SCALE + 2);
 	  break;
 	}
-       
+
+      (*free_gc) (fg_gc, user_data);
+      
       x_off += logical_rect.width;
     }
 }
 
 /**
  * pango_x_render_layout:
- * @display:  the X display
- * @drawable: the drawable on which to draw string
- * @gc:       the graphics context
- * @layout:   a #PangoLayout
- * @x:        the X position of the left of the layout (in pixels)
- * @y:        the Y position of the top of the layout (in pixels)
+ * @display:   the X display
+ * @drawable:  the drawable on which to draw string
+ * @layout:    a #PangoLayout
+ * @x:         the X position of the left of the layout (in pixels)
+ * @y:         the Y position of the top of the layout (in pixels)
+ * @get_gc:    function to call to retrieve a GC for a particular color
+ * @free_gc:   function to call to free a GC retrieved from get_gc
+ * @user_data: extra data to pass to get_gc and free_gc
  *
  * Render a #PangoLayoutLine onto an X drawable
  */
 void 
-pango_x_render_layout (Display     *display,
-		       Drawable     drawable,
-		       GC           gc,
-		       PangoLayout *layout,
-		       int          x, 
-		       int          y)
+pango_x_render_layout (Display         *display,
+		       Drawable         drawable,
+		       PangoLayout     *layout,
+		       int              x, 
+		       int              y,
+		       PangoGetGCFunc   get_gc,
+		       PangoFreeGCFunc  free_gc,
+		       gpointer         user_data)
 {
   PangoRectangle logical_rect;
   GSList *tmp_list;
@@ -2154,8 +2190,9 @@ pango_x_render_layout (Display     *display,
 	    }
 	}
 	  
-      pango_x_render_layout_line (display, drawable, gc,
-				  line, x + x_offset / PANGO_SCALE, y + (y_offset - logical_rect.y) / PANGO_SCALE);
+      pango_x_render_layout_line (display, drawable, 
+				  line, x + x_offset / PANGO_SCALE, y + (y_offset - logical_rect.y) / PANGO_SCALE,
+				  get_gc, free_gc, user_data);
 
       y_offset += logical_rect.height;
       tmp_list = tmp_list->next;
@@ -2167,10 +2204,20 @@ pango_x_render_layout (Display     *display,
  */
 static void
 pango_x_get_item_properties (PangoItem      *item,
-			     PangoUnderline *uline)
+			     PangoUnderline *uline,
+			     PangoAttrColor *fg_color,
+			     gboolean       *fg_set,
+			     PangoAttrColor *bg_color,
+			     gboolean       *bg_set)
 {
   GSList *tmp_list = item->extra_attrs;
 
+  if (fg_set)
+    *fg_set = FALSE;
+  
+  if (bg_set)
+    *bg_set = FALSE;
+  
   while (tmp_list)
     {
       PangoAttribute *attr = tmp_list->data;
@@ -2180,6 +2227,23 @@ pango_x_get_item_properties (PangoItem      *item,
 	case PANGO_ATTR_UNDERLINE:
 	  if (uline)
 	    *uline = ((PangoAttrInt *)attr)->value;
+	  break;
+	  
+	case PANGO_ATTR_FOREGROUND:
+	  if (fg_color)
+	    *fg_color = *((PangoAttrColor *)attr);
+	  if (fg_set)
+	    *fg_set = TRUE;
+	  
+	  break;
+	  
+	case PANGO_ATTR_BACKGROUND:
+	  if (bg_color)
+	    *bg_color = *((PangoAttrColor *)attr);
+	  if (bg_set)
+	    *bg_set = TRUE;
+	  
+	  break;
 	  
 	default:
 	  break;

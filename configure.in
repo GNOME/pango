@@ -25,7 +25,7 @@ AM_PATH_GTK(1.2.0,
 AM_CONDITIONAL(BUILD_TESTS, test x$gtk_works = xyes)
 
 AC_CHECK_LIB(fribidi, fribidi_map_range, :,
-	     AC_MSG_ERROR([*** libfribidi not found.]))
+	     AC_MSG_ERROR([*** libfribidi not found.]), -lglib)
 
 
 # We run glib-config separately to get the gmodule cflags so we

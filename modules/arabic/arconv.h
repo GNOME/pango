@@ -7,7 +7,7 @@
 
 #ifndef __arconv_h_
 #define __arconv_h_
-#include "../../libpango/utils.h"
+#include "utils.h"
 
 /*
  * arabic_reshape: reshapes string ( ordered left-to right visual order )
