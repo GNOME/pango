@@ -1,3 +1,15 @@
+2001-10-03  Havoc Pennington  <hp@redhat.com>
+
+	* pango/break.c (pango_break)
+	(pango_default_break) (pango_get_log_attrs): require one more 
+	log attr in the buffer passed in, to account for the end position
+	(pango_default_break): allow length of -1
+
+	* pango/pango-engine.h (struct _PangoEngineLang): change
+	script_break virtual function to match pango_break
+
+	* pango/pango-layout.c (get_items_log_attrs): update pango_break usage
+	
 2001-10-03  Sven Neumann  <sven@gimp.org>
 
 	* pango/fonts.c (pango_font_description_to_string): don't include

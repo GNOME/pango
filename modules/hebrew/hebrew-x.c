@@ -672,11 +672,11 @@ swap_range (PangoGlyphString *glyphs, int start, int end)
 }
 
 static void 
-hebrew_engine_shape (PangoFont      *font,
-		   const char       *text,
-		   gint              length,
-		   PangoAnalysis    *analysis,
-		   PangoGlyphString *glyphs)
+hebrew_engine_shape (PangoFont        *font,
+                     const char       *text,
+                     gint              length,
+                     PangoAnalysis    *analysis,
+                     PangoGlyphString *glyphs)
 {
   HebrewFontInfo *font_info;
   const char *p;
@@ -720,8 +720,8 @@ hebrew_engine_shape (PangoFont      *font,
 }
 
 static PangoCoverage *
-hebrew_engine_get_coverage (PangoFont *font,
-			   const char *lang)
+hebrew_engine_get_coverage (PangoFont  *font,
+                            const char *lang)
 {
   PangoCoverage *result = pango_coverage_new ();
   

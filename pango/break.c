@@ -364,7 +364,7 @@ typedef enum
 /**
  * pango_default_break:
  * @text: text to break
- * @length: length of text in bytes
+ * @length: length of text in bytes (or -1 is allowed if text is nul-terminated)
  * @analysis: a #PangoAnalysis for the text
  * @attrs: logical attributes to fill in
  *
@@ -381,8 +381,9 @@ void
 pango_default_break (const gchar   *text,
                      gint           length,
                      PangoAnalysis *analysis,
-                     PangoLogAttr  *attrs)
-{  
+                     PangoLogAttr  *attrs,
+                     int            attrs_len)
+{
   /* The rationale for all this is in section 5.15 of the Unicode 3.0 book */
 
   /* This is a default break implementation that should work for nearly all
@@ -393,8 +394,8 @@ pango_default_break (const gchar   *text,
    * before we start, and then never assign FALSE to anything
    */
 
-  const gchar *next = text;
-  const gchar *end = text + length;
+  const gchar *next;
+  const gchar *end;
   gint i = 0;
   gunichar prev_wc;
   gunichar next_wc;
@@ -413,6 +414,12 @@ pango_default_break (const gchar   *text,
 
   g_return_if_fail (text != NULL);
   g_return_if_fail (attrs != NULL);
+
+  if (length < 0)
+    length = strlen (text);
+  
+  next = text;
+  end = text + length;
   
   if (next == end)
     return;
@@ -433,12 +440,27 @@ pango_default_break (const gchar   *text,
       GUnicodeBreakType break_type;
       BreakOpportunity break_op;
 
+      if (i >= attrs_len)
+        {
+          g_warning ("pango_default_break(): the array of PangoLogAttr passed in must have at least N+1 elements, if there are N characters in the text being broken");
+          return;
+        }
+      
       wc = next_wc;
 
       next = g_utf8_next_char (next);
 
-      if (next >= end)
-        next_wc = 0;
+      if (next == end)
+        {
+          /* This is how we fill in the last element (end position) of the
+           * attr array - assume there's a newline off the end of @text.
+           */
+          next_wc = '\n';
+        }
+      else if (next > end)
+        {
+          next_wc = 0;
+        }
       else
         {
           next_wc = g_utf8_get_char (next);
@@ -1259,7 +1281,8 @@ void
 pango_break (const gchar   *text,
              gint           length,
              PangoAnalysis *analysis,
-             PangoLogAttr  *attrs)
+             PangoLogAttr  *attrs,
+             int            attrs_len)
 {
   g_return_if_fail (text != NULL);
   g_return_if_fail (analysis != NULL);
@@ -1270,9 +1293,9 @@ pango_break (const gchar   *text,
 
   if (analysis->lang_engine &&
       analysis->lang_engine->script_break)
-    (* analysis->lang_engine->script_break) (text, length, analysis, attrs);
+    (* analysis->lang_engine->script_break) (text, length, analysis, attrs, attrs_len);
   else
-    pango_default_break (text, length, analysis, attrs);
+    pango_default_break (text, length, analysis, attrs, attrs_len);
 }
 
 /**
@@ -1377,16 +1400,24 @@ pango_find_paragraph_boundary (const gchar *text,
  * @length: length in bytes of @text
  * @level: embedding level, or -1 if unknown
  * @language: language tag
- * @log_attrs: array with one PangoLogAttr per character in @text, to be filled in
+ * @log_attrs: array with one #PangoLogAttr per character in @text, plus one extra, to be filled in
+ * @attrs_len: length of @log_attrs array
  *
- * Computes a PangoLogAttr for each character in @text
+ * Computes a PangoLogAttr for each character in @text. The @log_attrs
+ * array must have one #PangoLogAttr for each position in @text; if
+ * @text contains N characters, it has N+1 positions, including the
+ * last position at the end of the text. @text should be an entire
+ * paragraph; logical attributes can't be computed without context
+ * (for example you need to see spaces on either side of a word to know the
+ * word is a word).
  */
 void
 pango_get_log_attrs (const char    *text,
                      int            length,
                      int            level,
                      PangoLanguage *language,
-                     PangoLogAttr  *log_attrs)
+                     PangoLogAttr  *log_attrs,
+                     int            attrs_len)
 {
   int n_chars;
   PangoMap *lang_map;
@@ -1419,6 +1450,12 @@ pango_get_log_attrs (const char    *text,
 
   n_chars = g_utf8_strlen (text, length);
 
+  if (attrs_len < (n_chars + 1))
+    {
+      g_warning ("pango_get_log_attrs(): length of PangoLogAttr array must be at least the number of chars in the text plus one more for the end position");
+      return;
+    }
+  
   lang_map = pango_find_map (language, engine_type_id, render_type_id);
 
   range_start = text;
@@ -1449,7 +1486,8 @@ pango_get_log_attrs (const char    *text,
           pango_break (range_start,
                        pos - range_start,
                        &analysis,
-                       log_attrs + chars_broken);
+                       log_attrs + chars_broken,
+                       attrs_len - chars_broken);
 
           chars_broken += chars_in_range;
 
@@ -1473,6 +1511,7 @@ pango_get_log_attrs (const char    *text,
     pango_break (range_start,
                  end - range_start,
                  &analysis,
-                 log_attrs + chars_broken);
+                 log_attrs + chars_broken,
+                 attrs_len - chars_broken);
 }
 

@@ -71,7 +71,8 @@ struct _PangoEngineLang
   void (*script_break) (const char    *text,
 			int            len,
 			PangoAnalysis *analysis,
-			PangoLogAttr  *attrs);
+			PangoLogAttr  *attrs,
+                        int            attrs_len);
 };
 
 struct _PangoEngineShape

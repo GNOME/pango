@@ -72,16 +72,6 @@ Win32 Fonts and Rendering
 @Returns: 
 
 
-<!-- ##### FUNCTION pango_win32_font_get_coverage ##### -->
-<para>
-
-</para>
-
-@font: 
-@lang: 
-@Returns: 
-
-
 <!-- ##### FUNCTION pango_win32_font_get_glyph_index ##### -->
 <para>
 

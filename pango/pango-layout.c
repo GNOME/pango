@@ -2723,7 +2723,8 @@ get_items_log_attrs (const char   *text,
       if (items->next == NULL)
         tmp_item.length += para_delimiter_len;
 
-      pango_break (text + index, tmp_item.length, &tmp_item.analysis, log_attrs + offset);
+      pango_break (text + index, tmp_item.length, &tmp_item.analysis,
+                   log_attrs + offset, tmp_item.num_chars + 1);
 
       offset += tmp_item.num_chars;
       index += tmp_item.length;
@@ -2786,7 +2787,7 @@ pango_layout_check_lines (PangoLayout *layout)
   attrs = pango_layout_get_effective_attributes (layout);
   iter = pango_attr_list_get_iterator (attrs);
   
-  layout->log_attrs = g_new (PangoLogAttr, layout->n_chars);
+  layout->log_attrs = g_new (PangoLogAttr, layout->n_chars + 1);
   
   start_offset = 0;
   start = layout->text;

@@ -314,6 +314,7 @@ for text.
 @length: 
 @analysis: 
 @attrs: 
+@attrs_len: 
 
 
 <!-- ##### FUNCTION pango_get_log_attrs ##### -->
@@ -326,6 +327,7 @@ for text.
 @level: 
 @language: 
 @log_attrs: 
+@attrs_len: 
 
 
 <!-- ##### FUNCTION pango_find_paragraph_boundary ##### -->
@@ -348,6 +350,7 @@ for text.
 @length: 
 @analysis: 
 @attrs: 
+@attrs_len: 
 
 
 <!-- ##### STRUCT PangoLogAttr ##### -->
