@@ -46,6 +46,7 @@ libpango_1_0_la_DEPENDENCIES = mini-fribidi/libmini-fribidi.la
 if OS_WIN32
 libpango_1_0_la_LDFLAGS += -export-symbols $(srcdir)/pango.def
 libpango_1_0_la_LIBADD += pango-win32res.lo
+libpango_1_0_la_DEPENDENCIES += pango-win32res.lo
 endif
 pango-win32res.lo: pango.rc
 	$(top_srcdir)/../glib/build/win32/lt-compile-resource $< $@

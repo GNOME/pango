@@ -27,7 +27,7 @@ Overview of changes between 1.3.1 and 1.3.2
 * Correct a mixup between ZWJ and ZWNJ in the Arabic
   engine  [Roozbeh Pournader]
 * Build and bug fixes for Win32  [Hans Breuer]
-* Fix a problem with RTL scripts on Win32  [Tor Lillquist, Shoshannah Forbes]
+* Fix a problem with RTL scripts on Win32  [Tor Lillqvist, Shoshannah Forbes]
 * Documentation improvements  [Ross Burton, Matthias Clasen]
 
 Overview of changes between 1.3.0 and 1.3.1
@@ -74,7 +74,7 @@ Overview of changes between 1.2.x and 1.3.0
   Pool]; add man pages for the included binaries.  [Matthias]
 * Misc bug and build fixes [Josh Beam, Tony Graham, Kaushal Kumar,
   Noah, Mehran Mehr, Soeren, Morten Welinder]
-* Win32 build fixes [Tor Lillquist, Hans Breuer]
+* Win32 build fixes [Tor Lillqvist, Hans Breuer]
 
 ============================================================
 
