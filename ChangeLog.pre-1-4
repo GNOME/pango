@@ -1,3 +1,10 @@
+2001-08-09  Matthias Clasen  <matthiasc@waldgeist.poet.de>
+
+	* pango/pango-layout.c (pango_layout_line_get_empty_extents): 
+	Remove unneeded inc_rect parameter.
+	(pango_layout_line_get_extents): Treat lines containing only
+	tabs as empty lines. (#57051)
+
 2001-08-09  Alexander Larsson <alexl@redhat.com>
 
 	* pango/pangowin32.h:

@@ -3308,17 +3308,8 @@ pango_layout_line_get_x_ranges (PangoLayoutLine  *line,
 
 static void
 pango_layout_line_get_empty_extents (PangoLayoutLine *line,
-				     PangoRectangle  *ink_rect,
 				     PangoRectangle  *logical_rect)
 {
-  if (ink_rect)
-    {
-      ink_rect->x = 0;
-      ink_rect->y = 0;
-      ink_rect->width = 0;
-      ink_rect->height = 0;
-    }
-  
   if (logical_rect)
     {
       char *line_start;
@@ -3486,12 +3477,6 @@ pango_layout_line_get_extents (PangoLayoutLine *line,
   if (!LINE_IS_VALID (line))
     return;
 
-  if (!line->runs)
-    {
-      pango_layout_line_get_empty_extents (line, ink_rect, logical_rect);
-      return;
-    }
-  
   if (ink_rect)
     {
       ink_rect->x = 0;
@@ -3548,6 +3533,13 @@ pango_layout_line_get_extents (PangoLayoutLine *line,
       
      x_pos += run_logical.width;
      tmp_list = tmp_list->next;
+    }
+  
+  if (logical_rect && logical_rect->height == 0) 
+    {
+      PangoRectangle temp_rect;
+      pango_layout_line_get_empty_extents (line, &temp_rect);
+      logical_rect->height = temp_rect.height;
     }
 }
 
