@@ -25,6 +25,8 @@
 #include "pango-engine.h"
 #include "pango-utils.h"
 
+#include "basic-common.h"
+
 #define SCRIPT_ENGINE_NAME "BasicScriptEngineWin32"
 
 static PangoEngineRange basic_ranges[] = {
@@ -143,7 +145,7 @@ basic_engine_shape (PangoFont        *font,
       if (wc == 0xa0)	/* non-break-space */
 	wc = 0x20;
 		
-      if (wc == 0x200B || wc == 0x200E || wc == 0x200F)	/* Zero-width characters */
+      if (ZERO_WIDTH_CHAR (wc))
 	{
 	  set_glyph (font, glyphs, i, p - text, 0);
 	}

@@ -27,25 +27,11 @@
 #include "pangoft2.h"
 #include "pango-utils.h"
 
+#include "basic-common.h"
+
 #define SCRIPT_ENGINE_NAME "BasicScriptEngineFT2"
 
-
-/* Zero Width characters:
- *
- *  200B  ZERO WIDTH SPACE
- *  200C  ZERO WIDTH NON-JOINER
- *  200D  ZERO WIDTH JOINER
- *  200E  LEFT-TO-RIGHT MARK
- *  200F  RIGHT-TO-LEFT MARK
- *  202A  LEFT-TO-RIGHT EMBEDDING
- *  202B  RIGHT-TO-LEFT EMBEDDING
- *  202C  POP DIRECTIONAL FORMATTING
- *  202D  LEFT-TO-RIGHT OVERRIDE
- *  202E  RIGHT-TO-LEFT OVERRIDE
- */
-
-#define ZERO_WIDTH_CHAR(wc)\
-(((wc) >= 0x200B && (wc) <= 0x200F) || ((wc) >= 0x202A && (wc) <= 0x202E))
+#include "basic-common.h"
 
 
 static PangoEngineRange basic_ranges[] = {

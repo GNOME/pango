@@ -115,6 +115,7 @@ pango_basic_win32_la_SOURCES = basic-win32.c
 libpango_basic_win32_la_SOURCES = basic-win32.c
 
 EXTRA_DIST =		\
+	basic-common.h	\
 	tables-big.i	\
 	tables-small.i	\
 	makefile.mingw	\
