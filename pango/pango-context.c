@@ -135,6 +135,18 @@ pango_context_finalize (GObject *object)
  * pango_context_new:
  * 
  * Creates a new #PangoContext initialized to default value.
+ *
+ * This function is only useful when implementing a new backend
+ * for Pango, something applications won't do. You should use
+ * the context creation function for the backend you are using,
+ * for example, pango_xft_get_context(), pango_win32_get_context()
+ * or, pango_ft2_font_map_create_context().
+ *
+ * If you are using Pango as part of a higher-level system,
+ * that system may have it's own ways of create a #PangoContext.
+ * For instance, the GTK+ toolkit has, among others,
+ * gdk_pango_context_get_for_screen(), and 
+ * gtk_widget_get_pango_context().
  * 
  * Return value: the new #PangoContext
  **/
@@ -154,6 +166,8 @@ pango_context_new (void)
  * @font_map: the #PangoFontMap to set.
  * 
  * Sets the font map to be searched when fonts are looked-up in this context.
+ * This is only for internal use by Pango backends, a #PangoContext obtained
+ * via one of the recommended methods should already have a suitable font map.
  **/
 void
 pango_context_set_font_map (PangoContext *context,
