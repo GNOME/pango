@@ -1,3 +1,9 @@
+Tue May 27 15:01:24 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pangoxft-font.c (pango_xft_font_get_metrics): 
+	Get the fontnmap for the right screen (#113452, 
+	Morten Welinder)
+
 Tue May 27 12:36:50 2003  Owen Taylor  <otaylor@redhat.com>
 
 	* configure.in: Fix typo for FreeType dependencies
