@@ -1,3 +1,8 @@
+Tue Apr 23 16:15:07 2002  Owen Taylor  <otaylor@redhat.com>
+ 
+ 	* pango/opentype/fterrcompat.h: Add compatibility 
+ 	defines for changes in FreeType 2.1.0.
+ 
 Tue Apr 23 15:20:33 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* README: Fix typo. (#79574)
