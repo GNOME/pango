@@ -1,5 +1,5 @@
 /* Pango
- * pango-font.h: Font handling
+ * pango-fontmap.c: Font handling
  *
  * Copyright (C) 2000 Red Hat Software
  *
