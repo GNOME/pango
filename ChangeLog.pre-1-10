@@ -1,3 +1,7 @@
+2001-11-29  Matthias Clasen  <matthiasc@poet.de>
+
+	* pango/pango-fontset.c: Documentation updates.
+
 Thu Nov 29 11:40:51 2001  Owen Taylor  <otaylor@redhat.com>
 
 	* examples/viewer-qt.cc: Include qpainter.h - apparently

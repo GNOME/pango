@@ -197,6 +197,13 @@ struct _PangoFontsetSimpleClass
 
 static PangoFontsetClass *simple_parent_class;	/* Parent class structure for PangoFontsetSimple */
 
+/**
+ * pango_fontset_simple_new:
+ * @language: a #PangoLanguage tag
+ * @returns: a newly-allocated #PangoFontsetSimple.
+ * 
+ * Creates a new #PangoFontsetSimple for the given language.
+ **/
 PangoFontsetSimple *
 pango_fontset_simple_new (PangoLanguage *language)
 {
@@ -282,6 +289,13 @@ pango_fontset_simple_finalize (GObject *object)
   G_OBJECT_CLASS (simple_parent_class)->finalize (object);
 }
 
+/**
+ * pango_fontset_simple_append:
+ * @fontset: a #PangoFontsetSimple.
+ * @font: a #PangoFont.
+ *
+ * Adds a font to the fontset.
+ **/
 void
 pango_fontset_simple_append (PangoFontsetSimple *fontset,
 			     PangoFont          *font)
@@ -290,6 +304,13 @@ pango_fontset_simple_append (PangoFontsetSimple *fontset,
   g_ptr_array_add (fontset->coverages, NULL);
 }
 
+/**
+ * pango_fontset_simple_size:
+ * @fontset: a #PangoFontsetSimple.
+ * @returns: the size of @fontset.
+ *
+ * Returns the number of fonts in the fontset. 
+ **/
 int
 pango_fontset_simple_size (PangoFontsetSimple *fontset)
 {
