@@ -1,3 +1,11 @@
+2002-09-05  Tor Lillqvist  <tml@iki.fi>
+
+	* pango/pangowin32.c (pango_win32_render): Render only valid
+	glyphs. Fix by Florent Duguet. Don't know if this is quite the
+	correct way to fix the problem of default glyphs (ugly boxes)
+	showing up, maybe invalid glyphs never should get this far, but be
+	noticed earlier?
+
 2002-09-04  Tor Lillqvist  <tml@iki.fi>
 
 	* pango/pango-utils.c: G_WIN32_DLLMAIN_FOR_DLL_NAME not needed on

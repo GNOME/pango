@@ -240,7 +240,7 @@ pango_win32_render (HDC                hdc,
 {
   HFONT old_hfont = NULL;
   HFONT hfont;
-  int i;
+  int i, num_valid_glyphs;
   guint16 *glyph_indexes;
   INT *dX;
 
@@ -255,16 +255,23 @@ pango_win32_render (HDC                hdc,
   glyph_indexes = g_new (guint16, glyphs->num_glyphs);
   dX = g_new (INT, glyphs->num_glyphs);
 
+  num_valid_glyphs = 0;
   for (i = 0; i <glyphs->num_glyphs; i++)
     {
-      glyph_indexes[i] = glyphs->glyphs[i].glyph;
-      dX[i] = glyphs->glyphs[i].geometry.width / PANGO_SCALE;
+      /* Prevent from displaying squares for nonexistent glyphs */
+      if (glyphs->glyphs[i].glyph != 0)
+        {
+          /* Glyph is actually handled */
+          glyph_indexes[num_valid_glyphs] = glyphs->glyphs[i].glyph;
+	  dX[num_valid_glyphs] = glyphs->glyphs[i].geometry.width / PANGO_SCALE;
+	  num_valid_glyphs++;
+	}
     }
 
   ExtTextOutW (hdc, x, y,
 	       ETO_GLYPH_INDEX,
 	       NULL,
-	       glyph_indexes, glyphs->num_glyphs,
+	       glyph_indexes, num_valid_glyphs,
 	       dX);
 
   SelectObject (hdc, old_hfont); /* restore */
