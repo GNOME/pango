@@ -63,9 +63,9 @@ no_undefined = -no-undefined
 endif
 
 if OS_WIN32
-pango_export_symbols = -export-symbols pango.def
-pangowin32_export_symbols = -export-symbols pangowin32.def
-pangoft2_export_symbols = -export-symbols pangoft2.def
+pango_export_symbols = -export-symbols $(srcdir)/pango.def
+pangowin32_export_symbols = -export-symbols $(srcdir)/pangowin32.def
+pangoft2_export_symbols = -export-symbols $(srcdir)/pangoft2.def
 
 pango_win32res = pango-win32res.lo
 pangowin32_win32res = pangowin32-win32res.lo
@@ -314,14 +314,14 @@ CLEANFILES =					\
 	pango-enum-types.c			\
 	s-enum-types-c
 
-pango-$(PANGO_API_VERSION).lib: libpango-$(PANGO_API_VERSION).la pango.def
-	lib -name:libpango-$(PANGO_API_VERSION)-@LT_CURRENT_MINUS_AGE@.dll -def:pango.def -out:$@
+pango-$(PANGO_API_VERSION).lib: libpango-$(PANGO_API_VERSION).la $(srcdir)/pango.def
+	lib -name:libpango-$(PANGO_API_VERSION)-@LT_CURRENT_MINUS_AGE@.dll -def:$(srcdir)/pango.def -out:$@
 
-pangoft2-$(PANGO_API_VERSION).lib: libpangoft2-$(PANGO_API_VERSION).la pangoft2.def
-	lib -name:libpangoft2-$(PANGO_API_VERSION)-@LT_CURRENT_MINUS_AGE@.dll -def:pangoft2.def -out:$@
+pangoft2-$(PANGO_API_VERSION).lib: libpangoft2-$(PANGO_API_VERSION).la $(srcdir)/pangoft2.def
+	lib -name:libpangoft2-$(PANGO_API_VERSION)-@LT_CURRENT_MINUS_AGE@.dll -def:$(srcdir)/pangoft2.def -out:$@
 
-pangowin32-$(PANGO_API_VERSION).lib: libpangowin32-$(PANGO_API_VERSION).la pangowin32.def
-	lib -name:libpangowin32-$(PANGO_API_VERSION)-@LT_CURRENT_MINUS_AGE@.dll -def:pangowin32.def -out:$@
+pangowin32-$(PANGO_API_VERSION).lib: libpangowin32-$(PANGO_API_VERSION).la $(srcdir)/pangowin32.def
+	lib -name:libpangowin32-$(PANGO_API_VERSION)-@LT_CURRENT_MINUS_AGE@.dll -def:$(srcdir)/pangowin32.def -out:$@
 
 install-data-local: install-ms-lib install-libtool-import-lib
 

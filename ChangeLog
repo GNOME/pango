@@ -1,3 +1,8 @@
+2003-12-07  Tor Lillqvist  <tml@iki.fi>
+
+	* pango/Makefile.am: Fix problems when building outside srcdir for
+	Win32. (#122167, Jeff Bonggren)
+
 2003-12-05  Sven Neumann  <sven@gimp.org>
 
 	* pango/pangoft2-fontmap.c (pango_ft2_font_map_new): merged fix
