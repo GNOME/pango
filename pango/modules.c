@@ -31,7 +31,6 @@
 
 #include "pango-modules.h"
 #include "pango-utils.h"
-#include "modules.h"
 
 typedef struct _PangoMapInfo PangoMapInfo;
 typedef struct _PangoEnginePair PangoEnginePair;
@@ -199,20 +198,9 @@ handle_included_module (PangoIncludedModule *module,
       pair->included = TRUE;
       pair->load_info = module;
       pair->engine = NULL;
-
+      
       *engine_list = g_slist_prepend (*engine_list, pair);
     }
-}
-
-static void
-add_builtin_modules (void)
-{
-  int i;
-
-  for (i = 0; _pango_included_modules[i].list; i++)
-    handle_included_module (&_pango_included_modules[i], &builtin_engines);
-
-  builtin_engines = g_slist_reverse (builtin_engines);
 }
 
 static gboolean /* Returns true if succeeded, false if failed */
@@ -392,8 +380,7 @@ init_modules (void)
     return;
   else
     init = TRUE;
-
-  add_builtin_modules ();
+  
   read_modules ();
 }
 

@@ -1,3 +1,30 @@
+2000-12-15  Havoc Pennington  <hp@redhat.com>
+
+	* modules/Makefile.am (install-data-local): touch
+	sysconfdir/pango/pango.modules even if there are no dynamic
+	modules, so pango won't spew warnings about pango.modules not
+	existing, and to simplify RPM file lists	
+
+	* pango/pango-context.c (fallback_engine_shape): fix this to 
+	avoid incrementing i twice
+	(fallback_shaper): fix initializer
+
+	* pango/querymodules.c (query_module): don't call g_module_close()
+	on a module that doesn't get opened successfully
+
+	* pango/modules.c: do not include modules.h
+	(init_modules): do not do the builtin modules here,
+	they are done by pangox
+
+	* pango/pangox.c (pango_x_get_context): register included modules
+	here
+	
+	* pango/pangoxft-font.c: do not include modules.h
+
+	* pango/Makefile.am (libpango_la_SOURCES): move modules.c,
+	back in here (but not modules.h, which actually goes with 
+	module-defs.c)
+
 2000-12-14  Havoc Pennington  <hp@redhat.com>
 
 	* pango/pango-context.c (add_engines): Use a fallback shaper if

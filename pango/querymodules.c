@@ -102,7 +102,8 @@ query_module (const char *dir, const char *name)
     }
 
   g_free (path);
-  g_module_close (module);
+  if (module)
+    g_module_close (module);
 }		       
 
 int main (int argc, char **argv)

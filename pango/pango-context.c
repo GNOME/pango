@@ -666,7 +666,7 @@ fallback_engine_shape (PangoFont        *font,
 {
   int n_chars;
   int i;
-  char *p;
+  const char *p;
   
   g_return_if_fail (font != NULL);
   g_return_if_fail (text != NULL);
@@ -675,9 +675,10 @@ fallback_engine_shape (PangoFont        *font,
 
   n_chars = g_utf8_strlen (text, length);
   pango_glyph_string_set_size (glyphs, n_chars);
-
+  
   p = text;
-  for (i = 0; i < n_chars; i++)
+  i = 0;
+  while (i < n_chars)
     {
       glyphs->glyphs[i].glyph = 0;
       
@@ -707,9 +708,11 @@ fallback_engine_get_coverage (PangoFont  *font,
 }
 
 static PangoEngineShape fallback_shaper = {
-  "FallbackScriptEngine",
-  PANGO_ENGINE_TYPE_SHAPE,
-  sizeof (PangoEngineShape),
+  {
+    "FallbackScriptEngine",
+    PANGO_ENGINE_TYPE_SHAPE,
+    sizeof (PangoEngineShape)
+  },
   fallback_engine_shape,
   fallback_engine_get_coverage
 };

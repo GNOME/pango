@@ -29,6 +29,7 @@
 #include "pango-utils.h"
 #include "pangox-private.h"
 #include "pango-intset.h"
+#include "modules.h"
 
 #define PANGO_LIGATURE_HACK_DEBUG
 
@@ -246,9 +247,19 @@ pango_x_get_context (Display *display)
 {
   PangoContext *result;
   PangoXContextInfo *info;
-
-  g_return_val_if_fail (display != NULL, NULL);
-
+  int i;
+  static gboolean registered_modules = FALSE;
+  
+  g_return_val_if_fail (display != NULL, NULL);  
+  
+  if (!registered_modules)
+    {
+      registered_modules = TRUE;
+      
+      for (i = 0; _pango_included_modules[i].list; i++)
+        pango_module_register (&_pango_included_modules[i]);
+    }
+  
   result = pango_context_new ();
   
   info = g_new (PangoXContextInfo, 1);

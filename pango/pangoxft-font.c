@@ -21,7 +21,7 @@
 
 #include "pangoxft-private.h"
 #include "X11/Xft/XftFreetype.h"
-#include "modules.h"
+#include "pango-modules.h"
 
 #define PANGO_XFT_FONT(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_TYPE_XFT_FONT, PangoXftFont))
 #define PANGO_XFT_FONT_CLASS(klass)      (G_TYPE_CHECK_CLASS_CAST ((klass), PANGO_TYPE_XFT_FONT, PangoXftFontClass))

@@ -18,6 +18,7 @@ install-data-local:
 		> $(DESTDIR)$(sysconfdir)/pango/pango.modules; \
         else \
           echo "No dynamic modules were installed; all modules were linked statically."; \
+	  echo "# This is an empty file, because Pango was installed with no dynamic modules" > $(DESTDIR)$(sysconfdir)/pango/pango.modules; \
         fi)
 
 EXTRA_DIST =		\
