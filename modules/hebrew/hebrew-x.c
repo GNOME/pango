@@ -720,8 +720,8 @@ hebrew_engine_shape (PangoFont        *font,
 }
 
 static PangoCoverage *
-hebrew_engine_get_coverage (PangoFont  *font,
-                            const char *lang)
+hebrew_engine_get_coverage (PangoFont     *font,
+                            PangoLanguage *lang)
 {
   PangoCoverage *result = pango_coverage_new ();
   
