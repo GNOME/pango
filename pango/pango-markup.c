@@ -767,8 +767,11 @@ big_parse_func      (MarkupData            *md,
   CHECK_NO_ATTRS("big");
 
   /* Grow text one level */
-  tag->scale_level_delta += 1;
-  tag->scale_level += 1;
+  if (tag)
+    {
+      tag->scale_level_delta += 1;
+      tag->scale_level += 1;
+    }
 
   return TRUE;
 }
@@ -989,13 +992,19 @@ span_parse_func     (MarkupData            *md,
         }
       else if (strcmp (size, "smaller") == 0)
         {
-          tag->scale_level_delta -= 1;
-          tag->scale_level -= 1;
+	  if (tag)
+	    {
+	      tag->scale_level_delta -= 1;
+	      tag->scale_level -= 1;
+	    }
         }
       else if (strcmp (size, "larger") == 0)
         {
-          tag->scale_level_delta += 1;
-          tag->scale_level += 1;
+	  if (tag)
+	    {
+	      tag->scale_level_delta += 1;
+	      tag->scale_level += 1;
+	    }
         }
       else if (parse_absolute_size (tag, size))
         ; /* nothing */
@@ -1262,8 +1271,11 @@ sub_parse_func      (MarkupData            *md,
   CHECK_NO_ATTRS("sub");
 
   /* Shrink font, and set a negative rise */
-  tag->scale_level_delta -= 1;
-  tag->scale_level -= 1;
+  if (tag)
+    {
+      tag->scale_level_delta -= 1;
+      tag->scale_level -= 1;
+    }
 
   add_attribute (tag, pango_attr_rise_new (-SUPERSUB_RISE));
 
@@ -1281,8 +1293,11 @@ sup_parse_func      (MarkupData            *md,
   CHECK_NO_ATTRS("sup");
 
   /* Shrink font, and set a positive rise */
-  tag->scale_level_delta -= 1;
-  tag->scale_level -= 1;
+  if (tag)
+    {
+      tag->scale_level_delta -= 1;
+      tag->scale_level -= 1;
+    }
 
   add_attribute (tag, pango_attr_rise_new (SUPERSUB_RISE));
 
@@ -1300,8 +1315,11 @@ small_parse_func    (MarkupData            *md,
   CHECK_NO_ATTRS("small");
 
   /* Shrink text one level */
-  tag->scale_level_delta -= 1;
-  tag->scale_level -= 1;
+  if (tag)
+    {
+      tag->scale_level_delta -= 1;
+      tag->scale_level -= 1;
+    }
 
   return TRUE;
 }
