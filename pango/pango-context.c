@@ -773,9 +773,9 @@ add_engines (PangoContext      *context,
 		    {
 		      char *ctmp;
 
-		      ctmp = pango_font_description_to_string(&next_desc);
-		      g_warning("Couldn't load font \"%s\"", ctmp);
-		      g_free(ctmp);
+		      ctmp = pango_font_description_to_string (&next_desc);
+		      g_warning ("Couldn't load font \"%s\"", ctmp);
+		      g_free (ctmp);
 		    }
 		}
 
