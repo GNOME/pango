@@ -26,7 +26,7 @@
  * pango_shape:
  * @text:      the text to process
  * @length:    the length (in bytes) of @text
- * @analysis:  #PangoAnalysis structure from PangoItemize
+ * @analysis:  #PangoAnalysis structure from pango_itemize()
  * @glyphs:    glyph string in which to store results
  *
  * Given a segment of text and the corresponding 

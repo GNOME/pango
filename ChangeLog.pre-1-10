@@ -1,3 +1,10 @@
+2005-02-21  Owen Taylor  <otaylor@redhat.com>
+
+
+	* pango/fonts.c (pango_font_get_glyph_extents): 
+	* pango/shape.c (pango_shape): Minor doc fixes.
+	(#167922, #167924, Billy Biggs)
+
 2005-01-31  Matthias Clasen  <mclasen@redhat.com>
 
 	* modules/hebrew/hebrew-fc.c (get_cluster_glyphs): Show
