@@ -313,7 +313,7 @@ pango_xft_font_get_glyph_extents (PangoFont        *font,
     }
   else if (glyph)
     {
-      if (!fcfont->is_transformed && fcfont->is_hinted)
+      if (!fcfont->is_transformed)
 	get_glyph_extents_xft (fcfont, glyph, ink_rect, logical_rect);
       else
 	get_glyph_extents_raw (xfont, glyph, ink_rect, logical_rect);
