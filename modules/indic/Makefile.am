@@ -4,6 +4,7 @@ pangolibs = $(top_builddir)/pango/libpango-$(PANGO_API_VERSION).la $(GLIB_LIBS)
 pangoft2libs = $(top_builddir)/pango/libpangoft2-$(PANGO_API_VERSION).la $(FREETYPE_LIBS) $(pangolibs)
 
 INCLUDES =					\
+	-DG_LOG_DOMAIN=\"Pango\"		\
 	-DPANGO_ENABLE_ENGINE			\
 	-DG_DISABLE_DEPRECATED			\
 	$(PANGO_DEBUG_FLAGS)			\

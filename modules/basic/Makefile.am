@@ -7,12 +7,13 @@ pangoxlibs = $(top_builddir)/pango/libpangox-$(PANGO_API_VERSION).la $(X_LIBS) $
 pangoft2libs = $(top_builddir)/pango/libpangoft2-$(PANGO_API_VERSION).la $(FREETYPE_LIBS) $(pangolibs)
 pangowin32libs = $(top_builddir)/pango/libpangowin32-$(PANGO_API_VERSION).la $(pangolibs)
 
-INCLUDES = 			\
-	-DPANGO_ENABLE_ENGINE	\
-	-DG_DISABLE_DEPRECATED	\
-	$(PANGO_DEBUG_FLAGS)	\
-	-I$(top_srcdir)		\
-	-I$(top_srcdir)/pango/	\
+INCLUDES = 				\
+	-DG_LOG_DOMAIN=\"Pango\"	\
+	-DPANGO_ENABLE_ENGINE		\
+	-DG_DISABLE_DEPRECATED		\
+	$(PANGO_DEBUG_FLAGS)		\
+	-I$(top_srcdir)			\
+	-I$(top_srcdir)/pango/		\
 	$(GLIB_CFLAGS)
 
 if PLATFORM_WIN32

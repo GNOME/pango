@@ -13,6 +13,7 @@ SUBDIRS = $(OPENTYPE_SUBDIR) mini-fribidi
 DIST_SUBDIRS = mini-fribidi opentype
 
 INCLUDES =						\
+	-DG_LOG_DOMAIN=\"Pango\"			\
 	-DPANGO_ENABLE_BACKEND				\
 	-DPANGO_ENABLE_ENGINE				\
 	-DSYSCONFDIR=\"$(sysconfdir)\"			\

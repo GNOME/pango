@@ -1,3 +1,8 @@
+Mon Nov 22 18:30:14 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/opentype/Makefile.am pango/Makefile.am
+	modules/*/Makefile.am: Set G_LOG_DOMAIN.
+
 Mon Nov 22 15:21:11 2004  Owen Taylor  <otaylor@redhat.com>
 
 	* modules/syriac configure.in modules/Makefile.am
