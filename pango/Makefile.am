@@ -5,21 +5,22 @@ INCLUDES=-DSYSCONFDIR=\"$(sysconfdir)\" -DLOCALSTATEDIR=\"$(localstatedir)\"
 lib_LTLIBRARIES = libpango.la libpangox.la
 bin_PROGRAMS = pango-querymodules
 
-libpango_la_SOURCES = 	 \
-	break.c 	 \
-	fonts.c 	 \
-	glyphstring.c 	 \
-	mapping.c 	 \
-	modules.c 	 \
-	modules.h 	 \
-	pango-context.c  \
-	pango-coverage.c \
-	reorder-items.c  \
-	shape.c 	 \
-	utils.c  	 \
+libpango_la_SOURCES = 	   \
+	break.c 	   \
+	fonts.c 	   \
+	glyphstring.c 	   \
+	mapping.c 	   \
+	modules.c 	   \
+	modules.h 	   \
+	pango-attributes.c \
+	pango-context.c    \
+	pango-coverage.c   \
+	reorder-items.c    \
+	shape.c 	   \
+	utils.c  	   \
 	utils.h
 
-libpangox_la_SOURCES = 	 \
+libpangox_la_SOURCES = 	   \
 	pangox.c
 
 # We use the -release flag for now until the API settles
@@ -29,15 +30,16 @@ libpangox_la_SOURCES = 	 \
 libpango_la_LDFLAGS = -release $(VERSION)
 libpangox_la_LDFLAGS = -release $(VERSION)
 
-include_HEADERS = 	 \
-	pango.h		 \
-	pango-context.h	 \
-	pango-coverage.h \
-	pango-engine.h	 \
-	pango-font.h     \
-	pango-glyph.h	 \
-	pango-layout.h	 \
-	pango-types.h	 \
+include_HEADERS = 	   \
+	pango.h		   \
+	pango-attributes.h \
+	pango-context.h	   \
+	pango-coverage.h   \
+	pango-engine.h	   \
+	pango-font.h       \
+	pango-glyph.h	   \
+	pango-layout.h	   \
+	pango-types.h	   \
 	pangox.h	
 
 pango_querymodules_SOURCES = \

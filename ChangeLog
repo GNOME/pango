@@ -1,3 +1,10 @@
+Tue Feb 15 02:35:56 2000  Owen Taylor  <otaylor@redhat.com>
+
+	* docs/**: Add documentation for attributes.
+
+	* Makefile.am libpango/pango-attributes.[ch]: Finish initial 
+	  implementation of attributes APIs.
+
 Mon Feb 14 22:04:38 2000  Owen Taylor  <otaylor@redhat.com>
 
 	* libpango/pango-attributes.[ch]: Start of attribute lists. 

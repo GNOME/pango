@@ -23,7 +23,9 @@
 
 struct _PangoAttrList
 {
+  guint ref_count;
   GSList *attributes;
+  GSList *attributes_tail;
 };
 
 struct _PangoAttrIterator
@@ -32,16 +34,25 @@ struct _PangoAttrIterator
   GList *attribute_stack;
 };
 
+static PangoAttribute *pango_attr_color_new  (const PangoAttrClass *klass,
+					      guint16         red,
+					      guint16         green,
+					      guint16         blue);
+static PangoAttribute *pango_attr_string_new (const PangoAttrClass *klass,
+					      const char     *str);
+static PangoAttribute *pango_attr_int_new    (const PangoAttrClass *klass,
+					      int             value);
+
 /**
- * pango_attribute_register_type:
+ * pango_attr_type_register:
  * @name: an identifier for the type. (Currently unused.)
  * 
  * Allocate a new attribute type ID.
  * 
  * Return value: the new type ID.
  **/
-PangoAttributeType
-pango_attribute_register_type (const gchar *name)
+PangoAttrType
+pango_attr_type_register (const gchar *name)
 {
   static guint current_type = 0x1000000;
 
@@ -57,9 +68,9 @@ pango_attribute_register_type (const gchar *name)
  * Return value: a newly allocated #PangoAttribute.
  **/
 PangoAttribute *
-pango_attribute_copy (PangoAttribute *attr)
+pango_attribute_copy (const PangoAttribute *attr)
 {
-  g_return_if_fail (attr != NULL);
+  g_return_val_if_fail (attr != NULL, NULL);
 
   return attr->klass->copy (attr);
 }
@@ -75,7 +86,7 @@ pango_attribute_destroy (PangoAttribute *attr)
 {
   g_return_if_fail (attr != NULL);
 
-  attr->klass->free (attr);
+  attr->klass->destroy (attr);
 }
 
 /**
@@ -90,11 +101,11 @@ pango_attribute_destroy (PangoAttribute *attr)
  * Return value: %TRUE if the two attributes have the same value.
  **/
 gboolean
-pango_attribute_compare (PangoAttribute    *attr1,
-			 PangoAttribute    *attr2)
+pango_attribute_compare (const PangoAttribute *attr1,
+			 const PangoAttribute *attr2)
 {
-  g_return_if_fail (attr1 != NULL);
-  g_return_if_fail (attr2 != NULL);
+  g_return_val_if_fail (attr1 != NULL, FALSE);
+  g_return_val_if_fail (attr2 != NULL, FALSE);
 
   if (attr1->klass->type != attr2->klass->type)
     return FALSE;
@@ -102,113 +113,605 @@ pango_attribute_compare (PangoAttribute    *attr1,
   return attr1->klass->compare (attr1, attr2);
 }
 
-static PangoAttribute
-pango_attr_lang_copy (PangoAttribute *attr);
+static PangoAttribute *
+pango_attr_string_copy (const PangoAttribute *attr)
 {
-  return pango_attr_lang_new (((PangoAttrLang *)attr)->lang);
+  return pango_attr_string_new (attr->klass, ((PangoAttrString *)attr)->value);
 }
 
-static gboolean
-pango_attr_lang_destroy (PangoAttribute *attr);
+static void
+pango_attr_string_destroy (PangoAttribute *attr)
 {
-  g_free (((PangoAttrLang *)attr)->lang);
+  g_free (((PangoAttrString *)attr)->value);
   g_free (attr);
 }
 
 static gboolean
-pango_attr_lang_compare (const PangoAttribute *attr1,
-			 const PangoAttribute *attr2)
+pango_attr_string_compare (const PangoAttribute *attr1,
+			   const PangoAttribute *attr2)
 {
-  return strcmp (((PangoAttrLang *)attr1)->lang, ((PangoAttrLang *)attr2)->lang) == 0;
+  return strcmp (((PangoAttrString *)attr1)->value, ((PangoAttrString *)attr2)->value) == 0;
 }
 
-PangoAttribute *
-pango_attr_lang_new (const char *lang)
+static PangoAttribute *
+pango_attr_string_new (const PangoAttrClass *klass,
+		       const char           *str)
 {
-  static const PangoAttributeClass klass = {
-    PANGO_ATTR_LANG
-    pango_attr_lang_copy,
-    pango_attr_lang_destroy,
-    pango_attr_lang_compare,
-  };
+  PangoAttrString *result = g_new (PangoAttrString, 1);
 
-  PangoAttrLang *result = g_new (PangoAttrLang, 1);
-  result->lang = g_strdup (lang);
+  result->attr.klass = klass;
+  result->value = g_strdup (str);
 
   return (PangoAttribute *)result;
 }
 
-PangoAttribute *pango_attr_color_new (guint16 red,
-				      guint16 green,
-				      guint16 blue)
-{
-}
-
+/**
+ * pango_attr_lang_new:
+ * @lang: language tag (in the form "en_US")
+ * 
+ * Create a new language tag attribute. 
+ * 
+ * Return value: the new #PangoAttribute.
+ **/
 PangoAttribute *
-pango_attr_size_new (double size)
+pango_attr_lang_new (const char *lang)
 {
+  static const PangoAttrClass klass = {
+    PANGO_ATTR_LANG,
+    pango_attr_string_copy,
+    pango_attr_string_destroy,
+    pango_attr_string_compare
+  };
+
+  g_return_val_if_fail (lang != NULL, NULL);
+  
+  return pango_attr_string_new (&klass, lang);
 }
 
+/**
+ * pango_attr_family_new:
+ * @family: the family or comma separated list of families
+ * 
+ * Create a new font family attribute.
+ * 
+ * Return value: the new #PangoAttribute.
+ **/
+PangoAttribute *
+pango_attr_family_new (const char *family)
+{
+  static const PangoAttrClass klass = {
+    PANGO_ATTR_FAMILY,
+    pango_attr_string_copy,
+    pango_attr_string_destroy,
+    pango_attr_string_compare
+  };
+
+  g_return_val_if_fail (family != NULL, NULL);
+  
+  return pango_attr_string_new (&klass, family);
+}
+
+static PangoAttribute *
+pango_attr_color_copy (const PangoAttribute *attr)
+{
+  const PangoAttrColor *color_attr = (PangoAttrColor *)attr;
+  
+  return pango_attr_color_new (attr->klass,
+			       color_attr->red, color_attr->blue, color_attr->green);
+}
+
+static void
+pango_attr_color_destroy (PangoAttribute *attr)
+{
+  g_free (attr);
+}
+
+static gboolean
+pango_attr_color_compare (const PangoAttribute *attr1,
+			  const PangoAttribute *attr2)
+{
+  const PangoAttrColor *color_attr1 = (const PangoAttrColor *)attr1;
+  const PangoAttrColor *color_attr2 = (const PangoAttrColor *)attr2;
+  
+  return (color_attr1->red == color_attr2->red &&
+	  color_attr1->blue == color_attr2->blue &&
+	  color_attr1->green == color_attr2->green);
+}
+
+static PangoAttribute *
+pango_attr_color_new (const PangoAttrClass *klass,
+		      guint16               red,
+		      guint16               green,
+		      guint16               blue)
+{
+  PangoAttrColor *result = g_new (PangoAttrColor, 1);
+  result->attr.klass = klass;
+  result->red = red;
+  result->green = green;
+  result->blue = blue;
+
+  return (PangoAttribute *)result;
+}
+
+/**
+ * pango_attr_foreground_new:
+ * @red: the red value (ranging from 0 to 65535)
+ * @green: the green value
+ * @blue: the blue value
+ * 
+ * Create a new foreground color attribute.
+ * 
+ * Return value: the new #PangoAttribute.
+ **/
+PangoAttribute *
+pango_attr_foreground_new (guint16 red,
+			   guint16 green,
+			   guint16 blue)
+{
+  static const PangoAttrClass klass = {
+    PANGO_ATTR_FOREGROUND,
+    pango_attr_color_copy,
+    pango_attr_color_destroy,
+    pango_attr_color_compare
+  };
+
+  return pango_attr_color_new (&klass, red, green, blue);
+}
+
+/**
+ * pango_attr_background_new:
+ * @red: the red value (ranging from 0 to 65535)
+ * @green: the green value
+ * @blue: the blue value
+ * 
+ * Create a new background color attribute.
+ * 
+ * Return value: the new #PangoAttribute.
+ **/
+PangoAttribute *
+pango_attr_background_new (guint16 red,
+			   guint16 green,
+			   guint16 blue)
+{
+  static const PangoAttrClass klass = {
+    PANGO_ATTR_BACKGROUND,
+    pango_attr_color_copy,
+    pango_attr_color_destroy,
+    pango_attr_color_compare
+  };
+
+  return pango_attr_color_new (&klass, red, green, blue);
+}
+
+static PangoAttribute *
+pango_attr_int_copy (const PangoAttribute *attr)
+{
+  const PangoAttrInt *int_attr = (PangoAttrInt *)attr;
+  
+  return pango_attr_int_new (attr->klass, int_attr->value);
+}
+
+static void
+pango_attr_int_destroy (PangoAttribute *attr)
+{
+  g_free (attr);
+}
+
+static gboolean
+pango_attr_int_compare (const PangoAttribute *attr1,
+			  const PangoAttribute *attr2)
+{
+  const PangoAttrInt *int_attr1 = (const PangoAttrInt *)attr1;
+  const PangoAttrInt *int_attr2 = (const PangoAttrInt *)attr2;
+  
+  return (int_attr1->value == int_attr2->value);
+}
+
+static PangoAttribute *
+pango_attr_int_new (const PangoAttrClass *klass,
+		    int                   value)
+{
+  PangoAttrInt *result = g_new (PangoAttrInt, 1);
+  result->attr.klass = klass;
+  result->value = value;
+
+  return (PangoAttribute *)result;
+}
+
+/**
+ * pango_attr_size_new:
+ * @size: the font size, in 1000ths of a point.
+ * 
+ * Create a new font-size attribute.
+ * 
+ * Return value: the new #PangoAttribute.
+ **/
+PangoAttribute *
+pango_attr_size_new (int size)
+{
+  static const PangoAttrClass klass = {
+    PANGO_ATTR_SIZE,
+    pango_attr_int_copy,
+    pango_attr_int_destroy,
+    pango_attr_int_compare
+  };
+
+  return pango_attr_int_new (&klass, size);
+}
+
+/**
+ * pango_attr_style_new:
+ * @style: the slant style
+ * 
+ * Create a new font slant style attribute.
+ * 
+ * Return value: the new #PangoAttribute.
+ **/
 PangoAttribute *
 pango_attr_style_new (PangoStyle style)
 {
+  static const PangoAttrClass klass = {
+    PANGO_ATTR_STYLE,
+    pango_attr_int_copy,
+    pango_attr_int_destroy,
+    pango_attr_int_compare
+  };
+
+  return pango_attr_int_new (&klass, (int)style);
 }
 
+/**
+ * pango_attr_weight_new:
+ * @weight: the weight
+ * 
+ * Create a new font weight attribute.
+ * 
+ * Return value: the new #PangoAttribute.
+ **/
 PangoAttribute *
 pango_attr_weight_new (PangoWeight weight)
 {
+  static const PangoAttrClass klass = {
+    PANGO_ATTR_WEIGHT,
+    pango_attr_int_copy,
+    pango_attr_int_destroy,
+    pango_attr_int_compare
+  };
+
+  return pango_attr_int_new (&klass, (int)weight);
 }
 
+/**
+ * pango_attr_variant_new:
+ * @variant: the variant
+ *
+ * Create a new font variant attribute (normal or small caps)
+ * 
+ * Return value: the new #PangoAttribute.
+ **/
 PangoAttribute *
 pango_attr_variant_new (PangoVariant variant)
 {
+  static const PangoAttrClass klass = {
+    PANGO_ATTR_VARIANT,
+    pango_attr_int_copy,
+    pango_attr_int_destroy,
+    pango_attr_int_compare
+  };
+
+  return pango_attr_int_new (&klass, (int)variant);
 }
 
+/**
+ * pango_attr_stretch_new:
+ * @stretch: the stretch
+ * 
+ * Create a new font stretch attribute
+ * 
+ * Return value: the new #PangoAttribute.
+ **/
 PangoAttribute *
 pango_attr_stretch_new (PangoStretch  stretch)
 {
+  static const PangoAttrClass klass = {
+    PANGO_ATTR_STRETCH,
+    pango_attr_int_copy,
+    pango_attr_int_destroy,
+    pango_attr_int_compare
+  };
+
+  return pango_attr_int_new (&klass, (int)stretch);
 }
 
+/**
+ * pango_attr_underline_new:
+ * @underline: %TRUE if the text should be underlined
+ * 
+ * Create a new underline-style object.
+ * 
+ * Return value: the new #PangoAttribute.
+ **/
 PangoAttribute *
 pango_attr_underline_new (gboolean underline)
 {
+  static const PangoAttrClass klass = {
+    PANGO_ATTR_UNDERLINE,
+    pango_attr_int_copy,
+    pango_attr_int_destroy,
+    pango_attr_int_compare
+  };
+
+  return pango_attr_int_new (&klass, (int)underline);
 }
 
+/**
+ * pango_attr_strikethrough_new:
+ * @strikethrough: %TRUE if the text should be struck-through.
+ * 
+ * Create a new font strike-through attribute.
+ * 
+ * Return value: the new #PangoAttribute.
+ **/
 PangoAttribute *
 pango_attr_strikethrough_new (gboolean strikethrough)
 {
+  static const PangoAttrClass klass = {
+    PANGO_ATTR_STRIKETHROUGH,
+    pango_attr_int_copy,
+    pango_attr_int_destroy,
+    pango_attr_int_compare
+  };
+
+  return pango_attr_int_new (&klass, (int)strikethrough);
 }
 
+/**
+ * pango_attr_rise_new:
+ * @rise: the amount that the text should be displaced vertically,
+ *        in 10'000ths of an em. Positive values displace the
+ *        text upwards.
+ * 
+ * Create a new baseline displacement attribute.
+ * 
+ * Return value: the new #PangoAttribute.
+ **/
 PangoAttribute *
 pango_attr_rise_new (int rise)
 {
+  static const PangoAttrClass klass = {
+    PANGO_ATTR_RISE,
+    pango_attr_int_copy,
+    pango_attr_int_destroy,
+    pango_attr_int_compare
+  };
+
+  return pango_attr_int_new (&klass, (int)rise);
 }
 
+/**
+ * pango_attr_list_new:
+ * 
+ * Create a new empty attribute list with a reference count of 1.
+ * 
+ * Return value: the newly allocated #PangoAttrList.
+ **/
 PangoAttrList *
 pango_attr_list_new (void)
 {
+  PangoAttrList *list = g_new (PangoAttrList, 1);
+
+  list->ref_count = 1;
+  list->attributes = NULL;
+  list->attributes_tail = NULL;
+
+  return list;
 }
 
-PangoAttrList *
+/**
+ * pango_attr_list_ref:
+ * @list: a #PangoAttrList
+ * 
+ * Increase the reference count on the given attribute list by one.
+ **/
+void
 pango_attr_list_ref (PangoAttrList *list)
 {
+  g_return_if_fail (list != NULL);
+
+  list->ref_count++;
 }
 
-PangoAttrList *
+/**
+ * pango_attr_list_unref:
+ * @list: a #PangoAttrList
+ * 
+ * Decrease the reference count on the given attribute list by one.
+ * If the result is zero, free the attribute list and the attributes
+ * it contains.
+ **/
+void
 pango_attr_list_unref (PangoAttrList *list)
 {
+  GSList *tmp_list;
+  
+  g_return_if_fail (list != NULL);
+  g_return_if_fail (list->ref_count > 0);
+
+  list->ref_count--;
+  if (list->ref_count == 0)
+    {
+      tmp_list = list->attributes;
+      while (tmp_list)
+	{
+	  PangoAttribute *attr = tmp_list->data;
+	  tmp_list = tmp_list->next;
+
+	  attr->klass->destroy (attr);
+	}
+
+      g_slist_free (list->attributes);
+    }
 }
 
-PangoAttrList *
-pango_attr_list_append (PangoAttrList  *list,
+/**
+ * pango_attr_list_insert:
+ * @list: a #PangoAttrList
+ * @attr: the attribute to insert. Ownership of this value is
+ *        assumed by the list.
+ * 
+ * Insert the given attribute into the #PangoAttrList. It will
+ * be inserted after all other attributes with a matching
+ * @start_index.
+ **/
+void
+pango_attr_list_insert (PangoAttrList  *list,
 			PangoAttribute *attr)
 {
+  GSList *tmp_list, *prev, *link;
+  gint start_index = attr->start_index;
+  
+  g_return_if_fail (list != NULL);
+
+  if (!list->attributes)
+    {
+      list->attributes = g_slist_prepend (NULL, attr);
+      list->attributes_tail = list->attributes;
+    }
+  else if (((PangoAttribute *)list->attributes_tail->data)->start_index <= start_index)
+    {
+      g_slist_append (list->attributes_tail, attr);
+    }
+  else
+    {
+      prev = NULL;
+      tmp_list = list->attributes;
+      while (1)
+	{
+	  PangoAttribute *tmp_attr = tmp_list->data;
+	  
+	  if (tmp_attr->start_index > start_index)
+	    {
+	      link = g_slist_alloc ();
+	      link->next = tmp_list;
+	      link->data = attr;
+
+	      if (prev)
+		prev->next = link;
+	      else
+		list->attributes = link;
+
+	      if (!tmp_list)
+		list->attributes_tail = link;
+	    }
+	  
+	  prev = tmp_list;
+	  tmp_list = tmp_list->next;
+	}
+    }
 }
 
-PangoAttrList *
+/**
+ * pango_attr_list_change:
+ * @list: a #PangoAttrList
+ * @attr: the attribute to insert. Ownership of this value is
+ *        assumed by the list.
+ * 
+ * Insert the given attribute into the #PangoAttrList. It will
+ * replace any attributes of the same type on that segment
+ * and be merged with any adjoining attributes that are identical.
+ *
+ * This function is slower than pango_attr_list_insert() for
+ * creating a attribute list in order (potentially much slower
+ * for large lists). However, pango_attr_list_insert() is not
+ * suitable for continually changing a set of attributes 
+ * since it never removes or combines existing attributes.
+ **/
+void
 pango_attr_list_change (PangoAttrList  *list,
-				       PangoAttribute *attr)
+			PangoAttribute *attr)
 {
+  GSList *tmp_list, *prev, *link;
+  gint start_index = attr->start_index;
+  gint end_index = attr->end_index;
+  
+  g_return_if_fail (list != NULL);
+
+  tmp_list = list->attributes;
+  prev = NULL;
+  while (tmp_list)
+    {
+      PangoAttribute *tmp_attr;
+
+      if (!tmp_list ||
+	  ((PangoAttribute *)tmp_list->data)->start_index > start_index)
+	{
+	  /* We need to insert a new attribute
+	   */
+	  link = g_slist_alloc ();
+	  link->next = tmp_list;
+	  link->data = attr;
+	  
+	  if (prev)
+	    prev->next = link;
+	  else
+	    list->attributes = link;
+	  
+	  if (!tmp_list)
+	    list->attributes_tail = link;
+	  
+	  prev = link;
+	}
+
+      tmp_attr = tmp_list->data;
+
+      if (tmp_attr->end_index >= start_index &&
+	       pango_attribute_compare (tmp_attr, attr))
+	{
+	  /* We can merge the new attribute with this attribute
+	   */
+	  end_index = MAX (end_index, tmp_attr->end_index);
+	  tmp_attr->end_index = end_index;
+	  pango_attribute_destroy (attr);
+
+	  attr = tmp_attr;
+
+	  prev = tmp_list;
+	  tmp_list = tmp_list->next;
+
+	  break;
+	}
+      
+      prev = tmp_list;
+      tmp_list = tmp_list->next;
+    }
+
+  /* We now have the range inserted into the list one way or the
+   * other. Fix up the remainder
+   */
+  while (tmp_list)
+    {
+      PangoAttribute *tmp_attr = tmp_list->data;
+
+      if (tmp_attr->start_index > end_index)
+	break;
+      else if (pango_attribute_compare (tmp_attr, attr))
+	{
+	  /* We can merge the new attribute with this attribute
+	   */
+	  attr->end_index = MAX (end_index, tmp_attr->end_index);
+	  
+	  pango_attribute_destroy (tmp_attr);
+	  prev->next = tmp_list->next;
+
+	  g_slist_free_1 (tmp_list);
+	  tmp_list = prev->next;
+	}
+      else
+	{
+	  prev = tmp_list;
+	  tmp_list = tmp_list->next;
+	}
+    }
 }
 
 /**
@@ -225,7 +728,7 @@ pango_attr_list_get_iterator (PangoAttrList  *list)
 {
   PangoAttrIterator *result;
 
-  g_return_if_fail (list != NULL);
+  g_return_val_if_fail (list != NULL, NULL);
 
   result = g_new (PangoAttrIterator, 1);
   result->next_attribute = list->attributes;
@@ -237,6 +740,8 @@ pango_attr_list_get_iterator (PangoAttrList  *list)
       result->attribute_stack = g_list_prepend (result->attribute_stack, result->next_attribute->data);
       result->next_attribute = result->next_attribute->next;
     }
+
+  return result;
 }
 
 /**
@@ -254,9 +759,12 @@ pango_attr_iterator_next (PangoAttrIterator *iterator)
   int next_index = G_MAXINT;
   GList *tmp_list;
 
-  g_return_if_fail (iterator != NULL);
+  g_return_val_if_fail (iterator != NULL, -1);
 
-  tmp_list = result->attribute_stack;
+  if (!iterator->next_attribute && !iterator->attribute_stack)
+    return -1;
+  
+  tmp_list = iterator->attribute_stack;
   while (tmp_list)
     {
       PangoAttribute *attr = tmp_list->data;
@@ -264,21 +772,21 @@ pango_attr_iterator_next (PangoAttrIterator *iterator)
 	next_index = attr->end_index;
     }
 
-  tmp_list = result->attribute_stack;
+  tmp_list = iterator->attribute_stack;
   
-  if (result->next_attribute)
+  if (iterator->next_attribute)
     {
-      int next_start = ((PangoAttribute *)result->next_attribute->data)->start_index;
+      int next_start = ((PangoAttribute *)iterator->next_attribute->data)->start_index;
 
       if (next_start <= next_index)
 	{
 	  do
 	    {
-	      result->attribute_stack = g_list_prepend (result->attribute_stack, result->next_attribute->data);
-	      result->next_attribute = result->next_attribute->next;
+	      iterator->attribute_stack = g_list_prepend (iterator->attribute_stack, iterator->next_attribute->data);
+	      iterator->next_attribute = iterator->next_attribute->next;
 	    }
-	  while (result->next_attribute &&
-		 ((PangoAttribute *)result->next_attribute->data)->start_index == next_start);
+	  while (iterator->next_attribute &&
+		 ((PangoAttribute *)iterator->next_attribute->data)->start_index == next_start);
 	}
 
       if (next_start < next_index)
@@ -291,7 +799,7 @@ pango_attr_iterator_next (PangoAttrIterator *iterator)
 
       if (((PangoAttribute *)tmp_list->data)->start_index == next_index)
 	{
-	  result->attribute_stack = g_list_remove_link (result->attribute_stack, tmp_list);
+	  iterator->attribute_stack = g_list_remove_link (iterator->attribute_stack, tmp_list);
 	  g_list_free_1 (tmp_list);
 	}
       
@@ -322,7 +830,9 @@ pango_attr_iterator_destroy (PangoAttrIterator *iterator)
  * @type: the type of attribute to find.
  * 
  * Find the current attribute of a particular type at the iterator
- * location.
+ * location. When multiple attributes of the same type overlap,
+ * the attribute whose range starts closest to the current location
+ * is used.
  * 
  * Return value: the current attribute of the given type, or %NULL
  *               if no attribute of that type applies to the current
@@ -332,8 +842,11 @@ PangoAttribute *
 pango_attr_iterator_get (PangoAttrIterator *iterator,
 			 PangoAttrType      type)
 {
-  GList *tmp_list = iterator->attribute_stack;
+  GList *tmp_list;
 
+  g_return_val_if_fail (iterator != NULL, NULL);
+
+  tmp_list = iterator->attribute_stack;
   while (tmp_list)
     {
       PangoAttribute *attr = tmp_list->data;
@@ -362,23 +875,26 @@ pango_attr_iterator_get_font (PangoAttrIterator    *iterator,
 			      PangoFontDescription *base,
 			      PangoFontDescription *current)
 {
-  *current = *base;
   PangoAttribute *attr;
 
+  g_return_if_fail (iterator != NULL);
+
+  *current = *base;
+
   if ((attr = pango_attr_iterator_get (iterator, PANGO_ATTR_FAMILY)))
-    current->family = ((PangoAttrFamily *)attr)->family;
+    current->family_name = ((PangoAttrString *)attr)->value;
 
   if ((attr = pango_attr_iterator_get (iterator, PANGO_ATTR_STYLE)))
-    current->style = ((PangoAttrStyle *)attr)->style;
+    current->style = ((PangoAttrInt *)attr)->value;
   
   if ((attr = pango_attr_iterator_get (iterator, PANGO_ATTR_VARIANT)))
-    current->variant = ((PangoAttrVariant *)attr)->variant;
+    current->variant = ((PangoAttrInt *)attr)->value;
   
   if ((attr = pango_attr_iterator_get (iterator, PANGO_ATTR_WEIGHT)))
-    current->weight = ((PangoAttrWeight *)attr)->weight;
+    current->weight = ((PangoAttrInt *)attr)->value;
 
   if ((attr = pango_attr_iterator_get (iterator, PANGO_ATTR_STRETCH)))
-    current->stretch = ((PangoAttrStretch *)attr)->stretch;
+    current->stretch = ((PangoAttrInt *)attr)->value;
 }
 
 

@@ -78,6 +78,14 @@ Functions for rendering and measuring glyphs on
 the X Window system.
 
 
+<!-- ##### FUNCTION pango_attribute_register_type ##### -->
+<para>
+
+</para>
+
+@name: 
+@Returns: 
+
 <!-- ##### FUNCTION g_glyph_string_new ##### -->
 <para>
 
