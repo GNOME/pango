@@ -1,3 +1,14 @@
+Wed Jan 23 16:49:24 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* examples/viewer-ft2.c: Remove this file; pangofttopgm
+	is the test case for the FT2 backend now.
+
+	* examples/Makefile.am: Don't dist moc_viewer-qt.cc.
+
+	* examples/Makefile.am: Build pangofttopgm if we have FT2.
+
+	* examples/pangoft2topgm.c (main): Warning fixes.
+
 2002-01-21  Havoc Pennington  <hp@redhat.com>
 
 	* pango/pango-layout.c (pango_layout_set_markup_with_accel): fix
