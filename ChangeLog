@@ -1,3 +1,8 @@
+2002-01-11  Havoc Pennington  <hp@redhat.com>
+
+	* pango/pango-layout.c (pango_layout_iter_get_index): docs tweak
+	(pango_layout_iter_next_cluster): update iter->index here
+
 Fri Jan 11 15:01:13 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pangoft2-fontmap.c (pango_ft2_make_pattern) 

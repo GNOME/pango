@@ -4029,7 +4029,8 @@ pango_layout_iter_free (PangoLayoutIter *iter)
  * 
  * Gets the current byte index. Note that iterating forward by char
  * moves in visual order, not logical order, so indexes may not be
- * sequential.
+ * sequential. Also, the index may be equal to the length of the text
+ * in the layout, if on the %NULL run (see pango_layout_iter_get_run()).
  * 
  * Return value: current byte index
  **/
@@ -4189,6 +4190,7 @@ pango_layout_iter_next_cluster (PangoLayoutIter *iter)
       iter->cluster_start = iter->next_cluster_start;
       iter->next_cluster_start = next_cluster_start (gs, iter->cluster_start);
       iter->cluster_index = gs->log_clusters[iter->cluster_start];
+      iter->index = iter->cluster_index;
       return TRUE;
     }
 }
@@ -4274,6 +4276,7 @@ pango_layout_iter_next_line (PangoLayoutIter *iter)
   else
     iter->run = NULL;
 
+  /* FIXME isn't this broken? we can have \r\n etc. */
   /* If we move on to an empty line (no runs), it means the empty line
    * represents a '\n' in layout->text, so advance iter->index
    */
@@ -4340,6 +4343,8 @@ pango_layout_iter_get_char_extents (PangoLayoutIter *iter,
       end_index = start_index;
       start_index = tmp;
     }
+
+  g_assert (start_index < end_index);
   
   p = iter->layout->text + start_index;
   current = iter->layout->text + iter->index;
