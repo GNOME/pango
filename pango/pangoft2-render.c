@@ -258,9 +258,8 @@ compare_points (const void *a,
 /**
  * _pango_ft2_draw_rect:
  * @bitmap: a #FT_Bitmap
- * @matrix: a #PangoMatrix giving the user to device transformation
- * @x_offset: X offset in device coordinates to add onto transformation result
- * @y_offset: Y offset in device coordinates to add onto transformation result
+ * @matrix: a #PangoMatrix giving the user to device transformation,
+ *          or %NULL for the identity.
  * @x: X coordinate of rectangle, in Pango units in user coordinate system
  * @y: Y coordinate of rectangle, in Pango units in user coordinate system
  * @width: width of rectangle, in Pango units in user coordinate system
@@ -278,7 +277,11 @@ _pango_ft2_draw_rect (FT_Bitmap    *bitmap,
 		      int           width,
 		      int           height)
 {
+  static const PangoMatrix identity = PANGO_MATRIX_INIT;
   Point points[4];
+
+  if (!matrix)
+    matrix = &identity;
 
   /* Convert the points to device coordinates, and sort
    * in ascending Y order. (Ordering by X for ties)
@@ -413,6 +416,22 @@ get_total_matrix (PangoMatrix  *total,
   total->y0 = (global->yx * x + global->yy * y) / PANGO_SCALE + global->y0;
 }
 
+/**
+ * _pango_ft2_draw_error_underline:
+ * @bitmap: a #FT_Bitmap
+ * @matrix: a #PangoMatrix giving the user to device transformation,
+ *          or %NULL for the identity.
+ * @x: X coordinate of underline, in Pango units in user coordinate system
+ * @y: Y coordinate of underline, in Pango units in user coordinate system
+ * @width: width of underline, in Pango units in user coordinate system
+ * @height: height of underline, in Pango units in user coordinate system
+ *
+ * Draw a squiggly line that approximately covers the given rectangle
+ * in the style of an underline used to indicate a spelling error.
+ * (The width of the underline is rounded to an integer number
+ * of up/down segments and the resulting rectangle is centered
+ * in the original rectangle)
+ **/
 void
 _pango_ft2_draw_error_underline (FT_Bitmap    *bitmap,
 				 PangoMatrix  *matrix,
@@ -425,9 +444,13 @@ _pango_ft2_draw_error_underline (FT_Bitmap    *bitmap,
   int square = height / HEIGHT_SQUARES;
   int unit_width = (HEIGHT_SQUARES - 1) * square;
   int width_units = (width + unit_width / 2) / unit_width;
+  static const PangoMatrix identity = PANGO_MATRIX_INIT;
 
   x += (width - width_units * unit_width) / 2;
   width = width_units * unit_width;
+
+  if (!matrix)
+    matrix = &identity;
 
   while (TRUE)
     {

@@ -1,3 +1,9 @@
+Tue Jun 22 10:39:32 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pangoft2-render.c (_pango_ft2_draw_error_underline,
+	_pango_ft2_draw_rect): Allow %NULL for @matrix.
+	(#144775, Diego González)
+
 Mon Jun 21 16:02:04 2004  Owen Taylor  <otaylor@redhat.com>
 
 	#143556, Noah Misch
