@@ -1,5 +1,9 @@
 2004-09-15  Tor Lillqvist  <tml@iki.fi>
 
+	* pango/pangowin32-fontmap.c (pango_win32_insert_font): Ignore
+	fonts in SYMBOL_CHARSET. They don't have any Unicode mapping
+	table. (#152473)
+
 	* pango/querymodules.c (string_needs_escape, escape_string):
 	Escape also backslashes. (#152607, Kazuki Iwamoto)
 
