@@ -1,3 +1,7 @@
+# NOTE: this file isn't used any more. No use trying to install a
+# pangowin32.aliases file anywhere.  This file is here mostly in case
+# somebody is interested in history ;-)
+
 # File defining aliases of PangoFontDescription to Windows font set
 #
 # family style variant weight stretch   "facename,..."

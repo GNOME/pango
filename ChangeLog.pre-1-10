@@ -1,3 +1,13 @@
+2002-09-21  Tor Lillqvist  <tml@iki.fi>
+
+	* examples/Makefile.am (EXTRA_DIST): Don't distribute
+	pangowin32.aliases, which isn't used.
+
+	* examples/pangowin32.aliases: Add comment that the file is of
+	historical interest only. Could be removed from CVS completely,
+	but I'll keep it for a while because of the useful comments on how
+	to get various non-Latin fonts.
+
 Thu Sep 19 15:12:21 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pango-utils.c (pango_scan_int): Fix problem
