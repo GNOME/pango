@@ -835,7 +835,8 @@ uniscribe_shape (PangoFont        *font,
   int wlen, i;
   gboolean retval = TRUE;
   GError *error;
-  HGDIOBJ old_font;
+  HGDIOBJ old_font = NULL;
+  HFONT hfont = NULL;
   LOGFONT *lf;
   SCRIPT_CACHE script_cache[100];
 
@@ -847,7 +848,15 @@ uniscribe_shape (PangoFont        *font,
   wlen /= 2;
 
   lf = pango_win32_font_logfont (font);
-  old_font = SelectObject (hdc, pango_win32_font_cache_load (font_cache, lf));
+  hfont = pango_win32_font_cache_load (font_cache, lf);
+  g_free (lf);
+
+  if (hfont == NULL)
+    retval = FALSE;
+
+  if (retval)
+    old_font = SelectObject (hdc, hfont);
+
   if (old_font == NULL)
     {
 #ifdef BASIC_WIN32_DEBUGGING
@@ -886,6 +895,9 @@ uniscribe_shape (PangoFont        *font,
   g_free (wtext);
   if (old_font != NULL)
     SelectObject (hdc, old_font);
+
+  if (hfont != NULL)
+    pango_win32_font_cache_unload (font_cache, hfont);
 
   return retval;
 }

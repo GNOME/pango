@@ -57,7 +57,8 @@ free_cache_entry (LOGFONT             *logfont,
 		  CacheEntry          *entry,
 		  PangoWin32FontCache *cache)
 {
-  DeleteObject (entry->hfont);
+  if (!DeleteObject (entry->hfont))
+    PING (("DeleteObject for hfont %p failed", entry->hfont));
 
   g_free (entry);
 }
@@ -144,6 +145,8 @@ cache_entry_unref (PangoWin32FontCache *cache,
   entry->ref_count--;
   if (entry->ref_count == 0)
     {
+      PING (("removing cache entry %p", entry->hfont));
+
       g_hash_table_remove (cache->forward, &entry->logfont);
       g_hash_table_remove (cache->back, entry->hfont);
 
@@ -181,6 +184,7 @@ pango_win32_font_cache_load (PangoWin32FontCache *cache,
   if (entry)
     {
       entry->ref_count++;
+      PING (("increased refcount for cache entry %p: %d", entry->hfont, entry->ref_count));
     }
   else
     {
@@ -233,7 +237,7 @@ pango_win32_font_cache_load (PangoWin32FontCache *cache,
 
 	  if (hfont != NULL)
 	    {
-	      PING (("Success!"));
+	      PING (("Success! hfont=%p", hfont));
 	      break;
 	    }
 	  

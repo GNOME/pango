@@ -1,3 +1,14 @@
+2002-11-12  Tor Lillqvist  <tml@iki.fi>
+
+	* pango/pangowin32-fontcache.c (free_cache_entry,
+	cache_entry_unref, pango_win32_font_cache_load): Add more
+	debugging output.
+
+	* modules/basic/basic-win32.c (uniscribe_shape): Plug memory leak:
+	Free return value from pango_win32_font_logfont(). Call
+	pango_win32_font_cache_unload() for the hfont returned from
+	pango_win32_font_cache_load() after using it.
+
 Thu Nov  7 10:08:19 2002  HideToshi Tajima  <hidetoshi.tajima@sun.com>
 
 	* modules/basic/basic-x.c: 
