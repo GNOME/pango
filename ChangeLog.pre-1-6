@@ -1,3 +1,12 @@
+Sun Nov 25 22:35:46 2001  Owen Taylor  <otaylor@redhat.com>
+
+	* configure.in (have_fribidi) README: Disable --with-fribidi; it offers
+	no advantages and until either fribidi is updated to use Glib-2.0
+	always, or the Glib dependecy is removed from fribidi entirely, there
+	will be problems with this option.
+
+	* pango/mini-fribidi/README: Update fribidi URL.
+
 2001-11-24  Manish Singh  <yosh@gimp.org>
 
 	* acconfig.h

@@ -193,35 +193,35 @@ AC_SUBST(GLIB_CFLAGS)
 #
 # Checks for fribidi
 #
-AC_ARG_WITH(fribidi, [ --with-fribidi     Use external fribidi library ],,with_fribidi=no)
-
+#AC_ARG_WITH(fribidi, [ --with-fribidi     Use external fribidi library ],,with_fribidi=no)
+#
 FRIBIDI_LIBS=""
 FRIBIDI_CFLAGS=""
 FRIBIDI_PC=""
 have_fribidi=no
-
-if test "x$with_fribidi" = "xyes" ; then
-   AC_PATH_PROG(FRIBIDI_CONFIG, fribidi-config, no)
-   if test x$FRIBIDI_CONFIG = xno ; then
-     AC_MSG_ERROR([*** fribidi-config not found])
-   fi
-
-   if $FRIBIDI_CONFIG --cflags | grep lib/glib/include > /dev/null ; then
-     AC_MSG_ERROR([*** fribidi appears to be compiled against GLib-1.2.x.
-     *** You must compile fribidi with GLib-1.3.1 or better.])
-   fi
- 
-   FRIBIDI_CFLAGS="`$FRIBIDI_CONFIG --cflags`"
-   CFLAGS="$CFLAGS $FRIBIDI_CFLAGS"
-   FRIBIDI_LIBS="`$FRIBIDI_CONFIG --libs`"
-   FRIBIDI_PC="fribidi,"	
-
-   AC_CHECK_LIB(fribidi, fribidi_get_mirror_char, :,
-	        AC_MSG_ERROR([*** libfribidi not found.]), $FRIBIDI_LIBS)
-
-   AC_DEFINE(HAVE_FRIBIDI)
-   have_fribidi=yes
-fi
+#
+#if test "x$with_fribidi" = "xyes" ; then
+#   AC_PATH_PROG(FRIBIDI_CONFIG, fribidi-config, no)
+#   if test x$FRIBIDI_CONFIG = xno ; then
+#     AC_MSG_ERROR([*** fribidi-config not found])
+#   fi
+#
+#   if $FRIBIDI_CONFIG --cflags | grep lib/glib/include > /dev/null ; then
+#     AC_MSG_ERROR([*** fribidi appears to be compiled against GLib-1.2.x.
+#     *** You must compile fribidi with GLib-1.3.1 or better.])
+#   fi
+# 
+#   FRIBIDI_CFLAGS="`$FRIBIDI_CONFIG --cflags`"
+#   CFLAGS="$CFLAGS $FRIBIDI_CFLAGS"
+#   FRIBIDI_LIBS="`$FRIBIDI_CONFIG --libs`"
+#   FRIBIDI_PC="fribidi,"	
+#
+#   AC_CHECK_LIB(fribidi, fribidi_get_mirror_char, :,
+#	        AC_MSG_ERROR([*** libfribidi not found.]), $FRIBIDI_LIBS)
+#
+#   AC_DEFINE(HAVE_FRIBIDI)
+#   have_fribidi=yes
+#fi
 
 AC_SUBST(FRIBIDI_LIBS)
 AC_SUBST(FRIBIDI_CFLAGS)
