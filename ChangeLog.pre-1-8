@@ -1,3 +1,7 @@
+Thu May 18 17:30:00 2000  Robert Brady  <rwb197@zepler.org>
+
+	* fonts/devnag18.bdf: Fix advance widths of some glyphs.
+
 Tue May  9 22:09:42 2000  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pango-types.h (PANGO_SCALE): Change PANGO_SCALE
