@@ -1,3 +1,8 @@
+2004-10-26  Matthias Clasen  <mclasen@redhat.com>
+
+	* docs/tmpl/text-attributes.sgml: Document PANGO_UNDERLINE_ERROR
+	as a 1.4 addition.  (#156533, Morten Welinder)
+
 2004-10-12  Theppitak Karoonboonyanan  <thep@linux.thai.net>
 
 	* modules/thai/thai-shaper.h (thai_get_glyph_tis,
