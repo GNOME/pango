@@ -180,7 +180,9 @@ AM_CONDITIONAL(HAVE_FREETYPE, $have_freetype && $have_fontconfig)
 #
 have_xft=false
 
-PKG_CHECK_MODULES(XFT, xft >= 2.0.0, have_xft=true, :)
+if test "x$have_x" != "xfalse" ; then
+  PKG_CHECK_MODULES(XFT, xft >= 2.0.0, have_xft=true, :)
+fi
 
 AC_SUBST(XFT_LIBS)
 AC_SUBST(XFT_CFLAGS)
