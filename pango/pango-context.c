@@ -111,7 +111,7 @@ pango_context_unref (PangoContext *context)
       if (context->lang)
 	g_free (context->lang);
 
-      g_slist_foreach (context->font_maps, (GFunc)pango_font_map_unref, NULL);
+      g_slist_foreach (context->font_maps, (GFunc)g_object_unref, NULL);
       g_slist_free (context->font_maps);
     }
 }

@@ -16,6 +16,7 @@ libpango_la_SOURCES = 	   \
 	pango-attributes.c \
 	pango-context.c    \
 	pango-coverage.c   \
+	pango-fontmap.c	   \
 	pango-item.c	   \
 	pango-layout.c	   \
 	reorder-items.c    \
@@ -24,13 +25,14 @@ libpango_la_SOURCES = 	   \
 	utils.h
 
 libpangox_la_SOURCES = 	   \
-	pangox.c
+	pangox.c	   \
+	pangox-fontmap.c
 
 # We use the -release flag for now until the API settles
 # down at which point we'll either use the GTK+ versioning
 # scheme or the standard libtool scheme.
 #
-libpango_la_LDFLAGS = -release $(VERSION)
+libpango_la_LDFLAGS = -release $(VERSION) $(GLIB_LIBS)
 
 libpangox_la_LDFLAGS = -release $(VERSION)
 libpangox_la_LIBADD = $(INCLUDED_MODULES)

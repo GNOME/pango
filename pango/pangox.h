@@ -82,6 +82,11 @@ gboolean   pango_x_has_glyph         (PangoFont      *font,
 				      PangoGlyph      glyph);
 PangoGlyph pango_x_get_unknown_glyph (PangoFont      *font);
 
+
+/* API for libraries that want to use PangoX mixed with classic X fonts.
+ */
+PangoFontMap *pango_x_font_map_for_display (Display *display);
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

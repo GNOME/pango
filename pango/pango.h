@@ -33,6 +33,7 @@ extern "C" {
 #include <pango/pango-coverage.h>
 #include <pango/pango-engine.h>
 #include <pango/pango-font.h>
+#include <pango/pango-fontmap.h>
 #include <pango/pango-glyph.h>
 #include <pango/pango-item.h>
 #include <pango/pango-layout.h>

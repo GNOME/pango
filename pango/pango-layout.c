@@ -377,7 +377,9 @@ pango_layout_get_alignment (PangoLayout *layout)
  * pango_layout_set_text:
  * @layout: a #PangoLayout
  * @text: a UTF8-string
- * @length: the length of @text, in bytes.
+ * @length: the length of @text, in bytes. -1 indicates that
+ *          the string is null terminated and the length should be
+ *          calculated.
  * 
  * Set the text of the layout.
  **/
@@ -392,22 +394,35 @@ pango_layout_set_text (PangoLayout *layout,
   if (layout->text)
     g_free (layout->text);
 
-  if (length > 0)
+  if (length == 0)
     {
-      int n_chars = unicode_strlen (text, length);
+      layout->text = g_strdup ("");
+      layout->n_chars = 0;
+    }
+  else
+    {
       unicode_char_t junk;
       char *p = text;
-      int i;
+      int n_chars = 0;
       
-      for (i=0; i<n_chars; i++)
+      while (*p && (length < 0 || p < text + length))
 	{
 	  p = unicode_get_utf8 (p, &junk);
-	  if (!p || !junk)
+	  if (!p)
 	    {
 	      g_warning ("Invalid UTF8 string passed to pango_layout_set_text()");
 	      return;
 	    }
+	  n_chars++;
 	}
+
+      if (length < 0)
+	length = p - text;
+
+      if (length >= 0 && p != text + length)
+	g_warning ("string passed to pango_layout_set_text() contains embedded NULL");
+
+      length = p - text;
       
       /* NULL-terminate the text, since we currently use unicode_next_utf8()
        * in quite a few places, and for convenience.
@@ -418,11 +433,6 @@ pango_layout_set_text (PangoLayout *layout,
       layout->text[length] = '\0';
 
       layout->n_chars = n_chars;
-    }
-  else
-    {
-      layout->text = g_strdup ("");
-      layout->n_chars = 0;
     }
   
   layout->length = length;

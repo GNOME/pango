@@ -1,3 +1,18 @@
+Sat May 27 20:36:56 2000  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/Makefile.am configure.in: Add libgobject.
+
+        * pango/pango-fontmap.[ch]: GObject'ify PangoFontMap. 
+	(Pango now requires GLib-1.3 to compile)
+	
+	* pango/pangox-fontmap.c pango/pangox-private.h: Break
+	the fontmap code in libpangox out into a separate file.
+
+Tue May 23 10:32:25 2000  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-layout.c (pango_layout_set_text): Allow -1 for
+	the length.
+
 2000-05-24  Matt Wilson  <msw@redhat.com>
 
 	* modules/basic/basic.c (conv_8bit): use size_t for arguments to

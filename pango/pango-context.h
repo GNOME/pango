@@ -23,6 +23,7 @@
 #define __PANGO_CONTEXT_H__
 
 #include <pango/pango-font.h>
+#include <pango/pango-fontmap.h>
 #include <pango/pango-attributes.h>
 
 #ifdef __cplusplus

@@ -31,8 +31,6 @@ extern "C" {
 
 typedef struct _PangoFontDescription PangoFontDescription;
 typedef struct _PangoFontClass PangoFontClass;
-typedef struct _PangoFontMap PangoFontMap;
-typedef struct _PangoFontMapClass PangoFontMapClass;
 typedef struct _PangoFontMetrics PangoFontMetrics;
 
 typedef enum {
@@ -149,44 +147,6 @@ void                  pango_font_get_glyph_extents (PangoFont        *font,
 /*
  * Font Map
  */
-
-struct _PangoFontMap
-{
-  PangoFontMapClass *klass;
-
-  /*< private >*/
-  gint ref_count;
-};
-
-struct _PangoFontMapClass
-{
-  void       (*destroy)       (PangoFontMap               *fontmap);
-  PangoFont *(*load_font)     (PangoFontMap               *fontmap,
-			       const PangoFontDescription *desc);
-  void       (*list_fonts)    (PangoFontMap               *fontmap,
-			       const gchar                *family,
-			       PangoFontDescription     ***descs,
-			       int                        *n_descs);
-  void       (*list_families) (PangoFontMap               *fontmap,
-			       gchar                    ***families,
-			       int                        *n_families);
-};
-
-void       pango_font_map_init      (PangoFontMap               *fontmap);
-void       pango_font_map_ref       (PangoFontMap               *fontmap);
-void       pango_font_map_unref     (PangoFontMap               *fontmap);
-PangoFont *pango_font_map_load_font (PangoFontMap               *fontmap,
-				     const PangoFontDescription *desc);
-
-void       pango_font_map_list_fonts    (PangoFontMap           *fontmap,
-					 const gchar            *family,
-					 PangoFontDescription ***descs,
-					 int                    *n_descs);
-void       pango_font_map_list_families (PangoFontMap           *fontmap,
-					 gchar                ***families,
-					 int                    *n_families);
-void       pango_font_map_free_families (gchar                 **families,
-					 int                     n_families);
 
 #ifdef __cplusplus
 }

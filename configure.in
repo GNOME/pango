@@ -45,16 +45,13 @@ AC_CHECK_LIB(fribidi, fribidi_map_range, :,
 	     AC_MSG_ERROR([*** libfribidi not found.]), $FRIBIDI_LIBS)
 
 
-# We run glib-config separately to get the gmodule cflags so we
-# can add them to pango-config
-
 AC_PATH_PROG(GLIB_CONFIG, glib-config, no)
 if test x$GLIB_CONFIG = xno ; then
   AC_MSG_ERROR([*** glib-config not found])
 fi
-GLIB_CFLAGS="`$GLIB_CONFIG --cflags gmodule`"
+GLIB_CFLAGS="`$GLIB_CONFIG --cflags gmodule gobject`"
 CFLAGS="$CFLAGS $GLIB_CFLAGS"
-GLIB_LIBS="`$GLIB_CONFIG --libs gmodule`"
+GLIB_LIBS="`$GLIB_CONFIG --libs gmodule gobject`"
 AC_SUBST(GLIB_LIBS)
 AC_SUBST(GLIB_CFLAGS)
 
