@@ -153,7 +153,12 @@ AM_CONDITIONAL(HAVE_XFT, $have_xft)
 have_win32=false
 WIN32_LIBS=""
 WIN32_CFLAGS=""
-AC_CHECK_LIB(gdi32, GetTextMetricsA@8, have_win32=true, : )
+# The following doesn't work with autoconf-2.13, so we check $host instead
+# AC_CHECK_LIB(gdi32, GetTextMetricsA@8, have_win32=true, : )
+case "$host" in
+  *-*-mingw*|*-*-cygwin*) have_win32=true ;;
+esac
+
 
 if test $have_win32 = true; then
   WIN32_LIBS="-lgdi32"

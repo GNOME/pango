@@ -4,6 +4,13 @@ Thu Oct 25 11:06:54 2001  Owen Taylor  <otaylor@redhat.com>
 
 	* NEWS: Updates.
 
+Fri Oct 26 12:32:25 2001  Owen Taylor  <otaylor@redhat.com>
+
+	* configure.in: Don't use AC_CHECK_LIB to check for
+	win32, since that causes problems with autoconf-2.13.
+
+	* docs/Makefile.am: Fix to install images.
+
 Thu Oct 25 11:05:01 2001  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pango-layout.c (pango_layout_run_get_extents): Allow
