@@ -425,8 +425,9 @@ AM_CONDITIONAL(INCLUDE_INDIC_XFT,echo $included_modules | grep '\(^\|,\)indic-xf
 
 #
 # We use flockfile to implement pango_getline() - should be moved to GLib
+# strtok_r isn't present on some systems
 #
-AC_CHECK_FUNCS(flockfile)
+AC_CHECK_FUNCS(flockfile strtok_r)
 
 #
 # Check for Qt - which we use for building the viewer example, if

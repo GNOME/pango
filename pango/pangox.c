@@ -49,6 +49,46 @@ typedef struct _PangoXContextInfo PangoXContextInfo;
 typedef struct _PangoXLigatureInfo   PangoXLigatureInfo;
 typedef struct _PangoXLigatureSource PangoXLigatureSource;
 
+#ifndef HAVE_STRTOK_R
+/* This implementation of strtok_r comes from the GNU C library.
+ * Copyright (C) 1991, 1996, 1997, 1998, 1999, 2001 Free Software Foundation, Inc.
+ */
+static char *
+my_strtok_r (char       *s,
+	     const char *delim,
+	     char      **save_ptr)
+{
+  char *token;
+
+  if (s == NULL)
+    s = *save_ptr;
+
+  /* Scan leading delimiters.  */
+  s += strspn (s, delim);
+  if (*s == '\0')
+    {
+      *save_ptr = s;
+      return NULL;
+    }
+
+  /* Find the end of the token.  */
+  token = s;
+  s = strpbrk (token, delim);
+  if (s == NULL)
+    /* This token finishes the string.  */
+    *save_ptr = token + strlen (token);
+  else
+    {
+      /* Terminate the token and make *SAVE_PTR point past it.  */
+      *s = '\0';
+      *save_ptr = s + 1;
+    }
+  return token;
+}
+#else
+#define my_strtok_r strtok_r
+#endif /* HAVE_STRTOK_R */
+
 static int
 hex_to_integer (const char *s) 
 {
@@ -73,7 +113,7 @@ parse_gintset_spec (char *s)
 {
   char *m = NULL;
   PangoIntSet *set = pango_int_set_new ();
-  s = strtok_r (s, ",", &m);
+  s = my_strtok_r (s, ",", &m);
   while (s)
     {
       char *p = strchr (s, '-');
@@ -93,7 +133,7 @@ parse_gintset_spec (char *s)
 	  if (start != -1 && end != -1)
 	    pango_int_set_add_range (set, start, end);
 	}
-      s = strtok_r (NULL, ",", &m);
+      s = my_strtok_r (NULL, ",", &m);
     }
   return set;
 }
@@ -1724,7 +1764,7 @@ font_struct_get_ligatures (PangoFontMap *fontmap,
             {
               char *val = g_strdup (pango_x_fontmap_name_from_atom (fontmap, fs->properties[i].card32));
               char *p;
-              char *a = strtok_r (val, " ", &p);
+              char *a = my_strtok_r (val, " ", &p);
               while (a)
                 {
                   char *r;
@@ -1805,7 +1845,7 @@ font_struct_get_ligatures (PangoFontMap *fontmap,
                         *r = 0;
                         r++;
                         q = a;
-                        q = strtok_r (q, "+", &m);
+                        q = my_strtok_r (q, "+", &m);
                         while (q) 
                           {
                             n_source ++;
@@ -1839,10 +1879,10 @@ font_struct_get_ligatures (PangoFontMap *fontmap,
                                 source [n_source-1].is_set = 0;
                                 source [n_source-1].data.glyph = i;
                               }
-                            q = strtok_r (NULL, "+", &m);
+                            q = my_strtok_r (NULL, "+", &m);
                           }
                         q = r;
-                        q = strtok_r (q, "+", &m);
+                        q = my_strtok_r (q, "+", &m);
                         while (q) 
                           {
                             n_dest++;
@@ -1873,7 +1913,7 @@ font_struct_get_ligatures (PangoFontMap *fontmap,
 				  }
 			      }
                             
-                            q = strtok_r (NULL, "+", &m);
+                            q = my_strtok_r (NULL, "+", &m);
                           }
                         
                         xli = linfo + n_linfo - 1;
@@ -1892,7 +1932,7 @@ font_struct_get_ligatures (PangoFontMap *fontmap,
                     }
                   
                   /* end switch */
-                  a = strtok_r (NULL, " ", &p);
+                  a = my_strtok_r (NULL, " ", &p);
                 }
               g_free (val);
             }
