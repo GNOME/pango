@@ -18,6 +18,7 @@ pangoft2-uninstalled.pc
 pangowin32-uninstalled.pc
 pango.spec
 pango-config
+pango-zip.sh
 stamp-h
 stamp-h1
 libtool
