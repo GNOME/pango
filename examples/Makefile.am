@@ -4,6 +4,7 @@ aliasdir = $(sysconfdir)/pango
 
 INCLUDES =				\
 	-DG_DISABLE_DEPRECATED		\
+	-DPANGO_DISABLE_DEPRECATED	\
 	$(PANGO_DEBUG_FLAGS)		\
 	-I$(top_srcdir)			\
 	$(QT_INCLUDES)			\

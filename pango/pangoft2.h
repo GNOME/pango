@@ -44,10 +44,6 @@ typedef void (*PangoFT2SubstituteFunc) (FcPattern *pattern,
                                         gpointer   data);
 
 /* Calls for applications */
-PangoContext      *pango_ft2_get_context          (double dpi_x,
-						   double dpi_y);
-PangoFontMap      *pango_ft2_font_map_for_display (void);
-void               pango_ft2_shutdown_display     (void);
 
 
 void           pango_ft2_render             (FT_Bitmap        *bitmap,
@@ -81,6 +77,11 @@ PangoContext *pango_ft2_font_map_create_context         (PangoFT2FontMap        
 /* API for rendering modules
  */
 #ifndef PANGO_DISABLE_DEPRECATED
+PangoContext      *pango_ft2_get_context          (double dpi_x,
+						   double dpi_y);
+PangoFontMap      *pango_ft2_font_map_for_display (void);
+void               pango_ft2_shutdown_display     (void);
+
 PangoGlyph     pango_ft2_get_unknown_glyph (PangoFont       *font);
 int            pango_ft2_font_get_kerning  (PangoFont       *font,
 					    PangoGlyph       left,

@@ -1,3 +1,17 @@
+Fri Aug  8 10:33:31 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pangoft2.h: Deprecate pango_ft2_get_context(),
+	pango_ft2_font_map_for_display(), pango_ft2_shutdown_display();
+	the explicit 
+
+	* pango/pangoft2-fontmap.c (pango_ft2_shutdown_display):
+	Add docs about deprecations.
+
+	* examples/Makefile.am (INCLUDES): Add -DPANGO_DISABLE_DEPRECATED
+
+	* examples/pangoft2topgm.c: Fix deprecated usages; add
+	--dpi and --markup options. Improve error handling.
+
 Fri Aug  8 10:03:03 2003  Owen Taylor  <otaylor@redhat.com>
 
 	* examples/pangoft2topgm.c: Get rid of a bunch of 

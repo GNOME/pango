@@ -265,7 +265,7 @@ pango_ft2_font_map_create_context (PangoFT2FontMap *fontmap)
  * (see pango_ft2_fontmap_get_for_display()) and sets the resolution
  * for the default fontmap to @dpi_x by @dpi_y.
  *
- * Use of this function is discouraged, see pango_ft2_fontmap_create_context()
+ * Use of this function is deprecated; see pango_ft2_fontmap_create_context()
  * instead.
  * 
  * Return value: the new #PangoContext
@@ -286,7 +286,9 @@ pango_ft2_get_context (double dpi_x, double dpi_y)
  *
  * Returns a #PangoFT2FontMap. This font map is cached and should
  * not be freed. If the font map is no longer needed, it can
- * be released with pango_ft2_shutdown_display().
+ * be released with pango_ft2_shutdown_display(). Use of the 
+ * global PangoFT2 fontmap is deprecated; use pango_ft2_font_map_new()
+ * instead.
  *
  * Returns: a #PangoFT2FontMap.
  **/
@@ -305,6 +307,7 @@ pango_ft2_font_map_for_display (void)
  * pango_ft2_shutdown_display:
  * 
  * Free the global fontmap. (See pango_ft2_font_map_for_display())
+ * Use of the global PangoFT2 fontmap is deprecated.
  **/
 void
 pango_ft2_shutdown_display (void)

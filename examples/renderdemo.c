@@ -33,15 +33,17 @@
 #include <stdio.h>
 #include <string.h>
 
-char *prog_name = NULL;
+static PangoContext *context;
 
-PangoContext *context;
+static char *opt_family = "sans";
+static  PangoDirection opt_dir = PANGO_DIRECTION_LTR;
+static int opt_dpi = 96;
+static int opt_margin = 10;
+static int opt_markup = FALSE;
+static int opt_scale = 24;
+static  gboolean opt_waterfall = FALSE;
 
-static char *init_family = "sans";
-static int init_scale = 24;
-static int init_margin = 10;
-static  PangoDirection init_dir = PANGO_DIRECTION_LTR;
-static  gboolean init_waterfall = FALSE;
+static void fail (const char *format, ...)  G_GNUC_PRINTF (1, 2);
 
 static void
 fail (const char *format, ...)
@@ -66,10 +68,13 @@ make_layout(PangoContext *context,
   PangoLayout *layout;
 
   layout = pango_layout_new (context);
-  pango_layout_set_text (layout, text, -1);
+  if (opt_markup)
+    pango_layout_set_markup (layout, text, -1);
+  else
+    pango_layout_set_text (layout, text, -1);
 
   font_description = pango_font_description_new ();
-  pango_font_description_set_family (font_description, init_family);
+  pango_font_description_set_family (font_description, opt_family);
   pango_font_description_set_size (font_description, scale * PANGO_SCALE);
 
   base_dir = pango_context_get_base_dir (context);
@@ -91,14 +96,14 @@ do_output (PangoContext *context,
 {
   PangoLayout *layout;
   PangoRectangle logical_rect;
-  int x = init_margin;
-  int y = init_margin;
+  int x = opt_margin;
+  int y = opt_margin;
   int scale, start_scale, end_scale, increment;
   
   *width = 0;
   *height = 0;
 
-  if (init_waterfall)
+  if (opt_waterfall)
     {
       start_scale = 8;
       end_scale = 48;
@@ -106,7 +111,7 @@ do_output (PangoContext *context,
     }
   else
     {
-      start_scale = end_scale = init_scale;
+      start_scale = end_scale = opt_scale;
       increment = 1;
     }
 
@@ -126,19 +131,33 @@ do_output (PangoContext *context,
       g_object_unref (layout);
     }
   
-  *width += 2 * init_margin;
-  *height += 2 * init_margin;
+  *width += 2 * opt_margin;
+  *height += 2 * opt_margin;
+}
+
+int int_arg (const char *arg_name, const char *arg)
+{
+  char *end;
+  long result = strtol (arg, &end, 0);
+  if (*arg == '\0' || *end != '\0')
+    {
+      fail ("Cannot parse integer value '%s' for %s.",
+	    arg, arg_name);
+    }
+
+  return result;
 }
 
 int main(int argc, char *argv[])
 {
+  char *outfile_name;
   FILE *outfile;
-  int dpi_x = 100, dpi_y = 100;
   char *text;
   size_t len;
   char *p;
   int argp;
   char *prog_name = g_path_get_basename (argv[0]);
+  PangoFontMap *fontmap;
   GError *error = NULL;
   
   g_type_init();
@@ -159,38 +178,50 @@ int main(int argc, char *argv[])
 		 "    %s [--family f] [--scale s] file\n"
 		 "\n"
 		 "Options:\n"
+		 "    --dpi d      Set the dpi.Default is '%d'.\n"
 		 "    --family f   Set the family. Default is '%s'.\n"
 		 "    --margin m   Set the margin on the output in pixels. Default is %d.\n"
+		 "    --markup     Interpret contents as Pango markup.\n"
 		 "    --scale s    Set the scale. Default is %d.\n"
 		 "    --rtl        Set base dir to RTL. Default is LTR.\n"
 		 "    --waterfall  Create a waterfall display."
 		 "    --width      Width of drawing window. Default is 500.\n",
-		 prog_name, prog_name, init_family, init_margin, init_scale);
+		 prog_name, prog_name, opt_dpi, opt_family, opt_margin, opt_scale);
 	  exit(0);
+	}
+      if (strcmp(opt, "--dpi") == 0)
+	{
+	  opt_dpi = int_arg("--dpi", argv[argp++]);
+	  continue;
 	}
       if (strcmp(opt, "--family") == 0)
 	{
-	  init_family = argv[argp++];
+	  opt_family = argv[argp++];
 	  continue;
 	}
       if (strcmp(opt, "--margin") == 0)
 	{
-	  init_margin = atoi(argv[argp++]);
+	  opt_margin = int_arg("--margin", argv[argp++]);
+	  continue;
+	}
+      if (strcmp(opt, "--markup") == 0)
+	{
+	  opt_markup = TRUE;
 	  continue;
 	}
       if (strcmp(opt, "--waterfall") == 0)
 	{
-	  init_waterfall = TRUE;
+	  opt_waterfall = TRUE;
 	  continue;
 	}
       if (strcmp(opt, "--scale") == 0)
 	{
-	  init_scale = atoi(argv[argp++]);
+	  opt_scale = int_arg("--scale", argv[argp++]);
 	  continue;
 	}
       if (strcmp(opt, "--rtl") == 0)
 	{
-	  init_dir = PANGO_DIRECTION_RTL;
+	  opt_dir = PANGO_DIRECTION_RTL;
 	  continue;
 	}
       fail ("Unknown option %s!\n", opt);
@@ -220,18 +251,31 @@ int main(int argc, char *argv[])
 	*p = '\0';
     }
 
+  /* Make sure we have valid markup
+   */
+  if (opt_markup &&
+      !pango_parse_markup (text, -1, 0, NULL, NULL, NULL, &error))
+    fail ("Cannot parse input as markup: %s", error->message);
+
   if (argp < argc)
-    outfile = fopen (argv[argp++], "wb");
+    {
+      outfile_name = argv[argp++];
+      outfile = fopen (outfile_name, "wb");
+
+      if (!outfile)
+	fail ("Cannot open output file %s: %s\n",
+	      outfile_name, g_strerror (errno));
+    }
   else
     outfile = stdout;
   
-  if (!outfile)
-    fail ("Cannot open output file %s: s\n", outfile, g_strerror (errno));
 
-  context = pango_ft2_get_context (dpi_x, dpi_y);
+  fontmap = pango_ft2_font_map_new ();
+  pango_ft2_font_map_set_resolution (PANGO_FT2_FONT_MAP (fontmap), opt_dpi, opt_dpi);
+  context = pango_ft2_font_map_create_context (PANGO_FT2_FONT_MAP (fontmap));
 
   pango_context_set_language (context, pango_language_from_string ("en_US"));
-  pango_context_set_base_dir (context, init_dir);
+  pango_context_set_base_dir (context, opt_dir);
 
   /* Write contents as pgm file */
   {
