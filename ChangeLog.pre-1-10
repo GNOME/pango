@@ -1,5 +1,10 @@
 2005-03-15  Owen Taylor  <otaylor@redhat.com>
 
+	* docs/tmpl/main.sgml (pango_unichar_direction): Fix
+	PANGO_DIRECTION_LTR/RTL cut-and-paste. (Tim Janik)
+
+2005-03-15  Owen Taylor  <otaylor@redhat.com>
+
 	* pango/pangofc-fontmap.c: Include the effect of the
 	CTM in the FC_PIXEL_SIZE we set in the FcPattern.
 	(Fixes problems with getting the wrong font when drawing

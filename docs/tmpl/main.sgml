@@ -296,7 +296,7 @@ The GObject type for #PangoDirection.
 <!-- ##### FUNCTION pango_unichar_direction ##### -->
 <para>
 Determines the direction of a character; either
-%PANGO_DIRECTION_LTR, %PANGO_DIRECTION_LTR, or
+%PANGO_DIRECTION_LTR, %PANGO_DIRECTION_RTL, or
 %PANGO_DIRECTION_NEUTRAL.
 </para>
 
