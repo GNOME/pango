@@ -1,3 +1,8 @@
+Mon Jan 26 14:20:34 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/opentype/pango-ot-info.c (is_truetype): Suport
+	CFF fonts as well. (#131202, Manjunath Sripadarao)
+
 Mon Jan 26 10:30:06 2004  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/modules/thai/thai-c: Fix up glyph addition
