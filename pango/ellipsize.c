@@ -144,6 +144,7 @@ init_state (EllipsizeState  *state,
     }
 
   state->ellipsis_run = NULL;
+  state->ellipsis_is_cjk = FALSE;
   state->line_start_attr = NULL;
   state->gap_start_attr = NULL;
 }

@@ -1,3 +1,8 @@
+Mon Sep 13 11:06:47 2004  Owen Taylor  <otaylor@redhat.com>
+ 
+ 	* pango/ellipsize.c (init_state): Initialize 
+ 	ellipsis_is_cjk (#151901, Christian Persch)
+ 
 Mon Sep 13 10:18:51 2004  Owen Taylor  <otaylor@redhat.com>
 
  	* pango/pango-context.c (itemize_state_process_run): 
