@@ -36,28 +36,53 @@ sub output {
     }
 }
 
-print "const guint32 char_mask_map[] = {\n  0,\n";
+#
+# Read in the maps
+#
+my @codepoints = ();
 
-open TABLE, "table";
+opendir (MAPS, "maps") || die "Cannot open maps/ subdirectory: $!\n";
+while (defined (my $map = readdir (MAPS))) {
+    next if ($map =~ /^\./);
+    next if ($map =~ /~$/);
+    next if ($map =~ /^CVS|README$/);
+
+    open (MAP, "maps/$map") || die "Cannot open map '$map:!\n";
+
+    $encoding = convert($map);
+    while (<MAP>) {
+	s/\s*#.*//;
+	s/\s*$//;
+	next if /^$/;
+	if (!/^\s*(0x[A-Fa-f0-9]+)\s+(0x[A-Fa-f0-9]+)$/) {
+	    die "Cannot parse line '%s' in map '$map'\n";
+	}
+	push @codepoints, [hex($2), $encoding];
+    }
+    close (MAP);
+}
+
+# 
+# And sort them
+#
+@codepoints = sort { $a->[0] <=> $b->[0] } @codepoints;
+
+print "const guint32 char_mask_map[] = {\n  0,\n";
 
 $encodings = "";
 
-while (<TABLE>) {
-    if (/^(0x[0-9a-fA-F]+)\s+([^:]*):(0x[0-9a-fA-F]+)/) {
-	($u, $e) = ($1, $2);
+for $cp (@codepoints) {
+    $u = $cp->[0]; $e = $cp->[1];
 
-	$u = oct($u);
-
-	if (!defined $old_u) {
-	    $old_u = $u;
-	    $encodings = convert($e);
-	} elsif ($old_u ne $u) {
-	    add($encodings);
-	    $old_u = $u;
-	    $encodings = convert($e);
-	} else {
-	    $encodings .= "|".convert($e);
-	}
+    if (!defined $old_u) {
+	$old_u = $u;
+	$encodings = $e;
+    } elsif ($old_u ne $u) {
+	add($encodings);
+	$old_u = $u;
+	$encodings = $e;
+    } else {
+	$encodings .= "|".$e;
     }
 }
 
@@ -65,44 +90,34 @@ if (defined $old_u) {
     add($encodings);
 } 
 
-close TABLE;
-
 print <<EOF;
 };
 
 const guchar char_masks[] = {
 EOF
 
-open TABLE, "table";
-
 $encodings = "";
 
 undef $old_u;
 $start = 0;
-while (<TABLE>) {
-    if (/^(0x[0-9a-fA-F]+)\s+([^:]*):(0x[0-9a-fA-F]+)/) {
-	($u, $e) = ($1, $2);
+for $cp (@codepoints) {
+    $u = $cp->[0]; $e = $cp->[1];
 
-	$u = oct($u);
-
-	if (!defined $old_u) {
-	    $old_u = $u;
-	    $encodings = convert($e);
-	} elsif ($old_u ne $u) {
-	    output($start, $old_u, $combos{$encodings});
-	    $start = $old_u + 1;
-	    $old_u = $u;
-	    $encodings = convert($e);
-	} else {
-	    $encodings .= "|".convert($e);
-	}
+    if (!defined $old_u) {
+	$old_u = $u;
+	$encodings = $e;
+    } elsif ($old_u ne $u) {
+	output($start, $old_u, $combos{$encodings});
+	$start = $old_u + 1;
+	$old_u = $u;
+	$encodings = $e;
+    } else {
+	$encodings .= "|".$e;
     }
 }
 
 if (defined $old_u) {
     output($start, $old_u, $combos{$encodings});
 } 
-
-close TABLE;
 
 print "\n};\n";
