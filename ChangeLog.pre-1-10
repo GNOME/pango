@@ -1,3 +1,10 @@
+Thu Jul  6 15:24:38 2000  Owen Taylor  <otaylor@redhat.com>
+
+	* Released 0.12
+
+	* gdk/Makefile.am: Fix missing \ which was causing
+	srcdir != builddir builds to fail.
+
 Thu Jul  6 15:16:28 2000  Owen Taylor  <otaylor@redhat.com>
 
 	* docs/pango-sections.txt docs/tmpl/*: Update

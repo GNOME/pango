@@ -57,7 +57,6 @@ struct _PangoCoverage
 PangoCoverage *
 pango_coverage_new (void)
 {
-  int i;
   PangoCoverage *coverage = g_new (PangoCoverage, 1);
 
   coverage->n_blocks = N_BLOCKS_INCREMENT;
@@ -117,7 +116,7 @@ pango_coverage_copy (PangoCoverage *coverage)
 PangoCoverage *
 pango_coverage_ref (PangoCoverage *coverage)
 {
-  g_return_if_fail (coverage != NULL);
+  g_return_val_if_fail (coverage != NULL, NULL);
 
   coverage->ref_count++;
 
