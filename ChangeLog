@@ -1,3 +1,8 @@
+Fri Aug 15 16:34:14 2003  Owen Taylor  <otaylor@redhat.com>
+ 
+ 	* configure.in: get the cflags for gmodule-2.0 as
+ 	well as gthread-2.0. (#119953, Benedikt Spranger)
+ 
 2003-08-08  Matthias Clasen  <maclas@gmx.de>
 
 	* docs/pango-docs.sgml: Add an index.
