@@ -1,3 +1,10 @@
+Mon Jun 21 14:31:40 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pangoft2.[ch] (pango_ft2_font_get_face): 
+	Temporarily undeprecate pango_ft2_font_get_face,
+	will be deprecated in favour of pango_fc_font_lock_face()
+	in 1.6. (#142355, Sven Neumann)
+
 Mon Jun 21 14:23:05 2004  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pango-layout.c (no_shape_filter_func)

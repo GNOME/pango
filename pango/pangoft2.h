@@ -86,10 +86,14 @@ PangoGlyph     pango_ft2_get_unknown_glyph (PangoFont       *font);
 int            pango_ft2_font_get_kerning  (PangoFont       *font,
 					    PangoGlyph       left,
 					    PangoGlyph       right);
-FT_Face        pango_ft2_font_get_face     (PangoFont       *font);
 PangoCoverage *pango_ft2_font_get_coverage (PangoFont       *font,
 					    PangoLanguage   *language);
 #endif /* PANGO_DISABLE_DEPRECATED */
+
+/* Temporarily undeprecated, will be deprecated in favour
+ * of pango_fc_font_lock_face() in 1.6
+ */
+FT_Face        pango_ft2_font_get_face     (PangoFont       *font);
 
 G_END_DECLS
 

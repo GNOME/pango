@@ -165,8 +165,6 @@ load_fallback_face (PangoFT2Font *ft2font,
  * Returns the native FreeType2 FT_Face structure used for this PangoFont.
  * This may be useful if you want to use FreeType2 functions directly.
  *
- * Use pango_fc_font_get_face() instead.
- * 
  * Return value: a pointer to a #FT_Face structure, with the size set correctly
  **/
 FT_Face
