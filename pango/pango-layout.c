@@ -140,6 +140,8 @@ struct _PangoLayoutClass
 static void pango_layout_clear_lines (PangoLayout *layout);
 static void pango_layout_check_lines (PangoLayout *layout);
 
+static PangoAttrList *pango_layout_get_effective_attributes (PangoLayout *layout);
+
 static PangoLayoutLine * pango_layout_line_new         (PangoLayout     *layout);
 static void              pango_layout_line_postprocess (PangoLayoutLine *line);
 
@@ -504,6 +506,7 @@ pango_layout_set_attributes (PangoLayout   *layout,
 
   if (old_attrs)
     pango_attr_list_unref (old_attrs);
+  layout->tab_width = -1;
 }
 
 /**
@@ -548,6 +551,7 @@ pango_layout_set_font_description (PangoLayout                 *layout,
     layout->font_desc = NULL;
 
   pango_layout_clear_lines (layout);
+  layout->tab_width = -1;
 }
 
 /**
@@ -848,7 +852,7 @@ pango_layout_set_markup_with_accel (PangoLayout    *layout,
     }
   
   pango_layout_set_text (layout, text, -1);
-  pango_layout_set_attributes (layout, list);  
+  pango_layout_set_attributes (layout, list);
   pango_attr_list_unref (list);
 }
 
@@ -2260,20 +2264,31 @@ ensure_tab_width (PangoLayout *layout)
       PangoGlyphString *glyphs = pango_glyph_string_new ();
       PangoItem *item;
       GList *items;
+      PangoAttribute *attr;
+      PangoAttrList *layout_attrs;
+      PangoAttrList *tmp_attrs;
+      PangoAttrIterator *iter;
+      PangoFontDescription font_desc;
       int i;
+
+      layout_attrs = pango_layout_get_effective_attributes (layout);
+      iter = pango_attr_list_get_iterator (layout_attrs);
+      pango_attr_iterator_get_font (iter, pango_context_get_font_description (layout->context),
+				    &font_desc, NULL);
       
-      PangoAttrList *attrs = pango_attr_list_new ();
-      if (layout->font_desc)
-	{
-	  PangoAttribute *attr = pango_attr_font_desc_new (layout->font_desc);
-	  attr->start_index = 0;
-	  attr->end_index = layout->length;
+      tmp_attrs = pango_attr_list_new ();
+      attr = pango_attr_font_desc_new (&font_desc);
+      attr->start_index = 0;
+      attr->end_index = 1;
 	  
-	  pango_attr_list_insert_before (attrs, attr);
-	}
+      pango_attr_list_insert_before (tmp_attrs, attr);
       
-      items = pango_itemize (layout->context, " ", 0, 1, attrs, NULL);
-      pango_attr_list_unref (attrs);
+      items = pango_itemize (layout->context, " ", 0, 1, tmp_attrs, NULL);
+
+      pango_attr_iterator_destroy (iter);
+      if (layout_attrs != layout->attrs)
+	pango_attr_list_unref (layout_attrs);
+      pango_attr_list_unref (tmp_attrs);
       
       item = items->data;
       pango_shape ("        ", 8, &item->analysis, glyphs);
@@ -2722,27 +2737,12 @@ get_items_log_attrs (const char   *text,
     }
 }
 
-static void
-pango_layout_check_lines (PangoLayout *layout)
+static PangoAttrList *
+pango_layout_get_effective_attributes (PangoLayout *layout)
 {
-  const char *start;
-  gboolean done = FALSE;
-  int start_offset;
   PangoAttrList *attrs;
-  PangoAttrIterator *iter;
   
-  if (layout->lines)
-    return;
-
-  g_assert (!layout->log_attrs);
-
-  /* For simplicity, we make sure at this point that layout->text
-   * is non-NULL even if it is zero length
-   */
-  if (!layout->text)
-    pango_layout_set_text (layout, NULL, 0);
-
-  if (layout->attrs)
+ if (layout->attrs)
     {
       /* If we were being clever, we'd try to catch the case here
        * where the set font desc doesn't change the font for any
@@ -2765,6 +2765,30 @@ pango_layout_check_lines (PangoLayout *layout)
       pango_attr_list_insert_before (attrs, attr);
     }
 
+  return attrs;
+}
+
+static void
+pango_layout_check_lines (PangoLayout *layout)
+{
+  const char *start;
+  gboolean done = FALSE;
+  int start_offset;
+  PangoAttrList *attrs;
+  PangoAttrIterator *iter;
+  
+  if (layout->lines)
+    return;
+
+  g_assert (!layout->log_attrs);
+
+  /* For simplicity, we make sure at this point that layout->text
+   * is non-NULL even if it is zero length
+   */
+  if (!layout->text)
+    pango_layout_set_text (layout, NULL, 0);
+
+  attrs = pango_layout_get_effective_attributes (layout);
   iter = pango_attr_list_get_iterator (attrs);
   
   layout->log_attrs = g_new (PangoLogAttr, layout->n_chars);
