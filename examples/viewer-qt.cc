@@ -169,7 +169,7 @@ ViewerView::readFile (const QString &name)
   
   if (!file.open (IO_ReadOnly))
     {
-      fprintf (stderr, "Cannot open file '%s'\n");
+      fprintf (stderr, "Cannot open file '%s'\n", (const char *)name.local8Bit());
       return;
     }
   
@@ -521,7 +521,7 @@ main (int argc, char **argv)
   else
     filename = "HELLO.utf8";
     
-  ViewerWindow *vw = new ViewerWindow (filename);
+  ViewerWindow *vw = new ViewerWindow (QString::fromLocal8Bit (filename));
 
   vw->show();
 

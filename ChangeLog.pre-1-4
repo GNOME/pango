@@ -1,3 +1,8 @@
+Mon Nov 25 11:58:30 2002  Owen Taylor  <otaylor@redhat.com>
+ 
+ 	* examples/viewer-qt.cc (readFile): Fix missing argument
+ 	(#99380, Dagfinn I. Mannsåker)
+ 
 Thu Nov 21 18:02:54 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* pango.spec.in: Tweak lib pattern a bit. (#97584)
