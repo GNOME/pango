@@ -6,7 +6,14 @@
 	* pango/pangowin32-fontmap.c:
 	* modules/basic/basic-win32.c:
 	* pango/pangowin32.def:
-	
+	Large rewrite of the win32 backend to use real glyph indexes
+	instead of unicode codes. Also drops the subfont thing, thereby
+	simplifying the code immensely. This looses some functionality, 
+	but i will add that back soon using global (non backend-specific)
+	aliases.
+	This is the first cut, and is not perfect. It still has some issues
+	and imperfections, but it so clearly better than the current 
+	imlementation that I'm checking it in anyway.
 
 2001-08-04  Alexander Larsson  <alexl@redhat.com>
 
