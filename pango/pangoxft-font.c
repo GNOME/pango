@@ -19,6 +19,8 @@
  * Boston, MA 02111-1307, USA.
  */
 
+#include <stdlib.h>
+
 #include "pangoxft-private.h"
 #include "X11/Xft/XftFreetype.h"
 #include "pango-modules.h"
@@ -594,6 +596,29 @@ pango_xft_font_get_font (PangoFont *font)
       _pango_xft_font_map_get_info (xfont->fontmap, &display, &screen);
 
       xfont->xft_font = XftFontOpenPattern (display, xfont->font_pattern);
+      if (!xfont->xft_font)
+	{
+	  gchar *name = pango_font_description_to_string (xfont->description);
+	  
+	  /* No provision for failure here, unfortunately, various fonts
+	   * fail only when FT tries to open them... e.g., fonts with only
+	   * bitmaps.
+	   */
+	  g_warning ("Cannot open font file for font %s", name);
+	  g_free (name);
+	  
+	  xfont->xft_font = XftFontOpen (display,  screen,
+					 XFT_FAMILY, XftTypeString, "sans",
+					 XFT_ENCODING, XftTypeString, "glyphs-fontspecific",
+					 XFT_CORE, XftTypeBool, False,
+					 XFT_SIZE, XftTypeDouble, (double)pango_font_description_get_size (xfont->description)/PANGO_SCALE,
+					 NULL);
+	}
+      if (!xfont->xft_font)
+	{
+	  g_warning ("Cannot open fallback font, nothing to do");
+	  exit (1);
+	}
 
       face = xfont->xft_font->u.ft.font->face;
 

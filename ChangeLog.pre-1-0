@@ -1,3 +1,10 @@
+Tue Feb 26 15:50:35 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pangoxft-font.c (pango_xft_font_get_font): Try
+	to load something (load sans) if we can't load a font
+	that Xft listed. (Workaround for #72299, reported
+	by Gediminas Paulauskas)
+
 Mon Feb 25 16:36:47 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* modules/hebrew/hebrew-x.c pango/mini-fribidi/fribidi-types.h:
