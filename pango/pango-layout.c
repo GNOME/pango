@@ -2128,16 +2128,18 @@ pango_layout_clear_lines (PangoLayout *layout)
  ************************************************/
 
 static void
-imposed_shape (gint              n_chars,
+imposed_shape (const char       *text,
+	       gint              n_chars,
 	       PangoRectangle   *shape_ink,
 	       PangoRectangle   *shape_logical,
 	       PangoGlyphString *glyphs)
 {
   int i;
+  const char *p;
   
   pango_glyph_string_set_size (glyphs, n_chars);
 
-  for (i=0; i < n_chars; i++)
+  for (i=0, p = text; i < n_chars; i++, p = g_utf8_next_char (p))
     {
       glyphs->glyphs[i].glyph = 0;
       glyphs->glyphs[i].geometry.x_offset = 0;
@@ -2145,7 +2147,7 @@ imposed_shape (gint              n_chars,
       glyphs->glyphs[i].geometry.width = shape_logical->width;
       glyphs->glyphs[i].attr.is_cluster_start = 1;
       
-      glyphs->log_clusters[i] = i;
+      glyphs->log_clusters[i] = p - text;
     }
 }
 
@@ -2563,7 +2565,7 @@ process_item (PangoLayout     *layout,
 					&shape_set);
 
       if (shape_set)
-	imposed_shape (item->num_chars, &shape_ink, &shape_logical, state->glyphs);
+	imposed_shape (layout->text + item->offset, item->num_chars, &shape_ink, &shape_logical, state->glyphs);
       else if (layout->text[item->offset] == '\t')
 	shape_tab (line, state->glyphs);
       else
@@ -2838,16 +2840,7 @@ pango_layout_get_effective_attributes (PangoLayout *layout)
   PangoAttrList *attrs;
   
  if (layout->attrs)
-    {
-      /* If we were being clever, we'd try to catch the case here
-       * where the set font desc doesn't change the font for any
-       * characters.
-       */
-      if (layout->font_desc)
-        attrs = pango_attr_list_copy (layout->attrs);
-      else
-        attrs = layout->attrs;
-    }
+   attrs = pango_attr_list_copy (layout->attrs);
   else
     attrs = pango_attr_list_new ();
 
@@ -2863,6 +2856,64 @@ pango_layout_get_effective_attributes (PangoLayout *layout)
   return attrs;
 }
 
+gboolean
+no_shape_filter_func (PangoAttribute *attribute,
+		      gpointer        data)
+{
+  static PangoAttrType no_shape_types[] = {
+    PANGO_ATTR_FOREGROUND,
+    PANGO_ATTR_BACKGROUND,
+    PANGO_ATTR_UNDERLINE,
+    PANGO_ATTR_STRIKETHROUGH,
+    PANGO_ATTR_RISE
+  };
+
+  int i;
+
+  for (i = 0; i < G_N_ELEMENTS (no_shape_types); i++)
+    if (attribute->klass->type == no_shape_types[i])
+      return TRUE;
+
+  return FALSE;
+}
+
+static PangoAttrList *
+filter_no_shape_attributes (PangoAttrList *attrs)
+{
+  return pango_attr_list_filter (attrs,
+				 no_shape_filter_func,
+				 NULL);
+}
+
+static void
+apply_no_shape_attributes (PangoLayout   *layout,
+			   PangoAttrList *no_shape_attrs)
+{
+  GSList *line_list;
+
+  for (line_list = layout->lines; line_list; line_list = line_list->next)
+    {
+      PangoLayoutLine *line = line_list->data;
+      GSList *old_runs = g_slist_reverse (line->runs);
+      GSList *run_list;
+      
+      line->runs = NULL;
+      for (run_list = old_runs; run_list; run_list = run_list->next)
+	{
+	  PangoGlyphItem *glyph_item = run_list->data;
+	  GSList *new_runs;
+	  
+	  new_runs = pango_glyph_item_apply_attrs (glyph_item,
+						   layout->text,
+						   no_shape_attrs);
+
+	  line->runs = g_slist_concat (new_runs, line->runs);
+	}
+      
+      g_slist_free (old_runs);
+    }
+}
+
 static void
 pango_layout_check_lines (PangoLayout *layout)
 {
@@ -2870,6 +2921,7 @@ pango_layout_check_lines (PangoLayout *layout)
   gboolean done = FALSE;
   int start_offset;
   PangoAttrList *attrs;
+  PangoAttrList *no_shape_attrs;
   PangoAttrIterator *iter;
   
   if (layout->lines)
@@ -2884,6 +2936,7 @@ pango_layout_check_lines (PangoLayout *layout)
     pango_layout_set_text (layout, NULL, 0);
 
   attrs = pango_layout_get_effective_attributes (layout);
+  no_shape_attrs = filter_no_shape_attributes (attrs);
   iter = pango_attr_list_get_iterator (attrs);
   
   layout->log_attrs = g_new (PangoLogAttr, layout->n_chars + 1);
@@ -2924,7 +2977,7 @@ pango_layout_check_lines (PangoLayout *layout)
       g_assert (start <= (layout->text + layout->length));
       g_assert (delim_len < 4);	/* PS is 3 bytes */
       g_assert (delim_len >= 0);
-      
+
       state.items = pango_itemize (layout->context,
 				   layout->text,
 				   start - layout->text,
@@ -2967,10 +3020,14 @@ pango_layout_check_lines (PangoLayout *layout)
   while (!done);
 
   pango_attr_iterator_destroy (iter);
-  
-  if (attrs != layout->attrs)
-    pango_attr_list_unref (attrs);
-  
+  pango_attr_list_unref (attrs);
+
+  if (no_shape_attrs)
+    {
+      apply_no_shape_attributes (layout, no_shape_attrs);
+      pango_attr_list_unref (no_shape_attrs);
+    }
+
   layout->lines = g_slist_reverse (layout->lines);
 }
 
@@ -3897,7 +3954,7 @@ cluster_end_index (PangoLayoutIter *iter)
     }
   else
     {
-      return  gs->log_clusters[iter->next_cluster_start];
+      return iter->run->item->offset + gs->log_clusters[iter->next_cluster_start];
     }
 }
 
@@ -4219,7 +4276,7 @@ pango_layout_iter_next_cluster (PangoLayoutIter *iter)
       iter->cluster_start = iter->next_cluster_start;
       iter->next_cluster_start = next_cluster_start (gs, iter->cluster_start);
       iter->cluster_index = gs->log_clusters[iter->cluster_start];
-      iter->index = iter->cluster_index;
+      iter->index = iter->run->item->offset + iter->cluster_index;
       return TRUE;
     }
 }

@@ -761,7 +761,12 @@ Returns the type of a #PangoFontMap.
 
 <!-- ##### STRUCT PangoFontset ##### -->
 <para>
-
+A #PangoFontset represents a set of #PangoFont to use
+when rendering text. It is the result of resolving a
+#PangoFontDescription against a particular #PangoContext.
+It has operations for finding the component font for
+a particular Unicode character, and for finding a composite
+set of metrics for the entire fontset.
 </para>
 
 
@@ -810,7 +815,10 @@ a particular #PangoFontset implementation.
 
 <!-- ##### STRUCT PangoFontsetSimple ##### -->
 <para>
-
+#PangoFontSetSimple is a implementation of the abstract
+#PangoFontSet base class in terms of an array of fonts,
+which the creator provides when constructing the
+#PangoFontSetSimple.
 </para>
 
 

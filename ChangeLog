@@ -1,3 +1,31 @@
+Sun Nov 17 23:28:26 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-glyph-item.[ch] pango/pango-layout.h:
+	Rename PangoLayoutRun to PangoGlyphItem (with a
+	typedef for compat), add pango_glyph_item_split(),
+	pango_glyph_item_apply_attrs().
+
+	* pango/pango-attributes.[ch]: Add
+	pango_attr_list_filter(), pango_attr_iterator_get_attrs().
+
+	* pango/pango-layout.c: Remove attributes that don't
+	affect shaping before shaping, shape and then add
+	them back. Fixes the infamous "underscores break
+	arabic shaping" bug (#83058)
+
+	* pango/pango-item.h: Remove an extraneous include.
+
+	* pango/pango-layout.c (imposed_shape): Fix bytes/chars
+	problem for glyph->log_clusters.
+
+	* pango/pango-layout.c (cluster_end_index)
+	* pango/pango-layout.c (pango_layout_iter_next_cluster): Fix 
+	confusion between global indices and run-relative indices.
+
+	* docs/tmpl/glyphs.sgml: Improve docs for log_clusters.
+
+	* docs/*: Document new API and PangoOTRuleset
+
 2002-11-29  Matthias Clasen  <maclas@gmx.de>
 
 	* docs/tmpl/xft-fonts.sgml: 
@@ -82,17 +110,6 @@ Thu Nov 21 00:26:40 2002  Owen Taylor  <otaylor@redhat.com>
 	Make checks handle 0.10 > 0.9. (#99120, Dan Mills)
 	Check for 0.10, since we need that for 
 	--output-format=xml.
-
-Sun Nov 17 23:28:26 2002  Owen Taylor  <otaylor@redhat.com>
-
-	* pango/pango-layout.c (imposed_shape): Fix bytes/chars
-	problem for glyph->log_clusters.
-
-	* pango/pango-layout.c (cluster_end_index)
-	* pango/pango-layout.c (pango_layout_iter_next_cluster): Fix 
-	confusion between global indices and run-relative indices.
-
-	* docs/tmpl/glyphs.sgml: Improve docs for log_clusters.
 
 2002-11-12  Tor Lillqvist  <tml@iki.fi>
 

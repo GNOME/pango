@@ -132,11 +132,13 @@ libpango_1_0_la_SOURCES =  \
 	pango-coverage.c   \
 	pango-fontmap.c	   \
 	pango-fontset.c	   \
+	pango-glyph-item.c \
 	pango-intset.c	   \
 	pango-intset.h	   \
 	pango-item.c	   \
 	pango-layout.c	   \
 	pango-markup.c	   \
+	pango-script-table.h   \
 	pango-tabs.c	   \
 	pango-utils.c	   \
 	reorder-items.c    \
@@ -227,6 +229,7 @@ pango_headers=		   \
 	pango-fontmap.h	   \
 	pango-fontset.h    \
 	pango-glyph.h	   \
+	pango-glyph-item.h \
 	pango-indic.h	   \
 	pango-item.h	   \
 	pango-layout.h	   \

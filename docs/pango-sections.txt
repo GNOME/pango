@@ -65,6 +65,7 @@ PangoGlyphGeometry
 PangoGlyphUnit
 PangoGlyphVisAttr
 PangoGlyphString
+PangoGlyphItem
 PANGO_TYPE_GLYPH_STRING
 pango_glyph_string_new
 pango_glyph_string_copy
@@ -75,6 +76,8 @@ pango_glyph_string_extents_range
 pango_glyph_string_index_to_x
 pango_glyph_string_x_to_index
 pango_glyph_string_get_logical_widths
+pango_glyph_item_split
+pango_glyph_item_apply_attrs
 
 <SUBSECTION Private>
 pango_glyph_string_get_type
@@ -305,6 +308,8 @@ pango_attr_list_insert
 pango_attr_list_insert_before
 pango_attr_list_change
 pango_attr_list_splice
+pango_attr_list_filter
+PangoAttrFilterFunc
 pango_attr_list_get_iterator
 PangoAttrIterator
 pango_attr_iterator_copy
@@ -312,6 +317,7 @@ pango_attr_iterator_next
 pango_attr_iterator_range
 pango_attr_iterator_get
 pango_attr_iterator_get_font
+pango_attr_iterator_get_attrs
 pango_attr_iterator_destroy
 <SUBSECTION Private>
 pango_attr_type_get_type

@@ -24,7 +24,7 @@
 
 #include <pango/pango-attributes.h>
 #include <pango/pango-context.h>
-#include <pango/pango-glyph.h>
+#include <pango/pango-glyph-item.h>
 #include <pango/pango-tabs.h>
 
 G_BEGIN_DECLS
@@ -32,7 +32,9 @@ G_BEGIN_DECLS
 typedef struct _PangoLayout      PangoLayout;
 typedef struct _PangoLayoutClass PangoLayoutClass;
 typedef struct _PangoLayoutLine  PangoLayoutLine;
-typedef struct _PangoLayoutRun   PangoLayoutRun;
+
+/* For backwards compatiblity */
+typedef PangoGlyphItem PangoLayoutRun;
 
 typedef enum {
   PANGO_ALIGN_LEFT,
@@ -52,12 +54,6 @@ struct _PangoLayoutLine
   gint         start_index;     /* start of line as byte index into layout->text */
   gint         length;		/* length of line in bytes */
   GSList      *runs;
-};
-
-struct _PangoLayoutRun
-{
-  PangoItem        *item;
-  PangoGlyphString *glyphs;
 };
 
 #define PANGO_TYPE_LAYOUT              (pango_layout_get_type ())

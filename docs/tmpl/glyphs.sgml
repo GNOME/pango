@@ -218,24 +218,15 @@ accessible fields
 </row>
 
 <row>
-<entry>PangoGlyph *#glyphs;</entry>
-<entry>an array of glyphs of length <structfield>num_glyphs</structfield>.</entry>
-</row>
-
-<row>
-<entry>PangoGlyphGeometry *#geometry;</entry>
-<entry>an array of #PangoGlyphGeometry structures corresponding to <structfield>glyphs</structfield>.</entry>
-</row>
-
-<row>
-<entry>PangoGlyphVisAttr *#attrs;</entry>
-<entry>an array of #PangoGlyphVisAttr structures corresponding to <structfield>glyphs</structfield>.</entry>
+<entry>PangoGlyphInfo *#glyphs;</entry>
+<entry>an array of #PangoGlyphInfo structures of length <structfield>num_glyphs</structfield>.</entry>
 </row>
 
 <row>
 <entry>gint *#log_clusters;</entry>
-<entry>for each glyph, the character index (should this be byte
-       index?) of the starting character for the cluster.</entry>
+<entry>for each glyph, byte index of the starting character for the
+cluster. The indices are relative to the start of the text
+corresponding to the PangoGlyphString.</entry>
 </row>
 
 </tbody></tgroup></informaltable>
@@ -244,6 +235,20 @@ accessible fields
 @num_glyphs: 
 @glyphs: 
 @log_clusters: 
+
+<!-- ##### STRUCT PangoGlyphItem ##### -->
+<para>
+A #PangoGlyphItem is a pair of a #PangoItem and the glyphs
+resulting from shaping the text corresponding to an item.
+As an example of the usage of #PangoGlyphItem, the results
+of shaping text with #PangoLayout is a list of #PangoLayoutLine,
+each of which contains a list of #PangoGlyphItem.
+</para>
+
+@item: a #PangoItem structure that provides information
+       about a segment of text.
+@glyphs: the glyphs obtained by shaping the text
+         corresponding to @item.
 
 <!-- ##### MACRO PANGO_TYPE_GLYPH_STRING ##### -->
 <para>
@@ -348,5 +353,27 @@ The GObject type for #PangoGlyphString.
 @length: 
 @embedding_level: 
 @logical_widths: 
+
+
+<!-- ##### FUNCTION pango_glyph_item_split ##### -->
+<para>
+
+</para>
+
+@orig: 
+@text: 
+@split_index: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_glyph_item_apply_attrs ##### -->
+<para>
+
+</para>
+
+@glyph_item: 
+@text: 
+@list: 
+@Returns: 
 
 

@@ -593,6 +593,28 @@ The GObject type for #PangoAttrList.
 @len: 
 
 
+<!-- ##### FUNCTION pango_attr_list_filter ##### -->
+<para>
+
+</para>
+
+@list: 
+@func: 
+@data: 
+@Returns: 
+
+
+<!-- ##### USER_FUNCTION PangoAttrFilterFunc ##### -->
+<para>
+A predicate function used by pango_attr_list_filter()
+to filter out a subset of attributes for a list.
+</para>
+
+@attribute: a #PangoAttribute
+@data: callback data passed to pango_attr_list_filter()
+@Returns: %TRUE if the attribute should be filtered out
+
+
 <!-- ##### FUNCTION pango_attr_list_get_iterator ##### -->
 <para>
 
@@ -661,6 +683,15 @@ attributes currently in effect can be queried.
 @desc: 
 @language: 
 @extra_attrs: 
+
+
+<!-- ##### FUNCTION pango_attr_iterator_get_attrs ##### -->
+<para>
+
+</para>
+
+@iterator: 
+@Returns: 
 
 
 <!-- ##### FUNCTION pango_attr_iterator_destroy ##### -->

@@ -2,11 +2,15 @@
 Indic Engine Support
 
 <!-- ##### SECTION Short_Description ##### -->
-
+Indic support for legacy shaper engines.
 
 <!-- ##### SECTION Long_Description ##### -->
 <para>
-
+The <function>pango_indic_*</function> functiosn are used to
+implement indic shaping support for certain legacy shaping engines,
+in particular the shaping engines for bitmap X fonts.
+These are basically internal routines and should not be
+used by applications.
 </para>
 
 <!-- ##### SECTION See_Also ##### -->

@@ -1,7 +1,8 @@
+/* -*- mode: C; c-file-style: "gnu" -*- */
 /* pango
  * pango-attributes.c: Attributed text
  *
- * Copyright (C) 2000 Red Hat Software
+ * Copyright (C) 2000-2002 Red Hat Software
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -1499,4 +1500,114 @@ pango_attr_iterator_get_font (PangoAttrIterator     *iterator,
 	    }
 	}
     }
+}
+
+/**
+ * pango_attr_list_filter:
+ * @list: a #PangoAttrList
+ * @func: callback function; returns %TRUE if an atttribute
+ *        should be filtered out.
+ * @data: Data to be passed to @func
+ * 
+ * Given a PangoAttrList and callback function, removes any elements
+ * of @list for which @func returns %TRUE and inserts them into
+ * a new list.
+ * 
+ * Return value: a newly allocated %PangoAttrList or %NULL if
+ *  no attributes of the given types were found.
+ **/
+PangoAttrList *
+pango_attr_list_filter (PangoAttrList       *list,
+			PangoAttrFilterFunc  func,
+			gpointer             data)
+
+{
+  PangoAttrList *new = NULL;
+  GSList *tmp_list;
+  GSList *prev;
+  GSList *new_attrs;
+  
+  g_return_val_if_fail (list != NULL, NULL);
+
+  tmp_list = list->attributes;
+  prev = NULL;
+  new_attrs = NULL;
+  while (tmp_list)
+    {
+      GSList *next = tmp_list->next;
+      PangoAttribute *tmp_attr = tmp_list->data;
+
+      if ((*func) (tmp_attr, data))
+	{
+	  if (!tmp_list->next)
+	    list->attributes_tail = prev;
+	  
+	  if (prev)
+	    prev->next = tmp_list->next;
+	  else
+	    list->attributes = tmp_list->next;
+	  
+	  tmp_list->next = NULL;
+	  
+	  if (!new)
+	    {
+	      new = pango_attr_list_new ();
+	      new->attributes = new->attributes_tail = tmp_list;
+	    }
+	  else
+	    {
+	      new->attributes_tail->next = tmp_list;
+	      new->attributes_tail = tmp_list;
+	    }
+
+	  goto next_attr;
+	}
+
+      prev = tmp_list;
+
+    next_attr:
+      tmp_list = next;
+    }
+
+  return new;
+}
+
+/**
+ * pango_attr_iterator_get_attrs:
+ * @iterator: a #PangAttrIterator
+ * 
+ * Gets a list all attributes a the current position of the
+ * iterator.
+ * 
+ * Return value: a list of all attributes for the current range.
+ *   To free this value, call pango_attributes_destroy() on
+ *   each value and g_slist_free() on the list.
+ **/
+GSList *
+pango_attr_iterator_get_attrs (PangoAttrIterator *iterator)
+{
+  GSList *attrs = NULL;
+  GList *tmp_list;
+
+  for (tmp_list = iterator->attribute_stack; tmp_list; tmp_list = tmp_list->next)
+    {
+      PangoAttribute *attr = tmp_list->data;
+      GSList *tmp_list2;
+      gboolean found = FALSE;
+
+      for (tmp_list2 = attrs; tmp_list2; tmp_list2 = tmp_list2->next)
+	{
+	  PangoAttribute *old_attr = tmp_list2->data;
+	  if (attr->klass->type == old_attr->klass->type)
+	    {
+	      found = TRUE;
+	      break;
+	    }
+	}
+
+      if (!found)
+	attrs = g_slist_prepend (attrs, pango_attribute_copy (attr));
+    }
+
+  return attrs;
 }

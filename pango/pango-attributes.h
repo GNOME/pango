@@ -97,6 +97,9 @@ struct _PangoAttribute
   guint end_index;
 };
 
+typedef gboolean (*PangoAttrFilterFunc) (PangoAttribute *attribute,
+					 gpointer        data);
+
 struct _PangoAttrClass
 {
   PangoAttrType type;
@@ -191,6 +194,11 @@ void               pango_attr_list_splice        (PangoAttrList  *list,
 						  PangoAttrList  *other,
 						  gint            pos,
 						  gint            len);
+
+PangoAttrList *pango_attr_list_filter (PangoAttrList       *list,
+				       PangoAttrFilterFunc  func,
+				       gpointer             data);
+
 PangoAttrIterator *pango_attr_list_get_iterator  (PangoAttrList  *list);
 
 void               pango_attr_iterator_range    (PangoAttrIterator     *iterator,
@@ -205,6 +213,7 @@ void               pango_attr_iterator_get_font (PangoAttrIterator     *iterator
                                                  PangoFontDescription  *desc,
 						 PangoLanguage        **language,
                                                  GSList               **extra_attrs);
+GSList *          pango_attr_iterator_get_attrs (PangoAttrIterator     *iterator);
 
 
 gboolean pango_parse_markup (const char                 *markup_text,
