@@ -243,26 +243,20 @@ pango_ft2_font_get_face (PangoFont      *font)
 	bail0:
 	  load_fallback_face (ft2font, filename);
 	}
-      ft2font->face->generic.data = 0;
-    }
 
-  g_assert (ft2font->face);
-  
-  if (!set_unicode_charmap (ft2font->face))
-    {
-      g_warning ("Unable to load unicode charmap from font file %s", filename);
+      g_assert (ft2font->face);
       
-      FT_Done_Face (ft2font->face);
-      ft2font->face = NULL;
+      if (!set_unicode_charmap (ft2font->face))
+	{
+	  g_warning ("Unable to load unicode charmap from font file %s", filename);
+	  
+	  FT_Done_Face (ft2font->face);
+	  ft2font->face = NULL;
+	  
+	  load_fallback_face (ft2font, filename);
+	}
 
-      load_fallback_face (ft2font, filename);
-    }
-
-  face = ft2font->face;
-
-  if (ft2font->size != GPOINTER_TO_UINT (face->generic.data))
-    {
-      face->generic.data = GUINT_TO_POINTER (ft2font->size);
+      face = ft2font->face;
 
       error = FT_Set_Char_Size (face,
 				PANGO_PIXELS_26_6 (ft2font->size),

@@ -1,3 +1,11 @@
+Sat Dec  7 00:10:02 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pangoft2.c (pango_ft2_font_get_face): Don't
+	use face->generic.data to hold the size the face is
+	currently set to; we don't need it currently and
+	it interferes with the use of face->generic.data for
+	OpenType data. (#93822, frequently reported bug)
+
 Fri Dec  6 23:07:58 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pangoxft-font.c (pango_xft_real_render)
