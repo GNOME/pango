@@ -864,7 +864,7 @@ pango_font_description_from_string (const char *str)
   while (last > str && g_ascii_isspace (*(last - 1)))
     last--;
 
-  while (g_ascii_isspace (*str))
+  while (last > str && g_ascii_isspace (*str))
     str++;
 
   if (str != last)

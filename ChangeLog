@@ -1,3 +1,8 @@
+2003-01-20  Padraig O'Briain  <padraig.obriain@sun.com>
+
+	* pango/fonts.c (pango_font_description_from_string): Avoid crash
+	with string such as " 12" (bug #103674)
+
 Fri Jan 10 18:56:36 2003  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/opentype/ftxgdef.c: Export TT_New_GDEF_Table
