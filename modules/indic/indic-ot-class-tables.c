@@ -40,6 +40,7 @@ enum
     _dr = _dv | CF_MATRA_POST,
     _lm = _dv | CF_LENGTH_MARK,
     _vr = CC_VIRAMA,
+    _al = CC_AL_LAKUNA,
 
     /*
      * Split matras
@@ -198,7 +199,7 @@ static IndicOTCharClass sinhCharClasses[] =
     _iv, _iv, _iv, _iv, _iv, _iv, _iv, _xx, _xx, _xx, _ct, _ct, _ct, _ct, _ct, _ct, /* 0D90 - 0D9F */
     _ct, _ct, _ct, _ct, _ct, _ct, _ct, _ct, _ct, _ct, _ct, _ct, _ct, _ct, _ct, _ct, /* 0DA0 - 0DAF */
     _ct, _ct, _xx, _ct, _ct, _ct, _ct, _ct, _ct, _ct, _ct, _ct, _xx, _ct, _xx, _xx, /* 0DB0 - 0DBF */
-    _ct, _ct, _ct, _ct, _ct, _ct, _ct, _xx, _xx, _xx, _vr, _xx, _xx, _xx, _xx, _dr, /* 0DC0 - 0DCF */
+    _ct, _ct, _ct, _ct, _ct, _ct, _ct, _xx, _xx, _xx, _al, _xx, _xx, _xx, _xx, _dr, /* 0DC0 - 0DCF */
     _dr, _dr, _da, _da, _db, _xx, _db, _xx, _dr, _dl, _s1, _dl, _s2, _s3, _s4, _dr, /* 0DD0 - 0DDF */
     _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, /* 0DE0 - 0DEF */
     _xx, _xx, _dr, _dr, _xx                                                         /* 0DF0 - 0DF4 */
@@ -243,7 +244,7 @@ static const IndicOTSplitMatra sinhSplitTable[] = {{0x0DD9, 0x0DCA}, {0x0DD9, 0x
 #define TELU_SCRIPT_FLAGS (SF_MATRAS_AFTER_BASE | 3)
 #define KNDA_SCRIPT_FLAGS (SF_MATRAS_AFTER_BASE | 3)
 #define MLYM_SCRIPT_FLAGS (SF_MPRE_FIXUP | SF_NO_POST_BASE_LIMIT)
-#define SINH_SCRIPT_FLAGS (SF_MPRE_FIXUP | SF_NO_POST_BASE_LIMIT)
+#define SINH_SCRIPT_FLAGS (SF_MPRE_FIXUP | SF_NO_POST_BASE_LIMIT | SF_PROCESS_ZWJ)
 
 /*
  * Indic Class Tables
@@ -307,7 +308,14 @@ gboolean indic_ot_is_virama(const IndicOTClassTable *class_table, gunichar ch)
 {
   IndicOTCharClass char_class = indic_ot_get_char_class(class_table, ch);
 
-  return IS_VIRAMA(char_class);
+  return (IS_VIRAMA(char_class) || IS_AL_LAKUNA(char_class));
+}
+
+gboolean indic_ot_is_al_lakuna(const IndicOTClassTable *class_table, gunichar ch)
+{
+  IndicOTCharClass char_class = indic_ot_get_char_class(class_table, ch);
+
+  return IS_AL_LAKUNA(char_class);
 }
 
 gboolean indic_ot_is_nukta(const IndicOTClassTable *class_table, gunichar ch)
@@ -413,16 +421,17 @@ IndicOTCharClass indic_ot_get_char_class(const IndicOTClassTable *class_table, g
 
 static const gint8 stateTable[][CC_COUNT] =
 {
-/*   xx  ma  mp  iv  ct  cn  nu  dv  vr  zw */
-    { 1,  1,  1,  5,  3,  2,  1,  1,  1,  1},
-    {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
-    {-1,  6,  1, -1, -1, -1, -1,  5,  4, -1},
-    {-1,  6,  1, -1, -1, -1,  2,  5,  4, -1},
-    {-1, -1, -1, -1,  3,  2, -1, -1, -1,  8},
-    {-1,  6,  1, -1, -1, -1, -1,  5, -1, -1},
-    {-1,  7,  1, -1, -1, -1, -1, -1, -1, -1},
-    {-1, -1,  1, -1, -1, -1, -1, -1, -1, -1},
-    {-1, -1, -1, -1,  3,  2, -1, -1, -1, -1}
+/*   xx  ma  mp  iv  ct  cn  nu  dv  vr  zw  al */
+    { 1,  1,  1,  5,  3,  2,  1,  1,  1,  1,  1},
+    {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
+    {-1,  6,  1, -1, -1, -1, -1,  5,  4, -1, -1},
+    {-1,  6,  1, -1, -1, -1,  2,  5,  4, -1,  9},
+    {-1, -1, -1, -1,  3,  2, -1, -1, -1,  8, -1},
+    {-1,  6,  1, -1, -1, -1, -1,  5, -1, -1, -1},
+    {-1,  7,  1, -1, -1, -1, -1, -1, -1, -1, -1},
+    {-1, -1,  1, -1, -1, -1, -1, -1, -1, -1, -1},
+    {-1, -1, -1, -1,  3,  2, -1, -1, -1, -1, -1},
+    {-1, -1, -1, -1, -1, -1, -1, -1, -1,  8, -1}
 
 };
 

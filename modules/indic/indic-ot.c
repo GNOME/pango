@@ -29,7 +29,7 @@ struct _Output
     gunichar fMabove;
     gunichar fMpost;
     gunichar fLengthMark;
-    gunichar fVirama; /* to handle virama in sinhala split matras */
+    gunichar fAlLakuna; /* to handle Al-Lakuna in sinhala split matras */
     glong    fMatraIndex;
     gulong   fMatraTags;
     gboolean fMatraWordStart;
@@ -51,7 +51,7 @@ static void initOutput(Output *output, const glong *originalOffsets, gunichar *o
     output->fOutIndex    = 0;
     output->fMatraTags   = 0;
 
-    output->fMpre = output->fMbelow = output->fMabove = output->fMpost = output->fLengthMark = output->fVirama = 0;
+    output->fMpre = output->fMbelow = output->fMabove = output->fMpost = output->fLengthMark = output->fAlLakuna = 0;
 
     output->fMPreOutIndex = -1;
     output->fMPreFixups = mpreFixups;
@@ -70,14 +70,14 @@ static void saveMatra(Output *output, gunichar matra, IndicOTCharClass matraClas
         output->fMpost = matra;
     } else if (IS_LENGTH_MARK(matraClass)) {
         output->fLengthMark = matra;
-    } else if (IS_VIRAMA(matraClass)) {
-        output->fVirama = matra;
+    } else if (IS_AL_LAKUNA(matraClass)) {
+        output->fAlLakuna = matra;
     }
 }
 
 static void initMatra(Output *output, guint32 matraIndex, gulong matraTags, gboolean wordStart)
 {
-    output->fMpre = output->fMbelow = output->fMabove = output->fMpost = output->fLengthMark = output->fVirama = 0;
+    output->fMpre = output->fMbelow = output->fMabove = output->fMpost = output->fLengthMark = output->fAlLakuna = 0;
     output->fMPreOutIndex = -1;
     output->fMatraIndex = matraIndex;
     output->fMatraTags = matraTags;
@@ -165,10 +165,10 @@ static void writeLengthMark(Output *output)
     }
 }
 
-static void writeVirama(Output *output)
+static void writeAlLakuna(Output *output)
 {
-    if (output->fVirama != 0) {
-	writeChar(output, output->fVirama, output->fMatraIndex, output->fMatraTags);
+    if (output->fAlLakuna != 0) {
+        writeChar(output, output->fAlLakuna, output->fMatraIndex, output->fMatraTags);
     }
 }
 
@@ -229,6 +229,7 @@ glong indic_ot_reorder(const gunichar *chars, const glong *utf8_offsets, glong c
         case CC_MODIFYING_MARK_POST:
         case CC_NUKTA:
         case CC_VIRAMA:
+        case CC_AL_LAKUNA:
             writeChar(&output, C_DOTTED_CIRCLE, prev, blwf_p);
             writeChar(&output, chars[prev], prev, blwf_p);
             break;
@@ -240,7 +241,7 @@ glong indic_ot_reorder(const gunichar *chars, const glong *utf8_offsets, glong c
             writeMabove(&output);
             writeMpost(&output);
             writeLengthMark(&output);
-	    writeVirama(&output);
+            writeAlLakuna(&output);
             break;
 
         case CC_CONSONANT:
@@ -425,7 +426,7 @@ glong indic_ot_reorder(const gunichar *chars, const glong *utf8_offsets, glong c
 	    }
 
 	    writeLengthMark(&output);
-	    writeVirama(&output);
+	    writeAlLakuna(&output);
 
 	    /* write reph */
 	    if ((class_table->scriptFlags & SF_REPH_AFTER_BELOW) == 0) {
