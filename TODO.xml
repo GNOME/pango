@@ -258,7 +258,8 @@
 	  Support for language tagging and for selecting appropriate
 	  glyphs for a user's locale is not yet complete. The shaping
 	  engine needs to modify the fonts it chooses based on the
-	  language tag for text, defaulting to the user's locale.
+	  language tag for text. (For untagged text, a default would
+	  come from user's locale setting.)
 	</p>
       </description>
       <contact>gtk-i18n-list@gnome.org</contact>
