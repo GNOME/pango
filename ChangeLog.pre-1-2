@@ -1,3 +1,40 @@
+2000-12-15  Havoc Pennington  <hp@pobox.com>
+
+	* pango/pango-glyph.h: move pango_shape and pango_reorder_items in
+	here.
+
+	* pango/pango-break.h: move most of pango.h in here, so that
+	pango.h can be the only file that includes pango-enum-types.h, so
+	that changing any header doesn't end up rebuilding all of pango
+	due to a rebuild of pango-enum-types.h.
+	
+	* pango/makeenums.pl: script to generate pango-enum-types.[hc]
+
+	* pango/Makefile.am (pango_headers): built pango-enum-types.h,
+	pango-enum-types.c that do enum type registration; add
+	pango-break.h; do some assorted rearranging to handle the 
+	built headers
+
+	* pango/pango.h: moved most of it to pango-break.h
+	
+	* pango/break.c: include individual headers, not pango.h
+	
+	* pango/shape.c: ditto
+
+	* pango/reorder-items.c: ditto
+
+	* pango/querymodules.c: ditto
+
+	* pango/pango-layout.c: ditto
+
+	* pango/pango-indic.c: ditto
+
+	* pango/mapping.c: ditto
+
+	* pango/itemize.c: ditto
+
+	* pango/fonts.c: ditto
+
 2000-12-15  Havoc Pennington  <hp@redhat.com>
 
 	* modules/Makefile.am (install-data-local): touch

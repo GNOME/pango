@@ -21,7 +21,7 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#include "pango.h"
+#include "pango-glyph.h"
 #include "pango-indic.h"
 
 /**

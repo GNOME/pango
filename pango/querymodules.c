@@ -26,8 +26,10 @@
 #include <dirent.h>
 #endif
 #include <gmodule.h>
-#include "pango.h"
+#include "pango-break.h"
+#include "pango-context.h"
 #include "pango-utils.h"
+#include "pango-engine.h"
 
 #include <errno.h>
 #include <string.h>

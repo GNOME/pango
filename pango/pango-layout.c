@@ -19,8 +19,11 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#include <pango/pango.h>		/* For pango_shape() */
+#include <pango/pango-glyph.h>		/* For pango_shape() */
 #include <pango/pango-layout.h>
+#include <pango/pango-break.h>
+#include <pango/pango-item.h>
+#include <pango/pango-engine.h>
 #include <string.h>
 
 #define LINE_IS_VALID(line) ((line)->layout != NULL)

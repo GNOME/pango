@@ -23,6 +23,11 @@ lib_LTLIBRARIES = libpango.la libpangox.la $(XFT_BUILD_LIBS)
 
 bin_PROGRAMS = pango-querymodules
 
+pango_built_headers= pango-enum-types.h
+pango_built_cfiles= pango-enum-types.c
+
+BUILT_SOURCES=$(pango_built_headers) $(pango_built_cfiles)
+
 libpango_la_SOURCES = 	   \
 	break.c 	   \
 	fonts.c 	   \
@@ -41,7 +46,8 @@ libpango_la_SOURCES = 	   \
 	pango-tabs.c	   \
 	pango-utils.c	   \
 	reorder-items.c    \
-	shape.c
+	shape.c	           \
+	$(pango_built_cfiles)
 
 libpangox_la_SOURCES = 	   \
 	modules.h 	   \
@@ -74,9 +80,10 @@ libpangoxft_la_LDFLAGS = -release $(VERSION)
 
 pangoincludedir=$(includedir)/pango-1.0/pango
 
-pangoinclude_HEADERS = 	   \
+pango_headers=		   \
 	pango.h		   \
 	pango-attributes.h \
+	pango-break.h	   \
 	pango-context.h	   \
 	pango-coverage.h   \
 	pango-engine.h	   \
@@ -91,7 +98,17 @@ pangoinclude_HEADERS = 	   \
 	pango-types.h	   \
 	pango-utils.h	   \
 	pangox.h	   \
-	$(XFT_HFILES) 
+	$(XFT_HFILES)
+
+pangoinclude_HEADERS = 	   \
+	$(pango_headers)   \
+	$(pango_built_headers)
+
+pango-enum-types.h: $(pango_headers) makeenums.pl
+	makeenums.pl include $(pango_headers) > pango-enum-types.h
+
+pango-enum-types.c: $(pango_headers) makeenums.pl
+	makeenums.pl cfile $(pango_headers) > pango-enum-types.c
 
 #
 # As a temporary hack, we pull in libpangox here so that we can link
@@ -105,6 +122,7 @@ pango_querymodules_LDADD = libpangox.la libpango.la $(GLIB_LIBS) $(FRIBIDI_LIBS)
 endif
 
 EXTRA_DIST =			\
+	makeenums.pl		\
 	module-defs.c.win32	\
 	pango.def		\
 	pangowin32.def		\

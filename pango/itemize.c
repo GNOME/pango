@@ -19,7 +19,7 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#include "pango.h"
+#include "pango-context.h"
 #include "modules.h"
 
 static void add_engines (PangoContext     *context,

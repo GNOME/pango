@@ -28,7 +28,7 @@
  * cursor positioning is allowed within clusters or not.
  */
 
-#include <pango/pango.h>
+#include <pango/pango-glyph.h>
 
 /**
  * pango_glyph_string_index_to_x:

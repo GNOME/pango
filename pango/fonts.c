@@ -24,7 +24,9 @@
 #include <math.h>
 #include <string.h>
 
-#include "pango.h"
+#include "pango-types.h"
+#include "pango-font.h"
+#include "pango-fontmap.h"
 
 /**
  * pango_font_description_copy:
