@@ -1,3 +1,10 @@
+2000-11-15  Elliot Lee  <sopwith@redhat.com>
+
+	* pango/modules.c: Make some vars static.
+	  Implement pango_module_register function.
+	* pango/pango-modules.h, pango/modules.h: Move declaration of
+	PangoIncludedModule to pango-modules.h for public use.
+
 Wed Nov 15 16:56:38 2000  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pango-layout.c (process_item): Fix problem with

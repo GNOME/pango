@@ -37,6 +37,15 @@ struct _PangoMapEntry
   gboolean is_exact;
 };
 
+typedef struct _PangoIncludedModule PangoIncludedModule;
+
+struct _PangoIncludedModule
+{
+  void (*list) (PangoEngineInfo **engines, int *n_engines);
+  PangoEngine *(*load) (const char *id);
+  void (*unload) (PangoEngine *engine);
+};
+
 PangoMap *     pango_find_map       (const char *lang,
 				     guint       engine_type_id,
 				     guint       render_type_id);
@@ -44,6 +53,7 @@ PangoMapEntry *pango_map_get_entry  (PangoMap   *map,
 				     guint32     wc);
 PangoEngine *  pango_map_get_engine (PangoMap   *map,
 				     guint32     wc);
+void           pango_module_register (PangoIncludedModule *mod);
 
 #ifdef __cplusplus
 }

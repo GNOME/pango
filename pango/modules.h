@@ -20,18 +20,10 @@
  */
 
 #include <pango/pango-engine.h>
+#include <pango/pango-modules.h>
 
 #ifndef __MODULES_H__
 #define __MODULES_H__
-
-typedef struct _PangoIncludedModule PangoIncludedModule;
-
-struct _PangoIncludedModule
-{
-  void (*list) (PangoEngineInfo **engines, int *n_engines);
-  PangoEngine *(*load) (const char *id);
-  void (*unload) (PangoEngine *engine);
-};
 
 extern PangoIncludedModule _pango_included_modules[];
 

@@ -68,8 +68,8 @@ struct _PangoEnginePair
   PangoEngine *engine;
 };
 
-GList *maps;
-GList *engines;
+static GList *maps = NULL;
+static GList *engines = NULL;
 
 static void      build_map      (PangoMapInfo       *info);
 static void      init_modules   (void);
@@ -179,29 +179,33 @@ pango_engine_pair_get_engine (PangoEnginePair *pair)
 }
 
 static void
+handle_included_module (PangoIncludedModule *mod)
+{
+  PangoEngineInfo *engine_info;
+  int n_engines;
+
+  mod->list (&engine_info, &n_engines);
+
+  for (j = 0; j < n_engines; j++)
+    {
+      PangoEnginePair *pair = g_new (PangoEnginePair, 1);
+
+      pair->info = engine_info[j];
+      pair->included = TRUE;
+      pair->load_info = mod;
+      pair->engine = NULL;
+
+      engines = g_list_prepend (engines, pair);
+    }
+}
+
+static void
 add_included_modules (void)
 {
   int i, j;
 
   for (i = 0; _pango_included_modules[i].list; i++)
-    {
-      PangoEngineInfo *engine_info;
-      int n_engines;
-
-      _pango_included_modules[i].list (&engine_info, &n_engines);
-
-      for (j=0; j < n_engines; j++)
-	{
-	  PangoEnginePair *pair = g_new (PangoEnginePair, 1);
-
-	  pair->info = engine_info[j];
-	  pair->included = TRUE;
-	  pair->load_info = &_pango_included_modules[i];
-	  pair->engine = NULL;
-
-	  engines = g_list_prepend (engines, pair);
-	}
-    }
+    handle_included_module                         (&_pango_included_modules[i]);
 }
 
 static gboolean /* Returns true if succeeded, false if failed */
@@ -528,4 +532,17 @@ pango_map_get_engine (PangoMap *map,
     return pango_engine_pair_get_engine ((PangoEnginePair *)entry->info);
   else
     return NULL;
+}
+
+/**
+ * pango_module_register:
+ * @mod: a PangoIncludedModule
+ * 
+ * Registers a PangoIncludedModlue
+ * 
+ **/
+void
+pango_module_register (PangoIncludedModule *mod)
+{
+  handle_included_module (mod);
 }
