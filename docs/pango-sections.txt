@@ -281,6 +281,8 @@ pango_layout_set_alignment
 pango_layout_get_alignment
 pango_layout_set_tabs
 pango_layout_get_tabs
+pango_layout_set_single_paragraph_mode
+pango_layout_get_single_paragraph_mode
 PangoAlignment
 PANGO_TYPE_ALIGNMENT
 

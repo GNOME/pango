@@ -1,3 +1,10 @@
+Changes between 0.15 and 0.16
+
+* Ability to make newlines in a PangoLayout display as regular characters
+  (useful for, e.g., having an entry widget with embedded newlines.)
+* Build fixes
+* Bug fixes
+
 Changes between 0.14 and 0.15
 
 * New version of Tamil shaper from Vikram Subramanian

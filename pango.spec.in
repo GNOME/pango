@@ -68,5 +68,3 @@ rm -rf $RPM_BUILD_ROOT
 %{prefix}/bin/pango-config
 %{prefix}/lib/libpango*.a
 %{prefix}/include/*
-
-

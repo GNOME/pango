@@ -298,6 +298,24 @@ fields.
 @Returns: 
 
 
+<!-- ##### FUNCTION pango_layout_set_single_paragraph_mode ##### -->
+<para>
+
+</para>
+
+@layout: 
+@setting: 
+
+
+<!-- ##### FUNCTION pango_layout_get_single_paragraph_mode ##### -->
+<para>
+
+</para>
+
+@layout: 
+@Returns: 
+
+
 <!-- ##### ENUM PangoAlignment ##### -->
 <para>
 describes how to align the lines of a #PangoLayout within the

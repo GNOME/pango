@@ -1,3 +1,16 @@
+Fri May  4 11:07:04 2001  Owen Taylor  <otaylor@redhat.com>
+
+	* NEWS: Update for 0.16
+
+	* docs/pango-sections.txt: Update.
+
+	* configure.in (PANGO_MINOR_VERSION): 0.16
+
+Wed May  2 11:57:45 2001  Owen Taylor  <otaylor@redhat.com>
+
+	* examples/Makefile.am (QT_LIBS): Remove space that
+	was confusing libtool.
+
 2001-05-04  Alex Larsson  <alla@lysator.liu.se>
 
 	* pango/pangoft2.c (get_font_metrics_from_subfonts):
@@ -12,6 +25,8 @@ Wed May  2 11:35:16 2001  Owen Taylor  <otaylor@redhat.com>
 
 	* configure.in (have_freetype): Add check to make sure
 	#include FT_ERRORS_H works. (#54043)
+
+2001-05-02  Sven Neumann  <sven@convergence.de>
 
 	* configure.in: do not try to build modules using Xft if X is not
 	available or was explicitely disabled.
