@@ -1,3 +1,9 @@
+2002-01-09  Alex Larsson  <alexl@redhat.com>
+
+	* pango/pangoxft-fontmap.c (pango_xft_font_map_load_fontset):
+	Add g_error if font match fails, referencing bug #68030, which
+	is the "libXrender is broken" bug.
+
 Wed Jan  9 18:51:02 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pango-context.c (pango_context_load_font): 

@@ -612,6 +612,10 @@ pango_xft_font_map_load_fontset (PangoFontMap                 *fontmap,
       if (array->len == 0)
 	{
 	  match = XftFontSetMatch (&xfontmap->font_set, 1, pattern, &res);
+	  if (match == NULL)
+	    g_error ("Failed to match any font. This could be due to a broken Xft "
+		     "configuration, or if you run XFree 4.1.0 due to a bug in libXrender. "
+		     "For more information about this, read http://bugzilla.gnome.org/show_bug.cgi?id=68030\n");
 	  g_ptr_array_add (array, match);
 	}
 
