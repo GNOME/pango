@@ -1,5 +1,8 @@
 2000-12-22  Alexander Larsson  <alla@lysator.liu.se>
 
+	* pango/pangoft2.c:
+	Remove timing printfs.
+
 	* pango/pangoft2-private.h:
 	Disable debug.
 

@@ -744,32 +744,17 @@ pango_ft2_get_coverage (PangoFont  *font,
   FT_Face face;
   gunichar wc;
   int i;
-  GTimeVal tv0, tv1;
 
   for (i = 1; i <= ft2font->n_fonts; i++)
     {
-      g_get_current_time (&tv0);
       tmp = pango_coverage_new ();
       face = pango_ft2_get_face (font, i);
-      g_get_current_time (&tv1);
-      if (tv1.tv_usec < tv0.tv_usec)
-	tv1.tv_sec--, tv1.tv_usec += 1000000L;
-      g_print ("after pango_ft2_get_face: %ld.%06ld s\n", tv1.tv_sec - tv0.tv_sec, tv1.tv_usec - tv0.tv_usec);
       for (wc = 0; wc < 65536; wc++)
 	{
 	  glyph = PANGO_FT2_MAKE_GLYPH (i, wc);
 	  if (FT_Get_Char_Index (face, wc))
 	    pango_coverage_set (tmp, wc, PANGO_COVERAGE_EXACT);
-	  if ((wc%3000)==1) {
-      g_get_current_time (&tv1);
-      if (tv1.tv_usec < tv0.tv_usec)
-	tv1.tv_sec--, tv1.tv_usec += 1000000L;
-      g_print ("after %d loops: %ld.%06ld s\n", wc, tv1.tv_sec - tv0.tv_sec, tv1.tv_usec - tv0.tv_usec);}
 	}
-      g_get_current_time (&tv1);
-      if (tv1.tv_usec < tv0.tv_usec)
-	tv1.tv_sec--, tv1.tv_usec += 1000000L;
-      g_print ("after loop for %s: %ld.%06ld s\n", face->family_name, tv1.tv_sec - tv0.tv_sec, tv1.tv_usec - tv0.tv_usec);
       pango_coverage_max (result, tmp);
       pango_coverage_unref (tmp);
     }
