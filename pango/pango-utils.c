@@ -19,7 +19,6 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#include <ctype.h>
 #include <errno.h>
 #include <string.h>
 #include <stdlib.h>
@@ -73,11 +72,11 @@ pango_trim_string (const char *str)
 
   g_return_val_if_fail (str != NULL, NULL);
   
-  while (*str && isspace (*str))
+  while (*str && g_ascii_isspace (*str))
     str++;
 
   len = strlen (str);
-  while (len > 0 && isspace (str[len-1]))
+  while (len > 0 && g_ascii_isspace (str[len-1]))
     len--;
 
   return g_strndup (str, len);
@@ -264,7 +263,7 @@ pango_skip_space (const char **pos)
 {
   const char *p = *pos;
   
-  while (isspace (*p))
+  while (g_ascii_isspace (*p))
     p++;
 
   *pos = p;
@@ -288,7 +287,7 @@ pango_scan_word (const char **pos, GString *out)
 {
   const char *p = *pos;
 
-  while (isspace (*p))
+  while (g_ascii_isspace (*p))
     p++;
   
   if (!((*p >= 'A' && *p <= 'Z') ||
@@ -331,7 +330,7 @@ pango_scan_string (const char **pos, GString *out)
 {
   const char *p = *pos;
   
-  while (isspace (*p))
+  while (g_ascii_isspace (*p))
     p++;
 
   if (!*p)
@@ -390,7 +389,7 @@ pango_scan_string (const char **pos, GString *out)
     {
       g_string_truncate (out, 0);
 
-      while (*p && !isspace (*p))
+      while (*p && !g_ascii_isspace (*p))
 	{
 	  g_string_append_c (out, *p);
 	  p++;
@@ -420,7 +419,7 @@ pango_scan_int (const char **pos, int *out)
   char buf[32];
   const char *p = *pos;
 
-  while (isspace (*p))
+  while (g_ascii_isspace (*p))
     p++;
   
   if (*p < '0' || *p > '9')

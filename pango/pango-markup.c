@@ -22,7 +22,6 @@
 #include <string.h>
 #include <stdlib.h>
 #include <errno.h>
-#include <ctype.h>
 
 #include <pango/pango-attributes.h>
 #include <pango/pango-font.h>
@@ -534,6 +533,12 @@ text_handler           (GMarkupParseContext *context,
     }
 }
 
+static gboolean
+xml_isspace (char c)
+{
+  return c == ' ' || c == '\t' || c == '\n' || c == '\r';
+}
+
 static GMarkupParser pango_markup_parser = {
   start_element_handler,
   end_element_handler,
@@ -614,7 +619,7 @@ pango_parse_markup (const char                 *markup_text,
 
   p = markup_text;
   end = markup_text + length;
-  while (p != end && isspace (*p))
+  while (p != end && xml_isspace (*p))
     ++p;
 
   if (end - p >= 8 && strncmp (p, "<markup>", 8) == 0)
@@ -955,7 +960,7 @@ span_parse_func     (MarkupData            *md,
 
   if (size)
     {
-      if (isdigit (*size))
+      if (g_ascii_isdigit (*size))
         {
           char *end = NULL;
           gulong n;

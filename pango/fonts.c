@@ -20,7 +20,6 @@
  */
 
 #include <stdlib.h>
-#include <ctype.h>
 #include <math.h>
 #include <string.h>
 
@@ -763,11 +762,11 @@ getword (const char *str, const char *last, size_t *wordlen)
 {
   const char *result;
   
-  while (last > str && isspace (*(last - 1)))
+  while (last > str && g_ascii_isspace (*(last - 1)))
     last--;
 
   result = last;
-  while (result > str && !isspace (*(result - 1)))
+  while (result > str && !g_ascii_isspace (*(result - 1)))
     result--;
 
   *wordlen = last - result;
@@ -855,16 +854,16 @@ pango_font_description_from_string (const char *str)
   /* Remainder (str => p) is family list. Trim off trailing commas and leading and trailing white space
    */
 
-  while (last > str && isspace (*(last - 1)))
+  while (last > str && g_ascii_isspace (*(last - 1)))
     last--;
 
   if (last > str && *(last - 1) == ',')
     last--;
 
-  while (last > str && isspace (*(last - 1)))
+  while (last > str && g_ascii_isspace (*(last - 1)))
     last--;
 
-  while (isspace (*str))
+  while (g_ascii_isspace (*str))
     str++;
 
   if (str != last)

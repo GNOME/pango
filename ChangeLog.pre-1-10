@@ -1,3 +1,19 @@
+2002-02-09  Darin Adler  <darin@bentspoon.com>
+
+	* pango/fonts.c: (getword): isspace -> g_ascii_isspace
+	(pango_font_description_from_string): isspace -> g_ascii_isspace
+	* pango/modules.c: Remove unneeded <ctype.h> include.
+	* pango/pango-markup.c: (xml_isspace): New.
+	(pango_parse_markup): isspace -> xml_isspace
+	(span_parse_func): isdigit -> g_ascii_isdigit
+	* pango/pango-utils.c: (pango_trim_string): isspace -> g_ascii_isspace
+	(pango_skip_space): isspace -> g_ascii_isspace
+	(pango_scan_word): isspace -> g_ascii_isspace
+	(pango_scan_string): isspace -> g_ascii_isspace
+	(pango_scan_int): isspace -> g_ascii_isspace
+	* pango/pangoft2-fontmap.c: Remove unneeded <ctype.h> include.
+	* pango/pangox-fontmap.c: Remove unneeded <ctype.h> include.
+
 2002-02-07  Tor Lillqvist  <tml@iki.fi>
 
 	* examples/pangoft2topgm.c (main): Accept also outfile name on
