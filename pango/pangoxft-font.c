@@ -281,18 +281,24 @@ pango_xft_real_render (Display          *display,
     }										\
   } G_STMT_END
 
-  /* Slow initial implementation. For speed, it should really
-   * collect the characters into runs, and draw multiple
-   * characters with each XftDrawString32 call.
-   */
   if (!display)
     _pango_xft_font_map_get_info (xfont->fontmap, &display, NULL);
-  
+
   for (i=0; i<glyphs->num_glyphs; i++)
     {
       PangoGlyph glyph = glyphs->glyphs[i].glyph;
+      int glyph_x = x + PANGO_PIXELS (x_off + glyphs->glyphs[i].geometry.x_offset);
+      int glyph_y = y + PANGO_PIXELS (glyphs->glyphs[i].geometry.y_offset);
 
-      if (glyph)
+      /* Clip glyphs into the X coordinate range; we really
+       * want to clip glyphs with an ink rect outside the
+       * [0,32767] x [0,32767] rectangle but looking up
+       * the ink rect here would be a noticeable speed hit.
+       * This is close enough.
+       */
+      if (glyph &&
+	  glyph_x >= -16384 && glyph_x <= 32767 &&
+	  glyph_y >= -16384 && glyph_y <= 32767)
 	{
 	  if (glyph & PANGO_XFT_UNKNOWN_FLAG)
 	    {
@@ -306,11 +312,11 @@ pango_xft_real_render (Display          *display,
       
 	      glyph &= ~PANGO_XFT_UNKNOWN_FLAG;
 	      
-	      ys[0] = y + PANGO_PIXELS (glyphs->glyphs[i].geometry.y_offset) - xft_font->ascent + (xft_font->ascent + xft_font->descent - xfont->mini_height * 2 - xfont->mini_pad * 5) / 2;
+	      ys[0] = glyph_y - xft_font->ascent + (xft_font->ascent + xft_font->descent - xfont->mini_height * 2 - xfont->mini_pad * 5) / 2;
 	      ys[1] = ys[0] + 2 * xfont->mini_pad + xfont->mini_height;
 	      ys[2] = ys[1] + xfont->mini_height + xfont->mini_pad;
 
-	      xs[0] = x + PANGO_PIXELS (x_off + glyphs->glyphs[i].geometry.x_offset); 
+	      xs[0] = glyph_x; 
 	      xs[1] = xs[0] + 2 * xfont->mini_pad;
 	      xs[2] = xs[1] + xfont->mini_width + xfont->mini_pad;
 	      
@@ -343,8 +349,8 @@ pango_xft_real_render (Display          *display,
 	      if (n_xft_glyph == N_XFT_LOCAL)
 		FLUSH_GLYPHS ();
 	      
-	      xft_glyphs[n_xft_glyph].x = x + PANGO_PIXELS (x_off + glyphs->glyphs[i].geometry.x_offset);
-	      xft_glyphs[n_xft_glyph].y = y + PANGO_PIXELS (glyphs->glyphs[i].geometry.y_offset);
+	      xft_glyphs[n_xft_glyph].x = glyph_x;
+	      xft_glyphs[n_xft_glyph].y = glyph_y;
 	      xft_glyphs[n_xft_glyph].glyph = glyph;
 	      n_xft_glyph++;
 	    }

@@ -1,3 +1,15 @@
+Fri Dec  6 23:07:58 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pangoxft-font.c (pango_xft_real_render)
+	  pango/pangox.c (pango_x_render): Roughly clip glyphs
+	into the X coordinate area to avoid wrap-around. (#73199)
+
+Fri Dec  6 22:30:17 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pangoxft-font.c (pango_xft_real_render): 
+	   pango/pangox.c (pango_x_render):  Truncate rendering
+	after 32768 pixels to avoid the possiblity of wrapping.
+
 Fri Dec  6 19:42:33 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/modules.c (map_get_submap): Dynamically allocate
