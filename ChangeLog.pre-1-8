@@ -1,3 +1,8 @@
+Mon Jul 26 15:21:23 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/opentype/ftxgsub.c: Add missing macro to make the 
+	last change actually compile.
+
 Mon Jul 26 15:16:07 2004  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/opentype/ftxgsub.c (Lookup_ChainContextSubst[123]):
