@@ -1,3 +1,10 @@
+2003-02-19  Noah Levitt  <nlevitt@columbia.edu>
+
+	* pango/pangofc-font.c (pango_fc_font_get_metrics):
+	* pango/pangowin32.c (pango_win32_font_get_metrics): Make
+	approximate_digit_width the width of the widest digit, rather than the
+	average.
+
 Thu Feb 19 10:44:17 2004  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pango-context.c (compute_derived_language):
