@@ -123,4 +123,4 @@ static const FriBidiCharType fribidi_prop_to_type_array[] = {
 #undef _FRIBIDI_ADD_TYPE
 };
 
-FriBidiCharType *_pango_fribidi_prop_to_type = fribidi_prop_to_type_array;
+const FriBidiCharType *_pango_fribidi_prop_to_type = fribidi_prop_to_type_array;

@@ -1,3 +1,10 @@
+Sat Mar  5 13:51:04 2005  Manish Singh  <yosh@gimp.org>
+
+	* pango/mini-fribidi/fribidi_types.[ch]: const correctness for
+	_pango_fribidi_prop_to_type
+
+	* tools/Makefile.am: dist gen-script-table.pl and gen-color-table.pl
+
 2005-03-04  Owen Taylor  <otaylor@redhat.com>
 
 	Reduce non-shared data (#168899, inspired by patches

@@ -285,7 +285,7 @@
   };
 
 /* Map fribidi_prop_types to fribidi_types */
-  extern FriBidiCharType *_pango_fribidi_prop_to_type;
+  extern const FriBidiCharType *_pango_fribidi_prop_to_type;
 
 
 /*======================================================================
