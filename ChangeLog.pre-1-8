@@ -1,3 +1,9 @@
+2002-10-31  Changwoo Ryu  <cwryu@debian.org>
+
+	* modules/hangul/hangul-xft.c (hangul_engine_get_coverage):
+	Added U+AC00- coverage
+	(hangul_engine_shape): Renders U+AC00 Hangul Syllables.
+
 2002-10-24  Tor Lillqvist  <tml@iki.fi>
 
 	* modules/basic/basic-win32.c: Update the non-Uniscribe ranges to

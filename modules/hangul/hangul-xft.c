@@ -33,7 +33,8 @@
 
 static PangoEngineRange hangul_ranges[] = {
   /* Language characters */
-  { 0x1100, 0x11FF, "*" }, /* Hangul Jamo */
+  { 0x1100, 0x11ff, "*" }, /* Hangul Jamo */
+  { 0xac00, 0xd7a3, "*" }, /* Hangul Syllables */
 };
 
 static PangoEngineInfo script_engines[] = {
@@ -137,7 +138,7 @@ hangul_engine_shape (PangoFont        *font,
   int i;
   const char *p, *start;
 
-  gunichar jamos_static[3];
+  gunichar jamos_static[8];
   guint max_jamos = G_N_ELEMENTS (jamos_static);
   gunichar *jamos = jamos_static;
   int n_jamos;
@@ -149,15 +150,17 @@ hangul_engine_shape (PangoFont        *font,
 
   for (i = 0; i < n_chars; i++)
     {
+      gunichar prev = jamos[n_jamos - 1];
       gunichar wc;
 
       wc = g_utf8_get_char (p);
 
       /* Check syllable boundaries. */
       if (n_jamos != 0 &&
-	  ((IS_T (jamos[n_jamos - 1]) && IS_L (wc)) ||
-	   (IS_V (jamos[n_jamos - 1]) && IS_L (wc)) ||
-	   (IS_T (jamos[n_jamos - 1]) && IS_V (wc))))
+	  ((!IS_L (prev) && IS_S (wc)) ||
+	   (IS_T (prev) && IS_L (wc)) ||
+	   (IS_V (prev) && IS_L (wc)) ||
+	   (IS_T (prev) && IS_V (wc))))
 	{
 	  /* Draw a syllable. */
 	  render_syllable (font, jamos, n_jamos, glyphs,
@@ -168,17 +171,25 @@ hangul_engine_shape (PangoFont        *font,
       
       if (n_jamos == max_jamos)
 	{
-	  max_jamos++;
+	  max_jamos += 3;	/* at most 3 for each syllable code (L+V+T) */
 	  if (jamos == jamos_static)
 	    {
 	      jamos = g_new (gunichar, max_jamos);
-	      memcpy(jamos, jamos_static, n_jamos*sizeof(gunichar));
+	      memcpy (jamos, jamos_static, n_jamos*sizeof(gunichar));
 	    }
 	  else
 	    jamos = g_renew (gunichar, jamos, max_jamos);
 	}
 
-      jamos[n_jamos++] = wc;
+      if (IS_S (wc))
+	{
+	  jamos[n_jamos++] = L_FROM_S (wc);
+	  jamos[n_jamos++] = V_FROM_S (wc);
+	  if (S_HAS_T (wc))
+	    jamos[n_jamos++] = T_FROM_S (wc);
+	}
+      else
+	jamos[n_jamos++] = wc;
       p = g_utf8_next_char (p);
     }
 
@@ -199,8 +210,10 @@ hangul_engine_get_coverage (PangoFont  *font,
 
   /* Well, no unicode rendering engine could render Hangul Jamo area
      _exactly_, I sure.  */
-  for (i = 0x1100; i <= 0x11FF; i++)
+  for (i = 0x1100; i <= 0x11ff; i++)
     pango_coverage_set (result, i, PANGO_COVERAGE_FALLBACK);
+  for (i = 0xac00; i <= 0xd7a3; i++)
+    pango_coverage_set (result, i, PANGO_COVERAGE_EXACT);
   return result;
 }
 

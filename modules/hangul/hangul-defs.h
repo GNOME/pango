@@ -60,3 +60,6 @@
 #define L_FROM_S(s)		(LBASE + (((s) - SBASE) / NCOUNT))
 #define V_FROM_S(s)		(VBASE + (((s) - SBASE) % NCOUNT) / TCOUNT)
 #define T_FROM_S(s)		(TBASE + (((s) - SBASE) % TCOUNT))
+
+#define IS_S(wc) (SBASE <= (wc) && (wc) <= SCOUNT)
+#define S_HAS_T(s) (((s) - SBASE) % TCOUNT)
