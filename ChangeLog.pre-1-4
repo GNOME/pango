@@ -1,3 +1,12 @@
+Wed Jul  3 18:39:45 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pangoft2.c pango/pangoxft-font.c: Be more
+	robust when trying to set the unicode character
+	map on the font.
+
+	* pango/pangoft2.c pango/pangoft2-private.h: 
+	Obey FC_HINTING, FC_AUTOHINT.
+
 Mon Jul  1 19:45:10 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pangoxft-fontmap.c (pango_xft_set_default_substitute): 

@@ -65,6 +65,7 @@ struct _PangoFT2Font
 
   FcPattern *font_pattern;
   FT_Face face;
+  int load_flags;
 
   int size;
 

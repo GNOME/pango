@@ -685,6 +685,44 @@ pango_xft_font_find_shaper (PangoFont     *font,
   return (PangoEngineShape *)pango_map_get_engine (shape_map, ch);
 }
 
+gboolean
+set_unicode_charmap (FT_Face face)
+{
+  int charmap;
+
+  for (charmap = 0; charmap < face->num_charmaps; charmap++)
+    if (face->charmaps[charmap]->encoding == ft_encoding_unicode)
+      {
+	FT_Error error = FT_Set_Charmap(face, face->charmaps[charmap]);
+	return error == FT_Err_Ok;
+      }
+
+  return FALSE;
+}
+
+void
+load_fallback_font (PangoXftFont *xfont)
+{
+  Display *display;
+  int screen;
+  XftFont *xft_font;
+  
+  _pango_xft_font_map_get_info (xfont->fontmap, &display, &screen);
+      
+  xft_font = XftFontOpen (display,  screen,
+                          FC_FAMILY, FcTypeString, "sans",
+                          FC_SIZE, FcTypeDouble, (double)pango_font_description_get_size (xfont->description)/PANGO_SCALE,
+                          NULL);
+  
+  if (!xft_font)
+    {
+      g_warning ("Cannot open fallback font, nothing to do");
+      exit (1);
+    }
+
+  xfont->xft_font = xft_font;
+}
+
 /**
  * pango_xft_font_get_font:
  * @font: a #PangoFont.
@@ -711,8 +749,11 @@ pango_xft_font_get_font (PangoFont *font)
       xfont->xft_font = XftFontOpenPattern (display, FcPatternDuplicate (xfont->font_pattern));
       if (!xfont->xft_font)
 	{
-	  g_warning ("Cannot open fallback font, nothing to do");
-	  exit (1);
+	  gchar *name = pango_font_description_to_string (xfont->description);
+	  g_warning ("Cannot open font file for font %s", name);
+  	  g_free (name);
+  	  
+ 	  load_fallback_font (xfont);
 	}
     }
   
