@@ -581,7 +581,7 @@ pango_fc_convert_weight_to_fc (PangoWeight pango_weight)
   if (pango_weight < (PANGO_WEIGHT_LIGHT + PANGO_WEIGHT_NORMAL) / 2)
     return FC_WEIGHT_LIGHT;
   else if (pango_weight < (500 /* PANGO_WEIGHT_MEDIUM */ + PANGO_WEIGHT_SEMIBOLD) / 2)
-    return FC_WEIGHT_NORMAL;
+    return FC_WEIGHT_MEDIUM;
   else if (pango_weight < (PANGO_WEIGHT_SEMIBOLD + PANGO_WEIGHT_BOLD) / 2)
     return FC_WEIGHT_DEMIBOLD;
   else if (pango_weight < (PANGO_WEIGHT_BOLD + PANGO_WEIGHT_ULTRABOLD) / 2)

@@ -1,3 +1,9 @@
+Fri Dec 17 14:37:49 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pangofc-fontmap.c (pango_fc_convert_weight_to_fc): Use
+	FC_WEIGHT_MEDIUM, not FC_WEIGHT_NORMAL in old-fontconfig
+	case. (#161568, Vincent Noel)
+
 Fri Dec 17 12:44:10 2004  Owen Taylor  <otaylor@redhat.com>
 
 	* configure.in: Fix a couple of typos in the handling of
