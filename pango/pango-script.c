@@ -351,15 +351,38 @@ pango_script_iter_next (PangoScriptIter *iter)
 
 #include "pango-script-lang-table.h"
 
+/* The fact that this comparison function works is dependent
+ * on a property of the pango_script_lang_table which accidental rather
+ * than inherent.
+ *
+ * The property is if we take any element in the table and suffix it
+ * <elem>-<suffix> then that must strcmp() between any elements
+ * preceding the element in the table and any element following in the
+ * table. So, if we had something like:
+ *
+ * 'zh'
+ *' zh-cn'
+ *
+ * in the table we would have a problem since 'zh-tw' follows 'zh-cn'.
+ * On the other hand:
+ *
+ * 'zh'
+ * 'zha'
+ *
+ * Works because 'zh-tw' precedes 'zha'.
+ */
 static int
 script_for_lang_compare (gconstpointer key,
 			 gconstpointer member)
 {
-  const char *lang = key;
+  PangoLanguage *lang = (PangoLanguage *)key;
   const PangoScriptForLang *script_for_lang = member;
-  
-  return strcmp (lang,
-		 pango_language_to_string (script_for_lang->lang));
+
+  if (pango_language_matches (lang, script_for_lang->lang))
+    return 0;
+  else
+    return strcmp (pango_language_to_string (lang),
+		   script_for_lang->lang);
 }
 
 /**
@@ -398,8 +421,8 @@ pango_language_includes_script (PangoLanguage *language,
    */
   script_for_lang = bsearch (pango_language_to_string (language),
 			     pango_script_for_lang,
-			     sizeof (PangoScriptForLang),
 			     G_N_ELEMENTS (pango_script_for_lang),
+			     sizeof (PangoScriptForLang),
 			     script_for_lang_compare);
   if (!script_for_lang)
     return TRUE;

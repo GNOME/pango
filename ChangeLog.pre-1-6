@@ -1,3 +1,9 @@
+Wed Jul 14 17:42:49 2004  Owen Taylor  <otaylor@redhat.com>
+ 
+ 	* pango/pango-script.c (pango_language_includes_script): 
+ 	Fix problem when we only figured out latin script for 'en'
+ 	not for 'en-us'. Fix reversed arguments to bsearch.
+
 Tue Jul 13 10:07:44 2004  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/Makefile.am: Reverse order of pangoft2/pangoxft
