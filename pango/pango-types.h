@@ -70,7 +70,8 @@ struct _PangoRectangle
 typedef enum {
   PANGO_DIRECTION_LTR,
   PANGO_DIRECTION_RTL,
-  PANGO_DIRECTION_TTB
+  PANGO_DIRECTION_TTB_LTR,
+  PANGO_DIRECTION_TTB_RTL
 } PangoDirection;
 
 /* Language tagging information

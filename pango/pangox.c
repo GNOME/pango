@@ -2109,6 +2109,12 @@ pango_x_render_layout (Display     *display,
   indent = pango_layout_get_indent (layout);
   width = pango_layout_get_width (layout);
   align = pango_layout_get_alignment (layout);
+
+  if (width == -1 && align != PANGO_ALIGN_LEFT)
+    {
+      pango_layout_get_extents (layout, NULL, &logical_rect);
+      width = logical_rect.width;
+    }
   
   tmp_list = pango_layout_get_lines (layout);
   while (tmp_list)

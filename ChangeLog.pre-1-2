@@ -1,3 +1,8 @@
+Mon Mar 13 11:47:53 2000  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-layout.c pango/pangox.c (pango_x_render_layout): Handle right 
+	alignment for width == -1, align within total width of layout.
+
 Mon Mar 13 10:54:48 2000  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pango-item.[ch]: Memory management functions for PangoItem.

@@ -22,6 +22,9 @@ string and produces lines of glyphs.
   should have change-notification, or else the layout should 
   make a copy of the context when the context is set.
 
+* optimize right alignment for width == -1 and only a single 
+  line. (Currently this causes a useless call to gtk_layout_get_extents.)
+
 X rendering
 ===========
 

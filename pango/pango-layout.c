@@ -546,17 +546,25 @@ pango_layout_xy_to_index (PangoLayout *layout,
 			  gboolean    *trailing)
 {
   GSList *line_list;
+  PangoRectangle logical_rect;
   int y_offset = 0;
+  int width;
 	  
   g_return_val_if_fail (layout != NULL, FALSE);
 
   pango_layout_check_lines (layout);
 
+  width = layout->width;
+  if (width == -1 && layout->alignment != PANGO_ALIGN_LEFT)
+    {
+      pango_layout_get_extents (layout, NULL, &logical_rect);
+      width = logical_rect.width;
+    }
+  
   line_list = layout->lines;
   while (line_list)
     {
       PangoLayoutLine *line = line_list->data;
-      PangoRectangle logical_rect;
 
       pango_layout_line_get_extents (line, NULL, &logical_rect);
 	      
@@ -564,10 +572,10 @@ pango_layout_xy_to_index (PangoLayout *layout,
 	{
 	  int x_offset;
 	    
-	  if (layout->width != 1 && layout->alignment == PANGO_ALIGN_RIGHT)
-	    x_offset = layout->width - logical_rect.width;
-	  else if (layout->width != 1 && layout->alignment == PANGO_ALIGN_CENTER)
-	    x_offset = (layout->width - logical_rect.width) / 2;
+	  if (layout->alignment == PANGO_ALIGN_RIGHT)
+	    x_offset = width - logical_rect.width;
+	  else if (layout->alignment == PANGO_ALIGN_CENTER)
+	    x_offset = (width - logical_rect.width) / 2;
 	  else
 	    x_offset = 0;
 	  
@@ -602,6 +610,7 @@ pango_layout_index_to_pos (PangoLayout    *layout,
   PangoRectangle logical_rect;
   GSList *tmp_list;
   int bytes_seen = 0;
+  int width;
   
   g_return_if_fail (layout != NULL);
   g_return_if_fail (index >= 0 && index < layout->length);
@@ -610,6 +619,13 @@ pango_layout_index_to_pos (PangoLayout    *layout,
   
   pango_layout_check_lines (layout);
 
+  width = layout->width;
+  if (width == -1 && layout->alignment != PANGO_ALIGN_LEFT)
+    {
+      pango_layout_get_extents (layout, NULL, &logical_rect);
+      width = logical_rect.width;
+    }
+  
   tmp_list = layout->lines;
   while (tmp_list)
     {
@@ -622,10 +638,10 @@ pango_layout_index_to_pos (PangoLayout    *layout,
 	  int x_pos;
 	  int x_offset;
 
-	  if (layout->width != 1 && layout->alignment == PANGO_ALIGN_RIGHT)
-	    x_offset = layout->width - logical_rect.width;
-	  else if (layout->width != 1 && layout->alignment == PANGO_ALIGN_CENTER)
-	    x_offset = (layout->width - logical_rect.width) / 2;
+	  if (layout->alignment == PANGO_ALIGN_RIGHT)
+	    x_offset = width - logical_rect.width;
+	  else if (layout->alignment == PANGO_ALIGN_CENTER)
+	    x_offset = (width - logical_rect.width) / 2;
 	  else
 	    x_offset = 0;
 	  
@@ -667,11 +683,21 @@ pango_layout_get_extents (PangoLayout    *layout,
 {
   GSList *line_list;
   int y_offset = 0;
+  int width;
 	  
   g_return_if_fail (layout != NULL);
 
   pango_layout_check_lines (layout);
 
+  width = layout->width;
+  if (width == -1 && layout->alignment != PANGO_ALIGN_LEFT && ink_rect != NULL)
+    {
+      PangoRectangle overall_logical;
+      
+      pango_layout_get_extents (layout, NULL, &overall_logical);
+      width = overall_logical.width;
+    }
+  
   line_list = layout->lines;
   while (line_list)
     {
@@ -684,10 +710,10 @@ pango_layout_get_extents (PangoLayout    *layout,
 	      
       pango_layout_line_get_extents (line, ink_rect ? &line_ink : NULL, &line_logical);
 
-      if (layout->width != 1 && layout->alignment == PANGO_ALIGN_RIGHT)
-	x_offset = layout->width - line_logical.width;
-      else if (layout->width != 1 && layout->alignment == PANGO_ALIGN_CENTER)
-	x_offset = (layout->width - line_logical.width) / 2;
+      if (layout->alignment == PANGO_ALIGN_RIGHT)
+	x_offset = width - line_logical.width;
+      else if (layout->alignment == PANGO_ALIGN_CENTER)
+	x_offset = (width - line_logical.width) / 2;
       else
 	x_offset = 0;
 	  
@@ -718,16 +744,16 @@ pango_layout_get_extents (PangoLayout    *layout,
 	{
 	  if (line_list == layout->lines)
 	    {
-	      logical_rect->x = line_logical.x + x_offset;
+	      logical_rect->x = line_logical.x;
 	      logical_rect->y = line_logical.y;
 	      logical_rect->width = line_logical.width;
 	      logical_rect->height = line_logical.height;
 	    }
 	  else
 	    {
-	      new_pos = MIN (logical_rect->x, line_logical.x + x_offset);
+	      new_pos = MIN (logical_rect->x, line_logical.x);
 	      logical_rect->width = MAX (logical_rect->x + logical_rect->width,
-					 line_logical.x + line_logical.width + x_offset) - new_pos;
+					 line_logical.x + line_logical.width) - new_pos;
 	      logical_rect->x = new_pos;
 
 	      new_pos = MIN (logical_rect->y, line_logical.y + y_offset);
