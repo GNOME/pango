@@ -39,8 +39,8 @@ the characteristics of a font to load.
 </para>
 
 @PANGO_STYLE_NORMAL: 
-@PANGO_STYLE_OBLIQUE:
-@PANGO_STYLE_ITALIC:
+@PANGO_STYLE_OBLIQUE: 
+@PANGO_STYLE_ITALIC: 
 
 <!-- ##### ENUM PangoWeight ##### -->
 <para>

@@ -1,18 +1,13 @@
-<!-- ##### FUNCTION pango_layout_line_x_to_cp ##### -->
-=======
-
-
-<!-- ##### FUNCTION pango_font_ref ##### -->
+<!-- ##### MACRO PANGO_LAYOUT_GET_CLASS ##### -->
 <para>
 
 </para>
 
-@font: 
+@obj: 
 
-<!-- ##### FUNCTION pango_x_to_cp ##### -->
+<!-- ##### FUNCTION pango_layout_line_x_to_cp ##### -->
 =======
 
-@coverage: 
 
 <!-- ##### FUNCTION pango_cfont_init ##### -->
 >>>>>>> 1.8
@@ -56,6 +51,275 @@ that may be accessed by derived classes:
 
 @font: 
 
+<!-- ##### FUNCTION pango_context_unref ##### -->
+<para>
+
+</para>
+
+@context: 
+
+<!-- ##### FUNCTION pango_font_get_data ##### -->
+<para>
+
+</para>
+
+@font: 
+@key: 
+@Returns: 
+
+<!-- ##### FUNCTION pango_layout_ref ##### -->
+<para>
+
+</para>
+
+@layout: 
+
+<!-- ##### FUNCTION pango_attribute_register_type ##### -->
+<para>
+
+</para>
+
+@name: 
+@Returns: 
+
+<!-- ##### SECTION ./tmpl/pango-x.sgml:Title ##### -->
+X Rendering
+=======
+
+
+<!-- ##### FUNCTION pango_cfont_ref ##### -->
+>>>>>>> 1.8
+<para>
+
+</para>
+
+<<<<<<< pango-unused.sgml
+
+@coverage: =======
+@font: >>>>>>> 1.8
+
+<<<<<<< pango-unused.sgml
+
+<!-- ##### FUNCTION pango_layout_set_first_line_width ##### -->
+>>>>>>> 1.8
+<para>
+
+</para>
+
+<<<<<<< pango-unused.sgml
+
+@string: =======
+@layout: 
+@width: >>>>>>> 1.8
+
+<<<<<<< pango-unused.sgml
+
+<!-- ##### FUNCTION pango_x_extents ##### -->
+>>>>>>> 1.8
+<para>
+
+</para>
+
+<<<<<<< pango-unused.sgml
+
+@font: 
+@xlfd: 
+@Returns: =======
+@font: 
+@glyphs: 
+@lbearing: 
+@rbearing: 
+@width: 
+@ascent: 
+@descent: 
+@logical_ascent: 
+@logical_descent: >>>>>>> 1.8
+
+<<<<<<< pango-unused.sgml
+
+<!-- ##### MACRO PANGO_IS_LAYOUT_CLASS ##### -->
+<para>
+
+</para>
+
+@klass: 
+
+<!-- ##### FUNCTION pango_context_get_type ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+<!-- ##### FUNCTION pango_coverage_destroy ##### -->
+<para>
+>>>>>>> 1.8
+
+<<<<<<< pango-unused.sgml
+=======
+</para>
+>>>>>>> 1.8
+
+<<<<<<< pango-unused.sgml
+
+
+<!-- ##### FUNCTION pango_cp_to_x ##### -->
+>>>>>>> 1.8
+<para>
+
+</para>
+
+<<<<<<< pango-unused.sgml
+
+@text: 
+@length: 
+@analysis: 
+@glyphs: 
+@x_pos: 
+@char_pos: 
+@trailing: 
+
+<!-- ##### FUNCTION pango_font_init ##### -->
+<para>
+
+</para>
+
+@font: 
+
+<!-- ##### FUNCTION pango_layout_get_type ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+<!-- ##### FUNCTION pango_x_list_cfonts ##### -->
+<para>
+
+</para>
+
+@font: 
+@charsets: 
+@n_charsets: 
+@xlfds: 
+@n_xlfds: 
+
+<!-- ##### FUNCTION pango_font_set_data ##### -->
+<para>
+
+</para>
+
+@font: 
+@key: 
+@data: 
+@destroy_func: 
+
+<!-- ##### FUNCTION g_glyph_string_set_size ##### -->
+<para>
+
+</para>
+
+@string: 
+@new_len: 
+
+<!-- ##### FUNCTION pango_x_find_cfont ##### -->
+<para>
+
+</para>
+
+@font: 
+@charset: 
+@Returns: 
+
+<!-- ##### FUNCTION pango_font_map_init ##### -->
+<para>
+
+</para>
+
+@fontmap: 
+
+<!-- ##### MACRO PANGO_CONTEXT ##### -->
+<para>
+
+</para>
+
+@object: 
+
+<!-- ##### FUNCTION g_glyph_string_free ##### -->
+<para>
+
+</para>
+
+@string: 
+
+<!-- ##### FUNCTION pango_layout_cp_to_line_x ##### -->
+<para>
+
+</para>
+
+@layout: 
+@char_pos: 
+@trailing: 
+@line: 
+@x_pos: 
+
+<!-- ##### SECTION ./tmpl/pango-x.sgml:Short_Description ##### -->
+Functions for rendering and measuring glyphs on
+the X Window system.
+
+
+<!-- ##### FUNCTION pango_context_get_size ##### -->
+<para>
+
+</para>
+
+@context: 
+@Returns: 
+
+<!-- ##### FUNCTION pango_font_map_ref ##### -->
+<para>
+
+</para>
+
+@fontmap: 
+
+<!-- ##### SECTION ./tmpl/pango-x.sgml:Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### STRUCT PangoContextClass ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### FUNCTION pango_font_ref ##### -->
+<para>
+
+</para>
+
+@font: 
+
+<!-- ##### FUNCTION pango_x_to_cp ##### -->
+=======
+
+@coverage: 
+
+<!-- ##### STRUCT PangoLayoutClass ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### MACRO PANGO_IS_LAYOUT ##### -->
+<para>
+
+</para>
+
+@object: 
+
 <!-- ##### FUNCTION pango_font_map_unref ##### -->
 <para>
 
@@ -69,15 +333,6 @@ that may be accessed by derived classes:
 </para>
 
 @font: 
-
-<!-- ##### FUNCTION pango_font_get_data ##### -->
-<para>
-
-</para>
-
-@font: 
-@key: 
-@Returns: 
 
 <!-- ##### FUNCTION pango_x_xlfd_get_ranges ##### -->
 =======
@@ -120,37 +375,18 @@ indices.
 @logical_ascent: 
 @logical_descent: 
 
-<!-- ##### FUNCTION pango_attribute_register_type ##### -->
-<para>
-
-</para>
-
-@name: 
-@Returns: 
-
 <!-- ##### SECTION ./tmpl/pango-x.sgml:See_Also ##### -->
 <para>
 
 </para>
 
 
-<!-- ##### SECTION ./tmpl/pango-x.sgml:Title ##### -->
-X Rendering
-=======
-
-
-<!-- ##### FUNCTION pango_cfont_ref ##### -->
->>>>>>> 1.8
+<!-- ##### MACRO PANGO_LAYOUT ##### -->
 <para>
 
 </para>
 
-<<<<<<< pango-unused.sgml
-
-@coverage: =======
-@font: >>>>>>> 1.8
-
-<<<<<<< pango-unused.sgml
+@object: 
 
 <!-- ##### FUNCTION pango_cfont_unref ##### -->
 >>>>>>> 1.8
@@ -169,88 +405,28 @@ X Rendering
 
 <<<<<<< pango-unused.sgml
 
-<!-- ##### FUNCTION pango_layout_set_first_line_width ##### -->
->>>>>>> 1.8
+<!-- ##### FUNCTION pango_context_get_data ##### -->
 <para>
 
 </para>
 
-<<<<<<< pango-unused.sgml
+@context: 
+@key: 
+@Returns: 
 
-@string: =======
-@layout: 
-@width: >>>>>>> 1.8
-
-<<<<<<< pango-unused.sgml
-
-<!-- ##### FUNCTION pango_x_extents ##### -->
->>>>>>> 1.8
+<!-- ##### MACRO PANGO_CONTEXT_GET_CLASS ##### -->
 <para>
 
 </para>
 
-<<<<<<< pango-unused.sgml
+@obj: 
 
-@font: 
-@xlfd: 
-@Returns: =======
-@font: 
-@glyphs: 
-@lbearing: 
-@rbearing: 
-@width: 
-@ascent: 
-@descent: 
-@logical_ascent: 
-@logical_descent: >>>>>>> 1.8
-
-<<<<<<< pango-unused.sgml
-
-<!-- ##### FUNCTION pango_coverage_destroy ##### -->
-<para>
->>>>>>> 1.8
-
-<<<<<<< pango-unused.sgml
-=======
-</para>
->>>>>>> 1.8
-
-<<<<<<< pango-unused.sgml
-
-
-<!-- ##### FUNCTION pango_cp_to_x ##### -->
->>>>>>> 1.8
+<!-- ##### MACRO PANGO_IS_CONTEXT_CLASS ##### -->
 <para>
 
 </para>
 
-<<<<<<< pango-unused.sgml
-
-@text: 
-@length: 
-@analysis: 
-@glyphs: 
-@x_pos: 
-@char_pos: 
-@trailing: 
-
-<!-- ##### FUNCTION pango_font_init ##### -->
-<para>
-
-</para>
-
-@font: 
-
-<!-- ##### FUNCTION pango_x_list_cfonts ##### -->
-<para>
-
-</para>
-
-@font: 
-@charsets: 
-@n_charsets: 
-@xlfds: 
-@n_xlfds: 
+@klass: 
 
 <!-- ##### FUNCTION pango_x_load_xlfd ##### -->
 <para>
@@ -261,39 +437,11 @@ X Rendering
 @xlfd: 
 @Returns: 
 
-<!-- ##### FUNCTION pango_font_set_data ##### -->
+<!-- ##### MACRO PANGO_TYPE_LAYOUT ##### -->
 <para>
 
 </para>
 
-@font: 
-@key: 
-@data: 
-@destroy_func: 
-
-<!-- ##### FUNCTION g_glyph_string_set_size ##### -->
-<para>
-
-</para>
-
-@string: 
-@new_len: 
-
-<!-- ##### FUNCTION pango_x_find_cfont ##### -->
-<para>
-
-</para>
-
-@font: 
-@charset: 
-@Returns: 
-
-<!-- ##### FUNCTION pango_font_map_init ##### -->
-<para>
-
-</para>
-
-@fontmap: 
 
 <!-- ##### STRUCT PangoXCFont ##### -->
 <para>
@@ -321,36 +469,42 @@ has the following publically accessible fields:
 @display: 
 @font_struct: 
 
-<!-- ##### FUNCTION g_glyph_string_free ##### -->
+<!-- ##### MACRO PANGO_LAYOUT_CLASS ##### -->
 <para>
 
 </para>
 
-@string: 
+@klass: 
 
-<!-- ##### FUNCTION pango_layout_cp_to_line_x ##### -->
+<!-- ##### FUNCTION pango_layout_unref ##### -->
 <para>
 
 </para>
 
 @layout: 
-@char_pos: 
-@trailing: 
-@line: 
-@x_pos: 
 
-<!-- ##### SECTION ./tmpl/pango-x.sgml:Short_Description ##### -->
-Functions for rendering and measuring glyphs on
-the X Window system.
+<!-- ##### MACRO PANGO_CONTEXT_CLASS ##### -->
+<para>
 
+</para>
 
-<!-- ##### FUNCTION pango_context_get_size ##### -->
+@klass: 
+
+<!-- ##### FUNCTION pango_context_set_data ##### -->
 <para>
 
 </para>
 
 @context: 
-@Returns: 
+@key: 
+@data: 
+@destroy_func: 
+
+<!-- ##### MACRO PANGO_TYPE_CONTEXT ##### -->
+<para>
+
+</para>
+
 
 <!-- ##### FUNCTION g_glyph_string_new ##### -->
 <para>
@@ -359,18 +513,12 @@ the X Window system.
 
 @Returns: 
 
-<!-- ##### FUNCTION pango_font_map_ref ##### -->
+<!-- ##### FUNCTION pango_context_ref ##### -->
 <para>
 
 </para>
 
-@fontmap: 
-
-<!-- ##### SECTION ./tmpl/pango-x.sgml:Long_Description ##### -->
-<para>
-
-</para>
-
+@context: 
 
 <!-- ##### STRUCT PangoCFontClass ##### -->
 <para>

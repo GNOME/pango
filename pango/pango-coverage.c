@@ -111,6 +111,8 @@ pango_coverage_copy (PangoCoverage *coverage)
  * @coverage: a #PangoCoverage
  * 
  * Increase the reference count on the #PangoCoverage by one
+ *
+ * Returns: @coverage
  **/
 PangoCoverage *
 pango_coverage_ref (PangoCoverage *coverage)

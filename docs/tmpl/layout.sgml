@@ -57,22 +57,6 @@ fields.
 @Returns: 
 
 
-<!-- ##### FUNCTION pango_layout_ref ##### -->
-<para>
-
-</para>
-
-@layout: 
-
-
-<!-- ##### FUNCTION pango_layout_unref ##### -->
-<para>
-
-</para>
-
-@layout: 
-
-
 <!-- ##### FUNCTION pango_layout_get_context ##### -->
 <para>
 
@@ -107,6 +91,15 @@ fields.
 
 @layout: 
 @attrs: 
+
+
+<!-- ##### FUNCTION pango_layout_set_font_description ##### -->
+<para>
+
+</para>
+
+@layout: 
+@desc: 
 
 
 <!-- ##### FUNCTION pango_layout_set_width ##### -->
@@ -278,6 +271,36 @@ for partial lines.
 @logical_rect: 
 
 
+<!-- ##### FUNCTION pango_layout_get_pixel_extents ##### -->
+<para>
+
+</para>
+
+@layout: 
+@ink_rect: 
+@logical_rect: 
+
+
+<!-- ##### FUNCTION pango_layout_get_size ##### -->
+<para>
+
+</para>
+
+@layout: 
+@width: 
+@height: 
+
+
+<!-- ##### FUNCTION pango_layout_get_pixel_size ##### -->
+<para>
+
+</para>
+
+@layout: 
+@width: 
+@height: 
+
+
 <!-- ##### FUNCTION pango_layout_get_line_count ##### -->
 <para>
 
@@ -355,6 +378,16 @@ a #PangoLayoutLine.
 </para>
 
 @line: 
+@ink_rect: 
+@logical_rect: 
+
+
+<!-- ##### FUNCTION pango_layout_line_get_pixel_extents ##### -->
+<para>
+
+</para>
+
+@layout_line: 
 @ink_rect: 
 @logical_rect: 
 

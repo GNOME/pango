@@ -221,43 +221,6 @@ for text.
 @Returns: 
 
 
-<!-- ##### FUNCTION pango_context_ref ##### -->
-<para>
-
-</para>
-
-@context: 
-
-
-<!-- ##### FUNCTION pango_context_unref ##### -->
-<para>
-
-</para>
-
-@context: 
-
-
-<!-- ##### FUNCTION pango_context_get_data ##### -->
-<para>
-
-</para>
-
-@context: 
-@key: 
-@Returns: 
-
-
-<!-- ##### FUNCTION pango_context_set_data ##### -->
-<para>
-
-</para>
-
-@context: 
-@key: 
-@data: 
-@destroy_func: 
-
-
 <!-- ##### FUNCTION pango_context_add_font_map ##### -->
 <para>
 

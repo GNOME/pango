@@ -54,6 +54,6 @@ dist-hook:
 	mkdir $(distdir)/tmpl
 	cp -p $(srcdir)/tmpl/*.sgml $(distdir)/tmpl
 	mkdir $(distdir)/TEXT
-	for i in $(srcdir)/TEXT/* ; do \
-	  test -f $$i && cp -p $$i $(distdir)/TEXT ;\
+	for i in $(srcdir)/TEXT/* ; do 			\
+	  test -f $$i && cp -p $$i $(distdir)/TEXT ;	\
         done

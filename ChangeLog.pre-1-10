@@ -1,3 +1,7 @@
+Thu Jul  6 15:16:28 2000  Owen Taylor  <otaylor@redhat.com>
+
+	* docs/pango-sections.txt docs/tmpl/*: Update
+
 2000-07-03  Havoc Pennington  <hp@redhat.com>
 
 	* pango/pango-layout.c (pango_layout_index_to_pos): Handle the

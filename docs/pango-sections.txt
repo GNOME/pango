@@ -15,10 +15,6 @@ pango_item_new
 pango_reorder_items
 <SUBSECTION>
 pango_context_new
-pango_context_ref
-pango_context_unref
-pango_context_get_data
-pango_context_set_data
 pango_context_add_font_map
 pango_context_get_font_description
 pango_context_set_font_description
@@ -29,6 +25,15 @@ pango_context_set_lang
 pango_context_load_font
 pango_context_list_families
 pango_context_list_fonts
+<SUBSECTION Standard>
+PANGO_TYPE_CONTEXT
+pango_context_get_type
+PangoContextClass
+PANGO_CONTEXT
+PANGO_CONTEXT_CLASS
+PANGO_IS_CONTEXT
+PANGO_IS_CONTEXT_CLASS
+PANGO_CONTEXT_GET_CLASS
 <SUBSECTION>
 pango_break
 PangoLogAttr
@@ -41,6 +46,7 @@ pango_justify
 <TITLE>Glyph Storage</TITLE>
 <FILE>glyphs</FILE>
 PANGO_SCALE
+PANGO_PIXELS
 PangoRectangle
 PANGO_ASCENT
 PANGO_DESCENT
@@ -156,10 +162,13 @@ PangoAttrList
 pango_attr_list_new
 pango_attr_list_ref
 pango_attr_list_unref
+pango_attr_list_copy
 pango_attr_list_insert
+pango_attr_list_insert_before
 pango_attr_list_change
 pango_attr_list_get_iterator
 PangoAttrIterator
+pango_attr_iterator_copy
 pango_attr_iterator_next
 pango_attr_iterator_range
 pango_attr_iterator_get
@@ -172,14 +181,13 @@ pango_attr_iterator_destroy
 <FILE>layout</FILE>
 PangoLayout
 pango_layout_new
-pango_layout_ref
-pango_layout_unref
 
 pango_layout_get_context
 pango_layout_context_changed
 
 pango_layout_set_text
 pango_layout_set_attributes
+pango_layout_set_font_description
 pango_layout_set_width
 pango_layout_get_width
 pango_layout_set_indent
@@ -200,6 +208,9 @@ pango_layout_get_cursor_pos
 pango_layout_move_cursor_visually
 
 pango_layout_get_extents
+pango_layout_get_pixel_extents
+pango_layout_get_size
+pango_layout_get_pixel_size
 pango_layout_get_line_count
 pango_layout_get_line
 pango_layout_get_lines
@@ -211,9 +222,20 @@ PangoLayoutRun
 pango_layout_line_ref
 pango_layout_line_unref
 pango_layout_line_get_extents
+pango_layout_line_get_pixel_extents
 pango_layout_line_index_to_x
 pango_layout_line_x_to_index
 pango_layout_line_get_x_ranges
+
+<SUBSECTION Standard>
+PANGO_TYPE_LAYOUT
+pango_layout_get_type
+PangoLayoutClass
+PANGO_LAYOUT
+PANGO_IS_LAYOUT
+PANGO_LAYOUT_CLASS
+PANGO_IS_LAYOUT_CLASS
+PANGO_LAYOUT_GET_CLASS
 </SECTION>
 
 <SECTION>

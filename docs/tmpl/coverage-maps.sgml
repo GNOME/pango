@@ -55,6 +55,7 @@ point to #PangoCoverageLevel. It is an opaque structure with no public fields.
 </para>
 
 @coverage: 
+@Returns: 
 
 
 <!-- ##### FUNCTION pango_coverage_unref ##### -->

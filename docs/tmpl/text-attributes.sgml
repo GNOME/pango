@@ -320,7 +320,25 @@ for more than one paragraph of text.
 @list: 
 
 
+<!-- ##### FUNCTION pango_attr_list_copy ##### -->
+<para>
+
+</para>
+
+@list: 
+@Returns: 
+
+
 <!-- ##### FUNCTION pango_attr_list_insert ##### -->
+<para>
+
+</para>
+
+@list: 
+@attr: 
+
+
+<!-- ##### FUNCTION pango_attr_list_insert_before ##### -->
 <para>
 
 </para>
@@ -357,6 +375,15 @@ in the text using pango_attr_iterator_next(). At each
 style change, the range of the current style segment and the
 attributes currently in effect can be queried.
 </para>
+
+
+<!-- ##### FUNCTION pango_attr_iterator_copy ##### -->
+<para>
+
+</para>
+
+@iterator: 
+@Returns: 
 
 
 <!-- ##### FUNCTION pango_attr_iterator_next ##### -->

@@ -28,6 +28,14 @@ for a screen, and points for a printer.) PANGO_SCALE is currently
 
 
 
+<!-- ##### MACRO PANGO_PIXELS ##### -->
+<para>
+
+</para>
+
+@d: 
+
+
 <!-- ##### STRUCT PangoRectangle ##### -->
 <para>
 The #PangoRectangle structure represents a rectangle. It is frequently
