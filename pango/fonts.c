@@ -706,11 +706,14 @@ static FieldMap variant_map[] = {
 };
 
 static FieldMap weight_map[] = {
-  { 300, "Light" },
+  { PANGO_WEIGHT_ULTRALIGHT, "Ultra-Light" },
+  { PANGO_WEIGHT_LIGHT, "Light" },
   { PANGO_WEIGHT_NORMAL, NULL },
   { 500, "Medium" },
   { 600, "Semi-Bold" },
-  { PANGO_WEIGHT_BOLD, "Bold" }
+  { PANGO_WEIGHT_BOLD, "Bold" },
+  { PANGO_WEIGHT_ULTRABOLD, "Ultra-Bold" },
+  { PANGO_WEIGHT_HEAVY, "Heavy" }
 };
 
 static FieldMap stretch_map[] = {
