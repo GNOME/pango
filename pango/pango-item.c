@@ -87,7 +87,7 @@ pango_item_free (PangoItem *item)
       g_slist_free (item->analysis.extra_attrs);
     }
 
-  if (result->analysis.font)
+  if (item->analysis.font)
     g_object_unref (item->analysis.font);
 
   g_free (item);
