@@ -1,3 +1,8 @@
+Tue Apr 15 03:54:01 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* modules/hangul/hangul-x.c: Fix out-of-bounds read
+	where the value wasn't actually used. (#106744, Morten Welinder)
+
 Tue Apr 15 03:47:37 2003  Owen Taylor  <otaylor@redhat.com>
  
         * pango/pango-attributes.c (pango_attr_iterator_next): Return 
