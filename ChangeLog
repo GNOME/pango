@@ -1,3 +1,10 @@
+Tue Jul 27 12:38:05 2004  Owen Taylor  <otaylor@redhat.com>
+ 
+ 	* pango/opentype/ftxopen.[ch] pango/opentype/ftxgsub.c
+ 	pango/opentype/ftxpos.c: Save the order in which
+ 	features were added and use that when applying features.
+ 	(Patch from Soheil Hassas Yeganeh, #122330)
+
 Mon Jul 26 19:11:46 2004  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/opentype/ftxgdef.c: Fix allocation and indexing
