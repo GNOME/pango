@@ -1,3 +1,9 @@
+2002-07-22  Sven Neumann  <sven@gimp.org>
+
+	* pango/pangoft2.c (pango_ft2_font_get_face): don't access the old
+	(invalid) face pointer after loading a fallback face because we
+	couldn't set the unicode charmap.
+
 2002-07-16  jacob berkman  <jacob@ximian.com>
 
 	* configure.in: use $X_CFLAGS when looking for Xft headers
