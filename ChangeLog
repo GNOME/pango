@@ -1,3 +1,8 @@
+2003-01-20  Padraig O'Briain  <padraig.obriain@sun.com>
+
+	* pango/fonts.c (pango_font_description_from_string): Avoid crash
+	with string such as " 12" (bug #103674)
+
 Fri Dec  6 23:07:58 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pangoxft-font.c (pango_xft_real_render)
