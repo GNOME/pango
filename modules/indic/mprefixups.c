@@ -95,7 +95,7 @@ void indic_mprefixups_apply(MPreFixups *mprefixups, PangoOTBuffer *buffer)
 	    baseIndex -= 1;
 	}
 
-	while (glyphs[mpreIndex].glyph == 0xFFFF || glyphs[mpreIndex].glyph == 0xFFFE) {
+	while (glyphs[mpreLimit].glyph == 0xFFFF || glyphs[mpreLimit].glyph == 0xFFFE) {
 	    mpreLimit += 1;
 	}
       
