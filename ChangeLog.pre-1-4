@@ -1,3 +1,7 @@
+2002-03-05  Manish Singh  <yosh@gimp.org>
+
+	* configure.in: require GLIB 2.0.0 at minimum
+
 2002-03-05  jacob berkman  <jacob@ximian.com>
 
 	* tests/Makefile.am (*boundaries_LDADD): more $(PANGO_API_VERSION)
