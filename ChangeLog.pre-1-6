@@ -1,3 +1,9 @@
+Wed Aug  2 12:00:53 2000  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-layout.c (pango_layout_get_extents):
+	Fix problem with the way extents for the layout lines
+	were summed together in the vertical direction.
+
 Sat Jul 29 21:26:30 2000  Owen Taylor  <otaylor@redhat.com>
 
 	* examples/viewer-qt.[ch] (ViewerWindow): Remove 

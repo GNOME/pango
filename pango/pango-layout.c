@@ -1389,7 +1389,7 @@ pango_layout_get_extents (PangoLayout    *layout,
 	x_offset = (width - line_logical.width) / 2;
       else
 	x_offset = 0;
-	  
+
       if (ink_rect)
 	{
 	  if (line_list == layout->lines)
@@ -1406,9 +1406,10 @@ pango_layout_get_extents (PangoLayout    *layout,
 				     line_ink.x + line_ink.width + x_offset) - new_pos;
 	      ink_rect->x = new_pos;
 
-	      new_pos = MIN (ink_rect->y, line_ink.y + y_offset);
+	      new_pos = MIN (ink_rect->y,
+			     y_offset - line_logical.y + line_ink.y);
 	      ink_rect->height = MAX (ink_rect->y + ink_rect->height,
-				      line_ink.y + line_ink.height + y_offset) - new_pos;
+				      y_offset - line_logical.y + line_ink.y + line_ink.height) - new_pos;
 	      ink_rect->y = new_pos;
 	    }
 	}
@@ -1418,7 +1419,7 @@ pango_layout_get_extents (PangoLayout    *layout,
 	  if (line_list == layout->lines)
 	    {
 	      logical_rect->x = line_logical.x;
-	      logical_rect->y = line_logical.y;
+	      logical_rect->y = 0;
 	      logical_rect->width = line_logical.width;
 	      logical_rect->height = line_logical.height;
 	    }
@@ -1429,10 +1430,7 @@ pango_layout_get_extents (PangoLayout    *layout,
 					 line_logical.x + line_logical.width) - new_pos;
 	      logical_rect->x = new_pos;
 
-	      new_pos = MIN (logical_rect->y, line_logical.y + y_offset);
-	      logical_rect->height = MAX (logical_rect->y + logical_rect->height,
-					  line_logical.y + line_logical.height + y_offset) - new_pos;
-	      logical_rect->y = new_pos;
+	      logical_rect->height += line_logical.height;
 	    }
 	}
       
