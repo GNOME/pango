@@ -53,6 +53,7 @@ static void
 get_cluster_glyphs(PangoFont      *font,
 		   gunichar       cluster[],
 		   gint           cluster_size,
+		   gboolean       do_mirror,
 		   /* output */
 		   gint           glyph_num[],
 		   PangoGlyph     glyph[],
@@ -63,7 +64,14 @@ get_cluster_glyphs(PangoFont      *font,
   for (i=0; i<cluster_size; i++)
     {
       PangoRectangle logical_rect;
-      glyph_num[i] = pango_fc_font_get_glyph ((PangoFcFont *)font, cluster[i]);
+      gunichar wc = cluster[i];
+      gunichar mirrored_ch;
+      
+      if (do_mirror)
+	if (pango_get_mirror_char (wc, &mirrored_ch))
+	  wc = mirrored_ch;
+	
+      glyph_num[i] = pango_fc_font_get_glyph ((PangoFcFont *)font, wc);
       glyph[i] = glyph_num[i];
 
       pango_font_get_glyph_extents (font,
@@ -159,6 +167,7 @@ hebrew_engine_shape (PangoEngineShape *engine,
       get_cluster_glyphs(font,
 			 cluster,
 			 cluster_size,
+			 analysis->level % 2,
 			 /* output */
 			 glyph_num,
 			 glyph,
