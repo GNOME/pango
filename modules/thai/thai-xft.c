@@ -179,7 +179,7 @@ make_glyph (ThaiFontInfo *font_info, unsigned int c)
   if (result)
     return result;
   else
-    return pango_xft_font_get_unknown_glyph (font_info->font, c);
+    return pango_xft_font_get_unknown_glyph (font_info->font, index);
 }
 
 PangoGlyph

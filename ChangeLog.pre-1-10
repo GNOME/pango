@@ -1,3 +1,8 @@
+Wed Jul 31 16:00:20 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* modules/thai/thai-xft.c (make_glyph): Minor tweak
+	to last patch to clarify index passed to unknown_glyph().
+
 Wed Jul 31 15:43:39 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* modules/thai/{thai-shaper.h,thai-x.c,thai-xft.c}:
