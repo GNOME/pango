@@ -81,7 +81,7 @@ typedef enum
   PANGO_ATTR_RISE,		/* PangoAttrInt */
   PANGO_ATTR_SHAPE,		/* PangoAttrShape */
   PANGO_ATTR_SCALE,             /* PangoAttrFloat */
-  PANGO_ATTR_FALLBACK,          /* PangoAttrInt */
+  PANGO_ATTR_FALLBACK           /* PangoAttrInt */
 } PangoAttrType;
 
 typedef enum {
@@ -89,7 +89,7 @@ typedef enum {
   PANGO_UNDERLINE_SINGLE,
   PANGO_UNDERLINE_DOUBLE,
   PANGO_UNDERLINE_LOW,
-  PANGO_UNDERLINE_ERROR,
+  PANGO_UNDERLINE_ERROR
 } PangoUnderline;
 
 struct _PangoAttribute

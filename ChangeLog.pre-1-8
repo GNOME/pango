@@ -1,3 +1,8 @@
+2004-03-01  Murray Cumming  <murrayc@murrayc.com>
+
+	* pango/pango-attributes.h: Removed trailing commas from the
+	enums - which causes warnings that break warnings-as-errors builds.
+
 Mon Mar  1 09:43:38 2004  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pangofc-fontmap.c (pango_fc_font_map_finalize):
