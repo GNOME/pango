@@ -1,3 +1,14 @@
+Tue May  9 03:22:11 2000  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-layout.c (pango_layout_check_lines): Fix
+	memory leak by freeing correct list.
+
+	* pango/pango-context.c (pango_context_get_font_description): 
+	Change to return a pointer to the context's font description
+	instead of a copy. Not quite 100% kosher but a lot 
+	more efficient than the previous. (Should we just refcount
+	font descriptions and get it over with?)
+
 Mon May  8 16:39:48 2000  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pango-layout.c (free_run): Call pango_item_free

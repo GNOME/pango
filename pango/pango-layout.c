@@ -1738,7 +1738,7 @@ pango_layout_check_lines (PangoLayout *layout)
       
       layout->lines = g_slist_prepend (layout->lines, line);
 
-      g_list_free (tmp_list);
+      g_list_free (items);
 
       if (!done)
 	{
