@@ -1,0 +1,180 @@
+Wed Jan 12 16:49:03 2000  Owen Taylor  <otaylor@redhat.com>
+
+	* Huge rename from GScript to Pango.
+
+	* modules/tamil/* examples/muru.utf fonts/tscakaram.pcf:
+
+	Tamil module from Sivaraj Doddannan <sivaraj@intelligroup.com> 
+
+Mon Aug  2 18:32:59 1999  Owen Taylor  <otaylor@redhat.com>
+
+	* configure.in: Check for libunicode.
+
+	* examples/viewer.c libgscript/break.c
+	  libgscript/itemize.c modules/basic/basic.c:
+
+	  Use libunicode functions for conversion.
+
+	* modules/basic/basic.c: Add support for
+	  simple accent composition; fix bidi
+	  swapping to correctly swap clusters
+	  as a unit.
+
+1999-07-26    <otaylor@localhost.localdomain>
+
+	* libgscript/mapping.c (g_script_cp_to_x): Fix
+	buggy algorithm.
+
+1999-07-31  Changwoo Ryu  <cwryu@adam.kaist.ac.kr>
+
+	* modules/hangul/Makefile.am (EXTRA_DIST): Added tables-*.i
+	files.
+
+1999-07-29  Raja R Harinath  <harinath@cs.umn.edu>
+
+	* modules/hangul/Makefile.am (INCLUDES): Use
+	-I$(top_srcdir)/libgscript.
+
+1999-07-30  Changwoo Ryu  <cwryu@adam.kaist.ac.kr>
+
+	* modules/hangul/*, Makefile.am, configure.in: Added the Hangul
+	shaping module.
+
+Wed Jul 28 14:45:00 1999  Owen Taylor  <otaylor@redhat.com>
+
+	* Released version 0.4
+
+Wed Jul 28 14:43:41 1999  Owen Taylor  <otaylor@redhat.com>
+
+	* libgscript/reorder-items.c: Return NULL correctly.
+
+	* libgscript/mapping.c:
+	   Fixed buggy algorithm for cp to x.
+	   Fixed reversed interpolation for x to cp.
+	   
+Wed Jul 28 14:42:40 1999  Owen Taylor  <otaylor@redhat.com>
+
+	* libgscript/mapping.c: Fix bugs 
+
+Thu Jul 22 09:36:08 1999  Owen Taylor  <otaylor@redhat.com>
+
+	* Released version 0.3
+
+Wed Jul 21 18:46:14 1999  Owen Taylor  <otaylor@redhat.com>
+
+	* libgscript/gscriptx.c (g_script_x_extents): Fix
+	same off-by-one bug here too...
+
+Wed Jul 21 18:44:55 1999  Owen Taylor  <otaylor@redhat.com>
+
+	* libgscript/gscriptx.c (g_script_x_glyph_extents): Fix
+	an off-by-one error in computing indexes into the
+	per-char information.
+
+Tue Jul 20 20:09:09 1999  Owen Taylor  <otaylor@redhat.com>
+
+	* docs/tmpl/engines.sgml: First pass at documenting
+	 engine interfaces.
+
+Tue Jul 20 16:10:48 1999  Owen Taylor  <otaylor@redhat.com>
+
+	* **: Documentation improvements.
+
+Tue Jul 20 15:05:45 1999  Owen Taylor  <otaylor@redhat.com>
+
+	* modules/basic/{basic.c,tables-{big,small}.i}:
+	 Rewrote basic module to support subset fonts meaningfully.
+	 This meant revising the algorithm used to look
+	 up a font for each character independently.
+	 Which required aggresive caching here and in the
+	 font code to give half-way decent performance.
+
+	 Added support for ISO-10646-1 fonts.
+
+	* libgscript/fonts.c (g_script_font_[get/set]_data): Add the
+	  ability to add user data to a font.
+
+	* libgscript/gscriptx.[ch]: Add functions to allow:
+	- Querying all XLFD's matching a set of character
+	  sets for a font.
+	- Loading a component font with a particular XLFD.
+	- Finding the range of present characters for a given XLFD.
+
+   	  Also added tons of caching.
+
+Wed Jul 14 19:11:41 1999  Owen Taylor  <otaylor@redhat.com>
+
+	* libgscript/gscriptx.c (g_script_x_glyph_extents):
+	Fixed min/max confusion.
+
+Mon Jul 12 17:14:53 1999  Owen Taylor  <otaylor@redhat.com>
+
+	* docs/TEXT/glossary (CFont): Expanded.
+
+	* libgscript/fonts.c (g_script_cfont_unref): Fixed
+	leak. (Pointed out by Raph)
+
+	* libgscript/gscriptx.c: Handle the case where
+	fontstruct->per_char == NULL.
+
+Sun Jul 11 23:44:42 1999  Owen Taylor  <otaylor@redhat.com>
+
+	* Made version 0.2
+
+	* **/Makefile.am: Fixes for srcdir != builddir
+
+Sun Jul 11 23:41:19 1999  Owen Taylor  <otaylor@redhat.com>
+
+	* docs/tmpl/glyphs.sgml: SGML fix.
+
+Sun Jul 11 22:53:11 1999  Owen Taylor  <otaylor@redhat.com>
+
+	* libgscript/mapping.c: Implemented g_script_cp_to_x()
+	and g_script_x_to_cp().
+
+	* examples/viewer.c: Added clicking on a character to
+	identify it as a test of the above.
+
+	* gscript/gscript.h gscript/gglyphstring.c modules/basic/basic.c:
+	Add another field into the GGlyphString which holds
+	a mapping from glyphs to logical clusters.
+
+	* libgscript/gscript.h (struct _GScriptLangRange):
+	Make it start-length like everything else, not
+	start-end.
+
+Sun Jul 11 00:18:56 1999  Owen Taylor  <otaylor@redhat.com>
+
+	* docs/tmpl/gscript-x.sgml: Fix sgml error.
+
+Sat Jul 10 23:40:40 1999  Owen Taylor  <otaylor@redhat.com>
+
+	* modules/basic/basic.c: Added ability to use
+	multibyte character sets. (Right now, they have
+	to be converted by iconv into EUC encoding, but
+	that can easily be extended).
+
+	Added simply CJK support. This really bloats and
+	slows down the module because the range-based
+	encoding we use to map characters onto character-sets
+	wasn't designed for CJK-style charsets. But it's
+	better than nothing for now.
+	
+	* libgscript/reorder-items.c (reorder_items_recurse): Fix
+	bug with variable initialization.
+
+	* examples/viewer.c (draw): Compute line increments.
+
+	* libgscript/gscriptx.c (g_script_x_[glyph]_extents): Added
+	logical_ascent/descent parameters.
+
+	* examples/viewer.c: Commented
+
+Sat Jul 10 04:35:10 1999  Owen Taylor  <otaylor@redhat.com>
+
+	* configure.in Makefile.am: automake'd and libtoolized.
+	
+Sat Jul 10 00:00:00 1999  Owen Taylor  <otaylor@redhat.com>
+
+	* It renders! Start a ChangeLog
+

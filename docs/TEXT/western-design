@@ -1,0 +1,34 @@
+Issues that this engine needs to handle:
+
+ - Picking the right character based on language/character
+ - Composition of combining diacriticals - should use precomposed
+   diacriticals when possible
+ - Finding word/line/breaks
+
+For each sequence of character + combining marks
+
+ - Find combined representations from most combined to least combined.
+ - If there are particular characters for this combination, use
+   them, otherwise 
+
+==========
+
+Ligature table per font.
+Pick fonts in order of preference according to LANG
+
+Characterstics of western/basic:
+
+ Consistent LTR
+ No reordering
+ Many characters => one glyph
+ Character/Word/Line breaking dependent only on character properties
+
+Issues
+ 
+ Accent placement for Greek, Vietnamese
+ How do we handle a case where lang == en_US, we have a glyph
+   combination with a combined form in iso-8859-2 but not
+   in iso-8859-1?
+
+
+

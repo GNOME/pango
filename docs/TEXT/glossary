@@ -1,0 +1,49 @@
+CFont:   A font component. This is a rendering-specific entity
+         which is paired with a glyph index to uniquely indentify
+         a glyph. Each abstract Font maps to one or more CFonts;
+         the method for obtaining CFonts from Fonts is also
+         rendering system specific.
+
+Cluster: A cluster is a small portion of text that is rendered
+         as typographically intertwined glyphs.
+
+         A number of properties are associated with clusters
+         and cluster boundaries.
+
+         1) Clusters are the smallest unit of text that is guaranteed to
+         progress in reading order. Within a cluster, reordering
+         of glyphs may occur.
+
+         2) At the boundaries of clusters, character boundaries
+         and glyph boundaries are guaranteed to coincide.
+
+	 3) There will be a cursor position between every two clusters.
+         There may not be a cursor position at some positions
+         inside a cluster.
+
+	 4) The cluster boundary is the only place where information
+         about the correspondence between character position
+         and screen position is conveyed from the shape-engine
+         to the layers above. 
+
+Engine:  A script-specific object that is responsible for 
+         converting Unicode text into glyphs or resolving
+         the properties of the text. Engines may be 
+	 rendering-system specific or independent of rendering
+	 system.
+
+Font:    An abstract font. The method in which a font is
+         created is dependent on the rendering system.
+
+Item:    An item is a portion of text in a single script, handled
+         by a single shaping engine, and with a single directional
+         level. g_script_itemize() returns a list of items.
+
+Module:  A dynamically loaded shared object containing one
+         or more Engines.
+
+Range:   A subportion of an item. You pass a range into
+         g_script_shape() by passing in the analysis structure
+         for the item and some subportion of the text.
+
+

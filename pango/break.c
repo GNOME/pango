@@ -1,0 +1,66 @@
+/* Pango
+ * break.c:
+ *
+ * Copyright (C) 1999 Red Hat Software
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Library General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+ * Library General Public License for more details.
+ *
+ * You should have received a copy of the GNU Library General Public
+ * License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ * Boston, MA 02111-1307, USA.
+ */
+
+#include <pango.h>
+#include <unicode.h>
+#include "utils.h"
+
+/**
+ * pango_break:
+ * @text:      the text to process
+ * @length:    the length (in bytes) of @text
+ * @analysis:  #PangoAnalysis structure from PangoItemize
+ * @attrs:     an array to store character information in
+ *
+ * Determines possible line, word, and character breaks
+ * for a string of Unicode text.
+ */
+void pango_break (gchar           *text, 
+                     gint             length, 
+                     PangoAnalysis *analysis, 
+		     PangoLogAttr  *attrs)
+{
+  /* Pseudo-implementation */
+
+  gchar *cur = text;
+  gchar *next;
+  gint i = 0;
+  GUChar4 wc;
+  
+  while (*cur)
+    {
+      next = unicode_get_utf8 (cur, &wc);
+      if (!next)
+	return;			/* FIXME: ERROR */
+      if (cur == next)
+	break;
+      if ((next - text) > length)
+	break;
+      cur = next;
+
+      attrs[i].is_white = (wc == ' ' || wc == '\t' || wc == '\n') ? 1 : 0;
+      attrs[i].is_break = (i > 0 && attrs[i-1].is_white) || attrs[i].is_white;
+      attrs[i].is_char_stop = 1;
+      attrs[i].is_word_stop = (i == 0) || attrs[i-1].is_white;
+      
+      i++;
+    }
+}

@@ -1,0 +1,62 @@
+#!/usr/local/bin/perl -w
+
+# Spit the copyright
+    
+# If there is a leading block comment that looks like this
+# license, don't add the license.
+
+$ARGV[0] =~ s!^\./!!;
+
+open IN, "<$ARGV[0]" or die "Cannot open $ARGV[0]: $!";
+open OUT, ">$ARGV[0].new" or die "Cannot open $ARGV[0].new: $!";
+
+$old = "";
+while (<IN>) {
+    $old .= $_;
+    m!^(/| )\*! or last;
+}
+
+if ($old !~ /Free Software Foundation/) {
+    while (<DATA>) {
+	s/\@NAME\@/$ARGV[0]/;
+	print OUT;
+    }
+}
+
+print OUT $old;
+while (<IN>) {
+    print OUT;
+}
+
+close IN;
+close OUT;
+
+if (system("diff $ARGV[0] $ARGV[0].new > /dev/null") != 0) {
+    system ("mv $ARGV[0] $ARGV[0].bak");
+    system ("mv $ARGV[0].new $ARGV[0]");
+} else {
+    system ("rm $ARGV[0].new");
+}
+
+__DATA__
+/* Pango
+ * @NAME@:
+ *
+ * Copyright (C) 1999 Red Hat Software
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Library General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+ * Library General Public License for more details.
+ *
+ * You should have received a copy of the GNU Library General Public
+ * License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ * Boston, MA 02111-1307, USA.
+ */
+

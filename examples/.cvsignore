@@ -1,0 +1,6 @@
+gscript.modules
+gscript-viewer
+.deps
+.libs
+*.lo
+*.la

@@ -1,0 +1,12 @@
+## Process this file with automake to create Makefile.in.
+
+noinst_LTLIBRARIES = pango-hangul.la
+
+INCLUDES = -I$(top_srcdir)/libpango
+
+pango_hangul_la_SOURCES = hangul.c
+pango_hangul_la_LDFLAGS = -rpath $(libdir) -export-dynamic -avoid-version -module
+
+EXTRA_DIST =			\
+	tables-ksc5601.i	\
+	tables-johabfont.i

@@ -1,0 +1,25 @@
+<!doctype book PUBLIC "-//Davenport//DTD DocBook V3.0//EN" [
+<!entity pango-main SYSTEM "sgml/main.sgml">
+<!entity pango-glyphs SYSTEM "sgml/glyphs.sgml">
+<!entity pango-fonts SYSTEM "sgml/fonts.sgml">
+<!entity pango-engines SYSTEM "sgml/engines.sgml">
+<!entity pango-x SYSTEM "sgml/pango-x.sgml">
+]>
+<book>
+  <bookinfo>
+    <title>Pango Reference Manual</title>
+  </bookinfo>
+
+  <chapter id="pango">
+    <title>Basic Pango Interfaces</title>
+    &pango-main;
+    &pango-glyphs;
+    &pango-fonts;
+    &pango-engines;
+  </chapter>
+
+  <chapter id="pango-x">
+    <title>Rendering under X with Pango</title>
+    &pango-x;
+    </chapter>
+</book>

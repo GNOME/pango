@@ -1,0 +1,13 @@
+* Return error codes from all functions. Possible errors include
+ - Invalid string
+ - Font does not match 
+
+* Allow UTF8 strings with embedded NULLs.
+
+* Write a small default shaping engine that only
+  draws a placeholder character ... and does that in
+  a way that always works.
+
+* Convert over from utils.c to Tom Tromey's libunicode.
+
+* Add accent composition to basic engine.

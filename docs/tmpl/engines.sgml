@@ -1,0 +1,248 @@
+<!-- ##### SECTION Title ##### -->
+Engines
+
+<!-- ##### SECTION Short_Description ##### -->
+Modules to do language-specific and rendering-system-specific
+processing.
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+Pango utilizes a module architecture in which
+the language-specific and render-system-specific
+components are provided by loadable modules. Each
+loadable module supplies one or more
+<firstterm>engines</firstterm>. 
+Each <firstterm>engine</firstterm> has an associated
+<firstterm>engine type</firstterm> and 
+<firstterm>render type</firstterm>. These two
+types are represented by strings.
+</para>
+<para>
+Each dynamically-loaded module exports several
+functions which provide the public API. These
+functions are script_engine_list(), 
+script_engine_load() and script_engine_unload().
+The latter two functions are used for loading
+and unloading modules, while the first function
+is used when building a catalog of all available
+modules.
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### STRUCT PangoEngineInfo ##### -->
+<para>
+The #PangoEngineInfo structure contains
+information about a particular engine. It
+contains the following fields:
+
+<informaltable pgwide=1 frame="none" role="struct">
+<tgroup cols="2"><colspec colwidth="2*"><colspec colwidth="8*">
+<tbody>
+
+<row>
+<entry>gchar *id;</entry>
+<entry>a unique string ID for the engine.</entry>
+</row>
+<row>
+<entry>gchar *engine_type;</entry>
+<entry>a string identifying the engine type.</entry>
+</row>
+
+<row>
+<entry>gchar *render type;</entry>
+<entry>a string identifying the render type.</entry>
+</row>
+
+<row>
+<entry>#PangoEngineRange *ranges;</entry>
+<entry>a pointer to an array of #PangoEngineRange
+       structures. Each structure contains information
+       about a range of Unicode code points that
+       this engine handles.</entry>
+</row>
+
+<row>
+<entry>gint n_ranges;</entry>
+<entry>the number of elements in <structfield>ranges</structfield>.</entry>
+</row>
+
+</tbody></tgroup></informaltable>
+</para>
+
+<!-- ##### STRUCT PangoEngineRange ##### -->
+<para>
+The PangoEngineRange structure contains
+information about a range of Unicode code
+points. It contains the following fields:
+
+<informaltable pgwide=1 frame="none" role="struct">
+<tgroup cols="2"><colspec colwidth="2*"><colspec colwidth="8*">
+<tbody>
+
+<row>
+<entry>guint32 start;</entry>
+<entry>the first code point in the range.</entry>
+</row>
+
+<row>
+<entry>guint32 end;</entry>
+<entry>the last code point for the range.</entry>
+</row>
+
+<row>
+<entry>gchar *langs;</entry>
+<entry>A semicolon separated list of languages that this
+       engine handles for this range. This may be empty, 
+       in which case the engine is saying that it is a
+       fallback choice for all languages for this range,
+       but should not be used if another engine provides
+       indicates that it is specific for the language for
+       a given code point. A  entry in this list of "*"
+       indicates that this engine is specific to all
+       languages for this range.</entry>
+</row>
+
+</tbody></tgroup></informaltable>
+</para>
+
+<!-- ##### STRUCT PangoEngine ##### -->
+<para>
+The #PangoEngine structure contains basic
+information common to all script engines. It
+contains the following fields:
+
+<informaltable pgwide=1 frame="none" role="struct">
+<tgroup cols="2"><colspec colwidth="2*"><colspec colwidth="8*">
+<tbody>
+
+<row>
+<entry>gchar *id;</entry>
+<entry>a unique string ID for this language engine.</entry>
+</row>
+
+<row>
+<entry>gchar *type;</entry>
+<entry>The "type" of the engine. (Is this engine type or render type??).</entry>
+</row>
+
+<row>
+<entry>gint length;</entry>
+<entry>the length of the entire structure in bytes. This is 
+       provided so that new functions can be added at the
+       end of subtypes of #PangoEngine without breaking
+       older modules.</entry>
+</row>
+
+</tbody></tgroup></informaltable>
+</para>
+
+<!-- ##### STRUCT PangoEngineLang ##### -->
+<para>
+The #PangoEngineLang structure extents the
+basic #PangoEngine structure to engines that
+deal with the rendering-system independent part
+of of the rendering pipeline. It contains the following fields:
+
+<informaltable pgwide=1 frame="none" role="struct">
+<tgroup cols="2"><colspec colwidth="2*"><colspec colwidth="8*">
+<tbody>
+
+<row>
+<entry>#PangoEngine engine;</entry>
+<entry>A nested structure containing basic engine data.</entry>
+</row>
+
+<row>
+<entry>void (*script_break) (...);</entry>
+<entry>A function that provides an implementation
+       for pango_break().</entry>
+</row>
+
+</tbody></tgroup></informaltable>
+</para>
+
+<!-- ##### STRUCT PangoEngineShape ##### -->
+<para>
+The #PangoEngineShape structure extents the
+basic #PangoEngine structure to engines that
+deal with the rendering-system dependent part
+of of the rendering pipeline. It contains the following fields:
+
+<informaltable pgwide=1 frame="none" role="struct">
+<tgroup cols="2"><colspec colwidth="2*"><colspec colwidth="8*">
+<tbody>
+
+<row>
+<entry>#PangoEngine engine;</entry>
+<entry>A nested structure containing basic engine data.</entry>
+</row>
+
+<row>
+<entry> void (*script_shape) (...);</entry>
+<entry>A function that provides an implementation
+       for pango_shape.</entry>
+</row>
+
+</tbody></tgroup></informaltable>
+</para>
+
+
+<!-- ##### MACRO PANGO_ENGINE_TYPE_LANG ##### -->
+<para>
+A string constant defining the engine type
+for <firstterm>language engines</firstterm>.
+These engines have a engine structure of 
+type #PangoEngineLang.
+</para>
+
+
+
+<!-- ##### MACRO PANGO_ENGINE_TYPE_SHAPE ##### -->
+<para>
+A string constant defining the engine type
+for <firstterm>shaping engines</firstterm>.
+These engines have a engine structure of 
+type #PangoEngineShape.
+</para>
+
+<!-- ##### MACRO PANGO_RENDER_TYPE_NONE ##### -->
+<para>
+A string constant defining the render type
+for engines that are not rendering-system 
+specific.
+</para>
+
+<!-- ##### FUNCTION script_engine_list ##### -->
+<para>
+Function to be provided by a module to list
+the engines that the module supplies.
+</para>
+
+@engines: location to store a pointer to an array of engines.
+@n_engines: location to store the number of elements in @engines.
+
+
+<!-- ##### FUNCTION script_engine_load ##### -->
+<para>
+Function to be provided by a module to load
+a particular engine.
+</para>
+
+@id: the ID from the #ScriptEngineInfo structure of the
+     module to load.
+@Returns: the newly created script engine.
+
+
+<!-- ##### FUNCTION script_engine_unload ##### -->
+<para>
+Function to be provided by a module to unload
+an engine.
+</para>
+
+@engine: the engine to unload.
+
+

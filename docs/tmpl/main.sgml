@@ -1,0 +1,229 @@
+<!-- ##### SECTION Title ##### -->
+Rendering
+
+<!-- ##### SECTION Short_Description ##### -->
+Functions to run the rendering pipeline.
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+The Pango rendering pipeline takes a string of
+Unicode characters and converts it into glyphs.
+The functions described in this section accomplish
+various steps of this process.
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### FUNCTION pango_itemize ##### -->
+<para>
+
+</para>
+
+@context: 
+@text: 
+@length: 
+@lang_info: 
+@n_langs: 
+@Returns: 
+
+
+<!-- ##### STRUCT PangoContext ##### -->
+<para>
+The #PangoContext structure stores global information
+used to control the itemization process. It contains
+the following fields:
+
+<informaltable pgwide=1 frame="none" role="struct">
+<tgroup cols="2"><colspec colwidth="2*"><colspec colwidth="8*">
+<tbody>
+
+<row>
+<entry>gchar *lang;</entry>
+<entry>the global default language in the standard form
+       "fr" or "fr_FR". (This may be overriden
+       with the @lang_info parameter to pango_itemize().)</entry>
+</row>
+
+<row>
+<entry>gchar *render_type;</entry>
+<entry>a string identifier for the rendering system to use,
+       for instance %PANGO_RENDER_TYPE_X</entry>
+</row>
+
+</tbody></tgroup></informaltable>
+</para>
+
+
+<!-- ##### STRUCT PangoItem ##### -->
+<para>
+The #PangoItem structure stores information about
+a segment of text. It contains the following fields:
+
+<informaltable pgwide=1 frame="none" role="struct">
+<tgroup cols="2"><colspec colwidth="2*"><colspec colwidth="8*">
+<tbody>
+
+<row>
+<entry>gint offset;</entry>
+<entry>the offset of the segment from the beginning of the
+       string in bytes.</entry>
+</row>
+
+<row>
+<entry>gint length;</entry>
+<entry>the length of the segment in bytes.</entry>
+</row>
+
+<row>
+<entry>gint num_chars;</entry>
+<entry>the length of the segment in characters.</entry>
+</row>
+
+<row>
+<entry>gint analysis;</entry>
+<entry>the properties of the segment.</entry>
+</row>
+
+</tbody></tgroup></informaltable>
+</para>
+
+
+<!-- ##### STRUCT PangoAnalysis ##### -->
+<para>
+The #PangoAnalysis structure stores information about
+the properties of a segment of text. It has the following
+fields:
+
+<informaltable pgwide=1 frame="none" role="struct">
+<tgroup cols="2"><colspec colwidth="2*"><colspec colwidth="8*">
+<tbody>
+
+<row>
+<entry>#PangoEngineShape *shape_engine;</entry>
+<entry>the engine for doing rendering-system-dependent processing</entry>
+</row>
+
+<row>
+<entry>#PangoEngineLang *lang_engine;</entry>
+<entry>the engine for doing rendering-system-independent processing</entry>
+</row>
+
+<row>
+<entry>guint8 level;</entry>
+<entry>the bidrectional level for this segment.</entry>
+</row>
+
+</tbody></tgroup></informaltable>
+</para>
+
+
+<!-- ##### STRUCT PangoLangRange ##### -->
+<para>
+The #PangoLangRange structure stores language tagging
+information for a range of character positions of text. 
+It contains the following fields:
+
+<informaltable pgwide=1 frame="none" role="struct">
+<tgroup cols="2"><colspec colwidth="2*"><colspec colwidth="8*">
+<tbody>
+
+<row>
+<entry>gint start;</entry>
+<entry>the start position of this tagged range in bytes.</entry>
+</row>
+
+<row>
+<entry>gint length;</entry>
+<entry>the length of this tagged range in bytes.</entry>
+</row>
+
+<row>
+<entry>gchar *lang;</entry> 
+<entry>the language for this range, in the standard form 
+       "fr" or "fr_FR".</entry>
+</row>
+
+</tbody></tgroup></informaltable>
+</para>
+
+
+<!-- ##### FUNCTION pango_reorder_items ##### -->
+<para>
+
+</para>
+
+@logical_items: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_break ##### -->
+<para>
+
+</para>
+
+@text: 
+@length: 
+@analysis: 
+@attrs: 
+
+
+<!-- ##### STRUCT PangoLogAttr ##### -->
+<para>
+The #PangoLogAttr structure stores information
+about the attributes of a single character.
+</para>
+
+
+<!-- ##### FUNCTION pango_shape ##### -->
+<para>
+
+</para>
+
+@font: 
+@text: 
+@length: 
+@analysis: 
+@glyphs: 
+
+
+<!-- ##### FUNCTION pango_justify ##### -->
+<para>
+
+</para>
+
+@glyphs: 
+@new_line_width: 
+@min_kashida_width: 
+
+
+<!-- ##### FUNCTION pango_cp_to_x ##### -->
+<para>
+
+</para>
+
+@text: 
+@length: 
+@analysis: 
+@glyphs: 
+@char_pos: 
+@trailing: 
+@x_pos: 
+
+
+<!-- ##### FUNCTION pango_x_to_cp ##### -->
+<para>
+
+</para>
+
+@text: 
+@length: 
+@analysis: 
+@glyphs: 
+@x_pos: 
+@char_pos: 
+@trailing: 
+
+

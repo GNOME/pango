@@ -1,0 +1,42 @@
+General points
+==============
+
+One global entry point for each module:
+
+g_i18n_list_functions()
+
+ function : language : vtable
+
+
+Tool:
+
+ gi18n-updatedb
+
+Input Method Module
+===================
+
+ Functions:
+
+ Callbacks:
+
+   Set the status area contents
+   Set the preedit string contents
+   Position the caret
+   Begin preediting
+   End preediting
+
+Shaping Module
+=============
+
+ Segment input text
+ Turn characters into glyphs
+ Provide line-break information 
+ 
+
+Output Modules
+==============
+
+ Position/justify glyphs
+
+
+

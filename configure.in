@@ -1,0 +1,51 @@
+dnl Process this file with autoconf to create configure.
+
+AC_INIT(ChangeLog)
+AM_INIT_AUTOMAKE(pango, 0.5)
+
+AM_CONFIG_HEADER(config.h)
+
+AC_PROG_CC
+AM_PROG_LIBTOOL
+
+changequote(,)dnl
+if test "x$GCC" = "xyes"; then
+  case " $CFLAGS " in
+  *[\ \	]-Wall[\ \	]*) ;;
+  *) CFLAGS="$CFLAGS -Wall" ;;
+  esac
+fi
+changequote([,])dnl
+
+AM_PATH_GTK(1.2.0,
+          [CFLAGS="$GTK_CFLAGS $CFLAGS"],
+ 	  AC_MSG_ERROR(pango requires GTK+ 1.2 or better))
+
+AC_CHECK_LIB(fribidi, fribidi_map_range, :,
+	     AC_MSG_ERROR([*** libfribidi not found.]))
+
+AC_PATH_PROG(UNICODE_CONFIG, unicode-config, no)
+if test x$UNICODE_CONFIG = xno ; then
+  AC_MSG_ERROR([*** unicode-config not found])
+fi
+CFLAGS="$CFLAGS `unicode-config --cflags`"
+UNICODE_LIBS="`unicode-config --libs`"
+AC_SUBST(UNICODE_LIBS)
+
+AC_CHECK_LIB(unicode, unicode_type, :,
+	     AC_MSG_ERROR([*** libunicode not found.]))
+
+AC_CHECK_PROG(gtkdoc, gtkdoc-scan, yes, no)
+AM_CONDITIONAL(HAVE_GTK_DOC, test x$gtkdoc = xyes)
+
+AC_OUTPUT([
+Makefile 
+libpango/Makefile
+modules/Makefile
+modules/basic/Makefile
+modules/hangul/Makefile
+modules/tamil/Makefile
+examples/Makefile
+docs/Makefile
+tools/Makefile
+])
