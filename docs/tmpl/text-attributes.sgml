@@ -34,7 +34,7 @@ attribute is listed in parentheses after the description.
 @PANGO_ATTR_WEIGHT: font weight (#PangoAttrInt)
 @PANGO_ATTR_VARIANT: font variant (normal or small caps) (#PangoAttrInt)
 @PANGO_ATTR_STRETCH: font stretch (#PangoAttrInt)
-@PANGO_ATTR_SIZE: font size in 1000th's of a point (#PangoAttrInt)
+@PANGO_ATTR_SIZE: font size in points divided by PANGO_SCALE (#PangoAttrInt)
 @PANGO_ATTR_FONT_DESC: font description (#PangoAttrFontDesc)
 @PANGO_ATTR_FOREGROUND: foreground color (#PangoAttrColor)
 @PANGO_ATTR_BACKGROUND: background color (#PangoAttrColor)

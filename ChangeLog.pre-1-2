@@ -1,3 +1,25 @@
+Fri Dec 20 11:59:22 2002  Owen Taylor  <otaylor@redhat.com>
+
+	Some unit fixups (#96335)
+
+	* pango/pango-layout.c pango/pango-mapping.c:
+	Fix occurrences of "in thousandths of a device
+	unit" to say "in #PangoGlyphUnit" which will
+	give a link to the PangoGlyphUnit docs.
+
+	* docs/tmpl/text-attributes.sgml: Change 1000 to PANGO_SCALE.
+
+	* docs/tmpl/glyphs.sgml: Fix docs for PangoGlyphUnit,
+	fix mention of value of PANGO_SCALE from 1000 to 1024.
+
+	* pango/pango-layout.c (pango_layout_line_get_x_ranges): 
+	Fix the docs for @ranges so it doesn't sound like the
+	coordinates are in pixels.
+
+Fri Dec 20 11:49:33 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* README: Add a note about fonts.conf.
+
 Mon Dec 16 21:16:31 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* === Released 1.1.6 ===

@@ -475,7 +475,7 @@ pango_layout_set_spacing (PangoLayout *layout,
  * 
  * Gets the amount of spacing between the lines of the layout.
  * 
- * Return value: the spacing (in thousandths of a device unit)
+ * Return value: the spacing (in #PangoGlyphUnit)
  **/
 int
 pango_layout_get_spacing (PangoLayout *layout)
@@ -959,7 +959,7 @@ pango_layout_get_line (PangoLayout *layout,
  * @trailing: an integer indicating the edge of the grapheme to retrieve 
  *            the position of. If 0, the trailing edge of the grapheme, 
  *            if > 0, the leading of the grapheme.
- * @x_pos: location to store the x_offset (in thousandths of a device unit)
+ * @x_pos: location to store the x_offset (in #PangoGlyphUnit)
  * 
  * Converts an index within a line to a X position.
  *
@@ -1347,9 +1347,9 @@ pango_layout_move_cursor_visually (PangoLayout *layout,
 /**
  * pango_layout_xy_to_index:
  * @layout:    a #PangoLayout
- * @x:         the X offset (in thousandths of a device unit)
+ * @x:         the X offset (in #PangoGlyphUnit)
  *             from the left edge of the layout.
- * @y:         the Y offset (in thousandths of a device unit)
+ * @y:         the Y offset (in #PangoGlyphUnit)
  *             from the top edge of the layout
  * @index_:    location to store calculated byte index
  * @trailing:  location to store a integer indicating where
@@ -2015,7 +2015,7 @@ pango_layout_get_extents (PangoLayout    *layout,
  * Compute the logical and ink extents of @layout in device units.
  * See pango_layout_get_extents(); this function just calls
  * pango_layout_get_extents() and then converts the extents to
- * pixels using the #PANGO_SCALE factor.
+ * device units using the #PANGO_SCALE factor.
  **/
 void
 pango_layout_get_pixel_extents (PangoLayout *layout,
@@ -3081,7 +3081,7 @@ pango_layout_line_unref (PangoLayoutLine *line)
 /**
  * pango_layout_line_x_to_index:
  * @line:      a #PangoLayoutLine
- * @x_pos:     the x offset (in thousands of a device unit)
+ * @x_pos:     the x offset (in #PangoGlyphUnit)
  *             from the left edge of the line.
  * @index_:    location to store calculated byte offset for
  *             the grapheme in which the user clicked.
@@ -3307,11 +3307,12 @@ pango_layout_line_x_to_index (PangoLayoutLine *line,
  *               the last range will extend all the way to the trailing
  *               edge of the layout. Otherwise, it will end at the
  *               trailing edge of the last character.
- * @ranges:      location to store a pointer to an array of arranges.
+ * @ranges:      location to store a pointer to an array of ranges.
  *               The array will be of length 2*@n_ranges, with each
- *               range including the pixels from (*ranges)[2*n] to
- *               (*ranges)[2*n + 1] - 1. This array must be freed
- *               with g_free. The pixels are in layout coordinates.
+ *               range starting at (*ranges)[2*n] and of width
+ *               (*ranges)[2*n + 1] - (*ranges)[2*n]. This array must be
+ *               freed with g_free. The coordinates are relative to the
+ *               layout and are in #PangoGlyphUnit.
  * @n_ranges: The number of ranges stored in @ranges.
  * 
  * Get a list of visual ranges corresponding to a given logical range.
@@ -3722,7 +3723,7 @@ pango_layout_line_new (PangoLayout *layout)
  * for pango_font_get_glyph_extents() for details about the interpretation
  * of the rectangles. The returned rectangles are in device units, as
  * opposed to pango_layout_line_get_extents(), which returns the extents in
- * units of device unit / PANGO_SCALE.
+ * #PangoGlyphUnit.
  **/
 void
 pango_layout_line_get_pixel_extents (PangoLayoutLine *layout_line,

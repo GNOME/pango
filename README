@@ -47,6 +47,11 @@ the fontconfig library, available along with Xft in the
 also require at least version 2.0.1 of the FreeType
 library. (http://www.freetype.org)
 
+After installing fontconfig, it may be necessary to edit
+the fonts.conf file, found at $(sysconfdir)/fonts/fonts.conf
+(usually /etc/fonts/fonts.conf) to point at the fonts
+on your system.
+
 There is also a backend that uses core X protocol fonts. This
 backend only requires the standard libraries from the X window 
 system. You should already have these installed on your system, but 

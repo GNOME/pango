@@ -23,7 +23,7 @@ The PANGO_SCALE macro represents the scale between dimensions used
 for Pango distances and device units. (The definition of device
 units is dependent on the output device; it will typically be pixels
 for a screen, and points for a printer.) PANGO_SCALE is currently
-1000, but this may be changed in the future.
+1024, but this may be changed in the future.
 </para>
 <para>
 When setting font sizes, device units are always considered to be
@@ -168,7 +168,12 @@ information for a single glyph. Distances are in
 <!-- ##### TYPEDEF PangoGlyphUnit ##### -->
 <para>
 The #PangoGlyphUnit type is used to store dimensions within
-Pango. Dimensions are stored in 1/64ths of a point.
+Pango. Dimensions are stored in 1/PANGO_SCALE of a device unit.
+(A device unit might be a pixel for screen display, or
+a point on a printer.) PANGO_SCALE is currently 1024, and
+is unlikely to change, but you should not depend on its
+exact value. The PANGO_PIXELS() macro can be used to convert
+from glyph units into device units with correct rounding.
 </para>
 
 
