@@ -573,6 +573,23 @@ pango_layout_set_text (PangoLayout *layout,
   pango_layout_clear_lines (layout);
 }
 
+/**
+ * pango_layout_get_text:
+ * @layout: a #PangoLayout
+ * 
+ * Gets the text in the layout. The returned text should not
+ * be freed or modified.
+ * 
+ * Return value: the text in the layout
+ **/
+const char*
+pango_layout_get_text (PangoLayout *layout)
+{
+  g_return_val_if_fail (PANGO_IS_LAYOUT (layout), NULL);
+
+  return layout->text;
+}
+
 void
 pango_layout_set_markup (PangoLayout *layout,
                          const char  *markup,

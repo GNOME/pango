@@ -1,3 +1,8 @@
+2000-11-12  Havoc Pennington  <hp@pobox.com>
+
+	* pango/pango-layout.c (pango_layout_get_text): Add accessor to 
+	get the text from the layout
+
 2000-11-11  Tor Lillqvist  <tml@iki.fi>
 
 	* pango/pangowin32.c (pango_win32_render): Add code to call
