@@ -50,7 +50,8 @@ pango_xftview_LDADD =					\
 	../pango/libpango-$(PANGO_API_VERSION).la	\
 	../pango/libpangoft2-$(PANGO_API_VERSION).la	\
 	../pango/libpangoxft-$(PANGO_API_VERSION).la	\
-	 $(XFT_LIBS)
+	$(XFT_LIBS)					\
+	$(X_LIBS)
 ###################################################
 
 if CROSS_COMPILING
