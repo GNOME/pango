@@ -54,6 +54,7 @@ typedef struct _PangoAttrClass    PangoAttrClass;
 typedef struct _PangoAttrString   PangoAttrString;
 typedef struct _PangoAttrLanguage PangoAttrLanguage;
 typedef struct _PangoAttrInt      PangoAttrInt;
+typedef struct _PangoAttrSize     PangoAttrSize;
 typedef struct _PangoAttrFloat    PangoAttrFloat;
 typedef struct _PangoAttrColor    PangoAttrColor;
 typedef struct _PangoAttrFontDesc PangoAttrFontDesc;
@@ -146,6 +147,13 @@ struct _PangoAttrColor
   PangoColor color;
 };
 
+struct _PangoAttrSize
+{
+  PangoAttribute attr;
+  int size;
+  guint absolute : 1;
+};
+
 struct _PangoAttrShape
 {
   PangoAttribute attr;
@@ -179,6 +187,7 @@ PangoAttribute *pango_attr_background_new    (guint16                     red,
 					      guint16                     green,
 					      guint16                     blue);
 PangoAttribute *pango_attr_size_new          (int                         size);
+PangoAttribute *pango_attr_size_new_absolute (int                         size);
 PangoAttribute *pango_attr_style_new         (PangoStyle                  style);
 PangoAttribute *pango_attr_weight_new        (PangoWeight                 weight);
 PangoAttribute *pango_attr_variant_new       (PangoVariant                variant);

@@ -39,7 +39,8 @@ struct _PangoFontDescription
 
   guint16 mask;
   guint static_family : 1;
-
+  guint size_is_absolute : 1;
+	
   int size;
 };
 
@@ -76,6 +77,7 @@ pango_font_description_new (void)
   desc->weight = PANGO_WEIGHT_NORMAL;
   desc->stretch = PANGO_STRETCH_NORMAL;
   desc->size = 0;
+  desc->size_is_absolute = FALSE;
 
   return desc;
 }
@@ -331,10 +333,16 @@ pango_font_description_get_stretch (const PangoFontDescription *desc)
 /**
  * pango_font_description_set_size:
  * @desc: a #PangoFontDescription
- * @size: the size for the font description in pango units.
- *        There are #PANGO_SCALE Pango units in one device unit (device unit is a point, for font sizes).
+ * @size: the size of the font in points, scaled by PANGO_SCALE. (That is,
+ *        a @size value of 10 * PANGO_SCALE is a 10 point font. The conversion
+ *        factor between points and device units depends on system configuration
+ *        and the output device. For screen display, a logical DPI of 96 is
+ *        common, in which case a 10 point font corresponds to a 10 * (96 / 72) = 13.3
+ *        pixel font. Use pango_font_description_set_absolute_size() if you need
+ *        a particular size in device units.
  * 
- * Sets the size field of a font description.
+ * Sets the size field of a font description in fractional points. This is mutually
+ * exclusive with pango_font_description_set_absolute_size(). 
  **/
 void
 pango_font_description_set_size (PangoFontDescription *desc,
@@ -343,6 +351,7 @@ pango_font_description_set_size (PangoFontDescription *desc,
   g_return_if_fail (desc != NULL);
   
   desc->size = size;
+  desc->size_is_absolute = FALSE;
   desc->mask |= PANGO_FONT_MASK_SIZE;
 }
 
@@ -353,9 +362,9 @@ pango_font_description_set_size (PangoFontDescription *desc,
  * Gets the size field of a font description.
  * See pango_font_description_get_size().
  * 
- * Return value: the size field for the font description in pango
- *   units.  (There are #PANGO_SCALE pango units in one device unit &mdash;
- *   for fonts, font points are the device unit.) Returns 0 if the stretch field has not
+ * Return value: the size field for the font description in points or device units.
+ *   You must call pango_font_description_get_size_is_absolute()
+ *   to find out which is the case. Returns 0 if the size field has not
  *   previously been set.  pango_font_description_get_set_fields() to
  *   find out if the field was explicitely set or not.
  **/
@@ -365,6 +374,50 @@ pango_font_description_get_size (const PangoFontDescription *desc)
   g_return_val_if_fail (desc != NULL, 0);
 
   return desc->size;
+}
+
+/**
+ * pango_font_description_set_absolute_size:
+ * @desc: a #PangoFontDescription
+ * @size: the new size, in pango units. There are #PANGO_SCALE Pango units in one
+ *   device unit. For an output backend where a device unit is a pixel, a @size
+ *   value of 10 * PANGO_SCALE gives a 10 pixel font.
+ * 
+ * Sets the size field of a font description, in device units. This is mutually
+ * exclusive with pango_font_description_set_size().
+ *
+ * Since: 1.8
+ **/
+void
+pango_font_description_set_absolute_size (PangoFontDescription *desc,
+					  double                size)
+{
+  g_return_if_fail (desc != NULL);
+  
+  desc->size = size;
+  desc->size_is_absolute = TRUE;
+  desc->mask |= PANGO_FONT_MASK_SIZE;
+}
+
+/**
+ * pango_font_description_get_size_is_absolute:
+ * @desc: a #PangoFontDescription
+ * 
+ * Determines whether the size of the font is in points or device units.
+ * See pango_font_description_set_size() and pango_font_description_set_absolute_size().
+ * 
+ * Return value: whether the the size for the font description is in
+ *   points or device units.  Use pango_font_description_get_set_fields() to
+ *   find out if the size field of the font description was explicitely set or not.
+ *
+ * Since: 1.8
+ **/
+gboolean
+pango_font_description_get_size_is_absolute (const PangoFontDescription *desc)
+{
+  g_return_val_if_fail (desc != NULL, FALSE);
+
+  return desc->size_is_absolute;
 }
 
 /**
@@ -443,7 +496,10 @@ pango_font_description_merge (PangoFontDescription       *desc,
   if (new_mask & PANGO_FONT_MASK_STRETCH)
     desc->stretch = desc_to_merge->stretch;
   if (new_mask & PANGO_FONT_MASK_SIZE)
-    desc->size = desc_to_merge->size;
+    {
+      desc->size = desc_to_merge->size;
+      desc->size_is_absolute = desc_to_merge->size_is_absolute;
+    }
 
   desc->mask |= new_mask;
 }
@@ -486,7 +542,10 @@ pango_font_description_merge_static (PangoFontDescription       *desc,
   if (new_mask & PANGO_FONT_MASK_STRETCH)
     desc->stretch = desc_to_merge->stretch;
   if (new_mask & PANGO_FONT_MASK_SIZE)
-    desc->size = desc_to_merge->size;
+    {
+      desc->size = desc_to_merge->size;
+      desc->size_is_absolute = desc_to_merge->size_is_absolute;
+    }
 
   desc->mask |= new_mask;
 }
@@ -614,6 +673,7 @@ pango_font_description_equal (const PangoFontDescription  *desc1,
 	  desc1->weight == desc2->weight &&
 	  desc1->stretch == desc2->stretch &&
 	  desc1->size == desc2->size &&
+	  desc1->size_is_absolute == desc2->size_is_absolute &&
 	  (desc1->family_name == desc2->family_name ||
 	   (desc1->family_name && desc2->family_name && g_ascii_strcasecmp (desc1->family_name, desc2->family_name) == 0)));
 }
@@ -655,7 +715,10 @@ pango_font_description_hash (const PangoFontDescription *desc)
   if (desc->mask & PANGO_FONT_MASK_FAMILY)
     hash = case_insensitive_hash (desc->family_name);
   if (desc->mask & PANGO_FONT_MASK_SIZE)
-    hash ^= desc->size;
+    {
+      hash ^= desc->size;
+      hash ^= desc->size_is_absolute ? 0xc33ca55a : 0;
+    }
   if (desc->mask & PANGO_FONT_MASK_STYLE)
     hash ^= desc->style << 16;
   if (desc->mask & PANGO_FONT_MASK_VARIANT)
@@ -839,6 +902,7 @@ pango_font_description_from_string (const char *str)
   desc->stretch = PANGO_STRETCH_NORMAL;
   
   desc->size = 0;
+  desc->size_is_absolute = FALSE;
 
   len = strlen (str);
   last = str + len;

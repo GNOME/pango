@@ -100,8 +100,8 @@ load_fallback_face (PangoFT2Font *ft2font,
   int id;
   
   sans = FcPatternBuild (NULL,
-			 FC_FAMILY, FcTypeString, "sans",
-			 FC_SIZE, FcTypeDouble, (double)pango_font_description_get_size (fcfont->description)/PANGO_SCALE,
+			 FC_FAMILY,     FcTypeString, "sans",
+			 FC_PIXEL_SIZE, FcTypeDouble, (double)ft2font->size / PANGO_SCALE,
 			 NULL);
   
   matched = FcFontMatch (NULL, sans, &result);

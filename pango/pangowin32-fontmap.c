@@ -449,6 +449,9 @@ pango_win32_font_map_load_font (PangoFontMap               *fontmap,
 	  GSList *tmp_list = best_match->cached_fonts;
 	  gint size = pango_font_description_get_size (description);
 
+	  if (pango_font_description_get_size_is_absolute (description))
+	    size = (int) 0.5 + (size * win32fontmap->resolution) / PANGO_SCALE;
+
 	  PING(("got best match:%s size=%d",best_match->logfont.lfFaceName,size));
 
 	  while (tmp_list)

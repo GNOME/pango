@@ -128,13 +128,19 @@ _pango_xft_font_get_mini_font (PangoXftFont *xfont)
       int width = 0, height = 0;
       XGlyphInfo extents;
       XftFont *mini_xft;
+      int new_size;
       
       _pango_xft_font_map_get_info (fcfont->fontmap, &display, NULL);
 
       pango_font_description_set_family_static (desc, "monospace");
-      pango_font_description_set_size (desc,
-				       0.5 * pango_font_description_get_size (fcfont->description));
+
+      new_size = pango_font_description_get_size (fcfont->description) / 2;
       
+      if (pango_font_description_get_size_is_absolute (fcfont->description))
+	pango_font_description_set_absolute_size (desc, new_size);
+      else
+	pango_font_description_set_size (desc, new_size);
+
       xfont->mini_font = pango_font_map_load_font (fcfont->fontmap, NULL, desc);
       pango_font_description_free (desc);
       
@@ -340,12 +346,17 @@ load_fallback_font (PangoXftFont *xfont)
   Display *display;
   int screen;
   XftFont *xft_font;
+  gboolean size_is_absolute;
+  double size;
   
   _pango_xft_font_map_get_info (fcfont->fontmap, &display, &screen);
+  
+  size_is_absolute = pango_font_description_get_size_is_absolute (fcfont->description);
+  size = (double)pango_font_description_get_size (fcfont->description) / PANGO_SCALE;
       
   xft_font = XftFontOpen (display,  screen,
                           FC_FAMILY, FcTypeString, "sans",
-                          FC_SIZE, FcTypeDouble, (double)pango_font_description_get_size (fcfont->description)/PANGO_SCALE,
+			  size_is_absolute ? FC_PIXEL_SIZE : FC_SIZE, FcTypeDouble, size,
                           NULL);
   
   if (!xft_font)

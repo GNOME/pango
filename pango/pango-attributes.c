@@ -40,16 +40,18 @@ struct _PangoAttrIterator
   int end_index;
 };
 
-static PangoAttribute *pango_attr_color_new  (const PangoAttrClass *klass,
-                                              guint16               red,
-                                              guint16               green,
-                                              guint16               blue);
-static PangoAttribute *pango_attr_string_new (const PangoAttrClass *klass,
-                                              const char           *str);
-static PangoAttribute *pango_attr_int_new    (const PangoAttrClass *klass,
-                                              int                   value);
-static PangoAttribute *pango_attr_float_new  (const PangoAttrClass *klass,
-                                              double                value);
+static PangoAttribute *pango_attr_color_new         (const PangoAttrClass *klass,
+                                                     guint16               red,
+                                                     guint16               green,
+                                                     guint16               blue);
+static PangoAttribute *pango_attr_string_new        (const PangoAttrClass *klass,
+                                                     const char           *str);
+static PangoAttribute *pango_attr_int_new           (const PangoAttrClass *klass,
+                                                     int                   value);
+static PangoAttribute *pango_attr_float_new         (const PangoAttrClass *klass,
+                                                     double                value);
+static PangoAttribute *pango_attr_size_new_internal (int                   size,
+						     gboolean              absolute);
 
 
 /**
@@ -396,25 +398,79 @@ pango_attr_float_new  (const PangoAttrClass *klass,
   return (PangoAttribute *)result;
 }
 
+static PangoAttribute *
+pango_attr_size_copy (const PangoAttribute *attr)
+{
+  const PangoAttrSize *size_attr = (PangoAttrSize *)attr;
+  
+  return pango_attr_size_new_internal (size_attr->size, size_attr->absolute);
+}
+
+static void
+pango_attr_size_destroy (PangoAttribute *attr)
+{
+  g_free (attr);
+}
+
+static gboolean
+pango_attr_size_equal (const PangoAttribute *attr1,
+		       const PangoAttribute *attr2)
+{
+  const PangoAttrSize *size_attr1 = (const PangoAttrSize *)attr1;
+  const PangoAttrSize *size_attr2 = (const PangoAttrSize *)attr2;
+  
+  return (size_attr1->size == size_attr2->size &&
+	  size_attr1->absolute == size_attr2->absolute);
+}
+
+static PangoAttribute *
+pango_attr_size_new_internal (int size,
+			      gboolean absolute)
+{
+  PangoAttrSize *result;
+  static const PangoAttrClass klass = {
+    PANGO_ATTR_SIZE,
+    pango_attr_size_copy,
+    pango_attr_size_destroy,
+    pango_attr_size_equal
+  };
+
+  result = g_new (PangoAttrSize, 1);
+  result->attr.klass = &klass;
+  result->size = size;
+  result->absolute = absolute;
+
+  return (PangoAttribute *)result;
+}
+
 /**
  * pango_attr_size_new:
  * @size: the font size, in #PANGO_SCALE<!-- -->ths of a point.
  * 
- * Create a new font-size attribute.
+ * Create a new font-size attribute in fractional points.
  * 
  * Return value: the new #PangoAttribute.
  **/
 PangoAttribute *
 pango_attr_size_new (int size)
 {
-  static const PangoAttrClass klass = {
-    PANGO_ATTR_SIZE,
-    pango_attr_int_copy,
-    pango_attr_int_destroy,
-    pango_attr_int_equal
-  };
+  return pango_attr_size_new_internal (size, FALSE);
+}
 
-  return pango_attr_int_new (&klass, size);
+/**
+ * pango_attr_size_absolute_new:
+ * @size: the font size, in #PANGO_SCALE<!-- -->ths of a device units.
+ * 
+ * Create a new font-size attribute in device units.
+ * 
+ * Return value: the new #PangoAttribute.
+ *
+ * Since: 1.8
+ **/
+PangoAttribute *
+pango_attr_size_new_absolute (int size)
+{
+  return pango_attr_size_new_internal (size, TRUE);
 }
 
 /**
@@ -1620,7 +1676,10 @@ pango_attr_iterator_get_font (PangoAttrIterator     *iterator,
 	  if (!(mask & PANGO_FONT_MASK_SIZE))
 	    {
 	      mask |= PANGO_FONT_MASK_SIZE;
-	      pango_font_description_set_size (desc, ((PangoAttrInt *)attr)->value);
+	      if (((PangoAttrSize *)attr)->absolute)
+		pango_font_description_set_size (desc, ((PangoAttrSize *)attr)->size);
+	      else
+		pango_font_description_set_absolute_size (desc, ((PangoAttrSize *)attr)->size);
 	    }
 	  break;
         case PANGO_ATTR_SCALE:

@@ -128,6 +128,9 @@ PangoStretch         pango_font_description_get_stretch       (const PangoFontDe
 void                 pango_font_description_set_size          (PangoFontDescription *desc,
 							       gint                  size);
 gint                 pango_font_description_get_size          (const PangoFontDescription *desc);
+void                 pango_font_description_set_absolute_size (PangoFontDescription *desc,
+							       double                size);
+gboolean             pango_font_description_get_size_is_absolute (const PangoFontDescription *desc);
 
 PangoFontMask pango_font_description_get_set_fields (const PangoFontDescription *desc);
 void          pango_font_description_unset_fields   (PangoFontDescription       *desc,

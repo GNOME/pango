@@ -1,3 +1,22 @@
+Wed Dec 15 22:09:42 2004  Owen Taylor  <otaylor@redhat.com>
+
+	Add pixel sizes for fonts (#119081, patch from Chris Lahey)
+
+	* pango/fonts.c pango/pango-font.h: 
+	Add pango_font_description_set_absolute_size(),
+	pango_font_description_get_size_is_absolute()
+
+	* pango/pango-attributes.[ch]: Add pango_attr_size_new_absolute(),
+	change PANGO_ATTR_SIZE from PangoAttrInt to PangoAttrSize 
+	(preserves compat because first component is identical)
+
+	* pango/pangowin32-fontmap.c (pango_win32_font_map_load_font): 
+	For absolute sizes, convert pixels to points, before 
+	calling pango_win32_font_new().
+
+	* pango/pangofc-fontmap.c pango/pangoft2.c pango/pangoxft-font.c: 
+	Handle absolute sizes.
+
 Wed Dec 15 18:50:18 2004  Owen Taylor  <otaylor@redhat.com>
 
 	* modules/indic/indic-fc.c modules/indic/indic-ot.h:

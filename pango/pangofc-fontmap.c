@@ -598,6 +598,7 @@ pango_fc_make_pattern (const PangoFontDescription *description)
   int slant;
   int weight;
   double size;
+  gboolean size_is_absolute;
   char **families;
   int i;
 #ifdef FC_WIDTH
@@ -611,6 +612,7 @@ pango_fc_make_pattern (const PangoFontDescription *description)
 #endif
 
   size = (double) pango_font_description_get_size (description) / PANGO_SCALE;
+  size_is_absolute = pango_font_description_get_size_is_absolute (description);
   
   pattern = FcPatternBuild (NULL,
 			    FC_WEIGHT, FcTypeInteger, weight,
@@ -618,7 +620,7 @@ pango_fc_make_pattern (const PangoFontDescription *description)
 #ifdef FC_WIDTH
 			    FC_WIDTH,  FcTypeInteger, width,
 #endif
-			    FC_SIZE,   FcTypeDouble,  size,
+ 			    (size_is_absolute ? FC_PIXEL_SIZE : FC_SIZE),  FcTypeDouble,  size,
 			    NULL);
 
   families = g_strsplit (pango_font_description_get_family (description), ",", -1);
@@ -1255,6 +1257,7 @@ pango_fc_convert_width_to_pango (int fc_stretch)
  * @pattern: a #FcPattern
  * @include_size: if %TRUE, the pattern will include the size from
  *   the @pattern; otherwise the resulting pattern will be unsized.
+ *   (only %FC_SIZE is examined, not %FC_PIXEL_SIZE)
  * 
  * Creates a #PangoFontDescription that matches the specified
  * Fontconfig pattern as closely as possible. Many possible Fontconfig
