@@ -1,3 +1,8 @@
+Fri Nov 19 18:45:24 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-renderer.c (pango_renderer_default_draw_error_underline):
+	Fix crash when renderer->matrix is NULL.
+
 Fri Nov 19 17:44:33 2004  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pango-renderer.[ch]: Remove color_set() virtual

@@ -887,7 +887,7 @@ pango_renderer_default_draw_error_underline (PangoRenderer *renderer,
   while (TRUE)
     {
       PangoMatrix total;
-      get_total_matrix (&total, renderer->matrix, x, y, square);
+      get_total_matrix (&total, matrix, x, y, square);
 
       draw_rectangle (renderer, &total, PANGO_RENDER_PART_UNDERLINE, /* A */
 		      0,                      0,
