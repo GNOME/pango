@@ -1,3 +1,12 @@
+2004-06-17  Christopher Blizzard  <blizzard@redhat.com>
+
+	* pango/pangofc-decoder.c (pango_fc_decoder_get_glyph,
+	pango_fc_decoder_get_charset): Changes to support extra arguments.
+
+	* pango/pangofc-decoder.h (struct _PangoFcDecoderClass): Add the
+	PangoFcDecoder * as the first argument to the callbacks for
+	get_glyph and get_charset.
+
 Wed Jun  9 17:32:59 2004  Christopher Blizzard  <blizzard@redhat.com>
 
 	* pango/Makefile.am: Add export of pangofc-decoder.h.  Build

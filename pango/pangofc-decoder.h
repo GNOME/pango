@@ -84,8 +84,10 @@ struct _PangoFcDecoderClass
 
   /* vtable - not signals */
   /*< public >*/
-  FcCharSet  *(*get_charset) (PangoFcFont    *fcfont);
-  PangoGlyph  (*get_glyph)   (PangoFcFont    *fcfont,
+  FcCharSet  *(*get_charset) (PangoFcDecoder *decoder,
+			      PangoFcFont    *fcfont);
+  PangoGlyph  (*get_glyph)   (PangoFcDecoder *decoder,
+			      PangoFcFont    *fcfont,
 			      guint32         wc);
 
   /*< private >*/

@@ -60,7 +60,7 @@ pango_fc_decoder_get_charset (PangoFcDecoder *decoder,
 {
   g_return_val_if_fail (PANGO_IS_FC_DECODER (decoder), NULL);
 
-  return PANGO_FC_DECODER_GET_CLASS (decoder)->get_charset (fcfont);
+  return PANGO_FC_DECODER_GET_CLASS (decoder)->get_charset (decoder, fcfont);
 }
 
 /**
@@ -84,5 +84,5 @@ pango_fc_decoder_get_glyph   (PangoFcDecoder *decoder,
 {
   g_return_val_if_fail (PANGO_IS_FC_DECODER (decoder), 0);
 
-  return PANGO_FC_DECODER_GET_CLASS (decoder)->get_glyph (fcfont, wc);
+  return PANGO_FC_DECODER_GET_CLASS (decoder)->get_glyph (decoder, fcfont, wc);
 }
