@@ -55,7 +55,7 @@ moduledir = $(libdir)/pango/modules
 module_LTLIBRARIES = $(myanmar_x_inst) $(gurmukhi_x_inst) $(bengali_x_inst) $(devanagari_x_inst) $(gujarati_x_inst)
 endif
 
-INCLUDES = -I$(top_srcdir) -I$(top_srcdir)/pango/ $(myanmar_x_cflags) $(gurmukhi_x_cflags) $(bengali_x_cflags) $(devanagari_x_cflags) $(gujarati_x_cflags)
+INCLUDES = -I$(top_srcdir) -I$(top_srcdir)/pango/ $(X_CFLAGS) $(myanmar_x_cflags) $(gurmukhi_x_cflags) $(bengali_x_cflags) $(devanagari_x_cflags) $(gujarati_x_cflags)
 
 EXTRA_DIST = \
 	pango-indic-script.h

@@ -11,7 +11,7 @@ module_LTLIBRARIES = pango-hangul-x.la
 moduleflags= -rpath $(libdir)
 endif
 
-INCLUDES = -I$(top_srcdir) -I$(top_srcdir)/pango/ $(moddefine)
+INCLUDES = -I$(top_srcdir) -I$(top_srcdir)/pango/ $(moddefine) $(X_CFLAGS)
 
 pango_hangul_x_la_LDFLAGS = $(moduleflags) -export-dynamic -avoid-version -module
 pango_hangul_x_la_SOURCES = $(sources)

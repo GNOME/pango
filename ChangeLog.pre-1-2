@@ -1,5 +1,15 @@
 2001-01-04  Havoc Pennington  <hp@redhat.com>
 
+	* modules/indic/Makefile.am (INCLUDES): add X_CFLAGS
+
+	* modules/hangul/Makefile.am (INCLUDES): add X_CFLAGS
+
+	* modules/tamil/Makefile.am (INCLUDES): add X_CFLAGS
+
+	* modules/thai/Makefile.am (INCLUDES): add X_CFLAGS
+
+2001-01-04  Havoc Pennington  <hp@redhat.com>
+
 	* pango/Makefile.am (install-data-local): put creation of module
 	file here. Fixes problem if you 'make install' with no preceding
 	'make' reported by Michael Meeks.
