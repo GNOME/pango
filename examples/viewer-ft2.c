@@ -1,5 +1,5 @@
 /* Pango
- * viewer-win32.c: Example program to view a UTF-8 encoding file
+ * viewer-ft2.c: Example program to view a UTF-8 encoding file
  *                 using Pango to render result.
  *
  * Copyright (C) 1999 Red Hat Software
@@ -21,10 +21,10 @@
  */
 
 #include <gtk/gtk.h>
-#include <gdk/win32/gdkwin32.h>
+#include <gdk/gdkrgb.h>
 
 #include <pango/pango.h>
-#include <pango/pangowin32.h>
+#include <pango/pangoft2.h>
 
 #include <errno.h>
 #include <stdlib.h>
@@ -82,7 +82,7 @@ read_file(char *name)
       char *bp = fgets (buffer, BUFSIZE-1, file);
       if (ferror (file))
 	{
-	  fprintf (stderr, "%s: Error reading %s\n", g_get_prgname (), name);
+	  fprintf(stderr, "%s: Error reading %s\n", g_get_prgname (), name);
 	  g_string_free (inbuf, TRUE);
 	  return NULL;
 	}
@@ -281,9 +281,11 @@ draw (GtkWidget *layout, GdkRectangle *area)
 {
   GList *tmp_list;
   int height = 0;
-  HDC hdc;
-  const GdkGCValuesMask mask = GDK_GC_FOREGROUND|GDK_GC_BACKGROUND|GDK_GC_FONT;
+  GdkVisual *visual = gdk_drawable_get_visual (GTK_LAYOUT (layout)->bin_window);
   
+  g_assert (visual->type == GDK_VISUAL_GRAYSCALE || 
+	    visual->type == GDK_VISUAL_TRUE_COLOR);
+
   gdk_draw_rectangle (GTK_LAYOUT (layout)->bin_window,
 		      layout->style->base_gc[layout->state],
 		      TRUE,
@@ -291,26 +293,47 @@ draw (GtkWidget *layout, GdkRectangle *area)
 		      area->width, area->height);
   
   gdk_gc_set_clip_rectangle (layout->style->text_gc[layout->state], area);
-
-  hdc = gdk_win32_hdc_get (GTK_LAYOUT (layout)->bin_window,
-			   layout->style->text_gc[GTK_STATE_NORMAL],
-			   mask);
+#if 0
+  g_print ("viewer-ft2.c: draw: area: %dx%d, x:%d y:%d layout->yoffset:%d\n", area->width, area->height, area->x, area->y, GTK_LAYOUT (layout)->yoffset);
+#endif
   tmp_list = paragraphs;
   while (tmp_list &&
 	 height < area->y + area->height + GTK_LAYOUT (layout)->yoffset)
     {
       Paragraph *para = tmp_list->data;
       tmp_list = tmp_list->next;
-      
+#if 0
+      g_print ("  para->height:%d\n", para->height);
+#endif
       if (height + para->height >= GTK_LAYOUT (layout)->yoffset + area->y)
-	pango_win32_render_layout (hdc, para->layout,
-				   0, height - GTK_LAYOUT (layout)->yoffset);
+	{
+	  FT_Bitmap bitmap;
+	  guchar *buf = g_malloc (area->width * para->height);
+      
+	  memset (buf, 0xFF, area->width * para->height);
+	  bitmap.rows = para->height;
+	  bitmap.width = area->width;
+	  bitmap.pitch = bitmap.width;
+	  bitmap.buffer = buf;
+	  bitmap.num_grays = 256;
+	  bitmap.pixel_mode = ft_pixel_mode_grays;
+	  
+	  pango_ft2_render_layout (&bitmap, para->layout,
+				   0, 0);
+
+	  gdk_draw_gray_image (GTK_LAYOUT (layout)->bin_window,
+			       layout->style->text_gc[GTK_STATE_NORMAL],
+			       0, height - GTK_LAYOUT (layout)->yoffset,
+			       bitmap.width, bitmap.rows,
+			       GDK_RGB_DITHER_NORMAL,
+			       bitmap.buffer,
+			       bitmap.pitch);
+	  g_free (buf);
+	}
+
       height += para->height;
     }
 
-  gdk_win32_hdc_release (GTK_LAYOUT (layout)->bin_window,
-			 layout->style->text_gc[GTK_STATE_NORMAL],
-			 mask);
   gdk_gc_set_clip_rectangle (layout->style->text_gc[layout->state], NULL);
 
   if (highlight_para)
@@ -624,6 +647,9 @@ main (int argc, char **argv)
 
   gtk_init (&argc, &argv);
   
+  gdk_rgb_init ();
+
+#if 0
   if (argc != 2)
     {
       fprintf (stderr, "Usage: %s FILE\n", g_get_prgname ());
@@ -633,10 +659,13 @@ main (int argc, char **argv)
   /* Create the list of paragraphs from the supplied file
    */
   text = read_file (argv[1]);
+#else
+  text = read_file ("koe2.txt");
+#endif
   if (!text)
     exit(1);
 
-  context = pango_win32_get_context ();
+  context = pango_ft2_get_context ();
 
   paragraphs = split_paragraphs (text);
 
@@ -646,9 +675,9 @@ main (int argc, char **argv)
   font_description.family_name = g_strdup ("sans");
   font_description.style = PANGO_STYLE_NORMAL;
   font_description.variant = PANGO_VARIANT_NORMAL;
-  font_description.weight = 500;
+  font_description.weight = PANGO_WEIGHT_NORMAL;
   font_description.stretch = PANGO_STRETCH_NORMAL;
-  font_description.size = 16000;
+  font_description.size = 24000;
 
   pango_context_set_font_description (context, &font_description);
 
@@ -707,3 +736,13 @@ main (int argc, char **argv)
   
   return 0;
 }
+
+int _stdcall
+WinMain (struct HINSTANCE__ *hInstance,
+	 struct HINSTANCE__ *hPrevInstance,
+	 char               *lpszCmdLine,
+	 int                 nCmdShow)
+{
+  return main (__argc, __argv);
+}
+

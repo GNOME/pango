@@ -66,10 +66,19 @@ pango_querymodules_SOURCES = \
 	querymodules.c
 pango_querymodules_LDADD = libpangox.la libpango.la $(GLIB_LIBS) $(FRIBIDI_LIBS) $(UNICODE_LIBS) $(X_LIBS)
 
-EXTRA_DIST =					\
-	pangowin32.h				\
-	pangowin32.c				\
-	pangowin32-private.h			\
-	pangowin32-fontcache.c			\
-	pangowin32-fontmap.c
+EXTRA_DIST =			\
+	pangowin32.h		\
+	pangowin32.c		\
+	pangowin32-private.h	\
+	pangowin32-fontcache.c	\
+	pangowin32-fontmap.c	\
+	pangoft2.h		\
+	pangoft2.c		\
+	pangoft2-private.h	\
+	pangoft2-fontcache.c	\
+	pangoft2-fontmap.c	\
+	makefile.mingw		\
+	makefile.mingw.in
 
+makefile.mingw: $(top_builddir)/config.status $(top_srcdir)/pango/makefile.mingw.in
+	cd $(top_builddir) && CONFIG_FILES=pango/$@ CONFIG_HEADERS= $(SHELL) ./config.status

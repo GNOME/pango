@@ -1,5 +1,5 @@
 /* Pango
- * basic-win32.c:
+ * basic-ft2.c:
  *
  * Copyright (C) 1999 Red Hat Software
  *
@@ -20,8 +20,10 @@
  */
 
 #include <glib.h>
+
 #include "pango.h"
-#include "pangowin32.h"
+#include "pangoft2.h"
+
 #include <fribidi/fribidi.h>
 
 static PangoEngineRange basic_ranges[] = {
@@ -47,9 +49,9 @@ static PangoEngineInfo script_engines[] = {
     basic_ranges, G_N_ELEMENTS(basic_ranges)
   },
   {
-    "BasicScriptEngineWin32",
+    "BasicScriptEngineFT2",
     PANGO_ENGINE_TYPE_SHAPE,
-    PANGO_RENDER_TYPE_WIN32,
+    PANGO_RENDER_TYPE_FT2,
     basic_ranges, G_N_ELEMENTS(basic_ranges)
   }
 };
@@ -84,29 +86,25 @@ basic_engine_lang_new (void)
 }
 
 /*
- * Win32 system script engine portion
+ * FT2 system script engine portion
  */
 
 static PangoGlyph 
 find_char (PangoFont *font,
 	   gunichar   wc)
 {
-  PangoWin32UnicodeSubrange subrange;
-  PangoWin32Subfont *subfonts;
   int i;
   int n_subfonts;
 
-  subrange = pango_win32_unicode_classify (wc);
-
-  n_subfonts = pango_win32_list_subfonts (font, subrange, &subfonts);
+  n_subfonts = pango_ft2_n_subfonts (font);
 
   for (i = 0; i < n_subfonts; i++)
     {
       PangoGlyph glyph;
 
-      glyph = PANGO_WIN32_MAKE_GLYPH (subfonts[i], wc);
+      glyph = PANGO_FT2_MAKE_GLYPH (i+1, wc);
 
-      if (pango_win32_has_glyph (font, glyph))
+      if (pango_ft2_has_glyph (font, glyph))
 	return glyph;	  
     }
 
@@ -131,6 +129,14 @@ set_glyph (PangoFont        *font,
 
   pango_font_get_glyph_extents (font, glyphs->glyphs[i].glyph, NULL, &logical_rect);
   glyphs->glyphs[i].geometry.width = logical_rect.width;
+
+  if (i > 0)
+    {
+      glyphs->glyphs[i-1].geometry.width +=
+	pango_ft2_font_get_kerning (font,
+				    glyphs->glyphs[i-1].glyph,
+				    glyphs->glyphs[i].glyph);
+    }
 }
 
 static void
@@ -219,7 +225,7 @@ basic_engine_shape (PangoFont        *font,
 		}
 	    }
 	  else
-	    set_glyph (font, glyphs, i, p - text, pango_win32_get_unknown_glyph (font));
+	    set_glyph (font, glyphs, i, p - text, pango_ft2_get_unknown_glyph (font));
 	}
       
       p = g_utf8_next_char (p);
@@ -263,7 +269,7 @@ basic_engine_get_coverage (PangoFont  *font,
 }
 
 static PangoEngine *
-basic_engine_win32_new (void)
+basic_engine_ft2_new (void)
 {
   PangoEngineShape *result;
   
@@ -298,10 +304,11 @@ MODULE_ENTRY(script_engine_list) (PangoEngineInfo **engines,
 PangoEngine *
 MODULE_ENTRY(script_engine_load) (const char *id)
 {
+  g_print ("basic-ft2: LOAD\n");
   if (!strcmp (id, "BasicScriptEngineLang"))
     return basic_engine_lang_new ();
-  else if (!strcmp (id, "BasicScriptEngineWin32"))
-    return basic_engine_win32_new ();
+  else if (!strcmp (id, "BasicScriptEngineFT2"))
+    return basic_engine_ft2_new ();
   else
     return NULL;
 }
@@ -309,4 +316,5 @@ MODULE_ENTRY(script_engine_load) (const char *id)
 void 
 MODULE_ENTRY(script_engine_unload) (PangoEngine *engine)
 {
+  g_print ("basic-ft2: UNLOAD\n");
 }

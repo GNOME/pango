@@ -21,4 +21,10 @@ libpango_basic_la_SOURCES = $(sources)
 EXTRA_DIST =		\
 	tables-big.i	\
 	tables-small.i	\
-	basic-win32.c
+	basic-win32.c	\
+	basic-ft2.c	\
+	makefile.mingw	\
+	makefile.mingw.in
+
+makefile.mingw: $(top_builddir)/config.status $(top_srcdir)/modules/basic/makefile.mingw.in
+	cd $(top_builddir) && CONFIG_FILES=modules/basic/$@ CONFIG_HEADERS= $(SHELL) ./config.status

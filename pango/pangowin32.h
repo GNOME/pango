@@ -34,7 +34,32 @@ extern "C" {
 
 #define PANGO_RENDER_TYPE_WIN32 "PangoRenderWin32"
 
-/* This enum divides Unicode characters according to the Microsoft
+/* Calls for applications
+ */
+PangoContext * pango_win32_get_context        (void);
+
+PangoFont *    pango_win32_load_font          (LOGFONT          *lfp,
+					       int               n_fonts);
+void           pango_win32_render             (HDC               hdc,
+					       PangoFont        *font,
+					       PangoGlyphString *glyphs,
+					       gint              x,
+					       gint              y);
+void           pango_win32_render_layout_line (HDC               hdc,
+					       PangoLayoutLine  *line,
+					       int               x,
+					       int               y);
+void           pango_win32_render_layout      (HDC               hdc,
+					       PangoLayout      *layout,
+					       int               x, 
+					       int               y);
+
+
+
+/* API for rendering modules
+ */
+
+/* This enum classifies Unicode characters according to the Microsoft
  * Unicode subrange numbering. This is based on the table in "Developing
  * International Software for Windows 95 and Windows NT". This is almost,
  * but not quite, the same as the official Unicode block table in
@@ -115,69 +140,45 @@ typedef enum
   PANGO_WIN32_U_LAST_PLUS_ONE
 } PangoWin32UnicodeSubrange;
 
-/* Calls for applications
- */
-PangoContext * pango_win32_get_context        (void);
+PangoWin32UnicodeSubrange pango_win32_unicode_classify (wchar_t wc);
 
-PangoFont *    pango_win32_load_font          (LOGFONT          *lfp,
-					       int               n_fonts);
-void           pango_win32_render             (HDC               hdc,
-					       PangoFont        *font,
-					       PangoGlyphString *glyphs,
-					       gint              x,
-					       gint              y);
-void           pango_win32_render_layout_line (HDC               hdc,
-					       PangoLayoutLine  *line,
-					       int               x,
-					       int               y);
-void           pango_win32_render_layout      (HDC               hdc,
-					       PangoLayout      *layout,
-					       int               x, 
-					       int               y);
-
-
-
-/* API for rendering modules
- */
 typedef guint16 PangoWin32Subfont;
 
 #define PANGO_WIN32_MAKE_GLYPH(subfont,index) ((subfont)<<16 | (index))
 #define PANGO_WIN32_GLYPH_SUBFONT(glyph) ((glyph)>>16)
 #define PANGO_WIN32_GLYPH_INDEX(glyph) ((glyph) & 0xffff)
 
-int        pango_win32_list_subfonts (PangoFont                 *font,
-				      PangoWin32UnicodeSubrange  subrange,
-				      PangoWin32Subfont        **subfont_ids);
-gboolean   pango_win32_has_glyph     (PangoFont          *font,
-				      PangoGlyph          glyph);
-PangoGlyph pango_win32_get_unknown_glyph (PangoFont      *font);
-
-PangoWin32UnicodeSubrange pango_win32_unicode_classify (wchar_t wc);
+int        pango_win32_list_subfonts 	(PangoFont                 *font,
+				     	 PangoWin32UnicodeSubrange  subrange,
+				     	 PangoWin32Subfont        **subfont_ids);
+gboolean   pango_win32_has_glyph     	(PangoFont                 *font,
+				     	 PangoGlyph                 glyph);
+PangoGlyph pango_win32_get_unknown_glyph (PangoFont                *font);
 
 /* API for libraries that want to use PangoWin32 mixed with classic
  * Win32 fonts.
  */
 typedef struct _PangoWin32FontCache PangoWin32FontCache;
 
-PangoWin32FontCache *pango_win32_font_cache_new  (void);
-void                 pango_win32_font_cache_free (PangoWin32FontCache *cache);
+PangoWin32FontCache *pango_win32_font_cache_new          (void);
+void                 pango_win32_font_cache_free         (PangoWin32FontCache *cache);
+ 
+HFONT                pango_win32_font_cache_load         (PangoWin32FontCache *cache,
+						          const LOGFONT       *lfp);
+void                 pango_win32_font_cache_unload       (PangoWin32FontCache *cache,
+						     	  HFONT                hfont);
 
-HFONT            pango_win32_font_cache_load     (PangoWin32FontCache *cache,
-						  const LOGFONT       *lfp);
-void             pango_win32_font_cache_unload   (PangoWin32FontCache *cache,
-						  HFONT                hfont);
+PangoFontMap        *pango_win32_font_map_for_display    (void);
+void                 pango_win32_shutdown_display        (void);
+PangoWin32FontCache *pango_win32_font_map_get_font_cache (PangoFontMap       *font_map);
 
-PangoFontMap *   pango_win32_font_map_for_display (void);
-void             pango_win32_shutdown_display     (void);
-PangoWin32FontCache *pango_win32_font_map_get_font_cache (PangoFontMap *font_map);
-
-LOGFONT *pango_win32_font_subfont_logfont (PangoFont         *font,
-					   PangoWin32Subfont  subfont_id);
+LOGFONT             *pango_win32_font_subfont_logfont    (PangoFont          *font,
+							  PangoWin32Subfont   subfont_id);
 
 /* Debugging.
  */
-void     pango_win32_fontmap_dump (int           indent,
-				   PangoFontMap *fontmap);
+void                 pango_win32_fontmap_dump            (int                 indent,
+							  PangoFontMap       *fontmap);
 
 #ifdef __cplusplus
 }

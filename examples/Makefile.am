@@ -34,7 +34,18 @@ pango.modules:
 	( cd ../modules && \
           ../pango/pango-querymodules `find . -name '*.so'` > ../examples/pango.modules )
           
-EXTRA_DIST=HELLO.utf8 muru.utf pangox.aliases
+EXTRA_DIST=			\
+	viewer-win32.c		\
+	viewer-ft2.c		\
+	makefile.mingw		\
+	makefile.mingw.in	\
+	HELLO.utf8		\
+	muru.utf		\
+	pangox.aliases
 
 alias_DATA = pangox.aliases
+
+makefile.mingw: $(top_builddir)/config.status $(top_srcdir)/examples/makefile.mingw.in
+	cd $(top_builddir) && CONFIG_FILES=examples/$@ CONFIG_HEADERS= $(SHELL) ./config.status
+
 

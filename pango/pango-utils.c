@@ -657,7 +657,8 @@ pango_get_lib_subdirectory (void)
 
 gboolean
 pango_parse_style (GString              *str,
-		   PangoFontDescription *desc)
+		   PangoFontDescription *desc,
+		   gboolean		 warn)
 {
   if (str->len == 0)
     return FALSE;
@@ -666,35 +667,37 @@ pango_parse_style (GString              *str,
     {
     case 'n':
     case 'N':
-      if (strncasecmp (str->str, "normal", str->len) == 0)
+      if (g_strncasecmp (str->str, "normal", str->len) == 0)
 	{
 	  desc->style = PANGO_STYLE_NORMAL;
 	  return TRUE;
 	}
       break;
     case 'i':
-      if (strncasecmp (str->str, "italic", str->len) == 0)
+      if (g_strncasecmp (str->str, "italic", str->len) == 0)
 	{
 	  desc->style = PANGO_STYLE_ITALIC;
 	  return TRUE;
 	}
       break;
     case 'o':
-      if (strncasecmp (str->str, "oblique", str->len) == 0)
+      if (g_strncasecmp (str->str, "oblique", str->len) == 0)
 	{
 	  desc->style = PANGO_STYLE_OBLIQUE;
 	  return TRUE;
 	}
       break;
     }
-  g_warning ("Style must be normal, italic, or oblique");
+  if (warn)
+    g_warning ("Style must be normal, italic, or oblique");
   
   return FALSE;
 }
 
 gboolean
 pango_parse_variant (GString              *str,
-		     PangoFontDescription *desc)
+		     PangoFontDescription *desc,
+		     gboolean		   warn)
 {
   if (str->len == 0)
     return FALSE;
@@ -703,7 +706,7 @@ pango_parse_variant (GString              *str,
     {
     case 'n':
     case 'N':
-      if (strncasecmp (str->str, "normal", str->len) == 0)
+      if (g_strncasecmp (str->str, "normal", str->len) == 0)
 	{
 	  desc->variant = PANGO_VARIANT_NORMAL;
 	  return TRUE;
@@ -711,7 +714,8 @@ pango_parse_variant (GString              *str,
       break;
     case 's':
     case 'S':
-      if (strncasecmp (str->str, "small_caps", str->len) == 0)
+      if (g_strncasecmp (str->str, "small_caps", str->len) == 0 ||
+	  g_strncasecmp (str->str, "smallcaps", str->len) == 0)
 	{
 	  desc->variant = PANGO_VARIANT_SMALL_CAPS;
 	  return TRUE;
@@ -719,13 +723,15 @@ pango_parse_variant (GString              *str,
       break;
     }
   
-  g_warning ("Variant must be normal, or small_caps");
+  if (warn)
+    g_warning ("Variant must be normal or small_caps");
   return FALSE;
 }
 
 gboolean
 pango_parse_weight (GString              *str,
-		    PangoFontDescription *desc)
+		    PangoFontDescription *desc,
+		    gboolean		  warn)
 {
   if (str->len == 0)
     return FALSE;
@@ -734,7 +740,7 @@ pango_parse_weight (GString              *str,
     {
     case 'b':
     case 'B':
-      if (strncasecmp (str->str, "bold", str->len) == 0)
+      if (g_strncasecmp (str->str, "bold", str->len) == 0)
 	{
 	  desc->weight = PANGO_WEIGHT_BOLD;
 	  return TRUE;
@@ -742,7 +748,7 @@ pango_parse_weight (GString              *str,
       break;
     case 'h':
     case 'H':
-      if (strncasecmp (str->str, "heavy", str->len) == 0)
+      if (g_strncasecmp (str->str, "heavy", str->len) == 0)
 	{
 	  desc->weight = PANGO_WEIGHT_HEAVY;
 	  return TRUE;
@@ -750,7 +756,7 @@ pango_parse_weight (GString              *str,
       break;
     case 'l':
     case 'L':
-      if (strncasecmp (str->str, "light", str->len) == 0)
+      if (g_strncasecmp (str->str, "light", str->len) == 0)
 	{
 	  desc->weight = PANGO_WEIGHT_LIGHT;
 	  return TRUE;
@@ -758,7 +764,7 @@ pango_parse_weight (GString              *str,
       break;
     case 'n':
     case 'N':
-      if (strncasecmp (str->str, "normal", str->len) == 0)
+      if (g_strncasecmp (str->str, "normal", str->len) == 0)
 	{
 	  desc->weight = PANGO_WEIGHT_NORMAL;
 	  return TRUE;
@@ -766,12 +772,12 @@ pango_parse_weight (GString              *str,
       break;
     case 'u':
     case 'U':
-      if (strncasecmp (str->str, "ultralight", str->len) == 0)
+      if (g_strncasecmp (str->str, "ultralight", str->len) == 0)
 	{
 	  desc->weight = PANGO_WEIGHT_ULTRALIGHT;
 	  return TRUE;
 	}
-      else if (strncasecmp (str->str, "ultrabold", str->len) == 0)
+      else if (g_strncasecmp (str->str, "ultrabold", str->len) == 0)
 	{
 	  desc->weight = PANGO_WEIGHT_ULTRABOLD;
 	  return TRUE;
@@ -795,7 +801,8 @@ pango_parse_weight (GString              *str,
 	desc->weight = strtol (numstr, &end, 0);
 	if (*end != '\0')
 	  {
-	    g_warning ("Cannot parse numerical weight '%s'", numstr);
+	    if (warn)
+	      g_warning ("Cannot parse numerical weight '%s'", numstr);
 	    g_free (numstr);
 	    return FALSE;
 	  }
@@ -805,13 +812,15 @@ pango_parse_weight (GString              *str,
       }
     }
   
-  g_warning ("Weight must be ultralight, light, normal, bold, ultrabold, heavy, or an integer");
+  if (warn)
+    g_warning ("Weight must be ultralight, light, normal, bold, ultrabold, heavy, or an integer");
   return FALSE;
 }
 
 gboolean
 pango_parse_stretch (GString               *str,
-		     PangoFontDescription *desc)
+		     PangoFontDescription *desc,
+		     gboolean		   warn)
 {
   if (str->len == 0)
     return FALSE;
@@ -820,7 +829,7 @@ pango_parse_stretch (GString               *str,
     { 
     case 'c':
     case 'C':
-      if (strncasecmp (str->str, "condensed", str->len) == 0)
+      if (g_strncasecmp (str->str, "condensed", str->len) == 0)
 	{
 	  desc->stretch = PANGO_STRETCH_CONDENSED;
 	  return TRUE;
@@ -828,17 +837,19 @@ pango_parse_stretch (GString               *str,
       break;
     case 'e':
     case 'E':
-      if (strncasecmp (str->str, "extra_condensed", str->len) == 0)
+      if (g_strncasecmp (str->str, "extra_condensed", str->len) == 0 ||
+	  g_strncasecmp (str->str, "extracondensed", str->len) == 0)
 	{
 	  desc->stretch = PANGO_STRETCH_EXTRA_CONDENSED;
 	  return TRUE;
 	}
-     if (strncasecmp (str->str, "extra_expanded", str->len) == 0)
+     if (g_strncasecmp (str->str, "extra_expanded", str->len) == 0 ||
+	 g_strncasecmp (str->str, "extraexpanded", str->len) == 0)
 	{
 	  desc->stretch = PANGO_STRETCH_EXTRA_EXPANDED;
 	  return TRUE;
 	}
-      if (strncasecmp (str->str, "expanded", str->len) == 0)
+      if (g_strncasecmp (str->str, "expanded", str->len) == 0)
 	{
 	  desc->stretch = PANGO_STRETCH_EXPANDED;
 	  return TRUE;
@@ -846,7 +857,7 @@ pango_parse_stretch (GString               *str,
       break;
     case 'n':
     case 'N':
-      if (strncasecmp (str->str, "normal", str->len) == 0)
+      if (g_strncasecmp (str->str, "normal", str->len) == 0)
 	{
 	  desc->stretch = PANGO_STRETCH_NORMAL;
 	  return TRUE;
@@ -854,12 +865,14 @@ pango_parse_stretch (GString               *str,
       break;
     case 's':
     case 'S':
-      if (strncasecmp (str->str, "semi_condensed", str->len) == 0)
+      if (g_strncasecmp (str->str, "semi_condensed", str->len) == 0 ||
+	  g_strncasecmp (str->str, "semicondensed", str->len) == 0)
 	{
 	  desc->stretch = PANGO_STRETCH_SEMI_CONDENSED;
 	  return TRUE;
 	}
-      if (strncasecmp (str->str, "semi_expanded", str->len) == 0)
+      if (g_strncasecmp (str->str, "semi_expanded", str->len) == 0 ||
+	  g_strncasecmp (str->str, "semiexpanded", str->len) == 0)
 	{
 	  desc->stretch = PANGO_STRETCH_SEMI_EXPANDED;
 	  return TRUE;
@@ -867,12 +880,14 @@ pango_parse_stretch (GString               *str,
       break;
     case 'u':
     case 'U':
-      if (strncasecmp (str->str, "ultra_condensed", str->len) == 0)
+      if (g_strncasecmp (str->str, "ultra_condensed", str->len) == 0 ||
+	  g_strncasecmp (str->str, "ultracondensed", str->len) == 0)
 	{
 	  desc->stretch = PANGO_STRETCH_ULTRA_CONDENSED;
 	  return TRUE;
 	}
-      if (strncasecmp (str->str, "ultra_expanded", str->len) == 0)
+      if (g_strncasecmp (str->str, "ultra_expanded", str->len) == 0 ||
+	  g_strncasecmp (str->str, "ultraexpanded", str->len) == 0)
 	{
 	  desc->variant = PANGO_STRETCH_ULTRA_EXPANDED;
 	  return TRUE;
@@ -880,7 +895,8 @@ pango_parse_stretch (GString               *str,
       break;
     }
 
-  g_warning ("Stretch must be ultra_condensed, extra_condensed, condensed, semi_condensed, normal, semi_expanded, expanded, extra_expanded, or ultra_expanded");
+  if (warn)
+    g_warning ("Stretch must be ultra_condensed, extra_condensed, condensed, semi_condensed, normal, semi_expanded, expanded, extra_expanded, or ultra_expanded");
   return FALSE;
 }
 

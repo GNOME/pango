@@ -1,0 +1,31 @@
+TOP = ../../..
+
+include $(TOP)/build/win32/make.mingw
+
+# Possibly override Pango version from build/win32/module.defs
+PANGO_VER = @VERSION@
+
+OPTIMIZE = -g -Wall
+
+INCLUDES = -I ../../pango -I ../..
+DEFINES = 
+DEPCFLAGS = $(GLIB_CFLAGS) $(FRIBIDI_CFLAGS) $(FREETYPE2_CFLAGS)
+
+all : \
+	../../config.h \
+	pango-basic-win32.dll \
+	pango-basic-ft2.dll
+
+../../config.h : ../../config.h.win32
+	cp $< $@
+
+pango-basic-win32.dll : basic-win32.o
+	$(GLIB)/build-dll pango-basic-win32 - ../module.def $< -L ../../pango -lpango-$(PANGO_VER) -lpangowin32-$(PANGO_VER) $(GLIB_LIBS) $(FRIBIDI_LIBS)
+
+pango-basic-ft2.dll : basic-ft2.o
+	$(GLIB)/build-dll pango-basic-ft2 - ../module.def $< -L ../../pango -lpango-$(PANGO_VER) -lpangoft2-$(PANGO_VER) $(GLIB_LIBS) $(FRIBIDI_LIBS) $(FREETYPE2_LIBS)
+
+# Hack to get an updated makefile.mingw automatically after updating
+# makefile.mingw.in. Only for developer use.
+makefile.mingw: makefile.mingw.in
+	sed -e 's,@VER[S]ION@,@VERSION@,' <$< >$@

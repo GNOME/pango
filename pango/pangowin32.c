@@ -90,18 +90,22 @@ static void pango_win32_font_shutdown   (GObject             *object);
 static void pango_win32_font_finalize   (GObject             *object);
 
 static PangoFontDescription *pango_win32_font_describe      (PangoFont        *font);
+
 static PangoCoverage        *pango_win32_font_get_coverage  (PangoFont        *font,
 							     const char       *lang);
+
 static PangoEngineShape     *pango_win32_font_find_shaper   (PangoFont        *font,
 							     const char       *lang,
 							     guint32           ch);
-static void pango_win32_font_get_glyph_extents (PangoFont        *font,
-						PangoGlyph        glyph,
-						PangoRectangle   *ink_rect,
-						PangoRectangle   *logical_rect);
-static void pango_win32_font_get_metrics       (PangoFont        *font,
-						const gchar      *lang,
-						PangoFontMetrics *metrics);
+
+static void pango_win32_font_get_glyph_extents 	       (PangoFont        *font,
+					 		PangoGlyph        glyph,
+					 		PangoRectangle   *ink_rect,
+					 		PangoRectangle   *logical_rect);
+
+static void pango_win32_font_get_metrics       	       (PangoFont        *font,
+					 		const gchar      *lang,
+					 		PangoFontMetrics *metrics);
 
 static PangoWin32SubfontInfo *pango_win32_find_subfont (PangoFont          *font,
 							PangoWin32Subfont   subfont_index);
@@ -110,8 +114,10 @@ static gboolean pango_win32_find_glyph (PangoFont              	 *font,
 					PangoGlyph             	  glyph,
 					PangoWin32SubfontInfo   **subfont_return,
 					SIZE                   	 *size_return);
+
 static HFONT pango_win32_get_hfont     (PangoFont              	 *font,
 				        PangoWin32SubfontInfo  	 *info);
+
 
 static void pango_win32_get_item_properties (PangoItem      	 *item,
 					     PangoUnderline 	 *uline,
@@ -540,6 +546,8 @@ pango_win32_unicode_classify (wchar_t wc)
       else
 	return -1;
     }
+  /* NOTREACHED */
+  return 0;
 }
 
 static void
@@ -867,7 +875,7 @@ pango_win32_list_subfonts (PangoFont                 *font,
   LOGFONT *lfp;
   PangoWin32Font *win32font = (PangoWin32Font *)font;
   PangoWin32Subfont *subfont_list;
-  int i, j;
+  int i;
   int n_subfonts;
 
   g_return_val_if_fail (font != NULL, 0);
@@ -985,7 +993,7 @@ subfont_has_glyph (PangoFont             *font,
       info->oldfont = SelectObject (info->buf_hdc, info->hfont);
       SetTextAlign (info->buf_hdc, TA_LEFT|TA_BASELINE|TA_NOUPDATECP);
       GetTextMetrics (info->buf_hdc, &tm);
-      PING(("wt:%d,ht:%d",tm.tmMaxCharWidth,tm.tmHeight));
+      PING(("wt:%ld,ht:%ld",tm.tmMaxCharWidth,tm.tmHeight));
 
       info->default_char_hbm =
 	create_bitmap_dibsection (info->buf_hdc, &info->default_char_buf,
@@ -1279,7 +1287,6 @@ pango_win32_render_layout_line (HDC               hdc,
   PangoRectangle overall_rect;
   PangoRectangle logical_rect;
   PangoRectangle ink_rect;
-  PangoContext *context = pango_layout_get_context (line->layout);
   
   int x_off = 0;
 

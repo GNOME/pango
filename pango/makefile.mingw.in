@@ -1,0 +1,87 @@
+TOP = ../..
+
+include $(TOP)/build/win32/make.mingw
+
+# Possibly override Pango version from build/win32/module.defs
+PANGO_VER = @VERSION@
+
+OPTIMIZE = -g -Wall
+
+INCLUDES = -I .. -I .
+DEFINES = 
+DEPCFLAGS = $(GLIB_CFLAGS) $(LIBICONV_CFLAGS) $(FRIBIDI_CFLAGS) $(FREETYPE2_CFLAGS)
+
+all :						\
+	../config.h				\
+	pango-$(PANGO_VER).dll			\
+	pangowin32-$(PANGO_VER).dll		\
+	pangoft2-$(PANGO_VER).dll		\
+	pango-querymodules.exe
+
+PANGO_OBJS =					\
+	break.o					\
+	fonts.o					\
+	glyphstring.o				\
+	mapping.o				\
+	modules.o				\
+	module-defs.o				\
+	pango-attributes.o			\
+	pango-context.o				\
+	pango-coverage.o			\
+	pango-fontmap.o				\
+	pango-item.o				\
+	pango-layout.o				\
+	pango-utils.o				\
+	reorder-items.o				\
+	shape.o
+
+PANGOWIN32_OBJS =				\
+	pangowin32.o				\
+	pangowin32-fontcache.o			\
+	pangowin32-fontmap.o
+
+PANGOFT2_OBJS =					\
+	pangoft2.o				\
+	pangoft2-fontcache.o			\
+	pangoft2-fontmap.o
+
+PANGO_QUERYMODULES_OBJS =			\
+	querymodules.o
+
+../config.h : ../config.h.win32
+	cp $< $@
+
+module-defs.c : module-defs.c.win32
+	cp $< $@
+
+pango-$(PANGO_VER).dll : $(PANGO_OBJS) pango.def
+	$(GLIB)/build-dll pango $(PANGO_VER) pango.def $(OPTIMIZE) $(PANGO_OBJS) $(GLIB_LIBS) $(LIBICONV_LIBS) $(FRIBIDI_LIBS)
+
+pangowin32-$(PANGO_VER).dll : $(PANGOWIN32_OBJS) pangowin32.def
+	$(GLIB)/build-dll pangowin32 $(PANGO_VER) pangowin32.def $(OPTIMIZE) $(PANGOWIN32_OBJS) -L . -lpango-$(PANGO_VER) $(GLIB_LIBS) $(FRIBIDI_LIBS) -lgdi32
+
+pangoft2-$(PANGO_VER).dll : $(PANGOFT2_OBJS) pangoft2.def
+	$(GLIB)/build-dll pangoft2 $(PANGO_VER) pangoft2.def $(OPTIMIZE) $(PANGOFT2_OBJS) -L . -lpango-$(PANGO_VER) $(GLIB_LIBS) $(FRIBIDI_LIBS) $(FREETYPE2_LIBS) -lgdi32
+
+pango-querymodules.exe : $(PANGO_QUERYMODULES_OBJS) pango-$(PANGO_VER).dll
+	$(CC) -o $@ $(PANGO_QUERYMODULES_OBJS) -L . -lpango-$(PANGO_VER) $(GLIB_LIBS)
+
+test1.exe : test1.o pango-$(PANGO_VER).dll pangowin32-$(PANGO_VER).dll
+	$(CC) -o $@ $(CFLAGS) test1.o -L . -lpango-$(PANGO_VER) -lpangowin32-$(PANGO_VER) $(GLIB_LIBS) $(FRIBIDI_LIBS) -lgdi32
+
+test2.exe : test2.o
+	$(CC) -o $@ $(CFLAGS) test2.o -lgdi32
+
+test3.exe : test3.o
+	$(CC) -o $@ $(CFLAGS) test3.o -lgdi32
+
+test4.exe : test4.o pango-$(PANGO_VER).dll pangowin32-$(PANGO_VER).dll
+	$(CC) -o $@ $(CFLAGS) test4.o -L . -lpango-$(PANGO_VER) -lpangowin32-$(PANGO_VER) $(GLIB_LIBS)
+
+test5.exe : test5.o
+	$(CC) -o $@ $(CFLAGS) test5.o -lgdi32
+
+# Hack to get an updated makefile.mingw automatically after updating
+# makefile.mingw.in. Only for developer use.
+makefile.mingw: makefile.mingw.in
+	sed -e 's,@VER[S]ION@,@VERSION@,' <$< >$@

@@ -1,3 +1,73 @@
+2000-08-20  Tor Lillqvist  <tml@iki.fi>
+
+	* pango/pango-utils.c (pango_parse_*): Add parameter telling
+	whether to print warning or not if string isn't recognised. Use
+	g_strncasecmp().
+
+	* pango/pango-utils.h: Change prototype accordingly.
+
+	* pango/pangox-fontmap.c
+	* pango/pangowin32-fontmap.c: Change calls correspondingly.
+
+	* pango/pangowin32.h: 
+	* pango/pangowin32.c: Cosmetic changes, dead code removal.
+
+	* pango/pangoft2.h
+	* pango/pangoft2-private.h
+	* pango/pangoft2.c
+	* pango/pangoft2-fontmap.c
+	* pango/pangoft2-fontcache.c: New files implementing a FreeType2
+	backend. Used only on Win32 so far, but doesn't contain
+	Win32-specific code per se, so if somebody wants to try it out on
+	X11, too, be my guest.
+
+	It works, more or less, but there are some details still to sort
+	out. Performance needs to be improved. Debugging printouts still
+	present. Font path currently hardcoded to C:\windows\fonts, heh.
+
+	Owen says he doesn't think it's a good idea to use ths on Win32,
+	but I'll try anyway. If it turns out using the native Win32 GDI
+	backend is better after all, oh well.
+
+	* pango/makefile.mingw: Delete. Move contents to
+	makefile.mingw.in.
+
+	* pango/makefile.mingw.in: New file. Add rules for
+	FreeType2 backend. Add FreeType2 CFLAGS and LIBS.
+
+	* pango/Makefile.am: Generate makefile.mingw.
+	(EXTRA_DIST): Add FreeType2 backend sources, and
+	makefile.mingw{,.in}
+
+	* modules/basic/basic-win32.c: Couple of cosmetic changes.
+
+	* modules/basic/Makefile.am: Generate makefile.mingw.
+	(EXTRA_DIST): Add basic-ft2.c, and makefile.mingw{,.in}
+
+	* modules/basic/makefile.mingw: Delete. Move contents to
+	makefile.mingw.in.
+
+	* modules/basic/makefile.mingw.in: New file. Add rule for
+	basic-ft2. Add FreeType2 CFLAGS and LIBS.
+
+	* examples/viewer-win32.c (read_file): Fix error messages.
+	(draw): Get HDC from GDK once for all paragraphs.
+
+	* examples/viewer-ft2.c: New file. The FT_Bitmap (256-level
+	bitmap) produced by the FreeType2 backend is copied to the
+	GtkLayout window using gdk_draw_gray_image from GdkRGB (!). Yes,
+	this is kinda circular dependency between Pango and GTK+.
+
+	* examples/makefile.mingw: Delete. Move contents to
+	makefile.mingw.in.
+
+	* examples/makefile.mingw.in: New file. Add rules for
+	viewer-ft2. Add FreeType2 CFLAGS and LIBS.
+
+	* examples/Makefile.am: Generate makefile.mingw.
+	(EXTRA_DIST): Add viewer-win32.c and viewer-ft2.c, and
+	makefile.mingw{,.in}
+
 2000-08-11  Havoc Pennington  <hp@redhat.com>
 
 	* pangox.pc.in (Cflags): remove /usr/include
