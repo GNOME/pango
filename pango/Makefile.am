@@ -44,7 +44,7 @@ libpango_1_0_la_LIBADD = $(GLIB_LIBS) mini-fribidi/libmini-fribidi.la
 libpango_1_0_la_DEPENDENCIES = mini-fribidi/libmini-fribidi.la
 
 if OS_WIN32
-libpango_1_0_la_LDFLAGS += -export-symbols pango.def
+libpango_1_0_la_LDFLAGS += -export-symbols $(srcdir)/pango.def
 libpango_1_0_la_LIBADD += pango-win32res.lo
 endif
 pango-win32res.lo: pango.rc
@@ -191,7 +191,7 @@ libpangoft2_1_0_la_SOURCES =   	\
 	module-defs-fc.c
 
 if OS_WIN32
-libpangoft2_1_0_la_LDFLAGS += -export-symbols pangoft2.def
+libpangoft2_1_0_la_LDFLAGS += -export-symbols $(srcdir)/pangoft2.def
 libpangoft2_1_0_la_LIBADD += pangoft2-win32res.lo
 libpangoft2_1_0_la_DEPENDENCIES += pangoft2-win32res.lo
 endif
@@ -219,7 +219,7 @@ libpangowin32_1_0_la_SOURCES =	\
 	module-defs-win32.c
 
 if OS_WIN32
-libpangowin32_1_0_la_LDFLAGS += -export-symbols pangowin32.def
+libpangowin32_1_0_la_LDFLAGS += -export-symbols $(srcdir)/pangowin32.def
 libpangowin32_1_0_la_LIBADD += pangowin32-win32res.lo
 libpangowin32_1_0_la_DEPENDENCIES += pangowin32-win32res.lo
 endif
@@ -265,14 +265,14 @@ install-ms-lib:
 uninstall-ms-lib:
 endif
 
-pango-$(PANGO_API_VERSION).lib: libpango-$(PANGO_API_VERSION).la pango.def
-	lib -name:libpango-$(PANGO_API_VERSION)-$(LT_CURRENT_MINUS_AGE).dll -def:pango.def -out:$@
+pango-$(PANGO_API_VERSION).lib: libpango-$(PANGO_API_VERSION).la $(srcdir)/pango.def
+	lib -name:libpango-$(PANGO_API_VERSION)-$(LT_CURRENT_MINUS_AGE).dll -def:$(srcdir)/pango.def -out:$@
 
-pangoft2-$(PANGO_API_VERSION).lib: libpangoft2-$(PANGO_API_VERSION).la pangoft2.def
-	lib -name:libpangoft2-$(PANGO_API_VERSION)-$(LT_CURRENT_MINUS_AGE).dll -def:pangoft2.def -out:$@
+pangoft2-$(PANGO_API_VERSION).lib: libpangoft2-$(PANGO_API_VERSION).la $(srcdir)/pangoft2.def
+	lib -name:libpangoft2-$(PANGO_API_VERSION)-$(LT_CURRENT_MINUS_AGE).dll -def:$(srcdir)/pangoft2.def -out:$@
 
-pangowin32-$(PANGO_API_VERSION).lib: libpangowin32-$(PANGO_API_VERSION).la pangowin32.def
-	lib -name:libpangowin32-$(PANGO_API_VERSION)-$(LT_CURRENT_MINUS_AGE).dll -def:pangowin32.def -out:$@
+pangowin32-$(PANGO_API_VERSION).lib: libpangowin32-$(PANGO_API_VERSION).la $(srcdir)/pangowin32.def
+	lib -name:libpangowin32-$(PANGO_API_VERSION)-$(LT_CURRENT_MINUS_AGE).dll -def:$(srcdir)/pangowin32.def -out:$@
 
 
 # ------------------- pango-querymodules -------------------
