@@ -351,14 +351,39 @@ pango_ft2_render (FT_Bitmap        *bitmap,
 		  {
 		    p = bitmap->buffer +
 		      (iyoff - face->glyph->bitmap_top + iy) * bitmap->pitch +
-		      ixoff +
-		      face->glyph->bitmap_left + x_start;
+		      ixoff + face->glyph->bitmap_left + 
+                      x_start;
 		    
-		    q = face->glyph->bitmap.buffer + iy*face->glyph->bitmap.pitch;
+		    q = face->glyph->bitmap.buffer + 
+                      iy * face->glyph->bitmap.pitch;
+
 		    for (ix = x_start; ix < x_limit; ix++)
 		      {
-			*p = *q;
-			q++;
+                        switch (*q)
+                          {
+                          case 0:
+                            break;
+                          case 0xff:
+                            *p = 0xff;
+                          default:
+                            switch (*p)
+                              {
+                              case 0:
+                                *p = *q;
+                                break;
+                              case 0xff:
+                                break;
+                              default:
+                                {
+                                  gushort pixel = *(q);
+                                  gushort s = (*p)+1;
+                                  *(p) = (pixel * (256-s) + s) >> 8;
+                                }
+                                break;
+                              }
+                            break;
+                          }
+                        q++;
 			p++;
 		      }
 		  }
@@ -367,17 +392,17 @@ pango_ft2_render (FT_Bitmap        *bitmap,
 		  {
 		    p = bitmap->buffer +
 		      (iyoff - face->glyph->bitmap_top + iy) * bitmap->pitch +
-		      ixoff +
-		      face->glyph->bitmap_left + x_start;
-		    
-		    q = face->glyph->bitmap.buffer + iy*face->glyph->bitmap.pitch;
+		      ixoff + face->glyph->bitmap_left + 
+                      x_start;
+                    
+                    q = face->glyph->bitmap.buffer + 
+                      iy*face->glyph->bitmap.pitch;
+
 		    for (ix = x_start; ix < x_limit; ix++)
 		      {
-			if ((*q) & (1 << (7 - (ix%8))))
-			  *p = 0;
-			else
-			  *p = MIN (*p, 0xFF);
-			if ((ix%8) == 7)
+			if ((*q) & (1 << (7 - (ix % 8))))
+			  *p = 0xff;
+			if ((ix % 8) == 7)
 			  q++;
 			p++;
 		      }

@@ -1,3 +1,9 @@
+2001-08-14  Sven Neumann  <sven@gimp.org>
+
+	* pango/pangoft2.c (pango_ft2_render): composite glyphs over the 
+	buffer instead of simply copying into it so glyphs with overlapping 
+	ink rectangles do not overwrite each other.
+
 Sun Aug 12 10:33:02 2001  Owen Taylor  <otaylor@redhat.com>
 
 	* docs/Makefile.am pango/Makefile.am: Set GPATH to fix srcdir !=
