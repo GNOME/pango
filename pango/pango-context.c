@@ -941,6 +941,9 @@ itemize_state_process_run (ItemizeState *state)
 
   itemize_state_update_for_new_run (state);
 
+  /* We should never get an empty run */
+  g_assert (state->run_end != state->run_start);
+
   for (p = state->run_start;
        p < state->run_end;
        p = g_utf8_next_char (p))

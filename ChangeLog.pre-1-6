@@ -1,3 +1,16 @@
+Thu Feb  5 16:30:46 2004  Owen Taylor  <otaylor@redhat.com>
+
+	Fix problem with empty markup tags (#128102, Christian Persch)
+
+	* pango/pango-context.c (itemize_state_process_run): Assert
+	that the run is non-empty.
+
+	* pango/pango-attributes.c (pango_attr_list_change): 
+	Just ignore empty attributes.
+
+	* pango/pango-attributes.c (pango_attr_iterator_next): 
+	Skip empty attributes.
+
 Thu Feb  5 15:28:44 2004  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pango-layout.c (pango_layout_set_font_description):

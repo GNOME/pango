@@ -941,8 +941,11 @@ pango_attr_list_change (PangoAttrList  *list,
   GSList *tmp_list, *prev, *link;
   gint start_index = attr->start_index;
   gint end_index = attr->end_index;
-  
+
   g_return_if_fail (list != NULL);
+
+  if (start_index == end_index)	/* empty, nothing to do */
+    return;
   
   tmp_list = list->attributes;
   prev = NULL;
@@ -1274,9 +1277,12 @@ pango_attr_iterator_next (PangoAttrIterator *iterator)
   while (iterator->next_attribute &&
 	 ((PangoAttribute *)iterator->next_attribute->data)->start_index == iterator->start_index)
     {
-      iterator->attribute_stack = g_list_prepend (iterator->attribute_stack, iterator->next_attribute->data);
-      iterator->end_index = MIN (iterator->end_index, ((PangoAttribute *)iterator->next_attribute->data)->end_index);
-      iterator->next_attribute = iterator->next_attribute->next;
+      if (((PangoAttribute *)iterator->next_attribute->data)->end_index > iterator->start_index)
+	{
+	  iterator->attribute_stack = g_list_prepend (iterator->attribute_stack, iterator->next_attribute->data);
+	  iterator->end_index = MIN (iterator->end_index, ((PangoAttribute *)iterator->next_attribute->data)->end_index);
+	  iterator->next_attribute = iterator->next_attribute->next;
+	}
     }
 
   if (iterator->next_attribute)
