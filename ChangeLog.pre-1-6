@@ -1,3 +1,14 @@
+Mon Sep 24 18:19:22 2001  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-layout.c (pango_layout_index_to_pos): Fix
+	handling of the last index in a paragraph.
+	(#60630, fix based on patch from Padraig O'Briain.)
+
+	* pango/pango-layout.c (update_run): Take the start
+	index of the run as an argument since we don't have
+	sufficient information to compute it when 
+	iter->run == NULL.
+
 Fri Sep 21 18:55:18 2001  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/fonts.c (pango_font_description_from_string): Set 

@@ -1425,7 +1425,7 @@ pango_layout_index_to_pos (PangoLayout    *layout,
   PangoRectangle logical_rect;
   PangoLayoutIter *iter;
   PangoLayoutLine *layout_line = NULL;
-  gboolean notfound = FALSE;
+  int x_pos;
   
   g_return_if_fail (layout != NULL);
   g_return_if_fail (index >= 0);
@@ -1455,33 +1455,24 @@ pango_layout_index_to_pos (PangoLayout    *layout,
 
       if (!pango_layout_iter_next_line (iter))
         {
-          notfound = TRUE;
+	  index = layout_line->start_index + layout_line->length;
           break;
         }
     }
 
-  if (notfound)
-    {
-      /* Iterator should now be on the "NULL" run at the end of the last
-       * line, which is a zero-width rectangle. Return the extents of
-       * that run.
-       */
-      
-      pango_layout_iter_get_run_extents (iter, NULL, pos);
-    }
-  else
-    {
-      int x_pos;
+  pos->y = logical_rect.y;
+  pos->height = logical_rect.height;
 
-      pos->y = logical_rect.y;
-      pos->height = logical_rect.height;
+  pango_layout_line_index_to_x (layout_line, index, 0, &x_pos);
+  pos->x = logical_rect.x + x_pos;
 
-      pango_layout_line_index_to_x (layout_line, index, 0, &x_pos);
-      pos->x = logical_rect.x + x_pos;
-	  
+  if (index < layout_line->length)
+    {
       pango_layout_line_index_to_x (layout_line, index, 1, &x_pos);
       pos->width = (logical_rect.x + x_pos) - pos->x;
     }
+  else
+    pos->width = 0;
   
   pango_layout_iter_free (iter);
 }
@@ -3805,7 +3796,8 @@ offset_y (PangoLayoutIter *iter,
 }
 
 static void
-update_run (PangoLayoutIter *iter)
+update_run (PangoLayoutIter *iter,
+	    int              run_start_index)
 {
   int old_run_width;
   Extents *line_ext;
@@ -3870,13 +3862,12 @@ update_run (PangoLayoutIter *iter)
   if (iter->run)
     iter->cluster_index = iter->run->glyphs->log_clusters[0];
   else
-    iter->cluster_index = iter->index;
+    iter->cluster_index = 0;
   
   /* Get an overall index, leaving it unchanged for
    * a the NULL run
    */
-  if (iter->run)
-    iter->index = iter->cluster_index + iter->run->item->offset;
+  iter->index = run_start_index;
 }
 
 
@@ -3913,11 +3904,6 @@ pango_layout_get_iter (PangoLayout *layout)
   else
     iter->run = NULL;
 
-  if (iter->run)
-    iter->index = iter->run->item->offset;
-  else
-    iter->index = 0;
-  
   iter->line_extents = NULL;  
   pango_layout_get_extents_internal (layout,
                                      NULL,
@@ -3926,7 +3912,7 @@ pango_layout_get_iter (PangoLayout *layout)
 
   iter->line_extents_link = iter->line_extents;
 
-  update_run (iter);
+  update_run (iter, 0);
 
   return iter;
 }
@@ -4131,6 +4117,7 @@ pango_layout_iter_next_cluster (PangoLayoutIter *iter)
 gboolean
 pango_layout_iter_next_run (PangoLayoutIter *iter)
 {
+  gint prev_run_end;
   GSList *next_link;
   
   if (IS_INVALID (iter))
@@ -4138,6 +4125,8 @@ pango_layout_iter_next_run (PangoLayoutIter *iter)
 
   if (iter->run == NULL)
     return pango_layout_iter_next_line (iter);
+  else
+    prev_run_end = iter->run->item->offset + iter->run->item->length;
   
   next_link = iter->run_list_link->next;
 
@@ -4155,7 +4144,7 @@ pango_layout_iter_next_run (PangoLayoutIter *iter)
       iter->run = iter->run_list_link->data;
     }
   
-  update_run (iter);
+  update_run (iter, prev_run_end);
   
   return TRUE;
 }
@@ -4203,12 +4192,10 @@ pango_layout_iter_next_line (PangoLayoutIter *iter)
   if (iter->run == NULL)
     iter->index += 1; /* 1 is the length of '\n' in UTF-8 */
 
-  /* update_run() will set the index if we aren't on an empty line */
-  
   iter->line_extents_link = iter->line_extents_link->next;
   g_assert (iter->line_extents_link != NULL);  
 
-  update_run (iter);
+  update_run (iter, iter->line->start_index);
   
   return TRUE;
 }
