@@ -11,12 +11,10 @@ system, or <firstterm>script</firstterm> of individual characters
 and of ranges within a larger text string.
 </para>
 
-
 <!-- ##### SECTION See_Also ##### -->
 <para>
 
 </para>
-
 
 <!-- ##### STRUCT PangoScriptIter ##### -->
 <para>

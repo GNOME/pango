@@ -21,7 +21,10 @@ if HAVE_FREETYPE
 ft2_programs = pangoft2topgm
 endif
 
-pangoft2topgm_SOURCES = pangoft2topgm.c
+pangoft2topgm_SOURCES =				\
+	pangoft2topgm.c				\
+	argcontext.c				\
+	argcontext.h
 pangoft2topgm_LDADD =					\
 	../pango/libpango-$(PANGO_API_VERSION).la	\
 	../pango/libpangoft2-$(PANGO_API_VERSION).la	\

@@ -1,9 +1,20 @@
+Mon Sep 15 15:48:25 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* examples/Makefile.am examples/argcontext.c examples/argcontext.h:
+	Borrow argument parsing code from GDK.
+
+	* examples/pangoft2topgm.c: Use argcontext.[ch]. Add options
+	--header to display options in a header in the image, --text
+	to pass the text on the command line, --width to set a 
+	wrap width. Add autoconversion to non-PGM output formats
+	via 'convert' for  --output="foo.png" etc.
+
 2003-09-12  Matthias Clasen  <maclas@gmx.de>
 
 	* pango/pango-context.c (pango_context_set_font_map) 
 	(pango_context_new): Document these funcions as backends-only, and 
-	explain how to obtain initialized contexts.  (#121881, Martin Pool)	
-
+	explain how to obtain initialized contexts.  (#121881, Martin Pool)
+	
 Tue Sep  9 12:17:07 2003  Owen Taylor  <otaylor@redhat.com>
 
 	* tools/Makefile.am (EXTRA_DIST): Remove reference
