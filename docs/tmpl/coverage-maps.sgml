@@ -34,6 +34,13 @@ character point for a particular scrpt.
                              the current script.
 @PANGO_COVERAGE_EXACT: The character is represented as the correct graphical form.
 
+<!-- ##### MACRO PANGO_TYPE_COVERAGE_LEVEL ##### -->
+<para>
+
+</para>
+
+
+
 <!-- ##### STRUCT PangoCoverage ##### -->
 <para>
 The #PangoCoverage structure represents a map from ISO-10646 character

@@ -7,11 +7,13 @@ PangoItem
 PangoAnalysis
 PangoLangRange
 PangoDirection
+PANGO_TYPE_DIRECTION
 <SUBSECTION>
 pango_itemize
 pango_item_free
 pango_item_copy
 pango_item_new
+pango_item_split
 pango_reorder_items
 <SUBSECTION>
 pango_context_new
@@ -37,10 +39,15 @@ PANGO_CONTEXT_GET_CLASS
 <SUBSECTION>
 pango_break
 pango_get_log_attrs
+pango_find_paragraph_boundary
+pango_default_break
 PangoLogAttr
 <SUBSECTION>
 pango_shape
 pango_justify
+
+<SUBSECTION Private>
+pango_direction_get_type
 </SECTION>
 
 <SECTION>
@@ -73,6 +80,7 @@ pango_glyph_string_get_logical_widths
 <TITLE>Coverage Maps</TITLE>
 <FILE>coverage-maps</FILE>
 PangoCoverageLevel
+PANGO_TYPE_COVERAGE_LEVEL
 PangoCoverage
 <SUBSECTION>
 pango_coverage_new
@@ -84,6 +92,9 @@ pango_coverage_max
 pango_coverage_set
 pango_coverage_to_bytes
 pango_coverage_from_bytes
+
+<SUBSECTION Private>
+pango_coverage_level_get_type
 </SECTION>
 
 <SECTION>
@@ -91,15 +102,20 @@ pango_coverage_from_bytes
 <FILE>fonts</FILE>
 PangoFontDescription
 PangoStyle
+PANGO_TYPE_STYLE
 PangoWeight
+PANGO_TYPE_WEIGHT
 PangoVariant
+PANGO_TYPE_VARIANT
 PangoStretch
+PANGO_TYPE_STRETCH
 pango_font_description_copy
 pango_font_description_equal
 pango_font_descriptions_free
 pango_font_description_free
 pango_font_description_from_string
 pango_font_description_to_string
+pango_font_description_to_filename
 <SUBSECTION>
 PangoFont
 PangoFontClass
@@ -130,12 +146,19 @@ PANGO_FONT_MAP_CLASS
 PANGO_IS_FONT_MAP_CLASS
 PANGO_FONT_MAP_GET_CLASS
 pango_font_map_get_type
+
+<SUBSECTION Private>
+pango_stretch_get_type
+pango_style_get_type
+pango_variant_get_type
+pango_weight_get_type
 </SECTION>
 
 <SECTION>
 <TITLE>Text Attributes</TITLE>
 <FILE>text-attributes</FILE>
 PangoAttrType
+PANGO_TYPE_ATTR_TYPE
 PangoAttrClass
 PangoAttribute
 PangoAttrString
@@ -165,6 +188,7 @@ pango_attr_underline_new
 pango_attr_shape_new
 pango_attr_scale_new
 PangoUnderline
+PANGO_TYPE_UNDERLINE
 pango_attr_rise_new
 <SUBSECTION>
 PangoAttrList
@@ -184,6 +208,9 @@ pango_attr_iterator_range
 pango_attr_iterator_get
 pango_attr_iterator_get_font
 pango_attr_iterator_destroy
+<SUBSECTION Private>
+pango_attr_type_get_type
+pango_underline_get_type
 </SECTION>
 
 <SECTION>
@@ -191,6 +218,7 @@ pango_attr_iterator_destroy
 <FILE>tab-stops</FILE>
 PangoTabArray
 PangoTabAlign
+PANGO_TYPE_TAB_ALIGN
 pango_tab_array_new
 pango_tab_array_new_with_positions
 pango_tab_array_copy
@@ -201,6 +229,9 @@ pango_tab_array_set_tab
 pango_tab_array_get_tab
 pango_tab_array_get_tabs
 pango_tab_array_get_positions_in_pixels
+
+<SUBSECTION Private>
+pango_tab_align_get_type
 </SECTION>
 
 <SECTION>
@@ -209,6 +240,7 @@ pango_tab_array_get_positions_in_pixels
 PangoLayout
 PangoLayoutIter
 pango_layout_new
+pango_layout_copy
 
 pango_layout_get_context
 pango_layout_context_changed
@@ -222,6 +254,9 @@ pango_layout_get_attributes
 pango_layout_set_font_description
 pango_layout_set_width
 pango_layout_get_width
+pango_layout_set_wrap
+pango_layout_get_wrap
+PangoWrapMode
 pango_layout_set_indent
 pango_layout_get_indent
 pango_layout_get_spacing
@@ -233,6 +268,7 @@ pango_layout_get_alignment
 pango_layout_set_tabs
 pango_layout_get_tabs
 PangoAlignment
+PANGO_TYPE_ALIGNMENT
 
 pango_layout_get_log_attrs
 
@@ -288,6 +324,7 @@ PANGO_IS_LAYOUT
 PANGO_LAYOUT_CLASS
 PANGO_IS_LAYOUT_CLASS
 PANGO_LAYOUT_GET_CLASS
+pango_alignment_get_type
 </SECTION>
 
 <SECTION>
@@ -415,9 +452,10 @@ PANGO_FT2_MAKE_GLYPH
 PANGO_FT2_GLYPH_SUBFONT
 PANGO_FT2_GLYPH_INDEX
 pango_ft2_n_subfonts
-pango_ft2_has_glyph
 pango_ft2_get_unknown_glyph
 pango_ft2_font_get_kerning
+pango_ft2_get_coverage
+pango_ft2_get_face
 PangoFT2FontCache
 pango_ft2_font_cache_new
 pango_ft2_font_cache_free
@@ -431,3 +469,45 @@ pango_ft2_fontmap_dump
 <SUBSECTION Private>
 STRICT
 </SECTION>
+
+<SECTION>
+<TITLE>Xft Fonts and Rendering</TITLE>
+<FILE>xft-fonts</FILE>
+PANGO_RENDER_TYPE_XFT
+PangoXftFont
+pango_xft_get_context
+pango_xft_render
+pango_xft_font_get_font
+pango_xft_font_get_face
+pango_xft_font_get_ot_info
+pango_xft_font_get_display
+pango_xft_font_get_unknown_glyph
+<SUBSECTION Standard>
+PANGO_TYPE_XFT_FONT
+PANGO_XFT_IS_FONT
+pango_xft_font_get_type
+</SECTION>
+
+<SECTION>
+<TITLE>OpenType Font Handling</TITLE>
+<FILE>opentype</FILE>
+PangoOTTag
+PangoOTInfo
+PangoOTRuleset
+PangoOTTableType
+pango_ot_info_new
+pango_ot_info_find_script
+pango_ot_info_find_language
+pango_ot_info_find_feature
+pango_ot_info_list_scripts
+pango_ot_info_list_languages
+pango_ot_info_list_features
+PangoOTGlyphLoader
+PangoOTAlternateFunc
+pango_ot_ruleset_new
+pango_ot_ruleset_set_glyph_loader
+pango_ot_ruleset_set_alternate_func
+pango_ot_ruleset_add_feature
+pango_ot_ruleset_shape
+</SECTION>
+

@@ -1,0 +1,203 @@
+<!-- ##### SECTION Title ##### -->
+OpenType Font Handling
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### TYPEDEF PangoOTTag ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### STRUCT PangoOTInfo ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### STRUCT PangoOTRuleset ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### ENUM PangoOTTableType ##### -->
+<para>
+
+</para>
+
+@PANGO_OT_TABLE_GSUB: 
+@PANGO_OT_TABLE_GPOS: 
+
+<!-- ##### FUNCTION pango_ot_info_new ##### -->
+<para>
+
+</para>
+
+@face: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_ot_info_find_script ##### -->
+<para>
+
+</para>
+
+@info: 
+@table_type: 
+@script_tag: 
+@script_index: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_ot_info_find_language ##### -->
+<para>
+
+</para>
+
+@info: 
+@table_type: 
+@script_index: 
+@language_tag: 
+@language_index: 
+@required_feature_index: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_ot_info_find_feature ##### -->
+<para>
+
+</para>
+
+@info: 
+@table_type: 
+@feature_tag: 
+@script_index: 
+@language_index: 
+@feature_index: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_ot_info_list_scripts ##### -->
+<para>
+
+</para>
+
+@info: 
+@table_type: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_ot_info_list_languages ##### -->
+<para>
+
+</para>
+
+@info: 
+@table_type: 
+@script_index: 
+@language_tag: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_ot_info_list_features ##### -->
+<para>
+
+</para>
+
+@info: 
+@table_type: 
+@tag: 
+@script_index: 
+@language_index: 
+@Returns: 
+
+
+<!-- ##### USER_FUNCTION PangoOTGlyphLoader ##### -->
+<para>
+
+</para>
+
+@face: 
+@glyphIndex: 
+@loadFlags: 
+@data: 
+@Returns: 
+
+
+<!-- ##### USER_FUNCTION PangoOTAlternateFunc ##### -->
+<para>
+
+</para>
+
+@pos: 
+@glyphID: 
+@num_alternates: 
+@alternates: 
+@data: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_ot_ruleset_new ##### -->
+<para>
+
+</para>
+
+@info: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_ot_ruleset_set_glyph_loader ##### -->
+<para>
+
+</para>
+
+@ruleset: 
+@func: 
+@data: 
+@notify: 
+
+
+<!-- ##### FUNCTION pango_ot_ruleset_set_alternate_func ##### -->
+<para>
+
+</para>
+
+@ruleset: 
+@func: 
+@data: 
+@notify: 
+
+
+<!-- ##### FUNCTION pango_ot_ruleset_add_feature ##### -->
+<para>
+
+</para>
+
+@ruleset: 
+@table_type: 
+@feature_index: 
+@property_bit: 
+
+
+<!-- ##### FUNCTION pango_ot_ruleset_shape ##### -->
+<para>
+
+</para>
+
+@ruleset: 
+@glyphs: 
+@properties: 
+
+

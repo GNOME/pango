@@ -43,6 +43,13 @@ attribute is listed in parentheses after the description.
 @PANGO_ATTR_SHAPE: 
 @PANGO_ATTR_SCALE: 
 
+<!-- ##### MACRO PANGO_TYPE_ATTR_TYPE ##### -->
+<para>
+
+</para>
+
+
+
 <!-- ##### STRUCT PangoAttrClass ##### -->
 <para>
 The #PangoAttrClass structure stores the type and operations for
@@ -323,6 +330,13 @@ of underlining.
                       single characters, such as for keyboard
                       accelerators. %PANGO_UNDERLINE_SINGLE should
                       be used for extended portions of text.
+
+<!-- ##### MACRO PANGO_TYPE_UNDERLINE ##### -->
+<para>
+
+</para>
+
+
 
 <!-- ##### FUNCTION pango_attr_rise_new ##### -->
 <para>

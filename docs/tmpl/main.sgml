@@ -164,6 +164,13 @@ for text.
                           top-to-bottom, with the rows ordered from
                           right to left.
 
+<!-- ##### MACRO PANGO_TYPE_DIRECTION ##### -->
+<para>
+
+</para>
+
+
+
 <!-- ##### FUNCTION pango_itemize ##### -->
 <para>
 
@@ -203,6 +210,17 @@ for text.
 
 </para>
 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_item_split ##### -->
+<para>
+
+</para>
+
+@orig: 
+@split_index: 
+@split_offset: 
 @Returns: 
 
 
@@ -342,14 +360,37 @@ for text.
 @log_attrs: 
 
 
+<!-- ##### FUNCTION pango_find_paragraph_boundary ##### -->
+<para>
+
+</para>
+
+@text: 
+@length: 
+@paragraph_delimiter_index: 
+@next_paragraph_start: 
+
+
+<!-- ##### FUNCTION pango_default_break ##### -->
+<para>
+
+</para>
+
+@text: 
+@length: 
+@analysis: 
+@attrs: 
+
+
 <!-- ##### STRUCT PangoLogAttr ##### -->
 <para>
 The #PangoLogAttr structure stores information
 about the attributes of a single character.
 </para>
 
-@is_break: 
+@is_line_break: 
 @is_mandatory_break: 
+@is_char_break: 
 @is_white: 
 @is_cursor_position: 
 @is_word_start: 

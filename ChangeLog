@@ -1,3 +1,8 @@
+Thu Jan 25 14:47:17 2001  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-sections.txt pango/pango-docs.sgml pango/tmpl/*:
+	Updates for new functions.
+
 2001-01-23  Havoc Pennington  <hp@redhat.com>
 
 	* pango/pango-layout.c (pango_layout_copy): New function

@@ -63,6 +63,15 @@ fields.
 @Returns: 
 
 
+<!-- ##### FUNCTION pango_layout_copy ##### -->
+<para>
+
+</para>
+
+@src: 
+@Returns: 
+
+
 <!-- ##### FUNCTION pango_layout_get_context ##### -->
 <para>
 
@@ -166,6 +175,32 @@ fields.
 @Returns: 
 
 
+<!-- ##### FUNCTION pango_layout_set_wrap ##### -->
+<para>
+
+</para>
+
+@layout: 
+@wrap: 
+
+
+<!-- ##### FUNCTION pango_layout_get_wrap ##### -->
+<para>
+
+</para>
+
+@layout: 
+@Returns: 
+
+
+<!-- ##### ENUM PangoWrapMode ##### -->
+<para>
+
+</para>
+
+@PANGO_WRAP_WORD: 
+@PANGO_WRAP_CHAR: 
+
 <!-- ##### FUNCTION pango_layout_set_indent ##### -->
 <para>
 
@@ -267,6 +302,13 @@ for partial lines.
 @PANGO_ALIGN_LEFT: Put all available space on the right
 @PANGO_ALIGN_CENTER: Center the line within the available space
 @PANGO_ALIGN_RIGHT: Put all available space on the left
+
+<!-- ##### MACRO PANGO_TYPE_ALIGNMENT ##### -->
+<para>
+
+</para>
+
+
 
 <!-- ##### FUNCTION pango_layout_get_log_attrs ##### -->
 <para>

@@ -13,6 +13,8 @@
 <!entity pango-X-Fonts SYSTEM "sgml/x-fonts.sgml">
 <!entity pango-Win32-Fonts-and-Rendering SYSTEM "sgml/win32-fonts.sgml">
 <!entity pango-FreeType-Fonts-and-Rendering SYSTEM "sgml/freetype-fonts.sgml">
+<!entity pango-Xft-Fonts-and-Rendering SYSTEM "sgml/xft-fonts.sgml">
+<!entity pango-OpenType-Font-Handling SYSTEM "sgml/opentype.sgml">
 <!entity markup-format SYSTEM "pango_markup.sgml">
 ]>
 <book id="index">
@@ -37,7 +39,9 @@
     &pango-X-Rendering;
     &pango-Win32-Fonts-and-Rendering;
     &pango-FreeType-Fonts-and-Rendering;
-    </chapter>
+    &pango-Xft-Fonts-and-Rendering;
+    &pango-OpenType-Font-Handling;
+  </chapter>
 
   <chapter id="lowlevel">
     <title>Low Level Functionality</title>
