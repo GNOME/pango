@@ -87,7 +87,7 @@ pango_font_map_list_fonts (PangoFontMap           *fontmap,
 {
   g_return_if_fail (fontmap != NULL);
 
-  return PANGO_FONT_MAP_GET_CLASS (fontmap)->list_fonts (fontmap, family, descs, n_descs);
+  PANGO_FONT_MAP_GET_CLASS (fontmap)->list_fonts (fontmap, family, descs, n_descs);
 }
 
 /**
@@ -106,7 +106,7 @@ pango_font_map_list_families (PangoFontMap   *fontmap,
 {
   g_return_if_fail (fontmap != NULL);
 
-  return PANGO_FONT_MAP_GET_CLASS (fontmap)->list_families (fontmap, families, n_families);
+  PANGO_FONT_MAP_GET_CLASS (fontmap)->list_families (fontmap, families, n_families);
 }
 
 /**

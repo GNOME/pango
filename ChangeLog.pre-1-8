@@ -1,5 +1,22 @@
 2000-07-19  Tor Lillqvist  <tml@iki.fi>
 
+	* configure.in: Don't try to use the ! command, not available in all
+	systems. Move the ! inside the test instead.
+
+	* pango-config.in: Change order of --cflags output, so that we can
+	build with both GLib 1.2 and 1.3 installed.
+
+	* modules/devanagari/dev-ligatures.h: No C++ comments, thanks.
+
+	* pango/break.c: Fix gccism, non-constant initailiser.
+
+	* pango/pango-fontmap.c (pango_font_map_list_fonts,
+	pango_font_map_list_families): Don't return value from void
+	functions.
+
+	* pango/pango-utils.c: Must have at least empty statement after
+	a label.
+
 	* examples/pangowin32.aliases: Add Tahoma and Angsana New, these
 	common fonts have Thai characters.
 

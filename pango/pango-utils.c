@@ -362,6 +362,7 @@ pango_scan_string (const char **pos, GString *out)
 	  p++;
 	}
     done:
+      ;
     }
   else
     {

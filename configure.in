@@ -60,7 +60,7 @@ AC_ARG_WITH(libiconv, [ --with-libiconv     Use the libiconv library ],,with_lib
 
 found_iconv=no
 
-if ! test "x$with_libiconv" = "xyes" ; then
+if test "x$with_libiconv" != "xyes" ; then
    # 
    # Check in the C library 
    #
@@ -92,7 +92,7 @@ AC_SUBST(UNICODE_LIBS)
 AC_ARG_WITH(included_modules, [ --with-included-modules=MODULE1,MODULE2,...     Build the given modules into Pango])
 
 included_modules=""
-if ! test "x$with_included_modules" = xno || test "x$with_included_modules" = x ; then
+if test "x$with_included_modules" != xno || test "x$with_included_modules" = x ; then
 
    # If no modules specified, include all modules
    if test "x$with_included_modules" = xyes ; then  
@@ -143,7 +143,7 @@ if test "x$with_qt" = xyes ; then
    done
 
 else
-   if ! test "x$with_qt" = xno ; then
+   if test "x$with_qt" != xno ; then
       if test -x $with_qt/bin/moc ; then
          QTDIR=$with_qt
       fi

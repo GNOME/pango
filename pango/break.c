@@ -86,7 +86,9 @@ pango_get_log_attrs (const char    *text,
   int chars_in_range;
   static guint engine_type_id = 0;
   static guint render_type_id = 0;  
-  PangoAnalysis analysis = { NULL, NULL, NULL, (guint8)level };
+  PangoAnalysis analysis = { NULL, NULL, NULL, 0 };
+
+  analysis.level = level;
   
   g_return_if_fail (length == 0 || text != NULL);
   g_return_if_fail (log_attrs != NULL);
