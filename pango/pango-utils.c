@@ -1167,30 +1167,30 @@ lang_info_compare (const void *key, const void *val)
  * there are obviously many more languages to include as well.
  */
 static LangInfo lang_texts[] = {
-  { "ar", "Arabic  السلام عليكم" },
-  { "cs", "Czech (česky)  Dobrý den" },
+  { "ar", "Arabic  \xd8\xa7\xd9\x84\xd8\xb3\xd9\x84\xd8\xa7\xd9\x85 \xd8\xb9\xd9\x84\xd9\x8a\xd9\x83\xd9\x85" },
+  { "cs", "Czech (\xc4\x8desky)  Dobr\xc3\xbd den" },
   { "da", "Danish (Dansk)  Hej, Goddag" },
-  { "el", "Greek (Ελληνικά) Γειά σας" },
+  { "el", "Greek (\xce\x95\xce\xbb\xce\xbb\xce\xb7\xce\xbd\xce\xb9\xce\xba\xce\xac) \xce\x93\xce\xb5\xce\xb9\xce\xac \xcf\x83\xce\xb1\xcf\x82" },
   { "en", "English Hello" },
   { "eo", "Esperanto Saluton" },
-  { "es", "Spanish (Español) ¡Hola!" },
+  { "es", "Spanish (Espa\xc3\xb1ol) \xc2\xa1Hola!" },
   { "et", "Estonian  Tere, Tervist" },
-  { "fi", "Finnish (Suomi)  Hei, Hyvää päivää" },
-  { "fr", "French (Français)" },
-  { "de", "German Grüß Gott" },
-  { "iw", "Hebrew   שלום" },
+  { "fi", "Finnish (Suomi)  Hei, Hyv\xc3\xa4\xc3\xa4 p\xc3\xa4iv\xc3\xa4\xc3\xa4" },
+  { "fr", "French (Fran\xc3\xa7ais)" },
+  { "de", "German Gr\xc3\xbc\xc3\x9f Gott" },
+  { "iw", "Hebrew   \xd7\xa9\xd7\x9c\xd7\x95\xd7\x9d" },
   { "il", "Italiano  Ciao, Buon giorno" },
-  { "ja", "Japanese (日本語) こんにちは, ｺﾝﾆﾁﾊ" },
-  { "ko", "Korean (한글)   안녕하세요, 안녕하십니까" },
-  { "mt", "Maltese   Ċaw, Saħħa" },
+  { "ja", "Japanese (\xe6\x97\xa5\xe6\x9c\xac\xe8\xaa\x9e) \xe3\x81\x93\xe3\x82\x93\xe3\x81\xab\xe3\x81\xa1\xe3\x81\xaf, \xef\xbd\xba\xef\xbe\x9d\xef\xbe\x86\xef\xbe\x81\xef\xbe\x8a" },
+  { "ko", "Korean (\xed\x95\x9c\xea\xb8\x80)   \xec\x95\x88\xeb\x85\x95\xed\x95\x98\xec\x84\xb8\xec\x9a\x94, \xec\x95\x88\xeb\x85\x95\xed\x95\x98\xec\x8b\xad\xeb\x8b\x88\xea\xb9\x8c" },
+  { "mt", "Maltese   \xc4\x8aaw, Sa\xc4\xa7\xc4\xa7a" },
   { "nl", "Nederlands, Vlaams Hallo, Dag" },
   { "no", "Norwegian (Norsk) Hei, God dag" },
-  { "pl", "Polish   Dzień dobry, Hej" },
-  { "ru", "Russian (Русский)" },
-  { "sk", "Slovak   Dobrý deň" },
-  { "sv", "Swedish (Svenska) Hej på dej, Goddag" },
-  { "tr", "Turkish (Türkçe) Merhaba" },
-  { "zh", "Chinese (中文,普通话,汉语)" }
+  { "pl", "Polish   Dzie\xc5\x84 dobry, Hej" },
+  { "ru", "Russian (\xd0\xa0\xd1\x83\xd1\x81\xd1\x81\xd0\xba\xd0\xb8\xd0\xb9)" },
+  { "sk", "Slovak   Dobr\xc3\xbd de\xc5\x88" },
+  { "sv", "Swedish (Svenska) Hej p\xc3\xa5 dej, Goddag" },
+  { "tr", "Turkish (T\xc3\xbcrk\xc3\xa7e) Merhaba" },
+  { "zh", "Chinese (\xe4\xb8\xad\xe6\x96\x87,\xe6\x99\xae\xe9\x80\x9a\xe8\xaf\x9d,\xe6\xb1\x89\xe8\xaf\xad)" }
 };
 
 /**
@@ -1220,14 +1220,14 @@ pango_language_get_sample_string (PangoLanguage *language)
       if (lang_info)
 	result = lang_info->str;
       else
-	result = "French (Français)";     /* Assume iso-8859-1 */
+	result = "French (Fran\xc3\xa7ais)";     /* Assume iso-8859-1 */
     }
   else
     {
       /* Complete junk
        */
 
-      result = "السلام عليكم česky Ελληνικά Français 日本語 한글 Русский 中文,普通话,汉语 Türkçe";
+      result = "\xd8\xa7\xd9\x84\xd8\xb3\xd9\x84\xd8\xa7\xd9\x85 \xd8\xb9\xd9\x84\xd9\x8a\xd9\x83\xd9\x85 \xc4\x8desky \xce\x95\xce\xbb\xce\xbb\xce\xb7\xce\xbd\xce\xb9\xce\xba\xce\xac Fran\xc3\xa7ais \xe6\x97\xa5\xe6\x9c\xac\xe8\xaa\x9e \xed\x95\x9c\xea\xb8\x80 \xd0\xa0\xd1\x83\xd1\x81\xd1\x81\xd0\xba\xd0\xb8\xd0\xb9 \xe4\xb8\xad\xe6\x96\x87,\xe6\x99\xae\xe9\x80\x9a\xe8\xaf\x9d,\xe6\xb1\x89\xe8\xaf\xad T\xc3\xbcrk\xc3\xa7e";
     }
 
   return result;

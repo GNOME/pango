@@ -1,3 +1,12 @@
+Fri Dec  6 18:30:36 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-utils.c: Convert literal UTF-8 to hex
+	escapes. (#92050, Arnaud Charlet)
+
+	* pango/testfonts.c: Convert literal ISO-8859-1
+	to UTF-8 hex escapes. (Don't know how passing
+	ISO-8859-1 to pango_shape() was working...)
+
 Fri Dec  6 18:07:48 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* modules/indic/devanagari-x.c, pango/modules.c
