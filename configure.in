@@ -53,9 +53,9 @@ FREETYPE_LIBS=
 FREETYPE_CFLAGS=
 have_freetype=false
 AC_PATH_PROG(FREETYPE_CONFIG, freetype-config, no)
-if test "x$FREE_CONFIG" != "xno" ; then
-  FREETYPE_CFLAGS=`freetype-config --cflags`
-  FREETYPE_LIBS=`freetype-config --libs`
+if test "x$FREETYPE_CONFIG" != "xno" ; then
+  FREETYPE_CFLAGS=`$FREETYPE_CONFIG --cflags`
+  FREETYPE_LIBS=`$FREETYPE_CONFIG --libs`
 
   AC_CHECK_LIB(freetype, FT_New_Face, have_freetype=true
 	       ,:,$FREETYPE_LIBS)
