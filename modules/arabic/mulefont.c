@@ -252,8 +252,35 @@ arabic_mule_recode(PangoXSubfont* subfont,int* glyph,PangoXSubfont* mulefonts)
         }
     else
         {
-            *subfont = mulefonts[1];
-            *glyph   = 0x26; /* we don't have this thing -- use a dot */
+	    switch(letter){
+	      /* Gaf */
+	    case 0xFB92: *subfont = mulefonts[2]; *glyph = 0x6B; break;
+	    case 0xFB93: *subfont = mulefonts[2]; *glyph = 0x6E; break;
+	    case 0xFB94: *subfont = mulefonts[2]; *glyph = 0x6C; break;
+	    case 0xFB95: *subfont = mulefonts[2]; *glyph = 0x6D; break;
+	      /* persian Kaf -- the first to forms are wrong ... */
+	    case 0xFB8E: *subfont = mulefonts[2]; *glyph = 0x55; break;
+	    case 0xFB8F: *subfont = mulefonts[2]; *glyph = 0x58; break;
+	    case 0xFB90: *subfont = mulefonts[2]; *glyph = 0x56; break;
+	    case 0xFB91: *subfont = mulefonts[2]; *glyph = 0x57; break;
+	      /* Tcheh */
+	    case 0xFB7A: *subfont = mulefonts[2]; *glyph = 0x67; break;
+	    case 0xFB7B: *subfont = mulefonts[2]; *glyph = 0x6A; break;
+	    case 0xFB7C: *subfont = mulefonts[2]; *glyph = 0x68; break;
+	    case 0xFB7D: *subfont = mulefonts[2]; *glyph = 0x69; break;
+	      /* Pe */
+	    case 0xFB56: *subfont = mulefonts[2]; *glyph = 0x65; break;
+	    case 0xFB57: *subfont = mulefonts[2]; *glyph = 0x66; break;
+	    case 0xFB58: *subfont = mulefonts[1]; *glyph = 0x66; break;
+	    case 0xFB59: *subfont = mulefonts[1]; *glyph = 0x67; break;
+		/* farsi Jeh */
+	    case 0xFB8A: *subfont = mulefonts[1]; *glyph = 0x68; break;
+	    case 0xFB8B: *subfont = mulefonts[1]; *glyph = 0x69; break;
+	    default:
+		*subfont = mulefonts[1];
+		*glyph   = 0x26; /* we don't have this thing -- use a dot */
+		break;
+	    }
         }
 }
 

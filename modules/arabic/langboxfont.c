@@ -227,26 +227,27 @@ arabic_lbox_recode(PangoXSubfont* subfont,int* glyph,int* glyph2,
                 case 0xFEFC : *glyph2 = 0xA1; break; /* Lam-Alif */
                 }
         }
-    else if (letter == 0x621)
-        {
-            *glyph   = charmap[0].charindex;
-        }
-    else if (letter == 0x640)
-        { /* tatweel */
-            *glyph   = 0xE0;
-        }
-    else if (letter == 0x61F)
-        { /* question mark */
-            *glyph   = 0xBF; 
-        }
     else if (letter < 0xB0 )
         {
             *glyph   = letter;
         }
-    else
-        {
+    else switch(letter)
+        { 
+            /* extra vowels */
+        case 0xFC5E: *glyph  = 0x82; break;
+        case 0xFC5F: *glyph  = 0x83; break;
+        case 0xFC60: *glyph  = 0x84; break;
+        case 0xFC61: *glyph  = 0x85; break;
+        case 0xFC62: *glyph  = 0x86; break;
+        case 0xFC63: *glyph  = 0xAE; break; /* This is not in the font */
+
+        case 0x621: *glyph   = charmap[0].charindex; break; /* hamza */
+        case 0x640: *glyph   = 0xE0; break; /* tatweel */
+        case 0x61F: *glyph   = 0xBF; break; /* question mark */
+        default:
             *glyph   = 0x20; /* we don't have this thing -- use a space */
             /* This has to be something that does not print anything !! */
+            break;
         }
 }
 

@@ -7,6 +7,8 @@ sources = \
 	mulefont.h \
 	langboxfont.c \
 	langboxfont.h \
+	naqshfont.c \
+	naqshfont.h \
 	arconv.h 
 
 if INCLUDE_ARABIC

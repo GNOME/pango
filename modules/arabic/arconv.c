@@ -24,9 +24,9 @@ typedef struct {
 } shapestruct;
 
 typedef struct {
-    gunichar     basechar;
-    gunichar     mark1;  /* has to be initialized to zero */
-    gunichar     vowel;  /*  */
+    gunichar      basechar;
+    gunichar      mark1;  /* has to be initialized to zero */
+    gunichar      vowel;  /*  */
     char         connecttoleft;
     signed char  lignum; /* is a ligature with lignum aditional characters */
     char         numshapes; 
@@ -103,11 +103,13 @@ static shapestruct chartable [] =
     {0x6BA,      0xFB9E,2}, /* Urdu:NUN GHUNNA                   */
     {0x6BB,      0xFBA0,4}, /* Sindhi:                           */
     {0x6BE,      0xFBAA,4}, /* HA special                        */
+    {0x6CC,      0xFEF1,4}, /* farsi ya                          */
     {0x6C0,      0xFBA4,2}, /* izafet: HA HAMZA                  */
     {0x6C1,      0xFBA6,4}, /* Urdu:                             */
     {0x6D2,      0xFBAE,2}, /* YA barree                         */
     {0x6D3,      0xFBB0,2}, /* YA BARREE HAMZA                   */
 
+    {0x200D,     0x200D,4}, /* Zero-width joiner */
     {0xFEF5,     0xFEF5,2}, /* Lam-Alif Madda  */
     {0xFEF7,     0xFEF7,2}, /* Lam-Alif Hamza  */
     {0xFEF9,     0xFEF9,2}, /* Lam-Alif iHamza */
@@ -120,6 +122,7 @@ static shapestruct chartable [] =
 #define LAM        0x644
 #define HAMZA      0x621
 #define TATWEEL    0x640
+#define JOINER    0x200D
 
 /* Hamza below ( saves Kasra and special cases ), Hamza above ( always joins ).
  * As I don't know what sHAMZA is good for I don't handle it.
@@ -135,6 +138,7 @@ static shapestruct chartable [] =
 #define KASRA      0x650
 #define FATHA      0x64E
 #define DAMMA      0x64F
+#define MADDA      0x653
 
 
 #define LAM_ALIF        0xFEFB
@@ -151,22 +155,29 @@ charstruct_init(charstruct* s)
     s->vowel          = 0;  
     s->connecttoleft  = 0;
     s->lignum         = 0;
-    s->numshapes      = 0;
+    s->numshapes      = 1;
 }
  
 void
-copycstostring(gunichar* string,int* i,charstruct* s,int level)
+copycstostring(gunichar* string,int* i,charstruct* s,arabic_level level)
 { /* s is a shaped charstruct; i is the index into the string */
     if (s->basechar == 0) return;
 
     string[*i] = s->basechar;  (*i)--; (s->lignum)--;
     if (s->mark1 != 0)
         {     
-            string[*i] = s->mark1;  (*i)--; (s->lignum)--;
+            if ( !(level & ar_novowel) )
+                {
+                    string[*i] = s->mark1;  (*i)--; (s->lignum)--;
+                } 
+            else 
+                {
+                    string[*i] = 0;  (*i)--; (s->lignum)--;
+                }
         }
     if (s->vowel != 0)
         {    
-            if (level > 1)
+            if (! (level & ar_novowel) )
                 {
                     string[*i] = s->vowel;  (*i)--; (s->lignum)--;
                 }
@@ -199,7 +210,7 @@ arabic_isvowel(gunichar s)
     return 0;
 }
 
-static gunichar
+static gunichar 
 unshape(gunichar s)
 {
     int j = 0;
@@ -222,12 +233,12 @@ static gunichar
 charshape(gunichar s,short which)
 { /* which 0=alone 1=end 2=start 3=middle */
     int j = 0;
-    if ((s >= chartable[1].basechar)  && (s <= 0x64A) && ( s != TATWEEL)) 
+    if ((s >= chartable[1].basechar)  && (s <= 0x64A) && ( s != TATWEEL) && ( s != JOINER)) 
         {   /* basic character */ 
             return chartable[s-chartable[0].basechar].charstart+which;
         } 
     else if ( (s >= chartable[1].basechar)  && ( s <= 0xFEFB ) 
-              && (s != TATWEEL))
+              && (s != TATWEEL) && ( s != JOINER) && ( s!= 0x6CC))
         {   /* special char or  Lam-Alif */
             while ( chartable[j].basechar < s) j++;
             return chartable[j].charstart+which;
@@ -237,6 +248,15 @@ charshape(gunichar s,short which)
             if (which < 2) return s;
             else return 0xFE8B+(which-2); /* The Hamza-'pod' */
         } 
+    else if (s == 0x6CC)
+	{ /* farsi ya --> map to Alif maqsura and Ya, depending on form */
+	    switch (which){
+	    case 0: return 0xFEEF; 
+	    case 1: return 0xFEF0;
+	    case 2: return 0xFEF3;
+	    case 3: return 0xFEF4;
+	    }
+	}
     else 
         {
             return s;
@@ -273,6 +293,7 @@ ligature(gunichar* string,int si,int len,charstruct* oldchar)
 { /* no ligature possible --> return 0; 1 == vowel; 2 = two chars */
     int     retval = 0;
     gunichar newchar = string[si];
+    if (!(oldchar->basechar)) return 0;
     if (arabic_isvowel(newchar))
         {
             retval = 1;
@@ -281,7 +302,16 @@ ligature(gunichar* string,int si,int len,charstruct* oldchar)
             }
             switch(newchar)
                 {
-                case SHADDA: oldchar->mark1 = newchar; break;
+                case SHADDA: 
+                    if (oldchar->mark1 == 0)
+                        {
+                            oldchar->mark1 = newchar; 
+                        }
+                    else 
+                        {
+                            return 0; /* no ligature possible */
+                        }
+                    break;
                 case iHAMZA: 
                     switch(oldchar->basechar)
                         {
@@ -308,6 +338,15 @@ ligature(gunichar* string,int si,int len,charstruct* oldchar)
                             retval = 2; break;
                         default: /* whatever sense this may make .. */
                             oldchar->mark1 = newchar; break;
+                        }
+                    break;
+                case MADDA:
+                    switch(oldchar->basechar)
+                        {
+                        case ALIFHAMZA:
+                        case ALIF:
+                            oldchar->basechar = ALIFMADDA;
+                            retval = 2; break;
                         }
                     break;
                 case KASRA:  
@@ -395,7 +434,7 @@ ligature(gunichar* string,int si,int len,charstruct* oldchar)
 }
 
 static void 
-shape(int olen,int* len,gunichar* string,int level)
+shape(int olen,int* len,gunichar* string,arabic_level level)
 {
     /* The string must be in visual order already.
     ** This routine does the basic arabic reshaping.
@@ -424,7 +463,18 @@ shape(int olen,int* len,gunichar* string,int level)
                         { 
                             which = 2; /* middle or beginning */
                         }
-                    if (oldchar.connecttoleft) which++; 
+                    if (oldchar.connecttoleft)
+                        {
+                            which++; 
+                        }
+                    else if (curchar.basechar == HAMZA)
+                        { /* normally, a Hamza hangs loose after an Alif.
+                           *  Use the form Ya-Hamza if you want a Hamza
+                           *  on a pod !
+                           */
+                            curchar.numshapes = 1;
+                        }
+
                     which = which % (curchar.numshapes);
                     curchar.basechar = charshape(curchar.basechar,which);
                     if (curchar.numshapes > 2)
@@ -441,11 +491,11 @@ shape(int olen,int* len,gunichar* string,int level)
                     curchar.lignum++;
                 }
             else if ( ( join == 2 )
-                      ||((join == 3)&&(level != 2))  
-                      ||((join == 1)&&(level == 1)
+                      ||((join == 3)&&(! (level & ar_lboxfont)  ))  
+                      ||((join == 1)&&(level & ar_novowel )
                          && arabic_isvowel(string[si])) ) 
                 { /*  Lam-Alif in Langbox-font is no ligature */
-                    /*  No vowels in Langbox-font */
+                    /*  No vowels in Mulearabic-font */
                     (*len)--;
                 }
             si--;
@@ -468,37 +518,43 @@ shape(int olen,int* len,gunichar* string,int level)
 }
 
 static void 
-doublelig(int olen,int* len,gunichar* string,int level)
+doublelig(int olen,int* len,gunichar* string,arabic_level level)
 { /* Ok. We have presentation ligatures in our font. */
     int        si  = (olen)-1;
-    gunichar   lapresult;
+    gunichar    lapresult;
 
     while (si > 0)
         {
             lapresult = 0;
-            switch(string[si])
-                {
-                case SHADDA:
-                    switch(string[si-1])
-                        {
-                        case KASRA: lapresult = 0xFC62; break;
-                        case FATHA: lapresult = 0xFC60; break;
-                        case DAMMA: lapresult = 0xFC61; break;
-                        case 0x64C: lapresult = 0xFC5E; break;
-                        case 0x64D: lapresult = 0xFC5F; break;
-                        }
-                    break;
-                case KASRA:
-                    if (string[si-1]==SHADDA) lapresult = 0xFC62;
-                    break;
-                case FATHA:
-                    if (string[si-1]==SHADDA) lapresult = 0xFC60;
-                    break;
-                case DAMMA:
-                    if (string[si-1]==SHADDA) lapresult = 0xFC61;
-                    break;
-                case 0xFEDF: /* LAM initial */
-                    if (level > 13){
+            if ( level & ar_composedtashkeel ){
+                switch(string[si])
+                    {
+                    case SHADDA:
+                        switch(string[si-1])
+                            {
+                            case KASRA: lapresult = 0xFC62; break;
+                            case FATHA: lapresult = 0xFC60; break;
+                            case DAMMA: lapresult = 0xFC61; break;
+                            case 0x64C: lapresult = 0xFC5E; break;
+                            case 0x64D: lapresult = 0xFC5F; break;
+                            }
+                        break;
+                    case KASRA:
+                        if (string[si-1]==SHADDA) lapresult = 0xFC62;
+                        break;
+                    case FATHA:
+                        if (string[si-1]==SHADDA) lapresult = 0xFC60;
+                        break;
+                    case DAMMA:
+                        if (string[si-1]==SHADDA) lapresult = 0xFC61;
+                        break;
+                    }
+            }
+
+            if ( level & ar_lig ){
+                switch(string[si])
+                    {
+                    case 0xFEDF: /* LAM initial */
                         switch(string[si-1]){
                         case 0xFE9E : lapresult = 0xFC3F; break; /* DJEEM final*/
                         case 0xFEA0 : lapresult = 0xFCC9; break;
@@ -509,38 +565,55 @@ doublelig(int olen,int* len,gunichar* string,int level)
                         case 0xFEE2 : lapresult = 0xFC42; break; /* MIM final */
                         case 0xFEE4 : lapresult = 0xFCCC; break;
                         }
-                    }
-                    break;
-                case 0xFE97: /* TA inital */
-                    if (level > 13){
+                        break;
+                    case 0xFE97: /* TA inital */
                         switch(string[si-1]){
                         case 0xFEA0 : lapresult = 0xFCA1; break; /* DJ init */
                         case 0xFEA4 : lapresult = 0xFCA2; break; /* .HA */
                         case 0xFEA8 : lapresult = 0xFCA3; break; /* CHA */
                         }
-                    }
-                    break;
-                case 0xFE91: /* BA inital */
-                    if (level > 13){
+                        break;
+                    case 0xFE91: /* BA inital */
                         switch(string[si-1]){
                         case 0xFEA0 : lapresult = 0xFC9C; break; /* DJ init */
                         case 0xFEA4 : lapresult = 0xFC9D; break; /* .HA */
                         case 0xFEA8 : lapresult = 0xFC9E; break; /* CHA */
                         }
-                    }
-                    break;
-                case 0xFEE7: /* NUN inital */
-                    if (level > 13) {
+                        break;
+                    case 0xFEE7: /* NUN inital */
                         switch(string[si-1]){
                         case 0xFEA0 : lapresult = 0xFCD2; break; /* DJ init */
                         case 0xFEA4 : lapresult = 0xFCD3; break; /* .HA */
                         case 0xFEA8 : lapresult = 0xFCD4; break; /* CHA */
                         }
-                    }
-                    break;
-                default:
-                    break;
-                } /* end switch string[si] */
+                        break;
+
+                    case 0xFEE8: /* NUN medial */
+                        switch(string[si-1]){
+                            /* missing : nun-ra : FC8A und nun-sai : FC8B */
+                        case 0xFEAE : lapresult = 0xFC8A; break; /* nun-ra  */
+                        case 0xFEB0 : lapresult = 0xFC8B; break; /* nun-sai */
+                        }
+                        break;
+                    case 0xFEE3: /* Mim initial */
+                        switch(string[si-1]){
+                        case 0xFEA0 : lapresult = 0xFCCE ; break; /* DJ init */
+                        case 0xFEA4 : lapresult = 0xFCCF ; break; /* .HA init */
+                        case 0xFEA8 : lapresult = 0xFCD0 ; break; /* CHA init */
+                        case 0xFEE4 : lapresult = 0xFCD1 ; break; /* Mim init */
+                        }
+                        break;
+                        
+                    case 0xFED3: /* Fa initial */
+                        switch(string[si-1]){
+                        case 0xFEF2 : lapresult = 0xFC32 ; break; /* fi-ligature (!) */ 
+                        }
+                        break;
+
+                    default:
+                        break;
+                    } /* end switch string[si] */
+            }
             if (lapresult != 0)
                 {
                     string[si] = lapresult; (*len)--; string[si-1] = 0x0;
@@ -550,7 +623,7 @@ doublelig(int olen,int* len,gunichar* string,int level)
 }
 
 void 
-arabic_reshape(int* len,gunichar* string,int level)
+arabic_reshape(int* len,gunichar* string,arabic_level level)
 {
     int i;
     int olen = *len;
@@ -558,7 +631,7 @@ arabic_reshape(int* len,gunichar* string,int level)
         string[i] = unshape(string[i]);
     }
     shape(olen,len,string,level);
-    if (level > 10)
+    if ( level & ( ar_composedtashkeel | ar_lig ) )
         doublelig(olen,len,string,level);
 }
 

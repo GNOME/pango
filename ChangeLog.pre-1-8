@@ -1,3 +1,8 @@
+Thu Jun 29 16:35:41 2000  Owen Taylor  <otaylor@redhat.com>
+
+	* modules/arabic/{*.c,Makefile.am}: New version from Karl
+	Koehler merged with the changes for the GLib unicode functions.
+
 Wed Jun 21 12:11:56 2000  Owen Taylor  <otaylor@redhat.com>
 
 	* configure.in: Remove tests for libunicode
@@ -21,17 +26,21 @@ Wed Jun 21 12:11:56 2000  Owen Taylor  <otaylor@redhat.com>
 
 2000-06-11  Elliot Lee  <sopwith@redhat.com>
 
-	* pango/fonts.c (pango_font_description_compare): g_strcasecmp returns 0 when strings are equal - negate return value.
+	* pango/fonts.c (pango_font_description_compare): g_strcasecmp
+	returns 0 when strings are equal - negate return value.
 
 2000-06-09  Elliot Lee  <sopwith@redhat.com>
 
-	* pango/pango-coverage.[ch]: Return 'coverage' from pango_coverage_ref.
+	* pango/pango-coverage.[ch]: Return 'coverage' from
+	pango_coverage_ref.
 
 2000-06-08  Elliot Lee  <sopwith@redhat.com>
 
-	* modules/Makefile.am: Add DOTMODULESDIR define to make it easier to change location of .modules files.
-	* pango/modules.c: Likewise. Also scan the config directory for multiple config files instead of pango.modules.
-	Also fclose() opened files.
+	* modules/Makefile.am: Add DOTMODULESDIR define to make it easier
+	to change location of .modules files.
+	* pango/modules.c: Likewise. Also scan the config directory for
+	multiple config files instead of pango.modules.  Also fclose()
+	opened files.
 
 Thu Jun  8 14:43:35 2000  Owen Taylor  <otaylor@redhat.com>
 
