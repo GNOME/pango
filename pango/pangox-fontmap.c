@@ -24,6 +24,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
+#include <glib.h>
 
 #include <X11/Xatom.h>
 
@@ -82,6 +83,9 @@ struct _PangoXFontMap
 
   GHashTable *families;
   GHashTable *size_infos;
+
+  GHashTable *to_atom_cache;
+  GHashTable *from_atom_cache;
 
   int n_fonts;
 
@@ -179,6 +183,7 @@ static char *   pango_x_get_xlfd_field      (const char         *fontname,
 					     char               *buffer);
 static char *   pango_x_get_identifier      (const char         *fontname);
 
+
 static PangoFontClass *parent_class;	/* Parent class structure for PangoXFontMap */
 
 static GType
@@ -214,6 +219,8 @@ pango_x_font_map_init (PangoXFontMap *xfontmap)
 {
   xfontmap->families = g_hash_table_new (g_str_hash, g_str_equal);
   xfontmap->size_infos = g_hash_table_new (g_str_hash, g_str_equal);
+  xfontmap->to_atom_cache = g_hash_table_new (g_str_hash, g_str_equal);
+  xfontmap->from_atom_cache = g_hash_table_new (g_direct_hash, g_direct_equal);
   xfontmap->n_fonts = 0;
 }
 
@@ -1523,3 +1530,46 @@ pango_x_fontmap_cache_clear (PangoXFontMap   *xfontmap)
   xfontmap->freed_fonts->length = 0;
 }
 
+
+Atom
+pango_x_fontmap_atom_from_name (PangoFontMap *fontmap, 
+				const char   *atomname)
+{
+  PangoXFontMap *xfm = PANGO_X_FONT_MAP(fontmap);
+  gpointer found;
+  Atom atom;
+
+  found = g_hash_table_lookup (xfm->to_atom_cache, atomname);
+
+  if (found) 
+    return (Atom)(GPOINTER_TO_UINT(found));
+
+  atom = XInternAtom (xfm->display, atomname, FALSE);
+  g_hash_table_insert (xfm->to_atom_cache, g_strdup (atomname), 
+		       (gpointer)atom);
+
+  return atom;
+}
+
+
+const char *
+pango_x_fontmap_name_from_atom (PangoFontMap *fontmap, 
+				Atom          atom)
+{
+  PangoXFontMap *xfm = PANGO_X_FONT_MAP(fontmap);
+  gpointer found;
+  char *name, *name2;
+
+  found = g_hash_table_lookup (xfm->from_atom_cache, GUINT_TO_POINTER(atom));
+
+  if (found) 
+    return (const char *)found;
+
+  name = XGetAtomName (xfm->display, atom);
+  name2 = g_strdup (name);
+  XFree (name);
+
+  g_hash_table_insert (xfm->from_atom_cache, (gpointer)atom, name2);
+
+  return name2;
+}

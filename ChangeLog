@@ -1,3 +1,22 @@
+2000-11-08  Robert Brady  <rwb197@zepler.org>
+
+	* pango/pangox-fontmap.c, pango/pangox-private.h: Add a 
+	per-PangoXFontMap cache for X Atoms.
+
+	* pango/pango-intset.c, pango/pango-intset.h: Integer set.
+
+	* pango/pangox.c, pango/pangox.h: Mainly add two new functions, 
+	font_struct_get_ligatures, to parse X font properties for ligature
+	info, and pango_x_apply_ligatures, which does that actual ligation.
+
+	Also add utility functions pango_x_fallback_shaper, 
+	pango_x_find_first_subfont.
+
+	* pango/pango-indic.c, pango/pango-indic.h: Utility functions for 
+	Indic scripts.
+
+	* pango/Makefile.am: Add pango-intset, pango-indic.
+	
 Thu Nov  2 16:21:22 2000  Owen Taylor  <otaylor@redhat.com>
 
 	* New Arabic shaper from Karl Koehler.

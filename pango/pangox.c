@@ -2,6 +2,7 @@
  * gscriptx.c: Routines for handling X fonts
  *
  * Copyright (C) 1999 Red Hat Software
+ * Copyright (C) 2000 SuSE Linux Ltd
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -27,6 +28,9 @@
 #include <fribidi/fribidi.h>
 #include "pangox.h"
 #include "pangox-private.h"
+#include "pango-intset.h"
+
+#define PANGO_LIGATURE_HACK_DEBUG
 
 #include <config.h>
 
@@ -40,6 +44,57 @@
 typedef struct _PangoXFontClass   PangoXFontClass;
 typedef struct _PangoXMetricsInfo PangoXMetricsInfo;
 typedef struct _PangoXContextInfo PangoXContextInfo;
+typedef struct _PangoXLigatureInfo   PangoXLigatureInfo;
+typedef struct _PangoXLigatureSource PangoXLigatureSource;
+
+static int
+hex_to_integer (const char *s) 
+{
+  int a;
+  char *end_ptr;
+  
+  if (!*s)
+    return (gunichar)-1;
+
+  a = strtol (s, &end_ptr, 16);
+  if (*end_ptr)
+    return (gunichar)-1;  /* Invalid characters in string */
+    
+  if (a <= 0 || a >= 0xffff)
+    return (gunichar)-1; /* Character out of range */
+  
+  return a;
+}
+
+static PangoIntSet *
+parse_gintset_spec (char *s) 
+{
+  char *m = NULL;
+  PangoIntSet *set = pango_int_set_new ();
+  s = strtok_r (s, ",", &m);
+  while (s)
+    {
+      char *p = strchr (s, '-');
+      if (!p) 
+	{
+	  int i = hex_to_integer (s);
+	  if (i != -1)
+	    pango_int_set_add (set, i);
+	}
+      else 
+	{
+	  int start, end;
+	  *p = 0;
+	  p++;
+	  start = hex_to_integer (s);
+	  end = hex_to_integer (p);
+	  if (start != -1 && end != -1)
+	    pango_int_set_add_range (set, start, end);
+	}
+      s = strtok_r (NULL, ",", &m);
+    }
+  return set;
+}
 
 struct _PangoXSubfontInfo
 {
@@ -48,6 +103,12 @@ struct _PangoXSubfontInfo
   gboolean     is_1byte;
   int          range_byte1;
   int          range_byte2;
+  
+  /* hash table mapping setnames to PangoIntSets */
+  GHashTable *ligature_sets;
+   
+  PangoXLigatureInfo *ligs;
+  int n_ligs;
 };
 
 struct _PangoXMetricsInfo
@@ -65,6 +126,24 @@ struct _PangoXContextInfo
 struct _PangoXFontClass
 {
   PangoFontClass parent_class;
+};
+
+struct _PangoXLigatureSource
+{
+  gboolean is_set;
+  union {
+    PangoIntSet *set;
+    gunichar glyph;
+  } data;
+};
+
+struct _PangoXLigatureInfo 
+{
+  int n_source;
+  PangoXLigatureSource *source;
+
+  gunichar *dest;
+  int n_dest;
 };
 
 static PangoFontClass *parent_class;	/* Parent class structure for PangoXFont */
@@ -107,6 +186,11 @@ static void     pango_x_get_item_properties (PangoItem      *item,
 					     PangoAttrColor *bg_color,
 					     gboolean       *bg_set);
 
+static void font_struct_get_ligatures (PangoFontMap *map,
+				       Display *display, 
+				       XFontStruct *fs, 
+				       PangoXSubfontInfo *info);
+
 static inline PangoXSubfontInfo *
 pango_x_find_subfont (PangoFont  *font,
 		      PangoXSubfont subfont_index)
@@ -115,7 +199,7 @@ pango_x_find_subfont (PangoFont  *font,
   
   if (subfont_index < 1 || subfont_index > xfont->n_subfonts)
     {
-      g_warning ("Invalid subfont %d", subfont_index);
+      g_warning ("Error parsing ligature info: Invalid subfont %d", subfont_index);
       return NULL;
     }
   
@@ -132,11 +216,12 @@ pango_x_make_font_struct (PangoFont *font, PangoXSubfontInfo *info)
   
   info->font_struct = pango_x_font_cache_load (cache, info->xlfd);
   if (!info->font_struct)
-    g_warning ("Cannot load font for XLFD '%s\n", info->xlfd);
+    g_warning ("Error parsing ligature info: Cannot load font for XLFD '%s\n", info->xlfd);
   
   info->is_1byte = (info->font_struct->min_byte1 == 0 && info->font_struct->max_byte1 == 0);
   info->range_byte1 = info->font_struct->max_byte1 - info->font_struct->min_byte1 + 1;
   info->range_byte2 = info->font_struct->max_char_or_byte2 - info->font_struct->min_char_or_byte2 + 1;
+  font_struct_get_ligatures (xfont->fontmap, xfont->display, info->font_struct, info);
 }
 
 static inline XFontStruct *
@@ -462,7 +547,7 @@ get_font_metrics_from_subfonts (PangoFont        *font,
 	    }
 	}
       else
-	g_warning ("Invalid subfont %d in get_font_metrics_from_subfonts", GPOINTER_TO_UINT (tmp_list->data));
+	g_warning ("Error parsing ligature info: Invalid subfont %d in get_font_metrics_from_subfonts", GPOINTER_TO_UINT (tmp_list->data));
 	  
       tmp_list = tmp_list->next;
     }
@@ -733,6 +818,9 @@ pango_x_insert_subfont (PangoFont *font, const char *xlfd)
   
   info->xlfd = g_strdup (xlfd);
   info->font_struct = NULL;
+  info->n_ligs = 0;
+  info->ligs = 0;
+  info->ligature_sets = 0;
 
   xfont->n_subfonts++;
   
@@ -901,7 +989,7 @@ pango_x_font_subfont_xlfd (PangoFont     *font,
   subfont = pango_x_find_subfont (font, subfont_id);
   if (!subfont)
     {
-      g_warning ("pango_x_font_subfont_xlfd: Invalid subfont_id specified");
+      g_warning ("Error parsing ligature info: pango_x_font_subfont_xlfd: Invalid subfont_id specified");
       return NULL;
     }
 
@@ -932,12 +1020,19 @@ subfonts_foreach (gpointer key, gpointer value, gpointer data)
 }
 
 static void
+free_sets_foreach (gpointer key, gpointer value, gpointer data)
+{
+  g_free (key);
+  pango_int_set_destroy (value);
+}
+
+static void
 pango_x_font_finalize (GObject *object)
 {
   PangoXFont *xfont = (PangoXFont *)object;
   PangoXFontCache *cache = pango_x_font_map_get_font_cache (xfont->fontmap);
 
-  int i;
+  int i, j;
 
   for (i=0; i<xfont->n_subfonts; i++)
     {
@@ -947,6 +1042,20 @@ pango_x_font_finalize (GObject *object)
 
       if (info->font_struct)
 	pango_x_font_cache_unload (cache, info->font_struct);
+
+      if (info->ligs) 
+	{
+	  
+	  for (j=0; j<info->n_ligs;j++) 
+	    {
+	      g_free (info->ligs[j].source);
+	    }
+	  
+	  g_free (info->ligs);
+	  
+	  g_hash_table_foreach (info->ligature_sets, free_sets_foreach, NULL);
+	  g_hash_table_destroy (info->ligature_sets);
+	}
 
       g_free (info);
     }
@@ -1365,5 +1474,410 @@ pango_x_get_item_properties (PangoItem      *item,
 	  break;
 	}
       tmp_list = tmp_list->next;
+    }
+}
+
+static void 
+font_struct_get_ligatures (PangoFontMap *fontmap,
+                           Display *display, 
+                           XFontStruct *fs,
+                           PangoXSubfontInfo *info)
+{
+  int i;
+   
+  PangoXLigatureInfo *linfo = 0;
+  int n_linfo = 0;
+
+  GList *list = g_list_append (NULL, g_strdup ("PANGO_LIGATURE_HACK"));
+  GList *list_start = list;
+
+  info->ligature_sets = g_hash_table_new (g_str_hash, g_str_equal);
+   
+  while (list) 
+    {
+      Atom this_atom = pango_x_fontmap_atom_from_name (fontmap, (char *)list->data);
+      for (i = 0; i < fs->n_properties; i++)
+        {
+          if (fs->properties[i].name == this_atom) 
+            {
+              char *val = g_strdup (pango_x_fontmap_name_from_atom (fontmap, fs->properties[i].card32));
+              char *p;
+              char *a = strtok_r (val, " ", &p);
+              while (a)
+                {
+                  char *r;
+                  char *m;
+                  char *q;
+                  PangoXLigatureSource *source = NULL;
+                  gunichar *dest = NULL;
+                  int n_source = 0;
+                  int n_dest = 0;
+                  PangoXLigatureInfo *xli;
+                  
+                  switch (*a) 
+                    {
+                      
+                    case '$': 
+                      /* class being defined */
+                      {
+                        char *name = a + 1;
+                        char *data = strchr (a, '=');
+                        PangoIntSet *set;
+                        if (!data) 
+                          {
+#ifdef PANGO_LIGATURE_HACK_DEBUG
+                            g_warning ("Error parsing ligature info: Isolated $.\n");
+#endif 
+                            break;
+                          }
+                        
+                        *data = 0;
+                        data++;
+                        set = parse_gintset_spec (data);
+                        if (!set) 
+                          {
+#ifdef PANGO_LIGATURE_HACK_DEBUG
+                            g_warning ("Error parsing ligature info: Invalid glyphset.\n");
+#endif
+                            break;
+                          }
+                        g_hash_table_insert (info->ligature_sets, 
+                                             g_strdup (name), set);
+                        break;
+                      }
+                      
+                    case ':': 
+                      /* a pointer */
+                      {
+                        char *lang = a+1;
+                        char *name = strchr (lang, ':');
+                        if (name) 
+                          {
+                            name++;
+                            list = g_list_append (list, g_strdup (name));
+                          }
+                        else 
+			  {
+#ifdef PANGO_LIGATURE_HACK_DEBUG
+			    g_warning ("Error parsing ligature info: Bad pointer.\n");
+#endif
+			  }
+                        break;
+                      }
+                      
+                    default:
+                      /* a literal */
+                      {
+                        n_linfo++;
+                        linfo = g_realloc (linfo, sizeof (PangoXLigatureInfo) * 
+                                           n_linfo);
+                        r = strchr (a, '=');
+                        if (!r) 
+                          {
+#ifdef PANGO_LIGATURE_HACK_DEBUG
+                            g_warning ("Error parsing ligature info: No equals.\n");
+#endif
+                            n_linfo--;
+                            break;
+                          }
+                        *r = 0;
+                        r++;
+                        q = a;
+                        q = strtok_r (q, "+", &m);
+                        while (q) 
+                          {
+                            n_source ++;
+                            source = g_realloc (source, n_source * 
+                                                sizeof (PangoXLigatureSource));
+                            if (q[0] == '%') 
+                              {
+                                source[n_source-1].is_set = 1;
+                                source[n_source-1].data.set = 
+                                  g_hash_table_lookup (info->ligature_sets, 
+                                                       q+1);
+                                if (!source[n_source-1].data.set) 
+				  {
+#ifdef PANGO_LIGATURE_HACK_DEBUG
+				    g_warning ("Error parsing ligature info: Unable to locate glyphset : %s\n", q+1);
+#endif
+				    source [n_source-1].is_set = 0;
+				    source [n_source-1].data.glyph = 0;
+				  }
+                              } 
+                            else 
+                              {
+                                int i = hex_to_integer (q);
+                                if (i == -1) 
+				  {
+#ifdef PANGO_LIGATURE_HACK_DEBUG
+				    g_warning ("Error parsing ligature info: Bad character value : %s. Assuming 0\n", q);
+#endif
+				    i = 0;
+				  }
+                                source [n_source-1].is_set = 0;
+                                source [n_source-1].data.glyph = i;
+                              }
+                            q = strtok_r (NULL, "+", &m);
+                          }
+                        q = r;
+                        q = strtok_r (q, "+", &m);
+                        while (q) 
+                          {
+                            n_dest++;
+                            dest = g_realloc (dest, n_dest * sizeof (gunichar));
+                            
+                            if (q[0] == '%') 
+			      {
+				char *er;
+				dest[n_dest-1] = -strtol (q+1, &er, 10);
+				if (*er) 
+				  {
+#ifdef PANGO_LIGATURE_HACK_DEBUG
+				    g_warning ("Error parsing ligature info: Bad %% reference. Assuming 1");
+#endif
+				    dest[n_dest-1] = -1;
+				  }
+			      }
+                            else 
+			      {
+				int i = hex_to_integer (q);
+				if (i != -1) 
+				  {
+				    dest[n_dest-1] = i;
+				  } 
+				else 
+				  {
+				    dest[n_dest-1] = 0;
+				  }
+			      }
+                            
+                            q = strtok_r (NULL, "+", &m);
+                          }
+                        
+                        xli = linfo + n_linfo - 1;
+                        
+                        xli->source = source;
+                        xli->n_source = n_source;
+                        xli->dest = dest;
+                        xli->n_dest = n_dest;
+                        
+                        if (xli->n_dest > xli->n_source)
+                          {
+                            g_warning ("Error parsing ligature info: Warning : truncating substitute string.");
+                            xli->n_dest = n_source;
+                          }
+                      }
+                    }
+                  
+                  /* end switch */
+                  a = strtok_r (NULL, " ", &p);
+                }
+              g_free (val);
+            }
+        }
+      list = g_list_next (list);
+    }
+  
+  list = list_start;
+  
+  while (list) 
+    {
+      g_free (list->data);
+      list = g_list_next (list);
+    }
+
+  g_list_free (list);
+  
+  info->n_ligs = n_linfo;
+  info->ligs = linfo;
+}
+
+/**
+ * pango_x_apply_ligatures:
+ * @font: a #PangoFont
+ * @subfont: a #PangoXSubFont
+ * @glyphs: a pointer to a pointer to an array of
+ *          glyph indices. This holds the input glyphs
+ *          on entry, and ligation will be performed
+ *          on this array in-place. If the number
+ *          of glyphs is increased, Pango will
+ *          call g_realloc() on @glyphs, so @chars
+ *          must be allocated with g_malloc().
+ * @n_glyphs: a pointer to the number of glyphs
+ *            *@n_glyphs is the number of original glyphs
+ *            on entry and the number of resulting glyphs
+ *            upon return
+ * @clusters: a pointer to the cluster information.
+ *
+ * Does subfont-specific ligation.  This involves replacing
+ * groups of glyphs in @chars with alternate groups of glyphs
+ * based on information provided in the X font.
+ *
+ * Return value: TRUE if any ligations were performed.
+ */
+gboolean
+pango_x_apply_ligatures (PangoFont     *font, 
+                         PangoXSubfont  subfont_id,
+                         gunichar     **glyphs, 
+                         int           *n_glyphs,
+                         int           **clusters) 
+{
+  int hits = 0;
+  int i, j, k;
+  PangoXSubfontInfo *subfont;
+  PangoXLigatureInfo *linfo;
+  int n_linfo = 0;
+  XFontStruct *fs;
+  
+  g_return_val_if_fail (font != NULL, 0);
+
+  subfont = pango_x_find_subfont (font, subfont_id);
+  if (!subfont)
+    return 0;
+
+  fs = pango_x_get_font_struct (font, subfont);
+  if (!fs)
+    return 0;
+
+  linfo = subfont->ligs;
+  n_linfo = subfont->n_ligs;
+  
+  for (i = 0; i < *n_glyphs; i++) 
+    for (j= 0; j < n_linfo; j++) 
+      {
+        PangoXLigatureInfo *li = &linfo[j];
+        gunichar *temp;
+        
+        if (i + li->n_source > *n_glyphs) 
+          continue;
+        
+        for (k = 0; k < li->n_source; k++) 
+          {
+            if ((li->source[k].is_set && 
+                 !pango_int_set_contains (li->source[k].data.set,
+                                          (*glyphs)[i + k]))
+                || (!li->source[k].is_set && 
+                    (*glyphs)[i + k] != li->source[k].data.glyph))
+              goto next_pattern;
+          }
+        
+
+        {
+          gunichar buffer[16];
+          if (li->n_source < G_N_ELEMENTS (buffer))
+            {
+              memcpy (buffer, &(*glyphs)[i], li->n_source * sizeof (gunichar));
+              temp = buffer;
+            }
+          else
+            { 
+              temp = g_memdup (&(*glyphs)[i], li->n_source * sizeof (gunichar));
+            }
+          
+          for (k = 0; k < li->n_dest; k++) 
+            {
+              int f = li->dest[k];
+              if (f < 0) 
+                f = temp[i - (1+f)];
+              
+              (*glyphs) [i + k - (li->n_dest - li->n_source)] = f;
+            }
+          
+          for (k = 0; k < li->n_source-li->n_dest; k++)
+            (*glyphs) [i+k] = 0;
+          
+          hits++;
+          i += li->n_source - 1;
+
+          if (temp != buffer) 
+            g_free (temp);
+        }
+
+      next_pattern:
+      }
+  
+  return hits >= 1;
+}
+  
+/**
+ * pango_x_find_first_subfont:
+ * @font: A #PangoFont
+ * @rfont: A pointer to a #PangoXSubfont
+ * @charsets: An array of charsets.
+ * @n_charset: The number of charsets in @charsets.
+ * 
+ * Looks for subfonts with the @charset charset,
+ * in @font, and puts the first one in *@rfont
+ *
+ * Return value: TRUE if *@rfont now contains a font.
+ */
+gboolean
+pango_x_find_first_subfont (PangoFont      *font, 
+                            char          **charsets,
+			    int             n_charsets,
+                            PangoXSubfont  *rfont)
+{
+  int n_subfonts;
+  gboolean result = FALSE;
+  PangoXSubfont *subfonts;
+  int *subfont_charsets;
+
+  g_return_val_if_fail (font, 0);
+  g_return_val_if_fail (charsets, 0);
+  g_return_val_if_fail (rfont, 0);
+
+  n_subfonts = pango_x_list_subfonts (font, charsets, n_charsets,
+                                      &subfonts, &subfont_charsets);
+
+  if (n_subfonts > 0)
+    {
+      *rfont = subfonts[0];
+      result = TRUE;
+    }
+
+  g_free (subfonts);
+  g_free (subfont_charsets);
+  return result;
+}
+
+/**
+ * pango_x_fallback_shape:
+ * @font: A #PangoFont
+ * @glyphs: A pointer to a #PangoGlyphString
+ * @text: UTF-8 string
+ * @n_chars: Number of UTF-8 seqs in @text
+ * 
+ * This is a simple fallback shaper, that can be used
+ * if no subfont that supports a given script is found. 
+ * For every character in @text, it puts the Unknown glyph.
+ */
+void 
+pango_x_fallback_shape (PangoFont        *font, 
+                        PangoGlyphString *glyphs, 
+                        const char       *text, 
+                        int               n_chars) 
+{
+  PangoGlyph unknown_glyph = pango_x_get_unknown_glyph (font);
+  PangoRectangle logical_rect;
+  const char *p;
+  int i;
+  
+  g_return_if_fail (font);
+  g_return_if_fail (glyphs);
+  g_return_if_fail (text);
+  g_return_if_fail (n_chars >= 0);
+
+  pango_font_get_glyph_extents (font, unknown_glyph, NULL, &logical_rect);
+  pango_glyph_string_set_size (glyphs, n_chars);
+  p = text;
+  for (i = 0; i < n_chars; i++)
+    {
+      glyphs->glyphs[i].glyph = unknown_glyph;
+      glyphs->glyphs[i].geometry.x_offset = 0;
+      glyphs->glyphs[i].geometry.y_offset = 0;
+      glyphs->glyphs[i].geometry.width = logical_rect.width;
+      glyphs->log_clusters[i] = 0;
+      
+      p = g_utf8_next_char (p);
     }
 }

@@ -2,6 +2,7 @@
  * pangox.h:
  *
  * Copyright (C) 1999 Red Hat Software
+ * Copyright (C) 2000 SuSE Linux Ltd
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -101,6 +102,24 @@ PangoXFontCache *pango_x_font_map_get_font_cache (PangoFontMap *font_map);
 
 char *pango_x_font_subfont_xlfd (PangoFont     *font,
 				 PangoXSubfont  subfont_id);
+  
+  
+gboolean pango_x_find_first_subfont (PangoFont     *font, 
+                                     char         **charsets,
+				     int            n_charsets,
+                                     PangoXSubfont *rfont);
+
+void pango_x_fallback_shape (PangoFont        *font, 
+                             PangoGlyphString *glyphs, 
+                             const char       *text, 
+                             int               n_chars);
+
+gboolean pango_x_apply_ligatures (PangoFont     *font, 
+                                  PangoXSubfont  subfont, 
+                                  gunichar     **chars, 
+                                  int           *n_glyphs,
+                                  int          **clusters);
+
 
 #ifdef __cplusplus
 }
