@@ -30,6 +30,7 @@ EXPORTS
 	pango_attr_shape_new
 	pango_attr_shape_new_with_data
 	pango_attr_size_new
+	pango_attr_size_new_absolute
 	pango_attr_stretch_new
 	pango_attr_strikethrough_new
 	pango_attr_style_new
