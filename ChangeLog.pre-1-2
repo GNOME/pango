@@ -1,3 +1,19 @@
+Mon Aug  5 23:12:13 2002  Owen Taylor  <otaylor@redhat.com>
+
+	Patch from Keith Packard:
+
+	* pango/pangoxft-private.h (struct _PangoXftFont): Add
+	some comments.
+
+	* pango/pangoxft-private.h pango/pangoxft-font.c
+	pango/pangoxft-fontmap.c: Identify coverage by a 
+	pair of filename and index within the filename instead
+	of just a filename, to handle TrueType Collection (TTC)
+	fonts.
+
+	* pango/pangoxft-fontmap.c (pango_xft_make_pattern):
+	Remove some leftover comments.
+
 Mon Aug  5 21:54:21 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pangoxft-fontmap.c (pango_xft_get_font_map): Export.

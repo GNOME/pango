@@ -43,7 +43,7 @@ struct _PangoXftFontMap
   PangoFontMap parent_instance;
 
   GHashTable *fontset_hash; /* Maps PangoFontDescription -> PangoXftPatternSet */
-  GHashTable *coverage_hash; /* Maps font file name -> PangoCoverage */
+  GHashTable *coverage_hash; /* Maps font file name/id -> PangoCoverage */
 
   GHashTable *fonts; /* Maps XftPattern -> PangoXftFont */
   GQueue *freed_fonts; /* Fonts in fonts that has been freed */
@@ -203,6 +203,20 @@ pango_xft_pattern_equal (FcPattern *pattern1,
   return FcPatternEqual (pattern1, pattern2);
 }
 
+static guint
+pango_xft_coverage_key_hash (PangoXftCoverageKey *key)
+{
+  return g_str_hash (key->filename) ^ key->id;
+}
+
+static gboolean
+pango_xft_coverage_key_equal (PangoXftCoverageKey *key1,
+			       PangoXftCoverageKey *key2)
+{
+  return key1->id == key2->id && strcmp (key1->filename, key2->filename) == 0;
+}
+
+
 static void
 pango_xft_init_fontset_hash (PangoXftFontMap *xfontmap)
 {
@@ -282,8 +296,9 @@ pango_xft_get_font_map (Display *display,
 
   xfontmap->fonts = g_hash_table_new ((GHashFunc)pango_xft_pattern_hash,
 				      (GEqualFunc)pango_xft_pattern_equal);
-  pango_xft_init_fontset_hash (xfontmap);
-  xfontmap->coverage_hash = g_hash_table_new_full (g_str_hash, g_str_equal,
+
+  xfontmap->coverage_hash = g_hash_table_new_full ((GHashFunc)pango_xft_coverage_key_hash,
+						   (GEqualFunc)pango_xft_coverage_key_equal,
 						   (GDestroyNotify)g_free,
 						   (GDestroyNotify)pango_coverage_unref);
   xfontmap->freed_fonts = g_queue_new ();
@@ -592,9 +607,6 @@ pango_xft_make_pattern (const PangoFontDescription *description)
   slant = pango_xft_convert_slant (pango_style);
   weight = pango_xft_convert_weight (pango_font_description_get_weight (description));
   
-  /* To fool Xft into not munging glyph indices, we open it as glyphs-fontspecific
-   * then set the encoding ourself
-   */
   pattern = FcPatternBuild (0,
 			     FC_WEIGHT, FcTypeInteger, weight,
 			     FC_SLANT,  FcTypeInteger, slant,
@@ -820,23 +832,29 @@ pango_xft_font_map_cache_clear (PangoXftFontMap   *xfontmap)
 }
 
 void
-_pango_xft_font_map_set_coverage (PangoFontMap  *fontmap,
-				  const char    *name,
-				  PangoCoverage *coverage)
+_pango_xft_font_map_set_coverage (PangoFontMap              *fontmap,
+				  const PangoXftCoverageKey *key,
+				  PangoCoverage             *coverage)
 {
-  PangoXftFontMap *xfontmap = PANGO_XFT_FONT_MAP (fontmap);
+  PangoXftFontMap     *xfontmap = PANGO_XFT_FONT_MAP (fontmap);
+  PangoXftCoverageKey *key_dup;
 
-  g_hash_table_insert (xfontmap->coverage_hash, g_strdup (name),
-		       pango_coverage_ref (coverage));
+  key_dup = g_malloc (sizeof (PangoXftCoverageKey) + strlen (key->filename) + 1);
+  key_dup->id = key->id;
+  key_dup->filename = (char *) (key_dup + 1);
+  strcpy (key_dup->filename, key->filename);
+  
+  g_hash_table_insert (xfontmap->coverage_hash,
+		       key_dup, pango_coverage_ref (coverage));
 }
 
 PangoCoverage *
-_pango_xft_font_map_get_coverage (PangoFontMap  *fontmap,
-				  const char    *name)
+_pango_xft_font_map_get_coverage (PangoFontMap	      *fontmap,
+				  const PangoXftCoverageKey *key)
 {
   PangoXftFontMap *xfontmap = PANGO_XFT_FONT_MAP (fontmap);
 
-  return g_hash_table_lookup (xfontmap->coverage_hash, name);
+  return g_hash_table_lookup (xfontmap->coverage_hash, key);
 }
 
 void

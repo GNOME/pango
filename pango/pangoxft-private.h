@@ -28,24 +28,31 @@
 G_BEGIN_DECLS
 
 typedef struct _PangoXftFont PangoXftFont;
+typedef struct _PangoXftCoverageKey PangoXftCoverageKey;
 
 struct _PangoXftFont
 {
   PangoFont parent_instance;
 
-  FcPattern *font_pattern;
-  XftFont *xft_font;
-  PangoFont *mini_font;
-  PangoFontMap *fontmap;
+  FcPattern *font_pattern;	    /* fully resolved pattern */
+  XftFont *xft_font;		    /* created on demand */
+  PangoFont *mini_font;		    /* font used to display missing glyphs */
+  PangoFontMap *fontmap;	    /* associated map */
   PangoFontDescription *description;
 
   GSList *metrics_by_lang;
 
-  guint16 mini_width;
+  guint16 mini_width;		    /* metrics for missing glyph drawing */
   guint16 mini_height;
   guint16 mini_pad; 
   
   gboolean in_cache;
+};
+
+struct _PangoXftCoverageKey
+{
+  char *filename;	
+  int id;            /* needed to handle TTC files with multiple faces */
 };
 
 PangoXftFont * _pango_xft_font_new              (PangoFontMap                *font,
@@ -57,10 +64,10 @@ void           _pango_xft_font_map_add          (PangoFontMap                *fo
 void           _pango_xft_font_map_remove       (PangoFontMap                *fontmap,
 						 PangoXftFont                *xfont);
 void           _pango_xft_font_map_set_coverage (PangoFontMap                *fontmap,
-						 const char                  *name,
+						 const PangoXftCoverageKey   *key,
 						 PangoCoverage               *coverage);
 PangoCoverage *_pango_xft_font_map_get_coverage (PangoFontMap                *fontmap,
-						 const char                  *name);
+						 const PangoXftCoverageKey   *key);
 void           _pango_xft_font_map_get_info     (PangoFontMap                *fontmap,
 						 Display                    **display,
 						 int                         *screen);

@@ -551,7 +551,7 @@ pango_xft_font_get_coverage (PangoFont     *font,
 			     PangoLanguage *language)
 {
   PangoXftFont *xfont = (PangoXftFont *)font;
-  FcChar8 *filename = NULL;
+  PangoXftCoverageKey key;
   PangoCoverage *coverage;
   Display *display;
   FcChar32  map[FC_CHARSET_MAP_SIZE];
@@ -561,15 +561,33 @@ pango_xft_font_get_coverage (PangoFont     *font,
   
   _pango_xft_font_map_get_info (xfont->fontmap, &display, NULL);
 
-  FcPatternGetString (xfont->font_pattern, FC_FILE, 0, &filename);
+  /*
+   * Assume that coverage information is identified by
+   * a filename/index pair; there shouldn't be any reason
+   * this isn't true, but it's not specified anywhere
+   */
+  if (FcPatternGetString (xfont->font_pattern, FC_FILE, 0, (FcChar8 **) &key.filename) != FcResultMatch)
+    return NULL;
+
+  if (FcPatternGetInteger (xfont->font_pattern, FC_INDEX, 0, &key.id) != FcResultMatch)
+    return NULL;
   
-  coverage = _pango_xft_font_map_get_coverage (xfont->fontmap, (char *) filename);
+  coverage = _pango_xft_font_map_get_coverage (xfont->fontmap, &key);
 
   if (coverage)
     return pango_coverage_ref (coverage);
 
-  FcPatternGetCharSet (xfont->font_pattern, FC_CHARSET, 0, &charset);
+  /*
+   * Pull the coverage out of the pattern, this
+   * doesn't require loading the font
+   */
+  if (FcPatternGetCharSet (xfont->font_pattern, FC_CHARSET, 0, &charset) != FcResultMatch)
+    return NULL;
   
+  /*
+   * Convert an Fc CharSet into a pango coverage structure.  Sure
+   * would be nice to just use the Fc structure in place...
+   */
   coverage = pango_coverage_new ();
   for (ucs4 = FcCharSetFirstPage (charset, map, &pos);
        ucs4 != FC_CHARSET_DONE;
@@ -592,7 +610,7 @@ pango_xft_font_get_coverage (PangoFont     *font,
 	}
     }
 
-  _pango_xft_font_map_set_coverage (xfont->fontmap, filename, coverage);
+  _pango_xft_font_map_set_coverage (xfont->fontmap, &key, coverage);
  
   return coverage;
 }
@@ -906,4 +924,3 @@ pango_xft_font_has_char (PangoFont *font,
   
   return XftCharExists (NULL, xft_font, wc);
 }
-
