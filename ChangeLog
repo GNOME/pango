@@ -1,3 +1,30 @@
+Sat Aug  2 23:19:16 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-engine.[ch] modules/*/*-{fc,win32,x}.c
+	pango/modules.c pango/break.c pango/pango-context.c
+	pango/pango-layout.c pango/pango-modules.h 
+	pango/querymodules.c pango/shape.c: Make 
+	PangoEngine{,Lang,Shape} GObjects, and use a
+	GTypeModule-based module-loading system closely based
+	on the one used for GtkIMContext and GtkThemeEngine.
+
+	* pango/pango-impl-utils.h: OK, I'm tired of typing
+	in get_type() functions.
+
+	* pango/pango-script.[ch] pango/pango-script-table.h
+	tests/testscript.c tools/gen-script-table.pl: Add port
+	of script-range code from ICU in preparation for future
+	use. (#91542)
+
+	* tools/gen-script-for-lang.c: Utility program to determine
+	the script for each fontconfig .orth file.
+
+	* docs/tmpl/{scripts.sgml,pango-engine-lang.sgml,
+	pango-engine-shape.sgml} docs/pango-sections.txt docs/pango-docs.sgml:
+	Redo to go along with the above changes.
+
+	* configure.in: chmod +x tests/runtests.sh
+
 2003-08-03  Noah Levitt  <nlevitt@columbia.edu>
 
 	* pango/Makefile.am (libpangoxft_1_0_la_DEPENDENCIES): Really make

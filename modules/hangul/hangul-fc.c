@@ -24,11 +24,15 @@
 
 #include "pango-engine.h"
 #include "pango-utils.h"
+#include "pangofc-font.h"
 
 #include "hangul-defs.h"
 #include "tables-jamos.i"
 
-#include "pangofc-font.h"
+/* No extra fields needed */
+typedef PangoEngineShape      HangulEngineFc;
+typedef PangoEngineShapeClass HangulEngineFcClass ;
+
 #define SCRIPT_ENGINE_NAME "HangulScriptEngineFc"
 #define RENDER_TYPE PANGO_RENDER_TYPE_FC
 
@@ -275,7 +279,8 @@ render_syllable (PangoFont *font, gunichar *text, int length,
 }
 
 static void 
-hangul_engine_shape (PangoFont        *font,
+hangul_engine_shape (PangoEngineShape *engine,
+		     PangoFont        *font,
 		     const char       *text,
 		     gint              length,
 		     PangoAnalysis    *analysis,
@@ -357,42 +362,26 @@ hangul_engine_shape (PangoFont        *font,
     g_free(jamos);
 }
 
-static PangoCoverage *
-hangul_engine_get_coverage (PangoFont  *font,
-			   PangoLanguage *lang)
+static void
+hangul_engine_fc_class_init (PangoEngineShapeClass *class)
 {
-  PangoCoverage *result = pango_coverage_new ();
-  int i;
-
-  /* Well, no unicode rendering engine could render Hangul Jamo area
-     _exactly_, I sure.  */
-  for (i = 0x1100; i <= 0x11ff; i++)
-    pango_coverage_set (result, i, PANGO_COVERAGE_FALLBACK);
-  pango_coverage_set (result, 0x302e, PANGO_COVERAGE_FALLBACK);
-  pango_coverage_set (result, 0x302f, PANGO_COVERAGE_FALLBACK);
-  for (i = 0xac00; i <= 0xd7a3; i++)
-    pango_coverage_set (result, i, PANGO_COVERAGE_EXACT);
-  return result;
+  class->script_shape = hangul_engine_shape;
 }
 
-static PangoEngine *
-hangul_engine_xft_new ()
+PANGO_ENGINE_SHAPE_DEFINE_TYPE (HangulEngineFc, hangul_engine_fc,
+				hangul_engine_fc_class_init, NULL);
+
+void 
+PANGO_MODULE_ENTRY(init) (GTypeModule *module)
 {
-  PangoEngineShape *result;
-  
-  result = g_new (PangoEngineShape, 1);
-
-  result->engine.id = SCRIPT_ENGINE_NAME;
-  result->engine.type = PANGO_ENGINE_TYPE_SHAPE;
-  result->engine.length = sizeof (result);
-  result->script_shape = hangul_engine_shape;
-  result->get_coverage = hangul_engine_get_coverage;
-
-  return (PangoEngine *)result;
+  hangul_engine_fc_register_type (module);
 }
 
-/* List the engines contained within this module
- */
+void 
+PANGO_MODULE_ENTRY(exit) (void)
+{
+}
+
 void 
 PANGO_MODULE_ENTRY(list) (PangoEngineInfo **engines,
 			  int              *n_engines)
@@ -401,18 +390,11 @@ PANGO_MODULE_ENTRY(list) (PangoEngineInfo **engines,
   *n_engines = G_N_ELEMENTS (script_engines);
 }
 
-/* Load a particular engine given the ID for the engine
- */
 PangoEngine *
-PANGO_MODULE_ENTRY(load) (const char *id)
+PANGO_MODULE_ENTRY(create) (const char *id)
 {
   if (!strcmp (id, SCRIPT_ENGINE_NAME))
-    return hangul_engine_xft_new ();
+    return g_object_new (hangul_engine_fc_type, NULL);
   else
     return NULL;
-}
-
-void 
-PANGO_MODULE_ENTRY(unload) (PangoEngine *engine)
-{
 }

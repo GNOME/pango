@@ -17,8 +17,9 @@ strings.
 <para>
 Each dynamically-loaded module exports several functions which provide
 the public API. These functions are script_engine_list(),
-script_engine_load() and script_engine_unload().  The latter two
-functions are used for loading and unloading modules, while the first
+script_engine_init() and script_engine_exit, and
+script_engine_create(). The latter three functions are used when
+creating engines from the module at run time, while the first
 function is used when building a catalog of all available modules.
 </para>
 
@@ -63,59 +64,13 @@ points. It contains the following fields:
 
 <!-- ##### STRUCT PangoEngine ##### -->
 <para>
-The #PangoEngine structure contains basic
-information common to all script engines. It
-contains the following fields:
 </para>
 
-@id: a unique string ID for this language engine.
-@type: the "type" of the engine. (Is this engine type or render type??).
-@length: the length of the entire structure in bytes. This is 
-         provided so that new functions can be added at the
-         end of subtypes of #PangoEngine without breaking
-         older modules.
 
-<!-- ##### STRUCT PangoEngineLang ##### -->
+<!-- ##### STRUCT PangoEngineClass ##### -->
 <para>
-The #PangoEngineLang structure extends the
-basic #PangoEngine structure to engines that
-deal with the rendering-system independent part
-of of the rendering pipeline. It contains the following fields:
+
 </para>
-
-@engine: a nested structure containing basic engine data.
-@script_break: a function that provides an implementation for pango_break().
-
-<!-- ##### STRUCT PangoEngineShape ##### -->
-<para>
-The #PangoEngineShape structure extends the
-basic #PangoEngine structure to engines that
-deal with the rendering-system dependent part
-of of the rendering pipeline. It contains the following fields:
-</para>
-
-@engine: a nested structure containing basic engine data.
-@script_shape: a function that provides an implementation for pango_shape.
-@get_coverage: 
-
-<!-- ##### MACRO PANGO_ENGINE_TYPE_LANG ##### -->
-<para>
-A string constant defining the engine type
-for <firstterm>language engines</firstterm>.
-These engines have a engine structure of 
-type #PangoEngineLang.
-</para>
-
-
-
-<!-- ##### MACRO PANGO_ENGINE_TYPE_SHAPE ##### -->
-<para>
-A string constant defining the engine type
-for <firstterm>shaping engines</firstterm>.
-These engines have a engine structure of 
-type #PangoEngineShape.
-</para>
-
 
 
 <!-- ##### MACRO PANGO_RENDER_TYPE_NONE ##### -->
@@ -129,37 +84,33 @@ specific.
 
 <!-- ##### FUNCTION script_engine_list ##### -->
 <para>
-Function to be provided by a module to list the engines that the
-module supplies. The function stores a pointer to an array
-of #PangoEngineInfo structures and the length of that array in
-the given location.
 </para>
 
 @engines: location to store a pointer to an array of engines.
 @n_engines: location to store the number of elements in @engines.
 
 
-<!-- ##### FUNCTION script_engine_load ##### -->
+<!-- ##### FUNCTION script_engine_init ##### -->
 <para>
-Function to be provided by a module to load a particular engine.
+
 </para>
 
-@id: the ID from the #PangoEngineInfo structure of the
-     module to load.
-@Returns: the newly created script engine.
+@module: 
 
 
-<!-- ##### FUNCTION script_engine_unload ##### -->
+<!-- ##### FUNCTION script_engine_exit ##### -->
 <para>
-Function to be provided by a module to unload an engine loaded
-with script_engine_load().
+
 </para>
 
-@engine: the engine to unload.
 
 
-<!-- Local Variables: -->
-<!-- sgml-parent-document: ("../pango-docs.sgml" "book" "refsect2") -->
-<!-- End: -->
+<!-- ##### FUNCTION script_engine_create ##### -->
+<para>
+
+</para>
+
+@id: 
+@Returns: 
 
 

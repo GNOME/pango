@@ -29,6 +29,10 @@
 
 #include "basic-common.h"
 
+/* No extra fields needed */
+typedef PangoEngineShape      BasicEngineX;
+typedef PangoEngineShapeClass BasicEngineXClass ;
+
 typedef struct _CharRange CharRange;
 typedef struct _Charset Charset;
 typedef struct _CharsetOrdering CharsetOrdering;
@@ -140,8 +144,6 @@ static PangoEngineInfo script_engines[] = {
     basic_ranges, G_N_ELEMENTS(basic_ranges)
   }
 };
-
-static gint n_script_engines = G_N_ELEMENTS (script_engines);
 
 /*
  * X window system script engine portion
@@ -569,7 +571,8 @@ get_char_cache (PangoFont     *font,
 }
 
 static void 
-basic_engine_shape (PangoFont        *font,
+basic_engine_shape (PangoEngineShape *engine,
+		    PangoFont        *font,
 		    const char       *text,
 		    gint              length,
 		    PangoAnalysis    *analysis,
@@ -682,8 +685,9 @@ basic_engine_shape (PangoFont        *font,
 }
 
 static PangoCoverage *
-basic_engine_get_coverage (PangoFont     *font,
-			   PangoLanguage *lang)
+basic_engine_get_coverage (PangoEngineShape *engine,
+			   PangoFont        *font,
+			   PangoLanguage    *lang)
 {
   CharCache *cache = get_char_cache (font, lang);
   PangoCoverage *result = pango_coverage_new ();
@@ -701,20 +705,25 @@ basic_engine_get_coverage (PangoFont     *font,
   return result;
 }
 
-static PangoEngine *
-basic_engine_x_new ()
+static void
+basic_engine_x_class_init (PangoEngineShapeClass *class)
 {
-  PangoEngineShape *result;
-  
-  result = g_new (PangoEngineShape, 1);
+  class->get_coverage = basic_engine_get_coverage;
+  class->script_shape = basic_engine_shape;
+}
 
-  result->engine.id = SCRIPT_ENGINE_NAME;
-  result->engine.type = PANGO_ENGINE_TYPE_SHAPE;
-  result->engine.length = sizeof (result);
-  result->script_shape = basic_engine_shape;
-  result->get_coverage = basic_engine_get_coverage;
+PANGO_ENGINE_SHAPE_DEFINE_TYPE (BasicEngineX, basic_engine_x,
+				basic_engine_x_class_init, NULL);
 
-  return (PangoEngine *)result;
+void 
+PANGO_MODULE_ENTRY(init) (GTypeModule *module)
+{
+  basic_engine_x_register_type (module);
+}
+
+void 
+PANGO_MODULE_ENTRY(exit) (void)
+{
 }
 
 void 
@@ -722,20 +731,14 @@ PANGO_MODULE_ENTRY(list) (PangoEngineInfo **engines,
 			  int              *n_engines)
 {
   *engines = script_engines;
-  *n_engines = n_script_engines;
+  *n_engines = G_N_ELEMENTS (script_engines);
 }
 
 PangoEngine *
-PANGO_MODULE_ENTRY(load) (const char *id)
+PANGO_MODULE_ENTRY(create) (const char *id)
 {
   if (!strcmp (id, SCRIPT_ENGINE_NAME))
-    return basic_engine_x_new ();
+    return g_object_new (basic_engine_x_type, NULL);
   else
     return NULL;
 }
-
-void 
-PANGO_MODULE_ENTRY(unload) (PangoEngine *engine)
-{
-}
-

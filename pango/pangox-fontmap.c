@@ -30,6 +30,7 @@
 /* For XExtSetCloseDisplay */
 #include <X11/Xlibint.h>
 
+#include "pango-engine-private.h"
 #include "pango-fontmap.h"
 #include "pango-utils.h"
 
@@ -1573,7 +1574,7 @@ pango_x_face_get_coverage (PangoXFace      *xface,
 	      if (!coverage)
 		{
 		  PangoEngineShape *engine = (PangoEngineShape *)pango_map_get_engine (shape_map, ch);
-		  coverage = engine->get_coverage (font, language);
+		  coverage = _pango_engine_shape_get_coverage (engine, font, language);
 		  g_hash_table_insert (coverage_hash, map_entry->info->id, coverage);
 		}
 	  

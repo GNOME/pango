@@ -27,13 +27,15 @@ TESTS=runtests.sh
 
 noinst_PROGRAMS = gen-all-unicode dump-boundaries
 
-check_PROGRAMS = testboundaries testcolor
+check_PROGRAMS = testboundaries testcolor testscript
 
 gen_all_unicode_SOURCES = gen-all-unicode.c
 
 testboundaries_SOURCES = testboundaries.c
 
 testcolor_SOURCES = testcolor.c
+
+testscript_SOURCES = testscript.c
 
 dump_boundaries_SOURCES = dump-boundaries.c
 
@@ -42,6 +44,8 @@ gen_all_unicode_LDADD = $(GLIB_LIBS)
 testboundaries_LDADD = ../pango/libpango-$(PANGO_API_VERSION).la
 
 testcolor_LDADD = ../pango/libpango-$(PANGO_API_VERSION).la
+
+testscript_LDADD = ../pango/libpango-$(PANGO_API_VERSION).la
 
 dump_boundaries_LDADD = ../pango/libpango-$(PANGO_API_VERSION).la
 

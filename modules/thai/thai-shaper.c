@@ -692,7 +692,8 @@ get_next_cluster(const char	*text,
 }
 
 void 
-thai_engine_shape (PangoFont        *font,
+thai_engine_shape (PangoEngineShape *engine,
+		   PangoFont        *font,
 		   const char       *text,
 		   gint              length,
 		   PangoAnalysis    *analysis,

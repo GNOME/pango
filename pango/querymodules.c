@@ -88,8 +88,9 @@ void
 query_module (const char *dir, const char *name)
 {
   void (*list) (PangoEngineInfo **engines, gint *n_engines);
-  PangoEngine *(*load) (const gchar *id);
-  void (*unload) (PangoEngine *engine);
+  void (*init) (GTypeModule *module);
+  void (*exit) (void);
+  PangoEngine *(*create) (const gchar *id);
 
   GModule *module;
   gchar *path;
@@ -106,8 +107,9 @@ query_module (const char *dir, const char *name)
 	  
   if (module &&
       g_module_symbol (module, "script_engine_list", (gpointer *) &list) &&
-      g_module_symbol (module, "script_engine_load", (gpointer *) &load) &&
-      g_module_symbol (module, "script_engine_unload", (gpointer *) &unload))
+      g_module_symbol (module, "script_engine_init", (gpointer *) &init) &&
+      g_module_symbol (module, "script_engine_exit", (gpointer *) &exit) &&
+      g_module_symbol (module, "script_engine_create", (gpointer *) &create))
     {
       gint i,j;
       PangoEngineInfo *engines;

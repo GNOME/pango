@@ -54,7 +54,8 @@ thai_has_glyph (ThaiFontInfo *font_info, PangoGlyph glyph);
  * Public functions
  */
 void
-thai_engine_shape (PangoFont        *font,
+thai_engine_shape (PangoEngineShape *engine,
+		   PangoFont        *font,
                    const char       *text,
                    gint              length,
                    PangoAnalysis    *analysis,

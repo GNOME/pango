@@ -49,26 +49,30 @@ endif
 pango-win32res.lo: pango.rc
 	$(top_srcdir)/../glib/build/win32/lt-compile-resource $< $@
 
-libpango_1_0_la_SOURCES =  \
-	break.c 	   \
-	fonts.c 	   \
-	glyphstring.c 	   \
-	mapping.c 	   \
-	modules.c 	   \
-	pango-attributes.c \
-	pango-color.c	   \
-	pango-context.c    \
-	pango-coverage.c   \
-	pango-fontmap.c	   \
-	pango-fontset.c	   \
-	pango-glyph-item.c \
-	pango-item.c	   \
-	pango-layout.c	   \
-	pango-markup.c	   \
-	pango-tabs.c	   \
-	pango-utils.c	   \
-	reorder-items.c    \
-	shape.c	           \
+libpango_1_0_la_SOURCES =      \
+	break.c 	       \
+	fonts.c 	       \
+	glyphstring.c 	       \
+	mapping.c 	       \
+	modules.c 	       \
+	pango-attributes.c     \
+	pango-color.c	       \
+	pango-context.c        \
+	pango-coverage.c       \
+	pango-engine.c	       \
+	pango-engine-private.h \
+	pango-fontmap.c	       \
+	pango-fontset.c	       \
+	pango-glyph-item.c     \
+	pango-item.c	       \
+	pango-layout.c	       \
+	pango-markup.c	       \
+	pango-script.c	       \
+	pango-script-table.h   \
+	pango-tabs.c	       \
+	pango-utils.c	       \
+	reorder-items.c        \
+	shape.c	               \
 	pango-enum-types.c
 
 pango_headers =		   \
@@ -86,6 +90,7 @@ pango_headers =		   \
 	pango-item.h	   \
 	pango-layout.h	   \
 	pango-modules.h	   \
+	pango-script.h	   \
 	pango-tabs.h	   \
 	pango-types.h	   \
 	pango-utils.h	   \

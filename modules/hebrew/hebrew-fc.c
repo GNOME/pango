@@ -24,7 +24,12 @@
 
 #include "pango-engine.h"
 #include "pango-utils.h"
+#include "pangofc-font.h"
 #include "hebrew-shaper.h"
+
+/* No extra fields needed */
+typedef PangoEngineShape      HebrewEngineFc;
+typedef PangoEngineShapeClass HebrewEngineFcClass ;
 
 #define MAX_CLUSTER_CHRS	20
 
@@ -34,7 +39,6 @@ static PangoEngineRange hebrew_ranges[] = {
   { 0xfb1d, 0xfb4f, "*" }  /* Hebrew presentation forms */
 };
 
-#include "pangofc-font.h"
 #define SCRIPT_ENGINE_NAME "HebrewScriptEngineFc"
 #define RENDER_TYPE PANGO_RENDER_TYPE_FC
 
@@ -124,11 +128,12 @@ add_cluster(PangoFont        *font,
 
 
 static void 
-hebrew_engine_shape (PangoFont        *font,
-		    const char       *text,
-		    gint              length,
-		    PangoAnalysis    *analysis,
-		    PangoGlyphString *glyphs)
+hebrew_engine_shape (PangoEngineShape *engine,
+		     PangoFont        *font,
+		     const char       *text,
+		     gint              length,
+		     PangoAnalysis    *analysis,
+		     PangoGlyphString *glyphs)
 {
   const char *p;
   const char *log_cluster;
@@ -189,31 +194,26 @@ hebrew_engine_shape (PangoFont        *font,
     hebrew_shaper_bidi_reorder(glyphs);
 }
 
-static PangoCoverage *
-hebrew_engine_get_coverage (PangoFont  *font,
-			   PangoLanguage *lang)
+static void
+hebrew_engine_fc_class_init (PangoEngineShapeClass *class)
 {
-  return pango_font_get_coverage (font, lang);
+  class->script_shape = hebrew_engine_shape;
 }
 
-static PangoEngine *
-hebrew_engine_fc_new ()
+PANGO_ENGINE_SHAPE_DEFINE_TYPE (HebrewEngineFc, hebrew_engine_fc,
+				hebrew_engine_fc_class_init, NULL);
+
+void 
+PANGO_MODULE_ENTRY(init) (GTypeModule *module)
 {
-  PangoEngineShape *result;
-  
-  result = g_new (PangoEngineShape, 1);
-
-  result->engine.id = SCRIPT_ENGINE_NAME;
-  result->engine.type = PANGO_ENGINE_TYPE_SHAPE;
-  result->engine.length = sizeof (result);
-  result->script_shape = hebrew_engine_shape;
-  result->get_coverage = hebrew_engine_get_coverage;
-
-  return (PangoEngine *)result;
+  hebrew_engine_fc_register_type (module);
 }
 
-/* List the engines contained within this module
- */
+void 
+PANGO_MODULE_ENTRY(exit) (void)
+{
+}
+
 void 
 PANGO_MODULE_ENTRY(list) (PangoEngineInfo **engines,
 			  int              *n_engines)
@@ -222,18 +222,11 @@ PANGO_MODULE_ENTRY(list) (PangoEngineInfo **engines,
   *n_engines = G_N_ELEMENTS (script_engines);
 }
 
-/* Load a particular engine given the ID for the engine
- */
 PangoEngine *
-PANGO_MODULE_ENTRY(load) (const char *id)
+PANGO_MODULE_ENTRY(create) (const char *id)
 {
   if (!strcmp (id, SCRIPT_ENGINE_NAME))
-    return hebrew_engine_fc_new ();
+    return g_object_new (hebrew_engine_fc_type, NULL);
   else
     return NULL;
-}
-
-void 
-PANGO_MODULE_ENTRY(unload) (PangoEngine *engine)
-{
 }

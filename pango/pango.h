@@ -33,6 +33,7 @@
 #include <pango/pango-glyph.h>
 #include <pango/pango-item.h>
 #include <pango/pango-layout.h>
+#include <pango/pango-script.h>
 #include <pango/pango-types.h>
 
 #endif /* __PANGO_H__ */

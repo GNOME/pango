@@ -450,21 +450,79 @@ pango_wrap_mode_get_type
 </SECTION>
 
 <SECTION>
+<TITLE>Scripts</TITLE>
+<FILE>scripts</FILE>
+PangoScriptIter
+PangoScript
+PANGO_TYPE_SCRIPT
+pango_script_for_unichar
+pango_script_iter_new
+pango_script_iter_get_range
+pango_script_iter_next
+pango_script_iter_free
+<SUBSECTION Private>
+pango_script_get_type
+</SECTION>
+
+<SECTION>
 <TITLE>Engines</TITLE>
 <FILE>engines</FILE>
 PangoEngineInfo
 PangoEngineRange
 PangoEngine
-PangoEngineLang
-PangoEngineShape
-PANGO_ENGINE_TYPE_LANG
-PANGO_ENGINE_TYPE_SHAPE
+PangoEngineClass
 PANGO_RENDER_TYPE_NONE
 script_engine_list
-script_engine_load
-script_engine_unload
+script_engine_init
+script_engine_exit
+script_engine_create
+<SUBSECTION Standard>
+PANGO_ENGINE
+PANGO_IS_ENGINE
+PANGO_TYPE_ENGINE
+PANGO_ENGINE_CLASS
+PANGO_IS_ENGINE_CLASS
+PANGO_ENGINE_GET_CLASS
 <SUBSECTION Private>
+pango_engine_get_type
 PANGO_MODULE_ENTRY
+PANGO_ENGINE_DEFINE_TYPE
+</SECTION>
+
+<SECTION>
+<TITLE>PangoEngineLang</TITLE>
+<FILE>pango-engine-lang</FILE>
+PangoEngineLang
+PangoEngineLangClass
+PANGO_ENGINE_TYPE_LANG
+PANGO_ENGINE_LANG_DEFINE_TYPE
+<SUBSECTION Standard>
+PANGO_ENGINE_LANG
+PANGO_IS_ENGINE_LANG
+PANGO_TYPE_ENGINE_LANG
+PANGO_ENGINE_LANG_CLASS
+PANGO_IS_ENGINE_LANG_CLASS
+PANGO_ENGINE_LANG_GET_CLASS
+<SUBSECTION Private>
+pango_engine_lang_get_type
+</SECTION>
+
+<SECTION>
+<TITLE>PangoEngineShape</TITLE>
+<FILE>pango-engine-shape</FILE>
+PangoEngineShape
+PangoEngineShapeClass
+PANGO_ENGINE_TYPE_SHAPE
+PANGO_ENGINE_SHAPE_DEFINE_TYPE
+<SUBSECTION Standard>
+PANGO_ENGINE_SHAPE
+PANGO_IS_ENGINE_SHAPE
+PANGO_TYPE_ENGINE_SHAPE
+PANGO_ENGINE_SHAPE_CLASS
+PANGO_IS_ENGINE_SHAPE_CLASS
+PANGO_ENGINE_SHAPE_GET_CLASS
+<SUBSECTION Private>
+pango_engine_shape_get_type
 </SECTION>
 
 <SECTION>

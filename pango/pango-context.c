@@ -25,6 +25,7 @@
 #include "pango/pango-context.h"
 #include "pango/pango-utils.h"
 
+#include "pango-engine.h"
 #include "pango-modules.h"
 
 struct _PangoContext
@@ -495,66 +496,6 @@ pango_itemize (PangoContext      *context,
   return g_list_reverse (result);
 }
 
-static void 
-fallback_engine_shape (PangoFont        *font,
-                       const char       *text,
-                       gint              length,
-                       PangoAnalysis    *analysis,
-                       PangoGlyphString *glyphs)
-{
-  int n_chars;
-  int i;
-  const char *p;
-  
-  g_return_if_fail (font != NULL);
-  g_return_if_fail (text != NULL);
-  g_return_if_fail (length >= 0);
-  g_return_if_fail (analysis != NULL);
-
-  n_chars = g_utf8_strlen (text, length);
-  pango_glyph_string_set_size (glyphs, n_chars);
-  
-  p = text;
-  i = 0;
-  while (i < n_chars)
-    {
-      glyphs->glyphs[i].glyph = 0;
-      
-      glyphs->glyphs[i].geometry.x_offset = 0;
-      glyphs->glyphs[i].geometry.y_offset = 0;
-      glyphs->glyphs[i].geometry.width = 0;
-
-      glyphs->log_clusters[i] = p - text;
-      
-      ++i;
-      p = g_utf8_next_char (p);
-    }
-}
-
-static PangoCoverage*
-fallback_engine_get_coverage (PangoFont      *font,
-                              PangoLanguage  *lang)
-{
-  PangoCoverage *result = pango_coverage_new ();
-
-  /* We return an empty coverage (this function won't get
-   * called, but if it is, empty coverage will keep
-   * it from being used).
-   */
-  
-  return result;
-}
-
-static PangoEngineShape fallback_shaper = {
-  {
-    "FallbackScriptEngine",
-    PANGO_ENGINE_TYPE_SHAPE,
-    sizeof (PangoEngineShape)
-  },
-  fallback_engine_shape,
-  fallback_engine_get_coverage
-};
-
 static gboolean
 advance_iterator_to (PangoAttrIterator *iterator,
                      int                start_index)
@@ -683,7 +624,7 @@ add_engines (PangoContext      *context,
 	analysis->shape_engine = NULL;
       
       if (analysis->shape_engine == NULL)
-        analysis->shape_engine = &fallback_shaper;
+        analysis->shape_engine = pango_get_fallback_shaper ();
       
       analysis->extra_attrs = extra_attrs;
     }

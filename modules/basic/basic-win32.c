@@ -34,6 +34,10 @@
 
 #include "basic-common.h"
 
+/* No extra fields needed */
+typedef PangoEngineShape      BasicEngineWin32;
+typedef PangoEngineShapeClass BasicEngineWin32Class ;
+
 #define SCRIPT_ENGINE_NAME "BasicScriptEngineWin32"
 
 static gboolean pango_win32_debug = FALSE;
@@ -971,7 +975,8 @@ uniscribe_shape (PangoFont        *font,
 #endif /* HAVE_USP10_H */
 
 static void 
-basic_engine_shape (PangoFont        *font,
+basic_engine_shape (PangoEngineShape *engine,
+		    PangoFont        *font,
 		    const char       *text,
 		    gint              length,
 		    PangoAnalysis    *analysis,
@@ -1075,29 +1080,6 @@ basic_engine_shape (PangoFont        *font,
     }
 }
 
-static PangoCoverage *
-basic_engine_get_coverage (PangoFont     *font,
-			   PangoLanguage *lang)
-{
-  return pango_font_get_coverage (font, lang);
-}
-
-static PangoEngine *
-basic_engine_win32_new (void)
-{
-  PangoEngineShape *result;
-  
-  result = g_new (PangoEngineShape, 1);
-
-  result->engine.id = SCRIPT_ENGINE_NAME;
-  result->engine.type = PANGO_ENGINE_TYPE_SHAPE;
-  result->engine.length = sizeof (result);
-  result->script_shape = basic_engine_shape;
-  result->get_coverage = basic_engine_get_coverage;
-
-  return (PangoEngine *)result;
-}
-
 static void
 init_uniscribe (void)
 {
@@ -1133,13 +1115,34 @@ init_uniscribe (void)
 #endif
 } 
 
-/* The following three functions provide the public module API for
- * Pango
- */
+static void
+basic_engine_win32_class_init (PangoEngineShapeClass *class)
+{
+  class->script_shape = basic_engine_shape;
+}
 
-void
+PANGO_ENGINE_SHAPE_DEFINE_TYPE (BasicEngineWin32, basic_engine_win32,
+				basic_engine_win32_class_init, NULL);
+
+void 
+PANGO_MODULE_ENTRY(init) (GTypeModule *module)
+{
+  init_uniscribe ();
+
+  if (pango_win32_get_debug_flag ())
+    pango_win32_debug = TRUE;
+
+  basic_engine_register_type (module);
+}
+
+void 
+PANGO_MODULE_ENTRY(exit) (void)
+{
+}
+
+void 
 PANGO_MODULE_ENTRY(list) (PangoEngineInfo **engines,
-			  gint             *n_engines)
+			  int              *n_engines)
 {
   init_uniscribe ();
 
@@ -1176,20 +1179,10 @@ PANGO_MODULE_ENTRY(list) (PangoEngineInfo **engines,
 }
 
 PangoEngine *
-PANGO_MODULE_ENTRY(load) (const char *id)
+PANGO_MODULE_ENTRY(create) (const char *id)
 {
-  init_uniscribe ();
-
-  if (pango_win32_get_debug_flag ())
-    pango_win32_debug = TRUE;
-
   if (!strcmp (id, SCRIPT_ENGINE_NAME))
-    return basic_engine_win32_new ();
+    return g_object_new (basic_engine_win32_type, NULL);
   else
     return NULL;
-}
-
-void 
-PANGO_MODULE_ENTRY(unload) (PangoEngine *engine)
-{
 }

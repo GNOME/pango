@@ -1306,8 +1306,8 @@ pango_break (const gchar   *text,
     length = strlen (text);
 
   if (analysis->lang_engine &&
-      analysis->lang_engine->script_break)
-    (* analysis->lang_engine->script_break) (text, length, analysis, attrs, attrs_len);
+      PANGO_ENGINE_LANG_CLASS (analysis->lang_engine)->script_break)
+    PANGO_ENGINE_LANG_CLASS (analysis->lang_engine)->script_break (analysis->lang_engine, text, length, analysis, attrs, attrs_len);
   else
     pango_default_break (text, length, analysis, attrs, attrs_len);
 }

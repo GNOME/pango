@@ -1,0 +1,57 @@
+<!-- ##### SECTION Title ##### -->
+PangoEngineShape
+
+<!-- ##### SECTION Short_Description ##### -->
+Rendering-system dependent script engines
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### STRUCT PangoEngineShape ##### -->
+<para>
+</para>
+
+
+<!-- ##### STRUCT PangoEngineShapeClass ##### -->
+<para>
+
+</para>
+
+@script_shape: 
+@get_coverage: 
+
+<!-- ##### MACRO PANGO_ENGINE_TYPE_SHAPE ##### -->
+<para>
+A string constant defining the engine type
+for <firstterm>shaping engines</firstterm>.
+These engines derive from #PangoEngineShape.
+</para>
+
+
+
+<!-- ##### MACRO PANGO_ENGINE_SHAPE_DEFINE_TYPE ##### -->
+<para>
+
+</para>
+
+@name: 
+@prefix: 
+@\
+				       class_init:
+@\
+				       class_init:
+@\
+				       class_init:
+@\
+				       class_init:
+@class_init: 
+@instance_init: 
+
+

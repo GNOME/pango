@@ -22,8 +22,9 @@ loaded module.
 </para>
 
 @list: 
-@load: 
-@unload: 
+@init: 
+@exit: 
+@create: 
 
 <!-- ##### STRUCT PangoMap ##### -->
 <para>

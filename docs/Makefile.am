@@ -22,9 +22,12 @@ CFILE_GLOB=$(top_srcdir)/pango/*.c
 IGNORE_HFILES=			\
 	mini-fribidi		\
 	mini-xft		\
+	module-defs.h		\
 	opentype		\
 	modules.h		\
-	pango-intset.h		\
+	pango-engine-private.h	\
+	pango-impl-utils.h	\
+	pango-script-table.h	\
 	pango-utils.h		\
 	pangofc-private.h	\
 	pangoft2-private.h	\
@@ -36,6 +39,7 @@ IGNORE_HFILES=			\
 # if $(DOC_MODULE).types is non-empty.
 INCLUDES =               	\
 	-DPANGO_ENABLE_BACKEND	\
+	-DPANGO_ENABLE_ENGINE	\
 	-I$(top_srcdir)		\
 	$(GLIB_CFLAGS)		\
 	$(XFT_CFLAGS)		\

@@ -504,8 +504,9 @@ for module in $included_modules; do
   module_c=`echo $module | sed s/-/_/`
   cat >> pango/module-defs.h <<EOTEXT
 extern void         _pango_${module_c}_script_engine_list (PangoEngineInfo **engines, int *n_engines);
-extern PangoEngine *_pango_${module_c}_script_engine_load (const char *id);
-extern void         _pango_${module_c}_script_engine_unload (PangoEngine *engine);
+extern PangoEngine *_pango_${module_c}_script_engine_init (GTypeModule *module);
+extern void         _pango_${module_c}_script_engine_exit (void);
+extern void         _pango_${module_c}_script_engine_create (const char *id);
 
 EOTEXT
 done 
@@ -531,7 +532,7 @@ for module in $included_modules; do
   if echo $module | egrep -- "-x($|,)" > /dev/null; then  
     module_c=`echo $module | sed s/-/_/`
     cat >> pango/module-defs-x.c <<EOTEXT
- { _pango_${module_c}_script_engine_list, _pango_${module_c}_script_engine_load,_pango_${module_c}_script_engine_unload },
+ { _pango_${module_c}_script_engine_list, _pango_${module_c}_script_engine_init, _pango_${module_c}_script_engine_exit, _pango_${module_c}_script_engine_create },
 EOTEXT
  fi
 done
@@ -560,7 +561,7 @@ for module in $included_modules; do
   if echo $module | egrep -- "-fc($|,)" > /dev/null; then
     module_c=`echo $module | sed s/-/_/`
     cat >> pango/module-defs-fc.c <<EOTEXT
- { _pango_${module_c}_script_engine_list, _pango_${module_c}_script_engine_load,_pango_${module_c}_script_engine_unload },
+ { _pango_${module_c}_script_engine_list, _pango_${module_c}_script_engine_init, _pango_${module_c}_script_engine_exit, _pango_${module_c}_script_engine_create },
 EOTEXT
   fi
 done
@@ -589,7 +590,7 @@ for module in $included_modules; do
   if echo $module | egrep -- "-win32($|,)" > /dev/null; then
     module_c=`echo $module | sed s/-/_/`
     cat >> pango/module-defs-win32.c <<EOTEXT
- { _pango_${module_c}_script_engine_list, _pango_${module_c}_script_engine_load,_pango_${module_c}_script_engine_unload },
+ { _pango_${module_c}_script_engine_list, _pango_${module_c}_script_engine_init, _pango_${module_c}_script_engine_exit, _pango_${module_c}_script_engine_create },
 EOTEXT
   fi
 done
@@ -629,7 +630,6 @@ docs/Makefile
 docs/version.xml
 tools/Makefile
 tests/Makefile
-tests/runtests.sh
 pango.pc
 pangox.pc
 pangowin32.pc
@@ -642,6 +642,9 @@ pangoft2-uninstalled.pc
 pangoxft-uninstalled.pc
 pango-zip.sh
 ])
+
+AC_CONFIG_FILES([tests/runtests.sh],
+	        [chmod +x tests/runtests.sh])
 
 AC_OUTPUT
 

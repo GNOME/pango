@@ -28,11 +28,14 @@
 #include "pango-engine.h"
 #include "pango-ot.h"
 #include "pango-utils.h"
+#include "pangofc-font.h"
 
-typedef struct _PangoEngineShapeIndic PangoEngineShapeIndic;
 typedef struct _PangoIndicInfo PangoIndicInfo;
 
-struct _PangoEngineShapeIndic
+typedef struct _IndicEngineFc IndicEngineFc;
+typedef PangoEngineShapeClass IndicEngineFcClass ; /* No extra fields needed */
+
+struct _IndicEngineFc
 {
   PangoEngineShape shapeEngine;
   PangoIndicInfo  *indicInfo;
@@ -46,7 +49,6 @@ struct _PangoIndicInfo
   gchar             *gposQuarkName;
 };
 
-#include "pangofc-font.h"
 #define ENGINE_SUFFIX "ScriptEngineFc"
 #define RENDER_TYPE PANGO_RENDER_TYPE_FC
 
@@ -291,7 +293,8 @@ expand_text(const gchar *text, glong length, glong **offsets, glong *n_chars)
 
 /* analysis->shape_engine has the PangoEngine... */
 static void 
-indic_engine_shape (PangoFont        *font,
+indic_engine_shape (PangoEngineShape *engine,
+		    PangoFont        *font,
 		    const char       *text,
 		    gint              length,
 		    PangoAnalysis    *analysis,
@@ -304,7 +307,7 @@ indic_engine_shape (PangoFont        *font,
   glong *indices = NULL;
   FT_Face face;
   PangoOTRuleset *gsub_ruleset = NULL, *gpos_ruleset = NULL;
-  PangoEngineShapeIndic *indic_shape_engine = NULL;
+  IndicEngineFc *indic_shape_engine = NULL;
   PangoIndicInfo *indic_info = NULL;
   PangoFcFont *fc_font;
   MPreFixups *mprefixups;
@@ -318,11 +321,7 @@ indic_engine_shape (PangoFont        *font,
   face = pango_fc_font_lock_face (fc_font);
   g_assert (face != NULL);
 
-  indic_shape_engine = (PangoEngineShapeIndic *) analysis->shape_engine;
-
-#if 1
-  g_assert (indic_shape_engine->shapeEngine.engine.length == sizeof (PangoEngineShapeIndic));
-#endif
+  indic_shape_engine = (IndicEngineFc *) engine;
 
   indic_info = indic_shape_engine->indicInfo;
 
@@ -400,33 +399,26 @@ indic_engine_shape (PangoFont        *font,
   g_free (utf8_offsets);
 }
 
-static PangoCoverage *
-indic_engine_get_coverage (PangoFont  *font,
-			   PangoLanguage *lang)
+static void
+indic_engine_fc_class_init (PangoEngineShapeClass *class)
 {
-  return pango_font_get_coverage (font, lang);
+  class->script_shape = indic_engine_shape;
 }
 
-static PangoEngine *
-indic_engine_fc_new (gint index)
+PANGO_ENGINE_SHAPE_DEFINE_TYPE (IndicEngineFc, indic_engine_fc,
+				indic_engine_fc_class_init, NULL);
+
+void 
+PANGO_MODULE_ENTRY(init) (GTypeModule *module)
 {
-  PangoEngineShapeIndic *result;
-  
-  result = g_new (PangoEngineShapeIndic, 1);
-
-  result->shapeEngine.engine.id     = script_engines[index].id;
-  result->shapeEngine.engine.type   = PANGO_ENGINE_TYPE_SHAPE;
-  result->shapeEngine.engine.length = sizeof (*result);
-  result->shapeEngine.script_shape  = indic_engine_shape;
-  result->shapeEngine.get_coverage  = indic_engine_get_coverage;
-
-  result->indicInfo = &indic_info[index];
-
-  return (PangoEngine *)result;
+  indic_engine_fc_register_type (module);
 }
 
-/* List the engines contained within this module
- */
+void 
+PANGO_MODULE_ENTRY(exit) (void)
+{
+}
+
 void 
 PANGO_MODULE_ENTRY(list) (PangoEngineInfo **engines,
 			  int              *n_engines)
@@ -435,10 +427,8 @@ PANGO_MODULE_ENTRY(list) (PangoEngineInfo **engines,
   *n_engines = G_N_ELEMENTS (script_engines);
 }
 
-/* Load a particular engine given the ID for the engine
- */
 PangoEngine *
-PANGO_MODULE_ENTRY(load) (const char *id)
+PANGO_MODULE_ENTRY(create) (const char *id)
 {
   gint i;
 
@@ -446,14 +436,12 @@ PANGO_MODULE_ENTRY(load) (const char *id)
     {
       if (!strcmp(id, script_engines[i].id))
 	{
-	  return indic_engine_fc_new(i);
+	  IndicEngineFc *engine = g_object_new (indic_engine_fc_type, NULL);
+	  engine->indicInfo = &indic_info[i];
+					      
+	  return (PangoEngine *)engine;
 	}
     }
 
   return NULL;
-}
-
-void 
-PANGO_MODULE_ENTRY(unload) (PangoEngine *engine)
-{
 }

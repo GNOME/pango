@@ -31,9 +31,14 @@
 
 #include <glib.h>
 #include "pango-engine.h"
+#include "pangofc-font.h"
+
 #include "thai-shaper.h"
 
-#include "pangofc-font.h"
+/* No extra fields needed */
+typedef PangoEngineShape      ThaiEngineFc;
+typedef PangoEngineShapeClass ThaiEngineFcClass ;
+
 #define SCRIPT_ENGINE_NAME "ThaiScriptEngineFc"
 #define RENDER_TYPE PANGO_RENDER_TYPE_FC
 
@@ -199,31 +204,26 @@ thai_has_glyph (ThaiFontInfo *font_info, PangoGlyph glyph)
   return TRUE;
 }
 
-static PangoCoverage *
-thai_engine_get_coverage (PangoFont  *font,
-			   PangoLanguage *lang)
+static void
+thai_engine_fc_class_init (PangoEngineShapeClass *class)
 {
-  return pango_font_get_coverage (font, lang);
+  class->script_shape = thai_engine_shape;
 }
 
-static PangoEngine *
-thai_engine_fc_new ()
+PANGO_ENGINE_SHAPE_DEFINE_TYPE (ThaiEngineFc, thai_engine_fc,
+				thai_engine_fc_class_init, NULL);
+
+void 
+PANGO_MODULE_ENTRY(init) (GTypeModule *module)
 {
-  PangoEngineShape *result;
-  
-  result = g_new (PangoEngineShape, 1);
-
-  result->engine.id = SCRIPT_ENGINE_NAME;
-  result->engine.type = PANGO_ENGINE_TYPE_SHAPE;
-  result->engine.length = sizeof (result);
-  result->script_shape = thai_engine_shape;
-  result->get_coverage = thai_engine_get_coverage;
-
-  return (PangoEngine *)result;
+  thai_engine_fc_register_type (module);
 }
 
-/* List the engines contained within this module
- */
+void 
+PANGO_MODULE_ENTRY(exit) (void)
+{
+}
+
 void 
 PANGO_MODULE_ENTRY(list) (PangoEngineInfo **engines,
 			  int              *n_engines)
@@ -232,18 +232,11 @@ PANGO_MODULE_ENTRY(list) (PangoEngineInfo **engines,
   *n_engines = G_N_ELEMENTS (script_engines);
 }
 
-/* Load a particular engine given the ID for the engine
- */
 PangoEngine *
-PANGO_MODULE_ENTRY(load) (const char *id)
+PANGO_MODULE_ENTRY(create) (const char *id)
 {
   if (!strcmp (id, SCRIPT_ENGINE_NAME))
-    return thai_engine_fc_new ();
+    return g_object_new (thai_engine_fc_type, NULL);
   else
     return NULL;
-}
-
-void 
-PANGO_MODULE_ENTRY(unload) (PangoEngine *engine)
-{
 }

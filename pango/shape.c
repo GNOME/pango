@@ -20,7 +20,7 @@
  */
 
 #include <pango/pango-glyph.h>
-#include <pango/pango-engine.h>
+#include <pango/pango-engine-private.h>
 
 /**
  * pango_shape:
@@ -44,7 +44,8 @@ pango_shape (const gchar      *text,
   int last_cluster = -1;
   
   if (analysis->shape_engine)
-    analysis->shape_engine->script_shape (analysis->font, text, length, analysis, glyphs);
+    _pango_engine_shape_shape (analysis->shape_engine, analysis->font,
+			       text, length, analysis, glyphs);
   else
     {
       pango_glyph_string_set_size (glyphs, 1);

@@ -2811,10 +2811,7 @@ get_items_log_attrs (const char   *text,
 	  PangoItem *next_item = items->next->data;
 
 	  /* FIXME: Handle language tags */
-	  if (next_item->analysis.lang_engine != tmp_item.analysis.lang_engine &&
-              (!next_item->analysis.lang_engine || !tmp_item.analysis.lang_engine ||
-		strcmp (next_item->analysis.lang_engine->engine.id,
-			tmp_item.analysis.lang_engine->engine.id) != 0))
+	  if (next_item->analysis.lang_engine != tmp_item.analysis.lang_engine)
 	    break;
 	  else
 	    {

@@ -26,8 +26,12 @@
 
 #include "pango-engine.h"
 #include "pango-utils.h"
-
 #include "pangofc-font.h"
+
+/* No extra fields needed */
+typedef PangoEngineShape      ArabicEngineFc;
+typedef PangoEngineShapeClass ArabicEngineFcClass ;
+
 #define SCRIPT_ENGINE_NAME "ArabicScriptEngineFc"
 #define RENDER_TYPE PANGO_RENDER_TYPE_FC
 
@@ -129,7 +133,8 @@ set_glyph (PangoFont *font, PangoGlyphString *glyphs, int i, int offset, PangoGl
 }
 
 static void 
-arabic_engine_shape (PangoFont        *font,
+arabic_engine_shape (PangoEngineShape *engine,
+		     PangoFont        *font,
 		     const char       *text,
 		     gint              length,
 		     PangoAnalysis    *analysis,
@@ -294,31 +299,26 @@ arabic_engine_shape (PangoFont        *font,
   pango_fc_font_unlock_face (fc_font);
 }
 
-static PangoCoverage *
-arabic_engine_get_coverage (PangoFont     *font,
-			    PangoLanguage *lang)
+static void
+arabic_engine_fc_class_init (PangoEngineShapeClass *class)
 {
-  return pango_font_get_coverage (font, lang);
+  class->script_shape = arabic_engine_shape;
 }
 
-static PangoEngine *
-arabic_engine_fc_new ()
+PANGO_ENGINE_SHAPE_DEFINE_TYPE (ArabicEngineFc, arabic_engine_fc,
+				arabic_engine_fc_class_init, NULL);
+
+void 
+PANGO_MODULE_ENTRY(init) (GTypeModule *module)
 {
-  PangoEngineShape *result;
-  
-  result = g_new (PangoEngineShape, 1);
-
-  result->engine.id = SCRIPT_ENGINE_NAME;
-  result->engine.type = PANGO_ENGINE_TYPE_SHAPE;
-  result->engine.length = sizeof (result);
-  result->script_shape = arabic_engine_shape;
-  result->get_coverage = arabic_engine_get_coverage;
-
-  return (PangoEngine *)result;
+  arabic_engine_fc_register_type (module);
 }
 
-/* List the engines contained within this module
- */
+void 
+PANGO_MODULE_ENTRY(exit) (void)
+{
+}
+
 void 
 PANGO_MODULE_ENTRY(list) (PangoEngineInfo **engines,
 			  int              *n_engines)
@@ -327,18 +327,11 @@ PANGO_MODULE_ENTRY(list) (PangoEngineInfo **engines,
   *n_engines = G_N_ELEMENTS (script_engines);
 }
 
-/* Load a particular engine given the ID for the engine
- */
 PangoEngine *
-PANGO_MODULE_ENTRY(load) (const char *id)
+PANGO_MODULE_ENTRY(create) (const char *id)
 {
   if (!strcmp (id, SCRIPT_ENGINE_NAME))
-    return arabic_engine_fc_new ();
+    return g_object_new (arabic_engine_fc_type, NULL);
   else
     return NULL;
-}
-
-void 
-PANGO_MODULE_ENTRY(unload) (PangoEngine *engine)
-{
 }

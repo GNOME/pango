@@ -41,9 +41,11 @@ typedef struct _PangoIncludedModule PangoIncludedModule;
 
 struct _PangoIncludedModule
 {
-  void (*list) (PangoEngineInfo **engines, int *n_engines);
-  PangoEngine *(*load) (const char *id);
-  void (*unload) (PangoEngine *engine);
+  void (*list) (PangoEngineInfo **engines,
+		int              *n_engines);
+  void (*init) (GTypeModule      *module);
+  void (*exit) (void);
+  PangoEngine *(*create) (const char       *id);
 };
 
 PangoMap *     pango_find_map        (PangoLanguage       *language,
