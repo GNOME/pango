@@ -35,14 +35,21 @@ G_BEGIN_DECLS
 
 /* Calls for applications
  */
-PangoContext * pango_xft_get_context        (Display          *display,
-					     int               screen);
-void           pango_xft_render           (XftDraw          *draw,
-					   XftColor         *color,
-					   PangoFont        *font,
-					   PangoGlyphString *glyphs,
-					   gint              x,
-					   gint              y);
+PangoContext *pango_xft_get_context    (Display          *display,
+					int               screen);
+void          pango_xft_render         (XftDraw          *draw,
+					XftColor         *color,
+					PangoFont        *font,
+					PangoGlyphString *glyphs,
+					gint              x,
+					gint              y);
+void          pango_xft_picture_render (Display          *display,
+					Picture           src_picture,
+					Picture           dest_picture,
+					PangoFont        *font,
+					PangoGlyphString *glyphs,
+					gint              x,
+					gint              y);
 
 #define PANGO_TYPE_XFT_FONT              (pango_xft_font_get_type ())
 #define PANGO_XFT_IS_FONT(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), PANGO_TYPE_XFT_FONT))

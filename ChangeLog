@@ -1,3 +1,9 @@
+Mon Nov  5 12:23:07 2001  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pangoxft.h pango/pangoxft-font.c: Add a function
+	pango_xft_picture_render() to render onto an Xft picture
+	directly linstead of using the XftDraw wrapper object.
+
 2001-11-03  Hans Breuer  <hans@breuer.org>
 
 	* pango/modules.c : don't bother with module dir
