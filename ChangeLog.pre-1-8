@@ -1,3 +1,9 @@
+Sat Jul 26 21:06:26 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/opentype/ftxgsub.c (Load_EmptyOrClassDefinition):
+	Fix confusion between boolean and FT_Error return.
+	(GSUB equivalent of fix for #108358)
+
 Sat Jul 26 10:52:20 2003  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/opentype/ftxgpos.c (Lookup_ContextPos2): 
