@@ -1,3 +1,14 @@
+Changes between 0.19 and 0.20
+
+* Change PangoFontDescription to save values for unset fields
+* Fix for compilation with FreeType 2.0.4 [Havoc Pennington]
+* Add PANGO_TYPE_FONT_METRICS [James Henstridge]
+* Win32 fixes and updates [Hans Breuer
+* PangoLayout bug fixes [Alex Larsson, Padraig O'Briain]
+* Misc fixes and cleanups.
+
+Other contributors: Matthias Clasen, Tony Graham, Mario Motta, Sven Neumann
+
 Changes between 0.18 and 0.19
 
 * Change font listing API to be more extensible. Instead of

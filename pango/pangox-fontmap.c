@@ -398,7 +398,7 @@ pango_x_font_map_load_font (PangoFontMap               *fontmap,
 
   g_return_val_if_fail (description != NULL, NULL);
 
-  name = g_ascii_strdown (pango_font_description_get_family (description));
+  name = g_ascii_strdown (pango_font_description_get_family (description), -1);
   size = pango_font_description_get_size (description);
 
   if (size <= 0)

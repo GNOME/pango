@@ -420,7 +420,7 @@ pango_ft2_font_map_load_font (PangoFontMap               *fontmap,
 
   g_return_val_if_fail (description != NULL, NULL);
   
-  name = g_ascii_strdown (pango_font_description_get_family (description));
+  name = g_ascii_strdown (pango_font_description_get_family (description), -1);
 
   family_entry = g_hash_table_lookup (ft2fontmap->families, name);
   g_free (name);
@@ -753,7 +753,7 @@ pango_ft2_insert_face (PangoFT2FontMap *ft2fontmap,
   PangoFT2OA *oa;
   FT_Open_Args *open_args;
 
-  family_name = g_ascii_strdown (face->family_name);
+  family_name = g_ascii_strdown (face->family_name, -1);
 
   if (face->style_flags & FT_STYLE_FLAG_ITALIC)
     style = PANGO_STYLE_ITALIC;

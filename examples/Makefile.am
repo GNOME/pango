@@ -31,7 +31,7 @@ endif
 all-local: pango.modules
 
 pango.modules:
-	if find ../modules -name '*.so' | grep -q 'so'; then \
+	if find ../modules -name '*.so' | grep 'so' > /dev/null ; then \
           echo "Writing a pango.modules file to use when running examples before installing Pango."; \
 	  (cd ../modules && \
            ../pango/pango-querymodules `find . -name '*.so'` > ../examples/pango.modules ) ;\
@@ -41,6 +41,9 @@ pango.modules:
 	fi
 
 EXTRA_DIST=			\
+	moc_viewer-qt.cc	\
+	viewer-qt.cc		\
+	viewer-qt.h		\
 	viewer-win32.c		\
 	viewer-ft2.c		\
 	makefile.mingw		\

@@ -445,7 +445,7 @@ pango_module_register
 </SECTION>
 
 <SECTION>
-FILE>pango-indic</FILE>
+<FILE>pango-indic</FILE>
 <TITLE>Indic Engine Support</TITLE>
 PANGO_ZERO_WIDTH_NON_JOINER
 PANGO_ZERO_WIDTH_JOINER

@@ -161,7 +161,7 @@ pango_font_description_set_family_static (PangoFontDescription *desc,
  * Gets the family name field of a font description. See
  * pango_font_description_set_family().
  * 
- * Return value: The family name field, or %NULL if the family name is unset.
+ * Return value: The family name field. (Will be %NULL if not previously set.)
  **/
 G_CONST_RETURN char *
 pango_font_description_get_family (const PangoFontDescription *desc)
@@ -202,9 +202,8 @@ pango_font_description_set_style (PangoFontDescription *desc,
  * Gets the style field of a #PangoFontDescription. See
  * pango_font_description_set_style().
  * 
- * Return value: the style field for the font description. Returns
- *   %PANGO_STYLE_NORMAL if the style field is unset. Use
- *   pango_font_description_get_set_fields() to find out if
+ * Return value: the style field for the font description. 
+ *   Use pango_font_description_get_set_fields() to find out if
  *   the field was explicitely set or not.
  **/
 PangoStyle
@@ -240,8 +239,7 @@ pango_font_description_set_variant (PangoFontDescription *desc,
  * Gets the variant field of a #PangoFontDescription. See
  * pango_font_description_set_variant().
  * 
- * Return value: the variant field for the font description. Returns
- *   %PANGO_VARIANT_NORMAL if the variant field is unset. Use
+ * Return value: the variant field for the font description. Use
  *   pango_font_description_get_set_fields() to find out if
  *   the field was explicitely set or not.
  **/
@@ -280,8 +278,7 @@ pango_font_description_set_weight (PangoFontDescription *desc,
  * Gets the weight field of a font description. See
  * pango_font_description_set_weight().
  * 
- * Return value: the weight field for the font description. Returns
- *   %PANGO_WEIGHT_NORMAL if the weight field is unset. Use
+ * Return value: the weight field for the font description. Use
  *   pango_font_description_get_set_fields() to find out if
  *   the field was explicitely set or not.
  **/
@@ -318,8 +315,7 @@ pango_font_description_set_stretch (PangoFontDescription *desc,
  * Gets the stretch field of a font description.
  * See pango_font_description_set_stretch().
  * 
- * Return value: the stretch field for the font description. Returns
- *   %PANGO_STRETCH_NORMAL if the stretch field is unset. Use
+ * Return value: the stretch field for the font description. Use
  *   pango_font_description_get_set_fields() to find out if
  *   the field was explicitely set or not.
  **/
@@ -357,8 +353,8 @@ pango_font_description_set_size (PangoFontDescription *desc,
  * See pango_font_description_get_size().
  * 
  * Return value: the size field for the font description in pango
- *   units.  (PANGO_SCALE pango units equals one point.)  Returns 0 if
- *   the stretch field is unset. Use
+ *   units.  (PANGO_SCALE pango units equals one point). Returns 0 if
+ *   the stretch field has not previously been set.
  *   pango_font_description_get_set_fields() to find out if the field
  *   was explicitely set or not.
  **/
@@ -392,7 +388,12 @@ pango_font_description_get_set_fields (const PangoFontDescription *desc)
  * @desc: a #PangoFontDescription
  * @to_unset: bitmask of fields in the @desc to unset.
  * 
- * Unsets some of the fields in a #PangoFontDescription.
+ * Unsets some of the fields in a #PangoFontDescription. Note that
+ * this merely marks the fields cleared, it does not clear the
+ * settings for those fields, to clear a family name set with
+ * pango_font_description_set_family_static() so that it won't
+ * be returned by subsequent calls to pango_font_description_get_family(),
+ * you must actually call pango_font_description-set_family (desc, NULL);
  **/
 void
 pango_font_description_unset_fields (PangoFontDescription *desc,
@@ -400,22 +401,6 @@ pango_font_description_unset_fields (PangoFontDescription *desc,
 {
   g_return_if_fail (desc != NULL);
 
-  /* We reset cleared mask values back to defaults, to avoid
-   * having to check the mask for getters.
-   */
-  if (to_unset & PANGO_FONT_MASK_FAMILY)
-    pango_font_description_set_family (desc, NULL);
-  if (to_unset & PANGO_FONT_MASK_STYLE)
-    desc->style = PANGO_STYLE_NORMAL;
-  if (to_unset & PANGO_FONT_MASK_VARIANT)
-    desc->variant = PANGO_VARIANT_NORMAL;
-  if (to_unset & PANGO_FONT_MASK_WEIGHT)
-    desc->weight = PANGO_WEIGHT_NORMAL;
-  if (to_unset & PANGO_FONT_MASK_STRETCH)
-    desc->stretch = PANGO_STRETCH_NORMAL;
-  if (to_unset & PANGO_FONT_MASK_SIZE)
-    desc->size = 0;
-    
   desc->mask &= ~to_unset;
 }
 

@@ -429,7 +429,7 @@ pango_win32_font_map_load_font (PangoFontMap               *fontmap,
 
   g_return_val_if_fail (description != NULL, NULL);
   
-  name = g_ascii_strdown (pango_font_description_get_family (description));
+  name = g_ascii_strdown (pango_font_description_get_family (description), -1);
 
   win32family = g_hash_table_lookup (win32fontmap->families, name);
   if (win32family)

@@ -1,3 +1,32 @@
+Tue Sep 25 11:54:03 2001  Owen Taylor  <otaylor@redhat.com>
+
+	* configure.in: Version 0.20
+
+	* NEWS: Updated
+
+	* configure.in (GLIB_REQUIRED_VERSION): Require GLib 1.3.9
+
+	* examples/Makefile.am (EXTRA_DIST): Add the viewer-qt
+	in case someone (say Tim) makes dist without qt installed.
+	(reported by Tony Graham)
+
+	* examples/Makefile.am (pango.modules): Don't use
+	grep -q (reported by Tony Graham)
+
+	* docs/pango-sections.txt: Fix small typo.
+
+Tue Sep 25 11:18:24 2001  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/fonts.c (pango_font_description_unset_fields): Change
+	things so that when you unset fields, the old values are
+	kept around persistantly. I don't like this much, but it
+	makes some hacks using PangoFontDescription easier. (In
+	particular, with GtkCellRendererText, being able to
+	toggle on-and-off a setting with a boolean.)
+
+	* pango/{pangoft2-fontmap.c, pangowin32-fontmap.c, pangox-fontmap.c}:
+	Fix for changed signature of g_ascii_strup/strdown.
+
 Mon Sep 24 19:18:48 2001  Owen Taylor  <otaylor@redhat.com>
 
 	Patch from Alex Larsson
