@@ -1,3 +1,13 @@
+2001-01-23    <alla@lysator.liu.se>
+
+	* modules/basic/basic-ft2.c (basic_engine_get_coverage):
+	Don't leak PangoCoverage.
+	* pango/pangoft2-fontmap.c (pango_ft2_font_map_load_font):
+	Move name free closer to allocation.
+	(pango_ft2_font_map_read_alias_file): Don't leak faces.
+	(pango_ft2_font_entry_get_coverage): Don't leak font as
+	filename and cache_file_name.
+
 2001-01-22  Havoc Pennington  <hp@redhat.com>
 
 	* tests/testboundaries.c (check_line_char): s/is_break/is_line_break/g;

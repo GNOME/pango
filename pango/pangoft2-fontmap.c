@@ -520,6 +520,8 @@ pango_ft2_font_map_load_font (PangoFontMap               *fontmap,
   g_strdown (name);
 
   family_entry = g_hash_table_lookup (ft2fontmap->families, name);
+  g_free (name);
+  
   if (family_entry)
     {
       PangoFT2FontEntry *best_match = NULL;
@@ -583,7 +585,6 @@ pango_ft2_font_map_load_font (PangoFontMap               *fontmap,
 	}
     }
 
-  g_free (name);
   return result;
 }
 
@@ -686,6 +687,8 @@ pango_ft2_font_map_read_alias_file (PangoFT2FontMap *ft2fontmap,
 		}
 	    }
 
+	  g_strfreev (faces);
+	  
 	  /* Insert the font entry into our structures */
 
 	  family_entry = pango_ft2_get_family_entry (ft2fontmap, font_entry->description.family_name);
@@ -941,6 +944,7 @@ pango_ft2_font_entry_get_coverage (PangoFT2FontEntry *entry,
   PangoFontDescription *description;
   FILE *cache_file;
   gchar *cache_file_name;
+  gchar *font_as_filename;
   guchar *buf;
   int buflen;
 
@@ -952,12 +956,14 @@ pango_ft2_font_entry_get_coverage (PangoFT2FontEntry *entry,
       }
 
   description = pango_font_describe (font);
+  font_as_filename = pango_font_description_to_filename (description);
   cache_file_name = g_strconcat (pango_get_sysconf_subdirectory (),
 				 G_DIR_SEPARATOR_S "cache.ft2" G_DIR_SEPARATOR_S,
-				 pango_font_description_to_filename (description),
+				 font_as_filename,
 				 ".",
 				 lang ? lang : "",
 				 NULL);
+  g_free (font_as_filename);
   pango_font_description_free (description);
 
   PING (("trying to load %s", cache_file_name));
@@ -1008,7 +1014,6 @@ pango_ft2_font_entry_get_coverage (PangoFT2FontEntry *entry,
 	  PING (("saving %d bytes to %s", buflen, cache_file_name));
 	  fwrite (buf, buflen, 1, cache_file);
 	  fclose (cache_file);
-	  g_free (cache_file_name);
 	  g_free (buf);
 	}
     }
@@ -1018,6 +1023,8 @@ pango_ft2_font_entry_get_coverage (PangoFT2FontEntry *entry,
       entry->coverage = result;
       pango_coverage_ref (result);
     }
+
+  g_free (cache_file_name);
 
   return result;
 }

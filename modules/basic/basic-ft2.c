@@ -285,9 +285,11 @@ static PangoCoverage *
 basic_engine_get_coverage (PangoFont  *font,
 			   const char *lang)
 {
-  PangoCoverage *result = pango_coverage_new ();
+  PangoCoverage *result;
 #if 0
   gunichar wc;
+  
+  result = pango_coverage_new ();
   
   for (wc = 0; wc < 65536; wc++)
     if (find_char (font, wc))
