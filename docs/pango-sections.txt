@@ -185,13 +185,25 @@ pango_attr_foreground_new
 pango_attr_background_new
 pango_attr_strikethrough_new
 pango_attr_underline_new
-pango_attr_shape_new
-pango_attr_scale_new
 PangoUnderline
 PANGO_TYPE_UNDERLINE
+pango_attr_shape_new
+pango_attr_scale_new
+PANGO_SCALE_XX_SMALL
+PANGO_SCALE_X_SMALL
+PANGO_SCALE_SMALL
+PANGO_SCALE_MEDIUM
+PANGO_SCALE_LARGE
+PANGO_SCALE_X_LARGE
+PANGO_SCALE_XX_LARGE
 pango_attr_rise_new
+PangoColor
+PANGO_TYPE_COLOR
+pango_color_free
+pango_color_copy
 <SUBSECTION>
 PangoAttrList
+PANGO_TYPE_ATTR_LIST
 pango_attr_list_new
 pango_attr_list_ref
 pango_attr_list_unref
@@ -209,7 +221,9 @@ pango_attr_iterator_get
 pango_attr_iterator_get_font
 pango_attr_iterator_destroy
 <SUBSECTION Private>
+pango_attr_list_get_type
 pango_attr_type_get_type
+pango_color_get_type
 pango_underline_get_type
 </SECTION>
 
@@ -257,6 +271,7 @@ pango_layout_get_width
 pango_layout_set_wrap
 pango_layout_get_wrap
 PangoWrapMode
+PANGO_TYPE_WRAP_MODE
 pango_layout_set_indent
 pango_layout_get_indent
 pango_layout_get_spacing
@@ -324,6 +339,7 @@ PANGO_IS_LAYOUT
 PANGO_LAYOUT_CLASS
 PANGO_IS_LAYOUT_CLASS
 PANGO_LAYOUT_GET_CLASS
+pango_wrap_mode_get_type
 pango_alignment_get_type
 </SECTION>
 

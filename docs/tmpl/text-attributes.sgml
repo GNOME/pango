@@ -294,25 +294,6 @@ sets all aspects of the font description at once.
 @Returns: 
 
 
-<!-- ##### FUNCTION pango_attr_shape_new ##### -->
-<para>
-
-</para>
-
-@ink_rect: 
-@logical_rect: 
-@Returns: 
-
-
-<!-- ##### FUNCTION pango_attr_scale_new ##### -->
-<para>
-
-</para>
-
-@scale_factor: 
-@Returns: 
-
-
 <!-- ##### ENUM PangoUnderline ##### -->
 <para>
 the #PangoUnderline enumeration is used to specify
@@ -337,12 +318,113 @@ of underlining.
 
 
 
+<!-- ##### FUNCTION pango_attr_shape_new ##### -->
+<para>
+
+</para>
+
+@ink_rect: 
+@logical_rect: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_attr_scale_new ##### -->
+<para>
+
+</para>
+
+@scale_factor: 
+@Returns: 
+
+
+<!-- ##### MACRO PANGO_SCALE_XX_SMALL ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO PANGO_SCALE_X_SMALL ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO PANGO_SCALE_SMALL ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO PANGO_SCALE_MEDIUM ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO PANGO_SCALE_LARGE ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO PANGO_SCALE_X_LARGE ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO PANGO_SCALE_XX_LARGE ##### -->
+<para>
+
+</para>
+
+
+
 <!-- ##### FUNCTION pango_attr_rise_new ##### -->
 <para>
 
 </para>
 
 @rise: 
+@Returns: 
+
+
+<!-- ##### STRUCT PangoColor ##### -->
+<para>
+
+</para>
+
+@red: 
+@green: 
+@blue: 
+
+<!-- ##### MACRO PANGO_TYPE_COLOR ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### FUNCTION pango_color_free ##### -->
+<para>
+
+</para>
+
+@color: 
+
+
+<!-- ##### FUNCTION pango_color_copy ##### -->
+<para>
+
+</para>
+
+@src: 
 @Returns: 
 
 
@@ -360,6 +442,13 @@ it is not suitable for storing attributes for large amounts
 of text. In general, you should not use a single #PangoAttrList
 for more than one paragraph of text.
 </para>
+
+
+<!-- ##### MACRO PANGO_TYPE_ATTR_LIST ##### -->
+<para>
+
+</para>
+
 
 
 <!-- ##### FUNCTION pango_attr_list_new ##### -->

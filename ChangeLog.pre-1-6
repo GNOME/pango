@@ -1,3 +1,10 @@
+Mon Apr 16 14:26:54 2001  Owen Taylor  <otaylor@redhat.com>
+
+	* docs/pango-sections.txt: Update.
+
+	* docs/Makefile.am (EXTRA_DIST): Update to the latest
+	version.
+
 2001-04-14  Hans Breuer  <hans@breuer.org>
 
 	* pango/pangowin32-fontmap.c : instead of simply adding one

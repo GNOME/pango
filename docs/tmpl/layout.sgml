@@ -201,6 +201,13 @@ fields.
 @PANGO_WRAP_WORD: 
 @PANGO_WRAP_CHAR: 
 
+<!-- ##### MACRO PANGO_TYPE_WRAP_MODE ##### -->
+<para>
+
+</para>
+
+
+
 <!-- ##### FUNCTION pango_layout_set_indent ##### -->
 <para>
 
