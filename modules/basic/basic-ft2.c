@@ -44,7 +44,7 @@ static PangoEngineRange basic_ranges[] = {
   { 0x0380, 0x058f, "*" },
 
   /* Hebrew */
-  { 0x0591, 0x05f4, "*" },
+  { 0x0591, 0x05f4, "" },
 
   /* Arabic */
   { 0x060c, 0x06f9, "" },
