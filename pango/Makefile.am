@@ -55,7 +55,7 @@ endif
 libpangox_la_LDFLAGS = -release $(VERSION)
 libpangox_la_LIBADD = $(INCLUDED_MODULES)
 
-pangoincludedir=$(includedir)/pango
+pangoincludedir=$(includedir)/pango-1.0/pango
 
 pangoinclude_HEADERS = 	   \
 	pango.h		   \

@@ -8,6 +8,5 @@ Description: Internationalized text handling
 Version: @VERSION@
 Requires: @FRIBIDI_PC@glib-2.0,gobject-2.0,gmodule-2.0
 Libs: -L${libdir} -lpango
-Cflags:
-
+Cflags: -I${includedir}/pango-1.0
 

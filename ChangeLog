@@ -1,3 +1,12 @@
+Wed Nov 29 11:08:52 2000  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/mini-fribidi/fribidi.c pango/mini-fribidi/fribidi-tables.i:
+	Some tiny changes to correspond to fribidi-0.15
+
+	* pango.pc.in pango-config.in pango/Makefile.am: 
+	Move headers into separate subdir, to avoid
+	clashes with future versions of Pango.
+	
 2000-11-20  Tor Lillqvist  <tml@iki.fi>
 
 	* Makefile.am (EXTRA_DIST): Add README.win32.
@@ -7,6 +16,7 @@
 	* examples/Makefile.am (EXTRA_DIST): Add it here.
 
 2000-11-21 Elliot Lee <sopwith@redhat.com>
+	
 	* modules/*/*.c: Fix warnings - mostly include string.h for strcmp.
 
 2000-11-20  Havoc Pennington  <hp@redhat.com>

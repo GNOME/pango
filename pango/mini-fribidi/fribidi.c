@@ -41,7 +41,7 @@ typedef struct {
 
 static TypeLink *free_type_links = NULL;
 
-static TypeLink *new_type_link()
+static TypeLink *new_type_link(void)
 {
   TypeLink *link;
   

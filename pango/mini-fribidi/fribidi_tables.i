@@ -1,5 +1,5 @@
 /*======================================================================
-//  This file was automatically created from PropList-3.0.txt
+//  This file was automatically created from PropList-3.0.1.txt
 //  by the perl script CreateGetType.pl.
 //----------------------------------------------------------------------*/
 
@@ -558,25 +558,6 @@ guchar FriBidiPropertyBlocka400[256] = {
   ON ,ON ,ON ,ON ,ON ,ON ,ON ,ON ,ON ,ON ,ON ,ON ,ON ,ON ,ON ,ON ,
 };
 
-guchar FriBidiPropertyBlockf800[256] = {
-  NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,
-  NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,
-  NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,
-  NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,
-  NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,
-  NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,
-  NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,
-  NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,
-  NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,
-  NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,
-  NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,
-  NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,
-  NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,
-  NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,
-  NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,
-  NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,NSM,
-};
-
 guchar FriBidiPropertyBlockfb00[256] = {
   LTR,LTR,LTR,LTR,LTR,LTR,LTR,LTR,LTR,LTR,LTR,LTR,LTR,LTR,LTR,LTR,
   LTR,LTR,LTR,LTR,LTR,LTR,LTR,LTR,LTR,LTR,LTR,LTR,LTR,RTL,NSM,RTL,
@@ -672,7 +653,7 @@ guchar FriBidiPropertyBlockff00[256] = {
   ON ,ON ,ON ,ON ,ON ,ON ,ON ,ON ,ON ,BN ,BN ,BN ,ON ,ON ,ON ,ON ,
 };
 
-/* 34 blocks defined */
+/* 33 blocks defined */
 
 guchar *FriBidiPropertyBlocks[256] = {
   FriBidiPropertyBlock0000,
@@ -923,7 +904,7 @@ guchar *FriBidiPropertyBlocks[256] = {
   FriBidiPropertyBlock0100,
   FriBidiPropertyBlock0100,
   FriBidiPropertyBlock0100,
-  FriBidiPropertyBlockf800,
+  FriBidiPropertyBlock0100,
   FriBidiPropertyBlock0100,
   FriBidiPropertyBlock0100,
   FriBidiPropertyBlockfb00,

@@ -8,5 +8,5 @@ Description: X Window System font support for Pango
 Version: @VERSION@
 Requires: pango
 Libs: -L${libdir} -lpangox @X_LIBS@
-Cflags:
+Cflags: -I${includedir}/pango-1.0
 
