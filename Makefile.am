@@ -1,6 +1,6 @@
 ## Process this file with automake to create Makefile.in.
 
-SUBDIRS=modules pango examples docs tools fonts
+SUBDIRS=modules pango examples docs tools tests
 
 EXTRA_DIST = 		\
 	pango.spec.in	\

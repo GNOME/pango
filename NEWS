@@ -1,3 +1,12 @@
+Changes between 0.14 and 0.15
+
+* New version of Tamil shaper from Vikram Subramanian
+* Update mini-fribidi to correspond to the latest FriBidi CVS
+* Win32 fixes
+* More documentation
+* Various minor bug and build fixes. 
+
+
 Changes between 0.13 and 0.14
 
 * Win32 improvements [Tor]

@@ -341,8 +341,16 @@ main (int    argc,
       char **argv)
 {
   gchar *text;
+  gchar *srcdir;
+  gchar *filename;
 
-  if (!g_file_get_contents ("boundaries.utf8", &text, NULL, NULL))
+  srcdir = getenv ("srcdir");
+  if (!srcdir)
+    srcdir = ".";
+
+  filename = g_strdup_printf ("%s/boundaries.utf8", srcdir);
+  
+  if (!g_file_get_contents (filename, &text, NULL, NULL))
     fail ("Couldn't open sample text file");
   
   check_invariants (text);

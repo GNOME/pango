@@ -11,4 +11,8 @@ testboundaries_SOURCES = testboundaries.c
 ## pangox should not actually be required, this is broken
 testboundaries_LDADD = ../pango/libpango.la ../pango/libpangox.la $(X_LIBS)
 
+EXTRA_DIST = 			\
+	all-unicode.txt		\
+	boundaries.utf8		\
+	runtests.sh
 

@@ -3,7 +3,7 @@ dnl Process this file with autoconf to create configure.
 AC_INIT(ChangeLog)
 
 PANGO_MAJOR_VERSION=0
-PANGO_MINOR_VERSION=14
+PANGO_MINOR_VERSION=15
 
 AC_SUBST(PANGO_MAJOR_VERSION)
 AC_SUBST(PANGO_MINOR_VERSION)
@@ -255,8 +255,9 @@ QTDIR=
 AC_MSG_CHECKING(For Qt location)
   
 if test "x$with_qt" = xyes ; then         
-# Search for Qt in various possibly standard locations
-   for dir in /usr/lib/qt-2.2.3 /usr/lib/qt-2.2.0 /usr/lib/qt-2.1.0 /usr/lib/qt-2.0.1 /usr/lib/qt-2.0.0 /usr/lib/qt2 ; do
+# Search for Qt in a common location. The ls -r is an attempt to find the newest 
+   dirs=`ls -d -r /usr/lib/qt*`
+   for dir in $dirs ; do
       if test -x $dir/bin/moc ; then
          QTDIR=$dir
          break
@@ -466,7 +467,6 @@ examples/Makefile
 examples/makefile.mingw
 docs/Makefile
 tools/Makefile
-fonts/Makefile
 tests/Makefile
 pango.spec
 pango.pc

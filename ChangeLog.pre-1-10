@@ -1,3 +1,15 @@
+Tue Apr 17 15:44:53 2001  Owen Taylor  <otaylor@redhat.com>
+
+	* Release 0.15
+
+	* tests/testboundaries.c: Look for files in $srcdir.
+
+	* Makefile.am (SUBDIRS): Add tests, remove fonts
+
+	* tests/Makefile.am (EXTRA_DIST): added missing stuff
+
+	* fonts/: Remove. Nothing in here is needed any more.
+
 2001-04-16  Havoc Pennington  <hp@pobox.com>
 
 	* pango/pango-glyph.h: Removed pango_justify(), since it has no
