@@ -1,3 +1,8 @@
+2001-04-20  Anders Carlsson  <andersca@codefactory.se>
+
+	* pango/pango-markup.c (pango_parse_markup): Discard the parsed text if
+	the input variable text is NULL. This fixes a segfault.
+
 Tue Apr 17 15:44:53 2001  Owen Taylor  <otaylor@redhat.com>
 
 	* Release 0.15

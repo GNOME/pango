@@ -601,8 +601,7 @@ pango_parse_markup (const char                 *markup_text,
   if (attr_list)
     md->attr_list = pango_attr_list_new ();
 
-  if (text)
-    md->text = g_string_new ("");
+  md->text = g_string_new ("");
   
   if (accel_char)
     *accel_char = 0;
@@ -678,7 +677,9 @@ pango_parse_markup (const char                 *markup_text,
 
   if (text)
     *text = g_string_free (md->text, FALSE);
-
+  else
+    g_string_free (md->text, TRUE);
+  
   if (accel_char)
     *accel_char = md->accel_char;
   
