@@ -1,5 +1,26 @@
 2002-09-24  Tor Lillqvist  <tml@iki.fi>
 
+	* pango/pangowin32.c: Use PANGO_PIXELS macro throughout instead of
+	dividing by PANGO_SCALE.
+	(pango_win32_render): New try. This time handle both glyphs at
+	code point 0, specifically put there by PangoLayout to indicate
+	spacing (for tab handling), and actual invalid glyphs noticed by
+	the shaper. Invalid glyphs are indicated by the flag
+	PANGO_WIN32_UNKNOWN_FLAG. (Idea taken frompangoxft-font.c)
+	(pango_win32_get_unknown_glyph): Take also the char as parameter,
+	return the same char with the above flag ORed in.
+	(pango_win32_font_get_glyph_extents): If the glyph is flagged as
+	invalid, look for glyph 0 instead. Use g_win32_error_message() in
+	warning message instead of numeric error code.
+
+	* pango/pangowin32.h: Add the new parameter to the
+	pango_win32_get_unknown_glyph() declaration. Surround the API used
+	by shape engines with #ifdef PANGO_ENABLE_ENGINE.
+
+	* modules/basic/basic-win32.c: Change call accordingly.
+
+2002-09-24  Tor Lillqvist  <tml@iki.fi>
+
 	* pango/opentype/pango-ot.def: Remove. Not used. (A static library
 	is built here. Exported entries are in ../pangoft2.def.)
 
