@@ -1,52 +1,75 @@
-General
+Shaping
+=======
+
+* Use the new PangoCoverage stuff for looking up fonts,
+  and implement pango_font_get_shaper().
+
+Layout Driver
+=============
+
+The PangoLayout object is a highlevel driver that takes an attributed
+string and produces lines of glyphs. As well as just implementing
+this, there are various improvements that need to be made to 
+
+* Figure out better ways of doing line breaks. (This may involve
+  implementing the TeX/Raph x0-x1 stuff for line breaks.)
+
+* Add attributes data structures, feed attributed strings
+  into pango_itemize() (? is this necessary)
+
+X rendering
+===========
+
+* The point-size/pixel size handling is not done right. Right
+  now we are just assuming pixel == point, because trying to
+  use the point-size fields of the X fonts didn't work on
+  systems with both 100 and 75 dpi fonts installed.
+
+  We should query the X server for its actual reported value
+  and use that to translate point size to pixel size.
+
+  (This doesn't really handle the case of optically scaled
+   bitmaps properly, but I think that is an ignorable problem.)
+
+Other rendering engines
+======================
+
+Somebody should start working on a libart font-system / renderer
+soon, to make sure that the interfaces are suitable.
+
+Engines
 =======
 
 * Switch engines to be indentified by properties, instead
   of hardcoded role/language. (?)
 
-* Add a PangoLayout highlevel driver
+Language Modules
+================
 
-* Add attributes data structures, feed attributed strings
-  into pango_itemize() (? is this necessary)
+ * It would be nice to have X based renderers for a few more scripts;
+   Arabic in particular is one such script.
 
-* Return error codes from all functions. Possible errors include
- - Invalid string
- - Font does not match 
-
-  I think a good general way of doing this is to always
-  have an error object as a parameter to each function, but
-  allow that error object to be NULL, in which case a
-  global error object is used.
-
-  So, either
-
-    
-    err = PANGO_ERROR_INIT;
-    pango_shape (..., &err);
-    if (PANGO_ERROR_CODE (&err) != NO_ERROR) 
-      {
-        g_print ("An error %s occurred\n", PANGO_ERROR_STRING (&err));
-        pango_error_free (&err);
-      }
-
-  or:
-
-    pango_shape (..., NULL);
-    if (PANGO_ERROR_CODE (NULL) != NO_ERROR) 
-      g_print ("An error %s occurred\n", PANGO_ERROR_STRING (NULL));
-
-  Also, whenever possible, the return value of each Pango function
-  will be a gboolean success code (and also, a pango function that
-  returns a pointer that cannot otherwise be NULL, will return NULL),
-  so we can write instead of the last one:
-    
-    if (!pango_shape (..., NULL))
-      g_print ("An error %s occurred\n", PANGO_ERROR_STRING (NULL));
-
-  This always people who write non-threaded code to write conveniently,
-  while those who write threaded code can avoid pollution of return
-  values.
+ * Once we have a libart renderer, porting Raph's devanagari shaper
+   to Pango and C (from Perl) would be a cool demo and test case.
   
+ * The clusters set by the current modules need to be set.
+
+Documentation
+=============
+
+* Much or all of the X Fonts document from pango.org needs to be moved
+  into the API reference.
+
+General
+=======
+
+* Report errors from functions, these errors include such things.
+
+  - Invalid string
+  - Font does not match 
+
+ Probably the right thing to do here is to use something very close
+ to the GConf API ... see Havoc's GException proposal.
 
 * Allow UTF8 strings with embedded NULLs.
 
@@ -54,35 +77,5 @@ General
   draws a placeholder character ... and does that in
   a way that always works.
 
-* Convert over from utils.c to Tom Tromey's libunicode.
-
-X fonts
-=======
-
-* Currently, for X, a language module must use a fixed priority
-  for the various encodings it can use; it can't distinguish:
-
-   good-unicode-subset-font
-   good-ksc-font
-   bad-unicode-full-fallback
-
-  from:
-
-   good-unicode-subset-font
-   bad-unicode-full-fallback
-   good-ksc-font
-
-  In either case if queried if a particular Unicode code-point, exists
-  in the font, it will return YES, and the bad-unicode-full-fallback
-  will be used.
-
-  void pango_x_list_subfonts (font, charsets, n_charsets, &subfonts_xlfds,
-                              &subfont_charsets, &subfont_ids, &n_subfonts);
-
-  Note that this call adds the queried subfonts to an internal list for
-  the font. Subfonts once queried take up a small amount of memory
-  (enough for the name), subfonts, once accessed, will retain the full
-  amount of memory for the X font until the entire font is freed.
-
-  Then for each mask, we assemble a list of subfont-ids ordered.
-
+* Finish coverting over from utils.c to Tom Tromey's libunicode.
+  Add the remaining useful functions from utils.c into libunicode.

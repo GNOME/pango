@@ -1136,7 +1136,7 @@ pango_x_load_font (Display *display,
 }
  
 /**
- * pango_x_load_font:
+ * pango_x_load_font_with_size:
  * @display: the X display
  * @spec:    a comma-separated list of XLFD's, unsized
  * @size:    the size at which to load the font

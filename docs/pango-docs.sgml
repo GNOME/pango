@@ -4,7 +4,8 @@
 <!entity pango-fonts SYSTEM "sgml/fonts.sgml">
 <!entity pango-coverage-maps SYSTEM "sgml/coverage-maps.sgml">
 <!entity pango-engines SYSTEM "sgml/engines.sgml">
-<!entity pango-x SYSTEM "sgml/pango-x.sgml">
+<!entity x-fonts SYSTEM "sgml/x-fonts.sgml">
+<!entity x-rendering SYSTEM "sgml/x-rendering.sgml">
 ]>
 <book>
   <bookinfo>
@@ -22,6 +23,7 @@
 
   <chapter id="pango-x">
     <title>Rendering under X with Pango</title>
-    &pango-x;
+    &x-fonts;
+    &x-rendering;
     </chapter>
 </book>

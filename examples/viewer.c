@@ -850,7 +850,7 @@ make_families_menu ()
 	}
     }
 
-  families = g_list_reverse (families);
+  families = g_list_sort (families, (GCompareFunc)strcmp);
   
   combo = gtk_combo_new ();
   gtk_combo_set_popdown_strings (GTK_COMBO (combo), families);
@@ -953,17 +953,6 @@ main (int argc, char **argv)
 
   font = pango_context_load_font (context, &font_description, font_size);
   
-#if 0
-  /* We hard code a font globally for now
-   */
-  font = pango_x_load_font (GDK_DISPLAY(),
-    /*			    "-misc-fixed-medium-r-semicondensed--13-*-*-*-c-*-iso10646-1," */
-			    "-tamil-tscakaram-medium-r-normal--*-120-*-*-*-*-tscii-0,"
-			    "-gnu-unifont-medium-r-normal--*-160-*-*-c-*-iso10646-1,"
-			    "-*-*-medium-r-normal--*-160-*-*-*-*-*-*");
-#endif  
-
-
   /* Create the user interface
    */
   window = gtk_window_new (GTK_WINDOW_TOPLEVEL);

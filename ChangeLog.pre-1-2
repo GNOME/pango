@@ -1,3 +1,10 @@
+Wed Feb  9 14:04:35 2000  Owen Taylor  <otaylor@redhat.com>
+
+	* TODO: updates.
+
+	* docs/*: Added some docs on font handling, both general
+	and for X.
+
 Tue Feb  8 15:05:17 2000  Owen Taylor  <otaylor@redhat.com>
 
 	* libpango/pangox.c: Moved the primary size and charset matching

@@ -48,8 +48,9 @@ pango_glyph_string_free
 <SECTION>
 <TITLE>Coverage Maps</TITLE>
 <FILE>coverage-maps</FILE>
-PangoCoverage
 PangoCoverageLevel
+PangoCoverage
+<SUBSECTION>
 pango_coverage_new
 pango_coverage_copy
 pango_coverage_destroy
@@ -66,13 +67,12 @@ PangoStyle
 PangoWeight
 PangoVariant
 PangoStretch
-PangoFont
-PangoFontClass
-PangoFontMap
-PangoFontMapClass
 pango_font_description_copy
 pango_font_descriptions_free
 pango_font_description_free
+<SUBSECTION>
+PangoFont
+PangoFontClass
 pango_font_init
 pango_font_ref
 pango_font_unref
@@ -81,6 +81,9 @@ pango_font_describe
 pango_font_get_coverage
 pango_font_get_data
 pango_font_set_data
+<SUBSECTION>
+PangoFontMap
+PangoFontMapClass
 pango_font_map_init
 pango_font_map_ref
 pango_font_map_unref
@@ -105,19 +108,24 @@ script_engine_unload
 </SECTION>
 
 <SECTION>
-<FILE>pango-x</FILE>
 <TITLE>X Rendering</TITLE>
-PangoXSubfont
+<FILE>x-rendering</FILE>
 PANGO_RENDER_TYPE_X
-PANGO_X_MAKE_GLYPH
-PANGO_X_GLYPH_SUBFONT
-PANGO_X_GLYPH_INDEX
 pango_x_get_context
-pango_x_load_font
 pango_x_render
 pango_x_extents
 pango_x_glyph_extents
+</SECTION>
+
+<SECTION>
+<TITLE>X Fonts</TITLE>
+<FILE>x-fonts</FILE>
+PangoXSubfont
+PANGO_X_MAKE_GLYPH
+PANGO_X_GLYPH_SUBFONT
+PANGO_X_GLYPH_INDEX
+pango_x_load_font
+pango_x_get_unknown_glyph
 pango_x_has_glyph
 pango_x_list_subfonts
 </SECTION>
-

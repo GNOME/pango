@@ -54,12 +54,42 @@ indices.
 
 @string: 
 
+<!-- ##### FUNCTION pango_x_load_xlfd ##### -->
+<para>
+
+</para>
+
+@font: 
+@xlfd: 
+@Returns: 
+
+<!-- ##### SECTION ./tmpl/pango-x.sgml:Title ##### -->
+X Rendering
+
+
+<!-- ##### SECTION ./tmpl/pango-x.sgml:See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION ./tmpl/pango-x.sgml:Short_Description ##### -->
+Functions for rendering and measuring glyphs on
+the X Window system.
+
+
 <!-- ##### FUNCTION g_glyph_string_new ##### -->
 <para>
 
 </para>
 
 @Returns: 
+
+<!-- ##### SECTION ./tmpl/pango-x.sgml:Long_Description ##### -->
+<para>
+
+</para>
+
 
 <!-- ##### FUNCTION pango_x_list_cfonts ##### -->
 <para>
@@ -71,15 +101,6 @@ indices.
 @n_charsets: 
 @xlfds: 
 @n_xlfds: 
-
-<!-- ##### FUNCTION pango_x_load_xlfd ##### -->
-<para>
-
-</para>
-
-@font: 
-@xlfd: 
-@Returns: 
 
 <!-- ##### STRUCT PangoCFontClass ##### -->
 <para>
