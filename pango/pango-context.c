@@ -214,7 +214,8 @@ pango_context_load_font (PangoContext               *context,
 			 const PangoFontDescription *desc)
 {
   g_return_val_if_fail (context != NULL, NULL);
-
+  g_return_val_if_fail (pango_font_description_get_family (desc) != NULL, NULL);
+  
   return pango_font_map_load_font (context->font_map, context, desc);
 }
 

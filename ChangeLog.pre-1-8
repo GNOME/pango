@@ -1,3 +1,9 @@
+Wed Jan  9 18:51:02 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-context.c (pango_context_load_font): 
+	g_return_if_fail() if the desc's family is NULL.
+	(#67947, report from Darin Adler.)
+
 Wed Jan  9 11:23:31 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/Makefile.am (s-enum-types-h): Include glib-object.h,
