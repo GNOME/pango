@@ -254,6 +254,7 @@ pango_ft2_pattern_equal (MiniXftPattern *pattern1,
 static void 
 pango_ft2_font_map_init (PangoFT2FontMap *ft2fontmap)
 {
+  ft2fontmap->n_families = -1;
 
   ft2fontmap->fonts =
     g_hash_table_new ((GHashFunc)pango_ft2_pattern_hash,
@@ -402,6 +403,7 @@ pango_ft2_font_map_list_families (PangoFontMap           *fontmap,
 	  ft2fontmap->families[i] = g_object_new (PANGO_FT2_TYPE_FAMILY, NULL);
 	  ft2fontmap->families[i]->family_name = g_strdup (s);
 	  ft2fontmap->families[i]->fontmap = ft2fontmap;
+          ft2fontmap->families[i]->n_faces = -1;
 	}
 
       MiniXftFontSetDestroy (fontset);

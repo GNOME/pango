@@ -1,3 +1,10 @@
+2001-12-04  Sven Neumann  <sven@gimp.org>
+
+	* pango/pangoft2-fontmap.c
+	(pango_ft2_font_map_init): set n_families to -1 (uninitialized).
+	(pango_ft2_font_map_list_families): set n_faces to -1 (uninitialized).
+	This makes list_families and list_faces work again for PangoFT2.
+
 2001-12-01  Matthias Clasen  <matthiasc@poet.de>
 
 	* pango/pango-fontset.c: Documentation fixes.
