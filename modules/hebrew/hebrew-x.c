@@ -56,15 +56,25 @@
 #define	__NS			2
 #define	__DA			3
 
-/* Unicode definitions ... */
-#define UNI_VAV			0x5d5
-#define UNI_LAMED		0x5DC
-#define UNI_SHIN		0x5E9
+/* Unicode definitions needed in logics below... */
+#define	UNI_BET			0x05D1
+#define	UNI_DALED		0x05D3
+#define	UNI_KAF			0x05DB
+#define UNI_VAV			0x05D5
+#define	UNI_YOD			0x05D9
+#define	UNI_RESH		0x05E8
+#define UNI_LAMED		0x05DC
+#define UNI_SHIN		0x05E9
 #define UNI_FINAL_PE		0x05E3
 #define UNI_PE			0x05E4
-#define UNI_SHIN_DOT		0x5c1
-#define UNI_SIN_DOT		0x5c2
-#define UNI_MAPIQ		0x5bc
+#define	UNI_TAV			0x05EA
+#define UNI_SHIN_DOT		0x05C1
+#define UNI_SIN_DOT		0x05C2
+#define UNI_MAPIQ		0x05BC
+#define	UNI_SHEVA		0x05B0
+#define	UNI_QAMATS		0x05B8
+#define	UNI_HOLAM		0x05B9
+#define	UNI_QUBUTS		0x05BB
 
 #define is_char_class(wc, mask)	(char_class_table[ucs2iso8859_8 ((wc))] & (mask))
 #define	is_composible(cur_wc, nxt_wc)	(compose_table[char_type_table[ucs2iso8859_8 (cur_wc)]]\
@@ -212,6 +222,7 @@ static const gint iso_8859_8_shape_table[128] = {
 static const gint Unicode_shape_table[128] = {
   /* 00 */    0x00, 0x00, 0x00, 0x00,  0x00, 0x00, 0x00, 0x00,
               0x00, 0x00, 0x00, 0x00,  0x00, 0x00, 0x00, 0x00,
+
   /* cantillation marks followed by accents */
   /* 10 */    0x0000, 0x0591, 0x0592, 0x0593, 0x0594, 0x0595, 0x0596, 0x0597,
               0x0598, 0x0599, 0x059A, 0x059B, 0x059C, 0x059D, 0x059E, 0x059F,
@@ -435,6 +446,7 @@ add_cluster (HebrewFontInfo	*font_info,
   gint i;
   
   num_glyphs = get_glyphs_list(font_info, cluster, num_chrs, glyphs_list);
+
   for (i=0; i<num_glyphs; i++)
        add_glyph (font_info, glyphs, cluster_start, glyphs_list[i],
 	    		i == 0 ? FALSE : TRUE);
@@ -494,6 +506,27 @@ add_cluster (HebrewFontInfo	*font_info,
 		     cluster width. But how can I check if that is the
 		     case??
 		  */
+		  /* This is wild, but it does the job of differentiating
+		     between two M$ fonts... Base the decision on the
+		     aspect ratio of the vav...
+		  */
+		  if (base_ink_height > base_ink_width * 3.5)
+		    {
+		      int j;
+		      double space = 0.7;
+		      double kern = 0.5;
+
+		      for (j=0; j<i; j++)
+			{
+			  glyphs->glyphs[cluster_start_idx+j].geometry.x_offset
+			    += ink_rect.width*(1+space-kern);
+			}
+		      
+		      glyphs->glyphs[cluster_start_idx+i].geometry.width
+			+= ink_rect.width*(1+space-kern);
+		      glyphs->glyphs[cluster_start_idx+i].geometry.x_offset
+			-= ink_rect.width*(kern);
+		    }
 		}
 
 	      /* Dot over SHIN */
@@ -511,11 +544,24 @@ add_cluster (HebrewFontInfo	*font_info,
 		    = base_ink_x_offset -ink_rect.x;
 		}
 
-	      /* VOWEL DOT next to LAMED */
-	      else if (gl == UNI_SIN_DOT && base_char == UNI_LAMED)
+	      /* VOWEL DOT above to any other character than
+	         SHIN or VAV should stick out a bit to the left. */
+	      else if ((gl == UNI_SIN_DOT || gl == UNI_HOLAM)
+		       && base_char != UNI_SHIN && base_char != UNI_VAV)
 		{  
 		  glyphs->glyphs[cluster_start_idx+i].geometry.x_offset
 		    = base_ink_x_offset -ink_rect.x - 2*ink_rect.width;
+		}
+
+	      /* VOWELS under resh or vav are right aligned */
+	      else if ((base_char == UNI_VAV || base_char == UNI_RESH
+			|| base_char == UNI_YOD)
+		       && ((gl >= UNI_SHEVA && gl <= UNI_QAMATS) ||
+			   gl == UNI_QUBUTS)) 
+		{
+		  glyphs->glyphs[cluster_start_idx+i].geometry.x_offset
+		    = base_ink_x_offset + base_ink_width
+		    - ink_rect.x - ink_rect.width;
 		}
 
 	      /* MAPIQ in PE or FINAL PE */
@@ -532,10 +578,32 @@ add_cluster (HebrewFontInfo	*font_info,
 		}
 
 	      /* VOWEL DOT next to any other character */
-	      else if (gl == UNI_SIN_DOT)
+	      else if ((gl == UNI_SIN_DOT || gl == UNI_HOLAM)
+		       && (base_char != UNI_VAV))
 		{   
 		  glyphs->glyphs[cluster_start_idx+i].geometry.x_offset
 		    = base_ink_x_offset -ink_rect.x;
+		}
+
+	      /* Move nikud of taf a bit ... */
+	      else if (base_char == UNI_TAV)
+		{
+		  glyphs->glyphs[cluster_start_idx+i].geometry.x_offset
+		    = base_ink_x_offset - ink_rect.x
+		    + base_ink_width * 5/8 - ink_rect.width/2;
+		}
+
+	      /* Move center dot of characters with a right stem and no
+		 left stem. */
+	      else if (gl == UNI_MAPIQ &&
+		       (base_char == UNI_BET
+			|| base_char == UNI_DALED
+			|| base_char == UNI_KAF
+			))
+		{
+		  glyphs->glyphs[cluster_start_idx+i].geometry.x_offset
+		    = base_ink_x_offset - ink_rect.x
+		    + base_ink_width * 3/8 - ink_rect.width/2;
 		}
 
 	      /* Center by default */
@@ -563,7 +631,6 @@ get_next_cluster(const char	*text,
   /* What is the maximum size of a Hebrew cluster? It is certainly
      bigger than two characters... */
   while (p < text + length && n_chars < MAX_CLUSTER_CHRS)  
-
     {
       gunichar current = g_utf8_get_char (p);
       
@@ -654,7 +721,7 @@ hebrew_engine_shape (PangoFont      *font,
 
 static PangoCoverage *
 hebrew_engine_get_coverage (PangoFont *font,
-			   PangoLanguage *lang)
+			   const char *lang)
 {
   PangoCoverage *result = pango_coverage_new ();
   
@@ -702,6 +769,7 @@ hebrew_engine_x_new ()
 
 /* List the engines contained within this module
  */
+
 void 
 MODULE_ENTRY(script_engine_list) (PangoEngineInfo **engines, gint *n_engines)
 {
