@@ -41,5 +41,15 @@ void pango_shape (const gchar      *text,
   if (analysis->shape_engine)
     analysis->shape_engine->script_shape (analysis->font, text, length, analysis, glyphs);
   else
-    pango_glyph_string_set_size (glyphs, 0);
+    {
+      pango_glyph_string_set_size (glyphs, 1);
+
+      glyphs->glyphs[0].glyph = 0;
+      
+      glyphs->glyphs[0].geometry.x_offset = 0;
+      glyphs->glyphs[0].geometry.y_offset = 0;
+      glyphs->glyphs[0].geometry.width = 0;
+      
+      glyphs->log_clusters[0] = 0;
+    }
 }
