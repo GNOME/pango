@@ -639,8 +639,6 @@ add_engines (PangoContext      *context,
 	      static guint engine_type_id = 0;
 	      static guint render_type_id = 0;
 	      
-	      language = next_language;
-
 	      if (engine_type_id == 0)
 		{
 		  engine_type_id = g_quark_from_static_string (PANGO_ENGINE_TYPE_LANG);
@@ -651,11 +649,14 @@ add_engines (PangoContext      *context,
 					 engine_type_id, render_type_id);
 	    }
 
-	  if (i == 0 || !pango_font_description_equal (current_desc, next_desc))
+	  if (i == 0 ||
+	      language != next_language ||
+	      !pango_font_description_equal (current_desc, next_desc))
 	    {
 	      pango_font_description_free (current_desc);
 	      current_desc = next_desc;
-
+	      language = next_language;
+	      
 	      if (current_fonts)
 		g_object_unref (current_fonts);
 	      

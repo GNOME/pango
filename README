@@ -44,7 +44,7 @@ Pango-1.2 requires version 2 of Xft.
 Both Xft and the optional PangoFT2 backend look up fonts via
 the fontconfig library, available along with Xft in the
 'fcpackage' tarball from http://keithp.com/fonts. They
-also require at least version 2.0.1 of the FreeType
+also require at least version 2.0.9 of the FreeType
 library. (http://www.freetype.org)
 
 After installing fontconfig, it may be necessary to edit
