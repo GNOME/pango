@@ -1,3 +1,8 @@
+Mon Nov 25 11:58:30 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* examples/viewer-qt.cc (readFile): Fix missing argument
+	(#99380, Dagfinn I. Mannsåker)
+
 2002-11-23  Matthias Clasen  <maclas@gmx.de>
 
 	* docs/version.xml.in: New file to let configure dump the version in.
