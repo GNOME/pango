@@ -1,3 +1,7 @@
+Wed Jul  3 18:54:14 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pangoft2.c: Fix some typos.
+
 Wed Jul  3 18:39:45 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pangoft2.c pango/pangoxft-font.c: Be more

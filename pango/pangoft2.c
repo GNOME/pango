@@ -224,14 +224,14 @@ pango_ft2_font_get_face (PangoFont      *font)
 	hinting = FcTrue;
 
       if (!hinting)
-        f2font->load_flags |= FT_LOAD_NO_HINTING;
+        ft2font->load_flags |= FT_LOAD_NO_HINTING;
 
       /* force autohinting if requested */
       if (FcPatternGetBool (pattern, FC_AUTOHINT, 0, &autohint) != FcResultMatch)
 	autohint = FcFalse;
 
       if (autohint)
-        f2font->load_flags |= FT_LOAD_FORCE_AUTOHINT;
+        ft2font->load_flags |= FT_LOAD_FORCE_AUTOHINT;
 
       error = FT_New_Face (_pango_ft2_font_map_get_library (ft2font->fontmap),
 			   (char *) filename, id, &ft2font->face);
@@ -350,8 +350,10 @@ pango_ft2_font_render_glyph (PangoFont *font,
   
   if (face)
     {
+      PangoFT2Font *ft2font = (PangoFT2Font *)font;
+	    
       /* Draw glyph */
-      FT_Load_Glyph (face, glyph_index, f2font->load_flags);
+      FT_Load_Glyph (face, glyph_index, ft2font->load_flags);
       FT_Render_Glyph (face->glyph, ft_render_mode_normal);
 
       rendered->bitmap = face->glyph->bitmap;
@@ -520,7 +522,7 @@ pango_ft2_font_get_glyph_info (PangoFont   *font,
       FT_Face face = pango_ft2_font_get_face (font);
       info = g_new0 (PangoFT2GlyphInfo, 1);
       
-      if (glyph && (gm = pango_ft2_get_per_char (face, glyph)))
+      if (glyph && (gm = pango_ft2_get_per_char (font, glyph)))
 	{
 	  info->ink_rect.x = PANGO_UNITS_26_6 (gm->horiBearingX);
 	  info->ink_rect.width = PANGO_UNITS_26_6 (gm->width);
