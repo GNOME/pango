@@ -653,12 +653,16 @@ get_font_metrics_from_subfonts (PangoFont        *font,
 		{
 		  metrics->ascent = tm.tmAscent * PANGO_SCALE;
 		  metrics->descent = tm.tmDescent * PANGO_SCALE;
+		  metrics->approximate_digit_width = /* really an approximation ... */
+		  metrics->approximate_char_width = tm.tmAveCharWidth * PANGO_SCALE;
 		  first = FALSE;
 		}
 	      else
 		{
 		  metrics->ascent = MAX (tm.tmAscent * PANGO_SCALE, metrics->ascent);
 		  metrics->descent = MAX (tm.tmDescent * PANGO_SCALE, metrics->descent);
+		  metrics->approximate_digit_width = /* really an approximation ... */
+		  metrics->approximate_char_width = MAX(tm.tmAveCharWidth * PANGO_SCALE, metrics->approximate_char_width);
 		}
 	    }
 	}
@@ -845,12 +849,35 @@ pango_win32_font_get_metrics (PangoFont        *font,
 
   if (!tmp_list)
     {
+      PangoLayout *layout;
+      PangoRectangle extents;
+      PangoContext *context;
+
+      win32font->metrics_by_lang = g_slist_prepend (win32font->metrics_by_lang, info);
+
       info = g_new (PangoWin32MetricsInfo, 1);
       info->lang = lookup_lang;
 
       win32font->metrics_by_lang = g_slist_prepend (win32font->metrics_by_lang, info);
       
       get_font_metrics_from_string (font, lang, str, &info->metrics);
+
+      /* lovely copy&paste programming (from pangox.c) */
+      /* This is sort of a sledgehammer solution, but we cache this
+       * stuff so not a huge deal hopefully. Get the avg. width of the
+       * chars in "0123456789"
+       */
+      context = pango_win32_get_context ();
+      pango_context_set_lang (context, lookup_lang);
+      layout = pango_layout_new (context);
+      pango_layout_set_text (layout, "0123456789", -1);
+
+      pango_layout_get_extents (layout, NULL, &extents);
+      
+      info->metrics.approximate_digit_width = extents.width / 10.0;
+
+      g_object_unref (G_OBJECT (layout));
+      g_object_unref (G_OBJECT (context));
     }
       
   *metrics = info->metrics;

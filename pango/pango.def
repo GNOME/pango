@@ -149,6 +149,7 @@ EXPORTS
 	pango_layout_set_font_description
 	pango_layout_set_indent
 	pango_layout_set_justify
+	pango_layout_set_single_paragraph_mode
 	pango_layout_set_spacing
 	pango_layout_set_tabs
 	pango_layout_set_text
