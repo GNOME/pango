@@ -433,8 +433,7 @@ text_handler           (GMarkupParseContext *context,
       
       md->index += text_len;
       
-      if (md->text)
-        g_string_append_len (md->text, text, text_len);
+      g_string_append_len (md->text, text, text_len);
     }
   else
     {
@@ -694,9 +693,8 @@ pango_parse_markup (const char                 *markup_text,
   g_slist_free (md->tag_stack);
   g_slist_foreach (md->to_apply, (GFunc) pango_attribute_destroy, NULL);
   g_slist_free (md->to_apply);
-
-  if (md->text)
-    g_string_free (md->text, TRUE);
+  g_string_free (md->text, TRUE);
+  
   if (md->attr_list)
     pango_attr_list_unref (md->attr_list);
 
