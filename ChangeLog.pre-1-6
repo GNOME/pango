@@ -1,3 +1,8 @@
+2002-05-23  Changwoo Ryu  <cwryu@debian.org>
+
+	* modules/hangul/hangul-x.c (render_syllable_with_ksc5601): 
+	Don't draw fillers when drawing Jamos with ksc5601 fallback.
+
 Wed May 22 16:07:16 2002  Owen Taylor  <otaylor@redhat.com>
 
 	* configure.in: Version 1.0.2, interface, binary age 2.

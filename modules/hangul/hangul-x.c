@@ -476,6 +476,9 @@ render_syllable_with_ksc5601 (PangoFont *font, PangoXSubfont subfont,
   for (i = 0; i < length; i++)
     {
       int j;
+
+      if (text[i] == LFILL || text[i] == VFILL || text[i] == TFILL)
+	continue;
       
       gindex = text[i];
       for (j = 0; (j < 3) && (__jamo_to_ksc5601[gindex - LBASE][j] != 0); j++)
