@@ -1,3 +1,8 @@
+Thu Aug 31 11:29:33 2000  Owen Taylor  <otaylor@redhat.com>
+
+	* tools/maps/tis-620: Check in this file, since it 
+	isn't from the Unicode consortium.
+
 Wed Aug 30 21:42:42 2000  Owen Taylor  <otaylor@redhat.com>
 
 	* configure.in (QTDIR): Add /usr/lib/qt-2.2.0 to the
