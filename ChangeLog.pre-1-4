@@ -1,3 +1,9 @@
+Sat Jul 26 10:43:20 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/opentype/ftxgsub.c pango/opentype/ftxgpos.c:
+	Fix various memory leaks from error returns that should 
+	have been jumps to cleanup blocks. (From Qt, Lars Knoll)
+
 Sat Jul 26 10:30:24 2003  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/opentype/ftxgpos.c: Fix additional places where 
