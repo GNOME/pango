@@ -1,3 +1,54 @@
+2000-11-01  Havoc Pennington  <hp@pobox.com>
+
+	* pango/pango-attributes.c (pango_attr_scale_new): Add a new
+	attribute for scaling a font; also required adding PangoAttrFloat.
+	(pango_attr_iterator_get_font): Add PANGO_ATTR_SCALE handling.
+
+	* pango/pango-utils.c (pango_parse_stretch): Take a plain string
+	not a GString
+	(pango_parse_weight): ditto
+	(pango_parse_variant): ditto
+	(pango_parse_style): ditto
+
+	* pango/pangox-fontmap.c (pango_x_font_map_read_alias_file): pass 
+	GString::str instead of the GString itself to pango_parse_*
+
+	* pango/pangoft2-fontmap.c (pango_ft2_insert_face): ditto
+
+	* pango/pangowin32-fontmap.c
+	(pango_win32_font_map_read_alias_file): ditto
+	
+	* pango/pango-layout.c (get_tab_pos): adapt to new pango_itemize()
+	signature
+	(pango_layout_check_lines): Raise attr list copy/creation out of
+	the loop over paragraphs. Adapt to pango_itemize() changes.
+
+	* pango/pango-context.c (pango_itemize): pass in a starting 
+	index and a cached iterator
+	(add_engines): Easy optimization, pass in
+	n_chars instead of recomputing it. Also, pass on the start
+	index and cached iterator.
+	
+	* docs/pango-sections.txt: Add new stuff
+	docs/pango_markup.sgml: Docs on markup format
+
+	* pango/pango-layout.c (pango_layout_get_attributes): New function 
+	to retrieve the AttrList from a layout
+	(pango_layout_set_markup): Set layout from markup
+	(pango_layout_set_markup_with_accel): Set layout from markup
+	including accelerator parsing.	
+
+	* pango/pango-attributes.h (pango_parse_markup): New function to 
+	convert a tag string to an attribute list
+
+	* pango/pango-markup.c (pango_parse_markup): implement
+
+	* docs/Makefile.am, docs/pango-docs.sgml, docs/pango-sections.txt,
+	docs/pango_markup.sgml: oooooh, documentation for the above patch!
+
+	* docs/tmpl/pango-unused.sgml: Remove from CVS; just causes
+	problems, and was full of checked-in conflict markers.
+	
 Tue Sep 12 10:21:08 2000  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/modules.c (pango_map_get_entry): Added docs

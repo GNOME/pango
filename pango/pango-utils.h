@@ -46,16 +46,16 @@ char *   pango_config_key_get (const char  *key);
  * a warning is printed (with g_warning) if the string does not
  * contain a valid value.
  */
-gboolean pango_parse_style   (GString              *str,
+gboolean pango_parse_style   (const char           *str,
 			      PangoFontDescription *desc,
 			      gboolean              warn);
-gboolean pango_parse_variant (GString               *str,
+gboolean pango_parse_variant (const char            *str,
 			      PangoFontDescription *desc,
 			      gboolean              warn);
-gboolean pango_parse_weight  (GString               *str,
+gboolean pango_parse_weight  (const char            *str,
 			      PangoFontDescription *desc,
 			      gboolean              warn);
-gboolean pango_parse_stretch (GString               *str,
+gboolean pango_parse_stretch (const char            *str,
 			      PangoFontDescription *desc,
 			      gboolean              warn);
 

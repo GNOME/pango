@@ -868,25 +868,25 @@ pango_x_font_map_read_alias_file (PangoXFontMap *xfontmap,
 	  if (!pango_scan_string (&p, tmp_buf))
 	    goto error;
 
-	  if (!pango_parse_style (tmp_buf, &font_entry->description, TRUE))
+	  if (!pango_parse_style (tmp_buf->str, &font_entry->description, TRUE))
 	    goto error;
 
 	  if (!pango_scan_string (&p, tmp_buf))
 	    goto error;
 
-	  if (!pango_parse_variant (tmp_buf, &font_entry->description, TRUE))
+	  if (!pango_parse_variant (tmp_buf->str, &font_entry->description, TRUE))
 	    goto error;
 
 	  if (!pango_scan_string (&p, tmp_buf))
 	    goto error;
 
-	  if (!pango_parse_weight (tmp_buf, &font_entry->description, TRUE))
+	  if (!pango_parse_weight (tmp_buf->str, &font_entry->description, TRUE))
 	    goto error;
 	  
 	  if (!pango_scan_string (&p, tmp_buf))
 	    goto error;
 
-	  if (!pango_parse_stretch (tmp_buf, &font_entry->description, TRUE))
+	  if (!pango_parse_stretch (tmp_buf->str, &font_entry->description, TRUE))
 	    goto error;
 
 	  if (!pango_scan_string (&p, tmp_buf))

@@ -22,6 +22,7 @@ libpango_la_SOURCES = 	   \
 	pango-fontmap.c	   \
 	pango-item.c	   \
 	pango-layout.c	   \
+	pango-markup.c	   \
 	pango-tabs.c	   \
 	pango-utils.c	   \
 	reorder-items.c    \

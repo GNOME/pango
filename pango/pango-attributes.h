@@ -33,14 +33,16 @@ typedef struct _PangoAttrClass    PangoAttrClass;
 				  
 typedef struct _PangoAttrString   PangoAttrString;
 typedef struct _PangoAttrInt      PangoAttrInt;
+typedef struct _PangoAttrFloat    PangoAttrFloat;
 typedef struct _PangoAttrColor    PangoAttrColor;
 typedef struct _PangoAttrFontDesc PangoAttrFontDesc;
 typedef struct _PangoAttrShape    PangoAttrShape;
-				  
+
 typedef struct _PangoAttrList     PangoAttrList;
 typedef struct _PangoAttrIterator PangoAttrIterator;
 
-typedef enum {
+typedef enum
+{
   PANGO_ATTR_LANG,		/* PangoAttrString */
   PANGO_ATTR_FAMILY,		/* PangoAttrString */
   PANGO_ATTR_STYLE,		/* PangoAttrInt */
@@ -54,7 +56,8 @@ typedef enum {
   PANGO_ATTR_UNDERLINE,		/* PangoAttrInt */
   PANGO_ATTR_STRIKETHROUGH,	/* PangoAttrInt */
   PANGO_ATTR_RISE,		/* PangoAttrInt */
-  PANGO_ATTR_SHAPE		/* PangoAttrShape */
+  PANGO_ATTR_SHAPE,		/* PangoAttrShape */
+  PANGO_ATTR_SCALE              /* PangoAttrFloat */
 } PangoAttrType;
 
 typedef enum {
@@ -89,6 +92,12 @@ struct _PangoAttrInt
 {
   PangoAttribute attr;
   int value;
+};
+
+struct _PangoAttrFloat
+{
+  PangoAttribute attr;
+  double value;
 };
 
 struct _PangoAttrColor
@@ -138,6 +147,7 @@ PangoAttribute *pango_attr_strikethrough_new (gboolean                    strike
 PangoAttribute *pango_attr_rise_new          (int                         rise);
 PangoAttribute *pango_attr_shape_new         (const PangoRectangle       *ink_rect,
 					      const PangoRectangle       *logical_rect);
+PangoAttribute *pango_attr_scale_new         (double                      scale_factor);
 
 PangoAttrList *    pango_attr_list_new           (void);
 void               pango_attr_list_ref           (PangoAttrList  *list);
@@ -169,6 +179,13 @@ void               pango_attr_iterator_get_font (PangoAttrIterator     *iterator
                                                  GSList               **extra_attrs);
 
 
+gboolean pango_parse_markup (const char                 *markup_text,
+                             int                         length,
+                             gunichar                    accel_marker,
+                             PangoAttrList             **attr_list,
+                             char                      **text,
+                             gunichar                   *accel_char,
+                             GError                    **error);
 
 #ifdef __cplusplus
 }

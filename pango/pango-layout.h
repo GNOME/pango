@@ -74,9 +74,21 @@ PangoContext  *pango_layout_get_context    (PangoLayout    *layout);
 
 void           pango_layout_set_attributes (PangoLayout    *layout,
 					    PangoAttrList  *attrs);
+PangoAttrList *pango_layout_get_attributes (PangoLayout    *layout);
+
 void           pango_layout_set_text       (PangoLayout    *layout,
 					    const char     *text,
 					    int             length);
+
+void           pango_layout_set_markup     (PangoLayout    *layout,
+                                            const char     *markup,
+                                            int             length);
+
+void           pango_layout_set_markup_with_accel (PangoLayout    *layout,
+                                                   const char     *markup,
+                                                   int             length,
+                                                   gunichar        accel_marker,
+                                                   gunichar       *accel_char);
 
 void           pango_layout_set_font_description (PangoLayout                *layout,
 						  const PangoFontDescription *desc);

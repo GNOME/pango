@@ -352,6 +352,22 @@ pango_layout_set_attributes (PangoLayout   *layout,
 }
 
 /**
+ * pango_layout_get_attributes:
+ * @layout: a #PangoLayout
+ * 
+ * Returns the attribute list for the layout, if any
+ * 
+ * Return value: a #PangoAttrList
+ **/
+PangoAttrList*
+pango_layout_get_attributes (PangoLayout *layout)
+{
+  g_return_val_if_fail (PANGO_IS_LAYOUT (layout), NULL);
+
+  return layout->attrs;
+}
+
+/**
  * pango_layout_set_font_description:
  * @layout: a #PangoLayout
  * @desc: the new pango font description, or %NULL to unset the
@@ -555,6 +571,65 @@ pango_layout_set_text (PangoLayout *layout,
   layout->length = length;
 
   pango_layout_clear_lines (layout);
+}
+
+void
+pango_layout_set_markup (PangoLayout *layout,
+                         const char  *markup,
+                         int          length)
+{
+  pango_layout_set_markup_with_accel (layout, markup, length, 0, NULL);
+}
+
+/**
+ * pango_layout_set_markup_with_accel:
+ * @layout: a #PangoLayout
+ * @markup: some marked-up text (see <link linkend="PangoMarkupFormat">markup format</link>)
+ * @length: length of @markup in bytes
+ * @accel_marker: marker for accelerators in the text
+ * @accel_char: return location for any located accelerators
+ * 
+ * Sets the layout text and attribute list from marked-up text (see
+ * <link linkend="PangoMarkupFormat">markup format</link>). Replaces
+ * the current text and attribute list.
+ *
+ * If @accel_marker is nonzero, the given character will mark the
+ * character following it as an accelerator. For example, the accel
+ * marker might be an ampersand or underscore. All characters marked
+ * as an accelerator will receive a %PANGO_UNDERLINE_LOW attribute,
+ * and the first character so marked will be returned in @accel_char.
+ * Two @accel_marker characters following each other produce a single
+ * literal @accel_marker character.
+ **/
+void
+pango_layout_set_markup_with_accel (PangoLayout    *layout,
+                                    const char     *markup,
+                                    int             length,
+                                    gunichar        accel_marker,
+                                    gunichar       *accel_char)
+{
+  PangoAttrList *list = NULL;
+  char *text = NULL;
+  GError *error;
+  
+  g_return_if_fail (PANGO_IS_LAYOUT (layout));
+  g_return_if_fail (markup != NULL);
+  
+  error = NULL;
+  if (!pango_parse_markup (markup, length,
+                           accel_marker,
+                           &list, &text,
+                           accel_char,
+                           &error))
+    {
+      g_warning ("%s: %s", G_STRLOC, error->message);
+      g_error_free (error);
+      return;
+    }
+  
+  pango_layout_set_text (layout, text, -1);
+  pango_layout_set_attributes (layout, list);  
+  pango_attr_list_unref (list);
 }
 
 /**
@@ -1807,7 +1882,7 @@ get_tab_pos (PangoLayout *layout, int index)
               pango_attr_list_insert_before (attrs, attr);
             }
 
-          items = pango_itemize (layout->context, " ", 1, attrs);
+          items = pango_itemize (layout->context, " ", 0, 1, attrs, NULL);
           pango_attr_list_unref (attrs);
 
           item = items->data;
@@ -2028,7 +2103,9 @@ pango_layout_check_lines (PangoLayout *layout)
   const char *start;
   gboolean done = FALSE;
   int start_offset;
-
+  PangoAttrList *attrs;
+  PangoAttrIterator *iter;
+  
   if (layout->lines)
     return;
 
@@ -2039,6 +2116,31 @@ pango_layout_check_lines (PangoLayout *layout)
    */
   if (!layout->text)
     pango_layout_set_text (layout, NULL, 0);
+
+  if (layout->attrs)
+    {
+      /* If we were being clever, we'd try to catch the case here
+       * where the set font desc doesn't change the font for any
+       * characters.
+       */
+      if (layout->font_desc)
+        attrs = pango_attr_list_copy (layout->attrs);
+      else
+        attrs = layout->attrs;
+    }
+  else
+    attrs = pango_attr_list_new ();
+
+  if (layout->font_desc)
+    {
+      PangoAttribute *attr = pango_attr_font_desc_new (layout->font_desc);
+      attr->start_index = 0;
+      attr->end_index = layout->length;
+	  
+      pango_attr_list_insert_before (attrs, attr);
+    }
+
+  iter = pango_attr_list_get_iterator (attrs);
   
   layout->log_attrs = g_new (PangoLogAttr, layout->n_chars);
   
@@ -2046,9 +2148,7 @@ pango_layout_check_lines (PangoLayout *layout)
   start = layout->text;
   do
     {
-      PangoLayoutLine *line;
-      PangoAttrList *attrs;
-      
+      PangoLayoutLine *line;      
       GList *items, *tmp_list;
       gboolean last_cant_end = FALSE;
       gboolean current_cant_end = FALSE;
@@ -2067,33 +2167,13 @@ pango_layout_check_lines (PangoLayout *layout)
       if (end == layout->text + layout->length)
 	done = TRUE;
   
-      if (layout->attrs)
-	{
-	  /* If we were being clever, we'd try to catch the case here
-	   * where the set font desc doesn't change the font for any
-	   * characters.
-	   */
-	  if (layout->font_desc)
-	    attrs = pango_attr_list_copy (layout->attrs);
-	  else
-	    attrs = layout->attrs;
-	}
-      else
-	attrs = pango_attr_list_new ();
 
-      if (layout->font_desc)
-	{
-	  PangoAttribute *attr = pango_attr_font_desc_new (layout->font_desc);
-	  attr->start_index = 0;
-	  attr->end_index = layout->length;
-	  
-	  pango_attr_list_insert_before (attrs, attr);
-	}
-
-      items = pango_itemize (layout->context, start, end - start, attrs);
-
-      if (attrs != layout->attrs)
-	  pango_attr_list_unref (attrs);
+      items = pango_itemize (layout->context,
+                             layout->text,
+                             start - layout->text,
+                             end - start,
+                             attrs,
+                             iter);
 
       get_para_log_attrs (start, items, layout->log_attrs + start_offset);
 
@@ -2107,7 +2187,7 @@ pango_layout_check_lines (PangoLayout *layout)
 	  BreakResult result;
  	  int old_num_chars = item->num_chars;
 
-	  result = process_item (line, item, start,
+	  result = process_item (line, item, layout->text,
 				 layout->log_attrs + start_offset,
 				 (line->runs == NULL) || last_cant_end,
 				 current_cant_end,
@@ -2201,6 +2281,9 @@ pango_layout_check_lines (PangoLayout *layout)
 	}
     }
   while (!done);
+
+  if (attrs != layout->attrs)
+    pango_attr_list_unref (attrs);
   
   layout->lines = g_slist_reverse (layout->lines);
 }

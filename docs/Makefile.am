@@ -35,6 +35,9 @@ tmpl_sources =				\
 	tmpl/x-fonts.sgml		\
 	tmpl/x-rendering.sgml
 
+content_files =				\
+	pango_markup.sgml
+
 
 ####################################
 # Everything below here is generic #
@@ -43,6 +46,7 @@ tmpl_sources =				\
 TARGET_DIR=$(HTML_DIR)/$(DOC_MODULE)
 
 EXTRA_DIST = 				\
+	$(content_files)		\
 	$(DOC_MAIN_SGML_FILE)		\
 	$(DOC_MODULE)-decl.txt		\
 	$(DOC_MODULE)-sections.txt	\

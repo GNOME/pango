@@ -8,6 +8,7 @@
 <!entity pango-engines SYSTEM "sgml/engines.sgml">
 <!entity x-fonts SYSTEM "sgml/x-fonts.sgml">
 <!entity x-rendering SYSTEM "sgml/x-rendering.sgml">
+<!entity markup-format SYSTEM "pango_markup.sgml">
 ]>
 <book id="index">
   <bookinfo>
@@ -20,6 +21,7 @@
     &pango-glyphs;
     &pango-fonts;
     &pango-text-attributes;
+    &markup-format;
     &pango-layout;
     &pango-coverage-maps;
     &pango-engines;

@@ -1,0 +1,202 @@
+<refentry id="PangoMarkupFormat" revision="23 Oct 2000">
+<refmeta>
+<refentrytitle>Pango Text Attribute Markup</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>Pango Library</refmiscinfo>
+</refmeta>
+
+<refnamediv>
+<refname>Pango Text Attribute Markup</refname><refpurpose>Simple
+markup language to encode text plus a <link linkend="PangoAttrList">PangoAttrList</link></refpurpose>
+</refnamediv>
+
+<refsect1>
+<title>Pango Text Attribute Markup Language</title>
+
+<para>
+Frequently, you want to display some text to the user with attributes
+applied to part of the text (for example, you might want bold or
+italicized words). With the base Pango interfaces, you could create a
+#PangoAttrList and apply it to the text; the problem is that you'd
+need to apply attributes to some numeric range of characters, for
+example "characters 12-17." This is broken from an
+internationalization standpoint; once the text is translated, the word
+you wanted to italicize could be in a different position.
+</para>
+
+<para>
+The solution is to include the text attributes in the string to be
+translated. Pango provides this feature with a small markup language.
+You can parse a marked-up string into the string text plus a
+<link linkend="PangoAttrList">PangoAttrList</link> using the function 
+pango_parse_markup().
+</para>
+
+<para>
+A simple example of a marked-up string might be:
+<literal>"&lt;span foreground="blue" size="100"&gt;Blue text&lt;/span&gt; is &lt;i&gt;cool&lt;/i&gt;!"</literal>
+</para>
+
+<para>
+The root tag of a marked-up document is &lt;markup&gt;, but
+pango_parse_markup() allows you to omit this tag, so you will most
+likely never need to use it. The most general markup tag is
+&lt;span&gt;, then there are some convenience tags. &lt;span&gt; has
+the following attributes:
+<variablelist><title>&lt;span&gt; attributes</title>
+
+<varlistentry><term>font_desc</term>
+<listitem><para>
+A font description string, such as "Sans Italic 12"; note that any other 
+span attributes will override this description. So if you have "Sans
+Italic" and also a style="normal" attribute, you will get Sans normal,
+not italic.
+</para></listitem>
+</varlistentry>
+
+<varlistentry><term>font_family</term>
+<listitem><para>
+A font family name
+</para></listitem>
+</varlistentry>
+
+<varlistentry><term>face</term>
+<listitem><para>
+Synonym for font_family
+</para></listitem>
+</varlistentry>
+
+<varlistentry><term>size</term>
+<listitem><para>
+Font size in 1000ths of a point, one of the absolute sizes 
+'xx-small', 'x-small', 'small', 'medium', 'large', 'x-large',
+'xx-large', or one of the relative sizes 'smaller' or 'larger'.
+</para></listitem>
+</varlistentry>
+
+<varlistentry><term>style</term>
+<listitem><para>
+One of 'normal', 'oblique', 'italic'
+</para></listitem>
+</varlistentry>
+
+<varlistentry><term>weight</term>
+<listitem><para>
+One of 'ultralight', 'light', 'normal', 'bold', 'ultrabold', 'heavy',
+or a numeric weight
+</para></listitem>
+</varlistentry>
+
+<varlistentry><term>variant</term>
+<listitem><para>
+'normal' or 'smallcaps'
+</para></listitem>
+</varlistentry>
+
+<varlistentry><term>stretch</term>
+<listitem><para>
+One of 'ultracondensed', 'extracondensed', 'condensed',
+'semicondensed', 'normal', 'semiexpanded', 'expanded',
+'extraexpanded', 'ultraexpanded'
+</para></listitem>
+</varlistentry>
+
+<varlistentry><term>foreground</term>
+<listitem><para>
+An RGB color specification such as '#00FF00' or a color name such as 
+'red'
+</para></listitem>
+</varlistentry>
+
+<varlistentry><term>background</term>
+<listitem><para>
+An RGB color specification such as '#00FF00' or a color name such as 
+'red'
+</para></listitem>
+</varlistentry>
+
+<varlistentry><term>underline</term>
+<listitem><para>
+One of 'single', 'double', 'low', 'none'
+</para></listitem>
+</varlistentry>
+
+<varlistentry><term>rise</term>
+<listitem><para>
+Vertical displacement, in 10000ths of an em. Can be negative for 
+subscript, positive for superscript.
+</para></listitem>
+</varlistentry>
+
+<varlistentry><term>strikethrough</term>
+<listitem><para>
+'true' or 'false' whether to strike through the text
+</para></listitem>
+</varlistentry>
+
+<varlistentry><term>lang</term>
+<listitem><para>
+A language code, indicating the text language
+</para></listitem>
+</varlistentry>
+
+</variablelist>
+
+</para>
+
+<para>
+The following convenience tags are provided:
+
+<variablelist><title>Convenience tags</title>
+<varlistentry><term>b</term>
+<listitem><para>
+Bold
+</para></listitem>
+</varlistentry>
+<varlistentry><term>big</term>
+<listitem><para>
+Makes font relatively larger, equivalent to &lt;span size="larger"&gt;
+</para></listitem>
+</varlistentry>
+<varlistentry><term>i</term>
+<listitem><para>
+Italic
+</para></listitem>
+</varlistentry>
+<varlistentry><term>s</term>
+<listitem><para>
+Strikethrough
+</para></listitem>
+</varlistentry>
+<varlistentry><term>sub</term>
+<listitem><para>
+Subscript
+</para></listitem>
+</varlistentry>
+<varlistentry><term>sup</term>
+<listitem><para>
+Superscript
+</para></listitem>
+</varlistentry>
+<varlistentry><term>small</term>
+<listitem><para>
+Makes font relatively smaller, equivalent to &lt;span size="smaller"&gt;
+</para></listitem>
+</varlistentry>
+<varlistentry><term>tt</term>
+<listitem><para>
+Monospace font
+</para></listitem>
+</varlistentry>
+<varlistentry><term>u</term>
+<listitem><para>
+Underline
+</para></listitem>
+</varlistentry>
+</variablelist>
+
+</para>
+
+</refsect1>
+
+</refentry>

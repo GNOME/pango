@@ -46,9 +46,12 @@ struct _PangoContextClass
 };
 
 static void add_engines (PangoContext      *context,
-			 const gchar       *text, 
+			 const gchar       *text,
+                         gint               start_index,
 			 gint               length,
 			 PangoAttrList     *attrs,
+                         PangoAttrIterator *cached_iter,
+                         gint               n_chars,
 			 PangoEngineShape **shape_engines,
 			 PangoEngineLang  **lang_engines,
 			 PangoFont        **fonts,
@@ -500,20 +503,30 @@ pango_context_get_base_dir (PangoContext *context)
  * @context:   a structure holding information that affects
                the itemization process.
  * @text:      the text to itemize.
- * @length:    the number of bytes (not characters) in text.
+ * @start_index: first byte in @text to process
+ * @length:    the number of bytes (not characters) to process
+ *             after @start_index.
  *             This must be >= 0.
  * @attrs:     the set of attributes that apply to @text.
+ * @cached_iter:      Cached attribute iterator, or NULL
  *
  * Breaks a piece of text into segments with consistent
  * directional level and shaping engine.
  *
- * Returns a GList of PangoItem structures.
+ * @cached_iter should be an iterator over @attrs currently positioned at a
+ * range before or containing @start_index; @cached_iter will be advanced to
+ * the range covering the position just after @start_index + @length.
+ * (i.e. if itemizing in a loop, just keep passing in the same @cached_iter).
+ *
+ * Return value: a GList of PangoItem structures.
  */
 GList *
-pango_itemize (PangoContext   *context, 
-	       const char     *text, 
-	       int             length,
-	       PangoAttrList  *attrs)
+pango_itemize (PangoContext      *context, 
+	       const char        *text,
+               int                start_index,
+	       int                length,
+	       PangoAttrList     *attrs,
+               PangoAttrIterator *cached_iter)
 {
   gunichar *text_ucs4;
   int n_chars, i;
@@ -530,6 +543,7 @@ pango_itemize (PangoContext   *context,
   PangoFont        **fonts;
 
   g_return_val_if_fail (context != NULL, NULL);
+  g_return_val_if_fail (start_index >= 0, NULL);
   g_return_val_if_fail (length >= 0, NULL);
   g_return_val_if_fail (length == 0 || text != NULL, NULL);
 
@@ -547,11 +561,11 @@ pango_itemize (PangoContext   *context,
   /* First, apply the bidirectional algorithm to break
    * the text into directional runs.
    */
-  text_ucs4 = g_utf8_to_ucs4 (text, length);
+  text_ucs4 = g_utf8_to_ucs4 (text + start_index, length);
   if (!text_ucs4)
     return NULL;
 
-  n_chars = g_utf8_strlen (text, length);
+  n_chars = g_utf8_strlen (text + start_index, length);
   embedding_levels = g_new (guint8, n_chars);
 
   fribidi_log2vis_get_embedding_levels (text_ucs4, n_chars, &base_dir,
@@ -570,15 +584,17 @@ pango_itemize (PangoContext   *context,
    * each character.
    */
 
-  add_engines (context, text, length, attrs, shape_engines, lang_engines, fonts,
+  add_engines (context, text, start_index, length, attrs,
+               cached_iter,
+               n_chars,
+               shape_engines, lang_engines, fonts,
 	       extra_attr_lists);
-
 
   /* Make a GList of PangoItems out of the above results
    */
 
   item = NULL;
-  p = text;
+  p = text + start_index;
   for (i=0; i<n_chars; i++)
     {
       next = g_utf8_next_char (p);
@@ -772,11 +788,36 @@ load_font (PangoContext          *context,
     }
 }
 
+static gboolean
+advance_iterator_to (PangoAttrIterator *iterator,
+                     int                start_index)
+{
+  int start_range, end_range;
+  
+  pango_attr_iterator_range (iterator, &start_range, &end_range);
+
+  while (start_index >= end_range)
+    {
+      if (!pango_attr_iterator_next (iterator))
+        return FALSE;
+      pango_attr_iterator_range (iterator, &start_range, &end_range);
+    }
+
+  if (start_range > start_index)
+    g_warning ("In pango_itemize(), the cached iterator passed in "
+               "had already moved beyond the start_index");
+
+  return TRUE;
+}
+
 static void
 add_engines (PangoContext      *context,
-	     const gchar       *text, 
+	     const gchar       *text,
+             gint               start_index,
 	     gint               length,
 	     PangoAttrList     *attrs,
+             PangoAttrIterator *cached_iter,
+             gint               n_chars,
 	     PangoEngineShape **shape_engines,
 	     PangoEngineLang  **lang_engines,
 	     PangoFont        **fonts,
@@ -784,34 +825,47 @@ add_engines (PangoContext      *context,
 {
   const char *pos;
   char *lang = NULL;
-  int next_index = 0;
+  int next_index;
   GSList *extra_attrs = NULL;
-  gint n_chars;
   PangoMap *lang_map = NULL;
   PangoFontDescription current_desc = { 0 };
-
   int n_families = 0;
   PangoFont *current_fonts[MAX_FAMILIES];
-  PangoCoverage *current_coverages[MAX_FAMILIES];
-  
+  PangoCoverage *current_coverages[MAX_FAMILIES];  
   PangoAttrIterator *iterator;
   PangoAttribute *attr;
-  
+  gboolean first_iteration = TRUE;
   gunichar wc;
-  int i, j;
+  int i = 0, j;
 
-  n_chars = g_utf8_strlen (text, length);
+  if (cached_iter)
+    iterator = cached_iter;
+  else
+    iterator = pango_attr_list_get_iterator (attrs);
 
-  iterator = pango_attr_list_get_iterator (attrs);
-
-  pos = text;
+  advance_iterator_to (iterator, start_index);
+  
+  pango_attr_iterator_range (iterator, NULL, &next_index);
+  
+  pos = text + start_index;
   for (i=0; i<n_chars; i++)
     {
-      if (pos - text == next_index)
+      if (first_iteration || pos - text == next_index)
 	{
 	  char *next_lang;
 	  PangoFontDescription next_desc;
-	  
+
+          first_iteration = FALSE;
+          
+          /* Only advance the iterator if we've exhausted a range,
+           * not on the first iteration.
+           */
+          if (pos - text == next_index)
+            {
+              pango_attr_iterator_next (iterator);
+              pango_attr_iterator_range (iterator, NULL, &next_index);
+            }
+          
 	  attr = pango_attr_iterator_get (iterator, PANGO_ATTR_LANG);
 	  if (attr)
 	    next_lang = ((PangoAttrString *)attr)->value;
@@ -837,8 +891,9 @@ add_engines (PangoContext      *context,
 					 engine_type_id, render_type_id);
 	    }
 
-	  pango_attr_iterator_get_font (iterator, context->font_desc, &next_desc, &extra_attrs);
-
+	  pango_attr_iterator_get_font (iterator, context->font_desc,
+                                        &next_desc, &extra_attrs);
+          
 	  if (i == 0 ||
 	      !pango_font_description_compare (&current_desc, &next_desc))
 	    {
@@ -847,10 +902,7 @@ add_engines (PangoContext      *context,
 	      load_font (context, lang, &current_desc,
 			 current_fonts, current_coverages, &n_families);
 	    }
-
-	  pango_attr_iterator_range (iterator, NULL, &next_index);
-	  pango_attr_iterator_next (iterator);
-	}
+        }
 
       wc = g_utf8_get_char (pos);
       pos = g_utf8_next_char (pos);
@@ -866,6 +918,8 @@ add_engines (PangoContext      *context,
 
       extra_attr_lists[i] = extra_attrs;
     }
+
+  g_assert (pos - text == start_index + length);
   
   for (j=0; j<n_families; j++)
     {
@@ -876,6 +930,7 @@ add_engines (PangoContext      *context,
 	}
     }
 
-  pango_attr_iterator_destroy (iterator);
+  if (iterator != cached_iter)
+    pango_attr_iterator_destroy (iterator);
 }
 

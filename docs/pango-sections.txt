@@ -140,8 +140,10 @@ PangoAttribute
 PangoAttrString
 PangoAttrColor
 PangoAttrInt
+PangoAttrFloat
 PangoAttrFontDesc
 PangoAttrShape
+pango_parse_markup
 pango_attr_type_register
 pango_attribute_copy
 pango_attribute_compare
@@ -160,6 +162,7 @@ pango_attr_background_new
 pango_attr_strikethrough_new
 pango_attr_underline_new
 pango_attr_shape_new
+pango_attr_scale_new
 PangoUnderline
 pango_attr_rise_new
 <SUBSECTION>
@@ -209,7 +212,10 @@ pango_layout_get_context
 pango_layout_context_changed
 
 pango_layout_set_text
+pango_layout_set_markup
+pango_layout_set_markup_with_accel
 pango_layout_set_attributes
+pango_layout_get_attributes
 pango_layout_set_font_description
 pango_layout_set_width
 pango_layout_get_width
@@ -221,8 +227,8 @@ pango_layout_set_justify
 pango_layout_get_justify
 pango_layout_set_alignment
 pango_layout_get_alignment
-pango_layout_get_tabs
 pango_layout_set_tabs
+pango_layout_get_tabs
 PangoAlignment
 
 pango_layout_get_log_attrs

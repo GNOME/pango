@@ -171,8 +171,10 @@ for text.
 
 @context: 
 @text: 
+@start_index: 
 @length: 
 @attrs: 
+@cached_iter: 
 @Returns: 
 <!-- # Unused Parameters # -->
 @lang_info: 

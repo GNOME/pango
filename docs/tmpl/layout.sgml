@@ -84,6 +84,28 @@ fields.
 @length: 
 
 
+<!-- ##### FUNCTION pango_layout_set_markup ##### -->
+<para>
+
+</para>
+
+@layout: 
+@markup: 
+@length: 
+
+
+<!-- ##### FUNCTION pango_layout_set_markup_with_accel ##### -->
+<para>
+
+</para>
+
+@layout: 
+@markup: 
+@length: 
+@accel_marker: 
+@accel_char: 
+
+
 <!-- ##### FUNCTION pango_layout_set_attributes ##### -->
 <para>
 
@@ -91,6 +113,15 @@ fields.
 
 @layout: 
 @attrs: 
+
+
+<!-- ##### FUNCTION pango_layout_get_attributes ##### -->
+<para>
+
+</para>
+
+@layout: 
+@Returns: 
 
 
 <!-- ##### FUNCTION pango_layout_set_font_description ##### -->
@@ -192,15 +223,6 @@ fields.
 @Returns: 
 
 
-<!-- ##### FUNCTION pango_layout_get_tabs ##### -->
-<para>
-
-</para>
-
-@layout: 
-@Returns: 
-
-
 <!-- ##### FUNCTION pango_layout_set_tabs ##### -->
 <para>
 
@@ -208,6 +230,15 @@ fields.
 
 @layout: 
 @tabs: 
+
+
+<!-- ##### FUNCTION pango_layout_get_tabs ##### -->
+<para>
+
+</para>
+
+@layout: 
+@Returns: 
 
 
 <!-- ##### ENUM PangoAlignment ##### -->

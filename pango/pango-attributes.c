@@ -39,13 +39,16 @@ struct _PangoAttrIterator
 };
 
 static PangoAttribute *pango_attr_color_new  (const PangoAttrClass *klass,
-					      guint16         red,
-					      guint16         green,
-					      guint16         blue);
+                                              guint16               red,
+                                              guint16               green,
+                                              guint16               blue);
 static PangoAttribute *pango_attr_string_new (const PangoAttrClass *klass,
-					      const char     *str);
+                                              const char           *str);
 static PangoAttribute *pango_attr_int_new    (const PangoAttrClass *klass,
-					      int             value);
+                                              int                   value);
+static PangoAttribute *pango_attr_float_new  (const PangoAttrClass *klass,
+                                              double                value);
+
 
 /**
  * pango_attr_type_register:
@@ -328,6 +331,41 @@ pango_attr_int_new (const PangoAttrClass *klass,
   return (PangoAttribute *)result;
 }
 
+static PangoAttribute *
+pango_attr_float_copy (const PangoAttribute *attr)
+{
+  const PangoAttrFloat *float_attr = (PangoAttrFloat *)attr;
+  
+  return pango_attr_float_new (attr->klass, float_attr->value);
+}
+
+static void
+pango_attr_float_destroy (PangoAttribute *attr)
+{
+  g_free (attr);
+}
+
+static gboolean
+pango_attr_float_compare (const PangoAttribute *attr1,
+			  const PangoAttribute *attr2)
+{
+  const PangoAttrFloat *float_attr1 = (const PangoAttrFloat *)attr1;
+  const PangoAttrFloat *float_attr2 = (const PangoAttrFloat *)attr2;
+  
+  return (float_attr1->value == float_attr2->value);
+}
+
+static PangoAttribute*
+pango_attr_float_new  (const PangoAttrClass *klass,
+                       double                value)
+{
+  PangoAttrFloat *result = g_new (PangoAttrFloat, 1);
+  result->attr.klass = klass;
+  result->value = value;
+
+  return (PangoAttribute *)result;
+}
+
 /**
  * pango_attr_size_new:
  * @size: the font size, in 1000ths of a point.
@@ -554,6 +592,28 @@ pango_attr_rise_new (int rise)
   return pango_attr_int_new (&klass, (int)rise);
 }
 
+/**
+ * pango_attr_scale_new:
+ * @scale_factor: factor to scale the font
+ * 
+ * Create a new font size scale attribute. The base font for the
+ * affected text will have its size multiplied by @scale_factor.
+ * 
+ * Return value: the new #PangoAttribute.
+ **/
+PangoAttribute*
+pango_attr_scale_new (double scale_factor)
+{
+  static const PangoAttrClass klass = {
+    PANGO_ATTR_SCALE,
+    pango_attr_float_copy,
+    pango_attr_float_destroy,
+    pango_attr_float_compare
+  };
+
+  return pango_attr_float_new (&klass, scale_factor);
+}
+
 static PangoAttribute *
 pango_attr_shape_copy (const PangoAttribute *attr)
 {
@@ -636,7 +696,7 @@ pango_attr_list_new (void)
   list->ref_count = 1;
   list->attributes = NULL;
   list->attributes_tail = NULL;
-
+  
   return list;
 }
 
@@ -731,7 +791,7 @@ pango_attr_list_insert_internal (PangoAttrList  *list,
 {
   GSList *tmp_list, *prev, *link;
   gint start_index = attr->start_index;
-  
+
   if (!list->attributes)
     {
       list->attributes = g_slist_prepend (NULL, attr);
@@ -839,7 +899,7 @@ pango_attr_list_change (PangoAttrList  *list,
   gint end_index = attr->end_index;
   
   g_return_if_fail (list != NULL);
-
+  
   tmp_list = list->attributes;
   prev = NULL;
   while (1)
@@ -1289,7 +1349,9 @@ pango_attr_iterator_get_font (PangoAttrIterator     *iterator,
   gboolean have_size = FALSE;
 
   g_return_if_fail (iterator != NULL);
-
+  g_return_if_fail (base != NULL);
+  g_return_if_fail (current != NULL);
+  
   *current = *base;
 
   if (extra_attrs)
@@ -1335,8 +1397,9 @@ pango_attr_iterator_get_font (PangoAttrIterator     *iterator,
 	      have_size = TRUE;
 	      current->size = ((PangoAttrFontDesc *)attr)->desc.size;
 	    }
-	}
-	  
+          }
+          break;
+          
 	case PANGO_ATTR_FAMILY:
 	  if (!have_family)
 	    {
@@ -1379,6 +1442,14 @@ pango_attr_iterator_get_font (PangoAttrIterator     *iterator,
 	      current->size = ((PangoAttrInt *)attr)->value;
 	    }
 	  break;
+        case PANGO_ATTR_SCALE:
+          if (!have_size)
+	    {
+	      have_size = TRUE;
+	      current->size = ((PangoAttrFloat *)attr)->value * base->size;
+	    }
+          break;
+          
 	default:
 	  if (extra_attrs)
 	    {
