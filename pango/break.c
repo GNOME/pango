@@ -328,6 +328,11 @@ static int line_break_indexes[] = {
 #define HIRAGANA(wc) ((wc) >= 0x3040 && (wc) <= 0x309F)
 #define KATAKANA(wc) ((wc) >= 0x30A0 && (wc) <= 0x30FF)
 
+#define LATIN(wc) (((wc) >= 0x0020 && (wc) <= 0x02AF) || ((wc) >= 0x1E00 && (wc) <= 0x1EFF))
+#define CYRILLIC(wc) (((wc) >= 0x0400 && (wc) <= 0x052F))
+#define GREEK(wc) (((wc) >= 0x0370 && (wc) <= 0x3FF) || ((wc) >= 0x1F00 && (wc) <= 0x1FFF))
+#define BACKSPACE_DELETES_CHARACTER(wc) (!LATIN (wc) && !CYRILLIC (wc) && !GREEK (wc))
+
 
 /* p. 132-133 of Unicode spec table 5-6 will help understand this */
 typedef enum
@@ -406,6 +411,7 @@ pango_default_break (const gchar   *text,
   gboolean prev_was_break_space;
   WordType current_word_type = WordNone;
   gunichar last_word_letter = 0;
+  gunichar base_character = 0;
   SentenceState sentence_state = STATE_SENTENCE_OUTSIDE;
   /* Tracks what will be the end of the sentence if a period is
    * determined to actually be a sentence-ending period.
@@ -598,6 +604,13 @@ pango_default_break (const gchar   *text,
             }
         }
       
+      /* If this is a grapheme boundary, we have to decide if backspace
+       * deletes a character or the whole grapheme cluster */
+      if (attrs[i].is_cursor_position)
+        attrs[i].backspace_deletes_character = BACKSPACE_DELETES_CHARACTER (base_character);
+      else
+        attrs[i].backspace_deletes_character = FALSE;
+
       /* ---- Line breaking ---- */
 
       break_type = g_unichar_break_type (wc);
@@ -1277,6 +1290,13 @@ pango_default_break (const gchar   *text,
 
       prev_type = type;
       prev_wc = wc;
+
+      /* wc might not be a valid unicode base character, but really all we
+       * need to know is the last non-combining character */
+      if (type != G_UNICODE_COMBINING_MARK && 
+          type != G_UNICODE_ENCLOSING_MARK && 
+          type != G_UNICODE_NON_SPACING_MARK)
+        base_character = wc;
     }
 }
 

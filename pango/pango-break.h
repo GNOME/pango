@@ -64,6 +64,11 @@ struct _PangoLogAttr
   guint is_sentence_boundary : 1;
   guint is_sentence_start : 1;  /* first character in a sentence */
   guint is_sentence_end : 1;    /* first non-sentence char after a sentence */
+
+  /* if set, backspace deletes one character rather than
+   * the entire grapheme cluster  
+   */
+  guint backspace_deletes_character : 1; 
 };
 
 /* Determine information about cluster/word/line breaks in a string

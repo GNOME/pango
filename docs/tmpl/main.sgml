@@ -308,6 +308,18 @@ about the attributes of a single character.
 @is_sentence_boundary: 
 @is_sentence_start: 
 @is_sentence_end: 
+@backspace_deletes_character: If set, backspace deletes one character
+                              rather than the entire grapheme cluster. This
+                              field is only meaningful on grapheme
+                              boundaries (where @is_cursor_position is
+                              set).  In some languages, the full grapheme
+                              (e.g.  letter + diacritics) is considered a
+                              unit, while in others, each decomposed
+                              character in the grapheme is a unit. In the
+                              default implementation of #pango_break, this
+                              bit is set on all grapheme boundaries except
+                              those following Latin, Cyrillic or Greek base
+                              characters.
 
 <!-- ##### FUNCTION pango_shape ##### -->
 <para>
