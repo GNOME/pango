@@ -808,6 +808,7 @@ PangoLayoutLine *
 pango_layout_get_line (PangoLayout *layout,
 		       int          line)
 {
+  GSList *list_item;
   g_return_val_if_fail (layout != NULL, NULL);
   g_return_val_if_fail (line >= 0, NULL);
 
@@ -815,7 +816,10 @@ pango_layout_get_line (PangoLayout *layout,
     return NULL;
 
   pango_layout_check_lines (layout);
-  return g_slist_nth (layout->lines, line)->data;
+  list_item = g_slist_nth (layout->lines, line);
+  if(list_item)
+    return list_item->data;
+  return NULL;
 }
 
 /**
@@ -1410,6 +1414,8 @@ pango_layout_get_cursor_pos (PangoLayout    *layout,
   g_return_if_fail (index >= 0 && index <= layout->length);
   
   base_dir = pango_context_get_base_dir (layout->context);
+
+  pango_layout_check_lines (layout);
 
   iter = pango_layout_get_iter (layout);
   

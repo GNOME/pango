@@ -1,3 +1,9 @@
+2000-11-13  Elliot Lee  <sopwith@redhat.com>
+
+	Patches from long ago:
+	* pango/pango-layout.c: Make pango_layout slightly more robust.
+	Do check_lines before getting cursor position.
+
 2000-11-13  Havoc Pennington  <hp@redhat.com>
 
 	* docs/pango-sections.txt: Add new PangoLayoutIter entry points
