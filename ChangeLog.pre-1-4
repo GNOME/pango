@@ -1,3 +1,8 @@
+Thu Sep 19 15:12:21 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-utils.c (pango_scan_int): Fix problem
+	where position wasn't updated properly.
+
 2002-09-05  jacob berkman  <jacob@ximian.com>
 
 	* autogen.sh: when checking automake version, run automake-1.4
