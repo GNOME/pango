@@ -236,7 +236,7 @@ to_device (const PangoMatrix *matrix,
   result->y = (x * matrix->yx + y * matrix->yy) / PANGO_SCALE + matrix->y0;
 }
 
-int
+static int
 compare_points (const void *a,
 		const void *b)
 {

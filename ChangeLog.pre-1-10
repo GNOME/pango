@@ -1,3 +1,8 @@
+Tue Jul 13 14:12:06 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pangoft2-render.c (compare_points): Make
+	static. (#147512, Morten Welinder)
+
 Tue Jul 13 10:07:44 2004  Owen Taylor  <otaylor@redhat.com>
 	
         * pango/Makefile.am: Reverse order of pangoft2/pangoxft
