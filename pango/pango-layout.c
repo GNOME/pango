@@ -1491,7 +1491,7 @@ process_item (PangoLayoutLine *line,
   for (i=0; i < glyphs->num_glyphs; i++)
     width += glyphs->glyphs[i].geometry.width;
 
-  if (width < *remaining_width && !no_break_at_end)
+  if (width <= *remaining_width && !no_break_at_end)
     {
       *remaining_width -= width;
       insert_run (line, item, glyphs);

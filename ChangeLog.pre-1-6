@@ -1,3 +1,7 @@
+Mon May 22 18:19:32 2000  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-layout.c (process_item): Fix <, <= confusion.
+
 Thu May 18 17:30:00 2000  Robert Brady  <rwb197@zepler.org>
 
 	* fonts/devnag18.bdf: Fix advance widths of some glyphs.
