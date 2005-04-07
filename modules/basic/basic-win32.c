@@ -704,7 +704,7 @@ itemize_shape_and_place (PangoFont        *font,
   SCRIPT_CONTROL control;
   SCRIPT_STATE state;
   SCRIPT_ITEM items[100];
-  double scale = pango_win32_font_get_scale_factor (font);
+  double scale = pango_win32_font_get_metrics_factor (font);
 
   memset (&control, 0, sizeof (control));
   memset (&state, 0, sizeof (state));

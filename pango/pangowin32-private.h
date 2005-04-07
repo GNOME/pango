@@ -146,10 +146,10 @@ struct _PangoWin32FontClass
 {
   PangoFontClass parent_class;
 
-  gboolean (*select_font)      (PangoFont *font,
-				HDC        hdc);
-  void     (*done_font)        (PangoFont *font);
-  double   (*get_scale_factor) (PangoFont *font);
+  gboolean (*select_font)        (PangoFont *font,
+				  HDC        hdc);
+  void     (*done_font)          (PangoFont *font);
+  double   (*get_metrics_factor) (PangoFont *font);
 };
 
 struct _PangoWin32Face

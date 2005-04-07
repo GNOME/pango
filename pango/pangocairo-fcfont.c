@@ -46,9 +46,10 @@ struct _PangoCairoFcFont
 {
   PangoFcFont font;
 
-  cairo_font_t *cairo_font;
+  cairo_font_face_t *font_face;
+  cairo_scaled_font_t *scaled_font;
   cairo_matrix_t *font_matrix;
-  cairo_matrix_t *total_matrix;
+  cairo_matrix_t *ctm;
 };
 
 struct _PangoCairoFcFontClass
@@ -58,53 +59,92 @@ struct _PangoCairoFcFontClass
 
 GType pango_cairo_fc_font_get_type (void);
 
+static cairo_font_face_t *pango_cairo_fc_font_get_font_face (PangoCairoFont *font);
+
 /*******************************
  *       Utility functions     *
  *******************************/
 
-static cairo_font_t *
-pango_cairo_fc_font_get_cairo_font (PangoCairoFont *font)
+static cairo_font_face_t *
+pango_cairo_fc_font_get_font_face (PangoCairoFont *font)
 {
   PangoCairoFcFont *cffont = PANGO_CAIRO_FC_FONT (font);
   PangoFcFont *fcfont = PANGO_FC_FONT (cffont);
 
-  if (cffont->cairo_font == NULL)
+  if (!cffont->font_face)
     {
-      cffont->cairo_font = cairo_ft_font_create (fcfont->font_pattern, cffont->total_matrix);
+      cffont->font_face = cairo_ft_font_face_create_for_pattern (fcfont->font_pattern);
+      
+      /* Failure of the above should only occur for out of memory,
+       * we can't proceed at that point
+       */
+      if (!cffont->font_face)
+	g_error ("Unable create Cairo font name");
+    }
+  
+  return cffont->font_face;
+}
+
+static cairo_scaled_font_t *
+pango_cairo_fc_font_get_scaled_font (PangoCairoFont *font)
+{
+  PangoCairoFcFont *cffont = PANGO_CAIRO_FC_FONT (font);
+
+  if (!cffont->scaled_font)
+    {
+      cairo_font_face_t *font_face;
+
+      font_face = pango_cairo_fc_font_get_font_face (font);
+      cffont->scaled_font = cairo_scaled_font_create (font_face,
+						     cffont->font_matrix,
+						     cffont->ctm);
 
       /* Failure of the above should only occur for out of memory,
        * we can't proceed at that point
        */
-      if (!cffont->cairo_font)
+      if (!cffont->scaled_font)
 	g_error ("Unable create Cairo font");
     }
   
-  return cffont->cairo_font;
+  return cffont->scaled_font;
 }
-
-static void
-cairo_font_iface_init (PangoCairoFontIface *iface)
-{
-  iface->get_cairo_font = pango_cairo_fc_font_get_cairo_font;
-}
-
-G_DEFINE_TYPE_WITH_CODE (PangoCairoFcFont, pango_cairo_fc_font, PANGO_TYPE_FC_FONT,
-    { G_IMPLEMENT_INTERFACE (PANGO_TYPE_CAIRO_FONT, cairo_font_iface_init) });
 
 /********************************
  *    Method implementations    *
  ********************************/
 
 static void
+pango_cairo_fc_font_install (PangoCairoFont *font,
+			     cairo_t        *cr)
+{
+  PangoCairoFcFont *cffont = PANGO_CAIRO_FC_FONT (font);
+
+  cairo_set_font_face (cr,
+		       pango_cairo_fc_font_get_font_face (font));
+  cairo_transform_font (cr, cffont->font_matrix);
+}
+
+static void
+cairo_font_iface_init (PangoCairoFontIface *iface)
+{
+  iface->install = pango_cairo_fc_font_install;
+}
+
+G_DEFINE_TYPE_WITH_CODE (PangoCairoFcFont, pango_cairo_fc_font, PANGO_TYPE_FC_FONT,
+    { G_IMPLEMENT_INTERFACE (PANGO_TYPE_CAIRO_FONT, cairo_font_iface_init) });
+
+static void
 pango_cairo_fc_font_finalize (GObject *object)
 {
   PangoCairoFcFont *cffont = PANGO_CAIRO_FC_FONT (object);
 
-  if (cffont->cairo_font)
-    cairo_font_destroy (cffont->cairo_font);
+  if (cffont->font_face)
+    cairo_font_face_destroy (cffont->font_face);
+  if (cffont->scaled_font)
+    cairo_scaled_font_destroy (cffont->scaled_font);
 
-  cairo_matrix_destroy (cffont->total_matrix);
   cairo_matrix_destroy (cffont->font_matrix);
+  cairo_matrix_destroy (cffont->ctm);
 
   G_OBJECT_CLASS (pango_cairo_fc_font_parent_class)->finalize (object);
 }
@@ -136,19 +176,18 @@ pango_cairo_fc_font_get_glyph_extents (PangoFont        *font,
 				       PangoRectangle   *logical_rect)
 {
   PangoCairoFcFont *cffont = PANGO_CAIRO_FC_FONT (font);
-  cairo_font_t *cairo_font;
+  cairo_scaled_font_t *scaled_font;
   cairo_text_extents_t extents;
   cairo_glyph_t cairo_glyph;
 
-  cairo_font = pango_cairo_fc_font_get_cairo_font (PANGO_CAIRO_FONT (font));
+  scaled_font = pango_cairo_fc_font_get_scaled_font (PANGO_CAIRO_FONT (font));
 
   cairo_glyph.index = glyph;
   cairo_glyph.x = 0;
   cairo_glyph.y = 0;
 
-  cairo_font_glyph_extents (cairo_font,
-			    cffont->font_matrix,
-			    &cairo_glyph, 1, &extents);
+  cairo_scaled_font_glyph_extents (scaled_font,
+				   &cairo_glyph, 1, &extents);
 
   if (ink_rect)
     {
@@ -174,13 +213,13 @@ pango_cairo_fc_font_get_glyph_extents (PangoFont        *font,
 static FT_Face
 pango_cairo_fc_font_lock_face (PangoFcFont *font)
 {
-  return cairo_ft_font_lock_face (pango_cairo_fc_font_get_cairo_font (PANGO_CAIRO_FONT (font)));
+  return cairo_ft_scaled_font_lock_face (pango_cairo_fc_font_get_scaled_font (PANGO_CAIRO_FONT (font)));
 }
 
 static void
 pango_cairo_fc_font_unlock_face (PangoFcFont *font)
 {
-  cairo_ft_font_unlock_face (pango_cairo_fc_font_get_cairo_font (PANGO_CAIRO_FONT (font)));
+  cairo_ft_scaled_font_unlock_face (pango_cairo_fc_font_get_scaled_font (PANGO_CAIRO_FONT (font)));
 }
 
 static PangoGlyph
@@ -194,10 +233,15 @@ static void
 pango_cairo_fc_font_shutdown (PangoFcFont *fcfont)
 {
   PangoCairoFcFont *cffont = PANGO_CAIRO_FC_FONT (fcfont);
-  if (cffont->cairo_font)
+  if (cffont->scaled_font)
     {
-      cairo_font_destroy (cffont->cairo_font);
-      cffont->cairo_font = NULL;
+      cairo_scaled_font_destroy (cffont->scaled_font);
+      cffont->scaled_font = NULL;
+    }
+  if (cffont->font_face)
+    {
+      cairo_font_face_destroy (cffont->font_face);
+      cffont->font_face = NULL;
     }
 }
 
@@ -366,26 +410,16 @@ _pango_cairo_fc_font_new (PangoCairoFcFontMap        *cffontmap,
   cairo_matrix_scale (cffont->font_matrix,
 		      size / PANGO_SCALE, size / PANGO_SCALE);
 
-  cffont->total_matrix = cairo_matrix_create ();
+  cffont->ctm = cairo_matrix_create ();
 
   pango_ctm = pango_context_get_matrix (context);
   if (pango_ctm)
-    {
-      cairo_matrix_t *ctm;
-
-      ctm = cairo_matrix_create ();
-      cairo_matrix_set_affine (ctm,
-			       pango_ctm->xx,
-			       pango_ctm->yx,
-			       pango_ctm->xy,
-			       pango_ctm->yy,
-			       0., 0.);
-      
-      cairo_matrix_multiply (cffont->total_matrix, cffont->font_matrix, ctm);
-      cairo_matrix_destroy (ctm);
-    }
-  else
-    cairo_matrix_copy (cffont->total_matrix, cffont->font_matrix);
+    cairo_matrix_set_affine (cffont->ctm,
+			     pango_ctm->xx,
+			     pango_ctm->yx,
+			     pango_ctm->xy,
+			     pango_ctm->yy,
+			     0., 0.);
 
   return PANGO_FC_FONT (cffont);
 }

@@ -49,10 +49,10 @@ struct _PangoWin32MetricsInfo
 static void pango_win32_font_dispose    (GObject             *object);
 static void pango_win32_font_finalize   (GObject             *object);
 
-static gboolean pango_win32_font_real_select_font      (PangoFont *font,
-							HDC        hdc);
-static void     pango_win32_font_real_done_font        (PangoFont *font);
-static double   pango_win32_font_real_get_scale_factor (PangoFont *font);
+static gboolean pango_win32_font_real_select_font        (PangoFont *font,
+							  HDC        hdc);
+static void     pango_win32_font_real_done_font          (PangoFont *font);
+static double   pango_win32_font_real_get_metrics_factor (PangoFont *font);
 
 static PangoFontDescription *pango_win32_font_describe          (PangoFont        *font);
 static PangoCoverage        *pango_win32_font_get_coverage      (PangoFont        *font,
@@ -74,7 +74,7 @@ static PangoFontMap *        pango_win32_font_get_font_map      (PangoFont      
 static gboolean pango_win32_font_real_select_font      (PangoFont *font,
 							HDC        hdc);
 static void     pango_win32_font_real_done_font        (PangoFont *font);
-static double   pango_win32_font_real_get_scale_factor (PangoFont *font);
+static double   pango_win32_font_real_get_metrics_factor (PangoFont *font);
 
 static HFONT                 pango_win32_get_hfont              (PangoFont        *font);
 static void                  pango_win32_get_item_properties    (PangoItem        *item,
@@ -221,7 +221,7 @@ pango_win32_font_class_init (PangoWin32FontClass *class)
 
   class->select_font = pango_win32_font_real_select_font;
   class->done_font = pango_win32_font_real_done_font;
-  class->get_scale_factor = pango_win32_font_real_get_scale_factor;
+  class->get_metrics_factor = pango_win32_font_real_get_metrics_factor;
 
   pango_win32_get_dc ();
 }
@@ -660,7 +660,7 @@ pango_win32_font_real_done_font (PangoFont *font)
 }
 
 static double
-pango_win32_font_real_get_scale_factor (PangoFont *font)
+pango_win32_font_real_get_metrics_factor (PangoFont *font)
 {
   return PANGO_SCALE;
 }
@@ -729,7 +729,7 @@ pango_win32_font_done_font (PangoFont *font)
 }
 
 /**
- * pango_win32_font_get_scale_factor:
+ * pango_win32_font_get_metrics_factor:
  * @font: a #PangoFont from the win32 backend
  * 
  * Returns the scale factor from logical units in the coordinate
@@ -740,11 +740,11 @@ pango_win32_font_done_font (PangoFont *font)
  *               units.
  **/
 double
-pango_win32_font_get_scale_factor (PangoFont *font)
+pango_win32_font_get_metrics_factor (PangoFont *font)
 {
   g_return_val_if_fail (PANGO_WIN32_IS_FONT (font), 1.);
   
-  return PANGO_WIN32_FONT_GET_CLASS (font)->get_scale_factor (font);
+  return PANGO_WIN32_FONT_GET_CLASS (font)->get_metrics_factor (font);
 }
 
 static void

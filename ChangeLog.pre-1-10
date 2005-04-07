@@ -1,3 +1,12 @@
+2005-04-07  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pangocairo-fcfont.c pango/pangocairo-win32font.c 
+	pango/pangocairo-render.c: Update to new Cairo font API.
+
+	* pangpopangowin32.h pango/pangowin32-private.h pango/pangowin32.c
+	pango/pangocairo-win32font.c modules/basic/basic-win32.c: Rename
+	get_scale_factor() to get_metrics_factor() to match Cairo.
+
 2005-04-04  Hans Breuer  <hans@breuer.org>
 
 	* pango/pangocairo-win32font.c(pango_cairor_win32_font_get_metrics) :

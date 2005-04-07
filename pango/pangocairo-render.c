@@ -96,8 +96,7 @@ pango_cairo_renderer_draw_glyphs (PangoRenderer     *renderer,
       x_position += gi->geometry.width;
     }
 
-  cairo_set_font (crenderer->cr,
-		  _pango_cairo_font_get_cairo_font (PANGO_CAIRO_FONT (font)));
+  _pango_cairo_font_install (PANGO_CAIRO_FONT (font), crenderer->cr);
   
   if (crenderer->do_path)
     cairo_glyph_path (crenderer->cr, cairo_glyphs, glyphs->num_glyphs);
@@ -423,7 +422,7 @@ pango_cairo_glyph_string_path (cairo_t          *cr,
   crenderer->x_offset = 0.;
   crenderer->y_offset = 0.;
   
-  cairo_set_font (cr, NULL);
+  cairo_set_font_face (cr, NULL);
 }
 
 /**
@@ -465,7 +464,7 @@ pango_cairo_layout_line_path (cairo_t          *cr,
   crenderer->x_offset = 0.;
   crenderer->y_offset = 0.;
   
-  cairo_set_font (cr, NULL);
+  cairo_set_font_face (cr, NULL);
 }
 
 /**
@@ -507,6 +506,6 @@ pango_cairo_layout_path (cairo_t     *cr,
   crenderer->x_offset = 0.;
   crenderer->y_offset = 0.;
   
-  cairo_set_font (cr, NULL);
+  cairo_set_font_face (cr, NULL);
 }
 

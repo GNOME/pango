@@ -53,15 +53,18 @@ pango_cairo_font_get_type (void)
 }
 
 /**
- * _pango_cairo_font_get_cairo_font:
+ * _pango_cairo_font_install:
  * @font: a #PangoCairoFont
+ * @cr: a #cairo_t
  *
- * Get the cairo_font_t for a PangoCairoFont.
+ * Makes @font the current font for rendering in the specified
+ * Cairo context.
  **/
-cairo_font_t *
-_pango_cairo_font_get_cairo_font (PangoCairoFont *font)
+void
+_pango_cairo_font_install (PangoCairoFont *font,
+			   cairo_t        *cr)
 {
-  g_return_val_if_fail (PANGO_IS_CAIRO_FONT (font), NULL);
+  g_return_if_fail (PANGO_IS_CAIRO_FONT (font));
   
-  return (* PANGO_CAIRO_FONT_GET_IFACE (font)->get_cairo_font) (font);
+  return (* PANGO_CAIRO_FONT_GET_IFACE (font)->install) (font, cr);
 }
