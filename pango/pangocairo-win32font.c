@@ -46,11 +46,11 @@ struct _PangoCairoWin32Font
 
   int size;
 
-  cairo_font_face_t font_face;
+  cairo_font_face_t *font_face;
   cairo_scaled_font_t *scaled_font;
   
-  cairo_matrix_t *font_matrix;
-  cairo_matrix_t *total_matrix;
+  cairo_matrix_t font_matrix;
+  cairo_matrix_t ctm;
 
   PangoFontMetrics *metrics;
 };
@@ -110,8 +110,8 @@ pango_cairo_win32_font_get_scaled_font (PangoCairoFont *font)
 
       font_face = pango_cairo_win32_font_get_font_face (font);
       cffont->scaled_font = cairo_scaled_font_create (font_face,
-						      cffont->font_matrix,
-						      cffont->ctm);
+						      &cffont->font_matrix,
+						      &cffont->ctm);
 
       /* Failure of the above should only occur for out of memory,
        * we can't proceed at that point
@@ -135,7 +135,7 @@ pango_cairo_win32_font_install (PangoCairoFont *font,
 
   cairo_set_font_face (cr,
 		       pango_cairo_win32_font_get_font_face (font));
-  cairo_transform_font (cr, cffont->font_matrix);
+  cairo_transform_font (cr, &cffont->font_matrix);
 }
 
 static void
@@ -158,20 +158,16 @@ pango_cairo_win32_font_finalize (GObject *object)
   if (cwfont->scaled_font)
     cairo_scaled_font_destroy (cwfont->scaled_font);
 
-  cairo_matrix_destroy (cwfont->total_matrix);
-  cairo_matrix_destroy (cwfont->font_matrix);
-
   G_OBJECT_CLASS (pango_cairo_win32_font_parent_class)->finalize (object);
 }
 
 static void
 pango_cairo_win32_font_get_glyph_extents (PangoFont        *font,
-				       PangoGlyph        glyph,
-				       PangoRectangle   *ink_rect,
-				       PangoRectangle   *logical_rect)
+					  PangoGlyph        glyph,
+					  PangoRectangle   *ink_rect,
+					  PangoRectangle   *logical_rect)
 {
-  PangoCairoWin32Font *cwfont = PANGO_CAIRO_WIN32_FONT (font);
-  cairo_scaled_font_t *scaled__font;
+  cairo_scaled_font_t *scaled_font;
   cairo_text_extents_t extents;
   cairo_glyph_t cairo_glyph;
 
@@ -181,7 +177,7 @@ pango_cairo_win32_font_get_glyph_extents (PangoFont        *font,
   cairo_glyph.x = 0;
   cairo_glyph.y = 0;
 
-  cairo_scaled_font_glyph_extents (scaled_font, cwfont->font_matrix,
+  cairo_scaled_font_glyph_extents (scaled_font,
 				   &cairo_glyph, 1, &extents);
 
   if (ink_rect)
@@ -196,8 +192,7 @@ pango_cairo_win32_font_get_glyph_extents (PangoFont        *font,
     {
       cairo_font_extents_t font_extents;
 
-      cairo_scaled_font_extents (scaled_font, cwfont->font_matrix,
-				 &font_extents);
+      cairo_scaled_font_extents (scaled_font, &font_extents);
       
       logical_rect->x = 0;
       logical_rect->y = - font_extents.ascent * PANGO_SCALE;
@@ -215,14 +210,13 @@ pango_cairo_win32_font_get_metrics (PangoFont        *font,
   if (!cwfont->metrics)
     {
       double height;
-      cairo_sacled_font_t *scaled_font;
+      cairo_scaled_font_t *scaled_font;
       cairo_font_extents_t font_extents;
       cwfont->metrics = pango_font_metrics_new ();
 
       scaled_font = pango_cairo_win32_font_get_scaled_font (PANGO_CAIRO_FONT (font));
 
-      cairo_scaled_font_extents (scaled_font, cwfont->font_matrix,
-				 &font_extents);
+      cairo_scaled_font_extents (scaled_font, &font_extents);
       
       cwfont->metrics->ascent = font_extents.ascent * PANGO_SCALE;
       cwfont->metrics->descent = font_extents.ascent * PANGO_SCALE;
@@ -252,7 +246,7 @@ pango_cairo_win32_font_select_font (PangoFont *font,
 static void
 pango_cairo_win32_font_done_font (PangoFont *font)
 {
-  cairo_font_t *scaled_font = pango_cairo_win32_font_get_scaled_font (PANGO_CAIRO_FONT (font));
+  cairo_scaled_font_t *scaled_font = pango_cairo_win32_font_get_scaled_font (PANGO_CAIRO_FONT (font));
   
   cairo_win32_scaled_font_done_font (scaled_font);
 }
@@ -321,30 +315,20 @@ _pango_cairo_win32_font_new (PangoCairoWin32FontMap     *cwfontmap,
    */
   win32font->size = size * PANGO_SCALE;
 
-  cwfont->font_matrix = cairo_matrix_create ();
-  cairo_matrix_scale (cwfont->font_matrix, size, size);
-
-  cwfont->total_matrix = cairo_matrix_create ();
+  cairo_matrix_init_scale (&cwfont->font_matrix,
+			   size, size);
 
   pango_ctm = pango_context_get_matrix (context);
   if (pango_ctm)
-    {
-      cairo_matrix_t *ctm;
-
-      ctm = cairo_matrix_create ();
-      cairo_matrix_set_affine (ctm,
-			       pango_ctm->xx,
-			       pango_ctm->yx,
-			       pango_ctm->xy,
-			       pango_ctm->yy,
-			       0., 0.);
-      
-      cairo_matrix_multiply (cwfont->total_matrix, cwfont->font_matrix, ctm);
-      cairo_matrix_destroy (ctm);
-    }
+    cairo_matrix_init (&cwfont->ctm,
+		       pango_ctm->xx,
+		       pango_ctm->yx,
+		       pango_ctm->xy,
+		       pango_ctm->yy,
+		       0., 0.);
   else
-    cairo_matrix_copy (cwfont->total_matrix, cwfont->font_matrix);
-  
+    cairo_matrix_init_identity (&cwfont->ctm);
+
   pango_win32_make_matching_logfont (win32font->fontmap,
 				     &face->logfont,
 				     win32font->size,

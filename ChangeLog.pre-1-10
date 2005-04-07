@@ -1,5 +1,15 @@
 2005-04-07  Owen Taylor  <otaylor@redhat.com>
 
+	* configure.in: Test for renamed
+	cairo_win32_scaled_font_select_font().
+
+	* pango/pangocairo-win32font.c: Fix various compilation errors.
+
+	* pango/pangocairo-fcfont.c pango/pangocairo-win32font.c
+	pango/pangocairo-fontmap.c: Use new matrix API.
+
+2005-04-07  Owen Taylor  <otaylor@redhat.com>
+
 	* pango/pangocairo-fcfont.c pango/pangocairo-win32font.c 
 	pango/pangocairo-render.c: Update to new Cairo font API.
 

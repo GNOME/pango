@@ -209,22 +209,19 @@ void
 pango_cairo_update_context (cairo_t      *cr,
 			    PangoContext *context)
 {
-  cairo_matrix_t *cairo_matrix;
+  cairo_matrix_t cairo_matrix;
   PangoMatrix pango_matrix;
   
   g_return_if_fail (cr != NULL);
   g_return_if_fail (PANGO_IS_CONTEXT (context));
 
-  cairo_matrix = cairo_matrix_create ();
-  cairo_current_matrix (cr, cairo_matrix);
-  cairo_matrix_get_affine (cairo_matrix,
+  cairo_current_matrix (cr, &cairo_matrix);
+  cairo_matrix_get_affine (&cairo_matrix,
 			   &pango_matrix.xx, &pango_matrix.yx,
 			   &pango_matrix.xy, &pango_matrix.yy,
 			   &pango_matrix.x0, &pango_matrix.y0);
 
   pango_context_set_matrix (context, &pango_matrix);
-
-  cairo_matrix_destroy (cairo_matrix);
 }
 
 /**

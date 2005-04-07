@@ -279,7 +279,7 @@ PKG_CHECK_MODULES(CAIRO, cairo >= 0.2.0, have_cairo=true, :)
 if $have_cairo ; then
   pango_save_ldflags=$LDFLAGS
   LDFLAGS="$LDFLAGS $CAIRO_LIBS"
-  AC_CHECK_LIB(cairo, cairo_win32_font_select_font, have_cairo_win32=true, :)
+  AC_CHECK_LIB(cairo, cairo_win32_scaled_font_select_font, have_cairo_win32=true, :)
   if $have_cairo_win32 && $have_win32; then
     AC_DEFINE(HAVE_CAIRO_WIN32, 1, [Whether Cairo uses the Win32 GDI for fonts])
   else			  
