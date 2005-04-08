@@ -30,6 +30,7 @@
 
 #include <pango/pangocairo.h>
 #include <cairo-xlib.h>
+#include <pixman.h>
 
 static pixman_region16_t *update_region = NULL;
 static PangoContext *context;

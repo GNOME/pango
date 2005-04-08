@@ -1,3 +1,8 @@
+Fri Apr  8 15:30:55 2005  Manish Singh  <yosh@gimp.org>
+
+	* examples/cairoview.c: #include <pixman.h> since the cairo headers
+	don't include it for us anymore.
+
 2005-04-08  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pangocairo-font.c (_pango_cairo_font_install): Remove
