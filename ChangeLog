@@ -1,3 +1,8 @@
+2005-04-08  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pangocairo-font.c (_pango_cairo_font_install): Remove
+	stray return. (#173046, Damien Carbery)
+
 Thu Apr  7 22:45:32 2005  Manish Singh  <yosh@gimp.org>
 
 	* configure.in: Test for renamed cairo_ft_scaled_font_lock_face().
@@ -11,8 +16,6 @@ Thu Apr  7 22:45:32 2005  Manish Singh  <yosh@gimp.org>
 
 	* pango/pangocairo-fcfont.c pango/pangocairo-win32font.c
 	pango/pangocairo-fontmap.c: Use new matrix API.
-
-2005-04-07  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pangocairo-fcfont.c pango/pangocairo-win32font.c 
 	pango/pangocairo-render.c: Update to new Cairo font API.

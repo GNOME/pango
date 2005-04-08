@@ -66,5 +66,5 @@ _pango_cairo_font_install (PangoCairoFont *font,
 {
   g_return_if_fail (PANGO_IS_CAIRO_FONT (font));
   
-  return (* PANGO_CAIRO_FONT_GET_IFACE (font)->install) (font, cr);
+  (* PANGO_CAIRO_FONT_GET_IFACE (font)->install) (font, cr);
 }
