@@ -283,7 +283,7 @@ if $have_cairo ; then
   if $have_cairo_win32 && $have_win32; then
     AC_DEFINE(HAVE_CAIRO_WIN32, 1, [Whether Cairo uses the Win32 GDI for fonts])
   else			  
-    AC_CHECK_LIB(cairo, cairo_ft_font_lock_face, have_cairo_freetype=true, :)
+    AC_CHECK_LIB(cairo, cairo_ft_scaled_font_lock_face, have_cairo_freetype=true, :)
     if $have_cairo_freetype && $have_freetype ; then
       AC_DEFINE(HAVE_CAIRO_FREETYPE, 1, [Whether Cairo uses FreeType for fonts])
     else

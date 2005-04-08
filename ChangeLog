@@ -1,3 +1,7 @@
+Thu Apr  7 22:45:32 2005  Manish Singh  <yosh@gimp.org>
+
+	* configure.in: Test for renamed cairo_ft_scaled_font_lock_face().
+
 2005-04-07  Owen Taylor  <otaylor@redhat.com>
 
 	* configure.in: Test for renamed
