@@ -14,7 +14,7 @@ EXPORTS
 	pango_win32_font_new
 	pango_win32_font_logfont
  	pango_win32_font_done_font
- 	pango_win32_font_get_scale_factor
+ 	pango_win32_font_get_metrics_factor
  	pango_win32_font_select_font
 	pango_win32_fontmap_cache_add
 	pango_win32_fontmap_cache_remove
