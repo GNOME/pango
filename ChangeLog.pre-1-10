@@ -1,3 +1,8 @@
+Mon Apr 18 15:49:36 2005  Manish Singh  <yosh@gimp.org>
+
+	* examples/cairoview.c: Update to new Cairo API for setting color
+	and opacity.
+
 2005-04-12  Tor Lillqvist  <tml@novell.com>
 
 	* pango/opentype/Makefile.am: Rename LDADDS to

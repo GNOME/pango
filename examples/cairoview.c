@@ -66,8 +66,7 @@ do_cairo_render (PangoLayout *layout,
       pango_layout_get_extents (layout, &ink, &logical);
 
       cairo_save (cr);
-      cairo_set_rgb_color (cr, 1.0, 0.0, 0.0);
-      cairo_set_alpha (cr, 0.75);
+      cairo_set_source_rgba (cr, 1.0, 0.0, 0.0, 0.75);
 
       cairo_rectangle (cr,
 		       (double)logical.x / PANGO_SCALE - lw / 2,
@@ -76,7 +75,7 @@ do_cairo_render (PangoLayout *layout,
 		       (double)logical.height / PANGO_SCALE + lw);
       cairo_stroke (cr);
       
-      cairo_set_rgb_color (cr, 0.0, 1.0, 0.0);
+      cairo_set_source_rgba (cr, 0.0, 1.0, 0.0, 0.75);
 
       cairo_rectangle (cr,
 		       (double)ink.x / PANGO_SCALE - lw / 2,
