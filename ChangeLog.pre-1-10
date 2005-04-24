@@ -1,3 +1,8 @@
+2005-04-25  Changwoo Ryu  <cwryu@debian.org>
+
+	* modules/hangul/hangul-fc.c (render_basic): handles zero width
+	chars, patch by Young-Ho Cha. (#157565)
+
 Mon Apr 18 15:49:36 2005  Manish Singh  <yosh@gimp.org>
 
 	* examples/cairoview.c: Update to new Cairo API for setting color
