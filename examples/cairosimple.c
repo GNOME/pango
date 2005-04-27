@@ -1,6 +1,5 @@
 #include <math.h>
 #include <pango/pangocairo.h>
-#include <cairo-png.h>
 
 static void
 draw_text (cairo_t *cr)
@@ -57,7 +56,8 @@ draw_text (cairo_t *cr)
 int main (int argc, char **argv)
 {
   cairo_t *cr;
-  FILE *f;
+  char *filename;
+  cairo_status_t status;
 
   if (argc != 2)
     {
@@ -65,12 +65,7 @@ int main (int argc, char **argv)
       return 1;
     }
 
-  f = fopen (argv[1], "wb");
-  if (!f)
-    {
-      g_printerr ("Usage: cannot open '%s'\n", argv[1]);
-      return 1;
-    }
+  filename = argv[1];
 
   cr = cairo_create();
   cairo_set_target_image_no_data (cr,
@@ -82,10 +77,15 @@ int main (int argc, char **argv)
   cairo_fill (cr);
   draw_text (cr);
   
-  cairo_surface_write_png (cairo_get_target_surface (cr), f);
-  
+  status = cairo_surface_write_to_png (cairo_get_target_surface (cr), filename);
+
+  if (status != CAIRO_STATUS_SUCCESS)
+    {
+      g_printerr ("Could not save png to '%s'\n", filename);
+      return 1;
+    }
+
   cairo_destroy (cr);
-  fclose (f);
 
   return 0;
 }

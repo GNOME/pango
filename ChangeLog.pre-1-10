@@ -1,3 +1,7 @@
+Wed Apr 27 15:45:06 2005  Manish Singh  <yosh@gimp.org>
+
+	* examples/cairoview.c: Update to new Cairo API for writing out PNGs.
+
 2005-04-28  Changwoo Ryu  <cwryu@debian.org>
 
 	* modules/hangul/hangul-defs.h: Cleanups.
