@@ -1,3 +1,30 @@
+2005-04-28  Tor Lillqvist  <tml@novell.com>
+
+	Add support to pangowin32 for TrueType fonts covering more than
+	the BMP. Fix handling of surrogate pairs in the Uniscribe
+	shaper. (#302238)
+
+	* pango/pangowin32-private.h (PangoWin32Face): Rename the
+	unicode_table field to cmap. Keep track of its format (4 or 12).
+	(format_12_cmap): Add struct for a format 12 cmap.
+
+	* pango/pangowin32.c: Corresponding changes. Rename internal
+	functions a bit.
+	(get_format_12_cmap): New function, reads a format 12 cmap.
+	(font_get_cmap): Look for both format 12 (which is preferred) and
+	format 4 cmaps.
+	(pango_win32_font_get_glyph_index,
+	pango_win32_font_calc_coverage): Handle also format 12 cmaps.
+
+	* modules/basic/basic-win32.c: Handle surrogate pairs in wchar_t
+	strings properly.
+	(unichar_index): New function. Given a wchar_t string and an index
+	into it, calculate the index of the corresponding Unicode
+	character. Each surrogate pair in the wchar_t is just one Unicode
+	character.
+	(set_up_pango_log_clusters, itemize_shape_and_place): Use
+	unichar_index() instead of direct index into wchar_t string.
+
 2005-04-25  Changwoo Ryu  <cwryu@debian.org>
 
 	* modules/hangul/hangul-fc.c (render_basic): handles zero width
