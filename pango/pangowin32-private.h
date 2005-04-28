@@ -161,7 +161,8 @@ struct _PangoWin32Face
   PangoCoverage *coverages[PANGO_WIN32_N_COVERAGES];
   char *face_name;
 
-  gpointer unicode_table;
+  guint16 cmap_format;
+  gpointer cmap;
 
   GSList *cached_fonts;
 };
@@ -194,15 +195,17 @@ struct _PangoWin32GlyphInfo
 #define UNICODE_ENCODING_ID 1
 #define UCS4_ENCODING_ID 10
 
+/* All the below structs must be packed! */
+
 struct cmap_encoding_subtable
-{ /* Must be packed! */
+{
   guint16 platform_id;
   guint16 encoding_id;
   guint32 offset;
 };
 
-struct type_4_cmap
-{ /* Must be packed! */
+struct format_4_cmap
+{
   guint16 format;
   guint16 length;
   guint16 language;
@@ -214,6 +217,17 @@ struct type_4_cmap
   guint16 reserved;
   
   guint16 arrays[1];
+};
+
+struct format_12_cmap
+{ 
+  guint16 format;
+  guint16 reserved;
+  guint32 length;
+  guint32 language;
+  guint32 count;
+
+  guint32 groups[1];
 };
 
 struct name_header

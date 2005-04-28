@@ -83,8 +83,8 @@ pango_cairo_win32_font_get_font_face (PangoCairoFont *font)
       memcpy (&logfontw, &win32font->logfont, sizeof (LOGFONTA));
       
       if (!MultiByteToWideChar (CP_ACP, MB_ERR_INVALID_CHARS,
-				win32font->logfont.lfFaceName, strlen (win32font->logfont.lfFaceName),
-				logfontw.lfFaceName, sizeof(logfontw.lfFaceName)))
+				win32font->logfont.lfFaceName, -1,
+				logfontw.lfFaceName, G_N_ELEMENTS (logfontw.lfFaceName)))
 	logfontw.lfFaceName[0] = 0; /* Hopefully this will select some font */
       
       cwfont->font_face = cairo_win32_font_face_create_for_logfontw (&logfontw);

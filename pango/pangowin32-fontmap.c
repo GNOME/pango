@@ -143,12 +143,13 @@ pango_win32_enum_proc (LOGFONT    *lfp,
 {
   LOGFONT lf;
 
+  PING(("%s", lfp->lfFaceName));
+
   if (fontType != TRUETYPE_FONTTYPE)
     return 1;
 
   lf = *lfp;
 
-  PING(("%s", lf.lfFaceName));
   EnumFontFamiliesExA (pango_win32_hdc, &lf,
 		       (FONTENUMPROC) pango_win32_inner_enum_proc,
 		       lParam, 0);
@@ -755,7 +756,8 @@ pango_win32_insert_font (PangoWin32FontMap *win32fontmap,
   for (i = 0; i < PANGO_WIN32_N_COVERAGES; i++)
      win32face->coverages[i] = NULL;
   win32face->logfont = *lfp;
-  win32face->unicode_table = NULL;
+  win32face->cmap_format = 0;
+  win32face->cmap = NULL;
   font_family->font_entries = g_slist_append (font_family->font_entries, win32face);
   win32fontmap->n_fonts++;
 

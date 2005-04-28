@@ -557,7 +557,7 @@ dump_glyphs_and_log_clusters (gboolean rtl,
 	for (j = 0, charix = charix0; j < itemlen; j++, charix++)
 	  {
 	    if (j == 0 || log_clusters[j-1] != log_clusters[j])
-	      printf ("  Cluster %d: chars %d--",
+	      printf ("  Cluster %d: wchar_t %d--",
 		      clusterix, charix);
 	    if (j == itemlen - 1 || log_clusters[j] != log_clusters[j+1])
 	      {
@@ -581,8 +581,24 @@ dump_glyphs_and_log_clusters (gboolean rtl,
 
 #endif /* BASIC_WIN32_DEBUGGING */
 
+static int
+unichar_index (wchar_t *wtext,
+				int      ix)
+{
+  int i, index;
+
+  index = 0;
+  for (i = 0; i < ix; i++)
+    /* Ignore the low surrogate */
+    if (!(wtext[i] >= 0xDC00 && wtext[i] < 0xE000))
+      index++;
+
+  return index;
+}
+
 static void
-set_up_pango_log_clusters (gboolean rtl,
+set_up_pango_log_clusters (wchar_t *wtext,
+			   gboolean rtl,
 			   int      itemlen,
 			   WORD    *usp_log_clusters,
 			   int      nglyphs,
@@ -598,13 +614,13 @@ set_up_pango_log_clusters (gboolean rtl,
        * log_clusters array forwards.
        */
       int glyph0 = 0;
-      first_char_in_cluster = itemlen - 1;
+      first_char_in_cluster = unichar_index (wtext, itemlen - 1);
       for (j = itemlen - 1; j >= 0; j--)
 	{
 	  if (j < itemlen - 1 && usp_log_clusters[j+1] != usp_log_clusters[j])
 	    {
 	      /* Cluster starts */
-	      first_char_in_cluster = j;
+	      first_char_in_cluster = unichar_index (wtext, j);
 	    }
 	  if (j == 0)
 	    {
@@ -615,7 +631,7 @@ set_up_pango_log_clusters (gboolean rtl,
 	  else if (usp_log_clusters[j-1] == usp_log_clusters[j])
 	    {
 	      /* Cluster continues */
-	      first_char_in_cluster = j-1;
+	      first_char_in_cluster = unichar_index (wtext, j-1);
 	    }
 	  else
 	    {
@@ -637,7 +653,7 @@ set_up_pango_log_clusters (gboolean rtl,
 	  if (j > 0 && usp_log_clusters[j-1] != usp_log_clusters[j])
 	    {
 	      /* Cluster starts */
-	      first_char_in_cluster = j;
+	      first_char_in_cluster = unichar_index (wtext, j);
 	    }
 	  if (j == itemlen - 1)
 	    {
@@ -753,16 +769,21 @@ itemize_shape_and_place (PangoFont        *font,
       ABC abc;
       int script = items[item].a.eScript;
       int ng;
+      int char_offset;
 
       memset (advances, 0, sizeof (advances));
       memset (offsets, 0, sizeof (offsets));
       memset (&abc, 0, sizeof (abc));
 	  
+      /* Note that itemlen is number of wchar_t's i.e. surrogate pairs
+       * count as two!
+       */
       itemlen = items[item+1].iCharPos - items[item].iCharPos;
+      char_offset = unichar_index (wtext, items[item].iCharPos);
 
 #ifdef BASIC_WIN32_DEBUGGING
       if (pango_win32_debug)
-	printf ("  Item %d: iCharPos=%d eScript=%d (%s) %s%s%s%s%s%s%s chars %d--%d (%d)\n",
+	printf ("  Item %d: iCharPos=%d eScript=%d (%s) %s%s%s%s%s%s%s wchar_t %d--%d (%d)\n",
 		item, items[item].iCharPos, script,
 		lang_name (scripts[script]->langid),
 		scripts[script]->fComplex ? "complex" : "simple",
@@ -801,9 +822,10 @@ itemize_shape_and_place (PangoFont        *font,
       ng = glyphs->num_glyphs;
       pango_glyph_string_set_size (glyphs, ng + nglyphs);
       
-      set_up_pango_log_clusters (items[item].a.fRTL, itemlen, log_clusters,
+      set_up_pango_log_clusters (wtext,
+				 items[item].a.fRTL, itemlen, log_clusters,
 				 nglyphs, glyphs->log_clusters + ng,
-				 items[item].iCharPos);
+				 char_offset);
 
       if ((*script_place) (hdc, &script_cache[script], iglyphs, nglyphs,
 			   visattrs, &items[item].a,
@@ -846,7 +868,7 @@ itemize_shape_and_place (PangoFont        *font,
 #ifdef BASIC_WIN32_DEBUGGING
   if (pango_win32_debug)
     {
-      printf ("  Pango log_clusters (%d), char index:", analysis->level);
+      printf ("  Pango log_clusters (level:%d), char index:", analysis->level);
       for (glyphix = 0; glyphix < glyphs->num_glyphs; glyphix++)
 	printf ("%d ", glyphs->log_clusters[glyphix]);
       printf ("\n");
@@ -917,7 +939,6 @@ text_is_simple (const char *text,
   long wlen;
 
   wtext = (wchar_t *) g_utf8_to_utf16 (text, length, NULL, &wlen, NULL);
-
   if (wtext == NULL)
     return TRUE;
 
@@ -927,7 +948,7 @@ text_is_simple (const char *text,
 
 #ifdef BASIC_WIN32_DEBUGGING
   if (pango_win32_debug)
-    printf ("text_is_simple: %.*s (%ld chars): %s\n",
+    printf ("text_is_simple: %.*s (%ld wchar_t): %s\n",
 	    MIN (length, 10), text, wlen, retval ? "YES" : "NO");
 #endif
 

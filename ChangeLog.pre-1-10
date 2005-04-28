@@ -1,3 +1,36 @@
+2005-04-28  Tor Lillqvist  <tml@novell.com>
+
+	* pango/pangocairo-win32font.c (pango_cairo_win32_font_get_font_face): 
+	Correct parameters passed to MultiByteToWideChar(). Pass -1 as
+	source string length so that the target string gets
+	zero-terminated. Size of target array is in number of WCHARs, not
+	number of bytes.
+
+	Add support to pangowin32 for TrueType fonts with coverage outside
+	the BMP. Fix handling of surrogate pairs in the Uniscribe
+	shaper. (#302238)
+
+	* pango/pangowin32-private.h (PangoWin32Face): Rename the
+	unicode_table field to cmap. Keep track of its format (4 or 12).
+	(format_12_cmap): Add struct for a format 12 cmap.
+
+	* pango/pangowin32.c: Corresponding changes. Rename internal
+	functions a bit.
+	(get_format_12_cmap): New function, reads a format 12 cmap.
+	(font_get_cmap): Look for both format 12 (which is preferred) and
+	format 4 cmaps.
+	(pango_win32_font_get_glyph_index,
+	pango_win32_font_calc_coverage): Handle also format 12 cmaps.
+
+	* modules/basic/basic-win32.c: Handle surrogate pairs in wchar_t
+	strings properly.
+	(unichar_index): New function. Given a wchar_t string and an index
+	into it, calculate the index of the corresponding Unicode
+	character. Each surrogate pair in the wchar_t is just one Unicode
+	character.
+	(set_up_pango_log_clusters, itemize_shape_and_place): Use
+	unichar_index() instead of direct index into wchar_t string.
+
 Wed Apr 27 15:45:06 2005  Manish Singh  <yosh@gimp.org>
 
 	* examples/cairoview.c: Update to new Cairo API for writing out PNGs.
