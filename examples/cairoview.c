@@ -165,7 +165,7 @@ update ()
   
   cairo_clip (cr);
   cairo_set_rgb_color (cr, 1.0, 1.0, 1.0);
-  cairo_fill (cr);
+  cairo_paint (cr);
   
   /* Draw the text in black */
   cairo_set_rgb_color (cr, 0.0, 0.0, 0.0);

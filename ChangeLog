@@ -1,3 +1,14 @@
+2005-05-01  Owen Taylor  <otaylor@redhat.com>
+
+	* examples/cairoview.c: Fix for the change of cairo_clip() not to preserve
+	the path.
+
+2005-04-29  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pangocairo-fcfont.c (pango_cairo_fc_font_get_glyph_extents):
+	Get the ascent/descent from Cairo to fix bugs in metrics computation
+	with a transformation in effect.
+
 2005-04-28  Tor Lillqvist  <tml@novell.com>
 
 	* pango/pangocairo-win32font.c (pango_cairo_win32_font_get_font_face): 
@@ -49,6 +60,7 @@ Mon Apr 18 15:49:36 2005  Manish Singh  <yosh@gimp.org>
 	* examples/cairoview.c: Update to new Cairo API for setting color
 	and opacity.
 
+>>>>>>> 1.1097
 2005-04-12  Tor Lillqvist  <tml@novell.com>
 
 	* pango/opentype/Makefile.am: Rename LDADDS to
