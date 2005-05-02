@@ -1,13 +1,13 @@
-2005-05-01  Owen Taylor  <otaylor@redhat.com>
-
-	* examples/cairoview.c: Fix for the change of cairo_clip() not to preserve
-	the path.
-
 2005-04-29  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pangocairo-fcfont.c (pango_cairo_fc_font_get_glyph_extents):
 	Get the ascent/descent from Cairo to fix bugs in metrics computation
 	with a transformation in effect.
+
+2005-05-01  Owen Taylor  <otaylor@redhat.com>
+
+	* examples/cairoview.c: Fix for the change of cairo_clip() not to preserve
+	the path.
 
 2005-04-28  Tor Lillqvist  <tml@novell.com>
 

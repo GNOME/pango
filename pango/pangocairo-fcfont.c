@@ -147,26 +147,6 @@ pango_cairo_fc_font_finalize (GObject *object)
 }
 
 static void
-get_ascent_descent (PangoCairoFcFont *cffont,
-		    int              *ascent,
-		    int              *descent)
-{
-  PangoFcFont *fcfont = PANGO_FC_FONT (cffont);
-  FT_Face face;
-
-  face = pango_fc_font_lock_face (fcfont);
-  
-  /* This is complicated in general (see pangofc-font.c:get_face_metrics(),
-   * but simple for hinted, untransformed fonts. cairo_glyph_extents() will
-   * have set up the right size on the font as a side-effect.
-   */
-  *descent = - PANGO_UNITS_26_6 (face->size->metrics.descender);
-  *ascent = PANGO_UNITS_26_6 (face->size->metrics.ascender);
-  
-  pango_fc_font_unlock_face (fcfont);
-}
-
-static void
 pango_cairo_fc_font_get_glyph_extents (PangoFont        *font,
 				       PangoGlyph        glyph,
 				       PangoRectangle   *ink_rect,
@@ -196,14 +176,17 @@ pango_cairo_fc_font_get_glyph_extents (PangoFont        *font,
   
   if (logical_rect)
     {
-      int ascent, descent;
+      /* It may well be worth caching the font_extents here, since getting them
+       * is pretty expensive.
+       */
+      cairo_font_extents_t font_extents;
 
-      get_ascent_descent (cffont, &ascent, &descent);
+      cairo_scaled_font_extents (scaled_font, &font_extents);
       
       logical_rect->x = 0;
-      logical_rect->y = - ascent;
+      logical_rect->y = - font_extents.ascent * PANGO_SCALE;
       logical_rect->width = extents.x_advance * PANGO_SCALE;
-      logical_rect->height = ascent + descent;
+      logical_rect->height = (font_extents.ascent + font_extents.descent) * PANGO_SCALE;
     }
 }
 
