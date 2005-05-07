@@ -35,7 +35,7 @@ draw_text (cairo_t *cr)
 
       /* Gradient from red at angle == 60 to blue at angle == 300 */
       red   = (1 + cos ((angle - 60) * G_PI / 180.)) / 2;
-      cairo_set_rgb_color (cr, red, 0, 1.0 - red);
+      cairo_set_source_rgb (cr, red, 0, 1.0 - red);
 
       cairo_rotate (cr, angle * G_PI / 180.);
     
@@ -58,6 +58,7 @@ int main (int argc, char **argv)
   cairo_t *cr;
   char *filename;
   cairo_status_t status;
+  cairo_surface_t *surface;
 
   if (argc != 2)
     {
@@ -67,25 +68,25 @@ int main (int argc, char **argv)
 
   filename = argv[1];
 
-  cr = cairo_create();
-  cairo_set_target_image_no_data (cr,
-				  CAIRO_FORMAT_ARGB32,
-				  2 * RADIUS, 2 * RADIUS);
+  surface = cairo_image_surface_create (CAIRO_FORMAT_ARGB32,
+					2 * RADIUS, 2 * RADIUS);
+  cr = cairo_create (surface);
+				  
 
-  cairo_set_rgb_color (cr, 1.0, 1.0, 1.0);
+  cairo_set_source_rgb (cr, 1.0, 1.0, 1.0);
   cairo_rectangle (cr, 0, 0, 2 * RADIUS, 2 * RADIUS);
   cairo_fill (cr);
   draw_text (cr);
+  cairo_destroy (cr);
   
-  status = cairo_surface_write_to_png (cairo_get_target_surface (cr), filename);
+  status = cairo_surface_write_to_png (surface, filename);
+  cairo_surface_destroy (surface);
 
   if (status != CAIRO_STATUS_SUCCESS)
     {
       g_printerr ("Could not save png to '%s'\n", filename);
       return 1;
     }
-
-  cairo_destroy (cr);
 
   return 0;
 }

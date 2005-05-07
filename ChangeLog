@@ -1,3 +1,9 @@
+2005-05-07  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pangocairo-fontmap.c pango/pangocairo-render.c
+	examples/cairosimple.c pango/pangocairo-fcfont.c
+	examples/cairoview.c: Update for Cairo API changes.
+
 2005-04-29  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pangocairo-fcfont.c (pango_cairo_fc_font_get_glyph_extents):

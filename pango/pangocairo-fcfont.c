@@ -121,7 +121,7 @@ pango_cairo_fc_font_install (PangoCairoFont *font,
 
   cairo_set_font_face (cr,
 		       pango_cairo_fc_font_get_font_face (font));
-  cairo_transform_font (cr, &cffont->font_matrix);
+  cairo_set_font_matrix (cr, &cffont->font_matrix);
 }
 
 static void
@@ -132,7 +132,6 @@ cairo_font_iface_init (PangoCairoFontIface *iface)
 
 G_DEFINE_TYPE_WITH_CODE (PangoCairoFcFont, pango_cairo_fc_font, PANGO_TYPE_FC_FONT,
     { G_IMPLEMENT_INTERFACE (PANGO_TYPE_CAIRO_FONT, cairo_font_iface_init) });
-
 static void
 pango_cairo_fc_font_finalize (GObject *object)
 {
@@ -152,7 +151,6 @@ pango_cairo_fc_font_get_glyph_extents (PangoFont        *font,
 				       PangoRectangle   *ink_rect,
 				       PangoRectangle   *logical_rect)
 {
-  PangoCairoFcFont *cffont = PANGO_CAIRO_FC_FONT (font);
   cairo_scaled_font_t *scaled_font;
   cairo_text_extents_t extents;
   cairo_glyph_t cairo_glyph;

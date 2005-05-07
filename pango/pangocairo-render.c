@@ -50,10 +50,10 @@ set_color (PangoCairoRenderer *crenderer,
   PangoColor *color = pango_renderer_get_color (PANGO_RENDERER (crenderer), part);
   
   if (color)
-    cairo_set_rgb_color (crenderer->cr,
-			 color->red / 65535.,
-			 color->green / 65535.,
-			 color->blue / 65535.);
+    cairo_set_source_rgb (crenderer->cr,
+			  color->red / 65535.,
+			  color->green / 65535.,
+			  color->blue / 65535.);
 }
      
 static void
@@ -285,7 +285,7 @@ pango_cairo_show_glyph_string (cairo_t          *cr,
 
   crenderer->cr = cr;
   crenderer->do_path = FALSE;
-  cairo_current_point (cr, &crenderer->x_offset, &crenderer->y_offset);
+  cairo_get_current_point (cr, &crenderer->x_offset, &crenderer->y_offset);
   
   pango_renderer_draw_glyphs (renderer, font, glyphs, 0, 0);
   
@@ -328,7 +328,7 @@ pango_cairo_show_layout_line (cairo_t          *cr,
 
   crenderer->cr = cr;
   crenderer->do_path = FALSE;
-  cairo_current_point (cr, &crenderer->x_offset, &crenderer->y_offset);
+  cairo_get_current_point (cr, &crenderer->x_offset, &crenderer->y_offset);
 
   pango_renderer_draw_layout_line (renderer, line, 0, 0);
   
@@ -371,7 +371,7 @@ pango_cairo_show_layout (cairo_t     *cr,
 
   crenderer->cr = cr;
   crenderer->do_path = FALSE;
-  cairo_current_point (cr, &crenderer->x_offset, &crenderer->y_offset);
+  cairo_get_current_point (cr, &crenderer->x_offset, &crenderer->y_offset);
 
   pango_renderer_draw_layout (renderer, layout, 0, 0);
   
@@ -413,7 +413,7 @@ pango_cairo_glyph_string_path (cairo_t          *cr,
 
   crenderer->cr = cr;
   crenderer->do_path = TRUE;
-  cairo_current_point (cr, &crenderer->x_offset, &crenderer->y_offset);
+  cairo_get_current_point (cr, &crenderer->x_offset, &crenderer->y_offset);
   
   pango_renderer_draw_glyphs (renderer, font, glyphs, 0, 0);
   
@@ -455,7 +455,7 @@ pango_cairo_layout_line_path (cairo_t          *cr,
 
   crenderer->cr = cr;
   crenderer->do_path = TRUE;
-  cairo_current_point (cr, &crenderer->x_offset, &crenderer->y_offset);
+  cairo_get_current_point (cr, &crenderer->x_offset, &crenderer->y_offset);
 
   pango_renderer_draw_layout_line (renderer, line, 0, 0);
   
@@ -497,7 +497,7 @@ pango_cairo_layout_path (cairo_t     *cr,
   
   crenderer->cr = cr;
   crenderer->do_path = TRUE;
-  cairo_current_point (cr, &crenderer->x_offset, &crenderer->y_offset);
+  cairo_get_current_point (cr, &crenderer->x_offset, &crenderer->y_offset);
 
   pango_renderer_draw_layout (renderer, layout, 0, 0);
   

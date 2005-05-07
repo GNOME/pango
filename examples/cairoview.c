@@ -61,7 +61,7 @@ do_cairo_render (PangoLayout *layout,
   if (show_borders)
     {
       PangoRectangle ink, logical;
-      double lw = cairo_current_line_width (cr);
+      double lw = cairo_get_line_width (cr);
       
       pango_layout_get_extents (layout, &ink, &logical);
 
@@ -94,27 +94,27 @@ do_cairo_transform (PangoContext *context,
 		    gpointer      data)
 {
   RenderData *render_data = data;
-  cairo_matrix_t *cairo_matrix = cairo_matrix_create ();
+  cairo_matrix_t cairo_matrix;
 
   if (matrix)
     {
-      cairo_matrix_set_affine (cairo_matrix,
-			       matrix->xx, matrix->yx,
-			       matrix->xy, matrix->yy,
-			       matrix->x0 + render_data->x_offset,
-			       matrix->y0 + render_data->y_offset);
+      cairo_matrix.xx = matrix->xx;
+      cairo_matrix.yx = matrix->yx;
+      cairo_matrix.xy = matrix->xy;
+      cairo_matrix.yy = matrix->yy;
+      cairo_matrix.x0 = matrix->x0;
+      cairo_matrix.y0 = matrix->y0;
     }
   else
     {
-      cairo_matrix_set_affine (cairo_matrix,
-			       1.0, 0,
-			       0,   1.0,
-			       render_data->x_offset,
-			       render_data->y_offset);
+      cairo_matrix_init_identity (&cairo_matrix);
     }
 
-  cairo_set_matrix (render_data->cr, cairo_matrix);
-  cairo_matrix_destroy (cairo_matrix);
+  cairo_matrix_translate (&cairo_matrix,
+			  render_data->x_offset,
+			  render_data->y_offset);
+
+  cairo_set_matrix (render_data->cr, &cairo_matrix);
       
   pango_context_set_matrix (context, matrix);
   pango_cairo_update_context (render_data->cr, context);
@@ -124,6 +124,7 @@ void
 update ()
 {
   RenderData render_data;
+  cairo_surface_t *surface;
   cairo_t *cr;
   Pixmap pixmap;
   GC gc;
@@ -135,13 +136,14 @@ update ()
 
   /* Create a temporary pixmap and a Cairo context pointing to it */
   extents = pixman_region_extents (update_region);
-  pixmap = XCreatePixmap (display, window,
-			  extents->x2 - extents->x1,
-			  extents->y2 - extents->y1,
-			  DefaultDepth (display, screen));
+  surface = cairo_xlib_surface_create_for_pixmap_with_visual (display,
+							      pixmap,
+							      DefaultVisual (display, screen));
+							      
 
-  cr = render_data.cr = cairo_create();
-  cairo_set_target_drawable (cr, display, pixmap);
+  cr = render_data.cr = cairo_create (surface);
+  cairo_surface_destroy (surface);
+  
   render_data.x_offset = - extents->x1;
   render_data.y_offset = - extents->y1;
 
@@ -164,11 +166,11 @@ update ()
     }
   
   cairo_clip (cr);
-  cairo_set_rgb_color (cr, 1.0, 1.0, 1.0);
+  cairo_set_source_rgb (cr, 1.0, 1.0, 1.0);
   cairo_paint (cr);
   
   /* Draw the text in black */
-  cairo_set_rgb_color (cr, 0.0, 0.0, 0.0);
+  cairo_set_source_rgb (cr, 0.0, 0.0, 0.0);
   do_output (context, do_cairo_render, do_cairo_transform, &render_data, NULL, NULL);
   cairo_destroy (cr);
 
@@ -209,6 +211,7 @@ int main (int argc, char **argv)
   RenderData render_data;
   unsigned int quit_keycode;
   unsigned int borders_keycode;
+  cairo_surface_t *surface;
   
   g_type_init();
 
@@ -222,7 +225,12 @@ int main (int argc, char **argv)
   fontmap = pango_cairo_font_map_get_default ();
   context = pango_cairo_font_map_create_context (PANGO_CAIRO_FONT_MAP (fontmap));
 
-  render_data.cr = cairo_create ();
+  /* This is annoying ... we have to create a temporary surface just to
+   * get the extents of the text.
+   */
+  surface = cairo_image_surface_create (CAIRO_FORMAT_RGB24, 1, 1);
+  render_data.cr = cairo_create (surface);
+  cairo_surface_destroy (surface);
   render_data.x_offset = 0;
   render_data.y_offset = 0;
   do_output (context, NULL, do_cairo_transform, &render_data, &width, &height);
