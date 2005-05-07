@@ -136,6 +136,11 @@ update ()
 
   /* Create a temporary pixmap and a Cairo context pointing to it */
   extents = pixman_region_extents (update_region);
+
+  pixmap = XCreatePixmap (display, window,
+			  extents->x2 - extents->x1,
+			  extents->y2 - extents->y1,
+			  DefaultDepth (display, screen));
   surface = cairo_xlib_surface_create_for_pixmap_with_visual (display,
 							      pixmap,
 							      DefaultVisual (display, screen));

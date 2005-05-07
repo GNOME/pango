@@ -1,5 +1,10 @@
 2005-05-07  Owen Taylor  <otaylor@redhat.com>
 
+	* examples/cairoview.c (update): Remove some accidentally
+	deleted code.
+
+2005-05-07  Owen Taylor  <otaylor@redhat.com>
+
 	* pango/pangocairo-fontmap.c pango/pangocairo-render.c
 	examples/cairosimple.c pango/pangocairo-fcfont.c
 	examples/cairoview.c: Update for Cairo API changes.
