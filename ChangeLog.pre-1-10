@@ -1,3 +1,9 @@
+2005-05-11  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pangocairo-win32font.c (pango_cairo_win32_font_install):
+	Update for cairo API change.
+	(pango_cairo_win32_font_get_metrics): Fix x/y typo.
+
 2005-05-07  Owen Taylor  <otaylor@redhat.com>
 
 	* examples/cairoview.c (update): Remove some accidentally

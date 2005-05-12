@@ -135,7 +135,7 @@ pango_cairo_win32_font_install (PangoCairoFont *font,
 
   cairo_set_font_face (cr,
 		       pango_cairo_win32_font_get_font_face (font));
-  cairo_transform_font (cr, &cffont->font_matrix);
+  cairo_set_font_matrix (cr, &cffont->font_matrix);
 }
 
 static void
@@ -221,7 +221,7 @@ pango_cairo_win32_font_get_metrics (PangoFont        *font,
       cwfont->metrics->ascent = font_extents.ascent * PANGO_SCALE;
       cwfont->metrics->descent = font_extents.ascent * PANGO_SCALE;
       cwfont->metrics->approximate_char_width = font_extents.max_x_advance * PANGO_SCALE;
-      cwfont->metrics->approximate_digit_width = font_extents.max_y_advance * PANGO_SCALE;
+      cwfont->metrics->approximate_digit_width = font_extents.max_x_advance * PANGO_SCALE;
 
       height = font_extents.ascent + font_extents.descent;
       
