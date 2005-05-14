@@ -1,3 +1,8 @@
+Fri May 13 23:54:29 2005  <yosh@gimp.org>
+
+	* examples/cairoview.c: #include Xutil.h explicitly, update
+	for renamed cairo API.
+
 2005-05-11  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pangocairo-win32font.c (pango_cairo_win32_font_install):

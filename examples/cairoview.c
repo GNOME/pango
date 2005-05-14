@@ -26,6 +26,8 @@
 #include <stdio.h>
 #include <string.h>
 
+#include <X11/Xutil.h>
+
 #include "renderdemo.h"
 
 #include <pango/pangocairo.h>
@@ -141,9 +143,9 @@ update ()
 			  extents->x2 - extents->x1,
 			  extents->y2 - extents->y1,
 			  DefaultDepth (display, screen));
-  surface = cairo_xlib_surface_create_for_pixmap_with_visual (display,
-							      pixmap,
-							      DefaultVisual (display, screen));
+  surface = cairo_xlib_surface_create_with_visual (display,
+						   pixmap,
+						   DefaultVisual (display, screen));
 							      
 
   cr = render_data.cr = cairo_create (surface);
