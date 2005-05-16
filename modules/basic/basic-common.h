@@ -10,6 +10,7 @@ G_BEGIN_DECLS
  *  200D  ZERO WIDTH JOINER
  *  200E  LEFT-TO-RIGHT MARK
  *  200F  RIGHT-TO-LEFT MARK
+ *  2028  LINE SEPARATOR
  *  202A  LEFT-TO-RIGHT EMBEDDING
  *  202B  RIGHT-TO-LEFT EMBEDDING
  *  202C  POP DIRECTIONAL FORMATTING
@@ -19,7 +20,7 @@ G_BEGIN_DECLS
  */
 
 #define ZERO_WIDTH_CHAR(wc)\
-(((wc) >= 0x200B && (wc) <= 0x200F) || ((wc) >= 0x202A && (wc) <= 0x202E) || ((wc) == 0xFEFF))
+(((wc) >= 0x200B && (wc) <= 0x200F) || (wc == 0x2028) || ((wc) >= 0x202A && (wc) <= 0x202E) || ((wc) == 0xFEFF))
 
 G_END_DECLS
 

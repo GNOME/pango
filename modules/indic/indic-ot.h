@@ -188,6 +188,7 @@ enum indic_glyph_property_
  *  200D  ZERO WIDTH JOINER
  *  200E  LEFT-TO-RIGHT MARK
  *  200F  RIGHT-TO-LEFT MARK
+ *  2028  LINE SEPARATOR
  *  202A  LEFT-TO-RIGHT EMBEDDING
  *  202B  RIGHT-TO-LEFT EMBEDDING
  *  202C  POP DIRECTIONAL FORMATTING
@@ -196,7 +197,7 @@ enum indic_glyph_property_
  *  FEFF  ZERO WIDTH NO-BREAK SPACE
  */
 #define ZERO_WIDTH_CHAR(wc) \
-   (((wc) >= 0x200B && (wc) <= 0x200F) || ((wc) >= 0x202A && (wc) <= 0x202E) || ((wc) == 0xFEFF))
+   (((wc) >= 0x200B && (wc) <= 0x200F) || (wc == 0x2028) || ((wc) >= 0x202A && (wc) <= 0x202E) || ((wc) == 0xFEFF))
 
 struct _IndicOTClassTable
 {

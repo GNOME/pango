@@ -1,5 +1,14 @@
 2005-05-16  Owen Taylor  <otaylor@redhat.com>
 
+	* pango/pangocairo-fcfont.c (pango_cairo_fc_font_get_glyph_extents):
+	pango/pangocairo-render.c (pango_cairo_renderer_draw_glyphs): 
+	Handle glyph == 0.
+
+	* modules/indic/indic-ot.h modules/basic/basic-common.h:
+	Treat LINE SEPARATOR as a zero-width character.
+
+2005-05-16  Owen Taylor  <otaylor@redhat.com>
+
 	* examples/cairoview.c: Include Xlib.h explicitely before
 	include Xutil.h, since Xutil.h doesn't include Xlib.h on
 	some platforms. (#304317, Damien Carbery)

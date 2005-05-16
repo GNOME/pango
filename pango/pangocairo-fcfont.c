@@ -152,39 +152,56 @@ pango_cairo_fc_font_get_glyph_extents (PangoFont        *font,
 				       PangoRectangle   *logical_rect)
 {
   cairo_scaled_font_t *scaled_font;
-  cairo_text_extents_t extents;
-  cairo_glyph_t cairo_glyph;
 
   scaled_font = pango_cairo_fc_font_get_scaled_font (PANGO_CAIRO_FONT (font));
 
-  cairo_glyph.index = glyph;
-  cairo_glyph.x = 0;
-  cairo_glyph.y = 0;
-
-  cairo_scaled_font_glyph_extents (scaled_font,
-				   &cairo_glyph, 1, &extents);
-
-  if (ink_rect)
-    {
-      ink_rect->x = extents.x_bearing * PANGO_SCALE;
-      ink_rect->y = extents.y_bearing * PANGO_SCALE;
-      ink_rect->width = extents.width * PANGO_SCALE;
-      ink_rect->height = extents.height * PANGO_SCALE;
-    }
-  
   if (logical_rect)
     {
       /* It may well be worth caching the font_extents here, since getting them
        * is pretty expensive.
        */
       cairo_font_extents_t font_extents;
-
+      
       cairo_scaled_font_extents (scaled_font, &font_extents);
       
       logical_rect->x = 0;
       logical_rect->y = - font_extents.ascent * PANGO_SCALE;
-      logical_rect->width = extents.x_advance * PANGO_SCALE;
+      logical_rect->width = 0;
       logical_rect->height = (font_extents.ascent + font_extents.descent) * PANGO_SCALE;
+    }
+
+  if (glyph)
+    {
+      cairo_text_extents_t extents;
+      cairo_glyph_t cairo_glyph;
+      
+      cairo_glyph.index = glyph;
+      cairo_glyph.x = 0;
+      cairo_glyph.y = 0;
+      
+      cairo_scaled_font_glyph_extents (scaled_font,
+				       &cairo_glyph, 1, &extents);
+
+      if (ink_rect)
+	{
+	  ink_rect->x = extents.x_bearing * PANGO_SCALE;
+	  ink_rect->y = extents.y_bearing * PANGO_SCALE;
+	  ink_rect->width = extents.width * PANGO_SCALE;
+	  ink_rect->height = extents.height * PANGO_SCALE;
+	}
+      
+      if (logical_rect)
+	logical_rect->width = extents.x_advance * PANGO_SCALE;
+    }
+  else
+    {
+      if (ink_rect)
+	{
+	  ink_rect->x = 0;
+	  ink_rect->y = 0;
+	  ink_rect->width = 0;
+	  ink_rect->height = 0;
+	}
     }
 }
 
