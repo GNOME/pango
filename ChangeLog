@@ -1,3 +1,9 @@
+2005-05-16  Owen Taylor  <otaylor@redhat.com>
+
+	* examples/cairoview.c: Include Xlib.h explicitely before
+	include Xutil.h, since Xutil.h doesn't include Xlib.h on
+	some platforms. (#304317, Damien Carbery)
+
 Fri May 13 23:54:29 2005  <yosh@gimp.org>
 
 	* examples/cairoview.c: #include Xutil.h explicitly, update
