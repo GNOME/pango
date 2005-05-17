@@ -132,6 +132,7 @@ update ()
   Pixmap pixmap;
   GC gc;
   pixman_box16_t *extents;
+  int width, height;
   int n_rects;
   pixman_box16_t *rects;
   XRectangle *xrects;
@@ -140,13 +141,15 @@ update ()
   /* Create a temporary pixmap and a Cairo context pointing to it */
   extents = pixman_region_extents (update_region);
 
-  pixmap = XCreatePixmap (display, window,
-			  extents->x2 - extents->x1,
-			  extents->y2 - extents->y1,
+  width = extents->x2 - extents->x1;
+  height = extents->y2 - extents->y1;
+
+  pixmap = XCreatePixmap (display, window, width, height,
 			  DefaultDepth (display, screen));
-  surface = cairo_xlib_surface_create_with_visual (display,
-						   pixmap,
-						   DefaultVisual (display, screen));
+
+  surface = cairo_xlib_surface_create (display, pixmap,
+				       DefaultVisual (display, screen),
+				       width, height);
 							      
 
   cr = render_data.cr = cairo_create (surface);

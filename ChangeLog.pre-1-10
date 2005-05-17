@@ -1,3 +1,7 @@
+Tue May 17 07:21:53 2005  Manish Singh  <yosh@gimp.org>
+
+	* examples/cairoview.c: update for new cairo_xlib_surface API.
+
 2005-05-16  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pangocairo-fcfont.c (pango_cairo_fc_font_get_glyph_extents):
@@ -13,7 +17,7 @@
 	include Xutil.h, since Xutil.h doesn't include Xlib.h on
 	some platforms. (#304317, Damien Carbery)
 
-Fri May 13 23:54:29 2005  <yosh@gimp.org>
+Fri May 13 23:54:29 2005  Manish Singh  <yosh@gimp.org>
 
 	* examples/cairoview.c: #include Xutil.h explicitly, update
 	for renamed cairo API.
