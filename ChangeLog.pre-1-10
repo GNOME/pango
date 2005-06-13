@@ -1,6 +1,13 @@
+2005-03-18  Hans Breuer  <hans@breuer.org>
+
+	Merge from HEAD:
+
+	* pango/pangowin32.c(pango_win32_render_transformed) : matrix elements 
+	xy and yx are needed the other way around for XFORM
+
 2005-04-28  Tor Lillqvist  <tml@novell.com>
 
-	Add support to pangowin32 for TrueType fonts covering more than
+	Add support to pangowin32 for TrueType fonts with coverage outside
 	the BMP. Fix handling of surrogate pairs in the Uniscribe
 	shaper. (#302238)
 
