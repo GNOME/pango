@@ -1,5 +1,12 @@
 2005-06-14  Owen Taylor  <otaylor@redhat.com>
 
+	#307433, Sebastien Bacher
+
+	* pango/Makefile.am (libpango_1_0_la_SOURCES): Add
+	pango-color-table.h.
+
+2005-06-14  Owen Taylor  <otaylor@redhat.com>
+
 	* pango/opentype/pango-ot-info.c (pango_ot_info_finalize)
 	pango/opentype/pango-ot-ruleset.c (pango_ot_ruleset_finalize): 
 	Chain up from finalize. (#307547, Paolo Borelli)
