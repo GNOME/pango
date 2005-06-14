@@ -41,6 +41,7 @@
 
 typedef struct _PangoCairoFcFont      PangoCairoFcFont;
 typedef struct _PangoCairoFcFontClass PangoCairoFcFontClass;
+typedef struct _PangoCairoFcGlyphInfo PangoCairoFcGlyphInfo;
 
 struct _PangoCairoFcFont
 {
@@ -50,11 +51,19 @@ struct _PangoCairoFcFont
   cairo_scaled_font_t *scaled_font;
   cairo_matrix_t font_matrix;
   cairo_matrix_t ctm;
+
+  GHashTable *glyph_info;
 };
 
 struct _PangoCairoFcFontClass
 {
   PangoFcFontClass  parent_class;
+};
+
+struct _PangoCairoFcGlyphInfo
+{
+  PangoRectangle logical_rect;
+  PangoRectangle ink_rect;
 };
 
 GType pango_cairo_fc_font_get_type (void);
@@ -88,7 +97,7 @@ pango_cairo_fc_font_get_font_face (PangoCairoFont *font)
 static cairo_scaled_font_t *
 pango_cairo_fc_font_get_scaled_font (PangoCairoFont *font)
 {
-  PangoCairoFcFont *cffont = PANGO_CAIRO_FC_FONT (font);
+  PangoCairoFcFont *cffont = (PangoCairoFcFont *)font;
 
   if (!cffont->scaled_font)
     {
@@ -132,6 +141,7 @@ cairo_font_iface_init (PangoCairoFontIface *iface)
 
 G_DEFINE_TYPE_WITH_CODE (PangoCairoFcFont, pango_cairo_fc_font, PANGO_TYPE_FC_FONT,
     { G_IMPLEMENT_INTERFACE (PANGO_TYPE_CAIRO_FONT, cairo_font_iface_init) });
+
 static void
 pango_cairo_fc_font_finalize (GObject *object)
 {
@@ -142,79 +152,106 @@ pango_cairo_fc_font_finalize (GObject *object)
   if (cffont->scaled_font)
     cairo_scaled_font_destroy (cffont->scaled_font);
 
+  g_hash_table_destroy (cffont->glyph_info);
+
   G_OBJECT_CLASS (pango_cairo_fc_font_parent_class)->finalize (object);
 }
 
 static void
-pango_cairo_fc_font_get_glyph_extents (PangoFont        *font,
-				       PangoGlyph        glyph,
-				       PangoRectangle   *ink_rect,
-				       PangoRectangle   *logical_rect)
+compute_glyph_extents (PangoFont        *font,
+		       PangoGlyph        glyph,
+		       PangoRectangle   *ink_rect,
+		       PangoRectangle   *logical_rect)
 {
-  cairo_scaled_font_t *scaled_font;
+  PangoCairoFont *cfont = (PangoCairoFont *)font;
+  cairo_scaled_font_t *scaled_font = pango_cairo_fc_font_get_scaled_font (cfont);
 
-  scaled_font = pango_cairo_fc_font_get_scaled_font (PANGO_CAIRO_FONT (font));
-
-  if (logical_rect)
-    {
-      /* It may well be worth caching the font_extents here, since getting them
-       * is pretty expensive.
-       */
-      cairo_font_extents_t font_extents;
-      
-      cairo_scaled_font_extents (scaled_font, &font_extents);
-      
-      logical_rect->x = 0;
-      logical_rect->y = - font_extents.ascent * PANGO_SCALE;
-      logical_rect->width = 0;
-      logical_rect->height = (font_extents.ascent + font_extents.descent) * PANGO_SCALE;
-    }
+  /* It may well be worth caching the font_extents here, since getting them
+   * is pretty expensive.
+   */
+  cairo_font_extents_t font_extents;
+  cairo_text_extents_t extents;
+  cairo_glyph_t cairo_glyph;
+  
+  cairo_scaled_font_extents (scaled_font, &font_extents);
+  
+  logical_rect->x = 0;
+  logical_rect->y = - font_extents.ascent * PANGO_SCALE;
+  logical_rect->width = 0;
+  logical_rect->height = (font_extents.ascent + font_extents.descent) * PANGO_SCALE;
 
   if (glyph)
     {
-      cairo_text_extents_t extents;
-      cairo_glyph_t cairo_glyph;
-      
       cairo_glyph.index = glyph;
       cairo_glyph.x = 0;
       cairo_glyph.y = 0;
       
       cairo_scaled_font_glyph_extents (scaled_font,
 				       &cairo_glyph, 1, &extents);
-
-      if (ink_rect)
-	{
-	  ink_rect->x = extents.x_bearing * PANGO_SCALE;
-	  ink_rect->y = extents.y_bearing * PANGO_SCALE;
-	  ink_rect->width = extents.width * PANGO_SCALE;
-	  ink_rect->height = extents.height * PANGO_SCALE;
-	}
       
-      if (logical_rect)
-	logical_rect->width = extents.x_advance * PANGO_SCALE;
+      ink_rect->x = extents.x_bearing * PANGO_SCALE;
+      ink_rect->y = extents.y_bearing * PANGO_SCALE;
+      ink_rect->width = extents.width * PANGO_SCALE;
+      ink_rect->height = extents.height * PANGO_SCALE;
+      
+      logical_rect->width = extents.x_advance * PANGO_SCALE;
     }
-  else
+}
+
+static PangoCairoFcGlyphInfo *
+pango_cairo_fc_font_get_glyph_info (PangoFont   *font,
+				    PangoGlyph   glyph)
+{
+  PangoCairoFcFont *cffont = (PangoCairoFcFont *)font;
+  PangoCairoFcGlyphInfo *info;
+
+  info = g_hash_table_lookup (cffont->glyph_info, GUINT_TO_POINTER (glyph));
+  if (!info)
     {
-      if (ink_rect)
-	{
-	  ink_rect->x = 0;
-	  ink_rect->y = 0;
-	  ink_rect->width = 0;
-	  ink_rect->height = 0;
-	}
+      info = g_new0 (PangoCairoFcGlyphInfo, 1);
+      
+      compute_glyph_extents (font, glyph,
+			     &info->ink_rect,
+			     &info->logical_rect);
+      
+      g_hash_table_insert (cffont->glyph_info, GUINT_TO_POINTER (glyph), info);
     }
+
+  return info;
+}
+     
+static void
+pango_cairo_fc_font_get_glyph_extents (PangoFont      *font,
+				       PangoGlyph      glyph,
+				       PangoRectangle *ink_rect,
+				       PangoRectangle *logical_rect)
+{
+  PangoCairoFcGlyphInfo *info;
+
+  info = pango_cairo_fc_font_get_glyph_info (font, glyph);
+  
+  if (ink_rect)
+    *ink_rect = info->ink_rect;
+  if (logical_rect)
+    *logical_rect = info->logical_rect;
 }
 
 static FT_Face
 pango_cairo_fc_font_lock_face (PangoFcFont *font)
 {
-  return cairo_ft_scaled_font_lock_face (pango_cairo_fc_font_get_scaled_font (PANGO_CAIRO_FONT (font)));
+  PangoCairoFont *cfont = (PangoCairoFont *)font;
+  cairo_scaled_font_t *scaled_font = pango_cairo_fc_font_get_scaled_font (cfont);
+  
+  return cairo_ft_scaled_font_lock_face (scaled_font);
 }
 
 static void
 pango_cairo_fc_font_unlock_face (PangoFcFont *font)
 {
-  cairo_ft_scaled_font_unlock_face (pango_cairo_fc_font_get_scaled_font (PANGO_CAIRO_FONT (font)));
+  PangoCairoFont *cfont = (PangoCairoFont *)font;
+  cairo_scaled_font_t *scaled_font = pango_cairo_fc_font_get_scaled_font (cfont);
+  
+  return cairo_ft_scaled_font_unlock_face (scaled_font);
 }
 
 static PangoGlyph
@@ -260,6 +297,10 @@ pango_cairo_fc_font_class_init (PangoCairoFcFontClass *class)
 static void
 pango_cairo_fc_font_init (PangoCairoFcFont *cffont)
 {
+  cffont->glyph_info = g_hash_table_new_full (g_direct_hash,
+					      NULL,
+					      NULL,
+					      (GDestroyNotify)g_free);
 }
 
 /********************

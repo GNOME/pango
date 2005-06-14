@@ -1,3 +1,11 @@
+2005-06-10  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pangocairo-fcfont.c: Add a (hopefully temporary) cache
+	in front of getting metrics from Cairo.
+
+	* pango/pangocairo-fcfont.c: Remove some cast checks in critical
+	code paths.
+
 2005-05-17  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pangofc-fontmap.[ch]: Add a new context_substitute() virtual
