@@ -1,5 +1,11 @@
 2005-06-14  Owen Taylor  <otaylor@redhat.com>
 
+	* modules/indic/indic-ot-class-tables.c (guruCharClasses): Mark
+	U+A33, U+A36 as _cn, not _ct, since they are combinations
+	of other characters with nutka. (#304174, Sukhjinder Sidhu)
+
+2005-06-14  Owen Taylor  <otaylor@redhat.com>
+	
         Misc fixes from Stepan Kasal, #169928
 	
 	* pangoxft.pc.in: Add requirement on pangoft2
