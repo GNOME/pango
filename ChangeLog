@@ -1,5 +1,14 @@
 2005-06-14  Owen Taylor  <otaylor@redhat.com>
 
+	* pango/opentype/pango-ot-info.c (pango_ot_info_finalize)
+	pango/opentype/pango-ot-ruleset.c (pango_ot_ruleset_finalize): 
+	Chain up from finalize. (#307547, Paolo Borelli)
+
+	* pango/opentype/pango-ot-info.c (pango_ot_info_finalizer):
+	make accidentally public function static.
+
+2005-06-14  Owen Taylor  <otaylor@redhat.com>
+
 	* pango/ellipsize.c (shape_ellipsis): Fix FALSE/TRUE
 	typo that was causing crashes with fonts not containing
 	".". (#304039, Sebastien Bacher) 
