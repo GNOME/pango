@@ -66,6 +66,7 @@ libpango_1_0_la_SOURCES =      \
 	modules.c 	       \
 	pango-attributes.c     \
 	pango-color.c	       \
+	pango-color-table.h    \
 	pango-context.c        \
 	pango-coverage.c       \
 	pango-engine.c	       \

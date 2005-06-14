@@ -1,5 +1,16 @@
 2005-06-14  Owen Taylor  <otaylor@redhat.com>
 
+	#307433, Sebastien Bacher
+
+	* Makefile.am (EXTRA_DIST): Name the Change.pre-*
+	correctly.
+
+	* pango/Makefile.am (libpango_1_0_la_SOURCES): Add
+	pango-color-table.h.
+
+2005-06-14  Owen Taylor  <otaylor@redhat.com>
+
+
 	* pango/pango-utils.c: Fix docs, handle a lone '~'
 	(#169851, Morten Welinder)
 

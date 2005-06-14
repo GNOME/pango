@@ -17,11 +17,11 @@ EXTRA_DIST = 			\
 	pangoxft-uninstalled.pc.in	\
 	pangoft2-uninstalled.pc.in	\
 	pangowin32-uninstalled.pc.in	\
-	ChangeLog.pre-1.0	\
-	ChangeLog.pre-1.2	\
-	ChangeLog.pre-1.4	\
-	ChangeLog.pre-1.6	\
-	ChangeLog.pre-1.8	\
+	ChangeLog.pre-1-0	\
+	ChangeLog.pre-1-2	\
+	ChangeLog.pre-1-4	\
+	ChangeLog.pre-1-6	\
+	ChangeLog.pre-1-8	\
 	TODO.xml	\
 	README.win32	\
 	pango-zip.sh	\
