@@ -783,7 +783,10 @@ itemize_state_fill_shaper (ItemizeState     *state,
       PangoItem *item = l->data;
       if (item->analysis.shape_engine)
 	break;
-      item->analysis.font = g_object_ref (font);
+      if (font)
+	item->analysis.font = g_object_ref (font);
+      else
+	item->analysis.font = NULL;
       item->analysis.shape_engine = shape_engine;
     }
 }

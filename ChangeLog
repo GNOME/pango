@@ -1,5 +1,14 @@
 2005-06-14  Owen Taylor  <otaylor@redhat.com>
 
+	* pango/ellipsize.c (shape_ellipsis): Fix FALSE/TRUE
+	typo that was causing crashes with fonts not containing
+	".". (#304039, Sebastien Bacher) 
+
+	* pango/pango-context.c (itemize_state_fill_shaper): Allow
+	font to be NULL.
+
+2005-06-14  Owen Taylor  <otaylor@redhat.com>
+
 	* pango/pango-context.c (itemize_state_finish): Fix 
 	potential leak of state->base_font. (#168930, Ben Maurer,
         Aivars Kalvans)
