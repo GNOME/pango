@@ -237,9 +237,6 @@ if $have_fontconfig ; then
   if $have_x && $have_freetype ; then
     PKG_CHECK_MODULES(XFT, xft >= 2.0.0, have_xft=true, :)
   fi
-
-  AC_SUBST(XFT_LIBS)
-  AC_SUBST(XFT_CFLAGS)
 else
   AC_MSG_WARN([No fontconfig found, skipping tests for FreeType and Xft])
 fi
