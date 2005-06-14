@@ -1,5 +1,18 @@
 2005-06-14  Owen Taylor  <otaylor@redhat.com>
 
+        Misc fixes from Stepan Kasal, #169928
+	
+	* pangoxft.pc.in: Add requirement on pangoft2
+
+	* pangoxft-uninstalled.pc.in: Fix cut-and-paste
+	errors in Name/Description when copying from 
+	pangox-uninstalled.
+
+	* configure.in: Don't call AC_SUBST() unnecessary
+	for XFT_CFLAGS/LIBS.
+
+2005-06-14  Owen Taylor  <otaylor@redhat.com>
+
 	* pango/pango-utils.c (pango_parse_style): Fix some
 	missing case variants in the switch statement.
 	(#169852, Morten Welinder)
