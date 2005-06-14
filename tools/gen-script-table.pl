@@ -21,14 +21,14 @@ while (<IN>) {
     
     s/#.*//;
     next if /^\s*$/;
-    if (!/^([0-9A-F]+)(?:\.\.([0-9A-F]+))?\s+;\s+([A-Z_]+)\s+$/) {
-	die "Cannot parse line: $_\n";
+    if (!/^([0-9A-F]+)(?:\.\.([0-9A-F]+))?\s*;\s*([A-Za-z_]+)\s*$/) {
+	die "Cannot parse line: '$_'\n";
     }
 
     if (defined $2) {
-	push @ranges, [ hex $1, hex $2, $3 ];
+	push @ranges, [ hex $1, hex $2, uc $3 ];
     } else {
-	push @ranges, [ hex $1, hex $1, $3 ];
+	push @ranges, [ hex $1, hex $1, uc $3 ];
     }
 }
 

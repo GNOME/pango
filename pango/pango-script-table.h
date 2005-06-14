@@ -84,7 +84,7 @@ static const struct {
  { 0x09dc,     2, PANGO_SCRIPT_BENGALI },
  { 0x09df,     5, PANGO_SCRIPT_BENGALI },
  { 0x09e6,    12, PANGO_SCRIPT_BENGALI },
- { 0x0a02,     2, PANGO_SCRIPT_GURMUKHI },
+ { 0x0a01,     3, PANGO_SCRIPT_GURMUKHI },
  { 0x0a05,     6, PANGO_SCRIPT_GURMUKHI },
  { 0x0a0f,     2, PANGO_SCRIPT_GURMUKHI },
  { 0x0a13,    22, PANGO_SCRIPT_GURMUKHI },

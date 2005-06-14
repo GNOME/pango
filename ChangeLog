@@ -1,5 +1,15 @@
 2005-06-14  Owen Taylor  <otaylor@redhat.com>
 
+	* pango/pango-script-table.h (struct): Hand edit
+	to fix a bug in the 4.0.0 data tables.
+	(#173096, Sukhjinder Sidhu)
+
+	* tools/gen-script-table.pl: Some updates to handle
+	newer formats (not actually regenerating tables at the
+	moment, since the changes are large)
+
+2005-06-14  Owen Taylor  <otaylor@redhat.com>
+
 	#307433, Sebastien Bacher
 
 	* Makefile.am (EXTRA_DIST): Name the Change.pre-*
