@@ -1140,6 +1140,8 @@ itemize_state_finish (ItemizeState *state)
   itemize_state_reset_shape_engines (state);
   if (state->current_fonts)
     g_object_unref (state->current_fonts);
+  if (state->base_font)
+    g_object_unref (state->base_font);
 }
 
 /**
