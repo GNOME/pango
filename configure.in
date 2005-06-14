@@ -462,6 +462,13 @@ dnl **************************
 dnl *** Checks for gtk-doc ***
 dnl **************************
 
+if $have_cairo ; then : ; else
+   if  test x$enable_gtk_doc = xyes ; then
+      AC_MSG_WARN([Cairo not present, disabling doc building])      
+      enable_gtk_doc=no
+   fi
+fi
+
 GTK_DOC_CHECK([1.0])
 
 AC_ARG_ENABLE(man,
