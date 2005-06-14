@@ -1,3 +1,9 @@
+2005-06-14  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-context.c (itemize_state_finish): Fix 
+	potential leak of state->base_font. (#168930, Ben Maurer,
+        Aivars Kalvans)
+	
 2005-06-10  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pangocairo-fcfont.c: Add a (hopefully temporary) cache
