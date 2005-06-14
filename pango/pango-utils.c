@@ -87,7 +87,7 @@ pango_trim_string (const char *str)
 
 /**
  * pango_split_file_list:
- * @str: a comma separated list of filenames
+ * @str: a G_SEARCHPATH_SEPARATOR separated list of filenames
  * 
  * Splits a G_SEARCHPATH_SEPARATOR-separated list of files, stripping
  * white space and subsituting ~/ with $HOME/.
@@ -132,6 +132,11 @@ pango_split_file_list (const char *str)
 	  char *tmp = g_strconcat (g_get_home_dir(), file + 1, NULL);
 	  g_free (file);
 	  file = tmp;
+	}
+      else if (file[0] == '~' && file[1] == '\0')
+	{
+	  g_free (file);
+	  file = g_strdup (g_get_home_dir());
 	}
 #endif
       g_free (files[i]);
