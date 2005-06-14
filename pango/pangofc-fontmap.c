@@ -818,14 +818,18 @@ uniquify_pattern (PangoFcFontMap *fcfontmap,
 
 static void
 pango_fc_default_substitute (PangoFcFontMap    *fontmap,
-			     FcPattern          *pattern)
+			     PangoContext      *context,
+			     FcPattern         *pattern)
 {
-  if (PANGO_FC_FONT_MAP_GET_CLASS (fontmap)->default_substitute)
+  if (PANGO_FC_FONT_MAP_GET_CLASS (fontmap)->context_substitute)
+    PANGO_FC_FONT_MAP_GET_CLASS (fontmap)->context_substitute (fontmap, context, pattern);
+  else if (PANGO_FC_FONT_MAP_GET_CLASS (fontmap)->default_substitute)
     PANGO_FC_FONT_MAP_GET_CLASS (fontmap)->default_substitute (fontmap, pattern);
 }
 
 static gdouble
-pango_fc_font_map_get_dpi (PangoFcFontMap *fcfontmap)
+pango_fc_font_map_get_dpi (PangoFcFontMap *fcfontmap,
+			   PangoContext   *context)
 {
   if (fcfontmap->priv->dpi < 0)
     {
@@ -836,7 +840,7 @@ pango_fc_font_map_get_dpi (PangoFcFontMap *fcfontmap)
 				       NULL);
       if (tmp)
 	{
-	  pango_fc_default_substitute (fcfontmap, tmp);
+	  pango_fc_default_substitute (fcfontmap, NULL, tmp);
 	  result = FcPatternGetDouble (tmp, FC_DPI, 0, &fcfontmap->priv->dpi);
 	  FcPatternDestroy (tmp);
 	}
@@ -881,7 +885,7 @@ pango_fc_font_map_get_render_key (PangoFcFontMap              *fcfontmap,
       if (pango_font_description_get_size_is_absolute (desc))
 	size = pango_font_description_get_size (desc);
       else
-	size = pango_fc_font_map_get_dpi (fcfontmap) * pango_font_description_get_size (desc) / 72.;
+	size = pango_fc_font_map_get_dpi (fcfontmap, context) * pango_font_description_get_size (desc) / 72.;
       
       if (context)
 	matrix = pango_context_get_matrix (context);
@@ -947,7 +951,7 @@ pango_fc_font_map_get_patterns (PangoFontMap               *fontmap,
     {
       pattern = pango_fc_make_pattern (desc, language, key.y_size / 1024.);
 
-      pango_fc_default_substitute (fcfontmap, pattern);
+      pango_fc_default_substitute (fcfontmap, context, pattern);
       
       font_patterns = FcFontSort (NULL, pattern, FcTrue, NULL, &res);
 
@@ -1609,7 +1613,7 @@ pango_fc_face_list_sizes (PangoFontFace  *face,
           if (FcPatternGetDouble (fontset->fonts[i], FC_PIXEL_SIZE, 0, &size) == FcResultMatch)
             {
               if (dpi < 0)
-		dpi = pango_fc_font_map_get_dpi (fcface->family->fontmap);
+		dpi = pango_fc_font_map_get_dpi (fcface->family->fontmap, NULL);
 	      
               size_i = (int) (PANGO_SCALE * size * 72.0 / dpi);
               g_array_append_val (size_array, size_i);

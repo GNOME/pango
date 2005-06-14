@@ -86,7 +86,8 @@ pango_cairo_fc_font_map_finalize (GObject *object)
 }
 
 static void
-pango_cairo_fc_font_map_default_substitute (PangoFcFontMap *fcfontmap,
+pango_cairo_fc_font_map_context_substitute (PangoFcFontMap *fcfontmap,
+					    PangoContext   *context,
 					    FcPattern      *pattern)
 {
   PangoCairoFcFontMap *cffontmap = PANGO_CAIRO_FC_FONT_MAP (fcfontmap);
@@ -96,6 +97,10 @@ pango_cairo_fc_font_map_default_substitute (PangoFcFontMap *fcfontmap,
 
   if (FcPatternGet (pattern, FC_DPI, 0, &v) == FcResultNoMatch)
     FcPatternAddDouble (pattern, FC_DPI, cffontmap->dpi);
+
+  if (!pango_cairo_context_get_hinting (context))
+    FcPatternAddBool (pattern, FC_HINTING, FcFalse);
+  
   FcDefaultSubstitute (pattern);
 }
 
@@ -128,7 +133,7 @@ pango_cairo_fc_font_map_class_init (PangoCairoFcFontMapClass *class)
   PangoFcFontMapClass *fcfontmap_class = PANGO_FC_FONT_MAP_CLASS (class);
 
   gobject_class->finalize  = pango_cairo_fc_font_map_finalize;
-  fcfontmap_class->default_substitute = pango_cairo_fc_font_map_default_substitute;
+  fcfontmap_class->context_substitute = pango_cairo_fc_font_map_context_substitute;
   fcfontmap_class->get_render_key = pango_cairo_fc_font_map_get_render_key;
   fcfontmap_class->create_font = pango_cairo_fc_font_map_create_font;
 }

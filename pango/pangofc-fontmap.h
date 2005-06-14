@@ -89,6 +89,7 @@ struct _PangoFcFontMapClass
   PangoFontMapClass parent_class;
 
   /*< public >*/
+  /* Deprecated in favor of context_substitute */
   void         (*default_substitute) (PangoFcFontMap   *fontmap,
 			              FcPattern        *pattern);
   /* Deprecated in favor of create_font */
@@ -101,6 +102,9 @@ struct _PangoFcFontMapClass
 				      int                        *xsize,
 				      int                        *ysize,
 				      guint                      *flags);
+  void         (*context_substitute) (PangoFcFontMap             *fontmap,
+				      PangoContext               *context,
+			              FcPattern                  *pattern);
   PangoFcFont  *(*create_font)       (PangoFcFontMap             *fontmap,
 				      PangoContext               *context,
 				      const PangoFontDescription *desc,

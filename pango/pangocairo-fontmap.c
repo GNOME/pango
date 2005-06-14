@@ -226,6 +226,71 @@ pango_cairo_update_context (cairo_t      *cr,
   pango_context_set_matrix (context, &pango_matrix);
 }
 
+typedef struct _PangoCairoContextInfo PangoCairoContextInfo;
+
+struct _PangoCairoContextInfo
+{
+  gboolean hinting;
+};
+
+static PangoCairoContextInfo *
+get_context_info (PangoContext *context,
+		  gboolean      create)
+{
+  PangoCairoContextInfo *info = g_object_get_data (G_OBJECT (context),
+						   "pango-cairo-context-info");
+  if (!info && create)
+    {
+      info = g_new (PangoCairoContextInfo, 1);
+      info->hinting = TRUE;
+
+      g_object_set_data_full (G_OBJECT (context), "pango-cairo-context-info", 
+			      info, (GDestroyNotify)g_free);
+    }
+
+  return info;
+}
+
+/**
+ * pango_cairo_context_set_hinting:
+ * @context: a #PangoContext, from pango_cairo_font_map_create_context()
+ * @hinting: %TRUE if hinting should be enabled.
+ * 
+ * Sets whether outlines and font metrics should be hinted for this
+ * context. Hinting is the process of adjusting outlines so that they
+ * render better when drawn onto a pixel grid. When hinting is
+ * enabled, font metrics such as character widths and font ascent and
+ * descent are quantized to integer pixel values.
+ * 
+ * If layouts have been previously created for this context, it is
+ * necessary to call pango_layout_context_changed() in order to update
+ * the layouts.
+ **/
+void 
+pango_cairo_context_set_hinting (PangoContext *context,
+				 gboolean      hinting)
+{
+  PangoCairoContextInfo *info = get_context_info (context, TRUE);
+  info->hinting = hinting != FALSE;
+}
+
+/**
+ * pango_cairo_context_get_hinting:
+ * @context: a #PangoContext, from pango_cairo_font_map_create_context()
+ * 
+ * Gets whether hinting is enabled for this context. See
+ * pango_cairo_context_set_hinting()
+ * 
+ * Return value: %TRUE if hinting is enabled.
+ **/
+gboolean 
+pango_cairo_context_get_hinting (PangoContext *context)
+{
+  PangoCairoContextInfo *info = get_context_info (context, FALSE);
+
+  return !info || info->hinting;
+}
+
 /**
  * pango_cairo_create_layout:
  * @cr: a Cairo context

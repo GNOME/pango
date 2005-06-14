@@ -1,3 +1,17 @@
+2005-05-17  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pangofc-fontmap.[ch]: Add a new context_substitute() virtual
+	function that replaces default_substitute() and adds a 
+	PangoContext argument.
+
+	* pango/pangocairo.h pango/pangocairo-fontmap.c docs/pango-sections.txt:  
+	Add pango_cairo_context_set/get_hinting() to control
+	hinting on individual contexts.
+
+	* pango/pangocairo-fcfont.c pango/pangocairo-fcfontmap.c:
+	Implement hinting control for the for the fontconfig/cairo
+	backend.
+
 Tue May 17 07:21:53 2005  Manish Singh  <yosh@gimp.org>
 
 	* examples/cairoview.c: update for new cairo_xlib_surface API.

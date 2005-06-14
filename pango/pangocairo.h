@@ -62,6 +62,10 @@ PangoContext *pango_cairo_font_map_create_context (PangoCairoFontMap *fontmap);
 void         pango_cairo_update_context (cairo_t      *cr,
 					 PangoContext *context);
 
+void pango_cairo_context_set_hinting (PangoContext *context,
+				      gboolean      hinting);
+gboolean pango_cairo_context_get_hinting (PangoContext *context);
+
 /* Convenience
  */
 PangoLayout *pango_cairo_create_layout (cairo_t     *cr);

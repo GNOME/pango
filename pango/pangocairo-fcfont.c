@@ -341,7 +341,7 @@ _pango_cairo_fc_get_render_key (PangoCairoFcFontMap        *cffontmap,
   *xsize = (int) (xscale * size + 0.5);
   *ysize = (int) (xscale * size + 0.5);
 
-  *flags = 0;
+  *flags = pango_cairo_context_get_hinting (context);
 
   if (matrix)
     {
