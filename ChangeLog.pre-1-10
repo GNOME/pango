@@ -1,5 +1,11 @@
 2005-06-14  Owen Taylor  <otaylor@redhat.com>
 
+	* pango/pango-utils.c (pango_parse_style): Fix some
+	missing case variants in the switch statement.
+	(#169852, Morten Welinder)
+
+2005-06-14  Owen Taylor  <otaylor@redhat.com>
+	
 	* pango/pango-script-table.h (struct): Hand edit
 	to fix a bug in the 4.0.0 data tables.
 	(#173096, Sukhjinder Sidhu)

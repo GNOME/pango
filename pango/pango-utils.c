@@ -730,6 +730,7 @@ pango_parse_style (const char *str,
 	}
       break;
     case 'i':
+    case 'I':
       if (g_ascii_strcasecmp (str, "italic") == 0)
 	{
 	  *style = PANGO_STYLE_ITALIC;
@@ -737,6 +738,7 @@ pango_parse_style (const char *str,
 	}
       break;
     case 'o':
+    case 'O':
       if (g_ascii_strcasecmp (str, "oblique") == 0)
 	{
 	  *style = PANGO_STYLE_OBLIQUE;
