@@ -347,14 +347,15 @@ shape_ellipsis (EllipsizeState *state)
 
   /* If that fails we use "..." in the first matching font
    */
-  if (!_pango_engine_shape_covers (item->analysis.shape_engine, item->analysis.font,
+  if (!item->analysis.font ||
+      !_pango_engine_shape_covers (item->analysis.shape_engine, item->analysis.font,
 				   item->analysis.language, g_utf8_get_char (ellipsis_text)))
     {
       pango_item_free (item);
       
       /* Modify the fallback iter while it is inside the PangoAttrList; Don't try this at home
        */
-      ((PangoAttrInt *)fallback)->value = FALSE; 
+      ((PangoAttrInt *)fallback)->value = TRUE; 
 
       ellipsis_text = "...";
       item = itemize_text (state, ellipsis_text, attrs);
