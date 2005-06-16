@@ -1,3 +1,8 @@
+2005-06-16  Tor Lillqvist  <tml@novell.com>
+
+	* configure.in: Move the check for native Win32 a bit later, as
+	$host didn't seem to be set up yet at the point where we checked.
+
 2005-06-14  Owen Taylor  <otaylor@redhat.com>
 
 	* modules/indic/indic-ot-class-tables.c (guruCharClasses): Mark

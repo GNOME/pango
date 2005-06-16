@@ -78,18 +78,6 @@ AC_SUBST(LT_CURRENT_MINUS_AGE)
 
 dnl ==========================================================================
 
-AC_MSG_CHECKING([for native Win32])
-case "$host" in
-  *-*-mingw*)
-    pango_os_win32=yes
-    ;;
-  *)
-    pango_os_win32=no
-    ;;
-esac
-AC_MSG_RESULT([$pango_os_win32])
-AM_CONDITIONAL(OS_WIN32, test "$pango_os_win32" = "yes")
-
 AC_PROG_CC
 	
 dnl 
@@ -106,6 +94,20 @@ AC_LANG_RESTORE
 AC_LIBTOOL_WIN32_DLL
 AM_DISABLE_STATIC
 
+AM_PROG_LIBTOOL
+
+AC_MSG_CHECKING([for native Win32])
+case "$host" in
+  *-*-mingw*)
+    pango_os_win32=yes
+    ;;
+  *)
+    pango_os_win32=no
+    ;;
+esac
+AC_MSG_RESULT([$pango_os_win32])
+AM_CONDITIONAL(OS_WIN32, test "$pango_os_win32" = "yes")
+
 if test "$pango_os_win32" = "yes"; then
   if test x$enable_static = xyes -o x$enable_static = x; then
     AC_MSG_WARN([Disabling static library build, must build as DLL on Windows.])
@@ -116,8 +118,6 @@ if test "$pango_os_win32" = "yes"; then
   fi
   enable_shared=yes
 fi
-
-AM_PROG_LIBTOOL
 
 AC_MSG_CHECKING([for some Win32 platform])
 case "$host" in
