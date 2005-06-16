@@ -251,7 +251,7 @@ pango_cairo_fc_font_unlock_face (PangoFcFont *font)
   PangoCairoFont *cfont = (PangoCairoFont *)font;
   cairo_scaled_font_t *scaled_font = pango_cairo_fc_font_get_scaled_font (cfont);
   
-  return cairo_ft_scaled_font_unlock_face (scaled_font);
+  cairo_ft_scaled_font_unlock_face (scaled_font);
 }
 
 static PangoGlyph
