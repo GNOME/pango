@@ -1411,12 +1411,20 @@ pango_find_paragraph_boundary (const gchar *text,
   const gchar *end;
   const gchar *start = NULL;
   const gchar *delimiter = NULL;
-  gunichar prev_wc;
 
   /* Only one character has type G_UNICODE_PARAGRAPH_SEPARATOR in
-   * Unicode 3.0; update this if that changes.
+   * Unicode 4.1; update the following code if that changes.
    */
+
+  /* prev_sep is the first byte of the previous separator.  Since
+   * the valid separators are \r, \n, and PARAGRAPH_SEPARATOR, the
+   * first byte is enough to identify it.
+   */
+  gchar prev_sep;
+
+
 #define PARAGRAPH_SEPARATOR 0x2029
+#define PARAGRAPH_SEPARATOR_STRING "\xE2\x80\xA9"
   
   if (length < 0)
     length = strlen (text);
@@ -1432,29 +1440,21 @@ pango_find_paragraph_boundary (const gchar *text,
   if (length == 0)
     return;
 
-  /* FIXME there's plenty of room to optimize this; e.g. there's
-   * no real need to g_utf8_get_char() on every char
-   */
-  
-  prev_wc = 0;
+  prev_sep = 0;
 
   while (p != end)
     {
-      gunichar wc;
-
-      wc = g_utf8_get_char (p);
-      
-      if (prev_wc == '\n' ||
-          prev_wc == PARAGRAPH_SEPARATOR)
+      if (prev_sep == '\n' ||
+          prev_sep == PARAGRAPH_SEPARATOR_STRING[0])
         {
           g_assert (delimiter);
           start = p;
           break;
         }
-      else if (prev_wc == '\r')
+      else if (prev_sep == '\r')
         {
           /* don't break between \r and \n */
-          if (wc != '\n')
+          if (*p != '\n')
             {
               g_assert (delimiter);
               start = p;
@@ -1462,13 +1462,18 @@ pango_find_paragraph_boundary (const gchar *text,
             }
         }
       
-      if ((wc == '\n' ||
-           wc == '\r' ||
-           wc == PARAGRAPH_SEPARATOR) &&
-          delimiter == NULL)
-        delimiter = p;
+      if (*p == '\n' ||
+           *p == '\r' ||
+           !strncmp(p, PARAGRAPH_SEPARATOR_STRING,
+		    strlen(PARAGRAPH_SEPARATOR_STRING)))
+        {
+          if (delimiter == NULL)
+	    delimiter = p;
+	  prev_sep = *p;
+	}
+      else
+	prev_sep = 0;
       
-      prev_wc = wc;
       p = g_utf8_next_char (p);
     }
 

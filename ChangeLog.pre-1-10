@@ -1,7 +1,12 @@
+2005-06-18  Behdad Esfahbod  <pango@behdad.org>
+
+	* pango/break.c (pango_find_paragraph_boundary): Optimization.
+	Do not g_utf8_get_char at all. (#305323, Paolo Borelli)
+
 2005-06-16  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pangocairo-fcfont.c (pango_cairo_fc_font_unlock_face): Remove
-	excess return (#307741, Damien Carbery)
+	excess return. (#307741, Damien Carbery)
 
 2005-06-14  Owen Taylor  <otaylor@redhat.com>
 
@@ -11,7 +16,7 @@
 
 2005-06-14  Owen Taylor  <otaylor@redhat.com>
 	
-        Misc fixes from Stepan Kasal, #169928
+	Misc fixes from Stepan Kasal, #169928
 	
 	* pangoxft.pc.in: Add requirement on pangoft2
 
@@ -81,7 +86,7 @@
 
 	* pango/pango-context.c (itemize_state_finish): Fix 
 	potential leak of state->base_font. (#168930, Ben Maurer,
-        Aivars Kalvans)
+	Aivars Kalvans)
 	
 2005-06-10  Owen Taylor  <otaylor@redhat.com>
 
