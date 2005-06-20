@@ -1,3 +1,11 @@
+2005-06-20  Owen Taylor  <otaylor@redhat.com>
+
+	* === Released 1.9.0 ===
+
+	* NEWS: Update for 1.9.0
+	
+	* README: Update
+
 2005-06-18  Behdad Esfahbod  <pango@behdad.org>
 
 	* pango/break.c (pango_find_paragraph_boundary): Optimization.
@@ -54,7 +62,6 @@
 	pango-color-table.h.
 
 2005-06-14  Owen Taylor  <otaylor@redhat.com>
-
 
 	* pango/pango-utils.c: Fix docs, handle a lone '~'
 	(#169851, Morten Welinder)
