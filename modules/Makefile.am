@@ -6,6 +6,7 @@ SUBDIRS = 		\
 	hangul 		\
 	hebrew		\
 	indic           \
+	khmer		\
 	syriac		\
 	thai		\
 	tibetan

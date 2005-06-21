@@ -1,6 +1,6 @@
 # modles for the ft2 backend, don't include 'basic'
 # here it is built-in pangoft.dll, see ../pango/makefile.msc
-MODULES = arabic hangul hebrew indic syriac thai
+MODULES = arabic hangul hebrew indic syriac thai khmer
 
 !IFNDEF MODULE
 
@@ -33,6 +33,10 @@ OBJECTS = hebrew-fc.obj hebrew-shaper.obj
 
 !IFDEF OBJ_indic
 OBJECTS = indic-fc.obj indic-ot.obj indic-ot-class-tables.obj mprefixups.obj 
+!ENDIF
+
+!IFDEF OBJ_khmer
+OBJECTS = khmer_fc.obj
 !ENDIF
 
 !IFDEF OBJ_syriac
