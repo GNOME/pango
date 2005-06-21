@@ -33,6 +33,7 @@ enum {
 struct _PangoXftRendererPrivate
 {
   PangoColor default_color;
+  guint16 alpha;
 
   Picture src_picture;
   Picture dest_picture;
@@ -94,6 +95,7 @@ pango_xft_renderer_init (PangoXftRenderer *xftrenderer)
   xftrenderer->priv = G_TYPE_INSTANCE_GET_PRIVATE (xftrenderer,
 						   PANGO_TYPE_XFT_RENDERER,
 						   PangoXftRendererPrivate);
+  xftrenderer->priv->alpha = 0xffff;
 }
 
 static void
@@ -516,7 +518,7 @@ pango_xft_renderer_real_composite_trapezoids (PangoXftRenderer *xftrenderer,
       xft_color.color.red = color->red;
       xft_color.color.green = color->green;
       xft_color.color.blue = color->blue;
-      xft_color.color.alpha = 0xffff;
+      xft_color.color.alpha = xftrenderer->priv->alpha;
 
       src_picture = XftDrawSrcPicture (xftrenderer->draw, &xft_color);
       dest_picture = XftDrawPicture (xftrenderer->draw);
@@ -555,7 +557,7 @@ pango_xft_renderer_real_composite_glyphs (PangoXftRenderer *xftrenderer,
       xft_color.color.red = color->red;
       xft_color.color.green = color->green;
       xft_color.color.blue = color->blue;
-      xft_color.color.alpha = 0xffff;
+      xft_color.color.alpha = xftrenderer->priv->alpha;
 
       XftDrawGlyphSpec (xftrenderer->draw, &xft_color,
 			xft_font,
@@ -569,18 +571,29 @@ get_renderer (PangoFontMap *fontmap,
 	      XftColor     *color)
 {
   PangoRenderer *renderer;
+  PangoXftRenderer *xftrenderer;
   PangoColor pango_color;
   
   renderer = _pango_xft_font_map_get_renderer (PANGO_XFT_FONT_MAP (fontmap));
+  xftrenderer = PANGO_XFT_RENDERER (renderer);
   
-  pango_xft_renderer_set_draw (PANGO_XFT_RENDERER (renderer), draw);
+  pango_xft_renderer_set_draw (xftrenderer, draw);
 
   pango_color.red = color->color.red;
   pango_color.green = color->color.green;
   pango_color.blue = color->color.blue;
-  pango_xft_renderer_set_default_color (PANGO_XFT_RENDERER (renderer), &pango_color);
+  pango_xft_renderer_set_default_color (xftrenderer, &pango_color);
+  xftrenderer->priv->alpha = color->color.alpha;
 
   return renderer;
+}
+
+static void
+release_renderer (PangoRenderer *renderer)
+{
+  PangoXftRenderer *xftrenderer = PANGO_XFT_RENDERER (renderer);
+  
+  xftrenderer->priv->alpha = 0xffff;
 }
 
 /**
@@ -616,6 +629,8 @@ pango_xft_render_layout (XftDraw     *draw,
   renderer = get_renderer (fontmap, draw, color);
 
   pango_renderer_draw_layout (renderer, layout, x, y);
+
+  release_renderer (renderer);
 }
 
 /**
@@ -651,6 +666,8 @@ pango_xft_render_layout_line (XftDraw         *draw,
   renderer = get_renderer (fontmap, draw, color);
   
   pango_renderer_draw_layout_line (renderer, line, x, y);
+
+  release_renderer (renderer);
 }
 
 /**
@@ -697,6 +714,8 @@ pango_xft_render_transformed (XftDraw          *draw,
   pango_renderer_set_matrix (renderer, matrix);
   
   pango_renderer_draw_glyphs (renderer, font, glyphs, x, y);
+
+  release_renderer (renderer);
 }
 
 /**
