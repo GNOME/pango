@@ -14,6 +14,14 @@
 	iterate through real clusters: that is, positions in the 
 	layout that have glyphs.
 
+	* pango/pango-layout.c (pango_layout_iter_get_char_extents):
+	Fix to give exactly the same results as 
+	pango_glyph_string_index_to_x: the previous positions didn't
+	completely occupy the entire line.
+
+	* pango/pango-layout.c (pango_layout_iter_next_line): Remove
+	unneeded updating of iter->index and an associated FIXME.
+	
 	* tests/testiter.c tests/Makefile.am: Add a (somewhat reworked) 
 	test from Amit for the operation of PangoLayoutIter.
 
