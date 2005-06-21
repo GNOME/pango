@@ -1,8 +1,14 @@
 2005-06-21  Owen Taylor  <otaylor@redhat.com>
 
+	* pango/pangoxft-render.c (get_renderer): Go back to 
+	honoring alpha in the XftColor passed in; it was a 1.6 => 1.8
+	regression. (#169622, based on a patch from Mikael Magnusson)
+
+2005-06-21  Owen Taylor  <otaylor@redhat.com>
+
 	* modules/khmer configure.in modules/Makefile.am 
 	modules/makefile.msc: Add a Khmer module by
-	Jens Herden and Javier Sola.
+	Jens Herden and Javier Sola. (#125605)
 
 2005-06-16  Tor Lillqvist  <tml@novell.com>
 
