@@ -1,3 +1,9 @@
+2005-06-21  Behdad Esfahbod  <pango@behdad.org>
+
+	* modules/khmer/khmer-fc.c: Fix C89 var after code issues.
+
+	* modules/khmer/.cvsignore: Copied from other modules.
+
 2005-06-21  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pangoxft-render.c (get_renderer): Go back to 
