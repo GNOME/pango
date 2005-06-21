@@ -3,6 +3,7 @@
 INCLUDES =					\
 	-I$(top_srcdir)				\
 	$(GLIB_CFLAGS)				\
+	$(CAIRO_CFLAGS)				\
 	$(XFT_CFLAGS)				\
 	$(FREETYPE_CFLAGS)			\
 	$(X_CFLAGS)				\
@@ -29,9 +30,13 @@ TESTS_ENVIRONMENT =                    \
    srcdir=$(srcdir)                    \
    PANGO_RC_FILE=./pangorc
 
-noinst_PROGRAMS = gen-all-unicode dump-boundaries
+noinst_PROGRAMS = gen-all-unicode dump-boundaries 
 
 check_PROGRAMS = testboundaries testcolor testscript
+
+if HAVE_CAIRO
+check_PROGRAMS += testiter
+endif
 
 gen_all_unicode_SOURCES = gen-all-unicode.c
 
@@ -39,7 +44,10 @@ testboundaries_SOURCES = testboundaries.c
 
 testcolor_SOURCES = testcolor.c
 
+testiter_SOURCES = testiter.c
+
 testscript_SOURCES = testscript.c
+
 
 dump_boundaries_SOURCES = dump-boundaries.c
 
@@ -48,6 +56,8 @@ gen_all_unicode_LDADD = $(GLIB_LIBS)
 testboundaries_LDADD = ../pango/libpango-$(PANGO_API_VERSION).la
 
 testcolor_LDADD = ../pango/libpango-$(PANGO_API_VERSION).la
+
+testiter_LDADD = ../pango/libpango-$(PANGO_API_VERSION).la ../pango/libpangocairo-$(PANGO_API_VERSION).la 
 
 testscript_LDADD = ../pango/libpango-$(PANGO_API_VERSION).la
 
