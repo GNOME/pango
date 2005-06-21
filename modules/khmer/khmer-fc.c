@@ -497,6 +497,7 @@ khmer_engine_shape (PangoEngineShape *engine,
   PangoFcFont *fc_font = PANGO_FC_FONT (font);
   FT_Face face;
   PangoOTBuffer *buffer;
+  PangoOTRuleset *ruleset;
   glong n_chars, i;
   gunichar *wcs;
   const char *p;
@@ -515,13 +516,14 @@ khmer_engine_shape (PangoEngineShape *engine,
    */
   while (cursor < n_chars)
     {
-      syllable = find_syllable (wcs, cursor, n_chars);
-
       /* write a pre vowel or the pre part of a split vowel first
        * and look out for coeng + ro. RO is the only vowel of type 2, and
        * therefore the only one that requires saving space before the base.
        */
       glong coengRo = -1;  /* There is no Coeng Ro, if found this value will change */
+
+      syllable = find_syllable (wcs, cursor, n_chars);
+
       for (i = cursor; i < syllable; i += 1)
         {
           charClass = get_char_class (wcs[i]);
@@ -678,7 +680,7 @@ khmer_engine_shape (PangoEngineShape *engine,
     } /* while */
 
   /* do gsub processing */
-  PangoOTRuleset *ruleset = get_ruleset (face);
+  ruleset = get_ruleset (face);
   if (ruleset != NULL)
     {
       pango_ot_ruleset_substitute (ruleset, buffer);
