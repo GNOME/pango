@@ -1,3 +1,9 @@
+2005-06-21  Owen Taylor  <otaylor@redhat.com>
+
+	* modules/khmer configure.in modules/Makefile.am 
+	modules/makefile.msc: Add a Khmer module by
+	Jens Herden and Javier Sola.
+
 2005-06-16  Tor Lillqvist  <tml@novell.com>
 
 	* configure.in: Move the check for native Win32 a bit later, as
