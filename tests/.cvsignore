@@ -3,6 +3,7 @@
 runtests.sh
 runtests.log
 testboundaries
+testiter
 testscript
 dump-boundaries
 gen-all-unicode
