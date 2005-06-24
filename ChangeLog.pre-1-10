@@ -1,5 +1,12 @@
 2005-06-24  Owen Taylor  <otaylor@redhat.com>
 
+	* pango/pango-layout.c (pango_layout_line_get_extents): Don't
+	key off zero-height to know whether to use the "empty extents" ...
+	this can cause infinite recursion, instead just check 
+	!line->runs. (Part of #306415, Thomas Fitzsimmons)
+
+2005-06-24  Owen Taylor  <otaylor@redhat.com>
+	
 	* docs/pango_markup.sgml (linkend): Fix a stray newline
 	(#308887, Ryan Lortie)
 

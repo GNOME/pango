@@ -3957,7 +3957,7 @@ pango_layout_line_get_extents (PangoLayoutLine *line,
      tmp_list = tmp_list->next;
     }
   
-  if (logical_rect && logical_rect->height == 0) 
+  if (!line->runs) 
     {
       PangoRectangle temp_rect;
       pango_layout_line_get_empty_extents (line, &temp_rect);
