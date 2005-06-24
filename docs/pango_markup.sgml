@@ -127,8 +127,7 @@ One of 'single', 'double', 'low', 'none'
 </para></listitem>
 </varlistentry>
 
-<varlistentry><term>underline_col
-or</term>
+<varlistentry><term>underline_color</term>
 <listitem><para>
 The color of underlines; an RGB color specification such as '#00FF00'
 or a color name such as 'red'
