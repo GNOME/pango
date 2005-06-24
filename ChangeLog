@@ -1,3 +1,8 @@
+2005-06-24  Owen Taylor  <otaylor@redhat.com>
+
+	* docs/pango_markup.sgml (linkend): Fix a stray newline
+	(#308887, Ryan Lortie)
+
 2005-06-22  Owen Taylor  <otaylor@redhat.com>
 
 	* modules/khmer/khmer-fc.c (khmer_engine_shape): Add back

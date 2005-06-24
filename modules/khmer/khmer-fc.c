@@ -505,6 +505,8 @@ khmer_engine_shape (PangoEngineShape *engine,
   KhmerCharClass charClass;
   glong cursor = 0;
 
+  buffer = pango_ot_buffer_new (fc_font);
+
   face = pango_fc_font_lock_face (fc_font);
   g_assert (face);
 
