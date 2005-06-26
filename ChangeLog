@@ -1,3 +1,8 @@
+2005-06-27  Tor Lillqvist  <tml@novell.com>
+
+	* modules/khmer/Makefile.am (INCLUDES): Drop superfluous trailing
+	slash in -I path.
+
 2005-06-24  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pango-layout.c (pango_layout_line_get_extents): Don't
