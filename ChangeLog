@@ -1,3 +1,11 @@
+2005-06-27  Tor Lillqvist  <tml@novell.com>
+
+	* pango/pango.def: Remove pango_script_for_lang. It was never part
+	of the public API, and is now static.
+
+	* modules/khmer/Makefile.am (INCLUDES): Drop superfluous trailing
+	slash in -I path.
+
 2005-06-24  Owen Taylor  <otaylor@redhat.com>
 
 	* docs/pango_markup.sgml (linkend): Fix a stray newline

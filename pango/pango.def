@@ -293,7 +293,6 @@ EXPORTS
 	pango_scan_int
 	pango_scan_string
 	pango_scan_word
-	pango_script_for_lang
 	pango_script_for_unichar
 	pango_script_get_sample_language
 	pango_script_get_type
