@@ -50,12 +50,11 @@ libpango_1_0_la_LIBADD = $(GLIB_LIBS) mini-fribidi/libmini-fribidi.la $(libm)
 libpango_1_0_la_DEPENDENCIES = mini-fribidi/libmini-fribidi.la
 
 if OS_WIN32
-libpango_1_0_la_LDFLAGS += -export-symbols $(srcdir)/pango.def
-libpango_1_0_la_LIBADD += pango-win32res.lo
-libpango_1_0_la_DEPENDENCIES += pango-win32res.lo pango.def
+libpango_1_0_la_LDFLAGS += -export-symbols $(srcdir)/pango.def -Wl,pango-win32-res.o
+libpango_1_0_la_DEPENDENCIES += pango-win32-res.o pango.def
 endif
-pango-win32res.lo: pango.rc
-	$(top_srcdir)/../glib/build/win32/lt-compile-resource $< $@
+pango-win32-res.o: pango.rc
+	$(WINDRES) $< $@
 
 libpango_1_0_la_SOURCES =      \
 	break.c 	       \
@@ -189,12 +188,11 @@ libpangoft2_1_0_la_SOURCES =   	\
 	module-defs-fc.c
 
 if OS_WIN32
-libpangoft2_1_0_la_LDFLAGS += -export-symbols $(srcdir)/pangoft2.def
-libpangoft2_1_0_la_LIBADD += pangoft2-win32res.lo
-libpangoft2_1_0_la_DEPENDENCIES += pangoft2-win32res.lo pangoft2.def
+libpangoft2_1_0_la_LDFLAGS += -export-symbols $(srcdir)/pangoft2.def -Wl,pangoft2-win32-res.o
+libpangoft2_1_0_la_DEPENDENCIES += pangoft2-win32-res.o pangoft2.def
 endif
-pangoft2-win32res.lo: pangoft2.rc
-	$(top_srcdir)/../glib/build/win32/lt-compile-resource $< $@
+pangoft2-win32-res.o: pangoft2.rc
+	$(WINDRES) $< $@
 
 
 # ------------------- libpangoxft -------------------
@@ -269,30 +267,31 @@ libpangowin32_1_0_la_SOURCES =	\
 	module-defs-win32.c
 
 if OS_WIN32
-libpangowin32_1_0_la_LDFLAGS += -export-symbols $(srcdir)/pangowin32.def
-libpangowin32_1_0_la_LIBADD += pangowin32-win32res.lo
-libpangowin32_1_0_la_DEPENDENCIES += pangowin32-win32res.lo pangowin32.def
+libpangowin32_1_0_la_LDFLAGS += -export-symbols $(srcdir)/pangowin32.def -Wl,pangowin32-win32-res.o
+libpangowin32_1_0_la_DEPENDENCIES += pangowin32-win32-res.o pangowin32.def
 endif
-pangowin32-win32res.lo: pangowin32.rc
-	$(top_srcdir)/../glib/build/win32/lt-compile-resource $< $@
+pangowin32-win32-res.o: pangowin32.rc
+	$(WINDRES) $< $@
 
 
 # ------------------- win32 build stuff -------------------
 
 if OS_WIN32
-install-libtool-import-lib:
-	$(INSTALL) .libs/libpango-$(PANGO_API_VERSION).dll.a $(DESTDIR)$(libdir)
+install-def-files:
+	$(INSTALL) pango.def $(DESTDIR)$(libdir)/pango-$(PANGO_API_VERSION).def
 if HAVE_FREETYPE
-	$(INSTALL) .libs/libpangoft2-$(PANGO_API_VERSION).dll.a $(DESTDIR)$(libdir)
+	$(INSTALL) pangoft2.def $(DESTDIR)$(libdir)/pangoft2-$(PANGO_API_VERSION).def
 endif
-	$(INSTALL) .libs/libpangowin32-$(PANGO_API_VERSION).dll.a $(DESTDIR)$(libdir)
-uninstall-libtool-import-lib:
-	-rm $(DESTDIR)$(libdir)/libpango-$(PANGO_API_VERSION).dll.a
-	-rm $(DESTDIR)$(libdir)/libpangoft2-$(PANGO_API_VERSION).dll.a
-	-rm $(DESTDIR)$(libdir)/libpangowin32-$(PANGO_API_VERSION).dll.a
+	$(INSTALL) pangowin32.def $(DESTDIR)$(libdir)/pangowin32-$(PANGO_API_VERSION).def
+uninstall-def-files:
+	-rm $(DESTDIR)$(libdir)/pango$(PANGO_API_VERSION).def
+if HAVE_FREETYPE
+	-rm $(DESTDIR)$(libdir)/pangoft2-$(PANGO_API_VERSION).def
+endif
+	-rm $(DESTDIR)$(libdir)/pangowin32-$(PANGO_API_VERSION).def
 else
-install-libtool-import-lib:
-uninstall-libtool-import-lib:
+install-def-files:
+uninstall-def-files:
 
 endif
 
@@ -400,7 +399,7 @@ DISTCLEANFILES = 		\
 	module-defs-fc.c	\
 	module-defs-win32.c
 
-install-data-local: install-ms-lib install-libtool-import-lib
+install-data-local: install-ms-lib install-def-files
 
 install-exec-hook: 
 if DISABLE_EXPLICIT_DEPS
@@ -409,4 +408,4 @@ if DISABLE_EXPLICIT_DEPS
 	done
 endif
 
-uninstall-local: uninstall-ms-lib uninstall-libtool-import-lib
+uninstall-local: uninstall-ms-lib uninstall-def-files

@@ -1,3 +1,23 @@
+2005-07-09  Tor Lillqvist  <tml@novell.com>
+
+	* configure.in: Call AC_CANONICAL_HOST before looking at $host.
+	Check for windres on Win32.
+
+	* pango/Makefile.am: Don't use the scripts in GLib's build/win32
+	to compile the rc files into resource object files. (This means we
+	lose the build number increment magic, but I doubt it was that
+	useful anyway.) Instead use windres directly. To pass a normal .o
+	file produced by windres through libtool, which wants .lo files,
+	pass it directly to the linker using a -Wl option.
+
+	Libtool installs/uninstalls the import libraries, no need to do it
+	ourselves. Do install/uninstall the .def files, though.
+
+	* pango/pango.rc.in
+	* pango/pangoft2.rc.in
+	* pango/pangowin32.rc.in: Correspondingly, use 0 instead of
+	BUILDNUMBER.
+
 2005-06-27  Tor Lillqvist  <tml@novell.com>
 
 	* modules/khmer/Makefile.am (INCLUDES): Drop superfluous trailing
