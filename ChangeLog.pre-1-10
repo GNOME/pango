@@ -1,5 +1,10 @@
 2005-07-21  Owen Taylor  <otaylor@redhat.com>
-  	
+
+	* README: Fix URL to tml's download page (#169467, 
+	Brandon Bergren)
+
+2005-07-21  Owen Taylor  <otaylor@redhat.com>
+
  	* modules/indic/indic-ot-class-tables.c: Change the char
  	class for U+0A5C from _cn (consonant with nukta) to _ct.
  	(#309459, Sukhjinder Sidhu)

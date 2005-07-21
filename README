@@ -57,7 +57,7 @@ the fonts.conf file, found at $(sysconfdir)/fonts/fonts.conf
 on your system.
 
 Installation of Pango on Win32 is possible, but is not documented
-here. See http://www.gimp.org/~tml/win32/downloads.html.
+here. See http://www.gimp.org/~tml/gimp/win32/downloads.html.
 
 Notes
 =====
