@@ -1,3 +1,22 @@
+2005-06-21  Owen Taylor  <otaylor@redhat.com>
+ 
+ 	Fix up the operation of PangoLayoutIter, especially for Bidi
+ 	(#89541, based on a patch from Amit Aronovitch)
+ 
+ 	* pango/pango-layout.c: Many changes to make iteration 
+ 	consistently in visual order.
+ 
+ 	* pango/pango-layout.c (pango_layout_iter_next_char): Iterate
+ 	through each character in the layout exactly once. (Including
+ 	a hack to get two iterator positions for \r\n)
+ 
+ 	* pango/pango-layout.c (pango_layout_iter_next_cluster): Only
+ 	iterate through real clusters: that is, positions in the 
+ 	layout that have glyphs.
+ 
+ 	* tests/testiter.c tests/Makefile.am: Add a (somewhat reworked) 
+ 	test from Amit for the operation of PangoLayoutIter.
+	
 2005-07-21  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pango-layout.c (pango_layout_set_text): Avoid calling
