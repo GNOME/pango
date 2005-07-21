@@ -51,7 +51,8 @@ struct _PangoCairoWin32Font
   
   cairo_matrix_t font_matrix;
   cairo_matrix_t ctm;
-
+  cairo_font_options_t *options;
+  
   PangoFontMetrics *metrics;
 };
 
@@ -111,7 +112,8 @@ pango_cairo_win32_font_get_scaled_font (PangoCairoFont *font)
       font_face = pango_cairo_win32_font_get_font_face (font);
       cffont->scaled_font = cairo_scaled_font_create (font_face,
 						      &cffont->font_matrix,
-						      &cffont->ctm);
+						      &cffont->ctm,
+						      cffont->options);
 
       /* Failure of the above should only occur for out of memory,
        * we can't proceed at that point
@@ -157,6 +159,9 @@ pango_cairo_win32_font_finalize (GObject *object)
   
   if (cwfont->scaled_font)
     cairo_scaled_font_destroy (cwfont->scaled_font);
+
+  if (cwfont->options)
+    cairo_font_options_destroy (cwfont->options);
 
   G_OBJECT_CLASS (pango_cairo_win32_font_parent_class)->finalize (object);
 }
@@ -296,6 +301,7 @@ _pango_cairo_win32_font_new (PangoCairoWin32FontMap     *cwfontmap,
   PangoWin32Font *win32font;
   const PangoMatrix *pango_ctm;
   double size;
+  double dpi;
 
   cwfont = g_object_new (PANGO_TYPE_CAIRO_WIN32_FONT, NULL);
   win32font = PANGO_WIN32_FONT (cwfont);
@@ -306,11 +312,21 @@ _pango_cairo_win32_font_new (PangoCairoWin32FontMap     *cwfontmap,
   win32font->win32face = face;
 
   size = (double) pango_font_description_get_size (desc) / PANGO_SCALE;
+
+  if (context)
+    {
+      dpi = pango_cairo_context_get_resolution (context);
+      
+      if (dpi <= 0)
+	dpi = cwfontmap->dpi;
+    }
+  else
+    dpi = cwfontmap->dpi;
   
   if (!pango_font_description_get_size_is_absolute (desc))
-    size *= cwfontmap->dpi / 72.;
+    size *= dpi / 72.;
 
-  /* FIXME: THis is a pixel size, so not really what we want for describe(),
+  /* FIXME: This is a pixel size, so not really what we want for describe(),
    * but it's what we need when computing the scale factor.
    */
   win32font->size = size * PANGO_SCALE;
@@ -334,5 +350,7 @@ _pango_cairo_win32_font_new (PangoCairoWin32FontMap     *cwfontmap,
 				     win32font->size,
 				     &win32font->logfont);
 
+  cffont->options = cairo_font_options_copy (_pango_cairo_context_get_merged_font_options (context));
+  
   return PANGO_FONT (cwfont);
 }

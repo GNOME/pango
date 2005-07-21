@@ -51,6 +51,7 @@ struct _PangoCairoFcFont
   cairo_scaled_font_t *scaled_font;
   cairo_matrix_t font_matrix;
   cairo_matrix_t ctm;
+  cairo_font_options_t *options;
 
   GHashTable *glyph_info;
 };
@@ -104,9 +105,11 @@ pango_cairo_fc_font_get_scaled_font (PangoCairoFont *font)
       cairo_font_face_t *font_face;
 
       font_face = pango_cairo_fc_font_get_font_face (font);
+
       cffont->scaled_font = cairo_scaled_font_create (font_face,
 						      &cffont->font_matrix,
-						      &cffont->ctm);
+						      &cffont->ctm,
+						      cffont->options);
 
       /* Failure of the above should only occur for out of memory,
        * we can't proceed at that point
@@ -151,6 +154,8 @@ pango_cairo_fc_font_finalize (GObject *object)
     cairo_font_face_destroy (cffont->font_face);
   if (cffont->scaled_font)
     cairo_scaled_font_destroy (cffont->scaled_font);
+  if (cffont->options)
+    cairo_font_options_destroy (cffont->options);
 
   g_hash_table_destroy (cffont->glyph_info);
 
@@ -308,96 +313,22 @@ pango_cairo_fc_font_init (PangoCairoFcFont *cffont)
  ********************/
 
 static double
-transformed_length (const PangoMatrix *matrix,
-		    double             dx,
-		    double             dy)
+get_font_size (PangoCairoFcFontMap        *cffontmap,
+	       PangoContext               *context,
+	       const PangoFontDescription *desc)
 {
-  double tx = (dx * matrix->xx + dy * matrix->xy);
-  double ty = (dx * matrix->yx + dy * matrix->yy);
-
-  return sqrt (tx * tx + ty * ty);
-}
-
-/* Adapted from cairo_matrix.c:_cairo_matrix_compute_scale_factors.
- */
-static void
-compute_scale_factors (const PangoMatrix *matrix,
-		       double            *sx,
-		       double            *sy)
-{
-  double det;
-
-  det = matrix->xx * matrix->yy - matrix->xy * matrix->xx;
-  
-  if (det == 0)
-    *sx = *sy = 0;
-  else
-    {
-      double major, minor;
       
-      major = transformed_length  (matrix, 1, 0);
-      /*
-       * ignore mirroring
-       */
-      if (det < 0)
-	det = -det;
-      if (major)
-	minor = det / major;
-      else 
-	minor = 0.0;
-
-      *sx = major;
-      *sy = minor;
-    }
-}
-
-gboolean
-_pango_cairo_fc_get_render_key (PangoCairoFcFontMap        *cffontmap,
-				PangoContext               *context,
-				const PangoFontDescription *desc,
-				int                        *xsize,
-				int                        *ysize,
-				guint                      *flags)
-{
-  const PangoMatrix *matrix;
-  double xscale, yscale;
-  double size;
-
-  matrix = pango_context_get_matrix (context);
-  if (matrix)
-    {
-      compute_scale_factors (matrix, &xscale, &yscale);
-    }
-  else
-    {
-      xscale = 1.;
-      yscale = 1.;
-    }
-  
   if (pango_font_description_get_size_is_absolute (desc))
-    size = pango_font_description_get_size (desc);
+    return pango_font_description_get_size (desc);
   else
-    size = cffontmap->dpi * pango_font_description_get_size (desc) / 72.;
-
-  *xsize = (int) (xscale * size + 0.5);
-  *ysize = (int) (xscale * size + 0.5);
-
-  *flags = pango_cairo_context_get_hinting (context);
-
-  if (matrix)
     {
-      if (xscale == 0. && yscale == 0.)
-	return FALSE;
-      else
-	{
-	  return (matrix->yx / xscale < 1. / 65536. &&
-		  matrix->xy / yscale < 1. / 65536. &&
-		  matrix->xx > 0 &&
-		  matrix->yy > 0);
-	}
+      double dpi = pango_cairo_context_get_resolution (context);
+
+      if (dpi <= 0)
+	dpi = cffontmap->dpi;
+      
+      return dpi * pango_font_description_get_size (desc) / 72.;
     }
-  else
-    return TRUE;
 }
 
 PangoFcFont *
@@ -430,11 +361,8 @@ _pango_cairo_fc_font_new (PangoCairoFcFontMap        *cffontmap,
     }
   else
     cairo_matrix_init_identity (&cffont->font_matrix);
-  
-  if (pango_font_description_get_size_is_absolute (desc))
-    size = pango_font_description_get_size (desc);
-  else
-    size = cffontmap->dpi * pango_font_description_get_size (desc) / 72.;
+
+  size = get_font_size (cffontmap, context, desc);
 
   cairo_matrix_scale (&cffont->font_matrix,
 		      size / PANGO_SCALE, size / PANGO_SCALE);
@@ -450,5 +378,7 @@ _pango_cairo_fc_font_new (PangoCairoFcFontMap        *cffontmap,
   else
     cairo_matrix_init_identity (&cffont->ctm);
 
+  cffont->options = cairo_font_options_copy (_pango_cairo_context_get_merged_font_options (context));
+  
   return PANGO_FC_FONT (cffont);
 }

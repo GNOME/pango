@@ -697,8 +697,7 @@ pango_win32_font_logfont (PangoFont *font)
 /**
  * pango_win32_font_select_font:
  * @font: a #PangoFont from the Win32 backend
- * @scale: location to store a scale factor from Windows
- *    units to Pango Units.
+ * @hdc: a windows device context
  * 
  * Selects the font into the specified DC and changes the mapping mode
  * and world transformation of the DC appropriately for the font.
@@ -706,7 +705,9 @@ pango_win32_font_logfont (PangoFont *font)
  * to SaveDC and RestoreDC. Call pango_win32_font_done_font() when
  * you are done using the DC to release allocated resources.
  *
- * See 
+ * See pango_win32_font_get_metrics_factor() for information about
+ * converting from the coordinate space used by this function
+ * into Pango units.
  * 
  * Return value: %TRUE if the operation succeeded.
  **/

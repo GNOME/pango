@@ -62,9 +62,13 @@ PangoContext *pango_cairo_font_map_create_context (PangoCairoFontMap *fontmap);
 void         pango_cairo_update_context (cairo_t      *cr,
 					 PangoContext *context);
 
-void pango_cairo_context_set_hinting (PangoContext *context,
-				      gboolean      hinting);
-gboolean pango_cairo_context_get_hinting (PangoContext *context);
+void                        pango_cairo_context_set_font_options (PangoContext               *context,
+								  const cairo_font_options_t *options);
+const cairo_font_options_t *pango_cairo_context_get_font_options (PangoContext               *context);
+
+void               pango_cairo_context_set_resolution     (PangoContext       *context,
+							   double              dpi);
+double             pango_cairo_context_get_resolution     (PangoContext       *context);
 
 /* Convenience
  */

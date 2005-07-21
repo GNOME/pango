@@ -17,6 +17,9 @@ glyphs.
 
 </para>
 
+<!-- ##### SECTION Stability_Level ##### -->
+
+
 <!-- ##### MACRO PANGO_SCALE ##### -->
 <para>
 The PANGO_SCALE macro represents the scale between dimensions used

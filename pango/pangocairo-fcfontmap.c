@@ -18,6 +18,7 @@
  * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  */
+#include <cairo-ft.h>
 
 #include "pangofc-fontmap.h"
 #include "pangocairo.h"
@@ -43,7 +44,7 @@ pango_cairo_fc_font_map_set_resolution (PangoCairoFontMap *cfontmap,
 }
 
 static double
-pango_cairo_fc_font_map_get_resolution (PangoCairoFontMap *cfontmap)
+pango_cairo_fc_font_map_get_resolution_cairo (PangoCairoFontMap *cfontmap)
 {
   PangoCairoFcFontMap *cffontmap = PANGO_CAIRO_FC_FONT_MAP (cfontmap);
 
@@ -65,7 +66,7 @@ static void
 cairo_font_map_iface_init (PangoCairoFontMapIface *iface)
 {
   iface->set_resolution = pango_cairo_fc_font_map_set_resolution;
-  iface->get_resolution = pango_cairo_fc_font_map_get_resolution;
+  iface->get_resolution = pango_cairo_fc_font_map_get_resolution_cairo;
   iface->get_renderer = pango_cairo_fc_font_map_get_renderer;
 }
 
@@ -90,32 +91,71 @@ pango_cairo_fc_font_map_context_substitute (PangoFcFontMap *fcfontmap,
 					    PangoContext   *context,
 					    FcPattern      *pattern)
 {
-  PangoCairoFcFontMap *cffontmap = PANGO_CAIRO_FC_FONT_MAP (fcfontmap);
-  FcValue v;
-
   FcConfigSubstitute (NULL, pattern, FcMatchPattern);
 
-  if (FcPatternGet (pattern, FC_DPI, 0, &v) == FcResultNoMatch)
-    FcPatternAddDouble (pattern, FC_DPI, cffontmap->dpi);
-
-  if (!pango_cairo_context_get_hinting (context))
-    FcPatternAddBool (pattern, FC_HINTING, FcFalse);
+  cairo_ft_font_options_substitute (_pango_cairo_context_get_merged_font_options (context),
+				    pattern);
   
   FcDefaultSubstitute (pattern);
 }
 
-static gboolean
-pango_cairo_fc_font_map_get_render_key (PangoFcFontMap             *fcfontmap,
-					PangoContext               *context,
-					const PangoFontDescription *desc,
-					int                        *xsize,
-					int                        *ysize,
-					guint                      *flags)
+static double
+pango_cairo_fc_font_map_get_resolution_fc (PangoFcFontMap *fcfontmap,
+					   PangoContext   *context)
 {
-  return _pango_cairo_fc_get_render_key (PANGO_CAIRO_FC_FONT_MAP (fcfontmap),
-					 context, desc, xsize, ysize, flags);
+  PangoCairoFcFontMap *cffontmap = PANGO_CAIRO_FC_FONT_MAP (fcfontmap);
+  double dpi;
+  
+  if (context)
+    {
+      dpi = pango_cairo_context_get_resolution (context);
+      
+      if (dpi <= 0)
+	dpi = cffontmap->dpi;
+    }
+  else
+    dpi = cffontmap->dpi;
+
+  return dpi;
 }
 
+static gconstpointer
+pango_cairo_fc_font_map_context_key_get (PangoFcFontMap *fcfontmap,
+					 PangoContext   *context)
+{
+  return _pango_cairo_context_get_merged_font_options (context);
+}
+
+static gpointer
+pango_cairo_fc_font_map_context_key_copy (PangoFcFontMap *fcfontmap,
+					  gconstpointer   key)
+{
+  return cairo_font_options_copy (key);
+}
+
+static void
+pango_cairo_fc_font_map_context_key_free (PangoFcFontMap *fcfontmap,
+					  gpointer        key)
+{
+  cairo_font_options_destroy (key);
+}
+
+
+static guint32
+pango_cairo_fc_font_map_context_key_hash (PangoFcFontMap *fcfontmap,
+					  gconstpointer        key)
+{
+  return (guint32)cairo_font_options_hash (key);
+}
+
+static gboolean
+pango_cairo_fc_font_map_context_key_equal (PangoFcFontMap *fcfontmap,
+					   gconstpointer   key_a,
+					   gconstpointer   key_b)
+{
+  return cairo_font_options_equal (key_a, key_b);
+}
+  
 static PangoFcFont *
 pango_cairo_fc_font_map_create_font (PangoFcFontMap             *fcfontmap,
 				     PangoContext               *context,
@@ -133,8 +173,16 @@ pango_cairo_fc_font_map_class_init (PangoCairoFcFontMapClass *class)
   PangoFcFontMapClass *fcfontmap_class = PANGO_FC_FONT_MAP_CLASS (class);
 
   gobject_class->finalize  = pango_cairo_fc_font_map_finalize;
+  
   fcfontmap_class->context_substitute = pango_cairo_fc_font_map_context_substitute;
-  fcfontmap_class->get_render_key = pango_cairo_fc_font_map_get_render_key;
+  fcfontmap_class->get_resolution = pango_cairo_fc_font_map_get_resolution_fc;
+  
+  fcfontmap_class->context_key_get = pango_cairo_fc_font_map_context_key_get;
+  fcfontmap_class->context_key_copy = pango_cairo_fc_font_map_context_key_copy;
+  fcfontmap_class->context_key_free = pango_cairo_fc_font_map_context_key_free;
+  fcfontmap_class->context_key_hash = pango_cairo_fc_font_map_context_key_hash;
+  fcfontmap_class->context_key_equal = pango_cairo_fc_font_map_context_key_equal;
+  
   fcfontmap_class->create_font = pango_cairo_fc_font_map_create_font;
 }
 

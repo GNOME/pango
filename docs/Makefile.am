@@ -27,6 +27,8 @@ IGNORE_HFILES=			\
 	modules.h		\
 	pangocairo-private.h	\
 	pangocairo-fc.h		\
+	pangocairo-win32.h	\
+	pango-color-table.h	\
 	pango-engine-private.h	\
 	pango-impl-utils.h	\
 	pango-glyph-item-private.h	\

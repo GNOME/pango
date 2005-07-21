@@ -139,6 +139,9 @@ int main (int argc, char **argv)
 
 </para>
 
+<!-- ##### SECTION Stability_Level ##### -->
+
+
 <!-- ##### STRUCT PangoCairoFontMap ##### -->
 <para>
 
@@ -188,6 +191,42 @@ int main (int argc, char **argv)
 </para>
 
 @fontmap: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_cairo_context_set_resolution ##### -->
+<para>
+
+</para>
+
+@context: 
+@dpi: 
+
+
+<!-- ##### FUNCTION pango_cairo_context_get_resolution ##### -->
+<para>
+
+</para>
+
+@context: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_cairo_context_set_font_options ##### -->
+<para>
+
+</para>
+
+@context: 
+@options: 
+
+
+<!-- ##### FUNCTION pango_cairo_context_get_font_options ##### -->
+<para>
+
+</para>
+
+@context: 
 @Returns: 
 
 

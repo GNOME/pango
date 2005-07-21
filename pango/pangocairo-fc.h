@@ -50,13 +50,6 @@ PangoFcFont *_pango_cairo_fc_font_new (PangoCairoFcFontMap        *cffontmap,
 				       const PangoFontDescription *desc,
 				       FcPattern	          *pattern);
 
-gboolean _pango_cairo_fc_get_render_key (PangoCairoFcFontMap        *cffontmap,
-					 PangoContext               *context,
-					 const PangoFontDescription *desc,
-					 int                        *xsize,
-					 int                        *ysize,
-					 guint                      *flags);
-
 G_END_DECLS
 
 #endif /* __PANGOCAIRO_FC_H__ */

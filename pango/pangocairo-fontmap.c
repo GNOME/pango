@@ -139,7 +139,7 @@ pango_cairo_font_map_set_resolution (PangoCairoFontMap *fontmap,
  * pango_cairo_font_map_get_resolution:
  * @fontmap: a #PangoCairoFontMap 
  * 
- * Gets the resolutions for the fontmap. See pango_cairo_font_map_set_resolution.
+ * Gets the resolution for the fontmap. See pango_cairo_font_map_set_resolution()
  *
  * Return value: the resolution in "dots per inch"
  *
@@ -192,6 +192,51 @@ _pango_cairo_font_map_get_renderer (PangoCairoFontMap *fontmap)
   return (* PANGO_CAIRO_FONT_MAP_GET_IFACE (fontmap)->get_renderer) (fontmap);
 }
 
+typedef struct _PangoCairoContextInfo PangoCairoContextInfo;
+
+struct _PangoCairoContextInfo
+{
+  double dpi;
+  
+  cairo_font_options_t *set_options;
+  cairo_font_options_t *surface_options;
+  cairo_font_options_t *merged_options;
+};
+
+static void
+free_context_info (PangoCairoContextInfo *info)
+{
+  if (info->set_options)
+    cairo_font_options_destroy (info->set_options);
+  if (info->surface_options)
+    cairo_font_options_destroy (info->surface_options);
+  if (info->merged_options)
+    cairo_font_options_destroy (info->merged_options);
+  
+  free (info);
+}
+
+static PangoCairoContextInfo *
+get_context_info (PangoContext *context,
+		  gboolean      create)
+{
+  PangoCairoContextInfo *info = g_object_get_data (G_OBJECT (context),
+						   "pango-cairo-context-info");
+  if (!info && create)
+    {
+      info = g_new (PangoCairoContextInfo, 1);
+      info->dpi = -1.0;
+      info->set_options = NULL;
+      info->surface_options = NULL;
+      info->merged_options = NULL;
+
+      g_object_set_data_full (G_OBJECT (context), "pango-cairo-context-info", 
+			      info, (GDestroyNotify)free_context_info);
+    }
+
+  return info;
+}
+
 /**
  * pango_cairo_update_context:
  * @cr: a Cairo context
@@ -209,7 +254,9 @@ void
 pango_cairo_update_context (cairo_t      *cr,
 			    PangoContext *context)
 {
+  PangoCairoContextInfo *info = get_context_info (context, TRUE);
   cairo_matrix_t cairo_matrix;
+  cairo_surface_t *target;
   PangoMatrix pango_matrix;
   
   g_return_if_fail (cr != NULL);
@@ -224,71 +271,149 @@ pango_cairo_update_context (cairo_t      *cr,
   pango_matrix.y0 = cairo_matrix.y0;
 
   pango_context_set_matrix (context, &pango_matrix);
-}
 
-typedef struct _PangoCairoContextInfo PangoCairoContextInfo;
+  if (!info->surface_options)
+    info->surface_options = cairo_font_options_create ();
 
-struct _PangoCairoContextInfo
-{
-  gboolean hinting;
-};
-
-static PangoCairoContextInfo *
-get_context_info (PangoContext *context,
-		  gboolean      create)
-{
-  PangoCairoContextInfo *info = g_object_get_data (G_OBJECT (context),
-						   "pango-cairo-context-info");
-  if (!info && create)
+  target = cairo_get_target (cr);
+  cairo_surface_get_font_options (target, info->surface_options);
+  
+  if (info->merged_options)
     {
-      info = g_new (PangoCairoContextInfo, 1);
-      info->hinting = TRUE;
-
-      g_object_set_data_full (G_OBJECT (context), "pango-cairo-context-info", 
-			      info, (GDestroyNotify)g_free);
+      cairo_font_options_destroy (info->merged_options);
+      info->merged_options = NULL;
     }
-
-  return info;
 }
 
 /**
- * pango_cairo_context_set_hinting:
+ * pango_cairo_context_set_resolution:
  * @context: a #PangoContext, from pango_cairo_font_map_create_context()
- * @hinting: %TRUE if hinting should be enabled.
+ * @dpi: the resolution in "dots per inch". (Physical inches aren't actually
+ *   involved; the terminology is conventional.) A 0 or negative value
+ *   means to use the resolution from the font map.
  * 
- * Sets whether outlines and font metrics should be hinted for this
- * context. Hinting is the process of adjusting outlines so that they
- * render better when drawn onto a pixel grid. When hinting is
- * enabled, font metrics such as character widths and font ascent and
- * descent are quantized to integer pixel values.
- * 
- * If layouts have been previously created for this context, it is
- * necessary to call pango_layout_context_changed() in order to update
- * the layouts.
+ * Sets the resolution for the context. This is a scale factor between
+ * points specified in a #PangoFontDescription and Cairo units. The
+ * default value is 96, meaning that a 10 point font will be 13
+ * units high. (10 * 96. / 72. = 13.3).
+ *
+ * Since: 1.10
  **/
-void 
-pango_cairo_context_set_hinting (PangoContext *context,
-				 gboolean      hinting)
+void
+pango_cairo_context_set_resolution (PangoContext *context,
+				    double        dpi)
 {
   PangoCairoContextInfo *info = get_context_info (context, TRUE);
-  info->hinting = hinting != FALSE;
+  info->dpi = dpi;
 }
 
 /**
- * pango_cairo_context_get_hinting:
+ * pango_cairo_context_get_resolution:
  * @context: a #PangoContext, from pango_cairo_font_map_create_context()
  * 
- * Gets whether hinting is enabled for this context. See
- * pango_cairo_context_set_hinting()
- * 
- * Return value: %TRUE if hinting is enabled.
+ * Gets the resolution for the context. See pango_cairo_context_set_resolution()
+ *
+ * Return value: the resolution in "dots per inch". A negative value will
+ *  be returned if no resolution has previously been set.
+ *
+ * Since: 1.10
  **/
-gboolean 
-pango_cairo_context_get_hinting (PangoContext *context)
+double
+pango_cairo_context_get_resolution (PangoContext *context)
 {
   PangoCairoContextInfo *info = get_context_info (context, FALSE);
 
-  return !info || info->hinting;
+  if (info)
+    return info->dpi;
+  else
+    return -1.0;
+}
+
+/**
+ * pango_cairo_context_set_font_options:
+ * @context: a #PangoContext, from pango_cairo_font_map_create_context()
+ * @options: a #cairo_font_options_t, or %NULL to unset any previously set
+ *           options. A copy is made.
+ * 
+ * Sets the font options used when rendering text with this context.
+ * These options override any options that pango_cairo_update_context()
+ * derives from the target surface.
+ */
+void 
+pango_cairo_context_set_font_options (PangoContext               *context,
+				      const cairo_font_options_t *options)
+{
+  g_return_if_fail (PANGO_IS_CONTEXT (context));
+  
+  PangoCairoContextInfo *info = get_context_info (context, TRUE);
+
+  if (info->set_options)
+    cairo_font_options_destroy (info->set_options);
+
+  if (options)
+    info->set_options = cairo_font_options_copy (options);
+  else
+    info->set_options = NULL;
+  
+  if (info->merged_options)
+    {
+      cairo_font_options_destroy (info->merged_options);
+      info->merged_options = NULL;
+    }
+}
+
+/**
+ * pango_cairo_get_font_options:
+ * @context: a #PangoContext, from pango_cairo_font_map_create_context()
+ * 
+ * Retrieves any font rendering options previously set with
+ * pango_cairo_font_map_set_font_options(). This functions not report options
+ * that are derived from the target surface by pango_cairo_update_context()
+ * 
+ * Return value: the font options previously set on the context, or %NULL
+ *   if no options have been set. This value is owned by the context
+ *   and must not be modified or freed.
+ **/
+const cairo_font_options_t *
+pango_cairo_context_get_font_options (PangoContext *context)
+{
+  g_return_val_if_fail (PANGO_IS_CONTEXT (context), NULL);
+
+  PangoCairoContextInfo *info = get_context_info (context, FALSE);
+
+  if (info)
+    return info->set_options;
+  else
+    return NULL;
+}
+
+/**
+ * _pango_cairo_context_merge_font_options:
+ * @context: a #PangoContext
+ * @options: a #cairo_font_options_t
+ * 
+ * Merge together options from the target surface and explicitly set
+ * on the context.
+ *
+ * Return value: the combined set of font options. This value is owned
+ * by the context and must not be modified or freed.
+ **/
+const cairo_font_options_t *
+_pango_cairo_context_get_merged_font_options (PangoContext *context)
+{
+  PangoCairoContextInfo *info = get_context_info (context, TRUE);
+
+  if (!info->merged_options)
+    {
+      info->merged_options = cairo_font_options_create ();
+
+      if (info->surface_options)
+	cairo_font_options_merge (info->merged_options, info->surface_options);
+      if (info->set_options)
+	cairo_font_options_merge (info->merged_options, info->set_options);
+    }
+
+  return info->merged_options;
 }
 
 /**

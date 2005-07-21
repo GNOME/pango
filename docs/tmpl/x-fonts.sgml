@@ -17,6 +17,9 @@ unpredictable results. Use the <link linkend="pango-Xft-Fonts-and-Rendering">Xft
 
 </para>
 
+<!-- ##### SECTION Stability_Level ##### -->
+
+
 <!-- ##### MACRO PANGO_RENDER_TYPE_X ##### -->
 <para>
 A string constant identifying the X renderer. The associated quark (see 

@@ -31,6 +31,9 @@ Fontconfig-based backend involves deriving from both
 </variablelist>
 </para>
 
+<!-- ##### SECTION Stability_Level ##### -->
+
+
 <!-- ##### STRUCT PangoFcFontMap ##### -->
 <para>
 
@@ -44,7 +47,13 @@ Fontconfig-based backend involves deriving from both
 
 @default_substitute: 
 @new_font: 
-@get_render_key: 
+@get_resolution: 
+@context_key_get: 
+@context_key_copy: 
+@context_key_free: 
+@context_key_hash: 
+@context_key_equal: 
+@context_substitute: 
 @create_font: 
 
 <!-- ##### FUNCTION pango_fc_font_description_from_pattern ##### -->

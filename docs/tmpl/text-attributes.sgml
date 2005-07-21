@@ -18,6 +18,9 @@ of attributes applied to a portion of text.
 
 </para>
 
+<!-- ##### SECTION Stability_Level ##### -->
+
+
 <!-- ##### ENUM PangoAttrType ##### -->
 <para>
 distinguishes between different types of attributes. Along with the

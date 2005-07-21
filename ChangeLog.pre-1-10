@@ -1,3 +1,36 @@
+2005-07-19  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-fcfontmap.[ch]: Rework handling of context-specific
+	options: drop get_render_key() and add a opaque "context
+	key" (get_context_key() and friends). Also add a function to get
+	the resolution.
+
+	* pango/pango-fcfontmap.c pango/pangofc-font.h:
+	 - Move the 'lang' into the fontset key lookup and get rid of the
+	   funky list-of-hash-tables
+	 - Make lookups of fontsets and fonts dependent on the context key
+	   for the context.
+	 - Simplify the pattern/fontset caching to have one finite-size
+	   cache rather than an infinite first-level and a finite-size
+	   second level.
+
+	* pango/pangocairo.h pango/pangocairo-private.h
+	pango/pangocairo-fontmap.c: Add
+	pango_cairo_context_get/set_resolution(),
+	pango_cairo_context_set/get_font_options to allow controlling the
+	resolution and font rendering options for a specific PangoContext.
+			
+	* pango/pangocairo-fcfont.c pango/pangocairo-fcfontmap
+	pango/pangocairo-win32font.c: Implement resolution and font
+	options handling adapt to related Cairo changes.
+
+	* docs/pango-sections.txt docs/Makefile.am pango/pangowin32.c:
+	Doc updates and build fixes.
+
+	* pango/pangofc-fontmap.c (pango_fc_make_pattern): Create
+	patterns with FC_SIZE as well as FC_PIXEL_SIZE to work around
+	a libgnomeprint bug. (#309477)
+
 2005-07-09  Tor Lillqvist  <tml@novell.com>
 
 	* configure.in: Call AC_CANONICAL_HOST before looking at $host.

@@ -17,6 +17,9 @@ to represent that information.
 
 </para>
 
+<!-- ##### SECTION Stability_Level ##### -->
+
+
 <!-- ##### ENUM PangoCoverageLevel ##### -->
 <para>
 Used to indicate how well a font can represent a particular ISO 10646

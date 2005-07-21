@@ -14,6 +14,9 @@ Support for loadable modules
 
 </para>
 
+<!-- ##### SECTION Stability_Level ##### -->
+
+
 <!-- ##### STRUCT PangoIncludedModule ##### -->
 <para>
 The #PangoIncludedModule structure for a statically linked module 

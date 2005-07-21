@@ -19,6 +19,9 @@ to load a font of a given description.
 
 </para>
 
+<!-- ##### SECTION Stability_Level ##### -->
+
+
 <!-- ##### STRUCT PangoFontDescription ##### -->
 <para>
 The #PangoFontDescription structure represents the description
@@ -607,6 +610,15 @@ Returns %TRUE if @object is a #PangoFont.
 
 @font: 
 @language: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_font_get_font_map ##### -->
+<para>
+
+</para>
+
+@font: 
 @Returns: 
 
 
