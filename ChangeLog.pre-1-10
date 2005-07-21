@@ -1,3 +1,30 @@
+2005-07-21  Owen Taylor  <otaylor@redhat.com>
+
+	Fix up places where there is missing or incomplete
+	Copyright and License information (Reported by William N. Ray)
+
+	* pango/opentype/fterrcompat.h: Mark as FreeType/GPL licensed.
+
+	* pango/opentype/FT-license.txt: Make this the dual-licensing
+	description that covers the FreeType code (FreeType's 
+	LICENSE.TXT) rather than the FTL.
+	
+	* pango/opentype/FTL.TXT: Move the FTL (referenced from 
+	FT-license.txt) to here.
+	
+	* modules/basic/basic-common.h modules/hebrew/hebrew-shaper.h
+	modules/thai/thai-charprop.c modules/thai/thai-shaper.h
+	tools/gen-script-for-lang.c tests/testcolor.c: 
+	Add LGPL header and copyright information.
+
+	* modules/indic/indic-ot.[ch] modules/indic/indic-ot-class-tables.c
+	modules/thai/thai-ot.[ch]: Add LGPL header.
+
+	* modules/thai/thai-shaper.c modules/thai/thai-charprop.h: 
+	Minor fixes to copyright information.
+
+	* modules/arabic/arabic-ot.c: Add Freetype license boilerplate.
+
 2005-06-27  Tor Lillqvist  <tml@novell.com>
 
 	* pango/pango.def: Remove pango_script_for_lang. It was never part
