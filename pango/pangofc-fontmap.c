@@ -550,9 +550,7 @@ pango_fc_font_map_add (PangoFcFontMap *fcfontmap,
   fcfont->context_key = key_copy->context_key;
   fcfont->matrix = key.matrix;
   
-  g_hash_table_insert (priv->font_hash,
-		       font_hash_key_copy (&key),
-		       fcfont);
+  g_hash_table_insert (priv->font_hash, key_copy, fcfont);
 }
 
 static PangoFcFont *
@@ -1123,6 +1121,8 @@ pango_fc_font_map_get_patterns (PangoFontMap               *fontmap,
 	      patterns->patterns[patterns->n_patterns++] = uniquify_pattern (fcfontmap, font_pattern);
 	    }
 	}
+      
+      FcPatternDestroy (pattern);
       
       FcFontSetSortDestroy (font_patterns);
 
