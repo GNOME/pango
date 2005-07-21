@@ -1,4 +1,10 @@
 2005-07-21  Owen Taylor  <otaylor@redhat.com>
+  	
+ 	* modules/indic/indic-ot-class-tables.c: Change the char
+ 	class for U+0A5C from _cn (consonant with nukta) to _ct.
+ 	(#309459, Sukhjinder Sidhu)
+	
+2005-07-21  Owen Taylor  <otaylor@redhat.com>
 	
 	* modules/indic/indic-ot-class-tables.c: Enable touching
 	for Sinhala with the ZWJ + al-lakuna combination.
