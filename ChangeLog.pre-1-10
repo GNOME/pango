@@ -1,4 +1,12 @@
 2005-07-21  Owen Taylor  <otaylor@redhat.com>
+  
+ 	* modules/indic/indic-ot.c: Minor formatting tweak to license
+ 	header.
+	
+	* tests/Makefile.am: Remove references to testiter: it's Cairo
+	dependent, so not added on the maintenance branch.
+
+2005-07-21  Owen Taylor  <otaylor@redhat.com>
 
 	* modules/indic/indic-ot-class-tables.c modules/indic/indic-ot.[ch]:
 	license on these ICU-derived files is X license, not LGPL.
