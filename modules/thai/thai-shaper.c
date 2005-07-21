@@ -4,7 +4,8 @@
  * Copyright (C) 1999 Red Hat Software
  * Author: Owen Taylor <otaylor@redhat.com>
  *
- * Software and Language Engineering Laboratory, NECTEC
+ * Copyright (C) 2005 Theppitak Karoonboonyanan
+ * Copyright (C) 2002 Software and Language Engineering Laboratory, NECTEC
  * Author: Theppitak Karoonboonyanan <thep@links.nectec.or.th>
  *
  * Copyright (c) 1996-2000 by Sun Microsystems, Inc.
