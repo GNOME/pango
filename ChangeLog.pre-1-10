@@ -1,5 +1,10 @@
 2005-07-21  Owen Taylor  <otaylor@redhat.com>
 
+	* modules/indic/indic-ot.c: Minor formatting tweak to license
+	header.
+
+2005-07-21  Owen Taylor  <otaylor@redhat.com>
+
 	* pango/pangofc-fontmap.c (pango_fc_font_map_load_font): Load a
 	fontset and return the first font to take advantage of existing
 	caching.
