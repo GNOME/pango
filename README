@@ -33,11 +33,10 @@ information about GLib can be found at http://www.gtk.org/.
 
 The supported font backend for X in Pango-1.8 is the Xft backend
 which uses version 2 of the Xft library to manage client
-side fonts. Version 2 of Xft is available from http://fontconfig.org/
-Along with Xft, you'll need to install its dependency fontconfig, and 
-possibly also the Xrender library, if that doesn't come with 
-your system. Both of these libraries are available from
-the same place as fontconfig.
+side fonts. Version 2 of Xft is available from 
+http://xlibs.freedesktop.org/release/. 
+You'll need the libXft package, and possibly the libXrender and 
+renderext packages as well. You'll also need fontconfig (see below.)
 
 Note that an earlier version of Xft is shipped with version
 of XFree86 up to 4.2. This version does not work with Pango-1.8;

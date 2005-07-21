@@ -1,5 +1,10 @@
 2005-07-21  Owen Taylor  <otaylor@redhat.com>
 
+        * README: Update information about the location of Xft.
+	(#172637, Karel 'Clock' Kulhavy)
+
+2005-07-21  Owen Taylor  <otaylor@redhat.com>
+
 	* README: Fix URL to tml's download page (#169467, 
 	Brandon Bergren)
 
