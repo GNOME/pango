@@ -1141,22 +1141,43 @@ pango_fc_font_map_get_patterns (PangoFontMap               *fontmap,
   return patterns;
 }
 
+static gboolean
+get_first_font (PangoFontset  *fontset,
+		PangoFont     *font,
+		gpointer       data)
+{
+  *(PangoFont **)data = font;
+  
+  return TRUE;
+}
+
 static PangoFont *
 pango_fc_font_map_load_font (PangoFontMap               *fontmap,
 			     PangoContext               *context,
 			     const PangoFontDescription *description)
 {
-  PangoFcPatternSet *patterns = pango_fc_font_map_get_patterns (fontmap, context, description, NULL);
-  if (!patterns)
-    return NULL;
+  PangoLanguage *language;
+  PangoFontset *fontset;
+  PangoFont *font = NULL;
 
-  if (patterns->n_patterns > 0)
+  if (context)
+    language = pango_context_get_language (context);
+  else
+    language = NULL;
+
+  fontset = pango_font_map_load_fontset (fontmap, context, description, language);
+
+  if (fontset)
     {
-      return pango_fc_font_map_new_font (fontmap, context, description,
-					 patterns->patterns[0]);
+      pango_fontset_foreach (fontset, get_first_font, &font);
+
+      if (font)
+	g_object_ref (font);
+  
+      g_object_unref (fontset);
     }
   
-  return NULL;
+  return font;
 }
 
 static void

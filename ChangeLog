@@ -1,5 +1,11 @@
 2005-07-21  Owen Taylor  <otaylor@redhat.com>
 
+	* pango/pangofc-fontmap.c (pango_fc_font_map_load_font): Load a
+	fontset and return the first font to take advantage of existing
+	caching.
+
+2005-07-21  Owen Taylor  <otaylor@redhat.com>
+
 	* modules/indic/indic-ot-class-tables.c modules/indic/indic-ot.[ch]:
 	license on these ICU-derived files is X license, not LGPL.
 
