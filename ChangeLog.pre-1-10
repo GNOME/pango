@@ -1,5 +1,19 @@
 2005-07-21  Owen Taylor  <otaylor@redhat.com>
 
+	Merges of fixes from Arabic module (#308813, Emil Soleyman-Zomalan)
+
+	* modules/syriac/syriac-fc.c (syriac_engine_shape): Fix 
+	bug where cluster was getting set to 0 for non-spacing
+	marks rather than to the cluster of the base character.
+	(#149126, Behdad Esfahbod)
+
+	* modules/syriac/syriac-fc.c (syriac_engine_shape): Turn
+	on zero-width-marks setting. [Not clear that this is
+	needed here, since it is mostly set in the Arabic engine
+	to handle legacy fonts, but it shouldn't hurt]
+
+2005-07-21  Owen Taylor  <otaylor@redhat.com>
+
 	Fix up places where there is missing or incomplete
 	Copyright and License information (Reported by William N. Ray)
 
