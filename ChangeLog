@@ -1,5 +1,10 @@
 2005-07-21  Owen Taylor  <otaylor@redhat.com>
 
+	* pango/pango-layout.c (pango_layout_set_text): Avoid calling
+	memcpy with a NULL argument. (#310021, Morten Welinder)
+
+2005-07-21  Owen Taylor  <otaylor@redhat.com>
+
 	Merges of fixes from Arabic module (#308813, Emil Soleyman-Zomalan)
 
 	* modules/syriac/syriac-fc.c (syriac_engine_shape): Fix 
