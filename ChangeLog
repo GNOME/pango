@@ -1,10 +1,17 @@
 2005-07-21  Owen Taylor  <otaylor@redhat.com>
 	
+	* modules/indic/indic-ot-class-tables.c: Change the char
+	class for U+0A5C from _cn (consonant with nukta) to _ct.
+	(#309459, Sukhjinder Sidhu)
+
+2005-07-21  Owen Taylor  <otaylor@redhat.com>
+	
 	* modules/indic/indic-ot-class-tables.c: Enable touching
 	for Sinhala with the ZWJ + al-lakuna combination.
 	(#302577, Harshula)
 
 2005-07-21  Owen Taylor  <otaylor@redhat.com>
+
 	* pango/pango-layout.c (pango_layout_set_text): Avoid calling
 	memcpy with a NULL argument. (#310021, Morten Welinder)
 
