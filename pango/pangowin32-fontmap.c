@@ -192,6 +192,9 @@ pango_win32_font_map_class_init (PangoWin32FontMapClass *class)
   fontmap_class->shape_engine_type = PANGO_RENDER_TYPE_WIN32;
   
   pango_win32_get_dc ();
+
+  for (i = 0; _pango_included_win32_modules[i].list; i++)
+    pango_module_register (&_pango_included_win32_modules[i]);
 }
 
 static PangoWin32FontMap *default_fontmap = NULL;

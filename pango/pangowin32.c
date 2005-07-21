@@ -132,16 +132,7 @@ PangoContext *
 pango_win32_get_context (void)
 {
   PangoContext *result;
-  static gboolean registered_modules = FALSE;
   int i;
-
-  if (!registered_modules)
-    {
-      registered_modules = TRUE;
-      
-      for (i = 0; _pango_included_win32_modules[i].list; i++)
-        pango_module_register (&_pango_included_win32_modules[i]);
-    }
 
   result = pango_context_new ();
   pango_context_set_font_map (result, pango_win32_font_map_for_display ());

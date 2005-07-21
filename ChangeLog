@@ -1,5 +1,12 @@
 2005-07-21  Owen Taylor  <otaylor@redhat.com>
-	
+
+	* pango/pangowin32-fontmap.c (pango_win32_font_map_class_init)
+	Move registration of included modules to here from
+	pango/pangowin32.c (pango_win32_get_context). (#309337, Hans
+	Breuer)
+
+2005-07-21  Owen Taylor  <otaylor@redhat.com>
+
 	* modules/indic/indic-ot-class-tables.c: Change the char
 	class for U+0A5C from _cn (consonant with nukta) to _ct.
 	(#309459, Sukhjinder Sidhu)
