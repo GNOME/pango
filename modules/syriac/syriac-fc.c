@@ -256,6 +256,7 @@ syriac_engine_shape (PangoEngineShape *engine,
   PangoOTRuleset *ruleset;
   PangoOTBuffer *buffer;
   PangoFcFont *fc_font;
+  int cluster = 0;
 
   g_return_if_fail (font != NULL);
   g_return_if_fail (text != NULL);
@@ -276,6 +277,7 @@ syriac_engine_shape (PangoEngineShape *engine,
 
   buffer = pango_ot_buffer_new (fc_font);
   pango_ot_buffer_set_rtl (buffer, analysis->level % 2 != 0);
+  pango_ot_buffer_set_zero_width_marks (buffer, TRUE);
     
   wcs = g_utf8_to_ucs4_fast (text, length, &n_chars);
   properties = g_new0 (gulong, n_chars);
@@ -288,7 +290,6 @@ syriac_engine_shape (PangoEngineShape *engine,
       gunichar wc;
       gunichar mirrored_ch;
       PangoGlyph index;
-      int cluster = 0;
 
       wc = g_utf8_get_char (p);
 
