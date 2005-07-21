@@ -1,5 +1,13 @@
 2005-07-21  Owen Taylor  <otaylor@redhat.com>
 
+	* modules/indic/indic-ot-class-tables.c modules/indic/indic-ot.[ch]:
+	license on these ICU-derived files is X license, not LGPL.
+
+	* modules/khmer/khmer-fc.c: Add the X license text here in addition 
+	to the LGPL.
+
+2005-07-21  Owen Taylor  <otaylor@redhat.com>
+
 	* pango/pangoxft-font.c (_pango_xft_font_new): Force on
 	metrics hinting for all Xft fonts (this fixes font
 	metrics - glyph metrics were fixed earlier).
@@ -56,7 +64,8 @@
 2005-07-21  Owen Taylor  <otaylor@redhat.com>
 
 	Fix up places where there is missing or incomplete
-	Copyright and License information (Reported by William N. Ray)
+	Copyright and License information (Reported by William N. Ray,
+	#310072)
 
 	* pango/opentype/fterrcompat.h: Mark as FreeType/GPL licensed.
 
