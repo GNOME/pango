@@ -1,3 +1,7 @@
+2005-07-21  Matthias Clasen  <mclasen@redhat.com>
+
+	* configure.in: Check for a new enough cairo.
+
 2005-07-19  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pango-fcfontmap.[ch]: Rework handling of context-specific
