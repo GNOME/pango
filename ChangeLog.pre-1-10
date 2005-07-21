@@ -1,3 +1,9 @@
+2005-07-21  Owen Taylor  <otaylor@redhat.com>
+	
+	* modules/indic/indic-ot-class-tables.c: Enable touching
+	for Sinhala with the ZWJ + al-lakuna combination.
+	(#302577, Harshula)
+
 2005-06-21  Owen Taylor  <otaylor@redhat.com>
  
  	Fix up the operation of PangoLayoutIter, especially for Bidi
@@ -18,7 +24,6 @@
  	test from Amit for the operation of PangoLayoutIter.
 	
 2005-07-21  Owen Taylor  <otaylor@redhat.com>
-
 	* pango/pango-layout.c (pango_layout_set_text): Avoid calling
 	memcpy with a NULL argument. (#310021, Morten Welinder)
 
