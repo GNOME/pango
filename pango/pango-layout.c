@@ -822,7 +822,8 @@ pango_layout_set_text (PangoLayout *layout,
   /* NULL-terminate the text for convenience.
    */
   layout->text = g_malloc (length + 1);
-  memcpy (layout->text, text, length);
+  if (length > 0)
+    memcpy (layout->text, text, length);
   layout->text[length] = '\0';
 
   layout->n_chars = g_utf8_strlen (layout->text, -1);
