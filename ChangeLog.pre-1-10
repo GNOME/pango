@@ -1,5 +1,12 @@
 2005-07-21  Owen Taylor  <otaylor@redhat.com>
 
+	* pango/pangoxft-font.c (_pango_xft_font_new): Force on
+	metrics hinting for all Xft fonts (this fixes font
+	metrics - glyph metrics were fixed earlier).
+	(#307196, Alex Jones)
+
+2005-07-21  Owen Taylor  <otaylor@redhat.com>
+
         * README: Update information about the location of Xft.
 	(#172637, Karel 'Clock' Kulhavy)
 
