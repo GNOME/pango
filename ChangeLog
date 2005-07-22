@@ -1,6 +1,6 @@
 2005-07-22  Owen Taylor  <otaylor@redhat.com>
 
-	* pango/Makefile.a configure.in: Use -export-symbols-regex
+	* pango/Makefile.am configure.in: Use -export-symbols-regex
 	to control symbol exports, including not exporting the symbols
 	from opentype/.
 
