@@ -1,5 +1,10 @@
 2005-07-22  Owen Taylor  <otaylor@redhat.com>
 
+	* pango/opentype/ftglue.c (ftglue_realloc): Remove
+	an unecessary set of block2.
+
+2005-07-22  Owen Taylor  <otaylor@redhat.com>
+	
 	Patch from David Turner. Review and testing by Behdad Esfahbod
 
 	* pango/opentype/ftglue.[ch] Makefile.am: Glue layer that provides
