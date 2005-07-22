@@ -24,7 +24,7 @@
 	an unecessary set of block2.
 
 2005-07-22  Owen Taylor  <otaylor@redhat.com>
-
+	
 	Patch from David Turner. Review and testing by Behdad Esfahbod
 
 	* pango/opentype/ftglue.[ch] Makefile.am: Glue layer that provides
@@ -53,15 +53,15 @@
 2005-07-21  Owen Taylor  <otaylor@redhat.com>
 
 	Based on patch from Gustavo J. A. M. Carneiro  (#305975)
-
+ 
 	* pango/pango-layout.[ch] (pango_layout_line_ref)
 	pango/pango-attributes.[ch] (pango_attr_list_ref): Return the
 	argument to _ref() functions.
 
-	* pango/pango-item.[ch]: Register PangoItem boxed type.
-
-	* pango/pango-layout.[ch]: Register PangoLayoutLine boxed type.
-
+ 	* pango/pango-item.[ch]: Register PangoItem boxed type.
+ 
+ 	* pango/pango-layout.[ch]: Register PangoLayoutLine boxed type.
+	
 2005-07-22  Tor Lillqvist  <tml@novell.com>
 
 	* pango/pangowin32.c: No need to include modules.h here any
@@ -108,7 +108,7 @@
 
 2005-07-21  Owen Taylor  <otaylor@redhat.com>
 
-	* README: Update information about the location of Xft.
+        * README: Update information about the location of Xft.
 	(#172637, Karel 'Clock' Kulhavy)
 
 2005-07-21  Owen Taylor  <otaylor@redhat.com>
@@ -130,7 +130,7 @@
 	(#309459, Sukhjinder Sidhu)
 
 2005-07-21  Owen Taylor  <otaylor@redhat.com>
-
+	
 	* modules/indic/indic-ot-class-tables.c: Enable touching
 	for Sinhala with the ZWJ + al-lakuna combination.
 	(#302577, Harshula)
@@ -165,10 +165,10 @@
 	* pango/opentype/FT-license.txt: Make this the dual-licensing
 	description that covers the FreeType code (FreeType's 
 	LICENSE.TXT) rather than the FTL.
-
+	
 	* pango/opentype/FTL.TXT: Move the FTL (referenced from 
 	FT-license.txt) to here.
-
+	
 	* modules/basic/basic-common.h modules/hebrew/hebrew-shaper.h
 	modules/thai/thai-charprop.c modules/thai/thai-shaper.h
 	tools/gen-script-for-lang.c tests/testcolor.c: 
@@ -207,7 +207,7 @@
 	pango_cairo_context_get/set_resolution(),
 	pango_cairo_context_set/get_font_options to allow controlling the
 	resolution and font rendering options for a specific PangoContext.
-
+			
 	* pango/pangocairo-fcfont.c pango/pangocairo-fcfontmap
 	pango/pangocairo-win32font.c: Implement resolution and font
 	options handling adapt to related Cairo changes.
@@ -252,7 +252,7 @@
 	!line->runs. (Part of #306415, Thomas Fitzsimmons)
 
 2005-06-24  Owen Taylor  <otaylor@redhat.com>
-
+	
 	* docs/pango_markup.sgml (linkend): Fix a stray newline
 	(#308887, Ryan Lortie)
 
@@ -290,28 +290,28 @@
 
 	* pango/pango-layout.c (pango_layout_iter_next_line): Remove
 	unneeded updating of iter->index and an associated FIXME.
-
+	
 	* tests/testiter.c tests/Makefile.am: Add a (somewhat reworked) 
 	test from Amit for the operation of PangoLayoutIter.
 
 2005-06-21  Owen Taylor  <otaylor@redhat.com>
 
-	* pango/pangoxft-render.c (get_renderer): Go back to 
-	honoring alpha in the XftColor passed in; it was a 1.6 => 1.8
-	regression. (#169622, based on a patch from Mikael Magnusson)
+ 	* pango/pangoxft-render.c (get_renderer): Go back to 
+ 	honoring alpha in the XftColor passed in; it was a 1.6 => 1.8
+ 	regression. (#169622, based on a patch from Mikael Magnusson)
 
 2005-06-21  Owen Taylor  <otaylor@redhat.com>
-
-	* modules/khmer configure.in modules/Makefile.am 
-	modules/makefile.msc: Add a Khmer module by
-	Jens Herden and Javier Sola. (#125605)
+ 
+ 	* modules/khmer configure.in modules/Makefile.am 
+ 	modules/makefile.msc: Add a Khmer module by
+ 	Jens Herden and Javier Sola. (#125605)
 
 2005-06-20  Owen Taylor  <otaylor@redhat.com>
 
 	* === Released 1.9.0 ===
 
 	* NEWS: Update for 1.9.0
-
+	
 	* README: Update
 
 2005-06-18  Behdad Esfahbod  <pango@behdad.org>
@@ -331,9 +331,9 @@
 	of other characters with nutka. (#304174, Sukhjinder Sidhu)
 
 2005-06-14  Owen Taylor  <otaylor@redhat.com>
-
+	
 	Misc fixes from Stepan Kasal, #169928
-
+	
 	* pangoxft.pc.in: Add requirement on pangoft2
 
 	* pangoxft-uninstalled.pc.in: Fix cut-and-paste
@@ -350,7 +350,7 @@
 	(#169852, Morten Welinder)
 
 2005-06-14  Owen Taylor  <otaylor@redhat.com>
-
+	
 	* pango/pango-script-table.h (struct): Hand edit
 	to fix a bug in the 4.0.0 data tables.
 	(#173096, Sukhjinder Sidhu)
@@ -402,7 +402,7 @@
 	* pango/pango-context.c (itemize_state_finish): Fix 
 	potential leak of state->base_font. (#168930, Ben Maurer,
 	Aivars Kalvans)
-
+	
 2005-06-10  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pangocairo-fcfont.c: Add a (hopefully temporary) cache
@@ -425,7 +425,7 @@
 	Implement hinting control for the for the fontconfig/cairo
 	backend.
 
-2005-05-17  Manish Singh  <yosh@gimp.org>
+Tue May 17 07:21:53 2005  Manish Singh  <yosh@gimp.org>
 
 	* examples/cairoview.c: update for new cairo_xlib_surface API.
 
@@ -444,7 +444,7 @@
 	include Xutil.h, since Xutil.h doesn't include Xlib.h on
 	some platforms. (#304317, Damien Carbery)
 
-2005-05-13  Manish Singh  <yosh@gimp.org>
+Fri May 13 23:54:29 2005  Manish Singh  <yosh@gimp.org>
 
 	* examples/cairoview.c: #include Xutil.h explicitly, update
 	for renamed cairo API.
@@ -474,8 +474,8 @@
 
 2005-05-01  Owen Taylor  <otaylor@redhat.com>
 
-	* examples/cairoview.c: Fix for the change of cairo_clip() not to
-	preserve the path.
+	* examples/cairoview.c: Fix for the change of cairo_clip() not to preserve
+	the path.
 
 2005-04-28  Tor Lillqvist  <tml@novell.com>
 
@@ -510,7 +510,7 @@
 	(set_up_pango_log_clusters, itemize_shape_and_place): Use
 	unichar_index() instead of direct index into wchar_t string.
 
-2005-04-27  Manish Singh  <yosh@gimp.org>
+Wed Apr 27 15:45:06 2005  Manish Singh  <yosh@gimp.org>
 
 	* examples/cairoview.c: Update to new Cairo API for writing out PNGs.
 
@@ -523,7 +523,7 @@
 	* modules/hangul/hangul-fc.c (render_basic): handles zero width
 	chars, patch by Young-Ho Cha. (#157565)
 
-2005-04-18  Manish Singh  <yosh@gimp.org>
+Mon Apr 18 15:49:36 2005  Manish Singh  <yosh@gimp.org>
 
 	* examples/cairoview.c: Update to new Cairo API for setting color
 	and opacity.
@@ -537,7 +537,7 @@
 	* pango/pangowin32.def: Rename get_scale_factor to
 	get_metrics_factor here, too. (#300222, Ivan Wong)
 
-2005-04-08  Manish Singh  <yosh@gimp.org>
+Fri Apr  8 15:30:55 2005  Manish Singh  <yosh@gimp.org>
 
 	* examples/cairoview.c: #include <pixman.h> since the cairo headers
 	don't include it for us anymore.
@@ -547,7 +547,7 @@
 	* pango/pangocairo-font.c (_pango_cairo_font_install): Remove
 	stray return. (#173046, Damien Carbery)
 
-2005-04-07  Manish Singh  <yosh@gimp.org>
+Thu Apr  7 22:45:32 2005  Manish Singh  <yosh@gimp.org>
 
 	* configure.in: Test for renamed cairo_ft_scaled_font_lock_face().
 
@@ -635,7 +635,7 @@
 	(pango_fc_font_map_get_render_key): Handle mix of
 	absolute and not sizes correctly.
 
-2005-03-05  Manish Singh  <yosh@gimp.org>
+Sat Mar  5 13:51:04 2005  Manish Singh  <yosh@gimp.org>
 
 	* pango/mini-fribidi/fribidi_types.[ch]: const correctness for
 	_pango_fribidi_prop_to_type
@@ -663,7 +663,7 @@
 	modules/indic/{indic-fc.c,indic-ot-class-tables.c,
 	indic-ot.h} modules/syriac/syriac-ot.c (syriac): Further
 	addition of const.
-
+	
 2005-03-04  Owen Taylor  <otaylor@redhat.com>
 
 	* NEWS: Updates from stable branch.
@@ -689,7 +689,7 @@
 	* pango/pango-fontmap.c (pango_font_map_load_font): Add
 	a g_return_if_fail() if desc doesn't have a family.
 	(#165866, Kees Cook)
-
+	
 2005-03-03  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pangoxft-render.c (pango_xft_renderer_draw_glyphs):
@@ -727,9 +727,9 @@
 	where people have disabled hinting in their config causes
 	various problems. (reported variously, including #167801, 
 	Adam Sampson)
-
+	
 2005-03-02  Owen Taylor  <otaylor@redhat.co>m
-
+	
 	[ ChangeLog entry for some changes accidentally committed
 	  a while ago ]
 
@@ -747,29 +747,29 @@
 	pango_attr_size_new()
 
 2005-03-01  Owen Taylor  <otaylor@redhat.com>
-
+  
 	* pango/pango-layout.c (process_item): Don't break
 	lines on LINE_SEPARATOR in single-paragraph mode.
 	(#168589, Damon Chaplin)
 
 2005-03-01  Owen Taylor  <otaylor@redhat.com>
-
-	* pango/pangoxft-font.c: Fix a typo in the last
-	commit (Manish Singh)
-
+  
+ 	* pango/pangoxft-font.c: Fix a typo in the last
+ 	commit (Manish Singh)
+	
 2005-03-01  Owen Taylor  <otaylor@redhat.com>
 
-	* pango/pangoxft-font.c (xft_font_get_font): Delete
-	FC_SPACING value out of pattern before passing it
-	to Xft, to prevent Xft clipping characters and
-	trashing metrics. (#164879, Billy Biggs)
+        * pango/pangoxft-font.c (xft_font_get_font): Delete
+        FC_SPACING value out of pattern before passing it
+        to Xft, to prevent Xft clipping characters and
+        trashing metrics. (#164879, Billy Biggs)
 
 2005-03-01  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pango-context.c (pango_context_get_metrics): Use
 	the language from the context if %NULL is passed in for
 	@language. (#163472)
-
+	
 2005-03-01  Owen Taylor  <otaylor@redhat.com>
 
 	Build fixes from Andrew P. Lentvorski, Jr, #164655
@@ -797,7 +797,7 @@
 	* tests/cxx-test.C: Include pangowin32.h first to avoid
 	a namespace collision. (#163584)
 
-2005-02-25  Manish Singh  <yosh@gimp.org>
+Fri Feb 25 12:14:24 2005  Manish Singh  <yosh@gimp.org>
 
 	* pango/pangofc-font.c (pango_fc_font_class_init): map get_font_map
 	to the right function.
@@ -825,7 +825,7 @@
 
 	* pango/pangowin32-fontmap.c: Move initialization into 
 	pango_win32_font_map_init() to facilitate derivation.
-
+	
 	* pango/pangowin2.c pango/pangowin32-fontmap.c 
 	pango/pangowin32-private.h: Move PangoWin32Font/PangoWin32FontMap 
 	definitions into pangowin32-private.h to allow derivation for 
@@ -852,11 +852,11 @@
 	of pangofc-fontmap.h.
 
 2005-02-21  Owen Taylor  <otaylor@redhat.com>
-
-	* pango/fonts.c (pango_font_get_glyph_extents): 
-	* pango/shape.c (pango_shape): Minor doc fixes.
-	(#167922, #167924, Billy Biggs)
-
+ 
+ 	* pango/fonts.c (pango_font_get_glyph_extents): 
+ 	* pango/shape.c (pango_shape): Minor doc fixes.
+ 	(#167922, #167924, Billy Biggs)
+ 
 2005-02-06  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pangocairo.h pango/pangocairo-render.c docs/pango-sections.txt:
@@ -871,14 +871,14 @@
 	build with the new Cairo dependency
 	* pango/Makefile.am : added pangocairo.def to EXTRA_DIST
 
-2005-02-03  Manish Singh  <yosh@gimp.org>
+Thu Feb  3 19:00:17 2005  Manish Singh  <yosh@gimp.org>
 
 	* pango/pangocairo-fc.h: spell _pango_cairo_fc_get_render_key
 	correctly.
 
 	* pango/pangocairo-fcfont.c: #include cairo-ft.h
 
-2005-02-03  Manish Singh  <yosh@gimp.org>
+Thu Feb  3 18:23:27 2005  Manish Singh  <yosh@gimp.org>
 
 	* configure.in: use CAIRO_LIBS for all libcairo checks, and disable
 	the cairo backend if we don't have Win32 nor FreeType support in
@@ -946,10 +946,10 @@
 	/ that was confusing gcc on Win32.
 
 2005-01-10  Owen Taylor  <otaylor@redhat.com>
-
-	* Makefile.am (EXTRA_DIST): Add missing ChangeLog.pre*
-
-2005-01-08  Owen Taylor  <otaylor@redhat.com>
+ 
+ 	* Makefile.am (EXTRA_DIST): Add missing ChangeLog.pre*
+ 
+Sat Jan  8 19:28:17 2005  Owen Taylor  <otaylor@redhat.com>
 
 	* Makefile.am configure.in pangocairo.pc.in 
 	pangocairo-uninstalled.pc.in: Add a .pc file for
@@ -960,7 +960,7 @@
 	* pango.pc.in: Require gmodule-no-export-2.0 instead
 	of gmodule-2.0
 
-2005-01-08  Owen Taylor  <otaylor@redhat.com>
+Sat Jan  8 16:46:37 2005  Owen Taylor  <otaylor@redhat.com>
 
 	* configure.in: Add checks for Cairo
 
@@ -997,36 +997,36 @@
 	* pango/pango-layout.c (pango_layout_line_get_extents): Fix
 	bug where line ink rect was always including 0, 0.
 
-2005-01-06  Owen Taylor  <otaylor@redhat.com>
+Thu Jan  6 12:29:31 2005  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pango-attributes.c (pango_attr_iterator_get_font): 
 	Fix reversed test on attr->absolute that was causing 
 	pixels sizes to be used inappropriately. (#163105, 
 	Ross Burton)
 
-2005-01-04  Owen Taylor  <otaylor@redhat.com>
+Tue Jan  4 14:14:28 2005  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/break.c (enum): Fix trailing comma in enum (#162618)
 
-2005-01-04  Owen Taylor  <otaylor@redhat.com>
+Tue Jan  4 14:11:43 2005  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pango-attributes.c (pango_attr_list_splice): Fix
 	doc sentences to parse. (#161812, Morten Welinder)
 
-2005-01-14  Owen Taylor  <otaylor@redhat.com>
+Tue Jan  4 14:05:13 2005  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pango-renderer.c (pango_renderer_draw_trapezoid): Rename
 	y1 parameters to y1_ to avoid conflicts with the math.h Bessel
 	function. (#161969)
 
-2004-12-31  Owen Taylor  <otaylor@redhat.com>
+Fri Dec 31 10:20:55 2004  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pangofc-fontmap.c (pango_fc_convert_weight_to_pango): 
 	Fix problem where MEDIUM was getting grouped with SEMIBOLD
 	rather than NORMAL. 
 	(http://bugzilla.redhat.com/bugzilla/show_bug.cgi?id=143832)
 
-2004-12-22  Owen Taylor  <otaylor@redhat.com>
+Wed Dec 22 13:21:01 2004  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pango-script.c pango/pango-types.h: Fix a couple
 	of documentation typos (#161647, Torsten Schoenfeld)
@@ -1045,24 +1045,24 @@
 
 	* pango/pango.def: Add a couple of missing functions.
 
-2004-12-17  Owen Taylor  <otaylor@redhat.com>
+Fri Dec 17 14:37:49 2004  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pangofc-fontmap.c (pango_fc_convert_weight_to_fc): Use
 	FC_WEIGHT_MEDIUM, not FC_WEIGHT_NORMAL in old-fontconfig
 	case. (#161568, Vincent Noel)
 
-2004-12-17  Owen Taylor  <otaylor@redhat.com>
+Fri Dec 17 12:44:10 2004  Owen Taylor  <otaylor@redhat.com>
 
 	* configure.in: Fix a couple of typos in the handling of
 	tibetan for --with-included-modules. (#161501, Sebastien Bacher)
 
-2004-12-17  Owen Taylor  <otaylor@redhat.com>
+Fri Dec 17 12:28:56 2004  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pango-layout.c (pango_layout_get_extents_internal): Fix 
 	bug in computing logical_rect.x when layout->width == -1.
 	(#161510, Morten Welinder)
 
-2004-12-16  Owen Taylor  <otaylor@redhat.com>
+Thu Dec 16 14:03:32 2004  Owen Taylor  <otaylor@redhat.com>
 
 	* docs/tmpl/pango-renderer.sgml: Add short and long descriptions.
 
