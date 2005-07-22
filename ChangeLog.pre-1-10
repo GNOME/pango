@@ -1,3 +1,25 @@
+2005-07-22  Owen Taylor  <otaylor@redhat.com>
+
+	Patch from David Turner. Review and testing by Behdad Esfahbod
+
+	* pango/opentype/ftglue.[ch] Makefile.am: Glue layer that provides
+	implementation of the internal functions that the opentype code
+	expects in terms of publically exported FreeType API.
+
+	* pango/opentype/ftxgdef.c pango/opentype/ftxgpos.c
+	pango/opentype/ftxgsub.c pango/opentype/ftxopen.c
+	pango/opentype/otlbuffer.c pango/opentype/pango-ot-info.c
+	pango/opentype/pango-ot-ruleset.c: Remove includes of 
+	internal headers. Small changes to work with ftglue.[ch]
+
+	* pango/opentype/fterrcompat.h: Remove: no longer needed.
+
+	* pango/opentype/ftxgpos.c: Use FT_IS_SFNT(face) rather
+	than poking at FT_MODULE_CLASS (face->driver)->module_name.
+
+	* pango/opentype/ftxopen.c (Free_FeatureList): Free
+	fl->ApplyOrder. (Found by Behdad)
+
 2005-07-21  Manish Singh  <yosh@gimp.org>
 
 	* pango/pangofc-fontmap.c (fontset_hash_key_hash, font_hash_key_hash):
