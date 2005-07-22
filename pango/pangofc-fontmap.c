@@ -506,8 +506,13 @@ static void
 get_context_matrix (PangoContext *context,
 		    PangoMatrix *matrix)
 {
-  const PangoMatrix *set_matrix = pango_context_get_matrix (context);
+  const PangoMatrix *set_matrix;
   static const PangoMatrix identity = PANGO_MATRIX_INIT;
+
+  if (context)
+    set_matrix = pango_context_get_matrix (context);
+  else
+    set_matrix = NULL;
 
   if (set_matrix)
     *matrix = *set_matrix;
