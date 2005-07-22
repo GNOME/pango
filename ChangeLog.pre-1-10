@@ -1,3 +1,15 @@
+2005-07-22  Tor Lillqvist  <tml@novell.com>
+
+	* pango/pangowin32.c: No need to include modules.h here any
+	longer.
+	(pango_win32_get_context): Remove unused variable.
+	(pango_win32_render_layout_line): Fix underlining. (#304692)
+	Mention in the doc comment that the DC's text alignment needs to
+	have TA_BASELINE and TA_LEFT for underlining to be correct.
+
+	* pango/pangowin32-fontmap.c: Include modules.h here instead.
+	(pango_win32_font_map_class_init): Define variable i.
+
 2005-07-21  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pangofc-fontmap.c (pango_fc_font_map_add): Fix an

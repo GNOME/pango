@@ -30,7 +30,6 @@
 #include "pango-utils.h"
 #include "pangowin32.h"
 #include "pangowin32-private.h"
-#include "modules.h"
 
 #define PANGO_WIN32_UNKNOWN_FLAG 0x10000000
 
@@ -132,7 +131,6 @@ PangoContext *
 pango_win32_get_context (void)
 {
   PangoContext *result;
-  int i;
 
   result = pango_context_new ();
   pango_context_set_font_map (result, pango_win32_font_map_for_display ());
@@ -866,12 +864,14 @@ pango_win32_get_unknown_glyph (PangoFont *font,
 
 /**
  * pango_win32_render_layout_line:
- * @hdc:       HDC to use for uncolored drawing
+ * @hdc:       DC to use for uncolored drawing
  * @line:      a #PangoLayoutLine
  * @x:         the x position of start of string (in pixels)
  * @y:         the y position of baseline (in pixels)
  *
- * Render a #PangoLayoutLine onto a device context
+ * Render a #PangoLayoutLine onto a device context. For underlining to
+ * work property the text alignment of the DC should have TA_BASELINE
+ * and TA_LEFT.
  */
 void 
 pango_win32_render_layout_line (HDC              hdc,
@@ -945,9 +945,13 @@ pango_win32_render_layout_line (HDC              hdc,
 	  points[0].y = points[1].y = y + 4;
 	  points[1].x = x + PANGO_PIXELS (x_off + ink_rect.x + ink_rect.width);
 	  Polyline (hdc, points, 2);
-	  /* Fall through */
-	case PANGO_UNDERLINE_SINGLE:
 	  points[0].y = points[1].y = y + 2;
+	  Polyline (hdc, points, 2);
+	  break;
+	case PANGO_UNDERLINE_SINGLE:
+	  points[0].x = x + PANGO_PIXELS (x_off + ink_rect.x) - 1;
+	  points[0].y = points[1].y = y + 2;
+	  points[1].x = x + PANGO_PIXELS (x_off + ink_rect.x + ink_rect.width);
 	  Polyline (hdc, points, 2);
 	  break;
 	case PANGO_UNDERLINE_ERROR:
