@@ -638,6 +638,7 @@ The GObject type for #PangoAttrList.
 </para>
 
 @list: 
+@Returns: 
 
 
 <!-- ##### FUNCTION pango_attr_list_unref ##### -->

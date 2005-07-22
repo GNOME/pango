@@ -1,3 +1,15 @@
+2005-07-21  Owen Taylor  <otaylor@redhat.com>
+
+	Based on patch from Gustavo J. A. M. Carneiro  (#305975)
+ 
+	* pango/pango-layout.[ch] (pango_layout_line_ref)
+	pango/pango-attributes.[ch] (pango_attr_list_ref): Return the
+	argument to _ref() functions.
+
+ 	* pango/pango-item.[ch]: Register PangoItem boxed type.
+ 
+ 	* pango/pango-layout.[ch]: Register PangoLayoutLine boxed type.
+	
 2005-07-22  Tor Lillqvist  <tml@novell.com>
 
 	* pango/pangowin32.c: No need to include modules.h here any

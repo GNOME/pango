@@ -3295,15 +3295,19 @@ pango_layout_check_lines (PangoLayout *layout)
  * @line: a #PangoLayoutLine
  * 
  * Increases the reference count of a #PangoLayoutLine by one.
+ *
+ * Return value: the line passed in (since 1.10)
  **/
-void
+PangoLayoutLine *
 pango_layout_line_ref (PangoLayoutLine *line)
 {
   PangoLayoutLinePrivate *private = (PangoLayoutLinePrivate *)line;
   
-  g_return_if_fail (line != NULL);
+  g_return_val_if_fail (line != NULL, NULL);
 
   private->ref_count++;
+
+  return line;
 }
 
 /**
@@ -3335,6 +3339,18 @@ pango_layout_line_unref (PangoLayoutLine *line)
       g_slist_free (line->runs);
       g_free (line);
     }
+}
+
+GType
+pango_layout_line_get_type(void)
+{
+  static GType our_type = 0;
+  
+  if (our_type == 0)
+    our_type = g_boxed_type_register_static ("PangoLayoutLine",
+                                             (GBoxedCopyFunc) pango_layout_line_ref,
+                                             (GBoxedFreeFunc) pango_layout_line_unref);
+  return our_type;
 }
 
 /**

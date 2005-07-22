@@ -93,6 +93,18 @@ pango_item_free (PangoItem *item)
   g_free (item);
 }
 
+GType
+pango_item_get_type (void)
+{
+  static GType our_type = 0;
+  
+  if (our_type == 0)
+    our_type = g_boxed_type_register_static ("PangoItem",
+                                             (GBoxedCopyFunc) pango_item_copy,
+                                             (GBoxedFreeFunc) pango_item_free);
+  return our_type;
+}
+
 /**
  * pango_item_split:
  * @orig: a #PangoItem

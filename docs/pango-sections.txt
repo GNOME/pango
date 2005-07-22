@@ -43,6 +43,7 @@ PANGO_CONTEXT_CLASS
 PANGO_IS_CONTEXT
 PANGO_IS_CONTEXT_CLASS
 PANGO_CONTEXT_GET_CLASS
+PANGO_TYPE_ITEM
 <SUBSECTION>
 pango_break
 pango_get_log_attrs
@@ -55,6 +56,7 @@ pango_shape
 <SUBSECTION Private>
 pango_direction_get_type
 pango_context_get_type
+pango_item_get_type
 </SECTION>
 
 <SECTION>
@@ -490,10 +492,12 @@ PANGO_LAYOUT_CLASS
 PANGO_IS_LAYOUT_CLASS
 PANGO_LAYOUT_GET_CLASS
 PANGO_TYPE_LAYOUT_ITER
+PANGO_TYPE_LAYOUT_LINE
 
 <SUBSECTION Private>
 pango_layout_get_type
 pango_layout_iter_get_type
+pango_layout_line_get_type
 pango_alignment_get_type
 pango_wrap_mode_get_type
 pango_ellipsize_mode_get_type

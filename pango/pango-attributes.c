@@ -965,13 +965,17 @@ pango_attr_list_new (void)
  * @list: a #PangoAttrList
  * 
  * Increase the reference count of the given attribute list by one.
+ *
+ * Return value: The attribute list passed in (since 1.10)
  **/
-void
+PangoAttrList *
 pango_attr_list_ref (PangoAttrList *list)
 {
-  g_return_if_fail (list != NULL);
+  g_return_val_if_fail (list != NULL, NULL);
 
   list->ref_count++;
+
+  return list;
 }
 
 /**

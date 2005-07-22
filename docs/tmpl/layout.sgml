@@ -725,6 +725,7 @@ See the #PangoGlyphItem docs for details on the fields.
 </para>
 
 @line: 
+@Returns: 
 
 
 <!-- ##### FUNCTION pango_layout_line_unref ##### -->
