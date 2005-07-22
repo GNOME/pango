@@ -1,3 +1,10 @@
+2005-07-22  Tor Lillqvist  <tml@novell.com>
+
+	* pango/pangowin32.c (pango_win32_render_layout_line): Fix
+	underlining. (#304692) Mention in the doc comment that the DC's
+	text alignment needs to have TA_BASELINE and TA_LEFT for
+	underlining to be correct.
+
 2005-07-21  Owen Taylor  <otaylor@redhat.com>
   
  	* modules/indic/indic-ot.c: Minor formatting tweak to license
