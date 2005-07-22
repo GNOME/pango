@@ -16,10 +16,6 @@ INCLUDES = 				\
 	-I$(top_srcdir)/pango		\
 	$(GLIB_CFLAGS)
 
-if PLATFORM_WIN32
-no_undefined = -no-undefined
-endif
-
 moduledir = $(libdir)/pango/$(PANGO_MODULE_VERSION)/modules
 module_LTLIBRARIES =
 noinst_LTLIBRARIES =
@@ -33,7 +29,7 @@ module_LTLIBRARIES += pango-basic-x.la
 endif
 endif
 
-pango_basic_x_la_LDFLAGS = -export-dynamic -avoid-version -module $(no_undefined)
+pango_basic_x_la_LDFLAGS = -module $(MODULE_LIBTOOL_OPTIONS)
 pango_basic_x_la_LIBADD = $(pangoxlibs)
 pango_basic_x_la_SOURCES = basic-x.c
 libpango_basic_x_la_SOURCES = basic-x.c
@@ -49,7 +45,7 @@ module_LTLIBRARIES += pango-basic-fc.la
 endif
 endif
 
-pango_basic_fc_la_LDFLAGS = -export-dynamic -avoid-version -module $(no_undefined)
+pango_basic_fc_la_LDFLAGS = -module $(MODULE_LIBTOOL_OPTIONS)
 pango_basic_fc_la_LIBADD = $(pangoft2libs)
 pango_basic_fc_la_SOURCES = basic-fc.c
 libpango_basic_fc_la_SOURCES = basic-fc.c
@@ -64,7 +60,7 @@ module_LTLIBRARIES += pango-basic-win32.la
 endif
 endif
 
-pango_basic_win32_la_LDFLAGS = -export-dynamic -avoid-version -module $(no_undefined)
+pango_basic_win32_la_LDFLAGS = -module $(MODULE_LIBTOOL_OPTIONS)
 pango_basic_win32_la_LIBADD = $(pangowin32libs) -lgdi32
 pango_basic_win32_la_SOURCES = basic-win32.c
 libpango_basic_win32_la_SOURCES = basic-win32.c

@@ -16,11 +16,6 @@ moduledir = $(libdir)/pango/$(PANGO_MODULE_VERSION)/modules
 module_LTLIBRARIES =
 noinst_LTLIBRARIES =
 
-if PLATFORM_WIN32
-no_undefined = -no-undefined
-endif
-
-
 if HAVE_FREETYPE
 INCLUDES += $(FREETYPE_CFLAGS)
 if INCLUDE_SYRIAC_FC
@@ -35,7 +30,7 @@ fc_sources = \
 	syriac-ot.c \
 	syriac-ot.h
 
-pango_syriac_fc_la_LDFLAGS = -export-dynamic -avoid-version -module $(no_undefined)
+pango_syriac_fc_la_LDFLAGS = -module $(MODULE_LIBTOOL_OPTIONS)
 pango_syriac_fc_la_LIBADD = $(pangoft2libs)
 pango_syriac_fc_la_SOURCES = $(fc_sources)
 libpango_syriac_fc_la_SOURCES = $(fc_sources)

@@ -1512,6 +1512,22 @@ pango_x_face_get_type (void)
   return object_type;
 }
 
+/* Cut and paste here to avoid an inter-module dependency */
+static PangoCoverageLevel
+engine_shape_covers (PangoEngineShape *engine,
+		     PangoFont        *font,
+		     PangoLanguage    *language,
+		     gunichar          wc)
+{
+  g_return_val_if_fail (PANGO_IS_ENGINE_SHAPE (engine), PANGO_COVERAGE_NONE);
+  g_return_val_if_fail (PANGO_IS_FONT (font), PANGO_COVERAGE_NONE);
+
+  return PANGO_ENGINE_SHAPE_GET_CLASS (engine)->covers (engine,
+							font,
+							language,
+							wc);
+}
+
 PangoCoverage *
 pango_x_face_get_coverage (PangoXFace      *xface,
 			   PangoFont       *font,
@@ -1558,7 +1574,7 @@ pango_x_face_get_coverage (PangoXFace      *xface,
 	{
 	  PangoCoverageLevel level;
 
-	  level = _pango_engine_shape_covers (engine, font, language, wc);
+	  level = engine_shape_covers (engine, font, language, wc);
 	  if (level != PANGO_COVERAGE_NONE)
 	    pango_coverage_set (result, wc, level);
 	}

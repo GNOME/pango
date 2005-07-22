@@ -12,10 +12,6 @@ INCLUDES =				\
 	-I$(top_srcdir)/pango		\
 	$(GLIB_CFLAGS)
 
-if PLATFORM_WIN32
-no_undefined = -no-undefined
-endif
-
 moduledir = $(libdir)/pango/$(PANGO_MODULE_VERSION)/modules
 module_LTLIBRARIES =
 noinst_LTLIBRARIES =
@@ -34,7 +30,7 @@ endif
 
 thai_fc_sources = $(common_sources) thai-fc.c thai-ot.c thai-ot.h
 
-pango_thai_fc_la_LDFLAGS = -export-dynamic -avoid-version -module $(no_undefined)
+pango_thai_fc_la_LDFLAGS = -module $(MODULE_LIBTOOL_OPTIONS)
 pango_thai_fc_la_LIBADD = $(pangoft2libs)
 pango_thai_fc_la_SOURCES = $(thai_fc_sources)
 libpango_thai_fc_la_SOURCES = $(thai_fc_sources)

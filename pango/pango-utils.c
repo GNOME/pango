@@ -58,7 +58,7 @@ struct PangoAlias
   gboolean visible; /* Do we want/need this? */
 };
 
-GHashTable *pango_aliases_ht = NULL;
+static GHashTable *pango_aliases_ht = NULL;
 
 /**
  * pango_trim_string:

@@ -1,5 +1,20 @@
 2005-07-22  Owen Taylor  <otaylor@redhat.com>
 
+	* pango/Makefile.a configure.in: Use -export-symbols-regex
+	to control symbol exports, including not exporting the symbols
+	from opentype/.
+
+	* modules/*/Makefile.am: Control symbol exports here as well,
+	simplify using AC_SUBST() of MODULE_LIBTOOL_OPTIONS from configure.in.
+
+	* pango/pangox-fontmap.c (engine_shape_covers): Cut-and-paste
+	engine_shape_covers to avoid using a symbol from libpango.
+
+	* pango/pango-utils.c: Make accidentally exported pango_aliases_ht
+	static.
+
+2005-07-22  Owen Taylor  <otaylor@redhat.com>
+
 	* pango/pango-layout.c: Add some missing statics on functions
 	added in the recent layout iter patch.
 

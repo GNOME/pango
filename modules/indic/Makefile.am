@@ -12,10 +12,6 @@ INCLUDES =					\
 	-I$(top_srcdir)/pango			\
 	$(GLIB_CFLAGS)
 
-if PLATFORM_WIN32
-no_undefined = -no-undefined
-endif
-
 moduledir = $(libdir)/pango/$(PANGO_MODULE_VERSION)/modules
 module_LTLIBRARIES =
 noinst_LTLIBRARIES =
@@ -38,7 +34,7 @@ fc_sources =		 	\
 	mprefixups.c		\
 	mprefixups.h
 
-pango_indic_fc_la_LDFLAGS = -export-dynamic -avoid-version -module $(no_undefined)
+pango_indic_fc_la_LDFLAGS = -module $(MODULE_LIBTOOL_OPTIONS)
 pango_indic_fc_la_LIBADD = $(pangoft2libs)
 pango_indic_fc_la_SOURCES = $(fc_sources)
 libpango_indic_fc_la_SOURCES = $(fc_sources)

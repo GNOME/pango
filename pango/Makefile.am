@@ -32,10 +32,6 @@ BUILT_SOURCES = pango-enum-types.h pango-enum-types.c
 
 pangoincludedir=$(includedir)/pango-1.0/pango
 
-if PLATFORM_WIN32
-no_undefined = -no-undefined
-endif
-
 if OS_WIN32
 else
 libm = -lm
@@ -45,7 +41,7 @@ endif
 
 lib_LTLIBRARIES = libpango-1.0.la
 
-libpango_1_0_la_LDFLAGS = -version-info $(LT_VERSION_INFO) $(no_undefined)
+libpango_1_0_la_LDFLAGS = $(LIBRARY_LIBTOOL_OPTIONS)
 libpango_1_0_la_LIBADD = $(GLIB_LIBS) mini-fribidi/libmini-fribidi.la $(libm)
 libpango_1_0_la_DEPENDENCIES = mini-fribidi/libmini-fribidi.la
 
@@ -151,7 +147,7 @@ pangoinclude_HEADERS += pangox.h
 lib_LTLIBRARIES += libpangox-1.0.la
 endif
 
-libpangox_1_0_la_LDFLAGS = -version-info $(LT_VERSION_INFO) $(no_undefined)
+libpangox_1_0_la_LDFLAGS = $(LIBRARY_LIBTOOL_OPTIONS)
 libpangox_1_0_la_LIBADD = libpango-$(PANGO_API_VERSION).la $(INCLUDED_X_MODULES) $(X_LIBS) $(X_EXTRA_LIBS) $(GLIB_LIBS)
 libpangox_1_0_la_DEPENDENCIES = libpango-$(PANGO_API_VERSION).la $(INCLUDED_X_MODULES)
 
@@ -171,7 +167,7 @@ pangoinclude_HEADERS += pangoft2.h pango-ot.h pangofc-decoder.h
 lib_LTLIBRARIES += libpangoft2-1.0.la
 endif
 
-libpangoft2_1_0_la_LDFLAGS = -version-info $(LT_VERSION_INFO) $(no_undefined)
+libpangoft2_1_0_la_LDFLAGS = $(LIBRARY_LIBTOOL_OPTIONS)
 libpangoft2_1_0_la_LIBADD = opentype/libpango-ot.la libpango-$(PANGO_API_VERSION).la $(INCLUDED_FC_MODULES) $(FREETYPE_LIBS) $(GLIB_LIBS) $(libm)
 libpangoft2_1_0_la_DEPENDENCIES = opentype/libpango-ot.la libpango-$(PANGO_API_VERSION).la $(INCLUDED_FC_MODULES)
 
@@ -202,7 +198,7 @@ pangoinclude_HEADERS += pangoxft.h pangoxft-render.h pango-ot.h
 lib_LTLIBRARIES += libpangoxft-1.0.la
 endif
 
-libpangoxft_1_0_la_LDFLAGS = -version-info $(LT_VERSION_INFO) $(no_undefined)
+libpangoxft_1_0_la_LDFLAGS = $(LIBRARY_LIBTOOL_OPTIONS)
 libpangoxft_1_0_la_LIBADD = libpangoft2-$(PANGO_API_VERSION).la libpango-$(PANGO_API_VERSION).la $(XFT_LIBS) $(GLIB_LIBS)
 libpangoxft_1_0_la_DEPENDENCIES = libpangoft2-$(PANGO_API_VERSION).la libpango-$(PANGO_API_VERSION).la
 
@@ -220,7 +216,7 @@ pangoinclude_HEADERS += pangocairo.h
 lib_LTLIBRARIES += libpangocairo-1.0.la
 endif
 
-libpangocairo_1_0_la_LDFLAGS = -version-info $(LT_VERSION_INFO) $(no_undefined)
+libpangocairo_1_0_la_LDFLAGS = $(LIBRARY_LIBTOOL_OPTIONS)
 libpangocairo_1_0_la_LIBADD = libpango-$(PANGO_API_VERSION).la $(CAIRO_LIBS) $(GLIB_LIBS)
 libpangocairo_1_0_la_DEPENDENCIES = libpango-$(PANGO_API_VERSION).la
 
@@ -254,7 +250,7 @@ pangoinclude_HEADERS += pangowin32.h
 lib_LTLIBRARIES += libpangowin32-1.0.la
 endif
 
-libpangowin32_1_0_la_LDFLAGS = -version-info $(LT_VERSION_INFO)	$(no_undefined)
+libpangowin32_1_0_la_LDFLAGS = $(LIBRARY_LIBTOOL_OPTIONS)
 libpangowin32_1_0_la_LIBADD = libpango-$(PANGO_API_VERSION).la $(INCLUDED_WIN32_MODULES) $(WIN32_LIBS) $(GLIB_LIBS)
 libpangowin32_1_0_la_DEPENDENCIES = libpango-$(PANGO_API_VERSION).la $(INCLUDED_WIN32_MODULES)
 

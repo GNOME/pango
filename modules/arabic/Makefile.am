@@ -16,10 +16,6 @@ moduledir = $(libdir)/pango/$(PANGO_MODULE_VERSION)/modules
 module_LTLIBRARIES =
 noinst_LTLIBRARIES =
 
-if PLATFORM_WIN32
-no_undefined = -no-undefined
-endif
-
 
 if HAVE_FREETYPE
 INCLUDES += $(FREETYPE_CFLAGS)
@@ -35,7 +31,7 @@ fc_sources = \
 	arabic-ot.c \
 	arabic-ot.h
 
-pango_arabic_fc_la_LDFLAGS = -export-dynamic -avoid-version -module $(no_undefined)
+pango_arabic_fc_la_LDFLAGS = -module $(MODULE_LIBTOOL_OPTIONS)
 pango_arabic_fc_la_LIBADD = $(pangoft2libs)
 pango_arabic_fc_la_SOURCES = $(fc_sources)
 libpango_arabic_fc_la_SOURCES = $(fc_sources)

@@ -28,13 +28,9 @@ module_LTLIBRARIES += pango-hebrew-fc.la
 endif
 endif
 
-if PLATFORM_WIN32
-no_undefined = -no-undefined
-endif
-
 hebrew_fc_sources = $(common_sources) hebrew-fc.c 
 
-pango_hebrew_fc_la_LDFLAGS = -export-dynamic -avoid-version -module $(no_undefined)
+pango_hebrew_fc_la_LDFLAGS = -module $(MODULE_LIBTOOL_OPTIONS)
 pango_hebrew_fc_la_LIBADD = $(pangoft2libs)
 pango_hebrew_fc_la_SOURCES = $(hebrew_fc_sources)
 libpango_hebrew_fc_la_SOURCES = $(hebrew_fc_sources)
