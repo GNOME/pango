@@ -1,5 +1,10 @@
 2005-07-22  Owen Taylor  <otaylor@redhat.com>
 
+	* pango/pango-layout.c: Add some missing statics on functions
+	added in the recent layout iter patch.
+
+2005-07-22  Owen Taylor  <otaylor@redhat.com>
+
 	* pango/opentype/ftglue.c (ftglue_realloc): Remove
 	an unecessary set of block2.
 
