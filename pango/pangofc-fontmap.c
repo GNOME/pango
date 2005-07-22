@@ -336,7 +336,7 @@ fontset_hash_key_hash (const FontsetHashKey *key)
 
     /* 1237 is just an abitrary prime */
     return (hash ^
-	    (guint)key->language ^
+	    GPOINTER_TO_UINT (key->language) ^
 	    (key->size * 1237) ^
 	    pango_font_description_hash (key->desc));
 }
@@ -407,7 +407,7 @@ font_hash_key_hash (const FontHashKey *key)
       hash ^= PANGO_FC_FONT_MAP_GET_CLASS (key->fontmap)->context_key_hash (key->fontmap,
 									    key->context_key);
 
-    return (hash ^ (guint32)key->pattern);
+    return (hash ^ GPOINTER_TO_UINT (key->pattern));
 }
 
 static void

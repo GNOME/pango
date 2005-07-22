@@ -1,3 +1,8 @@
+2005-07-21  Manish Singh  <yosh@gimp.org>
+
+	* pango/pangofc-fontmap.c (fontset_hash_key_hash, font_hash_key_hash):
+	use GPOINTER_TO_UINT() instead of bare casts to guint.
+
 2005-07-21  Owen Taylor  <otaylor@redhat.com>
 
 	Based on patch from Gustavo J. A. M. Carneiro  (#305975)
