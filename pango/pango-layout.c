@@ -4677,7 +4677,7 @@ line_is_terminated (PangoLayoutIter *iter)
  * is set, a line with just an explicit paragraph separator
  * is considered non-empty.
  */
-gboolean
+static gboolean
 next_nonempty_line (PangoLayoutIter *iter,
 		    gboolean         include_terminators)
 {
@@ -4703,7 +4703,7 @@ next_nonempty_line (PangoLayoutIter *iter,
  * is set, the trailing run at the end of a line with an explicit
  * paragraph separator is considered non-empty.
  */
-gboolean
+static gboolean
 next_nonempty_run (PangoLayoutIter *iter,
 		    gboolean         include_terminators)
 {
@@ -4729,7 +4729,7 @@ next_nonempty_run (PangoLayoutIter *iter,
  * is set, includes the fake runs/clusters for empty lines.
  * (But not positions introduced by line wrapping).
  */
-gboolean
+static gboolean
 next_cluster_internal (PangoLayoutIter *iter,
 		       gboolean         include_terminators)
 {
