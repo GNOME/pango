@@ -196,7 +196,7 @@ fallback_shape (PangoEngineShape *engine,
 	  pango_get_mirror_char (wc, &mirrored_ch))
 	wc = mirrored_ch;
 
-      if (wc >= 0x200B && wc <= 0x200F)	/* Zero-width characters */
+      if (pango_is_zero_width (wc))
 	{
 	  set_glyph (font, glyphs, i, p - text, 0);
 	}

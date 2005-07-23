@@ -197,7 +197,7 @@ fallback_shape (PangoEngineShape *engine,
 	    input = buf;
 	  }
 
-      if (wc >= 0x200B && wc <= 0x200F)	/* Zero-width characters */
+      if (pango_is_zero_width (wc))
 	{
 	  set_glyph (font, glyphs, i, p - text, 0);
 	}

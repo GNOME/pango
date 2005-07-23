@@ -275,10 +275,6 @@ render_syllable (PangoFont *font, gunichar *text, int length,
     render_tone(font, tone, glyphs, n_glyphs, cluster_offset);
 }
 
-/* stolen from basic module */
-#define ZERO_WIDTH_CHAR(wc)\
-(((wc) >= 0x200B && (wc) <= 0x200F) || ((wc) >= 0x202A && (wc) <= 0x202E) || ((wc) == 0xFEFF))
-
 static void
 render_basic (PangoFont *font, gunichar wc,
 	      PangoGlyphString *glyphs, int *n_glyphs, int cluster_offset)
@@ -294,7 +290,7 @@ render_basic (PangoFont *font, gunichar wc,
     set_glyph (font, glyphs, *n_glyphs, cluster_offset, index);
   else
     {
-      if (ZERO_WIDTH_CHAR (wc))
+      if (pango_is_zero_width (wc))
 	set_glyph (font, glyphs, *n_glyphs, cluster_offset, 0);
       else
 	set_glyph (font, glyphs, *n_glyphs, cluster_offset,

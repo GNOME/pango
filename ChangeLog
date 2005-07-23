@@ -1,3 +1,15 @@
+2005-07-23  Behdad Esfahbod  <pango@behdad.org>
+
+	* pango/pango-utils.c, pango/pango-utils.h (pango_is_zerowidth): New
+	function added.
+
+	* modules/basic/basic-common.h, modules/basic/basic-fc.c,
+	modules/basic/basic-win32.c, modules/basic/basic-x.c,
+	modules/hangul/hangul-fc.c, modules/arabic/arabic-fc.c,
+	modules/indic/indic-fc.c, modules/indic/indic-ot.h,
+	modules/syriac/syriac-fc.c:  Use the new pango_is_zerowidth function.
+	(#306639, Behnam Esfahbod)
+
 2005-07-22  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pangofc-fontmap.c (get_context_matrix): Handle context == NULL.

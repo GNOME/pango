@@ -1714,3 +1714,37 @@ pango_find_base_dir (const gchar *text,
 
   return dir;
 }
+
+/**
+ * pango_is_zero_width:
+ * @ch: a unicode character
+ *
+ * Checks @ch to see if it is a zero-width character that should not be
+ * normally rendered on the screen.
+ *
+ * Return value: %TRUE if @ch is a zero-width character, %FALSE otherwise
+ */
+gboolean
+pango_is_zero_width (gunichar ch)
+{
+/* Zero Width characters:
+ *
+ *  200B  ZERO WIDTH SPACE
+ *  200C  ZERO WIDTH NON-JOINER
+ *  200D  ZERO WIDTH JOINER
+ *  200E  LEFT-TO-RIGHT MARK
+ *  200F  RIGHT-TO-LEFT MARK
+ *  2028  LINE SEPARATOR
+ *  202A  LEFT-TO-RIGHT EMBEDDING
+ *  202B  RIGHT-TO-LEFT EMBEDDING
+ *  202C  POP DIRECTIONAL FORMATTING
+ *  202D  LEFT-TO-RIGHT OVERRIDE
+ *  202E  RIGHT-TO-LEFT OVERRIDE
+ *  FEFF  ZERO WIDTH NO-BREAK SPACE
+ */
+  return (ch & ~(gunichar)0x003F == 0x2000 && (
+		(ch >= 0x200B && ch <= 0x200F) ||
+		ch == 0x2028 ||
+		(ch >= 0x202A && ch <= 0x202E)
+	 )) || ch == 0xFEFF;
+}

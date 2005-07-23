@@ -260,7 +260,7 @@ set_glyphs (PangoFont *font, FT_Face face, const gunichar *wcs, gulong *tags, gl
     {
       guint glyph;
 
-      if (ZERO_WIDTH_CHAR (wcs[i]) &&
+      if (pango_is_zero_width (wcs[i]) &&
 	  (!process_zwj || wcs[i] != 0x200D))
 	glyph = 0;
       else
