@@ -329,6 +329,13 @@ pango_cairo_context_get_resolution (PangoContext *context)
     return -1.0;
 }
 
+struct _cairo_font_options {
+    cairo_antialias_t antialias;
+    cairo_subpixel_order_t subpixel_order;
+    cairo_hint_style_t hint_style;
+    cairo_hint_metrics_t hint_metrics;
+};
+
 /**
  * pango_cairo_context_set_font_options:
  * @context: a #PangoContext, from pango_cairo_font_map_create_context()
@@ -361,7 +368,7 @@ pango_cairo_context_set_font_options (PangoContext               *context,
       info->merged_options = NULL;
     }
 }
-
+  
 /**
  * pango_cairo_get_font_options:
  * @context: a #PangoContext, from pango_cairo_font_map_create_context()

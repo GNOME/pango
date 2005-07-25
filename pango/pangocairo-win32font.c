@@ -133,11 +133,12 @@ static void
 pango_cairo_win32_font_install (PangoCairoFont *font,
 				cairo_t        *cr)
 {
-  PangoCairoWin32Font *cffont = PANGO_CAIRO_WIN32_FONT (font);
+  PangoCairoWin32Font *cwfont = PANGO_CAIRO_WIN32_FONT (font);
 
   cairo_set_font_face (cr,
 		       pango_cairo_win32_font_get_font_face (font));
-  cairo_set_font_matrix (cr, &cffont->font_matrix);
+  cairo_set_font_matrix (cr, &cwfont->font_matrix);
+  cairo_set_font_optoins (cr, cwfont->options);
 }
 
 static void

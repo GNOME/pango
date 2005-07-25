@@ -1,5 +1,8 @@
 2005-07-25  Owen Taylor  <otaylor@redhat.com>
 
+	* pango/pangocairo-fcfont.c (pango_cairo_fc_font_install): Set
+	font options as well.
+
 	* pango/pango-layout.c (line_set_resolved_dir): Always set 
 	line->resolved_dir to one of LTR or RTL. (#171439, Reported
 	by Chris Blizzard)

@@ -134,6 +134,7 @@ pango_cairo_fc_font_install (PangoCairoFont *font,
   cairo_set_font_face (cr,
 		       pango_cairo_fc_font_get_font_face (font));
   cairo_set_font_matrix (cr, &cffont->font_matrix);
+  cairo_set_font_options (cr, cffont->options);
 }
 
 static void
