@@ -2924,6 +2924,29 @@ process_item (PangoLayout     *layout,
     }
 }
 
+/* The resolved direction for the line is always one
+ * of LTR/RTL; not a week or neutral directions
+ */
+static void
+line_set_resolved_dir (PangoLayoutLine *line,
+		       PangoDirection   direction)
+{
+  switch (direction)
+    {
+    case PANGO_DIRECTION_LTR:
+    case PANGO_DIRECTION_TTB_RTL:
+    case PANGO_DIRECTION_WEAK_LTR:
+    case PANGO_DIRECTION_NEUTRAL:
+      line->resolved_dir = PANGO_DIRECTION_LTR;
+      break; 
+    case PANGO_DIRECTION_RTL:
+    case PANGO_DIRECTION_WEAK_RTL:
+    case PANGO_DIRECTION_TTB_LTR:
+      line->resolved_dir = PANGO_DIRECTION_RTL;
+      break;
+    }
+}
+
 static void
 process_line (PangoLayout    *layout,
 	      ParaBreakState *state)
@@ -2938,7 +2961,7 @@ process_line (PangoLayout    *layout,
   line = pango_layout_line_new (layout);
   line->start_index = state->line_start_index;
   line->is_paragraph_start = state->first_line;
-  line->resolved_dir = state->base_dir;
+  line_set_resolved_dir (line, state->base_dir);
 
   if (layout->ellipsize != PANGO_ELLIPSIZE_NONE)
     state->remaining_width = -1;
@@ -3264,8 +3287,8 @@ pango_layout_check_lines (PangoLayout *layout)
 
           empty_line = pango_layout_line_new (layout);
           empty_line->start_index = start - layout->text;
-	  empty_line->is_paragraph_start = TRUE;	  
-	  empty_line->resolved_dir = base_dir;
+	  empty_line->is_paragraph_start = TRUE;
+	  line_set_resolved_dir (empty_line, base_dir);
 
           layout->lines = g_slist_prepend (layout->lines,
                                            empty_line);
