@@ -1,5 +1,5 @@
 /* Pango
- * pangocairowin32-font.c: Cairo font handling, fontconfig backend
+ * pangocairowin32-font.c: Cairo font handling, Win32 backend
  *
  * Copyright (C) 2000-2005 Red Hat Software
  *
@@ -350,7 +350,7 @@ _pango_cairo_win32_font_new (PangoCairoWin32FontMap     *cwfontmap,
 				     win32font->size,
 				     &win32font->logfont);
 
-  cffont->options = cairo_font_options_copy (_pango_cairo_context_get_merged_font_options (context));
+  cwfont->options = cairo_font_options_copy (_pango_cairo_context_get_merged_font_options (context));
   
   return PANGO_FONT (cwfont);
 }

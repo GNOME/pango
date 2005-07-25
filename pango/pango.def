@@ -175,6 +175,7 @@ EXPORTS
 	pango_glyph_string_new
 	pango_glyph_string_set_size
 	pango_glyph_string_x_to_index
+	pango_is_zero_width
 	pango_item_copy
 	pango_item_free
 	pango_item_new

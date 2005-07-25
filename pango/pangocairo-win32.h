@@ -1,5 +1,5 @@
 /* Pango
- * pangocairo-win32.h: Private header file for Cairo/fontconfig combination
+ * pangocairo-win32.h: Private header file for Cairo/Win32 combination
  *
  * Copyright (C) 2005 Red Hat, Inc.
  *
