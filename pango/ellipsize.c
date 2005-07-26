@@ -386,14 +386,13 @@ advance_iterator_to (PangoAttrIterator *iter,
 {
   int start, end;
   
-  while (TRUE)
+  do
     {
       pango_attr_iterator_range (iter, &start, &end);
       if (end > new_index)
 	break;
-      
-      pango_attr_iterator_next (iter);
     }
+  while (pango_attr_iterator_next (iter));
 }
 
 /* Updates the shaping of the ellipsis if necessary when we move the

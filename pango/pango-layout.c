@@ -815,7 +815,10 @@ pango_layout_set_text (PangoLayout *layout,
     {
       if (!g_utf8_validate (text, length, &end))
 	g_warning ("Invalid UTF-8 string passed to pango_layout_set_text()");
-      
+
+      while (end - text > G_MAXINT)
+	end = g_utf8_prev_char (end);
+
       length = end - text;
     }
   
@@ -3773,7 +3776,7 @@ pango_layout_line_get_empty_extents (PangoLayoutLine *line,
 	  PangoAttrIterator *iter = pango_attr_list_get_iterator (layout->attrs);
 	  int start, end;
 	  
-	  while (TRUE)
+	  do
 	    {
 	      pango_attr_iterator_range (iter, &start, &end);
 	      
@@ -3796,9 +3799,9 @@ pango_layout_line_get_empty_extents (PangoLayoutLine *line,
 
 		  break;
 		}
-	      
-	      pango_attr_iterator_next (iter);
+
 	    }
+	  while (pango_attr_iterator_next (iter));
 	  
 	  pango_attr_iterator_destroy (iter);
 	}

@@ -1,5 +1,34 @@
 2005-07-26  Owen Taylor  <otaylor@redhat.com>
 
+	Fixes for signed/unsigned in PangoAttrIterator ((#166700,
+	Morten Welinder)
+
+	* pango/pango-attributes.c (pango_attr_iterator_range): 
+	Clamp results to G_MAXINT to avoid negative numbers from
+	signed/unsigned conversions. 
+
+	* pango/pango-attributes.c: Make PangoAttrIterator 
+	start_index/end_index unsigned to match PangoAttribute.
+	Change various local variables to match.
+	
+	* pango/ellipsize.c (advance_iterator_to)
+	pango/pango-attributes.c (pango_attr_iterator_range)
+	pango/pango-glyph-item.c (pango_glyph_item_apply_attrs)
+	pango/pango-layout.c (pango_layout_line_get_empty_extents): 
+	Always check the return value from pango_attr_iterator()
+	to deal with potential infinite loops when trying to
+	advance to position G_MAXINT.
+	
+	* pango/pango-layout.c (pango_layout_set_text): Handle
+	the case where the text passed in is longer than
+	than G_MAXINT and length < 0.
+
+	* pango/pango-attributes.c (pango_attr_list_splice): Be 
+	careful about integer overflow - clamp addition.
+	(#163246, Morten Welinder)
+
+2005-07-26  Owen Taylor  <otaylor@redhat.com>
+
 	* modules/indic/indic-ot-class-tables.c (oryaCharClasses):
 	Change U+0B30 from _rv to _rb. Oriya doesn't have a vattu
 	form of ra. (#151393, Gautam Sengupta, fix from
