@@ -14,6 +14,9 @@ Obtaining information from OpenType tables
 
 </para>
 
+<!-- ##### SECTION Stability_Level ##### -->
+
+
 <!-- ##### TYPEDEF PangoOTTag ##### -->
 <para>
 The <type>PangoOTTag</type> typedef is used to represent TrueType and OpenType

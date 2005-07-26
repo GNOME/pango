@@ -25,6 +25,7 @@ IGNORE_HFILES=			\
 	module-defs.h		\
 	opentype		\
 	modules.h		\
+	pango-color-table.h	\
 	pango-engine-private.h	\
 	pango-impl-utils.h	\
 	pango-glyph-item-private.h	\

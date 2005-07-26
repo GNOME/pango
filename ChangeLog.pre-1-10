@@ -1,3 +1,13 @@
+2005-07-26  Owen Taylor  <otaylor@redhat.com>
+
+	* === Released 1.8.2 ===
+
+	* configure.in: Version 1.8.2
+
+	* NEWS: Updated
+
+	* docs/Makefile.am: Exclude pango-color-table.h
+
 2005-07-26    Owen Taylor  <otaylor@redhat.com>
 
 	* pango/opentype/ftxgsub.c, pango/opentype/ftxgpos.c: Skip lookups
@@ -46,11 +56,6 @@
 	* modules/indic/indic-ot-class-tables.c (oryaCharClasses):
 	Classify unicode standard additions U+0B35 (va), 
 	U+0B71 (wa) as _ct. (Also #311575)
-
-2005-07-26  Behdad Esfahbod  <pango@behdad.org>
-
-	* pango/opentype/ftxgsub.c, pango/opentype/ftxgpos.c: Skip lookups
-	with lookup index out of range. (#171170)
 
 2005-07-25  Owen Taylor  <otaylor@redhat.com>
 

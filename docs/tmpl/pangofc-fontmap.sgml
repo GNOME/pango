@@ -31,6 +31,9 @@ Fontconfig-based backend involves deriving from both
 </variablelist>
 </para>
 
+<!-- ##### SECTION Stability_Level ##### -->
+
+
 <!-- ##### STRUCT PangoFcFontMap ##### -->
 <para>
 

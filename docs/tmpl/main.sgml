@@ -17,6 +17,9 @@ various steps of this process.
 
 </para>
 
+<!-- ##### SECTION Stability_Level ##### -->
+
+
 <!-- ##### STRUCT PangoContext ##### -->
 <para>
 The #PangoContext structure stores global information

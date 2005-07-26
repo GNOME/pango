@@ -19,6 +19,9 @@ to load a font of a given description.
 
 </para>
 
+<!-- ##### SECTION Stability_Level ##### -->
+
+
 <!-- ##### STRUCT PangoFontDescription ##### -->
 <para>
 The #PangoFontDescription structure represents the description
