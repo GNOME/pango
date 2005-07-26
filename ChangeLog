@@ -1,5 +1,13 @@
 2005-07-26  Owen Taylor  <otaylor@redhat.com>
 
+	* pango/pangocairo-fontmap.c (pango_cairo_context_get_font_options):
+	Fix mixed code and declarations (#311626, Kazuki IWAMOTO)
+
+	* pango/pangocairo-win32font.c (pango_cairo_win32_font_install):
+	Fix typo (#311627, Kazuki IWAMOTO)
+
+2005-07-26  Owen Taylor  <otaylor@redhat.com>
+
 	Fixes for signed/unsigned in PangoAttrIterator ((#166700,
 	Morten Welinder)
 

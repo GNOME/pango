@@ -350,9 +350,11 @@ void
 pango_cairo_context_set_font_options (PangoContext               *context,
 				      const cairo_font_options_t *options)
 {
+  PangoCairoContextInfo *info;
+
   g_return_if_fail (PANGO_IS_CONTEXT (context));
   
-  PangoCairoContextInfo *info = get_context_info (context, TRUE);
+  info  = get_context_info (context, TRUE);
 
   if (info->set_options)
     cairo_font_options_destroy (info->set_options);
@@ -384,9 +386,11 @@ pango_cairo_context_set_font_options (PangoContext               *context,
 const cairo_font_options_t *
 pango_cairo_context_get_font_options (PangoContext *context)
 {
+  PangoCairoContextInfo *info;
+  
   g_return_val_if_fail (PANGO_IS_CONTEXT (context), NULL);
 
-  PangoCairoContextInfo *info = get_context_info (context, FALSE);
+  info = get_context_info (context, FALSE);
 
   if (info)
     return info->set_options;
