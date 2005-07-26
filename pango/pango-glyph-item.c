@@ -483,14 +483,13 @@ pango_glyph_item_apply_attrs (PangoGlyphItem   *glyph_item,
 
   /* Advance the attr iterator to the start of the item
    */
-  while (TRUE)
+  do
     {
       pango_attr_iterator_range (iter, &range_start, &range_end);
       if (range_end > glyph_item->item->offset)
 	break;
-
-      pango_attr_iterator_next (iter);
     }
+  while (pango_attr_iterator_next (iter));
 
   state.segment_attrs = pango_attr_iterator_get_attrs (iter);
   
@@ -505,6 +504,7 @@ pango_glyph_item_apply_attrs (PangoGlyphItem   *glyph_item,
        have_cluster;
        have_cluster = _pango_glyph_item_iter_next_cluster (&state.iter))
     {
+      gboolean have_next;
       
       /* [range_start,range_end] is the first range that intersects
        * the current cluster.
@@ -526,18 +526,17 @@ pango_glyph_item_apply_attrs (PangoGlyphItem   *glyph_item,
        * leaving [range_start,range_end] being the first range that
        * intersects the next cluster.
        */
-      while (TRUE)
+      do
 	{
-	  /* If any ranges end in this cluster, then the next cluster
-	   * goes into a separate segment
-	   */
-	  if (range_end <= state.iter.end_index)
-	    start_new_segment = TRUE;
-
 	  if (range_end > state.iter.end_index) /* Range intersects next cluster */
 	    break;
 
-	  pango_attr_iterator_next (iter);
+	  /* Since ranges end in this cluster, the next cluster goes into a
+	   * separate segment
+	   */
+	  start_new_segment = TRUE;
+
+	  have_next = pango_attr_iterator_next (iter);
 	  pango_attr_iterator_range (iter, &range_start, &range_end);
 
 	  if (range_start >= state.iter.end_index) /* New range doesn't intersect this cluster */
@@ -564,6 +563,7 @@ pango_glyph_item_apply_attrs (PangoGlyphItem   *glyph_item,
 	  state.segment_attrs = g_slist_concat (state.segment_attrs,
 						pango_attr_iterator_get_attrs (iter));
 	}
+      while (have_next);
     }
 
  out:

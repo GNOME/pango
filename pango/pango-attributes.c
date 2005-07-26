@@ -36,8 +36,8 @@ struct _PangoAttrIterator
 {
   GSList *next_attribute;
   GList *attribute_stack;
-  int start_index;
-  int end_index;
+  guint start_index;
+  guint end_index;
 };
 
 static PangoAttribute *pango_attr_color_new         (const PangoAttrClass *klass,
@@ -1050,7 +1050,7 @@ pango_attr_list_insert_internal (PangoAttrList  *list,
 				 gboolean        before)
 {
   GSList *tmp_list, *prev, *link;
-  gint start_index = attr->start_index;
+  guint start_index = attr->start_index;
 
   if (!list->attributes)
     {
@@ -1157,8 +1157,8 @@ pango_attr_list_change (PangoAttrList  *list,
 			PangoAttribute *attr)
 {
   GSList *tmp_list, *prev, *link;
-  gint start_index = attr->start_index;
-  gint end_index = attr->end_index;
+  guint start_index = attr->start_index;
+  guint end_index = attr->end_index;
 
   g_return_if_fail (list != NULL);
 
@@ -1367,26 +1367,40 @@ pango_attr_list_splice (PangoAttrList *list,
 			gint           len)
 {
   GSList *tmp_list;
+  guint upos, ulen;
   
   g_return_if_fail (list != NULL);
   g_return_if_fail (other != NULL); 
   g_return_if_fail (pos >= 0);
   g_return_if_fail (len >= 0);
- 
+
+  upos = (guint)pos;
+  ulen = (guint)len;
+
+/* This definition only works when a and b are unsigned; overflow
+ * isn't defined in the C standard for signed integers
+ */
+#define CLAMP_ADD(a,b) (((a) + (b) < (a)) ? G_MAXUINT : (a) + (b))
+  
   tmp_list = list->attributes;
   while (tmp_list)
     {
       PangoAttribute *attr = tmp_list->data;
 
-      if (attr->start_index <= pos)
+      if (attr->start_index <= upos)
 	{
-	  if (attr->end_index > pos)
-	    attr->end_index += len;
+	  if (attr->end_index > upos)
+	    attr->end_index = CLAMP_ADD (attr->end_index, ulen);
 	}
       else
 	{
-	  attr->start_index += len;
-	  attr->end_index += len;
+	  /* This could result in a zero length attribute if it
+	   * gets squashed up against G_MAXUINT, but deleting such
+	   * an element could (in theory) suprise the caller, so
+	   * we don't delete it.
+	   */
+	  attr->start_index = CLAMP_ADD (attr->end_index, ulen);
+	  attr->end_index = CLAMP_ADD (attr->end_index, ulen);
 	}
 
       tmp_list = tmp_list->next;
@@ -1396,9 +1410,12 @@ pango_attr_list_splice (PangoAttrList *list,
   while (tmp_list)
     {
       PangoAttribute *attr = pango_attribute_copy (tmp_list->data);
-      attr->start_index += pos;
-      attr->end_index += pos;
+      attr->start_index = CLAMP_ADD (attr->start_index, upos);
+      attr->end_index = CLAMP_ADD (attr->end_index, upos);
 
+      /* Same as above, the attribute could be squashed to zero-length; here
+       * pango_attr_list_change() will take care of deleting it.
+       */
       pango_attr_list_change (list, attr);
       
       tmp_list = tmp_list->next;
@@ -1429,7 +1446,7 @@ pango_attr_list_get_iterator (PangoAttrList  *list)
   iterator->end_index = 0;
 
   if (!pango_attr_iterator_next (iterator))
-    iterator->end_index = G_MAXINT;
+    iterator->end_index = G_MAXUINT;
 
   return iterator;
 }
@@ -1440,7 +1457,11 @@ pango_attr_list_get_iterator (PangoAttrList  *list)
  * @start: location to store the start of the range
  * @end: location to store the end of the range
  * 
- * Get the range of the current segment.
+ * Get the range of the current segment. Note that the
+ * stored return values are signed, not unsigned like
+ * the values in #PangoAttribute. To deal with this API
+ * oversight, stored return values that wouldn't fit into
+ * a signed integer are clamped to %G_MAXINT.
  **/
 void
 pango_attr_iterator_range (PangoAttrIterator *iterator,
@@ -1450,9 +1471,9 @@ pango_attr_iterator_range (PangoAttrIterator *iterator,
   g_return_if_fail (iterator != NULL);
 
   if (start)
-    *start = iterator->start_index;
+    *start = MIN (iterator->start_index, G_MAXINT);
   if (end)
-    *end = iterator->end_index;
+    *end = MIN (iterator->end_index, G_MAXINT);
 }
 
 /**
@@ -1474,7 +1495,7 @@ pango_attr_iterator_next (PangoAttrIterator *iterator)
     return FALSE;
 
   iterator->start_index = iterator->end_index;
-  iterator->end_index = G_MAXINT;
+  iterator->end_index = G_MAXUINT;
   
   tmp_list = iterator->attribute_stack;
   while (tmp_list)
