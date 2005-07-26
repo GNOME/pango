@@ -1,3 +1,8 @@
+2005-07-26    Owen Taylor  <otaylor@redhat.com>
+
+	* pango/opentype/ftxgsub.c, pango/opentype/ftxgpos.c: Skip lookups
+	with lookup index out of range. (Patch from Behdad Esfahbod, #171170)
+
 2005-07-26  Owen Taylor  <otaylor@redhat.com>
 
 	Fixes for signed/unsigned in PangoAttrIterator ((#166700,
@@ -41,6 +46,11 @@
 	* modules/indic/indic-ot-class-tables.c (oryaCharClasses):
 	Classify unicode standard additions U+0B35 (va), 
 	U+0B71 (wa) as _ct. (Also #311575)
+
+2005-07-26  Behdad Esfahbod  <pango@behdad.org>
+
+	* pango/opentype/ftxgsub.c, pango/opentype/ftxgpos.c: Skip lookups
+	with lookup index out of range. (#171170)
 
 2005-07-25  Owen Taylor  <otaylor@redhat.com>
 
