@@ -4,7 +4,7 @@ overview of changes between 1.9.0 and 1.9.1
   the Cairo backend.
 * Adapt to recent Cairo API changes
 * Win32 build improvements [Tor Lillqvist]
-* Misc bug fixes [Hans Breuer, Thomas Fitzsimmons]
+* Misc bug fixes [Hans Breuer, Thomas Fitzsimmons, Kazuki IWAMOTO]
 
 Overview of changes between 1.8.x and 1.9.x
 ===========================================
@@ -27,18 +27,20 @@ Overview of changes between 1.8.1 and 1.8.2
   [Tommi Komulainen, Ross Burton]
 * Remove dependence of opentype code on FreeType internals [David Turner,
   Behdad Esfahbod]
-* Better handling of MacThai encoded fonts [Theppitak Karoonboonyanan]
 * Cache metrics for the Win32 backend [Tor Lillqvist]
 * Improve handling of RTL text when passing it to Uniscribe [Tor]
 * Support for TrueType fonts on Win32 with characters outside the BMP [Tor]
 * Handle alpha in XftColors again. [Mikael Magnusson]
+* Better handling of MacThai encoded fonts [Theppitak Karoonboonyanan]
 * Handle zero width chars properly in Hangul backend 
   [Young-Ho Cha, Changwoo Ryu]
+* Fix Oriya character classification [Gora Mohanty, Gautam Sengupta]
+* PangoAttrIterator bug fixes [Morten Welinder]
 * Clean up copyright/licensing information [William N. Ray]
 * Misc bug and build fixes [Sebastien Bacher, Brandon Bergren,
   Chris Blizzard, Paolo Borelli, Behdad, Harshula, Alex Jones, Aivars Kalvans, 
   Stepan Kasal,  Karel Kulhavy, Ryan Lortie, Ben Maurer, Sukhjinder Sidhu, 
-  Manish Singh, Emil Soleyman-Zomalan, Morten Welinder]
+  Manish Singh, Emil Soleyman-Zomalan, Morten]
 
 Overview of changes between 1.8.0 and 1.8.1
 ===========================================

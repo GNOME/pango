@@ -1,3 +1,11 @@
+2005-07-26  Owen Taylor  <otaylor@redhat.com>
+
+	* === Released 1.9.1 ===
+
+	* configure.in: Version 1.9.1
+
+	* NEWS: Updated
+
 2005-07-26    Owen Taylor  <otaylor@redhat.com>
 
 	* pango/opentype/ftxgsub.c, pango/opentype/ftxgpos.c: Skip lookups
