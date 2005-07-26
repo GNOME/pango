@@ -1,4 +1,25 @@
-pOverview of changes between 1.8.0 and 1.8.1
+Overview of changes between 1.8.1 and 1.8.2
+===========================================
+* Add Khmer support [Jens Herden, Javier Sola]
+* Fix bugs and crashes in the operation of PangoLayoutIter [Amit Aronovitch]
+* Increase sharing of data between different copies of Pango
+  [Tommi Komulainen, Ross Burton]
+* Remove dependence of opentype code on FreeType internals [David Turner,
+  Behdad Esfahbod]
+* Better handling of MacThai encoded fonts [Theppitak Karoonboonyanan]
+* Cache metrics for the Win32 backend [Tor Lillqvist]
+* Improve handling of RTL text when passing it to Uniscribe [Tor]
+* Support for TrueType fonts on Win32 with characters outside the BMP [Tor]
+* Handle alpha in XftColors again. [Mikael Magnusson]
+* Handle zero width chars properly in Hangul backend 
+  [Young-Ho Cha, Changwoo Ryu]
+* Clean up copyright/licensing information [William N. Ray]
+* Misc bug and build fixes [Sebastien Bacher, Brandon Bergren,
+  Chris Blizzard, Paolo Borelli, Behdad, Harshula, Alex Jones, Aivars Kalvans, 
+  Stepan Kasal,  Karel Kulhavy, Ryan Lortie, Ben Maurer, Sukhjinder Sidhu, 
+  Manish Singh, Emil Soleyman-Zomalan, Morten Welinder]
+
+Overview of changes between 1.8.0 and 1.8.1
 ===========================================
 * Fix several problems with conjuct formation in Sinhala [Harshula]
 * Fix problems that were causing fonts to be missized and

@@ -1,3 +1,18 @@
+2005-07-26  Owen Taylor  <otaylor@redhat.com>
+
+	* modules/indic/indic-ot-class-tables.c (oryaCharClasses):
+	Change U+0B30 from _rv to _rb. Oriya doesn't have a vattu
+	form of ra. (#151393, Gautam Sengupta, fix from
+	Gora Mohanty)
+
+	* modules/indic/indic-ot-class-tables.c (oryaCharClasses):
+	Change U+B02 from _ma to _mp. Anusvara appears after not
+	above in Oriya. (#311575, Gora Mohanty)
+
+	* modules/indic/indic-ot-class-tables.c (oryaCharClasses):
+	Classify unicode standard additions U+0B35 (va), 
+	U+0B71 (wa) as _ct. (Also #311575)
+
 2005-07-25  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pango-layout.c (line_set_resolved_dir): Always set 
@@ -108,6 +123,7 @@
  	test from Amit for the operation of PangoLayoutIter.
 	
 2005-07-21  Owen Taylor  <otaylor@redhat.com>
+	
 	* pango/pango-layout.c (pango_layout_set_text): Avoid calling
 	memcpy with a NULL argument. (#310021, Morten Welinder)
 
