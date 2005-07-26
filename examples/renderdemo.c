@@ -426,6 +426,8 @@ parse_options (int argc, char *argv[])
 
   if (!arg_context_parse (arg_context, &argc, &argv, &error))
     fail ("%s", error->message);
+
+  arg_context_free (arg_context);
   
   if ((opt_text && argc != 1) ||
       (!opt_text && argc != 2))
@@ -474,4 +476,10 @@ parse_options (int argc, char *argv[])
   if (opt_markup &&
       !pango_parse_markup (text, -1, 0, NULL, NULL, NULL, &error))
     fail ("Cannot parse input as markup: %s", error->message);
+}
+
+void
+finalize (void)
+{
+  g_free (text);
 }

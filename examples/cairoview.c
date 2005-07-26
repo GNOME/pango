@@ -295,6 +295,10 @@ int main (int argc, char **argv)
       }
     }
 
- done:
+done:
+
+  g_object_unref (context);
+  finalize ();
+
   return 0;
 }

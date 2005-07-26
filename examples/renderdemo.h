@@ -47,6 +47,7 @@ void   do_output          (PangoContext     *context,
 			   gpointer          cb_data,
 			   int              *width,
 			   int              *height);
+void   finalize (void);
 void   fc_substitute_func (FcPattern        *pattern,
 			   gpointer          data);
 gchar *get_options_string (void);

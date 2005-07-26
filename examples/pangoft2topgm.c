@@ -30,8 +30,6 @@
 
 #include <pango/pangoft2.h>
 
-static char *tmpfile_name;
-
 static void
 ft2_render (PangoLayout *layout,
 	    int          x,
@@ -49,6 +47,8 @@ main(int argc, char *argv[])
   PangoFontMap *fontmap;
   GError *error = NULL;
   gboolean do_convert = FALSE;
+  int exit_status = 0;
+  char *tmpfile_name;
 
   g_type_init();
 
@@ -85,6 +85,8 @@ main(int argc, char *argv[])
   pango_ft2_font_map_set_resolution (PANGO_FT2_FONT_MAP (fontmap), opt_dpi, opt_dpi);
   pango_ft2_font_map_set_default_substitute (PANGO_FT2_FONT_MAP (fontmap), fc_substitute_func, NULL, NULL);
   context = pango_ft2_font_map_create_context (PANGO_FT2_FONT_MAP (fontmap));
+
+  g_object_unref (fontmap);
 
   /* Write contents as pgm file */
   {
@@ -130,8 +132,6 @@ main(int argc, char *argv[])
       /* Convert to a different format, if necessary */
       if (do_convert)
 	{
-	  int exit_status;
-	  
 	  gchar *command = g_strdup_printf ("convert %s %s",
 					    tmpfile_name,
 					    opt_output);
@@ -139,19 +139,21 @@ main(int argc, char *argv[])
 	    fail ("When running ImageMagick 'convert' command: %s\n",
 		  error->message);
 
+	  g_free (command);
+	  
 	  if (tmpfile_name)
 	    {
 	      remove (tmpfile_name);
+	      g_free (tmpfile_name);
 	      tmpfile_name = NULL;
 	    }
-	  
+
 	  if (exit_status)
-	    exit (1);
+	    goto done;
 	}
 
       if (opt_display)
 	{
-	  int exit_status;
 	  gchar *title = get_options_string ();
 	  gchar *title_quoted = g_shell_quote (title);
 	  
@@ -167,12 +169,20 @@ main(int argc, char *argv[])
 	  g_free (title_quoted);
 	  
 	  if (tmpfile_name)
-	    remove (tmpfile_name);
-	  
+	    {
+	      remove (tmpfile_name);
+	      g_free (tmpfile_name);
+	      tmpfile_name = NULL;
+	    }
+
 	  if (exit_status)
-	    exit (1);
+	    goto done;
 	}
     }
 
-  return 0;
+done:
+  g_object_unref (context);
+  finalize ();
+
+  return exit_status ? 1 : 0;
 }
