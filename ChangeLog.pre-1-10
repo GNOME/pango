@@ -1,3 +1,9 @@
+2005-07-26  Behdad Esfahbod  <pango@behdad.org>
+
+	* examples/cairoview.c, examples/pangoft2topgm.c,
+	examples/renderdemo.c, examples/renderdemo.h: Fixed a couple of leaks
+	and freed memory after use.
+
 2005-07-25  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pangocairo-fcfont.c (pango_cairo_fc_font_install): Set
