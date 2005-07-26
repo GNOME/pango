@@ -65,11 +65,6 @@
 
 2005-07-26  Behdad Esfahbod  <pango@behdad.org>
 
-	* pango/opentype/ftxgsub.c, pango/opentype/ftxgpos.c: Skip lookups
-	with lookup index out of range. (#171170)
-
-2005-07-26  Behdad Esfahbod  <pango@behdad.org>
-
 	* examples/cairoview.c, examples/pangoft2topgm.c,
 	examples/renderdemo.c, examples/renderdemo.h: Fixed a couple of leaks
 	and freed memory after use.
