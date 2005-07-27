@@ -1,3 +1,8 @@
+2005-07-26  Manish Singh  <yosh@gimp.org>
+
+	* pango/pango-utils.c (pango_is_zero_width): put parens around bitwise
+	&, to appease gcc.
+
 2005-07-26  Owen Taylor  <otaylor@redhat.com>
 
 	* === Released 1.9.1 ===

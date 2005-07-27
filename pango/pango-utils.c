@@ -1742,7 +1742,7 @@ pango_is_zero_width (gunichar ch)
  *  202E  RIGHT-TO-LEFT OVERRIDE
  *  FEFF  ZERO WIDTH NO-BREAK SPACE
  */
-  return (ch & ~(gunichar)0x003F == 0x2000 && (
+  return ((ch & ~(gunichar)0x003F) == 0x2000 && (
 		(ch >= 0x200B && ch <= 0x200F) ||
 		ch == 0x2028 ||
 		(ch >= 0x202A && ch <= 0x202E)
