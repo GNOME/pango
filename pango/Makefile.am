@@ -274,11 +274,11 @@ pangowin32-win32-res.o: pangowin32.rc
 
 if OS_WIN32
 install-def-files:
-	$(INSTALL) pango.def $(DESTDIR)$(libdir)/pango-$(PANGO_API_VERSION).def
+	$(INSTALL) $(srcdir)/pango.def $(DESTDIR)$(libdir)/pango-$(PANGO_API_VERSION).def
 if HAVE_FREETYPE
-	$(INSTALL) pangoft2.def $(DESTDIR)$(libdir)/pangoft2-$(PANGO_API_VERSION).def
+	$(INSTALL) $(srcdir)/pangoft2.def $(DESTDIR)$(libdir)/pangoft2-$(PANGO_API_VERSION).def
 endif
-	$(INSTALL) pangowin32.def $(DESTDIR)$(libdir)/pangowin32-$(PANGO_API_VERSION).def
+	$(INSTALL) $(srcdir)/pangowin32.def $(DESTDIR)$(libdir)/pangowin32-$(PANGO_API_VERSION).def
 uninstall-def-files:
 	-rm $(DESTDIR)$(libdir)/pango$(PANGO_API_VERSION).def
 if HAVE_FREETYPE

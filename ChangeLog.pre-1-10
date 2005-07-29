@@ -1,3 +1,8 @@
+2005-07-29  J. Ali Harlow  <ali@juiblex.co.uk>
+
+	* pango/Makefile.am: Look for pango.def, pangoft2.def and
+	pangowin32.def files in the source directory. Fixes #311971.
+
 2005-07-26  Manish Singh  <yosh@gimp.org>
 
 	* pango/pango-utils.c (pango_is_zero_width): put parens around bitwise
