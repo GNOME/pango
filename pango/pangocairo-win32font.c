@@ -225,7 +225,7 @@ pango_cairo_win32_font_get_metrics (PangoFont        *font,
       cairo_scaled_font_extents (scaled_font, &font_extents);
       
       cwfont->metrics->ascent = font_extents.ascent * PANGO_SCALE;
-      cwfont->metrics->descent = font_extents.ascent * PANGO_SCALE;
+      cwfont->metrics->descent = font_extents.descent * PANGO_SCALE;
       cwfont->metrics->approximate_char_width = font_extents.max_x_advance * PANGO_SCALE;
       cwfont->metrics->approximate_digit_width = font_extents.max_x_advance * PANGO_SCALE;
 

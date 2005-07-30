@@ -177,8 +177,8 @@ OBJECTS = \
         pangocairo-render.obj \
         pangocairo-win32font.obj \
         pangocairo-win32fontmap.obj \
-        pangocairo-fcfont.obj \
-        pangocairo-fcfontmap.obj \
+#        pangocairo-fcfont.obj \
+#        pangocairo-fcfontmap.obj \
 !ENDIF
 
 !IFDEF OBJS_querymodules
