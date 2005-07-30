@@ -123,7 +123,7 @@ basic-x.obj : ..\modules\basic\basic-x.c
 fribidi.obj : mini-fribidi\fribidi.c
 	$(CC) $(PKG_CFLAGS) -GD -c mini-fribidi\fribidi.c
 fribidi_get_type.obj : mini-fribidi\fribidi_get_type.c
-	$(CC) $(PKG_CFLAGS) -GD -c mini-fribidi\fribidi_get_type.c
+	$(CC) $(PKG_CFLAGS) -GD -Dpango_get_mirror_char=_pango_get_mirror_char -c mini-fribidi\fribidi_get_type.c
 
 !IFDEF OBJS_pangowin32
 PKG_CFLAGS = $(PKG_CFLAGS) -DPANGO_MODULE_PREFIX=_pango_basic_win32
@@ -190,6 +190,7 @@ pango_headers=		   \
 	pango-item.h	   \
 	pango-layout.h	   \
 	pango-modules.h	   \
+	pango-renderer.h	   \
 	pango-script.h	   \
 	pango-tabs.h	   \
 	pango-types.h	   \
