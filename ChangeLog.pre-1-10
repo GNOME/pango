@@ -1,3 +1,8 @@
+2005-07-30  Owen Taylor  <otaylor@redhat.com>
+
+	* configure.in: Use egrep for khmer, like the rest, to
+	fix --with-included-modules. (#311930, Sebastien Bacher)
+
 2005-07-29  J. Ali Harlow  <ali@juiblex.co.uk>
 
 	* pango/Makefile.am: Look for pango.def, pangoft2.def and

@@ -422,7 +422,7 @@ AM_CONDITIONAL(INCLUDE_HEBREW_FC,echo $included_modules | egrep '(^|,)hebrew-fc(
 
 AM_CONDITIONAL(INCLUDE_INDIC_FC,echo $included_modules | egrep '(^|,)indic-fc($|,)' > /dev/null)
 
-AM_CONDITIONAL(INCLUDE_KHMER_FC,echo $included_modules | grep '(^|,)khmer-fc($|,)' > /dev/null)
+AM_CONDITIONAL(INCLUDE_KHMER_FC,echo $included_modules | egrep '(^|,)khmer-fc($|,)' > /dev/null)
 
 AM_CONDITIONAL(INCLUDE_SYRIAC_FC,echo $included_modules | egrep '(^|,)syriac-fc($|,)' > /dev/null)
 
