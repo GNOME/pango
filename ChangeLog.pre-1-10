@@ -1,3 +1,12 @@
+2005-08-05  Tor Lillqvist  <tml@novell.com>
+
+	* pango-zip.sh.in: Add pangocairo files. Get the DLLs from "bin"
+	unconditionally, that's where libtool installs them since a long
+	time.
+	
+	* pango/Makefile.am (install-def-files, uninstall-def-files):
+	Install/uninstall also pangocairo .def and .lib files.
+
 2005-07-30  Hans Breuer  <hans@breuer.org>
 
 	* pango/makefile.msc : updated
