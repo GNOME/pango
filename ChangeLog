@@ -1,3 +1,10 @@
+2005-08-08  Roozbeh Pournader  <roozbeh@farsiweb.info>
+
+	* docs/tmpl/scripts.sgml, modules/arabic/arabic-ot.c,
+	pango/pango-script.c, pango/pango-script.h,
+	pango/pango-script-table.h, tools/gen-script-table.pl: Updated to
+	Unicode 4.1, adding new scripts and Arabic joining data. (#312884)
+
 2005-08-05  Tor Lillqvist  <tml@novell.com>
 
 	* pango-zip.sh.in: Add pangocairo files. Get the DLLs from "bin"

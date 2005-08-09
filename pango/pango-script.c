@@ -535,6 +535,15 @@ pango_script_get_sample_language (PangoScript script)
     "",    /* PANGO_SCRIPT_LINEAR_B */
     "",    /* PANGO_SCRIPT_TAI_LE */
     "uga", /* PANGO_SCRIPT_UGARITIC */
+    
+    "",    /* PANGO_SCRIPT_NEW_TAI_LUE */
+    "bug", /* PANGO_SCRIPT_BUGINESE */
+    "cop", /* PANGO_SCRIPT_GLAGOLITIC */
+    "ber", /* PANGO_SCRIPT_TIFINAGH */
+    /* Syloti Nagri is used for Sylheti, no ISO 639 code */
+    "",    /* PANGO_SCRIPT_SYLOTI_NAGRI */
+    "peo", /* PANGO_SCRIPT_OLD_PERSIAN */
+    "",    /*  PANGO_SCRIPT_KHAROSHTHI */
   };
   const char *sample_language;
   

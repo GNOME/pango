@@ -31,7 +31,7 @@
 /*
  *
  *     Here a table of the joining classes for characters in the range
- *     U+0620 - U+06FF.
+ *     U+0620 - U+06FF and U+0750 - U+077F.
  *
  *    The following character also has a joining class:
  *
@@ -64,8 +64,8 @@ static const joining_class  arabic[] =
   /* U+0650 */
   transparent, transparent, transparent, transparent,
   transparent, transparent, transparent, transparent,
-  none, none, none, none,
-  none, none, none, none,
+  transparent, transparent, transparent, transparent,
+  transparent, transparent, transparent, none,
 
   /* U+0660 */
   none, none, none, none,
@@ -126,6 +126,27 @@ static const joining_class  arabic[] =
   none, none, none, none,
   none, none, dual, dual,
   dual, none, none, dual
+};
+
+static const joining_class  arabic_supplement[] =
+{
+  /* U+0750 */
+  dual, dual, dual, dual,
+  dual, dual, dual, dual,
+  dual, right, right, right,
+  dual, dual, dual, dual,
+
+  /* U+0760 */
+  dual, dual, dual, dual,
+  dual, dual, dual, dual,
+  dual, dual, dual, right,
+  right, dual, none, none,
+
+  /* U+0770 */
+  none, none, none, none,
+  none, none, none, none,
+  none, none, none, none,
+  none, none, none, none
 };
 
 #if 0
@@ -273,18 +294,18 @@ static joining_class  Get_Joining_Class (gunichar*   string,
 
       if (pos >= length)
         return none;
-      
-      if (string[pos] < 0x0620 ||
-	  string[pos] >= 0x0700)
-	{
-	  if (string[pos] == 0x200D)
-	    return causing;
-	  else
-	    return none;
-	}
+
+      if (string[pos] >= 0x0620 &&
+          string[pos] < 0x0700)
+        j = arabic[string[pos] - 0x0620];
+      else if (string[pos] >= 0x0750 &&
+          string[pos] < 0x0780)
+        j = arabic_supplement[string[pos] - 0x0750];
+      else if (string[pos] == 0x200D)
+        return causing;
       else
-        j =  arabic[string[pos] - 0x0620];
-      
+        return none;
+
       if (!direction || j != transparent)
         return j;
     }
