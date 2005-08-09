@@ -1,3 +1,10 @@
+2005-08-09  Keith Packard  <keithp@keithp.com>
+
+	reviewed by: otaylor
+
+	* examples/cairoview.c: (update), (expose), (main):
+	Switch to Xlib regions as pixman is destined to disappear.
+
 2005-08-08  Roozbeh Pournader  <roozbeh@farsiweb.info>
 
 	* docs/tmpl/scripts.sgml, modules/arabic/arabic-ot.c,
