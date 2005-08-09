@@ -63,7 +63,9 @@ for (my $i = 0; $i <= $#ranges; $i++) {
 	$end = $ranges[$i]->[1];
     }
 
-    printf " { %#06x, %5d, PANGO_SCRIPT_%s },\n", $start, $end - $start + 1, $script;
+    if ($script ne "COMMON") {
+        printf " { %#06x, %5d, PANGO_SCRIPT_%s },\n", $start, $end - $start + 1, $script;
+    }
 }
 
 printf "};\n";

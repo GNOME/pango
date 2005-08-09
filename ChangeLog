@@ -1,3 +1,10 @@
+2005-08-08  Roozbeh Pournader  <roozbeh@farsiweb.info>
+
+	* docs/tmpl/scripts.sgml, modules/arabic/arabic-ot.c,
+	pango/pango-script.c, pango/pango-script.h,
+	pango/pango-script-table.h, tools/gen-script-table.pl: Updated to
+	Unicode 4.1, adding new scripts and Arabic joining data. (#312884)
+
 2005-07-30  Hans Breuer  <hans@breuer.org>
 
 	* pango/makefile.msc : updated
