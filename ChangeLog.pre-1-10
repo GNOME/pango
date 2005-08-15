@@ -1,3 +1,9 @@
+2005-08-15  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-layout.c (pango_layout_line_get_extents): 
+	Fix unconditional access to logical_rect. (#312691,
+	Hans Breuer)
+
 2005-08-15  Tor Lillqvist  <tml@novell.com>
 
 	* pango/pango.def: Add pango_item_get_type and
