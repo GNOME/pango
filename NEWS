@@ -1,3 +1,10 @@
+overview of changes between 1.9.1 and 1.10.0
+============================================
+* Update script tables, bidi tables, and Arabic joining tables for Unicode 4.1 
+  [Roozbeh Pournader, Behdad Esfahbod]
+* Misc bug and build fixes [Sebastien Bacher, Hans Breuer, Behdad, 
+  J. Ali Harlow, Tor Lillqvist, Keith Packard, Vittorio Palmisano, Manish Singh]
+
 overview of changes between 1.9.0 and 1.9.1
 ==========================================
 * Support setting of font options and DPI on PangoContext for
@@ -5,7 +12,7 @@ overview of changes between 1.9.0 and 1.9.1
 * Adapt to recent Cairo API changes
 * Win32 build improvements [Tor Lillqvist]
 * Misc bug fixes [Hans Breuer, Thomas Fitzsimmons, Kazuki IWAMOTO]
-
+	
 Overview of changes between 1.8.x and 1.9.x
 ===========================================
 * Add Cairo support; PangoCairoFontmap is an interface with

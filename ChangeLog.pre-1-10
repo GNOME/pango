@@ -1,3 +1,11 @@
+2005-08-15  Owen Taylor  <otaylor@redhat.com>
+
+	* === Released 1.10.0 ===
+
+	* configure.in: Version 1.10.0
+
+	* NEWS: Updated.
+
 2005-08-15  Behdad Esfahbod  <pango@behdad.org>
 
 	* pango/mini-fribidi/fribidi_tab_char_type_2.i: Updated to
@@ -330,7 +338,7 @@
 2005-07-21  Owen Taylor  <otaylor@redhat.com>
 	
 	* modules/indic/indic-ot-class-tables.c: Enable touching
-	for Sinhala with the ZWJ + al-lakuna combination.
+	letters for Sinhala with the ZWJ + al-lakuna combination.
 	(#302577, Harshula)
 
 2005-07-21  Owen Taylor  <otaylor@redhat.com>
@@ -872,7 +880,7 @@ Sat Mar  5 13:51:04 2005  Manish Singh  <yosh@gimp.org>
 	Split out handling of sinhala al-lakuna character from
 	handling of Virama in the state table to avoid implicit
 	formation of conjucts for Sinhala. (Patch from 
-	Harshula, ##161981)
+	Harshula, #161981)
 
 	* modules/indic/indic-fc.c modules/indic/indic-ot.h:
 	Add a new script flag SF_PROCESS_ZWJ indicating
