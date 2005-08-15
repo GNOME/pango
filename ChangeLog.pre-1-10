@@ -1,3 +1,8 @@
+2005-08-15  Behdad Esfahbod  <pango@behdad.org>
+
+	* pango/opentype/ftglue.h: Replace perror with perror_.
+	Remove FT_BEGIN_STMNT and FT_END_STMNT. (#313477)
+
 2005-08-08  Roozbeh Pournader  <roozbeh@farsiweb.info>
 
 	* docs/tmpl/scripts.sgml, modules/arabic/arabic-ot.c,
