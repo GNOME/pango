@@ -1,3 +1,8 @@
+2005-08-14  Behdad Esfahbod  <pango@behdad.org>
+
+	* examples/HELLO.utf8: Remove some characters at the beginning
+	of the file and add a line break.
+
 2005-08-09  Keith Packard  <keithp@keithp.com>
 
 	reviewed by: otaylor
