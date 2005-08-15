@@ -1,3 +1,9 @@
+2005-08-15  Tor Lillqvist  <tml@novell.com>
+
+	* pango/pango.def: Add pango_item_get_type and
+	pango_layout_line_get_type. Thanks to Vittorio Palmisano for
+	noticing.
+
 2005-08-15  Behdad Esfahbod  <pango@behdad.org>
 
 	* pango/opentype/ftglue.h: Replace perror with perror_.

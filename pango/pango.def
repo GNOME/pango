@@ -178,6 +178,7 @@ EXPORTS
 	pango_is_zero_width
 	pango_item_copy
 	pango_item_free
+	pango_item_get_type
 	pango_item_new
 	pango_item_split
 	pango_itemize
@@ -235,6 +236,7 @@ EXPORTS
 	pango_layout_iter_next_run
 	pango_layout_line_get_extents
 	pango_layout_line_get_pixel_extents
+	pango_layout_line_get_type
 	pango_layout_line_get_x_ranges
 	pango_layout_line_index_to_x
 	pango_layout_line_ref
