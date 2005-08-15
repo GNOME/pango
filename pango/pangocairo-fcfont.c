@@ -30,6 +30,7 @@
 #include "pangocairo-private.h"
 #include "pangocairo-fc.h"
 #include "pangofc-private.h"
+#include "pango-utils.h"
 
 #define PANGO_TYPE_CAIRO_FC_FONT           (pango_cairo_fc_font_get_type ())
 #define PANGO_CAIRO_FC_FONT(object)        (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_TYPE_CAIRO_FC_FONT, PangoCairoFcFont))
@@ -242,6 +243,57 @@ pango_cairo_fc_font_get_glyph_extents (PangoFont      *font,
     *logical_rect = info->logical_rect;
 }
 
+/* This function is cut-and-pasted from pangocairo-fcfont.c - it might be
+ * better to add a virtual fcfont->create_context (font).
+ */
+static PangoFontMetrics *
+pango_cairo_fc_font_get_metrics (PangoFont     *font,
+				 PangoLanguage *language)
+{
+  PangoFcFont *fcfont = PANGO_FC_FONT (font);
+  PangoCairoFcFont *cffont = PANGO_CAIRO_FC_FONT (font);
+  PangoFcMetricsInfo *info = NULL; /* Quiet gcc */
+  GSList *tmp_list;      
+
+  const char *sample_str = pango_language_get_sample_string (language);
+  
+  tmp_list = fcfont->metrics_by_lang;
+  while (tmp_list)
+    {
+      info = tmp_list->data;
+      
+      if (info->sample_str == sample_str)    /* We _don't_ need strcmp */
+	break;
+
+      tmp_list = tmp_list->next;
+    }
+
+  if (!tmp_list)
+    {
+      PangoContext *context;
+
+      if (!fcfont->fontmap)
+	return pango_font_metrics_new ();
+
+      info = g_new0 (PangoFcMetricsInfo, 1);
+      
+      fcfont->metrics_by_lang = g_slist_prepend (fcfont->metrics_by_lang, 
+						 info);
+	
+      info->sample_str = sample_str;
+
+      context = pango_fc_font_map_create_context (PANGO_FC_FONT_MAP (fcfont->fontmap));
+      pango_context_set_language (context, language);
+      pango_cairo_context_set_font_options (context, cffont->options);
+
+      info->metrics = pango_fc_font_create_metrics_for_context (fcfont, context);
+
+      g_object_unref (context);
+    }
+
+  return pango_font_metrics_ref (info->metrics);
+}
+
 static FT_Face
 pango_cairo_fc_font_lock_face (PangoFcFont *font)
 {
@@ -293,6 +345,7 @@ pango_cairo_fc_font_class_init (PangoCairoFcFontClass *class)
   object_class->finalize = pango_cairo_fc_font_finalize;
   
   font_class->get_glyph_extents = pango_cairo_fc_font_get_glyph_extents;
+  font_class->get_metrics = pango_cairo_fc_font_get_metrics;
 
   fc_font_class->lock_face = pango_cairo_fc_font_lock_face;
   fc_font_class->unlock_face = pango_cairo_fc_font_unlock_face;

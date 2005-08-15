@@ -27,6 +27,14 @@
 
 G_BEGIN_DECLS
 
+typedef struct _PangoFcMetricsInfo  PangoFcMetricsInfo;
+
+struct _PangoFcMetricsInfo
+{
+  const char       *sample_str;
+  PangoFontMetrics *metrics;
+};
+
 #define PANGO_SCALE_26_6 (PANGO_SCALE / (1<<6))
 #define PANGO_PIXELS_26_6(d)				\
   (((d) >= 0) ?						\
@@ -51,6 +59,9 @@ void            pango_fc_font_get_raw_extents    (PangoFcFont    *font,
 						  PangoGlyph      glyph,
 						  PangoRectangle *ink_rect,
 						  PangoRectangle *logical_rect);
+
+PangoFontMetrics *pango_fc_font_create_metrics_for_context (PangoFcFont   *font,
+							    PangoContext  *context);
 
 G_END_DECLS
 

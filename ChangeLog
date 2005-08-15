@@ -1,5 +1,13 @@
 2005-08-15  Owen Taylor  <otaylor@redhat.com>
 
+	* pango/pangofc-font.c (pango_fc_font_create_metrics_for_context) 
+	pango/pangofc-private.h  pango/pangocairo-fcfcont.c: Cut out the meat of
+	pango_fc_font_get_metrics_for_context() and export it (privately),
+	so that PangoCairoFcFont can create a variant that sets the font
+	options on the context it creates. (#311522)
+
+2005-08-15  Owen Taylor  <otaylor@redhat.com>
+
 	* pango/pango-layout.c (pango_layout_line_get_extents): 
 	Fix unconditional access to logical_rect. (#312691,
 	Hans Breuer)
