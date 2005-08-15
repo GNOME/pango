@@ -1,4 +1,4 @@
-This directory holds a stripped down version of Dov Grobgeld's FriBidi
+This directory holds a stripped down version of GNU FriBidi
 library. The fribidi version that fribidi.patch is against was
 obtained with "cvs up -D '2003-07-14'" from the fribidi cvs repository.
 
@@ -15,6 +15,14 @@ directory of the Pango distribution.
 Owen Taylor
 14 July 2003
 Noah Levitt
+
+
+The fribidi_tab_char_type_2.i table was updated to that of FriBidi 0.10.5
+which corresponds to Unicode 4.1.
+
+15 August 2005
+Behdad Esfahbod
+
 
 
 From the README of Fribidi:

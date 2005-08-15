@@ -1,3 +1,13 @@
+2005-08-15  Behdad Esfahbod  <pango@behdad.org>
+
+	* pango/mini-fribidi/fribidi_tab_char_type_2.i: Updated to
+	that of FriBidi 0.10.5 which corresponds to Unicode 4.1.
+
+	* pango/mini-fribidi/README: Added note to reflect above change.
+
+	* pango/mini-fribidi/fribidi_tables.i: Removed.  Not needed
+	since 2002.
+
 2005-08-15  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pango-script.c (pango_script_get_sample_language): 
