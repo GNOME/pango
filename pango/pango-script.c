@@ -538,8 +538,11 @@ pango_script_get_sample_language (PangoScript script)
     
     "",    /* PANGO_SCRIPT_NEW_TAI_LUE */
     "bug", /* PANGO_SCRIPT_BUGINESE */
-    "cop", /* PANGO_SCRIPT_GLAGOLITIC */
-    "ber", /* PANGO_SCRIPT_TIFINAGH */
+    /* The original script for Old Church Slavonic (chu), later
+     * written with Cyrillic */
+    "",    /* PANGO_SCRIPT_GLAGOLITIC */
+    /* Used for for Berber (ber), but Arabic script is more common */
+    "",    /* PANGO_SCRIPT_TIFINAGH */
     /* Syloti Nagri is used for Sylheti, no ISO 639 code */
     "",    /* PANGO_SCRIPT_SYLOTI_NAGRI */
     "peo", /* PANGO_SCRIPT_OLD_PERSIAN */

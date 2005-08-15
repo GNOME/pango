@@ -1,5 +1,13 @@
 2005-08-15  Owen Taylor  <otaylor@redhat.com>
 
+	* pango/pango-script.c (pango_script_get_sample_language): 
+	Glagolitic shouldn't have Coptic as a sample language; it was used
+	to write Old Church Slavonic. Tifinagh shouldn't have Berber
+	as a sample language, since it isn't the *primary* script used
+	to write Berber.
+
+2005-08-15  Owen Taylor  <otaylor@redhat.com>
+
 	* pango/pangofc-font.c (pango_fc_font_create_metrics_for_context) 
 	pango/pangofc-private.h  pango/pangocairo-fcfcont.c: Cut out the meat of
 	pango_fc_font_get_metrics_for_context() and export it (privately),
