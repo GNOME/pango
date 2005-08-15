@@ -1,3 +1,8 @@
+2005-08-15  Behdad Esfahbod  <pango@behdad.org>
+
+	* pango/opentype/ftglue.h: Replace perror with perror_.
+	Remove FT_BEGIN_STMNT and FT_END_STMNT. (#313477)
+
 2005-08-14  Behdad Esfahbod  <pango@behdad.org>
 
 	* examples/HELLO.utf8: Remove some characters at the beginning
