@@ -166,52 +166,41 @@ pango_cairo_renderer_draw_rectangle (PangoRenderer     *renderer,
  */
 #define HEIGHT_SQUARES 2.5
 
+/* This code is cut-and-pasted between here and gtk+/gdk/gdkpango.c */
 static void
-pango_cairo_renderer_draw_error_underline (PangoRenderer *renderer,
-					   int            x,
-					   int            y,
-					   int            width,
-					   int            height)
+draw_error_underline (cairo_t *cr,
+		      double   x,
+		      double   y,
+		      double   width,
+		      double   height)
 {
-  PangoCairoRenderer *crenderer = PANGO_CAIRO_RENDERER (renderer);
-  cairo_t *cr = crenderer->cr;
-
   double square = height / HEIGHT_SQUARES;
   double unit_width = (HEIGHT_SQUARES - 1) * square;
   int width_units = (width + unit_width / 2) / unit_width;
   double y_top, y_bottom;
   int i;
 
-  if (!crenderer->do_path)
-    {
-      cairo_save (cr);
-
-      set_color (crenderer, PANGO_RENDER_PART_UNDERLINE);
-      
-      cairo_new_path (cr);
-    }
-
   x += (width - width_units * unit_width);
   width = width_units * unit_width;
 
-  y_top = y + height;
-  y_bottom = y;
+  y_top = y;
+  y_bottom = y + height;
   
   /* Bottom of squiggle */
-  cairo_move_to (cr, x - square / 2, y_top - square / 2); /* A */
+  cairo_move_to (cr, x - square / 2, y_top + square / 2); /* A */
   for (i = 0; i < width_units; i += 2)
     {
       double x_middle = x + (i + 1) * unit_width;
       double x_right = x + (i + 2) * unit_width;
-      
+    
       cairo_line_to (cr, x_middle, y_bottom); /* B */
       
       if (i + 1 == width_units)
 	/* Nothing */;
       else if (i + 2 == width_units)
-	cairo_line_to (cr, x_right + square / 2, y_top - square / 2); /* D */
+	cairo_line_to (cr, x_right + square / 2, y_top + square / 2); /* D */
       else
-	cairo_line_to (cr, x_right, y_top - square); /* C */
+	cairo_line_to (cr, x_right, y_top + square); /* C */
     }
   
   /* Top of squiggle */
@@ -222,18 +211,40 @@ pango_cairo_renderer_draw_error_underline (PangoRenderer *renderer,
       double x_right = x + (i + 2) * unit_width;
       
       if (i + 1 == width_units)
-	cairo_line_to (cr, x_middle + square / 2, y_bottom + square / 2); /* G */
-      else
-	{
-	  if (i + 2 == width_units)
-	    cairo_line_to (cr, x_right, y_top); /* E */
-	  cairo_line_to (cr, x_middle, y_bottom + square); /* F */
-	}
-    
+	cairo_line_to (cr, x_middle + square / 2, y_bottom - square / 2); /* G */
+      else {
+	if (i + 2 == width_units)
+	  cairo_line_to (cr, x_right, y_top); /* E */
+	cairo_line_to (cr, x_middle, y_bottom - square); /* F */
+      }
+      
       cairo_line_to (cr, x_left, y_top);   /* H */
     }
-  
-  cairo_close_path (cr);
+}
+
+static void
+pango_cairo_renderer_draw_error_underline (PangoRenderer *renderer,
+					   int            x,
+					   int            y,
+					   int            width,
+					   int            height)
+{
+  PangoCairoRenderer *crenderer = PANGO_CAIRO_RENDERER (renderer);
+  cairo_t *cr = crenderer->cr;
+
+  if (!crenderer->do_path)
+    {
+      cairo_save (cr);
+
+      set_color (crenderer, PANGO_RENDER_PART_UNDERLINE);
+      
+      cairo_new_path (cr);
+    }
+
+  draw_error_underline (cr,
+			crenderer->x_offset + (double)x / PANGO_SCALE,
+			crenderer->y_offset + (double)y / PANGO_SCALE,
+			(double)width / PANGO_SCALE, (double)height / PANGO_SCALE);
   
   if (!crenderer->do_path)
     {
