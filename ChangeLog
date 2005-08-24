@@ -1,1 +1,5 @@
+2005-08-24  Owen Taylor  <otaylor@redhat.com>
 
+	* pango/pangocairo-render.c (draw_error_underline): convert
+	from Pango units to doubles, fix some coordinate space problems
+	that had previously been fixed in GTK+. (#313015, Luis Villa)
