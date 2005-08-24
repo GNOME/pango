@@ -1,3 +1,12 @@
+2005-08-25  Tor Lillqvist  <tml@novell.com>
+
+	* pango/Makefile.am: Use pangocairo.def when linking libpangocairo
+	on Windows, instead of relying on GNU ld auto-exporting all public
+	symbols.
+
+	* pango/pangocairo.def: Add missing entries. (#314420, Kazuki
+	Iwamoto)
+
 2005-08-24  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pangocairo-render.c (draw_error_underline): convert
