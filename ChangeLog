@@ -1,3 +1,8 @@
+2005-08-26  Behdad Esfahbod  <pango@behdad.org>
+
+	* pango/break.c: Protect against future line-break type additions in
+	glib Unicode module.
+
 2005-08-25  Tor Lillqvist  <tml@novell.com>
 
 	* pango/Makefile.am: Use pangocairo.def when linking libpangocairo
