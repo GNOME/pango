@@ -1,3 +1,8 @@
+2005-08-29  Behdad Esfahbod  <pango@behdad.org>
+
+	* examples/HELLO.utf8: Add a few Arabic non-spacing marks to the
+	example.  Put the line with Pango in Greek-Japanese back in.
+
 2005-08-26  Behdad Esfahbod  <pango@behdad.org>
 
 	* pango/break.c: Protect against future line-break type additions in
