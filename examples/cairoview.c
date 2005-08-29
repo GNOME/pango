@@ -217,6 +217,7 @@ int main (int argc, char **argv)
   screen = DefaultScreen (display);
 
   fontmap = pango_cairo_font_map_get_default ();
+  pango_cairo_font_map_set_resolution (PANGO_CAIRO_FONT_MAP (fontmap), opt_dpi);
   context = pango_cairo_font_map_create_context (PANGO_CAIRO_FONT_MAP (fontmap));
 
   /* This is annoying ... we have to create a temporary surface just to

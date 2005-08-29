@@ -36,12 +36,6 @@
  */
 
 
-/* Keep these in sync with the same macros in break.c */
-
-#define LEADING_JAMO(wc)  ((wc) >= 0x1100 && (wc) <= 0x115F)
-#define VOWEL_JAMO(wc)    ((wc) >= 0x1160 && (wc) <= 0x11A2)
-#define TRAILING_JAMO(wc) ((wc) >= 0x11A8 && (wc) <= 0x11F9)
-#define JAMO(wc)          ((wc) >= 0x1100 && (wc) <= 0x11FF)
 /* "virama script" is just an optimization; it includes a bunch of
  * scripts without viramas in them
  */
