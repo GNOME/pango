@@ -1,5 +1,10 @@
 2005-08-29  Behdad Esfahbod  <pango@behdad.org>
 
+	* pango/opentype/ottest.c, pango/opentype/disasm.c: Generate valid
+	XML output.  Dump LookupFlag too.
+
+2005-08-29  Behdad Esfahbod  <pango@behdad.org>
+
 	* examples/cairoview.c: Set cairo font resolution.
 
 	* tests/testboundaries.c: Remove unused Hangul Jamo macros.
