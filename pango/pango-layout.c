@@ -579,7 +579,7 @@ pango_layout_get_justify (PangoLayout *layout)
  * right-to-left layout is done by according to the base direction
  * of the layout's #PangoContext. (See pango_context_set_base_dir()).
  *
- * When the auto-computed direction or a paragraph differs from the
+ * When the auto-computed direction of a paragraph differs from the
  * base direction of the context, then the interpretation of
  * %PANGO_ALIGN_LEFT and %PANGO_ALIGN_RIGHT are swapped. 
  **/

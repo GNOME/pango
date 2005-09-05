@@ -1,3 +1,8 @@
+2005-09-05  Behdad Esfahbod  <pango@behdad.org>
+
+	* pango/pango-layout.c (pango_layout_set_auto_dir): Fixed typo in 
+	docs.
+
 2005-08-29  Behdad Esfahbod  <pango@behdad.org>
 
 	* pango/opentype/ottest.c, pango/opentype/disasm.c: Generate valid
