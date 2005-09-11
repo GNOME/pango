@@ -1,3 +1,9 @@
+2005-09-11  Matthias Clasen  <mclasen@redhat.com>
+
+	* pango/pangocairo-fontmap.c (free_context_info): Use g_free()
+	to free g_new()-allocated data, otherwise the GLib memory profiler
+	becomes very unhappy.
+
 2005-08-26  Behdad Esfahbod  <pango@behdad.org>
 
 	* pango/break.c: Protect against future line-break type additions in
