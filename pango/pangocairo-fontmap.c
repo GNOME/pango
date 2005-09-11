@@ -213,7 +213,7 @@ free_context_info (PangoCairoContextInfo *info)
   if (info->merged_options)
     cairo_font_options_destroy (info->merged_options);
   
-  free (info);
+  g_free (info);
 }
 
 static PangoCairoContextInfo *
