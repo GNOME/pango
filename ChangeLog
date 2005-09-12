@@ -1,3 +1,8 @@
+2005-09-12  Jean Brefort  <jean.brefort@normalesup.org>
+
+	* pango/pango-attributes.c: (pango_attr_list_splice): Fixed typo
+	(#316054).
+
 2005-09-11  Matthias Clasen  <mclasen@redhat.com>
 
 	* pango/pangocairo-fontmap.c (free_context_info): Use g_free()
