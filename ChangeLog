@@ -1,3 +1,11 @@
+2005-09-13  Tor Lillqvist  <tml@novell.com>
+
+	* modules/basic/basic-win32.c: Drop unused font_cache variable and
+	the call to pango_win32_font_map_for_display() used in its
+	initialization, which caused an extra instance of
+	PangoWin32FontMap to be created, and fonts enumerated an extra
+	time.
+
 2005-09-12  Jean Brefort  <jean.brefort@normalesup.org>
 
 	* pango/pango-attributes.c: (pango_attr_list_splice): Fixed typo
