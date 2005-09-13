@@ -70,8 +70,6 @@ static gboolean pango_win32_debug = FALSE;
 
 static gboolean have_uniscribe = FALSE;
 
-static PangoWin32FontCache *font_cache;
-
 static HDC hdc;
 
 typedef HRESULT (WINAPI *pScriptGetProperties) (const SCRIPT_PROPERTIES ***,
@@ -1094,9 +1092,6 @@ init_uniscribe (void)
 #ifdef BASIC_WIN32_DEBUGGING
       (*script_get_properties) (&scripts, &nscripts);
 #endif
-      font_cache = pango_win32_font_map_get_font_cache
-	(pango_win32_font_map_for_display ());
-      
       hdc = pango_win32_get_dc ();
     }
 #endif
