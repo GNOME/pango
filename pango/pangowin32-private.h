@@ -84,6 +84,7 @@ typedef struct _PangoWin32Font         PangoWin32Font;
 typedef struct _PangoWin32FontClass    PangoWin32FontClass;
 typedef struct _PangoWin32Face         PangoWin32Face;
 typedef struct _PangoWin32GlyphInfo    PangoWin32GlyphInfo;
+typedef struct _PangoWin32MetricsInfo  PangoWin32MetricsInfo;
 
 struct _PangoWin32FontMap
 {
@@ -171,6 +172,12 @@ struct _PangoWin32GlyphInfo
 {
   PangoRectangle logical_rect;
   PangoRectangle ink_rect;
+};
+
+struct _PangoWin32MetricsInfo
+{
+  const char *sample_str;
+  PangoFontMetrics *metrics;
 };
 
 /* TrueType defines: */

@@ -88,6 +88,8 @@ static void       pango_win32_fontmap_cache_clear    (PangoWin32FontMap         
 static void       pango_win32_insert_font            (PangoWin32FontMap            *fontmap,
 						      LOGFONT                      *lfp);
 
+static PangoWin32FontMap *default_fontmap = NULL;
+
 G_DEFINE_TYPE (PangoWin32FontMap, pango_win32_font_map, PANGO_TYPE_FONT_MAP)
 
 /* A hash function for LOGFONTs that takes into consideration only
@@ -177,7 +179,6 @@ pango_win32_font_map_init (PangoWin32FontMap *win32fontmap)
 		       (LPARAM)win32fontmap, 0);
 
   win32fontmap->resolution = (PANGO_SCALE / (double) GetDeviceCaps (pango_win32_hdc, LOGPIXELSY)) * 72.0;
-
 }
 
 static void
@@ -198,8 +199,6 @@ pango_win32_font_map_class_init (PangoWin32FontMapClass *class)
   for (i = 0; _pango_included_win32_modules[i].list; i++)
     pango_module_register (&_pango_included_win32_modules[i]);
 }
-
-static PangoWin32FontMap *default_fontmap = NULL;
 
 /**
  * pango_win32_font_map_for_display:
@@ -1031,17 +1030,10 @@ pango_win32_fontmap_cache_remove (PangoFontMap   *fontmap,
 				  PangoWin32Font *win32font)
 {
   PangoWin32FontMap *win32fontmap = PANGO_WIN32_FONT_MAP (fontmap);
+  GList *link = g_queue_find (win32fontmap->freed_fonts, win32font);
 
-  GList *link = g_list_find (win32fontmap->freed_fonts->head, win32font);
-  if (link == win32fontmap->freed_fonts->tail)
-    {
-      win32fontmap->freed_fonts->tail = win32fontmap->freed_fonts->tail->prev;
-      if (win32fontmap->freed_fonts->tail)
-	win32fontmap->freed_fonts->tail->next = NULL;
-    }
-  
-  win32fontmap->freed_fonts->head = g_list_delete_link (win32fontmap->freed_fonts->head, link);
-  win32fontmap->freed_fonts->length--;
+  if (link)
+    g_queue_delete_link (win32fontmap->freed_fonts, link);
   win32font->in_cache = FALSE;
 
   g_object_unref (win32font);
@@ -1051,8 +1043,6 @@ static void
 pango_win32_fontmap_cache_clear (PangoWin32FontMap *win32fontmap)
 {
   g_list_foreach (win32fontmap->freed_fonts->head, (GFunc)g_object_unref, NULL);
-  g_list_free (win32fontmap->freed_fonts->head);
-  win32fontmap->freed_fonts->head = NULL;
-  win32fontmap->freed_fonts->tail = NULL;
-  win32fontmap->freed_fonts->length = 0;
+  g_queue_free (win32fontmap->freed_fonts);
+  win32fontmap->freed_fonts = g_queue_new ();
 }

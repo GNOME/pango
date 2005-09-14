@@ -42,14 +42,6 @@ HDC pango_win32_hdc;
 OSVERSIONINFO pango_win32_os_version_info;
 gboolean pango_win32_debug = FALSE;
 
-typedef struct _PangoWin32MetricsInfo PangoWin32MetricsInfo;
-
-struct _PangoWin32MetricsInfo
-{
-  const char *sample_str;
-  PangoFontMetrics *metrics;
-};
-
 static void pango_win32_font_dispose    (GObject             *object);
 static void pango_win32_font_finalize   (GObject             *object);
 

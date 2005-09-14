@@ -1,3 +1,40 @@
+2005-09-14  Tor Lillqvist  <tml@novell.com>
+
+	* pango/pangocairo-win32font.c (struct _PangoCairoWin32Font): Have
+	a list of metrics by language instead of just one metrics.
+
+	(pango_cairo_win32_font_get_scaled_font): Use the name cwfont
+	instead of cffont.
+
+	(free_metrics_info, pango_cairo_win32_font_finalize): Free the
+	metrics by language list.
+
+	(create_metrics_for_context): New helper function. Approximate the
+	character and digit widths correctly. (#314114)
+
+	(pango_cairo_win32_font_get_metrics): Use the list of metrics by
+	language. Call create_metrics_for_context() to measure metrics.
+	
+	(_pango_cairo_win32_font_new): Keep the PangoWin32Font objects in
+	the PangoWin32Face::cached_fonts, like the pangowin32 backend
+	does. 
+
+	PangoWin32Face::cached_fonts isn't really a proper cache. It's a
+	list with unbound length, one PangoWin32Font per size. Once there
+	is cacheing in cairo this can be dropped presumably? What does the
+	pangofc backend do? There are too many levels of cacheing going
+	on: we have the stuff in pangowin32-fontcache.c (unused now with
+	cairo), the PangoWin32FontMap::freed_fonts cache, and the
+	PangoWin32::cached_fonts list.
+
+	* pango/pangowin32-fontmap.c (pango_win32_fontmap_cache_remove,
+	pango_win32_fontmap_cache_clear): Use GQueue API instead of
+	manipulating pointers manually.
+
+	* pango/pangowin32-private.h
+	* pango/pangowin32.c: Move PangoWin32MetricsInfo to the private
+	header file, as also pangocairo-win32font.c uses it.
+	
 2005-09-13  Tor Lillqvist  <tml@novell.com>
 
 	* modules/basic/basic-win32.c: Drop unused font_cache variable and
