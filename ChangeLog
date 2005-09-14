@@ -1,3 +1,8 @@
+2005-09-14  Morten Welinder  <terra@gnome.org>
+
+	* pango/pango-attributes.c (pango_attr_list_splice): Apply fix for
+	#316054 on this branch too.
+
 2005-08-15  Behdad Esfahbod  <pango@behdad.org>
 
 	* pango/opentype/ftglue.h: Replace perror with perror_.

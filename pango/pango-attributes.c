@@ -1399,7 +1399,7 @@ pango_attr_list_splice (PangoAttrList *list,
 	   * an element could (in theory) suprise the caller, so
 	   * we don't delete it.
 	   */
-	  attr->start_index = CLAMP_ADD (attr->end_index, ulen);
+	  attr->start_index = CLAMP_ADD (attr->start_index, ulen);
 	  attr->end_index = CLAMP_ADD (attr->end_index, ulen);
 	}
 
