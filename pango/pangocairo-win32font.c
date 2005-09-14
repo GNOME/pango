@@ -40,6 +40,7 @@
 
 typedef struct _PangoCairoWin32Font      PangoCairoWin32Font;
 typedef struct _PangoCairoWin32FontClass PangoCairoWin32FontClass;
+typedef struct _PangoCairoWin32GlyphInfo PangoCairoWin32GlyphInfo;
 
 struct _PangoCairoWin32Font
 {
@@ -55,11 +56,18 @@ struct _PangoCairoWin32Font
   cairo_font_options_t *options;
   
   GSList *metrics_by_lang;
+  GHashTable *glyph_info;
 };
 
 struct _PangoCairoWin32FontClass
 {
   PangoWin32FontClass  parent_class;
+};
+
+struct _PangoCairoWin32GlyphInfo
+{
+  PangoRectangle logical_rect;
+  PangoRectangle ink_rect;
 };
 
 GType pango_cairo_win32_font_get_type (void);
@@ -163,6 +171,8 @@ pango_cairo_win32_font_finalize (GObject *object)
 {
   PangoCairoWin32Font *cwfont = PANGO_CAIRO_WIN32_FONT (object);
 
+  g_hash_table_destroy (cwfont->glyph_info);
+
   g_slist_foreach (cwfont->metrics_by_lang, (GFunc)free_metrics_info, NULL);
   g_slist_free (cwfont->metrics_by_lang);  
 
@@ -176,43 +186,82 @@ pango_cairo_win32_font_finalize (GObject *object)
 }
 
 static void
+compute_glyph_extents (PangoFont        *font,
+		       PangoGlyph        glyph,
+		       PangoRectangle   *ink_rect,
+		       PangoRectangle   *logical_rect)
+{
+  PangoCairoFont *cfont = (PangoCairoFont *)font;
+  cairo_scaled_font_t *scaled_font = pango_cairo_win32_font_get_scaled_font (PANGO_CAIRO_FONT (cfont));
+
+  /* It may well be worth caching the font_extents here, since getting them
+   * is pretty expensive.
+   */
+  cairo_font_extents_t font_extents;
+  cairo_text_extents_t extents;
+  cairo_glyph_t cairo_glyph;
+  
+  cairo_scaled_font_extents (scaled_font, &font_extents);
+  
+  logical_rect->x = 0;
+  logical_rect->y = - font_extents.ascent * PANGO_SCALE;
+  logical_rect->width = 0;
+  logical_rect->height = (font_extents.ascent + font_extents.descent) * PANGO_SCALE;
+
+  if (glyph)
+    {
+      cairo_glyph.index = glyph;
+      cairo_glyph.x = 0;
+      cairo_glyph.y = 0;
+      
+      cairo_scaled_font_glyph_extents (scaled_font,
+				       &cairo_glyph, 1, &extents);
+      
+      ink_rect->x = extents.x_bearing * PANGO_SCALE;
+      ink_rect->y = extents.y_bearing * PANGO_SCALE;
+      ink_rect->width = extents.width * PANGO_SCALE;
+      ink_rect->height = extents.height * PANGO_SCALE;
+      
+      logical_rect->width = extents.x_advance * PANGO_SCALE;
+    }
+}
+
+static PangoCairoWin32GlyphInfo *
+pango_cairo_win32_font_get_glyph_info (PangoFont   *font,
+				       PangoGlyph   glyph)
+{
+  PangoCairoWin32Font *cwfont = (PangoCairoWin32Font *)font;
+  PangoCairoWin32GlyphInfo *info;
+
+  info = g_hash_table_lookup (cwfont->glyph_info, GUINT_TO_POINTER (glyph));
+  if (!info)
+    {
+      info = g_new0 (PangoCairoWin32GlyphInfo, 1);
+      
+      compute_glyph_extents (font, glyph,
+			     &info->ink_rect,
+			     &info->logical_rect);
+      
+      g_hash_table_insert (cwfont->glyph_info, GUINT_TO_POINTER (glyph), info);
+    }
+
+  return info;
+}
+     
+static void
 pango_cairo_win32_font_get_glyph_extents (PangoFont        *font,
 					  PangoGlyph        glyph,
 					  PangoRectangle   *ink_rect,
 					  PangoRectangle   *logical_rect)
 {
-  cairo_scaled_font_t *scaled_font;
-  cairo_text_extents_t extents;
-  cairo_glyph_t cairo_glyph;
+  PangoCairoWin32GlyphInfo *info;
 
-  scaled_font = pango_cairo_win32_font_get_scaled_font (PANGO_CAIRO_FONT (font));
-
-  cairo_glyph.index = glyph;
-  cairo_glyph.x = 0;
-  cairo_glyph.y = 0;
-
-  cairo_scaled_font_glyph_extents (scaled_font,
-				   &cairo_glyph, 1, &extents);
-
-  if (ink_rect)
-    {
-      ink_rect->x = extents.x_bearing * PANGO_SCALE;
-      ink_rect->y = extents.y_bearing * PANGO_SCALE;
-      ink_rect->width = extents.width * PANGO_SCALE;
-      ink_rect->height = extents.height * PANGO_SCALE;
-    }
+  info = pango_cairo_win32_font_get_glyph_info (font, glyph);
   
+  if (ink_rect)
+    *ink_rect = info->ink_rect;
   if (logical_rect)
-    {
-      cairo_font_extents_t font_extents;
-
-      cairo_scaled_font_extents (scaled_font, &font_extents);
-      
-      logical_rect->x = 0;
-      logical_rect->y = - font_extents.ascent * PANGO_SCALE;
-      logical_rect->width = extents.x_advance * PANGO_SCALE;
-      logical_rect->height = (font_extents.ascent + font_extents.descent) * PANGO_SCALE;
-    }
+    *logical_rect = info->logical_rect;
 }
 
 static PangoFontMetrics *
@@ -362,6 +411,10 @@ pango_cairo_win32_font_class_init (PangoCairoWin32FontClass *class)
 static void
 pango_cairo_win32_font_init (PangoCairoWin32Font *cwfont)
 {
+  cwfont->glyph_info = g_hash_table_new_full (g_direct_hash,
+					      NULL,
+					      NULL,
+					      (GDestroyNotify)g_free);
 }
 
 /********************
