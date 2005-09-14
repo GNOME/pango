@@ -3,6 +3,8 @@
 	* pango/pangocairo-win32font.c: Use identical glyph extents
 	cacheing as in pangocairo-fcfont.c. Huge performance improvement.
 
+	* README.win32: Update.
+
 2005-09-14  Tor Lillqvist  <tml@novell.com>
 
 	* pango/pangocairo-win32font.c (struct _PangoCairoWin32Font): Have
