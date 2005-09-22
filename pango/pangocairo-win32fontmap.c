@@ -104,5 +104,5 @@ pango_cairo_win32_font_map_class_init (PangoCairoWin32FontMapClass *class)
 static void
 pango_cairo_win32_font_map_init (PangoCairoWin32FontMap *cwfontmap)
 {
-  cwfontmap->dpi   = 96.0;
+  cwfontmap->dpi = GetDeviceCaps (pango_win32_get_dc (), LOGPIXELSY);
 }

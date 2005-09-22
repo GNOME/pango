@@ -1,3 +1,15 @@
+2005-09-22  Tor Lillqvist  <tml@novell.com>
+
+	* pango/pangocairo-win32font.c (_pango_cairo_win32_font_new): Move
+	the calculation of dpi and size earlier. Use the size variable
+	instad of isize when looking for a matching cached font. Isize was
+	supposed to be the same as size anyway. (Actually it was the same
+	only when LOGPIXELSY equalled 96 (which often is the default
+	value), see below.)
+
+	* pango/pangocairo-win32fontmap.c (pango_cairo_win32_font_map_init): 
+	Set dpi to the LOGPIXELSY value instead of hardcoding 96.
+
 2005-09-14  Tor Lillqvist  <tml@novell.com>
 
 	* pango/pangocairo-win32font.c: Use identical glyph extents
