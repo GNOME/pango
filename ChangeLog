@@ -10,6 +10,9 @@
 	* pango/pangocairo-win32fontmap.c (pango_cairo_win32_font_map_init): 
 	Set dpi to the LOGPIXELSY value instead of hardcoding 96.
 
+	* pango/Makefile.am (libpangocairo_1_0_la_LIBADD): Need WIN32_LIBS
+	now.
+
 2005-09-14  Tor Lillqvist  <tml@novell.com>
 
 	* pango/pangocairo-win32font.c: Use identical glyph extents
