@@ -436,22 +436,33 @@ _pango_cairo_win32_font_new (PangoCairoWin32FontMap     *cwfontmap,
 #ifdef USE_FACE_CACHED_FONTS
   PangoWin32FontMap *win32fontmap;
   GSList *tmp_list;
-  int isize;
 #endif
 
   g_return_val_if_fail (PANGO_IS_CAIRO_WIN32_FONT_MAP (cwfontmap), NULL);
 
+  size = (double) pango_font_description_get_size (desc) / PANGO_SCALE;
+
+  if (context)
+    {
+      dpi = pango_cairo_context_get_resolution (context);
+      
+      if (dpi <= 0)
+	dpi = cwfontmap->dpi;
+    }
+  else
+    dpi = cwfontmap->dpi;
+  
+  if (!pango_font_description_get_size_is_absolute (desc))
+    size *= dpi / 72.;
+
 #ifdef USE_FACE_CACHED_FONTS
   win32fontmap = PANGO_WIN32_FONT_MAP (cwfontmap);
-  isize = pango_font_description_get_size (desc);
-  if (!pango_font_description_get_size_is_absolute (desc))
-    isize = (int) 0.5 + (isize * PANGO_SCALE) / win32fontmap->resolution;
   
   tmp_list = face->cached_fonts;
   while (tmp_list)
     {
       win32font = tmp_list->data;
-      if (ABS (win32font->size- isize) < 2)
+      if (ABS (win32font->size - size * PANGO_SCALE) < 2)
 	{
 	  g_object_ref (win32font);
 	  if (win32font->in_cache)
@@ -473,21 +484,6 @@ _pango_cairo_win32_font_new (PangoCairoWin32FontMap     *cwfontmap,
 #ifdef USE_FACE_CACHED_FONTS
   face->cached_fonts = g_slist_prepend (face->cached_fonts, win32font);
 #endif
-
-  size = (double) pango_font_description_get_size (desc) / PANGO_SCALE;
-
-  if (context)
-    {
-      dpi = pango_cairo_context_get_resolution (context);
-      
-      if (dpi <= 0)
-	dpi = cwfontmap->dpi;
-    }
-  else
-    dpi = cwfontmap->dpi;
-  
-  if (!pango_font_description_get_size_is_absolute (desc))
-    size *= dpi / 72.;
 
   /* FIXME: This is a pixel size, so not really what we want for describe(),
    * but it's what we need when computing the scale factor.

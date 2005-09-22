@@ -230,7 +230,7 @@ if HAVE_CAIRO_WIN32
 libpangocairo_1_0_la_LDFLAGS += -export-symbols $(srcdir)/pangocairo.def
 libpangocairo_1_0_la_DEPENDENCIES += pangocairo.def
 
-libpangocairo_1_0_la_LIBADD += libpangowin32-$(PANGO_API_VERSION).la 
+libpangocairo_1_0_la_LIBADD += libpangowin32-$(PANGO_API_VERSION).la $(WIN32_LIBS)
 libpangocairo_1_0_la_DEPENDENCIES += libpangowin32-$(PANGO_API_VERSION).la 
 
 libpangocairo_1_0_la_SOURCES += pangocairo-win32font.c pangocairo-win32fontmap.c pangocairo-win32.h
