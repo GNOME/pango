@@ -1,3 +1,8 @@
+2005-09-25  Behdad Esfahbod  <behdad@gnome.org>
+
+	* pango/mini-fribidi/fribidi_get_type.c: Removed.  Not needed since
+	2003 or so!
+
 2005-09-22  Tor Lillqvist  <tml@novell.com>
 
 	* pango/pangocairo-win32font.c (_pango_cairo_win32_font_new): Move
