@@ -1,4 +1,13 @@
-2005-09-22  Tor Lillqvist  <tml@novell.com>
+2005-09-09  Owen Taylor  <otaylor@redhat.com>
+
+ 	* pango/pangocairo-render.c (pango_cairo_show_glyph_string): unset
+ 	all part colors, since when drawing just a glyph string, 
+ 	prepare_run() isn't called. (#315599, Choe Hwanjin)
+ 
+ 	* pango/pango-renderer.c (pango_renderer_draw_layout_line): NULL
+ 	out renderer->priv->line_state.
+	
+005-09-22  Tor Lillqvist  <tml@novell.com>
 
 	* pango/pangocairo-win32font.c (_pango_cairo_win32_font_new): Move
 	the calculation of dpi and size earlier. Use the size variable
