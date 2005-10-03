@@ -564,8 +564,9 @@ pango_renderer_draw_layout_line (PangoRenderer    *renderer,
   draw_underline (renderer, &state);
   draw_strikethrough (renderer, &state);
 
+  renderer->priv->line_state = NULL;
+  
   pango_renderer_deactivate (renderer);
-
 }
 
 /**

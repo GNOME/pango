@@ -1,3 +1,12 @@
+2005-09-09  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pangocairo-render.c (pango_cairo_show_glyph_string): unset
+	all part colors, since when drawing just a glyph string, 
+	prepare_run() isn't called. (#315599, Choe Hwanjin)
+
+	* pango/pango-renderer.c (pango_renderer_draw_layout_line): NULL
+	out renderer->priv->line_state.
+
 2005-09-25  Behdad Esfahbod  <behdad@gnome.org>
 
 	* pango/mini-fribidi/fribidi_get_type.c: Removed.  Not needed since
