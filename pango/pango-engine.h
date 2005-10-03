@@ -197,14 +197,14 @@ typedef struct _PangoEngineScriptInfo PangoEngineScriptInfo;
 struct _PangoEngineScriptInfo 
 {
   PangoScript script;
-  gchar *langs;
+  const gchar *langs;
 };
 
 struct _PangoEngineInfo
 {
-  gchar *id;
-  gchar *engine_type;
-  gchar *render_type;
+  const gchar *id;
+  const gchar *engine_type;
+  const gchar *render_type;
   PangoEngineScriptInfo *scripts;
   gint n_scripts;
 };

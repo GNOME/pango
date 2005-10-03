@@ -1,3 +1,8 @@
+2005-10-02  Behdad Esfahbod  <behdad@gnome.org>
+
+	* pango/pango-engine.h: Add const to gchar * members of structs.
+	Shuts up gcc warnings. (#317676)
+
 2005-09-09  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pangocairo-render.c (pango_cairo_show_glyph_string): unset
