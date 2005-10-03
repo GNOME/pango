@@ -1,11 +1,23 @@
-overview of changes between 1.9.1 and 1.10.0
+Overview of changes between 1.10.0 and 1.10.1
+=============================================
+- Add various forms of caching to the Win32 backend, greatly
+  improving performance [Tor Lillqvist]
+- Fix problem with colors leaking from a Pango item to 
+  subsequently drawn strings. [Choe Hwanjin]
+- Fix bug where error underlines would be drawn 1024 times
+  too big in the Cairo backend. [Luis Villa]
+- Misc bug and build fixes [Jean Brefort, Matthias Clasen, 
+  Behdad Esfahbod, Kazuki Iwamoto]
+
+Overview of changes between 1.9.1 and 1.10.0
 ============================================
 * Update script tables, bidi tables, and Arabic joining tables for Unicode 4.1 
   [Roozbeh Pournader, Behdad Esfahbod]
 * Misc bug and build fixes [Sebastien Bacher, Hans Breuer, Behdad, 
-  J. Ali Harlow, Tor Lillqvist, Keith Packard, Vittorio Palmisano, Manish Singh]
+  J. Ali Harlow, Tor Lillqvist, Keith Packard, Vittorio Palmisano, 
+  Manish Singh]
 
-overview of changes between 1.9.0 and 1.9.1
+Overview of changes between 1.9.0 and 1.9.1
 ==========================================
 * Support setting of font options and DPI on PangoContext for
   the Cairo backend.
