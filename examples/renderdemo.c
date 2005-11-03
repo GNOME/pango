@@ -54,6 +54,7 @@ char *opt_text = NULL;
 gboolean opt_waterfall = FALSE;
 int opt_width = -1;
 int opt_indent = 0;
+int opt_runs = 1;
 PangoEllipsizeMode opt_ellipsize = PANGO_ELLIPSIZE_NONE;
 HintMode opt_hinting = HINT_DEFAULT;
 
@@ -411,6 +412,8 @@ parse_options (int argc, char *argv[])
       ARG_INT,      &opt_width },
     { "indent",     "Width in points to indent paragraphs",
       ARG_INT,      &opt_indent },
+    { "runs",       "Render text this many times",
+      ARG_INT,      &opt_runs },
     { NULL }
   };
 

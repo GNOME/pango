@@ -1,5 +1,11 @@
 2005-11-03  Behdad Esfahbod  <behdad@gnome.org>
 
+	* examples/pangoft2pgm.c, renderdemo.c, renderdemo.h: Added a --runs
+	options, useful for profiling.  Misc cleanup, freeing memory. (from
+	#170414)
+
+2005-11-03  Behdad Esfahbod  <behdad@gnome.org>
+
 	Patches from #170414.  Reviewed by Matthias Clasen.
 
 	* pango/opentype/ftxgpos.c, pango/opentype/ftxgsub.c: Use call table
