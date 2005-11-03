@@ -31,9 +31,7 @@
 
 #include <glib/gstdio.h>
 
-#ifdef HAVE_FRIBIDI
-#include <fribidi/fribidi.h>
-#endif
+#include <mini-fribidi/fribidi.h>
 
 #ifndef HAVE_FLOCKFILE
 #  define flockfile(f) (void)1
@@ -1402,28 +1400,84 @@ pango_language_get_sample_string (PangoLanguage *language)
   return result;
 }
 
-#ifdef HAVE_FRIBIDI
-
-gboolean
-pango_log2vis_get_embedding_levels (gunichar       *str,
-				    int             len,
-				    PangoDirection *pbase_dir,
-				    guint8         *embedding_level_list)
+guint8 *
+pango_log2vis_get_embedding_levels (const gchar    *str,
+				    int             bytelen,
+				    PangoDirection *pbase_dir)
 {
   FriBidiCharType fribidi_base_dir;
   gboolean result;
+  guint8 *embedding_levels_list;
 
-  fribidi_base_dir = (*pbase_dir == PANGO_DIRECTION_LTR) ? FRIBIDI_TYPE_L : FRIBIDI_TYPE_R;
+  switch (*pbase_dir)
+    {
+    case PANGO_DIRECTION_LTR:
+    case PANGO_DIRECTION_TTB_RTL:
+      fribidi_base_dir = FRIBIDI_TYPE_L;
+      break;
+    case PANGO_DIRECTION_RTL:
+    case PANGO_DIRECTION_TTB_LTR:
+      fribidi_base_dir = FRIBIDI_TYPE_R;
+      break;
+    case PANGO_DIRECTION_WEAK_RTL:
+      fribidi_base_dir = FRIBIDI_TYPE_WR;
+      break;
+    /*
+    case PANGO_DIRECTION_WEAK_LTR:
+    case PANGO_DIRECTION_NEUTRAL:
+    */
+    default:
+      fribidi_base_dir = FRIBIDI_TYPE_WL;
+      break;
+    }
 
-  result = fribidi_log2vis_get_embedding_levels (str, len, &fribidi_base_dir,
-						 embedding_level_list);
-  
+#ifdef FRIBIDI_HAVE_UTF8
+  {
+    if (bytelen < 0)
+      bytelen = strlen (str);
+    embedding_levels_list = fribidi_log2vis_get_embedding_levels_new_utf8 (str, bytelen, &fribidi_base_dir);
+  }
+#else
+  {
+    gunichar *text_ucs4;
+    int n_chars;
+    text_ucs4 = g_utf8_to_ucs4_fast (str, bytelen, &n_chars);
+    embedding_levels_list = g_new (guint8, n_chars);
+    fribidi_log2vis_get_embedding_levels ((FriBidiChar*)text_ucs4, n_chars,
+					  &fribidi_base_dir,
+					  (FriBidiLevel*)embedding_levels_list);
+    g_free (text_ucs4);
+  }
+#endif
+
   *pbase_dir = (fribidi_base_dir == FRIBIDI_TYPE_L) ?  PANGO_DIRECTION_LTR : PANGO_DIRECTION_RTL;
 
-  return result;
+  return embedding_levels_list;
 }
 
-#endif /* HAVE_FRIBIDI */
+/**
+ * pango_unichar_direction:
+ * @ch: a unicode character
+ *
+ * Determines the direction of a character; either
+ * %PANGO_DIRECTION_LTR, %PANGO_DIRECTION_RTL, or
+ * %PANGO_DIRECTION_NEUTRAL.
+ *
+ * Return value: the direction of the character, as used in the
+ * Unicode bidirectional algorithm.
+ */
+PangoDirection
+pango_unichar_direction (gunichar ch)
+{
+  FriBidiCharType fribidi_ch_type = fribidi_get_type (ch);
+
+  if (!FRIBIDI_IS_LETTER (fribidi_ch_type))
+    return PANGO_DIRECTION_NEUTRAL;
+  else if (FRIBIDI_IS_RTL (fribidi_ch_type))
+    return PANGO_DIRECTION_RTL;
+  else
+    return PANGO_DIRECTION_LTR;
+}
 
 /**
  * pango_get_mirror_char:

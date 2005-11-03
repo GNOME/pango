@@ -88,10 +88,9 @@ G_CONST_RETURN char *   pango_get_lib_subdirectory (void);
 
 /* A routine from fribidi that we either wrap or provide ourselves.
  */
-gboolean pango_log2vis_get_embedding_levels (gunichar       *str,
-					     int             len,
-					     PangoDirection *pbase_dir,
-					     guint8         *embedding_level_list);
+guint8 * pango_log2vis_get_embedding_levels (const gchar    *str,
+					     int             bytelen,
+					     PangoDirection *pbase_dir);
 
 G_CONST_RETURN char *pango_language_get_sample_string (PangoLanguage *language);
 

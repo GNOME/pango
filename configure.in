@@ -205,13 +205,13 @@ else
 fi
 AM_CONDITIONAL(HAVE_X, $have_x) 
 
-#
-# Check for fontconfig
-#
 have_fontconfig=false
 have_freetype=false
 have_xft=false
 
+#
+# Check for fontconfig
+#
 PKG_CHECK_MODULES(FONTCONFIG, fontconfig >= 1.0.1, have_fontconfig=true, :)
 
 if $have_fontconfig ; then

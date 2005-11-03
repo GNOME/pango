@@ -659,11 +659,7 @@ itemize_state_init (ItemizeState      *state,
   /* First, apply the bidirectional algorithm to break
    * the text into directional runs.
    */
-  text_ucs4 = g_utf8_to_ucs4_fast (text + start_index, length, &n_chars);
-  state->embedding_levels = g_new (guint8, n_chars);
-  pango_log2vis_get_embedding_levels (text_ucs4, n_chars, &base_dir,
-                                      state->embedding_levels);
-  g_free (text_ucs4);
+  state->embedding_levels = pango_log2vis_get_embedding_levels (text + start_index, length, &base_dir);
   
   state->embedding_end_offset = 0;
   state->embedding_end = text + start_index;

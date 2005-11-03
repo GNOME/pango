@@ -296,18 +296,6 @@ The GObject type for #PangoDirection.
 @Returns: 
 
 
-<!-- ##### FUNCTION pango_unichar_direction ##### -->
-<para>
-Determines the direction of a character; either
-%PANGO_DIRECTION_LTR, %PANGO_DIRECTION_RTL, or
-%PANGO_DIRECTION_NEUTRAL.
-</para>
-
-@ch: character to examine
-@Returns:  the direction of a character, as used in the
-  Unicode bidirectional algorithm.
-
-
 <!-- ##### FUNCTION pango_find_base_dir ##### -->
 <para>
 

@@ -19,18 +19,59 @@
  * For licensing issues, contact <fwpg@sharif.edu>. 
  */
 
-#include <glib.h>
-#include "fribidi_types.h"
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+#include "fribidi.h"
 
-/*======================================================================
- *  _pango_fribidi_get_type() returns the bidi type of a character.
- *----------------------------------------------------------------------*/
-FriBidiCharType _pango_fribidi_get_type_internal (FriBidiChar uch);
+#ifdef MEM_OPTIMIZED
 
-FriBidiCharType
-_pango_fribidi_get_type (FriBidiChar uch)
-{
-  return _pango_fribidi_get_type_internal (uch);
-}
-
+#if   HAS_FRIBIDI_TAB_CHAR_TYPE_9_I
+#include "fribidi_tab_char_type_9.i"
+#elif HAS_FRIBIDI_TAB_CHAR_TYPE_8_I
+#include "fribidi_tab_char_type_8.i"
+#elif HAS_FRIBIDI_TAB_CHAR_TYPE_7_I
+#include "fribidi_tab_char_type_7.i"
+#elif HAS_FRIBIDI_TAB_CHAR_TYPE_6_I
+#include "fribidi_tab_char_type_6.i"
+#elif HAS_FRIBIDI_TAB_CHAR_TYPE_5_I
+#include "fribidi_tab_char_type_5.i"
+#elif HAS_FRIBIDI_TAB_CHAR_TYPE_4_I
+#include "fribidi_tab_char_type_4.i"
+#elif HAS_FRIBIDI_TAB_CHAR_TYPE_3_I
+#include "fribidi_tab_char_type_3.i"
+#elif HAS_FRIBIDI_TAB_CHAR_TYPE_2_I
 #include "fribidi_tab_char_type_2.i"
+#else
+#error You have no fribidi_tab_char_type_*.i file, please first make one by \
+       make fribidi_tab_char_type_n.i which n is the compress level, a digit \
+       between 2 and 9, or simply run make fribidi_tab_char_type_small, \
+       retry to make.
+#endif
+
+#else
+
+#if   HAS_FRIBIDI_TAB_CHAR_TYPE_2_I
+#include "fribidi_tab_char_type_2.i"
+#elif HAS_FRIBIDI_TAB_CHAR_TYPE_3_I
+#include "fribidi_tab_char_type_3.i"
+#elif HAS_FRIBIDI_TAB_CHAR_TYPE_4_I
+#include "fribidi_tab_char_type_4.i"
+#elif HAS_FRIBIDI_TAB_CHAR_TYPE_5_I
+#include "fribidi_tab_char_type_5.i"
+#elif HAS_FRIBIDI_TAB_CHAR_TYPE_6_I
+#include "fribidi_tab_char_type_6.i"
+#elif HAS_FRIBIDI_TAB_CHAR_TYPE_7_I
+#include "fribidi_tab_char_type_7.i"
+#elif HAS_FRIBIDI_TAB_CHAR_TYPE_8_I
+#include "fribidi_tab_char_type_8.i"
+#elif HAS_FRIBIDI_TAB_CHAR_TYPE_9_I
+#include "fribidi_tab_char_type_9.i"
+#else
+#error You have no fribidi_tab_char_type_*.i file, please first make one by \
+       make fribidi_tab_char_type_n.i which n is the compress level, a digit \
+       between 2 and 9, or simply run make fribidi_tab_char_type_large, \
+       retry to make.
+#endif
+
+#endif

@@ -1,5 +1,14 @@
 2005-11-03  Behdad Esfahbod  <behdad@gnome.org>
 
+	* docs/tmpl/main.sgml, pango/Makefile.am, pango/pango-context.c
+	(itemize_state_init), pango/pango-utils.c, pango/pango-utils.h,
+	pango/pangox.c (itemize_string_foreach), pango/mini-fribidi/*:
+	Updated to FriBidi version 0.10.7 patched to handle UTF-8 directly.
+	Moved pango_log2vis_get_embedding_levels to pango-utils.c instead
+	of mini-fribidi.  (#317192, review by Matthias Clasen)
+
+2005-11-03  Behdad Esfahbod  <behdad@gnome.org>
+
 	* examples/pangoft2pgm.c, renderdemo.c, renderdemo.h: Added a --runs
 	options, useful for profiling.  Misc cleanup, freeing memory. (from
 	#170414)

@@ -703,20 +703,12 @@ itemize_string_foreach (PangoFont     *font,
   PangoGlyphString *glyph_str = pango_glyph_string_new ();
   PangoEngineShape *shaper, *last_shaper;
   int last_level;
-  gunichar *text_ucs4;
   long n_chars, i;
   guint8 *embedding_levels;
   PangoDirection base_dir = PANGO_DIRECTION_LTR;
   gboolean finished = FALSE;
   
-  text_ucs4 = g_utf8_to_ucs4_fast (str, -1, &n_chars);
-  if (!text_ucs4)
-    return;
-
-  embedding_levels = g_new (guint8, n_chars);
-  pango_log2vis_get_embedding_levels (text_ucs4, n_chars, &base_dir,
-				      embedding_levels);
-  g_free (text_ucs4);
+  embedding_levels = pango_log2vis_get_embedding_levels (str, -1, &base_dir);
 
   last_shaper = NULL;
   last_level = 0;

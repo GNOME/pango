@@ -1,77 +1,55 @@
-Only in /usr/src/fribidi/: acconfig.h
-Only in /usr/src/fribidi/: acinclude.m4
-Only in /usr/src/fribidi/: aclocal.m4
-Only in /usr/src/fribidi/: ANNOUNCE
-Only in /usr/src/fribidi/: AUTHORS
-Only in /usr/src/fribidi/: autom4te.cache
-Only in /usr/src/fribidi/: bootstrap
-Only in /usr/src/fribidi/: ChangeLog
-Only in /usr/src/fribidi/: config.guess
-Only in /usr/src/fribidi/: config.h
-Only in /usr/src/fribidi/: config.h.in
-Only in /usr/src/fribidi/: config.log
-Only in /usr/src/fribidi/: config.status
-Only in /usr/src/fribidi/: config.sub
-Only in /usr/src/fribidi/: configure
-Only in /usr/src/fribidi/: configure.in
-Only in /usr/src/fribidi/: conformance
-Only in /usr/src/fribidi/: COPYING
-Common subdirectories: /usr/src/fribidi/CVS and mini-fribidi/CVS
-Only in mini-fribidi/: .cvsignore
-Only in /usr/src/fribidi/: depcomp
-Only in /usr/src/fribidi/: .deps
-Only in /usr/src/fribidi/: fribidi_benchmark.c
-diff -bu /usr/src/fribidi/fribidi.c mini-fribidi/fribidi.c
---- /usr/src/fribidi/fribidi.c	2002-09-13 16:26:42.000000000 -0400
-+++ mini-fribidi/fribidi.c	2003-07-14 18:21:27.000000000 -0400
-@@ -21,27 +21,17 @@
-  * <fwpg@sharif.edu>.
-  */
- 
--#ifdef HAVE_CONFIG_H
--#include <config.h>
--#endif
--#include "fribidi.h"
+diff -rua /home/behdad/src/fdo/fribidi/fribidi.stable/fribidi.c ./fribidi.c
+--- /home/behdad/src/fdo/fribidi/fribidi.stable/fribidi.c	2005-09-25 18:50:30.000000000 -0400
++++ ./fribidi.c	2005-11-03 11:30:26.000000000 -0500
+@@ -27,10 +27,6 @@
+ #include <config.h>
+ #endif
+ #include "fribidi.h"
 -#include "fribidi_mem.h"
 -#ifdef DEBUG
 -#include <stdio.h>
 -#endif
-+#include <glib.h>
-+#include "pango/pango-utils.h"
-+#include "fribidi_types.h"
  
--/* Redefine FRIBIDI_CHUNK_SIZE in config.h to override this. */
--#ifndef FRIBIDI_CHUNK_SIZE
--#ifdef MEM_OPTIMIZED
--#define FRIBIDI_CHUNK_SIZE 16
--#else
--#define FRIBIDI_CHUNK_SIZE 128
--#endif
-+#ifdef DEBUG
-+static gboolean fribidi_debug = FALSE;
+ /* Redefine FRIBIDI_CHUNK_SIZE in config.h to override this. */
+ #ifndef FRIBIDI_CHUNK_SIZE
+@@ -41,19 +37,8 @@
+ #endif
  #endif
  
- #ifdef DEBUG
--#define DBG(s) do { if (fribidi_debug_status(fribidienv)) { fprintf(stderr, s); } } while (0)
--#define DBG2(s, t) do { if (fribidi_debug_status(fribidienv)) { fprintf(stderr, s, t); } } while (0)
-+#define DBG(s) do { if (fribidi_debug) { fprintf(stderr, s); } } while (0)
-+#define DBG2(s, t) do { if (fribidi_debug) { fprintf(stderr, s, t); } } while (0)
- #else
+-#ifdef DEBUG
+-#define DBG(s) do { if (fribidi_debug) { fprintf(stderr, s); } } while (0)
+-#define DBG2(s, t) do { if (fribidi_debug) { fprintf(stderr, s, t); } } while (0)
+-#else
  #define DBG(s)
  #define DBG2(s, t)
-@@ -51,7 +41,7 @@
- char fribidi_char_from_type (FriBidiCharType c);
- #endif
- 
+-#endif
+-
+-#ifdef DEBUG
+-char fribidi_char_from_type (FriBidiCharType c);
+-#endif
+-
 -#define MAX(a,b) ((a) > (b) ? (a) : (b))
-+#define UNI_MAX_BIDI_LEVEL 61
  
  /*======================================================================
   * Typedef for the run-length list.
-@@ -79,63 +69,12 @@
+@@ -81,47 +66,6 @@
  }
  LevelInfo;
  
+-#ifdef DEBUG
+-static fribidi_boolean fribidi_debug = FRIBIDI_FALSE;
+-#endif
+-
+-fribidi_boolean
+-fribidi_set_debug (fribidi_boolean debug)
+-{
+-#ifdef DEBUG
+-  fribidi_debug = debug;
+-#else
+-  debug = 0;
+-#endif
+-  return debug;
+-}
 -
 -static void
 -bidi_string_reverse (FriBidiChar *str,
@@ -99,496 +77,338 @@ diff -bu /usr/src/fribidi/fribidi.c mini-fribidi/fribidi.c
 -    }
 -}
 -
--#ifndef USE_SIMPLE_MALLOC
--static TypeLink *free_type_links = NULL;
--#endif
--
- static TypeLink *
--new_type_link (FriBidiEnv *fribidienv)
-+new_type_link ()
- {
-   TypeLink *link;
- 
--#ifdef USE_SIMPLE_MALLOC
--  link = (TypeLink *) fribidi_malloc (fribidienv, sizeof (TypeLink));
--#else /* !USE_SIMPLE_MALLOC */
--  if (free_type_links)
--    {
--      link = free_type_links;
--      free_type_links = free_type_links->next;
--    }
--  else
--    {
--      static FriBidiMemChunk *mem_chunk = NULL;
--
--      if (!mem_chunk)
--	mem_chunk = fribidi_mem_chunk_create (fribidienv, TypeLink,
--					      FRIBIDI_CHUNK_SIZE,
--					      FRIBIDI_ALLOC_ONLY);
--
--      link = fribidi_chunk_new (fribidienv, TypeLink,
--				mem_chunk);
--    }
--#endif /* !USE_SIMPLE_MALLOC */
-+  link = (TypeLink *) g_malloc (sizeof (TypeLink));
- 
-   link->len = 0;
-   link->pos = 0;
-@@ -146,15 +85,9 @@
- }
- 
- static void
--free_type_link (FriBidiEnv *fribidienv,
--		TypeLink *link)
-+free_type_link (TypeLink *link)
- {
--#ifdef USE_SIMPLE_MALLOC
--  fribidi_free (fribidienv, link);
--#else
--  link->next = free_type_links;
--  free_type_links = link;
--#endif
-+  g_free (link);
- }
- 
- #define FRIBIDI_ADD_TYPE_LINK(p,q) \
-@@ -166,8 +99,7 @@
+ #ifndef USE_SIMPLE_MALLOC
+ static TypeLink *free_type_links = NULL;
+ #endif
+@@ -181,12 +125,13 @@
  	} while (0)
  
  static TypeLink *
--run_length_encode_types (FriBidiEnv *fribidienv,
--			 FriBidiCharType *char_type,
-+run_length_encode_types (FriBidiCharType *char_type,
- 			 FriBidiStrIndex type_len)
+-run_length_encode_types (FriBidiCharType *char_type,
+-			 FriBidiStrIndex type_len)
++run_length_encode_types_utf8 (const char *s,
++			      int bytelen, FriBidiStrIndex *len)
  {
    TypeLink *list, *last, *link;
-@@ -175,7 +107,7 @@
+-
++  FriBidiCharType char_type;
    FriBidiStrIndex i;
++  const char *p;
  
    /* Add the starting link */
--  list = new_type_link (fribidienv);
-+  list = new_type_link ();
-   list->type = FRIBIDI_TYPE_SOT;
+   list = new_type_link ();
+@@ -194,23 +139,30 @@
    list->level = FRIBIDI_LEVEL_START;
    last = list;
-@@ -184,14 +116,14 @@
-   for (i = 0; i < type_len; i++)
-     if (char_type[i] != last->type)
+ 
+-  /* Sweep over the string_type s */
+-  for (i = 0; i < type_len; i++)
+-    if (char_type[i] != last->type)
++  /* Sweep over the string s */
++  i = 0;
++  for (p = s; p < s + bytelen; p = g_utf8_next_char(p)) {
++    char_type = fribidi_get_type (g_utf8_get_char (p));
++    if (char_type != last->type)
        {
--	link = new_type_link (fribidienv);
-+        link = new_type_link ();
- 	link->type = char_type[i];
+ 	link = new_type_link ();
+-	link->type = char_type[i];
++	link->type = char_type;
  	link->pos = i;
  	FRIBIDI_ADD_TYPE_LINK (last, link);
        }
++    i++;
++  }
  
    /* Add the ending link */
--  link = new_type_link (fribidienv);
-+  link = new_type_link ();
+   link = new_type_link ();
    link->type = FRIBIDI_TYPE_EOT;
    link->level = FRIBIDI_LEVEL_END;
-   link->pos = type_len;
-@@ -205,22 +137,21 @@
-    the override_list.
- */
- static void
--init_list (FriBidiEnv *fribidienv,
--	   TypeLink **start,
-+init_list (TypeLink **start,
- 	   TypeLink **end)
- {
-   TypeLink *list;
-   TypeLink *link;
+-  link->pos = type_len;
++  link->pos = i;
+   FRIBIDI_ADD_TYPE_LINK (last, link);
  
-   /* Add the starting link */
--  list = new_type_link (fribidienv);
-+  list = new_type_link ();
-   list->type = FRIBIDI_TYPE_SOT;
-   list->level = FRIBIDI_LEVEL_START;
-   list->len = 0;
-   list->pos = 0;
- 
-   /* Add the ending link */
--  link = new_type_link (fribidienv);
-+  link = new_type_link ();
-   link->type = FRIBIDI_TYPE_EOT;
-   link->level = FRIBIDI_LEVEL_END;
-   link->len = 0;
-@@ -267,8 +198,7 @@
-    TBD: use some explanatory names instead of p, q, ...
- */
- static void
--override_list (FriBidiEnv *fribidienv,
--	       TypeLink *base,
-+override_list (TypeLink *base,
- 	       TypeLink *over)
- {
-   TypeLink *p = base, *q, *r, *s, *t;
-@@ -283,7 +213,7 @@
- 	{
- 	  t = q;
- 	  q = q->next;
--	  free_type_link (fribidienv, t);
-+          free_type_link (t);
- 	  continue;
- 	}
-       pos = q->pos;
-@@ -304,7 +234,7 @@
- 	    r = r->next;
- 	  else
- 	    {
--	      r = new_type_link (fribidienv);
-+              r = new_type_link ();
- 	      *r = *p;
- 	      if (r->next)
- 		{
-@@ -320,7 +250,7 @@
- 	    {
- 	      t = p;
- 	      p = p->prev;
--	      free_type_link (fribidienv, t);
-+              free_type_link (t);
- 	    }
- 	  else
- 	    p->len = pos - p->pos;
-@@ -346,7 +276,7 @@
- 	    {
- 	      t = s;
- 	      s = s->next;
--	      free_type_link (fribidienv, t);
-+              free_type_link (t);
- 	    }
- 	}
-       /* before updating the next and prev links to point to the inserted q,
-@@ -368,31 +298,28 @@
- #define RL_LEVEL(list) ((list)->level)
- 
- static TypeLink *
--merge_with_prev (FriBidiEnv *fribidienv,
--		 TypeLink *second)
-+merge_with_prev (TypeLink *second)
- {
-   TypeLink *first = second->prev;
-   first->next = second->next;
-   first->next->prev = first;
-   RL_LEN (first) += RL_LEN (second);
--  free_type_link (fribidienv, second);
-+  free_type_link (second);
-   return first;
++  if (len)
++    *len = i;
++
+   return list;
  }
  
- static void
--compact_list (FriBidiEnv *fribidienv,
--	      TypeLink *list)
-+compact_list (TypeLink *list)
- {
-   if (list->next)
-     for (list = list->next; list; list = list->next)
-       if (RL_TYPE (list->prev) == RL_TYPE (list)
- 	  && RL_LEVEL (list->prev) == RL_LEVEL (list))
--	list = merge_with_prev (fribidienv, list);
-+        list = merge_with_prev (list);
- }
- 
- static void
--compact_neutrals (FriBidiEnv *fribidienv,
--		  TypeLink *list)
-+compact_neutrals (TypeLink *list)
- {
-   if (list->next)
-     {
-@@ -404,7 +331,7 @@
- 		(list->prev) == RL_TYPE (list)
- 		|| (FRIBIDI_IS_NEUTRAL (RL_TYPE (list->prev))
- 		    && FRIBIDI_IS_NEUTRAL (RL_TYPE (list))))))
--	    list = merge_with_prev (fribidienv, list);
-+            list = merge_with_prev (list);
- 	}
-     }
- }
-@@ -498,7 +425,6 @@
-       ) \
-     )
- 
--
- /* Return the embedding direction of a link. */
+@@ -512,95 +464,22 @@
  #define FRIBIDI_EMBEDDING_DIRECTION(list) \
      FRIBIDI_LEVEL_TO_DIR(RL_LEVEL(list))
-@@ -572,17 +498,15 @@
-   fprintf (stderr, "  Org. types : ");
-   for (i = 0; str[i]; i++)
-     fprintf (stderr, "%c",
--	     fribidi_char_from_type (fribidi_get_type (fribidienv, str[i])));
-+	     fribidi_char_from_type (_pango_fribidi_get_type (str[i])));
-   fprintf (stderr, "\n");
- }
- #endif
+ 
+-#ifdef DEBUG
+-/*======================================================================
+- *  For debugging, define some functions for printing the types and the
+- *  levels.
+- *----------------------------------------------------------------------*/
 -
+-static char char_from_level_array[] = {
+-  'e',				/* FRIBIDI_LEVEL_REMOVED, internal error, this level shouldn't be viewed.  */
+-  '_',				/* FRIBIDI_LEVEL_START or _END, indicating start of string and end of string. */
+-  /* 0-9,A-F are the only valid levels in debug mode and before resolving
+-     implicits. after that the levels X, Y, Z may be appear too. */
+-  '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+-  'A', 'B', 'C', 'D', 'E', 'F',
+-  'X', 'Y', 'Z',		/* only must appear after resolving implicits. */
+-  'o', 'o', 'o'			/* overflows, this levels and higher levels show a bug!. */
+-};
+-
+-#define fribidi_char_from_level(level) char_from_level_array[(level) + 2]
+-
+-static void
+-print_types_re (TypeLink *pp)
+-{
+-  fprintf (stderr, "  Run types  : ");
+-  while (pp)
+-    {
+-      fprintf (stderr, "%d:l%d(%s)[%d] ",
+-	       pp->pos, pp->len, fribidi_type_name (pp->type), pp->level);
+-      pp = pp->next;
+-    }
+-  fprintf (stderr, "\n");
+-}
+-
+-static void
+-print_resolved_levels (TypeLink *pp)
+-{
+-  fprintf (stderr, "  Res. levels: ");
+-  while (pp)
+-    {
+-      FriBidiStrIndex i;
+-      for (i = 0; i < RL_LEN (pp); i++)
+-	fprintf (stderr, "%c", fribidi_char_from_level (RL_LEVEL (pp)));
+-      pp = pp->next;
+-    }
+-  fprintf (stderr, "\n");
+-}
+-
+-static void
+-print_resolved_types (TypeLink *pp)
+-{
+-  fprintf (stderr, "  Res. types : ");
+-  while (pp)
+-    {
+-      FriBidiStrIndex i;
+-      for (i = 0; i < RL_LEN (pp); i++)
+-	fprintf (stderr, "%c", fribidi_char_from_type (pp->type));
+-      pp = pp->next;
+-    }
+-  fprintf (stderr, "\n");
+-}
+-
+-/* Here, only for test porpuses, we have assumed that a fribidi_string
+-   ends with a 0 character */
+-static void
+-print_bidi_string (FriBidiChar *str)
+-{
+-  FriBidiStrIndex i;
+-  fprintf (stderr, "  Org. types : ");
+-  for (i = 0; str[i]; i++)
+-    fprintf (stderr, "%c",
+-	     fribidi_char_from_type (fribidi_get_type (str[i])));
+-  fprintf (stderr, "\n");
+-}
+-#endif
+ 
  /*======================================================================
   *  This function should follow the Unicode specification closely!
   *----------------------------------------------------------------------*/
  static void
--fribidi_analyse_string (FriBidiEnv *fribidienv,
--			/* input */
-+fribidi_analyse_string (/* input */
- 			const FriBidiChar *str,
- 			FriBidiStrIndex len,
- 			FriBidiCharType *pbase_dir,
-@@ -601,18 +525,17 @@
+-fribidi_analyse_string (	/* input */
+-			 FriBidiChar *str,
+-			 FriBidiStrIndex len,
++fribidi_analyse_string_utf8 (	/* input */
++			 const char *str,
++			 int bytelen,
+ 			 FriBidiCharType *pbase_dir,
+ 			 /* output */
++			 FriBidiStrIndex *len,
+ 			 TypeLink **ptype_rl_list,
+ 			 FriBidiLevel *pmax_level)
+ {
+   FriBidiLevel base_level, max_level;
+   FriBidiCharType base_dir;
+-  FriBidiStrIndex i;
+   TypeLink *type_rl_list, *explicits_list, *explicits_list_end, *pp;
+ 
+   DBG ("Entering fribidi_analyse_string()\n");
+@@ -608,14 +487,8 @@
+   /* Determinate character types */
    DBG ("  Determine character types\n");
    {
-     FriBidiCharType *char_type =
--      (FriBidiCharType *) fribidi_malloc (fribidienv,
--					  len * sizeof (FriBidiCharType));
-+      (FriBidiCharType *) g_malloc (len * sizeof (FriBidiCharType));
-     for (i = 0; i < len; i++)
--      char_type[i] = fribidi_get_type (fribidienv, str[i]);
-+      char_type[i] = _pango_fribidi_get_type (str[i]);
- 
+-    FriBidiCharType *char_type =
+-      (FriBidiCharType *) malloc (len * sizeof (FriBidiCharType));
+-    for (i = 0; i < len; i++)
+-      char_type[i] = fribidi_get_type (str[i]);
+-
      /* Run length encode the character types */
--    type_rl_list = run_length_encode_types (fribidienv, char_type, len);
--    fribidi_free (fribidienv, char_type);
-+    type_rl_list = run_length_encode_types (char_type, len);
-+    g_free (char_type);
+-    type_rl_list = run_length_encode_types (char_type, len);
+-    free (char_type);
++    type_rl_list = run_length_encode_types_utf8 (str, bytelen, len);
    }
    DBG ("  Determine character types, Done\n");
  
--  init_list (fribidienv, &explicits_list, &explicits_list_end);
-+  init_list (&explicits_list, &explicits_list_end);
- 
-   /* Find base level */
-   DBG ("  Finding the base level\n");
-@@ -640,7 +563,7 @@
+@@ -646,13 +519,6 @@
+   DBG2 ("  Base dir   : %c\n", fribidi_char_from_type (base_dir));
    DBG ("  Finding the base level, Done\n");
  
- #ifdef DEBUG
--  if (fribidi_debug_status (fribidienv))
-+  if (fribidi_debug)
-     {
-       print_types_re (type_rl_list);
-     }
-@@ -667,9 +590,7 @@
-     over_pushed = 0;
-     first_interval = 0;
-     status_stack =
--      (LevelInfo *) fribidi_malloc (fribidienv,
--				    sizeof (LevelInfo) * (UNI_MAX_BIDI_LEVEL +
--							  2));
-+      (LevelInfo *) g_malloc (sizeof (LevelInfo) * (UNI_MAX_BIDI_LEVEL + 2));
+-#ifdef DEBUG
+-  if (fribidi_debug)
+-    {
+-      print_types_re (type_rl_list);
+-    }
+-#endif
+-
+   /* Explicit Levels and Directions */
+   DBG ("Explicit Levels and Directions\n");
+   {
+@@ -752,16 +618,6 @@
  
-     for (pp = type_rl_list->next; pp->next; pp = pp->next)
-       {
-@@ -733,7 +654,7 @@
-     stack_size = 0;
-     over_pushed = 0;
+   compact_list (type_rl_list);
  
--    fribidi_free (fribidienv, status_stack);
-+    g_free (status_stack);
-   }
-   /* X10. The remaining rules are applied to each run of characters at the
-      same level. For each run, determine the start-of-level-run (sor) and
-@@ -745,10 +666,10 @@
-   /* Resolving Implicit Levels can be done out of X10 loop, so only change
-      of Resolving Weak Types and Resolving Neutral Types is needed. */
- 
--  compact_list (fribidienv, type_rl_list);
-+  compact_list (type_rl_list);
- 
- #ifdef DEBUG
--  if (fribidi_debug_status (fribidienv))
-+  if (fribidi_debug)
-     {
-       print_types_re (type_rl_list);
-       print_bidi_string (str);
-@@ -761,7 +682,7 @@
+-#ifdef DEBUG
+-  if (fribidi_debug)
+-    {
+-      print_types_re (type_rl_list);
+-      print_bidi_string (str);
+-      print_resolved_levels (type_rl_list);
+-      print_resolved_types (type_rl_list);
+-    }
+-#endif
+-
+   /* 4. Resolving weak types */
    DBG ("Resolving weak types\n");
    {
-     FriBidiCharType last_strong, prev_type_org;
--    fribidi_boolean w4;
-+    gboolean w4;
+@@ -884,14 +740,6 @@
  
-     last_strong = base_dir;
+   compact_neutrals (type_rl_list);
  
-@@ -787,7 +708,7 @@
- 	if (this_type == FRIBIDI_TYPE_NSM)
- 	  {
- 	    if (RL_LEVEL (pp->prev) == RL_LEVEL (pp))
--	      pp = merge_with_prev (fribidienv, pp);
-+              pp = merge_with_prev (pp);
- 	    else
- 	      RL_TYPE (pp) = prev_type;
- 	    continue;		/* As we know the next condition cannot be true. */
-@@ -810,7 +731,7 @@
-     /* Resolving dependency of loops for rules W4 and W5, W5 may
-        want to prevent W4 to take effect in the next turn, do this 
-        through "w4". */
--    w4 = FRIBIDI_TRUE;
-+    w4 = TRUE;
-     /* Resolving dependency of loops for rules W4 and W5 with W7,
-        W7 may change an EN to L but it sets the prev_type_org if needed,
-        so W4 and W5 in next turn can still do their works. */
-@@ -831,7 +752,7 @@
- 	if (this_type == FRIBIDI_TYPE_AL)
- 	  {
- 	    RL_TYPE (pp) = FRIBIDI_TYPE_RTL;
--	    w4 = FRIBIDI_TRUE;
-+            w4 = TRUE;
- 	    prev_type_org = FRIBIDI_TYPE_ON;
- 	    continue;
- 	  }
-@@ -848,7 +769,7 @@
- 	    RL_TYPE (pp) = prev_type;
- 	    this_type = RL_TYPE (pp);
- 	  }
--	w4 = FRIBIDI_TRUE;
-+        w4 = TRUE;
- 
- 	/* W5. A sequence of European terminators adjacent to European
- 	   numbers changes to All European numbers. */
-@@ -857,7 +778,7 @@
- 		|| next_type == FRIBIDI_TYPE_EN))
- 	  {
- 	    RL_TYPE (pp) = FRIBIDI_TYPE_EN;
--	    w4 = FRIBIDI_FALSE;
-+            w4 = FALSE;
- 	    this_type = RL_TYPE (pp);
- 	  }
- 
-@@ -877,10 +798,10 @@
-       }
-   }
- 
--  compact_neutrals (fribidienv, type_rl_list);
-+  compact_neutrals (type_rl_list);
- 
- #ifdef DEBUG
--  if (fribidi_debug_status (fribidienv))
-+  if (fribidi_debug)
-     {
-       print_resolved_levels (type_rl_list);
-       print_resolved_types (type_rl_list);
-@@ -909,10 +830,10 @@
-       }
-   }
- 
--  compact_list (fribidienv, type_rl_list);
-+  compact_list (type_rl_list);
- 
- #ifdef DEBUG
--  if (fribidi_debug_status (fribidienv))
-+  if (fribidi_debug)
-     {
-       print_resolved_levels (type_rl_list);
-       print_resolved_types (type_rl_list);
-@@ -945,10 +866,10 @@
-       }
-   }
- 
--  compact_list (fribidienv, type_rl_list);
-+  compact_list (type_rl_list);
- 
- #ifdef DEBUG
--  if (fribidi_debug_status (fribidienv))
-+  if (fribidi_debug)
-     {
-       print_bidi_string (str);
-       print_resolved_levels (type_rl_list);
-@@ -962,7 +883,7 @@
+-#ifdef DEBUG
+-  if (fribidi_debug)
+-    {
+-      print_resolved_levels (type_rl_list);
+-      print_resolved_types (type_rl_list);
+-    }
+-#endif
+-
+   /* 5. Resolving Neutral Types */
+   DBG ("Resolving neutral types\n");
    {
-     TypeLink *p;
+@@ -916,14 +764,6 @@
  
--    override_list (fribidienv, type_rl_list, explicits_list);
-+    override_list (type_rl_list, explicits_list);
-     p = type_rl_list->next;
-     if (p->level < 0)
-       p->level = base_level;
-@@ -972,7 +893,7 @@
+   compact_list (type_rl_list);
+ 
+-#ifdef DEBUG
+-  if (fribidi_debug)
+-    {
+-      print_resolved_levels (type_rl_list);
+-      print_resolved_types (type_rl_list);
+-    }
+-#endif
+-
+   /* 6. Resolving implicit levels */
+   DBG ("Resolving implicit levels\n");
+   {
+@@ -952,15 +792,6 @@
+ 
+   compact_list (type_rl_list);
+ 
+-#ifdef DEBUG
+-  if (fribidi_debug)
+-    {
+-      print_bidi_string (str);
+-      print_resolved_levels (type_rl_list);
+-      print_resolved_types (type_rl_list);
+-    }
+-#endif
+-
+ /* Reinsert the explicit codes & bn's that already removed, from the
+    explicits_list to type_rl_list. */
+   DBG ("Reinserting explicit codes\n");
+@@ -976,30 +807,23 @@
+ 	p->level = p->prev->level;
    }
  
- #ifdef DEBUG
--  if (fribidi_debug_status (fribidienv))
-+  if (fribidi_debug)
-     {
-       print_types_re (type_rl_list);
-       print_resolved_levels (type_rl_list);
-@@ -986,7 +907,7 @@
+-#ifdef DEBUG
+-  if (fribidi_debug)
+-    {
+-      print_types_re (type_rl_list);
+-      print_resolved_levels (type_rl_list);
+-      print_resolved_types (type_rl_list);
+-    }
+-#endif
+-
+   DBG ("Reset the embedding levels\n");
+   {
+     int j, k, state, pos;
      TypeLink *p, *q, *list, *list_end;
  
++    const char *strp = str + bytelen;
++
      /* L1. Reset the embedding levels of some chars. */
--    init_list (fribidienv, &list, &list_end);
-+    init_list (&list, &list_end);
+     init_list (&list, &list_end);
      q = list_end;
      state = 1;
-     pos = len - 1;
-@@ -994,7 +915,7 @@
+-    pos = len - 1;
+-    for (j = len - 1; j >= -1; j--)
++    pos = *len - 1;
++    for (j = *len - 1; j >= -1; j--)
        {
  	/* if state is on at the very first of string, do this too. */
  	if (j >= 0)
--	  k = fribidi_get_type (fribidienv, str[j]);
-+          k = _pango_fribidi_get_type (str[j]);
+-	  k = fribidi_get_type (str[j]);
++	  k = fribidi_get_type (g_utf8_get_char (strp = g_utf8_prev_char (strp)));
  	else
  	  k = FRIBIDI_TYPE_ON;
  	if (!state && FRIBIDI_IS_SEPARATOR (k))
-@@ -1005,7 +926,7 @@
- 	else if (state && !FRIBIDI_IS_EXPLICIT_OR_SEPARATOR_OR_BN_OR_WS (k))
- 	  {
- 	    state = 0;
--	    p = new_type_link (fribidienv);
-+            p = new_type_link ();
- 	    p->prev = p->next = (TypeLink *) NULL;
- 	    p->pos = j + 1;
- 	    p->len = pos - j;
-@@ -1015,11 +936,11 @@
- 	    q = p;
- 	  }
-       }
--    override_list (fribidienv, type_rl_list, list);
-+    override_list (type_rl_list, list);
+@@ -1023,15 +847,6 @@
+     override_list (type_rl_list, list);
    }
  
- #ifdef DEBUG
--  if (fribidi_debug_status (fribidienv))
-+  if (fribidi_debug)
-     {
-       print_types_re (type_rl_list);
-       print_resolved_levels (type_rl_list);
-@@ -1040,8 +961,7 @@
-  *  fribidi_analyse_string(), after the list is not needed anymore.
-  *----------------------------------------------------------------------*/
- static void
--free_rl_list (FriBidiEnv *fribidienv,
--	      TypeLink *type_rl_list)
-+free_rl_list (TypeLink *type_rl_list)
- {
- 
-   TypeLink *pp;
-@@ -1054,7 +974,6 @@
-       return;
-     }
- 
--#ifdef USE_SIMPLE_MALLOC
-   pp = type_rl_list;
-   while (pp)
-     {
-@@ -1062,366 +981,55 @@
- 
-       p = pp;
-       pp = pp->next;
--      free_type_link (fribidienv, p);
-+      free_type_link (p);
-     };
--#else
--  for (pp = type_rl_list->next; pp->next; pp = pp->next)
--    /* Nothing */ ;
--  pp->next = free_type_links;
--  free_type_links = type_rl_list;
--  type_rl_list = NULL;
+-#ifdef DEBUG
+-  if (fribidi_debug)
+-    {
+-      print_types_re (type_rl_list);
+-      print_resolved_levels (type_rl_list);
+-      print_resolved_types (type_rl_list);
+-    }
 -#endif
- 
-   DBG ("Leaving free_rl_list()\n");
+-
+   *ptype_rl_list = type_rl_list;
+   *pmax_level = max_level;
+   *pbase_dir = base_dir;
+@@ -1080,338 +895,36 @@
    return;
  }
  
+-static fribidi_boolean mirroring = FRIBIDI_TRUE;
+-
+-FRIBIDI_API fribidi_boolean
+-fribidi_mirroring_status (void)
+-{
+-  return mirroring;
+-}
+-
+-FRIBIDI_API void
+-fribidi_set_mirroring (fribidi_boolean mirror)
+-{
+-  mirroring = mirror;
+-}
+-
+-static fribidi_boolean reorder_nsm = FRIBIDI_FALSE;
+-
+-fribidi_boolean
+-fribidi_reorder_nsm_status (void)
+-{
+-  return reorder_nsm;
+-}
+-
+-FRIBIDI_API void
+-fribidi_set_reorder_nsm (fribidi_boolean reorder)
+-{
+-  reorder_nsm = reorder;
+-}
 -
 -/*======================================================================
 - *  Here starts the exposed front end functions.
@@ -599,8 +419,7 @@ diff -bu /usr/src/fribidi/fribidi.c mini-fribidi/fribidi.c
 - *  the new length, updates each of other inputs if not NULL.
 - *----------------------------------------------------------------------*/
 -FRIBIDI_API FriBidiStrIndex
--fribidi_remove_bidi_marks (FriBidiEnv *fribidienv,
--			   FriBidiChar *str,
+-fribidi_remove_bidi_marks (FriBidiChar *str,
 -			   FriBidiStrIndex length,
 -			   FriBidiStrIndex *position_to_this_list,
 -			   FriBidiStrIndex *position_from_this_list,
@@ -617,14 +436,12 @@ diff -bu /usr/src/fribidi/fribidi.c mini-fribidi/fribidi.c
 -    {
 -      private_from_this = FRIBIDI_TRUE;
 -      position_from_this_list =
--	(FriBidiStrIndex *) fribidi_malloc (fribidienv,
--					    sizeof (FriBidiStrIndex) *
--					    length);
+-	(FriBidiStrIndex *) malloc (sizeof (FriBidiStrIndex) * length);
 -    }
 -
 -  j = 0;
 -  for (i = 0; i < length; i++)
--    if (!FRIBIDI_IS_EXPLICIT (fribidi_get_type (fribidienv, str[i]))
+-    if (!FRIBIDI_IS_EXPLICIT (fribidi_get_type (str[i]))
 -	&& str[i] != UNI_LRM && str[i] != UNI_RLM)
 -      {
 -	str[j] = str[i];
@@ -647,7 +464,7 @@ diff -bu /usr/src/fribidi/fribidi.c mini-fribidi/fribidi.c
 -    }
 -
 -  if (private_from_this)
--    fribidi_free (fribidienv, position_from_this_list);
+-    free (position_from_this_list);
 -
 -  DBG ("Leaving fribidi_remove_bidi_marks()\n");
 -  return j;
@@ -659,18 +476,17 @@ diff -bu /usr/src/fribidi/fribidi.c mini-fribidi/fribidi.c
 - *  does reordering and fills in the output strings.
 - *----------------------------------------------------------------------*/
 -FRIBIDI_API fribidi_boolean
--fribidi_log2vis (FriBidiEnv *fribidienv,
--		 /* input */
--		 const FriBidiChar *str,
--		 FriBidiStrIndex len,
--		 FriBidiCharType *pbase_dir,
--		 /* output */
--		 FriBidiChar *visual_str,
--		 FriBidiStrIndex *position_L_to_V_list,
--		 FriBidiStrIndex *position_V_to_L_list,
--		 FriBidiLevel *embedding_level_list)
+-fribidi_log2vis (		/* input */
+-		  FriBidiChar *str,
+-		  FriBidiStrIndex len,
+-		  FriBidiCharType *pbase_dir,
+-		  /* output */
+-		  FriBidiChar *visual_str,
+-		  FriBidiStrIndex *position_L_to_V_list,
+-		  FriBidiStrIndex *position_V_to_L_list,
+-		  FriBidiLevel *embedding_level_list)
 -{
--  TypeLink *type_rl_list, *pp = (TypeLink *) NULL;
+-  TypeLink *type_rl_list, *pp = NULL;
 -  FriBidiLevel max_level;
 -  fribidi_boolean private_V_to_L = FRIBIDI_FALSE;
 -
@@ -688,8 +504,7 @@ diff -bu /usr/src/fribidi/fribidi.c mini-fribidi/fribidi.c
 -    {
 -      private_V_to_L = FRIBIDI_TRUE;
 -      position_V_to_L_list =
--	(FriBidiStrIndex *) fribidi_malloc (fribidienv,
--					    sizeof (FriBidiStrIndex) * len);
+-	(FriBidiStrIndex *) malloc (sizeof (FriBidiStrIndex) * len);
 -    }
 -
 -  if (len > FRIBIDI_MAX_STRING_LENGTH && position_V_to_L_list)
@@ -700,7 +515,7 @@ diff -bu /usr/src/fribidi/fribidi.c mini-fribidi/fribidi.c
 -#endif
 -      return FRIBIDI_FALSE;
 -    }
--  fribidi_analyse_string (fribidienv, str, len, pbase_dir,
+-  fribidi_analyse_string (str, len, pbase_dir,
 -			  /* output */
 -			  &type_rl_list, &max_level);
 -
@@ -749,7 +564,7 @@ diff -bu /usr/src/fribidi/fribidi.c mini-fribidi/fribidi.c
 -    /* Reorder both the outstring and the order array */
 -    if (visual_str || position_V_to_L_list)
 -      {
--	if (fribidi_mirroring_status (fribidienv) && visual_str)
+-	if (mirroring && visual_str)
 -	  {
 -	    /* L4. Mirror all characters that are in odd levels and have mirrors. */
 -	    DBG ("  Mirroring\n");
@@ -762,7 +577,7 @@ diff -bu /usr/src/fribidi/fribidi.c mini-fribidi/fribidi.c
 -		      {
 -			FriBidiChar mirrored_ch;
 -			if (fribidi_get_mirror_char
--			    (fribidienv, visual_str[i], &mirrored_ch))
+-			    (visual_str[i], &mirrored_ch))
 -			  visual_str[i] = mirrored_ch;
 -		      }
 -		  }
@@ -770,7 +585,7 @@ diff -bu /usr/src/fribidi/fribidi.c mini-fribidi/fribidi.c
 -	    DBG ("  Mirroring, Done\n");
 -	  }
 -
--	if (fribidi_reorder_nsm_status (fribidienv))
+-	if (reorder_nsm)
 -	  {
 -	    /* L3. Reorder NSMs. */
 -	    DBG ("  Reordering NSM sequences\n");
@@ -782,13 +597,13 @@ diff -bu /usr/src/fribidi/fribidi.c mini-fribidi/fribidi.c
 -		    FriBidiStrIndex i, seq_end = 0;
 -		    fribidi_boolean is_nsm_seq;
 -
--		    is_nsm_seq = 0;
+-		    is_nsm_seq = FRIBIDI_FALSE;
 -		    for (i = RL_POS (pp) + RL_LEN (pp) - 1; i >= RL_POS (pp);
 -			 i--)
 -		      {
 -			FriBidiCharType this_type;
 -
--			this_type = fribidi_get_type (NULL, str[i]);
+-			this_type = fribidi_get_type (str[i]);
 -			if (is_nsm_seq && this_type != FRIBIDI_TYPE_NSM)
 -			  {
 -			    if (visual_str)
@@ -859,9 +674,9 @@ diff -bu /usr/src/fribidi/fribidi.c mini-fribidi/fribidi.c
 -  DBG ("Reordering resolved levels, Done\n");
 -
 -  if (private_V_to_L)
--    fribidi_free (fribidienv, position_V_to_L_list);
+-    free (position_V_to_L_list);
 -
--  free_rl_list (fribidienv, type_rl_list);
+-  free_rl_list (type_rl_list);
 -
 -  DBG ("Leaving fribidi_log2vis()\n");
 -  return FRIBIDI_TRUE;
@@ -873,57 +688,54 @@ diff -bu /usr/src/fribidi/fribidi.c mini-fribidi/fribidi.c
   *  the embedding levels.
   *----------------------------------------------------------------------*/
 -FRIBIDI_API fribidi_boolean
--fribidi_log2vis_get_embedding_levels (FriBidiEnv *fribidienv,
--				      /* input */
--				      const FriBidiChar *str,
--				      FriBidiStrIndex len,
--				      FriBidiCharType *pbase_dir,
-+gboolean
-+pango_log2vis_get_embedding_levels (/* input */
-+                                    gunichar *str,
-+                                    gint len,
-+                                    PangoDirection *pbase_dir,
- 				      /* output */
--				      FriBidiLevel *embedding_level_list)
-+                                    guint8 *embedding_level_list)
+-fribidi_log2vis_get_embedding_levels (	/* input */
+-				       FriBidiChar *str,
+-				       FriBidiStrIndex len,
+-				       FriBidiCharType *pbase_dir,
+-				       /* output */
+-				       FriBidiLevel *embedding_level_list)
++FRIBIDI_API FriBidiLevel *
++fribidi_log2vis_get_embedding_levels_new_utf8 (	/* input */
++				       const char *str,
++				       int bytelen,
++				       FriBidiCharType *pbase_dir)
  {
    TypeLink *type_rl_list, *pp;
-   FriBidiLevel max_level;
-+  FriBidiCharType fribidi_base_dir;
+-  FriBidiLevel max_level;
++  FriBidiLevel max_level, *embedding_level_list;
++  FriBidiStrIndex len;
  
    DBG ("Entering fribidi_log2vis_get_embedding_levels()\n");
  
-+  fribidi_base_dir = (*pbase_dir == PANGO_DIRECTION_LTR) ? FRIBIDI_TYPE_LTR : FRIBIDI_TYPE_RTL;
-+
-   if (len == 0)
+-  if (len == 0)
++  if (bytelen == 0)
      {
        DBG ("Leaving fribidi_log2vis_get_embedding_levels()\n");
 -      return FRIBIDI_TRUE;
-+      return TRUE;
++      return NULL;
      }
  
--  fribidi_analyse_string (fribidienv, str, len, pbase_dir,
-+  fribidi_analyse_string (str, len, &fribidi_base_dir,
+-  fribidi_analyse_string (str, len, pbase_dir,
++  fribidi_analyse_string_utf8 (str, bytelen, pbase_dir,
  			  /* output */
- 			  &type_rl_list, &max_level);
+-			  &type_rl_list, &max_level);
++			  &len, &type_rl_list, &max_level);
  
++  embedding_level_list = g_new (FriBidiLevel, len);
    for (pp = type_rl_list->next; pp->next; pp = pp->next)
      {
 -      FriBidiStrIndex i, pos = RL_POS (pp),
-+      gint i, pos = RL_POS (pp),
-         len = RL_LEN (pp);
--      FriBidiLevel level = RL_LEVEL (pp);
-+      gint level = RL_LEVEL (pp);
+-        len = RL_LEN (pp);
++      FriBidiStrIndex i, pos = RL_POS (pp), len = RL_LEN (pp);
+       FriBidiLevel level = RL_LEVEL (pp);
        for (i = 0; i < len; i++)
  	embedding_level_list[pos + i] = level;
-     }
- 
--  free_rl_list (fribidienv, type_rl_list);
-+  free_rl_list (type_rl_list);
+@@ -1420,34 +933,6 @@
+   free_rl_list (type_rl_list);
  
    DBG ("Leaving fribidi_log2vis_get_embedding_levels()\n");
 -  return FRIBIDI_TRUE;
-+  return TRUE;
++  return embedding_level_list;
  }
  
 -
@@ -934,7 +746,8 @@ diff -bu /usr/src/fribidi/fribidi.c mini-fribidi/fribidi.c
 -  "\n"
 -  "Unicode version " FRIBIDI_UNICODE_VERSION "\n"
 -  "\n"
--  "Copyright (C) 2002 FriBidi Project (http://fribidi.sf.net/).\n"
+-  "Copyright (C) 2001,2002,2005  Behdad Esfahbod <fribidi@behdad.org>.\n"
+-  "Copyright (C) 1999,2000 Dov Grobgeld\n"
 -  FRIBIDI_PACKAGE " comes with NO WARRANTY, to the extent permitted by law.\n"
 -  "You may redistribute copies of " FRIBIDI_PACKAGE " under the terms of\n"
 -  "the GNU Lesser General Public License.\n"
@@ -953,242 +766,378 @@ diff -bu /usr/src/fribidi/fribidi.c mini-fribidi/fribidi.c
 -  "--without-charsts\n"
 -#endif
 -;
-Only in /usr/src/fribidi/: fribidi_char_sets.c
-Only in /usr/src/fribidi/: fribidi_char_sets_cap_rtl.c
-Only in /usr/src/fribidi/: fribidi_char_sets_cap_rtl.h
-Only in /usr/src/fribidi/: fribidi_char_sets_cp1255.c
-Only in /usr/src/fribidi/: fribidi_char_sets_cp1255.h
-Only in /usr/src/fribidi/: fribidi_char_sets_cp1256.c
-Only in /usr/src/fribidi/: fribidi_char_sets_cp1256.h
-Only in /usr/src/fribidi/: fribidi_char_sets.h
-Only in /usr/src/fribidi/: fribidi_char_sets.i
-Only in /usr/src/fribidi/: fribidi_char_sets_isiri_3342.c
-Only in /usr/src/fribidi/: fribidi_char_sets_isiri_3342.h
-Only in /usr/src/fribidi/: fribidi_char_sets_iso8859_6.c
-Only in /usr/src/fribidi/: fribidi_char_sets_iso8859_6.h
-Only in /usr/src/fribidi/: fribidi_char_sets_iso8859_8.c
-Only in /usr/src/fribidi/: fribidi_char_sets_iso8859_8.h
-Only in /usr/src/fribidi/: fribidi_char_sets_utf8.c
-Only in /usr/src/fribidi/: fribidi_char_sets_utf8.h
-diff -bu /usr/src/fribidi/fribidi_char_type.c mini-fribidi/fribidi_char_type.c
---- /usr/src/fribidi/fribidi_char_type.c	2003-07-17 17:18:01.000000000 -0400
-+++ mini-fribidi/fribidi_char_type.c	2003-07-14 18:06:19.000000000 -0400
-@@ -19,85 +19,18 @@
-  * For licensing issues, contact <fwpg@sharif.edu>. 
-  */
+diff -rua /home/behdad/src/fdo/fribidi/fribidi.stable/fribidi_char_type.c ./fribidi_char_type.c
+--- /home/behdad/src/fdo/fribidi/fribidi.stable/fribidi_char_type.c	2005-09-25 18:31:19.000000000 -0400
++++ ./fribidi_char_type.c	2005-11-03 11:30:26.000000000 -0500
+@@ -24,29 +24,6 @@
+ #endif
+ #include "fribidi.h"
  
--#ifdef HAVE_CONFIG_H
--#include <config.h>
--#endif
--#include "fribidi.h"
-+#include <glib.h>
-+#include "fribidi_types.h"
- 
- /*======================================================================
+-/*======================================================================
 - *  fribidi_get_type() returns the bidi type of a character.
-+ *  _pango_fribidi_get_type() returns the bidi type of a character.
-  *----------------------------------------------------------------------*/
+- *----------------------------------------------------------------------*/
 -FRIBIDI_API FriBidiCharType fribidi_get_type_internal (FriBidiChar uch);
-+FriBidiCharType _pango_fribidi_get_type_internal (FriBidiChar uch);
- 
+-
 -FRIBIDI_API FriBidiCharType
--fribidi_get_type (FriBidiEnv *env,
--		  FriBidiChar uch)
-+FriBidiCharType
-+_pango_fribidi_get_type (FriBidiChar uch)
- {
+-fribidi_get_type (FriBidiChar uch)
+-{
 -  return fribidi_get_type_internal (uch);
-+  return _pango_fribidi_get_type_internal (uch);
- }
- 
+-}
+-
 -FRIBIDI_API void
--fribidi_get_types (FriBidiEnv *env,
--		   /* input */
--		   const FriBidiChar *str,
--		   FriBidiStrIndex len,
--		   /* output */
--		   FriBidiCharType *type)
+-fribidi_get_types (		/* input */
+-		    FriBidiChar *str, FriBidiStrIndex len,
+-		    /* output */
+-		    FriBidiCharType *type)
 -{
 -  FriBidiStrIndex i;
 -
 -  for (i = 0; i < len; i++)
--    type[i] = fribidi_get_type (env, str[i]);
+-    type[i] = fribidi_get_type (str[i]);
 -}
 -
--#ifdef MEM_OPTIMIZED
--
--#if   HAS_FRIBIDI_TAB_CHAR_TYPE_9_I
--#include "fribidi_tab_char_type_9.i"
--#elif HAS_FRIBIDI_TAB_CHAR_TYPE_8_I
--#include "fribidi_tab_char_type_8.i"
--#elif HAS_FRIBIDI_TAB_CHAR_TYPE_7_I
--#include "fribidi_tab_char_type_7.i"
--#elif HAS_FRIBIDI_TAB_CHAR_TYPE_6_I
--#include "fribidi_tab_char_type_6.i"
--#elif HAS_FRIBIDI_TAB_CHAR_TYPE_5_I
--#include "fribidi_tab_char_type_5.i"
--#elif HAS_FRIBIDI_TAB_CHAR_TYPE_4_I
--#include "fribidi_tab_char_type_4.i"
--#elif HAS_FRIBIDI_TAB_CHAR_TYPE_3_I
--#include "fribidi_tab_char_type_3.i"
--#elif HAS_FRIBIDI_TAB_CHAR_TYPE_2_I
- #include "fribidi_tab_char_type_2.i"
--#else
--#error You have no fribidi_tab_char_type_*.i file, please first make one by \
--       make fribidi_tab_char_type_n.i which n is the compress level, a digit \
--       between 2 and 9, or simply run make fribidi_tab_char_type_small, \
--       retry to make.
+ #ifdef MEM_OPTIMIZED
+ 
+ #if   HAS_FRIBIDI_TAB_CHAR_TYPE_9_I
+diff -rua /home/behdad/src/fdo/fribidi/fribidi.stable/fribidi.h ./fribidi.h
+--- /home/behdad/src/fdo/fribidi/fribidi.stable/fribidi.h	2005-09-25 14:43:38.000000000 -0400
++++ ./fribidi.h	2005-11-03 11:30:26.000000000 -0500
+@@ -29,252 +29,26 @@
+ #endif
+ 
+ #include "fribidi_config.h"
+-#include "fribidi_unicode.h"
+ #include "fribidi_types.h"
+-#ifndef FRIBIDI_NO_CHARSETS
+-#include "fribidi_char_sets.h"
 -#endif
--
--#else
--
--#if   HAS_FRIBIDI_TAB_CHAR_TYPE_2_I
--#include "fribidi_tab_char_type_2.i"
--#elif HAS_FRIBIDI_TAB_CHAR_TYPE_3_I
--#include "fribidi_tab_char_type_3.i"
--#elif HAS_FRIBIDI_TAB_CHAR_TYPE_4_I
--#include "fribidi_tab_char_type_4.i"
--#elif HAS_FRIBIDI_TAB_CHAR_TYPE_5_I
--#include "fribidi_tab_char_type_5.i"
--#elif HAS_FRIBIDI_TAB_CHAR_TYPE_6_I
--#include "fribidi_tab_char_type_6.i"
--#elif HAS_FRIBIDI_TAB_CHAR_TYPE_7_I
--#include "fribidi_tab_char_type_7.i"
--#elif HAS_FRIBIDI_TAB_CHAR_TYPE_8_I
--#include "fribidi_tab_char_type_8.i"
--#elif HAS_FRIBIDI_TAB_CHAR_TYPE_9_I
--#include "fribidi_tab_char_type_9.i"
--#else
--#error You have no fribidi_tab_char_type_*.i file, please first make one by \
--       make fribidi_tab_char_type_n.i which n is the compress level, a digit \
--       between 2 and 9, or simply run make fribidi_tab_char_type_large, \
--       retry to make.
--#endif
--
--#endif
-Only in /usr/src/fribidi/: fribidi-config
-Only in /usr/src/fribidi/: fribidi_config.h
-Only in /usr/src/fribidi/: fribidi_config.h.in
-Only in /usr/src/fribidi/: fribidi-config.in
-Only in /usr/src/fribidi/: fribidi_create_char_types
-Only in /usr/src/fribidi/: fribidi_create_char_types.c
-Only in /usr/src/fribidi/: fribidi_create_char_types.o
-Only in /usr/src/fribidi/: fribidi_create_mirroring.c
-Only in /usr/src/fribidi/: fribidi_env.c
-Only in /usr/src/fribidi/: fribidi_env.h
-Only in mini-fribidi/: fribidi_get_type.c
-Only in /usr/src/fribidi/: fribidi.h
-Only in /usr/src/fribidi/: fribidi_main.c
-Only in /usr/src/fribidi/: fribidi_mem.c
-Only in /usr/src/fribidi/: fribidi_mem.h
-Only in /usr/src/fribidi/: fribidi_mirroring.c
-Only in mini-fribidi/: fribidi.patch
-Only in /usr/src/fribidi/: fribidi.pc
-Only in /usr/src/fribidi/: fribidi.pc.in
-Only in /usr/src/fribidi/: fribidi.spec
-Only in /usr/src/fribidi/: fribidi.spec.in
-diff -bu /usr/src/fribidi/fribidi_tab_char_type_2.i mini-fribidi/fribidi_tab_char_type_2.i
---- /usr/src/fribidi/fribidi_tab_char_type_2.i	2003-07-17 17:18:01.000000000 -0400
-+++ mini-fribidi/fribidi_tab_char_type_2.i	2003-07-17 17:49:01.000000000 -0400
-@@ -1,12 +1,13 @@
- /*
--  This file was automatically created from UnicodeData.txt version 3.2.0
-+  This file was automatically created from UnicodeData.txt version 4.0.0
-   by fribidi_create_char_types
- */
  
- #ifndef FRIBIDI_TAB_CHAR_TYPE_2_I
- #define FRIBIDI_TAB_CHAR_TYPE_2_I
- 
--#include "fribidi.h"
-+#include <glib.h>
-+#include "fribidi_types.h"
- 
- #define LTR FRIBIDI_PROP_TYPE_LTR
- #define RTL FRIBIDI_PROP_TYPE_RTL
-@@ -28,9 +29,6 @@
- #define SS FRIBIDI_PROP_TYPE_SS
- #define WS FRIBIDI_PROP_TYPE_WS
- 
--#define PACKTAB_UINT8 fribidi_uint8
--#define PACKTAB_UINT16 fribidi_uint16
--#define PACKTAB_UINT32 fribidi_uint32
- /*
-   Automatically generated by packtab.c version 2
- 
-@@ -979,7 +977,7 @@
-   LTR,LTR,LTR,LTR,LTR,LTR,LTR,LTR,LTR,LTR,LTR,LTR,LTR,LTR,LTR,LTR,
- };
- 
--static const PACKTAB_UINT16 FriBidiPropertyBlockLevel0[4352*1] = {
-+static const guint16 FriBidiPropertyBlockLevel0[4352*1] = {
- 
- #define FriBidiPropertyBlockLevel0_0000 0x0
- 
-@@ -5363,13 +5361,13 @@
- #undef RTL
- #undef LTR
- /*======================================================================
-- *  fribidi_get_type_internal() returns the bidi type of a character.
-+ *  _pango_fribidi_get_type_internal() returns the bidi type of a character.
-  *----------------------------------------------------------------------*/
--FRIBIDI_API FriBidiCharType
--fribidi_get_type_internal (FriBidiChar uch)
-+FriBidiCharType
-+_pango_fribidi_get_type_internal (FriBidiChar uch)
+ #ifdef __cplusplus
+ extern "C"
  {
-   if (uch < 0x110000)
--    return fribidi_prop_to_type[(unsigned char)FRIBIDI_GET_TYPE (uch)];
-+    return _pango_fribidi_prop_to_type[(unsigned char)FRIBIDI_GET_TYPE (uch)];
-   else
-     return FRIBIDI_TYPE_LTR;
-   /* Non-Unicode chars */
-Only in /usr/src/fribidi/: fribidi_tab_char_type_9.i
-Only in /usr/src/fribidi/: fribidi_tab_char_type_stamp
-Only in mini-fribidi/: fribidi_tables.i
-Only in /usr/src/fribidi/: fribidi_tab_mirroring.i
-diff -bu /usr/src/fribidi/fribidi_types.c mini-fribidi/fribidi_types.c
---- /usr/src/fribidi/fribidi_types.c	2002-08-01 09:39:28.000000000 -0400
-+++ mini-fribidi/fribidi_types.c	2003-07-14 18:06:21.000000000 -0400
-@@ -19,10 +19,8 @@
-  * For licensing issues, contact <fwpg@sharif.edu>. 
-  */
+ #endif
  
--#ifdef HAVE_CONFIG_H
--#include <config.h>
--#endif
--#include "fribidi.h"
-+#include <glib.h>
-+#include "fribidi_types.h"
+-  FRIBIDI_API fribidi_boolean fribidi_log2vis (	/* input */
+-						FriBidiChar *str,
+-						FriBidiStrIndex len,
+-						FriBidiCharType *pbase_dirs,
+-						/* output */
+-						FriBidiChar *visual_str,
+-						FriBidiStrIndex
+-						*position_L_to_V_list,
+-						FriBidiStrIndex
+-						*position_V_to_L_list,
+-						FriBidiLevel
+-						*embedding_level_list);
+-
+-  FRIBIDI_API fribidi_boolean fribidi_log2vis_get_embedding_levels (	/* input */
+-								     FriBidiChar
+-								     *str,
+-								     FriBidiStrIndex
+-								     len,
+-								     FriBidiCharType
+-								     *pbase_dir,
+-								     /* output */
+-								     FriBidiLevel
+-								     *embedding_level_list);
++#define FRIBIDI_HAVE_UTF8
  
- #ifdef DEBUG
+-/*======================================================================
+- *  fribidi_remove_bidi_marks() removes bidirectional marks, and returns
+- *  the new length, also updates each of other inputs if not NULL.
+- *----------------------------------------------------------------------*/
+-  FRIBIDI_API FriBidiStrIndex fribidi_remove_bidi_marks (FriBidiChar *str,
+-							 FriBidiStrIndex
+-							 length,
+-							 FriBidiStrIndex
+-							 *position_to_this_list,
+-							 FriBidiStrIndex
+-							 *position_from_this_list,
+-							 FriBidiLevel
+-							 *embedding_level_list);
++  FRIBIDI_API FriBidiLevel *fribidi_log2vis_get_embedding_levels_new_utf8 (	/* input */
++								     const char *str,
++								     int bytelen,
++								     FriBidiCharType
++								     *pbase_dir);
  
-@@ -125,4 +123,4 @@
- #undef _FRIBIDI_ADD_TYPE
- };
+ /*======================================================================
+  *  fribidi_get_type() returns bidi type of a character.
+  *----------------------------------------------------------------------*/
+   FRIBIDI_API FriBidiCharType fribidi_get_type (FriBidiChar uch);
  
--FriBidiCharType *fribidi_prop_to_type = fribidi_prop_to_type_array;
-+FriBidiCharType *_pango_fribidi_prop_to_type = fribidi_prop_to_type_array;
-diff -bu /usr/src/fribidi/fribidi_types.h mini-fribidi/fribidi_types.h
---- /usr/src/fribidi/fribidi_types.h	2002-08-07 08:02:52.000000000 -0400
-+++ mini-fribidi/fribidi_types.h	2003-07-14 18:06:22.000000000 -0400
-@@ -23,37 +23,15 @@
- #ifndef FRIBIDI_TYPES_H
- #define FRIBIDI_TYPES_H
+-/*======================================================================
+- *  fribidi_get_types() returns bidi type of a string.
+- *----------------------------------------------------------------------*/
+-  FRIBIDI_API void fribidi_get_types (	/* input */
+-				       FriBidiChar *str,
+-				       FriBidiStrIndex len,
+-				       /* output */
+-				       FriBidiCharType *type);
+-
+-/*======================================================================
+- *  fribidi_get_mirror_char() returns the mirrored character, if input
+- *  character has a mirror, or the input itself.
+- *  if mirrored_ch is NULL, just returns if character has a mirror or not.
+- *----------------------------------------------------------------------*/
+-  FRIBIDI_API fribidi_boolean fribidi_get_mirror_char (	/* Input */
+-							FriBidiChar ch,
+-							/* Output */
+-							FriBidiChar
+-							*mirrored_ch);
+-
+-/*======================================================================
+- *  fribidi_mirroring_status() returns whether mirroring is on or off,
+- *  default is on.
+- *----------------------------------------------------------------------*/
+-  FRIBIDI_API fribidi_boolean fribidi_mirroring_status (void);
+-
+-/*======================================================================
+- *  fribidi_set_mirroring() sets mirroring on or off.
+- *----------------------------------------------------------------------*/
+-  FRIBIDI_API void fribidi_set_mirroring (fribidi_boolean mirror);
+-
+-/*======================================================================
+- *  fribidi_reorder_nsm_status() returns whether reordering of NSM
+- *  sequences is on or off, default is off.
+- *----------------------------------------------------------------------*/
+-  FRIBIDI_API fribidi_boolean fribidi_reorder_nsm_status (void);
+-
+-/*======================================================================
+- *  fribidi_set_reorder_nsm() sets reordering of NSM characters on or off.
+- *----------------------------------------------------------------------*/
+-  FRIBIDI_API void fribidi_set_reorder_nsm (fribidi_boolean);
+-
+-/*======================================================================
+- *  fribidi_set_debug() turn on or off debugging, default is off, return
+- *  false is fribidi is not compiled with debug enabled.
+- *----------------------------------------------------------------------*/
+-  FRIBIDI_API fribidi_boolean fribidi_set_debug (fribidi_boolean debug);
+-
+-/* fribidi_utils.c */
+-
+-/*======================================================================
+- *  fribidi_find_string_changes() finds the bounding box of the section
+- *  of characters that need redrawing. It returns the start and the
+- *  length of the section in the new string that needs redrawing.
+- *----------------------------------------------------------------------*/
+-  FRIBIDI_API void fribidi_find_string_changes (	/* input */
+-						 FriBidiChar *old_str,
+-						 FriBidiStrIndex old_len,
+-						 FriBidiChar *new_str,
+-						 FriBidiStrIndex new_len,
+-						 /* output */
+-						 FriBidiStrIndex
+-						 *change_start,
+-						 FriBidiStrIndex *change_len);
+-
+-
+-/*======================================================================
+- *  The find_visual_ranges() function is used to convert between a
+- *  continous span in either logical or visual space to a one, two or
+- *  three discontinous spans in the other space. The function outputs
+- *  the number of ranges needed to display the mapped range as
+- *  well as the resolved ranges.
+- *
+- *  The variable is_v2l_map indicates whether the position map is
+- *  is in the direction of visual-to-logical. This information is
+- *  needed in order to look up the correct character from the
+- *  embedding_level_list which is assumed to be in logical order.
+- *
+- *  This function is typically used to resolve a logical range to visual
+- *  ranges e.g. to display the selection.
+- *
+- *  Example:
+- *     The selection is between logical characters 10 to 45. Calculate
+- *     the corresponding visual selection(s):
+- *
+- *     FriBidiStrIndex sel_span[2] = {10,45};
+- *
+- *     fribidi_map_range(sel_span,
+- *                       TRUE,
+- *                       length,
+- *                       vis2log_map,
+- *                       embedding_levels,
+- *                       // output
+- *                       &num_vis_ranges, *vis_ranges);
+- **----------------------------------------------------------------------*/
+-  FRIBIDI_API void fribidi_map_range (FriBidiStrIndex span[2],
+-				      FriBidiStrIndex len,
+-				      fribidi_boolean is_v2l_map,
+-				      FriBidiStrIndex *position_map,
+-				      FriBidiLevel *embedding_level_list,
+-				      /* output */
+-				      int *num_mapped_spans,
+-				      FriBidiStrIndex spans[3][2]);
+-
+-/*======================================================================
+- *  fribidi_is_char_rtl() answers the question whether a character
+- *  was resolved in the rtl direction. This simply involves asking
+- *  if the embedding level for the character is odd.
+- *----------------------------------------------------------------------*/
+-  FRIBIDI_API fribidi_boolean fribidi_is_char_rtl (FriBidiLevel
+-						   *embedding_level_list,
+-						   FriBidiCharType base_dir,
+-						   FriBidiStrIndex idx);
+-
+-/*======================================================================
+- *  fribidi_xpos_resolve() does the complicated translation of
+- *  an x-coordinate, e.g. as received through a mouse press event,
+- *  to the logical and the visual position the xcoordinate is closest
+- *  to. It will also resolve the direction of the cursor according
+- *  to the embedding level of the closest character.
+- *
+- *  It does this through the following logics:
+- *  Here are the different possibilities:
+- *
+- *        Pointer              =>          Log Pos         Vis pos
+- *  
+- *     Before first vis char             log_pos(vis=0)L       0
+- *     After last vis char               log_pos(vis=n-1)R     n
+- *     Within 1/2 width of vis char i    log_pos(vis=i)L       i
+- *     Within last 1/2 width of vchar i  log_pos(vis=i)R       i+1
+- *     Border between vis chars i,i+1       resolve!           i+1
+- *
+- *  Input:
+- *     x_pos        The pixel position to be resolved measured in pixels.
+- *     x_offset     The x_offset is the pixel position of the left side
+- *                  of the leftmost visual character. 
+- *     len          The length of the embedding level, the vis2log and
+- *                  the char width arrays.
+- *     base_dir     The resolved base direction of the line.
+- *     vis2log      The vis2log mapping.
+- *                  x_position and the character widths. The position
+- *                  (x_pos-x_offset) is number of pixels from the left
+- *                  of logical character 0.
+- *     char_widths  Width in pixels of each character. Note that the
+- *                  widths should be provided in logical order.
+- *
+- *  Output:
+- *     res_log_pos  Resolved logical position.
+- *     res_vis_pos  Resolved visual position
+- *     res_cursor_x_pos   The resolved pixel position to the left or
+- *                  the right of the character position x_pos.
+- *     res_cursor_dir_is_rtl   Whether the resolved dir of the character
+- *                  at position x_pos is rtl.
+- *     res_attach_before  Whether the x_pos is cutting the bounding
+- *                  box in such a way that the visual cursor should be
+- *                  be positioned before the following logical character.
+- *                  Note that in the bidi context, the positions "after
+- *                  a logical character" and "before the following logical
+- *                  character" is not necessarily the same. If x_pos is
+- *                  beyond the end of the line, res_attach_before is true.
+- *
+- *----------------------------------------------------------------------*/
+-  FRIBIDI_API void fribidi_xpos_resolve (int x_pos,
+-					 int x_offset,
+-					 FriBidiStrIndex len,
+-					 FriBidiLevel *embedding_level_list,
+-					 FriBidiCharType base_dir,
+-					 FriBidiStrIndex *vis2log,
+-					 int *char_widths,
+-					 /* output */
+-					 FriBidiStrIndex *res_log_pos,
+-					 FriBidiStrIndex *res_vis_pos,
+-					 int *res_cursor_x_pos,
+-					 fribidi_boolean
+-					 *res_cursor_dir_is_rtl,
+-					 fribidi_boolean *res_attach_before);
+-
+-/*======================================================================
+- *  fribidi_runs_log2vis takes a list of logical runs and returns a
+- *  a list of visual runs. A run is defined as a sequence that has
+- *  the same attributes.
+- *----------------------------------------------------------------------*/
+-  FRIBIDI_API void fribidi_runs_log2vis (	/* input */
+-					  FriBidiList *logical_runs,	/* List of FriBidiRunType */
+-
+-					  FriBidiStrIndex len,
+-					  FriBidiStrIndex *log2vis,
+-					  FriBidiCharType base_dir,
+-					  /* output */
+-					  FriBidiList **visual_runs);
+-
+-
+ #ifdef	__cplusplus
+ }
+ #endif
+diff -rua /home/behdad/src/fdo/fribidi/fribidi.stable/fribidi_types.c ./fribidi_types.c
+--- /home/behdad/src/fdo/fribidi/fribidi.stable/fribidi_types.c	2005-09-25 16:41:35.000000000 -0400
++++ ./fribidi_types.c	2005-11-03 11:30:26.000000000 -0500
+@@ -80,44 +80,6 @@
  
--#include "fribidi_config.h"
-+#include <glib.h>
+ #endif
  
--#ifdef __cplusplus
--extern "C"
+-char *
+-fribidi_type_name (FriBidiCharType c)
 -{
+-#define _FRIBIDI_CASE(type)	case FRIBIDI_TYPE_##type: return #type
+-  switch (c)
+-    {
+-      _FRIBIDI_CASE (LTR);
+-      _FRIBIDI_CASE (RTL);
+-      _FRIBIDI_CASE (AL);
+-
+-      _FRIBIDI_CASE (EN);
+-      _FRIBIDI_CASE (AN);
+-      _FRIBIDI_CASE (ES);
+-      _FRIBIDI_CASE (ET);
+-      _FRIBIDI_CASE (CS);
+-      _FRIBIDI_CASE (NSM);
+-      _FRIBIDI_CASE (BN);
+-
+-      _FRIBIDI_CASE (BS);
+-      _FRIBIDI_CASE (SS);
+-      _FRIBIDI_CASE (WS);
+-      _FRIBIDI_CASE (ON);
+-
+-      _FRIBIDI_CASE (LRE);
+-      _FRIBIDI_CASE (RLE);
+-      _FRIBIDI_CASE (LRO);
+-      _FRIBIDI_CASE (RLO);
+-      _FRIBIDI_CASE (PDF);
+-
+-      _FRIBIDI_CASE (SOT);
+-      _FRIBIDI_CASE (EOT);
+-
+-    default:
+-      return "?";
+-    }
+-#undef _FRIBIDI_CASE
+-}
+-
+ /* Map fribidi_prop_types to fribidi_types. */
+ const FriBidiCharType fribidi_prop_to_type[] = {
+ #define _FRIBIDI_ADD_TYPE(TYPE) FRIBIDI_TYPE_##TYPE,
+diff -rua /home/behdad/src/fdo/fribidi/fribidi.stable/fribidi_types.h ./fribidi_types.h
+--- /home/behdad/src/fdo/fribidi/fribidi.stable/fribidi_types.h	2005-09-25 18:49:59.000000000 -0400
++++ ./fribidi_types.h	2005-11-03 11:30:26.000000000 -0500
+@@ -25,44 +25,26 @@
+ 
+ #include "fribidi_config.h"
+ 
+-#define FRIBIDI_INT8	char
+-#if FRIBIDI_SIZEOF_INT+0 == 2
+-# define FRIBIDI_INT16	int
+-#elif FRIBIDI_SIZEOF_SHORT+0 == 2
+-# define FRIBIDI_INT16	short
+-#else
+-# error cannot determine a 16-bit integer type.  check fribidi_config.h
+-#endif
+-#if FRIBIDI_SIZEOF_INT+0 == 4
+-# define FRIBIDI_INT32	int
+-#elif FRIBIDI_SIZEOF_LONG+0 == 4
+-# define FRIBIDI_INT32	long
+-#else
+-# error cannot determine a 32-bit integer type.  check fribidi_config.h
 -#endif
 -
--#define FRIBIDI_INT8	char
--#define FRIBIDI_INT16	short
--#define FRIBIDI_INT32	long
--#define FRIBIDI_INT	int
 -
+ #ifdef __cplusplus
+ extern "C"
+ {
+ #endif
+ 
 -  typedef int fribidi_boolean;
 -
 -  typedef signed FRIBIDI_INT8 fribidi_int8;
@@ -1197,499 +1146,25 @@ diff -bu /usr/src/fribidi/fribidi_types.h mini-fribidi/fribidi_types.h
 -  typedef unsigned FRIBIDI_INT16 fribidi_uint16;
 -  typedef signed FRIBIDI_INT32 fribidi_int32;
 -  typedef unsigned FRIBIDI_INT32 fribidi_uint32;
--  typedef signed FRIBIDI_INT fribidi_int;
--  typedef unsigned FRIBIDI_INT fribidi_uint;
--
--
--  typedef fribidi_int8 FriBidiLevel;
++  typedef gboolean fribidi_boolean;
+ 
+-  typedef signed int fribidi_int;
+-  typedef unsigned int fribidi_uint;
++  typedef gint8 fribidi_int8;
++  typedef guint8 fribidi_uint8;
++  typedef gint16 fribidi_int16;
++  typedef guint16 fribidi_uint16;
++  typedef gint32 fribidi_int32;
++  typedef guint32 fribidi_uint32;
++  typedef gint fribidi_int;
++  typedef guint fribidi_uint;
+ 
+ 
+   typedef fribidi_int8 FriBidiLevel;
 -  typedef fribidi_uint32 FriBidiChar;
 -  typedef fribidi_int FriBidiStrIndex;
--  typedef fribidi_int32 FriBidiMaskType;
-+  typedef gint8 FriBidiLevel;
 +  typedef gunichar FriBidiChar;
-+  typedef gint FriBidiStrIndex;
-+  typedef gint32 FriBidiMaskType;
++  typedef gsize FriBidiStrIndex;
+   typedef fribidi_int32 FriBidiMaskType;
    typedef FriBidiMaskType FriBidiCharType;
  
--  char *fribidi_type_name (FriBidiCharType c);
-+  gchar *fribidi_type_name (FriBidiCharType c);
- 
- /* The following type is used by fribidi_utils */
-   typedef struct
-@@ -291,10 +269,9 @@
- 	(FRIBIDI_IS_OVERRIDE(p) ? FRIBIDI_LEVEL_TO_DIR(FRIBIDI_DIR_TO_LEVEL(p)) \
- 				: FRIBIDI_TYPE_ON)
- 
--
- /*
-  * Define character types that char_type_tables use.
-- * define them to be 0, 1, 2, ... and then in fribidi_get_type.c map them
-+ * define them to be 0, 1, 2, ... and then in _pango_fribidi_get_type.c map them
-  * to FriBidiCharTypes.
-  */
-   typedef char FriBidiPropCharType;
-@@ -308,10 +285,12 @@
-   };
- 
- /* Map fribidi_prop_types to fribidi_types */
--  extern FriBidiCharType *fribidi_prop_to_type;
-+  extern FriBidiCharType *_pango_fribidi_prop_to_type;
- 
--#ifdef	__cplusplus
--}
--#endif
- 
--#endif
-+/*======================================================================
-+ *  _pango_fribidi_get_type() returns bidi type of a character.
-+ *----------------------------------------------------------------------*/
-+  FriBidiCharType _pango_fribidi_get_type (FriBidiChar uch);
-+
-+#endif  /* #ifndef FRIBIDI_TYPES_H */
-Only in /usr/src/fribidi/: fribidi_unicode.h
-Only in /usr/src/fribidi/: fribidi_utils.c
-Only in /usr/src/fribidi/: fribidi_wcwidth.c
-Only in /usr/src/fribidi/: fribidi_wcwidth.i
-Only in /usr/src/fribidi/: getopt1.c
-Only in /usr/src/fribidi/: getopt.c
-Only in /usr/src/fribidi/: getopt.h
-Only in /usr/src/fribidi/: .indent.pro
-Only in /usr/src/fribidi/: INSTALL
-Only in /usr/src/fribidi/: install-sh
-Only in /usr/src/fribidi/: .libs
-Only in /usr/src/fribidi/: libtool
-Only in /usr/src/fribidi/: ltconfig
-Only in /usr/src/fribidi/: ltmain.sh
-Only in /usr/src/fribidi/: Makefile
-diff -bu /usr/src/fribidi/Makefile.am mini-fribidi/Makefile.am
---- /usr/src/fribidi/Makefile.am	2002-08-10 00:17:54.000000000 -0400
-+++ mini-fribidi/Makefile.am	2003-07-14 18:21:14.000000000 -0400
-@@ -1,208 +1,30 @@
-+## Process this file with automake to produce Makefile.in
- 
--AUTOMAKE_OPTIONS = gnu 
-+INCLUDES = 					\
-+	-DSYSCONFDIR=\"$(sysconfdir)\" 		\
-+	-DLIBDIR=\"$(libdir)\" 			\
-+	-DG_DISABLE_DEPRECATED			\
-+	$(PANGO_DEBUG_FLAGS)			\
-+	-I$(top_srcdir)				\
-+	$(GLIB_CFLAGS)
-+
-+LDADDS = @STRIP_BEGIN@ 	\
-+	@x_ldflags@	\
-+	@x_libs@	\
-+	@GLIB_LIBS@	\
-+	-lm		\
-+@STRIP_END@
- 
--noinst_PROGRAMS = fribidi_benchmark	\
--		fribidi_create_char_types	\
--		fribidi_create_mirroring
--
--libfribidi_charsets =	\
--	fribidi_char_sets.c	\
--	fribidi_char_sets_utf8.c
--
--libfribidi_charsets_extra =	\
--	fribidi_char_sets_cap_rtl.c	\
--	fribidi_char_sets_iso8859_6.c	\
--	fribidi_char_sets_iso8859_8.c	\
--	fribidi_char_sets_cp1255.c	\
--	fribidi_char_sets_cp1256.c	\
--	fribidi_char_sets_isiri_3342.c
--
--libfribidi_charsets_h =	\
--	fribidi_char_sets.h	\
--	fribidi_char_sets_utf8.h
--
--libfribidi_charsets_extra_h =	\
--	fribidi_char_sets_cap_rtl.h	\
--	fribidi_char_sets_cp1255.h	\
--	fribidi_char_sets_cp1256.h	\
--	fribidi_char_sets_isiri_3342.h	\
--	fribidi_char_sets_iso8859_6.h	\
--	fribidi_char_sets_iso8859_8.h
-+noinst_LTLIBRARIES = libmini-fribidi.la
- 
--libfribidi_extra_h =	\
--	fribidi_mem.h
--
--lib_LTLIBRARIES = libfribidi.la
--
--libfribidi_la_SOURCES =	\
-+libmini_fribidi_la_SOURCES =    \
- 	fribidi.c	\
--	fribidi_types.c		\
--	fribidi_env.c	\
--	fribidi_mem.c	\
--	fribidi_mirroring.c	\
- 	fribidi_char_type.c	\
--	fribidi_wcwidth.c	\
--	fribidi_utils.c	\
--	$(libfribidi_charsets)	\
--	$(libfribidi_charsets_extra)
--
--libfribidi_la_LIBADD = 
--
--libfribidiincdir = $(includedir)/fribidi
--
--libfribidiinc_HEADERS =	\
--	fribidi.h	\
--	fribidi_types.h	\
--	fribidi_env.h	\
--	fribidi_unicode.h	\
--	$(libfribidi_charsets_h)	\
--	$(libfribidi_charsets_extra_h)	\
--	fribidi_config.h
--
--GETOPT_SRC =	\
--	getopt.c	\
--	getopt1.c
--
--GETOPT_HDR =	\
--	getopt.h
--
--TEST_FILES =	\
--	tests/test_CapRTL_explicit.input	\
--	tests/test_CapRTL_explicit.reference	\
--	tests/test_CapRTL_implicit.input	\
--	tests/test_CapRTL_implicit.reference	\
--	tests/test_ISO8859-8_hebrew.input	\
--	tests/test_ISO8859-8_hebrew.reference	\
--	tests/test_UTF-8_persian.input	\
--	tests/test_UTF-8_persian.reference
--
--TABLE_FILES =	\
--	fribidi_types.i	\
--	fribidi_char_sets.i	\
--	fribidi_tab_mirroring.i	\
--	fribidi_tab_char_type_2.i	\
--	fribidi_tab_char_type_9.i
--
--UNIDATA_FILES =	\
--	unidata/README	\
--	unidata/UnicodeData.txt	\
--	unidata/BidiMirroring.txt
--
--OTHER_FILES =	\
--	fribidi_wcwidth.i
--
--EXTRA_HEADERS =	\
--	packtab.h	\
--	$(libfribidi_extra_h)	\
--	$(GETOPT_HDR)
-+	fribidi_types.c 	\
-+	fribidi_types.h
- 
- EXTRA_DIST =	\
--	bootstrap \
--	run.tests	\
--	ANNOUNCE	\
--	acinclude.m4	\
--	fribidi_config.h.in	\
--	fribidi.pc.in	\
--	fribidi.spec.in	\
--	fribidi.spec	\
--	$(TEST_FILES)	\
--	$(TABLE_FILES)	\
--	$(UNIDATA_FILES)	\
--	$(OTHER_FILES)	\
--	$(EXTRA_HEADERS)
--
--fribidi_benchmark_SOURCES = fribidi_benchmark.c $(GETOPT_SRC)
--fribidi_benchmark_LDADD = libfribidi.la
--
--fribidi_create_char_types_SOURCES = fribidi_create_char_types.c packtab.c
--
--fribidi_create_mirroring_SOURCES = fribidi_create_mirroring.c
--
--bin_PROGRAMS = fribidi
--fribidi_SOURCES = fribidi_main.c $(GETOPT_SRC)
--fribidi_LDADD = libfribidi.la
--
--
--fribidi_tab_mirroring.i: $(fribidi_create_mirroring_SOURCES) fribidi_types.h	\
--		unidata/BidiMirroring.txt
--	$(MAKE) fribidi_create_mirroring
--	if test -d unidata; then UNIDATA=unidata;	\
--	else UNIDATA="$(srcdir)/unidata"; fi &&	\
--	./fribidi_create_mirroring "$$UNIDATA" ||	\
--	($(RM) "$@"; false)
--
--
--$(srcdir)/fribidi_mirroring.c: fribidi_tab_mirroring.i
--	touch "$@" || $(MAKE) clean
--
--fribidi_tab_mirroring:	fribidi_tab_mirroring.i
--
--
--fribidi_tab_char_type_%.i: $(fribidi_create_char_types_SOURCES)	\
--		unidata/UnicodeData.txt
--	$(MAKE) fribidi_create_char_types
--	if test -d unidata; then UNIDATA=unidata;	\
--	else UNIDATA="$(srcdir)/unidata"; fi &&	\
--	./fribidi_create_char_types "`echo "$@"	\
--	  | $(SED) 's/[^0-9]*//g'`" "$$UNIDATA" ||	\
--	($(RM) "$@"; false)
--	$(RM) fribidi_tab_char_type_stamp
--	$(MAKE) fribidi_tab_char_type_stamp
--
--fribidi_tab_char_type_stamp:
--	touch "$(srcdir)/fribidi_char_type.c" || $(MAKE) clean
--	touch "$@"
--
--fribidi_tab_char_type_small:
--	$(MAKE) fribidi_tab_char_type_9.i
--
--fribidi_tab_char_type_large:
--	$(MAKE) fribidi_tab_char_type_2.i
--
--fribidi_tab tab:	fribidi_tab_char_type_small	\
--			fribidi_tab_char_type_large	\
--			fribidi_tab_mirroring
--
--
--config.h: fribidi_tab_char_type_stamp
--	./config.status --recheck
--	./config.status
--	touch "$@"
--
--$(srcdir)/fribidi_char_type.c: config.h
--
--tests/test_%.reference: tests/test_%.input $(libfribidi_la_SOURCES)
--	$(MAKE) fribidi
--	(test -d tests || mkdir tests) &&	\
--	testcase="$@" && 	\
--	charset="`echo "$@" | $(SED) 's/_[^_]*$$//;s/.*_//'`" &&	\
--	./fribidi --test --charset "$$charset" "$<" > "$@" || \
--	($(RM) "$@"; false)
--
--test.reference:
--	for testcase in "$(srcdir)"/tests/test_*.input; do	\
--		test="`echo "$$testcase"	\
--		  | $(SED) 's/\.input$$/.reference/i; s|.*/||;'`" &&	\
--		$(MAKE) "tests/$$test" ||	\
--		exit 1;	\
--	done
--
--test: fribidi
--	"$(srcdir)/run.tests"
--
--.PHONY:		test test.reference	\
--		fribidi_tab_char_type_small fribidi_tab_char_type_large	\
--		fribidi_tab_mirroring fribidi_tab tab
--
--TESTS = run.tests
--
--bin_SCRIPTS = fribidi-config
--
--pkgconfigdir = $(libdir)/pkgconfig
--pkgconfig_DATA = fribidi.pc
--
--CLEANFILES = 
--
--DISTCLEANFILES = fribidi_tab_char_type_stamp
-+	README	                \
-+	fribidi_tab_char_type_2.i \
-+        fribidi_types.i
- 
--MAINTAINERCLEANFILES = Makefile.in configure aclocal.m4 config.h.in
-Only in /usr/src/fribidi/: Makefile.in
-Only in /usr/src/fribidi/: missing
-Only in /usr/src/fribidi/: mkinstalldirs
-Only in /usr/src/fribidi/: NEWS
-Only in /usr/src/fribidi/: packtab.c
-Only in /usr/src/fribidi/: packtab.h
-Only in /usr/src/fribidi/: packtab.o
-diff -bu /usr/src/fribidi/README mini-fribidi/README
---- /usr/src/fribidi/README	2002-08-07 06:23:34.000000000 -0400
-+++ mini-fribidi/README	2003-07-14 18:31:21.000000000 -0400
-@@ -1,149 +1,44 @@
-+This directory holds a stripped down version of Dov Grobgeld's FriBidi
-+library. The fribidi version that fribidi.patch is against was
-+obtained with "cvs up -D '2003-07-14'" from the fribidi cvs repository.
-+
-+Like Pango, FriBidi is licensed under the terms of the GNU Lesser
-+General Public License - see the file COPYING in the toplevel
-+directory of the Pango distribution.
-+
-+12 November 2000, 18 October 2001
-+Owen Taylor
-+14 July 2003
-+Noah Levitt
-+
-+
-+From the README of Fribidi:
-+
-+
- This is is FriBidi, a Free Implementation of the Unicode BiDi algorithm.
- 
- Background
- ==========
--One of the missing links stopping the penetration of free software in Middle
--East is the lack of support for the Arabic and Hebrew alphabets. In order to
--have proper Arabic and Hebrew support, the BiDi algorithm should have been
--implemented. It is our hope that this library will stimulate more free
--software in the Middle Eastern countries.
-+One of the missing links stopping the penetration of free software in
-+Israel is the lack of support for Hebrew. In order to have proper
-+Hebrew support, the BiDi algorithm must be implemented. It is my hope
-+that this library will stimulate more Hebrew free software.
-+
-+Of course the BiDi algorithm is not limited to Hebrew, so I expect 
-+that our Arab neighbors will also find this software useful.
- 
- Audience
- ========
--It is our hope that this library will stimulate the implementation of Hebrew
--and Arabic in lots of free software. Here is a small list of projects that
--would benifit from the use of the FriBidi library, but of course there are
--many more: Wine, Mozilla, Qt, KDE, lynx, OpenOffice.
- 
--It may be interesting for you to know that Fribidi is already being used in
--projects like Gnome, GTK+, Pango, AbiWord, and Xterm.
-+It is my hope that this library will stimulate the implementation of
-+Hebrew and Arabic in lots of free software. Here is a small list of
-+projects that would benifit from the use of the FriBidi library, but
-+of course there are many more: Wine, Mozilla, Gtk, Gnome, Qt, KDE,
-+AbiWord, lynx.
- 
- Downloading
- ===========
- The latest version of FriBidi may be found at:
- 
--   http://fribidi.sourceforge.net/
--
--Building
--========
--See INSTALL for a description of how to build and install this library.
--
--Copyright
--=========
--Fribidi is:
--Copyright (C) 1999,2000 Dov Grobgeld, and
--Copyright (C) 2001,2002 Behdad Esfahbod.
--
--This library is free software; you can redistribute it and/or
--modify it under the terms of the GNU Lesser General Public
--License as published by the Free Software Foundation; either
--version 2.1 of the License, or (at your option) any later version.
--
--This library is distributed in the hope that it will be useful,
--but WITHOUT ANY WARRANTY; without even the implied warranty of
--MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
--Lesser General Public License for more details.
--
--You should have received a copy of the GNU Lesser General Public License
--along with this library, in a file named COPYING; if not, write to the
--Free Software Foundation, Inc., 59 Temple Place, Suite 330,
--Boston, MA  02111-1307  USA
--
--For licensing issues, contact <dov@imagic.weizmann.ac.il> and
--<fwpg@sharif.edu>.
--
--Implementation
--==============
--The library implements the algorithm described in the "Unicode Standard
--Annex #9, The Bidirectional Algorithm", available at
--http://www.unicode.org/unicode/reports/tr9/. Fribidi has been tested
--exhaustively against the Unicode Reference Code, and due to our knowledge,
--it completely conforms to the specification, always producing the same
--result as the Reference Code.
--
--In the API we were inspired by the document "Bi-Di languages support
--- BiDi API propasal", http://www.langbox.com/AraMosaic/mozilla/BiDi_API.html,
--by Franck Portaneri <franck@langbox.com> which he wrote as a proposal for
--adding BiDi support to Mozilla.
--
--Internally, the library uses Unicode entirely. The character property
--function was automatically created from the Unicode property list document
--PropList.txt available from the Unicode FTP site. This means that every
--Unicode character is treated in strict accordance with the Unicode
--specification. The same is true for the mirroring of characters, which also
--works for all the characters listed as mirrorable in the the Unicode
--specification.
--
--Other character sets must be converted into Unicode before the library
--may be used. In order to use, e.g. iso8859-8, the function
--
--     void
--     fribidi_iso8859_8_to_unicode(guchar *s,
--             	                  /* output */
--	    	                  FriBidiChar *us)
--
--must be called which translates the guchar string *s to a unicode 
--string. There is also a corresponding fribidi_unicode_to_iso8859_8
--that may be called to convert the string back to iso8859_8 for output.
--
--The reordering of characters is done through the function:
--      
--     void
--     fribidi_log2vis(/* input */
--		     FriBidiChar *str,
--		     int len,
--		     FriBidiCharType *pbase_dir,
--		     /* output */
--		     FriBidiChar *visual_str,
--		     gint        *position_L_to_V_list,
--		     gint        *position_V_to_L_list,
--		     gint8       *embedding_level_list
--		     )
--    
--
--where
--     str                    is the Unicode input string
--     len                    is the length of the unicode string
--     pbase_dir              is the input and output base direction. If 
--                            base == FRIBIDI_TYPE_ON then fribidi_log2vis 
--                            calculates the base direction on its own
--                            according to the BiDi algorithm.
--     visual_str             The reordered output unicode string.
--     position_L_to_V_list   Maps the positions in the logical string to 
--                            positions in the visual string.
--     position_V_to_L_list   Maps the positions in the visual string to 
--                            the positions in the logical string.
--     embedding_level_list   Returns the classification of each character. Even
--                            levels indicate LTR characters, and odd levels
--                            indicate RTL characters. The main use of this
--                            list is in interactive applications when the
--                            embedding e.g. level determines cursor display.
--
--In any of the output pointers == NULL, then that information is not 
--calculated.
--
--How it looks like
--=================
--
--Have a look at tests directory, to see some input and outputs, which
--CapRTL charset means that CAPITAL letters are right to left, and digits
--6, 7, 8, 9 are Arabic digits, try 'fribidi --charsetdesc CapRTL' for the
--full description.
--
--Executable
--==========
--There is also a command line utilitity called fribidi that loops over
--the text of a file and performs the BiDi algorithm on each line, also
--used for testing the algorithm. Run fribidi with the --help option to
--learn about usage.
--
--Bugs and comments
--=================
--
--Report FriBidi bugs at:
--
--	http://fribidi.sourceforge.net/bugs.php
--
--And send your comments to:
-+   http://fribidi.sourceforge.net
- 
--	fribidi-discuss@lists.sourceforge.net
-Only in /usr/src/fribidi/: run.tests
-Only in /usr/src/fribidi/: stamp-h1
-Only in /usr/src/fribidi/: stamp-h.in
-Only in /usr/src/fribidi/: tests
-Only in /usr/src/fribidi/: THANKS
-Only in /usr/src/fribidi/: TODO
-Only in /usr/src/fribidi/: unidata
-Only in /usr/src/fribidi/: win

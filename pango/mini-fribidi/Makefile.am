@@ -13,13 +13,15 @@ LDADDS = @STRIP_BEGIN@ 	\
 	@x_libs@	\
 	@GLIB_LIBS@	\
 	-lm		\
-@STRIP_END@
+	@STRIP_END@
 
 noinst_LTLIBRARIES = libmini-fribidi.la
 
 libmini_fribidi_la_SOURCES =    \
 	fribidi.c		\
 	fribidi_char_type.c 	\
+	fribidi_config.h 	\
+	fribidi.h		\
 	fribidi_types.c 	\
 	fribidi_types.h
 

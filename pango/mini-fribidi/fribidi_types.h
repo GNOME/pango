@@ -23,15 +23,32 @@
 #ifndef FRIBIDI_TYPES_H
 #define FRIBIDI_TYPES_H
 
-#include <glib.h>
+#include "fribidi_config.h"
 
-  typedef gint8 FriBidiLevel;
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
+  typedef gboolean fribidi_boolean;
+
+  typedef gint8 fribidi_int8;
+  typedef guint8 fribidi_uint8;
+  typedef gint16 fribidi_int16;
+  typedef guint16 fribidi_uint16;
+  typedef gint32 fribidi_int32;
+  typedef guint32 fribidi_uint32;
+  typedef gint fribidi_int;
+  typedef guint fribidi_uint;
+
+
+  typedef fribidi_int8 FriBidiLevel;
   typedef gunichar FriBidiChar;
-  typedef gint FriBidiStrIndex;
-  typedef gint32 FriBidiMaskType;
+  typedef gsize FriBidiStrIndex;
+  typedef fribidi_int32 FriBidiMaskType;
   typedef FriBidiMaskType FriBidiCharType;
 
-  gchar *fribidi_type_name (FriBidiCharType c);
+  char *fribidi_type_name (FriBidiCharType c);
 
 /* The following type is used by fribidi_utils */
   typedef struct
@@ -41,7 +58,7 @@
   }
   FriBidiRunType;
 
-/* The following type is used by fribidi_utils */
+/* The following type is used by fribdi_utils */
   typedef struct _FriBidiList FriBidiList;
   struct _FriBidiList
   {
@@ -51,9 +68,10 @@
   };
 
 #ifndef FRIBIDI_MAX_STRING_LENGTH
-#define FRIBIDI_MAX_STRING_LENGTH (sizeof (FriBidiStrIndex) == 2 ?	\
+#define FRIBIDI_MAX_STRING_LENGTH (FriBidiStrIndex) \
+				  (sizeof (FriBidiStrIndex) == 2 ?	\
     				   0x7FFE : (sizeof (FriBidiStrIndex) == 1 ? \
-					     0x7E : 0x8FFFFFFEL))
+					     0x7E : 0x7FFFFFFEL))
 #endif
 
 
@@ -269,9 +287,10 @@
 	(FRIBIDI_IS_OVERRIDE(p) ? FRIBIDI_LEVEL_TO_DIR(FRIBIDI_DIR_TO_LEVEL(p)) \
 				: FRIBIDI_TYPE_ON)
 
+
 /*
  * Define character types that char_type_tables use.
- * define them to be 0, 1, 2, ... and then in _pango_fribidi_get_type.c map them
+ * define them to be 0, 1, 2, ... and then in fribidi_char_type.c map them
  * to FriBidiCharTypes.
  */
   typedef char FriBidiPropCharType;
@@ -285,12 +304,10 @@
   };
 
 /* Map fribidi_prop_types to fribidi_types */
-  extern const FriBidiCharType *_pango_fribidi_prop_to_type;
+  extern const FriBidiCharType fribidi_prop_to_type[];
 
+#ifdef	__cplusplus
+}
+#endif
 
-/*======================================================================
- *  _pango_fribidi_get_type() returns bidi type of a character.
- *----------------------------------------------------------------------*/
-  FriBidiCharType _pango_fribidi_get_type (FriBidiChar uch);
-
-#endif  /* #ifndef FRIBIDI_TYPES_H */
+#endif

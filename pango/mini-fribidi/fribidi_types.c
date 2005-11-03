@@ -19,8 +19,10 @@
  * For licensing issues, contact <fwpg@sharif.edu>. 
  */
 
-#include <glib.h>
-#include "fribidi_types.h"
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+#include "fribidi.h"
 
 #ifdef DEBUG
 
@@ -76,51 +78,11 @@ fribidi_char_from_type (FriBidiCharType c)
     }
 };
 
-char *
-fribidi_type_name (FriBidiCharType c)
-{
-#define _FRIBIDI_CASE(type)	case FRIBIDI_TYPE_##type: return #type
-  switch (c)
-    {
-      _FRIBIDI_CASE (LTR);
-      _FRIBIDI_CASE (RTL);
-      _FRIBIDI_CASE (AL);
-
-      _FRIBIDI_CASE (EN);
-      _FRIBIDI_CASE (AN);
-      _FRIBIDI_CASE (ES);
-      _FRIBIDI_CASE (ET);
-      _FRIBIDI_CASE (CS);
-      _FRIBIDI_CASE (NSM);
-      _FRIBIDI_CASE (BN);
-
-      _FRIBIDI_CASE (BS);
-      _FRIBIDI_CASE (SS);
-      _FRIBIDI_CASE (WS);
-      _FRIBIDI_CASE (ON);
-
-      _FRIBIDI_CASE (LRE);
-      _FRIBIDI_CASE (RLE);
-      _FRIBIDI_CASE (LRO);
-      _FRIBIDI_CASE (RLO);
-      _FRIBIDI_CASE (PDF);
-
-      _FRIBIDI_CASE (SOT);
-      _FRIBIDI_CASE (EOT);
-
-    default:
-      return "?";
-    }
-#undef _FRIBIDI_CASE
-}
-
 #endif
 
 /* Map fribidi_prop_types to fribidi_types. */
-static const FriBidiCharType fribidi_prop_to_type_array[] = {
+const FriBidiCharType fribidi_prop_to_type[] = {
 #define _FRIBIDI_ADD_TYPE(TYPE) FRIBIDI_TYPE_##TYPE,
 #include "fribidi_types.i"
 #undef _FRIBIDI_ADD_TYPE
 };
-
-const FriBidiCharType *_pango_fribidi_prop_to_type = fribidi_prop_to_type_array;
