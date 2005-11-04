@@ -1,3 +1,9 @@
+2005-11-04  Behdad Esfahbod  <behdad@gnome.org>
+
+	* pango/pangofc-font.c: Use macros for locking and unlocking fonts
+	we know are valid to avoid redundant PANGO_IS_FC_FONT checks.
+	(Review by Matthias Clasen)
+
 2005-11-03  Behdad Esfahbod  <behdad@gnome.org>
 
 	* docs/tmpl/main.sgml, pango/Makefile.am, pango/pango-context.c

@@ -64,6 +64,13 @@ static PangoFontMetrics *    pango_fc_font_get_metrics  (PangoFont        *font,
 static PangoFontMap *        pango_fc_font_get_font_map (PangoFont        *font);
 static PangoFontDescription *pango_fc_font_describe     (PangoFont        *font);
 
+
+#define PANGO_FC_FONT_LOCK_FACE(font)	(PANGO_FC_FONT_GET_CLASS (font)->lock_face (font))
+#define PANGO_FC_FONT_UNLOCK_FACE(font)	(PANGO_FC_FONT_GET_CLASS (font)->unlock_face (font))
+
+
+
+
 G_DEFINE_TYPE (PangoFcFont, pango_fc_font, PANGO_TYPE_FONT)
 
 static void
@@ -273,7 +280,7 @@ static void
 get_face_metrics (PangoFcFont      *fcfont,
 		  PangoFontMetrics *metrics)
 {
-  FT_Face face = pango_fc_font_lock_face (fcfont);
+  FT_Face face = PANGO_FC_FONT_LOCK_FACE (fcfont);
   FcMatrix *fc_matrix;
   FT_Matrix ft_matrix;
   TT_OS2 *os2;
@@ -367,7 +374,7 @@ get_face_metrics (PangoFcFont      *fcfont,
       quantize_position (&metrics->strikethrough_thickness, &metrics->strikethrough_position);
     }
   
-  pango_fc_font_unlock_face (fcfont);
+  PANGO_FC_FONT_UNLOCK_FACE (fcfont);
 }
 
 static int
@@ -502,13 +509,13 @@ pango_fc_font_real_get_glyph (PangoFcFont *font,
   FT_Face face;
   FT_UInt index;
 
-  face = pango_fc_font_lock_face (font);
+  face = PANGO_FC_FONT_LOCK_FACE (font);
   
   index = FcFreeTypeCharIndex (face, wc);
   if (index > face->num_glyphs)
     index = 0;
 
-  pango_fc_font_unlock_face (font);
+  PANGO_FC_FONT_UNLOCK_FACE (font);
 
   return index;
 }
@@ -530,7 +537,7 @@ pango_fc_font_lock_face (PangoFcFont *font)
 {
   g_return_val_if_fail (PANGO_IS_FC_FONT (font), NULL);
 
-  return PANGO_FC_FONT_GET_CLASS (font)->lock_face (font);
+  return PANGO_FC_FONT_LOCK_FACE (font);
 }
 
 /**
@@ -546,8 +553,8 @@ void
 pango_fc_font_unlock_face (PangoFcFont *font)
 {
   g_return_if_fail (PANGO_IS_FC_FONT (font));
-  
-  PANGO_FC_FONT_GET_CLASS (font)->unlock_face (font);
+   
+  PANGO_FC_FONT_UNLOCK_FACE (font);
 }
 
 /**
@@ -597,9 +604,12 @@ PangoGlyph
 pango_fc_font_get_glyph (PangoFcFont *font,
 			 gunichar     wc)
 {
-  PangoFcFontPrivate *priv = PANGO_FC_FONT_GET_PRIVATE (font);
-
+  PangoFcFontPrivate *priv;
+  
   g_return_val_if_fail (PANGO_IS_FC_FONT (font), 0);
+
+  priv = PANGO_FC_FONT_GET_PRIVATE (font);
+
 
   /* Replace NBSP with a normal space; it should be invariant that
    * they shape the same other than breaking properties.
@@ -666,13 +676,13 @@ pango_fc_font_kern_glyphs (PangoFcFont      *font,
   g_return_if_fail (PANGO_IS_FC_FONT (font));
   g_return_if_fail (glyphs != NULL);
 
-  face = pango_fc_font_lock_face (font);
+  face = PANGO_FC_FONT_LOCK_FACE (font);
   if (!face)
     return;
 
   if (!FT_HAS_KERNING (face))
     {
-      pango_fc_font_unlock_face (font);
+      PANGO_FC_FONT_UNLOCK_FACE (font);
       return;
     }
   
@@ -688,7 +698,7 @@ pango_fc_font_kern_glyphs (PangoFcFont      *font,
 	glyphs->glyphs[i-1].geometry.width += PANGO_UNITS_26_6 (kerning.x);
     }
   
-  pango_fc_font_unlock_face (font);
+  PANGO_FC_FONT_UNLOCK_FACE (font);
 }
 
 /**
@@ -781,7 +791,9 @@ pango_fc_font_get_raw_extents (PangoFcFont    *fcfont,
   FT_Glyph_Metrics *gm;
   FT_Face face;
 
-  face = pango_fc_font_lock_face (fcfont);
+  g_return_if_fail (PANGO_IS_FC_FONT (fcfont));
+
+  face = PANGO_FC_FONT_LOCK_FACE (fcfont);
 
   if (!glyph)
     gm = NULL;
@@ -839,6 +851,6 @@ pango_fc_font_get_raw_extents (PangoFcFont    *fcfont,
 	}
     }
       
-  pango_fc_font_unlock_face (fcfont);
+  PANGO_FC_FONT_UNLOCK_FACE (fcfont);
 }
 
