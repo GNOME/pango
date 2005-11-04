@@ -44,6 +44,32 @@ typedef struct _PangoCairoFcFont      PangoCairoFcFont;
 typedef struct _PangoCairoFcFontClass PangoCairoFcFontClass;
 typedef struct _PangoCairoFcGlyphInfo PangoCairoFcGlyphInfo;
 
+#undef PROFILE_GLYPH_CACHE
+#ifdef PROFILE_GLYPH_CACHE
+static long num_cairo_fc_fonts;
+static long max_cairo_fc_fonts;
+static long num_glyph_caches;
+static long max_glyph_caches;
+static long num_glyph_cache_hits;
+static long num_glyph_cache_misses;
+#endif
+
+#define GLYPH_CACHE_NUM_ENTRIES 256
+#define GLYPH_CACHE_MASK 0x000000ff
+
+/* An entry in the fixed-size cache for the gunichar -> glyph mapping.  The
+ * cache is indexed by the lower N bits of the gunichar (see
+ * GLYPH_CACHE_NUM_ENTRIES and GLYPH_CACHE_MASK above).  For scripts with few
+ * code points, this should provide pretty much instant lookups.
+ *
+ * The "ch" field is zero if that cache entry is invalid.
+ */
+typedef struct
+{
+  gunichar ch;
+  PangoGlyph glyph;
+} GlyphCacheEntry;
+
 struct _PangoCairoFcFont
 {
   PangoFcFont font;
@@ -55,6 +81,8 @@ struct _PangoCairoFcFont
   cairo_font_options_t *options;
 
   GHashTable *glyph_info;
+
+  GlyphCacheEntry *char_to_glyph_cache;
 };
 
 struct _PangoCairoFcFontClass
@@ -161,7 +189,21 @@ pango_cairo_fc_font_finalize (GObject *object)
 
   g_hash_table_destroy (cffont->glyph_info);
 
+  if (cffont->char_to_glyph_cache)
+    {
+      g_free (cffont->char_to_glyph_cache);
+#ifdef PROFILE_GLYPH_CACHE
+      num_glyph_caches--;
+      g_assert (num_glyph_caches >= 0);
+#endif
+    }
+
   G_OBJECT_CLASS (pango_cairo_fc_font_parent_class)->finalize (object);
+
+#ifdef PROFILE_GLYPH_CACHE
+  num_cairo_fc_fonts--;
+  g_assert (num_cairo_fc_fonts >= 0);
+#endif
 }
 
 static void
@@ -313,6 +355,52 @@ pango_cairo_fc_font_unlock_face (PangoFcFont *font)
 }
 
 static PangoGlyph
+pango_cairo_fc_font_get_glyph (PangoFcFont *font,
+			       gunichar     wc)
+{
+  PangoCairoFcFont *cffont = (PangoCairoFcFont *)font;
+  guint idx;
+  GlyphCacheEntry *entry;
+
+  /* We create the cache dynamically because although we'll have a lot of
+   * PangoCairoFcFont structures (one per font in the fontset, as many as needed
+   * to cover the whole Unicode space), we'll only end up using a few of them
+   * for the user's actual text.
+   */
+  if (cffont->char_to_glyph_cache == NULL)
+    {
+      cffont->char_to_glyph_cache = g_new0 (GlyphCacheEntry, GLYPH_CACHE_NUM_ENTRIES);
+#ifdef PROFILE_GLYPH_CACHE
+      num_glyph_caches++;
+      if (num_glyph_caches > max_glyph_caches)
+	max_glyph_caches = num_glyph_caches;
+#endif
+    }
+
+  idx = wc & GLYPH_CACHE_MASK;
+  entry = cffont->char_to_glyph_cache + idx;
+
+  if (entry->ch != wc || wc == 0)
+    {
+#ifdef PROFILE_GLYPH_CACHE
+      num_glyph_cache_misses++;
+/*       printf ("cache MISS: cffont %p, gunichar %x = '%c'\n", cffont, wc, (wc < 128) ? wc : 0); */
+#endif
+      entry->ch = wc;
+      entry->glyph = ((PangoFcFontClass *) pango_cairo_fc_font_parent_class)->get_glyph (font, wc);
+    }
+  else
+    {
+#ifdef PROFILE_GLYPH_CACHE
+      num_glyph_cache_hits++;
+/*       printf ("cache HIT: cffont %p, gunichar %x = '%c'\n", cffont, wc, (wc < 128) ? wc : 0); */
+#endif
+    }
+
+  return entry->glyph;
+}
+
+static PangoGlyph
 pango_cairo_fc_font_real_get_unknown_glyph (PangoFcFont *font,
 					    gunichar     wc)
 {
@@ -335,6 +423,18 @@ pango_cairo_fc_font_shutdown (PangoFcFont *fcfont)
     }
 }
 
+#ifdef PROFILE_GLYPH_CACHE
+static void
+profile_glyph_cache_exit_cb (void)
+{
+  printf ("Maximum number of PangoCairoFcFont objects: %ld\n", max_cairo_fc_fonts);
+  printf ("Maximum number of glyph caches created: %ld (%ld KB)\n", max_glyph_caches, (max_glyph_caches * sizeof (GlyphCacheEntry) * GLYPH_CACHE_NUM_ENTRIES) / 1024);
+  printf ("Glyph cache hits: %ld\n", num_glyph_cache_hits);
+  printf ("Glyph cache misses: %ld\n", num_glyph_cache_misses);
+  printf ("Glyph cache miss rate: %f%%\n", 100.0 * (double) num_glyph_cache_misses / (num_glyph_cache_misses + num_glyph_cache_hits));
+}
+#endif
+
 static void
 pango_cairo_fc_font_class_init (PangoCairoFcFontClass *class)
 {
@@ -349,8 +449,13 @@ pango_cairo_fc_font_class_init (PangoCairoFcFontClass *class)
 
   fc_font_class->lock_face = pango_cairo_fc_font_lock_face;
   fc_font_class->unlock_face = pango_cairo_fc_font_unlock_face;
+  fc_font_class->get_glyph = pango_cairo_fc_font_get_glyph;
   fc_font_class->get_unknown_glyph = pango_cairo_fc_font_real_get_unknown_glyph;
   fc_font_class->shutdown = pango_cairo_fc_font_shutdown;
+
+#ifdef PROFILE_GLYPH_CACHE
+  atexit (profile_glyph_cache_exit_cb);
+#endif
 }
 
 static void
@@ -360,6 +465,12 @@ pango_cairo_fc_font_init (PangoCairoFcFont *cffont)
 					      NULL,
 					      NULL,
 					      (GDestroyNotify)g_free);
+
+#ifdef PROFILE_GLYPH_CACHE
+  num_cairo_fc_fonts++;
+  if (num_cairo_fc_fonts > max_cairo_fc_fonts)
+    max_cairo_fc_fonts = num_cairo_fc_fonts;
+#endif
 }
 
 /********************

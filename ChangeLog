@@ -1,3 +1,21 @@
+2005-11-04  Federico Mena Quintero  <federico@ximian.com>
+
+	Fixes #320665:
+
+	* pango/pangocairo-fcfont.c: Use a simple, fixed-size cache to map
+	gunichars to glyph indices within the font.  The cache is
+	described in detail here:
+	http://primates.ximian.com/~federico/news-2005-10.html#gtkfilechooser-profile-5
+	(GlyphCacheEntry): new structure to hold a gunichar and a PangoGlyph.
+	(struct _PangoCairoFcFont): Add a char_to_glyph_cache field.
+	(pango_cairo_fc_font_get_glyph): Allocate the char_to_glyph_cache
+	if needed.  We do it on demand because while many fonts will be
+	alive at any one time (in order to cover the whole Unicode space),
+	only very few of them will be actually accessed for glyph lookups.
+	(pango_cairo_fc_font_get_glyph): Look up the gunichar in the
+	cache, and replace the cache entry if necessary.
+	(pango_cairo_fc_font_finalize): Free the char_to_glyph_cache.
+
 2005-11-04  Behdad Esfahbod  <behdad@gnome.org>
 
 	* pango/pangocairo-fontmap.c: Use quarks for GObject data to improve
