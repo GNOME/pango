@@ -220,8 +220,14 @@ static PangoCairoContextInfo *
 get_context_info (PangoContext *context,
 		  gboolean      create)
 {
-  PangoCairoContextInfo *info = g_object_get_data (G_OBJECT (context),
-						   "pango-cairo-context-info");
+  static GQuark context_info_quark;
+  PangoCairoContextInfo *info;
+
+  if (!context_info_quark)
+    context_info_quark = g_quark_from_static_string ("pango-cairo-context-info");
+
+  info = g_object_get_qdata (G_OBJECT (context), context_info_quark);
+
   if (!info && create)
     {
       info = g_new (PangoCairoContextInfo, 1);
@@ -230,8 +236,8 @@ get_context_info (PangoContext *context,
       info->surface_options = NULL;
       info->merged_options = NULL;
 
-      g_object_set_data_full (G_OBJECT (context), "pango-cairo-context-info", 
-			      info, (GDestroyNotify)free_context_info);
+      g_object_set_qdata_full (G_OBJECT (context), context_info_quark, 
+			       info, (GDestroyNotify)free_context_info);
     }
 
   return info;

@@ -1,5 +1,13 @@
 2005-11-04  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango/pangocairo-fontmap.c: Use quarks for GObject data to improve
+	performance.  (Patch from Federico Mena Quintero)
+
+	* pango/modules.c (pango_module_load), pango/querymodules.c: Pass
+	G_MODULE_BIND_LAZY to g_module_open.  (Pointed by John Rice)
+
+2005-11-04  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/pangofc-font.c: Use macros for locking and unlocking fonts
 	we know are valid to avoid redundant PANGO_IS_FC_FONT checks.
 	(Review by Matthias Clasen)
