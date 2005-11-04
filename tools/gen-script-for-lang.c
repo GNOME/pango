@@ -40,7 +40,7 @@ static void scripts_for_file (const char *base_dir,
 			      const char *file_part,
 			      LangInfo   *info);
 
-const char *get_script_name (PangoScript script)
+static const char *get_script_name (PangoScript script)
 {
   static GEnumClass *class = NULL;
   GEnumValue *value;
@@ -53,7 +53,8 @@ const char *get_script_name (PangoScript script)
   return value->value_name;
 }
 
-int fail (char *format, ...)
+static void fail (const char *format, ...) G_GNUC_PRINTF (1, 2) G_GNUC_NORETURN;
+static void fail (const char *format, ...)
 {
   va_list vap;
   
@@ -64,7 +65,7 @@ int fail (char *format, ...)
   exit (1);
 }
 
-gboolean scan_hex (const char **str, gunichar *result)
+static gboolean scan_hex (const char **str, gunichar *result)
 {
   const char *end;
 
@@ -74,14 +75,6 @@ gboolean scan_hex (const char **str, gunichar *result)
 
   *str = end;
   return TRUE;
-}
-
-void warn_mismatch (const char *file_part,
-		    PangoScript script1,
-		    PangoScript script2)
-{
-  g_printerr ("%s has characters for both %s and %s\n",
-	      file_part, get_script_name (script1), get_script_name (script2));
 }
 
 static void
@@ -172,11 +165,11 @@ scripts_for_file (const char *base_dir,
   GIOStatus status = G_IO_STATUS_NORMAL;
 
   if (!channel)
-    fail ("Error opening '%s': %s\n", filename, error);
+    fail ("Error opening '%s': %s\n", filename, error->message);
 
   /* The files have ISO-8859-1 copyright signs in them */
   if (!g_io_channel_set_encoding (channel, "ISO-8859-1", &error))
-      fail ("Cannot set encoding when reading '%s': %s\n", filename, error);
+      fail ("Cannot set encoding when reading '%s': %s\n", filename, error->message);
   
   while (status == G_IO_STATUS_NORMAL)
     {
@@ -209,7 +202,7 @@ scripts_for_file (const char *base_dir,
     }
 
   if (!g_io_channel_shutdown (channel, FALSE, &error))
-    fail ("Error closing '%s': %s\n", channel, error);
+    fail ("Error closing '%s': %s\n", filename, error->message);
 
   g_free (filename);
 }
@@ -240,7 +233,7 @@ compare_lang (gconstpointer a,
 	      gconstpointer b)
 {
   const LangInfo *info_a = a;
-  const LangInfo *info_b = a;
+  const LangInfo *info_b = b;
 
   return strcmp (pango_language_to_string (info_a->lang),
 		 pango_language_to_string (info_b->lang));
@@ -251,7 +244,8 @@ int main (int argc, char **argv)
   GDir *dir;
   GError *error = NULL;
   GArray *script_array;
-  int i, j;
+  unsigned int i;
+  int j;
   int max_lang_len = 0;
 
   g_type_init ();
@@ -282,7 +276,7 @@ int main (int argc, char **argv)
       LangInfo *info = &g_array_index (script_array, LangInfo, i);
       
       max_lang_len = MAX (max_lang_len,
-			  1 + strlen (pango_language_to_string (info->lang)));
+			  1 + (int)strlen (pango_language_to_string (info->lang)));
     }
       
   g_print ("typedef struct {\n"

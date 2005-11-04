@@ -3128,7 +3128,7 @@ no_shape_filter_func (PangoAttribute *attribute,
 
   int i;
 
-  for (i = 0; i < G_N_ELEMENTS (no_shape_types); i++)
+  for (i = 0; i < (int)G_N_ELEMENTS (no_shape_types); i++)
     if (attribute->klass->type == no_shape_types[i])
       return TRUE;
 

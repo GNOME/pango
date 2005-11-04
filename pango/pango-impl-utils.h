@@ -43,10 +43,11 @@ prefix ## _get_type (void)				                   \
 	  (GBaseFinalizeFunc) NULL,					   \
 	  (GClassInitFunc) class_init,					   \
 	  (GClassFinalizeFunc) NULL,					   \
-	  NULL,           /* class_data */				   \
+	  NULL,          /* class_data */				   \
 	  sizeof (name),						   \
 	  0,             /* n_prelocs */				   \
-	  (GInstanceInitFunc) instance_init				   \
+	  (GInstanceInitFunc) instance_init,				   \
+	  NULL           /* value_table */				   \
 	};								   \
       									   \
       object_type = g_type_register_static (parent_type,	   	   \

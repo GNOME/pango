@@ -75,6 +75,7 @@ GType pango_cairo_renderer_get_type    (void);
 
 const cairo_font_options_t *_pango_cairo_context_get_merged_font_options (PangoContext *context);
 
+
 G_END_DECLS
 
 #endif /* __PANGOCAIRO_PRIVATE_H__ */

@@ -512,7 +512,7 @@ pango_fc_font_real_get_glyph (PangoFcFont *font,
   face = PANGO_FC_FONT_LOCK_FACE (font);
   
   index = FcFreeTypeCharIndex (face, wc);
-  if (index > face->num_glyphs)
+  if (index > (FT_UInt)face->num_glyphs)
     index = 0;
 
   PANGO_FC_FONT_UNLOCK_FACE (font);

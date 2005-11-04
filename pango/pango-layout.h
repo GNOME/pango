@@ -163,6 +163,11 @@ void     pango_layout_get_log_attrs (PangoLayout    *layout,
 void     pango_layout_index_to_pos         (PangoLayout    *layout,
 					    int             index_,
 					    PangoRectangle *pos);
+void     pango_layout_index_to_line_x      (PangoLayout    *layout,
+			                    int             index_,
+			                    gboolean        trailing,
+			                    int            *line,
+			                    int            *x_pos);
 void     pango_layout_get_cursor_pos       (PangoLayout    *layout,
 					    int             index_,
 					    PangoRectangle *strong_pos,

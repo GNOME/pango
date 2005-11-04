@@ -190,6 +190,7 @@ pango_x_font_map_get_type (void)
         sizeof (PangoXFontMap),
         0,              /* n_preallocs */
         (GInstanceInitFunc) pango_x_font_map_init,
+	NULL            /* value_table */
       };
       
       object_type = g_type_register_static (PANGO_TYPE_FONT_MAP,
@@ -380,7 +381,9 @@ pango_x_font_map_finalize (GObject *object)
 }
 
 static void
-list_families_foreach (gpointer key, gpointer value, gpointer user_data)
+list_families_foreach (gpointer key,
+		       gpointer value,
+		       gpointer user_data)
 {
   GSList **list = user_data;
 
@@ -527,7 +530,8 @@ pango_x_font_map_load_font (PangoFontMap               *fontmap,
 static gboolean error_occured;
 
 static int 
-ignore_error (Display *d, XErrorEvent *e)
+ignore_error (Display     *d,
+	      XErrorEvent *e)
 {
   return 0;
 }
@@ -1087,7 +1091,7 @@ pango_x_insert_font (PangoXFontMap *xfontmap,
   PangoXFace *xface;
   PangoXSizeInfo *size_info;
   char *identifier;
-  int i;
+  unsigned int i;
 
   /* First insert the XLFD into the list of XLFDs for the "identifier" - which
    * is the 2-4th fields of the XLFD
@@ -1205,7 +1209,7 @@ pango_x_insert_font (PangoXFontMap *xfontmap,
 
 /* Compare the tail of a to b */
 static gboolean
-match_end (char *a, char *b)
+match_end (const char *a, const char *b)
 {
   size_t len_a = strlen (a);
   size_t len_b = strlen (b);
@@ -1502,6 +1506,7 @@ pango_x_face_get_type (void)
         sizeof (PangoXFace),
         0,              /* n_preallocs */
         (GInstanceInitFunc) NULL,
+	NULL            /* value_table */
       };
       
       object_type = g_type_register_static (PANGO_TYPE_FONT_FACE,
@@ -1660,6 +1665,7 @@ pango_x_family_get_type (void)
         sizeof (PangoXFamily),
         0,              /* n_preallocs */
         (GInstanceInitFunc) NULL,
+	NULL            /* value_table */
       };
       
       object_type = g_type_register_static (PANGO_TYPE_FONT_FAMILY,

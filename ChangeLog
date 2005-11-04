@@ -1,3 +1,36 @@
+2005-11-04  Behdad Esfahbod  <behdad@gnome.org>
+
+	* configure.in, examples/argcontext.c examples/cairoview.c,
+	examples/renderdemo.c, examples/renderdemo.h examples/xftview.c,
+	modules/basic/basic-x.c, modules/hangul/hangul-fc.c,
+	modules/hebrew/hebrew-shaper.c, modules/hebrew/hebrew-shaper.h,
+	modules/indic/indic-fc.c, modules/indic/mprefixups.c,
+	modules/syriac/syriac-fc.c, pango/break.c pango/fonts.c,
+	pango/modules.c, pango/pango-coverage.c pango/pango-engine.c,
+	pango/pango-engine.h, pango/pango-fontmap.c,
+	pango/pango-fontset.c, pango/pango-impl-utils.h,
+	pango/pango-layout.c, pango/pango-layout.h,
+	pango/pango-renderer.c, pango/pango-script.c,
+	pango/pango-utils.c, pango/pangocairo-fc.h,
+	pango/pangocairo-font.c, pango/pangocairo-fontmap.c,
+	pango/pangocairo-private.h, pango/pangofc-decoder.c,
+	pango/pangofc-font.c, pango/pangofc-fontmap.c pango/pangoft2.c,
+	pango/pangox-fontcache.c, pango/pangox-fontmap.c pango/pangox.c,
+	pango/pangoxft-font.c, pango/querymodules.c,
+	pango/opentype/ftglue.c, pango/opentype/ftxgpos.c,
+	pango/opentype/ftxopen.c, pango/opentype/pango-ot-buffer.c,
+	pango/opentype/pango-ot-info.c,
+	pango/opentype/pango-ot-ruleset.c, tests/dump-boundaries.c,
+	tests/testboundaries.c, tests/testcolor.c tests/testiter.c,
+	tests/testscript.c: Turn various gcc warnings off. Adding const,
+	adding static, fully initializing structs, match signedness in
+	comparisons. (#317804)
+
+	* tests/testscript.c, tools/gen-script-for-lang.c:
+	(scripts_for_file): Pass error->message instead of error to fail(),
+	which was wrong.
+	(compare_lang): Fix typo comparing a and a instead of a and b.
+
 2005-11-04  Federico Mena Quintero  <federico@ximian.com>
 
 	Fixes #320665:

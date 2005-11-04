@@ -99,7 +99,7 @@ parse_int (const char *arg_name,
 void
 arg_context_print_help (ArgContext *context)
 {
-  int j, k;
+  unsigned int j, k;
   int max_name_len = 0;
 
   for (j = 0; j < context->tables->len; j++)
@@ -169,7 +169,7 @@ arg_context_parse (ArgContext *context,
 			if (strncmp (arg, table[k].name, len) == 0 &&
 			    (arg[len] == '=' || arg[len] == 0))
 			  {
-			    char *value = NULL;
+			    const char *value = NULL;
 
 			    (*argv)[i] = NULL;
 
@@ -187,7 +187,7 @@ arg_context_parse (ArgContext *context,
 			    switch (table[k].type)
 			      {
 			      case ARG_STRING:
-				*(gchar **)table[k].location = value;
+				*(const gchar **)table[k].location = value;
 				break;
 			      case ARG_INT:
 				if (!parse_int (table[k].name, value,

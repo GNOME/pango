@@ -123,7 +123,7 @@ do_cairo_transform (PangoContext *context,
 }
 
 void
-update ()
+update (void)
 {
   RenderData render_data;
   cairo_surface_t *surface;

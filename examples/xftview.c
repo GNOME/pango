@@ -51,7 +51,7 @@ xft_render (PangoLayout *layout,
 }
 
 void
-update ()
+update (void)
 {
   XRectangle area;
   XftColor color;

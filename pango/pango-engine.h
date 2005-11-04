@@ -274,10 +274,11 @@ prefix ## _register_type (GTypeModule *module)				  \
       (GBaseFinalizeFunc) NULL,						  \
       (GClassInitFunc) class_init,					  \
       (GClassFinalizeFunc) NULL,					  \
-      NULL,           /* class_data */					  \
+      NULL,          /* class_data */					  \
       sizeof (name),					  		  \
       0,             /* n_prelocs */					  \
       (GInstanceInitFunc) instance_init,				  \
+      NULL           /* value_table */					  \
     };									  \
 									  \
   prefix ## _type =  g_type_module_register_type (module, parent_type,	  \

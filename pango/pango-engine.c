@@ -46,7 +46,7 @@ pango_engine_shape_real_covers (PangoEngineShape *engine,
   return result;
 }
 
-void
+static void
 pango_engine_shape_class_init (PangoEngineShapeClass *class)
 {
   class->covers = pango_engine_shape_real_covers;

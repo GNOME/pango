@@ -411,7 +411,7 @@ pango_language_includes_script (PangoLanguage *language,
 				PangoScript    script)
 {
   PangoScriptForLang *script_for_lang;
-  int j;
+  unsigned int j;
 
   g_return_val_if_fail (language != NULL, FALSE);
 
@@ -551,7 +551,7 @@ pango_script_get_sample_language (PangoScript script)
   const char *sample_language;
   
   g_return_val_if_fail (script >= 0, NULL);
-  g_return_val_if_fail (script < G_N_ELEMENTS (sample_languages), NULL);
+  g_return_val_if_fail ((guint)script < G_N_ELEMENTS (sample_languages), NULL);
   
   sample_language = sample_languages[script];
 

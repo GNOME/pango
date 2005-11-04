@@ -42,7 +42,7 @@ char *prog_name;
 
 gboolean opt_display = FALSE;
 int opt_dpi = 96;
-char *opt_font = MAKE_FONT_NAME (DEFAULT_FONT_FAMILY, DEFAULT_FONT_SIZE);
+const char *opt_font = MAKE_FONT_NAME (DEFAULT_FONT_FAMILY, DEFAULT_FONT_SIZE);
 gboolean opt_header = FALSE;
 char *opt_output = NULL;
 int opt_margin = 10;
@@ -74,7 +74,7 @@ fail (const char *format, ...)
   exit (1);
 }
 
-PangoFontDescription *
+static PangoFontDescription *
 get_font_description (void)
 {
   PangoFontDescription *font_description = pango_font_description_from_string (opt_font);
@@ -304,6 +304,12 @@ static void
 show_help (ArgContext *context,
 	   const char *name,
 	   const char *arg,
+	   gpointer    data) G_GNUC_NORETURN;
+
+static void
+show_help (ArgContext *context,
+	   const char *name,
+	   const char *arg,
 	   gpointer    data)
 {
   g_print ("%s - An example viewer for Pango\n"
@@ -379,42 +385,42 @@ parse_options (int argc, char *argv[])
 {
   static const ArgDesc args[] = {
     { "no-auto-dir","Don't set layout direction according to contents",
-      ARG_NOBOOL,   &opt_auto_dir },
+      ARG_NOBOOL,   &opt_auto_dir, NULL },
     { "display",    "Show output using ImageMagick",
-      ARG_BOOL,     &opt_display },
+      ARG_BOOL,     &opt_display, NULL },
     { "dpi",        "Set the dpi'",
-      ARG_INT,      &opt_dpi },
+      ARG_INT,      &opt_dpi, NULL },
     { "ellipsize",  "Ellipsization mode [=none/start/middle/end]",
       ARG_CALLBACK, NULL, parse_ellipsis },
     { "font",       "Set the font name",
-      ARG_STRING,   &opt_font },
+      ARG_STRING,   &opt_font, NULL },
     { "header",     "Display the options in the output",
-      ARG_BOOL,     &opt_header },
+      ARG_BOOL,     &opt_header, NULL },
     { "help",       "Show this output",
-      ARG_CALLBACK, NULL, show_help, },
+      ARG_CALLBACK, NULL, show_help },
     { "hinting",    "Hinting style [=none/auto/full]",
-      ARG_CALLBACK, NULL, parse_hinting, },
+      ARG_CALLBACK, NULL, parse_hinting },
     { "margin",     "Set the margin on the output in pixels",
-      ARG_INT,      &opt_margin },
+      ARG_INT,      &opt_margin, NULL },
     { "markup",     "Interpret contents as Pango markup",
-      ARG_BOOL,     &opt_markup },
+      ARG_BOOL,     &opt_markup, NULL },
     { "output",     "Name of output file",
-      ARG_STRING,   &opt_output },
+      ARG_STRING,   &opt_output, NULL },
     { "rtl",        "Set base dir to RTL",
-      ARG_BOOL,     &opt_rtl },
+      ARG_BOOL,     &opt_rtl, NULL },
     { "rotate",     "Angle at which to rotate results",
-      ARG_INT,      &opt_rotate },
+      ARG_INT,      &opt_rotate, NULL },
     { "text",       "Text to display (instead of a file)",
-      ARG_STRING,   &opt_text },
+      ARG_STRING,   &opt_text, NULL },
     { "waterfall",  "Create a waterfall display",
-      ARG_BOOL,     &opt_waterfall },
+      ARG_BOOL,     &opt_waterfall, NULL },
     { "width",      "Width in points to which to wrap output",
-      ARG_INT,      &opt_width },
+      ARG_INT,      &opt_width, NULL },
     { "indent",     "Width in points to indent paragraphs",
-      ARG_INT,      &opt_indent },
+      ARG_INT,      &opt_indent, NULL },
     { "runs",       "Render text this many times",
-      ARG_INT,      &opt_runs },
-    { NULL }
+      ARG_INT,      &opt_runs, NULL },
+    { NULL, NULL, 0, NULL, NULL }
   };
 
   ArgContext *arg_context;

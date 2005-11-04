@@ -274,7 +274,7 @@ pango_fontset_simple_finalize (GObject *object)
 {
   PangoFontsetSimple *fontset = PANGO_FONTSET_SIMPLE (object);
   PangoCoverage *coverage;
-  int i;
+  unsigned int i;
 
   for (i = 0; i < fontset->fonts->len; i++)
     g_object_unref (g_ptr_array_index(fontset->fonts, i));
@@ -352,7 +352,7 @@ pango_fontset_simple_get_font (PangoFontset  *fontset,
   PangoFont *font;
   PangoCoverage *coverage;
   int result = -1;
-  int i;
+  unsigned int i;
   
   for (i = 0; i < simple->fonts->len; i++)
     {
@@ -387,7 +387,7 @@ pango_fontset_simple_foreach (PangoFontset           *fontset,
 			      gpointer                data)
 {
   PangoFontsetSimple *simple = PANGO_FONTSET_SIMPLE (fontset);
-  int i;
+  unsigned int i;
   
   for (i = 0; i < simple->fonts->len; i++)
     {

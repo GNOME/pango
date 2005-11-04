@@ -37,7 +37,7 @@ typedef void (*TransformCallback) (PangoContext *context,
 				   PangoMatrix  *transform,
 				   gpointer      data);
 
-void fail (const char *format, ...) G_GNUC_PRINTF (1, 2);
+void fail (const char *format, ...) G_GNUC_PRINTF (1, 2) G_GNUC_NORETURN;
 
 void   parse_options      (int               argc,
 			   char             *argv[]);
@@ -47,7 +47,8 @@ void   do_output          (PangoContext     *context,
 			   gpointer          cb_data,
 			   int              *width,
 			   int              *height);
-void   finalize (void);
+void   update             (void);
+void   finalize           (void);
 void   fc_substitute_func (FcPattern        *pattern,
 			   gpointer          data);
 gchar *get_options_string (void);
@@ -56,7 +57,7 @@ extern char *prog_name;
 
 extern gboolean opt_display;
 extern int opt_dpi;
-extern char *opt_font;
+extern const char *opt_font;
 extern gboolean opt_header;
 extern char *opt_output;
 extern int opt_margin;

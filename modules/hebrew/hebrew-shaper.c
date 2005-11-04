@@ -31,6 +31,7 @@
 
 #include <glib.h>
 #include "pango-engine.h"
+#include "hebrew-shaper.h"
 
 /* Wrap all characters above 0xF00 to ALEF. */
 #define ishebrew(wc)                    ((wc)>0x590 && (wc)<0x600)

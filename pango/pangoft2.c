@@ -368,7 +368,9 @@ pango_ft2_font_real_get_unknown_glyph (PangoFcFont *font,
 }
 
 static gboolean
-pango_ft2_free_glyph_info_callback (gpointer key, gpointer value, gpointer data)
+pango_ft2_free_glyph_info_callback (gpointer key,
+				    gpointer value,
+				    gpointer data)
 {
   PangoFT2Font *font = PANGO_FT2_FONT (data);
   PangoFT2GlyphInfo *info = value;

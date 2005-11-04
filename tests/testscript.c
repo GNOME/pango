@@ -140,10 +140,11 @@ unescape (const char *text)
 }
 
 static void
-test_script_lookup ()
+test_script_lookup (void)
 {
   gunichar ch = 0;
-  int i, j;
+  unsigned int i;
+  int j;
 
   for (i = 0; i < G_N_ELEMENTS (pango_script_table); i++)
     {
@@ -185,7 +186,7 @@ test_script_iter (void)
   const char *start;
   const char *end;
   PangoScript script;
-  int i;
+  unsigned int i;
     
   for (i = 0; i < G_N_ELEMENTS(test_data); i++)
     {

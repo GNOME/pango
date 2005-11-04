@@ -243,6 +243,7 @@ pango_x_font_get_type (void)
         sizeof (PangoXFont),
         0,              /* n_preallocs */
         (GInstanceInitFunc) pango_x_font_init,
+	NULL            /* value_table */
       };
       
       object_type = g_type_register_static (PANGO_TYPE_FONT,
@@ -948,7 +949,7 @@ pango_x_font_get_font_map (PangoFont *font)
 
 /* Compare the tail of a to b */
 static gboolean
-match_end (char *a, char *b)
+match_end (const char *a, const char *b)
 {
   size_t len_a = strlen (a);
   size_t len_b = strlen (b);

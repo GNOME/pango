@@ -120,7 +120,7 @@ script_from_string (PangoScript script)
   return value->value_nick;
 }
 
-void 
+static void 
 query_module (const char *dir, const char *name)
 {
   void (*list) (PangoEngineInfo **engines, gint *n_engines);

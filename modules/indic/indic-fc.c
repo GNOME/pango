@@ -45,8 +45,8 @@ struct _PangoIndicInfo
 {
   PangoOTTag               scriptTag; 
   const IndicOTClassTable *classTable;
-  gchar                   *gsubQuarkName;
-  gchar                   *gposQuarkName;
+  const gchar             *gsubQuarkName;
+  const gchar             *gposQuarkName;
 };
 
 #define ENGINE_SUFFIX "ScriptEngineFc"
@@ -250,7 +250,13 @@ get_gpos_ruleset (FT_Face face, const PangoIndicInfo *indic_info)
 }
 
 static void
-set_glyphs (PangoFont *font, FT_Face face, const gunichar *wcs, gulong *tags, glong n_glyphs, PangoOTBuffer *buffer, gboolean process_zwj)
+set_glyphs (PangoFont      *font,
+	    FT_Face         face,
+	    const gunichar *wcs,
+	    gulong         *tags,
+	    glong           n_glyphs,
+	    PangoOTBuffer  *buffer,
+	    gboolean        process_zwj)
 {
   gint i;
 
@@ -416,7 +422,7 @@ PANGO_MODULE_ENTRY(list) (PangoEngineInfo **engines,
 PangoEngine *
 PANGO_MODULE_ENTRY(create) (const char *id)
 {
-  gint i;
+  guint i;
 
   for (i = 0; i < G_N_ELEMENTS(script_engines); i += 1)
     {

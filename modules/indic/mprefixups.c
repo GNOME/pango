@@ -64,8 +64,8 @@ void indic_mprefixups_apply(MPreFixups *mprefixups, PangoOTBuffer *buffer)
     glong fixup;
 
     for (fixup = 0; fixup < mprefixups->fFixupCount; fixup += 1) {
-	glong baseIndex = mprefixups->fFixupData[fixup].fBaseIndex;
-	glong mpreIndex = mprefixups->fFixupData[fixup].fMPreIndex;
+	gulong baseIndex = mprefixups->fFixupData[fixup].fBaseIndex;
+	gulong mpreIndex = mprefixups->fFixupData[fixup].fMPreIndex;
 	glong baseGlyph = -1;
 	glong mpreGlyph = -1;
 	glong mpreLimit = -1;

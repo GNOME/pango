@@ -30,7 +30,7 @@ typedef struct _ColorSpec {
   guint16 blue;
 } ColorSpec;
 
-gboolean test_color (ColorSpec *spec)
+static gboolean test_color (ColorSpec *spec)
 {
   PangoColor color;
   gboolean accepted;
@@ -63,19 +63,19 @@ ColorSpec specs [] = {
   { "#000000000",    1, 0x0000, 0x0000, 0x0000 },
   { "#000000000000", 1, 0x0000, 0x0000, 0x0000 },
   { "#AAAABBBBCCCC", 1, 0xaaaa, 0xbbbb, 0xcccc },
-  { "#aa bb cc ",    0 },
-  { "#aa bb ccc",    0 },
-  { "#ab",           0 },
-  { "#aabb",         0 },
-  { "#aaabb",        0 },
-  { "aaabb",         0 },
-  { "",              0 },
-  { "#",             0 },
-  { "##fff",         0 },
-  { "#0000ff+",      0 },
-  { "#0000f+",       0 },
-  { "#0x00x10x2",    0 },
-  { NULL,            0 }
+  { "#aa bb cc ",    0, 0, 0, 0 },
+  { "#aa bb ccc",    0, 0, 0, 0 },
+  { "#ab",           0, 0, 0, 0 },
+  { "#aabb",         0, 0, 0, 0 },
+  { "#aaabb",        0, 0, 0, 0 },
+  { "aaabb",         0, 0, 0, 0 },
+  { "",              0, 0, 0, 0 },
+  { "#",             0, 0, 0, 0 },
+  { "##fff",         0, 0, 0, 0 },
+  { "#0000ff+",      0, 0, 0, 0 },
+  { "#0000f+",       0, 0, 0, 0 },
+  { "#0x00x10x2",    0, 0, 0, 0 },
+  { NULL,            0, 0, 0, 0 }
 };
 
 int 
@@ -83,7 +83,6 @@ main (int argc, char *argv[])
 {
   gboolean success;
   ColorSpec *spec;
-  gchar *blob;
 
   success = TRUE;
   for (spec = specs; spec->spec; spec++)
@@ -91,7 +90,3 @@ main (int argc, char *argv[])
 
   return !success;
 }
-
-
-
-

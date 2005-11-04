@@ -208,7 +208,7 @@ pango_coverage_set (PangoCoverage     *coverage,
   
   g_return_if_fail (coverage != NULL);
   g_return_if_fail (index >= 0);
-  g_return_if_fail (level >= 0 || level <= 3);
+  g_return_if_fail (level >= 0 && level <= 3);
 
   block_index = index / 256;
 

@@ -300,6 +300,7 @@ add_underline (PangoRenderer    *renderer,
   new_rect.x = base_x + ink_rect->x;
   new_rect.width = ink_rect->width;
   new_rect.height = underline_thickness;
+  new_rect.y = base_y;
   
   switch (renderer->underline)
     {
@@ -309,10 +310,10 @@ add_underline (PangoRenderer    *renderer,
     case PANGO_UNDERLINE_SINGLE:
     case PANGO_UNDERLINE_DOUBLE:
     case PANGO_UNDERLINE_ERROR:
-      new_rect.y = base_y - underline_position;
+      new_rect.y -= underline_position;
       break;
     case PANGO_UNDERLINE_LOW:
-      new_rect.y = base_y + ink_rect->y + ink_rect->height + underline_thickness;
+      new_rect.y += ink_rect->y + ink_rect->height + underline_thickness;
       break;
     }
   

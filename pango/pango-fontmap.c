@@ -111,7 +111,7 @@ pango_font_map_fontset_add_fonts (PangoFontMap          *fontmap,
 				  PangoContext          *context,
 				  PangoFontsetSimple    *fonts,
 				  PangoFontDescription  *desc,
-				  char                  *family)
+				  const char            *family)
 {
   char **aliases;
   int n_aliases;

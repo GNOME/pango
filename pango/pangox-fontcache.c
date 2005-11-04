@@ -52,7 +52,9 @@ struct _CacheEntry
 };
 
 static void
-free_cache_entry (char *xlfd, CacheEntry *entry, PangoXFontCache *cache)
+free_cache_entry (char            *xlfd,
+		  CacheEntry      *entry,
+		  PangoXFontCache *cache)
 {
   g_free (entry->xlfd);
   XFreeFont (cache->display, entry->fs);

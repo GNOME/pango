@@ -24,12 +24,6 @@
 G_DEFINE_ABSTRACT_TYPE (PangoFcDecoder, pango_fc_decoder, G_TYPE_OBJECT)
 
 static void
-pango_fc_decoder_init (PangoFcDecoder *decoder);
-
-static void
-pango_fc_decoder_class_init (PangoFcDecoderClass *klass);
-
-static void
 pango_fc_decoder_init (PangoFcDecoder *decoder)
 {
 }

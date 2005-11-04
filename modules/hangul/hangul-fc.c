@@ -312,7 +312,7 @@ hangul_engine_shape (PangoEngineShape *engine,
   const char *p, *start;
 
   gunichar jamos_static[8];
-  guint max_jamos = G_N_ELEMENTS (jamos_static);
+  gint max_jamos = G_N_ELEMENTS (jamos_static);
   gunichar *jamos = jamos_static;
   int n_jamos;
 

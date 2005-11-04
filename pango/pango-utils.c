@@ -421,7 +421,7 @@ pango_scan_string (const char **pos, GString *out)
 gboolean
 pango_scan_int (const char **pos, int *out)
 {
-  int i = 0;
+  unsigned int i = 0;
   char buf[32];
   const char *p = *pos;
 
@@ -1204,6 +1204,7 @@ pango_language_copy (PangoLanguage *language)
 {
   return language; /* language tags are const */
 }
+
 static void
 pango_language_free (PangoLanguage *language)
 {

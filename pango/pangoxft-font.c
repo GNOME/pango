@@ -358,7 +358,7 @@ load_fallback_font (PangoXftFont *xfont)
   _pango_xft_font_map_get_info (fcfont->fontmap, &display, &screen);
   
   size_is_absolute = pango_font_description_get_size_is_absolute (fcfont->description);
-  size = (double)pango_font_description_get_size (fcfont->description) / PANGO_SCALE;
+  size = pango_font_description_get_size (fcfont->description) / PANGO_SCALE;
       
   xft_font = XftFontOpen (display,  screen,
                           FC_FAMILY, FcTypeString, "sans",

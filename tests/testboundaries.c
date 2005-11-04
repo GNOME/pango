@@ -66,9 +66,8 @@ static gunichar current_wc = 0;
 static const char *line_start = NULL;
 static const char *line_end = NULL;
 
-static void
-fail (const char *format,
-      ...)
+static void fail (const char *format, ...) G_GNUC_PRINTF (1, 2) G_GNUC_NORETURN;
+static void fail (const char *format, ...)
 {
   char *str;
   char *line_text;
@@ -275,6 +274,8 @@ check_grapheme_invariants (const char   *text,
 
 }
 
+static void print_sentences (const char   *text,
+                             PangoLogAttr *attrs);
 static void
 print_sentences (const char   *text,
                  PangoLogAttr *attrs)
@@ -333,12 +334,11 @@ check_invariants (const char *text)
 }
 
 int
-main (int    argc,
-      char **argv)
+main (int argc, char *argv[]) 
 {
   gchar *text;
-  gchar *srcdir;
-  gchar *filename;
+  const gchar *srcdir;
+  const gchar *filename;
 
   srcdir = getenv ("srcdir");
   if (!srcdir)

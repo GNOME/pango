@@ -172,7 +172,7 @@ pango_module_load (GTypeModule *module)
       pango_module->library = g_module_open (pango_module->path, G_MODULE_BIND_LAZY);
       if (!pango_module->library)
 	{
-	  g_warning (g_module_error());
+	  g_warning ("%s", g_module_error());
 	  return FALSE;
 	}
       
@@ -186,7 +186,7 @@ pango_module_load (GTypeModule *module)
 	  !g_module_symbol (pango_module->library, "script_engine_create", 
 			    (gpointer *)&pango_module->create))
 	{
-	  g_warning (g_module_error());
+	  g_warning ("%s", g_module_error());
 	  g_module_close (pango_module->library);
 	  
 	  return FALSE;
@@ -545,7 +545,7 @@ map_add_engine (PangoMapInfo    *info,
 	}
 
       script = pair->info.scripts[i].script;
-      if (script >= map->entries->len)
+      if ((guint)script >= map->entries->len)
 	g_array_set_size (map->entries, script + 1);
 
       entry = &g_array_index (map->entries, PangoMapEntry, script);
@@ -635,7 +635,7 @@ pango_map_get_engine (PangoMap   *map,
   PangoMapEntry *entry = NULL;
   PangoMapEntry *common_entry = NULL;
   
-  if (script < map->entries->len)
+  if ((guint)script < map->entries->len)
     entry = &g_array_index (map->entries, PangoMapEntry, script);
 
   if (PANGO_SCRIPT_COMMON < map->entries->len)
@@ -692,7 +692,7 @@ pango_map_get_engines (PangoMap     *map,
   PangoMapEntry *entry = NULL;
   PangoMapEntry *common_entry = NULL;
   
-  if (script < map->entries->len)
+  if ((guint)script < map->entries->len)
     entry = &g_array_index (map->entries, PangoMapEntry, script);
 
   if (PANGO_SCRIPT_COMMON < map->entries->len)

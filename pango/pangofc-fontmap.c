@@ -1836,6 +1836,7 @@ pango_fc_face_get_type (void)
         sizeof (PangoFcFace),
         0,              /* n_preallocs */
         (GInstanceInitFunc) NULL,
+	NULL            /* value_table */
       };
       
       object_type = g_type_register_static (PANGO_TYPE_FONT_FACE,
@@ -1963,6 +1964,7 @@ pango_fc_family_get_type (void)
         sizeof (PangoFcFamily),
         0,              /* n_preallocs */
         (GInstanceInitFunc) pango_fc_family_init,
+	NULL            /* value_table */
       };
       
       object_type = g_type_register_static (PANGO_TYPE_FONT_FAMILY,

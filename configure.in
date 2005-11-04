@@ -636,7 +636,7 @@ done
 IFS="$pango_save_ifs"
 
 cat >> pango/module-defs-x.c <<EOTEXT
- { NULL, NULL, NULL },
+ { NULL, NULL, NULL, NULL },
 };
 EOTEXT
 ])
@@ -665,7 +665,7 @@ done
 IFS="$pango_save_ifs"
 
 cat >> pango/module-defs-fc.c <<EOTEXT
- { NULL, NULL, NULL },
+ { NULL, NULL, NULL, NULL },
 };
 EOTEXT
 ])
@@ -694,7 +694,7 @@ done
 IFS="$pango_save_ifs"
 
 cat >> pango/module-defs-win32.c <<EOTEXT
- { NULL, NULL, NULL },
+ { NULL, NULL, NULL, NULL },
 };
 EOTEXT
 ])

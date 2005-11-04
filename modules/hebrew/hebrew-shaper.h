@@ -23,7 +23,7 @@
 #ifndef HEBREW_SHAPER_H
 #define HEBREW_SHAPER_H
 
-char *
+const char *
 hebrew_shaper_get_next_cluster(const char	*text,
 			       gint		length,
 			       gunichar       *cluster,

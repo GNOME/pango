@@ -39,6 +39,7 @@ pango_cairo_font_get_type (void)
 	NULL,		/* class_data */
 	0,
 	0,
+	NULL,
 	NULL
       };
 

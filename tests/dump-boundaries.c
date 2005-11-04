@@ -28,9 +28,8 @@
 
 #define CHFORMAT "%0#6x"
 
-static void
-fail (const char *format,
-      ...)
+static void fail (const char *format, ...) G_GNUC_PRINTF (1, 2) G_GNUC_NORETURN;
+static void fail (const char *format, ...)
 {
   char *str;
   

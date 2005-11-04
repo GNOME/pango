@@ -34,6 +34,7 @@
 
 #undef VERBOSE
 
+static void verbose (const char *format, ...) G_GNUC_PRINTF (1, 2);
 static void
 verbose (const char *format, ...)
 {
@@ -53,7 +54,7 @@ verbose (const char *format, ...)
  * I think the iterator itself should support \r\n without trouble,
  * but there are comments in layout-iter.c suggesting otherwise.
  */
-char *test_texts[] =
+const char *test_texts[] =
   {
     /* English with embedded RTL runs (from ancient-hebrew.org) */
     "The Hebrew word \xd7\x90\xd7\x93\xd7\x9d\xd7\x94 (adamah) is the feminine form of \xd7\x90\xd7\x93\xd7\x9d meaning \"ground\"\n",
@@ -72,7 +73,7 @@ char *test_texts[] =
     NULL
   };
 
-void
+static void
 iter_char_test (PangoLayout *layout)
 {
   PangoRectangle   extents, run_extents;
@@ -157,7 +158,7 @@ iter_char_test (PangoLayout *layout)
  *  - Total num of iterations match number of chars
  *  - GlyphString's index_to_x positions match those returned by the Iter
  */
-void
+static void
 iter_cluster_test (PangoLayout *layout)
 {
   PangoRectangle   extents;
@@ -212,7 +213,7 @@ iter_cluster_test (PangoLayout *layout)
 int
 main (int argc, char *argv[])
 {
-  char        **ptext;
+  const char  **ptext;
   PangoFontMap *fontmap;
   PangoContext *context;
   PangoLayout  *layout;
@@ -227,8 +228,8 @@ main (int argc, char *argv[])
     {
       verbose ("--------- checking next text ----------\n");
       verbose (" <%s>\n", *ptext);
-      verbose ( "len=%d, bytes=%d\n",
-		g_utf8_strlen (*ptext, -1), strlen (*ptext));
+      verbose ( "len=%ld, bytes=%ld\n",
+		(long)g_utf8_strlen (*ptext, -1), (long)strlen (*ptext));
 
       pango_layout_set_text (layout, *ptext, -1);
       iter_char_test (layout);

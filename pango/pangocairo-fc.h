@@ -49,6 +49,7 @@ PangoFcFont *_pango_cairo_fc_font_new (PangoCairoFcFontMap        *cffontmap,
 				       PangoContext               *context,
 				       const PangoFontDescription *desc,
 				       FcPattern	          *pattern);
+FT_Library   _pango_cairo_fc_font_map_get_library (PangoCairoFcFontMap *fontmap);
 
 G_END_DECLS
 

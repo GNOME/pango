@@ -161,7 +161,11 @@ swap_range (PangoGlyphString *glyphs, int start, int end)
 }
 
 static void
-set_glyph (PangoFont *font, PangoGlyphString *glyphs, int i, int offset, PangoGlyph glyph)
+set_glyph (PangoFont        *font,
+	   PangoGlyphString *glyphs,
+	   int               i,
+	   int               offset,
+	   PangoGlyph        glyph)
 {
   glyphs->glyphs[i].glyph = glyph;
   glyphs->log_clusters[i] = offset;

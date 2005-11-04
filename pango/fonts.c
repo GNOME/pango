@@ -867,7 +867,7 @@ parse_size (const char *word,
   char *end;
   double size = g_ascii_strtod (word, &end);
 
-  if (end - word == wordlen) /* word is a valid float */
+  if ((size_t)(end - word) == wordlen) /* word is a valid float */
     {
       if (pango_size)
 	*pango_size = (int)(size * PANGO_SCALE + 0.5);

@@ -51,8 +51,8 @@ typedef PangoGlyph (*ConvFunc) (CharCache   *cache,
 struct _Charset
 {
   int   index;
-  char *id;
-  char *x_charset;
+  const char *id;
+  const char *x_charset;
   ConvFunc conv_func;
 };
 
@@ -214,7 +214,7 @@ find_char (CharCache *cache, PangoFont *font, gunichar wc, const char *input)
     mask_table = cache->mask_tables[mask_index];
   else
     {
-      char *charset_names[G_N_ELEMENTS(charsets)];
+      const char *charset_names[G_N_ELEMENTS(charsets)];
       Charset *charsets_map[G_N_ELEMENTS(charsets)];
       guint mask;
       int n_charsets = 0;
@@ -227,7 +227,7 @@ find_char (CharCache *cache, PangoFont *font, gunichar wc, const char *input)
       /* Find the character sets that are included in this mask
        */
 
-      for (i=0; i<G_N_ELEMENTS(charsets); i++)
+      for (i=0; i<(int)G_N_ELEMENTS(charsets); i++)
 	{
 	  int charset_index = cache->ordering->charsets[i];
 	  
@@ -240,7 +240,7 @@ find_char (CharCache *cache, PangoFont *font, gunichar wc, const char *input)
 	    }
 	}
       
-      mask_table->n_subfonts = pango_x_list_subfonts (font, charset_names, n_charsets, &mask_table->subfonts, &subfont_charsets);
+      mask_table->n_subfonts = pango_x_list_subfonts (font, (char**)charset_names, n_charsets, &mask_table->subfonts, &subfont_charsets);
 
       mask_table->charsets = g_new (Charset *, mask_table->n_subfonts);
       for (i=0; i<mask_table->n_subfonts; i++)
@@ -371,8 +371,8 @@ conv_16bit (CharCache  *cache,
 
 static PangoGlyph
 conv_16bit_MSB_on (CharCache  *cache,
-	    GIConv      cd,
-	    const char *input)
+	           GIConv      cd,
+	           const char *input)
 {
   char outbuf[2];
 
@@ -490,7 +490,7 @@ ordering_for_lang (PangoLanguage *lang)
 {
   int i;
 
-  for (i = 0; i < G_N_ELEMENTS (charset_orderings) - 1; i++)
+  for (i = 0; i < (int)G_N_ELEMENTS (charset_orderings) - 1; i++)
     {
       if (pango_language_matches (lang, charset_orderings[i].langs))
 	return &charset_orderings[i];
