@@ -23,6 +23,9 @@
 #include "pango-modules.h"
 #include <string.h>
 
+#define PARAGRAPH_SEPARATOR 0x2029
+#define PARAGRAPH_SEPARATOR_STRING "\xE2\x80\xA9"
+  
 /* See http://www.unicode.org/unicode/reports/tr14/ if you hope
  * to understand the line breaking code.
  */
@@ -38,6 +41,7 @@ typedef enum
    * but we handle that inline in the code.
    */
 } BreakOpportunity;
+
 
 enum
 {
@@ -77,7 +81,12 @@ enum
   INDEX_COMPLEX_CONTEXT,
   INDEX_AMBIGUOUS,
   INDEX_UNKNOWN,
-  INDEX_NEXT_LINE
+  INDEX_NEXT_LINE,
+  INDEX_HANGUL_L_JAMO,
+  INDEX_HANGUL_V_JAMO,
+  INDEX_HANGUL_T_JAMO,
+  INDEX_HANGUL_LV_SYLLABLE,
+  INDEX_HANGUL_LVT_SYLLABLE,
 };
 
 static const BreakOpportunity row_OPEN_PUNCTUATION[INDEX_END_OF_TABLE] = {
@@ -325,7 +334,12 @@ static const int line_break_indexes[] = {
   INDEX_AMBIGUOUS,
   INDEX_UNKNOWN,
   INDEX_NEXT_LINE,
-  INDEX_WORD_JOINER
+  INDEX_WORD_JOINER,
+  INDEX_HANGUL_L_JAMO,
+  INDEX_HANGUL_V_JAMO,
+  INDEX_HANGUL_T_JAMO,
+  INDEX_HANGUL_LV_SYLLABLE,
+  INDEX_HANGUL_LVT_SYLLABLE
 };
 
 #define BREAK_TYPE_SAFE(btype)            \
@@ -339,12 +353,71 @@ static const int line_break_indexes[] = {
 #define IN_BREAK_TABLE(btype)             \
          (btype < G_N_ELEMENTS(line_break_indexes) && BREAK_INDEX(btype) < INDEX_END_OF_TABLE)
 
-/* Keep these in sync with the same macros in the test program */
 
-#define LEADING_JAMO(wc)  ((wc) >= 0x1100 && (wc) <= 0x115F)
-#define VOWEL_JAMO(wc)    ((wc) >= 0x1160 && (wc) <= 0x11A2)
-#define TRAILING_JAMO(wc) ((wc) >= 0x11A8 && (wc) <= 0x11F9)
-#define JAMO(wc)          ((wc) >= 0x1100 && (wc) <= 0x11FF)
+
+/*
+ * Hangul Conjoining Jamo handling.
+ *
+ * The way we implement it is just a bit different from TR14,
+ * but produces the same results.
+ * The same algorithm is also used in TR29 for cluster boundaries.
+ *
+ */
+
+
+/* An enum that works as the states of the Hangul syllables system.
+ **/
+typedef enum
+{
+  JAMO_L,	/* G_UNICODE_BREAK_HANGUL_L_JAMO */
+  JAMO_V,	/* G_UNICODE_BREAK_HANGUL_V_JAMO */
+  JAMO_T,	/* G_UNICODE_BREAK_HANGUL_T_JAMO */
+  JAMO_LV,	/* G_UNICODE_BREAK_HANGUL_LV_SYLLABLE */
+  JAMO_LVT,	/* G_UNICODE_BREAK_HANGUL_LVT_SYLLABLE */
+  NO_JAMO	/* Other */
+} JamoType;
+
+/* There are Hangul syllables encoded as characters, that act like a
+ * sequence of Jamos. For each character we define a JamoType
+ * that the character starts with, and one that it ends with.  This
+ * decomposes JAMO_LV and JAMO_LVT to simple other JAMOs.  So for
+ * example, a character with LineBreak type
+ * G_UNICODE_BREAK_HANGUL_LV_SYLLABLE has start=JAMO_L and end=JAMO_V.
+ */
+typedef struct _CharJamoProps
+{
+  JamoType start, end;
+} CharJamoProps;
+
+/* Map from JamoType to CharJamoProps that hold only simple
+ * JamoTypes (no LV or LVT) or none.
+ */
+const CharJamoProps HangulJamoProps[] = {
+  {JAMO_L, JAMO_L},	/* JAMO_L */
+  {JAMO_V, JAMO_V},	/* JAMO_V */
+  {JAMO_T, JAMO_T},	/* JAMO_T */
+  {JAMO_L, JAMO_V},	/* JAMO_LV */
+  {JAMO_L, JAMO_T},	/* JAMO_LVT */
+  {NO_JAMO, NO_JAMO}	/* NO_JAMO */
+};
+
+/* A character forms a syllable with the previous character if and only if:
+ * JamoType(this) is not NO_JAMO and:
+ *
+ * HangulJamoProps[JamoType(prev)].end and
+ * HangulJamoProps[JamoType(this)].start are equal,
+ * or the former is one less than the latter.
+ */
+
+#define IS_JAMO(btype)              \
+	((btype >= G_UNICODE_BREAK_HANGUL_L_JAMO) && \
+	 (btype <= G_UNICODE_BREAK_HANGUL_LVT_SYLLABLE))
+#define JAMO_TYPE(btype)      \
+	(IS_JAMO(btype) ? (btype - G_UNICODE_BREAK_HANGUL_L_JAMO) : NO_JAMO)
+
+
+
+
 /* "virama script" is just an optimization; it includes a bunch of
  * scripts without viramas in them
  */
@@ -447,15 +520,21 @@ pango_default_break (const gchar   *text,
 
   const gchar *next;
   gint i;
+
   gunichar prev_wc;
   gunichar next_wc;
+
+  JamoType prev_jamo;
+
   GUnicodeBreakType next_break_type;
   GUnicodeType prev_type;
   GUnicodeBreakType prev_break_type; /* skips spaces */
   gboolean prev_was_break_space;
+
   WordType current_word_type = WordNone;
   gunichar last_word_letter = 0;
   gunichar base_character = 0;
+
   SentenceState sentence_state = STATE_SENTENCE_OUTSIDE;
   /* Tracks what will be the end of the sentence if a period is
    * determined to actually be a sentence-ending period.
@@ -483,6 +562,7 @@ pango_default_break (const gchar   *text,
   prev_break_type = G_UNICODE_BREAK_UNKNOWN;
   prev_was_break_space = FALSE;
   prev_wc = 0;
+  prev_jamo = NO_JAMO;
 
   if (n_chars)
     {
@@ -490,7 +570,7 @@ pango_default_break (const gchar   *text,
       g_assert (next_wc != 0);
     }
   else
-    next_wc = '\n';
+    next_wc = PARAGRAPH_SEPARATOR;
 
   next_break_type = g_unichar_break_type (next_wc);
   next_break_type = BREAK_TYPE_SAFE (next_break_type);
@@ -501,6 +581,8 @@ pango_default_break (const gchar   *text,
       gunichar wc;
       GUnicodeBreakType break_type;
       BreakOpportunity break_op;
+      JamoType jamo;
+      gboolean makes_hangul_syllable;
 
       wc = next_wc;
       break_type = next_break_type;
@@ -521,9 +603,10 @@ pango_default_break (const gchar   *text,
           if (i == n_chars - 1)
             {
               /* This is how we fill in the last element (end position) of the
-               * attr array - assume there's a newline off the end of @text.
+               * attr array - assume there's a paragraph separators off the end
+	       * of @text.
                */
-              next_wc = '\n';
+	      next_wc = PARAGRAPH_SEPARATOR;
             }
           else
             {
@@ -536,6 +619,19 @@ pango_default_break (const gchar   *text,
         }
 
       type = g_unichar_type (wc);
+      jamo = JAMO_TYPE (break_type);
+
+      /* Determine wheter this forms a Hangul syllable with prev. */
+      if (jamo == NO_JAMO)
+        makes_hangul_syllable = FALSE;
+      else
+	{
+	  JamoType prev_end   = HangulJamoProps[prev_jamo].end  ;
+	  JamoType this_start = HangulJamoProps[     jamo].start;
+	  
+	  /* See comments before IS_JAMO */
+	  makes_hangul_syllable = (prev_end == this_start) || (prev_end + 1 == this_start);
+	}
 
       /* Can't just use the type here since isspace() doesn't
        * correspond to a Unicode character type
@@ -599,37 +695,21 @@ pango_default_break (const gchar   *text,
             case G_UNICODE_OTHER_LETTER:
             case G_UNICODE_TITLECASE_LETTER:
             case G_UNICODE_UPPERCASE_LETTER:
-              if (JAMO (wc))
-                {
-                  /* Break before Jamo if they are in a broken sequence or
-                   * next to non-Jamo, otherwise don't
-                   */
-                  if (LEADING_JAMO (wc) &&
-                      !LEADING_JAMO (prev_wc))
-                    attrs[i].is_cursor_position = TRUE;
-                  else if (VOWEL_JAMO (wc) &&
-                           !LEADING_JAMO (prev_wc) &&
-                           !VOWEL_JAMO (prev_wc))
-                    attrs[i].is_cursor_position = TRUE;
-                  else if (TRAILING_JAMO (wc) &&
-                           !LEADING_JAMO (prev_wc) &&
-                           !VOWEL_JAMO (prev_wc) &&
-                           !TRAILING_JAMO (prev_wc))
-                    attrs[i].is_cursor_position = TRUE;
-                  else
-                    attrs[i].is_cursor_position = FALSE;
-                }
+
+	      if (makes_hangul_syllable)
+                attrs[i].is_cursor_position = FALSE;
               else
                 {
-                  /* Handle non-Jamo non-combining chars */
+                  /* Handle non-Hangul-syllable non-combining chars */
 
-                  /* Break if preceded by Jamo; don't break if a
-                   * letter is preceded by a virama; break in all
-                   * other cases. No need to check whether we're
+                  /* Break before Jamo if they are in a broken sequence or
+                   * next to non-Jamo; break if preceded by Jamo; don't
+		   * break if a letter is preceded by a virama; break in
+		   * all other cases. No need to check whether we are or are
                    * preceded by Jamo explicitly, since a Jamo is not
                    * a virama, we just break in all cases where we
-                   * aren't preceded by a virama. Don't fool with viramas
-                   * if we aren't part of a script that uses them.
+                   * aren't a or preceded by a virama.  Don't fool with
+		   * viramas if we aren't part of a script that uses them.
                    */
 
                   if (VIRAMA_SCRIPT (wc))
@@ -689,6 +769,38 @@ pango_default_break (const gchar   *text,
            */
           attrs[i].is_char_break = TRUE;          
           
+	  /* Make any necessary replacements first */
+          switch (prev_break_type)
+            {
+	    case G_UNICODE_BREAK_HANGUL_L_JAMO:
+	    case G_UNICODE_BREAK_HANGUL_V_JAMO:
+	    case G_UNICODE_BREAK_HANGUL_T_JAMO:
+	    case G_UNICODE_BREAK_HANGUL_LV_SYLLABLE:
+	    case G_UNICODE_BREAK_HANGUL_LVT_SYLLABLE:
+	      /* treat Jamo as IDEOGRAPHIC from now
+	       */
+	      prev_break_type = G_UNICODE_BREAK_IDEOGRAPHIC;
+	      break;
+
+            case G_UNICODE_BREAK_AMBIGUOUS:
+	      /* FIXME
+               * we need to resolve the East Asian width
+               * to decide what to do here
+	       */
+            case G_UNICODE_BREAK_COMPLEX_CONTEXT:
+	      /* FIXME
+               * language engines should handle this case...
+	       */
+            case G_UNICODE_BREAK_UNKNOWN:
+	      /* convert unknown, complex, ambiguous to ALPHABETIC
+	       */
+	      prev_break_type = G_UNICODE_BREAK_ALPHABETIC;
+	      break;
+
+	    default:
+	      ;
+	    }
+
           switch (prev_break_type)
             {
             case G_UNICODE_BREAK_MANDATORY:
@@ -719,20 +831,8 @@ pango_default_break (const gchar   *text,
 	      g_assert_not_reached ();
               break;
 
-            case G_UNICODE_BREAK_AMBIGUOUS:
-              /* FIXME we need to resolve the East Asian width
-               * to decide what to do here
-               */
-            case G_UNICODE_BREAK_COMPLEX_CONTEXT:
-              /* FIXME language engines should handle this case... */
-            case G_UNICODE_BREAK_UNKNOWN:
-              /* treat unknown, complex, ambiguous as if they were
-               * alphabetic for now.
-               */
-              prev_break_type = G_UNICODE_BREAK_ALPHABETIC;
-              /* FALL THRU to use the pair table if appropriate */
-
             default:
+              g_assert (IN_BREAK_TABLE (prev_break_type));
 
               /* Note that our table assumes that combining marks
                * are only applied to alphabetic characters;
@@ -742,8 +842,6 @@ pango_default_break (const gchar   *text,
                * away since we only look for breaks on grapheme
                * boundaries.
                */
-
-              g_assert (IN_BREAK_TABLE (prev_break_type));
 
               switch (break_type)
                 {
@@ -765,23 +863,45 @@ pango_default_break (const gchar   *text,
                   break_op = BREAK_ALLOWED;
                   break;
 
-                case G_UNICODE_BREAK_AMBIGUOUS:
-                  /* FIXME resolve East Asian width to figure out what to do */
-                case G_UNICODE_BREAK_COMPLEX_CONTEXT:
-                  /* FIXME language engine analysis */
-                case G_UNICODE_BREAK_UNKNOWN:
-                case G_UNICODE_BREAK_ALPHABETIC:
-                  /* treat all of the above as alphabetic for now */
-                  break_op = BREAK_OP (prev_break_type, G_UNICODE_BREAK_ALPHABETIC);
-                  break;
-
                 case G_UNICODE_BREAK_SURROGATE:
 		  g_assert_not_reached ();
                   break;
 
-                default:
-                  g_assert (IN_BREAK_TABLE (prev_break_type));
-                  g_assert (IN_BREAK_TABLE (break_type));
+		/* Hangul additions are from Unicode 4.1 UAX#14 */
+		case G_UNICODE_BREAK_HANGUL_L_JAMO:
+		case G_UNICODE_BREAK_HANGUL_V_JAMO:
+		case G_UNICODE_BREAK_HANGUL_T_JAMO:
+		case G_UNICODE_BREAK_HANGUL_LV_SYLLABLE:
+		case G_UNICODE_BREAK_HANGUL_LVT_SYLLABLE:
+                  /* treat Jamo as IDEOGRAPHIC from now
+		   */
+                  break_type = G_UNICODE_BREAK_IDEOGRAPHIC;
+
+		  if (makes_hangul_syllable)
+		    break_op = BREAK_IF_SPACES;
+		  else
+		    break_op = BREAK_ALLOWED;
+		  break;
+
+		case G_UNICODE_BREAK_AMBIGUOUS:
+		  /* FIXME:
+		   * we need to resolve the East Asian width
+		   * to decide what to do here
+		   */
+		case G_UNICODE_BREAK_COMPLEX_CONTEXT:
+		  /* FIXME:
+		   * language engines should handle this case...
+		   */
+		case G_UNICODE_BREAK_UNKNOWN:
+	          /* treat unknown, complex, and ambiguous like ALPHABETIC
+		   * for now
+	           */
+                  break_op = BREAK_OP (prev_break_type, G_UNICODE_BREAK_ALPHABETIC);
+                  break;
+
+		default:
+
+		  g_assert (IN_BREAK_TABLE (break_type));
                   break_op = BREAK_OP (prev_break_type, break_type);
                   break;
                 }
@@ -818,6 +938,7 @@ pango_default_break (const gchar   *text,
         {
           prev_break_type = break_type;
           prev_was_break_space = FALSE;
+	  prev_jamo = jamo;
         }
       else
         prev_was_break_space = TRUE;
@@ -1427,9 +1548,6 @@ pango_find_paragraph_boundary (const gchar *text,
   gchar prev_sep;
 
 
-#define PARAGRAPH_SEPARATOR 0x2029
-#define PARAGRAPH_SEPARATOR_STRING "\xE2\x80\xA9"
-  
   if (length < 0)
     length = strlen (text);
 

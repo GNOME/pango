@@ -1,5 +1,13 @@
 2005-11-04  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango/break.c: Update to handle new line-breaking types in the
+	Unicode 4.1 UAX#14. (#313907)
+
+	* configure.in: Bump required glib version to 2.9.0.  Needed for
+	above-mentioned line-breaking types.
+
+2005-11-04  Behdad Esfahbod  <behdad@gnome.org>
+
 	* configure.in, examples/argcontext.c examples/cairoview.c,
 	examples/renderdemo.c, examples/renderdemo.h examples/xftview.c,
 	modules/basic/basic-x.c, modules/hangul/hangul-fc.c,
