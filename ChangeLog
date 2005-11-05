@@ -1,5 +1,12 @@
 2005-11-04  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango-config.in, pango.spec.in: Removed. Not used for a long time,
+	and were out of date.
+
+	* .cvsignore: Remove pango-config and pango.spec.
+
+2005-11-04  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/break.c: Update to handle new line-breaking types in the
 	Unicode 4.1 UAX#14. (#313907)
 
