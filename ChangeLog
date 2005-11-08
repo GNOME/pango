@@ -1,3 +1,53 @@
+2005-11-07  Federico Mena Quintero  <federico@ximian.com>
+
+	Fixes bug #320666:
+
+	Instead of doing a bsearch() for every gunichar to map it to a
+	PangoScript, use a precomputed table for the first 8192 code
+	points.  Also, remember the last script that we computed on each
+	invocation; this will also help CJK and the other scripts above
+	U+2000.
+
+	This table also holds information on whether the characters in it
+	are paired characters.  We can use this to avoid doing the
+	expensive get_pair_index() call most of the time.
+
+	Many thanks to Matthias Clasen for his suggestions for this patch.
+
+	* tools/gen-easy-scripts-table.c: New program to generate
+	pango_easy_scripts_table.
+
+	* tools/Makefile.am: Build gen-easy-scripts-table.
+
+	* pango/pango-easy-scripts-table.h: New file with a mapping of the
+	first 8192 Unicode characters to their corresponding scripts.  The
+	table also says whether each character has a paired char or not.
+
+	* pango/Makefile.am (libpango_1_0_la_SOURCES): Add pango-easy-scripts-table.h.
+
+	* pango/pango-script-table.h: Remove everything below U+2000, and
+	add a note to that effect.
+
+	* pango/pango-script.c (pango_script_for_unichar_with_last_index):
+	New function.  This is the old pango_script_for_unichar(), but it
+	lets the caller keep around the computed index in
+	pango_script_table.  This works under the assumption that a
+	character is likely to be in the same script block as the
+	preceding character in a string.
+	(pango_script_for_unichar): First, do a quick check against the
+	pango_easy_scripts_table.  Then, do the expensive check with
+	pango_script_for_unichar_with_last_index().
+	(pango_script_iter_next): If the character is within the easy
+	script range, find out if it is a paired character by using
+	PANGO_PAIRED_CHAR_FLAG.
+	(struct _PangoScriptIter): Add a last_index_for_script_lookup
+	field.  We use this to maintain the last-lookup index from
+	pango_script_for_unichar_with_last_index().
+	(pango_script_iter_next): If the character is not within the easy
+	script range, use pango_script_for_unichar_with_last_index(), and
+	store the index in the last_index_for_script_lookup field of the
+	PangoScriptIter.
+
 2005-11-04  Behdad Esfahbod  <behdad@gnome.org>
 
 	* pango-config.in, pango.spec.in: Removed. Not used for a long time,
