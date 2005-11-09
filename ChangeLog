@@ -1,3 +1,8 @@
+2005-11-09  Behdad Esfahbod  <behdad@gnome.org>
+
+	* modules/hebrew/.cvsignore, modules/khmer/.cvsignore,
+	modules/tibetan/.cvsignore: Minor clean up and adjustment.
+
 2005-11-07  Federico Mena Quintero  <federico@ximian.com>
 
 	Fixes bug #320666:
