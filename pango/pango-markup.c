@@ -601,7 +601,7 @@ pango_parse_markup (const char                 *markup_text,
   else
     md->attr_list = NULL;
 
-  md->text = g_string_new ("");
+  md->text = g_string_new (NULL);
   
   if (accel_char)
     *accel_char = 0;

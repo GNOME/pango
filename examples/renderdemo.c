@@ -111,7 +111,10 @@ make_layout(PangoContext *context,
     pango_font_description_set_size (font_description, size * PANGO_SCALE);
     
   if (opt_width > 0)
-    pango_layout_set_width (layout, (opt_width * opt_dpi * PANGO_SCALE + 32) / 72);
+    {
+      pango_layout_set_wrap (layout, PANGO_WRAP_WORD_CHAR);
+      pango_layout_set_width (layout, (opt_width * opt_dpi * PANGO_SCALE + 32) / 72);
+    }
 
   if (opt_indent != 0)
     pango_layout_set_indent (layout, (opt_indent * opt_dpi * PANGO_SCALE + 32) / 72);

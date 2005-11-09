@@ -2739,12 +2739,13 @@ insert_run (PangoLayoutLine *line,
 }
 
 /* Tries to insert as much as possible of the item at the head of
- * state->items onto @line. Three results are possible:
+ * state->items onto @line. Five results are possible:
  *
- *  BREAK_NONE_FIT: Couldn't fit anything
- *  BREAK_SOME_FIT: The item was broken in the middle
+ *  BREAK_NONE_FIT: Couldn't fit anything.
+ *  BREAK_SOME_FIT: The item was broken in the middle.
  *  BREAK_ALL_FIT: Everything fit.
  *  BREAK_EMPTY_FIT: Nothing fit, but that was ok, as we can break at the first char.
+ *  BREAK_LINE_SEPARATOR: Item begins with a line separator.
  *
  * If @force_fit is TRUE, then BREAK_NONE_FIT will never
  * be returned, a run will be added even if inserting the minimum amount
@@ -2805,17 +2806,11 @@ process_item (PangoLayout     *layout,
     {
       for (i = 0; i < state->glyphs->num_glyphs; i++)
 	width += state->glyphs->glyphs[i].geometry.width;
-      
-      /* We'll add half the letter spacing to each side of the item */
-      width += state->properties.letter_spacing;
     }
   else
     {
       for (i = 0; i < item->num_chars; i++)
 	width += state->log_widths[state->log_widths_offset + i];
-
-      /* In this case, the letter spacing width has already been
-       * added to the last element in log_widths */
     }
 
   if ((width <= state->remaining_width || (item->num_chars == 1 && !line->runs)) &&
@@ -2843,7 +2838,7 @@ process_item (PangoLayout     *layout,
 						 state->log_widths);
 
 	  /* The extra run letter spacing is actually divided after
-	   * the last and and before the first, but it works to
+	   * the last and before the first, but it works to
 	   * account it all on the last
 	   */
 	  if (item->num_chars > 0)
@@ -3097,7 +3092,7 @@ pango_layout_get_effective_attributes (PangoLayout *layout)
 {
   PangoAttrList *attrs;
   
- if (layout->attrs)
+  if (layout->attrs)
    attrs = pango_attr_list_copy (layout->attrs);
   else
     attrs = pango_attr_list_new ();

@@ -1,5 +1,20 @@
 2005-11-09  Behdad Esfahbod  <behdad@gnome.org>
 
+	* examples/renderdemo.c (make_layout): Set layout wrapping to
+	PANGO_WRAP_WORD_CHAR if width is set for the layout.  Setting width
+	didn't have any effect previously.
+
+	* pango/pango-layout.c (process_item): Remove the excess
+	letter_spacing adjustment on the item width. (#168593, Damon Chaplin)
+
+	* pango/pango-markup.c (pango_parse_markup), pango/querymodules.c:
+	Replace g_string_new ("") with g_string_new (NULL).
+
+	* pango/pangoft2.c: Use g_malloc'ed memory for unknown FreeType2
+	error, instead of static buffer.
+
+2005-11-09  Behdad Esfahbod  <behdad@gnome.org>
+
 	* modules/hebrew/.cvsignore, modules/khmer/.cvsignore,
 	modules/tibetan/.cvsignore: Minor clean up and adjustment.
 
