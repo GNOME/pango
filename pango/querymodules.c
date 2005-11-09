@@ -60,7 +60,7 @@ string_needs_escape (const char *str)
 static char *
 escape_string (const char *str)
 {
-  GString *result = g_string_new ("");
+  GString *result = g_string_new (NULL);
 
   while (TRUE)
     {
