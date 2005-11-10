@@ -1,5 +1,10 @@
 2005-11-09  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango/break.c (pango_break): Do not call strlen when length < 0.
+	Leave it to language engines to handle NULL-terminated strings.
+
+2005-11-09  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/mini-fribidi/README, pango/mini-fribidi/fribidi.patch,
 	pango/mini-fribidi/fribidi.c: Short-circuit on LTR-only or RTL-only
 	text.

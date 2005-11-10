@@ -1498,9 +1498,6 @@ pango_break (const gchar   *text,
   g_return_if_fail (analysis != NULL);
   g_return_if_fail (attrs != NULL);
   
-  if (length < 0)
-    length = strlen (text);
-
   if (analysis->lang_engine &&
       PANGO_ENGINE_LANG_GET_CLASS (analysis->lang_engine)->script_break)
     PANGO_ENGINE_LANG_GET_CLASS (analysis->lang_engine)->script_break (analysis->lang_engine, text, length, analysis, attrs, attrs_len);
