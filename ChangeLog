@@ -1,5 +1,10 @@
 2005-11-09  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango/pangocairo-fontmap.c (pango_cairo_update_context): Call
+	get_context_info after g_return_if_fail.
+
+2005-11-09  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/break.c (pango_break): Do not call strlen when length < 0.
 	Leave it to language engines to handle NULL-terminated strings.
 

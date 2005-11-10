@@ -261,13 +261,15 @@ void
 pango_cairo_update_context (cairo_t      *cr,
 			    PangoContext *context)
 {
-  PangoCairoContextInfo *info = get_context_info (context, TRUE);
+  PangoCairoContextInfo *info;
   cairo_matrix_t cairo_matrix;
   cairo_surface_t *target;
   PangoMatrix pango_matrix;
   
   g_return_if_fail (cr != NULL);
   g_return_if_fail (PANGO_IS_CONTEXT (context));
+
+  info = get_context_info (context, TRUE);
 
   cairo_get_matrix (cr, &cairo_matrix);
   pango_matrix.xx = cairo_matrix.xx;
