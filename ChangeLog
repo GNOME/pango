@@ -1,6 +1,12 @@
 2005-11-09  Behdad Esfahbod  <behdad@gnome.org>
 
-	* pango/opentype/ftxgpos.c, pango/opentype/ftxopen.c:  Remove debug
+	* pango/mini-fribidi/README, pango/mini-fribidi/fribidi.patch,
+	pango/mini-fribidi/fribidi.c: Short-circuit on LTR-only or RTL-only
+	text.
+
+2005-11-09  Behdad Esfahbod  <behdad@gnome.org>
+
+	* pango/opentype/ftxgpos.c, pango/opentype/ftxopen.c: Remove debug
 	line that got in accidentally.
 
 2005-11-09  Behdad Esfahbod  <behdad@gnome.org>

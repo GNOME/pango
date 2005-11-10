@@ -80,24 +80,29 @@ diff -rua /home/behdad/src/fdo/fribidi/fribidi.stable/fribidi.c ./fribidi.c
  #ifndef USE_SIMPLE_MALLOC
  static TypeLink *free_type_links = NULL;
  #endif
-@@ -181,12 +125,13 @@
+@@ -181,12 +125,18 @@
  	} while (0)
  
  static TypeLink *
 -run_length_encode_types (FriBidiCharType *char_type,
 -			 FriBidiStrIndex type_len)
 +run_length_encode_types_utf8 (const char *s,
-+			      int bytelen, FriBidiStrIndex *len)
++			      int bytelen,
++			      FriBidiStrIndex *len,
++			      FriBidiCharType *pored_types,
++			      FriBidiCharType *panded_strongs)
  {
    TypeLink *list, *last, *link;
 -
 +  FriBidiCharType char_type;
++  FriBidiCharType ored_types = 0;
++  FriBidiCharType anded_strongs = FRIBIDI_TYPE_RLE;
    FriBidiStrIndex i;
 +  const char *p;
  
    /* Add the starting link */
    list = new_type_link ();
-@@ -194,23 +139,30 @@
+@@ -194,23 +144,38 @@
    list->level = FRIBIDI_LEVEL_START;
    last = list;
  
@@ -108,6 +113,9 @@ diff -rua /home/behdad/src/fdo/fribidi/fribidi.stable/fribidi.c ./fribidi.c
 +  i = 0;
 +  for (p = s; p < s + bytelen; p = g_utf8_next_char(p)) {
 +    char_type = fribidi_get_type (g_utf8_get_char (p));
++    ored_types |= char_type;
++    if (FRIBIDI_IS_STRONG (char_type))
++      anded_strongs &= char_type;
 +    if (char_type != last->type)
        {
  	link = new_type_link ();
@@ -130,10 +138,62 @@ diff -rua /home/behdad/src/fdo/fribidi/fribidi.stable/fribidi.c ./fribidi.c
 +  if (len)
 +    *len = i;
 +
++  if (pored_types)
++    *pored_types = ored_types;
++  if (panded_strongs)
++    *panded_strongs = anded_strongs; 
++
    return list;
  }
  
-@@ -512,95 +464,22 @@
+@@ -418,6 +383,46 @@
+     }
+ }
+ 
++/*======================================================================
++ *  Frees up the rl_list, must be called after each call to
++ *  fribidi_analyse_string(), after the list is not needed anymore.
++ *----------------------------------------------------------------------*/
++static void
++free_rl_list (TypeLink *type_rl_list)
++{
++
++  TypeLink *pp;
++
++  DBG ("Entering free_rl_list()\n");
++
++  if (!type_rl_list)
++    {
++      DBG ("Leaving free_rl_list()\n");
++      return;
++    }
++
++#ifdef USE_SIMPLE_MALLOC
++  pp = type_rl_list;
++  while (pp)
++    {
++      TypeLink *p;
++
++      p = pp;
++      pp = pp->next;
++      free_type_link (p);
++    };
++#else
++  for (pp = type_rl_list->next; pp->next; pp = pp->next)
++    /* Nothing */ ;
++  pp->next = free_type_links;
++  free_type_links = type_rl_list;
++  type_rl_list = NULL;
++#endif
++
++  DBG ("Leaving free_rl_list()\n");
++  return;
++}
++
+ /*=========================================================================
+  * define macros for push and pop the status in to / out of the stack
+  *-------------------------------------------------------------------------*/
+@@ -512,95 +517,22 @@
  #define FRIBIDI_EMBEDDING_DIRECTION(list) \
      FRIBIDI_LEVEL_TO_DIR(RL_LEVEL(list))
  
@@ -214,10 +274,11 @@ diff -rua /home/behdad/src/fdo/fribidi/fribidi.stable/fribidi.c ./fribidi.c
  /*======================================================================
   *  This function should follow the Unicode specification closely!
   *----------------------------------------------------------------------*/
- static void
+-static void
 -fribidi_analyse_string (	/* input */
 -			 FriBidiChar *str,
 -			 FriBidiStrIndex len,
++static fribidi_boolean
 +fribidi_analyse_string_utf8 (	/* input */
 +			 const char *str,
 +			 int bytelen,
@@ -233,7 +294,7 @@ diff -rua /home/behdad/src/fdo/fribidi/fribidi.stable/fribidi.c ./fribidi.c
    TypeLink *type_rl_list, *explicits_list, *explicits_list_end, *pp;
  
    DBG ("Entering fribidi_analyse_string()\n");
-@@ -608,14 +487,8 @@
+@@ -608,14 +540,47 @@
    /* Determinate character types */
    DBG ("  Determine character types\n");
    {
@@ -241,15 +302,53 @@ diff -rua /home/behdad/src/fdo/fribidi/fribidi.stable/fribidi.c ./fribidi.c
 -      (FriBidiCharType *) malloc (len * sizeof (FriBidiCharType));
 -    for (i = 0; i < len; i++)
 -      char_type[i] = fribidi_get_type (str[i]);
--
++    FriBidiCharType ored_types;
++    FriBidiCharType anded_strongs;
+ 
      /* Run length encode the character types */
 -    type_rl_list = run_length_encode_types (char_type, len);
 -    free (char_type);
-+    type_rl_list = run_length_encode_types_utf8 (str, bytelen, len);
++    type_rl_list = run_length_encode_types_utf8 (str, bytelen, len,
++		   				 &ored_types, &anded_strongs);
++
++    /* If there's absolutely nothing with a hint of rtl, then all resolved
++     * levels will be ltr (even).  short-circuit.
++     */
++    if (!FRIBIDI_IS_RTL (*pbase_dir | ored_types))
++      {
++	/* all ltr */
++	free_rl_list (type_rl_list);
++
++	*ptype_rl_list = NULL;
++	*pmax_level = 0;
++	*pbase_dir = FRIBIDI_TYPE_LTR;
++
++	return 0;
++      }
++    /* The case that all resolved levels will be rtl is much more complex.
++     * First, there should be no numbers, all strongs be rtl, and one of
++     * the following:
++     *
++     *	o *pbase_dir has an rtl taste (may be weak).
++     *	o there are letters, and *pbase_dir is weak.
++     */
++    else if (!FRIBIDI_IS_NUMBER (ored_types) && FRIBIDI_IS_RTL (anded_strongs) &&
++	     (FRIBIDI_IS_RTL (*pbase_dir) ||
++	      (FRIBIDI_IS_WEAK (*pbase_dir) && FRIBIDI_IS_LETTER (ored_types))
++	     ))
++      {
++	free_rl_list (type_rl_list);
++
++	*ptype_rl_list = NULL;
++	*pmax_level = 1;
++	*pbase_dir = FRIBIDI_TYPE_RTL;
++
++	return 0;
++      }
    }
    DBG ("  Determine character types, Done\n");
  
-@@ -646,13 +519,6 @@
+@@ -646,13 +611,6 @@
    DBG2 ("  Base dir   : %c\n", fribidi_char_from_type (base_dir));
    DBG ("  Finding the base level, Done\n");
  
@@ -263,7 +362,7 @@ diff -rua /home/behdad/src/fdo/fribidi/fribidi.stable/fribidi.c ./fribidi.c
    /* Explicit Levels and Directions */
    DBG ("Explicit Levels and Directions\n");
    {
-@@ -752,16 +618,6 @@
+@@ -752,16 +710,6 @@
  
    compact_list (type_rl_list);
  
@@ -280,7 +379,7 @@ diff -rua /home/behdad/src/fdo/fribidi/fribidi.stable/fribidi.c ./fribidi.c
    /* 4. Resolving weak types */
    DBG ("Resolving weak types\n");
    {
-@@ -884,14 +740,6 @@
+@@ -884,14 +832,6 @@
  
    compact_neutrals (type_rl_list);
  
@@ -295,7 +394,7 @@ diff -rua /home/behdad/src/fdo/fribidi/fribidi.stable/fribidi.c ./fribidi.c
    /* 5. Resolving Neutral Types */
    DBG ("Resolving neutral types\n");
    {
-@@ -916,14 +764,6 @@
+@@ -916,14 +856,6 @@
  
    compact_list (type_rl_list);
  
@@ -310,7 +409,7 @@ diff -rua /home/behdad/src/fdo/fribidi/fribidi.stable/fribidi.c ./fribidi.c
    /* 6. Resolving implicit levels */
    DBG ("Resolving implicit levels\n");
    {
-@@ -952,15 +792,6 @@
+@@ -952,15 +884,6 @@
  
    compact_list (type_rl_list);
  
@@ -326,7 +425,7 @@ diff -rua /home/behdad/src/fdo/fribidi/fribidi.stable/fribidi.c ./fribidi.c
  /* Reinsert the explicit codes & bn's that already removed, from the
     explicits_list to type_rl_list. */
    DBG ("Reinserting explicit codes\n");
-@@ -976,30 +807,23 @@
+@@ -976,30 +899,23 @@
  	p->level = p->prev->level;
    }
  
@@ -362,7 +461,7 @@ diff -rua /home/behdad/src/fdo/fribidi/fribidi.stable/fribidi.c ./fribidi.c
  	else
  	  k = FRIBIDI_TYPE_ON;
  	if (!state && FRIBIDI_IS_SEPARATOR (k))
-@@ -1023,15 +847,6 @@
+@@ -1023,395 +939,59 @@
      override_list (type_rl_list, list);
    }
  
@@ -378,10 +477,51 @@ diff -rua /home/behdad/src/fdo/fribidi/fribidi.stable/fribidi.c ./fribidi.c
    *ptype_rl_list = type_rl_list;
    *pmax_level = max_level;
    *pbase_dir = base_dir;
-@@ -1080,338 +895,36 @@
-   return;
- }
  
+   DBG ("Leaving fribidi_analyse_string()\n");
+-  return;
+-}
+-
+-/*======================================================================
+- *  Frees up the rl_list, must be called after each call to
+- *  fribidi_analyse_string(), after the list is not needed anymore.
+- *----------------------------------------------------------------------*/
+-static void
+-free_rl_list (TypeLink *type_rl_list)
+-{
+-
+-  TypeLink *pp;
+-
+-  DBG ("Entering free_rl_list()\n");
+-
+-  if (!type_rl_list)
+-    {
+-      DBG ("Leaving free_rl_list()\n");
+-      return;
+-    }
+-
+-#ifdef USE_SIMPLE_MALLOC
+-  pp = type_rl_list;
+-  while (pp)
+-    {
+-      TypeLink *p;
+-
+-      p = pp;
+-      pp = pp->next;
+-      free_type_link (p);
+-    };
+-#else
+-  for (pp = type_rl_list->next; pp->next; pp = pp->next)
+-    /* Nothing */ ;
+-  pp->next = free_type_links;
+-  free_type_links = type_rl_list;
+-  type_rl_list = NULL;
+-#endif
+-
+-  DBG ("Leaving free_rl_list()\n");
+-  return;
+-}
+-
 -static fribidi_boolean mirroring = FRIBIDI_TRUE;
 -
 -FRIBIDI_API fribidi_boolean
@@ -681,8 +821,9 @@ diff -rua /home/behdad/src/fdo/fribidi/fribidi.stable/fribidi.c ./fribidi.c
 -  DBG ("Leaving fribidi_log2vis()\n");
 -  return FRIBIDI_TRUE;
 -
--}
--
++  return 1;
+ }
+ 
  /*======================================================================
   *  fribidi_log2vis_get_embedding_levels() is used in order to just get
   *  the embedding levels.
@@ -716,10 +857,25 @@ diff -rua /home/behdad/src/fdo/fribidi/fribidi.stable/fribidi.c ./fribidi.c
      }
  
 -  fribidi_analyse_string (str, len, pbase_dir,
-+  fribidi_analyse_string_utf8 (str, bytelen, pbase_dir,
++  if (!fribidi_analyse_string_utf8 (str, bytelen, pbase_dir,
  			  /* output */
 -			  &type_rl_list, &max_level);
-+			  &len, &type_rl_list, &max_level);
++			  &len, &type_rl_list, &max_level))
++    {
++     /* unidirectional.  return all-zero or all-one embedding levels */
++
++     if (max_level)
++       {
++         embedding_level_list = g_new (FriBidiLevel, len);
++	 /* assumes sizeof(FriBidiLevel) == 1, which is true! */
++	 memset (embedding_level_list, max_level, len);
++	 return embedding_level_list;
++       }
++     else
++       {
++         return g_new0 (FriBidiLevel, len);
++       }
++    }
  
 +  embedding_level_list = g_new (FriBidiLevel, len);
    for (pp = type_rl_list->next; pp->next; pp = pp->next)
@@ -730,7 +886,7 @@ diff -rua /home/behdad/src/fdo/fribidi/fribidi.stable/fribidi.c ./fribidi.c
        FriBidiLevel level = RL_LEVEL (pp);
        for (i = 0; i < len; i++)
  	embedding_level_list[pos + i] = level;
-@@ -1420,34 +933,6 @@
+@@ -1420,34 +1000,6 @@
    free_rl_list (type_rl_list);
  
    DBG ("Leaving fribidi_log2vis_get_embedding_levels()\n");

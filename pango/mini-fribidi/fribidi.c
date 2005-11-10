@@ -126,10 +126,15 @@ free_type_link (TypeLink *link)
 
 static TypeLink *
 run_length_encode_types_utf8 (const char *s,
-			      int bytelen, FriBidiStrIndex *len)
+			      int bytelen,
+			      FriBidiStrIndex *len,
+			      FriBidiCharType *pored_types,
+			      FriBidiCharType *panded_strongs)
 {
   TypeLink *list, *last, *link;
   FriBidiCharType char_type;
+  FriBidiCharType ored_types = 0;
+  FriBidiCharType anded_strongs = FRIBIDI_TYPE_RLE;
   FriBidiStrIndex i;
   const char *p;
 
@@ -143,6 +148,9 @@ run_length_encode_types_utf8 (const char *s,
   i = 0;
   for (p = s; p < s + bytelen; p = g_utf8_next_char(p)) {
     char_type = fribidi_get_type (g_utf8_get_char (p));
+    ored_types |= char_type;
+    if (FRIBIDI_IS_STRONG (char_type))
+      anded_strongs &= char_type;
     if (char_type != last->type)
       {
 	link = new_type_link ();
@@ -162,6 +170,11 @@ run_length_encode_types_utf8 (const char *s,
 
   if (len)
     *len = i;
+
+  if (pored_types)
+    *pored_types = ored_types;
+  if (panded_strongs)
+    *panded_strongs = anded_strongs; 
 
   return list;
 }
@@ -370,6 +383,46 @@ compact_neutrals (TypeLink *list)
     }
 }
 
+/*======================================================================
+ *  Frees up the rl_list, must be called after each call to
+ *  fribidi_analyse_string(), after the list is not needed anymore.
+ *----------------------------------------------------------------------*/
+static void
+free_rl_list (TypeLink *type_rl_list)
+{
+
+  TypeLink *pp;
+
+  DBG ("Entering free_rl_list()\n");
+
+  if (!type_rl_list)
+    {
+      DBG ("Leaving free_rl_list()\n");
+      return;
+    }
+
+#ifdef USE_SIMPLE_MALLOC
+  pp = type_rl_list;
+  while (pp)
+    {
+      TypeLink *p;
+
+      p = pp;
+      pp = pp->next;
+      free_type_link (p);
+    };
+#else
+  for (pp = type_rl_list->next; pp->next; pp = pp->next)
+    /* Nothing */ ;
+  pp->next = free_type_links;
+  free_type_links = type_rl_list;
+  type_rl_list = NULL;
+#endif
+
+  DBG ("Leaving free_rl_list()\n");
+  return;
+}
+
 /*=========================================================================
  * define macros for push and pop the status in to / out of the stack
  *-------------------------------------------------------------------------*/
@@ -468,7 +521,7 @@ compact_neutrals (TypeLink *list)
 /*======================================================================
  *  This function should follow the Unicode specification closely!
  *----------------------------------------------------------------------*/
-static void
+static fribidi_boolean
 fribidi_analyse_string_utf8 (	/* input */
 			 const char *str,
 			 int bytelen,
@@ -487,8 +540,47 @@ fribidi_analyse_string_utf8 (	/* input */
   /* Determinate character types */
   DBG ("  Determine character types\n");
   {
+    FriBidiCharType ored_types;
+    FriBidiCharType anded_strongs;
+
     /* Run length encode the character types */
-    type_rl_list = run_length_encode_types_utf8 (str, bytelen, len);
+    type_rl_list = run_length_encode_types_utf8 (str, bytelen, len,
+		   				 &ored_types, &anded_strongs);
+
+    /* If there's absolutely nothing with a hint of rtl, then all resolved
+     * levels will be ltr (even).  short-circuit.
+     */
+    if (!FRIBIDI_IS_RTL (*pbase_dir | ored_types))
+      {
+	/* all ltr */
+	free_rl_list (type_rl_list);
+
+	*ptype_rl_list = NULL;
+	*pmax_level = 0;
+	*pbase_dir = FRIBIDI_TYPE_LTR;
+
+	return 0;
+      }
+    /* The case that all resolved levels will be rtl is much more complex.
+     * First, there should be no numbers, all strongs be rtl, and one of
+     * the following:
+     *
+     *	o *pbase_dir has an rtl taste (may be weak).
+     *	o there are letters, and *pbase_dir is weak.
+     */
+    else if (!FRIBIDI_IS_NUMBER (ored_types) && FRIBIDI_IS_RTL (anded_strongs) &&
+	     (FRIBIDI_IS_RTL (*pbase_dir) ||
+	      (FRIBIDI_IS_WEAK (*pbase_dir) && FRIBIDI_IS_LETTER (ored_types))
+	     ))
+      {
+	free_rl_list (type_rl_list);
+
+	*ptype_rl_list = NULL;
+	*pmax_level = 1;
+	*pbase_dir = FRIBIDI_TYPE_RTL;
+
+	return 0;
+      }
   }
   DBG ("  Determine character types, Done\n");
 
@@ -852,47 +944,7 @@ fribidi_analyse_string_utf8 (	/* input */
   *pbase_dir = base_dir;
 
   DBG ("Leaving fribidi_analyse_string()\n");
-  return;
-}
-
-/*======================================================================
- *  Frees up the rl_list, must be called after each call to
- *  fribidi_analyse_string(), after the list is not needed anymore.
- *----------------------------------------------------------------------*/
-static void
-free_rl_list (TypeLink *type_rl_list)
-{
-
-  TypeLink *pp;
-
-  DBG ("Entering free_rl_list()\n");
-
-  if (!type_rl_list)
-    {
-      DBG ("Leaving free_rl_list()\n");
-      return;
-    }
-
-#ifdef USE_SIMPLE_MALLOC
-  pp = type_rl_list;
-  while (pp)
-    {
-      TypeLink *p;
-
-      p = pp;
-      pp = pp->next;
-      free_type_link (p);
-    };
-#else
-  for (pp = type_rl_list->next; pp->next; pp = pp->next)
-    /* Nothing */ ;
-  pp->next = free_type_links;
-  free_type_links = type_rl_list;
-  type_rl_list = NULL;
-#endif
-
-  DBG ("Leaving free_rl_list()\n");
-  return;
+  return 1;
 }
 
 /*======================================================================
@@ -917,9 +969,24 @@ fribidi_log2vis_get_embedding_levels_new_utf8 (	/* input */
       return NULL;
     }
 
-  fribidi_analyse_string_utf8 (str, bytelen, pbase_dir,
+  if (!fribidi_analyse_string_utf8 (str, bytelen, pbase_dir,
 			  /* output */
-			  &len, &type_rl_list, &max_level);
+			  &len, &type_rl_list, &max_level))
+    {
+     /* unidirectional.  return all-zero or all-one embedding levels */
+
+     if (max_level)
+       {
+         embedding_level_list = g_new (FriBidiLevel, len);
+	 /* assumes sizeof(FriBidiLevel) == 1, which is true! */
+	 memset (embedding_level_list, max_level, len);
+	 return embedding_level_list;
+       }
+     else
+       {
+         return g_new0 (FriBidiLevel, len);
+       }
+    }
 
   embedding_level_list = g_new (FriBidiLevel, len);
   for (pp = type_rl_list->next; pp->next; pp = pp->next)
