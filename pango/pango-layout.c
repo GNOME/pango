@@ -638,7 +638,7 @@ pango_layout_set_alignment (PangoLayout   *layout,
  * pango_layout_get_alignment:
  * @layout: a #PangoLayout
  * 
- * Sets the alignment for the layout (how partial lines are
+ * Gets the alignment for the layout (how partial lines are
  * positioned within the horizontal space available.)
  * 
  * Return value: the alignment value

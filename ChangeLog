@@ -1,3 +1,8 @@
+2005-11-11  Behdad Esfahbod  <behdad@gnome.org>
+
+	* pango/pango-layout.c (pango_layout_get_alignment): Fix get/set
+	typo in docs. (#321247, Masao Mutoh)
+
 2005-11-09  Behdad Esfahbod  <behdad@gnome.org>
 
 	* pango/pangocairo-fontmap.c (pango_cairo_update_context): Call
