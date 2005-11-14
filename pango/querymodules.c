@@ -136,7 +136,7 @@ query_module (const char *dir, const char *name)
   else
     path = g_build_filename (dir, name, NULL);
   
-  module = g_module_open (path, 0);
+  module = g_module_open (path, G_MODULE_BIND_LAZY);
 
   if (!module)
     g_printerr ("Cannot load module %s: %s\n", path, g_module_error ());
