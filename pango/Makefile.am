@@ -69,7 +69,6 @@ libpango_1_0_la_SOURCES =			\
 	pango-color-table.h			\
 	pango-context.c				\
 	pango-coverage.c			\
-	pango-easy-scripts-table.h		\
 	pango-engine.c				\
 	pango-engine-private.h			\
 	pango-fontmap.c				\

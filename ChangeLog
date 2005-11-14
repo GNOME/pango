@@ -1,5 +1,27 @@
 2005-11-14  Behdad Esfahbod  <behdad@gnome.org>
 
+	Updates from #320666:
+
+	* pango/Makefile.am: Remove pango-easy-scripts-table.h.
+
+	* pango/pango-easy-scripts-table.h: Removed.  The "easy" table goes
+	into pango-scripts-table.h too.
+
+	* pango/pango-script-table.h: Include "easy" table.
+
+	* pango/pango-script.c: Change gunichar->script last_index caching
+	mechanism.  The caching is simply done by making int mid in the
+	bsearch static.
+
+	* tools/Makefile.am: Remove gen-easy-scripts-table.c.
+
+	* tools/gen-easy-scripts-table.c: Removed.  The "easy" table is
+	generated in gen-scripts-table.pl too.
+
+	* tools/gen-script-table.h: Generate "easy" table.
+
+2005-11-14  Behdad Esfahbod  <behdad@gnome.org>
+
 	* examples/Makefile.am: Add X_CFLAGS to INCLUDES.  We normally are
 	picking them up from XFT_CFLAGS, but we don't require Xft any more
 	for X11. (#320576)

@@ -58,7 +58,6 @@
 
 #include "pango-script.h"
 #include "pango-script-table.h"
-#include "pango-easy-scripts-table.h"
 
 #define PAREN_STACK_DEPTH 128
 
@@ -81,18 +80,17 @@ struct _PangoScriptIter
 
   ParenStackEntry paren_stack[PAREN_STACK_DEPTH];
   int paren_sp;
-  
-  int last_index_for_script_lookup;
 };
 
 #define PANGO_SCRIPT_TABLE_MIDPOINT (G_N_ELEMENTS (pango_script_table) / 2)
 
-static PangoScript
-pango_script_for_unichar_with_last_index (gunichar ch, int *last_index)
+static inline PangoScript
+pango_script_for_unichar_bsearch (gunichar ch)
 {
   int lower = 0;
   int upper = G_N_ELEMENTS (pango_script_table) - 1;
-  int mid = *last_index;
+  static int mid = PANGO_SCRIPT_TABLE_MIDPOINT;
+
 
   do 
     {
@@ -101,10 +99,8 @@ pango_script_for_unichar_with_last_index (gunichar ch, int *last_index)
       else if (ch >= pango_script_table[mid].start + pango_script_table[mid].chars)
 	lower = mid + 1;
       else
-	{
-	  *last_index = mid;
-	  return pango_script_table[mid].script;
-	}
+	return pango_script_table[mid].script;
+
       mid = (lower + upper) / 2;
     }
   while (lower <= upper);
@@ -126,12 +122,10 @@ pango_script_for_unichar_with_last_index (gunichar ch, int *last_index)
 PangoScript
 pango_script_for_unichar (gunichar ch)
 {
-  int index = PANGO_SCRIPT_TABLE_MIDPOINT;
-
   if (ch < PANGO_EASY_SCRIPTS_RANGE)
-    return pango_easy_scripts_table[ch] & PANGO_EASY_SCRIPTS_MASK;
+    return pango_script_easy_table[ch];
   else 
-    return pango_script_for_unichar_with_last_index (ch, &index); 
+    return pango_script_for_unichar_bsearch (ch); 
 }
 
 /**********************************************************************/
@@ -167,7 +161,6 @@ pango_script_iter_new (const char *text,
   iter->script_code = PANGO_SCRIPT_COMMON;
   
   iter->paren_sp = -1;
-  iter->last_index_for_script_lookup = PANGO_SCRIPT_TABLE_MIDPOINT;
 
   pango_script_iter_next (iter);
 
@@ -288,22 +281,11 @@ pango_script_iter_next (PangoScriptIter *iter)
       PangoScript sc;
       int pair_index;
       
-      if (ch < PANGO_EASY_SCRIPTS_RANGE)
-        {
-          sc = pango_easy_scripts_table[ch] & PANGO_EASY_SCRIPTS_MASK;
-	  if ((pango_easy_scripts_table[ch] & PANGO_PAIRED_CHAR_FLAG) == 0)
-	    pair_index = -1;
-          else
-	    pair_index = get_pair_index (ch);
-        }
+      sc = pango_script_for_unichar (ch);
+      if (sc != PANGO_SCRIPT_COMMON)
+	pair_index = -1;
       else
-        { 
-          sc = pango_script_for_unichar_with_last_index (ch, &iter->last_index_for_script_lookup);
-          if (sc != PANGO_SCRIPT_COMMON)
-	    pair_index = -1;
-          else
-	    pair_index = get_pair_index (ch);
-        }
+	pair_index = get_pair_index (ch);
 
       /*
        * Paired character handling:

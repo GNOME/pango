@@ -13,6 +13,12 @@ open IN, $ARGV[0] || die "Cannot open $ARGV[0]: $!\n";
 
 my @ranges;
 my $file;
+my $easy_range;
+my $i;
+my $start;
+my $end;
+my $script;
+
 
 while (<IN>) {
     if (/^\#\s+(Scripts-.*.txt)/) {
@@ -32,6 +38,7 @@ while (<IN>) {
     }
 }
 
+@ranges = sort { $a->[0] <=> $b->[0] } @ranges;
 $date = gmtime;
 
 print <<"EOT";
@@ -40,21 +47,63 @@ print <<"EOT";
  *  Date: $date
  *  Source: $file
  *
- * Do not edit.   
+ * Do not edit.
  */
+
+EOT
+
+$easy_range = 0x2000;
+
+print <<"EOT";
+#define PANGO_EASY_SCRIPTS_RANGE $easy_range
+
+static const guchar pango_script_easy_table[$easy_range] = {
+EOT
+
+$i = 0;
+$end = -1;
+
+for (my $c = 0; $c < $easy_range; $c++) {
+
+    if ($c % 3 == 0) {
+      printf "\n ";
+    }
+
+    if ($c > $end) {
+        $start = $ranges[$i]->[0];
+        $end = $ranges[$i]->[1];
+        $script = $ranges[$i]->[2];
+        $i++;
+    }
+    
+    if ($c < $start) {
+        printf " PANGO_SCRIPT_COMMON,";
+    } else {
+        printf " PANGO_SCRIPT_%s,", $script;
+    }
+}
+
+if ($end >= $easy_range) {
+    $i--;
+    $ranges[$i]->[0] = $easy_range;
+}
+
+
+print <<"EOT";
+
+};
+
 static const struct {
     gunichar    start;
     guint16     chars;
-    guint16     script;		/* PangoScript */
+    guint16     script;
 } pango_script_table[] = { 
 EOT
 
-@ranges = sort { $a->[0] <=> $b->[0] } @ranges;
-
-for (my $i = 0; $i <= $#ranges; $i++) {
-    my $start = $ranges[$i]->[0];
-    my $end = $ranges[$i]->[1];
-    my $script = $ranges[$i]->[2];
+for (; $i <= $#ranges; $i++) {
+    $start = $ranges[$i]->[0];
+    $end = $ranges[$i]->[1];
+    $script = $ranges[$i]->[2];
 
     while ($i <= $#ranges - 1 &&
 	   $ranges[$i + 1]->[0] == $end + 1 &&
