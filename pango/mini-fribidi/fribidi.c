@@ -22,6 +22,7 @@
  */
 
 #include <stdlib.h>
+#include <string.h>
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -547,10 +548,16 @@ fribidi_analyse_string_utf8 (	/* input */
     type_rl_list = run_length_encode_types_utf8 (str, bytelen, len,
 		   				 &ored_types, &anded_strongs);
 
-    /* If there's absolutely nothing with a hint of rtl, then all resolved
-     * levels will be ltr (even).  short-circuit.
+    /* The case that all resolved levels will be ltr.
+     * First, all strongs should be ltr, and one of the following:
+     *
+     *	o *pbase_dir doesn't have an rtl taste.
+     *	o there are letters, and *pbase_dir is weak.
      */
-    if (!FRIBIDI_IS_RTL (*pbase_dir | ored_types))
+    if (!FRIBIDI_IS_RTL (ored_types) &&
+	     (!FRIBIDI_IS_RTL (*pbase_dir) ||
+	      (FRIBIDI_IS_WEAK (*pbase_dir) && FRIBIDI_IS_LETTER (ored_types))
+	     ))
       {
 	/* all ltr */
 	free_rl_list (type_rl_list);

@@ -1,3 +1,11 @@
+2005-11-14  Behdad Esfahbod  <behdad@gnome.org>
+
+	* pango/mini-fribidi/fribidi.c): Include string.h, needed for memset.
+
+	* pango/mini-fribidi/fribidi.c (fribidi_analyse_string_utf8):
+	Handle short-circuiting of the case when there are ltr letters,
+	no rtl strongs, and base dir is weak rtl.  Pointed out by Owen Taylor.
+
 2005-11-11  Behdad Esfahbod  <behdad@gnome.org>
 
 	* pango/pango-layout.c (pango_layout_get_alignment): Fix get/set
