@@ -542,40 +542,32 @@ pango_default_break (const gchar   *text,
   gint possible_sentence_end = -1;
   /* possible sentence break before Open* after a period-ended sentence */
   gint possible_sentence_boundary = -1;
-  gint n_chars;
+  gboolean almost_done = FALSE;
+  gboolean done = FALSE;
 
   g_return_if_fail (text != NULL);
   g_return_if_fail (attrs != NULL);
 
-  n_chars = g_utf8_strlen (text, length);
-
   next = text;
   
-  /* + 1 because of the extra newline we stick on the end */
-  if (attrs_len < n_chars + 1)
-    {
-      g_warning ("pango_default_break(): the array of PangoLogAttr passed in must have at least N+1 elements, if there are N characters in the text being broken");
-      return;
-    }
-      
   prev_type = (GUnicodeType) -1;
   prev_break_type = G_UNICODE_BREAK_UNKNOWN;
   prev_was_break_space = FALSE;
   prev_wc = 0;
   prev_jamo = NO_JAMO;
 
-  if (n_chars)
+  if (length == 0 || *text == '\0')
+    next_wc = PARAGRAPH_SEPARATOR;
+  else
     {
       next_wc = g_utf8_get_char (next);
       g_assert (next_wc != 0);
     }
-  else
-    next_wc = PARAGRAPH_SEPARATOR;
 
   next_break_type = g_unichar_break_type (next_wc);
   next_break_type = BREAK_TYPE_SAFE (next_break_type);
 
-  for (i = 0; i <= n_chars; i++)
+  for (i = 0; !done ; i++)
     {
       GUnicodeType type;
       gunichar wc;
@@ -587,7 +579,7 @@ pango_default_break (const gchar   *text,
       wc = next_wc;
       break_type = next_break_type;
 
-      if (i == n_chars)
+      if (almost_done)
         {
           /*
            * If we have already reached the end of @text g_utf8_next_char()
@@ -595,18 +587,20 @@ pango_default_break (const gchar   *text,
            */
           next_wc = 0;
 	  next_break_type = G_UNICODE_BREAK_UNKNOWN;
+	  done = TRUE;
         }
       else
         {
           next = g_utf8_next_char (next);
 
-          if (i == n_chars - 1)
+	  if (length >= 0 && next == text + length || *next == '\0')
             {
               /* This is how we fill in the last element (end position) of the
                * attr array - assume there's a paragraph separators off the end
 	       * of @text.
                */
 	      next_wc = PARAGRAPH_SEPARATOR;
+	      almost_done = TRUE;
             }
           else
             {

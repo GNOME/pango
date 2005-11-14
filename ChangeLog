@@ -1,5 +1,10 @@
 2005-11-14  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango/break.c (pango_default_break): Remove g_utf8_strlen and
+	work around the logic.  Patch by Owen Taylor.
+
+2005-11-14  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/mini-fribidi/fribidi.c): Include string.h, needed for memset.
 
 	* pango/mini-fribidi/fribidi.c (fribidi_analyse_string_utf8):
