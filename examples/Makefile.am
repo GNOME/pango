@@ -9,6 +9,7 @@ INCLUDES =				\
 	-I$(top_srcdir)			\
 	$(CAIRO_CFLAGS)			\
 	$(GLIB_CFLAGS)			\
+	$(X_CFLAGS)			\
 	$(XFT_CFLAGS)			\
 	$(FREETYPE_CFLAGS)
 
