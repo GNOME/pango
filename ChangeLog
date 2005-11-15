@@ -1,3 +1,7 @@
+2005-11-15  Behdad Esfahbod  <behdad@gnome.org>
+
+	* examples/GLASS.utf8: Added redistribution permission.
+
 2005-11-14  Behdad Esfahbod  <behdad@gnome.org>
 
 	* modules/khmer/khmer/khmer-fc.c: Fixed bug in khmer module state
