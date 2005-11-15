@@ -1,5 +1,10 @@
 2005-11-14  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango/pangocairo-fcfont.c: Respect fontconfig reassignment of
+	pixelsize. (#317121, Funda Wang)
+
+2005-11-14  Behdad Esfahbod  <behdad@gnome.org>
+
 	Updates from #320666:
 
 	* pango/Makefile.am: Remove pango-easy-scripts-table.h.

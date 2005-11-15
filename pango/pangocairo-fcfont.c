@@ -480,9 +480,30 @@ pango_cairo_fc_font_init (PangoCairoFcFont *cffont)
 static double
 get_font_size (PangoCairoFcFontMap        *cffontmap,
 	       PangoContext               *context,
-	       const PangoFontDescription *desc)
+	       const PangoFontDescription *desc,
+	       FcPattern                  *pattern)
 {
-      
+  double size;
+
+ /* The reason why we read FC_PIXEL_SIZE here rather than just
+  * using the specified size is to support operations like clamping 
+  * a font to a minimal readable size in fonts.conf. This is pretty weird, 
+  * since it could mean that changing the Cairo CTM doesn't change the 
+  * font size, but it's just a more radical version of the non-linear
+  * font scaling we already have due to hinting and due to bitmap
+  * fonts being only available at a few sizes.
+  * 
+  * If honoring FC_PIXEL_SIZE gets in the way of more useful features
+  * it should be removed since it only matters in the unusual case
+  * of people doing exotic stuff in fonts.conf.
+  */
+
+  if (FcPatternGetDouble (pattern, FC_PIXEL_SIZE, 0, &size) == FcResultMatch)
+    return size * PANGO_SCALE;
+
+  /* Just in case FC_PIXEL_SIZE got unset between pango_fc_make_pattern()
+   * and here.
+   */
   if (pango_font_description_get_size_is_absolute (desc))
     return pango_font_description_get_size (desc);
   else
@@ -527,7 +548,7 @@ _pango_cairo_fc_font_new (PangoCairoFcFontMap        *cffontmap,
   else
     cairo_matrix_init_identity (&cffont->font_matrix);
 
-  size = get_font_size (cffontmap, context, desc);
+  size = get_font_size (cffontmap, context, desc, pattern);
 
   cairo_matrix_scale (&cffont->font_matrix,
 		      size / PANGO_SCALE, size / PANGO_SCALE);
