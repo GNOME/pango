@@ -1,5 +1,13 @@
 2005-11-14  Behdad Esfahbod  <behdad@gnome.org>
 
+	* examples/GLASS.utf8: Added.  The infamous "I Can Eat Glass" in
+	vairous languages.  Adopted from
+	http://www.columbia.edu/kermit/utf8.html#glass
+
+	* examples/Makefile.am (EXTRA_DIST): GLASS.utf8 added.
+
+2005-11-14  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/pangocairo-fcfont.c: Respect fontconfig reassignment of
 	pixelsize. (#317121, Funda Wang)
 

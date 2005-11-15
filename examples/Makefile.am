@@ -108,6 +108,7 @@ EXTRA_DIST=			\
 	pangoft2topgm.c         \
 	makefile.msc		\
 	HELLO.utf8		\
+	GLASS.utf8		\
 	dev-example.utf		\
 	muru.utf		\
 	syriac.utf		\
