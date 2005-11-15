@@ -1,5 +1,17 @@
 2005-11-14  Behdad Esfahbod  <behdad@gnome.org>
 
+	Updated Tibetan shaper from Pema Geyleg. (#313513)
+
+	* examples/tibetan.utf: Added.
+
+	* examples/Makefile.am (EXTRA_DIST): tibetan.utf added.
+
+	* modules/tibetan/tibetan-fc.c: Updated Tibetan shaper that is
+	rewritten from scratch. Supports the number pre-combining mark,
+	illegal sequence detection, etc.
+
+2005-11-14  Behdad Esfahbod  <behdad@gnome.org>
+
 	* examples/GLASS.utf8: Added.  The infamous "I Can Eat Glass" in
 	vairous languages.  Adopted from
 	http://www.columbia.edu/kermit/utf8.html#glass

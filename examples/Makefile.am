@@ -112,6 +112,7 @@ EXTRA_DIST=			\
 	dev-example.utf		\
 	muru.utf		\
 	syriac.utf		\
+	tibetan.utf		\
 	pangorc			\
 	pangox.aliases
 
