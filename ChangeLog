@@ -1,5 +1,10 @@
 2005-11-14  Behdad Esfahbod  <behdad@gnome.org>
 
+	* modules/khmer/khmer/khmer-fc.c: Fixed bug in khmer module state
+	table. (#320569, Jens Herden)
+
+2005-11-14  Behdad Esfahbod  <behdad@gnome.org>
+
 	Updated Tibetan shaper from Pema Geyleg. (#313513)
 
 	* examples/tibetan.utf: Added.
