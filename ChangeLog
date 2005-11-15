@@ -1,5 +1,10 @@
 2005-11-14  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango/pangocairo-fcfont.c: Respect fontconfig reassignment of
+	pixelsize. (#317121, Funda Wang)
+
+2005-11-14  Behdad Esfahbod  <behdad@gnome.org>
+
 	* examples/Makefile.am: Add X_CFLAGS to INCLUDES.  We normally are
 	picking them up from XFT_CFLAGS, but we don't require Xft any more
 	for X11. (#320576)
