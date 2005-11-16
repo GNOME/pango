@@ -147,7 +147,7 @@ void pango_matrix_concat    (PangoMatrix       *matrix,
  * @PANGO_DIRECTION_TTB_LTR: Deprecated value; treated the
  *   same as %PANGO_DIRECTION_RTL.
  * @PANGO_DIRECTION_TTB_RTL: Deprecated value; treated the
- *   same as PANGO_DIRECTION_LTR
+ *   same as %PANGO_DIRECTION_LTR
  * @PANGO_DIRECTION_WEAK_LTR: A weak left-to-right direction
  * @PANGO_DIRECTION_WEAK_RTL: A weak right-to-left direction
  * @PANGO_DIRECTION_NEUTRAL: No direction specified
