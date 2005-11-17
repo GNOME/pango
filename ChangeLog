@@ -1,5 +1,10 @@
 2005-11-17  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango/pangofc-fontmap.c (fontset_hash_key_equal): Compare language
+	too.  (#318168)
+
+2005-11-17  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/break.c (pango_get_log_attrs): Remove g_utf8_strlen that was
 	only used to give a warning.
 	
