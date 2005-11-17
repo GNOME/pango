@@ -1141,7 +1141,7 @@ pango_font_get_coverage (PangoFont     *font,
  * pango_font_find_shaper:
  * @font: a #PangoFont
  * @language: the language tag
- * @ch: a unicode character.
+ * @ch: a Unicode character.
  * 
  * Finds the best matching shaper for a font for a particular
  * language tag and character point.
@@ -1266,7 +1266,7 @@ pango_font_metrics_new (void)
  * pango_font_metrics_ref:
  * @metrics: a #PangoFontMetrics structure
  * 
- * Increases the reference count of a font metrics structure.
+ * Increase the reference count of a font metrics structure by one.
  * 
  * Return value: @metrics
  **/
@@ -1284,7 +1284,7 @@ pango_font_metrics_ref (PangoFontMetrics *metrics)
  * pango_font_metrics_unref:
  * @metrics: a #PangoFontMetrics structure
  * 
- * Decreases the reference count of a font metrics structure. If
+ * Decrease the reference count of a font metrics structure by one. If
  * the result is zero, frees the structure and any associated
  * memory.
  **/

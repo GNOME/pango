@@ -43,10 +43,10 @@ PANGO_DEFINE_TYPE_ABSTRACT (PangoFontset, pango_fontset,
 /**
  * pango_fontset_get_font:
  * @fontset: a #PangoFontset
- * @wc: a unicode character
+ * @wc: a Unicode character
  *
  * Returns the font in the fontset that contains the best glyph for the
- * unicode character wc.
+ * Unicode character @wc.
  *
  * Returns: a #PangoFont. The caller must call g_object_unref when finished
  *          with the font.

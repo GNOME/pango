@@ -84,11 +84,11 @@ struct _PangoScriptIter
 
 /**
  * pango_script_for_unichar:
- * @ch: a unicode characters
+ * @ch: a Unicode character
  * 
  * Looks up the #PangoScript for a particular character (as defined by
- * Unicode Technical report #24). No check is made for @ch being
- * valid unicode character; if you pass in invalid character, the
+ * Unicode Standard Annex #24). No check is made for @ch being a
+ * valid Unicode character; if you pass in invalid character, the
  * result is undefined.
  * 
  * Return value: the #PangoScript for the character.
@@ -118,14 +118,14 @@ pango_script_for_unichar (gunichar ch)
 /**
  * pango_script_iter_new:
  * @text: a UTF-8 string
- * @length: length of @text, or -1 if @text is NUL-terminated.
+ * @length: length of @text, or -1 if @text is nul-terminated.
  * 
  * Create a new #PangoScriptIter, used to break a string of
  * Unicode into runs by text. No copy is made of @text, so
  * the caller needs to make sure it remains valid until
  * the iterator is freed with pango_script_iter_free ().x
  * 
- * Return value: the newly created script iterator, initialized
+ * Return value: the new script iterator, initialized
  *  to point at the first range in the text. If the string is
  *  empty, it will point at an empty range.
  **/

@@ -1,5 +1,17 @@
 2005-11-17  Behdad Esfahbod  <behdad@gnome.org>
 
+	* docs/tmpl/coverage-maps.sgml docs/tmpl/fonts.sgml
+	docs/tmpl/glyphs.sgml docs/tmpl/layout.sgml
+	docs/tmpl/main.sgml docs/tmpl/scripts.sgml
+	docs/tmpl/tab-stops.sgml docs/tmpl/text-attributes.sgml
+	pango/break.c pango/fonts.c pango/pango-fontset.c
+	pango/pango-layout.c pango/pango-script.c pango/pango-utils.c
+	pango/pangofc-decoder.c pango/pangofc-decoder.h
+	pango/pangofc-font.c pango/pangofc-font.h
+	pango/pangoxft-font.c: More documentation improvements.
+
+2005-11-17  Behdad Esfahbod  <behdad@gnome.org>
+
 	Part of #101079:
 
 	* pango/opentype/ftxopen.c (Load_Lookup): In extension subtables,

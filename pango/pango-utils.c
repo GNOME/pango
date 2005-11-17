@@ -1427,10 +1427,10 @@ pango_log2vis_get_embedding_levels (gunichar       *str,
 
 /**
  * pango_get_mirror_char:
- * @ch: a unicode character
+ * @ch: a Unicode character
  * @mirrored_ch: location to store the mirrored character
  *
- * If @ch has the Unicode mirrored property and there is another unicode
+ * If @ch has the Unicode mirrored property and there is another Unicode
  * character that typically has a glyph that is the mirror image of @ch's
  * glyph, puts that character in the address pointed to by @mirrored_ch.
  *
@@ -1717,7 +1717,7 @@ pango_find_base_dir (const gchar *text,
 
 /**
  * pango_is_zero_width:
- * @ch: a unicode character
+ * @ch: a Unicode character
  *
  * Checks @ch to see if it is a zero-width character that should not be
  * normally rendered on the screen.

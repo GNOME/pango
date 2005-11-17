@@ -64,7 +64,7 @@ fields:
 
 <!-- ##### MACRO PANGO_TYPE_DIRECTION ##### -->
 <para>
-The GObject type for #PangoDirection.
+The #GObject type for #PangoDirection.
 </para>
 
 
@@ -300,7 +300,7 @@ Determines the direction of a character; either
 %PANGO_DIRECTION_NEUTRAL.
 </para>
 
-@ch: character to examine
+@ch: a Unicode character
 @Returns:  the direction of a character, as used in the
   Unicode bidirectional algorithm.
 

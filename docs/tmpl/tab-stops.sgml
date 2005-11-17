@@ -23,7 +23,7 @@ of tab stops. Each tab stop has an alignment and a position.
 
 <!-- ##### MACRO PANGO_TYPE_TAB_ARRAY ##### -->
 <para>
-The GObject type for #PangoTabArray.
+The #GObject type for #PangoTabArray.
 </para>
 
 
@@ -37,7 +37,7 @@ A #PangoTabAlign specifies where a tab stop appears relative to the text.
 
 <!-- ##### MACRO PANGO_TYPE_TAB_ALIGN ##### -->
 <para>
-The GObject type for #PangoTabAlign.
+The #GObject type for #PangoTabAlign.
 </para>
 
 
