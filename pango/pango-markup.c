@@ -552,10 +552,10 @@ static const GMarkupParser pango_markup_parser = {
  * @markup_text: markup to parse (see <link linkend="PangoMarkupFormat">markup format</link>)
  * @length: length of @markup_text, or -1 if nul-terminated
  * @accel_marker: character that precedes an accelerator, or 0 for none
- * @attr_list: address of return location for a #PangoAttrList, or NULL
- * @text: address of return location for text with tags stripped, or NULL
- * @accel_char: address of return location for accelerator char, or NULL
- * @error: address of return location for errors, or NULL
+ * @attr_list: address of return location for a #PangoAttrList, or %NULL
+ * @text: address of return location for text with tags stripped, or %NULL
+ * @accel_char: address of return location for accelerator char, or %NULL
+ * @error: address of return location for errors, or %NULL
  * 
  *
  * Parses marked-up text (see
@@ -570,7 +570,7 @@ static const GMarkupParser pango_markup_parser = {
  * Two @accel_marker characters following each other produce a single
  * literal @accel_marker character.
  * 
- * Return value: FALSE if @error is set, otherwise TRUE
+ * Return value: %FALSE if @error is set, otherwise %TRUE
  **/
 gboolean
 pango_parse_markup (const char                 *markup_text,

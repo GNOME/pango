@@ -28,9 +28,6 @@ function is used when building a catalog of all available modules.
 
 </para>
 
-<!-- ##### SECTION Stability_Level ##### -->
-
-
 <!-- ##### STRUCT PangoEngineInfo ##### -->
 <para>
 The #PangoEngineInfo structure contains information about a particular

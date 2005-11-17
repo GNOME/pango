@@ -84,11 +84,11 @@ struct _EllipsizeState
   RunInfo *run_info;		/* Array of information about each run */
   int n_runs;
 
-  int total_width;		/* Original width of line in pango units */
+  int total_width;		/* Original width of line in Pango units */
   int gap_center;		/* Goal for center of gap */
   
   PangoGlyphItem *ellipsis_run;	/* Run created to hold ellipsis */
-  int ellipsis_width;		/* Width of ellipsis, in pango units */
+  int ellipsis_width;		/* Width of ellipsis, in Pango units */
   int ellipsis_is_cjk;		/* Whether the first character in the ellipsized
 				 * is wide; this triggers us to try to use a
 				 * mid-line ellipsis instead of a baseline
@@ -97,12 +97,12 @@ struct _EllipsizeState
   PangoAttrIterator *line_start_attr; /* Cached PangoAttrIterator for the start of the run */
   
   LineIter gap_start_iter;	/* Iteratator pointig to the first cluster in gap */
-  int gap_start_x;		/* x position of start of gap, in pango units */
+  int gap_start_x;		/* x position of start of gap, in Pango units */
   PangoAttrIterator *gap_start_attr; /* Attribute iterator pointing to a range containing
 				      * the first character in gap */
   
   LineIter gap_end_iter;	/* Iterator pointing to last cluster in gap */
-  int gap_end_x;		/* x position of end of gap, in pango units */
+  int gap_end_x;		/* x position of end of gap, in Pango units */
 };
 
 /* Compute global information needed for the itemization process

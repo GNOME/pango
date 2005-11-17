@@ -160,7 +160,7 @@ void pango_matrix_concat    (PangoMatrix       *matrix,
  * or %PANGO_DIRECTION_WEAK_RTL, since every character is either
  * neutral or has a strong direction; on the other hand
  * %PANGO_DIRECTION_NEUTRAL doesn't make sense to pass
- * to pango_log2vis_get_embedding_levels().
+ * to pango_itemize_with_base_dir().
  *
  * The %PANGO_DIRECTION_TTB_LTR, %PANGO_DIRECTION_TTB_RTL
  * values come from an earlier interpretation of this

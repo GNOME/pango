@@ -639,8 +639,8 @@ pango_xft_render_layout (XftDraw     *draw,
  * @color:     the foreground color in which to draw the layout line
  *             (may be overriden by color attributes)
  * @line:      a #PangoLayoutLine
- * @x:         the x position of start of string (in pango units)
- * @y:         the y position of baseline (in pango units)
+ * @x:         the x position of start of string (in Pango units)
+ * @y:         the y position of baseline (in Pango units)
  *
  * Render a #PangoLayoutLine onto a #XftDraw
  *

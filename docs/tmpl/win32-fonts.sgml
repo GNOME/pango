@@ -14,9 +14,6 @@ Functions for shape engines to manipulate Win32 fonts
 
 </para>
 
-<!-- ##### SECTION Stability_Level ##### -->
-
-
 <!-- ##### MACRO PANGO_RENDER_TYPE_WIN32 ##### -->
 <para>
 A string constant identifying the Win32 renderer. The associated quark (see
@@ -145,8 +142,8 @@ g_quark_from_string()) is used to identify the renderer in pango_find_map().
 
 <!-- ##### STRUCT PangoWin32FontCache ##### -->
 <para>
-A <structname>PangoWin32FontCache</structname> caches
-<structname>HFONT</structname>s by their <structname>LOGFONT</structname> descriptions. 
+A #PangoWin32FontCache caches
+#HFONTs by their #LOGFONT descriptions. 
 </para>
 
 

@@ -448,7 +448,7 @@ pango_ft2_renderer_draw_trapezoid (PangoRenderer   *renderer,
  * @y:         the Y position of the top of the layout (in Pango units)
  *
  * Render a #PangoLayout onto a FreeType2 bitmap, with he
- * location specified in fixed-point pango units rather than
+ * location specified in fixed-point Pango units rather than
  * pixels. (Using this will avoid extra inaccuracies from
  * rounding to integer pixels multiple times, even if the
  * final glyph positions are integers.)
@@ -499,11 +499,11 @@ pango_ft2_render_layout (FT_Bitmap   *bitmap,
  * pango_ft2_render_layout_line_subpixel:
  * @bitmap:    a FT_Bitmap to render the line onto
  * @line:      a #PangoLayoutLine
- * @x:         the x position of start of string (in pango units)
- * @y:         the y position of baseline (in pango units)
+ * @x:         the x position of start of string (in Pango units)
+ * @y:         the y position of baseline (in Pango units)
  *
  * Render a #PangoLayoutLine onto a FreeType2 bitmap, with he
- * location specified in fixed-point pango units rather than
+ * location specified in fixed-point Pango units rather than
  * pixels. (Using this will avoid extra inaccuracies from
  * rounding to integer pixels multiple times, even if the
  * final glyph positions are integers.)

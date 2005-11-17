@@ -14,9 +14,6 @@ Obtaining information from OpenType tables
 
 </para>
 
-<!-- ##### SECTION Stability_Level ##### -->
-
-
 <!-- ##### TYPEDEF PangoOTTag ##### -->
 <para>
 The <type>PangoOTTag</type> typedef is used to represent TrueType and OpenType
@@ -28,10 +25,10 @@ create <type>PangoOTTag</type>s manually.
 
 <!-- ##### STRUCT PangoOTInfo ##### -->
 <para>
-The <structname>PangoOTInfo</structname> struct contains the various 
+The #PangoOTInfo struct contains the various 
 tables associated with an OpenType font. It contains only private fields and
 should only be accessed via the <function>pango_ot_info_*</function> functions
-which are documented below. To obtain a <structname>PangoOTInfo</structname>,
+which are documented below. To obtain a #PangoOTInfo,
 use pango_ot_info_new().
 </para>
 
@@ -56,11 +53,11 @@ use pango_ot_info_new().
 
 <!-- ##### STRUCT PangoOTRuleset ##### -->
 <para>
-The <structname>PangoOTRuleSet</structname> structure holds a
+The #PangoOTRuleSet structure holds a
 set of features selected from the tables in an OpenType font.
 (A feature is an operation such as adjusting glyph positioning
 that should be applied to a text feature such as a certain
-type of accent.) A <structname>PangoOTRuleSet</structname>
+type of accent.) A #PangoOTRuleSet
 is created with pango_ot_ruleset_new(), features are addded
 to it with pango_ot_ruleset_add_feature(), then it is
 applied to a #PangoGlyphString with pango_ot_ruleset_shape().

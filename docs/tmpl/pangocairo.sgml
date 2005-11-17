@@ -139,9 +139,6 @@ int main (int argc, char **argv)
 
 </para>
 
-<!-- ##### SECTION Stability_Level ##### -->
-
-
 <!-- ##### STRUCT PangoCairoFontMap ##### -->
 <para>
 

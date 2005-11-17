@@ -72,11 +72,11 @@ pango_attr_type_register (const gchar *name)
 
 /**
  * pango_attribute_copy:
- * @attr: a #PangoAttribute.
+ * @attr: a #PangoAttribute
  * 
  * Make a copy of an attribute.
  * 
- * Return value: a newly allocated #PangoAttribute.
+ * Return value: the new #PangoAttribute.
  **/
 PangoAttribute *
 pango_attribute_copy (const PangoAttribute *attr)
@@ -595,13 +595,13 @@ pango_attr_font_desc_equal (const PangoAttribute *attr1,
 
 /**
  * pango_attr_font_desc_new:
- * @desc: 
+ * @desc: the font description
  * 
- * Create a new font description attribute. (This attribute
+ * Create a new font description attribute. This attribute
  * allows setting family, style, weight, variant, stretch,
- * and size simultaneously.)
+ * and size simultaneously.
  * 
- * Return value: 
+ * Return value:  the new #PangoAttribute.
  **/
 PangoAttribute *
 pango_attr_font_desc_new (const PangoFontDescription *desc)
@@ -625,7 +625,7 @@ pango_attr_font_desc_new (const PangoFontDescription *desc)
  * pango_attr_underline_new:
  * @underline: the underline style.
  * 
- * Create a new underline-style object.
+ * Create a new underline-style attribute.
  * 
  * Return value: the new #PangoAttribute.
  **/
@@ -673,7 +673,7 @@ pango_attr_underline_color_new (guint16 red,
  * pango_attr_strikethrough_new:
  * @strikethrough: %TRUE if the text should be struck-through.
  * 
- * Create a new font strike-through attribute.
+ * Create a new strike-through attribute.
  * 
  * Return value: the new #PangoAttribute.
  **/
@@ -859,19 +859,19 @@ pango_attr_shape_equal (const PangoAttribute *attr1,
 /**
  * pango_attr_shape_new_with_data:
  * @ink_rect:     ink rectangle to assign to each character
- * @logical_rect: logical rectangle assign to each character
+ * @logical_rect: logical rectangle to assign to each character
  * @data:         user data pointer
  * @copy_func:    function to copy @data when the attribute
  *                is copied. If %NULL, @data is simply copied
  *                as a pointer.
  * @destroy_func: function to free @data when the attribute
- *                is freed, or %NULL.
+ *                is freed, or %NULL
  * 
  * Like pango_attr_shape_new(), but a user data pointer is also
- * provided; this pointer can be accessed when rendering later
+ * provided; this pointer can be accessed when later
  * rendering the glyph.
  * 
- * Return value: the newly created attribute
+ * Return value: the new #PangoAttribute.
  *
  * Since: 1.8
  **/
@@ -908,14 +908,14 @@ pango_attr_shape_new_with_data (const PangoRectangle  *ink_rect,
 /**
  * pango_attr_shape_new:
  * @ink_rect:     ink rectangle to assign to each character
- * @logical_rect: logical rectangle assign to each character
+ * @logical_rect: logical rectangle to assign to each character
  * 
  * Create a new shape attribute. A shape is used to impose a
  * particular ink and logical rect on the result of shaping a
  * particular glyph. This might be used, for instance, for
  * embedding a picture or a widget inside a PangoLayout.
  * 
- * Return value: the newly created attribute
+ * Return value: the new #PangoAttribute
  **/
 PangoAttribute *
 pango_attr_shape_new (const PangoRectangle *ink_rect,
@@ -946,7 +946,7 @@ pango_attr_list_get_type (void)
  * 
  * Create a new empty attribute list with a reference count of 1.
  * 
- * Return value: the newly allocated #PangoAttrList.
+ * Return value: new #PangoAttrList.
  **/
 PangoAttrList *
 pango_attr_list_new (void)
@@ -966,7 +966,9 @@ pango_attr_list_new (void)
  * 
  * Increase the reference count of the given attribute list by one.
  *
- * Return value: The attribute list passed in (since 1.10)
+ * Return value: The attribute list passed in
+ *
+ * Since: 1.10
  **/
 PangoAttrList *
 pango_attr_list_ref (PangoAttrList *list)
@@ -1618,7 +1620,7 @@ pango_attr_iterator_get (PangoAttrIterator *iterator,
  * @iterator: a #PangoAttrIterator
  * @desc: a #PangoFontDescription to fill in with the current values.
  *        The family name in this structure will be set using
- *        pango_font_description_set_family_static using values from
+ *        pango_font_description_set_family_static() using values from
  *        an attribute in the #PangoAttrList associated with the iterator,
  *        so if you plan to keep it around, you must call:
  *        <literal>pango_font_description_set_family (desc, pango_font_description_get_family (desc))</literal>.
@@ -1778,7 +1780,7 @@ pango_attr_iterator_get_font (PangoAttrIterator     *iterator,
  * of @list for which @func returns %TRUE and inserts them into
  * a new list.
  * 
- * Return value: a newly allocated #PangoAttrList or %NULL if
+ * Return value: the new #PangoAttrList or %NULL if
  *  no attributes of the given types were found.
  **/
 PangoAttrList *

@@ -594,7 +594,7 @@ pango_glyph_item_apply_attrs (PangoGlyphItem   *glyph_item,
  *   negative values will give ugly results.
  * 
  * Adds spacing between the graphemes of @glyph_item to
- * give the effect of typographic letter spacing.b
+ * give the effect of typographic letter spacing.
  *
  * Since: 1.6
  **/

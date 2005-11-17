@@ -1,12 +1,12 @@
 <refentry id="PangoMarkupFormat" revision="11 Dec 2002">
 <refmeta>
-<refentrytitle>Pango Text Attribute Markup</refentrytitle>
+<refentrytitle>Text Attribute Markup</refentrytitle>
 <manvolnum>3</manvolnum>
 <refmiscinfo>Pango Library</refmiscinfo>
 </refmeta>
 
 <refnamediv>
-<refname>Pango Text Attribute Markup</refname><refpurpose>Simple
+<refname>Text Attribute Markup</refname><refpurpose>Simple
 markup language to encode text with attributes</refpurpose>
 </refnamediv>
 

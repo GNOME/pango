@@ -379,7 +379,7 @@ pango_font_description_get_size (const PangoFontDescription *desc)
 /**
  * pango_font_description_set_absolute_size:
  * @desc: a #PangoFontDescription
- * @size: the new size, in pango units. There are #PANGO_SCALE Pango units in one
+ * @size: the new size, in Pango units. There are #PANGO_SCALE Pango units in one
  *   device unit. For an output backend where a device unit is a pixel, a @size
  *   value of 10 * PANGO_SCALE gives a 10 pixel font.
  * 
@@ -447,7 +447,7 @@ pango_font_description_get_set_fields (const PangoFontDescription *desc)
  * settings for those fields, to clear a family name set with
  * pango_font_description_set_family_static() so that it won't
  * be returned by subsequent calls to pango_font_description_get_family(),
- * you must actually call pango_font_description_set_family (desc, NULL);
+ * you must actually call pango_font_description_set_family (desc, %NULL);
  **/
 void
 pango_font_description_unset_fields (PangoFontDescription *desc,
@@ -1141,7 +1141,7 @@ pango_font_get_coverage (PangoFont     *font,
  * pango_font_find_shaper:
  * @font: a #PangoFont
  * @language: the language tag
- * @ch: the ISO-10646 character code.
+ * @ch: a unicode character.
  * 
  * Finds the best matching shaper for a font for a particular
  * language tag and character point.
@@ -1310,7 +1310,7 @@ pango_font_metrics_unref (PangoFontMetrics *metrics)
  * actual drawn ink. It is necessary to lay out the text to figure
  * where the ink will be.)
  * 
- * Return value: the ascent, in pango units. (1 point == #PANGO_SCALE pango units.)
+ * Return value: the ascent, in Pango units. (1 point == #PANGO_SCALE Pango units.)
  **/
 int
 pango_font_metrics_get_ascent (PangoFontMetrics *metrics)
@@ -1330,7 +1330,7 @@ pango_font_metrics_get_ascent (PangoFontMetrics *metrics)
  * actual drawn ink. It is necessary to lay out the text to figure
  * where the ink will be.)
  * 
- * Return value: the descent, in pango units. (1 point == #PANGO_SCALE pango units.)
+ * Return value: the descent, in Pango units. (1 point == #PANGO_SCALE Pango units.)
  **/
 int
 pango_font_metrics_get_descent (PangoFontMetrics *metrics)
@@ -1349,7 +1349,7 @@ pango_font_metrics_get_descent (PangoFontMetrics *metrics)
  * determining the initial size for a window. Actual characters in
  * text will be wider and narrower than this.
  * 
- * Return value: the character width, in pango units. (1 point == #PANGO_SCALE pango units.)
+ * Return value: the character width, in Pango units. (1 point == #PANGO_SCALE Pango units.)
  **/
 int
 pango_font_metrics_get_approximate_char_width (PangoFontMetrics *metrics)
@@ -1370,7 +1370,7 @@ pango_font_metrics_get_approximate_char_width (PangoFontMetrics *metrics)
  * is generally somewhat more accurate than the result of
  * pango_font_metrics_get_approximate_digit_width().
  * 
- * Return value: the digit width, in pango units. (1 point == #PANGO_SCALE pango units.)
+ * Return value: the digit width, in Pango units. (1 point == #PANGO_SCALE Pango units.)
  **/
 int
 pango_font_metrics_get_approximate_digit_width (PangoFontMetrics *metrics)
@@ -1532,7 +1532,7 @@ pango_font_family_list_faces (PangoFontFamily  *family,
  * of pango_font_metrics_get_approximate_char_width() may be affected
  * by double-width characters.  
  * 
- * Return value: TRUE if the family is monospace.
+ * Return value: %TRUE if the family is monospace.
  **/
 gboolean 
 pango_font_family_is_monospace (PangoFontFamily  *family)
@@ -1611,7 +1611,7 @@ pango_font_face_get_face_name (PangoFontFace *face)
  * List the available sizes for a font. This is only applicable to bitmap
  * fonts. For scalable fonts, stores %NULL at the location pointed to by
  * @sizes and 0 at the location pointed to by @n_sizes. The sizes returned
- * are in pango units and are sorted in ascending order.
+ * are in Pango units and are sorted in ascending order.
  *
  * Since: 1.4
  **/

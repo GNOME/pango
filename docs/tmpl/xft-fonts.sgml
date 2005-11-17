@@ -39,9 +39,6 @@ overring the #PangoXftRendererClass virtual functions
 
 </para>
 
-<!-- ##### SECTION Stability_Level ##### -->
-
-
 <!-- ##### STRUCT PangoXftFont ##### -->
 <para>
 

@@ -17,9 +17,6 @@ various steps of this process.
 
 </para>
 
-<!-- ##### SECTION Stability_Level ##### -->
-
-
 <!-- ##### STRUCT PangoContext ##### -->
 <para>
 The #PangoContext structure stores global information
@@ -296,6 +293,15 @@ The GObject type for #PangoDirection.
 @Returns: 
 
 
+<!-- ##### FUNCTION pango_unichar_direction ##### -->
+<para>
+
+</para>
+
+@ch: 
+@Returns: 
+
+
 <!-- ##### FUNCTION pango_find_base_dir ##### -->
 <para>
 
@@ -378,7 +384,7 @@ about the attributes of a single character.
                               (e.g.  letter + diacritics) is considered a
                               unit, while in others, each decomposed
                               character in the grapheme is a unit. In the
-                              default implementation of #pango_break, this
+                              default implementation of pango_break(), this
                               bit is set on all grapheme boundaries except
                               those following Latin, Cyrillic or Greek base
                               characters.
