@@ -219,7 +219,7 @@ enough space for a full word.
 
 <!-- ##### MACRO PANGO_TYPE_WRAP_MODE ##### -->
 <para>
-The GObject type for #PangoWrapMode.
+The #GObject type for #PangoWrapMode.
 </para>
 
 
@@ -254,7 +254,7 @@ The GObject type for #PangoWrapMode.
 
 <!-- ##### MACRO PANGO_TYPE_ELLIPSIZE_MODE ##### -->
 <para>
-The GObject type for #PangoEllipsizeMode.
+The #GObject type for #PangoEllipsizeMode.
 </para>
 
 
@@ -389,8 +389,7 @@ The GObject type for #PangoEllipsizeMode.
 <para>
 A PangoAlignment describes how to align the lines of a #PangoLayout within the
 available space. If the #PangoLayout is set to justify
-using pango_layout_set_justify(), then this only has an effect
-for partial lines.
+using pango_layout_set_justify(), this only has effect for partial lines.
 </para>
 
 @PANGO_ALIGN_LEFT: Put all available space on the right
@@ -399,7 +398,7 @@ for partial lines.
 
 <!-- ##### MACRO PANGO_TYPE_ALIGNMENT ##### -->
 <para>
-The GObject type for #PangoAlignment.
+The #GObject type for #PangoAlignment.
 </para>
 
 
@@ -700,12 +699,12 @@ Routines for rendering PangoLayout objects are provided in
 code specific to each rendering system.
 </para>
 
-@layout: the parent layout for this line.
-@start_index: the start of the line as byte index into @layout->text.
-@length: the length of the line in bytes.
-@runs: a list containing the runs of the line in visual order.
-@is_paragraph_start: %TRUE if this is the first line of the paragraph.
-@resolved_dir: 
+@layout: the parent layout for this line
+@start_index: the start of the line as byte index into @layout->text
+@length: the length of the line in bytes
+@runs: a list containing the runs of the line in visual order
+@is_paragraph_start: %TRUE if this is the first line of the paragraph
+@resolved_dir: the resolved #PangoDirection of the line
 
 <!-- ##### TYPEDEF PangoLayoutRun ##### -->
 <para>

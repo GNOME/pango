@@ -61,9 +61,9 @@ pango_fc_decoder_get_charset (PangoFcDecoder *decoder,
  * pango_fc_decoder_get_glyph:
  * @decoder: a #PangoFcDecoder
  * @fcfont: a #PangoFcFont to query.
- * @wc: the unicode code point to convert to a single #PangoGlyph.
+ * @wc: the Unicode code point to convert to a single #PangoGlyph.
  *
- * Generates a #PangoGlyph for the given unicode point using the
+ * Generates a #PangoGlyph for the given Unicode point using the
  * custom decoder. For complex scripts where there can be multiple
  * glyphs for a single character, the decoder will return whatever
  * glyph is most convenient for it. (Usually whatever glyph is directly

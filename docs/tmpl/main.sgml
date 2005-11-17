@@ -64,7 +64,7 @@ fields:
 
 <!-- ##### MACRO PANGO_TYPE_DIRECTION ##### -->
 <para>
-The GObject type for #PangoDirection.
+The #GObject type for #PangoDirection.
 </para>
 
 

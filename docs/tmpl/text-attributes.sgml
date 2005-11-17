@@ -52,7 +52,7 @@ attribute is listed in parentheses after the description.
 
 <!-- ##### MACRO PANGO_TYPE_ATTR_TYPE ##### -->
 <para>
-The GObject type for #PangoAttrType.
+The #GObject type for #PangoAttrType.
 </para>
 
 
@@ -384,7 +384,7 @@ of underlining.
 
 <!-- ##### MACRO PANGO_TYPE_UNDERLINE ##### -->
 <para>
-The GObject type for #PangoUnderline.
+The #GObject type for #PangoUnderline.
 </para>
 
 
@@ -522,7 +522,7 @@ represent a color in an uncalibrated RGB colorspace.
 
 <!-- ##### MACRO PANGO_TYPE_COLOR ##### -->
 <para>
-The GObject type for #PangoColor.
+The #GObject type for #PangoColor.
 </para>
 
 
@@ -567,7 +567,7 @@ copied and compared with each other.
 
 <!-- ##### MACRO PANGO_TYPE_LANGUAGE ##### -->
 <para>
-The GObject type for #PangoLanguage. 
+The #GObject type for #PangoLanguage. 
 </para>
 
 
@@ -618,7 +618,7 @@ for more than one paragraph of text.
 
 <!-- ##### MACRO PANGO_TYPE_ATTR_LIST ##### -->
 <para>
-The GObject type for #PangoAttrList.
+The #GObject type for #PangoAttrList.
 </para>
 
 

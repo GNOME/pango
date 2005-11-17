@@ -275,7 +275,7 @@ each of which contains a list of #PangoGlyphItem.
 
 <!-- ##### MACRO PANGO_TYPE_GLYPH_STRING ##### -->
 <para>
-The GObject type for #PangoGlyphString.
+The #GObject type for #PangoGlyphString.
 </para>
 
 

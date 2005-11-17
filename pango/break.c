@@ -1461,7 +1461,7 @@ pango_default_break (const gchar   *text,
       prev_type = type;
       prev_wc = wc;
 
-      /* wc might not be a valid unicode base character, but really all we
+      /* wc might not be a valid Unicode base character, but really all we
        * need to know is the last non-combining character */
       if (type != G_UNICODE_COMBINING_MARK && 
           type != G_UNICODE_ENCLOSING_MARK && 

@@ -95,7 +95,7 @@ struct _PangoFcFont
  *   Unicode character.
  * @get_unknown_glyph: Gets the glyph that should be used to
  *   display an unknown-glyph indication for the specified
- *   unicode character.
+ *   Unicode character.
  * @shutdown: Performs any font-specific shutdown code that
  *   needs to be done when pango_fc_font_map_shutdown is called.
  *   May be %NULL.

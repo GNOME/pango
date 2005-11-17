@@ -567,14 +567,14 @@ pango_xft_font_unlock_face (PangoFont *font)
  * @font: a #PangoFont for the Xft backend
  * @wc: Unicode codepoint to look up
  * 
- * Gets the glyph index for a given unicode codepoint
+ * Gets the glyph index for a given Unicode character
  * for @font. If you only want to determine
  * whether the font has the glyph, use pango_xft_font_has_char().
  * 
  * Use pango_fc_font_get_glyph() instead.
  *
- * Return value: the glyph index, or 0, if the unicode
- *  codepoint doesn't exist in the font.
+ * Return value: the glyph index, or 0, if the Unicode
+ *  character does not exist in the font.
  *
  * Since: 1.2
  **/

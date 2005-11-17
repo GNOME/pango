@@ -94,7 +94,7 @@ struct _PangoLayoutIter
   /* first glyph in the next cluster */
   int next_cluster_glyph;
 
-  /* number of unicode chars in current cluster */
+  /* number of Unicode chars in current cluster */
   int cluster_num_chars;
 
   /* visual position of current character within the cluster */
@@ -202,7 +202,7 @@ pango_layout_finalize (GObject *object)
  * Create a new #PangoLayout object with attributes initialized to
  * default values for a particular #PangoContext.
  * 
- * Return value: a new #PangoLayout, with a reference count of one.
+ * Return value: the new #PangoLayout, with a reference count of one.
  **/
 PangoLayout *
 pango_layout_new (PangoContext *context)
@@ -227,7 +227,7 @@ pango_layout_new (PangoContext *context)
  * tab array, and text from the original layout are all copied by
  * value.
  * 
- * Return value: a new #PangoLayout identical to @src
+ * Return value: the new #PangoLayout.
  **/
 PangoLayout*
 pango_layout_copy (PangoLayout *src)
@@ -271,7 +271,7 @@ pango_layout_copy (PangoLayout *src)
  * 
  * Retrieves the #PangoContext used for this layout.
  * 
- * Return value: The #PangoContext for the layout. This does not
+ * Return value: the #PangoContext for the layout. This does not
  * have an additional refcount added, so if you want to keep
  * a copy of this around, you must reference it yourself.
  **/
@@ -289,7 +289,7 @@ pango_layout_get_context (PangoLayout *layout)
  * @width: the desired width, or -1 to indicate that no wrapping should be
  *         performed.
  * 
- * Sets the width to which the lines of the #PangoLayout should be wrapped.
+ * Sets the width to which the lines of the #PangoLayout should wrap.
  **/
 void
 pango_layout_set_width (PangoLayout *layout,
@@ -308,9 +308,9 @@ pango_layout_set_width (PangoLayout *layout,
  * pango_layout_get_width:
  * @layout: a #PangoLayout
  * 
- * Gets the width to which the lines of the #PangoLayout should be wrapped.
+ * Gets the width to which the lines of the #PangoLayout should wrap.
  * 
- * Return value: the width
+ * Return value: the width.
  **/
 int
 pango_layout_get_width (PangoLayout    *layout)
@@ -324,7 +324,7 @@ pango_layout_get_width (PangoLayout    *layout)
  * @layout: a #PangoLayout
  * @wrap: the wrap mode
  * 
- * Sets the wrap mode; the wrap mode only has an effect if a width
+ * Sets the wrap mode; the wrap mode only has effect if a width
  * is set on the layout with pango_layout_set_width(). To turn off wrapping,
  * set the width to -1.
  **/
@@ -347,7 +347,7 @@ pango_layout_set_wrap (PangoLayout  *layout,
  * 
  * Gets the wrap mode for the layout.
  * 
- * Return value: Active wrap mode.
+ * Return value: active wrap mode.
  **/
 PangoWrapMode
 pango_layout_get_wrap (PangoLayout *layout)
@@ -360,10 +360,10 @@ pango_layout_get_wrap (PangoLayout *layout)
 /**
  * pango_layout_set_indent
  * @layout: a #PangoLayout.
- * @indent: the amount by which to indentset
+ * @indent: the amount by which to indent.
  * 
  * Sets the width in Pango units to indent each paragraph. A negative value
- * of @indent will produce a hanging indent. That is, the first line will
+ * of @indent will produce a hanging indentation. That is, the first line will
  * have the full width, and subsequent lines will be indented by the
  * absolute value of @indent.
  **/
@@ -385,9 +385,9 @@ pango_layout_set_indent (PangoLayout *layout,
  * @layout: a #PangoLayout
  * 
  * Gets the paragraph indent width in Pango units. A negative value
- * indicates a hanging indent.
+ * indicates a hanging indentation.
  * 
- * Return value: the indent
+ * Return value: the indent.
  **/
 int
 pango_layout_get_indent (PangoLayout *layout)
@@ -401,7 +401,9 @@ pango_layout_get_indent (PangoLayout *layout)
  * @layout: a #PangoLayout.
  * @spacing: the amount of spacing
  * 
- * Sets the amount of spacing between the lines of the layout.
+ * Sets the amount of spacing in #PangoGlyphUnit between the lines of the
+ * layout.
+ *
  **/
 void
 pango_layout_set_spacing (PangoLayout *layout,
@@ -420,9 +422,10 @@ pango_layout_set_spacing (PangoLayout *layout,
  * pango_layout_get_spacing:
  * @layout: a #PangoLayout
  * 
- * Gets the amount of spacing between the lines of the layout.
+ * Gets the amount of spacing in #PangoGlyphUnit between the lines of the
+ * layout.
  * 
- * Return value: the spacing (in #PangoGlyphUnit)
+ * Return value: the spacing.
  **/
 int
 pango_layout_get_spacing (PangoLayout *layout)
@@ -463,7 +466,7 @@ pango_layout_set_attributes (PangoLayout   *layout,
  * 
  * Gets the attribute list for the layout, if any.
  * 
- * Return value: a #PangoAttrList
+ * Return value: a #PangoAttrList.
  **/
 PangoAttrList*
 pango_layout_get_attributes (PangoLayout *layout)
@@ -477,7 +480,7 @@ pango_layout_get_attributes (PangoLayout *layout)
  * pango_layout_set_font_description:
  * @layout: a #PangoLayout
  * @desc: the new #PangoFontDescription, or %NULL to unset the
- *        current font description.
+ *        current font description
  * 
  * Sets the default font description for the layout. If no font 
  * description is set on the layout, the font description from
@@ -528,12 +531,13 @@ pango_layout_get_font_description (PangoLayout *layout)
  * @layout: a #PangoLayout
  * @justify: whether the lines in the layout should be justified.
  * 
- * Sets whether or not each complete line should be stretched to
+ * Sets whether each complete line should be stretched to
  * fill the entire width of the layout. This stretching is typically
  * done by adding whitespace, but for some scripts (such as Arabic),
- * the justification is done by extending the characters.
+ * the justification may be done in more complex ways, like extending
+ * the characters.
  *
- * Note that as of Pango-1.4, this functionality is not yet implemented.
+ * Note that as of Pango-1.10, this functionality is not yet implemented.
  **/
 void
 pango_layout_set_justify (PangoLayout *layout,
@@ -548,10 +552,10 @@ pango_layout_set_justify (PangoLayout *layout,
  * pango_layout_get_justify:
  * @layout: a #PangoLayout
  * 
- * Gets whether or not each complete line should be stretched to
- * fill the entire width of the layout.
+ * Gets whether each complete line should be stretched to fill the entire
+ * width of the layout.
  * 
- * Return value: the justify
+ * Return value: the justify.
  **/
 gboolean
 pango_layout_get_justify (PangoLayout *layout)
@@ -576,12 +580,13 @@ pango_layout_get_justify (PangoLayout *layout)
  * characters get their direction from the surrounding paragraphs.
  *
  * When %FALSE, the choice between left-to-right and
- * right-to-left layout is done by according to the base direction
+ * right-to-left layout is done according to the base direction
  * of the layout's #PangoContext. (See pango_context_set_base_dir()).
  *
  * When the auto-computed direction of a paragraph differs from the
- * base direction of the context, then the interpretation of
+ * base direction of the context, the interpretation of
  * %PANGO_ALIGN_LEFT and %PANGO_ALIGN_RIGHT are swapped. 
+ *
  **/
 void
 pango_layout_set_auto_dir (PangoLayout *layout,
@@ -606,8 +611,8 @@ pango_layout_set_auto_dir (PangoLayout *layout,
  * for the layout according to the contents of the layout.
  * See pango_layout_set_auto_dir().
  * 
- * Return value: if %TRUE, the bidirectional base direction
- *   is computed from the layout's contents.
+ * Return value: %TRUE if the bidirectional base direction
+ *   is computed from the layout's contents, %FALSE otherwise.
  **/
 gboolean
 pango_layout_get_auto_dir (PangoLayout *layout)
@@ -620,10 +625,10 @@ pango_layout_get_auto_dir (PangoLayout *layout)
 /**
  * pango_layout_set_alignment:
  * @layout: a #PangoLayout
- * @alignment: the new alignment
+ * @alignment: the alignment
  * 
- * Sets the alignment for the layout (how partial lines are
- * positioned within the horizontal space available.)
+ * Sets the alignment for the layout: how partial lines are
+ * positioned within the horizontal space available.
  **/
 void
 pango_layout_set_alignment (PangoLayout   *layout,
@@ -638,10 +643,10 @@ pango_layout_set_alignment (PangoLayout   *layout,
  * pango_layout_get_alignment:
  * @layout: a #PangoLayout
  * 
- * Gets the alignment for the layout (how partial lines are
- * positioned within the horizontal space available.)
+ * Gets the alignment for the layout: how partial lines are
+ * positioned within the horizontal space available.
  * 
- * Return value: the alignment value
+ * Return value: the alignment.
  **/
 PangoAlignment
 pango_layout_get_alignment (PangoLayout *layout)
@@ -682,7 +687,7 @@ pango_layout_set_tabs (PangoLayout   *layout,
  * and %NULL is returned. Default tabs are every 8 spaces.
  * The return value should be freed with pango_tab_array_free().
  * 
- * Return value: a copy of the tabs for this layout, or %NULL
+ * Return value: a copy of the tabs for this layout, or %NULL.
  **/
 PangoTabArray*
 pango_layout_get_tabs (PangoLayout *layout)
@@ -729,7 +734,7 @@ pango_layout_set_single_paragraph_mode (PangoLayout *layout,
  * Obtains the value set by pango_layout_set_single_paragraph_mode().
  * 
  * Return value: %TRUE if the layout does not break paragraphs at 
- * paragraph separator characters
+ * paragraph separator characters, %FALSE otherwise.
  **/
 gboolean
 pango_layout_get_single_paragraph_mode (PangoLayout *layout)
@@ -776,7 +781,7 @@ pango_layout_set_ellipsize (PangoLayout        *layout,
  * Gets the type of ellipsization being performed for @layout.
  * See pango_layout_set_ellipsize()
  * 
- * Return value: the current ellipsization mode for @layout
+ * Return value: the current ellipsization mode for @layout.
  *
  * Since: 1.6
  **/
@@ -845,7 +850,7 @@ pango_layout_set_text (PangoLayout *layout,
  * Gets the text in the layout. The returned text should not
  * be freed or modified.
  * 
- * Return value: the text in the @layout
+ * Return value: the text in the @layout.
  **/
 const char*
 pango_layout_get_text (PangoLayout *layout)
@@ -859,7 +864,8 @@ pango_layout_get_text (PangoLayout *layout)
  * pango_layout_set_markup:
  * @layout: a #PangoLayout
  * @markup: marked-up text
- * @length: length of marked-up text in bytes, or -1
+ * @length: length of marked-up text in bytes, or -1 if @markup is
+ * nul-terminated
  *
  * Same as pango_layout_set_markup_with_accel(), but
  * the markup text isn't scanned for accelerators.
@@ -876,11 +882,12 @@ pango_layout_set_markup (PangoLayout *layout,
 /**
  * pango_layout_set_markup_with_accel:
  * @layout: a #PangoLayout
- * @markup: some marked-up text 
+ * @markup: marked-up text 
  * (see <link linkend="PangoMarkupFormat">markup format</link>)
- * @length: length of @markup in bytes
+ * @length: length of marked-up text in bytes, or -1 if @markup is
+ * nul-terminated
  * @accel_marker: marker for accelerators in the text
- * @accel_char: return location for any located accelerators
+ * @accel_char: return location for first located accelerator, or %NULL
  * 
  * Sets the layout text and attribute list from marked-up text (see
  * <link linkend="PangoMarkupFormat">markup format</link>). Replaces
@@ -982,7 +989,7 @@ pango_layout_get_log_attrs (PangoLayout    *layout,
  * 
  * Retrieves the count of lines for the @layout.
  * 
- * Return value: the line count
+ * Return value: the line count.
  **/
 int
 pango_layout_get_line_count (PangoLayout   *layout)
@@ -1463,7 +1470,7 @@ pango_layout_move_cursor_visually (PangoLayout *layout,
  * If either the X or Y positions were not inside the layout, then the
  * function returns %FALSE; on an exact hit, it returns %TRUE.
  *
- * Return value: %TRUE if the coordinates were inside text
+ * Return value: %TRUE if the coordinates were inside text, %FALSE otherwise.
  **/
 gboolean
 pango_layout_xy_to_index (PangoLayout *layout,
@@ -1873,14 +1880,17 @@ direction_simple (PangoDirection d)
 {
   switch (d)
     {
-    case PANGO_DIRECTION_LTR :	    return 1;
-    case PANGO_DIRECTION_RTL :	    return -1;
-    case PANGO_DIRECTION_TTB_LTR :  return 1;
-    case PANGO_DIRECTION_TTB_RTL :  return -1;
-    case PANGO_DIRECTION_WEAK_LTR : return 1;
-    case PANGO_DIRECTION_WEAK_RTL : return -1;
-    case PANGO_DIRECTION_NEUTRAL :  return 0;
-    /* no default compiler should complain if a new values is added */
+    case PANGO_DIRECTION_LTR :
+    case PANGO_DIRECTION_WEAK_LTR :
+    case PANGO_DIRECTION_TTB_RTL :
+      return 1;
+    case PANGO_DIRECTION_RTL :
+    case PANGO_DIRECTION_WEAK_RTL :
+    case PANGO_DIRECTION_TTB_LTR :
+      return -1;
+    case PANGO_DIRECTION_NEUTRAL :
+      return 0;
+    /* no default, compiler should complain if a new values is added */
     }
   /* not reached */
   return 0;
@@ -3315,9 +3325,11 @@ pango_layout_check_lines (PangoLayout *layout)
  * pango_layout_line_ref:
  * @line: a #PangoLayoutLine
  * 
- * Increases the reference count of a #PangoLayoutLine by one.
+ * Increase the reference count of a #PangoLayoutLine by one.
  *
- * Return value: the line passed in (since 1.10)
+ * Return value: the line passed in.
+ *
+ * Since: 1.10
  **/
 PangoLayoutLine *
 pango_layout_line_ref (PangoLayoutLine *line)
@@ -3335,8 +3347,8 @@ pango_layout_line_ref (PangoLayoutLine *line)
  * pango_layout_line_unref:
  * @line: a #PangoLayoutLine
  * 
- * Decreases the reference count of a #PangoLayoutLine by one.
- * if the result is zero, the line and all associated memory
+ * Decrease the reference count of a #PangoLayoutLine by one.
+ * If the result is zero, the line and all associated memory
  * will be freed.
  **/
 void
@@ -3377,7 +3389,7 @@ pango_layout_line_get_type(void)
 /**
  * pango_layout_line_x_to_index:
  * @line:      a #PangoLayoutLine
- * @x_pos:     the x offset (in #PangoGlyphUnit)
+ * @x_pos:     the X offset (in #PangoGlyphUnit)
  *             from the left edge of the line.
  * @index_:    location to store calculated byte index for
  *             the grapheme in which the user clicked.
@@ -3908,13 +3920,13 @@ pango_layout_run_get_extents (PangoLayoutRun *run,
 /**
  * pango_layout_line_get_extents:
  * @line:     a #PangoLayoutLine
- * @ink_rect: rectangle used to store the extents of the glyph string as drawn
- *            or %NULL to indicate that the result is not needed.
- * @logical_rect: rectangle used to store the logical extents of the glyph string
- *            or %NULL to indicate that the result is not needed.
+ * @ink_rect: rectangle used to store the extents of the glyph string
+ *            as drawn, or %NULL
+ * @logical_rect: rectangle used to store the logical extents of the glyph
+ *            string, or %NULL
  * 
- * Computes the logical and ink extents of a layout line. See the documentation
- * for pango_font_get_glyph_extents() for details about the interpretation
+ * Computes the logical and ink extents of a layout line. See
+ * pango_font_get_glyph_extents() for details about the interpretation
  * of the rectangles.
  */
 void
@@ -4022,13 +4034,13 @@ pango_layout_line_new (PangoLayout *layout)
 /**
  * pango_layout_line_get_pixel_extents:
  * @layout_line: a #PangoLayoutLine
- * @ink_rect:    rectangle used to store the extents of the glyph string as drawn
- *               or %NULL to indicate that the result is not needed.
- * @logical_rect: rectangle used to store the logical extents of the glyph string
- *               or %NULL to indicate that the result is not needed.
+ * @ink_rect:    rectangle used to store the extents of the glyph string
+ *               as drawn, or %NULL
+ * @logical_rect: rectangle used to store the logical extents of the glyph
+ *               string, or %NULL
  * 
- * Computes the logical and ink extents of a layout line. See the documentation
- * for pango_font_get_glyph_extents() for details about the interpretation
+ * Computes the logical and ink extents of a layout line. See
+ * pango_font_get_glyph_extents() for details about the interpretation
  * of the rectangles. The returned rectangles are in device units, as
  * opposed to pango_layout_line_get_extents(), which returns the extents in
  * #PangoGlyphUnit.
@@ -4564,7 +4576,7 @@ pango_layout_iter_get_type (void)
  * 
  * Returns an iterator to iterate over the visual extents of the layout.
  * 
- * Return value: a new #PangoLayoutIter
+ * Return value: the new #PangoLayoutIter.
  **/
 PangoLayoutIter*
 pango_layout_get_iter (PangoLayout *layout)
@@ -4636,7 +4648,7 @@ pango_layout_iter_free (PangoLayoutIter *iter)
  * sequential. Also, the index may be equal to the length of the text
  * in the layout, if on the %NULL run (see pango_layout_iter_get_run()).
  * 
- * Return value: current byte index
+ * Return value: current byte index.
  **/
 int
 pango_layout_iter_get_index (PangoLayoutIter *iter)
@@ -4656,7 +4668,7 @@ pango_layout_iter_get_index (PangoLayoutIter *iter)
  * %NULL. The %NULL run at the end of each line ensures that all lines have
  * at least one run, even lines consisting of only a newline.
  * 
- * Return value: the current run
+ * Return value: the current run.
  **/
 PangoLayoutRun*
 pango_layout_iter_get_run (PangoLayoutIter *iter)
@@ -4673,7 +4685,7 @@ pango_layout_iter_get_run (PangoLayoutIter *iter)
  * 
  * Gets the current line.
  * 
- * Return value: the current line
+ * Return value: the current line.
  **/
 PangoLayoutLine*
 pango_layout_iter_get_line (PangoLayoutIter *iter)
@@ -4690,7 +4702,7 @@ pango_layout_iter_get_line (PangoLayoutIter *iter)
  * 
  * Determines whether @iter is on the last line of the layout.
  * 
- * Return value: %TRUE if @iter is on the last line
+ * Return value: %TRUE if @iter is on the last line.
  **/
 gboolean
 pango_layout_iter_at_last_line (PangoLayoutIter *iter)
@@ -4810,7 +4822,7 @@ next_cluster_internal (PangoLayoutIter *iter,
  * Moves @iter forward to the next character in visual order. If @iter was already at
  * the end of the layout, returns %FALSE.
  * 
- * Return value: whether motion was possible
+ * Return value: whether motion was possible.
  **/
 gboolean
 pango_layout_iter_next_char (PangoLayoutIter *iter)
@@ -4854,7 +4866,7 @@ pango_layout_iter_next_char (PangoLayoutIter *iter)
  * Moves @iter forward to the next cluster in visual order. If @iter
  * was already at the end of the layout, returns %FALSE.
  * 
- * Return value: whether motion was possible
+ * Return value: whether motion was possible.
  **/
 gboolean
 pango_layout_iter_next_cluster (PangoLayoutIter *iter)
@@ -4869,7 +4881,7 @@ pango_layout_iter_next_cluster (PangoLayoutIter *iter)
  * Moves @iter forward to the next run in visual order. If @iter was
  * already at the end of the layout, returns %FALSE.
  * 
- * Return value: whether motion was possible
+ * Return value: whether motion was possible.
  **/
 gboolean
 pango_layout_iter_next_run (PangoLayoutIter *iter)
@@ -4913,7 +4925,7 @@ pango_layout_iter_next_run (PangoLayoutIter *iter)
  * Moves @iter forward to the start of the next line. If @iter is
  * already on the last line, returns %FALSE.
  * 
- * Return value: whether motion was possible
+ * Return value: whether motion was possible.
  **/
 gboolean
 pango_layout_iter_next_line (PangoLayoutIter *iter)
@@ -5000,8 +5012,8 @@ pango_layout_iter_get_char_extents (PangoLayoutIter *iter,
 /**
  * pango_layout_iter_get_cluster_extents:
  * @iter: a #PangoLayoutIter
- * @ink_rect: rectangle to fill with ink extents
- * @logical_rect: rectangle to fill with logical extents
+ * @ink_rect: rectangle to fill with ink extents, or %NULL
+ * @logical_rect: rectangle to fill with logical extents, or %NULL
  *
  * Gets the extents of the current cluster, in layout coordinates
  * (origin is the top left of the entire layout).
@@ -5047,8 +5059,8 @@ pango_layout_iter_get_cluster_extents (PangoLayoutIter *iter,
 /**
  * pango_layout_iter_get_run_extents:
  * @iter: a #PangoLayoutIter
- * @ink_rect: rectangle to fill with ink extents
- * @logical_rect: rectangle to fill with logical extents
+ * @ink_rect: rectangle to fill with ink extents, or %NULL
+ * @logical_rect: rectangle to fill with logical extents, or %NULL
  * 
  * Gets the extents of the current run in layout coordinates
  * (origin is the top left of the entire layout).
@@ -5089,8 +5101,8 @@ pango_layout_iter_get_run_extents (PangoLayoutIter *iter,
 /**
  * pango_layout_iter_get_line_extents:
  * @iter: a #PangoLayoutIter
- * @ink_rect: rectangle to fill with ink extents
- * @logical_rect: rectangle to fill with logical extents
+ * @ink_rect: rectangle to fill with ink extents, or %NULL
+ * @logical_rect: rectangle to fill with logical extents, or %NULL
  *
  * Obtains the extents of the current line. @ink_rect or @logical_rect
  * can be NULL if you aren't interested in them. Extents are in layout
@@ -5137,7 +5149,7 @@ pango_layout_iter_get_line_extents (PangoLayoutIter *iter,
  * the current line.  A line's range includes the line's logical
  * extents, plus half of the spacing above and below the line, if
  * pango_layout_set_spacing() has been called to set layout spacing.
- * The y positions are in layout coordinates (origin at top left of the
+ * The Y positions are in layout coordinates (origin at top left of the
  * entire layout).
  * 
  **/
@@ -5183,10 +5195,10 @@ pango_layout_iter_get_line_yrange (PangoLayoutIter *iter,
  * pango_layout_iter_get_baseline:
  * @iter: a #PangoLayoutIter
  * 
- * Gets the y position of the current line's baseline, in layout
+ * Gets the Y position of the current line's baseline, in layout
  * coordinates (origin at top left of the entire layout).
  * 
- * Return value: baseline of current line
+ * Return value: baseline of current line.
  **/
 int
 pango_layout_iter_get_baseline (PangoLayoutIter *iter)
@@ -5204,8 +5216,8 @@ pango_layout_iter_get_baseline (PangoLayoutIter *iter)
 /**
  * pango_layout_iter_get_layout_extents:
  * @iter: a #PangoLayoutIter
- * @ink_rect: rectangle to fill with ink extents
- * @logical_rect: rectangle to fill with logical extents
+ * @ink_rect: rectangle to fill with ink extents, or %NULL
+ * @logical_rect: rectangle to fill with logical extents, or %NULL
  *
  * Obtains the extents of the #PangoLayout being iterated
  * over. @ink_rect or @logical_rect can be NULL if you

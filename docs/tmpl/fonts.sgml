@@ -30,7 +30,7 @@ the characteristics of a font to load.
 
 <!-- ##### MACRO PANGO_TYPE_FONT_DESCRIPTION ##### -->
 <para>
-The GObject type for #PangoFontDescription.
+The #GObject type for #PangoFontDescription.
 </para>
 
 
@@ -45,7 +45,7 @@ The GObject type for #PangoFontDescription.
 
 <!-- ##### MACRO PANGO_TYPE_STYLE ##### -->
 <para>
-The GObject type for #PangoStyle.
+The #GObject type for #PangoStyle.
 </para>
 
 
@@ -66,7 +66,7 @@ value ranging from 100 to 900, but there are some predefined values:
 
 <!-- ##### MACRO PANGO_TYPE_WEIGHT ##### -->
 <para>
-The GObject type for #PangoWeight.
+The #GObject type for #PangoWeight.
 </para>
 
 
@@ -82,7 +82,7 @@ An enumeration specifying capitalization variant of the font.
 
 <!-- ##### MACRO PANGO_TYPE_VARIANT ##### -->
 <para>
-The GObject type for #PangoVariant.
+The #GObject type for #PangoVariant.
 </para>
 
 
@@ -105,7 +105,7 @@ within a family.
 
 <!-- ##### MACRO PANGO_TYPE_STRETCH ##### -->
 <para>
-The GObject type for #PangoStretch.
+The #GObject type for #PangoStretch.
 </para>
 
 
@@ -125,7 +125,7 @@ The bits in a #PangoFontMask correspond to fields in a
 
 <!-- ##### MACRO PANGO_TYPE_FONT_MASK ##### -->
 <para>
-The GObject type for #PangoFontMask.
+The #GObject type for #PangoFontMask.
 </para>
 
 
@@ -424,7 +424,7 @@ of their meaning.
 
 <!-- ##### MACRO PANGO_TYPE_FONT_METRICS ##### -->
 <para>
-The GObject type for #PangoFontMetrics.
+The #GObject type for #PangoFontMetrics.
 </para>
 
 
@@ -538,7 +538,7 @@ which the implementation fills in.
 
 <!-- ##### MACRO PANGO_TYPE_FONT ##### -->
 <para>
-The GObject type for #PangoFont.
+The #GObject type for #PangoFont.
 </para>
 
 
@@ -629,7 +629,7 @@ slant, weight, width and other aspects.
 
 <!-- ##### MACRO PANGO_TYPE_FONT_FAMILY ##### -->
 <para>
-The GObject type for #PangoFontFamily.
+The #GObject type for #PangoFontFamily.
 </para>
 
 
@@ -687,7 +687,7 @@ the same family, slant, weight, width, but varying sizes.
 
 <!-- ##### MACRO PANGO_TYPE_FONT_FACE ##### -->
 <para>
-The GObject type for #PangoFontFace.
+The #GObject type for #PangoFontFace.
 </para>
 
 
@@ -755,7 +755,7 @@ fills in.
 
 <!-- ##### MACRO PANGO_TYPE_FONT_MAP ##### -->
 <para>
-The GObject type for #PangoFontMap.
+The #GObject type for #PangoFontMap.
 </para>
 
 
@@ -869,7 +869,7 @@ set of metrics for the entire fontset.
 
 <!-- ##### MACRO PANGO_TYPE_FONTSET ##### -->
 <para>
-The GObject type for #PangoFontset.
+The #GObject type for #PangoFontset.
 </para>
 
 
@@ -882,7 +882,7 @@ a particular #PangoFontset implementation.
 
 @parent_class: 
 @get_font: a function to get the font in the fontset that contains the 
-   best glyph for the given unicode character; see pango_fontset_get_font().
+   best glyph for the given Unicode character; see pango_fontset_get_font().
 @get_metrics: a function to get overall metric information for the fonts 
    in the fontset; see pango_fontset_get_metrics().
 @get_language: a function to get the language of the fontset.
@@ -939,7 +939,7 @@ which the creator provides when constructing the
 
 <!-- ##### MACRO PANGO_TYPE_FONTSET_SIMPLE ##### -->
 <para>
-The GObject type for #PangoFontsetSimple.
+The #GObject type for #PangoFontsetSimple.
 </para>
 
 
