@@ -1,3 +1,8 @@
+2005-11-17  Matthias Clasen  <mclasen@redhat.com>
+
+	* modules/hangul/tables-jamos.i: const correctness
+	fixes found by Arjan van de Ven and gcc.
+
 2005-11-17  Behdad Esfahbod  <behdad@gnome.org>
 
 	* pango/pangofc-fontmap.c (fontset_hash_key_equal): Compare language
