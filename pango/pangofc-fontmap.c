@@ -304,6 +304,7 @@ fontset_hash_key_equal (const FontsetHashKey *key_a,
 {
   if (key_a->size == key_b->size &&
       pango_font_description_equal (key_a->desc, key_b->desc) &&
+      key_a->language == key_b->language &&
       key_a->matrix.xx == key_b->matrix.xx &&
       key_a->matrix.xy == key_b->matrix.xy &&
       key_a->matrix.yx == key_b->matrix.yx &&
