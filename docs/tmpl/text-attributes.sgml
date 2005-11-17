@@ -18,11 +18,9 @@ of attributes applied to a portion of text.
 
 </para>
 
-<!-- ##### SECTION Stability_Level ##### -->
-
-
 <!-- ##### ENUM PangoAttrType ##### -->
 <para>
+The #PangoAttrType
 distinguishes between different types of attributes. Along with the
 predefined values, it is possible to allocate additional values
 for custom attributes using pango_attr_type_register(). The predefined
@@ -37,7 +35,7 @@ attribute is listed in parentheses after the description.
 @PANGO_ATTR_WEIGHT: font weight (#PangoAttrInt)
 @PANGO_ATTR_VARIANT: font variant (normal or small caps) (#PangoAttrInt)
 @PANGO_ATTR_STRETCH: font stretch (#PangoAttrInt)
-@PANGO_ATTR_SIZE: font size in points divided by PANGO_SCALE (#PangoAttrInt)
+@PANGO_ATTR_SIZE: font size in points divided by %PANGO_SCALE (#PangoAttrInt)
 @PANGO_ATTR_FONT_DESC: font description (#PangoAttrFontDesc)
 @PANGO_ATTR_FOREGROUND: foreground color (#PangoAttrColor)
 @PANGO_ATTR_BACKGROUND: background color (#PangoAttrColor)
@@ -45,7 +43,7 @@ attribute is listed in parentheses after the description.
 @PANGO_ATTR_STRIKETHROUGH: whether the text is struck-through (#PangoAttrInt)
 @PANGO_ATTR_RISE: baseline displacement (#PangoAttrInt)
 @PANGO_ATTR_SHAPE: shape (#PangoAttrShape)
-@PANGO_ATTR_SCALE: font size scale factor (#PangoAttrScale)
+@PANGO_ATTR_SCALE: font size scale factor (#PangoAttrFloat)
 @PANGO_ATTR_FALLBACK: whether fallback is enabled (#PangoAttrInt)
 @PANGO_ATTR_LETTER_SPACING: 
 @PANGO_ATTR_UNDERLINE_COLOR: 
@@ -84,7 +82,7 @@ applies.
 @klass: the class structure holding information about the type of the attribute
 @start_index: the start index of the range (in bytes).
 @end_index: end index of the range (in bytes). The character at this index
-	not included in the range.
+	is not included in the range.
 
 <!-- ##### STRUCT PangoAttrString ##### -->
 <para>
@@ -97,7 +95,7 @@ a string value.
 
 <!-- ##### STRUCT PangoAttrLanguage ##### -->
 <para>
-The #PangoAttrColor structure is used to represent attributes that
+The #PangoAttrLanguage structure is used to represent attributes that
 are languages.
 </para>
 
@@ -116,7 +114,7 @@ are colors.
 <!-- ##### STRUCT PangoAttrInt ##### -->
 <para>
 The #PangoAttrInt structure is used to represent attributes with
-a integer or enumeration value.
+an integer or enumeration value.
 </para>
 
 @attr: the common portion of the attribute
@@ -160,12 +158,12 @@ set font size.
 </para>
 
 @attr: the common portion of the attribute
-@size: size of font, in units of 1/PANGO_SCALE of a point (for
-  PANGO_ATTR_SIZE) or of a device uni (for PANGO_ATTR_ABSOLUTE_SIZE)
+@size: size of font, in units of 1/%PANGO_SCALE of a point (for
+  %PANGO_ATTR_SIZE) or of a device uni (for %PANGO_ATTR_ABSOLUTE_SIZE)
 @absolute: whether the font size is in device units or points.
    This field is only present for compatibility with Pango-1.8.0
-   (PANGO_ATTR_ABSOLUTE_SIZE was added in 1.8.1); and always will
-   be %FALSE for PANGO_ATTR_SIZE and %TRUE for PANGO_ATTR_ABSOLUTE_SIZE.
+   (%PANGO_ATTR_ABSOLUTE_SIZE was added in 1.8.1); and always will
+   be %FALSE for %PANGO_ATTR_SIZE and %TRUE for %PANGO_ATTR_ABSOLUTE_SIZE.
 
 <!-- ##### FUNCTION pango_parse_markup ##### -->
 <para>
@@ -368,9 +366,9 @@ whether text should be underlined, and if so, the type
 of underlining.
 </para>
 
-@PANGO_UNDERLINE_NONE: no underline should be drawn.
-@PANGO_UNDERLINE_SINGLE: a single underline should be drawn.
-@PANGO_UNDERLINE_DOUBLE: a double underline should be drawn.
+@PANGO_UNDERLINE_NONE: no underline should be drawn
+@PANGO_UNDERLINE_SINGLE: a single underline should be drawn
+@PANGO_UNDERLINE_DOUBLE: a double underline should be drawn
 @PANGO_UNDERLINE_LOW: a single underline should be drawn at a position
                       beneath the ink extents of the text being
                       underlined. This should be used only for underlining
@@ -380,7 +378,7 @@ of underlining.
 @PANGO_UNDERLINE_ERROR: a wavy underline should be drawn below.
                       This underline is typically used to indicate
                       an error such as a possilble mispelling; in some
-                      cases an contrasting color may automatically
+                      cases a contrasting color may automatically
                       be used. This type of underlining is available
                       since Pango 1.4.
 
@@ -416,11 +414,12 @@ The GObject type for #PangoUnderline.
 
 <!-- ##### USER_FUNCTION PangoAttrDataCopyFunc ##### -->
 <para>
-
+A copy function passed to attribute new functions that take
+user data.
 </para>
 
-@data: 
-@Returns: 
+@data: the user data
+@Returns: a new copy of @data.
 
 
 <!-- ##### FUNCTION pango_attr_scale_new ##### -->
@@ -510,7 +509,7 @@ The scale factor for three magnification steps (1.2 * 1.2 * 1.2).
 
 <!-- ##### STRUCT PangoColor ##### -->
 <para>
-The <structname>PangoColor</structname> structure is used to
+The #PangoColor structure is used to
 represent a color in an uncalibrated RGB colorspace.
 </para>
 
@@ -557,11 +556,11 @@ The GObject type for #PangoColor.
 
 <!-- ##### STRUCT PangoLanguage ##### -->
 <para>
-The <structname>PangoLanguage</structname> structure is used to
+The #PangoLanguage structure is used to
 represent a language.
 </para>
 <para>
-<structname>PangoLanguage</structname> pointers can be efficiently 
+#PangoLanguage pointers can be efficiently 
 copied and compared with each other.
 </para>
 
@@ -730,7 +729,7 @@ to filter out a subset of attributes for a list.
 <!-- ##### STRUCT PangoAttrIterator ##### -->
 <para>
 The #PangoAttrIterator structure is used to represent an
-iterator through a #PangoList. A new iterator is created
+iterator through a #PangoAttrList. A new iterator is created
 with pango_attr_list_get_iterator(). Once the iterator
 is created, it can be advanced through the style changes
 in the text using pango_attr_iterator_next(). At each

@@ -362,7 +362,7 @@ pango_layout_get_wrap (PangoLayout *layout)
  * @layout: a #PangoLayout.
  * @indent: the amount by which to indentset
  * 
- * Sets the width in pango units to indent each paragraph. A negative value
+ * Sets the width in Pango units to indent each paragraph. A negative value
  * of @indent will produce a hanging indent. That is, the first line will
  * have the full width, and subsequent lines will be indented by the
  * absolute value of @indent.
@@ -384,7 +384,7 @@ pango_layout_set_indent (PangoLayout *layout,
  * pango_layout_get_indent:
  * @layout: a #PangoLayout
  * 
- * Gets the paragraph indent width in pango units. A negative value
+ * Gets the paragraph indent width in Pango units. A negative value
  * indicates a hanging indent.
  * 
  * Return value: the indent

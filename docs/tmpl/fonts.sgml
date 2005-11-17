@@ -19,9 +19,6 @@ to load a font of a given description.
 
 </para>
 
-<!-- ##### SECTION Stability_Level ##### -->
-
-
 <!-- ##### STRUCT PangoFontDescription ##### -->
 <para>
 The #PangoFontDescription structure represents the description
@@ -535,7 +532,7 @@ pango_font_init() on the structure.
 </para>
 <para>
 The #PangoFont structure contains one member
-which the implementation fills in:
+which the implementation fills in.
 </para>
 
 
@@ -751,7 +748,8 @@ pointer to a appropriate #PangoFontMapClass, then call
 pango_font_map_init() on the structure.
 </para>
 <para>
-The #PangoFont structure contains one member which the implementation fills in:
+The #PangoFontMap structure contains one member which the implementation
+fills in.
 </para>
 
 
@@ -932,10 +930,10 @@ a particular #PangoFontset implementation.
 
 <!-- ##### STRUCT PangoFontsetSimple ##### -->
 <para>
-#PangoFontSetSimple is a implementation of the abstract
-#PangoFontSet base class in terms of an array of fonts,
+#PangoFontsetSimple is a implementation of the abstract
+#PangoFontset base class in terms of an array of fonts,
 which the creator provides when constructing the
-#PangoFontSetSimple.
+#PangoFontsetSimple.
 </para>
 
 

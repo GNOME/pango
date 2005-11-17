@@ -2,7 +2,7 @@
 Tab Stops
 
 <!-- ##### SECTION Short_Description ##### -->
-Structures for storing Tab Stops
+Structures for storing tab stops
 
 <!-- ##### SECTION Long_Description ##### -->
 <para>
@@ -14,12 +14,9 @@ Structures for storing Tab Stops
 
 </para>
 
-<!-- ##### SECTION Stability_Level ##### -->
-
-
 <!-- ##### STRUCT PangoTabArray ##### -->
 <para>
-A <structname>PangoTabArray</structname> struct contains an array
+A #PangoTabArray struct contains an array
 of tab stops. Each tab stop has an alignment and a position.
 </para>
 

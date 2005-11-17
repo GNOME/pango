@@ -14,9 +14,6 @@ Functions for shape engines to manipulate FreeType fonts
 
 </para>
 
-<!-- ##### SECTION Stability_Level ##### -->
-
-
 <!-- ##### STRUCT PangoFT2FontMap ##### -->
 <para>
 The #PangoFT2FontMap is the #PangoFontMap implementation for FreeType fonts.

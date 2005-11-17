@@ -1158,7 +1158,7 @@ itemize_state_finish (ItemizeState *state)
  *             This must be >= 0.
  * @base_dir:  base direction to use for bidirectional processing
  * @attrs:     the set of attributes that apply to @text.
- * @cached_iter:      Cached attribute iterator, or NULL
+ * @cached_iter:      Cached attribute iterator, or %NULL
  *
  * Like pango_itemize(), but the base direction to use when
  * computing bidirectional levels (see pango_context_set_base_dir ()),
@@ -1231,7 +1231,7 @@ itemize_with_font (PangoContext               *context,
  *             after @start_index.
  *             This must be >= 0.
  * @attrs:     the set of attributes that apply to @text.
- * @cached_iter:      Cached attribute iterator, or NULL
+ * @cached_iter:      Cached attribute iterator, or %NULL
  *
  * Breaks a piece of text into segments with consistent
  * directional level and shaping engine. Each byte of @text will
@@ -1353,7 +1353,7 @@ update_metrics_from_items (PangoFontMetrics *metrics,
  *            The process of determining such metrics is slow, so it is best
  *            to always make sure some real language tag will be used.
  * 
- * Get overall metric information for a font particular font
+ * Get overall metric information for a particular font
  * description.  Since the metrics may be substantially different for
  * different scripts, a language tag can be provided to indicate that
  * the metrics should be retrieved that correspond to the script(s)

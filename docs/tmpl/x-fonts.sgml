@@ -17,9 +17,6 @@ unpredictable results. Use the <link linkend="pango-Xft-Fonts-and-Rendering">Xft
 
 </para>
 
-<!-- ##### SECTION Stability_Level ##### -->
-
-
 <!-- ##### MACRO PANGO_RENDER_TYPE_X ##### -->
 <para>
 A string constant identifying the X renderer. The associated quark (see 
@@ -269,8 +266,8 @@ glyph index.
 
 <!-- ##### STRUCT PangoXFontCache ##### -->
 <para>
-A <structname>PangoXFontCache</structname> caches
-<structname>XFontStruct</structname>s for a single display by their XLFD name. 
+A #PangoXFontCache caches
+#XFontStructs for a single display by their XLFD name. 
 </para>
 
 

@@ -9,7 +9,7 @@ Highlevel layout driver objects
 While complete access to the layout capabilities of Pango is provided
 using the detailed interfaces for itemization and shaping, using
 that functionality directly involves writing a fairly large amount
-of code. The objects and functions in this structure provide a
+of code. The objects and functions in this section provide a
 high-level driver for formatting entire paragraphs of text
 at once.
 </para>
@@ -18,9 +18,6 @@ at once.
 <para>
 
 </para>
-
-<!-- ##### SECTION Stability_Level ##### -->
-
 
 <!-- ##### STRUCT PangoLayout ##### -->
 <para>
@@ -53,11 +50,11 @@ fields.
 
 <!-- ##### STRUCT PangoLayoutIter ##### -->
 <para>
-A <structname>PangoLayoutIter</structname> structure can be used to
+A #PangoLayoutIter structure can be used to
 iterate over the visual extents of a #PangoLayout. 
 </para>
 <para>
-The <structname>PangoLayoutIter</structname> structure is opaque, and 
+The #PangoLayoutIter structure is opaque, and 
 has no user-visible fields.
 </para>
 

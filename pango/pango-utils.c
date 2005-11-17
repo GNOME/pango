@@ -1278,7 +1278,7 @@ pango_language_from_string (const char *language)
  *            %NULL is allowed and matches nothing but '*'
  * @range_list: a list of language ranges, separated by ';' characters.
  *   each element must either be '*', or a RFC 3066 language range
- *   canonicalized as by pango_language_from_string().
+ *   canonicalized as by pango_language_from_string()
  * 
  * Checks if a language tag matches one of the elements in a list of
  * language ranges. A language tag is considered to match a range

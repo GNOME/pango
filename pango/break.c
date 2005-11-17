@@ -421,7 +421,7 @@ typedef enum
  * engine overrides it. Normally you should use pango_break()
  * instead; this function is mostly useful for chaining up
  * from a language engine override. Unlike pango_break(),
- * @analysis can be NULL, but only do that if you know what
+ * @analysis can be %NULL, but only do that if you know what
  * you're doing. (If you need an analysis to pass to pango_break(),
  * you need to pango_itemize() or use pango_get_log_attrs().)
  *
@@ -442,7 +442,7 @@ pango_default_break (const gchar   *text,
    */
 
   /* FIXME one cheesy optimization here would be to memset attrs to 0
-   * before we start, and then never assign FALSE to anything
+   * before we start, and then never assign %FALSE to anything
    */
 
   const gchar *next;

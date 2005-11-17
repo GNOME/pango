@@ -47,7 +47,7 @@ pango_color_get_type (void)
  * not that useful otherwise (since colors can just be copied
  * by assignment in C).
  * 
- * Return value: an allocated #PangoColor
+ * Return value: the new #PangoColor
  **/
 PangoColor*
 pango_color_copy (const PangoColor *src)

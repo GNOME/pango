@@ -1,3 +1,26 @@
+2005-11-16  Behdad Esfahbod  <behdad@gnome.org>
+
+	* docs/pango_markup.sgml docs/tmpl/coverage-maps.sgml
+	docs/tmpl/engines.sgml docs/tmpl/fonts.sgml
+	docs/tmpl/freetype-fonts.sgml docs/tmpl/glyphs.sgml
+	docs/tmpl/layout.sgml docs/tmpl/main.sgml
+	docs/tmpl/modules.sgml docs/tmpl/opentype.sgml
+	docs/tmpl/pango-engine-lang.sgml
+	docs/tmpl/pango-engine-shape.sgml
+	docs/tmpl/pango-renderer.sgml docs/tmpl/pangocairo.sgml
+	docs/tmpl/pangofc-decoder.sgml docs/tmpl/pangofc-font.sgml
+	docs/tmpl/pangofc-fontmap.sgml docs/tmpl/scripts.sgml
+	docs/tmpl/tab-stops.sgml docs/tmpl/text-attributes.sgml
+	docs/tmpl/win32-fonts.sgml docs/tmpl/x-fonts.sgml
+	docs/tmpl/xft-fonts.sgml pango/break.c pango/ellipsize.c
+	pango/fonts.c pango/pango-attributes.c pango/pango-color.c
+	pango/pango-context.c pango/pango-coverage.c
+	pango/pango-fontmap.c pango/pango-glyph-item.c
+	pango/pango-layout.c pango/pango-markup.c pango/pango-tabs.c
+	pango/pango-types.h pango/pango-utils.c
+	pango/pangoft2-render.c pango/pangox.c pango/pangoxft-render.c:
+	Various documentation improvements.
+
 2005-11-15  Behdad Esfahbod  <behdad@gnome.org>
 
 	* pango/pango-types.h: Added % to PANGO_DIRECTION_LTR in doc comments.
