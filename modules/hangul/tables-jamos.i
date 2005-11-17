@@ -117,7 +117,7 @@
 #define KSC_CHITUEUMCHIEUCH	0x237b
 #define KSC_CEONGEUMCHIEUCH	0x237d
 
-static guint16 __jamo_to_ksc5601[0x100][3] =
+static const guint16 __jamo_to_ksc5601[0x100][3] =
 {
   /*
    * CHOSEONG
