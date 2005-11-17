@@ -1,3 +1,14 @@
+2005-11-17  Behdad Esfahbod  <behdad@gnome.org>
+
+	Part of #101079:
+
+	* pango/opentype/ftxopen.c (Load_Lookup): In extension subtables,
+	offset is relative to the extension subtable, not the original
+	table. (Greg Aumann)
+
+	* pango/opentype/ftxgpos.c (Load_BaseArray): When reading BaseAnchor,
+	skip offsets that are zero.  Works around bug in Doulos SIL Regular.
+
 2005-11-16  Behdad Esfahbod  <behdad@gnome.org>
 
 	* docs/pango_markup.sgml docs/tmpl/coverage-maps.sgml
