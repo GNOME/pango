@@ -1,5 +1,13 @@
 2005-11-17  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango/break.c (pango_get_log_attrs): Remove g_utf8_strlen that was
+	only used to give a warning.
+	
+	* pango/break.c (pango_default_break): Add gcc-suggested parantheses
+	around boolean expression.
+
+2005-11-17  Behdad Esfahbod  <behdad@gnome.org>
+
 	* docs/tmpl/coverage-maps.sgml docs/tmpl/fonts.sgml
 	docs/tmpl/glyphs.sgml docs/tmpl/layout.sgml
 	docs/tmpl/main.sgml docs/tmpl/scripts.sgml

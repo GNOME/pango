@@ -593,7 +593,7 @@ pango_default_break (const gchar   *text,
         {
           next = g_utf8_next_char (next);
 
-	  if (length >= 0 && next == text + length || *next == '\0')
+	  if ((length >= 0 && next >= text + length) || *next == '\0')
             {
               /* This is how we fill in the last element (end position) of the
                * attr array - assume there's a paragraph separators off the end
@@ -1622,7 +1622,6 @@ pango_get_log_attrs (const char    *text,
                      PangoLogAttr  *log_attrs,
                      int            attrs_len)
 {
-  int n_chars;
   PangoMap *lang_map;
   int chars_broken;
   const char *pos;
@@ -1651,14 +1650,6 @@ pango_get_log_attrs (const char    *text,
       render_type_id = g_quark_from_static_string (PANGO_RENDER_TYPE_NONE);
     }
 
-  n_chars = g_utf8_strlen (text, length);
-
-  if (attrs_len < (n_chars + 1))
-    {
-      g_warning ("pango_get_log_attrs(): length of PangoLogAttr array must be at least the number of chars in the text plus one more for the end position");
-      return;
-    }
-  
   lang_map = pango_find_map (language, engine_type_id, render_type_id);
 
   range_start = text;
