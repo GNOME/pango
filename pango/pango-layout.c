@@ -1422,11 +1422,14 @@ pango_layout_move_cursor_visually (PangoLayout *layout,
 
   vis2log_map = pango_layout_line_get_vis2log_map (line, strong);
 
+  log_pos = g_utf8_pointer_to_offset (layout->text + line->start_index,
+				      layout->text + line->start_index + vis2log_map[vis_pos]);
   do
     {
+      int vis_pos_old = vis_pos;
       vis_pos += direction > 0 ? 1 : -1;
-      log_pos = g_utf8_pointer_to_offset (layout->text + line->start_index,
-					  layout->text + line->start_index + vis2log_map[vis_pos]);
+      log_pos += g_utf8_pointer_to_offset (layout->text + line->start_index + vis2log_map[vis_pos_old],
+					   layout->text + line->start_index + vis2log_map[vis_pos]);
     }
   while (vis_pos > 0 && vis_pos < n_vis &&
 	 !layout->log_attrs[start_offset + log_pos].is_cursor_position);
