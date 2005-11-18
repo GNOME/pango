@@ -1,11 +1,52 @@
-overview of changes between 1.9.1 and 1.10.0
+Overview of changes between 1.10.1 and 1.11.0
+=============================================
+* Line-breaking algorithm updated to Unicode 4.1.
+* Code borrowed from GNU FriBidi resynched to version 1.0.7.
+* New improved Tibetan shaper module. [Pema Geyleg]
+* Bug fix in Khmer shaper module. [Jens Herden]
+* Respect fontconfig reassignment of font pixelsize. [Funda Wang]
+* Make OpenType GPOS handling more robust/correct. [Greg Aumann]
+* Various documentation fixes and improvements.
+* Various gcc warning fixes.
+* Misc bug fixes.
+
+Optimizations:
+
+* Add a lazy fixed-size per-font cache to map characters to glyphs,
+  in the cairo backend. [Federico Mena Quintero]
+* Optimize character to script mapping by adding a linear table for
+  characters < U+2000, and also caching the last mid point in
+  bsearch. [Federico, Matthias Clasen]
+* Enabled mini-fribidi's trashstack instead of direct mallocs.
+* Short circuit the bidi algorithm for provably unidirectional text.
+* Make mini-fribidi process UTF-8 directly.
+* Several strlen and g_utf8_strlen calls removed. [Owen Taylor, Billy Biggs]
+* Use call tables in the OpenType layout code.
+* Use quarks for accessing GObject data. [Federico]
+* Open Pango modules with lazy-bind flags. [John Rice]
+* Use new negative offsets in g_utf8_pointer_to_offset to avoid
+  scanning from the beginning of line on cursor movement.
+* Avoid redundant PANGO_IS_FC_FONT checks.
+
+Overview of changes between 1.10.0 and 1.10.1
+=============================================
+* Add various forms of caching to the Win32 backend, greatly
+  improving performance [Tor Lillqvist]
+* Fix problem with colors leaking from a Pango item to 
+  subsequently drawn strings. [Choe Hwanjin]
+* Fix bug where error underlines would be drawn 1024 times
+  too big in the Cairo backend. [Luis Villa]
+* Misc bug and build fixes [Jean Brefort, Matthias Clasen, 
+  Behdad Esfahbod, Kazuki Iwamoto]
+
+Overview of changes between 1.9.1 and 1.10.0
 ============================================
 * Update script tables, bidi tables, and Arabic joining tables for Unicode 4.1 
   [Roozbeh Pournader, Behdad Esfahbod]
 * Misc bug and build fixes [Sebastien Bacher, Hans Breuer, Behdad, 
   J. Ali Harlow, Tor Lillqvist, Keith Packard, Vittorio Palmisano, Manish Singh]
 
-overview of changes between 1.9.0 and 1.9.1
+Overview of changes between 1.9.0 and 1.9.1
 ==========================================
 * Support setting of font options and DPI on PangoContext for
   the Cairo backend.

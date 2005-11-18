@@ -1,5 +1,13 @@
 2005-11-18  Behdad Esfahbod  <behdad@gnome.org>
 
+	* === Released 1.11.0 ===
+
+	* configure.in: Version 1.11.0
+
+	* NEWS: Updated.
+
+2005-11-18  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/pango-layout.c (pango_layout_move_cursor_visually): Use the
 	new support for negative offsets in g_utf8_pointer_to_offset.  So now,
 	we simply do:
