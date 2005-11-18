@@ -57,6 +57,22 @@ pango_font_description_get_type (void)
   return our_type;
 }
 
+
+static const PangoFontDescription pfd_defaults = {
+  NULL,			/* family_name */
+
+  PANGO_STYLE_NORMAL,	/* style */
+  PANGO_VARIANT_NORMAL,	/* variant */
+  PANGO_WEIGHT_NORMAL,	/* weight */
+  PANGO_STRETCH_NORMAL,	/* stretch */
+
+  0,			/* mask */
+  0,			/* static_family */
+  FALSE,		/* size_is_absolute */
+
+  0,			/* size */
+};
+
 /**
  * pango_font_description_new:
  * 
@@ -70,14 +86,7 @@ pango_font_description_new (void)
 {
   PangoFontDescription *desc = g_new (PangoFontDescription, 1);
 
-  desc->mask = 0;
-  desc->family_name = NULL;
-  desc->style = PANGO_STYLE_NORMAL;
-  desc->variant = PANGO_VARIANT_NORMAL;
-  desc->weight = PANGO_WEIGHT_NORMAL;
-  desc->stretch = PANGO_STRETCH_NORMAL;
-  desc->size = 0;
-  desc->size_is_absolute = FALSE;
+  *desc = pfd_defaults;
 
   return desc;
 }
@@ -97,27 +106,11 @@ void
 pango_font_description_set_family (PangoFontDescription *desc,
 				   const char           *family)
 {
-  gchar *old_family = NULL;
-	
   g_return_if_fail (desc != NULL);
 
-  if (desc->family_name && !desc->static_family)
-    old_family = desc->family_name;
-
+  pango_font_description_set_family_static (desc, family ? g_strdup (family) : NULL);
   if (family)
-    {
-      desc->family_name = g_strdup (family);
-      desc->mask |= PANGO_FONT_MASK_FAMILY;
-      desc->static_family = FALSE;
-    }
-  else
-    {
-      desc->family_name = NULL;
-      desc->mask &= ~PANGO_FONT_MASK_FAMILY;
-    }
-
-  if (old_family)
-    g_free (old_family);
+    desc->static_family = FALSE;
 }
 
 /**
@@ -147,12 +140,13 @@ pango_font_description_set_family_static (PangoFontDescription *desc,
   if (family)
     {
       desc->family_name = (char *)family;
-      desc->mask |= PANGO_FONT_MASK_FAMILY;
       desc->static_family = TRUE;
+      desc->mask |= PANGO_FONT_MASK_FAMILY;
     }
   else
     {
-      desc->family_name = NULL;
+      desc->family_name = pfd_defaults.family_name;
+      desc->static_family = pfd_defaults.static_family;
       desc->mask &= ~PANGO_FONT_MASK_FAMILY;
     }
 }
@@ -212,7 +206,7 @@ pango_font_description_set_style (PangoFontDescription *desc,
 PangoStyle
 pango_font_description_get_style (const PangoFontDescription *desc)
 {
-  g_return_val_if_fail (desc != NULL, PANGO_STYLE_NORMAL);
+  g_return_val_if_fail (desc != NULL, pfd_defaults.style);
 
   return desc->style;
 }
@@ -249,7 +243,7 @@ pango_font_description_set_variant (PangoFontDescription *desc,
 PangoVariant
 pango_font_description_get_variant (const PangoFontDescription *desc)
 {
-  g_return_val_if_fail (desc != NULL, PANGO_VARIANT_NORMAL);
+  g_return_val_if_fail (desc != NULL, pfd_defaults.variant);
   
   return desc->variant;
 }
@@ -288,7 +282,7 @@ pango_font_description_set_weight (PangoFontDescription *desc,
 PangoWeight
 pango_font_description_get_weight (const PangoFontDescription *desc)
 {
-  g_return_val_if_fail (desc != NULL, PANGO_WEIGHT_NORMAL);
+  g_return_val_if_fail (desc != NULL, pfd_defaults.weight);
   
   return desc->weight;
 }
@@ -325,7 +319,7 @@ pango_font_description_set_stretch (PangoFontDescription *desc,
 PangoStretch
 pango_font_description_get_stretch (const PangoFontDescription *desc)
 {
-  g_return_val_if_fail (desc != NULL, PANGO_STRETCH_NORMAL);
+  g_return_val_if_fail (desc != NULL, pfd_defaults.stretch);
 
   return desc->stretch;
 }
@@ -371,7 +365,7 @@ pango_font_description_set_size (PangoFontDescription *desc,
 gint
 pango_font_description_get_size (const PangoFontDescription *desc)
 {
-  g_return_val_if_fail (desc != NULL, 0);
+  g_return_val_if_fail (desc != NULL, pfd_defaults.size);
 
   return desc->size;
 }
@@ -415,7 +409,7 @@ pango_font_description_set_absolute_size (PangoFontDescription *desc,
 gboolean
 pango_font_description_get_size_is_absolute (const PangoFontDescription *desc)
 {
-  g_return_val_if_fail (desc != NULL, FALSE);
+  g_return_val_if_fail (desc != NULL, pfd_defaults.size_is_absolute);
 
   return desc->size_is_absolute;
 }
@@ -432,7 +426,7 @@ pango_font_description_get_size_is_absolute (const PangoFontDescription *desc)
 PangoFontMask
 pango_font_description_get_set_fields (const PangoFontDescription *desc)
 {
-  g_return_val_if_fail (desc != NULL, 0);
+  g_return_val_if_fail (desc != NULL, pfd_defaults.mask);
 
   return desc->mask;
 }
@@ -442,18 +436,21 @@ pango_font_description_get_set_fields (const PangoFontDescription *desc)
  * @desc: a #PangoFontDescription
  * @to_unset: bitmask of fields in the @desc to unset.
  * 
- * Unsets some of the fields in a #PangoFontDescription. Note that
- * this merely marks the fields cleared, it does not clear the
- * settings for those fields, to clear a family name set with
- * pango_font_description_set_family_static() so that it won't
- * be returned by subsequent calls to pango_font_description_get_family(),
- * you must actually call pango_font_description_set_family (desc, %NULL);
+ * Unsets some of the fields in a #PangoFontDescription.  The unset
+ * fields will get back to their default values.
  **/
 void
 pango_font_description_unset_fields (PangoFontDescription *desc,
 				     PangoFontMask         to_unset)
 {
+  PangoFontDescription unset_desc;
+  
   g_return_if_fail (desc != NULL);
+
+  unset_desc = pfd_defaults;
+  unset_desc.mask = to_unset;
+
+  pango_font_description_merge_static (desc, &unset_desc, TRUE);
 
   desc->mask &= ~to_unset;
 }
@@ -476,32 +473,15 @@ pango_font_description_merge (PangoFontDescription       *desc,
 			      const PangoFontDescription *desc_to_merge,
 			      gboolean                    replace_existing)
 {
-  PangoFontMask new_mask;
-  
-  g_return_if_fail (desc != NULL);
+  gboolean family_merged = desc_to_merge->family_name && (replace_existing || !desc->family_name);
 
-  if (replace_existing)
-    new_mask = desc_to_merge->mask;
-  else
-    new_mask = desc_to_merge->mask & ~desc->mask;
+  pango_font_description_merge_static (desc, desc_to_merge, replace_existing);
 
-  if (new_mask & PANGO_FONT_MASK_FAMILY)
-    pango_font_description_set_family (desc, desc_to_merge->family_name);
-  if (new_mask & PANGO_FONT_MASK_STYLE)
-    desc->style = desc_to_merge->style;
-  if (new_mask & PANGO_FONT_MASK_VARIANT)
-    desc->variant = desc_to_merge->variant;
-  if (new_mask & PANGO_FONT_MASK_WEIGHT)
-    desc->weight = desc_to_merge->weight;
-  if (new_mask & PANGO_FONT_MASK_STRETCH)
-    desc->stretch = desc_to_merge->stretch;
-  if (new_mask & PANGO_FONT_MASK_SIZE)
+  if (family_merged)
     {
-      desc->size = desc_to_merge->size;
-      desc->size_is_absolute = desc_to_merge->size_is_absolute;
+      desc->family_name = g_strdup (desc->family_name);
+      desc->static_family = FALSE;
     }
-
-  desc->mask |= new_mask;
 }
 
 /**
@@ -619,8 +599,11 @@ pango_font_description_copy  (const PangoFontDescription  *desc)
 
   *result = *desc;
 
-  result->family_name = g_strdup (result->family_name);
-  result->static_family = FALSE;
+  if (result->family_name)
+    {
+      result->family_name = g_strdup (result->family_name);
+      result->static_family = FALSE;
+    }
 
   return result;
 }
@@ -643,7 +626,8 @@ pango_font_description_copy_static (const PangoFontDescription *desc)
   PangoFontDescription *result = g_new (PangoFontDescription, 1);
 
   *result = *desc;
-  result->static_family = TRUE;
+  if (result->family_name)
+    result->static_family = TRUE;
 
   return result;
 }
@@ -653,12 +637,14 @@ pango_font_description_copy_static (const PangoFontDescription *desc)
  * @desc1: a #PangoFontDescription
  * @desc2: another #PangoFontDescription
  * 
- * Compares two font descriptions for equality.
+ * Compares two font descriptions for equality. Two font descriptions
+ * are considered equal if the fonts they describe are provably identical.
+ * This means that their maskd do not have to match, as long as other fields
+ * are all the same. (Two font descrptions may result in identical fonts
+ * being loaded, but still compare %FALSE.)
  * 
- * Return value: %TRUE if the two font descriptions are proveably
- *               identical. (Two font descriptions may result in
- *               identical fonts being loaded, but still compare
- *                %FALSE.)
+ * Return value: %TRUE if the two font descriptions are identical,
+ * 		 %FALSE otherwise.
  **/
 gboolean
 pango_font_description_equal (const PangoFontDescription  *desc1,
@@ -667,15 +653,14 @@ pango_font_description_equal (const PangoFontDescription  *desc1,
   g_return_val_if_fail (desc1 != NULL, FALSE);
   g_return_val_if_fail (desc2 != NULL, FALSE);
 
-  return (desc1->mask == desc2->mask &&
-	  desc1->style == desc2->style &&
-	  desc1->variant == desc2->variant &&
-	  desc1->weight == desc2->weight &&
-	  desc1->stretch == desc2->stretch &&
-	  desc1->size == desc2->size &&
-	  desc1->size_is_absolute == desc2->size_is_absolute &&
-	  (desc1->family_name == desc2->family_name ||
-	   (desc1->family_name && desc2->family_name && g_ascii_strcasecmp (desc1->family_name, desc2->family_name) == 0)));
+  return desc1->style == desc2->style &&
+	 desc1->variant == desc2->variant &&
+	 desc1->weight == desc2->weight &&
+	 desc1->stretch == desc2->stretch &&
+	 desc1->size == desc2->size &&
+	 desc1->size_is_absolute == desc2->size_is_absolute &&
+	 (desc1->family_name == desc2->family_name ||
+	  (desc1->family_name && desc2->family_name && g_ascii_strcasecmp (desc1->family_name, desc2->family_name) == 0));
 }
 
 #define TOLOWER(c) \
@@ -702,6 +687,7 @@ case_insensitive_hash (const char *key)
  * 
  * Computes a hash of a #PangoFontDescription structure suitable
  * to be used, for example, as an argument to g_hash_table_new().
+ * The hash value is independent of @desc->mask.
  * 
  * Return value: the hash value.
  **/
@@ -710,23 +696,14 @@ pango_font_description_hash (const PangoFontDescription *desc)
 {
   guint hash = 0;
 
-  hash = desc->mask;
-  
-  if (desc->mask & PANGO_FONT_MASK_FAMILY)
+  if (desc->family_name)
     hash = case_insensitive_hash (desc->family_name);
-  if (desc->mask & PANGO_FONT_MASK_SIZE)
-    {
-      hash ^= desc->size;
-      hash ^= desc->size_is_absolute ? 0xc33ca55a : 0;
-    }
-  if (desc->mask & PANGO_FONT_MASK_STYLE)
-    hash ^= desc->style << 16;
-  if (desc->mask & PANGO_FONT_MASK_VARIANT)
-    hash ^= desc->variant << 18;
-  if (desc->mask & PANGO_FONT_MASK_WEIGHT)
-    hash ^= desc->weight << 16;
-  if (desc->mask & PANGO_FONT_MASK_STRETCH)
-    hash ^= desc->stretch << 26;
+  hash ^= desc->size;
+  hash ^= desc->size_is_absolute ? 0xc33ca55a : 0;
+  hash ^= desc->style << 16;
+  hash ^= desc->variant << 18;
+  hash ^= desc->weight << 16;
+  hash ^= desc->stretch << 26;
 
   return hash;
 }

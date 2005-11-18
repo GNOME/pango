@@ -1,3 +1,11 @@
+2005-11-17  Behdad Esfahbod  <behdad@gnome.org>
+
+	* pango/fonts.c (pango_font_description_*): General cleanup.
+	(pango_font_description_unset_fields): Set fields being unset to their
+	default value.
+	(pango_font_description_hash, pango_font_description_equal): Do not
+	use mask in these.  Use all other fields unconditionally.
+
 2005-11-17  Matthias Clasen  <mclasen@redhat.com>
 
 	* modules/hangul/tables-jamos.i: const correctness
