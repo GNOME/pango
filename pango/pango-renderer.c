@@ -134,9 +134,9 @@ pango_renderer_finalize (GObject *gobject)
  * pango_renderer_draw_layout:
  * @renderer: a #PangoRenderer
  * @layout: a #PangoLayout
- * @x: x position of left edge of baseline, in user space coordinates
+ * @x: X position of left edge of baseline, in user space coordinates
  *   in Pango units.
- * @y: x position of left edge of baseline, in user space coordinates
+ * @y: Y position of left edge of baseline, in user space coordinates
  *    in Pango units.
  *
  * Draws @layout with the specified #PangoRenderer.
@@ -433,9 +433,9 @@ draw_shaped_glyphs (PangoRenderer    *renderer,
  * pango_renderer_draw_layout_line:
  * @renderer: a #PangoRenderer
  * @line: a #PangoLayoutLine
- * @x: x position of left edge of baseline, in user space coordinates
+ * @x: X position of left edge of baseline, in user space coordinates
  *   in Pango units.
- * @y: x position of left edge of baseline, in user space coordinates
+ * @y: Y position of left edge of baseline, in user space coordinates
  *    in Pango units.
  *
  * Draws @line with the specified #PangoRenderer.
@@ -575,9 +575,9 @@ pango_renderer_draw_layout_line (PangoRenderer    *renderer,
  * @renderer: a #PangoRenderer
  * @font: a #PangoFont
  * @glyphs: a #PangoGlyphString
- * @x: x position of left edge of baseline, in user space coordinates
+ * @x: X position of left edge of baseline, in user space coordinates
  *   in Pango units.
- * @y: x position of left edge of baseline, in user space coordinates
+ * @y: Y position of left edge of baseline, in user space coordinates
  *    in Pango units.
  *
  * Draws the glyphs in @glyphs with the specified #PangoRenderer.
@@ -630,10 +630,10 @@ pango_renderer_default_draw_glyphs (PangoRenderer    *renderer,
  * pango_renderer_draw_rectangle:
  * @renderer: a #PangoRenderer
  * @part: type of object this rectangle is part of
- * @x: x position at which to draw rectangle, in user space coordinates in Pango units
- * @y: y position at which to draw rectangle, in user space coordinates in Pango units
- * @width: width of rectangle in PangoUnits in user space coordinates
- * @height: height of rectangle in PangoUnits in user space coordinates
+ * @x: X position at which to draw rectangle, in user space coordinates in Pango units
+ * @y: Y position at which to draw rectangle, in user space coordinates in Pango units
+ * @width: width of rectangle in Pango units in user space coordinates
+ * @height: height of rectangle in Pango units in user space coordinates
  *
  * Draws an axis-aligned rectangle in user space coordinates with the
  * specified #PangoRenderer.
@@ -915,9 +915,9 @@ pango_renderer_default_draw_error_underline (PangoRenderer *renderer,
  * @y1_: Y coordinate of top of trapezoid
  * @x11: X coordinate of left end of top of trapezoid
  * @x21: X coordinate of right end of top of trapezoid
- * @y2: X coordinate of top of trapezoid
- * @x12: X coordinate of left end of top of trapezoid
- * @x22: Y coordinate of left end of top of trapezoid
+ * @y2: Y coordinate of bottom of trapezoid
+ * @x12: X coordinate of left end of bottom of trapezoid
+ * @x22: X coordinate of right end of bottom of trapezoid
  * 
  * Draws a trapezoid with the parallel sides aligned with the X axis
  * using the given #PangoRenderer; coordinates are in device space.
