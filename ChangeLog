@@ -1,3 +1,7 @@
+2005-11-17  Behdad Esfahbod  <behdad@gnome.org>
+
+	* pango/pango-renderer.c: Documentation improvements. (#321731)
+
 2005-11-17  Matthias Clasen  <mclasen@redhat.com>
 
 	* modules/hangul/tables-jamos.i: const correctness
