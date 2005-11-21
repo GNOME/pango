@@ -1,3 +1,8 @@
+2005-11-21  Behdad Esfahbod  <behdad@gnome.org>
+
+	* examples/GLASS.utf8: Make the Kermit notice a "no warranty" clause,
+	to comply with LPGL.
+
 2005-11-18  Behdad Esfahbod  <behdad@gnome.org>
 
 	* === Released 1.11.0 ===
