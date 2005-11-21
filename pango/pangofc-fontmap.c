@@ -1013,7 +1013,7 @@ get_unscaled_size (PangoFcFontMap             *fcfontmap,
  *
  * Copyright 2005, Keith Packard
  */
-static int
+static double
 get_scaled_size (FontsetHashKey *key)
 {
   PangoMatrix *matrix = &key->matrix;
@@ -1042,7 +1042,7 @@ get_scaled_size (FontsetHashKey *key)
       else 
 	minor = 0.0;
 
-      return minor * (key->size / 1024.);
+      return minor * key->size / 1024.;
     }
 }
 
