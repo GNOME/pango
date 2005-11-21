@@ -1,5 +1,10 @@
 2005-11-21  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango/pangofc-fontmap.c (get_scaled_size): Return double instead of
+	int. (#321891, Sebastian Bacher)
+
+2005-11-21  Behdad Esfahbod  <behdad@gnome.org>
+
 	* examples/GLASS.utf8: Make the Kermit notice a "no warranty" clause,
 	to comply with LPGL.
 
