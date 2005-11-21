@@ -1,7 +1,7 @@
 2005-11-21  Behdad Esfahbod  <behdad@gnome.org>
 
 	* pango/pangofc-fontmap.c (get_scaled_size): Return double instead of
-	int. (#321891, Sebastian Bacher)
+	int. (#321891, Sebastien Bacher)
 
 2005-11-21  Behdad Esfahbod  <behdad@gnome.org>
 
