@@ -251,6 +251,19 @@ libpangocairo_1_0_la_SOURCES += \
 	pangocairo-fc.h
 endif
 
+if HAVE_CAIRO_ATSUI
+libpangocairo_1_0_la_SOURCES += \
+	pangoatsui.h		\
+	pangoatsui.c		\
+	pangoatsui-fontmap.c	\
+	pangocairo-atsui.h	\
+	pangocairo-atsuifont.c	\
+	pangocairo-atsuifont.h	\
+	pangocairo-atsuifontmap.c 
+
+libpangocairo_1_0_la_CFLAGS = -xobjective-c
+endif
+
 # ------------------- libpangowin32 -------------------
 
 if HAVE_WIN32

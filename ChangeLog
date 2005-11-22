@@ -1,3 +1,31 @@
+2005-11-21  Anders Carlsson  <andersca@imendio.com>
+
+        * configure.in:
+	Add checks for ATSUI.
+	
+        * examples/Makefile.am:
+	Only build pango-cairoview if freetype is detected.
+	
+        * modules/basic/Makefile.am:
+	Add basic ATSUI module.
+	
+        * pango/Makefile.am:
+	Add ATSUI files for cairo backend.
+	
+        * pango/pangocairo-fontmap.c:
+        (pango_cairo_font_map_new):
+	Support creating ATSUI font maps here.
+
+	* pango/pangoatsui-fontmap.c:
+	* pango/pangoatsui-private.h:
+	* pango/pangoatsui.c:
+	* pango/pangoatsui.h:
+	* pango/pangocairo-atsui.h:
+	* pango/pangocairo-atsuifont.c:
+	* pango/pangocairo-atsuifont.h:
+	* pango/pangocairo-atsuifontmap.c:
+	Add.
+	
 2005-11-21  Behdad Esfahbod  <behdad@gnome.org>
 
 	* pango/pango-script.c (pango_script_for_unichar_bsearch): Only update

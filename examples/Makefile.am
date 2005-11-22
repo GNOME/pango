@@ -58,7 +58,9 @@ pango_xftview_LDADD =					\
 ###################################################
 if HAVE_CAIRO
 if HAVE_X
+if HAVE_FREETYPE
 noinst_PROGRAMS += pango-cairoview
+endif
 endif
 endif
 

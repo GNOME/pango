@@ -6,6 +6,7 @@ pangolibs = $(top_builddir)/pango/libpango-$(PANGO_API_VERSION).la $(GLIB_LIBS)
 pangoxlibs = $(top_builddir)/pango/libpangox-$(PANGO_API_VERSION).la $(X_LIBS) $(pangolibs)
 pangoft2libs = $(top_builddir)/pango/libpangoft2-$(PANGO_API_VERSION).la $(FREETYPE_LIBS) $(pangolibs)
 pangowin32libs = $(top_builddir)/pango/libpangowin32-$(PANGO_API_VERSION).la $(pangolibs)
+pangoatsuilibs = $(top_builddir)/pango/libpangocairo-$(PANGO_API_VERSION).la $(pangolibs)
 
 INCLUDES = 				\
 	-DG_LOG_DOMAIN=\"Pango\"	\
@@ -74,6 +75,20 @@ usp10.h: $(USP10_H)
 	cp $(USP10_H) usp10.h
 endif
 
+if HAVE_CAIRO_ATSUI
+INCLUDES += $(ATSUI_CFLAGS) $(CAIRO_CFLAGS)
+if INCLUDE_BASIC_ATSUI
+noinst_LTLIBRARIES += libpango-basic-atsui.la
+else
+module_LTLIBRARIES += pango-basic-atsui.la
+endif
+endif
+
+pango_basic_atsui_la_LDFLAGS = -module $(MODULE_LIBTOOL_OPTIONS) -framework Carbon
+pango_basic_atsui_la_LIBADD = $(pangoatsuilibs)
+pango_basic_atsui_la_SOURCES = basic-atsui.c
+libpango_basic_atsui_la_SOURCES = basic-atsui.c
+libpango_basic_atsui_la_CFLAGS = -DPANGO_MODULE_PREFIX=_pango_basic_atsui
 
 EXTRA_DIST =		\
 	basic-common.h	\
