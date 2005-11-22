@@ -89,7 +89,8 @@ pango_script_for_unichar_bsearch (gunichar ch)
 {
   int lower = 0;
   int upper = G_N_ELEMENTS (pango_script_table) - 1;
-  static int mid = PANGO_SCRIPT_TABLE_MIDPOINT;
+  static int saved_mid = PANGO_SCRIPT_TABLE_MIDPOINT;
+  int mid = saved_mid;
 
 
   do 
@@ -99,7 +100,7 @@ pango_script_for_unichar_bsearch (gunichar ch)
       else if (ch >= pango_script_table[mid].start + pango_script_table[mid].chars)
 	lower = mid + 1;
       else
-	return pango_script_table[mid].script;
+	return pango_script_table[saved_mid = mid].script;
 
       mid = (lower + upper) / 2;
     }

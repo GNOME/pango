@@ -1,5 +1,10 @@
 2005-11-21  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango/pango-script.c (pango_script_for_unichar_bsearch): Only update
+	static mid on a match.
+
+2005-11-21  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/pangofc-fontmap.c (get_scaled_size): Return double instead of
 	int. (#321891, Sebastien Bacher)
 
