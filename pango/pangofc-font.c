@@ -37,11 +37,12 @@ enum {
 
 typedef struct _PangoFcFontPrivate PangoFcFontPrivate;
 
-#define PANGO_FC_FONT_GET_PRIVATE(obj) (G_TYPE_INSTANCE_GET_PRIVATE ((obj), PANGO_TYPE_FC_FONT, PangoFcFontPrivate))
+#define PANGO_FC_FONT_GET_PRIVATE(obj) ((PangoFcFontPrivate *) ((PangoFcFont *) obj)->priv)
 
 struct _PangoFcFontPrivate
 {
   PangoFcDecoder *decoder;
+  gpointer context_key;
 };
 
 static gboolean pango_fc_font_real_has_char  (PangoFcFont *font,
@@ -95,13 +96,15 @@ pango_fc_font_class_init (PangoFcFontClass *class)
 							 "Pattern",
 							 "The fontconfig pattern for this font",
 							 G_PARAM_WRITABLE | G_PARAM_CONSTRUCT_ONLY));
-
-  g_type_class_add_private (object_class, sizeof (PangoFcFontPrivate));
 }
 
 static void
 pango_fc_font_init (PangoFcFont *fcfont)
 {
+  PangoFcFontPrivate *priv;
+
+  priv = g_new0 (PangoFcFontPrivate, 1);
+  fcfont->priv = priv;
 }
 
 static void
@@ -128,6 +131,8 @@ pango_fc_font_finalize (GObject *object)
 
   if (priv->decoder)
     _pango_fc_font_set_decoder (fcfont, NULL);
+
+  g_free (priv);
 
   G_OBJECT_CLASS (pango_fc_font_parent_class)->finalize (object);
 }
@@ -606,10 +611,7 @@ pango_fc_font_get_glyph (PangoFcFont *font,
 {
   PangoFcFontPrivate *priv;
   
-  g_return_val_if_fail (PANGO_IS_FC_FONT (font), 0);
-
   priv = PANGO_FC_FONT_GET_PRIVATE (font);
-
 
   /* Replace NBSP with a normal space; it should be invariant that
    * they shape the same other than breaking properties.
@@ -744,6 +746,23 @@ _pango_fc_font_set_decoder (PangoFcFont    *font,
 
   if (priv->decoder)
     g_object_ref (priv->decoder);
+}
+
+gpointer
+_pango_fc_font_get_context_key (PangoFcFont *fcfont)
+{
+  PangoFcFontPrivate *priv = PANGO_FC_FONT_GET_PRIVATE (fcfont);
+
+  return priv->context_key;
+}
+
+void
+_pango_fc_font_set_context_key (PangoFcFont *fcfont,
+				gpointer     context_key)
+{
+  PangoFcFontPrivate *priv = PANGO_FC_FONT_GET_PRIVATE (fcfont);
+
+  priv->context_key = context_key;
 }
 
 static FT_Glyph_Metrics *

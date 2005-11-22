@@ -71,7 +71,7 @@ struct _PangoFcFont
 
   FcPattern *font_pattern;	    /* fully resolved pattern */
   PangoFontMap *fontmap;	    /* associated map */
-  gpointer context_key;		    /* used internally */
+  gpointer priv;		    /* used internally */
   PangoMatrix matrix;		    /* used internally */
   PangoFontDescription *description;
   

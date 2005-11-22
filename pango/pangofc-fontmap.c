@@ -553,7 +553,7 @@ pango_fc_font_map_add (PangoFcFontMap *fcfontmap,
   key.pattern = fcfont->font_pattern;
   
   key_copy = font_hash_key_copy (&key);
-  fcfont->context_key = key_copy->context_key;
+  _pango_fc_font_set_context_key (fcfont, key_copy->context_key);
   fcfont->matrix = key.matrix;
   
   g_hash_table_insert (priv->font_hash, key_copy, fcfont);
@@ -584,11 +584,11 @@ _pango_fc_font_map_remove (PangoFcFontMap *fcfontmap,
   key.fontmap = fcfontmap;
   key.matrix = fcfont->matrix;
   key.pattern = fcfont->font_pattern;
-  key.context_key = fcfont->context_key;
+  key.context_key = _pango_fc_font_get_context_key (fcfont);
   
   g_hash_table_remove (priv->font_hash, &key);
   fcfont->fontmap = NULL;
-  fcfont->context_key = NULL;
+  _pango_fc_font_set_context_key (fcfont, NULL);
   g_object_unref (fcfontmap);
 }
 

@@ -1,3 +1,34 @@
+2005-11-22  Federico Mena Quintero  <federico@ximian.com>
+
+	Fixes #322174:
+
+	* pango/pangofc-font.h (struct _PangoFcFont): Replace the
+	"gpointer context_key" field with "gpointer priv".  This way we
+	can access the private data quickly, instead of using
+	g_type_instance_get_private().
+
+	* pango/pangofc-private.h: Added prototypes for
+	_pango_fc_font_{get,set}_context_key().
+
+	* pango/pangofc-font.c (struct _PangoFcFontPrivate): Moved the
+	"context_key" field to here.
+	(PANGO_FC_FONT_GET_PRIVATE): Use the "priv" field instead of GType
+	private data.
+	(pango_fc_font_class_init): Don't register GType private data.
+	(pango_fc_font_init): Initialize the private data here.
+	(pango_fc_font_finalize): Free the private data.
+	(_pango_fc_font_get_context_key): Implement.
+	(_pango_fc_font_set_context_key): Implement.
+	(pango_fc_font_get_glyph): Remove the g_return_val_if_fail(); it
+	was appearing quite high in the profile.
+
+	* pango/pangofc-fontmap.c (pango_fc_font_map_add): Call
+	_pango_fc_font_set_context_key() instead of setting the
+	fcfont->context_key directly.
+	(_pango_fc_font_map_remove): Likewise; also use
+	_pango_fc_font_get_context_key() instead of accessing the field
+	directly.
+
 2005-11-22  Behdad Esfahbod  <behdad@gnome.org>
 
 	* pango/pangoxft-font.c (_pango_xft_font_get_mini_font): Load a font
