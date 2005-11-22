@@ -129,14 +129,19 @@ _pango_xft_font_get_mini_font (PangoXftFont *xfont)
   if (!xfont->mini_font)
     {
       Display *display;
+      int screen;
       PangoFontDescription *desc = pango_font_description_new ();
+      PangoContext *context;
       int i;
       int width = 0, height = 0;
       XGlyphInfo extents;
       XftFont *mini_xft;
       int new_size;
       
-      _pango_xft_font_map_get_info (fcfont->fontmap, &display, NULL);
+      _pango_xft_font_map_get_info (fcfont->fontmap, &display, &screen);
+
+      context = pango_xft_get_context (display, screen);
+      pango_context_set_language (context, pango_language_from_string ("en"));
 
       pango_font_description_set_family_static (desc, "monospace");
 
@@ -147,8 +152,10 @@ _pango_xft_font_get_mini_font (PangoXftFont *xfont)
       else
 	pango_font_description_set_size (desc, new_size);
 
-      xfont->mini_font = pango_font_map_load_font (fcfont->fontmap, NULL, desc);
+      xfont->mini_font = pango_font_map_load_font (fcfont->fontmap, context, desc);
+
       pango_font_description_free (desc);
+      g_object_unref (context);
       
       mini_xft = xft_font_get_font (xfont->mini_font);
       

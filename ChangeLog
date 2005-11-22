@@ -1,3 +1,9 @@
+2005-11-22  Behdad Esfahbod  <behdad@gnome.org>
+
+	* pango/pangoxft-font.c (_pango_xft_font_get_mini_font): Load a font
+	suitable for viewing English text when creating mini font for hex
+	boxes. (#312477)
+
 2005-11-21  Behdad Esfahbod  <behdad@gnome.org>
 
 	* pango/pangofc-fontmap.c (get_scaled_size): Return double instead of
