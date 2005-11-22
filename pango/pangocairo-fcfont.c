@@ -269,22 +269,6 @@ pango_cairo_fc_font_get_glyph_info (PangoFont   *font,
   return info;
 }
      
-static void
-pango_cairo_fc_font_get_glyph_extents (PangoFont      *font,
-				       PangoGlyph      glyph,
-				       PangoRectangle *ink_rect,
-				       PangoRectangle *logical_rect)
-{
-  PangoCairoFcGlyphInfo *info;
-
-  info = pango_cairo_fc_font_get_glyph_info (font, glyph);
-  
-  if (ink_rect)
-    *ink_rect = info->ink_rect;
-  if (logical_rect)
-    *logical_rect = info->logical_rect;
-}
-
 /* This function is cut-and-pasted from pangocairo-fcfont.c - it might be
  * better to add a virtual fcfont->create_context (font).
  */
@@ -405,6 +389,22 @@ pango_cairo_fc_font_real_get_unknown_glyph (PangoFcFont *font,
 					    gunichar     wc)
 {
   return 0;
+}
+
+static void
+pango_cairo_fc_font_get_glyph_extents (PangoFont      *font,
+				       PangoGlyph      glyph,
+				       PangoRectangle *ink_rect,
+				       PangoRectangle *logical_rect)
+{
+  PangoCairoFcGlyphInfo *info;
+
+  info = pango_cairo_fc_font_get_glyph_info (font, glyph);
+  
+  if (ink_rect)
+    *ink_rect = info->ink_rect;
+  if (logical_rect)
+    *logical_rect = info->logical_rect;
 }
 
 static void
