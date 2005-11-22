@@ -1,3 +1,13 @@
+2005-11-22  Behdad Esfahbod  <behdad@gnome.org>
+
+	* pango/pangofc-font.c: Finish previous patch.  Use GType private
+	data, cache it into fcfont->priv.  Get rid of
+	PANGO_FC_FONT_GET_PRIVATE (fcfont) and access fcfont->priv. (#322174,
+	Christian Persch)
+
+	* pango/pangofc-fontmap.c (pango_fc_font_map_init): Remove redundant
+	priv = fcfontmap->priv initialization.
+
 2005-11-22  Federico Mena Quintero  <federico@ximian.com>
 
 	Fixes #322174:

@@ -159,7 +159,7 @@ static void
 pango_fc_font_map_init (PangoFcFontMap *fcfontmap)
 {
   static gboolean registered_modules = FALSE;
-  PangoFcFontMapPrivate *priv = fcfontmap->priv;
+  PangoFcFontMapPrivate *priv;
 
   priv = fcfontmap->priv = G_TYPE_INSTANCE_GET_PRIVATE (fcfontmap,
 							PANGO_TYPE_FC_FONT_MAP,
