@@ -1,5 +1,12 @@
 2005-11-23  Behdad Esfahbod  <behdad@gnome.org>
 
+	* configure.in (enable_explicit_deps): Fix typo when checking
+	libtool config deplibs_check_method. Moreover, enable explicit
+	deps if we get anything other than pass_all from libtool. (part of
+	#318750)
+
+2005-11-23  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/Makefile.am: Link libpangoxft with -lm. (#318210)
 
 2005-11-23  Behdad Esfahbod  <behdad@gnome.org>
