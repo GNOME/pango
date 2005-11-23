@@ -1,5 +1,9 @@
 2005-11-23  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango/opentyp/pango-ot-buffer.c: Fix typo in docs.
+
+2005-11-23  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/querymodules.c: Tiny clean up. Simpler way to suppress
 	gcc strict-aliasing warning. (part of #123307)
 
