@@ -1,5 +1,10 @@
 2005-11-23  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango/fonts.c (pango_font_description_get_absolute_size): Remove
+	excess "the" in docs. (#319175, Masao Mutoh)
+
+2005-11-23  Behdad Esfahbod  <behdad@gnome.org>
+
 	* modules/basic/basic-fc.c: Reworked basic shaper with OpenType
 	support. (#101079, based on patch from Denis Jacquerye and Noah Levitt)
 
