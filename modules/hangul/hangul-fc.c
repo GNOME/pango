@@ -346,9 +346,9 @@ hangul_engine_shape (PangoEngineShape *engine,
 	    }
 	}
 	  
-      if (n_jamos == max_jamos)
+      if (n_jamos >= max_jamos - 3)
 	{
-	  max_jamos += 3;	/* at most 3 for each syllable code (L+V+T) */
+	  max_jamos += 8;	/* at most 3 for each syllable code (L+V+T) */
 	  if (jamos == jamos_static)
 	    {
 	      jamos = g_new (gunichar, max_jamos);
