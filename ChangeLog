@@ -1,3 +1,18 @@
+2005-11-23  Behdad Esfahbod  <behdad@gnome.org>
+
+	* modules/basic/basic-fc.c: Reworked basic shaper with OpenType
+	support. (#101079, based on patch from Denis Jacquerye and Noah Levitt)
+
+	* modules/basic/basic-fc.c (basic_scripts): Added Unicode 4.1 addition
+	script PANGO_SCRIPT_GLAGOLITIC that is a "simple" script.
+
+	* modules/arabic/arabic-fc.c, modules/syriac/syriac-fc.c: Replace
+	g_utf8_to_ucs4_fast() with g_utf8_strlen()!
+
+	* pango/opentype/pango-ot-ruleset.c (pango_ot_ruleset_add_feature):
+	Remove reference in docs to pango_ot_ruleset_shape() that was
+	removed long ago.
+
 2005-11-22  Behdad Esfahbod  <behdad@gnome.org>
 
 	* pango/pangofc-font.c: Finish previous patch.  Use GType private

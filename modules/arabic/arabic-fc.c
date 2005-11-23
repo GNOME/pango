@@ -169,8 +169,7 @@ fallback_shape (PangoEngineShape *engine,
 		PangoGlyphString *glyphs)
 {
   PangoFcFont *fc_font = PANGO_FC_FONT (font);
-  glong n_chars;
-  gunichar *wcs = g_utf8_to_ucs4_fast (text, length, &n_chars);
+  glong n_chars = g_utf8_strlen (text, length);
   const char *p;
   int i;
   
@@ -236,8 +235,6 @@ fallback_shape (PangoEngineShape *engine,
       /* Swap all glyphs */
       swap_range (glyphs, 0, glyphs->num_glyphs);
     }
-
-  g_free (wcs);
 }
 
 static void 
@@ -284,6 +281,8 @@ arabic_engine_shape (PangoEngineShape *engine,
   properties = g_new0 (gulong, n_chars);
       
   Arabic_Assign_Properties (wcs, properties, n_chars);
+
+  g_free (wcs);
   
   p = text;
   for (i=0; i < n_chars; i++)
@@ -346,7 +345,6 @@ arabic_engine_shape (PangoEngineShape *engine,
   pango_ot_ruleset_position (ruleset, buffer);
   pango_ot_buffer_output (buffer, glyphs);
   
-  g_free (wcs);
   g_free (properties);
   pango_ot_buffer_destroy (buffer);
 
