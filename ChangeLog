@@ -1,5 +1,12 @@
 2005-11-23  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango/mapping.c (pango_glyph_string_index_to_x),
+	pango/pango-layout.c (pango_layout_iter_get_char_extents):
+	Remove cast to double in things like a = b / c where a, b,
+	and c are all ints. (#312469, Sven Neumann)
+
+2005-11-23  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/opentyp/pango-ot-buffer.c: Fix typo in docs.
 
 2005-11-23  Behdad Esfahbod  <behdad@gnome.org>

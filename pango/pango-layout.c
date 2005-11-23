@@ -4987,7 +4987,7 @@ pango_layout_iter_get_char_extents (PangoLayoutIter *iter,
                                     PangoRectangle  *logical_rect)
 {
   PangoRectangle cluster_rect;
-  double         x0, x1;
+  int            x0, x1;
 
   if (IS_INVALID (iter))
     return;
@@ -5008,13 +5008,13 @@ pango_layout_iter_get_char_extents (PangoLayoutIter *iter,
   
   g_assert (cluster_rect.width == iter->cluster_width);
 
-  x0 = ((double)iter->character_position * cluster_rect.width) / iter->cluster_num_chars;
-  x1 = ((double)(iter->character_position + 1) * cluster_rect.width) / iter->cluster_num_chars;
+  x0 = (iter->character_position * cluster_rect.width) / iter->cluster_num_chars;
+  x1 = (iter->character_position + 1) * cluster_rect.width) / iter->cluster_num_chars;
 
-  logical_rect->width = (int)x1 - (int)x0;
+  logical_rect->width = x1 - x0;
   logical_rect->height = cluster_rect.height;
   logical_rect->y = cluster_rect.y;
-  logical_rect->x = cluster_rect.x + (int)x0;
+  logical_rect->x = cluster_rect.x + x0;
 }
 
 /**

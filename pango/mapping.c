@@ -148,9 +148,8 @@ pango_glyph_string_index_to_x (PangoGlyphString *glyphs,
   if (trailing)
     cluster_offset += 1;
 
-  *x_pos = (((double)(cluster_chars - cluster_offset)) * start_xpos +
-	    ((double)cluster_offset) * end_xpos) /
-    cluster_chars;
+  *x_pos = ((cluster_chars - cluster_offset) * start_xpos +
+	    cluster_offset * end_xpos) / cluster_chars;
 }
 
 /**
