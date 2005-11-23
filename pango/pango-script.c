@@ -92,6 +92,8 @@ struct _PangoScriptIter
  * result is undefined.
  * 
  * Return value: the #PangoScript for the character.
+ *
+ * Since: 1.4
  **/
 PangoScript
 pango_script_for_unichar (gunichar ch)
@@ -128,6 +130,8 @@ pango_script_for_unichar (gunichar ch)
  * Return value: the new script iterator, initialized
  *  to point at the first range in the text. If the string is
  *  empty, it will point at an empty range.
+ *
+ * Since: 1.4
  **/
 PangoScriptIter *
 pango_script_iter_new (const char *text,
@@ -157,6 +161,8 @@ pango_script_iter_new (const char *text,
  * @iter: a #PangoScriptIter
  * 
  * Frees a #PangoScriptIter created with pango_script_iter_new().
+ *
+ * Since: 1.4
  **/
 void
 pango_script_iter_free (PangoScriptIter *iter)
@@ -174,6 +180,8 @@ pango_script_iter_free (PangoScriptIter *iter)
  * Gets information about the range to which @iter currently points.
  * The range is the set of locations p where *start <= p < *end.
  * (That is, it doesn't include the character stored at *end)
+ *
+ * Since: 1.4
  **/
 void
 pango_script_iter_get_range (PangoScriptIter      *iter,
@@ -247,6 +255,8 @@ get_pair_index (gunichar ch)
  * is returned.
  * 
  * Return value: %TRUE if the iter was succesfully advanced.
+ *
+ * Since: 1.4
  **/
 gboolean
 pango_script_iter_next (PangoScriptIter *iter)

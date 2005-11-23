@@ -1165,6 +1165,8 @@ itemize_state_finish (ItemizeState *state)
  * is specified explicitely rather than gotten from the #PangoContext.
  *
  * Return value: a GList of PangoItem structures.
+ *
+ * Since: 1.4
  */
 GList *
 pango_itemize_with_base_dir (PangoContext      *context, 

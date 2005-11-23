@@ -1219,6 +1219,8 @@ pango_font_get_metrics (PangoFont        *font,
  * Gets the font map for which the font was created.
  *
  * Returns: the #PangoFontMap for the font
+ *
+ * Since: 1.10
  **/
 PangoFontMap *
 pango_font_get_font_map (PangoFont *font)
@@ -1533,6 +1535,8 @@ pango_font_family_list_faces (PangoFontFamily  *family,
  * by double-width characters.  
  * 
  * Return value: %TRUE if the family is monospace.
+ *
+ * Since: 1.4
  **/
 gboolean 
 pango_font_family_is_monospace (PangoFontFamily  *family)

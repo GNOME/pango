@@ -770,6 +770,8 @@ get_per_char (FT_Face      face,
  * The other possibility would be to to make it public in something
  * like it's current form, and also expose glyph information
  * caching functionality similar to pango_ft2_font_set_glyph_info().
+ *
+ * Since: 1.6
  **/
 void
 pango_fc_font_get_raw_extents (PangoFcFont    *fcfont,

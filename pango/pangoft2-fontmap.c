@@ -194,6 +194,8 @@ pango_ft2_font_map_substitute_changed (PangoFT2FontMap *fontmap)
  * @dpi_y: dots per inch in the Y direction
  * 
  * Sets the horizontal and vertical resolutions for the fontmap.
+ *
+ * Since: 1.2
  **/
 void
 pango_ft2_font_map_set_resolution (PangoFT2FontMap *fontmap,
