@@ -132,6 +132,8 @@ pango_glyph_item_split (PangoGlyphItem *orig,
  * @glyph_item: a #PangoGlyphItem
  * 
  * Frees a #PangoGlyphItem and memory to which it points.
+ *
+ * Since: 1.6
  **/
 void
 pango_glyph_item_free  (PangoGlyphItem *glyph_item)

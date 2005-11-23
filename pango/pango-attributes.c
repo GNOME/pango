@@ -653,6 +653,8 @@ pango_attr_underline_new (PangoUnderline underline)
  * will use the foreground color.
  * 
  * Return value: the new #PangoAttribute.
+ *
+ * Since: 1.8
  **/
 PangoAttribute *
 pango_attr_underline_color_new (guint16 red,
@@ -701,6 +703,8 @@ pango_attr_strikethrough_new (gboolean strikethrough)
  * lines will use the foreground color.
  * 
  * Return value: the new #PangoAttribute.
+ *
+ * Since: 1.8
  **/
 PangoAttribute *
 pango_attr_strikethrough_color_new (guint16 red,
@@ -774,6 +778,8 @@ pango_attr_scale_new (double scale_factor)
  * text.
  * 
  * Return value: the new #PangoAttribute.
+ *
+ * Since: 1.4
  **/
 PangoAttribute *
 pango_attr_fallback_new (gboolean enable_fallback)
@@ -1782,6 +1788,8 @@ pango_attr_iterator_get_font (PangoAttrIterator     *iterator,
  * 
  * Return value: the new #PangoAttrList or %NULL if
  *  no attributes of the given types were found.
+ *
+ * Since: 1.2
  **/
 PangoAttrList *
 pango_attr_list_filter (PangoAttrList       *list,
@@ -1849,6 +1857,8 @@ pango_attr_list_filter (PangoAttrList       *list,
  * Return value: a list of all attributes for the current range.
  *   To free this value, call pango_attribute_destroy() on
  *   each value and g_slist_free() on the list.
+ *
+ * Since: 1.2
  **/
 GSList *
 pango_attr_iterator_get_attrs (PangoAttrIterator *iterator)

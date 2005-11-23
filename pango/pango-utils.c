@@ -1744,6 +1744,8 @@ pango_lookup_aliases (const char   *fontname,
  *
  * Return value: The direction corresponding to the first strong character.
  * If no such character is found, then %PANGO_DIRECTION_NEUTRAL is returned.
+ *
+ * Since: 1.4
  */
 PangoDirection
 pango_find_base_dir (const gchar *text,
@@ -1778,6 +1780,8 @@ pango_find_base_dir (const gchar *text,
  * normally rendered on the screen.
  *
  * Return value: %TRUE if @ch is a zero-width character, %FALSE otherwise
+ *
+ * Since: 1.10
  */
 gboolean
 pango_is_zero_width (gunichar ch)

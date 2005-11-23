@@ -1,5 +1,14 @@
 2005-11-23  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango/fonts.c pango/pango-attributes.c pango/pango-context.c
+	pango/pango-glyph-item.c pango/pango-layout.c
+	pango/pango-script.c pango/pango-utils.c pango/pangofc-font.c
+	pango/pangoft2-fontmap.c pango/opentype/pango-ot-buffer.c
+	pango/opentype/pango-ot-ruleset.c: Added "Since:" tags to all
+	interfaces added after Pango 1.0. (#319116, Brian Cameron)
+
+2005-11-23  Behdad Esfahbod  <behdad@gnome.org>
+
 	* configure.in (enable_explicit_deps): Fix typo when checking
 	libtool config deplibs_check_method. Moreover, enable explicit
 	deps if we get anything other than pass_all from libtool. (part of

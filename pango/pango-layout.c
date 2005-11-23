@@ -517,6 +517,8 @@ pango_layout_set_font_description (PangoLayout                 *layout,
  *  or %NULL if the font description from the layout's
  *  context is inherited. This value is owned by the layout
  *  and must not be modified or freed.
+ *
+ * Since: 1.8
  **/
 G_CONST_RETURN PangoFontDescription *
 pango_layout_get_font_description (PangoLayout *layout)
@@ -587,6 +589,7 @@ pango_layout_get_justify (PangoLayout *layout)
  * base direction of the context, the interpretation of
  * %PANGO_ALIGN_LEFT and %PANGO_ALIGN_RIGHT are swapped. 
  *
+ * Since: 1.4
  **/
 void
 pango_layout_set_auto_dir (PangoLayout *layout,
@@ -613,6 +616,8 @@ pango_layout_set_auto_dir (PangoLayout *layout,
  * 
  * Return value: %TRUE if the bidirectional base direction
  *   is computed from the layout's contents, %FALSE otherwise.
+ *
+ * Since: 1.4
  **/
 gboolean
 pango_layout_get_auto_dir (PangoLayout *layout)
