@@ -222,6 +222,8 @@ int main (int argc, char **argv)
 
       dirs = pango_split_file_list (path);
 
+      g_free (path);
+
       for (i=0; dirs[i]; i++)
 	{
 	  GDir *dir = g_dir_open (dirs[i], 0, NULL);
@@ -239,6 +241,8 @@ int main (int argc, char **argv)
 	      g_dir_close (dir);
 	    }
 	}
+
+      g_strfreev (dirs);
     }
   else
     {
