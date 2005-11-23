@@ -1,5 +1,9 @@
 2005-11-23  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango/Makefile.am: Link libpangoxft with -lm. (#318210)
+
+2005-11-23  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/querymodules.c: Free used memory. (#316467, Steve Grubb)
 
 2005-11-23  Behdad Esfahbod  <behdad@gnome.org>
