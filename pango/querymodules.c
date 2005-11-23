@@ -88,22 +88,11 @@ escape_string (const char *str)
   return g_string_free (result, FALSE);
 }
 
-/* Suppresses strict-aliasing warnings for gcc >= 3.3 */
-#if __GNUC__ > 3 || (__GNUC__ == 3 && __GNUC_MINOR__ >= 3)
-#define GET_SYMBOL(module,name,location) ({              \
-  gboolean result;					 \
-  void *tmp;                                             \
-  result = g_module_symbol (module, name, &tmp);         \
-  location = (typeof(location))tmp;                      \
-  result;                                                \
-})
-#else
 #define GET_SYMBOL(module,name,location)                 \
-  g_module_symbol (module, name, (gpointer *)&location)
-#endif
+  g_module_symbol (module, name, (gpointer *)(void *)&location)
 
 static const char *
-script_from_string (PangoScript script)
+string_from_script (PangoScript script)
 {
   static GEnumClass *class = NULL;
   GEnumValue *value;
@@ -114,7 +103,7 @@ script_from_string (PangoScript script)
   if (!value)
     {
       g_warning ("Engine reported invalid script value %d\n", script);
-      return script_from_string (PANGO_SCRIPT_INVALID_CODE);
+      return string_from_script (PANGO_SCRIPT_INVALID_CODE);
     }
 
   return value->value_nick;
@@ -169,16 +158,14 @@ query_module (const char *dir, const char *name)
 	      quoted_path = g_strdup (path);
 	    }
 	  
-	  g_printf ("%s%s%s %s %s %s ", quote, quoted_path, quote,
+	  g_printf ("%s%s%s %s %s %s", quote, quoted_path, quote,
 		    engines[i].id, engines[i].engine_type, engines[i].render_type);
 	  g_free (quoted_path);
 
 	  for (j=0; j < engines[i].n_scripts; j++)
 	    {
-	      if (j != 0)
-		g_printf (" ");
-	      g_printf ("%s:%s",
-			script_from_string (engines[i].scripts[j].script),
+	      g_printf (" %s:%s",
+			string_from_script (engines[i].scripts[j].script),
 			engines[i].scripts[j].langs);
 	    }
 	  g_printf ("\n");
@@ -194,7 +181,8 @@ query_module (const char *dir, const char *name)
     g_module_close (module);
 }		       
 
-int main (int argc, char **argv)
+int
+main (int argc, char **argv)
 {
   char *cwd;
   int i;

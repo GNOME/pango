@@ -1,5 +1,10 @@
 2005-11-23  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango/querymodules.c: Tiny clean up. Simpler way to suppress
+	gcc strict-aliasing warning. (part of #123307)
+
+2005-11-23  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/fonts.c pango/pango-attributes.c pango/pango-context.c
 	pango/pango-glyph-item.c pango/pango-layout.c
 	pango/pango-script.c pango/pango-utils.c pango/pangofc-font.c
