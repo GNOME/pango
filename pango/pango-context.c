@@ -1338,8 +1338,11 @@ update_metrics_from_items (PangoFontMetrics *metrics,
   
   g_hash_table_destroy (fonts_seen);
   
-  metrics->approximate_char_width /= count;
-  metrics->approximate_digit_width /= count;
+  if (count)
+    {
+      metrics->approximate_char_width /= count;
+      metrics->approximate_digit_width /= count;
+    }
 }
 
 /**
