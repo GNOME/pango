@@ -406,7 +406,7 @@ pango_font_description_set_absolute_size (PangoFontDescription *desc,
  * Determines whether the size of the font is in points or device units.
  * See pango_font_description_set_size() and pango_font_description_set_absolute_size().
  * 
- * Return value: whether the the size for the font description is in
+ * Return value: whether the size for the font description is in
  *   points or device units.  Use pango_font_description_get_set_fields() to
  *   find out if the size field of the font description was explicitely set or not.
  *

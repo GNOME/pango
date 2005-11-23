@@ -1,3 +1,8 @@
+2005-11-23  Behdad Esfahbod  <behdad@gnome.org>
+
+	* pango/fonts.c (pango_font_description_get_absolute_size): Remove
+	excess "the" in docs. (#319175, Masao Mutoh)
+
 2005-11-22  Behdad Esfahbod  <behdad@gnome.org>
 
 	* pango/pangoxft-font.c (_pango_xft_font_get_mini_font): Load a font
