@@ -1,5 +1,15 @@
 2005-11-23  Behdad Esfahbod  <behdad@gnome.org>
 
+	Protect against possible division by zeros (#316468, Steve Grubb)
+
+	* pango/pango-context.c (update_metrics_from_items),
+	pango/pango-fontset.c (pango_fontset_real_get_metrics): If count is
+	zero, do not alter approximate_{char,digit}_width.
+
+	* pango/opentype/disasm.c: Err on invalid DeltaFormat.
+
+2005-11-23  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/fonts.c (pango_font_description_get_absolute_size): Remove
 	excess "the" in docs. (#319175, Masao Mutoh)
 

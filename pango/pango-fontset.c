@@ -182,8 +182,11 @@ pango_fontset_real_get_metrics (PangoFontset  *fontset)
 
   g_hash_table_destroy (fonts_seen);
   
-  metrics->approximate_char_width /= count;
-  metrics->approximate_digit_width /= count;
+  if (count)
+    {
+      metrics->approximate_char_width /= count;
+      metrics->approximate_digit_width /= count;
+    }
 
   return metrics;
 }
