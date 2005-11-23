@@ -204,7 +204,7 @@ lib_LTLIBRARIES += libpangoxft-1.0.la
 endif
 
 libpangoxft_1_0_la_LDFLAGS = $(LIBRARY_LIBTOOL_OPTIONS)
-libpangoxft_1_0_la_LIBADD = libpangoft2-$(PANGO_API_VERSION).la libpango-$(PANGO_API_VERSION).la $(XFT_LIBS) $(GLIB_LIBS)
+libpangoxft_1_0_la_LIBADD = libpangoft2-$(PANGO_API_VERSION).la libpango-$(PANGO_API_VERSION).la $(XFT_LIBS) $(GLIB_LIBS) $(libm)
 libpangoxft_1_0_la_DEPENDENCIES = libpangoft2-$(PANGO_API_VERSION).la libpango-$(PANGO_API_VERSION).la
 
 libpangoxft_1_0_la_SOURCES =   	\
