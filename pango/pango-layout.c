@@ -5009,7 +5009,7 @@ pango_layout_iter_get_char_extents (PangoLayoutIter *iter,
   g_assert (cluster_rect.width == iter->cluster_width);
 
   x0 = (iter->character_position * cluster_rect.width) / iter->cluster_num_chars;
-  x1 = (iter->character_position + 1) * cluster_rect.width) / iter->cluster_num_chars;
+  x1 = ((iter->character_position + 1) * cluster_rect.width) / iter->cluster_num_chars;
 
   logical_rect->width = x1 - x0;
   logical_rect->height = cluster_rect.height;

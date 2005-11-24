@@ -1,3 +1,7 @@
+2005-11-24  Matthias Clasen  <mclasen@redhat.com>
+
+	* pango/pango-layout.c: Fix a typo.
+
 2005-11-23  Behdad Esfahbod  <behdad@gnome.org>
 
 	* pango/mapping.c (pango_glyph_string_index_to_x),
