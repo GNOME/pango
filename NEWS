@@ -1,7 +1,5 @@
 Overview of changes between 1.10.1 and 1.10.2
 =============================================
-* Line-breaking algorithm updated to Unicode 4.1.
-* Code borrowed from GNU FriBidi resynched to version 1.0.7.
 * New improved Tibetan shaper module. [Pema Geyleg]
 * Bug fix in Khmer shaper module. [Jens Herden]
 * Respect fontconfig reassignment of font pixelsize. [Funda Wang]
