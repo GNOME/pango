@@ -42,9 +42,22 @@
 
 typedef struct _PangoCairoFcFont      PangoCairoFcFont;
 typedef struct _PangoCairoFcFontClass PangoCairoFcFontClass;
-typedef struct _PangoCairoFcGlyphInfo PangoCairoFcGlyphInfo;
+
+typedef struct _GlyphExtentsCacheEntry    GlyphExtentsCacheEntry;
+typedef struct _GUnicharToGlyphCacheEntry GUnicharToGlyphCacheEntry;
+
+
+/* define one of these to profile one of the caches */
+#undef PROFILE_GLYPH_EXTENTS_CACHE
+#undef PROFILE_CHAR_TO_GLYPH_CACHE
 
 #undef PROFILE_GLYPH_CACHE
+#ifdef PROFILE_GLYPH_EXTENTS_CACHE
+# define PROFILE_GLYPH_CACHE GlyphExtentsCacheEntry
+#endif
+#ifdef PROFILE_CHAR_TO_GLYPH_CACHE
+# define PROFILE_GLYPH_CACHE GUnicharToGlyphCacheEntry
+#endif
 #ifdef PROFILE_GLYPH_CACHE
 static long num_cairo_fc_fonts;
 static long max_cairo_fc_fonts;
@@ -54,21 +67,35 @@ static long num_glyph_cache_hits;
 static long num_glyph_cache_misses;
 #endif
 
-#define GLYPH_CACHE_NUM_ENTRIES 256
-#define GLYPH_CACHE_MASK 0x000000ff
 
-/* An entry in the fixed-size cache for the gunichar -> glyph mapping.  The
- * cache is indexed by the lower N bits of the gunichar (see
- * GLYPH_CACHE_NUM_ENTRIES and GLYPH_CACHE_MASK above).  For scripts with few
- * code points, this should provide pretty much instant lookups.
+
+#define GLYPH_CACHE_NUM_ENTRIES 256 /* should be power of two */
+#define GLYPH_CACHE_MASK (GLYPH_CACHE_NUM_ENTRIES - 1)
+
+/* An entry in the fixed-size cache for the gunichar -> glyph mapping.
+ * The cache is indexed by the lower N bits of the gunichar (see
+ * GLYPH_CACHE_NUM_ENTRIES).  For scripts with few code points,
+ * this should provide pretty much instant lookups.
  *
  * The "ch" field is zero if that cache entry is invalid.
  */
-typedef struct
+struct _GUnicharToGlyphCacheEntry
 {
-  gunichar ch;
+  gunichar   ch;
   PangoGlyph glyph;
-} GlyphCacheEntry;
+};
+
+/* An entry in the fixed-size cache for the glyph -> ink_rect mapping.
+ * The cache is indexed by the lower N bits of the glyph (see
+ * GLYPH_CACHE_NUM_ENTRIES).  For scripts with few glyphs,
+ * this should provide pretty much instant lookups.
+ */
+struct _GlyphExtentsCacheEntry
+{
+  PangoGlyph     glyph;
+  int            width;
+  PangoRectangle ink_rect;
+};
 
 struct _PangoCairoFcFont
 {
@@ -80,20 +107,14 @@ struct _PangoCairoFcFont
   cairo_matrix_t ctm;
   cairo_font_options_t *options;
 
-  GHashTable *glyph_info;
-
-  GlyphCacheEntry *char_to_glyph_cache;
+  PangoRectangle font_extents;
+  GlyphExtentsCacheEntry    *glyph_extents_cache;
+  GUnicharToGlyphCacheEntry *char_to_glyph_cache;
 };
 
 struct _PangoCairoFcFontClass
 {
   PangoFcFontClass  parent_class;
-};
-
-struct _PangoCairoFcGlyphInfo
-{
-  PangoRectangle logical_rect;
-  PangoRectangle ink_rect;
 };
 
 GType pango_cairo_fc_font_get_type (void);
@@ -187,12 +208,20 @@ pango_cairo_fc_font_finalize (GObject *object)
   if (cffont->options)
     cairo_font_options_destroy (cffont->options);
 
-  g_hash_table_destroy (cffont->glyph_info);
+
+  if (cffont->glyph_extents_cache)
+    {
+      g_free (cffont->glyph_extents_cache);
+#ifdef PROFILE_GLYPH_EXTENTS_CACHE
+      num_glyph_caches--;
+      g_assert (num_glyph_caches >= 0);
+#endif
+    }
 
   if (cffont->char_to_glyph_cache)
     {
       g_free (cffont->char_to_glyph_cache);
-#ifdef PROFILE_GLYPH_CACHE
+#ifdef PROFILE_CHAR_TO_GLYPH_CACHE
       num_glyph_caches--;
       g_assert (num_glyph_caches >= 0);
 #endif
@@ -206,69 +235,6 @@ pango_cairo_fc_font_finalize (GObject *object)
 #endif
 }
 
-static void
-compute_glyph_extents (PangoFont        *font,
-		       PangoGlyph        glyph,
-		       PangoRectangle   *ink_rect,
-		       PangoRectangle   *logical_rect)
-{
-  PangoCairoFont *cfont = (PangoCairoFont *)font;
-  cairo_scaled_font_t *scaled_font = pango_cairo_fc_font_get_scaled_font (cfont);
-
-  /* It may well be worth caching the font_extents here, since getting them
-   * is pretty expensive.
-   */
-  cairo_font_extents_t font_extents;
-  cairo_text_extents_t extents;
-  cairo_glyph_t cairo_glyph;
-  
-  cairo_scaled_font_extents (scaled_font, &font_extents);
-  
-  logical_rect->x = 0;
-  logical_rect->y = - font_extents.ascent * PANGO_SCALE;
-  logical_rect->width = 0;
-  logical_rect->height = (font_extents.ascent + font_extents.descent) * PANGO_SCALE;
-
-  if (glyph)
-    {
-      cairo_glyph.index = glyph;
-      cairo_glyph.x = 0;
-      cairo_glyph.y = 0;
-      
-      cairo_scaled_font_glyph_extents (scaled_font,
-				       &cairo_glyph, 1, &extents);
-      
-      ink_rect->x = extents.x_bearing * PANGO_SCALE;
-      ink_rect->y = extents.y_bearing * PANGO_SCALE;
-      ink_rect->width = extents.width * PANGO_SCALE;
-      ink_rect->height = extents.height * PANGO_SCALE;
-      
-      logical_rect->width = extents.x_advance * PANGO_SCALE;
-    }
-}
-
-static PangoCairoFcGlyphInfo *
-pango_cairo_fc_font_get_glyph_info (PangoFont   *font,
-				    PangoGlyph   glyph)
-{
-  PangoCairoFcFont *cffont = (PangoCairoFcFont *)font;
-  PangoCairoFcGlyphInfo *info;
-
-  info = g_hash_table_lookup (cffont->glyph_info, GUINT_TO_POINTER (glyph));
-  if (!info)
-    {
-      info = g_new0 (PangoCairoFcGlyphInfo, 1);
-      
-      compute_glyph_extents (font, glyph,
-			     &info->ink_rect,
-			     &info->logical_rect);
-      
-      g_hash_table_insert (cffont->glyph_info, GUINT_TO_POINTER (glyph), info);
-    }
-
-  return info;
-}
-     
 /* This function is cut-and-pasted from pangocairo-fcfont.c - it might be
  * better to add a virtual fcfont->create_context (font).
  */
@@ -344,17 +310,14 @@ pango_cairo_fc_font_get_glyph (PangoFcFont *font,
 {
   PangoCairoFcFont *cffont = (PangoCairoFcFont *)font;
   guint idx;
-  GlyphCacheEntry *entry;
+  GUnicharToGlyphCacheEntry *entry;
 
-  /* We create the cache dynamically because although we'll have a lot of
-   * PangoCairoFcFont structures (one per font in the fontset, as many as needed
-   * to cover the whole Unicode space), we'll only end up using a few of them
-   * for the user's actual text.
-   */
   if (cffont->char_to_glyph_cache == NULL)
     {
-      cffont->char_to_glyph_cache = g_new0 (GlyphCacheEntry, GLYPH_CACHE_NUM_ENTRIES);
-#ifdef PROFILE_GLYPH_CACHE
+      cffont->char_to_glyph_cache = g_new0 (GUnicharToGlyphCacheEntry, GLYPH_CACHE_NUM_ENTRIES);
+      /* Make sure all cache entries are invalid initially */
+      cffont->char_to_glyph_cache[0].ch = 1; /* char 1 cannot happen in bucket 0 */
+#ifdef PROFILE_CHAR_TO_GLYPH_CACHE
       num_glyph_caches++;
       if (num_glyph_caches > max_glyph_caches)
 	max_glyph_caches = num_glyph_caches;
@@ -364,22 +327,22 @@ pango_cairo_fc_font_get_glyph (PangoFcFont *font,
   idx = wc & GLYPH_CACHE_MASK;
   entry = cffont->char_to_glyph_cache + idx;
 
-  if (entry->ch != wc || wc == 0)
+  if (entry->ch != wc)
     {
-#ifdef PROFILE_GLYPH_CACHE
+#ifdef PROFILE_CHAR_TO_GLYPH_CACHE
       num_glyph_cache_misses++;
-/*       printf ("cache MISS: cffont %p, gunichar %x = '%c'\n", cffont, wc, (wc < 128) ? wc : 0); */
+      /*g_message ("cache MISS: cffont %p, gunichar %x = '%c'", cffont, wc, (wc < 128) ? wc : 0);*/
 #endif
       entry->ch = wc;
       entry->glyph = ((PangoFcFontClass *) pango_cairo_fc_font_parent_class)->get_glyph (font, wc);
     }
+#ifdef PROFILE_CHAR_TO_GLYPH_CACHE
   else
     {
-#ifdef PROFILE_GLYPH_CACHE
       num_glyph_cache_hits++;
-/*       printf ("cache HIT: cffont %p, gunichar %x = '%c'\n", cffont, wc, (wc < 128) ? wc : 0); */
-#endif
+      /*g_message ("cache HIT: cffont %p, gunichar %x = '%c'", cffont, wc, (wc < 128) ? wc : 0);*/
     }
+#endif
 
   return entry->glyph;
 }
@@ -392,19 +355,116 @@ pango_cairo_fc_font_real_get_unknown_glyph (PangoFcFont *font,
 }
 
 static void
+pango_cairo_fc_font_glyph_extents_cache_init (PangoCairoFcFont *cffont)
+{
+  PangoCairoFont *cfont = (PangoCairoFont *)cffont;
+  cairo_scaled_font_t *scaled_font = pango_cairo_fc_font_get_scaled_font (cfont);
+  cairo_font_extents_t font_extents;
+  cairo_scaled_font_extents (scaled_font, &font_extents);
+
+  cffont->font_extents.x = 0;
+  cffont->font_extents.y = - font_extents.ascent * PANGO_SCALE;
+  cffont->font_extents.width = 0;
+  cffont->font_extents.height = (font_extents.ascent + font_extents.descent) * PANGO_SCALE;
+
+  cffont->glyph_extents_cache = g_new0 (GlyphExtentsCacheEntry, GLYPH_CACHE_NUM_ENTRIES);
+  /* Make sure all cache entries are invalid initially */
+  cffont->glyph_extents_cache[0].glyph = 1; /* glyph 1 cannot happen in bucket 0 */
+  
+#ifdef PROFILE_GLYPH_EXTENTS_CACHE
+  num_glyph_caches++;
+  if (num_glyph_caches > max_glyph_caches)
+    max_glyph_caches = num_glyph_caches;
+#endif
+}
+
+/* Fills in the glyph extents cache entry
+ */
+static void
+compute_glyph_extents (PangoCairoFcFont       *cffont,
+		       PangoGlyph              glyph,
+		       GlyphExtentsCacheEntry *entry)
+{
+  cairo_text_extents_t extents;
+  cairo_glyph_t cairo_glyph;
+
+  cairo_glyph.index = glyph;
+  cairo_glyph.x = 0;
+  cairo_glyph.y = 0;
+  
+  cairo_scaled_font_glyph_extents (cffont->scaled_font,
+				   &cairo_glyph, 1, &extents);
+  
+  entry->glyph = glyph;
+  entry->width = extents.x_advance * PANGO_SCALE;
+  entry->ink_rect.x = extents.x_bearing * PANGO_SCALE;
+  entry->ink_rect.y = extents.y_bearing * PANGO_SCALE;
+  entry->ink_rect.width = extents.width * PANGO_SCALE;
+  entry->ink_rect.height = extents.height * PANGO_SCALE;
+}
+     
+static GlyphExtentsCacheEntry *
+pango_cairo_fc_font_get_glyph_extents_cache_entry (PangoCairoFcFont       *cffont,
+						   PangoGlyph              glyph)
+{
+  GlyphExtentsCacheEntry *entry;
+  guint idx;
+
+  idx = glyph & GLYPH_CACHE_MASK;
+  entry = cffont->glyph_extents_cache + idx;
+
+  if (entry->glyph != glyph)
+    {
+#ifdef PROFILE_GLYPH_EXTENTS_CACHE
+      num_glyph_cache_misses++;
+      /*g_message ("cache MISS: cffont %p, glyph %x", cffont, glyph);*/
+#endif
+      compute_glyph_extents (cffont, glyph, entry);
+    }
+#ifdef PROFILE_GLYPH_EXTENTS_CACHE
+  else
+    {
+      num_glyph_cache_hits++;
+      /*g_message ("cache HIT: cffont %p, glyph %x = '%c'", cffont, glyph);*/
+    }
+#endif
+
+  return entry;
+}
+
+static void
 pango_cairo_fc_font_get_glyph_extents (PangoFont      *font,
 				       PangoGlyph      glyph,
 				       PangoRectangle *ink_rect,
 				       PangoRectangle *logical_rect)
 {
-  PangoCairoFcGlyphInfo *info;
+  PangoCairoFcFont *cffont = (PangoCairoFcFont *)font;
+  GlyphExtentsCacheEntry *entry;
 
-  info = pango_cairo_fc_font_get_glyph_info (font, glyph);
-  
+  /* We need to initialize the cache here, since we use cffont->font_extents
+   */
+  if (cffont->glyph_extents_cache == NULL)
+    pango_cairo_fc_font_glyph_extents_cache_init (cffont);
+
+
+  if (glyph == 0)
+    {
+      if (ink_rect)
+	*ink_rect = cffont->font_extents;
+      if (logical_rect)
+	*logical_rect = cffont->font_extents;
+      return;
+    }
+
+  entry = pango_cairo_fc_font_get_glyph_extents_cache_entry (cffont, glyph);
+
   if (ink_rect)
-    *ink_rect = info->ink_rect;
+    *ink_rect = entry->ink_rect;
   if (logical_rect)
-    *logical_rect = info->logical_rect;
+    {
+      *logical_rect = cffont->font_extents;
+      logical_rect->width = entry->width;
+    }
 }
 
 static void
@@ -427,11 +487,12 @@ pango_cairo_fc_font_shutdown (PangoFcFont *fcfont)
 static void
 profile_glyph_cache_exit_cb (void)
 {
-  printf ("Maximum number of PangoCairoFcFont objects: %ld\n", max_cairo_fc_fonts);
-  printf ("Maximum number of glyph caches created: %ld (%ld KB)\n", max_glyph_caches, (max_glyph_caches * sizeof (GlyphCacheEntry) * GLYPH_CACHE_NUM_ENTRIES) / 1024);
-  printf ("Glyph cache hits: %ld\n", num_glyph_cache_hits);
-  printf ("Glyph cache misses: %ld\n", num_glyph_cache_misses);
-  printf ("Glyph cache miss rate: %f%%\n", 100.0 * (double) num_glyph_cache_misses / (num_glyph_cache_misses + num_glyph_cache_hits));
+  g_message ("Profiled %s cache", G_STRINGIFY (PROFILE_GLYPH_CACHE));
+  g_message ("Maximum number of PangoCairoFcFont objects: %ld", max_cairo_fc_fonts);
+  g_message ("Maximum number of glyph caches created: %ld (%ld KB)", max_glyph_caches, (max_glyph_caches * sizeof (PROFILE_GLYPH_CACHE) * GLYPH_CACHE_NUM_ENTRIES) / 1024);
+  g_message ("Glyph cache hits: %ld", num_glyph_cache_hits);
+  g_message ("Glyph cache misses: %ld", num_glyph_cache_misses);
+  g_message ("Glyph cache miss rate: %f%%", 100.0 * (double) num_glyph_cache_misses / (num_glyph_cache_misses + num_glyph_cache_hits));
 }
 #endif
 
@@ -461,11 +522,6 @@ pango_cairo_fc_font_class_init (PangoCairoFcFontClass *class)
 static void
 pango_cairo_fc_font_init (PangoCairoFcFont *cffont)
 {
-  cffont->glyph_info = g_hash_table_new_full (g_direct_hash,
-					      NULL,
-					      NULL,
-					      (GDestroyNotify)g_free);
-
 #ifdef PROFILE_GLYPH_CACHE
   num_cairo_fc_fonts++;
   if (num_cairo_fc_fonts > max_cairo_fc_fonts)

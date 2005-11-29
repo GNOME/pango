@@ -1,3 +1,10 @@
+2005-11-29  Behdad Esfahbod  <behdad@gnome.org>
+
+	* pango/pangocairo-fcfont.c: Add a constact fixed-size (256) cache for
+	caching glyph extents, instead of the growing g_hash_table.  The cache
+	itself is very similar to the recent gunichar->glyph cache done by
+	Federico.  Reviewed by Matthias Clasen.
+
 2005-11-24  Matthias Clasen  <mclasen@redhat.com>
 
 	* pango/pango-layout.c: Fix a typo.
