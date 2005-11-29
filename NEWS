@@ -5,7 +5,6 @@ Overview of changes between 1.10.1 and 1.10.2
 * Respect fontconfig reassignment of font pixelsize. [Funda Wang]
 * Make OpenType GPOS handling more robust/correct. [Greg Aumann]
 * Various documentation fixes and improvements.
-* Various gcc warning fixes.
 * Misc bug fixes.
 * Open Pango modules with lazy-bind flags. [John Rice]
 

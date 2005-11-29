@@ -1,3 +1,11 @@
+2005-11-29  Behdad Esfahbod  <behdad@gnome.org>
+
+	* === Released 1.10.2 ===
+
+	* NEWS: Updated.
+
+	* configure.in: Version 1.10.2
+
 2005-11-23  Behdad Esfahbod  <behdad@gnome.org>
 
 	* pango/opentyp/pango-ot-buffer.c: Fix typo in docs.
