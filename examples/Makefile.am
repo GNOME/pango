@@ -34,6 +34,7 @@ pangoft2topgm_SOURCES =				\
 pangoft2topgm_LDADD =					\
 	../pango/libpango-$(PANGO_API_VERSION).la	\
 	../pango/libpangoft2-$(PANGO_API_VERSION).la	\
+	$(GLIB_LIBS)					\
 	$(FREETYPE_LIBS)
 ###################################################
 
@@ -51,6 +52,7 @@ pango_xftview_LDADD =					\
 	../pango/libpango-$(PANGO_API_VERSION).la	\
 	../pango/libpangoft2-$(PANGO_API_VERSION).la	\
 	../pango/libpangoxft-$(PANGO_API_VERSION).la	\
+	$(GLIB_LIBS)					\
 	$(XFT_LIBS)					\
 	$(X_LIBS)
 ###################################################
@@ -73,8 +75,9 @@ pango_cairoview_LDADD =					\
 	../pango/libpango-$(PANGO_API_VERSION).la	\
 	../pango/libpangoft2-$(PANGO_API_VERSION).la	\
 	../pango/libpangocairo-$(PANGO_API_VERSION).la	\
-	 $(CAIRO_LIBS)					\
-	 $(X_LIBS)
+	$(GLIB_LIBS)					\
+	$(CAIRO_LIBS)					\
+	$(X_LIBS)
 ###################################################
 
 ###################################################
@@ -87,7 +90,8 @@ cairosimple_SOURCES =					\
 cairosimple_LDADD =					\
 	../pango/libpango-$(PANGO_API_VERSION).la	\
 	../pango/libpangocairo-$(PANGO_API_VERSION).la	\
-	 $(CAIRO_LIBS)
+	$(GLIB_LIBS)					\
+	$(CAIRO_LIBS)
 ###################################################
 
 if CROSS_COMPILING
