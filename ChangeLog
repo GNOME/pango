@@ -1,3 +1,8 @@
+2005-11-30  Behdad Esfahbod  <behdad@gnome.org>
+
+	* examples/Makefile.am: Add GLIB_LIBS to examples explicitly. (#322885,
+	Manish Singh)
+
 2005-11-29  Behdad Esfahbod  <behdad@gnome.org>
 
 	* === Released 1.10.2 ===
