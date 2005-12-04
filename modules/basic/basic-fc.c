@@ -264,7 +264,7 @@ get_ruleset (FT_Face face)
 
   info = pango_ot_info_get (face);
   if (!info)
-	  return FALSE;
+	  return NULL;
 
   if (!ruleset_quark)
 	  ruleset_quark = g_quark_from_string ("pango-basic-ruleset");
