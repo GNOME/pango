@@ -103,9 +103,13 @@ get_ruleset (FT_Face face)
 
       ruleset = pango_ot_ruleset_new (info);
 
+      /* according to the Arabic OpenType spec, available here:
+       * http://www.microsoft.com/typography/otfntdev/arabicot/features.htm
+       */
       if (pango_ot_info_find_script (info, PANGO_OT_TABLE_GSUB,
 				     arab_tag, &script_index))
 	{
+	  /* Language based forms: */
 	  maybe_add_gsub_feature (ruleset, info, script_index, FT_MAKE_TAG ('c','c','m','p'), 0xFFFF);
 	  maybe_add_gsub_feature (ruleset, info, script_index, FT_MAKE_TAG ('i','s','o','l'), isolated);
 	  maybe_add_gsub_feature (ruleset, info, script_index, FT_MAKE_TAG ('f','i','n','a'), final);
@@ -113,13 +117,19 @@ get_ruleset (FT_Face face)
 	  maybe_add_gsub_feature (ruleset, info, script_index, FT_MAKE_TAG ('i','n','i','t'), initial);
 	  maybe_add_gsub_feature (ruleset, info, script_index, FT_MAKE_TAG ('r','l','i','g'), 0xFFFF);
 	  maybe_add_gsub_feature (ruleset, info, script_index, FT_MAKE_TAG ('c','a','l','t'), 0xFFFF);
+
+	  /* Typographical forms: */
 	  maybe_add_gsub_feature (ruleset, info, script_index, FT_MAKE_TAG ('l','i','g','a'), 0xFFFF);
+	  /* this one should be turned-on/off-able.  lets turn off for now. */
+	  /* maybe_add_gsub_feature (ruleset, info, script_index, FT_MAKE_TAG ('d','l','i','g'), 0xFFFF); */
+	  maybe_add_gsub_feature (ruleset, info, script_index, FT_MAKE_TAG ('c','s','w','h'), 0xFFFF);
 	  maybe_add_gsub_feature (ruleset, info, script_index, FT_MAKE_TAG ('m','s','e','t'), 0xFFFF);
 	}
 
       if (pango_ot_info_find_script (info, PANGO_OT_TABLE_GPOS,
 				     arab_tag, &script_index))
 	{
+	  /* Positioning features: */
 	  maybe_add_gpos_feature (ruleset, info, script_index, FT_MAKE_TAG ('c','u','r','s'), 0xFFFF);
 	  maybe_add_gpos_feature (ruleset, info, script_index, FT_MAKE_TAG ('k','e','r','n'), 0xFFFF);
 	  maybe_add_gpos_feature (ruleset, info, script_index, FT_MAKE_TAG ('m','a','r','k'), 0xFFFF);
