@@ -67,54 +67,20 @@ typedef struct
 }
 LevelInfo;
 
-#ifndef USE_SIMPLE_MALLOC
-static TypeLink *free_type_links = NULL;
-#endif
-
 static TypeLink *
 new_type_link (void)
 {
   TypeLink *link;
 
-#ifdef USE_SIMPLE_MALLOC
-  link = malloc (sizeof (TypeLink));
-#else /* !USE_SIMPLE_MALLOC */
-  if (free_type_links)
-    {
-      link = free_type_links;
-      free_type_links = free_type_links->next;
-    }
-  else
-    {
-      static FriBidiMemChunk *mem_chunk = NULL;
+  link = g_slice_new0 (TypeLink);
 
-      if (!mem_chunk)
-	mem_chunk = fribidi_mem_chunk_create (TypeLink,
-					      FRIBIDI_CHUNK_SIZE,
-					      FRIBIDI_ALLOC_ONLY);
-
-      link = fribidi_chunk_new (TypeLink,
-				mem_chunk);
-    }
-#endif /* !USE_SIMPLE_MALLOC */
-
-  link->len = 0;
-  link->pos = 0;
-  link->level = 0;
-  link->next = NULL;
-  link->prev = NULL;
   return link;
 }
 
 static void
 free_type_link (TypeLink *link)
 {
-#ifdef USE_SIMPLE_MALLOC
-  free (link);
-#else
-  link->next = free_type_links;
-  free_type_links = link;
-#endif
+  g_slice_free (TypeLink, link);
 }
 
 #define FRIBIDI_ADD_TYPE_LINK(p,q) \
@@ -391,9 +357,6 @@ compact_neutrals (TypeLink *list)
 static void
 free_rl_list (TypeLink *type_rl_list)
 {
-
-  TypeLink *pp;
-
   DBG ("Entering free_rl_list()\n");
 
   if (!type_rl_list)
@@ -402,23 +365,7 @@ free_rl_list (TypeLink *type_rl_list)
       return;
     }
 
-#ifdef USE_SIMPLE_MALLOC
-  pp = type_rl_list;
-  while (pp)
-    {
-      TypeLink *p;
-
-      p = pp;
-      pp = pp->next;
-      free_type_link (p);
-    };
-#else
-  for (pp = type_rl_list->next; pp->next; pp = pp->next)
-    /* Nothing */ ;
-  pp->next = free_type_links;
-  free_type_links = type_rl_list;
-  type_rl_list = NULL;
-#endif
+  g_slice_free_chain (TypeLink, type_rl_list, next);
 
   DBG ("Leaving free_rl_list()\n");
   return;

@@ -1,3 +1,11 @@
+2005-12-05  Behdad Esfahbod  <behdad@gnome.org>
+
+	* pango/mini-fribidi/fribidi.c, pango/mini-fribidi/fribidi_config.h,
+	pango/mini-fribidi/fribidi.patch: Use new g_slice API for TypeLink
+	allocation, instead of GMemChunks.
+
+	* configure.in: Bump required glib version to 2.9.1.
+
 2005-12-04  Behdad Esfahbod  <behdad@gnome.org>
 
 	* modules/basic/basic-fc.c: Return NULL, not FALSE!

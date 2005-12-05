@@ -12,17 +12,6 @@
 /* ripped off debugging functions, make sure it's not triggerred. */
 #undef DEBUG
 
-/* fribidi's memchunk code was a reimplementation of glib's api.
- * use glib proper. */
-# include <glib/gmem.h>
-#define FriBidiMemChunk GMemChunk
-#define FRIBIDI_ALLOC_ONLY G_ALLOC_ONLY
-#define fribidi_mem_chunk_new g_mem_chunk_new
-#define fribidi_mem_chunk_create g_mem_chunk_create
-#define fribidi_mem_chunk_alloc g_mem_chunk_alloc
-#define fribidi_mem_chunk_destroy g_mem_chunk_destroy
-#define fribidi_chunk_new g_chunk_new
-
 /* g_malloc and g_free verbatim */
 #define malloc g_malloc
 #define free g_free

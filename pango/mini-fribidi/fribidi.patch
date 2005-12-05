@@ -1,7 +1,13 @@
 diff -rua /home/behdad/src/fdo/fribidi/fribidi.stable/fribidi.c ./fribidi.c
 --- /home/behdad/src/fdo/fribidi/fribidi.stable/fribidi.c	2005-09-25 18:50:30.000000000 -0400
-+++ ./fribidi.c	2005-11-03 11:30:26.000000000 -0500
-@@ -27,10 +27,6 @@
++++ fribidi.c	2005-12-05 11:35:07.000000000 -0500
+@@ -22,15 +22,12 @@
+  */
+ 
+ #include <stdlib.h>
++#include <string.h>
+ 
+ #ifdef HAVE_CONFIG_H
  #include <config.h>
  #endif
  #include "fribidi.h"
@@ -12,7 +18,7 @@ diff -rua /home/behdad/src/fdo/fribidi/fribidi.stable/fribidi.c ./fribidi.c
  
  /* Redefine FRIBIDI_CHUNK_SIZE in config.h to override this. */
  #ifndef FRIBIDI_CHUNK_SIZE
-@@ -41,19 +37,8 @@
+@@ -41,19 +38,8 @@
  #endif
  #endif
  
@@ -32,7 +38,7 @@ diff -rua /home/behdad/src/fdo/fribidi/fribidi.stable/fribidi.c ./fribidi.c
  
  /*======================================================================
   * Typedef for the run-length list.
-@@ -81,47 +66,6 @@
+@@ -81,95 +67,20 @@
  }
  LevelInfo;
  
@@ -77,10 +83,60 @@ diff -rua /home/behdad/src/fdo/fribidi/fribidi.stable/fribidi.c ./fribidi.c
 -    }
 -}
 -
- #ifndef USE_SIMPLE_MALLOC
- static TypeLink *free_type_links = NULL;
- #endif
-@@ -181,12 +125,18 @@
+-#ifndef USE_SIMPLE_MALLOC
+-static TypeLink *free_type_links = NULL;
+-#endif
+-
+ static TypeLink *
+ new_type_link (void)
+ {
+   TypeLink *link;
+ 
+-#ifdef USE_SIMPLE_MALLOC
+-  link = malloc (sizeof (TypeLink));
+-#else /* !USE_SIMPLE_MALLOC */
+-  if (free_type_links)
+-    {
+-      link = free_type_links;
+-      free_type_links = free_type_links->next;
+-    }
+-  else
+-    {
+-      static FriBidiMemChunk *mem_chunk = NULL;
+-
+-      if (!mem_chunk)
+-	mem_chunk = fribidi_mem_chunk_create (TypeLink,
+-					      FRIBIDI_CHUNK_SIZE,
+-					      FRIBIDI_ALLOC_ONLY);
+-
+-      link = fribidi_chunk_new (TypeLink,
+-				mem_chunk);
+-    }
+-#endif /* !USE_SIMPLE_MALLOC */
++  link = g_slice_new0 (TypeLink);
+ 
+-  link->len = 0;
+-  link->pos = 0;
+-  link->level = 0;
+-  link->next = NULL;
+-  link->prev = NULL;
+   return link;
+ }
+ 
+ static void
+ free_type_link (TypeLink *link)
+ {
+-#ifdef USE_SIMPLE_MALLOC
+-  free (link);
+-#else
+-  link->next = free_type_links;
+-  free_type_links = link;
+-#endif
++  g_slice_free (TypeLink, link);
+ }
+ 
+ #define FRIBIDI_ADD_TYPE_LINK(p,q) \
+@@ -181,12 +92,18 @@
  	} while (0)
  
  static TypeLink *
@@ -102,7 +158,7 @@ diff -rua /home/behdad/src/fdo/fribidi/fribidi.stable/fribidi.c ./fribidi.c
  
    /* Add the starting link */
    list = new_type_link ();
-@@ -194,23 +144,38 @@
+@@ -194,23 +111,38 @@
    list->level = FRIBIDI_LEVEL_START;
    last = list;
  
@@ -146,7 +202,7 @@ diff -rua /home/behdad/src/fdo/fribidi/fribidi.stable/fribidi.c ./fribidi.c
    return list;
  }
  
-@@ -418,6 +383,46 @@
+@@ -418,6 +350,27 @@
      }
  }
  
@@ -157,9 +213,6 @@ diff -rua /home/behdad/src/fdo/fribidi/fribidi.stable/fribidi.c ./fribidi.c
 +static void
 +free_rl_list (TypeLink *type_rl_list)
 +{
-+
-+  TypeLink *pp;
-+
 +  DBG ("Entering free_rl_list()\n");
 +
 +  if (!type_rl_list)
@@ -168,23 +221,7 @@ diff -rua /home/behdad/src/fdo/fribidi/fribidi.stable/fribidi.c ./fribidi.c
 +      return;
 +    }
 +
-+#ifdef USE_SIMPLE_MALLOC
-+  pp = type_rl_list;
-+  while (pp)
-+    {
-+      TypeLink *p;
-+
-+      p = pp;
-+      pp = pp->next;
-+      free_type_link (p);
-+    };
-+#else
-+  for (pp = type_rl_list->next; pp->next; pp = pp->next)
-+    /* Nothing */ ;
-+  pp->next = free_type_links;
-+  free_type_links = type_rl_list;
-+  type_rl_list = NULL;
-+#endif
++  g_slice_free_chain (TypeLink, type_rl_list, next);
 +
 +  DBG ("Leaving free_rl_list()\n");
 +  return;
@@ -193,7 +230,7 @@ diff -rua /home/behdad/src/fdo/fribidi/fribidi.stable/fribidi.c ./fribidi.c
  /*=========================================================================
   * define macros for push and pop the status in to / out of the stack
   *-------------------------------------------------------------------------*/
-@@ -512,95 +517,22 @@
+@@ -512,95 +465,22 @@
  #define FRIBIDI_EMBEDDING_DIRECTION(list) \
      FRIBIDI_LEVEL_TO_DIR(RL_LEVEL(list))
  
@@ -294,7 +331,7 @@ diff -rua /home/behdad/src/fdo/fribidi/fribidi.stable/fribidi.c ./fribidi.c
    TypeLink *type_rl_list, *explicits_list, *explicits_list_end, *pp;
  
    DBG ("Entering fribidi_analyse_string()\n");
-@@ -608,14 +540,47 @@
+@@ -608,14 +488,53 @@
    /* Determinate character types */
    DBG ("  Determine character types\n");
    {
@@ -311,10 +348,16 @@ diff -rua /home/behdad/src/fdo/fribidi/fribidi.stable/fribidi.c ./fribidi.c
 +    type_rl_list = run_length_encode_types_utf8 (str, bytelen, len,
 +		   				 &ored_types, &anded_strongs);
 +
-+    /* If there's absolutely nothing with a hint of rtl, then all resolved
-+     * levels will be ltr (even).  short-circuit.
++    /* The case that all resolved levels will be ltr.
++     * First, all strongs should be ltr, and one of the following:
++     *
++     *	o *pbase_dir doesn't have an rtl taste.
++     *	o there are letters, and *pbase_dir is weak.
 +     */
-+    if (!FRIBIDI_IS_RTL (*pbase_dir | ored_types))
++    if (!FRIBIDI_IS_RTL (ored_types) &&
++	     (!FRIBIDI_IS_RTL (*pbase_dir) ||
++	      (FRIBIDI_IS_WEAK (*pbase_dir) && FRIBIDI_IS_LETTER (ored_types))
++	     ))
 +      {
 +	/* all ltr */
 +	free_rl_list (type_rl_list);
@@ -348,7 +391,7 @@ diff -rua /home/behdad/src/fdo/fribidi/fribidi.stable/fribidi.c ./fribidi.c
    }
    DBG ("  Determine character types, Done\n");
  
-@@ -646,13 +611,6 @@
+@@ -646,13 +565,6 @@
    DBG2 ("  Base dir   : %c\n", fribidi_char_from_type (base_dir));
    DBG ("  Finding the base level, Done\n");
  
@@ -362,7 +405,7 @@ diff -rua /home/behdad/src/fdo/fribidi/fribidi.stable/fribidi.c ./fribidi.c
    /* Explicit Levels and Directions */
    DBG ("Explicit Levels and Directions\n");
    {
-@@ -752,16 +710,6 @@
+@@ -752,16 +664,6 @@
  
    compact_list (type_rl_list);
  
@@ -379,7 +422,7 @@ diff -rua /home/behdad/src/fdo/fribidi/fribidi.stable/fribidi.c ./fribidi.c
    /* 4. Resolving weak types */
    DBG ("Resolving weak types\n");
    {
-@@ -884,14 +832,6 @@
+@@ -884,14 +786,6 @@
  
    compact_neutrals (type_rl_list);
  
@@ -394,7 +437,7 @@ diff -rua /home/behdad/src/fdo/fribidi/fribidi.stable/fribidi.c ./fribidi.c
    /* 5. Resolving Neutral Types */
    DBG ("Resolving neutral types\n");
    {
-@@ -916,14 +856,6 @@
+@@ -916,14 +810,6 @@
  
    compact_list (type_rl_list);
  
@@ -409,7 +452,7 @@ diff -rua /home/behdad/src/fdo/fribidi/fribidi.stable/fribidi.c ./fribidi.c
    /* 6. Resolving implicit levels */
    DBG ("Resolving implicit levels\n");
    {
-@@ -952,15 +884,6 @@
+@@ -952,15 +838,6 @@
  
    compact_list (type_rl_list);
  
@@ -425,7 +468,7 @@ diff -rua /home/behdad/src/fdo/fribidi/fribidi.stable/fribidi.c ./fribidi.c
  /* Reinsert the explicit codes & bn's that already removed, from the
     explicits_list to type_rl_list. */
    DBG ("Reinserting explicit codes\n");
-@@ -976,30 +899,23 @@
+@@ -976,30 +853,23 @@
  	p->level = p->prev->level;
    }
  
@@ -461,7 +504,7 @@ diff -rua /home/behdad/src/fdo/fribidi/fribidi.stable/fribidi.c ./fribidi.c
  	else
  	  k = FRIBIDI_TYPE_ON;
  	if (!state && FRIBIDI_IS_SEPARATOR (k))
-@@ -1023,395 +939,59 @@
+@@ -1023,395 +893,59 @@
      override_list (type_rl_list, list);
    }
  
@@ -886,7 +929,7 @@ diff -rua /home/behdad/src/fdo/fribidi/fribidi.stable/fribidi.c ./fribidi.c
        FriBidiLevel level = RL_LEVEL (pp);
        for (i = 0; i < len; i++)
  	embedding_level_list[pos + i] = level;
-@@ -1420,34 +1000,6 @@
+@@ -1420,34 +954,6 @@
    free_rl_list (type_rl_list);
  
    DBG ("Leaving fribidi_log2vis_get_embedding_levels()\n");
