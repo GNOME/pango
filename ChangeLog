@@ -1,5 +1,11 @@
 2005-12-05  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango/pangocairo-fcfont.c, pango/pangocairo-private.h,
+	pango/pangocairo-render.c: Draw an empty dashed box on missing glyphs
+	for cairo-fc backend.
+
+2005-12-05  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/mini-fribidi/fribidi.c, pango/mini-fribidi/fribidi_config.h,
 	pango/mini-fribidi/fribidi.patch: Use new g_slice API for TypeLink
 	allocation, instead of GMemChunks.

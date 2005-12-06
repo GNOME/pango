@@ -38,8 +38,6 @@
 #define PANGO_CAIRO_IS_FONT_CLASS(klass)   (G_TYPE_CHECK_CLASS_TYPE ((klass), PANGO_TYPE_CAIRO_FC_FONT))
 #define PANGO_CAIRO_FC_FONT_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), PANGO_TYPE_CAIRO_FC_FONT, PangoCairoFcFontClass))
 
-#define PANGO_CAIRO_UNKNOWN_FLAG 0x10000000
-
 typedef struct _PangoCairoFcFont      PangoCairoFcFont;
 typedef struct _PangoCairoFcFontClass PangoCairoFcFontClass;
 
@@ -351,7 +349,7 @@ static PangoGlyph
 pango_cairo_fc_font_real_get_unknown_glyph (PangoFcFont *font,
 					    gunichar     wc)
 {
-  return 0;
+  return wc | PANGO_CAIRO_UNKNOWN_FLAG;
 }
 
 static void
@@ -364,8 +362,9 @@ pango_cairo_fc_font_glyph_extents_cache_init (PangoCairoFcFont *cffont)
 
   cffont->font_extents.x = 0;
   cffont->font_extents.y = - font_extents.ascent * PANGO_SCALE;
-  cffont->font_extents.width = 0;
   cffont->font_extents.height = (font_extents.ascent + font_extents.descent) * PANGO_SCALE;
+  /* The width is only used for the width of box drawn for glyph-not-found */
+  cffont->font_extents.width = (font_extents.ascent - font_extents.descent) * PANGO_SCALE;
 
   cffont->glyph_extents_cache = g_new0 (GlyphExtentsCacheEntry, GLYPH_CACHE_NUM_ENTRIES);
   /* Make sure all cache entries are invalid initially */
@@ -447,7 +446,7 @@ pango_cairo_fc_font_get_glyph_extents (PangoFont      *font,
     pango_cairo_fc_font_glyph_extents_cache_init (cffont);
 
 
-  if (glyph == 0)
+  if (glyph & PANGO_CAIRO_UNKNOWN_FLAG)
     {
       if (ink_rect)
 	*ink_rect = cffont->font_extents;
