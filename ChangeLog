@@ -1,5 +1,10 @@
 2005-12-05  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango/pangofc-fontmap.c (pango_fc_font_map_finalize): Free
+	->fontset_hash. (#323498, Morten Welinder)
+
+2005-12-05  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/pangocairo-fcfont.c, pango/pangocairo-private.h,
 	pango/pangocairo-render.c: Draw an empty dashed box on missing glyphs
 	for cairo-fc backend.
