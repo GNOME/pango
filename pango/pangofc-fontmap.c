@@ -483,6 +483,9 @@ pango_fc_font_map_finalize (GObject *object)
   g_queue_free (priv->fontset_cache);
   g_hash_table_destroy (priv->coverage_hash);
 
+  if (priv->fontset_hash)
+    g_hash_table_destroy (priv->fontset_hash);
+
   if (priv->font_hash)
     g_hash_table_destroy (priv->font_hash);
 
