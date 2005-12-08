@@ -1,4 +1,4 @@
-2005-12-05  Behdad Esfahbod  <behdad@gnome.org>
+2005-12-08  Behdad Esfahbod  <behdad@gnome.org>
 
 	* pango/pangofc-fontmap.c (pango_fc_font_map_finalize): Free
 	->fontset_hash. (#323498, Morten Welinder)
