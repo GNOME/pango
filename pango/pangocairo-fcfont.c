@@ -446,7 +446,7 @@ pango_cairo_fc_font_get_glyph_extents (PangoFont      *font,
     pango_cairo_fc_font_glyph_extents_cache_init (cffont);
 
 
-  if (glyph & PANGO_CAIRO_UNKNOWN_FLAG)
+  if (!glyph || glyph & PANGO_CAIRO_UNKNOWN_FLAG)
     {
       if (ink_rect)
 	*ink_rect = cffont->font_extents;

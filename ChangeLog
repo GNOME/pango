@@ -1,3 +1,8 @@
+2005-12-10  Behdad Esfahbod  <behdad@gnome.org>
+
+	* pango/pangocairo-fcfont.c (pango_cairo_fc_font_get_glyph_extents):
+	Update on missing-box drawing change. Add (!glyph) to the conditional.
+
 2005-12-08  Behdad Esfahbod  <behdad@gnome.org>
 
 	* pango/pangofc-fontmap.c (pango_fc_font_map_finalize): Free
