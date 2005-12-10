@@ -1,5 +1,10 @@
 2005-12-10  Behdad Esfahbod  <behdad@gnome.org>
 
+	* configure.in: Bump required glib version to 2.9.2 now that it's
+	released. We are relying on the revised g_slice_free_chain api.
+
+2005-12-10  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/pangocairo-fcfont.c (pango_cairo_fc_font_get_glyph_extents):
 	Update on missing-box drawing change. Add (!glyph) to the conditional.
 
