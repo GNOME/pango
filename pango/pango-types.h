@@ -123,6 +123,7 @@ void pango_matrix_rotate    (PangoMatrix *matrix,
 			     double       degrees);
 void pango_matrix_concat    (PangoMatrix       *matrix,
 			     const PangoMatrix *new_matrix);
+double pango_matrix_get_font_scale_factor (PangoMatrix *matrix);
 
 #define PANGO_SCALE 1024
 #define PANGO_PIXELS(d) (((int)(d) + 512) >> 10)

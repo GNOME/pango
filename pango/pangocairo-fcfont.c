@@ -536,7 +536,8 @@ static double
 get_font_size (PangoCairoFcFontMap        *cffontmap,
 	       PangoContext               *context,
 	       const PangoFontDescription *desc,
-	       FcPattern                  *pattern)
+	       FcPattern                  *pattern,
+	       PangoMatrix                *matrix)
 {
   double size;
 
@@ -554,7 +555,7 @@ get_font_size (PangoCairoFcFontMap        *cffontmap,
   */
 
   if (FcPatternGetDouble (pattern, FC_PIXEL_SIZE, 0, &size) == FcResultMatch)
-    return size * PANGO_SCALE;
+    return size * PANGO_SCALE / pango_matrix_get_font_scale_factor (matrix);
 
   /* Just in case FC_PIXEL_SIZE got unset between pango_fc_make_pattern()
    * and here.
@@ -603,12 +604,13 @@ _pango_cairo_fc_font_new (PangoCairoFcFontMap        *cffontmap,
   else
     cairo_matrix_init_identity (&cffont->font_matrix);
 
-  size = get_font_size (cffontmap, context, desc, pattern);
+  pango_ctm = pango_context_get_matrix (context);
+
+  size = get_font_size (cffontmap, context, desc, pattern, pango_ctm);
 
   cairo_matrix_scale (&cffont->font_matrix,
 		      size / PANGO_SCALE, size / PANGO_SCALE);
 
-  pango_ctm = pango_context_get_matrix (context);
   if (pango_ctm)
     cairo_matrix_init (&cffont->ctm,
 		       pango_ctm->xx,
@@ -618,6 +620,7 @@ _pango_cairo_fc_font_new (PangoCairoFcFontMap        *cffontmap,
 		       0., 0.);
   else
     cairo_matrix_init_identity (&cffont->ctm);
+
 
   cffont->options = cairo_font_options_copy (_pango_cairo_context_get_merged_font_options (context));
   

@@ -1154,6 +1154,58 @@ pango_matrix_concat (PangoMatrix       *matrix,
   matrix->y0  = tmp.yx * new_matrix->y0 + tmp.yy * new_matrix->y0 + tmp.y0;
 }
 
+/**
+ * pango_matrix_get_font_scale_factor:
+ * @matrix: a #PangoMatrix, may be %NULL
+ * 
+ * Return value: the scale factor of @matrix on the height of the font.
+ * That is, the scale factor in the direction perpendicular to the
+ * vector that the X coordinate is mapped to, or 1.0 if @matrix is %NULL.
+ *
+ * Since: 1.12
+ **/
+double
+pango_matrix_get_font_scale_factor (PangoMatrix *matrix)
+{
+/*
+ * Based on cairo-matrix.c:_cairo_matrix_compute_scale_factors()
+ *
+ * Copyright 2005, Keith Packard
+ */
+  double det;
+  
+  if (!matrix)
+    return 1.0;
+  
+  det = matrix->xx * matrix->yy - matrix->yx * matrix->xy;
+
+  if (det == 0)
+    {
+      return 0.0;
+    }
+  else
+    {
+      double x = matrix->xx;
+      double y = matrix->yx;
+      double major, minor;
+
+      major = sqrt (x*x + y*y);
+      
+      /*
+       * ignore mirroring
+       */
+      if (det < 0)
+	det = - det;
+      
+      if (major)
+	minor = det / major;
+      else 
+	minor = 0.0;
+
+      return minor;
+    }
+}
+
 static const char canon_map[256] = {
    0,   0,   0,   0,   0,   0,   0,   0,    0,   0,   0,   0,   0,   0,   0,   0, 
    0,   0,   0,   0,   0,   0,   0,   0,    0,   0,   0,   0,   0,   0,   0,   0, 

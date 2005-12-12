@@ -1,3 +1,17 @@
+2005-12-12  Behdad Esfahbod  <behdad@gnome.org>
+
+	Fix bug #323540.
+
+	* pangofc-fontmap.c (get_scaled_size): The logic in there is moved
+	and renamed into pango-utils.
+
+	* pango/pango-types.h, 
+	* pango/pango-utils.c (pango_matrix_get_font_scale_factor):
+	New function.
+
+	* pango/pangocairo-fcfont.c (get_font_size): Divide pixel-size by
+	matrix font-scale-factor, since pixel-size is scaled.
+
 2005-12-11  Behdad Esfahbod  <behdad@gnome.org>
 
 	* configure.in: Undo last change.  2.9.1 has the revised
