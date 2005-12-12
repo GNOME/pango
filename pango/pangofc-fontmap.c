@@ -1011,44 +1011,6 @@ get_unscaled_size (PangoFcFontMap             *fcfontmap,
     }
 }
 
-/*
- * Based on cairo-matrix.c:_cairo_matrix_compute_scale_factors()
- *
- * Copyright 2005, Keith Packard
- */
-static double
-get_scaled_size (FontsetHashKey *key)
-{
-  PangoMatrix *matrix = &key->matrix;
-  double det = matrix->xx * matrix->yy - matrix->yx * matrix->xy;
-
-  if (det == 0)
-    {
-      return 0.0;
-    }
-  else
-    {
-      double x = matrix->xx;
-      double y = matrix->yx;
-      double major, minor;
-
-      major = sqrt (x*x + y*y);
-      
-      /*
-       * ignore mirroring
-       */
-      if (det < 0)
-	det = - det;
-      
-      if (major)
-	minor = det / major;
-      else 
-	minor = 0.0;
-
-      return minor * key->size / 1024.;
-    }
-}
-
 static PangoFcPatternSet *
 pango_fc_font_map_get_patterns (PangoFontMap               *fontmap,
 				PangoContext               *context,
@@ -1083,8 +1045,10 @@ pango_fc_font_map_get_patterns (PangoFontMap               *fontmap,
 
   if (patterns == NULL)
     {
+      double scale_factor = pango_matrix_get_font_scale_factor (&key.matrix);
+      double scaled_size = key.size * scale_factor / PANGO_SCALE;
       pattern = pango_fc_make_pattern (desc, language,
-				       get_scaled_size (&key),
+				       scaled_size,
 				       pango_fc_font_map_get_resolution (fcfontmap, context));
       
       pango_fc_default_substitute (fcfontmap, context, pattern);
