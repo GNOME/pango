@@ -410,6 +410,8 @@ module-defs-fc.c: $(top_builddir)/config.status
 	cd $(top_builddir) && $(SHELL) ./config.status pango/$@
 module-defs-win32.c: $(top_builddir)/config.status
 	cd $(top_builddir) && $(SHELL) ./config.status pango/$@
+module-defs-atsui.c: $(top_builddir)/config.status
+	cd $(top_builddir) && $(SHELL) ./config.status pango/$@
 
 CLEANFILES =			\
 	pango-enum-types.h	\
@@ -421,7 +423,8 @@ DISTCLEANFILES = 		\
 	module-defs.h		\
 	module-defs-x.c		\
 	module-defs-fc.c	\
-	module-defs-win32.c
+	module-defs-win32.c	\
+	module-defs-atsui.c
 
 install-data-local: install-ms-lib install-def-files
 

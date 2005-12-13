@@ -1,3 +1,20 @@
+Overview of changes between 1.11.0 and 1.11.1
+=============================================
+* ATSUI support for the cairo backend. [Anders Carlsson]
+* Fixed a couple of regressions with font size and scaling.
+* Draw a dashed empty box on missing glyphs for cairo-fc backend.
+* Support OpenType features for basic (Latin/Greek/...) module.
+* Support swash feature in Arabic module.
+* Misc bug fixes.
+* Misc documentation improvements.
+
+Optimizations:
+
+* Cache GObject private data in PangoFcFont.priv [Federico Mena Quintero]
+* Add a constant-sized light-weight cache for glyph extents.
+* Use g_slice_* instead of GMemChunk in mini-fribidi.
+
+
 Overview of changes between 1.10.1 and 1.11.0
 =============================================
 * Line-breaking algorithm updated to Unicode 4.1.

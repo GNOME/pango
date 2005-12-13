@@ -1,5 +1,17 @@
 2005-12-12  Behdad Esfahbod  <behdad@gnome.org>
 
+	* === Released 1.11.1 ===
+
+	* configure.in: Version 1.11.1
+
+	* NEWS: Updated.
+
+2005-12-12  Behdad Esfahbod  <behdad@gnome.org>
+
+	* pango/Makefile.am: Handle module-defs-atsui.c.
+
+2005-12-12  Behdad Esfahbod  <behdad@gnome.org>
+
 	Fix bug #323540.
 
 	* pangofc-fontmap.c (get_scaled_size): The logic in there is moved
