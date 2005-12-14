@@ -1,3 +1,8 @@
+2005-12-14  Behdad Esfahbod  <behdad@gnome.org>
+
+	* pango/pango.def: Add pango_matrix_get_font_scale_factor. (bug
+	#323978, J. Ali Harlow)
+
 2005-12-12  Behdad Esfahbod  <behdad@gnome.org>
 
 	Fix bug #323540.
