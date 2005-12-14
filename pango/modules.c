@@ -169,7 +169,7 @@ pango_module_load (GTypeModule *module)
 
   if (pango_module->path)
     {
-      pango_module->library = g_module_open (pango_module->path, G_MODULE_BIND_LAZY);
+      pango_module->library = g_module_open (pango_module->path, G_MODULE_BIND_LAZY | G_MODULE_BIND_LOCAL);
       if (!pango_module->library)
 	{
 	  g_warning ("%s", g_module_error());

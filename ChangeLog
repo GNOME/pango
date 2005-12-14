@@ -1,3 +1,8 @@
+2005-12-14  Behdad Esfahbod  <behdad@gnome.org>
+
+	* pango/modules.c (pango_module_load), pango/querymodules.c: Pass
+	G_MODULE_BIND_LOCAL to g_module_open.  (Pointed by Federico)
+
 2005-12-12  Behdad Esfahbod  <behdad@gnome.org>
 
 	* === Released 1.11.1 ===
