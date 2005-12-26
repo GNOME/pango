@@ -1,3 +1,11 @@
+2005-12-26  Behdad Esfahbod  <behdad@gnome.org>
+
+	* modules/arabic/arabic-fc.c,
+	* modules/basic/basic-fc.c,
+	* modules/hebrew/hebrew-fc.c,
+	* modules/syriac/syriac-fc.c: Use pango_is_zero_width() to not draw
+	zero-width characters in the OpenType shapers.  (Fixes bug #324621)
+
 2005-12-14  Behdad Esfahbod  <behdad@gnome.org>
 
 	* pango/pango.def: Add pango_matrix_get_font_scale_factor. (bug

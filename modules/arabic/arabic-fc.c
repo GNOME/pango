@@ -315,7 +315,7 @@ arabic_engine_shape (PangoEngineShape *engine,
 	    input = buf;
 	  }
 
-      if (wc >= 0x200B && wc <= 0x200F)	/* Zero-width characters */
+      if (pango_is_zero_width (wc))	/* Zero-width characters */
 	{
 	  pango_ot_buffer_add_glyph (buffer, 0, properties[i], p - text);
 	}

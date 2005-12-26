@@ -379,19 +379,26 @@ basic_engine_shape (PangoEngineShape *engine,
 	    input = buf;
 	  }
 
-      index = pango_fc_font_get_glyph (fc_font, wc);
-      
-      if (!index)
+      if (pango_is_zero_width (wc))	/* Zero-width characters */
 	{
-	  pango_ot_buffer_add_glyph (buffer, pango_fc_font_get_unknown_glyph (fc_font, wc),
-				     unknown_property, p - text);
+	  pango_ot_buffer_add_glyph (buffer, 0, unknown_property, p - text);
 	}
       else
-	{
-	  cluster = p - text;
+        {
+	  index = pango_fc_font_get_glyph (fc_font, wc);
 	  
-	  pango_ot_buffer_add_glyph (buffer, index,
-				     unknown_property, cluster);
+	  if (!index)
+	    {
+	      pango_ot_buffer_add_glyph (buffer, pango_fc_font_get_unknown_glyph (fc_font, wc),
+					 unknown_property, p - text);
+	    }
+	  else
+	    {
+	      cluster = p - text;
+	      
+	      pango_ot_buffer_add_glyph (buffer, index,
+					 unknown_property, cluster);
+	    }
 	}
       
       p = g_utf8_next_char (p);

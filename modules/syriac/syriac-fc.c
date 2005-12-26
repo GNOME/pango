@@ -300,7 +300,7 @@ syriac_engine_shape (PangoEngineShape *engine,
 	  pango_get_mirror_char (wc, &mirrored_ch))
 	wc = mirrored_ch;
 
-      if (wc >= 0x200B && wc <= 0x200F)	/* Zero-width characters */
+      if (pango_is_zero_width (wc))
 	{
 	  pango_ot_buffer_add_glyph (buffer, 0, properties[i], p - text);
 	}
