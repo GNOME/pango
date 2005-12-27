@@ -60,7 +60,7 @@ pango_context_init (PangoContext *context)
   context->font_map = NULL;
 
   context->font_desc = pango_font_description_new ();
-  pango_font_description_set_family (context->font_desc, "serif");
+  pango_font_description_set_family_static (context->font_desc, "serif");
   pango_font_description_set_style (context->font_desc, PANGO_STYLE_NORMAL);
   pango_font_description_set_variant (context->font_desc, PANGO_VARIANT_NORMAL);
   pango_font_description_set_weight (context->font_desc, PANGO_WEIGHT_NORMAL);

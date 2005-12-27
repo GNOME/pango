@@ -1,5 +1,11 @@
 2005-12-27  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango/pango-context.c (pango_context_init): Use
+	pango_font_description_set_family_static. (bug #325013, Matthias
+	Clasen)
+
+2005-12-27  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/opentype/pango-ot-buffer.c: Use g_slice for PangoOTBuffer
 	allocation. (bug #325026, Matthias Clasen)
 
