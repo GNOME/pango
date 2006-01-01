@@ -139,8 +139,10 @@ pango_attr_string_copy (const PangoAttribute *attr)
 static void
 pango_attr_string_destroy (PangoAttribute *attr)
 {
-  g_free (((PangoAttrString *)attr)->value);
-  g_free (attr);
+  PangoAttrString *sattr = (PangoAttrString *)attr;
+
+  g_free (sattr->value);
+  g_slice_free (PangoAttrString, sattr);
 }
 
 static gboolean
@@ -154,7 +156,7 @@ static PangoAttribute *
 pango_attr_string_new (const PangoAttrClass *klass,
 		       const char           *str)
 {
-  PangoAttrString *result = g_new (PangoAttrString, 1);
+  PangoAttrString *result = g_slice_new (PangoAttrString);
 
   result->attr.klass = klass;
   result->value = g_strdup (str);
@@ -188,13 +190,15 @@ pango_attr_family_new (const char *family)
 static PangoAttribute *
 pango_attr_language_copy (const PangoAttribute *attr)
 {
-  return g_memdup (attr, sizeof (PangoAttrLanguage));
+  return pango_attr_language_new (((PangoAttrLanguage *)attr)->value);
 }
 
 static void
 pango_attr_language_destroy (PangoAttribute *attr)
 {
-  g_free (attr);
+  PangoAttrLanguage *lattr = (PangoAttrLanguage *)attr;
+
+  g_slice_free (PangoAttrLanguage, lattr);
 }
 
 static gboolean
@@ -226,7 +230,7 @@ pango_attr_language_new (PangoLanguage *language)
 
   g_return_val_if_fail (language != NULL, NULL);
   
-  result = g_new (PangoAttrLanguage, 1);
+  result = g_slice_new (PangoAttrLanguage);
 
   result->attr.klass = &klass;
   result->value = language;
@@ -248,7 +252,9 @@ pango_attr_color_copy (const PangoAttribute *attr)
 static void
 pango_attr_color_destroy (PangoAttribute *attr)
 {
-  g_free (attr);
+  PangoAttrColor *cattr = (PangoAttrColor *)attr;
+
+  g_slice_free (PangoAttrColor, cattr);
 }
 
 static gboolean
@@ -269,7 +275,7 @@ pango_attr_color_new (const PangoAttrClass *klass,
 		      guint16               green,
 		      guint16               blue)
 {
-  PangoAttrColor *result = g_new (PangoAttrColor, 1);
+  PangoAttrColor *result = g_slice_new (PangoAttrColor);
   result->attr.klass = klass;
   result->color.red = red;
   result->color.green = green;
@@ -339,7 +345,9 @@ pango_attr_int_copy (const PangoAttribute *attr)
 static void
 pango_attr_int_destroy (PangoAttribute *attr)
 {
-  g_free (attr);
+  PangoAttrInt *iattr = (PangoAttrInt *)attr;
+
+  g_slice_free (PangoAttrInt, iattr);
 }
 
 static gboolean
@@ -356,7 +364,7 @@ static PangoAttribute *
 pango_attr_int_new (const PangoAttrClass *klass,
 		    int                   value)
 {
-  PangoAttrInt *result = g_new (PangoAttrInt, 1);
+  PangoAttrInt *result = g_slice_new (PangoAttrInt);
   result->attr.klass = klass;
   result->value = value;
 
@@ -374,7 +382,9 @@ pango_attr_float_copy (const PangoAttribute *attr)
 static void
 pango_attr_float_destroy (PangoAttribute *attr)
 {
-  g_free (attr);
+  PangoAttrFloat *fattr = (PangoAttrFloat *)attr;
+
+  g_slice_free (PangoAttrFloat, fattr);
 }
 
 static gboolean
@@ -391,7 +401,7 @@ static PangoAttribute*
 pango_attr_float_new  (const PangoAttrClass *klass,
                        double                value)
 {
-  PangoAttrFloat *result = g_new (PangoAttrFloat, 1);
+  PangoAttrFloat *result = g_slice_new (PangoAttrFloat);
   result->attr.klass = klass;
   result->value = value;
 
@@ -412,7 +422,9 @@ pango_attr_size_copy (const PangoAttribute *attr)
 static void
 pango_attr_size_destroy (PangoAttribute *attr)
 {
-  g_free (attr);
+  PangoAttrSize *sattr = (PangoAttrSize *)attr;
+
+  g_slice_free (PangoAttrSize, sattr);
 }
 
 static gboolean
@@ -444,7 +456,7 @@ pango_attr_size_new_internal (int size,
     pango_attr_size_equal
   };
 
-  result = g_new (PangoAttrSize, 1);
+  result = g_slice_new (PangoAttrSize);
   result->attr.klass = absolute ? &absolute_klass : &klass;
   result->size = size;
   result->absolute = absolute;
@@ -580,7 +592,7 @@ pango_attr_font_desc_destroy (PangoAttribute *attr)
   PangoAttrFontDesc *desc_attr = (PangoAttrFontDesc *)attr;
 
   pango_font_description_free (desc_attr->desc);
-  g_free (attr);
+  g_slice_free (PangoAttrFontDesc, desc_attr);
 }
 
 static gboolean
@@ -613,7 +625,7 @@ pango_attr_font_desc_new (const PangoFontDescription *desc)
     pango_attr_font_desc_equal
   };
 
-  PangoAttrFontDesc *result = g_new (PangoAttrFontDesc, 1);
+  PangoAttrFontDesc *result = g_slice_new (PangoAttrFontDesc);
   result->attr.klass = &klass;
   result->desc = pango_font_description_copy (desc);
 
@@ -841,7 +853,7 @@ pango_attr_shape_destroy (PangoAttribute *attr)
   if (shape_attr->destroy_func)
     shape_attr->destroy_func (shape_attr->data);
   
-  g_free (attr);
+  g_slice_free (PangoAttrShape, shape_attr);
 }
 
 static gboolean
@@ -900,7 +912,7 @@ pango_attr_shape_new_with_data (const PangoRectangle  *ink_rect,
   g_return_val_if_fail (ink_rect != NULL, NULL);
   g_return_val_if_fail (logical_rect != NULL, NULL);
   
-  result = g_new (PangoAttrShape, 1);
+  result = g_slice_new (PangoAttrShape);
   result->attr.klass = &klass;
   result->ink_rect = *ink_rect;
   result->logical_rect = *logical_rect;
@@ -957,7 +969,7 @@ pango_attr_list_get_type (void)
 PangoAttrList *
 pango_attr_list_new (void)
 {
-  PangoAttrList *list = g_new (PangoAttrList, 1);
+  PangoAttrList *list = g_slice_new (PangoAttrList);
 
   list->ref_count = 1;
   list->attributes = NULL;
@@ -1016,7 +1028,7 @@ pango_attr_list_unref (PangoAttrList *list)
 
       g_slist_free (list->attributes);
 
-      g_free (list);
+      g_slice_free (PangoAttrList, list);
     }
 }
 
@@ -1451,7 +1463,7 @@ pango_attr_list_get_iterator (PangoAttrList  *list)
 
   g_return_val_if_fail (list != NULL, NULL);
 
-  iterator = g_new (PangoAttrIterator, 1);
+  iterator = g_slice_new (PangoAttrIterator);
   iterator->next_attribute = list->attributes;
   iterator->attribute_stack = NULL;
 
@@ -1561,7 +1573,7 @@ pango_attr_iterator_copy (PangoAttrIterator *iterator)
 
   g_return_val_if_fail (iterator != NULL, NULL);
 
-  copy = g_new (PangoAttrIterator, 1);
+  copy = g_slice_new (PangoAttrIterator);
 
   *copy = *iterator;
 
@@ -1582,7 +1594,7 @@ pango_attr_iterator_destroy (PangoAttrIterator *iterator)
   g_return_if_fail (iterator != NULL);
   
   g_list_free (iterator->attribute_stack);
-  g_free (iterator);
+  g_slice_free (PangoAttrIterator, iterator);
 }
 
 /**

@@ -1,3 +1,8 @@
+2006-01-01  Behdad Esfahbod  <behdad@gnome.org>
+
+	* pango/pango-attributes.c: Use g_slice for various attribute types
+	allocations. (bug #325040, Matthias Clasen)
+
 2005-12-27  Behdad Esfahbod  <behdad@gnome.org>
 
 	* pango/pango-context.c (pango_context_init): Use
