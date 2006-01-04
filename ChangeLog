@@ -1,3 +1,8 @@
+2006-01-04  Behdad Esfahbod  <behdad@gnome.org>
+
+	* pango/pango-context.c: Use g_slice for ShaperFontElement
+	allocation. (bug #325728, Matthias Clasen)
+
 2006-01-01  Behdad Esfahbod  <behdad@gnome.org>
 
 	* pango/pango-attributes.c: Use g_slice for various attribute types
@@ -239,6 +244,8 @@
 	boxes. (#312477)
 
 2005-11-21  Anders Carlsson  <andersca@imendio.com>
+
+	Bug #322022, add ATSUI backend:
 
 	* configure.in: Add checks for ATSUI.
 	

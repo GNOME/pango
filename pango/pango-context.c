@@ -450,7 +450,7 @@ shaper_font_element_destroy (ShaperFontElement *element)
 {
   if (element->font)
     g_object_unref (element->font);
-  g_free (element);
+  g_slice_free (ShaperFontElement, element);
 }
 
 static ShaperFontCache *
@@ -502,7 +502,7 @@ shaper_font_cache_insert (ShaperFontCache   *cache,
 			  PangoEngineShape  *shape_engine,
 			  PangoFont         *font)
 {
-  ShaperFontElement *element = g_new (ShaperFontElement, 1);
+  ShaperFontElement *element = g_slice_new (ShaperFontElement);
   element->shape_engine = shape_engine;
   element->font = font;
   
