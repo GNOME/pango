@@ -78,6 +78,7 @@ pango_matrix_translate
 pango_matrix_scale
 pango_matrix_rotate
 pango_matrix_concat
+pango_matrix_get_font_scale_factor
 PangoGlyph
 PangoGlyphInfo
 PangoGlyphGeometry
@@ -440,8 +441,9 @@ PANGO_TYPE_ALIGNMENT
 
 pango_layout_get_log_attrs
 
-pango_layout_xy_to_index
 pango_layout_index_to_pos
+pango_layout_index_to_line_x
+pango_layout_xy_to_index
 pango_layout_get_cursor_pos
 pango_layout_move_cursor_visually
 

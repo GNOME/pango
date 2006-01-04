@@ -1,5 +1,18 @@
 2006-01-04  Behdad Esfahbod  <behdad@gnome.org>
 
+	* docs/Makefile.am (IGNORE_HFILES): Add pangocairo-atsui.h and
+	pangoatsui-private.h.
+
+	* docs/pango-sections.txt: Add pango_matrix_get_font_scale_factor and
+	pango_layout_index_to_line_x that were missing.
+
+	* docs/tmpl/glyphs.sgml: Add pango_matrix_get_font_scale_factor where
+	other pango_matrix functions reside.
+
+	* docs/tmpl/layout.sgml: Add pango_layout_index_to_line_x.
+
+2006-01-04  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/pango-context.c: Use g_slice for ShaperFontElement
 	allocation. (bug #325728, Matthias Clasen)
 

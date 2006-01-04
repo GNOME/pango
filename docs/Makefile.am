@@ -28,6 +28,7 @@ IGNORE_HFILES=			\
 	pangocairo-private.h	\
 	pangocairo-fc.h		\
 	pangocairo-win32.h	\
+	pangocairo-atsui.h	\
 	pango-color-table.h	\
 	pango-engine-private.h	\
 	pango-impl-utils.h	\
@@ -38,6 +39,7 @@ IGNORE_HFILES=			\
 	pangofc-private.h	\
 	pangoft2-private.h	\
 	pangowin32-private.h	\
+	pangoatsui-private.h	\
 	pangox-private.h	\
 	pangoxft-private.h
 

@@ -413,6 +413,28 @@ The #GObject type for #PangoAlignment.
 @n_attrs: 
 
 
+<!-- ##### FUNCTION pango_layout_index_to_pos ##### -->
+<para>
+
+</para>
+
+@layout: 
+@index_: 
+@pos: 
+
+
+<!-- ##### FUNCTION pango_layout_index_to_line_x ##### -->
+<para>
+
+</para>
+
+@layout: 
+@index_: 
+@trailing: 
+@line: 
+@x_pos: 
+
+
 <!-- ##### FUNCTION pango_layout_xy_to_index ##### -->
 <para>
 
@@ -424,16 +446,6 @@ The #GObject type for #PangoAlignment.
 @index_: 
 @trailing: 
 @Returns: 
-
-
-<!-- ##### FUNCTION pango_layout_index_to_pos ##### -->
-<para>
-
-</para>
-
-@layout: 
-@index_: 
-@pos: 
 
 
 <!-- ##### FUNCTION pango_layout_get_cursor_pos ##### -->
