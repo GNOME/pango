@@ -21,6 +21,7 @@
  */
 
 #include "pangoatsui-private.h"
+#include "pango-utils.h"
 
 #import <Cocoa/Cocoa.h>
 
@@ -205,7 +206,7 @@ pango_atsui_family_get_type (void)
       };
       
       object_type = g_type_register_static (PANGO_TYPE_FONT_FAMILY,
-                                            "PangoATSUIFamily",
+                                            I_("PangoATSUIFamily"),
                                             &object_info, 0);
     }
   
@@ -324,7 +325,7 @@ pango_atsui_face_get_type (void)
       };
       
       object_type = g_type_register_static (PANGO_TYPE_FONT_FACE,
-                                            "PangoATSUIFace",
+                                            I_("PangoATSUIFace"),
                                             &object_info, 0);
     }
   

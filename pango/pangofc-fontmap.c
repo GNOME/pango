@@ -27,6 +27,7 @@
 #include "pango-context.h"
 #include "pangofc-fontmap.h"
 #include "pangofc-private.h"
+#include "pango-utils.h"
 #include "modules.h"
 
 typedef struct _PangoFcCoverageKey  PangoFcCoverageKey;
@@ -1808,7 +1809,7 @@ pango_fc_face_get_type (void)
       };
       
       object_type = g_type_register_static (PANGO_TYPE_FONT_FACE,
-                                            "PangoFcFace",
+                                            I_("PangoFcFace"),
                                             &object_info, 0);
     }
   
@@ -1936,7 +1937,7 @@ pango_fc_family_get_type (void)
       };
       
       object_type = g_type_register_static (PANGO_TYPE_FONT_FAMILY,
-                                            "PangoFcFamily",
+                                            I_("PangoFcFamily"),
                                             &object_info, 0);
     }
   

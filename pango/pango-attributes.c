@@ -848,7 +848,7 @@ pango_attr_shape_copy (const PangoAttribute *attr)
 static void
 pango_attr_shape_destroy (PangoAttribute *attr)
 {
-  const PangoAttrShape *shape_attr = (PangoAttrShape *)attr;
+  PangoAttrShape *shape_attr = (PangoAttrShape *)attr;
   
   if (shape_attr->destroy_func)
     shape_attr->destroy_func (shape_attr->data);
@@ -952,7 +952,7 @@ pango_attr_list_get_type (void)
   static GType our_type = 0;
   
   if (our_type == 0)
-    our_type = g_boxed_type_register_static ("PangoAttrList",
+    our_type = g_boxed_type_register_static (I_("PangoAttrList"),
 					     (GBoxedCopyFunc) pango_attr_list_copy,
 					     (GBoxedFreeFunc) pango_attr_list_unref);
 

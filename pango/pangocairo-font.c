@@ -21,6 +21,7 @@
 
 #include "pangocairo.h"
 #include "pangocairo-private.h"
+#include "pango-utils.h"
 
 GType
 pango_cairo_font_get_type (void)
@@ -44,7 +45,7 @@ pango_cairo_font_get_type (void)
       };
 
       cairo_font_type =
-	g_type_register_static (G_TYPE_INTERFACE, "PangoCairoFont",
+	g_type_register_static (G_TYPE_INTERFACE, I_("PangoCairoFont"),
 				&cairo_font_info, 0);
 
       g_type_interface_add_prerequisite (cairo_font_type, PANGO_TYPE_FONT);

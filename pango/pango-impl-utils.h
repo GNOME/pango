@@ -51,7 +51,7 @@ prefix ## _get_type (void)				                   \
 	};								   \
       									   \
       object_type = g_type_register_static (parent_type,	   	   \
-					    # name,		   	   \
+					    g_intern_static_string (# name), \
 					    &object_info, abstract); 	   \
     }									   \
 									   \

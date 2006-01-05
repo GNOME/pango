@@ -194,7 +194,7 @@ pango_x_font_map_get_type (void)
       };
       
       object_type = g_type_register_static (PANGO_TYPE_FONT_MAP,
-                                            "PangoXFontMap",
+                                            I_("PangoXFontMap"),
                                             &object_info, 0);
     }
   
@@ -1510,7 +1510,7 @@ pango_x_face_get_type (void)
       };
       
       object_type = g_type_register_static (PANGO_TYPE_FONT_FACE,
-                                            "PangoXFace",
+                                            I_("PangoXFace"),
                                             &object_info, 0);
     }
   
@@ -1669,7 +1669,7 @@ pango_x_family_get_type (void)
       };
       
       object_type = g_type_register_static (PANGO_TYPE_FONT_FAMILY,
-                                            "PangoXFamily",
+                                            I_("PangoXFamily"),
                                             &object_info, 0);
     }
   

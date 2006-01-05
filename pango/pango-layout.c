@@ -23,6 +23,7 @@
 #include <pango/pango-break.h>
 #include <pango/pango-item.h>
 #include <pango/pango-engine.h>
+#include <pango/pango-utils.h>
 #include <string.h>
 
 #include "pango-layout-private.h"
@@ -3388,7 +3389,7 @@ pango_layout_line_get_type(void)
   static GType our_type = 0;
   
   if (our_type == 0)
-    our_type = g_boxed_type_register_static ("PangoLayoutLine",
+    our_type = g_boxed_type_register_static (I_("PangoLayoutLine"),
                                              (GBoxedCopyFunc) pango_layout_line_ref,
                                              (GBoxedFreeFunc) pango_layout_line_unref);
   return our_type;
@@ -4571,7 +4572,7 @@ pango_layout_iter_get_type (void)
   static GType our_type = 0;
   
   if (our_type == 0)
-    our_type = g_boxed_type_register_static ("PangoLayoutIter",
+    our_type = g_boxed_type_register_static (I_("PangoLayoutIter"),
 					     (GBoxedCopyFunc)pango_layout_iter_copy,
 					     (GBoxedFreeFunc)pango_layout_iter_free);
 

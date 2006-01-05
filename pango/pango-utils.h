@@ -99,6 +99,10 @@ G_CONST_RETURN char *pango_language_get_sample_string (PangoLanguage *language);
  */
 G_GNUC_CONST gboolean pango_is_zero_width (gunichar ch);
 
+/* String interning for static strings */
+#define I_(string) g_intern_static_string (string)
+
+
 G_END_DECLS
 
 #endif /* __PANGO_UTILS_H__ */

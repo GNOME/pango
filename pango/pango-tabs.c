@@ -20,6 +20,7 @@
  */
 
 #include "pango-tabs.h"
+#include "pango-utils.h"
 #include <string.h>
 
 typedef struct _PangoTab PangoTab;
@@ -158,7 +159,7 @@ pango_tab_array_get_type (void)
   static GType our_type = 0;
   
   if (our_type == 0)
-    our_type = g_boxed_type_register_static ("PangoTabArray",
+    our_type = g_boxed_type_register_static (I_("PangoTabArray"),
                                              (GBoxedCopyFunc)pango_tab_array_copy,
                                              (GBoxedFreeFunc)pango_tab_array_free);
   return our_type;

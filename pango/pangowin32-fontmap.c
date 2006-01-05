@@ -324,7 +324,7 @@ pango_win32_family_get_type (void)
       };
       
       object_type = g_type_register_static (PANGO_TYPE_FONT_FAMILY,
-                                            "PangoWin32Family",
+                                            I_("PangoWin32Family"),
                                             &object_info, 0);
     }
   
@@ -963,7 +963,7 @@ pango_win32_face_get_type (void)
       };
       
       object_type = g_type_register_static (PANGO_TYPE_FONT_FACE,
-                                            "PangoWin32Face",
+                                            I_("PangoWin32Face"),
                                             &object_info, 0);
     }
   

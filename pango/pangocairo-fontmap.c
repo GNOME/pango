@@ -23,6 +23,7 @@
 
 #include "pangocairo.h"
 #include "pangocairo-private.h"
+#include "pango-utils.h"
 
 #if defined (HAVE_CAIRO_ATSUI)
 #  include "pangocairo-atsui.h"
@@ -54,7 +55,7 @@ pango_cairo_font_map_get_type (void)
       };
 
       cairo_font_map_type =
-	g_type_register_static (G_TYPE_INTERFACE, "PangoCairoFontMap",
+	g_type_register_static (G_TYPE_INTERFACE, I_("PangoCairoFontMap"),
 				&cairo_font_map_info, 0);
 
       g_type_interface_add_prerequisite (cairo_font_map_type, PANGO_TYPE_FONT_MAP);

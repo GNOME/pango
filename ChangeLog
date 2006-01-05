@@ -1,3 +1,27 @@
+2006-01-05  Behdad Esfahbod  <behdad@gnome.org>
+
+	* pango/Makefile.am,
+	* pango/fonts.c,
+	* pango/glyphstring.c,
+	* pango/pango-attributes.c,
+	* pango/pango-color.c,
+	* pango/pango-impl-utils.h,
+	* pango/pango-item.c,
+	* pango/pango-layout.c,
+	* pango/pango-tabs.c,
+	* pango/pango-utils.c,
+	* pango/pango-utils.h,
+	* pango/pangoatsui-fontmap.c,
+	* pango/pangocairo-font.c,
+	* pango/pangocairo-fontmap.c,
+	* pango/pangofc-fontmap.c,
+	* pango/pangowin32-fontmap.c,
+	* pango/pangox-fontmap.c,
+	* pango/pangox.c,
+	* pango/opentype/pango-ot-info.c,
+	* pango/opentype/pango-ot-ruleset.c: Intern strings to avoid
+	unnecessary strdups in the type system. (bug #325832, Matthias Clasen)
+
 2006-01-04  Behdad Esfahbod  <behdad@gnome.org>
 
 	* docs/Makefile.am (IGNORE_HFILES): Add pangocairo-atsui.h and

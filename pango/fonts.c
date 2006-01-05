@@ -50,7 +50,7 @@ pango_font_description_get_type (void)
   static GType our_type = 0;
   
   if (our_type == 0)
-    our_type = g_boxed_type_register_static ("PangoFontDescription",
+    our_type = g_boxed_type_register_static (I_("PangoFontDescription"),
 					     (GBoxedCopyFunc)pango_font_description_copy,
 					     (GBoxedFreeFunc)pango_font_description_free);
 
@@ -1214,7 +1214,7 @@ pango_font_metrics_get_type (void)
   static GType our_type = 0;
   
   if (our_type == 0)
-    our_type = g_boxed_type_register_static ("PangoFontMetrics",
+    our_type = g_boxed_type_register_static (I_("PangoFontMetrics"),
 					     (GBoxedCopyFunc)pango_font_metrics_ref,
 					     (GBoxedFreeFunc)pango_font_metrics_unref);
 

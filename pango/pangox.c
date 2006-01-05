@@ -177,7 +177,7 @@ pango_x_get_context (Display *display)
   static gboolean registered_modules = FALSE;
   
   g_return_val_if_fail (display != NULL, NULL);  
-  
+
   if (!registered_modules)
     {
       registered_modules = TRUE;
@@ -247,7 +247,7 @@ pango_x_font_get_type (void)
       };
       
       object_type = g_type_register_static (PANGO_TYPE_FONT,
-                                            "PangoXFont",
+                                            I_("PangoXFont"),
                                             &object_info, 0);
     }
   

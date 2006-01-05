@@ -1000,7 +1000,7 @@ pango_matrix_get_type (void)
   static GType our_type = 0;
   
   if (our_type == 0)
-    our_type = g_boxed_type_register_static ("PangoMatrix",
+    our_type = g_boxed_type_register_static (I_("PangoMatrix"),
 					     (GBoxedCopyFunc) pango_matrix_copy,
 					     (GBoxedFreeFunc) pango_matrix_free);
 
@@ -1269,7 +1269,7 @@ pango_language_get_type (void)
   static GType our_type = 0;
   
   if (our_type == 0)
-    our_type = g_boxed_type_register_static ("PangoLanguage",
+    our_type = g_boxed_type_register_static (I_("PangoLanguage"),
                                              (GBoxedCopyFunc)pango_language_copy,
                                              (GBoxedFreeFunc)pango_language_free);
   return our_type;
