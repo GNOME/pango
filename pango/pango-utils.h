@@ -98,7 +98,7 @@ G_CONST_RETURN char *pango_language_get_sample_string (PangoLanguage *language);
 /* Unicode characters that are zero-width and should not be rendered
  * normally.
  */
-G_GNUC_CONST gboolean pango_is_zero_width (gunichar ch);
+gboolean pango_is_zero_width (gunichar ch) G_GNUC_CONST;
 
 G_END_DECLS
 
