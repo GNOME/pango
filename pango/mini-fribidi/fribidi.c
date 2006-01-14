@@ -21,12 +21,10 @@
  * <fwpg@sharif.edu>.
  */
 
+#include <config.h>
 #include <stdlib.h>
 #include <string.h>
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
 #include "fribidi.h"
 
 /* Redefine FRIBIDI_CHUNK_SIZE in config.h to override this. */

@@ -32,6 +32,8 @@
  * authorization of the copyright holder.
  */
 
+#include <config.h>
+
 #include "indic-ot.h"
 #include "mprefixups.h"
 /*

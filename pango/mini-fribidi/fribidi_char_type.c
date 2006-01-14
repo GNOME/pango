@@ -19,9 +19,7 @@
  * For licensing issues, contact <fwpg@sharif.edu>. 
  */
 
-#ifdef HAVE_CONFIG_H
 #include <config.h>
-#endif
 #include "fribidi.h"
 
 #ifdef MEM_OPTIMIZED

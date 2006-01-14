@@ -18,7 +18,7 @@
  * pango/opentype/FT-license.txt for full details of the FreeType 
  * license.
  */
-
+#include <config.h>
 #include "syriac-ot.h"
 
 /*     Here a table of the joining classes for characters in the range

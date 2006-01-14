@@ -25,6 +25,8 @@
 /* pango/opentype/FT-license.txt                                            */
 /****************************************************************************/
 
+#include <config.h>
+
 #include "arabic-ot.h"
 
 

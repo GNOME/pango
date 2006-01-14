@@ -20,6 +20,8 @@
  * Boston, MA 02111-1307, USA.
  */
 
+#include <config.h>
+
 #include "pangoatsui-private.h"
 #include "pangocairo.h"
 #include "pangocairo-private.h"

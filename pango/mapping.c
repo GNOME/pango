@@ -19,6 +19,8 @@
  * Boston, MA 02111-1307, USA.
  */
 
+#include <config.h>
+
 /* The initial implementation here is script independent,
  * but it might actually need to be virtualized into the
  * rendering modules. Otherwise, we probably will end up

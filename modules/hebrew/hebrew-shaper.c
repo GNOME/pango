@@ -29,6 +29,7 @@
  * bad though, and should be fixed, once I have more time.
  */
 
+#include <config.h>
 #include <glib.h>
 #include "pango-engine.h"
 #include "hebrew-shaper.h"

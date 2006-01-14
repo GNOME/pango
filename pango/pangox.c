@@ -19,6 +19,7 @@
  * Boston, MA 02111-1307, USA.
  */
 
+#include <config.h>
 #include <string.h>
 #include <stdlib.h>
 #include <math.h>
@@ -33,8 +34,6 @@
 #include "pangox-private.h"
 
 #define PANGO_X_UNKNOWN_FLAG 0x10000000
-
-#include "config.h"
 
 #define PANGO_TYPE_X_FONT              (pango_x_font_get_type ())
 #define PANGO_X_FONT(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_TYPE_X_FONT, PangoXFont))

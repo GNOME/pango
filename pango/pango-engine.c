@@ -19,6 +19,8 @@
  * Boston, MA 02111-1307, USA.
  */
 
+#include <config.h>
+
 #include "pango-engine.h"
 #include "pango-engine-private.h"
 #include "pango-impl-utils.h"

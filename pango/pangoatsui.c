@@ -19,6 +19,8 @@
  * Boston, MA 02111-1307, USA.
  */
 
+#include <config.h>
+
 #include "pangoatsui-private.h"
 
 G_DEFINE_TYPE (PangoATSUIFont, pango_atsui_font, PANGO_TYPE_FONT);

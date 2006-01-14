@@ -53,6 +53,8 @@
  * or other dealings in this Software without prior written authorization
  * of the copyright holder.
  */
+
+#include <config.h>
 #include <stdlib.h>
 #include <string.h>
 
