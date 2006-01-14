@@ -1,3 +1,8 @@
+2006-01-14  Behdad Esfahbod  <behdad@gnome.org>
+
+	* pango/pango-utils.h (pango_is_zero_width): Move G_GNUC_CONST to
+	after declaration, to be compatible with gcc 2.95. (bug #326847)
+
 2006-01-05  Behdad Esfahbod  <behdad@gnome.org>
 
 	* pango/Makefile.am,
