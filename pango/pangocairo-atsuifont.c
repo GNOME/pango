@@ -70,15 +70,6 @@ pango_cairo_atsui_font_install (PangoCairoFont *font,
   cairo_set_font_options (cr, cwfont->options);
 }
 
-static void
-cairo_font_iface_init (PangoCairoFontIface *iface)
-{
-  iface->install = pango_cairo_atsui_font_install;
-}
-
-G_DEFINE_TYPE_WITH_CODE (PangoCairoATSUIFont, pango_cairo_atsui_font, PANGO_TYPE_ATSUI_FONT,
-    { G_IMPLEMENT_INTERFACE (PANGO_TYPE_CAIRO_FONT, cairo_font_iface_init) });
-
 static cairo_font_face_t *
 pango_cairo_atsui_font_get_font_face (PangoCairoFont *font)
 {
@@ -116,6 +107,17 @@ pango_cairo_atsui_font_get_scaled_font (PangoCairoFont *font)
   
   return cafont->scaled_font;
 }
+
+static void
+cairo_font_iface_init (PangoCairoFontIface *iface)
+{
+  iface->install = pango_cairo_atsui_font_install;
+  iface->get_font_face = pango_cairo_atsui_font_get_font_face;
+  iface->get_scaled_font = pango_cairo_atsui_font_get_scaled_font;
+}
+
+G_DEFINE_TYPE_WITH_CODE (PangoCairoATSUIFont, pango_cairo_atsui_font, PANGO_TYPE_ATSUI_FONT,
+    { G_IMPLEMENT_INTERFACE (PANGO_TYPE_CAIRO_FONT, cairo_font_iface_init) });
 
 static void
 pango_cairo_atsui_font_get_glyph_extents (PangoFont        *font,

@@ -189,6 +189,8 @@ static void
 cairo_font_iface_init (PangoCairoFontIface *iface)
 {
   iface->install = pango_cairo_fc_font_install;
+  iface->get_font_face = pango_cairo_fc_font_get_font_face;
+  iface->get_scaled_font = pango_cairo_fc_font_get_scaled_font;
 }
 
 G_DEFINE_TYPE_WITH_CODE (PangoCairoFcFont, pango_cairo_fc_font, PANGO_TYPE_FC_FONT,
@@ -363,8 +365,7 @@ pango_cairo_fc_font_glyph_extents_cache_init (PangoCairoFcFont *cffont)
   cffont->font_extents.x = 0;
   cffont->font_extents.y = - font_extents.ascent * PANGO_SCALE;
   cffont->font_extents.height = (font_extents.ascent + font_extents.descent) * PANGO_SCALE;
-  /* The width is only used for the width of box drawn for glyph-not-found */
-  cffont->font_extents.width = (font_extents.ascent - font_extents.descent) * PANGO_SCALE;
+  cffont->font_extents.width = 0;
 
   cffont->glyph_extents_cache = g_new0 (GlyphExtentsCacheEntry, GLYPH_CACHE_NUM_ENTRIES);
   /* Make sure all cache entries are invalid initially */
@@ -445,8 +446,12 @@ pango_cairo_fc_font_get_glyph_extents (PangoFont      *font,
   if (cffont->glyph_extents_cache == NULL)
     pango_cairo_fc_font_glyph_extents_cache_init (cffont);
 
-
-  if (!glyph || glyph & PANGO_CAIRO_UNKNOWN_FLAG)
+  if (glyph & PANGO_CAIRO_UNKNOWN_FLAG) 
+    {
+      _pango_cairo_get_glyph_extents_missing((PangoCairoFont *)font, glyph, ink_rect, logical_rect);
+      return;
+    }
+  else if (!glyph)
     {
       if (ink_rect)
 	*ink_rect = cffont->font_extents;
@@ -537,7 +542,7 @@ get_font_size (PangoCairoFcFontMap        *cffontmap,
 	       PangoContext               *context,
 	       const PangoFontDescription *desc,
 	       FcPattern                  *pattern,
-	       PangoMatrix                *matrix)
+	       const PangoMatrix          *matrix)
 {
   double size;
 

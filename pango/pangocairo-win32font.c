@@ -154,6 +154,8 @@ static void
 cairo_font_iface_init (PangoCairoFontIface *iface)
 {
   iface->install = pango_cairo_win32_font_install;
+  iface->get_font_face = pango_cairo_win32_font_get_font_face;
+  iface->get_scaled_font = pango_cairo_win32_font_get_scaled_font;
 }
 
 G_DEFINE_TYPE_WITH_CODE (PangoCairoWin32Font, pango_cairo_win32_font, PANGO_TYPE_WIN32_FONT,

@@ -1,5 +1,34 @@
 2006-01-14  Behdad Esfahbod  <behdad@gnome.org>
 
+	Draw hexbox for cairo backend.  Bug #313551.  Based on patch by
+	LingNing Zhang.
+
+	* pango/pangocairo-private.h (_PangoCairoFontIface): Add new methods:
+	get_font_face and get_scaled_font, and getters:
+	_pango_cairo_font_get_font_face, _pango_cairo_font_get_scaled_font.
+
+	* pango/pangocairo-private.h: Add _PangoCairoHexBoxInfo, and getter
+	_pango_cairo_get_hex_box_info, and
+	_pango_cairo_get_glyph_extents_missing.
+
+	* pango/pangocairo-fcfont.c, pango/pangocairo-atsuifont.c,
+	* pango/pangocairo-win32font.c: Export get_font_face and
+	get_scaled_font methods.
+
+	* pango/pangocairo-fcfont.c: Use _pango_cairo_get_glyph_extents_missing
+	on missing glyphs.
+
+	* pango/pangocairo-font.c: Implement _pango_cairo_font_get_font_face,
+	_pango_cairo_font_get_scaled_font, _pango_cairo_get_hex_box_info, and
+	_pango_cairo_get_glyph_extents_missing.
+
+	* pango/pangocairo-render.c (_pango_cairo_renderer_draw_unknown_glyph):
+	Added. 
+	* pango/pangocairo-render.c (pango_cairo_renderer_draw_glyphs):
+	Cleaned up to use the added function above.
+
+2006-01-14  Behdad Esfahbod  <behdad@gnome.org>
+
 	* */*.c, */*/*.c: Make sure #include <config.h> is the first include
 	in the file. (bug #158870, based on patch by Luis Menina)
 

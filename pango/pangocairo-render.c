@@ -57,6 +57,71 @@ set_color (PangoCairoRenderer *crenderer,
 			  color->green / 65535.,
 			  color->blue / 65535.);
 }
+
+static void
+_pango_cairo_renderer_draw_unknown_glyph (PangoCairoRenderer *crenderer,
+					  PangoFont          *font,
+					  PangoGlyphInfo     *gi,
+					  double              cx,
+					  double              cy)
+{
+  char buf[7];
+  double ys[2];
+  double xs[3];
+  int row, col;
+  int cols;
+  char hexbox_string[2] = {0, 0};
+  double temp_x, temp_y;
+  PangoCairoHexBoxInfo *hbi;
+  gunichar ch;
+
+  hbi = _pango_cairo_get_hex_box_info ((PangoCairoFont *)font);      
+
+  ch = gi->glyph & ~PANGO_CAIRO_UNKNOWN_FLAG;
+
+  cols = ch > 0xffff ? 3 : 2;
+  g_snprintf (buf, sizeof(buf), cols == 2 ? "%04X" : "%06X", ch);
+
+  ys[1] = cy + hbi->box_descent - hbi->pad * 2;
+  ys[0] = ys[1] - hbi->digit_height - hbi->pad;
+
+  xs[0] = cx + hbi->pad * 3.0;
+  xs[1] = xs[0] + hbi->digit_width + hbi->pad;
+  xs[2] = xs[1] + hbi->digit_width + hbi->pad;
+
+  cairo_save (crenderer->cr);
+  cairo_get_current_point (crenderer->cr, &temp_x, &temp_y);
+
+  cairo_rectangle (crenderer->cr,
+		   cx + hbi->pad * 1.5,
+		   cy + hbi->box_descent - hbi->pad * 0.5,
+		   (double)gi->geometry.width / PANGO_SCALE - 3 * hbi->pad,
+		   -(hbi->box_height - hbi->pad));
+
+  if (!crenderer->do_path)
+    {
+      cairo_save (crenderer->cr);
+      cairo_set_line_width (crenderer->cr, hbi->pad);
+      cairo_stroke (crenderer->cr);
+      cairo_restore (crenderer->cr);
+    }
+
+  _pango_cairo_font_install (PANGO_CAIRO_FONT (hbi->font), crenderer->cr);
+  for (row = 0; row < 2; row++)
+      for (col = 0; col < cols; col++)
+	{
+	  hexbox_string[0] = buf[row * cols + col];
+	  cairo_move_to (crenderer->cr, xs[col], ys[row]);
+
+	  if (crenderer->do_path)
+	      cairo_text_path (crenderer->cr, hexbox_string);
+	  else
+	      cairo_show_text (crenderer->cr, hexbox_string);
+	}
+
+  cairo_move_to (crenderer->cr, temp_x, temp_y);
+  cairo_restore (crenderer->cr);
+}
      
 static void
 pango_cairo_renderer_draw_glyphs (PangoRenderer     *renderer,
@@ -93,36 +158,20 @@ pango_cairo_renderer_draw_glyphs (PangoRenderer     *renderer,
       PangoGlyphInfo *gi = &glyphs->glyphs[i];
 
       if (gi->glyph)
-	{
-	  if (gi->glyph & PANGO_CAIRO_UNKNOWN_FLAG)
-	    {
-	      int mini_pad = gi->geometry.width / 10;
-	      /* draw an empty dashed box, no hexbox for now */
-	      cairo_rectangle (crenderer->cr,
-			       crenderer->x_offset + (double)(x + x_position + mini_pad) / PANGO_SCALE,
-			       crenderer->y_offset + (double)(y - mini_pad) / PANGO_SCALE, 
-			       (double)(gi->geometry.width - 2 * mini_pad) / PANGO_SCALE,
-			       -(double)(gi->geometry.width - 2 * mini_pad) / PANGO_SCALE);
-	      if (!crenderer->do_path)
-		{
-		  double dash = (double)mini_pad * 2 / PANGO_SCALE;
-		  cairo_save (crenderer->cr);
-		  cairo_set_line_width (crenderer->cr, (double)mini_pad / PANGO_SCALE);
-		  cairo_set_dash (crenderer->cr, &dash, 1, 0);
-		  cairo_stroke (crenderer->cr);
-		  cairo_restore (crenderer->cr);
-		}
-	    }
-	  else
-	    {
-	      cairo_glyphs[count].index = gi->glyph;
-	      cairo_glyphs[count].x = crenderer->x_offset + (double)(x + x_position + gi->geometry.x_offset) / PANGO_SCALE;
-	      cairo_glyphs[count].y = crenderer->y_offset + (double)(y + gi->geometry.y_offset) / PANGO_SCALE;
+        {
+          double cx = crenderer->x_offset + (double)(x + x_position + gi->geometry.x_offset) / PANGO_SCALE;
+          double cy = crenderer->y_offset + (double)(y + gi->geometry.y_offset) / PANGO_SCALE;
 
-	      count++;
-	    }
-	}
-	  
+          if (gi->glyph & PANGO_CAIRO_UNKNOWN_FLAG)
+	    _pango_cairo_renderer_draw_unknown_glyph (crenderer, font, gi, cx, cy);
+          else
+            {
+              cairo_glyphs[count].index = gi->glyph;
+              cairo_glyphs[count].x = cx;
+              cairo_glyphs[count].y = cy;
+              count++;
+            }
+        }	  
       x_position += gi->geometry.width;
     }
 
