@@ -75,7 +75,6 @@ void indic_mprefixups_apply(MPreFixups *mprefixups, PangoOTBuffer *buffer)
 	PangoOTGlyph *glyphs;
 	int n_glyphs;
 	PangoOTGlyph *mpreSave;
-	int *clusterSave;
 
 	/* determine post GSUB location of baseIndex and mpreIndex */
 
@@ -99,7 +98,6 @@ void indic_mprefixups_apply(MPreFixups *mprefixups, PangoOTBuffer *buffer)
 	mpreDest   = baseGlyph - mpreCount;
 
 	mpreSave    = g_new (PangoOTGlyph, mpreCount);
-	clusterSave = g_new (int, mpreCount);
 
 	for (i = 0; i < mpreCount; i += 1) {
 	    mpreSave[i] = glyphs[mpreGlyph + i];
