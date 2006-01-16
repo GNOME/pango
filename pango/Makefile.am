@@ -148,9 +148,15 @@ lib_LTLIBRARIES += libpangox-1.0.la
 endif
 
 libpangox_1_0_la_LDFLAGS = $(LIBRARY_LIBTOOL_OPTIONS)
-libpangox_1_0_la_LIBADD = libpango-$(PANGO_API_VERSION).la $(INCLUDED_X_MODULES) $(X_LIBS) $(X_EXTRA_LIBS) $(GLIB_LIBS)
-libpangox_1_0_la_DEPENDENCIES = libpango-$(PANGO_API_VERSION).la $(INCLUDED_X_MODULES)
-
+libpangox_1_0_la_LIBADD = 			\
+	libpango-$(PANGO_API_VERSION).la	\
+	$(INCLUDED_X_MODULES)			\
+	$(GLIB_LIBS)				\
+	$(X_LIBS)				\
+	$(X_EXTRA_LIBS)
+libpangox_1_0_la_DEPENDENCIES =			\
+	libpango-$(PANGO_API_VERSION).la	\
+	$(INCLUDED_X_MODULES)
 libpangox_1_0_la_SOURCES = \
 	modules.h 	   \
 	module-defs-x.c	   \
@@ -168,9 +174,17 @@ lib_LTLIBRARIES += libpangoft2-1.0.la
 endif
 
 libpangoft2_1_0_la_LDFLAGS = $(LIBRARY_LIBTOOL_OPTIONS)
-libpangoft2_1_0_la_LIBADD = opentype/libpango-ot.la libpango-$(PANGO_API_VERSION).la $(INCLUDED_FC_MODULES) $(FREETYPE_LIBS) $(GLIB_LIBS) $(libm)
-libpangoft2_1_0_la_DEPENDENCIES = opentype/libpango-ot.la libpango-$(PANGO_API_VERSION).la $(INCLUDED_FC_MODULES)
-
+libpangoft2_1_0_la_LIBADD =			\
+	opentype/libpango-ot.la			\
+	libpango-$(PANGO_API_VERSION).la	\
+	$(INCLUDED_FC_MODULES)			\
+	$(GLIB_LIBS)				\
+	$(FREETYPE_LIBS)			\
+	$(libm)
+libpangoft2_1_0_la_DEPENDENCIES =		\
+	opentype/libpango-ot.la			\
+	libpango-$(PANGO_API_VERSION).la	\
+	$(INCLUDED_FC_MODULES)
 libpangoft2_1_0_la_SOURCES =   	\
 	pangofc-font.c	   	\
 	pangofc-fontmap.c	\
@@ -199,9 +213,15 @@ lib_LTLIBRARIES += libpangoxft-1.0.la
 endif
 
 libpangoxft_1_0_la_LDFLAGS = $(LIBRARY_LIBTOOL_OPTIONS)
-libpangoxft_1_0_la_LIBADD = libpangoft2-$(PANGO_API_VERSION).la libpango-$(PANGO_API_VERSION).la $(XFT_LIBS) $(GLIB_LIBS) $(libm)
-libpangoxft_1_0_la_DEPENDENCIES = libpangoft2-$(PANGO_API_VERSION).la libpango-$(PANGO_API_VERSION).la
-
+libpangoxft_1_0_la_LIBADD =			\
+	libpangoft2-$(PANGO_API_VERSION).la	\
+	libpango-$(PANGO_API_VERSION).la	\
+	$(GLIB_LIBS)				\
+	$(XFT_LIBS)				\
+	$(libm)
+libpangoxft_1_0_la_DEPENDENCIES =		\
+	libpangoft2-$(PANGO_API_VERSION).la	\
+	libpango-$(PANGO_API_VERSION).la
 libpangoxft_1_0_la_SOURCES =   	\
 	pangoxft-font.c		\
 	pangoxft-fontmap.c      \
@@ -217,9 +237,12 @@ lib_LTLIBRARIES += libpangocairo-1.0.la
 endif
 
 libpangocairo_1_0_la_LDFLAGS = $(LIBRARY_LIBTOOL_OPTIONS)
-libpangocairo_1_0_la_LIBADD = libpango-$(PANGO_API_VERSION).la $(CAIRO_LIBS) $(GLIB_LIBS)
-libpangocairo_1_0_la_DEPENDENCIES = libpango-$(PANGO_API_VERSION).la
-
+libpangocairo_1_0_la_LIBADD =			\
+	libpango-$(PANGO_API_VERSION).la	\
+	$(GLIB_LIBS)				\
+	$(CAIRO_LIBS)
+libpangocairo_1_0_la_DEPENDENCIES =		\
+	libpango-$(PANGO_API_VERSION).la
 libpangocairo_1_0_la_SOURCES =  \
 	pangocairo-font.c	\
 	pangocairo-fontmap.c    \
@@ -233,7 +256,10 @@ libpangocairo_1_0_la_DEPENDENCIES += pangocairo.def
 libpangocairo_1_0_la_LIBADD += libpangowin32-$(PANGO_API_VERSION).la $(WIN32_LIBS) 
 libpangocairo_1_0_la_DEPENDENCIES += libpangowin32-$(PANGO_API_VERSION).la 
 
-libpangocairo_1_0_la_SOURCES += pangocairo-win32font.c pangocairo-win32fontmap.c pangocairo-win32.h
+libpangocairo_1_0_la_SOURCES +=		\
+	pangocairo-win32font.c		\
+	pangocairo-win32fontmap.c	\
+	pangocairo-win32.h
 endif
 
 if HAVE_CAIRO_FREETYPE
@@ -254,9 +280,14 @@ lib_LTLIBRARIES += libpangowin32-1.0.la
 endif
 
 libpangowin32_1_0_la_LDFLAGS = $(LIBRARY_LIBTOOL_OPTIONS)
-libpangowin32_1_0_la_LIBADD = libpango-$(PANGO_API_VERSION).la $(INCLUDED_WIN32_MODULES) $(WIN32_LIBS) $(GLIB_LIBS)
-libpangowin32_1_0_la_DEPENDENCIES = libpango-$(PANGO_API_VERSION).la $(INCLUDED_WIN32_MODULES)
-
+libpangowin32_1_0_la_LIBADD =			\
+	libpango-$(PANGO_API_VERSION).la	\
+	$(INCLUDED_WIN32_MODULES)		\
+	$(GLIB_LIBS)				\
+	$(WIN32_LIBS)
+libpangowin32_1_0_la_DEPENDENCIES =		\
+	libpango-$(PANGO_API_VERSION).la	\
+	$(INCLUDED_WIN32_MODULES)
 libpangowin32_1_0_la_SOURCES =	\
 	pangowin32.h		\
 	pangowin32.c		\
