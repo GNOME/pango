@@ -21,7 +21,9 @@ INCLUDES += $(FREETYPE_CFLAGS)
 if INCLUDE_SYRIAC_FC
 noinst_LTLIBRARIES += libpango-syriac-fc.la
 else
+if DYNAMIC_SYRIAC_FC
 module_LTLIBRARIES += pango-syriac-fc.la
+endif
 endif
 endif
 
@@ -38,5 +40,6 @@ libpango_syriac_fc_la_CFLAGS = -DPANGO_MODULE_PREFIX=_pango_syriac_fc
 
 
 included-modules: $(noinst_LTLIBRARIES)
+dynamic-modules: $(module_LTLIBRARIES)
 
-.PHONY: included-modules
+.PHONY: included-modules dynamic-modules

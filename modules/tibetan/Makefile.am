@@ -20,7 +20,9 @@ INCLUDES += $(FREETYPE_CFLAGS)
 if INCLUDE_TIBETAN_FC
 noinst_LTLIBRARIES += libpango-tibetan-fc.la
 else
+if DYNAMIC_TIBETAN_FC
 module_LTLIBRARIES += pango-tibetan-fc.la
+endif
 endif
 endif
 
@@ -34,5 +36,6 @@ libpango_tibetan_fc_la_CFLAGS = -DPANGO_MODULE_PREFIX=_pango_tibetan_fc
 
 
 included-modules: $(noinst_LTLIBRARIES)
+dynamic-modules: $(module_LTLIBRARIES)
 
-.PHONY: included-modules
+.PHONY: included-modules dynamic-modules

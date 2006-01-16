@@ -22,7 +22,9 @@ INCLUDES += $(FREETYPE_CFLAGS)
 if INCLUDE_KHMER_FC
 noinst_LTLIBRARIES += libpango-khmer-fc.la
 else
+if DYNAMIC_KHMER_FC
 module_LTLIBRARIES += pango-khmer-fc.la
+endif
 endif
 endif
 
@@ -37,5 +39,6 @@ libpango_khmer_fc_la_CFLAGS = -DPANGO_MODULE_PREFIX=_pango_khmer_fc
 
 
 included-modules: $(noinst_LTLIBRARIES)
+dynamic-modules: $(module_LTLIBRARIES)
 
-.PHONY: included-modules
+.PHONY: included-modules dynamic-modules

@@ -1,3 +1,11 @@
+2006-01-16  Behdad Esfahbod  <behdad@gnome.org>
+
+	Fixes bug #71414, allowing to disable building/installing modules.
+
+	* configure.in: Add support for --with-dynamic-modules.
+
+	* */Makefile.am: Adapt to the above change.
+
 2006-01-14  Behdad Esfahbod  <behdad@gnome.org>
 
 	Draw hexbox for cairo backend.  Bug #313551.  Based on patch by

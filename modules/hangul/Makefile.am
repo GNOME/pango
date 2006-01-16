@@ -22,7 +22,9 @@ INCLUDES += $(FREETYPE_CFLAGS)
 if INCLUDE_HANGUL_FC
 noinst_LTLIBRARIES += libpango-hangul-fc.la
 else
+if DYNAMIC_HANGUL_FC
 module_LTLIBRARIES += pango-hangul-fc.la
+endif
 endif
 endif
 
@@ -39,5 +41,6 @@ EXTRA_DIST =			\
 	tables-jamos.i
 
 included-modules: $(noinst_LTLIBRARIES)
+dynamic-modules: $(module_LTLIBRARIES)
 
-.PHONY: included-modules
+.PHONY: included-modules dynamic-modules

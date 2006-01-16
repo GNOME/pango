@@ -26,7 +26,9 @@ INCLUDES += $(X_CFLAGS)
 if INCLUDE_BASIC_X
 noinst_LTLIBRARIES += libpango-basic-x.la
 else
+if DYNAMIC_BASIC_X
 module_LTLIBRARIES += pango-basic-x.la
+endif
 endif
 endif
 
@@ -42,7 +44,9 @@ INCLUDES += $(FREETYPE_CFLAGS)
 if INCLUDE_BASIC_FC
 noinst_LTLIBRARIES += libpango-basic-fc.la
 else
+if DYNAMIC_BASIC_FC
 module_LTLIBRARIES += pango-basic-fc.la
+endif
 endif
 endif
 
@@ -57,7 +61,9 @@ if HAVE_WIN32
 if INCLUDE_BASIC_WIN32
 noinst_LTLIBRARIES += libpango-basic-win32.la
 else
+if DYNAMIC_BASIC_WIN32
 module_LTLIBRARIES += pango-basic-win32.la
+endif
 endif
 endif
 
@@ -80,7 +86,9 @@ INCLUDES += $(ATSUI_CFLAGS) $(CAIRO_CFLAGS)
 if INCLUDE_BASIC_ATSUI
 noinst_LTLIBRARIES += libpango-basic-atsui.la
 else
+if DYNAMIC_BASIC_ATSUI
 module_LTLIBRARIES += pango-basic-atsui.la
+endif
 endif
 endif
 
@@ -96,5 +104,6 @@ EXTRA_DIST =		\
 	tables-small.i
 
 included-modules: $(noinst_LTLIBRARIES)
+dynamic-modules: $(module_LTLIBRARIES)
 
-.PHONY: included-modules
+.PHONY: included-modules dynamic-modules

@@ -22,7 +22,9 @@ INCLUDES += $(FREETYPE_CFLAGS)
 if INCLUDE_ARABIC_FC
 noinst_LTLIBRARIES += libpango-arabic-fc.la
 else
+if DYNAMIC_ARABIC_FC
 module_LTLIBRARIES += pango-arabic-fc.la
+endif
 endif
 endif
 
@@ -39,5 +41,6 @@ libpango_arabic_fc_la_CFLAGS = -DPANGO_MODULE_PREFIX=_pango_arabic_fc
 
 
 included-modules: $(noinst_LTLIBRARIES)
+dynamic-modules: $(module_LTLIBRARIES)
 
-.PHONY: included-modules
+.PHONY: included-modules dynamic-modules

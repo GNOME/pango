@@ -103,9 +103,9 @@ pango.modules: $(top_builddir)/pango/pango-querymodules
 	if find ../modules -name '*.so' | grep 'so' > /dev/null ; then \
           echo "Writing a pango.modules file to use when running examples before installing Pango."; \
 	  (cd ../modules && \
-           $(top_builddir)/pango/pango-querymodules `find . -name '*.la' | grep -v \.libs` > ../examples/pango.modules ) ;\
+           $(top_builddir)/pango/pango-querymodules `find . -name '*.la' | grep -v \.libs | grep -v libpango` > ../examples/pango.modules ) ;\
 	else \
-          echo "No dynamic modules found; will use only static modules for uninstalled example programs."; \
+          echo "No dynamic modules found; will use only static modules for not-installed example programs."; \
 	  touch pango.modules; \
 	fi
 
