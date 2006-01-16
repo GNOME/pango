@@ -1,3 +1,16 @@
+2006-01-16  Behdad Esfahbod  <behdad@gnome.org>
+
+	Fixes bug #314675, Brian Cameron.
+
+	* configure.in: Handle uninstalled cairo.
+
+	* pangocairo-uninstalled.pc.in: Fix typo: libpangoxft->libpangocairo.
+
+2006-01-16  Behdad Esfahbod  <behdad@gnome.org>
+
+	* modules/indic/mprefixups.c (indic_mprefixups_apply): Remove unused
+	variable clusterSave that was leaking too. (bug #316466, Steve Grubbs)
+
 2006-01-14  Behdad Esfahbod  <behdad@gnome.org>
 
 	* pango/pango-utils.h (pango_is_zero_width): Move G_GNUC_CONST to
