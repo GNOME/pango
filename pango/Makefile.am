@@ -20,13 +20,13 @@ INCLUDES =						\
 	-DLIBDIR=\"$(libdir)\"				\
 	-DMODULE_VERSION=\"$(PANGO_MODULE_VERSION)\"	\
 	-DG_DISABLE_DEPRECATED				\
+	-I$(top_srcdir)					\
 	$(PANGO_DEBUG_FLAGS)				\
 	$(GLIB_CFLAGS)					\
 	$(XFT_CFLAGS)					\
 	$(CAIRO_CFLAGS)					\
 	$(FREETYPE_CFLAGS)				\
-	$(X_CFLAGS)					\
-	-I$(top_srcdir)
+	$(X_CFLAGS)
 
 BUILT_SOURCES = pango-enum-types.h pango-enum-types.c
 

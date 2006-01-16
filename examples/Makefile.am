@@ -5,13 +5,13 @@ aliasdir = $(sysconfdir)/pango
 INCLUDES =				\
 	-DG_DISABLE_DEPRECATED		\
 	-DPANGO_DISABLE_DEPRECATED	\
-	$(PANGO_DEBUG_FLAGS)		\
 	-I$(top_srcdir)			\
-	$(CAIRO_CFLAGS)			\
+	$(PANGO_DEBUG_FLAGS)		\
 	$(GLIB_CFLAGS)			\
-	$(X_CFLAGS)			\
 	$(XFT_CFLAGS)			\
-	$(FREETYPE_CFLAGS)
+	$(CAIRO_CFLAGS)			\
+	$(FREETYPE_CFLAGS)		\
+	$(X_CFLAGS)
 
 ###################################################
 

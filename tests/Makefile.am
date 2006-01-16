@@ -1,14 +1,14 @@
 ## Process this file with automake to create Makefile.in.
 
 INCLUDES =					\
-	-I$(top_srcdir)				\
-	$(GLIB_CFLAGS)				\
-	$(CAIRO_CFLAGS)				\
-	$(XFT_CFLAGS)				\
-	$(FREETYPE_CFLAGS)			\
-	$(X_CFLAGS)				\
 	-DG_DISABLE_DEPRECATED			\
-	$(PANGO_DEBUG_FLAGS)
+	-I$(top_srcdir)				\
+	$(PANGO_DEBUG_FLAGS)			\
+	$(GLIB_CFLAGS)				\
+	$(XFT_CFLAGS)				\
+	$(CAIRO_CFLAGS)				\
+	$(FREETYPE_CFLAGS)			\
+	$(X_CFLAGS)
 
 if HAVE_XFT
 INCLUDES += -DHAVE_X
