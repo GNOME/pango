@@ -1,3 +1,11 @@
+Overview of changes between 1.11.1 and 1.11.2
+=============================================
+* Draw hex box on missing glyphs for cairo-fc backend.
+* New --with-dynamic-modules option added to configure.
+* Use g_slice for various small memory allocations [Matthias Clasen]
+* Misc bug fixes, optimizations, and documentation improvements.
+
+
 Overview of changes between 1.11.0 and 1.11.1
 =============================================
 * ATSUI support for the cairo backend. [Anders Carlsson]

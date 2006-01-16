@@ -1,5 +1,13 @@
 2006-01-16  Behdad Esfahbod  <behdad@gnome.org>
 
+	* === Released 1.11.2 ===
+
+	* configure.in: Version 1.11.2
+
+	* NEWS: Updated.
+
+2006-01-16  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/Makefile.am: Move GLIB_CFLAGS before external libraries'
 	CFLAGS.  Some formatting changes too.
 
