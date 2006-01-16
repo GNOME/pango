@@ -287,7 +287,9 @@ PKG_CHECK_MODULES(CAIRO, cairo >= 0.5.2-head, have_cairo=true, :)
    
 if $have_cairo ; then
   pango_save_ldflags=$LDFLAGS
-  LDFLAGS="$LDFLAGS $CAIRO_LIBS"
+  m4_pattern_allow([PKG_CONFIG_DISABLE_UNINSTALLED])
+  INSTALLED_CAIRO_LIBS=`PKG_CONFIG_DISABLE_UNINSTALLED=yes $PKG_CONFIG --libs cairo`
+  LDFLAGS="$LDFLAGS $INSTALLED_CAIRO_LIBS"
   AC_CHECK_LIB(cairo, cairo_win32_scaled_font_select_font, have_cairo_win32=true, :)
   if $have_cairo_win32 && $have_win32; then
     AC_DEFINE(HAVE_CAIRO_WIN32, 1, [Whether Cairo uses the Win32 GDI for fonts])
