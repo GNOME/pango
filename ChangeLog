@@ -1,5 +1,10 @@
 2006-01-16  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango/Makefile.am: Move GLIB_CFLAGS before external libraries'
+	CFLAGS.  Some formatting changes too.
+
+2006-01-16  Behdad Esfahbod  <behdad@gnome.org>
+
 	* docs/Makefile.am, examples/Makefile.am, pango/Makefile.am,
 	tests/Makefile.am: Adjust the order of *_CFLAGS to the same order
 	known to work. (Fixes bug #325588)
