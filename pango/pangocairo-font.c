@@ -171,7 +171,12 @@ _pango_cairo_get_hex_box_info (PangoCairoFont *cfont)
       cairo_text_extents_t extents;
 
       c[0] = hexdigits[i];
-      cairo_text_extents (cr, c, &extents);      
+      /* The following call is being added into cairo.  That's preferred way
+       * to get the extents here.  When turning that on, we can get rid of
+       * the dummy surface and cairo context created above.
+       */
+      /* cairo_scaled_font_text_extents (scaled_mini_font, c, &extents); */
+      cairo_text_extents (cr, c, &extents);
       width = MAX (width, extents.width);
       height = MAX (height, extents.height);
     }

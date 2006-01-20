@@ -1,3 +1,9 @@
+2006-01-20  Behdad Esfahbod  <behdad@gnome.org>
+
+	* pango/pangocairo-font.c (_pango_cairo_get_hex_box_info): Add a
+	comment about using cairo_scaled_font_text_extents instead of
+	cairo_text_extents.
+
 2006-01-16  Behdad Esfahbod  <behdad@gnome.org>
 
 	* === Released 1.11.2 ===
