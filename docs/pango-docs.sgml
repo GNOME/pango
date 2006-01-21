@@ -17,6 +17,7 @@
 <!ENTITY pango-Win32-Fonts-and-Rendering SYSTEM "xml/win32-fonts.xml">
 <!ENTITY pango-FreeType-Fonts-and-Rendering SYSTEM "xml/freetype-fonts.xml">
 <!ENTITY pango-Xft-Fonts-and-Rendering SYSTEM "xml/xft-fonts.xml">
+<!ENTITY pango-ATSUI-Fonts-and-Rendering SYSTEM "xml/atsui-fonts.xml">
 <!ENTITY pangocairo SYSTEM "xml/pangocairo.xml">
 <!ENTITY PangoFcFontMap SYSTEM "xml/pangofc-fontmap.xml">
 <!ENTITY PangoFcFont SYSTEM "xml/pangofc-font.xml">
@@ -50,6 +51,7 @@
     &pango-FreeType-Fonts-and-Rendering;
     &pango-Xft-Fonts-and-Rendering;
     &pangocairo;
+    &pango-ATSUI-Fonts-and-Rendering;
     &pango-X-Fonts-and-Rendering;
   </chapter>
 

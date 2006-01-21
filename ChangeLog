@@ -1,3 +1,23 @@
+2006-01-21  Behdad Esfahbod  <behdad@gnome.org>
+
+	Finish ATSUI module work.  Bug #322022, Matthias Clasen.
+
+	* docs/tmpl/atsui-fonts.sgml: Added.
+
+	* docs/pango-docs.sgml: Updated to reflect above change.
+
+	* docs/pango-sections.txt: Updated to reflect above change and
+	also document Standard ATSUI symbols.
+
+	* pango/pangocairo-atsuifont.c
+	(pango_cairo_atsui_font_get_atsu_font_id): Add docs.
+
+	* pango/pangoatsui-fontmap.c: Register included ATSUI modules.
+
+2006-01-20  Behdad Esfahbod  <behdad@gnome.org>
+
+	* examples/cairosimple.c: Small fixes.
+
 2006-01-20  Behdad Esfahbod  <behdad@gnome.org>
 
 	* pango/pangocairo-font.c (_pango_cairo_get_hex_box_info): Add a

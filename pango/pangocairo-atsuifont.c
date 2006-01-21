@@ -51,6 +51,16 @@ struct _PangoCairoATSUIFontClass
 
 static cairo_font_face_t *pango_cairo_atsui_font_get_font_face (PangoCairoFont *font);
 
+/**
+ * pango_cairo_atsui_font_get_atsu_font_id:
+ * @cafont: A #PangoCairoATSUIFont
+ *
+ * Returns the ATSUFontID of a font.
+ *
+ * Returns: the ATSUFontID associated to @cafont.
+ *
+ * Since: 1.12
+ */
 ATSUFontID
 pango_cairo_atsui_font_get_atsu_font_id (PangoCairoATSUIFont *cafont)
 {

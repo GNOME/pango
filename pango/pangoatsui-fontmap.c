@@ -179,6 +179,9 @@ pango_atsui_family_class_init (PangoFontFamilyClass *class)
   class->list_faces = pango_atsui_family_list_faces;
   class->get_name = pango_atsui_family_get_name;
   class->is_monospace = pango_atsui_family_is_monospace;
+
+  for (i = 0; _pango_included_atsui_modules[i].list; i++)
+    pango_module_register (&_pango_included_atsui_modules[i]);
 }
 
 static void

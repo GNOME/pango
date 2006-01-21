@@ -808,6 +808,22 @@ pango_cairo_font_map_get_type
 </SECTION>
 
 <SECTION>
+<TITLE>ATSUI Fonts</TITLE>
+<FILE>atsui-fonts</FILE>
+PangoCairoATSUIFont
+pango_cairo_atsui_font_get_atsu_font_id
+<SUBSECTION Standard>
+PangoCairoATSUIFontClass
+PANGO_CAIRO_ATSUI_FONT
+PANGO_CAIRO_ATSUI_FONT_CLASS
+PANGO_CAIRO_ATSUI_FONT_GET_CLASS
+PANGO_CAIRO_IS_FONT_CLASS
+PANGO_RENDER_TYPE_ATSUI
+PANGO_TYPE_CAIRO_ATSUI_FONT
+pango_cairo_atsui_font_get_type
+</SECTION>
+
+<SECTION>
 <FILE>pangofc-fontmap</FILE>
 <TITLE>PangoFcFontMap</TITLE>
 PangoFcFontMap
