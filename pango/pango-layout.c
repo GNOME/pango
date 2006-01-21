@@ -3419,7 +3419,7 @@ pango_layout_line_get_type(void)
  * grapheme in the line and @trailing being set to the number of characters
  * in that grapheme. The reverse is true for a left-to-right line.
  *
- * Returns: %FALSE if @x_pos was outside the line, %TRUE if inside
+ * Return value: %FALSE if @x_pos was outside the line, %TRUE if inside
  **/
 gboolean
 pango_layout_line_x_to_index (PangoLayoutLine *line,

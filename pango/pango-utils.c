@@ -1164,7 +1164,7 @@ pango_matrix_concat (PangoMatrix       *matrix,
  * Since: 1.12
  **/
 double
-pango_matrix_get_font_scale_factor (PangoMatrix *matrix)
+pango_matrix_get_font_scale_factor (const PangoMatrix *matrix)
 {
 /*
  * Based on cairo-matrix.c:_cairo_matrix_compute_scale_factors()
@@ -1336,7 +1336,7 @@ pango_language_from_string (const char *language)
  * or the range is a prefix of the tag, and the character after the
  * tag is '-'.
  *
- * Returns: %TRUE if a match was found.
+ * Return value: %TRUE if a match was found.
  **/
 gboolean
 pango_language_matches (PangoLanguage *language,

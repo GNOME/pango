@@ -262,7 +262,7 @@ pango_ft2_get_context (double dpi_x, double dpi_y)
  * global PangoFT2 fontmap is deprecated; use pango_ft2_font_map_new()
  * instead.
  *
- * Returns: a #PangoFT2FontMap.
+ * Return value: a #PangoFT2FontMap.
  **/
 PangoFontMap *
 pango_ft2_font_map_for_display (void)

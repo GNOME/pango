@@ -1230,7 +1230,7 @@ pango_renderer_set_matrix (PangoRenderer     *renderer,
  * Gets the transformation matrix that will be applied when
  * rendering. See pango_renderer_set_matrix().
  *
- * Returns: the matrix, or %NULL if no matrix has been set
+ * Return value: the matrix, or %NULL if no matrix has been set
  *  (which is the same as the identity matrix). The returned
  *  matrix is owned by Pango and must not be modified or
  *  freed.

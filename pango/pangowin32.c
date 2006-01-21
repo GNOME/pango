@@ -179,7 +179,7 @@ pango_win32_get_dc (void)
  *
  * Returns wether debugging is turned on.
  * 
- * Returns: %TRUE if debugging is turned on.
+ * Return value: %TRUE if debugging is turned on.
  * 
  * Since: 1.2
  */
@@ -1351,7 +1351,7 @@ font_get_cmap (PangoFont *font)
  *
  * Obtains the index of the glyph for @wc in @font.
  *
- * Returns: the glyph index for @wc.
+ * Return value: the glyph index for @wc.
  **/
 gint
 pango_win32_font_get_glyph_index (PangoFont *font,

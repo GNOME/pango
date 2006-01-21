@@ -57,7 +57,7 @@ static cairo_font_face_t *pango_cairo_atsui_font_get_font_face (PangoCairoFont *
  *
  * Returns the ATSUFontID of a font.
  *
- * Returns: the ATSUFontID associated to @cafont.
+ * Return value: the ATSUFontID associated to @cafont.
  *
  * Since: 1.12
  */
