@@ -207,7 +207,7 @@ pango_win32_font_map_class_init (PangoWin32FontMapClass *class)
  * not be freed. If the font map is no longer needed, it can
  * be released with pango_win32_shutdown_display().
  *
- * Returns: a #PangoFontMap.
+ * Return value: a #PangoFontMap.
  **/
 PangoFontMap *
 pango_win32_font_map_for_display (void)
@@ -997,7 +997,7 @@ pango_win32_font_entry_remove (PangoWin32Face *face,
  *
  * Obtains the font cache associated with the given font map.
  *
- * Returns: the #PangoWin32FontCache of @font_map.
+ * Return value: the #PangoWin32FontCache of @font_map.
  **/
 PangoWin32FontCache *
 pango_win32_font_map_get_font_cache (PangoFontMap *font_map)

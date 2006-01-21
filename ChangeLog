@@ -1,3 +1,24 @@
+2006-01-21  Behdad Esfahbod  <behdad@gnome.org>
+
+	* pango/pangocairo-fontmap.c (pango_cairo_context_get_font_options):
+	Fix typo in docs.
+
+2006-01-21  Behdad Esfahbod  <behdad@gnome.org>
+
+	* pango/pango-utils.c (pango_matrix_get_font_scale_factor): Fix docs.
+
+2006-01-21  Behdad Esfahbod  <behdad@gnome.org>
+
+	* pango/pango-types.h, pango/pango-utils.c
+	(pango_matrix_get_font_scale_factor): Make matrix parameter const.
+
+	* pango/fonts.c, pango/pango-context.c, pango/pango-coverage.c,
+	pango/pango-fontset.c, pango/pango-layout.c, pango/pango-renderer.c,
+	pango/pango-types.h, pango/pango-utils.c, pango/pangofc-font.c,
+	pango/pangoft2-fontmap.c, pango/pangowin32-fontmap.c,
+	pango/pangowin32.c, pango/pangox-fontmap.c, pango/pangoxft-font.c:
+	Replace "Returns:" with "Return value:" in docs.
+
 2006-01-16  Behdad Esfahbod  <behdad@gnome.org>
 
 	* pango/Makefile.am: Move GLIB_CFLAGS before external libraries'

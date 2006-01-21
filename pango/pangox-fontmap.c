@@ -266,7 +266,7 @@ static GList *fontmaps = NULL;
  * not be freed. If the font map for a display is no longer needed, it can 
  * be released with pango_x_shutdown_display().
  *
- * Returns: a #PangoXFontMap for @display.
+ * Return value: a #PangoXFontMap for @display.
  **/
 PangoFontMap *
 pango_x_font_map_for_display (Display *display)
@@ -1334,7 +1334,7 @@ pango_x_make_matching_xlfd (PangoFontMap *fontmap, char *xlfd, const char *chars
  *
  * Obtains the font cache associated with the given font map.
  *
- * Returns: the #PangoXFontCache of @font_map.
+ * Return value: the #PangoXFontCache of @font_map.
  **/
 PangoXFontCache *
 pango_x_font_map_get_font_cache (PangoFontMap *font_map)

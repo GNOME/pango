@@ -159,7 +159,7 @@ pango_context_set_matrix (PangoContext       *context,
  * Gets the transformation matrix that will be applied when
  * rendering with this context. See pango_context_set_matrix().
  *
- * Returns: the matrix, or %NULL if no matrix has been set
+ * Return value: the matrix, or %NULL if no matrix has been set
  *  (which is the same as the identity matrix). The returned
  *  matrix is owned by Pango and must not be modified or
  *  freed.
@@ -1371,7 +1371,7 @@ update_metrics_from_items (PangoFontMetrics *metrics,
  * be a composite of the metrics for the fonts loaded for the
  * individual families.
  *
- * Returns: a #PangoFontMetrics object. The caller must call pango_font_metrics_unref()
+ * Return value: a #PangoFontMetrics object. The caller must call pango_font_metrics_unref()
  *   when finished using the object.
  **/
 PangoFontMetrics *

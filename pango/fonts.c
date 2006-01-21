@@ -1202,7 +1202,7 @@ pango_font_get_glyph_extents  (PangoFont      *font,
  * be provided to indicate that the metrics should be retrieved that
  * correspond to the script(s) used by that language.
  *
- * Returns: a #PangoFontMetrics object. The caller must call pango_font_metrics_unref()
+ * Return value: a #PangoFontMetrics object. The caller must call pango_font_metrics_unref()
  *   when finished using the object.
  **/
 PangoFontMetrics *
@@ -1218,7 +1218,7 @@ pango_font_get_metrics (PangoFont        *font,
  * 
  * Gets the font map for which the font was created.
  *
- * Returns: the #PangoFontMap for the font
+ * Return value: the #PangoFontMap for the font
  *
  * Since: 1.10
  **/

@@ -521,7 +521,7 @@ pango_fc_font_real_get_glyph (PangoFcFont *font,
  * This face will be kept around until you call
  * pango_fc_font_unlock_face().
  *
- * Returns: the FreeType FT_Face associated with @font.
+ * Return value: the FreeType FT_Face associated with @font.
  *
  * Since: 1.4
  **/
@@ -697,7 +697,7 @@ pango_fc_font_kern_glyphs (PangoFcFont      *font,
  *
  * This will return any custom decoder set on this font.
  *
- * Returns: The custom decoder
+ * Return value: The custom decoder
  *
  * Since: 1.6
  **/
