@@ -33,7 +33,7 @@ draw_text (cairo_t *cr)
 
       cairo_save (cr);
 
-      /* Gradient from red at angle == 60 to blue at angle == 300 */
+      /* Gradient from red at angle == 60 to blue at angle == 240 */
       red   = (1 + cos ((angle - 60) * G_PI / 180.)) / 2;
       cairo_set_source_rgb (cr, red, 0, 1.0 - red);
 
@@ -74,8 +74,7 @@ int main (int argc, char **argv)
 				  
 
   cairo_set_source_rgb (cr, 1.0, 1.0, 1.0);
-  cairo_rectangle (cr, 0, 0, 2 * RADIUS, 2 * RADIUS);
-  cairo_fill (cr);
+  cairo_paint (cr);
   draw_text (cr);
   cairo_destroy (cr);
   
