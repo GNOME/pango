@@ -1157,9 +1157,12 @@ pango_matrix_concat (PangoMatrix       *matrix,
  * pango_matrix_get_font_scale_factor:
  * @matrix: a #PangoMatrix, may be %NULL
  * 
- * Return value: the scale factor of @matrix on the height of the font.
+ * Returns the scale factor of a matrix on the height of the font.
  * That is, the scale factor in the direction perpendicular to the
- * vector that the X coordinate is mapped to, or 1.0 if @matrix is %NULL.
+ * vector that the X coordinate is mapped to.
+ *
+ * Return value: the scale factor of @matrix on the height of the font,
+ * or 1.0 if @matrix is %NULL.
  *
  * Since: 1.12
  **/

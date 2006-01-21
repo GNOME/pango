@@ -1,6 +1,10 @@
 2006-01-21  Behdad Esfahbod  <behdad@gnome.org>
 
-	* pango/pango-types.h, pango/pango-utils.h
+	* pango/pango-utils.c (pango_matrix_get_font_scale_factor): Fix docs.
+
+2006-01-21  Behdad Esfahbod  <behdad@gnome.org>
+
+	* pango/pango-types.h, pango/pango-utils.c
 	(pango_matrix_get_font_scale_factor): Make matrix parameter const.
 
 	* pango/fonts.c, pango/pango-context.c, pango/pango-coverage.c,
