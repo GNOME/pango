@@ -386,7 +386,7 @@ pango_cairo_context_set_font_options (PangoContext               *context,
 }
   
 /**
- * pango_cairo_get_font_options:
+ * pango_cairo_context_get_font_options:
  * @context: a #PangoContext, from pango_cairo_font_map_create_context()
  * 
  * Retrieves any font rendering options previously set with

@@ -1,5 +1,10 @@
 2006-01-21  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango/pangocairo-fontmap.c (pango_cairo_context_get_font_options):
+	Fix typo in docs.
+
+2006-01-21  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/pango-utils.c (pango_matrix_get_font_scale_factor): Fix docs.
 
 2006-01-21  Behdad Esfahbod  <behdad@gnome.org>
