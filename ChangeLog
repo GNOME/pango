@@ -1,5 +1,9 @@
 2006-01-22  Behdad Esfahbod  <behdad@gnome.org>
 
+	* docs/TEXT/coding-style: Added "Since:" in the doc example.
+
+2006-01-22  Behdad Esfahbod  <behdad@gnome.org>
+
 	* TODO: Removed old file.  Filed some bugs out of it.
 
 	* TODO.xml: Removed old file.  Filed some bugs out of it.

@@ -63,6 +63,8 @@ in the gtk-doc / gnome-doc style. For instance:
  *               index is out of range. This layout line can
  *               be ref'ed and retained, but will become invalid
  *               if changes are made to the #PangoLayout.
+ *
+ * Since: 1.6
  **/
 PangoLayoutLine *
 pango_layout_get_line (PangoLayout *layout,
