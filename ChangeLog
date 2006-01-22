@@ -2,6 +2,10 @@
 
 	* TODO: Removed old file.  Filed some bugs out of it.
 
+	* TODO.xml: Removed old file.  Filed some bugs out of it.
+
+	* Makefile.am (EXTRA_DIST): Removed TODO.xml.
+
 2006-01-21  Behdad Esfahbod  <behdad@gnome.org>
 
 	* MAINTAINERS: Added.

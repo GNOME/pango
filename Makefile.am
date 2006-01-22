@@ -23,7 +23,6 @@ EXTRA_DIST = 			\
 	ChangeLog.pre-1-6	\
 	ChangeLog.pre-1-8	\
 	MAINTAINERS		\
-	TODO.xml	\
 	README.win32	\
 	pango-zip.sh	\
 	sanitize-la.sh
