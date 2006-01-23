@@ -181,7 +181,7 @@ update (void)
   update_region = NULL;
 }
 
-void
+static void
 expose (XExposeEvent *xev)
 {
   XRectangle  r;

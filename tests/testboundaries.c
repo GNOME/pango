@@ -340,6 +340,8 @@ main (int argc, char *argv[])
   const gchar *srcdir;
   const gchar *filename;
 
+  g_setenv ("PANGO_RC_FILE", "./pangorc", TRUE);
+
   srcdir = getenv ("srcdir");
   if (!srcdir)
     srcdir = ".";

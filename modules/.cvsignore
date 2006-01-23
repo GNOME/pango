@@ -1,6 +1,7 @@
 Makefile
 Makefile.in
 makefile.mingw
+pango.modules
 .deps
 .libs
 *.lo

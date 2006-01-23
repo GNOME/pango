@@ -1,7 +1,0 @@
-#
-# pangorc file for uninstalled operation. 
-#
-
-[Pango]
-ModuleFiles = ./pango.modules
-

@@ -84,6 +84,8 @@ main (int argc, char *argv[])
   gboolean success;
   ColorSpec *spec;
 
+  g_setenv ("PANGO_RC_FILE", "./pangorc", TRUE);
+
   success = TRUE;
   for (spec = specs; spec->spec; spec++)
     success &= test_color (spec);

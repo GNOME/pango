@@ -53,22 +53,23 @@ void   fc_substitute_func (FcPattern        *pattern,
 			   gpointer          data);
 gchar *get_options_string (void);
 
-extern char *prog_name;
+extern const char *prog_name;
 
 extern gboolean opt_display;
 extern int opt_dpi;
 extern const char *opt_font;
 extern gboolean opt_header;
-extern char *opt_output;
+extern const char *opt_output;
 extern int opt_margin;
 extern int opt_markup;
 extern gboolean opt_rtl;
 extern int opt_rotate;
 extern gboolean opt_auto_dir;
-extern char *opt_text;
+extern const char *opt_text;
 extern gboolean opt_waterfall;
 extern int opt_width;
 extern int opt_indent;
 extern int opt_runs;
 extern PangoEllipsizeMode opt_ellipsize;
 extern HintMode opt_hinting;
+extern const char *opt_pangorc;

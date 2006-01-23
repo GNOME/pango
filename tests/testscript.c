@@ -248,6 +248,8 @@ test_script_iter (void)
 int
 main (int argc, char **argv)
 {
+  g_setenv ("PANGO_RC_FILE", "./pangorc", TRUE);
+
   test_script_lookup ();
   test_script_iter ();
 

@@ -1,5 +1,13 @@
 ## Process this file with automake to create Makefile.in.
 
+EXTRA_DIST = 			\
+	all-unicode.txt		\
+	boundaries.utf8		\
+	runtests.sh
+
+CLEANFILES = pangorc
+DISTCLEANFILES = all-unicode.txt runtests.log
+
 INCLUDES =					\
 	-DG_DISABLE_DEPRECATED			\
 	-I$(top_srcdir)				\
@@ -68,29 +76,10 @@ check_PROGRAMS += cxx-test
 endif
 cxx_test_SOURCES = cxx-test.C
 
-if CROSS_COMPILING
-all-local:
-else
-all-local: all-unicode.txt pango.modules
-endif
-
-pango.modules:
-	if find ../modules -name '*.so' | grep 'so' > /dev/null ; then \
-          echo "Writing a pango.modules file to use when running tests before installing Pango."; \
-	  (cd ../modules && \
-           ../pango/pango-querymodules `find . -name '*.la' | grep -v \.libs` > ../tests/pango.modules ) ;\
-	else \
-          echo "No dynamic modules found; will use only static modules for uninstalled test programs."; \
-	  touch pango.modules; \
-	fi
-
-EXTRA_DIST = 			\
-	all-unicode.txt		\
-	boundaries.utf8		\
-	runtests.sh
-
 all-unicode.txt: gen-all-unicode
 	./gen-all-unicode > all-unicode.txt
 
-CLEANFILES = pango.modules
-DISTCLEANFILES = all-unicode.txt runtests.log
+pangorc: $(srcdir)/../modules/pangorc
+	cp $< $@
+
+$(noinst_PROGRAMS) $(check_PROGRAMS): pangorc

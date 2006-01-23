@@ -150,6 +150,8 @@ s-enum-types-c: @REBUILD@ $(pango_headers) Makefile
 if HAVE_X
 pangoinclude_HEADERS += pangox.h
 lib_LTLIBRARIES += libpangox-1.0.la
+aliasdir = $(sysconfdir)/pango
+alias_DATA = pangox.aliases
 endif
 
 libpangox_1_0_la_LDFLAGS = $(LIBRARY_LIBTOOL_OPTIONS)
@@ -416,6 +418,7 @@ EXTRA_DIST =					\
 	makefile.msc				\
 	pango.rc				\
 	pango.rc.in				\
+	pangox.aliases				\
 	pangoft2.rc				\
 	pangoft2.rc.in				\
 	pangowin32.rc				\

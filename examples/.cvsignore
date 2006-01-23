@@ -1,7 +1,7 @@
 Makefile.in
 Makefile
 makefile.mingw
-pango.modules
+pangorc
 cairosimple
 pango-cairoview
 pango-xftview

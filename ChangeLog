@@ -1,5 +1,32 @@
 2006-01-23  Behdad Esfahbod  <behdad@gnome.org>
 
+	Make tests/examples do use generated pango.modules. (bug #328291)
+
+	* examples/pangorc, tests/pangorc: Removed. Moved to modules/.
+
+	* examples/pangox.aliases: Removed. Moved to pango/.
+
+	* examples/Makefile.am, tests/Makefile.am: Remove pango.modules
+	creation stuff, copy pangorc from $(srcdir)/../modules/pangorc
+	insteadd.
+
+	* examples/renderdemo.c: Add --pangorc option, default to ./pangorc.
+	Setenv PANGO_RC_FILE to whatever pangorc file decided.
+
+	* tests/*.c: Setenv PANGO_RC_FILE to ./pangorc.
+
+	* pango/pangox.aliases: Added.
+
+	* pango/Makefile.am: Install pangox.aliases.
+
+	* modules/pangorc: Added.
+
+	* modules/Makefile.am: Create pango.modules.  Added pangorc.
+
+	* modules/.cvsignore, examples/.cvsignore, tests/.cvsignore: Updated.
+
+2006-01-23  Behdad Esfahbod  <behdad@gnome.org>
+
 	* modules/basic/basic-fc.c: Set cluster only on base chars, like the
 	Arabic module does.
 

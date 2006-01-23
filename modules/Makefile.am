@@ -12,16 +12,21 @@ SUBDIRS = 		\
 	tibetan
 
 EXTRA_DIST =		\
-	module.def
+	module.def	\
+	pangorc
+
+CLEANFILES =		\
+	pango.modules
 
 if CROSS_COMPILING
-RUN_QUERY_IMMODULES_TEST=false
+RUN_QUERY_MODULES_TEST=false
 else
-RUN_QUERY_IMMODULES_TEST=test -z "$(DESTDIR)"
+RUN_QUERY_MODULES_TEST=test -z "$(DESTDIR)"
+all-local: pango.modules
 endif
 
-install-data-local:
-	@if $(RUN_QUERY_IMMODULES_TEST) ; then 				\
+install-data-local: $(top_builddir)/pango/pango-querymodules
+	@if $(RUN_QUERY_MODULES_TEST) ; then 				\
 	  echo $(mkinstalldirs) $(DESTDIR)$(sysconfdir)/pango \&\& 	\
 	  $(top_builddir)/pango/pango-querymodules 			\
 		\> $(DESTDIR)$(sysconfdir)/pango/pango.modules ;	\
@@ -30,11 +35,20 @@ install-data-local:
 		> $(DESTDIR)$(sysconfdir)/pango/pango.modules ;		\
 	else								\
 	  echo "***" ; 							\
-	  echo "*** Warning: pango.modules not created" ; 		\
-	  echo "***" ; 							\
+	  echo "*** Warning: $(sysconfdir)/pango/pango.modules" ; 	\
+	  echo "*** not created" ; 					\
 	  echo "*** Generate this file on the target system" ; 		\
-	  echo "*** system using pango-querymodules" ; 			\
+	  echo "*** using pango-querymodules" ; 			\
 	  echo "***" ; 							\
+	fi
+
+pango.modules: $(top_builddir)/pango/pango-querymodules $(SUBDIRS)
+	@if find . -name '*.so' | grep 'so' > /dev/null ; then \
+          echo "Writing a pango.modules file to use with tests/examples."; \
+          $(top_builddir)/pango/pango-querymodules `find . -name '*.la' | grep -v '\.libs' | grep -v libpango` > $@ ;\
+	else \
+          echo "No dynamic modules found; will use only static modules for tests/examples."; \
+	  touch $@; \
 	fi
 
 included-modules:
@@ -48,4 +62,3 @@ dynamic-modules:
         done
 
 .PHONY: included-modules dynamic-modules
-

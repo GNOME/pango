@@ -12,4 +12,4 @@ cxx-test
 testcolor
 Makefile.in
 Makefile
-pango.modules
+pangorc

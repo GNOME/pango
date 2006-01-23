@@ -218,6 +218,8 @@ main (int argc, char *argv[])
   PangoContext *context;
   PangoLayout  *layout;
 
+  g_setenv ("PANGO_RC_FILE", "./pangorc", TRUE);
+
   fontmap = pango_cairo_font_map_get_default ();
   context = pango_cairo_font_map_create_context (PANGO_CAIRO_FONT_MAP (fontmap));
 

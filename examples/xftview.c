@@ -72,7 +72,7 @@ update (void)
   do_output (context, xft_render, NULL, draw, NULL, NULL);
 }
 
-void
+static void
 expose (XExposeEvent *xev)
 {
   XRectangle area;

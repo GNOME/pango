@@ -38,28 +38,29 @@
 #define _MAKE_FONT_NAME(family, size) family " " #size
 #define MAKE_FONT_NAME(family, size) _MAKE_FONT_NAME(family, size)
 
-char *prog_name;
+const char *prog_name;
 
 gboolean opt_display = FALSE;
 int opt_dpi = 96;
 const char *opt_font = MAKE_FONT_NAME (DEFAULT_FONT_FAMILY, DEFAULT_FONT_SIZE);
 gboolean opt_header = FALSE;
-char *opt_output = NULL;
+const char *opt_output = NULL;
 int opt_margin = 10;
 int opt_markup = FALSE;
 gboolean opt_rtl = FALSE;
 int opt_rotate = 0;
 gboolean opt_auto_dir = TRUE;
-char *opt_text = NULL;
+const char *opt_text = NULL;
 gboolean opt_waterfall = FALSE;
 int opt_width = -1;
 int opt_indent = 0;
 int opt_runs = 1;
 PangoEllipsizeMode opt_ellipsize = PANGO_ELLIPSIZE_NONE;
 HintMode opt_hinting = HINT_DEFAULT;
+const char *opt_pangorc = NULL;
 
 /* Text (or markup) to render */
-char *text;
+static char *text;
 
 void
 fail (const char *format, ...)
@@ -343,7 +344,7 @@ fc_substitute_func (FcPattern *pattern, gpointer   data)
     }
 }
 
-void
+static void
 parse_ellipsis (ArgContext *arg_context,
 		const char *name,
 		const char *arg,
@@ -362,7 +363,7 @@ parse_ellipsis (ArgContext *arg_context,
   opt_ellipsize = value->value;
 }
 
-void
+static void
 parse_hinting (ArgContext *arg_context,
 	       const char *name,
 	       const char *arg,
@@ -423,6 +424,8 @@ parse_options (int argc, char *argv[])
       ARG_INT,      &opt_indent, NULL },
     { "runs",       "Render text this many times",
       ARG_INT,      &opt_runs, NULL },
+    { "pangorc",    "pangorc file to use (default is ./pangorc if available)",
+      ARG_STRING,   &opt_pangorc, NULL },
     { NULL, NULL, 0, NULL, NULL }
   };
 
@@ -488,6 +491,14 @@ parse_options (int argc, char *argv[])
   if (opt_markup &&
       !pango_parse_markup (text, -1, 0, NULL, NULL, NULL, &error))
     fail ("Cannot parse input as markup: %s", error->message);
+
+  /* Setup PANGO_RC_FILE
+   */
+  if (!opt_pangorc)
+    if (g_file_test ("./pangorc", G_FILE_TEST_IS_REGULAR))
+      opt_pangorc = "./pangorc";
+  if (opt_pangorc)
+    g_setenv ("PANGO_RC_FILE", opt_pangorc, TRUE);
 }
 
 void

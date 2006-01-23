@@ -1,6 +1,16 @@
 ## Process this file with automake to create Makefile.in.
 
-aliasdir = $(sysconfdir)/pango
+EXTRA_DIST=			\
+	viewer-win32.c		\
+	makefile.msc		\
+	HELLO.utf8		\
+	GLASS.utf8		\
+	dev-example.utf		\
+	muru.utf		\
+	syriac.utf		\
+	tibetan.utf
+
+CLEANFILES = pangorc
 
 INCLUDES =				\
 	-DG_DISABLE_DEPRECATED		\
@@ -12,11 +22,6 @@ INCLUDES =				\
 	$(CAIRO_CFLAGS)			\
 	$(FREETYPE_CFLAGS)		\
 	$(X_CFLAGS)
-
-###################################################
-
-CLEANFILES = pango.modules
-###################################################
 
 noinst_PROGRAMS =
 
@@ -94,34 +99,7 @@ cairosimple_LDADD =					\
 	$(CAIRO_LIBS)
 ###################################################
 
-if CROSS_COMPILING
-else
-all-local: pango.modules
-endif
+pangorc: $(srcdir)/../modules/pangorc
+	cp $< $@
 
-pango.modules: $(top_builddir)/pango/pango-querymodules
-	if find ../modules -name '*.so' | grep 'so' > /dev/null ; then \
-          echo "Writing a pango.modules file to use when running examples before installing Pango."; \
-	  (cd ../modules && \
-           $(top_builddir)/pango/pango-querymodules `find . -name '*.la' | grep -v \.libs | grep -v libpango` > ../examples/pango.modules ) ;\
-	else \
-          echo "No dynamic modules found; will use only static modules for not-installed example programs."; \
-	  touch pango.modules; \
-	fi
-
-EXTRA_DIST=			\
-	viewer-win32.c		\
-	pangoft2topgm.c         \
-	makefile.msc		\
-	HELLO.utf8		\
-	GLASS.utf8		\
-	dev-example.utf		\
-	muru.utf		\
-	syriac.utf		\
-	tibetan.utf		\
-	pangorc			\
-	pangox.aliases
-
-if HAVE_X
-alias_DATA = pangox.aliases
-endif
+$(noinst_PROGRAMS): pangorc
