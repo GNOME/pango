@@ -1,3 +1,8 @@
+2006-01-23  Behdad Esfahbod  <behdad@gnome.org>
+
+	* modules/indic/indic-fc.c: Draw an unknown glyph on missing glyphs,
+	like other modules do. (part of bug #326960, LingNing Zhang)
+
 2006-01-21  Behdad Esfahbod  <behdad@gnome.org>
 
 	* pango/pangocairo-fontmap.c (pango_cairo_context_get_font_options):
