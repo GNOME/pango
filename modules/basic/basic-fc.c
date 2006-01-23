@@ -335,6 +335,7 @@ basic_engine_shape (PangoEngineShape *engine,
   int n_chars;
   int i;
   const char *p;
+  int cluster = 0;
 
   g_return_if_fail (font != NULL);
   g_return_if_fail (text != NULL);
@@ -367,7 +368,6 @@ basic_engine_shape (PangoEngineShape *engine,
       PangoGlyph index;
       char buf[6];
       const char *input;
-      int cluster = 0;
 
       wc = g_utf8_get_char (p);
       input = p;
@@ -395,7 +395,8 @@ basic_engine_shape (PangoEngineShape *engine,
 	    }
 	  else
 	    {
-	      cluster = p - text;
+	      if (g_unichar_type (wc) != G_UNICODE_NON_SPACING_MARK)
+		cluster = p - text;
 	      
 	      pango_ot_buffer_add_glyph (buffer, index,
 					 unknown_property, cluster);

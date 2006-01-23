@@ -1,3 +1,11 @@
+2006-01-23  Behdad Esfahbod  <behdad@gnome.org>
+
+	* modules/basic/basic-fc.c: Set cluster only on base chars, like the
+	Arabic module does.
+
+	* modules/indic/indic-fc.c: Draw an unknown glyph on missing glyphs,
+	like other modules do. (part of bug #326960, LingNing Zhang)
+
 2006-01-22  Behdad Esfahbod  <behdad@gnome.org>
 
 	* docs/TEXT/coding-style: Added "Since:" in the doc example.

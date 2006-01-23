@@ -236,7 +236,7 @@ get_gpos_ruleset (FT_Face face, const PangoIndicInfo *indic_info)
 
       ruleset = pango_ot_ruleset_new (info);
 
-      if (1 && pango_ot_info_find_script (info, PANGO_OT_TABLE_GPOS,
+      if (pango_ot_info_find_script (info, PANGO_OT_TABLE_GPOS,
 				     indic_info->scriptTag, &script_index))
 	{
 	  maybe_add_GPOS_feature (ruleset, info, script_index, FT_MAKE_TAG ('b','l','w','m'), blwm);
@@ -253,7 +253,6 @@ get_gpos_ruleset (FT_Face face, const PangoIndicInfo *indic_info)
 
 static void
 set_glyphs (PangoFont      *font,
-	    FT_Face         face,
 	    const gunichar *wcs,
 	    gulong         *tags,
 	    glong           n_glyphs,
@@ -261,8 +260,11 @@ set_glyphs (PangoFont      *font,
 	    gboolean        process_zwj)
 {
   gint i;
+  PangoFcFont *fc_font;
 
-  g_assert (face);
+  g_assert (font);
+
+  fc_font = PANGO_FC_FONT (font);
 
   for (i = 0; i < n_glyphs; i += 1)
     {
@@ -272,9 +274,14 @@ set_glyphs (PangoFont      *font,
 	  (!process_zwj || wcs[i] != 0x200D))
 	glyph = 0;
       else
-	glyph = FT_Get_Char_Index (face, wcs[i]);
-      
-      pango_ot_buffer_add_glyph (buffer, glyph, tags[i], i);
+        {
+	  glyph = pango_fc_font_get_glyph (fc_font, wcs[i]);
+
+	  if (!glyph)
+	    glyph = pango_fc_font_get_unknown_glyph (fc_font, wcs[i]);
+
+          pango_ot_buffer_add_glyph (buffer, glyph, tags[i], i);
+	}
     }
 }
 
@@ -295,7 +302,7 @@ expand_text(const gchar *text, glong length, glong **offsets, glong *n_chars)
   p   = text;
   wco = wcs;
   oo  = *offsets;
-  for (i = 0; i < *n_chars; i += 1)
+  for (i = 0; i < *n_chars; i++)
     {
       *wco++ = g_utf8_get_char (p);
       *oo++  = p - text;
@@ -357,7 +364,7 @@ indic_engine_shape (PangoEngineShape *engine,
   pango_glyph_string_set_size (glyphs, n_glyphs);
   buffer = pango_ot_buffer_new (fc_font);
 
-  set_glyphs(font, face, wc_out, tags, n_glyphs, buffer,
+  set_glyphs(font, wc_out, tags, n_glyphs, buffer,
 	     (indic_info->classTable->scriptFlags & SF_PROCESS_ZWJ) != 0);
 
   /* do gsub processing */
