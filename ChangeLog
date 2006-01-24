@@ -1,5 +1,10 @@
 2006-01-24  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango/pangocairo-atsuifont.c: Change cwfont to cafont in a couple
+	places.
+
+2006-01-24  Behdad Esfahbod  <behdad@gnome.org>
+
 	* modules/indic/pango-indic-script.h: Removed, not used for quite a
 	while.
 

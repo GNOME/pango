@@ -71,13 +71,13 @@ static void
 pango_cairo_atsui_font_install (PangoCairoFont *font,
 				cairo_t        *cr)
 {
-  PangoCairoATSUIFont *cwfont = PANGO_CAIRO_ATSUI_FONT (font);
+  PangoCairoATSUIFont *cafont = PANGO_CAIRO_ATSUI_FONT (font);
 
   cairo_set_font_face (cr,
 		       pango_cairo_atsui_font_get_font_face (font));
 
-  cairo_set_font_matrix (cr, &cwfont->font_matrix);
-  cairo_set_font_options (cr, cwfont->options);
+  cairo_set_font_matrix (cr, &cafont->font_matrix);
+  cairo_set_font_options (cr, cafont->options);
 }
 
 static cairo_font_face_t *
