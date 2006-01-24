@@ -1,5 +1,10 @@
 2006-01-24  Behdad Esfahbod  <behdad@gnome.org>
 
+	* modules/indic/pango-indic-script.h: Removed, not used for quite a
+	while.
+
+2006-01-24  Behdad Esfahbod  <behdad@gnome.org>
+
 	* examples/pangoft2.aliases: Removed based on an old ChangeLog entry
 	saying:  Remove pangoft2.aliases from CVS/distribution; it is
 	no longer used. (#82736, Sven Neumann.)
