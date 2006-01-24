@@ -312,7 +312,7 @@ pango_layout_set_width (PangoLayout *layout,
  * 
  * Gets the width to which the lines of the #PangoLayout should wrap.
  * 
- * Return value: the width.
+ * Return value: the width, or -1 if no width set.
  **/
 int
 pango_layout_get_width (PangoLayout    *layout)

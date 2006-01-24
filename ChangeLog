@@ -1,5 +1,10 @@
 2006-01-24  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango/pangolayout.c (pango_layout_get_width): Improve docs to say
+	it may return -1.
+
+2006-01-24  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/pangocairo-atsuifont.c: Change cwfont to cafont in a couple
 	places.
 
