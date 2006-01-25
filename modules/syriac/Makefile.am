@@ -6,7 +6,6 @@ pangoft2libs = $(top_builddir)/pango/libpangoft2-$(PANGO_API_VERSION).la $(FREET
 INCLUDES = 				\
 	-DG_LOG_DOMAIN=\"Pango\"	\
 	-DPANGO_ENABLE_ENGINE		\
-	-DG_DISABLE_DEPRECATED		\
 	$(PANGO_DEBUG_FLAGS)		\
 	-I$(top_srcdir)			\
 	-I$(top_srcdir)/pango		\

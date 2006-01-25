@@ -21,7 +21,6 @@ INCLUDES =						\
 	-DSYSCONFDIR=\"$(sysconfdir)\"			\
 	-DLIBDIR=\"$(libdir)\"				\
 	-DMODULE_VERSION=\"$(PANGO_MODULE_VERSION)\"	\
-	-DG_DISABLE_DEPRECATED				\
 	-I$(top_srcdir)					\
 	$(PANGO_DEBUG_FLAGS)				\
 	$(GLIB_CFLAGS)					\

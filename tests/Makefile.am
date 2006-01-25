@@ -9,7 +9,6 @@ CLEANFILES = pangorc
 DISTCLEANFILES = all-unicode.txt runtests.log
 
 INCLUDES =					\
-	-DG_DISABLE_DEPRECATED			\
 	-I$(top_srcdir)				\
 	$(PANGO_DEBUG_FLAGS)			\
 	$(GLIB_CFLAGS)				\

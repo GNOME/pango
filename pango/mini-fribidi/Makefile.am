@@ -3,7 +3,6 @@
 INCLUDES = 					\
 	-DSYSCONFDIR=\"$(sysconfdir)\" 		\
 	-DLIBDIR=\"$(libdir)\" 			\
-	-DG_DISABLE_DEPRECATED			\
 	$(PANGO_DEBUG_FLAGS)			\
 	-I$(top_srcdir)				\
 	$(GLIB_CFLAGS)

@@ -13,7 +13,6 @@ EXTRA_DIST=			\
 CLEANFILES = pangorc
 
 INCLUDES =				\
-	-DG_DISABLE_DEPRECATED		\
 	-DPANGO_DISABLE_DEPRECATED	\
 	-I$(top_srcdir)			\
 	$(PANGO_DEBUG_FLAGS)		\
