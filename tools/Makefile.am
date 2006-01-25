@@ -3,7 +3,6 @@
 INCLUDES =					\
 	-I$(top_srcdir)				\
 	$(GLIB_CFLAGS)				\
-	-DG_DISABLE_DEPRECATED			\
 	-DPANGO_DISABLE_DEPRECATED		\
 	$(PANGO_DEBUG_FLAGS)
 

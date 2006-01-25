@@ -328,6 +328,13 @@ PKG_CHECK_MODULES(GLIB, $GLIB_MODULES, :,
 # necesary defines for thread-safety.
 GLIB_CFLAGS=`$PKG_CONFIG --cflags $GLIB_MODULES gthread-2.0`
 
+# See if it's safe to turn G_DISABLE_DEPRECATED on.
+GLIB_VERSION_MAJOR_MINOR=`$PKG_CONFIG --modversion glib-2.0 | sed "s/\.@<:@^.@:>@*\$//"`
+GLIB_REQUIRED_VERSION_MAJOR_MINOR=`echo $GLIB_REQUIRED_VERSION | sed "s/\.@<:@^.@:>@*\$//"`
+if test "x$GLIB_VERSION_MAJOR_MINOR" = "x$GLIB_REQUIRED_VERSION_MAJOR_MINOR"; then
+  GLIB_CFLAGS="-DG_DISABLE_DEPRECATED $GLIB_CFLAGS"
+fi
+
 #
 # The OpenType test programs aren't particularly portable
 #

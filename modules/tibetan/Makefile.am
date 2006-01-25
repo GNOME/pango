@@ -3,12 +3,12 @@
 pangolibs = $(top_builddir)/pango/libpango-$(PANGO_API_VERSION).la $(GLIB_LIBS)
 pangoft2libs = $(top_builddir)/pango/libpangoft2-$(PANGO_API_VERSION).la $(FREETYPE_LIBS) $(pangolibs)
 
-INCLUDES =			\
-	-DPANGO_ENABLE_ENGINE	\
-	-DG_DISABLE_DEPRECATED	\
-	$(PANGO_DEBUG_FLAGS)	\
-	-I$(top_srcdir)		\
-	-I$(top_srcdir)/pango	\
+INCLUDES =				\
+	-DG_LOG_DOMAIN=\"Pango\"	\
+	-DPANGO_ENABLE_ENGINE		\
+	$(PANGO_DEBUG_FLAGS)		\
+	-I$(top_srcdir)			\
+	-I$(top_srcdir)/pango		\
 	$(GLIB_CFLAGS)
 
 moduledir = $(libdir)/pango/$(PANGO_MODULE_VERSION)/modules

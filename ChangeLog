@@ -1,3 +1,10 @@
+2006-01-25  Behdad Esfahbod  <behdad@gnome.org>
+
+	* configure.in: If major.minor of required and available glib versions
+	are the same, add -DG_DISABLE_DEPRECATED to GLIB_CFLAGS. (bug #328617)
+
+	* */Makefile.am: Remove hardcoded -DG_DISABLE_DEPRECATED.
+
 2006-01-24  Behdad Esfahbod  <behdad@gnome.org>
 
 	* pango/pangolayout.c (pango_layout_get_width): Improve docs to say

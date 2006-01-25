@@ -10,7 +10,6 @@ pangowin32libs = $(top_builddir)/pango/libpangowin32-$(PANGO_API_VERSION).la $(p
 INCLUDES = 				\
 	-DG_LOG_DOMAIN=\"Pango\"	\
 	-DPANGO_ENABLE_ENGINE		\
-	-DG_DISABLE_DEPRECATED		\
 	$(PANGO_DEBUG_FLAGS)		\
 	-I$(top_srcdir)			\
 	-I$(top_srcdir)/pango		\

@@ -3,7 +3,6 @@
 aliasdir = $(sysconfdir)/pango
 
 INCLUDES =				\
-	-DG_DISABLE_DEPRECATED		\
 	-DPANGO_DISABLE_DEPRECATED	\
 	-I$(top_srcdir)			\
 	$(PANGO_DEBUG_FLAGS)		\
