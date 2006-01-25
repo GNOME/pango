@@ -171,6 +171,7 @@ static void
 pango_atsui_family_class_init (PangoFontFamilyClass *class)
 {
   GObjectClass *object_class = (GObjectClass *)class;
+  int i;
   
   pango_atsui_family_parent_class = g_type_class_peek_parent (class);
 

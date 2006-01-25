@@ -1,3 +1,8 @@
+2006-01-25  Behdad Esfahbod  <behdad@gnome.org>
+
+	* pango/pangoatsui-fontmap.c (pango_atsui_family_class_init):  Declare
+	int i! (bug #328632)
+
 2006-01-24  Behdad Esfahbod  <behdad@gnome.org>
 
 	* pango/pangolayout.c (pango_layout_get_width): Improve docs to say
