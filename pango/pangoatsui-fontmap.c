@@ -22,8 +22,10 @@
 
 #include <config.h>
 
+#include "pango-fontmap.h"
 #include "pangoatsui-private.h"
 #include "pango-utils.h"
+#include "modules.h"
 
 #import <Cocoa/Cocoa.h>
 

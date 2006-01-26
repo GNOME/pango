@@ -1,5 +1,9 @@
 2006-01-26  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango/pangoatsui-fontmap.c: #include <modules.h>. (bug #328632)
+
+2006-01-26  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/modules.h, pango/Makefile.am:  Fix more ATSUI stuff in build
 	infrastructure.  Sigh... (bug #328632)
 
