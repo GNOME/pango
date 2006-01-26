@@ -192,6 +192,8 @@ libpangoft2_1_0_la_DEPENDENCIES =		\
 	libpango-$(PANGO_API_VERSION).la	\
 	$(INCLUDED_FC_MODULES)
 libpangoft2_1_0_la_SOURCES =   	\
+	modules.h		\
+	module-defs-fc.c	\
 	pangofc-font.c	   	\
 	pangofc-fontmap.c	\
 	pangofc-decoder.c	\
@@ -200,8 +202,7 @@ libpangoft2_1_0_la_SOURCES =   	\
 	pangoft2.c		\
 	pangoft2-private.h	\
 	pangoft2-fontmap.c	\
-	pangoft2-render.c	\
-	module-defs-fc.c
+	pangoft2-render.c
 
 if OS_WIN32
 libpangoft2_1_0_la_LDFLAGS += -export-symbols $(srcdir)/pangoft2.def -Wl,pangoft2-win32-res.o
@@ -280,13 +281,15 @@ endif
 
 if HAVE_CAIRO_ATSUI
 libpangocairo_1_0_la_SOURCES += \
+	modules.h		\
+	module-defs-atsui.c	\
 	pangoatsui.h		\
 	pangoatsui.c		\
 	pangoatsui-fontmap.c	\
 	pangocairo-atsui.h	\
 	pangocairo-atsuifont.c	\
 	pangocairo-atsuifont.h	\
-	pangocairo-atsuifontmap.c 
+	pangocairo-atsuifontmap.c
 
 libpangocairo_1_0_la_CFLAGS = -xobjective-c
 endif
@@ -308,12 +311,13 @@ libpangowin32_1_0_la_DEPENDENCIES =		\
 	libpango-$(PANGO_API_VERSION).la	\
 	$(INCLUDED_WIN32_MODULES)
 libpangowin32_1_0_la_SOURCES =	\
+	modules.h		\
+	module-defs-win32.c	\
 	pangowin32.h		\
 	pangowin32.c		\
 	pangowin32-private.h	\
 	pangowin32-fontcache.c	\
-	pangowin32-fontmap.c	\
-	module-defs-win32.c
+	pangowin32-fontmap.c
 
 if OS_WIN32
 libpangowin32_1_0_la_LDFLAGS += -export-symbols $(srcdir)/pangowin32.def -Wl,pangowin32-win32-res.o
@@ -407,9 +411,9 @@ pango_querymodules_LDADD += libpango-$(PANGO_API_VERSION).la $(GLIB_LIBS)
 
 EXTRA_DIST =					\
 	pango-enum-types.h			\
+	module-defs.h				\
 	module-defs-fc.c.win32			\
 	module-defs-win32.c.win32		\
-	module-defs.h				\
 	pango.def				\
 	pangocairo.def				\
 	pangowin32.def				\

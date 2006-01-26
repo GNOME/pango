@@ -28,5 +28,6 @@
 extern PangoIncludedModule _pango_included_x_modules[];
 extern PangoIncludedModule _pango_included_fc_modules[];
 extern PangoIncludedModule _pango_included_win32_modules[];
+extern PangoIncludedModule _pango_included_atsui_modules[];
 
 #endif /* __MODULES_H__ */
