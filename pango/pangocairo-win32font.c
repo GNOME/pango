@@ -103,7 +103,7 @@ pango_cairo_win32_font_get_font_face (PangoCairoFont *font)
        * we can't proceed at that point
        */
       if (!cwfont->font_face)
-	g_error ("Unable create Cairo font");
+	g_error ("Unable to create Win32 cairo font face.\nThis means out of memory or a cairo/fontconfig/FreeType bug");
     }
   
   return cwfont->font_face;
@@ -128,7 +128,7 @@ pango_cairo_win32_font_get_scaled_font (PangoCairoFont *font)
        * we can't proceed at that point
        */
       if (!cwfont->scaled_font)
-	g_error ("Unable create Cairo font");
+	g_error ("Unable to create Win32 cairo scaled font.\nThis means out of memory or a cairo/fontconfig/FreeType bug");
     }
   
   return cwfont->scaled_font;

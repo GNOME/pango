@@ -1,3 +1,10 @@
+2006-01-27  Behdad Esfahbod  <behdad@gnome.org>
+
+	* modules/Makefile.am: Remove pango.modules on uninstall. (bug #328869)
+
+	* pango/pango-fontmap.c, pango/pangocairo-*font.c: Better error
+	messages.
+
 2006-01-26  Behdad Esfahbod  <behdad@gnome.org>
 
 	* pango/pangoatsui-fontmap.c: #include <modules.h>. (bug #328632)

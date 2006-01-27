@@ -221,10 +221,7 @@ pango_font_map_real_load_fontset (PangoFontMap               *fontmap,
   /* Everything failed, we are screwed, there is no way to continue
    */
   if (pango_fontset_simple_size (fonts) == 0)
-    {
-      g_warning ("All font failbacks failed!!!!");
-      exit (1);
-    }
+      g_error ("All font fallbacks failed!!!!");
 
   return PANGO_FONTSET (fonts);
 }

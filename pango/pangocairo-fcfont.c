@@ -137,7 +137,7 @@ pango_cairo_fc_font_get_font_face (PangoCairoFont *font)
        * we can't proceed at that point
        */
       if (!cffont->font_face)
-	g_error ("Unable create Cairo font name");
+	g_error ("Unable to create FT2 cairo font face.\nThis means out of memory or a cairo/fontconfig/FreeType bug");
     }
   
   return cffont->font_face;
@@ -163,7 +163,7 @@ pango_cairo_fc_font_get_scaled_font (PangoCairoFont *font)
        * we can't proceed at that point
        */
       if (!cffont->scaled_font)
-	g_error ("Unable create Cairo font");
+	g_error ("Unable to create FT2 cairo scaled font.\nThis means out of memory or a cairo/fontconfig/FreeType bug");
     }
   
   return cffont->scaled_font;

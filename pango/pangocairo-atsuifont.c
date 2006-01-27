@@ -88,6 +88,12 @@ pango_cairo_atsui_font_get_font_face (PangoCairoFont *font)
   if (!cafont->font_face)
     {
       cafont->font_face = cairo_atsui_font_face_create_for_atsu_font_id (cafont->font_id);
+
+      /* Failure of the above should only occur for out of memory,
+       * we can't proceed at that point
+       */
+      if (!cafont->font_face)
+	g_error ("Unable to create ATSUI cairo font face.\nThis means out of memory or a cairo/fontconfig/FreeType bug");
     }
 
   return cafont->font_face;
@@ -112,7 +118,7 @@ pango_cairo_atsui_font_get_scaled_font (PangoCairoFont *font)
        * we can't proceed at that point
        */
       if (!cafont->scaled_font)
-	g_error ("Unable create Cairo font");
+	g_error ("Unable to create ATSUI cairo scaled font.\nThis means out of memory or a cairo/fontconfig/FreeType bug");
     }
   
   return cafont->scaled_font;
