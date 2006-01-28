@@ -30,13 +30,13 @@ typedef struct _PangoTabArray PangoTabArray;
 
 typedef enum
 {
-  PANGO_TAB_LEFT
+  PANGO_TAB_LEFT,
+  PANGO_TAB_RIGHT,
+  PANGO_TAB_CENTER
 
   /* These are not supported now, but may be in the
    * future.
    *
-   *  PANGO_TAB_RIGHT,
-   *  PANGO_TAB_CENTER,
    *  PANGO_TAB_NUMERIC
    */
 } PangoTabAlign;

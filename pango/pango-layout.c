@@ -109,6 +109,8 @@ struct _PangoLayoutLinePrivate
 {
   PangoLayoutLine line;
   guint ref_count;
+  PangoGlyphString *last_tab_glyph;
+  PangoTabAlign last_tab_alignment;
 };
 
 struct _PangoLayoutClass
@@ -2495,11 +2497,8 @@ ensure_tab_width (PangoLayout *layout)
     }
 }
 
-/* For now we only need the tab position, we assume
- * all tabs are left-aligned.
- */
 static int
-get_tab_pos (PangoLayout *layout, int index)
+get_tab_pos (PangoLayout *layout, int index, PangoTabAlign *alignment)
 {
   gint n_tabs;
   gboolean in_pixels;
@@ -2519,7 +2518,7 @@ get_tab_pos (PangoLayout *layout, int index)
     {
       gint pos = 0;
 
-      pango_tab_array_get_tab (layout->tabs, index, NULL, &pos);
+      pango_tab_array_get_tab (layout->tabs, index, alignment, &pos);
 
       if (in_pixels)
         return pos * PANGO_SCALE;
@@ -2536,10 +2535,10 @@ get_tab_pos (PangoLayout *layout, int index)
       int next_to_last_pos = 0;
       int tab_width;
       
-      pango_tab_array_get_tab (layout->tabs, n_tabs - 1, NULL, &last_pos);
+      pango_tab_array_get_tab (layout->tabs, n_tabs - 1, alignment, &last_pos);
 
       if (n_tabs > 1)
-        pango_tab_array_get_tab (layout->tabs, n_tabs - 2, NULL, &next_to_last_pos);
+        pango_tab_array_get_tab (layout->tabs, n_tabs - 2, alignment, &next_to_last_pos);
       else
         next_to_last_pos = 0;
 
@@ -2597,6 +2596,8 @@ shape_tab (PangoLayoutLine  *line,
 {
   int i;
 
+  PangoTabAlign tab_alignment;
+
   int current_width = line_width (line);
 
   pango_glyph_string_set_size (glyphs, 1);
@@ -2610,13 +2611,16 @@ shape_tab (PangoLayoutLine  *line,
 
   for (i=0;;i++)
     {
-      int tab_pos = get_tab_pos (line->layout, i);
+      int tab_pos = get_tab_pos (line->layout, i, &tab_alignment);
       if (tab_pos > current_width)
 	{
 	  glyphs->glyphs[0].geometry.width = tab_pos - current_width;
 	  break;
 	}
     }
+  PangoLayoutLinePrivate *private = (PangoLayoutLinePrivate *)line;
+  private->last_tab_glyph = glyphs;
+  private->last_tab_alignment =  tab_alignment;
 }
 
 static inline gboolean
@@ -2689,6 +2693,16 @@ struct _ParaBreakState
 				 * to the remaining portion of the first item */
 };
 
+static int
+glyphstring_width (PangoGlyphString* glyphs)
+{
+  int i;
+  int width = 0;
+  for (i=0; i < glyphs->num_glyphs; i++)
+    width += glyphs->glyphs[i].geometry.width;
+  return width;
+}
+
 static PangoGlyphString *
 shape_run (PangoLayoutLine *line,
 	   ParaBreakState  *state,
@@ -2701,12 +2715,31 @@ shape_run (PangoLayoutLine *line,
     shape_tab (line, glyphs);
   else
     {
+      PangoLayoutLinePrivate *private = (PangoLayoutLinePrivate *)line;
+      
+      g_return_val_if_fail (line != NULL, glyphs);
+      
       if (state->properties.shape_set)
 	imposed_shape (layout->text + item->offset, item->num_chars,
 		       state->properties.shape_ink_rect, state->properties.shape_logical_rect,
 		       glyphs);
       else 
 	pango_shape (layout->text + item->offset, item->length, &item->analysis, glyphs);
+
+	if (private->last_tab_glyph != NULL)
+	{
+	if (private->last_tab_glyph->num_glyphs > 0)
+	{
+	  int w = private->last_tab_glyph->glyphs[0].geometry.width;
+	  if (private->last_tab_alignment == PANGO_TAB_RIGHT)
+	    w -= glyphstring_width (glyphs);
+	  else if (private->last_tab_alignment == PANGO_TAB_CENTER)
+	    w -= glyphstring_width (glyphs) / 2;
+	  
+	  if (w < 0) w = 0;
+	  private->last_tab_glyph->glyphs[0].geometry.width = w;
+	}
+	}
 
       if (state->properties.letter_spacing)
 	{
@@ -4034,6 +4067,8 @@ pango_layout_line_new (PangoLayout *layout)
   private->line.layout = layout;
   private->line.runs = 0;
   private->line.length = 0;
+  private->last_tab_glyph = NULL;
+  private->last_tab_alignment = PANGO_TAB_LEFT;
 
   /* Note that we leave start_index, resolved_dir, and is_paragraph_start
    *  uninitialized */

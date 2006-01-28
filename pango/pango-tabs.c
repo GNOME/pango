@@ -257,13 +257,12 @@ pango_tab_array_resize (PangoTabArray *tab_array,
 /**
  * pango_tab_array_set_tab:
  * @tab_array: a #PangoTabArray
- * @tab_index: the index of a tab stop
+ * @tab_index: the index of a tab stop, starting from zero
  * @alignment: tab alignment
  * @location: tab location in Pango units
  *
- * Sets the alignment and location of a tab stop.
- * @alignment must always be #PANGO_TAB_LEFT in the current
- * implementation.
+ * Sets the alignment and location of a tab stop.  Resizes the
+ * tab array if needed.
  * 
  **/
 void
@@ -274,7 +273,6 @@ pango_tab_array_set_tab  (PangoTabArray *tab_array,
 {
   g_return_if_fail (tab_array != NULL);
   g_return_if_fail (tab_index >= 0);
-  g_return_if_fail (alignment == PANGO_TAB_LEFT);
   g_return_if_fail (location >= 0);
 
   if (tab_index >= tab_array->size)

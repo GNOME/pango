@@ -1,5 +1,19 @@
 2006-01-28  Behdad Esfahbod  <behdad@gnome.org>
 
+	Implement other tab alignments. Bug #325547, Itai Bar-Haim.
+
+	* docs/tmpl/tab-stops.sgml: Documented new tab alignment enum vals.
+
+	* pango/pango-tabs.h, pango/pango-tabs.c: Added support for tab
+	alignments PANGO_TAB_RIGHT and PANGO_TAB_CENTER.
+
+	* examples/renderdemo.h, examples/renderdemo.c: Added support for
+	--tab-spec.
+
+	* examples/GLASS.utf8, examples/HELLO.utf8: Cleaned up tabs.
+
+2006-01-28  Behdad Esfahbod  <behdad@gnome.org>
+
 	* doc/tmpl/opentype.sgml: Document PangoOTBuffer and PangoOTGlyph.
 
 	* pango/pango-ot-buffer.c, pango/pango-ot-info.c,
