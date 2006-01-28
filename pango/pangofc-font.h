@@ -58,7 +58,7 @@ typedef struct _PangoFcFontClass PangoFcFontClass;
 /**
  * PangoFcFont:
  * 
- * #PangoFcFontMap is a base class for font implementations
+ * #PangoFcFont is a base class for font implementations
  * using the FontConfig and FreeType libraries and is used in
  * conjunction with #PangoFcFontMap. When deriving from this
  * class, you need to implement all of its virtual functions
