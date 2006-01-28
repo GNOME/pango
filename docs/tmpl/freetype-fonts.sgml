@@ -91,8 +91,6 @@ Function type for doing final config tweaking on prepared FcPatterns.
 @dpi_x: 
 @dpi_y: 
 @Returns: 
-<!-- # Unused Parameters # -->
-@dpi: 
 
 
 <!-- ##### FUNCTION pango_ft2_render ##### -->

@@ -93,9 +93,10 @@ pango_ot_ruleset_finalize (GObject *object)
 /**
  * pango_ot_ruleset_new:
  * @info: a #PangoOTInfo.
- * @returns: a new #PangoOTRuleset.
  *
  * Creates a new #PangoOTRuleset for the given OpenType info.
+ *
+ * Return value: a new #PangoOTRuleset.
  **/
 PangoOTRuleset *
 pango_ot_ruleset_new (PangoOTInfo *info)
@@ -140,6 +141,9 @@ pango_ot_ruleset_add_feature (PangoOTRuleset   *ruleset,
  * pango_ot_ruleset_substitute:
  * @ruleset: a #PangoOTRuleset.
  * @buffer: a #PangoOTBuffer.
+ *
+ * Performs the OpenType GSUB substitution on @buffer using the features
+ * in @ruleset
  *
  * Since: 1.4
  **/
@@ -193,6 +197,9 @@ pango_ot_ruleset_substitute  (PangoOTRuleset   *ruleset,
  * pango_ot_ruleset_position:
  * @ruleset: a #PangoOTRuleset.
  * @buffer: a #PangoOTBuffer.
+ *
+ * Performs the OpenType GPOS positionoing on @buffer using the features
+ * in @ruleset
  *
  * Since: 1.4
  **/

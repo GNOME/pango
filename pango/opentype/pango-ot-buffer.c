@@ -28,6 +28,10 @@
  * pango_ot_buffer_new
  * @font: a #PangoFcFont
  *
+ * Creates a new #PangoOTBuffer for the given OpenType font.
+ *
+ * Return value: the new #PangoOTBuffer
+ *
  * Since: 1.4
  **/ 
 PangoOTBuffer *
@@ -59,6 +63,8 @@ pango_ot_buffer_new (PangoFcFont *font)
  * pango_ot_buffer_destroy
  * @buffer: a #PangoOTBuffer
  *
+ * Destroys a #PangoOTBuffer and free all associated memory.
+ *
  * Since: 1.4
  **/ 
 void
@@ -73,6 +79,8 @@ pango_ot_buffer_destroy (PangoOTBuffer *buffer)
  * pango_ot_buffer_clear
  * @buffer: a #PangoOTBuffer
  *
+ * Empties a #PangoOTBuffer, make it ready to add glyphs to.
+ *
  * Since: 1.4
  **/ 
 void
@@ -85,27 +93,33 @@ pango_ot_buffer_clear (PangoOTBuffer *buffer)
 /**
  * pango_ot_buffer_add_glyph
  * @buffer: a #PangoOTBuffer
- * @glyph_index:
- * @properties:
- * @cluster: 
+ * @glyph: the glyph index to add, like a #PangoGlyph
+ * @properties: the glyph properties
+ * @cluster: the cluster that this glyph belongs to
+ *
+ * Appends a glyph to a #PangoOTBuffer, with @properties identifying which
+ * features should be applied on this glyph.  See pango_ruleset_add_feature().
  *
  * Since: 1.4
  **/ 
 void
 pango_ot_buffer_add_glyph (PangoOTBuffer *buffer,
-			   guint          glyph_index,
+			   guint          glyph,
 			   guint          properties,
 			   guint          cluster)
 {
   otl_buffer_add_glyph (buffer->buffer,
-			glyph_index, properties, cluster);
+			glyph, properties, cluster);
 
 }
 
 /**
  * pango_ot_buffer_set_rtl
  * @buffer: a #PangoOTBuffer
- * @rtl: %TRUE for right-to-left 
+ * @rtl: %TRUE for right-to-left text
+ *
+ * Sets whether glyphs will be rendered right-to-left.  This setting
+ * is needed for proper horizontal positioning of right-to-left scripts.
  *
  * Since: 1.4
  **/ 
@@ -118,7 +132,7 @@ pango_ot_buffer_set_rtl (PangoOTBuffer *buffer,
 }
 
 /**
- * pango_ot_buffer_set_zero_width_marks:
+ * pango_ot_buffer_set_zero_width_marks
  * @buffer: a #PangoOTBuffer
  * @zero_width_marks: %TRUE if characters with a mark class should
  *  be forced to zero width.
@@ -140,8 +154,12 @@ pango_ot_buffer_set_zero_width_marks (PangoOTBuffer     *buffer,
 /**
  * pango_ot_buffer_get_glyphs
  * @buffer: a #PangoOTBuffer
- * @glyph: 
- * @n_glyphs:
+ * @glyphs: location to store the array of glyphs, or %NULL
+ * @n_glyphs: location to store the number of glyphs, or %NULL
+ *
+ * Gets the glyph array contained in a #PangoOTBuffer.  The glyphs are
+ * owned by the buffer and should not be freed, and are only valid as long
+ * as buffer is not modified.
  *
  * Since: 1.4
  **/ 
@@ -251,6 +269,10 @@ apply_gpos_rtl (PangoGlyphString *glyphs,
  * pango_ot_buffer_output
  * @buffer: a #PangoOTBuffer
  * @glyphs: a #PangoGlyphString
+ *
+ * Exports the glyphs in a #PangoOTBuffer into a #PangoGlyphString.  This is
+ * typically used after the OpenType layout processing is over, to convert the
+ * resulting glyphs into a generic Pango glyph string.
  *
  * Since: 1.4
  **/ 

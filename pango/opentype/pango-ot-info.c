@@ -108,10 +108,11 @@ pango_ot_info_finalizer (void *object)
 /**
  * pango_ot_info_get:
  * @face: a #FT_Face.
- * @returns: the #PangoOTInfo for @face. This object will
- *   have the same lifetime as FT_Face.
  * 
  * Returns the #PangoOTInfo structure for the given FreeType font.
+ *
+ * Return value: the #PangoOTInfo for @face. This object will have
+ * the same lifetime as @face.
  *
  * Since: 1.2
  **/
@@ -399,9 +400,10 @@ get_tables (PangoOTInfo      *info,
  * @table_type: the table type to obtain information about.
  * @script_tag: the tag of the script to find.
  * @script_index: location to store the index of the script, or %NULL.
- * @returns: %TRUE if the script was found.
  * 
  * Finds the index of a script.
+ *
+ * Return value: %TRUE if the script was found.
  **/
 gboolean 
 pango_ot_info_find_script (PangoOTInfo      *info,
@@ -440,9 +442,10 @@ pango_ot_info_find_script (PangoOTInfo      *info,
  * @language_index: location to store the index of the language, or %NULL.
  * @required_feature_index: location to store the required feature index of 
  *    the language, or %NULL.
- * @returns: %TRUE if the language was found.
  * 
  * Finds the index of a language and its required feature index.  
+ *
+ * Return value: %TRUE if the language was found.
  **/
 gboolean
 pango_ot_info_find_language (PangoOTInfo      *info,
@@ -489,9 +492,10 @@ pango_ot_info_find_language (PangoOTInfo      *info,
  * @language_index: the index of the language whose features are searched,
  *     or 0xffff to use the default language of the script.
  * @feature_index: location to store the index of the feature, or %NULL. 
- * @returns: %TRUE if the feature was found.
  * 
  * Finds the index of a feature.
+ *
+ * Return value: %TRUE if the feature was found.
  **/
 gboolean
 pango_ot_info_find_feature  (PangoOTInfo      *info,
@@ -545,10 +549,11 @@ pango_ot_info_find_feature  (PangoOTInfo      *info,
  * pango_ot_info_list_scripts:
  * @info: a #PangoOTInfo.
  * @table_type: the table type to obtain information about.
- * @returns: a newly-allocated array containing the tags of the
- *   available scripts.
  *
  * Obtains the list of available scripts. 
+ *
+ * Return value: a newly-allocated array containing the tags of the
+ *   available scripts.
  **/
 PangoOTTag *
 pango_ot_info_list_scripts (PangoOTInfo      *info,
@@ -579,10 +584,11 @@ pango_ot_info_list_scripts (PangoOTInfo      *info,
  * @table_type: the table type to obtain information about.
  * @script_index: the index of the script to list languages for.
  * @language_tag: unused parameter.
- * @returns: a newly-allocated array containing the tags of the
- *   available languages.
  * 
  * Obtains the list of available languages for a given script.
+ *
+ * Return value: a newly-allocated array containing the tags of the
+ *   available languages.
  **/ 
 PangoOTTag *
 pango_ot_info_list_languages (PangoOTInfo      *info,
@@ -622,10 +628,11 @@ pango_ot_info_list_languages (PangoOTInfo      *info,
  * @script_index: the index of the script to obtain information about. 
  * @language_index: the indes of the language to list features for, or
  *     0xffff, to list features for the default language of the script.
- * @returns: a newly-allocated array containing the tags of the available
- *    features. 
  *
  * Obtains the list of features for the given language of the given script.
+ *
+ * Return value: a newly-allocated array containing the tags of the
+ * available features. 
  **/
 PangoOTTag *
 pango_ot_info_list_features  (PangoOTInfo      *info,

@@ -1,5 +1,12 @@
 2006-01-28  Behdad Esfahbod  <behdad@gnome.org>
 
+	* doc/tmpl/opentype.sgml: Document PangoOTBuffer and PangoOTGlyph.
+
+	* pango/opentype/pango-ot-buffer.c, pango/opentype/pango-ot-info.c,
+	pango/opentype/pango-ot-ruleset.c: Document remaining symbols.
+
+2006-01-28  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/pangofc-font.h, pango/pangoft2-render.c, pango/pangowin32.c,
 	pango/pangoxft-render.c, docs/tmpl/xft-fonts.sgml: Documentation
 	improvements.
