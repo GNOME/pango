@@ -24,8 +24,9 @@
 
 #include <glib-object.h>
 
-#include <pango/pango-ot.h>
-#include "ftxopen.h"
+#include "pango-ot.h"
+#include "opentype/ftglue.h"
+#include "opentype/ftxopen.h"
 
 #ifdef __cplusplus
 extern "C" {

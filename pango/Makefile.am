@@ -181,14 +181,14 @@ endif
 
 libpangoft2_1_0_la_LDFLAGS = $(LIBRARY_LIBTOOL_OPTIONS)
 libpangoft2_1_0_la_LIBADD =			\
-	opentype/libpango-ot.la			\
+	opentype/libmini-harfbuzz.la		\
 	libpango-$(PANGO_API_VERSION).la	\
 	$(INCLUDED_FC_MODULES)			\
 	$(GLIB_LIBS)				\
 	$(FREETYPE_LIBS)			\
 	$(libm)
 libpangoft2_1_0_la_DEPENDENCIES =		\
-	opentype/libpango-ot.la			\
+	opentype/libmini-harfbuzz.la		\
 	libpango-$(PANGO_API_VERSION).la	\
 	$(INCLUDED_FC_MODULES)
 libpangoft2_1_0_la_SOURCES =   	\
@@ -202,7 +202,12 @@ libpangoft2_1_0_la_SOURCES =   	\
 	pangoft2.c		\
 	pangoft2-private.h	\
 	pangoft2-fontmap.c	\
-	pangoft2-render.c
+	pangoft2-render.c	\
+	pango-ot-private.h	\
+	pango-ot-buffer.c	\
+	pango-ot-info.c		\
+	pango-ot-ruleset.c
+
 
 if OS_WIN32
 libpangoft2_1_0_la_LDFLAGS += -export-symbols $(srcdir)/pangoft2.def -Wl,pangoft2-win32-res.o

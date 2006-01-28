@@ -30,7 +30,7 @@
 
 #include <glib/gstdio.h>
 
-#include <mini-fribidi/fribidi.h>
+#include "mini-fribidi/fribidi.h"
 
 #ifndef HAVE_FLOCKFILE
 #  define flockfile(f) (void)1

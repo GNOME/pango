@@ -43,7 +43,7 @@ typedef enum
   PANGO_OT_TABLE_GPOS
 } PangoOTTableType;
 
-/* Note that this much match OTLGlyphItem */
+/* Note that this must match OTLGlyphItem */
 struct _PangoOTGlyph
 {
   guint    glyph;

@@ -21,9 +21,8 @@
 
 #include <config.h>
 
-#include <pango/pango-ot.h>
 #include "pango-ot-private.h"
-#include "../pango-utils.h"
+#include "pango-utils.h"
 
 typedef struct _PangoOTRule PangoOTRule;
 

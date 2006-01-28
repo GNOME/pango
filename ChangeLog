@@ -1,5 +1,13 @@
 2006-01-28  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango/opentype/pango-ot-*: Removed.
+
+	* pango/pango-ot-*: Added.
+
+	* pango/Makefile.am, pango/opentype/Makefile.am: Adjusted.
+
+2006-01-28  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/pangofc-font.h, pango/pangoft2-render.c, pango/pangowin32.c,
 	pango/pangoxft-render.c, docs/tmpl/xft-fonts.sgml,
 	docs/tmp/atsui-fonts.sgml: Documentation improvements.
