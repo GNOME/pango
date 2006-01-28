@@ -1,3 +1,10 @@
+2006-01-28  Behdad Esfahbod  <behdad@gnome.org>
+
+	* configure.in: Use AC_HELP_STRING everywhere. Bump required version
+	to 2.56.
+
+	* doc/tmpl/pango-renderer.sgml (PANGO_TYPE_RENDER_PART): Document it.
+
 2006-01-27  Behdad Esfahbod  <behdad@gnome.org>
 
 	* modules/Makefile.am: Remove pango.modules on uninstall. (bug #328869)

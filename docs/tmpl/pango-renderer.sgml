@@ -37,7 +37,7 @@ destinations can be created.
 
 <!-- ##### MACRO PANGO_TYPE_RENDER_PART ##### -->
 <para>
-
+The #GObject type for #PangoRenderPart.
 </para>
 
 
