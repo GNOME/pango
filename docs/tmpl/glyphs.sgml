@@ -177,8 +177,6 @@ horizontal origin.
 
 @matrix: 
 @new_matrix: 
-<!-- # Unused Parameters # -->
-@new: 
 
 
 <!-- ##### FUNCTION pango_matrix_get_font_scale_factor ##### -->

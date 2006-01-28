@@ -130,8 +130,6 @@ The #GObject type for #PangoRenderPart.
 @y2: 
 @x12: 
 @x22: 
-<!-- # Unused Parameters # -->
-@y1: 
 
 
 <!-- ##### FUNCTION pango_renderer_draw_glyph ##### -->

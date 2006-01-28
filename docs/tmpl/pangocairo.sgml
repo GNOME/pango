@@ -168,9 +168,6 @@ int main (int argc, char **argv)
 
 @fontmap: 
 @dpi: 
-<!-- # Unused Parameters # -->
-@dpi_x: 
-@dpi_y: 
 
 
 <!-- ##### FUNCTION pango_cairo_font_map_get_resolution ##### -->

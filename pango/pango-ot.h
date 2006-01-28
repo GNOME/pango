@@ -91,7 +91,7 @@ void           pango_ot_buffer_clear      (PangoOTBuffer     *buffer);
 void           pango_ot_buffer_set_rtl    (PangoOTBuffer     *buffer,
 					   gboolean           rtl);
 void           pango_ot_buffer_add_glyph  (PangoOTBuffer     *buffer,
-					   guint              glyph_index,
+					   guint              glyph,
 					   guint              properties,
 					   guint              cluster);
 void           pango_ot_buffer_get_glyphs (PangoOTBuffer     *buffer,

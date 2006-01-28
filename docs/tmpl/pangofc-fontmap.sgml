@@ -78,8 +78,6 @@ Fontconfig-based backend involves deriving from both
 
 @fcfontmap: 
 @Returns: 
-<!-- # Unused Parameters # -->
-@fontmap: 
 
 
 <!-- ##### FUNCTION pango_fc_font_map_shutdown ##### -->
@@ -88,8 +86,6 @@ Fontconfig-based backend involves deriving from both
 </para>
 
 @fcfontmap: 
-<!-- # Unused Parameters # -->
-@fontmap: 
 
 
 <!-- ##### FUNCTION pango_fc_font_map_add_decoder_find_func ##### -->
