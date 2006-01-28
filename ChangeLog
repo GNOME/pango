@@ -4,7 +4,8 @@
 
 	* pango/pango-ot-*: Added.
 
-	* pango/Makefile.am, pango/opentype/Makefile.am: Adjusted.
+	* pango/Makefile.am, pango/opentype/Makefile.am, doc/Makefile.am:
+	Adjusted.
 
 2006-01-28  Behdad Esfahbod  <behdad@gnome.org>
 

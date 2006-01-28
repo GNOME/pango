@@ -41,7 +41,8 @@ IGNORE_HFILES=			\
 	pangowin32-private.h	\
 	pangoatsui-private.h	\
 	pangox-private.h	\
-	pangoxft-private.h
+	pangoxft-private.h	\
+	pango-ot-private.h
 
 # CFLAGS and LDFLAGS for compiling scan program. Only needed
 # if $(DOC_MODULE).types is non-empty.
