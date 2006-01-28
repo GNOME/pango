@@ -17,6 +17,8 @@ Font handling and rendering with ATSUI fonts
 <!-- ##### STRUCT PangoCairoATSUIFont ##### -->
 <para>
 
+The #PangoCairoATSUIFont is #PangoFont used to represent
+an ATSUI font used with the cairo backend.
 </para>
 
 

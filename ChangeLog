@@ -1,5 +1,11 @@
 2006-01-28  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango/pangofc-font.h, pango/pangoft2-render.c, pango/pangowin32.c,
+	pango/pangoxft-render.c, docs/tmpl/xft-fonts.sgml,
+	docs/tmp/atsui-fonts.sgml: Documentation improvements.
+
+2006-01-28  Behdad Esfahbod  <behdad@gnome.org>
+
 	* configure.in: Use AC_HELP_STRING everywhere. Bump required version
 	to 2.56.
 

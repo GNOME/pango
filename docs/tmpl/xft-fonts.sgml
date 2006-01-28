@@ -41,13 +41,16 @@ overring the #PangoXftRendererClass virtual functions
 
 <!-- ##### STRUCT PangoXftFont ##### -->
 <para>
-
+#PangoXftFont is an implementation of #PangoFcFont using the Xft
+library for rendering.  It is used in conjunction with #PangoXftFontMap.
 </para>
 
 
 <!-- ##### STRUCT PangoXftFontMap ##### -->
 <para>
-
+#PangoXftFontMap is an implementation of #PangoFcFontMap suitable for
+the Xft library as the renderer.  It is used in to create fonts of
+type #PangoXftFont.
 </para>
 
 
