@@ -4,8 +4,8 @@
 
 	* docs/tmpl/tab-stops.sgml: Documented new tab alignment enum vals.
 
-	* pango/pango-tabs.h, pango/pango-tabs.c: Added support for tab
-	alignments PANGO_TAB_RIGHT and PANGO_TAB_CENTER.
+	* pango/pango-tabs.h, pango/pango-tabs.c, pango/pango-layout.c:
+	Added support for tab alignments PANGO_TAB_RIGHT and PANGO_TAB_CENTER.
 
 	* examples/renderdemo.h, examples/renderdemo.c: Added support for
 	--tab-spec.
