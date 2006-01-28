@@ -395,6 +395,24 @@ pango_win32_render (HDC               hdc,
   g_free (dX);
 }
 
+/**
+ * pango_win32_render_transformed:
+ * @hdc:     a windows device context
+ * @matrix:  a #PangoMatrix, or %NULL to use an identity transformation
+ * @font:    the font in which to draw the string
+ * @glyphs:  the glyph string to draw
+ * @x:       the x position of the start of the string (in Pango
+ *           units in user space coordinates)
+ * @y:       the y position of the baseline (in Pango units
+ *           in user space coordinates)
+ *
+ * Renders a #PangoGlyphString onto a windows DC, possibly
+ * transforming the layed-out coordinates through a transformation
+ * matrix. Note that the transformation matrix for @font is not
+ * changed, so to produce correct rendering results, the @font
+ * must have been loaded using a #PangoContext with an identical
+ * transformation matrix to that passed in to this function.
+ **/
 void 
 pango_win32_render_transformed (HDC                hdc,
 				const PangoMatrix *matrix,
