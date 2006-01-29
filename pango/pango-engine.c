@@ -66,6 +66,8 @@ _pango_engine_shape_shape (PangoEngineShape *engine,
 			   PangoAnalysis    *analysis,
 			   PangoGlyphString *glyphs)
 {
+  glyphs->num_glyphs = 0;
+
   g_return_if_fail (PANGO_IS_ENGINE_SHAPE (engine));
   g_return_if_fail (PANGO_IS_FONT (font));
   g_return_if_fail (text != NULL);

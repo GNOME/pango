@@ -43,11 +43,47 @@ pango_shape (const gchar      *text,
 {
   int i;
   int last_cluster = -1;
-  
+
   if (analysis->shape_engine)
-    _pango_engine_shape_shape (analysis->shape_engine, analysis->font,
-			       text, length, analysis, glyphs);
+    {
+      _pango_engine_shape_shape (analysis->shape_engine, analysis->font,
+				 text, length, analysis, glyphs);
+
+      if (G_UNLIKELY (glyphs->num_glyphs == 0 && analysis->font))
+        {
+	  /* If a font has been correctly chosen, but no glyphs are output,
+	   * there's probably something wrong with the shaper.  Trying to be
+	   * informative, we print out the font description, but to not 
+	   * flood the terminal with zillions of the message, we set a flag
+	   * on the font to only err once per font.
+	   */
+	  static GQuark warned_quark = 0;
+
+	  if (!warned_quark)
+	    warned_quark = g_quark_from_static_string ("pango-shaper-warned");
+	  
+	  if (!g_object_get_qdata (G_OBJECT (analysis->font), warned_quark))
+	    {
+	      PangoFontDescription *desc;
+	      char *s;
+
+	      desc = pango_font_describe (analysis->font);
+	      s = pango_font_description_to_string (desc);
+	      pango_font_description_free (desc);
+
+	      g_warning ("shape engine failure, expect ugly output. the offending font is `%s'", s);
+
+	      g_free (s);
+
+	      g_object_set_qdata_full (G_OBJECT (analysis->font), warned_quark,
+				       GINT_TO_POINTER (1), NULL);
+	    }
+	}
+    }
   else
+    glyphs->num_glyphs = 0;
+
+  if (!glyphs->num_glyphs)
     {
       pango_glyph_string_set_size (glyphs, 1);
 
@@ -72,6 +108,4 @@ pango_shape (const gchar      *text,
       else
 	glyphs->glyphs[i].attr.is_cluster_start = FALSE;
     }
-	    
-  g_assert (glyphs->num_glyphs > 0);
 }

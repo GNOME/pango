@@ -449,7 +449,7 @@ pango_coverage_from_bytes (guchar *bytes,
 {
   PangoCoverage *coverage = g_new0 (PangoCoverage, 1);
   guchar *ptr = bytes;
- int i;
+  int i;
 
   coverage->ref_count = 1;
   

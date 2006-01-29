@@ -1,3 +1,15 @@
+2006-01-29  Behdad Esfahbod  <behdad@gnome.org>
+
+	Do not crash if the (win32 typically) shaper fails. Bug #304702:
+
+	* pango/pango-engine.c (_pango_engine_shape_shape): Set num_glyphs to
+	zero if failing.
+
+	* pango/pango-shape.c (pango_shape): Instead of crashing if the shaper
+	failed to produce any glyphs, print out a warning message containing
+	the name of the font, and mark the font such that we don't keep
+	printing warning for the same font.
+
 2006-01-28  Behdad Esfahbod  <behdad@gnome.org>
 
 	* .cvsusers: Removed.
