@@ -85,15 +85,20 @@ pango_shape (const gchar      *text,
 
   if (!glyphs->num_glyphs)
     {
-      pango_glyph_string_set_size (glyphs, 1);
+      /* If failed to get glyphs, put a whitespace glyph per character
+       */
+      pango_glyph_string_set_size (glyphs, g_utf8_strlen (text, length));
 
-      glyphs->glyphs[0].glyph = 0;
-      
-      glyphs->glyphs[0].geometry.x_offset = 0;
-      glyphs->glyphs[0].geometry.y_offset = 0;
-      glyphs->glyphs[0].geometry.width = 0;
-      
-      glyphs->log_clusters[0] = 0;
+      for (i = 0; i < glyphs->num_glyphs; i++)
+        {
+	  glyphs->glyphs[i].glyph = 0;
+	  
+	  glyphs->glyphs[i].geometry.x_offset = 0;
+	  glyphs->glyphs[i].geometry.y_offset = 0;
+	  glyphs->glyphs[i].geometry.width = 10 * PANGO_SCALE;
+	  
+	  glyphs->log_clusters[i] = i;
+	}
     }
 
   /* Set glyphs[i].attr.is_cluster_start based on log_clusters[]

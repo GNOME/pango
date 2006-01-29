@@ -8,7 +8,9 @@
 	* pango/pango-shape.c (pango_shape): Instead of crashing if the shaper
 	failed to produce any glyphs, print out a warning message containing
 	the name of the font, and mark the font such that we don't keep
-	printing warning for the same font.
+	printing warning for the same font.  Moreover, inject one whitespace
+	glyph per character, so you just see nothing, but everything works
+	otherwise.
 
 2006-01-28  Behdad Esfahbod  <behdad@gnome.org>
 
