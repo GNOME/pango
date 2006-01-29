@@ -1,5 +1,9 @@
 2006-01-28  Behdad Esfahbod  <behdad@gnome.org>
 
+	* .cvsusers: Removed.
+
+2006-01-28  Behdad Esfahbod  <behdad@gnome.org>
+
 	* doc/tmpl/opentype.sgml: Document PangoOTBuffer and PangoOTGlyph.
 
 	* pango/pango-ot-buffer.c, pango/pango-ot-info.c,
