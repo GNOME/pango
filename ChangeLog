@@ -1,5 +1,10 @@
 2006-01-28  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pangofc-fontmap.c: Create fake Bold, Italic, and Bold Italic faces
+	for fonts that do not have one. (bug #319808, James Su)
+
+2006-01-28  Behdad Esfahbod  <behdad@gnome.org>
+
 	* .cvsusers: Removed.
 
 2006-01-28  Behdad Esfahbod  <behdad@gnome.org>
