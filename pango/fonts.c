@@ -85,7 +85,7 @@ static const PangoFontDescription pfd_defaults = {
 PangoFontDescription *
 pango_font_description_new (void)
 {
-  PangoFontDescription *desc = g_new (PangoFontDescription, 1);
+  PangoFontDescription *desc = g_slice_new (PangoFontDescription);
 
   *desc = pfd_defaults;
 
@@ -596,7 +596,7 @@ pango_font_description_better_match (const PangoFontDescription *desc,
 PangoFontDescription *
 pango_font_description_copy  (const PangoFontDescription  *desc)
 {
-  PangoFontDescription *result = g_new (PangoFontDescription, 1);
+  PangoFontDescription *result = g_slice_new (PangoFontDescription);
 
   *result = *desc;
 
@@ -624,7 +624,7 @@ pango_font_description_copy  (const PangoFontDescription  *desc)
 PangoFontDescription *
 pango_font_description_copy_static (const PangoFontDescription *desc)
 {
-  PangoFontDescription *result = g_new (PangoFontDescription, 1);
+  PangoFontDescription *result = g_slice_new (PangoFontDescription);
 
   *result = *desc;
   if (result->family_name)
@@ -723,7 +723,7 @@ pango_font_description_free  (PangoFontDescription  *desc)
       if (desc->family_name && !desc->static_family)
 	g_free (desc->family_name);
 
-      g_free (desc);
+      g_slice_free (PangoFontDescription, desc);
     }
 }
 
@@ -883,7 +883,7 @@ pango_font_description_from_string (const char *str)
 
   g_return_val_if_fail (str != NULL, NULL);
 
-  desc = g_new (PangoFontDescription, 1);
+  desc = g_slice_new (PangoFontDescription);
 
   desc->mask = PANGO_FONT_MASK_STYLE |
                PANGO_FONT_MASK_WEIGHT |
@@ -1236,7 +1236,7 @@ pango_font_metrics_get_type (void)
 PangoFontMetrics *
 pango_font_metrics_new (void)
 {
-  PangoFontMetrics *metrics = g_new0 (PangoFontMetrics, 1);
+  PangoFontMetrics *metrics = g_slice_new0 (PangoFontMetrics);
   metrics->ref_count = 1;
 
   return metrics;
@@ -1277,7 +1277,7 @@ pango_font_metrics_unref (PangoFontMetrics *metrics)
   metrics->ref_count--;
   
   if (metrics->ref_count == 0)
-    g_free (metrics);
+    g_slice_free (PangoFontMetrics, metrics);
 }
 
 /**

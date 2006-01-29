@@ -443,7 +443,7 @@ static void
 shaper_font_cache_destroy (ShaperFontCache *cache)
 {
   g_hash_table_destroy (cache->hash);
-  g_free (cache);
+  g_slice_free (ShaperFontCache, cache);
 }
 
 static void
@@ -466,7 +466,7 @@ get_shaper_font_cache (PangoFontset *fontset)
   cache = g_object_get_qdata (G_OBJECT (fontset), cache_quark);
   if (!cache)
     {
-      cache = g_new (ShaperFontCache, 1);
+      cache = g_slice_new (ShaperFontCache);
       cache->hash = g_hash_table_new_full (g_direct_hash, NULL,
 					   NULL, (GDestroyNotify)shaper_font_element_destroy);
 

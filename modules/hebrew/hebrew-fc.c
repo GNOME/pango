@@ -295,14 +295,15 @@ hebrew_engine_shape (PangoEngineShape *engine,
 		     PangoAnalysis    *analysis,
 		     PangoGlyphString *glyphs)
 {
-  const gchar *p;
-  gint i;
-  glong n_chars;
-  gint unknown_property = 0;
+  PangoFcFont *fc_font;
   FT_Face face;
   PangoOTRuleset *ruleset;
   PangoOTBuffer *buffer;
-  PangoFcFont *fc_font;
+  gint unknown_property = 0;
+  glong n_chars;
+  const char *p;
+  int cluster = 0;
+  int i;
 
   g_return_if_fail (font != NULL);
   g_return_if_fail (text != NULL);
@@ -310,9 +311,8 @@ hebrew_engine_shape (PangoEngineShape *engine,
   g_return_if_fail (analysis != NULL);
 
   fc_font = PANGO_FC_FONT (font);
-
   face = pango_fc_font_lock_face (fc_font);
-  g_assert (face);
+  g_return_if_fail (face != NULL);
 
   ruleset = get_ruleset (face);
   if (!ruleset)
@@ -327,7 +327,6 @@ hebrew_engine_shape (PangoEngineShape *engine,
   n_chars = g_utf8_strlen (text, length);
       
   p = text;
-
   for (i=0; i < n_chars; i++)
     {
       gunichar wc;
@@ -335,7 +334,6 @@ hebrew_engine_shape (PangoEngineShape *engine,
       PangoGlyph index;
       char buf[6];
       const char *input;
-      int cluster = 0;
 
       wc = g_utf8_get_char (p);
       input = p;

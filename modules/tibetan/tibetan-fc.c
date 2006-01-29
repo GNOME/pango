@@ -487,25 +487,32 @@ tibetan_engine_shape (PangoEngineShape *engine,
                     PangoAnalysis    *analysis,
                     PangoGlyphString *glyphs)
 {
-  PangoFcFont *fc_font = PANGO_FC_FONT (font);
+  PangoFcFont *fc_font;
   FT_Face face;
-  PangoOTBuffer *buffer;
   PangoOTRuleset *ruleset;
-  glong n_chars, i;
+  PangoOTBuffer *buffer;
+  glong n_chars;
   gunichar *wcs;
   const char *p;
+  int i;
   glong syllable;
   TibetanCharClass charClass;
   glong cursor = 0;
 
+  g_return_if_fail (font != NULL);
+  g_return_if_fail (text != NULL);
+  g_return_if_fail (length >= 0);
+  g_return_if_fail (analysis != NULL);
+
+  fc_font = PANGO_FC_FONT (font);
+  face = pango_fc_font_lock_face (fc_font);
+  g_return_if_fail (face != NULL);
+
   buffer = pango_ot_buffer_new (fc_font);
 
-  face = pango_fc_font_lock_face (fc_font);
-  g_assert (face);
-
   wcs = g_utf8_to_ucs4_fast (text, length, &n_chars);
-  p = text;
 
+  p = text;
   /* This loop only exits when we reach the end of a run, which may contain
    * several syllables.
    */

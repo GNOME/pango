@@ -1583,7 +1583,7 @@ alias_free (struct PangoAlias *alias)
 
   g_free (alias->families);
   
-  g_free (alias);
+  g_slice_free (struct PangoAlias, alias);
 }
 
 static void
@@ -1665,7 +1665,7 @@ read_alias_file (const char *filename)
       
       if (!alias)
 	{
-	  alias = g_new0 (struct PangoAlias, 1);
+	  alias = g_slice_new0 (struct PangoAlias);
 	  alias->alias = alias_key.alias;
 	  
 	  g_hash_table_insert (pango_aliases_ht,

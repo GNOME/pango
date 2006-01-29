@@ -34,7 +34,7 @@
 PangoItem *
 pango_item_new (void)
 {
-  PangoItem *result = g_new0 (PangoItem, 1);
+  PangoItem *result = g_slice_new0 (PangoItem);
 
   return result;
 }
@@ -51,7 +51,7 @@ PangoItem *
 pango_item_copy (PangoItem *item)
 {
   GSList *extra_attrs, *tmp_list;
-  PangoItem *result = g_new (PangoItem, 1);
+  PangoItem *result = g_slice_new (PangoItem);
 
   result->offset = item->offset;
   result->length = item->length;
@@ -92,7 +92,7 @@ pango_item_free (PangoItem *item)
   if (item->analysis.font)
     g_object_unref (item->analysis.font);
 
-  g_free (item);
+  g_slice_free (PangoItem, item);
 }
 
 GType

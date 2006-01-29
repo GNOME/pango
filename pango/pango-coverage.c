@@ -58,7 +58,7 @@ struct _PangoCoverage
 PangoCoverage *
 pango_coverage_new (void)
 {
-  PangoCoverage *coverage = g_new (PangoCoverage, 1);
+  PangoCoverage *coverage = g_slice_new (PangoCoverage);
 
   coverage->n_blocks = N_BLOCKS_INCREMENT;
   coverage->blocks = g_new0 (PangoBlockInfo, coverage->n_blocks);
@@ -85,7 +85,7 @@ pango_coverage_copy (PangoCoverage *coverage)
 
   g_return_val_if_fail (coverage != NULL, NULL);
 
-  result = g_new (PangoCoverage, 1);
+  result = g_slice_new (PangoCoverage);
   result->n_blocks = coverage->n_blocks;
   result->blocks = g_new (PangoBlockInfo, coverage->n_blocks);
   result->ref_count = 1;
@@ -150,7 +150,7 @@ pango_coverage_unref (PangoCoverage *coverage)
 	}
       
       g_free (coverage->blocks);
-      g_free (coverage);
+      g_slice_free (PangoCoverage, coverage);
     }
 }
 
@@ -447,7 +447,7 @@ PangoCoverage *
 pango_coverage_from_bytes (guchar *bytes,
 			   int     n_bytes)
 {
-  PangoCoverage *coverage = g_new0 (PangoCoverage, 1);
+  PangoCoverage *coverage = g_slice_new0 (PangoCoverage);
   guchar *ptr = bytes;
   int i;
 

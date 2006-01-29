@@ -195,7 +195,7 @@ pango_cairo_fc_font_map_init (PangoCairoFcFontMap *cffontmap)
   cffontmap->library = NULL;
   error = FT_Init_FreeType (&cffontmap->library);
   if (error != FT_Err_Ok)
-    g_error ("pango_cairo_font_map_init: Could not initialize freetype");
+    g_critical ("pango_cairo_font_map_init: Could not initialize freetype");
 
   cffontmap->dpi   = 96.0;
 }

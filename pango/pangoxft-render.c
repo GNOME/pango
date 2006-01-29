@@ -409,7 +409,7 @@ pango_xft_renderer_draw_glyph (PangoRenderer   *renderer,
 			       double           x,
 			       double           y)
 {
-  g_error ("pango_xft_renderer_draw_glyph(): should not be called\n");
+  g_critical ("pango_xft_renderer_draw_glyph(): should not be called");
 }
 
 static void

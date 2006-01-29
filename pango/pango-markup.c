@@ -191,7 +191,7 @@ open_tag_free (OpenTag *ot)
 {
   g_slist_foreach (ot->attrs, (GFunc) pango_attribute_destroy, NULL);
   g_slist_free (ot->attrs);
-  g_free (ot);
+  g_slice_free (OpenTag, ot);
 }
 
 static void
@@ -226,7 +226,7 @@ markup_data_open_tag (MarkupData   *md)
   if (md->tag_stack)
     parent = md->tag_stack->data;
   
-  ot = g_new (OpenTag, 1);
+  ot = g_slice_new (OpenTag);
   ot->attrs = NULL;
   ot->start_index = md->index;
   ot->scale_level_delta = 0;
@@ -315,7 +315,7 @@ markup_data_close_tag (MarkupData *md)
     }
   
   g_slist_free (ot->attrs);
-  g_free (ot);  
+  g_slice_free (OpenTag, ot);  
 }
 
 static void
@@ -591,7 +591,7 @@ pango_parse_markup (const char                 *markup_text,
   
   g_return_val_if_fail (markup_text != NULL, FALSE);
   
-  md = g_new (MarkupData, 1);
+  md = g_slice_new (MarkupData);
 
   /* Don't bother creating these if they weren't requested;
    * might be useful e.g. if you just want to validate
@@ -686,7 +686,7 @@ pango_parse_markup (const char                 *markup_text,
   
   g_assert (md->tag_stack == NULL);
   
-  g_free (md);
+  g_slice_free (MarkupData, md);
 
   return TRUE;
 
@@ -700,7 +700,7 @@ pango_parse_markup (const char                 *markup_text,
   if (md->attr_list)
     pango_attr_list_unref (md->attr_list);
 
-  g_free (md);
+  g_slice_free (MarkupData, md);
 
   if (context)
     g_markup_parse_context_free (context);

@@ -1,5 +1,32 @@
 2006-01-29  Behdad Esfahbod  <behdad@gnome.org>
 
+	* modules/arabic/arabic-fc.c, modules/basic/basic-fc.c
+	modules/hebrew/hebrew-fc.c, modules/indic/indic-fc.c
+	modules/khmer/khmer-fc.c, modules/syriac/syriac-fc.c
+	modules/thai/thai-ot.c, modules/thai/thai-shaper.c
+	modules/tibetan/tibetan-fc.c: If locking font face failed,
+	do not assert, just return zero glyphs with an implicit
+	warning.
+
+	* pango/fonts.c, pango/glyphstring.c pango/modules.c
+	pango/pango-color.c, pango/pango-context.c
+	pango/pango-coverage.c, pango/pango-fontmap.c
+	pango/pango-glyph-item.c, pango/pango-item.c
+	pango/pango-layout.c, pango/pango-markup.c
+	pango/pango-ot-buffer.c, pango/pango-script.c
+	pango/pango-tabs.c, pango/pango-utils.c
+	pango/pangoatsui-fontmap.c, pango/pangocairo-fcfont.c
+	pango/pangocairo-fcfontmap.c, pango/pangocairo-fontmap.c
+	pango/pangocairo-win32font.c, pango/pangofc-font.c
+	pango/pangofc-fontmap.c, pango/pangoft2-fontmap.c
+	pango/pangoft2-render.c, pango/pangoft2.c
+	pango/pangowin32-fontcache.c, pango/pangoxft-font.c
+	pango/pangoxft-render.c, pango/break.c pango/ellipsize.c:
+	Use g_slice for allocating all types.  Also, change some
+	g_error's to g_critical's...
+
+2006-01-29  Behdad Esfahbod  <behdad@gnome.org>
+
 	Do not crash if the (win32 typically) shaper fails. Bug #304702:
 
 	* pango/pango-engine.c (_pango_engine_shape_shape): Set num_glyphs to

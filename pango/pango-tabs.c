@@ -79,7 +79,7 @@ pango_tab_array_new (gint initial_size,
    * If we allowed tab array resizing we'd need to drop this
    * optimization.
    */
-  array = g_new (PangoTabArray, 1);
+  array = g_slice_new (PangoTabArray);
   array->size = initial_size;
   array->allocated = initial_size;
 
@@ -202,7 +202,7 @@ pango_tab_array_free   (PangoTabArray *tab_array)
 
   g_free (tab_array->tabs);
   
-  g_free (tab_array);
+  g_slice_free (PangoTabArray, tab_array);
 }
 
 /**

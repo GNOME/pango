@@ -929,7 +929,7 @@ pango_layout_set_markup_with_accel (PangoLayout    *layout,
                            accel_char,
                            &error))
     {
-      g_warning ("%s: %s", G_STRLOC, error->message);
+      g_warning ("pango_layout_set_markup_with_accel: %s", error->message);
       g_error_free (error);
       return;
     }
@@ -2096,7 +2096,7 @@ pango_layout_get_extents_internal (PangoLayout    *layout,
         
         if (line_extents)
           {
-            Extents *ext = g_new (Extents, 1);
+            Extents *ext = g_slice_new (Extents);
             ext->baseline = baseline;
             ext->ink_rect = line_ink_layout;
             ext->logical_rect = line_logical_layout;
@@ -2398,13 +2398,20 @@ static void shape_tab (PangoLayoutLine  *line,
 		       PangoGlyphString *glyphs);
 
 static void
-free_run (PangoLayoutRun *run, gboolean free_item)
+free_run (PangoLayoutRun *run, gpointer data)
 {
+  gboolean free_item = data != NULL;
   if (free_item)
     pango_item_free (run->item);
 
   pango_glyph_string_free (run->glyphs);
-  g_free (run);
+  g_slice_free (PangoLayoutRun, run);
+}
+
+static void
+extents_free (Extents *ext, gpointer data)
+{
+  g_slice_free (Extents, ext);
 }
 
 static PangoItem *
@@ -2422,7 +2429,7 @@ uninsert_run (PangoLayoutLine *line)
   line->length -= item->length;
   
   g_slist_free_1 (tmp_node);
-  free_run (run, FALSE);
+  free_run (run, (gpointer)FALSE);
 
   return item;
 }
@@ -2737,7 +2744,7 @@ insert_run (PangoLayoutLine *line,
 	    PangoItem       *run_item,
 	    gboolean         last_run)
 {
-  PangoLayoutRun *run = g_new (PangoLayoutRun, 1);
+  PangoLayoutRun *run = g_slice_new (PangoLayoutRun);
 
   run->item = run_item;
 
@@ -3373,14 +3380,9 @@ pango_layout_line_unref (PangoLayoutLine *line)
   if (private->ref_count == 0)
     {
       GSList *tmp_list = line->runs;
-      while (tmp_list)
-	{
-	  free_run (tmp_list->data, TRUE);
-	  tmp_list = tmp_list->next;
-	}
-
+      g_slist_foreach (line->runs, (GFunc)free_run, GINT_TO_POINTER (1));
       g_slist_free (line->runs);
-      g_free (line);
+      g_slice_free (PangoLayoutLinePrivate, private);
     }
 }
 
@@ -4028,7 +4030,7 @@ pango_layout_line_get_extents (PangoLayoutLine *line,
 static PangoLayoutLine *
 pango_layout_line_new (PangoLayout *layout)
 {
-  PangoLayoutLinePrivate *private = g_new (PangoLayoutLinePrivate, 1);
+  PangoLayoutLinePrivate *private = g_slice_new (PangoLayoutLinePrivate);
 
   private->ref_count = 1;
   private->line.layout = layout;
@@ -4525,7 +4527,7 @@ pango_layout_iter_copy (PangoLayoutIter *iter)
   PangoLayoutIter *new;
   GSList *l;
 
-  new = g_new (PangoLayoutIter, 1);
+  new = g_slice_new (PangoLayoutIter);
   
   new->layout = g_object_ref (iter->layout);
   new->line_list_link = iter->line_list_link;
@@ -4596,7 +4598,7 @@ pango_layout_get_iter (PangoLayout *layout)
   
   g_return_val_if_fail (PANGO_IS_LAYOUT (layout), NULL);
   
-  iter = g_new (PangoLayoutIter, 1);
+  iter = g_slice_new (PangoLayoutIter);
 
   iter->layout = layout;
   g_object_ref (iter->layout);
@@ -4642,11 +4644,11 @@ pango_layout_iter_free (PangoLayoutIter *iter)
 {
   g_return_if_fail (iter != NULL);
 
-  g_slist_foreach (iter->line_extents, (GFunc) g_free, NULL);
+  g_slist_foreach (iter->line_extents, (GFunc)extents_free, NULL);
   g_slist_free (iter->line_extents);
   pango_layout_line_unref (iter->line);
   g_object_unref (iter->layout);
-  g_free (iter);
+  g_slice_free (PangoLayoutIter, iter);
 }
 
 /**

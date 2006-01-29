@@ -327,27 +327,24 @@ basic_engine_shape (PangoEngineShape *engine,
 		    PangoAnalysis    *analysis,
 		    PangoGlyphString *glyphs)
 {
-  PangoFcFont *fc_font = PANGO_FC_FONT (font);
+  PangoFcFont *fc_font;
   FT_Face face;
   PangoOTRuleset *ruleset;
   PangoOTBuffer *buffer;
   gint unknown_property = 0;
-  int n_chars;
-  int i;
+  glong n_chars;
   const char *p;
   int cluster = 0;
+  int i;
 
   g_return_if_fail (font != NULL);
   g_return_if_fail (text != NULL);
   g_return_if_fail (length >= 0);
   g_return_if_fail (analysis != NULL);
 
-  n_chars = g_utf8_strlen (text, length);
-  pango_glyph_string_set_size (glyphs, n_chars);
-
+  fc_font = PANGO_FC_FONT (font);
   face = pango_fc_font_lock_face (fc_font);
-  g_assert (face != NULL);
-
+  g_return_if_fail (face != NULL);
 
   ruleset = get_ruleset (face);
   if (!ruleset)
@@ -359,6 +356,9 @@ basic_engine_shape (PangoEngineShape *engine,
 
   buffer = pango_ot_buffer_new (fc_font);
   pango_ot_buffer_set_rtl (buffer, analysis->level % 2 != 0);
+
+  n_chars = g_utf8_strlen (text, length);
+  pango_glyph_string_set_size (glyphs, n_chars);
 
   p = text;
   for (i=0; i < n_chars; i++)

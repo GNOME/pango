@@ -267,10 +267,9 @@ pango_cairo_fc_font_get_metrics (PangoFont     *font,
       if (!fcfont->fontmap)
 	return pango_font_metrics_new ();
 
-      info = g_new0 (PangoFcMetricsInfo, 1);
+      info = g_slice_new0 (PangoFcMetricsInfo);
       
-      fcfont->metrics_by_lang = g_slist_prepend (fcfont->metrics_by_lang, 
-						 info);
+      fcfont->metrics_by_lang = g_slist_prepend (fcfont->metrics_by_lang, info);
 	
       info->sample_str = sample_str;
 

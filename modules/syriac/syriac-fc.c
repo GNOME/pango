@@ -248,16 +248,16 @@ syriac_engine_shape (PangoEngineShape *engine,
 		     PangoAnalysis    *analysis,
 		     PangoGlyphString *glyphs)
 {
-  glong n_chars;
-  gunichar *wcs;
-  int i;
-  const char *p;
-  gulong *properties = NULL;
+  PangoFcFont *fc_font;
   FT_Face face;
   PangoOTRuleset *ruleset;
   PangoOTBuffer *buffer;
-  PangoFcFont *fc_font;
+  gulong *properties = NULL;
+  glong n_chars;
+  gunichar *wcs;
+  const char *p;
   int cluster = 0;
+  int i;
 
   g_return_if_fail (font != NULL);
   g_return_if_fail (text != NULL);
@@ -265,9 +265,8 @@ syriac_engine_shape (PangoEngineShape *engine,
   g_return_if_fail (analysis != NULL);
 
   fc_font = PANGO_FC_FONT (font);
-
   face = pango_fc_font_lock_face (fc_font);
-  g_assert (face);
+  g_return_if_fail (face != NULL);
 
   ruleset = get_ruleset (face);
   if (!ruleset)

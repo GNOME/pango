@@ -112,7 +112,7 @@ static void
 free_metrics_info (PangoFcMetricsInfo *info)
 {
   pango_font_metrics_unref (info->metrics);
-  g_free (info);
+  g_slice_free (PangoFcMetricsInfo, info);
 }
 
 static void
@@ -467,7 +467,7 @@ pango_fc_font_get_metrics (PangoFont     *font,
       if (!fcfont->fontmap)
 	return pango_font_metrics_new ();
 
-      info = g_new0 (PangoFcMetricsInfo, 1);
+      info = g_slice_new0 (PangoFcMetricsInfo);
       
       fcfont->metrics_by_lang = g_slist_prepend (fcfont->metrics_by_lang, 
 						 info);

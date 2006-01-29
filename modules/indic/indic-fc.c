@@ -325,17 +325,17 @@ indic_engine_shape (PangoEngineShape *engine,
 		    PangoAnalysis    *analysis,
 		    PangoGlyphString *glyphs)
 {
+  PangoFcFont *fc_font;
+  FT_Face face;
+  PangoOTRuleset *gsub_ruleset, *gpos_ruleset;
+  PangoOTBuffer *buffer;
   glong i, n_chars, n_glyphs;
   gulong *tags = NULL;
   gunichar *wc_in = NULL, *wc_out = NULL;
   glong *utf8_offsets = NULL;
   glong *indices = NULL;
-  FT_Face face;
-  PangoOTRuleset *gsub_ruleset = NULL, *gpos_ruleset = NULL;
-  PangoOTBuffer *buffer;
   IndicEngineFc *indic_shape_engine = NULL;
   const PangoIndicInfo *indic_info = NULL;
-  PangoFcFont *fc_font;
   MPreFixups *mprefixups;
 
   g_return_if_fail (font != NULL);
@@ -345,7 +345,7 @@ indic_engine_shape (PangoEngineShape *engine,
 
   fc_font = PANGO_FC_FONT (font);
   face = pango_fc_font_lock_face (fc_font);
-  g_assert (face != NULL);
+  g_return_if_fail (face != NULL);
 
   indic_shape_engine = (IndicEngineFc *) engine;
 

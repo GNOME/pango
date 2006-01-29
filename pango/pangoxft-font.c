@@ -269,6 +269,12 @@ typedef struct
 } Extents;
 
 static void
+extents_free (Extents *ext)
+{
+  g_slice_free (Extents, ext);
+}
+
+static void
 get_glyph_extents_raw (PangoXftFont     *xfont,
 		       PangoGlyph        glyph,
 		       PangoRectangle   *ink_rect,
@@ -278,14 +284,14 @@ get_glyph_extents_raw (PangoXftFont     *xfont,
 
   if (!xfont->glyph_info)
     xfont->glyph_info = g_hash_table_new_full (NULL, NULL,
-					       NULL, (GDestroyNotify)g_free);
+					       NULL, (GDestroyNotify)extents_free);
 
   extents = g_hash_table_lookup (xfont->glyph_info,
 				 GUINT_TO_POINTER (glyph));
 
   if (!extents)
     {
-      extents = g_new (Extents, 1);
+      extents = g_slice_new (Extents);
      
       pango_fc_font_get_raw_extents (PANGO_FC_FONT (xfont),
 				     FT_LOAD_NO_BITMAP | FT_LOAD_NO_HINTING,

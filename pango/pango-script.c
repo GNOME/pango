@@ -155,7 +155,7 @@ PangoScriptIter *
 pango_script_iter_new (const char *text,
 		       int         length)
 {
-  PangoScriptIter *iter = g_new (PangoScriptIter, 1);
+  PangoScriptIter *iter = g_slice_new (PangoScriptIter);
 
   iter->text_start = text;
   if (length >= 0)
@@ -185,7 +185,7 @@ pango_script_iter_new (const char *text,
 void
 pango_script_iter_free (PangoScriptIter *iter)
 {
-  g_free (iter);
+  g_slice_free (PangoScriptIter, iter);
 }
 
 /**

@@ -96,7 +96,7 @@ static void
 pango_ft2_free_rendered_glyph (PangoFT2RenderedGlyph *rendered)
 {
   g_free (rendered->bitmap.buffer);
-  g_free (rendered);
+  g_slice_free (PangoFT2RenderedGlyph, rendered);
 }
 
 static PangoFT2RenderedGlyph *
@@ -106,7 +106,7 @@ pango_ft2_font_render_glyph (PangoFont *font,
   PangoFT2RenderedGlyph *rendered;
   FT_Face face;
 
-  rendered = g_new (PangoFT2RenderedGlyph, 1);
+  rendered = g_slice_new (PangoFT2RenderedGlyph);
 
   face = pango_ft2_font_get_face (font);
   
@@ -127,7 +127,7 @@ pango_ft2_font_render_glyph (PangoFont *font,
       rendered->bitmap_top = face->glyph->bitmap_top;
     }
   else
-    g_error ("Couldn't get face for PangoFT2Face");
+    g_warning ("couldn't get face for PangoFT2Face, expect ugly output");
 
   return rendered;
 }

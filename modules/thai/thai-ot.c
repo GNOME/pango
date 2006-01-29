@@ -76,7 +76,7 @@ thai_ot_get_ruleset (PangoFont *font)
 
   fc_font = PANGO_FC_FONT (font);
   face = pango_fc_font_lock_face (fc_font);
-  g_assert (face != NULL);
+  g_return_val_if_fail (face != NULL, NULL);
 
   info = pango_ot_info_get (face);
   if (info != NULL)
@@ -148,7 +148,7 @@ lao_ot_get_ruleset (PangoFont *font)
 
   fc_font = PANGO_FC_FONT (font);
   face = pango_fc_font_lock_face (fc_font);
-  g_assert (face != NULL);
+  g_return_val_if_fail (face != NULL, NULL);
 
   info = pango_ot_info_get (face);
   if (info != NULL)
@@ -215,9 +215,6 @@ thai_ot_shape (PangoFont        *font,
 {
   PangoOTRuleset *th_ruleset;
   PangoOTRuleset *lo_ruleset;
-
-  g_return_if_fail (font != NULL);
-  g_return_if_fail (glyphs != NULL);
 
   th_ruleset = thai_ot_get_ruleset (font);
   lo_ruleset = lao_ot_get_ruleset (font);

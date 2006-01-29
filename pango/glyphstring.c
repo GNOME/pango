@@ -35,7 +35,7 @@
 PangoGlyphString *
 pango_glyph_string_new (void)
 {
-  PangoGlyphString *string = g_new (PangoGlyphString, 1);
+  PangoGlyphString *string = g_slice_new (PangoGlyphString);
 
   string->num_glyphs = 0;
   string->space = 0;
@@ -65,7 +65,10 @@ pango_glyph_string_set_size (PangoGlyphString *string, gint new_len)
         string->space *= 2;
       
       if (string->space < 0)
-        g_error ("%s: glyph string length overflows maximum integer size", G_STRLOC);
+        {
+	  g_critical ("glyph string length overflows maximum integer size, truncated");
+	  new_len = string->space = G_MAXINT - 8;
+	}
     }
   
   string->glyphs = g_realloc (string->glyphs, string->space * sizeof (PangoGlyphInfo));
@@ -97,7 +100,7 @@ pango_glyph_string_get_type (void)
 PangoGlyphString *
 pango_glyph_string_copy (PangoGlyphString *string)
 {
-  PangoGlyphString *new_string = g_new (PangoGlyphString, 1);
+  PangoGlyphString *new_string = g_slice_new (PangoGlyphString);
 
   *new_string = *string;
 
@@ -120,7 +123,7 @@ pango_glyph_string_free (PangoGlyphString *string)
 {
   g_free (string->glyphs);
   g_free (string->log_clusters);
-  g_free (string);
+  g_slice_free (PangoGlyphString, string);
 }
 
 /**

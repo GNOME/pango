@@ -133,7 +133,7 @@ pango_ft2_font_map_new (void)
   
   error = FT_Init_FreeType (&ft2fontmap->library);
   if (error != FT_Err_Ok)
-    g_error ("pango_ft2_font_map_new: Could not initialize freetype");
+    g_critical ("pango_ft2_font_map_new: Could not initialize freetype");
 
   return (PangoFontMap *)ft2fontmap;
 }

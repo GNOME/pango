@@ -138,7 +138,7 @@ pango_find_map (PangoLanguage *language,
 
   if (!tmp_list)
     {
-      map_info = g_new (PangoMapInfo, 1);
+      map_info = g_slice_new (PangoMapInfo);
       map_info->language = language;
       map_info->engine_type_id = engine_type_id;
       map_info->render_type_id = render_type_id;
@@ -286,7 +286,7 @@ handle_included_module (PangoIncludedModule *included_module,
 
   for (i = 0; i < n_engines; i++)
     {
-      PangoEnginePair *pair = g_new (PangoEnginePair, 1);
+      PangoEnginePair *pair = g_slice_new (PangoEnginePair);
 
       pair->info = engine_info[i];
       pair->module = module;
@@ -354,6 +354,12 @@ script_from_string (const char *str)
   return value->value;
 }
 
+static void
+script_info_free (PangoEngineScriptInfo *script_info, gpointer data)
+{
+  g_slice_free (PangoEngineScriptInfo, script_info);
+}
+
 static gboolean /* Returns true if succeeded, false if failed */
 process_module_file (FILE *module_file)
 {
@@ -363,7 +369,7 @@ process_module_file (FILE *module_file)
 
   while (pango_read_line (module_file, line_buf))
     {
-      PangoEnginePair *pair = g_new (PangoEnginePair, 1);
+      PangoEnginePair *pair = g_slice_new (PangoEnginePair);
       PangoEngineScriptInfo *script_info;
       PangoScript script;
       GList *scripts = NULL;
@@ -377,7 +383,7 @@ process_module_file (FILE *module_file)
 
       if (!pango_skip_space (&p))
 	{
-	  g_free (pair);
+	  g_slice_free (PangoEnginePair, pair);
 	  continue;
 	}
 
@@ -419,7 +425,7 @@ process_module_file (FILE *module_file)
 		  goto error;
 		}
 	      
-	      script_info = g_new (PangoEngineScriptInfo, 1);
+	      script_info = g_slice_new (PangoEngineScriptInfo);
 	      script_info->script = script;
 	      script_info->langs = g_strdup (q + 1);
 	      
@@ -454,13 +460,13 @@ process_module_file (FILE *module_file)
       dlloaded_engines = g_slist_prepend (dlloaded_engines, pair);
 
     error:
-      g_list_foreach (scripts, (GFunc)g_free, NULL);
+      g_list_foreach (scripts, (GFunc)script_info_free, NULL);
       g_list_free (scripts);
 
       if (have_error)
 	{
 	  g_printerr ("Error reading Pango modules file\n");
-	  g_free(pair);
+	  g_slice_free(PangoEnginePair, pair);
 	  break;
 	}
     }
@@ -581,8 +587,6 @@ map_add_engine_list (PangoMapInfo *info,
 static void
 build_map (PangoMapInfo *info)
 {
-  PangoMap *map;
-
   const char *engine_type = g_quark_to_string (info->engine_type_id);
   const char *render_type = g_quark_to_string (info->render_type_id);
   
@@ -608,8 +612,8 @@ build_map (PangoMapInfo *info)
 	}
     }
   
-  info->map = map = g_new (PangoMap, 1);
-  map->entries = g_array_new (FALSE, TRUE, sizeof (PangoMapEntry));
+  info->map = g_slice_new (PangoMap);
+  info->map->entries = g_array_new (FALSE, TRUE, sizeof (PangoMapEntry));
 			      
   map_add_engine_list (info, dlloaded_engines, engine_type, render_type);  
   map_add_engine_list (info, registered_engines, engine_type, render_type);  

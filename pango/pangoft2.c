@@ -275,7 +275,7 @@ pango_ft2_font_get_glyph_info (PangoFont   *font,
 
   if ((info == NULL) && create)
     {
-       info = g_new0 (PangoFT2GlyphInfo, 1);
+      info = g_slice_new0 (PangoFT2GlyphInfo);
 
       pango_fc_font_get_raw_extents (fcfont, ft2font->load_flags,
 				     glyph,
@@ -378,7 +378,7 @@ pango_ft2_free_glyph_info_callback (gpointer key,
   if (font->glyph_cache_destroy && info->cached_glyph)
     (*font->glyph_cache_destroy) (info->cached_glyph);
 
-  g_free (value);
+  g_slice_free (PangoFT2GlyphInfo, info);
   return TRUE;
 }
 

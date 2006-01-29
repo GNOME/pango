@@ -561,10 +561,7 @@ pango_default_break (const gchar   *text,
   if (length == 0 || *text == '\0')
     next_wc = PARAGRAPH_SEPARATOR;
   else
-    {
-      next_wc = g_utf8_get_char (next);
-      g_assert (next_wc != 0);
-    }
+    next_wc = g_utf8_get_char (next);
 
   next_break_type = g_unichar_break_type (next_wc);
   next_break_type = BREAK_TYPE_SAFE (next_break_type);
@@ -605,10 +602,7 @@ pango_default_break (const gchar   *text,
 	      almost_done = TRUE;
             }
           else
-            {
-              next_wc = g_utf8_get_char (next);
-              g_assert (next_wc != 0);
-            }
+	    next_wc = g_utf8_get_char (next);
 	  
 	  next_break_type = g_unichar_break_type (next_wc);
           next_break_type = BREAK_TYPE_SAFE (next_break_type);

@@ -165,7 +165,7 @@ static void
 free_metrics_info (PangoWin32MetricsInfo *info)
 {
   pango_font_metrics_unref (info->metrics);
-  g_free (info);
+  g_slice_free (PangoWin32MetricsInfo, info);
 }
 
 static void
@@ -347,7 +347,7 @@ pango_cairo_win32_font_get_metrics (PangoFont        *font,
       if (!win32font->fontmap)
 	return pango_font_metrics_new ();
 
-      info = g_new0 (PangoWin32MetricsInfo, 1);
+      info = g_slice_new0 (PangoWin32MetricsInfo);
       
       cwfont->metrics_by_lang = g_slist_prepend (cwfont->metrics_by_lang, 
 						 info);

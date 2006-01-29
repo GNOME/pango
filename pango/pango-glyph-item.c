@@ -96,7 +96,7 @@ pango_glyph_item_split (PangoGlyphItem *orig,
 
   num_remaining = orig->glyphs->num_glyphs - num_glyphs;
 
-  new = g_new (PangoGlyphItem, 1);
+  new = g_slice_new (PangoGlyphItem);
   split_offset = g_utf8_pointer_to_offset (text + orig->item->offset,
 					   text + orig->item->offset + split_index);
   new->item = pango_item_split (orig->item, split_index, split_offset);
@@ -144,7 +144,7 @@ pango_glyph_item_free  (PangoGlyphItem *glyph_item)
   if (glyph_item->glyphs)
     pango_glyph_string_free (glyph_item->glyphs);
 
-  g_free (glyph_item);
+  g_slice_free (PangoGlyphItem, glyph_item);
 }
 
 /**

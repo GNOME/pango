@@ -219,7 +219,7 @@ free_context_info (PangoCairoContextInfo *info)
   if (info->merged_options)
     cairo_font_options_destroy (info->merged_options);
   
-  g_free (info);
+  g_slice_free (PangoCairoContextInfo, info);
 }
 
 static PangoCairoContextInfo *
@@ -236,7 +236,7 @@ get_context_info (PangoContext *context,
 
   if (!info && create)
     {
-      info = g_new (PangoCairoContextInfo, 1);
+      info = g_slice_new (PangoCairoContextInfo);
       info->dpi = -1.0;
       info->set_options = NULL;
       info->surface_options = NULL;

@@ -58,7 +58,7 @@ pango_color_copy (const PangoColor *src)
 
   g_return_val_if_fail (src != NULL, NULL);
   
-  ret = g_new (PangoColor, 1);
+  ret = g_slice_new (PangoColor);
 
   *ret = *src;
 
@@ -76,7 +76,7 @@ pango_color_free (PangoColor *color)
 {
   g_return_if_fail (color != NULL);
 
-  g_free (color);
+  g_slice_free (PangoColor, color);
 }
 
 /* Color parsing

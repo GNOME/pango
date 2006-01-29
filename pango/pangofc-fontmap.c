@@ -353,13 +353,13 @@ fontset_hash_key_free (FontsetHashKey *key)
     PANGO_FC_FONT_MAP_GET_CLASS (key->fontmap)->context_key_free (key->fontmap,
 								  key->context_key);
   
-  g_free (key);
+  g_slice_free (FontsetHashKey, key);
 }
 
 static FontsetHashKey *
 fontset_hash_key_copy (FontsetHashKey *old)
 {
-  FontsetHashKey *key = g_new (FontsetHashKey, 1);
+  FontsetHashKey *key = g_slice_new (FontsetHashKey);
   
   key->fontmap = old->fontmap;
   key->matrix = old->matrix;
@@ -420,13 +420,13 @@ font_hash_key_free (FontHashKey *key)
     PANGO_FC_FONT_MAP_GET_CLASS (key->fontmap)->context_key_free (key->fontmap,
 								  key->context_key);
   
-  g_free (key);
+  g_slice_free (FontHashKey, key);
 }
 
 static FontHashKey *
 font_hash_key_copy (FontHashKey *old)
 {
-  FontHashKey *key = g_new (FontHashKey, 1);
+  FontHashKey *key = g_slice_new (FontHashKey);
   
   key->fontmap = old->fontmap;
   key->matrix = old->matrix;
@@ -466,7 +466,7 @@ pango_fc_font_map_add_decoder_find_func (PangoFcFontMap        *fcfontmap,
   PangoFcFontMapPrivate *priv = fcfontmap->priv;
   PangoFcFindFuncInfo *info;
 
-  info = g_new (PangoFcFindFuncInfo, 1);
+  info = g_slice_new (PangoFcFindFuncInfo);
 
   info->findfunc = findfunc;
   info->user_data = user_data;
@@ -501,7 +501,7 @@ pango_fc_font_map_finalize (GObject *object)
       if (info->dnotify)
 	info->dnotify (info->user_data);
 
-      g_free (info);
+      g_slice_free (PangoFcFindFuncInfo, info);
       priv->findfuncs = g_slist_delete_link (priv->findfuncs, priv->findfuncs);
     }
 
@@ -1073,7 +1073,7 @@ pango_fc_font_map_get_patterns (PangoFontMap               *fontmap,
 	  exit (1);
 	}
 
-      patterns = g_new (PangoFcPatternSet, 1);
+      patterns = g_slice_new (PangoFcPatternSet);
       patterns->patterns = g_new (FcPattern *, font_patterns->nfont);
       patterns->n_patterns = 0;
       patterns->fontset = NULL;
@@ -1167,7 +1167,7 @@ pango_fc_pattern_set_free (PangoFcPatternSet *patterns)
     FcPatternDestroy (patterns->patterns[i]);
 
   g_free (patterns->patterns);
-  g_free (patterns);
+  g_slice_free (PangoFcPatternSet, patterns);
 }
 
 static void

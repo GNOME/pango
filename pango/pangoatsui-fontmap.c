@@ -440,13 +440,13 @@ font_hash_key_free (FontHashKey *key)
     PANGO_ATSUI_FONT_MAP_GET_CLASS (key->fontmap)->context_key_free (key->fontmap,
 								     key->context_key);
   
-  g_free (key);
+  g_slice_free (FontHashKey, key);
 }
 
 static FontHashKey *
 font_hash_key_copy (FontHashKey *old)
 {
-  FontHashKey *key = g_new (FontHashKey, 1);
+  FontHashKey *key = g_slice_new (FontHashKey);
   
   key->fontmap = old->fontmap;
   key->matrix = old->matrix;

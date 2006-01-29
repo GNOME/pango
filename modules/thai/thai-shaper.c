@@ -531,11 +531,16 @@ thai_engine_shape (PangoEngineShape *engine,
 		   PangoAnalysis    *analysis,
 		   PangoGlyphString *glyphs)
 {
-  ThaiFontInfo *font_info;
+  gint n_chars;
   const char *p;
+  ThaiFontInfo *font_info;
   const char *log_cluster;
   gunichar cluster[MAX_CLUSTER_CHRS];
-  gint num_chrs;
+
+  g_return_if_fail (font != NULL);
+  g_return_if_fail (text != NULL);
+  g_return_if_fail (length >= 0);
+  g_return_if_fail (analysis != NULL);
 
   pango_glyph_string_set_size (glyphs, 0);
 
@@ -545,8 +550,8 @@ thai_engine_shape (PangoEngineShape *engine,
   while (p < text + length)
     {
 	log_cluster = p;
-	p = get_next_cluster (p, text + length - p, cluster, &num_chrs);
-	add_cluster (font_info, glyphs, log_cluster - text, cluster, num_chrs);
+	p = get_next_cluster (p, text + length - p, cluster, &n_chars);
+	add_cluster (font_info, glyphs, log_cluster - text, cluster, n_chars);
     }
   thai_ot_shape (font, glyphs);
 }
