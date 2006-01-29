@@ -58,13 +58,9 @@ int opt_runs = 1;
 PangoEllipsizeMode opt_ellipsize = PANGO_ELLIPSIZE_NONE;
 HintMode opt_hinting = HINT_DEFAULT;
 const char *opt_pangorc = NULL;
-const char *opt_tab_spec;
 
 /* Text (or markup) to render */
 static char *text;
-
-
-static PangoTabArray * parse_tab_spec (const char *p);
 
 void
 fail (const char *format, ...)
@@ -131,15 +127,6 @@ make_layout(PangoContext *context,
   pango_layout_set_font_description (layout, font_description);
 
   pango_font_description_free (font_description);
-
-  if (opt_tab_spec != NULL)
-    {
-      PangoTabArray *tabs;
-
-      tabs = parse_tab_spec (opt_tab_spec);
-      pango_layout_set_tabs (layout, tabs);
-      pango_tab_array_free (tabs);
-    }
 
   return layout;
 }
@@ -382,6 +369,11 @@ parse_hinting (ArgContext *arg_context,
 	       const char *arg,
 	       gpointer    data)
 {
+  static GEnumClass *class = NULL;
+
+  if (!class)
+    class = g_type_class_ref (PANGO_TYPE_ELLIPSIZE_MODE);
+
   if (strcmp (arg, "none") == 0)
     opt_hinting = HINT_NONE;
   else if (strcmp (arg, "auto") == 0)
@@ -390,68 +382,6 @@ parse_hinting (ArgContext *arg_context,
     opt_hinting = HINT_FULL;
   else
     fail ("--hinting option must be one of none/auto/full");
-}
-
-static PangoTabArray *
-parse_tab_spec (const char *p)
-{
-  PangoTabArray *tabs;
-  int tab_index;
-
-  tab_index = 0;
-  tabs = pango_tab_array_new (0, FALSE);
-
-  while (*p)
-    {
-      double pos;
-      int pos_units;
-      PangoTabAlign tab_align;
-      char *endpos;
-
-      pos = g_ascii_strtod (p, &endpos);
-      if (p == (const char *)endpos)
-        goto failed;
-      p = endpos;
-
-      pos_units =  (pos * opt_dpi * PANGO_SCALE + 32) / 72;
-
-      switch (*p)
-	{
-	  case 'c':
-	    p++;
-	    tab_align = PANGO_TAB_CENTER;
-	    break;
-
-	  case 'r':
-	    p++;
-	    tab_align = PANGO_TAB_RIGHT;
-	    break;
-
-	  case 'l':
-	    p++;
-	    tab_align = PANGO_TAB_LEFT;
-	    break;
-
-	  default:
-	    break;
-	}
-
-      if (*p == ',')
-        p++;
-      else if (*p)
-        goto failed;
-
-      pango_tab_array_set_tab (tabs, tab_index, tab_align, pos_units);
-      tab_index++;
-   }
-
-  return tabs;
-
-failed:
-  fail ("invalid --tab-spec option.\n"
-	"A tab spec should consist of a comma-separated list of tab-stop\n"
-	"positions in points optionally followed by one of 'l', 'c', and 'r'.");
-  return NULL;
 }
 
 void
@@ -492,8 +422,6 @@ parse_options (int argc, char *argv[])
       ARG_INT,      &opt_width, NULL },
     { "indent",     "Width in points to indent paragraphs",
       ARG_INT,      &opt_indent, NULL },
-    { "tab-spec",   "Tab stops and alignment in points, like '100l,300r,500c,700'",
-      ARG_STRING,   &opt_tab_spec, NULL },
     { "runs",       "Render text this many times",
       ARG_INT,      &opt_runs, NULL },
     { "pangorc",    "pangorc file to use (default is ./pangorc if available)",

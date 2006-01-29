@@ -73,4 +73,3 @@ extern int opt_runs;
 extern PangoEllipsizeMode opt_ellipsize;
 extern HintMode opt_hinting;
 extern const char *opt_pangorc;
-extern const char *opt_tab_spec;

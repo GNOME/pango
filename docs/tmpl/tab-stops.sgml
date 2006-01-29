@@ -34,8 +34,6 @@ A #PangoTabAlign specifies where a tab stop appears relative to the text.
 </para>
 
 @PANGO_TAB_LEFT: the tab stop appears to the left of the text.
-@PANGO_TAB_RIGHT: the tab stop appears to the right of the text.
-@PANGO_TAB_CENTER: the tab stop appears to the center of the text.
 
 <!-- ##### MACRO PANGO_TYPE_TAB_ALIGN ##### -->
 <para>
