@@ -32,9 +32,7 @@ endif
 pangoft2topgm_SOURCES =				\
 	pangoft2topgm.c				\
 	renderdemo.c				\
-	renderdemo.h				\
-	argcontext.c				\
-	argcontext.h
+	renderdemo.h				
 pangoft2topgm_LDADD =					\
 	../pango/libpango-$(PANGO_API_VERSION).la	\
 	../pango/libpangoft2-$(PANGO_API_VERSION).la	\
@@ -49,9 +47,7 @@ endif
 
 pango_xftview_SOURCES =				\
 	xftview.c				\
-	renderdemo.c				\
-	argcontext.c				\
-	argcontext.h
+	renderdemo.c				
 pango_xftview_LDADD =					\
 	../pango/libpango-$(PANGO_API_VERSION).la	\
 	../pango/libpangoft2-$(PANGO_API_VERSION).la	\
@@ -72,9 +68,7 @@ endif
 
 pango_cairoview_SOURCES =			\
 	cairoview.c				\
-	renderdemo.c				\
-	argcontext.c				\
-	argcontext.h
+	renderdemo.c				
 pango_cairoview_LDADD =					\
 	../pango/libpango-$(PANGO_API_VERSION).la	\
 	../pango/libpangoft2-$(PANGO_API_VERSION).la	\

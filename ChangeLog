@@ -1,5 +1,15 @@
 2006-01-30  Behdad Esfahbod  <behdad@gnome.org>
 
+	Bug 328314 – Examples should use GOption instead of argcontext.c
+	Patch from Antoine Dopffer.
+
+	* examples/renderdemo.c: Use GOption for parsing cmd-line
+	options.
+
+	* examples/renderdemo.c, examples/renderdemo.h: Removed.
+
+2006-01-30  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/opentype/ftxgsub.c: Handle GSUB Lookup type 8,
 	and ReverseChainContextualSubst table.  (bug #149696,
 	patch from Aamir Wali)
