@@ -1,3 +1,9 @@
+2006-01-30  Behdad Esfahbod  <behdad@gnome.org>
+
+	* pango/opentype/ftxgsub.c: Handle GSUB Lookup type 8,
+	and ReverseChainContextualSubst table.  (bug #149696,
+	patch from Aamir Wali)
+
 2006-01-29  Behdad Esfahbod  <behdad@gnome.org>
 
 	* modules/arabic/arabic-fc.c, modules/basic/basic-fc.c
