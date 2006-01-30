@@ -44,12 +44,12 @@ pango_shape (const gchar      *text,
   int i;
   int last_cluster = -1;
 
-  if (analysis->shape_engine)
+  if (G_LIKELY (analysis->shape_engine && analysis->font))
     {
       _pango_engine_shape_shape (analysis->shape_engine, analysis->font,
 				 text, length, analysis, glyphs);
 
-      if (G_UNLIKELY (glyphs->num_glyphs == 0 && analysis->font))
+      if (G_UNLIKELY (glyphs->num_glyphs == 0))
         {
 	  /* If a font has been correctly chosen, but no glyphs are output,
 	   * there's probably something wrong with the shaper.  Trying to be
@@ -81,7 +81,25 @@ pango_shape (const gchar      *text,
 	}
     }
   else
-    glyphs->num_glyphs = 0;
+    {
+      static struct {
+        guint font : 1; 
+	guint shape_engine : 1;
+      } warned = { FALSE, FALSE };
+      
+      if (!analysis->shape_engine && !warned.shape_engine)
+        {
+	  g_critical ("pango_shape called with analysis->shape_engine == NULL");
+	  warned.font = TRUE;
+	}
+      if (!analysis->font && !warned.font)
+        {
+	  g_critical ("pango_shape called with analysis->font == NULL");
+	  warned.font = TRUE;
+	}
+
+      glyphs->num_glyphs = 0;
+    }
 
   if (!glyphs->num_glyphs)
     {

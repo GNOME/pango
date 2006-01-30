@@ -280,6 +280,7 @@ AC_CHECK_HEADER(Carbon/Carbon.h, [have_atsui=true], [have_atsui=true])
 # Checks for Cairo
 #
 have_cairo=false
+have_cairo_png=false
 have_cairo_freetype=false
 have_cairo_win32=false
 have_cairo_atsui=false
@@ -291,26 +292,30 @@ if $have_cairo ; then
   m4_pattern_allow([PKG_CONFIG_DISABLE_UNINSTALLED])
   INSTALLED_CAIRO_LIBS=`PKG_CONFIG_DISABLE_UNINSTALLED=yes $PKG_CONFIG --libs cairo`
   LDFLAGS="$LDFLAGS $INSTALLED_CAIRO_LIBS"
+
+  AC_CHECK_LIB(cairo, cairo_surface_write_to_png, have_cairo_png=true, :)
+
+  have_cairo=false
   AC_CHECK_LIB(cairo, cairo_win32_scaled_font_select_font, have_cairo_win32=true, :)
   if $have_cairo_win32 && $have_win32; then
     AC_DEFINE(HAVE_CAIRO_WIN32, 1, [Whether Cairo uses the Win32 GDI for fonts])
-  else			  
-    AC_CHECK_LIB(cairo, cairo_ft_scaled_font_lock_face, have_cairo_freetype=true, :)
-    if $have_cairo_freetype && $have_freetype ; then
-      AC_DEFINE(HAVE_CAIRO_FREETYPE, 1, [Whether Cairo uses FreeType for fonts])
-    else
-      AC_CHECK_LIB(cairo, cairo_atsui_font_face_create_for_atsu_font_id, have_cairo_atsui=true, :)
-      if $have_cairo_atsui && $have_atsui ; then
-        AC_DEFINE(HAVE_CAIRO_ATSUI, 1, [Whether Cairo uses ATSUI for fonts])
-      else
-        have_cairo=false
-      fi
-    fi
+    have_cairo=true
+  fi
+  AC_CHECK_LIB(cairo, cairo_ft_scaled_font_lock_face, have_cairo_freetype=true, :)
+  if $have_cairo_freetype && $have_freetype ; then
+    AC_DEFINE(HAVE_CAIRO_FREETYPE, 1, [Whether Cairo uses FreeType for fonts])
+    have_cairo=true
+  fi
+  AC_CHECK_LIB(cairo, cairo_atsui_font_face_create_for_atsu_font_id, have_cairo_atsui=true, :)
+  if $have_cairo_atsui && $have_atsui ; then
+    AC_DEFINE(HAVE_CAIRO_ATSUI, 1, [Whether Cairo uses ATSUI for fonts])
+    have_cairo=true
   fi
   LDFLAGS=$pango_save_ldflags
 fi
 
 AM_CONDITIONAL(HAVE_CAIRO, $have_cairo)
+AM_CONDITIONAL(HAVE_CAIRO_PNG, $have_cairo_png)
 AM_CONDITIONAL(HAVE_CAIRO_WIN32, $have_cairo_win32 && $have_win32)
 AM_CONDITIONAL(HAVE_CAIRO_FREETYPE, $have_cairo_freetype && $have_freetype)
 AM_CONDITIONAL(HAVE_CAIRO_ATSUI, $have_cairo_atsui && $have_atsui)

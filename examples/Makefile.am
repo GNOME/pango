@@ -79,7 +79,7 @@ pango_cairoview_LDADD =					\
 ###################################################
 
 ###################################################
-if HAVE_CAIRO
+if HAVE_CAIRO_PNG
 noinst_PROGRAMS += cairosimple
 endif
 

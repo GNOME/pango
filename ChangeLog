@@ -6,7 +6,7 @@
 	* examples/renderdemo.c: Use GOption for parsing cmd-line
 	options.
 
-	* examples/renderdemo.c, examples/renderdemo.h: Removed.
+	* examples/argcontext.c, examples/argcontext.h: Removed.
 
 2006-01-30  Behdad Esfahbod  <behdad@gnome.org>
 
