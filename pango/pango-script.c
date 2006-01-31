@@ -146,7 +146,8 @@ pango_script_for_unichar (gunichar ch)
  * the iterator is freed with pango_script_iter_free ().x
  * 
  * Return value: the new script iterator, initialized
- *  to point at the first range in the text. If the string is
+ *  to point at the first range in the text, which should be
+ *  freed with pango_script_iter_free(). If the string is
  *  empty, it will point at an empty range.
  *
  * Since: 1.4

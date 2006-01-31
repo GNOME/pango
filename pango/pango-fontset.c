@@ -234,7 +234,8 @@ static PangoFontsetClass *simple_parent_class;	/* Parent class structure for Pan
  * 
  * Creates a new #PangoFontsetSimple for the given language.
  *
- * Return value: a newly-allocated #PangoFontsetSimple.
+ * Return value: the newly allocated #PangoFontsetSimple, which should
+ *               be freed with g_object_unref().
  **/
 PangoFontsetSimple *
 pango_fontset_simple_new (PangoLanguage *language)

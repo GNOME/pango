@@ -799,8 +799,8 @@ pango_xft_picture_render (Display          *display,
  * with the Xft library. You must call pango_xft_renderer_set_draw() before
  * using the renderer.
  *
- * Return value: the newly created #PangoXftRenderer object. Unref
- * with g_object_unref() when you are finished with it.
+ * Return value: the newly created #PangoXftRenderer, which should
+ *               be freed with g_object_unref().
  *
  * Since: 1.8
  **/

@@ -29,7 +29,8 @@
  * 
  * Creates a new #PangoItem structure initialized to default values.
  * 
- * Return value: the new #PangoItem
+ * Return value: the newly allocated #PangoItem, which should
+ *               be freed with pango_item_free().
  **/
 PangoItem *
 pango_item_new (void)
@@ -45,7 +46,8 @@ pango_item_new (void)
  * 
  * Copy an existing #PangoItem structure.
  * 
- * Return value: the new #PangoItem
+ * Return value: the newly allocated #PangoItem, which should
+ *               be freed with pango_item_free().
  **/
 PangoItem *
 pango_item_copy (PangoItem *item)
@@ -124,7 +126,8 @@ pango_item_get_type (void)
  * item isn't available, so pango_item_split() can't count the char
  * length of the split items itself.
  * 
- * Return value: new item representing text before @split_index
+ * Return value: new item representing text before @split_index, which
+ *               should be freed with pango_item_free().
  **/
 PangoItem*
 pango_item_split (PangoItem  *orig,

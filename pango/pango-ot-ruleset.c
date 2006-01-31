@@ -99,7 +99,8 @@ pango_ot_ruleset_finalize (GObject *object)
  *
  * Creates a new #PangoOTRuleset for the given OpenType info.
  *
- * Return value: a new #PangoOTRuleset.
+ * Return value: the newly allocated #PangoOTRuleset, which
+ *               should be freed with g_object_unref().
  **/
 PangoOTRuleset *
 pango_ot_ruleset_new (PangoOTInfo *info)

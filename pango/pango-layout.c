@@ -204,7 +204,9 @@ pango_layout_finalize (GObject *object)
  * Create a new #PangoLayout object with attributes initialized to
  * default values for a particular #PangoContext.
  * 
- * Return value: the new #PangoLayout, with a reference count of one.
+ * Return value: the newly allocated #PangoLayout, with a reference
+ *               count of one, which should be freed with
+ *               g_object_unref().
  **/
 PangoLayout *
 pango_layout_new (PangoContext *context)
@@ -229,7 +231,9 @@ pango_layout_new (PangoContext *context)
  * tab array, and text from the original layout are all copied by
  * value.
  * 
- * Return value: the new #PangoLayout.
+ * Return value: the newly allocated #PangoLayout, with a reference
+ *               count of one, which should be freed with
+ *               g_object_unref().
  **/
 PangoLayout*
 pango_layout_copy (PangoLayout *src)

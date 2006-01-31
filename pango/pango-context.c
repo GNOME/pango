@@ -112,7 +112,8 @@ pango_context_finalize (GObject *object)
  * gdk_pango_context_get_for_screen(), and 
  * gtk_widget_get_pango_context().
  * 
- * Return value: the new #PangoContext
+ * Return value: the newly allocated #PangoContext, which should
+ *               be freed with g_object_unref().
  **/
 PangoContext *
 pango_context_new (void)

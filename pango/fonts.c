@@ -80,8 +80,8 @@ static const PangoFontDescription pfd_defaults = {
  * 
  * Creates a new font description structure with all fields unset.
  * 
- * Return value: the newly-created #PangoFontDescription. Use
- * pango_font_description_free() to free the result.
+ * Return value: the newly allocated #PangoFontDescription, which
+ *               should be freed using pango_font_description_free().
  **/
 PangoFontDescription *
 pango_font_description_new (void)
@@ -591,8 +591,8 @@ pango_font_description_better_match (const PangoFontDescription *desc,
  * 
  * Make a copy of a #PangoFontDescription.
  * 
- * Return value: a newly-allocated #PangoFontDescription. This value
- *               must be freed using pango_font_description_free().
+ * Return value: the newly allocated #PangoFontDescription, which should
+ *               be freed with pango_font_description_free().
  **/
 PangoFontDescription *
 pango_font_description_copy  (const PangoFontDescription  *desc)
@@ -619,8 +619,8 @@ pango_font_description_copy  (const PangoFontDescription  *desc)
  * be used until @desc is modififed or freed. This is meant to be used
  * when the copy is only needed temporarily.
  * 
- * Return value: a newly-allocated #PangoFontDescription. This value
- *               must be freed using pango_font_description_free().
+ * Return value: the newly allocated #PangoFontDescription, which should
+ *               be freed with pango_font_description_free().
  **/
 PangoFontDescription *
 pango_font_description_copy_static (const PangoFontDescription *desc)

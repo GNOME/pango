@@ -32,7 +32,8 @@
  *
  * Creates a new #PangoOTBuffer for the given OpenType font.
  *
- * Return value: the new #PangoOTBuffer
+ * Return value: the newly allocated #PangoOTBuffer, which should
+ *               be freed with pango_ot_buffer_destroy().
  *
  * Since: 1.4
  **/ 
