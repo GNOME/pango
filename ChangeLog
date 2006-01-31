@@ -1,5 +1,13 @@
 2006-01-31  Behdad Esfahbod  <behdad@gnome.org>
 
+	Bug 328313 – Use GKeyFile for parsing pangorc
+	Patch from Antoine Dopffer.
+
+	* pango/pango-utils.c (read_config_file): Use GKeyFile to parse
+	config file.
+
+2006-01-31  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/fonts.c, pango/glyphstring.c pango/pango-attributes.c
 	pango/pango-color.c, pango/pango-context.c
 	pango/pango-coverage.c, pango/pango-fontset.c

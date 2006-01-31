@@ -456,137 +456,71 @@ static GHashTable *config_hash = NULL;
 static void
 read_config_file (const char *filename, gboolean enoent_error)
 {
-  FILE *file;
-    
-  GString *line_buffer;
-  GString *tmp_buffer1;
-  GString *tmp_buffer2;
-  char *errstring = NULL;
-  const char *pos;
-  char *section = NULL;
-  int line = 0;
-
-  file = g_fopen (filename, "r");
-  if (!file)
+  GKeyFile *key_file = g_key_file_new();
+  GError *key_file_error = NULL;
+  gchar **groups;
+  gsize groups_length = 0;
+  gsize i = 0;
+  
+  if (!g_key_file_load_from_file(key_file,filename, 0, &key_file_error))
     {
-      if (errno != ENOENT || enoent_error)
-	g_printerr ("Pango:%s: Error opening config file: %s\n",
-		    filename, g_strerror (errno));
+      if (key_file_error)
+	{
+	  if (key_file_error->domain != G_FILE_ERROR || key_file_error->code != G_FILE_ERROR_NOENT || enoent_error)
+	    {
+	      g_warning ("error opening config file '%s': %s\n",
+			  filename, key_file_error->message);
+	    }
+	  g_error_free(key_file_error);
+	}
+      g_key_file_free(key_file);
       return;
     }
   
-  line_buffer = g_string_new (NULL);
-  tmp_buffer1 = g_string_new (NULL);
-  tmp_buffer2 = g_string_new (NULL);
-
-  while (pango_read_line (file, line_buffer))
+  groups = g_key_file_get_groups (key_file, &groups_length);
+  while (i < groups_length)
     {
-      line++;
-
-      pos = line_buffer->str;
-      if (!pango_skip_space (&pos))
-	continue;
-
-      if (*pos == '[')	/* Section */
-	{
-	  pos++;
-	  if (!pango_skip_space (&pos) ||
-	      !pango_scan_word (&pos, tmp_buffer1) ||
-	      !pango_skip_space (&pos) ||
-	      *(pos++) != ']' ||
-	      pango_skip_space (&pos))
-	    {
-	      errstring = g_strdup ("Error parsing [SECTION] declaration");
-	      goto error;
-	    }
-
-	  section = g_strdup (tmp_buffer1->str);
-	}
-      else			/* Key */
-	{
-	  gboolean empty = FALSE;
-	  gboolean append = FALSE;
-	  char *v;
-
-	  if (!section)
-	    {
-	      errstring = g_strdup ("A [SECTION] declaration must occur first");
-	      goto error;
-	    }
-
-	  if (!pango_scan_word (&pos, tmp_buffer1) ||
-	      !pango_skip_space (&pos))
-	    {
-	      errstring = g_strdup ("Line is not of the form KEY=VALUE or KEY+=VALUE");
-	      goto error;
-	    }
-	  if (*pos == '+')
-	    {
-	      append = TRUE;
-	      pos++;
-	    }
-
-	  if (*(pos++) != '=')
-	    {
-	      errstring = g_strdup ("Line is not of the form KEY=VALUE or KEY+=VALUE");
-	      goto error;
-	    }
-	    
-	  if (!pango_skip_space (&pos))
-	    {
-	      empty = TRUE;
-	    }
-	  else
-	    {
-	      if (!pango_scan_string (&pos, tmp_buffer2))
-		{
-		  errstring = g_strdup ("Error parsing value string");
-		  goto error;
-		}
-	      if (pango_skip_space (&pos))
-		{
-		  errstring = g_strdup ("Junk after value string");
-		  goto error;
-		}
-	    }
-
-	  g_string_prepend_c (tmp_buffer1, '/');
-	  g_string_prepend (tmp_buffer1, section);
-
-	  if (append)
-	    {
-	      /* Get any existing value */
-	      v = g_hash_table_lookup (config_hash, tmp_buffer1->str);
-	      if (v)
-		g_string_prepend (tmp_buffer2, v);
-	    }
-	      
-	  if (!empty)
-	    {
-	      g_hash_table_insert (config_hash,
-				   g_strdup (tmp_buffer1->str),
-				   g_strdup (tmp_buffer2->str));
-	    }
-	}
-    }
+      gsize keys_length = 0;
+      gchar *current_group = groups[i];
+      GError *keys_error = NULL;
+      gsize j = 0;
+      gchar **keys = g_key_file_get_keys(key_file,current_group, &keys_length,&keys_error);
       
-  if (ferror (file))
-    errstring = g_strdup (g_strerror(errno));
-  
- error:
-
-  if (errstring)
-    {
-      g_printerr ("Pango:%s:%d: %s\n", filename, line, errstring);
-      g_free (errstring);
+      if (keys)
+	{
+	  while ( j < keys_length)
+	    {
+	      gchar *key = keys[j];
+	      GError *key_error = NULL;
+	      gchar *value =  g_key_file_get_value(key_file,current_group,key, &key_error);
+	      if (value != NULL)
+		{
+		  g_hash_table_insert (config_hash,
+				       g_strdup (key),
+				       g_strdup (value));
+		  free(value);
+		}
+	      if (key_error)
+		{
+		  g_warning ("error getting key '%s' in config file '%s'\n",
+			     key, filename);
+		  g_error_free(key_error);
+		}
+	      j++;
+	    }
+	  g_strfreev(keys);
+	  
+	}
+      if (keys_error)
+	{
+	  g_warning ("error getting keys in group '%s' of config file '%s'\n",
+		     filename, current_group);
+	  g_error_free(keys_error);
+	}
+      i++;
     }
-      
-  g_free (section);
-  g_string_free (line_buffer, TRUE);
-  g_string_free (tmp_buffer1, TRUE);
-  g_string_free (tmp_buffer2, TRUE);
-
-  fclose (file);
+  g_strfreev(groups);
+  g_key_file_free(key_file);
 }
 
 static void
@@ -752,7 +686,7 @@ pango_parse_style (const char *str,
       break;
     }
   if (warn)
-    g_warning ("Style must be normal, italic, or oblique");
+    g_warning ("style must be normal, italic, or oblique");
   
   return FALSE;
 }
@@ -799,7 +733,7 @@ pango_parse_variant (const char   *str,
     }
   
   if (warn)
-    g_warning ("Variant must be normal or small_caps");
+    g_warning ("variant must be normal or small_caps");
   return FALSE;
 }
 
@@ -887,7 +821,7 @@ pango_parse_weight (const char  *str,
 	if (*end != '\0')
 	  {
 	    if (warn)
-	      g_warning ("Cannot parse numerical weight '%s'", str);
+	      g_warning ("failed parsing numerical weight '%s'", str);
 	    return FALSE;
 	  }
 	return TRUE;
@@ -895,7 +829,7 @@ pango_parse_weight (const char  *str,
     }
   
   if (warn)
-    g_warning ("Weight must be ultralight, light, normal, bold, ultrabold, heavy, or an integer");
+    g_warning ("weight must be ultralight, light, normal, bold, ultrabold, heavy, or an integer");
   return FALSE;
 }
 
@@ -992,7 +926,7 @@ pango_parse_stretch (const char   *str,
     }
 
   if (warn)
-    g_warning ("Stretch must be ultra_condensed, extra_condensed, condensed, semi_condensed, normal, semi_expanded, expanded, extra_expanded, or ultra_expanded");
+    g_warning ("stretch must be ultra_condensed, extra_condensed, condensed, semi_condensed, normal, semi_expanded, expanded, extra_expanded, or ultra_expanded");
   return FALSE;
 }
 
@@ -1709,7 +1643,7 @@ read_alias_file (const char *filename)
 
   if (errstring)
     {
-      g_printerr ("Pango:%s:%d: %s\n", filename, line, errstring);
+      g_warning ("error reading alias file: %s:%d: %s\n", filename, line, errstring);
       g_free (errstring);
     }
       
