@@ -21,9 +21,12 @@
 
 #include <config.h>
 
+#include "pango-impl-utils.h"
 #include "pangocairo.h"
 #include "pangocairo-private.h"
 #include "pango-utils.h"
+
+PangoCairoWarningHistory _pango_cairo_warning_history = {};
 
 GType
 pango_cairo_font_get_type (void)
@@ -68,7 +71,15 @@ void
 _pango_cairo_font_install (PangoCairoFont *font,
 			   cairo_t        *cr)
 {
-  g_return_if_fail (PANGO_IS_CAIRO_FONT (font));
+  if (G_UNLIKELY (!PANGO_IS_CAIRO_FONT (font)))
+    {
+      if (!_pango_cairo_warning_history.font_install)
+        {
+	  _pango_cairo_warning_history.font_install = TRUE;
+	  g_critical ("_pango_cairo_font_install called with font == NULL, expect ugly output");
+	}
+      return;
+    }
   
   (* PANGO_CAIRO_FONT_GET_IFACE (font)->install) (font, cr);
 }

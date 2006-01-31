@@ -24,6 +24,7 @@
 #include <math.h>
 #include <string.h>
 
+#include "pango-impl-utils.h"
 #include "pango-types.h"
 #include "pango-font.h"
 #include "pango-fontmap.h"
@@ -1163,7 +1164,30 @@ pango_font_get_glyph_extents  (PangoFont      *font,
 			       PangoRectangle *ink_rect,
 			       PangoRectangle *logical_rect)
 {
-  g_return_if_fail (font != NULL);
+  if (G_UNLIKELY (font == NULL))
+    {
+      
+      if (!_pango_warning_history.get_glyph_extents)
+        {
+	  _pango_warning_history.get_glyph_extents = TRUE;
+	  g_critical ("pango_font_get_glyph_extents called with font == NULL, expect ugly output");
+	}
+      if (ink_rect)
+        {
+	  ink_rect->x = 0;
+	  ink_rect->y = 0;
+	  ink_rect->height = 12 * PANGO_SCALE;
+	  ink_rect->width = 12 * PANGO_SCALE;
+        }
+      if (logical_rect)
+        {
+	  logical_rect->x = 0;
+	  logical_rect->y = 0;
+	  logical_rect->height = 12 * PANGO_SCALE;
+	  logical_rect->width = 12 * PANGO_SCALE;
+	}
+      return;
+    }
 
   PANGO_FONT_GET_CLASS (font)->get_glyph_extents (font, glyph, ink_rect, logical_rect);
 }

@@ -103,6 +103,14 @@ void _pango_cairo_get_glyph_extents_missing (PangoCairoFont *cfont,
 					     PangoRectangle *ink_rect,
 					     PangoRectangle *logical_rect);
 
+typedef struct _PangoCairoWarningHistory PangoCairoWarningHistory;
+
+struct _PangoCairoWarningHistory {
+  guint font_install		: 1;
+}; 
+
+extern PangoCairoWarningHistory _pango_cairo_warning_history;
+
 G_END_DECLS
 
 #endif /* __PANGOCAIRO_PRIVATE_H__ */

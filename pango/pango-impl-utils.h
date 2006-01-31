@@ -72,6 +72,18 @@ prefix ## _get_type (void)				                   \
 			 class_init, instance_init,		\
 			 parent_type, G_TYPE_FLAG_ABSTRACT)
 
+
+
+typedef struct _PangoWarningHistory PangoWarningHistory;
+
+struct _PangoWarningHistory {
+  guint shape_font		: 1; 
+  guint shape_shape_engine	: 1;
+  guint get_glyph_extents	: 1;
+}; 
+
+extern PangoWarningHistory _pango_warning_history;
+
 G_END_DECLS
 
 #endif /* __PANGO_IMPL_UTILS_H__ */

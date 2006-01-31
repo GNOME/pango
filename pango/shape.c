@@ -20,8 +20,10 @@
  */
 
 #include <config.h>
-#include <pango/pango-glyph.h>
-#include <pango/pango-engine-private.h>
+
+#include "pango-impl-utils.h"
+#include "pango-glyph.h"
+#include "pango-engine-private.h"
 
 /**
  * pango_shape:
@@ -82,20 +84,15 @@ pango_shape (const gchar      *text,
     }
   else
     {
-      static struct {
-        guint font : 1; 
-	guint shape_engine : 1;
-      } warned = { FALSE, FALSE };
-      
-      if (!analysis->shape_engine && !warned.shape_engine)
+      if (!analysis->shape_engine && !_pango_warning_history.shape_shape_engine)
         {
-	  g_critical ("pango_shape called with analysis->shape_engine == NULL");
-	  warned.font = TRUE;
+	  _pango_warning_history.shape_font = TRUE;
+	  g_critical ("pango_shape called with analysis->shape_engine == NULL, expect ugly output");
 	}
-      if (!analysis->font && !warned.font)
+      if (!analysis->font && !_pango_warning_history.shape_font)
         {
-	  g_critical ("pango_shape called with analysis->font == NULL");
-	  warned.font = TRUE;
+	  _pango_warning_history.shape_font = TRUE;
+	  g_critical ("pango_shape called with analysis->font == NULL, expect ugly output");
 	}
 
       glyphs->num_glyphs = 0;

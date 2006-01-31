@@ -1,5 +1,18 @@
 2006-01-30  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango/shape.c (pango_shape):
+	* pango/fonts.c (pango_font_get_glyph_extents):
+	* pango/pangocairo-font.c (_pango_cairo_font_install):
+	Improve error handling in high-frequency functions:  Only warn
+	once.
+
+	* pango-impl-utils.h, pangoutils.h:
+	* pangocairo-private.h, pangocairo-font.c:
+	Add machinery for above: _pango_warning_history and
+	_pango_cairo_warning_history.
+
+2006-01-30  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 328314 – Examples should use GOption instead of argcontext.c
 	Patch from Antoine Dopffer.
 

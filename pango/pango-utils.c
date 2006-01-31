@@ -25,8 +25,9 @@
 #include <string.h>
 #include <stdlib.h>
 
-#include "pango-font.h"
+#include "pango-impl-utils.h"
 #include "pango-utils.h"
+#include "pango-font.h"
 
 #include <glib/gstdio.h>
 
@@ -56,6 +57,8 @@ struct PangoAlias
 };
 
 static GHashTable *pango_aliases_ht = NULL;
+
+PangoWarningHistory _pango_warning_history = {};
 
 /**
  * pango_trim_string:
@@ -1461,7 +1464,6 @@ pango_log2vis_get_embedding_levels (const gchar    *str,
 				    PangoDirection *pbase_dir)
 {
   FriBidiCharType fribidi_base_dir;
-  gboolean result;
   guint8 *embedding_levels_list;
 
   switch (*pbase_dir)
