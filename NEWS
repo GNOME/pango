@@ -1,10 +1,17 @@
+Overview of changes between 1.11.2 and 1.11.3
+=============================================
+* Do not crash if the shapers fail.
+* Use g_slice for various struct allocations.
+* 100% symbol coverage in docs.
+* Misc bug fixes and documentation improvements.
+* Janitory works, like removing unneeded files.
+
 Overview of changes between 1.11.1 and 1.11.2
 =============================================
 * Draw hex box on missing glyphs for cairo-fc backend.
 * New --with-dynamic-modules option added to configure.
 * Use g_slice for various small memory allocations [Matthias Clasen]
 * Misc bug fixes, optimizations, and documentation improvements.
-
 
 Overview of changes between 1.11.0 and 1.11.1
 =============================================

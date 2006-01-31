@@ -1,5 +1,13 @@
 2006-01-30  Behdad Esfahbod  <behdad@gnome.org>
 
+	* === Released 1.11.3 ===
+
+	* configure.in: Version 1.11.3
+
+	* NEWS: Updated.
+
+2006-01-30  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/shape.c (pango_shape):
 	* pango/fonts.c (pango_font_get_glyph_extents):
 	* pango/pangocairo-font.c (_pango_cairo_font_install):
