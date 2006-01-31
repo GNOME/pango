@@ -62,7 +62,8 @@ init_tabs (PangoTabArray *array, gint start, gint end)
  * pixel units if @positions_in_pixels is %TRUE, otherwise in Pango
  * units. All stops are initially at position 0.
  * 
- * Return value: the new #PangoTabArray
+ * Return value: the newly allocated #PangoTabArray, which should
+ *               be freed with pango_tab_array_free().
  **/
 PangoTabArray*
 pango_tab_array_new (gint initial_size,
@@ -107,7 +108,8 @@ pango_tab_array_new (gint initial_size,
  * tab stop. You <emphasis>must</emphasis> provide an alignment
  * and position for @size tab stops.
  * 
- * Return value: the new #PangoTabArray
+ * Return value: the newly allocated #PangoTabArray, which should
+ *               be freed with pango_tab_array_free().
  **/
 PangoTabArray  *
 pango_tab_array_new_with_positions (gint           size,
@@ -170,7 +172,8 @@ pango_tab_array_get_type (void)
  * 
  * Copies a #PangoTabArray
  * 
- * Return value: the new #PangoTabArray.
+ * Return value: the newly allocated #PangoTabArray, which should
+ *               be freed with pango_tab_array_free().
  **/
 PangoTabArray*
 pango_tab_array_copy (PangoTabArray *src)

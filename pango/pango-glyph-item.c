@@ -30,7 +30,7 @@
 /**
  * pango_glyph_item_split:
  * @orig: a #PangoItem
- * @text: text to which positions in @orig apply.
+ * @text: text to which positions in @orig apply
  * @split_index: byte index of position to split item, relative to the start of the item
  * 
  * Modifies @orig to cover only the text after @split_index, and
@@ -42,9 +42,11 @@
  * zero-length item).
  *
  * This function is similar in function to pango_item_split() (and uses
- * it internally)
+ * it internally.)
  * 
- * Return value: new item representing text before @split_index
+ * Return value: the newly allocated item representing text before
+ *               @split_index, which should be freed
+ *               with pango_glyph_item_free().
  *
  * Since: 1.2
  **/

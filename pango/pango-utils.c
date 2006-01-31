@@ -1015,8 +1015,8 @@ pango_matrix_get_type (void)
  * 
  * Copies a #PangoMatrix.
  * 
- * Return value: a copy of @matrix. The result must be freed with
- *  pango_matrix_free().
+ * Return value: the newly allocated #PangoMatrix, which should
+ *               be freed with pango_matrix_free().
  *
  * Since: 1.6
  **/

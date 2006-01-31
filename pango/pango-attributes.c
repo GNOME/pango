@@ -56,7 +56,7 @@ static PangoAttribute *pango_attr_size_new_internal (int                   size,
 
 /**
  * pango_attr_type_register:
- * @name: an identifier for the type. (Currently unused.)
+ * @name: an identifier for the type (currently unused.)
  * 
  * Allocate a new attribute type ID.
  * 
@@ -76,7 +76,8 @@ pango_attr_type_register (const gchar *name)
  * 
  * Make a copy of an attribute.
  * 
- * Return value: the new #PangoAttribute.
+ * Return value: the newly allocated #PangoAttribute, which should be
+ *               freed with pango_attribute_destroy().
  **/
 PangoAttribute *
 pango_attribute_copy (const PangoAttribute *attr)
@@ -168,7 +169,8 @@ pango_attr_string_new (const PangoAttrClass *klass,
  * 
  * Create a new font family attribute.
  * 
- * Return value: the new #PangoAttribute.
+ * Return value: the newly allocated #PangoAttribute, which should be
+ *               freed with pango_attribute_destroy().
  **/
 PangoAttribute *
 pango_attr_family_new (const char *family)
@@ -210,7 +212,8 @@ pango_attr_language_equal (const PangoAttribute *attr1,
  * 
  * Create a new language tag attribute. 
  * 
- * Return value: the new #PangoAttribute.
+ * Return value: the newly allocated #PangoAttribute, which should be
+ *               freed with pango_attribute_destroy().
  **/
 PangoAttribute *
 pango_attr_language_new (PangoLanguage *language)
@@ -286,7 +289,8 @@ pango_attr_color_new (const PangoAttrClass *klass,
  * 
  * Create a new foreground color attribute.
  * 
- * Return value: the new #PangoAttribute.
+ * Return value: the newly allocated #PangoAttribute, which should be
+ *               freed with pango_attribute_destroy().
  **/
 PangoAttribute *
 pango_attr_foreground_new (guint16 red,
@@ -311,7 +315,8 @@ pango_attr_foreground_new (guint16 red,
  * 
  * Create a new background color attribute.
  * 
- * Return value: the new #PangoAttribute.
+ * Return value: the newly allocated #PangoAttribute, which should be
+ *               freed with pango_attribute_destroy().
  **/
 PangoAttribute *
 pango_attr_background_new (guint16 red,
@@ -458,7 +463,8 @@ pango_attr_size_new_internal (int size,
  * 
  * Create a new font-size attribute in fractional points.
  * 
- * Return value: the new #PangoAttribute.
+ * Return value: the newly allocated #PangoAttribute, which should be
+ *               freed with pango_attribute_destroy().
  **/
 PangoAttribute *
 pango_attr_size_new (int size)
@@ -472,7 +478,8 @@ pango_attr_size_new (int size)
  * 
  * Create a new font-size attribute in device units.
  * 
- * Return value: the new #PangoAttribute.
+ * Return value: the newly allocated #PangoAttribute, which should be
+ *               freed with pango_attribute_destroy().
  *
  * Since: 1.8
  **/
@@ -488,7 +495,8 @@ pango_attr_size_new_absolute (int size)
  * 
  * Create a new font slant style attribute.
  * 
- * Return value: the new #PangoAttribute.
+ * Return value: the newly allocated #PangoAttribute, which should be
+ *               freed with pango_attribute_destroy().
  **/
 PangoAttribute *
 pango_attr_style_new (PangoStyle style)
@@ -509,7 +517,8 @@ pango_attr_style_new (PangoStyle style)
  * 
  * Create a new font weight attribute.
  * 
- * Return value: the new #PangoAttribute.
+ * Return value: the newly allocated #PangoAttribute, which should be
+ *               freed with pango_attribute_destroy().
  **/
 PangoAttribute *
 pango_attr_weight_new (PangoWeight weight)
@@ -530,7 +539,8 @@ pango_attr_weight_new (PangoWeight weight)
  *
  * Create a new font variant attribute (normal or small caps)
  * 
- * Return value: the new #PangoAttribute.
+ * Return value: the newly allocated #PangoAttribute, which should be
+ *               freed with pango_attribute_destroy().
  **/
 PangoAttribute *
 pango_attr_variant_new (PangoVariant variant)
@@ -551,7 +561,8 @@ pango_attr_variant_new (PangoVariant variant)
  * 
  * Create a new font stretch attribute
  * 
- * Return value: the new #PangoAttribute.
+ * Return value: the newly allocated #PangoAttribute, which should be
+ *               freed with pango_attribute_destroy().
  **/
 PangoAttribute *
 pango_attr_stretch_new (PangoStretch  stretch)
@@ -601,7 +612,8 @@ pango_attr_font_desc_equal (const PangoAttribute *attr1,
  * allows setting family, style, weight, variant, stretch,
  * and size simultaneously.
  * 
- * Return value:  the new #PangoAttribute.
+ * Return value:  the newly allocated #PangoAttribute, which should be
+ *               freed with pango_attribute_destroy().
  **/
 PangoAttribute *
 pango_attr_font_desc_new (const PangoFontDescription *desc)
@@ -627,7 +639,8 @@ pango_attr_font_desc_new (const PangoFontDescription *desc)
  * 
  * Create a new underline-style attribute.
  * 
- * Return value: the new #PangoAttribute.
+ * Return value: the newly allocated #PangoAttribute, which should be
+ *               freed with pango_attribute_destroy().
  **/
 PangoAttribute *
 pango_attr_underline_new (PangoUnderline underline)
@@ -652,7 +665,8 @@ pango_attr_underline_new (PangoUnderline underline)
  * modifies the color of underlines. If not set, underlines
  * will use the foreground color.
  * 
- * Return value: the new #PangoAttribute.
+ * Return value: the newly allocated #PangoAttribute, which should be
+ *               freed with pango_attribute_destroy().
  *
  * Since: 1.8
  **/
@@ -677,7 +691,8 @@ pango_attr_underline_color_new (guint16 red,
  * 
  * Create a new strike-through attribute.
  * 
- * Return value: the new #PangoAttribute.
+ * Return value: the newly allocated #PangoAttribute, which should be
+ *               freed with pango_attribute_destroy().
  **/
 PangoAttribute *
 pango_attr_strikethrough_new (gboolean strikethrough)
@@ -702,7 +717,8 @@ pango_attr_strikethrough_new (gboolean strikethrough)
  * modifies the color of strikethrough lines. If not set, strikethrough
  * lines will use the foreground color.
  * 
- * Return value: the new #PangoAttribute.
+ * Return value: the newly allocated #PangoAttribute, which should be
+ *               freed with pango_attribute_destroy().
  *
  * Since: 1.8
  **/
@@ -728,7 +744,8 @@ pango_attr_strikethrough_color_new (guint16 red,
  * 
  * Create a new baseline displacement attribute.
  * 
- * Return value: the new #PangoAttribute.
+ * Return value: the newly allocated #PangoAttribute, which should be
+ *               freed with pango_attribute_destroy().
  **/
 PangoAttribute *
 pango_attr_rise_new (int rise)
@@ -750,7 +767,8 @@ pango_attr_rise_new (int rise)
  * Create a new font size scale attribute. The base font for the
  * affected text will have its size multiplied by @scale_factor.
  * 
- * Return value: the new #PangoAttribute.
+ * Return value: the newly allocated #PangoAttribute, which should be
+ *               freed with pango_attribute_destroy().
  **/
 PangoAttribute*
 pango_attr_scale_new (double scale_factor)
@@ -777,7 +795,8 @@ pango_attr_scale_new (double scale_factor)
  * other fonts on the system that might contain the characters in the
  * text.
  * 
- * Return value: the new #PangoAttribute.
+ * Return value: the newly allocated #PangoAttribute, which should be
+ *               freed with pango_attribute_destroy().
  *
  * Since: 1.4
  **/
@@ -801,7 +820,8 @@ pango_attr_fallback_new (gboolean enable_fallback)
  * 
  * Create a new letter-spacing attribute.
  * 
- * Return value: the new #PangoAttribute.
+ * Return value: the newly allocated #PangoAttribute, which should be
+ *               freed with pango_attribute_destroy().
  *
  * Since: 1.6
  **/
@@ -877,7 +897,8 @@ pango_attr_shape_equal (const PangoAttribute *attr1,
  * provided; this pointer can be accessed when later
  * rendering the glyph.
  * 
- * Return value: the new #PangoAttribute.
+ * Return value: the newly allocated #PangoAttribute, which should be
+ *               freed with pango_attribute_destroy().
  *
  * Since: 1.8
  **/
@@ -921,7 +942,8 @@ pango_attr_shape_new_with_data (const PangoRectangle  *ink_rect,
  * particular glyph. This might be used, for instance, for
  * embedding a picture or a widget inside a PangoLayout.
  * 
- * Return value: the new #PangoAttribute
+ * Return value: the newly allocated #PangoAttribute, which should be
+ *               freed with pango_attribute_destroy().
  **/
 PangoAttribute *
 pango_attr_shape_new (const PangoRectangle *ink_rect,
@@ -950,9 +972,10 @@ pango_attr_list_get_type (void)
 /**
  * pango_attr_list_new:
  * 
- * Create a new empty attribute list with a reference count of 1.
+ * Create a new empty attribute list with a reference count of one.
  * 
- * Return value: new #PangoAttrList.
+ * Return value: the newly allocated #PangoAttrList, which should
+ *               be freed with pango_attr_list_unref().
  **/
 PangoAttrList *
 pango_attr_list_new (void)
@@ -1024,9 +1047,11 @@ pango_attr_list_unref (PangoAttrList *list)
  * pango_attr_list_copy:
  * @list: a #PangoAttrList
  * 
- * Copy @list and return an identical, new list.
+ * Copy @list and return an identical new list.
  *
- * Return value: new attribute list
+ * Return value: the newly allocated #PangoAttrList, with a
+ *               reference count of one, which should
+ *               be freed with pango_attr_list_unref().
  **/
 PangoAttrList *
 pango_attr_list_copy (PangoAttrList *list)
@@ -1440,9 +1465,10 @@ pango_attr_list_splice (PangoAttrList *list,
  * @list: a #PangoAttrList
  * 
  * Create a iterator initialized to the beginning of the list.
+ * @list must not be modified until this iterator is freed.
  * 
- * Return value: a new #PangoIterator. @list must not be modified
- *               until this iterator is freed with pango_attr_iterator_destroy().
+ * Return value: the newly allocated #PangoAttrIterator, which should
+ *               be freed with pango_attr_iterator_destroy().
  **/
 PangoAttrIterator *
 pango_attr_list_get_iterator (PangoAttrList  *list)
@@ -1552,7 +1578,8 @@ pango_attr_iterator_next (PangoAttrIterator *iterator)
  * 
  * Copy a #PangoAttrIterator
  *
- * Return value: Copy of @iterator
+ * Return value: the newly allocated #PangoAttrIterator, which should
+ *               be freed with pango_attr_iterator_destroy().
  **/
 PangoAttrIterator *
 pango_attr_iterator_copy (PangoAttrIterator *iterator)

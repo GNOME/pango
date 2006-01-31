@@ -1,3 +1,17 @@
+2006-01-31  Behdad Esfahbod  <behdad@gnome.org>
+
+	* pango/fonts.c, pango/glyphstring.c pango/pango-attributes.c
+	pango/pango-color.c, pango/pango-context.c
+	pango/pango-coverage.c, pango/pango-fontset.c
+	pango/pango-glyph-item.c, pango/pango-item.c
+	pango/pango-layout.c, pango/opentype/pango-ot-buffer.c
+	pango/opentype/pango-ot-info.c, pango/opentype/pango-ot-ruleset.c
+	pango/pango-script.c, pango/pango-tabs.c pango/pango-utils.c
+	pango/pangocairo-fcfontmap.c, pango/pangocairo-fontmap.c
+	pango/pangox-fontcache.c, pango/pangoxft-render.c:
+	Improve documentation for functions allocating memory,
+	on how the object should be freed.
+
 2006-01-28  Behdad Esfahbod  <behdad@gnome.org>
 
 	* doc/tmpl/opentype.sgml: Document PangoOTBuffer and PangoOTGlyph.

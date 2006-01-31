@@ -74,8 +74,8 @@ pango_cairo_font_map_get_type (void)
  * You generally should only use the #PangoFontMap and
  * #PangoCairoFontMap interfaces on the returned object.
  * 
- * Return value: the newly created fontmap object. Free
- * with g_object_unref().
+ * Return value: the newly allocated #PangoFontMap, which should
+ *               be freed with g_object_unref().
  *
  * Since: 1.10
  **/

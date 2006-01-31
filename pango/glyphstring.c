@@ -28,7 +28,8 @@
  *
  * Create a new PangoGlyphString.
  *
- * Returns the new PangoGlyphString
+ * Return value: the newly allocated #PangoGlyphString, which
+ *               should be freed with pango_glyph_string_free().
  */
 PangoGlyphString *
 pango_glyph_string_new (void)
@@ -90,7 +91,8 @@ pango_glyph_string_get_type (void)
  *
  *  Copy a glyph string and associated storage.
  *
- * Returns the copied PangoGlyphString
+ * Return value: the newly allocated #PangoGlyphString, which
+ *               should be freed with pango_glyph_string_free().
  */
 PangoGlyphString *
 pango_glyph_string_copy (PangoGlyphString *string)
@@ -111,7 +113,7 @@ pango_glyph_string_copy (PangoGlyphString *string)
  * pango_glyph_string_free:
  * @string:    a PangoGlyphString.
  *
- *  Free a glyph string and associated storage.
+ * Free a glyph string and associated storage.
  */
 void
 pango_glyph_string_free (PangoGlyphString *string)

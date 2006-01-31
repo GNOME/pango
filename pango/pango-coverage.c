@@ -51,8 +51,10 @@ struct _PangoCoverage
  * 
  * Create a new #PangoCoverage
  * 
- * Return value: a new PangoCoverage object, initialized to %PANGO_COVERAGE_NONE
- *               with a reference count of 0.
+ * Return value: the newly allocated #PangoCoverage,
+ *               initialized to %PANGO_COVERAGE_NONE
+ *               with a reference count of one, which
+ *               should be freed with pango_coverage_unref().
  **/
 PangoCoverage *
 pango_coverage_new (void)
@@ -74,7 +76,9 @@ pango_coverage_new (void)
  * since we refcount the structure. Mail otaylor@redhat.com if you
  * use it.)
  * 
- * Return value: a copy of @coverage with a reference count of 1
+ * Return value: the newly allocated #PangoCoverage,
+ *               with a reference count of one, which
+ *               should be freed with pango_coverage_unref().
  **/
 PangoCoverage *
 pango_coverage_copy (PangoCoverage *coverage)

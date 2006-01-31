@@ -86,8 +86,8 @@ pango_x_font_cache_free (PangoXFontCache *cache)
  * 
  * Creates a font cache for the specified display.
  * 
- * Return value: The new font cache. This must be freed with
- * pango_x_font_cache_free().
+ * Return value: The newly allocated #PangoXFontCache, which should be
+ *               freed with pango_x_font_cache_free().
  **/
 PangoXFontCache *
 pango_x_font_cache_new (Display *display)
