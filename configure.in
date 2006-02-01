@@ -285,7 +285,7 @@ have_cairo_freetype=false
 have_cairo_win32=false
 have_cairo_atsui=false
 
-PKG_CHECK_MODULES(CAIRO, cairo >= 0.5.2-head, have_cairo=true, :)
+PKG_CHECK_MODULES(CAIRO, cairo >= 1.1.1, have_cairo=true, :)
    
 if $have_cairo ; then
   pango_save_ldflags=$LDFLAGS
