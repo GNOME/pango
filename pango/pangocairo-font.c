@@ -132,8 +132,6 @@ _pango_cairo_get_hex_box_info (PangoCairoFont *cfont)
   cairo_font_extents_t font_extents;
   PangoFontDescription *mini_desc, *desc;
   cairo_scaled_font_t *scaled_font, *scaled_mini_font;
-  cairo_surface_t *surface;
-  cairo_t *cr;
 
   hbi = (PangoCairoHexBoxInfo *) g_object_get_data (G_OBJECT (cfont), "hex_box_info");
   if (hbi)
@@ -212,27 +210,16 @@ _pango_cairo_get_hex_box_info (PangoCairoFont *cfont)
   mini_cfont = (PangoCairoFont *) mini_font;
   scaled_mini_font = _pango_cairo_font_get_scaled_font (mini_cfont);  
 
-  surface = cairo_image_surface_create (CAIRO_FORMAT_RGB24, 0, 0);
-  cr = cairo_create (surface);
-  _pango_cairo_font_install (mini_cfont, cr);
-  cairo_surface_destroy (surface);
-
   for (i = 0 ; i < 16 ; i++)
     {
       cairo_text_extents_t extents;
 
       c[0] = hexdigits[i];
-      /* The following call is being added into cairo.  That's preferred way
-       * to get the extents here.  When turning that on, we can get rid of
-       * the dummy surface and cairo context created above.
-       */
-      /* cairo_scaled_font_text_extents (scaled_mini_font, c, &extents); */
-      cairo_text_extents (cr, c, &extents);
+      cairo_scaled_font_text_extents (scaled_mini_font, c, &extents);
       width = MAX (width, extents.width);
       height = MAX (height, extents.height);
     }
 
-  cairo_destroy (cr);
   cairo_scaled_font_extents (scaled_font, &font_extents);
 
   hbi = g_slice_new (PangoCairoHexBoxInfo);

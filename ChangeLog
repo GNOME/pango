@@ -1,11 +1,16 @@
 2006-01-31  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango/pangocairo-font.c (_pango_cairo_get_hex_box_info): Use
+	cairo_scaled_font_text_extents instead of cairo_text_extents.
+
+2006-01-31  Behdad Esfahbod  <behdad@gnome.org>
+
 	* configure.in: Require cairo >= 1.1.1.
 
 2006-01-31  Behdad Esfahbod  <behdad@gnome.org>
 
 	* pango/pangocairo-private.h, pango/pangocairo-font.c,
-	* pango/pangocairo-render.c: Hint hexbox.  Also draw a singl-row
+	pango/pangocairo-render.c: Hint hexbox.  Also draw a singl-row
 	hexbox for very small sizes.
 
 2006-01-31  Behdad Esfahbod  <behdad@gnome.org>
