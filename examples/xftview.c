@@ -1,8 +1,8 @@
 /* Pango
- * pangoft2topgm.c: Example program to view a UTF-8 encoding file
- *                  using Pango to render result.
+ * xftview.c: Example program to view a UTF-8 encoding file
+ *            using PangoXft to render result
  *
- * Copyright (C) 1999,2004 Red Hat, Inc.
+ * Copyright (C) 1999,2004,2005 Red Hat, Inc.
  * Copyright (C) 2001 Sun Microsystems
  *
  * This library is free software; you can redistribute it and/or
@@ -21,25 +21,19 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#include <errno.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-
 #include "renderdemo.h"
+#include "viewer-x.h"
 
 #include <pango/pangoxft.h>
 
-static Region update_region = NULL;
-static XftDraw *draw;
-static PangoContext *context;
-
 static void
-xft_render (PangoLayout *layout,
-	    int          x,
-	    int          y,
-	    gpointer     data)
+render_callback (PangoLayout *layout,
+		 int          x,
+		 int          y,
+		 gpointer     data,
+		 gboolean     show_borders)
 {
+  XftDraw *draw = (XftDraw *)data;
   XftColor color;
 
   color.color.red = 0x0;
@@ -48,103 +42,66 @@ xft_render (PangoLayout *layout,
   color.color.alpha = 0xffff;
 
   pango_xft_render_layout (draw, &color, layout, x, y);
+
+  /*
+  if (show_borders)
+    {
+      PangoContext *context;
+      PangoXftFontMap *fontmap;
+      PangoRenderer *renderer;
+      PangoRectangle ink, logical;
+      
+      pango_layout_get_extents (layout, &ink, &logical);
+
+      context = pango_layout_get_context (layout);
+      fontmap = (PangoXftFontMap *)pango_context_get_font_map (context);
+
+      humm, we cannot go on, as the following is private api.
+      need to implement pango_font_map_get_renderer...
+
+      renderer = _pango_xft_font_map_get_renderer (fontmap);
+    }
+  */
 }
 
 void
-update (void)
+do_init (Display *display,
+	 int screen,
+	 /* output */
+	 PangoContext **context,
+	 int *width,
+	 int *height)
 {
-  XRectangle area;
+  XftInit (NULL);
+  *context = pango_xft_get_context (display, screen);
+  do_output (*context, NULL, NULL, NULL, width, height, FALSE);
+}
+
+void
+do_render (Display *display,
+	   int screen,
+	   Window window,
+	   Pixmap pixmap,
+	   PangoContext *context,
+	   int width,
+	   int height,
+	   gboolean show_borders)
+{
+  XftDraw *draw;
   XftColor color;
 
-  XClipBox (update_region, &area);
-  XftDrawSetClip (draw, update_region);
-  XDestroyRegion (update_region);
-  update_region = NULL;
+  draw = XftDrawCreate (display, pixmap,
+			DefaultVisual (display, screen),
+			DefaultColormap (display, screen));
 
   color.color.red = 0xffff;
   color.color.blue = 0xffff;
   color.color.green = 0xffff;
   color.color.alpha = 0xffff;
 
-  XftDrawRect (draw, &color,
-	       area.x, area.y, area.width, area.height);
+  XftDrawRect (draw, &color, 0, 0, width, height);
 
-  do_output (context, xft_render, NULL, draw, NULL, NULL);
-}
+  do_output (context, render_callback, NULL, draw, NULL, NULL, show_borders);
 
-static void
-expose (XExposeEvent *xev)
-{
-  XRectangle area;
-  
-  if (!update_region)
-    update_region = XCreateRegion ();
-
-  area.x = xev->x;
-  area.y = xev->y;
-  area.width = xev->width;
-  area.height = xev->height;
-
-  XUnionRectWithRegion (&area, update_region, update_region);
-}
-
-int main (int argc, char **argv)
-{
-  Display *display;
-  int screen;
-  Window window;
-  XEvent xev;
-  unsigned long bg;
-  int width, height;
-  XSizeHints size_hints;
-  
-  g_type_init();
-
-  XftInit (NULL);
-  
-  parse_options (argc, argv);
-
-  display = XOpenDisplay (NULL);
-  if (!display)
-    fail ("Cannot open display %s\n", XDisplayName (NULL));
-
-  screen = DefaultScreen (display);
-  bg = WhitePixel (display, screen);
-
-  context = pango_xft_get_context (display, screen);
-  do_output (context, NULL, NULL, NULL, &width, &height);
-
-  window = XCreateSimpleWindow (display, DefaultRootWindow (display),
-				0, 0, width, height, 0,
-				bg, bg);
-  XSelectInput (display, window, ExposureMask);
-  
-  XMapWindow (display, window);
-  draw = XftDrawCreate (display, window,
-			DefaultVisual (display, screen),
-			DefaultColormap (display, screen));
-  XmbSetWMProperties (display, window,
-		      get_options_string (),
-		      NULL, NULL, 0, NULL, NULL, NULL);
-
-  memset ((char *)&size_hints, 0, sizeof (XSizeHints));
-  size_hints.flags = PSize | PMaxSize;
-  size_hints.width = width; size_hints.height = height; /* for compat only */
-  size_hints.max_width = width; size_hints.max_height = height;
-  
-  XSetWMNormalHints (display, window, &size_hints);
-
-  while (1)
-    {
-      if (!XPending (display) && update_region)
-	update ();
-	
-      XNextEvent (display, &xev);
-      if (xev.xany.type == Expose)
-	{
-	  expose (&xev.xexpose);
-	}
-    }
-  
-  return 0;
+  XftDrawDestroy (draw);
 }

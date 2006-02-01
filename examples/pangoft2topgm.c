@@ -1,8 +1,8 @@
 /* Pango
  * pangoft2topgm.c: Example program to view a UTF-8 encoding file
- *                  using Pango to render result.
+ *                  using PangoFT2 to render result.
  *
- * Copyright (C) 1999 Red Hat Software
+ * Copyright (C) 1999,2004,2005 Red Hat, Inc.
  * Copyright (C) 2001 Sun Microsystems
  *
  * This library is free software; you can redistribute it and/or
@@ -102,7 +102,7 @@ main(int argc, char *argv[])
       int width, height;
       int run;
 
-      do_output (context, NULL, NULL, NULL, &width, &height);
+      do_output (context, NULL, NULL, NULL, &width, &height, FALSE);
       
       bitmap.width = width;
       bitmap.pitch = (bitmap.width + 3) & ~3;
@@ -113,7 +113,7 @@ main(int argc, char *argv[])
       memset (buf, 0x00, bitmap.pitch * bitmap.rows);
 
       for (run = 0; run < opt_runs; run++)
-	do_output (context, ft2_render, NULL, &bitmap, &width, &height);
+	do_output (context, ft2_render, NULL, &bitmap, &width, &height, FALSE);
 
       if (gen_output)
         {

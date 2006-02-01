@@ -32,7 +32,8 @@ typedef enum {
 typedef void (*RenderCallback) (PangoLayout *layout,
 				int          x,
 				int          y,
-				gpointer     data);
+				gpointer     data,
+				gboolean     show_borders);
 typedef void (*TransformCallback) (PangoContext *context,
 				   PangoMatrix  *transform,
 				   gpointer      data);
@@ -46,8 +47,8 @@ void   do_output          (PangoContext     *context,
 			   TransformCallback transform_cb,
 			   gpointer          cb_data,
 			   int              *width,
-			   int              *height);
-void   update             (void);
+			   int              *height,
+			   gboolean          show_borders);
 void   finalize           (void);
 void   fc_substitute_func (FcPattern        *pattern,
 			   gpointer          data);

@@ -36,8 +36,8 @@ endif
 
 pangoft2_view_SOURCES =			\
 	pangoft2topgm.c				\
-	renderdemo.c				\
-	renderdemo.h				
+	renderdemo.h				\
+	renderdemo.c
 pangoft2_view_LDADD =					\
 	../pango/libpango-$(PANGO_API_VERSION).la	\
 	../pango/libpangoft2-$(PANGO_API_VERSION).la	\
@@ -51,8 +51,11 @@ noinst_PROGRAMS += pangoxft-view
 endif
 
 pangoxft_view_SOURCES =				\
-	xftview.c				\
-	renderdemo.c				
+	renderdemo.h				\
+	renderdemo.c				\
+	viewer-x.h				\
+	viewer-x.c				\
+	xftview.c
 pangoxft_view_LDADD =					\
 	../pango/libpango-$(PANGO_API_VERSION).la	\
 	../pango/libpangoft2-$(PANGO_API_VERSION).la	\
@@ -72,8 +75,11 @@ endif
 endif
 
 pangocairo_view_SOURCES =			\
-	cairoview.c				\
-	renderdemo.c				
+	renderdemo.h				\
+	renderdemo.c				\
+	viewer-x.h				\
+	viewer-x.c				\
+	cairoview.c
 pangocairo_view_LDADD =					\
 	../pango/libpango-$(PANGO_API_VERSION).la	\
 	../pango/libpangoft2-$(PANGO_API_VERSION).la	\

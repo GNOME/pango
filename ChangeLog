@@ -1,5 +1,14 @@
 2006-02-01  Behdad Esfahbod  <behdad@gnome.org>
 
+	* examples/viewer-x.c, examples/viewer-x.h: Driver for X-based
+	viewer.  Used by pangocairo-view and pangoxft-view currently.
+
+	* examples/Makefile.am, examples/cairoview.c, examples/xftview.c,
+	examples/pangoft2topgm.c, examples/renderdemo.h,
+	examples/renderdemo.c: Adjust to the above change.
+
+2006-02-01  Behdad Esfahbod  <behdad@gnome.org>
+
 	* examples/viewer.c: Removed.
 
 2006-02-01  Behdad Esfahbod  <behdad@gnome.org>
