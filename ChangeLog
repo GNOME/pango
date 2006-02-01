@@ -1,5 +1,11 @@
 2006-01-31  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango/pangocairo-private.h, pango/pangocairo-font.c,
+	* pango/pangocairo-render.c: Hint hexbox.  Also draw a singl-row
+	hexbox for very small sizes.
+
+2006-01-31  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 328313 – Use GKeyFile for parsing pangorc
 	Patch from Antoine Dopffer.
 

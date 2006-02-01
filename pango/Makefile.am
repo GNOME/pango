@@ -252,7 +252,8 @@ libpangocairo_1_0_la_LDFLAGS = $(LIBRARY_LIBTOOL_OPTIONS)
 libpangocairo_1_0_la_LIBADD =			\
 	libpango-$(PANGO_API_VERSION).la	\
 	$(GLIB_LIBS)				\
-	$(CAIRO_LIBS)
+	$(CAIRO_LIBS)				\
+	$(libm)
 libpangocairo_1_0_la_DEPENDENCIES =		\
 	libpango-$(PANGO_API_VERSION).la
 libpangocairo_1_0_la_SOURCES =  \

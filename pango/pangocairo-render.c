@@ -66,10 +66,9 @@ _pango_cairo_renderer_draw_unknown_glyph (PangoCairoRenderer *crenderer,
 					  double              cy)
 {
   char buf[7];
-  double ys[2];
-  double xs[3];
+  double x0, y0;
   int row, col;
-  int cols;
+  int rows, cols;
   char hexbox_string[2] = {0, 0};
   double temp_x, temp_y;
   PangoCairoHexBoxInfo *hbi;
@@ -79,45 +78,49 @@ _pango_cairo_renderer_draw_unknown_glyph (PangoCairoRenderer *crenderer,
 
   ch = gi->glyph & ~PANGO_CAIRO_UNKNOWN_FLAG;
 
-  cols = ch > 0xffff ? 3 : 2;
-  g_snprintf (buf, sizeof(buf), cols == 2 ? "%04X" : "%06X", ch);
-
-  ys[1] = cy + hbi->box_descent - hbi->pad * 2;
-  ys[0] = ys[1] - hbi->digit_height - hbi->pad;
-
-  xs[0] = cx + hbi->pad * 3.0;
-  xs[1] = xs[0] + hbi->digit_width + hbi->pad;
-  xs[2] = xs[1] + hbi->digit_width + hbi->pad;
+  rows = hbi->rows;
+  cols = (ch > 0xffff ? 6 : 4) / rows;
+  g_snprintf (buf, sizeof(buf), (ch > 0xffff) ? "%06X" : "%04X", ch);
 
   cairo_save (crenderer->cr);
   cairo_get_current_point (crenderer->cr, &temp_x, &temp_y);
 
   cairo_rectangle (crenderer->cr,
-		   cx + hbi->pad * 1.5,
-		   cy + hbi->box_descent - hbi->pad * 0.5,
-		   (double)gi->geometry.width / PANGO_SCALE - 3 * hbi->pad,
-		   -(hbi->box_height - hbi->pad));
+		   cx + hbi->pad_x * 1.5,
+		   cy + hbi->box_descent - hbi->pad_y * 0.5,
+		   (double)gi->geometry.width / PANGO_SCALE - 3 * hbi->pad_x,
+		   -(hbi->box_height - hbi->pad_y));
 
   if (!crenderer->do_path)
     {
       cairo_save (crenderer->cr);
-      cairo_set_line_width (crenderer->cr, hbi->pad);
+      cairo_set_line_width (crenderer->cr, hbi->line_width);
       cairo_stroke (crenderer->cr);
       cairo_restore (crenderer->cr);
     }
 
   _pango_cairo_font_install (PANGO_CAIRO_FONT (hbi->font), crenderer->cr);
-  for (row = 0; row < 2; row++)
+
+  x0 = cx + hbi->pad_x * 3.0;
+  y0 = cy + hbi->box_descent - hbi->pad_y * 2;
+
+  for (row = 0; row < rows; row++)
+    {
+      double y = y0 - (rows - 1 - row) * (hbi->digit_height + hbi->pad_y);
       for (col = 0; col < cols; col++)
 	{
+	  double x = x0 + col * (hbi->digit_width + hbi->pad_x);
+
+	  cairo_move_to (crenderer->cr, x, y);
+
 	  hexbox_string[0] = buf[row * cols + col];
-	  cairo_move_to (crenderer->cr, xs[col], ys[row]);
 
 	  if (crenderer->do_path)
 	      cairo_text_path (crenderer->cr, hexbox_string);
 	  else
 	      cairo_show_text (crenderer->cr, hexbox_string);
 	}
+    }
 
   cairo_move_to (crenderer->cr, temp_x, temp_y);
   cairo_restore (crenderer->cr);
@@ -212,11 +215,13 @@ pango_cairo_renderer_draw_rectangle (PangoRenderer     *renderer,
 		   crenderer->x_offset + (double)x / PANGO_SCALE,
 		   crenderer->y_offset + (double)y / PANGO_SCALE, 
 		   (double)width / PANGO_SCALE, (double)height / PANGO_SCALE);
+
   if (!crenderer->do_path)
-    cairo_fill (crenderer->cr);
-  
-  if (!crenderer->do_path)
-    cairo_restore (crenderer->cr);
+    {
+      cairo_fill (crenderer->cr);
+    
+      cairo_restore (crenderer->cr);
+    }
 }
 
 /* Draws an error underline that looks like one of:

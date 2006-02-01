@@ -89,9 +89,12 @@ typedef struct _PangoCairoHexBoxInfo PangoCairoHexBoxInfo;
 struct _PangoCairoHexBoxInfo
 {
 	PangoFont *font;
+	int rows;
 	double digit_width;
 	double digit_height;
-	double pad;
+	double pad_x;
+	double pad_y;
+	double line_width;
 	double box_descent;
 	double box_height;
 };

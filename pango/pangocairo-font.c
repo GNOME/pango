@@ -21,6 +21,8 @@
 
 #include <config.h>
 
+#include <math.h>
+
 #include "pango-impl-utils.h"
 #include "pangocairo.h"
 #include "pangocairo-private.h"
@@ -118,7 +120,13 @@ _pango_cairo_get_hex_box_info (PangoCairoFont *cfont)
   PangoFont *mini_font;
   PangoCairoFont *mini_cfont;
   PangoCairoHexBoxInfo *hbi;
+
+  /* for metrics hinting */
+  double scale_x, scale_x_inv, scale_y, scale_y_inv;
+
   int i;
+  int rows;
+  double pad;
   double width = 0;
   double height = 0;
   cairo_font_extents_t font_extents;
@@ -131,24 +139,57 @@ _pango_cairo_get_hex_box_info (PangoCairoFont *cfont)
   if (hbi)
     return hbi;
 
+  scaled_font = _pango_cairo_font_get_scaled_font (cfont);  
 
-  mini_desc = pango_font_description_new ();
-  desc = pango_font_describe ((PangoFont *)cfont);
-
-  pango_font_description_set_family_static (mini_desc, "mono-space");
-
-  /* set size on mini_desc */
+  /* prepare for some hinting */
   {
-    int new_size;
-    new_size = pango_font_description_get_size (desc) / 2.4 + .9;
+    cairo_matrix_t ctm;
+    double x, y;
+    cairo_scaled_font_get_ctm (scaled_font, &ctm);
 
-    if (pango_font_description_get_size_is_absolute (desc))
-	pango_font_description_set_absolute_size (mini_desc, new_size);
-    else
-	pango_font_description_set_size (mini_desc, new_size);
+    x = 1.; y = 0.;
+    cairo_matrix_transform_distance (&ctm, &x, &y);
+    scale_x = sqrt (x*x + y*y);
+    scale_x_inv = 1 / scale_x;
+
+    x = 0.; y = 1.;
+    cairo_matrix_transform_distance (&ctm, &x, &y);
+    scale_y = sqrt (x*x + y*y);
+    scale_y_inv = 1 / scale_y;
   }
 
-  pango_font_description_free (desc);
+/* we hint to the nearest device units */
+#define HINT(value, scale, scale_inv) (ceil ((value) * scale) * scale_inv)
+#define HINT_X(value) HINT ((value), scale_x, scale_x_inv)
+#define HINT_Y(value) HINT ((value), scale_y, scale_y_inv)
+  
+  /* create mini_font description */
+  {
+    double size, mini_size;
+
+    desc = pango_font_describe ((PangoFont *)cfont);
+    size = pango_font_description_get_size (desc) / (1.*PANGO_SCALE);
+
+    mini_desc = pango_font_description_new ();
+    pango_font_description_set_family_static (mini_desc, "mono-space");
+
+    /* TODO: The stuff here should give a shit to whether it's
+     * absolute size or not. */
+    rows = 2;
+    mini_size = HINT_Y (size / 2.4);
+    if (mini_size < 5.0)
+      {
+        rows = 1;
+	mini_size = MIN (size, 5.0);
+      }
+
+    if (pango_font_description_get_size_is_absolute (desc))
+	pango_font_description_set_absolute_size (mini_desc, mini_size * PANGO_SCALE);
+    else
+	pango_font_description_set_size (mini_desc, mini_size * PANGO_SCALE);
+
+    pango_font_description_free (desc);
+  }
 
   /* load mini_font */
   {
@@ -161,15 +202,14 @@ _pango_cairo_get_hex_box_info (PangoCairoFont *cfont)
 
     pango_context_set_language (context, pango_language_from_string ("en"));
     mini_font = pango_font_map_load_font (fontmap, context, mini_desc);
+    pango_font_description_free (mini_desc);
 
     g_object_unref (context);
     g_object_unref (fontmap);
   }
 
-  pango_font_description_free (mini_desc);
 
   mini_cfont = (PangoCairoFont *) mini_font;
-  scaled_font = _pango_cairo_font_get_scaled_font (cfont);  
   scaled_mini_font = _pango_cairo_font_get_scaled_font (mini_cfont);  
 
   surface = cairo_image_surface_create (CAIRO_FORMAT_RGB24, 0, 0);
@@ -197,16 +237,20 @@ _pango_cairo_get_hex_box_info (PangoCairoFont *cfont)
 
   hbi = g_slice_new (PangoCairoHexBoxInfo);
   hbi->font = mini_font;
+  hbi->rows = rows;
 
-  hbi->digit_width = width;
-  hbi->digit_height = height;
+  hbi->digit_width = HINT_X (width);
+  hbi->digit_height = HINT_Y (height);
 
-  hbi->pad = hbi->digit_height / 8;
+  pad = MIN (hbi->digit_width / 10, hbi->digit_height / 12);
+  hbi->pad_x = HINT_X (pad);
+  hbi->pad_y = HINT_Y (pad);
+  hbi->line_width = MIN (hbi->pad_x, hbi->pad_y);
 
-  hbi->box_height = 5 * hbi->pad + 2 * hbi->digit_height;
-  hbi->box_descent = font_extents.descent -
-		    (font_extents.ascent + font_extents.descent - hbi->box_height) / 2;
-  
+  hbi->box_height = 3 * hbi->pad_y + rows * (hbi->pad_y + hbi->digit_height);
+  hbi->box_descent = HINT_Y (font_extents.descent -
+			     (font_extents.ascent + font_extents.descent - hbi->box_height) / 2);
+
   g_object_set_data_full (G_OBJECT (cfont), "hex_box_info", hbi, (GDestroyNotify)_pango_cairo_hex_box_info_destroy); 
 
   return hbi;
@@ -219,25 +263,27 @@ _pango_cairo_get_glyph_extents_missing (PangoCairoFont *cfont,
 				        PangoRectangle *logical_rect)
 {
   PangoCairoHexBoxInfo *hbi;  
-  gint cols;
+  gint rows, cols;
 
-  cols = (glyph & ~PANGO_CAIRO_UNKNOWN_FLAG) > 0xffff ? 3 : 2;
   hbi = _pango_cairo_get_hex_box_info (cfont);
+
+  rows = hbi->rows;
+  cols = ((glyph & ~PANGO_CAIRO_UNKNOWN_FLAG) > 0xffff ? 6 : 4) / rows;
   
   if (ink_rect)
     {
-      ink_rect->x = PANGO_SCALE * hbi->pad;
+      ink_rect->x = PANGO_SCALE * hbi->pad_x;
       ink_rect->y = PANGO_SCALE * (hbi->box_descent - hbi->box_height);
-      ink_rect->width = PANGO_SCALE * (3 * hbi->pad + cols * (hbi->digit_width + hbi->pad));
+      ink_rect->width = PANGO_SCALE * (3 * hbi->pad_x + cols * (hbi->digit_width + hbi->pad_x));
       ink_rect->height = PANGO_SCALE * hbi->box_height;
     }
   
   if (logical_rect)
     {
       logical_rect->x = 0;
-      logical_rect->y = PANGO_SCALE * (hbi->box_descent - (hbi->box_height + hbi->pad));
-      logical_rect->width = PANGO_SCALE * (5 * hbi->pad + cols * (hbi->digit_width + hbi->pad));
-      logical_rect->height = PANGO_SCALE * (hbi->box_height + 2 * hbi->pad);
+      logical_rect->y = PANGO_SCALE * (hbi->box_descent - (hbi->box_height + hbi->pad_y));
+      logical_rect->width = PANGO_SCALE * (5 * hbi->pad_x + cols * (hbi->digit_width + hbi->pad_x));
+      logical_rect->height = PANGO_SCALE * (hbi->box_height + 2 * hbi->pad_y);
     }  
 }
 
