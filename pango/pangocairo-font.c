@@ -28,7 +28,7 @@
 #include "pangocairo-private.h"
 #include "pango-utils.h"
 
-PangoCairoWarningHistory _pango_cairo_warning_history = {};
+PangoCairoWarningHistory _pango_cairo_warning_history = { FALSE };
 
 GType
 pango_cairo_font_get_type (void)

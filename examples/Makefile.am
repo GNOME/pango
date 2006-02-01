@@ -31,14 +31,14 @@ noinst_PROGRAMS =
 
 ###################################################
 if HAVE_FREETYPE
-noinst_PROGRAMS += pangoft2-topgm
+noinst_PROGRAMS += pangoft2-view
 endif
 
-pangoft2_topgm_SOURCES =			\
+pangoft2_view_SOURCES =			\
 	pangoft2topgm.c				\
 	renderdemo.c				\
 	renderdemo.h				
-pangoft2_topgm_LDADD =					\
+pangoft2_view_LDADD =					\
 	../pango/libpango-$(PANGO_API_VERSION).la	\
 	../pango/libpangoft2-$(PANGO_API_VERSION).la	\
 	$(GLIB_LIBS)					\

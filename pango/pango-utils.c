@@ -58,7 +58,7 @@ struct PangoAlias
 
 static GHashTable *pango_aliases_ht = NULL;
 
-PangoWarningHistory _pango_warning_history = {};
+PangoWarningHistory _pango_warning_history = { FALSE, FALSE, FALSE };
 
 /**
  * pango_trim_string:

@@ -1,3 +1,8 @@
+2006-02-01  Behdad Esfahbod  <behdad@gnome.org>
+
+	* pango/pango-utils.c, pango/pangocairo-font.c: Initialize warning
+	history structs more explicitly. (bug #329459)
+
 2006-01-31  Behdad Esfahbod  <behdad@gnome.org>
 
 	* examples/syriac.utf, examples/tibetan.utf, examples/muru.utf,

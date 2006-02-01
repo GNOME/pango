@@ -160,7 +160,9 @@ pango_font_description_set_family_static (PangoFontDescription *desc,
  * Gets the family name field of a font description. See
  * pango_font_description_set_family().
  * 
- * Return value: The family name field. (Will be %NULL if not previously set.)
+ * Return value: the family name field for the font description, or
+ *               %NULL if not previously set.  This has the same life-time
+ *               as the font description itself and should not be freed.
  **/
 G_CONST_RETURN char *
 pango_font_description_get_family (const PangoFontDescription *desc)
