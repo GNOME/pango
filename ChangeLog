@@ -1,5 +1,9 @@
 2006-02-01  Behdad Esfahbod  <behdad@gnome.org>
 
+	* examples/viewer.c: Removed.
+
+2006-02-01  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/pango-utils.c, pango/pangocairo-font.c: Initialize warning
 	history structs more explicitly. (bug #329459)
 
