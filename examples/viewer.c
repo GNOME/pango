@@ -48,7 +48,7 @@ struct _Paragraph {
 
 GList *paragraphs;
 
-static PangoFontDescription font_description;
+static PangoFontDescription *font_description;
 static Paragraph *highlight_para;
 static int highlight_offset;
 
@@ -401,7 +401,7 @@ reload_font ()
 void
 set_family (GtkWidget *entry, gpointer data)
 {
-  font_description.family_name = gtk_editable_get_chars (GTK_EDITABLE (entry), 0, -1);
+  pango_font_description_set_family (font_description, gtk_editable_get_chars (GTK_EDITABLE (entry), 0, -1));
   fill_styles_combo (styles_combo);
 }
 
@@ -413,10 +413,10 @@ set_style (GtkWidget *entry, gpointer data)
   
   tmp_desc = pango_font_description_from_string (str);
 
-  font_description.style = tmp_desc->style;
-  font_description.variant = tmp_desc->variant;
-  font_description.weight = tmp_desc->weight;
-  font_description.stretch = tmp_desc->stretch;
+  pango_font_description_set_style (font_description, pango_font_description_get_style (tmp_desc));
+  pango_font_description_set_variant (font_description, pango_font_description_get_variant (tmp_desc));
+  pango_font_description_set_weight (font_description, pango_font_description_get_weight (tmp_desc));
+  pango_font_description_set_stretch (font_description, pango_font_description_get_stretch (tmp_desc));
 
   pango_font_description_free (tmp_desc);
   g_free (str);
@@ -427,7 +427,7 @@ set_style (GtkWidget *entry, gpointer data)
 void
 font_size_changed (GtkAdjustment *adj)
 {
-  font_description.size = (int)(adj->value * PANGO_SCALE + 0.5);
+  pango_font_description_set_size (font_description, (int)(adj->value * PANGO_SCALE + 0.5));
   reload_font();
 }
 
@@ -478,7 +478,7 @@ fill_styles_combo (GtkWidget *combo)
   GList *style_list = NULL;
   
   FontDescInfo *info = g_new (FontDescInfo, 1);
-  pango_context_list_fonts (context, font_description.family_name, &info->descs, &info->n_descs);
+  pango_context_list_fonts (context, pango_font_description_get_family (font_description), &info->descs, &info->n_descs);
   gtk_object_set_data_full (GTK_OBJECT (combo), "descs", info, (GtkDestroyNotify)free_info);
 
   qsort (info->descs, info->n_descs, sizeof(PangoFontDescription *), font_description_sort_func);
@@ -487,13 +487,13 @@ fill_styles_combo (GtkWidget *combo)
     {
       char *str;
 	
-      PangoFontDescription tmp_desc;
+      PangoFontDescription *tmp_desc;
 
       tmp_desc = *info->descs[i];
       tmp_desc.family_name = NULL;
       tmp_desc.size = 0;
       
-      str = pango_font_description_to_string (&tmp_desc);
+      str = pango_font_description_to_string (tmp_desc);
       style_list = g_list_prepend (style_list, str);
     }
 
@@ -549,7 +549,7 @@ make_families_menu ()
   gtk_combo_set_value_in_list (GTK_COMBO (combo), TRUE, FALSE);
   gtk_editable_set_editable (GTK_EDITABLE (GTK_COMBO (combo)->entry), FALSE);
 
-  gtk_entry_set_text (GTK_ENTRY (GTK_COMBO (combo)->entry), font_description.family_name);
+  gtk_entry_set_text (GTK_ENTRY (GTK_COMBO (combo)->entry), pango_font_description_get_family (font_description));
 
   gtk_signal_connect (GTK_OBJECT (GTK_COMBO (combo)->entry), "changed",
 		      GTK_SIGNAL_FUNC (set_family), NULL);
@@ -598,7 +598,7 @@ make_font_selector (void)
   gtk_box_pack_start (GTK_BOX (hbox), util_hbox, FALSE, FALSE, 0);
 
   adj = gtk_spin_button_get_adjustment (GTK_SPIN_BUTTON (spin_button));
-  adj->value = font_description.size / 1000.;
+  adj->value = pango_font_description_get_size (font_description) / (1.*PANGO_SCALE);
   adj->lower = 0;
   adj->upper = 1024;
   adj->step_increment = 1;
@@ -643,12 +643,12 @@ main (int argc, char **argv)
   pango_context_set_lang (context, "en_US");
   pango_context_set_base_dir (context, PANGO_DIRECTION_LTR);
 
-  font_description.family_name = g_strdup ("sans");
-  font_description.style = PANGO_STYLE_NORMAL;
-  font_description.variant = PANGO_VARIANT_NORMAL;
-  font_description.weight = 500;
-  font_description.stretch = PANGO_STRETCH_NORMAL;
-  font_description.size = 16000;
+  pango_font_description_set_family_static (font_description, "sans");
+  pango_font_description_set_style (font_description, PANGO_STYLE_NORMAL);
+  pango_font_description_set_variant (font_description, PANGO_VARIANT_NORMAL);
+  pango_font_description_set_weight (font_description, 500);
+  pango_font_description_set_stretch (font_description, PANGO_STRETCH_NORMAL);
+  pango_font_description_set_size (font_description, 16000);
 
   pango_context_set_font_description (context, &font_description);
 
