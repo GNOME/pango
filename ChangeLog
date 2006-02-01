@@ -1,5 +1,18 @@
 2006-01-31  Behdad Esfahbod  <behdad@gnome.org>
 
+	* examples/syriac.utf, examples/tibetan.utf, examples/muru.utf,
+	examples/dev-example.utf: Removed/renamed.
+
+	* examples/test-arabic.txt, examples/test-devanagari.txt,
+	examples/test-ipa.txt, test-syriac.txt, test-tamil.txt,
+	test-tibetan.txt: Added.
+
+	* examples/Makefie.am: Change pango-cairoview, pango-xftview,
+	pangoft2topgm to pangocairo-view, pangoxft-view, and pangoft2-topgm
+	respectively.
+
+2006-01-31  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/pangocairo-font.c (_pango_cairo_get_hex_box_info): Use
 	cairo_scaled_font_text_extents instead of cairo_text_extents.
 

@@ -1,14 +1,19 @@
 ## Process this file with automake to create Makefile.in.
 
-EXTRA_DIST=			\
+TEST_TEXTS =			\
+	test-arabic.txt	\
+	test-devanagari.txt	\
+	test-ipa.txt		\
+	test-syriac.txt	\
+	test-tamil.txt		\
+	test-tibetan.txt	\
+	HELLO.utf8		\
+	GLASS.utf8
+
+EXTRA_DIST =			\
 	viewer-win32.c		\
 	makefile.msc		\
-	HELLO.utf8		\
-	GLASS.utf8		\
-	dev-example.utf		\
-	muru.utf		\
-	syriac.utf		\
-	tibetan.utf
+	$(TEST_TEXTS)
 
 CLEANFILES = pangorc
 
@@ -26,14 +31,14 @@ noinst_PROGRAMS =
 
 ###################################################
 if HAVE_FREETYPE
-noinst_PROGRAMS += pangoft2topgm
+noinst_PROGRAMS += pangoft2-topgm
 endif
 
-pangoft2topgm_SOURCES =				\
+pangoft2_topgm_SOURCES =			\
 	pangoft2topgm.c				\
 	renderdemo.c				\
 	renderdemo.h				
-pangoft2topgm_LDADD =					\
+pangoft2_topgm_LDADD =					\
 	../pango/libpango-$(PANGO_API_VERSION).la	\
 	../pango/libpangoft2-$(PANGO_API_VERSION).la	\
 	$(GLIB_LIBS)					\
@@ -42,13 +47,13 @@ pangoft2topgm_LDADD =					\
 
 ###################################################
 if HAVE_XFT
-noinst_PROGRAMS += pango-xftview
+noinst_PROGRAMS += pangoxft-view
 endif
 
-pango_xftview_SOURCES =				\
+pangoxft_view_SOURCES =				\
 	xftview.c				\
 	renderdemo.c				
-pango_xftview_LDADD =					\
+pangoxft_view_LDADD =					\
 	../pango/libpango-$(PANGO_API_VERSION).la	\
 	../pango/libpangoft2-$(PANGO_API_VERSION).la	\
 	../pango/libpangoxft-$(PANGO_API_VERSION).la	\
@@ -61,15 +66,15 @@ pango_xftview_LDADD =					\
 if HAVE_CAIRO
 if HAVE_X
 if HAVE_FREETYPE
-noinst_PROGRAMS += pango-cairoview
+noinst_PROGRAMS += pangocairo-view
 endif
 endif
 endif
 
-pango_cairoview_SOURCES =			\
+pangocairo_view_SOURCES =			\
 	cairoview.c				\
 	renderdemo.c				
-pango_cairoview_LDADD =					\
+pangocairo_view_LDADD =					\
 	../pango/libpango-$(PANGO_API_VERSION).la	\
 	../pango/libpangoft2-$(PANGO_API_VERSION).la	\
 	../pango/libpangocairo-$(PANGO_API_VERSION).la	\
