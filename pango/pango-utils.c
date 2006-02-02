@@ -459,8 +459,8 @@ read_config_file (const char *filename, gboolean enoent_error)
   GKeyFile *key_file = g_key_file_new();
   GError *key_file_error = NULL;
   gchar **groups;
-  gsize groups_length = 0;
-  gsize i = 0;
+  gsize groups_count = 0;
+  gint group_index;
   
   if (!g_key_file_load_from_file(key_file,filename, 0, &key_file_error))
     {
@@ -477,47 +477,47 @@ read_config_file (const char *filename, gboolean enoent_error)
       return;
     }
   
-  groups = g_key_file_get_groups (key_file, &groups_length);
-  while (i < groups_length)
+  groups = g_key_file_get_groups (key_file, &groups_count);
+  for (group_index = 0; group_index < groups_count; group_index++)
     {
-      gsize keys_length = 0;
-      gchar *current_group = groups[i];
+      gsize keys_count = 0;
+      const gchar *group = groups[group_index];
       GError *keys_error = NULL;
-      gsize j = 0;
-      gchar **keys = g_key_file_get_keys(key_file,current_group, &keys_length,&keys_error);
+      gchar **keys;
+      
+      keys = g_key_file_get_keys(key_file, group, &keys_count, &keys_error);
       
       if (keys)
 	{
-	  while ( j < keys_length)
+	  gint key_index;
+
+	  for (key_index = 0; key_index < keys_count; key_index++)
 	    {
-	      gchar *key = keys[j];
+	      const gchar *key = keys[key_index];
 	      GError *key_error = NULL;
-	      gchar *value =  g_key_file_get_value(key_file,current_group,key, &key_error);
+	      gchar *value =  g_key_file_get_value(key_file, group, key, &key_error);
 	      if (value != NULL)
 		{
 		  g_hash_table_insert (config_hash,
-				       g_strdup (key),
-				       g_strdup (value));
-		  free(value);
+				       g_strdup_printf ("%s/%s", group, key),
+				       value);
 		}
 	      if (key_error)
 		{
-		  g_warning ("error getting key '%s' in config file '%s'\n",
-			     key, filename);
+		  g_warning ("error getting key '%s/%s' in config file '%s'\n",
+			     group, key, filename);
 		  g_error_free(key_error);
 		}
-	      j++;
 	    }
 	  g_strfreev(keys);
-	  
 	}
+
       if (keys_error)
 	{
 	  g_warning ("error getting keys in group '%s' of config file '%s'\n",
-		     filename, current_group);
+		     filename, group);
 	  g_error_free(keys_error);
 	}
-      i++;
     }
   g_strfreev(groups);
   g_key_file_free(key_file);
