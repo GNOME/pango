@@ -301,9 +301,19 @@ pango_ft2_font_get_glyph_extents (PangoFont      *font,
   if (glyph == PANGO_GLYPH_NULL)
     {
       if (ink_rect)
-	  ink_rect->x = ink_rect->y = ink_rect->width = ink_rect->height = 0;
+        {
+	  ink_rect->x = 0;
+	  ink_rect->y = 0;
+	  ink_rect->height = PANGO_UNKNOWN_GLYPH_HEIGHT * PANGO_SCALE;
+	  ink_rect->width = PANGO_UNKNOWN_GLYPH_WIDTH * PANGO_SCALE;
+        }
       if (logical_rect)
-	  logical_rect->x = logical_rect->y = logical_rect->width = logical_rect->height = 0;
+        {
+	  logical_rect->x = 0;
+	  logical_rect->y = 0;
+	  logical_rect->height = PANGO_UNKNOWN_GLYPH_HEIGHT * PANGO_SCALE;
+	  logical_rect->width = PANGO_UNKNOWN_GLYPH_WIDTH * PANGO_SCALE;
+	}
       return;
     }
 

@@ -1,5 +1,9 @@
 2006-02-02  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango/pangoft2.c: Do unknown glyph extents here too.
+
+2006-02-02  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/pangoxft-font.c, pango/pangoxft-render.c: Guard Xft
 	backend agains crashes too.
 
