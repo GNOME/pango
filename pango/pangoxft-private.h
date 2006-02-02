@@ -55,6 +55,14 @@ PangoRenderer *_pango_xft_font_map_get_renderer (PangoXftFontMap *xftfontmap);
 
 PangoFont *_pango_xft_font_get_mini_font (PangoXftFont *xfont);
 
+typedef struct _PangoXftWarningHistory PangoXftWarningHistory;
+
+struct _PangoXftWarningHistory {
+  guint get_font		: 1;
+}; 
+
+extern PangoXftWarningHistory _pango_xft_warning_history;
+
 G_END_DECLS
 
 #endif /* __PANGOXFT_PRIVATE_H__ */

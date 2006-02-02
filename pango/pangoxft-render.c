@@ -22,6 +22,7 @@
 #include <config.h>
 #include <math.h>
 
+#include "pango-engine-private.h"
 #include "pangoxft-render.h"
 #include "pangoxft-private.h"
 
@@ -297,20 +298,20 @@ box_in_bounds (PangoRenderer *renderer,
 
 static void
 draw_box (PangoRenderer *renderer,
-	  PangoXftFont  *xfont,
+	  gint           line_width,
 	  gint           x,
 	  gint           y,
 	  gint           width,
 	  gint           height)
 {
   pango_renderer_draw_rectangle (renderer, PANGO_RENDER_PART_FOREGROUND,
-				 x, y, width, xfont->mini_pad);
+				 x, y, width, line_width);
   pango_renderer_draw_rectangle (renderer, PANGO_RENDER_PART_FOREGROUND,
-				 x, y + xfont->mini_pad, xfont->mini_pad, height - xfont->mini_pad * 2);
+				 x, y + line_width, line_width, height - line_width * 2);
   pango_renderer_draw_rectangle (renderer, PANGO_RENDER_PART_FOREGROUND,
-				 x + width - xfont->mini_pad, y + xfont->mini_pad, xfont->mini_pad, height - xfont->mini_pad * 2);
+				 x + width - line_width, y + line_width, line_width, height - line_width * 2);
   pango_renderer_draw_rectangle (renderer, PANGO_RENDER_PART_FOREGROUND,
-				 x, y + height - xfont->mini_pad, width, xfont->mini_pad);
+				 x, y + height - line_width, width, line_width);
 }
 
 static void
@@ -326,7 +327,31 @@ pango_xft_renderer_draw_glyphs (PangoRenderer    *renderer,
   int i;
   int x_off = 0;
 
-  if (!fcfont->fontmap)		/* Display closed */
+  if (!fcfont)
+    {
+      for (i=0; i<glyphs->num_glyphs; i++)
+	{
+	  PangoGlyph glyph = glyphs->glyphs[i].glyph;
+	  int glyph_x = x + x_off + glyphs->glyphs[i].geometry.x_offset;
+	  int glyph_y = y + glyphs->glyphs[i].geometry.y_offset;
+
+	  if (glyph != PANGO_GLYPH_NULL && glyph & PANGO_GLYPH_UNKNOWN_FLAG)
+	    {
+	      int x = glyph_x + PANGO_SCALE;
+	      int y = glyph_y + PANGO_SCALE;
+	      int width = PANGO_SCALE * (PANGO_UNKNOWN_GLYPH_WIDTH - 2);
+	      int height = PANGO_SCALE * (PANGO_UNKNOWN_GLYPH_HEIGHT - 2);
+
+	      if (box_in_bounds (renderer, x, y, width, height))
+		draw_box (renderer, PANGO_SCALE, x, y, width, height);
+	    }
+
+          x_off += glyphs->glyphs[i].geometry.width;
+	}
+      return;
+    }
+
+  if (!fcfont->fontmap)	/* Display closed */
     return;
 
   for (i=0; i<glyphs->num_glyphs; i++)
@@ -359,23 +384,23 @@ pango_xft_renderer_draw_glyphs (PangoRenderer    *renderer,
 	      xs[2] = xs[1] + xfont->mini_width + xfont->mini_pad;
 	      xs[3] = xs[2] + xfont->mini_width + xfont->mini_pad;
 
-              if (glyph > 0xffff)
-                {
-                  cols = 3;
-                  g_snprintf (buf, sizeof(buf), "%06X", glyph);
-                }
-              else
-                {
-                  cols = 2;
-                  g_snprintf (buf, sizeof(buf), "%04X", glyph);
-                }
+	      if (glyph > 0xffff)
+		{
+		  cols = 3;
+		  g_snprintf (buf, sizeof(buf), "%06X", glyph);
+		}
+	      else
+		{
+		  cols = 2;
+		  g_snprintf (buf, sizeof(buf), "%04X", glyph);
+		}
 
 	      if (box_in_bounds (renderer,
 				 xs[0], ys[0],
 				 xfont->mini_width * cols + xfont->mini_pad * (2 * cols + 1),
 				 xfont->mini_height * 2 + xfont->mini_pad * 5))
 		{
-		  draw_box (renderer, xfont,
+		  draw_box (renderer, xfont->mini_pad,
 			    xs[0], ys[0],
 			    xfont->mini_width * cols + xfont->mini_pad * (2 * cols + 1),
 			    xfont->mini_height * 2 + xfont->mini_pad * 5);
@@ -391,10 +416,9 @@ pango_xft_renderer_draw_glyphs (PangoRenderer    *renderer,
 		      }
 		}
 	    }
-	  else if (glyph)
+	  else
 	    {
-	      draw_glyph (renderer, font,
-			  glyph, glyph_x, glyph_y);
+	      draw_glyph (renderer, font, glyph, glyph_x, glyph_y);
 	    }
 	}
       

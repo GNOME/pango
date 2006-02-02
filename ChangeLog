@@ -1,5 +1,10 @@
 2006-02-02  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango/pangoxft-font.c, pango/pangoxft-render.c: Guard Xft
+	backend agains crashes too.
+
+2006-02-02  Behdad Esfahbod  <behdad@gnome.org>
+
 	* modules/arabic/arabic-fc.c, modules/basic/basic-atsui.c,
 	modules/basic/basic-fc.c, modules/basic/basic-win32.c,
 	modules/basic/basic-x.c, modules/hangul/hangul-fc.c,
