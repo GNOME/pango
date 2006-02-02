@@ -21,7 +21,6 @@
 
 #include <config.h>
 
-#include "pango-engine-private.h"
 #include "pangocairo-private.h"
 
 typedef struct _PangoCairoRendererClass PangoCairoRendererClass;

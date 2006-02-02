@@ -22,7 +22,6 @@
 #include <config.h>
 #include <math.h>
 
-#include "pango-engine-private.h"
 #include "pangoxft-render.h"
 #include "pangoxft-private.h"
 

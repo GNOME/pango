@@ -29,7 +29,6 @@
 #include "pango-font.h"
 #include "pango-fontmap.h"
 #include "pango-utils.h"
-#include "pango-engine-private.h"
 
 struct _PangoFontDescription
 {

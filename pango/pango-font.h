@@ -357,6 +357,12 @@ struct _PangoFontClass
   void (*_pango_reserved3) (void);
 };
 
+/* used for very rare and miserable situtations that we cannot even
+ * draw a hexbox
+ */
+#define PANGO_UNKNOWN_GLYPH_WIDTH  10
+#define PANGO_UNKNOWN_GLYPH_HEIGHT 14
+
 #endif /* PANGO_ENABLE_BACKEND */
 
 G_END_DECLS
