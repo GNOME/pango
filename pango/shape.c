@@ -51,7 +51,6 @@ pango_shape (const gchar      *text,
       _pango_engine_shape_shape (analysis->shape_engine, analysis->font,
 				 text, length, analysis, glyphs);
 
-      glyphs->num_glyphs = 0;
       if (G_UNLIKELY (glyphs->num_glyphs == 0))
         {
 	  /* If a font has been correctly chosen, but no glyphs are output,
