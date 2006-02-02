@@ -77,7 +77,7 @@ _pango_cairo_renderer_draw_unknown_glyph (PangoCairoRenderer *crenderer,
   cairo_save (crenderer->cr);
   cairo_get_current_point (crenderer->cr, &temp_x, &temp_y);
 
-  hbi = _pango_cairo_get_hex_box_info ((PangoCairoFont *)font);      
+  hbi = _pango_cairo_font_get_hex_box_info ((PangoCairoFont *)font);      
   if (!hbi)
     {
       cairo_rectangle (crenderer->cr,

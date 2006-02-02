@@ -114,7 +114,7 @@ _pango_cairo_hex_box_info_destroy (PangoCairoHexBoxInfo *hbi)
 }  
    
 PangoCairoHexBoxInfo *
-_pango_cairo_get_hex_box_info (PangoCairoFont *cfont)
+_pango_cairo_font_get_hex_box_info (PangoCairoFont *cfont)
 {
   static const char hexdigits[] = "0123456789ABCDEF";
   char c[2] = {0, 0};
@@ -256,7 +256,7 @@ _pango_cairo_get_glyph_extents_missing (PangoCairoFont *cfont,
   PangoCairoHexBoxInfo *hbi;  
   gint rows, cols;
 
-  hbi = _pango_cairo_get_hex_box_info (cfont);
+  hbi = _pango_cairo_font_get_hex_box_info (cfont);
 
   rows = hbi->rows;
   cols = ((glyph & ~PANGO_GLYPH_UNKNOWN_FLAG) > 0xffff ? 6 : 4) / rows;

@@ -97,7 +97,7 @@ struct _PangoCairoHexBoxInfo
 	double box_height;
 };
 
-PangoCairoHexBoxInfo *_pango_cairo_get_hex_box_info (PangoCairoFont *font);
+PangoCairoHexBoxInfo *_pango_cairo_font_get_hex_box_info (PangoCairoFont *font);
 
 void _pango_cairo_get_glyph_extents_missing (PangoCairoFont *cfont,
 					     PangoGlyph      glyph,
