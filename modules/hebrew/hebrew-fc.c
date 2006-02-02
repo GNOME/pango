@@ -348,13 +348,13 @@ hebrew_engine_shape (PangoEngineShape *engine,
 
       if (pango_is_zero_width (wc))	/* Zero-width characters */
 	{
-	  pango_ot_buffer_add_glyph (buffer, 0, unknown_property, p - text);
+	  pango_ot_buffer_add_glyph (buffer, PANGO_GLYPH_NULL, unknown_property, p - text);
 	}
       else
 	{
 	  index = pango_fc_font_get_glyph (fc_font, wc);
 	  
-	  if (!index)
+	  if (index == PANGO_GLYPH_NULL)
 	    {
 	      pango_ot_buffer_add_glyph (buffer, pango_fc_font_get_unknown_glyph (fc_font, wc),
 					 unknown_property, p - text);

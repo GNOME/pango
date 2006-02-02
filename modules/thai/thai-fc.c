@@ -228,7 +228,7 @@ thai_make_glyph_uni (ThaiFontInfo *font_info, gunichar uc)
   PangoFcFont *fc_font = (PangoFcFont *)font_info->font;
 
   result = pango_fc_font_get_glyph (fc_font, uc);
-  if (result)
+  if (result != PANGO_GLYPH_NULL)
     return result;
   else
     return pango_fc_font_get_unknown_glyph (fc_font, uc);

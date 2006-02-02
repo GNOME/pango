@@ -346,13 +346,6 @@ pango_cairo_fc_font_get_glyph (PangoFcFont *font,
   return entry->glyph;
 }
 
-static PangoGlyph
-pango_cairo_fc_font_real_get_unknown_glyph (PangoFcFont *font,
-					    gunichar     wc)
-{
-  return wc | PANGO_CAIRO_UNKNOWN_FLAG;
-}
-
 static void
 pango_cairo_fc_font_glyph_extents_cache_init (PangoCairoFcFont *cffont)
 {
@@ -445,17 +438,17 @@ pango_cairo_fc_font_get_glyph_extents (PangoFont      *font,
   if (cffont->glyph_extents_cache == NULL)
     pango_cairo_fc_font_glyph_extents_cache_init (cffont);
 
-  if (glyph & PANGO_CAIRO_UNKNOWN_FLAG) 
-    {
-      _pango_cairo_get_glyph_extents_missing((PangoCairoFont *)font, glyph, ink_rect, logical_rect);
-      return;
-    }
-  else if (!glyph)
+  if (glyph == PANGO_GLYPH_NULL)
     {
       if (ink_rect)
 	*ink_rect = cffont->font_extents;
       if (logical_rect)
 	*logical_rect = cffont->font_extents;
+      return;
+    }
+  else if (glyph & PANGO_GLYPH_UNKNOWN_FLAG) 
+    {
+      _pango_cairo_get_glyph_extents_missing((PangoCairoFont *)font, glyph, ink_rect, logical_rect);
       return;
     }
 
@@ -514,7 +507,6 @@ pango_cairo_fc_font_class_init (PangoCairoFcFontClass *class)
   fc_font_class->lock_face = pango_cairo_fc_font_lock_face;
   fc_font_class->unlock_face = pango_cairo_fc_font_unlock_face;
   fc_font_class->get_glyph = pango_cairo_fc_font_get_glyph;
-  fc_font_class->get_unknown_glyph = pango_cairo_fc_font_real_get_unknown_glyph;
   fc_font_class->shutdown = pango_cairo_fc_font_shutdown;
 
 #ifdef PROFILE_GLYPH_CACHE

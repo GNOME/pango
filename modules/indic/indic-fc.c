@@ -272,12 +272,12 @@ set_glyphs (PangoFont      *font,
 
       if (pango_is_zero_width (wcs[i]) &&
 	  (!process_zwj || wcs[i] != 0x200D))
-	glyph = 0;
+	glyph = PANGO_GLYPH_NULL;
       else
         {
 	  glyph = pango_fc_font_get_glyph (fc_font, wcs[i]);
 
-	  if (!glyph)
+	  if (glyph == PANGO_GLYPH_NULL)
 	    glyph = pango_fc_font_get_unknown_glyph (fc_font, wcs[i]);
 
           pango_ot_buffer_add_glyph (buffer, glyph, tags[i], i);

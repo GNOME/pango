@@ -201,13 +201,13 @@ fallback_shape (PangoEngineShape *engine,
 
       if (pango_is_zero_width (wc))
 	{
-	  set_glyph (font, glyphs, i, p - text, 0);
+	  set_glyph (font, glyphs, i, p - text, PANGO_GLYPH_NULL);
 	}
       else
 	{
 	  index = pango_fc_font_get_glyph (fc_font, wc);
 
-	  if (!index)
+	  if (index == PANGO_GLYPH_NULL)
 	    index = pango_fc_font_get_unknown_glyph (fc_font, wc);
 
 	  set_glyph (font, glyphs, i, p - text, index);

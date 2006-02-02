@@ -1,5 +1,26 @@
 2006-02-02  Behdad Esfahbod  <behdad@gnome.org>
 
+	* modules/arabic/arabic-fc.c, modules/basic/basic-atsui.c,
+	modules/basic/basic-fc.c, modules/basic/basic-win32.c,
+	modules/basic/basic-x.c, modules/hangul/hangul-fc.c,
+	modules/hebrew/hebrew-fc.c, modules/indic/indic-fc.c,
+	modules/khmer/khmer-fc.c, modules/syriac/syriac-fc.c,
+	modules/thai/thai-fc.c, modules/tibetan/tibetan-fc.c,
+	pango/fonts.c, pango/pango-engine-private.h pango/pango-types.h,
+	pango/pangocairo-fcfont.c, pango/pangocairo-font.c,
+	pango/pangocairo-private.h, pango/pangocairo-render.c,
+	pango/pangofc-decoder.c, pango/pangofc-font.c,
+	pango/pangoft2-render.c, pango/pangoft2.c pango/pangowin32.c,
+	pango/pangox.c, pango/pangoxft-font.c pango/pangoxft-private.h,
+	pango/pangoxft-render.c, pango/shape.c: Use PANGO_GLYPH_NULL for
+	when no glyph should be drawn.  Use PANGO_GLYPH_UNKNOWN_FLAG for
+	all backends to mark unknown flags.  There's no need for
+	pango_font_get_unknown_glyph() anymore, since all backends know
+	how to handle PANGO_GLYPH_UNKNOWN_FLAG gracefully.  We may add
+	that in the future however. (fixes bug #73147, closes bug #329524)
+
+2006-02-02  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/pango-utils.c (read_config_file): Fix GKeyFile transition.
 
 2006-02-01  Behdad Esfahbod  <behdad@gnome.org>
@@ -75,14 +96,14 @@
 
 2006-01-31  Behdad Esfahbod  <behdad@gnome.org>
 
-	* pango/fonts.c, pango/glyphstring.c pango/pango-attributes.c
-	pango/pango-color.c, pango/pango-context.c
-	pango/pango-coverage.c, pango/pango-fontset.c
-	pango/pango-glyph-item.c, pango/pango-item.c
-	pango/pango-layout.c, pango/pango-ot-buffer.c
-	pango/pango-ot-info.c, pango/pango-ot-ruleset.c
-	pango/pango-script.c, pango/pango-tabs.c pango/pango-utils.c
-	pango/pangocairo-fcfontmap.c, pango/pangocairo-fontmap.c
+	* pango/fonts.c, pango/glyphstring.c pango/pango-attributes.c,
+	pango/pango-color.c, pango/pango-context.c,
+	pango/pango-coverage.c, pango/pango-fontset.c,
+	pango/pango-glyph-item.c, pango/pango-item.c,
+	pango/pango-layout.c, pango/pango-ot-buffer.c,
+	pango/pango-ot-info.c, pango/pango-ot-ruleset.c,
+	pango/pango-script.c, pango/pango-tabs.c pango/pango-utils.c,
+	pango/pangocairo-fcfontmap.c, pango/pangocairo-fontmap.c,
 	pango/pangox-fontcache.c, pango/pangoxft-render.c:
 	Improve documentation for functions allocating memory,
 	on how the object should be freed.
@@ -126,27 +147,27 @@
 
 2006-01-29  Behdad Esfahbod  <behdad@gnome.org>
 
-	* modules/arabic/arabic-fc.c, modules/basic/basic-fc.c
-	modules/hebrew/hebrew-fc.c, modules/indic/indic-fc.c
-	modules/khmer/khmer-fc.c, modules/syriac/syriac-fc.c
-	modules/thai/thai-ot.c, modules/thai/thai-shaper.c
+	* modules/arabic/arabic-fc.c, modules/basic/basic-fc.c,
+	modules/hebrew/hebrew-fc.c, modules/indic/indic-fc.c,
+	modules/khmer/khmer-fc.c, modules/syriac/syriac-fc.c,
+	modules/thai/thai-ot.c, modules/thai/thai-shaper.c,
 	modules/tibetan/tibetan-fc.c: If locking font face failed,
 	do not assert, just return zero glyphs with an implicit
 	warning.
 
-	* pango/fonts.c, pango/glyphstring.c pango/modules.c
-	pango/pango-color.c, pango/pango-context.c
-	pango/pango-coverage.c, pango/pango-fontmap.c
-	pango/pango-glyph-item.c, pango/pango-item.c
-	pango/pango-layout.c, pango/pango-markup.c
-	pango/pango-ot-buffer.c, pango/pango-script.c
-	pango/pango-tabs.c, pango/pango-utils.c
-	pango/pangoatsui-fontmap.c, pango/pangocairo-fcfont.c
-	pango/pangocairo-fcfontmap.c, pango/pangocairo-fontmap.c
-	pango/pangocairo-win32font.c, pango/pangofc-font.c
-	pango/pangofc-fontmap.c, pango/pangoft2-fontmap.c
-	pango/pangoft2-render.c, pango/pangoft2.c
-	pango/pangowin32-fontcache.c, pango/pangoxft-font.c
+	* pango/fonts.c, pango/glyphstring.c pango/modules.c,
+	pango/pango-color.c, pango/pango-context.c,
+	pango/pango-coverage.c, pango/pango-fontmap.c,
+	pango/pango-glyph-item.c, pango/pango-item.c,
+	pango/pango-layout.c, pango/pango-markup.c,
+	pango/pango-ot-buffer.c, pango/pango-script.c,
+	pango/pango-tabs.c, pango/pango-utils.c,
+	pango/pangoatsui-fontmap.c, pango/pangocairo-fcfont.c,
+	pango/pangocairo-fcfontmap.c, pango/pangocairo-fontmap.c,
+	pango/pangocairo-win32font.c, pango/pangofc-font.c,
+	pango/pangofc-fontmap.c, pango/pangoft2-fontmap.c,
+	pango/pangoft2-render.c, pango/pangoft2.c,
+	pango/pangowin32-fontcache.c, pango/pangoxft-font.c,
 	pango/pangoxft-render.c, pango/break.c pango/ellipsize.c:
 	Use g_slice for allocating all types.  Also, change some
 	g_error's to g_critical's...

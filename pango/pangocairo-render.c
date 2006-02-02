@@ -21,6 +21,7 @@
 
 #include <config.h>
 
+#include "pango-engine-private.h"
 #include "pangocairo-private.h"
 
 typedef struct _PangoCairoRendererClass PangoCairoRendererClass;
@@ -74,16 +75,32 @@ _pango_cairo_renderer_draw_unknown_glyph (PangoCairoRenderer *crenderer,
   PangoCairoHexBoxInfo *hbi;
   gunichar ch;
 
-  hbi = _pango_cairo_get_hex_box_info ((PangoCairoFont *)font);      
+  cairo_save (crenderer->cr);
+  cairo_get_current_point (crenderer->cr, &temp_x, &temp_y);
 
-  ch = gi->glyph & ~PANGO_CAIRO_UNKNOWN_FLAG;
+  hbi = _pango_cairo_get_hex_box_info ((PangoCairoFont *)font);      
+  if (!hbi)
+    {
+      cairo_rectangle (crenderer->cr,
+		       cx + 1.5,
+		       cy - 1.5,
+		       (double)gi->geometry.width / PANGO_SCALE - 3.0,
+		       PANGO_UNKNOWN_GLYPH_HEIGHT - 3.0);
+
+      if (!crenderer->do_path)
+	{
+	  cairo_set_line_width (crenderer->cr, 1.0);
+	  cairo_stroke (crenderer->cr);
+	}
+
+      goto done;
+    }
+
+  ch = gi->glyph & ~PANGO_GLYPH_UNKNOWN_FLAG;
 
   rows = hbi->rows;
   cols = (ch > 0xffff ? 6 : 4) / rows;
   g_snprintf (buf, sizeof(buf), (ch > 0xffff) ? "%06X" : "%04X", ch);
-
-  cairo_save (crenderer->cr);
-  cairo_get_current_point (crenderer->cr, &temp_x, &temp_y);
 
   cairo_rectangle (crenderer->cr,
 		   cx + hbi->pad_x * 1.5,
@@ -93,10 +110,8 @@ _pango_cairo_renderer_draw_unknown_glyph (PangoCairoRenderer *crenderer,
 
   if (!crenderer->do_path)
     {
-      cairo_save (crenderer->cr);
       cairo_set_line_width (crenderer->cr, hbi->line_width);
       cairo_stroke (crenderer->cr);
-      cairo_restore (crenderer->cr);
     }
 
   _pango_cairo_font_install (PANGO_CAIRO_FONT (hbi->font), crenderer->cr);
@@ -122,6 +137,7 @@ _pango_cairo_renderer_draw_unknown_glyph (PangoCairoRenderer *crenderer,
 	}
     }
 
+done:
   cairo_move_to (crenderer->cr, temp_x, temp_y);
   cairo_restore (crenderer->cr);
 }
@@ -160,12 +176,12 @@ pango_cairo_renderer_draw_glyphs (PangoRenderer     *renderer,
     {
       PangoGlyphInfo *gi = &glyphs->glyphs[i];
 
-      if (gi->glyph)
+      if (gi->glyph != PANGO_GLYPH_NULL)
         {
           double cx = crenderer->x_offset + (double)(x + x_position + gi->geometry.x_offset) / PANGO_SCALE;
           double cy = crenderer->y_offset + (double)(y + gi->geometry.y_offset) / PANGO_SCALE;
 
-          if (gi->glyph & PANGO_CAIRO_UNKNOWN_FLAG)
+          if (gi->glyph & PANGO_GLYPH_UNKNOWN_FLAG)
 	    _pango_cairo_renderer_draw_unknown_glyph (crenderer, font, gi, cx, cy);
           else
             {

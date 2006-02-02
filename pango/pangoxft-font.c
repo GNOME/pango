@@ -51,8 +51,6 @@ static gboolean   pango_xft_font_real_has_char          (PangoFcFont      *font,
 							 gunichar          wc);
 static guint      pango_xft_font_real_get_glyph         (PangoFcFont      *font,
 							 gunichar          wc);
-static PangoGlyph pango_xft_font_real_get_unknown_glyph (PangoFcFont      *font,
-							 gunichar          wc);
 static void       pango_xft_font_real_shutdown          (PangoFcFont      *font);
 
 static XftFont *xft_font_get_font (PangoFont *font);
@@ -74,7 +72,6 @@ pango_xft_font_class_init (PangoXftFontClass *class)
   fc_font_class->unlock_face = pango_xft_font_real_unlock_face;
   fc_font_class->has_char = pango_xft_font_real_has_char;
   fc_font_class->get_glyph = pango_xft_font_real_get_glyph;
-  fc_font_class->get_unknown_glyph = pango_xft_font_real_get_unknown_glyph;
   fc_font_class->shutdown = pango_xft_font_real_shutdown;
 }
 
@@ -209,7 +206,7 @@ get_glyph_extents_missing (PangoXftFont    *xfont,
   PangoFont *font = PANGO_FONT (xfont);
   XftFont *xft_font = xft_font_get_font (font);
   
-  gint cols = (glyph & ~PANGO_XFT_UNKNOWN_FLAG) > 0xffff ? 3 : 2;
+  gint cols = (glyph & ~PANGO_GLYPH_UNKNOWN_FLAG) > 0xffff ? 3 : 2;
   
   _pango_xft_font_get_mini_font (xfont);
   
@@ -323,21 +320,7 @@ pango_xft_font_get_glyph_extents (PangoFont        *font,
   if (!fcfont->fontmap)		/* Display closed */
     goto fallback;
 
-  if (glyph == (PangoGlyph)-1)
-    glyph = 0;
-
-  if (glyph & PANGO_XFT_UNKNOWN_FLAG)
-    {
-      get_glyph_extents_missing (xfont, glyph, ink_rect, logical_rect);
-    }
-  else if (glyph)
-    {
-      if (!fcfont->is_transformed)
-	get_glyph_extents_xft (fcfont, glyph, ink_rect, logical_rect);
-      else
-	get_glyph_extents_raw (xfont, glyph, ink_rect, logical_rect);
-    }
-  else
+  if (glyph == PANGO_GLYPH_NULL)
     {
     fallback:
       
@@ -355,6 +338,18 @@ pango_xft_font_get_glyph_extents (PangoFont        *font,
 	  logical_rect->y = 0;
 	  logical_rect->height = 0;
 	}
+      return;
+    }
+  else if (glyph & PANGO_GLYPH_UNKNOWN_FLAG)
+    {
+      get_glyph_extents_missing (xfont, glyph, ink_rect, logical_rect);
+    }
+  else
+    {
+      if (!fcfont->is_transformed)
+	get_glyph_extents_xft (fcfont, glyph, ink_rect, logical_rect);
+      else
+	get_glyph_extents_raw (xfont, glyph, ink_rect, logical_rect);
     }
 }
 
@@ -451,13 +446,6 @@ pango_xft_font_real_get_glyph (PangoFcFont *font,
   XftFont *xft_font = xft_font_get_font ((PangoFont *)font);
 
   return XftCharIndex (NULL, xft_font, wc);
-}
-
-static PangoGlyph
-pango_xft_font_real_get_unknown_glyph (PangoFcFont *font,
-				       gunichar     wc)
-{
-  return wc | PANGO_XFT_UNKNOWN_FLAG;
 }
 
 static void
@@ -586,7 +574,7 @@ pango_xft_font_unlock_face (PangoFont *font)
  * 
  * Use pango_fc_font_get_glyph() instead.
  *
- * Return value: the glyph index, or 0, if the Unicode
+ * Return value: the glyph index, or %PANGO_GLYPH_NULL, if the Unicode
  *  character does not exist in the font.
  *
  * Since: 1.2
@@ -595,7 +583,7 @@ guint
 pango_xft_font_get_glyph (PangoFont *font,
 			  gunichar   wc)
 {
-  g_return_val_if_fail (PANGO_XFT_IS_FONT (font), 0);
+  g_return_val_if_fail (PANGO_XFT_IS_FONT (font), PANGO_GLYPH_NULL);
 
   return pango_fc_font_get_glyph (PANGO_FC_FONT (font), wc);
 }

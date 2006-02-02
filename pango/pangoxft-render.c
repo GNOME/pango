@@ -335,9 +335,9 @@ pango_xft_renderer_draw_glyphs (PangoRenderer    *renderer,
       int glyph_x = x + x_off + glyphs->glyphs[i].geometry.x_offset;
       int glyph_y = y + glyphs->glyphs[i].geometry.y_offset;
 
-      if (glyph)
+      if (glyph != PANGO_GLYPH_NULL)
 	{
-	  if (glyph & PANGO_XFT_UNKNOWN_FLAG)
+	  if (glyph & PANGO_GLYPH_UNKNOWN_FLAG)
 	    {
 	      char buf[7];
 	      int ys[3];
@@ -348,7 +348,7 @@ pango_xft_renderer_draw_glyphs (PangoRenderer    *renderer,
 	      PangoFont *mini_font = _pango_xft_font_get_mini_font (xfont);
 	      XftFont *mini_xft_font = pango_xft_font_get_font (mini_font);
 	      
-	      glyph &= ~PANGO_XFT_UNKNOWN_FLAG;
+	      glyph &= ~PANGO_GLYPH_UNKNOWN_FLAG;
 	      
 	      ys[0] = glyph_y - PANGO_SCALE * xft_font->ascent + PANGO_SCALE * (((xft_font->ascent + xft_font->descent) - (xfont->mini_height * 2 + xfont->mini_pad * 5 + PANGO_SCALE / 2) / PANGO_SCALE) / 2);
 	      ys[1] = ys[0] + 2 * xfont->mini_pad + xfont->mini_height;

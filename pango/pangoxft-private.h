@@ -27,8 +27,6 @@
 
 G_BEGIN_DECLS
 
-#define PANGO_XFT_UNKNOWN_FLAG 0x10000000
-
 struct _PangoXftFont
 {
   PangoFcFont parent_instance;

@@ -138,7 +138,7 @@ render_tone (PangoFont *font, gunichar tone, PangoGlyphString *glyphs,
 
   index = find_char (font, tone);
   pango_glyph_string_set_size (glyphs, *n_glyphs + 1);
-  if (index)
+  if (index != PANGO_GLYPH_NULL)
     {
       set_glyph_tone (font, glyphs, *n_glyphs, cluster_offset, index);
     }
@@ -146,7 +146,7 @@ render_tone (PangoFont *font, gunichar tone, PangoGlyphString *glyphs,
     {
       /* fall back : HTONE1(0x302e) => middle-dot, HTONE2(0x302f) => colon */
       index = find_char (font, tone == HTONE1 ? 0x00b7 : 0x003a);
-      if (index)
+      if (index != PANGO_GLYPH_NULL)
         {
           set_glyph_tone (font, glyphs, *n_glyphs, cluster_offset, index);
         }
@@ -167,11 +167,11 @@ render_isolated_tone (PangoFont *font, gunichar tone, PangoGlyphString *glyphs,
   /* Find a base character to render the mark on
    */
   int index = find_char (font, 0x25cc);	/* DOTTED CIRCLE */
-  if (!index)
+  if (index == PANGO_GLYPH_NULL)
     index = find_char (font, 0x25cb);   /* WHITE CIRCLE, in KSC-5601 */
-  if (!index)
+  if (index == PANGO_GLYPH_NULL)
     index = find_char (font, ' ');      /* Space */
-  if (!index)			        /* Unknown glyph box with 0000 in it */
+  if (index == PANGO_GLYPH_NULL)        /* Unknown glyph box with 0000 in it */
     index = find_char (font, get_unknown_glyph (font, 0));
 
   /* Add the base character
@@ -217,7 +217,7 @@ render_syllable (PangoFont *font, gunichar *text, int length,
 	wc = S_FROM_LV(text[0], text[1]);
       index = find_char (font, wc);
       pango_glyph_string_set_size (glyphs, *n_glyphs + 1);
-      if (!index)
+      if (index == PANGO_GLYPH_NULL)
 	set_glyph (font, glyphs, *n_glyphs, cluster_offset,
 		   get_unknown_glyph (font, wc));
       else
@@ -236,7 +236,7 @@ render_syllable (PangoFont *font, gunichar *text, int length,
 	continue;
 
       index = find_char (font, text[i]);
-      if (index)
+      if (index != PANGO_GLYPH_NULL)
 	{
 	  pango_glyph_string_set_size (glyphs, *n_glyphs + 1);
 	  set_glyph (font, glyphs, *n_glyphs, cluster_offset, index);
@@ -250,9 +250,9 @@ render_syllable (PangoFont *font, gunichar *text, int length,
       for (j = 0; j < 3 && (__jamo_to_ksc5601[jindex][j] != 0); j++)
 	{
 	  wc = __jamo_to_ksc5601[jindex][j] - KSC_JAMOBASE + UNI_JAMOBASE;
-	  index = (wc >= 0x3131) ? find_char (font, wc) : 0;
+	  index = (wc >= 0x3131) ? find_char (font, wc) : PANGO_GLYPH_NULL;
 	  pango_glyph_string_set_size (glyphs, *n_glyphs + 1);
-	  if (!index)
+	  if (index == PANGO_GLYPH_NULL)
 	    set_glyph (font, glyphs, *n_glyphs, cluster_offset,
 		       get_unknown_glyph (font, index));
 	  else
@@ -264,7 +264,7 @@ render_syllable (PangoFont *font, gunichar *text, int length,
     {
       index = find_char (font, 0x3164);
       pango_glyph_string_set_size (glyphs, *n_glyphs + 1);
-      if (!index)
+      if (index == PANGO_GLYPH_NULL)
 	set_glyph (font, glyphs, *n_glyphs, cluster_offset,
 		   get_unknown_glyph (font, index));
       else
@@ -287,12 +287,12 @@ render_basic (PangoFont *font, gunichar wc,
 
   index = find_char (font, wc);
   pango_glyph_string_set_size (glyphs, *n_glyphs + 1);
-  if (index)
+  if (index != PANGO_GLYPH_NULL)
     set_glyph (font, glyphs, *n_glyphs, cluster_offset, index);
   else
     {
       if (pango_is_zero_width (wc))
-	set_glyph (font, glyphs, *n_glyphs, cluster_offset, 0);
+	set_glyph (font, glyphs, *n_glyphs, cluster_offset, PANGO_GLYPH_NULL);
       else
 	set_glyph (font, glyphs, *n_glyphs, cluster_offset,
 		   get_unknown_glyph (font, wc));

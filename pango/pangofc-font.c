@@ -82,6 +82,7 @@ pango_fc_font_class_init (PangoFcFontClass *class)
 
   class->has_char = pango_fc_font_real_has_char;
   class->get_glyph = pango_fc_font_real_get_glyph;
+  class->get_unknown_glyph = NULL;
   
   object_class->finalize = pango_fc_font_finalize;
   object_class->set_property = pango_fc_font_set_property;
@@ -517,7 +518,7 @@ pango_fc_font_real_get_glyph (PangoFcFont *font,
   
   index = FcFreeTypeCharIndex (face, wc);
   if (index > (FT_UInt)face->num_glyphs)
-    index = 0;
+    index = PANGO_GLYPH_NULL;
 
   PANGO_FC_FONT_UNLOCK_FACE (font);
 
@@ -599,7 +600,7 @@ pango_fc_font_has_char (PangoFcFont *font,
  * for @font. If you only want to determine
  * whether the font has the glyph, use pango_fc_font_has_char().
  * 
- * Return value: the glyph index, or 0, if the Unicode
+ * Return value: the glyph index, or %PANGO_GLYPH_NULL, if the Unicode
  *   character doesn't exist in the font.
  *
  * Since: 1.4
@@ -641,7 +642,10 @@ pango_fc_font_get_unknown_glyph (PangoFcFont *font,
 {
   g_return_val_if_fail (PANGO_IS_FC_FONT (font), 0);
 
-  return PANGO_FC_FONT_GET_CLASS (font)->get_unknown_glyph (font, wc);
+  if (PANGO_FC_FONT_GET_CLASS (font)->get_unknown_glyph)
+    return PANGO_FC_FONT_GET_CLASS (font)->get_unknown_glyph (font, wc);
+
+  return PANGO_GLYPH_UNKNOWN_FLAG | (PangoGlyph)wc;
 }
 
 void

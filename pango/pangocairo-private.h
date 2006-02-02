@@ -27,8 +27,6 @@
 
 G_BEGIN_DECLS
 
-#define PANGO_CAIRO_UNKNOWN_FLAG 0x10000000
-
 #define PANGO_CAIRO_FONT_MAP_GET_IFACE(obj)  (G_TYPE_INSTANCE_GET_INTERFACE ((obj), PANGO_TYPE_CAIRO_FONT_MAP, PangoCairoFontMapIface))
 
 typedef struct _PangoCairoFontMapIface PangoCairoFontMapIface;

@@ -31,8 +31,6 @@
 #include "pangowin32.h"
 #include "pangowin32-private.h"
 
-#define PANGO_WIN32_UNKNOWN_FLAG 0x10000000
-
 #define CH_IS_UNIHAN_BMP(ch) ((ch) >= 0x3400 && (ch) <= 0x9FFF)
 #define CH_IS_UNIHAN(ch) (CH_IS_UNIHAN_BMP (ch) || \
 			  ((ch) >= 0x20000 && (ch) <= 0x2A6DF) ||	\
@@ -313,11 +311,11 @@ pango_win32_render (HDC               hdc,
        * point zero (just spacing).
        */
       while (i < glyphs->num_glyphs &&
-	     (glyphs->glyphs[i].glyph == 0 || cur_y_offset == glyphs->glyphs[i].geometry.y_offset))
+	     (glyphs->glyphs[i].glyph == PANGO_GLYPH_NULL || cur_y_offset == glyphs->glyphs[i].geometry.y_offset))
 	{
-	  if (glyphs->glyphs[i].glyph == 0)
+	  if (glyphs->glyphs[i].glyph == PANGO_GLYPH_NULL)
 	    {
-	      /* Code point 0 glyphs should not be rendered, but their
+	      /* PANGO_GLYPH_NULL glyphs should not be rendered, but their
 	       * indicated width (set up by PangoLayout) should be taken
 	       * into account.
 	       */
@@ -337,7 +335,7 @@ pango_win32_render (HDC               hdc,
 	    }
 	  else
 	    {
-	      if (glyphs->glyphs[i].glyph & PANGO_WIN32_UNKNOWN_FLAG)
+	      if (glyphs->glyphs[i].glyph & PANGO_GLYPH_UNKNOWN_FLAG)
 		{
 		  /* Glyph index is actually the char value that doesn't
 		   * have any glyph (ORed with the flag). We should really
@@ -462,7 +460,7 @@ pango_win32_font_get_glyph_extents (PangoFont      *font,
   MAT2 m = {{0,1}, {0,0}, {0,0}, {0,1}};
   PangoWin32GlyphInfo *info;
 
-  if (glyph & PANGO_WIN32_UNKNOWN_FLAG)
+  if (glyph & PANGO_GLYPH_UNKNOWN_FLAG)
     glyph_index = glyph = 0;
 
   info = g_hash_table_lookup (win32font->glyph_info, GUINT_TO_POINTER (glyph));
@@ -869,7 +867,7 @@ PangoGlyph
 pango_win32_get_unknown_glyph (PangoFont *font,
 			       gunichar   wc)
 {
-  return wc | PANGO_WIN32_UNKNOWN_FLAG;
+  return wc | PANGO_GLYPH_UNKNOWN_FLAG;
 }
 
 /**
@@ -1383,7 +1381,7 @@ pango_win32_font_get_glyph_index (PangoFont *font,
   cmap = font_get_cmap (font);
 
   if (cmap == NULL)
-    return 0;
+    return PANGO_GLYPH_NULL;
 
   if (win32font->win32face->cmap_format == 4)
     {
@@ -1396,10 +1394,10 @@ pango_win32_font_get_glyph_index (PangoFont *font,
       guint16 ch = wc;
   
       if (wc > 0xFFFF)
-	return 0;
+	return PANGO_GLYPH_NULL;
 
       if (!find_segment (cmap4, ch, &segment))
-	return 0;
+	return PANGO_GLYPH_NULL;
 
       id_range_offset = get_id_range_offset (cmap4);
       id_delta = get_id_delta (cmap4);
@@ -1415,7 +1413,7 @@ pango_win32_font_get_glyph_index (PangoFont *font,
 	  if (id)
 	    glyph = (id_delta[segment] + id) %65536;
 	  else
-	    glyph = 0;
+	    glyph = PANGO_GLYPH_NULL;
 	}
     }
   else if (win32font->win32face->cmap_format == 12)
@@ -1423,7 +1421,7 @@ pango_win32_font_get_glyph_index (PangoFont *font,
       struct format_12_cmap *cmap12 = cmap;
       guint32 i;
 
-      glyph = 0;
+      glyph = PANGO_GLYPH_NULL;
       for (i = 0; i < cmap12->count; i++)
 	{
 	  if (cmap12->groups[i*3+0] <= wc && wc <= cmap12->groups[i*3+1])

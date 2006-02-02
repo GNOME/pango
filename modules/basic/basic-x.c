@@ -284,7 +284,7 @@ find_char (CharCache *cache, PangoFont *font, gunichar wc, const char *input)
 	}
     }
 
-  return 0;
+  return PANGO_GLYPH_NULL;
 }
 
 static void
@@ -610,12 +610,12 @@ basic_engine_shape (PangoEngineShape *engine,
 		
       if (pango_is_zero_width (wc))
 	{
-	  set_glyph (font, glyphs, i, p - text, 0);
+	  set_glyph (font, glyphs, i, p - text, PANGO_GLYPH_NULL);
 	}
       else
 	{
 	  index = find_char (cache, font, wc, input);
-	  if (index)
+	  if (index != PANGO_GLYPH_NULL)
 	    {
 	      set_glyph (font, glyphs, i, p - text, index);
 	      
@@ -640,7 +640,7 @@ basic_engine_shape (PangoEngineShape *engine,
 		}
 	    }
 	  else
-	    set_glyph (font, glyphs, i, p - text, pango_x_get_unknown_glyph (font));
+	    set_glyph (font, glyphs, i, p - text, pango_x_font_get_unknown_glyph (font, wc));
 	}
       
       p = g_utf8_next_char (p);
@@ -680,7 +680,7 @@ basic_engine_covers (PangoEngineShape *engine,
 
   g_unichar_to_utf8 (wc, buf);
 
-  return find_char (cache, font, wc, buf) ? PANGO_COVERAGE_EXACT : PANGO_COVERAGE_NONE;
+  return find_char (cache, font, wc, buf) != PANGO_GLYPH_NULL ? PANGO_COVERAGE_EXACT : PANGO_COVERAGE_NONE;
 }
 
 static void

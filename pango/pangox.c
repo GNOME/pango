@@ -33,8 +33,6 @@
 #include "pangox.h"
 #include "pangox-private.h"
 
-#define PANGO_X_UNKNOWN_FLAG 0x10000000
-
 #define PANGO_TYPE_X_FONT              (pango_x_font_get_type ())
 #define PANGO_X_FONT(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_TYPE_X_FONT, PangoXFont))
 #define PANGO_X_FONT_CLASS(klass)      (G_TYPE_CHECK_CLASS_CAST ((klass), PANGO_TYPE_X_FONT, PangoXFontClass))
@@ -401,12 +399,12 @@ pango_x_render  (Display           *display,
        * the ink rect here would be a noticeable speed hit.
        * This is close enough.
        */
-      if (!(glyph &&
+      if (!(glyph != PANGO_GLYPH_NULL &&
 	    glyph_x >= -16384 && glyph_x <= 32767 &&
 	    glyph_y >= -16384 && glyph_y <= 32767))
 	goto next_glyph;
 	      
-      if (glyph & PANGO_X_UNKNOWN_FLAG)
+      if (glyph & PANGO_GLYPH_UNKNOWN_FLAG)
         {
 	  PangoFontMetrics *metrics = pango_font_get_metrics (font,
 							      pango_language_from_string ("en"));
@@ -425,7 +423,7 @@ pango_x_render  (Display           *display,
           baseline = glyph_y;
 	  stroke_thick = MAX ((int) (0.5 + 0.075 * (y2 - y1)), 1);
           
-          wc = glyph & (~PANGO_X_UNKNOWN_FLAG);
+          wc = glyph & (~PANGO_GLYPH_UNKNOWN_FLAG);
 
           switch (wc)
             {
@@ -576,7 +574,7 @@ pango_x_font_get_glyph_extents  (PangoFont      *font,
   XCharStruct *cs;
   PangoXSubfontInfo *subfont;
 
-  if (glyph & PANGO_X_UNKNOWN_FLAG)
+  if (glyph != PANGO_GLYPH_NULL && glyph & PANGO_GLYPH_UNKNOWN_FLAG)
     {
       PangoFontMetrics *metrics = pango_font_get_metrics (font,
 							  pango_language_from_string ("en"));
@@ -584,7 +582,7 @@ pango_x_font_get_glyph_extents  (PangoFont      *font,
       gdouble width_factor;
       int w;
       
-      wc = glyph & (~PANGO_X_UNKNOWN_FLAG);
+      wc = glyph & (~PANGO_GLYPH_UNKNOWN_FLAG);
           
       switch (wc)
         {
@@ -625,7 +623,7 @@ pango_x_font_get_glyph_extents  (PangoFont      *font,
 	}
       
     }
-  else if (glyph && pango_x_find_glyph (font, glyph, &subfont, &cs))
+  else if (glyph != PANGO_GLYPH_NULL && pango_x_find_glyph (font, glyph, &subfont, &cs))
     {
       if (ink_rect)
 	{
@@ -852,7 +850,7 @@ get_subfonts_foreach (PangoFont      *font,
   GSList **subfonts = data;
   PangoGlyph glyph = glyph_info->glyph;
 
-  if ((glyph & PANGO_X_UNKNOWN_FLAG) == 0)
+  if ((glyph & PANGO_GLYPH_UNKNOWN_FLAG) == 0)
     {
       PangoXSubfont subfont = PANGO_X_GLYPH_SUBFONT (glyph);
       if (!g_slist_find (*subfonts, GUINT_TO_POINTER ((guint)subfont)))
@@ -1412,7 +1410,7 @@ pango_x_find_glyph (PangoFont *font,
 PangoGlyph
 pango_x_get_unknown_glyph (PangoFont *font)
 {
-  return PANGO_X_UNKNOWN_FLAG;
+  return PANGO_GLYPH_UNKNOWN_FLAG;
 }
 
 /**
@@ -1758,5 +1756,5 @@ pango_x_font_get_unknown_glyph (PangoFont *font,
 {
   g_return_val_if_fail (PANGO_IS_FONT (font), 0);
 
-  return PANGO_X_UNKNOWN_FLAG | wc;
+  return PANGO_GLYPH_UNKNOWN_FLAG | wc;
 }

@@ -51,6 +51,7 @@ pango_shape (const gchar      *text,
       _pango_engine_shape_shape (analysis->shape_engine, analysis->font,
 				 text, length, analysis, glyphs);
 
+      glyphs->num_glyphs = 0;
       if (G_UNLIKELY (glyphs->num_glyphs == 0))
         {
 	  /* If a font has been correctly chosen, but no glyphs are output,
@@ -100,19 +101,27 @@ pango_shape (const gchar      *text,
 
   if (!glyphs->num_glyphs)
     {
-      /* If failed to get glyphs, put a whitespace glyph per character
+      /* If failed to get glyphs, put unknown glyphs for all characters
        */
+      const char *p = text;
       pango_glyph_string_set_size (glyphs, g_utf8_strlen (text, length));
 
       for (i = 0; i < glyphs->num_glyphs; i++)
         {
-	  glyphs->glyphs[i].glyph = 0;
+	  PangoRectangle logical_rect;
+	  PangoGlyph glyph = g_utf8_get_char (p) | PANGO_GLYPH_UNKNOWN_FLAG;
+	  
+	  pango_font_get_glyph_extents (analysis->font, glyph, NULL, &logical_rect);
+
+	  glyphs->glyphs[i].glyph = glyph;
 	  
 	  glyphs->glyphs[i].geometry.x_offset = 0;
 	  glyphs->glyphs[i].geometry.y_offset = 0;
-	  glyphs->glyphs[i].geometry.width = 10 * PANGO_SCALE;
+	  glyphs->glyphs[i].geometry.width = logical_rect.width;
 	  
 	  glyphs->log_clusters[i] = i;
+
+	  p = g_utf8_next_char (p);
 	}
     }
 

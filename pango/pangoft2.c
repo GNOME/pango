@@ -296,6 +296,17 @@ pango_ft2_font_get_glyph_extents (PangoFont      *font,
 {
   PangoFT2GlyphInfo *info;
 
+  if (glyph & PANGO_GLYPH_UNKNOWN_FLAG)
+    glyph = PANGO_GLYPH_NULL;
+  if (glyph == PANGO_GLYPH_NULL)
+    {
+      if (ink_rect)
+	  ink_rect->x = ink_rect->y = ink_rect->width = ink_rect->height = 0;
+      if (logical_rect)
+	  logical_rect->x = logical_rect->y = logical_rect->width = logical_rect->height = 0;
+      return;
+    }
+
   info = pango_ft2_font_get_glyph_info (font, glyph, TRUE);
 
   if (ink_rect)

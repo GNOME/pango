@@ -40,6 +40,12 @@ PangoCoverageLevel _pango_engine_shape_covers (PangoEngineShape *engine,
 
 PangoEngineShape *_pango_get_fallback_shaper (void);
 
+/* used for very rare and miserable situtations that we cannot even
+ * draw a hexbox
+ */
+#define PANGO_UNKNOWN_GLYPH_WIDTH  10
+#define PANGO_UNKNOWN_GLYPH_HEIGHT 14
+
 G_END_DECLS
 
 #endif /* __PANGO_ENGINE_PRIVATE_H__ */

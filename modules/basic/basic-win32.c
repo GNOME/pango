@@ -1003,12 +1003,12 @@ basic_engine_shape (PangoEngineShape *engine,
 		
       if (pango_is_zero_width (wc))
 	{
-	  set_glyph (font, glyphs, i, p - text, 0);
+	  set_glyph (font, glyphs, i, p - text, PANGO_GLYPH_NULL);
 	}
       else
 	{
 	  index = find_char (font, wc);
-	  if (index)
+	  if (index != PANGO_GLYPH_NULL)
 	    {
 	      set_glyph (font, glyphs, i, p - text, index);
 	      

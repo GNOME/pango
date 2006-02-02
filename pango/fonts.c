@@ -29,6 +29,7 @@
 #include "pango-font.h"
 #include "pango-fontmap.h"
 #include "pango-utils.h"
+#include "pango-engine-private.h"
 
 struct _PangoFontDescription
 {
@@ -1178,15 +1179,15 @@ pango_font_get_glyph_extents  (PangoFont      *font,
         {
 	  ink_rect->x = 0;
 	  ink_rect->y = 0;
-	  ink_rect->height = 12 * PANGO_SCALE;
-	  ink_rect->width = 12 * PANGO_SCALE;
+	  ink_rect->height = PANGO_UNKNOWN_GLYPH_HEIGHT * PANGO_SCALE;
+	  ink_rect->width = PANGO_UNKNOWN_GLYPH_WIDTH * PANGO_SCALE;
         }
       if (logical_rect)
         {
 	  logical_rect->x = 0;
 	  logical_rect->y = 0;
-	  logical_rect->height = 12 * PANGO_SCALE;
-	  logical_rect->width = 12 * PANGO_SCALE;
+	  logical_rect->height = PANGO_UNKNOWN_GLYPH_HEIGHT * PANGO_SCALE;
+	  logical_rect->width = PANGO_UNKNOWN_GLYPH_WIDTH * PANGO_SCALE;
 	}
       return;
     }

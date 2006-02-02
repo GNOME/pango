@@ -70,8 +70,8 @@ pango_fc_decoder_get_charset (PangoFcDecoder *decoder,
  * glyph is most convenient for it. (Usually whatever glyph is directly
  * in the fonts character map table.)
  *
- * Return value: the glyph index, or 0 if the glyph isn't covered
- *  by the font.
+ * Return value: the glyph index, or %PANGO_GLYPH_NULL if the glyph isn't
+ * covered by the font.
  *
  * Since: 1.6
  **/
@@ -80,7 +80,7 @@ pango_fc_decoder_get_glyph (PangoFcDecoder *decoder,
 			    PangoFcFont    *fcfont,
 			    guint32         wc)
 {
-  g_return_val_if_fail (PANGO_IS_FC_DECODER (decoder), 0);
+  g_return_val_if_fail (PANGO_IS_FC_DECODER (decoder), PANGO_GLYPH_NULL);
 
   return PANGO_FC_DECODER_GET_CLASS (decoder)->get_glyph (decoder, fcfont, wc);
 }

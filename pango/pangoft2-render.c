@@ -150,6 +150,11 @@ pango_ft2_renderer_draw_glyph (PangoRenderer *renderer,
   int iyoff = floor (y + 0.5);
   int ix, iy;
 
+  if (glyph & PANGO_GLYPH_UNKNOWN_FLAG)
+    glyph = PANGO_GLYPH_NULL;
+  if (glyph == PANGO_GLYPH_NULL)
+    return;
+
   rendered_glyph = _pango_ft2_font_get_cache_glyph_data (font, glyph);
   add_glyph_to_cache = FALSE;
   if (rendered_glyph == NULL)
