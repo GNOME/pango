@@ -1,5 +1,10 @@
 2006-02-01  Behdad Esfahbod  <behdad@gnome.org>
 
+	* examples/xftview.c: Add a default_substitute function to set
+	correct dpi on the pattern.
+
+2006-02-01  Behdad Esfahbod  <behdad@gnome.org>
+
 	* examples/viewer-x.c, examples/viewer-x.h: Driver for X-based
 	viewer.  Used by pangocairo-view and pangoxft-view currently.
 

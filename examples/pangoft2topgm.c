@@ -31,10 +31,11 @@
 #include <pango/pangoft2.h>
 
 static void
-ft2_render (PangoLayout *layout,
-	    int          x,
-	    int          y,
-	    gpointer     data)
+do_render (PangoLayout *layout,
+	   int          x,
+	   int          y,
+	   gpointer     data,
+	   gboolean     show_borders)
 {
   pango_ft2_render_layout (data, layout, x, y);
 }
@@ -113,7 +114,7 @@ main(int argc, char *argv[])
       memset (buf, 0x00, bitmap.pitch * bitmap.rows);
 
       for (run = 0; run < opt_runs; run++)
-	do_output (context, ft2_render, NULL, &bitmap, &width, &height, FALSE);
+	do_output (context, do_render, NULL, &bitmap, &width, &height, FALSE);
 
       if (gen_output)
         {

@@ -28,6 +28,7 @@
 
 void do_init (Display *display,
 	      int screen,
+	      int dpi,
 	      /* output */
 	      PangoContext **context,
 	      int *width,

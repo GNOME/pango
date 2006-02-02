@@ -100,7 +100,7 @@ main (int argc, char **argv)
     fail ("Cannot open display %s\n", XDisplayName (NULL));
   screen = DefaultScreen (display);
 
-  do_init (display, screen, &context, &width, &height);
+  do_init (display, screen, opt_dpi, &context, &width, &height);
 
   bg = WhitePixel (display, screen);
   window = XCreateSimpleWindow (display, DefaultRootWindow (display),

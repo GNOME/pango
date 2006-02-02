@@ -27,6 +27,14 @@
 #include <pango/pangoxft.h>
 
 static void
+default_substitute (FcPattern *pattern,
+		    gpointer data)
+{
+  int dpi = GPOINTER_TO_INT (data);
+  FcPatternAddInteger (pattern, FC_DPI, dpi);
+}
+
+static void
 render_callback (PangoLayout *layout,
 		 int          x,
 		 int          y,
@@ -67,6 +75,7 @@ render_callback (PangoLayout *layout,
 void
 do_init (Display *display,
 	 int screen,
+	 int dpi,
 	 /* output */
 	 PangoContext **context,
 	 int *width,
@@ -74,6 +83,7 @@ do_init (Display *display,
 {
   XftInit (NULL);
   *context = pango_xft_get_context (display, screen);
+  pango_xft_set_default_substitute (display, screen, default_substitute, GINT_TO_POINTER (dpi), NULL);
   do_output (*context, NULL, NULL, NULL, width, height, FALSE);
 }
 

@@ -100,6 +100,7 @@ transform_callback (PangoContext *context,
 void
 do_init (Display *display,
 	 int screen,
+	 int dpi,
 	 /* output */
 	 PangoContext **context,
 	 int *width,
@@ -109,7 +110,7 @@ do_init (Display *display,
   cairo_t *cr;
   cairo_surface_t *surface;
   fontmap = pango_cairo_font_map_get_default ();
-  pango_cairo_font_map_set_resolution (PANGO_CAIRO_FONT_MAP (fontmap), opt_dpi);
+  pango_cairo_font_map_set_resolution (PANGO_CAIRO_FONT_MAP (fontmap), dpi);
   *context = pango_cairo_font_map_create_context (PANGO_CAIRO_FONT_MAP (fontmap));
 
   /* This is annoying ... we have to create a temporary surface just to
