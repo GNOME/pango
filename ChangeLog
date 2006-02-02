@@ -1,5 +1,12 @@
 2006-02-01  Behdad Esfahbod  <behdad@gnome.org>
 
+	* configure.in: AC_DEFINE (HAVE_CAIRO_PNG).
+
+	* examples/cairoview.c: Save to PNG if cairo has PNG support and
+	--output is given.
+
+2006-02-01  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/pangocairo-font.c: For mini_font, set family to "monospace",
 	not "mono-space" which didn't work!
 

@@ -21,6 +21,8 @@
  * Boston, MA 02111-1307, USA.
  */
 
+#include <config.h>
+
 #include "renderdemo.h"
 #include "viewer-x.h"
 
@@ -141,7 +143,6 @@ do_render (Display *display,
 				       width, height);
 
   cr = cairo_create (surface);
-  cairo_surface_destroy (surface);
   
   transform_callback (context, NULL, cr);
 
@@ -152,5 +153,17 @@ do_render (Display *display,
   cairo_set_source_rgb (cr, 0.0, 0.0, 0.0);
   do_output (context, render_callback, transform_callback, cr, NULL, NULL, show_borders);
 
+#ifdef HAVE_CAIRO_PNG
+  if (opt_output && *opt_output)
+    {
+      cairo_status_t status;
+
+      status = cairo_surface_write_to_png (surface, opt_output);
+      if (status != CAIRO_STATUS_SUCCESS)
+	g_printerr ("could not save PNG to '%s'\n", opt_output);
+    }
+#endif
+
+  cairo_surface_destroy (surface);
   cairo_destroy (cr);
 }

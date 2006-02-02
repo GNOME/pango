@@ -18,10 +18,7 @@
  * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-
-#define DEFAULT_FONT_FAMILY "Sans"
-#define DEFAULT_FONT_SIZE 18
-
+#include <config.h>
 #include <errno.h>
 #include <math.h>
 #include <stdarg.h>
@@ -29,10 +26,12 @@
 #include <stdio.h>
 #include <string.h>
 
-
 #include <pango/pango.h>
 
 #include "renderdemo.h"
+
+#define DEFAULT_FONT_FAMILY "Sans"
+#define DEFAULT_FONT_SIZE 18
 
 #define _MAKE_FONT_NAME(family, size) family " " #size
 #define MAKE_FONT_NAME(family, size) _MAKE_FONT_NAME(family, size)

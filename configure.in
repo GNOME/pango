@@ -294,7 +294,9 @@ if $have_cairo ; then
   LDFLAGS="$LDFLAGS $INSTALLED_CAIRO_LIBS"
 
   AC_CHECK_LIB(cairo, cairo_surface_write_to_png, have_cairo_png=true, :)
-
+  if $have_cairo_png; then
+    AC_DEFINE(HAVE_CAIRO_PNG, 1, [Whether Cairo has PNG support])
+  fi
   have_cairo=false
   AC_CHECK_LIB(cairo, cairo_win32_scaled_font_select_font, have_cairo_win32=true, :)
   if $have_cairo_win32 && $have_win32; then
