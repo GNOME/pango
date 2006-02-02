@@ -169,7 +169,7 @@ _pango_cairo_get_hex_box_info (PangoCairoFont *cfont)
     size = pango_font_description_get_size (desc) / (1.*PANGO_SCALE);
 
     mini_desc = pango_font_description_new ();
-    pango_font_description_set_family_static (mini_desc, "mono-space");
+    pango_font_description_set_family_static (mini_desc, "monospace");
 
     /* TODO: The stuff here should give a shit to whether it's
      * absolute size or not. */

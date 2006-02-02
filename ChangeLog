@@ -1,5 +1,10 @@
 2006-02-01  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango/pangocairo-font.c: For mini_font, set family to "monospace",
+	not "mono-space" which didn't work!
+
+2006-02-01  Behdad Esfahbod  <behdad@gnome.org>
+
 	* examples/xftview.c: Add a default_substitute function to set
 	correct dpi on the pattern.
 
