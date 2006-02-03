@@ -5,6 +5,7 @@ AUTOMAKE_OPTIONS = 1.7
 SUBDIRS= pango modules examples docs tools tests
 
 EXTRA_DIST = 			\
+	autogen.sh		\
 	pango.pc.in		\
 	pangocairo.pc.in	\
 	pangox.pc.in		\

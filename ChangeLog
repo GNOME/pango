@@ -1,3 +1,7 @@
+2006-02-03  Behdad Esfahbod  <behdad@gnome.org>
+
+	* Makefile.am: Distribute autogen.sh.
+
 2006-02-02  Behdad Esfahbod  <behdad@gnome.org>
 
 	Finish the 'glyph 0' work of this morning:
