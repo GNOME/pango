@@ -100,19 +100,96 @@ pango_ft2_free_rendered_glyph (PangoFT2RenderedGlyph *rendered)
 }
 
 static PangoFT2RenderedGlyph *
+pango_ft2_font_render_box_glyph (int width,
+				 int height,
+				 int top)
+{
+  PangoFT2RenderedGlyph *box;
+  int i, j, offset1, offset2, line_width;
+
+  line_width = MAX ((height + 43) / 44, 1);
+  if (width < 1 || height < 1)
+    line_width = 0;
+
+  box = g_slice_new (PangoFT2RenderedGlyph);
+
+  box->bitmap_left = 0;
+  box->bitmap_top = top;
+
+  box->bitmap.pixel_mode = ft_pixel_mode_grays;
+
+  box->bitmap.width = width;
+  box->bitmap.rows = height;
+  box->bitmap.pitch = height;
+
+  box->bitmap.buffer = g_malloc0 (box->bitmap.rows * box->bitmap.pitch);
+
+  /* draw the box */
+  for (j = 0; j < line_width; j++)
+    {
+      offset1 = box->bitmap.pitch * (MIN (1 + j, height - 1));
+      offset2 = box->bitmap.pitch * (MAX (box->bitmap.rows - 2 - j, 0));
+      for (i = 1;
+	   i < box->bitmap.width - 1;
+	   i++)
+	{
+	  box->bitmap.buffer[offset1 + i] = 0xff;
+	  box->bitmap.buffer[offset2 + i] = 0xff;
+	}
+    }
+  for (j = 0; j < line_width; j++)
+    {
+      offset1 = MIN (1 + j, width - 1);
+      offset2 = MAX (box->bitmap.width - 2 - j, 0);
+      for (i = box->bitmap.pitch;
+	   i < (box->bitmap.rows - 1) * box->bitmap.pitch;
+	   i += box->bitmap.pitch)
+	{
+	  box->bitmap.buffer[offset1 + i] = 0xff;
+	  box->bitmap.buffer[offset2 + i] = 0xff;
+	}
+    }
+
+  return box;
+}
+
+static PangoFT2RenderedGlyph *
 pango_ft2_font_render_glyph (PangoFont *font,
 			     int glyph_index)
 {
-  PangoFT2RenderedGlyph *rendered;
   FT_Face face;
 
-  rendered = g_slice_new (PangoFT2RenderedGlyph);
+  if (glyph_index & PANGO_GLYPH_UNKNOWN_FLAG)
+    {
+      static PangoFT2RenderedGlyph *box;
+      PangoFontMetrics *metrics;
+
+      if (!font)
+	goto generic_box;
+
+      metrics = pango_font_get_metrics (font, NULL);
+      if (!metrics)
+	goto generic_box;
+
+      /* this box gets cached, so don't bother with static'ing it.
+       */
+
+      box = pango_ft2_font_render_box_glyph (PANGO_PIXELS (metrics->approximate_char_width),
+					     PANGO_PIXELS (metrics->ascent + metrics->descent),
+					     PANGO_PIXELS (metrics->ascent));
+      pango_font_metrics_unref (metrics);
+
+      return box;
+    }
 
   face = pango_ft2_font_get_face (font);
   
   if (face)
     {
+      PangoFT2RenderedGlyph *rendered;
       PangoFT2Font *ft2font = (PangoFT2Font *) font;
+
+      rendered = g_slice_new (PangoFT2RenderedGlyph);
 
       /* Draw glyph */
       FT_Load_Glyph (face, glyph_index, ft2font->load_flags);
@@ -125,11 +202,23 @@ pango_ft2_font_render_glyph (PangoFont *font,
 					  face->glyph->bitmap.rows * face->glyph->bitmap.pitch);
       rendered->bitmap_left = face->glyph->bitmap_left;
       rendered->bitmap_top = face->glyph->bitmap_top;
+
+      return rendered;
     }
   else
-    g_warning ("couldn't get face for PangoFT2Face, expect ugly output");
+    {
+      static PangoFT2RenderedGlyph *box = NULL;
 
-  return rendered;
+    generic_box:
+      if (!box)
+        {
+	  box = pango_ft2_font_render_box_glyph (PANGO_UNKNOWN_GLYPH_WIDTH,
+						 PANGO_UNKNOWN_GLYPH_HEIGHT,
+						 PANGO_UNKNOWN_GLYPH_HEIGHT);
+	}
+
+      return box;
+    }
 }
 
 static void
@@ -151,9 +240,18 @@ pango_ft2_renderer_draw_glyph (PangoRenderer *renderer,
   int ix, iy;
 
   if (glyph & PANGO_GLYPH_UNKNOWN_FLAG)
-    glyph = PANGO_GLYPH_NULL;
-  if (glyph == PANGO_GLYPH_NULL)
-    return;
+    {
+      FT_Face face = pango_ft2_font_get_face (font);
+      if (face && FT_IS_SFNT (face))
+	glyph = pango_ft2_get_unknown_glyph (font);
+      else
+        {
+	  /* Since we only draw an empty box for FT2 renderer,
+	   * unify the rendered bitmaps in the cache.
+	   */
+	  glyph = PANGO_GLYPH_UNKNOWN_FLAG;
+	}
+    }
 
   rendered_glyph = _pango_ft2_font_get_cache_glyph_data (font, glyph);
   add_glyph_to_cache = FALSE;
@@ -588,8 +686,8 @@ pango_ft2_render_transformed (FT_Bitmap         *bitmap,
   PangoRenderer *renderer;
 
   g_return_if_fail (bitmap != NULL);
-  g_return_if_fail (PANGO_FT2_IS_FONT (font));
   g_return_if_fail (glyphs != NULL);
+  g_return_if_fail (PANGO_FT2_IS_FONT (font));
 
   fontmap = PANGO_FC_FONT (font)->fontmap;
   renderer = _pango_ft2_font_map_get_renderer (PANGO_FT2_FONT_MAP (fontmap));

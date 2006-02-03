@@ -59,6 +59,33 @@ set_color (PangoCairoRenderer *crenderer,
 }
 
 static void
+_pango_cairo_renderer_draw_box_glyph (PangoCairoRenderer *crenderer,
+				      PangoGlyphInfo     *gi,
+				      double              cx,
+				      double              cy)
+{
+  double temp_x, temp_y;
+
+  cairo_save (crenderer->cr);
+  cairo_get_current_point (crenderer->cr, &temp_x, &temp_y);
+
+  cairo_rectangle (crenderer->cr,
+		   cx + 1.5,
+		   cy + 1.5 - PANGO_UNKNOWN_GLYPH_HEIGHT,
+		   (double)gi->geometry.width / PANGO_SCALE - 3.0,
+		   PANGO_UNKNOWN_GLYPH_HEIGHT - 3.0);
+
+  if (!crenderer->do_path)
+    {
+      cairo_set_line_width (crenderer->cr, 1.0);
+      cairo_stroke (crenderer->cr);
+    }
+
+  cairo_move_to (crenderer->cr, temp_x, temp_y);
+  cairo_restore (crenderer->cr);
+}
+
+static void
 _pango_cairo_renderer_draw_unknown_glyph (PangoCairoRenderer *crenderer,
 					  PangoFont          *font,
 					  PangoGlyphInfo     *gi,
@@ -78,20 +105,10 @@ _pango_cairo_renderer_draw_unknown_glyph (PangoCairoRenderer *crenderer,
   cairo_get_current_point (crenderer->cr, &temp_x, &temp_y);
 
   hbi = _pango_cairo_font_get_hex_box_info ((PangoCairoFont *)font);      
-  if (!hbi)
+
+  if (!hbi || !_pango_cairo_font_install (PANGO_CAIRO_FONT (hbi->font), crenderer->cr))
     {
-      cairo_rectangle (crenderer->cr,
-		       cx + 1.5,
-		       cy - 1.5,
-		       (double)gi->geometry.width / PANGO_SCALE - 3.0,
-		       PANGO_UNKNOWN_GLYPH_HEIGHT - 3.0);
-
-      if (!crenderer->do_path)
-	{
-	  cairo_set_line_width (crenderer->cr, 1.0);
-	  cairo_stroke (crenderer->cr);
-	}
-
+      _pango_cairo_renderer_draw_box_glyph (crenderer, gi, cx, cy);
       goto done;
     }
 
@@ -103,17 +120,15 @@ _pango_cairo_renderer_draw_unknown_glyph (PangoCairoRenderer *crenderer,
 
   cairo_rectangle (crenderer->cr,
 		   cx + hbi->pad_x * 1.5,
-		   cy + hbi->box_descent - hbi->pad_y * 0.5,
+		   cy + hbi->box_descent - hbi->box_height + hbi->pad_y * 0.5,
 		   (double)gi->geometry.width / PANGO_SCALE - 3 * hbi->pad_x,
-		   -(hbi->box_height - hbi->pad_y));
+		   (hbi->box_height - hbi->pad_y));
 
   if (!crenderer->do_path)
     {
       cairo_set_line_width (crenderer->cr, hbi->line_width);
       cairo_stroke (crenderer->cr);
     }
-
-  _pango_cairo_font_install (PANGO_CAIRO_FONT (hbi->font), crenderer->cr);
 
   x0 = cx + hbi->pad_x * 3.0;
   y0 = cy + hbi->box_descent - hbi->pad_y * 2;
@@ -165,6 +180,27 @@ pango_cairo_renderer_draw_glyphs (PangoRenderer     *renderer,
       set_color (crenderer, PANGO_RENDER_PART_FOREGROUND);
     }
 
+  if (!_pango_cairo_font_install (PANGO_CAIRO_FONT (font), crenderer->cr))
+    {
+      for (i = 0; i < glyphs->num_glyphs; i++)
+	{
+	  PangoGlyphInfo *gi = &glyphs->glyphs[i];
+
+	  if (gi->glyph != PANGO_GLYPH_EMPTY)
+	    {
+	      double cx = crenderer->x_offset +
+			  (double)(x + x_position + gi->geometry.x_offset) / PANGO_SCALE;
+	      double cy = crenderer->y_offset +
+			  (double)(y + gi->geometry.y_offset) / PANGO_SCALE;
+
+	      _pango_cairo_renderer_draw_unknown_glyph (crenderer, font, gi, cx, cy);
+	    }	  
+	  x_position += gi->geometry.width;
+	}
+
+      goto done;
+    }
+
   if (glyphs->num_glyphs > MAX_STACK)
     cairo_glyphs = g_new (cairo_glyph_t, glyphs->num_glyphs);
   else
@@ -175,10 +211,12 @@ pango_cairo_renderer_draw_glyphs (PangoRenderer     *renderer,
     {
       PangoGlyphInfo *gi = &glyphs->glyphs[i];
 
-      if (gi->glyph != PANGO_GLYPH_NULL)
+      if (gi->glyph != PANGO_GLYPH_EMPTY)
         {
-          double cx = crenderer->x_offset + (double)(x + x_position + gi->geometry.x_offset) / PANGO_SCALE;
-          double cy = crenderer->y_offset + (double)(y + gi->geometry.y_offset) / PANGO_SCALE;
+          double cx = crenderer->x_offset +
+		      (double)(x + x_position + gi->geometry.x_offset) / PANGO_SCALE;
+          double cy = crenderer->y_offset +
+		      (double)(y + gi->geometry.y_offset) / PANGO_SCALE;
 
           if (gi->glyph & PANGO_GLYPH_UNKNOWN_FLAG)
 	    _pango_cairo_renderer_draw_unknown_glyph (crenderer, font, gi, cx, cy);
@@ -193,8 +231,6 @@ pango_cairo_renderer_draw_glyphs (PangoRenderer     *renderer,
       x_position += gi->geometry.width;
     }
 
-  _pango_cairo_font_install (PANGO_CAIRO_FONT (font), crenderer->cr);
-  
   if (crenderer->do_path)
     cairo_glyph_path (crenderer->cr, cairo_glyphs, count);
   else
@@ -203,6 +239,7 @@ pango_cairo_renderer_draw_glyphs (PangoRenderer     *renderer,
   if (glyphs->num_glyphs > MAX_STACK)
     g_free (cairo_glyphs);
 
+done:
   if (!crenderer->do_path)
     cairo_restore (crenderer->cr);
   

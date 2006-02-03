@@ -173,7 +173,7 @@ pango_cairo_fc_font_get_scaled_font (PangoCairoFont *font)
  *    Method implementations    *
  ********************************/
 
-static void
+static gboolean
 pango_cairo_fc_font_install (PangoCairoFont *font,
 			     cairo_t        *cr)
 {
@@ -183,6 +183,8 @@ pango_cairo_fc_font_install (PangoCairoFont *font,
 		       pango_cairo_fc_font_get_font_face (font));
   cairo_set_font_matrix (cr, &cffont->font_matrix);
   cairo_set_font_options (cr, cffont->options);
+
+  return TRUE;
 }
 
 static void
@@ -438,7 +440,7 @@ pango_cairo_fc_font_get_glyph_extents (PangoFont      *font,
   if (cffont->glyph_extents_cache == NULL)
     pango_cairo_fc_font_glyph_extents_cache_init (cffont);
 
-  if (glyph == PANGO_GLYPH_NULL)
+  if (glyph == PANGO_GLYPH_EMPTY)
     {
       if (ink_rect)
 	*ink_rect = cffont->font_extents;

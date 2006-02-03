@@ -138,7 +138,7 @@ pango_cairo_win32_font_get_scaled_font (PangoCairoFont *font)
  *    Method implementations    *
  ********************************/
 
-static void
+static gboolean
 pango_cairo_win32_font_install (PangoCairoFont *font,
 				cairo_t        *cr)
 {
@@ -210,7 +210,7 @@ compute_glyph_extents (PangoFont        *font,
   logical_rect->width = 0;
   logical_rect->height = (font_extents.ascent + font_extents.descent) * PANGO_SCALE;
 
-  if (glyph)
+  if (glyph != PANGO_GLYPH_EMPTY)
     {
       cairo_glyph.index = glyph;
       cairo_glyph.x = 0;

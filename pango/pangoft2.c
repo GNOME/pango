@@ -33,6 +33,8 @@
 #include "pangofc-fontmap.h"
 #include "pangofc-private.h"
 
+PangoFT2WarningHistory _pango_ft2_warning_history = { FALSE };
+
 /* for compatibility with older freetype versions */
 #ifndef FT_LOAD_TARGET_MONO
 #define FT_LOAD_TARGET_MONO  FT_LOAD_MONOCHROME
@@ -58,8 +60,6 @@ static void                   pango_ft2_font_get_glyph_extents (PangoFont      *
 
 static FT_Face    pango_ft2_font_real_lock_face         (PangoFcFont      *font);
 static void       pango_ft2_font_real_unlock_face       (PangoFcFont      *font);
-static PangoGlyph pango_ft2_font_real_get_unknown_glyph (PangoFcFont      *font,
-							 gunichar          wc);
 
 PangoFT2Font *
 _pango_ft2_font_new (PangoFT2FontMap *ft2fontmap,
@@ -173,6 +173,16 @@ pango_ft2_font_get_face (PangoFont *font)
   FcBool antialias, hinting, autohint;
   int id;
 
+  if (G_UNLIKELY (!PANGO_FT2_IS_FONT (font)))
+    {
+      if (!_pango_ft2_warning_history.get_face)
+        {
+	  _pango_ft2_warning_history.get_face = TRUE;
+	  g_critical ("pango_ft2_font_get_face called with bad font, expect ugly output");
+	}
+      return NULL;
+    }
+
   pattern = fcfont->font_pattern;
 
   if (!ft2font->face)
@@ -259,7 +269,6 @@ pango_ft2_font_class_init (PangoFT2FontClass *class)
   
   fc_font_class->lock_face = pango_ft2_font_real_lock_face;
   fc_font_class->unlock_face = pango_ft2_font_real_unlock_face;
-  fc_font_class->get_unknown_glyph = pango_ft2_font_real_get_unknown_glyph;
 }
 
 static PangoFT2GlyphInfo *
@@ -296,25 +305,52 @@ pango_ft2_font_get_glyph_extents (PangoFont      *font,
 {
   PangoFT2GlyphInfo *info;
 
-  if (glyph & PANGO_GLYPH_UNKNOWN_FLAG)
-    glyph = PANGO_GLYPH_NULL;
-  if (glyph == PANGO_GLYPH_NULL)
+  if (glyph == PANGO_GLYPH_EMPTY)
     {
       if (ink_rect)
-        {
-	  ink_rect->x = 0;
-	  ink_rect->y = 0;
-	  ink_rect->height = PANGO_UNKNOWN_GLYPH_HEIGHT * PANGO_SCALE;
-	  ink_rect->width = PANGO_UNKNOWN_GLYPH_WIDTH * PANGO_SCALE;
-        }
+	ink_rect->x = ink_rect->y = ink_rect->height = ink_rect->width = 0;
       if (logical_rect)
-        {
-	  logical_rect->x = 0;
-	  logical_rect->y = 0;
-	  logical_rect->height = PANGO_UNKNOWN_GLYPH_HEIGHT * PANGO_SCALE;
-	  logical_rect->width = PANGO_UNKNOWN_GLYPH_WIDTH * PANGO_SCALE;
-	}
+	logical_rect->x = logical_rect->y = logical_rect->height = logical_rect->width = 0;
       return;
+    }
+
+  if (glyph & PANGO_GLYPH_UNKNOWN_FLAG)
+    {
+      FT_Face face = pango_ft2_font_get_face (font);
+      if (face && FT_IS_SFNT (face))
+	glyph = pango_ft2_get_unknown_glyph (font);
+      else
+        {
+	  PangoFontMetrics *metrics = pango_font_get_metrics (font, NULL);
+
+	  if (metrics)
+	    {
+	      if (ink_rect)
+		{
+		  ink_rect->x = PANGO_SCALE;
+		  ink_rect->y = - (metrics->ascent - PANGO_SCALE);
+		  ink_rect->height = metrics->ascent + metrics->descent - 2 * PANGO_SCALE;
+		  ink_rect->width = metrics->approximate_char_width - 2 * PANGO_SCALE;
+		}
+	      if (logical_rect)
+		{
+		  logical_rect->x = 0;
+		  logical_rect->y = -metrics->ascent;
+		  logical_rect->height = metrics->ascent + metrics->descent;
+		  logical_rect->width = metrics->approximate_char_width;
+		}
+
+	      pango_font_metrics_unref (metrics);
+	    }
+	  else
+	    {
+	      if (ink_rect)
+		ink_rect->x = ink_rect->y = ink_rect->height = ink_rect->width = 0;
+	      if (logical_rect)
+		logical_rect->x = logical_rect->y = logical_rect->height = logical_rect->width = 0;
+	    }
+	  return;
+	}
     }
 
   info = pango_ft2_font_get_glyph_info (font, glyph, TRUE);
@@ -379,13 +415,6 @@ pango_ft2_font_real_lock_face (PangoFcFont *font)
 static void
 pango_ft2_font_real_unlock_face (PangoFcFont *font)
 {
-}
-
-static PangoGlyph
-pango_ft2_font_real_get_unknown_glyph (PangoFcFont *font,
-				       gunichar     wc)
-{
-  return 0;
 }
 
 static gboolean
@@ -505,7 +534,8 @@ _pango_ft2_font_get_cache_glyph_data (PangoFont *font,
 {
   PangoFT2GlyphInfo *info;
 
-  g_return_val_if_fail (PANGO_FT2_IS_FONT (font), NULL);
+  if (!PANGO_FT2_IS_FONT (font))
+    return NULL;
   
   info = pango_ft2_font_get_glyph_info (font, glyph_index, FALSE);
 
@@ -522,7 +552,8 @@ _pango_ft2_font_set_cache_glyph_data (PangoFont     *font,
 {
   PangoFT2GlyphInfo *info;
 
-  g_return_if_fail (PANGO_FT2_IS_FONT (font));
+  if (!PANGO_FT2_IS_FONT (font))
+    return;
   
   info = pango_ft2_font_get_glyph_info (font, glyph_index, TRUE);
 
@@ -535,7 +566,8 @@ void
 _pango_ft2_font_set_glyph_cache_destroy (PangoFont      *font,
 					 GDestroyNotify  destroy_notify)
 {
-  g_return_if_fail (PANGO_FT2_IS_FONT (font));
+  if (!PANGO_FT2_IS_FONT (font))
+    return;
   
   PANGO_FT2_FONT (font)->glyph_cache_destroy = destroy_notify;
 }

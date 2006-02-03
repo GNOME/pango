@@ -965,7 +965,7 @@ pango_renderer_draw_glyph (PangoRenderer *renderer,
   g_return_if_fail (PANGO_IS_RENDERER (renderer));
   g_return_if_fail (renderer->active_count > 0);
 	  
-  if (glyph == 0)		/* glyph 0 never renders */
+  if (glyph == PANGO_GLYPH_EMPTY) /* glyph PANGO_GLYPH_EMPTY never renders */
     return;
   
   PANGO_RENDERER_GET_CLASS (renderer)->draw_glyph (renderer, font, glyph, x, y);

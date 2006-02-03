@@ -68,12 +68,6 @@ _pango_engine_shape_shape (PangoEngineShape *engine,
 {
   glyphs->num_glyphs = 0;
 
-  g_return_if_fail (PANGO_IS_ENGINE_SHAPE (engine));
-  g_return_if_fail (PANGO_IS_FONT (font));
-  g_return_if_fail (text != NULL);
-  g_return_if_fail (analysis != NULL);
-  g_return_if_fail (glyphs != NULL);
-
   PANGO_ENGINE_SHAPE_GET_CLASS (engine)->script_shape (engine,
 						       font,
 						       text, length,
@@ -112,27 +106,26 @@ fallback_engine_shape (PangoEngineShape *engine,
   int i;
   const char *p;
   
-  g_return_if_fail (font != NULL);
-  g_return_if_fail (text != NULL);
-  g_return_if_fail (length >= 0);
-  g_return_if_fail (analysis != NULL);
+  n_chars = text ? g_utf8_strlen (text, length) : 0;
 
-  n_chars = g_utf8_strlen (text, length);
   pango_glyph_string_set_size (glyphs, n_chars);
   
   p = text;
-  i = 0;
-  while (i < n_chars)
+  for (i = 0; i < n_chars; i++)
     {
-      glyphs->glyphs[i].glyph = 0;
+      PangoRectangle logical_rect;
+      PangoGlyph glyph = g_utf8_get_char (p) | PANGO_GLYPH_UNKNOWN_FLAG;
+      
+      pango_font_get_glyph_extents (analysis->font, glyph, NULL, &logical_rect);
+
+      glyphs->glyphs[i].glyph = glyph;
       
       glyphs->glyphs[i].geometry.x_offset = 0;
       glyphs->glyphs[i].geometry.y_offset = 0;
-      glyphs->glyphs[i].geometry.width = 0;
-
-      glyphs->log_clusters[i] = p - text;
+      glyphs->glyphs[i].geometry.width = logical_rect.width;
       
-      ++i;
+      glyphs->log_clusters[i] = p - text;
+
       p = g_utf8_next_char (p);
     }
 }

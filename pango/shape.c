@@ -46,7 +46,7 @@ pango_shape (const gchar      *text,
   int i;
   int last_cluster = -1;
 
-  if (G_LIKELY (analysis->shape_engine && analysis->font))
+  if (G_LIKELY (PANGO_IS_ENGINE_SHAPE (analysis->shape_engine) && PANGO_IS_FONT (analysis->font)))
     {
       _pango_engine_shape_shape (analysis->shape_engine, analysis->font,
 				 text, length, analysis, glyphs);
@@ -84,15 +84,17 @@ pango_shape (const gchar      *text,
     }
   else
     {
-      if (!analysis->shape_engine && !_pango_warning_history.shape_shape_engine)
+      if (!PANGO_IS_ENGINE_SHAPE (analysis->shape_engine) &&
+	  !_pango_warning_history.shape_shape_engine)
         {
 	  _pango_warning_history.shape_font = TRUE;
-	  g_critical ("pango_shape called with analysis->shape_engine == NULL, expect ugly output");
+	  g_critical ("pango_shape called with bad shape_engine, expect ugly output");
 	}
-      if (!analysis->font && !_pango_warning_history.shape_font)
+      if (!PANGO_IS_FONT (analysis->font) &&
+	  !_pango_warning_history.shape_font)
         {
 	  _pango_warning_history.shape_font = TRUE;
-	  g_critical ("pango_shape called with analysis->font == NULL, expect ugly output");
+	  g_critical ("pango_shape called with bad font, expect ugly output");
 	}
 
       glyphs->num_glyphs = 0;
@@ -100,28 +102,10 @@ pango_shape (const gchar      *text,
 
   if (!glyphs->num_glyphs)
     {
-      /* If failed to get glyphs, put unknown glyphs for all characters
-       */
-      const char *p = text;
-      pango_glyph_string_set_size (glyphs, g_utf8_strlen (text, length));
+      PangoEngineShape *fallback_engine = _pango_get_fallback_shaper ();
 
-      for (i = 0; i < glyphs->num_glyphs; i++)
-        {
-	  PangoRectangle logical_rect;
-	  PangoGlyph glyph = g_utf8_get_char (p) | PANGO_GLYPH_UNKNOWN_FLAG;
-	  
-	  pango_font_get_glyph_extents (analysis->font, glyph, NULL, &logical_rect);
-
-	  glyphs->glyphs[i].glyph = glyph;
-	  
-	  glyphs->glyphs[i].geometry.x_offset = 0;
-	  glyphs->glyphs[i].geometry.y_offset = 0;
-	  glyphs->glyphs[i].geometry.width = logical_rect.width;
-	  
-	  glyphs->log_clusters[i] = i;
-
-	  p = g_utf8_next_char (p);
-	}
+      _pango_engine_shape_shape (fallback_engine, analysis->font,
+				 text, length, analysis, glyphs);
     }
 
   /* Set glyphs[i].attr.is_cluster_start based on log_clusters[]

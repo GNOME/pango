@@ -162,8 +162,8 @@ struct _PangoEngineShape
  *   using the @log_clusters array. Each input character must occur in one
  *   of the output logical clusters;
  *   if no rendering is desired for a character, this may involve
- *   inserting glyphs with the #PangoGlyph ID 0, which is guaranteed never
- *   to render.
+ *   inserting glyphs with the #PangoGlyph ID #PANGO_GLYPH_EMPTY, which
+ *   is guaranteed never to render.
  * @covers: Returns the characters that this engine can cover
  *   with a given font for a given language. If not overridden, the default
  *   implementation simply returns the coverage information for the

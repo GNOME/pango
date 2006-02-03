@@ -160,7 +160,7 @@ basic_engine_shape (PangoEngineShape *engine,
       
       if (pango_is_zero_width (wc))
 	{
-	  set_glyph (font, glyphs, i, p - text, PANGO_GLYPH_NULL);
+	  set_glyph (font, glyphs, i, p - text, PANGO_GLYPH_EMPTY);
 	}
       else
 	{

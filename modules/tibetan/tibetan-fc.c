@@ -473,7 +473,7 @@ static PangoGlyph
 get_index (PangoFcFont *fc_font, gunichar wc)
 {
   PangoGlyph index = pango_fc_font_get_glyph (fc_font, wc);
-  if (index == PANGO_GLYPH_NULL)
+  if (!index)
     index = pango_fc_font_get_unknown_glyph (fc_font, wc);
   return index;
 }

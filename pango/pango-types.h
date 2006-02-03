@@ -46,7 +46,7 @@ typedef struct _PangoLanguage PangoLanguage;
 typedef guint32 PangoGlyph;
 
 #define PANGO_GLYPH_UNKNOWN_FLAG ((PangoGlyph)0x10000000)
-#define PANGO_GLYPH_NULL         ((PangoGlyph)0xFFFFFFFF)
+#define PANGO_GLYPH_EMPTY        ((PangoGlyph)0xFFFFFFFF)
 
 /* A rectangle. Used to store logical and physical extents of glyphs,
  * runs, strings, etc.

@@ -56,8 +56,8 @@ struct _PangoCairoFontIface
 {
   GTypeInterface g_iface;
 
-  void (*install) (PangoCairoFont *font,
-		   cairo_t        *cr);
+  gboolean (*install) (PangoCairoFont *font,
+		       cairo_t        *cr);
 
   cairo_font_face_t *(*get_font_face) (PangoCairoFont *font);
 
@@ -66,8 +66,8 @@ struct _PangoCairoFontIface
 
 GType pango_cairo_font_get_type (void);
 
-void _pango_cairo_font_install (PangoCairoFont *font,
-				cairo_t        *cr);
+gboolean _pango_cairo_font_install (PangoCairoFont *font,
+				    cairo_t        *cr);
 cairo_font_face_t *_pango_cairo_font_get_font_face (PangoCairoFont *font);
 cairo_scaled_font_t *_pango_cairo_font_get_scaled_font (PangoCairoFont *font);
 

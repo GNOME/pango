@@ -69,7 +69,7 @@ pango_cairo_font_get_type (void)
  * Makes @font the current font for rendering in the specified
  * Cairo context.
  **/
-void
+gboolean
 _pango_cairo_font_install (PangoCairoFont *font,
 			   cairo_t        *cr)
 {
@@ -78,13 +78,13 @@ _pango_cairo_font_install (PangoCairoFont *font,
       if (!_pango_cairo_warning_history.font_install)
         {
 	  _pango_cairo_warning_history.font_install = TRUE;
-	  g_critical ("_pango_cairo_font_install called with font == NULL, expect ugly output");
+	  g_critical ("_pango_cairo_font_install called with bad font, expect ugly output");
 	  cairo_set_font_face (cr, NULL);
 	}
-      return;
+      return FALSE;
     }
   
-  (* PANGO_CAIRO_FONT_GET_IFACE (font)->install) (font, cr);
+  return (* PANGO_CAIRO_FONT_GET_IFACE (font)->install) (font, cr);
 }
 
 cairo_font_face_t *
@@ -161,7 +161,7 @@ _pango_cairo_font_get_hex_box_info (PangoCairoFont *cfont)
   }
 
 /* we hint to the nearest device units */
-#define HINT(value, scale, scale_inv) (ceil ((value) * scale) * scale_inv)
+#define HINT(value, scale, scale_inv) (ceil ((value-1e-5) * scale) * scale_inv)
 #define HINT_X(value) HINT ((value), scale_x, scale_x_inv)
 #define HINT_Y(value) HINT ((value), scale_y, scale_y_inv)
   
@@ -233,7 +233,7 @@ _pango_cairo_font_get_hex_box_info (PangoCairoFont *cfont)
   hbi->digit_width = HINT_X (width);
   hbi->digit_height = HINT_Y (height);
 
-  pad = MIN (hbi->digit_width / 10, hbi->digit_height / 12);
+  pad = (font_extents.ascent + font_extents.descent) / 43;
   hbi->pad_x = HINT_X (pad);
   hbi->pad_y = HINT_Y (pad);
   hbi->line_width = MIN (hbi->pad_x, hbi->pad_y);
@@ -257,6 +257,11 @@ _pango_cairo_get_glyph_extents_missing (PangoCairoFont *cfont,
   gint rows, cols;
 
   hbi = _pango_cairo_font_get_hex_box_info (cfont);
+  if (!hbi)
+    {
+      pango_font_get_glyph_extents (NULL, glyph, ink_rect, logical_rect);
+      return;
+    }
 
   rows = hbi->rows;
   cols = ((glyph & ~PANGO_GLYPH_UNKNOWN_FLAG) > 0xffff ? 6 : 4) / rows;

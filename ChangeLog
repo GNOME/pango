@@ -1,5 +1,55 @@
 2006-02-02  Behdad Esfahbod  <behdad@gnome.org>
 
+	Finish the 'glyph 0' work of this morning:
+	PANGO_GLYPH_NULL that I introduced is renamed to
+	PANGO_GLYPH_EMPTY.  It means, no rendering should
+	be performed.  The backends however, still return
+	0 if a glyph is not found.  The modules then are
+	free to replace this 0 glyph with an unknown
+	character.
+
+	* modules/arabic/arabic-fc.c, modules/basic/basic-atsui.c,
+	modules/basic/basic-fc.c, modules/basic/basic-win32.c,
+	modules/basic/basic-x.c, modules/hangul/hangul-fc.c,
+	modules/hebrew/hebrew-fc.c, modules/indic/indic-fc.c,
+	modules/khmer/khmer-fc.c, modules/syriac/syriac-fc.c,
+	modules/thai/thai-fc.c, modules/tibetan/tibetan-fc.c,
+	pango/pangox.c, pango/pangowin32.c:
+	Adapt to above change.  Backends return 0 if glyph not
+	found.
+
+	* pango/fonts.c (pango_font_get_glyph_extents): If font
+	is not usable (!PANGO_IS_FONT (font)), return the generic
+	UNKNOWN_GLYPH metrics.  This is used when your backends
+	are misconfigured and you don't find *any* font at all.
+
+	* pango/pango-engince.c: Add unknown glyphs in fallback
+	shaper, instead of empty glyphs.
+
+	* pango/shape.c: Call the fall-back shaper if shaper
+	fails, instead of generating a dummy glyph string ourselves.
+
+	* pango/pango-layout.c (imposed_shape, shape_tab): Use
+	PANGO_GLYPH_EMPTY instead of glyph 0.
+
+	* pango/pango-renderer.c (pango_renderer_draw_glyph): No-op on
+	PANGO_GLYPH_EMPTY instead of glyph 0.
+
+	* pango/pangocairo-atsuifont.c, pango/pangocairo-win32font.c,
+	pango/pangocairo-fcfont.c, pango/pangocairo-font.c,
+	pango/pangocairo-private.h: install_font returns a boolean now.
+
+	* pango/pangocairo-render.c, pango/pangoxft-render.c: Handle font
+	and hex-box failures more gracefully by drawing a generic
+	unknown-box glyph.
+
+	* pango/pangoft2.c, pango/pangoft2-render.c: Draw the generic
+	unknown-box glyph here too.  For unknown glyphs though, if
+	the font is TTF (FT_IS_SFNT), use the zero-indexed glyph,
+	otherwise, draw a box of proper size.
+
+2006-02-02  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/pangoft2.c: Do unknown glyph extents here too.
 
 2006-02-02  Behdad Esfahbod  <behdad@gnome.org>

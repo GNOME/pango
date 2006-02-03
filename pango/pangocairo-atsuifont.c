@@ -67,7 +67,7 @@ pango_cairo_atsui_font_get_atsu_font_id (PangoCairoATSUIFont *cafont)
   return cafont->font_id;
 }
 
-static void
+static gboolean
 pango_cairo_atsui_font_install (PangoCairoFont *font,
 				cairo_t        *cr)
 {
@@ -78,6 +78,8 @@ pango_cairo_atsui_font_install (PangoCairoFont *font,
 
   cairo_set_font_matrix (cr, &cafont->font_matrix);
   cairo_set_font_options (cr, cafont->options);
+
+  return TRUE;
 }
 
 static cairo_font_face_t *
@@ -142,36 +144,53 @@ pango_cairo_atsui_font_get_glyph_extents (PangoFont        *font,
 					  PangoRectangle   *logical_rect)
 {
   cairo_scaled_font_t *scaled_font;
+  cairo_font_extents_t font_extents;
   cairo_text_extents_t extents;
   cairo_glyph_t cairo_glyph;
 
   scaled_font = pango_cairo_atsui_font_get_scaled_font (PANGO_CAIRO_FONT (font));
 
+  if (logical_rect)
+    cairo_scaled_font_extents (scaled_font, &font_extents);
+	  
   cairo_glyph.index = glyph;
   cairo_glyph.x = 0;
   cairo_glyph.y = 0;
 
-  cairo_scaled_font_glyph_extents (scaled_font,
-				   &cairo_glyph, 1, &extents);
-
-  if (ink_rect)
+  if (glyph != PANGO_GLYPH_EMPTY)
     {
-      ink_rect->x = extents.x_bearing * PANGO_SCALE;
-      ink_rect->y = extents.y_bearing * PANGO_SCALE;
-      ink_rect->width = extents.width * PANGO_SCALE;
-      ink_rect->height = extents.height * PANGO_SCALE;
-    }
-  
-  if (logical_rect)
-    {
-      cairo_font_extents_t font_extents;
+      cairo_scaled_font_glyph_extents (scaled_font,
+				       &cairo_glyph, 1, &extents);
 
-      cairo_scaled_font_extents (scaled_font, &font_extents);
+      if (ink_rect)
+	{
+	  ink_rect->x = extents.x_bearing * PANGO_SCALE;
+	  ink_rect->y = extents.y_bearing * PANGO_SCALE;
+	  ink_rect->width = extents.width * PANGO_SCALE;
+	  ink_rect->height = extents.height * PANGO_SCALE;
+	}
       
-      logical_rect->x = 0;
-      logical_rect->y = - font_extents.ascent * PANGO_SCALE;
-      logical_rect->width = extents.x_advance * PANGO_SCALE;
-      logical_rect->height = (font_extents.ascent + font_extents.descent) * PANGO_SCALE;
+      if (logical_rect)
+	{
+	  logical_rect->x = 0;
+	  logical_rect->y = - font_extents.ascent * PANGO_SCALE;
+	  logical_rect->width = extents.x_advance * PANGO_SCALE;
+	  logical_rect->height = (font_extents.ascent + font_extents.descent) * PANGO_SCALE;
+	}
+    }
+  else
+    {
+      if (ink_rect)
+	{
+	  ink_rect->x = ink_rect->y = ink_rect->width = ink_rect->height = 0;
+	}
+      if (logical_rect)
+        {
+	  logical_rect->x = 0;
+	  logical_rect->y = - font_extents.ascent * PANGO_SCALE;
+	  logical_rect->width = 0;
+	  logical_rect->height = (font_extents.ascent + font_extents.descent) * PANGO_SCALE;
+	}
     }
 }
 

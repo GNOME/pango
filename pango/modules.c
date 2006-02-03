@@ -600,11 +600,11 @@ build_map (PangoMapInfo *info)
 	  gchar *filename = g_build_filename (pango_get_sysconf_subdirectory (),
 					      "pango.modules",
 					      NULL);
-	  g_warning ("No builtin or dynamically loaded modules\n"
-		     "were found. Pango will not work correctly. This probably means\n"
-		     "there was an error in the creation of:\n"
+	  g_warning ("No builtin or dynamically\n"
+		     "loaded modules were found. Pango will not work correctly.\n"
+		     "This probably means there was an error in the creation of:\n"
 		     "  '%s'\n"
-		     "You may be able to recreate this file by running pango-querymodules.",
+		     "You should create this file by running pango-querymodules.",
 		     filename);
 	  g_free (filename);
 	  

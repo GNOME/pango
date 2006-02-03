@@ -201,13 +201,13 @@ fallback_shape (PangoEngineShape *engine,
 
       if (pango_is_zero_width (wc))
 	{
-	  set_glyph (font, glyphs, i, p - text, PANGO_GLYPH_NULL);
+	  set_glyph (font, glyphs, i, p - text, PANGO_GLYPH_EMPTY);
 	}
       else
 	{
 	  index = pango_fc_font_get_glyph (fc_font, wc);
 
-	  if (index == PANGO_GLYPH_NULL)
+	  if (!index)
 	    index = pango_fc_font_get_unknown_glyph (fc_font, wc);
 
 	  set_glyph (font, glyphs, i, p - text, index);
@@ -301,7 +301,7 @@ syriac_engine_shape (PangoEngineShape *engine,
 
       if (pango_is_zero_width (wc))
 	{
-	  pango_ot_buffer_add_glyph (buffer, 0, properties[i], p - text);
+	  pango_ot_buffer_add_glyph (buffer, PANGO_GLYPH_EMPTY, properties[i], p - text);
 	}
       else
 	{

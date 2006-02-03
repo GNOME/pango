@@ -266,22 +266,21 @@ set_glyphs (PangoFont      *font,
 
   fc_font = PANGO_FC_FONT (font);
 
-  for (i = 0; i < n_glyphs; i += 1)
+  for (i = 0; i < n_glyphs; i++)
     {
       guint glyph;
 
       if (pango_is_zero_width (wcs[i]) &&
 	  (!process_zwj || wcs[i] != 0x200D))
-	glyph = PANGO_GLYPH_NULL;
+	glyph = PANGO_GLYPH_EMPTY;
       else
         {
 	  glyph = pango_fc_font_get_glyph (fc_font, wcs[i]);
 
-	  if (glyph == PANGO_GLYPH_NULL)
+	  if (!glyph)
 	    glyph = pango_fc_font_get_unknown_glyph (fc_font, wcs[i]);
-
-          pango_ot_buffer_add_glyph (buffer, glyph, tags[i], i);
 	}
+      pango_ot_buffer_add_glyph (buffer, glyph, tags[i], i);
     }
 }
 

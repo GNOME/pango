@@ -399,21 +399,58 @@ pango_x_render  (Display           *display,
        * the ink rect here would be a noticeable speed hit.
        * This is close enough.
        */
-      if (!(glyph != PANGO_GLYPH_NULL &&
+      if (!(glyph != PANGO_GLYPH_EMPTY &&
 	    glyph_x >= -16384 && glyph_x <= 32767 &&
 	    glyph_y >= -16384 && glyph_y <= 32767))
 	goto next_glyph;
 	      
-      if (glyph & PANGO_GLYPH_UNKNOWN_FLAG)
-        {
-	  PangoFontMetrics *metrics = pango_font_get_metrics (font,
-							      pango_language_from_string ("en"));
+      if ((glyph & PANGO_GLYPH_UNKNOWN_FLAG) == 0)
+	{
+	  guint16 index = PANGO_X_GLYPH_INDEX (glyph);
+	  guint16 subfont_index = PANGO_X_GLYPH_SUBFONT (glyph);
+	  PangoXSubfontInfo *subfont;
+      
+	  subfont = pango_x_find_subfont (font, subfont_index);
+	  if (subfont)
+	    {
+	      fs = pango_x_get_font_struct (font, subfont);
+	      if (!fs)
+		continue;
+	      
+	      if (fs->fid != old_fid)
+		{
+		  FLUSH;
+		  XSetFont (display, gc, fs->fid);
+		  old_fid = fs->fid;
+		}
+
+	      if (charcount == G_N_ELEMENTS (xcharbuffer) ||
+		  (charcount > 0 && (glyph_y != glyph_y0 ||
+				     glyph_x != expected_x)))
+		FLUSH;
+
+	      if (charcount == 0)
+		{
+		  glyph_x0 = glyph_x;
+		  glyph_y0 = glyph_y;
+		}
+	      xcharbuffer[charcount].byte1 = index / 256;
+	      xcharbuffer[charcount].byte2 = index % 256;
+
+	      expected_x = glyph_x + XTextWidth16 (fs, &xcharbuffer[charcount], 1);
+
+	      charcount++;
+	    } else
+	      goto unknown_glyph;
+	} else {
+	  PangoFontMetrics *metrics;
           int x1, y1, x2, y2; /* rectangle the character should go inside. */
           int baseline;
 	  int stroke_thick;
-
           gunichar wc;
-
+	  
+	unknown_glyph:
+	  metrics = pango_font_get_metrics (font, pango_language_from_string ("en"));
 	  FLUSH;
 
           x1 = glyph_x;
@@ -423,7 +460,10 @@ pango_x_render  (Display           *display,
           baseline = glyph_y;
 	  stroke_thick = MAX ((int) (0.5 + 0.075 * (y2 - y1)), 1);
           
-          wc = glyph & (~PANGO_GLYPH_UNKNOWN_FLAG);
+	  if (glyph & PANGO_GLYPH_UNKNOWN_FLAG)
+	    wc = glyph & (~PANGO_GLYPH_UNKNOWN_FLAG);
+	  else
+	    wc = 0;
 
           switch (wc)
             {
@@ -518,44 +558,6 @@ pango_x_render  (Display           *display,
 
 	  pango_font_metrics_unref (metrics);
         }
-      else
-	{
-	  guint16 index = PANGO_X_GLYPH_INDEX (glyph);
-	  guint16 subfont_index = PANGO_X_GLYPH_SUBFONT (glyph);
-	  PangoXSubfontInfo *subfont;
-      
-	  subfont = pango_x_find_subfont (font, subfont_index);
-	  if (subfont)
-	    {
-	      fs = pango_x_get_font_struct (font, subfont);
-	      if (!fs)
-		continue;
-	      
-	      if (fs->fid != old_fid)
-		{
-		  FLUSH;
-		  XSetFont (display, gc, fs->fid);
-		  old_fid = fs->fid;
-		}
-
-	      if (charcount == G_N_ELEMENTS (xcharbuffer) ||
-		  (charcount > 0 && (glyph_y != glyph_y0 ||
-				     glyph_x != expected_x)))
-		FLUSH;
-
-	      if (charcount == 0)
-		{
-		  glyph_x0 = glyph_x;
-		  glyph_y0 = glyph_y;
-		}
-	      xcharbuffer[charcount].byte1 = index / 256;
-	      xcharbuffer[charcount].byte2 = index % 256;
-
-	      expected_x = glyph_x + XTextWidth16 (fs, &xcharbuffer[charcount], 1);
-
-	      charcount++;
-	    }
-	}
 
     next_glyph:
       x_off += glyphs->glyphs[i].geometry.width;
@@ -574,7 +576,32 @@ pango_x_font_get_glyph_extents  (PangoFont      *font,
   XCharStruct *cs;
   PangoXSubfontInfo *subfont;
 
-  if (glyph != PANGO_GLYPH_NULL && glyph & PANGO_GLYPH_UNKNOWN_FLAG)
+  if (glyph == PANGO_GLYPH_EMPTY)
+    {
+      if (ink_rect)
+	ink_rect->x = ink_rect->width = ink_rect->y = ink_rect->height = 0;
+      if (logical_rect)
+	logical_rect->x = logical_rect->width = logical_rect->y = logical_rect->height = 0;
+      return;
+    }
+  if ((glyph & PANGO_GLYPH_UNKNOWN_FLAG) == 0 && pango_x_find_glyph (font, glyph, &subfont, &cs))
+    {
+      if (ink_rect)
+	{
+	  ink_rect->x = PANGO_SCALE * cs->lbearing;
+	  ink_rect->width = PANGO_SCALE * (cs->rbearing - cs->lbearing);
+	  ink_rect->y = PANGO_SCALE * -cs->ascent;
+	  ink_rect->height = PANGO_SCALE * (cs->ascent + cs->descent);
+	}
+      if (logical_rect)
+	{
+	  logical_rect->x = 0;
+	  logical_rect->width = PANGO_SCALE * cs->width;
+	  logical_rect->y = - PANGO_SCALE * subfont->font_struct->ascent;
+	  logical_rect->height = PANGO_SCALE * (subfont->font_struct->ascent + subfont->font_struct->descent);
+	}
+    }
+  else
     {
       PangoFontMetrics *metrics = pango_font_get_metrics (font,
 							  pango_language_from_string ("en"));
@@ -582,7 +609,10 @@ pango_x_font_get_glyph_extents  (PangoFont      *font,
       gdouble width_factor;
       int w;
       
-      wc = glyph & (~PANGO_GLYPH_UNKNOWN_FLAG);
+      if (glyph & PANGO_GLYPH_UNKNOWN_FLAG)
+	wc = glyph & (~PANGO_GLYPH_UNKNOWN_FLAG);
+      else
+        wc = 0;
           
       switch (wc)
         {
@@ -622,40 +652,6 @@ pango_x_font_get_glyph_extents  (PangoFont      *font,
 	  logical_rect->height = metrics->ascent + metrics->descent;
 	}
       
-    }
-  else if (glyph != PANGO_GLYPH_NULL && pango_x_find_glyph (font, glyph, &subfont, &cs))
-    {
-      if (ink_rect)
-	{
-	  ink_rect->x = PANGO_SCALE * cs->lbearing;
-	  ink_rect->width = PANGO_SCALE * (cs->rbearing - cs->lbearing);
-	  ink_rect->y = PANGO_SCALE * -cs->ascent;
-	  ink_rect->height = PANGO_SCALE * (cs->ascent + cs->descent);
-	}
-      if (logical_rect)
-	{
-	  logical_rect->x = 0;
-	  logical_rect->width = PANGO_SCALE * cs->width;
-	  logical_rect->y = - PANGO_SCALE * subfont->font_struct->ascent;
-	  logical_rect->height = PANGO_SCALE * (subfont->font_struct->ascent + subfont->font_struct->descent);
-	}
-    }
-  else
-    {
-      if (ink_rect)
-	{
-	  ink_rect->x = 0;
-	  ink_rect->width = 0;
-	  ink_rect->y = 0;
-	  ink_rect->height = 0;
-	}
-      if (logical_rect)
-	{
-	  logical_rect->x = 0;
-	  logical_rect->width = 0;
-	  logical_rect->y = 0;
-	  logical_rect->height = 0;
-	}
     }
 }
 
@@ -701,7 +697,7 @@ itemize_string_foreach (PangoFont     *font,
   PangoGlyphString *glyph_str = pango_glyph_string_new ();
   PangoEngineShape *shaper, *last_shaper;
   int last_level;
-  long n_chars, i;
+  int i;
   guint8 *embedding_levels;
   PangoDirection base_dir = PANGO_DIRECTION_LTR;
   gboolean finished = FALSE;

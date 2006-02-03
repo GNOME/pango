@@ -1166,25 +1166,25 @@ pango_font_get_glyph_extents  (PangoFont      *font,
 			       PangoRectangle *ink_rect,
 			       PangoRectangle *logical_rect)
 {
-  if (G_UNLIKELY (font == NULL))
+  if (G_UNLIKELY (!PANGO_IS_FONT (font)))
     {
       
       if (!_pango_warning_history.get_glyph_extents)
         {
 	  _pango_warning_history.get_glyph_extents = TRUE;
-	  g_critical ("pango_font_get_glyph_extents called with font == NULL, expect ugly output");
+	  g_critical ("pango_font_get_glyph_extents called with bad font, expect ugly output");
 	}
       if (ink_rect)
         {
-	  ink_rect->x = 0;
-	  ink_rect->y = 0;
-	  ink_rect->height = PANGO_UNKNOWN_GLYPH_HEIGHT * PANGO_SCALE;
-	  ink_rect->width = PANGO_UNKNOWN_GLYPH_WIDTH * PANGO_SCALE;
+	  ink_rect->x = PANGO_SCALE;
+	  ink_rect->y = - (PANGO_UNKNOWN_GLYPH_HEIGHT - 1) * PANGO_SCALE;
+	  ink_rect->height = (PANGO_UNKNOWN_GLYPH_HEIGHT - 2) * PANGO_SCALE;
+	  ink_rect->width = (PANGO_UNKNOWN_GLYPH_WIDTH - 2) * PANGO_SCALE;
         }
       if (logical_rect)
         {
-	  logical_rect->x = 0;
-	  logical_rect->y = 0;
+	  logical_rect->x = logical_rect->y = 0;
+	  logical_rect->y = - PANGO_UNKNOWN_GLYPH_HEIGHT * PANGO_SCALE;
 	  logical_rect->height = PANGO_UNKNOWN_GLYPH_HEIGHT * PANGO_SCALE;
 	  logical_rect->width = PANGO_UNKNOWN_GLYPH_WIDTH * PANGO_SCALE;
 	}
@@ -1279,7 +1279,8 @@ pango_font_metrics_new (void)
 PangoFontMetrics *
 pango_font_metrics_ref (PangoFontMetrics *metrics)
 {
-  g_return_val_if_fail (metrics != NULL, NULL);
+  if (!metrics)
+    return NULL;
   
   metrics->ref_count++;
 
@@ -1297,7 +1298,8 @@ pango_font_metrics_ref (PangoFontMetrics *metrics)
 void
 pango_font_metrics_unref (PangoFontMetrics *metrics)
 {
-  g_return_if_fail (metrics != NULL);
+  if (!metrics)
+    return;
   g_return_if_fail (metrics->ref_count > 0 );
   
   metrics->ref_count--;

@@ -2339,7 +2339,7 @@ imposed_shape (const char       *text,
 
   for (i=0, p = text; i < n_chars; i++, p = g_utf8_next_char (p))
     {
-      glyphs->glyphs[i].glyph = 0;
+      glyphs->glyphs[i].glyph = PANGO_GLYPH_EMPTY;
       glyphs->glyphs[i].geometry.x_offset = 0;
       glyphs->glyphs[i].geometry.y_offset = 0;
       glyphs->glyphs[i].geometry.width = shape_logical->width;
@@ -2612,7 +2612,7 @@ shape_tab (PangoLayoutLine  *line,
 
   pango_glyph_string_set_size (glyphs, 1);
   
-  glyphs->glyphs[0].glyph = 0;
+  glyphs->glyphs[0].glyph = PANGO_GLYPH_EMPTY;
   glyphs->glyphs[0].geometry.x_offset = 0;
   glyphs->glyphs[0].geometry.y_offset = 0;
   glyphs->glyphs[0].attr.is_cluster_start = 1;
@@ -3844,11 +3844,19 @@ pango_layout_line_get_empty_extents (PangoLayoutLine *line,
 	  metrics = pango_font_get_metrics (font,
 					    pango_context_get_language (layout->context));
 
-	  logical_rect->y = - pango_font_metrics_get_ascent (metrics);
-	  logical_rect->height = - logical_rect->y + pango_font_metrics_get_descent (metrics);
+	  if (metrics)
+	    {
+	      logical_rect->y = - pango_font_metrics_get_ascent (metrics);
+	      logical_rect->height = - logical_rect->y + pango_font_metrics_get_descent (metrics);
 
+	      pango_font_metrics_unref (metrics);
+	    }
+	  else
+	    {
+	      logical_rect->y = 0;
+	      logical_rect->height = 0;
+	    }
 	  g_object_unref (font);
-	  pango_font_metrics_unref (metrics);
 	}
       else
 	{

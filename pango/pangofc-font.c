@@ -435,7 +435,7 @@ pango_fc_font_create_metrics_for_context (PangoFcFont   *fcfont,
   g_object_unref (layout);
 
   return metrics;
-}		    
+}
 
 /* This function is cut-and-pasted into pangocairo-fcfont.c - it might be
  * better to add a virtual fcfont->create_context (font).
@@ -469,7 +469,7 @@ pango_fc_font_get_metrics (PangoFont     *font,
 	return pango_font_metrics_new ();
 
       info = g_slice_new0 (PangoFcMetricsInfo);
-      
+
       fcfont->metrics_by_lang = g_slist_prepend (fcfont->metrics_by_lang, 
 						 info);
 	
@@ -518,7 +518,7 @@ pango_fc_font_real_get_glyph (PangoFcFont *font,
   
   index = FcFreeTypeCharIndex (face, wc);
   if (index > (FT_UInt)face->num_glyphs)
-    index = PANGO_GLYPH_NULL;
+    index = 0;
 
   PANGO_FC_FONT_UNLOCK_FACE (font);
 
@@ -600,7 +600,7 @@ pango_fc_font_has_char (PangoFcFont *font,
  * for @font. If you only want to determine
  * whether the font has the glyph, use pango_fc_font_has_char().
  * 
- * Return value: the glyph index, or %PANGO_GLYPH_NULL, if the Unicode
+ * Return value: the glyph index, or 0, if the Unicode
  *   character doesn't exist in the font.
  *
  * Since: 1.4
@@ -817,7 +817,7 @@ pango_fc_font_get_raw_extents (PangoFcFont    *fcfont,
 
   face = PANGO_FC_FONT_LOCK_FACE (fcfont);
 
-  if (!glyph)
+  if (glyph == PANGO_GLYPH_EMPTY)
     gm = NULL;
   else
     gm = get_per_char (face, load_flags, glyph);

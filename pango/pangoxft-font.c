@@ -172,7 +172,7 @@ _pango_xft_font_get_mini_font (PangoXftFont *xfont)
       
       xfont->mini_width = PANGO_SCALE * width;
       xfont->mini_height = PANGO_SCALE * height;
-      xfont->mini_pad = PANGO_SCALE * MAX (height / 10, 1);
+      xfont->mini_pad = PANGO_SCALE * MAX ((int)(2.2 * height + 27) / 28, 1);
     }
 
   return xfont->mini_font;
@@ -325,27 +325,16 @@ pango_xft_font_get_glyph_extents (PangoFont        *font,
   if (!fcfont->fontmap)		/* Display closed */
     goto fallback;
 
-  if (glyph == PANGO_GLYPH_NULL)
+  if (glyph == PANGO_GLYPH_EMPTY)
     {
     fallback:
-      
       if (ink_rect)
-	{
-	  ink_rect->x = 0;
-	  ink_rect->width = 0;
-	  ink_rect->y = 0;
-	  ink_rect->height = 0;
-	}
+	ink_rect->x = ink_rect->width = ink_rect->y = ink_rect->height = 0;
       if (logical_rect)
-	{
-	  logical_rect->x = 0;
-	  logical_rect->width = 0;
-	  logical_rect->y = 0;
-	  logical_rect->height = 0;
-	}
+	logical_rect->x = logical_rect->width = logical_rect->y = logical_rect->height = 0;
       return;
     }
-  else if (glyph & PANGO_GLYPH_UNKNOWN_FLAG)
+  if (glyph & PANGO_GLYPH_UNKNOWN_FLAG)
     {
       get_glyph_extents_missing (xfont, glyph, ink_rect, logical_rect);
     }
@@ -449,7 +438,7 @@ pango_xft_font_real_get_glyph (PangoFcFont *font,
 			       gunichar     wc)
 {
   XftFont *xft_font = xft_font_get_font ((PangoFont *)font);
-
+  
   return XftCharIndex (NULL, xft_font, wc);
 }
 
@@ -484,7 +473,7 @@ pango_xft_font_get_font (PangoFont *font)
       if (!_pango_xft_warning_history.get_font)
         {
 	  _pango_xft_warning_history.get_font = TRUE;
-	  g_critical ("pango_xft_font_get_font called with font == NULL, expect ugly output");
+	  g_critical ("pango_xft_font_get_font called with bad font, expect ugly output");
 	}
       return NULL;
     }
@@ -587,7 +576,7 @@ pango_xft_font_unlock_face (PangoFont *font)
  * 
  * Use pango_fc_font_get_glyph() instead.
  *
- * Return value: the glyph index, or %PANGO_GLYPH_NULL, if the Unicode
+ * Return value: the glyph index, or 0, if the Unicode
  *  character does not exist in the font.
  *
  * Since: 1.2
@@ -596,7 +585,7 @@ guint
 pango_xft_font_get_glyph (PangoFont *font,
 			  gunichar   wc)
 {
-  g_return_val_if_fail (PANGO_XFT_IS_FONT (font), PANGO_GLYPH_NULL);
+  g_return_val_if_fail (PANGO_XFT_IS_FONT (font), 0);
 
   return pango_fc_font_get_glyph (PANGO_FC_FONT (font), wc);
 }
