@@ -66,6 +66,8 @@ AC_SUBST(PANGO_INTERFACE_AGE)
 AC_SUBST(PANGO_BINARY_AGE)
 AC_SUBST(PANGO_MODULE_VERSION)
 
+AC_DEFINE(MODULE_VERSION, "pango_module_version()", [Module interface version])
+
 dnl libtool versioning
 m4_define([lt_current], [m4_eval(100 * pango_minor_version + pango_micro_version - pango_interface_age)])
 m4_define([lt_revision], [pango_interface_age])
