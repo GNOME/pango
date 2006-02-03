@@ -3,9 +3,9 @@ Makefile
 makefile.mingw
 pangorc
 cairosimple
-pango-cairoview
-pango-xftview
-pangoft2topgm
+pangocairo-view
+pangoxft-view
+pangoft2-view
 moc_viewer-qt.cc
 .deps
 .libs
