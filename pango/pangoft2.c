@@ -316,11 +316,10 @@ pango_ft2_font_get_glyph_extents (PangoFont      *font,
 
   if (glyph & PANGO_GLYPH_UNKNOWN_FLAG)
     {
-      FT_Face face = pango_ft2_font_get_face (font);
-      if (face && FT_IS_SFNT (face))
-	glyph = pango_ft2_get_unknown_glyph (font);
-      else
+      glyph = pango_ft2_get_unknown_glyph (font);
+      if (glyph == PANGO_GLYPH_EMPTY)
         {
+	  /* No unknown glyph found for the font, draw a box */
 	  PangoFontMetrics *metrics = pango_font_get_metrics (font, NULL);
 
 	  if (metrics)
@@ -471,16 +470,22 @@ pango_ft2_font_get_coverage (PangoFont     *font,
  * pango_ft2_get_unknown_glyph:
  * @font: a #PangoFont
  * 
- * Return the index of a glyph suitable for drawing unknown characters.
+ * Return the index of a glyph suitable for drawing unknown characters,
+ * or %PANGO_GLYPH_EMPTY if no suitable glyph found.
  * 
- * Use pango_fc_font_get_unknown_glyph() instead.
+ * For most uses, pango_fc_font_get_unknown_glyph() should be used instead.
  * 
- * Return value: a glyph index into @font
+ * Return value: a glyph index into @font, or %PANGO_GLYPH_EMPTY
  **/
 PangoGlyph
 pango_ft2_get_unknown_glyph (PangoFont *font)
 {
-  return 0;
+  FT_Face face = pango_ft2_font_get_face (font);
+  if (face && FT_IS_SFNT (face))
+    /* TrueType fonts have an 'unknown glyph' box on glyph index 0 */
+    return 0;
+  else
+    return PANGO_GLYPH_EMPTY;
 }
 
 typedef struct

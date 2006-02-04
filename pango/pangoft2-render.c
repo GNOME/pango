@@ -241,13 +241,13 @@ pango_ft2_renderer_draw_glyph (PangoRenderer *renderer,
 
   if (glyph & PANGO_GLYPH_UNKNOWN_FLAG)
     {
-      FT_Face face = pango_ft2_font_get_face (font);
-      if (face && FT_IS_SFNT (face))
-	glyph = pango_ft2_get_unknown_glyph (font);
-      else
+      glyph = pango_ft2_get_unknown_glyph (font);
+      if (glyph == PANGO_GLYPH_EMPTY)
         {
+	  /* No unknown glyph found for the font, draw a box */
+
 	  /* Since we only draw an empty box for FT2 renderer,
-	   * unify the rendered bitmaps in the cache.
+	   * we unify the rendered bitmaps in the cache.
 	   */
 	  glyph = PANGO_GLYPH_UNKNOWN_FLAG;
 	}
