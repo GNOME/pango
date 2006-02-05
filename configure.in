@@ -32,10 +32,8 @@ m4_define([pango_interface_age], [2])
 dnl Number of releases since we've broken binary compatibility.
 m4_define([pango_binary_age],
           [m4_eval(100 * pango_minor_version + pango_micro_version)])
-dnl This is the last version with which we have compatibility with
-dnl with the modules for; it isn't the same as
-dnl PANGO_API_VERSION.'PANGO_MICRO_VERSION - PANGO_BINARY_AGE' since we have
-dnl engine only API    
+dnl Module API version.  This should be stepped up when a change causes
+dnl older modules to not work with new pango.
 m4_define([pango_module_version], [1.5.0])
 
 
@@ -67,6 +65,11 @@ AC_SUBST(PANGO_BINARY_AGE)
 AC_SUBST(PANGO_MODULE_VERSION)
 
 AC_DEFINE(MODULE_VERSION, "pango_module_version()", [Module interface version])
+AC_DEFINE(PANGO_BINARY_AGE, pango_binary_age(), [PANGO binary age])
+AC_DEFINE(PANGO_INTERFACE_AGE, pango_interface_age(), [PANGO interface age])
+AC_DEFINE(PANGO_MAJOR_VERSION, pango_major_version(), [PANGO major version])
+AC_DEFINE(PANGO_MINOR_VERSION, pango_minor_version(), [PANGO minor version])
+AC_DEFINE(PANGO_MICRO_VERSION, pango_micro_version(), [PANGO micro version])
 
 dnl libtool versioning
 m4_define([lt_current], [m4_eval(100 * pango_minor_version + pango_micro_version - pango_interface_age)])

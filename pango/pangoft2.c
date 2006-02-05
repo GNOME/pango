@@ -503,7 +503,7 @@ ft_error_compare (const void *pkey,
   return ((ft_error_description *) pkey)->code - ((ft_error_description *) pbase)->code;
 }
 
-const char *
+G_CONST_RETURN char *
 _pango_ft2_ft_strerror (FT_Error error)
 {
 #undef __FTERRORS_H__

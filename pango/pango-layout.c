@@ -863,7 +863,7 @@ pango_layout_set_text (PangoLayout *layout,
  * 
  * Return value: the text in the @layout.
  **/
-const char*
+G_CONST_RETURN char*
 pango_layout_get_text (PangoLayout *layout)
 {
   g_return_val_if_fail (PANGO_IS_LAYOUT (layout), NULL);

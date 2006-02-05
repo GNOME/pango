@@ -215,7 +215,7 @@ static const gint Unicode_shape_table[128] = {
 #define	is_composible(cur_wc, nxt_wc)	(compose_table[char_type_table[ucs2iso8859_8 (cur_wc)]]\
 						      [char_type_table[ucs2iso8859_8 (nxt_wc)]])
 
-const char *
+G_CONST_RETURN char *
 hebrew_shaper_get_next_cluster(const char      *text,
 			       gint		length,
 			       gunichar        *cluster,

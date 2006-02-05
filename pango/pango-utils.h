@@ -102,7 +102,6 @@ gboolean pango_is_zero_width (gunichar ch) G_GNUC_CONST;
 /* String interning for static strings */
 #define I_(string) g_intern_static_string (string)
 
-
 G_END_DECLS
 
 #endif /* __PANGO_UTILS_H__ */

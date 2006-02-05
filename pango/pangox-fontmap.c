@@ -1429,7 +1429,7 @@ pango_x_fontmap_atom_from_name (PangoFontMap *fontmap,
 }
 
 
-const char *
+G_CONST_RETURN char *
 pango_x_fontmap_name_from_atom (PangoFontMap *fontmap, 
 				Atom          atom)
 {
@@ -1633,7 +1633,7 @@ pango_x_family_list_faces (PangoFontFamily  *family,
     }
 }
 
-const char *
+G_CONST_RETURN char *
 pango_x_family_get_name (PangoFontFamily  *family)
 {
   PangoXFamily *xfamily = PANGO_X_FAMILY (family);
