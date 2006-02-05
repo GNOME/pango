@@ -1,5 +1,13 @@
 2006-02-04  Behdad Esfahbod  <behdad@gnome.org>
 
+	Bug 324408 – tab can result in 0 characters
+
+	* pango/pango-layout.c (shape_tab): Make sure there is
+	at least an space-width of space between tab-aligned text
+	and the text before it.
+
+2006-02-04  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 329528 – implement --wrap in examples/renderdemo.c
 	Patch from Antoine Dopffer.
 

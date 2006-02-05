@@ -2566,7 +2566,6 @@ get_tab_pos (PangoLayout *layout, int index)
 	}
       else
 	{
-	  ensure_tab_width (layout);
 	  tab_width = layout->tab_width;
 	}
 
@@ -2576,7 +2575,6 @@ get_tab_pos (PangoLayout *layout, int index)
     {
       /* No tab array set, so use default tab width
        */
-      ensure_tab_width (layout);
       return layout->tab_width * index;
     }
 }
@@ -2606,7 +2604,7 @@ static void
 shape_tab (PangoLayoutLine  *line,
 	   PangoGlyphString *glyphs)
 {
-  int i;
+  int i, space_width;
 
   int current_width = line_width (line);
 
@@ -2619,10 +2617,13 @@ shape_tab (PangoLayoutLine  *line,
   
   glyphs->log_clusters[0] = 0;
 
+  ensure_tab_width (line->layout);
+  space_width = line->layout->tab_width / 8;
+
   for (i=0;;i++)
     {
       int tab_pos = get_tab_pos (line->layout, i);
-      if (tab_pos > current_width)
+      if (tab_pos >= current_width + space_width)
 	{
 	  glyphs->glyphs[0].geometry.width = tab_pos - current_width;
 	  break;
