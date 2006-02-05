@@ -128,7 +128,7 @@ set_glyph_tone (PangoFont *font, PangoGlyphString *glyphs, int i,
 #define find_char(font,wc) \
     pango_fc_font_get_glyph((PangoFcFont *)font, wc)
 #define get_unknown_glyph(font,wc) \
-    pango_fc_font_get_unknown_glyph((PangoFcFont *)font, wc)
+    PANGO_GET_UNKNOWN_GLYPH ( wc)
 
 static void
 render_tone (PangoFont *font, gunichar tone, PangoGlyphString *glyphs,

@@ -90,6 +90,7 @@ main (int argc, char **argv)
   XSizeHints size_hints;
   unsigned int quit_keycode;
   unsigned int borders_keycode;
+  const char *title;
   
   g_type_init();
 
@@ -111,9 +112,11 @@ main (int argc, char **argv)
   XSelectInput (display, window, ExposureMask | KeyPressMask);
   
   XMapWindow (display, window);
+  title = get_options_string ();
   XmbSetWMProperties (display, window,
-		      get_options_string (),
+		      title,
 		      NULL, NULL, 0, NULL, NULL, NULL);
+  g_free (title);
   
   memset ((char *)&size_hints, 0, sizeof (XSizeHints));
   size_hints.flags = PSize | PMaxSize;

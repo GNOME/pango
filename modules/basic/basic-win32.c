@@ -849,10 +849,10 @@ itemize_shape_and_place (PangoFont        *font,
 	    {
 	      PangoRectangle logical_rect;
 	      /* Should pass actual char that was not found to
-	       * pango_win32_get_unknown_glyph(), but a bit hard to
+	       * PANGO_GET_UNKNOWN_GLYPH(), but a bit hard to
 	       * find out that at this point, so cheat and use 0.
 	       */
-	      PangoGlyph unk = pango_win32_get_unknown_glyph (font, 0);
+	      PangoGlyph unk = PANGO_GET_UNKNOWN_GLYPH (0);
 
 	      glyphs->glyphs[ng+glyphix].glyph = unk;
 	      pango_font_get_glyph_extents (font, unk, NULL, &logical_rect);
@@ -1034,7 +1034,7 @@ basic_engine_shape (PangoEngineShape *engine,
 		}
 	    }
 	  else
-	    set_glyph (font, glyphs, i, p - text, pango_win32_get_unknown_glyph (font, wc));
+	    set_glyph (font, glyphs, i, p - text, PANGO_GET_UNKNOWN_GLYPH (wc));
 	}
       
       p = g_utf8_next_char (p);

@@ -470,10 +470,12 @@ pango_ft2_font_get_coverage (PangoFont     *font,
  * pango_ft2_get_unknown_glyph:
  * @font: a #PangoFont
  * 
- * Return the index of a glyph suitable for drawing unknown characters,
- * or %PANGO_GLYPH_EMPTY if no suitable glyph found.
+ * Return the index of a glyph suitable for drawing unknown characters with
+ * @font, or %PANGO_GLYPH_EMPTY if no suitable glyph found.
  * 
- * For most uses, pango_fc_font_get_unknown_glyph() should be used instead.
+ * If you want to draw an unknown-box for a character that is not covered
+ * by the font,
+ * use PANGO_GET_UNKNOWN_GLYPH() instead.
  * 
  * Return value: a glyph index into @font, or %PANGO_GLYPH_EMPTY
  **/

@@ -1396,7 +1396,7 @@ pango_x_find_glyph (PangoFont *font,
  * @font: a #PangoFont.
  * 
  * Returns the index of a glyph suitable for drawing unknown characters;
- * you should generally use pango_x_font_get_unknown_glyph_instead,
+ * you should generally use PANGO_GET_UNKNOWN_GLYPH() instead,
  * since that may return a glyph that provides a better representation
  * of a particular char. (E.g., by showing hex digits, or a glyph
  * representive of a certain Unicode range.)
@@ -1406,7 +1406,7 @@ pango_x_find_glyph (PangoFont *font,
 PangoGlyph
 pango_x_get_unknown_glyph (PangoFont *font)
 {
-  return PANGO_GLYPH_UNKNOWN_FLAG;
+  return PANGO_GET_UNKNOWN_GLYPH (0);
 }
 
 /**
@@ -1744,13 +1744,13 @@ pango_x_fallback_shape (PangoFont        *font,
  * Returns the index of a glyph suitable for drawing @wc as an
  * unknown character.
  *
+ * Use PANGO_GET_UNKNOWN_GLYPH() instead.
+ *
  * Return value: a glyph index into @font.
  */
 PangoGlyph
 pango_x_font_get_unknown_glyph (PangoFont *font,
                                 gunichar   wc)
 {
-  g_return_val_if_fail (PANGO_IS_FONT (font), 0);
-
-  return PANGO_GLYPH_UNKNOWN_FLAG | wc;
+  return PANGO_GET_UNKNOWN_GLYPH (wc);
 }

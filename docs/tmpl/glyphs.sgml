@@ -194,6 +194,36 @@ A #PangoGlyph represents a single glyph in the output form of a string.
 </para>
 
 
+<!-- ##### MACRO PANGO_GLYPH_EMPTY ##### -->
+<para>
+The %PANGO_GLYPH_EMPTY macro represents a #PangoGlyph value that has a
+special meaning, which is a zero-width empty glyph.  This is useful for
+example in shaper modules, to use as the glyph for various zero-width
+Unicode characters (those passing pango_is_zero_width()).
+</para>
+
+
+
+<!-- ##### MACRO PANGO_GLYPH_UNKNOWN_FLAG ##### -->
+<para>
+The %PANGO_GLYPH_UNKNOWN_FLAG macro is a flag value that can be added to
+a #gunichar value of a valid Unicode character, to produce a #PangoGlyph
+value, representing an unknown-character glyph for the respective #gunichar.
+</para>
+
+
+
+<!-- ##### MACRO PANGO_GET_UNKNOWN_GLYPH ##### -->
+<para>
+Returns a #PangoGlyph value that means no glyph was found for @wc.
+The way this unknown glyphs are rendered is backend specific.  For example,
+a box with the hexadecimal Unicode code-point of the character written in it
+is what is done in the most common backends.
+</para>
+
+@wc: a Unicode character
+
+
 <!-- ##### STRUCT PangoGlyphInfo ##### -->
 <para>
 The #PangoGlyphInfo structure represents a single glyph together with

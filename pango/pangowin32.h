@@ -69,8 +69,10 @@ void           pango_win32_render_transformed (HDC         hdc,
 /* For shape engines
  */
 
+#ifndef PANGO_DISABLE_DEPRECATED
 PangoGlyph     pango_win32_get_unknown_glyph  (PangoFont        *font,
 					       gunichar          wc);
+#endif /* PANGO_DISABLE_DEPRECATED */
 gint	      pango_win32_font_get_glyph_index(PangoFont        *font,
 					       gunichar          wc);
 

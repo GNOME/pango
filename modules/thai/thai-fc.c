@@ -231,13 +231,13 @@ thai_make_glyph_uni (ThaiFontInfo *font_info, gunichar uc)
   if (result)
     return result;
   else
-    return pango_fc_font_get_unknown_glyph (fc_font, uc);
+    return PANGO_GET_UNKNOWN_GLYPH ( uc);
 }
 
 PangoGlyph
 thai_make_unknown_glyph (ThaiFontInfo *font_info, gunichar uc)
 {
-  return pango_fc_font_get_unknown_glyph ((PangoFcFont *)font_info->font, uc);
+  return PANGO_GET_UNKNOWN_GLYPH ( uc);
 }
 
 static void

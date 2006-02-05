@@ -278,7 +278,7 @@ set_glyphs (PangoFont      *font,
 	  glyph = pango_fc_font_get_glyph (fc_font, wcs[i]);
 
 	  if (!glyph)
-	    glyph = pango_fc_font_get_unknown_glyph (fc_font, wcs[i]);
+	    glyph = PANGO_GET_UNKNOWN_GLYPH ( wcs[i]);
 	}
       pango_ot_buffer_add_glyph (buffer, glyph, tags[i], i);
     }

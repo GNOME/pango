@@ -76,7 +76,7 @@ get_cluster_glyphs(PangoFont      *font,
 	
       glyph_num[i] = pango_fc_font_get_glyph ((PangoFcFont *)font, wc);
       if (!glyph_num[i])
-	glyph_num[i] = pango_fc_font_get_unknown_glyph ((PangoFcFont *)font, wc);
+	glyph_num[i] = PANGO_GET_UNKNOWN_GLYPH ( wc);
 
       glyph[i] = glyph_num[i];
 
@@ -356,7 +356,7 @@ hebrew_engine_shape (PangoEngineShape *engine,
 	  
 	  if (!index)
 	    {
-	      pango_ot_buffer_add_glyph (buffer, pango_fc_font_get_unknown_glyph (fc_font, wc),
+	      pango_ot_buffer_add_glyph (buffer, PANGO_GET_UNKNOWN_GLYPH ( wc),
 					 unknown_property, p - text);
 	    }
 	  else

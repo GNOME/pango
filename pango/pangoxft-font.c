@@ -511,7 +511,7 @@ pango_xft_font_get_display (PangoFont *font)
  * Returns the index of a glyph suitable for drawing @wc as an
  * unknown character.
  *
- * Use pango_fc_font_get_unknown_glyph() instead.
+ * Use PANGO_GET_UNKNOWN_GLYPH() instead.
  *
  * Return value: a glyph index into @font.
  **/
@@ -519,7 +519,7 @@ PangoGlyph
 pango_xft_font_get_unknown_glyph (PangoFont *font,
 				  gunichar   wc)
 {
-  g_return_val_if_fail (PANGO_XFT_IS_FONT (font), -1);
+  g_return_val_if_fail (PANGO_XFT_IS_FONT (font), PANGO_GLYPH_EMPTY);
 
   return pango_fc_font_get_unknown_glyph (PANGO_FC_FONT (font), wc);
 }

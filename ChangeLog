@@ -1,5 +1,26 @@
 2006-02-04  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango/pango-types.h: Change PANGO_GLYPH_EMPTY to 0x0FFFFFFF, to
+	not overlap with PANGO_GLYPH_UNKNOWN_FLAG (0x10000000).
+	Define PANGO_GET_UNKNOWN_GLYPH(wc) that simply returns
+	wc|PANGO_GLYPH_UNKNOWN_FLAG.
+
+	* docs/pango-sections.txt, docs/tmpl/glyphs.sgml: Document new
+	symbols.
+
+	* modules/*/*.c: Use PANGO_GET_UNKNOWN_GLYPH instead of various
+	backend-specific functions.
+
+	* pango/pangofc-font.c, pango/pangoft.c, pango/pangoxft-font.c,
+	* pango/pangowin32.c, pango/pangox.c: Suggest using
+	PANGO_GET_UNKNOWN_GLYPH in docs.
+
+	* pango/pangofc-font.h: Deprecate pango_fc_font_get_unknown_glyph().
+
+	* pango/pangowin32.h: Deprecate pango_win32_get_unknown_glyph().
+
+2006-02-04  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/pangoft2.c, pango/pangoft2-render.c: Move the
 	FT_IS_SFNT(font) logic into pango_ft2_get_unknown glyph.
 

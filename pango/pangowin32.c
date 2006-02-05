@@ -860,6 +860,8 @@ pango_win32_font_find_shaper (PangoFont     *font,
  * 
  * Returns the index of a glyph suitable for drawing @wc as an
  * unknown character.
+ *
+ * Use PANGO_GET_UNKNOWN_GLYPH() instead.
  * 
  * Return value: a glyph index into @font
  **/
@@ -867,7 +869,7 @@ PangoGlyph
 pango_win32_get_unknown_glyph (PangoFont *font,
 			       gunichar   wc)
 {
-  return wc | PANGO_GLYPH_UNKNOWN_FLAG;
+  return PANGO_GET_UNKNOWN_GLYPH (wc);
 }
 
 /**

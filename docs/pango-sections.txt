@@ -80,6 +80,9 @@ pango_matrix_rotate
 pango_matrix_concat
 pango_matrix_get_font_scale_factor
 PangoGlyph
+PANGO_GLYPH_EMPTY
+PANGO_GLYPH_UNKNOWN_FLAG
+PANGO_GET_UNKNOWN_GLYPH
 PangoGlyphInfo
 PangoGlyphGeometry
 PangoGlyphUnit

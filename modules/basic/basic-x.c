@@ -202,7 +202,7 @@ find_char (CharCache *cache, PangoFont *font, gunichar wc, const char *input)
     case '\r':
     case 0x2028: /* Line separator */
     case 0x2029: /* Paragraph separator */
-      return pango_x_font_get_unknown_glyph (font, wc);
+      return PANGO_GET_UNKNOWN_GLYPH (wc);
       break;
     }
   
@@ -640,7 +640,7 @@ basic_engine_shape (PangoEngineShape *engine,
 		}
 	    }
 	  else
-	    set_glyph (font, glyphs, i, p - text, pango_x_font_get_unknown_glyph (font, wc));
+	    set_glyph (font, glyphs, i, p - text, PANGO_GET_UNKNOWN_GLYPH (wc));
 	}
       
       p = g_utf8_next_char (p);
