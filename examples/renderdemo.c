@@ -55,6 +55,8 @@ int opt_indent = 0;
 int opt_runs = 1;
 PangoEllipsizeMode opt_ellipsize = PANGO_ELLIPSIZE_NONE;
 HintMode opt_hinting = HINT_DEFAULT;
+PangoWrapMode opt_wrap = PANGO_WRAP_WORD_CHAR;
+gboolean opt_wrap_set = FALSE;
 const char *opt_pangorc = NULL;
 
 /* Text (or markup) to render */
@@ -68,7 +70,7 @@ fail (const char *format, ...)
   va_list vap;
   va_start (vap, format);
   msg = g_strdup_vprintf (format, vap);
-  g_printerr ("%s: %s\n", prog_name, msg);
+  g_warning ("%s: %s\n", prog_name, msg);
   
   exit (1);
 }
@@ -111,7 +113,7 @@ make_layout(PangoContext *context,
     
   if (opt_width > 0)
     {
-      pango_layout_set_wrap (layout, PANGO_WRAP_WORD_CHAR);
+      pango_layout_set_wrap (layout, opt_wrap);
       pango_layout_set_width (layout, (opt_width * opt_dpi * PANGO_SCALE + 32) / 72);
     }
 
@@ -379,48 +381,80 @@ parse_hinting (const char *name,
   return ret;
 }
 
+
+static gboolean
+parse_wrap (const char *name,
+	       const char *arg,
+	       gpointer    data,
+	       GError    **error)
+{
+  static GEnumClass *class = NULL;
+  gboolean ret = TRUE;
+  GEnumValue *value;
+  
+  if (!class)
+    class = g_type_class_ref (PANGO_TYPE_WRAP_MODE);
+
+  value = g_enum_get_value_by_nick (class, arg);
+  if (value)
+    {
+      opt_wrap = value->value;
+      opt_wrap_set = TRUE;
+    }
+  else
+    {
+      fail ("--wrap option must be one of word/char/word-char");
+      ret = FALSE;
+    }
+
+  return ret;
+}
+
+
 void
 parse_options (int argc, char *argv[])
 {
   GOptionEntry entries[] = 
   {
     {"no-auto-dir",	0, G_OPTION_FLAG_REVERSE, G_OPTION_ARG_NONE,	&opt_auto_dir,
-     "No layout direction according to contents",			NULL },
+     "No layout direction according to contents",			NULL},
     {"no-display",	'q', G_OPTION_FLAG_REVERSE, G_OPTION_ARG_NONE,	&opt_display,
-     "Do not display (just save to file or whatever)",			NULL },
+     "Do not display (just save to file or whatever)",			NULL},
     {"dpi",		0, 0, G_OPTION_ARG_INT,				&opt_dpi,
-     "Set the resolution", 						NULL },  
+     "Set the resolution", 						NULL},  
     {"ellipsize",	0, 0, G_OPTION_ARG_CALLBACK,			&parse_ellipsis,
-     "Ellipsization mode",  "start/middle/end"				     },  
+     "Ellipsization mode",  "start/middle/end"				    },  
     {"font",		0, 0, G_OPTION_ARG_STRING,			&opt_font,
-     "Set the font description", 					NULL },  
+     "Set the font description", 					NULL},  
     {"header",		0, 0, G_OPTION_ARG_NONE,			&opt_header,
-     "Display the options in the output",				NULL },
+     "Display the options in the output",				NULL},
     {"hinting",		0, 0, G_OPTION_ARG_CALLBACK,			&parse_hinting,
-     "Hinting style",	"none/auto/full"				     },  
+     "Hinting style",	"none/auto/full"				    },  
     {"indent",		0, 0, G_OPTION_ARG_INT,				&opt_indent,
-     "Width in points to indent paragraphs", 				NULL },  
+     "Width in points to indent paragraphs", 				NULL},  
     {"margin",		0, 0, G_OPTION_ARG_INT,				&opt_margin,
-     "Set the margin on the output in pixels", 				NULL },  
+     "Set the margin on the output in pixels", 				NULL},  
     {"markup",		0, 0, G_OPTION_ARG_NONE,			&opt_markup,
-     "Interpret text as Pango markup", 					NULL },
+     "Interpret text as Pango markup", 					NULL},
     {"output",		'o', 0,G_OPTION_ARG_STRING,			&opt_output,
-     "Save rendered image to output file", 				NULL },  
+     "Save rendered image to output file", 				NULL},  
     {"pangorc",		0, 0, G_OPTION_ARG_STRING,			&opt_pangorc,
-     "pangorc file to use (default is ./pangorc)", 			NULL },  
+     "pangorc file to use (default is ./pangorc)", 			NULL},  
     {"rtl",		0, 0, G_OPTION_ARG_NONE,			&opt_rtl,
-     "Set base direction to right-to-left", 				NULL },
+     "Set base direction to right-to-left", 				NULL},
     {"rotate",		0, 0, G_OPTION_ARG_INT,				&opt_rotate,
-     "Angle at which to rotate results", 				NULL },  
+     "Angle at which to rotate results", 				NULL},  
     {"runs",		'n', 0, G_OPTION_ARG_INT,			&opt_runs,
-     "Run Pango layout engine this many times", 			NULL },  
+     "Run Pango layout engine this many times", 			NULL},  
     {"text",		't', 0, G_OPTION_ARG_STRING,			&opt_text,
-     "Text to display (instead of a file)", 				NULL },  
+     "Text to display (instead of a file)", 				NULL},  
     {"waterfall",	0, 0, G_OPTION_ARG_NONE,			&opt_waterfall,
-     "Create a waterfall display", 					NULL },
+     "Create a waterfall display", 					NULL},
     {"width",		'w', 0, G_OPTION_ARG_INT,			&opt_width,
-     "Width in points to which to wrap output", 			NULL },  
-    {NULL }
+     "Width in points to which to wrap output", 			NULL},  
+    {"wrap",		0, 0, G_OPTION_ARG_CALLBACK,			&parse_wrap,
+     "Text wrapping mode (needs a width to be set), ", "word/char/word-char"},
+    {NULL}
   };
   GError *error = NULL;
   GError *parse_error = NULL;
@@ -452,6 +486,12 @@ parse_options (int argc, char *argv[])
 	
       g_printerr ("Usage: %s [OPTION...] FILE\n", prog_name);
       exit (1);
+    }
+
+  /* if wrap mode is set then width must be set */
+  if (opt_width < 0 && opt_wrap_set)
+    {
+      g_printerr ("The wrap mode only has effect if a width is set\n");
     }
 
   /* Get the text

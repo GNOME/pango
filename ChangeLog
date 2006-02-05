@@ -1,5 +1,12 @@
 2006-02-04  Behdad Esfahbod  <behdad@gnome.org>
 
+	Bug 329528 – implement --wrap in examples/renderdemo.c
+	Patch from Antoine Dopffer.
+
+	* examples/renderdemo.c: Add --wrap option.
+
+2006-02-04  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/pango-types.h: Change PANGO_GLYPH_EMPTY to 0x0FFFFFFF, to
 	not overlap with PANGO_GLYPH_UNKNOWN_FLAG (0x10000000).
 	Define PANGO_GET_UNKNOWN_GLYPH(wc) that simply returns
