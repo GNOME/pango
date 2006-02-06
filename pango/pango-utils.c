@@ -31,9 +31,7 @@
 
 #include <glib/gstdio.h>
 
-#ifdef HAVE_FRIBIDI
-#include <fribidi/fribidi.h>
-#endif
+#include "mini-fribidi/fribidi_types.h"
 
 #ifndef HAVE_FLOCKFILE
 #  define flockfile(f) (void)1
@@ -1770,6 +1768,30 @@ pango_find_base_dir (const gchar *text,
     }
 
   return dir;
+}
+
+/**
+ * pango_unichar_direction:
+ * @ch: a Unicode character
+ *
+ * Determines the direction of a character; either
+ * %PANGO_DIRECTION_LTR, %PANGO_DIRECTION_RTL, or
+ * %PANGO_DIRECTION_NEUTRAL.
+ *
+ * Return value: the direction of the character, as used in the
+ * Unicode bidirectional algorithm.
+ */
+PangoDirection
+pango_unichar_direction (gunichar ch)
+{
+  FriBidiCharType fribidi_ch_type = _pango_fribidi_get_type (ch);
+
+  if (!FRIBIDI_IS_LETTER (fribidi_ch_type))
+    return PANGO_DIRECTION_NEUTRAL;
+  else if (FRIBIDI_IS_RTL (fribidi_ch_type))
+    return PANGO_DIRECTION_RTL;
+  else
+    return PANGO_DIRECTION_LTR;
 }
 
 /**

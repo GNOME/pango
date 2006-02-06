@@ -1049,16 +1049,3 @@ pango_log2vis_get_embedding_levels (/* input */
   DBG ("Leaving fribidi_log2vis_get_embedding_levels()\n");
   return TRUE;
 }
-
-PangoDirection
-pango_unichar_direction (gunichar ch)
-{
-  FriBidiCharType fribidi_ch_type = _pango_fribidi_get_type (ch);
-
-  if (!FRIBIDI_IS_LETTER (fribidi_ch_type))
-    return PANGO_DIRECTION_NEUTRAL;
-  else if (FRIBIDI_IS_RTL (fribidi_ch_type))
-    return PANGO_DIRECTION_RTL;
-  else
-    return PANGO_DIRECTION_LTR;
-}

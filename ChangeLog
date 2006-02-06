@@ -1,3 +1,10 @@
+2006-02-05  Behdad Esfahbod  <behdad@gnome.org>
+
+	100% symbol coverage in docs.
+
+	* pango/pango-utils.c, pango/mini-fribidi/fribidi.c: Move
+	pango_unichar_direction to pango-utils.c and document it.
+
 2006-01-31  Behdad Esfahbod  <behdad@gnome.org>
 
 	* pango/fonts.c, pango/glyphstring.c pango/pango-attributes.c
