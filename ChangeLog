@@ -1,3 +1,11 @@
+2006-02-06  Behdad Esfahbod  <behdad@gnome.org>
+
+	* pango/pango-fontmap.c (pango_font_map_real_load_fontset): Warn
+	only once per font-description that cannot be loaded.
+
+	* pango/pangox.c: Make it not crash if no font found, like other
+	backends.
+
 2006-02-05  Behdad Esfahbod  <behdad@gnome.org>
 
 	* configure.in: AC_DEFINE various version components.

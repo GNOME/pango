@@ -152,6 +152,7 @@ pango_font_map_real_load_fontset (PangoFontMap               *fontmap,
   char **families;
   int i;
   PangoFontsetSimple *fonts;
+  static GHashTable *warned_fonts = NULL;
 
   families = g_strsplit (pango_font_description_get_family (desc), ",", -1);
 
@@ -178,11 +179,20 @@ pango_font_map_real_load_fontset (PangoFontMap               *fontmap,
       
       ctmp1 = pango_font_description_to_string (desc);
       pango_font_description_set_family_static (tmp_desc, "Sans");
-      ctmp2 = pango_font_description_to_string (tmp_desc);
-      
-      g_warning ("Couldn't load font \"%s\" falling back to \"%s\"", ctmp1, ctmp2);
+
+      if (!warned_fonts || !g_hash_table_lookup (warned_fonts, ctmp1))
+        {
+	  if (!warned_fonts)
+	    warned_fonts = g_hash_table_new (g_str_hash, g_str_equal);
+
+	  g_hash_table_insert (warned_fonts, g_strdup (ctmp1), GINT_TO_POINTER (1));
+
+	  ctmp2 = pango_font_description_to_string (tmp_desc);
+	  g_warning ("couldn't load font \"%s\", falling back to \"%s\", "
+		     "expect ugly output.", ctmp1, ctmp2);
+	  g_free (ctmp2);
+        }
       g_free (ctmp1);
-      g_free (ctmp2);
       
       pango_font_map_fontset_add_fonts (fontmap,
 					context,
@@ -203,11 +213,19 @@ pango_font_map_real_load_fontset (PangoFontMap               *fontmap,
       pango_font_description_set_weight (tmp_desc, PANGO_WEIGHT_NORMAL);
       pango_font_description_set_variant (tmp_desc, PANGO_VARIANT_NORMAL);
       pango_font_description_set_stretch (tmp_desc, PANGO_STRETCH_NORMAL);
-      ctmp2 = pango_font_description_to_string (tmp_desc);
+
+      if (!warned_fonts || !g_hash_table_lookup (warned_fonts, ctmp1))
+        {
+	  g_hash_table_insert (warned_fonts, g_strdup (ctmp1), GINT_TO_POINTER (1));
+
+	  ctmp2 = pango_font_description_to_string (tmp_desc);
       
-      g_warning ("Couldn't load font \"%s\" falling back to \"%s\"", ctmp1, ctmp2);
+	  g_warning ("couldn't load font \"%s\", falling back to \"%s\", "
+		     "expect ugly output.", ctmp1, ctmp2);
+	  g_free (ctmp2);
+	}
+
       g_free (ctmp1);
-      g_free (ctmp2);
       
       pango_font_map_fontset_add_fonts (fontmap,
 					context,

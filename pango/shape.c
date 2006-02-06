@@ -73,7 +73,7 @@ pango_shape (const gchar      *text,
 	      s = pango_font_description_to_string (desc);
 	      pango_font_description_free (desc);
 
-	      g_warning ("shape engine failure, expect ugly output. the offending font is `%s'", s);
+	      g_warning ("shape engine failure, expect ugly output. the offending font is '%s'", s);
 
 	      g_free (s);
 
@@ -87,7 +87,7 @@ pango_shape (const gchar      *text,
       if (!PANGO_IS_ENGINE_SHAPE (analysis->shape_engine) &&
 	  !_pango_warning_history.shape_shape_engine)
         {
-	  _pango_warning_history.shape_font = TRUE;
+	  _pango_warning_history.shape_shape_engine = TRUE;
 	  g_critical ("pango_shape called with bad shape_engine, expect ugly output");
 	}
       if (!PANGO_IS_FONT (analysis->font) &&

@@ -450,13 +450,27 @@ pango_x_render  (Display           *display,
           gunichar wc;
 	  
 	unknown_glyph:
-	  metrics = pango_font_get_metrics (font, pango_language_from_string ("en"));
 	  FLUSH;
 
-          x1 = glyph_x;
-          y1 = glyph_y - PANGO_PIXELS (metrics->ascent);
-          x2 = x1 + PANGO_PIXELS (glyphs->glyphs[i].geometry.width);
-          y2 = y1 + PANGO_PIXELS (metrics->ascent + metrics->descent);
+	  if (font)
+	    metrics = pango_font_get_metrics (font, NULL);
+	  else
+	    metrics = NULL;
+
+	  if (metrics)
+	    {
+	      y1 = glyph_y - PANGO_PIXELS (metrics->ascent);
+	      y2 = y1 + PANGO_PIXELS (metrics->ascent + metrics->descent);
+	    }
+	  else
+	    {
+	      y2 = glyph_y;
+	      y1 = y2 - PANGO_UNKNOWN_GLYPH_HEIGHT;
+	    }
+
+	  x1 = glyph_x;
+	  x2 = x1 + PANGO_PIXELS (glyphs->glyphs[i].geometry.width);
+
           baseline = glyph_y;
 	  stroke_thick = MAX ((int) (0.5 + 0.075 * (y2 - y1)), 1);
           
@@ -603,8 +617,7 @@ pango_x_font_get_glyph_extents  (PangoFont      *font,
     }
   else
     {
-      PangoFontMetrics *metrics = pango_font_get_metrics (font,
-							  pango_language_from_string ("en"));
+      PangoFontMetrics *metrics;
       gunichar wc;
       gdouble width_factor;
       int w;
@@ -630,28 +643,41 @@ pango_x_font_get_glyph_extents  (PangoFont      *font,
 	default:
 	  {
 	    /* Unknown glyph square */
-	    width_factor = 0.7;
+	    width_factor = 1.0;
 	  }
 	}
 	    
-      w = metrics->approximate_char_width * width_factor;
-      w = PANGO_SCALE * PANGO_PIXELS (w);
-            
-      if (ink_rect)
-	{
-	  ink_rect->x = 0;
-	  ink_rect->width = w;
-	  ink_rect->y = - metrics->ascent;
-	  ink_rect->height = metrics->ascent + metrics->descent;
+      metrics = pango_font_get_metrics (font, NULL);
+
+      if (metrics)
+        {
+	  w = metrics->approximate_char_width * width_factor;
+	  w = PANGO_SCALE * PANGO_PIXELS (w);
+		
+	  if (ink_rect)
+	    {
+	      ink_rect->x = PANGO_SCALE;
+	      ink_rect->width = w - 2 * PANGO_SCALE;
+	      ink_rect->y = - (metrics->ascent - PANGO_SCALE);
+	      ink_rect->height = metrics->ascent + metrics->descent - 2 * PANGO_SCALE;
+	    }
+	  if (logical_rect)
+	    {
+	      logical_rect->x = 0;
+	      logical_rect->width = w;
+	      logical_rect->y = - metrics->ascent;
+	      logical_rect->height = metrics->ascent + metrics->descent;
+	    }
+
+	  pango_font_metrics_unref (metrics);
 	}
-      if (logical_rect)
+      else
 	{
-	  logical_rect->x = 0;
-	  logical_rect->width = w;
-	  logical_rect->y = - metrics->ascent;
-	  logical_rect->height = metrics->ascent + metrics->descent;
+	  if (ink_rect)
+	    ink_rect->x = ink_rect->y = ink_rect->height = ink_rect->width = 0;
+	  if (logical_rect)
+	    logical_rect->x = logical_rect->y = logical_rect->height = logical_rect->width = 0;
 	}
-      
     }
 }
 
@@ -835,7 +861,12 @@ get_font_metrics_from_subfonts (PangoFont        *font,
   if (n_avg_widths)
     metrics->approximate_char_width = total_avg_widths / n_avg_widths;
   else
-    metrics->approximate_char_width = 10 * PANGO_SCALE;
+    metrics->approximate_char_width = PANGO_UNKNOWN_GLYPH_WIDTH * PANGO_SCALE;
+  if (metrics->ascent + metrics->descent == 0)
+    {
+      metrics->ascent = PANGO_UNKNOWN_GLYPH_HEIGHT * PANGO_SCALE;
+      metrics->descent = 0;
+    }
 }
 
 static void
@@ -846,12 +877,19 @@ get_subfonts_foreach (PangoFont      *font,
   GSList **subfonts = data;
   PangoGlyph glyph = glyph_info->glyph;
 
-  if ((glyph & PANGO_GLYPH_UNKNOWN_FLAG) == 0)
-    {
-      PangoXSubfont subfont = PANGO_X_GLYPH_SUBFONT (glyph);
-      if (!g_slist_find (*subfonts, GUINT_TO_POINTER ((guint)subfont)))
-	*subfonts = g_slist_prepend (*subfonts, GUINT_TO_POINTER ((guint)subfont));
-    }
+  if (glyph == PANGO_GLYPH_EMPTY)
+    return;
+
+  /* Use an arbitrary subfont for unknown glyphs...*/
+  if (glyph & PANGO_GLYPH_UNKNOWN_FLAG)
+    if (((PangoXFont *)font)->n_subfonts > 0)
+      glyph = PANGO_X_MAKE_GLYPH (1, 0);
+    else
+      return;
+
+  PangoXSubfont subfont = PANGO_X_GLYPH_SUBFONT (glyph);
+  if (!g_slist_find (*subfonts, GUINT_TO_POINTER ((guint)subfont)))
+    *subfonts = g_slist_prepend (*subfonts, GUINT_TO_POINTER ((guint)subfont));
 }
 
 /* Get composite font metrics for all subfonts resulting from shaping
@@ -918,15 +956,20 @@ pango_x_font_get_metrics (PangoFont        *font,
 
   if (!tmp_list)
     {
-      info = g_new (PangoXMetricsInfo, 1);
-      info->sample_str = sample_str;
-      info->metrics = pango_font_metrics_new ();
+      PangoFontMetrics *metrics;
+
+      info = g_new0 (PangoXMetricsInfo, 1);
 
       xfont->metrics_by_lang = g_slist_prepend (xfont->metrics_by_lang, info);
 
-      get_font_metrics_from_string (font, language, sample_str, info->metrics);
+      info->sample_str = sample_str;
+      metrics = pango_font_metrics_new ();
 
-      info->metrics->approximate_digit_width = get_total_width_for_string (font, language, "0123456789") / 10;
+      get_font_metrics_from_string (font, language, sample_str, metrics);
+
+      metrics->approximate_digit_width = get_total_width_for_string (font, language, "0123456789") / 10;
+
+      info->metrics = metrics;
     }
       
   return pango_font_metrics_ref (info->metrics);
@@ -1540,7 +1583,7 @@ pango_x_render_layout_line (Display          *display,
  * @x:         the x position of the left of the layout (in pixels).
  * @y:         the y position of the top of the layout (in pixels).
  *
- * Renders a #PangoLayoutLine onto an X drawable.
+ * Renders a #PangoLayout onto an X drawable.
  */
 void 
 pango_x_render_layout (Display         *display,
@@ -1703,7 +1746,7 @@ pango_x_find_first_subfont (PangoFont      *font,
  * 
  * This is a simple fallback shaper, that can be used
  * if no subfont that supports a given script is found. 
- * For every character in @text, it puts the Unknown glyph.
+ * For every character in @text, it puts the unknown glyph.
  */
 void 
 pango_x_fallback_shape (PangoFont        *font, 
@@ -1727,10 +1770,12 @@ pango_x_fallback_shape (PangoFont        *font,
   for (i = 0; i < n_chars; i++)
     {
       glyphs->glyphs[i].glyph = unknown_glyph;
+
       glyphs->glyphs[i].geometry.x_offset = 0;
       glyphs->glyphs[i].geometry.y_offset = 0;
       glyphs->glyphs[i].geometry.width = logical_rect.width;
-      glyphs->log_clusters[i] = 0;
+
+      glyphs->log_clusters[i] = p - text;
       
       p = g_utf8_next_char (p);
     }

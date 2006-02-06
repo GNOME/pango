@@ -279,6 +279,8 @@ pango_font_family_get_type
 pango_font_metrics_get_type
 pango_fontset_get_type
 pango_fontset_simple_get_type
+PANGO_UNKNOWN_GLYPH_WIDTH
+PANGO_UNKNOWN_GLYPH_HEIGHT
 </SECTION>
 
 <SECTION>
