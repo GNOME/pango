@@ -26,6 +26,7 @@
 #include <stdio.h>
 #include <string.h>
 
+#include <glib.h>
 #include <pango/pango.h>
 
 #include "renderdemo.h"
@@ -58,6 +59,7 @@ HintMode opt_hinting = HINT_DEFAULT;
 PangoWrapMode opt_wrap = PANGO_WRAP_WORD_CHAR;
 gboolean opt_wrap_set = FALSE;
 const char *opt_pangorc = NULL;
+const PangoViewer *opt_viewer = NULL;
 
 /* Text (or markup) to render */
 static char *text;
@@ -66,12 +68,12 @@ void
 fail (const char *format, ...)
 {
   const char *msg;
-  
+
   va_list vap;
   va_start (vap, format);
   msg = g_strdup_vprintf (format, vap);
-  g_warning ("%s: %s\n", prog_name, msg);
-  
+  g_printerr ("%s: %s\n", prog_name, msg);
+
   exit (1);
 }
 
@@ -79,7 +81,7 @@ static PangoFontDescription *
 get_font_description (void)
 {
   PangoFontDescription *font_description = pango_font_description_from_string (opt_font);
-  
+
   if ((pango_font_description_get_set_fields (font_description) & PANGO_FONT_MASK_FAMILY) == 0)
     pango_font_description_set_family (font_description, DEFAULT_FONT_FAMILY);
 
@@ -110,7 +112,7 @@ make_layout(PangoContext *context,
   font_description = get_font_description ();
   if (size > 0)
     pango_font_description_set_size (font_description, size * PANGO_SCALE);
-    
+
   if (opt_width > 0)
     {
       pango_layout_set_wrap (layout, opt_wrap);
@@ -123,7 +125,7 @@ make_layout(PangoContext *context,
   base_dir = pango_context_get_base_dir (context);
   pango_layout_set_alignment (layout,
 			      base_dir == PANGO_DIRECTION_LTR ? PANGO_ALIGN_LEFT : PANGO_ALIGN_RIGHT);
-  
+
   pango_layout_set_font_description (layout, font_description);
 
   pango_font_description_free (font_description);
@@ -142,7 +144,7 @@ get_options_string (void)
     pango_font_description_unset_fields (font_description, PANGO_FONT_MASK_SIZE);
 
   font_name = pango_font_description_to_string (font_description);
-  result = g_strdup_printf ("%s: dpi=%d", font_name, opt_dpi);
+  result = g_strdup_printf ("%s: %s (%d dpi)", opt_viewer->name, font_name, opt_dpi);
   pango_font_description_free (font_description);
   g_free (font_name);
 
@@ -164,16 +166,15 @@ static void
 output_body (PangoContext   *context,
 	     const char     *text,
 	     RenderCallback  render_cb,
+	     gpointer        cb_context,
 	     gpointer        cb_data,
 	     int            *width,
-	     int            *height,
-	     gboolean        show_borders)
+	     int            *height)
 {
   PangoLayout *layout;
   PangoRectangle logical_rect;
   int size, start_size, end_size, increment;
-  int dy;
-  
+
   if (opt_waterfall)
     {
       start_size = 8;
@@ -188,25 +189,17 @@ output_body (PangoContext   *context,
 
   *width = 0;
   *height = 0;
-  dy = 0;
-  
+
   for (size = start_size; size <= end_size; size += increment)
     {
       layout = make_layout (context, text, size);
       pango_layout_get_extents (layout, NULL, &logical_rect);
-      
-      /* TODO: instead of these two calls, we really should call
-       * pango_layout_get_effective_width when that's implemented.
-       */
-      *width = MAX (*width, PANGO_PIXELS (pango_layout_get_width (layout)));
-      *width = MAX (*width, PANGO_PIXELS (logical_rect.width));
-
-      *height += PANGO_PIXELS (logical_rect.height);
 
       if (render_cb)
-	(*render_cb) (layout, 0, dy, cb_data, show_borders);
-      
-      dy += PANGO_PIXELS (logical_rect.height);
+	(*render_cb) (layout, 0, *height, cb_context, cb_data);
+
+      *width = MAX (*width, PANGO_PIXELS (logical_rect.x + logical_rect.width));
+      *height += PANGO_PIXELS (logical_rect.height);
 
       g_object_unref (layout);
     }
@@ -215,11 +208,12 @@ output_body (PangoContext   *context,
 static void
 set_transform (PangoContext     *context,
 	       TransformCallback transform_cb,
+	       gpointer          cb_context,
 	       gpointer          cb_data,
 	       PangoMatrix      *matrix)
 {
   if (transform_cb)
-    (*transform_cb) (context, matrix, cb_data);
+    (*transform_cb) (context, matrix, cb_context, cb_data);
   else
     pango_context_set_matrix (context, matrix);
 }
@@ -228,10 +222,10 @@ void
 do_output (PangoContext     *context,
 	   RenderCallback    render_cb,
 	   TransformCallback transform_cb,
+	   gpointer          cb_context,
 	   gpointer          cb_data,
 	   int              *width_out,
-	   int              *height_out,
-	   gboolean          show_borders)
+	   int              *height_out)
 {
   PangoLayout *layout;
   PangoRectangle logical_rect;
@@ -246,40 +240,40 @@ do_output (PangoContext     *context,
   double minx, miny;
   double maxx, maxy;
   int width, height;
-  
+
   width = 0;
   height = 0;
 
-  set_transform (context, transform_cb, cb_data, NULL);
-  
+  set_transform (context, transform_cb, cb_context, cb_data, NULL);
+
   pango_context_set_language (context, pango_language_from_string ("en_US"));
   pango_context_set_base_dir (context,
 			      opt_rtl ? PANGO_DIRECTION_RTL : PANGO_DIRECTION_LTR);
-  
+
   if (opt_header)
     {
       char *options_string = get_options_string ();
       layout = make_layout (context, options_string, 10);
       pango_layout_get_extents (layout, NULL, &logical_rect);
-      
+
       width = MAX (width, PANGO_PIXELS (logical_rect.width));
       height += PANGO_PIXELS (logical_rect.height);
-      
+
       if (render_cb)
-	(*render_cb) (layout, x, y, cb_data, show_borders);
-      
+	(*render_cb) (layout, x, y, cb_context, cb_data);
+
       y += PANGO_PIXELS (logical_rect.height);
-      
+
       g_object_unref (layout);
       g_free (options_string);
     }
 
   pango_matrix_rotate (&matrix, opt_rotate);
 
-  set_transform (context, transform_cb, cb_data, &matrix);
-  
-  output_body (context, text, NULL, NULL, &rotated_width, &rotated_height, show_borders);
-  
+  set_transform (context, transform_cb, cb_context, cb_data, &matrix);
+
+  output_body (context, text, NULL, NULL, NULL, &rotated_width, &rotated_height);
+
   transform_point (&matrix, 0,             0,              &p1x, &p1y);
   transform_point (&matrix, rotated_width, 0,              &p2x, &p2y);
   transform_point (&matrix, rotated_width, rotated_height, &p3x, &p3y);
@@ -294,10 +288,10 @@ do_output (PangoContext     *context,
   matrix.x0 = x - minx;
   matrix.y0 = y - miny;
 
-  set_transform (context, transform_cb, cb_data, &matrix);
-  
+  set_transform (context, transform_cb, cb_context, cb_data, &matrix);
+
   if (render_cb)
-    output_body (context, text, render_cb, cb_data, &rotated_width, &rotated_height, show_borders);
+    output_body (context, text, render_cb, cb_context, cb_data, &rotated_width, &rotated_height);
 
   width = MAX (width, maxx - minx);
   height += maxy - miny;
@@ -312,23 +306,6 @@ do_output (PangoContext     *context,
 }
 
 
-/* This function gets called to convert a matched pattern into what
- * we'll use to actually load the font. We turn off hinting since we
- * want metrics that are independent of scale.
- */
-void
-fc_substitute_func (FcPattern *pattern, gpointer   data)
-{
-  if (opt_hinting != HINT_DEFAULT)
-    {
-      FcPatternDel (pattern, FC_HINTING);
-      FcPatternAddBool (pattern, FC_HINTING, opt_hinting != HINT_NONE);
-      
-      FcPatternDel (pattern, FC_AUTOHINT);
-      FcPatternAddBool (pattern, FC_AUTOHINT, opt_hinting == HINT_AUTO);
-    }
-}
-
 static gboolean
 parse_ellipsis (const char *name,
 		const char *arg,
@@ -341,7 +318,7 @@ parse_ellipsis (const char *name,
 
   if (!class)
     class = g_type_class_ref (PANGO_TYPE_ELLIPSIZE_MODE);
-  
+
   value = g_enum_get_value_by_nick (class, arg);
   if (value)
     opt_ellipsize = value->value;
@@ -362,7 +339,7 @@ parse_hinting (const char *name,
 {
   static GEnumClass *class = NULL;
   gboolean ret = TRUE;
-  
+
   if (!class)
     class = g_type_class_ref (PANGO_TYPE_ELLIPSIZE_MODE);
 
@@ -381,7 +358,6 @@ parse_hinting (const char *name,
   return ret;
 }
 
-
 static gboolean
 parse_wrap (const char *name,
 	       const char *arg,
@@ -391,7 +367,7 @@ parse_wrap (const char *name,
   static GEnumClass *class = NULL;
   gboolean ret = TRUE;
   GEnumValue *value;
-  
+
   if (!class)
     class = g_type_class_ref (PANGO_TYPE_WRAP_MODE);
 
@@ -410,48 +386,84 @@ parse_wrap (const char *name,
   return ret;
 }
 
+static gboolean
+parse_backend (const char *name,
+	       const char *arg,
+	       gpointer    data,
+	       GError    **error)
+{
+  gboolean ret = TRUE;
+  const PangoViewer **viewer;
+
+  for (viewer = viewers; *viewer; viewer++)
+    if (!g_ascii_strcasecmp ((*viewer)->id, arg))
+      break;
+
+  if (*viewer)
+    opt_viewer = *viewer;
+  else
+    {
+      GString *backends = g_string_new (NULL);
+
+      for (viewer = viewers; *viewer; viewer++)
+        if ((*viewer)->id)
+	  {
+	    g_string_append (backends, (*viewer)->id);
+	    g_string_append_c (backends, '/');
+	  }
+      g_string_truncate (backends, MAX (0, (gint)backends->len - 1));
+
+      fail ("available --backend options are: %s", g_string_free (backends, FALSE));
+      ret = FALSE;
+    }
+
+  return ret;
+}
+
 
 void
 parse_options (int argc, char *argv[])
 {
-  GOptionEntry entries[] = 
+  GOptionEntry entries[] =
   {
     {"no-auto-dir",	0, G_OPTION_FLAG_REVERSE, G_OPTION_ARG_NONE,	&opt_auto_dir,
      "No layout direction according to contents",			NULL},
+    {"backend",		0, 0, G_OPTION_ARG_CALLBACK,			&parse_backend,
+     "Pango backend to use for rendering",				"id"},
     {"no-display",	'q', G_OPTION_FLAG_REVERSE, G_OPTION_ARG_NONE,	&opt_display,
      "Do not display (just save to file or whatever)",			NULL},
     {"dpi",		0, 0, G_OPTION_ARG_INT,				&opt_dpi,
-     "Set the resolution", 						NULL},  
+     "Set the resolution",					    "number"},
     {"ellipsize",	0, 0, G_OPTION_ARG_CALLBACK,			&parse_ellipsis,
-     "Ellipsization mode",  "start/middle/end"				    },  
+     "Ellipsization mode",				  "start/middle/end"},
     {"font",		0, 0, G_OPTION_ARG_STRING,			&opt_font,
-     "Set the font description", 					NULL},  
+     "Set the font description",			       "description"},
     {"header",		0, 0, G_OPTION_ARG_NONE,			&opt_header,
      "Display the options in the output",				NULL},
     {"hinting",		0, 0, G_OPTION_ARG_CALLBACK,			&parse_hinting,
-     "Hinting style",	"none/auto/full"				    },  
+     "Hinting style",					    "none/auto/full"},
     {"indent",		0, 0, G_OPTION_ARG_INT,				&opt_indent,
-     "Width in points to indent paragraphs", 				NULL},  
+     "Width in points to indent paragraphs", 			    "points"},
     {"margin",		0, 0, G_OPTION_ARG_INT,				&opt_margin,
-     "Set the margin on the output in pixels", 				NULL},  
+     "Set the margin on the output in pixels",			    "pixels"},
     {"markup",		0, 0, G_OPTION_ARG_NONE,			&opt_markup,
      "Interpret text as Pango markup", 					NULL},
-    {"output",		'o', 0,G_OPTION_ARG_STRING,			&opt_output,
-     "Save rendered image to output file", 				NULL},  
+    {"output",		'o', 0, G_OPTION_ARG_STRING,			&opt_output,
+     "Save rendered image to output file", 			      "file"},
     {"pangorc",		0, 0, G_OPTION_ARG_STRING,			&opt_pangorc,
-     "pangorc file to use (default is ./pangorc)", 			NULL},  
+     "pangorc file to use (default is ./pangorc)",		      "file"},
     {"rtl",		0, 0, G_OPTION_ARG_NONE,			&opt_rtl,
      "Set base direction to right-to-left", 				NULL},
     {"rotate",		0, 0, G_OPTION_ARG_INT,				&opt_rotate,
-     "Angle at which to rotate results", 				NULL},  
+     "Angle at which to rotate results",		 	   "degrees"},
     {"runs",		'n', 0, G_OPTION_ARG_INT,			&opt_runs,
-     "Run Pango layout engine this many times", 			NULL},  
+     "Run Pango layout engine this many times",			   "integer"},
     {"text",		't', 0, G_OPTION_ARG_STRING,			&opt_text,
-     "Text to display (instead of a file)", 				NULL},  
+     "Text to display (instead of a file)", 			    "string"},
     {"waterfall",	0, 0, G_OPTION_ARG_NONE,			&opt_waterfall,
      "Create a waterfall display", 					NULL},
     {"width",		'w', 0, G_OPTION_ARG_INT,			&opt_width,
-     "Width in points to which to wrap output", 			NULL},  
+     "Width in points to which to wrap output",			    "points"},
     {"wrap",		0, 0, G_OPTION_ARG_CALLBACK,			&parse_wrap,
      "Text wrapping mode (needs a width to be set), ", "word/char/word-char"},
     {NULL}
@@ -488,6 +500,14 @@ parse_options (int argc, char *argv[])
       exit (1);
     }
 
+  /* set up the backend */
+  if (!opt_viewer)
+    {
+      opt_viewer = *viewers;
+      if (!opt_viewer)
+        fail ("No viewer backend found");
+    }
+
   /* if wrap mode is set then width must be set */
   if (opt_width < 0 && opt_wrap_set)
     {
@@ -508,7 +528,7 @@ parse_options (int argc, char *argv[])
       if (!g_utf8_validate (text, len, NULL))
 	fail ("Text is not valid UTF-8");
     }
-  
+
   /* Strip trailing whitespace
    */
   p = text + len;

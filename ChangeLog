@@ -1,5 +1,31 @@
 2006-02-06  Behdad Esfahbod  <behdad@gnome.org>
 
+	Bug 328067 – Install pango-view
+
+	Added a rather generic framework for a pango-view example.  All
+	backends have their own pango*-view built, and a pango-view binary
+	is built too, that can choose backend via --backend.  This one is
+	installed in bindir.
+
+	* examples/Makefile.am: Updated, to build pangox-view, pangoft2-view,
+	pangoxft-view, pangocairo-view, and pango-view.
+
+	* examples/viewer.h, examples/viewer-x.c, examples/viewer-x.h
+	examples/viewer-cairo.c, examples/viewer-cairo.h,
+	examples/viewer-main.c, examples/viewer-pangox.c,
+	examples/viewer-pangoft2.c, examples/viewer-pangoxft.c,
+	examples/viewer-pangocairo.c, examples/pango-view.c,
+	examples/pango-xview.c, examples/pango-ft2view.c,
+	examples/pango-xftview.c, examples/pango-cairoview.c: Added.
+
+	* examples/cairoview.c, examples/xftview.c, examples/pangoft2topgm.c,
+	examples/viewer-qt.cc, examples/viewer-qt.h: Removed.
+
+	* configure.in: Check for Cairo Xlib backend, also AC_DEFINE various
+	backend bits.
+
+2006-02-06  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/pango-fontmap.c (pango_font_map_real_load_fontset): Warn
 	only once per font-description that cannot be loaded.
 

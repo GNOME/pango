@@ -1,4 +1,4 @@
-/* viewer-x.h: Common code X-based rendering demos
+/* viewer-x.h: Common headers for X-based viewers
  *
  * Copyright (C) 1999,2004,2005 Red Hat, Inc.
  * Copyright (C) 2001 Sun Microsystems
@@ -18,27 +18,53 @@
  * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  */
+#ifndef VIEWER_X_H
+#define VIEWER_X_H
 
 #include <pango/pango.h>
 
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 
-/* to be implemented by the backend-specific part */
+#include "viewer.h"
 
-void do_init (Display *display,
-	      int screen,
-	      int dpi,
-	      /* output */
-	      PangoContext **context,
-	      int *width,
-	      int *height);
 
-void do_render (Display *display,
-		int screen,
-		Window window,
-		Pixmap pixmap,
-		PangoContext *context,
-		int width,
-		int height,
-		gboolean show_borders);
+typedef struct 
+{
+  Display *display;
+  int screen;
+} XViewer;
+
+
+extern const PangoViewer x_viewer;
+
+void x_view_init (gpointer           instance,
+                  const PangoViewer *klass);
+
+gpointer x_view_create (const PangoViewer *klass);
+
+void x_view_destroy (gpointer instance);
+
+gpointer x_view_create_surface (gpointer instance,
+			        int      width,
+				int      height);
+
+void x_view_destroy_surface (gpointer instance,
+			     gpointer surface);
+
+gpointer x_view_create_window (gpointer    instance,
+			       const char *title,
+			       int         width,
+			       int         height);
+
+void x_view_destroy_window (gpointer instance,
+			    gpointer window);
+
+gpointer x_view_display (gpointer instance,
+			 gpointer surface,
+			 gpointer window,
+			 int      width,
+			 int      height,
+			 gpointer state);
+
+#endif /* VIEWER_X_H */

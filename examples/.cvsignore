@@ -2,11 +2,8 @@ Makefile.in
 Makefile
 makefile.mingw
 pangorc
+pango*-view
 cairosimple
-pangocairo-view
-pangoxft-view
-pangoft2-view
-moc_viewer-qt.cc
 .deps
 .libs
 *.lo

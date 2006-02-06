@@ -18,9 +18,12 @@
  * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  */
+#ifndef RENDERDEMO_H
+#define RENDERDEMO_H
 
 #include <pango/pango-layout.h>
-#include <pango/pangofc-fontmap.h>
+
+#include "viewer.h"
 
 typedef enum {
   HINT_DEFAULT,
@@ -32,11 +35,12 @@ typedef enum {
 typedef void (*RenderCallback) (PangoLayout *layout,
 				int          x,
 				int          y,
-				gpointer     data,
-				gboolean     show_borders);
+				gpointer     cb_context,
+				gpointer     cb_data);
 typedef void (*TransformCallback) (PangoContext *context,
 				   PangoMatrix  *transform,
-				   gpointer      data);
+				   gpointer      cb_context,
+				   gpointer      cb_data);
 
 void fail (const char *format, ...) G_GNUC_PRINTF (1, 2) G_GNUC_NORETURN;
 
@@ -45,22 +49,18 @@ void   parse_options      (int               argc,
 void   do_output          (PangoContext     *context,
 			   RenderCallback    render_cb,
 			   TransformCallback transform_cb,
+			   gpointer          cb_context,
 			   gpointer          cb_data,
 			   int              *width,
-			   int              *height,
-			   gboolean          show_borders);
+			   int              *height);
 void   finalize           (void);
-void   fc_substitute_func (FcPattern        *pattern,
-			   gpointer          data);
 gchar *get_options_string (void);
 
 extern const char *prog_name;
 
-extern gboolean opt_display;
-extern int opt_dpi;
+/* handled by renderdemo.c */
 extern const char *opt_font;
 extern gboolean opt_header;
-extern const char *opt_output;
 extern int opt_margin;
 extern int opt_markup;
 extern gboolean opt_rtl;
@@ -70,7 +70,17 @@ extern const char *opt_text;
 extern gboolean opt_waterfall;
 extern int opt_width;
 extern int opt_indent;
-extern int opt_runs;
 extern PangoEllipsizeMode opt_ellipsize;
-extern HintMode opt_hinting;
 extern const char *opt_pangorc;
+
+/* handled by view.c */
+extern gboolean opt_display;
+extern const char *opt_output;
+extern int opt_runs;
+extern const PangoViewer *opt_viewer;
+
+/* handled by backend-specific code */
+extern int opt_dpi;
+extern HintMode opt_hinting;
+
+#endif /* RENDERDEMO_H */
