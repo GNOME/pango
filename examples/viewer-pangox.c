@@ -39,8 +39,17 @@ static PangoContext *
 pangox_view_get_context (gpointer instance)
 {
   XViewer *x = (XViewer *) instance;
+  PangoContext *context;
+  PangoMatrix matrix = {0., 0., 0., 0., 0., 0.};
 
-  return pango_x_get_context (x->display);
+  context = pango_x_get_context (x->display);
+
+  /* We set an all-zero matrix on the context, to negotiate that
+   * this backend doesn't support transformations.
+   */
+  pango_context_set_matrix (context, &matrix);
+
+  return context;
 }
 
 typedef struct 

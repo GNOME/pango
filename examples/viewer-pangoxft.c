@@ -93,7 +93,7 @@ render_callback (PangoLayout *layout,
   pango_xft_render_layout (xft_context->draw,
 			   &xft_context->color,
 			   layout,
-			   x, y);
+			   x * PANGO_SCALE, y * PANGO_SCALE);
 }
 
 static void 

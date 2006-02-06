@@ -169,11 +169,26 @@ output_body (PangoContext   *context,
 	     gpointer        cb_context,
 	     gpointer        cb_data,
 	     int            *width,
-	     int            *height)
+	     int            *height,
+	     gboolean        supports_matrix)
 {
   PangoLayout *layout;
   PangoRectangle logical_rect;
   int size, start_size, end_size, increment;
+  int x = 0, y = 0;
+  
+  if (!supports_matrix)
+    {
+      const PangoMatrix* matrix;
+      const PangoMatrix identity = PANGO_MATRIX_INIT;
+      matrix = pango_context_get_matrix (context);
+      if (matrix)
+	{
+	  x += matrix->x0;
+	  y += matrix->y0;
+	}
+      pango_context_set_matrix (context, &identity);
+    }
 
   if (opt_waterfall)
     {
@@ -196,7 +211,7 @@ output_body (PangoContext   *context,
       pango_layout_get_extents (layout, NULL, &logical_rect);
 
       if (render_cb)
-	(*render_cb) (layout, 0, *height, cb_context, cb_data);
+	(*render_cb) (layout, x, y+*height, cb_context, cb_data);
 
       *width = MAX (*width, PANGO_PIXELS (logical_rect.x + logical_rect.width));
       *height += PANGO_PIXELS (logical_rect.height);
@@ -212,10 +227,9 @@ set_transform (PangoContext     *context,
 	       gpointer          cb_data,
 	       PangoMatrix      *matrix)
 {
+  pango_context_set_matrix (context, matrix);
   if (transform_cb)
     (*transform_cb) (context, matrix, cb_context, cb_data);
-  else
-    pango_context_set_matrix (context, matrix);
 }
 
 void
@@ -230,6 +244,8 @@ do_output (PangoContext     *context,
   PangoLayout *layout;
   PangoRectangle logical_rect;
   PangoMatrix matrix = PANGO_MATRIX_INIT;
+  const PangoMatrix *orig_matrix;
+  gboolean supports_matrix;
   int rotated_width, rotated_height;
   int x = opt_margin;
   int y = opt_margin;
@@ -243,6 +259,15 @@ do_output (PangoContext     *context,
 
   width = 0;
   height = 0;
+
+  orig_matrix = pango_matrix_copy (pango_context_get_matrix (context));
+  /* If the backend sets an all-zero matrix on the context,
+   * means that it doesn't support transformations.
+   */
+  supports_matrix = !orig_matrix ||
+		    (orig_matrix->xx != 0. || orig_matrix->xy != 0. ||
+		     orig_matrix->yx != 0. || orig_matrix->yy != 0. ||
+		     orig_matrix->x0 != 0. || orig_matrix->y0 != 0.);
 
   set_transform (context, transform_cb, cb_context, cb_data, NULL);
 
@@ -268,11 +293,21 @@ do_output (PangoContext     *context,
       g_free (options_string);
     }
 
-  pango_matrix_rotate (&matrix, opt_rotate);
+  if (opt_rotate != 0)
+    {
+      if (supports_matrix)
+	pango_matrix_rotate (&matrix, opt_rotate);
+      else
+        g_printerr ("The backend does not support rotated text\n");
+    }
 
   set_transform (context, transform_cb, cb_context, cb_data, &matrix);
 
-  output_body (context, text, NULL, NULL, NULL, &rotated_width, &rotated_height);
+  output_body (context,
+	       text,
+	       NULL, NULL, NULL,
+	       &rotated_width, &rotated_height,
+	       supports_matrix);
 
   transform_point (&matrix, 0,             0,              &p1x, &p1y);
   transform_point (&matrix, rotated_width, 0,              &p2x, &p2y);
@@ -291,7 +326,11 @@ do_output (PangoContext     *context,
   set_transform (context, transform_cb, cb_context, cb_data, &matrix);
 
   if (render_cb)
-    output_body (context, text, render_cb, cb_context, cb_data, &rotated_width, &rotated_height);
+    output_body (context,
+		 text,
+		 render_cb, cb_context, cb_data,
+		 &rotated_width, &rotated_height,
+		 supports_matrix);
 
   width = MAX (width, maxx - minx);
   height += maxy - miny;
@@ -303,6 +342,9 @@ do_output (PangoContext     *context,
     *width_out = width;
   if (height_out)
     *height_out = height;
+
+  pango_context_set_matrix (context, orig_matrix);
+  pango_matrix_free (orig_matrix);
 }
 
 

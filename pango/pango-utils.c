@@ -945,37 +945,46 @@ pango_matrix_get_type (void)
 
 /**
  * pango_matrix_copy:
- * @matrix: a #PangoMatrix
+ * @matrix: a #PangoMatrix, can be %NULL
  * 
  * Copies a #PangoMatrix.
  * 
  * Return value: the newly allocated #PangoMatrix, which should
- *               be freed with pango_matrix_free().
+ *               be freed with pango_matrix_free(), or %NULL if
+ *               @matrix was %NULL.
  *
  * Since: 1.6
  **/
 PangoMatrix *
 pango_matrix_copy (const PangoMatrix *matrix)
 {
-  g_return_val_if_fail (matrix != NULL, NULL);
+  PangoMatrix *new_matrix;
 
-  return g_memdup (matrix, sizeof (PangoMatrix));
+  if (matrix)
+    {
+      new_matrix = g_slice_new (PangoMatrix);
+      *new_matrix = *matrix;
+    }
+  else
+    new_matrix = NULL;
+
+  return new_matrix;
 }
 
 /**
  * pango_matrix_free:
- * @matrix: a #PangoMatrix
+ * @matrix: a #PangoMatrix, or %NULL
  * 
  * Free a #PangoMatrix created with pango_matrix_copy().
+ * Does nothing if @matrix is %NULL.
  *
  * Since: 1.6
  **/
 void
 pango_matrix_free (PangoMatrix *matrix)
 {
-  g_return_if_fail (matrix != NULL);
-  
-  g_free (matrix);
+  if (matrix)
+    g_slice_free (PangoMatrix, matrix);
 }
 
 /**

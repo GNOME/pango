@@ -140,7 +140,8 @@ render_callback (PangoLayout *layout,
   cairo_t *cr = (cairo_t *) context;
   gboolean show_borders = GPOINTER_TO_UINT (data) == 0xdeadbeef;
 
-  cairo_move_to (cr, x, y);
+  cairo_save (cr);
+  cairo_translate (cr, x, y);
   pango_cairo_show_layout (cr,
 			   layout);
 
@@ -151,7 +152,6 @@ render_callback (PangoLayout *layout,
       
       pango_layout_get_extents (layout, &ink, &logical);
 
-      cairo_save (cr);
       cairo_set_source_rgba (cr, 1.0, 0.0, 0.0, 0.75);
 
       cairo_rectangle (cr,
@@ -169,9 +169,8 @@ render_callback (PangoLayout *layout,
 		       (double)ink.width / PANGO_SCALE + lw,
 		       (double)ink.height / PANGO_SCALE + lw);
       cairo_stroke (cr);
-
-      cairo_restore (cr);
     }
+  cairo_restore (cr);
 }
 
 static void
@@ -199,7 +198,6 @@ transform_callback (PangoContext *context,
 
   cairo_set_matrix (cr, &cairo_matrix);
       
-  pango_context_set_matrix (context, matrix);
   pango_cairo_update_context (cr, context);
 }
 

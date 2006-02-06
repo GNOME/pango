@@ -1,5 +1,25 @@
 2006-02-06  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango/pango-utils.c (pango_matrix_copy, pango_matrix_free):  If
+	NULL is passed to _copy, return NULL with no warning.  If NULL is
+	passed to _free, do nothing with no warning.  Docs updated.
+
+	* examples/viewer-pangoxft.c (render_callback): Multiply x,y by
+	PANGO_SCALE, as pango_xft_render_layout takes coordinates in 
+	Pango units weirdly enough.
+
+	* viewer-pangocairo.c (render_callback): Do cairo_translate, to
+	draw correct bounding boxes for x,y nonzero.
+
+	* examples/renderdemo.c (do_output): If context has an all-zero matrix
+	set, interpret it as backend does not support transformation, so
+	warn on --rotate, and do not try to rotate.
+
+	* examples/viewer-pangox.c (pangox_view_get_context): Set an all-zero
+	matrix on context, to negotiate that we don't support transformations.
+
+2006-02-06  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 328067 – Install pango-view
 
 	Added a rather generic framework for a pango-view example.  All
