@@ -44,7 +44,7 @@ also required.
 
 Cairo support depends on the Cairo library (http://cairographics.org).
 
-The supported font backend for X in Pango-1.8 is the Xft backend
+The supported font backend for X in Pango-1.10 is the Xft backend
 which uses version 2 of the Xft library to manage client
 side fonts. Version 2 of Xft is available from 
 http://xlibs.freedesktop.org/release/. 

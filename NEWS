@@ -1,3 +1,9 @@
+Overview of changes between 1.10.2 and 1.10.3
+=============================================
+* Various documentation improvements, achieving
+  100% symbol coverage.
+* Minor bug fixes.
+
 Overview of changes between 1.10.1 and 1.10.2
 =============================================
 * New improved Tibetan shaper module. [Pema Geyleg]

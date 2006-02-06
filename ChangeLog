@@ -1,5 +1,13 @@
 2006-02-05  Behdad Esfahbod  <behdad@gnome.org>
 
+	* === Released 1.10.3 ===
+
+	* NEWS: Updated.
+
+	* configure.in: Version 1.10.3
+
+2006-02-05  Behdad Esfahbod  <behdad@gnome.org>
+
 	100% symbol coverage in docs.
 
 	* pango/pango-utils.c, pango/mini-fribidi/fribidi.c: Move
