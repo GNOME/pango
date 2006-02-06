@@ -1,5 +1,17 @@
 2006-02-06  Behdad Esfahbod  <behdad@gnome.org>
 
+	As cairo 1.2 seems to be delayed infinitely, make all cairo HEAD
+	API that we use conditional, to make a release.
+
+	* configure.in: Depend on cairo 1.0.0 again.  Check for
+	cairo_scaled_font_get_*() and cairo_scaled_font_text_extents()
+	availability.
+
+	* pango/pangocairo-font.c: Work around if the above functions are not
+	available.
+
+2006-02-06  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/pango-utils.c (pango_matrix_copy, pango_matrix_free):  If
 	NULL is passed to _copy, return NULL with no warning.  If NULL is
 	passed to _free, do nothing with no warning.  Docs updated.

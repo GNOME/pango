@@ -133,6 +133,10 @@ _pango_cairo_font_get_hex_box_info (PangoCairoFont *cfont)
   cairo_font_extents_t font_extents;
   PangoFontDescription *mini_desc, *desc;
   cairo_scaled_font_t *scaled_font, *scaled_mini_font;
+#ifndef HAVE_CAIRO_SCALED_FONT_TEXT_EXTENTS
+  cairo_surface_t *surface;
+  cairo_t *cr;
+#endif
 
   if (!cfont)
     return NULL;
@@ -143,6 +147,7 @@ _pango_cairo_font_get_hex_box_info (PangoCairoFont *cfont)
 
   scaled_font = _pango_cairo_font_get_scaled_font (cfont);  
 
+#ifdef HAVE_CAIRO_SCALED_FONT_GETTERS
   /* prepare for some hinting */
   {
     cairo_matrix_t ctm;
@@ -159,6 +164,9 @@ _pango_cairo_font_get_hex_box_info (PangoCairoFont *cfont)
     scale_y = sqrt (x*x + y*y);
     scale_y_inv = 1 / scale_y;
   }
+#else
+  scale_x = scale_x_inv = scale_y = scale_y_inv = 1.0;
+#endif
 
 /* we hint to the nearest device units */
 #define HINT(value, scale, scale_inv) (ceil ((value-1e-5) * scale) * scale_inv)
@@ -214,16 +222,30 @@ _pango_cairo_font_get_hex_box_info (PangoCairoFont *cfont)
   mini_cfont = (PangoCairoFont *) mini_font;
   scaled_mini_font = _pango_cairo_font_get_scaled_font (mini_cfont);  
 
+#ifndef HAVE_CAIRO_SCALED_FONT_TEXT_EXTENTS
+  surface = cairo_image_surface_create (CAIRO_FORMAT_RGB24, 1, 1);
+  cr = cairo_create (surface);
+  cairo_surface_destroy (surface);
+  _pango_cairo_font_install (mini_cfont, cr);
+#endif
+
   for (i = 0 ; i < 16 ; i++)
     {
       cairo_text_extents_t extents;
 
       c[0] = hexdigits[i];
+#ifdef HAVE_CAIRO_SCALED_FONT_TEXT_EXTENTS
       cairo_scaled_font_text_extents (scaled_mini_font, c, &extents);
+#else
+      cairo_text_extents (cr, c, &extents);
+#endif
       width = MAX (width, extents.width);
       height = MAX (height, extents.height);
     }
 
+#ifndef HAVE_CAIRO_SCALED_FONT_TEXT_EXTENTS
+  cairo_destroy (cr);
+#endif
   cairo_scaled_font_extents (scaled_font, &font_extents);
 
   hbi = g_slice_new (PangoCairoHexBoxInfo);

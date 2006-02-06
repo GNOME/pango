@@ -295,13 +295,25 @@ have_cairo_freetype=false
 have_cairo_win32=false
 have_cairo_atsui=false
 
-PKG_CHECK_MODULES(CAIRO, cairo >= 1.1.1, have_cairo=true, :)
+PKG_CHECK_MODULES(CAIRO, cairo >= 1.0.0, have_cairo=true, :)
    
 if $have_cairo ; then
   pango_save_ldflags=$LDFLAGS
   m4_pattern_allow([PKG_CONFIG_DISABLE_UNINSTALLED])
   INSTALLED_CAIRO_LIBS=`PKG_CONFIG_DISABLE_UNINSTALLED=yes $PKG_CONFIG --libs cairo`
   LDFLAGS="$LDFLAGS $INSTALLED_CAIRO_LIBS"
+
+  # A couple temporary checks, to not rely on cairo HEAD :(
+  have_cairo_scaled_font_getters=false
+  AC_CHECK_LIB(cairo, cairo_scaled_font_get_ctm, have_cairo_scaled_font_getters=true, :)
+  if $have_cairo_scaled_font_getters; then
+    AC_DEFINE(HAVE_CAIRO_SCALED_FONT_GETTERS, 1, [Whether Cairo has cairo_scaled_font_get_*()])
+  fi
+  have_cairo_scaled_font_text_extents=false
+  AC_CHECK_LIB(cairo, cairo_scaled_font_text_extents, have_cairo_scaled_font_text_extents=true, :)
+  if $have_cairo_scaled_font_text_extents; then
+    AC_DEFINE(HAVE_CAIRO_SCALED_FONT_TEXT_EXTENTS, 1, [Whether Cairo has cairo_scaled_font_text_extents()])
+  fi
 
   AC_CHECK_LIB(cairo, cairo_surface_write_to_png, have_cairo_png=true, :)
   if $have_cairo_png; then
