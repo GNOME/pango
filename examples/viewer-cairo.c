@@ -27,7 +27,7 @@
 #include <cairo-xlib.h>
 
 static cairo_surface_t *
-x_cairo_view_create_surface (gpointer instance,
+cairo_x_view_create_surface (gpointer instance,
 			     gpointer surface,
 			     int      width,
 			     int      height)
@@ -40,14 +40,14 @@ x_cairo_view_create_surface (gpointer instance,
 				    width, height);
 }
 
-static CairoViewerIface x_cairo_viewer_iface = {
+static CairoViewerIface cairo_x_viewer_iface = {
   &x_viewer,
-  x_cairo_view_create_surface
+  cairo_x_view_create_surface
 };
 
 const CairoViewerIface *
 get_default_cairo_viewer_iface (void)
 {
-  return &x_cairo_viewer_iface;
+  return &cairo_x_viewer_iface;
 }
 #endif /* HAVE_CAIRO_XLIB */
