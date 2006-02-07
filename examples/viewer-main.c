@@ -24,10 +24,13 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include <sys/wait.h>
 
 #include <glib.h>
 #include <glib/gstdio.h>
+
+#ifdef G_OS_UNIX
+#include <sys/wait.h>
+#endif
 
 #include "viewer.h"
 #include "renderdemo.h"
@@ -123,7 +126,7 @@ main (int    argc,
 	  int fd;
 	  FILE *stream;
 	  const gchar *display_argv[5] = {"display", "-title", "%s", "-"};
-	  GError *error;
+	  GError *error = NULL;
 	  GPid pid;
 
 	  if (!view->save)
@@ -140,7 +143,9 @@ main (int    argc,
 	  stream = fdopen (fd, "wb");
 	  view->save (instance, surface, stream, width, height);
 	  fclose (stream);
+#ifdef G_OS_UNIX
 	  waitpid (pid, NULL, 0);
+#endif
 	  g_spawn_close_pid (pid);
 	}
 

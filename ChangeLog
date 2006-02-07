@@ -1,5 +1,8 @@
 2006-02-07  Tor Lillqvist  <tml@novell.com>
 
+	* examples/viewer-main.c (main): Initialise GError pointer to
+	NULL. Use waitpid() only on Unix.
+
 	* pango-zip.sh.in: Drop the timestamp from the zipfile names.
 
 2006-02-06  Behdad Esfahbod  <behdad@gnome.org>
