@@ -1,3 +1,18 @@
+Overview of changes between 1.11.3 and 1.11.4
+=============================================
+* Major change in the low-level interface of Pango.  The special value
+  PANGO_GLYPH_EMPTY is now defined to mean a "draw nothing" glyph.  This
+  was what glyph 0 was used for previously.  As a result, bumped up the
+  Pango module version, meaning that modules compiled against earlier
+  versions are probably not compatible with this release. [#73147]
+* New framework in examples for building a binary called pango-view,
+  that can be used to render a text file using any of the available
+  backends.  This is installed into bindir now.
+* Enhancements to the FT2 backend, to draw boxes on missing glyphs.
+* Better hexbox drawing for cairo backend:  Hinting hexbox, and
+  drawing a single-row hexbox for very small font sizes.
+* Improved documentation.
+
 Overview of changes between 1.11.2 and 1.11.3
 =============================================
 * Do not crash if the shapers fail.

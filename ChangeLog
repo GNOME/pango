@@ -7,6 +7,14 @@
 
 2006-02-06  Behdad Esfahbod  <behdad@gnome.org>
 
+	* === Released 1.11.4 ===
+
+	* configure.in: Version 1.11.4
+
+	* NEWS: Updated.
+
+2006-02-06  Behdad Esfahbod  <behdad@gnome.org>
+
 	As cairo 1.2 seems to be delayed infinitely, make all cairo HEAD
 	API that we use conditional, to make a release.
 
@@ -278,7 +286,7 @@
 2006-01-31  Behdad Esfahbod  <behdad@gnome.org>
 
 	* pango/pangocairo-private.h, pango/pangocairo-font.c,
-	pango/pangocairo-render.c: Hint hexbox.  Also draw a singl-row
+	pango/pangocairo-render.c: Hint hexbox.  Also draw a single-row
 	hexbox for very small sizes.
 
 2006-01-31  Behdad Esfahbod  <behdad@gnome.org>
