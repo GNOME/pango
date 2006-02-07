@@ -1,3 +1,7 @@
+2006-02-07  Tor Lillqvist  <tml@novell.com>
+
+	* pango-zip.sh.in: Drop the timestamp from the zipfile names.
+
 2006-02-05  Behdad Esfahbod  <behdad@gnome.org>
 
 	* === Released 1.10.3 ===
