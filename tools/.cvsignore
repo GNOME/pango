@@ -1,3 +1,5 @@
 gen-script-for-lang
 Makefile
 Makefile.in
+.deps
+.libs
