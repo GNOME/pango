@@ -244,7 +244,7 @@ do_output (PangoContext     *context,
   PangoLayout *layout;
   PangoRectangle logical_rect;
   PangoMatrix matrix = PANGO_MATRIX_INIT;
-  const PangoMatrix *orig_matrix;
+  PangoMatrix *orig_matrix;
   gboolean supports_matrix;
   int rotated_width, rotated_height;
   int x = opt_margin;
@@ -402,9 +402,9 @@ parse_hinting (const char *name,
 
 static gboolean
 parse_wrap (const char *name,
-	       const char *arg,
-	       gpointer    data,
-	       GError    **error)
+	    const char *arg,
+	    gpointer    data,
+	    GError    **error)
 {
   static GEnumClass *class = NULL;
   gboolean ret = TRUE;
@@ -428,6 +428,55 @@ parse_wrap (const char *name,
   return ret;
 }
 
+static gchar *
+backends_to_string (void)
+{
+  GString *backends = g_string_new (NULL);
+  const PangoViewer **viewer;
+  
+  for (viewer = viewers; *viewer; viewer++)
+    if ((*viewer)->id)
+      {
+	g_string_append (backends, (*viewer)->id);
+	g_string_append_c (backends, '/');
+      }
+  g_string_truncate (backends, MAX (0, (gint)backends->len - 1));
+  
+  return g_string_free(backends,FALSE);
+}
+
+static int
+backends_get_count (void)
+{
+  const PangoViewer **viewer;
+  int i = 0;
+
+  for (viewer = viewers; *viewer; viewer++)
+    if ((*viewer)->id)
+      i++;
+  
+  return i;
+}
+
+
+static gchar *
+backend_description (void)
+{
+ GString *description  = g_string_new("Pango backend to use for rendering ");
+ int backends_count = backends_get_count ();
+  
+ if (backends_count > 1)
+   g_string_append_printf(description,"(default: %s)", (*viewers)->id);
+ else if (backends_count == 1)
+   g_string_append_printf(description,"(only available: %s)", (*viewers)->id);
+ else
+   g_string_append_printf(description,"(no backends found!)");
+
+ return g_string_free(description,FALSE);
+ 
+}
+
+
 static gboolean
 parse_backend (const char *name,
 	       const char *arg,
@@ -445,17 +494,10 @@ parse_backend (const char *name,
     opt_viewer = *viewer;
   else
     {
-      GString *backends = g_string_new (NULL);
+      gchar *backends = backends_to_string ();
 
-      for (viewer = viewers; *viewer; viewer++)
-        if ((*viewer)->id)
-	  {
-	    g_string_append (backends, (*viewer)->id);
-	    g_string_append_c (backends, '/');
-	  }
-      g_string_truncate (backends, MAX (0, (gint)backends->len - 1));
-
-      fail ("available --backend options are: %s", g_string_free (backends, FALSE));
+      fail ("available --backend options are: %s", backends);
+      g_free(backends);
       ret = FALSE;
     }
 
@@ -466,12 +508,15 @@ parse_backend (const char *name,
 void
 parse_options (int argc, char *argv[])
 {
+  gchar *backend_options = backends_to_string();
+  GOptionFlags backend_flag = backends_get_count () > 1 ? 0 : G_OPTION_FLAG_HIDDEN;
+  gchar *backend_desc = backend_description ();
   GOptionEntry entries[] =
   {
     {"no-auto-dir",	0, G_OPTION_FLAG_REVERSE, G_OPTION_ARG_NONE,	&opt_auto_dir,
      "No layout direction according to contents",			NULL},
-    {"backend",		0, 0, G_OPTION_ARG_CALLBACK,			&parse_backend,
-     "Pango backend to use for rendering",				"id"},
+    {"backend",		0, backend_flag, G_OPTION_ARG_CALLBACK,		&parse_backend,
+     backend_desc,					     backend_options},
     {"no-display",	'q', G_OPTION_FLAG_REVERSE, G_OPTION_ARG_NONE,	&opt_display,
      "Do not display (just write to file or whatever)",			NULL},
     {"dpi",		0, 0, G_OPTION_ARG_INT,				&opt_dpi,
@@ -507,7 +552,7 @@ parse_options (int argc, char *argv[])
     {"width",		'w', 0, G_OPTION_ARG_INT,			&opt_width,
      "Width in points to which to wrap output",			    "points"},
     {"wrap",		0, 0, G_OPTION_ARG_CALLBACK,			&parse_wrap,
-     "Text wrapping mode (needs a width to be set), ", "word/char/word-char"},
+     "Text wrapping mode (needs a width to be set)",   "word/char/word-char"},
     {NULL}
   };
   GError *error = NULL;
@@ -532,6 +577,8 @@ parse_options (int argc, char *argv[])
     exit(1);
   }
   g_option_context_free(context);
+  g_free(backend_options);
+  g_free(backend_desc);
 
   if ((opt_text && argc != 1) || (!opt_text && argc != 2))
     {
