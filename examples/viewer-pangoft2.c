@@ -27,9 +27,6 @@
 
 #include "renderdemo.h"
 #include "viewer.h"
-#ifdef HAVE_X
-#include "viewer-x.h"
-#endif
 
 #include <pango/pangoft2.h>
 
@@ -159,17 +156,7 @@ const PangoViewer pangoft2_viewer = {
   pangoft2_view_destroy_surface,
   pangoft2_view_render,
   pangoft2_view_write,
-  /*
-#ifdef HAVE_X
-  x_view_create_window,
-  x_view_destroy_window,
-  pangoft2_x_view_display
-#else
-*/
   NULL,
   NULL,
   NULL
-   /*
-#endif
-*/
 };
