@@ -1498,3 +1498,8 @@
 	* pango/pangocairo-render.c (draw_error_underline): convert
 	from Pango units to doubles, fix some coordinate space problems
 	that had previously been fixed in GTK+. (#313015, Luis Villa)
+
+Local Variables:
+coding: utf-8
+End:
+vim: encoding=utf-8:

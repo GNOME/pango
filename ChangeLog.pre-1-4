@@ -1755,3 +1755,8 @@ Fri Jan 10 18:56:36 2003  Owen Taylor  <otaylor@redhat.com>
 	the charmap and the unicode properties of characters
 	in the charmap. (Needed to make things work with various
 	old Arabic fonts, such as the KACST fonts)
+
+Local Variables:
+coding: utf-8
+End:
+vim: encoding=utf-8:

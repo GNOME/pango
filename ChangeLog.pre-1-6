@@ -793,3 +793,7 @@ Thu May 27 15:08:32 2004  Owen Taylor  <otaylor@redhat.com>
 	* examples/argcontext.c (arg_context_parse): 
 	Handle '--' correctly.
 
+Local Variables:
+coding: utf-8
+End:
+vim: encoding=utf-8:

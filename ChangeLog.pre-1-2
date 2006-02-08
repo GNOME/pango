@@ -1564,3 +1564,7 @@ Wed Mar 13 10:31:07 2002  Owen Taylor  <otaylor@redhat.com>
 	* docs/tmpl/opentype.sgml: Document PangoOTInfo, PangoOTTag,
 	PangoOTTableType.
 
+Local Variables:
+coding: utf-8
+End:
+vim: encoding=utf-8:

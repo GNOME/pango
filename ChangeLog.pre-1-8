@@ -1,6 +1,6 @@
 Wed Dec 15 23:49:14 2004  Owen Taylor  <otaylor@redhat.com>
 
-        * === Released 1.8.0 ===
+	* === Released 1.8.0 ===
 	
 	* configure.in: Version 1.8.0
 
@@ -481,3 +481,8 @@ Mon Sep 20 12:17:37 2004  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/querymodules.c (string_needs_escape, escape_string):
 	Escape also backslashes. (#152607, Kazuki Iwamoto)
+
+Local Variables:
+coding: utf-8
+End:
+vim: encoding=utf-8:
