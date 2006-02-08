@@ -405,7 +405,7 @@ CPPFLAGS=$pango_saved_cppflags
 # Modules to build
 #
 arabic_modules="arabic-fc"
-basic_modules="basic-fc,basic-win32,basic-x"
+basic_modules="basic-fc,basic-win32,basic-x,basic-atsui"
 hangul_modules="hangul-fc"
 hebrew_modules="hebrew-fc"
 indic_modules="indic-fc"

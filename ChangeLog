@@ -1,3 +1,7 @@
+2006-02-08  Anders Carlsson  <andersca@imendio.com>
+
+	* configure.in: Add basic-atsui to basic_modules
+
 2006-02-08  Behdad Esfahbod  <behdad@gnome.org>
 
 	Bug 330146 – pango-view --help should list available backends
