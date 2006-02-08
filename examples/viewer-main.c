@@ -62,13 +62,13 @@ main (int    argc,
 
   if (opt_output)
     {
-      if (!view->save)
-	fail ("%s viewer backend does not support saving", view->name);
+      if (!view->write)
+	fail ("%s viewer backend does not support writing", view->name);
       else
 	{
 	  FILE *stream;
 
-	  if (view->save_suffix && g_str_has_suffix (opt_output, view->save_suffix))
+	  if (view->write_suffix && g_str_has_suffix (opt_output, view->write_suffix))
 	    {
 	      stream = g_fopen (opt_output, "wb");
 	      if (!stream)
@@ -91,7 +91,7 @@ main (int    argc,
 		fail ("When running ImageMagick 'convert' command: %s\n", error->message);
 	      stream = fdopen (fd, "wb");
 	    }
-	  view->save (instance, surface, stream, width, height);
+	  view->write (instance, surface, stream, width, height);
 	  fclose (stream);
 	}
     }
@@ -129,8 +129,8 @@ main (int    argc,
 	  GError *error = NULL;
 	  GPid pid;
 
-	  if (!view->save)
-	    fail ("%s viewer backend does not support displaying or saving", view->name);
+	  if (!view->write)
+	    fail ("%s viewer backend does not support displaying or writing", view->name);
 	  display_argv[2] = title;
 	  
 	  if (!g_spawn_async_with_pipes (NULL, (gchar **)display_argv, NULL,
@@ -141,7 +141,7 @@ main (int    argc,
 					 NULL, NULL, &pid, &fd, NULL, NULL, &error))
 	    fail ("When running ImageMagick 'display' command: %s\n", error->message);
 	  stream = fdopen (fd, "wb");
-	  view->save (instance, surface, stream, width, height);
+	  view->write (instance, surface, stream, width, height);
 	  fclose (stream);
 #ifdef G_OS_UNIX
 	  waitpid (pid, NULL, 0);

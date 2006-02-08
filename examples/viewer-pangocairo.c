@@ -251,11 +251,11 @@ write_func (void                *closure,
 }
 
 static void
-pangocairo_view_save (gpointer instance,
-		      gpointer surface,
-		      FILE    *stream,
-		      int      width,
-		      int      height)
+pangocairo_view_write (gpointer instance,
+		       gpointer surface,
+		       FILE    *stream,
+		       int      width,
+		       int      height)
 {
   CairoSurface *c_surface = (CairoSurface *) surface;
 
@@ -314,7 +314,7 @@ const PangoViewer pangocairo_viewer = {
   pangocairo_view_destroy_surface,
   pangocairo_view_render,
 #ifdef HAVE_CAIRO_PNG
-  pangocairo_view_save,
+  pangocairo_view_write,
 #else
   NULL,
 #endif

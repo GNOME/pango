@@ -876,18 +876,21 @@ get_subfonts_foreach (PangoFont      *font,
 {
   GSList **subfonts = data;
   PangoGlyph glyph = glyph_info->glyph;
+  PangoXSubfont subfont;
 
   if (glyph == PANGO_GLYPH_EMPTY)
     return;
 
   /* Use an arbitrary subfont for unknown glyphs...*/
   if (glyph & PANGO_GLYPH_UNKNOWN_FLAG)
+    {
     if (((PangoXFont *)font)->n_subfonts > 0)
       glyph = PANGO_X_MAKE_GLYPH (1, 0);
     else
       return;
+    }
 
-  PangoXSubfont subfont = PANGO_X_GLYPH_SUBFONT (glyph);
+  subfont = PANGO_X_GLYPH_SUBFONT (glyph);
   if (!g_slist_find (*subfonts, GUINT_TO_POINTER ((guint)subfont)))
     *subfonts = g_slist_prepend (*subfonts, GUINT_TO_POINTER ((guint)subfont));
 }

@@ -27,6 +27,9 @@
 
 #include "renderdemo.h"
 #include "viewer.h"
+#ifdef HAVE_X
+#include "viewer-x.h"
+#endif
 
 #include <pango/pangoft2.h>
 
@@ -127,11 +130,11 @@ pangoft2_view_render (gpointer      instance,
 }
 
 static void
-pangoft2_view_save (gpointer instance,
-		    gpointer surface,
-		    FILE    *stream,
-		    int      width,
-		    int      height)
+pangoft2_view_write (gpointer instance,
+		     gpointer surface,
+		     FILE    *stream,
+		     int      width,
+		     int      height)
 {
   int row;
   FT_Bitmap *bitmap = (FT_Bitmap *) surface;
@@ -155,8 +158,18 @@ const PangoViewer pangoft2_viewer = {
   pangoft2_view_create_surface,
   pangoft2_view_destroy_surface,
   pangoft2_view_render,
-  pangoft2_view_save,
+  pangoft2_view_write,
+  /*
+#ifdef HAVE_X
+  x_view_create_window,
+  x_view_destroy_window,
+  pangoft2_x_view_display
+#else
+*/
   NULL,
   NULL,
   NULL
+   /*
+#endif
+*/
 };

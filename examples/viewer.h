@@ -32,7 +32,7 @@ struct _PangoViewer {
 
   const char *id;
 
-  const char *save_suffix;
+  const char *write_suffix;
 
   gpointer (*create) (const PangoViewer *klass);
 
@@ -56,11 +56,11 @@ struct _PangoViewer {
 
   /* The following can be NULL */
 
-  void (*save) (gpointer instance,
-		gpointer surface,
-		FILE    *stream,
-		int      width,
-		int      height);
+  void (*write) (gpointer instance,
+		 gpointer surface,
+		 FILE    *stream,
+		 int      width,
+		 int      height);
 
   gpointer (*create_window) (gpointer    instance,
 			     const char *title,
@@ -76,6 +76,20 @@ struct _PangoViewer {
 		       int      width,
 		       int      height,
 		       gpointer state);
+
+  void (*load) (gpointer instance,
+		gpointer surface,
+		guchar  *buffer,
+		int      width,
+		int      height,
+		int      stride);
+
+  void (*save) (gpointer instance,
+		gpointer surface,
+		guchar  *buffer,
+		int      width,
+		int      height,
+		int      stride);
 
 };
 

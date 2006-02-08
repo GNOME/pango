@@ -473,7 +473,7 @@ parse_options (int argc, char *argv[])
     {"backend",		0, 0, G_OPTION_ARG_CALLBACK,			&parse_backend,
      "Pango backend to use for rendering",				"id"},
     {"no-display",	'q', G_OPTION_FLAG_REVERSE, G_OPTION_ARG_NONE,	&opt_display,
-     "Do not display (just save to file or whatever)",			NULL},
+     "Do not display (just write to file or whatever)",			NULL},
     {"dpi",		0, 0, G_OPTION_ARG_INT,				&opt_dpi,
      "Set the resolution",					    "number"},
     {"ellipsize",	0, 0, G_OPTION_ARG_CALLBACK,			&parse_ellipsis,
