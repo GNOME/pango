@@ -1,7 +1,7 @@
 /* Pango
  * test-color.c: Test program for pango_color_parse()
  *
- * Copyright © 2002 Matthias Clasen
+ * Copyright (C) 2002 Matthias Clasen
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
