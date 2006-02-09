@@ -124,7 +124,7 @@ void pango_glyph_string_x_to_index (PangoGlyphString *glyphs,
  */
 void pango_shape (const gchar      *text,
 		  gint              length,
-		  PangoAnalysis    *analysis,
+		  const PangoAnalysis *analysis,
 		  PangoGlyphString *glyphs);
 
 GList *pango_reorder_items (GList *logical_items);

@@ -484,7 +484,7 @@ tibetan_engine_shape (PangoEngineShape *engine,
                     PangoFont        *font,
                     const char       *text,
                     int               length,
-                    PangoAnalysis    *analysis,
+                    const PangoAnalysis *analysis,
                     PangoGlyphString *glyphs)
 {
   PangoFcFont *fc_font;

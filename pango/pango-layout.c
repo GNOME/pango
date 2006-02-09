@@ -3384,7 +3384,6 @@ pango_layout_line_unref (PangoLayoutLine *line)
   private->ref_count--;
   if (private->ref_count == 0)
     {
-      GSList *tmp_list = line->runs;
       g_slist_foreach (line->runs, (GFunc)free_run, GINT_TO_POINTER (1));
       g_slist_free (line->runs);
       g_slice_free (PangoLayoutLinePrivate, private);

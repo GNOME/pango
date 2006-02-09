@@ -646,8 +646,6 @@ itemize_state_init (ItemizeState      *state,
 		    PangoAttrIterator *cached_iter,
 		    const PangoFontDescription *desc)
 {
-  gunichar *text_ucs4;
-  long n_chars;
 
   state->context = context;
   state->text = text;

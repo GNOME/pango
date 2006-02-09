@@ -181,7 +181,7 @@ struct _PangoEngineShapeClass
 			PangoFont        *font,
 			const char       *text,
 			int               length,
-			PangoAnalysis    *analysis,
+			const PangoAnalysis *analysis,
 			PangoGlyphString *glyphs);
   PangoCoverageLevel (*covers)   (PangoEngineShape *engine,
 				  PangoFont        *font,

@@ -31,7 +31,7 @@ void               _pango_engine_shape_shape  (PangoEngineShape *engine,
 					       PangoFont        *font,
 					       const char       *text,
 					       int               length,
-					       PangoAnalysis    *analysis,
+					       const PangoAnalysis *analysis,
 					       PangoGlyphString *glyphs);
 PangoCoverageLevel _pango_engine_shape_covers (PangoEngineShape *engine,
 					       PangoFont        *font,

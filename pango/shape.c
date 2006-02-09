@@ -40,7 +40,7 @@
 void
 pango_shape (const gchar      *text, 
              gint              length, 
-             PangoAnalysis    *analysis,
+             const PangoAnalysis *analysis,
              PangoGlyphString *glyphs)
 {
   int i;

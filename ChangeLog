@@ -1,3 +1,19 @@
+2006-02-09  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 314548 – pango_shape() is missing const correctness
+	Patch from Antoine Dopffer.
+
+	* modules/arabic/arabic-fc.c, modules/basic/basic-fc.c,
+	modules/basic/basic-x.c, modules/hangul/hangul-fc.c,
+	modules/hebrew/hebrew-fc.c, modules/indic/indic-fc.c,
+	modules/khmer/khmer-fc.c, modules/syriac/syriac-fc.c,
+	modules/thai/thai-shaper.c, modules/thai/thai-shaper.h,
+	modules/tibetan/tibetan-fc.c, pango/pango-context.c,
+	pango/pango-engine-private.h, pango/pango-engine.c,
+	pango/pango-engine.h, pango/pango-glyph.h pango/pango-layout.c,
+	pango/shape.c: Make PangoAnalysis *analysis const in all shaper
+	interfaces.
+
 2006-02-08  Anders Carlsson  <andersca@imendio.com>
 
 	* configure.in: Add basic-atsui to basic_modules

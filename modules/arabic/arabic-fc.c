@@ -176,7 +176,7 @@ fallback_shape (PangoEngineShape *engine,
 		PangoFont        *font,
 		const char       *text,
 		gint              length,
-		PangoAnalysis    *analysis,
+		const PangoAnalysis *analysis,
 		PangoGlyphString *glyphs)
 {
   PangoFcFont *fc_font = PANGO_FC_FONT (font);
@@ -253,7 +253,7 @@ arabic_engine_shape (PangoEngineShape *engine,
 		     PangoFont        *font,
 		     const char       *text,
 		     gint              length,
-		     PangoAnalysis    *analysis,
+		     const PangoAnalysis *analysis,
 		     PangoGlyphString *glyphs)
 {
   PangoFcFont *fc_font;

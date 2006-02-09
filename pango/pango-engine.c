@@ -63,7 +63,7 @@ _pango_engine_shape_shape (PangoEngineShape *engine,
 			   PangoFont        *font,
 			   const char       *text,
 			   int               length,
-			   PangoAnalysis    *analysis,
+			   const PangoAnalysis *analysis,
 			   PangoGlyphString *glyphs)
 {
   glyphs->num_glyphs = 0;
@@ -99,7 +99,7 @@ fallback_engine_shape (PangoEngineShape *engine,
 		       PangoFont        *font,
                        const char       *text,
                        gint              length,
-                       PangoAnalysis    *analysis,
+                       const PangoAnalysis *analysis,
                        PangoGlyphString *glyphs)
 {
   int n_chars;
