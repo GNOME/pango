@@ -13,7 +13,7 @@
 	lowercase the name before looking up from the hash table.
 	(get_family_name): Constify parameter.
 	(get_family_name_lowercase): Not needed any longer.
-	(pango_win32_pango_font_description_from_logfont): New public
+	(pango_win32_font_description_from_logfont): New public
 	function. Code moved from pango_win32_insert_font(). Use family
 	name as such, don't lowercase it.
 	(pango_win32_insert_font): Use the above new function. Don't
@@ -21,8 +21,10 @@
 	shouldn't ever happen. We have pruned out fonts that differ only
 	in charset already earlier.
 
-	* pango/pangowin32.h: Declare
-	pango_win32_pango_font_description_from_logfont().
+	* pango/pangowin32.h: Declare pango_win32_font_description_from_logfont().
+
+	* pango/pangowin32.def
+	* docs/pango-sections.txt: Add it here too.
 
 2006-02-09  Behdad Esfahbod  <behdad@gnome.org>
 

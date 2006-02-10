@@ -106,7 +106,7 @@ PangoWin32FontCache *pango_win32_font_map_get_font_cache (PangoFontMap       *fo
 
 LOGFONT             *pango_win32_font_logfont            (PangoFont          *font);
 
-PangoFontDescription *pango_win32_pango_font_description_from_logfont (const LOGFONT *lfp);
+PangoFontDescription *pango_win32_font_description_from_logfont (const LOGFONT *lfp);
 
 G_END_DECLS
 

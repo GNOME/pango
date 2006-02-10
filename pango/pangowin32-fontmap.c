@@ -621,9 +621,9 @@ get_family_name (const LOGFONT *lfp)
 
 /**
  * pango_win32_pango_font_description_from_logfont:
- * @lfp: pointer to a LOGFONT
+ * @lfp: a LOGFONT
  *
- * Creates a #PangoFontDescription from a LOGFONT.
+ * Creates a #PangoFontDescription that matches the specified LOGFONT.
  *
  * The face name, italicness and weight fields in the LOGFONT are used
  * to set up the resulting #PangoFontDescription. If the face name in
@@ -633,13 +633,13 @@ get_family_name (const LOGFONT *lfp)
  * data. If that doesn't work, the face name is converted from the
  * system codepage to UTF-8 and that is used.
  *
- * Return value: a new #PangoFontDescription that should be freed with
- * pango_font_desciption_free() when no longer needed.
+ * Return value: the newly allocated #PangoFontDescription, which
+ *  should be freed using pango_font_desciption_free()
  *
  * Since: 1.12
  */
 PangoFontDescription *
-pango_win32_pango_font_description_from_logfont (const LOGFONT *lfp)
+pango_win32_font_description_from_logfont (const LOGFONT *lfp)
 {
   PangoFontDescription *description;
   gchar *family;
@@ -765,7 +765,7 @@ pango_win32_insert_font (PangoWin32FontMap *win32fontmap,
   PING(("g_slist_length(size_info->logfonts)=%d", g_slist_length(size_info->logfonts)));
 
   win32face = g_object_new (PANGO_WIN32_TYPE_FACE, NULL);
-  win32face->description = pango_win32_pango_font_description_from_logfont (lfp2);
+  win32face->description = pango_win32_font_description_from_logfont (lfp2);
 
   win32face->cached_fonts = NULL;
   
