@@ -817,7 +817,7 @@ pango_parse_weight (const char  *str,
       {
 	char *end;
 
-	*weight = strtol (str, &end, 0);
+	*weight = strtol (str, &end, 10);
 	if (*end != '\0')
 	  {
 	    if (warn)

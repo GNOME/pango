@@ -1,5 +1,13 @@
 2006-02-09  Behdad Esfahbod  <behdad@gnome.org>
 
+	Bug 330602 – pango_parse_weight
+	Reported by Morten Welinder.
+
+	* pango/pango-utils.c (pango_parse_weight): Pass 10 as base to
+	strtol.
+
+2006-02-09  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 314548 – pango_shape() is missing const correctness
 	Patch from Antoine Dopffer.
 
