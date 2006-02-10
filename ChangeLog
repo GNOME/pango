@@ -1,3 +1,29 @@
+2006-02-10  Tor Lillqvist  <tml@novell.com>
+
+	Fix #135098 and #322510.
+
+	* pango/pangowin32-fontmap.c (case_insensitive_hash)
+	(case_insensitive_equal): New helper functions for string hashing
+	based on ASCII case insensitivity..
+	(logfont_nosize_hash): Use case_insensitive_hash().
+	(logfont_nosize_equal): Use case_insensitive_equal().
+	(pango_win32_font_map_init): Use the case-insensitive functions
+	for the PangoWin32FontMap::families hash table.
+	(pango_win32_font_map_load_font): Consequently we don't need to
+	lowercase the name before looking up from the hash table.
+	(get_family_name): Constify parameter.
+	(get_family_name_lowercase): Not needed any longer.
+	(pango_win32_pango_font_description_from_logfont): New public
+	function. Code moved from pango_win32_insert_font(). Use family
+	name as such, don't lowercase it.
+	(pango_win32_insert_font): Use the above new function. Don't
+	bother looking for superfluos copies of the font entry as that
+	shouldn't ever happen. We have pruned out fonts that differ only
+	in charset already earlier.
+
+	* pango/pangowin32.h: Declare
+	pango_win32_pango_font_description_from_logfont().
+
 2006-02-09  Behdad Esfahbod  <behdad@gnome.org>
 
 	Bug 330602 – pango_parse_weight
