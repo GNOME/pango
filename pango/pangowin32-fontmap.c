@@ -635,6 +635,8 @@ get_family_name (const LOGFONT *lfp)
  *
  * Return value: a new #PangoFontDescription that should be freed with
  * pango_font_desciption_free() when no longer needed.
+ *
+ * Since: 1.12
  */
 PangoFontDescription *
 pango_win32_pango_font_description_from_logfont (const LOGFONT *lfp)
