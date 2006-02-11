@@ -620,7 +620,7 @@ get_family_name (const LOGFONT *lfp)
 }
 
 /**
- * pango_win32_pango_font_description_from_logfont:
+ * pango_win32_font_description_from_logfont:
  * @lfp: a LOGFONT
  *
  * Creates a #PangoFontDescription that matches the specified LOGFONT.
