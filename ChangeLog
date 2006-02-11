@@ -1,3 +1,11 @@
+2006-02-11  Behdad Esfahbod  <behdad@gnome.org>
+
+	* === Released 1.11.5 ===
+
+	* configure.in: Version 1.11.5
+
+	* NEWS: Updated.
+
 2006-02-10  Tor Lillqvist  <tml@novell.com>
 
 	Fix #135098 and #322510.

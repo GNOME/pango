@@ -1,3 +1,11 @@
+Overview of changes between 1.11.4 and 1.11.5
+=============================================
+* Cleanup work on the win32 backend.  Families are not listed all
+  in lower case anymore.
+* New public function: pango_win32_font_description_from_logfont.
+* pango-view accepts --wrap now, and lists backends in --help output.
+* A couple minor bug fixes.
+
 Overview of changes between 1.11.3 and 1.11.4
 =============================================
 * Major change in the low-level interface of Pango.  The special value
