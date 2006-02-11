@@ -215,3 +215,12 @@ A #PangoWin32FontCache caches
 @Returns: 
 
 
+<!-- ##### FUNCTION pango_win32_font_description_from_logfont ##### -->
+<para>
+
+</para>
+
+@lfp: 
+@Returns: 
+
+
