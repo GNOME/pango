@@ -1,5 +1,14 @@
 2006-02-11  Behdad Esfahbod  <behdad@gnome.org>
 
+	Bug 330795 – pango_renderer_draw_glyph segfaults when trying to call
+	the class vfunc
+	Opened by Torsten Schoenfeld
+
+	* pango/pango-renderer.c (pango_renderer_draw_trapezoid,
+	pango_renderer_draw_glyph): Bail if method is not implemented.
+
+2006-02-11  Behdad Esfahbod  <behdad@gnome.org>
+
 	* === Released 1.11.5 ===
 
 	* configure.in: Version 1.11.5

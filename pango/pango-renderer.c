@@ -938,9 +938,10 @@ pango_renderer_draw_trapezoid (PangoRenderer  *renderer,
   g_return_if_fail (PANGO_IS_RENDERER (renderer));
   g_return_if_fail (renderer->active_count > 0);
   
-  PANGO_RENDERER_GET_CLASS (renderer)->draw_trapezoid (renderer, part,
-						       y1_, x11, x21,
-						       y2, x12, x22);
+  if (PANGO_RENDERER_GET_CLASS (renderer)->draw_trapezoid)
+    PANGO_RENDERER_GET_CLASS (renderer)->draw_trapezoid (renderer, part,
+							 y1_, x11, x21,
+							 y2, x12, x22);
 }
 
 /**
@@ -968,7 +969,8 @@ pango_renderer_draw_glyph (PangoRenderer *renderer,
   if (glyph == PANGO_GLYPH_EMPTY) /* glyph PANGO_GLYPH_EMPTY never renders */
     return;
   
-  PANGO_RENDERER_GET_CLASS (renderer)->draw_glyph (renderer, font, glyph, x, y);
+  if (PANGO_RENDERER_GET_CLASS (renderer)->draw_glyph)
+    PANGO_RENDERER_GET_CLASS (renderer)->draw_glyph (renderer, font, glyph, x, y);
 }
 
 /**
