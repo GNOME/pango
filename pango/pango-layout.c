@@ -292,8 +292,8 @@ pango_layout_get_context (PangoLayout *layout)
 /**
  * pango_layout_set_width:
  * @layout: a #PangoLayout.
- * @width: the desired width, or -1 to indicate that no wrapping should be
- *         performed.
+ * @width: the desired width in Pango units, or -1 to indicate that no
+ *         wrapping should be performed.
  * 
  * Sets the width to which the lines of the #PangoLayout should wrap.
  **/
