@@ -1,7 +1,5 @@
 ## Process this file with automake to create Makefile.in.
 
-AUTOMAKE_OPTIONS = 1.6
-
 # The name of the module.
 DOC_MODULE=pango
 

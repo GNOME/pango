@@ -1,7 +1,5 @@
 ## Process this file with automake to create Makefile.in.
 
-AUTOMAKE_OPTIONS = 1.7
-
 SUBDIRS= pango modules examples docs tools tests
 
 EXTRA_DIST = 			\
