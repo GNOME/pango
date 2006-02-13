@@ -1,3 +1,14 @@
+2006-02-13  Behdad Esfahbod  <behdad@gnome.org>
+
+	* configure.in: Pass 1.6 and gnu options to automake.
+
+	* modules/Makefile.am: Distribute Module.mk.
+
+	* modules/Module.mk: Common bits for writing module Makefil.am's.
+
+	* modules/*/Makefile.am: Include Module.mk instead of copying common
+	bits.
+
 2006-02-11  Behdad Esfahbod  <behdad@gnome.org>
 
 	Bug 330795 – pango_renderer_draw_glyph segfaults when trying to call

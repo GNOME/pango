@@ -1,24 +1,4 @@
-## Process this file with automake to create Makefile.in.
-
-basic_sources = basic-x.c
-
-pangolibs = $(top_builddir)/pango/libpango-$(PANGO_API_VERSION).la $(GLIB_LIBS)
-pangoxlibs = $(top_builddir)/pango/libpangox-$(PANGO_API_VERSION).la $(X_LIBS) $(pangolibs)
-pangoft2libs = $(top_builddir)/pango/libpangoft2-$(PANGO_API_VERSION).la $(FREETYPE_LIBS) $(pangolibs)
-pangowin32libs = $(top_builddir)/pango/libpangowin32-$(PANGO_API_VERSION).la $(pangolibs)
-pangoatsuilibs = $(top_builddir)/pango/libpangocairo-$(PANGO_API_VERSION).la $(pangolibs)
-
-INCLUDES = 				\
-	-DG_LOG_DOMAIN=\"Pango\"	\
-	-DPANGO_ENABLE_ENGINE		\
-	$(PANGO_DEBUG_FLAGS)		\
-	-I$(top_srcdir)			\
-	-I$(top_srcdir)/pango		\
-	$(GLIB_CFLAGS)
-
-moduledir = $(libdir)/pango/$(PANGO_MODULE_VERSION)/modules
-module_LTLIBRARIES =
-noinst_LTLIBRARIES =
+include $(top_srcdir)/modules/Module.mk
 
 if HAVE_X
 INCLUDES += $(X_CFLAGS)
@@ -101,8 +81,3 @@ EXTRA_DIST =		\
 	basic-common.h	\
 	tables-big.i	\
 	tables-small.i
-
-included-modules: $(noinst_LTLIBRARIES)
-dynamic-modules: $(module_LTLIBRARIES)
-
-.PHONY: included-modules dynamic-modules

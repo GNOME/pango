@@ -12,6 +12,7 @@ SUBDIRS = 		\
 	tibetan
 
 EXTRA_DIST =		\
+	Module.mk	\
 	module.def	\
 	pangorc
 
