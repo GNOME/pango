@@ -37,12 +37,12 @@ dnl older modules to not work with new pango.
 m4_define([pango_module_version], [1.5.0])
 
 
-AC_INIT(pango, [pango_version],
+AC_INIT(pango, pango_version(),
         [http://bugzilla.gnome.org/enter_bug.cgi?product=pango])
 
 AC_CONFIG_SRCDIR([ChangeLog])
 
-AM_INIT_AUTOMAKE(1.6 gnu)
+AM_INIT_AUTOMAKE(1.6 gnits)
 AM_CONFIG_HEADER([config.h])
 
 

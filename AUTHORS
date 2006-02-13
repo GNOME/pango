@@ -1,15 +1,2 @@
-Owen Taylor <otaylor@redhat.com>, with help from many others, including:
-
-Abigail Brady (Indic shapers)
-Hans Breuer (Windows backend)
-Matthias Clasen (Documentation)
-Sivaraj Doddannan (Tamil shaper)
-Behdad Esfahbod
-Dov Grobgeld (Hebrew shaper)
-Karl Koehler (Arabic shaper)
-Alex Larsson (FreeType and Windows backends)
-Tor Lillqvist (FreeType and Windows backends)
-Changwoo Ryu (Hangul shaper)
-Havoc Pennington
-Roozbeh Pournader (Arabic shaper)
-Chookij Vanatham (Hebrew shaper)
+Owen Taylor <otaylor@redhat.com>, with help from many others.
+See file named THANKS for a list.

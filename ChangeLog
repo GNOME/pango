@@ -1,5 +1,13 @@
 2006-02-13  Behdad Esfahbod  <behdad@gnome.org>
 
+	* configure.in: Pass gnits instead of gnu to automake.
+
+	* AUTHORS: Contributors move to THANKS.
+
+	* THANKS: New file.
+
+2006-02-13  Behdad Esfahbod  <behdad@gnome.org>
+
 	* configure.in: Pass 1.6 and gnu options to automake.
 
 	* modules/Makefile.am: Distribute Module.mk.
