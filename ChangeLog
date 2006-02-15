@@ -1,3 +1,10 @@
+2006-02-15  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 331038 – pango-querymodules --help and --version
+	Patch from Antoine Dopffer.
+
+	* examples/renderdemo.c, pango/querymodules.c: Add --version option.
+
 2006-02-13  Behdad Esfahbod  <behdad@gnome.org>
 
 	* configure.in: Pass gnits instead of gnu to automake.

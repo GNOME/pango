@@ -19,6 +19,7 @@
  * Boston, MA 02111-1307, USA.
  */
 
+#include <stdlib.h>
 #include <config.h>
 
 #include <glib.h>
@@ -181,13 +182,50 @@ query_module (const char *dir, const char *name)
     g_module_close (module);
 }		       
 
+static gboolean
+show_version(const char *name,
+	     const char *arg,
+	     gpointer    data,
+	     GError    **error)
+{
+  g_printf("pango-querymodules (%s) %s\n", PACKAGE_NAME, PACKAGE_VERSION);
+  g_printf("module interface version: %s\n", MODULE_VERSION);
+  exit(0);
+}
+
 int
 main (int argc, char **argv)
 {
   char *cwd;
   int i;
   char *path;
-
+  GOptionContext *context;
+  GError *parse_error = NULL;
+  GOptionEntry entries[] =
+    {
+      {"version",	0, G_OPTION_FLAG_NO_ARG, G_OPTION_ARG_CALLBACK, &show_version,
+       "Show version numbers",                                             NULL},
+      {NULL}
+    };
+  
+  context = g_option_context_new ("- [MODULE]...");
+  g_option_context_add_main_entries (context, entries, NULL);
+ 
+  if (!g_option_context_parse (context, &argc, &argv, &parse_error))
+    {
+      if (parse_error != NULL)
+	{
+	  g_printerr("Parse option error: %s\n", parse_error->message);
+	}
+      else
+	{
+	  g_printerr("Parse option error\n");
+	}
+      exit(1);
+    }
+  
+  g_option_context_free(context);
+  
   g_type_init ();
   
   g_printf ("# Pango Modules file\n"

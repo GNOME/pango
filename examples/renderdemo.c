@@ -27,6 +27,7 @@
 #include <string.h>
 
 #include <glib.h>
+#include <glib/gprintf.h>
 #include <pango/pango.h>
 
 #include "renderdemo.h"
@@ -366,8 +367,11 @@ parse_ellipsis (const char *name,
     opt_ellipsize = value->value;
   else
     {
-      fail ("--ellipsize option must be one of none/start/middle/end");
-      ret = FALSE;
+        g_set_error(error,
+		    G_OPTION_ERROR, 
+		    G_OPTION_ERROR_BAD_VALUE,
+		    "Argument for --ellipsize must be one of none/start/middle/end");
+	ret = FALSE;
     }
 
   return ret;
@@ -393,10 +397,13 @@ parse_hinting (const char *name,
     opt_hinting = HINT_FULL;
   else
     {
-      fail ("--hinting option must be one of none/auto/full");
+      g_set_error(error,
+		  G_OPTION_ERROR, 
+		  G_OPTION_ERROR_BAD_VALUE,
+		  "Argument for --hinting must be one of none/auto/full");
       ret = FALSE;
     }
-
+  
   return ret;
 }
 
@@ -421,7 +428,10 @@ parse_wrap (const char *name,
     }
   else
     {
-      fail ("--wrap option must be one of word/char/word-char");
+      g_set_error(error,
+		  G_OPTION_ERROR, 
+		  G_OPTION_ERROR_BAD_VALUE,
+		  "Argument for --wrap must be one of word/char/word-char");
       ret = FALSE;
     }
 
@@ -496,7 +506,11 @@ parse_backend (const char *name,
     {
       gchar *backends = backends_to_string ();
 
-      fail ("available --backend options are: %s", backends);
+      g_set_error(error,
+		  G_OPTION_ERROR, 
+		  G_OPTION_ERROR_BAD_VALUE,
+		  "Available --backend options are: %s", 
+		  backends);
       g_free(backends);
       ret = FALSE;
     }
@@ -504,6 +518,17 @@ parse_backend (const char *name,
   return ret;
 }
 
+
+static gboolean
+show_version(const char *name,
+	     const char *arg,
+	     gpointer    data,
+	     GError    **error)
+{
+  g_printf("%s (%s) %s\n", prog_name, PACKAGE_NAME, PACKAGE_VERSION);
+  g_printf("module interface version: %s\n", MODULE_VERSION);
+  exit(0);
+}
 
 void
 parse_options (int argc, char *argv[])
@@ -547,6 +572,8 @@ parse_options (int argc, char *argv[])
      "Run Pango layout engine this many times",			   "integer"},
     {"text",		't', 0, G_OPTION_ARG_STRING,			&opt_text,
      "Text to display (instead of a file)", 			    "string"},
+    {"version",		0, G_OPTION_FLAG_NO_ARG, G_OPTION_ARG_CALLBACK, &show_version,
+     "Show version numbers",						NULL},
     {"waterfall",	0, 0, G_OPTION_ARG_NONE,			&opt_waterfall,
      "Create a waterfall display", 					NULL},
     {"width",		'w', 0, G_OPTION_ARG_INT,			&opt_width,
@@ -567,13 +594,9 @@ parse_options (int argc, char *argv[])
   if (!g_option_context_parse (context, &argc, &argv, &parse_error))
   {
     if (parse_error != NULL)
-    {
-      fail("Parse option error : %s\n", parse_error->message);
-    }
+      fail("%s", parse_error->message);
     else
-    {
-      fail("Parse option error\n");
-    }
+      fail("Option parse error");
     exit(1);
   }
   g_option_context_free(context);
@@ -615,7 +638,7 @@ parse_options (int argc, char *argv[])
       if (!g_file_get_contents (argv[1], &text, &len, &error))
 	fail ("%s\n", error->message);
       if (!g_utf8_validate (text, len, NULL))
-	fail ("Text is not valid UTF-8");
+	fail ("Input text is not valid UTF-8");
     }
 
   /* Strip trailing whitespace
