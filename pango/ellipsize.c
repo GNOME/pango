@@ -125,7 +125,6 @@ init_state (EllipsizeState  *state,
   start_offset = g_utf8_strlen (line->layout->text,
 				line->start_index);
 
-  start_offset = 0;
   state->total_width = 0;
   for (l = line->runs, i = 0; l; l = l->next, i++)
     {
