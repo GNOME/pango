@@ -1,3 +1,10 @@
+2006-02-17  Behdad Esfahbod  <behdad@gnome.org>
+
+	* pango/pango-types.h, pango/pango-font.h: Move PANGO_GLYPH_EMPTY,
+	PANGO_GLYPH_UNKNOWN_FLAG, and PANGO_GET_UNKNOWN_GLYPH from the former
+	to the latter, and only define if PANGO_ENABLE_ENGINE or
+	PANGO_ENABLE_BACKEND is set.
+
 2006-02-15  Behdad Esfahbod  <behdad@gnome.org>
 
 	Bug 331038 – pango-querymodules --help and --version
