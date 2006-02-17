@@ -215,6 +215,7 @@ output_body (PangoContext   *context,
 	(*render_cb) (layout, x, y+*height, cb_context, cb_data);
 
       *width = MAX (*width, PANGO_PIXELS (logical_rect.x + logical_rect.width));
+      *width = MAX (*width, PANGO_PIXELS (pango_layout_get_width (layout)));
       *height += PANGO_PIXELS (logical_rect.height);
 
       g_object_unref (layout);

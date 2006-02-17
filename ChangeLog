@@ -1,5 +1,11 @@
 2006-02-17  Behdad Esfahbod  <behdad@gnome.org>
 
+	Bug 329148 – pango_glyph_item_split: assertion `split_index > 0' failed
+
+	* pango/ellipsize.c (init_state): Do not mistakenly set start_offset = 0.
+
+2006-02-17  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/pango-types.h, pango/pango-font.h: Move PANGO_GLYPH_EMPTY,
 	PANGO_GLYPH_UNKNOWN_FLAG, and PANGO_GET_UNKNOWN_GLYPH from the former
 	to the latter, and only define if PANGO_ENABLE_ENGINE or
