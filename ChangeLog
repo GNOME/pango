@@ -1,5 +1,15 @@
 2006-02-21  Behdad Esfahbod  <behdad@gnome.org>
 
+	Bug 331723 – shapers should not crash on failures
+
+	* modules/*/*-fc.c: Return instead of g_return_if_fail when
+	face == NULL.
+
+	* pango/pango-engine.h (PangoEngineShape): Document that a shaper
+	should return an empty glyph string on failure.
+
+2006-02-21  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/fonts.c, pango/glyphstring.c, pango/pango-fontmap.c,
 	pango/pango-ot-buffer.c, pango/pangocairo-font.c, pango/pangoft2.c,
 	pango/pangoxft-font.c, pango/shape.c: Change g_critical to g_warning.

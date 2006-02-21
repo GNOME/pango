@@ -76,7 +76,8 @@ thai_ot_get_ruleset (PangoFont *font)
 
   fc_font = PANGO_FC_FONT (font);
   face = pango_fc_font_lock_face (fc_font);
-  g_return_val_if_fail (face != NULL, NULL);
+  if (!face)
+    return NULL;
 
   info = pango_ot_info_get (face);
   if (info != NULL)
@@ -148,7 +149,8 @@ lao_ot_get_ruleset (PangoFont *font)
 
   fc_font = PANGO_FC_FONT (font);
   face = pango_fc_font_lock_face (fc_font);
-  g_return_val_if_fail (face != NULL, NULL);
+  if (!face)
+    return NULL;
 
   info = pango_ot_info_get (face);
   if (info != NULL)

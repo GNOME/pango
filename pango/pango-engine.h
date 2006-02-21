@@ -163,7 +163,10 @@ struct _PangoEngineShape
  *   of the output logical clusters;
  *   if no rendering is desired for a character, this may involve
  *   inserting glyphs with the #PangoGlyph ID #PANGO_GLYPH_EMPTY, which
- *   is guaranteed never to render.
+ *   is guaranteed never to render. If the shaping fails for any reason,
+ *   the shaper should return with an empty (zero-size) glyph string.
+ *   If the shaper has not set the size on the glyph string yet, simply
+ *   returning signals the failure too.
  * @covers: Returns the characters that this engine can cover
  *   with a given font for a given language. If not overridden, the default
  *   implementation simply returns the coverage information for the

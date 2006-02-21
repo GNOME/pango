@@ -344,7 +344,8 @@ indic_engine_shape (PangoEngineShape *engine,
 
   fc_font = PANGO_FC_FONT (font);
   face = pango_fc_font_lock_face (fc_font);
-  g_return_if_fail (face != NULL);
+  if (!face)
+    return;
 
   indic_shape_engine = (IndicEngineFc *) engine;
 
