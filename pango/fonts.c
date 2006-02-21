@@ -1172,7 +1172,7 @@ pango_font_get_glyph_extents  (PangoFont      *font,
       if (!_pango_warning_history.get_glyph_extents)
         {
 	  _pango_warning_history.get_glyph_extents = TRUE;
-	  g_critical ("pango_font_get_glyph_extents called with bad font, expect ugly output");
+	  g_warning ("pango_font_get_glyph_extents called with bad font, expect ugly output");
 	}
       if (ink_rect)
         {

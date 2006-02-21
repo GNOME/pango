@@ -78,7 +78,7 @@ _pango_cairo_font_install (PangoCairoFont *font,
       if (!_pango_cairo_warning_history.font_install)
         {
 	  _pango_cairo_warning_history.font_install = TRUE;
-	  g_critical ("_pango_cairo_font_install called with bad font, expect ugly output");
+	  g_warning ("_pango_cairo_font_install called with bad font, expect ugly output");
 	  cairo_set_font_face (cr, NULL);
 	}
       return FALSE;

@@ -850,12 +850,6 @@ pango_fc_font_map_new_font (PangoFontMap               *fontmap,
   PangoFcFont *fcfont;
   GSList *l;
 
-  /* Returning NULL here actually violates a contract
-   * that loading load_font() will never return NULL.
-   * We probably should actually create a dummy
-   * font that doesn't draw anything and has empty
-   * metrics.
-   */
   if (priv->closed)
     return NULL;
   
@@ -903,6 +897,9 @@ pango_fc_font_map_new_font (PangoFontMap               *fontmap,
       if (pango_matrix)
 	FcPatternDestroy (pattern);
     }
+
+  if (!fcfont)
+    return NULL;
 
   pango_fc_font_map_add (fcfontmap, context, fcfont);
 

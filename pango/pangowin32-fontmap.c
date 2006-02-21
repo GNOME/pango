@@ -447,6 +447,7 @@ pango_win32_font_map_load_font (PangoFontMap               *fontmap,
 	result = PANGO_WIN32_FONT_MAP_GET_CLASS (win32fontmap)->find_font (win32fontmap, context,
 									   best_match,
 									   description);
+        /* TODO: Handle the case that result == NULL. */
       else
 	PING(("no best match!"));
     }
@@ -487,6 +488,9 @@ pango_win32_font_map_real_find_font (PangoWin32FontMap          *win32fontmap,
     }
   
   win32font = pango_win32_font_new (fontmap, &face->logfont, size);
+
+  if (!win32font)
+    return NULL;
       
   win32font->fontmap = fontmap;
   win32font->win32face = face;

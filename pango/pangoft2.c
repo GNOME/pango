@@ -178,7 +178,7 @@ pango_ft2_font_get_face (PangoFont *font)
       if (!_pango_ft2_warning_history.get_face)
         {
 	  _pango_ft2_warning_history.get_face = TRUE;
-	  g_critical ("pango_ft2_font_get_face called with bad font, expect ugly output");
+	  g_warning ("pango_ft2_font_get_face called with bad font, expect ugly output");
 	}
       return NULL;
     }

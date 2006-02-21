@@ -67,7 +67,7 @@ pango_glyph_string_set_size (PangoGlyphString *string, gint new_len)
       
       if (string->space < 0)
         {
-	  g_critical ("glyph string length overflows maximum integer size, truncated");
+	  g_warning ("glyph string length overflows maximum integer size, truncated");
 	  new_len = string->space = G_MAXINT - 8;
 	}
     }

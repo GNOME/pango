@@ -85,6 +85,9 @@ pango_win32_get_hfont (PangoFont *font)
   PangoWin32FontCache *cache;
   TEXTMETRIC tm;
 
+  if (!win32font)
+    return NULL;
+
   if (!win32font->hfont)
     {
       cache = pango_win32_font_map_get_font_cache (win32font->fontmap);

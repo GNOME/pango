@@ -819,7 +819,6 @@ pango_layout_set_text (PangoLayout *layout,
 		       const char  *text,
 		       int          length)
 {
-  const char *end;
   char *old_text;
   
   g_return_if_fail (layout != NULL);
@@ -827,16 +826,20 @@ pango_layout_set_text (PangoLayout *layout,
 
   old_text = layout->text;
 
+  if (length < 0)
+    length = strlen (text);
+
+#ifndef G_DISABLE_ASSERT
   if (length != 0)
     {
+      const char *end;
       if (!g_utf8_validate (text, length, &end))
-	g_warning ("Invalid UTF-8 string passed to pango_layout_set_text()");
-
-      while (end - text > G_MAXINT)
-	end = g_utf8_prev_char (end);
-
-      length = end - text;
+        {
+	  /* TODO: Write out the beginning excerpt of text? */
+	  g_warning ("Invalid UTF-8 string passed to pango_layout_set_text()");
+	}
     }
+#endif
   
   /* NULL-terminate the text for convenience.
    */

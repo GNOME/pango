@@ -473,7 +473,7 @@ pango_xft_font_get_font (PangoFont *font)
       if (!_pango_xft_warning_history.get_font)
         {
 	  _pango_xft_warning_history.get_font = TRUE;
-	  g_critical ("pango_xft_font_get_font called with bad font, expect ugly output");
+	  g_warning ("pango_xft_font_get_font called with bad font, expect ugly output");
 	}
       return NULL;
     }

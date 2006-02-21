@@ -1,3 +1,27 @@
+2006-02-21  Behdad Esfahbod  <behdad@gnome.org>
+
+	* pango/fonts.c, pango/glyphstring.c, pango/pango-fontmap.c,
+	pango/pango-ot-buffer.c, pango/pangocairo-font.c, pango/pangoft2.c,
+	pango/pangoxft-font.c, pango/shape.c: Change g_critical to g_warning.
+	We already handle them gracefully.
+
+	Bug 331994 – --disable-debug removes G_DISABLE_CAST_CHECKS
+	Patch from charlet@act-europe.fr
+
+	* configure.in: Do not lose PANGO_DEBUG_FLAGS when reassigning.
+
+	Bug 331995 – pango_layout_set_text optimization
+	Patch from charlet@act-europe.fr
+
+	* pango/pango-layout.c: Do not validate input text if asserts are
+	disabled.  Moreover, do not truncate input text on invalid sequence.
+
+	Bug 331996 – avoid crashes in win32 font handling
+	Patch from charlet@act-europe.fr
+
+	* pango/pangofc-fontmap.c, pango/pangowin32-fontmap.c,
+	pango/pangowin32.c: if (!font) return NULL in a number of places.
+
 2006-02-17  Behdad Esfahbod  <behdad@gnome.org>
 
 	Bug 329148 – pango_glyph_item_split: assertion `split_index > 0' failed

@@ -50,7 +50,7 @@ pango_ot_buffer_new (PangoFcFont *font)
   FT_Face face = pango_fc_font_lock_face (font);
 
   if (otl_buffer_new (face->memory, &buffer->buffer) != FT_Err_Ok)
-    g_critical ("Allocation of OTLBuffer failed"); /* this doesn't happen */
+    g_warning ("Allocation of OTLBuffer failed"); /* this doesn't happen */
 
   buffer->font = g_object_ref (font);
   buffer->applied_gpos = FALSE;

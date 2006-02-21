@@ -591,6 +591,7 @@ pango_atsui_font_map_load_font (PangoFontMap               *fontmap,
 
 	  if (best_font)
 	    pango_atsui_font_map_add (atsuifontmap, context, best_font);
+	    /* TODO: Handle the else case here. */
 	}
 
       pango_font_description_free (best_desc);

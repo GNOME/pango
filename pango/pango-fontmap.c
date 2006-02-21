@@ -236,10 +236,11 @@ pango_font_map_real_load_fontset (PangoFontMap               *fontmap,
 
   pango_font_description_free (tmp_desc);
 
-  /* Everything failed, we are screwed, there is no way to continue
+  /* Everything failed, we are screwed, there is no way to continue,
+   * but lets just not crash here.
    */
   if (pango_fontset_simple_size (fonts) == 0)
-      g_critical ("All font fallbacks failed!!!!");
+      g_warning ("All font fallbacks failed!!!!");
 
   return PANGO_FONTSET (fonts);
 }
