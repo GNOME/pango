@@ -807,7 +807,7 @@ pango_layout_get_ellipsize (PangoLayout *layout)
 /**
  * pango_layout_set_text:
  * @layout: a #PangoLayout
- * @text: a UTF-8 string
+ * @text: a valid UTF-8 string
  * @length: the length of @text, in bytes. -1 indicates that
  *          the string is nul-terminated and the length should be
  *          calculated.
