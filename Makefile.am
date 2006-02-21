@@ -22,8 +22,9 @@ EXTRA_DIST = 			\
 	ChangeLog.pre-1-6	\
 	ChangeLog.pre-1-8	\
 	MAINTAINERS		\
-	README.win32	\
-	pango-zip.sh	\
+	HACKING			\
+	README.win32		\
+	pango-zip.sh		\
 	sanitize-la.sh
 
 pkgconfigdir = $(libdir)/pkgconfig

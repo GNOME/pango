@@ -1,5 +1,16 @@
 2006-02-21  Behdad Esfahbod  <behdad@gnome.org>
 
+	Bug 328206 – Update/remove some old files
+
+	* docs/TEXT/{coding-style,modules,questions,ligatures,western-design}:
+	Removed.
+
+	* HACKING: Added.  Renamed from docs/TEXT/coding-style.
+
+	* Makefile.am: Add HACKING.
+
+2006-02-21  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 314239 – pangocairo crashes when font cannot be read
 
 	* pango/pangocairo-fcfont.c, pango/pangocairo-font.c: Hack up to not

@@ -57,7 +57,7 @@ in the gtk-doc / gnome-doc style. For instance:
  * @line: the index of a line, which must be between 0 and
  *        pango_layout_get_line_count(layout) - 1, inclusive.
  * 
- * Retrieves a particular line from a #PangoLayout
+ * Retrieves a particular line from a #PangoLayout (or @layout.)
  * 
  * Return value: the requested #PangoLayoutLine, or %NULL if the
  *               index is out of range. This layout line can
@@ -71,8 +71,6 @@ pango_layout_get_line (PangoLayout *layout,
 		       int          line)
 [...]
 
-An Emacs lisp file is distributed with gnome-libs which automates
-inserting these comments
 
 Choosing Function Names
 =======================
@@ -112,6 +110,4 @@ Other comments
    int new_width = MAX (width - 15, 1);
 
   produces 4294967291, not 1.
-
-
 
