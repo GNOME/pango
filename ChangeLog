@@ -1,3 +1,11 @@
+2006-02-11  Behdad Esfahbod  <behdad@gnome.org>
+
+	* === Released 1.11.6 ===
+
+	* configure.in: Version 1.11.6
+
+	* NEWS: Updated.
+
 2006-02-21  Behdad Esfahbod  <behdad@gnome.org>
 
 	Bug 328206 – Update/remove some old files

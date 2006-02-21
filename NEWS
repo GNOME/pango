@@ -1,3 +1,13 @@
+Overview of changes between 1.11.5 and 1.11.6
+=============================================
+* Do not export macros PANGO_GLYPH_EMPTY, PANGO_GLYPH_UNKNOWN_FLAG and
+  PANGO_GET_UNKNOWN_GLYPH publicly; just in the engine/backend interface.
+* Fix a few crashers, especially when a font cannot be read. [#314239]
+* Change some g_critical's to g_warning, where it's not application's
+  fault. [#331723]
+* Bugs fixed in this release:
+  330795,331038,329148,331994,331995,331996,314239,331723
+
 Overview of changes between 1.11.4 and 1.11.5
 =============================================
 * Cleanup work on the win32 backend.  Families are not listed all
