@@ -133,11 +133,11 @@ pango_cairo_fc_font_get_font_face (PangoCairoFont *font)
     {
       cffont->font_face = cairo_ft_font_face_create_for_pattern (fcfont->font_pattern);
       
-      /* Failure of the above should only occur for out of memory,
-       * we can't proceed at that point
+      /* Unable to create FT2 cairo scaled font.
+       * This means out of memory or a cairo/fontconfig/FreeType bug,
        */
       if (!cffont->font_face)
-	g_error ("Unable to create FT2 cairo font face.\nThis means out of memory or a cairo/fontconfig/FreeType bug");
+        return NULL;
     }
   
   return cffont->font_face;
@@ -154,16 +154,20 @@ pango_cairo_fc_font_get_scaled_font (PangoCairoFont *font)
 
       font_face = pango_cairo_fc_font_get_font_face (font);
 
+      if (!font_face)
+        return NULL;
+
       cffont->scaled_font = cairo_scaled_font_create (font_face,
 						      &cffont->font_matrix,
 						      &cffont->ctm,
 						      cffont->options);
 
-      /* Failure of the above should only occur for out of memory,
-       * we can't proceed at that point
+      /* Unable to create FT2 cairo scaled font.
+       * This means out of memory or a cairo/fontconfig/FreeType bug,
+       * or a missing font...
        */
       if (!cffont->scaled_font)
-	g_error ("Unable to create FT2 cairo scaled font.\nThis means out of memory or a cairo/fontconfig/FreeType bug");
+        return NULL;
     }
   
   return cffont->scaled_font;
@@ -292,6 +296,8 @@ pango_cairo_fc_font_lock_face (PangoFcFont *font)
 {
   PangoCairoFont *cfont = (PangoCairoFont *)font;
   cairo_scaled_font_t *scaled_font = pango_cairo_fc_font_get_scaled_font (cfont);
+  if (G_UNLIKELY (!scaled_font))
+    return NULL;
   
   return cairo_ft_scaled_font_lock_face (scaled_font);
 }
@@ -301,6 +307,8 @@ pango_cairo_fc_font_unlock_face (PangoFcFont *font)
 {
   PangoCairoFont *cfont = (PangoCairoFont *)font;
   cairo_scaled_font_t *scaled_font = pango_cairo_fc_font_get_scaled_font (cfont);
+  if (G_UNLIKELY (!scaled_font))
+    return NULL;
   
   cairo_ft_scaled_font_unlock_face (scaled_font);
 }
@@ -354,6 +362,7 @@ pango_cairo_fc_font_glyph_extents_cache_init (PangoCairoFcFont *cffont)
   PangoCairoFont *cfont = (PangoCairoFont *)cffont;
   cairo_scaled_font_t *scaled_font = pango_cairo_fc_font_get_scaled_font (cfont);
   cairo_font_extents_t font_extents;
+
   cairo_scaled_font_extents (scaled_font, &font_extents);
 
   cffont->font_extents.x = 0;
@@ -434,6 +443,13 @@ pango_cairo_fc_font_get_glyph_extents (PangoFont      *font,
 {
   PangoCairoFcFont *cffont = (PangoCairoFcFont *)font;
   GlyphExtentsCacheEntry *entry;
+
+  if (!pango_cairo_fc_font_get_scaled_font ((PangoCairoFont *)cffont))
+    {
+      /* Get generic unknown-glyph extents. */
+      pango_font_get_glyph_extents (NULL, glyph, ink_rect, logical_rect);
+      return;
+    }
 
   /* We need to initialize the cache here, since we use cffont->font_extents
    */

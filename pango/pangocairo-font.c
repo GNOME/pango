@@ -146,6 +146,11 @@ _pango_cairo_font_get_hex_box_info (PangoCairoFont *cfont)
     return hbi;
 
   scaled_font = _pango_cairo_font_get_scaled_font (cfont);  
+  if (!scaled_font)
+    {
+      g_object_set_data_full (G_OBJECT (cfont), "hex_box_info", NULL, NULL); 
+      return NULL;
+    }
 
 #ifdef HAVE_CAIRO_SCALED_FONT_GETTERS
   /* prepare for some hinting */

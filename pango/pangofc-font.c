@@ -291,6 +291,17 @@ get_face_metrics (PangoFcFont      *fcfont,
   TT_OS2 *os2;
   gboolean have_transform = FALSE;
 
+  if (!face)
+    {
+      metrics->descent = 0;
+      metrics->ascent = PANGO_SCALE * PANGO_UNKNOWN_GLYPH_HEIGHT;
+      metrics->underline_thickness = PANGO_SCALE;
+      metrics->underline_position = - PANGO_SCALE;
+      metrics->strikethrough_thickness = PANGO_SCALE;
+      metrics->strikethrough_position = PANGO_SCALE * (PANGO_UNKNOWN_GLYPH_HEIGHT/2);
+      return;
+    }
+
   if  (FcPatternGetMatrix (fcfont->font_pattern,
 			   FC_MATRIX, 0, &fc_matrix) == FcResultMatch)
     {

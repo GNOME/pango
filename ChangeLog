@@ -1,5 +1,13 @@
 2006-02-21  Behdad Esfahbod  <behdad@gnome.org>
 
+	Bug 314239 – pangocairo crashes when font cannot be read
+
+	* pango/pangocairo-fcfont.c, pango/pangocairo-font.c: Hack up to not
+	crash if we cannot create cairo_scaled_font_t for PangoFont (font is
+	not readable, removed, etc.)
+
+2006-02-21  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 331723 – shapers should not crash on failures
 
 	* modules/*/*-fc.c: Return instead of g_return_if_fail when
