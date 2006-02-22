@@ -1,4 +1,12 @@
-2006-02-11  Behdad Esfahbod  <behdad@gnome.org>
+2006-02-22  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 332167 – Void function returns value - breaks Solaris build
+	Reported by Damien Carbery
+
+	* pango/pangocairo-fcfont (pango_cairo_fc_font_unlock_face): Simply
+	return.
+
+2006-02-21  Behdad Esfahbod  <behdad@gnome.org>
 
 	* === Released 1.11.6 ===
 
