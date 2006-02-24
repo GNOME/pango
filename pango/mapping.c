@@ -1,5 +1,5 @@
 /* Pango
- * itemize.c:
+ * mapping.c:
  *
  * Copyright (C) 1999 Red Hat Software
  *
