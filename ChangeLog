@@ -1,3 +1,9 @@
+2006-02-25  Behdad Esfahbod  <behdad@gnome.org>
+
+	* examples/test-hebrew.txt: Added.  Parts of Genesis.
+
+	* examples/Makefile.am: Adjusted.
+
 2006-02-22  Behdad Esfahbod  <behdad@gnome.org>
 
 	Bug 332167 – Void function returns value - breaks Solaris build
