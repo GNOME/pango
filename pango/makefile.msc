@@ -76,7 +76,7 @@ PKG_LINK = $(GLIB_LIBS) $(LIBICONV_LIBS) \
 !IFDEF OBJS_pangocairo
 PKG_LINK = $(GLIB_LIBS) $(LIBICONV_LIBS) \
 	pango-$(PANGO_VER).lib $(CAIRO_LIBS) \
-	pangowin32-$(PANGO_VER).lib pangoft2-$(PANGO_VER).lib $(FREETYPE2_LIBS) $(FONTCONFIG_LIBS) 
+	pangowin32-$(PANGO_VER).lib $(FONTCONFIG_LIBS) 
 !ENDIF
 
 !IF DEFINED (OBJS_querymodules) || DEFINED (OBJS_testfonts)
@@ -113,7 +113,8 @@ OBJECTS = \
 	shape.obj \
 	\
 	fribidi.obj \
-	fribidi_get_type.obj
+	fribidi_types.obj \
+	fribidi_char_type.obj
 !ENDIF
 
 basic-win32.obj : ..\modules\basic\basic-win32.c
@@ -128,8 +129,10 @@ basic-x.obj : ..\modules\basic\basic-x.c
 
 fribidi.obj : mini-fribidi\fribidi.c
 	$(CC) $(PKG_CFLAGS) -GD -c mini-fribidi\fribidi.c
-fribidi_get_type.obj : mini-fribidi\fribidi_get_type.c
-	$(CC) $(PKG_CFLAGS) -GD -Dpango_get_mirror_char=_pango_get_mirror_char -c mini-fribidi\fribidi_get_type.c
+fribidi_types.obj : mini-fribidi\fribidi_types.c
+	$(CC) $(PKG_CFLAGS) -GD -c mini-fribidi\fribidi_types.c
+fribidi_char_type.obj : mini-fribidi\fribidi_char_type.c
+	$(CC) $(PKG_CFLAGS) -GD -c mini-fribidi\fribidi_char_type.c
 
 !IFDEF OBJS_pangowin32
 PKG_CFLAGS = $(PKG_CFLAGS) -DPANGO_MODULE_PREFIX=_pango_basic_win32

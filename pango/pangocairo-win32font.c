@@ -148,6 +148,8 @@ pango_cairo_win32_font_install (PangoCairoFont *font,
 		       pango_cairo_win32_font_get_font_face (font));
   cairo_set_font_matrix (cr, &cwfont->font_matrix);
   cairo_set_font_options (cr, cwfont->options);
+
+  return TRUE;
 }
 
 static void
