@@ -638,8 +638,6 @@ parse_options (int argc, char *argv[])
     {
       if (!g_file_get_contents (argv[1], &text, &len, &error))
 	fail ("%s\n", error->message);
-      if (!g_utf8_validate (text, len, NULL))
-	fail ("Input text is not valid UTF-8");
     }
 
   /* Strip trailing whitespace

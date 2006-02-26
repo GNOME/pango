@@ -1,11 +1,18 @@
+2006-02-26  Behdad Esfahbod  <behdad@gnome.org>
+
+	* pango/pango-layout.c (pango_layout_set_text): Replace each byte in invalid
+	UTF-8 sequences with '?'.  (bug #331995)
+
+	* examples/renderdemo.c: Don't exit on invalid UTF-8 input.
+
 2006-02-25  Hans Breuer  <hans@breuer.org>
 
-	* pango/pangocairo-win32font.c(pango_cairo_win32_font_install) :
+	* pango/pangocairo-win32font.c(pango_cairo_win32_font_install):
 	return TRUE to glyphs rendered at all (instead of box). This may
 	be compiler specific (what to return w/o return) but fixes bug #332538
 	
-	* pango/makefile.msc : updated
-	* pango/pango.def : just some sorting
+	* pango/makefile.msc: updated
+	* pango/pango.def: just some sorting
 
 2006-02-25  Behdad Esfahbod  <behdad@gnome.org>
 

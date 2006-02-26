@@ -808,9 +808,11 @@ pango_layout_get_ellipsize (PangoLayout *layout)
  * pango_layout_set_text:
  * @layout: a #PangoLayout
  * @text: a valid UTF-8 string
- * @length: the length of @text, in bytes. -1 indicates that
+ * @length: maximum length of @text, in bytes. -1 indicates that
  *          the string is nul-terminated and the length should be
- *          calculated.
+ *          calculated.  The text will also be truncated on
+ *          encountaring a nul-termination even when @length is
+ *          positive.
  * 
  * Sets the text of the layout.
  **/
@@ -819,37 +821,46 @@ pango_layout_set_text (PangoLayout *layout,
 		       const char  *text,
 		       int          length)
 {
-  char *old_text;
+  char *old_text, *start, *end;
   
   g_return_if_fail (layout != NULL);
   g_return_if_fail (length == 0 || text != NULL);
 
   old_text = layout->text;
-
-  if (length < 0)
-    length = strlen (text);
-
-#ifndef G_DISABLE_ASSERT
-  if (length != 0)
-    {
-      const char *end;
-      if (!g_utf8_validate (text, length, &end))
-        {
-	  /* TODO: Write out the beginning excerpt of text? */
-	  g_warning ("Invalid UTF-8 string passed to pango_layout_set_text()");
-	}
-    }
-#endif
   
-  /* NULL-terminate the text for convenience.
+  if (length < 0)
+    layout->text = g_strdup (text);
+  else if (length > 0)
+    /* This is not exactly what we want.  We don't need the padding...
+     */
+    layout->text = g_strndup (text, length);
+  else
+    layout->text = g_malloc0 (1);
+
+  layout->length = strlen (layout->text);
+
+  /* validate it, and replace invalid bytes with '?'
    */
-  layout->text = g_malloc (length + 1);
-  if (length > 0)
-    memcpy (layout->text, text, length);
-  layout->text[length] = '\0';
+  start = layout->text;
+  for (;;) {
+    gboolean valid;
+    
+    valid = g_utf8_validate (start, -1, &end);
+
+    if (!*end)
+      break;
+
+    if (!valid)
+      *end++ = '?';
+
+    start = end;
+  }
+
+  if (start != layout->text)
+    /* TODO: Write out the beginning excerpt of text? */
+    g_warning ("Invalid UTF-8 string passed to pango_layout_set_text()");
 
   layout->n_chars = g_utf8_strlen (layout->text, -1);
-  layout->length = length;
 
   pango_layout_clear_lines (layout);
   
