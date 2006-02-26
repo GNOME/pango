@@ -1,3 +1,7 @@
+Overview of changes between 1.10.3 and 1.10.4
+=============================================
+* Fix crasher assertion `split_index > 0' in ellipsization.
+
 Overview of changes between 1.10.2 and 1.10.3
 =============================================
 * Various documentation improvements, achieving
