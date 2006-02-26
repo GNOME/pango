@@ -1,7 +1,15 @@
 2006-02-26  Behdad Esfahbod  <behdad@gnome.org>
 
-	* pango/pango-layout.c (pango_layout_set_text): Replace each byte in invalid
-	UTF-8 sequences with '?'.  (bug #331995)
+	* === Released 1.11.99 "Just In Case" ===
+
+	* configure.in: Version 1.11.99
+
+	* NEWS: Updated.
+
+2006-02-26  Behdad Esfahbod  <behdad@gnome.org>
+
+	* pango/pango-layout.c (pango_layout_set_text): Replace each byte in
+	invalid UTF-8 sequences with '?'.  (bug #331995)
 
 	* examples/renderdemo.c: Don't exit on invalid UTF-8 input.
 
