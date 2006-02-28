@@ -267,13 +267,13 @@ pango_win32_render (HDC               hdc,
       PING (("num_glyphs:%d", glyphs->num_glyphs));
       for (i = 0; i < glyphs->num_glyphs; i++)
 	{
-	  printf (" %d:%d", glyphs->glyphs[i].glyph, glyphs->glyphs[i].geometry.width);
+	  g_print (" %d:%d", glyphs->glyphs[i].glyph, glyphs->glyphs[i].geometry.width);
 	  if (glyphs->glyphs[i].geometry.x_offset != 0 || 
 	      glyphs->glyphs[i].geometry.y_offset != 0)
-	    printf (":%d,%d", glyphs->glyphs[i].geometry.x_offset,
-		    glyphs->glyphs[i].geometry.y_offset);
+	    g_print (":%d,%d", glyphs->glyphs[i].geometry.x_offset,
+		     glyphs->glyphs[i].geometry.y_offset);
 	}
-      printf ("\n");
+      g_print ("\n");
     }
 #endif
 
@@ -372,12 +372,12 @@ pango_win32_render (HDC               hdc,
 #ifdef PANGO_WIN32_DEBUGGING
       if (pango_win32_debug)
 	{
-	  printf ("ExtTextOutW at %d,%d deltas:",
-		  x + PANGO_PIXELS (start_x_offset),
-		  y + PANGO_PIXELS (cur_y_offset));
+	  g_print ("ExtTextOutW at %d,%d deltas:",
+		   x + PANGO_PIXELS (start_x_offset),
+		   y + PANGO_PIXELS (cur_y_offset));
 	  for (j = 0; j < num_valid_glyphs; j++)
-	    printf (" %d", dX[j]);
-	  printf ("\n");
+	    g_print (" %d", dX[j]);
+	  g_print ("\n");
 	}
 #endif
 
@@ -1592,9 +1592,9 @@ pango_win32_font_calc_coverage (PangoFont     *font,
 	      if (pango_win32_debug)
 		{
 		  if (end_count[i] == start_count[i])
-		    printf ("%04x ", start_count[i]);
+		    g_print ("%04x ", start_count[i]);
 		  else
-		    printf ("%04x:%04x ", start_count[i], end_count[i]);
+		    g_print ("%04x:%04x ", start_count[i], end_count[i]);
 		}
 #endif	  
 	      for (ch = start_count[i]; ch <= end_count[i]; ch++)
@@ -1633,9 +1633,9 @@ pango_win32_font_calc_coverage (PangoFont     *font,
 		      if (pango_win32_debug)
 			{
 			  if (ch > ch0 + 2)
-			    printf ("%04x:%04x ", ch0, ch - 1);
+			    g_print ("%04x:%04x ", ch0, ch - 1);
 			  else
-			    printf ("%04x ", ch0);
+			    g_print ("%04x ", ch0);
 			}
 		      ch0 = G_MAXUINT;
 		    }
@@ -1647,9 +1647,9 @@ pango_win32_font_calc_coverage (PangoFont     *font,
 		  if (pango_win32_debug)
 		    {
 		      if (ch > ch0 + 2)
-			printf ("%04x:%04x ", ch0, ch - 1);
+			g_print ("%04x:%04x ", ch0, ch - 1);
 		      else
-			printf ("%04x ", ch0);
+			g_print ("%04x ", ch0);
 		    }
 		}
 #endif
@@ -1666,9 +1666,9 @@ pango_win32_font_calc_coverage (PangoFont     *font,
 	  if (pango_win32_debug)
 	    {
 	      if (cmap12->groups[i*3+0] == cmap12->groups[i*3+1])
-		printf ("%04x ", cmap12->groups[i*3+0]);
+		g_print ("%04x ", cmap12->groups[i*3+0]);
 	      else
-		printf ("%04x:%04x ", cmap12->groups[i*3+0], cmap12->groups[i*3+1]);
+		g_print ("%04x:%04x ", cmap12->groups[i*3+0], cmap12->groups[i*3+1]);
 	    }
 #endif
 	  for (ch = cmap12->groups[i*3+0]; ch <= cmap12->groups[i*3+1]; ch++)
@@ -1684,6 +1684,6 @@ pango_win32_font_calc_coverage (PangoFont     *font,
     g_assert_not_reached ();
 #ifdef PANGO_WIN32_DEBUGGING
   if (pango_win32_debug)
-    printf ("\n");
+    g_print ("\n");
 #endif
 }

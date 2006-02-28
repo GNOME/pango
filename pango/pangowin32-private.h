@@ -34,16 +34,16 @@
 #ifdef __GNUC__
 #define PING(printlist)					\
 (pango_win32_debug ?					\
- (printf ("%s:%d ", __PRETTY_FUNCTION__, __LINE__),	\
-  printf printlist,					\
-  printf ("\n")) :					\
+ (g_print ("%s:%d ", __PRETTY_FUNCTION__, __LINE__),	\
+  g_print printlist,					\
+  g_print ("\n")) :					\
  0)
 #else
 #define PING(printlist)					\
 (pango_win32_debug ?					\
- (printf ("%s:%d ", __FILE__, __LINE__),		\
-  printf printlist,					\
-  printf ("\n")) :					\
+ (g_print ("%s:%d ", __FILE__, __LINE__),		\
+  g_print printlist,					\
+  g_print ("\n")) :					\
  0)
 #endif
 #else  /* !PANGO_WIN32_DEBUGGING */

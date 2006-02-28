@@ -1,3 +1,11 @@
+2006-02-28  Tor Lillqvist  <tml@novell.com>
+
+	* pango/pangowin32-private.h (PING)
+	* pango/pangowin32.c
+	* modules/basic/basic-win32.c: Use g_print() instead of printf()
+	for debugging output, to enable easy redirection using GLib
+	facilities. (#332855)
+
 2006-02-26  Behdad Esfahbod  <behdad@gnome.org>
 
 	* === Released 1.11.99 "Just In Case" ===
