@@ -1,3 +1,14 @@
+2006-03-01  Tor Lillqvist  <tml@novell.com>
+
+	* pango/pango-context.c (update_metrics_from_items): Check the
+	font pointer being NULL to avoid crashes for at least one class of
+	"bad" fonts (those without a Unicode cmap) on Win32. It would
+	probably be better to prune out such fonts already in the
+	enumeration phase. That would require opening (CreateFontIndirect)
+	every font, though, to be able to check with GetFontData() whether
+	there is a Unicode cmap. Don't know how much that would slow down
+	the enumeration.
+
 2006-02-28  Tor Lillqvist  <tml@novell.com>
 
 	* pango/pangowin32-private.h (PING)

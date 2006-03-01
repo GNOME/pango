@@ -1310,7 +1310,7 @@ update_metrics_from_items (PangoFontMetrics *metrics,
       PangoItem *item = l->data;
       PangoFont *font = item->analysis.font;
 
-      if (g_hash_table_lookup (fonts_seen, font) == NULL)
+      if (font != NULL && g_hash_table_lookup (fonts_seen, font) == NULL)
 	{
 	  PangoFontMetrics *raw_metrics = pango_font_get_metrics (font, language);
 	  g_hash_table_insert (fonts_seen, font, font);
