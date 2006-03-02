@@ -1,3 +1,8 @@
+2006-03-03  Tor Lillqvist  <tml@novell.com>
+
+	* pango/pangowin32-private.h (PING): Fix compilation error with
+	MSVC. (#333115)
+
 2006-03-01  Tor Lillqvist  <tml@novell.com>
 
 	* pango/pango-context.c (update_metrics_from_items): Check the
