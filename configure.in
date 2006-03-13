@@ -21,8 +21,8 @@ dnl
 
 dnl The triplet 
 m4_define([pango_major_version], [1])
-m4_define([pango_minor_version], [11])
-m4_define([pango_micro_version], [99])
+m4_define([pango_minor_version], [12])
+m4_define([pango_micro_version], [0])
 m4_define([pango_version],
           [pango_major_version.pango_minor_version.pango_micro_version])
 dnl The X.Y in -lpango-X.Y line. This is expected to stay 1.0 until Pango 2.
@@ -363,7 +363,7 @@ fi
 #
 # Checks for GLib
 #
-GLIB_REQUIRED_VERSION=2.9.1
+GLIB_REQUIRED_VERSION=2.10.0
 GLIB_MODULES="glib-2.0 >= $GLIB_REQUIRED_VERSION gobject-2.0 gmodule-no-export-2.0"
 
 PKG_CHECK_MODULES(GLIB, $GLIB_MODULES, :,

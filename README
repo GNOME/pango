@@ -5,7 +5,7 @@ the GTK+ widget toolkit as a test platform. Pango forms the core of text
 and font handling for GTK+-2.x.
 
 Pango is designed to be modular; the core Pango layout can be used
-with different font backends. There are two basic backends, with
+with different font backends. There are three basic backends, with
 multiple options for rendering with each.
 
  - Client side fonts using the FreeType and fontconfig libraries.
@@ -15,6 +15,8 @@ multiple options for rendering with each.
  - Native fonts on Microsoft Windows. (Optionally using Uniscribe
    for complex-text handling). Rendering can be done via Cairo 
    or directly using the native Win32 API.
+
+  - Native fonts on MacOS X, rendering via Cairo.
 
 The integration of Pango with Cairo (http://cairographics.org)
 provides a complete solution with high quality text handling 
@@ -29,12 +31,12 @@ and routines to assist in editing internationalized text.
 
 For more information about Pango, see:
 
- http://www.pango.org
+ http://www.pango.org/
 
 Dependencies
 ============
 
-Pango depends on version 2.10 or newer of the GLib library; more 
+Pango depends on version 2.10.0 or newer of the GLib library; more 
 information about GLib can be found at http://www.gtk.org/.
 
 When using client side fonts, the fontconfig library
@@ -43,18 +45,21 @@ of the FreeType font handling library (http://www.freetype.org) is
 also required.
 
 Cairo support depends on the Cairo library (http://cairographics.org).
+The Cairo backend is the preferred backend to use Pango with and is
+subject of most of the development in the future.  It has the
+advantage that the same code can be used for display and printing.
 
-The supported font backend for X in Pango-1.8 is the Xft backend
-which uses version 2 of the Xft library to manage client
-side fonts. Version 2 of Xft is available from 
-http://xlibs.freedesktop.org/release/. 
-You'll need the libXft package, and possibly the libXrender and 
-renderext packages as well. You'll also need fontconfig (see below.)
+We suggest using Pango with Cairo as described above, but you can also
+do X-specific rendering using the Xft library. The Xft backend uses
+version 2 of the Xft library to manage client side fonts. Version 2 of
+Xft is available from http://xlibs.freedesktop.org/release/.  You'll
+need the libXft package, and possibly the libXrender and renderext
+packages as well.  You'll also need fontconfig (see below.)
 
 Note that an earlier version of Xft is shipped with version
 of XFree86 up to 4.2. This version does not work with Pango-1.8;
 Pango-1.8 requires version 2 of Xft, which is present in XFree86-4.3
-and newer and in X11R6.7 and X11R6.8.
+and X11R6.7 and newer versions of those.
 
 After installing fontconfig, it may be necessary to edit
 the fonts.conf file, found at $(sysconfdir)/fonts/fonts.conf
@@ -82,7 +87,7 @@ GNU Lesser Public License (LGPL) - see the file COPYING for details.
 
 The OpenType code in pango/opentype is derived from the FreeType 
 project (http://www.freetype.org) and is dual-licensed under the 
-GNU Public License and the FreeType license. See see
+GNU General Public License and the FreeType license. See see
 pango/opentype/FT-license.txt for full details of the FreeType 
 license.
 
@@ -93,4 +98,8 @@ README file.
 
 Owen Taylor
 otaylor@redhat.com
-17 June 2005
+
+Behdad Esfahbod
+behdad@gnome.org
+
+13 March 2006
