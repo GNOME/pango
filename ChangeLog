@@ -1,3 +1,7 @@
+2006-03-25  Behdad Esfahbod  <behdad@gnome.org>
+
+	* pango/opentype/ottest.c: Don't err on Table_Missing.
+
 2006-03-13  Behdad Esfahbod  <behdad@gnome.org>
 
 	Create pango-1-12 stable branch.
