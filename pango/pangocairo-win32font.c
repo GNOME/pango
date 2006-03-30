@@ -264,6 +264,28 @@ pango_cairo_win32_font_get_glyph_extents (PangoFont        *font,
     *logical_rect = info->logical_rect;
 }
 
+static void
+quantize_position (int *thickness,
+		   int *position)
+{
+  int thickness_pixels = (*thickness + PANGO_SCALE / 2) / PANGO_SCALE;
+  if (thickness_pixels == 0)
+    thickness_pixels = 1;
+  
+  if (thickness_pixels & 1)
+    {
+      int new_center = ((*position - *thickness / 2) & ~(PANGO_SCALE - 1)) + PANGO_SCALE / 2;
+      *position = new_center + (PANGO_SCALE * thickness_pixels) / 2;
+    }
+  else
+    {
+      int new_center = ((*position - *thickness / 2 + PANGO_SCALE / 2) & ~(PANGO_SCALE - 1));
+      *position = new_center + (PANGO_SCALE * thickness_pixels) / 2;
+    }
+
+  *thickness = thickness_pixels * PANGO_SCALE;
+}
+
 static PangoFontMetrics *
 create_metrics_for_context (PangoFont    *font,
 			    PangoContext *context)
@@ -297,6 +319,9 @@ create_metrics_for_context (PangoFont    *font,
   metrics->underline_position = - metrics->underline_thickness;
   metrics->strikethrough_thickness = metrics->underline_thickness;
   metrics->strikethrough_position = height / 4;
+
+  quantize_position (&metrics->underline_thickness, &metrics->underline_position);
+  quantize_position (&metrics->strikethrough_thickness, &metrics->strikethrough_position);
 
   layout = pango_layout_new (context);
   font_desc = pango_font_describe (font);
