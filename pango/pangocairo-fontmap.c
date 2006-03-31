@@ -23,7 +23,7 @@
 
 #include "pangocairo.h"
 #include "pangocairo-private.h"
-#include "pango-utils.h"
+#include "pango-impl-utils.h"
 
 #if defined (HAVE_CAIRO_ATSUI)
 #  include "pangocairo-atsui.h"

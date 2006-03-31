@@ -30,7 +30,7 @@
 #include "pangocairo-private.h"
 #include "pangocairo-fc.h"
 #include "pangofc-private.h"
-#include "pango-utils.h"
+#include "pango-impl-utils.h"
 
 #define PANGO_TYPE_CAIRO_FC_FONT           (pango_cairo_fc_font_get_type ())
 #define PANGO_CAIRO_FC_FONT(object)        (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_TYPE_CAIRO_FC_FONT, PangoCairoFcFont))

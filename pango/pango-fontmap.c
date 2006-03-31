@@ -21,7 +21,7 @@
 
 #include <config.h>
 #include "pango-fontmap.h"
-#include "pango-utils.h"
+#include "pango-impl-utils.h"
 #include <stdlib.h>
 
 static PangoFontset *pango_font_map_real_load_fontset (PangoFontMap               *fontmap,

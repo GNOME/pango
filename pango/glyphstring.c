@@ -23,7 +23,7 @@
 #include <glib.h>
 #include <pango/pango-glyph.h>
 #include <pango/pango-font.h>
-#include <pango/pango-utils.h>
+#include <pango/pango-impl-utils.h>
 
 /**
  * pango_glyph_string_new:

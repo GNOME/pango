@@ -24,11 +24,10 @@
 #include <math.h>
 #include <string.h>
 
-#include "pango-impl-utils.h"
 #include "pango-types.h"
 #include "pango-font.h"
 #include "pango-fontmap.h"
-#include "pango-utils.h"
+#include "pango-impl-utils.h"
 
 struct _PangoFontDescription
 {

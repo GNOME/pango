@@ -30,7 +30,7 @@
 #include <errno.h>
 
 #include "pango-fontmap.h"
-#include "pango-utils.h"
+#include "pango-impl-utils.h"
 #include "pangowin32-private.h"
 #include "modules.h"
 

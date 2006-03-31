@@ -24,7 +24,7 @@
 #include <pango/pango-break.h>
 #include <pango/pango-item.h>
 #include <pango/pango-engine.h>
-#include <pango/pango-utils.h>
+#include <pango/pango-impl-utils.h>
 #include <string.h>
 
 #include "pango-layout-private.h"

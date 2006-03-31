@@ -25,7 +25,7 @@
 #include <string.h>
 
 #include "pango-attributes.h"
-#include "pango-utils.h"
+#include "pango-impl-utils.h"
 
 GType
 pango_color_get_type (void)

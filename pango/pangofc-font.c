@@ -26,7 +26,7 @@
 #include "pangofc-private.h"
 #include "pango-layout.h"
 #include "pango-modules.h"
-#include "pango-utils.h"
+#include "pango-impl-utils.h"
 
 #include <fontconfig/fcfreetype.h>
 

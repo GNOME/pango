@@ -25,9 +25,8 @@
 #include <string.h>
 #include <stdlib.h>
 
-#include "pango-impl-utils.h"
-#include "pango-utils.h"
 #include "pango-font.h"
+#include "pango-impl-utils.h"
 
 #include <glib/gstdio.h>
 
@@ -694,7 +693,7 @@ pango_parse_style (const char *str,
 /**
  * pango_parse_variant:
  * @str: a string to parse.
- * @style: a #PangoVariant to store the result in.
+ * @variant: a #PangoVariant to store the result in.
  * @warn: if %TRUE, issue a g_warning() on bad input.
  * 
  * Parses a font variant. The allowed values are "normal"
@@ -740,7 +739,7 @@ pango_parse_variant (const char   *str,
 /**
  * pango_parse_weight:
  * @str: a string to parse.
- * @style: a #PangoWeight to store the result in.
+ * @weight: a #PangoWeight to store the result in.
  * @warn: if %TRUE, issue a g_warning() on bad input.
  * 
  * Parses a font weight. The allowed values are "heavy",
@@ -836,7 +835,7 @@ pango_parse_weight (const char  *str,
 /**
  * pango_parse_stretch:
  * @str: a string to parse.
- * @style: a #PangoStretch to store the result in.
+ * @stretch: a #PangoStretch to store the result in.
  * @warn: if %TRUE, issue a g_warning() on bad input.
  * 
  * Parses a font stretch. The allowed values are 
@@ -1401,9 +1400,29 @@ pango_language_get_sample_string (PangoLanguage *language)
   return result;
 }
 
+/**
+ * pango_log2vis_get_embedding_levels:
+ * @text:      the text to itemize.
+ * @length:    the number of bytes (not characters) to process, or -1
+ *             if @text is nul-terminated and the legnth should be calculated.
+ * @pbase_dir: input base direction, and output resolved direction.
+ *
+ * This will return the bidirectional embedding levels of the input paragraph
+ * as defined by the Unicode Bidirectional Algorithm available at:
+ *
+ *   http://www.unicode.org/reports/tr9/
+ *
+ * If the input base direction is a weak direction, the direction of the
+ * characters in the text will determine the final resolved direction.
+ *
+ * Return value: a newly allocated array of embedding levels, one item per
+ *               character (not byte), that should be freed using g_free.
+ *
+ * Since: 1.4
+ */
 guint8 *
-pango_log2vis_get_embedding_levels (const gchar    *str,
-				    int             bytelen,
+pango_log2vis_get_embedding_levels (const gchar    *text,
+				    int             length,
 				    PangoDirection *pbase_dir)
 {
   FriBidiCharType fribidi_base_dir;
@@ -1433,15 +1452,15 @@ pango_log2vis_get_embedding_levels (const gchar    *str,
 
 #ifdef FRIBIDI_HAVE_UTF8
   {
-    if (bytelen < 0)
-      bytelen = strlen (str);
-    embedding_levels_list = fribidi_log2vis_get_embedding_levels_new_utf8 (str, bytelen, &fribidi_base_dir);
+    if (length < 0)
+      length = strlen (text);
+    embedding_levels_list = fribidi_log2vis_get_embedding_levels_new_utf8 (text, length, &fribidi_base_dir);
   }
 #else
   {
     gunichar *text_ucs4;
     int n_chars;
-    text_ucs4 = g_utf8_to_ucs4_fast (str, bytelen, &n_chars);
+    text_ucs4 = g_utf8_to_ucs4_fast (text, length, &n_chars);
     embedding_levels_list = g_new (guint8, n_chars);
     fribidi_log2vis_get_embedding_levels ((FriBidiChar*)text_ucs4, n_chars,
 					  &fribidi_base_dir,
@@ -1698,13 +1717,11 @@ pango_load_aliases (void)
  * @fontname: an ascii string
  * @families: will be set to an array of font family names.
  *    this array is owned by pango and should not be freed.
+ * @n_families: will be set to the length of the @families array.
  *
- * Look up all user defined aliases for the alias #fontname.
- * The resulting font family names will be stored in #families,
- * and the number of families will be returned.
- * 
- * Return value: the number of font famillies stored in the #families argument.
- *   This value is owned by Pango and must not be freed.
+ * Look up all user defined aliases for the alias @fontname.
+ * The resulting font family names will be stored in @families,
+ * and the number of families in @n_families.
  **/
 void
 pango_lookup_aliases (const char   *fontname,
@@ -1814,7 +1831,7 @@ pango_is_zero_width (gunichar ch)
  *
  * Quantizes the thickness and position of a line, typically an
  * underline or strikethrough, to whole device pixels, that is
- * multiplies of PANGO_SCALE. The purpose of this function is to avoid
+ * multiplies of %PANGO_SCALE. The purpose of this function is to avoid
  * such lines looking blurry.
  *
  * Since: 1.12

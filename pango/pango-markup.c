@@ -26,7 +26,7 @@
 
 #include <pango/pango-attributes.h>
 #include <pango/pango-font.h>
-#include <pango/pango-utils.h>
+#include <pango/pango-impl-utils.h>
 
 /* FIXME */
 #define _(x) x

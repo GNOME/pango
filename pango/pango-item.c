@@ -22,7 +22,7 @@
 #include <config.h>
 #include <pango-attributes.h>
 #include <pango-item.h>
-#include <pango-utils.h>
+#include <pango-impl-utils.h>
 
 /**
  * pango_item_new:

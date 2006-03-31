@@ -28,7 +28,7 @@
 #include "pango-context.h"
 #include "pangofc-fontmap.h"
 #include "pangofc-private.h"
-#include "pango-utils.h"
+#include "pango-impl-utils.h"
 #include "modules.h"
 
 typedef struct _PangoFcCoverageKey  PangoFcCoverageKey;

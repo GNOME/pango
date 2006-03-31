@@ -88,8 +88,8 @@ G_CONST_RETURN char *   pango_get_lib_subdirectory (void);
 
 /* A routine from fribidi that we either wrap or provide ourselves.
  */
-guint8 * pango_log2vis_get_embedding_levels (const gchar    *str,
-					     int             bytelen,
+guint8 * pango_log2vis_get_embedding_levels (const gchar    *text,
+					     int             length,
 					     PangoDirection *pbase_dir);
 
 G_CONST_RETURN char *pango_language_get_sample_string (PangoLanguage *language);
@@ -99,9 +99,8 @@ G_CONST_RETURN char *pango_language_get_sample_string (PangoLanguage *language);
  */
 gboolean pango_is_zero_width (gunichar ch) G_GNUC_CONST;
 
-/* String interning for static strings */
-#define I_(string) g_intern_static_string (string)
-
+/* Hint line position and thickness.
+ */
 void pango_quantize_line_geometry (int *thickness,
 				   int *position);
 

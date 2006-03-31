@@ -26,7 +26,7 @@
 #include <string.h>
 
 #include "pango-fontmap.h"
-#include "pango-utils.h"
+#include "pango-impl-utils.h"
 #include "pangocairo-private.h"
 #include "pangocairo-win32.h"
 

@@ -26,7 +26,7 @@
 #include <gmodule.h>
 #include "pango-break.h"
 #include "pango-context.h"
-#include "pango-utils.h"
+#include "pango-impl-utils.h"
 #include "pango-engine.h"
 #include "pango-enum-types.h"
 

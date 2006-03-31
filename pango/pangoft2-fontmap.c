@@ -30,7 +30,7 @@
 
 #include <fontconfig/fontconfig.h>
 
-#include "pango-utils.h"
+#include "pango-impl-utils.h"
 #include "pangoft2-private.h"
 #include "pangofc-fontmap.h"
 

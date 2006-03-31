@@ -923,3 +923,26 @@ pango_ot_ruleset_substitute
 pango_ot_ruleset_position
 </SECTION>
 
+<SECTION>
+<TITLE>Miscellaneous Utilities</TITLE>
+<FILE>utils</FILE>
+pango_split_file_list
+pango_trim_string
+pango_read_line
+pango_skip_space
+pango_scan_word
+pango_scan_string
+pango_scan_int
+pango_config_key_get
+pango_lookup_aliases
+pango_parse_style
+pango_parse_variant
+pango_parse_weight
+pango_parse_stretch
+pango_get_sysconf_subdirectory
+pango_get_lib_subdirectory
+pango_log2vis_get_embedding_levels
+pango_language_get_sample_string
+pango_is_zero_width
+pango_quantize_line_geometry
+</SECTION>

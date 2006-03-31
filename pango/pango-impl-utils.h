@@ -21,8 +21,10 @@
  */
 
 #ifndef __PANGO_IMPL_UTILS_H__
+#define __PANGO_IMPL_UTILS_H__
 
 #include <glib-object.h>
+#include <pango/pango-utils.h>
 
 G_BEGIN_DECLS
 
@@ -74,6 +76,7 @@ prefix ## _get_type (void)				                   \
 
 
 
+/* Warning history.  Used to not spew some warnings more than once. */
 typedef struct _PangoWarningHistory PangoWarningHistory;
 
 struct _PangoWarningHistory {
@@ -83,6 +86,11 @@ struct _PangoWarningHistory {
 }; 
 
 extern PangoWarningHistory _pango_warning_history;
+
+
+/* String interning for static strings */
+#define I_(string) g_intern_static_string (string)
+
 
 G_END_DECLS
 

@@ -25,7 +25,7 @@
 #include <math.h>
 
 #include <X11/Xlib.h>
-#include "pango-utils.h"
+#include "pango-impl-utils.h"
 #include "modules.h"
 
 #undef PANGO_DISABLE_DEPRECATED

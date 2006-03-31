@@ -26,7 +26,7 @@
 #include <stdlib.h>
 #include <gmodule.h>
 #include "pango.h"
-#include "pango-utils.h"
+#include "pango-impl-utils.h"
 #include "pangowin32.h"
 
 

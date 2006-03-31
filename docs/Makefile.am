@@ -19,9 +19,8 @@ CFILE_GLOB=$(top_srcdir)/pango/*.c
 # Headers to ignore
 IGNORE_HFILES=			\
 	mini-fribidi		\
-	mini-xft		\
-	module-defs.h		\
 	opentype		\
+	module-defs.h		\
 	modules.h		\
 	pangocairo-private.h	\
 	pangocairo-fc.h		\
@@ -33,7 +32,6 @@ IGNORE_HFILES=			\
 	pango-glyph-item-private.h	\
 	pango-layout-private.h	\
 	pango-script-table.h	\
-	pango-utils.h		\
 	pangofc-private.h	\
 	pangoft2-private.h	\
 	pangowin32-private.h	\

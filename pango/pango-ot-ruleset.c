@@ -22,7 +22,7 @@
 #include <config.h>
 
 #include "pango-ot-private.h"
-#include "pango-utils.h"
+#include "pango-impl-utils.h"
 
 typedef struct _PangoOTRule PangoOTRule;
 

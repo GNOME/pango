@@ -1,3 +1,9 @@
+2006-03-30  Behdad Esfahbod  <behdad@gnome.org>
+
+	Hook up pango-utils.h into the documentation, as we are installing
+	it anyway.  Move some internal stuff to pango-impl-utils.h and make
+	source files include that instead.
+
 2006-03-30  Tor Lillqvist  <tml@novell.com>
 
 	Fix blurred underlines on Win32 (#332656):

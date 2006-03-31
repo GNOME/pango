@@ -22,7 +22,7 @@
 #include <config.h>
 
 #include "pango-ot-private.h"
-#include "pango-utils.h"
+#include "pango-impl-utils.h"
 #include FT_MODULE_H
 
 static void pango_ot_info_class_init (GObjectClass *object_class);

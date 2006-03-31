@@ -23,10 +23,9 @@
 
 #include <math.h>
 
-#include "pango-impl-utils.h"
 #include "pangocairo.h"
 #include "pangocairo-private.h"
-#include "pango-utils.h"
+#include "pango-impl-utils.h"
 
 PangoCairoWarningHistory _pango_cairo_warning_history = { FALSE };
 

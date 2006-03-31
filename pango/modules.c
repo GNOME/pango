@@ -30,7 +30,6 @@
 
 #include "pango-enum-types.h"
 #include "pango-modules.h"
-#include "pango-utils.h"
 #include "pango-impl-utils.h"
 
 typedef struct _PangoModule      PangoModule;

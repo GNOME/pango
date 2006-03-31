@@ -33,7 +33,7 @@
 
 #include "pango-engine-private.h"
 #include "pango-fontmap.h"
-#include "pango-utils.h"
+#include "pango-impl-utils.h"
 
 #undef PANGO_DISABLE_DEPRECATED
 

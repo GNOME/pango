@@ -23,6 +23,7 @@
 <!ENTITY PangoFcFont SYSTEM "xml/pangofc-font.xml">
 <!ENTITY PangoFcDecoder SYSTEM "xml/pangofc-decoder.xml">
 <!ENTITY pango-OpenType-Font-Handling SYSTEM "xml/opentype.xml">
+<!ENTITY pango-Misc-Utils SYSTEM "xml/utils.xml">
 <!ENTITY markup-format SYSTEM "pango_markup.sgml">
 <!ENTITY pango-querymodules SYSTEM "pango-querymodules.xml">
 <!ENTITY version SYSTEM "version.xml">
@@ -66,6 +67,7 @@
     &PangoEngineLang;
     &PangoEngineShape;
     &pango-Modules;
+    &pango-Misc-Utils;
     </chapter>
 
   <chapter id="tools">

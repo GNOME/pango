@@ -24,7 +24,7 @@
 #include <stdlib.h>
 
 #include "pango/pango-context.h"
-#include "pango/pango-utils.h"
+#include "pango/pango-impl-utils.h"
 
 #include "pango-engine.h"
 #include "pango-engine-private.h"

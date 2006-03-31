@@ -21,7 +21,7 @@
 
 #include <config.h>
 #include "pango-tabs.h"
-#include "pango-utils.h"
+#include "pango-impl-utils.h"
 #include <string.h>
 
 typedef struct _PangoTab PangoTab;
