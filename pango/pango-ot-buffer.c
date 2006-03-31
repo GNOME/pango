@@ -354,6 +354,8 @@ pango_ot_buffer_output (PangoOTBuffer    *buffer,
       else
 	apply_gpos_ltr (glyphs, buffer->buffer->positions);
     }
+  else
+    pango_fc_font_kern_glyphs (buffer->font, glyphs);
 
   pango_fc_font_unlock_face (buffer->font);
 }
