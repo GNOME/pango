@@ -272,7 +272,7 @@ pango_glyph_string_x_to_index (PangoGlyphString *glyphs,
       if (index)
 	*index = start_index;
       if (trailing)
-	trailing = 0;
+	*trailing = 0;
     }
   else
     {
