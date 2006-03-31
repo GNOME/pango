@@ -1,5 +1,13 @@
 2006-03-31  Behdad Esfahbod  <behdad@gnome.org>
 
+	Part of Bug 336026 – Make fallback shaper in modules work
+	Patch from Denis Jacquerye.
+
+	* pango/pango-ot-buffer.c (pango_ot_buffer_output): Call
+	pango_fc_font_kern_glyphs if GPOS not applied.
+
+2006-03-31  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 334802 – Using plain integer as NULL pointer
 
 	* pango/mapping.c (pango_glyph_string_x_to_index): Fix type assigining
