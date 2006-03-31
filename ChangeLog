@@ -1,5 +1,10 @@
 2006-03-31  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango/pangoft2.c (_pango_ft2_ft_strerror): Change char* to
+	char[] in the ft error table, to avoid relocations.
+
+2006-03-31  Behdad Esfahbod  <behdad@gnome.org>
+
 	Part of Bug 336026 – Make fallback shaper in modules work
 	Patch from Denis Jacquerye.
 

@@ -493,7 +493,7 @@ pango_ft2_get_unknown_glyph (PangoFont *font)
 typedef struct
 {
   FT_Error     code;
-  const char*  msg;
+  const char   msg[40];
 } ft_error_description;
 
 static int
@@ -509,7 +509,7 @@ _pango_ft2_ft_strerror (FT_Error error)
 #undef __FTERRORS_H__
 #define FT_ERRORDEF( e, v, s )  { e, s },
 #define FT_ERROR_START_LIST  {
-#define FT_ERROR_END_LIST    { 0, 0 } };
+#define FT_ERROR_END_LIST    };
 
   static const ft_error_description ft_errors[] =
 #include FT_ERRORS_H
@@ -519,7 +519,7 @@ _pango_ft2_ft_strerror (FT_Error error)
 #undef FT_ERROR_END_LIST
 
   ft_error_description *found =
-    bsearch (&error, ft_errors, G_N_ELEMENTS (ft_errors) - 1,
+    bsearch (&error, ft_errors, G_N_ELEMENTS (ft_errors),
 	     sizeof (ft_errors[0]), ft_error_compare);
   if (found != NULL)
     return found->msg;
