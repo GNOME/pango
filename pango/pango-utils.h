@@ -102,6 +102,9 @@ gboolean pango_is_zero_width (gunichar ch) G_GNUC_CONST;
 /* String interning for static strings */
 #define I_(string) g_intern_static_string (string)
 
+void pango_quantize_line_geometry (int *thickness,
+				   int *position);
+
 G_END_DECLS
 
 #endif /* __PANGO_UTILS_H__ */

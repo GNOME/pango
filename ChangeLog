@@ -1,3 +1,22 @@
+2006-03-30  Tor Lillqvist  <tml@novell.com>
+
+	Fix blurred underlines on Win32 (#332656):
+	
+	* pango/pango-utils.c (pango_quantize_line_geometry):
+	New public function. Used to be the static quantize_position() in
+	pangofc-font.c
+
+	* pango/pango-utils.h: Declare it.
+
+	* pango/pango.def: Here, too.
+
+	* pango/pangofc-font.c (quantize_position): Remove.
+	(get_face_metrics): Use pango_quantize_line_geometry() instead.
+
+	* pango/pangocairo-win32font.c (create_metrics_for_context): Call
+	pango_quantize_line_geometry() for underline and strikethrough
+	geometries.
+
 2006-03-25  Behdad Esfahbod  <behdad@gnome.org>
 
 	* pango/opentype/ottest.c: Don't err on Table_Missing.

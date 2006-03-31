@@ -1806,3 +1806,37 @@ pango_is_zero_width (gunichar ch)
 		(ch >= 0x202A && ch <= 0x202E)
 	 )) || ch == 0xFEFF;
 }
+
+/**
+ * pango_quantize_line_geometry:
+ * @thickness: pointer to the thickness of a line, in Pango scaled units
+ * @position: corresponding position
+ *
+ * Quantizes the thickness and position of a line, typically an
+ * underline or strikethrough, to whole device pixels, that is
+ * multiplies of PANGO_SCALE. The purpose of this function is to avoid
+ * such lines looking blurry.
+ *
+ * Since: 1.12
+ */
+void
+pango_quantize_line_geometry (int *thickness,
+			      int *position)
+{
+  int thickness_pixels = (*thickness + PANGO_SCALE / 2) / PANGO_SCALE;
+  if (thickness_pixels == 0)
+    thickness_pixels = 1;
+  
+  if (thickness_pixels & 1)
+    {
+      int new_center = ((*position - *thickness / 2) & ~(PANGO_SCALE - 1)) + PANGO_SCALE / 2;
+      *position = new_center + (PANGO_SCALE * thickness_pixels) / 2;
+    }
+  else
+    {
+      int new_center = ((*position - *thickness / 2 + PANGO_SCALE / 2) & ~(PANGO_SCALE - 1));
+      *position = new_center + (PANGO_SCALE * thickness_pixels) / 2;
+    }
+
+  *thickness = thickness_pixels * PANGO_SCALE;
+}

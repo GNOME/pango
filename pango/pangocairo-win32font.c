@@ -302,6 +302,11 @@ create_metrics_for_context (PangoFont    *font,
   metrics->strikethrough_thickness = metrics->underline_thickness;
   metrics->strikethrough_position = height / 4;
 
+  pango_quantize_line_geometry (&metrics->underline_thickness,
+				&metrics->underline_position);
+  pango_quantize_line_geometry (&metrics->strikethrough_thickness,
+				&metrics->strikethrough_position);
+
   layout = pango_layout_new (context);
   font_desc = pango_font_describe (font);
   pango_layout_set_font_description (layout, font_desc);

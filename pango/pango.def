@@ -278,6 +278,7 @@ EXPORTS
 	pango_parse_style
 	pango_parse_variant
 	pango_parse_weight
+	pango_quantize_line_geometry
 	pango_read_line
 	pango_render_part_get_type
 	pango_renderer_activate

@@ -252,28 +252,6 @@ pango_fc_font_get_coverage (PangoFont     *font,
 					  fcfont);
 }
 
-static void
-quantize_position (int *thickness,
-		   int *position)
-{
-  int thickness_pixels = (*thickness + PANGO_SCALE / 2) / PANGO_SCALE;
-  if (thickness_pixels == 0)
-    thickness_pixels = 1;
-  
-  if (thickness_pixels & 1)
-    {
-      int new_center = ((*position - *thickness / 2) & ~(PANGO_SCALE - 1)) + PANGO_SCALE / 2;
-      *position = new_center + (PANGO_SCALE * thickness_pixels) / 2;
-    }
-  else
-    {
-      int new_center = ((*position - *thickness / 2 + PANGO_SCALE / 2) & ~(PANGO_SCALE - 1));
-      *position = new_center + (PANGO_SCALE * thickness_pixels) / 2;
-    }
-
-  *thickness = thickness_pixels * PANGO_SCALE;
-}
-
 /* For Xft, it would be slightly more efficient to simply to
  * call Xft, and also more robust against changes in Xft.
  * But for now, we simply use the same code for all backends.
@@ -386,8 +364,10 @@ get_face_metrics (PangoFcFont      *fcfont,
    */
   if (fcfont->is_hinted)
     {
-      quantize_position (&metrics->underline_thickness, &metrics->underline_position);
-      quantize_position (&metrics->strikethrough_thickness, &metrics->strikethrough_position);
+      pango_quantize_line_geometry (&metrics->underline_thickness,
+				    &metrics->underline_position);
+      pango_quantize_line_geometry (&metrics->strikethrough_thickness,
+				    &metrics->strikethrough_position);
     }
   
   PANGO_FC_FONT_UNLOCK_FACE (fcfont);
