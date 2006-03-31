@@ -98,7 +98,7 @@ struct _PangoXSizeInfo
 };
 
 static const struct {
-  const gchar *text;
+  const gchar text[12];
   PangoWeight value;
 } weights_map[] = {
   { "light",     300 },
@@ -115,7 +115,7 @@ static const struct {
 };
 
 static const struct {
-  const gchar *text;
+  const gchar text[4];
   PangoStyle value;
 } styles_map[] = {
   { "r", PANGO_STYLE_NORMAL },
@@ -124,7 +124,7 @@ static const struct {
 };
 
 static const struct {
-  const gchar *text;
+  const gchar text[16];
   PangoStretch value;
 } stretches_map[] = {
   { "normal",        PANGO_STRETCH_NORMAL },

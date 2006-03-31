@@ -1316,7 +1316,7 @@ pango_language_matches (PangoLanguage *language,
 }
 
 typedef struct {
-  const char *lang;
+  const char lang[4];
   const char *str;
 } LangInfo;
 

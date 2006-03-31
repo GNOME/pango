@@ -753,7 +753,7 @@ pango_font_descriptions_free (PangoFontDescription **descs,
 typedef struct
 {
   int value;
-  const char *str;
+  const char str[16];
 } FieldMap;
 
 static const FieldMap style_map[] = {

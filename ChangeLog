@@ -1,5 +1,8 @@
 2006-03-31  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango/fonts.c:
+	* pango/pango-utils.c:
+	* pango/pangox-fontmap.c:
 	* pango/pangoft2.c (_pango_ft2_ft_strerror): Change char* to
 	char[] in the ft error table, to avoid relocations.
 
