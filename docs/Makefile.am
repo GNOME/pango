@@ -18,8 +18,20 @@ CFILE_GLOB=$(top_srcdir)/pango/*.c
 
 # Headers to ignore
 IGNORE_HFILES=			\
+	ftglue.h		\
+	harfbuzz-buffer.h	\
+	harfbuzz-dump.h		\
+	harfbuzz-gdef.h		\
+	harfbuzz-gdef-private.h	\
+	harfbuzz-gpos.h		\
+	harfbuzz-gpos-private.h	\
+	harfbuzz-gsub.h		\
+	harfbuzz-gsub-private.h	\
+	harfbuzz.h		\
+	harfbuzz-impl.h		\
+	harfbuzz-open.h		\
+	harfbuzz-open-private.h	\
 	mini-fribidi		\
-	opentype		\
 	module-defs.h		\
 	modules.h		\
 	pangocairo-private.h	\
