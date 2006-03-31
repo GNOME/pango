@@ -1,5 +1,11 @@
 2006-03-30  Behdad Esfahbod  <behdad@gnome.org>
 
+	Bug 335840 – Typo in including Xft.
+
+	* pangoxft-render.h: Define _XFT_NO_COMPAT_ instead of _XFT_NO_COMPAT.
+
+2006-03-30  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/*.[ch]: Make #include syntax in sources and headers more
 	consistent.  We are using the "..." syntax for all Pango headers
 	in source files, and <...> syntax in all header files, except for

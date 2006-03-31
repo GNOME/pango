@@ -15,6 +15,92 @@ backends and modules, but may be useful for other purposes too.
 
 </para>
 
+<!-- ##### FUNCTION pango_split_file_list ##### -->
+<para>
+
+</para>
+
+@str: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_trim_string ##### -->
+<para>
+
+</para>
+
+@str: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_read_line ##### -->
+<para>
+
+</para>
+
+@stream: 
+@str: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_skip_space ##### -->
+<para>
+
+</para>
+
+@pos: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_scan_word ##### -->
+<para>
+
+</para>
+
+@pos: 
+@out: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_scan_string ##### -->
+<para>
+
+</para>
+
+@pos: 
+@out: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_scan_int ##### -->
+<para>
+
+</para>
+
+@pos: 
+@out: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_config_key_get ##### -->
+<para>
+
+</para>
+
+@key: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_lookup_aliases ##### -->
+<para>
+
+</para>
+
+@fontname: 
+@families: 
+@n_families: 
+
+
 <!-- ##### FUNCTION pango_parse_style ##### -->
 <para>
 
@@ -22,6 +108,17 @@ backends and modules, but may be useful for other purposes too.
 
 @str: 
 @style: 
+@warn: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_parse_variant ##### -->
+<para>
+
+</para>
+
+@str: 
+@variant: 
 @warn: 
 @Returns: 
 
@@ -37,107 +134,14 @@ backends and modules, but may be useful for other purposes too.
 @Returns: 
 
 
-<!-- ##### FUNCTION pango_is_zero_width ##### -->
-<para>
-
-</para>
-
-@ch: 
-@Returns: 
-
-
-<!-- ##### FUNCTION pango_scan_int ##### -->
-<para>
-
-</para>
-
-@pos: 
-@out: 
-@Returns: 
-
-
-<!-- ##### FUNCTION pango_get_lib_subdirectory ##### -->
-<para>
-
-</para>
-
-@Returns: 
-
-
-<!-- ##### FUNCTION pango_quantize_line_geometry ##### -->
-<para>
-
-</para>
-
-@thickness: 
-@position: 
-
-
-<!-- ##### FUNCTION pango_language_get_sample_string ##### -->
-<para>
-
-</para>
-
-@language: 
-@Returns: 
-
-
-<!-- ##### FUNCTION pango_skip_space ##### -->
-<para>
-
-</para>
-
-@pos: 
-@Returns: 
-
-
-<!-- ##### FUNCTION pango_parse_variant ##### -->
+<!-- ##### FUNCTION pango_parse_stretch ##### -->
 <para>
 
 </para>
 
 @str: 
-@variant: 
+@stretch: 
 @warn: 
-@Returns: 
-
-
-<!-- ##### FUNCTION pango_scan_string ##### -->
-<para>
-
-</para>
-
-@pos: 
-@out: 
-@Returns: 
-
-
-<!-- ##### FUNCTION pango_read_line ##### -->
-<para>
-
-</para>
-
-@stream: 
-@str: 
-@Returns: 
-
-
-<!-- ##### FUNCTION pango_config_key_get ##### -->
-<para>
-
-</para>
-
-@key: 
-@Returns: 
-
-
-<!-- ##### FUNCTION pango_scan_word ##### -->
-<para>
-
-</para>
-
-@pos: 
-@out: 
 @Returns: 
 
 
@@ -149,12 +153,11 @@ backends and modules, but may be useful for other purposes too.
 @Returns: 
 
 
-<!-- ##### FUNCTION pango_trim_string ##### -->
+<!-- ##### FUNCTION pango_get_lib_subdirectory ##### -->
 <para>
 
 </para>
 
-@str: 
 @Returns: 
 
 
@@ -172,33 +175,30 @@ backends and modules, but may be useful for other purposes too.
 @bytelen: 
 
 
-<!-- ##### FUNCTION pango_parse_stretch ##### -->
+<!-- ##### FUNCTION pango_language_get_sample_string ##### -->
 <para>
 
 </para>
 
-@str: 
-@stretch: 
-@warn: 
+@language: 
 @Returns: 
 
 
-<!-- ##### FUNCTION pango_lookup_aliases ##### -->
+<!-- ##### FUNCTION pango_is_zero_width ##### -->
 <para>
 
 </para>
 
-@fontname: 
-@families: 
-@n_families: 
-
-
-<!-- ##### FUNCTION pango_split_file_list ##### -->
-<para>
-
-</para>
-
-@str: 
+@ch: 
 @Returns: 
+
+
+<!-- ##### FUNCTION pango_quantize_line_geometry ##### -->
+<para>
+
+</para>
+
+@thickness: 
+@position: 
 
 

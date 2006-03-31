@@ -26,8 +26,7 @@
 
 G_BEGIN_DECLS
 
-#define _XFT_NO_COMPAT
-#define _XFTCOMPAT_H_
+#define _XFT_NO_COMPAT_
 #include <X11/Xlib.h>
 #include <X11/Xft/Xft.h>
 #if defined(XftVersion) && XftVersion >= 20000
