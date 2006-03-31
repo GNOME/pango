@@ -4060,7 +4060,7 @@ pango_layout_line_new (PangoLayout *layout)
 
   private->ref_count = 1;
   private->line.layout = layout;
-  private->line.runs = 0;
+  private->line.runs = NULL;
   private->line.length = 0;
 
   /* Note that we leave start_index, resolved_dir, and is_paragraph_start

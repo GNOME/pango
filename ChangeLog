@@ -1,5 +1,14 @@
 2006-03-31  Behdad Esfahbod  <behdad@gnome.org>
 
+	Bug 334802 – Using plain integer as NULL pointer
+
+	* pango/mapping.c (pango_glyph_string_x_to_index): Fix type assigining
+	trailing instead of *trailing.
+
+	* pango/pango-layout.c (pango_layout_line_new): Use NULL instead of 0.
+
+2006-03-31  Behdad Esfahbod  <behdad@gnome.org>
+
 	Convert pango/opentype to the new project called HarfBuzz.
 
 	* pango/opentype/*: Restructured.
