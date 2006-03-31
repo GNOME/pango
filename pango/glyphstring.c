@@ -21,9 +21,9 @@
 
 #include <config.h>
 #include <glib.h>
-#include <pango/pango-glyph.h>
-#include <pango/pango-font.h>
-#include <pango/pango-impl-utils.h>
+#include "pango-glyph.h"
+#include "pango-font.h"
+#include "pango-impl-utils.h"
 
 /**
  * pango_glyph_string_new:

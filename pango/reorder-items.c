@@ -20,7 +20,7 @@
  */
 
 #include <config.h>
-#include <pango/pango-glyph.h>
+#include "pango-glyph.h"
 
 /*
  * NB: The contents of the file implement the exact same algorithm

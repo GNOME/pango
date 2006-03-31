@@ -22,7 +22,7 @@
 #include <config.h>
 #include <string.h>
 
-#include <pango/pango-coverage.h>
+#include "pango-coverage.h"
 
 typedef struct _PangoBlockInfo PangoBlockInfo;
 

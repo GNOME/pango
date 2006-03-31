@@ -52,8 +52,8 @@
 #define PING(printlist)
 #endif
 
-#include "pango-modules.h"
-#include "pangowin32.h"
+#include <pango/pango-modules.h>
+#include <pango/pangowin32.h>
 
 typedef enum
   {

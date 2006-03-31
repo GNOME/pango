@@ -24,9 +24,9 @@
 #include <stdlib.h>
 #include <errno.h>
 
-#include <pango/pango-attributes.h>
-#include <pango/pango-font.h>
-#include <pango/pango-impl-utils.h>
+#include "pango-attributes.h"
+#include "pango-font.h"
+#include "pango-impl-utils.h"
 
 /* FIXME */
 #define _(x) x

@@ -1,5 +1,12 @@
 2006-03-30  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango/*.[ch]: Make #include syntax in sources and headers more
+	consistent.  We are using the "..." syntax for all Pango headers
+	in source files, and <...> syntax in all header files, except for
+	including private headers, that we use "...".
+
+2006-03-30  Behdad Esfahbod  <behdad@gnome.org>
+
 	Hook up pango-utils.h into the documentation, as we are installing
 	it anyway.  Move some internal stuff to pango-impl-utils.h and make
 	source files include that instead.

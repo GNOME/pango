@@ -23,8 +23,8 @@
 #include <string.h>
 #include <stdlib.h>
 
-#include "pango/pango-context.h"
-#include "pango/pango-impl-utils.h"
+#include "pango-context.h"
+#include "pango-impl-utils.h"
 
 #include "pango-engine.h"
 #include "pango-engine-private.h"

@@ -20,11 +20,11 @@
  */
 
 #include <config.h>
-#include <pango/pango-glyph.h>		/* For pango_shape() */
-#include <pango/pango-break.h>
-#include <pango/pango-item.h>
-#include <pango/pango-engine.h>
-#include <pango/pango-impl-utils.h>
+#include "pango-glyph.h"		/* For pango_shape() */
+#include "pango-break.h"
+#include "pango-item.h"
+#include "pango-engine.h"
+#include "pango-impl-utils.h"
 #include <string.h>
 
 #include "pango-layout-private.h"

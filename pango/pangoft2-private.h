@@ -23,8 +23,8 @@
 #ifndef __PANGOFT2_PRIVATE_H__
 #define __PANGOFT2_PRIVATE_H__
 
-#include "pangoft2.h"
-#include "pango-renderer.h"
+#include <pango/pangoft2.h>
+#include <pango/pango-renderer.h>
 #include <fontconfig/fontconfig.h>
 
 /* Debugging... */

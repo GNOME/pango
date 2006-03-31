@@ -22,9 +22,9 @@
 #ifndef __PANGOCAIRO_WIN32_H__
 #define __PANGOCAIRO_WIN32_H__
 
-#include "pangowin32.h"
+#include <pango/pangowin32.h>
 #include "pangowin32-private.h"
-#include "pangocairo.h"
+#include <pango/pangocairo.h>
 
 G_BEGIN_DECLS
 

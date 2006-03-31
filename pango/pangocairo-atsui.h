@@ -23,7 +23,7 @@
 #define __PANGOCAIRO_ATSUI_H__
 
 #include "pangoatsui-private.h"
-#include "pangocairo.h"
+#include <pango/pangocairo.h>
 #include <cairo-atsui.h>
 
 G_BEGIN_DECLS

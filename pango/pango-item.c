@@ -20,9 +20,9 @@
  */
 
 #include <config.h>
-#include <pango-attributes.h>
-#include <pango-item.h>
-#include <pango-impl-utils.h>
+#include "pango-attributes.h"
+#include "pango-item.h"
+#include "pango-impl-utils.h"
 
 /**
  * pango_item_new:

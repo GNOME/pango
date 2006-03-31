@@ -22,9 +22,8 @@
 #ifndef __PANGOX_PRIVATE_H__
 #define __PANGOX_PRIVATE_H__
 
-#include "pango-modules.h"
-#include "pangox.h"
-#include "pangox-private.h"
+#include <pango/pangox.h>
+#include <pango/pango-modules.h>
 
 typedef struct _PangoXFace        PangoXFace;
 typedef struct _PangoXFont        PangoXFont;

@@ -22,8 +22,8 @@
 #ifndef __PANGOCAIRO_FC_H__
 #define __PANGOCAIRO_FC_H__
 
-#include "pangofc-fontmap.h"
-#include "pangocairo.h"
+#include <pango/pangofc-fontmap.h>
+#include <pango/pangocairo.h>
 
 G_BEGIN_DECLS
 

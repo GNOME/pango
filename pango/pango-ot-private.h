@@ -24,7 +24,7 @@
 
 #include <glib-object.h>
 
-#include "pango-ot.h"
+#include <pango/pango-ot.h>
 #include "opentype/ftglue.h"
 #include "opentype/ftxopen.h"
 

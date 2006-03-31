@@ -22,8 +22,8 @@
 #ifndef __PANGOXFT_PRIVATE_H__
 #define __PANGOXFT_PRIVATE_H__
 
-#include "pangoxft.h"
-#include "pango-renderer.h"
+#include <pango/pangoxft.h>
+#include <pango/pango-renderer.h>
 
 G_BEGIN_DECLS
 
