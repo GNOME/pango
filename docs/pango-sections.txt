@@ -902,6 +902,8 @@ PangoOTBuffer
 PangoOTGlyph
 PangoOTRuleset
 PangoOTTableType
+PANGO_OT_ALL_GLYPHS
+PANGO_OT_DEFAULT_LANGUAGE
 pango_ot_info_get
 pango_ot_info_find_script
 pango_ot_info_find_language

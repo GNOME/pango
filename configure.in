@@ -397,7 +397,6 @@ pango_configure_test_yes
 #endif
 ],have_varargs=yes)
 AC_MSG_RESULT($have_varargs)
-AM_CONDITIONAL(BUILD_OT_TESTS, test $have_varargs = yes)
 CPPFLAGS=$pango_saved_cppflags
 
 

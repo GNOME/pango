@@ -49,8 +49,8 @@ pango_ot_buffer_new (PangoFcFont *font)
   PangoOTBuffer *buffer = g_slice_new (PangoOTBuffer);
   FT_Face face = pango_fc_font_lock_face (font);
 
-  if (otl_buffer_new (face->memory, &buffer->buffer) != FT_Err_Ok)
-    g_warning ("Allocation of OTLBuffer failed"); /* this doesn't happen */
+  if (hb_buffer_new (face->memory, &buffer->buffer) != FT_Err_Ok)
+    g_warning ("Allocation of HB_Buffer failed"); /* this doesn't happen */
 
   buffer->font = g_object_ref (font);
   buffer->applied_gpos = FALSE;
@@ -73,7 +73,7 @@ pango_ot_buffer_new (PangoFcFont *font)
 void
 pango_ot_buffer_destroy (PangoOTBuffer *buffer)
 {
-  otl_buffer_free (buffer->buffer);
+  hb_buffer_free (buffer->buffer);
   g_object_unref (buffer->font);
   g_slice_free (PangoOTBuffer, buffer);
 }
@@ -89,7 +89,7 @@ pango_ot_buffer_destroy (PangoOTBuffer *buffer)
 void
 pango_ot_buffer_clear (PangoOTBuffer *buffer)
 {
-  otl_buffer_clear (buffer->buffer);
+  hb_buffer_clear (buffer->buffer);
   buffer->applied_gpos = FALSE;
 }
 
@@ -111,7 +111,7 @@ pango_ot_buffer_add_glyph (PangoOTBuffer *buffer,
 			   guint          properties,
 			   guint          cluster)
 {
-  otl_buffer_add_glyph (buffer->buffer,
+  hb_buffer_add_glyph (buffer->buffer,
 			glyph, properties, cluster);
 }
 
@@ -198,7 +198,7 @@ swap_range (PangoGlyphString *glyphs, int start, int end)
 
 static void
 apply_gpos_ltr (PangoGlyphString *glyphs,
-		OTL_Position      positions)
+		HB_Position      positions)
 {
   int i;
 	    
@@ -231,7 +231,7 @@ apply_gpos_ltr (PangoGlyphString *glyphs,
 
 static void
 apply_gpos_rtl (PangoGlyphString *glyphs,
-		OTL_Position      positions)
+		HB_Position      positions)
 {
   int i;
   
@@ -283,7 +283,7 @@ pango_ot_buffer_output (PangoOTBuffer    *buffer,
 {
   FT_Face face;
   PangoOTInfo *info;
-  TTO_GDEF gdef = NULL;
+  HB_GDEF gdef = NULL;
   unsigned int i;
   int last_cluster;
 
@@ -296,7 +296,7 @@ pango_ot_buffer_output (PangoOTBuffer    *buffer,
   last_cluster = -1;
   for (i = 0; i < buffer->buffer->in_length; i++)
     {
-      OTL_GlyphItem item = &buffer->buffer->in_string[i];
+      HB_GlyphItem item = &buffer->buffer->in_string[i];
       
       glyphs->glyphs[i].glyph = item->gindex;
 
@@ -323,8 +323,8 @@ pango_ot_buffer_output (PangoOTBuffer    *buffer,
 
 	  if (buffer->zero_width_marks &&
 	      gdef &&
-	      TT_GDEF_Get_Glyph_Property (gdef, glyphs->glyphs[i].glyph, &property) == FT_Err_Ok &&
-	      (property == TTO_MARK || (property & IGNORE_SPECIAL_MARKS) != 0))
+	      HB_GDEF_Get_Glyph_Property (gdef, glyphs->glyphs[i].glyph, &property) == FT_Err_Ok &&
+	      (property == HB_GDEF_MARK || (property & HB_LOOKUP_FLAG_IGNORE_SPECIAL_MARKS) != 0))
 	    {
 	      glyphs->glyphs[i].geometry.width = 0;
 	    }

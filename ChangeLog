@@ -1,3 +1,11 @@
+2006-03-31  Behdad Esfahbod  <behdad@gnome.org>
+
+	Convert pango/opentype to the new project called HarfBuzz.
+
+	* pango/opentype/*: Restructured.
+
+	* pango/pango-ot-*: Updated to use HarfBuzz symbol names.
+
 2006-03-30  Behdad Esfahbod  <behdad@gnome.org>
 
 	Bug 335840 – Typo in including Xft.

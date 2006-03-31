@@ -81,17 +81,17 @@ pango_ot_info_finalize (GObject *object)
   
   if (info->gdef)
     {
-      TT_Done_GDEF_Table (info->gdef);
+      HB_Done_GDEF_Table (info->gdef);
       info->gdef = NULL;
     }
   if (info->gsub)
     {
-      TT_Done_GSUB_Table (info->gsub);
+      HB_Done_GSUB_Table (info->gsub);
       info->gsub = NULL;
     }
   if (info->gpos)
     {
-      TT_Done_GPOS_Table (info->gpos);
+      HB_Done_GPOS_Table (info->gpos);
       info->gpos = NULL;
     }
 
@@ -272,7 +272,7 @@ synthesize_class_def (PangoOTInfo *info)
 
   g_array_free (glyph_infos, TRUE);
 
-  TT_GDEF_Build_ClassDefinition (info->gdef, info->face->num_glyphs, j,
+  HB_GDEF_Build_ClassDefinition (info->gdef, info->face->num_glyphs, j,
 				 glyph_indices, classes);
 
   g_free (glyph_indices);
@@ -282,7 +282,7 @@ synthesize_class_def (PangoOTInfo *info)
     FT_Set_Charmap (info->face, old_charmap);
 }
 
-TTO_GDEF 
+HB_GDEF 
 pango_ot_info_get_gdef (PangoOTInfo *info)
 {
   g_return_val_if_fail (PANGO_IS_OT_INFO (info), NULL);
@@ -295,13 +295,13 @@ pango_ot_info_get_gdef (PangoOTInfo *info)
 
       if (is_truetype (info->face))
 	{
-	  error = TT_Load_GDEF_Table (info->face, &info->gdef);
+	  error = HB_Load_GDEF_Table (info->face, &info->gdef);
 	  
-	  if (error && error != TT_Err_Table_Missing)
+	  if (error && error != FT_Err_Table_Missing)
 	    g_warning ("Error loading GDEF table %d", error);
 
 	  if (!info->gdef)
-	    error = TT_New_GDEF_Table (info->face, &info->gdef);
+	    error = HB_New_GDEF_Table (info->face, &info->gdef);
 
 	  if (info->gdef && !info->gdef->GlyphClassDef.loaded)
 	    synthesize_class_def (info);
@@ -311,7 +311,7 @@ pango_ot_info_get_gdef (PangoOTInfo *info)
   return info->gdef;
 }
 
-TTO_GSUB
+HB_GSUB
 pango_ot_info_get_gsub (PangoOTInfo *info)
 {
   g_return_val_if_fail (PANGO_IS_OT_INFO (info), NULL);
@@ -319,15 +319,15 @@ pango_ot_info_get_gsub (PangoOTInfo *info)
   if (!(info->loaded & INFO_LOADED_GSUB))
     {
       FT_Error error;
-      TTO_GDEF gdef = pango_ot_info_get_gdef (info);
+      HB_GDEF gdef = pango_ot_info_get_gdef (info);
       
       info->loaded |= INFO_LOADED_GSUB;
 
       if (is_truetype (info->face))
 	{
-	  error = TT_Load_GSUB_Table (info->face, &info->gsub, gdef);
+	  error = HB_Load_GSUB_Table (info->face, &info->gsub, gdef);
 
-	  if (error && error != TT_Err_Table_Missing)
+	  if (error && error != FT_Err_Table_Missing)
 	    g_warning ("Error loading GSUB table %d", error);
 	}
     }
@@ -335,7 +335,7 @@ pango_ot_info_get_gsub (PangoOTInfo *info)
   return info->gsub;
 }
 
-TTO_GPOS
+HB_GPOS
 pango_ot_info_get_gpos (PangoOTInfo *info)
 {
   g_return_val_if_fail (PANGO_IS_OT_INFO (info), NULL);
@@ -343,15 +343,15 @@ pango_ot_info_get_gpos (PangoOTInfo *info)
   if (!(info->loaded & INFO_LOADED_GPOS))
     {
       FT_Error error;
-      TTO_GDEF gdef = pango_ot_info_get_gdef (info);
+      HB_GDEF gdef = pango_ot_info_get_gdef (info);
 
       info->loaded |= INFO_LOADED_GPOS;
 
       if (is_truetype (info->face))
 	{
-	  error = TT_Load_GPOS_Table (info->face, &info->gpos, gdef);
+	  error = HB_Load_GPOS_Table (info->face, &info->gpos, gdef);
 
-	  if (error && error != TT_Err_Table_Missing)
+	  if (error && error != FT_Err_Table_Missing)
 	    g_warning ("Error loading GPOS table %d", error);
 	}
     }
@@ -362,12 +362,12 @@ pango_ot_info_get_gpos (PangoOTInfo *info)
 static gboolean
 get_tables (PangoOTInfo      *info,
 	    PangoOTTableType  table_type,
-	    TTO_ScriptList  **script_list,
-	    TTO_FeatureList **feature_list)
+	    HB_ScriptList  **script_list,
+	    HB_FeatureList **feature_list)
 {
   if (table_type == PANGO_OT_TABLE_GSUB)
     {
-      TTO_GSUB gsub = pango_ot_info_get_gsub (info);
+      HB_GSUB gsub = pango_ot_info_get_gsub (info);
 
       if (!gsub)
 	return FALSE;
@@ -382,7 +382,7 @@ get_tables (PangoOTInfo      *info,
     }
   else
     {
-      TTO_GPOS gpos = pango_ot_info_get_gpos (info);
+      HB_GPOS gpos = pango_ot_info_get_gpos (info);
 
       if (!gpos)
 	return FALSE;
@@ -414,7 +414,7 @@ pango_ot_info_find_script (PangoOTInfo      *info,
 			   PangoOTTag        script_tag,
 			   guint            *script_index)
 {
-  TTO_ScriptList *script_list;
+  HB_ScriptList *script_list;
   int i;
 
   g_return_val_if_fail (PANGO_IS_OT_INFO (info), FALSE);
@@ -458,8 +458,8 @@ pango_ot_info_find_language (PangoOTInfo      *info,
 			     guint            *language_index,
 			     guint            *required_feature_index)
 {
-  TTO_ScriptList *script_list;
-  TTO_Script *script;
+  HB_ScriptList *script_list;
+  HB_Script *script;
   int i;
 
   g_return_val_if_fail (PANGO_IS_OT_INFO (info), FALSE);
@@ -493,7 +493,7 @@ pango_ot_info_find_language (PangoOTInfo      *info,
  * @feature_tag: the tag of the feature to find.
  * @script_index: the index of the script.
  * @language_index: the index of the language whose features are searched,
- *     or 0xffff to use the default language of the script.
+ *     or %PANGO_OT_DEFAULT_LANGUAGE to use the default language of the script.
  * @feature_index: location to store the index of the feature, or %NULL. 
  * 
  * Finds the index of a feature.
@@ -508,10 +508,10 @@ pango_ot_info_find_feature  (PangoOTInfo      *info,
 			     guint             language_index,
 			     guint            *feature_index)
 {
-  TTO_ScriptList *script_list;
-  TTO_FeatureList *feature_list;
-  TTO_Script *script;
-  TTO_LangSys *lang_sys;
+  HB_ScriptList *script_list;
+  HB_FeatureList *feature_list;
+  HB_Script *script;
+  HB_LangSys *lang_sys;
 
   int i;
 
@@ -524,7 +524,7 @@ pango_ot_info_find_feature  (PangoOTInfo      *info,
 
   script = &script_list->ScriptRecord[script_index].Script;
 
-  if (language_index == 0xffff)
+  if (language_index == PANGO_OT_DEFAULT_LANGUAGE)
     lang_sys = &script->DefaultLangSys;
   else
     {
@@ -563,7 +563,7 @@ pango_ot_info_list_scripts (PangoOTInfo      *info,
 			    PangoOTTableType  table_type)
 {
   PangoOTTag *result;
-  TTO_ScriptList *script_list;
+  HB_ScriptList *script_list;
   int i;
 
   g_return_val_if_fail (PANGO_IS_OT_INFO (info), NULL);
@@ -597,11 +597,11 @@ PangoOTTag *
 pango_ot_info_list_languages (PangoOTInfo      *info,
 			      PangoOTTableType  table_type,
 			      guint             script_index,
-			      PangoOTTag        language_tag)
+			      PangoOTTag        language_tag G_GNUC_UNUSED)
 {
   PangoOTTag *result;
-  TTO_ScriptList *script_list;
-  TTO_Script *script;
+  HB_ScriptList *script_list;
+  HB_Script *script;
   int i;
 
   g_return_val_if_fail (PANGO_IS_OT_INFO (info), NULL);
@@ -630,7 +630,8 @@ pango_ot_info_list_languages (PangoOTInfo      *info,
  * @tag: unused parameter.
  * @script_index: the index of the script to obtain information about. 
  * @language_index: the indes of the language to list features for, or
- *     0xffff, to list features for the default language of the script.
+ *     %PANGO_OT_DEFAULT_LANGUAGE, to list features for the default
+ *     language of the script.
  *
  * Obtains the list of features for the given language of the given script.
  *
@@ -640,16 +641,16 @@ pango_ot_info_list_languages (PangoOTInfo      *info,
 PangoOTTag *
 pango_ot_info_list_features  (PangoOTInfo      *info,
 			      PangoOTTableType  table_type,
-			      PangoOTTag        tag,
+			      PangoOTTag        tag G_GNUC_UNUSED,
 			      guint             script_index,
 			      guint             language_index)
 {
   PangoOTTag *result;
 
-  TTO_ScriptList *script_list;
-  TTO_FeatureList *feature_list;
-  TTO_Script *script;
-  TTO_LangSys *lang_sys;
+  HB_ScriptList *script_list;
+  HB_FeatureList *feature_list;
+  HB_Script *script;
+  HB_LangSys *lang_sys;
 
   int i;
 
@@ -662,7 +663,7 @@ pango_ot_info_list_features  (PangoOTInfo      *info,
 
   script = &script_list->ScriptRecord[script_index].Script;
 
-  if (language_index == 0xffff)
+  if (language_index == PANGO_OT_DEFAULT_LANGUAGE)
     lang_sys = &script->DefaultLangSys;
   else
     {

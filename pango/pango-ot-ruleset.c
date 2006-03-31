@@ -120,7 +120,8 @@ pango_ot_ruleset_new (PangoOTInfo *info)
  * @table_type: the table type to add a feature to.
  * @feature_index: the index of the feature to add.
  * @property_bit: the property bit to use for this feature. Used to identify
- *                the glyphs that this feature should be applied to.
+ *                the glyphs that this feature should be applied to, or
+ *                %PANGO_OT_ALL_GLYPHS if it should be applied to all glyphs.
  *
  * Adds a feature to the ruleset.
  **/
@@ -157,7 +158,7 @@ pango_ot_ruleset_substitute  (PangoOTRuleset   *ruleset,
 {
   unsigned int i;
   
-  TTO_GSUB gsub = NULL;
+  HB_GSUB gsub = NULL;
   
   g_return_if_fail (PANGO_OT_IS_RULESET (ruleset));
 
@@ -173,15 +174,15 @@ pango_ot_ruleset_substitute  (PangoOTRuleset   *ruleset,
 	  gsub = pango_ot_info_get_gsub (ruleset->info);
 
 	  if (gsub)
-	    TT_GSUB_Clear_Features (gsub);
+	    HB_GSUB_Clear_Features (gsub);
 	  else
 	    return;
 	}
 
-      TT_GSUB_Add_Feature (gsub, rule->feature_index, rule->property_bit);
+      HB_GSUB_Add_Feature (gsub, rule->feature_index, rule->property_bit);
     }
 
-  TT_GSUB_Apply_String (gsub, buffer->buffer);
+  HB_GSUB_Apply_String (gsub, buffer->buffer);
 }
 
 /**
@@ -200,7 +201,7 @@ pango_ot_ruleset_position (PangoOTRuleset   *ruleset,
 {
   unsigned int i;
   
-  TTO_GPOS gpos = NULL;
+  HB_GPOS gpos = NULL;
   
   g_return_if_fail (PANGO_OT_IS_RULESET (ruleset));
 
@@ -216,15 +217,15 @@ pango_ot_ruleset_position (PangoOTRuleset   *ruleset,
 	  gpos = pango_ot_info_get_gpos (ruleset->info);
 
 	  if (gpos)
-	    TT_GPOS_Clear_Features (gpos);
+	    HB_GPOS_Clear_Features (gpos);
 	  else
 	    return;
         }
 
-      TT_GPOS_Add_Feature (gpos, rule->feature_index, rule->property_bit);
+      HB_GPOS_Add_Feature (gpos, rule->feature_index, rule->property_bit);
     }
 
-  if (TT_GPOS_Apply_String (ruleset->info->face, gpos, 0, buffer->buffer,
+  if (HB_GPOS_Apply_String (ruleset->info->face, gpos, 0, buffer->buffer,
 			    FALSE /* enable device-dependant values */,
 			    buffer->rtl) == FT_Err_Ok)
     buffer->applied_gpos = TRUE;

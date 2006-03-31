@@ -180,14 +180,14 @@ endif
 
 libpangoft2_1_0_la_LDFLAGS = $(LIBRARY_LIBTOOL_OPTIONS)
 libpangoft2_1_0_la_LIBADD =			\
-	opentype/libmini-harfbuzz.la		\
+	opentype/libharfbuzz-1.la		\
 	libpango-$(PANGO_API_VERSION).la	\
 	$(INCLUDED_FC_MODULES)			\
 	$(GLIB_LIBS)				\
 	$(FREETYPE_LIBS)			\
 	$(libm)
 libpangoft2_1_0_la_DEPENDENCIES =		\
-	opentype/libmini-harfbuzz.la		\
+	opentype/libharfbuzz-1.la		\
 	libpango-$(PANGO_API_VERSION).la	\
 	$(INCLUDED_FC_MODULES)
 libpangoft2_1_0_la_SOURCES =   	\

@@ -25,12 +25,9 @@
 #include <glib-object.h>
 
 #include <pango/pango-ot.h>
-#include "opentype/ftglue.h"
-#include "opentype/ftxopen.h"
+#include "opentype/harfbuzz.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
+G_BEGIN_DECLS
 
 #define PANGO_TYPE_OT_INFO              (pango_ot_info_get_type ())
 #define PANGO_OT_INFO(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_TYPE_OT_INFO, PangoOTInfo))
@@ -49,9 +46,9 @@ struct _PangoOTInfo
 
   FT_Face face;
 
-  TTO_GSUB gsub;
-  TTO_GDEF gdef;
-  TTO_GPOS gpos;
+  HB_GSUB gsub;
+  HB_GDEF gdef;
+  HB_GPOS gpos;
 };
 
 struct _PangoOTInfoClass
@@ -83,7 +80,7 @@ struct _PangoOTRulesetClass
 
 struct _PangoOTBuffer
 {
-  OTL_Buffer buffer;
+  HB_Buffer buffer;
   PangoFcFont *font;
   guint rtl : 1;
   guint zero_width_marks : 1;
@@ -92,15 +89,12 @@ struct _PangoOTBuffer
 
 GType pango_ot_info_get_type (void);
 
-TTO_GDEF pango_ot_info_get_gdef (PangoOTInfo *info);
-TTO_GSUB pango_ot_info_get_gsub (PangoOTInfo *info);
-TTO_GPOS pango_ot_info_get_gpos (PangoOTInfo *info);
+HB_GDEF pango_ot_info_get_gdef (PangoOTInfo *info);
+HB_GSUB pango_ot_info_get_gsub (PangoOTInfo *info);
+HB_GPOS pango_ot_info_get_gpos (PangoOTInfo *info);
 
 GType pango_ot_ruleset_get_type (void);
 
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
-
+G_END_DECLS
 
 #endif /* __PANGO_OT_PRIVATE_H__ */

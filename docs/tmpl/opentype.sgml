@@ -81,6 +81,22 @@ identify the various OpenType tables in the
 @PANGO_OT_TABLE_GSUB: The GSUB table.
 @PANGO_OT_TABLE_GPOS: The GPOS table.
 
+<!-- ##### MACRO PANGO_OT_ALL_GLYPHS ##### -->
+<para>
+This is used as the property bit in pango_ot_ruleset_add_feature() when a
+feature should be applied to all glyphs.
+</para>
+
+
+
+<!-- ##### MACRO PANGO_OT_DEFAULT_LANGUAGE ##### -->
+<para>
+This is used as the language index in pango_ot_info_find_feature() when a
+the default language system of the script is desired.
+</para>
+
+
+
 <!-- ##### FUNCTION pango_ot_info_get ##### -->
 <para>
 
