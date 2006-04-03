@@ -1,3 +1,10 @@
+2006-04-03  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 337029 – pango/fonts.c: Illegal structure initialization
+
+	* pango/fonts.c: Change NULL's to ""'s after previous change, and fix
+	code to follow.
+
 2006-03-31  Behdad Esfahbod  <behdad@gnome.org>
 
 	* pango/fonts.c:

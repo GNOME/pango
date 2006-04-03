@@ -757,20 +757,20 @@ typedef struct
 } FieldMap;
 
 static const FieldMap style_map[] = {
-  { PANGO_STYLE_NORMAL, NULL },
+  { PANGO_STYLE_NORMAL, "" },
   { PANGO_STYLE_OBLIQUE, "Oblique" },
   { PANGO_STYLE_ITALIC, "Italic" }
 };
 
 static const FieldMap variant_map[] = {
-  { PANGO_VARIANT_NORMAL, NULL },
+  { PANGO_VARIANT_NORMAL, "" },
   { PANGO_VARIANT_SMALL_CAPS, "Small-Caps" }
 };
 
 static const FieldMap weight_map[] = {
   { PANGO_WEIGHT_ULTRALIGHT, "Ultra-Light" },
   { PANGO_WEIGHT_LIGHT, "Light" },
-  { PANGO_WEIGHT_NORMAL, NULL },
+  { PANGO_WEIGHT_NORMAL, "" },
   { 500, "Medium" },
   { PANGO_WEIGHT_SEMIBOLD, "Semi-Bold" },
   { PANGO_WEIGHT_BOLD, "Bold" },
@@ -783,7 +783,7 @@ static const FieldMap stretch_map[] = {
   { PANGO_STRETCH_EXTRA_CONDENSED, "Extra-Condensed" },
   { PANGO_STRETCH_CONDENSED,       "Condensed" },
   { PANGO_STRETCH_SEMI_CONDENSED,  "Semi-Condensed" },
-  { PANGO_STRETCH_NORMAL,          NULL },
+  { PANGO_STRETCH_NORMAL,          "" },
   { PANGO_STRETCH_SEMI_EXPANDED,   "Semi-Expanded" },
   { PANGO_STRETCH_EXPANDED,        "Expanded" },
   { PANGO_STRETCH_EXTRA_EXPANDED,  "Extra-Expanded" },
@@ -964,7 +964,7 @@ append_field (GString *str, const FieldMap *map, int n_elements, int val)
     {
       if (map[i].value == val)
 	{
-	  if (map[i].str)
+	  if (map[i].str && map[i].str[0])
 	    {
 	      if (str->len > 0 && str->str[str->len -1] != ' ')
 		g_string_append_c (str, ' ');
