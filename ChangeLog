@@ -1,5 +1,10 @@
 2006-04-03  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango/opentype/harfbuzz-impl.h: Make sure TTAG_GDEF and frineds are
+	defined, needed for FreeType <= 2.1.7 (pointed by Tim Janik).
+
+2006-04-03  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 337029 – pango/fonts.c: Illegal structure initialization
 
 	* pango/fonts.c: Change NULL's to ""'s after previous change, and fix
