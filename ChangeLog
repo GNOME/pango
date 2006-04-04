@@ -1,3 +1,7 @@
+2006-04-04  Behdad Esfahbod  <behdad@gnome.org>
+
+	* pango/pango-utils.c, pango/querymodules.c: Fix a few warnings.
+
 2006-04-03  Behdad Esfahbod  <behdad@gnome.org>
 
 	* pango/opentype/harfbuzz-impl.h: Make sure TTAG_GDEF and frineds are

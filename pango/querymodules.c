@@ -37,12 +37,12 @@
 #endif
 #include <glib/gprintf.h>
 
-#if USE_LA_MODULES
+#ifdef USE_LA_MODULES
 #define SOEXT ".la"
 #else
 #define SOEXT ("." G_MODULE_SUFFIX)
 #endif
-#define SOEXT_LEN (strlen (SOEXT))
+#define SOEXT_LEN ((int) strlen (SOEXT))
 
 static gboolean
 string_needs_escape (const char *str)

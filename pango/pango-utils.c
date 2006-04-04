@@ -459,7 +459,7 @@ read_config_file (const char *filename, gboolean enoent_error)
   GError *key_file_error = NULL;
   gchar **groups;
   gsize groups_count = 0;
-  gint group_index;
+  guint group_index;
   
   if (!g_key_file_load_from_file(key_file,filename, 0, &key_file_error))
     {
@@ -488,7 +488,7 @@ read_config_file (const char *filename, gboolean enoent_error)
       
       if (keys)
 	{
-	  gint key_index;
+	  guint key_index;
 
 	  for (key_index = 0; key_index < keys_count; key_index++)
 	    {
