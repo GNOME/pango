@@ -1,5 +1,15 @@
 2006-04-06  Behdad Esfahbod  <behdad@gnome.org>
 
+	Bug 337502 – Win32 build fix
+	Patch from Alexander Larsson.
+
+	* pango/pangocairo-fontmap.c: Fix order of checking for freetype and
+	win32 cairo backends to match the constructor.
+
+	* pango/pangoft2.def: Add missing symbol
+
+2006-04-06  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/opentype: Update from HarfBuzz.  Lars Knoll fixed all the
 	warnings.
 
