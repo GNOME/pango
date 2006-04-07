@@ -45,6 +45,13 @@ typedef struct _GlyphExtentsCacheEntry    GlyphExtentsCacheEntry;
 typedef struct _GUnicharToGlyphCacheEntry GUnicharToGlyphCacheEntry;
 
 
+
+
+#define PANGO_UNITS(Double) ((int)((Double) * PANGO_SCALE + 0.49999))
+
+
+
+
 /* define one of these to profile one of the caches */
 #undef PROFILE_GLYPH_EXTENTS_CACHE
 #undef PROFILE_CHAR_TO_GLYPH_CACHE
@@ -366,8 +373,8 @@ pango_cairo_fc_font_glyph_extents_cache_init (PangoCairoFcFont *cffont)
   cairo_scaled_font_extents (scaled_font, &font_extents);
 
   cffont->font_extents.x = 0;
-  cffont->font_extents.y = - font_extents.ascent * PANGO_SCALE;
-  cffont->font_extents.height = (font_extents.ascent + font_extents.descent) * PANGO_SCALE;
+  cffont->font_extents.y = - PANGO_UNITS (font_extents.ascent);
+  cffont->font_extents.height = PANGO_UNITS (font_extents.ascent + font_extents.descent);
   cffont->font_extents.width = 0;
 
   cffont->glyph_extents_cache = g_new0 (GlyphExtentsCacheEntry, GLYPH_CACHE_NUM_ENTRIES);
@@ -399,11 +406,11 @@ compute_glyph_extents (PangoCairoFcFont       *cffont,
 				   &cairo_glyph, 1, &extents);
   
   entry->glyph = glyph;
-  entry->width = extents.x_advance * PANGO_SCALE;
-  entry->ink_rect.x = extents.x_bearing * PANGO_SCALE;
-  entry->ink_rect.y = extents.y_bearing * PANGO_SCALE;
-  entry->ink_rect.width = extents.width * PANGO_SCALE;
-  entry->ink_rect.height = extents.height * PANGO_SCALE;
+  entry->width = PANGO_UNITS (extents.x_advance);
+  entry->ink_rect.x = PANGO_UNITS (extents.x_bearing);
+  entry->ink_rect.y = PANGO_UNITS (extents.y_bearing);
+  entry->ink_rect.width = PANGO_UNITS (extents.width);
+  entry->ink_rect.height = PANGO_UNITS (extents.height);
 }
      
 static GlyphExtentsCacheEntry *
