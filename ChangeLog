@@ -1,5 +1,13 @@
 2006-04-07  Behdad Esfahbod  <behdad@gnome.org>
 
+	Incorrect text rendering when in x86 64-bit precision mode
+	https://bugs.freedesktop.org/show_bug.cgi?id=5200
+
+	* pango/pangocairo-fcfont.c:Round metrics when converting
+	to Pango units.
+	
+2006-04-07  Behdad Esfahbod  <behdad@gnome.org>
+
 	* === Released 1.12.1 ===
 
 	* configure.in: Version 1.12.1
