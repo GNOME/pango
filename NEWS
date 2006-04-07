@@ -1,3 +1,12 @@
+Overview of changes between 1.12.0 and 1.12.1
+=============================================
+* Fix non-OpenType fonts losing kerning in 1.12.0 [#336026, Denis Jacquerye]
+* Fix blurred underlines on Win32 [#332656, Tor Lillqvist]
+* Build fix when having both Win32 and FreeType cairo backends available
+  [#337502, Alexander Larsson]
+* Bugs fixed in this release:
+  334802,336026,332656,337502
+
 Overview of changes between 1.11.99 and 1.12.0
 ==============================================
 * Compilations fixes for MSVC. [#333115, Tor Lillqvist]

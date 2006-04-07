@@ -1,3 +1,11 @@
+2006-04-07  Behdad Esfahbod  <behdad@gnome.org>
+
+	* === Released 1.12.1 ===
+
+	* configure.in: Version 1.12.1
+
+	* NEWS: Updated.
+
 2006-04-06  Behdad Esfahbod  <behdad@gnome.org>
 
 	Bug 337502 – Win32 build fix
