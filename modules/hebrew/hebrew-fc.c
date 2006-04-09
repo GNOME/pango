@@ -73,10 +73,16 @@ get_cluster_glyphs(PangoFont      *font,
       if (do_mirror)
 	if (pango_get_mirror_char (wc, &mirrored_ch))
 	  wc = mirrored_ch;
-	
-      glyph_num[i] = pango_fc_font_get_glyph ((PangoFcFont *)font, wc);
-      if (!glyph_num[i])
-	glyph_num[i] = PANGO_GET_UNKNOWN_GLYPH ( wc);
+
+      if (pango_is_zero_width (wc))
+	glyph_num[i] = PANGO_GLYPH_EMPTY;
+      else
+        {
+	  glyph_num[i] = pango_fc_font_get_glyph ((PangoFcFont *)font, wc);
+
+	  if (!glyph_num[i])
+	    glyph_num[i] = PANGO_GET_UNKNOWN_GLYPH ( wc);
+	}
 
       glyph[i] = glyph_num[i];
 

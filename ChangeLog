@@ -1,3 +1,13 @@
+2006-04-09  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 337821 – invisible unicode chars are visible next to hebrew chars
+
+	* modules/hebrew/hebrew-fc.c: Handle zero_width chars in fallback
+	shaper too.
+
+	* modules/hebrew/hebrew-shaper.c: Remove unused Unicode<->ISO8859
+	tables.
+
 2006-04-07  Behdad Esfahbod  <behdad@gnome.org>
 
 	Incorrect text rendering when in x86 64-bit precision mode
