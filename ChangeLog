@@ -1,3 +1,8 @@
+2006-04-09  Tor Lillqvist  <tml@novell.com>
+
+	* pango/pango-utils.c (pango_quantize_line_geometry): Fix typo in
+	doc comment.
+
 2006-04-09  Behdad Esfahbod  <behdad@gnome.org>
 
 	Bug 337821 – invisible unicode chars are visible next to hebrew chars

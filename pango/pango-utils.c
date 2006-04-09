@@ -1830,8 +1830,8 @@ pango_is_zero_width (gunichar ch)
  * @position: corresponding position
  *
  * Quantizes the thickness and position of a line, typically an
- * underline or strikethrough, to whole device pixels, that is
- * multiplies of %PANGO_SCALE. The purpose of this function is to avoid
+ * underline or strikethrough, to whole device pixels, that is integer
+ * multiples of %PANGO_SCALE. The purpose of this function is to avoid
  * such lines looking blurry.
  *
  * Since: 1.12
