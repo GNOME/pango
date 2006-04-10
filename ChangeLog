@@ -1,3 +1,24 @@
+2006-04-10  Behdad Esfahbod  <behdad@gnome.org>
+
+	Fix minor bugs reported by the Coverity scan report.
+
+	* pango/opentype/harfbuzz-gdef.c (HB_GDEF_Build_ClassDefinition):
+	* pango/opentype/harfbuzz-gpos.c (HB_GPOS_Query_Scripts),
+	(HB_GPOS_Query_Languages), (HB_GPOS_Query_Features): Do not access
+	structs before we check them for nullity.
+
+	* pango/pango-layout.c (pango_layout_index_to_line),
+	(pango_layout_index_to_line_and_extents),
+	(pango_layout_index_to_pos): Check for invalid iterators outside the
+	loop, so we don't crash.
+	
+	* pango/pango-layout.c (pango_layout_line_x_to_index): Set
+	char_trailing instead of trailing in one of too many paths.  Should
+	have been a typo.
+
+	* pango/pangox.c (get_font_metrics_from_subfonts): Check for nullity
+	somewhere.
+
 2006-04-09  Tor Lillqvist  <tml@novell.com>
 
 	* pango/pango-utils.c (pango_quantize_line_geometry): Fix typo in

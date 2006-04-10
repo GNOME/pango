@@ -830,7 +830,7 @@ get_font_metrics_from_subfonts (PangoFont        *font,
 		}
 	    }
 
-          if (get_int_prop (avg_width_atom, fs, &avg_width))
+          if (fs && get_int_prop (avg_width_atom, fs, &avg_width))
             {
               /* convert decipoints --> Pango units.
                * Resolution is in (points * PANGO_SCALE) / pixel,
