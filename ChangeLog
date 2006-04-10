@@ -1,5 +1,10 @@
 2006-04-10  Behdad Esfahbod  <behdad@gnome.org>
 
+	* config.h.win32, examples/makefile.msc: Removed.  Have not been
+	updated since Feb 2001.
+
+2006-04-10  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/pango-layout.c: Fix broken changes I made :).
 
 2006-04-10  Behdad Esfahbod  <behdad@gnome.org>

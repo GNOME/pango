@@ -13,7 +13,6 @@ TEST_TEXTS =			\
 
 EXTRA_DIST =			\
 	viewer-win32.c		\
-	makefile.msc		\
 	$(TEST_TEXTS)
 
 CLEANFILES = pangorc
