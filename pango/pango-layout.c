@@ -29,7 +29,6 @@
 
 #include "pango-layout-private.h"
 
-#define LINE_IS_VALID(line) ((line)->layout != NULL)
 
 typedef struct _Extents Extents;
 typedef struct _ItemProperties ItemProperties;
@@ -117,6 +116,28 @@ struct _PangoLayoutClass
 
 
 };
+
+#define LINE_IS_VALID(line) ((line)->layout != NULL)
+
+#ifdef G_DISABLE_CHECKS
+#define ITER_IS_INVALID(iter) FALSE
+#else
+#define ITER_IS_INVALID(iter) check_invalid ((iter), G_STRLOC)
+static gboolean
+check_invalid (PangoLayoutIter *iter,
+               const char      *loc)
+{
+  if (iter->line->layout == NULL)
+    {
+      g_warning ("%s: PangoLayout changed since PangoLayoutIter was created, iterator invalid", loc);
+      return TRUE;
+    }
+  else
+    {
+      return FALSE;
+    }
+}
+#endif
 
 static void pango_layout_clear_lines (PangoLayout *layout);
 static void pango_layout_check_lines (PangoLayout *layout);
@@ -1220,7 +1241,7 @@ pango_layout_index_to_line_and_extents (PangoLayout     *layout,
   
   iter = pango_layout_get_iter (layout);
 
-  if (!IS_INVALID (iter))
+  if (!ITER_IS_INVALID (iter))
     while (TRUE)
       {
 	PangoLayoutLine *tmp_line = pango_layout_iter_get_line (iter);
@@ -1613,7 +1634,7 @@ pango_layout_index_to_pos (PangoLayout    *layout,
   
   iter = pango_layout_get_iter (layout);
 
-  if (!IS_INVALID (iter))
+  if (!ITER_IS_INVALID (iter))
     {
       while (TRUE)
 	{
@@ -3577,7 +3598,7 @@ pango_layout_line_x_to_index (PangoLayoutLine *line,
 
 	  if (properties.shape_set)
 	    {
-	      char_trailing = false;
+	      char_trailing = FALSE;
 	    }
 	  else
 	    {
@@ -4372,27 +4393,6 @@ pango_layout_get_item_properties (PangoItem      *item,
     }
 }
 
-static gboolean
-check_invalid (PangoLayoutIter *iter,
-               const char      *loc)
-{
-  if (iter->line->layout == NULL)
-    {
-      g_warning ("%s: PangoLayout changed since PangoLayoutIter was created, iterator invalid", loc);
-      return TRUE;
-    }
-  else
-    {
-      return FALSE;
-    }
-}
-
-#ifdef G_DISABLE_CHECKS
-#define IS_INVALID(iter) FALSE
-#else
-#define IS_INVALID(iter) check_invalid ((iter), G_STRLOC)
-#endif
-
 static int
 next_cluster_start (PangoGlyphString *gs,
                     int               cluster_start)
@@ -4695,7 +4695,7 @@ pango_layout_iter_free (PangoLayoutIter *iter)
 int
 pango_layout_iter_get_index (PangoLayoutIter *iter)
 {
-  if (IS_INVALID (iter))
+  if (ITER_IS_INVALID (iter))
     return 0;
   
   return iter->index;
@@ -4715,7 +4715,7 @@ pango_layout_iter_get_index (PangoLayoutIter *iter)
 PangoLayoutRun*
 pango_layout_iter_get_run (PangoLayoutIter *iter)
 {
-  if (IS_INVALID (iter))
+  if (ITER_IS_INVALID (iter))
     return NULL;
 
   return iter->run;
@@ -4732,7 +4732,7 @@ pango_layout_iter_get_run (PangoLayoutIter *iter)
 PangoLayoutLine*
 pango_layout_iter_get_line (PangoLayoutIter *iter)
 {
-  if (IS_INVALID (iter))
+  if (ITER_IS_INVALID (iter))
     return NULL;
 
   return iter->line;
@@ -4749,7 +4749,7 @@ pango_layout_iter_get_line (PangoLayoutIter *iter)
 gboolean
 pango_layout_iter_at_last_line (PangoLayoutIter *iter)
 {
-  if (IS_INVALID (iter))
+  if (ITER_IS_INVALID (iter))
     return FALSE;
 
   return iter->line_extents_link->next == NULL;
@@ -4834,7 +4834,7 @@ next_cluster_internal (PangoLayoutIter *iter,
   PangoGlyphString *gs;
   int               next_start;
   
-  if (IS_INVALID (iter))
+  if (ITER_IS_INVALID (iter))
     return FALSE;
 
   if (iter->run == NULL)
@@ -4871,7 +4871,7 @@ pango_layout_iter_next_char (PangoLayoutIter *iter)
 {
   const char *text;
 
-  if (IS_INVALID (iter))
+  if (ITER_IS_INVALID (iter))
     return FALSE;
 
   if (iter->run == NULL)
@@ -4931,7 +4931,7 @@ pango_layout_iter_next_run (PangoLayoutIter *iter)
   int next_run_start; /* byte index */
   GSList *next_link;
   
-  if (IS_INVALID (iter))
+  if (ITER_IS_INVALID (iter))
     return FALSE;
 
   if (iter->run == NULL)
@@ -4974,7 +4974,7 @@ pango_layout_iter_next_line (PangoLayoutIter *iter)
 {
   GSList *next_link;
 
-  if (IS_INVALID (iter))
+  if (ITER_IS_INVALID (iter))
     return FALSE;
 
   next_link = iter->line_list_link->next;
@@ -5023,7 +5023,7 @@ pango_layout_iter_get_char_extents (PangoLayoutIter *iter,
   PangoRectangle cluster_rect;
   int            x0, x1;
 
-  if (IS_INVALID (iter))
+  if (ITER_IS_INVALID (iter))
     return;
 
   if (logical_rect == NULL)
@@ -5066,7 +5066,7 @@ pango_layout_iter_get_cluster_extents (PangoLayoutIter *iter,
                                        PangoRectangle  *ink_rect,
                                        PangoRectangle  *logical_rect)
 {
-  if (IS_INVALID (iter))
+  if (ITER_IS_INVALID (iter))
     return;
 
   if (iter->run == NULL)
@@ -5113,7 +5113,8 @@ pango_layout_iter_get_run_extents (PangoLayoutIter *iter,
                                    PangoRectangle  *ink_rect,
                                    PangoRectangle  *logical_rect)
 {
-  IS_INVALID (iter);
+  if (ITER_IS_INVALID (iter))
+    return;
 
   if (ink_rect)
     {
@@ -5161,7 +5162,7 @@ pango_layout_iter_get_line_extents (PangoLayoutIter *iter,
 {
   Extents *ext;
   
-  if (IS_INVALID (iter))
+  if (ITER_IS_INVALID (iter))
     return;
 
   ext = iter->line_extents_link->data;
@@ -5203,7 +5204,8 @@ pango_layout_iter_get_line_yrange (PangoLayoutIter *iter,
   Extents *ext;
   int half_spacing;
   
-  IS_INVALID (iter);
+  if (ITER_IS_INVALID (iter))
+    return;
 
   ext = iter->line_extents_link->data;
 
@@ -5247,7 +5249,7 @@ pango_layout_iter_get_baseline (PangoLayoutIter *iter)
 {
   Extents *ext;
   
-  if (IS_INVALID (iter))
+  if (ITER_IS_INVALID (iter))
     return 0;
 
   ext = iter->line_extents_link->data;
@@ -5271,7 +5273,7 @@ pango_layout_iter_get_layout_extents  (PangoLayoutIter *iter,
                                        PangoRectangle  *ink_rect,
                                        PangoRectangle  *logical_rect)
 {
-  if (IS_INVALID (iter))
+  if (ITER_IS_INVALID (iter))
     return;
 
   if (ink_rect)

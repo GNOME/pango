@@ -1,5 +1,9 @@
 2006-04-10  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango/pango-layout.c: Fix broken changes I made :).
+
+2006-04-10  Behdad Esfahbod  <behdad@gnome.org>
+
 	Fix minor bugs reported by the Coverity scan report.
 
 	* pango/opentype/harfbuzz-gdef.c (HB_GDEF_Build_ClassDefinition):
