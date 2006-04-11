@@ -131,8 +131,10 @@ _pango_cairo_font_get_hex_box_info (PangoCairoFont *cfont)
   double height = 0;
   cairo_font_extents_t font_extents;
   PangoFontDescription *mini_desc, *desc;
-  cairo_scaled_font_t *scaled_font, *scaled_mini_font;
-#ifndef HAVE_CAIRO_SCALED_FONT_TEXT_EXTENTS
+  cairo_scaled_font_t *scaled_font;
+#ifdef HAVE_CAIRO_SCALED_FONT_TEXT_EXTENTS
+  cairo_scaled_font_t *scaled_mini_font;
+#else
   cairo_surface_t *surface;
   cairo_t *cr;
 #endif
@@ -224,7 +226,6 @@ _pango_cairo_font_get_hex_box_info (PangoCairoFont *cfont)
 
 
   mini_cfont = (PangoCairoFont *) mini_font;
-  scaled_mini_font = _pango_cairo_font_get_scaled_font (mini_cfont);  
 
 #ifndef HAVE_CAIRO_SCALED_FONT_TEXT_EXTENTS
   surface = cairo_image_surface_create (CAIRO_FORMAT_RGB24, 1, 1);
@@ -239,6 +240,7 @@ _pango_cairo_font_get_hex_box_info (PangoCairoFont *cfont)
 
       c[0] = hexdigits[i];
 #ifdef HAVE_CAIRO_SCALED_FONT_TEXT_EXTENTS
+      scaled_mini_font = _pango_cairo_font_get_scaled_font (mini_cfont);  
       cairo_scaled_font_text_extents (scaled_mini_font, c, &extents);
 #else
       cairo_text_extents (cr, c, &extents);

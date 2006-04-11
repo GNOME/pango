@@ -39,8 +39,10 @@ static void fail (const char *format, ...)
   str = g_strdup_vprintf (format, args);
   va_end (args);
 
-  fprintf (stderr, "Error: %s\n", format);
+  fprintf (stderr, "Error: %s\n", str);
   
+  g_free (str);
+
   exit (1);
 }
 

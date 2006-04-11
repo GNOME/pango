@@ -27,11 +27,11 @@
 
 PANGO_DEFINE_TYPE_ABSTRACT (PangoEngine, pango_engine,
 			    NULL, NULL,
-			    G_TYPE_OBJECT);
+			    G_TYPE_OBJECT)
 
 PANGO_DEFINE_TYPE_ABSTRACT (PangoEngineLang, pango_engine_lang,
 			    NULL, NULL,
-			    PANGO_TYPE_ENGINE);
+			    PANGO_TYPE_ENGINE)
 
 static PangoCoverageLevel
 pango_engine_shape_real_covers (PangoEngineShape *engine,
@@ -56,7 +56,7 @@ pango_engine_shape_class_init (PangoEngineShapeClass *class)
 
 PANGO_DEFINE_TYPE_ABSTRACT (PangoEngineShape, pango_engine_shape,
 			    pango_engine_shape_class_init, NULL,
-			    PANGO_TYPE_ENGINE);
+			    PANGO_TYPE_ENGINE)
 
 void
 _pango_engine_shape_shape (PangoEngineShape *engine,
@@ -148,7 +148,7 @@ fallback_engine_class_init (PangoEngineShapeClass *class)
 
 static PANGO_DEFINE_TYPE (PangoFallbackEngine, pango_fallback_engine,
 			  fallback_engine_class_init, NULL,
-			  PANGO_TYPE_ENGINE_SHAPE);
+			  PANGO_TYPE_ENGINE_SHAPE)
 
 PangoEngineShape *
 _pango_get_fallback_shaper (void)

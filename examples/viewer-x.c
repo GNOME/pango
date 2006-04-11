@@ -91,12 +91,8 @@ update (Display *display,
 {
   GC gc;
   XRectangle extents;
-  int width, height;
 
   XClipBox (*update_region, &extents);
-
-  width = extents.width;
-  height = extents.height;
 
   gc = XCreateGC (display, pixmap, 0, NULL);
 

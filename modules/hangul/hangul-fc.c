@@ -397,7 +397,7 @@ hangul_engine_fc_class_init (PangoEngineShapeClass *class)
 }
 
 PANGO_ENGINE_SHAPE_DEFINE_TYPE (HangulEngineFc, hangul_engine_fc,
-				hangul_engine_fc_class_init, NULL);
+				hangul_engine_fc_class_init, NULL)
 
 void 
 PANGO_MODULE_ENTRY(init) (GTypeModule *module)

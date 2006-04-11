@@ -1291,7 +1291,6 @@ pango_x_make_matching_xlfd (PangoFontMap *fontmap, char *xlfd, const char *chars
       if (match_scaleable)
 	{
 	  char *prefix_end, *p;
-	  char *size_end;
 	  int n_dashes = 0;
 	  int target_size;
 	  char *prefix;
@@ -1315,8 +1314,6 @@ pango_x_make_matching_xlfd (PangoFontMap *fontmap, char *xlfd, const char *chars
 	      p++;
 	    }
 	  
-	  size_end = p - 1;
-
 	  target_size = (int)((double)size / xfontmap->resolution + 0.5);
 	  prefix = g_strndup (closest_match, prefix_end - closest_match);
 	  result  = g_strdup_printf ("%s--%d-*-*-*-*-*-%s", prefix, target_size, charset);

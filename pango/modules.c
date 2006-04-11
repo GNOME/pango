@@ -247,7 +247,7 @@ pango_module_class_init (PangoModuleClass *class)
 
 static PANGO_DEFINE_TYPE (PangoModule, pango_module,
 			  pango_module_class_init, NULL,
-			  G_TYPE_TYPE_MODULE);
+			  G_TYPE_TYPE_MODULE)
 
 static PangoEngine *
 pango_engine_pair_get_engine (PangoEnginePair *pair)

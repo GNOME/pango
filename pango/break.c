@@ -394,7 +394,7 @@ typedef struct _CharJamoProps
 /* Map from JamoType to CharJamoProps that hold only simple
  * JamoTypes (no LV or LVT) or none.
  */
-const CharJamoProps HangulJamoProps[] = {
+static const CharJamoProps HangulJamoProps[] = {
   {JAMO_L, JAMO_L},	/* JAMO_L */
   {JAMO_V, JAMO_V},	/* JAMO_V */
   {JAMO_T, JAMO_T},	/* JAMO_T */

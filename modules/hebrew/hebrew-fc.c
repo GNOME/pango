@@ -340,17 +340,14 @@ hebrew_engine_shape (PangoEngineShape *engine,
       gunichar mirrored_ch;
       PangoGlyph index;
       char buf[6];
-      const char *input;
 
       wc = g_utf8_get_char (p);
-      input = p;
       if (analysis->level % 2)
 	if (pango_get_mirror_char (wc, &mirrored_ch))
 	  {
 	    wc = mirrored_ch;
 	    
 	    g_unichar_to_utf8 (wc, buf);
-	    input = buf;
 	  }
 
       if (pango_is_zero_width (wc))	/* Zero-width characters */
@@ -396,7 +393,7 @@ hebrew_engine_fc_class_init (PangoEngineShapeClass *class)
 }
 
 PANGO_ENGINE_SHAPE_DEFINE_TYPE (HebrewEngineFc, hebrew_engine_fc,
-				hebrew_engine_fc_class_init, NULL);
+				hebrew_engine_fc_class_init, NULL)
 
 void 
 PANGO_MODULE_ENTRY(init) (GTypeModule *module)

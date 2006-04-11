@@ -741,7 +741,7 @@ khmer_engine_fc_class_init (PangoEngineShapeClass *class)
 }
 
 PANGO_ENGINE_SHAPE_DEFINE_TYPE (KhmerEngineFc, khmer_engine_fc,
-                                khmer_engine_fc_class_init, NULL);
+                                khmer_engine_fc_class_init, NULL)
 
 
 void

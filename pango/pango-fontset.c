@@ -39,7 +39,7 @@ pango_fontset_class_init (PangoFontsetClass *class)
 }
 
 PANGO_DEFINE_TYPE_ABSTRACT (PangoFontset, pango_fontset,
-			    pango_fontset_class_init, NULL, G_TYPE_OBJECT);
+			    pango_fontset_class_init, NULL, G_TYPE_OBJECT)
 
 /**
  * pango_fontset_get_font:
@@ -272,7 +272,7 @@ pango_fontset_simple_init (PangoFontsetSimple *fontset)
 
 PANGO_DEFINE_TYPE (PangoFontsetSimple, pango_fontset_simple,
 		   pango_fontset_simple_class_init, pango_fontset_simple_init,
-		   PANGO_TYPE_FONTSET);
+		   PANGO_TYPE_FONTSET)
 
 static void
 pango_fontset_simple_finalize (GObject *object)

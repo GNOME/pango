@@ -866,7 +866,7 @@ pango_layout_set_text (PangoLayout *layout,
   for (;;) {
     gboolean valid;
     
-    valid = g_utf8_validate (start, -1, &end);
+    valid = g_utf8_validate (start, -1, (const char *)&end);
 
     if (!*end)
       break;
@@ -1533,7 +1533,6 @@ pango_layout_xy_to_index (PangoLayout *layout,
   PangoLayoutLine *prev_line = NULL;
   PangoLayoutLine *found = NULL;
   int found_line_x = 0;
-  int prev_first = 0;
   int prev_last = 0;
   int prev_line_x = 0;
   gboolean retval = FALSE;
@@ -1575,7 +1574,6 @@ pango_layout_xy_to_index (PangoLayout *layout,
         }
 
       prev_line = pango_layout_iter_get_line (iter);
-      prev_first = first_y;
       prev_last = last_y;
       prev_line_x = x - line_logical.x;
 
@@ -1854,7 +1852,7 @@ pango_layout_get_cursor_pos (PangoLayout    *layout,
 			     PangoRectangle *strong_pos,
 			     PangoRectangle *weak_pos)
 {
-  PangoDirection dir1, dir2;
+  PangoDirection dir1;
   PangoRectangle line_rect;
   PangoLayoutLine *layout_line = NULL; /* Quiet GCC */
   int x1_trailing;
@@ -1887,7 +1885,6 @@ pango_layout_get_cursor_pos (PangoLayout    *layout,
   /* Examine the leading edge of the character after the cursor */
   if (index >= layout_line->start_index + layout_line->length)
     {
-      dir2 = layout_line->resolved_dir;
       if (layout_line->resolved_dir == PANGO_DIRECTION_LTR)
         x2 = line_rect.width;
       else
@@ -1895,7 +1892,6 @@ pango_layout_get_cursor_pos (PangoLayout    *layout,
     }
   else
     {
-      dir2 = pango_layout_line_get_char_direction (layout_line, index);
       pango_layout_line_index_to_x (layout_line, index, FALSE, &x2);
     }
 	  

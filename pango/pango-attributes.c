@@ -1840,13 +1840,11 @@ pango_attr_list_filter (PangoAttrList       *list,
   PangoAttrList *new = NULL;
   GSList *tmp_list;
   GSList *prev;
-  GSList *new_attrs;
   
   g_return_val_if_fail (list != NULL, NULL);
 
   tmp_list = list->attributes;
   prev = NULL;
-  new_attrs = NULL;
   while (tmp_list)
     {
       GSList *next = tmp_list->next;

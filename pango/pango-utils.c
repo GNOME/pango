@@ -1577,7 +1577,6 @@ read_alias_file (const char *filename)
 
   while (pango_read_line (file, line_buffer))
     {
-      gboolean empty = FALSE;
       gboolean append = FALSE;
       line++;
 
@@ -1604,22 +1603,15 @@ read_alias_file (const char *filename)
 	  goto error;
 	}
       
-      if (!pango_skip_space (&pos))
+      if (!pango_scan_string (&pos, tmp_buffer2))
 	{
-	  empty = TRUE;
+	  errstring = g_strdup ("Error parsing value string");
+	  goto error;
 	}
-      else
+      if (pango_skip_space (&pos))
 	{
-	  if (!pango_scan_string (&pos, tmp_buffer2))
-	    {
-	      errstring = g_strdup ("Error parsing value string");
-	      goto error;
-	    }
-	  if (pango_skip_space (&pos))
-	    {
-	      errstring = g_strdup ("Junk after value string");
-	      goto error;
-	    }
+	  errstring = g_strdup ("Junk after value string");
+	  goto error;
 	}
 
       alias_key.alias = g_ascii_strdown (tmp_buffer1->str, -1);

@@ -1,3 +1,38 @@
+2006-04-11  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 337924 – cleanups for issues reported by various compilers
+	Patch from Kjartan Maraas.
+
+	* examples/viewer-x.c (update):
+	* modules/arabic/arabic-fc.c (fallback_shape),
+	(arabic_engine_shape):
+	* modules/basic/basic-fc.c (fallback_shape), (basic_engine_shape):
+	* modules/basic/basic-x.c:
+	* modules/hangul/hangul-fc.c:
+	* modules/hebrew/hebrew-fc.c (hebrew_engine_shape):
+	* modules/indic/indic-fc.c:
+	* modules/khmer/khmer-fc.c:
+	* modules/syriac/syriac-fc.c:
+	* modules/thai/thai-fc.c:
+	* modules/tibetan/tibetan-fc.c:
+	* pango/break.c:
+	* pango/modules.c:
+	* pango/opentype/ftglue.c (_hb_ftglue_face_goto_table):
+	* pango/pango-attributes.c (pango_attr_list_filter):
+	* pango/pango-engine.c:
+	* pango/pango-fontset.c:
+	* pango/pango-layout.c (pango_layout_set_text),
+	(pango_layout_xy_to_index), (pango_layout_get_cursor_pos):
+	* pango/pango-markup.c (text_handler):
+	* pango/pango-utils.c (read_alias_file):
+	* pango/pangocairo-fcfont.c (G_DEFINE_TYPE_WITH_CODE):
+	* pango/pangocairo-fcfontmap.c (G_DEFINE_TYPE_WITH_CODE):
+	* pango/pangocairo-font.c (_pango_cairo_font_get_hex_box_info):
+	* pango/pangox-fontmap.c (pango_x_make_matching_xlfd):
+	* tests/dump-boundaries.c (fail):
+	Remove unused variables.  Remove excess semicolon after DEFINE_TYPE
+	macros.
+
 2006-04-10  Behdad Esfahbod  <behdad@gnome.org>
 
 	* config.h.win32, examples/makefile.msc: Removed.  Have not been

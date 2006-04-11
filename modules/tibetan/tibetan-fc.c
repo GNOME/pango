@@ -597,7 +597,7 @@ tibetan_engine_fc_class_init (PangoEngineShapeClass *class)
 }
 
 PANGO_ENGINE_SHAPE_DEFINE_TYPE (TibetanEngineFc, tibetan_engine_fc,
-                                tibetan_engine_fc_class_init, NULL);
+                                tibetan_engine_fc_class_init, NULL)
 
 
 void
