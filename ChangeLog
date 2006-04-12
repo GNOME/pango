@@ -1,3 +1,8 @@
+2006-04-12  Behdad Esfahbod  <behdad@gnome.org>
+
+	* pango/opentype/harfbuzz-gpos.c: Fix loop variables. (coverity
+	found bug.)
+
 2006-04-11  Behdad Esfahbod  <behdad@gnome.org>
 
 	Bug 337924 – cleanups for issues reported by various compilers
