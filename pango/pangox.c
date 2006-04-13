@@ -813,7 +813,7 @@ get_font_metrics_from_subfonts (PangoFont        *font,
       if (subfont)
 	{
 	  XFontStruct *fs = pango_x_get_font_struct (font, subfont);
-          gint avg_width;
+          gint avg_width = 0;
           
 	  if (fs)
 	    {
@@ -828,28 +828,31 @@ get_font_metrics_from_subfonts (PangoFont        *font,
 		  metrics->ascent = MAX (fs->ascent * PANGO_SCALE, metrics->ascent);
 		  metrics->descent = MAX (fs->descent * PANGO_SCALE, metrics->descent);
 		}
+
+	      if (get_int_prop (avg_width_atom, fs, &avg_width))
+		{
+		  /* convert decipoints --> Pango units.
+		   * Resolution is in (points * PANGO_SCALE) / pixel,
+		   * avg_width in decipoints.
+		   * We want pixels * PANGO_SCALE
+		   */
+
+		  /* Convert to points * PANGO_SCALE */
+		  avg_width *= PANGO_SCALE / (double) 10.0;
+		  /* Convert to pixels * PANGO_SCALE */
+		  avg_width *= (PANGO_SCALE / PANGO_X_FONT_MAP (PANGO_X_FONT (font)->fontmap)->resolution);
+		}
+	      else
+		{
+		  avg_width = PANGO_SCALE * ((fs->min_bounds.width + fs->max_bounds.width) / 2);
+		}
 	    }
-
-          if (fs && get_int_prop (avg_width_atom, fs, &avg_width))
-            {
-              /* convert decipoints --> Pango units.
-               * Resolution is in (points * PANGO_SCALE) / pixel,
-               * avg_width in decipoints.
-               * We want pixels * PANGO_SCALE
-               */
-
-              /* Convert to points * PANGO_SCALE */
-              avg_width *= PANGO_SCALE / (double) 10.0;
-              /* Convert to pixels * PANGO_SCALE */
-              avg_width *= (PANGO_SCALE / PANGO_X_FONT_MAP (PANGO_X_FONT (font)->fontmap)->resolution);
-            }
-          else
-            {
-              avg_width = PANGO_SCALE * ((fs->min_bounds.width + fs->max_bounds.width) / 2);
-            }
           
-          total_avg_widths += avg_width;
-          n_avg_widths += 1;
+	  if (avg_width)
+	    {
+	      total_avg_widths += avg_width;
+	      n_avg_widths += 1;
+	    }
 	}
       else
 	g_warning ("Invalid subfont %d in get_font_metrics_from_subfonts", GPOINTER_TO_UINT (tmp_list->data));
