@@ -1,3 +1,8 @@
+2006-04-12  Behdad Esfahbod  <behdad@gnome.org>
+
+	* pango/opentype/ftxgpos.c: Fix loop variables. (coverity
+	found bug.)
+
 2006-04-09  Behdad Esfahbod  <behdad@gnome.org>
 
 	Bug 337821 – invisible unicode chars are visible next to hebrew chars
