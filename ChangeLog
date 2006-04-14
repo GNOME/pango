@@ -1,3 +1,9 @@
+2006-04-14  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 338343 – Bad cast
+
+	* pango/pango-layout.c (pango_layout_set_text): Fix cast.
+
 2006-04-13  Behdad Esfahbod  <behdad@gnome.org>
 
 	* pango/pangox.c (get_font_metrics_from_subfonts): Check for nullity

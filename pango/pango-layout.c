@@ -866,7 +866,7 @@ pango_layout_set_text (PangoLayout *layout,
   for (;;) {
     gboolean valid;
     
-    valid = g_utf8_validate (start, -1, (const char *)&end);
+    valid = g_utf8_validate (start, -1, (const char **)&end);
 
     if (!*end)
       break;
