@@ -1,3 +1,11 @@
+2006-04-23  Behdad Esfahbod  <behdad@gnome.org>
+
+	* === Released 1.13.0 ===
+
+	* configure.in: Version 1.13.0
+
+	* NEWS: Updated.
+
 2006-04-14  Behdad Esfahbod  <behdad@gnome.org>
 
 	* examples/HELLO.utf8: Add Sinhala. (patch from Harshula)
