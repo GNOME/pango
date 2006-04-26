@@ -1,3 +1,10 @@
+2006-04-26  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 339749 – pango_language_from_string issues
+
+	* pango/pango-utils.c (pango_language_from_string): Avoid lookup that
+	we know fails...
+
 2006-04-23  Behdad Esfahbod  <behdad@gnome.org>
 
 	* === Released 1.13.0 ===

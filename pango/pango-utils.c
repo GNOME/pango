@@ -1246,12 +1246,14 @@ pango_language_from_string (const char *language)
   int len;
   char *p;
 
-  if (!hash)
+  if (G_UNLIKELY (!hash))
     hash = g_hash_table_new (lang_hash, lang_equal);
-
-  result = g_hash_table_lookup (hash, language);
-  if (result)
-    return (PangoLanguage *)result;
+  else
+    {
+      result = g_hash_table_lookup (hash, language);
+      if (result)
+	return (PangoLanguage *)result;
+    }
 
   len = strlen (language);
   result = g_malloc (len + 1);
