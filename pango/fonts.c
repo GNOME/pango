@@ -1373,9 +1373,9 @@ pango_font_metrics_get_approximate_char_width (PangoFontMetrics *metrics)
  * Gets the approximate digit width for a font metrics structure.
  * This is merely a representative value useful, for example, for
  * determining the initial size for a window. Actual digits in
- * text can be wider and narrower than this, though this value
+ * text can be wider or narrower than this, though this value
  * is generally somewhat more accurate than the result of
- * pango_font_metrics_get_approximate_digit_width().
+ * pango_font_metrics_get_approximate_char_width() for digits.
  * 
  * Return value: the digit width, in Pango units. (1 point == #PANGO_SCALE Pango units.)
  **/
