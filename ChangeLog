@@ -1,5 +1,16 @@
 2006-04-27  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango/pango-impl-utils.h:
+	* pango/fonts.c (pango_font_get_glyph_extents),
+	(pango_font_get_metrics), (pango_font_get_font_map):
+	* pango/pangocairo-render.c (pango_cairo_show_glyph_string),
+	(pango_cairo_glyph_string_path): Add more warning_history items and
+	handle more font failures, to make sure that instead of crashing,
+	gedit runs and draws empty boxes when pango.modules is not set
+	properly.
+
+2006-04-27  Behdad Esfahbod  <behdad@gnome.org>
+
 	* === Released 1.12.2 ===
 
 	* configure.in: Version 1.12.2
