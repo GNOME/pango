@@ -1,3 +1,11 @@
+2006-04-27  Behdad Esfahbod  <behdad@gnome.org>
+
+	* === Released 1.12.2 ===
+
+	* configure.in: Version 1.12.2
+
+	* NEWS: Updated.
+
 2006-04-12  Behdad Esfahbod  <behdad@gnome.org>
 
 	* pango/opentype/ftxgpos.c: Fix loop variables. (coverity

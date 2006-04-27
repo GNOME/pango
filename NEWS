@@ -1,3 +1,9 @@
+Overview of changes between 1.12.1 and 1.12.2
+==============================================
+* Fix incorrect rendering when in x86 64-bit precision mode
+  https://bugs.freedesktop.org/show_bug.cgi?id=5200
+* Misc bug fixes.
+
 Overview of changes between 1.12.0 and 1.12.1
 =============================================
 * Fix non-OpenType fonts losing kerning in 1.12.0 [#336026, Denis Jacquerye]
