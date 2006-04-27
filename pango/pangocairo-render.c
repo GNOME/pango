@@ -419,13 +419,19 @@ pango_cairo_show_glyph_string (cairo_t          *cr,
   PangoFontMap *fontmap;
   PangoCairoRenderer *crenderer;
   PangoRenderer *renderer;
+  gboolean unref_renderer = FALSE;
 
   g_return_if_fail (cr != NULL);
-  g_return_if_fail (PANGO_IS_CAIRO_FONT (font));
   g_return_if_fail (glyphs != NULL);
 
   fontmap = pango_font_get_font_map (font);
   renderer = _pango_cairo_font_map_get_renderer (PANGO_CAIRO_FONT_MAP (fontmap));
+  if (G_UNLIKELY (!renderer))
+    {
+      renderer = g_object_new (PANGO_TYPE_CAIRO_RENDERER, NULL);
+      unref_renderer = TRUE;
+    }
+
   crenderer = PANGO_CAIRO_RENDERER (renderer);
 
   cairo_save (cr);
@@ -445,9 +451,14 @@ pango_cairo_show_glyph_string (cairo_t          *cr,
 
   pango_renderer_deactivate (renderer);
   
-  crenderer->cr = NULL;
-  crenderer->x_offset = 0.;
-  crenderer->y_offset = 0.;
+  if (G_UNLIKELY (unref_renderer))
+    g_object_unref (renderer);
+  else
+    {
+      crenderer->cr = NULL;
+      crenderer->x_offset = 0.;
+      crenderer->y_offset = 0.;
+    }
   
   cairo_restore (cr);
 }
@@ -558,13 +569,19 @@ pango_cairo_glyph_string_path (cairo_t          *cr,
   PangoFontMap *fontmap;
   PangoCairoRenderer *crenderer;
   PangoRenderer *renderer;
+  gboolean unref_renderer = FALSE;
 
   g_return_if_fail (cr != NULL);
-  g_return_if_fail (PANGO_IS_CAIRO_FONT (font));
   g_return_if_fail (glyphs != NULL);
 
   fontmap = pango_font_get_font_map (font);
   renderer = _pango_cairo_font_map_get_renderer (PANGO_CAIRO_FONT_MAP (fontmap));
+  if (G_UNLIKELY (!renderer))
+    {
+      renderer = g_object_new (PANGO_TYPE_CAIRO_RENDERER, NULL);
+      unref_renderer = TRUE;
+    }
+
   crenderer = PANGO_CAIRO_RENDERER (renderer);
 
   crenderer->cr = cr;
@@ -573,10 +590,15 @@ pango_cairo_glyph_string_path (cairo_t          *cr,
   
   pango_renderer_draw_glyphs (renderer, font, glyphs, 0, 0);
   
-  crenderer->cr = NULL;
-  crenderer->do_path = FALSE;
-  crenderer->x_offset = 0.;
-  crenderer->y_offset = 0.;
+  if (G_UNLIKELY (unref_renderer))
+    g_object_unref (renderer);
+  else
+    {
+      crenderer->cr = NULL;
+      crenderer->do_path = FALSE;
+      crenderer->x_offset = 0.;
+      crenderer->y_offset = 0.;
+    }
   
   cairo_set_font_face (cr, NULL);
 }

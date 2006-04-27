@@ -29,6 +29,8 @@
 #include "pango-fontmap.h"
 #include "pango-impl-utils.h"
 
+static const char bad_font_warning[] = "%s called with bad font, expect ugly output";
+
 struct _PangoFontDescription
 {
   char *family_name;
@@ -1171,7 +1173,7 @@ pango_font_get_glyph_extents  (PangoFont      *font,
       if (!_pango_warning_history.get_glyph_extents)
         {
 	  _pango_warning_history.get_glyph_extents = TRUE;
-	  g_warning ("pango_font_get_glyph_extents called with bad font, expect ugly output");
+	  g_warning (bad_font_warning, "pango_font_get_glyph_extents");
 	}
       if (ink_rect)
         {
@@ -1212,6 +1214,17 @@ PangoFontMetrics *
 pango_font_get_metrics (PangoFont        *font,
 			PangoLanguage    *language)
 {
+  if (G_UNLIKELY (!PANGO_IS_FONT (font)))
+    {
+      
+      if (!_pango_warning_history.get_metrics)
+        {
+	  _pango_warning_history.get_metrics = TRUE;
+	  g_warning (bad_font_warning, "pango_font_get_metrics");
+	}
+      return pango_font_metrics_new ();
+    }
+
   return PANGO_FONT_GET_CLASS (font)->get_metrics (font, language);
 }
 
@@ -1228,6 +1241,17 @@ pango_font_get_metrics (PangoFont        *font,
 PangoFontMap *
 pango_font_get_font_map (PangoFont *font)
 {
+  if (G_UNLIKELY (!PANGO_IS_FONT (font)))
+    {
+      
+      if (!_pango_warning_history.get_font_map)
+        {
+	  _pango_warning_history.get_font_map = TRUE;
+	  g_warning (bad_font_warning, "pango_font_get_font_map");
+	}
+      return NULL;
+    }
+
   if (PANGO_FONT_GET_CLASS (font)->get_font_map)
     return PANGO_FONT_GET_CLASS (font)->get_font_map (font);
   else
