@@ -1171,15 +1171,17 @@ lang_equal (gconstpointer v1,
   const guchar *p1 = v1;
   const guchar *p2 = v2;
 
-  while (*p2)
+  while (*p1 && *p2)
     {
-      guchar value = canon_map[*p2];
-      if (value && value != *p1++)
-	return FALSE;
-      p2++;
+      guchar c1 = canon_map[*p1];
+      guchar c2 = canon_map[*p2];
+      if (!c1) { p1++; continue; }
+      if (!c2) { p2++; continue; }
+      if (c1 != c2) return FALSE;
+      p1++, p2++;
     }
 
-  return (*p1 == '\0');
+  return (*p1 == *p2);
 }
 
 static guint

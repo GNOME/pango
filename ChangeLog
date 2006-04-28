@@ -1,5 +1,12 @@
 2006-04-28  Behdad Esfahbod  <behdad@gnome.org>
 
+	Bug 339749 – pango_language_from_string issues
+	Patch from Morten Welinder.
+
+	* pango/pango-utils.c (lang_equal): Make the equal function symmetric.
+
+2006-04-28  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/pangofc-font.c (get_face_metrics),
 	(pango_fc_font_get_raw_extents): Don't use is_hinted.  Metrics are
 	always hinted now.
