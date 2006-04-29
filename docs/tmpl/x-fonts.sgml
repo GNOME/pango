@@ -9,13 +9,17 @@ Font handling and rendering with the deprecated X font backend
 The functions and macros in this section are for use with the old
 X font backend which used server-side bitmap fonts. This font backend
 is no longer supported, and attempts to use it will produce
-unpredictable results. Use the <link linkend="pango-Xft-Fonts-and-Rendering">Xft backend</link> instead.
+unpredictable results. Use the <link linkend="pango-Xft-Fonts-and-Rendering">Xft</link>
+or <link linkend="pango-Cairo-Rendering">Cairo</link> backend instead.
 </para>
 
 <!-- ##### SECTION See_Also ##### -->
 <para>
 
 </para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
 
 <!-- ##### MACRO PANGO_RENDER_TYPE_X ##### -->
 <para>

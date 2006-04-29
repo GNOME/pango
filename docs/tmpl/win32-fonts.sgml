@@ -6,13 +6,17 @@ Functions for shape engines to manipulate Win32 fonts
 
 <!-- ##### SECTION Long_Description ##### -->
 <para>
-
+The macros and functions in this section are used to access fonts natively on
+Win32 systems and to render text in conjunction with Win32 APIs.
 </para>
 
 <!-- ##### SECTION See_Also ##### -->
 <para>
 
 </para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
 
 <!-- ##### MACRO PANGO_RENDER_TYPE_WIN32 ##### -->
 <para>

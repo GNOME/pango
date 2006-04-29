@@ -19,6 +19,9 @@ to load a font of a given description.
 
 </para>
 
+<!-- ##### SECTION Stability_Level ##### -->
+
+
 <!-- ##### STRUCT PangoFontDescription ##### -->
 <para>
 The #PangoFontDescription structure represents the description
@@ -93,15 +96,15 @@ An enumeration specifying the width of the font relative to other designs
 within a family.
 </para>
 
-@PANGO_STRETCH_ULTRA_CONDENSED: 
-@PANGO_STRETCH_EXTRA_CONDENSED: 
-@PANGO_STRETCH_CONDENSED: 
-@PANGO_STRETCH_SEMI_CONDENSED: 
+@PANGO_STRETCH_ULTRA_CONDENSED: ultra condensed width
+@PANGO_STRETCH_EXTRA_CONDENSED: extra condensed width
+@PANGO_STRETCH_CONDENSED: condensed width
+@PANGO_STRETCH_SEMI_CONDENSED: semi condensed width
 @PANGO_STRETCH_NORMAL: the normal width
-@PANGO_STRETCH_SEMI_EXPANDED: 
-@PANGO_STRETCH_EXPANDED: 
-@PANGO_STRETCH_EXTRA_EXPANDED: 
-@PANGO_STRETCH_ULTRA_EXPANDED: 
+@PANGO_STRETCH_SEMI_EXPANDED: semi expanded width
+@PANGO_STRETCH_EXPANDED: expanded width
+@PANGO_STRETCH_EXTRA_EXPANDED: extra expanded width
+@PANGO_STRETCH_ULTRA_EXPANDED: ultra expanded width
 
 <!-- ##### MACRO PANGO_TYPE_STRETCH ##### -->
 <para>
@@ -412,15 +415,21 @@ the documentation of the corresponding getters for documentation
 of their meaning.
 </para>
 
-@ref_count: 
-@ascent: 
-@descent: 
-@approximate_char_width: 
-@approximate_digit_width: 
-@underline_position: 
-@underline_thickness: 
-@strikethrough_position: 
-@strikethrough_thickness: 
+@ref_count: reference count.  Used internally.  See pango_font_metrics_ref()
+            and pango_font_metrics_unref().
+@ascent: the distance from the baseline to the highest point of the glyphs of
+	 the font. This is positive in practically all fonts.
+@descent: the distance from the baseline to the lowest point of the glyphs of
+	 the font. This is positive in practically all fonts.
+@approximate_char_width: approximate average width of the regular glyphs of
+         the font.
+@approximate_digit_width: approximate average width of the glyphs for digits
+         of the font.
+@underline_position: position of the underline. This is normally negative.
+@underline_thickness: thickness of the underline.
+@strikethrough_position: position of the strikethrough line. This is
+	 normally positive.
+@strikethrough_thickness: thickness of the strikethrough line.
 
 <!-- ##### MACRO PANGO_TYPE_FONT_METRICS ##### -->
 <para>
@@ -782,13 +791,16 @@ The #PangoFontMapClass structure holds the virtual functions for
 a particular #PangoFontMap implementation.
 </para>
 
-@parent_class: 
+@parent_class: parent #GObjectClass.
 @load_font: a function to load a font with a given description. See
-            pango_font_map_load_font()
+            pango_font_map_load_font().
 @list_families: A function to list available font families. See
                 pango_font_map_list_families().
-@load_fontset: 
-@shape_engine_type: 
+@load_fontset: a function to load a fontset with a given given description
+             suitable for a particular language. See
+	     pango_font_map_load_fontset().
+@shape_engine_type: the type of rendering-system-dependent engines that
+             can handle fonts of this fonts loaded with this fontmap.
 
 <!-- ##### MACRO PANGO_FONT_MAP_CLASS ##### -->
 <para>
@@ -880,13 +892,14 @@ The #PangoFontsetClass structure holds the virtual functions for
 a particular #PangoFontset implementation.
 </para>
 
-@parent_class: 
+@parent_class: parent #GObjectClass.
 @get_font: a function to get the font in the fontset that contains the 
    best glyph for the given Unicode character; see pango_fontset_get_font().
 @get_metrics: a function to get overall metric information for the fonts 
    in the fontset; see pango_fontset_get_metrics().
 @get_language: a function to get the language of the fontset.
-@foreach: 
+@foreach: a function to loop over the fonts in the fontset. See
+   pango_fontset_foreach().
 
 <!-- ##### FUNCTION pango_fontset_get_font ##### -->
 <para>

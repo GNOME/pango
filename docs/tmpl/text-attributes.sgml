@@ -18,6 +18,9 @@ of attributes applied to a portion of text.
 
 </para>
 
+<!-- ##### SECTION Stability_Level ##### -->
+
+
 <!-- ##### ENUM PangoAttrType ##### -->
 <para>
 The #PangoAttrType
@@ -28,14 +31,14 @@ values are given below. The type of structure used to store the
 attribute is listed in parentheses after the description.
 </para>
 
-@PANGO_ATTR_INVALID: 
+@PANGO_ATTR_INVALID: does not happen
 @PANGO_ATTR_LANGUAGE: language (#PangoAttrLanguage)
 @PANGO_ATTR_FAMILY: font family name list (#PangoAttrString)
 @PANGO_ATTR_STYLE: font slant style (#PangoAttrInt)
 @PANGO_ATTR_WEIGHT: font weight (#PangoAttrInt)
 @PANGO_ATTR_VARIANT: font variant (normal or small caps) (#PangoAttrInt)
 @PANGO_ATTR_STRETCH: font stretch (#PangoAttrInt)
-@PANGO_ATTR_SIZE: font size in points divided by %PANGO_SCALE (#PangoAttrInt)
+@PANGO_ATTR_SIZE: font size in points scaled by %PANGO_SCALE (#PangoAttrInt)
 @PANGO_ATTR_FONT_DESC: font description (#PangoAttrFontDesc)
 @PANGO_ATTR_FOREGROUND: foreground color (#PangoAttrColor)
 @PANGO_ATTR_BACKGROUND: background color (#PangoAttrColor)
@@ -45,10 +48,10 @@ attribute is listed in parentheses after the description.
 @PANGO_ATTR_SHAPE: shape (#PangoAttrShape)
 @PANGO_ATTR_SCALE: font size scale factor (#PangoAttrFloat)
 @PANGO_ATTR_FALLBACK: whether fallback is enabled (#PangoAttrInt)
-@PANGO_ATTR_LETTER_SPACING: 
-@PANGO_ATTR_UNDERLINE_COLOR: 
-@PANGO_ATTR_STRIKETHROUGH_COLOR: 
-@PANGO_ATTR_ABSOLUTE_SIZE: 
+@PANGO_ATTR_LETTER_SPACING: letter spacing (#PangoAttrInt)
+@PANGO_ATTR_UNDERLINE_COLOR: underline color (#PangoAttrColor)
+@PANGO_ATTR_STRIKETHROUGH_COLOR: strikethrough color (#PangoAttrColor)
+@PANGO_ATTR_ABSOLUTE_SIZE: font size in pixels scaled by %PANGO_SCALE (#PangoAttrInt)
 
 <!-- ##### MACRO PANGO_TYPE_ATTR_TYPE ##### -->
 <para>
@@ -68,7 +71,7 @@ provided for #PangoAttribute.
 @type: the type ID for this attribute
 @copy: function to duplicate an attribute of this type (see pango_attribute_copy())
 @destroy: function to free an attribute of this type (see pango_attribute_destroy())
-@equal: 
+@equal: function to check two attributes of this type for equality (see pango_attribute_equal())
 
 <!-- ##### STRUCT PangoAttribute ##### -->
 <para>
@@ -147,9 +150,9 @@ impose shape restrictions.
 @attr: the common portion of the attribute
 @ink_rect: the ink rectangle to restrict to
 @logical_rect: the logical rectangle to restrict to
-@data: 
-@copy_func: 
-@destroy_func: 
+@data: user data set (see pango_attr_shape_new_with_data())
+@copy_func: copy function for the user data
+@destroy_func: destroy function for the user data
 
 <!-- ##### STRUCT PangoAttrSize ##### -->
 <para>

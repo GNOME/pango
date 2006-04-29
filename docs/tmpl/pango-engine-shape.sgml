@@ -6,13 +6,18 @@ Rendering-system dependent script engines
 
 <!-- ##### SECTION Long_Description ##### -->
 <para>
-
+The <firstterm>shape engines</firstterm> are rendering-system dependent
+engines that convert character strings into glyph strings.
+These engines are used in pango_shape().
 </para>
 
 <!-- ##### SECTION See_Also ##### -->
 <para>
 
 </para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
 
 <!-- ##### STRUCT PangoEngineShape ##### -->
 <para>
@@ -30,7 +35,7 @@ Rendering-system dependent script engines
 <!-- ##### MACRO PANGO_ENGINE_TYPE_SHAPE ##### -->
 <para>
 A string constant defining the engine type
-for <firstterm>shaping engines</firstterm>.
+for shaping engines.
 These engines derive from #PangoEngineShape.
 </para>
 
@@ -43,14 +48,6 @@ These engines derive from #PangoEngineShape.
 
 @name: 
 @prefix: 
-@\
-				       class_init:
-@\
-				       class_init:
-@\
-				       class_init:
-@\
-				       class_init:
 @class_init: 
 @instance_init: 
 

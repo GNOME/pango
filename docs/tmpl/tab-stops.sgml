@@ -6,13 +6,17 @@ Structures for storing tab stops
 
 <!-- ##### SECTION Long_Description ##### -->
 <para>
-
+Functions in this section are used to deal with #PangoTabArray objects
+that can be used to set tab stop positions in a #PangoLayout.
 </para>
 
 <!-- ##### SECTION See_Also ##### -->
 <para>
 
 </para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
 
 <!-- ##### STRUCT PangoTabArray ##### -->
 <para>

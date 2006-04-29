@@ -6,13 +6,17 @@ Font handling and rendering with ATSUI fonts
 
 <!-- ##### SECTION Long_Description ##### -->
 <para>
-
+The macros and functions in this section are used to access fonts natively on
+MacOS systems using the ATSUI text rendering subsystem.
 </para>
 
 <!-- ##### SECTION See_Also ##### -->
 <para>
 
 </para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
 
 <!-- ##### STRUCT PangoCairoATSUIFont ##### -->
 <para>

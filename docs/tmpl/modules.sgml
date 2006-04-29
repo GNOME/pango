@@ -6,13 +6,17 @@ Support for loadable modules
 
 <!-- ##### SECTION Long_Description ##### -->
 <para>
-
+Functions and macros in this section are used to support loading dynamic
+modules that add engines to Pango at run time.
 </para>
 
 <!-- ##### SECTION See_Also ##### -->
 <para>
 
 </para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
 
 <!-- ##### STRUCT PangoIncludedModule ##### -->
 <para>
@@ -21,10 +25,10 @@ contains the functions that would otherwise be loaded from a dynamically
 loaded module.
 </para>
 
-@list: 
-@init: 
-@exit: 
-@create: 
+@list: a function that lists the engines defined in this module.
+@init: a function to initialize the module.
+@exit: a function to finilize the module.
+@create: a function to create an engine, given the engine name.
 
 <!-- ##### STRUCT PangoMap ##### -->
 <para>

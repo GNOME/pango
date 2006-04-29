@@ -15,6 +15,9 @@ backends and modules, but may be useful for other purposes too.
 
 </para>
 
+<!-- ##### SECTION Stability_Level ##### -->
+
+
 <!-- ##### FUNCTION pango_split_file_list ##### -->
 <para>
 
@@ -170,9 +173,6 @@ backends and modules, but may be useful for other purposes too.
 @length: 
 @pbase_dir: 
 @Returns: 
-<!-- # Unused Parameters # -->
-@str: 
-@bytelen: 
 
 
 <!-- ##### FUNCTION pango_language_get_sample_string ##### -->
