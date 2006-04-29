@@ -1,5 +1,12 @@
 2006-04-29  Behdad Esfahbod  <behdad@gnome.org>
 
+	Bug 337594 – pango_glyph_string_extents_range possible bug
+
+	* pango/glyphstring.c (pango_glyph_string_extents_range): Add offset
+	for first glyph too.
+
+2006-04-29  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 333771 – Use gmodule-no-export-2.0 instead of gmodule-2.0 in
 	pango-uninstalled.pc.in
 
