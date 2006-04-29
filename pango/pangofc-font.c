@@ -306,10 +306,21 @@ get_face_metrics (PangoFcFont      *fcfont,
       FT_Vector_Transform (&vector, &ft_matrix);
       metrics->ascent = PANGO_UNITS_26_6 (vector.y);
     }
-  else
+  else if (fcfont->is_hinted ||
+	   (face->face_flags & FT_FACE_FLAG_SCALABLE) == 0)
     {
       metrics->descent = - PANGO_UNITS_26_6 (face->size->metrics.descender);
       metrics->ascent = PANGO_UNITS_26_6 (face->size->metrics.ascender);
+    }
+  else
+    {
+      FT_Fixed ascender, descender;
+
+      descender = FT_MulFix (face->descender, face->size->metrics.y_scale);
+      metrics->descent = - PANGO_UNITS_26_6 (descender);
+
+      ascender = FT_MulFix (face->ascender, face->size->metrics.y_scale);
+      metrics->ascent = PANGO_UNITS_26_6 (ascender);
     }
 
   /* Versions of FreeType < 2.1.8 get underline thickness wrong
@@ -348,12 +359,16 @@ get_face_metrics (PangoFcFont      *fcfont,
       metrics->strikethrough_position = (PANGO_SCALE * face->size->metrics.y_ppem) / 4;
     }
 
-  /* Quantize the underline and strikethrough position to integer values.
+  /* If hinting is on for this font, quantize the underline and strikethrough position
+   * to integer values.
    */
-  pango_quantize_line_geometry (&metrics->underline_thickness,
-				&metrics->underline_position);
-  pango_quantize_line_geometry (&metrics->strikethrough_thickness,
-				&metrics->strikethrough_position);
+  if (fcfont->is_hinted)
+    {
+      pango_quantize_line_geometry (&metrics->underline_thickness,
+				    &metrics->underline_position);
+      pango_quantize_line_geometry (&metrics->strikethrough_thickness,
+				    &metrics->strikethrough_position);
+    }
   
   PANGO_FC_FONT_UNLOCK_FACE (fcfont);
 }
@@ -812,8 +827,22 @@ pango_fc_font_get_raw_extents (PangoFcFont    *fcfont,
 	{
 	  logical_rect->x = 0;
 	  logical_rect->width = PANGO_UNITS_26_6 (gm->horiAdvance);
-	  logical_rect->y = - PANGO_UNITS_26_6 (face->size->metrics.ascender);
-	  logical_rect->height = PANGO_UNITS_26_6 (face->size->metrics.ascender - face->size->metrics.descender);
+	  if (fcfont->is_hinted ||
+	      (face->face_flags & FT_FACE_FLAG_SCALABLE) == 0)
+	    {
+	      logical_rect->y = - PANGO_UNITS_26_6 (face->size->metrics.ascender);
+	      logical_rect->height = PANGO_UNITS_26_6 (face->size->metrics.ascender - face->size->metrics.descender);
+	    }
+	  else
+	    {
+	      FT_Fixed ascender, descender;
+	      
+	      ascender = FT_MulFix (face->ascender, face->size->metrics.y_scale);
+	      descender = FT_MulFix (face->descender, face->size->metrics.y_scale);
+	      
+	      logical_rect->y = - PANGO_UNITS_26_6 (ascender);
+	      logical_rect->height = PANGO_UNITS_26_6 (ascender - descender);
+	    }
 	}
     }
   else

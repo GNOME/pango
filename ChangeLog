@@ -1,3 +1,16 @@
+2006-04-29  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 307196 – Unhinted fonts are measured incorrectly and drawing
+	problems occur as a result
+
+	* pango/pangofc-font.c (get_face_metrics),
+	(pango_fc_font_get_raw_extents):
+	* pango/pangoxft-font.c (_pango_xft_font_new): Rollback previous
+	change that forced metrics hinting always on.
+
+	* pango/pangocairo-fcfont.c (_pango_cairo_fc_font_new): Set fcfont
+	metrics hinting based on cairo font options.
+
 2006-04-28  Behdad Esfahbod  <behdad@gnome.org>
 
 	Bug 339749 – pango_language_from_string issues

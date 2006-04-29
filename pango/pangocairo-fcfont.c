@@ -645,5 +645,10 @@ _pango_cairo_fc_font_new (PangoCairoFcFontMap        *cffontmap,
 
   cffont->options = cairo_font_options_copy (_pango_cairo_context_get_merged_font_options (context));
   
+  /* fcfont's is_hinted controls metric hinting
+   */
+  PANGO_FC_FONT(cffont)->is_hinted = 
+    (cairo_font_options_get_hint_metrics(cffont->options) != CAIRO_HINT_METRICS_OFF);
+
   return PANGO_FC_FONT (cffont);
 }

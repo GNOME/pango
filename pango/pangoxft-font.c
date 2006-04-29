@@ -96,6 +96,12 @@ _pango_xft_font_new (PangoXftFontMap *xftfontmap,
 					"pattern", pattern,
 					NULL);
 
+  /* Hack to force hinting of vertical metrics; hinting off for
+   * a Xft font just means to not hint outlines, but we still
+   * want integer line spacing, underline positions, etc
+   */
+  PANGO_FC_FONT (xfont)->is_hinted = TRUE;
+  
   xfont->xft_font = NULL;
 
   return xfont;
