@@ -123,21 +123,18 @@ _pango_cairo_font_get_hex_box_info (PangoCairoFont *cfont)
 
   /* for metrics hinting */
   double scale_x, scale_x_inv, scale_y, scale_y_inv;
+  gboolean is_hinted;
 
   int i;
   int rows;
   double pad;
   double width = 0;
   double height = 0;
+  cairo_font_options_t *font_options;
   cairo_font_extents_t font_extents;
-  PangoFontDescription *mini_desc, *desc;
-  cairo_scaled_font_t *scaled_font;
-#ifdef HAVE_CAIRO_SCALED_FONT_TEXT_EXTENTS
-  cairo_scaled_font_t *scaled_mini_font;
-#else
-  cairo_surface_t *surface;
-  cairo_t *cr;
-#endif
+  double size, mini_size;
+  PangoFontDescription *desc, *mini_desc;
+  cairo_scaled_font_t *scaled_font, *scaled_mini_font;
 
   if (!cfont)
     return NULL;
@@ -153,26 +150,27 @@ _pango_cairo_font_get_hex_box_info (PangoCairoFont *cfont)
       return NULL;
     }
 
-#ifdef HAVE_CAIRO_SCALED_FONT_GETTERS
-  /* prepare for some hinting */
-  {
-    cairo_matrix_t ctm;
-    double x, y;
-    cairo_scaled_font_get_ctm (scaled_font, &ctm);
+  font_options = cairo_font_options_create ();
+  cairo_scaled_font_get_font_options (scaled_font, font_options);
+  is_hinted = (cairo_font_options_get_hint_metrics(font_options) != CAIRO_HINT_METRICS_OFF);
 
-    x = 1.; y = 0.;
-    cairo_matrix_transform_distance (&ctm, &x, &y);
-    scale_x = sqrt (x*x + y*y);
-    scale_x_inv = 1 / scale_x;
+  if (is_hinted)
+    {
+      /* prepare for some hinting */
+      cairo_matrix_t ctm;
+      double x, y;
+      cairo_scaled_font_get_ctm (scaled_font, &ctm);
 
-    x = 0.; y = 1.;
-    cairo_matrix_transform_distance (&ctm, &x, &y);
-    scale_y = sqrt (x*x + y*y);
-    scale_y_inv = 1 / scale_y;
-  }
-#else
-  scale_x = scale_x_inv = scale_y = scale_y_inv = 1.0;
-#endif
+      x = 1.; y = 0.;
+      cairo_matrix_transform_distance (&ctm, &x, &y);
+      scale_x = sqrt (x*x + y*y);
+      scale_x_inv = 1 / scale_x;
+
+      x = 0.; y = 1.;
+      cairo_matrix_transform_distance (&ctm, &x, &y);
+      scale_y = sqrt (x*x + y*y);
+      scale_y_inv = 1 / scale_y;
+    }
 
 /* we hint to the nearest device units */
 #define HINT(value, scale, scale_inv) (ceil ((value-1e-5) * scale) * scale_inv)
@@ -181,94 +179,108 @@ _pango_cairo_font_get_hex_box_info (PangoCairoFont *cfont)
   
   /* create mini_font description */
   {
-    double size, mini_size;
-
-    desc = pango_font_describe ((PangoFont *)cfont);
-    size = pango_font_description_get_size (desc) / (1.*PANGO_SCALE);
-
-    mini_desc = pango_font_description_new ();
-    pango_font_description_set_family_static (mini_desc, "monospace");
-
-    /* TODO: The stuff here should give a shit to whether it's
-     * absolute size or not. */
-    rows = 2;
-    mini_size = HINT_Y (size / 2.4);
-    if (mini_size < 5.0)
-      {
-        rows = 1;
-	mini_size = MIN (size, 5.0);
-      }
-
-    if (pango_font_description_get_size_is_absolute (desc))
-	pango_font_description_set_absolute_size (mini_desc, mini_size * PANGO_SCALE);
-    else
-	pango_font_description_set_size (mini_desc, mini_size * PANGO_SCALE);
-
-    pango_font_description_free (desc);
-  }
-
-  /* load mini_font */
-  {
     PangoContext *context;
     PangoFontMap *fontmap;
 
     fontmap = pango_font_get_font_map ((PangoFont *)cfont);
-    g_assert (fontmap);
+
+    desc = pango_font_describe ((PangoFont *)cfont);
+    size = pango_font_description_get_size (desc) / (1.*PANGO_SCALE);
+    if (pango_font_description_get_size_is_absolute (desc))
+      {
+        int dpi = pango_cairo_font_map_get_resolution (PANGO_CAIRO_FONT_MAP (fontmap));
+        size = size * 72. / dpi;
+      }
+
+    mini_desc = pango_font_description_new ();
+    pango_font_description_set_family_static (mini_desc, "monospace");
+
+
+    rows = 2;
+    mini_size = size / 2.4;
+    if (is_hinted)
+      {
+	mini_size = HINT_Y (mini_size);
+      }
+
+    if (mini_size < 5.0)
+      {
+	rows = 1;
+	mini_size = MIN (MAX (size - 1, 0), 5.0);
+      }
+
+    pango_font_description_set_size (mini_desc, mini_size * PANGO_SCALE);
+
+
+    /* load mini_font */
+
     context = pango_cairo_font_map_create_context (PANGO_CAIRO_FONT_MAP (fontmap));
 
     pango_context_set_language (context, pango_language_from_string ("en"));
+    pango_cairo_context_set_font_options (context, font_options);
     mini_font = pango_font_map_load_font (fontmap, context, mini_desc);
     pango_font_description_free (mini_desc);
 
+    pango_font_description_free (desc);
     g_object_unref (context);
     g_object_unref (fontmap);
   }
 
+  cairo_font_options_destroy (font_options);
+
 
   mini_cfont = (PangoCairoFont *) mini_font;
-
-#ifndef HAVE_CAIRO_SCALED_FONT_TEXT_EXTENTS
-  surface = cairo_image_surface_create (CAIRO_FORMAT_RGB24, 1, 1);
-  cr = cairo_create (surface);
-  cairo_surface_destroy (surface);
-  _pango_cairo_font_install (mini_cfont, cr);
-#endif
+  scaled_mini_font = _pango_cairo_font_get_scaled_font (mini_cfont);  
 
   for (i = 0 ; i < 16 ; i++)
     {
       cairo_text_extents_t extents;
 
       c[0] = hexdigits[i];
-#ifdef HAVE_CAIRO_SCALED_FONT_TEXT_EXTENTS
-      scaled_mini_font = _pango_cairo_font_get_scaled_font (mini_cfont);  
       cairo_scaled_font_text_extents (scaled_mini_font, c, &extents);
-#else
-      cairo_text_extents (cr, c, &extents);
-#endif
       width = MAX (width, extents.width);
       height = MAX (height, extents.height);
     }
 
-#ifndef HAVE_CAIRO_SCALED_FONT_TEXT_EXTENTS
-  cairo_destroy (cr);
-#endif
   cairo_scaled_font_extents (scaled_font, &font_extents);
+  pad = (font_extents.ascent + font_extents.descent) / 43;
+  pad = MIN (pad, mini_size);
 
   hbi = g_slice_new (PangoCairoHexBoxInfo);
   hbi->font = mini_font;
   hbi->rows = rows;
 
-  hbi->digit_width = HINT_X (width);
-  hbi->digit_height = HINT_Y (height);
+  hbi->digit_width  = width;
+  hbi->digit_height = height;
 
-  pad = (font_extents.ascent + font_extents.descent) / 43;
-  hbi->pad_x = HINT_X (pad);
-  hbi->pad_y = HINT_Y (pad);
+  hbi->pad_x = pad;
+  hbi->pad_y = pad;
+
+  if (is_hinted)
+    {
+      hbi->digit_width  = HINT_X (hbi->digit_width);
+      hbi->digit_height = HINT_Y (hbi->digit_height);
+      hbi->pad_x = HINT_X (hbi->pad_x);
+      hbi->pad_y = HINT_Y (hbi->pad_y);
+    }
+
   hbi->line_width = MIN (hbi->pad_x, hbi->pad_y);
 
   hbi->box_height = 3 * hbi->pad_y + rows * (hbi->pad_y + hbi->digit_height);
-  hbi->box_descent = HINT_Y (font_extents.descent -
-			     (font_extents.ascent + font_extents.descent - hbi->box_height) / 2);
+
+  if (rows == 1)
+    {
+      hbi->box_descent = hbi->pad_y;
+    }
+  else
+    {
+      hbi->box_descent = font_extents.descent * hbi->box_height /
+			 (font_extents.ascent + font_extents.descent);
+    }
+  if (is_hinted)
+    {
+       hbi->box_descent = HINT_Y (hbi->box_descent);
+    }
 
   g_object_set_data_full (G_OBJECT (cfont), "hex_box_info", hbi, (GDestroyNotify)_pango_cairo_hex_box_info_destroy); 
 

@@ -1,5 +1,13 @@
 2006-04-29  Behdad Esfahbod  <behdad@gnome.org>
 
+	* configure.in: Require cairo >= 1.1.2.  Also pass -no-undefined on all
+	systems.
+
+	* pango/pangocairo-font.c (_pango_cairo_font_get_hex_box_info): Fix
+	hexbox info to respect absolute sizes and no metrics hinting settings.
+
+2006-04-29  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 329664 – Move gunichar_to_glyph cache from PangoCairoFcFont to
 	PangoFcFont
 	Patch from LingNing Zhang.
