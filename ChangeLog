@@ -1,5 +1,18 @@
 2006-04-29  Behdad Esfahbod  <behdad@gnome.org>
 
+	Bug 329547 – pango_layout_get_pixel_extents and
+	pango_layout_get_pixel_size cause off-by-one metrics
+
+	* docs/pango-sections.txt:
+	* docs/tmpl/glyphs.sgml:
+	* pango/pango-types.h: Define PANGO_PIXELS_FLOOR and PANGO_PIXELS_CEIL.
+
+	* pango/pango-layout.c (pango_layout_get_pixel_extents),
+	(pango_layout_get_pixel_size): Make sure logical rects are
+	consistent and ink rects are inclusive.
+
+2006-04-29  Behdad Esfahbod  <behdad@gnome.org>
+
 	* docs/tmpl/atsui-fonts.sgml:
 	* docs/tmpl/coverage-maps.sgml:
 	* docs/tmpl/engines.sgml:

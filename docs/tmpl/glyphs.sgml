@@ -37,7 +37,23 @@ points (as in "12 point font"), rather than pixels.
 
 <!-- ##### MACRO PANGO_PIXELS ##### -->
 <para>
-Converts a dimension to device units.
+Converts a dimension to device units by rounding.
+</para>
+
+@d: a dimension in Pango units.
+
+
+<!-- ##### MACRO PANGO_PIXELS_FLOOR ##### -->
+<para>
+Converts a dimension to device units by flooring.
+</para>
+
+@d: a dimension in Pango units.
+
+
+<!-- ##### MACRO PANGO_PIXELS_CEIL ##### -->
+<para>
+Converts a dimension to device units by ceiling.
 </para>
 
 @d: a dimension in Pango units.

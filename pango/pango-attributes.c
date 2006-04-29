@@ -472,7 +472,7 @@ pango_attr_size_new_internal (int size,
 
 /**
  * pango_attr_size_new:
- * @size: the font size, in #PANGO_SCALE<!-- -->ths of a point.
+ * @size: the font size, in %PANGO_SCALE<!-- -->ths of a point.
  * 
  * Create a new font-size attribute in fractional points.
  * 
@@ -487,7 +487,7 @@ pango_attr_size_new (int size)
 
 /**
  * pango_attr_size_new_absolute:
- * @size: the font size, in #PANGO_SCALE<!-- -->ths of a device unit.
+ * @size: the font size, in %PANGO_SCALE<!-- -->ths of a device unit.
  * 
  * Create a new font-size attribute in device units.
  * 

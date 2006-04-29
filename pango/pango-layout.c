@@ -1275,7 +1275,7 @@ pango_layout_index_to_line_and_extents (PangoLayout     *layout,
  * @line:      location to store resulting line index. (which will
  *             between 0 and pango_layout_get_line_count(layout) - 1)
  * @x_pos:     location to store resulting position within line
- *             (in thousandths of a device unit)
+ *             (%PANGO_SCALE units per device unit)
  *
  * Converts from byte @index_ within the @layout to line and X position.
  * (X position is measured from the left edge of the line)
@@ -2261,20 +2261,26 @@ pango_layout_get_pixel_extents (PangoLayout *layout,
 
   if (ink_rect)
     {
-      ink_rect->width = (ink_rect->width + PANGO_SCALE / 2) / PANGO_SCALE;
-      ink_rect->height = (ink_rect->height + PANGO_SCALE / 2) / PANGO_SCALE;
+      int orig_x = ink_rect->x;
+      int orig_y = ink_rect->y;
 
-      ink_rect->x = PANGO_PIXELS (ink_rect->x);
-      ink_rect->y = PANGO_PIXELS (ink_rect->y);
+      ink_rect->x = PANGO_PIXELS_FLOOR (ink_rect->x);
+      ink_rect->y = PANGO_PIXELS_FLOOR (ink_rect->y);
+
+      ink_rect->width  = PANGO_PIXELS_CEIL (orig_x + ink_rect->width ) - ink_rect->x;
+      ink_rect->height = PANGO_PIXELS_CEIL (orig_y + ink_rect->height) - ink_rect->y;
     }
 
   if (logical_rect)
     {
-      logical_rect->width = (logical_rect->width + PANGO_SCALE / 2) / PANGO_SCALE;
-      logical_rect->height = (logical_rect->height + PANGO_SCALE / 2) / PANGO_SCALE;
+      int orig_x = logical_rect->x;
+      int orig_y = logical_rect->y;
 
       logical_rect->x = PANGO_PIXELS (logical_rect->x);
       logical_rect->y = PANGO_PIXELS (logical_rect->y);
+
+      logical_rect->width  = PANGO_PIXELS (orig_x + logical_rect->width ) - logical_rect->x;
+      logical_rect->height = PANGO_PIXELS (orig_y + logical_rect->height) - logical_rect->y;
     }
 }
 
@@ -2285,7 +2291,7 @@ pango_layout_get_pixel_extents (PangoLayout *layout,
  * @height: location to store the logical height, or %NULL
  * 
  * Determines the logical width and height of a #PangoLayout
- * in Pango units. (device units divided by %PANGO_SCALE). This
+ * in Pango units. (device units scaled by %PANGO_SCALE). This
  * is simply a convenience function around pango_layout_get_extents().
  **/
 void
@@ -2311,8 +2317,9 @@ pango_layout_get_size (PangoLayout *layout,
  * 
  * Determines the logical width and height of a #PangoLayout
  * in device units. (pango_layout_get_size() returns the width
- * and height in thousandths of a device unit.) This
- * is simply a convenience function around pango_layout_get_extents().
+ * and height scaled by %PANGO_SCALE.) This
+ * is simply a convenience function around
+ * pango_layout_get_pixel_extents().
  **/
 void
 pango_layout_get_pixel_size (PangoLayout *layout,
@@ -2321,12 +2328,12 @@ pango_layout_get_pixel_size (PangoLayout *layout,
 {
   PangoRectangle logical_rect;
 
-  pango_layout_get_extents (layout, NULL, &logical_rect);
+  pango_layout_get_pixel_extents (layout, NULL, &logical_rect);
 
   if (width)
-    *width = (logical_rect.width + PANGO_SCALE / 2) / PANGO_SCALE;
+    *width = logical_rect.width;
   if (height)
-    *height = (logical_rect.height + PANGO_SCALE / 2) / PANGO_SCALE;
+    *height = logical_rect.height;
 }
 
 static void

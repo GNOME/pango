@@ -127,10 +127,12 @@ double pango_matrix_get_font_scale_factor (const PangoMatrix *matrix);
 
 #define PANGO_SCALE 1024
 #define PANGO_PIXELS(d) (((int)(d) + 512) >> 10)
-/* The above expression is just slightly wrong for floating point d;
- * We'd expect -512.5 => -1 but instead we get 0. That's unlikely
- * to matter for practical use and the expression is much more
- * compact and faster than alternatives that work exactly for both
+#define PANGO_PIXELS_FLOOR(d) (((int)(d)) >> 10)
+#define PANGO_PIXELS_CEIL(d) (((int)(d) + 1023) >> 10)
+/* The above expressions are just slightly wrong for floating point d;
+ * For example we'd expect PANGO_PIXELS(-512.5) => -1 but instead we get 0.
+ * That's unlikely to matter for practical use and the expression is much
+ * more compact and faster than alternatives that work exactly for both
  * integers and floating point.
  */
 

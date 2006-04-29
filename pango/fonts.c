@@ -378,7 +378,7 @@ pango_font_description_get_size (const PangoFontDescription *desc)
 /**
  * pango_font_description_set_absolute_size:
  * @desc: a #PangoFontDescription
- * @size: the new size, in Pango units. There are #PANGO_SCALE Pango units in one
+ * @size: the new size, in Pango units. There are %PANGO_SCALE Pango units in one
  *   device unit. For an output backend where a device unit is a pixel, a @size
  *   value of 10 * PANGO_SCALE gives a 10 pixel font.
  * 
@@ -1341,7 +1341,7 @@ pango_font_metrics_unref (PangoFontMetrics *metrics)
  * actual drawn ink. It is necessary to lay out the text to figure
  * where the ink will be.)
  * 
- * Return value: the ascent, in Pango units. (1 point == #PANGO_SCALE Pango units.)
+ * Return value: the ascent, in Pango units. (1 point == %PANGO_SCALE Pango units.)
  **/
 int
 pango_font_metrics_get_ascent (PangoFontMetrics *metrics)
@@ -1361,7 +1361,7 @@ pango_font_metrics_get_ascent (PangoFontMetrics *metrics)
  * actual drawn ink. It is necessary to lay out the text to figure
  * where the ink will be.)
  * 
- * Return value: the descent, in Pango units. (1 point == #PANGO_SCALE Pango units.)
+ * Return value: the descent, in Pango units. (1 point == %PANGO_SCALE Pango units.)
  **/
 int
 pango_font_metrics_get_descent (PangoFontMetrics *metrics)
@@ -1380,7 +1380,7 @@ pango_font_metrics_get_descent (PangoFontMetrics *metrics)
  * determining the initial size for a window. Actual characters in
  * text will be wider and narrower than this.
  * 
- * Return value: the character width, in Pango units. (1 point == #PANGO_SCALE Pango units.)
+ * Return value: the character width, in Pango units. (1 point == %PANGO_SCALE Pango units.)
  **/
 int
 pango_font_metrics_get_approximate_char_width (PangoFontMetrics *metrics)
@@ -1401,7 +1401,7 @@ pango_font_metrics_get_approximate_char_width (PangoFontMetrics *metrics)
  * is generally somewhat more accurate than the result of
  * pango_font_metrics_get_approximate_char_width() for digits.
  * 
- * Return value: the digit width, in Pango units. (1 point == #PANGO_SCALE Pango units.)
+ * Return value: the digit width, in Pango units. (1 point == %PANGO_SCALE Pango units.)
  **/
 int
 pango_font_metrics_get_approximate_digit_width (PangoFontMetrics *metrics)
