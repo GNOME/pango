@@ -1,5 +1,13 @@
 2006-04-29  Behdad Esfahbod  <behdad@gnome.org>
 
+	Bug 333771 – Use gmodule-no-export-2.0 instead of gmodule-2.0 in
+	pango-uninstalled.pc.in
+
+	* pango-uninstalled.pc.in: Require gmodule-no-export-2.0, like
+	pango.pc.in does.
+
+2006-04-29  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 307196 – Unhinted fonts are measured incorrectly and drawing
 	problems occur as a result
 
