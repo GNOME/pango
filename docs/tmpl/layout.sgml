@@ -19,6 +19,9 @@ at once.
 
 </para>
 
+<!-- ##### SECTION Stability_Level ##### -->
+
+
 <!-- ##### STRUCT PangoLayout ##### -->
 <para>
 The #PangoLayout structure represents and entire paragraph

@@ -28,6 +28,9 @@ function is used when building a catalog of all available modules.
 
 </para>
 
+<!-- ##### SECTION Stability_Level ##### -->
+
+
 <!-- ##### STRUCT PangoEngineInfo ##### -->
 <para>
 The #PangoEngineInfo structure contains information about a particular
@@ -37,8 +40,8 @@ engine. It contains the following fields:
 @id: a unique string ID for the engine.
 @engine_type: a string identifying the engine type.
 @render_type: a string identifying the render type.
-@scripts: 
-@n_scripts: 
+@scripts: array of scripts this engine supports.
+@n_scripts: number of items in @scripts.
 
 <!-- ##### STRUCT PangoEngineScriptInfo ##### -->
 <para>

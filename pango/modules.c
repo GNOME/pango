@@ -110,7 +110,7 @@ static GType pango_module_get_type (void);
  * type. The resulting map can be used to determine the engine
  * for each character.
  * 
- * Return value: 
+ * Return value: the suitable #PangoMap.
  **/
 PangoMap *
 pango_find_map (PangoLanguage *language,

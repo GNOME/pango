@@ -1,5 +1,63 @@
 2006-04-29  Behdad Esfahbod  <behdad@gnome.org>
 
+	* docs/tmpl/atsui-fonts.sgml:
+	* docs/tmpl/coverage-maps.sgml:
+	* docs/tmpl/engines.sgml:
+	* docs/tmpl/fonts.sgml:
+	* docs/tmpl/freetype-fonts.sgml:
+	* docs/tmpl/glyphs.sgml:
+	* docs/tmpl/layout.sgml:
+	* docs/tmpl/main.sgml:
+	* docs/tmpl/modules.sgml:
+	* docs/tmpl/opentype.sgml:
+	* docs/tmpl/pango-engine-lang.sgml:
+	* docs/tmpl/pango-engine-shape.sgml:
+	* docs/tmpl/pango-renderer.sgml:
+	* docs/tmpl/pangocairo.sgml:
+	* docs/tmpl/pangofc-decoder.sgml:
+	* docs/tmpl/pangofc-font.sgml:
+	* docs/tmpl/pangofc-fontmap.sgml:
+	* docs/tmpl/scripts.sgml:
+	* docs/tmpl/tab-stops.sgml:
+	* docs/tmpl/text-attributes.sgml:
+	* docs/tmpl/win32-fonts.sgml:
+	* docs/tmpl/x-fonts.sgml:
+	* docs/tmpl/xft-fonts.sgml:
+	* examples/Makefile.am:
+	* pango/modules.c:
+	* pango/pango-coverage.c: Update docs.
+
+2006-04-29  Behdad Esfahbod  <behdad@gnome.org>
+
+	* docs/tmpl/atsui-fonts.sgml:
+	* docs/tmpl/coverage-maps.sgml:
+	* docs/tmpl/engines.sgml:
+	* docs/tmpl/fonts.sgml:
+	* docs/tmpl/freetype-fonts.sgml:
+	* docs/tmpl/glyphs.sgml:
+	* docs/tmpl/layout.sgml:
+	* docs/tmpl/main.sgml:
+	* docs/tmpl/modules.sgml:
+	* docs/tmpl/opentype.sgml:
+	* docs/tmpl/pango-engine-lang.sgml:
+	* docs/tmpl/pango-engine-shape.sgml:
+	* docs/tmpl/pango-renderer.sgml:
+	* docs/tmpl/pangocairo.sgml:
+	* docs/tmpl/pangofc-decoder.sgml:
+	* docs/tmpl/pangofc-font.sgml:
+	* docs/tmpl/pangofc-fontmap.sgml:
+	* docs/tmpl/scripts.sgml:
+	* docs/tmpl/tab-stops.sgml:
+	* docs/tmpl/text-attributes.sgml:
+	* docs/tmpl/win32-fonts.sgml:
+	* docs/tmpl/x-fonts.sgml:
+	* docs/tmpl/xft-fonts.sgml:
+	* examples/Makefile.am:
+	* pango/modules.c:
+	* pango/pango-coverage.c:
+
+2006-04-29  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 337594 – pango_glyph_string_extents_range possible bug
 
 	* pango/glyphstring.c (pango_glyph_string_extents_range): Add offset

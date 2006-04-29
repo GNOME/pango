@@ -17,9 +17,12 @@ to represent that information.
 
 </para>
 
+<!-- ##### SECTION Stability_Level ##### -->
+
+
 <!-- ##### ENUM PangoCoverageLevel ##### -->
 <para>
-Used to indicate how well a font can represent a particular ISO 10646
+Used to indicate how well a font can represent a particular Unicode
 character point for a particular script.
 </para>
 
@@ -43,8 +46,8 @@ The #GObject type for #PangoCoverageLevel.
 
 <!-- ##### STRUCT PangoCoverage ##### -->
 <para>
-The #PangoCoverage structure represents a map from ISO-10646 character
-point to #PangoCoverageLevel. It is an opaque structure with no public fields.
+The #PangoCoverage structure represents a map from Unicode characters
+to #PangoCoverageLevel. It is an opaque structure with no public fields.
 </para>
 
 

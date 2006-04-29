@@ -165,7 +165,7 @@ pango_coverage_unref (PangoCoverage *coverage)
  * 
  * Determine whether a particular index is covered by @coverage
  * 
- * Return value: 
+ * Return value: the coverage level of @coverage for character @index_.
  **/
 PangoCoverageLevel
 pango_coverage_get (PangoCoverage *coverage,

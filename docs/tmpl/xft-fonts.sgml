@@ -39,6 +39,9 @@ overring the #PangoXftRendererClass virtual functions
 
 </para>
 
+<!-- ##### SECTION Stability_Level ##### -->
+
+
 <!-- ##### STRUCT PangoXftFont ##### -->
 <para>
 #PangoXftFont is an implementation of #PangoFcFont using the Xft

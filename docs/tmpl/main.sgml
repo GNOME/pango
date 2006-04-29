@@ -17,6 +17,9 @@ various steps of this process.
 
 </para>
 
+<!-- ##### SECTION Stability_Level ##### -->
+
+
 <!-- ##### STRUCT PangoContext ##### -->
 <para>
 The #PangoContext structure stores global information
@@ -45,10 +48,10 @@ fields:
 
 @shape_engine: the engine for doing rendering-system-dependent processing.
 @lang_engine: the engine for doing rendering-system-independent processing.
-@font: 
+@font: the font for this segment.
 @level: the bidrectional level for this segment.
-@language: 
-@extra_attrs: 
+@language: the detected language for this segment.
+@extra_attrs: extra attributes for this segment.
 
 <!-- ##### ENUM PangoDirection ##### -->
 <para>
@@ -366,17 +369,31 @@ The #PangoLogAttr structure stores information
 about the attributes of a single character.
 </para>
 
-@is_line_break: 
-@is_mandatory_break: 
-@is_char_break: 
-@is_white: 
-@is_cursor_position: 
-@is_word_start: 
-@is_word_end: 
-@is_sentence_boundary: 
-@is_sentence_start: 
-@is_sentence_end: 
-@backspace_deletes_character: If set, backspace deletes one character
+@is_line_break: if set, can break line in front of character
+@is_mandatory_break: if set, must break line in front of character
+@is_char_break: if set, can break here when doing character wrapping
+@is_white: is whitespace character
+@is_cursor_position: if set, cursor can appear in front of character.
+	i.e. this is a grapheme boundary, or the first character
+        in the text.
+@is_word_start: is first character in a word
+@is_word_end: is first non-word char after a word
+	Note that in degenerate cases, you could have both @is_word_start
+	and @is_word_end set for some character.
+@is_sentence_boundary: is a sentence boundary.
+        There are two ways to divide sentences. The first assigns all
+	intersentence whitespace/control/format chars to some sentence,
+	so all chars are in some sentence; @is_sentence_boundary denotes
+	the boundaries there. The second way doesn't assign
+	between-sentence spaces, etc. to any sentence, so
+	@is_sentence_start/@is_sentence_end mark the boundaries
+	of those sentences.
+@is_sentence_start: is first character in a sentence
+@is_sentence_end: is first char after a sentence.
+	Note that in degenerate cases, you could have both @is_sentence_start
+	and @is_sentence_end set for some character. (e.g. no space after a
+	period, so the next sentence starts right away)
+@backspace_deletes_character: if set, backspace deletes one character
                               rather than the entire grapheme cluster. This
                               field is only meaningful on grapheme
                               boundaries (where @is_cursor_position is

@@ -6,13 +6,18 @@ Obtaining information from OpenType tables
 
 <!-- ##### SECTION Long_Description ##### -->
 <para>
-
+Functions and macros in this section are used to implement the OpenType Layout
+features and algorithms.  These are mostly useful when writing Fontconfig-based
+shaping engines
 </para>
 
 <!-- ##### SECTION See_Also ##### -->
 <para>
 
 </para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
 
 <!-- ##### TYPEDEF PangoOTTag ##### -->
 <para>
