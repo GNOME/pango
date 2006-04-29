@@ -24,7 +24,6 @@
 	* docs/tmpl/win32-fonts.sgml:
 	* docs/tmpl/x-fonts.sgml:
 	* docs/tmpl/xft-fonts.sgml:
-	* examples/Makefile.am:
 	* pango/modules.c:
 	* pango/pango-coverage.c: Doc updates.
 
