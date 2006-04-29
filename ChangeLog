@@ -1,5 +1,19 @@
 2006-04-29  Behdad Esfahbod  <behdad@gnome.org>
 
+	Bug 329664 – Move gunichar_to_glyph cache from PangoCairoFcFont to
+	PangoFcFont
+	Patch from LingNing Zhang.
+
+	* pango/pangocairo-fcfont.c (pango_cairo_fc_font_finalize),
+	(pango_cairo_fc_font_glyph_extents_cache_init),
+	(pango_cairo_fc_font_get_glyph_extents_cache_entry),
+	(pango_cairo_fc_font_class_init), (pango_cairo_fc_font_init):
+	* pango/pangofc-font.c (pango_fc_font_finalize),
+	(pango_fc_font_real_get_glyph): Move gunichar->glyph cache to
+	pangofc-font.c
+
+2006-04-29  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 329547 – pango_layout_get_pixel_extents and
 	pango_layout_get_pixel_size cause off-by-one metrics
 
