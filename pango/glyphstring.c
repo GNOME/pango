@@ -197,9 +197,9 @@ pango_glyph_string_extents_range (PangoGlyphString *glyphs,
 	{
 	  if (ink_rect->width == 0 || ink_rect->height == 0)
 	    {
-	      ink_rect->x = x_pos + glyph_ink.x;
+	      ink_rect->x = x_pos + glyph_ink.x + geometry->x_offset;
 	      ink_rect->width = glyph_ink.width;
-	      ink_rect->y = glyph_ink.y;
+	      ink_rect->y = glyph_ink.y + geometry->y_offset;
 	      ink_rect->height = glyph_ink.height;
 	    }
 	  else

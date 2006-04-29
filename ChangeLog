@@ -1,5 +1,12 @@
 2006-04-29  Behdad Esfahbod  <behdad@gnome.org>
 
+	Bug 337594 – pango_glyph_string_extents_range possible bug
+
+	* pango/glyphstring.c (pango_glyph_string_extents_range): Add offset
+	for first glyph too.
+
+2006-04-29  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 307196 – Unhinted fonts are measured incorrectly and drawing
 	problems occur as a result
 
