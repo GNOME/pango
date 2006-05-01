@@ -348,6 +348,7 @@ pango_font_description_set_size (PangoFontDescription *desc,
 				 gint                  size)
 {
   g_return_if_fail (desc != NULL);
+  g_return_if_fail (size >= 0);
   
   desc->size = size;
   desc->size_is_absolute = FALSE;
@@ -392,6 +393,7 @@ pango_font_description_set_absolute_size (PangoFontDescription *desc,
 					  double                size)
 {
   g_return_if_fail (desc != NULL);
+  g_return_if_fail (size >= 0);
   
   desc->size = size;
   desc->size_is_absolute = TRUE;
@@ -849,7 +851,7 @@ parse_size (const char *word,
   char *end;
   double size = g_ascii_strtod (word, &end);
 
-  if ((size_t)(end - word) == wordlen) /* word is a valid float */
+  if ((size_t)(end - word) == wordlen && size >= 0 && size <= 1000000) /* word is a valid float */
     {
       if (pango_size)
 	*pango_size = (int)(size * PANGO_SCALE + 0.5);

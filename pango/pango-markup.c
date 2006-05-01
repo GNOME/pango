@@ -997,7 +997,7 @@ span_parse_func     (MarkupData            *md,
 
           n = strtoul (size, &end, 10);
 
-          if (*end != '\0')
+          if (*end != '\0' || n < 0 || n > 1000000)
             {
               g_set_error (error,
                            G_MARKUP_ERROR,

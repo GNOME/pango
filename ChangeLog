@@ -1,3 +1,13 @@
+2006-05-01  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 340229 – pango_font_description_from_string does not do bound
+	checking
+
+	* pango/fonts.c (pango_font_description_set_size),
+	(pango_font_description_set_absolute_size), (parse_size):
+	* pango/pango-markup.c (span_parse_func): Don't accept negative font
+	sizes, and make sure sizes don't overflow.
+
 2006-04-29  Behdad Esfahbod  <behdad@gnome.org>
 
 	* configure.in: Require cairo >= 1.1.2.  Also pass -no-undefined on all
