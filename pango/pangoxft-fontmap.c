@@ -354,11 +354,19 @@ pango_xft_font_map_default_substitute (PangoFcFontMap *fcfontmap,
 				       FcPattern      *pattern)
 {
   PangoXftFontMap *xftfontmap = PANGO_XFT_FONT_MAP (fcfontmap);
+  double d;
 	
   FcConfigSubstitute (NULL, pattern, FcMatchPattern);
   if (xftfontmap->substitute_func)
     xftfontmap->substitute_func (pattern, xftfontmap->substitute_data);
   XftDefaultSubstitute (xftfontmap->display, xftfontmap->screen, pattern);
+  if (FcPatternGetDouble (pattern, FC_PIXEL_SIZE, 0, &d) == FcResultMatch && d == 0.0)
+    {
+      FcValue v;
+      v.type = FcTypeDouble;
+      v.u.d = 1.0;
+      FcPatternAdd (pattern, FC_PIXEL_SIZE, v, FcFalse);
+    }
 }
 
 static PangoFcFont *

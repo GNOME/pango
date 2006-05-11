@@ -1,3 +1,18 @@
+2006-05-11  Behdad Esfahbod  <behdad@gnome.org>
+
+	* pango/fonts.c (pango_font_description_set_size): Update docs to note
+	a size value of zero may have been set explicitly.
+
+	* pango/pango-context.c (pango_context_load_font): Don't warn if font
+	size if zero.
+
+	* pango/pangoatsui-fontmap.c (pango_atsui_font_map_load_font):
+	* pango/pangox-fontmap.c (pango_x_font_map_load_font): Don't return if
+	size is zero (probably will fail with no fonts found.)
+
+	* pango/pangoxft-fontmap.c (pango_xft_font_map_default_substitute): Xft
+	chokes on size zero.  Reassing PIXEL_SIZE to 1.0 if it's zero.
+
 2006-05-01  Behdad Esfahbod  <behdad@gnome.org>
 
 	Bug 340229 – pango_font_description_from_string does not do bound

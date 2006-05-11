@@ -172,7 +172,7 @@ _pango_xft_font_get_mini_font (PangoXftFont *xfont)
       
       xfont->mini_width = PANGO_SCALE * width;
       xfont->mini_height = PANGO_SCALE * height;
-      xfont->mini_pad = PANGO_SCALE * MAX ((int)(2.2 * height + 27) / 28, 1);
+      xfont->mini_pad = PANGO_SCALE * MIN (height / 2, MAX ((int)(2.2 * height + 27) / 28, 1));
     }
 
   return xfont->mini_font;
@@ -387,7 +387,7 @@ xft_font_get_font (PangoFont *font)
   xfont = (PangoXftFont *)font;
   fcfont = (PangoFcFont *)font;
 
-  if (xfont->xft_font == NULL)
+  if (G_UNLIKELY (xfont->xft_font == NULL))
     {
       FcPattern *pattern = FcPatternDuplicate (fcfont->font_pattern);
       FcPatternDel (pattern, FC_SPACING);

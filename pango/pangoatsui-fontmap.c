@@ -545,7 +545,7 @@ pango_atsui_font_map_load_font (PangoFontMap               *fontmap,
 
   size = pango_font_description_get_size (description);
 
-  if (size <= 0)
+  if (size < 0)
     return NULL;
 
   name = g_utf8_casefold (pango_font_description_get_family (description), -1);

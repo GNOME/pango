@@ -372,10 +372,11 @@ _pango_xft_renderer_draw_unknown_glyph (PangoRenderer    *renderer,
 		     xfont->mini_width * cols + xfont->mini_pad * (2 * cols + 1),
 		     xfont->mini_height * 2 + xfont->mini_pad * 5))
     {
-      draw_box (renderer, xfont->mini_pad,
-		xs[0], ys[0],
-		xfont->mini_width * cols + xfont->mini_pad * (2 * cols + 1),
-		xfont->mini_height * 2 + xfont->mini_pad * 5);
+      if (xfont->mini_pad)
+	draw_box (renderer, xfont->mini_pad,
+		  xs[0], ys[0],
+		  xfont->mini_width * cols + xfont->mini_pad * (2 * cols + 1),
+		  xfont->mini_height * 2 + xfont->mini_pad * 5);
       
       for (row = 0; row < 2; row++)
 	for (col = 0; col < cols; col++)
