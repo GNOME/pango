@@ -1666,7 +1666,8 @@ pango_font_face_list_sizes (PangoFontFace  *face,
     PANGO_FONT_FACE_GET_CLASS (face)->list_sizes (face, sizes, n_sizes);
   else
     {
-      *sizes = NULL;
+      if (sizes != NULL)
+	*sizes = NULL;
       *n_sizes = 0;
     }
 }

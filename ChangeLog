@@ -1,3 +1,8 @@
+2006-05-13  Behdad Esfahbod  <behdad@gnome.org>
+
+	* pango/fonts.c (pango_font_face_list_sizes): Fix possible NULL
+	dereference. (Coverity found)
+
 2006-05-11  Behdad Esfahbod  <behdad@gnome.org>
 
 	* pango/fonts.c (pango_font_description_set_size): Update docs to note
