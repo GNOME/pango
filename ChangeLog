@@ -1,7 +1,12 @@
 2006-05-13  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango/pango-item.c (pango_item_split): Don't copy item before
+	g_return_if_fail'ing it for NULL. (Coverity issue id=18509&runid=43)
+
+2006-05-13  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/fonts.c (pango_font_face_list_sizes): Fix possible NULL
-	dereference. (Coverity found)
+	dereference. (Coverity issues id=17770&runid=43)
 
 2006-05-11  Behdad Esfahbod  <behdad@gnome.org>
 

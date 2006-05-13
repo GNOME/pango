@@ -134,7 +134,7 @@ pango_item_split (PangoItem  *orig,
                   int         split_index,
                   int         split_offset)
 {
-  PangoItem *new_item = pango_item_copy (orig);
+  PangoItem *new_item;
 
   g_return_val_if_fail (orig != NULL, NULL);
   g_return_val_if_fail (orig->length > 0, NULL);
@@ -143,6 +143,7 @@ pango_item_split (PangoItem  *orig,
   g_return_val_if_fail (split_offset > 0, NULL);
   g_return_val_if_fail (split_offset < orig->num_chars, NULL);
   
+  new_item = pango_item_copy (orig);
   new_item->length = split_index;
   new_item->num_chars = split_offset;
   
