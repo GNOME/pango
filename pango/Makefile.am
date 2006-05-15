@@ -297,6 +297,7 @@ libpangocairo_1_0_la_SOURCES += \
 	pangocairo-atsuifontmap.c
 
 libpangocairo_1_0_la_CFLAGS = -xobjective-c
+libpangocairo_1_0_la_LDFLAGS += -framework CoreFoundation -framework Carbon -framework Cocoa
 endif
 
 # ------------------- libpangowin32 -------------------
