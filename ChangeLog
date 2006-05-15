@@ -1,3 +1,11 @@
+2006-05-15  Behdad Esfahbod  <behdad@gnome.org>
+
+	* === Released 1.13.1 ===
+
+	* configure.in: Version 1.13.1
+
+	* NEWS: Updated.
+
 2006-05-15  Richard Hult  <richard@imendio.com>
 
 	Bug 322374 – Examples does not build on MacOS X
