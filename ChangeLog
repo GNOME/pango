@@ -1,5 +1,7 @@
 2006-05-15  Richard Hult  <richard@imendio.com>
 
+	Bug 322374 – Examples does not build on MacOS X
+
 	* pango/Makefile.am (libpangocairo_1_0_la_LDFLAGS): Add the necessary
 	frameworks to make this build with -no-undefined.
 
@@ -14,6 +16,8 @@
 	dereference. (Coverity issues id=17770&runid=43)
 
 2006-05-11  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 71033 – make size 0 fonts work
 
 	* pango/fonts.c (pango_font_description_set_size): Update docs to note
 	a size value of zero may have been set explicitly.
@@ -39,6 +43,11 @@
 	sizes, and make sure sizes don't overflow.
 
 2006-04-29  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 329483 – hinting hexbox in cairo backend doesn't handle absolute
+	font size
+	Bug 340040 – pangocairo hex box hinting falls apart with PS/PDF
+	backends
 
 	* configure.in: Require cairo >= 1.1.2.  Also pass -no-undefined on all
 	systems.
