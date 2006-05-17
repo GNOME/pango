@@ -290,6 +290,7 @@ libpangocairo_1_0_la_SOURCES += \
 	module-defs-atsui.c	\
 	pangoatsui.h		\
 	pangoatsui.c		\
+	pangoatsui-private.h	\
 	pangoatsui-fontmap.c	\
 	pangocairo-atsui.h	\
 	pangocairo-atsuifont.c	\

@@ -1,3 +1,10 @@
+2006-05-17  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 342079 – pangoatsui-private.h missing from release
+
+	* pango/Makefile.am (libpangocairo_1_0_la_SOURCES):
+	Include pangoatsui-private.h.
+
 2006-05-15  Behdad Esfahbod  <behdad@gnome.org>
 
 	* === Released 1.13.1 ===
