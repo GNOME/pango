@@ -1,3 +1,12 @@
+2006-05-22  Tor Lillqvist  <tml@novell.com>
+
+	* pango/pangowin32.c (pango_win32_font_get_metrics): Calculate
+	average digit width correctly, not as max of the digit
+	widths. (#342525) Note that this code doesn't really get much used
+	currently (instead the code in pangocairo-win32font.c is used),
+	fixed only for completeness.
+	(max_glpyh_with): Now unused, drop.
+	
 2006-04-29  Behdad Esfahbod  <behdad@gnome.org>
 
 	* docs/tmpl/atsui-fonts.sgml:
