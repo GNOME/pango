@@ -1,5 +1,26 @@
 2006-05-22  Behdad Esfahbod  <behdad@gnome.org>
 
+	Bug 342525 – With PangoFc and PangoWin32, approximate digit width is
+	not what it says
+
+	* pango/pangocairo-win32font.c (max_glyph_width),
+	(create_metrics_for_context): Use max digit width instead of average.
+
+	Reverted the following changes:
+
+	* pango/pangofc-font.c (pango_fc_font_create_metrics_for_context):
+	Likewise for PangoFc.  Compute average instead of max.
+	(max_glpyh_with): Now unused, drop.
+
+	* pango/pangowin32.c (pango_win32_font_get_metrics): Calculate
+	average digit width correctly, not as max of the digit
+	widths. (#342525) Note that this code doesn't really get much used
+	currently (instead the code in pangocairo-win32font.c is used),
+	fixed only for completeness.
+	(max_glpyh_with): Now unused, drop.
+
+2006-05-22  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/pango-font.h, pango/fonts.c: New function
 	pango_font_describe_with_absolute_size().
 

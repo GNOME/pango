@@ -527,6 +527,30 @@ pango_win32_font_get_glyph_extents (PangoFont      *font,
     *logical_rect = info->logical_rect;
 }
 
+static int
+max_glyph_width (PangoLayout *layout)
+{
+  int max_width = 0;
+  GSList *l, *r;
+
+  for (l = pango_layout_get_lines (layout); l; l = l->next)
+    {
+      PangoLayoutLine *line = l->data;
+
+      for (r = line->runs; r; r = r->next)
+        {
+          PangoGlyphString *glyphs = ((PangoGlyphItem *)r->data)->glyphs;
+          int i;
+
+          for (i = 0; i < glyphs->num_glyphs; i++)
+            if (glyphs->glyphs[i].geometry.width > max_width)
+              max_width = glyphs->glyphs[i].geometry.width;
+        }
+    }
+
+  return max_width;
+}
+
 static PangoFontMetrics *
 pango_win32_font_get_metrics (PangoFont     *font,
 			      PangoLanguage *language)
@@ -579,7 +603,6 @@ pango_win32_font_get_metrics (PangoFont     *font,
 	      PangoContext *context;
 	      PangoFontDescription *font_desc;
 	      PangoLayout *layout;
-	      PangoRectangle extents;
 	      
 	      /*  Get the average width of the chars in "0123456789" */
 	      context = pango_win32_get_context ();
@@ -588,9 +611,8 @@ pango_win32_font_get_metrics (PangoFont     *font,
 	      pango_context_set_font_description (context, font_desc);
 	      layout = pango_layout_new (context);
 	      pango_layout_set_text (layout, "0123456789", -1);
-	      pango_layout_get_extents (layout, NULL, &extents);
 
-	      metrics->approximate_digit_width = extents.width / 10;
+	      metrics->approximate_digit_width = max_glyph_width (layout);
 
 	      pango_font_description_free (font_desc);
 	      g_object_unref (layout);
