@@ -290,6 +290,30 @@ quantize_position (int *thickness,
   *thickness = thickness_pixels * PANGO_SCALE;
 }
 
+static int
+max_glyph_width (PangoLayout *layout)
+{
+  int max_width = 0;
+  GSList *l, *r;
+
+  for (l = pango_layout_get_lines (layout); l; l = l->next)
+    {
+      PangoLayoutLine *line = l->data;
+
+      for (r = line->runs; r; r = r->next)
+        {
+          PangoGlyphString *glyphs = ((PangoGlyphItem *)r->data)->glyphs;
+          int i;
+
+          for (i = 0; i < glyphs->num_glyphs; i++)
+            if (glyphs->glyphs[i].geometry.width > max_width)
+              max_width = glyphs->glyphs[i].geometry.width;
+        }
+    }
+
+  return max_width;
+}
+
 static PangoFontMetrics *
 create_metrics_for_context (PangoFont    *font,
 			    PangoContext *context)
@@ -336,9 +360,7 @@ create_metrics_for_context (PangoFont    *font,
   metrics->approximate_char_width = extents.width / g_utf8_strlen (sample_str, -1);
 
   pango_layout_set_text (layout, "0123456789", -1);
-  pango_layout_get_extents (layout, NULL, &extents);
-
-  metrics->approximate_digit_width = extents.width / 10;
+  metrics->approximate_digit_width = max_glyph_width (layout);
 
   pango_font_description_free (font_desc);
   g_object_unref (layout);
