@@ -1787,22 +1787,36 @@ pango_is_zero_width (gunichar ch)
 {
 /* Zero Width characters:
  *
+ *  00AD  SOFT HYPHEN
+ *  034F  COMBINING GRAPHEME JOINER
+ *
  *  200B  ZERO WIDTH SPACE
  *  200C  ZERO WIDTH NON-JOINER
  *  200D  ZERO WIDTH JOINER
  *  200E  LEFT-TO-RIGHT MARK
  *  200F  RIGHT-TO-LEFT MARK
+ *
  *  2028  LINE SEPARATOR
+ *
  *  202A  LEFT-TO-RIGHT EMBEDDING
  *  202B  RIGHT-TO-LEFT EMBEDDING
  *  202C  POP DIRECTIONAL FORMATTING
  *  202D  LEFT-TO-RIGHT OVERRIDE
  *  202E  RIGHT-TO-LEFT OVERRIDE
+ *
+ *  2060  WORD JOINER
+ *  2061  FUNCTION APPLICATION
+ *  2062  INVISIBLE TIMES
+ *  2063  INVISIBLE SEPARATOR
+ *
  *  FEFF  ZERO WIDTH NO-BREAK SPACE
  */
-  return ((ch & ~(gunichar)0x003F) == 0x2000 && (
+  return ((ch & ~(gunichar)0x007F) == 0x2000 && (
 		(ch >= 0x200B && ch <= 0x200F) ||
-		ch == 0x2028 ||
-		(ch >= 0x202A && ch <= 0x202E)
-	 )) || ch == 0xFEFF;
+		(ch >= 0x202A && ch <= 0x202E) ||
+		(ch >= 0x2060 && ch <= 0x2063) ||
+		(ch == 0x2028)
+	 )) || G_UNLIKELY (ch == 0x00AD
+			|| ch == 0x034F
+			|| ch == 0xFEFF);
 }

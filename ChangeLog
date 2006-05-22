@@ -1,3 +1,17 @@
+2006-05-22  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 341922 – pango should handle more characters as zero width
+	Patch from Roozbeh Pournader
+
+	* pango/pango-utils.c (pango_is_zero_width): Handle the following too:
+
+		U+00AD  SOFT HYPHEN
+		U+034F  COMBINING GRAPHEME JOINER
+		U+2060  WORD JOINER
+		U+2061  FUNCTION APPLICATION
+		U+2062  INVISIBLE TIMES
+		U+2063  INVISIBLE SEPARATOR
+
 2006-05-22  Tor Lillqvist  <tml@novell.com>
 
 	* pango/pangowin32.c (pango_win32_font_get_metrics): Calculate
