@@ -802,7 +802,8 @@ find_field (const FieldMap *map, int n_elements, const char *str, int len, int *
   
   for (i=0; i<n_elements; i++)
     {
-      if (map[i].str && g_ascii_strncasecmp (map[i].str, str, len) == 0)
+      if (map[i].str[0] && g_ascii_strncasecmp (map[i].str, str, len) == 0 &&
+	  map[i].str[len] == '\0')
 	{
 	  if (val)
 	    *val = map[i].value;

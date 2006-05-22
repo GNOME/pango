@@ -1,5 +1,12 @@
 2006-05-22  Behdad Esfahbod  <behdad@gnome.org>
 
+	Bug 339730 – Pango needlessly falls back away from a Type 1 font into
+	a TTF font
+
+	* pango/fonts.c (find_field): Fix strncmp usage.
+
+2006-05-22  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 342562 – Support absolute sizes in
 	pango_font_description_to/from_string
 
