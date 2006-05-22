@@ -588,6 +588,15 @@ Returns %TRUE if @object is a #PangoFont.
 @Returns: 
 
 
+<!-- ##### FUNCTION pango_font_describe_with_absolute_size ##### -->
+<para>
+
+</para>
+
+@font: 
+@Returns: 
+
+
 <!-- ##### FUNCTION pango_font_get_coverage ##### -->
 <para>
 

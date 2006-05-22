@@ -304,6 +304,7 @@ struct _PangoFontFaceClass
 GType                 pango_font_get_type          (void) G_GNUC_CONST;
 
 PangoFontDescription *pango_font_describe          (PangoFont        *font);
+PangoFontDescription *pango_font_describe_with_absolute_size (PangoFont        *font);
 PangoCoverage *       pango_font_get_coverage      (PangoFont        *font,
 						    PangoLanguage    *language);
 PangoEngineShape *    pango_font_find_shaper       (PangoFont        *font,
@@ -349,12 +350,12 @@ struct _PangoFontClass
   PangoFontMetrics *    (*get_metrics)        (PangoFont      *font,
 					       PangoLanguage  *language);
   PangoFontMap *        (*get_font_map)       (PangoFont      *font);
+  PangoFontDescription *(*describe_absolute)  (PangoFont      *font);
   /*< private >*/
 
   /* Padding for future expansion */
   void (*_pango_reserved1) (void);
   void (*_pango_reserved2) (void);
-  void (*_pango_reserved3) (void);
 };
 
 /* used for very rare and miserable situtations that we cannot even

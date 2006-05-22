@@ -1106,7 +1106,9 @@ pango_font_init (PangoFont *font)
  * pango_font_describe:
  * @font: a #PangoFont
  * 
- * Returns a description of the font.
+ * Returns a description of the font, with font size set in points.
+ * Use pango_font_describe_with_absolute_size() if you want the font
+ * size in device units.
  * 
  * Return value: a newly-allocated #PangoFontDescription object.
  **/
@@ -1116,6 +1118,30 @@ pango_font_describe (PangoFont      *font)
   g_return_val_if_fail (font != NULL, NULL);
 
   return PANGO_FONT_GET_CLASS (font)->describe (font);
+}
+
+/**
+ * pango_font_describe_with_absolute_size:
+ * @font: a #PangoFont
+ * 
+ * Returns a description of the font, with absolute font size set
+ * (in device units). Use pango_font_describe() if you want the font
+ * size in points.
+ * 
+ * Return value: a newly-allocated #PangoFontDescription object.
+ **/
+PangoFontDescription *
+pango_font_describe_with_absolute_size (PangoFont      *font)
+{
+  g_return_val_if_fail (font != NULL, NULL);
+
+  if (G_UNLIKELY (!PANGO_FONT_GET_CLASS (font)->describe_absolute))
+    {
+      g_warning ("describe_absolute not implemented for this font class, report this as a bug");
+      return pango_font_describe (font);
+    }
+
+  return PANGO_FONT_GET_CLASS (font)->describe_absolute (font);
 }
 
 /**

@@ -184,13 +184,8 @@ _pango_cairo_font_get_hex_box_info (PangoCairoFont *cfont)
 
     fontmap = pango_font_get_font_map ((PangoFont *)cfont);
 
-    desc = pango_font_describe ((PangoFont *)cfont);
+    desc = pango_font_describe_with_absolute_size ((PangoFont *)cfont);
     size = pango_font_description_get_size (desc) / (1.*PANGO_SCALE);
-    if (pango_font_description_get_size_is_absolute (desc))
-      {
-        int dpi = pango_cairo_font_map_get_resolution (PANGO_CAIRO_FONT_MAP (fontmap));
-        size = size * 72. / dpi;
-      }
 
     mini_desc = pango_font_description_new ();
     pango_font_description_set_family_static (mini_desc, "monospace");
@@ -201,12 +196,12 @@ _pango_cairo_font_get_hex_box_info (PangoCairoFont *cfont)
     if (is_hinted)
       {
 	mini_size = HINT_Y (mini_size);
-      }
 
-    if (mini_size < 5.0)
-      {
-	rows = 1;
-	mini_size = MIN (MAX (size - 1, 0), 5.0);
+	if (mini_size < 5.0)
+	  {
+	    rows = 1;
+	    mini_size = MIN (MAX (size - 1, 0), 5.0);
+	  }
       }
 
     pango_font_description_set_size (mini_desc, mini_size * PANGO_SCALE);

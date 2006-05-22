@@ -308,7 +308,7 @@ create_metrics_for_context (PangoFont    *font,
 				&metrics->strikethrough_position);
 
   layout = pango_layout_new (context);
-  font_desc = pango_font_describe (font);
+  font_desc = pango_font_describe_with_absolute_size (font);
   pango_layout_set_font_description (layout, font_desc);
   pango_layout_set_text (layout, sample_str, -1);      
   pango_layout_get_extents (layout, NULL, &extents);

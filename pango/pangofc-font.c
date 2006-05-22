@@ -83,6 +83,7 @@ static PangoFontMetrics *    pango_fc_font_get_metrics  (PangoFont        *font,
 							 PangoLanguage    *language);
 static PangoFontMap *        pango_fc_font_get_font_map (PangoFont        *font);
 static PangoFontDescription *pango_fc_font_describe     (PangoFont        *font);
+static PangoFontDescription *pango_fc_font_describe_absolute (PangoFont        *font);
 
 
 #define PANGO_FC_FONT_LOCK_FACE(font)	(PANGO_FC_FONT_GET_CLASS (font)->lock_face (font))
@@ -103,6 +104,7 @@ pango_fc_font_class_init (PangoFcFontClass *class)
   object_class->finalize = pango_fc_font_finalize;
   object_class->set_property = pango_fc_font_set_property;
   font_class->describe = pango_fc_font_describe;
+  font_class->describe_absolute = pango_fc_font_describe_absolute;
   font_class->find_shaper = pango_fc_font_find_shaper;
   font_class->get_coverage = pango_fc_font_get_coverage;
   font_class->get_metrics = pango_fc_font_get_metrics;
@@ -225,6 +227,19 @@ pango_fc_font_describe (PangoFont *font)
   PangoFcFont *fcfont = (PangoFcFont *)font;
 
   return pango_font_description_copy (fcfont->description);
+}
+
+static PangoFontDescription *
+pango_fc_font_describe_absolute (PangoFont *font)
+{
+  PangoFcFont *fcfont = (PangoFcFont *)font;
+  PangoFontDescription *desc = pango_font_description_copy (fcfont->description);
+  double size;
+
+  if (FcPatternGetDouble (fcfont->font_pattern, FC_PIXEL_SIZE, 0, &size) == FcResultMatch)
+    pango_font_description_set_absolute_size (desc, size * PANGO_SCALE);
+
+  return desc;
 }
 
 static PangoMap *
@@ -401,13 +416,15 @@ pango_fc_font_create_metrics_for_context (PangoFcFont   *fcfont,
   PangoRectangle extents;
   PangoLanguage *language = pango_context_get_language (context);
   const char *sample_str = pango_language_get_sample_string (language);
+  PangoFontDescription *desc = pango_font_describe_with_absolute_size (fcfont);
   
   metrics = pango_font_metrics_new ();
   
   get_face_metrics (fcfont, metrics);
   
   layout = pango_layout_new (context);
-  pango_layout_set_font_description (layout, fcfont->description);
+  pango_layout_set_font_description (layout, desc);
+  pango_font_description_free (desc);
   
   pango_layout_set_text (layout, sample_str, -1);      
   pango_layout_get_extents (layout, NULL, &extents);

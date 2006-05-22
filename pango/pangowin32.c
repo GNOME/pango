@@ -49,6 +49,7 @@ static void     pango_win32_font_real_done_font          (PangoFont *font);
 static double   pango_win32_font_real_get_metrics_factor (PangoFont *font);
 
 static PangoFontDescription *pango_win32_font_describe          (PangoFont        *font);
+static PangoFontDescription *pango_win32_font_describe_absolute (PangoFont        *font);
 static PangoCoverage        *pango_win32_font_get_coverage      (PangoFont        *font,
 								 PangoLanguage    *lang);
 static void                  pango_win32_font_calc_coverage     (PangoFont        *font,
@@ -200,6 +201,7 @@ pango_win32_font_class_init (PangoWin32FontClass *class)
   object_class->dispose = pango_win32_font_dispose;
   
   font_class->describe = pango_win32_font_describe;
+  font_class->describe_absolute = pango_win32_font_describe;
   font_class->get_coverage = pango_win32_font_get_coverage;
   font_class->find_shaper = pango_win32_font_find_shaper;
   font_class->get_glyph_extents = pango_win32_font_get_glyph_extents;
@@ -582,7 +584,7 @@ pango_win32_font_get_metrics (PangoFont     *font,
 	      /*  Get the average width of the chars in "0123456789" */
 	      context = pango_win32_get_context ();
 	      pango_context_set_language (context, language);
-	      font_desc = pango_font_describe (font);
+	      font_desc = pango_font_describe_with_absolute_size (font);
 	      pango_context_set_font_description (context, font_desc);
 	      layout = pango_layout_new (context);
 	      pango_layout_set_text (layout, "0123456789", -1);
@@ -782,7 +784,19 @@ pango_win32_font_describe (PangoFont *font)
   PangoWin32Font *win32font = PANGO_WIN32_FONT (font);
 
   desc = pango_font_description_copy (win32font->win32face->description);
-  pango_font_description_set_size (desc, win32font->size);
+  pango_font_description_set_size (desc, win32font->size /* TODO */);
+  
+  return desc;
+}
+
+static PangoFontDescription *
+pango_win32_font_describe_absolute (PangoFont *font)
+{
+  PangoFontDescription *desc;
+  PangoWin32Font *win32font = PANGO_WIN32_FONT (font);
+
+  desc = pango_font_description_copy (win32font->win32face->description);
+  pango_font_description_set_absolute_size (desc, win32font->size);
   
   return desc;
 }

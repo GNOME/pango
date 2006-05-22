@@ -86,6 +86,7 @@ EXPORTS
 	pango_find_map
 	pango_find_paragraph_boundary
 	pango_font_describe
+	pango_font_describe_with_absolute_size
 	pango_font_description_better_match
 	pango_font_description_copy
 	pango_font_description_copy_static

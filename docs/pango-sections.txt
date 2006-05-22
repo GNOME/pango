@@ -197,6 +197,7 @@ PANGO_FONT
 PANGO_IS_FONT
 pango_font_find_shaper
 pango_font_describe
+pango_font_describe_with_absolute_size
 pango_font_get_coverage
 pango_font_get_glyph_extents
 pango_font_get_metrics
