@@ -1,5 +1,14 @@
 2006-05-22  Behdad Esfahbod  <behdad@gnome.org>
 
+	Bug 342562 – Support absolute sizes in
+	pango_font_description_to/from_string
+
+	* pango/fonts.c (parse_size), (pango_font_description_from_string),
+	(pango_font_description_to_string): Accept and generate a "px" suffix
+	to identify absolute font sizes.
+
+2006-05-22  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 341922 – pango should handle more characters as zero width
 	Patch from Roozbeh Pournader
 

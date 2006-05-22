@@ -847,15 +847,22 @@ getword (const char *str, const char *last, size_t *wordlen)
 static gboolean
 parse_size (const char *word,
 	    size_t      wordlen,
-	    int        *pango_size)
+	    int        *pango_size,
+	    gboolean   *size_is_absolute)
 {
   char *end;
   double size = g_ascii_strtod (word, &end);
 
-  if ((size_t)(end - word) == wordlen && size >= 0 && size <= 1000000) /* word is a valid float */
+  if (end != word &&
+      (end == word + wordlen ||
+       (end + 2 == word + wordlen && !strncmp (end, "px", 2))
+      ) && size >= 0 && size <= 1000000) /* word is a valid float */
     {
       if (pango_size)
 	*pango_size = (int)(size * PANGO_SCALE + 0.5);
+
+      if (size_is_absolute)
+        *size_is_absolute = end < word + wordlen;
 
       return TRUE;
     }
@@ -872,7 +879,8 @@ parse_size (const char *word,
  * comma separated list of families optionally terminated by a comma,
  * STYLE_OPTIONS is a whitespace separated list of words where each
  * WORD describes one of style, variant, weight, or stretch, and SIZE
- * is an decimal number (size in points). Any one of the options may
+ * is a decimal number (size in points) or optionally followed by the
+ * unit modifier "px" for absolute size. Any one of the options may
  * be absent.  If FAMILY-LIST is absent, then the family_name field of
  * the resulting font description will be initialized to %NULL.  If
  * STYLE-OPTIONS is missing, then all style options will be set to the
@@ -916,8 +924,10 @@ pango_font_description_from_string (const char *str)
    */
   if (wordlen != 0)
     {
-      if (parse_size (p, wordlen, &desc->size))
+      gboolean size_is_absolute;
+      if (parse_size (p, wordlen, &desc->size, &size_is_absolute))
 	{
+	  desc->size_is_absolute = size_is_absolute;
 	  desc->mask |= PANGO_FONT_MASK_SIZE;
 	  last = p;
 	}
@@ -1015,7 +1025,7 @@ pango_font_description_to_string (const PangoFontDescription  *desc)
       p = getword (desc->family_name, desc->family_name + strlen(desc->family_name), &wordlen);
       if (wordlen != 0 &&
 	  (find_field_any (p, wordlen, NULL) ||
-	   (parse_size (p, wordlen, NULL) &&
+	   (parse_size (p, wordlen, NULL, NULL) &&
 	    desc->weight == PANGO_WEIGHT_NORMAL &&
 	    desc->style == PANGO_STYLE_NORMAL &&
 	    desc->stretch == PANGO_STRETCH_NORMAL &&
@@ -1041,6 +1051,9 @@ pango_font_description_to_string (const PangoFontDescription  *desc)
 
       g_ascii_dtostr (buf, sizeof (buf), (double)desc->size / PANGO_SCALE);
       g_string_append (result, buf);
+
+      if (desc->size_is_absolute)
+	g_string_append (result, "px");
     }
   
   return g_string_free (result, FALSE);
