@@ -229,12 +229,12 @@ get_context_info (PangoContext *context,
   static GQuark context_info_quark;
   PangoCairoContextInfo *info;
 
-  if (!context_info_quark)
+  if (G_UNLIKELY (!context_info_quark))
     context_info_quark = g_quark_from_static_string ("pango-cairo-context-info");
 
   info = g_object_get_qdata (G_OBJECT (context), context_info_quark);
 
-  if (!info && create)
+  if (G_UNLIKELY (!info) && create)
     {
       info = g_slice_new (PangoCairoContextInfo);
       info->dpi = -1.0;
