@@ -804,7 +804,7 @@ pango_win32_font_describe (PangoFont *font)
   PangoWin32Font *win32font = PANGO_WIN32_FONT (font);
 
   desc = pango_font_description_copy (win32font->win32face->description);
-  pango_font_description_set_size (desc, win32font->size);
+  pango_font_description_set_absolute_size (desc, win32font->size);
   
   return desc;
 }

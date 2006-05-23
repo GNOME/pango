@@ -1,3 +1,13 @@
+2006-05-23  Tor Lillqvist  <tml@novell.com>
+
+	* pango/pangowin32.c (pango_win32_font_describe): Call
+	pango_font_description_set_absolute_size() instead of
+	pango_font_description_set_size() as the PangoWin32Font::size is
+	in pixels, not points. There has been several bugs opened around
+	this issue, with more or less misleading guesses. See for instance
+	#314114. Thanks to Behdad for finally noticing the real problem
+	here.
+
 2006-05-22  Behdad Esfahbod  <behdad@gnome.org>
 
 	Bug 342525 – With PangoFc and PangoWin32, approximate digit width is
