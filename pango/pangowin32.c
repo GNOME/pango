@@ -201,7 +201,7 @@ pango_win32_font_class_init (PangoWin32FontClass *class)
   object_class->dispose = pango_win32_font_dispose;
   
   font_class->describe = pango_win32_font_describe;
-  font_class->describe_absolute = pango_win32_font_describe;
+  font_class->describe_absolute = pango_win32_font_describe_absolute;
   font_class->get_coverage = pango_win32_font_get_coverage;
   font_class->find_shaper = pango_win32_font_find_shaper;
   font_class->get_glyph_extents = pango_win32_font_get_glyph_extents;
@@ -806,7 +806,7 @@ pango_win32_font_describe (PangoFont *font)
   PangoWin32Font *win32font = PANGO_WIN32_FONT (font);
 
   desc = pango_font_description_copy (win32font->win32face->description);
-  pango_font_description_set_size (desc, win32font->size /* TODO */);
+  pango_font_description_set_size (desc, win32font->size / (PANGO_SCALE / PANGO_WIN32_FONT_MAP (win32font->fontmap)->resolution));
   
   return desc;
 }
