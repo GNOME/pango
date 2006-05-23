@@ -1,5 +1,9 @@
 2006-05-23  Tor Lillqvist  <tml@novell.com>
 
+	* pango/fonts.c (find_field): Fix crash, don't dereference NULL.
+
+2006-05-23  Tor Lillqvist  <tml@novell.com>
+
 	* pango/pangowin32.c (pango_win32_font_describe): Call
 	pango_font_description_set_absolute_size() instead of
 	pango_font_description_set_size() as the PangoWin32Font::size is
