@@ -1,3 +1,21 @@
+Overview of changes between 1.12.2 and 1.12.3
+==============================================
+* Increased robustness against broken pango.modules
+* Improved build infrastructure:
+  - Remove CAIRO_CFLAGS from pangocairo.pc.in, as it Require's cairo already.
+* Improved documentation.
+* Misc fixes.
+* Bugs fixed in this release:
+	Bug 342525 – With PangoFc and PangoWin32, approximate digit width is
+	             not what it says
+	Bug 339730 – Pango needlessly falls back away from a Type 1 font into
+		     a TTF font
+	Bug 341922 – pango should handle more characters as zero width
+		     Patch from Roozbeh Pournader
+	Bug 337594 – pango_glyph_string_extents_range possible bug
+	Bug 307196 – Unhinted fonts are measured incorrectly and drawing
+		     problems occur as a result
+
 Overview of changes between 1.12.1 and 1.12.2
 ==============================================
 * Fix incorrect rendering when in x86 64-bit precision mode
