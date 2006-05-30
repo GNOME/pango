@@ -310,7 +310,7 @@ draw_error_underline (cairo_t *cr,
   double y_top, y_bottom;
   int i;
 
-  x += (width - width_units * unit_width);
+  x += (width - width_units * unit_width) / 2;
   width = width_units * unit_width;
 
   y_top = y;
@@ -440,16 +440,7 @@ pango_cairo_show_glyph_string (cairo_t          *cr,
   crenderer->do_path = FALSE;
   cairo_get_current_point (cr, &crenderer->x_offset, &crenderer->y_offset);
   
-  pango_renderer_activate (renderer);
-
-  pango_renderer_set_color (renderer, PANGO_RENDER_PART_FOREGROUND, NULL);
-  pango_renderer_set_color (renderer, PANGO_RENDER_PART_BACKGROUND, NULL);
-  pango_renderer_set_color (renderer, PANGO_RENDER_PART_UNDERLINE, NULL);
-  pango_renderer_set_color (renderer, PANGO_RENDER_PART_STRIKETHROUGH, NULL);
-  
   pango_renderer_draw_glyphs (renderer, font, glyphs, 0, 0);
-
-  pango_renderer_deactivate (renderer);
   
   if (G_UNLIKELY (unref_renderer))
     g_object_unref (renderer);

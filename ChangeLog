@@ -1,3 +1,11 @@
+2006-05-30  Behdad Esfahbod  <behdad@gnome.org>
+
+	* pango/pangocairo-render.c (draw_error_underline): Fix offset to
+	center the underline in requested rectangle.
+
+	* pango/pangocairo-render.c (pango_cairo_show_glyph_string): Remove
+	unncessary renderer activation and cleanup.
+
 2006-05-23  Tor Lillqvist  <tml@novell.com>
 
 	* pango/pangowin32.c (pango_win32_font_class_init): Initialize the
