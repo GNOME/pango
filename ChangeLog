@@ -1,3 +1,10 @@
+2006-05-30  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 125378 – Better underline thickness handling
+
+	* pango/pango-layout.c (pango_layout_run_get_extents): Include
+	underline in ink extents.
+
 2006-05-26  Behdad Esfahbod  <behdad@gnome.org>
 
 	* === Released 1.12.3 ===

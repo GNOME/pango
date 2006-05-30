@@ -3892,57 +3892,52 @@ pango_layout_run_get_extents (PangoLayoutRun *run,
                               PangoRectangle *run_logical)
 {
   ItemProperties properties;
-  PangoRectangle tmp_ink;
-  gboolean need_ink;
 
   pango_layout_get_item_properties (run->item, &properties);
 
-  need_ink = run_ink || properties.uline == PANGO_UNDERLINE_LOW;
-  
   if (properties.shape_set)
     imposed_extents (run->item->num_chars,
 		     properties.shape_ink_rect,
 		     properties.shape_logical_rect,
-		     need_ink ? &tmp_ink : NULL, run_logical);
+		     run_ink, run_logical);
   else
     pango_glyph_string_extents (run->glyphs, run->item->analysis.font,
-                                need_ink ? &tmp_ink : NULL,
-                                run_logical);
+				run_ink, run_logical);
 
-  if (run_ink)
-    *run_ink = tmp_ink;
-
-  switch (properties.uline)
+  if (properties.uline != PANGO_UNDERLINE_NONE)
     {
-    case PANGO_UNDERLINE_NONE:
-      break;
-    case PANGO_UNDERLINE_ERROR:
-      if (run_ink)
-        run_ink->height = MAX (run_ink->height, 3 * PANGO_SCALE - run_ink->y);
-      if (run_logical)
-	run_logical->height = MAX (run_logical->height, 3 * PANGO_SCALE - run_logical->y);
-      break;
-    case PANGO_UNDERLINE_SINGLE:
-      if (run_ink)
-        run_ink->height = MAX (run_ink->height, 2 * PANGO_SCALE - run_ink->y);
-      if (run_logical)
-	run_logical->height = MAX (run_logical->height, 2 * PANGO_SCALE - run_logical->y);
-      break;
-    case PANGO_UNDERLINE_DOUBLE:
-      if (run_ink)
-        run_ink->height = MAX (run_ink->height, 4 * PANGO_SCALE - run_ink->y);
-      if (run_logical)
-	run_logical->height = MAX (run_logical->height, 4 * PANGO_SCALE - run_logical->y);
-      break;
-    case PANGO_UNDERLINE_LOW:
-      /* FIXME: Should this simply be run_logical->height += 2 * PANGO_SCALE instead?
-       */
-      if (run_ink)
-	run_ink->height += 2 * PANGO_SCALE;
-      if (run_logical)
-	run_logical->height = MAX (run_logical->height,
-				   tmp_ink.y + tmp_ink.height + 2 * PANGO_SCALE - run_logical->y);
-      break;
+      PangoFontMetrics *metrics = pango_font_get_metrics (run->item->analysis.font,
+							  run->item->analysis.language); 
+      int underline_thickness = pango_font_metrics_get_underline_thickness (metrics);
+      int underline_position = pango_font_metrics_get_underline_position (metrics);
+
+      switch (properties.uline)
+	{
+	case PANGO_UNDERLINE_ERROR:
+	  if (run_ink)
+	    run_ink->height = MAX (run_ink->height,
+				   3 * underline_thickness - underline_position - run_ink->y);
+	  break;
+	case PANGO_UNDERLINE_SINGLE:
+	  if (run_ink)
+	    run_ink->height = MAX (run_ink->height,
+				   underline_thickness - underline_position - run_ink->y);
+	  break;
+	case PANGO_UNDERLINE_DOUBLE:
+	  if (run_ink)
+	    run_ink->height = MAX (run_ink->height,
+				   3 * underline_thickness - underline_position - run_ink->y);
+	  break;
+	case PANGO_UNDERLINE_LOW:
+	  if (run_ink)
+	    run_ink->height += 2 * underline_thickness;
+	  break;
+	default:
+	  g_critical ("unknown underline mode");
+	  break;
+	}
+
+      pango_font_metrics_unref (metrics);
     }
 
   if (properties.rise != 0)
