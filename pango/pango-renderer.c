@@ -802,9 +802,8 @@ pango_renderer_draw_error_underline (PangoRenderer *renderer,
  *    \   \/  \   \/            \   \/  \   \          |
  *     \  /    \  /              \  /    \  /          |
  *      \/      \/                \/      \/           -
- *
- * |----|
- *   unit_width = (HEIGHT_SQUARES - 1) * square
+ *      |---|
+ *    unit_width = (HEIGHT_SQUARES - 1) * square
  *
  * To do this conveniently, we work in a coordinate system where A,B,C
  * are axis aligned rectangles. (If fonts were square, the diagrams

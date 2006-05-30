@@ -287,8 +287,8 @@ pango_cairo_renderer_draw_rectangle (PangoRenderer     *renderer,
  *        \  /    \  /              \  /    \  /          |
  *         \/      \/                \/      \/           -
  *         B                         B       
- * |----|
- *   unit_width = (HEIGHT_SQUARES - 1) * square
+ *         |---|
+ *       unit_width = (HEIGHT_SQUARES - 1) * square
  *
  * The x, y, width, height passed in give the desired bounding box;
  * x/width are adjusted to make the underline a integer number of units
