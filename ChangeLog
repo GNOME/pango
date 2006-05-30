@@ -1,5 +1,12 @@
 2006-05-30  Behdad Esfahbod  <behdad@gnome.org>
 
+	Bug 125378 – Better underline thickness handling
+
+	* pango/pango-layout.c (pango_layout_run_get_extents): Include
+	underline in ink extents.
+
+2006-05-30  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/pangocairo-render.c (draw_error_underline): Fix offset to
 	center the underline in requested rectangle.
 
