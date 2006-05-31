@@ -141,7 +141,7 @@ typedef struct _PangoEngineShapeClass PangoEngineShapeClass;
  * A #PangoEngineShape implementation is then specific to both
  * a particular rendering system or group of rendering systems
  * and to a particular script. For instance, there is one
- * #PangoEngineShape implementation to handling shaping Arabic
+ * #PangoEngineShape implementation to handle shaping Arabic
  * for Fontconfig-based backends.
  **/
 struct _PangoEngineShape
