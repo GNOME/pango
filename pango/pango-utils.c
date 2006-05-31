@@ -1157,7 +1157,7 @@ static const char canon_map[256] = {
    0,   0,   0,   0,   0,   0,   0,   0,    0,   0,   0,   0,   0,   0,   0,   0, 
    0,   0,   0,   0,   0,   0,   0,   0,    0,   0,   0,   0,   0,   0,   0,   0, 
    0,   0,   0,   0,   0,   0,   0,   0,    0,   0,   0,   0,   0,  '-',  0,   0, 
-   0,   0,   0,   0,   0,   0,   0,   0,    0,   0,   0,   0,   0,   0,   0,   0, 
+  '0', '1', '2', '3', '4', '5', '6', '7',  '8', '9',  0,   0,   0,   0,   0,   0, 
    0,  'a', 'b', 'c', 'd', 'e', 'f', 'g',  'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o',
   'p', 'q', 'r', 's', 't', 'u', 'v', 'w',  'x', 'y', 'z',  0,   0,   0,   0,  '-',
    0,  'a', 'b', 'c', 'd', 'e', 'f', 'g',  'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o',
@@ -1171,17 +1171,12 @@ lang_equal (gconstpointer v1,
   const guchar *p1 = v1;
   const guchar *p2 = v2;
 
-  while (*p1 && *p2)
+  while (canon_map[*p1] && canon_map[*p1] == canon_map[*p2])
     {
-      guchar c1 = canon_map[*p1];
-      guchar c2 = canon_map[*p2];
-      if (!c1) { p1++; continue; }
-      if (!c2) { p2++; continue; }
-      if (c1 != c2) return FALSE;
       p1++, p2++;
     }
 
-  return (*p1 == *p2);
+  return (canon_map[*p1] == canon_map[*p2]);
 }
 
 static guint
@@ -1189,11 +1184,9 @@ lang_hash (gconstpointer key)
 {
   const guchar *p = key;
   guint h = 0;
-  while (*p)
+  while (canon_map[*p])
     {
-      guchar value = canon_map[*p];
-      if (value)
-	h = (h << 5) - h + value;
+      h = (h << 5) - h + canon_map[*p];
       p++;
     }
 
@@ -1261,13 +1254,8 @@ pango_language_from_string (const char *language)
   result = g_malloc (len + 1);
 
   p = result;
-  while (*language)
-    {
-      char value = canon_map[*(guchar *)language++];
-      if (value)
-	*(p++) = value;
-    }
-  *p++ = '\0';
+  while ((*(p++) = canon_map[*(guchar *)language++]))
+    ;
 
   g_hash_table_insert (hash, result, result);
 
@@ -1278,15 +1266,16 @@ pango_language_from_string (const char *language)
  * pango_language_matches:
  * @language: a language tag (see pango_language_from_string()),
  *            %NULL is allowed and matches nothing but '*'
- * @range_list: a list of language ranges, separated by ';' characters.
- *   each element must either be '*', or a RFC 3066 language range
+ * @range_list: a list of language ranges, separated by ';', ':',
+ *   ',', or space characters.
+ *   Each element must either be '*', or a RFC 3066 language range
  *   canonicalized as by pango_language_from_string()
  * 
  * Checks if a language tag matches one of the elements in a list of
  * language ranges. A language tag is considered to match a range
  * in the list if the range is '*', the range is exactly the tag,
- * or the range is a prefix of the tag, and the character after the
- * tag is '-'.
+ * or the range is a prefix of the tag, and the character after it
+ * in the tag is '-'.
  *
  * Return value: %TRUE if a match was found.
  **/
@@ -1300,7 +1289,7 @@ pango_language_matches (PangoLanguage *language,
 
   while (!done)
     {
-      const char *end = strchr (p, ';');
+      const char *end = strpbrk (p, ";:, \t");
       if (!end)
 	{
 	  end = p + strlen (p);

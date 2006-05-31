@@ -1,5 +1,18 @@
 2006-05-30  Behdad Esfahbod  <behdad@gnome.org>
 
+	Bug 333984 – pango_language_from_string improvements
+
+	* pango/pango-utils.c (lang_equal), (lang_hash),
+	(pango_language_from_string): Allow digits in language tags as per
+	RFC-3066, and stop on first invalid char.  Previous
+	pango_language_from_string ("en_US.UTF-8") was returning "en-usutf-",
+	now it returns "en-us".
+	
+	* pango/pango-utils.c (pango_language_matches): Allow other common
+	separators in the language list (colon, comma, and space).
+
+2006-05-30  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 125378 – Better underline thickness handling
 
 	* pango/pango-layout.c (pango_layout_run_get_extents): Include
