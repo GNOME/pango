@@ -1,3 +1,12 @@
+2006-05-31  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 336153 – Mark to mark positioning (Lookup Type 6) isn't correct
+	when using MarkAttchmentType
+	Patch from Tin Myo Htet.
+
+	* pango/opentype/ftxgpos.c (Lookup_MarkMarkPos): Ignore marks
+	of non-matchin attachment type.
+
 2006-05-30  Behdad Esfahbod  <behdad@gnome.org>
 
 	Bug 125378 – Better underline thickness handling

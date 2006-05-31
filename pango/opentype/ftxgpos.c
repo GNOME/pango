@@ -3001,7 +3001,7 @@
                                        FT_UShort         context_length,
                                        int               nesting_level )
   {
-    FT_UShort        j, mark1_index, mark2_index, property, class;
+    FT_UShort        i, j, mark1_index, mark2_index, property, class;
     FT_Pos           x_mark1_value, y_mark1_value,
                      x_mark2_value, y_mark2_value;
     FT_Error         error;
@@ -3032,27 +3032,37 @@
     if ( error )
       return error;
 
-    /* now we check the preceding glyph whether it is a suitable
-       mark glyph                                                */
+    /* now we search backwards for a suitable mark glyph until a non-mark
+       glyph								  */
 
     if ( buffer->in_pos == 0 )
       return TTO_Err_Not_Covered;
 
+    i = 1;
     j = buffer->in_pos - 1;
-    error = TT_GDEF_Get_Glyph_Property( gpos->gdef, IN_GLYPH( j ),
-                                        &property );
-    if ( error )
-      return error;
 
-    if ( flags & IGNORE_SPECIAL_MARKS )
+    while ( i <= buffer->in_pos )
     {
-      if ( property != (flags & 0xFF00) )
+      error = TT_GDEF_Get_Glyph_Property( gpos->gdef, IN_GLYPH( j ),
+                                          &property );
+      if ( error )
+        return error;
+
+      if ( !( property == TTO_MARK || property & IGNORE_SPECIAL_MARKS ) )
         return TTO_Err_Not_Covered;
-    }
-    else
-    {
-      if ( property != TTO_MARK )
-        return TTO_Err_Not_Covered;
+      else
+      {
+        if ( flags & IGNORE_SPECIAL_MARKS )
+        {
+          if ( property == (flags & 0xFF00) )
+            break;
+        }
+	 else
+	   break;
+      }
+
+      i++;
+      j--;
     }
 
     error = Coverage_Index( &mmp->Mark2Coverage, IN_GLYPH( j ),
