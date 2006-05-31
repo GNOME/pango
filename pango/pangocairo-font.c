@@ -204,7 +204,7 @@ _pango_cairo_font_get_hex_box_info (PangoCairoFont *cfont)
 	  }
       }
 
-    pango_font_description_set_size (mini_desc, mini_size * PANGO_SCALE);
+    pango_font_description_set_absolute_size (mini_desc, mini_size * PANGO_SCALE);
 
 
     /* load mini_font */

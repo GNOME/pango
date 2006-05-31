@@ -1,3 +1,8 @@
+2006-05-31  Behdad Esfahbod  <behdad@gnome.org>
+
+	* pango/pangocairo-font.c (_pango_cairo_font_get_hex_box_info): Set
+	absolute_size, since we are using describe_with_absolute_size now...
+
 2006-05-30  Behdad Esfahbod  <behdad@gnome.org>
 
 	Bug 333984 – pango_language_from_string improvements
