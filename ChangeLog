@@ -1,3 +1,8 @@
+2006-06-02  Behdad Esfahbod  <behdad@gnome.org>
+
+	* pango/pango-utils.c (pango_find_base_dir): Don't g_return if text ==
+	NULL and length == 0.
+
 2006-05-31  Behdad Esfahbod  <behdad@gnome.org>
 
 	Bug 341138 – Using TTC font, Gtk2 programs begin to eating big memory

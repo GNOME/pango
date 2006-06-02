@@ -1755,7 +1755,7 @@ pango_find_base_dir (const gchar *text,
   PangoDirection dir = PANGO_DIRECTION_NEUTRAL;
   const gchar *p;
 
-  g_return_val_if_fail (text != NULL, PANGO_DIRECTION_NEUTRAL);
+  g_return_val_if_fail (text != NULL || length == 0, PANGO_DIRECTION_NEUTRAL);
 
   p = text;
   while ((length < 0 || p < text + length) && *p)
