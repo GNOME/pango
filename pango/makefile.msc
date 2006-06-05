@@ -185,6 +185,8 @@ OBJECTS = \
 !ENDIF
 
 !IFDEF OBJS_querymodules
+PKG_CFLAGS = $(PKG_CFLAGS) \
+	-DPACKAGE_NAME=\"Pango\" -DPACKAGE_VERSION=\"$(PANGO_VER)\"
 OBJECTS = \
 	querymodules.obj
 !ENDIF
@@ -249,6 +251,8 @@ lib$(PACKAGE)-$(PKG_VER)-0.dll : $(OBJECTS) $(PKG_DEF) $(PRJ_TOP)\config.h
 $(PACKAGE).exe : $(PKG_LINK) $(OBJECTS)
 	$(CC) $(CFLAGS) -Fe$(PACKAGE).exe $(OBJECTS) $(PKG_LINK) gdi32.lib user32.lib
 
+$(PRJ_TOP)\config.h.win32 : makefile.msc
+	echo /*empty*/ > $(PRJ_TOP)\config.h.win32
 
 $(PRJ_TOP)\config.h: $(PRJ_TOP)\config.h.win32
 	copy $(PRJ_TOP)\config.h.win32 $(PRJ_TOP)\config.h

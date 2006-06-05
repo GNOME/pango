@@ -66,7 +66,7 @@ int main (int argc, char **argv)
   PangoFontFamily** families = NULL;
   PangoFontFace** faces = NULL;
   int nb, i;
-  const gchar* family_name = NULL;
+  gchar* family_name = NULL;
   PangoLanguage *lang = pango_language_from_string (g_win32_getlocale ());
   HDC hdc = NULL;
   int line = 0;
@@ -115,7 +115,7 @@ int main (int argc, char **argv)
         }
 
       desc = pango_font_description_from_string(s->str);
-      family_name = pango_font_description_get_family (desc);
+      family_name = g_strdup (pango_font_description_get_family (desc));
 
       font = pango_font_map_load_font (fontmap, context, desc);
       
@@ -139,7 +139,7 @@ int main (int argc, char **argv)
       /* Get on the family faces. No simple way ? */
       for (i = 0; i < nb; i++)
         {
-          if (0 == strcmp (pango_font_family_get_name (families[i]), family_name))
+          if (0 == g_ascii_strcasecmp (pango_font_family_get_name (families[i]), family_name))
             {
               pango_font_family_list_faces (families[i], &faces, &nb);
               /* now nb is the number of faces */
@@ -148,6 +148,8 @@ int main (int argc, char **argv)
         }
       g_free (families);
       families = NULL;
+      g_free (family_name);
+      family_name = NULL;
     }
 
   hdc = pre_render(my_font_size * 64, 3 * my_font_size * nb / 2);

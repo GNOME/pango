@@ -1,3 +1,17 @@
+2006-05-05  Hans Breuer  <hans@breuer.org>
+
+	* pango/pangocairo-win32font.c(compute_glyph_extents) : not only 
+	handle PANGO_GLYPH_EMPTY but also PANGO_GLYPH_UNKNOWN_FLAG. 
+	The latter is needed to have proper sizing of the "hex box" for 
+	missing glyphs. It also stops cairo complaining about unknown glyphs.
+	Fixes part of bug #343796.
+	
+	* pango/makefile.msc : create $(PRJ_TOP)\config.h.win32. (Not 
+	changing in years does not necessarily mean it is not used)
+
+	* pango/testfonts.c : make family_name survive 
+	pango_font_description_free(), it is used later on
+	
 2006-06-02  Behdad Esfahbod  <behdad@gnome.org>
 
 	* pango/pango-utils.c (pango_find_base_dir): Don't g_return if text ==
