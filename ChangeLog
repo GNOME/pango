@@ -1,3 +1,11 @@
+2006-06-05  Hans Breuer  <hans@breuer.org>
+	[merged from HEAD]
+	* pango/pangocairo-win32font.c(compute_glyph_extents) : not only 
+	handle PANGO_GLYPH_EMPTY but also PANGO_GLYPH_UNKNOWN_FLAG. 
+	The latter is needed to have proper sizing of the "hex box" for 
+	missing glyphs. It also stops cairo complaining about unknown glyphs.
+	Fixes part of bug #343796.
+
 2006-05-31  Behdad Esfahbod  <behdad@gnome.org>
 
 	Bug 341138 – Using TTC font, Gtk2 programs begin to eating big memory

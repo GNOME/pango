@@ -212,7 +212,16 @@ compute_glyph_extents (PangoFont        *font,
   logical_rect->width = 0;
   logical_rect->height = (font_extents.ascent + font_extents.descent) * PANGO_SCALE;
 
-  if (glyph != PANGO_GLYPH_EMPTY)
+  if (glyph == PANGO_GLYPH_EMPTY)
+    {
+      /* already initialized above */
+    }
+  else if (glyph & PANGO_GLYPH_UNKNOWN_FLAG)
+    {
+      /* space for the hex box */
+      _pango_cairo_get_glyph_extents_missing(cfont, glyph, ink_rect, logical_rect);
+    }
+  else
     {
       cairo_glyph.index = glyph;
       cairo_glyph.x = 0;
