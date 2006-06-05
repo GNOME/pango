@@ -176,6 +176,59 @@ pango_win32_enum_proc (LOGFONT    *lfp,
   return 1;
 }
 
+static gboolean 
+first_match (gpointer key, 
+            gpointer value, 
+	    gpointer user_data)
+{
+  LOGFONT *lfp = (LOGFONT *)key;
+  LOGFONT *lfp2 = (LOGFONT *)((PangoWin32SizeInfo *)value)->logfonts->data;
+  gchar *name = (gchar *)user_data;
+  
+  if (strcmp (lfp->lfFaceName, name) == 0 && lfp->lfWeight == lfp2->lfWeight)
+    return TRUE;
+  return FALSE;
+}
+
+typedef struct _ItalicHelper
+{
+  PangoWin32FontMap *fontmap;
+  GSList            *list;
+} ItalicHelper;
+
+static void
+ensure_italic (gpointer key,
+               gpointer value,
+               gpointer user_data)
+{
+  ItalicHelper *helper = (ItalicHelper *)user_data;
+  /* PangoWin32Family *win32family = (PangoWin32Family *)value; */
+
+  PangoWin32SizeInfo *sip = (PangoWin32SizeInfo *)g_hash_table_find (helper->fontmap->size_infos, first_match, key);
+  if (sip)
+    {
+      GSList *list = sip->logfonts;
+
+      while (list)
+        {
+	  LOGFONT *lfp = (LOGFONT *)list->data;
+          if (!lfp->lfItalic)
+            {
+	      /* we have a non italic variant, look if there is an italic */
+	      LOGFONT logfont = *lfp;
+	      logfont.lfItalic = 1;
+	      sip = (PangoWin32SizeInfo *)g_hash_table_find (helper->fontmap->size_infos, first_match, &logfont);
+	      if (!sip)
+	        {
+		  /* remember the non italic variant to be added later as italic */
+		  helper->list = g_slist_append (helper->list, lfp);
+		}
+	    }
+	  list = list->next;
+	}
+    }
+}
+
 static void 
 pango_win32_font_map_init (PangoWin32FontMap *win32fontmap)
 {
@@ -194,6 +247,24 @@ pango_win32_font_map_init (PangoWin32FontMap *win32fontmap)
   logfont.lfCharSet = DEFAULT_CHARSET;
   EnumFontFamiliesExA (pango_win32_hdc, &logfont, (FONTENUMPROC) pango_win32_enum_proc, 
 		       (LPARAM)win32fontmap, 0);
+
+  /* create synthetic italic entries */
+  {
+    ItalicHelper helper = { win32fontmap, NULL };
+    GSList *list;
+
+    g_hash_table_foreach (win32fontmap->families, ensure_italic, &helper);
+    /* cant modify while iterating */
+    list = helper.list;
+    while (list)
+      {
+	LOGFONT logfont = *((LOGFONT *)list->data);
+	logfont.lfItalic = 1;
+	pango_win32_insert_font (win32fontmap, &logfont);
+	list = list->next;
+      }
+    g_slist_free (helper.list);
+  }
 
   win32fontmap->resolution = (PANGO_SCALE / (double) GetDeviceCaps (pango_win32_hdc, LOGPIXELSY)) * 72.0;
 }

@@ -1,5 +1,9 @@
 2006-06-05  Hans Breuer  <hans@breuer.org>
 
+	* pango/pangowin32-fontmap.c(pango_win32_font_map_init) : synthesize
+	some italic variants for fonts no having them already. This fixes
+	bug #343796 and for the italic case also bug #110521.
+
 	* pango/pangocairo-win32font.c(compute_glyph_extents) : not only 
 	handle PANGO_GLYPH_EMPTY but also PANGO_GLYPH_UNKNOWN_FLAG. 
 	The latter is needed to have proper sizing of the "hex box" for 
