@@ -1,4 +1,4 @@
-2006-05-05  Hans Breuer  <hans@breuer.org>
+2006-06-05  Hans Breuer  <hans@breuer.org>
 
 	* pango/pangocairo-win32font.c(compute_glyph_extents) : not only 
 	handle PANGO_GLYPH_EMPTY but also PANGO_GLYPH_UNKNOWN_FLAG. 
