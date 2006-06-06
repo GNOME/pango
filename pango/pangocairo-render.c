@@ -296,7 +296,6 @@ pango_cairo_renderer_draw_rectangle (PangoRenderer     *renderer,
  */
 #define HEIGHT_SQUARES 2.5
 
-/* This code is cut-and-pasted between here and gtk+/gdk/gdkpango.c */
 static void
 draw_error_underline (cairo_t *cr,
 		      double   x,
