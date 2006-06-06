@@ -173,12 +173,9 @@ pango_cairo_renderer_draw_glyphs (PangoRenderer     *renderer,
   cairo_glyph_t *cairo_glyphs;
   cairo_glyph_t stack_glyphs[MAX_STACK];
 
+  cairo_save (crenderer->cr);
   if (!crenderer->do_path)
-    {
-      cairo_save (crenderer->cr);
-
-      set_color (crenderer, PANGO_RENDER_PART_FOREGROUND);
-    }
+    set_color (crenderer, PANGO_RENDER_PART_FOREGROUND);
 
   if (!_pango_cairo_font_install (PANGO_CAIRO_FONT (font), crenderer->cr))
     {
@@ -240,8 +237,7 @@ pango_cairo_renderer_draw_glyphs (PangoRenderer     *renderer,
     g_free (cairo_glyphs);
 
 done:
-  if (!crenderer->do_path)
-    cairo_restore (crenderer->cr);
+  cairo_restore (crenderer->cr);
   
 #undef MAX_STACK
 }
@@ -423,8 +419,6 @@ _pango_cairo_do_glyph_string (cairo_t          *cr,
 
   crenderer = PANGO_CAIRO_RENDERER (renderer);
 
-  cairo_save (cr);
-
   crenderer->cr = cr;
   crenderer->do_path = do_path;
   cairo_get_current_point (cr, &crenderer->x_offset, &crenderer->y_offset);
@@ -440,8 +434,6 @@ _pango_cairo_do_glyph_string (cairo_t          *cr,
       crenderer->x_offset = 0.;
       crenderer->y_offset = 0.;
     }
-  
-  cairo_restore (cr);
 }
 
 static void
@@ -459,8 +451,6 @@ _pango_cairo_do_layout_line (cairo_t          *cr,
   renderer = _pango_cairo_font_map_get_renderer (PANGO_CAIRO_FONT_MAP (fontmap));
   crenderer = PANGO_CAIRO_RENDERER (renderer);
 
-  cairo_save (cr);
-
   crenderer->cr = cr;
   crenderer->do_path = do_path;
   cairo_get_current_point (cr, &crenderer->x_offset, &crenderer->y_offset);
@@ -471,8 +461,6 @@ _pango_cairo_do_layout_line (cairo_t          *cr,
   crenderer->do_path = FALSE;
   crenderer->x_offset = 0.;
   crenderer->y_offset = 0.;
-  
-  cairo_restore (cr);
 }
 
 static void
@@ -490,8 +478,6 @@ _pango_cairo_do_layout (cairo_t     *cr,
   renderer = _pango_cairo_font_map_get_renderer (PANGO_CAIRO_FONT_MAP (fontmap));
   crenderer = PANGO_CAIRO_RENDERER (renderer);
   
-  cairo_save (cr);
-
   crenderer->cr = cr;
   crenderer->do_path = do_path;
   cairo_get_current_point (cr, &crenderer->x_offset, &crenderer->y_offset);
@@ -502,8 +488,6 @@ _pango_cairo_do_layout (cairo_t     *cr,
   crenderer->do_path = FALSE;
   crenderer->x_offset = 0.;
   crenderer->y_offset = 0.;
-  
-  cairo_restore (cr);
 }
 
 static void 
@@ -514,25 +498,19 @@ _pango_cairo_do_error_underline (cairo_t *cr,
 				 double   height,
 				 gboolean do_path)
 {  
-  PangoFontMap *fontmap;
-  PangoRenderer *renderer;
-  PangoCairoRenderer *crenderer;
+  /* We don't use a renderer here, for a simple reason:
+   * the only renderer we can get is the default renderer, that
+   * is all implemented here, so we shortcircuit and make our
+   * life way easier.
+   */
 
-  fontmap = pango_cairo_font_map_get_default ();
-  renderer = _pango_cairo_font_map_get_renderer (PANGO_CAIRO_FONT_MAP (fontmap));
-  crenderer = PANGO_CAIRO_RENDERER (renderer);
-  
-  cairo_save (cr);
+  if (!do_path)
+    cairo_new_path (cr);
 
-  crenderer->cr = cr;
-  crenderer->do_path = do_path;  
+  draw_error_underline (cr, x, y, width, height);
 
-  pango_renderer_draw_error_underline (renderer, x, y, width, height);
-  
-  crenderer->cr = NULL;
-  crenderer->do_path = FALSE;
-    
-  cairo_restore (cr);
+  if (!do_path)
+    cairo_fill (cr);
 } 
 
 
@@ -612,9 +590,11 @@ pango_cairo_show_layout (cairo_t     *cr,
  * @width: Non-negative width of the rectangle
  * @height: Non-negative height of the rectangle
  * 
- * Draws a wavy underline filling the given rectangle in the specified
- * cairo context.  This is typically used to draw error underlines,
- * indicating an error such as a possilble mispelling.
+ * Draw a squiggly line in the specified cairo context that approximately
+ * covers the given rectangle in the style of an underline used to indicate a
+ * spelling error.  (The width of the underline is rounded to an integer
+ * number of up/down segments and the resulting rectangle is centered in the
+ * original rectangle)
  *
  * Since: 1.14
  **/
@@ -704,10 +684,11 @@ pango_cairo_layout_path (cairo_t     *cr,
  * @width: Non-negative width of the rectangle
  * @height: Non-negative height of the rectangle
  * 
- * Adds a wavy underline filling the given rectangle to the current
- * patch in the specified cairo context.  This is typically used to
- * draw error underlines, indicating an error such as a possilble
- * mispelling.
+ * Add a squiggly line to the current path in the specified cairo context that
+ * approximately covers the given rectangle in the style of an underline used
+ * to indicate a spelling error.  (The width of the underline is rounded to an
+ * integer number of up/down segments and the resulting rectangle is centered
+ * in the original rectangle)
  *
  * Since: 1.14
  **/

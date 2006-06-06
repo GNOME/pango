@@ -1,5 +1,20 @@
 2006-06-06  Behdad Esfahbod  <behdad@gnome.org>
 
+	Followup on previous change.
+
+	* pango/pango-renderer.c: Note that pango_renderer_draw_rectangle
+	and pango_renderer_draw_error_underline should be called with
+	active renderer.
+
+	* pango/pangocairo-render.c (pango_cairo_renderer_draw_glyphs),
+	(_pango_cairo_do_glyph_string), (_pango_cairo_do_layout_line),
+	(_pango_cairo_do_layout): Remove excess cairo_save/restore() calls.
+	
+	* pango/pangocairo-render.c (_pango_cairo_do_error_underline): Don't
+	go through renderer.
+
+2006-06-06  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 343355 – Add pango_cairo_show_error_underline &
 	pango_cairo_error_underline_path
 	Based on patch by LingNing Zhang.

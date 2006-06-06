@@ -639,6 +639,9 @@ pango_renderer_default_draw_glyphs (PangoRenderer    *renderer,
  * Draws an axis-aligned rectangle in user space coordinates with the
  * specified #PangoRenderer.
  *
+ * This should be called while @renderer is already active.  Use
+ * pango_renderer_activate() to activate a renderer.
+ *
  * Since: 1.8
  **/
 void
@@ -776,6 +779,9 @@ pango_renderer_default_draw_rectangle (PangoRenderer  *renderer,
  * (The width of the underline is rounded to an integer number
  * of up/down segments and the resulting rectangle is centered
  * in the original rectangle)
+ *
+ * This should be called while @renderer is already active.  Use
+ * pango_renderer_activate() to activate a renderer.
  *
  * Since: 1.8
  **/
