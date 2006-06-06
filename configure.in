@@ -604,7 +604,7 @@ else
     # libtool option to control which symbols are exported
     # right now, symbols starting with '_' are not exported
     LIBRARY_LIBTOOL_OPTIONS="$LIBRARY_LIBTOOL_OPTIONS "'-export-symbols-regex "^pango_.*"'
-    MODULE_LIBTOOL_OPTIONS="$MODULE_LIBTOOL_OPTIONS"'-export-symbols-regex "^script_engine_.*"'
+    MODULE_LIBTOOL_OPTIONS="$MODULE_LIBTOOL_OPTIONS "'-export-symbols-regex "^script_engine_.*"'
 fi
 AC_SUBST(LIBRARY_LIBTOOL_OPTIONS)
 AC_SUBST(MODULE_LIBTOOL_OPTIONS)

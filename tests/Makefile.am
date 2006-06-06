@@ -75,7 +75,7 @@ check_PROGRAMS += cxx-test
 endif
 cxx_test_SOURCES = cxx-test.C
 
-all-unicode.txt: gen-all-unicode
+all-unicode.txt: gen-all-unicode$(EXEEXT)
 	./gen-all-unicode > all-unicode.txt
 
 pangorc: $(srcdir)/../modules/pangorc
