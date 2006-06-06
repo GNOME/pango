@@ -399,6 +399,147 @@ pango_cairo_renderer_class_init (PangoCairoRendererClass *klass)
   renderer_class->draw_error_underline = pango_cairo_renderer_draw_error_underline;
 }
 
+
+/* convenience wrappers using the default renderer */
+
+
+static void
+_pango_cairo_do_glyph_string (cairo_t          *cr,
+			      PangoFont        *font,
+			      PangoGlyphString *glyphs,
+			      gboolean          do_path)
+{
+  PangoFontMap *fontmap;
+  PangoCairoRenderer *crenderer;
+  PangoRenderer *renderer;
+  gboolean unref_renderer = FALSE;
+
+  fontmap = pango_font_get_font_map (font);
+  renderer = _pango_cairo_font_map_get_renderer (PANGO_CAIRO_FONT_MAP (fontmap));
+  if (G_UNLIKELY (!renderer))
+    {
+      renderer = g_object_new (PANGO_TYPE_CAIRO_RENDERER, NULL);
+      unref_renderer = TRUE;
+    }
+
+  crenderer = PANGO_CAIRO_RENDERER (renderer);
+
+  cairo_save (cr);
+
+  crenderer->cr = cr;
+  crenderer->do_path = do_path;
+  cairo_get_current_point (cr, &crenderer->x_offset, &crenderer->y_offset);
+  
+  pango_renderer_draw_glyphs (renderer, font, glyphs, 0, 0);
+  
+  if (G_UNLIKELY (unref_renderer))
+    g_object_unref (renderer);
+  else
+    {
+      crenderer->cr = NULL;
+      crenderer->do_path = FALSE;
+      crenderer->x_offset = 0.;
+      crenderer->y_offset = 0.;
+    }
+  
+  cairo_restore (cr);
+}
+
+static void
+_pango_cairo_do_layout_line (cairo_t          *cr,
+			     PangoLayoutLine  *line,
+			     gboolean          do_path)
+{
+  PangoContext *context;
+  PangoFontMap *fontmap;
+  PangoRenderer *renderer;
+  PangoCairoRenderer *crenderer;
+
+  context = pango_layout_get_context (line->layout);
+  fontmap = pango_context_get_font_map (context);
+  renderer = _pango_cairo_font_map_get_renderer (PANGO_CAIRO_FONT_MAP (fontmap));
+  crenderer = PANGO_CAIRO_RENDERER (renderer);
+
+  cairo_save (cr);
+
+  crenderer->cr = cr;
+  crenderer->do_path = do_path;
+  cairo_get_current_point (cr, &crenderer->x_offset, &crenderer->y_offset);
+
+  pango_renderer_draw_layout_line (renderer, line, 0, 0);
+  
+  crenderer->cr = NULL;
+  crenderer->do_path = FALSE;
+  crenderer->x_offset = 0.;
+  crenderer->y_offset = 0.;
+  
+  cairo_restore (cr);
+}
+
+static void
+_pango_cairo_do_layout (cairo_t     *cr,
+			PangoLayout *layout,
+			gboolean     do_path)
+{
+  PangoContext *context;
+  PangoFontMap *fontmap;
+  PangoRenderer *renderer;
+  PangoCairoRenderer *crenderer;
+
+  context = pango_layout_get_context (layout);
+  fontmap = pango_context_get_font_map (context);
+  renderer = _pango_cairo_font_map_get_renderer (PANGO_CAIRO_FONT_MAP (fontmap));
+  crenderer = PANGO_CAIRO_RENDERER (renderer);
+  
+  cairo_save (cr);
+
+  crenderer->cr = cr;
+  crenderer->do_path = do_path;
+  cairo_get_current_point (cr, &crenderer->x_offset, &crenderer->y_offset);
+
+  pango_renderer_draw_layout (renderer, layout, 0, 0);
+  
+  crenderer->cr = NULL;
+  crenderer->do_path = FALSE;
+  crenderer->x_offset = 0.;
+  crenderer->y_offset = 0.;
+  
+  cairo_restore (cr);
+}
+
+static void 
+_pango_cairo_do_error_underline (cairo_t *cr,                                  
+				 double   x,
+				 double   y,
+				 double   width,
+				 double   height,
+				 gboolean do_path)
+{  
+  PangoFontMap *fontmap;
+  PangoRenderer *renderer;
+  PangoCairoRenderer *crenderer;
+
+  fontmap = pango_cairo_font_map_get_default ();
+  renderer = _pango_cairo_font_map_get_renderer (PANGO_CAIRO_FONT_MAP (fontmap));
+  crenderer = PANGO_CAIRO_RENDERER (renderer);
+  
+  cairo_save (cr);
+
+  crenderer->cr = cr;
+  crenderer->do_path = do_path;  
+
+  pango_renderer_draw_error_underline (renderer, x, y, width, height);
+  
+  crenderer->cr = NULL;
+  crenderer->do_path = FALSE;
+    
+  cairo_restore (cr);
+} 
+
+
+/* public wrapper of above to show or append path */
+
+
 /**
  * pango_cairo_show_glyph_string:
  * @cr: a Cairo context
@@ -416,42 +557,10 @@ pango_cairo_show_glyph_string (cairo_t          *cr,
 			       PangoFont        *font,
 			       PangoGlyphString *glyphs)
 {
-  PangoFontMap *fontmap;
-  PangoCairoRenderer *crenderer;
-  PangoRenderer *renderer;
-  gboolean unref_renderer = FALSE;
-
   g_return_if_fail (cr != NULL);
   g_return_if_fail (glyphs != NULL);
 
-  fontmap = pango_font_get_font_map (font);
-  renderer = _pango_cairo_font_map_get_renderer (PANGO_CAIRO_FONT_MAP (fontmap));
-  if (G_UNLIKELY (!renderer))
-    {
-      renderer = g_object_new (PANGO_TYPE_CAIRO_RENDERER, NULL);
-      unref_renderer = TRUE;
-    }
-
-  crenderer = PANGO_CAIRO_RENDERER (renderer);
-
-  cairo_save (cr);
-
-  crenderer->cr = cr;
-  crenderer->do_path = FALSE;
-  cairo_get_current_point (cr, &crenderer->x_offset, &crenderer->y_offset);
-  
-  pango_renderer_draw_glyphs (renderer, font, glyphs, 0, 0);
-  
-  if (G_UNLIKELY (unref_renderer))
-    g_object_unref (renderer);
-  else
-    {
-      crenderer->cr = NULL;
-      crenderer->x_offset = 0.;
-      crenderer->y_offset = 0.;
-    }
-  
-  cairo_restore (cr);
+  _pango_cairo_do_glyph_string (cr, font, glyphs, FALSE);
 }
 
 /**
@@ -469,32 +578,10 @@ void
 pango_cairo_show_layout_line (cairo_t          *cr,
 			      PangoLayoutLine  *line)
 {
-  PangoContext *context;
-  PangoFontMap *fontmap;
-  PangoRenderer *renderer;
-  PangoCairoRenderer *crenderer;
-
   g_return_if_fail (cr != NULL);
   g_return_if_fail (line != NULL);
 
-  context = pango_layout_get_context (line->layout);
-  fontmap = pango_context_get_font_map (context);
-  renderer = _pango_cairo_font_map_get_renderer (PANGO_CAIRO_FONT_MAP (fontmap));
-  crenderer = PANGO_CAIRO_RENDERER (renderer);
-
-  cairo_save (cr);
-
-  crenderer->cr = cr;
-  crenderer->do_path = FALSE;
-  cairo_get_current_point (cr, &crenderer->x_offset, &crenderer->y_offset);
-
-  pango_renderer_draw_layout_line (renderer, line, 0, 0);
-  
-  crenderer->cr = NULL;
-  crenderer->x_offset = 0.;
-  crenderer->y_offset = 0.;
-  
-  cairo_restore (cr);
+  _pango_cairo_do_layout_line (cr, line, FALSE);
 }
 
 /**
@@ -512,33 +599,38 @@ void
 pango_cairo_show_layout (cairo_t     *cr,
 			 PangoLayout *layout)
 {
-  PangoContext *context;
-  PangoFontMap *fontmap;
-  PangoRenderer *renderer;
-  PangoCairoRenderer *crenderer;
-
   g_return_if_fail (cr != NULL);
   g_return_if_fail (PANGO_IS_LAYOUT (layout));
 
-  context = pango_layout_get_context (layout);
-  fontmap = pango_context_get_font_map (context);
-  renderer = _pango_cairo_font_map_get_renderer (PANGO_CAIRO_FONT_MAP (fontmap));
-  crenderer = PANGO_CAIRO_RENDERER (renderer);
-  
-  cairo_save (cr);
-
-  crenderer->cr = cr;
-  crenderer->do_path = FALSE;
-  cairo_get_current_point (cr, &crenderer->x_offset, &crenderer->y_offset);
-
-  pango_renderer_draw_layout (renderer, layout, 0, 0);
-  
-  crenderer->cr = NULL;
-  crenderer->x_offset = 0.;
-  crenderer->y_offset = 0.;
-  
-  cairo_restore (cr);
+  _pango_cairo_do_layout (cr, layout, FALSE);
 }
+
+/**
+ * pango_cairo_show_error_underline:
+ * @cr: a Cairo context
+ * @x: The X coordinate of one corner of the rectangle
+ * @y: The Y coordinate of one corner of the rectangle
+ * @width: Non-negative width of the rectangle
+ * @height: Non-negative height of the rectangle
+ * 
+ * Draws a wavy underline filling the given rectangle in the specified
+ * cairo context.  This is typically used to draw error underlines,
+ * indicating an error such as a possilble mispelling.
+ *
+ * Since: 1.14
+ **/
+void 
+pango_cairo_show_error_underline (cairo_t *cr,                                  
+			          double  x,
+			          double  y,
+			          double  width,
+			          double  height)
+{  
+  g_return_if_fail (cr != NULL);
+  g_return_if_fail ((width >= 0) && (height >= 0));  
+  
+  _pango_cairo_do_error_underline (cr, x, y, width, height, FALSE);                                 
+} 
 
 /**
  * pango_cairo_glyph_string_path
@@ -557,41 +649,10 @@ pango_cairo_glyph_string_path (cairo_t          *cr,
 			       PangoFont        *font,
 			       PangoGlyphString *glyphs)
 {
-  PangoFontMap *fontmap;
-  PangoCairoRenderer *crenderer;
-  PangoRenderer *renderer;
-  gboolean unref_renderer = FALSE;
-
   g_return_if_fail (cr != NULL);
   g_return_if_fail (glyphs != NULL);
 
-  fontmap = pango_font_get_font_map (font);
-  renderer = _pango_cairo_font_map_get_renderer (PANGO_CAIRO_FONT_MAP (fontmap));
-  if (G_UNLIKELY (!renderer))
-    {
-      renderer = g_object_new (PANGO_TYPE_CAIRO_RENDERER, NULL);
-      unref_renderer = TRUE;
-    }
-
-  crenderer = PANGO_CAIRO_RENDERER (renderer);
-
-  crenderer->cr = cr;
-  crenderer->do_path = TRUE;
-  cairo_get_current_point (cr, &crenderer->x_offset, &crenderer->y_offset);
-  
-  pango_renderer_draw_glyphs (renderer, font, glyphs, 0, 0);
-  
-  if (G_UNLIKELY (unref_renderer))
-    g_object_unref (renderer);
-  else
-    {
-      crenderer->cr = NULL;
-      crenderer->do_path = FALSE;
-      crenderer->x_offset = 0.;
-      crenderer->y_offset = 0.;
-    }
-  
-  cairo_set_font_face (cr, NULL);
+  _pango_cairo_do_glyph_string (cr, font, glyphs, TRUE);
 }
 
 /**
@@ -609,31 +670,10 @@ void
 pango_cairo_layout_line_path (cairo_t          *cr,
 			      PangoLayoutLine  *line)
 {
-  PangoContext *context;
-  PangoFontMap *fontmap;
-  PangoRenderer *renderer;
-  PangoCairoRenderer *crenderer;
-  
   g_return_if_fail (cr != NULL);
   g_return_if_fail (line != NULL);
 
-  context = pango_layout_get_context (line->layout);
-  fontmap = pango_context_get_font_map (context);
-  renderer = _pango_cairo_font_map_get_renderer (PANGO_CAIRO_FONT_MAP (fontmap));
-  crenderer = PANGO_CAIRO_RENDERER (renderer);
-
-  crenderer->cr = cr;
-  crenderer->do_path = TRUE;
-  cairo_get_current_point (cr, &crenderer->x_offset, &crenderer->y_offset);
-
-  pango_renderer_draw_layout_line (renderer, line, 0, 0);
-  
-  crenderer->cr = NULL;
-  crenderer->do_path = FALSE;
-  crenderer->x_offset = 0.;
-  crenderer->y_offset = 0.;
-  
-  cairo_set_font_face (cr, NULL);
+  _pango_cairo_do_layout_line (cr, line, TRUE);
 }
 
 /**
@@ -651,30 +691,36 @@ void
 pango_cairo_layout_path (cairo_t     *cr,
 			 PangoLayout *layout)
 {
-  PangoContext *context;
-  PangoFontMap *fontmap;
-  PangoRenderer *renderer;
-  PangoCairoRenderer *crenderer;
-
   g_return_if_fail (cr != NULL);
   g_return_if_fail (PANGO_IS_LAYOUT (layout));
 
-  context = pango_layout_get_context (layout);
-  fontmap = pango_context_get_font_map (context);
-  renderer = _pango_cairo_font_map_get_renderer (PANGO_CAIRO_FONT_MAP (fontmap));
-  crenderer = PANGO_CAIRO_RENDERER (renderer);
-  
-  crenderer->cr = cr;
-  crenderer->do_path = TRUE;
-  cairo_get_current_point (cr, &crenderer->x_offset, &crenderer->y_offset);
-
-  pango_renderer_draw_layout (renderer, layout, 0, 0);
-  
-  crenderer->cr = NULL;
-  crenderer->do_path = FALSE;
-  crenderer->x_offset = 0.;
-  crenderer->y_offset = 0.;
-  
-  cairo_set_font_face (cr, NULL);
+  _pango_cairo_do_layout (cr, layout, TRUE);
 }
 
+/**
+ * pango_cairo_error_underline_path:
+ * @cr: a Cairo context
+ * @x: The X coordinate of one corner of the rectangle
+ * @y: The Y coordinate of one corner of the rectangle
+ * @width: Non-negative width of the rectangle
+ * @height: Non-negative height of the rectangle
+ * 
+ * Adds a wavy underline filling the given rectangle to the current
+ * patch in the specified cairo context.  This is typically used to
+ * draw error underlines, indicating an error such as a possilble
+ * mispelling.
+ *
+ * Since: 1.14
+ **/
+void 
+pango_cairo_error_underline_path (cairo_t *cr,                                  
+			          double   x,
+			          double   y,
+			          double   width,
+			          double   height)
+{
+  g_return_if_fail (cr != NULL);
+  g_return_if_fail ((width >= 0) && (height >= 0));
+  
+  _pango_cairo_do_error_underline (cr, x, y, width, height, TRUE);                                 
+}

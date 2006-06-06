@@ -87,6 +87,12 @@ void pango_cairo_show_layout_line  (cairo_t          *cr,
 void pango_cairo_show_layout       (cairo_t          *cr,
 				    PangoLayout      *layout);
 
+void pango_cairo_show_error_underline (cairo_t       *cr,                                   
+				       double         x,
+				       double         y,
+				       double         width,
+				       double         height);
+
 /*
  * Rendering to a path
  */
@@ -97,6 +103,12 @@ void pango_cairo_layout_line_path  (cairo_t          *cr,
 				    PangoLayoutLine  *line);
 void pango_cairo_layout_path       (cairo_t          *cr,
 				    PangoLayout      *layout);
+					
+void pango_cairo_error_underline_path (cairo_t       *cr,                                   
+				       double         x,
+				       double         y,
+				       double         width,
+				       double         height);
 
 G_END_DECLS
 

@@ -282,6 +282,18 @@ int main (int argc, char **argv)
 @layout: 
 
 
+<!-- ##### FUNCTION pango_cairo_show_error_underline ##### -->
+<para>
+
+</para>
+
+@cr: 
+@x: 
+@y: 
+@width: 
+@height: 
+
+
 <!-- ##### FUNCTION pango_cairo_glyph_string_path ##### -->
 <para>
 
@@ -308,5 +320,17 @@ int main (int argc, char **argv)
 
 @cr: 
 @layout: 
+
+
+<!-- ##### FUNCTION pango_cairo_error_underline_path ##### -->
+<para>
+
+</para>
+
+@cr: 
+@x: 
+@y: 
+@width: 
+@height: 
 
 

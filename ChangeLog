@@ -1,5 +1,25 @@
 2006-06-06  Behdad Esfahbod  <behdad@gnome.org>
 
+	Bug 343355 – Add pango_cairo_show_error_underline &
+	pango_cairo_error_underline_path
+	Based on patch by LingNing Zhang.
+
+	* docs/pango-sections.txt, docs/tmpl/pangocairo.sgml,
+	pango/pangocairo.def, pango/pangocairo.h, pango/pangocairo-render.c:
+	New functions pango_cairo_show_error_underline and
+	pango_cairo_error_underline_path.
+
+	* pango/pangocairo-render.c (_pango_cairo_do_glyph_string),
+	(_pango_cairo_do_layout_line), (_pango_cairo_do_layout),
+	(_pango_cairo_do_error_underline), (pango_cairo_show_glyph_string),
+	(pango_cairo_show_layout_line), (pango_cairo_show_layout),
+	(pango_cairo_show_error_underline),
+	(pango_cairo_glyph_string_path), (pango_cairo_layout_line_path),
+	(pango_cairo_layout_path), (pango_cairo_error_underline_path): Merge
+	similar code for pango_cairo_show_* and pango_cairo_*_path functions.
+
+2006-06-06  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 343966 – pango Cygwin build fixes
 	Patch from Cygwin Ports maintainer.
 
