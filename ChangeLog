@@ -1,3 +1,11 @@
+2006-06-06  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 343966 – pango Cygwin build fixes
+	Patch from Cygwin Ports maintainer.
+
+	* configure.in: Use -no-undefined on all systems. [already on HEAD]
+	* tests/Makefile.am: Add $(EXEEXT) where appropriate.
+
 2006-06-05  Hans Breuer  <hans@breuer.org>
 	[merged from HEAD]
 	* pango/pangowin32-fontmap.c(pango_win32_font_map_init) : synthesize
