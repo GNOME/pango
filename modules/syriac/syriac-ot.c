@@ -14,9 +14,8 @@
  *  D. Turner, R.Wilhelm, and W. Lemberg
  *
  * The code, like the FreeType code it is derived from is dual-licensed
- * under the  GNU Public License and the FreeType license. See see
- * pango/opentype/FT-license.txt for full details of the FreeType 
- * license.
+ * under the GNU General Public License and the FreeType license. See
+ * pango/opentype/COPYING for full details of this licensing scheme.
  */
 #include <config.h>
 #include "syriac-ot.h"

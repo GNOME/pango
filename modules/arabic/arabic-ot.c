@@ -21,8 +21,9 @@
 /*  this file you indicate that you have read the license and               */
 /*  understand and accept it fully.                                         */
 /*                                                                          */
-/* The file LICENSE.TXT can be found in the Pango distribution as           */
-/* pango/opentype/FT-license.txt                                            */
+/* The code, like the FreeType code it is derived from is dual-licensed     */
+/* under the GNU General Public License and the FreeType license. See       */
+/* pango/opentype/COPYING for full details of this licensing scheme.        */
 /****************************************************************************/
 
 #include <config.h>

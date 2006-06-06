@@ -1,5 +1,12 @@
 2006-06-06  Behdad Esfahbod  <behdad@gnome.org>
 
+	Bug 343717 – License information in unclear.
+
+	* modules/arabic/arabic-ot.c, modules/syriac/syriac-ot.c: Fix
+	dual-license information and refer to pango/opentype/COPYING.
+
+2006-06-06  Behdad Esfahbod  <behdad@gnome.org>
+
 	Followup on previous change.
 
 	* pango/pango-renderer.c: Note that pango_renderer_draw_rectangle
