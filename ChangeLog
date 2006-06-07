@@ -1,5 +1,10 @@
 2006-06-07  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango/pangocairo-font.c (_pango_cairo_font_get_hex_box_info):
+	Set matrix on the context we create to load minifont.
+
+2006-06-07  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 326960 – hex box drawing for win32 and atsui backends of cairo
 
 	Hans already fixed win32.

@@ -135,6 +135,8 @@ _pango_cairo_font_get_hex_box_info (PangoCairoFont *cfont)
   double size, mini_size;
   PangoFontDescription *desc, *mini_desc;
   cairo_scaled_font_t *scaled_font, *scaled_mini_font;
+  PangoMatrix pango_ctm;
+  cairo_matrix_t cairo_ctm;
 
   if (!cfont)
     return NULL;
@@ -154,20 +156,26 @@ _pango_cairo_font_get_hex_box_info (PangoCairoFont *cfont)
   cairo_scaled_font_get_font_options (scaled_font, font_options);
   is_hinted = (cairo_font_options_get_hint_metrics(font_options) != CAIRO_HINT_METRICS_OFF);
 
+  cairo_scaled_font_get_ctm (scaled_font, &cairo_ctm);
+  pango_ctm.xx = cairo_ctm.xx;
+  pango_ctm.yx = cairo_ctm.yx;
+  pango_ctm.xy = cairo_ctm.xy;
+  pango_ctm.yy = cairo_ctm.yy;
+  pango_ctm.x0 = cairo_ctm.x0;
+  pango_ctm.y0 = cairo_ctm.y0;
+
   if (is_hinted)
     {
       /* prepare for some hinting */
-      cairo_matrix_t ctm;
       double x, y;
-      cairo_scaled_font_get_ctm (scaled_font, &ctm);
 
       x = 1.; y = 0.;
-      cairo_matrix_transform_distance (&ctm, &x, &y);
+      cairo_matrix_transform_distance (&cairo_ctm, &x, &y);
       scale_x = sqrt (x*x + y*y);
       scale_x_inv = 1 / scale_x;
 
       x = 0.; y = 1.;
-      cairo_matrix_transform_distance (&ctm, &x, &y);
+      cairo_matrix_transform_distance (&cairo_ctm, &x, &y);
       scale_y = sqrt (x*x + y*y);
       scale_y_inv = 1 / scale_y;
     }
@@ -211,6 +219,7 @@ _pango_cairo_font_get_hex_box_info (PangoCairoFont *cfont)
 
     context = pango_cairo_font_map_create_context (PANGO_CAIRO_FONT_MAP (fontmap));
 
+    pango_context_set_matrix (context, &pango_ctm);
     pango_context_set_language (context, pango_language_from_string ("en"));
     pango_cairo_context_set_font_options (context, font_options);
     mini_font = pango_font_map_load_font (fontmap, context, mini_desc);
