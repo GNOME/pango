@@ -1,3 +1,12 @@
+2006-06-07  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 326960 – hex box drawing for win32 and atsui backends of cairo
+
+	Hans already fixed win32.
+
+	* pango/pangocairo-atsuifont.c (compute_glyph_extents): Handle
+	PANGO_GLYPH_UNKNOWN_FLAG. 
+
 2006-06-06  Behdad Esfahbod  <behdad@gnome.org>
 
 	Bug 343717 – License information in unclear.

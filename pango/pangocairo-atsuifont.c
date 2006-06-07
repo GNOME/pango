@@ -143,6 +143,7 @@ pango_cairo_atsui_font_get_glyph_extents (PangoFont        *font,
 					  PangoRectangle   *ink_rect,
 					  PangoRectangle   *logical_rect)
 {
+  PangoCairoFont *cfont = (PangoCairoFont *)font;
   cairo_scaled_font_t *scaled_font;
   cairo_font_extents_t font_extents;
   cairo_text_extents_t extents;
@@ -157,7 +158,26 @@ pango_cairo_atsui_font_get_glyph_extents (PangoFont        *font,
   cairo_glyph.x = 0;
   cairo_glyph.y = 0;
 
-  if (glyph != PANGO_GLYPH_EMPTY)
+  if (glyph == PANGO_GLYPH_EMPTY)
+    {
+      if (ink_rect)
+	{
+	  ink_rect->x = ink_rect->y = ink_rect->width = ink_rect->height = 0;
+	}
+      if (logical_rect)
+        {
+	  logical_rect->x = 0;
+	  logical_rect->y = - font_extents.ascent * PANGO_SCALE;
+	  logical_rect->width = 0;
+	  logical_rect->height = (font_extents.ascent + font_extents.descent) * PANGO_SCALE;
+	}
+    }
+  else if (glyph & PANGO_GLYPH_UNKNOWN_FLAG)
+    {
+      /* space for the hex box */
+      _pango_cairo_get_glyph_extents_missing(cfont, glyph, ink_rect, logical_rect);
+    }
+  else
     {
       cairo_scaled_font_glyph_extents (scaled_font,
 				       &cairo_glyph, 1, &extents);
@@ -175,20 +195,6 @@ pango_cairo_atsui_font_get_glyph_extents (PangoFont        *font,
 	  logical_rect->x = 0;
 	  logical_rect->y = - font_extents.ascent * PANGO_SCALE;
 	  logical_rect->width = extents.x_advance * PANGO_SCALE;
-	  logical_rect->height = (font_extents.ascent + font_extents.descent) * PANGO_SCALE;
-	}
-    }
-  else
-    {
-      if (ink_rect)
-	{
-	  ink_rect->x = ink_rect->y = ink_rect->width = ink_rect->height = 0;
-	}
-      if (logical_rect)
-        {
-	  logical_rect->x = 0;
-	  logical_rect->y = - font_extents.ascent * PANGO_SCALE;
-	  logical_rect->width = 0;
 	  logical_rect->height = (font_extents.ascent + font_extents.descent) * PANGO_SCALE;
 	}
     }
