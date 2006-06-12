@@ -1,3 +1,41 @@
+Overview of changes between 1.13.1 and 1.13.2
+==============================================
+* Improved hexbox drawing, and font metrics calculations.
+* Synthesize italic variants on win32 [Hans Breuer]
+* New public API:
+	- pango_cairo_show_error_underline
+	- pango_cairo_error_underline_path
+	- pango_font_describe_with_absolute_size
+* Misc fixes.
+* Bugs fixed in this release:
+	Bug 326960 – hex box drawing for win32 and atsui backends of cairo
+	Bug 343717 – License information in unclear.
+	Bug 343355 – Add pango_cairo_show_error_underline &
+	             pango_cairo_error_underline_path
+	Bug 343966 – pango Cygwin build fixes
+	             Patch from Cygwin Ports maintainer.
+	Bug 343796 – Italic Chinese character can't be show correctly in
+	             Win32.
+	Bug 314114 – max_x_advance not appropriate for
+	             approximate_(char|digit)_width
+	Bug 341138 – Using TTC font, Gtk2 programs begin to eating big memory
+	             and have many cpu usage.
+	             Patch from Yong Li.
+	Bug 336153 – Mark to mark positioning (Lookup Type 6) isn't correct
+	             when using MarkAttchmentType
+	             Patch from Tin Myo Htet.
+	Bug 333984 – pango_language_from_string improvements
+	Bug 125378 – Better underline thickness handling
+	Bug 339730 – Pango needlessly falls back away from a Type 1 font into
+	             a TTF font
+	Bug 342562 – Support absolute sizes in
+	             pango_font_description_to/from_string
+	Bug 341922 – pango should handle more characters as zero width
+	             Patch from Roozbeh Pournader
+	Bug 342525 – With PangoFc and PangoWin32, approximate digit width is
+	             not what it says
+	Bug 342079 – pangoatsui-private.h missing from release
+
 Overview of changes between 1.13.0 and 1.13.1
 ==============================================
 * Increased robustness against broken pango.modules

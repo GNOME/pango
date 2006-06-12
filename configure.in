@@ -22,13 +22,13 @@ dnl
 dnl The triplet 
 m4_define([pango_major_version], [1])
 m4_define([pango_minor_version], [13])
-m4_define([pango_micro_version], [1])
+m4_define([pango_micro_version], [2])
 m4_define([pango_version],
           [pango_major_version.pango_minor_version.pango_micro_version])
 dnl The X.Y in -lpango-X.Y line. This is expected to stay 1.0 until Pango 2.
 m4_define([pango_api_version], [1.0])
 dnl Number of releases since we've added interfaces
-m4_define([pango_interface_age], [1])
+m4_define([pango_interface_age], [0])
 dnl Number of releases since we've broken binary compatibility.
 m4_define([pango_binary_age],
           [m4_eval(100 * pango_minor_version + pango_micro_version)])
