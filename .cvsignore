@@ -36,3 +36,6 @@ aclocal.m4
 sgml
 stamp-h.in
 autom4te.cache
+xmldocs.make
+omf.make
+INSTALL

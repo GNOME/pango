@@ -75,11 +75,10 @@ dnl libtool versioning
 m4_define([lt_current], [m4_eval(100 * pango_minor_version + pango_micro_version - pango_interface_age)])
 m4_define([lt_revision], [pango_interface_age])
 m4_define([lt_age], [m4_eval(pango_binary_age - pango_interface_age)])
-LT_VERSION_INFO="lt_current():lt_revision():lt_age()"
-LT_CURRENT_MINUS_AGE=m4_eval(lt_current - lt_age)
+VERSION_INFO="lt_current():lt_revision():lt_age()"
+PANGO_CURRENT_MINUS_AGE=m4_eval(lt_current - lt_age)
 
-AC_SUBST(LT_VERSION_INFO)
-AC_SUBST(LT_CURRENT_MINUS_AGE)
+AC_SUBST(PANGO_CURRENT_MINUS_AGE)
 
 dnl ==========================================================================
 
@@ -595,7 +594,7 @@ dnl ********************************************************
 # Note that -module isn't included here since automake needs to see it to know
 # that something like pango-arabic-fc.la is a valid libtool archive
 #
-LIBRARY_LIBTOOL_OPTIONS="-version-info $LT_VERSION_INFO -no-undefined"
+LIBRARY_LIBTOOL_OPTIONS="-version-info $VERSION_INFO -no-undefined"
 MODULE_LIBTOOL_OPTIONS="-export-dynamic -avoid-version -no-undefined"
 if test "$pango_os_win32" = yes; then
     # We currently use .def files on Windows

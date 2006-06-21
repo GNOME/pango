@@ -11,10 +11,10 @@ zip $ZIP -@ <<EOF
 bin/pango-querymodules.exe
 etc/pango/pango.aliases
 etc/pango/pango.modules
-bin/libpango-@PANGO_API_VERSION@-@LT_CURRENT_MINUS_AGE@.dll
-bin/libpangoft2-@PANGO_API_VERSION@-@LT_CURRENT_MINUS_AGE@.dll
-bin/libpangowin32-@PANGO_API_VERSION@-@LT_CURRENT_MINUS_AGE@.dll
-bin/libpangocairo-@PANGO_API_VERSION@-@LT_CURRENT_MINUS_AGE@.dll
+bin/libpango-@PANGO_API_VERSION@-@PANGO_CURRENT_MINUS_AGE@.dll
+bin/libpangoft2-@PANGO_API_VERSION@-@PANGO_CURRENT_MINUS_AGE@.dll
+bin/libpangowin32-@PANGO_API_VERSION@-@PANGO_CURRENT_MINUS_AGE@.dll
+bin/libpangocairo-@PANGO_API_VERSION@-@PANGO_CURRENT_MINUS_AGE@.dll
 EOF
 
 zip $ZIP lib/pango/@PANGO_MODULE_VERSION@/modules/*.dll

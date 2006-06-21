@@ -1,3 +1,17 @@
+2006-06-21  Behdad Esfahbod  <behdad@gnome.org>
+
+	* autogen.sh: Just call gnome-autogen.sh.  The old autogen.sh had
+	poor version checking and was borking with libtool 2.x.
+
+	* Makefile.am:
+	* configure.in:
+	* pango-zip.sh.in:
+	* pango/Makefile.am:
+	* pango/pango.rc.in:
+	* pango/pangoft2.rc.in:
+	* pango/pangowin32.rc.in: Rename LT_* variables such that autoconf
+	doesn't err on "possibly undefined macros".
+
 2006-06-12  Behdad Esfahbod  <behdad@gnome.org>
 
 	* === Released 1.13.2 ===
