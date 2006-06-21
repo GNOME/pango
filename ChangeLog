@@ -1,5 +1,13 @@
 2006-06-21  Behdad Esfahbod  <behdad@gnome.org>
 
+	Bug 345511 – -no-undefined problem with new libtool
+
+	* configure.in: Remove -no-undefined on non-Win32 systems.  That
+	doesn't make any sense, and makes latest libtool not create shared
+	libraries.
+
+2006-06-21  Behdad Esfahbod  <behdad@gnome.org>
+
 	* autogen.sh: Just call gnome-autogen.sh.  The old autogen.sh had
 	poor version checking and was borking with libtool 2.x.
 

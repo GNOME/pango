@@ -594,11 +594,13 @@ dnl ********************************************************
 # Note that -module isn't included here since automake needs to see it to know
 # that something like pango-arabic-fc.la is a valid libtool archive
 #
-LIBRARY_LIBTOOL_OPTIONS="-version-info $VERSION_INFO -no-undefined"
-MODULE_LIBTOOL_OPTIONS="-export-dynamic -avoid-version -no-undefined"
+LIBRARY_LIBTOOL_OPTIONS="-version-info $VERSION_INFO"
+MODULE_LIBTOOL_OPTIONS="-export-dynamic -avoid-version"
 if test "$pango_os_win32" = yes; then
     # We currently use .def files on Windows
     true
+    LIBRARY_LIBTOOL_OPTIONS="$LIBRARY_LIBTOOL_OPTIONS -no-undefined"
+    MODULE_LIBTOOL_OPTIONS="$MODULE_LIBTOOL_OPTIONS -no-undefined"
 else
     # libtool option to control which symbols are exported
     # right now, symbols starting with '_' are not exported
