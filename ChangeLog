@@ -1,3 +1,10 @@
+2006-06-22  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 345600 – cvs build error in pango/opentype/Makefile
+
+	* pango/opentype/Makefile.am: Rename variable SOURCES to MAINSOURCES.
+	Some automake versions seem to use it or something.
+
 2006-06-21  Behdad Esfahbod  <behdad@gnome.org>
 
 	Bug 345511 – -no-undefined problem with new libtool
