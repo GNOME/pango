@@ -1,3 +1,9 @@
+2006-07-07  Behdad Esfahbod  <behdad@gnome.org>
+
+	* pango/pango-matrix.c: New file.
+	* pango/pango-utils.c: Move all pango_matrix_* stuff into a separate
+	file.
+
 2006-06-22  Behdad Esfahbod  <behdad@gnome.org>
 
 	Bug 345600 – cvs build error in pango/opentype/Makefile

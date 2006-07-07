@@ -84,6 +84,7 @@ libpango_1_0_la_SOURCES =			\
 	pango-script-table.h			\
 	pango-tabs.c				\
 	pango-utils.c				\
+	pango-matrix.c				\
 	reorder-items.c				\
 	shape.c					\
 	pango-enum-types.c
