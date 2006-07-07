@@ -1,3 +1,16 @@
+2006-07-07  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 344766 – Memory leak in get_ruleset() in modules/basic/basic-fc.c
+
+	* pango/pango-ot-private.h: Rename PANGO_OT_IS_RULESET is
+	PANGO_IS_OT_RULESET.
+
+	* pango/pango-ot-ruleset.c (pango_ot_ruleset_finalize),
+	(pango_ot_ruleset_new), (pango_ot_ruleset_add_feature),
+	(pango_ot_ruleset_substitute), (pango_ot_ruleset_position):
+	Use weak pointers to reference ruleset->info, to avoid circular
+	dependency.
+
 2006-06-06  Behdad Esfahbod  <behdad@gnome.org>
 
 	Bug 343966 – pango Cygwin build fixes
