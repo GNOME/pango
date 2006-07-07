@@ -88,7 +88,8 @@ pango_ot_ruleset_finalize (GObject *object)
   PangoOTRuleset *ruleset = PANGO_OT_RULESET (object);
 
   g_array_free (ruleset->rules, TRUE);
-  g_object_unref (ruleset->info);
+  if (ruleset->info)
+    g_object_remove_weak_pointer (ruleset->info, &ruleset->info);
 
   parent_class->finalize (object);
 }
@@ -107,9 +108,12 @@ pango_ot_ruleset_new (PangoOTInfo *info)
 {
   PangoOTRuleset *ruleset;
 
+  g_return_val_if_fail (info != NULL, NULL);
+
   ruleset = g_object_new (PANGO_TYPE_OT_RULESET, NULL);
 
-  ruleset->info = g_object_ref (info);
+  ruleset->info = info;
+  g_object_add_weak_pointer (ruleset->info, &ruleset->info);
 
   return ruleset;
 }
@@ -133,7 +137,8 @@ pango_ot_ruleset_add_feature (PangoOTRuleset   *ruleset,
 {
   PangoOTRule tmp_rule;
 
-  g_return_if_fail (PANGO_OT_IS_RULESET (ruleset));
+  g_return_if_fail (PANGO_IS_OT_RULESET (ruleset));
+  g_return_if_fail (PANGO_IS_OT_INFO (ruleset->info));
 
   tmp_rule.table_type = table_type;
   tmp_rule.feature_index = feature_index;
@@ -160,7 +165,8 @@ pango_ot_ruleset_substitute  (PangoOTRuleset   *ruleset,
   
   HB_GSUB gsub = NULL;
   
-  g_return_if_fail (PANGO_OT_IS_RULESET (ruleset));
+  g_return_if_fail (PANGO_IS_OT_RULESET (ruleset));
+  g_return_if_fail (PANGO_IS_OT_INFO (ruleset->info));
 
   for (i = 0; i < ruleset->rules->len; i++)
     {
@@ -203,7 +209,8 @@ pango_ot_ruleset_position (PangoOTRuleset   *ruleset,
   
   HB_GPOS gpos = NULL;
   
-  g_return_if_fail (PANGO_OT_IS_RULESET (ruleset));
+  g_return_if_fail (PANGO_IS_OT_RULESET (ruleset));
+  g_return_if_fail (PANGO_IS_OT_INFO (ruleset->info));
 
   for (i = 0; i < ruleset->rules->len; i++)
     {
