@@ -360,7 +360,7 @@ pango_font_description_set_size (PangoFontDescription *desc,
  * @desc: a #PangoFontDescription
  * 
  * Gets the size field of a font description.
- * See pango_font_description_get_size().
+ * See pango_font_description_set_size().
  * 
  * Return value: the size field for the font description in points or device units.
  *   You must call pango_font_description_get_size_is_absolute()
