@@ -388,7 +388,6 @@ The #GObject type for #PangoGlyphString.
 </para>
 
 @glyphs: 
-@font: 
 @Returns: 
 
 

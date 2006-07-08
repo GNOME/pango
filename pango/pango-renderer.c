@@ -496,7 +496,7 @@ pango_renderer_draw_layout_line (PangoRenderer    *renderer,
 	      renderer->strikethrough)
 	      pango_glyph_string_extents (run->glyphs, run->item->analysis.font,
 					  &ink_rect, NULL);
-	  glyph_string_width = pango_glyph_string_get_width (run->glyphs, run->item->analysis.font);
+	  glyph_string_width = pango_glyph_string_get_width (run->glyphs);
 	}
 
       state.logical_rect_end = x + x_off + glyph_string_width;

@@ -266,7 +266,6 @@ pango_glyph_string_extents (PangoGlyphString *glyphs,
 /**
  * pango_glyph_string_get_width:
  * @glyphs:   a #PangoGlyphString
- * @font:     a #PangoFont
  * 
  * Computes the logical width of the glyph string as can also be computed
  * using pango_glyph_string_extents().  However, since this only computes the
@@ -278,14 +277,13 @@ pango_glyph_string_extents (PangoGlyphString *glyphs,
  * Since: 1.14
  */
 int
-pango_glyph_string_get_width (PangoGlyphString *glyphs,
-			      PangoFont        *font)
+pango_glyph_string_get_width (PangoGlyphString *glyphs)
 {
   int i;
   int width = 0;
 
   for (i = 0; i < glyphs->num_glyphs; i++)
-    width += &glyphs->glyphs[i].geometry.width;
+    width += glyphs->glyphs[i].geometry.width;
 
   return width;
 }

@@ -1168,7 +1168,7 @@ pango_layout_line_index_to_x (PangoLayoutLine  *line,
 	}
       
       if (!properties.shape_set)
-	width += pango_glyph_string_get_width (run->glyphs, run->item->analysis.font);
+	width += pango_glyph_string_get_width (run->glyphs);
       else
 	width += properties.shape_logical_rect->width;
 
@@ -3577,7 +3577,7 @@ pango_layout_line_x_to_index (PangoLayoutLine *line,
       if (properties.shape_set)
 	logical_width = properties.shape_logical_rect->width;
       else
-	logical_width = pango_glyph_string_get_width (run->glyphs, run->item->analysis.font);
+	logical_width = pango_glyph_string_get_width (run->glyphs);
 
       if (x_pos >= start_pos && x_pos < start_pos + logical_width)
 	{
@@ -3782,7 +3782,7 @@ pango_layout_line_get_x_ranges (PangoLayoutLine  *line,
 	}
 
       if (tmp_list->next)
-	accumulated_width += pango_glyph_string_get_width (run->glyphs, run->item->analysis.font);
+	accumulated_width += pango_glyph_string_get_width (run->glyphs);
 
       tmp_list = tmp_list->next;
     }
