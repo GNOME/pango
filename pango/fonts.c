@@ -1210,7 +1210,7 @@ pango_font_get_glyph_extents  (PangoFont      *font,
 			       PangoRectangle *ink_rect,
 			       PangoRectangle *logical_rect)
 {
-  if (G_UNLIKELY (!PANGO_IS_FONT (font)))
+  if (G_UNLIKELY (!font))
     {
       
       if (!_pango_warning_history.get_glyph_extents)

@@ -98,6 +98,7 @@ pango_glyph_string_set_size
 pango_glyph_string_free
 pango_glyph_string_extents
 pango_glyph_string_extents_range
+pango_glyph_string_get_width
 pango_glyph_string_index_to_x
 pango_glyph_string_x_to_index
 pango_glyph_string_get_logical_widths

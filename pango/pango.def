@@ -172,6 +172,7 @@ EXPORTS
 	pango_glyph_string_free
 	pango_glyph_string_get_logical_widths
 	pango_glyph_string_get_type
+	pango_glyph_string_get_width
 	pango_glyph_string_index_to_x
 	pango_glyph_string_new
 	pango_glyph_string_set_size

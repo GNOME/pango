@@ -289,8 +289,7 @@ add_underline (PangoRenderer    *renderer,
 	       PangoFontMetrics *metrics,
 	       int               base_x,
 	       int               base_y,
-	       PangoRectangle   *ink_rect,
-	       PangoRectangle   *logical_rect)
+	       PangoRectangle   *ink_rect)
 {
   PangoRectangle *current_rect = &state->underline_rect;
   PangoRectangle new_rect;
@@ -341,8 +340,7 @@ add_strikethrough (PangoRenderer    *renderer,
 		   PangoFontMetrics *metrics,
 		   int               base_x,
 		   int               base_y,
-		   PangoRectangle   *ink_rect,
-		   PangoRectangle   *logical_rect)
+		   PangoRectangle   *ink_rect)
 {
   PangoRectangle *current_rect = &state->strikethrough_rect;
   PangoRectangle new_rect;
@@ -450,6 +448,7 @@ pango_renderer_draw_layout_line (PangoRenderer    *renderer,
 				 int               y)
 {
   int x_off = 0;
+  int glyph_string_width;
   LineState state;
   GSList *l;
   gboolean got_overall = FALSE;
@@ -480,7 +479,6 @@ pango_renderer_draw_layout_line (PangoRenderer    *renderer,
       gint rise;
       PangoLayoutRun *run = l->data;
       PangoAttrShape *shape_attr;
-      PangoRectangle logical_rect;
       PangoRectangle ink_rect;
 
       pango_renderer_prepare_run (renderer, run);
@@ -490,20 +488,18 @@ pango_renderer_draw_layout_line (PangoRenderer    *renderer,
       if (shape_attr)
 	{
 	  ink_rect = shape_attr->ink_rect;
-	  logical_rect = shape_attr->logical_rect;
+	  glyph_string_width = shape_attr->logical_rect.width;
 	}
       else
 	{
 	  if (renderer->underline != PANGO_UNDERLINE_NONE ||
 	      renderer->strikethrough)
-	    pango_glyph_string_extents (run->glyphs, run->item->analysis.font,
-					&ink_rect, &logical_rect);
-	  else
-	    pango_glyph_string_extents (run->glyphs, run->item->analysis.font,
-					NULL, &logical_rect);
+	      pango_glyph_string_extents (run->glyphs, run->item->analysis.font,
+					  &ink_rect, NULL);
+	  glyph_string_width = pango_glyph_string_get_width (run->glyphs, run->item->analysis.font);
 	}
 
-      state.logical_rect_end = x + x_off + logical_rect.x + logical_rect.width;
+      state.logical_rect_end = x + x_off + glyph_string_width;
 
       if (renderer->priv->color_set[PANGO_RENDER_PART_BACKGROUND])
 	{
@@ -515,9 +511,9 @@ pango_renderer_draw_layout_line (PangoRenderer    *renderer,
 	  
 	  pango_renderer_draw_rectangle (renderer,
 					 PANGO_RENDER_PART_BACKGROUND,
-					 x + x_off + logical_rect.x,
+					 x + x_off,
 					 y - rise + overall_rect.y,
-					 logical_rect.width,
+					 glyph_string_width,
 					 overall_rect.height);
 	}
 
@@ -541,12 +537,12 @@ pango_renderer_draw_layout_line (PangoRenderer    *renderer,
 	  if (renderer->underline != PANGO_UNDERLINE_NONE)
 	    add_underline (renderer, &state,metrics,
 			   x + x_off, y - rise,
-			   &ink_rect, &logical_rect);
+			   &ink_rect);
 	  
 	  if (renderer->strikethrough)
 	    add_strikethrough (renderer, &state, metrics,
 			       x + x_off, y - rise,
-			       &ink_rect, &logical_rect);
+			       &ink_rect);
 	  
 	  pango_font_metrics_unref (metrics);
 	}
@@ -558,7 +554,7 @@ pango_renderer_draw_layout_line (PangoRenderer    *renderer,
       if (!renderer->strikethrough && state.strikethrough)
 	draw_strikethrough (renderer, &state);
 
-      x_off += logical_rect.width;
+      x_off += glyph_string_width;
     }
 
   /* Finish off any remaining underlines

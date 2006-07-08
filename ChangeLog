@@ -1,3 +1,19 @@
+2006-07-08  Behdad Esfahbod  <behdad@gnome.org>
+
+	Part of Bug 135683 – Cache glyphstring extents
+
+	* docs/pango-sections.txt:
+	* docs/tmpl/glyphs.sgml:
+	* pango/pango.def:
+	* pango/pango-glyph.h:
+	* pango/glyphstring.c (pango_glyph_string_get_width): New function.
+	Much faster than calling pango_glyph_string_extents and using
+	logical_rect.width.
+
+	* pango/pango-renderer.c (add_underline), (add_strikethrough),
+	(pango_renderer_draw_layout_line): Use the new function for
+	optimization.
+
 2006-07-07  Behdad Esfahbod  <behdad@gnome.org>
 
 	Bug 344766 – Memory leak in get_ruleset() in modules/basic/basic-fc.c

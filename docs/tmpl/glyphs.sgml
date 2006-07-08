@@ -382,6 +382,16 @@ The #GObject type for #PangoGlyphString.
 @logical_rect: 
 
 
+<!-- ##### FUNCTION pango_glyph_string_get_width ##### -->
+<para>
+
+</para>
+
+@glyphs: 
+@font: 
+@Returns: 
+
+
 <!-- ##### FUNCTION pango_glyph_string_index_to_x ##### -->
 <para>
 
