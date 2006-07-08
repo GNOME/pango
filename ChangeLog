@@ -1,5 +1,12 @@
 2006-07-08  Behdad Esfahbod  <behdad@gnome.org>
 
+	Bug 346297 – autogen doesn't work with automake-1.6
+	Patch from Priit Laes
+
+	* autogen.sh, configure.in: Require automake 1.7.
+
+2006-07-08  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/glyphstring.c (pango_glyph_string_get_width):
 	* pango/pango-glyph.h:
 	* pango/pango-layout.c (pango_layout_line_index_to_x),
