@@ -390,23 +390,6 @@ if test "x$GLIB_VERSION_MAJOR_MINOR" = "x$GLIB_REQUIRED_VERSION_MAJOR_MINOR"; th
   GLIB_CFLAGS="-DG_DISABLE_DEPRECATED $GLIB_CFLAGS"
 fi
 
-#
-# The OpenType test programs aren't particularly portable
-#
-have_varargs=no
-pango_saved_cppflags=$CPPFLAGS
-CPPFLAGS="$CPPFLAGS $GLIB_CFLAGS"
-AC_MSG_CHECKING(Whether to build OpenType test programs)
-AC_EGREP_CPP(pango_configure_test_yes, [
-#include <glib.h>
-
-#if defined(G_HAVE_ISO_VARARGS) || defined(G_HAVE_GNUC_VARARGS)
-pango_configure_test_yes
-#endif
-],have_varargs=yes)
-AC_MSG_RESULT($have_varargs)
-CPPFLAGS=$pango_saved_cppflags
-
 
 #
 # Modules to build

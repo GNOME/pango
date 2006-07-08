@@ -1,5 +1,11 @@
 2006-07-08  Behdad Esfahbod  <behdad@gnome.org>
 
+	* configure.in: Remove obsolete checks for varargs that were
+	preivously used by the OpenType code, but are not needed with
+	HarfBuzz anymore.
+
+2006-07-08  Behdad Esfahbod  <behdad@gnome.org>
+
 	Part of Bug 135683 – Cache glyphstring extents
 
 	* pango/pango-layout.c (pango_layout_line_index_to_x),
