@@ -1168,17 +1168,9 @@ pango_layout_line_index_to_x (PangoLayoutLine  *line,
 	}
       
       if (!properties.shape_set)
-	{
-	  PangoRectangle logical_rect;
-	  
-	  pango_glyph_string_extents (run->glyphs, run->item->analysis.font,
-				      NULL, &logical_rect);
-	  width += logical_rect.width;
-	}
+	width += pango_glyph_string_get_width (run->glyphs, run->item->analysis.font);
       else
-	{
-	  width += properties.shape_logical_rect->width;
-	}
+	width += properties.shape_logical_rect->width;
 
       run_list = run_list->next;
     }
@@ -3577,17 +3569,17 @@ pango_layout_line_x_to_index (PangoLayoutLine *line,
   while (tmp_list)
     {
       PangoLayoutRun *run = tmp_list->data;
-      PangoRectangle logical_rect;
       ItemProperties properties;
+      int logical_width;
 
       pango_layout_get_item_properties (run->item, &properties);
 
       if (properties.shape_set)
-	logical_rect = *properties.shape_logical_rect;
+	logical_width = properties.shape_logical_rect->width;
       else
-	pango_glyph_string_extents (run->glyphs, run->item->analysis.font, NULL, &logical_rect);
+	logical_width = pango_glyph_string_get_width (run->glyphs, run->item->analysis.font);
 
-      if (x_pos >= start_pos && x_pos < start_pos + logical_rect.width)
+      if (x_pos >= start_pos && x_pos < start_pos + logical_width)
 	{
 	  int offset;
 	  gboolean char_trailing;
@@ -3650,7 +3642,7 @@ pango_layout_line_x_to_index (PangoLayoutLine *line,
 	  return TRUE;
 	}
 
-      start_pos += logical_rect.width;
+      start_pos += logical_width;
       tmp_list = tmp_list->next;
     }
 
@@ -3790,13 +3782,7 @@ pango_layout_line_get_x_ranges (PangoLayoutLine  *line,
 	}
 
       if (tmp_list->next)
-	{
-	  PangoRectangle run_logical;
-	  
-	  pango_glyph_string_extents (run->glyphs, run->item->analysis.font,
-				      NULL, &run_logical);
-	  accumulated_width += run_logical.width;
-	}
+	accumulated_width += pango_glyph_string_get_width (run->glyphs, run->item->analysis.font);
 
       tmp_list = tmp_list->next;
     }

@@ -2,6 +2,14 @@
 
 	Part of Bug 135683 – Cache glyphstring extents
 
+	* pango/pango-layout.c (pango_layout_line_index_to_x),
+	(pango_layout_line_x_to_index), (pango_layout_line_get_x_ranges):
+	Use pango_glyph_string_get_width in most places in PangoLayout.
+
+2006-07-08  Behdad Esfahbod  <behdad@gnome.org>
+
+	Part of Bug 135683 – Cache glyphstring extents
+
 	* docs/pango-sections.txt:
 	* docs/tmpl/glyphs.sgml:
 	* pango/pango.def:
