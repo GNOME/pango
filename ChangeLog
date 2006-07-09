@@ -1,5 +1,13 @@
 2006-07-08  Behdad Esfahbod  <behdad@gnome.org>
 
+	Bug 345274 – list of new symbols for each version is missing in docs
+	Patch from Priit Laes
+
+	* docs/pango-docs.sgml: Generate index of deprecated, and new symbols
+	per version.
+
+2006-07-08  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 346297 – autogen doesn't work with automake-1.6
 	Patch from Priit Laes
 

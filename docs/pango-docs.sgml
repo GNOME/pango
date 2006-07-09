@@ -78,4 +78,28 @@
 
   <index/>
 
+  <index role="deprecated">
+    <title>Index of deprecated symbols</title>
+  </index>
+  <index role="1.2">
+    <title>Index of new symbols in 1.2</title>
+  </index>
+  <index role="1.4">
+    <title>Index of new symbols in 1.4</title>
+  </index>
+  <index role="1.6">
+    <title>Index of new symbols in 1.6</title>
+  </index>
+  <index role="1.8">
+    <title>Index of new symbols in 1.8</title>
+  </index>
+  <index role="1.10">
+    <title>Index of new symbols in 1.10</title>
+  </index>
+  <index role="1.12">
+    <title>Index of new symbols in 1.12</title>
+  </index>
+  <index role="1.14">
+    <title>Index of new symbols in 1.14</title>
+  </index>
 </book>
