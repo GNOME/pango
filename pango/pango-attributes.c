@@ -1401,7 +1401,9 @@ pango_attr_list_change (PangoAttrList  *list,
  *       must be specified since the attributes in @other
  *       may only be present at some subsection of this range)
  * 
- * This function splices attribute list @other into @list.
+ * This function opens up a hole in @list, fills it in with attributes from
+ * the left, and then merges @other on top of the hole.
+ *
  * This operation is equivalent to stretching every attribute
  * that applies at position @pos in @list by an amount @len,
  * and then calling pango_attr_list_change() with a copy
