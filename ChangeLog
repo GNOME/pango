@@ -1,5 +1,11 @@
 2006-07-10  Behdad Esfahbod  <behdad@gnome.org>
 
+	Bug 330603 – pango_scan_int invokes undefined behaviour
+
+	* pango/pango-utils.c (pango_scan_int): Use strtol.
+
+2006-07-10  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 315599 – PangoAttribute remains in wrong context.
 
 	* pango/pangocairo-render.c (_pango_cairo_do_glyph_string): Rever my

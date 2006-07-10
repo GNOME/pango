@@ -412,8 +412,7 @@ pango_scan_string (const char **pos, GString *out)
  * @pos: in/out string position
  * @out: an int into which to write the result
  * 
- * Scans an integer. An integer consists
- * of up to 31 decimal digits. 
+ * Scans an integer. 
  * Leading white space is skipped.
  * 
  * Return value: %FALSE if a parse error occured.
@@ -422,29 +421,24 @@ gboolean
 pango_scan_int (const char **pos, int *out)
 {
   unsigned int i = 0;
-  char buf[32];
-  const char *p = *pos;
+  char *end;
+  long temp;
 
-  while (g_ascii_isspace (*p))
-    p++;
-  
-  if (*p < '0' || *p > '9')
-    return FALSE;
-
-  while ((*p >= '0') && (*p <= '9') && i < sizeof(buf))
+  errno = 0;
+  temp = strtol (*pos, &end, 10);
+  if (errno == ERANGE)
     {
-      buf[i] = *p;
-      i++;
-      p++;
+      errno = 0;
+      return FALSE;
+    }
+	
+  *out = (int)temp;
+  if ((long)(*out) != temp)
+    {
+      return FALSE;
     }
 
-  if (i == sizeof(buf))
-    return FALSE;
-  else
-    buf[i] = '\0';
-
-  *out = atoi (buf);
-  *pos = p;
+  *pos = end;
 
   return TRUE;
 }
