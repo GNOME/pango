@@ -1,3 +1,29 @@
+Overview of changes between 1.13.2 and 1.13.3
+==============================================
+* Improved build system.  Using gnome-autogen.sh now.
+  (gnome-common needed for bootstrapping)
+* Improved documentation.  Docs now include list of new API for
+  each stable version of Pango.
+* New public API:
+	- pango_glyph_string_get_width
+* Little performance improvement.
+* Misc fixes.
+* Bugs fixed in this release:
+	Bug 330603 – pango_scan_int invokes undefined behaviour
+	Bug 315599 – PangoAttribute remains in wrong context.
+	Bug 163677 – pango_attr_list_splice: inconsistent docs
+		     Patch from Morten Welinder
+	Bug 345070 – [ml_IN] not render for combination with ZWJ
+		     Patch from LingNing Zhang
+	Bug 345274 – list of new symbols for each version is missing in docs
+		     Patch from Priit Laes
+	Bug 346297 – autogen doesn't work with automake-1.6
+		     Patch from Priit Laes
+	Bug 135683 – Cache glyphstring extents
+	Bug 344766 – Memory leak in get_ruleset() in modules/basic/basic-fc.c
+	Bug 345600 – cvs build error in pango/opentype/Makefile
+	Bug 345511 – -no-undefined problem with new libtool
+
 Overview of changes between 1.13.1 and 1.13.2
 ==============================================
 * Improved hexbox drawing, and font metrics calculations.

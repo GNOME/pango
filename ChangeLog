@@ -1,5 +1,13 @@
 2006-07-10  Behdad Esfahbod  <behdad@gnome.org>
 
+	* === Released 1.13.3 ===
+
+	* configure.in: Version 1.13.3
+
+	* NEWS: Updated.
+
+2006-07-10  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 330603 – pango_scan_int invokes undefined behaviour
 
 	* pango/pango-utils.c (pango_scan_int): Use strtol.
