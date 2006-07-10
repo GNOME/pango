@@ -422,8 +422,27 @@ _pango_cairo_do_glyph_string (cairo_t          *cr,
   crenderer->cr = cr;
   crenderer->do_path = do_path;
   cairo_get_current_point (cr, &crenderer->x_offset, &crenderer->y_offset);
+
+  if (!do_path)
+    {
+      /* unset all part colors, since when drawing just a glyph string,
+       * prepare_run() isn't called.
+       */
+
+      pango_renderer_activate (renderer); 	 
+	   	 
+      pango_renderer_set_color (renderer, PANGO_RENDER_PART_FOREGROUND, NULL); 	 
+      pango_renderer_set_color (renderer, PANGO_RENDER_PART_BACKGROUND, NULL); 	 
+      pango_renderer_set_color (renderer, PANGO_RENDER_PART_UNDERLINE, NULL); 	 
+      pango_renderer_set_color (renderer, PANGO_RENDER_PART_STRIKETHROUGH, NULL); 	 
+    }
   
   pango_renderer_draw_glyphs (renderer, font, glyphs, 0, 0);
+
+  if (!do_path)
+    {
+      pango_renderer_deactivate (renderer);
+    }
   
   if (G_UNLIKELY (unref_renderer))
     g_object_unref (renderer);

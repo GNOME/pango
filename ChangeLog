@@ -1,5 +1,12 @@
 2006-07-10  Behdad Esfahbod  <behdad@gnome.org>
 
+	Bug 315599 – PangoAttribute remains in wrong context.
+
+	* pango/pangocairo-render.c (_pango_cairo_do_glyph_string): Rever my
+	commit that removed Owen's fix from last year!
+
+2006-07-10  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 163677 – pango_attr_list_splice: inconsistent docs
 	Patch from Morten Welinder
 
