@@ -1,3 +1,10 @@
+2006-07-10  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 345070 – [ml_IN] not render for combination with ZWJ
+	Patch from LingNing Zhang
+
+	* modules/indic/indic-ot-class-tables.c: Process ZWJ for Malayalam.
+
 2006-07-08  Behdad Esfahbod  <behdad@gnome.org>
 
 	Bug 345274 – list of new symbols for each version is missing in docs
