@@ -578,6 +578,9 @@ pango_atsui_font_map_load_font (PangoFontMap               *fontmap,
 	    }
 	}
       
+      if (best_desc == NULL || best_face == NULL)
+        return NULL;
+
       pango_font_description_set_size (best_desc, size);
 
       best_font = pango_atsui_font_map_lookup (atsuifontmap, context, best_desc, best_face->postscript_name);
