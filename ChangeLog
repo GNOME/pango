@@ -1,3 +1,18 @@
+2006-07-17  Richard Hult  <richard@imendio.com>
+
+	Bug 322374 ? Examples does not build on MacOS X (merge from HEAD).
+
+	* pango/Makefile.am (libpangocairo_1_0_la_LDFLAGS): Add the
+	necessary frameworks to make this build with -no-undefined.
+
+2006-07-17  Richard Hult  <richard@imendio.com>
+
+	Bug 347021 ? atsui crash when a matching font cannot be found.
+	Patch from Brian Tarricone.
+
+	* pango/pangoatsui-fontmap.c (pango_atsui_font_map_load_font):
+	Bail out if best desc or best face isn't found.
+
 2006-07-08  Behdad Esfahbod  <behdad@gnome.org>
 
 	Bug 345274 – list of new symbols for each version is missing in docs
