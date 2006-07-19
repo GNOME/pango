@@ -2215,9 +2215,14 @@ pango_layout_get_extents_internal (PangoLayout    *layout,
                  or %NULL to indicate that the result is not needed.
  * 
  * Computes the logical and ink extents of @layout. Logical extents
- * are usually what you want for positioning things. The extents
- * are given in layout coordinates; layout coordinates begin at the
- * top left corner of the layout. 
+ * are usually what you want for positioning things.  Note that both extents
+ * may have non-zero x and y.  You may want to use those to offset where you
+ * render the layout.  Not doing that is a very typical bug that shows up as
+ * right-to-left layouts not being correctly positioned in a layout with
+ * a set width.
+ *
+ * The extents are given in layout coordinates and in Pango units; layout
+ * coordinates begin at the top left corner of the layout. 
  */
 void
 pango_layout_get_extents (PangoLayout    *layout,
