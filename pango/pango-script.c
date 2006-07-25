@@ -585,7 +585,7 @@ pango_script_get_sample_language (PangoScript script)
     "",    /* PANGO_SCRIPT_CUNEIFORM */
     "",    /* PANGO_SCRIPT_PHOENICIAN */
     "",    /* PANGO_SCRIPT_PHAGS_PA */
-    ""     /* PANGO_SCRIPT_NKO */
+    "nqo"  /* PANGO_SCRIPT_NKO */
   };
   const char *sample_language;
   

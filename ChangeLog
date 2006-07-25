@@ -1,3 +1,12 @@
+2006-07-25  Behdad Esfahbod  <behdad@gnome.org>
+
+	* modules/basic/basic-fc.c: Add Cuneiform and Phoenician in the list
+	of supported scripts by this backend.  Phoenician is a simple RTL
+	script.
+
+	* pango/pango-script.c (pango_script_get_sample_language): Add
+	language code "nqo" for script N'Ko.
+
 2006-07-24  Behdad Esfahbod  <behdad@gnome.org>
 
 	* === Released 1.13.4 ===

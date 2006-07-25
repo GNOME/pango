@@ -71,6 +71,10 @@ static PangoEngineScriptInfo basic_scripts[] = {
   /* Unicode-4.1 additions */
   { PANGO_SCRIPT_GLAGOLITIC, "*" },
     
+  /* Unicode-5.0 additions */
+  { PANGO_SCRIPT_CUNEIFORM,  "*" },
+  { PANGO_SCRIPT_PHOENICIAN, "*" },
+
   { PANGO_SCRIPT_COMMON,   "" }
 };
 
