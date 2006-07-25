@@ -1,3 +1,10 @@
+2006-07-24  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 347073 – Allow empty GPOS table
+
+	* pango/opentype/harfbuzz-open.c (_HB_OPEN_Load_ScriptList): Don't
+	err on empty GPOS/GSUB tables.
+
 2006-07-19  Behdad Esfahbod  <behdad@gnome.org>
 
 	* pango/pango-layout.c (pango_layout_get_extents): Improve docs.
