@@ -1,3 +1,13 @@
+Overview of changes between 1.13.3 and 1.13.4
+==============================================
+* Update to Unicode Character Database 5.0.0.
+* Misc fixes.
+* Bugs fixed in this release:
+	Bug 336282 – Update to Unicode Character Database 5.0.0
+	Bug 347073 – Allow empty GPOS table
+	Bug 347021 – atsui crash when a matching font cannot be found.
+	             Patch from Brian Tarricone.
+
 Overview of changes between 1.13.2 and 1.13.3
 ==============================================
 * Improved build system.  Using gnome-autogen.sh now.
