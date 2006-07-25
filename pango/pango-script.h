@@ -103,7 +103,15 @@ typedef enum {                         /* ISO 15924 code */
       PANGO_SCRIPT_TIFINAGH,           /* Tfng */
       PANGO_SCRIPT_SYLOTI_NAGRI,       /* Sylo */
       PANGO_SCRIPT_OLD_PERSIAN,        /* Xpeo */
-      PANGO_SCRIPT_KHAROSHTHI          /* Khar */
+      PANGO_SCRIPT_KHAROSHTHI,         /* Khar */
+
+      /* Unicode-5.0 additions */
+      PANGO_SCRIPT_UNKNOWN,            /* Zzzz */
+      PANGO_SCRIPT_BALINESE,           /* Bali */
+      PANGO_SCRIPT_CUNEIFORM,          /* Xsux */
+      PANGO_SCRIPT_PHOENICIAN,         /* Phnx */
+      PANGO_SCRIPT_PHAGS_PA,           /* Phag */
+      PANGO_SCRIPT_NKO                 /* Nkoo */
 } PangoScript;
 
 PangoScript pango_script_for_unichar         (gunichar             ch);

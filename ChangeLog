@@ -1,5 +1,33 @@
 2006-07-24  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango/mini-fribidi/fribidi_tab_char_type_2.i: Update to UCD 5.0.0.
+
+	* pango/mini-fribidi/README: Note the about update.
+
+	* pango/pango-script.h: Add new values for PangoScript.
+
+	* pango/pango-script.c (pango_script_for_unichar_bsearch): Default
+	to PANGO_SCRIPT_UNKNOWN.
+
+	* pango/pango-script.c (pango_script_get_sample_language): Add empty
+	entries for new script values.
+
+	* tools/gen-script-table.pl: Default to PANGO_SCRIPT_UNKNOWN as is
+	now the default value of Scripts.txt in UCD 5.0.0.
+
+	* pango/pango-script-table.h: Regenerated against UCD 5.0.0.
+
+	* docs/tmpl/scripts.sgml: Document new script types.
+
+	* tools/gen-script-for-lang.c (scripts_for_line): Ignore data at the
+	end of lines as many .orth files in fontconfig now list the character
+	name there.
+
+	* pango/pango-script-lang-table.h: Regenerate against newer
+	fontconfig 2.3.9x.
+
+2006-07-24  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 347073 – Allow empty GPOS table
 
 	* pango/opentype/harfbuzz-open.c (_HB_OPEN_Load_ScriptList): Don't

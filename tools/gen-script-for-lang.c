@@ -122,8 +122,12 @@ scripts_for_line (const char  *base_dir,
 
       pango_skip_space (&p);
     }
+
+  /* The rest of the line is ignored */
+  /*
   if (*p != '\0')
     goto err;
+   */
 
   for (ch = start_char; ch <= end_char; ch++)
     {

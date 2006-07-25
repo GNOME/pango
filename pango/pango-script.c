@@ -108,7 +108,7 @@ pango_script_for_unichar_bsearch (gunichar ch)
     }
   while (lower <= upper);
 
-  return PANGO_SCRIPT_COMMON;
+  return PANGO_SCRIPT_UNKNOWN;
 }
 
 /**
@@ -578,7 +578,14 @@ pango_script_get_sample_language (PangoScript script)
     /* Syloti Nagri is used for Sylheti, no ISO 639 code */
     "",    /* PANGO_SCRIPT_SYLOTI_NAGRI */
     "peo", /* PANGO_SCRIPT_OLD_PERSIAN */
-    "",    /*  PANGO_SCRIPT_KHAROSHTHI */
+    "",    /* PANGO_SCRIPT_KHAROSHTHI */
+
+    "",    /* PANGO_SCRIPT_UNKNOWN */
+    "",    /* PANGO_SCRIPT_BALINESE */
+    "",    /* PANGO_SCRIPT_CUNEIFORM */
+    "",    /* PANGO_SCRIPT_PHOENICIAN */
+    "",    /* PANGO_SCRIPT_PHAGS_PA */
+    ""     /* PANGO_SCRIPT_NKO */
   };
   const char *sample_language;
   

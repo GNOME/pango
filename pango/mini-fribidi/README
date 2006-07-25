@@ -6,7 +6,8 @@ Like Pango, FriBidi is licensed under the terms of the GNU Lesser General
 Public License - see the file COPYING in the toplevel directory of the Pango
 distribution.
 
-The fribidi_tab_char_type_2.i table corresponds to Unicode 4.1.
+The fribidi_tab_char_type_2.i table has been updated to correspond to
+Unicode 5.0.0.
 
 Please try not to make any changes to files duplicated in this directory.
 The aim has been to only remove lines from those files, not add new ones.

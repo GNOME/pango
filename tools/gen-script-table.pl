@@ -77,7 +77,7 @@ for (my $c = 0; $c < $easy_range; $c++) {
     }
     
     if ($c < $start) {
-        printf " PANGO_SCRIPT_COMMON,";
+        printf " PANGO_SCRIPT_UNKNOWN,";
     } else {
         printf " PANGO_SCRIPT_%s,", $script;
     }
@@ -112,9 +112,7 @@ for (; $i <= $#ranges; $i++) {
 	$end = $ranges[$i]->[1];
     }
 
-    if ($script ne "COMMON") {
-        printf " { %#06x, %5d, PANGO_SCRIPT_%s },\n", $start, $end - $start + 1, $script;
-    }
+    printf " { %#06x, %5d, PANGO_SCRIPT_%s },\n", $start, $end - $start + 1, $script;
 }
 
 printf "};\n";
