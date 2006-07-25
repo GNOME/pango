@@ -1,13 +1,20 @@
+2006-07-24  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 347073 – Allow empty GPOS table
+
+	* pango/opentype/ftxopen.c (FT_Load_ScriptList): Don't
+	err on empty GPOS/GSUB tables.
+
 2006-07-17  Richard Hult  <richard@imendio.com>
 
-	Bug 322374 ? Examples does not build on MacOS X (merge from HEAD).
+	Bug 322374 – Examples does not build on MacOS X (merge from HEAD).
 
 	* pango/Makefile.am (libpangocairo_1_0_la_LDFLAGS): Add the
 	necessary frameworks to make this build with -no-undefined.
 
 2006-07-17  Richard Hult  <richard@imendio.com>
 
-	Bug 347021 ? atsui crash when a matching font cannot be found.
+	Bug 347021 – atsui crash when a matching font cannot be found.
 	Patch from Brian Tarricone.
 
 	* pango/pangoatsui-fontmap.c (pango_atsui_font_map_load_font):

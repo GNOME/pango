@@ -250,11 +250,13 @@
       (void)FILE_Seek( cur_offset );
     }
 
+    /*
     if ( sl->ScriptCount == 0 )
     {
       error = TTO_Err_Invalid_SubTable;
       goto Fail;
     }
+    */
     
     return TT_Err_Ok;
 
