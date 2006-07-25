@@ -37,7 +37,7 @@ url="http://www.unicode.org/reports/tr24/">Unicode Standard Annex
 #24: Script names</ulink>.
 </para>
 
-@PANGO_SCRIPT_INVALID_CODE: a value never used for any Unicode character
+@PANGO_SCRIPT_INVALID_CODE: a value never returned from pango_script_for_unichar()
 @PANGO_SCRIPT_COMMON: a character used by multiple different scripts
 @PANGO_SCRIPT_INHERITED: a mark glyph that takes its script from the
   base glyph to which it is attached
