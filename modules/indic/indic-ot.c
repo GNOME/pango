@@ -142,6 +142,32 @@ static void noteBaseConsonant(Output *output)
         indic_mprefixups_add(output->fMPreFixups, output->fOutIndex, output->fMPreOutIndex);
     }
 }
+
+static void shiftCharsLeft3(Output *output)
+{
+    if (output->fOutChars != NULL) {
+	gunichar temp_char;
+	guint32 temp_index;
+	gulong temp_tag;
+
+	temp_char = output->fOutChars[output->fOutIndex - 3];
+	temp_index = output->fCharIndices[output->fOutIndex - 3];
+	temp_tag = output->fCharTags[output->fOutIndex - 3];
+
+	output->fOutChars[output->fOutIndex - 3] = output->fOutChars[output->fOutIndex - 2];
+	output->fCharIndices[output->fOutIndex - 3] = output->fCharIndices[output->fOutIndex - 2];
+	output->fCharTags[output->fOutIndex - 3] = output->fCharTags[output->fOutIndex - 2];	
+
+	output->fOutChars[output->fOutIndex - 2] = output->fOutChars[output->fOutIndex - 1];
+	output->fCharIndices[output->fOutIndex - 2] = output->fCharIndices[output->fOutIndex - 1];
+	output->fCharTags[output->fOutIndex - 2] = output->fCharTags[output->fOutIndex - 1];
+
+	output->fOutChars[output->fOutIndex - 1] = temp_char;
+	output->fCharIndices[output->fOutIndex - 1] = temp_index;
+	output->fCharTags[output->fOutIndex - 1] = temp_tag;
+    }
+}
+
 static void writeChar(Output *output, gunichar ch, guint32 charIndex, gulong charTags)
 {
     if (output->fOutChars != NULL) {
@@ -440,6 +466,14 @@ glong indic_ot_reorder(const gunichar *chars, const glong *utf8_offsets, glong c
 
 		    /* write halant that was after base consonant */
 		    writeChar(&output, chars[bcSpan], /*bcSpan*/ prev, blwf_p);
+
+		    //for Ra of malayalam
+		    if ((bcSpan - 1 >= 0) && (bcSpan + 1 < char_count) &&
+			(chars[bcSpan] == 0x0d4d) && (chars[bcSpan + 1] == 0x0d30) &&
+			((chars[bcSpan - 1] >= 0x0d15) && (chars[bcSpan - 1] <= 0x0d39))) {
+
+			shiftCharsLeft3 (&output);
+		    }
 		}
 
 		/* write the training halant, if there is one */

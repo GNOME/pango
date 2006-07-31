@@ -1,5 +1,13 @@
 2006-07-31  Behdad Esfahbod  <behdad@gnome.org>
 
+	Bug 121672 – Ra (vattu) not rendered properly in Malayalam
+	Patch from LingNing Zhang
+
+	* modules/indic/indic-ot.c (shiftCharsLeft3), (indic_ot_reorder):
+	Reorder combinations of some three chars!
+
+2006-07-31  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 335811 – Some conjugates of Malayalam are wrong.
 	Patch from LingNing Zhang
 
