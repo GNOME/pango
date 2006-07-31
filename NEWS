@@ -1,3 +1,13 @@
+Overview of changes between 1.13.4 and 1.13.5
+==============================================
+* Indic shaper improvements.
+* Misc fixes.
+* Bugs fixed in this release:
+	Bug 121672 – Ra (vattu) not rendered properly in Malayalam
+	             Patch from LingNing Zhang
+	Bug 335811 – Some conjugates of Malayalam are wrong.
+	             Patch from LingNing Zhang
+
 Overview of changes between 1.13.3 and 1.13.4
 ==============================================
 * Update to Unicode Character Database 5.0.0.

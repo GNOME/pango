@@ -1,5 +1,13 @@
 2006-07-31  Behdad Esfahbod  <behdad@gnome.org>
 
+	* === Released 1.13.5 ===
+
+	* configure.in: Version 1.13.5
+
+	* NEWS: Updated.
+
+2006-07-31  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 121672 – Ra (vattu) not rendered properly in Malayalam
 	Patch from LingNing Zhang
 
