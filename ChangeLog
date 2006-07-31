@@ -1,3 +1,11 @@
+2006-07-31  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 335811 – Some conjugates of Malayalam are wrong.
+	Patch from LingNing Zhang
+
+	* modules/indic/indic-ot-class-tables.c: Update consonant tags to
+	fix conjugates.
+
 2006-07-25  Behdad Esfahbod  <behdad@gnome.org>
 
 	* modules/basic/basic-fc.c: Add Cuneiform and Phoenician in the list
