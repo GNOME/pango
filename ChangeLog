@@ -1,3 +1,11 @@
+2006-08-01  Behdad Esfahbod  <behdad@gnome.org>
+
+	* examples/renderdemo.c (parse_options): Don't ignore all trailing
+	whitespace in input text.  Only chop one newline.
+
+	* examples/viewer-main.c (main): setlocale(LC_ALL, "") to get GOption
+	work for UTF-8 text on the command line.
+
 2006-07-31  Behdad Esfahbod  <behdad@gnome.org>
 
 	* === Released 1.13.5 ===

@@ -640,19 +640,13 @@ parse_options (int argc, char *argv[])
 	fail ("%s\n", error->message);
     }
 
-  /* Strip trailing whitespace
+  /* Strip one trailing newline
    */
-  p = text + len;
-  while (p > text)
-    {
-      gunichar ch;
-      p = g_utf8_prev_char (p);
-      ch = g_utf8_get_char (p);
-      if (!g_unichar_isspace (ch))
-	break;
-      else
-	*p = '\0';
-    }
+  if (len > 0 && text[len - 1] == '\n')
+    len--;
+  if (len > 0 && text[len - 1] == '\r')
+    len--;
+  text[len] = '\0';
 
   /* Make sure we have valid markup
    */

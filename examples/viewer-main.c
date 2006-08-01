@@ -24,6 +24,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <locale.h>
 
 #include <glib.h>
 #include <glib/gstdio.h>
@@ -47,6 +48,7 @@ main (int    argc,
   gpointer surface;
   
   g_type_init();
+  setlocale (LC_ALL, "");
   parse_options (argc, argv);
   
   view = opt_viewer;
