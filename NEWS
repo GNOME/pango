@@ -1,3 +1,8 @@
+Overview of changes between 1.13.5 and 1.14.0
+==============================================
+* Make pango-view accept non-ASCII --text.
+* Require cairo-1.2.2 for the important bug fixes it has.
+
 Overview of changes between 1.13.4 and 1.13.5
 ==============================================
 * Indic shaper improvements.

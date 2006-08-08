@@ -101,11 +101,11 @@ url="http://www.unicode.org/reports/tr24/">Unicode Standard Annex
 @PANGO_SCRIPT_OLD_PERSIAN: 	Old Persian
 @PANGO_SCRIPT_KHAROSHTHI: 	Kharoshthi
 @PANGO_SCRIPT_UNKNOWN: 		an unassigned code point
-@PANGO_SCRIPT_BALINESE:		Balinese
+@PANGO_SCRIPT_BALINESE: 		Balinese
 @PANGO_SCRIPT_CUNEIFORM: 	Cuneiform
 @PANGO_SCRIPT_PHOENICIAN: 	Phoenician
-@PANGO_SCRIPT_PHAGS_PA:		Phags-pa
-@PANGO_SCRIPT_NKO:		N'Ko
+@PANGO_SCRIPT_PHAGS_PA: 		Phags-pa
+@PANGO_SCRIPT_NKO: 		N'Ko
 
 <!-- ##### MACRO PANGO_TYPE_SCRIPT ##### -->
 <para>
