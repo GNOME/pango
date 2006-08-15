@@ -1,5 +1,19 @@
 2006-08-15  Behdad Esfahbod  <behdad@gnome.org>
 
+	* docs/pango-sections.txt:
+	* docs/tmpl/main.sgml:
+	* examples/renderdemo.c (parse_gravity), (parse_options):
+	* pango/pango-context.c (pango_context_init),
+	(pango_context_get_base_gravity), (itemize_state_add_character):
+	* pango/pango-types.h:
+	* pango/pangocairo-fcfont.c (pango_cairo_fc_font_get_scaled_font):
+	* pango/pangofc-fontmap.c (pango_fc_make_pattern):
+	Oops.  Exchange west<->east and north<->south gravities.  The gravity
+	is the side that the glyph sits on.  So, for normal Latin text for
+	example, gravity is south, not north.
+
+2006-08-15  Behdad Esfahbod  <behdad@gnome.org>
+
 	* examples/renderdemo.c (do_output), (parse_gravity),
 	(parse_options): Support --gravity.
 

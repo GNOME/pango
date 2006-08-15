@@ -183,21 +183,21 @@ typedef enum {
 
 /**
  * PangoGravity:
- * @PANGO_GRAVITY_NORTH: Glyphs stand upright (default)
- * @PANGO_GRAVITY_WEST: Glyphs are rotated 90 degrees clockwise
- * @PANGO_GRAVITY_SOUTH: Glyphs are upside-down
- * @PANGO_GRAVITY_EAST: Glyphs are rotated 90 degrees counter-clockwise
+ * @PANGO_GRAVITY_SOUTH: Glyphs stand upright (default)
+ * @PANGO_GRAVITY_EAST: Glyphs are rotated 90 degrees clockwise
+ * @PANGO_GRAVITY_NORTH: Glyphs are upside-down
+ * @PANGO_GRAVITY_WEST: Glyphs are rotated 90 degrees counter-clockwise
  * 
- * The #PangoGravity type represents the direction that the glyphs are
- * rotated.  This is useful when rendering vertical text layouts.  In
+ * The #PangoGravity type represents the orientation of glyphs in a segment
+ * of text.  This is useful when rendering vertical text layouts.  In
  * those situations, the layout is rotated using a non-identity PangoMatrix,
- * and then glyph rotation is controlled using #PangoGravity.
+ * and then glyph orientation is controlled using #PangoGravity.
  **/			  
 typedef enum {
-  PANGO_GRAVITY_NORTH,
-  PANGO_GRAVITY_WEST,
   PANGO_GRAVITY_SOUTH,
-  PANGO_GRAVITY_EAST
+  PANGO_GRAVITY_EAST,
+  PANGO_GRAVITY_NORTH,
+  PANGO_GRAVITY_WEST
 } PangoGravity;
 
 #define PANGO_TYPE_LANGUAGE (pango_language_get_type ())

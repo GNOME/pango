@@ -56,7 +56,7 @@ int opt_width = -1;
 int opt_indent = 0;
 int opt_runs = 1;
 PangoEllipsizeMode opt_ellipsize = PANGO_ELLIPSIZE_NONE;
-PangoGravity opt_gravity = PANGO_GRAVITY_NORTH;
+PangoGravity opt_gravity = PANGO_GRAVITY_SOUTH;
 HintMode opt_hinting = HINT_DEFAULT;
 PangoWrapMode opt_wrap = PANGO_WRAP_WORD_CHAR;
 gboolean opt_wrap_set = FALSE;
@@ -401,7 +401,7 @@ parse_gravity (const char *name,
         g_set_error(error,
 		    G_OPTION_ERROR, 
 		    G_OPTION_ERROR_BAD_VALUE,
-		    "Argument for --gravity must be one of north/west/south/east");
+		    "Argument for --gravity must be one of south/east/north/west");
 	ret = FALSE;
     }
 
@@ -582,7 +582,7 @@ parse_options (int argc, char *argv[])
     {"font",		0, 0, G_OPTION_ARG_STRING,			&opt_font,
      "Set the font description",			       "description"},
     {"gravity",		0, 0, G_OPTION_ARG_CALLBACK,			&parse_gravity,
-     "Gravity",					     "north/west/south/east"},
+     "Gravity",					     "south/east/north/west"},
     {"header",		0, 0, G_OPTION_ARG_NONE,			&opt_header,
      "Display the options in the output",				NULL},
     {"hinting",		0, 0, G_OPTION_ARG_CALLBACK,			&parse_hinting,

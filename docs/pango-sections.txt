@@ -60,6 +60,7 @@ pango_shape
 <SUBSECTION Private>
 pango_direction_get_type
 pango_context_get_type
+pango_gravity_get_type
 pango_item_get_type
 </SECTION>
 

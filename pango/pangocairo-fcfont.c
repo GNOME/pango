@@ -134,7 +134,7 @@ pango_cairo_fc_font_get_scaled_font (PangoCairoFont *font)
       if (!cffont->scaled_font)
         return NULL;
 
-      if (cffont->gravity != PANGO_GRAVITY_NORTH)
+      if (cffont->gravity != PANGO_GRAVITY_SOUTH)
         {
 	  cairo_font_extents_t metrics;
 	  cairo_matrix_t matrix;
@@ -147,16 +147,16 @@ pango_cairo_fc_font_get_scaled_font (PangoCairoFont *font)
 
 	  switch (cffont->gravity)
 	    {
-	      case PANGO_GRAVITY_NORTH:
+	      case PANGO_GRAVITY_SOUTH:
 	      default:
 	        break;
-	      case PANGO_GRAVITY_SOUTH:
+	      case PANGO_GRAVITY_NORTH:
 		cairo_matrix_rotate(&matrix, M_PI);
 		break;
-	      case PANGO_GRAVITY_WEST:
+	      case PANGO_GRAVITY_EAST:
 		cairo_matrix_rotate(&matrix, -M_PI_2);
 		break;
-	      case PANGO_GRAVITY_EAST:
+	      case PANGO_GRAVITY_WEST:
 		cairo_matrix_rotate(&matrix, +M_PI_2);
 		break;
 	    }

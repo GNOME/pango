@@ -59,7 +59,7 @@ static void
 pango_context_init (PangoContext *context)
 {
   context->base_dir = PANGO_DIRECTION_WEAK_LTR;
-  context->base_gravity = PANGO_GRAVITY_NORTH;
+  context->base_gravity = PANGO_GRAVITY_SOUTH;
   context->language = NULL;
   context->font_map = NULL;
 
@@ -435,7 +435,7 @@ pango_context_set_base_gravity (PangoContext  *context,
 PangoGravity
 pango_context_get_base_gravity (PangoContext *context)
 {
-  g_return_val_if_fail (context != NULL, PANGO_GRAVITY_NORTH);
+  g_return_val_if_fail (context != NULL, PANGO_GRAVITY_SOUTH);
 
   return context->base_gravity;
 }
@@ -887,12 +887,12 @@ itemize_state_add_character (ItemizeState     *state,
    */
   switch (state->item->analysis.gravity)
     {
-      case PANGO_GRAVITY_NORTH:
-      case PANGO_GRAVITY_WEST:
-      default:
-	break;
       case PANGO_GRAVITY_SOUTH:
       case PANGO_GRAVITY_EAST:
+      default:
+	break;
+      case PANGO_GRAVITY_NORTH:
+      case PANGO_GRAVITY_WEST:
 	state->item->analysis.level++;
     }
 

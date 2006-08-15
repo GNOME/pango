@@ -50,6 +50,7 @@ fields:
 @lang_engine: the engine for doing rendering-system-independent processing.
 @font: the font for this segment.
 @level: the bidrectional level for this segment.
+@gravity: the glyph orientation for this segment.
 @language: the detected language for this segment.
 @extra_attrs: extra attributes for this segment.
 
@@ -68,6 +69,22 @@ fields:
 <!-- ##### MACRO PANGO_TYPE_DIRECTION ##### -->
 <para>
 The #GObject type for #PangoDirection.
+</para>
+
+
+
+<!-- ##### ENUM PangoGravity ##### -->
+<para>
+</para>
+
+@PANGO_GRAVITY_SOUTH: 
+@PANGO_GRAVITY_EAST: 
+@PANGO_GRAVITY_NORTH: 
+@PANGO_GRAVITY_WEST: 
+
+<!-- ##### MACRO PANGO_TYPE_GRAVITY ##### -->
+<para>
+The #GObject type for #PangoGravity.
 </para>
 
 
@@ -224,6 +241,24 @@ The #GObject type for #PangoDirection.
 
 @context: 
 @direction: 
+
+
+<!-- ##### FUNCTION pango_context_get_base_gravity ##### -->
+<para>
+
+</para>
+
+@context: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_context_set_base_gravity ##### -->
+<para>
+
+</para>
+
+@context: 
+@gravity: 
 
 
 <!-- ##### FUNCTION pango_context_get_matrix ##### -->

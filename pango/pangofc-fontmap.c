@@ -814,13 +814,13 @@ pango_fc_make_pattern (const  PangoFontDescription *description,
 
   switch (gravity)
     {
-      case PANGO_GRAVITY_NORTH:
       case PANGO_GRAVITY_SOUTH:
+      case PANGO_GRAVITY_NORTH:
       default:
         vertical = FcFalse;
 	break;
-      case PANGO_GRAVITY_WEST:
       case PANGO_GRAVITY_EAST:
+      case PANGO_GRAVITY_WEST:
         vertical = FcTrue;
         break;
     }
