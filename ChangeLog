@@ -1,5 +1,14 @@
 2006-08-15  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango/pango-context.c (itemize_state_process_run):
+	Add FIXME note about handling item gravity.
+
+	* pango/pangofc-fontmap.c (fontset_hash_key_equal),
+	(fontset_hash_key_hash), (fontset_hash_key_copy),
+	(pango_fc_font_map_get_patterns): Add gravity into the hask key.
+
+2006-08-15  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/pango-item.h: Add a gravity member to PangoItem, and
 
 	* pango/pango-context.c (itemize_state_init),

@@ -265,6 +265,7 @@ struct _FontsetHashKey {
   PangoFcFontMap *fontmap;
   PangoMatrix matrix;
   PangoLanguage *language;
+  PangoGravity gravity;
   PangoFontDescription *desc;
   int size;			/* scaled via the current DPI */
   gpointer context_key;
@@ -307,6 +308,7 @@ fontset_hash_key_equal (const FontsetHashKey *key_a,
   if (key_a->size == key_b->size &&
       pango_font_description_equal (key_a->desc, key_b->desc) &&
       key_a->language == key_b->language &&
+      key_a->gravity == key_b->gravity &&
       key_a->matrix.xx == key_b->matrix.xx &&
       key_a->matrix.xy == key_b->matrix.xy &&
       key_a->matrix.yx == key_b->matrix.yx &&
@@ -339,6 +341,7 @@ fontset_hash_key_hash (const FontsetHashKey *key)
 
     /* 1237 is just an abitrary prime */
     return (hash ^
+	    key->gravity ^
 	    GPOINTER_TO_UINT (key->language) ^
 	    (key->size * 1237) ^
 	    pango_font_description_hash (key->desc));
@@ -364,6 +367,7 @@ fontset_hash_key_copy (FontsetHashKey *old)
   key->fontmap = old->fontmap;
   key->matrix = old->matrix;
   key->language = old->language;
+  key->gravity = old->gravity;
   key->desc = pango_font_description_copy (old->desc);
   key->size = old->size;
   if (old->context_key)
@@ -1031,6 +1035,8 @@ pango_fc_font_map_get_patterns (PangoFontMap               *fontmap,
   key.fontmap = fcfontmap;
   get_context_matrix (context, &key.matrix);
   key.language = language;
+  /* FIXME: support per-item gravity */
+  key.gravity = pango_context_get_base_gravity (context);
   key.desc = pango_font_description_copy_static (desc);
   pango_font_description_unset_fields (key.desc, PANGO_FONT_MASK_SIZE);
   key.size = get_unscaled_size (fcfontmap, context, desc);

@@ -1165,7 +1165,12 @@ itemize_state_process_run (ItemizeState *state)
 	  font = NULL;
 	}
       else
-        get_shaper_and_font (state, wc, &shape_engine, &font);
+        {
+	  /* FIXME: We need a way to respect item gravity when loading
+	   * fonts, but we currently don't have a way to do that.
+	   */
+	  get_shaper_and_font (state, wc, &shape_engine, &font);
+	}
 	
       itemize_state_add_character (state,
 				   shape_engine, font,
