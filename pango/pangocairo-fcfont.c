@@ -133,45 +133,8 @@ pango_cairo_fc_font_get_scaled_font (PangoCairoFont *font)
        */
       if (!cffont->scaled_font)
         return NULL;
-
-      if (cffont->gravity != PANGO_GRAVITY_SOUTH)
-        {
-	  cairo_font_extents_t metrics;
-	  cairo_matrix_t matrix;
-
-	  cairo_scaled_font_extents (cffont->scaled_font, &metrics);
-	  cairo_scaled_font_destroy (cffont->scaled_font);
-	  cffont->scaled_font = NULL;
-
-	  cairo_matrix_init_identity (&matrix);
-
-	  switch (cffont->gravity)
-	    {
-	      case PANGO_GRAVITY_SOUTH:
-	      default:
-	        break;
-	      case PANGO_GRAVITY_NORTH:
-		cairo_matrix_rotate(&matrix, M_PI);
-		break;
-	      case PANGO_GRAVITY_EAST:
-		cairo_matrix_rotate(&matrix, -M_PI_2);
-		break;
-	      case PANGO_GRAVITY_WEST:
-		cairo_matrix_rotate(&matrix, +M_PI_2);
-		break;
-	    }
-	  cairo_matrix_multiply(&cffont->font_matrix, &cffont->font_matrix, &matrix);
-	  
-	  cffont->scaled_font = cairo_scaled_font_create (font_face,
-							  &cffont->font_matrix,
-							  &cffont->ctm,
-							  cffont->options);
-
-	  if (!cffont->scaled_font)
-	    return NULL;
-	}
     }
-  
+
   return cffont->scaled_font;
 }
 
@@ -497,7 +460,7 @@ _pango_cairo_fc_font_new (PangoCairoFcFontMap        *cffontmap,
   PangoCairoFcFont *cffont;
   const PangoMatrix *pango_ctm;
   FcMatrix *fc_matrix;
-  double size;
+  double size, rotation;
   
   g_return_val_if_fail (PANGO_IS_CAIRO_FC_FONT_MAP (cffontmap), NULL);
   g_return_val_if_fail (pattern != NULL, NULL);
@@ -522,17 +485,22 @@ _pango_cairo_fc_font_new (PangoCairoFcFontMap        *cffontmap,
   else
     cairo_matrix_init_identity (&cffont->font_matrix);
 
+  switch (cffont->gravity)
+    {
+      default:
+      case PANGO_GRAVITY_SOUTH:	rotation =  0;		break;
+      case PANGO_GRAVITY_NORTH:	rotation =  M_PI;	break;
+      case PANGO_GRAVITY_EAST:	rotation = -M_PI_2;	break;
+      case PANGO_GRAVITY_WEST:	rotation = +M_PI_2;	break;
+    }
+  cairo_matrix_rotate(&cffont->font_matrix, rotation);
+
   pango_ctm = pango_context_get_matrix (context);
 
   size = get_font_size (cffontmap, context, desc, pattern, pango_ctm);
 
   cairo_matrix_scale (&cffont->font_matrix,
 		      size / PANGO_SCALE, size / PANGO_SCALE);
-
-  /* Note: the ->font_matrix at this point is not final yet.  We
-   * will adjust it to the gravity later as it needs the scaled_font
-   * to be loaded first.
-   */
 
   if (pango_ctm)
     cairo_matrix_init (&cffont->ctm,

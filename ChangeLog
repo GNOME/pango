@@ -1,5 +1,11 @@
 2006-08-15  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango/pangocairo-fcfont.c (pango_cairo_fc_font_get_scaled_font),
+	(_pango_cairo_fc_font_new): Move font_matrix rotation into font_new
+	as we use only rotation and no translation anymore.
+
+2006-08-15  Behdad Esfahbod  <behdad@gnome.org>
+
 	* docs/pango-sections.txt:
 	* docs/tmpl/main.sgml:
 	* examples/renderdemo.c (parse_gravity), (parse_options):
