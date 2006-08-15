@@ -1,5 +1,13 @@
 2006-08-15  Behdad Esfahbod  <behdad@gnome.org>
 
+	* modules/basic/basic-fc.c (basic_engine_shape): Always use
+	fallback shaping for vertical fonts.
+
+	* pango/pango-context.c (get_shaper_and_font): Always use basic
+	shaper for vertical items (east/west gravity).
+
+2006-08-15  Behdad Esfahbod  <behdad@gnome.org>
+
 	* examples/renderdemo.c (do_output): Render the header with SOUTH
 	gravity.
 

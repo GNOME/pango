@@ -990,8 +990,28 @@ get_shaper_and_font (ItemizeState      *state,
     return *shape_engine != NULL;
 
   if (!state->exact_engines && !state->fallback_engines)
-    get_engines (state->context, state->derived_lang, state->script,
-		 &state->exact_engines, &state->fallback_engines);
+    {
+      /* Always use a basic shaper for vertical layout (ie, east/west gravity)
+       * as we do not support vertical shaping as of now.
+       */
+      PangoScript script;
+
+      switch (state->gravity)
+	{
+	  case PANGO_GRAVITY_SOUTH:
+	  case PANGO_GRAVITY_NORTH:
+	  default:
+            script = state->script;
+	    break;
+	  case PANGO_GRAVITY_EAST:
+	  case PANGO_GRAVITY_WEST:
+            script = PANGO_SCRIPT_COMMON;
+	    break;
+	}
+
+      get_engines (state->context, state->derived_lang, script,
+		   &state->exact_engines, &state->fallback_engines);
+    }
 
   info.lang = state->derived_lang;
   info.wc = wc;
