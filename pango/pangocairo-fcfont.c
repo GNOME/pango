@@ -270,9 +270,27 @@ pango_cairo_fc_font_glyph_extents_cache_init (PangoCairoFcFont *cffont)
   cairo_scaled_font_extents (scaled_font, &font_extents);
 
   cffont->font_extents.x = 0;
-  cffont->font_extents.y = - PANGO_UNITS (font_extents.ascent);
-  cffont->font_extents.height = PANGO_UNITS (font_extents.ascent + font_extents.descent);
   cffont->font_extents.width = 0;
+  cffont->font_extents.height = PANGO_UNITS (font_extents.ascent + font_extents.descent);
+  switch (cffont->gravity)
+    {
+      default:
+      case PANGO_GRAVITY_SOUTH:
+        cffont->font_extents.y = - PANGO_UNITS (font_extents.ascent);
+	break;
+      case PANGO_GRAVITY_NORTH:
+        cffont->font_extents.y = - PANGO_UNITS (font_extents.descent);
+	break;
+      /* The case of EAST/WEST is tricky.  In vertical layout, ascent/descent
+       * are useless.  I'm trying to get a patch into cairo to use
+       * max_x_advance*0.5 for ascent and descent for vertical fonts.  That's
+       * at least more useful.  But with or without it, doesn't harm to center
+       * ourselves here.
+       */
+      case PANGO_GRAVITY_EAST:
+      case PANGO_GRAVITY_WEST:
+        cffont->font_extents.y = - PANGO_UNITS ((font_extents.ascent + font_extents.descent) * 0.5);
+    }
 
   cffont->glyph_extents_cache = g_new0 (GlyphExtentsCacheEntry, GLYPH_CACHE_NUM_ENTRIES);
   /* Make sure all cache entries are invalid initially */

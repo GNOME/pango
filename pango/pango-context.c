@@ -875,25 +875,31 @@ itemize_state_add_character (ItemizeState     *state,
   state->item->analysis.level = state->embedding;
   state->item->analysis.gravity = state->gravity;
   /* The level vs. gravity dance:
-   * 	- If gravity is NORTH, leave level untouched
-   * 	- If gravity is SOUTH, step level one up, to
+   * 	- If gravity is SOUTH, leave level untouched
+   * 	- If gravity is NORTH, step level one up, to
    * 	  not get mirrored upside-down text
-   * 	- If gravity is WEST, leave level untouched, as
+   * 	- If gravity is EAST, step up to an even level, as
    * 	  it's a clockwise-rotated layout, so the rotated
    * 	  top is unrotated left.
-   * 	- If gravity is EAST, step level one up to get, as
+   * 	- If gravity is WEST, step up to an odd level, as
    * 	  it's a counter-clockwise-rotated layout, so the rotated
    * 	  top is unrotated right.
    */
   switch (state->item->analysis.gravity)
     {
       case PANGO_GRAVITY_SOUTH:
-      case PANGO_GRAVITY_EAST:
       default:
 	break;
       case PANGO_GRAVITY_NORTH:
-      case PANGO_GRAVITY_WEST:
 	state->item->analysis.level++;
+	break;
+      case PANGO_GRAVITY_EAST:
+	state->item->analysis.level += 1;
+	state->item->analysis.level &= ~1;
+	break;
+      case PANGO_GRAVITY_WEST:
+	state->item->analysis.level |= 1;
+	break;
     }
 
   state->item->analysis.language = state->derived_lang;

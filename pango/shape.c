@@ -109,10 +109,10 @@ pango_shape (const gchar      *text,
 				 text, length, analysis, glyphs);
     }
 
-  /* Set glyphs[i].attr.is_cluster_start based on log_clusters[]
-   */
   for (i = 0; i < glyphs->num_glyphs; i++)
     {
+     /* Set glyphs[i].attr.is_cluster_start based on log_clusters[]
+      */
       if (glyphs->log_clusters[i] != last_cluster)
 	{
 	  glyphs->glyphs[i].attr.is_cluster_start = TRUE;
@@ -120,5 +120,16 @@ pango_shape (const gchar      *text,
 	}
       else
 	glyphs->glyphs[i].attr.is_cluster_start = FALSE;
+
+
+      /* Shift glyph if width is negative, and negate width.
+       * This is useful for rotated font matrices and shouldn't
+       * harm in normal cases.
+       */
+      if (glyphs->glyphs[i].geometry.width < 0)
+	{
+	  glyphs->glyphs[i].geometry.width = -glyphs->glyphs[i].geometry.width;
+	  glyphs->glyphs[i].geometry.x_offset += glyphs->glyphs[i].geometry.width;
+	}
     }
 }

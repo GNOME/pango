@@ -1,5 +1,20 @@
 2006-08-15  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango/pango-context.c (itemize_state_add_character):
+	Fix handling of WEST and EAST gravity effect on bidi level.
+
+	* pango/pangocairo-fcfont.c
+	(pango_cairo_fc_font_glyph_extents_cache_init):
+	For NORTH gravity (upside down text), swap ascent and descent,
+	and for EAST/WEST, center baseline between ascent/descent.
+
+	* pango/shape.c (pango_shape): If glyph width is negative, negate
+	it and shift glyph by that amount.  This allows having font matrices
+	that essentially move the glyph origin to the right of the glyph to
+	still work.
+
+2006-08-15  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/pangocairo-fcfont.c (pango_cairo_fc_font_get_scaled_font),
 	(_pango_cairo_fc_font_new): Move font_matrix rotation into font_new
 	as we use only rotation and no translation anymore.
