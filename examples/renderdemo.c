@@ -56,6 +56,7 @@ int opt_width = -1;
 int opt_indent = 0;
 int opt_runs = 1;
 PangoEllipsizeMode opt_ellipsize = PANGO_ELLIPSIZE_NONE;
+PangoGravity opt_gravity = PANGO_GRAVITY_NORTH;
 HintMode opt_hinting = HINT_DEFAULT;
 PangoWrapMode opt_wrap = PANGO_WRAP_WORD_CHAR;
 gboolean opt_wrap_set = FALSE;
@@ -276,6 +277,7 @@ do_output (PangoContext     *context,
   pango_context_set_language (context, pango_language_from_string ("en_US"));
   pango_context_set_base_dir (context,
 			      opt_rtl ? PANGO_DIRECTION_RTL : PANGO_DIRECTION_LTR);
+  pango_context_set_base_gravity (context, opt_gravity);
 
   if (opt_header)
     {
@@ -372,6 +374,34 @@ parse_ellipsis (const char *name,
 		    G_OPTION_ERROR, 
 		    G_OPTION_ERROR_BAD_VALUE,
 		    "Argument for --ellipsize must be one of none/start/middle/end");
+	ret = FALSE;
+    }
+
+  return ret;
+}
+
+static gboolean
+parse_gravity (const char *name,
+	       const char *arg,
+	       gpointer    data,
+	       GError **error)
+{
+  static GEnumClass *class = NULL;
+  gboolean ret = TRUE;
+  GEnumValue *value;
+
+  if (!class)
+    class = g_type_class_ref (PANGO_TYPE_GRAVITY);
+
+  value = g_enum_get_value_by_nick (class, arg);
+  if (value)
+    opt_gravity = value->value;
+  else
+    {
+        g_set_error(error,
+		    G_OPTION_ERROR, 
+		    G_OPTION_ERROR_BAD_VALUE,
+		    "Argument for --gravity must be one of north/west/south/east");
 	ret = FALSE;
     }
 
@@ -551,6 +581,8 @@ parse_options (int argc, char *argv[])
      "Ellipsization mode",				  "start/middle/end"},
     {"font",		0, 0, G_OPTION_ARG_STRING,			&opt_font,
      "Set the font description",			       "description"},
+    {"gravity",		0, 0, G_OPTION_ARG_CALLBACK,			&parse_gravity,
+     "Gravity",					     "north/west/south/east"},
     {"header",		0, 0, G_OPTION_ARG_NONE,			&opt_header,
      "Display the options in the output",				NULL},
     {"hinting",		0, 0, G_OPTION_ARG_CALLBACK,			&parse_hinting,

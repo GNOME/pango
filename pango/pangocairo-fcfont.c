@@ -46,7 +46,7 @@ typedef struct _GlyphExtentsCacheEntry    GlyphExtentsCacheEntry;
 #define GLYPH_CACHE_NUM_ENTRIES 256 /* should be power of two */
 #define GLYPH_CACHE_MASK (GLYPH_CACHE_NUM_ENTRIES - 1)
 
-#define PANGO_UNITS(Double) ((int)((Double) * PANGO_SCALE + 0.49999))
+#define PANGO_UNITS(Double) ((int)floor((Double) * PANGO_SCALE + 0.5))
 
 /* An entry in the fixed-size cache for the glyph -> ink_rect mapping.
  * The cache is indexed by the lower N bits of the glyph (see
@@ -69,6 +69,7 @@ struct _PangoCairoFcFont
   cairo_matrix_t font_matrix;
   cairo_matrix_t ctm;
   cairo_font_options_t *options;
+  PangoGravity gravity;
 
   PangoRectangle font_extents;
   GlyphExtentsCacheEntry    *glyph_extents_cache;  
@@ -132,6 +133,43 @@ pango_cairo_fc_font_get_scaled_font (PangoCairoFont *font)
        */
       if (!cffont->scaled_font)
         return NULL;
+
+      if (cffont->gravity != PANGO_GRAVITY_NORTH)
+        {
+	  cairo_font_extents_t metrics;
+	  cairo_matrix_t matrix;
+
+	  cairo_scaled_font_extents (cffont->scaled_font, &metrics);
+	  cairo_scaled_font_destroy (cffont->scaled_font);
+	  cffont->scaled_font = NULL;
+
+	  cairo_matrix_init_identity (&matrix);
+
+	  switch (cffont->gravity)
+	    {
+	      case PANGO_GRAVITY_NORTH:
+	      default:
+	        break;
+	      case PANGO_GRAVITY_SOUTH:
+		cairo_matrix_rotate(&matrix, M_PI);
+		break;
+	      case PANGO_GRAVITY_WEST:
+		cairo_matrix_rotate(&matrix, -M_PI_2);
+		break;
+	      case PANGO_GRAVITY_EAST:
+		cairo_matrix_rotate(&matrix, +M_PI_2);
+		break;
+	    }
+	  cairo_matrix_multiply(&cffont->font_matrix, &cffont->font_matrix, &matrix);
+	  
+	  cffont->scaled_font = cairo_scaled_font_create (font_face,
+							  &cffont->font_matrix,
+							  &cffont->ctm,
+							  cffont->options);
+
+	  if (!cffont->scaled_font)
+	    return NULL;
+	}
     }
   
   return cffont->scaled_font;
@@ -468,6 +506,9 @@ _pango_cairo_fc_font_new (PangoCairoFcFontMap        *cffontmap,
 			 "pattern", pattern,
 			 NULL);
 
+  /* FIXME: support per-item gravity */
+  cffont->gravity = pango_context_get_base_gravity (context);
+
   if  (FcPatternGetMatrix (pattern,
 			   FC_MATRIX, 0, &fc_matrix) == FcResultMatch)
     {
@@ -487,6 +528,11 @@ _pango_cairo_fc_font_new (PangoCairoFcFontMap        *cffontmap,
 
   cairo_matrix_scale (&cffont->font_matrix,
 		      size / PANGO_SCALE, size / PANGO_SCALE);
+
+  /* Note: the ->font_matrix at this point is not final yet.  We
+   * will adjust it to the gravity later as it needs the scaled_font
+   * to be loaded first.
+   */
 
   if (pango_ctm)
     cairo_matrix_init (&cffont->ctm,

@@ -1,5 +1,18 @@
 2006-08-15  Behdad Esfahbod  <behdad@gnome.org>
 
+	* examples/renderdemo.c (do_output), (parse_gravity),
+	(parse_options): Support --gravity.
+
+	* pango/pangocairo-fcfont.c (pango_cairo_fc_font_get_scaled_font),
+	(compute_glyph_extents), (_pango_cairo_fc_font_new): Load rotated
+	scaled_fonts to handle gravity.
+
+	* pango/pangofc-fontmap.c (pango_fc_make_pattern),
+	(pango_fc_font_map_get_patterns), (pango_fc_font_map_load_fontset):
+	Set FC_VERTICAL_LAYOUT on West and East gravity.
+
+2006-08-15  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/pango-context.c (itemize_state_process_run):
 	Add FIXME note about handling item gravity.
 
