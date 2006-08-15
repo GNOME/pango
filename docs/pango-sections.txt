@@ -7,6 +7,8 @@ PangoItem
 PangoAnalysis
 PangoDirection
 PANGO_TYPE_DIRECTION
+PangoGravity
+PANGO_TYPE_GRAVITY
 <SUBSECTION>
 pango_itemize
 pango_itemize_with_base_dir
@@ -25,6 +27,8 @@ pango_context_get_language
 pango_context_set_language
 pango_context_get_base_dir
 pango_context_set_base_dir
+pango_context_get_base_gravity
+pango_context_set_base_gravity
 pango_context_get_matrix
 pango_context_set_matrix
 pango_context_load_font

@@ -1,3 +1,18 @@
+2006-08-15  Behdad Esfahbod  <behdad@gnome.org>
+
+	* pango/pango-types.h: Add enum PangoGravity.
+
+	* pango/pango-context.h:
+	* pango/pango-context.c (pango_context_set_base_gravity),
+	(pango_context_get_base_gravity): New functions.
+
+	* pango/pango.def:
+	* docs/pango-sections.txt: Hook new API.
+
+2006-08-15  Behdad Esfahbod  <behdad@gnome.org>
+
+	Branchpoint for branch 'vertical'
+
 2006-08-08  Behdad Esfahbod  <behdad@gnome.org>
 
 	* === Released 1.14.0 ===

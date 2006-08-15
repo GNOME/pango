@@ -36,6 +36,8 @@ struct _PangoContext
 
   PangoLanguage *language;
   PangoDirection base_dir;
+  PangoGravity base_gravity;
+
   PangoFontDescription *font_desc;
 
   PangoMatrix *matrix;
@@ -57,6 +59,7 @@ static void
 pango_context_init (PangoContext *context)
 {
   context->base_dir = PANGO_DIRECTION_WEAK_LTR;
+  context->base_gravity = PANGO_GRAVITY_NORTH;
   context->language = NULL;
   context->font_map = NULL;
 
@@ -400,6 +403,41 @@ pango_context_get_base_dir (PangoContext *context)
   g_return_val_if_fail (context != NULL, PANGO_DIRECTION_LTR);
 
   return context->base_dir;
+}
+
+/**
+ * pango_context_set_base_gravity:
+ * @context: a #PangoContext
+ * @gravity: the new base gravity
+ * 
+ * Sets the base gravity for the context.
+ *
+ * The base gravity is used in laying vertical text out.
+ **/
+void
+pango_context_set_base_gravity (PangoContext  *context,
+				PangoGravity gravity)
+{
+  g_return_if_fail (context != NULL);
+
+  context->base_gravity = gravity;
+}
+
+/**
+ * pango_context_get_base_gravity:
+ * @context: a #PangoContext
+ * 
+ * Retrieves the base gravity for the context. See
+ * pango_context_set_base_gravity().
+ * 
+ * Return value: the base gravity for the context.
+ **/
+PangoGravity
+pango_context_get_base_gravity (PangoContext *context)
+{
+  g_return_val_if_fail (context != NULL, PANGO_GRAVITY_NORTH);
+
+  return context->base_gravity;
 }
 
 /**********************************************************************/

@@ -168,11 +168,8 @@ double pango_matrix_get_font_scale_factor (const PangoMatrix *matrix);
  * The %PANGO_DIRECTION_TTB_LTR, %PANGO_DIRECTION_TTB_RTL
  * values come from an earlier interpretation of this
  * enumeration as the writing direction of a block of
- * text and are no longer used; See the Text module of the
- * CSS3 spec for how vertical text is planned to be handled
- * in a future version of Pango. The explanation of why
- * %PANGO_DIRECTION_TTB_LTR is treated as %PANGO_DIRECTION_RTL
- * can be found there as well.
+ * text and are no longer used; See #PangoGravity for how
+ * vertical text is handled in Pango.
  **/			  
 typedef enum {
   PANGO_DIRECTION_LTR,
@@ -183,6 +180,25 @@ typedef enum {
   PANGO_DIRECTION_WEAK_RTL,
   PANGO_DIRECTION_NEUTRAL
 } PangoDirection;
+
+/**
+ * PangoGravity:
+ * @PANGO_GRAVITY_NORTH: Glyphs stand upright (default)
+ * @PANGO_GRAVITY_WEST: Glyphs are rotated 90 degrees clockwise
+ * @PANGO_GRAVITY_SOUTH: Glyphs are upside-down
+ * @PANGO_GRAVITY_EAST: Glyphs are rotated 90 degrees counter-clockwise
+ * 
+ * The #PangoGravity type represents the direction that the glyphs are
+ * rotated.  This is useful when rendering vertical text layouts.  In
+ * those situations, the layout is rotated using a non-identity PangoMatrix,
+ * and then glyph rotation is controlled using #PangoGravity.
+ **/			  
+typedef enum {
+  PANGO_GRAVITY_NORTH,
+  PANGO_GRAVITY_WEST,
+  PANGO_GRAVITY_SOUTH,
+  PANGO_GRAVITY_EAST
+} PangoGravity;
 
 #define PANGO_TYPE_LANGUAGE (pango_language_get_type ())
 

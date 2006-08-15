@@ -53,6 +53,7 @@ EXPORTS
 	pango_context_get_base_dir
 	pango_context_get_font_description
 	pango_context_get_font_map
+	pango_context_get_gravity
 	pango_context_get_language
 	pango_context_get_matrix
 	pango_context_get_metrics
@@ -64,6 +65,7 @@ EXPORTS
 	pango_context_set_base_dir
 	pango_context_set_font_description
 	pango_context_set_font_map
+	pango_context_set_gravity
 	pango_context_set_language
 	pango_context_set_matrix
 	pango_coverage_copy

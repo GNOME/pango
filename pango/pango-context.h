@@ -78,6 +78,9 @@ void                      pango_context_set_language         (PangoContext      
 void                      pango_context_set_base_dir         (PangoContext               *context,
 							      PangoDirection              direction);
 PangoDirection            pango_context_get_base_dir         (PangoContext               *context);
+void                      pango_context_set_base_gravity     (PangoContext               *context,
+							      PangoGravity                gravity);
+PangoGravity              pango_context_get_base_gravity     (PangoContext               *context);
 
 void                        pango_context_set_matrix (PangoContext      *context,
 						      const PangoMatrix *matrix);
