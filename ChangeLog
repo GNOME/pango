@@ -1,5 +1,10 @@
 2006-08-15  Behdad Esfahbod  <behdad@gnome.org>
 
+	* modules/basic/basic-fc.c (basic_engine_shape): Use analysis->gravity
+	to detect vertical fonts, instead of poking into the font_pattern.
+
+2006-08-15  Behdad Esfahbod  <behdad@gnome.org>
+
 	* modules/basic/basic-fc.c (basic_engine_shape): Always use
 	fallback shaping for vertical fonts.
 

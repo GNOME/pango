@@ -23,7 +23,6 @@
 #include <config.h>
 #include <string.h>
 
-#define PANGO_ENABLE_BACKEND 1 /* to get access to ->font_pattern :( */
 #include <glib/gprintf.h>
 #include "pango-engine.h"
 #include "pango-utils.h"
@@ -338,7 +337,7 @@ basic_engine_shape (PangoEngineShape *engine,
   const char *p;
   int cluster = 0;
   int i;
-  FcBool vertical = FcFalse;
+  gboolean vertical;
 
   g_return_if_fail (font != NULL);
   g_return_if_fail (text != NULL);
@@ -350,11 +349,19 @@ basic_engine_shape (PangoEngineShape *engine,
   if (!face)
     return;
 
-#ifdef FC_VERTICAL_LAYOUT
-  FcPatternGetBool (fc_font->font_pattern, FC_VERTICAL_LAYOUT, 0, &vertical);
-#endif
-
-  if (vertical == FcTrue)
+  switch (analysis->gravity)
+    {
+      case PANGO_GRAVITY_SOUTH:
+      case PANGO_GRAVITY_NORTH:
+      default:
+        vertical = FALSE;
+	break;
+      case PANGO_GRAVITY_EAST:
+      case PANGO_GRAVITY_WEST:
+        vertical = TRUE;
+	break;
+    }
+  if (vertical)
     {
       fallback_shape (engine, font, text, length, analysis, glyphs);
       goto out;
