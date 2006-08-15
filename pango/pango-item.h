@@ -35,6 +35,7 @@ struct _PangoAnalysis
   PangoEngineLang  *lang_engine;
   PangoFont *font;
   guint8 level;
+  PangoGravity gravity : 8; /* nastiest hack ever.  stuff gravity in the padding after the guint8 */
   PangoLanguage *language;
   GSList *extra_attrs;
 };

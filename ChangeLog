@@ -1,5 +1,13 @@
 2006-08-15  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango/pango-item.h: Add a gravity member to PangoItem, and
+
+	* pango/pango-context.c (itemize_state_init),
+	(itemize_state_add_character): Propagate context base_gravity
+	into items.
+
+2006-08-15  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/pango-types.h: Add enum PangoGravity.
 
 	* pango/pango-context.h:

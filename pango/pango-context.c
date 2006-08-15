@@ -576,6 +576,7 @@ struct _ItemizeState
   int embedding_end_offset;
   const char *embedding_end;
   guint8 embedding;
+  PangoGravity gravity;
 
   PangoAttrIterator *attr_iter;
   gboolean free_attr_iter;
@@ -701,6 +702,11 @@ itemize_state_init (ItemizeState      *state,
   state->embedding_end_offset = 0;
   state->embedding_end = text + start_index;
   update_embedding_end (state);
+
+  /* FIXME: Set gravity to base gravity for now, until we do
+   * proper gravity assignment.
+   */
+  state->gravity = context->base_gravity;
   
   /* Initialize the attribute iterator
    */
@@ -867,6 +873,29 @@ itemize_state_add_character (ItemizeState     *state,
   state->item->analysis.font = font;
   
   state->item->analysis.level = state->embedding;
+  state->item->analysis.gravity = state->gravity;
+  /* The level vs. gravity dance:
+   * 	- If gravity is NORTH, leave level untouched
+   * 	- If gravity is SOUTH, step level one up, to
+   * 	  not get mirrored upside-down text
+   * 	- If gravity is WEST, leave level untouched, as
+   * 	  it's a clockwise-rotated layout, so the rotated
+   * 	  top is unrotated left.
+   * 	- If gravity is EAST, step level one up to get, as
+   * 	  it's a counter-clockwise-rotated layout, so the rotated
+   * 	  top is unrotated right.
+   */
+  switch (state->item->analysis.gravity)
+    {
+      case PANGO_GRAVITY_NORTH:
+      case PANGO_GRAVITY_WEST:
+      default:
+	break;
+      case PANGO_GRAVITY_SOUTH:
+      case PANGO_GRAVITY_EAST:
+	state->item->analysis.level++;
+    }
+
   state->item->analysis.language = state->derived_lang;
   
   if (state->copy_extra_attrs)
