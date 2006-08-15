@@ -277,11 +277,11 @@ do_output (PangoContext     *context,
   pango_context_set_language (context, pango_language_from_string ("en_US"));
   pango_context_set_base_dir (context,
 			      opt_rtl ? PANGO_DIRECTION_RTL : PANGO_DIRECTION_LTR);
-  pango_context_set_base_gravity (context, opt_gravity);
 
   if (opt_header)
     {
       char *options_string = get_options_string ();
+      pango_context_set_base_gravity (context, PANGO_GRAVITY_SOUTH);
       layout = make_layout (context, options_string, 10);
       pango_layout_get_extents (layout, NULL, &logical_rect);
 
@@ -304,6 +304,8 @@ do_output (PangoContext     *context,
       else
         g_printerr ("The backend does not support rotated text\n");
     }
+
+  pango_context_set_base_gravity (context, opt_gravity);
 
   set_transform (context, transform_cb, cb_context, cb_data, &matrix);
 
@@ -619,7 +621,6 @@ parse_options (int argc, char *argv[])
   GError *parse_error = NULL;
   GOptionContext *context;
   size_t len;
-  char *p;
 
   prog_name = g_path_get_basename (argv[0]);
   context = g_option_context_new ("- FILE");

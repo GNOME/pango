@@ -1,5 +1,14 @@
 2006-08-15  Behdad Esfahbod  <behdad@gnome.org>
 
+	* examples/renderdemo.c (do_output): Render the header with SOUTH
+	gravity.
+
+	* pango/pangocairo-fcfont.c (pango_cairo_fc_font_get_metrics),
+	(pango_cairo_fc_font_glyph_extents_cache_init): Center baseline
+	for east/west gravity in pango_font_metrics too.
+
+2006-08-15  Behdad Esfahbod  <behdad@gnome.org>
+
 	* examples/HELLO.utf8: Remove excess LRM.
 
 	* examples/viewer-pangocairo.c (render_callback): Draw baselines in

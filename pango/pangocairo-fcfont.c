@@ -216,6 +216,7 @@ pango_cairo_fc_font_get_metrics (PangoFont     *font,
   if (!tmp_list)
     {
       PangoContext *context;
+      int height;
 
       if (!fcfont->fontmap)
 	return pango_font_metrics_new ();
@@ -231,6 +232,23 @@ pango_cairo_fc_font_get_metrics (PangoFont     *font,
       pango_cairo_context_set_font_options (context, cffont->options);
 
       info->metrics = pango_fc_font_create_metrics_for_context (fcfont, context);
+      /* We may actually reuse ascent/descent we got from cairo here.  that's
+       * in cffont->font_extents.
+       */
+      height = info->metrics->ascent + info->metrics->descent;
+      switch (cffont->gravity)
+	{
+	  default:
+	  case PANGO_GRAVITY_SOUTH:
+	    break;
+	  case PANGO_GRAVITY_NORTH:
+	    info->metrics->ascent = info->metrics->descent;
+	    break;
+	  case PANGO_GRAVITY_EAST:
+	  case PANGO_GRAVITY_WEST:
+	    info->metrics->ascent = height / 2;
+	}
+      info->metrics->descent = height - info->metrics->ascent;
 
       g_object_unref (context);
     }
@@ -281,12 +299,6 @@ pango_cairo_fc_font_glyph_extents_cache_init (PangoCairoFcFont *cffont)
       case PANGO_GRAVITY_NORTH:
         cffont->font_extents.y = - PANGO_UNITS (font_extents.descent);
 	break;
-      /* The case of EAST/WEST is tricky.  In vertical layout, ascent/descent
-       * are useless.  I'm trying to get a patch into cairo to use
-       * max_x_advance*0.5 for ascent and descent for vertical fonts.  That's
-       * at least more useful.  But with or without it, doesn't harm to center
-       * ourselves here.
-       */
       case PANGO_GRAVITY_EAST:
       case PANGO_GRAVITY_WEST:
         cffont->font_extents.y = - PANGO_UNITS ((font_extents.ascent + font_extents.descent) * 0.5);
