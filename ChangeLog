@@ -1,5 +1,11 @@
 2006-08-15  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango/break.c (pango_get_log_attrs): Remove initliazer members
+	for analysis, let compiler zero them all.  Fixes compile break after
+	adding the gravity member inside there.
+
+2006-08-15  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/pango-context.c (itemize_state_add_character):
 	Fix handling of WEST and EAST gravity effect on bidi level.
 
