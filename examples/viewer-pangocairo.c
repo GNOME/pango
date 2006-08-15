@@ -149,11 +149,11 @@ render_callback (PangoLayout *layout,
     {
       PangoRectangle ink, logical;
       double lw = cairo_get_line_width (cr);
+      PangoLayoutIter* iter;
       
       pango_layout_get_extents (layout, &ink, &logical);
 
-      cairo_set_source_rgba (cr, 1.0, 0.0, 0.0, 0.75);
-
+      cairo_set_source_rgba (cr, 1.0, 0.0, 0.0, 0.5);
       cairo_rectangle (cr,
 		       (double)logical.x / PANGO_SCALE - lw / 2,
 		       (double)logical.y / PANGO_SCALE - lw / 2,
@@ -161,14 +161,33 @@ render_callback (PangoLayout *layout,
 		       (double)logical.height / PANGO_SCALE + lw);
       cairo_stroke (cr);
       
-      cairo_set_source_rgba (cr, 0.0, 1.0, 0.0, 0.75);
+      cairo_save (cr);
+      cairo_set_line_width (cr, lw / 2);
+      cairo_set_source_rgba (cr, 0.0, 0.0, 1.0, 0.5);
+      iter = pango_layout_get_iter (layout);
+      do
+        {
+	  y = pango_layout_iter_get_baseline (iter);
+	  cairo_move_to (cr,
+		       (double)logical.x / PANGO_SCALE,
+		       (double)y / PANGO_SCALE + lw / 4);
+	  cairo_rel_line_to (cr,
+		       (double)logical.width / PANGO_SCALE,
+		       0);
+	  cairo_stroke (cr);
+        }
+      while (pango_layout_iter_next_line (iter));
+      pango_layout_iter_free (iter);
+      cairo_restore (cr);
 
+      cairo_set_source_rgba (cr, 0.0, 1.0, 0.0, 0.5);
       cairo_rectangle (cr,
 		       (double)ink.x / PANGO_SCALE - lw / 2,
 		       (double)ink.y / PANGO_SCALE - lw / 2,
 		       (double)ink.width / PANGO_SCALE + lw,
 		       (double)ink.height / PANGO_SCALE + lw);
       cairo_stroke (cr);
+
     }
   cairo_restore (cr);
 }

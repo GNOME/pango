@@ -4060,11 +4060,7 @@ pango_layout_line_get_extents (PangoLayoutLine *line,
     }
   
   if (logical_rect && !line->runs) 
-    {
-      PangoRectangle temp_rect;
-      pango_layout_line_get_empty_extents (line, &temp_rect);
-      logical_rect->height = temp_rect.height;
-    }
+    pango_layout_line_get_empty_extents (line, logical_rect);
 }
 
 static PangoLayoutLine *

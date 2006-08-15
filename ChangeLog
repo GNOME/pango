@@ -1,5 +1,17 @@
 2006-08-15  Behdad Esfahbod  <behdad@gnome.org>
 
+	* examples/HELLO.utf8: Remove excess LRM.
+
+	* examples/viewer-pangocairo.c (render_callback): Draw baselines in
+	border-drawing mode.
+
+	* pango/pango-layout.c (pango_layout_line_get_extents): Make sure
+	we set logical_rect.y on empty lines.  Previously empty lines had
+	wrong baseline.  The code apparently was written like that
+	intentionally, but I cannot find out why.
+
+2006-08-15  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/break.c (pango_get_log_attrs): Remove initliazer members
 	for analysis, let compiler zero them all.  Fixes compile break after
 	adding the gravity member inside there.
