@@ -1129,6 +1129,8 @@ pango_font_describe (PangoFont      *font)
  * size in points.
  * 
  * Return value: a newly-allocated #PangoFontDescription object.
+ *
+ * Since: 1.14
  **/
 PangoFontDescription *
 pango_font_describe_with_absolute_size (PangoFont      *font)
