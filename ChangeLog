@@ -1,5 +1,12 @@
 2006-08-16  Behdad Esfahbod  <behdad@gnome.org>
 
+	Bug 351585 – API documentation issues with 2.15 release
+
+	* pango/fonts.c (pango_font_describe_with_absolute_size): Add Since
+	tag to docs.
+
+2006-08-16  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/pango-layout.c (line_set_resolved_dir): Adjust line
 	resolved_dir according to context base_gravity, like we do
 	in itemize_state_add_character().
