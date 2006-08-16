@@ -163,7 +163,7 @@ render_callback (PangoLayout *layout,
       
       cairo_save (cr);
       cairo_set_line_width (cr, lw / 2);
-      cairo_set_source_rgba (cr, 0.0, 0.0, 1.0, 0.5);
+      cairo_set_source_rgba (cr, 0.4, 0.4, 1.0, 0.75);
       iter = pango_layout_get_iter (layout);
       do
         {
