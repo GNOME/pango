@@ -1,5 +1,11 @@
 2006-08-16  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango/pango-layout.c (line_set_resolved_dir): Adjust line
+	resolved_dir according to context base_gravity, like we do
+	in itemize_state_add_character().
+
+2006-08-16  Behdad Esfahbod  <behdad@gnome.org>
+
 	* examples/viewer-pangocairo.c (render_callback): Render block
 	progression and line direction arrows, and a base gravity roof-top.
 

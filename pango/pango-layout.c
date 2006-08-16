@@ -3014,6 +3014,39 @@ line_set_resolved_dir (PangoLayoutLine *line,
       line->resolved_dir = PANGO_DIRECTION_RTL;
       break;
     }
+
+  /* The direction vs. gravity dance:
+   * 	- If gravity is SOUTH, leave direction untouched.
+   * 	- If gravity is NORTH, switch direction.
+   * 	- If gravity is EAST, set to LTR, as
+   * 	  it's a clockwise-rotated layout, so the rotated
+   * 	  top is unrotated left.
+   * 	- If gravity is WEST, set to RTL, as
+   * 	  it's a counter-clockwise-rotated layout, so the rotated
+   * 	  top is unrotated right.
+   *
+   * A similar dance is performed in pango-context.c:
+   * itemize_state_add_character().  Keep in synch.
+   */
+  switch (pango_context_get_base_gravity (line->layout->context))
+    {
+    case PANGO_GRAVITY_SOUTH:
+    default:
+      break;
+    case PANGO_GRAVITY_NORTH:
+      line->resolved_dir = PANGO_DIRECTION_LTR
+                         + PANGO_DIRECTION_RTL
+			 - line->resolved_dir;
+      break;
+    case PANGO_GRAVITY_EAST:
+      /* This is in fact why deprecated TTB_RTL is LTR */
+      line->resolved_dir = PANGO_DIRECTION_LTR;
+      break;
+    case PANGO_GRAVITY_WEST:
+      /* This is in fact why deprecated TTB_LTR is RTL */
+      line->resolved_dir = PANGO_DIRECTION_RTL;
+      break;
+    }
 }
 
 static void
