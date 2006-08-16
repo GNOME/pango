@@ -165,15 +165,19 @@ render_callback (PangoLayout *layout,
 	pango_gravity_to_rotation (
 	  pango_context_get_base_gravity (
 	    pango_layout_get_context (layout))));
-      cairo_move_to     (cr, -1.0, -1.1);
+      cairo_move_to     (cr, -1.0, -1.0);
       cairo_rel_line_to (cr, +1.0, -0.2); /* /   */
       cairo_rel_line_to (cr, +1.0, +0.2); /*   \ */
       cairo_close_path  (cr);             /*  -  */
-      pattern = cairo_pattern_create_linear (0, -1.1, 0, -1.3);
+      pattern = cairo_pattern_create_linear (0, -1.0, 0, -1.2);
       cairo_pattern_add_color_stop_rgba (pattern, 0.0, 0.0, 0.0, 1.0, 0.0);
       cairo_pattern_add_color_stop_rgba (pattern, 1.0, 0.0, 0.0, 1.0, 0.15);
       cairo_set_source (cr, pattern);
-      cairo_fill_preserve (cr);
+      cairo_fill (cr);
+      /* once more, without close_path this time */
+      cairo_move_to     (cr, -1.0, -1.0);
+      cairo_rel_line_to (cr, +1.0, -0.2); /* /   */
+      cairo_rel_line_to (cr, +1.0, +0.2); /*   \ */
       /* silly line_width is not locked :(. get rid of scale. */
       cairo_restore (cr);
       cairo_save (cr);
