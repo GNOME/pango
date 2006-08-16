@@ -1,3 +1,8 @@
+2006-08-16  Behdad Esfahbod  <behdad@gnome.org>
+
+	* modules/basic/basic-fc.c (fallback_shape): Remove redundant
+	positioning block!
+
 2006-08-15  Behdad Esfahbod  <behdad@gnome.org>
 
 	* pango/pango-layout.c (pango_layout_run_get_extents):

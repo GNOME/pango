@@ -207,23 +207,6 @@ fallback_shape (PangoEngineShape *engine,
       p = g_utf8_next_char (p);
     }
 
-  /* Apply default positioning */
-  for (i = 0; i < glyphs->num_glyphs; i++)
-    {
-      if (glyphs->glyphs[i].glyph)
-	{
-	  PangoRectangle logical_rect;
-	  
-	  pango_font_get_glyph_extents (font, glyphs->glyphs[i].glyph, NULL, &logical_rect);
-	  glyphs->glyphs[i].geometry.width = logical_rect.width;
-	}
-      else
-	glyphs->glyphs[i].geometry.width = 0;
-      
-      glyphs->glyphs[i].geometry.x_offset = 0;
-      glyphs->glyphs[i].geometry.y_offset = 0;
-    }
-  
   if (analysis->level % 2 != 0)
     {
       /* Swap all glyphs */
