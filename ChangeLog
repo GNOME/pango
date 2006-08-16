@@ -1,5 +1,25 @@
 2006-08-15  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango/pango-layout.c (pango_layout_run_get_extents):
+	* pango/glyphstring.c (pango_glyph_string_extents_range):
+	Return if none of logical_rect or ink_rect is non-NULL.
+
+	* pango/pango-item.h (PangoAnalysis): Add new member centered_baseline
+	which if set, makes item rendered such that ascent == descent.
+
+	* pango/pango-context.c (itemize_state_init),
+	(itemize_state_add_character):
+	* pango/pango-renderer.c (pango_renderer_draw_layout_line):
+	Implement centered_baseline.
+
+	* pango/pangocairo-fcfont.c (pango_cairo_fc_font_get_metrics): When
+	adjusting ascent/descent for vertical fonts, adjust strikethrough and
+	underline position too.
+
+	* docs/tmpl/main.sgml: Document new struct member.
+
+2006-08-15  Behdad Esfahbod  <behdad@gnome.org>
+
 	* modules/basic/basic-fc.c (basic_engine_shape): Use analysis->gravity
 	to detect vertical fonts, instead of poking into the font_pattern.
 

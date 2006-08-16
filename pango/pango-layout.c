@@ -3910,9 +3910,16 @@ pango_layout_run_get_extents (PangoLayoutRun *run,
                               PangoRectangle *run_ink,
                               PangoRectangle *run_logical)
 {
+  PangoRectangle logical;
   ItemProperties properties;
 
+  if (G_UNLIKELY (!run_ink && !run_logical))
+    return;
+
   pango_layout_get_item_properties (run->item, &properties);
+
+  if (!run_logical && run->item->analysis.centered_baseline)
+    run_logical = &logical;
 
   if (properties.shape_set)
     imposed_extents (run->item->num_chars,
@@ -3958,6 +3965,9 @@ pango_layout_run_get_extents (PangoLayoutRun *run,
 
       pango_font_metrics_unref (metrics);
     }
+
+  if (run->item->analysis.centered_baseline)
+    properties.rise += run_logical->y + run_logical->height / 2;
 
   if (properties.rise != 0)
     {

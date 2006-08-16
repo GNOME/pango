@@ -577,6 +577,7 @@ struct _ItemizeState
   const char *embedding_end;
   guint8 embedding;
   PangoGravity gravity;
+  gboolean centered_baseline;
 
   PangoAttrIterator *attr_iter;
   gboolean free_attr_iter;
@@ -707,7 +708,10 @@ itemize_state_init (ItemizeState      *state,
    * proper gravity assignment.
    */
   state->gravity = context->base_gravity;
-  
+
+  state->centered_baseline = context->base_gravity == PANGO_GRAVITY_EAST
+			  || context->base_gravity == PANGO_GRAVITY_WEST;
+
   /* Initialize the attribute iterator
    */
   if (cached_iter)
@@ -901,6 +905,8 @@ itemize_state_add_character (ItemizeState     *state,
 	state->item->analysis.level |= 1;
 	break;
     }
+
+  state->item->analysis.centered_baseline = state->centered_baseline;
 
   state->item->analysis.language = state->derived_lang;
   

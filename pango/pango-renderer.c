@@ -479,7 +479,11 @@ pango_renderer_draw_layout_line (PangoRenderer    *renderer,
       gint rise;
       PangoLayoutRun *run = l->data;
       PangoAttrShape *shape_attr;
-      PangoRectangle ink_rect;
+      PangoRectangle ink_rect, *ink = NULL;
+      PangoRectangle logical_rect, *logical = NULL;
+
+      if (run->item->analysis.centered_baseline)
+        logical = &logical_rect;
 
       pango_renderer_prepare_run (renderer, run);
       
@@ -488,18 +492,27 @@ pango_renderer_draw_layout_line (PangoRenderer    *renderer,
       if (shape_attr)
 	{
 	  ink_rect = shape_attr->ink_rect;
+	  logical_rect = shape_attr->logical_rect;
 	  glyph_string_width = shape_attr->logical_rect.width;
 	}
       else
 	{
 	  if (renderer->underline != PANGO_UNDERLINE_NONE ||
 	      renderer->strikethrough)
-	      pango_glyph_string_extents (run->glyphs, run->item->analysis.font,
-					  &ink_rect, NULL);
-	  glyph_string_width = pango_glyph_string_get_width (run->glyphs);
+	    ink = &ink_rect;
+	  pango_glyph_string_extents (run->glyphs, run->item->analysis.font,
+				      ink, logical);
+	  if (logical)
+	    glyph_string_width = logical_rect.width;
+	  else
+	    glyph_string_width = pango_glyph_string_get_width (run->glyphs);
 	}
 
       state.logical_rect_end = x + x_off + glyph_string_width;
+
+      if (run->item->analysis.centered_baseline)
+        rise += logical_rect.y + logical_rect.height / 2;
+
 
       if (renderer->priv->color_set[PANGO_RENDER_PART_BACKGROUND])
 	{

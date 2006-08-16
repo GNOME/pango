@@ -216,7 +216,7 @@ pango_cairo_fc_font_get_metrics (PangoFont     *font,
   if (!tmp_list)
     {
       PangoContext *context;
-      int height;
+      int height, shift;
 
       if (!fcfont->fontmap)
 	return pango_font_metrics_new ();
@@ -248,7 +248,13 @@ pango_cairo_fc_font_get_metrics (PangoFont     *font,
 	  case PANGO_GRAVITY_WEST:
 	    info->metrics->ascent = height / 2;
 	}
-      info->metrics->descent = height - info->metrics->ascent;
+      shift = (height - info->metrics->ascent) - info->metrics->descent;
+      if (fcfont->is_hinted)
+        shift &= ~(PANGO_SCALE - 1);
+      info->metrics->descent += shift;
+      info->metrics->underline_position -= shift;
+      info->metrics->strikethrough_position -= shift;
+      info->metrics->ascent = height - info->metrics->descent;
 
       g_object_unref (context);
     }

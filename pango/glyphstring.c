@@ -166,6 +166,9 @@ pango_glyph_string_extents_range (PangoGlyphString *glyphs,
    */
   g_return_if_fail (start <= end);
 
+  if (G_UNLIKELY (!ink_rect && !logical_rect))
+    return;
+
   if (ink_rect)
     {
       ink_rect->x = 0;
