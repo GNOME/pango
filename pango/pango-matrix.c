@@ -20,6 +20,7 @@
  */
 
 #include <config.h>
+#include <stdlib.h>
 #include <math.h>
 
 #include "pango-types.h"
@@ -247,4 +248,31 @@ pango_matrix_get_font_scale_factor (const PangoMatrix *matrix)
 
       return minor;
     }
+}
+
+/**
+ * pango_matrix_to_gravity:
+ * @matrix: a #PangoMatrix
+ *
+ * Finds the gravity that best matches the rotation component
+ * in a #PangoMatrix.
+ *
+ * Return value: the gravity of @matrix, which will never be
+ * %PANGO_GRAVITY_AUTO
+ *
+ * Since: 1.16
+ */
+PangoGravity
+pango_matrix_to_gravity (const PangoMatrix *matrix)
+{
+  PangoGravity gravity;
+  double x = matrix->xy;
+  double y = matrix->yy;
+
+  if (abs (x) > abs (y))
+    gravity = x < 0 ? PANGO_GRAVITY_WEST : PANGO_GRAVITY_EAST;
+  else
+    gravity = y < 0 ? PANGO_GRAVITY_NORTH : PANGO_GRAVITY_SOUTH;
+
+  return gravity;
 }

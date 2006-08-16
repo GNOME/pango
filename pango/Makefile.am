@@ -481,3 +481,5 @@ if DISABLE_EXPLICIT_DEPS
 endif
 
 uninstall-local: uninstall-ms-lib uninstall-def-files
+
+TESTS = check.defs

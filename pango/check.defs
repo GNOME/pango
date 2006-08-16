@@ -1,0 +1,23 @@
+#!/bin/bash
+
+LANG=C
+
+test -z "$srcdir" && srcdir=.
+status=0
+
+for def in $srcdir/*.def; do
+	lib=${def%.def}
+	lib=${lib##*/}
+	so=.libs/lib${lib}-1.0.so
+
+	test -f $so || continue
+	echo Checking $def
+
+	nm $so | grep ' T ' | cut -d' ' -f3 | sort -u > NM
+	cut -f 2 $def | grep -v '^EXPORTS$' > DEF
+
+	diff DEF NM || status=1
+	rm -f DEF NM
+done
+
+exit $status

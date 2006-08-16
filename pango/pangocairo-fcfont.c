@@ -496,7 +496,7 @@ _pango_cairo_fc_font_new (PangoCairoFcFontMap        *cffontmap,
   PangoCairoFcFont *cffont;
   const PangoMatrix *pango_ctm;
   FcMatrix *fc_matrix;
-  double size, rotation;
+  double size;
   
   g_return_val_if_fail (PANGO_IS_CAIRO_FC_FONT_MAP (cffontmap), NULL);
   g_return_val_if_fail (pattern != NULL, NULL);
@@ -521,15 +521,8 @@ _pango_cairo_fc_font_new (PangoCairoFcFontMap        *cffontmap,
   else
     cairo_matrix_init_identity (&cffont->font_matrix);
 
-  switch (cffont->gravity)
-    {
-      default:
-      case PANGO_GRAVITY_SOUTH:	rotation =  0;		break;
-      case PANGO_GRAVITY_NORTH:	rotation =  M_PI;	break;
-      case PANGO_GRAVITY_EAST:	rotation = -M_PI_2;	break;
-      case PANGO_GRAVITY_WEST:	rotation = +M_PI_2;	break;
-    }
-  cairo_matrix_rotate(&cffont->font_matrix, rotation);
+  cairo_matrix_rotate(&cffont->font_matrix,
+		      pango_gravity_to_rotation (cffont->gravity));
 
   pango_ctm = pango_context_get_matrix (context);
 

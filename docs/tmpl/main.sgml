@@ -352,6 +352,15 @@ The #GObject type for #PangoGravity.
 @Returns: 
 
 
+<!-- ##### FUNCTION pango_gravity_to_rotation ##### -->
+<para>
+
+</para>
+
+@gravity: 
+@Returns: 
+
+
 <!-- ##### FUNCTION pango_break ##### -->
 <para>
 

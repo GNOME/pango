@@ -38,12 +38,46 @@ typedef struct _PangoFontMap PangoFontMap;
 typedef struct _PangoMatrix    PangoMatrix;
 typedef struct _PangoRectangle PangoRectangle;
 
+
+
+/* A index of a glyph into a font. Rendering system dependent */
+typedef guint32 PangoGlyph;
+
+
+
+#define PANGO_SCALE 1024
+#define PANGO_PIXELS(d) (((int)(d) + 512) >> 10)
+#define PANGO_PIXELS_FLOOR(d) (((int)(d)) >> 10)
+#define PANGO_PIXELS_CEIL(d) (((int)(d) + 1023) >> 10)
+/* The above expressions are just slightly wrong for floating point d;
+ * For example we'd expect PANGO_PIXELS(-512.5) => -1 but instead we get 0.
+ * That's unlikely to matter for practical use and the expression is much
+ * more compact and faster than alternatives that work exactly for both
+ * integers and floating point.
+ */
+
+/* Hint line position and thickness.
+ */
+void pango_quantize_line_geometry (int *thickness,
+				   int *position);
+
+
+
 /* Dummy typedef - internally it's a 'const char *' */
 typedef struct _PangoLanguage PangoLanguage;
 
-/* A index of a glyph into a font. Rendering system dependent
- */
-typedef guint32 PangoGlyph;
+#define PANGO_TYPE_LANGUAGE (pango_language_get_type ())
+
+GType          pango_language_get_type    (void);
+PangoLanguage *pango_language_from_string (const char *language);
+#define pango_language_to_string(language) ((const char *)language)
+
+G_CONST_RETURN char *pango_language_get_sample_string (PangoLanguage *language);
+
+gboolean      pango_language_matches  (PangoLanguage *language,
+				       const char *range_list);
+
+
 
 /* A rectangle. Used to store logical and physical extents of glyphs,
  * runs, strings, etc.
@@ -55,6 +89,89 @@ struct _PangoRectangle
   int width;
   int height;
 };
+
+/* Macros to translate from extents rectangles to ascent/descent/lbearing/rbearing
+ */
+#define PANGO_ASCENT(rect) (-(rect).y)
+#define PANGO_DESCENT(rect) ((rect).y + (rect).height)
+#define PANGO_LBEARING(rect) ((rect).x)
+#define PANGO_RBEARING(rect) ((rect).x + (rect).width)
+
+
+
+/**
+ * PangoDirection:
+ * @PANGO_DIRECTION_LTR: A strong left-to-right direction
+ * @PANGO_DIRECTION_RTL: A strong right-to-left direction
+ * @PANGO_DIRECTION_TTB_LTR: Deprecated value; treated the
+ *   same as %PANGO_DIRECTION_RTL.
+ * @PANGO_DIRECTION_TTB_RTL: Deprecated value; treated the
+ *   same as %PANGO_DIRECTION_LTR
+ * @PANGO_DIRECTION_WEAK_LTR: A weak left-to-right direction
+ * @PANGO_DIRECTION_WEAK_RTL: A weak right-to-left direction
+ * @PANGO_DIRECTION_NEUTRAL: No direction specified
+ * 
+ * The #PangoDirection type represents a direction in the
+ * Unicode bidirectional algorithm; not every value in this
+ * enumeration makes sense for every usage of #PangoDirection;
+ * for example, the return value of pango_unichar_direction()
+ * and pango_find_base_dir() cannot be %PANGO_DIRECTION_WEAK_LTR
+ * or %PANGO_DIRECTION_WEAK_RTL, since every character is either
+ * neutral or has a strong direction; on the other hand
+ * %PANGO_DIRECTION_NEUTRAL doesn't make sense to pass
+ * to pango_itemize_with_base_dir().
+ *
+ * The %PANGO_DIRECTION_TTB_LTR, %PANGO_DIRECTION_TTB_RTL
+ * values come from an earlier interpretation of this
+ * enumeration as the writing direction of a block of
+ * text and are no longer used; See #PangoGravity for how
+ * vertical text is handled in Pango.
+ **/			  
+typedef enum {
+  PANGO_DIRECTION_LTR,
+  PANGO_DIRECTION_RTL,
+  PANGO_DIRECTION_TTB_LTR,
+  PANGO_DIRECTION_TTB_RTL,
+  PANGO_DIRECTION_WEAK_LTR,
+  PANGO_DIRECTION_WEAK_RTL,
+  PANGO_DIRECTION_NEUTRAL
+} PangoDirection;
+
+PangoDirection pango_unichar_direction      (gunichar     ch);
+PangoDirection pango_find_base_dir          (const gchar *text,
+					     gint         length);
+
+#ifndef PANGO_DISABLE_DEPRECATED
+gboolean       pango_get_mirror_char        (gunichar     ch,
+					     gunichar    *mirrored_ch);
+#endif
+
+
+
+/**
+ * PangoGravity:
+ * @PANGO_GRAVITY_SOUTH: Glyphs stand upright (default)
+ * @PANGO_GRAVITY_EAST: Glyphs are rotated 90 degrees clockwise
+ * @PANGO_GRAVITY_NORTH: Glyphs are upside-down
+ * @PANGO_GRAVITY_WEST: Glyphs are rotated 90 degrees counter-clockwise
+ * 
+ * The #PangoGravity type represents the orientation of glyphs in a segment
+ * of text.  This is useful when rendering vertical text layouts.  In
+ * those situations, the layout is rotated using a non-identity PangoMatrix,
+ * and then glyph orientation is controlled using #PangoGravity.
+ *
+ * Since: 1.16
+ **/			  
+typedef enum {
+  PANGO_GRAVITY_SOUTH,
+  PANGO_GRAVITY_EAST,
+  PANGO_GRAVITY_NORTH,
+  PANGO_GRAVITY_WEST
+} PangoGravity;
+
+double pango_gravity_to_rotation (PangoGravity gravity);
+
+
 
 /**
  * PangoMatrix:
@@ -124,100 +241,9 @@ void pango_matrix_rotate    (PangoMatrix *matrix,
 void pango_matrix_concat    (PangoMatrix       *matrix,
 			     const PangoMatrix *new_matrix);
 double pango_matrix_get_font_scale_factor (const PangoMatrix *matrix);
-
-#define PANGO_SCALE 1024
-#define PANGO_PIXELS(d) (((int)(d) + 512) >> 10)
-#define PANGO_PIXELS_FLOOR(d) (((int)(d)) >> 10)
-#define PANGO_PIXELS_CEIL(d) (((int)(d) + 1023) >> 10)
-/* The above expressions are just slightly wrong for floating point d;
- * For example we'd expect PANGO_PIXELS(-512.5) => -1 but instead we get 0.
- * That's unlikely to matter for practical use and the expression is much
- * more compact and faster than alternatives that work exactly for both
- * integers and floating point.
- */
-
-/* Macros to translate from extents rectangles to ascent/descent/lbearing/rbearing
- */
-#define PANGO_ASCENT(rect) (-(rect).y)
-#define PANGO_DESCENT(rect) ((rect).y + (rect).height)
-#define PANGO_LBEARING(rect) ((rect).x)
-#define PANGO_RBEARING(rect) ((rect).x + (rect).width)
-
-/**
- * PangoDirection:
- * @PANGO_DIRECTION_LTR: A strong left-to-right direction
- * @PANGO_DIRECTION_RTL: A strong right-to-left direction
- * @PANGO_DIRECTION_TTB_LTR: Deprecated value; treated the
- *   same as %PANGO_DIRECTION_RTL.
- * @PANGO_DIRECTION_TTB_RTL: Deprecated value; treated the
- *   same as %PANGO_DIRECTION_LTR
- * @PANGO_DIRECTION_WEAK_LTR: A weak left-to-right direction
- * @PANGO_DIRECTION_WEAK_RTL: A weak right-to-left direction
- * @PANGO_DIRECTION_NEUTRAL: No direction specified
- * 
- * The #PangoDirection type represents a direction in the
- * Unicode bidirectional algorithm; not every value in this
- * enumeration makes sense for every usage of #PangoDirection;
- * for example, the return value of pango_unichar_direction()
- * and pango_find_base_dir() cannot be %PANGO_DIRECTION_WEAK_LTR
- * or %PANGO_DIRECTION_WEAK_RTL, since every character is either
- * neutral or has a strong direction; on the other hand
- * %PANGO_DIRECTION_NEUTRAL doesn't make sense to pass
- * to pango_itemize_with_base_dir().
- *
- * The %PANGO_DIRECTION_TTB_LTR, %PANGO_DIRECTION_TTB_RTL
- * values come from an earlier interpretation of this
- * enumeration as the writing direction of a block of
- * text and are no longer used; See #PangoGravity for how
- * vertical text is handled in Pango.
- **/			  
-typedef enum {
-  PANGO_DIRECTION_LTR,
-  PANGO_DIRECTION_RTL,
-  PANGO_DIRECTION_TTB_LTR,
-  PANGO_DIRECTION_TTB_RTL,
-  PANGO_DIRECTION_WEAK_LTR,
-  PANGO_DIRECTION_WEAK_RTL,
-  PANGO_DIRECTION_NEUTRAL
-} PangoDirection;
-
-/**
- * PangoGravity:
- * @PANGO_GRAVITY_SOUTH: Glyphs stand upright (default)
- * @PANGO_GRAVITY_EAST: Glyphs are rotated 90 degrees clockwise
- * @PANGO_GRAVITY_NORTH: Glyphs are upside-down
- * @PANGO_GRAVITY_WEST: Glyphs are rotated 90 degrees counter-clockwise
- * 
- * The #PangoGravity type represents the orientation of glyphs in a segment
- * of text.  This is useful when rendering vertical text layouts.  In
- * those situations, the layout is rotated using a non-identity PangoMatrix,
- * and then glyph orientation is controlled using #PangoGravity.
- **/			  
-typedef enum {
-  PANGO_GRAVITY_SOUTH,
-  PANGO_GRAVITY_EAST,
-  PANGO_GRAVITY_NORTH,
-  PANGO_GRAVITY_WEST
-} PangoGravity;
-
-#define PANGO_TYPE_LANGUAGE (pango_language_get_type ())
-
-GType          pango_language_get_type    (void);
-PangoLanguage *pango_language_from_string (const char *language);
-#define pango_language_to_string(language) ((const char *)language)
-
-gboolean      pango_language_matches  (PangoLanguage *language,
-				       const char *range_list);
-
-#ifndef PANGO_DISABLE_DEPRECATED
-gboolean       pango_get_mirror_char        (gunichar     ch,
-					     gunichar    *mirrored_ch);
-#endif
+PangoGravity pango_matrix_to_gravity (const PangoMatrix *matrix);
 
 
-PangoDirection pango_unichar_direction      (gunichar     ch);
-PangoDirection pango_find_base_dir          (const gchar *text,
-					     gint         length);
 
 G_END_DECLS
 

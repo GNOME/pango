@@ -1,6 +1,7 @@
 EXPORTS
 	pango_fc_decoder_get_charset
 	pango_fc_decoder_get_glyph
+	pango_fc_decoder_get_type
 	pango_fc_font_create_metrics_for_context
 	pango_fc_font_description_from_pattern
 	pango_fc_font_get_glyph
@@ -19,6 +20,7 @@ EXPORTS
 	pango_ft2_font_get_coverage
 	pango_ft2_font_get_face
 	pango_ft2_font_get_kerning
+	pango_ft2_font_get_type
 	pango_ft2_font_map_create_context
 	pango_ft2_font_map_for_display
 	pango_ft2_font_map_get_type
@@ -34,6 +36,7 @@ EXPORTS
 	pango_ft2_render_layout_line_subpixel
 	pango_ft2_render_layout_subpixel
 	pango_ft2_render_transformed
+	pango_ft2_renderer_get_type
 	pango_ft2_shutdown_display
 	pango_ot_buffer_add_glyph
 	pango_ot_buffer_clear

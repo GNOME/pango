@@ -2,6 +2,7 @@
 
 TEST_TEXTS =			\
 	test-arabic.txt		\
+	test-chinese.txt	\
 	test-devanagari.txt	\
 	test-hebrew.txt		\
 	test-ipa.txt		\

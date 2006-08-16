@@ -1,5 +1,40 @@
 2006-08-16  Behdad Esfahbod  <behdad@gnome.org>
 
+	* examples/viewer-pangocairo.c (render_callback): Render block
+	progression and line direction arrows, and a base gravity roof-top.
+
+	* pango/pango-matrix.c (pango_matrix_to_gravity): New function.
+
+	* pango/pango-utils.c (pango_gravity_to_rotation): New function.
+
+	* pango/pangocairo-fcfont.c (_pango_cairo_fc_font_new): Use
+	pango_gravity_to_rotation().
+
+	* pango/pango-utils.h:
+	* pango/pango-types.h:
+	Reorder a bit.
+
+	* examples/Makefile.am:
+	* examples/test-chinese.txt: New test text for Chinese.
+
+	* pango/check.defs: New script that checks that all the exported
+	symbols are listed in the respective .def file. (only checks the
+	libraries actually built.  No win32 for example.)
+
+	* pango/Makefile.am: Hook check.defs as a 'make check' test.
+
+	* pango/pango.def:
+	* pango/pangoft2.def:
+	* pango/pangocairo.def:
+	Update.
+
+	* docs/tmpl/glyphs.sgml:
+	* docs/tmpl/main.sgml:
+	* docs/pango-sections.txt:
+	Update.
+
+2006-08-16  Behdad Esfahbod  <behdad@gnome.org>
+
 	* modules/basic/basic-fc.c (fallback_shape): Remove redundant
 	positioning block!
 

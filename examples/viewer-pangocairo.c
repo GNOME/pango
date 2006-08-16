@@ -142,17 +142,108 @@ render_callback (PangoLayout *layout,
 
   cairo_save (cr);
   cairo_translate (cr, x, y);
-  pango_cairo_show_layout (cr,
-			   layout);
 
   if (show_borders)
     {
+      cairo_pattern_t *pattern;
       PangoRectangle ink, logical;
       double lw = cairo_get_line_width (cr);
       PangoLayoutIter* iter;
       
       pango_layout_get_extents (layout, &ink, &logical);
 
+      /* draw resolved gravity "roof" in blue */
+      cairo_save (cr);
+      cairo_translate (cr,
+		       (double)logical.x / PANGO_SCALE,
+		       (double)logical.y / PANGO_SCALE);
+      cairo_scale     (cr,
+		       (double)logical.width / PANGO_SCALE * 0.5,
+		       (double)logical.height / PANGO_SCALE * 0.5);
+      cairo_translate   (cr,  1.0,  1.0);
+      cairo_rotate (cr,
+	pango_gravity_to_rotation (
+	  pango_context_get_base_gravity (
+	    pango_layout_get_context (layout))));
+      cairo_move_to     (cr, -1.0, -1.1);
+      cairo_rel_line_to (cr, +1.0, -0.2); /* /   */
+      cairo_rel_line_to (cr, +1.0, +0.2); /*   \ */
+      cairo_close_path  (cr);             /*  -  */
+      pattern = cairo_pattern_create_linear (0, -1.1, 0, -1.3);
+      cairo_pattern_add_color_stop_rgba (pattern, 0.0, 0.0, 0.0, 1.0, 0.0);
+      cairo_pattern_add_color_stop_rgba (pattern, 1.0, 0.0, 0.0, 1.0, 0.15);
+      cairo_set_source (cr, pattern);
+      cairo_fill_preserve (cr);
+      /* silly line_width is not locked :(. get rid of scale. */
+      cairo_restore (cr);
+      cairo_save (cr);
+      cairo_set_source_rgba (cr, 0.0, 0.0, 0.7, 0.2);
+      cairo_stroke (cr);
+      cairo_restore (cr);
+      
+
+      /* draw block progression arrow in green */
+      cairo_save (cr);
+      cairo_translate (cr,
+		       (double)logical.x / PANGO_SCALE,
+		       (double)logical.y / PANGO_SCALE);
+      cairo_scale     (cr,
+		       (double)logical.width / PANGO_SCALE * 0.5,
+		       (double)logical.height / PANGO_SCALE * 0.5);
+      cairo_translate   (cr,  1.0,  1.0);
+      cairo_move_to     (cr, -0.4, -0.7);
+      cairo_rel_line_to (cr, +0.8,  0.0); /*  --   */
+      cairo_rel_line_to (cr,  0.0, +0.9); /*    |  */
+      cairo_rel_line_to (cr, +0.4,  0.0); /*     - */
+      cairo_rel_line_to (cr, -0.8, +0.5); /*    /  */
+      cairo_rel_line_to (cr, -0.8, -0.5); /*  \    */
+      cairo_rel_line_to (cr, +0.4,  0.0); /* -     */
+      cairo_close_path  (cr);             /*  |    */
+      pattern = cairo_pattern_create_linear (0, -0.7, 0, 0.7);
+      cairo_pattern_add_color_stop_rgba (pattern, 0.0, 0.0, 1.0, 0.0, 0.0);
+      cairo_pattern_add_color_stop_rgba (pattern, 1.0, 0.0, 1.0, 0.0, 0.15);
+      cairo_set_source (cr, pattern);
+      cairo_fill_preserve (cr);
+      /* silly line_width is not locked :(. get rid of scale. */
+      cairo_restore (cr);
+      cairo_save (cr);
+      cairo_set_source_rgba (cr, 0.0, 0.7, 0.0, 0.2);
+      cairo_stroke (cr);
+      cairo_restore (cr);
+      
+      /* draw baselines with line direction arrow in orange */
+      cairo_save (cr);
+      cairo_set_source_rgba (cr, 1.0, 0.5, 0.0, 0.5);
+      iter = pango_layout_get_iter (layout);
+      do
+        {
+	  PangoLayoutLine *line = pango_layout_iter_get_line (iter);
+	  double width = (double)logical.width / PANGO_SCALE;
+
+	  y = pango_layout_iter_get_baseline (iter);
+	  cairo_save (cr);
+	  cairo_translate (cr,
+			 (double)logical.x / PANGO_SCALE + width * 0.5,
+			 (double)y / PANGO_SCALE);
+	  if (line->resolved_dir)
+	    cairo_scale (cr, -1, 1);
+	  cairo_move_to     (cr, -width * .5, -lw*0.2);
+	  cairo_rel_line_to (cr, +width * .9, -lw*0.3);
+	  cairo_rel_line_to (cr,  0,          -lw);
+	  cairo_rel_line_to (cr, +width * .1, +lw*1.5);
+	  cairo_rel_line_to (cr, -width * .1, +lw*1.5);
+	  cairo_rel_line_to (cr, 0,           -lw);
+	  cairo_rel_line_to (cr, -width * .9, -lw*0.3);
+	  cairo_close_path (cr);
+	  cairo_fill (cr);
+	  cairo_restore (cr);
+        }
+      while (pango_layout_iter_next_line (iter));
+      pango_layout_iter_free (iter);
+      cairo_restore (cr);
+
+      /* draw the logical rect in red */
+      cairo_save (cr);
       cairo_set_source_rgba (cr, 1.0, 0.0, 0.0, 0.5);
       cairo_rectangle (cr,
 		       (double)logical.x / PANGO_SCALE - lw / 2,
@@ -160,26 +251,10 @@ render_callback (PangoLayout *layout,
 		       (double)logical.width / PANGO_SCALE + lw,
 		       (double)logical.height / PANGO_SCALE + lw);
       cairo_stroke (cr);
-      
-      cairo_save (cr);
-      cairo_set_line_width (cr, lw / 2);
-      cairo_set_source_rgba (cr, 0.4, 0.4, 1.0, 0.75);
-      iter = pango_layout_get_iter (layout);
-      do
-        {
-	  y = pango_layout_iter_get_baseline (iter);
-	  cairo_move_to (cr,
-		       (double)logical.x / PANGO_SCALE,
-		       (double)y / PANGO_SCALE + lw / 4);
-	  cairo_rel_line_to (cr,
-		       (double)logical.width / PANGO_SCALE,
-		       0);
-	  cairo_stroke (cr);
-        }
-      while (pango_layout_iter_next_line (iter));
-      pango_layout_iter_free (iter);
       cairo_restore (cr);
 
+      /* draw the ink rect in green */
+      cairo_save (cr);
       cairo_set_source_rgba (cr, 0.0, 1.0, 0.0, 0.5);
       cairo_rectangle (cr,
 		       (double)ink.x / PANGO_SCALE - lw / 2,
@@ -187,8 +262,11 @@ render_callback (PangoLayout *layout,
 		       (double)ink.width / PANGO_SCALE + lw,
 		       (double)ink.height / PANGO_SCALE + lw);
       cairo_stroke (cr);
-
+      cairo_restore (cr);
     }
+
+  pango_cairo_show_layout (cr, layout);
+
   cairo_restore (cr);
 }
 

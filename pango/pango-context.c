@@ -413,6 +413,8 @@ pango_context_get_base_dir (PangoContext *context)
  * Sets the base gravity for the context.
  *
  * The base gravity is used in laying vertical text out.
+ *
+ * Since: 1.16
  **/
 void
 pango_context_set_base_gravity (PangoContext  *context,
@@ -431,6 +433,8 @@ pango_context_set_base_gravity (PangoContext  *context,
  * pango_context_set_base_gravity().
  * 
  * Return value: the base gravity for the context.
+ *
+ * Since: 1.16
  **/
 PangoGravity
 pango_context_get_base_gravity (PangoContext *context)
