@@ -1627,7 +1627,7 @@ pango_get_log_attrs (const char    *text,
   int chars_in_range;
   static guint engine_type_id = 0;
   static guint render_type_id = 0;
-  PangoAnalysis analysis = {};
+  PangoAnalysis analysis = { 0 };
 
   analysis.level = level;
 

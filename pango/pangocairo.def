@@ -5,8 +5,8 @@ EXPORTS
 	pango_cairo_context_set_resolution
 	pango_cairo_create_layout
 	pango_cairo_error_underline_path
-	pango_cairo_fc_font_get_type
-	pango_cairo_fc_font_map_get_type
+;	pango_cairo_fc_font_get_type
+;	pango_cairo_fc_font_map_get_type
 	pango_cairo_font_get_type
 	pango_cairo_font_map_create_context
 	pango_cairo_font_map_get_default

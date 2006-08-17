@@ -1647,9 +1647,9 @@ pango_gravity_to_rotation (PangoGravity gravity)
     {
       default:
       case PANGO_GRAVITY_SOUTH:	rotation =  0;		break;
-      case PANGO_GRAVITY_NORTH:	rotation =  M_PI;	break;
-      case PANGO_GRAVITY_EAST:	rotation = -M_PI_2;	break;
-      case PANGO_GRAVITY_WEST:	rotation = +M_PI_2;	break;
+      case PANGO_GRAVITY_NORTH:	rotation =  G_PI;	break;
+      case PANGO_GRAVITY_EAST:	rotation = -G_PI_2;	break;
+      case PANGO_GRAVITY_WEST:	rotation = +G_PI_2;	break;
     }
 
   return rotation;
