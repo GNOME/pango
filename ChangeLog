@@ -1,3 +1,10 @@
+2006-08-17  Tor Lillqvist  <tml@novell.com>
+
+	* pangowin32.pc.in: Drop @WIN32_LIBS@, no need to search -lgdi32
+	when linking apps that link with libcairowin32.
+
+	* pango/pango.def: Add two symbols.
+
 2006-08-16  Behdad Esfahbod  <behdad@gnome.org>
 
 	Bug 351585 – API documentation issues with 2.15 release

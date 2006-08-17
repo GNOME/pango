@@ -179,6 +179,8 @@ EXPORTS
 	pango_glyph_string_new
 	pango_glyph_string_set_size
 	pango_glyph_string_x_to_index
+	pango_gravity_get_type
+	pango_gravity_to_rotation
 	pango_is_zero_width
 	pango_item_copy
 	pango_item_free
