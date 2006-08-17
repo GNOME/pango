@@ -1,3 +1,10 @@
+2006-08-17  Behdad Esfahbod  <behdad@gnome.org>
+
+	Part of Bug 348825 – pango should optimize away calls to FcFontSort as
+	much as possible
+
+	* pango/pangofc-fontmap.c: Increase FONTSET_CACHE_SIZE from 16 to 64.
+
 2006-08-16  Behdad Esfahbod  <behdad@gnome.org>
 
 	Bug 351585 – API documentation issues with 2.15 release
