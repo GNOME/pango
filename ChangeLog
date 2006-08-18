@@ -1,3 +1,12 @@
+2006-08-17  Hans Breuer  <hans@breuer.org>
+
+	* pango/makefile.msc pango/pango.def : updated
+	* pango/break.c(1630) : error C2059: syntax error : '}' Intializing a 
+	struct with empty braces is not supported with MSVC, instead use 0.
+	* pango/pangocairo.def : removed pango_fc_font_(map_)get_type
+	pangocairo has either win32 fonts or freetype. The former is more usual.
+	* pango/pango-utils.c : replaced M_PI by G_PI (from glib/gtypes.h).
+
 2006-08-17  Behdad Esfahbod  <behdad@gnome.org>
 
 	Part of Bug 348825 – pango should optimize away calls to FcFontSort as
