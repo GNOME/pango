@@ -51,9 +51,9 @@ EXPORTS
 	pango_color_parse
 	pango_config_key_get
 	pango_context_get_base_dir
+	pango_context_get_base_gravity
 	pango_context_get_font_description
 	pango_context_get_font_map
-	pango_context_get_base_gravity
 	pango_context_get_language
 	pango_context_get_matrix
 	pango_context_get_metrics
@@ -63,9 +63,9 @@ EXPORTS
 	pango_context_load_fontset
 	pango_context_new
 	pango_context_set_base_dir
+	pango_context_set_base_gravity
 	pango_context_set_font_description
 	pango_context_set_font_map
-	pango_context_set_base_gravity
 	pango_context_set_language
 	pango_context_set_matrix
 	pango_coverage_copy
@@ -277,6 +277,7 @@ EXPORTS
 	pango_matrix_get_type
 	pango_matrix_rotate
 	pango_matrix_scale
+	pango_matrix_to_gravity
 	pango_matrix_translate
 	pango_module_register
 	pango_parse_markup
@@ -311,7 +312,7 @@ EXPORTS
 	pango_script_get_type
 	pango_script_iter_free
 	pango_script_iter_get_range
-	pango_script_iter_new 
+	pango_script_iter_new
 	pango_script_iter_next
 	pango_shape
 	pango_skip_space
