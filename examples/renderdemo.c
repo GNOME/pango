@@ -48,7 +48,7 @@ const char *opt_output = NULL;
 int opt_margin = 10;
 int opt_markup = FALSE;
 gboolean opt_rtl = FALSE;
-int opt_rotate = 0;
+double opt_rotate = 0;
 gboolean opt_auto_dir = TRUE;
 const char *opt_text = NULL;
 gboolean opt_waterfall = FALSE;
@@ -601,7 +601,7 @@ parse_options (int argc, char *argv[])
      "pangorc file to use (default is ./pangorc)",		      "file"},
     {"rtl",		0, 0, G_OPTION_ARG_NONE,			&opt_rtl,
      "Set base direction to right-to-left", 				NULL},
-    {"rotate",		0, 0, G_OPTION_ARG_INT,				&opt_rotate,
+    {"rotate",		0, 0, G_OPTION_ARG_DOUBLE,			&opt_rotate,
      "Angle at which to rotate results",		 	   "degrees"},
     {"runs",		'n', 0, G_OPTION_ARG_INT,			&opt_runs,
      "Run Pango layout engine this many times",			   "integer"},

@@ -1,5 +1,11 @@
 2006-08-20  Behdad Esfahbod  <behdad@gnome.org>
 
+	* examples/renderdemo.c (parse_options):
+	* examples/renderdemo.h: Change the --rotate parameter to double now
+	that we depend on a recent-enough glib.
+
+2006-08-20  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 351496 – PangoAnalysis::gravity breaks binary compatibility
 
 	* pango/pango-item.h (PangoAnalysis): Use bitfields for level.

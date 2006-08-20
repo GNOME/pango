@@ -64,7 +64,7 @@ extern gboolean opt_header;
 extern int opt_margin;
 extern int opt_markup;
 extern gboolean opt_rtl;
-extern int opt_rotate;
+extern double opt_rotate;
 extern gboolean opt_auto_dir;
 extern const char *opt_text;
 extern gboolean opt_waterfall;
