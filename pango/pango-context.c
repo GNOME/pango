@@ -37,6 +37,7 @@ struct _PangoContext
   PangoLanguage *language;
   PangoDirection base_dir;
   PangoGravity base_gravity;
+  PangoGravity resolved_gravity;
 
   PangoFontDescription *font_desc;
 
@@ -59,7 +60,7 @@ static void
 pango_context_init (PangoContext *context)
 {
   context->base_dir = PANGO_DIRECTION_WEAK_LTR;
-  context->base_gravity = PANGO_GRAVITY_SOUTH;
+  context->resolved_gravity = context->base_gravity = PANGO_GRAVITY_SOUTH;
   context->language = NULL;
   context->font_map = NULL;
 
@@ -128,6 +129,15 @@ pango_context_new (void)
   return context;
 }
 
+static void
+update_resolved_gravity (PangoContext *context)
+{
+  if (context->base_gravity == PANGO_GRAVITY_AUTO)
+    context->resolved_gravity = pango_matrix_to_gravity (context->matrix);
+  else
+    context->resolved_gravity = context->base_gravity;
+}
+
 /**
  * pango_context_set_matrix:
  * @context: a #PangoContext
@@ -155,6 +165,8 @@ pango_context_set_matrix (PangoContext       *context,
     context->matrix = pango_matrix_copy (matrix);
   else
     context->matrix = NULL;
+
+  update_resolved_gravity (context);
 }
 
 /**
@@ -423,6 +435,8 @@ pango_context_set_base_gravity (PangoContext  *context,
   g_return_if_fail (context != NULL);
 
   context->base_gravity = gravity;
+
+  update_resolved_gravity (context);
 }
 
 /**
@@ -442,6 +456,27 @@ pango_context_get_base_gravity (PangoContext *context)
   g_return_val_if_fail (context != NULL, PANGO_GRAVITY_SOUTH);
 
   return context->base_gravity;
+}
+
+/**
+ * pango_context_get_gravity:
+ * @context: a #PangoContext
+ * 
+ * Retrieves the gravity for the context. This is similar to
+ * pango_context_get_base_gravity(), except for when the base gravity
+ * is %PANGO_GRAVITY_AUTO for which pango_matrix_to_gravity() is used
+ * to return the gravity from the current context matrix.
+ * 
+ * Return value: the resolved gravity for the context.
+ *
+ * Since: 1.16
+ **/
+PangoGravity
+pango_context_get_gravity (PangoContext *context)
+{
+  g_return_val_if_fail (context != NULL, PANGO_GRAVITY_SOUTH);
+
+  return context->resolved_gravity;
 }
 
 /**********************************************************************/
@@ -711,10 +746,10 @@ itemize_state_init (ItemizeState      *state,
   /* FIXME: Set gravity to base gravity for now, until we do
    * proper gravity assignment.
    */
-  state->gravity = context->base_gravity;
+  state->gravity = context->resolved_gravity;
 
-  state->centered_baseline = context->base_gravity == PANGO_GRAVITY_EAST
-			  || context->base_gravity == PANGO_GRAVITY_WEST;
+  state->centered_baseline = context->resolved_gravity == PANGO_GRAVITY_EAST
+			  || context->resolved_gravity == PANGO_GRAVITY_WEST;
 
   /* Initialize the attribute iterator
    */
@@ -1014,6 +1049,7 @@ get_shaper_and_font (ItemizeState      *state,
 	{
 	  case PANGO_GRAVITY_SOUTH:
 	  case PANGO_GRAVITY_NORTH:
+	  case PANGO_GRAVITY_AUTO:
 	  default:
             script = state->script;
 	    break;

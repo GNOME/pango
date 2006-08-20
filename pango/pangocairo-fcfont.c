@@ -239,6 +239,7 @@ pango_cairo_fc_font_get_metrics (PangoFont     *font,
       switch (cffont->gravity)
 	{
 	  default:
+	  case PANGO_GRAVITY_AUTO:
 	  case PANGO_GRAVITY_SOUTH:
 	    break;
 	  case PANGO_GRAVITY_NORTH:
@@ -299,6 +300,7 @@ pango_cairo_fc_font_glyph_extents_cache_init (PangoCairoFcFont *cffont)
   switch (cffont->gravity)
     {
       default:
+      case PANGO_GRAVITY_AUTO:
       case PANGO_GRAVITY_SOUTH:
         cffont->font_extents.y = - PANGO_UNITS (font_extents.ascent);
 	break;
@@ -506,7 +508,7 @@ _pango_cairo_fc_font_new (PangoCairoFcFontMap        *cffontmap,
 			 NULL);
 
   /* FIXME: support per-item gravity */
-  cffont->gravity = pango_context_get_base_gravity (context);
+  cffont->gravity = pango_context_get_gravity (context);
 
   if  (FcPatternGetMatrix (pattern,
 			   FC_MATRIX, 0, &fc_matrix) == FcResultMatch)

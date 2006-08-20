@@ -1,5 +1,29 @@
 2006-08-20  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango/pango-matrix.c (pango_matrix_to_gravity): Correct switched
+	return value of EAST/WEST.
+
+	* pango/pango-types.h (PangoGravity): Add PANGO_GRAVITY_AUTO.
+	* pango/pango-context.h: Add pango_context_get_gravity().
+
+	* examples/renderdemo.c (parse_gravity), (parse_options):
+	* pango/pango-context.c (pango_context_init),
+	(update_resolved_gravity), (pango_context_set_matrix),
+	(pango_context_set_base_gravity), (pango_context_get_gravity),
+	(itemize_state_init), (get_shaper_and_font):
+	* pango/pango-layout.c (line_set_resolved_dir):
+	* pango/pangocairo-fcfont.c (pango_cairo_fc_font_get_metrics),
+	(pango_cairo_fc_font_glyph_extents_cache_init),
+	(_pango_cairo_fc_font_new):
+	* pango/pangofc-fontmap.c (pango_fc_make_pattern),
+	(pango_fc_font_map_load_fontset):
+	* pango/pango.def:
+	* docs/pango-sections.txt:
+	* docs/tmpl/main.sgml:
+	Update to above.
+
+2006-08-20  Behdad Esfahbod  <behdad@gnome.org>
+
 	* examples/renderdemo.c (parse_options):
 	* examples/renderdemo.h: Change the --rotate parameter to double now
 	that we depend on a recent-enough glib.

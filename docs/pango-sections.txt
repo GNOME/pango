@@ -29,6 +29,7 @@ pango_context_get_base_dir
 pango_context_set_base_dir
 pango_context_get_base_gravity
 pango_context_set_base_gravity
+pango_context_get_gravity
 pango_context_get_matrix
 pango_context_set_matrix
 pango_context_load_font

@@ -3028,7 +3028,7 @@ line_set_resolved_dir (PangoLayoutLine *line,
    * A similar dance is performed in pango-context.c:
    * itemize_state_add_character().  Keep in synch.
    */
-  switch (pango_context_get_base_gravity (line->layout->context))
+  switch (pango_context_get_gravity (line->layout->context))
     {
     case PANGO_GRAVITY_SOUTH:
     default:

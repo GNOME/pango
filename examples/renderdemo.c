@@ -403,7 +403,7 @@ parse_gravity (const char *name,
         g_set_error(error,
 		    G_OPTION_ERROR, 
 		    G_OPTION_ERROR_BAD_VALUE,
-		    "Argument for --gravity must be one of south/east/north/west");
+		    "Argument for --gravity must be one of south/east/north/west/auto");
 	ret = FALSE;
     }
 
@@ -584,7 +584,7 @@ parse_options (int argc, char *argv[])
     {"font",		0, 0, G_OPTION_ARG_STRING,			&opt_font,
      "Set the font description",			       "description"},
     {"gravity",		0, 0, G_OPTION_ARG_CALLBACK,			&parse_gravity,
-     "Gravity",					     "south/east/north/west"},
+     "Gravity",					"south/east/north/west/auto"},
     {"header",		0, 0, G_OPTION_ARG_NONE,			&opt_header,
      "Display the options in the output",				NULL},
     {"hinting",		0, 0, G_OPTION_ARG_CALLBACK,			&parse_hinting,

@@ -812,6 +812,7 @@ pango_fc_make_pattern (const  PangoFontDescription *description,
   width = pango_fc_convert_width_to_fc (pango_font_description_get_stretch (description));
 #endif
 
+  /* FIXME: get gravity from description */
   switch (gravity)
     {
       case PANGO_GRAVITY_SOUTH:
@@ -1233,7 +1234,7 @@ pango_fc_font_map_load_fontset (PangoFontMap                 *fontmap,
 {
   /* FIXME: support per-item gravity */
  PangoFcPatternSet *patterns = pango_fc_font_map_get_patterns (fontmap, context, desc, language,
-							       pango_context_get_base_gravity (context));
+							       pango_context_get_gravity (context));
   PangoFontset *result;
   int i;
   

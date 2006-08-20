@@ -54,6 +54,7 @@ EXPORTS
 	pango_context_get_base_gravity
 	pango_context_get_font_description
 	pango_context_get_font_map
+	pango_context_get_gravity
 	pango_context_get_language
 	pango_context_get_matrix
 	pango_context_get_metrics
