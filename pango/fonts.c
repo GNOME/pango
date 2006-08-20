@@ -39,6 +39,7 @@ struct _PangoFontDescription
   PangoVariant variant;
   PangoWeight weight;
   PangoStretch stretch;
+  PangoGravity gravity;
 
   guint16 mask;
   guint static_family : 1;
@@ -68,6 +69,7 @@ static const PangoFontDescription pfd_defaults = {
   PANGO_VARIANT_NORMAL,	/* variant */
   PANGO_WEIGHT_NORMAL,	/* weight */
   PANGO_STRETCH_NORMAL,	/* stretch */
+  PANGO_GRAVITY_SOUTH,  /* gravity */
 
   0,			/* mask */
   0,			/* static_family */
@@ -423,6 +425,58 @@ pango_font_description_get_size_is_absolute (const PangoFontDescription *desc)
 }
 
 /**
+ * pango_font_description_set_gravity:
+ * @desc: a #PangoFontDescription
+ * @gravity: the gravity for the font description.
+ * 
+ * Sets the gravity field of a font description. The gravity field
+ * specifies how the glyphs should be rotated.  If @gravity is
+ * %PANGO_GRAVITY_AUTO, this actually unsets the gravity mask on
+ * the font description.
+ *
+ * This function is seldom useful to the user.  Gravity should normally
+ * be set on a #PangoContext.
+ *
+ * Since: 1.16
+ **/
+void
+pango_font_description_set_gravity (PangoFontDescription *desc,
+				    PangoGravity          gravity)
+{
+  g_return_if_fail (desc != NULL);
+
+  if (gravity == PANGO_GRAVITY_AUTO)
+    {
+      pango_font_description_unset_fields (desc, PANGO_FONT_MASK_GRAVITY);
+      return;
+    }
+
+  desc->gravity = gravity;
+  desc->mask |= PANGO_FONT_MASK_GRAVITY;
+}
+
+/**
+ * pango_font_description_get_gravity:
+ * @desc: a #PangoFontDescription
+ * 
+ * Gets the gravity field of a font description. See
+ * pango_font_description_set_gravity().
+ * 
+ * Return value: the gravity field for the font description. Use
+ *   pango_font_description_get_set_fields() to find out if
+ *   the field was explicitely set or not.
+ *
+ * Since: 1.16
+ **/
+PangoGravity
+pango_font_description_get_gravity (const PangoFontDescription *desc)
+{
+  g_return_val_if_fail (desc != NULL, pfd_defaults.gravity);
+  
+  return desc->gravity;
+}
+
+/**
  * pango_font_description_get_set_fields:
  * @desc: a #PangoFontDescription
  * 
@@ -534,6 +588,8 @@ pango_font_description_merge_static (PangoFontDescription       *desc,
       desc->size = desc_to_merge->size;
       desc->size_is_absolute = desc_to_merge->size_is_absolute;
     }
+  if (new_mask & PANGO_FONT_MASK_GRAVITY)
+    desc->gravity = desc_to_merge->gravity;
 
   desc->mask |= new_mask;
 }
@@ -579,7 +635,8 @@ pango_font_description_better_match (const PangoFontDescription *desc,
   g_return_val_if_fail (new_match != NULL, G_MAXINT);
   
   if (new_match->variant == desc->variant &&
-      new_match->stretch == desc->stretch)
+      new_match->stretch == desc->stretch &&
+      new_match->gravity == desc->gravity)
     {
       int old_distance = old_match ? compute_distance (desc, old_match) : G_MAXINT;
       int new_distance = compute_distance (desc, new_match);
@@ -667,6 +724,7 @@ pango_font_description_equal (const PangoFontDescription  *desc1,
 	 desc1->stretch == desc2->stretch &&
 	 desc1->size == desc2->size &&
 	 desc1->size_is_absolute == desc2->size_is_absolute &&
+	 desc1->gravity == desc2->gravity &&
 	 (desc1->family_name == desc2->family_name ||
 	  (desc1->family_name && desc2->family_name && g_ascii_strcasecmp (desc1->family_name, desc2->family_name) == 0));
 }
@@ -712,6 +770,7 @@ pango_font_description_hash (const PangoFontDescription *desc)
   hash ^= desc->variant << 18;
   hash ^= desc->weight << 16;
   hash ^= desc->stretch << 26;
+  hash ^= desc->gravity << 28;
 
   return hash;
 }
@@ -795,6 +854,17 @@ static const FieldMap stretch_map[] = {
   { PANGO_STRETCH_ULTRA_EXPANDED,  "Ultra-Expanded" }
 };
 
+static const FieldMap gravity_map[] = {
+  { PANGO_GRAVITY_SOUTH, "South" },
+  { PANGO_GRAVITY_SOUTH, "Upright" },
+  { PANGO_GRAVITY_NORTH, "North" },
+  { PANGO_GRAVITY_SOUTH, "Upside-Down" },
+  { PANGO_GRAVITY_EAST,  "East" },
+  { PANGO_GRAVITY_EAST,  "Rotated-Left" },
+  { PANGO_GRAVITY_WEST,  "West" },
+  { PANGO_GRAVITY_WEST,  "Rotated-Right" }
+};
+
 static gboolean
 find_field (const FieldMap *map, int n_elements, const char *str, int len, int *val)
 {
@@ -817,15 +887,30 @@ find_field (const FieldMap *map, int n_elements, const char *str, int len, int *
 static gboolean
 find_field_any (const char *str, int len, PangoFontDescription *desc)
 {
-  return (g_ascii_strcasecmp (str, "Normal") == 0 ||
-	  find_field (style_map, G_N_ELEMENTS (style_map), str, len,
-		      desc ? (int *)&desc->style : NULL) ||
-	  find_field (variant_map, G_N_ELEMENTS (variant_map), str, len,
-		      desc ? (int *)&desc->variant : NULL) ||
-	  find_field (weight_map, G_N_ELEMENTS (weight_map), str, len,
-		      desc ? (int *)&desc->weight : NULL) || 
-	  find_field (stretch_map, G_N_ELEMENTS (stretch_map), str, len,
-		      desc ? (int *)&desc->stretch : NULL));
+  gboolean found = FALSE;
+
+  if (g_ascii_strcasecmp (str, "Normal") == 0)
+    return TRUE;
+  
+#define FIELD(NAME, MASK) \
+  G_STMT_START { \
+  if (find_field (NAME##_map, G_N_ELEMENTS (NAME##_map), str, len, \
+		  desc ? (int *)&desc->NAME : NULL)) \
+    { \
+      found = TRUE; \
+      if (desc) \
+        desc->mask |= MASK; \
+    } \
+  } G_STMT_END
+
+  FIELD (variant, PANGO_FONT_MASK_VARIANT);
+  FIELD (weight,  PANGO_FONT_MASK_WEIGHT);
+  FIELD (stretch, PANGO_FONT_MASK_STRETCH);
+  FIELD (gravity, PANGO_FONT_MASK_GRAVITY);
+
+#undef FIELD
+
+  return found;
 }
 
 static const char *
@@ -878,8 +963,8 @@ parse_size (const char *word,
  * Creates a new font description from a string representation in the
  * form "[FAMILY-LIST] [STYLE-OPTIONS] [SIZE]", where FAMILY-LIST is a
  * comma separated list of families optionally terminated by a comma,
- * STYLE_OPTIONS is a whitespace separated list of words where each
- * WORD describes one of style, variant, weight, or stretch, and SIZE
+ * STYLE_OPTIONS is a whitespace separated list of words where each WORD
+ * describes one of style, variant, weight, stretch, or gravity, and SIZE
  * is a decimal number (size in points) or optionally followed by the
  * unit modifier "px" for absolute size. Any one of the options may
  * be absent.  If FAMILY-LIST is absent, then the family_name field of
@@ -899,24 +984,13 @@ pango_font_description_from_string (const char *str)
 
   g_return_val_if_fail (str != NULL, NULL);
 
-  desc = g_slice_new (PangoFontDescription);
+  desc = pango_font_description_new ();
 
   desc->mask = PANGO_FONT_MASK_STYLE |
                PANGO_FONT_MASK_WEIGHT |
                PANGO_FONT_MASK_VARIANT |
                PANGO_FONT_MASK_STRETCH;
   
-  desc->family_name = NULL;
-  desc->static_family = FALSE;
-  
-  desc->style = PANGO_STYLE_NORMAL;
-  desc->weight = PANGO_WEIGHT_NORMAL;
-  desc->variant = PANGO_VARIANT_NORMAL;
-  desc->stretch = PANGO_STRETCH_NORMAL;
-  
-  desc->size = 0;
-  desc->size_is_absolute = FALSE;
-
   len = strlen (str);
   last = str + len;
   p = getword (str, last, &wordlen);
@@ -1031,7 +1105,7 @@ pango_font_description_to_string (const PangoFontDescription  *desc)
 	    desc->style == PANGO_STYLE_NORMAL &&
 	    desc->stretch == PANGO_STRETCH_NORMAL &&
 	    desc->variant == PANGO_VARIANT_NORMAL &&
-	    (desc->mask & PANGO_FONT_MASK_SIZE) == 0)))
+	    (desc->mask & (PANGO_FONT_MASK_GRAVITY | PANGO_FONT_MASK_SIZE)) == 0)))
 	g_string_append_c (result, ',');
     }
 
@@ -1039,6 +1113,8 @@ pango_font_description_to_string (const PangoFontDescription  *desc)
   append_field (result, style_map, G_N_ELEMENTS (style_map), desc->style);
   append_field (result, stretch_map, G_N_ELEMENTS (stretch_map), desc->stretch);
   append_field (result, variant_map, G_N_ELEMENTS (variant_map), desc->variant);
+  if (desc->mask & PANGO_FONT_MASK_GRAVITY)
+    append_field (result, gravity_map, G_N_ELEMENTS (gravity_map), desc->gravity);
 
   if (result->len == 0)
     g_string_append (result, "Normal");

@@ -79,7 +79,8 @@ typedef enum {
   PANGO_FONT_MASK_VARIANT = 1 << 2,
   PANGO_FONT_MASK_WEIGHT  = 1 << 3,
   PANGO_FONT_MASK_STRETCH = 1 << 4,
-  PANGO_FONT_MASK_SIZE    = 1 << 5
+  PANGO_FONT_MASK_SIZE    = 1 << 5,
+  PANGO_FONT_MASK_GRAVITY = 1 << 6
 } PangoFontMask;
 
 /* CSS scale factors (1.2 factor between each size) */
@@ -131,6 +132,9 @@ gint                 pango_font_description_get_size          (const PangoFontDe
 void                 pango_font_description_set_absolute_size (PangoFontDescription *desc,
 							       double                size);
 gboolean             pango_font_description_get_size_is_absolute (const PangoFontDescription *desc);
+void                 pango_font_description_set_gravity       (PangoFontDescription *desc,
+							       PangoGravity          gravity);
+PangoGravity         pango_font_description_get_gravity       (const PangoFontDescription *desc);
 
 PangoFontMask pango_font_description_get_set_fields (const PangoFontDescription *desc);
 void          pango_font_description_unset_fields   (PangoFontDescription       *desc,

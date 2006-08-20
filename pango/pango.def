@@ -97,6 +97,7 @@ EXPORTS
 	pango_font_description_free
 	pango_font_description_from_string
 	pango_font_description_get_family
+	pango_font_description_get_gravity
 	pango_font_description_get_set_fields
 	pango_font_description_get_size
 	pango_font_description_get_size_is_absolute
@@ -112,6 +113,7 @@ EXPORTS
 	pango_font_description_set_absolute_size
 	pango_font_description_set_family
 	pango_font_description_set_family_static
+	pango_font_description_set_gravity
 	pango_font_description_set_size
 	pango_font_description_set_stretch
 	pango_font_description_set_style

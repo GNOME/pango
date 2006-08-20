@@ -125,6 +125,7 @@ The bits in a #PangoFontMask correspond to fields in a
 @PANGO_FONT_MASK_WEIGHT: the font weight is specified.
 @PANGO_FONT_MASK_STRETCH: the font stretch is specified.
 @PANGO_FONT_MASK_SIZE: the font size is specified.
+@PANGO_FONT_MASK_GRAVITY: the font gravity is specified (Since: 1.16.)
 
 <!-- ##### MACRO PANGO_TYPE_FONT_MASK ##### -->
 <para>
@@ -322,6 +323,24 @@ The #GObject type for #PangoFontMask.
 
 
 <!-- ##### FUNCTION pango_font_description_get_size_is_absolute ##### -->
+<para>
+
+</para>
+
+@desc: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_font_description_set_gravity ##### -->
+<para>
+
+</para>
+
+@desc: 
+@gravity: 
+
+
+<!-- ##### FUNCTION pango_font_description_get_gravity ##### -->
 <para>
 
 </para>

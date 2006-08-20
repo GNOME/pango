@@ -1,5 +1,20 @@
 2006-08-20  Behdad Esfahbod  <behdad@gnome.org>
 
+	* docs/pango-sections.txt:
+	* docs/tmpl/fonts.sgml:
+	* pango/fonts.c (pango_font_description_set_gravity),
+	(pango_font_description_get_gravity),
+	(pango_font_description_merge_static),
+	(pango_font_description_better_match),
+	(pango_font_description_equal), (pango_font_description_hash),
+	(find_field_any), (pango_font_description_from_string),
+	(pango_font_description_to_string):
+	* pango/pango-font.h:
+	* pango/pango.def:
+	Add gravity in PangoFontDescription.
+
+2006-08-20  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/pango-matrix.c (pango_matrix_to_gravity): Correct switched
 	return value of EAST/WEST.
 
