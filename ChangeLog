@@ -1,3 +1,9 @@
+2006-08-20  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 351496 – PangoAnalysis::gravity breaks binary compatibility
+
+	* pango/pango-item.h (PangoAnalysis): Use bitfields for level.
+
 2006-08-17  Hans Breuer  <hans@breuer.org>
 
 	* pango/makefile.msc pango/pango.def : updated

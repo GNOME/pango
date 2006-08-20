@@ -35,10 +35,9 @@ struct _PangoAnalysis
   PangoEngineLang  *lang_engine;
   PangoFont *font;
 
-  guint8 level;
-  /* nastiest hack ever.  stuff new items in the padding after the guint8 */
-  PangoGravity gravity       : 8;
-  gboolean centered_baseline : 1;
+  guint level : 8;
+  guint gravity : 3; /* PangoGravity */
+  guint centered_baseline : 1; /* gboolean */
 
   PangoLanguage *language;
   GSList *extra_attrs;

@@ -75,7 +75,7 @@ struct _PangoLayoutLine
   gint         length;		/* length of line in bytes */
   GSList      *runs;
   guint        is_paragraph_start : 1;  /* TRUE if this is the first line of the paragraph */ 
-  guint        resolved_dir : 3;  /* Resolved direction of line */
+  guint        resolved_dir : 3;  /* Resolved PangoDirection of line */
 };
 
 #define PANGO_TYPE_LAYOUT              (pango_layout_get_type ())
