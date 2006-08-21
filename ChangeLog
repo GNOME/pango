@@ -1,3 +1,10 @@
+2006-08-21  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 352114 – pango-1.14: generated docs still contain old example code
+
+	* docs/tmpl/pangocairo.sgml: Update cairo example code to that of
+	examples/cairosimple.c.
+
 2006-08-17  Behdad Esfahbod  <behdad@gnome.org>
 
 	Part of Bug 348825 – pango should optimize away calls to FcFontSort as
