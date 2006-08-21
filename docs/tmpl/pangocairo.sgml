@@ -39,7 +39,6 @@ to the floating point units used in Cairo divide by %PANGO_SCALE.
 <example id="rotated-example">
 <title>Using Pango with Cairo</title>
 <programlisting>
-#<!-- -->include &lt;config.h>
 #<!-- -->include &lt;math.h>
 #<!-- -->include &lt;pango/pangocairo.h>
 
