@@ -30,6 +30,7 @@
 #include "pangofc-private.h"
 #include "pango-impl-utils.h"
 #include "modules.h"
+#include "pango-enum-types.h"
 
 typedef struct _PangoFcCoverageKey  PangoFcCoverageKey;
 typedef struct _PangoFcFace         PangoFcFace;
@@ -211,6 +212,17 @@ pango_fc_font_map_class_init (PangoFcFontMapClass *class)
   g_type_class_add_private (object_class, sizeof (PangoFcFontMapPrivate));
 }
 
+static gpointer
+get_gravity_class (void)
+{
+  static GEnumClass *class = NULL;
+
+  if (G_UNLIKELY (!class))
+    class = g_type_class_ref (PANGO_TYPE_GRAVITY);
+
+  return class;
+}
+
 static guint
 pango_fc_pattern_hash (FcPattern *pattern)
 {
@@ -265,7 +277,6 @@ struct _FontsetHashKey {
   PangoFcFontMap *fontmap;
   PangoMatrix matrix;
   PangoLanguage *language;
-  PangoGravity gravity;
   PangoFontDescription *desc;
   int size;			/* scaled via the current DPI */
   gpointer context_key;
@@ -308,7 +319,6 @@ fontset_hash_key_equal (const FontsetHashKey *key_a,
   if (key_a->size == key_b->size &&
       pango_font_description_equal (key_a->desc, key_b->desc) &&
       key_a->language == key_b->language &&
-      key_a->gravity == key_b->gravity &&
       key_a->matrix.xx == key_b->matrix.xx &&
       key_a->matrix.xy == key_b->matrix.xy &&
       key_a->matrix.yx == key_b->matrix.yx &&
@@ -341,7 +351,6 @@ fontset_hash_key_hash (const FontsetHashKey *key)
 
     /* 1237 is just an abitrary prime */
     return (hash ^
-	    key->gravity ^
 	    GPOINTER_TO_UINT (key->language) ^
 	    (key->size * 1237) ^
 	    pango_font_description_hash (key->desc));
@@ -367,7 +376,6 @@ fontset_hash_key_copy (FontsetHashKey *old)
   key->fontmap = old->fontmap;
   key->matrix = old->matrix;
   key->language = old->language;
-  key->gravity = old->gravity;
   key->desc = pango_font_description_copy (old->desc);
   key->size = old->size;
   if (old->context_key)
@@ -792,13 +800,13 @@ pango_fc_convert_width_to_fc (PangoStretch pango_stretch)
 static FcPattern *
 pango_fc_make_pattern (const  PangoFontDescription *description,
 		       PangoLanguage               *language,
-		       PangoGravity                 gravity,
 		       double                       pixel_size,
 		       double                       dpi)
 {
   FcPattern *pattern;
   int slant;
   int weight;
+  PangoGravity gravity;
   FcBool vertical;
   char **families;
   int i;
@@ -812,7 +820,7 @@ pango_fc_make_pattern (const  PangoFontDescription *description,
   width = pango_fc_convert_width_to_fc (pango_font_description_get_stretch (description));
 #endif
 
-  /* FIXME: get gravity from description */
+  gravity = pango_font_description_get_gravity (description);
   switch (gravity)
     {
       case PANGO_GRAVITY_SOUTH:
@@ -856,6 +864,12 @@ pango_fc_make_pattern (const  PangoFontDescription *description,
 
   if (language)
     FcPatternAddString (pattern, FC_LANG, (FcChar8 *) pango_language_to_string (language));
+
+  if (gravity != PANGO_GRAVITY_SOUTH)
+    {
+      GEnumValue *value = g_enum_get_value (get_gravity_class (), gravity);
+      FcPatternAddString (pattern, PANGO_FC_GRAVITY, value->value_nick);
+    }
   
   return pattern;
 }
@@ -1037,8 +1051,7 @@ static PangoFcPatternSet *
 pango_fc_font_map_get_patterns (PangoFontMap               *fontmap,
 				PangoContext               *context,
 				const PangoFontDescription *desc,
-				PangoLanguage              *language,
-				PangoGravity                gravity)
+				PangoLanguage              *language)
 {
   PangoFcFontMap *fcfontmap = (PangoFcFontMap *)fontmap;
   PangoFcFontMapPrivate *priv = fcfontmap->priv;
@@ -1055,7 +1068,6 @@ pango_fc_font_map_get_patterns (PangoFontMap               *fontmap,
   key.fontmap = fcfontmap;
   get_context_matrix (context, &key.matrix);
   key.language = language;
-  key.gravity = gravity;
   key.desc = pango_font_description_copy_static (desc);
   pango_font_description_unset_fields (key.desc, PANGO_FONT_MASK_SIZE);
   key.size = get_unscaled_size (fcfontmap, context, desc);
@@ -1071,7 +1083,7 @@ pango_fc_font_map_get_patterns (PangoFontMap               *fontmap,
     {
       double scale_factor = pango_matrix_get_font_scale_factor (&key.matrix);
       double scaled_size = key.size * scale_factor / PANGO_SCALE;
-      pattern = pango_fc_make_pattern (desc, language, gravity,
+      pattern = pango_fc_make_pattern (desc, language,
 				       scaled_size,
 				       pango_fc_font_map_get_resolution (fcfontmap, context));
       
@@ -1232,9 +1244,7 @@ pango_fc_font_map_load_fontset (PangoFontMap                 *fontmap,
 				const PangoFontDescription   *desc,
 				PangoLanguage                *language)
 {
-  /* FIXME: support per-item gravity */
- PangoFcPatternSet *patterns = pango_fc_font_map_get_patterns (fontmap, context, desc, language,
-							       pango_context_get_gravity (context));
+  PangoFcPatternSet *patterns = pango_fc_font_map_get_patterns (fontmap, context, desc, language);
   PangoFontset *result;
   int i;
   
@@ -1592,6 +1602,7 @@ pango_fc_font_description_from_pattern (FcPattern *pattern, gboolean include_siz
   PangoWeight weight;
   PangoStretch stretch;
   double size;
+  PangoGravity gravity;
   
   FcChar8 *s;
   int i;
@@ -1631,6 +1642,16 @@ pango_fc_font_description_from_pattern (FcPattern *pattern, gboolean include_siz
 
   if (include_size && FcPatternGetDouble (pattern, FC_SIZE, 0, &size) == FcResultMatch)
     pango_font_description_set_size (desc, size * PANGO_SCALE);
+
+  if (FcPatternGetString (pattern, PANGO_FC_GRAVITY, 0, (FcChar8 **)&s) == FcResultMatch)
+    {
+      GEnumValue *value = g_enum_get_value_by_nick (get_gravity_class (), s);
+      gravity = value->value;
+    }
+  else
+    gravity = PANGO_GRAVITY_SOUTH;
+
+  pango_font_description_set_gravity (desc, gravity);
 
   return desc;
 }

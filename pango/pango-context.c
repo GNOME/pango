@@ -615,7 +615,9 @@ struct _ItemizeState
   int embedding_end_offset;
   const char *embedding_end;
   guint8 embedding;
+
   PangoGravity gravity;
+  PangoGravity font_desc_gravity;
   gboolean centered_baseline;
 
   PangoAttrIterator *attr_iter;
@@ -690,6 +692,11 @@ update_attr_iterator (ItemizeState *state)
   state->font_desc = pango_font_description_copy_static (state->context->font_desc);
   pango_attr_iterator_get_font (state->attr_iter, state->font_desc,
 				&state->lang, &state->extra_attrs);
+  if (pango_font_description_get_set_fields (state->font_desc) & PANGO_FONT_MASK_GRAVITY)
+    state->font_desc_gravity = pango_font_description_get_gravity (state->font_desc);
+  else
+    state->font_desc_gravity = PANGO_GRAVITY_AUTO;
+
   state->copy_extra_attrs = FALSE;
 
   if (!state->lang)
@@ -743,14 +750,6 @@ itemize_state_init (ItemizeState      *state,
   state->embedding_end = text + start_index;
   update_embedding_end (state);
 
-  /* FIXME: Set gravity to base gravity for now, until we do
-   * proper gravity assignment.
-   */
-  state->gravity = context->resolved_gravity;
-
-  state->centered_baseline = context->resolved_gravity == PANGO_GRAVITY_EAST
-			  || context->resolved_gravity == PANGO_GRAVITY_WEST;
-
   /* Initialize the attribute iterator
    */
   if (cached_iter)
@@ -796,6 +795,15 @@ itemize_state_init (ItemizeState      *state,
 
   update_end (state);
 
+  state->centered_baseline = state->context->resolved_gravity == PANGO_GRAVITY_EAST
+			  || state->context->resolved_gravity == PANGO_GRAVITY_WEST;
+
+  if (pango_font_description_get_set_fields (state->font_desc) & PANGO_FONT_MASK_GRAVITY)
+    state->font_desc_gravity = pango_font_description_get_gravity (state->font_desc);
+  else
+    state->font_desc_gravity = PANGO_GRAVITY_AUTO;
+
+  state->gravity = PANGO_GRAVITY_AUTO;
   state->derived_lang = NULL;
   state->lang_engine = NULL;
   state->current_fonts = NULL;
@@ -1158,6 +1166,30 @@ get_lang_map (PangoLanguage *lang)
 static void
 itemize_state_update_for_new_run (ItemizeState *state)
 {
+  if (state->changed & (FONT_CHANGED | SCRIPT_CHANGED))
+    {
+      PangoGravity old_gravity = state->gravity;
+
+      if (state->font_desc_gravity != PANGO_GRAVITY_AUTO)
+	state->gravity = state->font_desc_gravity;
+      else
+        {
+	  PangoGravity gravity = state->context->resolved_gravity;
+
+	  /* FIXME
+	   * gravity = pango_script_get_resolved_gravity (script, gravity, hint);
+	   */
+
+	  state->gravity = gravity;
+	}
+
+      if (old_gravity != state->gravity)
+        {
+	  pango_font_description_set_gravity (state->font_desc, state->gravity);
+          state->changed |= FONT_CHANGED;
+	}
+    }
+
   if (state->changed & (SCRIPT_CHANGED | LANG_CHANGED))
     {
       PangoLanguage *old_derived_lang = state->derived_lang;
@@ -1242,9 +1274,6 @@ itemize_state_process_run (ItemizeState *state)
 	}
       else
         {
-	  /* FIXME: We need a way to respect item gravity when loading
-	   * fonts, but we currently don't have a way to do that.
-	   */
 	  get_shaper_and_font (state, wc, &shape_engine, &font);
 	}
 	

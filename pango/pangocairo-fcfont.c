@@ -507,8 +507,7 @@ _pango_cairo_fc_font_new (PangoCairoFcFontMap        *cffontmap,
 			 "pattern", pattern,
 			 NULL);
 
-  /* FIXME: support per-item gravity */
-  cffont->gravity = pango_context_get_gravity (context);
+  cffont->gravity = pango_font_description_get_gravity (desc);
 
   if  (FcPatternGetMatrix (pattern,
 			   FC_MATRIX, 0, &fc_matrix) == FcResultMatch)

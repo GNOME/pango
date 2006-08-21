@@ -1,5 +1,30 @@
 2006-08-20  Behdad Esfahbod  <behdad@gnome.org>
 
+	Support per-item gravity.
+
+	* pango/pango-context.c (update_attr_iterator),
+	(itemize_state_init), (itemize_state_update_for_new_run),
+	(itemize_state_process_run): Make per-item gravity work, by setting
+	gravity into font description before loading fonts.  Also, allow
+	the context font description to override the gravity (but not
+	centered_baseline.)
+
+	* pango/pangocairo-fcfont.c (_pango_cairo_fc_font_new): Get gravity
+	from font description, not context.
+
+	* pango/pangofc-fontmap.c (fontset_hash_key_equal),
+	(fontset_hash_key_hash), (fontset_hash_key_copy),
+	(pango_fc_make_pattern), (pango_fc_font_map_get_patterns),
+	(pango_fc_font_map_load_fontset),
+	(pango_fc_font_description_from_pattern): Get gravity from font
+	description, not context.  Moreover, put it into pattern, and
+	reconstruct it out of font patterns.
+
+	* pango/pangofc-private.h: Define PANGO_FC_GRAVITY, which is the key
+	we put PangoGravity into an FcPattern under.
+
+2006-08-20  Behdad Esfahbod  <behdad@gnome.org>
+
 	* docs/pango-sections.txt:
 	* docs/tmpl/fonts.sgml:
 	* pango/fonts.c (pango_font_description_set_gravity),
