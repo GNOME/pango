@@ -39,15 +39,16 @@ to the floating point units used in Cairo divide by %PANGO_SCALE.
 <example id="rotated-example">
 <title>Using Pango with Cairo</title>
 <programlisting>
-#include &lt;math.h>
-#include &lt;pango/pangocairo.h>
+#<!-- -->include &lt;config.h>
+#<!-- -->include &lt;math.h>
+#<!-- -->include &lt;pango/pangocairo.h>
 
 static void
 draw_text (cairo_t *cr)
 {
-#define RADIUS 150
-#define N_WORDS 10
-#define FONT "Sans Bold 27"
+#<!-- -->define RADIUS 150
+#<!-- -->define N_WORDS 10
+#<!-- -->define FONT "Sans Bold 27"
 
   PangoLayout *layout;
   PangoFontDescription *desc;
@@ -74,9 +75,9 @@ draw_text (cairo_t *cr)
 
       cairo_save (cr);
 
-      /* Gradient from red at angle == 60 to blue at angle == 300 */
+      /* Gradient from red at angle == 60 to blue at angle == 240 */
       red   = (1 + cos ((angle - 60) * G_PI / 180.)) / 2;
-      cairo_set_rgb_color (cr, red, 0, 1.0 - red);
+      cairo_set_source_rgb (cr, red, 0, 1.0 - red);
 
       cairo_rotate (cr, angle * G_PI / 180.);
     
@@ -97,33 +98,36 @@ draw_text (cairo_t *cr)
 int main (int argc, char **argv)
 {
   cairo_t *cr;
-  FILE *f;
+  char *filename;
+  cairo_status_t status;
+  cairo_surface_t *surface;
 
   if (argc != 2)
     {
-      g_printerr ("Usage: cairo-example OUTPUT_FILENAME\n");
+      g_printerr ("Usage: cairosimple OUTPUT_FILENAME\n");
       return 1;
     }
 
-  f = fopen (argv[1], "w");
-  if (!f)
-    {
-      g_printerr ("Usage: cannot open '%s'\n", argv[1]);
-      return 1;
-    }
+  filename = argv[1];
 
-  cr = cairo_create();
-  cairo_set_target_png (cr, f,
-			 CAIRO_FORMAT_ARGB32,
-			 2 * RADIUS, 2 * RADIUS);
+  surface = cairo_image_surface_create (CAIRO_FORMAT_ARGB32,
+					2 * RADIUS, 2 * RADIUS);
+  cr = cairo_create (surface);
+				  
 
-  cairo_set_rgb_color (cr, 1.0, 1.0, 1.0);
-  cairo_rectangle (cr, 0, 0, 2 * RADIUS, 2 * RADIUS);
-  cairo_fill (cr);
+  cairo_set_source_rgb (cr, 1.0, 1.0, 1.0);
+  cairo_paint (cr);
   draw_text (cr);
-  
   cairo_destroy (cr);
-  fclose (f);
+  
+  status = cairo_surface_write_to_png (surface, filename);
+  cairo_surface_destroy (surface);
+
+  if (status != CAIRO_STATUS_SUCCESS)
+    {
+      g_printerr ("Could not save png to '%s'\n", filename);
+      return 1;
+    }
 
   return 0;
 }
