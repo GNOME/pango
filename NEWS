@@ -1,3 +1,13 @@
+Overview of changes between 1.14.0 and 1.14.1
+==============================================
+* Increased fontset cache size from 16 to 64.  This should make
+  firefox+pango A LOT faster.
+* Bugs fixed in this release:
+	Bug 352114 – pango-1.14: generated docs still contain old example code
+	Part of Bug 348825 – pango should optimize away calls to FcFontSort as
+	                     much as possible
+	Bug 351585 – API documentation issues with 2.15 release
+
 Overview of changes between 1.13.5 and 1.14.0
 ==============================================
 * Make pango-view accept non-ASCII --text.
