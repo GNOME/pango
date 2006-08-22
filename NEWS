@@ -1,3 +1,8 @@
+Overview of changes between 1.14.1 and 1.14.2
+==============================================
+* Find shaper/font for Private Use and space characters.
+  Part of Bug 145275 – Font selection for space characters
+
 Overview of changes between 1.14.0 and 1.14.1
 ==============================================
 * Increased fontset cache size from 16 to 64.  This should make
