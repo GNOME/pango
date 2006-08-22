@@ -1,5 +1,13 @@
 2006-08-22  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango/pango-context.c (itemize_state_process_run): Replace (!isgraph
+	&& !isspace) with (!isprint) which is equivalent.  Also, update
+	comments.
+
+2006-08-22  Behdad Esfahbod  <behdad@gnome.org>
+
+	Part of Bug 145275 – Font selection for space characters
+
 	* pango/pango-context.c (itemize_state_process_run): Find shaper/font
 	for Private Use and space characters too.  Finding shaper for Private
 	Use is needed for any practical use of those areas.  Ideally, spaces
