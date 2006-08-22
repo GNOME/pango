@@ -1081,7 +1081,9 @@ itemize_state_process_run (ItemizeState *state)
       PangoFont *font;
 
       /* We don't want space characters to affect font selection; in general,
-       * it's always wrong to select a font just to render a space.
+       * it's always wrong to select a font just to render a space.  But until
+       * we have a better solution, choosing a font for spaces seems to work
+       * better.
        *
        * The exception of U+3000 (IDEOGRAPHIC SPACE) here is because we
        * want to choose an ideographic space that matches ideographic text
@@ -1092,8 +1094,11 @@ itemize_state_process_run (ItemizeState *state)
        * The exception of PrivateUse characters is indeed necessary to be
        * able to render any of them.
        */
-      if (G_UNLIKELY (!g_unichar_isgraph (wc) &&
-		      !g_unichar_isspace (wc) /*wc != 0x3000*/ &&
+      /*
+      if (G_UNLIKELY (!g_unichar_isgraph (wc) && wc != 0x3000 &&
+		      g_unichar_type (wc) != G_UNICODE_PRIVATE_USE))
+	*/
+      if (G_UNLIKELY (!g_unichar_isprint (wc) &&
 		      g_unichar_type (wc) != G_UNICODE_PRIVATE_USE))
 	{
 	  shape_engine = NULL;
