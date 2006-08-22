@@ -1257,17 +1257,19 @@ itemize_state_process_run (ItemizeState *state)
 
       /* We don't want space characters to affect font selection; in general,
        * it's always wrong to select a font just to render a space.
-       * To make this really work well, we'd need to emulate missing
-       * space characters, which we don't yet do, so we sometimes
-       * will get hex boxes.
        *
        * The exception of U+3000 (IDEOGRAPHIC SPACE) here is because we
        * want to choose an ideographic space that matches ideographic text
        * in cell width. Even if we were emulating missing spaces, an
        * emulated ideographic space for the primary font wouldn't be the
        * right size.
+       *
+       * The exception of PrivateUse characters is indeed necessary to be
+       * able to render any of them.
        */
-      if (!g_unichar_isgraph (wc) && wc != 0x3000)
+      if (G_UNLIKELY (!g_unichar_isgraph (wc) &&
+		      !g_unichar_isspace (wc) /*wc != 0x3000*/ &&
+		      g_unichar_type (wc) != G_UNICODE_PRIVATE_USE))
 	{
 	  shape_engine = NULL;
 	  font = NULL;
