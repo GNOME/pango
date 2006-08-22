@@ -1,3 +1,10 @@
+2006-08-22  Behdad Esfahbod  <behdad@gnome.org>
+
+	* pango/fonts.c (gravity_map): Rename "Upright" to "Not-Rotated".
+	Also, reorder the user-friendly names (Not-Rotated, Rotated-Left, ...)
+	before the enum names (South, East, ...) such that they are used to
+	describe fonts.
+
 2006-08-21  Behdad Esfahbod  <behdad@gnome.org>
 
 	Bug 352114 – pango-1.14: generated docs still contain old example code

@@ -855,14 +855,14 @@ static const FieldMap stretch_map[] = {
 };
 
 static const FieldMap gravity_map[] = {
+  { PANGO_GRAVITY_SOUTH, "Not-Rotated" },
   { PANGO_GRAVITY_SOUTH, "South" },
-  { PANGO_GRAVITY_SOUTH, "Upright" },
-  { PANGO_GRAVITY_NORTH, "North" },
   { PANGO_GRAVITY_SOUTH, "Upside-Down" },
-  { PANGO_GRAVITY_EAST,  "East" },
+  { PANGO_GRAVITY_NORTH, "North" },
   { PANGO_GRAVITY_EAST,  "Rotated-Left" },
-  { PANGO_GRAVITY_WEST,  "West" },
-  { PANGO_GRAVITY_WEST,  "Rotated-Right" }
+  { PANGO_GRAVITY_EAST,  "East" },
+  { PANGO_GRAVITY_WEST,  "Rotated-Right" },
+  { PANGO_GRAVITY_WEST,  "West" }
 };
 
 static gboolean
