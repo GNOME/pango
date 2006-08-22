@@ -1,3 +1,13 @@
+2006-08-22  Behdad Esfahbod  <behdad@gnome.org>
+
+	* pango/pango-context.c (itemize_state_process_run): Find shaper/font
+	for Private Use and space characters too.  Finding shaper for Private
+	Use is needed for any practical use of those areas.  Ideally, spaces
+	should be synthesized if they are not available in the font, but
+	falling back to other fonts is far easier, and should give pretty good
+	results with the current set of common fonts.  These fixes allow
+	Firefox+Pango to render MathML like Firefox+Xft does.
+
 2006-08-21  Behdad Esfahbod  <behdad@gnome.org>
 
 	* === Released 1.14.1 ===
