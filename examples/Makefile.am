@@ -14,6 +14,7 @@ TEST_TEXTS =			\
 
 EXTRA_DIST =			\
 	viewer-win32.c		\
+	pangowin32tobmp.c	\
 	$(TEST_TEXTS)
 
 CLEANFILES = pangorc

@@ -269,10 +269,7 @@ libpangocairo_1_0_la_DEPENDENCIES += pangocairo.def
 libpangocairo_1_0_la_LIBADD += libpangowin32-$(PANGO_API_VERSION).la $(WIN32_LIBS)
 libpangocairo_1_0_la_DEPENDENCIES += libpangowin32-$(PANGO_API_VERSION).la 
 
-libpangocairo_1_0_la_SOURCES +=		\
-	pangocairo-win32font.c		\
-	pangocairo-win32fontmap.c	\
-	pangocairo-win32.h
+libpangocairo_1_0_la_SOURCES += pangocairo-win32font.c pangocairo-win32fontmap.c pangocairo-win32.h
 endif
 
 if HAVE_CAIRO_FREETYPE
@@ -433,8 +430,7 @@ EXTRA_DIST =					\
 	pangoft2.rc				\
 	pangoft2.rc.in				\
 	pangowin32.rc				\
-	pangowin32.rc.in			\
-	testfonts.c
+	pangowin32.rc.in
 
 
 if HAVE_INCLUDED_MODULES

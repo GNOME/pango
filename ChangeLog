@@ -1,3 +1,11 @@
+2006-08-23  Tor Lillqvist  <tml@novell.com>
+
+	* pango/Makefile.am
+	* examples/Makefile.am
+	* pango/testfonts.c
+	* examples/pangowin32tobmp.c: Rename pango/testfonts.c to
+	examples/pangowin32tobmp.c. (#104151)
+
 2006-08-22  Behdad Esfahbod  <behdad@gnome.org>
 
 	* pango/pango-context.c (itemize_state_process_run): Replace (!isgraph
