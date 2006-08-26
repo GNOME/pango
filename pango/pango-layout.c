@@ -1337,7 +1337,7 @@ pango_layout_index_to_line_x (PangoLayout *layout,
  * Computes a new cursor position from an old position and
  * a count of positions to move visually. If @count is positive,
  * then the new strong cursor position will be one position
- * to the right of the old cursor position. If @count is position
+ * to the right of the old cursor position. If @count is negative,
  * then the new strong cursor position will be one position
  * to the left of the old cursor position. 
  *
