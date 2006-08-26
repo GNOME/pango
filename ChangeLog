@@ -1,3 +1,9 @@
+2006-08-26  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 349813 – typo in docs for pango_layout_move_cursor_visually
+
+	* pango/pango-layout.c (pango_layout_move_cursor_visually): Fix typo.
+
 2006-08-23  Tor Lillqvist  <tml@novell.com>
 
 	* pango/Makefile.am
