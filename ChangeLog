@@ -1,3 +1,9 @@
+2006-08-28  Tor Lillqvist  <tml@novell.com>
+
+	* modules/basic/Makefile.am: Have basic-win32.c instead of
+	basic-win32.lo depend on usp10.h so things work out also in case
+	the basic-win32 module is compiled in.
+
 2006-08-26  Behdad Esfahbod  <behdad@gnome.org>
 
 	Bug 349813 – typo in docs for pango_layout_move_cursor_visually
