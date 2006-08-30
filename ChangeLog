@@ -1,3 +1,11 @@
+2006-08-30  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 353525 – libpangoft2-1.0.so.0: undefined reference to
+	`pango_font_description_get_gravity'
+
+	* examples/Makefile.am: Explicitly link to the just built pangoft2 for
+	pangocairo uses, like we already do for pangoxft.
+
 2006-08-28  Tor Lillqvist  <tml@novell.com>
 
 	* modules/basic/Makefile.am: Have basic-win32.c instead of
