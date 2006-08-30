@@ -1,5 +1,10 @@
 2006-08-30  Behdad Esfahbod  <behdad@gnome.org>
 
+	* modules/Makefile.am (pango.modules): Improve the conditional to
+	ignore included modules.
+
+2006-08-30  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 352811 – SIGSEGV with pango(cairo)-view on HP-UX
 
 	* modules/Makefile.am (pango.modules): Don't hardcode .so extension.
