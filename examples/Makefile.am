@@ -117,6 +117,7 @@ pangocairo_view_SOURCES =				\
 
 pangocairo_view_LDADD =					\
 	../pango/libpango-$(PANGO_API_VERSION).la	\
+	../pango/libpangoft2-$(PANGO_API_VERSION).la	\
 	../pango/libpangocairo-$(PANGO_API_VERSION).la	\
 	$(GLIB_LIBS)					\
 	$(CAIRO_LIBS)					\
@@ -168,6 +169,7 @@ pango_view_SOURCES +=					\
 	viewer-cairo.c					\
 	viewer-pangocairo.c
 pango_view_LDADD +=					\
+	../pango/libpangoft2-$(PANGO_API_VERSION).la	\
 	../pango/libpangocairo-$(PANGO_API_VERSION).la	\
 	$(CAIRO_LIBS)
 endif
@@ -185,6 +187,7 @@ cairosimple_SOURCES =					\
 	cairosimple.c
 cairosimple_LDADD =					\
 	../pango/libpango-$(PANGO_API_VERSION).la	\
+	../pango/libpangoft2-$(PANGO_API_VERSION).la	\
 	../pango/libpangocairo-$(PANGO_API_VERSION).la	\
 	$(GLIB_LIBS)					\
 	$(CAIRO_LIBS)
