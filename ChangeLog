@@ -1,5 +1,13 @@
 2006-08-30  Behdad Esfahbod  <behdad@gnome.org>
 
+	Bug 148732 – cursor movenmet is not correct in gedit when I type
+	Arabic text.
+
+	* pango/pango-layout.c (pango_layout_move_cursor_visually): Update
+	locally cached line properties upon line change.
+
+2006-08-30  Behdad Esfahbod  <behdad@gnome.org>
+
 	* modules/Makefile.am (pango.modules): Improve the conditional to
 	ignore included modules.
 

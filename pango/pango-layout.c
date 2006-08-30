@@ -1335,13 +1335,13 @@ pango_layout_index_to_line_x (PangoLayout *layout,
  *                where the cursor should be displayed. 
  * 
  * Computes a new cursor position from an old position and
- * a count of positions to move visually. If @count is positive,
+ * a count of positions to move visually. If @direction is positive,
  * then the new strong cursor position will be one position
- * to the right of the old cursor position. If @count is negative,
+ * to the right of the old cursor position. If @direction is negative,
  * then the new strong cursor position will be one position
  * to the left of the old cursor position. 
  *
- * In the presence of bidirection text, the correspondence
+ * In the presence of bidirectional text, the correspondence
  * between logical and visual order will depend on the direction
  * of the current run, and there may be jumps when the cursor
  * is moved off of the end of a run.
@@ -1378,6 +1378,8 @@ pango_layout_move_cursor_visually (PangoLayout *layout,
   g_return_if_fail (new_index != NULL);
   g_return_if_fail (new_trailing != NULL);
 
+  direction = (direction >= 0 ? 1 : -1);
+
   pango_layout_check_lines (layout);
 
   /* Find the line the old cursor is on */
@@ -1397,6 +1399,7 @@ pango_layout_move_cursor_visually (PangoLayout *layout,
     old_index = line->start_index + line->length;
   
   vis_pos = log2vis_map[old_index - line->start_index];
+
   g_free (log2vis_map);
 
   /* Handling movement between lines */
@@ -1445,9 +1448,12 @@ pango_layout_move_cursor_visually (PangoLayout *layout,
 	  paragraph_boundary = (line->start_index != old_index);
 	}
 
+      n_vis = g_utf8_strlen (layout->text + line->start_index, line->length);
+      start_offset = g_utf8_pointer_to_offset (layout->text, layout->text + line->start_index);
+
       if (vis_pos == 0 && direction < 0)
 	{
-	  vis_pos = g_utf8_strlen (layout->text + line->start_index, line->length);
+	  vis_pos = n_vis;
 	  if (paragraph_boundary)
 	    vis_pos++;
 	}
@@ -1466,7 +1472,7 @@ pango_layout_move_cursor_visually (PangoLayout *layout,
   do
     {
       int vis_pos_old = vis_pos;
-      vis_pos += direction > 0 ? 1 : -1;
+      vis_pos += direction;
       log_pos += g_utf8_pointer_to_offset (layout->text + line->start_index + vis2log_map[vis_pos_old],
 					   layout->text + line->start_index + vis2log_map[vis_pos]);
     }
