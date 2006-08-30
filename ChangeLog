@@ -1,5 +1,12 @@
 2006-08-30  Behdad Esfahbod  <behdad@gnome.org>
 
+	Bug 352811 – SIGSEGV with pango(cairo)-view on HP-UX
+
+	* modules/Makefile.am (pango.modules): Don't hardcode .so extension.
+	Look for .la instead.
+
+2006-08-30  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 353525 – libpangoft2-1.0.so.0: undefined reference to
 	`pango_font_description_get_gravity'
 

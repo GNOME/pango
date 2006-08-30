@@ -47,12 +47,12 @@ uninstall-local:
 	$(RM) $(DESTDIR)$(sysconfdir)/pango/pango.modules
 
 pango.modules: $(top_builddir)/pango/pango-querymodules $(SUBDIRS)
-	@if find . -name '*.so' | grep 'so' > /dev/null ; then \
+	@if find . -name '*.la' | grep '.' > /dev/null ; then \
           echo "Writing a pango.modules file to use with tests/examples."; \
           $(top_builddir)/pango/pango-querymodules `find . -name '*.la' | grep -v '\.libs' | grep -v libpango` > $@ ;\
 	else \
           echo "No dynamic modules found; will use only static modules for tests/examples."; \
-	  touch $@; \
+	  > $@; \
 	fi
 
 included-modules:
