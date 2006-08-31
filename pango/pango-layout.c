@@ -2818,20 +2818,20 @@ insert_run (PangoLayoutLine *line,
 /* Tries to insert as much as possible of the item at the head of
  * state->items onto @line. Five results are possible:
  *
- *  BREAK_NONE_FIT: Couldn't fit anything.
- *  BREAK_SOME_FIT: The item was broken in the middle.
- *  BREAK_ALL_FIT: Everything fit.
- *  BREAK_EMPTY_FIT: Nothing fit, but that was ok, as we can break at the first char.
- *  BREAK_LINE_SEPARATOR: Item begins with a line separator.
+ *  %BREAK_NONE_FIT: Couldn't fit anything.
+ *  %BREAK_SOME_FIT: The item was broken in the middle.
+ *  %BREAK_ALL_FIT: Everything fit.
+ *  %BREAK_EMPTY_FIT: Nothing fit, but that was ok, as we can break at the first char.
+ *  %BREAK_LINE_SEPARATOR: Item begins with a line separator.
  *
- * If @force_fit is TRUE, then BREAK_NONE_FIT will never
+ * If @force_fit is %TRUE, then %BREAK_NONE_FIT will never
  * be returned, a run will be added even if inserting the minimum amount
  * will cause the line to overflow. This is used at the start of a line
  * and until we've found at least some place to break.
  *
- * If @no_break_at_end is TRUE, then BREAK_ALL_FIT will never be
+ * If @no_break_at_end is %TRUE, then %BREAK_ALL_FIT will never be
  * returned even everything fits; the run will be broken earlier,
- * or BREAK_NONE_FIT returned. This is used when the end of the
+ * or %BREAK_NONE_FIT returned. This is used when the end of the
  * run is not a break position.
  */
 static BreakResult
@@ -5182,7 +5182,7 @@ pango_layout_iter_get_run_extents (PangoLayoutIter *iter,
  * @logical_rect: rectangle to fill with logical extents, or %NULL
  *
  * Obtains the extents of the current line. @ink_rect or @logical_rect
- * can be NULL if you aren't interested in them. Extents are in layout
+ * can be %NULL if you aren't interested in them. Extents are in layout
  * coordinates (origin is the top-left corner of the entire
  * #PangoLayout).  Thus the extents returned by this function will be
  * the same width/height but not at the same x/y as the extents
@@ -5298,7 +5298,7 @@ pango_layout_iter_get_baseline (PangoLayoutIter *iter)
  * @logical_rect: rectangle to fill with logical extents, or %NULL
  *
  * Obtains the extents of the #PangoLayout being iterated
- * over. @ink_rect or @logical_rect can be NULL if you
+ * over. @ink_rect or @logical_rect can be %NULL if you
  * aren't interested in them.
  * 
  **/

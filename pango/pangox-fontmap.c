@@ -938,7 +938,7 @@ pango_x_font_map_read_aliases (PangoXFontMap *xfontmap)
 }
 
 /*
- * Returns TRUE if the fontname is a valid XLFD.
+ * Returns %TRUE if the fontname is a valid XLFD.
  * (It just checks if the number of dashes is 14, and that each
  * field < XLFD_MAX_FIELD_LEN  characters long - that's not in the XLFD but it
  * makes it easier for me).
@@ -1020,8 +1020,8 @@ pango_x_get_identifier (const char *fontname)
 
 /*
  * This fills the buffer with the specified field from the X Logical Font
- * Description name, and returns it. If fontname is NULL or the field is
- * longer than XFLD_MAX_FIELD_LEN it returns NULL.
+ * Description name, and returns it. If fontname is %NULL or the field is
+ * longer than XFLD_MAX_FIELD_LEN it returns %NULL.
  * Note: For the charset field, we also return the encoding, e.g. 'iso8859-1'.
  */
 static char*

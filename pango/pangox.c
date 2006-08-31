@@ -1003,7 +1003,7 @@ match_end (const char *a, const char *b)
 }
 
 /* Substitute in a charset into an XLFD. Return the
- * (g_malloc'd) new name, or NULL if the XLFD cannot
+ * (g_malloc'd) new name, or %NULL if the XLFD cannot
  * match the charset
  */
 static char *
