@@ -1,3 +1,11 @@
+Overview of changes between 1.14.2 and 1.14.3
+==============================================
+* Win32 build improvement. [Tor Lillqist]
+* Bugs fixed in this release:
+	Bug 353525 – libpangoft2-1.0.so.0: undefined reference to
+	             `pango_font_description_get_gravity'
+	Bug 349813 – typo in docs for pango_layout_move_cursor_visually
+
 Overview of changes between 1.14.1 and 1.14.2
 ==============================================
 * Find shaper/font for Private Use and space characters.
