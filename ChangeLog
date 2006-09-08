@@ -1,5 +1,12 @@
 2006-09-08  Behdad Esfahbod  <behdad@gnome.org>
 
+	* examples/cairotwisted.c: A simple text-on-path example using
+	pangocairo.
+
+	* examples/Makefile.am: Update.
+
+2006-09-08  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/fonts.c (find_field_any): Parse style.  It was dropped when
 	I was adding support for gravity.
 

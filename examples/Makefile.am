@@ -181,16 +181,15 @@ endif
 
 #########################################################
 if HAVE_CAIRO_PNG
-noinst_PROGRAMS += cairosimple
+noinst_PROGRAMS += cairosimple cairotwisted
 
-cairosimple_SOURCES =					\
-	cairosimple.c
 cairosimple_LDADD =					\
 	../pango/libpango-$(PANGO_API_VERSION).la	\
 	../pango/libpangoft2-$(PANGO_API_VERSION).la	\
 	../pango/libpangocairo-$(PANGO_API_VERSION).la	\
 	$(GLIB_LIBS)					\
 	$(CAIRO_LIBS)
+cairotwisted_LDADD = $(cairosimple_LDADD)
 endif
 #########################################################
 
