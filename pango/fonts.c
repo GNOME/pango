@@ -903,6 +903,7 @@ find_field_any (const char *str, int len, PangoFontDescription *desc)
     } \
   } G_STMT_END
 
+  FIELD (style,   PANGO_FONT_MASK_STYLE);
   FIELD (variant, PANGO_FONT_MASK_VARIANT);
   FIELD (weight,  PANGO_FONT_MASK_WEIGHT);
   FIELD (stretch, PANGO_FONT_MASK_STRETCH);
