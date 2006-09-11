@@ -384,7 +384,7 @@ pango_cairo_fc_font_get_glyph_extents (PangoFont      *font,
   if (glyph == PANGO_GLYPH_EMPTY)
     {
       if (ink_rect)
-	*ink_rect = cffont->font_extents;
+	ink_rect->x = ink_rect->y = ink_rect->width = ink_rect->height = 0;
       if (logical_rect)
 	*logical_rect = cffont->font_extents;
       return;

@@ -1,3 +1,11 @@
+2006-09-10  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 352535 – Ink extents of empty glyph
+
+	* pango/pangocairo-fcfont.c
+	(pango_cairo_fc_font_get_glyph_extents): Return zero ink_rect for
+	PANGO_GLYPH_EMPTY.
+
 2006-09-08  Behdad Esfahbod  <behdad@gnome.org>
 
 	* examples/cairotwisted.c: A simple text-on-path example using
