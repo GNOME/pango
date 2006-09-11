@@ -1,3 +1,26 @@
+2006-09-11  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 347146 – underline/overstrike spaces
+
+	* pango/pango-renderer.c (add_underline), (add_strikethrough),
+	(pango_renderer_draw_layout_line): Use logical extents for
+	x and width of underline/strikethrough, such that trailing spaces are
+	correctly handled.
+
+	* pango/pango-layout.c (pango_layout_run_get_extents): Use logical
+	rect for underline/strikethrough, and reflect that in run ink extents.
+
+	* pango/pango-layout.c (pango_layout_line_get_extents): Don't
+	let runs with empty ink extents affect total ink extents.
+
+2006-09-10  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 352535 – Ink extents of empty glyph
+
+	* pango/pangocairo-fcfont.c
+	(pango_cairo_fc_font_get_glyph_extents): Return zero ink_rect for
+	PANGO_GLYPH_EMPTY.
+
 2006-09-04  Behdad Esfahbod  <behdad@gnome.org>
 
 	* === Released 1.14.3 ===

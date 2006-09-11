@@ -47,6 +47,7 @@ struct _Extents
 struct _ItemProperties
 {
   PangoUnderline  uline;
+  gboolean        strikethrough;
   gint            rise;
   gint            letter_spacing;
   gboolean        shape_set;
@@ -3910,9 +3911,13 @@ pango_layout_run_get_extents (PangoLayoutRun *run,
                               PangoRectangle *run_ink,
                               PangoRectangle *run_logical)
 {
+  PangoRectangle logical;
   ItemProperties properties;
 
   pango_layout_get_item_properties (run->item, &properties);
+
+  if (!run_logical && (properties.uline != PANGO_UNDERLINE_NONE || properties.strikethrough))
+    run_logical = &logical;
 
   if (properties.shape_set)
     imposed_extents (run->item->num_chars,
@@ -3923,33 +3928,55 @@ pango_layout_run_get_extents (PangoLayoutRun *run,
     pango_glyph_string_extents (run->glyphs, run->item->analysis.font,
 				run_ink, run_logical);
 
-  if (properties.uline != PANGO_UNDERLINE_NONE)
+  if (run_ink && (properties.uline != PANGO_UNDERLINE_NONE || properties.strikethrough))
     {
       PangoFontMetrics *metrics = pango_font_get_metrics (run->item->analysis.font,
 							  run->item->analysis.language); 
       int underline_thickness = pango_font_metrics_get_underline_thickness (metrics);
       int underline_position = pango_font_metrics_get_underline_position (metrics);
+      int strikethrough_thickness = pango_font_metrics_get_strikethrough_thickness (metrics);
+      int strikethrough_position = pango_font_metrics_get_strikethrough_position (metrics);
+
+      int new_pos;
+
+      /* the underline/strikethrough takes x,width of logical_rect.  reflect
+       * that into ink_rect.
+       */
+      new_pos = MIN (run_ink->x, run_logical->x);
+      run_ink->width = MAX (run_ink->x + run_ink->width, run_logical->x + run_logical->width) - new_pos;
+      run_ink->x = new_pos;
+
+      /* We should better handle the case of height==0 in the following cases.
+       * If run_ink->height == 0, we should adjust run_ink->y appropriately.
+       */
+
+      if (properties.strikethrough)
+        {
+	  if (run_ink->height == 0)
+	    {
+	      run_ink->height = strikethrough_thickness;
+	      run_ink->y = -strikethrough_position;
+	    }
+	}
 
       switch (properties.uline)
 	{
 	case PANGO_UNDERLINE_ERROR:
-	  if (run_ink)
-	    run_ink->height = MAX (run_ink->height,
-				   3 * underline_thickness - underline_position - run_ink->y);
+	  run_ink->height = MAX (run_ink->height,
+				 3 * underline_thickness - underline_position - run_ink->y);
 	  break;
 	case PANGO_UNDERLINE_SINGLE:
-	  if (run_ink)
-	    run_ink->height = MAX (run_ink->height,
-				   underline_thickness - underline_position - run_ink->y);
+	  run_ink->height = MAX (run_ink->height,
+				 underline_thickness - underline_position - run_ink->y);
 	  break;
 	case PANGO_UNDERLINE_DOUBLE:
-	  if (run_ink)
-	    run_ink->height = MAX (run_ink->height,
-				   3 * underline_thickness - underline_position - run_ink->y);
+	  run_ink->height = MAX (run_ink->height,
+				 3 * underline_thickness - underline_position - run_ink->y);
 	  break;
 	case PANGO_UNDERLINE_LOW:
-	  if (run_ink)
-	    run_ink->height += 2 * underline_thickness;
+	  run_ink->height += 2 * underline_thickness;
+	  break;
+	case PANGO_UNDERLINE_NONE:
 	  break;
 	default:
 	  g_critical ("unknown underline mode");
@@ -4024,11 +4051,12 @@ pango_layout_line_get_extents (PangoLayoutLine *line,
       
       if (ink_rect)
 	{
-	  if (tmp_list == line->runs)
+	  if (ink_rect->width == 0 || ink_rect->height == 0)
 	    {
 	      *ink_rect = run_ink;
+	      ink_rect->x += x_pos;
 	    }
-	  else
+	  else if (run_ink.width != 0 && run_ink.height != 0)
 	    {
 	      new_pos = MIN (ink_rect->x, x_pos + run_ink.x);
 	      ink_rect->width = MAX (ink_rect->x + ink_rect->width,
@@ -4345,6 +4373,7 @@ pango_layout_get_item_properties (PangoItem      *item,
   GSList *tmp_list = item->analysis.extra_attrs;
 
   properties->uline = PANGO_UNDERLINE_NONE;
+  properties->strikethrough = FALSE;
   properties->letter_spacing = 0;
   properties->rise = 0;
   properties->shape_set = FALSE;
@@ -4361,6 +4390,10 @@ pango_layout_get_item_properties (PangoItem      *item,
 	  properties->uline = ((PangoAttrInt *)attr)->value;
 	  break;
 
+	case PANGO_ATTR_STRIKETHROUGH:
+	  properties->strikethrough = ((PangoAttrInt *)attr)->value;
+	  break;
+	  
         case PANGO_ATTR_RISE:
 	  properties->rise = ((PangoAttrInt *)attr)->value;
           break;

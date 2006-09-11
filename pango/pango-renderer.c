@@ -289,7 +289,8 @@ add_underline (PangoRenderer    *renderer,
 	       PangoFontMetrics *metrics,
 	       int               base_x,
 	       int               base_y,
-	       PangoRectangle   *ink_rect)
+	       PangoRectangle   *ink_rect,
+	       PangoRectangle   *logical_rect)
 {
   PangoRectangle *current_rect = &state->underline_rect;
   PangoRectangle new_rect;
@@ -297,8 +298,8 @@ add_underline (PangoRenderer    *renderer,
   int underline_thickness = pango_font_metrics_get_underline_thickness (metrics);
   int underline_position = pango_font_metrics_get_underline_position (metrics);
 
-  new_rect.x = base_x + ink_rect->x;
-  new_rect.width = ink_rect->width;
+  new_rect.x = base_x + logical_rect->x;
+  new_rect.width = logical_rect->width;
   new_rect.height = underline_thickness;
   new_rect.y = base_y;
   
@@ -321,9 +322,7 @@ add_underline (PangoRenderer    *renderer,
       new_rect.y == current_rect->y &&
       new_rect.height == current_rect->height)
     {
-      current_rect->y = new_rect.y;
       current_rect->width = new_rect.x + new_rect.width - current_rect->x;
-      current_rect->height = new_rect.height;
     }
   else
     {
@@ -340,7 +339,8 @@ add_strikethrough (PangoRenderer    *renderer,
 		   PangoFontMetrics *metrics,
 		   int               base_x,
 		   int               base_y,
-		   PangoRectangle   *ink_rect)
+		   PangoRectangle   *ink_rect,
+		   PangoRectangle   *logical_rect)
 {
   PangoRectangle *current_rect = &state->strikethrough_rect;
   PangoRectangle new_rect;
@@ -348,8 +348,8 @@ add_strikethrough (PangoRenderer    *renderer,
   int strikethrough_thickness = pango_font_metrics_get_strikethrough_thickness (metrics);
   int strikethrough_position = pango_font_metrics_get_strikethrough_position (metrics);
   
-  new_rect.x = base_x + ink_rect->x;
-  new_rect.width = ink_rect->width;
+  new_rect.x = base_x + logical_rect->x;
+  new_rect.width = logical_rect->width;
   new_rect.y = base_y - strikethrough_position;
   new_rect.height = strikethrough_thickness;
   
@@ -357,9 +357,7 @@ add_strikethrough (PangoRenderer    *renderer,
       new_rect.y == current_rect->y &&
       new_rect.height == current_rect->height)
     {
-      current_rect->y = new_rect.y;
       current_rect->width = new_rect.x + new_rect.width - current_rect->x;
-      current_rect->height = new_rect.height;
     }
   else
     {
@@ -479,7 +477,7 @@ pango_renderer_draw_layout_line (PangoRenderer    *renderer,
       gint rise;
       PangoLayoutRun *run = l->data;
       PangoAttrShape *shape_attr;
-      PangoRectangle ink_rect;
+      PangoRectangle ink_rect, logical_rect;
 
       pango_renderer_prepare_run (renderer, run);
       
@@ -488,15 +486,20 @@ pango_renderer_draw_layout_line (PangoRenderer    *renderer,
       if (shape_attr)
 	{
 	  ink_rect = shape_attr->ink_rect;
+	  logical_rect = shape_attr->logical_rect;
 	  glyph_string_width = shape_attr->logical_rect.width;
 	}
       else
 	{
 	  if (renderer->underline != PANGO_UNDERLINE_NONE ||
 	      renderer->strikethrough)
+	    {
 	      pango_glyph_string_extents (run->glyphs, run->item->analysis.font,
-					  &ink_rect, NULL);
-	  glyph_string_width = pango_glyph_string_get_width (run->glyphs);
+					    &ink_rect, &logical_rect);
+	      glyph_string_width = logical_rect.width;
+	    }
+	  else
+	    glyph_string_width = pango_glyph_string_get_width (run->glyphs);
 	}
 
       state.logical_rect_end = x + x_off + glyph_string_width;
@@ -537,12 +540,12 @@ pango_renderer_draw_layout_line (PangoRenderer    *renderer,
 	  if (renderer->underline != PANGO_UNDERLINE_NONE)
 	    add_underline (renderer, &state,metrics,
 			   x + x_off, y - rise,
-			   &ink_rect);
+			   &ink_rect, &logical_rect);
 	  
 	  if (renderer->strikethrough)
 	    add_strikethrough (renderer, &state, metrics,
 			       x + x_off, y - rise,
-			       &ink_rect);
+			       &ink_rect, &logical_rect);
 	  
 	  pango_font_metrics_unref (metrics);
 	}
