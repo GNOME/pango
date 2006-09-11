@@ -1361,9 +1361,11 @@ pango_x_font_find_shaper (PangoFont     *font,
 			  guint32        ch)
 {
   PangoMap *shape_map = NULL;
+  PangoScript script;
 
   shape_map = pango_x_get_shaper_map (language);
-  return (PangoEngineShape *)pango_map_get_engine (shape_map, ch);
+  script = pango_script_for_unichar (ch);
+  return (PangoEngineShape *)pango_map_get_engine (shape_map, script);
 }
 
 /* Utility functions */
