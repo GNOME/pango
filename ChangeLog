@@ -1,5 +1,17 @@
 2006-09-11  Behdad Esfahbod  <behdad@gnome.org>
 
+	Bug 355435 – Invalid calls to pango_map_get_engine()
+	Patch from Theppitak Karoonboonyanan
+
+	* pango/break.c (pango_get_log_attrs):
+	* pango/pango-renderer.c (add_underline):
+	* pango/pangofc-font.c (pango_fc_font_find_shaper):
+	* pango/pangowin32.c (pango_win32_font_find_shaper):
+	* pango/pangox.c (pango_x_font_find_shaper):
+	Pass a PangoScript to pango_map_get_engine, not a gunichar!
+
+2006-09-11  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 347146 – underline/overstrike spaces
 
 	* pango/pango-renderer.c (add_underline), (add_strikethrough),

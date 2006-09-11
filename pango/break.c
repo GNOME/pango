@@ -1624,6 +1624,7 @@ pango_get_log_attrs (const char    *text,
   const char *end;
   PangoEngineLang* range_engine;
   const char *range_start;
+  PangoScript script;
   int chars_in_range;
   static guint engine_type_id = 0;
   static guint render_type_id = 0;
@@ -1649,8 +1650,8 @@ pango_get_log_attrs (const char    *text,
   lang_map = pango_find_map (language, engine_type_id, render_type_id);
 
   range_start = text;
-  range_engine = (PangoEngineLang*) pango_map_get_engine (lang_map,
-                                                          g_utf8_get_char (text));
+  script = pango_script_for_unichar (g_utf8_get_char (text));
+  range_engine = (PangoEngineLang*) pango_map_get_engine (lang_map, script);
   analysis.lang_engine = range_engine;
   chars_broken = 0;
   chars_in_range = 1;
@@ -1664,9 +1665,9 @@ pango_get_log_attrs (const char    *text,
       g_assert (range_start <= end);
       g_assert (end - pos < length);
 
+      script = pango_script_for_unichar (g_utf8_get_char (pos));
       analysis.lang_engine =
-        (PangoEngineLang*) pango_map_get_engine (lang_map,
-                                                 g_utf8_get_char (pos));
+        (PangoEngineLang*) pango_map_get_engine (lang_map, script);
 
       if (range_engine != analysis.lang_engine)
         {

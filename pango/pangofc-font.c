@@ -263,9 +263,11 @@ pango_fc_font_find_shaper (PangoFont     *font,
 			   guint32        ch)
 {
   PangoMap *shaper_map = NULL;
+  PangoScript script;
 
   shaper_map = pango_fc_get_shaper_map (language);
-  return (PangoEngineShape *)pango_map_get_engine (shaper_map, ch);
+  script = pango_script_for_unichar (ch);
+  return (PangoEngineShape *)pango_map_get_engine (shaper_map, script);
 }
 
 static PangoCoverage *

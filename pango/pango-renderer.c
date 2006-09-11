@@ -317,7 +317,6 @@ add_underline (PangoRenderer    *renderer,
       new_rect.y += ink_rect->y + ink_rect->height + underline_thickness;
       break;
     }
-      int new_pos;
   
   if (renderer->underline == state->underline &&
       new_rect.y == current_rect->y &&
