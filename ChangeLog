@@ -1,3 +1,11 @@
+2006-09-12  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 355605 – hexbox with 0000 in it
+
+	* modules/hangul/hangul-fc.c (render_syllable): If decomposition
+	fails, backup and add a single hexbox glyph for the original
+	character.
+
 2006-09-11  Behdad Esfahbod  <behdad@gnome.org>
 
 	Bug 355435 – Invalid calls to pango_map_get_engine()

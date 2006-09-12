@@ -231,6 +231,7 @@ render_syllable (PangoFont *font, gunichar *text, int length,
   for (i = 0; i < length; i++)
     {
       int jindex;
+      int oldlen;
 
       if (text[i] == LFILL || text[i] == VFILL)
 	continue;
@@ -247,14 +248,21 @@ render_syllable (PangoFont *font, gunichar *text, int length,
       /* This font has no glyphs on the Hangul Jamo area!  Find a
 	 fallback from the Hangul Compatibility Jamo area.  */
       jindex = text[i] - LBASE;
+      oldlen = *n_glyphs;
       for (j = 0; j < 3 && (__jamo_to_ksc5601[jindex][j] != 0); j++)
 	{
 	  wc = __jamo_to_ksc5601[jindex][j] - KSC_JAMOBASE + UNI_JAMOBASE;
 	  index = (wc >= 0x3131) ? find_char (font, wc) : 0;
 	  pango_glyph_string_set_size (glyphs, *n_glyphs + 1);
 	  if (!index)
-	    set_glyph (font, glyphs, *n_glyphs, cluster_offset,
-		       get_unknown_glyph (font, index));
+	    {
+	      *n_glyphs = oldlen;
+	      pango_glyph_string_set_size (glyphs, *n_glyphs + 1);
+	      set_glyph (font, glyphs, *n_glyphs, cluster_offset,
+			 get_unknown_glyph (font, text[i]));
+	      (*n_glyphs)++;
+	      break;
+	    }
 	  else
 	    set_glyph (font, glyphs, *n_glyphs, cluster_offset, index);
 	  (*n_glyphs)++;
