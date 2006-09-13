@@ -261,7 +261,25 @@ pango_engine_pair_get_engine (PangoEnginePair *pair)
 	}
 
       if (!pair->engine)
-	g_printerr ("Failed to load Pango module for id: '%s'", pair->info.id);
+        {
+	  /* If a module cannot be used, or doesn't not create an engine
+	   * correctly, we print out an error containing module name and id,
+	   * but to not flood the terminal with zillions of the message, we
+	   * set a flag on the module to only err once per module.
+	   */
+	  static GQuark warned_quark = 0;
+
+	  if (!warned_quark)
+	    warned_quark = g_quark_from_static_string ("pango-module-warned");
+	  
+	  if (!g_object_get_qdata (G_OBJECT (pair->module), warned_quark))
+	    {
+	      g_warning ("Failed to load Pango module '%s' for id '%s'", pair->module->path, pair->info.id);
+
+	      g_object_set_qdata_full (G_OBJECT (pair->module), warned_quark,
+				       GINT_TO_POINTER (1), NULL);
+	    }
+	}
     }
 
   return pair->engine;

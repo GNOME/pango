@@ -1,5 +1,10 @@
 2006-09-13  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango/modules.c (pango_engine_pair_get_engine): Err about failing to
+	load engine only once per module.
+
+2006-09-13  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 355697 – The IndicOTClassTable of Oriya has a error.
 
 	* modules/indic/indic-ot-class-tables.c: Compute lastChar from
