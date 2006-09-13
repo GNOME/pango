@@ -1,5 +1,12 @@
 2006-09-13  Behdad Esfahbod  <behdad@gnome.org>
 
+	Bug 355697 – The IndicOTClassTable of Oriya has a error.
+
+	* modules/indic/indic-ot-class-tables.c: Compute lastChar from
+	charClasses table size to avoid out-of-synch.
+
+2006-09-13  Behdad Esfahbod  <behdad@gnome.org>
+
 	Part of Bug 355782 – Misaligned extents in pango
 
 	* pango/pango-layout.c (pango_layout_get_extents_internal),
