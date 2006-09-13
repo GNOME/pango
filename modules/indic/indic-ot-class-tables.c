@@ -277,25 +277,20 @@ static const IndicOTSplitMatra sinhSplitTable[] = {{0x0DD9, 0x0DCA}, {0x0DD9, 0x
 /*
  * Indic Class Tables
  */
-const IndicOTClassTable deva_class_table = {0x0900, 0x0970, 2, DEVA_SCRIPT_FLAGS, devaCharClasses, NULL};
-
-const IndicOTClassTable beng_class_table = {0x0980, 0x09FA, 3, BENG_SCRIPT_FLAGS, bengCharClasses, bengSplitTable};
-
-const IndicOTClassTable guru_class_table = {0x0A00, 0x0A74, 2, GURU_SCRIPT_FLAGS, guruCharClasses, NULL};
-
-const IndicOTClassTable gujr_class_table = {0x0A80, 0x0AEF, 2, GUJR_SCRIPT_FLAGS, gujrCharClasses, NULL};
-
-const IndicOTClassTable orya_class_table = {0x0B00, 0x0B70, 3, ORYA_SCRIPT_FLAGS, oryaCharClasses, oryaSplitTable};
-
-const IndicOTClassTable taml_class_table = {0x0B80, 0x0BF2, 3, TAML_SCRIPT_FLAGS, tamlCharClasses, tamlSplitTable};
-
-const IndicOTClassTable telu_class_table = {0x0C00, 0x0C6F, 3, TELU_SCRIPT_FLAGS, teluCharClasses, teluSplitTable};
-
-const IndicOTClassTable knda_class_table = {0x0C80, 0x0CEF, 4, KNDA_SCRIPT_FLAGS, kndaCharClasses, kndaSplitTable};
-
-const IndicOTClassTable mlym_class_table = {0x0D00, 0x0D6F, 3, MLYM_SCRIPT_FLAGS, mlymCharClasses, mlymSplitTable};
-
-const IndicOTClassTable sinh_class_table = {0x0D80, 0x0DF4, 3, SINH_SCRIPT_FLAGS, sinhCharClasses, sinhSplitTable};
+/* Add a little macro to compute lastChar based on size of the charClasses * table */
+#define INDIC_OT_CLASS_TABLE_DEFINE(name, firstChar, worstCaseExpansion, scriptFlags, charClasses, splitMatraTable) \
+  const IndicOTClassTable name = {firstChar, firstChar + G_N_ELEMENTS (charClasses) - 1, \
+                                  worstCaseExpansion, scriptFlags, charClasses, splitMatraTable}
+INDIC_OT_CLASS_TABLE_DEFINE (deva_class_table, 0x0900, 2, DEVA_SCRIPT_FLAGS, devaCharClasses, NULL);
+INDIC_OT_CLASS_TABLE_DEFINE (beng_class_table, 0x0980, 3, BENG_SCRIPT_FLAGS, bengCharClasses, bengSplitTable);
+INDIC_OT_CLASS_TABLE_DEFINE (guru_class_table, 0x0A00, 2, GURU_SCRIPT_FLAGS, guruCharClasses, NULL);
+INDIC_OT_CLASS_TABLE_DEFINE (gujr_class_table, 0x0A80, 2, GUJR_SCRIPT_FLAGS, gujrCharClasses, NULL);
+INDIC_OT_CLASS_TABLE_DEFINE (orya_class_table, 0x0B00, 3, ORYA_SCRIPT_FLAGS, oryaCharClasses, oryaSplitTable);
+INDIC_OT_CLASS_TABLE_DEFINE (taml_class_table, 0x0B80, 3, TAML_SCRIPT_FLAGS, tamlCharClasses, tamlSplitTable);
+INDIC_OT_CLASS_TABLE_DEFINE (telu_class_table, 0x0C00, 3, TELU_SCRIPT_FLAGS, teluCharClasses, teluSplitTable);
+INDIC_OT_CLASS_TABLE_DEFINE (knda_class_table, 0x0C80, 4, KNDA_SCRIPT_FLAGS, kndaCharClasses, kndaSplitTable);
+INDIC_OT_CLASS_TABLE_DEFINE (mlym_class_table, 0x0D00, 3, MLYM_SCRIPT_FLAGS, mlymCharClasses, mlymSplitTable);
+INDIC_OT_CLASS_TABLE_DEFINE (sinh_class_table, 0x0D80, 3, SINH_SCRIPT_FLAGS, sinhCharClasses, sinhSplitTable);
 
 const IndicOTSplitMatra *indic_ot_get_split_matra(const IndicOTClassTable *class_table, IndicOTCharClass char_class)
 {
