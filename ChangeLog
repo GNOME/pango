@@ -1,5 +1,17 @@
 2006-09-13  Behdad Esfahbod  <behdad@gnome.org>
 
+	Part of Bug 355782 – Misaligned extents in pango
+
+	* pango/pango-layout.c (pango_layout_get_extents_internal),
+	(pango_layout_get_extents), (pango_layout_iter_copy),
+	(pango_layout_get_iter), (pango_layout_iter_get_line_extents):
+	Add a new internal member layout_width to PangoLayoutIter.  Set it up
+	in pango_layout_get_extents_internal and use in
+	pango_layout_iter_get_line_extents to fix misalignment of ink link
+	extents.
+
+2006-09-13  Behdad Esfahbod  <behdad@gnome.org>
+
 	"Thou shalt not touch code that does not fit in thy brain."
 
 	* pango/pango-layout.c (update_cluster): Add cluster_start_index
