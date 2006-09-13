@@ -101,6 +101,9 @@ struct _PangoLayoutIter
 
   /* visual position of current character within the cluster */
   int character_position;
+
+  /* the real width of layout */
+  int layout_width;
 };
 
 typedef struct _PangoLayoutLinePrivate PangoLayoutLinePrivate;
@@ -2053,7 +2056,8 @@ static void
 pango_layout_get_extents_internal (PangoLayout    *layout,
                                    PangoRectangle *ink_rect,
                                    PangoRectangle *logical_rect,
-                                   GSList        **line_extents)
+                                   GSList        **line_extents,
+                                   int            *real_width)
 {
   GSList *line_list;
   int y_offset = 0;
@@ -2070,12 +2074,14 @@ pango_layout_get_extents_internal (PangoLayout    *layout,
    */
   width = layout->width;
 
-  /* If one of the lines of the layout is not left aligned, then we need
-   * the width of the width to calculate line x-offsets; this requires
-   * looping through the lines for layout->auto_dir.
-  */
-  if (layout->auto_dir)
+  if (real_width)
+    need_width = TRUE;
+  else if (layout->auto_dir)
     {
+      /* If one of the lines of the layout is not left aligned, then we need
+       * the width of the width to calculate line x-offsets; this requires
+       * looping through the lines for layout->auto_dir.
+       */
       line_list = layout->lines;
       while (line_list)
 	{
@@ -2205,6 +2211,9 @@ pango_layout_get_extents_internal (PangoLayout    *layout,
 
   if (line_extents)
     *line_extents = g_slist_reverse (*line_extents);
+
+  if (real_width)
+    *real_width = width;
 }
 
 /**
@@ -2232,7 +2241,7 @@ pango_layout_get_extents (PangoLayout    *layout,
 {	  
   g_return_if_fail (layout != NULL);
 
-  pango_layout_get_extents_internal (layout, ink_rect, logical_rect, NULL);
+  pango_layout_get_extents_internal (layout, ink_rect, logical_rect, NULL, NULL);
 }
 
 /**
@@ -4617,6 +4626,8 @@ pango_layout_iter_copy (PangoLayoutIter *iter)
   new->cluster_num_chars = iter->cluster_num_chars;
   new->character_position = iter->character_position;
 
+  new->layout_width = iter->layout_width;
+
   return new;
 }
 
@@ -4676,7 +4687,8 @@ pango_layout_get_iter (PangoLayout *layout)
   pango_layout_get_extents_internal (layout,
                                      NULL,
                                      &iter->logical_rect,
-                                     &iter->line_extents);
+                                     &iter->line_extents,
+				     &iter->layout_width);
 
   iter->line_extents_link = iter->line_extents;
 
@@ -5192,7 +5204,7 @@ pango_layout_iter_get_line_extents (PangoLayoutIter *iter,
   if (ink_rect)
     {
       get_line_extents_layout_coords (iter->layout, iter->line,
-                                      iter->logical_rect.width,
+                                      iter->layout_width,
                                       ext->logical_rect.y,
                                       NULL,
                                       ink_rect,
