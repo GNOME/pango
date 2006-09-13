@@ -1,5 +1,12 @@
 2006-09-13  Behdad Esfahbod  <behdad@gnome.org>
 
+	"Thou shalt not touch code that does not fit in thy brain."
+
+	* pango/pango-layout.c (update_cluster): Add cluster_start_index
+	parameter back in.
+
+2006-09-13  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/pango-engine.h: Remove unnecessary 'static' in type definition
 	that causes a relocation.
 

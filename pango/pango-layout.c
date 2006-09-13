@@ -4509,11 +4509,12 @@ offset_y (PangoLayoutIter *iter,
   *y += line_ext->baseline;
 }
 
-/* Sets up the iter for the start of a new cluster. iter->cluster_start
+/* Sets up the iter for the start of a new cluster. cluster_start_index
  * is the byte index of the cluster start relative to the run.
  */
 static void 
-update_cluster (PangoLayoutIter *iter)
+update_cluster (PangoLayoutIter *iter,
+		int              cluster_start_index)
 {
   char             *cluster_text;
   PangoGlyphString *gs;
@@ -4531,9 +4532,9 @@ update_cluster (PangoLayoutIter *iter)
        * since logical and visual runs are in the same direction.
        */
       if (iter->next_cluster_glyph < gs->num_glyphs)
-	cluster_length = gs->log_clusters[iter->next_cluster_glyph] - iter->cluster_start;
+	cluster_length = gs->log_clusters[iter->next_cluster_glyph] - cluster_start_index;
       else
-	cluster_length = iter->run->item->length - iter->cluster_start;
+	cluster_length = iter->run->item->length - cluster_start_index;
     }
   else
     {
@@ -4541,16 +4542,16 @@ update_cluster (PangoLayoutIter *iter)
        * visual cluster which is the next logical cluster.
        */
       int i = iter->cluster_start;
-      while (i > 0 && gs->log_clusters[i - 1] == iter->cluster_start)
+      while (i > 0 && gs->log_clusters[i - 1] == cluster_start_index)
 	i--;
 
       if (i == 0)
-	cluster_length = iter->run->item->length - iter->cluster_start;
+	cluster_length = iter->run->item->length - cluster_start_index;
       else
-	cluster_length = gs->log_clusters[i - 1] - iter->cluster_start;
+	cluster_length = gs->log_clusters[i - 1] - cluster_start_index;
     }
 
-  cluster_text = iter->layout->text + iter->run->item->offset + iter->cluster_start;
+  cluster_text = iter->layout->text + iter->run->item->offset + cluster_start_index;
   iter->cluster_num_chars = g_utf8_strlen (cluster_text, cluster_length);
 
   if (iter->ltr)
@@ -4607,7 +4608,7 @@ update_run (PangoLayoutIter *iter,
 
   if (iter->run)
     {
-      update_cluster (iter);
+      update_cluster (iter, iter->run->glyphs->log_clusters[0]);
     }
   else
     {
@@ -4918,7 +4919,7 @@ next_cluster_internal (PangoLayoutIter *iter,
     {
       iter->cluster_start = next_start;
       iter->cluster_x += iter->cluster_width;
-      update_cluster(iter);
+      update_cluster(iter, gs->log_clusters[iter->cluster_start]);
 
       return TRUE;
     }
