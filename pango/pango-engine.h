@@ -270,7 +270,7 @@ static GType prefix ## _type;						  \
 static void								  \
 prefix ## _register_type (GTypeModule *module)				  \
 {									  \
-  const GTypeInfo object_info =						  \
+  static const GTypeInfo object_info =					  \
     {									  \
       sizeof (name ## Class),						  \
       (GBaseInitFunc) NULL,						  \

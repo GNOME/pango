@@ -44,7 +44,7 @@ pango_shape (const gchar      *text,
              PangoGlyphString *glyphs)
 {
   int i;
-  int last_cluster;
+  int last_cluster = -1;
 
   if (G_LIKELY (PANGO_IS_ENGINE_SHAPE (analysis->shape_engine) && PANGO_IS_FONT (analysis->font)))
     {
@@ -109,8 +109,6 @@ pango_shape (const gchar      *text,
 				 text, length, analysis, glyphs);
     }
 
-  /* make sure last_cluster is invalid */
-  last_cluster = glyphs->log_clusters[0] - 1;
   for (i = 0; i < glyphs->num_glyphs; i++)
     {
      /* Set glyphs[i].attr.is_cluster_start based on log_clusters[]
