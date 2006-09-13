@@ -1,5 +1,14 @@
 2006-09-13  Behdad Esfahbod  <behdad@gnome.org>
 
+	Bug 351223 – the conjuction of Con + 0x0d4d +0x0d31 of Malayalam is
+	wrong
+	Patch from LingNing Zhang
+
+	* modules/indic/indic-ot.c (swapChars), (indic_ot_reorder): Special
+	case the above case.
+
+2006-09-13  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 355750 – The glyphs of the conjuctions about Cons+0x0d4d+0x0d32 of
 	Malayalm are wrong.
 	Patch from LingNing Zhang
