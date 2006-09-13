@@ -1,3 +1,10 @@
+2006-09-13  Behdad Esfahbod  <behdad@gnome.org>
+
+	Part of Bug 355782 – Misaligned extents in pango
+
+	* pango/pango-layout.c (pango_layout_iter_copy): Fix typo in copying
+	iter->cluster_width.
+
 2006-09-12  Behdad Esfahbod  <behdad@gnome.org>
 
 	Bug 355605 – hexbox with 0000 in it

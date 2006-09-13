@@ -4602,7 +4602,6 @@ pango_layout_iter_copy (PangoLayoutIter *iter)
       if (l == iter->line_extents_link)
 	new->line_extents_link = new->line_extents;
     }
-
   new->line_extents = g_slist_reverse (new->line_extents);
   
   new->run_x = iter->run_x;
@@ -4610,7 +4609,7 @@ pango_layout_iter_copy (PangoLayoutIter *iter)
   new->ltr = iter->ltr;
   
   new->cluster_x = iter->cluster_x;
-  new->cluster_width = iter->cluster_x;
+  new->cluster_width = iter->cluster_width;
 
   new->cluster_start = iter->cluster_start;
   new->next_cluster_glyph = iter->next_cluster_glyph;
@@ -4640,7 +4639,8 @@ pango_layout_iter_get_type (void)
  * 
  * Returns an iterator to iterate over the visual extents of the layout.
  * 
- * Return value: the new #PangoLayoutIter.
+ * Return value: the new #PangoLayoutIter that should be freed using
+ *               pango_layout_iter_free().
  **/
 PangoLayoutIter*
 pango_layout_get_iter (PangoLayout *layout)
@@ -4672,11 +4672,11 @@ pango_layout_get_iter (PangoLayout *layout)
   else
     iter->run = NULL;
 
-  iter->line_extents = NULL;  
+  iter->line_extents = NULL;
   pango_layout_get_extents_internal (layout,
                                      NULL,
                                      &iter->logical_rect,
-                                     &iter->line_extents);  
+                                     &iter->line_extents);
 
   iter->line_extents_link = iter->line_extents;
 
@@ -4819,7 +4819,7 @@ next_nonempty_line (PangoLayoutIter *iter,
   return result;
 }
 
-/* Moves to the next non-empty line. If @include_terminators
+/* Moves to the next non-empty run. If @include_terminators
  * is set, the trailing run at the end of a line with an explicit
  * paragraph separator is considered non-empty.
  */
