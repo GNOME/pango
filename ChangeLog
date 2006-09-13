@@ -1,5 +1,12 @@
 2006-09-13  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango/pango-engine.h: Remove unnecessary 'static' in type definition
+	that causes a relocation.
+
+	* pango/shape.c (pango_shape): Make sure last_cluster is invalid.
+
+2006-09-13  Behdad Esfahbod  <behdad@gnome.org>
+
 	Part of Bug 355782 – Misaligned extents in pango
 
 	* pango/pango-layout.c (cluster_width): Rewrite based on
