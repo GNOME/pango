@@ -1,5 +1,14 @@
 2006-09-13  Behdad Esfahbod  <behdad@gnome.org>
 
+	Bug 349876 – U+0x0904 of Devanagari need be "independent vowel", but
+	it is "reserved" in Pango
+	Patch from LingNing Zhang
+
+	* modules/indic/indic-ot-class-tables.c (devaCharClasses): Change
+	U+0904 from _xx to _iv.
+
+2006-09-13  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 355550 – Miscalculation of logical attributes in
 	pango_get_log_attrs()
 	Patch from Theppitak Karoonboonyanan

@@ -101,7 +101,7 @@ enum
  */
 static const IndicOTCharClass devaCharClasses[] =
 {
-    _xx, _ma, _ma, _mp, _xx, _iv, _iv, _iv, _iv, _iv, _iv, _iv, _iv, _iv, _iv, _iv, /* 0900 - 090F */
+    _xx, _ma, _ma, _mp, _iv, _iv, _iv, _iv, _iv, _iv, _iv, _iv, _iv, _iv, _iv, _iv, /* 0900 - 090F */
     _iv, _iv, _iv, _iv, _iv, _ct, _ct, _ct, _ct, _ct, _ct, _ct, _ct, _ct, _ct, _ct, /* 0910 - 091F */
     _ct, _ct, _ct, _ct, _ct, _ct, _ct, _ct, _ct, _cn, _ct, _ct, _ct, _ct, _ct, _ct, /* 0920 - 092F */
     _rv, _cn, _ct, _ct, _ct, _ct, _ct, _ct, _ct, _ct, _xx, _xx, _nu, _xx, _dr, _dl, /* 0930 - 093F */
