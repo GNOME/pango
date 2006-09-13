@@ -1666,8 +1666,7 @@ pango_get_log_attrs (const char    *text,
       g_assert (end - pos < length);
 
       script = pango_script_for_unichar (g_utf8_get_char (pos));
-      analysis.lang_engine =
-        (PangoEngineLang*) pango_map_get_engine (lang_map, script);
+      range_engine = (PangoEngineLang*) pango_map_get_engine (lang_map, script);
 
       if (range_engine != analysis.lang_engine)
         {
@@ -1683,7 +1682,7 @@ pango_get_log_attrs (const char    *text,
           chars_broken += chars_in_range;
 
           range_start = pos;
-          range_engine = analysis.lang_engine;
+          analysis.lang_engine = range_engine;
           chars_in_range = 1;
         }
       else
