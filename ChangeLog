@@ -1,3 +1,23 @@
+2006-09-13  Behdad Esfahbod  <behdad@gnome.org>
+
+	Part of Bug 355782 – Misaligned extents in pango
+
+	* pango/pango-layout.c (cluster_width): Rewrite based on
+	is_cluster_start instead of accessing log_clusters directly.  This is
+	more robust as next_cluster uses that, so the two match now.
+	
+	* pango/pango-layout.c (update_cluster): Remove the
+	cluster_start_index parameter and use iter->cluster_start instead.
+
+	* pango/pango-layout.c (pango_layout_iter_copy): Fix typo in copying
+	iter->cluster_width.
+	
+	* pango/pango-layout.c (pango_layout_iter_get_cluster_extents): Add
+	an assert to make sure iter->cluster_width is correctly set.
+
+	* pango/pango-layout.c (pango_layout_iter_get_char_extents): Remove
+	assert that was readded above to check more cases.
+
 2006-09-12  Behdad Esfahbod  <behdad@gnome.org>
 
 	Bug 355605 – hexbox with 0000 in it

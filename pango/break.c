@@ -1488,11 +1488,17 @@ pango_break (const gchar   *text,
   g_return_if_fail (analysis != NULL);
   g_return_if_fail (attrs != NULL);
   
+  g_message ("break");
+
   if (analysis->lang_engine &&
       PANGO_ENGINE_LANG_GET_CLASS (analysis->lang_engine)->script_break)
     PANGO_ENGINE_LANG_GET_CLASS (analysis->lang_engine)->script_break (analysis->lang_engine, text, length, analysis, attrs, attrs_len);
   else
     pango_default_break (text, length, analysis, attrs, attrs_len);
+
+  int i;
+  for (i = 0; i < attrs_len; i++)
+    g_message ("%d %d", attrs[i].is_cursor_position, attrs[i].backspace_deletes_character);
 }
 
 /**
@@ -1629,6 +1635,7 @@ pango_get_log_attrs (const char    *text,
   static guint engine_type_id = 0;
   static guint render_type_id = 0;
   PangoAnalysis analysis = { 0 };
+  PangoScriptIter *iter;
 
   analysis.level = level;
 
@@ -1647,7 +1654,17 @@ pango_get_log_attrs (const char    *text,
       render_type_id = g_quark_from_static_string (PANGO_RENDER_TYPE_NONE);
     }
 
+  g_message ("logattrs %d >>>>>", length);
   lang_map = pango_find_map (language, engine_type_id, render_type_id);
+
+
+  iter = pango_script_iter_new (text, length);
+  do
+    {
+      
+    }
+  while (pango_script_iter_next (iter));
+  pango_script_iter_free (iter);
 
   range_start = text;
   script = pango_script_for_unichar (g_utf8_get_char (text));
@@ -1666,14 +1683,14 @@ pango_get_log_attrs (const char    *text,
       g_assert (end - pos < length);
 
       script = pango_script_for_unichar (g_utf8_get_char (pos));
-      analysis.lang_engine =
-        (PangoEngineLang*) pango_map_get_engine (lang_map, script);
+      range_engine = (PangoEngineLang*) pango_map_get_engine (lang_map, script);
 
       if (range_engine != analysis.lang_engine)
         {
           /* Engine has changed; do the breaking for the current range,
            * then start a new range.
            */
+	  g_message ("log break %d %d", chars_broken, chars_in_range);
           pango_break (range_start,
                        pos - range_start,
                        &analysis,
@@ -1683,7 +1700,7 @@ pango_get_log_attrs (const char    *text,
           chars_broken += chars_in_range;
 
           range_start = pos;
-          range_engine = analysis.lang_engine;
+	  analysis.lang_engine = range_engine;
           chars_in_range = 1;
         }
       else
@@ -1699,9 +1716,11 @@ pango_get_log_attrs (const char    *text,
     g_assert (pos == end);
     g_assert (range_engine == analysis.lang_engine);
 
+    g_message ("log final break %d %d", chars_broken, chars_in_range);
     pango_break (range_start,
                  end - range_start,
                  &analysis,
                  log_attrs + chars_broken,
                  attrs_len - chars_broken);
+  g_message ("logattrs <<<<<");
 }

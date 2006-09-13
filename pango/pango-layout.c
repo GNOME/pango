@@ -4482,15 +4482,17 @@ cluster_width (PangoGlyphString *gs,
 	       int               cluster_start)
 {
   int i;
-  int log_cluster;
-  int width = 0;
+  int width;
 
-  log_cluster = gs->log_clusters[cluster_start];
-  for (i = cluster_start; i < gs->num_glyphs; i++) 
+  width = gs->glyphs[cluster_start].geometry.width;
+  i = cluster_start + 1;
+  while (i < gs->num_glyphs)
     {
-      if (gs->log_clusters[i] != log_cluster)
-	break;
+      if (gs->glyphs[i].attr.is_cluster_start)
+        break;
+      
       width += gs->glyphs[i].geometry.width;
+      i++;
     }
 
   return width;
@@ -4507,12 +4509,11 @@ offset_y (PangoLayoutIter *iter,
   *y += line_ext->baseline;
 }
 
-/* Sets up the iter for the start of a new cluster. cluster_start_index
+/* Sets up the iter for the start of a new cluster. iter->cluster_start
  * is the byte index of the cluster start relative to the run.
  */
 static void 
-update_cluster (PangoLayoutIter *iter,
-		int              cluster_start_index)
+update_cluster (PangoLayoutIter *iter)
 {
   char             *cluster_text;
   PangoGlyphString *gs;
@@ -4530,9 +4531,9 @@ update_cluster (PangoLayoutIter *iter,
        * since logical and visual runs are in the same direction.
        */
       if (iter->next_cluster_glyph < gs->num_glyphs)
-	cluster_length = gs->log_clusters[iter->next_cluster_glyph] - cluster_start_index;
+	cluster_length = gs->log_clusters[iter->next_cluster_glyph] - iter->cluster_start;
       else
-	cluster_length = iter->run->item->length - cluster_start_index;
+	cluster_length = iter->run->item->length - iter->cluster_start;
     }
   else
     {
@@ -4540,16 +4541,16 @@ update_cluster (PangoLayoutIter *iter,
        * visual cluster which is the next logical cluster.
        */
       int i = iter->cluster_start;
-      while (i > 0 && gs->log_clusters[i - 1] == cluster_start_index)
+      while (i > 0 && gs->log_clusters[i - 1] == iter->cluster_start)
 	i--;
 
       if (i == 0)
-	cluster_length = iter->run->item->length - cluster_start_index;
+	cluster_length = iter->run->item->length - iter->cluster_start;
       else
-	cluster_length = gs->log_clusters[i - 1] - cluster_start_index;
+	cluster_length = gs->log_clusters[i - 1] - iter->cluster_start;
     }
 
-  cluster_text = iter->layout->text + iter->run->item->offset + cluster_start_index;
+  cluster_text = iter->layout->text + iter->run->item->offset + iter->cluster_start;
   iter->cluster_num_chars = g_utf8_strlen (cluster_text, cluster_length);
 
   if (iter->ltr)
@@ -4606,7 +4607,7 @@ update_run (PangoLayoutIter *iter,
 
   if (iter->run)
     {
-      update_cluster (iter, iter->run->glyphs->log_clusters[0]);
+      update_cluster (iter);
     }
   else
     {
@@ -4646,7 +4647,6 @@ pango_layout_iter_copy (PangoLayoutIter *iter)
       if (l == iter->line_extents_link)
 	new->line_extents_link = new->line_extents;
     }
-
   new->line_extents = g_slist_reverse (new->line_extents);
   
   new->run_x = iter->run_x;
@@ -4654,7 +4654,7 @@ pango_layout_iter_copy (PangoLayoutIter *iter)
   new->ltr = iter->ltr;
   
   new->cluster_x = iter->cluster_x;
-  new->cluster_width = iter->cluster_x;
+  new->cluster_width = iter->cluster_width;
 
   new->cluster_start = iter->cluster_start;
   new->next_cluster_glyph = iter->next_cluster_glyph;
@@ -4684,7 +4684,8 @@ pango_layout_iter_get_type (void)
  * 
  * Returns an iterator to iterate over the visual extents of the layout.
  * 
- * Return value: the new #PangoLayoutIter.
+ * Return value: the new #PangoLayoutIter that should be freed using
+ *               pango_layout_iter_free().
  **/
 PangoLayoutIter*
 pango_layout_get_iter (PangoLayout *layout)
@@ -4716,11 +4717,11 @@ pango_layout_get_iter (PangoLayout *layout)
   else
     iter->run = NULL;
 
-  iter->line_extents = NULL;  
+  iter->line_extents = NULL;
   pango_layout_get_extents_internal (layout,
                                      NULL,
                                      &iter->logical_rect,
-                                     &iter->line_extents);  
+                                     &iter->line_extents);
 
   iter->line_extents_link = iter->line_extents;
 
@@ -4863,7 +4864,7 @@ next_nonempty_line (PangoLayoutIter *iter,
   return result;
 }
 
-/* Moves to the next non-empty line. If @include_terminators
+/* Moves to the next non-empty run. If @include_terminators
  * is set, the trailing run at the end of a line with an explicit
  * paragraph separator is considered non-empty.
  */
@@ -4917,7 +4918,7 @@ next_cluster_internal (PangoLayoutIter *iter,
     {
       iter->cluster_start = next_start;
       iter->cluster_x += iter->cluster_width;
-      update_cluster(iter, gs->log_clusters[iter->cluster_start]);
+      update_cluster(iter);
 
       return TRUE;
     }
@@ -5106,8 +5107,6 @@ pango_layout_iter_get_char_extents (PangoLayoutIter *iter,
       return;
     }
   
-  g_assert (cluster_rect.width == iter->cluster_width);
-
   x0 = (iter->character_position * cluster_rect.width) / iter->cluster_num_chars;
   x1 = ((iter->character_position + 1) * cluster_rect.width) / iter->cluster_num_chars;
 
@@ -5159,6 +5158,7 @@ pango_layout_iter_get_cluster_extents (PangoLayoutIter *iter,
 
   if (logical_rect)
     {
+      g_assert (logical_rect->width == iter->cluster_width);
       logical_rect->x += iter->cluster_x;
       offset_y (iter, &logical_rect->y);
     }

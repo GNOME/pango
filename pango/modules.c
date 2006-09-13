@@ -260,6 +260,7 @@ pango_engine_pair_get_engine (PangoEnginePair *pair)
 	  g_type_module_unuse (G_TYPE_MODULE (pair->module));
 	}
 
+      /* TODO: warn once (per id or something) */
       if (!pair->engine)
 	g_printerr ("Failed to load Pango module for id: '%s'", pair->info.id);
     }
