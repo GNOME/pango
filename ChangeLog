@@ -1,5 +1,14 @@
 2006-09-13  Behdad Esfahbod  <behdad@gnome.org>
 
+	Bug 355550 – Miscalculation of logical attributes in
+	pango_get_log_attrs()
+	Patch from Theppitak Karoonboonyanan
+
+	* pango/break.c (pango_get_log_attrs): Pass the correct lang_engine to
+	pango_break().
+
+2006-09-13  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 355697 – The IndicOTClassTable of Oriya has a error.
 
 	* modules/indic/indic-ot-class-tables.c: Compute lastChar from
