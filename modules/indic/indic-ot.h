@@ -44,12 +44,9 @@ G_BEGIN_DECLS
 #ifdef PANGO_ENABLE_ENGINE
 
 /* Characters that get refered to by name... */
-enum
-{
-  C_SIGN_ZWNJ     = 0x200C,
-  C_SIGN_ZWJ      = 0x200D,
-  C_DOTTED_CIRCLE = 0x25CC
-};
+#define C_SIGN_ZWNJ     0x200C
+#define C_SIGN_ZWJ      0x200D
+#define C_DOTTED_CIRCLE 0x25CC
 
 /*
  * The characters that a split matra splits into.
@@ -60,46 +57,42 @@ typedef gunichar IndicOTSplitMatra[3];
 /*
  * Character class values
  */
-/* FIXME: does this need to be a typedef? */
 typedef enum
 {
-  CC_RESERVED             = 0,
-  CC_MODIFYING_MARK_ABOVE = 1,
-  CC_MODIFYING_MARK_POST  = 2,
-  CC_INDEPENDENT_VOWEL    = 3,
-  CC_CONSONANT            = 4,
-  CC_CONSONANT_WITH_NUKTA = 5,
-  CC_NUKTA                = 6,
-  CC_DEPENDENT_VOWEL      = 7,
-  CC_VIRAMA               = 8,
-  CC_ZERO_WIDTH_MARK      = 9,
-  CC_AL_LAKUNA            = 10,
-  CC_COUNT                = 11
+  CC_RESERVED,
+  CC_MODIFYING_MARK_ABOVE,
+  CC_MODIFYING_MARK_POST,
+  CC_INDEPENDENT_VOWEL,
+  CC_CONSONANT,
+  CC_CONSONANT_WITH_NUKTA,
+  CC_NUKTA,
+  CC_DEPENDENT_VOWEL,
+  CC_VIRAMA,
+  CC_ZERO_WIDTH_MARK,
+  CC_AL_LAKUNA,
+  CC_COUNT
 } IndicOTCharClassValues;
 
 /*
  * Character class flags
  */
-/* FIXME: does this need to be a typedef? */
-typedef enum
-{
-  CF_CLASS_MASK   = 0x0000FFFF,
+#define CF_CLASS_MASK   0x0000FFFFU
 
-  CF_CONSONANT    = (int)0x80000000,
+#define CF_CONSONANT    0x80000000U
 
-  CF_REPH         = 0x40000000,
-  CF_VATTU        = 0x20000000,
-  CF_BELOW_BASE   = 0x10000000,
-  CF_POST_BASE    = 0x08000000,
+#define CF_REPH         0x40000000U
+#define CF_VATTU        0x20000000U
+#define CF_BELOW_BASE   0x10000000U
+#define CF_POST_BASE    0x08000000U
 
-  CF_MATRA_PRE    = 0x04000000,
-  CF_MATRA_BELOW  = 0x02000000,
-  CF_MATRA_ABOVE  = 0x01000000,
-  CF_MATRA_POST   = 0x00800000,
-  CF_LENGTH_MARK  = 0x00400000,
-  CF_INDEX_MASK   = 0x000F0000,
-  CF_INDEX_SHIFT  = 16
-} IndicOTCharClassFlags;
+#define CF_MATRA_PRE    0x04000000U
+#define CF_MATRA_BELOW  0x02000000U
+#define CF_MATRA_ABOVE  0x01000000U
+#define CF_MATRA_POST   0x00800000U
+#define CF_LENGTH_MARK  0x00400000U
+
+#define CF_INDEX_MASK   0x000F0000U
+#define CF_INDEX_SHIFT  16
 
 /*
  * Character class: a character class value
@@ -110,17 +103,16 @@ typedef glong IndicOTCharClass;
 /*
  * Script flags
  */
-typedef enum
-{
-  SF_MATRAS_AFTER_BASE    = (int)0x80000000,
-  SF_REPH_AFTER_BELOW     = 0x40000000,
-  SF_EYELASH_RA           = 0x20000000,
-  SF_MPRE_FIXUP           = 0x10000000,
-  SF_PROCESS_ZWJ          = 0x08000000,
+#define SF_MATRAS_AFTER_BASE    0x80000000U
+#define SF_REPH_AFTER_BELOW     0x40000000U
+#define SF_EYELASH_RA           0x20000000U
+#define SF_MPRE_FIXUP           0x10000000U
+#define SF_PROCESS_ZWJ          0x08000000U
 
-  SF_POST_BASE_LIMIT_MASK = 0x0000FFFF,
-  SF_NO_POST_BASE_LIMIT   = 0x00007FFF
-} IndicOTScriptFlags;
+#define SF_POST_BASE_LIMIT_MASK 0x0000FFFFU
+#define SF_NO_POST_BASE_LIMIT   0x00007FFFU
+
+typedef guint32 IndicOTScriptFlags;
 
 /*
  * Bit flags for the indic feature tags
@@ -170,39 +162,22 @@ enum indic_glyph_property_
  * Macros to test the charClass flags for various things.
  */
 #define IS_VM_ABOVE(charClass) ((charClass & CF_CLASS_MASK) == CC_MODIFYING_MARK_ABOVE)
-
 #define IS_VM_POST(charClass) ((charClass & CF_CLASS_MASK) == CC_MODIFYING_MARK_POST)
-
 #define IS_CONSONANT(charClass) ((charClass & CF_CONSONANT) != 0)
-
 #define IS_REPH(charClass) ((charClass & CF_REPH) != 0)
-
 #define IS_NUKTA(charClass) ((charClass & CF_CLASS_MASK) == CC_NUKTA)
-
 #define IS_VIRAMA(charClass) ((charClass & CF_CLASS_MASK) == CC_VIRAMA)
-
 #define IS_AL_LAKUNA(charClass) ((charClass & CF_CLASS_MASK) == CC_AL_LAKUNA)
-
 #define IS_VATTU(charClass) ((charClass & CF_VATTU) != 0)
-
 #define IS_MATRA(charClass) ((charClass & CF_CLASS_MASK) == CC_DEPENDENT_VOWEL)
-
 #define IS_SPLIT_MATRA(charClass) ((charClass & CF_INDEX_MASK) != 0)
-
 #define IS_M_PRE(charClass) ((charClass & CF_MATRA_PRE) != 0)
-
 #define IS_M_BELOW(charClass) ((charClass & CF_MATRA_BELOW) != 0)
-
 #define IS_M_ABOVE(charClass) ((charClass & CF_MATRA_ABOVE) != 0)
-
 #define IS_M_POST(charClass) ((charClass & CF_MATRA_POST) != 0)
-
 #define IS_LENGTH_MARK(charClass) ((charClass & CF_LENGTH_MARK) != 0)
-
 #define HAS_POST_OR_BELOW_BASE_FORM(charClass) ((charClass & (CF_POST_BASE | CF_BELOW_BASE)) != 0)
-
 #define HAS_POST_BASE_FORM(charClass) ((charClass & CF_POST_BASE) != 0)
-
 #define HAS_BELOW_BASE_FORM(charClass) ((charClass & CF_BELOW_BASE) != 0)
 
 struct _IndicOTClassTable

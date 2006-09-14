@@ -1,3 +1,8 @@
+2006-09-14  Behdad Esfahbod  <behdad@gnome.org>
+
+	* modules/indic/indic-ot.h: Change some enums to macros, to get in
+	synch with ICU shaper.  No functional changes.
+
 2006-09-13  Behdad Esfahbod  <behdad@gnome.org>
 
 	Bug 351223 – the conjuction of Con + 0x0d4d +0x0d31 of Malayalam is
