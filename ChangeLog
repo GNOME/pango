@@ -1,5 +1,10 @@
 2006-09-14  Behdad Esfahbod  <behdad@gnome.org>
 
+	* modules/indic/indic-ot-class-tables.c: Change enums to macros, to
+	get in synch with ICU shaper.  No functional changes.
+
+2006-09-14  Behdad Esfahbod  <behdad@gnome.org>
+
 	* modules/indic/indic-ot.h: Change some enums to macros, to get in
 	synch with ICU shaper.  No functional changes.
 
