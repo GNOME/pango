@@ -1,3 +1,11 @@
+2006-09-15  Behdad Esfahbod  <behdad@gnome.org>
+
+	* === Released 1.14.4 ===
+
+	* configure.in: Version 1.14.4
+
+	* NEWS: Updated.
+
 2006-09-13  Behdad Esfahbod  <behdad@gnome.org>
 
 	Bug 351223 – the conjuction of Con + 0x0d4d +0x0d31 of Malayalam is

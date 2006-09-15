@@ -1,3 +1,28 @@
+Overview of changes between 1.14.3 and 1.14.4
+==============================================
+* Indic shaper fixes.
+* Misc bug fixes.
+* Bugs fixed in this release:
+	Bug 351223 – the conjuction of Con + 0x0d4d +0x0d31 of Malayalam is
+	             wrong
+	             Patch from LingNing Zhang
+	Bug 355750 – The glyphs of the conjuctions about Cons+0x0d4d+0x0d32 of
+	             Malayalm are wrong.
+	             Patch from LingNing Zhang
+	Bug 349876 – U+0x0904 of Devanagari need be "independent vowel", but
+	             it is "reserved" in Pango
+	             Patch from LingNing Zhang
+	Bug 355550 – Miscalculation of logical attributes in
+	             pango_get_log_attrs()
+	             Patch from Theppitak Karoonboonyanan
+	Bug 355697 – The IndicOTClassTable of Oriya has a error.
+	Bug 355782 – Misaligned extents in pango
+	Bug 355605 – hexbox with 0000 in it
+	Bug 355435 – Invalid calls to pango_map_get_engine()
+	             Patch from Theppitak Karoonboonyanan
+	Bug 347146 – underline/overstrike spaces
+	Bug 352535 – Ink extents of empty glyph
+
 Overview of changes between 1.14.2 and 1.14.3
 ==============================================
 * Win32 build improvement. [Tor Lillqist]
