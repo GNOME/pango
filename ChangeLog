@@ -1,5 +1,12 @@
 2006-09-15  Behdad Esfahbod  <behdad@gnome.org>
 
+	Bug 355820 – pango_get_log_attrs broken
+
+	* pango/break.c (break_it), (pango_get_log_attrs): Use PangoScriptIter
+	to itemize text, instead of pango_script_for_unichar().
+
+2006-09-15  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/pangofc-fontmap.c (pango_fc_face_describe): Unset gravity on
 	the resulting font description.  We want gravity to be set on all
 	fonts described, but not font faces.
