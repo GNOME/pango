@@ -1,3 +1,26 @@
+Overview of changes between 1.12.3 and 1.12.4
+==============================================
+* Win32 Italic synthesis and hexbox (with cairo) support
+* Improed documentation.
+* Misc fixes.
+* Bugs fixed in this release:
+	Bug 347073 – Allow empty GPOS table
+	Bug 322374 – Examples does not build on MacOS X (merge from HEAD).
+	Bug 347021 – atsui crash when a matching font cannot be found.
+	             Patch from Brian Tarricone.
+	Bug 345274 – list of new symbols for each version is missing in docs
+	             Patch from Priit Laes
+	Bug 344766 – Memory leak in get_ruleset() in modules/basic/basic-fc.c
+	Bug 343966 – pango Cygwin build fixes
+	             Patch from Cygwin Ports maintainer.
+	Bug 341138 – Using TTC font, Gtk2 programs begin to eating big memory
+	             and have many cpu usage.
+	             Patch from Yong Li.
+	Bug 336153 – Mark to mark positioning (Lookup Type 6) isn't correct
+	             when using MarkAttchmentType
+	             Patch from Tin Myo Htet.
+	Bug 125378 – Better underline thickness handling
+
 Overview of changes between 1.12.2 and 1.12.3
 ==============================================
 * Increased robustness against broken pango.modules
