@@ -1273,7 +1273,7 @@ itemize_state_process_run (ItemizeState *state)
       if (G_UNLIKELY (!g_unichar_isgraph (wc) && wc != 0x3000 &&
 		      g_unichar_type (wc) != G_UNICODE_PRIVATE_USE))
 	*/
-      if (G_UNLIKELY (!g_unichar_isprint (wc) &&
+      if (G_UNLIKELY (!g_unichar_isgraph (wc) &&
 		      g_unichar_type (wc) != G_UNICODE_PRIVATE_USE))
 	{
 	  shape_engine = NULL;

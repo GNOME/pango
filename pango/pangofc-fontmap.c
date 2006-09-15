@@ -1708,6 +1708,10 @@ pango_fc_face_describe (PangoFontFace *face)
     {
       desc = pango_fc_font_description_from_pattern (result_pattern, FALSE);
       FcPatternDestroy (result_pattern);
+      /* Unset gravity.  We want gravity to be set to descriptions of fonts,
+       * but not faces.
+       */
+      pango_font_description_unset_fields (desc, PANGO_FONT_MASK_GRAVITY);
     }
 
   FcPatternDestroy (match_pattern);

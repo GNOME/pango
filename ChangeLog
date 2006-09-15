@@ -1,3 +1,9 @@
+2006-09-15  Behdad Esfahbod  <behdad@gnome.org>
+
+	* pango/pangofc-fontmap.c (pango_fc_face_describe): Unset gravity on
+	the resulting font description.  We want gravity to be set on all
+	fonts described, but not font faces.
+
 2006-09-14  Behdad Esfahbod  <behdad@gnome.org>
 
 	* modules/indic/indic-ot-class-tables.c: Change enums to macros, to
