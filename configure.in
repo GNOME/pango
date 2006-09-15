@@ -394,7 +394,7 @@ fi
 #
 # Modules to build
 #
-arabic_modules="arabic-fc,arabic-lang"
+arabic_modules="arabic-fc"
 basic_modules="basic-fc,basic-win32,basic-x,basic-atsui"
 hangul_modules="hangul-fc"
 hebrew_modules="hebrew-fc"
@@ -472,7 +472,6 @@ done
 IFS="$pango_save_ifs"
 
 AM_CONDITIONAL(INCLUDE_ARABIC_FC,	echo $included_modules | egrep '(^|,)arabic-fc($|,)' 	> /dev/null)
-AM_CONDITIONAL(INCLUDE_ARABIC_LANG,	echo $included_modules | egrep '(^|,)arabic-lang($|,)' 	> /dev/null)
 AM_CONDITIONAL(INCLUDE_BASIC_FC,	echo $included_modules | egrep '(^|,)basic-fc($|,)' 	> /dev/null)
 AM_CONDITIONAL(INCLUDE_BASIC_WIN32,	echo $included_modules | egrep '(^|,)basic-win32($|,)' 	> /dev/null)
 AM_CONDITIONAL(INCLUDE_BASIC_X,		echo $included_modules | egrep '(^|,)basic-x($|,)' 	> /dev/null)
@@ -486,7 +485,6 @@ AM_CONDITIONAL(INCLUDE_THAI_FC,		echo $included_modules | egrep '(^|,)thai-fc($|
 AM_CONDITIONAL(INCLUDE_TIBETAN_FC,	echo $included_modules | egrep '(^|,)tibetan-fc($|,)' 	> /dev/null)
 
 AM_CONDITIONAL(DYNAMIC_ARABIC_FC,	echo $dynamic_modules | egrep '(^|,)arabic-fc($|,)' 	> /dev/null)
-AM_CONDITIONAL(DYNAMIC_ARABIC_LANG,	echo $dynamic_modules | egrep '(^|,)arabic-lang($|,)' 	> /dev/null)
 AM_CONDITIONAL(DYNAMIC_BASIC_FC,	echo $dynamic_modules | egrep '(^|,)basic-fc($|,)' 	> /dev/null)
 AM_CONDITIONAL(DYNAMIC_BASIC_WIN32,	echo $dynamic_modules | egrep '(^|,)basic-win32($|,)' 	> /dev/null)
 AM_CONDITIONAL(DYNAMIC_BASIC_X,		echo $dynamic_modules | egrep '(^|,)basic-x($|,)' 	> /dev/null)
