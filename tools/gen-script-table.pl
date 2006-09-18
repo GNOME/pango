@@ -55,8 +55,6 @@ EOT
 $easy_range = 0x2000;
 
 print <<"EOT";
-#define PANGO_EASY_SCRIPTS_RANGE $easy_range
-
 static const guchar pango_script_easy_table[$easy_range] = {
 EOT
 

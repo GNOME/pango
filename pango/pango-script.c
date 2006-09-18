@@ -127,7 +127,7 @@ pango_script_for_unichar_bsearch (gunichar ch)
 PangoScript
 pango_script_for_unichar (gunichar ch)
 {
-  if (ch < PANGO_EASY_SCRIPTS_RANGE)
+  if (ch < G_N_ELEMENTS (pango_script_easy_table))
     return pango_script_easy_table[ch];
   else 
     return pango_script_for_unichar_bsearch (ch); 

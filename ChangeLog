@@ -1,5 +1,14 @@
 2006-09-18  Behdad Esfahbod  <behdad@gnome.org>
 
+	* tools/gen-script-table.pl:
+	* pango/pango-script-table.h:
+	* pango/pango-script.c (pango_script_for_unichar): Minor
+	simplification.
+
+	* tests/testscript.c (test_script_lookup): Update to pass.
+
+2006-09-18  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/pangoft2-render.c (pango_ft2_font_render_glyph): Remove a
 	couple of unnecessary static variables.
 

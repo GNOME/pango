@@ -142,15 +142,18 @@ unescape (const char *text)
 static void
 test_script_lookup (void)
 {
-  gunichar ch = 0;
+  gunichar ch;
   unsigned int i;
   int j;
+
+  for (ch = 0; ch < G_N_ELEMENTS (pango_script_easy_table); ch++)
+    ASSERT (pango_script_for_unichar (ch) == pango_script_easy_table[ch]);
 
   for (i = 0; i < G_N_ELEMENTS (pango_script_table); i++)
     {
       while (ch < pango_script_table[i].start)
 	{
-	  ASSERT (pango_script_for_unichar (ch) == PANGO_SCRIPT_COMMON);
+	  ASSERT (pango_script_for_unichar (ch) == PANGO_SCRIPT_UNKNOWN);
 	  ch++;
 	}
 
@@ -161,7 +164,7 @@ test_script_lookup (void)
 	}
     }
 
-  ASSERT (pango_script_for_unichar (ch) == PANGO_SCRIPT_COMMON);
+  ASSERT (pango_script_for_unichar (ch) == PANGO_SCRIPT_UNKNOWN);
 }
 
 static void
