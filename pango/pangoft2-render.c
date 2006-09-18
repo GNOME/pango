@@ -161,7 +161,7 @@ pango_ft2_font_render_glyph (PangoFont *font,
 
   if (glyph_index & PANGO_GLYPH_UNKNOWN_FLAG)
     {
-      static PangoFT2RenderedGlyph *box;
+      PangoFT2RenderedGlyph *box;
       PangoFontMetrics *metrics;
 
       if (!font)
@@ -170,9 +170,6 @@ pango_ft2_font_render_glyph (PangoFont *font,
       metrics = pango_font_get_metrics (font, NULL);
       if (!metrics)
 	goto generic_box;
-
-      /* this box gets cached, so don't bother with static'ing it.
-       */
 
       box = pango_ft2_font_render_box_glyph (PANGO_PIXELS (metrics->approximate_char_width),
 					     PANGO_PIXELS (metrics->ascent + metrics->descent),
@@ -207,17 +204,10 @@ pango_ft2_font_render_glyph (PangoFont *font,
     }
   else
     {
-      static PangoFT2RenderedGlyph *box = NULL;
-
-    generic_box:
-      if (!box)
-        {
-	  box = pango_ft2_font_render_box_glyph (PANGO_UNKNOWN_GLYPH_WIDTH,
-						 PANGO_UNKNOWN_GLYPH_HEIGHT,
-						 PANGO_UNKNOWN_GLYPH_HEIGHT);
-	}
-
-      return box;
+generic_box:
+      return  pango_ft2_font_render_box_glyph (PANGO_UNKNOWN_GLYPH_WIDTH,
+					       PANGO_UNKNOWN_GLYPH_HEIGHT,
+					       PANGO_UNKNOWN_GLYPH_HEIGHT);
     }
 }
 

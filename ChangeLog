@@ -1,5 +1,10 @@
 2006-09-18  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango/pangoft2-render.c (pango_ft2_font_render_glyph): Remove a
+	couple of unnecessary static variables.
+
+2006-09-18  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 356194 – more pango_get_log_attrs problems
 
 	* pango/break.c (tailor_break): New function.  Simply calls the
