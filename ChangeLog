@@ -1,5 +1,11 @@
 2006-09-18  Behdad Esfahbod  <behdad@gnome.org>
 
+	* configure.in: Step module interface version to 1.6.0 because of the
+	script_break() slight change of behavior and anticipated changes to
+	the module interface this cycle.
+
+2006-09-18  Behdad Esfahbod  <behdad@gnome.org>
+
 	Part of Bug 350132 – backspacing doesn't work properly for Arabic
 
 	* configure.in:

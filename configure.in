@@ -34,7 +34,7 @@ m4_define([pango_binary_age],
           [m4_eval(100 * pango_minor_version + pango_micro_version)])
 dnl Module API version.  This should be stepped up when a change causes
 dnl older modules to not work with new pango.
-m4_define([pango_module_version], [1.5.0])
+m4_define([pango_module_version], [1.6.0])
 
 
 AC_INIT(pango, pango_version(),
