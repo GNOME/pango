@@ -1,5 +1,16 @@
 2006-09-18  Behdad Esfahbod  <behdad@gnome.org>
 
+	Part of Bug 350132 – backspacing doesn't work properly for Arabic
+
+	* configure.in:
+	* modules/arabic/Makefile.am:
+	* modules/arabic/arabic-lang.c:
+	Add a simple Arabic language engine.  Currently it just makes sure
+	that backspace_deletes_character is not set on ALEF-MADDA
+	combinations.
+
+2006-09-18  Behdad Esfahbod  <behdad@gnome.org>
+
 	* tools/gen-script-table.pl:
 	* pango/pango-script-table.h:
 	* pango/pango-script.c (pango_script_for_unichar): Minor
