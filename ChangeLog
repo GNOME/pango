@@ -1,3 +1,22 @@
+2006-09-18  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 356194 – more pango_get_log_attrs problems
+
+	* pango/break.c (tailor_break): New function.  Simply calls the
+	script_break() function of the language engine, if any.
+
+	* pango/break.c (pango_break): Call pango_default_break()
+	unconditionally.  Call tailor_break() on top of the result to tailor
+	it using the language engines, if any.
+
+	* pango/break.c (tailor_segment): Call tailor_break() on the segment,
+	and make sure the log_attrs for the first position are not corrupted.
+
+	* pango/break.c (pango_get_log_attrs): Call pango_default_break() on
+	the entire paragraph, and call tailor_segment on each segment.
+
+	* pango/pango-engine.h: Update docs about *script_break()'s behavior.
+
 2006-09-15  Behdad Esfahbod  <behdad@gnome.org>
 
 	Bug 355820 – pango_get_log_attrs broken

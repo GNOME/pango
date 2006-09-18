@@ -2858,7 +2858,7 @@ process_item (PangoLayout     *layout,
   int i;
   gboolean processing_new_item = FALSE;
 
-  /* Only one character has type G_UNICODE_LINE_SEPARATOR in Unicode 4.0;
+  /* Only one character has type G_UNICODE_LINE_SEPARATOR in Unicode 5.0;
    * update this if that changes. */
 #define LINE_SEPARATOR 0x2028
 

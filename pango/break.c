@@ -494,12 +494,11 @@ typedef enum
  *
  * This is the default break algorithm, used if no language
  * engine overrides it. Normally you should use pango_break()
- * instead; this function is mostly useful for chaining up
- * from a language engine override. Unlike pango_break(),
+ * instead. Unlike pango_break(),
  * @analysis can be %NULL, but only do that if you know what
- * you're doing. (If you need an analysis to pass to pango_break(),
- * you need to pango_itemize() or use pango_get_log_attrs().)
- *
+ * you're doing. If you need an analysis to pass to pango_break(),
+ * you need to pango_itemize().  In most cases however you should
+ * simply use pango_get_log_attrs().
  **/
 void
 pango_default_break (const gchar   *text,
@@ -547,7 +546,7 @@ pango_default_break (const gchar   *text,
   gboolean almost_done = FALSE;
   gboolean done = FALSE;
 
-  g_return_if_fail (text != NULL);
+  g_return_if_fail (length == 0 || text != NULL);
   g_return_if_fail (attrs != NULL);
 
   next = text;
@@ -1466,6 +1465,26 @@ pango_default_break (const gchar   *text,
     }
 }
 
+static gboolean
+tailor_break (const gchar   *text,
+             gint           length,
+             PangoAnalysis *analysis,
+             PangoLogAttr  *attrs,
+             int            attrs_len)
+{
+  if (analysis->lang_engine && PANGO_ENGINE_LANG_GET_CLASS (analysis->lang_engine)->script_break)
+    {
+      if (length < 0)
+	length = strlen (text);
+      else if (text == NULL)
+	text = "";
+
+      PANGO_ENGINE_LANG_GET_CLASS (analysis->lang_engine)->script_break (analysis->lang_engine, text, length, analysis, attrs, attrs_len);
+      return TRUE;
+    }
+  return FALSE;
+}
+
 /**
  * pango_break:
  * @text:      the text to process
@@ -1475,7 +1494,8 @@ pango_default_break (const gchar   *text,
  * @attrs_len: size of the array passed as @attrs
  *
  * Determines possible line, word, and character breaks
- * for a string of Unicode text.
+ * for a string of Unicode text with a single analysis.  For most
+ * purposes you may want to use pango_get_log_attrs().
  */
 void
 pango_break (const gchar   *text,
@@ -1484,15 +1504,11 @@ pango_break (const gchar   *text,
              PangoLogAttr  *attrs,
              int            attrs_len)
 {
-  g_return_if_fail (text != NULL);
   g_return_if_fail (analysis != NULL);
   g_return_if_fail (attrs != NULL);
   
-  if (analysis->lang_engine &&
-      PANGO_ENGINE_LANG_GET_CLASS (analysis->lang_engine)->script_break)
-    PANGO_ENGINE_LANG_GET_CLASS (analysis->lang_engine)->script_break (analysis->lang_engine, text, length, analysis, attrs, attrs_len);
-  else
-    pango_default_break (text, length, analysis, attrs, attrs_len);
+  pango_default_break (text, length, analysis, attrs, attrs_len);
+  tailor_break        (text, length, analysis, attrs, attrs_len);
 }
 
 /**
@@ -1525,7 +1541,7 @@ pango_find_paragraph_boundary (const gchar *text,
   const gchar *delimiter = NULL;
 
   /* Only one character has type G_UNICODE_PARAGRAPH_SEPARATOR in
-   * Unicode 4.1; update the following code if that changes.
+   * Unicode 5.0; update the following code if that changes.
    */
 
   /* prev_sep is the first byte of the previous separator.  Since
@@ -1594,23 +1610,36 @@ pango_find_paragraph_boundary (const gchar *text,
 }
 
 static int
-break_it (const char      *range_start,
-	  const char      *range_end,
-	  PangoEngineLang *range_engine,
-	  int              chars_broken,
-	  PangoAnalysis   *analysis,
-	  PangoLogAttr    *log_attrs)
+tailor_segment (const char      *range_start,
+		const char      *range_end,
+		PangoEngineLang *range_engine,
+		int              chars_broken,
+		PangoAnalysis   *analysis,
+		PangoLogAttr    *log_attrs)
 {
   int chars_in_range;
+  PangoLogAttr attr_before = log_attrs[0];
 
   analysis->lang_engine = range_engine;
   chars_in_range = g_utf8_strlen (range_start, range_end - range_start);
 
-  pango_break (range_start,
-	       range_end - range_start,
-	       analysis,
-	       log_attrs + chars_broken,
-	       chars_in_range + 1);
+
+  if (tailor_break (range_start,
+		    range_end - range_start,
+		    analysis,
+		    log_attrs + chars_broken,
+		    chars_in_range + 1))
+    {
+      /* if tailored, we enforce some of the attrs from before tailoring at
+       * the boundary
+       */
+
+     log_attrs[0].backspace_deletes_character  = attr_before.backspace_deletes_character;
+
+     log_attrs[0].is_line_break      |= attr_before.is_line_break;
+     log_attrs[0].is_mandatory_break |= attr_before.is_mandatory_break;
+     log_attrs[0].is_cursor_position |= attr_before.is_cursor_position;
+    }
 
   return chars_in_range;
 }
@@ -1629,8 +1658,8 @@ break_it (const char      *range_start,
  * @text contains N characters, it has N+1 positions, including the
  * last position at the end of the text. @text should be an entire
  * paragraph; logical attributes can't be computed without context
- * (for example you need to see spaces on either side of a word to know the
- * word is a word).
+ * (for example you need to see spaces on either side of a word to know
+ * the word is a word).
  */
 void
 pango_get_log_attrs (const char    *text,
@@ -1643,7 +1672,7 @@ pango_get_log_attrs (const char    *text,
   PangoMap *lang_map;
   int chars_broken;
   const char *range_start, *range_end;
-  PangoScript range_script;
+  PangoScript script;
   PangoEngineLang *range_engine;
   static guint engine_type_id = 0;
   static guint render_type_id = 0;
@@ -1655,8 +1684,7 @@ pango_get_log_attrs (const char    *text,
 
   analysis.level = level;
 
-  if (length < 0)
-    length = strlen (text);
+  pango_default_break (text, length, &analysis, log_attrs, attrs_len);
 
   if (engine_type_id == 0)
     {
@@ -1669,31 +1697,25 @@ pango_get_log_attrs (const char    *text,
   chars_broken = 0;
 
   iter = pango_script_iter_new (text, length);
-  pango_script_iter_get_range (iter, &range_start, &range_end, &range_script);
-  range_engine = (PangoEngineLang*) pango_map_get_engine (lang_map, range_script);
+  pango_script_iter_get_range (iter, &range_start, &range_end, &script);
+  range_engine = (PangoEngineLang*) pango_map_get_engine (lang_map, script);
   g_assert (range_start == text);
 
   while (pango_script_iter_next (iter))
     {
       const char *run_start, *run_end;
-      PangoScript run_script;
       PangoEngineLang* run_engine;
 
-      pango_script_iter_get_range (iter, &run_start, &run_end, &run_script);
-      run_engine = (PangoEngineLang*) pango_map_get_engine (lang_map, run_script);
+      pango_script_iter_get_range (iter, &run_start, &run_end, &script);
+      run_engine = (PangoEngineLang*) pango_map_get_engine (lang_map, script);
       g_assert (range_end == run_start);
 
       if (range_engine != run_engine)
         {
-          /* Engine has changed; do the breaking for the current range,
+          /* Engine has changed; do the tailoring for the current range,
            * then start a new range.
            */
-	  chars_broken += break_it (range_start,
-				    range_end,
-				    range_engine,
-				    chars_broken,
-				    &analysis,
-				    log_attrs);
+	  chars_broken += tailor_segment (range_start, range_end, range_engine, chars_broken, &analysis, log_attrs);
 
           range_start = run_start;
 	  range_engine = run_engine;
@@ -1702,14 +1724,9 @@ pango_get_log_attrs (const char    *text,
     }
   pango_script_iter_free (iter);
 
-  g_assert (range_end == text + length);
+  g_assert (length < 0 || range_end == text + length);
 
-  chars_broken += break_it (range_start,
-			    range_end,
-			    range_engine,
-			    chars_broken,
-			    &analysis,
-			    log_attrs);
+  chars_broken += tailor_segment (range_start, range_end, range_engine, chars_broken, &analysis, log_attrs);
 
   if (chars_broken + 1 < attrs_len)
     g_warning ("pango_get_log_attrs: attrs_len should have been at least %d, but was %d.  Expect corrupted memory.", 

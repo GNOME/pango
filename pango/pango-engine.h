@@ -101,7 +101,11 @@ struct _PangoEngineLang
 /**
  * PangoEngineLangClass:
  * @script_break: Provides a custom implementation of pango_break().
- *  if this is %NULL, pango_default_break() will be used.
+ * If %NULL, pango_default_break() is used instead. If not %NULL, for
+ * Pango versions before 1.16 (module interface version before 1.6.0),
+ * this was called instead of pango_default_break(), but in newer versions,
+ * pango_default_break() is always called and this is called after that to
+ * allow tailoring the breaking results.
  *
  * Class structure for #PangoEngineLang
  **/
