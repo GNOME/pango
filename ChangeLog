@@ -1,3 +1,10 @@
+2006-09-22  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 357228 – Remove aix specific hack from configure.in
+
+	* configure.in: Remove hack added back 2002 that is not required
+	anymore.
+
 2006-09-18  Behdad Esfahbod  <behdad@gnome.org>
 
 	* configure.in: Step module interface version to 1.6.0 because of the

@@ -600,9 +600,8 @@ dnl * See whether we need to load our modules as .la files *
 dnl ********************************************************
 
 use_la_modules=false
-case $host in
-  *-aix*) use_la_modules=true
-esac
+
+# is there any platform that we have to use .la files?
 
 if $use_la_modules ; then
    AC_DEFINE(USE_LA_MODULES, 1, [Whether to load modules via .la files rather than directly])
