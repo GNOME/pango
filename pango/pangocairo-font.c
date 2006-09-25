@@ -227,7 +227,6 @@ _pango_cairo_font_get_hex_box_info (PangoCairoFont *cfont)
 
     pango_font_description_free (desc);
     g_object_unref (context);
-    g_object_unref (fontmap);
   }
 
   cairo_font_options_destroy (font_options);
