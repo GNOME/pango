@@ -1,3 +1,11 @@
+2006-09-25  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 357686 – pangocairo-font.c: illegal g_object_unref in
+	pango_cairo_font_get_hex_box_info
+
+	* pango/pangocairo-font.c (_pango_cairo_font_get_hex_box_info): Remove
+	wrong g_object_unref (fontmap).
+
 2006-09-15  Behdad Esfahbod  <behdad@gnome.org>
 
 	* === Released 1.12.4 ===

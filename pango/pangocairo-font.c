@@ -220,7 +220,6 @@ _pango_cairo_font_get_hex_box_info (PangoCairoFont *cfont)
     pango_font_description_free (mini_desc);
 
     g_object_unref (context);
-    g_object_unref (fontmap);
   }
 
 
