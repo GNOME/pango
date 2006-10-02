@@ -1,3 +1,7 @@
+2006-10-02  Behdad Esfahbod  <behdad@gnome.org>
+
+	* configure.in: Require glib 2.12, for Unicode 5.0 data files.
+
 2006-09-25  Behdad Esfahbod  <behdad@gnome.org>
 
 	Bug 357686 – pangocairo-font.c: illegal g_object_unref in
