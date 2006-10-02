@@ -1,3 +1,11 @@
+2006-10-02  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 357790 – Rendering problem for malayalam consonant RA (U+0D30)
+
+	* modules/indic/indic-ot-class-tables.c:
+	* modules/indic/indic-ot.c (indic_ot_reorder):
+	Fix.
+
 2006-08-26  Behdad Esfahbod  <behdad@gnome.org>
 
 	Bug 349813 – typo in docs for pango_layout_move_cursor_visually
