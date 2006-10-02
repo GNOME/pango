@@ -4,6 +4,7 @@ makefile.mingw
 pangorc
 pango*-view
 cairosimple
+cairotwisted
 .deps
 .libs
 *.lo
