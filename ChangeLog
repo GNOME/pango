@@ -1,5 +1,11 @@
 2006-10-02  Behdad Esfahbod  <behdad@gnome.org>
 
+	Bug 359043 – PangoRenderer does not show in API docs
+
+	* docs/pango-docs.sgml: Hook PangoRenderer docs.
+
+2006-10-02  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 359046 – renderdemo.c unconditionally use GLib 2.12
 
 	* configure.in: Require glib 2.12, for Unicode 5.0 data files.
