@@ -448,7 +448,16 @@ glong indic_ot_reorder(const gunichar *chars, const glong *utf8_offsets, glong c
 		(chars[baseConsonant] == 0x0d31) &&
 		((chars[baseConsonant - 2] >= 0x0d15) && 
 		 (chars[baseConsonant - 2] <= 0x0d39)))  {
-		swapChars (&output, -1, -3);
+      		swapChars (&output, -1, -3);
+	    }
+
+            /* for the special conjuction of Cons+0x0d4d+0x0d30 of Malayalam */
+	    if ((baseConsonant - 2 >= 0) &&
+		(chars[baseConsonant - 1] == 0x0d4d) &&
+		(chars[baseConsonant] == 0x0d30) &&
+		((chars[baseConsonant - 2] >= 0x0d15) && 
+		 (chars[baseConsonant - 2] <= 0x0d39)))  {
+      		swapChars (&output, -1, -3);
 	    }
 
 	    if ((class_table->scriptFlags & SF_MATRAS_AFTER_BASE) != 0) {
@@ -496,14 +505,6 @@ glong indic_ot_reorder(const gunichar *chars, const glong *utf8_offsets, glong c
 
 		    /* write halant that was after base consonant */
 		    writeChar(&output, chars[bcSpan], /*bcSpan*/ prev, blwf_p);
-
-		    /* for Ra of Malayalam */
-		    if ((bcSpan - 1 >= 0) && (bcSpan + 1 < char_count) &&
-			(chars[bcSpan] == 0x0d4d) && (chars[bcSpan + 1] == 0x0d30) &&
-			((chars[bcSpan - 1] >= 0x0d15) && (chars[bcSpan - 1] <= 0x0d39))) {
-
-			shiftCharsLeft3 (&output);
-		    }
 		}
 
 		/* write the training halant, if there is one */
