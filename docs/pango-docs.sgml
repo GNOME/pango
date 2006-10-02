@@ -12,6 +12,7 @@
 <!ENTITY pango-Engines SYSTEM "xml/engines.xml">
 <!ENTITY PangoEngineLang SYSTEM "xml/pango-engine-lang.xml">
 <!ENTITY PangoEngineShape SYSTEM "xml/pango-engine-shape.xml">
+<!ENTITY PangoRenderer SYSTEM "xml/pango-renderer.xml">
 <!ENTITY pango-Modules SYSTEM "xml/modules.xml">
 <!ENTITY pango-X-Fonts-and-Rendering SYSTEM "xml/x-fonts.xml">
 <!ENTITY pango-Win32-Fonts-and-Rendering SYSTEM "xml/win32-fonts.xml">
@@ -58,6 +59,7 @@
 
   <chapter id="lowlevel">
     <title>Low Level Functionality</title>
+    &PangoRenderer;
     &PangoFcFontMap;
     &PangoFcFont;
     &PangoFcDecoder;
