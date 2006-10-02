@@ -1,5 +1,13 @@
 2006-10-02  Behdad Esfahbod  <behdad@gnome.org>
 
+	* === Released 1.14.5 ===
+
+	* configure.in: Version 1.14.5
+
+	* NEWS: Updated.
+
+2006-10-02  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 356685 – [or_IN] Rendering of consonant+0x0B4D+0x0B2F is wrong
 	Patch from Rahul Bhalerao
 

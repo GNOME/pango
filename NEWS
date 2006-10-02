@@ -1,3 +1,16 @@
+Overview of changes between 1.14.4 and 1.14.5
+==============================================
+* Indic shaper fixes.
+* Misc bug fixes.
+* Bugs fixed in this release:
+	Bug 356685 – [or_IN] Rendering of consonant+0x0B4D+0x0B2F is wrong
+	             Patch from Rahul Bhalerao
+	Bug 357790 – Rendering problem for malayalam consonant RA (U+0D30)
+	             Patch from Rahul Bhalerao
+	Bug 349813 – typo in docs for pango_layout_move_cursor_visually
+	Bug 357686 – pangocairo-font.c: illegal g_object_unref in
+	             pango_cairo_font_get_hex_box_info
+
 Overview of changes between 1.14.3 and 1.14.4
 ==============================================
 * Indic shaper fixes.
