@@ -1,6 +1,15 @@
 2006-10-02  Behdad Esfahbod  <behdad@gnome.org>
 
+	Bug 356685 – [or_IN] Rendering of consonant+0x0B4D+0x0B2F is wrong
+	Patch from Rahul Bhalerao
+
+	* modules/indic/indic-ot-class-tables.c:  Change _ct to _bb for
+	various Orya characters.
+
+2006-10-02  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 357790 – Rendering problem for malayalam consonant RA (U+0D30)
+	Patch from Rahul Bhalerao
 
 	* modules/indic/indic-ot-class-tables.c:
 	* modules/indic/indic-ot.c (indic_ot_reorder):
