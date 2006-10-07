@@ -6,6 +6,7 @@ TEST_TEXTS =			\
 	test-devanagari.txt	\
 	test-hebrew.txt		\
 	test-ipa.txt		\
+	test-latin.txt		\
 	test-syriac.txt		\
 	test-tamil.txt		\
 	test-tibetan.txt	\

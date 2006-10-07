@@ -1,3 +1,8 @@
+2006-10-07  Behdad Esfahbod  <behdad@gnome.org>
+
+	* examples/Makefile.am:
+	* examples/test-latin.txt: Add part of Jabberwocky as Latin test text.
+
 2006-10-02  Behdad Esfahbod  <behdad@gnome.org>
 
 	Bug 356685 – [or_IN] Rendering of consonant+0x0B4D+0x0B2F is wrong
