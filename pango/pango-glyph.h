@@ -32,7 +32,7 @@ typedef struct _PangoGlyphVisAttr PangoGlyphVisAttr;
 typedef struct _PangoGlyphInfo PangoGlyphInfo;
 typedef struct _PangoGlyphString PangoGlyphString;
 
-/* 1000ths of a device unit */
+/* 1024ths of a device unit */
 typedef gint32 PangoGlyphUnit;
 
 /* Positioning information about a glyph
