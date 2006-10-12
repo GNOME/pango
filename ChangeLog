@@ -1,3 +1,12 @@
+2006-10-12  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 358174 – Reph and Vattu forms of Assamese character RA(U+09F0) are
+	not rendered.
+	Patch from Rahul Bhalerao
+
+	* modules/indic/indic-ot-class-tables.c: Change the class bit of
+	U+09F0 from '_ct' to '_rv'.
+
 2006-10-07  Behdad Esfahbod  <behdad@gnome.org>
 
 	* examples/Makefile.am:

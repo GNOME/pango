@@ -124,7 +124,7 @@ static const IndicOTCharClass bengCharClasses[] =
     _dr, _db, _db, _db, _db, _xx, _xx, _dl, _dl, _xx, _xx, _s1, _s2, _vr, _xx, _xx, /* 09C0 - 09CF */
     _xx, _xx, _xx, _xx, _xx, _xx, _xx, _dr, _xx, _xx, _xx, _xx, _cn, _cn, _xx, _cn, /* 09D0 - 09DF */
     _iv, _iv, _dv, _dv, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, /* 09E0 - 09EF */
-    _ct, _ct, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx                           /* 09F0 - 09FA */
+    _rv, _ct, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx                           /* 09F0 - 09FA */
 };
 
 static const IndicOTCharClass guruCharClasses[] =
