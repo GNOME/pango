@@ -1,5 +1,12 @@
 2006-10-12  Behdad Esfahbod  <behdad@gnome.org>
 
+	* configure.in:
+	* modules/arabic/Makefile.am:
+	* modules/arabic/arabic-lang.c: Backport the Arabic lang engine from
+	HEAD.
+
+2006-10-12  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/break.c (pango_default_break), (tailor_break),
 	(pango_break), (pango_find_paragraph_boundary), (tailor_segment),
 	(pango_get_log_attrs): Backport (copy) break.c from HEAD.  This makes
