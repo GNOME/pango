@@ -1,5 +1,13 @@
 2006-10-12  Behdad Esfahbod  <behdad@gnome.org>
 
+	* === Released 1.14.6 ===
+
+	* configure.in: Version 1.14.6
+
+	* NEWS: Updated.
+
+2006-10-12  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 353877 – Sinhala is_cursor_position and
 	backspace_deletes_character issues
 	Patch from Akira TAGOH

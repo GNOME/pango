@@ -1,3 +1,19 @@
+Overview of changes between 1.14.5 and 1.14.6
+==============================================
+* Backport language-engine handling fixes from HEAD.
+* Add simple Arabic and Indic language engines.
+* Indic shaper fixes.
+* Bugs fixed in this release:
+	Bug 353877 – Sinhala is_cursor_position and
+		     backspace_deletes_character issues
+		     Patch from Akira TAGOH
+	Bug 358224 – Telugu Character U+0C31 does not render its below-base
+		     form.
+		     Patch from Rahul Bhalerao
+	Bug 358174 – Reph and Vattu forms of Assamese character RA(U+09F0)
+		     are not rendered.
+		     Patch from Rahul Bhalerao
+
 Overview of changes between 1.14.4 and 1.14.5
 ==============================================
 * Indic shaper fixes.
