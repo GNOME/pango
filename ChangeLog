@@ -1,5 +1,14 @@
 2006-10-12  Behdad Esfahbod  <behdad@gnome.org>
 
+	Bug 358224 – Telugu Character U+0C31 does not render its below-base
+	form.
+	Patch from Rahul Bhalerao
+
+	* modules/indic/indic-ot-class-tables.c: Change  the class of U+0C31
+	from '_ct' to '_bb'.
+
+2006-10-12  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 358174 – Reph and Vattu forms of Assamese character RA(U+09F0) are
 	not rendered.
 	Patch from Rahul Bhalerao
