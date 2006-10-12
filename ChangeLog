@@ -1,5 +1,15 @@
 2006-10-12  Behdad Esfahbod  <behdad@gnome.org>
 
+	Bug 353877 – Sinhala is_cursor_position and
+	backspace_deletes_character issues
+	Patch from Akira TAGOH
+
+	* configure.in:
+	* modules/indic/Makefile.am:
+	* modules/indic/indic-lang.c: Add a simple Indic language engine.
+
+2006-10-12  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 358224 – Telugu Character U+0C31 does not render its below-base
 	form.
 	Patch from Rahul Bhalerao
