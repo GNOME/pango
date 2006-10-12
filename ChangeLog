@@ -1,3 +1,10 @@
+2006-10-12  Behdad Esfahbod  <behdad@gnome.org>
+
+	* pango/break.c (pango_default_break), (tailor_break),
+	(pango_break), (pango_find_paragraph_boundary), (tailor_segment),
+	(pango_get_log_attrs): Backport (copy) break.c from HEAD.  This makes
+	the language engine interface work.
+
 2006-10-02  Behdad Esfahbod  <behdad@gnome.org>
 
 	* === Released 1.14.5 ===
