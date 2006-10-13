@@ -1,5 +1,13 @@
 2006-10-13  Behdad Esfahbod  <behdad@gnome.org>
 
+	* === Released 1.14.7 ===
+
+	* configure.in: Version 1.14.7
+
+	* NEWS: Updated.
+
+2006-10-13  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 361938 – Can't include *-lang modules (./configure
 	--with-included-modules fails)
 
