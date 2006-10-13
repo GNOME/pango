@@ -8,10 +8,7 @@ pango-enum-types.[ch]
 s-enum-types-[ch]
 pango-querymodules
 module-defs.h
-module-defs-atsui.c
-module-defs-x.c
-module-defs-fc.c
-module-defs-win32.c
+module-defs-*.c
 *.lo
 *.la
 .deps

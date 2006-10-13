@@ -1,3 +1,16 @@
+2006-10-13  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 361938 – Can't include *-lang modules (./configure
+	--with-included-modules fails)
+
+	* configure.in:
+	* modules/Makefile.am:
+	* pango/.cvsignore:
+	* pango/Makefile.am:
+	* pango/modules.c (init_modules):
+	* pango/modules.h:
+	Make included language engines work.
+
 2006-10-12  Behdad Esfahbod  <behdad@gnome.org>
 
 	Bug 353877 – Sinhala is_cursor_position and

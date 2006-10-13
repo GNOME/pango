@@ -42,8 +42,12 @@ endif
 lib_LTLIBRARIES = libpango-1.0.la
 
 libpango_1_0_la_LDFLAGS = $(LIBRARY_LIBTOOL_OPTIONS)
-libpango_1_0_la_LIBADD = $(GLIB_LIBS) $(libm)
-libpango_1_0_la_DEPENDENCIES = 
+libpango_1_0_la_LIBADD =		\
+	$(GLIB_LIBS)			\
+	$(libm)				\
+	$(INCLUDED_LANG_MODULES)
+libpango_1_0_la_DEPENDENCIES = 		\
+	$(INCLUDED_LANG_MODULES)
 
 libpango_1_0_la_LIBADD += mini-fribidi/libmini-fribidi.la
 libpango_1_0_la_DEPENDENCIES += mini-fribidi/libmini-fribidi.la
@@ -87,7 +91,8 @@ libpango_1_0_la_SOURCES =			\
 	pango-matrix.c				\
 	reorder-items.c				\
 	shape.c					\
-	pango-enum-types.c
+	pango-enum-types.c			\
+	module-defs-lang.c
 
 pango_headers =		   \
 	pango.h		   \
@@ -430,28 +435,29 @@ EXTRA_DIST =					\
 	pangoft2.rc				\
 	pangoft2.rc.in				\
 	pangowin32.rc				\
-	pangowin32.rc.in
+	pangowin32.rc.in			\
+	check.defs
 
 
 if HAVE_INCLUDED_MODULES
 included-modules:
 	@cd $(top_builddir)/modules && $(MAKE) $(AM_MAKEFLAGS) included-modules
 
-$(INCLUDED_X_MODULES) $(INCLUDED_FC_MODULES) $(INCLUDED_WIN32_MODULES): included-modules
+$(INCLUDED_LANG_MODULES) $(INCLUDED_X_MODULES) $(INCLUDED_FC_MODULES) $(INCLUDED_WIN32_MODULES) $(INCLUDED_ATSUI_MODULES): included-modules
 	@true
 
 .PHONY: included-modules
 endif
 
-module-defs.h: $(top_builddir)/config.status
-	cd $(top_builddir) && $(SHELL) ./config.status pango/$@
-module-defs-x.c: $(top_builddir)/config.status
-	cd $(top_builddir) && $(SHELL) ./config.status pango/$@
-module-defs-fc.c: $(top_builddir)/config.status
-	cd $(top_builddir) && $(SHELL) ./config.status pango/$@
-module-defs-win32.c: $(top_builddir)/config.status
-	cd $(top_builddir) && $(SHELL) ./config.status pango/$@
-module-defs-atsui.c: $(top_builddir)/config.status
+MODULE_DEF_FILES = \
+	module-defs.h \
+	module-defs-lang.c \
+	module-defs-x.c \
+	module-defs-fc.c \
+	module-defs-win32.c \
+	module-defs-atsui.c
+
+$(MODULE_DEF_FILES): $(top_builddir)/config.status
 	cd $(top_builddir) && $(SHELL) ./config.status pango/$@
 
 CLEANFILES =			\
@@ -461,11 +467,7 @@ CLEANFILES =			\
 	s-enum-types-c
 
 DISTCLEANFILES = 		\
-	module-defs.h		\
-	module-defs-x.c		\
-	module-defs-fc.c	\
-	module-defs-win32.c	\
-	module-defs-atsui.c
+	$(MODULE_DEF_FILES)
 
 install-data-local: install-ms-lib install-def-files
 

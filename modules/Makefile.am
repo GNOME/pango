@@ -46,7 +46,10 @@ install-data-local: $(top_builddir)/pango/pango-querymodules
 uninstall-local:
 	$(RM) $(DESTDIR)$(sysconfdir)/pango/pango.modules
 
-pango.modules: $(top_builddir)/pango/pango-querymodules $(SUBDIRS)
+pango.modules:						\
+	$(SUBDIRS)					\
+	$(top_builddir)/config.status			\
+	$(top_builddir)/pango/pango-querymodules
 	@if find . -name '*.la' | grep -v '\.libs' | grep -v libpango | grep '.' > /dev/null ; then \
           echo "Writing a pango.modules file to use with tests/examples."; \
           $(top_builddir)/pango/pango-querymodules `find . -name '*.la' | grep -v '\.libs' | grep -v libpango` > $@ ;\

@@ -31,6 +31,7 @@
 #include "pango-enum-types.h"
 #include "pango-modules.h"
 #include "pango-impl-utils.h"
+#include "modules.h"
 
 typedef struct _PangoModule      PangoModule;
 typedef struct _PangoModuleClass PangoModuleClass;
@@ -536,6 +537,7 @@ static void
 init_modules (void)
 {
   static gboolean init = FALSE;
+  int i;
 
   if (init)
     return;
@@ -545,6 +547,8 @@ init_modules (void)
   /* Make sure that the type system is initialized */
   g_type_init ();
   
+  for (i = 0; _pango_included_lang_modules[i].list; i++)
+    pango_module_register (&_pango_included_lang_modules[i]);
   read_modules ();
 }
 
