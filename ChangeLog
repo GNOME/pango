@@ -1,5 +1,22 @@
 2006-10-13  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango/pango-ot-info.c (pango_ot_info_get_type):
+	* pango/pango-ot-ruleset.c (pango_ot_ruleset_get_type):
+	* pango/pangoatsui-fontmap.c (pango_atsui_family_get_type),
+	(pango_atsui_face_get_type):
+	* pango/pangocairo-font.c (pango_cairo_font_get_type):
+	* pango/pangocairo-fontmap.c (pango_cairo_font_map_get_type):
+	* pango/pangofc-fontmap.c (pango_fc_face_get_type),
+	(pango_fc_family_get_type):
+	* pango/pangowin32-fontmap.c (pango_win32_family_get_type),
+	(pango_win32_face_get_type):
+	* pango/pangox-fontmap.c (pango_x_font_map_get_type),
+	(pango_x_face_get_type), (pango_x_family_get_type):
+	* pango/pangox.c (pango_x_font_get_type):
+	Make TypeInfo structs not static.  Reduces relocations.
+
+2006-10-13  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 361938 – Can't include *-lang modules (./configure
 	--with-included-modules fails)
 

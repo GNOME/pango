@@ -44,7 +44,7 @@ pango_ot_info_get_type (void)
 
   if (!object_type)
     {
-      static const GTypeInfo object_info =
+      const GTypeInfo object_info =
       {
         sizeof (PangoOTInfoClass),
         (GBaseInitFunc) NULL,

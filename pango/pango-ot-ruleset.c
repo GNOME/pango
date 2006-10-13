@@ -46,7 +46,7 @@ pango_ot_ruleset_get_type (void)
 
   if (!object_type)
     {
-      static const GTypeInfo object_info =
+      const GTypeInfo object_info =
       {
         sizeof (PangoOTRulesetClass),
         (GBaseInitFunc) NULL,

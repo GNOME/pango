@@ -36,7 +36,7 @@ pango_cairo_font_get_type (void)
 
   if (! cairo_font_type)
     {
-      static const GTypeInfo cairo_font_info =
+      const GTypeInfo cairo_font_info =
       {
 	sizeof (PangoCairoFontIface), /* class_size */
 	NULL,           /* base_init */

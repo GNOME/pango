@@ -40,7 +40,7 @@ pango_cairo_font_map_get_type (void)
 
   if (! cairo_font_map_type)
     {
-      static const GTypeInfo cairo_font_map_info =
+      const GTypeInfo cairo_font_map_info =
       {
 	sizeof (PangoCairoFontMapIface), /* class_size */
 	NULL,           /* base_init */
