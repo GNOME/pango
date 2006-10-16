@@ -1,5 +1,13 @@
 2006-10-16  Behdad Esfahbod  <behdad@gnome.org>
 
+	* === Released 1.15.0 ===
+
+	* configure.in: Version 1.15.0
+
+	* NEWS: Updated.
+
+2006-10-16  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 330407 – Multiple dependant vowel signs (indic) displayed as one
 	Patch from LingNing Zhang
 

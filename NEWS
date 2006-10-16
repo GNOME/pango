@@ -1,3 +1,108 @@
+Overview of changes between 1.14.7 and 1.15.0
+==============================================
+* Add basic support for vertical text.  (PangoGravity and related API)
+* New PangoCairo example (examples/cairotwisted) to lay text out on a path
+* Fix various bugs in the way language engines are used.  Add simple Arabic
+  and Indic language engines. (Backported to 1.14.6)
+* Step module interface version up to 1.6.0
+* Misc small cleanups.
+* Bugs fixed in this release:
+        Bug 330407 – Multiple dependant vowel signs (indic) displayed as one
+        Bug 359043 – PangoRenderer does not show in API docs
+        Bug 359046 – renderdemo.c unconditionally use GLib 2.12
+        Bug 357228 – Remove aix specific hack from configure.in
+        Part of Bug 350132 – backspacing doesn't work properly for Arabic
+        Bug 356194 – more pango_get_log_attrs problems
+        Bug 355820 – pango_get_log_attrs broken
+        Bug 352811 – SIGSEGV with pango(cairo)-view on HP-UX
+        Bug 351496 – PangoAnalysis::gravity breaks binary compatibility
+        Bug 351585 – API documentation issues with 2.15 release
+
+Overview of changes between 1.14.6 and 1.14.7
+==============================================
+* Fixed broken build with included lang modules.
+* Bugs fixed in this release:
+	Bug 361938 – Can't include *-lang modules (./configure
+		     --with-included-modules fails)
+
+Overview of changes between 1.14.5 and 1.14.6
+==============================================
+* Backport language-engine handling fixes from HEAD.
+* Add simple Arabic and Indic language engines.
+* Indic shaper fixes.
+* Bugs fixed in this release:
+	Bug 353877 – Sinhala is_cursor_position and
+		     backspace_deletes_character issues
+		     Patch from Akira TAGOH
+	Bug 358224 – Telugu Character U+0C31 does not render its below-base
+		     form.
+		     Patch from Rahul Bhalerao
+	Bug 358174 – Reph and Vattu forms of Assamese character RA(U+09F0)
+		     are not rendered.
+		     Patch from Rahul Bhalerao
+
+Overview of changes between 1.14.4 and 1.14.5
+==============================================
+* Indic shaper fixes.
+* Misc bug fixes.
+* Bugs fixed in this release:
+	Bug 356685 – [or_IN] Rendering of consonant+0x0B4D+0x0B2F is wrong
+	             Patch from Rahul Bhalerao
+	Bug 357790 – Rendering problem for malayalam consonant RA (U+0D30)
+	             Patch from Rahul Bhalerao
+	Bug 349813 – typo in docs for pango_layout_move_cursor_visually
+	Bug 357686 – pangocairo-font.c: illegal g_object_unref in
+	             pango_cairo_font_get_hex_box_info
+
+Overview of changes between 1.14.3 and 1.14.4
+==============================================
+* Indic shaper fixes.
+* Misc bug fixes.
+* Bugs fixed in this release:
+	Bug 351223 – the conjuction of Con + 0x0d4d +0x0d31 of Malayalam is
+	             wrong
+	             Patch from LingNing Zhang
+	Bug 355750 – The glyphs of the conjuctions about Cons+0x0d4d+0x0d32 of
+	             Malayalm are wrong.
+	             Patch from LingNing Zhang
+	Bug 349876 – U+0x0904 of Devanagari need be "independent vowel", but
+	             it is "reserved" in Pango
+	             Patch from LingNing Zhang
+	Bug 355550 – Miscalculation of logical attributes in
+	             pango_get_log_attrs()
+	             Patch from Theppitak Karoonboonyanan
+	Bug 355697 – The IndicOTClassTable of Oriya has a error.
+	Bug 355782 – Misaligned extents in pango
+	Bug 355605 – hexbox with 0000 in it
+	Bug 355435 – Invalid calls to pango_map_get_engine()
+	             Patch from Theppitak Karoonboonyanan
+	Bug 347146 – underline/overstrike spaces
+	Bug 352535 – Ink extents of empty glyph
+
+Overview of changes between 1.14.2 and 1.14.3
+==============================================
+* Win32 build improvement. [Tor Lillqist]
+* Bugs fixed in this release:
+	Bug 353525 – libpangoft2-1.0.so.0: undefined reference to
+	             `pango_font_description_get_gravity'
+	Bug 349813 – typo in docs for pango_layout_move_cursor_visually
+
+Overview of changes between 1.14.1 and 1.14.2
+==============================================
+* Find shaper/font for Private Use and space characters.
+  Part of Bug 145275 – Font selection for space characters
+
+Overview of changes between 1.14.0 and 1.14.1
+==============================================
+* Increased fontset cache size from 16 to 64.  This should make
+  firefox+pango A LOT faster.
+* Bugs fixed in this release:
+	Bug 352114 – pango-1.14: generated docs still contain old example code
+	Part of Bug 348825 – pango should optimize away calls to FcFontSort as
+	                     much as possible
+	Bug 351585 – API documentation issues with 2.15 release
+
+
 Overview of changes between 1.13.5 and 1.14.0
 ==============================================
 * Make pango-view accept non-ASCII --text.
