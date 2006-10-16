@@ -1,3 +1,11 @@
+2006-10-16  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 330407 – Multiple dependant vowel signs (indic) displayed as one
+	Patch from LingNing Zhang
+
+	* modules/indic/indic-ot-class-tables.c: Change state transition for
+	cn to dv.
+
 2006-10-13  Behdad Esfahbod  <behdad@gnome.org>
 
 	* === Released 1.14.7 ===
