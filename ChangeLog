@@ -1,3 +1,8 @@
+2006-10-17  Behdad Esfahbod  <behdad@gnome.org>
+
+	* examples/Makefile.am:
+	* examples/test-thai.txt: Added.
+
 2006-10-16  Behdad Esfahbod  <behdad@gnome.org>
 
 	Bug 330407 – Multiple dependant vowel signs (indic) displayed as one

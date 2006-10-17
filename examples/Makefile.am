@@ -7,6 +7,7 @@ TEST_TEXTS =			\
 	test-ipa.txt		\
 	test-syriac.txt		\
 	test-tamil.txt		\
+	test-thai.txt		\
 	test-tibetan.txt	\
 	HELLO.utf8		\
 	GLASS.utf8
