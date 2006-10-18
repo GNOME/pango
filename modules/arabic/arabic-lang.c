@@ -23,8 +23,6 @@
 #include <config.h>
 #include <string.h>
 
-#include "arabic-ot.h"
-
 #include "pango-engine.h"
 #include "pango-break.h"
 
