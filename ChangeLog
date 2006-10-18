@@ -1,3 +1,7 @@
+2006-10-18  Behdad Esfahbod  <behdad@gnome.org>
+
+	* examples/test-thai.txt: Replace by a better one.
+
 2006-10-17  Behdad Esfahbod  <behdad@gnome.org>
 
 	* examples/Makefile.am:
