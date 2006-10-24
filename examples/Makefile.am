@@ -186,10 +186,13 @@ cairosimple_SOURCES =					\
 	cairosimple.c
 cairosimple_LDADD =					\
 	../pango/libpango-$(PANGO_API_VERSION).la	\
-	../pango/libpangoft2-$(PANGO_API_VERSION).la	\
 	../pango/libpangocairo-$(PANGO_API_VERSION).la	\
 	$(GLIB_LIBS)					\
 	$(CAIRO_LIBS)
+if HAVE_FREETYPE
+cairosimple_LDADD +=					\
+	../pango/libpangoft2-$(PANGO_API_VERSION).la
+endif
 endif
 #########################################################
 
