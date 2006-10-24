@@ -66,6 +66,8 @@ static void          pango_ft2_font_map_default_substitute  (PangoFcFontMap     
 							     FcPattern            *pattern);
 static PangoFcFont * pango_ft2_font_map_new_font            (PangoFcFontMap       *fcfontmap,
 							     FcPattern            *pattern);
+static double        pango_ft2_font_map_get_resolution      (PangoFcFontMap       *fcfontmap,
+							     PangoContext         *context);
 
 static PangoFT2FontMap *pango_ft2_global_fontmap = NULL;
 
@@ -80,6 +82,7 @@ pango_ft2_font_map_class_init (PangoFT2FontMapClass *class)
   gobject_class->finalize = pango_ft2_font_map_finalize;
   fcfontmap_class->default_substitute = pango_ft2_font_map_default_substitute;
   fcfontmap_class->new_font = pango_ft2_font_map_new_font;
+  fcfontmap_class->get_resolution = pango_ft2_font_map_get_resolution;
 }
 
 static void
@@ -335,6 +338,13 @@ pango_ft2_font_map_default_substitute (PangoFcFontMap *fcfontmap,
   if (FcPatternGet (pattern, FC_DPI, 0, &v) == FcResultNoMatch)
     FcPatternAddDouble (pattern, FC_DPI, ft2fontmap->dpi_y);
   FcDefaultSubstitute (pattern);
+}
+
+static double
+pango_ft2_font_map_get_resolution (PangoFcFontMap       *fcfontmap,
+				   PangoContext         *context)
+{
+  return ((PangoFT2FontMap *)fcfontmap)->dpi_y;
 }
 
 static PangoFcFont *
