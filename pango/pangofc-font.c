@@ -152,8 +152,7 @@ pango_fc_font_finalize (GObject *object)
   if (priv->decoder)
     _pango_fc_font_set_decoder (fcfont, NULL);
 
-  if (priv->char_to_glyph_cache)
-    g_free (priv->char_to_glyph_cache);
+  g_free (priv->char_to_glyph_cache);
 
   G_OBJECT_CLASS (pango_fc_font_parent_class)->finalize (object);
 }

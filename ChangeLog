@@ -1,3 +1,14 @@
+2006-11-02  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 369670 – Checked g_free calls
+
+	* pango/pango-coverage.c (pango_coverage_unref):
+	* pango/pango-layout.c (pango_layout_finalize),
+	(pango_layout_set_text):
+	* pango/pangofc-font.c (pango_fc_font_finalize):
+	* pango/pangox-fontmap.c (pango_x_font_map_read_alias_file):
+	Remove redundant checks before g_free() calls.
+
 2006-10-24  Behdad Esfahbod  <behdad@gnome.org>
 
 	* examples/Makefile.am (cairosimple_LDADD): Do not require pangoft2

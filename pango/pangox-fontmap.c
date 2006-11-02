@@ -896,8 +896,7 @@ pango_x_font_map_read_alias_file (PangoXFontMap *xfontmap,
     error:
       if (xface)
 	{
-	  if (xface->xlfd)
-	    g_free (xface->xlfd);
+	  g_free (xface->xlfd);
 	  if (xface->description)
 	    pango_font_description_free (xface->description);
 	  g_free (xface);

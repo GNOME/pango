@@ -209,8 +209,8 @@ pango_layout_finalize (GObject *object)
   
   if (layout->attrs)
     pango_attr_list_unref (layout->attrs);
-  if (layout->text)
-    g_free (layout->text);
+
+  g_free (layout->text);
 
   if (layout->font_desc)
     pango_font_description_free (layout->font_desc);
@@ -889,8 +889,7 @@ pango_layout_set_text (PangoLayout *layout,
 
   pango_layout_clear_lines (layout);
   
-  if (old_text)
-    g_free (old_text);
+  g_free (old_text);
 }
 
 /**

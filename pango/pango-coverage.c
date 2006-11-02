@@ -148,10 +148,7 @@ pango_coverage_unref (PangoCoverage *coverage)
   if (coverage->ref_count == 0)
     {
       for (i=0; i<coverage->n_blocks; i++)
-	{
-	  if (coverage->blocks[i].data)
-	    g_free (coverage->blocks[i].data);
-	}
+	g_free (coverage->blocks[i].data);
       
       g_free (coverage->blocks);
       g_slice_free (PangoCoverage, coverage);
