@@ -1,3 +1,8 @@
+2006-11-08  Behdad Esfahbod  <behdad@gnome.org>
+
+	* pango/pango-layout.c (pango_layout_move_cursor_visually): Don't
+	index vis2log_map[] with a negative value. Fixes #368972.
+
 2006-10-24  Behdad Esfahbod  <behdad@gnome.org>
 
 	* examples/Makefile.am (cairosimple_LDADD): Do not require pangoft2
