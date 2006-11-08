@@ -1370,7 +1370,7 @@ pango_layout_move_cursor_visually (PangoLayout *layout,
   int *log2vis_map;
   int *vis2log_map;
   int n_vis;
-  int vis_pos, log_pos;
+  int vis_pos, vis_pos_old, log_pos;
   int start_offset;
   gboolean off_start = FALSE;
   gboolean off_end = FALSE;
@@ -1470,14 +1470,15 @@ pango_layout_move_cursor_visually (PangoLayout *layout,
 
   vis2log_map = pango_layout_line_get_vis2log_map (line, strong);
 
+  vis_pos_old = vis_pos + direction;
   log_pos = g_utf8_pointer_to_offset (layout->text + line->start_index,
-				      layout->text + line->start_index + vis2log_map[vis_pos]);
+				      layout->text + line->start_index + vis2log_map[vis_pos_old]);
   do
     {
-      int vis_pos_old = vis_pos;
       vis_pos += direction;
       log_pos += g_utf8_pointer_to_offset (layout->text + line->start_index + vis2log_map[vis_pos_old],
 					   layout->text + line->start_index + vis2log_map[vis_pos]);
+      vis_pos_old = vis_pos;
     }
   while (vis_pos > 0 && vis_pos < n_vis &&
 	 !layout->log_attrs[start_offset + log_pos].is_cursor_position);

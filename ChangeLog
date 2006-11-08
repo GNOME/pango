@@ -1,3 +1,10 @@
+2006-11-08  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 369670 – Crash when selecting text using the keyboard
+
+	* pango/pango-layout.c (pango_layout_move_cursor_visually): Don't
+	index vis2log_map[] with a negative value.
+
 2006-11-02  Behdad Esfahbod  <behdad@gnome.org>
 
 	Bug 369670 – Checked g_free calls
