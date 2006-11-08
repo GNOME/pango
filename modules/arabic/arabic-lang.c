@@ -1,8 +1,10 @@
 /* Pango
- * arabic-fc.h:
+ * arabic-lang.c:
  *
  * Copyright (C) 2006 Red Hat Software
- * Author: Behdad Esfahbod <besfahbo@redhat.com>
+ * Copyright (C) 2006 Sharif FarsiWeb, Inc.
+ * Authors: Behdad Esfahbod <besfahbo@redhat.com>
+ *          Roozbeh Pournader <roozbeh@farsiweb.info>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -47,6 +49,27 @@ static PangoEngineInfo script_engines[] = {
 };
 
 
+#define ALEF_WITH_MADDA_ABOVE	0x0622
+#define YEH_WITH_HAMZA_ABOVE	0x0626
+#define ALEF			0x0627
+#define WAW			0x0648
+#define YEH			0x064A
+
+#define MADDAH_ABOVE		0x0653
+#define HAMZA_ABOVE		0x0654
+#define HAMZA_BELOW		0x0655
+
+/*
+ * Arabic characters with canonical decompositions that are not just
+ * ligatures.  The characters U+06C0, U+06C2, and U+06D3 are intentionally
+ * excluded as they are marked as "not an independent letter" in Unicode
+ * Character Database's NamesList.txt
+ */
+#define IS_COMPOSITE(c) (ALEF_WITH_MADDA_ABOVE <= (c) && (c) <= YEH_WITH_HAMZA_ABOVE)
+
+/* If a character is the second part of a composite Arabic character with an Alef */
+#define IS_COMPOSITE_WITH_ALEF(c) (MADDAH_ABOVE <= (c) && (c) <= HAMZA_BELOW)
+
 static void
 arabic_engine_break (PangoEngineLang *engine,
 		     const char      *text,
@@ -70,11 +93,22 @@ arabic_engine_break (PangoEngineLang *engine,
       this_wc = g_utf8_get_char (p);
 
       /*
-       * Unset backspace_deletes_character for various combinations:
+       * Unset backspace_deletes_character for various combinations.
+       *
+       * A few more combinations may need to be handled here, but are not
+       * handled yet, as expectations of users is not known or may differ
+       * among different languages or users:
+       * some letters combined with U+0658 ARABIC MARK NOON GHUNNA;
+       * combinations considered one letter in Azerbaijani (WAW+SUKUN and
+       * FARSI_YEH+HAMZA_ABOVE); combinations of YEH and ALEF_MAKSURA with
+       * HAMZA_BELOW (Qur'anic); TATWEEL+HAMZA_ABOVE (Qur'anic).
+       *
+       * FIXME: Ordering these in some other way may lower the time spent here, or not.
        */
       if (G_UNLIKELY (
-	   this_wc == 0x0622 /* ARABIC LETTER ALEF WITH MADDA ABOVE */ ||
-	  (prev_wc == 0x0627 /* ARABIC LETTER ALEF */ && this_wc == 0x0653 /* ARABIC MADDAH ABOVE */)
+	   IS_COMPOSITE (this_wc) ||
+	  (prev_wc == ALEF && IS_COMPOSITE_WITH_ALEF (this_wc)) ||
+	  (this_wc == HAMZA_ABOVE && (prev_wc == WAW || prev_wc == YEH))
 	 ))
         attrs[i+1].backspace_deletes_character = FALSE;
     }

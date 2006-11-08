@@ -1,3 +1,10 @@
+2006-11-08  Roozbeh Pournader  <roozbeh@farsiweb.info>
+
+	Bug 350132 – backspacing doesn't work properly for Arabic
+
+	* modules/arabic/arabic-lang.c: Add more backspace_deletes_character
+	cases.
+
 2006-11-08  Behdad Esfahbod  <behdad@gnome.org>
 
 	Bug 369670 – Crash when selecting text using the keyboard
