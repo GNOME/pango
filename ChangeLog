@@ -1,5 +1,12 @@
 2006-11-14  Behdad Esfahbod  <behdad@gnome.org>
 
+	Bug 352795 – configure.in: Bug in "checking Whether to write
+	dependencies into .pc files"
+
+	* configure.in: Make libtool magic robust.
+
+2006-11-14  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/pango-context.c (itemize_state_process_run): Choose
 	shaper/font for unassigned Unicode codepoints too.  This is needed to
 	be able to render scripts being encoded before next version of Unicode
