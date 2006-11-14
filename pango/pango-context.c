@@ -1266,15 +1266,18 @@ itemize_state_process_run (ItemizeState *state)
        * emulated ideographic space for the primary font wouldn't be the
        * right size.
        *
-       * The exception of PrivateUse characters is indeed necessary to be
-       * able to render any of them.
+       * The exception of PrivateUse and Unassigned characters is necessary
+       * to be able to render any of them. (for private or being encoded
+       * scripts, etc.)
        */
       /*
       if (G_UNLIKELY (!g_unichar_isgraph (wc) && wc != 0x3000 &&
-		      g_unichar_type (wc) != G_UNICODE_PRIVATE_USE))
+		      g_unichar_type (wc) != G_UNICODE_PRIVATE_USE &&
+		      g_unichar_type (wc) != G_UNICODE_UNASSIGNED))
 	*/
       if (G_UNLIKELY (!g_unichar_isprint (wc) &&
-		      g_unichar_type (wc) != G_UNICODE_PRIVATE_USE))
+		      g_unichar_type (wc) != G_UNICODE_PRIVATE_USE &&
+		      g_unichar_type (wc) != G_UNICODE_UNASSIGNED))
 	{
 	  shape_engine = NULL;
 	  font = NULL;

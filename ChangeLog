@@ -1,3 +1,10 @@
+2006-11-14  Behdad Esfahbod  <behdad@gnome.org>
+
+	* pango/pango-context.c (itemize_state_process_run): Choose
+	shaper/font for unassigned Unicode codepoints too.  This is needed to
+	be able to render scripts being encoded before next version of Unicode
+	is out.
+
 2006-11-08  Roozbeh Pournader  <roozbeh@farsiweb.info>
 
 	Bug 350132 – backspacing doesn't work properly for Arabic
