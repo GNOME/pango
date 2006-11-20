@@ -1,5 +1,13 @@
 2006-11-20  Behdad Esfahbod  <behdad@gnome.org>
 
+	* === Released 1.14.8 ===
+
+	* configure.in: Version 1.14.8
+
+	* NEWS: Updated.
+
+2006-11-20  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 356666 – pango is not thread-safe, nautilus does not honour that
 
 	* pango/pangocairo-render.c (acquire_renderer), (release_renderer),

@@ -1,3 +1,20 @@
+Overview of changes between 1.14.7 and 1.14.8
+==============================================
+* Improved thread-safety.  Pango is still NOT thread-safe, but this fixes
+  lots of crashes using pangocairo from multiple threads.
+* Fix out-of-bounds array access.
+* Improved Indic shaper.
+* Improved Arabic language engine.
+* Choose shaper/font for unassigned Unicode codepoints.
+* Build fixes.
+* Bugs fixed in this release:
+	Bug 356666 – pango is not thread-safe, nautilus does not honour that
+	Bug 352795 – configure.in: Bug in "checking Whether to write
+	             dependencies into .pc files"
+	Bug 350132 – backspacing doesn't work properly for Arabic
+	Bug 330407 – Multiple dependant vowel signs (indic) displayed as one
+	Patch from LingNing Zhang
+
 Overview of changes between 1.14.6 and 1.14.7
 ==============================================
 * Fixed broken build with included lang modules.
