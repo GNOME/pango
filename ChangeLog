@@ -1,3 +1,13 @@
+2006-11-20  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 356666 – pango is not thread-safe, nautilus does not honour that
+
+	* pango/pangocairo-render.c (acquire_renderer), (release_renderer),
+	(_pango_cairo_do_glyph_string), (_pango_cairo_do_layout_line),
+	(_pango_cairo_do_layout): Instead of using a per-fontmap renderer, use
+	a locally cached one, but make sure only one thread uses the cached
+	renderer.  Fixes the raciest point in pangocairo.
+
 2006-11-14  Behdad Esfahbod  <behdad@gnome.org>
 
 	Bug 352795 – configure.in: Bug in "checking Whether to write

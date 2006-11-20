@@ -394,6 +394,44 @@ pango_cairo_renderer_class_init (PangoCairoRendererClass *klass)
   renderer_class->draw_error_underline = pango_cairo_renderer_draw_error_underline;
 }
 
+static PangoCairoRenderer *cached_renderer = NULL;
+static GStaticMutex cached_renderer_mutex = G_STATIC_MUTEX_INIT;
+
+static PangoCairoRenderer *
+acquire_renderer (void)
+{
+  PangoCairoRenderer *renderer;
+
+  /* renderer = _pango_cairo_font_map_get_renderer (PANGO_CAIRO_FONT_MAP (fontmap)); */
+
+  if (G_LIKELY (g_static_mutex_trylock (&cached_renderer_mutex)))
+    {
+      if (G_UNLIKELY (!cached_renderer))
+        cached_renderer = g_object_new (PANGO_TYPE_CAIRO_RENDERER, NULL);
+
+      renderer = cached_renderer;
+    }
+  else
+    renderer = g_object_new (PANGO_TYPE_CAIRO_RENDERER, NULL);
+
+  return renderer;
+}
+
+release_renderer (PangoCairoRenderer *renderer)
+{
+  if (G_LIKELY (renderer == cached_renderer))
+    {
+      renderer->cr = NULL;
+      renderer->do_path = FALSE;
+      renderer->x_offset = 0.;
+      renderer->y_offset = 0.;
+
+      g_static_mutex_unlock (&cached_renderer_mutex);
+    }
+  else
+    g_object_unref (renderer);
+}
+
 
 /* convenience wrappers using the default renderer */
 
@@ -404,20 +442,8 @@ _pango_cairo_do_glyph_string (cairo_t          *cr,
 			      PangoGlyphString *glyphs,
 			      gboolean          do_path)
 {
-  PangoFontMap *fontmap;
-  PangoCairoRenderer *crenderer;
-  PangoRenderer *renderer;
-  gboolean unref_renderer = FALSE;
-
-  fontmap = pango_font_get_font_map (font);
-  renderer = _pango_cairo_font_map_get_renderer (PANGO_CAIRO_FONT_MAP (fontmap));
-  if (G_UNLIKELY (!renderer))
-    {
-      renderer = g_object_new (PANGO_TYPE_CAIRO_RENDERER, NULL);
-      unref_renderer = TRUE;
-    }
-
-  crenderer = PANGO_CAIRO_RENDERER (renderer);
+  PangoCairoRenderer *crenderer = acquire_renderer ();
+  PangoRenderer *renderer = (PangoRenderer *) crenderer;
 
   crenderer->cr = cr;
   crenderer->do_path = do_path;
@@ -444,15 +470,7 @@ _pango_cairo_do_glyph_string (cairo_t          *cr,
       pango_renderer_deactivate (renderer);
     }
   
-  if (G_UNLIKELY (unref_renderer))
-    g_object_unref (renderer);
-  else
-    {
-      crenderer->cr = NULL;
-      crenderer->do_path = FALSE;
-      crenderer->x_offset = 0.;
-      crenderer->y_offset = 0.;
-    }
+  release_renderer (crenderer);
 }
 
 static void
@@ -460,15 +478,8 @@ _pango_cairo_do_layout_line (cairo_t          *cr,
 			     PangoLayoutLine  *line,
 			     gboolean          do_path)
 {
-  PangoContext *context;
-  PangoFontMap *fontmap;
-  PangoRenderer *renderer;
-  PangoCairoRenderer *crenderer;
-
-  context = pango_layout_get_context (line->layout);
-  fontmap = pango_context_get_font_map (context);
-  renderer = _pango_cairo_font_map_get_renderer (PANGO_CAIRO_FONT_MAP (fontmap));
-  crenderer = PANGO_CAIRO_RENDERER (renderer);
+  PangoCairoRenderer *crenderer = acquire_renderer ();
+  PangoRenderer *renderer = (PangoRenderer *) crenderer;
 
   crenderer->cr = cr;
   crenderer->do_path = do_path;
@@ -476,10 +487,7 @@ _pango_cairo_do_layout_line (cairo_t          *cr,
 
   pango_renderer_draw_layout_line (renderer, line, 0, 0);
   
-  crenderer->cr = NULL;
-  crenderer->do_path = FALSE;
-  crenderer->x_offset = 0.;
-  crenderer->y_offset = 0.;
+  release_renderer (crenderer);
 }
 
 static void
@@ -487,15 +495,8 @@ _pango_cairo_do_layout (cairo_t     *cr,
 			PangoLayout *layout,
 			gboolean     do_path)
 {
-  PangoContext *context;
-  PangoFontMap *fontmap;
-  PangoRenderer *renderer;
-  PangoCairoRenderer *crenderer;
-
-  context = pango_layout_get_context (layout);
-  fontmap = pango_context_get_font_map (context);
-  renderer = _pango_cairo_font_map_get_renderer (PANGO_CAIRO_FONT_MAP (fontmap));
-  crenderer = PANGO_CAIRO_RENDERER (renderer);
+  PangoCairoRenderer *crenderer = acquire_renderer ();
+  PangoRenderer *renderer = (PangoRenderer *) crenderer;
   
   crenderer->cr = cr;
   crenderer->do_path = do_path;
@@ -503,10 +504,7 @@ _pango_cairo_do_layout (cairo_t     *cr,
 
   pango_renderer_draw_layout (renderer, layout, 0, 0);
   
-  crenderer->cr = NULL;
-  crenderer->do_path = FALSE;
-  crenderer->x_offset = 0.;
-  crenderer->y_offset = 0.;
+  release_renderer (crenderer);
 }
 
 static void 
