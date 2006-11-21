@@ -1,3 +1,7 @@
+2006-11-21  Behdad Esfahbod  <behdad@gnome.org>
+
+	* pango/pango-glyph-item.c: Fix typo in private docs.
+
 2006-11-20  Behdad Esfahbod  <behdad@gnome.org>
 
 	Bug 356666 – pango is not thread-safe, nautilus does not honour that

@@ -343,7 +343,7 @@ _pango_glyph_item_iter_init_start (PangoGlyphItemIter  *iter,
 }
 
 /**
- * _pango_glyph_item_iter_init_start:
+ * _pango_glyph_item_iter_init_end:
  * @iter: pointer to a #PangoGlyphItemIter structure
  * @glyph_item: the glyph item that the iter points into
  * @text: text corresponding to the glyph item
