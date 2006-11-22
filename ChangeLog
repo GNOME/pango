@@ -1,5 +1,12 @@
 2006-11-22  Behdad Esfahbod  <behdad@gnome.org>
 
+	* examples/HELLO.utf8:
+	* examples/Makefile.am:
+	* examples/test-lao.txt:
+	Add Lao text samples from Anousak Souphavanh.
+
+2006-11-22  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 377975 – bug in _pango_glyph_item_iter_next_cluster
 
 	* pango/pango-glyph-item.c (_pango_glyph_item_iter_next_cluster),
