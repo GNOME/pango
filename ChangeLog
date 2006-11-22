@@ -1,3 +1,11 @@
+2006-11-22  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 377975 – bug in _pango_glyph_item_iter_next_cluster
+
+	* pango/pango-glyph-item.c (_pango_glyph_item_iter_next_cluster),
+	(_pango_glyph_item_iter_prev_cluster): Fix condition for ending a
+	cluster.
+
 2006-11-20  Behdad Esfahbod  <behdad@gnome.org>
 
 	* === Released 1.14.8 ===
