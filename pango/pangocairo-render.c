@@ -398,7 +398,7 @@ static PangoCairoRenderer *cached_renderer = NULL;
 static GStaticMutex cached_renderer_mutex = G_STATIC_MUTEX_INIT;
 
 static PangoCairoRenderer *
-acquire_renderer (void)
+acquire_renderer (gboolean *free_renderer)
 {
   PangoCairoRenderer *renderer;
 
@@ -410,16 +410,21 @@ acquire_renderer (void)
         cached_renderer = g_object_new (PANGO_TYPE_CAIRO_RENDERER, NULL);
 
       renderer = cached_renderer;
+      *free_renderer = FALSE;
     }
   else
-    renderer = g_object_new (PANGO_TYPE_CAIRO_RENDERER, NULL);
+    {
+      renderer = g_object_new (PANGO_TYPE_CAIRO_RENDERER, NULL);
+      *free_renderer = TRUE;
+    }
 
   return renderer;
 }
 
-release_renderer (PangoCairoRenderer *renderer)
+static void
+release_renderer (PangoCairoRenderer *renderer, gboolean free_renderer)
 {
-  if (G_LIKELY (renderer == cached_renderer))
+  if (G_LIKELY (!free_renderer))
     {
       renderer->cr = NULL;
       renderer->do_path = FALSE;
@@ -442,7 +447,8 @@ _pango_cairo_do_glyph_string (cairo_t          *cr,
 			      PangoGlyphString *glyphs,
 			      gboolean          do_path)
 {
-  PangoCairoRenderer *crenderer = acquire_renderer ();
+  gboolean free_renderer;
+  PangoCairoRenderer *crenderer = acquire_renderer (&free_renderer);
   PangoRenderer *renderer = (PangoRenderer *) crenderer;
 
   crenderer->cr = cr;
@@ -470,7 +476,7 @@ _pango_cairo_do_glyph_string (cairo_t          *cr,
       pango_renderer_deactivate (renderer);
     }
   
-  release_renderer (crenderer);
+  release_renderer (crenderer, free_renderer);
 }
 
 static void
@@ -478,7 +484,8 @@ _pango_cairo_do_layout_line (cairo_t          *cr,
 			     PangoLayoutLine  *line,
 			     gboolean          do_path)
 {
-  PangoCairoRenderer *crenderer = acquire_renderer ();
+  gboolean free_renderer;
+  PangoCairoRenderer *crenderer = acquire_renderer (&free_renderer);
   PangoRenderer *renderer = (PangoRenderer *) crenderer;
 
   crenderer->cr = cr;
@@ -487,7 +494,7 @@ _pango_cairo_do_layout_line (cairo_t          *cr,
 
   pango_renderer_draw_layout_line (renderer, line, 0, 0);
   
-  release_renderer (crenderer);
+  release_renderer (crenderer, free_renderer);
 }
 
 static void
@@ -495,7 +502,8 @@ _pango_cairo_do_layout (cairo_t     *cr,
 			PangoLayout *layout,
 			gboolean     do_path)
 {
-  PangoCairoRenderer *crenderer = acquire_renderer ();
+  gboolean free_renderer;
+  PangoCairoRenderer *crenderer = acquire_renderer (&free_renderer);
   PangoRenderer *renderer = (PangoRenderer *) crenderer;
   
   crenderer->cr = cr;
@@ -504,7 +512,7 @@ _pango_cairo_do_layout (cairo_t     *cr,
 
   pango_renderer_draw_layout (renderer, layout, 0, 0);
   
-  release_renderer (crenderer);
+  release_renderer (crenderer, free_renderer);
 }
 
 static void 

@@ -1,3 +1,12 @@
+2006-11-25  Behdad Esfahbod  <behdad@gnome.org>
+
+	* pango/pangocairo-render.c (acquire_renderer), (release_renderer),
+	(_pango_cairo_do_glyph_string), (_pango_cairo_do_layout_line),
+	(_pango_cairo_do_layout):  Make renderer-cache really thread-safe this
+	time.  Last try was not quite thread-safe theoretically, because
+	pointer assignments are not necessarily atomic on some archs.  Anyway,
+	this one should do it.
+
 2006-11-22  Behdad Esfahbod  <behdad@gnome.org>
 
 	* examples/HELLO.utf8:
