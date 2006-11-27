@@ -1,3 +1,16 @@
+2006-11-27  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 371388 – Add Thai langauage engine
+	Patch from Theppitak Karoonboonyanan
+
+	* configure.in: Look for libthai and enable thai-lang module.
+	* modules/thai/Makefile.am: Hook thai-lang module.
+
+	* modules/thai/thai-lang.c: New Thai language engine that uses libthai
+	to do dictionary-based Thai line-breaking.
+
+	* examples/test-thai.txt: Improved.
+
 2006-11-25  Behdad Esfahbod  <behdad@gnome.org>
 
 	* pango/pangocairo-render.c (acquire_renderer), (release_renderer),
