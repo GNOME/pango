@@ -108,6 +108,7 @@ typedef struct _PangoCairoWarningHistory PangoCairoWarningHistory;
 
 struct _PangoCairoWarningHistory {
   guint font_install		: 1;
+  guint font_get_scaled_font	: 1;
 }; 
 
 extern PangoCairoWarningHistory _pango_cairo_warning_history;
