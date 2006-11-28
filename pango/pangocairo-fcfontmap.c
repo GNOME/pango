@@ -37,17 +37,17 @@ static void
 pango_cairo_fc_font_map_set_resolution (PangoCairoFontMap *cfontmap,
 					double             dpi)
 {
-  PangoCairoFcFontMap *cffontmap = PANGO_CAIRO_FC_FONT_MAP (cfontmap);
+  PangoCairoFcFontMap *cffontmap = (PangoCairoFcFontMap *) (cfontmap);
   
   cffontmap->dpi = dpi;
 
-  pango_fc_font_map_cache_clear (PANGO_FC_FONT_MAP (cfontmap));
+  pango_fc_font_map_cache_clear ((PangoFcFontMap *) (cfontmap));
 }
 
 static double
 pango_cairo_fc_font_map_get_resolution_cairo (PangoCairoFontMap *cfontmap)
 {
-  PangoCairoFcFontMap *cffontmap = PANGO_CAIRO_FC_FONT_MAP (cfontmap);
+  PangoCairoFcFontMap *cffontmap = (PangoCairoFcFontMap *) (cfontmap);
 
   return cffontmap->dpi;
 }
@@ -55,7 +55,7 @@ pango_cairo_fc_font_map_get_resolution_cairo (PangoCairoFontMap *cfontmap)
 static PangoRenderer *
 pango_cairo_fc_font_map_get_renderer (PangoCairoFontMap *cfontmap)
 {
-  PangoCairoFcFontMap *cffontmap = PANGO_CAIRO_FC_FONT_MAP (cfontmap);
+  PangoCairoFcFontMap *cffontmap = (PangoCairoFcFontMap *) (cfontmap);
   
   if (!cffontmap->renderer)
     cffontmap->renderer = g_object_new (PANGO_TYPE_CAIRO_RENDERER, NULL);
@@ -77,7 +77,7 @@ G_DEFINE_TYPE_WITH_CODE (PangoCairoFcFontMap, pango_cairo_fc_font_map, PANGO_TYP
 static void
 pango_cairo_fc_font_map_finalize (GObject *object)
 {
-  PangoCairoFcFontMap *cffontmap = PANGO_CAIRO_FC_FONT_MAP (object);
+  PangoCairoFcFontMap *cffontmap = (PangoCairoFcFontMap *) (object);
   
   if (cffontmap->renderer)
     g_object_unref (cffontmap->renderer);
@@ -104,7 +104,7 @@ static double
 pango_cairo_fc_font_map_get_resolution_fc (PangoFcFontMap *fcfontmap,
 					   PangoContext   *context)
 {
-  PangoCairoFcFontMap *cffontmap = PANGO_CAIRO_FC_FONT_MAP (fcfontmap);
+  PangoCairoFcFontMap *cffontmap = (PangoCairoFcFontMap *) (fcfontmap);
   double dpi;
   
   if (context)
@@ -163,7 +163,7 @@ pango_cairo_fc_font_map_create_font (PangoFcFontMap             *fcfontmap,
 				     const PangoFontDescription *desc,
 				     FcPattern                  *pattern)
 {
-  return _pango_cairo_fc_font_new (PANGO_CAIRO_FC_FONT_MAP (fcfontmap),
+  return _pango_cairo_fc_font_new ((PangoCairoFcFontMap *) (fcfontmap),
 				   context, desc, pattern);
 }
 

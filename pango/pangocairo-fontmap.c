@@ -465,7 +465,7 @@ pango_cairo_create_layout  (cairo_t *cr)
   g_return_val_if_fail (cr != NULL, NULL);
 
   fontmap = pango_cairo_font_map_get_default ();
-  context = pango_cairo_font_map_create_context (PANGO_CAIRO_FONT_MAP (fontmap));
+  context = pango_cairo_font_map_create_context ((PangoCairoFontMap *) (fontmap));
   layout = pango_layout_new (context);
 
   pango_cairo_update_context (cr, context);
