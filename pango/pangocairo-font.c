@@ -72,7 +72,7 @@ gboolean
 _pango_cairo_font_install (PangoCairoFont *font,
 			   cairo_t        *cr)
 {
-  if (G_UNLIKELY (!PANGO_IS_CAIRO_FONT (font)))
+  if (G_UNLIKELY (!font))
     {
       if (!_pango_cairo_warning_history.font_install)
         {
@@ -89,7 +89,7 @@ _pango_cairo_font_install (PangoCairoFont *font,
 cairo_font_face_t *
 _pango_cairo_font_get_font_face (PangoCairoFont *font)
 {
-  g_return_val_if_fail (PANGO_IS_CAIRO_FONT (font), NULL);
+  g_return_val_if_fail (font, NULL);
   
   return (* PANGO_CAIRO_FONT_GET_IFACE (font)->get_font_face) (font);
 }
@@ -97,7 +97,7 @@ _pango_cairo_font_get_font_face (PangoCairoFont *font)
 cairo_scaled_font_t *
 _pango_cairo_font_get_scaled_font (PangoCairoFont *font)
 {
-  g_return_val_if_fail (PANGO_IS_CAIRO_FONT (font), NULL);
+  g_return_val_if_fail (font, NULL);
   
   return (* PANGO_CAIRO_FONT_GET_IFACE (font)->get_scaled_font) (font);
 }
@@ -122,7 +122,7 @@ _pango_cairo_font_get_hex_box_info (PangoCairoFont *cfont)
   PangoCairoHexBoxInfo *hbi;
 
   /* for metrics hinting */
-  double scale_x, scale_x_inv, scale_y, scale_y_inv;
+  double scale_x = 1., scale_x_inv = 1., scale_y = 1., scale_y_inv = 1.;
   gboolean is_hinted;
 
   int i;
@@ -217,7 +217,7 @@ _pango_cairo_font_get_hex_box_info (PangoCairoFont *cfont)
 
     /* load mini_font */
 
-    context = pango_cairo_font_map_create_context (PANGO_CAIRO_FONT_MAP (fontmap));
+    context = pango_cairo_font_map_create_context ((PangoCairoFontMap *) (fontmap));
 
     pango_context_set_matrix (context, &pango_ctm);
     pango_context_set_language (context, pango_language_from_string ("en"));

@@ -1,3 +1,29 @@
+2006-11-28  Behdad Esfahbod  <behdad@gnome.org>
+
+	* pango/pangocairo-fcfont.c (pango_cairo_fc_font_get_font_face),
+	(pango_cairo_fc_font_install), (pango_cairo_fc_font_finalize),
+	(pango_cairo_fc_font_get_metrics), (pango_cairo_fc_font_shutdown),
+	(_pango_cairo_fc_font_new):
+	* pango/pangocairo-fcfontmap.c
+	(pango_cairo_fc_font_map_set_resolution),
+	(pango_cairo_fc_font_map_get_resolution_cairo),
+	(pango_cairo_fc_font_map_get_renderer),
+	(pango_cairo_fc_font_map_finalize),
+	(pango_cairo_fc_font_map_get_resolution_fc),
+	(pango_cairo_fc_font_map_create_font):
+	* pango/pangocairo-font.c (_pango_cairo_font_install),
+	(_pango_cairo_font_get_font_face),
+	(_pango_cairo_font_get_scaled_font),
+	(_pango_cairo_font_get_hex_box_info):
+	* pango/pangocairo-fontmap.c (pango_cairo_create_layout):
+	* pango/pangocairo-render.c (set_color),
+	(_pango_cairo_renderer_draw_unknown_glyph),
+	(pango_cairo_renderer_draw_glyphs),
+	(pango_cairo_renderer_draw_rectangle),
+	(pango_cairo_renderer_draw_error_underline):
+	Use simple, fast, casts instead of PANGO_CAIRO_*() macros where the
+	object cannot have reached us if it wasn't of the right type.
+
 2006-11-27  Behdad Esfahbod  <behdad@gnome.org>
 
 	Bug 371388 – Add Thai langauage engine

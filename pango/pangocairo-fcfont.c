@@ -91,8 +91,8 @@ static cairo_font_face_t *pango_cairo_fc_font_get_font_face (PangoCairoFont *fon
 static cairo_font_face_t *
 pango_cairo_fc_font_get_font_face (PangoCairoFont *font)
 {
-  PangoCairoFcFont *cffont = PANGO_CAIRO_FC_FONT (font);
-  PangoFcFont *fcfont = PANGO_FC_FONT (cffont);
+  PangoCairoFcFont *cffont = (PangoCairoFcFont *) (font);
+  PangoFcFont *fcfont = (PangoFcFont *) (cffont);
 
   if (!cffont->font_face)
     {
@@ -146,7 +146,7 @@ static gboolean
 pango_cairo_fc_font_install (PangoCairoFont *font,
 			     cairo_t        *cr)
 {
-  PangoCairoFcFont *cffont = PANGO_CAIRO_FC_FONT (font);
+  PangoCairoFcFont *cffont = (PangoCairoFcFont *) (font);
 
   cairo_set_font_face (cr,
 		       pango_cairo_fc_font_get_font_face (font));
@@ -170,7 +170,7 @@ G_DEFINE_TYPE_WITH_CODE (PangoCairoFcFont, pango_cairo_fc_font, PANGO_TYPE_FC_FO
 static void
 pango_cairo_fc_font_finalize (GObject *object)
 {
-  PangoCairoFcFont *cffont = PANGO_CAIRO_FC_FONT (object);
+  PangoCairoFcFont *cffont = (PangoCairoFcFont *) (object);
 
   if (cffont->font_face)
     cairo_font_face_destroy (cffont->font_face);
@@ -195,8 +195,8 @@ static PangoFontMetrics *
 pango_cairo_fc_font_get_metrics (PangoFont     *font,
 				 PangoLanguage *language)
 {
-  PangoFcFont *fcfont = PANGO_FC_FONT (font);
-  PangoCairoFcFont *cffont = PANGO_CAIRO_FC_FONT (font);
+  PangoFcFont *fcfont = (PangoFcFont *) (font);
+  PangoCairoFcFont *cffont = (PangoCairoFcFont *) (font);
   PangoFcMetricsInfo *info = NULL; /* Quiet gcc */
   GSList *tmp_list;      
 
@@ -409,7 +409,7 @@ pango_cairo_fc_font_get_glyph_extents (PangoFont      *font,
 static void
 pango_cairo_fc_font_shutdown (PangoFcFont *fcfont)
 {
-  PangoCairoFcFont *cffont = PANGO_CAIRO_FC_FONT (fcfont);
+  PangoCairoFcFont *cffont = (PangoCairoFcFont *) (fcfont);
   if (cffont->scaled_font)
     {
       cairo_scaled_font_destroy (cffont->scaled_font);
@@ -547,8 +547,8 @@ _pango_cairo_fc_font_new (PangoCairoFcFontMap        *cffontmap,
   
   /* fcfont's is_hinted controls metric hinting
    */
-  PANGO_FC_FONT(cffont)->is_hinted = 
+  ((PangoFcFont *)(cffont))->is_hinted = 
     (cairo_font_options_get_hint_metrics(cffont->options) != CAIRO_HINT_METRICS_OFF);
 
-  return PANGO_FC_FONT (cffont);
+  return (PangoFcFont *) (cffont);
 }

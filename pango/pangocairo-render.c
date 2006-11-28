@@ -49,7 +49,7 @@ static void
 set_color (PangoCairoRenderer *crenderer,
 	   PangoRenderPart     part)
 {
-  PangoColor *color = pango_renderer_get_color (PANGO_RENDERER (crenderer), part);
+  PangoColor *color = pango_renderer_get_color ((PangoRenderer *) (crenderer), part);
   
   if (color)
     cairo_set_source_rgb (crenderer->cr,
@@ -106,7 +106,7 @@ _pango_cairo_renderer_draw_unknown_glyph (PangoCairoRenderer *crenderer,
 
   hbi = _pango_cairo_font_get_hex_box_info ((PangoCairoFont *)font);      
 
-  if (!hbi || !_pango_cairo_font_install (PANGO_CAIRO_FONT (hbi->font), crenderer->cr))
+  if (!hbi || !_pango_cairo_font_install ((PangoCairoFont *) (hbi->font), crenderer->cr))
     {
       _pango_cairo_renderer_draw_box_glyph (crenderer, gi, cx, cy);
       goto done;
@@ -163,7 +163,7 @@ pango_cairo_renderer_draw_glyphs (PangoRenderer     *renderer,
 				  int                x,
 				  int                y)
 {
-  PangoCairoRenderer *crenderer = PANGO_CAIRO_RENDERER (renderer);
+  PangoCairoRenderer *crenderer = (PangoCairoRenderer *) (renderer);
 
   /* cairo_glyph_t is 24 bytes */
 #define MAX_STACK 40
@@ -250,7 +250,7 @@ pango_cairo_renderer_draw_rectangle (PangoRenderer     *renderer,
 				     int                width,
 				     int                height)
 {
-  PangoCairoRenderer *crenderer = PANGO_CAIRO_RENDERER (renderer);
+  PangoCairoRenderer *crenderer = (PangoCairoRenderer *) (renderer);
 
   if (!crenderer->do_path)
     {
@@ -354,7 +354,7 @@ pango_cairo_renderer_draw_error_underline (PangoRenderer *renderer,
 					   int            width,
 					   int            height)
 {
-  PangoCairoRenderer *crenderer = PANGO_CAIRO_RENDERER (renderer);
+  PangoCairoRenderer *crenderer = (PangoCairoRenderer *) (renderer);
   cairo_t *cr = crenderer->cr;
 
   if (!crenderer->do_path)
