@@ -1,5 +1,15 @@
 2006-11-28  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango/pangocairo-font.c (_pango_cairo_font_install),
+	(_pango_cairo_font_get_font_face),
+	(_pango_cairo_font_get_scaled_font):
+	* pango/pangocairo-private.h:
+	* pango/pangocairo-render.c (pango_cairo_renderer_draw_glyphs):
+	Revert two of the cast changes from last commit, to make sure the
+	test-pangocairo-fontmap-mismatch test doesn't crash.
+
+2006-11-28  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/pangocairo-fcfont.c (pango_cairo_fc_font_get_font_face),
 	(pango_cairo_fc_font_install), (pango_cairo_fc_font_finalize),
 	(pango_cairo_fc_font_get_metrics), (pango_cairo_fc_font_shutdown),

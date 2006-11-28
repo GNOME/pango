@@ -177,7 +177,7 @@ pango_cairo_renderer_draw_glyphs (PangoRenderer     *renderer,
   if (!crenderer->do_path)
     set_color (crenderer, PANGO_RENDER_PART_FOREGROUND);
 
-  if (!_pango_cairo_font_install (PANGO_CAIRO_FONT (font), crenderer->cr))
+  if (!_pango_cairo_font_install ((PangoCairoFont *) (font), crenderer->cr))
     {
       for (i = 0; i < glyphs->num_glyphs; i++)
 	{

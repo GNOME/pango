@@ -72,7 +72,7 @@ gboolean
 _pango_cairo_font_install (PangoCairoFont *font,
 			   cairo_t        *cr)
 {
-  if (G_UNLIKELY (!font))
+  if (G_UNLIKELY (!PANGO_IS_CAIRO_FONT (font)))
     {
       if (!_pango_cairo_warning_history.font_install)
         {
@@ -89,7 +89,8 @@ _pango_cairo_font_install (PangoCairoFont *font,
 cairo_font_face_t *
 _pango_cairo_font_get_font_face (PangoCairoFont *font)
 {
-  g_return_val_if_fail (font, NULL);
+  g_return_val_if_fail (PANGO_IS_CAIRO_FONT (font), NULL);
+  /* this function will be removed.  don't bother with warning history here */
   
   return (* PANGO_CAIRO_FONT_GET_IFACE (font)->get_font_face) (font);
 }
@@ -97,7 +98,15 @@ _pango_cairo_font_get_font_face (PangoCairoFont *font)
 cairo_scaled_font_t *
 _pango_cairo_font_get_scaled_font (PangoCairoFont *font)
 {
-  g_return_val_if_fail (font, NULL);
+  if (G_UNLIKELY (!PANGO_IS_CAIRO_FONT (font)))
+    {
+      if (!_pango_cairo_warning_history.font_get_scaled_font)
+        {
+	  _pango_cairo_warning_history.font_get_scaled_font = TRUE;
+	  g_warning ("_pango_cairo_font_get_scaled_font called with bad font, expect ugly output");
+	}
+      return NULL;
+    }
   
   return (* PANGO_CAIRO_FONT_GET_IFACE (font)->get_scaled_font) (font);
 }
