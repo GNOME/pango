@@ -395,7 +395,7 @@ pango_cairo_renderer_class_init (PangoCairoRendererClass *klass)
 }
 
 static PangoCairoRenderer *cached_renderer = NULL;
-static GStaticMutex cached_renderer_mutex = G_STATIC_MUTEX_INIT;
+G_LOCK_DEFINE_STATIC (cached_renderer);
 
 static PangoCairoRenderer *
 acquire_renderer (gboolean *free_renderer)
@@ -404,7 +404,7 @@ acquire_renderer (gboolean *free_renderer)
 
   /* renderer = _pango_cairo_font_map_get_renderer (PANGO_CAIRO_FONT_MAP (fontmap)); */
 
-  if (G_LIKELY (g_static_mutex_trylock (&cached_renderer_mutex)))
+  if (G_LIKELY (G_TRYLOCK (cached_renderer)))
     {
       if (G_UNLIKELY (!cached_renderer))
         cached_renderer = g_object_new (PANGO_TYPE_CAIRO_RENDERER, NULL);
@@ -431,7 +431,7 @@ release_renderer (PangoCairoRenderer *renderer, gboolean free_renderer)
       renderer->x_offset = 0.;
       renderer->y_offset = 0.;
 
-      g_static_mutex_unlock (&cached_renderer_mutex);
+      G_UNLOCK (cached_renderer);
     }
   else
     g_object_unref (renderer);
