@@ -1,5 +1,12 @@
 2006-11-30  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango/pango-renderer.c (pango_renderer_draw_layout_line):
+	Don't call into pango_glyph_string_extents() if we don't need anything
+	out of it!  (Ok, that function returns immediately in that case, but
+	still, avoiding the call overhead.)
+
+2006-11-30  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/pangocairo-render.c (acquire_renderer), (release_renderer):
 	Use G_LOCK_* wrappers for GStaticMutex.
 

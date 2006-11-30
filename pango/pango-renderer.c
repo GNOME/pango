@@ -503,8 +503,9 @@ pango_renderer_draw_layout_line (PangoRenderer    *renderer,
 	      ink = &ink_rect;
 	      logical = &logical_rect;
 	    }
-	  pango_glyph_string_extents (run->glyphs, run->item->analysis.font,
-				      ink, logical);
+	  if (G_UNLIKELY (ink || logical))
+	    pango_glyph_string_extents (run->glyphs, run->item->analysis.font,
+					ink, logical);
 	  if (logical)
 	    glyph_string_width = logical_rect.width;
 	  else
