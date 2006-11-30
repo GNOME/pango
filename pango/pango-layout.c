@@ -126,7 +126,7 @@ struct _PangoLayoutClass
 #ifdef G_DISABLE_CHECKS
 #define ITER_IS_INVALID(iter) FALSE
 #else
-#define ITER_IS_INVALID(iter) check_invalid ((iter), G_STRLOC)
+#define ITER_IS_INVALID(iter) G_UNLIKELY (check_invalid ((iter), G_STRLOC))
 static gboolean
 check_invalid (PangoLayoutIter *iter,
                const char      *loc)
@@ -2069,6 +2069,7 @@ pango_layout_get_extents_internal (PangoLayout    *layout,
   int y_offset = 0;
   int width;
   gboolean need_width = FALSE;
+  PangoRectangle logical_rect_local;
 
   g_return_if_fail (layout != NULL);
 
@@ -2080,16 +2081,14 @@ pango_layout_get_extents_internal (PangoLayout    *layout,
    */
   width = layout->width;
 
-  if (real_width)
-    need_width = TRUE;
-  else if (layout->auto_dir)
+  if (layout->auto_dir)
     {
       /* If one of the lines of the layout is not left aligned, then we need
-       * the width of the width to calculate line x-offsets; this requires
+       * the width of the layout to calculate line x-offsets; this requires
        * looping through the lines for layout->auto_dir.
        */
       line_list = layout->lines;
-      while (line_list)
+      while (line_list && !need_width)
 	{
 	  PangoLayoutLine *line = line_list->data;
 
@@ -2109,6 +2108,13 @@ pango_layout_get_extents_internal (PangoLayout    *layout,
       pango_layout_get_extents (layout, NULL, &overall_logical);
       width = overall_logical.width;
     }
+  
+  /* if user asked for real width and we don't have the width so far, make
+   * sure we compute the logical_rect so we get the width at the end of the
+   * function.  This way we don't have to call a second get_extents().
+   */
+  if (width == -1 && real_width && !logical_rect)
+    logical_rect = &logical_rect_local;
 
   if (logical_rect)
     {
@@ -2219,7 +2225,7 @@ pango_layout_get_extents_internal (PangoLayout    *layout,
     *line_extents = g_slist_reverse (*line_extents);
 
   if (real_width)
-    *real_width = width;
+    *real_width = width == -1 ? logical_rect->width : width;
 }
 
 /**

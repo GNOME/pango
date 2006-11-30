@@ -1,5 +1,13 @@
 2006-11-30  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango/pango-layout.c (pango_layout_get_extents_internal):  Rework
+	the way we compute the real_width to avoid calling
+	pango_layout_get_extents(), and so, avoid one
+	pango_font_get_glyph_extents() call per glyph per layout rendering.
+	We now make 2 such calls.
+
+2006-11-30  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/pango-renderer.c (pango_renderer_draw_layout_line):
 	Don't call into pango_glyph_string_extents() if we don't need anything
 	out of it!  (Ok, that function returns immediately in that case, but
