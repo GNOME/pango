@@ -1,5 +1,12 @@
 2006-12-01  Behdad Esfahbod  <behdad@gnome.org>
 
+	Red Hat Bug 213632: ZWJ (200d) and ZWNJ (200c) showing same output
+	Patch from LingNing Zhang
+
+	* modules/indic/indic-ot.c (indic_ot_reorder): Handle ZWNJ.
+
+2006-12-01  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/pango-layout.c (pango_layout_run_get_width), (update_run),
 	(pango_layout_iter_copy), (pango_layout_iter_get_run_extents):
 	Don't cache run_logical_rect in PangoLayoutIter.  Just cache run_width

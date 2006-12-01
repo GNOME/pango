@@ -410,6 +410,9 @@ glong indic_ot_reorder(const gunichar *chars, const glong *utf8_offsets, glong c
 		    if (IS_VATTU(charClass) && supressVattu) {
 			tag = nukt_p;
 		    }
+		    else if ((i + 2 < baseConsonant) && (chars[i + 2] == C_SIGN_ZWNJ)) {
+			tag = nukt_p;
+		    }
 
 		    supressVattu = IS_VATTU(charClass);
 		} else if (IS_VIRAMA(charClass) && chars[i + 1] == C_SIGN_ZWNJ)
