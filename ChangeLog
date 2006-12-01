@@ -1,3 +1,10 @@
+2006-12-01  Behdad Esfahbod  <behdad@gnome.org>
+
+	Red Hat Bug 213632: ZWJ (200d) and ZWNJ (200c) showing same output
+	Patch from LingNing Zhang
+
+	* modules/indic/indic-ot.c (indic_ot_reorder): Handle ZWNJ.
+
 2006-11-28  Behdad Esfahbod  <behdad@gnome.org>
 
 	* pango/pangocairo-font.c (_pango_cairo_font_install),
