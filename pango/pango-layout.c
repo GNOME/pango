@@ -78,8 +78,8 @@ struct _PangoLayoutIter
   /* X position of the current run */
   int run_x;
 
-  /* Extents of the current run */
-  PangoRectangle run_logical_rect;
+  /* Width of the current run */
+  int run_width;
 
   /* this run is left-to-right */
   gboolean ltr;
@@ -3960,6 +3960,26 @@ pango_layout_line_get_empty_extents (PangoLayoutLine *line,
     }
 }
 
+static int
+pango_layout_run_get_width (PangoLayoutRun *run)
+{
+  ItemProperties properties;
+
+  pango_layout_get_item_properties (run->item, &properties);
+
+  if (properties.shape_set) {
+    PangoRectangle run_logical;
+
+    imposed_extents (run->item->num_chars,
+		     properties.shape_ink_rect,
+		     properties.shape_logical_rect,
+		     NULL, &run_logical);
+
+    return run_logical.width;
+  } else
+    return pango_glyph_string_get_width (run->glyphs);
+}
+
 static void
 pango_layout_run_get_extents (PangoLayoutRun *run,
                               PangoRectangle *run_ink,
@@ -4583,34 +4603,23 @@ update_run (PangoLayoutIter *iter,
 
   line_ext = (Extents*)iter->line_extents_link->data;
   
-  /* Note that in iter_new() the iter->run_logical_rect.width
+  /* Note that in iter_new() the iter->run_width
    * is garbage but we don't use it since we're on the first run of
    * a line.
    */
   if (iter->run_list_link == iter->line->runs)
     iter->run_x = line_ext->logical_rect.x;
   else
-    iter->run_x += iter->run_logical_rect.width;
+    iter->run_x += iter->run_width;
   
   if (iter->run)
     {
-      pango_layout_run_get_extents (iter->run,
-                                    NULL,
-                                    &iter->run_logical_rect);
-
-      /* Fix coordinates of the run extents to be layout-relative*/
-      iter->run_logical_rect.x += iter->run_x;
-      
-      offset_y (iter, &iter->run_logical_rect.y);
+      iter->run_width = pango_layout_run_get_width (iter->run);
     }
   else
     {
       /* The empty run at the end of a line */
-      
-      iter->run_logical_rect.x = iter->run_x;
-      iter->run_logical_rect.y = line_ext->logical_rect.y;
-      iter->run_logical_rect.width = 0;
-      iter->run_logical_rect.height = line_ext->logical_rect.height;
+      iter->run_width = 0;
     }
 
   if (iter->run)
@@ -4619,7 +4628,7 @@ update_run (PangoLayoutIter *iter,
     iter->ltr = TRUE;
 
   iter->cluster_start = 0;
-  iter->cluster_x = iter->run_logical_rect.x;
+  iter->cluster_x = iter->run_x;
 
   if (iter->run)
     {
@@ -4666,7 +4675,7 @@ pango_layout_iter_copy (PangoLayoutIter *iter)
   new->line_extents = g_slist_reverse (new->line_extents);
   
   new->run_x = iter->run_x;
-  new->run_logical_rect = iter->run_logical_rect;
+  new->run_width = iter->run_width;
   new->ltr = iter->ltr;
   
   new->cluster_x = iter->cluster_x;
@@ -5198,32 +5207,46 @@ pango_layout_iter_get_run_extents (PangoLayoutIter *iter,
                                    PangoRectangle  *ink_rect,
                                    PangoRectangle  *logical_rect)
 {
+  if (G_UNLIKELY (!ink_rect && !logical_rect))
+    return;
+
   if (ITER_IS_INVALID (iter))
     return;
 
-  if (ink_rect)
+  if (iter->run)
     {
-      if (iter->run)
-        {
-          pango_layout_run_get_extents (iter->run, ink_rect, NULL);
-          offset_y (iter, &ink_rect->y);
-          ink_rect->x += iter->run_x;
-        }
-      else
-        {
-          PangoRectangle line_ink;
+      pango_layout_run_get_extents (iter->run, ink_rect, logical_rect);
 
-          pango_layout_iter_get_line_extents (iter, &line_ink, NULL);
-          
-          ink_rect->x = iter->run_x;          
-          ink_rect->y = line_ink.y;
-          ink_rect->width = 0;
-          ink_rect->height = line_ink.height;
-        }
+      if (ink_rect)
+	{
+	  offset_y (iter, &ink_rect->y);
+	  ink_rect->x += iter->run_x;
+	}
+
+      if (logical_rect)
+	{
+	  offset_y (iter, &logical_rect->y);
+	  logical_rect->x += iter->run_x;
+	}
     }
+  else
+    {
+      /* The empty run at the end of a line */
       
-  if (logical_rect)
-    *logical_rect = iter->run_logical_rect;
+      pango_layout_iter_get_line_extents (iter, ink_rect, logical_rect);
+
+      if (ink_rect)
+        {
+          ink_rect->x = iter->run_x;          
+          ink_rect->width = 0;
+        }
+
+      if (logical_rect)
+	{
+	  logical_rect->x = iter->run_x;
+	  logical_rect->width = 0;
+	}
+    }
 }
 
 /**
