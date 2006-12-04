@@ -79,18 +79,9 @@ _pango_cairo_renderer_draw_frame (PangoCairoRenderer *crenderer,
        */
 
       /* outer */
-      cairo_move_to (cr, x - d2, y - d2);
-      cairo_rel_line_to (cr, width + d, 0);
-      cairo_rel_line_to (cr, 0, height + d);
-      cairo_rel_line_to (cr, - (width + d), 0);
-      cairo_close_path (cr);
-
+      cairo_rectangle (crenderer->cr, x-d2, y-d2, width+d, height+d);
       /* inner */
-      cairo_move_to (cr, x + d2, y + d2);
-      cairo_rel_line_to (cr, 0, height - d);
-      cairo_rel_line_to (cr, width - d, 0);
-      cairo_rel_line_to (cr, 0, - (height - d));
-      cairo_close_path (cr);
+      cairo_rectangle (crenderer->cr, x+d2 + (width-d), y+d2, - (width-d), height-d);
     }
   else
     {
