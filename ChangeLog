@@ -1,3 +1,15 @@
+2006-12-04  Behdad Esfahbod  <behdad@gnome.org>
+
+	* pango/pango-renderer.c (pango_renderer_draw_layout_line),
+	(pango_renderer_draw_glyphs), (pango_renderer_draw_rectangle),
+	(pango_renderer_draw_error_underline),
+	(pango_renderer_draw_trapezoid), (pango_renderer_draw_glyph),
+	(pango_renderer_activate), (pango_renderer_deactivate),
+	(pango_renderer_set_color), (pango_renderer_get_color),
+	(pango_renderer_part_changed), (pango_renderer_prepare_run),
+	(pango_renderer_set_matrix): Replace PANGO_IS_RENDERER with
+	PANGO_IS_RENDERER_FAST that is just a NULL-check.
+
 2006-12-01  Behdad Esfahbod  <behdad@gnome.org>
 
 	Red Hat Bug 213632: ZWJ (200d) and ZWNJ (200c) showing same output

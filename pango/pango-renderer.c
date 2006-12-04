@@ -26,6 +26,7 @@
 
 #define N_RENDER_PARTS 4
 
+#define PANGO_IS_RENDERER_FAST(renderer) (renderer != NULL)
 #define IS_VALID_PART(part) ((guint)part < N_RENDER_PARTS)
 
 typedef struct _LineState LineState;
@@ -452,7 +453,7 @@ pango_renderer_draw_layout_line (PangoRenderer    *renderer,
   gboolean got_overall = FALSE;
   PangoRectangle overall_rect;
   
-  g_return_if_fail (PANGO_IS_RENDERER (renderer));
+  g_return_if_fail (PANGO_IS_RENDERER_FAST (renderer));
 
   /* We only change the matrix if the renderer isn't already
    * active.
@@ -605,7 +606,7 @@ pango_renderer_draw_glyphs (PangoRenderer    *renderer,
 			    int               x,
 			    int               y)
 {
-  g_return_if_fail (PANGO_IS_RENDERER (renderer));
+  g_return_if_fail (PANGO_IS_RENDERER_FAST (renderer));
   
   pango_renderer_activate (renderer);
 
@@ -665,7 +666,7 @@ pango_renderer_draw_rectangle (PangoRenderer   *renderer,
 			       int              width,
 			       int              height)
 {
-  g_return_if_fail (PANGO_IS_RENDERER (renderer));
+  g_return_if_fail (PANGO_IS_RENDERER_FAST (renderer));
   g_return_if_fail (IS_VALID_PART (part));
   g_return_if_fail (renderer->active_count > 0);
   
@@ -805,7 +806,7 @@ pango_renderer_draw_error_underline (PangoRenderer *renderer,
 				     int            width,
 				     int            height)
 {
-  g_return_if_fail (PANGO_IS_RENDERER (renderer));
+  g_return_if_fail (PANGO_IS_RENDERER_FAST (renderer));
   g_return_if_fail (renderer->active_count > 0);
   
   PANGO_RENDERER_GET_CLASS (renderer)->draw_error_underline (renderer, x, y, width, height);
@@ -953,7 +954,7 @@ pango_renderer_draw_trapezoid (PangoRenderer  *renderer,
 			       double          x12,
 			       double          x22)
 {
-  g_return_if_fail (PANGO_IS_RENDERER (renderer));
+  g_return_if_fail (PANGO_IS_RENDERER_FAST (renderer));
   g_return_if_fail (renderer->active_count > 0);
   
   if (PANGO_RENDERER_GET_CLASS (renderer)->draw_trapezoid)
@@ -981,7 +982,7 @@ pango_renderer_draw_glyph (PangoRenderer *renderer,
 			   double         x,
 			   double         y)
 {
-  g_return_if_fail (PANGO_IS_RENDERER (renderer));
+  g_return_if_fail (PANGO_IS_RENDERER_FAST (renderer));
   g_return_if_fail (renderer->active_count > 0);
 	  
   if (glyph == PANGO_GLYPH_EMPTY) /* glyph PANGO_GLYPH_EMPTY never renders */
@@ -1008,7 +1009,7 @@ pango_renderer_draw_glyph (PangoRenderer *renderer,
 void
 pango_renderer_activate (PangoRenderer *renderer)
 {
-  g_return_if_fail (PANGO_IS_RENDERER (renderer));
+  g_return_if_fail (PANGO_IS_RENDERER_FAST (renderer));
 
   renderer->active_count++;
   if (renderer->active_count == 1)
@@ -1030,7 +1031,7 @@ pango_renderer_activate (PangoRenderer *renderer)
 void
 pango_renderer_deactivate (PangoRenderer *renderer)
 {
-  g_return_if_fail (PANGO_IS_RENDERER (renderer));
+  g_return_if_fail (PANGO_IS_RENDERER_FAST (renderer));
   g_return_if_fail (renderer->active_count > 0);
   
   if (renderer->active_count == 1)
@@ -1056,7 +1057,7 @@ pango_renderer_set_color (PangoRenderer    *renderer,
 			  PangoRenderPart   part,
 			  const PangoColor *color)
 {
-  g_return_if_fail (PANGO_IS_RENDERER (renderer));
+  g_return_if_fail (PANGO_IS_RENDERER_FAST (renderer));
   g_return_if_fail (IS_VALID_PART (part));
 
   if ((!color && !renderer->priv->color_set[part]) ||
@@ -1096,7 +1097,7 @@ PangoColor *
 pango_renderer_get_color (PangoRenderer   *renderer,
 			  PangoRenderPart  part)
 {
-  g_return_val_if_fail (PANGO_IS_RENDERER (renderer), NULL);
+  g_return_val_if_fail (PANGO_IS_RENDERER_FAST (renderer), NULL);
   g_return_val_if_fail (IS_VALID_PART (part), NULL);
   
   if (renderer->priv->color_set[part])
@@ -1130,7 +1131,7 @@ void
 pango_renderer_part_changed (PangoRenderer    *renderer,
 			     PangoRenderPart   part)
 {
-  g_return_if_fail (PANGO_IS_RENDERER (renderer));
+  g_return_if_fail (PANGO_IS_RENDERER_FAST (renderer));
   g_return_if_fail (IS_VALID_PART (part));
   g_return_if_fail (renderer->active_count > 0);
   
@@ -1153,7 +1154,7 @@ static void
 pango_renderer_prepare_run (PangoRenderer  *renderer,
 			    PangoLayoutRun *run)
 {
-  g_return_if_fail (PANGO_IS_RENDERER (renderer));
+  g_return_if_fail (PANGO_IS_RENDERER_FAST (renderer));
   
   PANGO_RENDERER_GET_CLASS (renderer)->prepare_run (renderer, run);
 }
@@ -1232,7 +1233,7 @@ void
 pango_renderer_set_matrix (PangoRenderer     *renderer,
 			   const PangoMatrix *matrix)
 {
-  g_return_if_fail (PANGO_IS_RENDERER (renderer));
+  g_return_if_fail (PANGO_IS_RENDERER_FAST (renderer));
 
   if (renderer->matrix)
     pango_matrix_free (renderer->matrix);
