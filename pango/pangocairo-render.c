@@ -58,6 +58,48 @@ set_color (PangoCairoRenderer *crenderer,
 			  color->blue / 65535.);
 }
 
+/* modifies cairo_set_line_width() without doing cairo_save/restore() */
+static void
+_pango_cairo_renderer_draw_frame (PangoCairoRenderer *crenderer,
+				  double              x,
+				  double              y,
+				  double              width,
+				  double              height,
+				  double              line_width)
+{
+  if (crenderer->do_path)
+    {
+      cairo_t *cr = crenderer->cr;
+      double d2 = line_width * .5, d = line_width;
+
+      /* we draw an outer box in one winding direction and an inner one in the
+       * opposite direction.  This works for both cairo windings rules.
+       *
+       * what we really want is cairo_stroke_to_path().
+       */
+
+      /* outer */
+      cairo_move_to (cr, x - d2, y - d2);
+      cairo_rel_line_to (cr, width + d, 0);
+      cairo_rel_line_to (cr, 0, height + d);
+      cairo_rel_line_to (cr, - (width + d), 0);
+      cairo_close_path (cr);
+
+      /* inner */
+      cairo_move_to (cr, x + d2, y + d2);
+      cairo_rel_line_to (cr, 0, height - d);
+      cairo_rel_line_to (cr, width - d, 0);
+      cairo_rel_line_to (cr, 0, - (height - d));
+      cairo_close_path (cr);
+    }
+  else
+    {
+      cairo_rectangle (crenderer->cr, x, y, width, height);
+      cairo_set_line_width (crenderer->cr, line_width);
+      cairo_stroke (crenderer->cr);
+    }
+}
+
 static void
 _pango_cairo_renderer_draw_box_glyph (PangoCairoRenderer *crenderer,
 				      PangoGlyphInfo     *gi,
@@ -69,17 +111,13 @@ _pango_cairo_renderer_draw_box_glyph (PangoCairoRenderer *crenderer,
   cairo_save (crenderer->cr);
   cairo_get_current_point (crenderer->cr, &temp_x, &temp_y);
 
-  cairo_rectangle (crenderer->cr,
-		   cx + 1.5,
-		   cy + 1.5 - PANGO_UNKNOWN_GLYPH_HEIGHT,
-		   (double)gi->geometry.width / PANGO_SCALE - 3.0,
-		   PANGO_UNKNOWN_GLYPH_HEIGHT - 3.0);
 
-  if (!crenderer->do_path)
-    {
-      cairo_set_line_width (crenderer->cr, 1.0);
-      cairo_stroke (crenderer->cr);
-    }
+  _pango_cairo_renderer_draw_frame (crenderer,
+				    cx + 1.5,
+				    cy + 1.5 - PANGO_UNKNOWN_GLYPH_HEIGHT,
+				    (double)gi->geometry.width / PANGO_SCALE - 3.0,
+				    PANGO_UNKNOWN_GLYPH_HEIGHT - 3.0,
+				    1.0);
 
   cairo_move_to (crenderer->cr, temp_x, temp_y);
   cairo_restore (crenderer->cr);
@@ -118,17 +156,12 @@ _pango_cairo_renderer_draw_unknown_glyph (PangoCairoRenderer *crenderer,
   cols = (ch > 0xffff ? 6 : 4) / rows;
   g_snprintf (buf, sizeof(buf), (ch > 0xffff) ? "%06X" : "%04X", ch);
 
-  cairo_rectangle (crenderer->cr,
-		   cx + hbi->pad_x * 1.5,
-		   cy + hbi->box_descent - hbi->box_height + hbi->pad_y * 0.5,
-		   (double)gi->geometry.width / PANGO_SCALE - 3 * hbi->pad_x,
-		   (hbi->box_height - hbi->pad_y));
-
-  if (!crenderer->do_path)
-    {
-      cairo_set_line_width (crenderer->cr, hbi->line_width);
-      cairo_stroke (crenderer->cr);
-    }
+  _pango_cairo_renderer_draw_frame (crenderer,
+				    cx + hbi->pad_x * 1.5,
+				    cy + hbi->box_descent - hbi->box_height + hbi->pad_y * 0.5,
+				    (double)gi->geometry.width / PANGO_SCALE - 3 * hbi->pad_x,
+				    (hbi->box_height - hbi->pad_y),
+				    hbi->line_width);
 
   x0 = cx + hbi->pad_x * 3.0;
   y0 = cy + hbi->box_descent - hbi->pad_y * 2;

@@ -1,5 +1,23 @@
 2006-12-04  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango/pangocairo-render.c (_pango_cairo_renderer_draw_frame),
+	(_pango_cairo_renderer_draw_box_glyph),
+	(_pango_cairo_renderer_draw_unknown_glyph):
+	Fix handling of boxes drawn in do_path mode.  Previously we were
+	doing one rectangle and stroke it if in show mode, and leave it alone
+	if in path mode.  That doesn't really work.  Now we do two rectangles,
+	for the outer and inner rects of the box border, but with different
+	orientations, such that pango_cairo_layout_path(); cairo_fill(); works
+	for hexboxes now.
+
+2006-12-04  Behdad Esfahbod  <behdad@gnome.org>
+
+	* pango/pangocairo-render.c (_pango_cairo_renderer_draw_frame),
+	(_pango_cairo_renderer_draw_box_glyph),
+	(_pango_cairo_renderer_draw_unknown_glyph):
+
+2006-12-04  Behdad Esfahbod  <behdad@gnome.org>
+
 	Red Hat Bug 211964: [ta] Rendering issue with Tamil
 	Patch from LingNing Zhang
 
