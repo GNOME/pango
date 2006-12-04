@@ -67,5 +67,6 @@ G_END_DECLS
 
 void _pango_layout_line_ellipsize (PangoLayoutLine *line,
 				   PangoAttrList   *attrs);
+PangoLayoutLine* _pango_layout_iter_get_line_readonly (PangoLayoutIter *iter);
 
 #endif /* __PANGO_LAYOUT_PRIVATE_H__ */

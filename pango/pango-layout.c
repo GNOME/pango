@@ -112,6 +112,21 @@ struct _PangoLayoutLinePrivate
 {
   PangoLayoutLine line;
   guint ref_count;
+
+  /* Extents cache status:
+   *
+   * LEAKED means that the user has access to this line structure or a
+   * run included in this line, and so can change the glyphs/glyph-widths.
+   * If this is true, extents caching will be disabled.
+   */
+  enum {
+    NOT_CACHED,
+    CACHED,
+    LEAKED
+  } cache_status;
+
+  PangoRectangle ink_rect;
+  PangoRectangle logical_rect;
 };
 
 struct _PangoLayoutClass
@@ -156,6 +171,10 @@ static int *pango_layout_line_get_log2vis_map (PangoLayoutLine  *line,
 					       gboolean          strong);
 static int *pango_layout_line_get_vis2log_map (PangoLayoutLine  *line,
 					       gboolean          strong);
+static void pango_layout_line_leaked (PangoLayoutLine *line);
+
+/* doesn't leak line */
+static PangoLayoutLine* _pango_layout_iter_get_line (PangoLayoutIter *iter);
 
 static void pango_layout_get_item_properties (PangoItem      *item,
 					      ItemProperties *properties);
@@ -1064,6 +1083,19 @@ GSList *
 pango_layout_get_lines (PangoLayout *layout)
 {
   pango_layout_check_lines (layout);
+
+  if (layout->lines)
+    {
+      GSList *tmp_list = layout->lines;
+      while (tmp_list)
+	{
+	  PangoLayoutLine *line = tmp_list->data;
+	  tmp_list = tmp_list->next;
+	  
+	  pango_layout_line_leaked (line);
+	}
+    }
+
   return layout->lines;
 }
 
@@ -1092,9 +1124,17 @@ pango_layout_get_line (PangoLayout *layout,
     return NULL;
 
   pango_layout_check_lines (layout);
+
   list_item = g_slist_nth (layout->lines, line);
+
   if (list_item)
-    return list_item->data;
+    {
+      PangoLayoutLine *line = list_item->data;
+
+      pango_layout_line_leaked (line);
+      return line;
+    }
+
   return NULL;
 }
 
@@ -1239,7 +1279,7 @@ pango_layout_index_to_line_and_extents (PangoLayout     *layout,
   if (!ITER_IS_INVALID (iter))
     while (TRUE)
       {
-	PangoLayoutLine *tmp_line = pango_layout_iter_get_line (iter);
+	PangoLayoutLine *tmp_line = _pango_layout_iter_get_line (iter);
 
 	if (tmp_line->start_index > index)
 	    break; /* index was in paragraph delimiters */
@@ -1564,18 +1604,18 @@ pango_layout_xy_to_index (PangoLayout *layout,
               if (prev_line == NULL)
                 outside = TRUE; /* off the top */
               
-              found = pango_layout_iter_get_line (iter);
+              found = _pango_layout_iter_get_line (iter);
               found_line_x = x - line_logical.x;
             }
         }
       else if (y >= first_y &&
                y < last_y)
         {
-          found = pango_layout_iter_get_line (iter);
+          found = _pango_layout_iter_get_line (iter);
           found_line_x = x - line_logical.x;
         }
 
-      prev_line = pango_layout_iter_get_line (iter);
+      prev_line = _pango_layout_iter_get_line (iter);
       prev_last = last_y;
       prev_line_x = x - line_logical.x;
 
@@ -1638,7 +1678,7 @@ pango_layout_index_to_pos (PangoLayout    *layout,
     {
       while (TRUE)
 	{
-	  PangoLayoutLine *tmp_line = pango_layout_iter_get_line (iter);
+	  PangoLayoutLine *tmp_line = _pango_layout_iter_get_line (iter);
 
 	  if (tmp_line->start_index > index)
 	    {
@@ -2379,6 +2419,14 @@ pango_layout_clear_lines (PangoLayout *layout)
       g_free (layout->log_attrs);
       layout->log_attrs = NULL;
     }
+}
+
+static void
+pango_layout_line_leaked (PangoLayoutLine *line)
+{
+  PangoLayoutLinePrivate *private = (PangoLayoutLinePrivate *)line;
+
+  private->cache_status = LEAKED;
 }
 
 
@@ -4096,13 +4144,40 @@ pango_layout_line_get_extents (PangoLayoutLine *line,
 			       PangoRectangle  *ink_rect,
 			       PangoRectangle  *logical_rect)
 {
+  PangoLayoutLinePrivate *private = (PangoLayoutLinePrivate *)line;
   GSList *tmp_list;
   int x_pos = 0;
+  gboolean caching = FALSE;
   
   g_return_if_fail (LINE_IS_VALID (line));
 
   if (!LINE_IS_VALID (line))
     return;
+
+  switch (private->cache_status)
+    {
+    case CACHED:
+      {
+	if (ink_rect)
+	  *ink_rect = private->ink_rect;
+	if (logical_rect)
+	  *logical_rect = private->logical_rect;
+	return;
+      }
+    case NOT_CACHED:
+      {
+        caching = TRUE;
+	if (!ink_rect)
+	  ink_rect = &private->ink_rect;
+	if (!logical_rect)
+	  logical_rect = &private->logical_rect;
+	break;
+      }
+    case LEAKED:
+      {
+        break;
+      }
+    }
 
   if (ink_rect)
     {
@@ -4172,6 +4247,15 @@ pango_layout_line_get_extents (PangoLayoutLine *line,
   
   if (logical_rect && !line->runs) 
     pango_layout_line_get_empty_extents (line, logical_rect);
+
+  if (caching)
+    {
+      if (&private->ink_rect != ink_rect)
+	private->ink_rect = *ink_rect;
+      if (&private->logical_rect != logical_rect)
+	private->logical_rect = *logical_rect;
+      private->cache_status = CACHED;
+    }
 }
 
 static PangoLayoutLine *
@@ -4183,6 +4267,7 @@ pango_layout_line_new (PangoLayout *layout)
   private->line.layout = layout;
   private->line.runs = NULL;
   private->line.length = 0;
+  private->cache_status = NOT_CACHED;
 
   /* Note that we leave start_index, resolved_dir, and is_paragraph_start
    *  uninitialized */
@@ -4813,7 +4898,23 @@ pango_layout_iter_get_run (PangoLayoutIter *iter)
   if (ITER_IS_INVALID (iter))
     return NULL;
 
+  pango_layout_line_leaked (iter->line);
+
   return iter->run;
+}
+
+/* an inline-able version for local use */
+static PangoLayoutLine*
+_pango_layout_iter_get_line (PangoLayoutIter *iter)
+{
+  return iter->line;
+}
+
+/* a private one for pango-renderer.c use */
+PangoLayoutLine*
+_pango_layout_iter_get_line_readonly (PangoLayoutIter *iter)
+{
+  return iter->line;
 }
 
 /**
@@ -4829,6 +4930,8 @@ pango_layout_iter_get_line (PangoLayoutIter *iter)
 {
   if (ITER_IS_INVALID (iter))
     return NULL;
+
+  pango_layout_line_leaked (iter->line);
 
   return iter->line;
 }

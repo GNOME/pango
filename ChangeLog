@@ -1,5 +1,29 @@
 2006-12-04  Behdad Esfahbod  <behdad@gnome.org>
 
+	Bug 135683 – Cache glyphstring extents
+
+	* pango/pango-layout.c (pango_layout_get_lines),
+	(pango_layout_get_line), (pango_layout_line_leaked),
+	(pango_layout_line_get_extents), (pango_layout_line_new),
+	(pango_layout_iter_get_run), (pango_layout_iter_get_line): 
+	Cache line extents.  Line extents are cached only if the user doesn't
+	have a pointer to the line or any of its runs.  Functions that give
+	away such pointers mark the line as "leak"ed.
+
+	* pango/pango-layout.c (pango_layout_index_to_line_and_extents),
+	(pango_layout_xy_to_index), (pango_layout_index_to_pos):
+	Use _pango_layout_iter_get_line() which is like
+	pango_layout_iter_get_line() but doesn't leak the line.
+
+	* pango/pango-layout-private.h: Add pango_layout_iter_get_line()
+	duplicate _pango_layout_iter_get_line_readonly() that doesn't leak
+	the line.
+
+	* pango/pango-renderer.c (pango_renderer_draw_layout): Use
+	_pango_layout_iter_get_line_readonly().
+
+2006-12-04  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/pangocairo-render.c (_pango_cairo_renderer_draw_frame):
 	Improve upon last change.  Suggested by Carl Worth: use
 	cairo_rectangle(x + width, y, -width, height) to do a rectangle with
