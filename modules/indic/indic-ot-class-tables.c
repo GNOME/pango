@@ -469,6 +469,48 @@ glong indic_ot_find_syllable(const IndicOTClassTable *class_table, const gunicha
 
         state = stateTable[state][char_class & CF_CLASS_MASK];
 
+        /*for the components of split matra*/	
+	if ((char_count >= cursor + 3) &&
+	    (chars[cursor] == 0x0DD9 && chars[cursor + 1] == 0x0DCF && chars[cursor + 2] == 0x0DCA)) {  /*for 3 split matra of Sinhala*/
+	    return cursor + 3;
+	}        
+	else if ((char_count >= cursor + 3) &&
+	         (chars[cursor] == 0x0CC6 && chars[cursor + 1] == 0x0CC2 && chars[cursor + 2] == 0x0CD5)) {  /*for 3 split matra of Kannada*/
+	    return cursor + 3;
+	}
+        /*for 2 split matra*/	
+	else if (char_count >= cursor + 2) {
+	        /*for Bengali*/
+            if ((chars[cursor] == 0x09C7 && chars[cursor + 1] == 0x09BE) ||	       
+	        (chars[cursor] == 0x09C7 && chars[cursor + 1] == 0x09D7) ||		
+	        /*for Oriya*/
+	        (chars[cursor] == 0x0B47 && chars[cursor + 1] == 0x0B3E) ||		
+	        (chars[cursor] == 0x0B47 && chars[cursor + 1] == 0x0B56) ||		
+	        (chars[cursor] == 0x0B47 && chars[cursor + 1] == 0x0B57) ||
+	        /*for Tamil*/
+	        (chars[cursor] == 0x0BC6 && chars[cursor + 1] == 0x0BBE) ||		
+	        (chars[cursor] == 0x0BC6 && chars[cursor + 1] == 0x0BD7) ||		
+	        (chars[cursor] == 0x0BC7 && chars[cursor + 1] == 0x0BBE) ||		
+	        /*for Malayalam*/
+	        (chars[cursor] == 0x0D46 && chars[cursor + 1] == 0x0D3E) ||	
+	        (chars[cursor] == 0x0D46 && chars[cursor + 1] == 0x0D57) ||		
+	        (chars[cursor] == 0x0D47 && chars[cursor + 1] == 0x0D3E) ||	
+	        /*for Sinhala*/
+	        (chars[cursor] == 0x0DD9 && chars[cursor + 1] == 0x0DCA) ||		
+	        (chars[cursor] == 0x0DD9 && chars[cursor + 1] == 0x0DCF) ||		
+	        (chars[cursor] == 0x0DD9 && chars[cursor + 1] == 0x0DDF) ||		
+	        (chars[cursor] == 0x0DDC && chars[cursor + 1] == 0x0DCA) ||		
+	        /*for Telugu*/
+	        (chars[cursor] == 0x0C46 && chars[cursor + 1] == 0x0C56) ||	
+	        /*for Kannada*/
+	        (chars[cursor] == 0x0CBF && chars[cursor + 1] == 0x0CD5) ||		    
+	        (chars[cursor] == 0x0CC6 && chars[cursor + 1] == 0x0CD5) ||		
+	        (chars[cursor] == 0x0CC6 && chars[cursor + 1] == 0x0CD6) ||		
+	        (chars[cursor] == 0x0CC6 && chars[cursor + 1] == 0x0CC2) ||		
+	        (chars[cursor] == 0x0CCA && chars[cursor + 1] == 0x0CD5))
+		    return cursor + 2;
+	}
+
         if (state < 0) {
             break;
         }
