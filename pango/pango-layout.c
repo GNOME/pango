@@ -1073,6 +1073,9 @@ pango_layout_get_line_count (PangoLayout   *layout)
  * @layout: a #PangoLayout
  * 
  * Returns the lines of the @layout as a list.
+ *
+ * Use the faster pango_layout_get_lines_readonly() if you do not plan
+ * to modify the contents of the lines (glyphs, glyph widths, etc.).
  * 
  * Return value: a #GSList containing the lines in the layout. This
  * points to internal data of the #PangoLayout and must be used with
@@ -1100,6 +1103,31 @@ pango_layout_get_lines (PangoLayout *layout)
 }
 
 /**
+ * pango_layout_get_lines_readonly:
+ * @layout: a #PangoLayout
+ * 
+ * Returns the lines of the @layout as a list.
+ * 
+ * This is a faster alternative to pango_layout_get_lines(),
+ * but the user is not expected
+ * to modify the contents of the lines (glyphs, glyph widths, etc.).
+ *
+ * Return value: a #GSList containing the lines in the layout. This
+ * points to internal data of the #PangoLayout and must be used with
+ * care. It will become invalid on any change to the layout's
+ * text or properties.  No changes should be made to the lines.
+ *
+ * Since: 1.16
+ **/
+GSList *
+pango_layout_get_lines_readonly (PangoLayout *layout)
+{
+  pango_layout_check_lines (layout);
+
+  return layout->lines;
+}
+
+/**
  * pango_layout_get_line:
  * @layout: a #PangoLayout
  * @line: the index of a line, which must be between 0 and
@@ -1107,6 +1135,9 @@ pango_layout_get_lines (PangoLayout *layout)
  * 
  * Retrieves a particular line from a #PangoLayout.
  * 
+ * Use the faster pango_layout_get_line_readonly() if you do not plan
+ * to modify the contents of the line (glyphs, glyph widths, etc.).
+ *
  * Return value: the requested #PangoLayoutLine, or %NULL if the
  *               index is out of range. This layout line can
  *               be ref'ed and retained, but will become invalid
@@ -1132,6 +1163,50 @@ pango_layout_get_line (PangoLayout *layout,
       PangoLayoutLine *line = list_item->data;
 
       pango_layout_line_leaked (line);
+      return line;
+    }
+
+  return NULL;
+}
+
+/**
+ * pango_layout_get_line_readonly:
+ * @layout: a #PangoLayout
+ * @line: the index of a line, which must be between 0 and
+ *        <literal>pango_layout_get_line_count(layout) - 1</literal>, inclusive.
+ * 
+ * Retrieves a particular line from a #PangoLayout.
+ * 
+ * This is a faster alternative to pango_layout_get_line(),
+ * but the user is not expected
+ * to modify the contents of the line (glyphs, glyph widths, etc.).
+ *
+ * Return value: the requested #PangoLayoutLine, or %NULL if the
+ *               index is out of range. This layout line can
+ *               be ref'ed and retained, but will become invalid
+ *               if changes are made to the #PangoLayout.
+ *               No changes should be made to the line.
+ *
+ * Since: 1.16
+ **/
+PangoLayoutLine *
+pango_layout_get_line_readonly (PangoLayout *layout,
+				int          line)
+{
+  GSList *list_item;
+  g_return_val_if_fail (layout != NULL, NULL);
+  g_return_val_if_fail (line >= 0, NULL);
+
+  if (line < 0)
+    return NULL;
+
+  pango_layout_check_lines (layout);
+
+  list_item = g_slist_nth (layout->lines, line);
+
+  if (list_item)
+    {
+      PangoLayoutLine *line = list_item->data;
       return line;
     }
 
@@ -4889,11 +4964,42 @@ pango_layout_iter_get_index (PangoLayoutIter *iter)
  * line, there's a position with a %NULL run, so this function can return
  * %NULL. The %NULL run at the end of each line ensures that all lines have
  * at least one run, even lines consisting of only a newline.
+ *
+ * Use the faster pango_layout_iter_get_run_readonly() if you do not plan
+ * to modify the contents of the run (glyphs, glyph widths, etc.).
  * 
  * Return value: the current run.
  **/
 PangoLayoutRun*
 pango_layout_iter_get_run (PangoLayoutIter *iter)
+{
+  if (ITER_IS_INVALID (iter))
+    return NULL;
+
+  pango_layout_line_leaked (iter->line);
+
+  return iter->run;
+}
+
+/**
+ * pango_layout_iter_get_run_readonly:
+ * @iter: a #PangoLayoutIter
+ * 
+ * Gets the current run. When iterating by run, at the end of each
+ * line, there's a position with a %NULL run, so this function can return
+ * %NULL. The %NULL run at the end of each line ensures that all lines have
+ * at least one run, even lines consisting of only a newline.
+ * 
+ * This is a faster alternative to pango_layout_iter_get_run(),
+ * but the user is not expected
+ * to modify the contents of the run (glyphs, glyph widths, etc.).
+ * 
+ * Return value: the current run, that should not be modified.
+ *
+ * Since: 1.16
+ **/
+PangoLayoutRun*
+pango_layout_iter_get_run_readonly (PangoLayoutIter *iter)
 {
   if (ITER_IS_INVALID (iter))
     return NULL;
@@ -4910,18 +5016,14 @@ _pango_layout_iter_get_line (PangoLayoutIter *iter)
   return iter->line;
 }
 
-/* a private one for pango-renderer.c use */
-PangoLayoutLine*
-_pango_layout_iter_get_line_readonly (PangoLayoutIter *iter)
-{
-  return iter->line;
-}
-
 /**
  * pango_layout_iter_get_line:
  * @iter: a #PangoLayoutIter
  * 
  * Gets the current line.
+ *
+ * Use the faster pango_layout_iter_get_line_readonly() if you do not plan
+ * to modify the contents of the line (glyphs, glyph widths, etc.).
  * 
  * Return value: the current line.
  **/
@@ -4932,6 +5034,29 @@ pango_layout_iter_get_line (PangoLayoutIter *iter)
     return NULL;
 
   pango_layout_line_leaked (iter->line);
+
+  return iter->line;
+}
+
+/**
+ * pango_layout_iter_get_line_readonly:
+ * @iter: a #PangoLayoutIter
+ * 
+ * Gets the current line for read-only access.
+ *
+ * This is a faster alternative to pango_layout_iter_get_line(),
+ * but the user is not expected
+ * to modify the contents of the line (glyphs, glyph widths, etc.).
+ * 
+ * Return value: the current line, that should not be modified.
+ *
+ * Since: 1.16
+ **/
+PangoLayoutLine*
+pango_layout_iter_get_line_readonly (PangoLayoutIter *iter)
+{
+  if (ITER_IS_INVALID (iter))
+    return NULL;
 
   return iter->line;
 }

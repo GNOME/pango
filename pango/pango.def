@@ -212,7 +212,9 @@ EXPORTS
 	pango_layout_get_justify
 	pango_layout_get_line
 	pango_layout_get_line_count
+	pango_layout_get_line_readonly
 	pango_layout_get_lines
+	pango_layout_get_lines_readonly
 	pango_layout_get_log_attrs
 	pango_layout_get_pixel_extents
 	pango_layout_get_pixel_size
@@ -235,9 +237,11 @@ EXPORTS
 	pango_layout_iter_get_layout_extents
 	pango_layout_iter_get_line
 	pango_layout_iter_get_line_extents
+	pango_layout_iter_get_line_readonly
 	pango_layout_iter_get_line_yrange
 	pango_layout_iter_get_run
 	pango_layout_iter_get_run_extents
+	pango_layout_iter_get_run_readonly
 	pango_layout_iter_get_type
 	pango_layout_iter_next_char
 	pango_layout_iter_next_cluster

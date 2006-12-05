@@ -23,7 +23,6 @@
 #include <stdlib.h>
 
 #include "pango-renderer.h"
-#include "pango-layout-private.h"
 
 #define N_RENDER_PARTS 4
 
@@ -177,7 +176,7 @@ pango_renderer_draw_layout (PangoRenderer    *renderer,
       PangoLayoutLine *line;
       int              baseline;
       
-      line = _pango_layout_iter_get_line_readonly (iter);
+      line = pango_layout_iter_get_line_readonly (iter);
       
       pango_layout_iter_get_line_extents (iter, NULL, &logical_rect);
       baseline = pango_layout_iter_get_baseline (iter);

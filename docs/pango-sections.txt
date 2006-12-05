@@ -472,7 +472,9 @@ pango_layout_get_size
 pango_layout_get_pixel_size
 pango_layout_get_line_count
 pango_layout_get_line
+pango_layout_get_line_readonly
 pango_layout_get_lines
+pango_layout_get_lines_readonly
 
 pango_layout_get_iter
 pango_layout_iter_free
@@ -484,7 +486,9 @@ pango_layout_iter_at_last_line
 pango_layout_iter_get_index
 pango_layout_iter_get_baseline
 pango_layout_iter_get_run
+pango_layout_iter_get_run_readonly
 pango_layout_iter_get_line
+pango_layout_iter_get_line_readonly
 pango_layout_iter_get_char_extents
 pango_layout_iter_get_cluster_extents
 pango_layout_iter_get_run_extents

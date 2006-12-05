@@ -535,7 +535,26 @@ The #GObject type for #PangoAlignment.
 @Returns: 
 
 
+<!-- ##### FUNCTION pango_layout_get_line_readonly ##### -->
+<para>
+
+</para>
+
+@layout: 
+@line: 
+@Returns: 
+
+
 <!-- ##### FUNCTION pango_layout_get_lines ##### -->
+<para>
+
+</para>
+
+@layout: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_layout_get_lines_readonly ##### -->
 <para>
 
 </para>
@@ -633,7 +652,25 @@ The #GObject type for #PangoAlignment.
 @Returns: 
 
 
+<!-- ##### FUNCTION pango_layout_iter_get_run_readonly ##### -->
+<para>
+
+</para>
+
+@iter: 
+@Returns: 
+
+
 <!-- ##### FUNCTION pango_layout_iter_get_line ##### -->
+<para>
+
+</para>
+
+@iter: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_layout_iter_get_line_readonly ##### -->
 <para>
 
 </para>

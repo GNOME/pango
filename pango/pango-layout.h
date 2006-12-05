@@ -200,7 +200,10 @@ void     pango_layout_get_pixel_size       (PangoLayout    *layout,
 int              pango_layout_get_line_count       (PangoLayout    *layout);
 PangoLayoutLine *pango_layout_get_line             (PangoLayout    *layout,
 						    int             line);
+PangoLayoutLine *pango_layout_get_line_readonly    (PangoLayout    *layout,
+						    int             line);
 GSList *         pango_layout_get_lines            (PangoLayout    *layout);
+GSList *         pango_layout_get_lines_readonly   (PangoLayout    *layout);
 
 #define PANGO_TYPE_LAYOUT_LINE (pango_layout_line_get_type ())
 
@@ -240,7 +243,9 @@ void             pango_layout_iter_free (PangoLayoutIter *iter);
 
 int              pango_layout_iter_get_index (PangoLayoutIter *iter);
 PangoLayoutRun  *pango_layout_iter_get_run   (PangoLayoutIter *iter);
+PangoLayoutRun  *pango_layout_iter_get_run_readonly   (PangoLayoutIter *iter);
 PangoLayoutLine *pango_layout_iter_get_line  (PangoLayoutIter *iter);
+PangoLayoutLine *pango_layout_iter_get_line_readonly  (PangoLayoutIter *iter);
 gboolean         pango_layout_iter_at_last_line (PangoLayoutIter *iter);
 
 gboolean pango_layout_iter_next_char    (PangoLayoutIter *iter);
