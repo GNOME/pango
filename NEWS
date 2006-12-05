@@ -1,3 +1,57 @@
+Overview of changes between 1.15.0 and 1.15.1
+==============================================
+* Add Thai langauage engine. (currently makes tests/testboundary fail.)
+* Add Lao and improved Thai sample text.
+* Improved Indic module.
+* Output correct path for hexboxes in pango_cairo_layout_path().
+* Implement get_resolution method for the FT2 fontmap.  Shouldn't make
+  any difference whatsoever.  Open a bug if it does.
+* Misc small fixes.
+
+* Optimizations:
+  - Rework PangoLayout algorithms to avoid calling a recursive call to
+    pango_layout_get_extents().  Avoids one pango_font_get_glyph_extents()
+    call per glyph per layout rendering.  We now make 2 such calls.
+  - Don't cache run_logical_rect in PangoLayoutIter.
+    Avoids one pango_font_get_glyph_extents() call per glyph per layout
+    rendering.  We are down to 1 now.
+  - Cache line extents.  This avoids the final pango_font_get_glyph_extents()
+    call per glyph per layout rendering.  Now we don't make any
+    pango_font_get_glyph_extents() calls when rendering a layout (some
+    conditions apply)!
+  - Replace PANGO_IS_RENDERER with PANGO_IS_RENDERER_FAST for most
+    internal uses, that is, just a NULL-check.
+  - Use simple, fast, casts instead of PANGO_CAIRO_*() macros where the
+    object cannot have reached us if it wasn't of the right type.
+
+* Bugs fixed in this release:
+	Bug 135683 – Cache glyphstring extents
+	Red Hat Bug 211964: [ta] Rendering issue with Tamil
+		Patch from LingNing Zhang
+	Red Hat Bug 213632: ZWJ (200d) and ZWNJ (200c) showing same output
+		Patch from LingNing Zhang
+	Bug 371388 – Add Thai langauage engine
+		Patch from Theppitak Karoonboonyanan
+	Bug 377975 – bug in _pango_glyph_item_iter_next_cluster
+	Bug 369670 – Checked g_free calls
+
+Changes that also appeared between 1.14.7 and 1.14.8
+=====================================================
+* Improved thread-safety.  Pango is still NOT thread-safe, but this fixes
+  lots of crashes using pangocairo from multiple threads.
+* Fix out-of-bounds array access.
+* Improved Indic shaper.
+* Improved Arabic language engine.
+* Choose shaper/font for unassigned Unicode codepoints.
+* Build fixes.
+* Bugs fixed in this release:
+	Bug 356666 – pango is not thread-safe, nautilus does not honour that
+	Bug 352795 – configure.in: Bug in "checking Whether to write
+	             dependencies into .pc files"
+	Bug 350132 – backspacing doesn't work properly for Arabic
+	Bug 330407 – Multiple dependant vowel signs (indic) displayed as one
+	Patch from LingNing Zhang
+
 Overview of changes between 1.14.7 and 1.15.0
 ==============================================
 * Add basic support for vertical text.  (PangoGravity and related API)
