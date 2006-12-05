@@ -2,6 +2,11 @@
 
 	Bug 135683 – Cache glyphstring extents
 
+	Cache line extents.  This avoids the final pango_font_get_glyph_extents()
+	call per glyph per layout rendering.  Now we don't make any
+	pango_font_get_glyph_extents() calls when rendering a layout (some
+	conditions apply).
+
 	* pango/pango-layout.c (pango_layout_get_lines),
 	(pango_layout_get_line), (pango_layout_line_leaked),
 	(pango_layout_line_get_extents), (pango_layout_line_new),
