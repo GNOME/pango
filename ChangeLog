@@ -1,3 +1,9 @@
+2006-12-06  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 382437 – tests/testboundaries fails
+
+	* configure.in: Require libthai >= 0.1.7
+
 2006-12-04  Behdad Esfahbod  <behdad@gnome.org>
 
 	* pango/pangocairo-render.c (_pango_cairo_renderer_draw_frame),
