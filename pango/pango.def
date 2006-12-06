@@ -49,6 +49,7 @@ EXPORTS
 	pango_color_free
 	pango_color_get_type
 	pango_color_parse
+	pango_color_to_string
 	pango_config_key_get
 	pango_context_get_base_dir
 	pango_context_get_base_gravity

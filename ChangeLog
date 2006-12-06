@@ -1,5 +1,17 @@
 2006-12-06  Behdad Esfahbod  <behdad@gnome.org>
 
+	Bug 373856 – Wish: Function to convert a GdkColor to a string
+	Patch from Matthew Barnes
+
+	* docs/pango-sections.txt:
+	* docs/tmpl/text-attributes.sgml:
+	* pango/pango-attributes.h:
+	* pango/pango.def:
+	* pango/pango-color.c (pango_color_to_string):
+	New public function pango_color_to_string().
+
+2006-12-06  Behdad Esfahbod  <behdad@gnome.org>
+
 	Red Hat Bug 216850: Issue in combination with vowels (ml_IN)
 	Patch from LingNing Zhang
 

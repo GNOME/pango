@@ -351,9 +351,10 @@ pango_attr_rise_new
 pango_attr_letter_spacing_new
 PangoColor
 PANGO_TYPE_COLOR
-pango_color_free
 pango_color_parse
 pango_color_copy
+pango_color_free
+pango_color_to_string
 PangoLanguage
 PANGO_TYPE_LANGUAGE
 pango_language_from_string

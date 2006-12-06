@@ -530,14 +530,6 @@ The #GObject type for #PangoColor.
 
 
 
-<!-- ##### FUNCTION pango_color_free ##### -->
-<para>
-
-</para>
-
-@color: 
-
-
 <!-- ##### FUNCTION pango_color_parse ##### -->
 <para>
 
@@ -554,6 +546,23 @@ The #GObject type for #PangoColor.
 </para>
 
 @src: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_color_free ##### -->
+<para>
+
+</para>
+
+@color: 
+
+
+<!-- ##### FUNCTION pango_color_to_string ##### -->
+<para>
+
+</para>
+
+@color: 
 @Returns: 
 
 
