@@ -143,31 +143,6 @@ static void noteBaseConsonant(Output *output)
     }
 }
 
-static void shiftCharsLeft3(Output *output)
-{
-    if (output->fOutChars != NULL) {
-	gunichar temp_char;
-	guint32 temp_index;
-	gulong temp_tag;
-
-	temp_char = output->fOutChars[output->fOutIndex - 3];
-	temp_index = output->fCharIndices[output->fOutIndex - 3];
-	temp_tag = output->fCharTags[output->fOutIndex - 3];
-
-	output->fOutChars[output->fOutIndex - 3] = output->fOutChars[output->fOutIndex - 2];
-	output->fCharIndices[output->fOutIndex - 3] = output->fCharIndices[output->fOutIndex - 2];
-	output->fCharTags[output->fOutIndex - 3] = output->fCharTags[output->fOutIndex - 2];	
-
-	output->fOutChars[output->fOutIndex - 2] = output->fOutChars[output->fOutIndex - 1];
-	output->fCharIndices[output->fOutIndex - 2] = output->fCharIndices[output->fOutIndex - 1];
-	output->fCharTags[output->fOutIndex - 2] = output->fCharTags[output->fOutIndex - 1];
-
-	output->fOutChars[output->fOutIndex - 1] = temp_char;
-	output->fCharIndices[output->fOutIndex - 1] = temp_index;
-	output->fCharTags[output->fOutIndex - 1] = temp_tag;
-    }
-}
-
 static void swapChars(Output *output, int a, int b)
 {
     if (output->fOutChars != NULL) {
@@ -445,23 +420,21 @@ glong indic_ot_reorder(const gunichar *chars, const glong *utf8_offsets, glong c
 		writeChar(&output, chars[i], /*i*/ prev, nukt_p);
 	    }
 
-            /* for the special conjuction of Cons+0x0d4d+0x0d31 of Malayalam */
+            /* for the special conjuction of Cons+0x0d4d+0x0d31 or Cons+0x0d4d+0x0d30 of Malayalam */
 	    if ((baseConsonant - 2 >= 0) &&
 		(chars[baseConsonant - 1] == 0x0d4d) &&
-		(chars[baseConsonant] == 0x0d31) &&
+		((chars[baseConsonant] == 0x0d31) || 
+		 (chars[baseConsonant] == 0x0d30)) &&
 		((chars[baseConsonant - 2] >= 0x0d15) && 
 		 (chars[baseConsonant - 2] <= 0x0d39)))  {
       		swapChars (&output, -1, -3);
-	    }
-
-            /* for the special conjuction of Cons+0x0d4d+0x0d30 of Malayalam */
-	    if ((baseConsonant - 2 >= 0) &&
-		(chars[baseConsonant - 1] == 0x0d4d) &&
-		(chars[baseConsonant] == 0x0d30) &&
-		((chars[baseConsonant - 2] >= 0x0d15) && 
-		 (chars[baseConsonant - 2] <= 0x0d39)))  {
-      		swapChars (&output, -1, -3);
-	    }
+        
+                if (mpreFixups) {
+		    if (mpreFixups->fFixupCount > 0) {
+                        mpreFixups->fFixupCount--;
+		    }
+                }        
+	    }            
 
 	    if ((class_table->scriptFlags & SF_MATRAS_AFTER_BASE) != 0) {
 		writeMbelow(&output);
