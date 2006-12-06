@@ -350,7 +350,9 @@ pango_context_get_font_description (PangoContext *context)
  * @context: a #PangoContext
  * @language: the new language tag.
  * 
- * Sets the global language tag for the context.
+ * Sets the global language tag for the context.  The default language
+ * for the locale of the running process can be found using
+ * pango_language_get_default().
  **/
 void
 pango_context_set_language (PangoContext *context,

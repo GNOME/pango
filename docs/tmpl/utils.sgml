@@ -175,6 +175,14 @@ backends and modules, but may be useful for other purposes too.
 @Returns: 
 
 
+<!-- ##### FUNCTION pango_language_get_default ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+
 <!-- ##### FUNCTION pango_language_get_sample_string ##### -->
 <para>
 

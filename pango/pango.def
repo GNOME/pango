@@ -194,6 +194,7 @@ EXPORTS
 	pango_itemize
 	pango_itemize_with_base_dir
 	pango_language_from_string
+	pango_language_get_default
 	pango_language_get_sample_string
 	pango_language_get_type
 	pango_language_includes_script

@@ -24,6 +24,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <math.h>
+#include <locale.h>
 
 #include "pango-font.h"
 #include "pango-impl-utils.h"
@@ -988,6 +989,92 @@ pango_language_get_type (void)
 }
 
 /**
+ * _pango_get_lc_ctype:
+ *
+ * Return the Unix-style locale string for the language currently in
+ * effect. On Unix systems, this is the return value from
+ * <literal>setlocale(LC_CTYPE, NULL)</literal>, and the user can
+ * affect this through the environment variables LC_ALL, LC_CTYPE or
+ * LANG (checked in that order). The locale strings typically is in
+ * the form lang_COUNTRY, where lang is an ISO-639 language code, and
+ * COUNTRY is an ISO-3166 country code. For instance, sv_FI for
+ * Swedish as written in Finland or pt_BR for Portuguese as written in
+ * Brazil.
+ * 
+ * On Windows, the C library doesn't use any such environment
+ * variables, and setting them won't affect the behaviour of functions
+ * like ctime(). The user sets the locale through the Regional Options 
+ * in the Control Panel. The C library (in the setlocale() function) 
+ * does not use country and language codes, but country and language 
+ * names spelled out in English. 
+ * However, this function does check the above environment
+ * variables, and does return a Unix-style locale string based on
+ * either said environment variables or the thread's current locale.
+ *
+ * Return value: a dynamically allocated string, free with g_free().
+ */
+static gchar *
+_pango_get_lc_ctype (void)
+{
+#ifdef G_OS_WIN32
+  /* Somebody might try to set the locale for this process using the
+   * LANG or LC_ environment variables. The Microsoft C library
+   * doesn't know anything about them. You set the locale in the
+   * Control Panel. Setting these env vars won't have any affect on
+   * locale-dependent C library functions like ctime(). But just for
+   * kicks, do obey LC_ALL, LC_CTYPE and LANG in Pango. (This also makes
+   * it easier to test GTK and Pango in various default languages, you
+   * don't have to clickety-click in the Control Panel, you can simply
+   * start the program with LC_ALL=something on the command line.)
+   */
+
+  gchar *p;
+
+  p = getenv ("LC_ALL");
+  if (p != NULL)
+    return g_strdup (p);
+
+  p = getenv ("LC_CTYPE");
+  if (p != NULL)
+    return g_strdup (p);
+
+  p = getenv ("LANG");
+  if (p != NULL)
+    return g_strdup (p);
+
+  return g_win32_getlocale ();
+#else
+  return g_strdup (setlocale (LC_CTYPE, NULL));
+#endif
+}
+
+/**
+ * pango_language_get_default:
+ *
+ * Returns the #PangoLanguage for the current locale of the running
+ * process.  Note that this can change over the life of an
+ * application.
+ * 
+ * Return value: the default language as a #PangoLanguage, must not be
+ *               freed.
+ *
+ * Since: 1.16
+ **/
+PangoLanguage *
+pango_language_get_default (void)
+{
+  gchar *lang;
+  PangoLanguage *result;  
+  
+  lang = _pango_get_lc_ctype ();
+ 
+  result = pango_language_from_string (lang);
+  g_free (lang);
+  
+  return result;
+}
+
+/**
  * pango_language_from_string:
  * @language: a string representing a language tag
  * 
@@ -999,6 +1086,9 @@ pango_language_get_type (void)
  * This function first canonicalizes the string by converting it to
  * lowercase, mapping '_' to '-', and stripping all characters other
  * than letters and '-'.
+ *
+ * Use pango_language_get_default() if you want to get the #PangoLanguage for
+ * the current locale of the process.
  * 
  * Return value: an opaque pointer to a #PangoLanguage structure.
  *               this will be valid forever after.

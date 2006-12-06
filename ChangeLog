@@ -1,5 +1,24 @@
 2006-12-06  Behdad Esfahbod  <behdad@gnome.org>
 
+	Bug 333982 – Fallback to $LANG whenever NULL PangoLanguage is used
+	Patch from LingNing Zhang
+
+	* docs/pango-sections.txt:
+	* docs/tmpl/utils.sgml:
+	* pango/pango-context.c:
+	* pango/pango-types.h:
+	* pango/pango-utils.c (_pango_get_lc_ctype),
+	(pango_language_get_default):
+	* pango/pango.def:
+	New public function pango_language_get_default().  Note that, this
+	does not make Pango fallback to the default language automatically,
+	but the user can use this function to set the default language of the
+	locale on a context:
+
+	  pango_context_set_language (context, pango_language_get_default());
+
+2006-12-06  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 373856 – Wish: Function to convert a GdkColor to a string
 	Patch from Matthew Barnes
 

@@ -965,6 +965,7 @@ pango_parse_stretch
 pango_get_sysconf_subdirectory
 pango_get_lib_subdirectory
 pango_log2vis_get_embedding_levels
+pango_language_get_default
 pango_language_get_sample_string
 pango_is_zero_width
 pango_quantize_line_geometry
