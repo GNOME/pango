@@ -1051,9 +1051,12 @@ _pango_get_lc_ctype (void)
 /**
  * pango_language_get_default:
  *
- * Returns the #PangoLanguage for the current locale of the running
- * process.  Note that this can change over the life of an
- * application.
+ * Returns the #PangoLanguage for the current locale of the process.
+ * Note that this can change over the life of an application.
+ *
+ * Your application should call <literal>setlocale (LC_ALL, "");</literal>
+ * for the user settings to take effect.  Gtk+ does this in its initialization
+ * functions.  See <literal>man setlocale</literal> for details.
  * 
  * Return value: the default language as a #PangoLanguage, must not be
  *               freed.

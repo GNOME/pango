@@ -274,7 +274,7 @@ do_output (PangoContext     *context,
 
   set_transform (context, transform_cb, cb_context, cb_data, NULL);
 
-  pango_context_set_language (context, pango_language_from_string ("en_US"));
+  pango_context_set_language (context, pango_language_get_default ());
   pango_context_set_base_dir (context,
 			      opt_rtl ? PANGO_DIRECTION_RTL : PANGO_DIRECTION_LTR);
 

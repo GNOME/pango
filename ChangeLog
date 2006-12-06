@@ -1,5 +1,12 @@
 2006-12-06  Behdad Esfahbod  <behdad@gnome.org>
 
+	* examples/renderdemo.c (do_output): Set context language to
+	pango_language_get_default() instead of hardcoding "en-US".
+
+	* pango/pango-utils.c (pango_language_get_default): Improve docs.
+
+2006-12-06  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 333982 – Fallback to $LANG whenever NULL PangoLanguage is used
 	Patch from LingNing Zhang
 
