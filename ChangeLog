@@ -1,3 +1,9 @@
+2006-12-06  Behdad Esfahbod  <behdad@gnome.org>
+
+	* examples/Makefile.am:
+	* examples/test-gurmukhi.txt:
+	Gurmukhi test text from supreet sethi.
+
 2006-12-05  Behdad Esfahbod  <behdad@gnome.org>
 
 	* docs/pango-sections.txt:

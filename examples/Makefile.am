@@ -4,6 +4,7 @@ TEST_TEXTS =			\
 	test-arabic.txt		\
 	test-chinese.txt	\
 	test-devanagari.txt	\
+	test-gurmukhi.txt	\
 	test-hebrew.txt		\
 	test-ipa.txt		\
 	test-lao.txt		\
