@@ -1,5 +1,11 @@
 2006-12-06  Behdad Esfahbod  <behdad@gnome.org>
 
+	Bug 382437 – tests/testboundaries fails
+
+	* configure.in: Require libthai >= 0.1.7
+
+2006-12-06  Behdad Esfahbod  <behdad@gnome.org>
+
 	* examples/Makefile.am:
 	* examples/test-gurmukhi.txt:
 	Gurmukhi test text from supreet sethi.
