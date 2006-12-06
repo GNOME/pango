@@ -1,5 +1,12 @@
 2006-12-06  Behdad Esfahbod  <behdad@gnome.org>
 
+	Red Hat Bug 216850: Issue in combination with vowels (ml_IN)
+	Patch from LingNing Zhang
+
+	* modules/indic/indic-ot.c (indic_ot_reorder): Fix it!
+
+2006-12-06  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 382437 – tests/testboundaries fails
 
 	* configure.in: Require libthai >= 0.1.7
