@@ -1,3 +1,24 @@
+Overview of changes between 1.14.8 and 1.14.9
+==============================================
+* Add Thai langauage engine.
+* Improved Indic module.
+* Output correct path for hexboxes in pango_cairo_layout_path().
+* Misc small fixes.
+* Bugs fixed in this release:
+	Red Hat Bug 216424: [te_IN] pango - consonant + dependent vowel (ai)
+		Composed char is not rendering properly
+		Patch from LingNing Zhang
+	Red Hat Bug 216850: Issue in combination with vowels (ml_IN)
+		Patch from LingNing Zhang
+	Red Hat Bug 211964: [ta] Rendering issue with Tamil
+		Patch from LingNing Zhang
+	Red Hat Bug 213632: ZWJ (200d) and ZWNJ (200c) showing same output
+		Patch from LingNing Zhang
+	Bug 382437 – tests/testboundaries fails
+	Bug 371388 – Add Thai langauage engine
+		Patch from Theppitak Karoonboonyanan
+	Bug 377975 – bug in _pango_glyph_item_iter_next_cluster
+
 Overview of changes between 1.14.7 and 1.14.8
 ==============================================
 * Improved thread-safety.  Pango is still NOT thread-safe, but this fixes
