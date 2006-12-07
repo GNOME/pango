@@ -437,9 +437,26 @@ glong indic_ot_reorder(const gunichar *chars, const glong *utf8_offsets, glong c
 	    }            
 
 	    if ((class_table->scriptFlags & SF_MATRAS_AFTER_BASE) != 0) {
-		writeMbelow(&output);
-		writeMabove(&output);
-		writeMpost(&output);
+		gboolean is_for_0C48 = FALSE;
+	        if (output.fOutChars != NULL) {  /*for 0x0C48 of Telugu*/
+		    int t;
+		    for (t = prev; t < syllable; t++) {
+		        if (chars[t] == 0x0C48) {
+			    writeMabove(&output);
+			    writeMbelow(&output);
+			    writeMpost(&output);
+
+                            is_for_0C48 = TRUE;
+                            break;			    
+			}
+		    }
+		}
+		
+		if (!is_for_0C48) {
+		    writeMbelow(&output);
+		    writeMabove(&output);
+		    writeMpost(&output);
+		}
 	    }
 
 	    /* write below-base consonants */
