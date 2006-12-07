@@ -27,6 +27,7 @@
 #include <locale.h>
 
 #include "pango-font.h"
+#include "pango-features.h"
 #include "pango-impl-utils.h"
 
 #include <glib/gstdio.h>
@@ -59,6 +60,93 @@ struct PangoAlias
 static GHashTable *pango_aliases_ht = NULL;
 
 PangoWarningHistory _pango_warning_history = { FALSE, FALSE, FALSE };
+
+/**
+ * pango_version:
+ *
+ * This is similar to the macro %PANGO_VERSION except that
+ * it returns the encoded version of Pango available at run-time,
+ * as opposed to the version available at compile-time.
+ *
+ * A version number can be encoded into an integer using
+ * PANGO_VERSION_ENCODE().
+ *
+ * Returns value: The encoded version of Pango library
+ *   available at run time.
+ *
+ * Since: 1.16
+ **/
+int
+pango_version (void)
+{
+  return PANGO_VERSION;
+}
+
+/**
+ * pango_version_string:
+ *
+ * This is similar to the macro %PANGO_VERSION_STRING except that
+ * it returns the version of Pango available at run-time, as opposed to
+ * the version available at compile-time.
+ *
+ * Returns value: A string containing the version of Pango library
+ *   available at run time.
+ *   The returned string is owned by Pango and should not be modified
+ *   or freed.
+ *
+ * Since: 1.16
+ **/
+const char *
+pango_version_string (void)
+{
+  return PANGO_VERSION_STRING;
+}
+
+/**
+ * pango_version_check:
+ * @required_major: the required major version.
+ * @required_minor: the required minor version.
+ * @required_micro: the required major version.
+ *
+ * Checks that the Pango library in use is compatible with the
+ * given version. Generally you would pass in the constants
+ * %PANGO_VERSION_MAJOR, %PANGO_VERSION_MINOR, %PANGO_VERSION_MICRO
+ * as the three arguments to this function; that produces
+ * a check that the library in use at run-time is compatible with
+ * the version of Pango the application or module was compiled against.
+ *
+ * Compatibility is defined by two things: first the version
+ * of the running library is newer than the version
+ * @required_major.required_minor.@required_micro. Second
+ * the running library must be binary compatible with the
+ * version @required_major.required_minor.@required_micro
+ * (same major version.)
+ *
+ * For compile-time version checking use PANGO_VERSION_CHECK().
+ *
+ * Return value: %NULL if the Pango library is compatible with the
+ *   given version, or a string describing the version mismatch.
+ *   The returned string is owned by Pango and should not be modified
+ *   or freed.
+ *
+ * Since: 1.16
+ **/
+const gchar*
+pango_version_check (int required_major,
+                     int required_minor,
+                     int required_micro)
+{
+  gint pango_effective_micro = 100 * PANGO_VERSION_MINOR + PANGO_VERSION_MICRO;
+  gint required_effective_micro = 100 * required_minor + required_micro;
+
+  if (required_major < PANGO_VERSION_MAJOR)
+    return "Pango version too new (major mismatch)";
+  if (required_effective_micro < pango_effective_micro - PANGO_BINARY_AGE)
+    return "Pango version too new (micro mismatch)";
+  if (required_effective_micro > pango_effective_micro)
+    return "Pango version too old (micro mismatch)";
+  return NULL;
+}
 
 /**
  * pango_trim_string:
@@ -1727,7 +1815,7 @@ pango_quantize_line_geometry (int *thickness,
  * Converts a #PangoGravity value to its rotation value.
  *
  * Return value: the rotation value corresponding to @gravity,
- * or zero if @gravity is #PANGO_GRAVITY_AUTO
+ * or zero if @gravity is %PANGO_GRAVITY_AUTO
  *
  * Since: 1.16
  */
@@ -1747,3 +1835,4 @@ pango_gravity_to_rotation (PangoGravity gravity)
 
   return rotation;
 }
+

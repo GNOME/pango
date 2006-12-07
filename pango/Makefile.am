@@ -28,7 +28,7 @@ INCLUDES =						\
 	$(FREETYPE_CFLAGS)				\
 	$(X_CFLAGS)
 
-BUILT_SOURCES = pango-enum-types.h pango-enum-types.c
+BUILT_SOURCES = pango-enum-types.h pango-enum-types.c pango-features.h
 
 pangoincludedir=$(includedir)/pango-1.0/pango
 
@@ -101,6 +101,7 @@ pango_headers =		   \
 	pango-context.h	   \
 	pango-coverage.h   \
 	pango-engine.h	   \
+	pango-features.h   \
 	pango-font.h       \
 	pango-fontmap.h	   \
 	pango-fontset.h    \
@@ -148,6 +149,8 @@ s-enum-types-c: @REBUILD@ $(pango_headers) Makefile
 	&& rm -f tmp-pango-enum-types.c \
 	&& echo timestamp > $(@F)
 
+pango-features.h:
+	cd $(top_builddir) && ./config.status pango/pango-features.h
 
 # ------------------- libpangox -------------------
 
@@ -466,7 +469,12 @@ CLEANFILES =			\
 	pango-enum-types.c	\
 	s-enum-types-c
 
+MOSTLYCLEANFILES = 		\
+	*.def.list		\
+	*.def.expected
+
 DISTCLEANFILES = 		\
+	pango-features.h	\
 	$(MODULE_DEF_FILES)
 
 install-data-local: install-ms-lib install-def-files

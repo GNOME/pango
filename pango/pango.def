@@ -344,5 +344,8 @@ EXPORTS
 	pango_underline_get_type
 	pango_unichar_direction
 	pango_variant_get_type
+	pango_version
+	pango_version_check
+	pango_version_string
 	pango_weight_get_type
 	pango_wrap_mode_get_type

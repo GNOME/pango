@@ -27,6 +27,7 @@
 <!ENTITY pango-Misc-Utils SYSTEM "xml/utils.xml">
 <!ENTITY markup-format SYSTEM "pango_markup.sgml">
 <!ENTITY pango-querymodules SYSTEM "pango-querymodules.xml">
+<!ENTITY pango-Version SYSTEM "xml/pango-version.xml">
 <!ENTITY version SYSTEM "version.xml">
 ]>
 <book id="index">
@@ -70,6 +71,7 @@
     &PangoEngineShape;
     &pango-Modules;
     &pango-Misc-Utils;
+    &pango-Version;
     </chapter>
 
   <chapter id="tools">
@@ -103,5 +105,8 @@
   </index>
   <index role="1.14">
     <title>Index of new symbols in 1.14</title>
+  </index>
+  <index role="1.16">
+    <title>Index of new symbols in 1.16</title>
   </index>
 </book>

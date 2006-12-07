@@ -1,0 +1,29 @@
+#!/bin/bash
+
+LANG=C
+
+test -z "$srcdir" && srcdir=.
+status=0
+
+if ! test -f pango-undocumented.txt -a -f pango-unused.txt; then
+	echo At least one of pango-undocumented.txt and pango-unused.txt not found.
+	echo Skipping test.
+	exit 0
+fi
+
+status=0
+
+unused=`cat pango-unused.txt`
+if test -n "$unused"; then
+	echo Unused documentated symbols:
+	cat pango-unused.txt
+	status=1
+fi
+if ! grep '^0 symbols incomplete' pango-undocumented.txt >/dev/null ||
+   ! grep '^0 not documented'     pango-undocumented.txt >/dev/null; then
+	echo Incomplete or undocumented symbols:
+	cat pango-unused.txt
+	status=1
+fi
+
+exit $status

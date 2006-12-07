@@ -970,3 +970,18 @@ pango_language_get_sample_string
 pango_is_zero_width
 pango_quantize_line_geometry
 </SECTION>
+
+<SECTION>
+<TITLE>Version Checking</TITLE>
+<FILE>pango-version</FILE>
+PANGO_VERSION_ENCODE
+PANGO_VERSION
+PANGO_VERSION_MAJOR
+PANGO_VERSION_MINOR
+PANGO_VERSION_MICRO
+PANGO_VERSION_STRING
+PANGO_VERSION_CHECK
+pango_version
+pango_version_string
+pango_version_check
+</SECTION>

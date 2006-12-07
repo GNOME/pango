@@ -97,6 +97,36 @@ guint8 * pango_log2vis_get_embedding_levels (const gchar    *text,
  */
 gboolean pango_is_zero_width (gunichar ch) G_GNUC_CONST;
 
+/* Pango version checking */
+
+/* Encode a Pango version as an integer */
+#define PANGO_VERSION_ENCODE(major, minor, micro) (     \
+	  ((major) * 10000)                             \
+	+ ((minor) *   100)                             \
+	+ ((micro) *     1))
+
+/* Encoded version of Pango at compile-time */
+#define PANGO_VERSION PANGO_VERSION_ENCODE(     \
+	PANGO_VERSION_MAJOR,                    \
+	PANGO_VERSION_MINOR,                    \
+	PANGO_VERSION_MICRO)
+
+/* Check that compile-time Pango is as new as required */
+#define PANGO_VERSION_CHECK(major,minor,micro)    \
+	(PANGO_VERSION >= PANGO_VERSION_ENCODE(major,minor,micro))
+
+
+/* Return encoded version of Pango at run-time */
+int pango_version (void) G_GNUC_CONST;
+
+/* Return run-time Pango version as an string */
+G_CONST_RETURN char * pango_version_string (void);
+
+/* Check that run-time Pango is as new as required */
+G_CONST_RETURN char * pango_version_check (int required_major,
+                                           int required_minor,
+                                           int required_micro);
+
 G_END_DECLS
 
 #endif /* __PANGO_UTILS_H__ */

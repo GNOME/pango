@@ -560,6 +560,10 @@ show_version(const char *name,
 {
   g_printf("%s (%s) %s\n", prog_name, PACKAGE_NAME, PACKAGE_VERSION);
   g_printf("module interface version: %s\n", MODULE_VERSION);
+
+  if (PANGO_VERSION != pango_version())
+    g_printf("\nLinked Pango library has a different version: %s\n", pango_version_string ());
+
   exit(0);
 }
 

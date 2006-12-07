@@ -98,7 +98,8 @@ endif
 EXTRA_DIST +=				\
 	layout.fig			\
 	layout.eps			\
-	version.xml.in
+	version.xml.in			\
+	check.docs
 
 BUILT_EXTRA_DIST = $(man_MANS)
 
@@ -112,3 +113,5 @@ dist-hook-local:
 	for f in $(srcdir)/TEXT/* ; do				\
 	  test -f $$f && cp -p $$f $(distdir)/TEXT;		\
 	done
+
+TESTS = check.docs

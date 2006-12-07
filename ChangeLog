@@ -1,5 +1,48 @@
 2006-12-06  Behdad Esfahbod  <behdad@gnome.org>
 
+	* configure.in:
+	* pango/Makefile.am:
+	New generated public header file pango-features.h.  Currently contains
+	the version information.  In the future, can be expanded to define
+	which backends have been enabled, etc.
+
+	* pango/pango.def:
+	* pango/pango-utils.h:
+	* pango/pango-utils.c:
+	New public macros and functions: PANGO_VERSION_ENCODE(),
+	PANGO_VERSION_MAJOR, PANGO_VERSION_MINOR, PANGO_VERSION_MICRO,
+	PANGO_VERSION, PANGO_VERSION_STRING, PANGO_VERSION_CHECK(),
+	pango_version(), pango_version_string(), pango_version_check().
+
+	* docs/pango-docs.sgml:
+	* docs/pango-sections.txt:
+	* docs/tmpl/pango-version.sgml:
+	Docs for new symbols, in a new section.
+
+	* examples/renderdemo.c (show_version):
+	If run-time Pango lib version is different than the compile-time one,
+	show that one too.
+
+	* pango/pango.h:
+	#include <pango-utils.h> as well as almost all other public pango-*.h
+	headers (though, the other ones were already included indirectly).
+	The only public pango-*.h header pango.h shouldn't include are
+	pango-ot.h (which is really misnamed) and pango-modules.h (that should
+	not be needed by 99.99% users anyway).
+
+	* docs/Makefile.am:
+	* docs/check.docs: Test to check that all symbols are documented and
+	properly hooked into documentation tree.
+
+	* pango/pango.rc.in:
+	* pango/pangoft2.rc.in:
+	* pango/pangowin32.rc.in:
+	Update, reflecting some internal symbol changes.
+
+	* pango/check.defs: Improve.
+
+2006-12-06  Behdad Esfahbod  <behdad@gnome.org>
+
 	* examples/renderdemo.c (do_output): Set context language to
 	pango_language_get_default() instead of hardcoding "en-US".
 
