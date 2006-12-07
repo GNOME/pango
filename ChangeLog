@@ -1,3 +1,13 @@
+2006-12-07  Behdad Esfahbod  <behdad@gnome.org>
+
+	* pango/pango-layout-private.h:
+	* pango/pango-layout.c (pango_layout_get_extents_internal),
+	(pango_layout_get_extents), (pango_layout_clear_lines),
+	(pango_layout_line_leaked), (pango_layout_line_get_extents),
+	(pango_layout_iter_copy), (pango_layout_get_iter),
+	(pango_layout_iter_get_layout_extents):
+	Cache layout ink and logical extents.
+
 2006-12-06  Behdad Esfahbod  <behdad@gnome.org>
 
 	* configure.in:

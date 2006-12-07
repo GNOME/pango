@@ -68,9 +68,6 @@ struct _PangoLayoutIter
   PangoLayoutRun *run; /* FIXME nuke this, just keep the link */
   int index;
 
-  /* layout extents in layout coordinates */
-  PangoRectangle logical_rect;
-
   /* list of Extents for each line in layout coordinates */
   GSList *line_extents;
   GSList *line_extents_link;
@@ -124,7 +121,6 @@ struct _PangoLayoutLinePrivate
     CACHED,
     LEAKED
   } cache_status;
-
   PangoRectangle ink_rect;
   PangoRectangle logical_rect;
 };
@@ -2177,16 +2173,27 @@ static void
 pango_layout_get_extents_internal (PangoLayout    *layout,
                                    PangoRectangle *ink_rect,
                                    PangoRectangle *logical_rect,
-                                   GSList        **line_extents,
-                                   int            *real_width)
+                                   GSList        **line_extents)
 {
   GSList *line_list;
   int y_offset = 0;
   int width;
   gboolean need_width = FALSE;
-  PangoRectangle logical_rect_local;
 
   g_return_if_fail (layout != NULL);
+
+  if (ink_rect && layout->ink_rect_cached)
+    {
+      *ink_rect = layout->ink_rect;
+      ink_rect = NULL;
+    }
+  if (logical_rect && layout->logical_rect_cached)
+    {
+      *logical_rect = layout->logical_rect;
+      logical_rect = NULL;
+    }
+  if (!ink_rect && !logical_rect && !line_extents)
+    return;
 
   pango_layout_check_lines (layout);
 
@@ -2220,17 +2227,10 @@ pango_layout_get_extents_internal (PangoLayout    *layout,
     {
       PangoRectangle overall_logical;
       
-      pango_layout_get_extents (layout, NULL, &overall_logical);
+      pango_layout_get_extents_internal (layout, NULL, &overall_logical, NULL);
       width = overall_logical.width;
     }
   
-  /* if user asked for real width and we don't have the width so far, make
-   * sure we compute the logical_rect so we get the width at the end of the
-   * function.  This way we don't have to call a second get_extents().
-   */
-  if (width == -1 && real_width && !logical_rect)
-    logical_rect = &logical_rect_local;
-
   if (logical_rect)
     {
       logical_rect->x = 0;
@@ -2336,11 +2336,18 @@ pango_layout_get_extents_internal (PangoLayout    *layout,
       line_list = line_list->next;
     }
 
+  if (ink_rect)
+    {
+      layout->ink_rect = *ink_rect;
+      layout->ink_rect_cached = TRUE;
+    }
+  if (logical_rect)
+    {
+      layout->logical_rect = *logical_rect;
+      layout->logical_rect_cached = TRUE;
+    }
   if (line_extents)
     *line_extents = g_slist_reverse (*line_extents);
-
-  if (real_width)
-    *real_width = width == -1 ? logical_rect->width : width;
 }
 
 /**
@@ -2368,7 +2375,7 @@ pango_layout_get_extents (PangoLayout    *layout,
 {	  
   g_return_if_fail (layout != NULL);
 
-  pango_layout_get_extents_internal (layout, ink_rect, logical_rect, NULL, NULL);
+  pango_layout_get_extents_internal (layout, ink_rect, logical_rect, NULL);
 }
 
 /**
@@ -2494,6 +2501,8 @@ pango_layout_clear_lines (PangoLayout *layout)
       g_free (layout->log_attrs);
       layout->log_attrs = NULL;
     }
+  layout->logical_rect_cached = FALSE;
+  layout->ink_rect_cached = FALSE;
 }
 
 static void
@@ -2502,6 +2511,12 @@ pango_layout_line_leaked (PangoLayoutLine *line)
   PangoLayoutLinePrivate *private = (PangoLayoutLinePrivate *)line;
 
   private->cache_status = LEAKED;
+
+  if (line->layout)
+    {
+      line->layout->logical_rect_cached = FALSE;
+      line->layout->ink_rect_cached = FALSE;
+    }
 }
 
 
@@ -4229,6 +4244,9 @@ pango_layout_line_get_extents (PangoLayoutLine *line,
   if (!LINE_IS_VALID (line))
     return;
 
+  if (G_UNLIKELY (!ink_rect && !logical_rect))
+    return;
+
   switch (private->cache_status)
     {
     case CACHED:
@@ -4820,8 +4838,6 @@ pango_layout_iter_copy (PangoLayoutIter *iter)
   new->run = iter->run;
   new->index = iter->index;
 
-  new->logical_rect = iter->logical_rect;
-
   new->line_extents = NULL;
   new->line_extents_link = NULL;
   for (l = iter->line_extents; l; l = l->next)
@@ -4879,6 +4895,7 @@ pango_layout_get_iter (PangoLayout *layout)
 {
   int run_start_index;
   PangoLayoutIter *iter;
+  PangoRectangle logical_rect;
   
   g_return_val_if_fail (PANGO_IS_LAYOUT (layout), NULL);
   
@@ -4907,9 +4924,9 @@ pango_layout_get_iter (PangoLayout *layout)
   iter->line_extents = NULL;
   pango_layout_get_extents_internal (layout,
                                      NULL,
-                                     &iter->logical_rect,
-                                     &iter->line_extents,
-				     &iter->layout_width);
+                                     &logical_rect,
+                                     &iter->line_extents);
+  iter->layout_width = layout->width == -1 ? logical_rect.width : layout->width;
 
   iter->line_extents_link = iter->line_extents;
 
@@ -5612,14 +5629,5 @@ pango_layout_iter_get_layout_extents  (PangoLayoutIter *iter,
   if (ITER_IS_INVALID (iter))
     return;
 
-  if (ink_rect)
-    {
-      /* expensive recomputation, woo-hoo */
-      pango_layout_get_extents (iter->layout,
-                                ink_rect,
-                                NULL);
-    }
-
-  if (logical_rect)
-    *logical_rect = iter->logical_rect;
+  pango_layout_get_extents (iter->layout, ink_rect, logical_rect);
 }

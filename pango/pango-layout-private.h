@@ -52,7 +52,14 @@ struct _PangoLayout
   
   guint wrap : 2;		/* PangoWrapMode */
   guint ellipsize : 2;		/* PangoEllipsizeMode */
-  
+
+  /* some caching */
+  guint logical_rect_cached : 1;
+  guint ink_rect_cached : 1;
+  PangoRectangle logical_rect;
+  PangoRectangle ink_rect;
+
+
   gint n_chars;		        /* Total number of characters in layout */
   PangoLogAttr *log_attrs;	/* Logical attributes for layout's text */
 
