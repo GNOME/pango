@@ -1,3 +1,13 @@
+2006-12-13  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 319808 – Patch to let pango support artifical italic, bold and
+	bold italic styles for the fonts which don't have these styles.
+	Patch from James Su
+
+	* pango/pangofc-fontmap.c (pango_fc_face_describe), (create_face),
+	(pango_fc_family_list_faces): Create fake Bold, Italic, and Bold
+	Italic faces for fonts that do not have one.
+
 2006-12-08  Behdad Esfahbod  <behdad@gnome.org>
 
 	Red Hat Bug 211574: [hi/ml/si_LK] cursor naviation is wrong when
