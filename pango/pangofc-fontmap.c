@@ -86,6 +86,8 @@ struct _PangoFcFace
 
   PangoFcFamily *family;
   char *style;
+
+  guint fake : 1;
 };
 
 struct _PangoFcFamily
@@ -1684,7 +1686,7 @@ pango_fc_face_describe (PangoFontFace *face)
   FcPattern *match_pattern;
   FcPattern *result_pattern;
 
-  if (is_alias_family (fcfamily->family_name))
+  if (fcface->fake)
     {
       if (strcmp (fcface->style, "Regular") == 0)
 	return make_alias_description (fcfamily, FALSE, FALSE);
@@ -1869,11 +1871,13 @@ pango_fc_face_get_type (void)
  */
 static PangoFcFace *
 create_face (PangoFcFamily *fcfamily,
-	     const char     *style)
+	     const char     *style,
+	     gboolean       fake)
 {
   PangoFcFace *face = g_object_new (PANGO_FC_TYPE_FACE, NULL);
   face->style = g_strdup (style);
   face->family = fcfamily;
+  face->fake = fake;
 
   return face;
 }
@@ -1898,37 +1902,98 @@ pango_fc_family_list_faces (PangoFontFamily  *family,
 	  fcfamily->faces = g_new (PangoFcFace *, fcfamily->n_faces);
 
 	  i = 0;
-	  fcfamily->faces[i++] = create_face (fcfamily, "Regular");
-	  fcfamily->faces[i++] = create_face (fcfamily, "Bold");
-	  fcfamily->faces[i++] = create_face (fcfamily, "Italic");
-	  fcfamily->faces[i++] = create_face (fcfamily, "Bold Italic");
+	  fcfamily->faces[i++] = create_face (fcfamily, "Regular", TRUE);
+	  fcfamily->faces[i++] = create_face (fcfamily, "Bold", TRUE);
+	  fcfamily->faces[i++] = create_face (fcfamily, "Italic", TRUE);
+	  fcfamily->faces[i++] = create_face (fcfamily, "Bold Italic", TRUE);
 	}
       else
 	{
-	  FcObjectSet *os = FcObjectSetBuild (FC_STYLE, NULL);
+	  FcObjectSet *os = FcObjectSetBuild (FC_STYLE, FC_WEIGHT, FC_SLANT, NULL);
 	  FcPattern *pat = FcPatternBuild (NULL, 
 					   FC_FAMILY, FcTypeString, fcfamily->family_name,
 					   NULL);
-      
+
+	  enum {
+	    REGULAR,
+	    ITALIC,
+	    BOLD,
+	    BOLD_ITALIC
+	  };
+	  /* Regular, Italic, Bold, Bold Italic */
+	  gboolean has_face [4] = { FALSE, FALSE, FALSE, FALSE };
+	  PangoFcFace **faces;
+	  gint num = 0;
+
 	  fontset = FcFontList (NULL, pat, os);
-      
+
 	  FcPatternDestroy (pat);
 	  FcObjectSetDestroy (os);
-      
-	  fcfamily->n_faces = fontset->nfont;
-	  fcfamily->faces = g_new (PangoFcFace *, fcfamily->n_faces);
-	  
+
+	  /* at most we have 3 additional artifical faces */
+	  faces = g_new (PangoFcFace *, fontset->nfont + 3);
+
 	  for (i = 0; i < fontset->nfont; i++)
 	    {
-	      FcChar8 *s;
-	      FcResult res;
+	      FcChar8 *style, *font_style = NULL;
+	      int weight, slant;
 
-	      res = FcPatternGetString (fontset->fonts[i], FC_STYLE, 0, &s);
-	      if (res != FcResultMatch)
-		s = "Regular";
+	      if (FcPatternGetInteger(fontset->fonts[i], FC_WEIGHT, 0, &weight) != FcResultMatch)
+		weight = FC_WEIGHT_MEDIUM;
 
-	      fcfamily->faces[i] = create_face (fcfamily, s);
+	      if (FcPatternGetInteger(fontset->fonts[i], FC_SLANT, 0, &slant) != FcResultMatch)
+		slant = FC_SLANT_ROMAN;
+
+	      if (FcPatternGetString (fontset->fonts[i], FC_STYLE, 0, &font_style) != FcResultMatch)
+	        font_style = NULL;
+
+	      if (weight <= FC_WEIGHT_MEDIUM)
+		{
+	          if (slant == FC_SLANT_ROMAN)
+		    {
+		      has_face[REGULAR] = TRUE;
+		      style = "Regular";
+		    }
+		  else
+		    {
+		      has_face[ITALIC] = TRUE;
+		      style = "Italic";
+		    }
+		}
+	      else
+		{
+	          if (slant == FC_SLANT_ROMAN)
+		    {
+		      has_face[BOLD] = TRUE;
+		      style = "Bold";
+		    }
+		  else
+		    {
+		      has_face[BOLD_ITALIC] = TRUE;
+		      style = "Bold Italic";
+		    }
+		}
+
+	      if (!font_style)
+	        font_style = style;
+	      faces[num++] = create_face (fcfamily, font_style, FALSE);
 	    }
+
+	  if (has_face[REGULAR])
+	    {
+	      if (!has_face[ITALIC])
+		faces[num++] = create_face (fcfamily, "Italic", TRUE);
+	      if (!has_face[BOLD])
+		faces[num++] = create_face (fcfamily, "Bold", TRUE);
+
+	    }
+	  if ((has_face[REGULAR] || has_face[ITALIC] || has_face[BOLD]) && !has_face[BOLD_ITALIC])
+	    faces[num++] = create_face (fcfamily, "Bold Italic", TRUE);
+
+	  faces = g_renew (PangoFcFace *, faces, num);
+
+	  fcfamily->n_faces = num;
+	  fcfamily->faces = faces;
 
 	  FcFontSetDestroy (fontset);
 	}
