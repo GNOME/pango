@@ -1,3 +1,12 @@
+2006-12-13  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 385321 – Worst case expansion for Sinhala
+	Patch from Harshula
+
+	* modules/indic/indic-ot-class-tables.c: Change worst case expansion
+	for Sinhala from 3 to 4.  This is only superficial because Pango
+	doesn't appear to ever use the worst case expansion value.
+
 2006-12-08  Behdad Esfahbod  <behdad@gnome.org>
 
 	Red Hat Bug 211574: [hi/ml/si_LK] cursor naviation is wrong when

@@ -289,7 +289,7 @@ INDIC_OT_CLASS_TABLE_DEFINE (taml_class_table, 0x0B80, 3, TAML_SCRIPT_FLAGS, tam
 INDIC_OT_CLASS_TABLE_DEFINE (telu_class_table, 0x0C00, 3, TELU_SCRIPT_FLAGS, teluCharClasses, teluSplitTable);
 INDIC_OT_CLASS_TABLE_DEFINE (knda_class_table, 0x0C80, 4, KNDA_SCRIPT_FLAGS, kndaCharClasses, kndaSplitTable);
 INDIC_OT_CLASS_TABLE_DEFINE (mlym_class_table, 0x0D00, 3, MLYM_SCRIPT_FLAGS, mlymCharClasses, mlymSplitTable);
-INDIC_OT_CLASS_TABLE_DEFINE (sinh_class_table, 0x0D80, 3, SINH_SCRIPT_FLAGS, sinhCharClasses, sinhSplitTable);
+INDIC_OT_CLASS_TABLE_DEFINE (sinh_class_table, 0x0D80, 4, SINH_SCRIPT_FLAGS, sinhCharClasses, sinhSplitTable);
 
 const IndicOTSplitMatra *indic_ot_get_split_matra(const IndicOTClassTable *class_table, IndicOTCharClass char_class)
 {
