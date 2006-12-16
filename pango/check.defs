@@ -7,7 +7,7 @@ status=0
 
 get_pango_syms='nm "$so" | grep " T " | cut -d" " -f3'
 if [ "`uname -s`" = "Linux" ]; then
-	get_pango_syms='objdump -t "$so" | sed -n "/.*g *F *\.\(opd\|text\).*\(pango_.*\)$/s//\2/p"'
+	get_pango_syms='objdump -t "$so" | sed -n "/.*g *F *\.\(opd\|text\).* \(.*pango_.*\)$/s//\2/p"'
 fi
 
 for def in $srcdir/*.def; do

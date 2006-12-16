@@ -1,3 +1,10 @@
+2006-12-15  Frederic Crozat  <fcrozat@mandriva.com>
+
+	Bug 385478 – Fix tests on OPD platform
+
+	* pango/check.defs: Fix tests on OPD platform to report correct
+	symbols name.
+
 2006-12-13  Behdad Esfahbod  <behdad@gnome.org>
 
 	Bug 319808 – Patch to let pango support artifical italic, bold and
