@@ -196,6 +196,8 @@ pango_cairo_renderer_draw_glyphs (PangoRenderer     *renderer,
   int x_position = 0;
   cairo_glyph_t *cairo_glyphs;
   cairo_glyph_t stack_glyphs[MAX_STACK];
+  double base_x = crenderer->x_offset + (double)x / PANGO_SCALE;
+  double base_y = crenderer->y_offset + (double)y / PANGO_SCALE;
 
   cairo_save (crenderer->cr);
   if (!crenderer->do_path)
@@ -209,10 +211,10 @@ pango_cairo_renderer_draw_glyphs (PangoRenderer     *renderer,
 
 	  if (gi->glyph != PANGO_GLYPH_EMPTY)
 	    {
-	      double cx = crenderer->x_offset +
-			  (double)(x + x_position + gi->geometry.x_offset) / PANGO_SCALE;
-	      double cy = crenderer->y_offset +
-			  (double)(y + gi->geometry.y_offset) / PANGO_SCALE;
+	      double cx = base_x + (double)(x_position + gi->geometry.x_offset) / PANGO_SCALE;
+	      double cy = gi->geometry.y_offset == 0 ?
+			  base_y :
+			  base_y + (double)(gi->geometry.y_offset) / PANGO_SCALE;
 
 	      _pango_cairo_renderer_draw_unknown_glyph (crenderer, font, gi, cx, cy);
 	    }	  
@@ -234,10 +236,10 @@ pango_cairo_renderer_draw_glyphs (PangoRenderer     *renderer,
 
       if (gi->glyph != PANGO_GLYPH_EMPTY)
         {
-          double cx = crenderer->x_offset +
-		      (double)(x + x_position + gi->geometry.x_offset) / PANGO_SCALE;
-          double cy = crenderer->y_offset +
-		      (double)(y + gi->geometry.y_offset) / PANGO_SCALE;
+          double cx = base_x + (double)(x_position + gi->geometry.x_offset) / PANGO_SCALE;
+          double cy = gi->geometry.y_offset == 0 ?
+		      base_y :
+		      base_y + (double)(gi->geometry.y_offset) / PANGO_SCALE;
 
           if (gi->glyph & PANGO_GLYPH_UNKNOWN_FLAG)
 	    _pango_cairo_renderer_draw_unknown_glyph (crenderer, font, gi, cx, cy);
