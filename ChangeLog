@@ -1,3 +1,15 @@
+2006-12-20  Changwoo Ryu  <cwryu@debian.org>
+
+	* modules/hangul/hangul-defs.h:
+	* modules/hangul/hangul-fc.c
+	(hangul_engine_shape): Optimizing for non-old Hangul users; no
+	more waste of decompose and compose.
+	(render_syllable): The string argument is now in UTF-8.	Normalization
+	is now done only when the entire sequence is equivalent to a
+	precomposed syllable.
+	(render_isolated_tone): Conditioned out tone mark's dummy base
+	character drawing.
+
 2006-12-17  Behdad Esfahbod  <behdad@gnome.org>
 
 	* pango/pangocairo-render.c (pango_cairo_renderer_draw_glyphs):

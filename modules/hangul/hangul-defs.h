@@ -1,7 +1,7 @@
 /* Pango
  * hangul-defs.h:
  *
- * Copyright (C) 2002-2005 Changwoo Ryu
+ * Copyright (C) 2002-2006 Changwoo Ryu
  * Author: Changwoo Ryu <cwryu@debian.org>
  *
  * This library is free software; you can redistribute it and/or
@@ -69,6 +69,19 @@
 
 /* if a syllable has a jongseong */
 #define S_HAS_T(s) (((s) - SBASE) % TCOUNT)
+
+/* non hangul */
+#define IS_HANGUL(wc)	(IS_S(wc) || IS_JAMO(wc) || IS_M(wc))
+
+/* syllable boundary condition */
+#define IS_BOUNDARY(prev,next)					\
+	((!IS_L(prev) && IS_S(wc)) ||				\
+	 !IS_HANGUL(next) ||					\
+	 (IS_S(prev) && S_HAS_T(prev) && IS_L(next)) ||		\
+	 (IS_T(prev) && (IS_L(next) || IS_V(next))) ||		\
+	 (IS_S(prev) && !S_HAS_T(prev) && IS_L(next)) ||	\
+	 (IS_V(prev) && IS_L(next)) ||				\
+	 IS_M(prev))
 
 /* composing/decomposing */
 #define S_FROM_LVT(l,v,t)	(SBASE + (((l) - LBASE) * VCOUNT + ((v) - VBASE)) * TCOUNT + ((t) - TBASE))

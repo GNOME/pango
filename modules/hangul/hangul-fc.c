@@ -1,7 +1,7 @@
 /* Pango
  * hangul-fc.c: Hangul shaper for FreeType based backends
  *
- * Copyright (C) 2002-2004 Changwoo Ryu
+ * Copyright (C) 2002-2006 Changwoo Ryu
  * Author: Changwoo Ryu <cwryu@debian.org>
  *
  * This library is free software; you can redistribute it and/or
@@ -127,8 +127,6 @@ set_glyph_tone (PangoFont *font, PangoGlyphString *glyphs, int i,
 
 #define find_char(font,wc) \
     pango_fc_font_get_glyph((PangoFcFont *)font, wc)
-#define get_unknown_glyph(font,wc) \
-    PANGO_GET_UNKNOWN_GLYPH ( wc)
 
 static void
 render_tone (PangoFont *font, gunichar tone, PangoGlyphString *glyphs,
@@ -152,7 +150,7 @@ render_tone (PangoFont *font, gunichar tone, PangoGlyphString *glyphs,
         }
       else 
         set_glyph (font, glyphs, *n_glyphs, cluster_offset,
-		   get_unknown_glyph (font, tone));
+		   PANGO_GET_UNKNOWN_GLYPH (tone));
     }
   (*n_glyphs)++;
 }
@@ -164,6 +162,7 @@ static void
 render_isolated_tone (PangoFont *font, gunichar tone, PangoGlyphString *glyphs,
 		      int *n_glyphs, int cluster_offset)
 {
+#if 0 /* FIXME: what kind of hack is it?  it draws dummy glyphs.  */
   /* Find a base character to render the mark on
    */
   int index = find_char (font, 0x25cc);	/* DOTTED CIRCLE */
@@ -172,71 +171,151 @@ render_isolated_tone (PangoFont *font, gunichar tone, PangoGlyphString *glyphs,
   if (!index)
     index = find_char (font, ' ');      /* Space */
   if (!index)				/* Unknown glyph box with 0000 in it */
-    index = find_char (font, get_unknown_glyph (font, 0));
+    index = find_char (font, PANGO_GET_UNKNOWN_GLYPH (0));
 
   /* Add the base character
    */
   pango_glyph_string_set_size (glyphs, *n_glyphs + 1);
   set_glyph (font, glyphs, *n_glyphs, cluster_offset, index);
   (*n_glyphs)++;
+#endif
 
-  /* And the tone mrak
+  /* And the tone mark
    */
   render_tone(font, tone, glyphs, n_glyphs, cluster_offset);
 }
 
 static void
-render_syllable (PangoFont *font, gunichar *text, int length,
+render_syllable (PangoFont *font, const char *str, int length,
 		 PangoGlyphString *glyphs, int *n_glyphs, int cluster_offset)
 {
   int n_prev_glyphs = *n_glyphs;
   int index;
-  gunichar wc, tone;
-  int i, j, composed;
+  gunichar wc = 0, tone = 0, text[4];
+  int i, j, composed = 0;
+  const char *p;
 
-  if (IS_M (text[length - 1]))
+  /* Normalize it only when the entire sequence is equivalent to a
+   * precomposed syllable. It's usually better than prefix
+   * normalization both for poor-featured fonts and for smart fonts.
+   * I have seen no smart font which can render S+T as a syllable
+   * form.
+   */
+  
+  if (length == 3 || length == 4)
     {
-      tone = text[length - 1];
-      length--;
-    }
-  else
-    tone = 0;
+      p = str;
+      text[0] = g_utf8_get_char(p);
+      p = g_utf8_next_char(p);
+      text[1] = g_utf8_get_char(p);
+      p = g_utf8_next_char(p);
+      text[2] = g_utf8_get_char(p);
 
-  if (length >= 3 && IS_L_S(text[0]) && IS_V_S(text[1]) && IS_T_S(text[2]))
-    composed = 3;
-  else if (length >= 2 && IS_L_S(text[0]) && IS_V_S(text[1]))
-    composed = 2;
-  else
-    composed = 0;
+      if (length == 4 && !IS_M(g_utf8_get_char(g_utf8_next_char(p))))
+	goto lvt_out;		/* draw the tone mark later */
+      
+      if (IS_L_S(text[0]) && IS_V_S(text[1]) &&  IS_T_S(text[2]))
+	{
+	  composed = 3;
+	  wc = S_FROM_LVT(text[0], text[1], text[2]);
+	  str = g_utf8_next_char(p);
+	  goto normalize_out;
+	}
+    }
+ lvt_out:
+
+  if (length == 2 || length == 3)
+    {
+      p = str;
+      text[0] = g_utf8_get_char(p);
+      p = g_utf8_next_char(p);
+      text[1] = g_utf8_get_char(p);
+
+      if (length == 3 && !IS_M(g_utf8_get_char(g_utf8_next_char(p))))
+	goto lv_out;		/* draw the tone mark later */
+      if (IS_L_S(text[0]) && IS_V_S(text[1]))
+	{
+	  composed = 2;
+	  wc = S_FROM_LV(text[0], text[1]);
+	  str = g_utf8_next_char(p);
+	}
+      else if (IS_S(text[0] && !S_HAS_T(text[0]) && IS_T_S(text[1])))
+	{
+	  composed = 2;
+	  wc = text[0] + (text[1] - TBASE);
+	  str = g_utf8_next_char(p);
+	  goto normalize_out;
+	}
+    }
+ lv_out:
+ normalize_out:
 
   if (composed)
     {
-      if (composed == 3)
-	wc = S_FROM_LVT(text[0], text[1], text[2]);
-      else
-	wc = S_FROM_LV(text[0], text[1]);
       index = find_char (font, wc);
       pango_glyph_string_set_size (glyphs, *n_glyphs + 1);
       if (!index)
 	set_glyph (font, glyphs, *n_glyphs, cluster_offset,
-		   get_unknown_glyph (font, wc));
+		   PANGO_GET_UNKNOWN_GLYPH (wc));
       else
 	set_glyph (font, glyphs, *n_glyphs, cluster_offset, index);
       (*n_glyphs)++;
-      text += composed;
       length -= composed;
     }
 
   /* Render the remaining text as uncomposed forms as a fallback.  */
-  for (i = 0; i < length; i++)
+  for (i = 0; i < length; i++, str = g_utf8_next_char(str))
     {
       int jindex;
       int oldlen;
 
-      if (text[i] == LFILL || text[i] == VFILL)
+      wc = g_utf8_get_char(str);
+
+      if (wc == LFILL || wc == VFILL)
 	continue;
 
-      index = find_char (font, text[i]);
+      if (IS_M(wc))
+	{
+	  tone = wc;
+	  break;
+	}
+
+      if (IS_S(wc))
+	{
+	  oldlen = *n_glyphs;
+
+	  text[0] = L_FROM_S(wc);
+	  text[1] = V_FROM_S(wc);
+	  if (S_HAS_T(wc))
+	    {
+	      text[2] = T_FROM_S(wc);
+	      composed = 3;
+	    }
+	  else
+	      composed = 2;
+
+	  for (j = 0; j < composed; j++)
+	    {
+	      index = find_char (font, text[j]);
+	      if (index)
+		{
+		  pango_glyph_string_set_size (glyphs, *n_glyphs + 1);
+		  set_glyph (font, glyphs, *n_glyphs, cluster_offset, index);
+		  (*n_glyphs)++;
+		}
+	      else
+		goto decompose_cancel;
+	    }
+
+	  continue;
+
+	decompose_cancel:
+	  /* The font doesn't have jamos.  Cancel it. */
+	  *n_glyphs = oldlen;
+	  pango_glyph_string_set_size (glyphs, *n_glyphs);
+	}
+
+      index = find_char (font, wc);
       if (index)
 	{
 	  pango_glyph_string_set_size (glyphs, *n_glyphs + 1);
@@ -247,7 +326,7 @@ render_syllable (PangoFont *font, gunichar *text, int length,
 
       /* This font has no glyphs on the Hangul Jamo area!  Find a
 	 fallback from the Hangul Compatibility Jamo area.  */
-      jindex = text[i] - LBASE;
+      jindex = wc - LBASE;
       oldlen = *n_glyphs;
       for (j = 0; j < 3 && (__jamo_to_ksc5601[jindex][j] != 0); j++)
 	{
@@ -259,7 +338,7 @@ render_syllable (PangoFont *font, gunichar *text, int length,
 	      *n_glyphs = oldlen;
 	      pango_glyph_string_set_size (glyphs, *n_glyphs + 1);
 	      set_glyph (font, glyphs, *n_glyphs, cluster_offset,
-			 get_unknown_glyph (font, text[i]));
+			 PANGO_GET_UNKNOWN_GLYPH (text[i]));
 	      (*n_glyphs)++;
 	      break;
 	    }
@@ -270,11 +349,11 @@ render_syllable (PangoFont *font, gunichar *text, int length,
     }
   if (n_prev_glyphs == *n_glyphs)
     {
-      index = find_char (font, 0x3164);
+      index = find_char (font, 0x3164);	/* U+3164 HANGUL FILLER */
       pango_glyph_string_set_size (glyphs, *n_glyphs + 1);
       if (!index)
 	set_glyph (font, glyphs, *n_glyphs, cluster_offset,
-		   get_unknown_glyph (font, index));
+		   PANGO_GET_UNKNOWN_GLYPH (index));
       else
 	set_glyph (font, glyphs, *n_glyphs, cluster_offset, index);
       glyphs->log_clusters[*n_glyphs] = cluster_offset;
@@ -303,7 +382,7 @@ render_basic (PangoFont *font, gunichar wc,
       if (index)
 	set_glyph (font, glyphs, *n_glyphs, cluster_offset, index);
       else
-	set_glyph (font, glyphs, *n_glyphs, cluster_offset, get_unknown_glyph (font, wc));
+	set_glyph (font, glyphs, *n_glyphs, cluster_offset, PANGO_GET_UNKNOWN_GLYPH (wc));
     }
   (*n_glyphs)++;
 }
@@ -316,16 +395,14 @@ hangul_engine_shape (PangoEngineShape *engine,
 		     const PangoAnalysis *analysis,
 		     PangoGlyphString *glyphs)
 {
-  int n_chars, n_glyphs;
+  int n_chars = g_utf8_strlen (text, length);
+  int n_glyphs;
   int i;
   const char *p, *start;
 
-  gunichar jamos_static[8];
-  gint max_jamos = G_N_ELEMENTS (jamos_static);
-  gunichar *jamos = jamos_static;
   int n_jamos;
+  gunichar prev = 0;
 
-  n_chars = g_utf8_strlen (text, length);
   n_glyphs = 0;
   start = p = text;
   n_jamos = 0;
@@ -337,47 +414,25 @@ hangul_engine_shape (PangoEngineShape *engine,
       wc = g_utf8_get_char (p);
 
       /* Check syllable boundaries. */
-      if (n_jamos)
+      if (n_jamos && IS_BOUNDARY (prev, wc))
 	{
-	  gunichar prev = jamos[n_jamos - 1];
-	  if ((!IS_JAMO (wc) && !IS_S (wc) && !IS_M (wc)) ||
-	      (!IS_L (prev) && IS_S (wc)) ||
-	      (IS_T (prev) && IS_L (wc)) ||
-	      (IS_V (prev) && IS_L (wc)) ||
-	      (IS_T (prev) && IS_V (wc)) ||
-	      IS_M (prev))
-	    {
-	      /* Draw a syllable with these jamos. */
-	      render_syllable (font, jamos, n_jamos, glyphs,
-			       &n_glyphs, start - text);
-	      n_jamos = 0;
-	      start = p;
-	    }
-	}
-	  
-      if (n_jamos >= max_jamos - 3)
-	{
-	  max_jamos += 8;	/* at most 3 for each syllable code (L+V+T) */
-	  if (jamos == jamos_static)
-	    {
-	      jamos = g_new (gunichar, max_jamos);
-	      memcpy (jamos, jamos_static, n_jamos*sizeof(gunichar));
-	    }
+	  if (n_jamos == 1 && IS_S (prev))
+	    /* common case which the most people use */
+	    render_basic (font, prev, glyphs, &n_glyphs, start - text);
 	  else
-	    jamos = g_renew (gunichar, jamos, max_jamos);
+	    /* possibly complex composition */
+	    render_syllable (font, start, n_jamos, glyphs,
+			     &n_glyphs, start - text);
+	  n_jamos = 0;
+	  start = p;
 	}
 
-      if (!IS_JAMO (wc) && !IS_S (wc) && !IS_M (wc))
+      prev = wc;
+
+      if (!IS_HANGUL (wc))
 	{
 	  render_basic (font, wc, glyphs, &n_glyphs, start - text);
 	  start = g_utf8_next_char (p);
-	}
-      else if (IS_S (wc))
-	{
-	  jamos[n_jamos++] = L_FROM_S (wc);
-	  jamos[n_jamos++] = V_FROM_S (wc);
-	  if (S_HAS_T (wc))
-	    jamos[n_jamos++] = T_FROM_S (wc);
 	}
       else if (IS_M (wc) && !n_jamos)
 	{
@@ -386,16 +441,13 @@ hangul_engine_shape (PangoEngineShape *engine,
 	  start = g_utf8_next_char (p);
 	}
       else
-	jamos[n_jamos++] = wc;
+	n_jamos++;
       p = g_utf8_next_char (p);
     }
 
-  if (n_jamos != 0)
-    render_syllable (font, jamos, n_jamos, glyphs, &n_glyphs,
+  if (n_jamos > 0)
+    render_syllable (font, start, n_jamos, glyphs, &n_glyphs,
 		     start - text);
-
-  if (jamos != jamos_static)
-    g_free(jamos);
 }
 
 static void
