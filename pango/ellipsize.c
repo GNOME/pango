@@ -723,6 +723,7 @@ _pango_layout_line_ellipsize (PangoLayoutLine *line,
 			      PangoAttrList   *attrs)
 {
   EllipsizeState state;
+  int goal_width;
 
   if (line->layout->ellipsize == PANGO_ELLIPSIZE_NONE ||
       line->layout->width < 0)
@@ -730,12 +731,16 @@ _pango_layout_line_ellipsize (PangoLayoutLine *line,
 
   init_state (&state, line, attrs);
 
-  if (state.total_width <= state.layout->width)
+  goal_width = state.layout->width;
+  if (state.layout->indent > 0 && state.layout->alignment != PANGO_ALIGN_CENTER)
+    goal_width -= state.layout->indent;
+
+  if (state.total_width <= goal_width)
     goto out;
 
   find_initial_span (&state);
 
-  while (current_width (&state) > state.layout->width)
+  while (current_width (&state) > goal_width)
     {
       if (!remove_one_span (&state))
 	break;

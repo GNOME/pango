@@ -1,3 +1,11 @@
+2006-12-19  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 326099 – Setting width, indentation and ellipsizing doesn't work
+	as I would expect
+
+	* pango/ellipsize.c (_pango_layout_line_ellipsize): Account for
+	indentation when deciding what width to ellipsize for.
+
 2006-12-13  Behdad Esfahbod  <behdad@gnome.org>
 
 	Bug 319808 – Patch to let pango support artifical italic, bold and
