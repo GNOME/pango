@@ -2064,7 +2064,7 @@ get_alignment (PangoLayout     *layout,
 {
   PangoAlignment alignment = layout->alignment;
 
-  if (line->layout->auto_dir &&
+  if (alignment != PANGO_ALIGN_CENTER && line->layout->auto_dir &&
       direction_simple (line->resolved_dir) ==
       -direction_simple (pango_context_get_base_dir (layout->context)))
     {

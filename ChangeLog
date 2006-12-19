@@ -1,3 +1,14 @@
+2006-12-19  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 326099 – Setting width, indentation and ellipsizing doesn't work
+	as I would expect
+
+	* pango/ellipsize.c (_pango_layout_line_ellipsize): Account for
+	indentation when deciding what width to ellipsize for.
+
+	* pango/pango-layout.c (get_alignment): Don't bother about
+	conditioning on the line direction for center alignment.
+
 2006-12-20  Changwoo Ryu  <cwryu@debian.org>
 
 	* modules/hangul/hangul-defs.h:
