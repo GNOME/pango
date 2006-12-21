@@ -1,3 +1,11 @@
+2006-12-20  Behdad Esfahbod  <behdad@gnome.org>
+
+	* === Released 1.15.2 ===
+
+	* configure.in: Version 1.15.2
+
+	* NEWS: Updated.
+
 2006-12-19  Behdad Esfahbod  <behdad@gnome.org>
 
 	Bug 326099 – Setting width, indentation and ellipsizing doesn't work
@@ -200,7 +208,7 @@
 	* pango/pango-renderer.c (pango_renderer_draw_layout):
 	* pango/pango.def:
 	Add new functions:
-		pango_layout_iter_get_line_readonly()
+		pango_layout_get_line_readonly()
 		pango_layout_get_lines_readonly()
 		pango_layout_iter_get_line_readonly()
 		pango_layout_iter_get_run_readonly()

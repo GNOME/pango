@@ -1,3 +1,105 @@
+Overview of changes between 1.15.1 and 1.15.2
+==============================================
+* Engines:
+  - Improved Hangul shaper engine
+  - Improved Indic shaper and language engines
+  - Require libthai >= 0.1.7 for the Thai language engine
+
+* Optimizations:
+  - Avoid some floating-point operations.  Should cut the number of float
+    ops per expose event in pangocairo to a half.
+  - Cache ink and logical extents for PangoLayout
+
+* New Public API:
+
+  - New, generated, public header file pango-features.h.  Included by
+    pango.h.  Currently contains the version information.  In the future,
+    can be expanded to define which backends have been enabled, etc.
+
+  - Public macros and functions for compile- and run-time version checking:
+
+	PANGO_VERSION_ENCODE()
+	PANGO_VERSION_MAJOR
+	PANGO_VERSION_MINOR
+	PANGO_VERSION_MICRO
+	PANGO_VERSION
+	PANGO_VERSION_STRING
+	PANGO_VERSION_CHECK()
+	pango_version()
+	pango_version_string()
+	pango_version_check()
+
+    The scheme chosen here is a mixture of approaches taken by glib and cairo.
+    The advantage over the glib model is that there are no public variables,
+    but it still gives access to a string and numerical representation of the
+    version number at compile- and run-time.
+    
+    The macros enable conditional compilation of code depending on newer Pango
+    APIs, while the runtime functions allow refusing to run against old
+    versions of the library.
+
+  - New, readonly, version of methods that give read/write access to the
+    internals of PangoLayout:
+
+	pango_layout_get_line_readonly()
+	pango_layout_get_lines_readonly()
+	pango_layout_iter_get_line_readonly()
+	pango_layout_iter_get_run_readonly()
+
+    These should be used when you do not intend to modify the run/line,
+    which is most of the time the case.  The only exception known to me
+    is Firefox that adjusts glyph widths to do justification.  Most other
+    uses that do not write to the returned structs (or structs accessible from
+    them) should be ported to the new readonly API to benefit from major
+    optimizations (in this case, line extents caching).  The list includes,
+    but is not limited to, Gtk+, SWT, ClassPath, gnome-applets, libgnomeprint,
+    xmlroff, GtkMathView, Conglomerate, Dia, Anjuta, wxWindows, The Gimp, 
+    and various other applications/libraries:
+
+      http://www.google.com/codesearch?hl=en&q=+pango_layout_(iter_)%3Fget_(lines%3F%7Crun)%5B%5E_%5D&start=50&sa=N
+
+    Worth noting here is that, many uses of pango_layout_get_lines() can be
+    replaced by a pango_layout_get_iter() that works both more elegantly and
+    more efficiently.  The versioning macros introduced in this release can be
+    used to make code use these new symbols without breaking compilation
+    against older Pango (though, such code compiled with the new Pango cannot
+    be run against an older Pango).
+
+  - pango_language_get_default(): Note that, this does not make Pango
+    fallback to the default language automatically (yet), but the user can
+    use this function to set the default language of the locale on a context:
+
+	  pango_context_set_language (context, pango_language_get_default());
+
+    This essentially deprecates gtk_get_default_language().  The pango-view
+    tool has been updated to use this feature, so it now respects $LANG when
+    choosing fonts.
+
+  - pango_color_to_string().
+
+* Bugs fixed in this release:
+	Bug 326099 – Setting width, indentation and ellipsizing doesn't work
+		     as I would expect
+	Bug 385478 – Fix tests on OPD platform
+	Bug 319808 – Patch to let pango support artifical italic, bold and
+		     bold italic styles for the fonts which don't have these styles.
+		     Patch from James Su
+	Bug 385321 – Worst case expansion for Sinhala
+		     Patch from Harshula
+	Red Hat Bug 211574: [hi/ml/si_LK] cursor naviation is wrong when
+		     using ZWJ (200d)
+		     Patch from LingNing Zhang
+	Red Hat Bug 216424: [te_IN] pango - consonant + dependent vowel (ai)
+		     Composed char is not rendering properly
+		     Patch from LingNing Zhang
+	Bug 373856 – Wish: Function to convert a GdkColor to a string
+		     Patch from Matthew Barnes
+	Red Hat Bug 216850: Issue in combination with vowels (ml_IN)
+		     Patch from LingNing Zhang
+	Bug 382437 – tests/testboundaries fails
+	Bug 333982 – Fallback to $LANG whenever NULL PangoLanguage is used
+		     Patch from LingNing Zhang
+
 Overview of changes between 1.15.0 and 1.15.1
 ==============================================
 * Add Thai langauage engine. (currently makes tests/testboundary fail.)
