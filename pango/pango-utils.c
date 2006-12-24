@@ -1142,9 +1142,29 @@ _pango_get_lc_ctype (void)
  * Returns the #PangoLanguage for the current locale of the process.
  * Note that this can change over the life of an application.
  *
+ * On Unix systems, this is the return value is derived from
+ * <literal>setlocale(LC_CTYPE, NULL)</literal>, and the user can
+ * affect this through the environment variables LC_ALL, LC_CTYPE or
+ * LANG (checked in that order). The locale string typically is in
+ * the form lang_COUNTRY, where lang is an ISO-639 language code, and
+ * COUNTRY is an ISO-3166 country code. For instance, sv_FI for
+ * Swedish as written in Finland or pt_BR for Portuguese as written in
+ * Brazil.
+ * 
+ * On Windows, the C library does not use any such environment
+ * variables, and setting them won't affect the behaviour of functions
+ * like ctime(). The user sets the locale through the Regional Options 
+ * in the Control Panel. The C library (in the setlocale() function) 
+ * does not use country and language codes, but country and language 
+ * names spelled out in English. 
+ * However, this function does check the above environment
+ * variables, and does return a Unix-style locale string based on
+ * either said environment variables or the thread's current locale.
+ *
  * Your application should call <literal>setlocale (LC_ALL, "");</literal>
  * for the user settings to take effect.  Gtk+ does this in its initialization
- * functions.  See <literal>man setlocale</literal> for details.
+ * functions automatically (by calling gtk_set_locale()).
+ * See <literal>man setlocale</literal> for more details.
  * 
  * Return value: the default language as a #PangoLanguage, must not be
  *               freed.

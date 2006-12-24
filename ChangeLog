@@ -1,3 +1,7 @@
+2006-12-23  Behdad Esfahbod  <behdad@gnome.org>
+
+	* pango/pango-utils.c (pango_language_get_default): Improve docs.
+
 2006-12-20  Behdad Esfahbod  <behdad@gnome.org>
 
 	* === Released 1.15.2 ===
