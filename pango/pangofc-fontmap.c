@@ -1704,7 +1704,10 @@ pango_fc_face_describe (PangoFontFace *face)
 				  NULL);
 
   g_assert (match_pattern);
-  
+
+  FcConfigSubstitute (NULL, match_pattern, FcMatchPattern);
+  FcDefaultSubstitute (match_pattern);
+
   result_pattern = FcFontMatch (NULL, match_pattern, &res);
   if (result_pattern)
     {

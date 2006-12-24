@@ -100,6 +100,8 @@ load_fallback_face (PangoFT2Font *ft2font,
 			 FC_PIXEL_SIZE, FcTypeDouble, (double)ft2font->size / PANGO_SCALE,
 			 NULL);
   
+  _pango_ft2_font_map_default_substitute (fcfont->fontmap, sans);
+
   matched = FcFontMatch (NULL, sans, &result);
   
   if (FcPatternGetString (matched, FC_FILE, 0, &filename2) != FcResultMatch)

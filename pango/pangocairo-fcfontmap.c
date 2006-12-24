@@ -94,8 +94,9 @@ pango_cairo_fc_font_map_context_substitute (PangoFcFontMap *fcfontmap,
 {
   FcConfigSubstitute (NULL, pattern, FcMatchPattern);
 
-  cairo_ft_font_options_substitute (_pango_cairo_context_get_merged_font_options (context),
-				    pattern);
+  if (context)
+    cairo_ft_font_options_substitute (_pango_cairo_context_get_merged_font_options (context),
+				      pattern);
   
   FcDefaultSubstitute (pattern);
 }
