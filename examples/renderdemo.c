@@ -588,7 +588,7 @@ parse_options (int argc, char *argv[])
     {"font",		0, 0, G_OPTION_ARG_STRING,			&opt_font,
      "Set the font description",			       "description"},
     {"gravity",		0, 0, G_OPTION_ARG_CALLBACK,			&parse_gravity,
-     "Gravity",					"south/east/north/west/auto"},
+     "Gravity: glyph rotation",			"south/east/north/west/auto"},
     {"header",		0, 0, G_OPTION_ARG_NONE,			&opt_header,
      "Display the options in the output",				NULL},
     {"hinting",		0, 0, G_OPTION_ARG_CALLBACK,			&parse_hinting,
