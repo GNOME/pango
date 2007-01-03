@@ -323,6 +323,14 @@ render_syllable (PangoFont *font, const char *str, int length,
 	  (*n_glyphs)++;
 	  continue;
 	}
+      else if (IS_S(wc))
+        {
+	  pango_glyph_string_set_size (glyphs, *n_glyphs + 1);
+	  set_glyph (font, glyphs, *n_glyphs, cluster_offset,
+		     PANGO_GET_UNKNOWN_GLYPH (wc));
+	  (*n_glyphs)++;
+	  continue;
+	}
 
       /* This font has no glyphs on the Hangul Jamo area!  Find a
 	 fallback from the Hangul Compatibility Jamo area.  */
@@ -445,7 +453,9 @@ hangul_engine_shape (PangoEngineShape *engine,
       p = g_utf8_next_char (p);
     }
 
-  if (n_jamos > 0)
+  if (n_jamos == 1 && IS_S (prev))
+    render_basic (font, prev, glyphs, &n_glyphs, start - text);
+  else if (n_jamos > 0)
     render_syllable (font, start, n_jamos, glyphs, &n_glyphs,
 		     start - text);
 }

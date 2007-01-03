@@ -1,3 +1,18 @@
+2007-01-03  Changwoo Ryu  <cwryu@debian.org>
+
+	Bug 388702 - Crash when there's no Hangul glyph in the font.
+	
+	* modules/hangul/hangul-fc.c (render_syllable): Do not try to
+	render unknown syllable glyphs as jamos.
+
+	* modules/hangul/hangul-fc.c (hangul_engine_shape): Check if the
+	remaining string is a syllable.
+
+	Bug 388581 - Every last Hangul syllable is decomposed to jamos.
+
+	* modules/hangul/hangul-fc.c (hangul_engine_shape): Check if the
+	remaining string is a syllable.
+
 2007-01-03  Behdad Esfahbod  <behdad@gnome.org>
 
 	Bug 390877 – Don't feed pango-features.h to glib-mkenums
