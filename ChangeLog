@@ -1,3 +1,10 @@
+2007-01-03  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 390877 – Don't feed pango-features.h to glib-mkenums
+	Patch from Yevgen Muntyan
+
+	* pango/Makefile.am: Move pango-features.h to pangoinclude_HEADERS.
+
 2006-12-23  Behdad Esfahbod  <behdad@gnome.org>
 
 	Bug 384543 – FcFontMatch misuse
@@ -12,13 +19,6 @@
 	* pango/pangocairo-fcfontmap.c
 	(pango_cairo_fc_font_map_context_substitute):
 	Handle the case of context == NULL.
-
-2006-12-23  Behdad Esfahbod  <behdad@gnome.org>
-
-	Patch from Eugeniy Meshcheryakov
-
-	* pango/pangofc-fontmap.c (pango_fc_face_describe):
-	* pango/pangoft2.c (load_fallback_face):
 
 2006-12-23  Behdad Esfahbod  <behdad@gnome.org>
 

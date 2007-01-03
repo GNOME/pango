@@ -101,7 +101,6 @@ pango_headers =		   \
 	pango-context.h	   \
 	pango-coverage.h   \
 	pango-engine.h	   \
-	pango-features.h   \
 	pango-font.h       \
 	pango-fontmap.h	   \
 	pango-fontset.h    \
@@ -120,6 +119,7 @@ pango_headers =		   \
 
 pangoinclude_HEADERS =	   \
 	$(pango_headers)   \
+	pango-features.h   \
 	pango-enum-types.h
 
 pango-enum-types.h: s-enum-types-h
