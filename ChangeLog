@@ -1,5 +1,10 @@
 2007-01-04  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango/pango-utils.c: Improve docs, and mention
+	g_unichar_iszerowidth().
+
+2007-01-04  Behdad Esfahbod  <behdad@gnome.org>
+
 	Part of Bug 332266 – gdk_draw_layout fails for coordinates >= 2^21
 
 	* pango/pango-types.h:
