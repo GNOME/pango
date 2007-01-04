@@ -86,6 +86,11 @@ G_CONST_RETURN char *   pango_get_lib_subdirectory (void);
 
 #endif /* PANGO_ENABLE_BACKEND */
 
+/* Hint line position and thickness.
+ */
+void pango_quantize_line_geometry (int *thickness,
+				   int *position);
+
 /* A routine from fribidi that we either wrap or provide ourselves.
  */
 guint8 * pango_log2vis_get_embedding_levels (const gchar    *text,

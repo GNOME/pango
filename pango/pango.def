@@ -86,6 +86,7 @@ EXPORTS
 	pango_engine_get_type
 	pango_engine_lang_get_type
 	pango_engine_shape_get_type
+	pango_extents_to_pixels
 	pango_find_base_dir
 	pango_find_map
 	pango_find_paragraph_boundary
@@ -287,6 +288,10 @@ EXPORTS
 	pango_matrix_rotate
 	pango_matrix_scale
 	pango_matrix_to_gravity
+	pango_matrix_transform_distance
+	pango_matrix_transform_pixel_rectangle
+	pango_matrix_transform_point
+	pango_matrix_transform_rectangle
 	pango_matrix_translate
 	pango_module_register
 	pango_parse_markup
@@ -343,6 +348,8 @@ EXPORTS
 	pango_trim_string
 	pango_underline_get_type
 	pango_unichar_direction
+	pango_units_from_double
+	pango_units_to_double
 	pango_variant_get_type
 	pango_version
 	pango_version_check

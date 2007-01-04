@@ -73,11 +73,14 @@ PANGO_SCALE
 PANGO_PIXELS
 PANGO_PIXELS_FLOOR
 PANGO_PIXELS_CEIL
+pango_units_to_double
+pango_units_from_double
 PangoRectangle
 PANGO_ASCENT
 PANGO_DESCENT
 PANGO_LBEARING
 PANGO_RBEARING
+pango_extents_to_pixels
 PangoMatrix
 PANGO_TYPE_MATRIX
 PANGO_MATRIX_INIT
@@ -87,6 +90,10 @@ pango_matrix_translate
 pango_matrix_scale
 pango_matrix_rotate
 pango_matrix_concat
+pango_matrix_transform_point
+pango_matrix_transform_distance
+pango_matrix_transform_rectangle
+pango_matrix_transform_pixel_rectangle
 pango_matrix_get_font_scale_factor
 pango_matrix_to_gravity
 PangoGlyph

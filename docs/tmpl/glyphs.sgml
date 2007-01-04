@@ -59,6 +59,24 @@ Converts a dimension to device units by ceiling.
 @d: a dimension in Pango units.
 
 
+<!-- ##### FUNCTION pango_units_to_double ##### -->
+<para>
+
+</para>
+
+@i: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_units_from_double ##### -->
+<para>
+
+</para>
+
+@d: 
+@Returns: 
+
+
 <!-- ##### STRUCT PangoRectangle ##### -->
 <para>
 The #PangoRectangle structure represents a rectangle. It is frequently
@@ -115,6 +133,15 @@ horizontal origin.
 </para>
 
 @rect: a #PangoRectangle
+
+
+<!-- ##### FUNCTION pango_extents_to_pixels ##### -->
+<para>
+
+</para>
+
+@ink_rect: 
+@logical_rect: 
 
 
 <!-- ##### STRUCT PangoMatrix ##### -->
@@ -196,6 +223,35 @@ horizontal origin.
 
 @matrix: 
 @new_matrix: 
+
+
+<!-- ##### FUNCTION pango_matrix_transform_point ##### -->
+<para>
+
+</para>
+
+@matrix: 
+@x: 
+@y: 
+
+
+<!-- ##### FUNCTION pango_matrix_transform_distance ##### -->
+<para>
+
+</para>
+
+@matrix: 
+@dx: 
+@dy: 
+
+
+<!-- ##### FUNCTION pango_matrix_transform_rectangle ##### -->
+<para>
+
+</para>
+
+@matrix: 
+@rect: 
 
 
 <!-- ##### FUNCTION pango_matrix_get_font_scale_factor ##### -->

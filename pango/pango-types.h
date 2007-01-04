@@ -56,11 +56,8 @@ typedef guint32 PangoGlyph;
  * integers and floating point.
  */
 
-/* Hint line position and thickness.
- */
-void pango_quantize_line_geometry (int *thickness,
-				   int *position);
-
+int    pango_units_from_double (double d) G_GNUC_CONST;
+double pango_units_to_double (int i) G_GNUC_CONST;
 
 
 /* Dummy typedef - internally it's a 'const char *' */
@@ -99,7 +96,8 @@ struct _PangoRectangle
 #define PANGO_LBEARING(rect) ((rect).x)
 #define PANGO_RBEARING(rect) ((rect).x + (rect).width)
 
-
+void pango_extents_to_pixels (PangoRectangle *ink_rect,
+			      PangoRectangle *logical_rect);
 
 /**
  * PangoDirection:
@@ -139,7 +137,7 @@ typedef enum {
   PANGO_DIRECTION_NEUTRAL
 } PangoDirection;
 
-PangoDirection pango_unichar_direction      (gunichar     ch);
+PangoDirection pango_unichar_direction      (gunichar     ch) G_GNUC_CONST;
 PangoDirection pango_find_base_dir          (const gchar *text,
 					     gint         length);
 
@@ -177,7 +175,7 @@ typedef enum {
   PANGO_GRAVITY_AUTO
 } PangoGravity;
 
-double pango_gravity_to_rotation (PangoGravity gravity);
+double pango_gravity_to_rotation (PangoGravity gravity) G_GNUC_CONST;
 
 
 
@@ -248,6 +246,16 @@ void pango_matrix_rotate    (PangoMatrix *matrix,
 			     double       degrees);
 void pango_matrix_concat    (PangoMatrix       *matrix,
 			     const PangoMatrix *new_matrix);
+void pango_matrix_transform_point    (const PangoMatrix *matrix,
+				      double            *x,
+				      double            *y);
+void pango_matrix_transform_distance (const PangoMatrix *matrix,
+				      double            *dx,
+				      double            *dy);
+void pango_matrix_transform_rectangle (const PangoMatrix *matrix,
+				       PangoRectangle    *rect);
+void pango_matrix_transform_pixel_rectangle (const PangoMatrix *matrix,
+					     PangoRectangle    *rect);
 double pango_matrix_get_font_scale_factor (const PangoMatrix *matrix);
 PangoGravity pango_matrix_to_gravity (const PangoMatrix *matrix);
 

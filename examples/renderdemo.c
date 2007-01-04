@@ -154,17 +154,6 @@ get_options_string (void)
 }
 
 static void
-transform_point (PangoMatrix *matrix,
-		 double       x_in,
-		 double       y_in,
-		 double      *x_out,
-		 double      *y_out)
-{
-  *x_out = x_in * matrix->xx + y_in * matrix->xy + matrix->x0;
-  *y_out = x_in * matrix->yx + y_in * matrix->yy + matrix->y0;
-}
-
-static void
 output_body (PangoContext   *context,
 	     const char     *text,
 	     RenderCallback  render_cb,
@@ -245,19 +234,13 @@ do_output (PangoContext     *context,
 	   int              *height_out)
 {
   PangoLayout *layout;
-  PangoRectangle logical_rect;
+  PangoRectangle rect;
   PangoMatrix matrix = PANGO_MATRIX_INIT;
   PangoMatrix *orig_matrix;
   gboolean supports_matrix;
   int rotated_width, rotated_height;
   int x = opt_margin;
   int y = opt_margin;
-  double p1x, p1y;
-  double p2x, p2y;
-  double p3x, p3y;
-  double p4x, p4y;
-  double minx, miny;
-  double maxx, maxy;
   int width, height;
 
   width = 0;
@@ -283,15 +266,15 @@ do_output (PangoContext     *context,
       char *options_string = get_options_string ();
       pango_context_set_base_gravity (context, PANGO_GRAVITY_SOUTH);
       layout = make_layout (context, options_string, 10);
-      pango_layout_get_extents (layout, NULL, &logical_rect);
+      pango_layout_get_extents (layout, NULL, &rect);
 
-      width = MAX (width, PANGO_PIXELS (logical_rect.width));
-      height += PANGO_PIXELS (logical_rect.height);
+      width = MAX (width, PANGO_PIXELS (rect.width));
+      height += PANGO_PIXELS (rect.height);
 
       if (render_cb)
 	(*render_cb) (layout, x, y, cb_context, cb_data);
 
-      y += PANGO_PIXELS (logical_rect.height);
+      y += PANGO_PIXELS (rect.height);
 
       g_object_unref (layout);
       g_free (options_string);
@@ -315,19 +298,14 @@ do_output (PangoContext     *context,
 	       &rotated_width, &rotated_height,
 	       supports_matrix);
 
-  transform_point (&matrix, 0,             0,              &p1x, &p1y);
-  transform_point (&matrix, rotated_width, 0,              &p2x, &p2y);
-  transform_point (&matrix, rotated_width, rotated_height, &p3x, &p3y);
-  transform_point (&matrix, 0,             rotated_height, &p4x, &p4y);
+  rect.x = rect.y = 0;
+  rect.width = rotated_width;
+  rect.height = rotated_height;
 
-  minx = MIN (MIN (p1x, p2x), MIN (p3x, p4x));
-  miny = MIN (MIN (p1y, p2y), MIN (p3y, p4y));
+  pango_matrix_transform_pixel_rectangle (&matrix, &rect);
 
-  maxx = MAX (MAX (p1x, p2x), MAX (p3x, p4x));
-  maxy = MAX (MAX (p1y, p2y), MAX (p3y, p4y));
-
-  matrix.x0 = x - minx;
-  matrix.y0 = y - miny;
+  matrix.x0 = x - rect.x;
+  matrix.y0 = y - rect.y;
 
   set_transform (context, transform_cb, cb_context, cb_data, &matrix);
 
@@ -338,8 +316,8 @@ do_output (PangoContext     *context,
 		 &rotated_width, &rotated_height,
 		 supports_matrix);
 
-  width = MAX (width, maxx - minx);
-  height += maxy - miny;
+  width = MAX (width, rect.width);
+  height += rect.height;
 
   width += 2 * opt_margin;
   height += 2 * opt_margin;

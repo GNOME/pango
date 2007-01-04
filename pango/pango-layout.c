@@ -2387,9 +2387,8 @@ pango_layout_get_extents (PangoLayout    *layout,
  *              layout or %NULL to indicate that the result is not needed.
  * 
  * Computes the logical and ink extents of @layout in device units.
- * See pango_layout_get_extents(); this function just calls
- * pango_layout_get_extents() and then converts the extents to
- * device units using the %PANGO_SCALE factor.
+ * This function just calls pango_layout_get_extents() followed by
+ * pango_extents_to_pixels().
  **/
 void
 pango_layout_get_pixel_extents (PangoLayout *layout,
@@ -2399,30 +2398,7 @@ pango_layout_get_pixel_extents (PangoLayout *layout,
   g_return_if_fail (PANGO_IS_LAYOUT (layout));
 
   pango_layout_get_extents (layout, ink_rect, logical_rect);
-
-  if (ink_rect)
-    {
-      int orig_x = ink_rect->x;
-      int orig_y = ink_rect->y;
-
-      ink_rect->x = PANGO_PIXELS_FLOOR (ink_rect->x);
-      ink_rect->y = PANGO_PIXELS_FLOOR (ink_rect->y);
-
-      ink_rect->width  = PANGO_PIXELS_CEIL (orig_x + ink_rect->width ) - ink_rect->x;
-      ink_rect->height = PANGO_PIXELS_CEIL (orig_y + ink_rect->height) - ink_rect->y;
-    }
-
-  if (logical_rect)
-    {
-      int orig_x = logical_rect->x;
-      int orig_y = logical_rect->y;
-
-      logical_rect->x = PANGO_PIXELS (logical_rect->x);
-      logical_rect->y = PANGO_PIXELS (logical_rect->y);
-
-      logical_rect->width  = PANGO_PIXELS (orig_x + logical_rect->width ) - logical_rect->x;
-      logical_rect->height = PANGO_PIXELS (orig_y + logical_rect->height) - logical_rect->y;
-    }
+  pango_extents_to_pixels (ink_rect, logical_rect);
 }
 
 /**
@@ -2432,7 +2408,7 @@ pango_layout_get_pixel_extents (PangoLayout *layout,
  * @height: location to store the logical height, or %NULL
  * 
  * Determines the logical width and height of a #PangoLayout
- * in Pango units. (device units scaled by %PANGO_SCALE). This
+ * in Pango units (device units scaled by %PANGO_SCALE). This
  * is simply a convenience function around pango_layout_get_extents().
  **/
 void
@@ -4376,11 +4352,9 @@ pango_layout_line_new (PangoLayout *layout)
  * @logical_rect: rectangle used to store the logical extents of the glyph
  *               string, or %NULL
  * 
- * Computes the logical and ink extents of a layout line. See
- * pango_font_get_glyph_extents() for details about the interpretation
- * of the rectangles. The returned rectangles are in device units, as
- * opposed to pango_layout_line_get_extents(), which returns the extents in
- * #PangoGlyphUnit.
+ * Computes the logical and ink extents of @layout_line in device units.
+ * This function just calls pango_layout_line_get_extents() followed by
+ * pango_extents_to_pixels().
  **/
 void
 pango_layout_line_get_pixel_extents (PangoLayoutLine *layout_line,
@@ -4390,24 +4364,7 @@ pango_layout_line_get_pixel_extents (PangoLayoutLine *layout_line,
   g_return_if_fail (LINE_IS_VALID (layout_line));
 
   pango_layout_line_get_extents (layout_line, ink_rect, logical_rect);
-
-  if (ink_rect)
-    {
-      ink_rect->width = (ink_rect->width + PANGO_SCALE / 2) / PANGO_SCALE;
-      ink_rect->height = (ink_rect->height + PANGO_SCALE / 2) / PANGO_SCALE;
-
-      ink_rect->x = PANGO_PIXELS (ink_rect->x);
-      ink_rect->y = PANGO_PIXELS (ink_rect->y);
-    }
-
-  if (logical_rect)
-    {
-      logical_rect->width = (logical_rect->width + PANGO_SCALE / 2) / PANGO_SCALE;
-      logical_rect->height = (logical_rect->height + PANGO_SCALE / 2) / PANGO_SCALE;
-
-      logical_rect->x = PANGO_PIXELS (logical_rect->x);
-      logical_rect->y = PANGO_PIXELS (logical_rect->y);
-    }
+  pango_extents_to_pixels (ink_rect, logical_rect);
 }
 
 /*

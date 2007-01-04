@@ -46,8 +46,6 @@ typedef struct _GlyphExtentsCacheEntry    GlyphExtentsCacheEntry;
 #define GLYPH_CACHE_NUM_ENTRIES 256 /* should be power of two */
 #define GLYPH_CACHE_MASK (GLYPH_CACHE_NUM_ENTRIES - 1)
 
-#define PANGO_UNITS(Double) ((int)floor((Double) * PANGO_SCALE + 0.5))
-
 /* An entry in the fixed-size cache for the glyph -> ink_rect mapping.
  * The cache is indexed by the lower N bits of the glyph (see
  * GLYPH_CACHE_NUM_ENTRIES).  For scripts with few glyphs,
@@ -296,20 +294,20 @@ pango_cairo_fc_font_glyph_extents_cache_init (PangoCairoFcFont *cffont)
 
   cffont->font_extents.x = 0;
   cffont->font_extents.width = 0;
-  cffont->font_extents.height = PANGO_UNITS (font_extents.ascent + font_extents.descent);
+  cffont->font_extents.height = pango_units_from_double (font_extents.ascent + font_extents.descent);
   switch (cffont->gravity)
     {
       default:
       case PANGO_GRAVITY_AUTO:
       case PANGO_GRAVITY_SOUTH:
-        cffont->font_extents.y = - PANGO_UNITS (font_extents.ascent);
+        cffont->font_extents.y = - pango_units_from_double (font_extents.ascent);
 	break;
       case PANGO_GRAVITY_NORTH:
-        cffont->font_extents.y = - PANGO_UNITS (font_extents.descent);
+        cffont->font_extents.y = - pango_units_from_double (font_extents.descent);
 	break;
       case PANGO_GRAVITY_EAST:
       case PANGO_GRAVITY_WEST:
-        cffont->font_extents.y = - PANGO_UNITS ((font_extents.ascent + font_extents.descent) * 0.5);
+        cffont->font_extents.y = - pango_units_from_double ((font_extents.ascent + font_extents.descent) * 0.5);
     }
 
   cffont->glyph_extents_cache = g_new0 (GlyphExtentsCacheEntry, GLYPH_CACHE_NUM_ENTRIES);
@@ -335,11 +333,11 @@ compute_glyph_extents (PangoCairoFcFont       *cffont,
 				   &cairo_glyph, 1, &extents);
   
   entry->glyph = glyph;
-  entry->width = PANGO_UNITS (extents.x_advance);
-  entry->ink_rect.x = PANGO_UNITS (extents.x_bearing);
-  entry->ink_rect.y = PANGO_UNITS (extents.y_bearing);
-  entry->ink_rect.width = PANGO_UNITS (extents.width);
-  entry->ink_rect.height = PANGO_UNITS (extents.height);
+  entry->width = pango_units_from_double (extents.x_advance);
+  entry->ink_rect.x = pango_units_from_double (extents.x_bearing);
+  entry->ink_rect.y = pango_units_from_double (extents.y_bearing);
+  entry->ink_rect.width = pango_units_from_double (extents.width);
+  entry->ink_rect.height = pango_units_from_double (extents.height);
 }
      
 static GlyphExtentsCacheEntry *

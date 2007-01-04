@@ -1856,3 +1856,87 @@ pango_gravity_to_rotation (PangoGravity gravity)
   return rotation;
 }
 
+/**
+ * pango_units_from_double:
+ * @d: double floating-point value
+ *
+ * Converts a floating-point number to Pango units: multiplys
+ * it by %PANGO_SCALE and rounds to nearest integer.
+ *
+ * Return value: the value in Pango units.
+ *
+ * Since: 1.16
+ */
+int
+pango_units_from_double (double d)
+{
+  return (int)floor (d * PANGO_SCALE + 0.5);
+}
+
+/**
+ * pango_units_to_double:
+ * @i: value in Pango units
+ *
+ * Converts a number in Pango units to floating-point: divides
+ * it by %PANGO_SCALE.
+ *
+ * Return value: the double value.
+ *
+ * Since: 1.16
+ */
+double
+pango_units_to_double (int i)
+{
+  return (double)i / PANGO_SCALE;
+}
+
+/**
+ * pango_extents_to_pixels:
+ * @ink_rect: ink rectangle to convert, or %NULL.
+ * @logical_rect: logical rectangle to convert, or %NULL.
+ * 
+ * Converts extents from Pango units to device units, dividing by the
+ * %PANGO_SCALE factor and performing rounding.
+ *
+ * The ink rectangle is converted by flooring the x/y coordinates and extending
+ * width/height, such that the final rectangle completely includes the original
+ * rectangle.
+ *
+ * The logical rectangle is converted by rounding the coordinates
+ * of the rectangle to the nearest device unit.
+ *
+ * Note that in certain situations you may want pass a logical extents
+ * rectangle to this function as @ink_rect.  The rule is: if you want the
+ * resulting device-space rectangle to completely contain the original
+ * rectangle, pass it in as @ink_rect.
+ *
+ * Since: 1.16
+ **/
+void
+pango_extents_to_pixels (PangoRectangle *ink_rect,
+			 PangoRectangle *logical_rect)
+{
+  if (ink_rect)
+    {
+      int orig_x = ink_rect->x;
+      int orig_y = ink_rect->y;
+
+      ink_rect->x = PANGO_PIXELS_FLOOR (ink_rect->x);
+      ink_rect->y = PANGO_PIXELS_FLOOR (ink_rect->y);
+
+      ink_rect->width  = PANGO_PIXELS_CEIL (orig_x + ink_rect->width ) - ink_rect->x;
+      ink_rect->height = PANGO_PIXELS_CEIL (orig_y + ink_rect->height) - ink_rect->y;
+    }
+
+  if (logical_rect)
+    {
+      int orig_x = logical_rect->x;
+      int orig_y = logical_rect->y;
+
+      logical_rect->x = PANGO_PIXELS (logical_rect->x);
+      logical_rect->y = PANGO_PIXELS (logical_rect->y);
+
+      logical_rect->width  = PANGO_PIXELS (orig_x + logical_rect->width ) - logical_rect->x;
+      logical_rect->height = PANGO_PIXELS (orig_y + logical_rect->height) - logical_rect->y;
+    }
+}

@@ -1,3 +1,34 @@
+2007-01-04  Behdad Esfahbod  <behdad@gnome.org>
+
+	Part of Bug 332266 – gdk_draw_layout fails for coordinates >= 2^21
+
+	* pango/pango-types.h:
+	* pango/pango-matrix.c: New public API:
+		pango_matrix_transform_distance()
+		pango_matrix_transform_point()
+		pango_matrix_transform_rectangle()
+		pango_matrix_transform_pixel_rectangle()
+
+	* pango/pango-utils.h:
+	* pango/pango-utils.c: New public API:
+		pango_units_from_double()
+		pango_units_to_double()
+		pango_extents_to_pixels()
+
+	* pango/pango-layout.c (pango_layout_get_pixel_extents),
+	(pango_layout_line_get_pixel_extents): Use pango_extents_to_pixels().
+
+	* pango/pangocairo-fcfont.c:
+	(pango_cairo_fc_font_glyph_extents_cache_init),
+	(compute_glyph_extents): Use pango_units_from_double().
+
+	* examples/renderdemo.c (do_output): Use
+	pango_matrix_transform_pixel_rectangle();
+
+	* pango/pango.def:
+	* docs/pango-sections.txt:
+	* docs/tmpl/glyphs.sgml: Update.
+
 2007-01-03  Changwoo Ryu  <cwryu@debian.org>
 
 	Bug 388702 - Crash when there's no Hangul glyph in the font.
