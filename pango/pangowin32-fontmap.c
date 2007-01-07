@@ -703,13 +703,13 @@ get_family_name (const LOGFONT *lfp)
  * The face name, italicness and weight fields in the LOGFONT are used
  * to set up the resulting #PangoFontDescription. If the face name in
  * the LOGFONT contains non-ASCII characters the font is temporarily
- * loaded (using CreateFontIndirect) and an ASCII (usually English)
+ * loaded (using CreateFontIndirect()) and an ASCII (usually English)
  * name for it is looked up from the font name tables in the font
  * data. If that doesn't work, the face name is converted from the
  * system codepage to UTF-8 and that is used.
  *
  * Return value: the newly allocated #PangoFontDescription, which
- *  should be freed using pango_font_desciption_free()
+ *  should be freed using pango_font_description_free()
  *
  * Since: 1.12
  */

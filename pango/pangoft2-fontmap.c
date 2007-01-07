@@ -177,7 +177,7 @@ pango_ft2_font_map_set_default_substitute (PangoFT2FontMap        *fontmap,
  * Call this function any time the results of the
  * default substitution function set with
  * pango_ft2_font_map_set_default_substitute() change.
- * That is, if your subsitution function will return different
+ * That is, if your substitution function will return different
  * results for the same input pattern, you must call this function.
  *
  * Since: 1.2
@@ -231,8 +231,8 @@ pango_ft2_font_map_create_context (PangoFT2FontMap *fontmap)
 
 /**
  * pango_ft2_get_context:
- * @dpi_x:  the horizontal dpi of the target device
- * @dpi_y:  the vertical dpi of the target device
+ * @dpi_x:  the horizontal DPI of the target device
+ * @dpi_y:  the vertical DPI of the target device
  * 
  * Retrieves a #PangoContext for the default PangoFT2 fontmap
  * (see pango_ft2_fontmap_get_for_display()) and sets the resolution

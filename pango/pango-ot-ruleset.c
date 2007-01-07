@@ -196,7 +196,7 @@ pango_ot_ruleset_substitute  (PangoOTRuleset   *ruleset,
  * @ruleset: a #PangoOTRuleset.
  * @buffer: a #PangoOTBuffer.
  *
- * Performs the OpenType GPOS positionoing on @buffer using the features
+ * Performs the OpenType GPOS positioning on @buffer using the features
  * in @ruleset
  *
  * Since: 1.4

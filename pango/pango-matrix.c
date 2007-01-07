@@ -139,7 +139,7 @@ pango_matrix_scale (PangoMatrix *matrix,
  * 
  * Changes the transformation represented by @matrix to be the
  * transformation given by first rotating by @degrees degrees
- * counter-clokwise then applying the original transformation.
+ * counter-clockwise then applying the original transformation.
  *
  * Since: 1.6
  **/
@@ -352,7 +352,7 @@ pango_matrix_transform_point (const PangoMatrix *matrix,
  * @matrix: a #PangoMatrix, or %NULL
  * @rect: in/out bounding box in Pango units, or %NULL
  * 
- * First transforms the @rect using @matrix, then calculates the bounding box
+ * First transforms @rect using @matrix, then calculates the bounding box
  * of the transformed rectangle.  The rectangle should be in Pango units.
  *
  * This function is useful for example when you want to draw a rotated
@@ -365,7 +365,7 @@ pango_matrix_transform_point (const PangoMatrix *matrix,
  * If you have the rectangle in Pango units and want to convert to
  * transformed pixel bounding box, it is more accurate to transform it first
  * (using this function) and pass the result to pango_extents_to_pixels(),
- * as the ink_rect.  However, there is a reason that you may want to convert
+ * as @ink_rect.  However, there is a reason that you may want to convert
  * to pixels first and then transform, and that is when the transformed
  * coordinates may overflow in Pango units (large matrix translation for
  * example).
@@ -440,8 +440,8 @@ pango_matrix_transform_rectangle (const PangoMatrix *matrix,
  * should be and how much you should shift the layout when rendering.
  *
  * For better accuracy, you should use pango_matrix_transform_rectangle() on
- * original rectangle in Pango units and convert to pixels afterwards
- * using pango_extents_to_pixels() as the ink_rect.
+ * original rectangle in Pango units and convert to pixels afterward
+ * using pango_extents_to_pixels() as @ink_rect.
  *
  * Since: 1.16
  **/

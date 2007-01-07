@@ -17,7 +17,7 @@ Using the Xft backend is generally straightforward;
 pango_xft_get_context() creates a context for a specified display
 and screen. You can then create a #PangoLayout with that context
 and render it with pango_xft_render_layout(). At a more advanced
-level, the lowlevel fontconfig options used for rendering fonts
+level, the low-level fontconfig options used for rendering fonts
 can be affected using pango_xft_set_default_substitute(), and
 pango_xft_substitute_changed().
 </para>
@@ -30,7 +30,7 @@ is useful to derive from #PangoXftRenderer. Deriving from
 support custom attributes by overriding #PangoRendererClass virtual
 functions like 'prepare_run' or 'draw_shape'. The reason is to
 customize exactly how the final bits are drawn to the destination by
-overring the #PangoXftRendererClass virtual functions
+overriding the #PangoXftRendererClass virtual functions
 'composite_glyphs' and 'composite_trapezoids'.
 </para>
 

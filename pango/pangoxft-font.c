@@ -114,7 +114,7 @@ _pango_xft_font_new (PangoXftFontMap *xftfontmap,
  * Gets the font used for drawing the digits in the
  * missing-character hex squares
  * 
- * Return value: the PangoFont used for the digits; this
+ * Return value: the #PangoFont used for the digits; this
  *  value is associated with the main font and will be freed
  *  along with the main font.
  **/
@@ -528,13 +528,13 @@ pango_xft_font_get_unknown_glyph (PangoFont *font,
  * pango_xft_font_lock_face:
  * @font: a #PangoFont.
  *
- * Gets the FreeType FT_Face associated with a font,
+ * Gets the FreeType <type>FT_Face</type> associated with a font,
  * This face will be kept around until you call
  * pango_xft_font_unlock_face().
  *
  * Use pango_fc_font_lock_face() instead.
  *
- * Return value: the FreeType FT_Face associated with @font.
+ * Return value: the FreeType <type>FT_Face</type> associated with @font.
  *
  * Since: 1.2
  **/

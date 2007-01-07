@@ -642,7 +642,7 @@ release_renderer (PangoRenderer *renderer)
  * pango_xft_render_layout:
  * @draw:      an #XftDraw
  * @color:     the foreground color in which to draw the layout
- *             (may be overriden by color attributes)
+ *             (may be overridden by color attributes)
  * @layout:    a #PangoLayout
  * @x:         the X position of the left of the layout (in Pango units)
  * @y:         the Y position of the top of the layout (in Pango units)
@@ -679,7 +679,7 @@ pango_xft_render_layout (XftDraw     *draw,
  * pango_xft_render_layout_line:
  * @draw:      an #XftDraw
  * @color:     the foreground color in which to draw the layout line
- *             (may be overriden by color attributes)
+ *             (may be overridden by color attributes)
  * @line:      a #PangoLayoutLine
  * @x:         the x position of start of string (in Pango units)
  * @y:         the y position of baseline (in Pango units)
@@ -792,7 +792,7 @@ pango_xft_render (XftDraw          *draw,
  * pango_xft_picture_render:
  * @display:      an X display
  * @src_picture:  the source picture to draw the string with
- * @dest_picture: the destination picture to draw the strign onto
+ * @dest_picture: the destination picture to draw the string onto
  * @font:         the font in which to draw the string
  * @glyphs:       the glyph string to draw
  * @x:            the x position of start of string (in pixels)

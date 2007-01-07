@@ -2,7 +2,7 @@
 Layout Objects
 
 <!-- ##### SECTION Short_Description ##### -->
-Highlevel layout driver objects
+High-level layout driver objects
 
 <!-- ##### SECTION Long_Description ##### -->
 <para>
@@ -212,7 +212,7 @@ has no user-visible fields.
 
 <!-- ##### ENUM PangoWrapMode ##### -->
 <para>
-A PangoWrapMode describes how to wrap the lines of a #PangoLayout to the desired width.
+A #PangoWrapMode describes how to wrap the lines of a #PangoLayout to the desired width.
 </para>
 
 @PANGO_WRAP_WORD: wrap lines at word boundaries.
@@ -390,7 +390,7 @@ The #GObject type for #PangoEllipsizeMode.
 
 <!-- ##### ENUM PangoAlignment ##### -->
 <para>
-A PangoAlignment describes how to align the lines of a #PangoLayout within the
+A #PangoAlignment describes how to align the lines of a #PangoLayout within the
 available space. If the #PangoLayout is set to justify
 using pango_layout_set_justify(), this only has effect for partial lines.
 </para>

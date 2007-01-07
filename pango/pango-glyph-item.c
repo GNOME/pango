@@ -235,7 +235,7 @@ _pango_glyph_item_iter_next_cluster (PangoGlyphItemIter *iter)
  * 
  * Moves the iterator to the preceding cluster in the glyph item.
  * 
- * Return value: %TRUE if the iterator was movedn, %FALSE if we were already on the
+ * Return value: %TRUE if the iterator was moved, %FALSE if we were already on the
  *  first cluster.
  **/
 gboolean
@@ -313,14 +313,14 @@ _pango_glyph_item_iter_prev_cluster (PangoGlyphItemIter *iter)
 /**
  * _pango_glyph_item_iter_init_start:
  * @iter: pointer to a #PangoGlyphItemIter structure
- * @glyph_item: the glyph item that the iter points into
+ * @glyph_item: the glyph item that @iter points into
  * @text: text corresponding to the glyph item
  * 
  * Initializes a #PangoGlyphItemIter structure to point to the
  * first cluster in a glyph item.
  * 
  * Return value: %FALSE if there are no clusters in the glyph item;
- *  in this case, the state of the iter is undefined.
+ *  in this case, the state of @iter is undefined.
  **/
 gboolean
 _pango_glyph_item_iter_init_start (PangoGlyphItemIter  *iter,
@@ -345,14 +345,14 @@ _pango_glyph_item_iter_init_start (PangoGlyphItemIter  *iter,
 /**
  * _pango_glyph_item_iter_init_end:
  * @iter: pointer to a #PangoGlyphItemIter structure
- * @glyph_item: the glyph item that the iter points into
+ * @glyph_item: the glyph item that @iter points into
  * @text: text corresponding to the glyph item
  * 
  * Initializes a #PangoGlyphItemIter structure to point to the
  * last cluster in a glyph item.
  * 
  * Return value: %FALSE if there are no clusters in the glyph item;
- *  in this case, the state of the iter is undefined.
+ *  in this case, the state of @iter is undefined.
  **/
 gboolean
 _pango_glyph_item_iter_init_end (PangoGlyphItemIter  *iter,
@@ -391,7 +391,7 @@ append_attrs (PangoGlyphItem *glyph_item,
     g_slist_concat (glyph_item->item->analysis.extra_attrs, attrs);
 }
 
-/* Make a deep copy of a GSlist of PangoAttribute
+/* Make a deep copy of a #GSList of PangoAttribute
  */
 static GSList *
 attr_slist_copy (GSList *attrs)
@@ -447,7 +447,7 @@ split_before_cluster_start (ApplyAttrsState *state)
  *
  * All attributes that start or end inside a cluster are applied
  * to that cluster; for instance, if half of a cluster is underlined
- * and the other-half strikethough, then the cluster will end
+ * and the other-half strikethrough, then the cluster will end
  * up with both underline and strikethrough attributes. In these
  * cases, it may happen that item->extra_attrs for some of the
  * result items can have multiple attributes of the same type.

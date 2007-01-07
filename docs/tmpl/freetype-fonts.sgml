@@ -64,7 +64,7 @@ with the FreeType backend. See %PANGO_RENDER_TYPE_FC for the replacement.
 Function type for doing final config tweaking on prepared FcPatterns.
 </para>
 
-@pattern: the FcPattern to tweak.
+@pattern: the <type>FcPattern</type> to tweak.
 @data: user data.
 
 

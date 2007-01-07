@@ -208,7 +208,7 @@ pango_font_description_set_style (PangoFontDescription *desc,
  * 
  * Return value: the style field for the font description. 
  *   Use pango_font_description_get_set_fields() to find out if
- *   the field was explicitely set or not.
+ *   the field was explicitly set or not.
  **/
 PangoStyle
 pango_font_description_get_style (const PangoFontDescription *desc)
@@ -245,7 +245,7 @@ pango_font_description_set_variant (PangoFontDescription *desc,
  * 
  * Return value: the variant field for the font description. Use
  *   pango_font_description_get_set_fields() to find out if
- *   the field was explicitely set or not.
+ *   the field was explicitly set or not.
  **/
 PangoVariant
 pango_font_description_get_variant (const PangoFontDescription *desc)
@@ -284,7 +284,7 @@ pango_font_description_set_weight (PangoFontDescription *desc,
  * 
  * Return value: the weight field for the font description. Use
  *   pango_font_description_get_set_fields() to find out if
- *   the field was explicitely set or not.
+ *   the field was explicitly set or not.
  **/
 PangoWeight
 pango_font_description_get_weight (const PangoFontDescription *desc)
@@ -321,7 +321,7 @@ pango_font_description_set_stretch (PangoFontDescription *desc,
  * 
  * Return value: the stretch field for the font description. Use
  *   pango_font_description_get_set_fields() to find out if
- *   the field was explicitely set or not.
+ *   the field was explicitly set or not.
  **/
 PangoStretch
 pango_font_description_get_stretch (const PangoFontDescription *desc)
@@ -369,7 +369,7 @@ pango_font_description_set_size (PangoFontDescription *desc,
  *   to find out which is the case. Returns 0 if the size field has not
  *   previously been set or it has been set to 0 explicitly.
  *   Use pango_font_description_get_set_fields() to
- *   find out if the field was explicitely set or not.
+ *   find out if the field was explicitly set or not.
  **/
 gint
 pango_font_description_get_size (const PangoFontDescription *desc)
@@ -412,7 +412,7 @@ pango_font_description_set_absolute_size (PangoFontDescription *desc,
  * 
  * Return value: whether the size for the font description is in
  *   points or device units.  Use pango_font_description_get_set_fields() to
- *   find out if the size field of the font description was explicitely set or not.
+ *   find out if the size field of the font description was explicitly set or not.
  *
  * Since: 1.8
  **/
@@ -464,7 +464,7 @@ pango_font_description_set_gravity (PangoFontDescription *desc,
  * 
  * Return value: the gravity field for the font description. Use
  *   pango_font_description_get_set_fields() to find out if
- *   the field was explicitely set or not.
+ *   the field was explicitly set or not.
  *
  * Since: 1.16
  **/
@@ -679,7 +679,7 @@ pango_font_description_copy  (const PangoFontDescription  *desc)
  * 
  * Like pango_font_description_copy(), but only a shallow copy is made
  * of the family name and other allocated fields. The result can only
- * be used until @desc is modififed or freed. This is meant to be used
+ * be used until @desc is modified or freed. This is meant to be used
  * when the copy is only needed temporarily.
  * 
  * Return value: the newly allocated #PangoFontDescription, which should
@@ -704,8 +704,8 @@ pango_font_description_copy_static (const PangoFontDescription *desc)
  * 
  * Compares two font descriptions for equality. Two font descriptions
  * are considered equal if the fonts they describe are provably identical.
- * This means that their maskd do not have to match, as long as other fields
- * are all the same. (Two font descrptions may result in identical fonts
+ * This means that their masks do not have to match, as long as other fields
+ * are all the same. (Two font descriptions may result in identical fonts
  * being loaded, but still compare %FALSE.)
  * 
  * Return value: %TRUE if the two font descriptions are identical,

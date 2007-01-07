@@ -524,11 +524,11 @@ pango_x_font_map_load_font (PangoFontMap               *fontmap,
 
 /* We need to be robust against errors accessing the coverage
  * cache window, since it is not our window. So we temporarily
- * set this error handler while accessing it. The error_occured
- * global allows us to tell whether an error occured for
+ * set this error handler while accessing it. The error_occurred
+ * global allows us to tell whether an error occurred for
  * XChangeProperty
  */
-static gboolean error_occured;
+static gboolean error_occurred;
 
 static int 
 ignore_error (Display     *d,
@@ -601,7 +601,7 @@ pango_x_real_get_coverage_win (Display *display)
   return retval;
 }
 
-/* Find or create the peristant window for caching font coverage
+/* Find or create the persistent window for caching font coverage
  * information.
  *
  * To assure atomic creation, we first look for the window, then if we
@@ -756,7 +756,7 @@ pango_x_store_cached_coverage (PangoXFontMap *xfontmap,
 	break;
 
       old_handler = XSetErrorHandler (ignore_error);
-      error_occured = False;
+      error_occurred = False;
   
       XChangeProperty (xfontmap->display,
 		       coverage_win,
@@ -768,7 +768,7 @@ pango_x_store_cached_coverage (PangoXFontMap *xfontmap,
       XSync (xfontmap->display, False);
       XSetErrorHandler (old_handler);
 
-      if (!error_occured)
+      if (!error_occurred)
 	break;
       else
 	{
@@ -1220,7 +1220,7 @@ match_end (const char *a, const char *b)
     return (strcmp (a + len_a - len_b, b) == 0);
 }
 
-/* Given a xlfd, charset and size, find the best matching installed X font.
+/* Given a XLFD, charset and size, find the best matching installed X font.
  * The XLFD must be a full XLFD (14 fields)
  */
 char *

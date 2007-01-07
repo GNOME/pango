@@ -1,5 +1,5 @@
 /* Pango
- * pango-layout.h: Highlevel layout driver
+ * pango-layout.h: High-level layout driver
  *
  * Copyright (C) 2000 Red Hat Software
  *
@@ -86,7 +86,7 @@ struct _PangoLayoutLine
 #define PANGO_LAYOUT_GET_CLASS(obj)    (G_TYPE_INSTANCE_GET_CLASS ((obj), PANGO_TYPE_LAYOUT, PangoLayoutClass))
 
 /* The PangoLayout and PangoLayoutClass structs are private; if you
- * need to create a subclass of these, mail otaylor@redhat.com
+ * need to create a subclass of these, file a bug.
  */
 
 GType        pango_layout_get_type       (void) G_GNUC_CONST;

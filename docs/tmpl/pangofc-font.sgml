@@ -6,8 +6,8 @@ Base font class for Fontconfig-based backends
 
 <!-- ##### SECTION Long_Description ##### -->
 <para>
-PangoFcFont is a base class for font implementation using the
-FontConfig and FreeType libraries. It is used in the
+#PangoFcFont is a base class for font implementation using the
+Fontconfig and FreeType libraries. It is used in the
 <link linkend="pango-Xft-Fonts-and-Rendering">Xft</link> and
 <link linkend="pango-FreeType-Fonts-and-Rendering">FreeType</link>
 backends shipped with Pango, but can also be used when creating

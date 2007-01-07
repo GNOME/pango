@@ -179,7 +179,7 @@ pango_win32_get_dc (void)
 /**
  * pango_win32_get_debug_flag:
  *
- * Returns wether debugging is turned on.
+ * Returns whether debugging is turned on.
  * 
  * Return value: %TRUE if debugging is turned on.
  * 
@@ -245,7 +245,7 @@ pango_win32_font_new (PangoFontMap  *fontmap,
  * @x:       the x position of start of string (in pixels)
  * @y:       the y position of baseline (in pixels)
  *
- * Render a PangoGlyphString onto a Windows DC
+ * Render a #PangoGlyphString onto a Windows DC
  */
 void 
 pango_win32_render (HDC               hdc,
@@ -676,7 +676,7 @@ pango_win32_font_real_get_metrics_factor (PangoFont *font)
  * pango_win32_font_logfont:
  * @font: a #PangoFont which must be from the Win32 backend
  * 
- * Determine the LOGFONT struct for the specified bfont.
+ * Determine the LOGFONT struct for the specified font.
  * 
  * Return value: A newly allocated LOGFONT struct. It must be
  * freed with g_free().
@@ -704,7 +704,7 @@ pango_win32_font_logfont (PangoFont *font)
  * Selects the font into the specified DC and changes the mapping mode
  * and world transformation of the DC appropriately for the font.
  * You may want to surround the use of this function with calls
- * to SaveDC and RestoreDC. Call pango_win32_font_done_font() when
+ * to SaveDC() and RestoreDC(). Call pango_win32_font_done_font() when
  * you are done using the DC to release allocated resources.
  *
  * See pango_win32_font_get_metrics_factor() for information about

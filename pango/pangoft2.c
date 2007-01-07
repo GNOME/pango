@@ -155,14 +155,14 @@ set_transform (PangoFT2Font *ft2font)
  * pango_ft2_font_get_face:
  * @font: a #PangoFont
  * 
- * Returns the native FreeType2 FT_Face structure used for this PangoFont.
+ * Returns the native FreeType2 <type>FT_Face</type> structure used for this #PangoFont.
  * This may be useful if you want to use FreeType2 functions directly.
  *
  * Use pango_fc_font_lock_face() instead; when you are done with a
  * face from pango_fc_font_lock_face() you must call
  * pango_fc_font_unlock_face().
  * 
- * Return value: a pointer to a #FT_Face structure, with the size set correctly
+ * Return value: a pointer to a <type>FT_Face<type> structure, with the size set correctly
  **/
 FT_Face
 pango_ft2_font_get_face (PangoFont *font)

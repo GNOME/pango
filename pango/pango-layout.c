@@ -1,5 +1,5 @@
 /* Pango
- * pango-layout.c: Highlevel layout driver
+ * pango-layout.c: High-level layout driver
  *
  * Copyright (C) 2000, 2001 Red Hat Software
  *
@@ -585,7 +585,7 @@ pango_layout_get_font_description (PangoLayout *layout)
  * the justification may be done in more complex ways, like extending
  * the characters.
  *
- * Note that as of Pango-1.10, this functionality is not yet implemented.
+ * Note that as of Pango-1.16, this functionality is not yet implemented.
  **/
 void
 pango_layout_set_justify (PangoLayout *layout,
@@ -851,7 +851,7 @@ pango_layout_get_ellipsize (PangoLayout *layout)
  * @length: maximum length of @text, in bytes. -1 indicates that
  *          the string is nul-terminated and the length should be
  *          calculated.  The text will also be truncated on
- *          encountaring a nul-termination even when @length is
+ *          encountering a nul-termination even when @length is
  *          positive.
  * 
  * Sets the text of the layout.
@@ -958,8 +958,8 @@ pango_layout_set_markup (PangoLayout *layout,
  * the current text and attribute list.
  *
  * If @accel_marker is nonzero, the given character will mark the
- * character following it as an accelerator. For example, the accel
- * marker might be an ampersand or underscore. All characters marked
+ * character following it as an accelerator. For example, @accel_marker
+ * might be an ampersand or underscore. All characters marked
  * as an accelerator will receive a %PANGO_UNDERLINE_LOW attribute,
  * and the first character so marked will be returned in @accel_char.
  * Two @accel_marker characters following each other produce a single
@@ -1439,7 +1439,7 @@ pango_layout_index_to_line_x (PangoLayout *layout,
  *                value indicates motion to the left.
  * @new_index:    location to store the new cursor byte index. A value of -1 
  *                indicates that the cursor has been moved off the beginning
- *                of the layout. A value of G_MAXINT indicates that
+ *                of the layout. A value of %G_MAXINT indicates that
  *                the cursor has been moved off the end of the layout.
  * @new_trailing: number of characters to move forward from the location returned
  *                for @new_index to get the position where the cursor should
@@ -3082,7 +3082,7 @@ process_item (PangoLayout     *layout,
 	  goto retry_break;
 	}
 
-      if (force_fit || break_width <= state->remaining_width)	/* Succesfully broke the item */
+      if (force_fit || break_width <= state->remaining_width)	/* Successfully broke the item */
 	{
 	  if (state->remaining_width >= 0)
 	    {
@@ -4470,14 +4470,14 @@ is_tab_run (PangoLayout    *layout,
 
 /* When doing shaping, we add the letter spacing value for a
  * run after every grapheme in the run. This produces ugly
- * asymetrical results, so what this routine is redistributes
+ * asymmetrical results, so what this routine is redistributes
  * that space to the beginning and the end of the run.
  *
  * We also trim the letter spacing from runs adjacent to
  * tabs and from the outside runs of the lines so that things
  * line up properly. The line breaking and tab positioning
  * were computed without this trimming so they are no longer
- * exactly correct, but this won't be very noticable in most
+ * exactly correct, but this won't be very noticeable in most
  * cases.
  */
 static void

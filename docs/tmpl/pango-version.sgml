@@ -72,7 +72,7 @@ A string literal containing the version of Pango available at compile-time.
 
 <!-- ##### MACRO PANGO_VERSION_CHECK ##### -->
 <para>
-Checks that the versoin of Pango available at compile-time is not older than
+Checks that the version of Pango available at compile-time is not older than
 the provided version number.
 </para>
 

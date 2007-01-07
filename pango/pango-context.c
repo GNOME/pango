@@ -107,8 +107,8 @@ pango_context_finalize (GObject *object)
  * This function is only useful when implementing a new backend
  * for Pango, something applications won't do. You should use
  * the context creation function for the backend you are using,
- * for example, pango_xft_get_context(), pango_win32_get_context()
- * or, pango_ft2_font_map_create_context().
+ * for example, pango_cairo_font_map_create_context(), pango_xft_get_context(),
+ * pango_win32_get_context() or, pango_ft2_font_map_create_context().
  *
  * If you are using Pango as part of a higher-level system,
  * that system may have it's own ways of create a #PangoContext.
@@ -147,7 +147,7 @@ update_resolved_gravity (PangoContext *context)
  * Sets the transformation matrix that will be applied when rendering
  * with this context. Note that reported metrics are in the user space
  * coordinates before the application of the matrix, not device-space
- * coordiantes after the application of the matrix. So, they don't scale
+ * coordinates after the application of the matrix. So, they don't scale
  * with the matrix, though they may change slightly for different
  * matrices, depending on how the text is fit to the pixel grid.
  *
@@ -238,7 +238,7 @@ pango_context_get_font_map (PangoContext *context)
 /**
  * pango_context_list_families:
  * @context: a #PangoContext
- * @families: location to store a pointer to an array of PangoFontFamily *.
+ * @families: location to store a pointer to an array of #PangoFontFamily *.
  *            This array should be freed with g_free().
  * @n_families: location to store the number of elements in @descs
  * 
@@ -1346,9 +1346,9 @@ itemize_state_finish (ItemizeState *state)
  *
  * Like pango_itemize(), but the base direction to use when
  * computing bidirectional levels (see pango_context_set_base_dir ()),
- * is specified explicitely rather than gotten from the #PangoContext.
+ * is specified explicitly rather than gotten from the #PangoContext.
  *
- * Return value: a GList of PangoItem structures.
+ * Return value: a #GList of #PangoItem structures.
  *
  * Since: 1.4
  */
@@ -1430,7 +1430,7 @@ itemize_with_font (PangoContext               *context,
  * the range covering the position just after @start_index + @length.
  * (i.e. if itemizing in a loop, just keep passing in the same @cached_iter).
  *
- * Return value: a GList of PangoItem structures.
+ * Return value: a #GList of #PangoItem structures.
  */
 GList *
 pango_itemize (PangoContext      *context, 
@@ -1537,7 +1537,7 @@ update_metrics_from_items (PangoFontMetrics *metrics,
  * @desc: a #PangoFontDescription structure
  * @language: language tag used to determine which script to get the metrics
  *            for. %NULL means that the language tag from the context will
- *            be used. If no language tag is set on the ccontext, metrics
+ *            be used. If no language tag is set on the context, metrics
  *            large enough to cover a range of languages will be returned.
  *            The process of determining such metrics is slow, so it is best
  *            to always make sure some real language tag will be used.

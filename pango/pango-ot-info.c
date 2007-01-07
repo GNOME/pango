@@ -110,7 +110,7 @@ pango_ot_info_finalizer (void *object)
 
 /**
  * pango_ot_info_get:
- * @face: a #FT_Face.
+ * @face: a <type>FT_Face</type>.
  * 
  * Returns the #PangoOTInfo structure for the given FreeType font.
  *
@@ -210,7 +210,7 @@ set_unicode_charmap (FT_Face face)
 }
 
 /* Synthesize a GDEF table using the font's charmap and the
- * unicode property database. We'll fill in class definitions
+ * Unicode property database. We'll fill in class definitions
  * for glyphs not in the charmap as we walk through the tables.
  */
 static void
@@ -629,7 +629,7 @@ pango_ot_info_list_languages (PangoOTInfo      *info,
  * @table_type: the table type to obtain information about.
  * @tag: unused parameter.
  * @script_index: the index of the script to obtain information about. 
- * @language_index: the indes of the language to list features for, or
+ * @language_index: the index of the language to list features for, or
  *     %PANGO_OT_DEFAULT_LANGUAGE, to list features for the default
  *     language of the script.
  *

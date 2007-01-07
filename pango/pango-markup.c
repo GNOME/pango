@@ -559,11 +559,11 @@ static const GMarkupParser pango_markup_parser = {
  *
  * Parses marked-up text (see
  * <link linkend="PangoMarkupFormat">markup format</link>) to create
- * a plaintext string and an attribute list.
+ * a plain-text string and an attribute list.
  *
  * If @accel_marker is nonzero, the given character will mark the
- * character following it as an accelerator. For example, the accel
- * marker might be an ampersand or underscore. All characters marked
+ * character following it as an accelerator. For example, @accel_marker
+ * might be an ampersand or underscore. All characters marked
  * as an accelerator will receive a %PANGO_UNDERLINE_LOW attribute,
  * and the first character so marked will be returned in @accel_char.
  * Two @accel_marker characters following each other produce a single

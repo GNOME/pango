@@ -27,7 +27,7 @@ loaded module.
 
 @list: a function that lists the engines defined in this module.
 @init: a function to initialize the module.
-@exit: a function to finilize the module.
+@exit: a function to finalize the module.
 @create: a function to create an engine, given the engine name.
 
 <!-- ##### STRUCT PangoMap ##### -->

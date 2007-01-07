@@ -45,7 +45,7 @@ engine. It contains the following fields:
 
 <!-- ##### STRUCT PangoEngineScriptInfo ##### -->
 <para>
-The PangoEngineScriptInfo structure contains
+The #PangoEngineScriptInfo structure contains
 information about how the shaper covers a particular
 script.
 </para>

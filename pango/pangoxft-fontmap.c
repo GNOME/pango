@@ -282,7 +282,7 @@ pango_xft_set_default_substitute (Display                *display,
  * Call this function any time the results of the
  * default substitution function set with
  * pango_xft_set_default_substitute() change.
- * That is, if your subsitution function will return different
+ * That is, if your substitution function will return different
  * results for the same input pattern, you must call this function.
  *
  * Since: 1.2
@@ -335,7 +335,7 @@ pango_xft_get_context (Display *display,
  * _pango_xft_font_map_get_renderer:
  * @fontmap: a #PangoXftFontmap
  * 
- * Gets the singleton PangoXFTRenderer for this fontmap.
+ * Gets the singleton #PangoXFTRenderer for this fontmap.
  * 
  * Return value: 
  **/

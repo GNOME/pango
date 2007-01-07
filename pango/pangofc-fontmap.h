@@ -47,7 +47,7 @@ typedef struct _PangoFcFontMapPrivate PangoFcFontMapPrivate;
  * PangoFcFontMap:
  * 
  * #PangoFcFontMap is a base class for font map implementations
- * using the FontConfig and FreeType libraries. To create a new
+ * using the Fontconfig and FreeType libraries. To create a new
  * backend using Fontconfig and FreeType, you derive from this class
  * and implement a new_font() virtual function that creates an
  * instance deriving from #PangoFcFont.
