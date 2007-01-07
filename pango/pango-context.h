@@ -44,7 +44,7 @@ typedef struct _PangoContextClass PangoContextClass;
 
 
 /* The PangoContext and PangoContextClass structs are private; if you
- * need to create a subclass of these, mail otaylor@redhat.com
+ * need to create a subclass of these, file a bug.
  */
 
 GType         pango_context_get_type      (void) G_GNUC_CONST;
@@ -85,7 +85,7 @@ G_CONST_RETURN PangoMatrix *pango_context_get_matrix (PangoContext      *context
 
 /* Break a string of Unicode characters into segments with
  * consistent shaping/language engine and bidrectional level.
- * Returns a GList of PangoItem's
+ * Returns a #GList of #PangoItem's
  */
 GList *pango_itemize                (PangoContext      *context,
 				     const char        *text,

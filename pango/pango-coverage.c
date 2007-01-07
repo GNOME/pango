@@ -73,9 +73,8 @@ pango_coverage_new (void)
  * pango_coverage_copy:
  * @coverage: a #PangoCoverage
  * 
- * Copy an existing #PangoCoverage. (This function may now be unecessary 
- * since we refcount the structure. Mail otaylor@redhat.com if you
- * use it.)
+ * Copy an existing #PangoCoverage. (This function may now be unnecessary 
+ * since we refcount the structure. File a bug if you use it.)
  * 
  * Return value: the newly allocated #PangoCoverage,
  *               with a reference count of one, which
@@ -357,7 +356,7 @@ pango_coverage_max (PangoCoverage *coverage,
  * @bytes: location to store result (must be freed with g_free())
  * @n_bytes: location to store size of result
  * 
- * Convert a PangoCoverage structure into a flat binary format
+ * Convert a #PangoCoverage structure into a flat binary format
  **/
 void
 pango_coverage_to_bytes   (PangoCoverage  *coverage,

@@ -103,7 +103,7 @@ pango_cairo_font_map_new (void)
  * 
  * Gets a default font map to use with Cairo. 
  * 
- * Return value: the default Cairo fontmap for Pango. This
+ * Return value: the default Cairo fontmap for #Pango. This
  *  object is owned by Pango and must not be freed.
  *
  * Since: 1.10
@@ -186,7 +186,7 @@ pango_cairo_font_map_create_context (PangoCairoFontMap *fontmap)
  * _pango_cairo_font_map_get_renderer:
  * @fontmap: a #PangoCairoFontmap
  * 
- * Gets the singleton PangoCairoRenderer for this fontmap.
+ * Gets the singleton #PangoCairoRenderer for this fontmap.
  * 
  * Return value: the singleton renderer
  **/

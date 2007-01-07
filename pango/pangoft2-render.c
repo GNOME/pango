@@ -546,7 +546,7 @@ pango_ft2_renderer_draw_trapezoid (PangoRenderer   *renderer,
 
 /**
  * pango_ft2_render_layout_subpixel:
- * @bitmap:    a FT_Bitmap to render the layout onto
+ * @bitmap:    a <type>FT_Bitmap</type> to render the layout onto
  * @layout:    a #PangoLayout
  * @x:         the X position of the left of the layout (in Pango units)
  * @y:         the Y position of the top of the layout (in Pango units)
@@ -583,7 +583,7 @@ pango_ft2_render_layout_subpixel (FT_Bitmap   *bitmap,
 
 /**
  * pango_ft2_render_layout:
- * @bitmap:    a FT_Bitmap to render the layout onto
+ * @bitmap:    a <type>FT_Bitmap</type> to render the layout onto
  * @layout:    a #PangoLayout
  * @x:         the X position of the left of the layout (in pixels)
  * @y:         the Y position of the top of the layout (in pixels)
@@ -601,7 +601,7 @@ pango_ft2_render_layout (FT_Bitmap   *bitmap,
 
 /**
  * pango_ft2_render_layout_line_subpixel:
- * @bitmap:    a FT_Bitmap to render the line onto
+ * @bitmap:    a <type>FT_Bitmap</type> to render the line onto
  * @line:      a #PangoLayoutLine
  * @x:         the x position of start of string (in Pango units)
  * @y:         the y position of baseline (in Pango units)
@@ -638,7 +638,7 @@ pango_ft2_render_layout_line_subpixel (FT_Bitmap       *bitmap,
 
 /**
  * pango_ft2_render_layout_line:
- * @bitmap:    a FT_Bitmap to render the line onto
+ * @bitmap:    a <type>FT_Bitmap</type> to render the line onto
  * @line:      a #PangoLayoutLine
  * @x:         the x position of start of string (in pixels)
  * @y:         the y position of baseline (in pixels)

@@ -684,7 +684,7 @@ append_engines (GSList **engine_list,
  *  handle this script.
  * 
  * Finds engines in the map that handle the given script. The returned
- * lists should be fred with g_slist_free, but the engines in the
+ * lists should be freed with g_slist_free, but the engines in the
  * lists are owned by GLib and will be kept around permanently, so
  * they should not be unref'ed.
  *

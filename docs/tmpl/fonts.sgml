@@ -9,7 +9,7 @@ Structures representing abstract fonts
 Pango supports a flexible architecture where a
 particular rendering architecture can supply an
 implementation of fonts. The #PangoFont structure
-represents an abstract rendering-system-indepent font.
+represents an abstract rendering-system-independent font.
 Pango provides routines to list available fonts, and
 to load a font of a given description.
 </para>
@@ -532,9 +532,9 @@ The #GObject type for #PangoFontMetrics.
 The #PangoFont structure is used to represent
 a font in a rendering-system-independent matter.
 To create an implementation of a #PangoFont,
-the rendering-system specific code should malloc
+the rendering-system specific code should allocate
 a larger structure that contains a nested
-#PangoFont, fill in the klass member of
+#PangoFont, fill in the <structfield>klass</structfield> member of
 the nested #PangoFont with a pointer to
 a appropriate #PangoFontClass, then call
 pango_font_init() on the structure.
@@ -760,8 +760,8 @@ The #PangoFontMap represents the set of fonts available for a
 particular rendering system. This is a virtual object with
 implementations being specific to particular rendering systems.  To
 create an implementation of a #PangoFontMap, the rendering-system
-specific code should malloc a larger structure that contains a nested
-#PangoFontMap, fill in the klass member of the nested #PangoFontMap with a
+specific code should allocate a larger structure that contains a nested
+#PangoFontMap, fill in the <structfield>klass</structfield> member of the nested #PangoFontMap with a
 pointer to a appropriate #PangoFontMapClass, then call
 pango_font_map_init() on the structure.
 </para>

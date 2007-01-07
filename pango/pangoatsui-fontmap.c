@@ -1,5 +1,5 @@
 /* Pango
- * pangatsui-fontmap.c
+ * pangoatsui-fontmap.c
  *
  * Copyright (C) 2000-2003 Red Hat, Inc.
  * Copyright (C) 2005 Imendio AB

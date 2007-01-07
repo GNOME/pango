@@ -271,7 +271,7 @@ glyph index.
 <!-- ##### STRUCT PangoXFontCache ##### -->
 <para>
 A #PangoXFontCache caches
-#XFontStructs for a single display by their XLFD name. 
+<type>XFontStructs</type> for a single display by their XLFD name. 
 </para>
 
 

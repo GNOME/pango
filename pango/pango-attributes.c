@@ -951,9 +951,9 @@ pango_attr_shape_new_with_data (const PangoRectangle  *ink_rect,
  * @logical_rect: logical rectangle to assign to each character
  * 
  * Create a new shape attribute. A shape is used to impose a
- * particular ink and logical rect on the result of shaping a
+ * particular ink and logical rectangle on the result of shaping a
  * particular glyph. This might be used, for instance, for
- * embedding a picture or a widget inside a PangoLayout.
+ * embedding a picture or a widget inside a #PangoLayout.
  * 
  * Return value: the newly allocated #PangoAttribute, which should be
  *               freed with pango_attribute_destroy().
@@ -1410,7 +1410,7 @@ pango_attr_list_change (PangoAttrList  *list,
  * of each attribute in @other in sequence (offset in position by @pos).
  *
  * This operation proves useful for, for instance, inserting
- * a preedit string in the middle of an edit buffer.
+ * a pre-edit string in the middle of an edit buffer.
  **/
 void
 pango_attr_list_splice (PangoAttrList *list,
@@ -1820,7 +1820,7 @@ pango_attr_iterator_get_font (PangoAttrIterator     *iterator,
 /**
  * pango_attr_list_filter:
  * @list: a #PangoAttrList
- * @func: callback function; returns %TRUE if an atttribute
+ * @func: callback function; returns %TRUE if an attribute
  *        should be filtered out.
  * @data: Data to be passed to @func
  * 

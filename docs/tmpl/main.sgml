@@ -49,7 +49,7 @@ fields:
 @shape_engine: the engine for doing rendering-system-dependent processing.
 @lang_engine: the engine for doing rendering-system-independent processing.
 @font: the font for this segment.
-@level: the bidrectional level for this segment.
+@level: the bidirectional level for this segment.
 @language: the detected language for this segment.
 @extra_attrs: extra attributes for this segment.
 
@@ -382,7 +382,7 @@ about the attributes of a single character.
 	and @is_word_end set for some character.
 @is_sentence_boundary: is a sentence boundary.
         There are two ways to divide sentences. The first assigns all
-	intersentence whitespace/control/format chars to some sentence,
+	inter-sentence whitespace/control/format chars to some sentence,
 	so all chars are in some sentence; @is_sentence_boundary denotes
 	the boundaries there. The second way doesn't assign
 	between-sentence spaces, etc. to any sentence, so

@@ -315,7 +315,7 @@ pango_x_font_new (PangoFontMap *fontmap, const char *spec, int size)
  *
  * Loads up a logical font based on a "fontset" style text
  * specification. This is not remotely useful (Pango API's generally
- * work in terms of PangoFontDescription) and the result may not
+ * work in terms of #PangoFontDescription) and the result may not
  * work correctly in all circumstances. Use of this function should
  * be avoided.
  *
@@ -1450,7 +1450,7 @@ pango_x_find_glyph (PangoFont *font,
  * you should generally use PANGO_GET_UNKNOWN_GLYPH() instead,
  * since that may return a glyph that provides a better representation
  * of a particular char. (E.g., by showing hex digits, or a glyph
- * representive of a certain Unicode range.)
+ * representative of a certain Unicode range.)
  * 
  * Return value: a glyph index into @font.
  **/

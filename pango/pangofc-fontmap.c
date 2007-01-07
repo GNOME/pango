@@ -881,7 +881,7 @@ pango_fc_font_map_new_font (PangoFontMap               *fontmap,
 	{
 	  FcMatrix fc_matrix;
 	  
-	  /* FontConfig has the Y axis pointing up, Pango, down.
+	  /* Fontconfig has the Y axis pointing up, Pango, down.
 	   */
 	  fc_matrix.xx = pango_matrix->xx;
 	  fc_matrix.xy = - pango_matrix->xy;
@@ -1436,7 +1436,7 @@ cleanup_font (gpointer        key,
  * 
  * Clears all cached information for the fontmap and marks
  * all fonts open for the fontmap as dead. (See the shutdown()
- * virtual function of PangoFcFont.) This function might be used
+ * virtual function of #PangoFcFont.) This function might be used
  * by a backend when the underlying windowing system for the font
  * map exits. This function is only intended to be called from
  * only for backend implementations deriving from #PangoFcFontmap.

@@ -1,3 +1,58 @@
+2007-01-07  Behdad Esfahbod  <behdad@gnome.org>
+
+	* docs/tmpl/engines.sgml:
+	* docs/tmpl/fonts.sgml:
+	* docs/tmpl/freetype-fonts.sgml:
+	* docs/tmpl/layout.sgml:
+	* docs/tmpl/main.sgml:
+	* docs/tmpl/modules.sgml:
+	* docs/tmpl/opentype.sgml:
+	* docs/tmpl/pango-renderer.sgml:
+	* docs/tmpl/pangofc-font.sgml:
+	* docs/tmpl/pangofc-fontmap.sgml:
+	* docs/tmpl/text-attributes.sgml:
+	* docs/tmpl/win32-fonts.sgml:
+	* docs/tmpl/x-fonts.sgml:
+	* docs/tmpl/xft-fonts.sgml:
+	* pango/ellipsize.c:
+	* pango/fonts.c:
+	* pango/glyphstring.c:
+	* pango/modules.c:
+	* pango/pango-attributes.c:
+	* pango/pango-context.c:
+	* pango/pango-context.h:
+	* pango/pango-coverage.c:
+	* pango/pango-glyph-item.c:
+	* pango/pango-layout.c:
+	* pango/pango-layout.h:
+	* pango/pango-markup.c:
+	* pango/pango-matrix.c:
+	* pango/pango-ot-buffer.c:
+	* pango/pango-ot-info.c:
+	* pango/pango-ot-ruleset.c:
+	* pango/pango-renderer.c:
+	* pango/pango-script.c:
+	* pango/pango-utils.c:
+	* pango/pangoatsui-fontmap.c:
+	* pango/pangocairo-fontmap.c:
+	* pango/pangofc-font.c:
+	* pango/pangofc-font.h:
+	* pango/pangofc-fontmap.c:
+	* pango/pangofc-fontmap.h:
+	* pango/pangoft2-fontmap.c:
+	* pango/pangoft2-render.c:
+	* pango/pangoft2.c:
+	* pango/pangowin32-fontcache.c:
+	* pango/pangowin32-fontmap.c:
+	* pango/pangowin32.c:
+	* pango/pangox-fontmap.c:
+	* pango/pangox.c:
+	* pango/pangoxft-font.c:
+	* pango/pangoxft-fontmap.c:
+	* pango/pangoxft-render.c:
+	* pango/reorder-items.c:
+	Spell-check the docs.
+
 2007-01-07  Tor Lillqvist  <tml@novell.com>
 
 	* modules/basic/Makefile.am: Fix build on Win32 outside

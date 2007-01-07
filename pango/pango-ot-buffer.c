@@ -140,7 +140,7 @@ pango_ot_buffer_set_rtl (PangoOTBuffer *buffer,
  * 
  * Sets whether characters with a mark class should be forced to zero width.
  * This setting is needed for proper positioning of Arabic accents,
- * but will produce incorrect results with standard OpenType indic
+ * but will produce incorrect results with standard OpenType Indic
  * fonts.
  *
  * Since: 1.6

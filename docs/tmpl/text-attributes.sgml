@@ -513,7 +513,7 @@ The scale factor for three magnification steps (1.2 * 1.2 * 1.2).
 <!-- ##### STRUCT PangoColor ##### -->
 <para>
 The #PangoColor structure is used to
-represent a color in an uncalibrated RGB colorspace.
+represent a color in an uncalibrated RGB color-space.
 </para>
 
 @red: The red component of the color. This is a value between 0 and 65535, 

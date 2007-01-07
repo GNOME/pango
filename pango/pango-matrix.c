@@ -138,7 +138,7 @@ pango_matrix_scale (PangoMatrix *matrix,
  * 
  * Changes the transformation represented by @matrix to be the
  * transformation given by first rotating by @degrees degrees
- * counter-clokwise then applying the original transformation.
+ * counter-clockwise then applying the original transformation.
  *
  * Since: 1.6
  **/

@@ -7,7 +7,7 @@ Base fontmap class for Fontconfig-based backends
 <!-- ##### SECTION Long_Description ##### -->
 <para>
 PangoFcFontMap is a base class for font map implementations using the
-FontConfig and FreeType libraries. It is used in the
+Fontconfig and FreeType libraries. It is used in the
 <link linkend="pango-Xft-Fonts-and-Rendering">Xft</link> and
 <link linkend="pango-FreeType-Fonts-and-Rendering">FreeType</link>
 backends shipped with Pango, but can also be used when creating

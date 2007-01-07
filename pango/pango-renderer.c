@@ -1096,7 +1096,7 @@ pango_renderer_get_color (PangoRenderer   *renderer,
  * @renderer: a #PangoRenderer
  * @part: the part for which rendering has changed.
  * 
- * Informs Pango that the way that the renderering is done
+ * Informs Pango that the way that the rendering is done
  * for @part has changed in a way that would prevent multiple
  * pieces being joined together into one drawing call. For
  * instance, if a subclass of #PangoRenderer was to add a stipple
@@ -1131,7 +1131,7 @@ pango_renderer_part_changed (PangoRenderer    *renderer,
  * @renderer: a #PangoRenderer
  * @run: a #PangoLayoutRun
  * 
- * Set up the state of the PangoRenderer for rendering @run.
+ * Set up the state of the #PangoRenderer for rendering @run.
  *
  * Since: 1.8
  **/

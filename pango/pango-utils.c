@@ -85,10 +85,10 @@ pango_trim_string (const char *str)
 
 /**
  * pango_split_file_list:
- * @str: a G_SEARCHPATH_SEPARATOR separated list of filenames
+ * @str: a %G_SEARCHPATH_SEPARATOR separated list of filenames
  * 
- * Splits a G_SEARCHPATH_SEPARATOR-separated list of files, stripping
- * white space and subsituting ~/ with $HOME/.
+ * Splits a %G_SEARCHPATH_SEPARATOR-separated list of files, stripping
+ * white space and substituting ~/ with $HOME/.
  * 
  * Return value: a list of strings to be freed with g_strfreev()
  **/
@@ -286,7 +286,7 @@ pango_skip_space (const char **pos)
  * of [A-Za-z_] followed by zero or more [A-Za-z_0-9]
  * Leading white space is skipped.
  * 
- * Return value: %FALSE if a parse error occured. 
+ * Return value: %FALSE if a parse error occurred. 
  **/
 gboolean
 pango_scan_word (const char **pos, GString *out)
@@ -329,7 +329,7 @@ pango_scan_word (const char **pos, GString *out)
  * string with '"'. Instead a quoted string, '\"' represents
  * a literal quote. Leading white space outside of quotes is skipped.
  * 
- * Return value: %FALSE if a parse error occured.
+ * Return value: %FALSE if a parse error occurred.
  **/
 gboolean
 pango_scan_string (const char **pos, GString *out)
@@ -415,7 +415,7 @@ pango_scan_string (const char **pos, GString *out)
  * Scans an integer. 
  * Leading white space is skipped.
  * 
- * Return value: %FALSE if a parse error occured.
+ * Return value: %FALSE if a parse error occurred.
  **/
 gboolean
 pango_scan_int (const char **pos, int *out)
@@ -1092,7 +1092,7 @@ lang_info_compare (const void *key, const void *val)
 
 /* The following array is supposed to contain enough text to tickle all necessary fonts for each
  * of the languages in the following. Yes, it's pretty lame. Not all of the languages
- * in the following have sufficient text to excercise all the accents for the language, and
+ * in the following have sufficient text to exercise all the accents for the language, and
  * there are obviously many more languages to include as well.
  */
 static const LangInfo lang_texts[] = {
@@ -1166,7 +1166,7 @@ pango_language_get_sample_string (PangoLanguage *language)
  * pango_log2vis_get_embedding_levels:
  * @text:      the text to itemize.
  * @length:    the number of bytes (not characters) to process, or -1
- *             if @text is nul-terminated and the legnth should be calculated.
+ *             if @text is nul-terminated and the length should be calculated.
  * @pbase_dir: input base direction, and output resolved direction.
  *
  * This will return the bidirectional embedding levels of the input paragraph

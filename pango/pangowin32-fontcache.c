@@ -162,7 +162,7 @@ cache_entry_unref (PangoWin32FontCache *cache,
  * @cache: a #PangoWin32FontCache
  * @logfont: a pointer to a LOGFONT structure describing the font to load.
  * 
- * Creates a #HFONT from a LOGFONT. The
+ * Creates a HFONT from a LOGFONT. The
  * result may be newly loaded, or it may have been previously
  * stored
  * 

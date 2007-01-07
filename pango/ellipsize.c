@@ -48,7 +48,7 @@ typedef struct _LineIter       LineIter;
  * us to use a gap position at x=line_width and still have it be part of
  * of a run.
  *
- * We grow the grap out one "span" at a time, where a span is simply a
+ * We grow the gap out one "span" at a time, where a span is simply a
  * consecutive run of clusters that we can't interrupt with an ellipsis.
  *
  * When choosing whether to grow the gap at the start or the end, we
@@ -236,7 +236,7 @@ line_iter_prev_cluster (EllipsizeState *state,
  * - Starts a grapheme - checked here
  *
  * In the future we'd also like to add a check for cursive connectivity here.
- * This should be an addition to PangoGlyphVisAttr
+ * This should be an addition to #PangoGlyphVisAttr
  *
  */
 
@@ -715,7 +715,7 @@ current_width (EllipsizeState *state)
  * @line: a #PangoLayoutLine
  * @attrs: Attributes being used for itemization/shaping
  * 
- * Given a PangoLayoutLine with the runs still in logical order, ellipsize
+ * Given a #PangoLayoutLine with the runs still in logical order, ellipsize
  * it according the layout's policy to fit within the set width of the layout.
  **/
 void

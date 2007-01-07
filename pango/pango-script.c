@@ -269,11 +269,11 @@ get_pair_index (gunichar ch)
  * pango_script_iter_next:
  * @iter: a #PangoScriptIter
  * 
- * Advances a #PangoScriptIter to the next range. If the iter
+ * Advances a #PangoScriptIter to the next range. If @iter
  * is already at the end, it is left unchanged and %FALSE
  * is returned.
  * 
- * Return value: %TRUE if the iter was succesfully advanced.
+ * Return value: %TRUE if @iter was successfully advanced.
  *
  * Since: 1.4
  **/
@@ -419,7 +419,7 @@ script_for_lang_compare (gconstpointer key,
 
 /**
  * pango_language_includes_script:
- * @language: a PangoLanguage
+ * @language: a #PangoLanguage
  * @script: a #PangoScript
  * 
  * Determines if @script is one of the scripts used to
@@ -477,7 +477,7 @@ pango_language_includes_script (PangoLanguage *language,
  * representative of that script. This will usually be the
  * most widely spoken or used language written in that script:
  * for instance, the sample language for %PANGO_SCRIPT_CYRILLIC
- * is <literal>ru</literal> (Russian), the sample lanugage
+ * is <literal>ru</literal> (Russian), the sample language
  * for %PANGO_SCRIPT_ARABIC is <literal>ar</literal>.
  *
  * For some
