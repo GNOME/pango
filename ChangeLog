@@ -1,3 +1,8 @@
+2007-01-07  Tor Lillqvist  <tml@novell.com>
+
+	* modules/basic/Makefile.am: Fix build on Win32 outside
+	srcdir. (#392789, J. Ali Harlow)
+
 2007-01-04  Behdad Esfahbod  <behdad@gnome.org>
 
 	* pango/pango-utils.c: Improve docs, and mention
