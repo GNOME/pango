@@ -1,3 +1,8 @@
+2007-01-07  Tor Lillqvist  <tml@novell.com>
+
+	* modules/basic/Makefile.am: Fix build on Win32 outside
+	srcdir. (#392789, J. Ali Harlow)
+
 2006-12-19  Behdad Esfahbod  <behdad@gnome.org>
 
 	Bug 326099 – Setting width, indentation and ellipsizing doesn't work

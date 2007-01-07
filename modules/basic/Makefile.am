@@ -53,7 +53,7 @@ libpango_basic_win32_la_SOURCES = basic-win32.c
 libpango_basic_win32_la_CFLAGS = -DPANGO_MODULE_PREFIX=_pango_basic_win32
 
 if HAVE_USP10_H
-basic-win32.c: usp10.h
+$(srcdir)/basic-win32.c: usp10.h
 # Do it like this to avoid getting other headers from where usp10.h is
 usp10.h: $(USP10_H)
 	cp $(USP10_H) usp10.h
