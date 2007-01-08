@@ -5,6 +5,7 @@
 PangoContext
 PangoItem
 PangoAnalysis
+PANGO_ANALYSIS_FLAG_CENTERED_BASELINE
 PangoDirection
 PANGO_TYPE_DIRECTION
 PangoGravity

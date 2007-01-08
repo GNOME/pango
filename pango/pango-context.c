@@ -959,7 +959,7 @@ itemize_state_add_character (ItemizeState     *state,
 	break;
     }
 
-  state->item->analysis.centered_baseline = state->centered_baseline;
+  state->item->analysis.flags = state->centered_baseline ? PANGO_ANALYSIS_FLAG_CENTERED_BASELINE : 0;
 
   state->item->analysis.language = state->derived_lang;
   

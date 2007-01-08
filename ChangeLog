@@ -1,3 +1,16 @@
+2007-01-08  Behdad Esfahbod  <behdad@gnome.org>
+
+	* docs/pango-sections.txt:
+	* docs/tmpl/glyphs.sgml:
+	* docs/tmpl/main.sgml:
+	* pango/pango-context.c (itemize_state_add_character):
+	* pango/pango-item.h:
+	* pango/pango-layout.c (pango_layout_run_get_extents):
+	* pango/pango-renderer.c (pango_renderer_draw_layout_line):
+	Don't introduce bitfields in public struct and rename PangoAnalysis.
+	centered_baseline to PangoAnalysis.flags and introduce
+	PANGO_ANALYSIS_FLAGS_CENTERED_BASELINE.
+
 2007-01-07  Behdad Esfahbod  <behdad@gnome.org>
 
 	* docs/tmpl/engines.sgml:

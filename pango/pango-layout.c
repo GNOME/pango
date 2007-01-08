@@ -4107,7 +4107,7 @@ pango_layout_run_get_extents (PangoLayoutRun *run,
 
   pango_layout_get_item_properties (run->item, &properties);
 
-  if (!run_logical && run->item->analysis.centered_baseline)
+  if (!run_logical && (run->item->analysis.flags & PANGO_ANALYSIS_FLAG_CENTERED_BASELINE))
     run_logical = &logical;
 
   if (!run_logical && (properties.uline != PANGO_UNDERLINE_NONE || properties.strikethrough))
@@ -4180,7 +4180,7 @@ pango_layout_run_get_extents (PangoLayoutRun *run,
       pango_font_metrics_unref (metrics);
     }
 
-  if (run->item->analysis.centered_baseline)
+  if (run->item->analysis.flags & PANGO_ANALYSIS_FLAG_CENTERED_BASELINE)
     properties.rise += run_logical->y + run_logical->height / 2;
 
   if (properties.rise != 0)

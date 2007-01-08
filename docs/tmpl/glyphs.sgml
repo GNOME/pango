@@ -254,6 +254,15 @@ horizontal origin.
 @rect: 
 
 
+<!-- ##### FUNCTION pango_matrix_transform_pixel_rectangle ##### -->
+<para>
+
+</para>
+
+@matrix: 
+@rect: 
+
+
 <!-- ##### FUNCTION pango_matrix_get_font_scale_factor ##### -->
 <para>
 

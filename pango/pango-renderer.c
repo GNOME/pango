@@ -481,7 +481,7 @@ pango_renderer_draw_layout_line (PangoRenderer    *renderer,
       PangoRectangle ink_rect, *ink = NULL;
       PangoRectangle logical_rect, *logical = NULL;
 
-      if (run->item->analysis.centered_baseline)
+      if (run->item->analysis.flags & PANGO_ANALYSIS_FLAG_CENTERED_BASELINE)
         logical = &logical_rect;
 
       pango_renderer_prepare_run (renderer, run);
@@ -515,7 +515,7 @@ pango_renderer_draw_layout_line (PangoRenderer    *renderer,
 
       state.logical_rect_end = x + x_off + glyph_string_width;
 
-      if (run->item->analysis.centered_baseline)
+      if (run->item->analysis.flags & PANGO_ANALYSIS_FLAG_CENTERED_BASELINE)
         rise += logical_rect.y + logical_rect.height / 2;
 
 
