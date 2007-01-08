@@ -1,5 +1,15 @@
 2007-01-08  Behdad Esfahbod  <behdad@gnome.org>
 
+	* === Released 1.15.3 ===
+
+	* configure.in: Version 1.15.3
+
+	* NEWS: Updated.
+
+2007-01-08  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 351496 – PangoAnalysis::gravity breaks binary compatibility
+
 	* docs/pango-sections.txt:
 	* docs/tmpl/glyphs.sgml:
 	* docs/tmpl/main.sgml:
@@ -110,7 +120,7 @@
 
 2007-01-03  Changwoo Ryu  <cwryu@debian.org>
 
-	Bug 388702 - Crash when there's no Hangul glyph in the font.
+	Bug 388702 – Crash when there's no Hangul glyph in the font.
 	
 	* modules/hangul/hangul-fc.c (render_syllable): Do not try to
 	render unknown syllable glyphs as jamos.

@@ -1,3 +1,61 @@
+Overview of changes between 1.15.2 and 1.15.3
+==============================================
+- Fix Hangul crasher and other Hangul bugs introduced in 1.15.2
+- Spell-checked docs
+- Build fixes
+- Don't introduce bitfields in public structs.  This changes some public API
+  that was broken in the 1.15 series.  The new struct is backward compatible
+  with the older Pango series, but not with earlier 1.15.x devel releases.
+
+- New Public API:
+
+  * PangoAnalysis.flags and PANGO_ANALYSIS_FLAGS_CENTERED_BASELINE.  These are
+    mostly only useful for the vertical text support in Pango, but language
+    bindings probably want to update their bindings for PangoAnalysis to
+    include these.
+
+  * New PangoMatrix methods:
+
+	pango_matrix_transform_distance()
+	pango_matrix_transform_point()
+	pango_matrix_transform_rectangle()
+	pango_matrix_transform_pixel_rectangle()
+
+    The transform_rectangle methods are particularly useful when an
+    app/toolkit wants to know the extents of a rotated layout in device
+    coordinates.  It will be used by Gtk+ for example, and is used by the
+    pango-view tool too.  The _pixel_ variant takes a PangoRectangle in device
+    units instead of Pango units.
+
+  * Unit conversion helpers:
+
+	pango_units_from_double()
+	pango_units_to_double()
+	pango_extents_to_pixels()
+
+    The first two just convert between Pango units (fixed precision) and
+    double floating-point numbers.  The current implementations are as simple
+    as "(int)floor (d * PANGO_SCALE + 0.5)" and "(double)i / PANGO_SCALE", but
+    the idea is to have optimized versions of these that do not use the FPU in
+    the future.  That will be appreciated by embedded devices without FPU
+    units.  Since the functionality can be generally useful, the API is made
+    public.
+
+    The pango_extents_to_pixels() function in conjunction with
+    pango_matrix_transform_rectangle() makes it possible to convert extents to
+    device space and round then, instead of having to transform rounded
+    user-space extents.
+
+- Bugs fixed in this release:
+	Bug 351496 – PangoAnalysis::gravity breaks binary compatibility
+	Bug 388702 – Crash when there's no Hangul glyph in the font.
+	Bug 384543 – FcFontMatch misuse
+	Bug 392789 – vpath build fails in basic module
+		     Patch from J. Ali Harlow
+	Bug 390877 – Don't feed pango-features.h to glib-mkenums
+		     Patch from Yevgen Muntyan
+
+
 Overview of changes between 1.15.1 and 1.15.2
 ==============================================
 * Engines:
