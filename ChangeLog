@@ -1,3 +1,7 @@
+2007-01-13  Hans Breuer  <hans@breuer.org>
+
+	* pango/makefile.msc pango/opentype/makefile.msc : updated
+
 2007-01-08  Behdad Esfahbod  <behdad@gnome.org>
 
 	* === Released 1.15.3 ===

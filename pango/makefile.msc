@@ -7,7 +7,7 @@ PERL = perl
 
 # Possibly override Pango version from build/win32/module.defs
 PANGO_VER = 1.0
-PANGO_MODULE_VERSION = 1.2.0
+PANGO_MODULE_VERSION = 1.6.0
 
 # INCLUDES = -I .. -I .
 # DEFINES = -DPACKAGE=\"Pango\" -DVERSION=\"$(PANGO_VER)\"
@@ -87,6 +87,8 @@ PKG_LINK = $(GLIB_LIBS) $(LIBICONV_LIBS) \
 !IFDEF OBJS_pango
 OBJECTS = \
 	pango-enum-types.obj \
+	\
+	module-defs-lang.obj \
 	\
 	break.obj \
 	ellipsize.obj \
@@ -207,6 +209,9 @@ module-defs-win32.c : module-defs-win32.c.win32
 module-defs-fc.c : module-defs-fc.c.win32
 	copy module-defs-fc.c.win32 module-defs-fc.c
 
+module-defs-lang.c : module-defs-lang.c.win32
+	copy module-defs-lang.c.win32 module-defs-lang.c
+
 pango_headers=		   \
 	pango.h		   \
 	pango-attributes.h \
@@ -265,6 +270,6 @@ $(PRJ_TOP)\config.h: $(PRJ_TOP)\config.h.win32
 
 
 .c.obj :
-	$(CC) $(CFLAGS) -GD -c $(PKG_CFLAGS) -DPANGO_VERSION=\"$(PANGO_VER)\" $<
+	$(CC) $(CFLAGS) -GD -c $(PKG_CFLAGS) $<
 
 !ENDIF #PACKAGE
