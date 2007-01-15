@@ -1,5 +1,10 @@
 2007-01-15  Tor Lillqvist  <tml@novell.com>
 
+	* configure.in: Don't check for X and don't warn about missing
+	fontconfig on Win32. (#392628, Yevgen Muntyan)
+
+2007-01-15  Tor Lillqvist  <tml@novell.com>
+
 	* configure.in: Automatically use -mms-bitfields on Windows when
 	building with gcc. (#394453)
 

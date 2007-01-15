@@ -198,15 +198,18 @@ if test "x$enable_rebuilds" = "xyes" && \
 fi
 AC_SUBST(REBUILD)
 
-AC_PATH_XTRA
+have_x=false
+if test "x$pango_os_win32" != xyes; then
+  AC_PATH_XTRA
 
-if test x$no_x = xyes ; then
-  AC_MSG_WARN([X development libraries not found])
-  have_x=false
-else
-  X_LIBS="$X_LIBS -lX11"
-  have_x=true
-  AC_DEFINE(HAVE_X, 1, [Have X libraries])
+  if test x$no_x = xyes ; then
+    AC_MSG_WARN([X development libraries not found])
+    have_x=false
+  else
+    X_LIBS="$X_LIBS -lX11"
+    have_x=true
+    AC_DEFINE(HAVE_X, 1, [Have X libraries])
+  fi
 fi
 AM_CONDITIONAL(HAVE_X, $have_x) 
 
@@ -252,7 +255,7 @@ if $have_fontconfig ; then
       AC_DEFINE(HAVE_XFT, 1, [Have Xft library])
     fi
   fi
-else
+elif test "x$pango_os_win32" != xyes; then
   AC_MSG_WARN([No fontconfig found, skipping tests for FreeType and Xft])
 fi
 
