@@ -1,3 +1,8 @@
+2007-01-15  Tor Lillqvist  <tml@novell.com>
+
+	* configure.in: Automatically use -mms-bitfields on Windows when
+	building with gcc. (#394453)
+
 2007-01-13  Hans Breuer  <hans@breuer.org>
 
 	* pango/makefile.msc pango/opentype/makefile.msc : updated
