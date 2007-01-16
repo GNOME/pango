@@ -424,6 +424,15 @@ The #GObject type for #PangoAlignment.
 
 
 
+<!-- ##### FUNCTION pango_layout_get_unknown_glyphs_count ##### -->
+<para>
+
+</para>
+
+@layout: 
+@Returns: 
+
+
 <!-- ##### FUNCTION pango_layout_get_log_attrs ##### -->
 <para>
 

@@ -469,6 +469,7 @@ pango_layout_get_single_paragraph_mode
 PangoAlignment
 PANGO_TYPE_ALIGNMENT
 
+pango_layout_get_unknown_glyphs_count
 pango_layout_get_log_attrs
 
 pango_layout_index_to_pos

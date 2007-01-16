@@ -156,7 +156,9 @@ void               pango_layout_set_ellipsize (PangoLayout        *layout,
 PangoEllipsizeMode pango_layout_get_ellipsize (PangoLayout        *layout);
 gboolean           pango_layout_is_ellipsized (PangoLayout        *layout);
 
-void           pango_layout_context_changed (PangoLayout    *layout);
+int      pango_layout_get_unknown_glyphs_count (PangoLayout    *layout);
+
+void     pango_layout_context_changed (PangoLayout    *layout);
 
 void     pango_layout_get_log_attrs (PangoLayout    *layout,
 				     PangoLogAttr  **attrs,
@@ -206,6 +208,7 @@ PangoLayoutLine *pango_layout_get_line_readonly    (PangoLayout    *layout,
 						    int             line);
 GSList *         pango_layout_get_lines            (PangoLayout    *layout);
 GSList *         pango_layout_get_lines_readonly   (PangoLayout    *layout);
+
 
 #define PANGO_TYPE_LAYOUT_LINE (pango_layout_line_get_type ())
 

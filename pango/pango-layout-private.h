@@ -44,6 +44,8 @@ struct _PangoLayout
   int indent;			/* amount by which first line should be shorter */
   int spacing;			/* spacing between lines */
 
+  int unknown_glyphs_count;	/* number of unknown glyphs */
+
   guint justify : 1;
   guint alignment : 2;
 

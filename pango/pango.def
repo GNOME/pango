@@ -234,6 +234,7 @@ EXPORTS
 	pango_layout_get_tabs
 	pango_layout_get_text
 	pango_layout_get_type
+	pango_layout_get_unknown_glyphs_count
 	pango_layout_get_width
 	pango_layout_get_wrap
 	pango_layout_index_to_line_x

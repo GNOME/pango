@@ -197,6 +197,7 @@ pango_layout_init (PangoLayout *layout)
   layout->lines = NULL;
 
   layout->tab_width = -1;
+  layout->unknown_glyphs_count = -1;
 
   layout->wrap = PANGO_WRAP_WORD;
   layout->is_wrapped = FALSE;
@@ -307,8 +308,10 @@ pango_layout_copy (PangoLayout *src)
     layout->tabs = pango_tab_array_copy (src->tabs);
   layout->wrap = src->wrap;  
   layout->ellipsize = src->ellipsize;
+
+  layout->unknown_glyphs_count = -1;
   
-  /* is_wrapped, is_ellipsized, log_attrs, lines
+  /* unknown_glyphs_count, is_wrapped, is_ellipsized, log_attrs, lines
    * fields are updated by check_lines */
 
   return layout;
@@ -1056,6 +1059,59 @@ pango_layout_set_markup_with_accel (PangoLayout    *layout,
   pango_layout_set_attributes (layout, list);
   pango_attr_list_unref (list);
   g_free (text);
+}
+
+/**
+ * pango_layout_get_unknown_glyphs_count:
+ * @layout: a #PangoLayout
+ * 
+ * Counts the number unknown glyphs in @layout.  That is, zero if
+ * glyphs for all characters in the layout text were found, or more
+ * than zero otherwise.
+ *
+ * Return value: The number of unknown glyphs in @layout.
+ *
+ * Since: 1.16
+ */
+int
+pango_layout_get_unknown_glyphs_count (PangoLayout *layout)
+{
+    PangoLayoutLine *line;
+    PangoLayoutRun *run;
+    GSList *lines_list;
+    GSList *runs_list;
+    int i, count = 0;
+
+    g_return_val_if_fail (PANGO_IS_LAYOUT (layout), 0);
+
+    pango_layout_check_lines (layout);
+
+    if (layout->unknown_glyphs_count >= 0)
+      return layout->unknown_glyphs_count;
+
+    lines_list = layout->lines;
+    while (lines_list)
+      {
+        line = lines_list->data;
+        runs_list = line->runs;
+
+        while (runs_list)
+          {
+            run = runs_list->data;
+
+            for (i = 0; i < run->glyphs->num_glyphs; i++)
+              {
+                if (run->glyphs->glyphs[i].glyph & PANGO_GLYPH_UNKNOWN_FLAG)
+                    count++;
+              }
+
+            runs_list = runs_list->next;
+          }
+        lines_list = lines_list->next;
+      }
+
+    layout->unknown_glyphs_count = count;
+    return count;
 }
 
 /**
@@ -2538,6 +2594,8 @@ pango_layout_clear_lines (PangoLayout *layout)
       g_free (layout->log_attrs);
       layout->log_attrs = NULL;
     }
+
+  layout->unknown_glyphs_count = -1;
   layout->logical_rect_cached = FALSE;
   layout->ink_rect_cached = FALSE;
   layout->is_ellipsized = FALSE;
