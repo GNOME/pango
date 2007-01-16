@@ -849,15 +849,13 @@ itemize_state_init (ItemizeState      *state,
 
   update_end (state);
 
-  state->centered_baseline = state->context->resolved_gravity == PANGO_GRAVITY_EAST
-			  || state->context->resolved_gravity == PANGO_GRAVITY_WEST;
-
   if (pango_font_description_get_set_fields (state->font_desc) & PANGO_FONT_MASK_GRAVITY)
     state->font_desc_gravity = pango_font_description_get_gravity (state->font_desc);
   else
     state->font_desc_gravity = PANGO_GRAVITY_AUTO;
 
   state->gravity = PANGO_GRAVITY_AUTO;
+  state->centered_baseline = FALSE;
   state->gravity_hint = state->context->gravity_hint;
   state->resolved_gravity = PANGO_GRAVITY_AUTO;
   state->derived_lang = NULL;
@@ -1220,22 +1218,22 @@ itemize_state_update_for_new_run (ItemizeState *state)
       PangoGravity old_gravity = state->resolved_gravity;
 
       if (state->font_desc_gravity != PANGO_GRAVITY_AUTO)
-	state->resolved_gravity = state->font_desc_gravity;
+        {
+	  state->resolved_gravity = state->font_desc_gravity;
+	  state->centered_baseline = PANGO_GRAVITY_IS_VERTICAL (state->resolved_gravity);
+	}
       else
         {
-	  PangoGravity gravity;
-	  PangoGravityHint gravity_hint;
+	  PangoGravity gravity = state->gravity;
+	  PangoGravityHint gravity_hint = state->gravity_hint;
 
-	  gravity = state->gravity;
 	  if (G_LIKELY (gravity == PANGO_GRAVITY_AUTO))
 	    gravity = state->context->resolved_gravity;
 
-	  gravity_hint = state->gravity_hint;
-
-	  gravity = pango_gravity_get_for_script (state->script,
-						  gravity,
-						  gravity_hint);
-	  state->resolved_gravity = gravity;
+	  state->centered_baseline = PANGO_GRAVITY_IS_VERTICAL (gravity);
+	  state->resolved_gravity = pango_gravity_get_for_script (state->script,
+								  gravity,
+								  gravity_hint);
 	}
 
       if (old_gravity != state->resolved_gravity)

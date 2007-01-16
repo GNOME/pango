@@ -1,5 +1,11 @@
 2007-01-16  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango/pango-context.c (itemize_state_init),
+	(itemize_state_update_for_new_run): Update  centered_baseline in
+	presence of gravity attributes.
+
+2007-01-16  Behdad Esfahbod  <behdad@gnome.org>
+
 	* examples/cairotwisted.c (draw_text):
 	* pango/pangocairo-win32font.c (max_glyph_width):
 	* pango/pangofc-font.c (max_glyph_width):
