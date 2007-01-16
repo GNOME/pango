@@ -119,11 +119,11 @@ make_layout(PangoContext *context,
   if (opt_width > 0)
     {
       pango_layout_set_wrap (layout, opt_wrap);
-      pango_layout_set_width (layout, (opt_width * opt_dpi * PANGO_SCALE + 32) / 72);
+      pango_layout_set_width (layout, (opt_width * opt_dpi * PANGO_SCALE + 36) / 72);
     }
 
   if (opt_indent != 0)
-    pango_layout_set_indent (layout, (opt_indent * opt_dpi * PANGO_SCALE + 32) / 72);
+    pango_layout_set_indent (layout, (opt_indent * opt_dpi * PANGO_SCALE + 36) / 72);
 
   base_dir = pango_context_get_base_dir (context);
   pango_layout_set_alignment (layout,

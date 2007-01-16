@@ -1,5 +1,10 @@
 2007-01-16  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango-view/viewer-render.c (make_layout): Fix typo when rounding
+	to points.
+
+2007-01-16  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 397337 – Use is_ellipsized and is_wrapped to optimize property
 	changes
 
