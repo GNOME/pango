@@ -933,6 +933,7 @@ pango/opentype/Makefile
 pango/pango.rc
 pango/pangoft2.rc
 pango/pangowin32.rc
+pango-view/Makefile
 modules/Makefile
 modules/arabic/Makefile
 modules/basic/Makefile

@@ -1,5 +1,46 @@
 2007-01-16  Behdad Esfahbod  <behdad@gnome.org>
 
+	* examples/pango-view.c:
+	* examples/pangocairo-view.c:
+	* examples/pangoft2-view.c:
+	* examples/pangox-view.c:
+	* examples/pangoxft-view.c:
+	* examples/renderdemo.c:
+	* examples/renderdemo.h:
+	* examples/test-arabic.txt:
+	* examples/test-chinese.txt:
+	* examples/test-devanagari.txt:
+	* examples/test-gurmukhi.txt:
+	* examples/test-hebrew.txt:
+	* examples/test-ipa.txt:
+	* examples/test-lao.txt:
+	* examples/test-latin.txt:
+	* examples/test-mixed.txt:
+	* examples/test-syriac.txt:
+	* examples/test-tamil.txt:
+	* examples/test-thai.txt:
+	* examples/test-tibetan.txt:
+	* examples/viewer-cairo.c:
+	* examples/viewer-cairo.h:
+	* examples/viewer-main.c:
+	* examples/viewer-pangocairo.c:
+	* examples/viewer-pangoft2.c:
+	* examples/viewer-pangox.c:
+	* examples/viewer-pangoxft.c:
+	* examples/viewer-win32.c:
+	* examples/viewer-x.c:
+	* examples/viewer-x.h:
+	* examples/viewer.h:
+	Move into pango-view/
+
+	* Makefile.am:
+	* configure.in:
+	* examples/Makefile.am:
+	* pango-view/Makefile.am:
+	Update.
+
+2007-01-16  Behdad Esfahbod  <behdad@gnome.org>
+
 	* examples/renderdemo.c (parse_enum): Oops. Replace GType* with GType.
 
 2007-01-16  Behdad Esfahbod  <behdad@gnome.org>
