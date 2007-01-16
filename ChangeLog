@@ -1,3 +1,8 @@
+2007-01-16  Behdad Esfahbod  <behdad@gnome.org>
+
+	* pango/pango-renderer.c (pango_renderer_draw_layout_line): Fix
+	background rendering being off in presence of rise attributes.
+
 2007-01-15  Tor Lillqvist  <tml@novell.com>
 
 	* configure.in: Don't check for X and don't warn about missing
