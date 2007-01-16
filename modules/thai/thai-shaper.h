@@ -79,10 +79,10 @@ thai_make_unknown_glyph (ThaiFontInfo *font_info, gunichar uc);
 void
 thai_engine_shape (PangoEngineShape *engine,
 		   PangoFont        *font,
-                   const char       *text,
-                   gint              length,
-                   const PangoAnalysis *analysis,
-                   PangoGlyphString *glyphs);
+		   const char       *text,
+		   gint              length,
+		   const PangoAnalysis *analysis,
+		   PangoGlyphString *glyphs);
 
 #endif /* __THAI_SHAPER_H__ */
 

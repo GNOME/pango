@@ -274,12 +274,12 @@ pango_gravity_get_for_script (PangoScript      script,
     default:
     case PANGO_GRAVITY_HINT_NATURAL:
       if (props.vert_dir == PANGO_VERTICAL_DIRECTION_NONE)
-        return PANGO_GRAVITY_SOUTH;
+	return PANGO_GRAVITY_SOUTH;
       if ((base_gravity   == PANGO_GRAVITY_EAST) ^
 	  (props.vert_dir == PANGO_VERTICAL_DIRECTION_BTT))
-        return PANGO_GRAVITY_SOUTH;
+	return PANGO_GRAVITY_SOUTH;
       else
-        return PANGO_GRAVITY_NORTH;
+	return PANGO_GRAVITY_NORTH;
 
     case PANGO_GRAVITY_HINT_STRONG:
       return base_gravity;
@@ -287,8 +287,8 @@ pango_gravity_get_for_script (PangoScript      script,
     case PANGO_GRAVITY_HINT_LINE:
       if ((base_gravity    == PANGO_GRAVITY_EAST) ^
 	  (props.horiz_dir == PANGO_DIRECTION_RTL))
-        return PANGO_GRAVITY_SOUTH;
+	return PANGO_GRAVITY_SOUTH;
       else
-        return PANGO_GRAVITY_NORTH;
+	return PANGO_GRAVITY_NORTH;
     }
 }

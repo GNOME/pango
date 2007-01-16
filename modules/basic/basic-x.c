@@ -372,8 +372,8 @@ conv_16bit (CharCache  *cache,
 
 static PangoGlyph
 conv_16bit_MSB_on (CharCache  *cache,
-	           GIConv      cd,
-	           const char *input)
+		   GIConv      cd,
+		   const char *input)
 {
   char outbuf[2];
 

@@ -194,7 +194,7 @@ TT_Error  Build_Arabic_Glyph_Properties (TT_CharMap        char_map,
 	MARK_GLYPH : SIMPLE_GLYPH;
       Arabic[j].glyph_index = TT_Char_Index (char_map, i);
       if (Arabic[j].glyph_index)
-        j++;
+	j++;
     }
   num_glyphs = j;
 
@@ -222,7 +222,7 @@ TT_Error  Build_Arabic_Glyph_Properties (TT_CharMap        char_map,
       classes[j]       = Arabic[i].class;
 
       if (glyph_indices[j - 1] != glyph_indices[j])
-        j++;
+	j++;
     }
   num_glyphs = j;
 
@@ -291,26 +291,26 @@ static joining_class  Get_Joining_Class (gunichar*   string,
   while (1)
     {
       if (pos == 0 && direction < 0)
-        return none;
+	return none;
 
       pos += direction;
 
       if (pos >= length)
-        return none;
+	return none;
 
       if (string[pos] >= 0x0620 &&
-          string[pos] < 0x0700)
-        j = arabic[string[pos] - 0x0620];
+	  string[pos] < 0x0700)
+	j = arabic[string[pos] - 0x0620];
       else if (string[pos] >= 0x0750 &&
-          string[pos] < 0x0780)
-        j = arabic_supplement[string[pos] - 0x0750];
+	  string[pos] < 0x0780)
+	j = arabic_supplement[string[pos] - 0x0750];
       else if (string[pos] == 0x200D)
-        return causing;
+	return causing;
       else
-        return none;
+	return none;
 
       if (!direction || j != transparent)
-        return j;
+	return j;
     }
 }
 
@@ -345,7 +345,7 @@ FT_Error  Arabic_Assign_Properties (gunichar    *string,
       if (previous == causing ||
 	  previous == left    ||
 	  previous == dual   )
-        if (current == right)
+	if (current == right)
 	  {
 	    properties[i] |= final_p;
 	    continue;
@@ -354,7 +354,7 @@ FT_Error  Arabic_Assign_Properties (gunichar    *string,
       /* R3 */
 
       if (current == left)
-        if (next == causing ||
+	if (next == causing ||
 	    next == right   ||
 	    next == dual   )
 	  {
@@ -367,8 +367,8 @@ FT_Error  Arabic_Assign_Properties (gunichar    *string,
       if (previous == causing ||
 	  previous == left    ||
 	  previous == dual   )
-        if (current == dual)
-          if (next == causing ||
+	if (current == dual)
+	  if (next == causing ||
 	      next == right   ||
 	      next == dual   )
 	    {
@@ -381,8 +381,8 @@ FT_Error  Arabic_Assign_Properties (gunichar    *string,
       if (previous == causing ||
 	  previous == left    ||
 	  previous == dual   )
-        if (current == dual)
-          if (!(next == causing ||
+	if (current == dual)
+	  if (!(next == causing ||
 		next == right   ||
 		next == dual   ))
 	    {
@@ -395,8 +395,8 @@ FT_Error  Arabic_Assign_Properties (gunichar    *string,
       if (!(previous == causing ||
 	    previous == left    ||
 	    previous == dual   ))
-        if (current == dual)
-          if (next == causing ||
+	if (current == dual)
+	  if (next == causing ||
 	      next == right   ||
 	      next == dual   )
 	    {

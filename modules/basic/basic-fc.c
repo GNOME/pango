@@ -174,9 +174,9 @@ fallback_shape (PangoEngineShape *engine,
 	  index = pango_fc_font_get_glyph (fc_font, wc);
 
 	  if (!index)
-            {
+	    {
 	      index = PANGO_GET_UNKNOWN_GLYPH ( wc);
-              set_glyph (font, glyphs, i, p - text, index);
+	      set_glyph (font, glyphs, i, p - text, index);
 	    }
 	  else
 	    {
@@ -262,38 +262,38 @@ get_ruleset (FT_Face face)
 
     for (i = 0; i < G_N_ELEMENTS (scripts); i++)
       {
-         PangoOTTag script_tag = FT_MAKE_TAG (scripts[i][0], scripts[i][1], scripts[i][2], scripts[i][3]);
-         guint script_index;
+	 PangoOTTag script_tag = FT_MAKE_TAG (scripts[i][0], scripts[i][1], scripts[i][2], scripts[i][3]);
+	 guint script_index;
 
 
-         if (pango_ot_info_find_script (info, PANGO_OT_TABLE_GPOS, script_tag, &script_index))
-           for (j = 0; j < G_N_ELEMENTS (gpos_features); j++)
+	 if (pango_ot_info_find_script (info, PANGO_OT_TABLE_GPOS, script_tag, &script_index))
+	   for (j = 0; j < G_N_ELEMENTS (gpos_features); j++)
 	     {
-               PangoOTTag feature_tag = FT_MAKE_TAG (gpos_features[j][0], gpos_features[j][1],
-                                                     gpos_features[j][2], gpos_features[j][3]);
-               guint feature_index;
+	       PangoOTTag feature_tag = FT_MAKE_TAG (gpos_features[j][0], gpos_features[j][1],
+						     gpos_features[j][2], gpos_features[j][3]);
+	       guint feature_index;
 
-               /* 0xffff means default language */
-               if (pango_ot_info_find_feature (info, PANGO_OT_TABLE_GPOS, feature_tag, script_index, 0xffff,&feature_index))
-               {
-                 pango_ot_ruleset_add_feature (ruleset, PANGO_OT_TABLE_GPOS, feature_index, 0xffff);
+	       /* 0xffff means default language */
+	       if (pango_ot_info_find_feature (info, PANGO_OT_TABLE_GPOS, feature_tag, script_index, 0xffff,&feature_index))
+	       {
+		 pango_ot_ruleset_add_feature (ruleset, PANGO_OT_TABLE_GPOS, feature_index, 0xffff);
 	       }
 	     }
 
-          if (pango_ot_info_find_script (info, PANGO_OT_TABLE_GSUB, script_tag, &script_index))
-            for (j = 0; j < G_N_ELEMENTS (gsub_features); j++)
-              {
-                PangoOTTag feature_tag = FT_MAKE_TAG (gsub_features[j][0], gsub_features[j][1],
-                                                      gsub_features[j][2], gsub_features[j][3]);
-                guint feature_index;
+	  if (pango_ot_info_find_script (info, PANGO_OT_TABLE_GSUB, script_tag, &script_index))
+	    for (j = 0; j < G_N_ELEMENTS (gsub_features); j++)
+	      {
+		PangoOTTag feature_tag = FT_MAKE_TAG (gsub_features[j][0], gsub_features[j][1],
+						      gsub_features[j][2], gsub_features[j][3]);
+		guint feature_index;
 
-                /* 0xffff means default language */
-                if (pango_ot_info_find_feature (info, PANGO_OT_TABLE_GSUB, feature_tag,
-                                                script_index, 0xffff, &feature_index))
-                  {
-                    pango_ot_ruleset_add_feature (ruleset, PANGO_OT_TABLE_GSUB, feature_index, 0xffff);
-                  }
-              }
+		/* 0xffff means default language */
+		if (pango_ot_info_find_feature (info, PANGO_OT_TABLE_GSUB, feature_tag,
+						script_index, 0xffff, &feature_index))
+		  {
+		    pango_ot_ruleset_add_feature (ruleset, PANGO_OT_TABLE_GSUB, feature_index, 0xffff);
+		  }
+	      }
       }
 
     g_object_set_qdata_full (G_OBJECT (info), ruleset_quark, ruleset, (GDestroyNotify) g_object_unref);
@@ -375,7 +375,7 @@ basic_engine_shape (PangoEngineShape *engine,
 	  pango_ot_buffer_add_glyph (buffer, PANGO_GLYPH_EMPTY, unknown_property, p - text);
 	}
       else
-        {
+	{
 	  index = pango_fc_font_get_glyph (fc_font, wc);
 
 	  if (!index)

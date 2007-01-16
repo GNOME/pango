@@ -110,7 +110,7 @@ arabic_engine_break (PangoEngineLang *engine,
 	  (prev_wc == ALEF && IS_COMPOSITE_WITH_ALEF (this_wc)) ||
 	  (this_wc == HAMZA_ABOVE && (prev_wc == WAW || prev_wc == YEH))
 	 ))
-        attrs[i+1].backspace_deletes_character = FALSE;
+	attrs[i+1].backspace_deletes_character = FALSE;
     }
 }
 

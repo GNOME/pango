@@ -115,8 +115,8 @@ void           pango_x_fontmap_cache_remove    (PangoFontMap    *fontmap,
 						PangoXFont      *xfont);
 
 Atom           pango_x_fontmap_atom_from_name (PangoFontMap *fontmap,
-                                               const char   *atomname);
+					       const char   *atomname);
 const char    *pango_x_fontmap_name_from_atom  (PangoFontMap *fontmap,
-                                                Atom          atom);
+						Atom          atom);
 
 #endif /* __PANGOX_PRIVATE_H__ */

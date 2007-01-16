@@ -46,21 +46,21 @@ pango_ot_info_get_type (void)
     {
       const GTypeInfo object_info =
       {
-        sizeof (PangoOTInfoClass),
-        (GBaseInitFunc) NULL,
-        (GBaseFinalizeFunc) NULL,
-        (GClassInitFunc)pango_ot_info_class_init,
-        NULL,           /* class_finalize */
-        NULL,           /* class_data */
-        sizeof (PangoOTInfo),
-        0,              /* n_preallocs */
+	sizeof (PangoOTInfoClass),
+	(GBaseInitFunc) NULL,
+	(GBaseFinalizeFunc) NULL,
+	(GClassInitFunc)pango_ot_info_class_init,
+	NULL,           /* class_finalize */
+	NULL,           /* class_data */
+	sizeof (PangoOTInfo),
+	0,              /* n_preallocs */
 	NULL,           /* init */
 	NULL,           /* value_table */
       };
 
       object_type = g_type_register_static (G_TYPE_OBJECT,
-                                            I_("PangoOTInfo"),
-                                            &object_info, 0);
+					    I_("PangoOTInfo"),
+					    &object_info, 0);
     }
 
   return object_type;

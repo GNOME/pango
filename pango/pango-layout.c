@@ -140,7 +140,7 @@ struct _PangoLayoutClass
 #define ITER_IS_INVALID(iter) G_UNLIKELY (check_invalid ((iter), G_STRLOC))
 static gboolean
 check_invalid (PangoLayoutIter *iter,
-               const char      *loc)
+	       const char      *loc)
 {
   if (iter->line->layout == NULL)
     {
@@ -382,7 +382,7 @@ pango_layout_get_width (PangoLayout    *layout)
  **/
 void
 pango_layout_set_wrap (PangoLayout  *layout,
-                       PangoWrapMode wrap)
+		       PangoWrapMode wrap)
 {
   g_return_if_fail (PANGO_IS_LAYOUT (layout));
 
@@ -488,7 +488,7 @@ pango_layout_get_indent (PangoLayout *layout)
  **/
 void
 pango_layout_set_spacing (PangoLayout *layout,
-                          int          spacing)
+			  int          spacing)
 {
   g_return_if_fail (layout != NULL);
 
@@ -754,7 +754,7 @@ pango_layout_get_alignment (PangoLayout *layout)
  **/
 void
 pango_layout_set_tabs (PangoLayout   *layout,
-                       PangoTabArray *tabs)
+		       PangoTabArray *tabs)
 {
   g_return_if_fail (PANGO_IS_LAYOUT (layout));
 
@@ -799,7 +799,7 @@ pango_layout_get_tabs (PangoLayout *layout)
  **/
 void
 pango_layout_set_single_paragraph_mode (PangoLayout *layout,
-                                        gboolean     setting)
+					gboolean     setting)
 {
   g_return_if_fail (PANGO_IS_LAYOUT (layout));
 
@@ -1001,8 +1001,8 @@ pango_layout_get_text (PangoLayout *layout)
  **/
 void
 pango_layout_set_markup (PangoLayout *layout,
-                         const char  *markup,
-                         int          length)
+			 const char  *markup,
+			 int          length)
 {
   pango_layout_set_markup_with_accel (layout, markup, length, 0, NULL);
 }
@@ -1031,10 +1031,10 @@ pango_layout_set_markup (PangoLayout *layout,
  **/
 void
 pango_layout_set_markup_with_accel (PangoLayout    *layout,
-                                    const char     *markup,
-                                    int             length,
-                                    gunichar        accel_marker,
-                                    gunichar       *accel_char)
+				    const char     *markup,
+				    int             length,
+				    gunichar        accel_marker,
+				    gunichar       *accel_char)
 {
   PangoAttrList *list = NULL;
   char *text = NULL;
@@ -1045,10 +1045,10 @@ pango_layout_set_markup_with_accel (PangoLayout    *layout,
 
   error = NULL;
   if (!pango_parse_markup (markup, length,
-                           accel_marker,
-                           &list, &text,
-                           accel_char,
-                           &error))
+			   accel_marker,
+			   &list, &text,
+			   accel_char,
+			   &error))
     {
       g_warning ("pango_layout_set_markup_with_accel: %s", error->message);
       g_error_free (error);
@@ -1092,22 +1092,22 @@ pango_layout_get_unknown_glyphs_count (PangoLayout *layout)
     lines_list = layout->lines;
     while (lines_list)
       {
-        line = lines_list->data;
-        runs_list = line->runs;
+	line = lines_list->data;
+	runs_list = line->runs;
 
-        while (runs_list)
-          {
-            run = runs_list->data;
+	while (runs_list)
+	  {
+	    run = runs_list->data;
 
-            for (i = 0; i < run->glyphs->num_glyphs; i++)
-              {
-                if (run->glyphs->glyphs[i].glyph & PANGO_GLYPH_UNKNOWN_FLAG)
-                    count++;
-              }
+	    for (i = 0; i < run->glyphs->num_glyphs; i++)
+	      {
+		if (run->glyphs->glyphs[i].glyph & PANGO_GLYPH_UNKNOWN_FLAG)
+		    count++;
+	      }
 
-            runs_list = runs_list->next;
-          }
-        lines_list = lines_list->next;
+	    runs_list = runs_list->next;
+	  }
+	lines_list = lines_list->next;
       }
 
     layout->unknown_glyphs_count = count;
@@ -1392,7 +1392,7 @@ pango_layout_line_index_to_x (PangoLayoutLine  *line,
 					     &run->item->analysis,
 					     index - run->item->offset, trailing, x_pos);
 	      if (x_pos)
-	        *x_pos += width;
+		*x_pos += width;
 	    }
 
 	  return;
@@ -1429,7 +1429,7 @@ pango_layout_index_to_line (PangoLayout      *layout,
       PangoLayoutLine *tmp_line = tmp_list->data;
 
       if (tmp_line->start_index > index)
-        break; /* index was in paragraph delimiters */
+	break; /* index was in paragraph delimiters */
 
       prev_line = line;
       line = tmp_line;
@@ -1437,7 +1437,7 @@ pango_layout_index_to_line (PangoLayout      *layout,
       i++;
 
       if (line->start_index + line->length > index)
-        break;
+	break;
 
       tmp_list = tmp_list->next;
     }
@@ -1781,34 +1781,34 @@ pango_layout_xy_to_index (PangoLayout *layout,
       pango_layout_iter_get_line_yrange (iter, &first_y, &last_y);
 
       if (y < first_y)
-        {
-          if (prev_line && y < (prev_last + (first_y - prev_last) / 2))
-            {
-              found = prev_line;
-              found_line_x = prev_line_x;
-            }
-          else
-            {
-              if (prev_line == NULL)
-                outside = TRUE; /* off the top */
+	{
+	  if (prev_line && y < (prev_last + (first_y - prev_last) / 2))
+	    {
+	      found = prev_line;
+	      found_line_x = prev_line_x;
+	    }
+	  else
+	    {
+	      if (prev_line == NULL)
+		outside = TRUE; /* off the top */
 
-              found = _pango_layout_iter_get_line (iter);
-              found_line_x = x - line_logical.x;
-            }
-        }
+	      found = _pango_layout_iter_get_line (iter);
+	      found_line_x = x - line_logical.x;
+	    }
+	}
       else if (y >= first_y &&
-               y < last_y)
-        {
-          found = _pango_layout_iter_get_line (iter);
-          found_line_x = x - line_logical.x;
-        }
+	       y < last_y)
+	{
+	  found = _pango_layout_iter_get_line (iter);
+	  found_line_x = x - line_logical.x;
+	}
 
       prev_line = _pango_layout_iter_get_line (iter);
       prev_last = last_y;
       prev_line_x = x - line_logical.x;
 
       if (found != NULL)
-        break;
+	break;
     }
   while (pango_layout_iter_next_line (iter));
 
@@ -1824,8 +1824,8 @@ pango_layout_xy_to_index (PangoLayout *layout,
     }
 
   retval = pango_layout_line_x_to_index (found,
-                                         found_line_x,
-                                         index, trailing);
+					 found_line_x,
+					 index, trailing);
 
   if (outside)
     retval = FALSE;
@@ -2101,9 +2101,9 @@ pango_layout_get_cursor_pos (PangoLayout    *layout,
     {
       dir1 = layout_line->resolved_dir;
       if (layout_line->resolved_dir == PANGO_DIRECTION_LTR)
-        x1_trailing = 0;
+	x1_trailing = 0;
       else
-        x1_trailing = line_rect.width;
+	x1_trailing = line_rect.width;
     }
   else
     {
@@ -2116,9 +2116,9 @@ pango_layout_get_cursor_pos (PangoLayout    *layout,
   if (index >= layout_line->start_index + layout_line->length)
     {
       if (layout_line->resolved_dir == PANGO_DIRECTION_LTR)
-        x2 = line_rect.width;
+	x2 = line_rect.width;
       else
-        x2 = 0;
+	x2 = 0;
     }
   else
     {
@@ -2196,10 +2196,10 @@ get_alignment (PangoLayout     *layout,
 
 static void
 get_x_offset (PangoLayout     *layout,
-              PangoLayoutLine *line,
-              int              layout_width,
-              int              line_width,
-              int             *x_offset)
+	      PangoLayoutLine *line,
+	      int              layout_width,
+	      int              line_width,
+	      int             *x_offset)
 {
   PangoAlignment alignment = get_alignment (layout, line);
 
@@ -2226,33 +2226,33 @@ get_x_offset (PangoLayout     *layout,
   if (line->is_paragraph_start)
     {
       if (layout->indent > 0)
-        {
-          if (alignment == PANGO_ALIGN_LEFT)
-            *x_offset += layout->indent;
-          else
-            *x_offset -= layout->indent;
-        }
+	{
+	  if (alignment == PANGO_ALIGN_LEFT)
+	    *x_offset += layout->indent;
+	  else
+	    *x_offset -= layout->indent;
+	}
     }
   else
     {
       if (layout->indent < 0)
-        {
-          if (alignment == PANGO_ALIGN_LEFT)
-            *x_offset -= layout->indent;
-          else
-            *x_offset += layout->indent;
-        }
+	{
+	  if (alignment == PANGO_ALIGN_LEFT)
+	    *x_offset -= layout->indent;
+	  else
+	    *x_offset += layout->indent;
+	}
     }
 }
 
 static void
 get_line_extents_layout_coords (PangoLayout     *layout,
-                                PangoLayoutLine *line,
-                                int              layout_width,
-                                int              y_offset,
-                                int             *baseline,
-                                PangoRectangle  *line_ink_layout,
-                                PangoRectangle  *line_logical_layout)
+				PangoLayoutLine *line,
+				int              layout_width,
+				int              y_offset,
+				int             *baseline,
+				PangoRectangle  *line_ink_layout,
+				PangoRectangle  *line_logical_layout)
 {
   int x_offset;
   /* Line extents in line coords (origin at line baseline) */
@@ -2260,7 +2260,7 @@ get_line_extents_layout_coords (PangoLayout     *layout,
   PangoRectangle line_logical;
 
   pango_layout_line_get_extents (line, line_ink_layout ? &line_ink : NULL,
-                                 &line_logical);
+				 &line_logical);
 
   get_x_offset (layout, line, layout_width, line_logical.width, &x_offset);
 
@@ -2288,9 +2288,9 @@ get_line_extents_layout_coords (PangoLayout     *layout,
  */
 static void
 pango_layout_get_extents_internal (PangoLayout    *layout,
-                                   PangoRectangle *ink_rect,
-                                   PangoRectangle *logical_rect,
-                                   GSList        **line_extents)
+				   PangoRectangle *ink_rect,
+				   PangoRectangle *logical_rect,
+				   GSList        **line_extents)
 {
   GSList *line_list;
   int y_offset = 0;
@@ -2368,48 +2368,48 @@ pango_layout_get_extents_internal (PangoLayout    *layout,
 
       /* This block gets the line extents in layout coords */
       {
-        int baseline;
+	int baseline;
 
-        get_line_extents_layout_coords (layout, line,
-                                        width, y_offset,
-                                        &baseline,
-                                        ink_rect ? &line_ink_layout : NULL,
-                                        &line_logical_layout);
+	get_line_extents_layout_coords (layout, line,
+					width, y_offset,
+					&baseline,
+					ink_rect ? &line_ink_layout : NULL,
+					&line_logical_layout);
 
-        if (line_extents)
-          {
-            Extents *ext = g_slice_new (Extents);
-            ext->baseline = baseline;
-            ext->ink_rect = line_ink_layout;
-            ext->logical_rect = line_logical_layout;
-            *line_extents = g_slist_prepend (*line_extents, ext);
-          }
+	if (line_extents)
+	  {
+	    Extents *ext = g_slice_new (Extents);
+	    ext->baseline = baseline;
+	    ext->ink_rect = line_ink_layout;
+	    ext->logical_rect = line_logical_layout;
+	    *line_extents = g_slist_prepend (*line_extents, ext);
+	  }
       }
 
       if (ink_rect)
 	{
-          /* Compute the union of the current ink_rect with
-           * line_ink_layout
-           */
+	  /* Compute the union of the current ink_rect with
+	   * line_ink_layout
+	   */
 
 	  if (line_list == layout->lines)
 	    {
-              *ink_rect = line_ink_layout;
+	      *ink_rect = line_ink_layout;
 	    }
 	  else
 	    {
 	      new_pos = MIN (ink_rect->x, line_ink_layout.x);
 	      ink_rect->width =
-                MAX (ink_rect->x + ink_rect->width,
-                     line_ink_layout.x + line_ink_layout.width) - new_pos;
+		MAX (ink_rect->x + ink_rect->width,
+		     line_ink_layout.x + line_ink_layout.width) - new_pos;
 	      ink_rect->x = new_pos;
 
 	      new_pos = MIN (ink_rect->y, line_ink_layout.y);
 	      ink_rect->height =
-                MAX (ink_rect->y + ink_rect->height,
-                     line_ink_layout.y + line_ink_layout.height) - new_pos;
+		MAX (ink_rect->y + ink_rect->height,
+		     line_ink_layout.y + line_ink_layout.height) - new_pos;
 	      ink_rect->y = new_pos;
-            }
+	    }
 	}
 
       if (logical_rect)
@@ -2444,9 +2444,9 @@ pango_layout_get_extents_internal (PangoLayout    *layout,
 
 	  logical_rect->height += line_logical_layout.height;
 
-          /* No space after the last line, of course. */
-          if (line_list->next != NULL)
-            logical_rect->height += layout->spacing;
+	  /* No space after the last line, of course. */
+	  if (line_list->next != NULL)
+	    logical_rect->height += layout->spacing;
 	}
 
       y_offset += line_logical_layout.height + layout->spacing;
@@ -2473,7 +2473,7 @@ pango_layout_get_extents_internal (PangoLayout    *layout,
  * @ink_rect: rectangle used to store the extents of the layout as drawn
  *            or %NULL to indicate that the result is not needed.
  * @logical_rect: rectangle used to store the logical extents of the layout
-                 or %NULL to indicate that the result is not needed.
+		 or %NULL to indicate that the result is not needed.
  *
  * Computes the logical and ink extents of @layout. Logical extents
  * are usually what you want for positioning things.  Note that both extents
@@ -2829,9 +2829,9 @@ get_tab_pos (PangoLayout *layout, int index)
       pango_tab_array_get_tab (layout->tabs, index, NULL, &pos);
 
       if (in_pixels)
-        return pos * PANGO_SCALE;
+	return pos * PANGO_SCALE;
       else
-        return pos;
+	return pos;
     }
 
   if (n_tabs > 0)
@@ -2846,9 +2846,9 @@ get_tab_pos (PangoLayout *layout, int index)
       pango_tab_array_get_tab (layout->tabs, n_tabs - 1, NULL, &last_pos);
 
       if (n_tabs > 1)
-        pango_tab_array_get_tab (layout->tabs, n_tabs - 2, NULL, &next_to_last_pos);
+	pango_tab_array_get_tab (layout->tabs, n_tabs - 2, NULL, &next_to_last_pos);
       else
-        next_to_last_pos = 0;
+	next_to_last_pos = 0;
 
       if (in_pixels)
 	{
@@ -3227,7 +3227,7 @@ process_item (PangoLayout     *layout,
 
 	      length = g_utf8_offset_to_pointer (layout->text + item->offset, break_num_chars) - (layout->text + item->offset);
 
-              new_item = pango_item_split (item, length, break_num_chars);
+	      new_item = pango_item_split (item, length, break_num_chars);
 
 	      insert_run (line, state, new_item, FALSE);
 
@@ -3294,7 +3294,7 @@ line_set_resolved_dir (PangoLayoutLine *line,
       break;
     case PANGO_GRAVITY_NORTH:
       line->resolved_dir = PANGO_DIRECTION_LTR
-                         + PANGO_DIRECTION_RTL
+			 + PANGO_DIRECTION_RTL
 			 - line->resolved_dir;
       break;
     case PANGO_GRAVITY_EAST:
@@ -3389,10 +3389,10 @@ process_line (PangoLayout    *layout,
 	  layout->is_wrapped = TRUE;
 	  goto done;
 
-        case BREAK_LINE_SEPARATOR:
-          state->items = g_list_delete_link (state->items, state->items);
-          state->start_offset += old_num_chars;
-          goto done;
+	case BREAK_LINE_SEPARATOR:
+	  state->items = g_list_delete_link (state->items, state->items);
+	  state->start_offset += old_num_chars;
+	  goto done;
 	}
     }
 
@@ -3405,9 +3405,9 @@ process_line (PangoLayout    *layout,
 
 static void
 get_items_log_attrs (const char   *text,
-                     GList        *items,
-                     PangoLogAttr *log_attrs,
-                     int           para_delimiter_len)
+		     GList        *items,
+		     PangoLogAttr *log_attrs,
+		     int           para_delimiter_len)
 {
   int offset = 0;
   int index = 0;
@@ -3443,7 +3443,7 @@ get_items_log_attrs (const char   *text,
 	}
 
       pango_break (text + index, tmp_item.length, &tmp_item.analysis,
-                   log_attrs + offset, tmp_item.num_chars + 1);
+		   log_attrs + offset, tmp_item.num_chars + 1);
 
       offset += tmp_item.num_chars;
       index += tmp_item.length;
@@ -3581,17 +3581,17 @@ pango_layout_check_lines (PangoLayout *layout)
       ParaBreakState state;
 
       if (layout->single_paragraph)
-        {
-          delimiter_index = layout->length;
-          next_para_index = layout->length;
-        }
+	{
+	  delimiter_index = layout->length;
+	  next_para_index = layout->length;
+	}
       else
-        {
-          pango_find_paragraph_boundary (start,
-                                         (layout->text + layout->length) - start,
-                                         &delimiter_index,
-                                         &next_para_index);
-        }
+	{
+	  pango_find_paragraph_boundary (start,
+					 (layout->text + layout->length) - start,
+					 &delimiter_index,
+					 &next_para_index);
+	}
 
       g_assert (next_para_index >= delimiter_index);
 
@@ -3628,37 +3628,37 @@ pango_layout_check_lines (PangoLayout *layout)
 						 iter);
 
       get_items_log_attrs (start, state.items,
-                           layout->log_attrs + start_offset,
-                           delim_len);
+			   layout->log_attrs + start_offset,
+			   delim_len);
 
       if (state.items)
 	{
 	  state.first_line = TRUE;
 	  state.base_dir = base_dir;
 	  state.start_offset = start_offset;
-          state.line_start_index = start - layout->text;
+	  state.line_start_index = start - layout->text;
 
 	  state.glyphs = NULL;
 	  state.log_widths = NULL;
 
 	  while (state.items)
-            process_line (layout, &state);
+	    process_line (layout, &state);
 	}
       else
-        {
-          PangoLayoutLine *empty_line;
+	{
+	  PangoLayoutLine *empty_line;
 
-          empty_line = pango_layout_line_new (layout);
-          empty_line->start_index = start - layout->text;
+	  empty_line = pango_layout_line_new (layout);
+	  empty_line->start_index = start - layout->text;
 	  empty_line->is_paragraph_start = TRUE;
 	  line_set_resolved_dir (empty_line, base_dir);
 
-          layout->lines = g_slist_prepend (layout->lines,
-                                           empty_line);
-        }
+	  layout->lines = g_slist_prepend (layout->lines,
+					   empty_line);
+	}
 
       if (!done)
-        start_offset += g_utf8_strlen (start, (end - start) + delim_len);
+	start_offset += g_utf8_strlen (start, (end - start) + delim_len);
 
       start = end + delim_len;
     }
@@ -3730,8 +3730,8 @@ pango_layout_line_get_type(void)
 
   if (our_type == 0)
     our_type = g_boxed_type_register_static (I_("PangoLayoutLine"),
-                                             (GBoxedCopyFunc) pango_layout_line_ref,
-                                             (GBoxedFreeFunc) pango_layout_line_unref);
+					     (GBoxedCopyFunc) pango_layout_line_ref,
+					     (GBoxedFreeFunc) pango_layout_line_unref);
   return our_type;
 }
 
@@ -4221,8 +4221,8 @@ pango_layout_run_get_width (PangoLayoutRun *run)
 
 static void
 pango_layout_run_get_extents (PangoLayoutRun *run,
-                              PangoRectangle *run_ink,
-                              PangoRectangle *run_logical)
+			      PangoRectangle *run_ink,
+			      PangoRectangle *run_logical)
 {
   PangoRectangle logical;
   ItemProperties properties;
@@ -4270,7 +4270,7 @@ pango_layout_run_get_extents (PangoLayoutRun *run,
        */
 
       if (properties.strikethrough)
-        {
+	{
 	  if (run_ink->height == 0)
 	    {
 	      run_ink->height = strikethrough_thickness;
@@ -4311,7 +4311,7 @@ pango_layout_run_get_extents (PangoLayoutRun *run,
   if (properties.rise != 0)
     {
       if (run_ink)
-        run_ink->y -= properties.rise;
+	run_ink->y -= properties.rise;
 
       if (run_logical)
 	run_logical->y -= properties.rise;
@@ -4360,7 +4360,7 @@ pango_layout_line_get_extents (PangoLayoutLine *line,
       }
     case NOT_CACHED:
       {
-        caching = TRUE;
+	caching = TRUE;
 	if (!ink_rect)
 	  ink_rect = &private->ink_rect;
 	if (!logical_rect)
@@ -4369,7 +4369,7 @@ pango_layout_line_get_extents (PangoLayoutLine *line,
       }
     case LEAKED:
       {
-        break;
+	break;
       }
     }
 
@@ -4398,8 +4398,8 @@ pango_layout_line_get_extents (PangoLayoutLine *line,
       PangoRectangle run_logical;
 
       pango_layout_run_get_extents (run,
-                                    ink_rect ? &run_ink : NULL,
-                                    &run_logical);
+				    ink_rect ? &run_ink : NULL,
+				    &run_logical);
 
       if (ink_rect)
 	{
@@ -4734,9 +4734,9 @@ pango_layout_get_item_properties (PangoItem      *item,
 	  properties->strikethrough = ((PangoAttrInt *)attr)->value;
 	  break;
 
-        case PANGO_ATTR_RISE:
+	case PANGO_ATTR_RISE:
 	  properties->rise = ((PangoAttrInt *)attr)->value;
-          break;
+	  break;
 
 	case PANGO_ATTR_LETTER_SPACING:
 	  properties->letter_spacing = ((PangoAttrInt *)attr)->value;
@@ -4757,7 +4757,7 @@ pango_layout_get_item_properties (PangoItem      *item,
 
 static int
 next_cluster_start (PangoGlyphString *gs,
-                    int               cluster_start)
+		    int               cluster_start)
 {
   int i;
 
@@ -4765,7 +4765,7 @@ next_cluster_start (PangoGlyphString *gs,
   while (i < gs->num_glyphs)
     {
       if (gs->glyphs[i].attr.is_cluster_start)
-        return i;
+	return i;
 
       i++;
     }
@@ -4785,7 +4785,7 @@ cluster_width (PangoGlyphString *gs,
   while (i < gs->num_glyphs)
     {
       if (gs->glyphs[i].attr.is_cluster_start)
-        break;
+	break;
 
       width += gs->glyphs[i].geometry.width;
       i++;
@@ -4796,7 +4796,7 @@ cluster_width (PangoGlyphString *gs,
 
 static inline void
 offset_y (PangoLayoutIter *iter,
-          int             *y)
+	  int             *y)
 {
   Extents *line_ext;
 
@@ -5006,9 +5006,9 @@ pango_layout_get_iter (PangoLayout *layout)
 
   iter->line_extents = NULL;
   pango_layout_get_extents_internal (layout,
-                                     NULL,
-                                     &logical_rect,
-                                     &iter->line_extents);
+				     NULL,
+				     &logical_rect,
+				     &iter->line_extents);
   iter->layout_width = layout->width == -1 ? logical_rect.width : layout->width;
 
   iter->line_extents_link = iter->line_extents;
@@ -5441,7 +5441,7 @@ pango_layout_iter_next_line (PangoLayoutIter *iter)
  **/
 void
 pango_layout_iter_get_char_extents (PangoLayoutIter *iter,
-                                    PangoRectangle  *logical_rect)
+				    PangoRectangle  *logical_rect)
 {
   PangoRectangle cluster_rect;
   int            x0, x1;
@@ -5484,8 +5484,8 @@ pango_layout_iter_get_char_extents (PangoLayoutIter *iter,
  **/
 void
 pango_layout_iter_get_cluster_extents (PangoLayoutIter *iter,
-                                       PangoRectangle  *ink_rect,
-                                       PangoRectangle  *logical_rect)
+				       PangoRectangle  *ink_rect,
+				       PangoRectangle  *logical_rect)
 {
   if (ITER_IS_INVALID (iter))
     return;
@@ -5500,11 +5500,11 @@ pango_layout_iter_get_cluster_extents (PangoLayoutIter *iter,
     }
 
   pango_glyph_string_extents_range (iter->run->glyphs,
-                                    iter->cluster_start,
-                                    iter->next_cluster_glyph,
-                                    iter->run->item->analysis.font,
-                                    ink_rect,
-                                    logical_rect);
+				    iter->cluster_start,
+				    iter->next_cluster_glyph,
+				    iter->run->item->analysis.font,
+				    ink_rect,
+				    logical_rect);
 
   if (ink_rect)
     {
@@ -5532,8 +5532,8 @@ pango_layout_iter_get_cluster_extents (PangoLayoutIter *iter,
  **/
 void
 pango_layout_iter_get_run_extents (PangoLayoutIter *iter,
-                                   PangoRectangle  *ink_rect,
-                                   PangoRectangle  *logical_rect)
+				   PangoRectangle  *ink_rect,
+				   PangoRectangle  *logical_rect)
 {
   if (G_UNLIKELY (!ink_rect && !logical_rect))
     return;
@@ -5564,10 +5564,10 @@ pango_layout_iter_get_run_extents (PangoLayoutIter *iter,
       pango_layout_iter_get_line_extents (iter, ink_rect, logical_rect);
 
       if (ink_rect)
-        {
-          ink_rect->x = iter->run_x;
-          ink_rect->width = 0;
-        }
+	{
+	  ink_rect->x = iter->run_x;
+	  ink_rect->width = 0;
+	}
 
       if (logical_rect)
 	{
@@ -5593,8 +5593,8 @@ pango_layout_iter_get_run_extents (PangoLayoutIter *iter,
  **/
 void
 pango_layout_iter_get_line_extents (PangoLayoutIter *iter,
-                                    PangoRectangle  *ink_rect,
-                                    PangoRectangle  *logical_rect)
+				    PangoRectangle  *ink_rect,
+				    PangoRectangle  *logical_rect)
 {
   Extents *ext;
 
@@ -5606,11 +5606,11 @@ pango_layout_iter_get_line_extents (PangoLayoutIter *iter,
   if (ink_rect)
     {
       get_line_extents_layout_coords (iter->layout, iter->line,
-                                      iter->layout_width,
-                                      ext->logical_rect.y,
-                                      NULL,
-                                      ink_rect,
-                                      NULL);
+				      iter->layout_width,
+				      ext->logical_rect.y,
+				      NULL,
+				      ink_rect,
+				      NULL);
     }
 
   if (logical_rect)
@@ -5634,8 +5634,8 @@ pango_layout_iter_get_line_extents (PangoLayoutIter *iter,
  **/
 void
 pango_layout_iter_get_line_yrange (PangoLayoutIter *iter,
-                                   int             *y0,
-                                   int             *y1)
+				   int             *y0,
+				   int             *y1)
 {
   Extents *ext;
   int half_spacing;
@@ -5656,18 +5656,18 @@ pango_layout_iter_get_line_yrange (PangoLayoutIter *iter,
       /* No spacing above the first line */
 
       if (iter->line_extents_link == iter->line_extents)
-        *y0 = ext->logical_rect.y;
+	*y0 = ext->logical_rect.y;
       else
-        *y0 = ext->logical_rect.y - (iter->layout->spacing - half_spacing);
+	*y0 = ext->logical_rect.y - (iter->layout->spacing - half_spacing);
     }
 
   if (y1)
     {
       /* No spacing below the last line */
       if (iter->line_extents_link->next == NULL)
-        *y1 = ext->logical_rect.y + ext->logical_rect.height;
+	*y1 = ext->logical_rect.y + ext->logical_rect.height;
       else
-        *y1 = ext->logical_rect.y + ext->logical_rect.height + half_spacing;
+	*y1 = ext->logical_rect.y + ext->logical_rect.height + half_spacing;
     }
 }
 
@@ -5706,8 +5706,8 @@ pango_layout_iter_get_baseline (PangoLayoutIter *iter)
  **/
 void
 pango_layout_iter_get_layout_extents  (PangoLayoutIter *iter,
-                                       PangoRectangle  *ink_rect,
-                                       PangoRectangle  *logical_rect)
+				       PangoRectangle  *ink_rect,
+				       PangoRectangle  *logical_rect)
 {
   if (ITER_IS_INVALID (iter))
     return;

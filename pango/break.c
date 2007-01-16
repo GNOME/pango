@@ -345,15 +345,15 @@ static const int line_break_indexes[] = {
 };
 
 #define BREAK_TYPE_SAFE(btype)            \
-         (btype < G_N_ELEMENTS(line_break_indexes) ? btype : G_UNICODE_BREAK_UNKNOWN)
+	 (btype < G_N_ELEMENTS(line_break_indexes) ? btype : G_UNICODE_BREAK_UNKNOWN)
 #define BREAK_INDEX(btype)                \
-         (line_break_indexes[(btype)])
+	 (line_break_indexes[(btype)])
 #define BREAK_ROW(before_type)            \
-         (line_break_rows[BREAK_INDEX (before_type)])
+	 (line_break_rows[BREAK_INDEX (before_type)])
 #define BREAK_OP(before_type, after_type) \
-         (BREAK_ROW (before_type)[BREAK_INDEX (after_type)])
+	 (BREAK_ROW (before_type)[BREAK_INDEX (after_type)])
 #define IN_BREAK_TABLE(btype)             \
-         (btype < G_N_ELEMENTS(line_break_indexes) && BREAK_INDEX(btype) < INDEX_END_OF_TABLE)
+	 (btype < G_N_ELEMENTS(line_break_indexes) && BREAK_INDEX(btype) < INDEX_END_OF_TABLE)
 
 
 
@@ -425,19 +425,19 @@ static const CharJamoProps HangulJamoProps[] = {
  */
 #define VIRAMA_SCRIPT(wc)        ((wc) >= 0x0901 && (wc) <= 0x17FF)
 #define VIRAMA(wc) ((wc) == 0x094D || \
-                    (wc) == 0x09CD || \
-                    (wc) == 0x0A4D || \
-                    (wc) == 0x0ACD || \
-                    (wc) == 0x0B4D || \
-                    (wc) == 0x0BCD || \
-                    (wc) == 0x0C4D || \
-                    (wc) == 0x0CCD || \
-                    (wc) == 0x0D4D || \
-                    (wc) == 0x0DCA || \
-                    (wc) == 0x0E3A || \
-                    (wc) == 0x0F84 || \
-                    (wc) == 0x1039 || \
-                    (wc) == 0x17D2)
+		    (wc) == 0x09CD || \
+		    (wc) == 0x0A4D || \
+		    (wc) == 0x0ACD || \
+		    (wc) == 0x0B4D || \
+		    (wc) == 0x0BCD || \
+		    (wc) == 0x0C4D || \
+		    (wc) == 0x0CCD || \
+		    (wc) == 0x0D4D || \
+		    (wc) == 0x0DCA || \
+		    (wc) == 0x0E3A || \
+		    (wc) == 0x0F84 || \
+		    (wc) == 0x1039 || \
+		    (wc) == 0x17D2)
 /* Types of Japanese characters */
 #define JAPANESE(wc) ((wc) >= 0x2F00 && (wc) <= 0x30FF)
 #define KANJI(wc)    ((wc) >= 0x2F00 && (wc) <= 0x2FDF)
@@ -502,10 +502,10 @@ typedef enum
  **/
 void
 pango_default_break (const gchar   *text,
-                     gint           length,
-                     PangoAnalysis *analysis,
-                     PangoLogAttr  *attrs,
-                     int            attrs_len)
+		     gint           length,
+		     PangoAnalysis *analysis,
+		     PangoLogAttr  *attrs,
+		     int            attrs_len)
 {
   /* The rationale for all this is in section 5.15 of the Unicode 3.0 book,
    * the line breaking stuff is also in TR14 on unicode.org
@@ -578,41 +578,41 @@ pango_default_break (const gchar   *text,
       break_type = next_break_type;
 
       if (almost_done)
-        {
-          /*
-           * If we have already reached the end of @text g_utf8_next_char()
-           * may not increment next
-           */
-          next_wc = 0;
+	{
+	  /*
+	   * If we have already reached the end of @text g_utf8_next_char()
+	   * may not increment next
+	   */
+	  next_wc = 0;
 	  next_break_type = G_UNICODE_BREAK_UNKNOWN;
 	  done = TRUE;
-        }
+	}
       else
-        {
-          next = g_utf8_next_char (next);
+	{
+	  next = g_utf8_next_char (next);
 
 	  if ((length >= 0 && next >= text + length) || *next == '\0')
-            {
-              /* This is how we fill in the last element (end position) of the
-               * attr array - assume there's a paragraph separators off the end
+	    {
+	      /* This is how we fill in the last element (end position) of the
+	       * attr array - assume there's a paragraph separators off the end
 	       * of @text.
-               */
+	       */
 	      next_wc = PARAGRAPH_SEPARATOR;
 	      almost_done = TRUE;
-            }
-          else
+	    }
+	  else
 	    next_wc = g_utf8_get_char (next);
 
 	  next_break_type = g_unichar_break_type (next_wc);
-          next_break_type = BREAK_TYPE_SAFE (next_break_type);
-        }
+	  next_break_type = BREAK_TYPE_SAFE (next_break_type);
+	}
 
       type = g_unichar_type (wc);
       jamo = JAMO_TYPE (break_type);
 
       /* Determine wheter this forms a Hangul syllable with prev. */
       if (jamo == NO_JAMO)
-        makes_hangul_syllable = FALSE;
+	makes_hangul_syllable = FALSE;
       else
 	{
 	  JamoType prev_end   = HangulJamoProps[prev_jamo].end  ;
@@ -631,106 +631,106 @@ pango_default_break (const gchar   *text,
       /* ---- Cursor position breaks (Grapheme breaks) ---- */
 
       if (wc == '\n')
-        {
-          /* Break before line feed unless prev char is a CR */
+	{
+	  /* Break before line feed unless prev char is a CR */
 
-          if (prev_wc != '\r')
-            attrs[i].is_cursor_position = TRUE;
-          else
-            attrs[i].is_cursor_position = FALSE;
-        }
+	  if (prev_wc != '\r')
+	    attrs[i].is_cursor_position = TRUE;
+	  else
+	    attrs[i].is_cursor_position = FALSE;
+	}
       else if (i == 0 ||
-               prev_type == G_UNICODE_CONTROL ||
-               prev_type == G_UNICODE_FORMAT)
-        {
-          /* Break at first position (must be special cased, or if the
-           * first char is say a combining mark there won't be a
-           * cursor position at the start, which seems wrong to me
-           * ???? - maybe it makes sense though, who knows)
-           */
-          /* break after all format or control characters */
-          attrs[i].is_cursor_position = TRUE;
-        }
+	       prev_type == G_UNICODE_CONTROL ||
+	       prev_type == G_UNICODE_FORMAT)
+	{
+	  /* Break at first position (must be special cased, or if the
+	   * first char is say a combining mark there won't be a
+	   * cursor position at the start, which seems wrong to me
+	   * ???? - maybe it makes sense though, who knows)
+	   */
+	  /* break after all format or control characters */
+	  attrs[i].is_cursor_position = TRUE;
+	}
       else
-        {
-          switch (type)
-            {
-            case G_UNICODE_CONTROL:
-            case G_UNICODE_FORMAT:
-              /* Break before all format or control characters */
-              attrs[i].is_cursor_position = TRUE;
-              break;
+	{
+	  switch (type)
+	    {
+	    case G_UNICODE_CONTROL:
+	    case G_UNICODE_FORMAT:
+	      /* Break before all format or control characters */
+	      attrs[i].is_cursor_position = TRUE;
+	      break;
 
-            case G_UNICODE_COMBINING_MARK:
-            case G_UNICODE_ENCLOSING_MARK:
-            case G_UNICODE_NON_SPACING_MARK:
-              /* Unicode spec includes "Combining marks plus Tibetan
-               * subjoined characters" as joining chars, but lists the
-               * Tibetan subjoined characters as combining marks, and
-               * g_unichar_type() returns NON_SPACING_MARK for the Tibetan
-               * subjoined characters. So who knows, beats me.
-               */
+	    case G_UNICODE_COMBINING_MARK:
+	    case G_UNICODE_ENCLOSING_MARK:
+	    case G_UNICODE_NON_SPACING_MARK:
+	      /* Unicode spec includes "Combining marks plus Tibetan
+	       * subjoined characters" as joining chars, but lists the
+	       * Tibetan subjoined characters as combining marks, and
+	       * g_unichar_type() returns NON_SPACING_MARK for the Tibetan
+	       * subjoined characters. So who knows, beats me.
+	       */
 
-              /* It's a joining character, break only if preceded by
-               * control or format; we already handled the case where
-               * it was preceded earlier, so here we know it wasn't,
-               * don't break
-               */
-              attrs[i].is_cursor_position = FALSE;
-              break;
+	      /* It's a joining character, break only if preceded by
+	       * control or format; we already handled the case where
+	       * it was preceded earlier, so here we know it wasn't,
+	       * don't break
+	       */
+	      attrs[i].is_cursor_position = FALSE;
+	      break;
 
-            case G_UNICODE_LOWERCASE_LETTER:
-            case G_UNICODE_MODIFIER_LETTER:
-            case G_UNICODE_OTHER_LETTER:
-            case G_UNICODE_TITLECASE_LETTER:
-            case G_UNICODE_UPPERCASE_LETTER:
+	    case G_UNICODE_LOWERCASE_LETTER:
+	    case G_UNICODE_MODIFIER_LETTER:
+	    case G_UNICODE_OTHER_LETTER:
+	    case G_UNICODE_TITLECASE_LETTER:
+	    case G_UNICODE_UPPERCASE_LETTER:
 
 	      if (makes_hangul_syllable)
-                attrs[i].is_cursor_position = FALSE;
-              else
-                {
-                  /* Handle non-Hangul-syllable non-combining chars */
+		attrs[i].is_cursor_position = FALSE;
+	      else
+		{
+		  /* Handle non-Hangul-syllable non-combining chars */
 
-                  /* Break before Jamo if they are in a broken sequence or
-                   * next to non-Jamo; break if preceded by Jamo; don't
+		  /* Break before Jamo if they are in a broken sequence or
+		   * next to non-Jamo; break if preceded by Jamo; don't
 		   * break if a letter is preceded by a virama; break in
 		   * all other cases. No need to check whether we are or are
-                   * preceded by Jamo explicitly, since a Jamo is not
-                   * a virama, we just break in all cases where we
-                   * aren't a or preceded by a virama.  Don't fool with
+		   * preceded by Jamo explicitly, since a Jamo is not
+		   * a virama, we just break in all cases where we
+		   * aren't a or preceded by a virama.  Don't fool with
 		   * viramas if we aren't part of a script that uses them.
-                   */
+		   */
 
-                  if (VIRAMA_SCRIPT (wc))
-                    {
-                      /* Check whether we're preceded by a virama; this
-                       * could use some optimization.
-                       */
-                      if (VIRAMA (prev_wc))
-                        attrs[i].is_cursor_position = FALSE;
-                      else
-                        attrs[i].is_cursor_position = TRUE;
-                    }
-                  else
-                    {
-                      attrs[i].is_cursor_position = TRUE;
-                    }
-                }
-              break;
+		  if (VIRAMA_SCRIPT (wc))
+		    {
+		      /* Check whether we're preceded by a virama; this
+		       * could use some optimization.
+		       */
+		      if (VIRAMA (prev_wc))
+			attrs[i].is_cursor_position = FALSE;
+		      else
+			attrs[i].is_cursor_position = TRUE;
+		    }
+		  else
+		    {
+		      attrs[i].is_cursor_position = TRUE;
+		    }
+		}
+	      break;
 
-            default:
-              /* Some weirdo char, just break here, why not */
-              attrs[i].is_cursor_position = TRUE;
-              break;
-            }
-        }
+	    default:
+	      /* Some weirdo char, just break here, why not */
+	      attrs[i].is_cursor_position = TRUE;
+	      break;
+	    }
+	}
 
       /* If this is a grapheme boundary, we have to decide if backspace
        * deletes a character or the whole grapheme cluster */
       if (attrs[i].is_cursor_position)
-        attrs[i].backspace_deletes_character = BACKSPACE_DELETES_CHARACTER (base_character);
+	attrs[i].backspace_deletes_character = BACKSPACE_DELETES_CHARACTER (base_character);
       else
-        attrs[i].backspace_deletes_character = FALSE;
+	attrs[i].backspace_deletes_character = FALSE;
 
       /* ---- Line breaking ---- */
 
@@ -742,9 +742,9 @@ pango_default_break (const gchar   *text,
       attrs[i].is_mandatory_break = FALSE;
 
       if (attrs[i].is_cursor_position) /* If it's not a grapheme boundary,
-                                        * it's not a line break either
-                                        */
-        {
+					* it's not a line break either
+					*/
+	{
 	  /* space followed by a combining mark is handled
 	   * specially; (rule 7a from TR 14)
 	   */
@@ -752,15 +752,15 @@ pango_default_break (const gchar   *text,
 	      next_break_type == G_UNICODE_BREAK_COMBINING_MARK)
 	    break_type = G_UNICODE_BREAK_IDEOGRAPHIC;
 
-          /* Unicode doesn't specify char wrap; we wrap around all chars
-           * except where a line break is prohibited, which means we
-           * effectively break everywhere except inside runs of spaces.
-           */
-          attrs[i].is_char_break = TRUE;
+	  /* Unicode doesn't specify char wrap; we wrap around all chars
+	   * except where a line break is prohibited, which means we
+	   * effectively break everywhere except inside runs of spaces.
+	   */
+	  attrs[i].is_char_break = TRUE;
 
 	  /* Make any necessary replacements first */
-          switch (prev_break_type)
-            {
+	  switch (prev_break_type)
+	    {
 	    case G_UNICODE_BREAK_HANGUL_L_JAMO:
 	    case G_UNICODE_BREAK_HANGUL_V_JAMO:
 	    case G_UNICODE_BREAK_HANGUL_T_JAMO:
@@ -771,16 +771,16 @@ pango_default_break (const gchar   *text,
 	      prev_break_type = G_UNICODE_BREAK_IDEOGRAPHIC;
 	      break;
 
-            case G_UNICODE_BREAK_AMBIGUOUS:
+	    case G_UNICODE_BREAK_AMBIGUOUS:
 	      /* FIXME
-               * we need to resolve the East Asian width
-               * to decide what to do here
+	       * we need to resolve the East Asian width
+	       * to decide what to do here
 	       */
-            case G_UNICODE_BREAK_COMPLEX_CONTEXT:
+	    case G_UNICODE_BREAK_COMPLEX_CONTEXT:
 	      /* FIXME
-               * language engines should handle this case...
+	       * language engines should handle this case...
 	       */
-            case G_UNICODE_BREAK_UNKNOWN:
+	    case G_UNICODE_BREAK_UNKNOWN:
 	      /* convert unknown, complex, ambiguous to ALPHABETIC
 	       */
 	      prev_break_type = G_UNICODE_BREAK_ALPHABETIC;
@@ -790,71 +790,71 @@ pango_default_break (const gchar   *text,
 	      ;
 	    }
 
-          switch (prev_break_type)
-            {
-            case G_UNICODE_BREAK_MANDATORY:
-            case G_UNICODE_BREAK_LINE_FEED:
-            case G_UNICODE_BREAK_NEXT_LINE:
-              attrs[i].is_line_break = TRUE;
-              attrs[i].is_mandatory_break = TRUE;
-              break;
+	  switch (prev_break_type)
+	    {
+	    case G_UNICODE_BREAK_MANDATORY:
+	    case G_UNICODE_BREAK_LINE_FEED:
+	    case G_UNICODE_BREAK_NEXT_LINE:
+	      attrs[i].is_line_break = TRUE;
+	      attrs[i].is_mandatory_break = TRUE;
+	      break;
 
-            case G_UNICODE_BREAK_CARRIAGE_RETURN:
-              if (wc != '\n')
-                {
-                  attrs[i].is_line_break = TRUE;
-                  attrs[i].is_mandatory_break = TRUE;
-                }
-              break;
+	    case G_UNICODE_BREAK_CARRIAGE_RETURN:
+	      if (wc != '\n')
+		{
+		  attrs[i].is_line_break = TRUE;
+		  attrs[i].is_mandatory_break = TRUE;
+		}
+	      break;
 
-            case G_UNICODE_BREAK_CONTINGENT:
-              /* can break after 0xFFFC by default, though we might want
-               * to eventually have a PangoLayout setting or
-               * PangoAttribute that disables this, if for some
-               * application breaking after objects is not desired.
-               */
-              break_op = BREAK_ALLOWED;
-              break;
+	    case G_UNICODE_BREAK_CONTINGENT:
+	      /* can break after 0xFFFC by default, though we might want
+	       * to eventually have a PangoLayout setting or
+	       * PangoAttribute that disables this, if for some
+	       * application breaking after objects is not desired.
+	       */
+	      break_op = BREAK_ALLOWED;
+	      break;
 
-            case G_UNICODE_BREAK_SURROGATE:
+	    case G_UNICODE_BREAK_SURROGATE:
 	      g_assert_not_reached ();
-              break;
+	      break;
 
-            default:
-              g_assert (IN_BREAK_TABLE (prev_break_type));
+	    default:
+	      g_assert (IN_BREAK_TABLE (prev_break_type));
 
-              /* Note that our table assumes that combining marks
-               * are only applied to alphabetic characters;
-               * tech report 14 explains how to remove this assumption
-               * from the code, if anyone ever cares, but it shouldn't
-               * be a problem. Also this issue sort of goes
-               * away since we only look for breaks on grapheme
-               * boundaries.
-               */
+	      /* Note that our table assumes that combining marks
+	       * are only applied to alphabetic characters;
+	       * tech report 14 explains how to remove this assumption
+	       * from the code, if anyone ever cares, but it shouldn't
+	       * be a problem. Also this issue sort of goes
+	       * away since we only look for breaks on grapheme
+	       * boundaries.
+	       */
 
-              switch (break_type)
-                {
-                case G_UNICODE_BREAK_MANDATORY:
-                case G_UNICODE_BREAK_LINE_FEED:
-                case G_UNICODE_BREAK_CARRIAGE_RETURN:
-                case G_UNICODE_BREAK_NEXT_LINE:
-                case G_UNICODE_BREAK_SPACE:
-                  /* These types all "pile up" at the end of lines and
-                   * get elided.
-                   */
-                  break_op = BREAK_PROHIBITED;
-                  break;
+	      switch (break_type)
+		{
+		case G_UNICODE_BREAK_MANDATORY:
+		case G_UNICODE_BREAK_LINE_FEED:
+		case G_UNICODE_BREAK_CARRIAGE_RETURN:
+		case G_UNICODE_BREAK_NEXT_LINE:
+		case G_UNICODE_BREAK_SPACE:
+		  /* These types all "pile up" at the end of lines and
+		   * get elided.
+		   */
+		  break_op = BREAK_PROHIBITED;
+		  break;
 
-                case G_UNICODE_BREAK_CONTINGENT:
-                  /* break before 0xFFFC by default, eventually
-                   * make this configurable?
-                   */
-                  break_op = BREAK_ALLOWED;
-                  break;
+		case G_UNICODE_BREAK_CONTINGENT:
+		  /* break before 0xFFFC by default, eventually
+		   * make this configurable?
+		   */
+		  break_op = BREAK_ALLOWED;
+		  break;
 
-                case G_UNICODE_BREAK_SURROGATE:
+		case G_UNICODE_BREAK_SURROGATE:
 		  g_assert_not_reached ();
-                  break;
+		  break;
 
 		/* Hangul additions are from Unicode 4.1 UAX#14 */
 		case G_UNICODE_BREAK_HANGUL_L_JAMO:
@@ -862,9 +862,9 @@ pango_default_break (const gchar   *text,
 		case G_UNICODE_BREAK_HANGUL_T_JAMO:
 		case G_UNICODE_BREAK_HANGUL_LV_SYLLABLE:
 		case G_UNICODE_BREAK_HANGUL_LVT_SYLLABLE:
-                  /* treat Jamo as IDEOGRAPHIC from now
+		  /* treat Jamo as IDEOGRAPHIC from now
 		   */
-                  break_type = G_UNICODE_BREAK_IDEOGRAPHIC;
+		  break_type = G_UNICODE_BREAK_IDEOGRAPHIC;
 
 		  if (makes_hangul_syllable)
 		    break_op = BREAK_IF_SPACES;
@@ -882,55 +882,55 @@ pango_default_break (const gchar   *text,
 		   * language engines should handle this case...
 		   */
 		case G_UNICODE_BREAK_UNKNOWN:
-	          /* treat unknown, complex, and ambiguous like ALPHABETIC
+		  /* treat unknown, complex, and ambiguous like ALPHABETIC
 		   * for now
-	           */
-                  break_op = BREAK_OP (prev_break_type, G_UNICODE_BREAK_ALPHABETIC);
-                  break;
+		   */
+		  break_op = BREAK_OP (prev_break_type, G_UNICODE_BREAK_ALPHABETIC);
+		  break;
 
 		default:
 
 		  g_assert (IN_BREAK_TABLE (break_type));
-                  break_op = BREAK_OP (prev_break_type, break_type);
-                  break;
-                }
-              break;
-            }
+		  break_op = BREAK_OP (prev_break_type, break_type);
+		  break;
+		}
+	      break;
+	    }
 
-          if (break_op != BREAK_ALREADY_HANDLED)
-            {
-              switch (break_op)
-                {
-                case BREAK_PROHIBITED:
-                  /* can't break here */
-                  attrs[i].is_char_break = FALSE;
-                  break;
+	  if (break_op != BREAK_ALREADY_HANDLED)
+	    {
+	      switch (break_op)
+		{
+		case BREAK_PROHIBITED:
+		  /* can't break here */
+		  attrs[i].is_char_break = FALSE;
+		  break;
 
-                case BREAK_IF_SPACES:
-                  /* break if prev char was space */
-                  if (prev_was_break_space)
-                    attrs[i].is_line_break = TRUE;
-                  break;
+		case BREAK_IF_SPACES:
+		  /* break if prev char was space */
+		  if (prev_was_break_space)
+		    attrs[i].is_line_break = TRUE;
+		  break;
 
-                case BREAK_ALLOWED:
-                  attrs[i].is_line_break = TRUE;
-                  break;
+		case BREAK_ALLOWED:
+		  attrs[i].is_line_break = TRUE;
+		  break;
 
-                default:
-                  g_assert_not_reached ();
-                  break;
-                }
-            }
-        }
+		default:
+		  g_assert_not_reached ();
+		  break;
+		}
+	    }
+	}
 
       if (break_type != G_UNICODE_BREAK_SPACE)
-        {
-          prev_break_type = break_type;
-          prev_was_break_space = FALSE;
+	{
+	  prev_break_type = break_type;
+	  prev_was_break_space = FALSE;
 	  prev_jamo = jamo;
-        }
+	}
       else
-        prev_was_break_space = TRUE;
+	prev_was_break_space = TRUE;
 
       /* ---- Word breaks ---- */
 
@@ -939,100 +939,100 @@ pango_default_break (const gchar   *text,
       attrs[i].is_word_end = FALSE;
 
       if (current_word_type != WordNone)
-        {
-          /* Check for a word end */
-          switch (type)
-            {
-            case G_UNICODE_COMBINING_MARK:
-            case G_UNICODE_ENCLOSING_MARK:
-            case G_UNICODE_NON_SPACING_MARK:
+	{
+	  /* Check for a word end */
+	  switch (type)
+	    {
+	    case G_UNICODE_COMBINING_MARK:
+	    case G_UNICODE_ENCLOSING_MARK:
+	    case G_UNICODE_NON_SPACING_MARK:
 	    case G_UNICODE_FORMAT:
-              /* nothing, we just eat these up as part of the word */
-              break;
+	      /* nothing, we just eat these up as part of the word */
+	      break;
 
-            case G_UNICODE_LOWERCASE_LETTER:
-            case G_UNICODE_MODIFIER_LETTER:
-            case G_UNICODE_OTHER_LETTER:
-            case G_UNICODE_TITLECASE_LETTER:
-            case G_UNICODE_UPPERCASE_LETTER:
-              if (current_word_type == WordLetters)
-                {
-                  /* Japanese special cases for ending the word */
-                  if (JAPANESE (last_word_letter) ||
-                      JAPANESE (wc))
-                    {
-                      if ((HIRAGANA (last_word_letter) &&
-                           !HIRAGANA (wc)) ||
-                          (KATAKANA (last_word_letter) &&
-                           !(KATAKANA (wc) || HIRAGANA (wc))) ||
-                          (KANJI (last_word_letter) &&
-                           !(HIRAGANA (wc) || KANJI (wc))) ||
-                          (JAPANESE (last_word_letter) &&
-                           !JAPANESE (wc)) ||
-                          (!JAPANESE (last_word_letter) &&
-                           JAPANESE (wc)))
-                        attrs[i].is_word_end = TRUE;
-                    }
-                }
-              else
-                {
-                  /* end the number word, start the letter word */
-                  attrs[i].is_word_end = TRUE;
-                  attrs[i].is_word_start = TRUE;
-                  current_word_type = WordLetters;
-                }
+	    case G_UNICODE_LOWERCASE_LETTER:
+	    case G_UNICODE_MODIFIER_LETTER:
+	    case G_UNICODE_OTHER_LETTER:
+	    case G_UNICODE_TITLECASE_LETTER:
+	    case G_UNICODE_UPPERCASE_LETTER:
+	      if (current_word_type == WordLetters)
+		{
+		  /* Japanese special cases for ending the word */
+		  if (JAPANESE (last_word_letter) ||
+		      JAPANESE (wc))
+		    {
+		      if ((HIRAGANA (last_word_letter) &&
+			   !HIRAGANA (wc)) ||
+			  (KATAKANA (last_word_letter) &&
+			   !(KATAKANA (wc) || HIRAGANA (wc))) ||
+			  (KANJI (last_word_letter) &&
+			   !(HIRAGANA (wc) || KANJI (wc))) ||
+			  (JAPANESE (last_word_letter) &&
+			   !JAPANESE (wc)) ||
+			  (!JAPANESE (last_word_letter) &&
+			   JAPANESE (wc)))
+			attrs[i].is_word_end = TRUE;
+		    }
+		}
+	      else
+		{
+		  /* end the number word, start the letter word */
+		  attrs[i].is_word_end = TRUE;
+		  attrs[i].is_word_start = TRUE;
+		  current_word_type = WordLetters;
+		}
 
-              last_word_letter = wc;
-              break;
+	      last_word_letter = wc;
+	      break;
 
-            case G_UNICODE_DECIMAL_NUMBER:
-            case G_UNICODE_LETTER_NUMBER:
-            case G_UNICODE_OTHER_NUMBER:
-              if (current_word_type != WordNumbers)
-                {
-                  attrs[i].is_word_end = TRUE;
-                  attrs[i].is_word_start = TRUE;
-                  current_word_type = WordNumbers;
-                }
+	    case G_UNICODE_DECIMAL_NUMBER:
+	    case G_UNICODE_LETTER_NUMBER:
+	    case G_UNICODE_OTHER_NUMBER:
+	      if (current_word_type != WordNumbers)
+		{
+		  attrs[i].is_word_end = TRUE;
+		  attrs[i].is_word_start = TRUE;
+		  current_word_type = WordNumbers;
+		}
 
-              last_word_letter = wc;
-              break;
+	      last_word_letter = wc;
+	      break;
 
-            default:
-              /* Punctuation, control/format chars, etc. all end a word. */
-              attrs[i].is_word_end = TRUE;
+	    default:
+	      /* Punctuation, control/format chars, etc. all end a word. */
+	      attrs[i].is_word_end = TRUE;
 	      current_word_type = WordNone;
-              break;
-            }
-        }
+	      break;
+	    }
+	}
       else
-        {
-          /* Check for a word start */
-          switch (type)
-            {
-            case G_UNICODE_LOWERCASE_LETTER:
-            case G_UNICODE_MODIFIER_LETTER:
-            case G_UNICODE_OTHER_LETTER:
-            case G_UNICODE_TITLECASE_LETTER:
-            case G_UNICODE_UPPERCASE_LETTER:
-              current_word_type = WordLetters;
-              last_word_letter = wc;
-              attrs[i].is_word_start = TRUE;
-              break;
+	{
+	  /* Check for a word start */
+	  switch (type)
+	    {
+	    case G_UNICODE_LOWERCASE_LETTER:
+	    case G_UNICODE_MODIFIER_LETTER:
+	    case G_UNICODE_OTHER_LETTER:
+	    case G_UNICODE_TITLECASE_LETTER:
+	    case G_UNICODE_UPPERCASE_LETTER:
+	      current_word_type = WordLetters;
+	      last_word_letter = wc;
+	      attrs[i].is_word_start = TRUE;
+	      break;
 
-            case G_UNICODE_DECIMAL_NUMBER:
-            case G_UNICODE_LETTER_NUMBER:
-            case G_UNICODE_OTHER_NUMBER:
-              current_word_type = WordNumbers;
-              last_word_letter = wc;
-              attrs[i].is_word_start = TRUE;
-              break;
+	    case G_UNICODE_DECIMAL_NUMBER:
+	    case G_UNICODE_LETTER_NUMBER:
+	    case G_UNICODE_OTHER_NUMBER:
+	      current_word_type = WordNumbers;
+	      last_word_letter = wc;
+	      attrs[i].is_word_start = TRUE;
+	      break;
 
-            default:
-              /* No word here */
-              break;
-            }
-        }
+	    default:
+	      /* No word here */
+	      break;
+	    }
+	}
 
       /* ---- Sentence breaks ---- */
 
@@ -1050,21 +1050,21 @@ pango_default_break (const gchar   *text,
        */
 
 #define MAYBE_START_NEW_SENTENCE                                \
-              switch (type)                                     \
-                {                                               \
-                case G_UNICODE_LINE_SEPARATOR:                  \
-                case G_UNICODE_PARAGRAPH_SEPARATOR:             \
-                case G_UNICODE_CONTROL:                         \
-                case G_UNICODE_FORMAT:                          \
-                case G_UNICODE_SPACE_SEPARATOR:                 \
-                  sentence_state = STATE_SENTENCE_OUTSIDE;      \
-                  break;                                        \
-                                                                \
-                default:                                        \
-                  sentence_state = STATE_SENTENCE_BODY;         \
-                  attrs[i].is_sentence_start = TRUE;            \
-                  break;                                        \
-                }
+	      switch (type)                                     \
+		{                                               \
+		case G_UNICODE_LINE_SEPARATOR:                  \
+		case G_UNICODE_PARAGRAPH_SEPARATOR:             \
+		case G_UNICODE_CONTROL:                         \
+		case G_UNICODE_FORMAT:                          \
+		case G_UNICODE_SPACE_SEPARATOR:                 \
+		  sentence_state = STATE_SENTENCE_OUTSIDE;      \
+		  break;                                        \
+								\
+		default:                                        \
+		  sentence_state = STATE_SENTENCE_BODY;         \
+		  attrs[i].is_sentence_start = TRUE;            \
+		  break;                                        \
+		}
 
       /* No sentence break at the start of the text */
 
@@ -1084,374 +1084,374 @@ pango_default_break (const gchar   *text,
        * followed by newline
        */
       switch (prev_type)
-        {
-        case G_UNICODE_LINE_SEPARATOR:
-        case G_UNICODE_PARAGRAPH_SEPARATOR:
-        case G_UNICODE_CONTROL:
-        case G_UNICODE_FORMAT:
-          if (wc == '\r')
-            {
-              if (next_wc != '\n')
-                attrs[i].is_sentence_boundary = TRUE;
-            }
-          else
-            attrs[i].is_sentence_boundary = TRUE;
-          break;
+	{
+	case G_UNICODE_LINE_SEPARATOR:
+	case G_UNICODE_PARAGRAPH_SEPARATOR:
+	case G_UNICODE_CONTROL:
+	case G_UNICODE_FORMAT:
+	  if (wc == '\r')
+	    {
+	      if (next_wc != '\n')
+		attrs[i].is_sentence_boundary = TRUE;
+	    }
+	  else
+	    attrs[i].is_sentence_boundary = TRUE;
+	  break;
 
-        default:
-          break;
-        }
+	default:
+	  break;
+	}
 
       /* break before para/line separators except newline following
        * carriage return
        */
       switch (type)
-        {
-        case G_UNICODE_LINE_SEPARATOR:
-        case G_UNICODE_PARAGRAPH_SEPARATOR:
-        case G_UNICODE_CONTROL:
-        case G_UNICODE_FORMAT:
-          if (wc == '\n')
-            {
-              if (prev_wc != '\r')
-                attrs[i].is_sentence_boundary = TRUE;
-            }
-          else
-            attrs[i].is_sentence_boundary = TRUE;
-          break;
+	{
+	case G_UNICODE_LINE_SEPARATOR:
+	case G_UNICODE_PARAGRAPH_SEPARATOR:
+	case G_UNICODE_CONTROL:
+	case G_UNICODE_FORMAT:
+	  if (wc == '\n')
+	    {
+	      if (prev_wc != '\r')
+		attrs[i].is_sentence_boundary = TRUE;
+	    }
+	  else
+	    attrs[i].is_sentence_boundary = TRUE;
+	  break;
 
-        default:
-          break;
-        }
+	default:
+	  break;
+	}
 
       switch (sentence_state)
-        {
-        case STATE_SENTENCE_OUTSIDE:
-          /* Start sentence if we have non-whitespace/format/control */
-          switch (type)
-            {
-            case G_UNICODE_LINE_SEPARATOR:
-            case G_UNICODE_PARAGRAPH_SEPARATOR:
-            case G_UNICODE_CONTROL:
-            case G_UNICODE_FORMAT:
-            case G_UNICODE_SPACE_SEPARATOR:
-              break;
+	{
+	case STATE_SENTENCE_OUTSIDE:
+	  /* Start sentence if we have non-whitespace/format/control */
+	  switch (type)
+	    {
+	    case G_UNICODE_LINE_SEPARATOR:
+	    case G_UNICODE_PARAGRAPH_SEPARATOR:
+	    case G_UNICODE_CONTROL:
+	    case G_UNICODE_FORMAT:
+	    case G_UNICODE_SPACE_SEPARATOR:
+	      break;
 
-            default:
-              attrs[i].is_sentence_start = TRUE;
-              sentence_state = STATE_SENTENCE_BODY;
-              break;
-            }
-          break;
+	    default:
+	      attrs[i].is_sentence_start = TRUE;
+	      sentence_state = STATE_SENTENCE_BODY;
+	      break;
+	    }
+	  break;
 
-        case STATE_SENTENCE_BODY:
-          /* If we already broke here due to separators, end the sentence. */
-          if (attrs[i].is_sentence_boundary)
-            {
-              attrs[i].is_sentence_end = TRUE;
+	case STATE_SENTENCE_BODY:
+	  /* If we already broke here due to separators, end the sentence. */
+	  if (attrs[i].is_sentence_boundary)
+	    {
+	      attrs[i].is_sentence_end = TRUE;
 
-              MAYBE_START_NEW_SENTENCE;
-            }
-          else
-            {
-              if (wc == '.')
-                sentence_state = STATE_SENTENCE_DOT;
-              else if (wc == '?' || wc == '!')
-                sentence_state = STATE_SENTENCE_TERM;
-            }
-          break;
+	      MAYBE_START_NEW_SENTENCE;
+	    }
+	  else
+	    {
+	      if (wc == '.')
+		sentence_state = STATE_SENTENCE_DOT;
+	      else if (wc == '?' || wc == '!')
+		sentence_state = STATE_SENTENCE_TERM;
+	    }
+	  break;
 
-        case STATE_SENTENCE_TERM:
-          /* End sentence on anything but close punctuation and some
-           * loosely-specified OTHER_PUNCTUATION such as period,
-           * comma, etc.; follow Unicode rules for breaks
-           */
-          switch (type)
-            {
-            case G_UNICODE_OTHER_PUNCTUATION:
-            case G_UNICODE_CLOSE_PUNCTUATION:
-              if (type == G_UNICODE_CLOSE_PUNCTUATION ||
-                  wc == '.' ||
-                  wc == ',' ||
-                  wc == '?' ||
-                  wc == '!')
-                sentence_state = STATE_SENTENCE_POST_TERM_CLOSE;
-              else
-                {
-                  attrs[i].is_sentence_end = TRUE;
-                  attrs[i].is_sentence_boundary = TRUE;
+	case STATE_SENTENCE_TERM:
+	  /* End sentence on anything but close punctuation and some
+	   * loosely-specified OTHER_PUNCTUATION such as period,
+	   * comma, etc.; follow Unicode rules for breaks
+	   */
+	  switch (type)
+	    {
+	    case G_UNICODE_OTHER_PUNCTUATION:
+	    case G_UNICODE_CLOSE_PUNCTUATION:
+	      if (type == G_UNICODE_CLOSE_PUNCTUATION ||
+		  wc == '.' ||
+		  wc == ',' ||
+		  wc == '?' ||
+		  wc == '!')
+		sentence_state = STATE_SENTENCE_POST_TERM_CLOSE;
+	      else
+		{
+		  attrs[i].is_sentence_end = TRUE;
+		  attrs[i].is_sentence_boundary = TRUE;
 
-                  MAYBE_START_NEW_SENTENCE;
-                }
-              break;
+		  MAYBE_START_NEW_SENTENCE;
+		}
+	      break;
 
-            case G_UNICODE_SPACE_SEPARATOR:
-              attrs[i].is_sentence_end = TRUE;
-              sentence_state = STATE_SENTENCE_POST_TERM_SPACE;
-              break;
+	    case G_UNICODE_SPACE_SEPARATOR:
+	      attrs[i].is_sentence_end = TRUE;
+	      sentence_state = STATE_SENTENCE_POST_TERM_SPACE;
+	      break;
 
-            case G_UNICODE_LINE_SEPARATOR:
-            case G_UNICODE_PARAGRAPH_SEPARATOR:
-              attrs[i].is_sentence_end = TRUE;
-              sentence_state = STATE_SENTENCE_POST_TERM_SEP;
-              break;
+	    case G_UNICODE_LINE_SEPARATOR:
+	    case G_UNICODE_PARAGRAPH_SEPARATOR:
+	      attrs[i].is_sentence_end = TRUE;
+	      sentence_state = STATE_SENTENCE_POST_TERM_SEP;
+	      break;
 
-            default:
-              attrs[i].is_sentence_end = TRUE;
-              attrs[i].is_sentence_boundary = TRUE;
+	    default:
+	      attrs[i].is_sentence_end = TRUE;
+	      attrs[i].is_sentence_boundary = TRUE;
 
-              MAYBE_START_NEW_SENTENCE;
+	      MAYBE_START_NEW_SENTENCE;
 
-              break;
-            }
-          break;
+	      break;
+	    }
+	  break;
 
-        case STATE_SENTENCE_POST_TERM_CLOSE:
-          /* End sentence on anything besides more punctuation; follow
-           * rules for breaks
-           */
-          switch (type)
-            {
-            case G_UNICODE_OTHER_PUNCTUATION:
-            case G_UNICODE_CLOSE_PUNCTUATION:
-              if (type == G_UNICODE_CLOSE_PUNCTUATION ||
-                  wc == '.' ||
-                  wc == ',' ||
-                  wc == '?' ||
-                  wc == '!')
-                /* continue in this state */
-                ;
-              else
-                {
-                  attrs[i].is_sentence_end = TRUE;
-                  attrs[i].is_sentence_boundary = TRUE;
+	case STATE_SENTENCE_POST_TERM_CLOSE:
+	  /* End sentence on anything besides more punctuation; follow
+	   * rules for breaks
+	   */
+	  switch (type)
+	    {
+	    case G_UNICODE_OTHER_PUNCTUATION:
+	    case G_UNICODE_CLOSE_PUNCTUATION:
+	      if (type == G_UNICODE_CLOSE_PUNCTUATION ||
+		  wc == '.' ||
+		  wc == ',' ||
+		  wc == '?' ||
+		  wc == '!')
+		/* continue in this state */
+		;
+	      else
+		{
+		  attrs[i].is_sentence_end = TRUE;
+		  attrs[i].is_sentence_boundary = TRUE;
 
-                  MAYBE_START_NEW_SENTENCE;
-                }
-              break;
+		  MAYBE_START_NEW_SENTENCE;
+		}
+	      break;
 
-            case G_UNICODE_SPACE_SEPARATOR:
-              attrs[i].is_sentence_end = TRUE;
-              sentence_state = STATE_SENTENCE_POST_TERM_SPACE;
-              break;
+	    case G_UNICODE_SPACE_SEPARATOR:
+	      attrs[i].is_sentence_end = TRUE;
+	      sentence_state = STATE_SENTENCE_POST_TERM_SPACE;
+	      break;
 
-            case G_UNICODE_LINE_SEPARATOR:
-            case G_UNICODE_PARAGRAPH_SEPARATOR:
-              attrs[i].is_sentence_end = TRUE;
-              /* undo the unconditional break-at-all-line/para-separators
-               * from above; I'm not sure this is what the Unicode spec
-               * intends, but it seems right - we get to include
-               * a single line/para separator in the sentence according
-               * to their rules
-               */
-              attrs[i].is_sentence_boundary = FALSE;
-              sentence_state = STATE_SENTENCE_POST_TERM_SEP;
-              break;
+	    case G_UNICODE_LINE_SEPARATOR:
+	    case G_UNICODE_PARAGRAPH_SEPARATOR:
+	      attrs[i].is_sentence_end = TRUE;
+	      /* undo the unconditional break-at-all-line/para-separators
+	       * from above; I'm not sure this is what the Unicode spec
+	       * intends, but it seems right - we get to include
+	       * a single line/para separator in the sentence according
+	       * to their rules
+	       */
+	      attrs[i].is_sentence_boundary = FALSE;
+	      sentence_state = STATE_SENTENCE_POST_TERM_SEP;
+	      break;
 
-            default:
-              attrs[i].is_sentence_end = TRUE;
-              attrs[i].is_sentence_boundary = TRUE;
+	    default:
+	      attrs[i].is_sentence_end = TRUE;
+	      attrs[i].is_sentence_boundary = TRUE;
 
-              MAYBE_START_NEW_SENTENCE;
+	      MAYBE_START_NEW_SENTENCE;
 
-              break;
-            }
-          break;
+	      break;
+	    }
+	  break;
 
-        case STATE_SENTENCE_POST_TERM_SPACE:
+	case STATE_SENTENCE_POST_TERM_SPACE:
 
-          /* Sentence is definitely already ended; to enter this state
-           * we had to see a space, which ends the sentence.
-           */
+	  /* Sentence is definitely already ended; to enter this state
+	   * we had to see a space, which ends the sentence.
+	   */
 
-          switch (type)
-            {
-            case G_UNICODE_SPACE_SEPARATOR:
-              /* continue in this state */
-              break;
+	  switch (type)
+	    {
+	    case G_UNICODE_SPACE_SEPARATOR:
+	      /* continue in this state */
+	      break;
 
-            case G_UNICODE_LINE_SEPARATOR:
-            case G_UNICODE_PARAGRAPH_SEPARATOR:
-              /* undo the unconditional break-at-all-line/para-separators
-               * from above; I'm not sure this is what the Unicode spec
-               * intends, but it seems right
-               */
-              attrs[i].is_sentence_boundary = FALSE;
-              sentence_state = STATE_SENTENCE_POST_TERM_SEP;
-              break;
+	    case G_UNICODE_LINE_SEPARATOR:
+	    case G_UNICODE_PARAGRAPH_SEPARATOR:
+	      /* undo the unconditional break-at-all-line/para-separators
+	       * from above; I'm not sure this is what the Unicode spec
+	       * intends, but it seems right
+	       */
+	      attrs[i].is_sentence_boundary = FALSE;
+	      sentence_state = STATE_SENTENCE_POST_TERM_SEP;
+	      break;
 
-            default:
-              attrs[i].is_sentence_boundary = TRUE;
+	    default:
+	      attrs[i].is_sentence_boundary = TRUE;
 
-              MAYBE_START_NEW_SENTENCE;
+	      MAYBE_START_NEW_SENTENCE;
 
-              break;
-            }
-          break;
+	      break;
+	    }
+	  break;
 
-        case STATE_SENTENCE_POST_TERM_SEP:
-          /* Break is forced at this point, unless we're a newline
-           * after a CR, then we will break after the newline on the
-           * next iteration. Only a single Sep can be in the
-           * sentence.
-           */
-          if (!(prev_wc == '\r' && wc == '\n'))
-            attrs[i].is_sentence_boundary = TRUE;
+	case STATE_SENTENCE_POST_TERM_SEP:
+	  /* Break is forced at this point, unless we're a newline
+	   * after a CR, then we will break after the newline on the
+	   * next iteration. Only a single Sep can be in the
+	   * sentence.
+	   */
+	  if (!(prev_wc == '\r' && wc == '\n'))
+	    attrs[i].is_sentence_boundary = TRUE;
 
-          MAYBE_START_NEW_SENTENCE;
+	  MAYBE_START_NEW_SENTENCE;
 
-          break;
+	  break;
 
-        case STATE_SENTENCE_DOT:
-          switch (type)
-            {
-            case G_UNICODE_CLOSE_PUNCTUATION:
-              sentence_state = STATE_SENTENCE_POST_DOT_CLOSE;
-              break;
+	case STATE_SENTENCE_DOT:
+	  switch (type)
+	    {
+	    case G_UNICODE_CLOSE_PUNCTUATION:
+	      sentence_state = STATE_SENTENCE_POST_DOT_CLOSE;
+	      break;
 
-            case G_UNICODE_SPACE_SEPARATOR:
-              possible_sentence_end = i;
-              sentence_state = STATE_SENTENCE_POST_DOT_SPACE;
-              break;
+	    case G_UNICODE_SPACE_SEPARATOR:
+	      possible_sentence_end = i;
+	      sentence_state = STATE_SENTENCE_POST_DOT_SPACE;
+	      break;
 
-            default:
-              /* If we broke on a control/format char, end the
-               * sentence; else this was not a sentence end, since
-               * we didn't enter the POST_DOT_SPACE state.
-               */
-              if (attrs[i].is_sentence_boundary)
-                {
-                  attrs[i].is_sentence_end = TRUE;
+	    default:
+	      /* If we broke on a control/format char, end the
+	       * sentence; else this was not a sentence end, since
+	       * we didn't enter the POST_DOT_SPACE state.
+	       */
+	      if (attrs[i].is_sentence_boundary)
+		{
+		  attrs[i].is_sentence_end = TRUE;
 
-                  MAYBE_START_NEW_SENTENCE;
-                }
-              else
-                sentence_state = STATE_SENTENCE_BODY;
-              break;
-            }
-          break;
+		  MAYBE_START_NEW_SENTENCE;
+		}
+	      else
+		sentence_state = STATE_SENTENCE_BODY;
+	      break;
+	    }
+	  break;
 
-        case STATE_SENTENCE_POST_DOT_CLOSE:
-          switch (type)
-            {
-            case G_UNICODE_SPACE_SEPARATOR:
-              possible_sentence_end = i;
-              sentence_state = STATE_SENTENCE_POST_DOT_SPACE;
-              break;
+	case STATE_SENTENCE_POST_DOT_CLOSE:
+	  switch (type)
+	    {
+	    case G_UNICODE_SPACE_SEPARATOR:
+	      possible_sentence_end = i;
+	      sentence_state = STATE_SENTENCE_POST_DOT_SPACE;
+	      break;
 
-            default:
-              /* If we broke on a control/format char, end the
-               * sentence; else this was not a sentence end, since
-               * we didn't enter the POST_DOT_SPACE state.
-               */
-              if (attrs[i].is_sentence_boundary)
-                {
-                  attrs[i].is_sentence_end = TRUE;
+	    default:
+	      /* If we broke on a control/format char, end the
+	       * sentence; else this was not a sentence end, since
+	       * we didn't enter the POST_DOT_SPACE state.
+	       */
+	      if (attrs[i].is_sentence_boundary)
+		{
+		  attrs[i].is_sentence_end = TRUE;
 
-                  MAYBE_START_NEW_SENTENCE;
-                }
-              else
-                sentence_state = STATE_SENTENCE_BODY;
-              break;
-            }
-          break;
+		  MAYBE_START_NEW_SENTENCE;
+		}
+	      else
+		sentence_state = STATE_SENTENCE_BODY;
+	      break;
+	    }
+	  break;
 
-        case STATE_SENTENCE_POST_DOT_SPACE:
+	case STATE_SENTENCE_POST_DOT_SPACE:
 
-          possible_sentence_boundary = i;
+	  possible_sentence_boundary = i;
 
-          switch (type)
-            {
-            case G_UNICODE_SPACE_SEPARATOR:
-              /* remain in current state */
-              break;
+	  switch (type)
+	    {
+	    case G_UNICODE_SPACE_SEPARATOR:
+	      /* remain in current state */
+	      break;
 
-            case G_UNICODE_OPEN_PUNCTUATION:
-              sentence_state = STATE_SENTENCE_POST_DOT_OPEN;
-              break;
+	    case G_UNICODE_OPEN_PUNCTUATION:
+	      sentence_state = STATE_SENTENCE_POST_DOT_OPEN;
+	      break;
 
-            case G_UNICODE_LOWERCASE_LETTER:
-              /* wasn't a sentence-ending period; so re-enter the sentence
-               * body
-               */
-              sentence_state = STATE_SENTENCE_BODY;
-              break;
+	    case G_UNICODE_LOWERCASE_LETTER:
+	      /* wasn't a sentence-ending period; so re-enter the sentence
+	       * body
+	       */
+	      sentence_state = STATE_SENTENCE_BODY;
+	      break;
 
-            default:
-              /* End the sentence, break, maybe start a new one */
+	    default:
+	      /* End the sentence, break, maybe start a new one */
 
-              g_assert (possible_sentence_end >= 0);
-              g_assert (possible_sentence_boundary >= 0);
+	      g_assert (possible_sentence_end >= 0);
+	      g_assert (possible_sentence_boundary >= 0);
 
-              attrs[possible_sentence_boundary].is_sentence_boundary = TRUE;
-              attrs[possible_sentence_end].is_sentence_end = TRUE;
+	      attrs[possible_sentence_boundary].is_sentence_boundary = TRUE;
+	      attrs[possible_sentence_end].is_sentence_end = TRUE;
 
-              possible_sentence_end = -1;
-              possible_sentence_boundary = -1;
+	      possible_sentence_end = -1;
+	      possible_sentence_boundary = -1;
 
-              MAYBE_START_NEW_SENTENCE;
+	      MAYBE_START_NEW_SENTENCE;
 
-              break;
-            }
-          break;
+	      break;
+	    }
+	  break;
 
-        case STATE_SENTENCE_POST_DOT_OPEN:
-          switch (type)
-            {
-            case G_UNICODE_OPEN_PUNCTUATION:
-              /* continue in current state */
-              break;
+	case STATE_SENTENCE_POST_DOT_OPEN:
+	  switch (type)
+	    {
+	    case G_UNICODE_OPEN_PUNCTUATION:
+	      /* continue in current state */
+	      break;
 
-            case G_UNICODE_LOWERCASE_LETTER:
-              /* wasn't a sentence-ending period; so re-enter the sentence
-               * body
-               */
-              sentence_state = STATE_SENTENCE_BODY;
-              break;
+	    case G_UNICODE_LOWERCASE_LETTER:
+	      /* wasn't a sentence-ending period; so re-enter the sentence
+	       * body
+	       */
+	      sentence_state = STATE_SENTENCE_BODY;
+	      break;
 
-            default:
-              /* End the sentence, break, maybe start a new one */
+	    default:
+	      /* End the sentence, break, maybe start a new one */
 
-              g_assert (possible_sentence_end >= 0);
-              g_assert (possible_sentence_boundary >= 0);
+	      g_assert (possible_sentence_end >= 0);
+	      g_assert (possible_sentence_boundary >= 0);
 
-              attrs[possible_sentence_boundary].is_sentence_boundary = TRUE;
-              attrs[possible_sentence_end].is_sentence_end = TRUE;
+	      attrs[possible_sentence_boundary].is_sentence_boundary = TRUE;
+	      attrs[possible_sentence_end].is_sentence_end = TRUE;
 
-              possible_sentence_end = -1;
-              possible_sentence_boundary = -1;
+	      possible_sentence_end = -1;
+	      possible_sentence_boundary = -1;
 
-              MAYBE_START_NEW_SENTENCE;
+	      MAYBE_START_NEW_SENTENCE;
 
-              break;
-            }
-          break;
+	      break;
+	    }
+	  break;
 
-        case STATE_SENTENCE_POST_DOT_SEP:
-          /* Break is forced at this point, unless we're a newline
-           * after a CR, then we will break after the newline on the
-           * next iteration. Only a single Sep can be in the
-           * sentence.
-           */
-          if (!(prev_wc == '\r' && wc == '\n'))
-            attrs[i].is_sentence_boundary = TRUE;
+	case STATE_SENTENCE_POST_DOT_SEP:
+	  /* Break is forced at this point, unless we're a newline
+	   * after a CR, then we will break after the newline on the
+	   * next iteration. Only a single Sep can be in the
+	   * sentence.
+	   */
+	  if (!(prev_wc == '\r' && wc == '\n'))
+	    attrs[i].is_sentence_boundary = TRUE;
 
-          g_assert (possible_sentence_end >= 0);
-          g_assert (possible_sentence_boundary >= 0);
+	  g_assert (possible_sentence_end >= 0);
+	  g_assert (possible_sentence_boundary >= 0);
 
-          attrs[possible_sentence_end].is_sentence_end = TRUE;
+	  attrs[possible_sentence_end].is_sentence_end = TRUE;
 
-          possible_sentence_end = -1;
-          possible_sentence_boundary = -1;
+	  possible_sentence_end = -1;
+	  possible_sentence_boundary = -1;
 
-          MAYBE_START_NEW_SENTENCE;
+	  MAYBE_START_NEW_SENTENCE;
 
-          break;
+	  break;
 
-        default:
-          g_assert_not_reached ();
-          break;
-        }
+	default:
+	  g_assert_not_reached ();
+	  break;
+	}
 
       prev_type = type;
       prev_wc = wc;
@@ -1459,18 +1459,18 @@ pango_default_break (const gchar   *text,
       /* wc might not be a valid Unicode base character, but really all we
        * need to know is the last non-combining character */
       if (type != G_UNICODE_COMBINING_MARK &&
-          type != G_UNICODE_ENCLOSING_MARK &&
-          type != G_UNICODE_NON_SPACING_MARK)
-        base_character = wc;
+	  type != G_UNICODE_ENCLOSING_MARK &&
+	  type != G_UNICODE_NON_SPACING_MARK)
+	base_character = wc;
     }
 }
 
 static gboolean
 tailor_break (const gchar   *text,
-             gint           length,
-             PangoAnalysis *analysis,
-             PangoLogAttr  *attrs,
-             int            attrs_len)
+	     gint           length,
+	     PangoAnalysis *analysis,
+	     PangoLogAttr  *attrs,
+	     int            attrs_len)
 {
   if (analysis->lang_engine && PANGO_ENGINE_LANG_GET_CLASS (analysis->lang_engine)->script_break)
     {
@@ -1499,10 +1499,10 @@ tailor_break (const gchar   *text,
  */
 void
 pango_break (const gchar   *text,
-             gint           length,
-             PangoAnalysis *analysis,
-             PangoLogAttr  *attrs,
-             int            attrs_len)
+	     gint           length,
+	     PangoAnalysis *analysis,
+	     PangoLogAttr  *attrs,
+	     int            attrs_len)
 {
   g_return_if_fail (analysis != NULL);
   g_return_if_fail (attrs != NULL);
@@ -1531,9 +1531,9 @@ pango_break (const gchar   *text,
  **/
 void
 pango_find_paragraph_boundary (const gchar *text,
-                               gint         length,
-                               gint        *paragraph_delimiter_index,
-                               gint        *next_paragraph_start)
+			       gint         length,
+			       gint        *paragraph_delimiter_index,
+			       gint        *next_paragraph_start)
 {
   const gchar *p = text;
   const gchar *end;
@@ -1570,29 +1570,29 @@ pango_find_paragraph_boundary (const gchar *text,
   while (p != end)
     {
       if (prev_sep == '\n' ||
-          prev_sep == PARAGRAPH_SEPARATOR_STRING[0])
-        {
-          g_assert (delimiter);
-          start = p;
-          break;
-        }
+	  prev_sep == PARAGRAPH_SEPARATOR_STRING[0])
+	{
+	  g_assert (delimiter);
+	  start = p;
+	  break;
+	}
       else if (prev_sep == '\r')
-        {
-          /* don't break between \r and \n */
-          if (*p != '\n')
-            {
-              g_assert (delimiter);
-              start = p;
-              break;
-            }
-        }
+	{
+	  /* don't break between \r and \n */
+	  if (*p != '\n')
+	    {
+	      g_assert (delimiter);
+	      start = p;
+	      break;
+	    }
+	}
 
       if (*p == '\n' ||
-           *p == '\r' ||
-           !strncmp(p, PARAGRAPH_SEPARATOR_STRING,
+	   *p == '\r' ||
+	   !strncmp(p, PARAGRAPH_SEPARATOR_STRING,
 		    strlen(PARAGRAPH_SEPARATOR_STRING)))
-        {
-          if (delimiter == NULL)
+	{
+	  if (delimiter == NULL)
 	    delimiter = p;
 	  prev_sep = *p;
 	}
@@ -1663,11 +1663,11 @@ tailor_segment (const char      *range_start,
  */
 void
 pango_get_log_attrs (const char    *text,
-                     int            length,
-                     int            level,
-                     PangoLanguage *language,
-                     PangoLogAttr  *log_attrs,
-                     int            attrs_len)
+		     int            length,
+		     int            level,
+		     PangoLanguage *language,
+		     PangoLogAttr  *log_attrs,
+		     int            attrs_len)
 {
   PangoMap *lang_map;
   int chars_broken;
@@ -1711,15 +1711,15 @@ pango_get_log_attrs (const char    *text,
       g_assert (range_end == run_start);
 
       if (range_engine != run_engine)
-        {
-          /* Engine has changed; do the tailoring for the current range,
-           * then start a new range.
-           */
+	{
+	  /* Engine has changed; do the tailoring for the current range,
+	   * then start a new range.
+	   */
 	  chars_broken += tailor_segment (range_start, range_end, range_engine, chars_broken, &analysis, log_attrs);
 
-          range_start = run_start;
+	  range_start = run_start;
 	  range_engine = run_engine;
-        }
+	}
       range_end = run_end;
     }
   pango_script_iter_free (iter);

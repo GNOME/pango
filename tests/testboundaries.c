@@ -41,19 +41,19 @@
  */
 #define VIRAMA_SCRIPT(wc)        ((wc) >= 0x0901 && (wc) <= 0x17FF)
 #define VIRAMA(wc) ((wc) == 0x094D || \
-                    (wc) == 0x09CD || \
-                    (wc) == 0x0A4D || \
-                    (wc) == 0x0ACD || \
-                    (wc) == 0x0B4D || \
-                    (wc) == 0x0BCD || \
-                    (wc) == 0x0C4D || \
-                    (wc) == 0x0CCD || \
-                    (wc) == 0x0D4D || \
-                    (wc) == 0x0DCA || \
-                    (wc) == 0x0E3A || \
-                    (wc) == 0x0F84 || \
-                    (wc) == 0x1039 || \
-                    (wc) == 0x17D2)
+		    (wc) == 0x09CD || \
+		    (wc) == 0x0A4D || \
+		    (wc) == 0x0ACD || \
+		    (wc) == 0x0B4D || \
+		    (wc) == 0x0BCD || \
+		    (wc) == 0x0C4D || \
+		    (wc) == 0x0CCD || \
+		    (wc) == 0x0D4D || \
+		    (wc) == 0x0DCA || \
+		    (wc) == 0x0E3A || \
+		    (wc) == 0x0F84 || \
+		    (wc) == 0x1039 || \
+		    (wc) == 0x17D2)
 /* Types of Japanese characters */
 #define JAPANESE(wc) ((wc) >= 0x2F00 && (wc) <= 0x30FF)
 #define KANJI(wc)    ((wc) >= 0x2F00 && (wc) <= 0x2FDF)
@@ -88,21 +88,21 @@ static void fail (const char *format, ...)
 }
 
 typedef void (* CharForeachFunc) (gunichar      wc,
-                                  gunichar      prev_wc,
-                                  gunichar      next_wc,
-                                  GUnicodeType  type,
-                                  GUnicodeType  prev_type,
-                                  GUnicodeType  next_type,
-                                  PangoLogAttr *attr,
-                                  PangoLogAttr *prev_attr,
-                                  PangoLogAttr *next_attr,
-                                  gpointer      data);
+				  gunichar      prev_wc,
+				  gunichar      next_wc,
+				  GUnicodeType  type,
+				  GUnicodeType  prev_type,
+				  GUnicodeType  next_type,
+				  PangoLogAttr *attr,
+				  PangoLogAttr *prev_attr,
+				  PangoLogAttr *next_attr,
+				  gpointer      data);
 
 static void
 log_attr_foreach (const char     *text,
-                  PangoLogAttr   *attrs,
-                  CharForeachFunc func,
-                  gpointer        data)
+		  PangoLogAttr   *attrs,
+		  CharForeachFunc func,
+		  gpointer        data)
 {
   const gchar *next = text;
   gint length = strlen (text);
@@ -142,45 +142,45 @@ log_attr_foreach (const char     *text,
       line_end = next;
 
       if (next >= end)
-        next_wc = 0;
+	next_wc = 0;
       else
-        next_wc = g_utf8_get_char (next);
+	next_wc = g_utf8_get_char (next);
 
       if (next_wc)
-        next_type = g_unichar_type (next_wc);
+	next_type = g_unichar_type (next_wc);
 
       (* func) (wc, prev_wc, next_wc,
-                type, prev_type, next_type,
-                &attrs[i],
-                i != 0 ? &attrs[i-1] : NULL,
-                next_wc != 0 ? &attrs[i+1] : NULL,
-                data);
+		type, prev_type, next_type,
+		&attrs[i],
+		i != 0 ? &attrs[i-1] : NULL,
+		next_wc != 0 ? &attrs[i+1] : NULL,
+		data);
 
       prev_type = type;
       prev_wc = wc;
       ++i;
       ++offset;
       if (wc == '\n')
-        {
-          ++line;
-          offset = 0;
-          line_start = next;
-          line_end = next;
-        }
+	{
+	  ++line;
+	  offset = 0;
+	  line_start = next;
+	  line_end = next;
+	}
     }
 }
 
 static void
 check_line_char (gunichar      wc,
-                 gunichar      prev_wc,
-                 gunichar      next_wc,
-                 GUnicodeType  type,
-                 GUnicodeType  prev_type,
-                 GUnicodeType  next_type,
-                 PangoLogAttr *attr,
-                 PangoLogAttr *prev_attr,
-                 PangoLogAttr *next_attr,
-                 gpointer      data)
+		 gunichar      prev_wc,
+		 gunichar      next_wc,
+		 GUnicodeType  type,
+		 GUnicodeType  prev_type,
+		 GUnicodeType  next_type,
+		 PangoLogAttr *attr,
+		 PangoLogAttr *prev_attr,
+		 PangoLogAttr *next_attr,
+		 gpointer      data)
 {
   GUnicodeBreakType break_type;
   GUnicodeBreakType prev_break_type;
@@ -194,13 +194,13 @@ check_line_char (gunichar      wc,
   if (wc == '\n')
     {
       if (prev_wc == '\r')
-        {
-          if (attr->is_line_break)
-            fail ("line break between \\r and \\n");
-        }
+	{
+	  if (attr->is_line_break)
+	    fail ("line break between \\r and \\n");
+	}
 
       if (next_attr && !next_attr->is_line_break)
-        fail ("no line break after \\n");
+	fail ("no line break after \\n");
     }
 
   if (attr->is_line_break && prev_wc == 0)
@@ -209,9 +209,9 @@ check_line_char (gunichar      wc,
   if (break_type == G_UNICODE_BREAK_SPACE)
     {
       if (attr->is_line_break && prev_attr != NULL &&
-          !attr->is_mandatory_break &&
+	  !attr->is_mandatory_break &&
 	  !(next_wc && g_unichar_break_type (next_wc) == G_UNICODE_BREAK_COMBINING_MARK))
-        fail ("can't break lines before a space unless a mandatory break char precedes it or a combining mark follows; prev char was " CHFORMAT, prev_wc);
+	fail ("can't break lines before a space unless a mandatory break char precedes it or a combining mark follows; prev char was " CHFORMAT, prev_wc);
     }
 
   if (attr->is_mandatory_break && !attr->is_line_break)
@@ -245,14 +245,14 @@ check_line_char (gunichar      wc,
 
 static void
 check_line_invariants (const char   *text,
-                       PangoLogAttr *attrs)
+		       PangoLogAttr *attrs)
 {
   log_attr_foreach (text, attrs, check_line_char, NULL);
 }
 
 static void
 check_word_invariants (const char   *text,
-                       PangoLogAttr *attrs)
+		       PangoLogAttr *attrs)
 {
 
 
@@ -260,7 +260,7 @@ check_word_invariants (const char   *text,
 
 static void
 check_sentence_invariants (const char   *text,
-                           PangoLogAttr *attrs)
+			   PangoLogAttr *attrs)
 {
 
 
@@ -268,17 +268,17 @@ check_sentence_invariants (const char   *text,
 
 static void
 check_grapheme_invariants (const char   *text,
-                           PangoLogAttr *attrs)
+			   PangoLogAttr *attrs)
 {
 
 
 }
 
 static void print_sentences (const char   *text,
-                             PangoLogAttr *attrs);
+			     PangoLogAttr *attrs);
 static void
 print_sentences (const char   *text,
-                 PangoLogAttr *attrs)
+		 PangoLogAttr *attrs)
 {
   const char *p;
   const char *last;
@@ -290,12 +290,12 @@ print_sentences (const char   *text,
   while (*p)
     {
       if (attrs[i].is_sentence_boundary)
-        {
-          char *s = g_strndup (last, p - last);
-          printf ("%s\n", s);
-          g_free (s);
-          last = p;
-        }
+	{
+	  char *s = g_strndup (last, p - last);
+	  printf ("%s\n", s);
+	  g_free (s);
+	  last = p;
+	}
 
       p = g_utf8_next_char (p);
       ++i;
@@ -315,11 +315,11 @@ check_invariants (const char *text)
   attrs = g_new0 (PangoLogAttr, len + 1);
 
   pango_get_log_attrs (text,
-                       -1,
-                       0,
-                       pango_language_from_string ("C"),
-                       attrs,
-                       len + 1);
+		       -1,
+		       0,
+		       pango_language_from_string ("C"),
+		       attrs,
+		       len + 1);
 
   check_line_invariants (text, attrs);
   check_sentence_invariants (text, attrs);

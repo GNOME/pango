@@ -202,20 +202,20 @@ pango_atsui_family_get_type (void)
     {
       const GTypeInfo object_info =
       {
-        sizeof (PangoFontFamilyClass),
-        (GBaseInitFunc) NULL,
-        (GBaseFinalizeFunc) NULL,
-        (GClassInitFunc) pango_atsui_family_class_init,
-        NULL,           /* class_finalize */
-        NULL,           /* class_data */
-        sizeof (PangoATSUIFamily),
-        0,              /* n_preallocs */
-        (GInstanceInitFunc) pango_atsui_family_init,
+	sizeof (PangoFontFamilyClass),
+	(GBaseInitFunc) NULL,
+	(GBaseFinalizeFunc) NULL,
+	(GClassInitFunc) pango_atsui_family_class_init,
+	NULL,           /* class_finalize */
+	NULL,           /* class_data */
+	sizeof (PangoATSUIFamily),
+	0,              /* n_preallocs */
+	(GInstanceInitFunc) pango_atsui_family_init,
       };
 
       object_type = g_type_register_static (PANGO_TYPE_FONT_FAMILY,
-                                            I_("PangoATSUIFamily"),
-                                            &object_info, 0);
+					    I_("PangoATSUIFamily"),
+					    &object_info, 0);
     }
 
   return object_type;
@@ -280,8 +280,8 @@ pango_atsui_face_get_face_name (PangoFontFace *face)
 
 static void
 pango_atsui_face_list_sizes (PangoFontFace  *face,
-                             int           **sizes,
-                             int            *n_sizes)
+			     int           **sizes,
+			     int            *n_sizes)
 {
   *n_sizes = 0;
   *sizes = NULL;
@@ -321,20 +321,20 @@ pango_atsui_face_get_type (void)
     {
       const GTypeInfo object_info =
       {
-        sizeof (PangoFontFaceClass),
-        (GBaseInitFunc) NULL,
-        (GBaseFinalizeFunc) NULL,
-        (GClassInitFunc) pango_atsui_face_class_init,
-        NULL,           /* class_finalize */
-        NULL,           /* class_data */
-        sizeof (PangoATSUIFace),
-        0,              /* n_preallocs */
-        (GInstanceInitFunc) NULL,
+	sizeof (PangoFontFaceClass),
+	(GBaseInitFunc) NULL,
+	(GBaseFinalizeFunc) NULL,
+	(GClassInitFunc) pango_atsui_face_class_init,
+	NULL,           /* class_finalize */
+	NULL,           /* class_data */
+	sizeof (PangoATSUIFace),
+	0,              /* n_preallocs */
+	(GInstanceInitFunc) NULL,
       };
 
       object_type = g_type_register_static (PANGO_TYPE_FONT_FACE,
-                                            I_("PangoATSUIFace"),
-                                            &object_info, 0);
+					    I_("PangoATSUIFace"),
+					    &object_info, 0);
     }
 
   return object_type;
@@ -579,7 +579,7 @@ pango_atsui_font_map_load_font (PangoFontMap               *fontmap,
 	}
 
       if (best_desc == NULL || best_face == NULL)
-        return NULL;
+	return NULL;
 
       pango_font_description_set_size (best_desc, size);
 

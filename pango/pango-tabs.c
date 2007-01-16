@@ -29,11 +29,11 @@ typedef struct _PangoTab PangoTab;
 struct _PangoTab
 {
   gint location; 	        /* Offset in pixels of this tab stop
-                                 * from the left margin of the text.
-                                 */
+				 * from the left margin of the text.
+				 */
   PangoTabAlign alignment;      /* Where the tab stop appears relative
-                                 * to the text.
-                                 */
+				 * to the text.
+				 */
 };
 
 struct _PangoTabArray
@@ -69,7 +69,7 @@ init_tabs (PangoTabArray *array, gint start, gint end)
  **/
 PangoTabArray*
 pango_tab_array_new (gint initial_size,
-                     gboolean positions_in_pixels)
+		     gboolean positions_in_pixels)
 {
   PangoTabArray *array;
 
@@ -115,10 +115,10 @@ pango_tab_array_new (gint initial_size,
  **/
 PangoTabArray  *
 pango_tab_array_new_with_positions (gint           size,
-                                    gboolean       positions_in_pixels,
-                                    PangoTabAlign  first_alignment,
-                                    gint           first_position,
-                                    ...)
+				    gboolean       positions_in_pixels,
+				    PangoTabAlign  first_alignment,
+				    gint           first_position,
+				    ...)
 {
   PangoTabArray *array;
   va_list args;
@@ -163,8 +163,8 @@ pango_tab_array_get_type (void)
 
   if (our_type == 0)
     our_type = g_boxed_type_register_static (I_("PangoTabArray"),
-                                             (GBoxedCopyFunc)pango_tab_array_copy,
-                                             (GBoxedFreeFunc)pango_tab_array_free);
+					     (GBoxedCopyFunc)pango_tab_array_copy,
+					     (GBoxedFreeFunc)pango_tab_array_free);
   return our_type;
 }
 
@@ -235,7 +235,7 @@ pango_tab_array_get_size (PangoTabArray *tab_array)
  **/
 void
 pango_tab_array_resize (PangoTabArray *tab_array,
-                        gint           new_size)
+			gint           new_size)
 {
   if (new_size > tab_array->allocated)
     {
@@ -243,10 +243,10 @@ pango_tab_array_resize (PangoTabArray *tab_array,
 
       /* Ratchet allocated size up above the index. */
       if (tab_array->allocated == 0)
-        tab_array->allocated = 2;
+	tab_array->allocated = 2;
 
       while (new_size > tab_array->allocated)
-        tab_array->allocated = tab_array->allocated * 2;
+	tab_array->allocated = tab_array->allocated * 2;
 
       tab_array->tabs = g_renew (PangoTab, tab_array->tabs,
 				 tab_array->allocated);
@@ -271,9 +271,9 @@ pango_tab_array_resize (PangoTabArray *tab_array,
  **/
 void
 pango_tab_array_set_tab  (PangoTabArray *tab_array,
-                          gint           tab_index,
-                          PangoTabAlign  alignment,
-                          gint           location)
+			  gint           tab_index,
+			  PangoTabAlign  alignment,
+			  gint           location)
 {
   g_return_if_fail (tab_array != NULL);
   g_return_if_fail (tab_index >= 0);
@@ -299,9 +299,9 @@ pango_tab_array_set_tab  (PangoTabArray *tab_array,
  **/
 void
 pango_tab_array_get_tab  (PangoTabArray *tab_array,
-                          gint           tab_index,
-                          PangoTabAlign *alignment,
-                          gint          *location)
+			  gint           tab_index,
+			  PangoTabAlign *alignment,
+			  gint          *location)
 {
   g_return_if_fail (tab_array != NULL);
   g_return_if_fail (tab_index < tab_array->size);
@@ -327,8 +327,8 @@ pango_tab_array_get_tab  (PangoTabArray *tab_array,
  **/
 void
 pango_tab_array_get_tabs (PangoTabArray *tab_array,
-                          PangoTabAlign **alignments,
-                          gint          **locations)
+			  PangoTabAlign **alignments,
+			  gint          **locations)
 {
   gint i;
 
@@ -344,9 +344,9 @@ pango_tab_array_get_tabs (PangoTabArray *tab_array,
   while (i < tab_array->size)
     {
       if (alignments)
-        (*alignments)[i] = tab_array->tabs[i].alignment;
+	(*alignments)[i] = tab_array->tabs[i].alignment;
       if (locations)
-        (*locations)[i] = tab_array->tabs[i].location;
+	(*locations)[i] = tab_array->tabs[i].location;
 
       ++i;
     }

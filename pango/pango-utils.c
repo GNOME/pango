@@ -133,8 +133,8 @@ pango_version_string (void)
  **/
 const gchar*
 pango_version_check (int required_major,
-                     int required_minor,
-                     int required_micro)
+		     int required_minor,
+		     int required_micro)
 {
   gint pango_effective_micro = 100 * PANGO_VERSION_MINOR + PANGO_VERSION_MICRO;
   gint required_effective_micro = 100 * required_minor + required_micro;
@@ -763,13 +763,13 @@ pango_parse_enum (GType       type,
   if (v)
     {
       if (G_LIKELY (value))
-        *value = v->value;
+	*value = v->value;
     }
   else
     {
       ret = FALSE;
       if (warn || possible_values)
-        {
+	{
 	  int i;
 	  GString *s = g_string_new (NULL);
 
@@ -777,7 +777,7 @@ pango_parse_enum (GType       type,
 	       i++  , v = g_enum_get_value (class, i))
 	    {
 	      if (i)
-	        g_string_append_c (s, '/');
+		g_string_append_c (s, '/');
 	      g_string_append (s, v->value_nick);
 	    }
 
@@ -1149,8 +1149,8 @@ pango_language_get_type (void)
 
   if (our_type == 0)
     our_type = g_boxed_type_register_static (I_("PangoLanguage"),
-                                             (GBoxedCopyFunc)pango_language_copy,
-                                             (GBoxedFreeFunc)pango_language_free);
+					     (GBoxedCopyFunc)pango_language_copy,
+					     (GBoxedFreeFunc)pango_language_free);
   return our_type;
 }
 

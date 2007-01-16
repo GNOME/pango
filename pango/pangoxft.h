@@ -44,7 +44,7 @@ typedef struct _PangoXftFontMap      PangoXftFontMap;
 typedef struct _PangoXftFont    PangoXftFont;
 
 typedef void (*PangoXftSubstituteFunc) (FcPattern *pattern,
-                                        gpointer   data);
+					gpointer   data);
 
 /* Calls for applications
  */

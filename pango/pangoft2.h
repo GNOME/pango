@@ -41,7 +41,7 @@ G_BEGIN_DECLS
 typedef struct _PangoFT2FontMap      PangoFT2FontMap;
 
 typedef void (*PangoFT2SubstituteFunc) (FcPattern *pattern,
-                                        gpointer   data);
+					gpointer   data);
 
 /* Calls for applications */
 

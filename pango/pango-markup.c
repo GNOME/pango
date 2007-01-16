@@ -82,78 +82,78 @@ struct _OpenTag
 };
 
 typedef gboolean (*TagParseFunc) (MarkupData            *md,
-                                  OpenTag               *tag,
-                                  const gchar          **names,
-                                  const gchar          **values,
-                                  GMarkupParseContext   *context,
-                                  GError               **error);
+				  OpenTag               *tag,
+				  const gchar          **names,
+				  const gchar          **values,
+				  GMarkupParseContext   *context,
+				  GError               **error);
 
 static gboolean b_parse_func        (MarkupData           *md,
-                                     OpenTag              *tag,
-                                     const gchar         **names,
-                                     const gchar         **values,
-                                     GMarkupParseContext  *context,
-                                     GError              **error);
+				     OpenTag              *tag,
+				     const gchar         **names,
+				     const gchar         **values,
+				     GMarkupParseContext  *context,
+				     GError              **error);
 static gboolean big_parse_func      (MarkupData           *md,
-                                     OpenTag              *tag,
-                                     const gchar         **names,
-                                     const gchar         **values,
-                                     GMarkupParseContext  *context,
-                                     GError              **error);
+				     OpenTag              *tag,
+				     const gchar         **names,
+				     const gchar         **values,
+				     GMarkupParseContext  *context,
+				     GError              **error);
 static gboolean span_parse_func     (MarkupData           *md,
-                                     OpenTag              *tag,
-                                     const gchar         **names,
-                                     const gchar         **values,
-                                     GMarkupParseContext  *context,
-                                     GError              **error);
+				     OpenTag              *tag,
+				     const gchar         **names,
+				     const gchar         **values,
+				     GMarkupParseContext  *context,
+				     GError              **error);
 static gboolean i_parse_func        (MarkupData           *md,
-                                     OpenTag              *tag,
-                                     const gchar         **names,
-                                     const gchar         **values,
-                                     GMarkupParseContext  *context,
-                                     GError              **error);
+				     OpenTag              *tag,
+				     const gchar         **names,
+				     const gchar         **values,
+				     GMarkupParseContext  *context,
+				     GError              **error);
 static gboolean markup_parse_func   (MarkupData           *md,
-                                     OpenTag              *tag,
-                                     const gchar         **names,
-                                     const gchar         **values,
-                                     GMarkupParseContext  *context,
-                                     GError              **error);
+				     OpenTag              *tag,
+				     const gchar         **names,
+				     const gchar         **values,
+				     GMarkupParseContext  *context,
+				     GError              **error);
 static gboolean s_parse_func        (MarkupData           *md,
-                                     OpenTag              *tag,
-                                     const gchar         **names,
-                                     const gchar         **values,
-                                     GMarkupParseContext  *context,
-                                     GError              **error);
+				     OpenTag              *tag,
+				     const gchar         **names,
+				     const gchar         **values,
+				     GMarkupParseContext  *context,
+				     GError              **error);
 static gboolean sub_parse_func      (MarkupData           *md,
-                                     OpenTag              *tag,
-                                     const gchar         **names,
-                                     const gchar         **values,
-                                     GMarkupParseContext  *context,
-                                     GError              **error);
+				     OpenTag              *tag,
+				     const gchar         **names,
+				     const gchar         **values,
+				     GMarkupParseContext  *context,
+				     GError              **error);
 static gboolean sup_parse_func      (MarkupData           *md,
-                                     OpenTag              *tag,
-                                     const gchar         **names,
-                                     const gchar         **values,
-                                     GMarkupParseContext  *context,
-                                     GError              **error);
+				     OpenTag              *tag,
+				     const gchar         **names,
+				     const gchar         **values,
+				     GMarkupParseContext  *context,
+				     GError              **error);
 static gboolean small_parse_func    (MarkupData           *md,
-                                     OpenTag              *tag,
-                                     const gchar         **names,
-                                     const gchar         **values,
-                                     GMarkupParseContext  *context,
-                                     GError              **error);
+				     OpenTag              *tag,
+				     const gchar         **names,
+				     const gchar         **values,
+				     GMarkupParseContext  *context,
+				     GError              **error);
 static gboolean tt_parse_func       (MarkupData           *md,
-                                     OpenTag              *tag,
-                                     const gchar         **names,
-                                     const gchar         **values,
-                                     GMarkupParseContext  *context,
-                                     GError              **error);
+				     OpenTag              *tag,
+				     const gchar         **names,
+				     const gchar         **values,
+				     GMarkupParseContext  *context,
+				     GError              **error);
 static gboolean u_parse_func        (MarkupData           *md,
-                                     OpenTag              *tag,
-                                     const gchar         **names,
-                                     const gchar         **values,
-                                     GMarkupParseContext  *context,
-                                     GError              **error);
+				     OpenTag              *tag,
+				     const gchar         **names,
+				     const gchar         **values,
+				     GMarkupParseContext  *context,
+				     GError              **error);
 
 static double
 scale_factor (int scale_level, double base)
@@ -167,21 +167,21 @@ scale_factor (int scale_level, double base)
     {
       i = 0;
       while (i < scale_level)
-        {
-          factor *= 1.2;
+	{
+	  factor *= 1.2;
 
-          ++i;
-        }
+	  ++i;
+	}
     }
   else if (scale_level < 0)
     {
       i = scale_level;
       while (i < 0)
-        {
-          factor /= 1.2;
+	{
+	  factor /= 1.2;
 
-          ++i;
-        }
+	  ++i;
+	}
     }
 
   return factor;
@@ -197,7 +197,7 @@ open_tag_free (OpenTag *ot)
 
 static void
 open_tag_set_absolute_font_size (OpenTag *ot,
-                                 int      font_size)
+				 int      font_size)
 {
   ot->base_font_size = font_size;
   ot->has_base_font_size = TRUE;
@@ -207,7 +207,7 @@ open_tag_set_absolute_font_size (OpenTag *ot,
 
 static void
 open_tag_set_absolute_font_scale (OpenTag *ot,
-                                  double   scale)
+				  double   scale)
 {
   ot->base_scale_factor = scale;
   ot->has_base_font_size = FALSE;
@@ -264,7 +264,7 @@ markup_data_close_tag (MarkupData *md)
   /* pop the stack */
   ot = md->tag_stack->data;
   md->tag_stack = g_slist_delete_link (md->tag_stack,
-                                       md->tag_stack);
+				       md->tag_stack);
 
   /* Adjust end indexes, and push each attr onto the front of the
    * to_apply list. This means that outermost tags are on the front of
@@ -292,22 +292,22 @@ markup_data_close_tag (MarkupData *md)
       PangoAttribute *a;
 
       if (ot->has_base_font_size)
-        {
-          /* Create a font using the absolute point size
-           * as the base size to be scaled from
-           */
-          a = pango_attr_size_new (scale_factor (ot->scale_level,
-                                                 1.0) *
-                                   ot->base_font_size);
-        }
+	{
+	  /* Create a font using the absolute point size
+	   * as the base size to be scaled from
+	   */
+	  a = pango_attr_size_new (scale_factor (ot->scale_level,
+						 1.0) *
+				   ot->base_font_size);
+	}
       else
-        {
-          /* Create a font using the current scale factor
-           * as the base size to be scaled from
-           */
-          a = pango_attr_scale_new (scale_factor (ot->scale_level,
-                                                  ot->base_scale_factor));
-        }
+	{
+	  /* Create a font using the current scale factor
+	   * as the base size to be scaled from
+	   */
+	  a = pango_attr_scale_new (scale_factor (ot->scale_level,
+						  ot->base_scale_factor));
+	}
 
       a->start_index = ot->start_index;
       a->end_index = md->index;
@@ -321,11 +321,11 @@ markup_data_close_tag (MarkupData *md)
 
 static void
 start_element_handler  (GMarkupParseContext *context,
-                        const gchar         *element_name,
-                        const gchar        **attribute_names,
-                        const gchar        **attribute_values,
-                        gpointer             user_data,
-                        GError             **error)
+			const gchar         *element_name,
+			const gchar        **attribute_names,
+			const gchar        **attribute_values,
+			gpointer             user_data,
+			GError             **error)
 {
   TagParseFunc parse_func = NULL;
   OpenTag *ot;
@@ -334,42 +334,42 @@ start_element_handler  (GMarkupParseContext *context,
     {
     case 'b':
       if (strcmp ("b", element_name) == 0)
-        parse_func = b_parse_func;
+	parse_func = b_parse_func;
       else if (strcmp ("big", element_name) == 0)
-        parse_func = big_parse_func;
+	parse_func = big_parse_func;
       break;
 
     case 'i':
       if (strcmp ("i", element_name) == 0)
-        parse_func = i_parse_func;
+	parse_func = i_parse_func;
       break;
 
     case 'm':
       if (strcmp ("markup", element_name) == 0)
-        parse_func = markup_parse_func;
+	parse_func = markup_parse_func;
       break;
 
     case 's':
       if (strcmp ("span", element_name) == 0)
-        parse_func = span_parse_func;
+	parse_func = span_parse_func;
       else if (strcmp ("s", element_name) == 0)
-        parse_func = s_parse_func;
+	parse_func = s_parse_func;
       else if (strcmp ("sub", element_name) == 0)
-        parse_func = sub_parse_func;
+	parse_func = sub_parse_func;
       else if (strcmp ("sup", element_name) == 0)
-        parse_func = sup_parse_func;
+	parse_func = sup_parse_func;
       else if (strcmp ("small", element_name) == 0)
-        parse_func = small_parse_func;
+	parse_func = small_parse_func;
       break;
 
     case 't':
       if (strcmp ("tt", element_name) == 0)
-        parse_func = tt_parse_func;
+	parse_func = tt_parse_func;
       break;
 
     case 'u':
       if (strcmp ("u", element_name) == 0)
-        parse_func = u_parse_func;
+	parse_func = u_parse_func;
       break;
     }
 
@@ -378,14 +378,14 @@ start_element_handler  (GMarkupParseContext *context,
       gint line_number, char_number;
 
       g_markup_parse_context_get_position (context,
-                                           &line_number, &char_number);
+					   &line_number, &char_number);
 
       g_set_error (error,
-                   G_MARKUP_ERROR,
-                   G_MARKUP_ERROR_UNKNOWN_ELEMENT,
-                   _("Unknown tag '%s' on line %d char %d"),
-                   element_name,
-                   line_number, char_number);
+		   G_MARKUP_ERROR,
+		   G_MARKUP_ERROR_UNKNOWN_ELEMENT,
+		   _("Unknown tag '%s' on line %d char %d"),
+		   element_name,
+		   line_number, char_number);
 
       return;
     }
@@ -395,8 +395,8 @@ start_element_handler  (GMarkupParseContext *context,
   /* note ot may be NULL if the user didn't want the attribute list */
 
   if (!(*parse_func) (user_data, ot,
-                      attribute_names, attribute_values,
-                      context, error))
+		      attribute_names, attribute_values,
+		      context, error))
     {
       /* there's nothing to do; we return an error, and end up
        * freeing ot off the tag stack later.
@@ -406,19 +406,19 @@ start_element_handler  (GMarkupParseContext *context,
 
 static void
 end_element_handler    (GMarkupParseContext *context,
-                        const gchar         *element_name,
-                        gpointer             user_data,
-                        GError             **error)
+			const gchar         *element_name,
+			gpointer             user_data,
+			GError             **error)
 {
   markup_data_close_tag (user_data);
 }
 
 static void
 text_handler           (GMarkupParseContext *context,
-                        const gchar         *text,
-                        gsize                text_len,
-                        gpointer             user_data,
-                        GError             **error)
+			const gchar         *text,
+			gsize                text_len,
+			gpointer             user_data,
+			GError             **error)
 {
   MarkupData *md = user_data;
 
@@ -446,90 +446,90 @@ text_handler           (GMarkupParseContext *context,
       end = text + text_len;
 
       while (p != end)
-        {
-          gunichar c;
+	{
+	  gunichar c;
 
-          c = g_utf8_get_char (p);
+	  c = g_utf8_get_char (p);
 
-          if (range_end)
-            {
-              if (c == md->accel_marker)
-                {
-                  /* escaped accel marker; move range_end
-                   * past the accel marker that came before,
-                   * append the whole thing
-                   */
-                  range_end = g_utf8_next_char (range_end);
-                  g_string_append_len (md->text,
-                                       range_start,
-                                       range_end - range_start);
-                  md->index += range_end - range_start;
+	  if (range_end)
+	    {
+	      if (c == md->accel_marker)
+		{
+		  /* escaped accel marker; move range_end
+		   * past the accel marker that came before,
+		   * append the whole thing
+		   */
+		  range_end = g_utf8_next_char (range_end);
+		  g_string_append_len (md->text,
+				       range_start,
+				       range_end - range_start);
+		  md->index += range_end - range_start;
 
-                  /* set next range_start, skipping accel marker */
-                  range_start = g_utf8_next_char (p);
-                }
-              else
-                {
-                  /* Don't append the accel marker (leave range_end
-                   * alone); set the accel char to c; record location for
-                   * underline attribute
-                   */
-                  if (md->accel_char == 0)
-                    md->accel_char = c;
+		  /* set next range_start, skipping accel marker */
+		  range_start = g_utf8_next_char (p);
+		}
+	      else
+		{
+		  /* Don't append the accel marker (leave range_end
+		   * alone); set the accel char to c; record location for
+		   * underline attribute
+		   */
+		  if (md->accel_char == 0)
+		    md->accel_char = c;
 
-                  g_string_append_len (md->text,
-                                       range_start,
-                                       range_end - range_start);
-                  md->index += range_end - range_start;
+		  g_string_append_len (md->text,
+				       range_start,
+				       range_end - range_start);
+		  md->index += range_end - range_start;
 
-                  /* The underline should go underneath the char
-                   * we're setting as the next range_start
-                   */
-                  uline_index = md->index;
-                  uline_len = g_utf8_next_char (p) - p;
+		  /* The underline should go underneath the char
+		   * we're setting as the next range_start
+		   */
+		  uline_index = md->index;
+		  uline_len = g_utf8_next_char (p) - p;
 
-                  /* set next range_start to include this char */
-                  range_start = p;
-                }
+		  /* set next range_start to include this char */
+		  range_start = p;
+		}
 
-              /* reset range_end */
-              range_end = NULL;
-            }
-          else if (c == md->accel_marker)
-            {
-              range_end = p;
-            }
+	      /* reset range_end */
+	      range_end = NULL;
+	    }
+	  else if (c == md->accel_marker)
+	    {
+	      range_end = p;
+	    }
 
-          p = g_utf8_next_char (p);
-        }
+	  p = g_utf8_next_char (p);
+	}
 
       if (range_end)
-        {
-          g_string_append_len (md->text,
-                               range_start,
-                               range_end - range_start);
-          md->index += range_end - range_start;
-        }
+	{
+	  g_string_append_len (md->text,
+			       range_start,
+			       range_end - range_start);
+	  md->index += range_end - range_start;
+	}
       else
-        {
-          g_string_append_len (md->text,
-                               range_start,
-                               end - range_start);
-          md->index += end - range_start;
-        }
+	{
+	  g_string_append_len (md->text,
+			       range_start,
+			       end - range_start);
+	  md->index += end - range_start;
+	}
 
       if (md->attr_list != NULL && uline_index >= 0)
-        {
-          /* Add the underline indicating the accelerator */
-          PangoAttribute *attr;
+	{
+	  /* Add the underline indicating the accelerator */
+	  PangoAttribute *attr;
 
-          attr = pango_attr_underline_new (PANGO_UNDERLINE_LOW);
+	  attr = pango_attr_underline_new (PANGO_UNDERLINE_LOW);
 
-          attr->start_index = uline_index;
-          attr->end_index = uline_index + uline_len;
+	  attr->start_index = uline_index;
+	  attr->end_index = uline_index + uline_len;
 
-          pango_attr_list_change (md->attr_list, attr);
-        }
+	  pango_attr_list_change (md->attr_list, attr);
+	}
     }
 }
 
@@ -574,12 +574,12 @@ static const GMarkupParser pango_markup_parser = {
  **/
 gboolean
 pango_parse_markup (const char                 *markup_text,
-                    int                         length,
-                    gunichar                    accel_marker,
-                    PangoAttrList             **attr_list,
-                    char                      **text,
-                    gunichar                   *accel_char,
-                    GError                    **error)
+		    int                         length,
+		    gunichar                    accel_marker,
+		    PangoAttrList             **attr_list,
+		    char                      **text,
+		    gunichar                   *accel_char,
+		    GError                    **error)
 {
   GMarkupParseContext *context = NULL;
   MarkupData *md = NULL;
@@ -614,7 +614,7 @@ pango_parse_markup (const char                 *markup_text,
   md->to_apply = NULL;
 
   context = g_markup_parse_context_new (&pango_markup_parser,
-                                        0, md, NULL);
+					0, md, NULL);
 
   if (length < 0)
     length = strlen (markup_text);
@@ -629,23 +629,23 @@ pango_parse_markup (const char                 *markup_text,
 
   if (needs_root)
     if (!g_markup_parse_context_parse (context,
-                                       "<markup>",
-                                       -1,
-                                       error))
+				       "<markup>",
+				       -1,
+				       error))
       goto error;
 
 
   if (!g_markup_parse_context_parse (context,
-                                     markup_text,
-                                     length,
-                                     error))
+				     markup_text,
+				     length,
+				     error))
     goto error;
 
   if (needs_root)
     if (!g_markup_parse_context_parse (context,
-                                       "</markup>",
-                                       -1,
-                                       error))
+				       "</markup>",
+				       -1,
+				       error))
       goto error;
 
   if (!g_markup_parse_context_end_parse (context, error))
@@ -660,14 +660,14 @@ pango_parse_markup (const char                 *markup_text,
        */
       tmp_list = md->to_apply;
       while (tmp_list != NULL)
-        {
-          PangoAttribute *attr = tmp_list->data;
+	{
+	  PangoAttribute *attr = tmp_list->data;
 
-          /* Innermost tags before outermost */
-          pango_attr_list_change (md->attr_list, attr);
+	  /* Innermost tags before outermost */
+	  pango_attr_list_change (md->attr_list, attr);
 
-          tmp_list = g_slist_next (tmp_list);
-        }
+	  tmp_list = g_slist_next (tmp_list);
+	}
       g_slist_free (md->to_apply);
       md->to_apply = NULL;
     }
@@ -709,27 +709,27 @@ pango_parse_markup (const char                 *markup_text,
 
 static void
 set_bad_attribute (GError             **error,
-                   GMarkupParseContext *context,
-                   const char          *element_name,
-                   const char          *attribute_name)
+		   GMarkupParseContext *context,
+		   const char          *element_name,
+		   const char          *attribute_name)
 {
   gint line_number, char_number;
 
   g_markup_parse_context_get_position (context,
-                                       &line_number, &char_number);
+				       &line_number, &char_number);
 
   g_set_error (error,
-               G_MARKUP_ERROR,
-               G_MARKUP_ERROR_UNKNOWN_ATTRIBUTE,
-               _("Tag '%s' does not support attribute '%s' on line %d char %d"),
-               element_name,
-               attribute_name,
-               line_number, char_number);
+	       G_MARKUP_ERROR,
+	       G_MARKUP_ERROR_UNKNOWN_ATTRIBUTE,
+	       _("Tag '%s' does not support attribute '%s' on line %d char %d"),
+	       element_name,
+	       attribute_name,
+	       line_number, char_number);
 }
 
 static void
 add_attribute (OpenTag        *ot,
-               PangoAttribute *attr)
+	       PangoAttribute *attr)
 {
   if (ot == NULL)
     pango_attribute_destroy (attr);
@@ -738,18 +738,18 @@ add_attribute (OpenTag        *ot,
 }
 
 #define CHECK_NO_ATTRS(elem) G_STMT_START {                    \
-         if (*names != NULL) {                                 \
-           set_bad_attribute (error, context, (elem), *names); \
-           return FALSE;                                       \
-         } }G_STMT_END
+	 if (*names != NULL) {                                 \
+	   set_bad_attribute (error, context, (elem), *names); \
+	   return FALSE;                                       \
+	 } }G_STMT_END
 
 static gboolean
 b_parse_func        (MarkupData            *md,
-                     OpenTag               *tag,
-                     const gchar          **names,
-                     const gchar          **values,
-                     GMarkupParseContext   *context,
-                     GError               **error)
+		     OpenTag               *tag,
+		     const gchar          **names,
+		     const gchar          **values,
+		     GMarkupParseContext   *context,
+		     GError               **error)
 {
   CHECK_NO_ATTRS("b");
   add_attribute (tag, pango_attr_weight_new (PANGO_WEIGHT_BOLD));
@@ -758,11 +758,11 @@ b_parse_func        (MarkupData            *md,
 
 static gboolean
 big_parse_func      (MarkupData            *md,
-                     OpenTag               *tag,
-                     const gchar          **names,
-                     const gchar          **values,
-                     GMarkupParseContext   *context,
-                     GError               **error)
+		     OpenTag               *tag,
+		     const gchar          **names,
+		     const gchar          **values,
+		     GMarkupParseContext   *context,
+		     GError               **error)
 {
   CHECK_NO_ATTRS("big");
 
@@ -778,7 +778,7 @@ big_parse_func      (MarkupData            *md,
 
 static gboolean
 parse_absolute_size (OpenTag               *tag,
-                     const char            *size)
+		     const char            *size)
 {
   SizeLevel level = Medium;
   double factor;
@@ -828,13 +828,13 @@ attr_strcmp (gconstpointer pa,
       cb = *b++;
 
       if (ca == cb)
-        continue;
+	continue;
 
       ca = ca == '_' ? '-' : ca;
       cb = cb == '_' ? '-' : cb;
 
       if (ca != cb)
-        return cb - ca;
+	return cb - ca;
     }
 
   ca = *a;
@@ -882,9 +882,9 @@ span_parse_boolean (const char *attr_name,
       strcmp (attr_val, "y") == 0)
     *val = TRUE;
   else if (strcmp (attr_val, "false") == 0 ||
-           strcmp (attr_val, "no") == 0 ||
-           strcmp (attr_val, "f") == 0 ||
-           strcmp (attr_val, "n") == 0)
+	   strcmp (attr_val, "no") == 0 ||
+	   strcmp (attr_val, "f") == 0 ||
+	   strcmp (attr_val, "n") == 0)
     *val = FALSE;
   else
     {
@@ -951,11 +951,11 @@ span_parse_enum (const char *attr_name,
 
 static gboolean
 span_parse_func     (MarkupData            *md,
-                     OpenTag               *tag,
-                     const gchar          **names,
-                     const gchar          **values,
-                     GMarkupParseContext   *context,
-                     GError               **error)
+		     OpenTag               *tag,
+		     const gchar          **names,
+		     const gchar          **values,
+		     GMarkupParseContext   *context,
+		     GError               **error)
 {
   int line_number, char_number;
   int i;
@@ -981,17 +981,17 @@ span_parse_func     (MarkupData            *md,
   const char *gravity_hint = NULL;
 
   g_markup_parse_context_get_position (context,
-                                       &line_number, &char_number);
+				       &line_number, &char_number);
 
 #define CHECK_DUPLICATE(var) G_STMT_START{                              \
-          if ((var) != NULL) {                                          \
-            g_set_error (error, G_MARKUP_ERROR,                         \
-                         G_MARKUP_ERROR_INVALID_CONTENT,                \
-                         _("Attribute '%s' occurs twice on <span> tag " \
-                           "on line %d char %d, may only occur once"),  \
-                         names[i], line_number, char_number);           \
-            return FALSE;                                               \
-          }}G_STMT_END
+	  if ((var) != NULL) {                                          \
+	    g_set_error (error, G_MARKUP_ERROR,                         \
+			 G_MARKUP_ERROR_INVALID_CONTENT,                \
+			 _("Attribute '%s' occurs twice on <span> tag " \
+			   "on line %d char %d, may only occur once"),  \
+			 names[i], line_number, char_number);           \
+	    return FALSE;                                               \
+	  }}G_STMT_END
 #define CHECK_ATTRIBUTE2(var, name) \
 	if (attr_strcmp (names[i], (name)) == 0) { \
 	  CHECK_DUPLICATE (var); \
@@ -1008,49 +1008,49 @@ span_parse_func     (MarkupData            *md,
 
       switch (names[i][0]) {
       case 'f':
-        CHECK_ATTRIBUTE2(family, "face");
-        CHECK_ATTRIBUTE (fallback);
-        CHECK_ATTRIBUTE2(desc, "font_desc");
-        CHECK_ATTRIBUTE2(family, "font_family");
-        CHECK_ATTRIBUTE (foreground);
+	CHECK_ATTRIBUTE2(family, "face");
+	CHECK_ATTRIBUTE (fallback);
+	CHECK_ATTRIBUTE2(desc, "font_desc");
+	CHECK_ATTRIBUTE2(family, "font_family");
+	CHECK_ATTRIBUTE (foreground);
 	break;
       case 's':
-        CHECK_ATTRIBUTE (size);
-        CHECK_ATTRIBUTE (stretch);
-        CHECK_ATTRIBUTE (strikethrough);
-        CHECK_ATTRIBUTE (strikethrough_color);
-        CHECK_ATTRIBUTE (style);
+	CHECK_ATTRIBUTE (size);
+	CHECK_ATTRIBUTE (stretch);
+	CHECK_ATTRIBUTE (strikethrough);
+	CHECK_ATTRIBUTE (strikethrough_color);
+	CHECK_ATTRIBUTE (style);
 	break;
       case 'g':
-        CHECK_ATTRIBUTE (gravity);
-        CHECK_ATTRIBUTE (gravity_hint);
+	CHECK_ATTRIBUTE (gravity);
+	CHECK_ATTRIBUTE (gravity_hint);
 	break;
       case 'l':
-        CHECK_ATTRIBUTE (lang);
-        CHECK_ATTRIBUTE (letter_spacing);
+	CHECK_ATTRIBUTE (lang);
+	CHECK_ATTRIBUTE (letter_spacing);
 	break;
       case 'u':
-        CHECK_ATTRIBUTE (underline);
-        CHECK_ATTRIBUTE (underline_color);
+	CHECK_ATTRIBUTE (underline);
+	CHECK_ATTRIBUTE (underline_color);
 	break;
       default:
-        CHECK_ATTRIBUTE (background);
-        CHECK_ATTRIBUTE2(foreground, "color");
-        CHECK_ATTRIBUTE (rise);
-        CHECK_ATTRIBUTE (variant);
-        CHECK_ATTRIBUTE (weight);
+	CHECK_ATTRIBUTE (background);
+	CHECK_ATTRIBUTE2(foreground, "color");
+	CHECK_ATTRIBUTE (rise);
+	CHECK_ATTRIBUTE (variant);
+	CHECK_ATTRIBUTE (weight);
 	break;
       }
 
       if (!found)
-        {
-          g_set_error (error, G_MARKUP_ERROR,
-                       G_MARKUP_ERROR_UNKNOWN_ATTRIBUTE,
-                       _("Attribute '%s' is not allowed on the <span> tag "
-                         "on line %d char %d"),
-                       names[i], line_number, char_number);
-          return FALSE;
-        }
+	{
+	  g_set_error (error, G_MARKUP_ERROR,
+		       G_MARKUP_ERROR_UNKNOWN_ATTRIBUTE,
+		       _("Attribute '%s' is not allowed on the <span> tag "
+			 "on line %d char %d"),
+		       names[i], line_number, char_number);
+	  return FALSE;
+	}
 
       ++i;
     }
@@ -1062,12 +1062,12 @@ span_parse_func     (MarkupData            *md,
 
       parsed = pango_font_description_from_string (desc);
       if (parsed)
-        {
-          add_attribute (tag, pango_attr_font_desc_new (parsed));
+	{
+	  add_attribute (tag, pango_attr_font_desc_new (parsed));
 	  if (tag)
 	    open_tag_set_absolute_font_size (tag, pango_font_description_get_size (parsed));
-          pango_font_description_free (parsed);
-        }
+	  pango_font_description_free (parsed);
+	}
     }
 
   if (G_UNLIKELY (family))
@@ -1078,57 +1078,57 @@ span_parse_func     (MarkupData            *md,
   if (G_UNLIKELY (size))
     {
       if (g_ascii_isdigit (*size))
-        {
-          char *end = NULL;
-          gulong n;
+	{
+	  char *end = NULL;
+	  gulong n;
 
-          n = strtoul (size, &end, 10);
+	  n = strtoul (size, &end, 10);
 
-          if (*end != '\0' || n < 0 || n > 1000000)
-            {
-              g_set_error (error,
-                           G_MARKUP_ERROR,
-                           G_MARKUP_ERROR_INVALID_CONTENT,
-                           _("Value of 'size' attribute on <span> tag on line %d"
-                             "could not be parsed; should be an integer, or a "
-                             "string such as 'small', not '%s'"),
-                           line_number, size);
-              goto error;
-            }
+	  if (*end != '\0' || n < 0 || n > 1000000)
+	    {
+	      g_set_error (error,
+			   G_MARKUP_ERROR,
+			   G_MARKUP_ERROR_INVALID_CONTENT,
+			   _("Value of 'size' attribute on <span> tag on line %d"
+			     "could not be parsed; should be an integer, or a "
+			     "string such as 'small', not '%s'"),
+			   line_number, size);
+	      goto error;
+	    }
 
-          add_attribute (tag, pango_attr_size_new (n));
+	  add_attribute (tag, pango_attr_size_new (n));
 	  if (tag)
 	    open_tag_set_absolute_font_size (tag, n);
-        }
+	}
       else if (strcmp (size, "smaller") == 0)
-        {
+	{
 	  if (tag)
 	    {
 	      tag->scale_level_delta -= 1;
 	      tag->scale_level -= 1;
 	    }
-        }
+	}
       else if (strcmp (size, "larger") == 0)
-        {
+	{
 	  if (tag)
 	    {
 	      tag->scale_level_delta += 1;
 	      tag->scale_level += 1;
 	    }
-        }
+	}
       else if (parse_absolute_size (tag, size))
-        ; /* nothing */
+	; /* nothing */
       else
-        {
-          g_set_error (error,
-                       G_MARKUP_ERROR,
-                       G_MARKUP_ERROR_INVALID_CONTENT,
-                       _("Value of 'size' attribute on <span> tag on line %d"
-                         "could not be parsed; should be an integer, or a "
-                         "string such as 'small', not '%s'"),
-                       line_number, size);
-          goto error;
-        }
+	{
+	  g_set_error (error,
+		       G_MARKUP_ERROR,
+		       G_MARKUP_ERROR_INVALID_CONTENT,
+		       _("Value of 'size' attribute on <span> tag on line %d"
+			 "could not be parsed; should be an integer, or a "
+			 "string such as 'small', not '%s'"),
+		       line_number, size);
+	  goto error;
+	}
     }
 
   if (G_UNLIKELY (style))
@@ -1136,18 +1136,18 @@ span_parse_func     (MarkupData            *md,
       PangoStyle pango_style;
 
       if (pango_parse_style (style, &pango_style, FALSE))
-        add_attribute (tag, pango_attr_style_new (pango_style));
+	add_attribute (tag, pango_attr_style_new (pango_style));
       else
-        {
-          g_set_error (error,
-                       G_MARKUP_ERROR,
-                       G_MARKUP_ERROR_INVALID_CONTENT,
-                       _("'%s' is not a valid value for the 'style' attribute "
-                         "on <span> tag, line %d; valid values are "
-                         "'normal', 'oblique', 'italic'"),
-                       style, line_number);
-          goto error;
-        }
+	{
+	  g_set_error (error,
+		       G_MARKUP_ERROR,
+		       G_MARKUP_ERROR_INVALID_CONTENT,
+		       _("'%s' is not a valid value for the 'style' attribute "
+			 "on <span> tag, line %d; valid values are "
+			 "'normal', 'oblique', 'italic'"),
+		       style, line_number);
+	  goto error;
+	}
     }
 
   if (G_UNLIKELY (weight))
@@ -1155,19 +1155,19 @@ span_parse_func     (MarkupData            *md,
       PangoWeight pango_weight;
 
       if (pango_parse_weight (weight, &pango_weight, FALSE))
-        add_attribute (tag,
-                       pango_attr_weight_new (pango_weight));
+	add_attribute (tag,
+		       pango_attr_weight_new (pango_weight));
       else
-        {
-          g_set_error (error,
-                       G_MARKUP_ERROR,
-                       G_MARKUP_ERROR_INVALID_CONTENT,
-                       _("'%s' is not a valid value for the 'weight' "
-                         "attribute on <span> tag, line %d; valid "
-                         "values are for example 'light', 'ultrabold' or a number"),
-                       weight, line_number);
-          goto error;
-        }
+	{
+	  g_set_error (error,
+		       G_MARKUP_ERROR,
+		       G_MARKUP_ERROR_INVALID_CONTENT,
+		       _("'%s' is not a valid value for the 'weight' "
+			 "attribute on <span> tag, line %d; valid "
+			 "values are for example 'light', 'ultrabold' or a number"),
+		       weight, line_number);
+	  goto error;
+	}
     }
 
   if (G_UNLIKELY (variant))
@@ -1175,18 +1175,18 @@ span_parse_func     (MarkupData            *md,
       PangoVariant pango_variant;
 
       if (pango_parse_variant (variant, &pango_variant, FALSE))
-        add_attribute (tag, pango_attr_variant_new (pango_variant));
+	add_attribute (tag, pango_attr_variant_new (pango_variant));
       else
-        {
-          g_set_error (error,
-                       G_MARKUP_ERROR,
-                       G_MARKUP_ERROR_INVALID_CONTENT,
-                       _("'%s' is not a valid value for the 'variant' "
-                         "attribute on <span> tag, line %d; valid values are "
-                         "'normal', 'smallcaps'"),
-                       variant, line_number);
-          goto error;
-        }
+	{
+	  g_set_error (error,
+		       G_MARKUP_ERROR,
+		       G_MARKUP_ERROR_INVALID_CONTENT,
+		       _("'%s' is not a valid value for the 'variant' "
+			 "attribute on <span> tag, line %d; valid values are "
+			 "'normal', 'smallcaps'"),
+		       variant, line_number);
+	  goto error;
+	}
     }
 
   if (G_UNLIKELY (stretch))
@@ -1194,19 +1194,19 @@ span_parse_func     (MarkupData            *md,
       PangoStretch pango_stretch;
 
       if (pango_parse_stretch (stretch, &pango_stretch, FALSE))
-        add_attribute (tag, pango_attr_stretch_new (pango_stretch));
+	add_attribute (tag, pango_attr_stretch_new (pango_stretch));
       else
-        {
-          g_set_error (error,
-                       G_MARKUP_ERROR,
-                       G_MARKUP_ERROR_INVALID_CONTENT,
-                       _("'%s' is not a valid value for the 'stretch' "
-                         "attribute on <span> tag, line %d; valid "
-                         "values are for example 'condensed', "
-                         "'ultraexpanded', 'normal'"),
-                       stretch, line_number);
-          goto error;
-        }
+	{
+	  g_set_error (error,
+		       G_MARKUP_ERROR,
+		       G_MARKUP_ERROR_INVALID_CONTENT,
+		       _("'%s' is not a valid value for the 'stretch' "
+			 "attribute on <span> tag, line %d; valid "
+			 "values are for example 'condensed', "
+			 "'ultraexpanded', 'normal'"),
+		       stretch, line_number);
+	  goto error;
+	}
     }
 
   if (G_UNLIKELY (foreground))
@@ -1214,7 +1214,7 @@ span_parse_func     (MarkupData            *md,
       PangoColor color;
 
       if (!span_parse_color ("foreground", foreground, &color, line_number, error))
-        goto error;
+	goto error;
 
       add_attribute (tag, pango_attr_foreground_new (color.red, color.green, color.blue));
     }
@@ -1224,7 +1224,7 @@ span_parse_func     (MarkupData            *md,
       PangoColor color;
 
       if (!span_parse_color ("background", background, &color, line_number, error))
-        goto error;
+	goto error;
 
       add_attribute (tag, pango_attr_background_new (color.red, color.green, color.blue));
     }
@@ -1234,7 +1234,7 @@ span_parse_func     (MarkupData            *md,
       PangoUnderline ul = PANGO_UNDERLINE_NONE;
 
       if (!span_parse_enum ("underline", underline, PANGO_TYPE_UNDERLINE, &ul, line_number, error))
-        goto error;
+	goto error;
 
       add_attribute (tag, pango_attr_underline_new (ul));
     }
@@ -1244,7 +1244,7 @@ span_parse_func     (MarkupData            *md,
       PangoColor color;
 
       if (!span_parse_color ("underline_color", underline_color, &color, line_number, error))
-        goto error;
+	goto error;
 
       add_attribute (tag, pango_attr_underline_color_new (color.red, color.green, color.blue));
     }
@@ -1254,7 +1254,7 @@ span_parse_func     (MarkupData            *md,
       PangoGravity gr = PANGO_GRAVITY_SOUTH;
 
       if (!span_parse_enum ("gravity", gravity, PANGO_TYPE_GRAVITY, &gr, line_number, error))
-        goto error;
+	goto error;
 
       add_attribute (tag, pango_attr_gravity_new (gr));
     }
@@ -1264,7 +1264,7 @@ span_parse_func     (MarkupData            *md,
       PangoGravityHint hint = PANGO_GRAVITY_HINT_NATURAL;
 
       if (!span_parse_enum ("gravity_hint", gravity_hint, PANGO_TYPE_GRAVITY_HINT, &hint, line_number, error))
-        goto error;
+	goto error;
 
       add_attribute (tag, pango_attr_gravity_hint_new (hint));
     }
@@ -1274,7 +1274,7 @@ span_parse_func     (MarkupData            *md,
       gboolean b = FALSE;
 
       if (!span_parse_boolean ("strikethrough", strikethrough, &b, line_number, error))
-        goto error;
+	goto error;
 
       add_attribute (tag, pango_attr_strikethrough_new (b));
     }
@@ -1284,7 +1284,7 @@ span_parse_func     (MarkupData            *md,
       PangoColor color;
 
       if (!span_parse_color ("strikethrough_color", strikethrough_color, &color, line_number, error))
-        goto error;
+	goto error;
 
       add_attribute (tag, pango_attr_strikethrough_color_new (color.red, color.green, color.blue));
     }
@@ -1294,7 +1294,7 @@ span_parse_func     (MarkupData            *md,
       gboolean b = FALSE;
 
       if (!span_parse_boolean ("fallback", fallback, &b, line_number, error))
-        goto error;
+	goto error;
 
       add_attribute (tag, pango_attr_fallback_new (b));
     }
@@ -1304,7 +1304,7 @@ span_parse_func     (MarkupData            *md,
       gint n = 0;
 
       if (!span_parse_int ("rise", rise, &n, line_number, error))
-        goto error;
+	goto error;
 
       add_attribute (tag, pango_attr_rise_new (n));
     }
@@ -1314,7 +1314,7 @@ span_parse_func     (MarkupData            *md,
       gint n = 0;
 
       if (!span_parse_int ("letter_spacing", letter_spacing, &n, line_number, error))
-        goto error;
+	goto error;
 
       add_attribute (tag, pango_attr_letter_spacing_new (n));
     }
@@ -1334,11 +1334,11 @@ span_parse_func     (MarkupData            *md,
 
 static gboolean
 i_parse_func        (MarkupData            *md,
-                     OpenTag               *tag,
-                     const gchar          **names,
-                     const gchar          **values,
-                     GMarkupParseContext   *context,
-                     GError               **error)
+		     OpenTag               *tag,
+		     const gchar          **names,
+		     const gchar          **values,
+		     GMarkupParseContext   *context,
+		     GError               **error)
 {
   CHECK_NO_ATTRS("i");
   add_attribute (tag, pango_attr_style_new (PANGO_STYLE_ITALIC));
@@ -1348,11 +1348,11 @@ i_parse_func        (MarkupData            *md,
 
 static gboolean
 markup_parse_func (MarkupData            *md,
-                   OpenTag               *tag,
-                   const gchar          **names,
-                   const gchar          **values,
-                   GMarkupParseContext   *context,
-                   GError               **error)
+		   OpenTag               *tag,
+		   const gchar          **names,
+		   const gchar          **values,
+		   GMarkupParseContext   *context,
+		   GError               **error)
 {
   /* We don't do anything with this tag at the moment. */
 
@@ -1361,11 +1361,11 @@ markup_parse_func (MarkupData            *md,
 
 static gboolean
 s_parse_func        (MarkupData            *md,
-                     OpenTag               *tag,
-                     const gchar          **names,
-                     const gchar          **values,
-                     GMarkupParseContext   *context,
-                     GError               **error)
+		     OpenTag               *tag,
+		     const gchar          **names,
+		     const gchar          **values,
+		     GMarkupParseContext   *context,
+		     GError               **error)
 {
   CHECK_NO_ATTRS("s");
   add_attribute (tag, pango_attr_strikethrough_new (TRUE));
@@ -1377,11 +1377,11 @@ s_parse_func        (MarkupData            *md,
 
 static gboolean
 sub_parse_func      (MarkupData            *md,
-                     OpenTag               *tag,
-                     const gchar          **names,
-                     const gchar          **values,
-                     GMarkupParseContext   *context,
-                     GError               **error)
+		     OpenTag               *tag,
+		     const gchar          **names,
+		     const gchar          **values,
+		     GMarkupParseContext   *context,
+		     GError               **error)
 {
   CHECK_NO_ATTRS("sub");
 
@@ -1399,11 +1399,11 @@ sub_parse_func      (MarkupData            *md,
 
 static gboolean
 sup_parse_func      (MarkupData            *md,
-                     OpenTag               *tag,
-                     const gchar          **names,
-                     const gchar          **values,
-                     GMarkupParseContext   *context,
-                     GError               **error)
+		     OpenTag               *tag,
+		     const gchar          **names,
+		     const gchar          **values,
+		     GMarkupParseContext   *context,
+		     GError               **error)
 {
   CHECK_NO_ATTRS("sup");
 
@@ -1421,11 +1421,11 @@ sup_parse_func      (MarkupData            *md,
 
 static gboolean
 small_parse_func    (MarkupData            *md,
-                     OpenTag               *tag,
-                     const gchar          **names,
-                     const gchar          **values,
-                     GMarkupParseContext   *context,
-                     GError               **error)
+		     OpenTag               *tag,
+		     const gchar          **names,
+		     const gchar          **values,
+		     GMarkupParseContext   *context,
+		     GError               **error)
 {
   CHECK_NO_ATTRS("small");
 
@@ -1441,11 +1441,11 @@ small_parse_func    (MarkupData            *md,
 
 static gboolean
 tt_parse_func       (MarkupData            *md,
-                     OpenTag               *tag,
-                     const gchar          **names,
-                     const gchar          **values,
-                     GMarkupParseContext   *context,
-                     GError               **error)
+		     OpenTag               *tag,
+		     const gchar          **names,
+		     const gchar          **values,
+		     GMarkupParseContext   *context,
+		     GError               **error)
 {
   CHECK_NO_ATTRS("tt");
 
@@ -1456,11 +1456,11 @@ tt_parse_func       (MarkupData            *md,
 
 static gboolean
 u_parse_func        (MarkupData            *md,
-                     OpenTag               *tag,
-                     const gchar          **names,
-                     const gchar          **values,
-                     GMarkupParseContext   *context,
-                     GError               **error)
+		     OpenTag               *tag,
+		     const gchar          **names,
+		     const gchar          **values,
+		     GMarkupParseContext   *context,
+		     GError               **error)
 {
   CHECK_NO_ATTRS("u");
   add_attribute (tag, pango_attr_underline_new (PANGO_UNDERLINE_SINGLE));

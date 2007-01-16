@@ -154,7 +154,7 @@ _pango_xft_font_get_mini_font (PangoXftFont *xfont)
 
       xfont->mini_font = pango_font_map_load_font (fcfont->fontmap, context, desc);
       if (!xfont->mini_font)
-        return NULL;
+	return NULL;
 
       pango_font_description_free (desc);
       g_object_unref (context);
@@ -363,9 +363,9 @@ load_fallback_font (PangoXftFont *xfont)
   size = pango_font_description_get_size (fcfont->description) / PANGO_SCALE;
 
   xft_font = XftFontOpen (display,  screen,
-                          FC_FAMILY, FcTypeString, "sans",
+			  FC_FAMILY, FcTypeString, "sans",
 			  size_is_absolute ? FC_PIXEL_SIZE : FC_SIZE, FcTypeDouble, size,
-                          NULL);
+			  NULL);
 
   if (!xft_font)
     {
@@ -471,7 +471,7 @@ pango_xft_font_get_font (PangoFont *font)
   if (G_UNLIKELY (!PANGO_XFT_IS_FONT (font)))
     {
       if (!_pango_xft_warning_history.get_font)
-        {
+	{
 	  _pango_xft_warning_history.get_font = TRUE;
 	  g_warning ("pango_xft_font_get_font called with bad font, expect ugly output");
 	}

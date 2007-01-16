@@ -94,11 +94,11 @@ void              pango_glyph_string_extents  (PangoGlyphString *glyphs,
 int               pango_glyph_string_get_width(PangoGlyphString *glyphs);
 
 void              pango_glyph_string_extents_range  (PangoGlyphString *glyphs,
-                                                     int               start,
-                                                     int               end,
-                                                     PangoFont        *font,
-                                                     PangoRectangle   *ink_rect,
-                                                     PangoRectangle   *logical_rect);
+						     int               start,
+						     int               end,
+						     PangoFont        *font,
+						     PangoRectangle   *ink_rect,
+						     PangoRectangle   *logical_rect);
 
 void pango_glyph_string_get_logical_widths (PangoGlyphString *glyphs,
 					    const char       *text,

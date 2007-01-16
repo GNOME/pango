@@ -417,7 +417,7 @@ pango_xft_renderer_draw_glyphs (PangoRenderer    *renderer,
 	      _pango_xft_renderer_draw_box_glyph (renderer, gi, glyph_x, glyph_y);
 	    }
 
-          x_off += gi->geometry.width;
+	  x_off += gi->geometry.width;
 	}
       return;
     }

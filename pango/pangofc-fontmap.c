@@ -177,7 +177,7 @@ pango_fc_font_map_init (PangoFcFontMap *fcfontmap)
       registered_modules = TRUE;
 
       for (i = 0; _pango_included_fc_modules[i].list; i++)
-        pango_module_register (&_pango_included_fc_modules[i]);
+	pango_module_register (&_pango_included_fc_modules[i]);
     }
 
   priv->n_families = -1;
@@ -614,7 +614,7 @@ _pango_fc_font_map_remove (PangoFcFontMap *fcfontmap,
 static PangoFcFamily *
 create_family (PangoFcFontMap *fcfontmap,
 	       const char     *family_name,
-               int             spacing)
+	       int             spacing)
 {
   PangoFcFamily *family = g_object_new (PANGO_FC_TYPE_FAMILY, NULL);
   family->fontmap = fcfontmap;
@@ -683,22 +683,22 @@ pango_fc_font_map_list_families (PangoFontMap      *fontmap,
 	{
 	  FcChar8 *s;
 	  FcResult res;
-          int spacing;
+	  int spacing;
 
 	  res = FcPatternGetString (fontset->fonts[i], FC_FAMILY, 0, (FcChar8 **) &s);
 	  g_assert (res == FcResultMatch);
 
-          res = FcPatternGetInteger (fontset->fonts[i], FC_SPACING, 0, &spacing);
-          g_assert (res == FcResultMatch || res == FcResultNoMatch);
-          if (res == FcResultNoMatch)
-            spacing = FC_PROPORTIONAL;
+	  res = FcPatternGetInteger (fontset->fonts[i], FC_SPACING, 0, &spacing);
+	  g_assert (res == FcResultMatch || res == FcResultNoMatch);
+	  if (res == FcResultNoMatch)
+	    spacing = FC_PROPORTIONAL;
 
 	  if (!is_alias_family (s) && !g_hash_table_lookup (temp_family_hash, s))
-            {
-              PangoFcFamily *temp_family = create_family (fcfontmap, (gchar *)s, spacing);
-              g_hash_table_insert (temp_family_hash, g_strdup (s), s);
-              priv->families[count++] = temp_family;
-            }
+	    {
+	      PangoFcFamily *temp_family = create_family (fcfontmap, (gchar *)s, spacing);
+	      g_hash_table_insert (temp_family_hash, g_strdup (s), s);
+	      priv->families[count++] = temp_family;
+	    }
 	}
 
       FcFontSetDestroy (fontset);
@@ -1723,7 +1723,7 @@ pango_fc_face_get_face_name (PangoFontFace *face)
 
 static int
 compare_ints (gconstpointer ap,
-              gconstpointer bp)
+	      gconstpointer bp)
 {
   int a = *(int *)ap;
   int b = *(int *)bp;
@@ -1738,8 +1738,8 @@ compare_ints (gconstpointer ap,
 
 static void
 pango_fc_face_list_sizes (PangoFontFace  *face,
-                          int           **sizes,
-                          int            *n_sizes)
+			  int           **sizes,
+			  int            *n_sizes)
 {
   PangoFcFace *fcface = PANGO_FC_FACE (face);
   FcPattern *pattern;
@@ -1764,37 +1764,37 @@ pango_fc_face_list_sizes (PangoFontFace  *face,
       size_array = g_array_new (FALSE, FALSE, sizeof (int));
 
       for (i = 0; i < fontset->nfont; i++)
-        {
-          if (FcPatternGetDouble (fontset->fonts[i], FC_PIXEL_SIZE, 0, &size) == FcResultMatch)
-            {
-              if (dpi < 0)
+	{
+	  if (FcPatternGetDouble (fontset->fonts[i], FC_PIXEL_SIZE, 0, &size) == FcResultMatch)
+	    {
+	      if (dpi < 0)
 		dpi = pango_fc_font_map_get_resolution (fcface->family->fontmap, NULL);
 
-              size_i = (int) (PANGO_SCALE * size * 72.0 / dpi);
-              g_array_append_val (size_array, size_i);
-            }
-        }
+	      size_i = (int) (PANGO_SCALE * size * 72.0 / dpi);
+	      g_array_append_val (size_array, size_i);
+	    }
+	}
 
       g_array_sort (size_array, compare_ints);
 
       if (size_array->len == 0)
-        {
-          *n_sizes = 0;
-          if (sizes)
-            *sizes = NULL;
-          g_array_free (size_array, TRUE);
-        }
+	{
+	  *n_sizes = 0;
+	  if (sizes)
+	    *sizes = NULL;
+	  g_array_free (size_array, TRUE);
+	}
       else
-        {
-          *n_sizes = size_array->len;
-          if (sizes)
-            {
-              *sizes = (int *) size_array->data;
-              g_array_free (size_array, FALSE);
-            }
-          else
-            g_array_free (size_array, TRUE);
-        }
+	{
+	  *n_sizes = size_array->len;
+	  if (sizes)
+	    {
+	      *sizes = (int *) size_array->data;
+	      g_array_free (size_array, FALSE);
+	    }
+	  else
+	    g_array_free (size_array, TRUE);
+	}
 
       FcFontSetDestroy (fontset);
     }
@@ -1802,7 +1802,7 @@ pango_fc_face_list_sizes (PangoFontFace  *face,
     {
       *n_sizes = 0;
       if (sizes)
-        *sizes = NULL;
+	*sizes = NULL;
     }
 
   FcPatternDestroy (pattern);
@@ -1816,9 +1816,9 @@ pango_fc_family_is_monospace (PangoFontFamily *family)
 
   return fcfamily->spacing == FC_MONO ||
 #ifdef FC_DUAL
-         fcfamily->spacing == FC_DUAL ||
+	 fcfamily->spacing == FC_DUAL ||
 #endif
-         fcfamily->spacing == FC_CHARCELL;
+	 fcfamily->spacing == FC_CHARCELL;
 }
 
 static void
@@ -1838,21 +1838,21 @@ pango_fc_face_get_type (void)
     {
       const GTypeInfo object_info =
       {
-        sizeof (PangoFontFaceClass),
-        (GBaseInitFunc) NULL,
-        (GBaseFinalizeFunc) NULL,
-        (GClassInitFunc) pango_fc_face_class_init,
-        NULL,           /* class_finalize */
-        NULL,           /* class_data */
-        sizeof (PangoFcFace),
-        0,              /* n_preallocs */
-        (GInstanceInitFunc) NULL,
+	sizeof (PangoFontFaceClass),
+	(GBaseInitFunc) NULL,
+	(GBaseFinalizeFunc) NULL,
+	(GClassInitFunc) pango_fc_face_class_init,
+	NULL,           /* class_finalize */
+	NULL,           /* class_data */
+	sizeof (PangoFcFace),
+	0,              /* n_preallocs */
+	(GInstanceInitFunc) NULL,
 	NULL            /* value_table */
       };
 
       object_type = g_type_register_static (PANGO_TYPE_FONT_FACE,
-                                            I_("PangoFcFace"),
-                                            &object_info, 0);
+					    I_("PangoFcFace"),
+					    &object_info, 0);
     }
 
   return object_type;
@@ -1937,11 +1937,11 @@ pango_fc_family_list_faces (PangoFontFamily  *family,
 		slant = FC_SLANT_ROMAN;
 
 	      if (FcPatternGetString (fontset->fonts[i], FC_STYLE, 0, &font_style) != FcResultMatch)
-	        font_style = NULL;
+		font_style = NULL;
 
 	      if (weight <= FC_WEIGHT_MEDIUM)
 		{
-	          if (slant == FC_SLANT_ROMAN)
+		  if (slant == FC_SLANT_ROMAN)
 		    {
 		      has_face[REGULAR] = TRUE;
 		      style = "Regular";
@@ -1954,7 +1954,7 @@ pango_fc_family_list_faces (PangoFontFamily  *family,
 		}
 	      else
 		{
-	          if (slant == FC_SLANT_ROMAN)
+		  if (slant == FC_SLANT_ROMAN)
 		    {
 		      has_face[BOLD] = TRUE;
 		      style = "Bold";
@@ -1967,7 +1967,7 @@ pango_fc_family_list_faces (PangoFontFamily  *family,
 		}
 
 	      if (!font_style)
-	        font_style = style;
+		font_style = style;
 	      faces[num++] = create_face (fcfamily, font_style, FALSE);
 	    }
 
@@ -2029,21 +2029,21 @@ pango_fc_family_get_type (void)
     {
       const GTypeInfo object_info =
       {
-        sizeof (PangoFontFamilyClass),
-        (GBaseInitFunc) NULL,
-        (GBaseFinalizeFunc) NULL,
-        (GClassInitFunc) pango_fc_family_class_init,
-        NULL,           /* class_finalize */
-        NULL,           /* class_data */
-        sizeof (PangoFcFamily),
-        0,              /* n_preallocs */
-        (GInstanceInitFunc) pango_fc_family_init,
+	sizeof (PangoFontFamilyClass),
+	(GBaseInitFunc) NULL,
+	(GBaseFinalizeFunc) NULL,
+	(GClassInitFunc) pango_fc_family_class_init,
+	NULL,           /* class_finalize */
+	NULL,           /* class_data */
+	sizeof (PangoFcFamily),
+	0,              /* n_preallocs */
+	(GInstanceInitFunc) pango_fc_family_init,
 	NULL            /* value_table */
       };
 
       object_type = g_type_register_static (PANGO_TYPE_FONT_FAMILY,
-                                            I_("PangoFcFamily"),
-                                            &object_info, 0);
+					    I_("PangoFcFamily"),
+					    &object_info, 0);
     }
 
   return object_type;

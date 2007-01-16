@@ -288,14 +288,14 @@ max_glyph_width (PangoLayout *layout)
       PangoLayoutLine *line = l->data;
 
       for (r = line->runs; r; r = r->next)
-        {
-          PangoGlyphString *glyphs = ((PangoGlyphItem *)r->data)->glyphs;
-          int i;
+	{
+	  PangoGlyphString *glyphs = ((PangoGlyphItem *)r->data)->glyphs;
+	  int i;
 
-          for (i = 0; i < glyphs->num_glyphs; i++)
-            if (glyphs->glyphs[i].geometry.width > max_width)
-              max_width = glyphs->glyphs[i].geometry.width;
-        }
+	  for (i = 0; i < glyphs->num_glyphs; i++)
+	    if (glyphs->glyphs[i].geometry.width > max_width)
+	      max_width = glyphs->glyphs[i].geometry.width;
+	}
     }
 
   return max_width;

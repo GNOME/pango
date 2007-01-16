@@ -120,7 +120,7 @@ struct _PangoEngineLangClass
 			int            len,
 			PangoAnalysis *analysis,
 			PangoLogAttr  *attrs,
-                        int            attrs_len);
+			int            attrs_len);
 };
 
 GType pango_engine_lang_get_type (void) G_GNUC_CONST;
@@ -289,7 +289,7 @@ prefix ## _register_type (GTypeModule *module)				  \
     };									  \
 									  \
   prefix ## _type =  g_type_module_register_type (module, parent_type,	  \
-					          # name,		  \
+						  # name,		  \
 						  &object_info, 0);	  \
 }
 
@@ -321,7 +321,7 @@ prefix ## _register_type (GTypeModule *module)				  \
 #define PANGO_ENGINE_LANG_DEFINE_TYPE(name, prefix, class_init, instance_init)	\
   PANGO_ENGINE_DEFINE_TYPE (name, prefix,				\
 			    class_init, instance_init,			\
-                            PANGO_TYPE_ENGINE_LANG)
+			    PANGO_TYPE_ENGINE_LANG)
 
 /**
  * PANGO_ENGINE_SHAPE_DEFINE_TYPE:
@@ -351,7 +351,7 @@ prefix ## _register_type (GTypeModule *module)				  \
 #define PANGO_ENGINE_SHAPE_DEFINE_TYPE(name, prefix, class_init, instance_init)	\
   PANGO_ENGINE_DEFINE_TYPE (name, prefix,				\
 			    class_init, instance_init,			\
-                            PANGO_TYPE_ENGINE_SHAPE)
+			    PANGO_TYPE_ENGINE_SHAPE)
 
 /* Macro used for possibly builtin Pango modules. Not useful
  * for externally build modules. If we are compiling a module standaline,

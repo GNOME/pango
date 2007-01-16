@@ -39,14 +39,14 @@ typedef struct
 extern const PangoViewer x_viewer;
 
 void x_view_init (gpointer           instance,
-                  const PangoViewer *klass);
+		  const PangoViewer *klass);
 
 gpointer x_view_create (const PangoViewer *klass);
 
 void x_view_destroy (gpointer instance);
 
 gpointer x_view_create_surface (gpointer instance,
-			        int      width,
+				int      width,
 				int      height);
 
 void x_view_destroy_surface (gpointer instance,

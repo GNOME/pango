@@ -165,7 +165,7 @@ pango_cairo_atsui_font_get_glyph_extents (PangoFont        *font,
 	  ink_rect->x = ink_rect->y = ink_rect->width = ink_rect->height = 0;
 	}
       if (logical_rect)
-        {
+	{
 	  logical_rect->x = 0;
 	  logical_rect->y = - font_extents.ascent * PANGO_SCALE;
 	  logical_rect->width = 0;

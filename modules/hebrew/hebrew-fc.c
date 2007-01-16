@@ -77,7 +77,7 @@ get_cluster_glyphs(PangoFont      *font,
       if (pango_is_zero_width (wc))
 	glyph_num[i] = PANGO_GLYPH_EMPTY;
       else
-        {
+	{
 	  glyph_num[i] = pango_fc_font_get_glyph ((PangoFcFont *)font, wc);
 
 	  if (!glyph_num[i])

@@ -231,8 +231,8 @@ struct _PangoFontFamilyClass
   /*< public >*/
 
   void  (*list_faces)      (PangoFontFamily  *family,
-		            PangoFontFace  ***faces,
-		            int              *n_faces);
+			    PangoFontFace  ***faces,
+			    int              *n_faces);
   const char * (*get_name) (PangoFontFamily  *family);
   gboolean (*is_monospace) (PangoFontFamily *family);
 
@@ -259,8 +259,8 @@ GType      pango_font_face_get_type       (void) G_GNUC_CONST;
 PangoFontDescription *pango_font_face_describe       (PangoFontFace *face);
 G_CONST_RETURN char  *pango_font_face_get_face_name (PangoFontFace *face);
 void                  pango_font_face_list_sizes     (PangoFontFace  *face,
-                                                      int           **sizes,
-                                                      int            *n_sizes);
+						      int           **sizes,
+						      int            *n_sizes);
 
 #ifdef PANGO_ENABLE_BACKEND
 
@@ -284,8 +284,8 @@ struct _PangoFontFaceClass
   const char           * (*get_face_name) (PangoFontFace *face);
   PangoFontDescription * (*describe)       (PangoFontFace *face);
   void                   (*list_sizes)     (PangoFontFace  *face,
-                                            int           **sizes,
-                                            int            *n_sizes);
+					    int           **sizes,
+					    int            *n_sizes);
 
   /*< private >*/
 

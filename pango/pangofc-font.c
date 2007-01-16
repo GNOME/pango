@@ -419,14 +419,14 @@ max_glyph_width (PangoLayout *layout)
       PangoLayoutLine *line = l->data;
 
       for (r = line->runs; r; r = r->next)
-        {
-          PangoGlyphString *glyphs = ((PangoGlyphItem *)r->data)->glyphs;
-          int i;
+	{
+	  PangoGlyphString *glyphs = ((PangoGlyphItem *)r->data)->glyphs;
+	  int i;
 
-          for (i = 0; i < glyphs->num_glyphs; i++)
-            if (glyphs->glyphs[i].geometry.width > max_width)
-              max_width = glyphs->glyphs[i].geometry.width;
-        }
+	  for (i = 0; i < glyphs->num_glyphs; i++)
+	    if (glyphs->glyphs[i].geometry.width > max_width)
+	      max_width = glyphs->glyphs[i].geometry.width;
+	}
     }
 
   return max_width;
@@ -470,7 +470,7 @@ pango_fc_font_create_metrics_for_context (PangoFcFont   *fcfont,
  */
 static PangoFontMetrics *
 pango_fc_font_get_metrics (PangoFont     *font,
-                           PangoLanguage *language)
+			   PangoLanguage *language)
 {
   PangoFcFont *fcfont = PANGO_FC_FONT (font);
   PangoFcMetricsInfo *info = NULL; /* Quiet gcc */
@@ -529,7 +529,7 @@ pango_fc_font_real_has_char (PangoFcFont *font,
   FcCharSet *charset;
 
   if (FcPatternGetCharSet (font->font_pattern,
-                           FC_CHARSET, 0, &charset) != FcResultMatch)
+			   FC_CHARSET, 0, &charset) != FcResultMatch)
     return FALSE;
 
   return FcCharSetHasChar (charset, wc);
@@ -562,7 +562,7 @@ pango_fc_font_real_get_glyph (PangoFcFont *font,
       face = PANGO_FC_FONT_LOCK_FACE (font);
       index = FcFreeTypeCharIndex (face, wc);
       if (index > (FT_UInt)face->num_glyphs)
-        index = 0;
+	index = 0;
 
       entry->ch = wc;
       entry->glyph = index;

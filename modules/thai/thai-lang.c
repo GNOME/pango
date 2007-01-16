@@ -69,11 +69,11 @@ utf8_to_tis (const char *text, int len)
 
 static void
 thai_engine_break (PangoEngineLang *engine,
-                   const char      *text,
-                   int              len,
-                   PangoAnalysis   *analysis,
-                   PangoLogAttr    *attrs,
-                   int              attrs_len)
+		   const char      *text,
+		   int              len,
+		   PangoAnalysis   *analysis,
+		   PangoLogAttr    *attrs,
+		   int              attrs_len)
 {
   thchar_t *tis_text;
 
@@ -88,11 +88,11 @@ thai_engine_break (PangoEngineLang *engine,
       /* find line break positions */
       brk_n = th_brk (tis_text, brk_pnts, brk_len);
       for (i = 0; i < brk_n; i++)
-        {
-          attrs[brk_pnts[i]].is_line_break = TRUE;
-          attrs[brk_pnts[i]].is_word_start = TRUE;
-          attrs[brk_pnts[i]].is_word_end = TRUE;
-        }
+	{
+	  attrs[brk_pnts[i]].is_line_break = TRUE;
+	  attrs[brk_pnts[i]].is_word_start = TRUE;
+	  attrs[brk_pnts[i]].is_word_end = TRUE;
+	}
 
       g_free (brk_pnts);
       g_free (tis_text);
@@ -106,7 +106,7 @@ thai_engine_lang_class_init (PangoEngineLangClass *class)
 }
 
 PANGO_ENGINE_LANG_DEFINE_TYPE (ThaiEngineLang, thai_engine_lang,
-                               thai_engine_lang_class_init, NULL);
+			       thai_engine_lang_class_init, NULL);
 
 void
 PANGO_MODULE_ENTRY(init) (GTypeModule *module)

@@ -154,58 +154,58 @@ indic_engine_break (PangoEngineLang *engine,
 	  attrs[i].is_mandatory_break = FALSE;
 	}
       else if (prev_wc != 0 && (this_wc == 0x200D || this_wc == 0x200C))
-        {
-          if (next_wc != 0)
-            {
-              if  (next_next_wc == 0)
-                {
-                  attrs[i].is_cursor_position = FALSE;
-	          attrs[i].is_char_break = FALSE;
-	          attrs[i].is_line_break = FALSE;
-	          attrs[i].is_mandatory_break = FALSE;
+	{
+	  if (next_wc != 0)
+	    {
+	      if  (next_next_wc == 0)
+		{
+		  attrs[i].is_cursor_position = FALSE;
+		  attrs[i].is_char_break = FALSE;
+		  attrs[i].is_line_break = FALSE;
+		  attrs[i].is_mandatory_break = FALSE;
 
-                  i++;
+		  i++;
 
-                  attrs[i].is_cursor_position = FALSE;
-	          attrs[i].is_char_break = FALSE;
-	          attrs[i].is_line_break = FALSE;
-	          attrs[i].is_mandatory_break = FALSE;
-                }
-              else if ((next_next_wc != 0) &&
-                       (next_wc == 0x09CD ||	/* Bengali */
-		        next_wc == 0x0ACD ||	/* Gujarati */
-		        next_wc == 0x094D ||	/* Hindi */
-		        next_wc == 0x0CCD ||	/* Kannada */
-		        next_wc == 0x0D4D ||	/* Malayalam */
-		        next_wc == 0x0B4D ||	/* Oriya */
-		        next_wc == 0x0A4D ||	/* Punjabi */
-		        next_wc == 0x0BCD ||	/* Tamil */
-		        next_wc == 0x0C4D ||	/* Telugu */
-                        next_wc == 0x0DCA))  /*Sinhala*/
-                {
-                  attrs[i].is_cursor_position = FALSE;
-	          attrs[i].is_char_break = FALSE;
-	          attrs[i].is_line_break = FALSE;
-	          attrs[i].is_mandatory_break = FALSE;
+		  attrs[i].is_cursor_position = FALSE;
+		  attrs[i].is_char_break = FALSE;
+		  attrs[i].is_line_break = FALSE;
+		  attrs[i].is_mandatory_break = FALSE;
+		}
+	      else if ((next_next_wc != 0) &&
+		       (next_wc == 0x09CD ||	/* Bengali */
+			next_wc == 0x0ACD ||	/* Gujarati */
+			next_wc == 0x094D ||	/* Hindi */
+			next_wc == 0x0CCD ||	/* Kannada */
+			next_wc == 0x0D4D ||	/* Malayalam */
+			next_wc == 0x0B4D ||	/* Oriya */
+			next_wc == 0x0A4D ||	/* Punjabi */
+			next_wc == 0x0BCD ||	/* Tamil */
+			next_wc == 0x0C4D ||	/* Telugu */
+			next_wc == 0x0DCA))  /*Sinhala*/
+		{
+		  attrs[i].is_cursor_position = FALSE;
+		  attrs[i].is_char_break = FALSE;
+		  attrs[i].is_line_break = FALSE;
+		  attrs[i].is_mandatory_break = FALSE;
 
-                  i++;
+		  i++;
 
-                  attrs[i].is_cursor_position = FALSE;
-	          attrs[i].is_char_break = FALSE;
-	          attrs[i].is_line_break = FALSE;
-	          attrs[i].is_mandatory_break = FALSE;
+		  attrs[i].is_cursor_position = FALSE;
+		  attrs[i].is_char_break = FALSE;
+		  attrs[i].is_line_break = FALSE;
+		  attrs[i].is_mandatory_break = FALSE;
 
-                  i++;
-                  attrs[i].is_cursor_position = FALSE;
-                }
-            }
-          else
-            {
-              attrs[i].is_cursor_position = FALSE;
+		  i++;
+		  attrs[i].is_cursor_position = FALSE;
+		}
+	    }
+	  else
+	    {
+	      attrs[i].is_cursor_position = FALSE;
 	      attrs[i].is_char_break = FALSE;
 	      attrs[i].is_line_break = FALSE;
 	      attrs[i].is_mandatory_break = FALSE;
-            }
+	    }
 	}
     }
 }

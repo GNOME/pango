@@ -182,21 +182,21 @@ pango_x_font_map_get_type (void)
     {
       const GTypeInfo object_info =
       {
-        sizeof (PangoFontMapClass),
-        (GBaseInitFunc) NULL,
-        (GBaseFinalizeFunc) NULL,
-        (GClassInitFunc) pango_x_font_map_class_init,
-        NULL,           /* class_finalize */
-        NULL,           /* class_data */
-        sizeof (PangoXFontMap),
-        0,              /* n_preallocs */
-        (GInstanceInitFunc) pango_x_font_map_init,
+	sizeof (PangoFontMapClass),
+	(GBaseInitFunc) NULL,
+	(GBaseFinalizeFunc) NULL,
+	(GClassInitFunc) pango_x_font_map_class_init,
+	NULL,           /* class_finalize */
+	NULL,           /* class_data */
+	sizeof (PangoXFontMap),
+	0,              /* n_preallocs */
+	(GInstanceInitFunc) pango_x_font_map_init,
 	NULL            /* value_table */
       };
 
       object_type = g_type_register_static (PANGO_TYPE_FONT_MAP,
-                                            I_("PangoXFontMap"),
-                                            &object_info, 0);
+					    I_("PangoXFontMap"),
+					    &object_info, 0);
     }
 
   return object_type;
@@ -1494,21 +1494,21 @@ pango_x_face_get_type (void)
     {
       const GTypeInfo object_info =
       {
-        sizeof (PangoFontFaceClass),
-        (GBaseInitFunc) NULL,
-        (GBaseFinalizeFunc) NULL,
-        (GClassInitFunc) pango_x_face_class_init,
-        NULL,           /* class_finalize */
-        NULL,           /* class_data */
-        sizeof (PangoXFace),
-        0,              /* n_preallocs */
-        (GInstanceInitFunc) NULL,
+	sizeof (PangoFontFaceClass),
+	(GBaseInitFunc) NULL,
+	(GBaseFinalizeFunc) NULL,
+	(GClassInitFunc) pango_x_face_class_init,
+	NULL,           /* class_finalize */
+	NULL,           /* class_data */
+	sizeof (PangoXFace),
+	0,              /* n_preallocs */
+	(GInstanceInitFunc) NULL,
 	NULL            /* value_table */
       };
 
       object_type = g_type_register_static (PANGO_TYPE_FONT_FACE,
-                                            I_("PangoXFace"),
-                                            &object_info, 0);
+					    I_("PangoXFace"),
+					    &object_info, 0);
     }
 
   return object_type;
@@ -1653,21 +1653,21 @@ pango_x_family_get_type (void)
     {
       const GTypeInfo object_info =
       {
-        sizeof (PangoFontFamilyClass),
-        (GBaseInitFunc) NULL,
-        (GBaseFinalizeFunc) NULL,
-        (GClassInitFunc) pango_x_family_class_init,
-        NULL,           /* class_finalize */
-        NULL,           /* class_data */
-        sizeof (PangoXFamily),
-        0,              /* n_preallocs */
-        (GInstanceInitFunc) NULL,
+	sizeof (PangoFontFamilyClass),
+	(GBaseInitFunc) NULL,
+	(GBaseFinalizeFunc) NULL,
+	(GClassInitFunc) pango_x_family_class_init,
+	NULL,           /* class_finalize */
+	NULL,           /* class_data */
+	sizeof (PangoXFamily),
+	0,              /* n_preallocs */
+	(GInstanceInitFunc) NULL,
 	NULL            /* value_table */
       };
 
       object_type = g_type_register_static (PANGO_TYPE_FONT_FAMILY,
-                                            I_("PangoXFamily"),
-                                            &object_info, 0);
+					    I_("PangoXFamily"),
+					    &object_info, 0);
     }
 
   return object_type;

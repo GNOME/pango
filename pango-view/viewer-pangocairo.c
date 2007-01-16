@@ -99,7 +99,7 @@ typedef struct
 
 static gpointer
 pangocairo_view_create_surface (gpointer instance,
-			        int      width,
+				int      width,
 				int      height)
 {
   CairoViewer *c = (CairoViewer *) instance;
@@ -220,7 +220,7 @@ render_callback (PangoLayout *layout,
       cairo_set_source_rgba (cr, 1.0, 0.5, 0.0, 0.5);
       iter = pango_layout_get_iter (layout);
       do
-        {
+	{
 	  PangoLayoutLine *line = pango_layout_iter_get_line (iter);
 	  double width = (double)logical.width / PANGO_SCALE;
 
@@ -241,7 +241,7 @@ render_callback (PangoLayout *layout,
 	  cairo_close_path (cr);
 	  cairo_fill (cr);
 	  cairo_restore (cr);
-        }
+	}
       while (pango_layout_iter_next_line (iter));
       pango_layout_iter_free (iter);
       cairo_restore (cr);

@@ -104,8 +104,8 @@ pango_item_get_type (void)
 
   if (our_type == 0)
     our_type = g_boxed_type_register_static (I_("PangoItem"),
-                                             (GBoxedCopyFunc) pango_item_copy,
-                                             (GBoxedFreeFunc) pango_item_free);
+					     (GBoxedCopyFunc) pango_item_copy,
+					     (GBoxedFreeFunc) pango_item_free);
   return our_type;
 }
 
@@ -131,8 +131,8 @@ pango_item_get_type (void)
  **/
 PangoItem*
 pango_item_split (PangoItem  *orig,
-                  int         split_index,
-                  int         split_offset)
+		  int         split_index,
+		  int         split_offset)
 {
   PangoItem *new_item;
 

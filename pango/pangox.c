@@ -180,7 +180,7 @@ pango_x_get_context (Display *display)
       registered_modules = TRUE;
 
       for (i = 0; _pango_included_x_modules[i].list; i++)
-        pango_module_register (&_pango_included_x_modules[i]);
+	pango_module_register (&_pango_included_x_modules[i]);
     }
 
   result = pango_context_new ();
@@ -189,8 +189,8 @@ pango_x_get_context (Display *display)
   info->get_gc_func = NULL;
   info->free_gc_func = NULL;
   g_object_set_qdata_full (G_OBJECT (result),
-                           g_quark_from_static_string ("pango-x-info"),
-                           info, (GDestroyNotify)g_free);
+			   g_quark_from_static_string ("pango-x-info"),
+			   info, (GDestroyNotify)g_free);
 
   pango_context_set_font_map (result, pango_x_font_map_for_display (display));
 
@@ -216,7 +216,7 @@ pango_x_context_set_funcs  (PangoContext     *context,
   g_return_if_fail (context != NULL);
 
   info = g_object_get_qdata (G_OBJECT (context),
-                             g_quark_from_static_string ("pango-x-info"));
+			     g_quark_from_static_string ("pango-x-info"));
 
   info->get_gc_func = get_gc_func;
   info->free_gc_func = free_gc_func;
@@ -231,21 +231,21 @@ pango_x_font_get_type (void)
     {
       const GTypeInfo object_info =
       {
-        sizeof (PangoXFontClass),
-        (GBaseInitFunc) NULL,
-        (GBaseFinalizeFunc) NULL,
-        (GClassInitFunc) pango_x_font_class_init,
-        NULL,           /* class_finalize */
-        NULL,           /* class_data */
-        sizeof (PangoXFont),
-        0,              /* n_preallocs */
-        (GInstanceInitFunc) pango_x_font_init,
+	sizeof (PangoXFontClass),
+	(GBaseInitFunc) NULL,
+	(GBaseFinalizeFunc) NULL,
+	(GClassInitFunc) pango_x_font_class_init,
+	NULL,           /* class_finalize */
+	NULL,           /* class_data */
+	sizeof (PangoXFont),
+	0,              /* n_preallocs */
+	(GInstanceInitFunc) pango_x_font_init,
 	NULL            /* value_table */
       };
 
       object_type = g_type_register_static (PANGO_TYPE_FONT,
-                                            I_("PangoXFont"),
-                                            &object_info, 0);
+					    I_("PangoXFont"),
+					    &object_info, 0);
     }
 
   return object_type;
@@ -444,10 +444,10 @@ pango_x_render  (Display           *display,
 	      goto unknown_glyph;
 	} else {
 	  PangoFontMetrics *metrics;
-          int x1, y1, x2, y2; /* rectangle the character should go inside. */
-          int baseline;
+	  int x1, y1, x2, y2; /* rectangle the character should go inside. */
+	  int baseline;
 	  int stroke_thick;
-          gunichar wc;
+	  gunichar wc;
 
 	unknown_glyph:
 	  FLUSH;
@@ -471,7 +471,7 @@ pango_x_render  (Display           *display,
 	  x1 = glyph_x;
 	  x2 = x1 + PANGO_PIXELS (glyphs->glyphs[i].geometry.width);
 
-          baseline = glyph_y;
+	  baseline = glyph_y;
 	  stroke_thick = MAX ((int) (0.5 + 0.075 * (y2 - y1)), 1);
 
 	  if (glyph & PANGO_GLYPH_UNKNOWN_FLAG)
@@ -479,16 +479,16 @@ pango_x_render  (Display           *display,
 	  else
 	    wc = 0;
 
-          switch (wc)
-            {
-            case '\n':
-            case '\r':
-            case 0x2028: /* Line separator */
-            case 0x2029: /* Paragraph separator */
-              {
-                /* Draw a carriage-return thingy */
-                PangoRectangle up_stroke;
-                PangoRectangle across_stroke;
+	  switch (wc)
+	    {
+	    case '\n':
+	    case '\r':
+	    case 0x2028: /* Line separator */
+	    case 0x2029: /* Paragraph separator */
+	      {
+		/* Draw a carriage-return thingy */
+		PangoRectangle up_stroke;
+		PangoRectangle across_stroke;
 
 		int hborder = (x2 - x1) * 0.1;
 		int arrow_height = 0.25 * (y2 - y1);
@@ -504,37 +504,37 @@ pango_x_render  (Display           *display,
 
 		for (arrow_x = x1 + hborder; arrow_x < x1 + hborder + arrow_width; arrow_x++)
 		  {
-                    XDrawLine (display, d, gc,
-                               arrow_x,
+		    XDrawLine (display, d, gc,
+			       arrow_x,
 			       baseline - stroke_thick + (stroke_thick - tmp_height) / 2,
-                               arrow_x,
+			       arrow_x,
 			       baseline - stroke_thick + (stroke_thick - tmp_height) / 2 + tmp_height - 1);
 
 		    if ((arrow_x - x1 - hborder) % 2 == 1)
 		      tmp_height += 2;
 		  }
 
-                across_stroke.x = arrow_x;
-                across_stroke.width = x2 - hborder - arrow_x - stroke_thick;
-                across_stroke.y = baseline - stroke_thick;
-                across_stroke.height = stroke_thick;
+		across_stroke.x = arrow_x;
+		across_stroke.width = x2 - hborder - arrow_x - stroke_thick;
+		across_stroke.y = baseline - stroke_thick;
+		across_stroke.height = stroke_thick;
 
-                XFillRectangle (display, d, gc,
-                                across_stroke.x, across_stroke.y,
-                                across_stroke.width, across_stroke.height);
+		XFillRectangle (display, d, gc,
+				across_stroke.x, across_stroke.y,
+				across_stroke.width, across_stroke.height);
 
 		up_stroke.x = across_stroke.x + across_stroke.width;
 		up_stroke.width = stroke_thick;
 		up_stroke.y = y1 + top_border;
 		up_stroke.height = baseline - up_stroke.y;
 
-                XFillRectangle (display, d, gc,
-                                up_stroke.x, up_stroke.y,
-                                up_stroke.width, up_stroke.height);
-              }
-              break;
+		XFillRectangle (display, d, gc,
+				up_stroke.x, up_stroke.y,
+				up_stroke.width, up_stroke.height);
+	      }
+	      break;
 
-            default:
+	    default:
 	      {
 		/* Perhaps we should draw the box-with-numbers as in the
 		 * Xft backend, though we have no guarantee of having
@@ -571,7 +571,7 @@ pango_x_render  (Display           *display,
 	    }
 
 	  pango_font_metrics_unref (metrics);
-        }
+	}
 
     next_glyph:
       x_off += glyphs->glyphs[i].geometry.width;
@@ -625,18 +625,18 @@ pango_x_font_get_glyph_extents  (PangoFont      *font,
       if (glyph & PANGO_GLYPH_UNKNOWN_FLAG)
 	wc = glyph & (~PANGO_GLYPH_UNKNOWN_FLAG);
       else
-        wc = 0;
+	wc = 0;
 
       switch (wc)
-        {
-        case '\n':
-        case '\r':
-        case 0x2028: /* Line separator */
-        case 0x2029: /* Paragraph separator */
-          {
+	{
+	case '\n':
+	case '\r':
+	case 0x2028: /* Line separator */
+	case 0x2029: /* Paragraph separator */
+	  {
 #define MAGIC_FACTOR 1.2
 
-            /* carriage-return thingy */
+	    /* carriage-return thingy */
 	    width_factor = MAGIC_FACTOR;
 	    break;
 	  }
@@ -650,7 +650,7 @@ pango_x_font_get_glyph_extents  (PangoFont      *font,
       metrics = pango_font_get_metrics (font, NULL);
 
       if (metrics)
-        {
+	{
 	  w = metrics->approximate_char_width * width_factor;
 	  w = PANGO_SCALE * PANGO_PIXELS (w);
 
@@ -683,8 +683,8 @@ pango_x_font_get_glyph_extents  (PangoFont      *font,
 
 static gboolean
 get_int_prop (Atom         atom,
-              XFontStruct *fs,
-              int         *val)
+	      XFontStruct *fs,
+	      int         *val)
 {
   int i;
 
@@ -694,10 +694,10 @@ get_int_prop (Atom         atom,
   while (i < fs->n_properties)
     {
       if (fs->properties[i].name == atom)
-        {
-          *val = fs->properties[i].card32;
-          return TRUE;
-        }
+	{
+	  *val = fs->properties[i].card32;
+	  return TRUE;
+	}
 
       ++i;
     }
@@ -779,7 +779,7 @@ itemize_string_foreach (PangoFont     *font,
 	  last_shaper = shaper;
 	  last_level = embedding_levels[i];
 	  i++;
-        }
+	}
     }
 
   pango_glyph_string_free (glyph_str);
@@ -801,7 +801,7 @@ get_font_metrics_from_subfonts (PangoFont        *font,
   Atom avg_width_atom;
 
   avg_width_atom = pango_x_fontmap_atom_from_name (xfont->fontmap,
-                                                   "AVERAGE_WIDTH");
+						   "AVERAGE_WIDTH");
 
   metrics->ascent = 0;
   metrics->descent = 0;
@@ -813,7 +813,7 @@ get_font_metrics_from_subfonts (PangoFont        *font,
       if (subfont)
 	{
 	  XFontStruct *fs = pango_x_get_font_struct (font, subfont);
-          gint avg_width = 0;
+	  gint avg_width = 0;
 
 	  if (fs)
 	    {
@@ -1486,7 +1486,7 @@ pango_x_render_layout_line (Display          *display,
   PangoContext *context = pango_layout_get_context (line->layout);
   PangoXContextInfo *info =
     g_object_get_qdata (G_OBJECT (context),
-                        g_quark_from_static_string ("pango-x-info"));
+			g_quark_from_static_string ("pango-x-info"));
 
   int x_off = 0;
 
@@ -1548,14 +1548,14 @@ pango_x_render_layout_line (Display          *display,
 		     x + (x_off + ink_rect.x + ink_rect.width) / PANGO_SCALE, y + 2);
 	  break;
 	case PANGO_UNDERLINE_ERROR:
-          {
-            int point_x;
-            int counter = 0;
+	  {
+	    int point_x;
+	    int counter = 0;
 	    int end_x = x + (x_off + ink_rect.x + ink_rect.width) / PANGO_SCALE;
 
-            for (point_x = x + PANGO_PIXELS (x_off + ink_rect.x) - 1;
-                 point_x <= end_x;
-                 point_x += 2)
+	    for (point_x = x + PANGO_PIXELS (x_off + ink_rect.x) - 1;
+		 point_x <= end_x;
+		 point_x += 2)
 	      {
 		if (counter)
 		  XDrawLine (display, drawable, gc,
@@ -1566,7 +1566,7 @@ pango_x_render_layout_line (Display          *display,
 
 		counter = (counter + 1) % 2;
 	      }
-          }
+	  }
 	  break;
 	case PANGO_UNDERLINE_LOW:
 	  XDrawLine (display, drawable, fg_gc,
@@ -1620,9 +1620,9 @@ pango_x_render_layout (Display         *display,
       baseline = pango_layout_iter_get_baseline (iter);
 
       pango_x_render_layout_line (display, drawable, gc,
-                                  line,
-                                  x + PANGO_PIXELS (logical_rect.x),
-                                  y + PANGO_PIXELS (baseline));
+				  line,
+				  x + PANGO_PIXELS (logical_rect.x),
+				  y + PANGO_PIXELS (baseline));
     }
   while (pango_layout_iter_next_line (iter));
 
@@ -1696,10 +1696,10 @@ pango_x_get_item_properties (PangoItem      *item,
  */
 gboolean
 pango_x_apply_ligatures (PangoFont     *font,
-                         PangoXSubfont  subfont_id,
-                         gunichar     **glyphs,
-                         int           *n_glyphs,
-                         int           **clusters)
+			 PangoXSubfont  subfont_id,
+			 gunichar     **glyphs,
+			 int           *n_glyphs,
+			 int           **clusters)
 {
   return FALSE;
 }
@@ -1718,9 +1718,9 @@ pango_x_apply_ligatures (PangoFont     *font,
  */
 gboolean
 pango_x_find_first_subfont (PangoFont      *font,
-                            char          **charsets,
+			    char          **charsets,
 			    int             n_charsets,
-                            PangoXSubfont  *rfont)
+			    PangoXSubfont  *rfont)
 {
   int n_subfonts;
   gboolean result = FALSE;
@@ -1732,7 +1732,7 @@ pango_x_find_first_subfont (PangoFont      *font,
   g_return_val_if_fail (rfont, 0);
 
   n_subfonts = pango_x_list_subfonts (font, charsets, n_charsets,
-                                      &subfonts, &subfont_charsets);
+				      &subfonts, &subfont_charsets);
 
   if (n_subfonts > 0)
     {
@@ -1758,9 +1758,9 @@ pango_x_find_first_subfont (PangoFont      *font,
  */
 void
 pango_x_fallback_shape (PangoFont        *font,
-                        PangoGlyphString *glyphs,
-                        const char       *text,
-                        int               n_chars)
+			PangoGlyphString *glyphs,
+			const char       *text,
+			int               n_chars)
 {
   PangoGlyph unknown_glyph = pango_x_get_unknown_glyph (font);
   PangoRectangle logical_rect;
@@ -1803,7 +1803,7 @@ pango_x_fallback_shape (PangoFont        *font,
  */
 PangoGlyph
 pango_x_font_get_unknown_glyph (PangoFont *font,
-                                gunichar   wc)
+				gunichar   wc)
 {
   return PANGO_GET_UNKNOWN_GLYPH (wc);
 }

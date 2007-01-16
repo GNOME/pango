@@ -315,7 +315,7 @@ static const gint8 khmerStateTable[][CC_COUNT] =
   {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1}, /*  1 - exit state (or sign to the right of the syllable) */
   {-1, -1, -1, -1,  3,  4,  5,  6, 16, 17,  1, -1}, /*  2 - Base consonant */
   {-1, -1, -1, -1, -1,  4, -1, -1, 16, -1, -1, -1}, /*  3 - First ZWNJ before a register shifter
-                                                            It can only be followed by a shifter or a vowel */
+							    It can only be followed by a shifter or a vowel */
   {-1, -1, -1, -1, 15, -1, -1,  6, 16, 17,  1, 14}, /*  4 - First register shifter */
   {-1, -1, -1, -1, -1, -1, -1, -1, 20, -1,  1, -1}, /*  5 - Robat */
   {-1,  7,  8,  9, -1, -1, -1, -1, -1, -1, -1, -1}, /*  6 - First Coeng */
@@ -417,35 +417,35 @@ find_syllable (const gunichar *chars,
 
 static void
 maybe_add_GSUB_feature (PangoOTRuleset *ruleset,
-                        PangoOTInfo    *info,
-                        guint           script_index,
-                        PangoOTTag      tag,
-                        gulong          property_bit)
+			PangoOTInfo    *info,
+			guint           script_index,
+			PangoOTTag      tag,
+			gulong          property_bit)
 {
   guint feature_index;
 
   /* 0xffff == default language system */
   if (pango_ot_info_find_feature (info, PANGO_OT_TABLE_GSUB,
-                                  tag, script_index, 0xffff, &feature_index))
+				  tag, script_index, 0xffff, &feature_index))
     pango_ot_ruleset_add_feature (ruleset, PANGO_OT_TABLE_GSUB, feature_index,
-                                  property_bit);
+				  property_bit);
 }
 
 
 static void
 maybe_add_GPOS_feature (PangoOTRuleset *ruleset,
-                        PangoOTInfo    *info,
-                        guint           script_index,
-                        PangoOTTag      tag,
-                        gulong          property_bit)
+			PangoOTInfo    *info,
+			guint           script_index,
+			PangoOTTag      tag,
+			gulong          property_bit)
 {
   guint feature_index;
 
   /* 0xffff == default language system */
   if (pango_ot_info_find_feature (info, PANGO_OT_TABLE_GPOS,
-                                  tag, script_index, 0xffff, &feature_index))
+				  tag, script_index, 0xffff, &feature_index))
     pango_ot_ruleset_add_feature (ruleset, PANGO_OT_TABLE_GPOS, feature_index,
-                                  property_bit);
+				  property_bit);
 }
 
 
@@ -473,31 +473,31 @@ get_ruleset (FT_Face face)
       ruleset = pango_ot_ruleset_new (info);
 
       if (pango_ot_info_find_script (info, PANGO_OT_TABLE_GSUB,
-                                      khmer_tag, &script_index))
-        {
-          maybe_add_GSUB_feature (ruleset, info, script_index, FT_MAKE_TAG ('p','r','e','f'), pref);
-          maybe_add_GSUB_feature (ruleset, info, script_index, FT_MAKE_TAG ('b','l','w','f'), blwf);
-          maybe_add_GSUB_feature (ruleset, info, script_index, FT_MAKE_TAG ('a','b','v','f'), abvf);
-          maybe_add_GSUB_feature (ruleset, info, script_index, FT_MAKE_TAG ('p','s','t','f'), pstf);
+				      khmer_tag, &script_index))
+	{
+	  maybe_add_GSUB_feature (ruleset, info, script_index, FT_MAKE_TAG ('p','r','e','f'), pref);
+	  maybe_add_GSUB_feature (ruleset, info, script_index, FT_MAKE_TAG ('b','l','w','f'), blwf);
+	  maybe_add_GSUB_feature (ruleset, info, script_index, FT_MAKE_TAG ('a','b','v','f'), abvf);
+	  maybe_add_GSUB_feature (ruleset, info, script_index, FT_MAKE_TAG ('p','s','t','f'), pstf);
 
-          maybe_add_GSUB_feature (ruleset, info, script_index, FT_MAKE_TAG ('p','r','e','s'), pres);
-          maybe_add_GSUB_feature (ruleset, info, script_index, FT_MAKE_TAG ('b','l','w','s'), blws);
-          maybe_add_GSUB_feature (ruleset, info, script_index, FT_MAKE_TAG ('a','b','v','s'), abvs);
-          maybe_add_GSUB_feature (ruleset, info, script_index, FT_MAKE_TAG ('p','s','t','s'), psts);
-          maybe_add_GSUB_feature (ruleset, info, script_index, FT_MAKE_TAG ('c','l','i','g'), clig);
-        }
+	  maybe_add_GSUB_feature (ruleset, info, script_index, FT_MAKE_TAG ('p','r','e','s'), pres);
+	  maybe_add_GSUB_feature (ruleset, info, script_index, FT_MAKE_TAG ('b','l','w','s'), blws);
+	  maybe_add_GSUB_feature (ruleset, info, script_index, FT_MAKE_TAG ('a','b','v','s'), abvs);
+	  maybe_add_GSUB_feature (ruleset, info, script_index, FT_MAKE_TAG ('p','s','t','s'), psts);
+	  maybe_add_GSUB_feature (ruleset, info, script_index, FT_MAKE_TAG ('c','l','i','g'), clig);
+	}
 
       if (pango_ot_info_find_script (info, PANGO_OT_TABLE_GPOS,
-                                      khmer_tag, &script_index))
-        {
-          maybe_add_GPOS_feature (ruleset, info, script_index, FT_MAKE_TAG ('d','i','s','t'), dist);
-          maybe_add_GPOS_feature (ruleset, info, script_index, FT_MAKE_TAG ('b','l','w','m'), blwm);
-          maybe_add_GPOS_feature (ruleset, info, script_index, FT_MAKE_TAG ('a','b','v','m'), abvm);
-          maybe_add_GPOS_feature (ruleset, info, script_index, FT_MAKE_TAG ('m','k','m','k'), mkmk);
-        }
+				      khmer_tag, &script_index))
+	{
+	  maybe_add_GPOS_feature (ruleset, info, script_index, FT_MAKE_TAG ('d','i','s','t'), dist);
+	  maybe_add_GPOS_feature (ruleset, info, script_index, FT_MAKE_TAG ('b','l','w','m'), blwm);
+	  maybe_add_GPOS_feature (ruleset, info, script_index, FT_MAKE_TAG ('a','b','v','m'), abvm);
+	  maybe_add_GPOS_feature (ruleset, info, script_index, FT_MAKE_TAG ('m','k','m','k'), mkmk);
+	}
 
       g_object_set_qdata_full (G_OBJECT (info), ruleset_quark, ruleset,
-                                (GDestroyNotify)g_object_unref);
+				(GDestroyNotify)g_object_unref);
     }
 
   return ruleset;
@@ -516,11 +516,11 @@ get_index (PangoFcFont *fc_font, gunichar wc)
 
 static void
 khmer_engine_shape (PangoEngineShape *engine,
-                    PangoFont        *font,
-                    const char       *text,
-                    int               length,
-                    const PangoAnalysis *analysis,
-                    PangoGlyphString *glyphs)
+		    PangoFont        *font,
+		    const char       *text,
+		    int               length,
+		    const PangoAnalysis *analysis,
+		    PangoGlyphString *glyphs)
 {
   PangoFcFont *fc_font;
   FT_Face face;
@@ -563,43 +563,43 @@ khmer_engine_shape (PangoEngineShape *engine,
       syllable = find_syllable (wcs, cursor, n_chars);
 
       for (i = cursor; i < syllable; i += 1)
-        {
-          charClass = get_char_class (wcs[i]);
+	{
+	  charClass = get_char_class (wcs[i]);
 
-          /* if a split vowel, write the pre part. In Khmer the pre part
-           * is the same for all split vowels, same glyph as pre vowel C_VOWEL_E
-           */
-          if (charClass & CF_SPLIT_VOWEL)
-            {
-              pango_ot_buffer_add_glyph (buffer, get_index (fc_font, C_VOWEL_E), pref_p, p - text);
-              break; /* there can be only one vowel */
-            }
+	  /* if a split vowel, write the pre part. In Khmer the pre part
+	   * is the same for all split vowels, same glyph as pre vowel C_VOWEL_E
+	   */
+	  if (charClass & CF_SPLIT_VOWEL)
+	    {
+	      pango_ot_buffer_add_glyph (buffer, get_index (fc_font, C_VOWEL_E), pref_p, p - text);
+	      break; /* there can be only one vowel */
+	    }
 
-          /* if a vowel with pos before write it out */
-          if (charClass & CF_POS_BEFORE)
-            {
-              pango_ot_buffer_add_glyph (buffer, get_index (fc_font, wcs[i]), pref_p, p - text);
-              break; /* there can be only one vowel */
-            }
+	  /* if a vowel with pos before write it out */
+	  if (charClass & CF_POS_BEFORE)
+	    {
+	      pango_ot_buffer_add_glyph (buffer, get_index (fc_font, wcs[i]), pref_p, p - text);
+	      break; /* there can be only one vowel */
+	    }
 
-          /* look for coeng + ro and remember position
-           * works because coeng + ro is always in front of a vowel (if there is a vowel)
-           * and because CC_CONSONANT2 is enough to identify it, as it is the only consonant
-           * with this flag
-           */
-          if ((charClass & CF_COENG) && (i + 1 < syllable) &&
-             ((get_char_class (wcs[i + 1]) & CF_CLASS_MASK) == CC_CONSONANT2))
-            {
-              coengRo = i;
-            }
-        }
+	  /* look for coeng + ro and remember position
+	   * works because coeng + ro is always in front of a vowel (if there is a vowel)
+	   * and because CC_CONSONANT2 is enough to identify it, as it is the only consonant
+	   * with this flag
+	   */
+	  if ((charClass & CF_COENG) && (i + 1 < syllable) &&
+	     ((get_char_class (wcs[i + 1]) & CF_CLASS_MASK) == CC_CONSONANT2))
+	    {
+	      coengRo = i;
+	    }
+	}
 
       /* write coeng + ro if found  */
       if (coengRo > -1)
-        {
-          pango_ot_buffer_add_glyph (buffer, get_index (fc_font, C_COENG), pref_p, p - text);
-          pango_ot_buffer_add_glyph (buffer, get_index (fc_font, C_RO), pref_p, p - text);
-        }
+	{
+	  pango_ot_buffer_add_glyph (buffer, get_index (fc_font, C_COENG), pref_p, p - text);
+	  pango_ot_buffer_add_glyph (buffer, get_index (fc_font, C_RO), pref_p, p - text);
+	}
 
       /* shall we add a dotted circle?
       * If in the position in which the base should be (first char in the string) there is
@@ -607,51 +607,51 @@ khmer_engine_shape (PangoEngineShape *engine,
       * then write a dotted circle
       */
       if (get_char_class (wcs[cursor]) & CF_DOTTED_CIRCLE)
-        {
-          pango_ot_buffer_add_glyph (buffer, get_index (fc_font, C_DOTTED_CIRCLE), default_p, p - text);
-        }
+	{
+	  pango_ot_buffer_add_glyph (buffer, get_index (fc_font, C_DOTTED_CIRCLE), default_p, p - text);
+	}
 
       /* copy what is left to the output, skipping before vowels and
       * coeng Ro if they are present
       */
       for (i = cursor; i < syllable; i += 1)
-        {
-          charClass = get_char_class (wcs[i]);
+	{
+	  charClass = get_char_class (wcs[i]);
 
-          /* skip a before vowel, it was already processed */
-          if (charClass & CF_POS_BEFORE)
-            {
-              p = g_utf8_next_char (p);
-              continue;
-            }
+	  /* skip a before vowel, it was already processed */
+	  if (charClass & CF_POS_BEFORE)
+	    {
+	      p = g_utf8_next_char (p);
+	      continue;
+	    }
 
-          /* skip coeng + ro, it was already processed */
-          if (i == coengRo)
-            {
-              p = g_utf8_next_char (p);
-              i += 1;
-              p = g_utf8_next_char (p);
-              continue;
-            }
+	  /* skip coeng + ro, it was already processed */
+	  if (i == coengRo)
+	    {
+	      p = g_utf8_next_char (p);
+	      i += 1;
+	      p = g_utf8_next_char (p);
+	      continue;
+	    }
 
-          switch (charClass & CF_POS_MASK)
-            {
-              case CF_POS_ABOVE :
+	  switch (charClass & CF_POS_MASK)
+	    {
+	      case CF_POS_ABOVE :
 		pango_ot_buffer_add_glyph (buffer, get_index (fc_font, wcs[i]), abvf_p, p - text);
 		break;
 
-              case CF_POS_AFTER :
+	      case CF_POS_AFTER :
 		pango_ot_buffer_add_glyph (buffer, get_index (fc_font, wcs[i]), pstf_p, p - text);
 		break;
 
-              case CF_POS_BELOW :
+	      case CF_POS_BELOW :
 		pango_ot_buffer_add_glyph (buffer, get_index (fc_font, wcs[i]), blwf_p, p - text);
 		break;
 
-              default:
-                  /* assign the correct flags to a coeng consonant
-                  * Consonants of type 3 are taged as Post forms and those type 1 as below forms
-                  */
+	      default:
+		  /* assign the correct flags to a coeng consonant
+		  * Consonants of type 3 are taged as Post forms and those type 1 as below forms
+		  */
 		if ((charClass & CF_COENG) && i + 1 < syllable)
 		  {
 		    if ((get_char_class (wcs[i + 1]) & CF_CLASS_MASK) == CC_CONSONANT3)
@@ -672,47 +672,47 @@ khmer_engine_shape (PangoEngineShape *engine,
 		      }
 		  }
 
-                  /* if a shifter is followed by an above vowel change the shifter to below form,
-                  * an above vowel can have two possible positions i + 1 or i + 3
-                  * (position i+1 corresponds to unicode 3, position i+3 to Unicode 4)
-                  * and there is an extra rule for C_VOWEL_AA + C_SIGN_NIKAHIT also for two
-                  * different positions, right after the shifter or after a vowel (Unicode 4)
-                  */
-                  if ((charClass & CF_SHIFTER) && (i + 1 < syllable))
-                    {
-                      if (get_char_class (wcs[i + 1]) & CF_ABOVE_VOWEL)
-                        {
-                          pango_ot_buffer_add_glyph (buffer, get_index (fc_font, wcs[i]), blwf_p, p - text);
-                          break;
-                        }
-                      if (i + 2 < syllable &&
-                          (wcs[i + 1] == C_VOWEL_AA) &&
-                          (wcs[i + 2] == C_SIGN_NIKAHIT) )
-                        {
-                          pango_ot_buffer_add_glyph (buffer, get_index (fc_font, wcs[i]), blwf_p, p - text);
-                          break;
-                        }
-                      if (i + 3 < syllable && (get_char_class (wcs[i + 3]) & CF_ABOVE_VOWEL) )
-                        {
-                          pango_ot_buffer_add_glyph (buffer, get_index (fc_font, wcs[i]), blwf_p, p - text);
-                          break;
-                        }
-                      if (i + 4 < syllable &&
-                          (wcs[i + 3] == C_VOWEL_AA) &&
-                          (wcs[i + 4] == C_SIGN_NIKAHIT) )
-                        {
-                          pango_ot_buffer_add_glyph (buffer, get_index (fc_font, wcs[i]), blwf_p, p - text);
-                          break;
-                        }
+		  /* if a shifter is followed by an above vowel change the shifter to below form,
+		  * an above vowel can have two possible positions i + 1 or i + 3
+		  * (position i+1 corresponds to unicode 3, position i+3 to Unicode 4)
+		  * and there is an extra rule for C_VOWEL_AA + C_SIGN_NIKAHIT also for two
+		  * different positions, right after the shifter or after a vowel (Unicode 4)
+		  */
+		  if ((charClass & CF_SHIFTER) && (i + 1 < syllable))
+		    {
+		      if (get_char_class (wcs[i + 1]) & CF_ABOVE_VOWEL)
+			{
+			  pango_ot_buffer_add_glyph (buffer, get_index (fc_font, wcs[i]), blwf_p, p - text);
+			  break;
+			}
+		      if (i + 2 < syllable &&
+			  (wcs[i + 1] == C_VOWEL_AA) &&
+			  (wcs[i + 2] == C_SIGN_NIKAHIT) )
+			{
+			  pango_ot_buffer_add_glyph (buffer, get_index (fc_font, wcs[i]), blwf_p, p - text);
+			  break;
+			}
+		      if (i + 3 < syllable && (get_char_class (wcs[i + 3]) & CF_ABOVE_VOWEL) )
+			{
+			  pango_ot_buffer_add_glyph (buffer, get_index (fc_font, wcs[i]), blwf_p, p - text);
+			  break;
+			}
+		      if (i + 4 < syllable &&
+			  (wcs[i + 3] == C_VOWEL_AA) &&
+			  (wcs[i + 4] == C_SIGN_NIKAHIT) )
+			{
+			  pango_ot_buffer_add_glyph (buffer, get_index (fc_font, wcs[i]), blwf_p, p - text);
+			  break;
+			}
 
-                    }
+		    }
 
-                  /* default - any other characters  */
-                  pango_ot_buffer_add_glyph (buffer, get_index (fc_font, wcs[i]), default_p, p - text);
-                  break;
-            } /* switch */
-          p = g_utf8_next_char (p);
-        } /* for */
+		  /* default - any other characters  */
+		  pango_ot_buffer_add_glyph (buffer, get_index (fc_font, wcs[i]), default_p, p - text);
+		  break;
+	    } /* switch */
+	  p = g_utf8_next_char (p);
+	} /* for */
 
       cursor = syllable; /* move the pointer to the start of next syllable */
     } /* while */
@@ -741,7 +741,7 @@ khmer_engine_fc_class_init (PangoEngineShapeClass *class)
 }
 
 PANGO_ENGINE_SHAPE_DEFINE_TYPE (KhmerEngineFc, khmer_engine_fc,
-                                khmer_engine_fc_class_init, NULL)
+				khmer_engine_fc_class_init, NULL)
 
 
 void
@@ -759,7 +759,7 @@ PANGO_MODULE_ENTRY(exit) (void)
 
 void
 PANGO_MODULE_ENTRY(list) (PangoEngineInfo **engines,
-                          int              *n_engines)
+			  int              *n_engines)
 {
   *engines = script_engines;
   *n_engines = G_N_ELEMENTS (script_engines);

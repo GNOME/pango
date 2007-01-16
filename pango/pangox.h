@@ -109,20 +109,20 @@ char *pango_x_font_subfont_xlfd (PangoFont     *font,
 
 
 gboolean pango_x_find_first_subfont (PangoFont     *font,
-                                     char         **charsets,
+				     char         **charsets,
 				     int            n_charsets,
-                                     PangoXSubfont *rfont);
+				     PangoXSubfont *rfont);
 
 void pango_x_fallback_shape (PangoFont        *font,
-                             PangoGlyphString *glyphs,
-                             const char       *text,
-                             int               n_chars);
+			     PangoGlyphString *glyphs,
+			     const char       *text,
+			     int               n_chars);
 
 gboolean pango_x_apply_ligatures (PangoFont     *font,
-                                  PangoXSubfont  subfont,
-                                  gunichar     **glyphs,
-                                  int           *n_glyphs,
-                                  int          **clusters);
+				  PangoXSubfont  subfont,
+				  gunichar     **glyphs,
+				  int           *n_glyphs,
+				  int          **clusters);
 
 #endif /* PANGO_DISABLE_DEPRECATED */
 

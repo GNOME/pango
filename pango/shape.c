@@ -39,9 +39,9 @@
  */
 void
 pango_shape (const gchar      *text,
-             gint              length,
-             const PangoAnalysis *analysis,
-             PangoGlyphString *glyphs)
+	     gint              length,
+	     const PangoAnalysis *analysis,
+	     PangoGlyphString *glyphs)
 {
   int i;
   int last_cluster;
@@ -52,7 +52,7 @@ pango_shape (const gchar      *text,
 				 text, length, analysis, glyphs);
 
       if (G_UNLIKELY (glyphs->num_glyphs == 0))
-        {
+	{
 	  /* If a font has been correctly chosen, but no glyphs are output,
 	   * there's probably something wrong with the shaper.  Trying to be
 	   * informative, we print out the font description, but to not
@@ -87,13 +87,13 @@ pango_shape (const gchar      *text,
     {
       if (!PANGO_IS_ENGINE_SHAPE (analysis->shape_engine) &&
 	  !_pango_warning_history.shape_shape_engine)
-        {
+	{
 	  _pango_warning_history.shape_shape_engine = TRUE;
 	  g_warning ("pango_shape called with bad shape_engine, expect ugly output");
 	}
       if (!PANGO_IS_FONT (analysis->font) &&
 	  !_pango_warning_history.shape_font)
-        {
+	{
 	  _pango_warning_history.shape_font = TRUE;
 	  g_warning ("pango_shape called with bad font, expect ugly output");
 	}

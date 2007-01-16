@@ -286,7 +286,7 @@ do_output (PangoContext     *context,
       if (supports_matrix)
 	pango_matrix_rotate (&matrix, opt_rotate);
       else
-        g_printerr ("The backend does not support rotated text\n");
+	g_printerr ("The backend does not support rotated text\n");
     }
 
   pango_context_set_base_gravity (context, opt_gravity);
@@ -623,7 +623,7 @@ parse_options (int argc, char *argv[])
     {
       opt_viewer = *viewers;
       if (!opt_viewer)
-        fail ("No viewer backend found");
+	fail ("No viewer backend found");
     }
 
   /* if wrap mode is set then width must be set */

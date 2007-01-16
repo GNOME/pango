@@ -538,13 +538,13 @@ advance_attr_iterator_to (PangoAttrIterator *iterator,
   while (start_index >= end_range)
     {
       if (!pango_attr_iterator_next (iterator))
-        return FALSE;
+	return FALSE;
       pango_attr_iterator_range (iterator, &start_range, &end_range);
     }
 
   if (start_range > start_index)
     g_warning ("In pango_itemize(), the cached iterator passed in "
-               "had already moved beyond the start_index");
+	       "had already moved beyond the start_index");
 
   return TRUE;
 }
@@ -710,7 +710,7 @@ update_embedding_end (ItemizeState *state)
 
 static PangoAttribute *
 find_attribute (GSList        *attr_list,
-                PangoAttrType  type)
+		PangoAttrType  type)
 {
   GSList *node;
 
@@ -1082,8 +1082,8 @@ get_base_font (ItemizeState *state)
 {
   if (!state->base_font)
     state->base_font = pango_font_map_load_font (state->context->font_map,
-                                                 state->context,
-                                                 state->font_desc);
+						 state->context,
+						 state->font_desc);
   return state->base_font;
 }
 
@@ -1108,9 +1108,9 @@ get_shaper_and_font (ItemizeState      *state,
       PangoScript script;
 
       if (PANGO_GRAVITY_IS_VERTICAL (state->resolved_gravity))
-        script = PANGO_SCRIPT_COMMON;
+	script = PANGO_SCRIPT_COMMON;
       else
-        script = state->script;
+	script = state->script;
 
       get_engines (state->context, state->derived_lang, script,
 		   &state->exact_engines, &state->fallback_engines);
@@ -1134,7 +1134,7 @@ get_shaper_and_font (ItemizeState      *state,
 
       /* skip caching if fallback disabled (see above) */
       if (state->enable_fallback)
-        shaper_font_cache_insert (state->cache, wc, *shape_engine, *font);
+	shaper_font_cache_insert (state->cache, wc, *shape_engine, *font);
 
       return TRUE;
     }
@@ -1218,12 +1218,12 @@ itemize_state_update_for_new_run (ItemizeState *state)
       PangoGravity old_gravity = state->resolved_gravity;
 
       if (state->font_desc_gravity != PANGO_GRAVITY_AUTO)
-        {
+	{
 	  state->resolved_gravity = state->font_desc_gravity;
 	  state->centered_baseline = PANGO_GRAVITY_IS_VERTICAL (state->resolved_gravity);
 	}
       else
-        {
+	{
 	  PangoGravity gravity = state->gravity;
 	  PangoGravityHint gravity_hint = state->gravity_hint;
 
@@ -1237,9 +1237,9 @@ itemize_state_update_for_new_run (ItemizeState *state)
 	}
 
       if (old_gravity != state->resolved_gravity)
-        {
+	{
 	  pango_font_description_set_gravity (state->font_desc, state->resolved_gravity);
-          state->changed |= FONT_CHANGED;
+	  state->changed |= FONT_CHANGED;
 	}
     }
 
@@ -1336,7 +1336,7 @@ itemize_state_process_run (ItemizeState *state)
 	  font = NULL;
 	}
       else
-        {
+	{
 	  get_shaper_and_font (state, wc, &shape_engine, &font);
 	}
 
@@ -1385,7 +1385,7 @@ itemize_state_finish (ItemizeState *state)
 /**
  * pango_itemize_with_base_dir:
  * @context:   a structure holding information that affects
-               the itemization process.
+	       the itemization process.
  * @text:      the text to itemize.
  * @start_index: first byte in @text to process
  * @length:    the number of bytes (not characters) to process
@@ -1461,7 +1461,7 @@ itemize_with_font (PangoContext               *context,
 /**
  * pango_itemize:
  * @context:   a structure holding information that affects
-               the itemization process.
+	       the itemization process.
  * @text:      the text to itemize.
  * @start_index: first byte in @text to process
  * @length:    the number of bytes (not characters) to process
@@ -1486,10 +1486,10 @@ itemize_with_font (PangoContext               *context,
 GList *
 pango_itemize (PangoContext      *context,
 	       const char        *text,
-               int                start_index,
+	       int                start_index,
 	       int                length,
 	       PangoAttrList     *attrs,
-               PangoAttrIterator *cached_iter)
+	       PangoAttrIterator *cached_iter)
 {
   g_return_val_if_fail (context != NULL, NULL);
   g_return_val_if_fail (start_index >= 0, NULL);

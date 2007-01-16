@@ -77,12 +77,12 @@ Get_Joining_Class (gunichar*   string,
   while (1)
     {
       if (pos == 0 && direction < 0)
-        return none;
+	return none;
 
       pos += direction;
 
       if (pos >= length)
-        return none;
+	return none;
 
       if (string[pos] < 0x0700 ||
 	  string[pos] >= 0x074F)
@@ -93,10 +93,10 @@ Get_Joining_Class (gunichar*   string,
 	    return none;
 	}
       else
-        j =  syriac[string[pos] - 0x0700];
+	j =  syriac[string[pos] - 0x0700];
 
       if (!direction || j != transparent)
-        return j;
+	return j;
     }
 }
 
@@ -230,57 +230,57 @@ syriac_assign_properties (gunichar    *string,
       /* R1 */
 
       if (current == transparent)
-        {
+	{
 	  properties[i] |= isolated_p;
 	  continue;
-        }
+	}
 
       /* R2 */
 
       if (string[i] == 0x0722 ||
 	  string[i] == 0x071F)
-        if (previous == causing ||
-            previous == right)
-          if (!(next == causing ||
+	if (previous == causing ||
+	    previous == right)
+	  if (!(next == causing ||
 		next == right ||
 		next == dual))
-          {
-            properties[i] |= isolated_p;
-            continue;
-          }
+	  {
+	    properties[i] |= isolated_p;
+	    continue;
+	  }
 
       /* R3 */
 
       if (string[i] == 0x0710)
-        if (previous == causing ||
-            previous == right)
-          if (!(string[i - 1] == 0x0715 ||
+	if (previous == causing ||
+	    previous == right)
+	  if (!(string[i - 1] == 0x0715 ||
 		string[i - 1] == 0x0716 ||
 		string[i - 1] == 0x072A))
-          {
-            properties[i] |= final2_p;
-            continue;
-          }
+	  {
+	    properties[i] |= final2_p;
+	    continue;
+	  }
 
       /* R4 */
 
       if (string[i] == 0x0710)
-        if (previous == causing ||
-            previous == right)
-         if (string[i - 1] == 0x0715 ||
-              string[i - 1] == 0x0716 ||
-              string[i - 1] == 0x072A)
-          {
-            properties[i] |= final3_p;
-            continue;
-          }
+	if (previous == causing ||
+	    previous == right)
+	 if (string[i - 1] == 0x0715 ||
+	      string[i - 1] == 0x0716 ||
+	      string[i - 1] == 0x072A)
+	  {
+	    properties[i] |= final3_p;
+	    continue;
+	  }
 
       /* R5 */
 
       if (previous == causing ||
 	  previous == right   ||
 	  previous == dual)
-        if (current == right)
+	if (current == right)
 	    {
 	      properties[i] |= final_p;
 	      continue;
@@ -289,50 +289,50 @@ syriac_assign_properties (gunichar    *string,
       /* R6 */
 
       if (previous == causing ||
-          previous == right   ||
+	  previous == right   ||
 	  previous == dual)
-        if (current == dual)
-          if (!(next == causing ||
+	if (current == dual)
+	  if (!(next == causing ||
 		    next == right   ||
 		    next == dual   ))
 	      {
-	        properties[i] |= final_p;
-	        continue;
+		properties[i] |= final_p;
+		continue;
 	      }
 
       /* R7 */
 
       if (previous == causing ||
-          previous == left    ||
-          previous == dual)
-        if (current == dual)
-          if (next == causing ||
-              next == right   ||
-              next == dual   )
+	  previous == left    ||
+	  previous == dual)
+	if (current == dual)
+	  if (next == causing ||
+	      next == right   ||
+	      next == dual   )
 	      {
-	        properties[i] |= medial_p;
-	        continue;
+		properties[i] |= medial_p;
+		continue;
 	      }
 
       /* R8 */
 
       if (string[i] == 0x0710)
-        if (previous == causing ||
-            previous == right)
-            if (next == causing ||
-                next == right ||
-                next == dual)
-            {
-              properties[i] |= medial2_p;
-              continue;
-            }
+	if (previous == causing ||
+	    previous == right)
+	    if (next == causing ||
+		next == right ||
+		next == dual)
+	    {
+	      properties[i] |= medial2_p;
+	      continue;
+	    }
 
       /* R9 */
 
       if (current == left)
-        if (next == causing ||
-            next == right   ||
-            next == dual)
+	if (next == causing ||
+	    next == right   ||
+	    next == dual)
 	    {
 	      properties[i] |= initial_p;
 	      continue;
@@ -343,13 +343,13 @@ syriac_assign_properties (gunichar    *string,
       if (!(previous == causing ||
 	    previous == left ||
 	    previous == dual   ))
-        if (current == dual)
-          if (next == causing ||
-              next == right   ||
-              next == dual)
+	if (current == dual)
+	  if (next == causing ||
+	      next == right   ||
+	      next == dual)
 	      {
-	        properties[i] |= initial_p;
-	        continue;
+		properties[i] |= initial_p;
+		continue;
 	      }
 
       /* R11 */

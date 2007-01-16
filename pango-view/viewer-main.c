@@ -104,7 +104,7 @@ main (int    argc,
       title = get_options_string ();
 
       if (view->display)
-        {
+	{
 	  gpointer window = NULL;
 	  gpointer state = NULL;
 
@@ -124,7 +124,7 @@ main (int    argc,
 	    view->destroy_window (instance, window);
 	}
       else
-        {
+	{
 	  int fd;
 	  FILE *stream;
 	  const gchar *display_argv[5] = {"display", "-title", "%s", "-"};

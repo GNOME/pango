@@ -233,7 +233,7 @@ pango_ft2_renderer_draw_glyph (PangoRenderer *renderer,
     {
       glyph = pango_ft2_get_unknown_glyph (font);
       if (glyph == PANGO_GLYPH_EMPTY)
-        {
+	{
 	  /* No unknown glyph found for the font, draw a box */
 
 	  /* Since we only draw an empty box for FT2 renderer,

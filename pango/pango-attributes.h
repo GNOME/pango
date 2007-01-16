@@ -214,7 +214,7 @@ PangoAttribute *pango_attr_fallback_new      (gboolean                    enable
 PangoAttribute *pango_attr_letter_spacing_new (int                        letter_spacing);
 
 PangoAttribute *pango_attr_shape_new           (const PangoRectangle       *ink_rect,
-					        const PangoRectangle       *logical_rect);
+						const PangoRectangle       *logical_rect);
 PangoAttribute *pango_attr_shape_new_with_data (const PangoRectangle       *ink_rect,
 						const PangoRectangle       *logical_rect,
 						gpointer                    data,
@@ -247,27 +247,27 @@ PangoAttrList *pango_attr_list_filter (PangoAttrList       *list,
 PangoAttrIterator *pango_attr_list_get_iterator  (PangoAttrList  *list);
 
 void               pango_attr_iterator_range    (PangoAttrIterator     *iterator,
-                                                 gint                  *start,
-                                                 gint                  *end);
+						 gint                  *start,
+						 gint                  *end);
 gboolean           pango_attr_iterator_next     (PangoAttrIterator     *iterator);
 PangoAttrIterator *pango_attr_iterator_copy     (PangoAttrIterator     *iterator);
 void               pango_attr_iterator_destroy  (PangoAttrIterator     *iterator);
 PangoAttribute *   pango_attr_iterator_get      (PangoAttrIterator     *iterator,
-                                                 PangoAttrType          type);
+						 PangoAttrType          type);
 void               pango_attr_iterator_get_font (PangoAttrIterator     *iterator,
-                                                 PangoFontDescription  *desc,
+						 PangoFontDescription  *desc,
 						 PangoLanguage        **language,
-                                                 GSList               **extra_attrs);
+						 GSList               **extra_attrs);
 GSList *          pango_attr_iterator_get_attrs (PangoAttrIterator     *iterator);
 
 
 gboolean pango_parse_markup (const char                 *markup_text,
-                             int                         length,
-                             gunichar                    accel_marker,
-                             PangoAttrList             **attr_list,
-                             char                      **text,
-                             gunichar                   *accel_char,
-                             GError                    **error);
+			     int                         length,
+			     gunichar                    accel_marker,
+			     PangoAttrList             **attr_list,
+			     char                      **text,
+			     gunichar                   *accel_char,
+			     GError                    **error);
 
 G_END_DECLS
 

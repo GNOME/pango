@@ -235,22 +235,22 @@ pango_cairo_renderer_draw_glyphs (PangoRenderer     *renderer,
       PangoGlyphInfo *gi = &glyphs->glyphs[i];
 
       if (gi->glyph != PANGO_GLYPH_EMPTY)
-        {
-          double cx = base_x + (double)(x_position + gi->geometry.x_offset) / PANGO_SCALE;
-          double cy = gi->geometry.y_offset == 0 ?
+	{
+	  double cx = base_x + (double)(x_position + gi->geometry.x_offset) / PANGO_SCALE;
+	  double cy = gi->geometry.y_offset == 0 ?
 		      base_y :
 		      base_y + (double)(gi->geometry.y_offset) / PANGO_SCALE;
 
-          if (gi->glyph & PANGO_GLYPH_UNKNOWN_FLAG)
+	  if (gi->glyph & PANGO_GLYPH_UNKNOWN_FLAG)
 	    _pango_cairo_renderer_draw_unknown_glyph (crenderer, font, gi, cx, cy);
-          else
-            {
-              cairo_glyphs[count].index = gi->glyph;
-              cairo_glyphs[count].x = cx;
-              cairo_glyphs[count].y = cy;
-              count++;
-            }
-        }
+	  else
+	    {
+	      cairo_glyphs[count].index = gi->glyph;
+	      cairo_glyphs[count].x = cx;
+	      cairo_glyphs[count].y = cy;
+	      count++;
+	    }
+	}
       x_position += gi->geometry.width;
     }
 
@@ -433,7 +433,7 @@ acquire_renderer (gboolean *free_renderer)
   if (G_LIKELY (G_TRYLOCK (cached_renderer)))
     {
       if (G_UNLIKELY (!cached_renderer))
-        cached_renderer = g_object_new (PANGO_TYPE_CAIRO_RENDERER, NULL);
+	cached_renderer = g_object_new (PANGO_TYPE_CAIRO_RENDERER, NULL);
 
       renderer = cached_renderer;
       *free_renderer = FALSE;
@@ -651,10 +651,10 @@ pango_cairo_show_layout (cairo_t     *cr,
  **/
 void
 pango_cairo_show_error_underline (cairo_t *cr,
-			          double  x,
-			          double  y,
-			          double  width,
-			          double  height)
+				  double  x,
+				  double  y,
+				  double  width,
+				  double  height)
 {
   g_return_if_fail (cr != NULL);
   g_return_if_fail ((width >= 0) && (height >= 0));
@@ -745,10 +745,10 @@ pango_cairo_layout_path (cairo_t     *cr,
  **/
 void
 pango_cairo_error_underline_path (cairo_t *cr,
-			          double   x,
-			          double   y,
-			          double   width,
-			          double   height)
+				  double   x,
+				  double   y,
+				  double   width,
+				  double   height)
 {
   g_return_if_fail (cr != NULL);
   g_return_if_fail ((width >= 0) && (height >= 0));

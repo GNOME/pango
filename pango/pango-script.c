@@ -364,7 +364,7 @@ pango_script_iter_next (PangoScriptIter *iter)
 
 	      if (iter->paren_sp < start_sp)
 		start_sp = iter->paren_sp;
-            }
+	    }
 	}
       else
 	{

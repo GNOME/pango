@@ -61,11 +61,11 @@ dump_text (const char *text)
   attrs = g_new0 (PangoLogAttr, len + 1);
 
   pango_get_log_attrs (text,
-                       -1,
-                       0,
-                       pango_language_from_string ("C"),
-                       attrs,
-                       len + 1);
+		       -1,
+		       0,
+		       pango_language_from_string ("C"),
+		       attrs,
+		       len + 1);
 
   ucs4 = g_utf8_to_ucs4 (text, -1, NULL, NULL, NULL);
 
@@ -78,27 +78,27 @@ dump_text (const char *text)
       g_unichar_to_utf8 (ucs4[i], buf);
 
       if (*buf == '\n')
-        loc = g_strdup ("\\n");
+	loc = g_strdup ("\\n");
       else if (*buf == '\r')
-        loc = g_strdup ("\\r");
+	loc = g_strdup ("\\r");
       else
-        loc = g_locale_from_utf8 (buf, -1, NULL, NULL, NULL);
+	loc = g_locale_from_utf8 (buf, -1, NULL, NULL, NULL);
 
       g_print (CHFORMAT " (%s):\t line_break = %d mandatory_break = %d char_break = %d\n"
-               "     \t\t white = %d cursor_position = %d\n"
-               "     \t\t word_start = %d word_end = %d\n"
-               "     \t\t sentence_boundary = %d sentence_start = %d sentence_end = %d\n",
-               ucs4[i], loc ? loc : "?",
-               attrs[i].is_line_break,
-               attrs[i].is_mandatory_break,
-               attrs[i].is_char_break,
-               attrs[i].is_white,
-               attrs[i].is_cursor_position,
-               attrs[i].is_word_start,
-               attrs[i].is_word_end,
-               attrs[i].is_sentence_boundary,
-               attrs[i].is_sentence_start,
-               attrs[i].is_sentence_end);
+	       "     \t\t white = %d cursor_position = %d\n"
+	       "     \t\t word_start = %d word_end = %d\n"
+	       "     \t\t sentence_boundary = %d sentence_start = %d sentence_end = %d\n",
+	       ucs4[i], loc ? loc : "?",
+	       attrs[i].is_line_break,
+	       attrs[i].is_mandatory_break,
+	       attrs[i].is_char_break,
+	       attrs[i].is_white,
+	       attrs[i].is_cursor_position,
+	       attrs[i].is_word_start,
+	       attrs[i].is_word_end,
+	       attrs[i].is_sentence_boundary,
+	       attrs[i].is_sentence_start,
+	       attrs[i].is_sentence_end);
 
       g_free (loc);
 

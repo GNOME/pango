@@ -78,19 +78,19 @@ void pango_break (const gchar   *text,
 		  int            length,
 		  PangoAnalysis *analysis,
 		  PangoLogAttr  *attrs,
-                  int            attrs_len);
+		  int            attrs_len);
 
 void pango_find_paragraph_boundary (const gchar *text,
-                                    gint         length,
-                                    gint        *paragraph_delimiter_index,
-                                    gint        *next_paragraph_start);
+				    gint         length,
+				    gint        *paragraph_delimiter_index,
+				    gint        *next_paragraph_start);
 
 void pango_get_log_attrs (const char    *text,
-                          int            length,
-                          int            level,
-                          PangoLanguage *language,
-                          PangoLogAttr  *log_attrs,
-                          int            attrs_len);
+			  int            length,
+			  int            level,
+			  PangoLanguage *language,
+			  PangoLogAttr  *log_attrs,
+			  int            attrs_len);
 
 #ifdef PANGO_ENABLE_ENGINE
 
@@ -100,10 +100,10 @@ void pango_get_log_attrs (const char    *text,
  * from a language engine override.
  */
 void pango_default_break (const gchar   *text,
-                          int            length,
-                          PangoAnalysis *analysis,
-                          PangoLogAttr  *attrs,
-                          int            attrs_len);
+			  int            length,
+			  PangoAnalysis *analysis,
+			  PangoLogAttr  *attrs,
+			  int            attrs_len);
 
 #endif /* PANGO_ENABLE_ENGINE */
 

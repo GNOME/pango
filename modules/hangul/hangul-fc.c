@@ -75,7 +75,7 @@ set_glyph (PangoFont *font, PangoGlyphString *glyphs, int i, int offset, PangoGl
 
 static void
 set_glyph_tone (PangoFont *font, PangoGlyphString *glyphs, int i,
-		            int offset, PangoGlyph glyph)
+			    int offset, PangoGlyph glyph)
 {
   PangoRectangle logical_rect, ink_rect;
   PangoRectangle logical_rect_cluster;
@@ -116,8 +116,8 @@ set_glyph_tone (PangoFont *font, PangoGlyphString *glyphs, int i,
       if (logical_rect.width)
 	{
 	  glyphs->glyphs[i].geometry.x_offset -= ink_rect.width;
-          glyphs->glyphs[j + 1].geometry.width += ink_rect.width;
-          glyphs->glyphs[j + 1].geometry.x_offset += ink_rect.width;
+	  glyphs->glyphs[j + 1].geometry.width += ink_rect.width;
+	  glyphs->glyphs[j + 1].geometry.x_offset += ink_rect.width;
 	}
     }
 
@@ -130,7 +130,7 @@ set_glyph_tone (PangoFont *font, PangoGlyphString *glyphs, int i,
 
 static void
 render_tone (PangoFont *font, gunichar tone, PangoGlyphString *glyphs,
-             int *n_glyphs, int cluster_offset)
+	     int *n_glyphs, int cluster_offset)
 {
   int index;
 
@@ -145,11 +145,11 @@ render_tone (PangoFont *font, gunichar tone, PangoGlyphString *glyphs,
       /* fall back : HTONE1(0x302e) => middle-dot, HTONE2(0x302f) => colon */
       index = find_char (font, tone == HTONE1 ? 0x00b7 : 0x003a);
       if (index)
-        {
-          set_glyph_tone (font, glyphs, *n_glyphs, cluster_offset, index);
-        }
+	{
+	  set_glyph_tone (font, glyphs, *n_glyphs, cluster_offset, index);
+	}
       else
-        set_glyph (font, glyphs, *n_glyphs, cluster_offset,
+	set_glyph (font, glyphs, *n_glyphs, cluster_offset,
 		   PANGO_GET_UNKNOWN_GLYPH (tone));
     }
   (*n_glyphs)++;
@@ -324,7 +324,7 @@ render_syllable (PangoFont *font, const char *str, int length,
 	  continue;
 	}
       else if (IS_S(wc))
-        {
+	{
 	  pango_glyph_string_set_size (glyphs, *n_glyphs + 1);
 	  set_glyph (font, glyphs, *n_glyphs, cluster_offset,
 		     PANGO_GET_UNKNOWN_GLYPH (wc));

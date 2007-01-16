@@ -135,8 +135,8 @@ G_CONST_RETURN char * pango_version_string (void);
 
 /* Check that run-time Pango is as new as required */
 G_CONST_RETURN char * pango_version_check (int required_major,
-                                           int required_minor,
-                                           int required_micro);
+					   int required_minor,
+					   int required_micro);
 
 G_END_DECLS
 

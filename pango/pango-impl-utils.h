@@ -61,14 +61,14 @@ prefix ## _get_type (void)				                   \
 }
 
 #define PANGO_DEFINE_TYPE(name, prefix,			\
-		          class_init, instance_init,	\
+			  class_init, instance_init,	\
 			  parent_type)			\
  PANGO_DEFINE_TYPE_FULL (name, prefix,			\
 			 class_init, instance_init,	\
 			 parent_type, 0)
 
 #define PANGO_DEFINE_TYPE_ABSTRACT(name, prefix,		\
-		          class_init, instance_init,		\
+			  class_init, instance_init,		\
 			  parent_type)				\
  PANGO_DEFINE_TYPE_FULL (name, prefix,				\
 			 class_init, instance_init,		\

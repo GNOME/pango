@@ -201,8 +201,8 @@ pango_coverage_get (PangoCoverage *coverage,
  **/
 void
 pango_coverage_set (PangoCoverage     *coverage,
-                    int                index,
-                    PangoCoverageLevel level)
+		    int                index,
+		    PangoCoverageLevel level)
 {
   int block_index, i;
   guchar *data;
@@ -239,7 +239,7 @@ pango_coverage_set (PangoCoverage     *coverage,
       byte = coverage->blocks[block_index].level |
 	(coverage->blocks[block_index].level << 2) |
 	(coverage->blocks[block_index].level << 4) |
-        (coverage->blocks[block_index].level << 6);
+	(coverage->blocks[block_index].level << 6);
 
       memset (data, byte, 64);
     }
@@ -259,7 +259,7 @@ pango_coverage_set (PangoCoverage     *coverage,
  **/
 void
 pango_coverage_max (PangoCoverage *coverage,
-                    PangoCoverage *other)
+		    PangoCoverage *other)
 {
   int block_index, i;
   int old_blocks;

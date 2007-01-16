@@ -178,7 +178,7 @@ pango_ft2_font_get_face (PangoFont *font)
   if (G_UNLIKELY (!PANGO_FT2_IS_FONT (font)))
     {
       if (!_pango_ft2_warning_history.get_face)
-        {
+	{
 	  _pango_ft2_warning_history.get_face = TRUE;
 	  g_warning ("pango_ft2_font_get_face called with bad font, expect ugly output");
 	}
@@ -193,29 +193,29 @@ pango_ft2_font_get_face (PangoFont *font)
 
       /* disable antialiasing if requested */
       if (FcPatternGetBool (pattern,
-                            FC_ANTIALIAS, 0, &antialias) != FcResultMatch)
+			    FC_ANTIALIAS, 0, &antialias) != FcResultMatch)
 	antialias = FcTrue;
 
       if (antialias)
-        ft2font->load_flags |= FT_LOAD_NO_BITMAP;
+	ft2font->load_flags |= FT_LOAD_NO_BITMAP;
       else
 	ft2font->load_flags |= FT_LOAD_TARGET_MONO;
 
       /* disable hinting if requested */
       if (FcPatternGetBool (pattern,
-                            FC_HINTING, 0, &hinting) != FcResultMatch)
+			    FC_HINTING, 0, &hinting) != FcResultMatch)
 	hinting = FcTrue;
 
       if (!hinting)
-        ft2font->load_flags |= FT_LOAD_NO_HINTING;
+	ft2font->load_flags |= FT_LOAD_NO_HINTING;
 
       /* force autohinting if requested */
       if (FcPatternGetBool (pattern,
-                            FC_AUTOHINT, 0, &autohint) != FcResultMatch)
+			    FC_AUTOHINT, 0, &autohint) != FcResultMatch)
 	autohint = FcFalse;
 
       if (autohint)
-        ft2font->load_flags |= FT_LOAD_FORCE_AUTOHINT;
+	ft2font->load_flags |= FT_LOAD_FORCE_AUTOHINT;
 
       if (FcPatternGetString (pattern, FC_FILE, 0, &filename) != FcResultMatch)
 	      goto bail0;
@@ -320,7 +320,7 @@ pango_ft2_font_get_glyph_extents (PangoFont      *font,
     {
       glyph = pango_ft2_get_unknown_glyph (font);
       if (glyph == PANGO_GLYPH_EMPTY)
-        {
+	{
 	  /* No unknown glyph found for the font, draw a box */
 	  PangoFontMetrics *metrics = pango_font_get_metrics (font, NULL);
 
@@ -530,7 +530,7 @@ _pango_ft2_ft_strerror (FT_Error error)
       static char *default_msg = NULL;
 
       if (!default_msg)
-        default_msg = g_malloc (60);
+	default_msg = g_malloc (60);
 
       g_sprintf (default_msg, "Unknown FreeType2 error %#x", error);
       return default_msg;

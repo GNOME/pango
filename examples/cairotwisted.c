@@ -210,7 +210,7 @@ point_on_path (parametrized_path_t *param,
   parametrization_t *parametrization = param->parametrization;
 
   for (i=0; i + path->data[i].header.length < path->num_data &&
-            (d > parametrization[i] ||
+	    (d > parametrization[i] ||
 	     path->data[i].header.type == CAIRO_PATH_MOVE_TO);
        i += path->data[i].header.length) {
     d -= parametrization[i];
@@ -254,22 +254,22 @@ point_on_path (parametrized_path_t *param,
   case CAIRO_PATH_CURVE_TO:
       ratio = d / parametrization[i];
       *x = current_point.point.x * (1 - ratio) * (1 - ratio) * (1 - ratio)
-         + 3 *   data[1].point.x * (1 - ratio) * (1 - ratio) * ratio
-         + 3 *   data[2].point.x * (1 - ratio) *      ratio  * ratio
-         +       data[3].point.x *      ratio  *      ratio  * ratio;
+	 + 3 *   data[1].point.x * (1 - ratio) * (1 - ratio) * ratio
+	 + 3 *   data[2].point.x * (1 - ratio) *      ratio  * ratio
+	 +       data[3].point.x *      ratio  *      ratio  * ratio;
       *y = current_point.point.y * (1 - ratio) * (1 - ratio) * (1 - ratio)
-         + 3 *   data[1].point.y * (1 - ratio) * (1 - ratio) * ratio
-         + 3 *   data[2].point.y * (1 - ratio) *      ratio  * ratio
-         +       data[3].point.y *      ratio  *      ratio  * ratio;
+	 + 3 *   data[1].point.y * (1 - ratio) * (1 - ratio) * ratio
+	 + 3 *   data[2].point.y * (1 - ratio) *      ratio  * ratio
+	 +       data[3].point.y *      ratio  *      ratio  * ratio;
 
       dx =-3 * current_point.point.x * (1 - ratio) * (1 - ratio)
-         + 3 *       data[1].point.x * (1 - 4 * ratio + 3 * ratio * ratio)
-         + 3 *       data[2].point.x * (    2 * ratio - 3 * ratio * ratio)
-         + 3 *       data[3].point.x *      ratio  *      ratio;
+	 + 3 *       data[1].point.x * (1 - 4 * ratio + 3 * ratio * ratio)
+	 + 3 *       data[2].point.x * (    2 * ratio - 3 * ratio * ratio)
+	 + 3 *       data[3].point.x *      ratio  *      ratio;
       dy =-3 * current_point.point.y * (1 - ratio) * (1 - ratio)
-         + 3 *       data[1].point.y * (1 - 4 * ratio + 3 * ratio * ratio)
-         + 3 *       data[2].point.y * (    2 * ratio - 3 * ratio * ratio)
-         + 3 *       data[3].point.y *      ratio  *      ratio;
+	 + 3 *       data[1].point.y * (1 - 4 * ratio + 3 * ratio * ratio)
+	 + 3 *       data[2].point.y * (    2 * ratio - 3 * ratio * ratio)
+	 + 3 *       data[3].point.y *      ratio  *      ratio;
 
       d = oldy;
       ratio = d / sqrt (dx * dx + dy * dy);

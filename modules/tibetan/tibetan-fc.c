@@ -384,35 +384,35 @@ find_syllable (const gunichar *chars,
 
 static void
 maybe_add_GSUB_feature (PangoOTRuleset *ruleset,
-	                PangoOTInfo    *info,
-	                guint           script_index,
-	                PangoOTTag      tag,
-	                gulong          property_bit)
+			PangoOTInfo    *info,
+			guint           script_index,
+			PangoOTTag      tag,
+			gulong          property_bit)
 {
   guint feature_index;
 
   /* 0xffff == default language system */
   if (pango_ot_info_find_feature (info, PANGO_OT_TABLE_GSUB,
-	                          tag, script_index, 0xffff, &feature_index))
+				  tag, script_index, 0xffff, &feature_index))
     pango_ot_ruleset_add_feature (ruleset, PANGO_OT_TABLE_GSUB, feature_index,
-	                          property_bit);
+				  property_bit);
 }
 
 
 static void
 maybe_add_GPOS_feature (PangoOTRuleset *ruleset,
-	                PangoOTInfo    *info,
-	                guint           script_index,
-	                PangoOTTag      tag,
-	                gulong          property_bit)
+			PangoOTInfo    *info,
+			guint           script_index,
+			PangoOTTag      tag,
+			gulong          property_bit)
 {
   guint feature_index;
 
   /* 0xffff == default language system */
   if (pango_ot_info_find_feature (info, PANGO_OT_TABLE_GPOS,
-	                          tag, script_index, 0xffff, &feature_index))
+				  tag, script_index, 0xffff, &feature_index))
     pango_ot_ruleset_add_feature (ruleset, PANGO_OT_TABLE_GPOS, feature_index,
-	                          property_bit);
+				  property_bit);
 }
 
 /* Rules found in the Open type font features */
@@ -440,7 +440,7 @@ get_ruleset (FT_Face face)
       ruleset = pango_ot_ruleset_new (info);
 
       if (pango_ot_info_find_script (info, PANGO_OT_TABLE_GSUB,
-	                              tibetan_tag, &script_index))
+				      tibetan_tag, &script_index))
 	{
 	  maybe_add_GSUB_feature (ruleset, info, script_index, FT_MAKE_TAG ('p','r','e','f'), pref);
 	  maybe_add_GSUB_feature (ruleset, info, script_index, FT_MAKE_TAG ('b','l','w','f'), blwf);
@@ -455,7 +455,7 @@ get_ruleset (FT_Face face)
 	}
 
       if (pango_ot_info_find_script (info, PANGO_OT_TABLE_GPOS,
-	                              tibetan_tag, &script_index))
+				      tibetan_tag, &script_index))
 	{
 	  maybe_add_GPOS_feature (ruleset, info, script_index, FT_MAKE_TAG ('d','i','s','t'), dist);
 	  maybe_add_GPOS_feature (ruleset, info, script_index, FT_MAKE_TAG ('b','l','w','m'), blwm);
@@ -464,7 +464,7 @@ get_ruleset (FT_Face face)
 	}
 
       g_object_set_qdata_full (G_OBJECT (info), ruleset_quark, ruleset,
-	                        (GDestroyNotify)g_object_unref);
+				(GDestroyNotify)g_object_unref);
     }
 
   return ruleset;
@@ -483,11 +483,11 @@ get_index (PangoFcFont *fc_font, gunichar wc)
 
 static void
 tibetan_engine_shape (PangoEngineShape *engine,
-	            PangoFont        *font,
-	            const char       *text,
-	            int               length,
-	            const PangoAnalysis *analysis,
-	            PangoGlyphString *glyphs)
+		    PangoFont        *font,
+		    const char       *text,
+		    int               length,
+		    const PangoAnalysis *analysis,
+		    PangoGlyphString *glyphs)
 {
   PangoFcFont *fc_font;
   FT_Face face;
@@ -551,21 +551,21 @@ tibetan_engine_shape (PangoEngineShape *engine,
 	  switch (charClass & CF_POS_MASK)
 	    {
 	      case CF_POS_ABOVE :
-		             pango_ot_buffer_add_glyph (buffer, get_index (fc_font, wcs[i]), abvf_p, p - text);
-		             break;
+			     pango_ot_buffer_add_glyph (buffer, get_index (fc_font, wcs[i]), abvf_p, p - text);
+			     break;
 
 	      case CF_POS_AFTER :
-		             pango_ot_buffer_add_glyph (buffer, get_index (fc_font, wcs[i]), pstf_p, p - text);
-		             break;
+			     pango_ot_buffer_add_glyph (buffer, get_index (fc_font, wcs[i]), pstf_p, p - text);
+			     break;
 
 	      case CF_POS_BELOW :
-		             pango_ot_buffer_add_glyph (buffer, get_index (fc_font, wcs[i]), blwf_p, p - text);
-		             break;
+			     pango_ot_buffer_add_glyph (buffer, get_index (fc_font, wcs[i]), blwf_p, p - text);
+			     break;
 
 	      default:
-	           /* default - any other characters  */
-	          pango_ot_buffer_add_glyph (buffer, get_index (fc_font, wcs[i]), default_p, p - text);
-	          break;
+		   /* default - any other characters  */
+		  pango_ot_buffer_add_glyph (buffer, get_index (fc_font, wcs[i]), default_p, p - text);
+		  break;
 	    } /* switch */
 	   }
 
@@ -599,7 +599,7 @@ tibetan_engine_fc_class_init (PangoEngineShapeClass *class)
 }
 
 PANGO_ENGINE_SHAPE_DEFINE_TYPE (TibetanEngineFc, tibetan_engine_fc,
-	                        tibetan_engine_fc_class_init, NULL)
+				tibetan_engine_fc_class_init, NULL)
 
 
 void
@@ -617,7 +617,7 @@ PANGO_MODULE_ENTRY(exit) (void)
 
 void
 PANGO_MODULE_ENTRY(list) (PangoEngineInfo **engines,
-	                  int              *n_engines)
+			  int              *n_engines)
 {
   *engines = script_engines;
   *n_engines = G_N_ELEMENTS (script_engines);

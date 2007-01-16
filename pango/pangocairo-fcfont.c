@@ -100,7 +100,7 @@ pango_cairo_fc_font_get_font_face (PangoCairoFont *font)
        * This means out of memory or a cairo/fontconfig/FreeType bug,
        */
       if (!cffont->font_face)
-        return NULL;
+	return NULL;
     }
 
   return cffont->font_face;
@@ -118,7 +118,7 @@ pango_cairo_fc_font_get_scaled_font (PangoCairoFont *font)
       font_face = pango_cairo_fc_font_get_font_face (font);
 
       if (!font_face)
-        return NULL;
+	return NULL;
 
       cffont->scaled_font = cairo_scaled_font_create (font_face,
 						      &cffont->font_matrix,
@@ -130,7 +130,7 @@ pango_cairo_fc_font_get_scaled_font (PangoCairoFont *font)
        * or a missing font...
        */
       if (!cffont->scaled_font)
-        return NULL;
+	return NULL;
     }
 
   return cffont->scaled_font;
@@ -249,7 +249,7 @@ pango_cairo_fc_font_get_metrics (PangoFont     *font,
 	}
       shift = (height - info->metrics->ascent) - info->metrics->descent;
       if (fcfont->is_hinted)
-        shift &= ~(PANGO_SCALE - 1);
+	shift &= ~(PANGO_SCALE - 1);
       info->metrics->descent += shift;
       info->metrics->underline_position -= shift;
       info->metrics->strikethrough_position -= shift;
@@ -300,14 +300,14 @@ pango_cairo_fc_font_glyph_extents_cache_init (PangoCairoFcFont *cffont)
       default:
       case PANGO_GRAVITY_AUTO:
       case PANGO_GRAVITY_SOUTH:
-        cffont->font_extents.y = - pango_units_from_double (font_extents.ascent);
+	cffont->font_extents.y = - pango_units_from_double (font_extents.ascent);
 	break;
       case PANGO_GRAVITY_NORTH:
-        cffont->font_extents.y = - pango_units_from_double (font_extents.descent);
+	cffont->font_extents.y = - pango_units_from_double (font_extents.descent);
 	break;
       case PANGO_GRAVITY_EAST:
       case PANGO_GRAVITY_WEST:
-        cffont->font_extents.y = - pango_units_from_double ((font_extents.ascent + font_extents.descent) * 0.5);
+	cffont->font_extents.y = - pango_units_from_double ((font_extents.ascent + font_extents.descent) * 0.5);
     }
 
   cffont->glyph_extents_cache = g_new0 (GlyphExtentsCacheEntry, GLYPH_CACHE_NUM_ENTRIES);

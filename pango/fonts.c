@@ -899,7 +899,7 @@ find_field_any (const char *str, int len, PangoFontDescription *desc)
     { \
       found = TRUE; \
       if (desc) \
-        desc->mask |= MASK; \
+	desc->mask |= MASK; \
     } \
   } G_STMT_END
 
@@ -949,7 +949,7 @@ parse_size (const char *word,
 	*pango_size = (int)(size * PANGO_SCALE + 0.5);
 
       if (size_is_absolute)
-        *size_is_absolute = end < word + wordlen;
+	*size_is_absolute = end < word + wordlen;
 
       return TRUE;
     }
@@ -988,9 +988,9 @@ pango_font_description_from_string (const char *str)
   desc = pango_font_description_new ();
 
   desc->mask = PANGO_FONT_MASK_STYLE |
-               PANGO_FONT_MASK_WEIGHT |
-               PANGO_FONT_MASK_VARIANT |
-               PANGO_FONT_MASK_STRETCH;
+	       PANGO_FONT_MASK_WEIGHT |
+	       PANGO_FONT_MASK_VARIANT |
+	       PANGO_FONT_MASK_STRETCH;
 
   len = strlen (str);
   last = str + len;
@@ -1293,19 +1293,19 @@ pango_font_get_glyph_extents  (PangoFont      *font,
     {
 
       if (!_pango_warning_history.get_glyph_extents)
-        {
+	{
 	  _pango_warning_history.get_glyph_extents = TRUE;
 	  g_warning (bad_font_warning, "pango_font_get_glyph_extents");
 	}
       if (ink_rect)
-        {
+	{
 	  ink_rect->x = PANGO_SCALE;
 	  ink_rect->y = - (PANGO_UNKNOWN_GLYPH_HEIGHT - 1) * PANGO_SCALE;
 	  ink_rect->height = (PANGO_UNKNOWN_GLYPH_HEIGHT - 2) * PANGO_SCALE;
 	  ink_rect->width = (PANGO_UNKNOWN_GLYPH_WIDTH - 2) * PANGO_SCALE;
-        }
+	}
       if (logical_rect)
-        {
+	{
 	  logical_rect->x = logical_rect->y = 0;
 	  logical_rect->y = - PANGO_UNKNOWN_GLYPH_HEIGHT * PANGO_SCALE;
 	  logical_rect->height = PANGO_UNKNOWN_GLYPH_HEIGHT * PANGO_SCALE;
@@ -1340,7 +1340,7 @@ pango_font_get_metrics (PangoFont        *font,
     {
 
       if (!_pango_warning_history.get_metrics)
-        {
+	{
 	  _pango_warning_history.get_metrics = TRUE;
 	  g_warning (bad_font_warning, "pango_font_get_metrics");
 	}
@@ -1367,7 +1367,7 @@ pango_font_get_font_map (PangoFont *font)
     {
 
       if (!_pango_warning_history.get_font_map)
-        {
+	{
 	  _pango_warning_history.get_font_map = TRUE;
 	  g_warning (bad_font_warning, "pango_font_get_font_map");
 	}
@@ -1772,8 +1772,8 @@ pango_font_face_get_face_name (PangoFontFace *face)
  **/
 void
 pango_font_face_list_sizes (PangoFontFace  *face,
-                            int           **sizes,
-                            int            *n_sizes)
+			    int           **sizes,
+			    int            *n_sizes)
 {
   g_return_if_fail (PANGO_IS_FONT_FACE (face));
   g_return_if_fail (sizes == NULL || n_sizes != NULL);

@@ -41,15 +41,15 @@ struct _PangoAttrIterator
 };
 
 static PangoAttribute *pango_attr_color_new         (const PangoAttrClass *klass,
-                                                     guint16               red,
-                                                     guint16               green,
-                                                     guint16               blue);
+						     guint16               red,
+						     guint16               green,
+						     guint16               blue);
 static PangoAttribute *pango_attr_string_new        (const PangoAttrClass *klass,
-                                                     const char           *str);
+						     const char           *str);
 static PangoAttribute *pango_attr_int_new           (const PangoAttrClass *klass,
-                                                     int                   value);
+						     int                   value);
 static PangoAttribute *pango_attr_float_new         (const PangoAttrClass *klass,
-                                                     double                value);
+						     double                value);
 static PangoAttribute *pango_attr_size_new_internal (int                   size,
 						     gboolean              absolute);
 
@@ -248,8 +248,8 @@ pango_attr_color_copy (const PangoAttribute *attr)
 
   return pango_attr_color_new (attr->klass,
 			       color_attr->color.red,
-                               color_attr->color.green,
-                               color_attr->color.blue);
+			       color_attr->color.green,
+			       color_attr->color.blue);
 }
 
 static void
@@ -404,7 +404,7 @@ pango_attr_float_equal (const PangoAttribute *attr1,
 
 static PangoAttribute*
 pango_attr_float_new  (const PangoAttrClass *klass,
-                       double                value)
+		       double                value)
 {
   PangoAttrFloat *result = g_slice_new (PangoAttrFloat);
   result->attr.klass = klass;
@@ -1136,7 +1136,7 @@ pango_attr_list_copy (PangoAttrList *list)
   while (iter != NULL)
     {
       new_attrs = g_slist_prepend (new_attrs,
-                                   pango_attribute_copy (iter->data));
+				   pango_attribute_copy (iter->data));
 
       iter = g_slist_next (iter);
     }
@@ -1416,7 +1416,7 @@ pango_attr_list_change (PangoAttrList  *list,
 		  if (tmp_attr2->start_index >= tmp_attr->start_index)
 		    break;
 
-                  prev2 = tmp_list2;
+		  prev2 = tmp_list2;
 		  tmp_list2 = tmp_list2->next;
 		}
 
@@ -1775,7 +1775,7 @@ pango_attr_iterator_get_font (PangoAttrIterator     *iterator,
 	    pango_font_description_merge_static (desc, ((PangoAttrFontDesc *)attr)->desc, FALSE);
 
 	    break;
-          }
+	  }
 	case PANGO_ATTR_FAMILY:
 	  if (!(mask & PANGO_FONT_MASK_FAMILY))
 	    {
@@ -1825,7 +1825,7 @@ pango_attr_iterator_get_font (PangoAttrIterator     *iterator,
 	      pango_font_description_set_absolute_size (desc, ((PangoAttrSize *)attr)->size);
 	    }
 	  break;
-        case PANGO_ATTR_SCALE:
+	case PANGO_ATTR_SCALE:
 	  if (!have_scale)
 	    {
 	      have_scale = TRUE;

@@ -48,21 +48,21 @@ pango_ot_ruleset_get_type (void)
     {
       const GTypeInfo object_info =
       {
-        sizeof (PangoOTRulesetClass),
-        (GBaseInitFunc) NULL,
-        (GBaseFinalizeFunc) NULL,
-        (GClassInitFunc)pango_ot_ruleset_class_init,
-        NULL,           /* class_finalize */
-        NULL,           /* class_data */
-        sizeof (PangoOTRuleset),
-        0,              /* n_preallocs */
-        (GInstanceInitFunc)pango_ot_ruleset_init,
+	sizeof (PangoOTRulesetClass),
+	(GBaseInitFunc) NULL,
+	(GBaseFinalizeFunc) NULL,
+	(GClassInitFunc)pango_ot_ruleset_class_init,
+	NULL,           /* class_finalize */
+	NULL,           /* class_data */
+	sizeof (PangoOTRuleset),
+	0,              /* n_preallocs */
+	(GInstanceInitFunc)pango_ot_ruleset_init,
 	NULL            /* value_table */
       };
 
       object_type = g_type_register_static (G_TYPE_OBJECT,
-                                            I_("PangoOTRuleset"),
-                                            &object_info, 0);
+					    I_("PangoOTRuleset"),
+					    &object_info, 0);
     }
 
   return object_type;
@@ -220,14 +220,14 @@ pango_ot_ruleset_position (PangoOTRuleset   *ruleset,
 	continue;
 
       if (!gpos)
-        {
+	{
 	  gpos = pango_ot_info_get_gpos (ruleset->info);
 
 	  if (gpos)
 	    HB_GPOS_Clear_Features (gpos);
 	  else
 	    return;
-        }
+	}
 
       HB_GPOS_Add_Feature (gpos, rule->feature_index, rule->property_bit);
     }

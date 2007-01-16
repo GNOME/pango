@@ -61,12 +61,12 @@ pango_glyph_string_set_size (PangoGlyphString *string, gint new_len)
   while (new_len > string->space)
     {
       if (string->space == 0)
-        string->space = 1;
+	string->space = 1;
       else
-        string->space *= 2;
+	string->space *= 2;
 
       if (string->space < 0)
-        {
+	{
 	  g_warning ("glyph string length overflows maximum integer size, truncated");
 	  new_len = string->space = G_MAXINT - 8;
 	}
@@ -133,7 +133,7 @@ pango_glyph_string_free (PangoGlyphString *string)
  * @glyphs:   a #PangoGlyphString
  * @start:    start index
  * @end:      end index (the range is the set of bytes with
-              indices such that start <= index < end)
+	      indices such that start <= index < end)
  * @font:     a #PangoFont
  * @ink_rect: rectangle used to store the extents of the glyph string range as drawn
  *            or %NULL to indicate that the result is not needed.
@@ -147,11 +147,11 @@ pango_glyph_string_free (PangoGlyphString *string)
  **/
 void
 pango_glyph_string_extents_range (PangoGlyphString *glyphs,
-                                  int               start,
-                                  int               end,
-                                  PangoFont        *font,
-                                  PangoRectangle   *ink_rect,
-                                  PangoRectangle   *logical_rect)
+				  int               start,
+				  int               end,
+				  PangoFont        *font,
+				  PangoRectangle   *ink_rect,
+				  PangoRectangle   *logical_rect)
 {
   int x_pos = 0;
   int i;
@@ -263,7 +263,7 @@ pango_glyph_string_extents (PangoGlyphString *glyphs,
 			    PangoRectangle   *logical_rect)
 {
   pango_glyph_string_extents_range (glyphs, 0, glyphs->num_glyphs,
-                                    font, ink_rect, logical_rect);
+				    font, ink_rect, logical_rect);
 }
 
 /**

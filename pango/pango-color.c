@@ -163,8 +163,8 @@ find_color(const char *name,
   ColorEntry *found;
 
   found = bsearch (name, color_entries, G_N_ELEMENTS (color_entries),
-                   sizeof (ColorEntry),
-                   compare_xcolor_entries);
+		   sizeof (ColorEntry),
+		   compare_xcolor_entries);
   if (found == NULL)
     return FALSE;
 
@@ -223,7 +223,7 @@ pango_color_parse (PangoColor *color,
       spec++;
       len = strlen (spec);
       if (len % 3 || len < 3 || len > 12)
-        return FALSE;
+	return FALSE;
 
       len /= 3;
 
@@ -248,12 +248,12 @@ pango_color_parse (PangoColor *color,
 	  color->red   = r;
 	  color->green = g;
 	  color->blue  = b;
-        }
+	}
     }
   else
     {
       if (!find_color (spec, color))
-        return FALSE;
+	return FALSE;
     }
   return TRUE;
 }

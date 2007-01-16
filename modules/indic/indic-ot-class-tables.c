@@ -245,7 +245,7 @@ static const IndicOTSplitMatra tamlSplitTable[] = {{0x0BC6, 0x0BBE}, {0x0BC7, 0x
 static const IndicOTSplitMatra teluSplitTable[] = {{0x0C46, 0x0C56}};
 
 static const IndicOTSplitMatra kndaSplitTable[] = {{0x0CBF, 0x0CD5}, {0x0CC6, 0x0CD5}, {0x0CC6, 0x0CD6}, {0x0CC6, 0x0CC2},
-                                      {0x0CC6, 0x0CC2, 0x0CD5}};
+				      {0x0CC6, 0x0CC2, 0x0CD5}};
 
 static const IndicOTSplitMatra mlymSplitTable[] = {{0x0D46, 0x0D3E}, {0x0D47, 0x0D3E}, {0x0D46, 0x0D57}};
 
@@ -279,7 +279,7 @@ static const IndicOTSplitMatra sinhSplitTable[] = {{0x0DD9, 0x0DCA}, {0x0DD9, 0x
 /* Add a little macro to compute lastChar based on size of the charClasses * table */
 #define INDIC_OT_CLASS_TABLE_DEFINE(name, firstChar, worstCaseExpansion, scriptFlags, charClasses, splitMatraTable) \
   const IndicOTClassTable name = {firstChar, firstChar + G_N_ELEMENTS (charClasses) - 1, \
-                                  worstCaseExpansion, scriptFlags, charClasses, splitMatraTable}
+				  worstCaseExpansion, scriptFlags, charClasses, splitMatraTable}
 INDIC_OT_CLASS_TABLE_DEFINE (deva_class_table, 0x0900, 2, DEVA_SCRIPT_FLAGS, devaCharClasses, NULL);
 INDIC_OT_CLASS_TABLE_DEFINE (beng_class_table, 0x0980, 3, BENG_SCRIPT_FLAGS, bengCharClasses, bengSplitTable);
 INDIC_OT_CLASS_TABLE_DEFINE (guru_class_table, 0x0A00, 2, GURU_SCRIPT_FLAGS, guruCharClasses, NULL);
@@ -427,15 +427,15 @@ gboolean indic_ot_has_below_base_form(const IndicOTClassTable *class_table, guni
 IndicOTCharClass indic_ot_get_char_class(const IndicOTClassTable *class_table, gunichar ch)
 {
     if (ch == C_SIGN_ZWJ) {
-        return CF_CONSONANT | CC_ZERO_WIDTH_MARK;
+	return CF_CONSONANT | CC_ZERO_WIDTH_MARK;
     }
 
     if (ch == C_SIGN_ZWNJ) {
-        return CC_ZERO_WIDTH_MARK;
+	return CC_ZERO_WIDTH_MARK;
     }
 
     if (ch < class_table->firstChar || ch > class_table->lastChar) {
-        return CC_RESERVED;
+	return CC_RESERVED;
     }
 
     return class_table->charClasses[ch - class_table->firstChar];
@@ -464,57 +464,57 @@ glong indic_ot_find_syllable(const IndicOTClassTable *class_table, const gunicha
     gint8 state = 0;
 
     while (cursor < char_count) {
-        IndicOTCharClass char_class = indic_ot_get_char_class(class_table, chars[cursor]);
+	IndicOTCharClass char_class = indic_ot_get_char_class(class_table, chars[cursor]);
 
-        state = stateTable[state][char_class & CF_CLASS_MASK];
+	state = stateTable[state][char_class & CF_CLASS_MASK];
 
-        /*for the components of split matra*/
+	/*for the components of split matra*/
 	if ((char_count >= cursor + 3) &&
 	    (chars[cursor] == 0x0DD9 && chars[cursor + 1] == 0x0DCF && chars[cursor + 2] == 0x0DCA)) {  /*for 3 split matra of Sinhala*/
 	    return cursor + 3;
 	}
 	else if ((char_count >= cursor + 3) &&
-	         (chars[cursor] == 0x0CC6 && chars[cursor + 1] == 0x0CC2 && chars[cursor + 2] == 0x0CD5)) {  /*for 3 split matra of Kannada*/
+		 (chars[cursor] == 0x0CC6 && chars[cursor + 1] == 0x0CC2 && chars[cursor + 2] == 0x0CD5)) {  /*for 3 split matra of Kannada*/
 	    return cursor + 3;
 	}
-        /*for 2 split matra*/
+	/*for 2 split matra*/
 	else if (char_count >= cursor + 2) {
-	        /*for Bengali*/
-            if ((chars[cursor] == 0x09C7 && chars[cursor + 1] == 0x09BE) ||
-	        (chars[cursor] == 0x09C7 && chars[cursor + 1] == 0x09D7) ||
-	        /*for Oriya*/
-	        (chars[cursor] == 0x0B47 && chars[cursor + 1] == 0x0B3E) ||
-	        (chars[cursor] == 0x0B47 && chars[cursor + 1] == 0x0B56) ||
-	        (chars[cursor] == 0x0B47 && chars[cursor + 1] == 0x0B57) ||
-	        /*for Tamil*/
-	        (chars[cursor] == 0x0BC6 && chars[cursor + 1] == 0x0BBE) ||
-	        (chars[cursor] == 0x0BC6 && chars[cursor + 1] == 0x0BD7) ||
-	        (chars[cursor] == 0x0BC7 && chars[cursor + 1] == 0x0BBE) ||
-	        /*for Malayalam*/
-	        (chars[cursor] == 0x0D46 && chars[cursor + 1] == 0x0D3E) ||
-	        (chars[cursor] == 0x0D46 && chars[cursor + 1] == 0x0D57) ||
-	        (chars[cursor] == 0x0D47 && chars[cursor + 1] == 0x0D3E) ||
-	        /*for Sinhala*/
-	        (chars[cursor] == 0x0DD9 && chars[cursor + 1] == 0x0DCA) ||
-	        (chars[cursor] == 0x0DD9 && chars[cursor + 1] == 0x0DCF) ||
-	        (chars[cursor] == 0x0DD9 && chars[cursor + 1] == 0x0DDF) ||
-	        (chars[cursor] == 0x0DDC && chars[cursor + 1] == 0x0DCA) ||
-	        /*for Telugu*/
-	        (chars[cursor] == 0x0C46 && chars[cursor + 1] == 0x0C56) ||
-	        /*for Kannada*/
-	        (chars[cursor] == 0x0CBF && chars[cursor + 1] == 0x0CD5) ||
-	        (chars[cursor] == 0x0CC6 && chars[cursor + 1] == 0x0CD5) ||
-	        (chars[cursor] == 0x0CC6 && chars[cursor + 1] == 0x0CD6) ||
-	        (chars[cursor] == 0x0CC6 && chars[cursor + 1] == 0x0CC2) ||
-	        (chars[cursor] == 0x0CCA && chars[cursor + 1] == 0x0CD5))
+		/*for Bengali*/
+	    if ((chars[cursor] == 0x09C7 && chars[cursor + 1] == 0x09BE) ||
+		(chars[cursor] == 0x09C7 && chars[cursor + 1] == 0x09D7) ||
+		/*for Oriya*/
+		(chars[cursor] == 0x0B47 && chars[cursor + 1] == 0x0B3E) ||
+		(chars[cursor] == 0x0B47 && chars[cursor + 1] == 0x0B56) ||
+		(chars[cursor] == 0x0B47 && chars[cursor + 1] == 0x0B57) ||
+		/*for Tamil*/
+		(chars[cursor] == 0x0BC6 && chars[cursor + 1] == 0x0BBE) ||
+		(chars[cursor] == 0x0BC6 && chars[cursor + 1] == 0x0BD7) ||
+		(chars[cursor] == 0x0BC7 && chars[cursor + 1] == 0x0BBE) ||
+		/*for Malayalam*/
+		(chars[cursor] == 0x0D46 && chars[cursor + 1] == 0x0D3E) ||
+		(chars[cursor] == 0x0D46 && chars[cursor + 1] == 0x0D57) ||
+		(chars[cursor] == 0x0D47 && chars[cursor + 1] == 0x0D3E) ||
+		/*for Sinhala*/
+		(chars[cursor] == 0x0DD9 && chars[cursor + 1] == 0x0DCA) ||
+		(chars[cursor] == 0x0DD9 && chars[cursor + 1] == 0x0DCF) ||
+		(chars[cursor] == 0x0DD9 && chars[cursor + 1] == 0x0DDF) ||
+		(chars[cursor] == 0x0DDC && chars[cursor + 1] == 0x0DCA) ||
+		/*for Telugu*/
+		(chars[cursor] == 0x0C46 && chars[cursor + 1] == 0x0C56) ||
+		/*for Kannada*/
+		(chars[cursor] == 0x0CBF && chars[cursor + 1] == 0x0CD5) ||
+		(chars[cursor] == 0x0CC6 && chars[cursor + 1] == 0x0CD5) ||
+		(chars[cursor] == 0x0CC6 && chars[cursor + 1] == 0x0CD6) ||
+		(chars[cursor] == 0x0CC6 && chars[cursor + 1] == 0x0CC2) ||
+		(chars[cursor] == 0x0CCA && chars[cursor + 1] == 0x0CD5))
 		    return cursor + 2;
 	}
 
-        if (state < 0) {
-            break;
-        }
+	if (state < 0) {
+	    break;
+	}
 
-        cursor += 1;
+	cursor += 1;
     }
 
     return cursor;

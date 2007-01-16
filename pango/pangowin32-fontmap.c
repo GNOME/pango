@@ -67,8 +67,8 @@ GType             pango_win32_family_get_type        (void);
 GType             pango_win32_face_get_type          (void);
 
 static void       pango_win32_face_list_sizes        (PangoFontFace  *face,
-                                                      int           **sizes,
-                                                      int            *n_sizes);
+						      int           **sizes,
+						      int            *n_sizes);
 
 static void       pango_win32_font_map_finalize      (GObject                      *object);
 static PangoFont *pango_win32_font_map_load_font     (PangoFontMap                 *fontmap,
@@ -178,7 +178,7 @@ pango_win32_enum_proc (LOGFONT    *lfp,
 
 static gboolean
 first_match (gpointer key,
-            gpointer value,
+	    gpointer value,
 	    gpointer user_data)
 {
   LOGFONT *lfp = (LOGFONT *)key;
@@ -198,8 +198,8 @@ typedef struct _ItalicHelper
 
 static void
 ensure_italic (gpointer key,
-               gpointer value,
-               gpointer user_data)
+	       gpointer value,
+	       gpointer user_data)
 {
   ItalicHelper *helper = (ItalicHelper *)user_data;
   /* PangoWin32Family *win32family = (PangoWin32Family *)value; */
@@ -210,16 +210,16 @@ ensure_italic (gpointer key,
       GSList *list = sip->logfonts;
 
       while (list)
-        {
+	{
 	  LOGFONT *lfp = (LOGFONT *)list->data;
-          if (!lfp->lfItalic)
-            {
+	  if (!lfp->lfItalic)
+	    {
 	      /* we have a non italic variant, look if there is an italic */
 	      LOGFONT logfont = *lfp;
 	      logfont.lfItalic = 1;
 	      sip = (PangoWin32SizeInfo *)g_hash_table_find (helper->fontmap->size_infos, first_match, &logfont);
 	      if (!sip)
-	        {
+		{
 		  /* remember the non italic variant to be added later as italic */
 		  helper->list = g_slist_append (helper->list, lfp);
 		}
@@ -400,20 +400,20 @@ pango_win32_family_get_type (void)
     {
       const GTypeInfo object_info =
       {
-        sizeof (PangoFontFamilyClass),
-        (GBaseInitFunc) NULL,
-        (GBaseFinalizeFunc) NULL,
-        (GClassInitFunc) pango_win32_family_class_init,
-        NULL,           /* class_finalize */
-        NULL,           /* class_data */
-        sizeof (PangoWin32Family),
-        0,              /* n_preallocs */
-        (GInstanceInitFunc) NULL,
+	sizeof (PangoFontFamilyClass),
+	(GBaseInitFunc) NULL,
+	(GBaseFinalizeFunc) NULL,
+	(GClassInitFunc) pango_win32_family_class_init,
+	NULL,           /* class_finalize */
+	NULL,           /* class_data */
+	sizeof (PangoWin32Family),
+	0,              /* n_preallocs */
+	(GInstanceInitFunc) NULL,
       };
 
       object_type = g_type_register_static (PANGO_TYPE_FONT_FAMILY,
-                                            I_("PangoWin32Family"),
-                                            &object_info, 0);
+					    I_("PangoWin32Family"),
+					    &object_info, 0);
     }
 
   return object_type;
@@ -518,7 +518,7 @@ pango_win32_font_map_load_font (PangoFontMap               *fontmap,
 	result = PANGO_WIN32_FONT_MAP_GET_CLASS (win32fontmap)->find_font (win32fontmap, context,
 									   best_match,
 									   description);
-        /* TODO: Handle the case that result == NULL. */
+	/* TODO: Handle the case that result == NULL. */
       else
 	PING(("no best match!"));
     }
@@ -1024,8 +1024,8 @@ pango_win32_face_class_init (PangoFontFaceClass *class)
 
 static void
 pango_win32_face_list_sizes (PangoFontFace  *face,
-                             int           **sizes,
-                             int            *n_sizes)
+			     int           **sizes,
+			     int            *n_sizes)
 {
   /*
    * for scalable fonts it's simple, and currently we only have such
@@ -1044,20 +1044,20 @@ pango_win32_face_get_type (void)
     {
       const GTypeInfo object_info =
       {
-        sizeof (PangoFontFaceClass),
-        (GBaseInitFunc) NULL,
-        (GBaseFinalizeFunc) NULL,
-        (GClassInitFunc) pango_win32_face_class_init,
-        NULL,           /* class_finalize */
-        NULL,           /* class_data */
-        sizeof (PangoWin32Face),
-        0,              /* n_preallocs */
-        (GInstanceInitFunc) NULL,
+	sizeof (PangoFontFaceClass),
+	(GBaseInitFunc) NULL,
+	(GBaseFinalizeFunc) NULL,
+	(GClassInitFunc) pango_win32_face_class_init,
+	NULL,           /* class_finalize */
+	NULL,           /* class_data */
+	sizeof (PangoWin32Face),
+	0,              /* n_preallocs */
+	(GInstanceInitFunc) NULL,
       };
 
       object_type = g_type_register_static (PANGO_TYPE_FONT_FACE,
-                                            I_("PangoWin32Face"),
-                                            &object_info, 0);
+					    I_("PangoWin32Face"),
+					    &object_info, 0);
     }
 
   return object_type;

@@ -105,14 +105,14 @@ void           pango_layout_set_text       (PangoLayout    *layout,
 const char    *pango_layout_get_text       (PangoLayout    *layout);
 
 void           pango_layout_set_markup     (PangoLayout    *layout,
-                                            const char     *markup,
-                                            int             length);
+					    const char     *markup,
+					    int             length);
 
 void           pango_layout_set_markup_with_accel (PangoLayout    *layout,
-                                                   const char     *markup,
-                                                   int             length,
-                                                   gunichar        accel_marker,
-                                                   gunichar       *accel_char);
+						   const char     *markup,
+						   int             length,
+						   gunichar        accel_marker,
+						   gunichar       *accel_char);
 
 void           pango_layout_set_font_description (PangoLayout                *layout,
 						  const PangoFontDescription *desc);
@@ -123,7 +123,7 @@ void           pango_layout_set_width            (PangoLayout                *la
 						  int                         width);
 int            pango_layout_get_width            (PangoLayout                *layout);
 void           pango_layout_set_wrap             (PangoLayout                *layout,
-                                                  PangoWrapMode               wrap);
+						  PangoWrapMode               wrap);
 PangoWrapMode  pango_layout_get_wrap             (PangoLayout                *layout);
 gboolean       pango_layout_is_wrapped           (PangoLayout                *layout);
 void           pango_layout_set_indent           (PangoLayout                *layout,
@@ -143,12 +143,12 @@ void           pango_layout_set_alignment        (PangoLayout                *la
 PangoAlignment pango_layout_get_alignment        (PangoLayout                *layout);
 
 void           pango_layout_set_tabs             (PangoLayout                *layout,
-                                                  PangoTabArray              *tabs);
+						  PangoTabArray              *tabs);
 
 PangoTabArray* pango_layout_get_tabs             (PangoLayout                *layout);
 
 void           pango_layout_set_single_paragraph_mode (PangoLayout                *layout,
-                                                       gboolean                    setting);
+						       gboolean                    setting);
 gboolean       pango_layout_get_single_paragraph_mode (PangoLayout                *layout);
 
 void               pango_layout_set_ellipsize (PangoLayout        *layout,
@@ -168,10 +168,10 @@ void     pango_layout_index_to_pos         (PangoLayout    *layout,
 					    int             index_,
 					    PangoRectangle *pos);
 void     pango_layout_index_to_line_x      (PangoLayout    *layout,
-			                    int             index_,
-			                    gboolean        trailing,
-			                    int            *line,
-			                    int            *x_pos);
+					    int             index_,
+					    gboolean        trailing,
+					    int            *line,
+					    int            *x_pos);
 void     pango_layout_get_cursor_pos       (PangoLayout    *layout,
 					    int             index_,
 					    PangoRectangle *strong_pos,
@@ -259,25 +259,25 @@ gboolean pango_layout_iter_next_run     (PangoLayoutIter *iter);
 gboolean pango_layout_iter_next_line    (PangoLayoutIter *iter);
 
 void pango_layout_iter_get_char_extents    (PangoLayoutIter *iter,
-                                            PangoRectangle  *logical_rect);
+					    PangoRectangle  *logical_rect);
 void pango_layout_iter_get_cluster_extents (PangoLayoutIter *iter,
-                                            PangoRectangle  *ink_rect,
-                                            PangoRectangle  *logical_rect);
+					    PangoRectangle  *ink_rect,
+					    PangoRectangle  *logical_rect);
 void pango_layout_iter_get_run_extents     (PangoLayoutIter *iter,
-                                            PangoRectangle  *ink_rect,
-                                            PangoRectangle  *logical_rect);
+					    PangoRectangle  *ink_rect,
+					    PangoRectangle  *logical_rect);
 void pango_layout_iter_get_line_extents    (PangoLayoutIter *iter,
-                                            PangoRectangle  *ink_rect,
-                                            PangoRectangle  *logical_rect);
+					    PangoRectangle  *ink_rect,
+					    PangoRectangle  *logical_rect);
 /* All the yranges meet, unlike the logical_rect's (i.e. the yranges
  * assign between-line spacing to the nearest line)
  */
 void pango_layout_iter_get_line_yrange     (PangoLayoutIter *iter,
-                                            int             *y0_,
-                                            int             *y1_);
+					    int             *y0_,
+					    int             *y1_);
 void pango_layout_iter_get_layout_extents  (PangoLayoutIter *iter,
-                                            PangoRectangle  *ink_rect,
-                                            PangoRectangle  *logical_rect);
+					    PangoRectangle  *ink_rect,
+					    PangoRectangle  *logical_rect);
 int  pango_layout_iter_get_baseline        (PangoLayoutIter *iter);
 
 G_END_DECLS

@@ -29,10 +29,10 @@ static PangoEngineRange arabic_range[] = {
 
 static PangoEngineInfo script_engines[] = {
     {
-        "ArabicScriptEngineX",
-        PANGO_ENGINE_TYPE_SHAPE,
-        PANGO_RENDER_TYPE_X,
-        arabic_range, G_N_ELEMENTS(arabic_range)
+	"ArabicScriptEngineX",
+	PANGO_ENGINE_TYPE_SHAPE,
+	PANGO_RENDER_TYPE_X,
+	arabic_range, G_N_ELEMENTS(arabic_range)
     }
 };
 
@@ -48,28 +48,28 @@ arabic_unicodeinit(PangoFont  *font, PangoXSubfont subfont)
     ArabicFontInfo    *fs = NULL;
 
     if (subfont != 0)
-        {
-            if ( pango_x_has_glyph /* Alif-Madda */
-                 (font,PANGO_X_MAKE_GLYPH(subfont,0xFE81)))
-                {
-                    fs              = g_new (ArabicFontInfo,1);
-                    fs->level       = ar_standard | ar_unifont;
-                    fs->subfonts[0] = subfont;
+	{
+	    if ( pango_x_has_glyph /* Alif-Madda */
+		 (font,PANGO_X_MAKE_GLYPH(subfont,0xFE81)))
+		{
+		    fs              = g_new (ArabicFontInfo,1);
+		    fs->level       = ar_standard | ar_unifont;
+		    fs->subfonts[0] = subfont;
 
-                    if ( pango_x_has_glyph /* Shadda+Kasra */
-                         (font,PANGO_X_MAKE_GLYPH(subfont,0xFC62)))
-                        {
-                            fs->level   |= ar_composedtashkeel;
-                            /* extra vowels in font, hopefully */
-                        }
-                    if ( pango_x_has_glyph /* Lam-Min alone */
-                         (font,PANGO_X_MAKE_GLYPH(subfont,0xFC42)))
-                        {
-                            fs->level |= ar_lig;
-                            /* extra ligatures in font, hopefully */
-                        }
-                }
-        }
+		    if ( pango_x_has_glyph /* Shadda+Kasra */
+			 (font,PANGO_X_MAKE_GLYPH(subfont,0xFC62)))
+			{
+			    fs->level   |= ar_composedtashkeel;
+			    /* extra vowels in font, hopefully */
+			}
+		    if ( pango_x_has_glyph /* Lam-Min alone */
+			 (font,PANGO_X_MAKE_GLYPH(subfont,0xFC42)))
+			{
+			    fs->level |= ar_lig;
+			    /* extra ligatures in font, hopefully */
+			}
+		}
+	}
     return fs;
 }
 
@@ -77,9 +77,9 @@ static ArabicFontInfo*
 find_unic_font (PangoFont *font)
 {
     static char *charsets[] = {
-        "iso10646-1",
-        "iso8859-6.8x",
-        "mulearabic-2",
+	"iso10646-1",
+	"iso8859-6.8x",
+	"mulearabic-2",
 	"urdunaqsh-0",
 /*          "symbol-0" */
     };
@@ -95,44 +95,44 @@ find_unic_font (PangoFont *font)
     if (fs) return fs;
 
     n_subfonts = pango_x_list_subfonts (font, charsets, 4,
-                                        &subfonts, &subfont_charsets);
+					&subfonts, &subfont_charsets);
 
     for (i=0; i < n_subfonts; i++)
-        {
-            if  ( !strcmp (charsets[subfont_charsets[i]], "mulearabic-2"))
-                {
+	{
+	    if  ( !strcmp (charsets[subfont_charsets[i]], "mulearabic-2"))
+		{
 #ifdef DEBUG
-                    if (getenv("PANGO_AR_NOMULEFONT") == NULL )
+		    if (getenv("PANGO_AR_NOMULEFONT") == NULL )
 #endif
-                        fs = arabic_muleinit(font);
-                }
-            else if ( !strcmp (charsets[subfont_charsets[i]], "iso8859-6.8x"))
-                {
+			fs = arabic_muleinit(font);
+		}
+	    else if ( !strcmp (charsets[subfont_charsets[i]], "iso8859-6.8x"))
+		{
 #ifdef DEBUG
-                    if (getenv("PANGO_AR_NOLBOXFONT") == NULL )
+		    if (getenv("PANGO_AR_NOLBOXFONT") == NULL )
 #endif
-                        fs = arabic_lboxinit(font);
-                }
-            else if ( !strcmp (charsets[subfont_charsets[i]], "urdunaqsh-0"))
-                {
+			fs = arabic_lboxinit(font);
+		}
+	    else if ( !strcmp (charsets[subfont_charsets[i]], "urdunaqsh-0"))
+		{
 #ifdef DEBUG
-                    if (getenv("PANGO_AR_NONQFONT") == NULL )
+		    if (getenv("PANGO_AR_NONQFONT") == NULL )
 #endif
-                        fs = urdu_naqshinit(font);
-                }
-            else
-                {
+			fs = urdu_naqshinit(font);
+		}
+	    else
+		{
 #ifdef DEBUG
-                    if (getenv("PANGO_AR_NOUNIFONT") == NULL )
+		    if (getenv("PANGO_AR_NOUNIFONT") == NULL )
 #endif
-                        fs = arabic_unicodeinit(font,subfonts[i]);
-                }
-            if (fs){
-                g_object_set_qdata_full (G_OBJECT (font), info_id,
-                                         fs, (GDestroyNotify)g_free);
-                break;
-            }
-        }
+			fs = arabic_unicodeinit(font,subfonts[i]);
+		}
+	    if (fs){
+		g_object_set_qdata_full (G_OBJECT (font), info_id,
+					 fs, (GDestroyNotify)g_free);
+		break;
+	    }
+	}
 
     g_free (subfonts);
     g_free (subfont_charsets);
@@ -144,8 +144,8 @@ find_unic_font (PangoFont *font)
 
 static void
 set_glyph (PangoGlyphString *glyphs,
-           PangoFont *font, PangoXSubfont subfont,
-           int i, int cluster_start, int glyph, int is_vowel)
+	   PangoFont *font, PangoXSubfont subfont,
+	   int i, int cluster_start, int glyph, int is_vowel)
 {
     PangoRectangle logical_rect;
 
@@ -157,13 +157,13 @@ set_glyph (PangoGlyphString *glyphs,
     pango_font_get_glyph_extents (font, glyphs->glyphs[i].glyph, NULL, &logical_rect);
     glyphs->log_clusters[i] = cluster_start;
     if (is_vowel)
-        {
-            glyphs->glyphs[i].geometry.width = 0;
-        }
+	{
+	    glyphs->glyphs[i].geometry.width = 0;
+	}
     else
-        {
-            glyphs->glyphs[i].geometry.width = logical_rect.width;
-        }
+	{
+	    glyphs->glyphs[i].geometry.width = logical_rect.width;
+	}
 }
 
 
@@ -171,10 +171,10 @@ set_glyph (PangoGlyphString *glyphs,
 
 static void
 arabic_engine_shape (PangoFont        *font,
-                     const char       *text,
-                     int               length,
-                     PangoAnalysis    *analysis,
-                     PangoGlyphString *glyphs)
+		     const char       *text,
+		     int               length,
+		     PangoAnalysis    *analysis,
+		     PangoGlyphString *glyphs)
 {
     PangoXSubfont   subfont;
     int             n_chars;
@@ -193,42 +193,42 @@ arabic_engine_shape (PangoFont        *font,
      */
 
     if (! (fs = find_unic_font (font)) )
-        {
+	{
 
-            PangoGlyph unknown_glyph = pango_x_get_unknown_glyph (font);
+	    PangoGlyph unknown_glyph = pango_x_get_unknown_glyph (font);
 
-            n_chars = g_utf8_strlen(text,length);
-            pango_glyph_string_set_size (glyphs, n_chars);
+	    n_chars = g_utf8_strlen(text,length);
+	    pango_glyph_string_set_size (glyphs, n_chars);
 
-            p = text;
-            for (i=0; i<n_chars; i++)
-                {
-                    set_glyph (glyphs, font,
-                               PANGO_X_GLYPH_SUBFONT (unknown_glyph), i,
-                               p - text, PANGO_X_GLYPH_INDEX (unknown_glyph),0);
-                    p = g_utf8_next_char (p);
-                }
-            return;
-        }
+	    p = text;
+	    for (i=0; i<n_chars; i++)
+		{
+		    set_glyph (glyphs, font,
+			       PANGO_X_GLYPH_SUBFONT (unknown_glyph), i,
+			       p - text, PANGO_X_GLYPH_INDEX (unknown_glyph),0);
+		    p = g_utf8_next_char (p);
+		}
+	    return;
+	}
 
 
     p = text;
     if (analysis->level % 2 == 0)
-        {
-            wc      = g_utf8_to_ucs4_fast(text,length,&n_chars);
-            /* We were called on a LTR directional run (e.g. some numbers);
-               fallback as simple as possible */
-            pango_glyph_string_set_size (glyphs, n_chars);
+	{
+	    wc      = g_utf8_to_ucs4_fast(text,length,&n_chars);
+	    /* We were called on a LTR directional run (e.g. some numbers);
+	       fallback as simple as possible */
+	    pango_glyph_string_set_size (glyphs, n_chars);
 
-        }
+	}
     else
-        {
-            wc      = (gunichar *)g_malloc(sizeof(gunichar)* (length) ); /* length is succicient: all arabic chars use at
+	{
+	    wc      = (gunichar *)g_malloc(sizeof(gunichar)* (length) ); /* length is succicient: all arabic chars use at
 									    least 2 bytes in utf-8 encoding */
-            n_chars = length;
-            arabic_reshape(&n_chars,text,wc,fs->level);
-            pango_glyph_string_set_size (glyphs, n_chars);
-        };
+	    n_chars = length;
+	    arabic_reshape(&n_chars,text,wc,fs->level);
+	    pango_glyph_string_set_size (glyphs, n_chars);
+	};
 
 
     p    = text;
@@ -237,59 +237,59 @@ arabic_engine_shape (PangoFont        *font,
     subfont = fs->subfonts[0];
 
     while(i < n_chars)
-        {
-            if (wc[i] == 0)
-                {
-                    p = g_utf8_next_char (p);
+	{
+	    if (wc[i] == 0)
+		{
+		    p = g_utf8_next_char (p);
 #ifdef DEBUG
-                    fprintf(stderr,"NULL-character detected in generated string.!");
+		    fprintf(stderr,"NULL-character detected in generated string.!");
 #endif
-                    i++;
-                }
-            else
-                {
-                    int cluster_start ;
-                    int is_vowel      = arabic_isvowel(wc[i]);
-                    cluster_start     = is_vowel ? pold - text : p - text;
+		    i++;
+		}
+	    else
+		{
+		    int cluster_start ;
+		    int is_vowel      = arabic_isvowel(wc[i]);
+		    cluster_start     = is_vowel ? pold - text : p - text;
 
-                    if ( fs->level & ar_mulefont )
-                        {
-                            arabic_mule_recode(&subfont,&(wc[i]),
-                                               fs->subfonts);
-                        }
-                    else if ( fs->level & ar_lboxfont )
-                        {
-                            if (( i < n_chars-1 )&&(wc[i+1] == 0))
-                                {
-                                    arabic_lbox_recode(&subfont,&(wc[i]),
-                                                       &(wc[i+1]),
-                                                       fs->subfonts);
-                                }
-                            else
-                                arabic_lbox_recode(&subfont,&(wc[i]),NULL,
-                                                   fs->subfonts);
-                        }
-                    else if ( fs->level & ar_naqshfont )
-                        {
-                            if (( i < n_chars-1 )&&(wc[i+1] == 0))
-                                {
-                                    urdu_naqsh_recode(&subfont,&(wc[i]),
-                                                      &(wc[i+1]),
-                                                      fs->subfonts);
-                                }
-                            else
-                                urdu_naqsh_recode(&subfont,&(wc[i]),NULL,
-                                                  fs->subfonts);
-                        }
+		    if ( fs->level & ar_mulefont )
+			{
+			    arabic_mule_recode(&subfont,&(wc[i]),
+					       fs->subfonts);
+			}
+		    else if ( fs->level & ar_lboxfont )
+			{
+			    if (( i < n_chars-1 )&&(wc[i+1] == 0))
+				{
+				    arabic_lbox_recode(&subfont,&(wc[i]),
+						       &(wc[i+1]),
+						       fs->subfonts);
+				}
+			    else
+				arabic_lbox_recode(&subfont,&(wc[i]),NULL,
+						   fs->subfonts);
+			}
+		    else if ( fs->level & ar_naqshfont )
+			{
+			    if (( i < n_chars-1 )&&(wc[i+1] == 0))
+				{
+				    urdu_naqsh_recode(&subfont,&(wc[i]),
+						      &(wc[i+1]),
+						      fs->subfonts);
+				}
+			    else
+				urdu_naqsh_recode(&subfont,&(wc[i]),NULL,
+						  fs->subfonts);
+			}
 
-                    set_glyph(glyphs, font, subfont, n_chars - i - 1,
-                              cluster_start, wc[i], is_vowel);
+		    set_glyph(glyphs, font, subfont, n_chars - i - 1,
+			      cluster_start, wc[i], is_vowel);
 
-                    pold = p;
-                    p    = g_utf8_next_char (p);
-                    i++;
-                }
-        }
+		    pold = p;
+		    p    = g_utf8_next_char (p);
+		    i++;
+		}
+	}
 
     g_free(wc);
 }
@@ -297,15 +297,15 @@ arabic_engine_shape (PangoFont        *font,
 
 static PangoCoverage *
 arabic_engine_get_coverage (PangoFont  *font,
-                            const char *lang)
+			    const char *lang)
 {
     gunichar i;
     PangoCoverage *result = pango_coverage_new ();
 
     for (i = 0x60B; i <= 0x66D; i++)
-        pango_coverage_set (result, i, PANGO_COVERAGE_EXACT);
+	pango_coverage_set (result, i, PANGO_COVERAGE_EXACT);
     for (i = 0x670; i <= 0x6D3; i++)
-        pango_coverage_set (result, i, PANGO_COVERAGE_EXACT);
+	pango_coverage_set (result, i, PANGO_COVERAGE_EXACT);
 
     return result;
 }

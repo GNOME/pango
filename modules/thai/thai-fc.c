@@ -126,7 +126,7 @@ static const int lao_0[128] = {
     /**/ 0,      0,      0,      0,      0,      0,      0,      0,
     0x0020, 0x0e81, 0x0e82,      0, 0x0e84,      0,      0, 0x0e87,
     0x0e88,      0, 0x0e8a,      0,      0, 0x0e8d,      0,      0,
-         0,      0,      0,      0, 0x0e94, 0x0e95, 0x0e96, 0x0e97,
+	 0,      0,      0,      0, 0x0e94, 0x0e95, 0x0e96, 0x0e97,
     /**/ 0, 0x0e99, 0x0e9a, 0x0e9b, 0x0e9c, 0x0e9d, 0x0e9e, 0x0e9f,
     /**/ 0, 0x0ea1, 0x0ea2, 0x0ea3,      0, 0x0ea5,      0, 0x0ea7,
     /**/ 0,      0, 0x0eaa, 0x0eab,      0, 0x0ead, 0x0eae, 0x0eaf,
@@ -146,10 +146,10 @@ contain_glyphs(PangoFont *font, const int glyph_map[128])
   for (c = 0; c < 0x80; c++)
     {
       if (glyph_map[c])
-        {
+	{
 	  if (!pango_fc_font_has_char (fc_font, glyph_map[c]))
-            return 0;
-        }
+	    return 0;
+	}
     }
   return 1;
 }
@@ -175,13 +175,13 @@ thai_get_font_info (PangoFont *font)
 
       /* detect font set by determining availibility of OT ruleset & glyphs */
       if (thai_ot_get_ruleset (font))
-        font_info->font_set = THAI_FONT_TIS;
+	font_info->font_set = THAI_FONT_TIS;
       else if (contain_glyphs(font, tis620_2))
-        font_info->font_set = THAI_FONT_TIS_WIN;
+	font_info->font_set = THAI_FONT_TIS_WIN;
       else if (contain_glyphs(font, tis620_1))
-        font_info->font_set = THAI_FONT_TIS_MAC;
+	font_info->font_set = THAI_FONT_TIS_MAC;
       else
-        font_info->font_set = THAI_FONT_TIS;
+	font_info->font_set = THAI_FONT_TIS;
 
       g_object_set_qdata_full (G_OBJECT (font), info_id, font_info, (GDestroyNotify)g_free);
     }

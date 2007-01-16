@@ -155,7 +155,7 @@ maybe_add_GSUB_feature (PangoOTRuleset *ruleset,
 
 static void
 maybe_add_GPOS_feature (PangoOTRuleset *ruleset,
-		        PangoOTInfo    *info,
+			PangoOTInfo    *info,
 			guint           script_index,
 			PangoOTTag      feature_tag,
 			gulong          property_bit)
@@ -274,7 +274,7 @@ set_glyphs (PangoFont      *font,
 	  (!process_zwj || wcs[i] != 0x200D))
 	glyph = PANGO_GLYPH_EMPTY;
       else
-        {
+	{
 	  glyph = pango_fc_font_get_glyph (fc_font, wcs[i]);
 
 	  if (!glyph)

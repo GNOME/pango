@@ -497,7 +497,7 @@ fill_styles_combo (GtkWidget *combo)
   for (i = 0; i < n_families; i++)
     {
       if (0 == g_strcasecmp(pango_font_family_get_name(families[i]), family_name))
-        {
+	{
 	  family = families[i];
 	  break;
 	}

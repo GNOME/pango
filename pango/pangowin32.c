@@ -442,7 +442,7 @@ pango_win32_render_transformed (HDC                hdc,
       xForm.eDx = matrix->x0;
       xForm.eDy = matrix->y0;
       if (!SetWorldTransform (hdc, &xForm))
-        g_warning ("GetWorldTransform() failed");
+	g_warning ("GetWorldTransform() failed");
     }
 
   pango_win32_render (hdc, font, glyphs, x/PANGO_SCALE, y/PANGO_SCALE);
@@ -538,14 +538,14 @@ max_glyph_width (PangoLayout *layout)
       PangoLayoutLine *line = l->data;
 
       for (r = line->runs; r; r = r->next)
-        {
-          PangoGlyphString *glyphs = ((PangoGlyphItem *)r->data)->glyphs;
-          int i;
+	{
+	  PangoGlyphString *glyphs = ((PangoGlyphItem *)r->data)->glyphs;
+	  int i;
 
-          for (i = 0; i < glyphs->num_glyphs; i++)
-            if (glyphs->glyphs[i].geometry.width > max_width)
-              max_width = glyphs->glyphs[i].geometry.width;
-        }
+	  for (i = 0; i < glyphs->num_glyphs; i++)
+	    if (glyphs->glyphs[i].geometry.width > max_width)
+	      max_width = glyphs->glyphs[i].geometry.width;
+	}
     }
 
   return max_width;
@@ -984,27 +984,27 @@ pango_win32_render_layout_line (HDC              hdc,
 	  Polyline (hdc, points, 2);
 	  break;
 	case PANGO_UNDERLINE_ERROR:
-          {
-            int point_x;
-            int counter = 0;
+	  {
+	    int point_x;
+	    int counter = 0;
 	    int end_x = x + PANGO_PIXELS (x_off + ink_rect.x + ink_rect.width);
 
-            for (point_x = x + PANGO_PIXELS (x_off + ink_rect.x) - 1;
-                 point_x <= end_x;
-                 point_x += 2)
-            {
+	    for (point_x = x + PANGO_PIXELS (x_off + ink_rect.x) - 1;
+		 point_x <= end_x;
+		 point_x += 2)
+	    {
 	      points[0].x = point_x;
 	      points[1].x = MAX (point_x + 1, end_x);
 
-              if (counter)
-	        points[0].y = points[1].y = y + 2;
-              else
-	        points[0].y = points[1].y = y + 3;
+	      if (counter)
+		points[0].y = points[1].y = y + 2;
+	      else
+		points[0].y = points[1].y = y + 3;
 
 	      Polyline (hdc, points, 2);
-              counter = (counter + 1) % 2;
-            }
-          }
+	      counter = (counter + 1) % 2;
+	    }
+	  }
 	  break;
 	case PANGO_UNDERLINE_LOW:
 	  points[0].x = x + PANGO_PIXELS (x_off + ink_rect.x) - 1;
@@ -1058,9 +1058,9 @@ pango_win32_render_layout (HDC          hdc,
       baseline = pango_layout_iter_get_baseline (iter);
 
       pango_win32_render_layout_line (hdc,
-                                      line,
-                                      x + PANGO_PIXELS (logical_rect.x),
-                                      y + PANGO_PIXELS (baseline));
+				      line,
+				      x + PANGO_PIXELS (logical_rect.x),
+				      y + PANGO_PIXELS (baseline));
     }
   while (pango_layout_iter_next_line (iter));
 
@@ -1167,7 +1167,7 @@ get_format_4_cmap (HDC hdc)
   struct format_4_cmap *table;
 
   /* FIXME: Could look here at the CRC for the font in the DC
-            and return a cached copy if the same */
+	    and return a cached copy if the same */
 
   offset = get_cmap_offset (hdc, UNICODE_ENCODING_ID);
   if (offset == 0)

@@ -30,7 +30,7 @@ thai_ot_get_ruleset (PangoFont *font);
 
 void
 thai_ot_shape (PangoFont        *font,
-               PangoGlyphString *glyphs);
+	       PangoGlyphString *glyphs);
 
 #endif /* __THAI_OT_H__ */
 

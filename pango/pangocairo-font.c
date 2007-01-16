@@ -75,7 +75,7 @@ _pango_cairo_font_install (PangoCairoFont *font,
   if (G_UNLIKELY (!PANGO_IS_CAIRO_FONT (font)))
     {
       if (!_pango_cairo_warning_history.font_install)
-        {
+	{
 	  _pango_cairo_warning_history.font_install = TRUE;
 	  g_warning ("_pango_cairo_font_install called with bad font, expect ugly output");
 	  cairo_set_font_face (cr, NULL);
@@ -101,7 +101,7 @@ _pango_cairo_font_get_scaled_font (PangoCairoFont *font)
   if (G_UNLIKELY (!PANGO_IS_CAIRO_FONT (font)))
     {
       if (!_pango_cairo_warning_history.font_get_scaled_font)
-        {
+	{
 	  _pango_cairo_warning_history.font_get_scaled_font = TRUE;
 	  g_warning ("_pango_cairo_font_get_scaled_font called with bad font, expect ugly output");
 	}
@@ -301,9 +301,9 @@ _pango_cairo_font_get_hex_box_info (PangoCairoFont *cfont)
 
 void
 _pango_cairo_get_glyph_extents_missing (PangoCairoFont *cfont,
-				        PangoGlyph      glyph,
-				        PangoRectangle *ink_rect,
-				        PangoRectangle *logical_rect)
+					PangoGlyph      glyph,
+					PangoRectangle *ink_rect,
+					PangoRectangle *logical_rect)
 {
   PangoCairoHexBoxInfo *hbi;
   gint rows, cols;

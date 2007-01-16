@@ -97,10 +97,10 @@ typedef PangoEngineShapeClass PangoFallbackEngineClass;
 static void
 fallback_engine_shape (PangoEngineShape *engine,
 		       PangoFont        *font,
-                       const char       *text,
-                       gint              length,
-                       const PangoAnalysis *analysis,
-                       PangoGlyphString *glyphs)
+		       const char       *text,
+		       gint              length,
+		       const PangoAnalysis *analysis,
+		       PangoGlyphString *glyphs)
 {
   int n_chars;
   int i;
