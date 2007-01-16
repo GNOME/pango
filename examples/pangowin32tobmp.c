@@ -376,7 +376,7 @@ SaveBitmap (HBITMAP hBmp, const char* pszFile)
    */
   pbmi->bmiHeader.biClrImportant = 0;
 
-  { // C sucks
+  { /* C sucks */
   HANDLE hf;                  /* file handle */
   BITMAPFILEHEADER hdr;       /* bitmap file-header */
   PBITMAPINFOHEADER pbih;     /* bitmap info-header */
@@ -445,6 +445,6 @@ SaveBitmap (HBITMAP hBmp, const char* pszFile)
   GlobalFree((HGLOBAL)pbmi);
 
   DeleteDC(hDC);
-  } // C sucks
+  } /* C sucks */
   return TRUE;
 }

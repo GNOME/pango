@@ -1,5 +1,11 @@
 2007-01-16  Behdad Esfahbod  <behdad@gnome.org>
 
+	* examples/pangowin32tobmp.c (SaveBitmap):
+	* modules/tibetan/tibetan-fc.c:
+	Replace C++-style // comments with C-style /* */ ones.
+
+2007-01-16  Behdad Esfahbod  <behdad@gnome.org>
+
 	*.c, *.h: Drop trailing whitespace.
 
 2007-01-16  Behdad Esfahbod  <behdad@gnome.org>
