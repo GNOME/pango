@@ -26,6 +26,7 @@
 
 #include "pango-attributes.h"
 #include "pango-font.h"
+#include "pango-enum-types.h"
 #include "pango-impl-utils.h"
 
 /* FIXME */
@@ -783,33 +784,19 @@ parse_absolute_size (OpenTag               *tag,
   double factor;
   
   if (strcmp (size, "xx-small") == 0)
-    {
-      level = XXSmall;
-    }
+    level = XXSmall;
   else if (strcmp (size, "x-small") == 0)
-    {
-      level = XSmall;
-    }
+    level = XSmall;
   else if (strcmp (size, "small") == 0)
-    {
-      level = Small;
-    }
+    level = Small;
   else if (strcmp (size, "medium") == 0)
-    {
-      level = Medium;
-    }
+    level = Medium;
   else if (strcmp (size, "large") == 0)
-    {
-      level = Large;
-    }
+    level = Large;
   else if (strcmp (size, "x-large") == 0)
-    {
-      level = XLarge;
-    }
+    level = XLarge;
   else if (strcmp (size, "xx-large") == 0)
-    {
-      level = XXLarge;
-    }
+    level = XXLarge;
   else
     return FALSE;
 
@@ -824,15 +811,143 @@ parse_absolute_size (OpenTag               *tag,
   return TRUE;
 }
 
-#define CHECK_DUPLICATE(var) G_STMT_START{                              \
-          if ((var) != NULL) {                                          \
-            g_set_error (error, G_MARKUP_ERROR,                         \
-                         G_MARKUP_ERROR_INVALID_CONTENT,                \
-                         _("Attribute '%s' occurs twice on <span> tag " \
-                           "on line %d char %d, may only occur once"),  \
-                         names[i], line_number, char_number);           \
-            return FALSE;                                               \
-          }}G_STMT_END
+/* a string compare func that ignores '-' vs '_' differences */
+static gint
+attr_strcmp (gconstpointer pa,
+	     gconstpointer pb)
+{
+  const char *a = pa;
+  const char *b = pb;
+
+  int ca;
+  int cb;
+
+  while (*a && *b)
+    {
+      ca = *a++;
+      cb = *b++;
+
+      if (ca == cb)
+        continue;
+
+      ca = ca == '_' ? '-' : ca;
+      cb = cb == '_' ? '-' : cb;
+
+      if (ca != cb)
+        return cb - ca;
+    }
+
+  ca = *a;
+  cb = *b;
+
+  return cb - ca;
+}
+
+static gboolean
+span_parse_int (const char *attr_name,
+		const char *attr_val,
+		int *val,
+		int line_number,
+		GError **error)
+{
+  const char *end = attr_val;
+
+  if (!pango_scan_int (&end, val) || *end != '\0')
+    {
+      g_set_error (error,
+		   G_MARKUP_ERROR,
+		   G_MARKUP_ERROR_INVALID_CONTENT,
+		   _("Value of '%s' attribute on <span> tag "
+		     "on line %d could not be parsed; "
+		     "should be an integer, not '%s'"),
+		   attr_name, line_number, attr_val);
+      return FALSE;
+    }
+
+  return TRUE;
+}
+
+static gboolean
+span_parse_boolean (const char *attr_name,
+		    const char *attr_val,
+		    gboolean *val,
+		    int line_number,
+		    GError **error)
+{
+  const char *end = attr_val;
+
+  if (strcmp (attr_val, "true") == 0 ||
+      strcmp (attr_val, "yes") == 0 ||
+      strcmp (attr_val, "t") == 0 ||
+      strcmp (attr_val, "y") == 0)
+    *val = TRUE;
+  else if (strcmp (attr_val, "false") == 0 ||
+           strcmp (attr_val, "no") == 0 ||
+           strcmp (attr_val, "f") == 0 ||
+           strcmp (attr_val, "n") == 0)
+    *val = FALSE;
+  else
+    {
+      g_set_error (error,
+		   G_MARKUP_ERROR,
+		   G_MARKUP_ERROR_INVALID_CONTENT,
+		   _("Value of '%s' attribute on <span> tag "
+		     "line %d should have one of "
+		     "'true/yes/t/y' or 'false/no/f/n': '%s' is not valid"),
+		   attr_name, line_number, attr_val);
+      return FALSE;
+    }
+
+  return TRUE;
+}
+
+static gboolean
+span_parse_color (const char *attr_name,
+		  const char *attr_val,
+		  PangoColor *color,
+		  int line_number,
+		  GError **error)
+{
+  if (!pango_color_parse (color, attr_val))
+    {
+      g_set_error (error,
+		   G_MARKUP_ERROR,
+		   G_MARKUP_ERROR_INVALID_CONTENT,
+		   _("Value of '%s' attribute on <span> tag "
+		     "on line %d could not be parsed; "
+		     "should be a color specification, not '%s'"),
+		   attr_name, line_number, attr_val);
+      return FALSE;
+    }
+
+  return TRUE;
+}
+
+static gboolean
+span_parse_enum (const char *attr_name,
+		 const char *attr_val,
+		 GType type,
+		 int *val,
+		 int line_number,
+		 GError **error)
+{
+  char *possible_values = NULL;
+
+  if (!pango_parse_enum (type, attr_val, val, FALSE, &possible_values))
+    {
+      g_set_error (error,
+		   G_MARKUP_ERROR,
+		   G_MARKUP_ERROR_INVALID_CONTENT,
+		   _("'%s' is not a valid value for the '%s' "
+		     "attribute on <span> tag, line %d; valid "
+		     "values are %s"),
+		   attr_val, attr_name, line_number, possible_values);
+      g_free (possible_values);
+      return FALSE;
+    }
+
+  return TRUE;
+}
 
 static gboolean
 span_parse_func     (MarkupData            *md,
@@ -844,6 +959,7 @@ span_parse_func     (MarkupData            *md,
 {
   int line_number, char_number;
   int i;
+
   const char *family = NULL;
   const char *size = NULL;
   const char *style = NULL;
@@ -861,101 +977,72 @@ span_parse_func     (MarkupData            *md,
   const char *letter_spacing = NULL;
   const char *lang = NULL;
   const char *fallback = NULL;
+  const char *gravity = NULL;
+  const char *gravity_hint = NULL;
   
   g_markup_parse_context_get_position (context,
                                        &line_number, &char_number);
 
+#define CHECK_DUPLICATE(var) G_STMT_START{                              \
+          if ((var) != NULL) {                                          \
+            g_set_error (error, G_MARKUP_ERROR,                         \
+                         G_MARKUP_ERROR_INVALID_CONTENT,                \
+                         _("Attribute '%s' occurs twice on <span> tag " \
+                           "on line %d char %d, may only occur once"),  \
+                         names[i], line_number, char_number);           \
+            return FALSE;                                               \
+          }}G_STMT_END
+#define CHECK_ATTRIBUTE2(var, name) \
+	if (attr_strcmp (names[i], (name)) == 0) { \
+	  CHECK_DUPLICATE (var); \
+	  (var) = values[i]; \
+	  found = TRUE; \
+	  break; \
+	}
+#define CHECK_ATTRIBUTE(var) CHECK_ATTRIBUTE2 (var, G_STRINGIFY (var))
+
   i = 0;
   while (names[i])
     {
-      if (strcmp (names[i], "font_family") == 0 ||
-          strcmp (names[i], "face") == 0)
-        {
-          CHECK_DUPLICATE (family);
-          family = values[i];
-        }
-      else if (strcmp (names[i], "size") == 0)
-        {
-          CHECK_DUPLICATE (size);
-          size = values[i];
-        }
-      else if (strcmp (names[i], "style") == 0)
-        {
-          CHECK_DUPLICATE (style);
-          style = values[i];
-        }
-      else if (strcmp (names[i], "weight") == 0)
-        {
-          CHECK_DUPLICATE (weight);
-          weight = values[i];
-        }
-      else if (strcmp (names[i], "variant") == 0)
-        {
-          CHECK_DUPLICATE (variant);
-          variant = values[i];
-        }
-      else if (strcmp (names[i], "stretch") == 0)
-        {
-          CHECK_DUPLICATE (stretch);
-          stretch = values[i];
-        }
-      else if (strcmp (names[i], "font_desc") == 0)
-        {
-          CHECK_DUPLICATE (desc);
-          desc = values[i];
-        }
-      else if (strcmp (names[i], "foreground") == 0 ||
-               strcmp (names[i], "color") == 0)
-        {
-          CHECK_DUPLICATE (foreground);
-          foreground = values[i];
-        }
-      else if (strcmp (names[i], "background") == 0)
-        {
-          CHECK_DUPLICATE (background);
-          background = values[i];
-        }
-      else if (strcmp (names[i], "underline") == 0)
-        {
-          CHECK_DUPLICATE (underline);
-          underline = values[i];
-        }
-      else if (strcmp (names[i], "underline_color") == 0)
-        {
-          CHECK_DUPLICATE (underline_color);
-          underline_color = values[i];
-        }
-      else if (strcmp (names[i], "strikethrough") == 0)
-        {
-          CHECK_DUPLICATE (strikethrough);
-          strikethrough = values[i];
-        }
-      else if (strcmp (names[i], "strikethrough_color") == 0)
-        {
-          CHECK_DUPLICATE (strikethrough_color);
-          strikethrough_color = values[i];
-        }
-      else if (strcmp (names[i], "rise") == 0)
-        {
-          CHECK_DUPLICATE (rise);
-          rise = values[i];
-        }
-      else if (strcmp (names[i], "letter_spacing") == 0)
-        {
-          CHECK_DUPLICATE (letter_spacing);
-          letter_spacing = values[i];
-        }
-      else if (strcmp (names[i], "lang") == 0)
-        {
-          CHECK_DUPLICATE (lang);
-          lang = values[i];
-        }
-      else if (strcmp (names[i], "fallback") == 0)
-        {
-          CHECK_DUPLICATE (fallback);
-          fallback = values[i];
-        }
-      else
+      gboolean found = FALSE;
+
+      switch (names[i][0]) {
+      case 'f':
+        CHECK_ATTRIBUTE2(family, "face");
+        CHECK_ATTRIBUTE (fallback);
+        CHECK_ATTRIBUTE2(desc, "font_desc");
+        CHECK_ATTRIBUTE2(family, "font_family");
+        CHECK_ATTRIBUTE (foreground);
+	break;
+      case 's':
+        CHECK_ATTRIBUTE (size);
+        CHECK_ATTRIBUTE (stretch);
+        CHECK_ATTRIBUTE (strikethrough);
+        CHECK_ATTRIBUTE (strikethrough_color);
+        CHECK_ATTRIBUTE (style);
+	break;
+      case 'g':
+        CHECK_ATTRIBUTE (gravity);
+        CHECK_ATTRIBUTE (gravity_hint);
+	break;
+      case 'l':
+        CHECK_ATTRIBUTE (lang);
+        CHECK_ATTRIBUTE (letter_spacing);
+	break;
+      case 'u':
+        CHECK_ATTRIBUTE (underline);
+        CHECK_ATTRIBUTE (underline_color);
+	break;
+      default:
+        CHECK_ATTRIBUTE (background);
+        CHECK_ATTRIBUTE2(foreground, "color");
+        CHECK_ATTRIBUTE (rise);
+        CHECK_ATTRIBUTE (variant);
+        CHECK_ATTRIBUTE (weight);
+	break;
+      }
+
+      if (!found)
         {
           g_set_error (error, G_MARKUP_ERROR,
                        G_MARKUP_ERROR_UNKNOWN_ATTRIBUTE,
@@ -969,7 +1056,7 @@ span_parse_func     (MarkupData            *md,
     }
 
   /* Parse desc first, then modify it with other font-related attributes. */
-  if (desc)
+  if (G_UNLIKELY (desc))
     {
       PangoFontDescription *parsed;
 
@@ -983,12 +1070,12 @@ span_parse_func     (MarkupData            *md,
         }
     }
 
-  if (family)
+  if (G_UNLIKELY (family))
     {
       add_attribute (tag, pango_attr_family_new (family));
     }
 
-  if (size)
+  if (G_UNLIKELY (size))
     {
       if (g_ascii_isdigit (*size))
         {
@@ -1044,7 +1131,7 @@ span_parse_func     (MarkupData            *md,
         }
     }
 
-  if (style)
+  if (G_UNLIKELY (style))
     {
       PangoStyle pango_style;
       
@@ -1063,7 +1150,7 @@ span_parse_func     (MarkupData            *md,
         }
     }
 
-  if (weight)
+  if (G_UNLIKELY (weight))
     {
       PangoWeight pango_weight;
       
@@ -1083,7 +1170,7 @@ span_parse_func     (MarkupData            *md,
         }
     }
 
-  if (variant)
+  if (G_UNLIKELY (variant))
     {
       PangoVariant pango_variant;
       
@@ -1102,7 +1189,7 @@ span_parse_func     (MarkupData            *md,
         }
     }
 
-  if (stretch)
+  if (G_UNLIKELY (stretch))
     {
       PangoStretch pango_stretch;
       
@@ -1122,191 +1209,117 @@ span_parse_func     (MarkupData            *md,
         }
     }
 
-  if (foreground)
+  if (G_UNLIKELY (foreground))
     {
       PangoColor color;
 
-      if (!pango_color_parse (&color, foreground))
-        {
-          g_set_error (error,
-                       G_MARKUP_ERROR,
-                       G_MARKUP_ERROR_INVALID_CONTENT,
-                       _("Could not parse foreground color specification "
-                         "'%s' on line %d"),
-                       foreground, line_number);
-          goto error;
-        }
+      if (!span_parse_color ("foreground", foreground, &color, line_number, error))
+        goto error;
 
       add_attribute (tag, pango_attr_foreground_new (color.red, color.green, color.blue));
     }
 
-  if (background)
+  if (G_UNLIKELY (background))
     {
       PangoColor color;
       
-      if (!pango_color_parse (&color, background))
-        {
-          g_set_error (error,
-                       G_MARKUP_ERROR,
-                       G_MARKUP_ERROR_INVALID_CONTENT,
-                       _("Could not parse background color specification "
-                         "'%s' on line %d"),
-                       background, line_number);
-          goto error;
-        }
+      if (!span_parse_color ("background", background, &color, line_number, error))
+        goto error;
 
       add_attribute (tag, pango_attr_background_new (color.red, color.green, color.blue));
     }
 
-  if (underline)
+  if (G_UNLIKELY (underline))
     {
       PangoUnderline ul = PANGO_UNDERLINE_NONE;
 
-      if (strcmp (underline, "single") == 0)
-        ul = PANGO_UNDERLINE_SINGLE;
-      else if (strcmp (underline, "double") == 0)
-        ul = PANGO_UNDERLINE_DOUBLE;
-      else if (strcmp (underline, "low") == 0)
-        ul = PANGO_UNDERLINE_LOW;
-      else if (strcmp (underline, "error") == 0)
-        ul = PANGO_UNDERLINE_ERROR;
-      else if (strcmp (underline, "none") == 0)
-        ul = PANGO_UNDERLINE_NONE;
-      else
-        {
-          g_set_error (error,
-                       G_MARKUP_ERROR,
-                       G_MARKUP_ERROR_INVALID_CONTENT,
-                       _("'%s' is not a valid value for the 'underline' "
-                         "attribute on <span> tag, line %d; valid "
-                         "values are for example 'single', "
-                         "'double', 'low', 'none'"),
-                       underline, line_number);
-          goto error;
-        }
+      if (!span_parse_enum ("underline", underline, PANGO_TYPE_UNDERLINE, &ul, line_number, error))
+        goto error;
 
       add_attribute (tag, pango_attr_underline_new (ul));
     }
 
-  if (underline_color)
+  if (G_UNLIKELY (underline_color))
     {
       PangoColor color;
 
-      if (!pango_color_parse (&color, underline_color))
-        {
-          g_set_error (error,
-                       G_MARKUP_ERROR,
-                       G_MARKUP_ERROR_INVALID_CONTENT,
-                       _("Could not parse underline_color color specification "
-                         "'%s' on line %d"),
-                       underline_color, line_number);
-          goto error;
-        }
+      if (!span_parse_color ("underline_color", underline_color, &color, line_number, error))
+        goto error;
 
       add_attribute (tag, pango_attr_underline_color_new (color.red, color.green, color.blue));
     }
 
-  if (strikethrough)
+  if (G_UNLIKELY (gravity))
     {
-      if (strcmp (strikethrough, "true") == 0)
-        add_attribute (tag, pango_attr_strikethrough_new (TRUE));
-      else if (strcmp (strikethrough, "false") == 0)
-        add_attribute (tag, pango_attr_strikethrough_new (FALSE));
-      else
-        {
-          g_set_error (error,
-                       G_MARKUP_ERROR,
-                       G_MARKUP_ERROR_INVALID_CONTENT,
-                       _("'strikethrough' attribute on <span> tag "
-                         "line %d should have one of the values "
-                         "'true' or 'false': '%s' is not valid"),
-                       line_number, strikethrough);
-          goto error;
-        }
+      PangoGravity gr = PANGO_GRAVITY_SOUTH;
+
+      if (!span_parse_enum ("gravity", gravity, PANGO_TYPE_GRAVITY, &gr, line_number, error))
+        goto error;
+
+      add_attribute (tag, pango_attr_gravity_new (gr));
     }
 
-  if (strikethrough_color)
+  if (G_UNLIKELY (gravity_hint))
+    {
+      PangoGravityHint hint = PANGO_GRAVITY_HINT_NATURAL;
+
+      if (!span_parse_enum ("gravity_hint", gravity_hint, PANGO_TYPE_GRAVITY_HINT, &hint, line_number, error))
+        goto error;
+
+      add_attribute (tag, pango_attr_gravity_hint_new (hint));
+    }
+
+  if (G_UNLIKELY (strikethrough))
+    {
+      gboolean b = FALSE;
+
+      if (!span_parse_boolean ("strikethrough", strikethrough, &b, line_number, error))
+        goto error;
+
+      add_attribute (tag, pango_attr_strikethrough_new (b));
+    }
+
+  if (G_UNLIKELY (strikethrough_color))
     {
       PangoColor color;
 
-      if (!pango_color_parse (&color, strikethrough_color))
-        {
-          g_set_error (error,
-                       G_MARKUP_ERROR,
-                       G_MARKUP_ERROR_INVALID_CONTENT,
-                       _("Could not parse strikethrough_color color specification "
-                         "'%s' on line %d"),
-                       strikethrough_color, line_number);
-          goto error;
-        }
+      if (!span_parse_color ("strikethrough_color", strikethrough_color, &color, line_number, error))
+        goto error;
 
       add_attribute (tag, pango_attr_strikethrough_color_new (color.red, color.green, color.blue));
     }
 
-  if (fallback)
+  if (G_UNLIKELY (fallback))
     {
-      if (strcmp (fallback, "true") == 0)
-        add_attribute (tag, pango_attr_fallback_new (TRUE));
-      else if (strcmp (fallback, "false") == 0)
-        add_attribute (tag, pango_attr_fallback_new (FALSE));
-      else
-        {
-          g_set_error (error,
-                       G_MARKUP_ERROR,
-                       G_MARKUP_ERROR_INVALID_CONTENT,
-                       _("'fallback' attribute on <span> tag "
-                         "line %d should have one of the values "
-                         "'true' or 'false': '%s' is not valid"),
-                       line_number, fallback);
-          goto error;
-        }
+      gboolean b = FALSE;
+
+      if (!span_parse_boolean ("fallback", fallback, &b, line_number, error))
+        goto error;
+
+      add_attribute (tag, pango_attr_fallback_new (b));
     }
 
-  if (rise)
+  if (G_UNLIKELY (rise))
     {
-      char *end = NULL;
-      glong n;
-      
-      n = strtol (rise, &end, 10);
+      gint n = 0;
 
-      if (*end != '\0')
-        {
-          g_set_error (error,
-                       G_MARKUP_ERROR,
-                       G_MARKUP_ERROR_INVALID_CONTENT,
-                       _("Value of 'rise' attribute on <span> tag "
-                         "on line %d could not be parsed; "
-                         "should be an integer, not '%s'"),
-                       line_number, rise);
-          goto error;
-        }
+      if (!span_parse_int ("rise", rise, &n, line_number, error))
+        goto error;
 
       add_attribute (tag, pango_attr_rise_new (n));
     }
 
-  if (letter_spacing)
+  if (G_UNLIKELY (letter_spacing))
     {
-      char *end = NULL;
-      glong n;
+      gint n = 0;
       
-      n = strtol (letter_spacing, &end, 10);
-
-      if (*end != '\0')
-        {
-          g_set_error (error,
-                       G_MARKUP_ERROR,
-                       G_MARKUP_ERROR_INVALID_CONTENT,
-                       _("Value of 'letter_spacing' attribute on <span> tag "
-                         "on line %d could not be parsed; "
-                         "should be an integer, not '%s'"),
-                       line_number, letter_spacing);
-          goto error;
-        }
+      if (!span_parse_int ("letter_spacing", letter_spacing, &n, line_number, error))
+        goto error;
 
       add_attribute (tag, pango_attr_letter_spacing_new (n));
     }
 
-  if (lang)
+  if (G_UNLIKELY (lang))
     {
       add_attribute (tag,
 		     pango_attr_language_new (pango_language_from_string (lang)));

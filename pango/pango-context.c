@@ -663,6 +663,8 @@ struct _ItemizeState
   guint8 embedding;
 
   PangoGravity gravity;
+  PangoGravityHint gravity_hint;
+  PangoGravity resolved_gravity;
   PangoGravity font_desc_gravity;
   gboolean centered_baseline;
 
@@ -723,7 +725,7 @@ static void
 update_attr_iterator (ItemizeState *state)
 {
   PangoLanguage *old_lang;
-  PangoAttribute *fallback;
+  PangoAttribute *attr;
   int end_index;
   
   pango_attr_iterator_range (state->attr_iter, NULL, &end_index);
@@ -748,8 +750,14 @@ update_attr_iterator (ItemizeState *state)
   if (!state->lang)
     state->lang = state->context->language;
   
-  fallback = find_attribute (state->extra_attrs, PANGO_ATTR_FALLBACK);
-  state->enable_fallback = (fallback == NULL || ((PangoAttrInt *)fallback)->value);
+  attr = find_attribute (state->extra_attrs, PANGO_ATTR_FALLBACK);
+  state->enable_fallback = (attr == NULL || ((PangoAttrInt *)attr)->value);
+
+  attr = find_attribute (state->extra_attrs, PANGO_ATTR_GRAVITY);
+  state->gravity = attr == NULL ? PANGO_GRAVITY_AUTO : ((PangoAttrInt *)attr)->value;
+
+  attr = find_attribute (state->extra_attrs, PANGO_ATTR_GRAVITY_HINT);
+  state->gravity_hint = attr == NULL ? state->context->gravity_hint : ((PangoAttrInt *)attr)->value;
 
   state->changed |= FONT_CHANGED;
   if (state->lang != old_lang)
@@ -850,6 +858,8 @@ itemize_state_init (ItemizeState      *state,
     state->font_desc_gravity = PANGO_GRAVITY_AUTO;
 
   state->gravity = PANGO_GRAVITY_AUTO;
+  state->gravity_hint = state->context->gravity_hint;
+  state->resolved_gravity = PANGO_GRAVITY_AUTO;
   state->derived_lang = NULL;
   state->lang_engine = NULL;
   state->current_fonts = NULL;
@@ -970,7 +980,7 @@ itemize_state_add_character (ItemizeState     *state,
   state->item->analysis.font = font;
   
   state->item->analysis.level = state->embedding;
-  state->item->analysis.gravity = state->gravity;
+  state->item->analysis.gravity = state->resolved_gravity;
 
   /* The level vs. gravity dance:
    * 	- If gravity is SOUTH, leave level untouched.
@@ -1099,19 +1109,10 @@ get_shaper_and_font (ItemizeState      *state,
        */
       PangoScript script;
 
-      switch (state->gravity)
-	{
-	  case PANGO_GRAVITY_SOUTH:
-	  case PANGO_GRAVITY_NORTH:
-	  case PANGO_GRAVITY_AUTO:
-	  default:
-            script = state->script;
-	    break;
-	  case PANGO_GRAVITY_EAST:
-	  case PANGO_GRAVITY_WEST:
-            script = PANGO_SCRIPT_COMMON;
-	    break;
-	}
+      if (PANGO_GRAVITY_IS_VERTICAL (state->resolved_gravity))
+        script = PANGO_SCRIPT_COMMON;
+      else
+        script = state->script;
 
       get_engines (state->context, state->derived_lang, script,
 		   &state->exact_engines, &state->fallback_engines);
@@ -1212,25 +1213,34 @@ get_lang_map (PangoLanguage *lang)
 static void
 itemize_state_update_for_new_run (ItemizeState *state)
 {
+  /* This block should be moved to update_attr_iterator, but I'm too lazy to
+   * do it right now */
   if (state->changed & (FONT_CHANGED | SCRIPT_CHANGED))
     {
-      PangoGravity old_gravity = state->gravity;
+      PangoGravity old_gravity = state->resolved_gravity;
 
       if (state->font_desc_gravity != PANGO_GRAVITY_AUTO)
-	state->gravity = state->font_desc_gravity;
+	state->resolved_gravity = state->font_desc_gravity;
       else
         {
-	  PangoGravity gravity = state->context->resolved_gravity;
+	  PangoGravity gravity;
+	  PangoGravityHint gravity_hint;
+
+	  gravity = state->gravity;
+	  if (G_LIKELY (gravity == PANGO_GRAVITY_AUTO))
+	    gravity = state->context->resolved_gravity;
+
+	  gravity_hint = state->gravity_hint;
 
 	  gravity = pango_gravity_get_for_script (state->script,
-						  state->context->resolved_gravity,
-						  state->context->gravity_hint);
-	  state->gravity = gravity;
+						  gravity,
+						  gravity_hint);
+	  state->resolved_gravity = gravity;
 	}
 
-      if (old_gravity != state->gravity)
+      if (old_gravity != state->resolved_gravity)
         {
-	  pango_font_description_set_gravity (state->font_desc, state->gravity);
+	  pango_font_description_set_gravity (state->font_desc, state->resolved_gravity);
           state->changed |= FONT_CHANGED;
 	}
     }

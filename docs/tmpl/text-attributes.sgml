@@ -52,6 +52,8 @@ attribute is listed in parentheses after the description.
 @PANGO_ATTR_UNDERLINE_COLOR: underline color (#PangoAttrColor)
 @PANGO_ATTR_STRIKETHROUGH_COLOR: strikethrough color (#PangoAttrColor)
 @PANGO_ATTR_ABSOLUTE_SIZE: font size in pixels scaled by %PANGO_SCALE (#PangoAttrInt)
+@PANGO_ATTR_GRAVITY: base text gravity (#PangoAttrInt)
+@PANGO_ATTR_GRAVITY_HINT: gravity hint (#PangoAttrInt)
 
 <!-- ##### MACRO PANGO_TYPE_ATTR_TYPE ##### -->
 <para>
@@ -434,15 +436,6 @@ user data.
 @Returns: 
 
 
-<!-- ##### FUNCTION pango_attr_fallback_new ##### -->
-<para>
-
-</para>
-
-@enable_fallback: 
-@Returns: 
-
-
 <!-- ##### MACRO PANGO_SCALE_XX_SMALL ##### -->
 <para>
 The scale factor for three shrinking steps (1 / (1.2 * 1.2 * 1.2)).
@@ -507,6 +500,33 @@ The scale factor for three magnification steps (1.2 * 1.2 * 1.2).
 </para>
 
 @letter_spacing: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_attr_fallback_new ##### -->
+<para>
+
+</para>
+
+@enable_fallback: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_attr_gravity_new ##### -->
+<para>
+
+</para>
+
+@gravity: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_attr_gravity_hint_new ##### -->
+<para>
+
+</para>
+
+@hint: 
 @Returns: 
 
 

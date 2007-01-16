@@ -968,6 +968,61 @@ pango_attr_shape_new (const PangoRectangle *ink_rect,
 					 NULL, NULL, NULL);
 }
 
+/**
+ * pango_attr_gravity_new:
+ * @gravity: the gravity value; should not be %PANGO_GRAVITY_AUTO.
+ * 
+ * Create a new gravity attribute.
+ * 
+ * Return value: the newly allocated #PangoAttribute, which should be
+ *               freed with pango_attribute_destroy().
+ *
+ * Since: 1.16
+ **/
+PangoAttribute *
+pango_attr_gravity_new (PangoGravity gravity)
+{
+  static const PangoAttrClass klass = {
+    PANGO_ATTR_GRAVITY,
+    pango_attr_int_copy,
+    pango_attr_int_destroy,
+    pango_attr_int_equal
+  };
+
+  g_return_val_if_fail (gravity != PANGO_GRAVITY_AUTO, NULL);
+
+  return pango_attr_int_new (&klass, (int)gravity);
+}
+
+/**
+ * pango_attr_gravity_hint_new:
+ * @hint: the gravity hint value.
+ * 
+ * Create a new gravity hint attribute.
+ * 
+ * Return value: the newly allocated #PangoAttribute, which should be
+ *               freed with pango_attribute_destroy().
+ *
+ * Since: 1.16
+ **/
+PangoAttribute *
+pango_attr_gravity_hint_new (PangoGravityHint hint)
+{
+  static const PangoAttrClass klass = {
+    PANGO_ATTR_GRAVITY_HINT,
+    pango_attr_int_copy,
+    pango_attr_int_destroy,
+    pango_attr_int_equal
+  };
+
+  return pango_attr_int_new (&klass, (int)hint);
+}
+
+
+/*
+ * Attribute List
+ */
+
 GType
 pango_attr_list_get_type (void)
 {

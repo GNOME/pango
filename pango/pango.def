@@ -5,6 +5,8 @@ EXPORTS
 	pango_attr_family_new
 	pango_attr_font_desc_new
 	pango_attr_foreground_new
+	pango_attr_gravity_hint_new
+	pango_attr_gravity_new
 	pango_attr_iterator_copy
 	pango_attr_iterator_destroy
 	pango_attr_iterator_get
@@ -298,6 +300,7 @@ EXPORTS
 	pango_matrix_transform_rectangle
 	pango_matrix_translate
 	pango_module_register
+	pango_parse_enum
 	pango_parse_markup
 	pango_parse_stretch
 	pango_parse_style

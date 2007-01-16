@@ -48,6 +48,12 @@ void     pango_lookup_aliases (const char   *fontname,
 			       int          *n_families);
 #endif /* PANGO_ENABLE_BACKEND */
 
+gboolean pango_parse_enum     (GType       type,
+			       const char *str,
+			       int        *value,
+			       gboolean    warn,
+			       char      **possible_values);
+
 /* Functions for parsing textual representations
  * of PangoFontDescription fields. They return TRUE if the input string
  * contains a valid value, which then has been assigned to the corresponding

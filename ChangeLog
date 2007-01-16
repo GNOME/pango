@@ -1,3 +1,47 @@
+2007-01-16  Behdad Esfahbod  <behdad@gnome.org>
+
+	* pango/pango-attributes.h:
+	* pango/pango-attributes.c:
+	New attribute types PANGO_ATTR_GRAVITY and PANGO_ATTR_GRAVITY_HINT.
+	New public functions:
+
+		pango_attr_gravity_new()
+		pango_attr_gravity_hint_new()
+
+	* pango/pango-context.c (update_attr_iterator),
+	(itemize_state_init), (itemize_state_add_character),
+	(get_shaper_and_font), (itemize_state_update_for_new_run):
+	Handle gravity and gravity_hint attributes.
+
+	* pango/pango-utils.h:
+	* pango/pango-utils.c:
+	New public function:
+
+		pango_parse_enum()
+
+	* pango/pango-markup.c (span_parse_func): Parse gravity and
+	gravity_hint attributes for <span>.  Optimize a bit.
+
+	* pango/pango-markup.c (parse_absolute_size), (attr_strcmp),
+	(span_parse_int), (span_parse_boolean), (span_parse_color),
+	(span_parse_enum), (span_parse_func): Use pango_scan_int(),
+	pango_color_parse(), and pango_parse_enum().  Also, ignore '-' and
+	'_' differences when matching attribute names for <span>.
+
+	* examples/renderdemo.c (parse_enum), (parse_ellipsis),
+	(parse_gravity), (parse_gravity_hint), (parse_hinting),
+	(parse_wrap): Use a generic parse_enum() that uses pango_parse_enum().
+
+	* modules/basic/basic-fc.c (basic_engine_shape):
+	* pango/pangofc-fontmap.c (pango_fc_make_pattern):
+	Use PANGO_GRAVITY_IS_VERTICAL().
+
+	* pango/pango.def:
+	* docs/pango-sections.txt:
+	* docs/tmpl/text-attributes.sgml:
+	* docs/tmpl/utils.sgml:
+	Update.
+
 2007-01-15  Behdad Esfahbod  <behdad@gnome.org>
 
 	Bug 323173 – Add layout of mixed direction text for vertical layout

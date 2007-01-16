@@ -333,6 +333,38 @@ do_output (PangoContext     *context,
   pango_matrix_free (orig_matrix);
 }
 
+static gboolean
+parse_enum (GType      *type,
+	    int        *value,
+	    const char *name,
+	    const char *arg,
+	    gpointer    data,
+	    GError **error)
+{
+  char *possible_values = NULL;
+  gboolean ret;
+
+  ret = pango_parse_enum (type,
+			  arg,
+			  value,
+			  FALSE,
+			  &possible_values);
+
+  if (!ret && error)
+    {
+      g_set_error(error,
+		  G_OPTION_ERROR, 
+		  G_OPTION_ERROR_BAD_VALUE,
+		  "Argument for %s must be one of %s",
+		  name,
+		  possible_values);
+      ret = FALSE;
+    }
+
+  g_free (possible_values);
+
+  return ret;
+}
 
 static gboolean
 parse_ellipsis (const char *name,
@@ -340,26 +372,8 @@ parse_ellipsis (const char *name,
 		gpointer    data,
 		GError **error)
 {
-  static GEnumClass *class = NULL;
-  gboolean ret = TRUE;
-  GEnumValue *value;
-
-  if (!class)
-    class = g_type_class_ref (PANGO_TYPE_ELLIPSIZE_MODE);
-
-  value = g_enum_get_value_by_nick (class, arg);
-  if (value)
-    opt_ellipsize = value->value;
-  else
-    {
-        g_set_error(error,
-		    G_OPTION_ERROR, 
-		    G_OPTION_ERROR_BAD_VALUE,
-		    "Argument for --ellipsize must be one of none/start/middle/end");
-	ret = FALSE;
-    }
-
-  return ret;
+  return parse_enum (PANGO_TYPE_ELLIPSIZE_MODE, &opt_ellipsize,
+		     name, arg, data, error);
 }
 
 static gboolean
@@ -368,26 +382,8 @@ parse_gravity (const char *name,
 	       gpointer    data,
 	       GError **error)
 {
-  static GEnumClass *class = NULL;
-  gboolean ret = TRUE;
-  GEnumValue *value;
-
-  if (!class)
-    class = g_type_class_ref (PANGO_TYPE_GRAVITY);
-
-  value = g_enum_get_value_by_nick (class, arg);
-  if (value)
-    opt_gravity = value->value;
-  else
-    {
-        g_set_error(error,
-		    G_OPTION_ERROR, 
-		    G_OPTION_ERROR_BAD_VALUE,
-		    "Argument for --gravity must be one of south/east/north/west/auto");
-	ret = FALSE;
-    }
-
-  return ret;
+  return parse_enum (PANGO_TYPE_GRAVITY, &opt_gravity,
+		     name, arg, data, error);
 }
 
 static gboolean
@@ -396,26 +392,8 @@ parse_gravity_hint (const char *name,
 		    gpointer    data,
 		    GError **error)
 {
-  static GEnumClass *class = NULL;
-  gboolean ret = TRUE;
-  GEnumValue *value;
-
-  if (!class)
-    class = g_type_class_ref (PANGO_TYPE_GRAVITY_HINT);
-
-  value = g_enum_get_value_by_nick (class, arg);
-  if (value)
-    opt_gravity_hint = value->value;
-  else
-    {
-        g_set_error(error,
-		    G_OPTION_ERROR, 
-		    G_OPTION_ERROR_BAD_VALUE,
-		    "Argument for --gravity-hint must be one of natural/strong/line");
-	ret = FALSE;
-    }
-
-  return ret;
+  return parse_enum (PANGO_TYPE_GRAVITY_HINT, &opt_gravity_hint,
+		     name, arg, data, error);
 }
 
 static gboolean
@@ -424,11 +402,7 @@ parse_hinting (const char *name,
 	       gpointer    data,
 	       GError    **error)
 {
-  static GEnumClass *class = NULL;
   gboolean ret = TRUE;
-
-  if (!class)
-    class = g_type_class_ref (PANGO_TYPE_ELLIPSIZE_MODE);
 
   if (strcmp (arg, "none") == 0)
     opt_hinting = HINT_NONE;
@@ -454,28 +428,12 @@ parse_wrap (const char *name,
 	    gpointer    data,
 	    GError    **error)
 {
-  static GEnumClass *class = NULL;
-  gboolean ret = TRUE;
-  GEnumValue *value;
-
-  if (!class)
-    class = g_type_class_ref (PANGO_TYPE_WRAP_MODE);
-
-  value = g_enum_get_value_by_nick (class, arg);
-  if (value)
+  gboolean ret;
+  if ((ret = parse_enum (PANGO_TYPE_WRAP_MODE, &opt_wrap,
+			 name, arg, data, error)))
     {
-      opt_wrap = value->value;
       opt_wrap_set = TRUE;
     }
-  else
-    {
-      g_set_error(error,
-		  G_OPTION_ERROR, 
-		  G_OPTION_ERROR_BAD_VALUE,
-		  "Argument for --wrap must be one of word/char/word-char");
-      ret = FALSE;
-    }
-
   return ret;
 }
 

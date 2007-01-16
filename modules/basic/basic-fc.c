@@ -332,18 +332,7 @@ basic_engine_shape (PangoEngineShape *engine,
   if (!face)
     return;
 
-  switch (analysis->gravity)
-    {
-      case PANGO_GRAVITY_SOUTH:
-      case PANGO_GRAVITY_NORTH:
-      default:
-        vertical = FALSE;
-	break;
-      case PANGO_GRAVITY_EAST:
-      case PANGO_GRAVITY_WEST:
-        vertical = TRUE;
-	break;
-    }
+  vertical = PANGO_GRAVITY_IS_VERTICAL (analysis->gravity);
   if (vertical)
     {
       fallback_shape (engine, font, text, length, analysis, glyphs);

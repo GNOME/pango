@@ -454,6 +454,8 @@ pango_scan_string (const char **pos, GString *out)
 		case 't':
 		  c = '\t';
 		  break;
+		default:
+		  break;
 		}
 	      
 	      quoted = FALSE;
@@ -718,6 +720,82 @@ pango_get_lib_subdirectory (void)
 #else
   return LIBDIR "/pango";
 #endif
+}
+
+
+/**
+ * pango_parse_enum:
+ * @type: enum type to parse, eg. %PANGO_TYPE_ELLIPSIZE_MODE.
+ * @str: string to parse.  May be %NULL.
+ * @value: integer to store the result in, or %NULL.
+ * @warn: if %TRUE, issue a g_warning() on bad input.
+ * @possible_values: place to store list of possible values on failure, or %NULL.
+ * 
+ * Parses an enum type and stored the result in @value.
+ *
+ * If @str does not match the nick name of any of the possible values for the
+ * enum, %FALSE is returned, a warning is issued if @warn is %TRUE, and a
+ * string representing the list of possible values is stored in
+ * @possible_values.  The list is slash-separated, eg.
+ * "none/start/middle/end".  If failed and @possible_values is not %NULL,
+ * returned string should be freed using g_free().
+ * 
+ * Return value: %TRUE if @str was successfully parsed.
+ *
+ * Since: 1.16
+ **/ 
+gboolean
+pango_parse_enum (GType       type,
+		  const char *str,
+		  int        *value,
+		  gboolean    warn,
+		  char      **possible_values)
+{
+  GEnumClass *class = NULL;
+  gboolean ret = TRUE;
+  GEnumValue *v = NULL;
+
+  class = g_type_class_ref (type);
+
+  if (G_LIKELY (str))
+    v = g_enum_get_value_by_nick (class, str);
+
+  if (v)
+    {
+      if (G_LIKELY (value))
+        *value = v->value;
+    }
+  else
+    {
+      ret = FALSE;
+      if (warn || possible_values)
+        {
+	  int i;
+	  GString *s = g_string_new (NULL);
+
+	  for (i = 0, v = g_enum_get_value (class, i); v;
+	       i++  , v = g_enum_get_value (class, i))
+	    {
+	      if (i)
+	        g_string_append_c (s, '/');
+	      g_string_append (s, v->value_nick);
+	    }
+
+	  if (warn)
+	    g_warning ("%s must be one of %s",
+		       G_ENUM_CLASS_TYPE_NAME(class),
+		       s->str);
+
+	  if (possible_values)
+	    *possible_values = s->str;
+	    
+	  g_string_free (s, possible_values ? FALSE : TRUE);
+	}
+    }
+
+  g_type_class_unref (class);
+
+  return ret;
 }
 
 /**

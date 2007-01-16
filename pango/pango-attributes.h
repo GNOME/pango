@@ -86,9 +86,11 @@ typedef enum
   PANGO_ATTR_SCALE,             /* PangoAttrFloat */
   PANGO_ATTR_FALLBACK,          /* PangoAttrInt */
   PANGO_ATTR_LETTER_SPACING,    /* PangoAttrInt */
-  PANGO_ATTR_UNDERLINE_COLOR,	 /* PangoAttrColor */
-  PANGO_ATTR_STRIKETHROUGH_COLOR, /* PangoAttrColor */
-  PANGO_ATTR_ABSOLUTE_SIZE      /* PangoAttrSize */
+  PANGO_ATTR_UNDERLINE_COLOR,	/* PangoAttrColor */
+  PANGO_ATTR_STRIKETHROUGH_COLOR,/* PangoAttrColor */
+  PANGO_ATTR_ABSOLUTE_SIZE,	/* PangoAttrSize */
+  PANGO_ATTR_GRAVITY,		/* PangoAttrInt */
+  PANGO_ATTR_GRAVITY_HINT	/* PangoAttrInt */
 } PangoAttrType;
 
 typedef enum {
@@ -218,6 +220,9 @@ PangoAttribute *pango_attr_shape_new_with_data (const PangoRectangle       *ink_
 						gpointer                    data,
 						PangoAttrDataCopyFunc       copy_func,
 						GDestroyNotify              destroy_func);
+
+PangoAttribute *pango_attr_gravity_new      (PangoGravity     gravity);
+PangoAttribute *pango_attr_gravity_hint_new (PangoGravityHint hint);
 
 GType              pango_attr_list_get_type      (void) G_GNUC_CONST;
 PangoAttrList *    pango_attr_list_new           (void);

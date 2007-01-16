@@ -104,6 +104,19 @@ backends and modules, but may be useful for other purposes too.
 @n_families: 
 
 
+<!-- ##### FUNCTION pango_parse_enum ##### -->
+<para>
+
+</para>
+
+@type: 
+@str: 
+@value: 
+@warn: 
+@possible_values: 
+@Returns: 
+
+
 <!-- ##### FUNCTION pango_parse_style ##### -->
 <para>
 

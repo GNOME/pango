@@ -823,18 +823,7 @@ pango_fc_make_pattern (const  PangoFontDescription *description,
 #endif
 
   gravity = pango_font_description_get_gravity (description);
-  switch (gravity)
-    {
-      case PANGO_GRAVITY_SOUTH:
-      case PANGO_GRAVITY_NORTH:
-      default:
-        vertical = FcFalse;
-	break;
-      case PANGO_GRAVITY_EAST:
-      case PANGO_GRAVITY_WEST:
-        vertical = FcTrue;
-        break;
-    }
+  vertical = PANGO_GRAVITY_IS_VERTICAL (gravity) ? FcTrue : FcFalse;
 
   /* The reason for passing in FC_SIZE as well as FC_PIXEL_SIZE is
    * to work around a bug in libgnomeprint where it doesn't look

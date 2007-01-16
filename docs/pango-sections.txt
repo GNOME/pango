@@ -345,7 +345,6 @@ pango_attr_shape_new
 pango_attr_shape_new_with_data
 PangoAttrDataCopyFunc
 pango_attr_scale_new
-pango_attr_fallback_new
 PANGO_SCALE_XX_SMALL
 PANGO_SCALE_X_SMALL
 PANGO_SCALE_SMALL
@@ -355,6 +354,9 @@ PANGO_SCALE_X_LARGE
 PANGO_SCALE_XX_LARGE
 pango_attr_rise_new
 pango_attr_letter_spacing_new
+pango_attr_fallback_new
+pango_attr_gravity_new
+pango_attr_gravity_hint_new
 PangoColor
 PANGO_TYPE_COLOR
 pango_color_parse
@@ -964,6 +966,7 @@ pango_scan_string
 pango_scan_int
 pango_config_key_get
 pango_lookup_aliases
+pango_parse_enum
 pango_parse_style
 pango_parse_variant
 pango_parse_weight
