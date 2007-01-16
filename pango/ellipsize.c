@@ -174,12 +174,12 @@ get_cluster_width (LineIter *iter)
   if (run_iter->start_glyph < run_iter->end_glyph) /* LTR */
     {
       for (i = run_iter->start_glyph; i < run_iter->end_glyph; i++)
-	width += glyphs->glyphs[run_iter->start_glyph].geometry.width;
+	width += glyphs->glyphs[i].geometry.width;
     }
   else			                 /* RTL */
     {
       for (i = run_iter->start_glyph; i > run_iter->end_glyph; i--)
-	width += glyphs->glyphs[run_iter->start_glyph].geometry.width;
+	width += glyphs->glyphs[i].geometry.width;
     }
 
   return width;
@@ -564,6 +564,7 @@ remove_one_span (EllipsizeState *state)
   LineIter new_gap_end_iter;
   int new_gap_start_x;
   int new_gap_end_x;
+  int width;
 
   /* Find one span backwards and forward from the gap
    */
@@ -573,9 +574,11 @@ remove_one_span (EllipsizeState *state)
     {
       if (!line_iter_prev_cluster (state, &new_gap_start_iter))
 	break;
-      new_gap_start_x -= get_cluster_width (&new_gap_start_iter);
+      width = get_cluster_width (&new_gap_start_iter);
+      new_gap_start_x -= width;
     }
-  while (!starts_at_ellipsization_boundary (state, &new_gap_start_iter));
+  while (!starts_at_ellipsization_boundary (state, &new_gap_start_iter) ||
+	 width == 0);
 
   new_gap_end_iter = state->gap_end_iter;
   new_gap_end_x = state->gap_end_x;
@@ -583,9 +586,11 @@ remove_one_span (EllipsizeState *state)
     {
       if (!line_iter_next_cluster (state, &new_gap_end_iter))
 	break;
-      new_gap_end_x += get_cluster_width (&new_gap_end_iter);
+      width = get_cluster_width (&new_gap_end_iter);
+      new_gap_end_x += width;
     }
-  while (!ends_at_ellipsization_boundary (state, &new_gap_end_iter));
+  while (!ends_at_ellipsization_boundary (state, &new_gap_end_iter) ||
+	 width == 0);
 
   if (state->gap_end_x == new_gap_end_x && state->gap_start_x == new_gap_start_x)
     return FALSE;
