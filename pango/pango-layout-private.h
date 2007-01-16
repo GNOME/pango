@@ -51,6 +51,7 @@ struct _PangoLayout
   guint auto_dir : 1;
   
   guint wrap : 2;		/* PangoWrapMode */
+  guint is_wrapped : 1;		/* Whether the layout has any wrapped lines */
   guint ellipsize : 2;		/* PangoEllipsizeMode */
   guint is_ellipsized : 1;	/* Whether the layout has any ellipsized lines */
 

@@ -444,6 +444,7 @@ pango_layout_set_width
 pango_layout_get_width
 pango_layout_set_wrap
 pango_layout_get_wrap
+pango_layout_is_wrapped
 PangoWrapMode
 PANGO_TYPE_WRAP_MODE
 pango_layout_set_ellipsize

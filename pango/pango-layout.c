@@ -199,6 +199,7 @@ pango_layout_init (PangoLayout *layout)
   layout->tab_width = -1;
 
   layout->wrap = PANGO_WRAP_WORD;
+  layout->is_wrapped = FALSE;
   layout->ellipsize = PANGO_ELLIPSIZE_NONE;
   layout->is_ellipsized = FALSE;
 }
@@ -307,7 +308,8 @@ pango_layout_copy (PangoLayout *src)
   layout->wrap = src->wrap;  
   layout->ellipsize = src->ellipsize;
   
-  /* is_ellipsized, log_attrs, lines fields are updated by check_lines */
+  /* is_wrapped, is_ellipsized, log_attrs, lines
+   * fields are updated by check_lines */
 
   return layout;
 }
@@ -393,6 +395,9 @@ pango_layout_set_wrap (PangoLayout  *layout,
  * @layout: a #PangoLayout
  * 
  * Gets the wrap mode for the layout.
+ *
+ * Use pango_layout_is_wrapped() to query whether any paragraphs
+ * were actually wrapped.
  * 
  * Return value: active wrap mode.
  **/
@@ -402,6 +407,32 @@ pango_layout_get_wrap (PangoLayout *layout)
   g_return_val_if_fail (PANGO_IS_LAYOUT (layout), 0);
   
   return layout->wrap;
+}
+
+/**
+ * pango_layout_is_wrapped:
+ * @layout: a #PangoLayout
+ * 
+ * Queries whether the layout had to wrap any paragraphs.
+ *
+ * This returns %TRUE if a positive width is set on @layout,
+ * ellipsization mode of @layout is set to %PANGO_ELLIPSIZE_NONE,
+ * and there are paragraphs exceeding the layout width that have
+ * to be wrapped.
+ *
+ * Return value: %TRUE if any paragraphs had to be wrapped, %FALSE
+ * otherwise.
+ *
+ * Since: 1.16
+ */
+gboolean
+pango_layout_is_wrapped (PangoLayout *layout)
+{
+  g_return_val_if_fail (layout != NULL, FALSE);
+
+  pango_layout_check_lines (layout);
+
+  return layout->is_wrapped;
 }
 
 /**
@@ -835,6 +866,9 @@ pango_layout_set_ellipsize (PangoLayout        *layout,
  * 
  * Return value: the current ellipsization mode for @layout.
  *
+ * Use pango_layout_is_ellipsized() to query whether any paragraphs
+ * were actually ellipsized.
+ * 
  * Since: 1.6
  **/
 PangoEllipsizeMode
@@ -851,9 +885,9 @@ pango_layout_get_ellipsize (PangoLayout *layout)
  * 
  * Queries whether the layout had to ellipsize any paragraphs.
  *
- * This can only return %TRUE if the ellipsization mode for @layout
+ * This returns %TRUE if the ellipsization mode for @layout
  * is not %PANGO_ELLIPSIZE_NONE, a positive width is set on @layout,
- * and there were paragraphs exceeding that width that had to be
+ * and there are paragraphs exceeding that width that have to be
  * ellipsized.
  *
  * Return value: %TRUE if any paragraphs had to be ellipsized, %FALSE
@@ -2483,8 +2517,6 @@ pango_layout_get_pixel_size (PangoLayout *layout,
 static void
 pango_layout_clear_lines (PangoLayout *layout)
 {
-  layout->is_ellipsized = FALSE;
-
   if (layout->lines)
     {
       GSList *tmp_list = layout->lines;
@@ -2508,6 +2540,8 @@ pango_layout_clear_lines (PangoLayout *layout)
     }
   layout->logical_rect_cached = FALSE;
   layout->ink_rect_cached = FALSE;
+  layout->is_ellipsized = FALSE;
+  layout->is_wrapped = FALSE;
 }
 
 static void
@@ -3274,6 +3308,7 @@ process_line (PangoLayout    *layout,
 	  
 	case BREAK_SOME_FIT:
 	  state->start_offset += old_num_chars - item->num_chars;
+	  layout->is_wrapped = TRUE;
 	  goto done;
 	  
 	case BREAK_NONE_FIT:
@@ -3293,6 +3328,7 @@ process_line (PangoLayout    *layout,
 	  
 	  state->start_offset += old_num_chars - item->num_chars;
 	  
+	  layout->is_wrapped = TRUE;
 	  goto done;
 
         case BREAK_LINE_SEPARATOR:

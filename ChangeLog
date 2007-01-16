@@ -1,5 +1,24 @@
 2007-01-16  Behdad Esfahbod  <behdad@gnome.org>
 
+	Part of Bug 326693 – PangoLayouts should be query-able about their
+	effective properties (width / wrapped / ellipsized / etc)
+
+	* pango/pango-layout-private.h:
+	* pango/pango-layout.c (pango_layout_init), (pango_layout_copy),
+	(pango_layout_is_wrapped), (pango_layout_clear_lines),
+	(process_line):
+	* pango/pango-layout.h:
+	New public function:
+
+		pango_layout_is_wrapped()
+
+	* pango/pango.def:
+	* docs/tmpl/layout.sgml:
+	* docs/pango-sections.txt:
+	Update.
+
+2007-01-16  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 397327 – pango-layout.c: 'pango_layout_is_ellipsized' must return
 	a value
 

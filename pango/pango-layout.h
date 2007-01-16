@@ -125,6 +125,7 @@ int            pango_layout_get_width            (PangoLayout                *la
 void           pango_layout_set_wrap             (PangoLayout                *layout,
                                                   PangoWrapMode               wrap);
 PangoWrapMode  pango_layout_get_wrap             (PangoLayout                *layout);
+gboolean       pango_layout_is_wrapped           (PangoLayout                *layout);
 void           pango_layout_set_indent           (PangoLayout                *layout,
 						  int                         indent);
 int            pango_layout_get_indent           (PangoLayout                *layout);
@@ -153,7 +154,7 @@ gboolean       pango_layout_get_single_paragraph_mode (PangoLayout              
 void               pango_layout_set_ellipsize (PangoLayout        *layout,
 					       PangoEllipsizeMode  ellipsize);
 PangoEllipsizeMode pango_layout_get_ellipsize (PangoLayout        *layout);
-gboolean pango_layout_is_ellipsized           (PangoLayout *layout);
+gboolean           pango_layout_is_ellipsized (PangoLayout        *layout);
 
 void           pango_layout_context_changed (PangoLayout    *layout);
 

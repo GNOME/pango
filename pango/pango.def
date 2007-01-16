@@ -239,6 +239,7 @@ EXPORTS
 	pango_layout_index_to_line_x
 	pango_layout_index_to_pos
 	pango_layout_is_ellipsized
+	pango_layout_is_wrapped
 	pango_layout_iter_at_last_line
 	pango_layout_iter_free
 	pango_layout_iter_get_baseline

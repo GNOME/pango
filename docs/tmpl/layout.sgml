@@ -210,6 +210,15 @@ has no user-visible fields.
 @Returns: 
 
 
+<!-- ##### FUNCTION pango_layout_is_wrapped ##### -->
+<para>
+
+</para>
+
+@layout: 
+@Returns: 
+
+
 <!-- ##### ENUM PangoWrapMode ##### -->
 <para>
 A #PangoWrapMode describes how to wrap the lines of a #PangoLayout to the desired width.
