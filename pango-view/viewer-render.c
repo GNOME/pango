@@ -1,4 +1,4 @@
-/* renderdemo.c: Common code for rendering demos
+/* viewer-render.c: Common code for rendering in viewers
  *
  * Copyright (C) 1999, 2004 Red Hat Software
  * Copyright (C) 2001 Sun Microsystems
@@ -30,7 +30,7 @@
 #include <glib/gprintf.h>
 #include <pango/pango.h>
 
-#include "renderdemo.h"
+#include "viewer-render.h"
 
 #define DEFAULT_FONT_FAMILY "Sans"
 #define DEFAULT_FONT_SIZE 18

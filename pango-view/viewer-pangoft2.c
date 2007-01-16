@@ -25,7 +25,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "renderdemo.h"
+#include "viewer-render.h"
 #include "viewer.h"
 
 #include <pango/pangoft2.h>

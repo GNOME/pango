@@ -21,7 +21,7 @@
 #include <config.h>
 #include <string.h>
 
-#include "renderdemo.h"
+#include "viewer-render.h"
 #include "viewer-x.h"
 
 void

@@ -34,7 +34,7 @@
 #endif
 
 #include "viewer.h"
-#include "renderdemo.h"
+#include "viewer-render.h"
 
 int
 main (int    argc,

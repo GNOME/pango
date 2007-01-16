@@ -20,7 +20,7 @@
  */
 #include <config.h>
 
-#include "renderdemo.h"
+#include "viewer-render.h"
 #include "viewer-x.h"
 
 #include <pango/pangox.h>

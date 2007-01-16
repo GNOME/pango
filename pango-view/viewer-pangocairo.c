@@ -21,7 +21,7 @@
 
 #include <config.h>
 
-#include "renderdemo.h"
+#include "viewer-render.h"
 #include "viewer-cairo.h"
 
 #include <pango/pangocairo.h>

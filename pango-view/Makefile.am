@@ -13,8 +13,8 @@ TEST_TEXTS =			\
 	test-tamil.txt		\
 	test-thai.txt		\
 	test-tibetan.txt	\
-	HELLO.utf8		\
-	GLASS.utf8
+	HELLO.txt		\
+	GLASS.txt
 
 EXTRA_DIST =			\
 	viewer-win32.c		\
@@ -39,8 +39,8 @@ if HAVE_FREETYPE
 noinst_PROGRAMS += pangoft2-view
 
 pangoft2_view_SOURCES =					\
-	renderdemo.h					\
-	renderdemo.c					\
+	viewer-render.h					\
+	viewer-render.c					\
 	viewer.h					\
 	viewer-main.c					\
 	viewer-pangoft2.c				\
@@ -59,8 +59,8 @@ if HAVE_X
 noinst_PROGRAMS += pangox-view
 
 pangox_view_SOURCES =					\
-	renderdemo.h					\
-	renderdemo.c					\
+	viewer-render.h					\
+	viewer-render.c					\
 	viewer.h					\
 	viewer-x.h					\
 	viewer-x.c					\
@@ -81,8 +81,8 @@ if HAVE_XFT
 noinst_PROGRAMS += pangoxft-view
 
 pangoxft_view_SOURCES =					\
-	renderdemo.h					\
-	renderdemo.c					\
+	viewer-render.h					\
+	viewer-render.c					\
 	viewer.h					\
 	viewer-x.h					\
 	viewer-x.c					\
@@ -107,8 +107,8 @@ if HAVE_CAIRO_XLIB
 noinst_PROGRAMS += pangocairo-view
 
 pangocairo_view_SOURCES =				\
-	renderdemo.h					\
-	renderdemo.c					\
+	viewer-render.h					\
+	viewer-render.c					\
 	viewer.h					\
 	viewer-cairo.h					\
 	viewer-cairo.c					\
@@ -134,8 +134,8 @@ endif
 if HAVE_X
 bin_PROGRAMS += pango-view
 pango_view_SOURCES =					\
-	renderdemo.h					\
-	renderdemo.c					\
+	viewer-render.h					\
+	viewer-render.c					\
 	viewer.h					\
 	viewer-x.h					\
 	viewer-x.c					\

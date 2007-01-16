@@ -1,4 +1,4 @@
-/* renderdemo.c: Common code for rendering demos
+/* viewer-render.c: Common code for rendering in viewers
  *
  * Copyright (C) 1999, 2004 Red Hat Software
  * Copyright (C) 2001 Sun Microsystems
@@ -18,8 +18,8 @@
  * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-#ifndef RENDERDEMO_H
-#define RENDERDEMO_H
+#ifndef VIEWER_RENDER_H
+#define VIEWER_RENDER_H
 
 #include <pango/pango-layout.h>
 
@@ -58,7 +58,7 @@ gchar *get_options_string (void);
 
 extern const char *prog_name;
 
-/* handled by renderdemo.c */
+/* handled by viewer-render.c */
 extern const char *opt_font;
 extern gboolean opt_header;
 extern int opt_margin;
@@ -83,4 +83,4 @@ extern const PangoViewer *opt_viewer;
 extern int opt_dpi;
 extern HintMode opt_hinting;
 
-#endif /* RENDERDEMO_H */
+#endif /* VIEWER_RENDER_H */
