@@ -1,7 +1,7 @@
 /* Pango
  * pango-context.c: Contexts for itemization and shaping
  *
- * Copyright (C) 2000 Red Hat Software
+ * Copyright (C) 2000, 2006 Red Hat Software
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -38,6 +38,7 @@ struct _PangoContext
   PangoDirection base_dir;
   PangoGravity base_gravity;
   PangoGravity resolved_gravity;
+  PangoGravityHint gravity_hint;
 
   PangoFontDescription *font_desc;
 
@@ -61,6 +62,8 @@ pango_context_init (PangoContext *context)
 {
   context->base_dir = PANGO_DIRECTION_WEAK_LTR;
   context->resolved_gravity = context->base_gravity = PANGO_GRAVITY_SOUTH;
+  context->gravity_hint = PANGO_GRAVITY_HINT_NATURAL;
+    
   context->language = NULL;
   context->font_map = NULL;
 
@@ -133,7 +136,7 @@ static void
 update_resolved_gravity (PangoContext *context)
 {
   if (context->base_gravity == PANGO_GRAVITY_AUTO)
-    context->resolved_gravity = pango_matrix_to_gravity (context->matrix);
+    context->resolved_gravity = pango_gravity_get_for_matrix (context->matrix);
   else
     context->resolved_gravity = context->base_gravity;
 }
@@ -466,7 +469,7 @@ pango_context_get_base_gravity (PangoContext *context)
  * 
  * Retrieves the gravity for the context. This is similar to
  * pango_context_get_base_gravity(), except for when the base gravity
- * is %PANGO_GRAVITY_AUTO for which pango_matrix_to_gravity() is used
+ * is %PANGO_GRAVITY_AUTO for which pango_gravity_get_for_matrix() is used
  * to return the gravity from the current context matrix.
  * 
  * Return value: the resolved gravity for the context.
@@ -479,6 +482,47 @@ pango_context_get_gravity (PangoContext *context)
   g_return_val_if_fail (context != NULL, PANGO_GRAVITY_SOUTH);
 
   return context->resolved_gravity;
+}
+
+/**
+ * pango_context_set_gravity_hint:
+ * @context: a #PangoContext
+ * @hint: the new gravity hint
+ * 
+ * Sets the gravity hint for the context.
+ *
+ * The gravity hint is used in laying vertical text out, and is only relevant
+ * if gravity of the context as returned by pango_context_get_gravity()
+ * is set %PANGO_GRAVITY_EAST or %PANGO_GRAVITY_WEST.
+ *
+ * Since: 1.16
+ **/
+void
+pango_context_set_gravity_hint (PangoContext    *context,
+				PangoGravityHint hint)
+{
+  g_return_if_fail (context != NULL);
+
+  context->gravity_hint = hint;
+}
+
+/**
+ * pango_context_get_gravity_hint:
+ * @context: a #PangoContext
+ * 
+ * Retrieves the gravity hint for the context. See
+ * pango_context_set_gravity_hint() for details.
+ * 
+ * Return value: the gravity hint for the context.
+ *
+ * Since: 1.16
+ **/
+PangoGravityHint
+pango_context_get_gravity_hint (PangoContext *context)
+{
+  g_return_val_if_fail (context != NULL, PANGO_GRAVITY_HINT_NATURAL);
+
+  return context->gravity_hint;
 }
 
 /**********************************************************************/
@@ -1178,10 +1222,9 @@ itemize_state_update_for_new_run (ItemizeState *state)
         {
 	  PangoGravity gravity = state->context->resolved_gravity;
 
-	  /* FIXME
-	   * gravity = pango_script_get_resolved_gravity (script, gravity, hint);
-	   */
-
+	  gravity = pango_gravity_get_for_script (state->script,
+						  state->context->resolved_gravity,
+						  state->context->gravity_hint);
 	  state->gravity = gravity;
 	}
 

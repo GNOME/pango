@@ -1,4 +1,3 @@
-/* -*- mode: C; c-file-style: "gnu" -*- */
 /* Pango
  * pango-script.h: Script tag handling
  *
@@ -25,13 +24,11 @@
 
 #include <glib.h>
 
-#include <pango/pango-types.h>
-
 G_BEGIN_DECLS
 
 /**
  * PangoScriptIter:
-
+ *
  * A #PangoScriptIter is used to iterate through a string
  * and identify ranges in different scripts.
  **/
@@ -113,6 +110,8 @@ typedef enum {                         /* ISO 15924 code */
       PANGO_SCRIPT_PHAGS_PA,           /* Phag */
       PANGO_SCRIPT_NKO                 /* Nkoo */
 } PangoScript;
+
+#include <pango/pango-types.h>
 
 PangoScript pango_script_for_unichar         (gunichar             ch);
 

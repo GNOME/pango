@@ -1,4 +1,3 @@
-/* -*- mode: C; c-file-style: "gnu" -*- */
 /* Pango
  * pango-script.c: Script tag handling
  *

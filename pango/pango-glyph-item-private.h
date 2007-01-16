@@ -1,4 +1,3 @@
-/* -*- mode: C; c-file-style: "gnu" -*- */
 /* Pango
  * pango-glyph-item-private.h: Pair of PangoItem and a glyph string; private
  *   functionality

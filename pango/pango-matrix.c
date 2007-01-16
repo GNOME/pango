@@ -1,7 +1,7 @@
 /* Pango
  * pango-matrix.c: Matrix manipulation routines
  *
- * Copyright (C) 2000 Red Hat Software
+ * Copyright (C) 2000, 2006 Red Hat Software
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -23,7 +23,7 @@
 #include <stdlib.h>
 #include <math.h>
 
-#include "pango-types.h"
+#include "pango-matrix.h"
 #include "pango-impl-utils.h"
 
 GType
@@ -248,39 +248,6 @@ pango_matrix_get_font_scale_factor (const PangoMatrix *matrix)
 
       return minor;
     }
-}
-
-/**
- * pango_matrix_to_gravity:
- * @matrix: a #PangoMatrix
- *
- * Finds the gravity that best matches the rotation component
- * in a #PangoMatrix.
- *
- * Return value: the gravity of @matrix, which will never be
- * %PANGO_GRAVITY_AUTO, or PANGO_GRAVITY_SOUTH if @matrix is %NULL
- *
- * Since: 1.16
- */
-PangoGravity
-pango_matrix_to_gravity (const PangoMatrix *matrix)
-{
-  PangoGravity gravity;
-  double x;
-  double y;
-  
-  if (!matrix)
-    return PANGO_GRAVITY_SOUTH;
-
-  x = matrix->xy;
-  y = matrix->yy;
-
-  if (abs (x) > abs (y))
-    gravity = x > 0 ? PANGO_GRAVITY_WEST : PANGO_GRAVITY_EAST;
-  else
-    gravity = y < 0 ? PANGO_GRAVITY_NORTH : PANGO_GRAVITY_SOUTH;
-
-  return gravity;
 }
 
 /**

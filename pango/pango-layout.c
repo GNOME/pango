@@ -1,7 +1,7 @@
 /* Pango
  * pango-layout.c: High-level layout driver
  *
- * Copyright (C) 2000, 2001 Red Hat Software
+ * Copyright (C) 2000, 2001, 2006 Red Hat Software
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -3138,6 +3138,7 @@ line_set_resolved_dir (PangoLayoutLine *line,
 {
   switch (direction)
     {
+    default:
     case PANGO_DIRECTION_LTR:
     case PANGO_DIRECTION_TTB_RTL:
     case PANGO_DIRECTION_WEAK_LTR:
@@ -3166,8 +3167,9 @@ line_set_resolved_dir (PangoLayoutLine *line,
    */
   switch (pango_context_get_gravity (line->layout->context))
     {
-    case PANGO_GRAVITY_SOUTH:
     default:
+    case PANGO_GRAVITY_AUTO:
+    case PANGO_GRAVITY_SOUTH:
       break;
     case PANGO_GRAVITY_NORTH:
       line->resolved_dir = PANGO_DIRECTION_LTR

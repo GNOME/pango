@@ -1,5 +1,4 @@
-/* -*- mode: C; c-file-style: "gnu" -*- */
-/* pango
+/* Pango
  * pango-attributes.c: Attributed text
  *
  * Copyright (C) 2000-2002 Red Hat Software

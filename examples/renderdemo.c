@@ -57,6 +57,7 @@ int opt_indent = 0;
 int opt_runs = 1;
 PangoEllipsizeMode opt_ellipsize = PANGO_ELLIPSIZE_NONE;
 PangoGravity opt_gravity = PANGO_GRAVITY_SOUTH;
+PangoGravityHint opt_gravity_hint = PANGO_GRAVITY_HINT_NATURAL;
 HintMode opt_hinting = HINT_DEFAULT;
 PangoWrapMode opt_wrap = PANGO_WRAP_WORD_CHAR;
 gboolean opt_wrap_set = FALSE;
@@ -289,6 +290,7 @@ do_output (PangoContext     *context,
     }
 
   pango_context_set_base_gravity (context, opt_gravity);
+  pango_context_set_gravity_hint (context, opt_gravity_hint);
 
   set_transform (context, transform_cb, cb_context, cb_data, &matrix);
 
@@ -382,6 +384,34 @@ parse_gravity (const char *name,
 		    G_OPTION_ERROR, 
 		    G_OPTION_ERROR_BAD_VALUE,
 		    "Argument for --gravity must be one of south/east/north/west/auto");
+	ret = FALSE;
+    }
+
+  return ret;
+}
+
+static gboolean
+parse_gravity_hint (const char *name,
+		    const char *arg,
+		    gpointer    data,
+		    GError **error)
+{
+  static GEnumClass *class = NULL;
+  gboolean ret = TRUE;
+  GEnumValue *value;
+
+  if (!class)
+    class = g_type_class_ref (PANGO_TYPE_GRAVITY_HINT);
+
+  value = g_enum_get_value_by_nick (class, arg);
+  if (value)
+    opt_gravity_hint = value->value;
+  else
+    {
+        g_set_error(error,
+		    G_OPTION_ERROR, 
+		    G_OPTION_ERROR_BAD_VALUE,
+		    "Argument for --gravity-hint must be one of natural/strong/line");
 	ret = FALSE;
     }
 
@@ -566,7 +596,9 @@ parse_options (int argc, char *argv[])
     {"font",		0, 0, G_OPTION_ARG_STRING,			&opt_font,
      "Set the font description",			       "description"},
     {"gravity",		0, 0, G_OPTION_ARG_CALLBACK,			&parse_gravity,
-     "Gravity: glyph rotation",			"south/east/north/west/auto"},
+     "Base gravity: glyph rotation",		"south/east/north/west/auto"},
+    {"gravity-hint",	0, 0, G_OPTION_ARG_CALLBACK,			&parse_gravity_hint,
+     "Gravity hint",				       "natural/strong/line"},
     {"header",		0, 0, G_OPTION_ARG_NONE,			&opt_header,
      "Display the options in the output",				NULL},
     {"hinting",		0, 0, G_OPTION_ARG_CALLBACK,			&parse_hinting,

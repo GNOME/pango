@@ -77,18 +77,19 @@ libpango_1_0_la_SOURCES =			\
 	pango-fontset.c				\
 	pango-glyph-item.c			\
 	pango-glyph-item-private.h		\
+	pango-gravity.c				\
 	pango-impl-utils.h			\
 	pango-item.c				\
 	pango-layout.c				\
 	pango-layout-private.h			\
 	pango-markup.c				\
+	pango-matrix.c				\
 	pango-renderer.c			\
 	pango-script.c				\
 	pango-script-lang-table.h		\
 	pango-script-table.h			\
 	pango-tabs.c				\
 	pango-utils.c				\
-	pango-matrix.c				\
 	reorder-items.c				\
 	shape.c					\
 	pango-enum-types.c			\
@@ -106,16 +107,16 @@ pango_headers =		   \
 	pango-fontset.h    \
 	pango-glyph.h	   \
 	pango-glyph-item.h \
+	pango-gravity.h    \
 	pango-item.h	   \
 	pango-layout.h	   \
+	pango-matrix.h     \
 	pango-modules.h	   \
 	pango-renderer.h   \
 	pango-script.h	   \
 	pango-tabs.h	   \
 	pango-types.h	   \
-	pango-utils.h	   \
-	pangofc-font.h	   \
-	pangofc-fontmap.h
+	pango-utils.h
 
 pangoinclude_HEADERS =	   \
 	$(pango_headers)   \
@@ -183,6 +184,7 @@ libpangox_1_0_la_SOURCES = \
 # ------------------- libpangoft2 -------------------
 
 if HAVE_FREETYPE
+pangoinclude_HEADERS += pangofc-font.h pangofc-fontmap.h
 pangoinclude_HEADERS += pangoft2.h pango-ot.h pangofc-decoder.h
 lib_LTLIBRARIES += libpangoft2-1.0.la
 endif

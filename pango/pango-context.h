@@ -82,6 +82,9 @@ void                      pango_context_set_base_gravity     (PangoContext      
 							      PangoGravity                gravity);
 PangoGravity              pango_context_get_base_gravity     (PangoContext               *context);
 PangoGravity              pango_context_get_gravity          (PangoContext               *context);
+void                      pango_context_set_gravity_hint     (PangoContext               *context,
+							      PangoGravityHint            hint);
+PangoGravityHint          pango_context_get_gravity_hint     (PangoContext               *context);
 
 void                        pango_context_set_matrix (PangoContext      *context,
 						      const PangoMatrix *matrix);

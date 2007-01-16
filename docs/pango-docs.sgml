@@ -28,6 +28,7 @@
 <!ENTITY markup-format SYSTEM "pango_markup.sgml">
 <!ENTITY pango-querymodules SYSTEM "pango-querymodules.xml">
 <!ENTITY pango-Version SYSTEM "xml/pango-version.xml">
+<!ENTITY pango-Vertical-Text SYSTEM "xml/vertical.xml">
 <!ENTITY version SYSTEM "version.xml">
 ]>
 <book id="index">
@@ -46,6 +47,7 @@
     &markup-format;
     &pango-Layout-Objects;
     &pango-Scripts;
+    &pango-Vertical-Text;
   </chapter>
 
   <chapter id="rendering">

@@ -1,3 +1,51 @@
+2007-01-15  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 323173 – Add layout of mixed direction text for vertical layout
+
+	* pango/pango-gravity.h:
+	* pango/pango-gravity.c:
+	Moved gravity stuff here.  New public API:
+
+		PangoGravityHint
+		pango_gravity_get_for_matrix()
+		pango_gravity_get_for_script()
+
+	* pango/pango-context.h:
+	* pango/pango-context.c (pango_context_init),
+	(update_resolved_gravity), (itemize_state_update_for_new_run):
+	Support gravity hint.  New public API:
+
+		pango_context_set_gravity_hint()
+		pango_context_get_gravity_hint()
+
+	* pango/pango-utils.c:
+	* pango/pango-matrix.c:
+	* pango/pango-matrix.h:
+	* pango/pango-types.h:
+	Moved gravity and matrix stuff into its own header.  pango-types.h
+	includes both pango-matrix.h and pango-gravity.h
+
+	* pango/pango.h:
+	Include new headers.
+
+	* pango/pango.def:
+	* pango/Makefile.am:
+	Update.
+
+	* docs/pango-docs.sgml:
+	* docs/pango-sections.txt:
+	* docs/tmpl/glyphs.sgml:
+	* docs/tmpl/main.sgml:
+	* docs/tmpl/vertical.sgml:
+	Add a section for Vertical Text.
+
+	* examples/renderdemo.c (do_output), (parse_gravity_hint),
+	(parse_options):
+	Support gravity hint.
+
+	* examples/test-mixed.txt:
+	New test, mixed Latin, Arabic, Chinese text.
+
 2007-01-15  Tor Lillqvist  <tml@novell.com>
 
 	* configure.in: Don't check for X and don't warn about missing

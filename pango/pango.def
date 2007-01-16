@@ -56,6 +56,7 @@ EXPORTS
 	pango_context_get_font_description
 	pango_context_get_font_map
 	pango_context_get_gravity
+	pango_context_get_gravity_hint
 	pango_context_get_language
 	pango_context_get_matrix
 	pango_context_get_metrics
@@ -68,6 +69,7 @@ EXPORTS
 	pango_context_set_base_gravity
 	pango_context_set_font_description
 	pango_context_set_font_map
+	pango_context_set_gravity_hint
 	pango_context_set_language
 	pango_context_set_matrix
 	pango_coverage_copy
@@ -184,7 +186,10 @@ EXPORTS
 	pango_glyph_string_new
 	pango_glyph_string_set_size
 	pango_glyph_string_x_to_index
+	pango_gravity_get_for_matrix
+	pango_gravity_get_for_script
 	pango_gravity_get_type
+	pango_gravity_hint_get_type
 	pango_gravity_to_rotation
 	pango_is_zero_width
 	pango_item_copy
@@ -287,7 +292,6 @@ EXPORTS
 	pango_matrix_get_type
 	pango_matrix_rotate
 	pango_matrix_scale
-	pango_matrix_to_gravity
 	pango_matrix_transform_distance
 	pango_matrix_transform_pixel_rectangle
 	pango_matrix_transform_point

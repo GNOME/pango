@@ -8,8 +8,6 @@ PangoAnalysis
 PANGO_ANALYSIS_FLAG_CENTERED_BASELINE
 PangoDirection
 PANGO_TYPE_DIRECTION
-PangoGravity
-PANGO_TYPE_GRAVITY
 <SUBSECTION>
 pango_itemize
 pango_itemize_with_base_dir
@@ -31,6 +29,8 @@ pango_context_set_base_dir
 pango_context_get_base_gravity
 pango_context_set_base_gravity
 pango_context_get_gravity
+pango_context_get_gravity_hint
+pango_context_set_gravity_hint
 pango_context_get_matrix
 pango_context_set_matrix
 pango_context_load_font
@@ -63,7 +63,6 @@ pango_shape
 <SUBSECTION Private>
 pango_direction_get_type
 pango_context_get_type
-pango_gravity_get_type
 pango_item_get_type
 </SECTION>
 
@@ -96,7 +95,6 @@ pango_matrix_transform_distance
 pango_matrix_transform_rectangle
 pango_matrix_transform_pixel_rectangle
 pango_matrix_get_font_scale_factor
-pango_matrix_to_gravity
 PangoGlyph
 PANGO_GLYPH_EMPTY
 PANGO_GLYPH_UNKNOWN_FLAG
@@ -992,4 +990,19 @@ PANGO_VERSION_CHECK
 pango_version
 pango_version_string
 pango_version_check
+</SECTION>
+
+<SECTION>
+<TITLE>Vertical Text</TITLE>
+<FILE>vertical</FILE>
+PangoGravity
+PANGO_TYPE_GRAVITY
+PangoGravityHint
+PANGO_TYPE_GRAVITY_HINT
+PANGO_GRAVITY_IS_VERTICAL
+pango_gravity_get_for_matrix
+pango_gravity_get_for_script
+<SUBSECTION Private>
+pango_gravity_get_type
+pango_gravity_hint_get_type
 </SECTION>

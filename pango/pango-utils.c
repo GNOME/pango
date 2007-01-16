@@ -1,4 +1,4 @@
-  /* Pango
+/* Pango
  * pango-utils.c: Utilities for internal functions and modules
  *
  * Copyright (C) 2000 Red Hat Software
@@ -1829,34 +1829,6 @@ pango_quantize_line_geometry (int *thickness,
     }
 
   *thickness = thickness_pixels * PANGO_SCALE;
-}
-
-/**
- * pango_gravity_to_rotation:
- * @gravity: gravity to query
- *
- * Converts a #PangoGravity value to its rotation value.
- *
- * Return value: the rotation value corresponding to @gravity,
- * or zero if @gravity is %PANGO_GRAVITY_AUTO
- *
- * Since: 1.16
- */
-double
-pango_gravity_to_rotation (PangoGravity gravity)
-{
-  double rotation;
-
-  switch (gravity)
-    {
-      default:
-      case PANGO_GRAVITY_SOUTH:	rotation =  0;		break;
-      case PANGO_GRAVITY_NORTH:	rotation =  G_PI;	break;
-      case PANGO_GRAVITY_EAST:	rotation = -G_PI_2;	break;
-      case PANGO_GRAVITY_WEST:	rotation = +G_PI_2;	break;
-    }
-
-  return rotation;
 }
 
 /**

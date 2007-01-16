@@ -272,15 +272,6 @@ horizontal origin.
 @Returns: 
 
 
-<!-- ##### FUNCTION pango_matrix_to_gravity ##### -->
-<para>
-
-</para>
-
-@matrix: 
-@Returns: 
-
-
 <!-- ##### TYPEDEF PangoGlyph ##### -->
 <para>
 A #PangoGlyph represents a single glyph in the output form of a string.

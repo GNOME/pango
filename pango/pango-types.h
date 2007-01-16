@@ -35,7 +35,6 @@ typedef struct _PangoEngineShape PangoEngineShape;
 typedef struct _PangoFont    PangoFont;
 typedef struct _PangoFontMap PangoFontMap;
 
-typedef struct _PangoMatrix    PangoMatrix;
 typedef struct _PangoRectangle PangoRectangle;
 
 
@@ -147,118 +146,9 @@ gboolean       pango_get_mirror_char        (gunichar     ch,
 #endif
 
 
-
-/**
- * PangoGravity:
- * @PANGO_GRAVITY_SOUTH: Glyphs stand upright (default)
- * @PANGO_GRAVITY_EAST: Glyphs are rotated 90 degrees clockwise
- * @PANGO_GRAVITY_NORTH: Glyphs are upside-down
- * @PANGO_GRAVITY_WEST: Glyphs are rotated 90 degrees counter-clockwise
- * @PANGO_GRAVITY_AUTO: Gravity is resolved from the context matrix
- * 
- * The #PangoGravity type represents the orientation of glyphs in a segment
- * of text.  This is useful when rendering vertical text layouts.  In
- * those situations, the layout is rotated using a non-identity PangoMatrix,
- * and then glyph orientation is controlled using #PangoGravity.
- * Not every value in this enumeration makes sense for every usage of
- * #PangoGravity; for example, %PANGO_GRAVITY_AUTO only can be passed to
- * pango_context_set_base_gravity() and can only be returned by
- * pango_context_get_base_gravity().
- *
- * Since: 1.16
- **/			  
-typedef enum {
-  PANGO_GRAVITY_SOUTH,
-  PANGO_GRAVITY_EAST,
-  PANGO_GRAVITY_NORTH,
-  PANGO_GRAVITY_WEST,
-  PANGO_GRAVITY_AUTO
-} PangoGravity;
-
-double pango_gravity_to_rotation (PangoGravity gravity) G_GNUC_CONST;
-
-
-
-/**
- * PangoMatrix:
- * @xx: 1st component of the transformation matrix
- * @xy: 2nd component of the transformation matrix
- * @yx: 3rd component of the transformation matrix
- * @yy: 4th component of the transformation matrix
- * @x0: x translation
- * @y0: y translation
- *
- * A structure specifying a transformation between user-space
- * coordinates and device coordinates. The transformation
- * is given by
- *
- * <programlisting>
- * x_device = x_user * matrix->xx + y_user * matrix->xy + matrix->x0;
- * y_device = x_user * matrix->yx + y_user * matrix->yy + matrix->y0;
- * </programlisting>
- *
- * Since: 1.6
- **/
-struct _PangoMatrix
-{
-  double xx;
-  double xy;
-  double yx;
-  double yy;
-  double x0;
-  double y0;
-};
-
-/**
- * PANGO_TYPE_MATRIX
- *
- * The GObject type for #PangoMatrix
- **/
-#define PANGO_TYPE_MATRIX (pango_matrix_get_type ())
-
-/**
- * PANGO_MATRIX_INIT
- *
- * Constant that can be used to initialize a PangoMatrix to
- * the identity transform.
- *
- * <informalexample><programlisting>
- * PangoMatrix matrix = PANGO_MATRIX_INIT;
- * pango_matrix_rotate (&amp;matrix, 45.);
- * </programlisting></informalexample>
- *
- * Since: 1.6
- **/
-#define PANGO_MATRIX_INIT { 1., 0., 0., 1., 0., 0. }
-
-GType pango_matrix_get_type (void);
-
-PangoMatrix *pango_matrix_copy   (const PangoMatrix *matrix);
-void         pango_matrix_free   (PangoMatrix *matrix);
-
-void pango_matrix_translate (PangoMatrix *matrix,
-			     double       tx,
-			     double       ty);
-void pango_matrix_scale     (PangoMatrix *matrix,
-			     double       scale_x,
-			     double       scale_y);
-void pango_matrix_rotate    (PangoMatrix *matrix,
-			     double       degrees);
-void pango_matrix_concat    (PangoMatrix       *matrix,
-			     const PangoMatrix *new_matrix);
-void pango_matrix_transform_point    (const PangoMatrix *matrix,
-				      double            *x,
-				      double            *y);
-void pango_matrix_transform_distance (const PangoMatrix *matrix,
-				      double            *dx,
-				      double            *dy);
-void pango_matrix_transform_rectangle (const PangoMatrix *matrix,
-				       PangoRectangle    *rect);
-void pango_matrix_transform_pixel_rectangle (const PangoMatrix *matrix,
-					     PangoRectangle    *rect);
-double pango_matrix_get_font_scale_factor (const PangoMatrix *matrix);
-PangoGravity pango_matrix_to_gravity (const PangoMatrix *matrix);
-
+#include <pango/pango-matrix.h>
+#include <pango/pango-script.h>
+#include <pango/pango-gravity.h>
 
 
 G_END_DECLS
