@@ -530,7 +530,7 @@ pango_renderer_draw_layout_line (PangoRenderer    *renderer,
 	  pango_renderer_draw_rectangle (renderer,
 					 PANGO_RENDER_PART_BACKGROUND,
 					 x + x_off,
-					 y - rise + overall_rect.y,
+					 y + overall_rect.y,
 					 glyph_string_width,
 					 overall_rect.height);
 	}

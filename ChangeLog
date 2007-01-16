@@ -1,5 +1,10 @@
 2007-01-16  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango/pango-renderer.c (pango_renderer_draw_layout_line): Fix
+	background rendering being off in presence of rise attributes.
+
+2007-01-16  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/pango-context.c (itemize_state_init),
 	(itemize_state_update_for_new_run): Update  centered_baseline in
 	presence of gravity attributes.
