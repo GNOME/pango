@@ -39,7 +39,7 @@ pango_engine_shape_real_covers (PangoEngineShape *engine,
 				PangoLanguage    *language,
 				gunichar          wc)
 {
-  
+
   PangoCoverage *coverage = pango_font_get_coverage (font, language);
   PangoCoverageLevel result = pango_coverage_get (coverage, wc);
 
@@ -94,7 +94,7 @@ _pango_engine_shape_covers (PangoEngineShape *engine,
 typedef PangoEngineShape PangoFallbackEngine;
 typedef PangoEngineShapeClass PangoFallbackEngineClass;
 
-static void 
+static void
 fallback_engine_shape (PangoEngineShape *engine,
 		       PangoFont        *font,
                        const char       *text,
@@ -105,25 +105,25 @@ fallback_engine_shape (PangoEngineShape *engine,
   int n_chars;
   int i;
   const char *p;
-  
+
   n_chars = text ? g_utf8_strlen (text, length) : 0;
 
   pango_glyph_string_set_size (glyphs, n_chars);
-  
+
   p = text;
   for (i = 0; i < n_chars; i++)
     {
       PangoRectangle logical_rect;
       PangoGlyph glyph = g_utf8_get_char (p) | PANGO_GLYPH_UNKNOWN_FLAG;
-      
+
       pango_font_get_glyph_extents (analysis->font, glyph, NULL, &logical_rect);
 
       glyphs->glyphs[i].glyph = glyph;
-      
+
       glyphs->glyphs[i].geometry.x_offset = 0;
       glyphs->glyphs[i].geometry.y_offset = 0;
       glyphs->glyphs[i].geometry.width = logical_rect.width;
-      
+
       glyphs->log_clusters[i] = p - text;
 
       p = g_utf8_next_char (p);

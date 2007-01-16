@@ -151,9 +151,9 @@ pango_version_check (int required_major,
 /**
  * pango_trim_string:
  * @str: a string
- * 
+ *
  * Trims leading and trailing whitespace from a string.
- * 
+ *
  * Return value: A newly-allocated string that must be freed with g_free()
  **/
 char *
@@ -162,7 +162,7 @@ pango_trim_string (const char *str)
   int len;
 
   g_return_val_if_fail (str != NULL, NULL);
-  
+
   while (*str && g_ascii_isspace (*str))
     str++;
 
@@ -176,10 +176,10 @@ pango_trim_string (const char *str)
 /**
  * pango_split_file_list:
  * @str: a %G_SEARCHPATH_SEPARATOR separated list of filenames
- * 
+ *
  * Splits a %G_SEARCHPATH_SEPARATOR-separated list of files, stripping
  * white space and substituting ~/ with $HOME/.
- * 
+ *
  * Return value: a list of strings to be freed with g_strfreev()
  **/
 char **
@@ -200,10 +200,10 @@ pango_split_file_list (const char *str)
 	{
 	  g_free(file);
 	  g_free (files[i]);
-	  
+
 	  for (j = i + 1; files[j]; j++)
 	    files[j - 1] = files[j];
-	  
+
 	  files[j - 1] = NULL;
 
 	  continue;
@@ -229,7 +229,7 @@ pango_split_file_list (const char *str)
 #endif
       g_free (files[i]);
       files[i] = file;
-	
+
       i++;
     }
 
@@ -240,7 +240,7 @@ pango_split_file_list (const char *str)
  * pango_read_line:
  * @stream: a stdio stream
  * @str: #GString buffer into which to write the result
- * 
+ *
  * Reads an entire line from a file into a buffer. Lines may
  * be delimited with '\n', '\r', '\n\r', or '\r\n'. The delimiter
  * is not written into the buffer. Text after a '#' character is treated as
@@ -248,10 +248,10 @@ pango_split_file_list (const char *str)
  * '\' proceeding a line delimiter combines adjacent lines. A '\' proceeding
  * any other character is ignored and written into the output buffer
  * unmodified.
- * 
+ *
  * Return value: 0 if the stream was already at an %EOF character, otherwise
  *               the number of lines read (this is useful for maintaining
- *               a line number counter which doesn't combine lines with '\') 
+ *               a line number counter which doesn't combine lines with '\')
  **/
 gint
 pango_read_line (FILE *stream, GString *str)
@@ -260,22 +260,22 @@ pango_read_line (FILE *stream, GString *str)
   gboolean comment = FALSE;
   int n_read = 0;
   int lines = 1;
-  
+
   flockfile (stream);
 
   g_string_truncate (str, 0);
-  
+
   while (1)
     {
       int c;
-      
+
       c = getc_unlocked (stream);
 
       if (c == EOF)
 	{
 	  if (quoted)
 	    g_string_append_c (str, '\\');
-	  
+
 	  goto done;
 	}
       else
@@ -284,7 +284,7 @@ pango_read_line (FILE *stream, GString *str)
       if (quoted)
 	{
 	  quoted = FALSE;
-	  
+
 	  switch (c)
 	    {
 	    case '#':
@@ -301,11 +301,11 @@ pango_read_line (FILE *stream, GString *str)
 		  ungetc (next_c, stream);
 
 		lines++;
-		
+
 		break;
 	      }
 	    default:
-	      g_string_append_c (str, '\\');	      
+	      g_string_append_c (str, '\\');
 	      g_string_append_c (str, c);
 	    }
 	}
@@ -348,9 +348,9 @@ pango_read_line (FILE *stream, GString *str)
 /**
  * pango_skip_space:
  * @pos: in/out string position
- * 
+ *
  * Skips 0 or more characters of white space.
- * 
+ *
  * Return value: %FALSE if skipping the white space leaves
  * the position at a '\0' character.
  **/
@@ -358,7 +358,7 @@ gboolean
 pango_skip_space (const char **pos)
 {
   const char *p = *pos;
-  
+
   while (g_ascii_isspace (*p))
     p++;
 
@@ -371,12 +371,12 @@ pango_skip_space (const char **pos)
  * pango_scan_word:
  * @pos: in/out string position
  * @out: a #GString into which to write the result
- * 
+ *
  * Scans a word into a #GString buffer. A word consists
  * of [A-Za-z_] followed by zero or more [A-Za-z_0-9]
  * Leading white space is skipped.
- * 
- * Return value: %FALSE if a parse error occurred. 
+ *
+ * Return value: %FALSE if a parse error occurred.
  **/
 gboolean
 pango_scan_word (const char **pos, GString *out)
@@ -385,7 +385,7 @@ pango_scan_word (const char **pos, GString *out)
 
   while (g_ascii_isspace (*p))
     p++;
-  
+
   if (!((*p >= 'A' && *p <= 'Z') ||
 	(*p >= 'a' && *p <= 'z') ||
 	*p == '_'))
@@ -413,19 +413,19 @@ pango_scan_word (const char **pos, GString *out)
  * pango_scan_string:
  * @pos: in/out string position
  * @out: a #GString into which to write the result
- * 
+ *
  * Scans a string into a #GString buffer. The string may either
  * be a sequence of non-white-space characters, or a quoted
  * string with '"'. Instead a quoted string, '\"' represents
  * a literal quote. Leading white space outside of quotes is skipped.
- * 
+ *
  * Return value: %FALSE if a parse error occurred.
  **/
 gboolean
 pango_scan_string (const char **pos, GString *out)
 {
   const char *p = *pos;
-  
+
   while (g_ascii_isspace (*p))
     p++;
 
@@ -443,7 +443,7 @@ pango_scan_string (const char **pos, GString *out)
 	  if (quoted)
 	    {
 	      int c = *p;
-	      
+
 	      switch (c)
 		{
 		case '\0':
@@ -457,7 +457,7 @@ pango_scan_string (const char **pos, GString *out)
 		default:
 		  break;
 		}
-	      
+
 	      quoted = FALSE;
 	      g_string_append_c (out, c);
 	    }
@@ -503,10 +503,10 @@ pango_scan_string (const char **pos, GString *out)
  * pango_scan_int:
  * @pos: in/out string position
  * @out: an int into which to write the result
- * 
- * Scans an integer. 
+ *
+ * Scans an integer.
  * Leading white space is skipped.
- * 
+ *
  * Return value: %FALSE if a parse error occurred.
  **/
 gboolean
@@ -523,7 +523,7 @@ pango_scan_int (const char **pos, int *out)
       errno = 0;
       return FALSE;
     }
-	
+
   *out = (int)temp;
   if ((long)(*out) != temp)
     {
@@ -545,7 +545,7 @@ read_config_file (const char *filename, gboolean enoent_error)
   gchar **groups;
   gsize groups_count = 0;
   guint group_index;
-  
+
   if (!g_key_file_load_from_file(key_file,filename, 0, &key_file_error))
     {
       if (key_file_error)
@@ -560,7 +560,7 @@ read_config_file (const char *filename, gboolean enoent_error)
       g_key_file_free(key_file);
       return;
     }
-  
+
   groups = g_key_file_get_groups (key_file, &groups_count);
   for (group_index = 0; group_index < groups_count; group_index++)
     {
@@ -568,9 +568,9 @@ read_config_file (const char *filename, gboolean enoent_error)
       const gchar *group = groups[group_index];
       GError *keys_error = NULL;
       gchar **keys;
-      
+
       keys = g_key_file_get_keys(key_file, group, &keys_count, &keys_error);
-      
+
       if (keys)
 	{
 	  guint key_index;
@@ -615,7 +615,7 @@ read_config (void)
       char *filename;
       const char *home;
       const char *envvar;
-      
+
       config_hash = g_hash_table_new_full (g_str_hash, g_str_equal,
 					   (GDestroyNotify)g_free,
 					   (GDestroyNotify)g_free);
@@ -642,11 +642,11 @@ read_config (void)
 /**
  * pango_config_key_get:
  * @key: Key to look up, in the form "SECTION/KEY".
- * 
+ *
  * Looks up a key in the Pango config database
  * (pseudo-win.ini style, read from $sysconfdir/pango/pangorc,
  *  ~/.pangorc, and getenv (PANGO_RC_FILE).)
- * 
+ *
  * Return value: the value, if found, otherwise %NULL. The value is a
  * newly-allocated string and must be freed with g_free().
  **/
@@ -654,7 +654,7 @@ char *
 pango_config_key_get (const char *key)
 {
   g_return_val_if_fail (key != NULL, NULL);
-  
+
   read_config ();
 
   return g_strdup (g_hash_table_lookup (config_hash, key));
@@ -676,7 +676,7 @@ G_WIN32_DLLMAIN_FOR_DLL_NAME(static, dll_name)
  * the DLL's location, or stored in the Registry).
  *
  * Return value: the Pango sysconf directory. The returned string should
- * not be freed. 
+ * not be freed.
  */
 G_CONST_RETURN char *
 pango_get_sysconf_subdirectory (void)
@@ -704,7 +704,7 @@ pango_get_sysconf_subdirectory (void)
  * not be freed.
  *
  * Return value: the Pango lib directory. The returned string should
- * not be freed. 
+ * not be freed.
  */
 G_CONST_RETURN char *
 pango_get_lib_subdirectory (void)
@@ -730,7 +730,7 @@ pango_get_lib_subdirectory (void)
  * @value: integer to store the result in, or %NULL.
  * @warn: if %TRUE, issue a g_warning() on bad input.
  * @possible_values: place to store list of possible values on failure, or %NULL.
- * 
+ *
  * Parses an enum type and stored the result in @value.
  *
  * If @str does not match the nick name of any of the possible values for the
@@ -739,11 +739,11 @@ pango_get_lib_subdirectory (void)
  * @possible_values.  The list is slash-separated, eg.
  * "none/start/middle/end".  If failed and @possible_values is not %NULL,
  * returned string should be freed using g_free().
- * 
+ *
  * Return value: %TRUE if @str was successfully parsed.
  *
  * Since: 1.16
- **/ 
+ **/
 gboolean
 pango_parse_enum (GType       type,
 		  const char *str,
@@ -788,7 +788,7 @@ pango_parse_enum (GType       type,
 
 	  if (possible_values)
 	    *possible_values = s->str;
-	    
+
 	  g_string_free (s, possible_values ? FALSE : TRUE);
 	}
     }
@@ -803,13 +803,13 @@ pango_parse_enum (GType       type,
  * @str: a string to parse.
  * @style: a #PangoStyle to store the result in.
  * @warn: if %TRUE, issue a g_warning() on bad input.
- * 
+ *
  * Parses a font style. The allowed values are "normal",
  * "italic" and "oblique", case variations being
  * ignored.
- * 
+ *
  * Return value: %TRUE if @str was successfully parsed.
- **/ 
+ **/
 gboolean
 pango_parse_style (const char *str,
 		   PangoStyle *style,
@@ -847,7 +847,7 @@ pango_parse_style (const char *str,
     }
   if (warn)
     g_warning ("style must be normal, italic, or oblique");
-  
+
   return FALSE;
 }
 
@@ -856,13 +856,13 @@ pango_parse_style (const char *str,
  * @str: a string to parse.
  * @variant: a #PangoVariant to store the result in.
  * @warn: if %TRUE, issue a g_warning() on bad input.
- * 
+ *
  * Parses a font variant. The allowed values are "normal"
  * and "smallcaps" or "small_caps", case variations being
  * ignored.
- * 
+ *
  * Return value: %TRUE if @str was successfully parsed.
- **/ 
+ **/
 gboolean
 pango_parse_variant (const char   *str,
 		     PangoVariant *variant,
@@ -891,7 +891,7 @@ pango_parse_variant (const char   *str,
 	}
       break;
     }
-  
+
   if (warn)
     g_warning ("variant must be normal or small_caps");
   return FALSE;
@@ -902,13 +902,13 @@ pango_parse_variant (const char   *str,
  * @str: a string to parse.
  * @weight: a #PangoWeight to store the result in.
  * @warn: if %TRUE, issue a g_warning() on bad input.
- * 
+ *
  * Parses a font weight. The allowed values are "heavy",
- * "ultrabold", "bold", "normal", "light", "ultraleight" 
+ * "ultrabold", "bold", "normal", "light", "ultraleight"
  * and integers. Case variations are ignored.
- * 
+ *
  * Return value: %TRUE if @str was successfully parsed.
- **/ 
+ **/
 gboolean
 pango_parse_weight (const char  *str,
 		    PangoWeight *weight,
@@ -987,7 +987,7 @@ pango_parse_weight (const char  *str,
 	return TRUE;
       }
     }
-  
+
   if (warn)
     g_warning ("weight must be ultralight, light, normal, bold, ultrabold, heavy, or an integer");
   return FALSE;
@@ -998,15 +998,15 @@ pango_parse_weight (const char  *str,
  * @str: a string to parse.
  * @stretch: a #PangoStretch to store the result in.
  * @warn: if %TRUE, issue a g_warning() on bad input.
- * 
- * Parses a font stretch. The allowed values are 
- * "ultra_condensed", "extra_condensed", "condensed", 
- * "semi_condensed", "normal", "semi_expanded", "expanded", 
- * "extra_expanded" and "ultra_expanded". Case variations are 
+ *
+ * Parses a font stretch. The allowed values are
+ * "ultra_condensed", "extra_condensed", "condensed",
+ * "semi_condensed", "normal", "semi_expanded", "expanded",
+ * "extra_expanded" and "ultra_expanded". Case variations are
  * ignored and the '_' characters may be omitted.
- * 
+ *
  * Return value: %TRUE if @str was successfully parsed.
- **/ 
+ **/
 gboolean
 pango_parse_stretch (const char   *str,
 		     PangoStretch *stretch,
@@ -1016,7 +1016,7 @@ pango_parse_stretch (const char   *str,
     return FALSE;
 
   switch (str[0])
-    { 
+    {
     case 'c':
     case 'C':
       if (g_ascii_strcasecmp (str, "condensed") == 0)
@@ -1091,16 +1091,16 @@ pango_parse_stretch (const char   *str,
 }
 
 static const char canon_map[256] = {
-   0,   0,   0,   0,   0,   0,   0,   0,    0,   0,   0,   0,   0,   0,   0,   0, 
-   0,   0,   0,   0,   0,   0,   0,   0,    0,   0,   0,   0,   0,   0,   0,   0, 
-   0,   0,   0,   0,   0,   0,   0,   0,    0,   0,   0,   0,   0,  '-',  0,   0, 
-  '0', '1', '2', '3', '4', '5', '6', '7',  '8', '9',  0,   0,   0,   0,   0,   0, 
+   0,   0,   0,   0,   0,   0,   0,   0,    0,   0,   0,   0,   0,   0,   0,   0,
+   0,   0,   0,   0,   0,   0,   0,   0,    0,   0,   0,   0,   0,   0,   0,   0,
+   0,   0,   0,   0,   0,   0,   0,   0,    0,   0,   0,   0,   0,  '-',  0,   0,
+  '0', '1', '2', '3', '4', '5', '6', '7',  '8', '9',  0,   0,   0,   0,   0,   0,
    0,  'a', 'b', 'c', 'd', 'e', 'f', 'g',  'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o',
   'p', 'q', 'r', 's', 't', 'u', 'v', 'w',  'x', 'y', 'z',  0,   0,   0,   0,  '-',
    0,  'a', 'b', 'c', 'd', 'e', 'f', 'g',  'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o',
   'p', 'q', 'r', 's', 't', 'u', 'v', 'w',  'x', 'y', 'z',  0,   0,   0,   0,   0
 };
-   
+
 static gboolean
 lang_equal (gconstpointer v1,
 	    gconstpointer v2)
@@ -1146,7 +1146,7 @@ GType
 pango_language_get_type (void)
 {
   static GType our_type = 0;
-  
+
   if (our_type == 0)
     our_type = g_boxed_type_register_static (I_("PangoLanguage"),
                                              (GBoxedCopyFunc)pango_language_copy,
@@ -1166,13 +1166,13 @@ pango_language_get_type (void)
  * COUNTRY is an ISO-3166 country code. For instance, sv_FI for
  * Swedish as written in Finland or pt_BR for Portuguese as written in
  * Brazil.
- * 
+ *
  * On Windows, the C library doesn't use any such environment
  * variables, and setting them won't affect the behavior of functions
- * like ctime(). The user sets the locale through the Regional Options 
- * in the Control Panel. The C library (in the setlocale() function) 
- * does not use country and language codes, but country and language 
- * names spelled out in English. 
+ * like ctime(). The user sets the locale through the Regional Options
+ * in the Control Panel. The C library (in the setlocale() function)
+ * does not use country and language codes, but country and language
+ * names spelled out in English.
  * However, this function does check the above environment
  * variables, and does return a Unix-style locale string based on
  * either said environment variables or the thread's current locale.
@@ -1228,13 +1228,13 @@ _pango_get_lc_ctype (void)
  * COUNTRY is an ISO-3166 country code. For instance, sv_FI for
  * Swedish as written in Finland or pt_BR for Portuguese as written in
  * Brazil.
- * 
+ *
  * On Windows, the C library does not use any such environment
  * variables, and setting them won't affect the behavior of functions
- * like ctime(). The user sets the locale through the Regional Options 
- * in the Control Panel. The C library (in the setlocale() function) 
- * does not use country and language codes, but country and language 
- * names spelled out in English. 
+ * like ctime(). The user sets the locale through the Regional Options
+ * in the Control Panel. The C library (in the setlocale() function)
+ * does not use country and language codes, but country and language
+ * names spelled out in English.
  * However, this function does check the above environment
  * variables, and does return a Unix-style locale string based on
  * either said environment variables or the thread's current locale.
@@ -1243,7 +1243,7 @@ _pango_get_lc_ctype (void)
  * for the user settings to take effect.  Gtk+ does this in its initialization
  * functions automatically (by calling gtk_set_locale()).
  * See <literal>man setlocale</literal> for more details.
- * 
+ *
  * Return value: the default language as a #PangoLanguage, must not be
  *               freed.
  *
@@ -1253,20 +1253,20 @@ PangoLanguage *
 pango_language_get_default (void)
 {
   gchar *lang;
-  PangoLanguage *result;  
-  
+  PangoLanguage *result;
+
   lang = _pango_get_lc_ctype ();
- 
+
   result = pango_language_from_string (lang);
   g_free (lang);
-  
+
   return result;
 }
 
 /**
  * pango_language_from_string:
  * @language: a string representing a language tag
- * 
+ *
  * Take a RFC-3066 format language tag as a string and convert it to a
  * #PangoLanguage pointer that can be efficiently copied (copy the
  * pointer) and compared with other language tags (compare the
@@ -1278,7 +1278,7 @@ pango_language_get_default (void)
  *
  * Use pango_language_get_default() if you want to get the #PangoLanguage for
  * the current locale of the process.
- * 
+ *
  * Return value: an opaque pointer to a #PangoLanguage structure.
  *               this will be valid forever after.
  **/
@@ -1319,7 +1319,7 @@ pango_language_from_string (const char *language)
  *   ',', or space characters.
  *   Each element must either be '*', or a RFC 3066 language range
  *   canonicalized as by pango_language_from_string()
- * 
+ *
  * Checks if a language tag matches one of the elements in a list of
  * language ranges. A language tag is considered to match a range
  * in the list if the range is '*', the range is exactly the tag,
@@ -1405,11 +1405,11 @@ static const LangInfo lang_texts[] = {
 /**
  * pango_language_get_sample_string:
  * @language: a #PangoLanguage
- * 
+ *
  * Get a string that is representative of the characters needed to
  * render a particular language. This function is a bad hack for
  * internal use by renderers and Pango.
- * 
+ *
  * Return value: the sample string. This value is owned by Pango
  *   and must not be freed.
  **/
@@ -1417,11 +1417,11 @@ G_CONST_RETURN char *
 pango_language_get_sample_string (PangoLanguage *language)
 {
   const char *result;
-  
+
   if (language)
     {
       const char *lang_str = pango_language_to_string (language);
-      
+
       LangInfo *lang_info = bsearch (lang_str, lang_texts,
 				     G_N_ELEMENTS (lang_texts), sizeof (LangInfo),
 				     lang_info_compare);
@@ -1551,15 +1551,15 @@ pango_unichar_direction (gunichar ch)
  *
  * Use g_unichar_get_mirror_char() instead; the docs for that function
  * provide full details.
- * 
+ *
  * Return value: %TRUE if @ch has a mirrored character and @mirrored_ch is
  * filled in, %FALSE otherwise
  **/
-gboolean 
+gboolean
 pango_get_mirror_char (gunichar        ch,
 		       gunichar       *mirrored_ch)
 {
-  return g_unichar_get_mirror_char (ch, mirrored_ch); 
+  return g_unichar_get_mirror_char (ch, mirrored_ch);
 }
 
 
@@ -1588,7 +1588,7 @@ alias_free (struct PangoAlias *alias)
     g_free (alias->families[i]);
 
   g_free (alias->families);
-  
+
   g_slice_free (struct PangoAlias, alias);
 }
 
@@ -1596,7 +1596,7 @@ static void
 read_alias_file (const char *filename)
 {
   FILE *file;
-    
+
   GString *line_buffer;
   GString *tmp_buffer1;
   GString *tmp_buffer2;
@@ -1625,14 +1625,14 @@ read_alias_file (const char *filename)
       pos = line_buffer->str;
       if (!pango_skip_space (&pos))
 	continue;
-      
+
       if (!pango_scan_word (&pos, tmp_buffer1) ||
 	  !pango_skip_space (&pos))
 	{
 	  errstring = g_strdup ("Line is not of the form KEY=VALUE or KEY+=VALUE");
 	  goto error;
 	}
-      
+
       if (*pos == '+')
 	{
 	  append = TRUE;
@@ -1644,7 +1644,7 @@ read_alias_file (const char *filename)
 	  errstring = g_strdup ("Line is not of the form KEY=VALUE or KEY+=VALUE");
 	  goto error;
 	}
-      
+
       if (!pango_scan_string (&pos, tmp_buffer2))
 	{
 	  errstring = g_strdup ("Error parsing value string");
@@ -1657,27 +1657,27 @@ read_alias_file (const char *filename)
 	}
 
       alias_key.alias = g_ascii_strdown (tmp_buffer1->str, -1);
-      
+
       /* Remove any existing values */
       alias = g_hash_table_lookup (pango_aliases_ht, &alias_key);
-      
+
       if (!alias)
 	{
 	  alias = g_slice_new0 (struct PangoAlias);
 	  alias->alias = alias_key.alias;
-	  
+
 	  g_hash_table_insert (pango_aliases_ht,
 			       alias, alias);
 	}
       else
 	g_free (alias_key.alias);
-	  
+
       new_families = g_strsplit (tmp_buffer2->str, ",", -1);
-      
+
       n_new = 0;
       while (new_families[n_new])
 	n_new++;
-      
+
       if (alias->families && append)
 	{
 	  alias->families = g_realloc (alias->families,
@@ -1692,7 +1692,7 @@ read_alias_file (const char *filename)
 	  for (i = 0; i < alias->n_families; i++)
 	    g_free (alias->families[i]);
 	  g_free (alias->families);
-	  
+
 	  alias->families = new_families;
 	  alias->n_families = n_new;
 	}
@@ -1700,7 +1700,7 @@ read_alias_file (const char *filename)
 
   if (ferror (file))
     errstring = g_strdup (g_strerror(errno));
-  
+
  error:
 
   if (errstring)
@@ -1708,7 +1708,7 @@ read_alias_file (const char *filename)
       g_warning ("error reading alias file: %s:%d: %s\n", filename, line, errstring);
       g_free (errstring);
     }
-      
+
   g_string_free (line_buffer, TRUE);
   g_string_free (tmp_buffer1, TRUE);
   g_string_free (tmp_buffer2, TRUE);
@@ -1733,7 +1733,7 @@ pango_load_aliases (void)
 			  NULL);
   read_alias_file (filename);
   g_free (filename);
-  
+
   home = g_get_home_dir ();
   if (home && *home)
     {
@@ -1764,7 +1764,7 @@ pango_lookup_aliases (const char   *fontname,
 {
   struct PangoAlias alias_key;
   struct PangoAlias *alias;
-  
+
   if (pango_aliases_ht == NULL)
     pango_load_aliases ();
 
@@ -1789,7 +1789,7 @@ pango_lookup_aliases (const char   *fontname,
  * @text:   the text to process
  * @length: length of @text in bytes (may be -1 if @text is nul-terminated)
  *
- * Searches a string the first character that has a strong 
+ * Searches a string the first character that has a strong
  * direction, according to the Unicode bidirectional algorithm.
  *
  * Return value: The direction corresponding to the first strong character.
@@ -1894,7 +1894,7 @@ pango_quantize_line_geometry (int *thickness,
   int thickness_pixels = (*thickness + PANGO_SCALE / 2) / PANGO_SCALE;
   if (thickness_pixels == 0)
     thickness_pixels = 1;
-  
+
   if (thickness_pixels & 1)
     {
       int new_center = ((*position - *thickness / 2) & ~(PANGO_SCALE - 1)) + PANGO_SCALE / 2;
@@ -1947,7 +1947,7 @@ pango_units_to_double (int i)
  * pango_extents_to_pixels:
  * @ink_rect: ink rectangle to convert, or %NULL.
  * @logical_rect: logical rectangle to convert, or %NULL.
- * 
+ *
  * Converts extents from Pango units to device units, dividing by the
  * %PANGO_SCALE factor and performing rounding.
  *

@@ -116,9 +116,9 @@ static const ThaiShapeTable Lao_shape_table = {
 };
 
 static void
-add_glyph (ThaiFontInfo     *font_info, 
-	   PangoGlyphString *glyphs, 
-	   gint              cluster_start, 
+add_glyph (ThaiFontInfo     *font_info,
+	   PangoGlyphString *glyphs,
+	   gint              cluster_start,
 	   PangoGlyph        glyph,
 	   gboolean          combining)
 {
@@ -126,10 +126,10 @@ add_glyph (ThaiFontInfo     *font_info,
   gint index = glyphs->num_glyphs;
 
   pango_glyph_string_set_size (glyphs, index + 1);
-  
+
   glyphs->glyphs[index].glyph = glyph;
   glyphs->glyphs[index].attr.is_cluster_start = combining ? 0 : 1;
-  
+
   glyphs->log_clusters[index] = cluster_start;
 
   pango_font_get_glyph_extents (font_info->font,
@@ -181,7 +181,7 @@ get_adjusted_glyphs_list (ThaiFontInfo *font_info,
             return 1;
           }
         break;
-        
+
       case 2:
         if (is_char_type (cluster[0], NoTailCons|BotTailCons|SpltTailCons) &&
             is_char_type (cluster[1], SaraAm))
@@ -278,7 +278,7 @@ get_adjusted_glyphs_list (ThaiFontInfo *font_info,
 	    return n;
 	  }
         break;
-          
+
       case 3:
         if (is_char_type (cluster[0], NoTailCons|BotTailCons|SpltTailCons) &&
             is_char_type (cluster[1], Tone) &&
@@ -414,13 +414,13 @@ get_glyphs_list (ThaiFontInfo	*font_info,
 	       */
               return get_adjusted_glyphs_list (font_info, cluster,
 		      num_chrs, glyph_lists, &tis620_0_shape_table);
-      
+
             case THAI_FONT_TIS_MAC:
 	      /* MacIntosh Extension
 	       */
               return get_adjusted_glyphs_list (font_info, cluster,
 		      num_chrs, glyph_lists, &Mac_shape_table);
-      
+
             case THAI_FONT_TIS_WIN:
 	      /* Microsoft Extension
 	       */
@@ -505,7 +505,7 @@ get_next_cluster(const char	*text,
   const char *p;
   gint n_chars = 0;
   gunichar current;
-  
+
   for (p = text; p < text + length; p = g_utf8_next_char (p))
     {
       current = g_utf8_get_char (p);
@@ -523,7 +523,7 @@ get_next_cluster(const char	*text,
   return p;
 }
 
-void 
+void
 thai_engine_shape (PangoEngineShape *engine,
 		   PangoFont        *font,
 		   const char       *text,

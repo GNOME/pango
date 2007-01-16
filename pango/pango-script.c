@@ -36,7 +36,7 @@
  * copyright notice(s) and this permission notice appear in all copies of
  * the Software and that both the above copyright notice(s) and this
  * permission notice appear in supporting documentation.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
  * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT
@@ -46,7 +46,7 @@
  * FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
  * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  * WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- * 
+ *
  * Except as contained in this notice, the name of a copyright holder
  * shall not be used in advertising or otherwise to promote the sale, use
  * or other dealings in this Software without prior written authorization
@@ -94,7 +94,7 @@ pango_script_for_unichar_bsearch (gunichar ch)
   int mid = saved_mid;
 
 
-  do 
+  do
     {
       if (ch < pango_script_table[mid].start)
 	upper = mid - 1;
@@ -113,12 +113,12 @@ pango_script_for_unichar_bsearch (gunichar ch)
 /**
  * pango_script_for_unichar:
  * @ch: a Unicode character
- * 
+ *
  * Looks up the #PangoScript for a particular character (as defined by
  * Unicode Standard Annex #24). No check is made for @ch being a
  * valid Unicode character; if you pass in invalid character, the
  * result is undefined.
- * 
+ *
  * Return value: the #PangoScript for the character.
  *
  * Since: 1.4
@@ -128,8 +128,8 @@ pango_script_for_unichar (gunichar ch)
 {
   if (ch < G_N_ELEMENTS (pango_script_easy_table))
     return pango_script_easy_table[ch];
-  else 
-    return pango_script_for_unichar_bsearch (ch); 
+  else
+    return pango_script_for_unichar_bsearch (ch);
 }
 
 /**********************************************************************/
@@ -138,12 +138,12 @@ pango_script_for_unichar (gunichar ch)
  * pango_script_iter_new:
  * @text: a UTF-8 string
  * @length: length of @text, or -1 if @text is nul-terminated.
- * 
+ *
  * Create a new #PangoScriptIter, used to break a string of
  * Unicode into runs by text. No copy is made of @text, so
  * the caller needs to make sure it remains valid until
  * the iterator is freed with pango_script_iter_free ().x
- * 
+ *
  * Return value: the new script iterator, initialized
  *  to point at the first range in the text, which should be
  *  freed with pango_script_iter_free(). If the string is
@@ -166,7 +166,7 @@ pango_script_iter_new (const char *text,
   iter->script_start = text;
   iter->script_end = text;
   iter->script_code = PANGO_SCRIPT_COMMON;
-  
+
   iter->paren_sp = -1;
 
   pango_script_iter_next (iter);
@@ -177,7 +177,7 @@ pango_script_iter_new (const char *text,
 /**
  * pango_script_iter_free:
  * @iter: a #PangoScriptIter
- * 
+ *
  * Frees a #PangoScriptIter created with pango_script_iter_new().
  *
  * Since: 1.4
@@ -194,7 +194,7 @@ pango_script_iter_free (PangoScriptIter *iter)
  * @start: location to store start position of the range, or %NULL
  * @end: location to store end position of the range, or %NULL
  * @script: location to store script for range, or %NULL
- * 
+ *
  * Gets information about the range to which @iter currently points.
  * The range is the set of locations p where *start <= p < *end.
  * (That is, it doesn't include the character stored at *end)
@@ -244,7 +244,7 @@ get_pair_index (gunichar ch)
   while (lower <= upper)
     {
       int mid = (lower + upper) / 2;
-      
+
       if (ch < paired_chars[mid])
 	upper = mid - 1;
       else if (ch > paired_chars[mid])
@@ -267,11 +267,11 @@ get_pair_index (gunichar ch)
 /**
  * pango_script_iter_next:
  * @iter: a #PangoScriptIter
- * 
+ *
  * Advances a #PangoScriptIter to the next range. If @iter
  * is already at the end, it is left unchanged and %FALSE
  * is returned.
- * 
+ *
  * Return value: %TRUE if @iter was successfully advanced.
  *
  * Since: 1.4
@@ -280,7 +280,7 @@ gboolean
 pango_script_iter_next (PangoScriptIter *iter)
 {
   int start_sp;
-  
+
   if (iter->script_end == iter->text_end)
     return FALSE;
 
@@ -293,7 +293,7 @@ pango_script_iter_next (PangoScriptIter *iter)
       gunichar ch = g_utf8_get_char (iter->script_end);
       PangoScript sc;
       int pair_index;
-      
+
       sc = pango_script_for_unichar (ch);
       if (sc != PANGO_SCRIPT_COMMON)
 	pair_index = -1;
@@ -361,7 +361,7 @@ pango_script_iter_next (PangoScriptIter *iter)
 	  if (pair_index >= 0 && !IS_OPEN (pair_index) && iter->paren_sp >= 0)
 	    {
 	      iter->paren_sp--;
-	      
+
 	      if (iter->paren_sp < start_sp)
 		start_sp = iter->paren_sp;
             }
@@ -420,7 +420,7 @@ script_for_lang_compare (gconstpointer key,
  * pango_language_includes_script:
  * @language: a #PangoLanguage
  * @script: a #PangoScript
- * 
+ *
  * Determines if @script is one of the scripts used to
  * write @language. The returned value is conservative;
  * if nothing is known about the language tag @language,
@@ -431,7 +431,7 @@ script_for_lang_compare (gconstpointer key,
  * determining if a supplied language tag is relevant to
  * a particular section of text. It probably is not useful for
  * applications in most circumstances.
- * 
+ *
  * Return value: %TRUE if @script is one of the scripts used
  * to write @language, or if nothing is known about @language.
  *
@@ -471,7 +471,7 @@ pango_language_includes_script (PangoLanguage *language,
 /**
  * pango_script_get_sample_language:
  * @script: a #PangoScript
- * 
+ *
  * Given a script, finds a language tag that is reasonably
  * representative of that script. This will usually be the
  * most widely spoken or used language written in that script:
@@ -487,7 +487,7 @@ pango_language_includes_script (PangoLanguage *language,
  * significantly different sets of Han characters and forms
  * of shared characters. No sample language can be provided
  * for many historical scripts as well.
- * 
+ *
  * Return value: a #PangoLanguage that is representative
  * of the script, or %NULL if no such language exists.
  *
@@ -566,7 +566,7 @@ pango_script_get_sample_language (PangoScript script)
     "",    /* PANGO_SCRIPT_LINEAR_B */
     "",    /* PANGO_SCRIPT_TAI_LE */
     "uga", /* PANGO_SCRIPT_UGARITIC */
-    
+
     "",    /* PANGO_SCRIPT_NEW_TAI_LUE */
     "bug", /* PANGO_SCRIPT_BUGINESE */
     /* The original script for Old Church Slavonic (chu), later
@@ -587,10 +587,10 @@ pango_script_get_sample_language (PangoScript script)
     "nqo"  /* PANGO_SCRIPT_NKO */
   };
   const char *sample_language;
-  
+
   g_return_val_if_fail (script >= 0, NULL);
   g_return_val_if_fail ((guint)script < G_N_ELEMENTS (sample_languages), NULL);
-  
+
   sample_language = sample_languages[script];
 
   if (!sample_language[0])

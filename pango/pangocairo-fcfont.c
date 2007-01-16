@@ -70,7 +70,7 @@ struct _PangoCairoFcFont
   PangoGravity gravity;
 
   PangoRectangle font_extents;
-  GlyphExtentsCacheEntry    *glyph_extents_cache;  
+  GlyphExtentsCacheEntry    *glyph_extents_cache;
 };
 
 struct _PangoCairoFcFontClass
@@ -95,14 +95,14 @@ pango_cairo_fc_font_get_font_face (PangoCairoFont *font)
   if (!cffont->font_face)
     {
       cffont->font_face = cairo_ft_font_face_create_for_pattern (fcfont->font_pattern);
-      
+
       /* Unable to create FT2 cairo scaled font.
        * This means out of memory or a cairo/fontconfig/FreeType bug,
        */
       if (!cffont->font_face)
         return NULL;
     }
-  
+
   return cffont->font_face;
 }
 
@@ -181,7 +181,7 @@ pango_cairo_fc_font_finalize (GObject *object)
   if (cffont->glyph_extents_cache)
     {
       g_free (cffont->glyph_extents_cache);
-    }  
+    }
 
   G_OBJECT_CLASS (pango_cairo_fc_font_parent_class)->finalize (object);
 }
@@ -196,15 +196,15 @@ pango_cairo_fc_font_get_metrics (PangoFont     *font,
   PangoFcFont *fcfont = (PangoFcFont *) (font);
   PangoCairoFcFont *cffont = (PangoCairoFcFont *) (font);
   PangoFcMetricsInfo *info = NULL; /* Quiet gcc */
-  GSList *tmp_list;      
+  GSList *tmp_list;
 
   const char *sample_str = pango_language_get_sample_string (language);
-  
+
   tmp_list = fcfont->metrics_by_lang;
   while (tmp_list)
     {
       info = tmp_list->data;
-      
+
       if (info->sample_str == sample_str)    /* We _don't_ need strcmp */
 	break;
 
@@ -220,9 +220,9 @@ pango_cairo_fc_font_get_metrics (PangoFont     *font,
 	return pango_font_metrics_new ();
 
       info = g_slice_new0 (PangoFcMetricsInfo);
-      
+
       fcfont->metrics_by_lang = g_slist_prepend (fcfont->metrics_by_lang, info);
-	
+
       info->sample_str = sample_str;
 
       context = pango_fc_font_map_create_context (PANGO_FC_FONT_MAP (fcfont->fontmap));
@@ -268,7 +268,7 @@ pango_cairo_fc_font_lock_face (PangoFcFont *font)
   cairo_scaled_font_t *scaled_font = pango_cairo_fc_font_get_scaled_font (cfont);
   if (G_UNLIKELY (!scaled_font))
     return NULL;
-  
+
   return cairo_ft_scaled_font_lock_face (scaled_font);
 }
 
@@ -279,7 +279,7 @@ pango_cairo_fc_font_unlock_face (PangoFcFont *font)
   cairo_scaled_font_t *scaled_font = pango_cairo_fc_font_get_scaled_font (cfont);
   if (G_UNLIKELY (!scaled_font))
     return;
-  
+
   cairo_ft_scaled_font_unlock_face (scaled_font);
 }
 
@@ -328,10 +328,10 @@ compute_glyph_extents (PangoCairoFcFont       *cffont,
   cairo_glyph.index = glyph;
   cairo_glyph.x = 0;
   cairo_glyph.y = 0;
-  
+
   cairo_scaled_font_glyph_extents (cffont->scaled_font,
 				   &cairo_glyph, 1, &extents);
-  
+
   entry->glyph = glyph;
   entry->width = pango_units_from_double (extents.x_advance);
   entry->ink_rect.x = pango_units_from_double (extents.x_bearing);
@@ -339,7 +339,7 @@ compute_glyph_extents (PangoCairoFcFont       *cffont,
   entry->ink_rect.width = pango_units_from_double (extents.width);
   entry->ink_rect.height = pango_units_from_double (extents.height);
 }
-     
+
 static GlyphExtentsCacheEntry *
 pango_cairo_fc_font_get_glyph_extents_cache_entry (PangoCairoFcFont       *cffont,
 						   PangoGlyph              glyph)
@@ -387,7 +387,7 @@ pango_cairo_fc_font_get_glyph_extents (PangoFont      *font,
 	*logical_rect = cffont->font_extents;
       return;
     }
-  else if (glyph & PANGO_GLYPH_UNKNOWN_FLAG) 
+  else if (glyph & PANGO_GLYPH_UNKNOWN_FLAG)
     {
       _pango_cairo_get_glyph_extents_missing((PangoCairoFont *)font, glyph, ink_rect, logical_rect);
       return;
@@ -428,7 +428,7 @@ pango_cairo_fc_font_class_init (PangoCairoFcFontClass *class)
   PangoFcFontClass *fc_font_class = PANGO_FC_FONT_CLASS (class);
 
   object_class->finalize = pango_cairo_fc_font_finalize;
-  
+
   font_class->get_glyph_extents = pango_cairo_fc_font_get_glyph_extents;
   font_class->get_metrics = pango_cairo_fc_font_get_metrics;
 
@@ -456,13 +456,13 @@ get_font_size (PangoCairoFcFontMap        *cffontmap,
   double size;
 
  /* The reason why we read FC_PIXEL_SIZE here rather than just
-  * using the specified size is to support operations like clamping 
-  * a font to a minimal readable size in fonts.conf. This is pretty weird, 
-  * since it could mean that changing the Cairo CTM doesn't change the 
+  * using the specified size is to support operations like clamping
+  * a font to a minimal readable size in fonts.conf. This is pretty weird,
+  * since it could mean that changing the Cairo CTM doesn't change the
   * font size, but it's just a more radical version of the non-linear
   * font scaling we already have due to hinting and due to bitmap
   * fonts being only available at a few sizes.
-  * 
+  *
   * If honoring FC_PIXEL_SIZE gets in the way of more useful features
   * it should be removed since it only matters in the unusual case
   * of people doing exotic stuff in fonts.conf.
@@ -482,7 +482,7 @@ get_font_size (PangoCairoFcFontMap        *cffontmap,
 
       if (dpi <= 0)
 	dpi = cffontmap->dpi;
-      
+
       return dpi * pango_font_description_get_size (desc) / 72.;
     }
 }
@@ -497,7 +497,7 @@ _pango_cairo_fc_font_new (PangoCairoFcFontMap        *cffontmap,
   const PangoMatrix *pango_ctm;
   FcMatrix *fc_matrix;
   double size;
-  
+
   g_return_val_if_fail (PANGO_IS_CAIRO_FC_FONT_MAP (cffontmap), NULL);
   g_return_val_if_fail (pattern != NULL, NULL);
 
@@ -542,10 +542,10 @@ _pango_cairo_fc_font_new (PangoCairoFcFontMap        *cffontmap,
 
 
   cffont->options = cairo_font_options_copy (_pango_cairo_context_get_merged_font_options (context));
-  
+
   /* fcfont's is_hinted controls metric hinting
    */
-  ((PangoFcFont *)(cffont))->is_hinted = 
+  ((PangoFcFont *)(cffont))->is_hinted =
     (cairo_font_options_get_hint_metrics(cffont->options) != CAIRO_HINT_METRICS_OFF);
 
   return (PangoFcFont *) (cffont);

@@ -69,14 +69,14 @@ pango_glyph_string_index_to_x (PangoGlyphString *glyphs,
   int cluster_offset = 0;
 
   char *p;
-  
+
   g_return_if_fail (glyphs != NULL);
   g_return_if_fail (length >= 0);
   g_return_if_fail (length == 0 || text != NULL);
 
   if (!x_pos) /* Allow the user to do the useless */
     return;
-  
+
   if (glyphs->num_glyphs == 0)
     {
       *x_pos = 0;
@@ -125,7 +125,7 @@ pango_glyph_string_index_to_x (PangoGlyphString *glyphs,
 	      start_index = glyphs->log_clusters[i];
 	      start_xpos = width;
 	    }
-	  
+
 	  width += glyphs->glyphs[i].geometry.width;
 	}
     }
@@ -146,7 +146,7 @@ pango_glyph_string_index_to_x (PangoGlyphString *glyphs,
       cluster_chars++;
       p = g_utf8_next_char (p);
     }
-  
+
   if (trailing)
     cluster_offset += 1;
 
@@ -173,13 +173,13 @@ pango_glyph_string_index_to_x (PangoGlyphString *glyphs,
  * position; the caller must combine the result with the logical
  * attributes for the text to compute the valid cursor position.
  */
-void 
+void
 pango_glyph_string_x_to_index (PangoGlyphString *glyphs,
 			       char             *text,
 			       int               length,
 			       PangoAnalysis    *analysis,
 			       int               x_pos,
-			       int              *index, 
+			       int              *index,
 			       gboolean         *trailing)
 {
   int i;
@@ -245,10 +245,10 @@ pango_glyph_string_x_to_index (PangoGlyphString *glyphs,
 		  start_xpos = width;
 		}
 	    }
-	  
+
 	  if (width <= x_pos && x_pos < width + glyphs->glyphs[i].geometry.width)
 	    found = TRUE;
-	  
+
 	  width += glyphs->glyphs[i].geometry.width;
 	}
     }
@@ -266,7 +266,7 @@ pango_glyph_string_x_to_index (PangoGlyphString *glyphs,
       p = g_utf8_next_char (p);
       cluster_chars++;
     }
-  
+
   if (start_xpos == end_xpos)
     {
       if (index)
@@ -289,16 +289,16 @@ pango_glyph_string_x_to_index (PangoGlyphString *glyphs,
 	    {
 	      char *p = text + start_index;
 	      int i = 0;
-	      
+
 	      while (i + 1 <= cp)
 		{
 		  p = g_utf8_next_char (p);
 		  i++;
 		}
-	      
+
 	      *index = (p - text);
 	    }
-	  
+
 	  if (trailing)
 	    *trailing = (cp - (int)cp >= 0.5) ? 1 : 0;
 	}
@@ -308,16 +308,16 @@ pango_glyph_string_x_to_index (PangoGlyphString *glyphs,
 	    {
 	      char *p = text + start_index;
 	      int i = 0;
-	      
+
 	      while (i + 1 < cp)
 		{
 		  p = g_utf8_next_char (p);
 		  i++;
 		}
-	      
+
 	      *index = (p - text);
 	    }
-	  
+
 	  if (trailing)
 	    {
 	      double cp_flip = cluster_chars - cp;

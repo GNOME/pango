@@ -67,7 +67,7 @@ free_cache_entry (LOGFONT             *logfont,
 /**
  * pango_win32_font_cache_free:
  * @cache: a #PangoWin32FontCache
- * 
+ *
  * Frees a #PangoWin32FontCache and all associated memory. All fonts loaded
  * through this font cache will be freed along with the cache.
  **/
@@ -75,9 +75,9 @@ void
 pango_win32_font_cache_free (PangoWin32FontCache *cache)
 {
   g_return_if_fail (cache != NULL);
-  
+
   g_hash_table_foreach (cache->forward, (GHFunc)free_cache_entry, cache);
-  
+
   g_hash_table_destroy (cache->forward);
   g_hash_table_destroy (cache->back);
 
@@ -115,12 +115,12 @@ logfont_equal (gconstpointer   v1,
 	  && lfp1->lfWidth == lfp2->lfWidth
 	  && lfp1->lfHeight == lfp2->lfHeight);
 }
-  
+
 /**
  * pango_win32_font_cache_new:
- * 
+ *
  * Creates a font cache.
- * 
+ *
  * Return value: The new font cache. This must be freed with
  * pango_win32_font_cache_free().
  **/
@@ -133,11 +133,11 @@ pango_win32_font_cache_new (void)
 
   cache->forward = g_hash_table_new (logfont_hash, logfont_equal);
   cache->back = g_hash_table_new (g_direct_hash, g_direct_equal);
-      
+
   cache->mru = NULL;
   cache->mru_tail = NULL;
   cache->mru_count = 0;
-  
+
   return cache;
 }
 
@@ -161,11 +161,11 @@ cache_entry_unref (PangoWin32FontCache *cache,
  * pango_win32_font_cache_load:
  * @cache: a #PangoWin32FontCache
  * @logfont: a pointer to a LOGFONT structure describing the font to load.
- * 
+ *
  * Creates a HFONT from a LOGFONT. The
  * result may be newly loaded, or it may have been previously
  * stored
- * 
+ *
  * Return value: The font structure, or %NULL if the font could
  * not be loaded. In order to free this structure, you must call
  * pango_win32_font_cache_unload().
@@ -204,7 +204,7 @@ pango_win32_font_cache_load (PangoWin32FontCache *cache,
 	{
 	  UINT smoothing_type;
 
-#ifndef SPI_GETFONTSMOOTHINGTYPE 
+#ifndef SPI_GETFONTSMOOTHINGTYPE
 #define SPI_GETFONTSMOOTHINGTYPE 0x200a
 #endif
 #ifndef FE_FONTSMOOTHINGCLEARTYPE
@@ -243,7 +243,7 @@ pango_win32_font_cache_load (PangoWin32FontCache *cache,
 	      PING (("Success! hfont=%p", hfont));
 	      break;
 	    }
-	  
+
 	  /* If we fail, try some similar fonts often found on Windows. */
 	  if (tries == 0)
 	    {
@@ -288,10 +288,10 @@ pango_win32_font_cache_load (PangoWin32FontCache *cache,
 	    break;
 	  tries++;
 	}
-  
+
       if (!hfont)
 	return NULL;
-      
+
       entry = g_slice_new (CacheEntry);
 
       entry->logfont = lf;
@@ -301,15 +301,15 @@ pango_win32_font_cache_load (PangoWin32FontCache *cache,
       entry->mru = NULL;
 
       g_hash_table_insert (cache->forward, &entry->logfont, entry);
-      g_hash_table_insert (cache->back, entry->hfont, entry); 
+      g_hash_table_insert (cache->back, entry->hfont, entry);
     }
-  
+
   if (entry->mru)
     {
       if (cache->mru_count > 1 && entry->mru->prev)
 	{
 	  /* Move to the head of the mru list */
-	  
+
 	  if (entry->mru == cache->mru_tail)
 	    {
 	      cache->mru_tail = cache->mru_tail->prev;
@@ -320,7 +320,7 @@ pango_win32_font_cache_load (PangoWin32FontCache *cache,
 	      entry->mru->prev->next = entry->mru->next;
 	      entry->mru->next->prev = entry->mru->prev;
 	    }
-	  
+
 	  entry->mru->next = cache->mru;
 	  entry->mru->prev = NULL;
 	  cache->mru->prev = entry->mru;
@@ -330,13 +330,13 @@ pango_win32_font_cache_load (PangoWin32FontCache *cache,
   else
     {
       entry->ref_count++;
-      
+
       /* Insert into the mru list */
-      
+
       if (cache->mru_count == CACHE_SIZE)
 	{
 	  CacheEntry *old_entry = cache->mru_tail->data;
-	  
+
 	  cache->mru_tail = cache->mru_tail->prev;
 	  cache->mru_tail->next = NULL;
 
@@ -360,7 +360,7 @@ pango_win32_font_cache_load (PangoWin32FontCache *cache,
  * pango_win32_font_cache_unload:
  * @cache: a #PangoWin32FontCache
  * @hfont: the HFONT to unload
- * 
+ *
  * Frees a font structure previously loaded with pango_win32_font_cache_load().
  **/
 void
@@ -375,5 +375,5 @@ pango_win32_font_cache_unload (PangoWin32FontCache *cache,
   entry = g_hash_table_lookup (cache->back, hfont);
   g_return_if_fail (entry != NULL);
 
-  cache_entry_unref (cache, entry);  
+  cache_entry_unref (cache, entry);
 }

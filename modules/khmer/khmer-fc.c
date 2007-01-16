@@ -643,7 +643,7 @@ khmer_engine_shape (PangoEngineShape *engine,
               case CF_POS_AFTER :
 		pango_ot_buffer_add_glyph (buffer, get_index (fc_font, wcs[i]), pstf_p, p - text);
 		break;
-		
+
               case CF_POS_BELOW :
 		pango_ot_buffer_add_glyph (buffer, get_index (fc_font, wcs[i]), blwf_p, p - text);
 		break;

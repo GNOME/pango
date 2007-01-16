@@ -30,7 +30,7 @@ GType
 pango_matrix_get_type (void)
 {
   static GType our_type = 0;
-  
+
   if (our_type == 0)
     our_type = g_boxed_type_register_static (I_("PangoMatrix"),
 					     (GBoxedCopyFunc) pango_matrix_copy,
@@ -42,9 +42,9 @@ pango_matrix_get_type (void)
 /**
  * pango_matrix_copy:
  * @matrix: a #PangoMatrix, can be %NULL
- * 
+ *
  * Copies a #PangoMatrix.
- * 
+ *
  * Return value: the newly allocated #PangoMatrix, which should
  *               be freed with pango_matrix_free(), or %NULL if
  *               @matrix was %NULL.
@@ -70,7 +70,7 @@ pango_matrix_copy (const PangoMatrix *matrix)
 /**
  * pango_matrix_free:
  * @matrix: a #PangoMatrix, or %NULL
- * 
+ *
  * Free a #PangoMatrix created with pango_matrix_copy().
  * Does nothing if @matrix is %NULL.
  *
@@ -88,7 +88,7 @@ pango_matrix_free (PangoMatrix *matrix)
  * @matrix: a #PangoMatrix
  * @tx: amount to translate in the X direction
  * @ty: amount to translate in the Y direction
- * 
+ *
  * Changes the transformation represented by @matrix to be the
  * transformation given by first translating by (@tx, @ty)
  * then applying the original transformation.
@@ -111,7 +111,7 @@ pango_matrix_translate (PangoMatrix *matrix,
  * @matrix: a #PangoMatrix
  * @scale_x: amount to scale by in X direction
  * @scale_y: amount to scale by in Y direction
- * 
+ *
  * Changes the transformation represented by @matrix to be the
  * transformation given by first scaling by @sx in the X direction
  * and @sy in the Y direction then applying the original
@@ -136,7 +136,7 @@ pango_matrix_scale (PangoMatrix *matrix,
  * pango_matrix_rotate:
  * @matrix: a #PangoMatrix
  * @degrees: degrees to rotate counter-clockwise
- * 
+ *
  * Changes the transformation represented by @matrix to be the
  * transformation given by first rotating by @degrees degrees
  * counter-clockwise then applying the original transformation.
@@ -170,7 +170,7 @@ pango_matrix_rotate (PangoMatrix *matrix,
  * pango_matrix_concat:
  * @matrix: a #PangoMatrix
  * @new_matrix: a #PangoMatrix
- * 
+ *
  * Changes the transformation represented by @matrix to be the
  * transformation given by first applying transformation
  * given by @new_matrix then applying the original transformation.
@@ -182,7 +182,7 @@ pango_matrix_concat (PangoMatrix       *matrix,
 		     const PangoMatrix *new_matrix)
 {
   PangoMatrix tmp;
-  
+
   g_return_if_fail (matrix != NULL);
 
   tmp = *matrix;
@@ -198,7 +198,7 @@ pango_matrix_concat (PangoMatrix       *matrix,
 /**
  * pango_matrix_get_font_scale_factor:
  * @matrix: a #PangoMatrix, may be %NULL
- * 
+ *
  * Returns the scale factor of a matrix on the height of the font.
  * That is, the scale factor in the direction perpendicular to the
  * vector that the X coordinate is mapped to.
@@ -217,10 +217,10 @@ pango_matrix_get_font_scale_factor (const PangoMatrix *matrix)
  * Copyright 2005, Keith Packard
  */
   double det;
-  
+
   if (!matrix)
     return 1.0;
-  
+
   det = matrix->xx * matrix->yy - matrix->yx * matrix->xy;
 
   if (det == 0)
@@ -234,16 +234,16 @@ pango_matrix_get_font_scale_factor (const PangoMatrix *matrix)
       double major, minor;
 
       major = sqrt (x*x + y*y);
-      
+
       /*
        * ignore mirroring
        */
       if (det < 0)
 	det = - det;
-      
+
       if (major)
 	minor = det / major;
-      else 
+      else
 	minor = 0.0;
 
       return minor;
@@ -295,7 +295,7 @@ pango_matrix_transform_distance (const PangoMatrix *matrix,
  * @matrix: a #PangoMatrix, or %NULL
  * @x: in/out X position
  * @y: in/out Y position
- * 
+ *
  * Transforms the point (@x, @y) by @matrix.
  *
  * Since: 1.16
@@ -318,7 +318,7 @@ pango_matrix_transform_point (const PangoMatrix *matrix,
  * pango_matrix_transform_rectangle:
  * @matrix: a #PangoMatrix, or %NULL
  * @rect: in/out bounding box in Pango units, or %NULL
- * 
+ *
  * First transforms @rect using @matrix, then calculates the bounding box
  * of the transformed rectangle.  The rectangle should be in Pango units.
  *
@@ -397,7 +397,7 @@ pango_matrix_transform_rectangle (const PangoMatrix *matrix,
  * pango_matrix_transform_pixel_rectangle:
  * @matrix: a #PangoMatrix, or %NULL
  * @rect: in/out bounding box in device units, or %NULL
- * 
+ *
  * First transforms the @rect using @matrix, then calculates the bounding box
  * of the transformed rectangle.  The rectangle should be in device units
  * (pixels).

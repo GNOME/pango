@@ -48,7 +48,7 @@ pango_font_map_init (PangoFontMap *fontmap)
  * @fontmap: a #PangoFontMap
  * @context: the #PangoContext the font will be used with
  * @desc: a #PangoFontDescription describing the font to load
- * 
+ *
  * Load the font in the fontmap that is the closest match for @desc.
  *
  * Returns the font loaded, or %NULL if no font matched.
@@ -70,8 +70,8 @@ pango_font_map_load_font  (PangoFontMap               *fontmap,
  * @families: location to store a pointer to an array of #PangoFontFamily *.
  *            This array should be freed with g_free().
  * @n_families: location to store the number of elements in @families
- * 
- * List all families for a fontmap. 
+ *
+ * List all families for a fontmap.
  **/
 void
 pango_font_map_list_families (PangoFontMap      *fontmap,
@@ -89,7 +89,7 @@ pango_font_map_list_families (PangoFontMap      *fontmap,
  * @context: the #PangoContext the font will be used with
  * @desc: a #PangoFontDescription describing the font to load
  * @language: a #PangoLanguage the fonts will be used for
- * 
+ *
  * Load a set of fonts in the fontmap that can be used to render
  * a font matching @desc.
  *
@@ -103,7 +103,7 @@ pango_font_map_load_fontset (PangoFontMap                 *fontmap,
 {
   g_return_val_if_fail (fontmap != NULL, NULL);
   g_return_val_if_fail (pango_font_description_get_family (desc) != NULL, NULL);
-  
+
   return PANGO_FONT_MAP_GET_CLASS (fontmap)->load_fontset (fontmap, context, desc, language);
 }
 
@@ -122,7 +122,7 @@ pango_font_map_fontset_add_fonts (PangoFontMap          *fontmap,
   pango_lookup_aliases (family,
 			&aliases,
 			&n_aliases);
-      
+
   if (n_aliases)
     {
       for (j = 0; j < n_aliases; j++)
@@ -157,14 +157,14 @@ pango_font_map_real_load_fontset (PangoFontMap               *fontmap,
   families = g_strsplit (pango_font_description_get_family (desc), ",", -1);
 
   fonts = pango_fontset_simple_new (language);
-  
+
   for (i = 0; families[i]; i++)
     pango_font_map_fontset_add_fonts (fontmap,
 				      context,
 				      fonts,
 				      tmp_desc,
 				      families[i]);
-  
+
   g_strfreev (families);
 
   /* The font description was completely unloadable, try with
@@ -173,10 +173,10 @@ pango_font_map_real_load_fontset (PangoFontMap               *fontmap,
   if (pango_fontset_simple_size (fonts) == 0)
     {
       char *ctmp1, *ctmp2;
-      
+
       pango_font_description_set_family_static (tmp_desc,
 						pango_font_description_get_family (desc));
-      
+
       ctmp1 = pango_font_description_to_string (desc);
       pango_font_description_set_family_static (tmp_desc, "Sans");
 
@@ -193,20 +193,20 @@ pango_font_map_real_load_fontset (PangoFontMap               *fontmap,
 	  g_free (ctmp2);
         }
       g_free (ctmp1);
-      
+
       pango_font_map_fontset_add_fonts (fontmap,
 					context,
 					fonts,
 					tmp_desc,
 					"Sans");
     }
-  
+
   /* We couldn't try with Sans and the specified style. Try Sans Normal
    */
   if (pango_fontset_simple_size (fonts) == 0)
     {
       char *ctmp1, *ctmp2;
-      
+
       pango_font_description_set_family_static (tmp_desc, "Sans");
       ctmp1 = pango_font_description_to_string (tmp_desc);
       pango_font_description_set_style (tmp_desc, PANGO_STYLE_NORMAL);
@@ -219,14 +219,14 @@ pango_font_map_real_load_fontset (PangoFontMap               *fontmap,
 	  g_hash_table_insert (warned_fonts, g_strdup (ctmp1), GINT_TO_POINTER (1));
 
 	  ctmp2 = pango_font_description_to_string (tmp_desc);
-      
+
 	  g_warning ("couldn't load font \"%s\", falling back to \"%s\", "
 		     "expect ugly output.", ctmp1, ctmp2);
 	  g_free (ctmp2);
 	}
 
       g_free (ctmp1);
-      
+
       pango_font_map_fontset_add_fonts (fontmap,
 					context,
 					fonts,
@@ -248,11 +248,11 @@ pango_font_map_real_load_fontset (PangoFontMap               *fontmap,
 /**
  * pango_font_map_get_shape_engine_type:
  * @fontmap: a #PangoFontMap
- * 
+ *
  * Returns the render ID for shape engines for this fontmap.
  * See the <structfield>render_type</structfield> field of
  * #PangoEngineInfo.
-  * 
+  *
  * Return value: the ID string for shape engines for
  *  this fontmap. Owned by Pango, should not be modified
  *  or freed.
@@ -263,7 +263,7 @@ G_CONST_RETURN char *
 pango_font_map_get_shape_engine_type (PangoFontMap *fontmap)
 {
   g_return_val_if_fail (PANGO_IS_FONT_MAP (fontmap), NULL);
-  
+
   return PANGO_FONT_MAP_GET_CLASS (fontmap)->shape_engine_type;
 }
 

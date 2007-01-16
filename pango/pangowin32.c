@@ -92,7 +92,7 @@ pango_win32_get_hfont (PangoFont *font)
   if (!win32font->hfont)
     {
       cache = pango_win32_font_map_get_font_cache (win32font->fontmap);
-      
+
       win32font->hfont = pango_win32_font_cache_load (cache, &win32font->logfont);
       if (!win32font->hfont)
 	{
@@ -110,15 +110,15 @@ pango_win32_get_hfont (PangoFont *font)
       win32font->tm_descent = tm.tmDescent;
       win32font->tm_ascent = tm.tmAscent;
     }
-  
+
   return win32font->hfont;
 }
 
 /**
  * pango_win32_get_context:
- * 
+ *
  * Retrieves a #PangoContext appropriate for rendering with Windows fonts.
-  * 
+  *
  * Return value: the new #PangoContext
  **/
 PangoContext *
@@ -134,7 +134,7 @@ pango_win32_get_context (void)
 
 G_DEFINE_TYPE (PangoWin32Font, pango_win32_font, PANGO_TYPE_FONT)
 
-static void 
+static void
 pango_win32_font_init (PangoWin32Font *win32font)
 {
   win32font->size = -1;
@@ -146,9 +146,9 @@ pango_win32_font_init (PangoWin32Font *win32font)
 
 /**
  * pango_win32_get_dc:
- * 
+ *
  * Obtains a handle to the Windows device context that is used by Pango.
- * 
+ *
  * Return value: A handle to the Windows device context that is used by Pango.
  **/
 HDC
@@ -170,19 +170,19 @@ pango_win32_get_dc (void)
 #ifdef PANGO_WIN32_DEBUGGING
       if (getenv ("PANGO_WIN32_DEBUG") != NULL)
 	pango_win32_debug = TRUE;
-#endif      
+#endif
     }
 
   return pango_win32_hdc;
-}  
+}
 
 /**
  * pango_win32_get_debug_flag:
  *
  * Returns whether debugging is turned on.
- * 
+ *
  * Return value: %TRUE if debugging is turned on.
- * 
+ *
  * Since: 1.2
  */
 gboolean
@@ -199,7 +199,7 @@ pango_win32_font_class_init (PangoWin32FontClass *class)
 
   object_class->finalize = pango_win32_font_finalize;
   object_class->dispose = pango_win32_font_dispose;
-  
+
   font_class->describe = pango_win32_font_describe;
   font_class->describe_absolute = pango_win32_font_describe_absolute;
   font_class->get_coverage = pango_win32_font_get_coverage;
@@ -226,7 +226,7 @@ pango_win32_font_new (PangoFontMap  *fontmap,
   g_return_val_if_fail (lfp != NULL, NULL);
 
   result = (PangoWin32Font *)g_object_new (PANGO_TYPE_WIN32_FONT, NULL);
-  
+
   result->fontmap = fontmap;
   g_object_ref (fontmap);
 
@@ -247,11 +247,11 @@ pango_win32_font_new (PangoFontMap  *fontmap,
  *
  * Render a #PangoGlyphString onto a Windows DC
  */
-void 
+void
 pango_win32_render (HDC               hdc,
 		    PangoFont        *font,
 		    PangoGlyphString *glyphs,
-		    int               x, 
+		    int               x,
 		    int               y)
 {
   HFONT hfont, old_hfont = NULL;
@@ -270,7 +270,7 @@ pango_win32_render (HDC               hdc,
       for (i = 0; i < glyphs->num_glyphs; i++)
 	{
 	  g_print (" %d:%d", glyphs->glyphs[i].glyph, glyphs->glyphs[i].geometry.width);
-	  if (glyphs->glyphs[i].geometry.x_offset != 0 || 
+	  if (glyphs->glyphs[i].geometry.x_offset != 0 ||
 	      glyphs->glyphs[i].geometry.y_offset != 0)
 	    g_print (":%d,%d", glyphs->glyphs[i].geometry.x_offset,
 		     glyphs->glyphs[i].geometry.y_offset);
@@ -287,7 +287,7 @@ pango_win32_render (HDC               hdc,
     return;
 
   old_hfont = SelectObject (hdc, hfont);
-		
+
   glyph_indexes = g_new (guint16, glyphs->num_glyphs);
   dX = g_new (INT, glyphs->num_glyphs);
 
@@ -417,12 +417,12 @@ pango_win32_render (HDC               hdc,
  * must have been loaded using a #PangoContext with an identical
  * transformation matrix to that passed in to this function.
  **/
-void 
+void
 pango_win32_render_transformed (HDC                hdc,
 				const PangoMatrix *matrix,
 				PangoFont         *font,
 				PangoGlyphString  *glyphs,
-				int                x, 
+				int                x,
 				int                y)
 {
   XFORM xForm;
@@ -479,7 +479,7 @@ pango_win32_font_get_glyph_extents (PangoFont      *font,
     glyph_index = glyph = 0;
 
   info = g_hash_table_lookup (win32font->glyph_info, GUINT_TO_POINTER (glyph));
-  
+
   if (!info)
     {
       info = g_new0 (PangoWin32GlyphInfo, 1);
@@ -490,13 +490,13 @@ pango_win32_font_get_glyph_extents (PangoFont      *font,
       SelectObject (pango_win32_hdc, hfont);
       /* FIXME: (Alex) This constant reuse of pango_win32_hdc is
 	 not thread-safe */
-      res = GetGlyphOutlineA (pango_win32_hdc, 
+      res = GetGlyphOutlineA (pango_win32_hdc,
 			      glyph_index,
 			      GGO_METRICS | GGO_GLYPH_INDEX,
-			      &gm, 
+			      &gm,
 			      0, NULL,
 			      &m);
-  
+
       if (res == GDI_ERROR)
 	{
 	  gchar *error = g_win32_error_message (GetLastError ());
@@ -558,14 +558,14 @@ pango_win32_font_get_metrics (PangoFont     *font,
   PangoWin32MetricsInfo *info = NULL; /* Quiet gcc */
   PangoWin32Font *win32font = (PangoWin32Font *)font;
   GSList *tmp_list;
-      
+
   const char *sample_str = pango_language_get_sample_string (language);
-  
+
   tmp_list = win32font->metrics_by_lang;
   while (tmp_list)
     {
       info = tmp_list->data;
-      
+
       if (info->sample_str == sample_str)    /* We _don't_ need strcmp */
 	break;
 
@@ -576,7 +576,7 @@ pango_win32_font_get_metrics (PangoFont     *font,
     {
       HFONT hfont;
       PangoFontMetrics *metrics;
-      
+
       info = g_new (PangoWin32MetricsInfo, 1);
       win32font->metrics_by_lang = g_slist_prepend (win32font->metrics_by_lang, info);
 
@@ -588,7 +588,7 @@ pango_win32_font_get_metrics (PangoFont     *font,
 	{
 	  PangoCoverage *coverage;
 	  TEXTMETRIC tm;
-	    
+
 	  SelectObject (pango_win32_hdc, hfont);
 	  GetTextMetrics (pango_win32_hdc, &tm);
 
@@ -603,7 +603,7 @@ pango_win32_font_get_metrics (PangoFont     *font,
 	      PangoContext *context;
 	      PangoFontDescription *font_desc;
 	      PangoLayout *layout;
-	      
+
 	      /*  Get the average width of the chars in "0123456789" */
 	      context = pango_win32_get_context ();
 	      pango_context_set_language (context, language);
@@ -631,7 +631,7 @@ pango_win32_font_get_metrics (PangoFont     *font,
 	  metrics->strikethrough_position = metrics->ascent / 3;
 	}
     }
-      
+
   return pango_font_metrics_ref (info->metrics);
 }
 
@@ -651,13 +651,13 @@ pango_win32_font_real_select_font (PangoFont *font,
 
   if (!hfont)
     return FALSE;
-  
+
   if (!SelectObject (hdc, hfont))
     {
       g_warning ("pango_win32_font_real_select_font: Cannot select font\n");
       return FALSE;
     }
-  
+
   return TRUE;
 }
 
@@ -675,9 +675,9 @@ pango_win32_font_real_get_metrics_factor (PangoFont *font)
 /**
  * pango_win32_font_logfont:
  * @font: a #PangoFont which must be from the Win32 backend
- * 
+ *
  * Determine the LOGFONT struct for the specified font.
- * 
+ *
  * Return value: A newly allocated LOGFONT struct. It must be
  * freed with g_free().
  **/
@@ -700,7 +700,7 @@ pango_win32_font_logfont (PangoFont *font)
  * pango_win32_font_select_font:
  * @font: a #PangoFont from the Win32 backend
  * @hdc: a windows device context
- * 
+ *
  * Selects the font into the specified DC and changes the mapping mode
  * and world transformation of the DC appropriately for the font.
  * You may want to surround the use of this function with calls
@@ -710,7 +710,7 @@ pango_win32_font_logfont (PangoFont *font)
  * See pango_win32_font_get_metrics_factor() for information about
  * converting from the coordinate space used by this function
  * into Pango units.
- * 
+ *
  * Return value: %TRUE if the operation succeeded.
  **/
 gboolean
@@ -718,7 +718,7 @@ pango_win32_font_select_font (PangoFont *font,
 			      HDC        hdc)
 {
   g_return_val_if_fail (PANGO_WIN32_IS_FONT (font), FALSE);
-  
+
   return PANGO_WIN32_FONT_GET_CLASS (font)->select_font (font, hdc);
 }
 
@@ -732,18 +732,18 @@ void
 pango_win32_font_done_font (PangoFont *font)
 {
   g_return_if_fail (PANGO_WIN32_IS_FONT (font));
-  
+
   PANGO_WIN32_FONT_GET_CLASS (font)->done_font (font);
 }
 
 /**
  * pango_win32_font_get_metrics_factor:
  * @font: a #PangoFont from the win32 backend
- * 
+ *
  * Returns the scale factor from logical units in the coordinate
  * space used by pango_win32_font_select_font() to Pango units
  * in user space.
- * 
+ *
  * Return value: factor to multiply logical units by to get Pango
  *               units.
  **/
@@ -751,7 +751,7 @@ double
 pango_win32_font_get_metrics_factor (PangoFont *font)
 {
   g_return_val_if_fail (PANGO_WIN32_IS_FONT (font), 1.);
-  
+
   return PANGO_WIN32_FONT_GET_CLASS (font)->get_metrics_factor (font);
 }
 
@@ -788,12 +788,12 @@ pango_win32_font_finalize (GObject *object)
 
   g_slist_foreach (win32font->metrics_by_lang, (GFunc)free_metrics_info, NULL);
   g_slist_free (win32font->metrics_by_lang);
-  
+
   if (win32font->win32face)
     pango_win32_font_entry_remove (win32font->win32face, PANGO_FONT (win32font));
- 
+
   g_hash_table_destroy (win32font->glyph_info);
- 
+
   g_object_unref (win32font->fontmap);
 
   G_OBJECT_CLASS (pango_win32_font_parent_class)->finalize (object);
@@ -807,7 +807,7 @@ pango_win32_font_describe (PangoFont *font)
 
   desc = pango_font_description_copy (win32font->win32face->description);
   pango_font_description_set_size (desc, win32font->size / (PANGO_SCALE / PANGO_WIN32_FONT_MAP (win32font->fontmap)->resolution));
-  
+
   return desc;
 }
 
@@ -819,7 +819,7 @@ pango_win32_font_describe_absolute (PangoFont *font)
 
   desc = pango_font_description_copy (win32font->win32face->description);
   pango_font_description_set_absolute_size (desc, win32font->size);
-  
+
   return desc;
 }
 
@@ -828,13 +828,13 @@ pango_win32_get_shaper_map (PangoLanguage *lang)
 {
   static guint engine_type_id = 0;
   static guint render_type_id = 0;
-  
+
   if (engine_type_id == 0)
     {
       engine_type_id = g_quark_from_static_string (PANGO_ENGINE_TYPE_SHAPE);
       render_type_id = g_quark_from_static_string (PANGO_RENDER_TYPE_WIN32);
     }
-  
+
   return pango_find_map (lang, engine_type_id, render_type_id);
 }
 
@@ -850,7 +850,7 @@ pango_win32_font_get_coverage (PangoFont     *font,
     {
       coverage = pango_coverage_new ();
       pango_win32_font_calc_coverage (font, coverage, lang);
-      
+
       pango_win32_font_entry_set_coverage (win32font->win32face, coverage, lang);
     }
 
@@ -876,12 +876,12 @@ pango_win32_font_find_shaper (PangoFont     *font,
  * pango_win32_get_unknown_glyph:
  * @font: a #PangoFont
  * @wc: the Unicode character for which a glyph is needed.
- * 
+ *
  * Returns the index of a glyph suitable for drawing @wc as an
  * unknown character.
  *
  * Use PANGO_GET_UNKNOWN_GLYPH() instead.
- * 
+ *
  * Return value: a glyph index into @font
  **/
 PangoGlyph
@@ -902,21 +902,21 @@ pango_win32_get_unknown_glyph (PangoFont *font,
  * work property the text alignment of the DC should have TA_BASELINE
  * and TA_LEFT.
  */
-void 
+void
 pango_win32_render_layout_line (HDC              hdc,
 				PangoLayoutLine *line,
-				int              x, 
+				int              x,
 				int              y)
 {
   GSList *tmp_list = line->runs;
   PangoRectangle overall_rect;
   PangoRectangle logical_rect;
   PangoRectangle ink_rect;
-  
+
   int x_off = 0;
 
   pango_layout_line_get_extents (line,NULL, &overall_rect);
-  
+
   while (tmp_list)
     {
       HBRUSH oldfg = NULL;
@@ -926,7 +926,7 @@ pango_win32_render_layout_line (HDC              hdc,
       PangoLayoutRun *run = tmp_list->data;
       PangoAttrColor fg_color, bg_color;
       gboolean fg_set, bg_set;
-      
+
       tmp_list = tmp_list->next;
 
       pango_win32_get_item_properties (run->item, &uline, &fg_color, &fg_set, &bg_color, &bg_set);
@@ -1019,7 +1019,7 @@ pango_win32_render_layout_line (HDC              hdc,
 	  SelectObject (hdc, oldfg);
 	  DeleteObject (brush);
 	}
-      
+
       x_off += logical_rect.width;
     }
 }
@@ -1033,10 +1033,10 @@ pango_win32_render_layout_line (HDC              hdc,
  *
  * Render a #PangoLayoutLine onto an X drawable
  */
-void 
+void
 pango_win32_render_layout (HDC          hdc,
 			   PangoLayout *layout,
-			   int          x, 
+			   int          x,
 			   int          y)
 {
   PangoLayoutIter *iter;
@@ -1051,12 +1051,12 @@ pango_win32_render_layout (HDC          hdc,
       PangoRectangle   logical_rect;
       PangoLayoutLine *line;
       int              baseline;
-      
+
       line = pango_layout_iter_get_line_readonly (iter);
-      
+
       pango_layout_iter_get_line_extents (iter, NULL, &logical_rect);
       baseline = pango_layout_iter_get_baseline (iter);
-      
+
       pango_win32_render_layout_line (hdc,
                                       line,
                                       x + PANGO_PIXELS (logical_rect.x),
@@ -1064,7 +1064,7 @@ pango_win32_render_layout (HDC          hdc,
     }
   while (pango_layout_iter_next_line (iter));
 
-  pango_layout_iter_free (iter);  
+  pango_layout_iter_free (iter);
 }
 
 /* This utility function is duplicated here and in pango-layout.c; should it be
@@ -1082,10 +1082,10 @@ pango_win32_get_item_properties (PangoItem      *item,
 
   if (fg_set)
     *fg_set = FALSE;
-  
+
   if (bg_set)
     *bg_set = FALSE;
-  
+
   while (tmp_list)
     {
       PangoAttribute *attr = tmp_list->data;
@@ -1096,23 +1096,23 @@ pango_win32_get_item_properties (PangoItem      *item,
 	  if (uline)
 	    *uline = ((PangoAttrInt *)attr)->value;
 	  break;
-	  
+
 	case PANGO_ATTR_FOREGROUND:
 	  if (fg_color)
 	    *fg_color = *((PangoAttrColor *)attr);
 	  if (fg_set)
 	    *fg_set = TRUE;
-	  
+
 	  break;
-	  
+
 	case PANGO_ATTR_BACKGROUND:
 	  if (bg_color)
 	    *bg_color = *((PangoAttrColor *)attr);
 	  if (bg_set)
 	    *bg_set = TRUE;
-	  
+
 	  break;
-	  
+
 	default:
 	  break;
 	}
@@ -1120,7 +1120,7 @@ pango_win32_get_item_properties (PangoItem      *item,
     }
 }
 
-static guint 
+static guint
 get_cmap_offset (HDC     hdc,
 		 guint16 encoding_id)
 {
@@ -1136,9 +1136,9 @@ get_cmap_offset (HDC     hdc,
     return 0;
 
   n_tables = GUINT16_FROM_BE (n_tables);
-  
+
   table = g_malloc (ENCODING_TABLE_SIZE*n_tables);
-  
+
   res = GetFontData (hdc, CMAP, CMAP_HEADER_SIZE, table, ENCODING_TABLE_SIZE*n_tables);
   if (res != ENCODING_TABLE_SIZE*n_tables)
     return 0;
@@ -1166,7 +1166,7 @@ get_format_4_cmap (HDC hdc)
   guint16 *tbl, *tbl_end;
   struct format_4_cmap *table;
 
-  /* FIXME: Could look here at the CRC for the font in the DC 
+  /* FIXME: Could look here at the CRC for the font in the DC
             and return a cached copy if the same */
 
   offset = get_cmap_offset (hdc, UNICODE_ENCODING_ID);
@@ -1188,7 +1188,7 @@ get_format_4_cmap (HDC hdc)
       g_free (table);
       return NULL;
     }
-  
+
   table->format = GUINT16_FROM_BE (table->format);
   table->length = GUINT16_FROM_BE (table->length);
   table->language = GUINT16_FROM_BE (table->language);
@@ -1234,13 +1234,13 @@ static guint16 *
 get_end_count (struct format_4_cmap *table)
 {
   gint32 seg_count = table->seg_count_x_2/2;
-  /* Apparently the reseved spot is not reserved for 
+  /* Apparently the reseved spot is not reserved for
      the end_count array!? */
   return (&table->arrays[seg_count*0])-1;
 }
 
 static gboolean
-find_segment (struct format_4_cmap *table, 
+find_segment (struct format_4_cmap *table,
 	      guint16               wc,
 	      guint16              *segment)
 {
@@ -1249,7 +1249,7 @@ find_segment (struct format_4_cmap *table,
   guint16 *end_count = get_end_count (table);
   guint16 *start_count = get_start_count (table);
   static guint last = 0; /* Cache of one */
-  
+
   if (last < seg_count &&
       wc >= start_count[last] &&
       wc <= end_count[last])
@@ -1257,12 +1257,12 @@ find_segment (struct format_4_cmap *table,
       *segment = last;
       return TRUE;
     }
-      
+
 
   /* Binary search for the segment */
   start = 0; /* inclusive */
   end = seg_count; /* not inclusive */
-  while (start < end) 
+  while (start < end)
     {
       /* Look at middle pos */
       i = (start + end)/2;
@@ -1270,7 +1270,7 @@ find_segment (struct format_4_cmap *table,
       if (i == start)
 	{
 	  /* We made no progress. Look if this is the one. */
-	  
+
 	  if (wc >= start_count[i] &&
 	      wc <= end_count[i])
 	    {
@@ -1308,7 +1308,7 @@ get_format_12_cmap (HDC hdc)
   guint32 length;
   guint32 *tbl, *tbl_end;
   struct format_12_cmap *table;
-  
+
   offset = get_cmap_offset (hdc, UCS4_ENCODING_ID);
   if (offset == 0)
     return NULL;
@@ -1340,7 +1340,7 @@ get_format_12_cmap (HDC hdc)
       g_free (table);
       return NULL;
     }
-  
+
   tbl_end = (guint32 *) ((char *) table + length);
   tbl = table->groups;
 
@@ -1352,7 +1352,7 @@ get_format_12_cmap (HDC hdc)
 
   return table;
 }
-  
+
 static gpointer
 font_get_cmap (PangoFont *font)
 {
@@ -1414,7 +1414,7 @@ pango_win32_font_get_glyph_index (PangoFont *font,
       guint16 segment;
       guint16 id;
       guint16 ch = wc;
-  
+
       if (wc > 0xFFFF)
 	return 0;
 
@@ -1471,7 +1471,7 @@ pango_win32_get_name_header (HDC                 hdc,
 
   return TRUE;
 }
-  
+
 gboolean
 pango_win32_get_name_record (HDC                 hdc,
 			     gint                i,
@@ -1480,7 +1480,7 @@ pango_win32_get_name_record (HDC                 hdc,
   if (GetFontData (hdc, NAME, 6 + i * sizeof (*record),
 		   record, sizeof (*record)) != sizeof (*record))
     return FALSE;
-  
+
   record->platform_id = GUINT16_FROM_BE (record->platform_id);
   record->encoding_id = GUINT16_FROM_BE (record->encoding_id);
   record->language_id = GUINT16_FROM_BE (record->language_id);
@@ -1564,7 +1564,7 @@ pango_win32_font_calc_coverage (PangoFont     *font,
   guint32 i;
   PangoWin32CoverageLanguageClass cjkv;
   gboolean hide_unihan = FALSE;
-  
+
   PING(("font:%s lang:%s",
 	pango_font_description_to_string (pango_font_describe (font)),
 	pango_language_to_string (lang)));
@@ -1584,7 +1584,7 @@ pango_win32_font_calc_coverage (PangoFont     *font,
       PING(("no table"));
       return;
     }
-  
+
   PING (("coverage:"));
   if (win32font->win32face->cmap_format == 4)
     {
@@ -1612,7 +1612,7 @@ pango_win32_font_calc_coverage (PangoFont     *font,
 		  else
 		    g_print ("%04x:%04x ", start_count[i], end_count[i]);
 		}
-#endif	  
+#endif
 	      for (ch = start_count[i]; ch <= end_count[i]; ch++)
 		if (hide_unihan && CH_IS_UNIHAN_BMP (ch))
 		  pango_coverage_set (coverage, ch, PANGO_COVERAGE_APPROXIMATE);
@@ -1628,7 +1628,7 @@ pango_win32_font_calc_coverage (PangoFont     *font,
 		{
 		  if (ch == 0xFFFF)
 		    break;
-		  
+
 		  id = *(id_range_offset[i]/2 +
 			 (ch - start_count[i]) +
 			 &id_range_offset[i]);

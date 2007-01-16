@@ -26,7 +26,7 @@ typedef struct _ColorSpec {
   const gchar *spec;
   gboolean valid;
   guint16 red;
-  guint16 green; 
+  guint16 green;
   guint16 blue;
 } ColorSpec;
 
@@ -38,7 +38,7 @@ static gboolean test_color (ColorSpec *spec)
   accepted = pango_color_parse (&color, spec->spec);
 
   if (accepted == spec->valid &&
-      (!accepted || 
+      (!accepted ||
       (color.red == spec->red &&
        color.green == spec->green &&
        color.blue == spec->blue)))
@@ -78,8 +78,8 @@ ColorSpec specs [] = {
   { NULL,            0, 0, 0, 0 }
 };
 
-int 
-main (int argc, char *argv[]) 
+int
+main (int argc, char *argv[])
 {
   gboolean success;
   ColorSpec *spec;

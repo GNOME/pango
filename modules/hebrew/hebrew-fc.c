@@ -69,7 +69,7 @@ get_cluster_glyphs(PangoFont      *font,
       PangoRectangle logical_rect;
       gunichar wc = cluster[i];
       gunichar mirrored_ch;
-      
+
       if (do_mirror)
 	if (pango_get_mirror_char (wc, &mirrored_ch))
 	  wc = mirrored_ch;
@@ -88,7 +88,7 @@ get_cluster_glyphs(PangoFont      *font,
 
       pango_font_get_glyph_extents (font,
 				    glyph[i], &ink_rects[i], &logical_rect);
-      
+
       /* Assign the base char width to the last character in the cluster */
       if (i==0)
 	{
@@ -101,8 +101,8 @@ get_cluster_glyphs(PangoFont      *font,
 }
 
 static void
-add_glyph (PangoGlyphString *glyphs, 
-	   gint              cluster_start, 
+add_glyph (PangoGlyphString *glyphs,
+	   gint              cluster_start,
 	   PangoGlyph        glyph,
 	   gboolean          is_combining,
 	   gint              width,
@@ -113,10 +113,10 @@ add_glyph (PangoGlyphString *glyphs,
   gint index = glyphs->num_glyphs;
 
   pango_glyph_string_set_size (glyphs, index + 1);
-  
+
   glyphs->glyphs[index].glyph = glyph;
   glyphs->glyphs[index].attr.is_cluster_start = is_combining ? 0 : 1;
-  
+
   glyphs->log_clusters[index] = cluster_start;
 
   glyphs->glyphs[index].geometry.x_offset = x_offset;
@@ -152,7 +152,7 @@ maybe_add_gsub_feature (PangoOTRuleset *ruleset,
 			gulong          property_bit)
 {
   guint feature_index;
-  
+
   /* 0xffff == default language system */
   if (pango_ot_info_find_feature (info, PANGO_OT_TABLE_GSUB,
 				  tag, script_index, 0xffff, &feature_index))
@@ -168,7 +168,7 @@ maybe_add_gpos_feature (PangoOTRuleset *ruleset,
 			gulong          property_bit)
 {
   guint feature_index;
-  
+
   /* 0xffff == default language system */
   if (pango_ot_info_find_feature (info, PANGO_OT_TABLE_GPOS,
 				  tag, script_index, 0xffff, &feature_index))
@@ -188,7 +188,7 @@ get_ruleset (FT_Face face)
 
   if (!ruleset_quark)
     ruleset_quark = g_quark_from_string ("pango-hebrew-ruleset");
-  
+
   if (!info)
     return NULL;
 
@@ -231,7 +231,7 @@ get_ruleset (FT_Face face)
   return ruleset;
 }
 
-static void 
+static void
 fallback_shape (PangoEngineShape *engine,
 		PangoFont        *font,
 		const char       *text,
@@ -266,7 +266,7 @@ fallback_shape (PangoEngineShape *engine,
 			 glyph,
 			 glyph_width,
 			 ink_rects);
-      
+
       /* Kern the glyphs! */
       hebrew_shaper_get_cluster_kerning(cluster,
 					cluster_size,
@@ -276,7 +276,7 @@ fallback_shape (PangoEngineShape *engine,
 					/* output */
 					x_offset,
 					y_offset);
-      
+
       add_cluster(font,
 		  glyphs,
 		  cluster_size,
@@ -286,14 +286,14 @@ fallback_shape (PangoEngineShape *engine,
 		  glyph_width,
 		  x_offset,
 		  y_offset);
-      
+
     }
 
   if (analysis->level % 2)
     hebrew_shaper_bidi_reorder(glyphs);
 }
 
-static void 
+static void
 hebrew_engine_shape (PangoEngineShape *engine,
 		     PangoFont        *font,
 		     const char       *text,
@@ -330,9 +330,9 @@ hebrew_engine_shape (PangoEngineShape *engine,
 
   buffer = pango_ot_buffer_new (fc_font);
   pango_ot_buffer_set_rtl (buffer, analysis->level % 2 != 0);
-    
+
   n_chars = g_utf8_strlen (text, length);
-      
+
   p = text;
   for (i=0; i < n_chars; i++)
     {
@@ -346,7 +346,7 @@ hebrew_engine_shape (PangoEngineShape *engine,
 	if (pango_get_mirror_char (wc, &mirrored_ch))
 	  {
 	    wc = mirrored_ch;
-	    
+
 	    g_unichar_to_utf8 (wc, buf);
 	  }
 
@@ -357,7 +357,7 @@ hebrew_engine_shape (PangoEngineShape *engine,
       else
 	{
 	  index = pango_fc_font_get_glyph (fc_font, wc);
-	  
+
 	  if (!index)
 	    {
 	      pango_ot_buffer_add_glyph (buffer, PANGO_GET_UNKNOWN_GLYPH ( wc),
@@ -366,22 +366,22 @@ hebrew_engine_shape (PangoEngineShape *engine,
 	  else
 	    {
 	      cluster = p - text;
-	      
+
 	      pango_ot_buffer_add_glyph (buffer, index,
 					 unknown_property, cluster);
 	    }
 	}
-      
+
       p = g_utf8_next_char (p);
     }
-  
+
 
   pango_ot_ruleset_substitute (ruleset, buffer);
   pango_ot_ruleset_position (ruleset, buffer);
   pango_ot_buffer_output (buffer, glyphs);
 
   pango_ot_buffer_destroy (buffer);
-  
+
  out:
   pango_fc_font_unlock_face (fc_font);
 }
@@ -395,18 +395,18 @@ hebrew_engine_fc_class_init (PangoEngineShapeClass *class)
 PANGO_ENGINE_SHAPE_DEFINE_TYPE (HebrewEngineFc, hebrew_engine_fc,
 				hebrew_engine_fc_class_init, NULL)
 
-void 
+void
 PANGO_MODULE_ENTRY(init) (GTypeModule *module)
 {
   hebrew_engine_fc_register_type (module);
 }
 
-void 
+void
 PANGO_MODULE_ENTRY(exit) (void)
 {
 }
 
-void 
+void
 PANGO_MODULE_ENTRY(list) (PangoEngineInfo **engines,
 			  int              *n_engines)
 {

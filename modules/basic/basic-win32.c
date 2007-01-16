@@ -177,7 +177,7 @@ static PangoEngineInfo script_engines[] = {
   }
 };
 
-static PangoGlyph 
+static PangoGlyph
 find_char (PangoFont *font,
 	   gunichar   wc)
 {
@@ -194,7 +194,7 @@ set_glyph (PangoFont        *font,
   PangoRectangle logical_rect;
 
   glyphs->glyphs[i].glyph = glyph;
-  
+
   glyphs->glyphs[i].geometry.x_offset = 0;
   glyphs->glyphs[i].geometry.y_offset = 0;
 
@@ -210,16 +210,16 @@ swap_range (PangoGlyphString *glyphs,
 	    int               end)
 {
   int i, j;
-  
+
   for (i = start, j = end - 1; i < j; i++, j--)
     {
       PangoGlyphInfo glyph_info;
       gint log_cluster;
-      
+
       glyph_info = glyphs->glyphs[i];
       glyphs->glyphs[i] = glyphs->glyphs[j];
       glyphs->glyphs[j] = glyph_info;
-      
+
       log_cluster = glyphs->log_clusters[i];
       glyphs->log_clusters[i] = glyphs->log_clusters[j];
       glyphs->log_clusters[j] = log_cluster;
@@ -270,7 +270,7 @@ static char *
 lang_name (int lang)
 {
   static char unk[10];
-  
+
   switch (PRIMARYLANGID (lang))
     {
 #define CASE(n) case LANG_##n: return #n
@@ -699,7 +699,7 @@ convert_log_clusters_to_byte_offsets (const char       *text,
       g_assert (glyphs->log_clusters[glyphix] < n_chars);
       glyphs->log_clusters[glyphix] = byte_offset[glyphs->log_clusters[glyphix]];
     }
-  
+
   g_free (byte_offset);
 }
 
@@ -725,7 +725,7 @@ itemize_shape_and_place (PangoFont        *font,
 
   control.uDefaultLanguage = make_langid (analysis->language);
   state.uBidiLevel = analysis->level;
-  
+
 #ifdef BASIC_WIN32_DEBUGGING
   if (pango_win32_debug)
     g_print (G_STRLOC ": ScriptItemize: uDefaultLanguage:%04x uBidiLevel:%d\n",
@@ -772,7 +772,7 @@ itemize_shape_and_place (PangoFont        *font,
       memset (advances, 0, sizeof (advances));
       memset (offsets, 0, sizeof (offsets));
       memset (&abc, 0, sizeof (abc));
-	  
+
       /* Note that itemlen is number of wchar_t's i.e. surrogate pairs
        * count as two!
        */
@@ -810,7 +810,7 @@ itemize_shape_and_place (PangoFont        *font,
 #endif
 	  return FALSE;
 	}
-      
+
 #ifdef BASIC_WIN32_DEBUGGING
       dump_glyphs_and_log_clusters (items[item].a.fRTL, itemlen,
 				    items[item].iCharPos, log_clusters,
@@ -819,7 +819,7 @@ itemize_shape_and_place (PangoFont        *font,
 
       ng = glyphs->num_glyphs;
       pango_glyph_string_set_size (glyphs, ng + nglyphs);
-      
+
       set_up_pango_log_clusters (wtext,
 				 items[item].a.fRTL, itemlen, log_clusters,
 				 nglyphs, glyphs->log_clusters + ng,
@@ -904,7 +904,7 @@ uniscribe_shape (PangoFont        *font,
 	if (script_cache[i])
 	  (*script_free_cache)(&script_cache[i]);
     }
-  
+
   if (retval)
     {
       convert_log_clusters_to_byte_offsets (text, length, glyphs);
@@ -952,10 +952,10 @@ text_is_simple (const char *text,
 
   return retval;
 }
-		
+
 #endif /* HAVE_USP10_H */
 
-static void 
+static void
 basic_engine_shape (PangoEngineShape *engine,
 		    PangoFont        *font,
 		    const char       *text,
@@ -1000,7 +1000,7 @@ basic_engine_shape (PangoEngineShape *engine,
 
       if (wc == 0xa0)	/* non-break-space */
 	wc = 0x20;
-		
+
       if (pango_is_zero_width (wc))
 	{
 	  set_glyph (font, glyphs, i, p - text, PANGO_GLYPH_EMPTY);
@@ -1011,13 +1011,13 @@ basic_engine_shape (PangoEngineShape *engine,
 	  if (index)
 	    {
 	      set_glyph (font, glyphs, i, p - text, index);
-	      
+
 	      if (g_unichar_type (wc) == G_UNICODE_NON_SPACING_MARK)
 		{
 		  if (i > 0)
 		    {
 		      PangoRectangle logical_rect, ink_rect;
-		      
+
 		      glyphs->glyphs[i].geometry.width = MAX (glyphs->glyphs[i-1].geometry.width,
 							      glyphs->glyphs[i].geometry.width);
 		      glyphs->glyphs[i-1].geometry.width = 0;
@@ -1036,7 +1036,7 @@ basic_engine_shape (PangoEngineShape *engine,
 	  else
 	    set_glyph (font, glyphs, i, p - text, PANGO_GET_UNKNOWN_GLYPH (wc));
 	}
-      
+
       p = g_utf8_next_char (p);
     }
 
@@ -1048,7 +1048,7 @@ basic_engine_shape (PangoEngineShape *engine,
 
       /* Swap all glyphs */
       swap_range (glyphs, 0, n_chars);
-      
+
       /* Now reorder glyphs within each cluster back to LTR */
       for (start = 0; start < n_chars;)
 	{
@@ -1056,7 +1056,7 @@ basic_engine_shape (PangoEngineShape *engine,
 	  while (end < n_chars &&
 		 glyphs->log_clusters[end] == glyphs->log_clusters[start])
 	    end++;
-	  
+
 	  swap_range (glyphs, start, end);
 	  start = end;
 	}
@@ -1070,7 +1070,7 @@ init_uniscribe (void)
   HMODULE usp10_dll;
 
   have_uniscribe = FALSE;
-  
+
   if ((usp10_dll = LoadLibrary ("usp10.dll")) != NULL)
     {
       (script_get_properties = (pScriptGetProperties)
@@ -1095,7 +1095,7 @@ init_uniscribe (void)
       hdc = pango_win32_get_dc ();
     }
 #endif
-} 
+}
 
 static void
 basic_engine_win32_class_init (PangoEngineShapeClass *class)
@@ -1106,7 +1106,7 @@ basic_engine_win32_class_init (PangoEngineShapeClass *class)
 PANGO_ENGINE_SHAPE_DEFINE_TYPE (BasicEngineWin32, basic_engine_win32,
 				basic_engine_win32_class_init, NULL);
 
-void 
+void
 PANGO_MODULE_ENTRY(init) (GTypeModule *module)
 {
   init_uniscribe ();
@@ -1117,12 +1117,12 @@ PANGO_MODULE_ENTRY(init) (GTypeModule *module)
   basic_engine_win32_register_type (module);
 }
 
-void 
+void
 PANGO_MODULE_ENTRY(exit) (void)
 {
 }
 
-void 
+void
 PANGO_MODULE_ENTRY(list) (PangoEngineInfo **engines,
 			  int              *n_engines)
 {

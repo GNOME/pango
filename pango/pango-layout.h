@@ -54,7 +54,7 @@ typedef enum {
  * @PANGO_ELLIPSIZE_START: Omit characters at the start of the text
  * @PANGO_ELLIPSIZE_MIDDLE: Omit characters in the middle of the text
  * @PANGO_ELLIPSIZE_END: Omit characters at the end of the text
- * 
+ *
  * The #PangoEllipsizeMode type describes what sort of (if any)
  * ellipsization should be applied to a line of text. In
  * the ellipsization process characters are removed from the
@@ -74,7 +74,7 @@ struct _PangoLayoutLine
   gint         start_index;     /* start of line as byte index into layout->text */
   gint         length;		/* length of line in bytes */
   GSList      *runs;
-  guint        is_paragraph_start : 1;  /* TRUE if this is the first line of the paragraph */ 
+  guint        is_paragraph_start : 1;  /* TRUE if this is the first line of the paragraph */
   guint        resolved_dir : 3;  /* Resolved PangoDirection of line */
 };
 

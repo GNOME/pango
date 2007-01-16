@@ -1,5 +1,5 @@
-/* 
- * mprefixups.h: Handle left matra placement 
+/*
+ * mprefixups.h: Handle left matra placement
  *
  * Author: Sivaraj Doddannan
  * Ported from IBM's ICU engine.  Original copyright:
@@ -55,7 +55,7 @@ void indic_mprefixups_add (MPreFixups *mprefixups, glong baseIndex, glong mpreIn
     if (baseIndex - mpreIndex > 1) {
        mprefixups->fFixupData[mprefixups->fFixupCount].fBaseIndex = baseIndex;
        mprefixups->fFixupData[mprefixups->fFixupCount].fMPreIndex = mpreIndex;
-    
+
        mprefixups->fFixupCount += 1;
     }
 }
@@ -79,7 +79,7 @@ void indic_mprefixups_apply(MPreFixups *mprefixups, PangoOTBuffer *buffer)
 	/* determine post GSUB location of baseIndex and mpreIndex */
 
 	pango_ot_buffer_get_glyphs (buffer, &glyphs, &n_glyphs);
-	
+
 	for (i = 0; i < n_glyphs; i++) {
 	    if (baseGlyph < 0 && glyphs[i].cluster == baseIndex)
 		baseGlyph = i;
@@ -87,7 +87,7 @@ void indic_mprefixups_apply(MPreFixups *mprefixups, PangoOTBuffer *buffer)
 		    if (mpreGlyph < 0)
 			    mpreGlyph = i;
 		    mpreLimit = i + 1;
-	    }		    
+	    }
 	}
 	if (baseGlyph < 0 || mpreGlyph < 0 || mpreLimit >= baseGlyph) {
 	    continue;
@@ -110,7 +110,7 @@ void indic_mprefixups_apply(MPreFixups *mprefixups, PangoOTBuffer *buffer)
 	for (i = 0; i < mpreCount; i += 1) {
 	    glyphs[mpreDest + i] = mpreSave[i];
 	}
- 
+
 	g_free(mpreSave);
-    } 
+    }
 }

@@ -32,14 +32,14 @@
  * @analysis:  #PangoAnalysis structure from pango_itemize()
  * @glyphs:    glyph string in which to store results
  *
- * Given a segment of text and the corresponding 
+ * Given a segment of text and the corresponding
  * #PangoAnalysis structure returned from pango_itemize(),
  * convert the characters into glyphs. You may also pass
  * in only a substring of the item from pango_itemize().
  */
 void
-pango_shape (const gchar      *text, 
-             gint              length, 
+pango_shape (const gchar      *text,
+             gint              length,
              const PangoAnalysis *analysis,
              PangoGlyphString *glyphs)
 {
@@ -55,7 +55,7 @@ pango_shape (const gchar      *text,
         {
 	  /* If a font has been correctly chosen, but no glyphs are output,
 	   * there's probably something wrong with the shaper.  Trying to be
-	   * informative, we print out the font description, but to not 
+	   * informative, we print out the font description, but to not
 	   * flood the terminal with zillions of the message, we set a flag
 	   * on the font to only err once per font.
 	   */
@@ -63,7 +63,7 @@ pango_shape (const gchar      *text,
 
 	  if (!warned_quark)
 	    warned_quark = g_quark_from_static_string ("pango-shaper-warned");
-	  
+
 	  if (!g_object_get_qdata (G_OBJECT (analysis->font), warned_quark))
 	    {
 	      PangoFontDescription *desc;

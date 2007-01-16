@@ -115,13 +115,13 @@ pango_x_find_subfont (PangoFont  *font,
 		      PangoXSubfont subfont_index)
 {
   PangoXFont *xfont = (PangoXFont *)font;
-  
+
   if (subfont_index < 1 || subfont_index > xfont->n_subfonts)
     {
       g_warning ("Invalid subfont %d", subfont_index);
       return NULL;
     }
-  
+
   return xfont->subfonts[subfont_index-1];
 }
 
@@ -132,7 +132,7 @@ pango_x_make_font_struct (PangoFont *font, PangoXSubfontInfo *info)
   PangoXFontCache *cache;
 
   cache = pango_x_font_map_get_font_cache (xfont->fontmap);
-  
+
   info->font_struct = pango_x_font_cache_load (cache, info->xlfd);
   if (!info->font_struct)
     {
@@ -141,7 +141,7 @@ pango_x_make_font_struct (PangoFont *font, PangoXSubfontInfo *info)
       /* Prevent a segfault, but probably not much more */
       info->font_struct = pango_x_font_cache_load (cache, "fixed");
     }
-  
+
   info->is_1byte = (info->font_struct->min_byte1 == 0 && info->font_struct->max_byte1 == 0);
   info->range_byte1 = info->font_struct->max_byte1 - info->font_struct->min_byte1 + 1;
   info->range_byte2 = info->font_struct->max_char_or_byte2 - info->font_struct->min_char_or_byte2 + 1;
@@ -152,17 +152,17 @@ pango_x_get_font_struct (PangoFont *font, PangoXSubfontInfo *info)
 {
   if (!info->font_struct)
     pango_x_make_font_struct (font, info);
-  
+
   return info->font_struct;
 }
 
 /**
  * pango_x_get_context:
  * @display: an X display (As returned by XOpenDisplay().)
- * 
+ *
  * Retrieves a #PangoContext appropriate for rendering with X fonts on the
  * given display.
- * 
+ *
  * Return value: the new #PangoContext.
  **/
 PangoContext *
@@ -172,26 +172,26 @@ pango_x_get_context (Display *display)
   PangoXContextInfo *info;
   int i;
   static gboolean registered_modules = FALSE;
-  
-  g_return_val_if_fail (display != NULL, NULL);  
+
+  g_return_val_if_fail (display != NULL, NULL);
 
   if (!registered_modules)
     {
       registered_modules = TRUE;
-      
+
       for (i = 0; _pango_included_x_modules[i].list; i++)
         pango_module_register (&_pango_included_x_modules[i]);
     }
-  
+
   result = pango_context_new ();
-  
+
   info = g_new (PangoXContextInfo, 1);
   info->get_gc_func = NULL;
   info->free_gc_func = NULL;
   g_object_set_qdata_full (G_OBJECT (result),
                            g_quark_from_static_string ("pango-x-info"),
                            info, (GDestroyNotify)g_free);
-  
+
   pango_context_set_font_map (result, pango_x_font_map_for_display (display));
 
   return result;
@@ -202,7 +202,7 @@ pango_x_get_context (Display *display)
  * @context: a #PangoContext.
  * @get_gc_func: function called to create a new GC for a given color.
  * @free_gc_func: function called to free a GC created with @get_gc_func.
- * 
+ *
  * Sets the functions that will be used to get GC's in various colors when
  * rendering layouts with this context.
  **/
@@ -212,7 +212,7 @@ pango_x_context_set_funcs  (PangoContext     *context,
 			    PangoFreeGCFunc   free_gc_func)
 {
   PangoXContextInfo *info;
-  
+
   g_return_if_fail (context != NULL);
 
   info = g_object_get_qdata (G_OBJECT (context),
@@ -242,16 +242,16 @@ pango_x_font_get_type (void)
         (GInstanceInitFunc) pango_x_font_init,
 	NULL            /* value_table */
       };
-      
+
       object_type = g_type_register_static (PANGO_TYPE_FONT,
                                             I_("PangoXFont"),
                                             &object_info, 0);
     }
-  
+
   return object_type;
 }
 
-static void 
+static void
 pango_x_font_init (PangoXFont *xfont)
 {
   xfont->subfonts_by_charset = g_hash_table_new (g_str_hash, g_str_equal);
@@ -273,10 +273,10 @@ pango_x_font_class_init (PangoXFontClass *class)
   PangoFontClass *font_class = PANGO_FONT_CLASS (class);
 
   parent_class = g_type_class_peek_parent (class);
-  
+
   object_class->finalize = pango_x_font_finalize;
   object_class->dispose = pango_x_font_dispose;
-  
+
   font_class->describe = pango_x_font_describe;
   font_class->get_coverage = pango_x_font_get_coverage;
   font_class->find_shaper = pango_x_font_find_shaper;
@@ -294,7 +294,7 @@ pango_x_font_new (PangoFontMap *fontmap, const char *spec, int size)
   g_return_val_if_fail (spec != NULL, NULL);
 
   result = g_object_new (PANGO_TYPE_X_FONT, NULL);
-  
+
   result->fontmap = fontmap;
   g_object_ref (fontmap);
   result->display = pango_x_fontmap_get_display (fontmap);
@@ -329,7 +329,7 @@ pango_x_load_font (Display    *display,
 
   g_return_val_if_fail (display != NULL, NULL);
   g_return_val_if_fail (spec != NULL, NULL);
-  
+
   result = pango_x_font_new (pango_x_font_map_for_display (display), spec, -1);
 
   return (PangoFont *)result;
@@ -347,7 +347,7 @@ pango_x_load_font (Display    *display,
       }							\
   } G_STMT_END
 
- 
+
 /**
  * pango_x_render:
  * @display: the X display.
@@ -360,13 +360,13 @@ pango_x_load_font (Display    *display,
  *
  * Renders a #PangoGlyphString onto an X drawable.
  */
-void 
+void
 pango_x_render  (Display           *display,
 		 Drawable           d,
 		 GC                 gc,
 		 PangoFont         *font,
 		 PangoGlyphString  *glyphs,
-		 int                x, 
+		 int                x,
 		 int                y)
 {
   Font old_fid = None;
@@ -386,7 +386,7 @@ pango_x_render  (Display           *display,
 
   g_return_if_fail (display != NULL);
   g_return_if_fail (glyphs != NULL);
-  
+
   for (i=0; i<glyphs->num_glyphs; i++)
     {
       PangoGlyph glyph = glyphs->glyphs[i].glyph;
@@ -403,20 +403,20 @@ pango_x_render  (Display           *display,
 	    glyph_x >= -16384 && glyph_x <= 32767 &&
 	    glyph_y >= -16384 && glyph_y <= 32767))
 	goto next_glyph;
-	      
+
       if ((glyph & PANGO_GLYPH_UNKNOWN_FLAG) == 0)
 	{
 	  guint16 index = PANGO_X_GLYPH_INDEX (glyph);
 	  guint16 subfont_index = PANGO_X_GLYPH_SUBFONT (glyph);
 	  PangoXSubfontInfo *subfont;
-      
+
 	  subfont = pango_x_find_subfont (font, subfont_index);
 	  if (subfont)
 	    {
 	      fs = pango_x_get_font_struct (font, subfont);
 	      if (!fs)
 		continue;
-	      
+
 	      if (fs->fid != old_fid)
 		{
 		  FLUSH;
@@ -448,7 +448,7 @@ pango_x_render  (Display           *display,
           int baseline;
 	  int stroke_thick;
           gunichar wc;
-	  
+
 	unknown_glyph:
 	  FLUSH;
 
@@ -473,7 +473,7 @@ pango_x_render  (Display           *display,
 
           baseline = glyph_y;
 	  stroke_thick = MAX ((int) (0.5 + 0.075 * (y2 - y1)), 1);
-          
+
 	  if (glyph & PANGO_GLYPH_UNKNOWN_FLAG)
 	    wc = glyph & (~PANGO_GLYPH_UNKNOWN_FLAG);
 	  else
@@ -509,7 +509,7 @@ pango_x_render  (Display           *display,
 			       baseline - stroke_thick + (stroke_thick - tmp_height) / 2,
                                arrow_x,
 			       baseline - stroke_thick + (stroke_thick - tmp_height) / 2 + tmp_height - 1);
-		    
+
 		    if ((arrow_x - x1 - hborder) % 2 == 1)
 		      tmp_height += 2;
 		  }
@@ -565,7 +565,7 @@ pango_x_render  (Display           *display,
 		XFillRectangle (display, d, gc,
 				x1, y2 - stroke_thick,
 				x2 - x1, stroke_thick);
-		
+
 		break;
 	      }
 	    }
@@ -621,12 +621,12 @@ pango_x_font_get_glyph_extents  (PangoFont      *font,
       gunichar wc;
       gdouble width_factor;
       int w;
-      
+
       if (glyph & PANGO_GLYPH_UNKNOWN_FLAG)
 	wc = glyph & (~PANGO_GLYPH_UNKNOWN_FLAG);
       else
         wc = 0;
-          
+
       switch (wc)
         {
         case '\n':
@@ -646,14 +646,14 @@ pango_x_font_get_glyph_extents  (PangoFont      *font,
 	    width_factor = 1.0;
 	  }
 	}
-	    
+
       metrics = pango_font_get_metrics (font, NULL);
 
       if (metrics)
         {
 	  w = metrics->approximate_char_width * width_factor;
 	  w = PANGO_SCALE * PANGO_PIXELS (w);
-		
+
 	  if (ink_rect)
 	    {
 	      ink_rect->x = PANGO_SCALE;
@@ -689,7 +689,7 @@ get_int_prop (Atom         atom,
   int i;
 
   *val = 0;
-  
+
   i = 0;
   while (i < fs->n_properties)
     {
@@ -727,7 +727,7 @@ itemize_string_foreach (PangoFont     *font,
   guint8 *embedding_levels;
   PangoDirection base_dir = PANGO_DIRECTION_LTR;
   gboolean finished = FALSE;
-  
+
   embedding_levels = pango_log2vis_get_embedding_levels (str, -1, &base_dir);
 
   last_shaper = NULL;
@@ -749,8 +749,8 @@ itemize_string_foreach (PangoFont     *font,
 	  finished = TRUE;
 	  shaper = NULL;
 	}
-	  
-      if (p > start && 
+
+      if (p > start &&
 	  (finished ||
 	   (shaper != last_shaper || last_level != embedding_levels[i])))
 	{
@@ -763,25 +763,25 @@ itemize_string_foreach (PangoFont     *font,
 	  analysis.language = language;
 	  analysis.level = last_level;
 	  analysis.extra_attrs = NULL;
-	  
+
 	  pango_shape (start, p - start, &analysis, glyph_str);
 
 	  for (j = 0; j < glyph_str->num_glyphs; j++)
 	    (*func) (font, &glyph_str->glyphs[j], data);
-	  
+
 	  start = p;
 	}
 
       if (!finished)
 	{
 	  p = g_utf8_next_char (p);
-	      
+
 	  last_shaper = shaper;
 	  last_level = embedding_levels[i];
 	  i++;
         }
     }
-  
+
   pango_glyph_string_free (glyph_str);
   g_free (embedding_levels);
 }
@@ -797,24 +797,24 @@ get_font_metrics_from_subfonts (PangoFont        *font,
   GSList *tmp_list = subfonts;
   gboolean first = TRUE;
   int total_avg_widths = 0;
-  int n_avg_widths = 0;  
+  int n_avg_widths = 0;
   Atom avg_width_atom;
 
   avg_width_atom = pango_x_fontmap_atom_from_name (xfont->fontmap,
                                                    "AVERAGE_WIDTH");
-  
+
   metrics->ascent = 0;
   metrics->descent = 0;
-  
+
   while (tmp_list)
     {
       PangoXSubfontInfo *subfont = pango_x_find_subfont (font, GPOINTER_TO_UINT (tmp_list->data));
-      
+
       if (subfont)
 	{
 	  XFontStruct *fs = pango_x_get_font_struct (font, subfont);
           gint avg_width = 0;
-          
+
 	  if (fs)
 	    {
 	      if (first)
@@ -847,7 +847,7 @@ get_font_metrics_from_subfonts (PangoFont        *font,
 		  avg_width = PANGO_SCALE * ((fs->min_bounds.width + fs->max_bounds.width) / 2);
 		}
 	    }
-          
+
 	  if (avg_width)
 	    {
 	      total_avg_widths += avg_width;
@@ -856,7 +856,7 @@ get_font_metrics_from_subfonts (PangoFont        *font,
 	}
       else
 	g_warning ("Invalid subfont %d in get_font_metrics_from_subfonts", GPOINTER_TO_UINT (tmp_list->data));
-	  
+
       tmp_list = tmp_list->next;
     }
 
@@ -908,7 +908,7 @@ get_font_metrics_from_string (PangoFont        *font,
 			      PangoFontMetrics *metrics)
 {
   GSList *subfonts = NULL;
-  
+
   itemize_string_foreach (font, language, str, get_subfonts_foreach, &subfonts);
   get_font_metrics_from_subfonts (font, subfonts, metrics);
   g_slist_free (subfonts);
@@ -933,7 +933,7 @@ get_total_width_for_string (PangoFont        *font,
 			    const char       *str)
 {
   int width = 0;
-  
+
   itemize_string_foreach (font, language, str, average_width_foreach, &width);
 
   return width;
@@ -946,14 +946,14 @@ pango_x_font_get_metrics (PangoFont        *font,
   PangoXMetricsInfo *info = NULL; /* Quiet gcc */
   PangoXFont *xfont = (PangoXFont *)font;
   GSList *tmp_list;
-      
+
   const char *sample_str = pango_language_get_sample_string (language);
-  
+
   tmp_list = xfont->metrics_by_lang;
   while (tmp_list)
     {
       info = tmp_list->data;
-      
+
       if (info->sample_str == sample_str)    /* We _don't_ need strcmp */
 	break;
 
@@ -977,7 +977,7 @@ pango_x_font_get_metrics (PangoFont        *font,
 
       info->metrics = metrics;
     }
-      
+
   return pango_font_metrics_ref (info->metrics);
 }
 
@@ -1017,7 +1017,7 @@ name_for_charset (char *xlfd, char *charset)
   for (p = xlfd; *p; p++)
     if (*p == '-')
       ndashes++;
-  
+
   if (ndashes == 14) /* Complete XLFD */
     {
       if (match_end (xlfd, "-*-*"))
@@ -1061,22 +1061,22 @@ pango_x_insert_subfont (PangoFont *font, const char *xlfd)
 {
   PangoXFont *xfont = (PangoXFont *)font;
   PangoXSubfontInfo *info;
-  
+
   info = g_new (PangoXSubfontInfo, 1);
-  
+
   info->xlfd = g_strdup (xlfd);
   info->font_struct = NULL;
 
   xfont->n_subfonts++;
-  
+
   if (xfont->n_subfonts > xfont->max_subfonts)
     {
       xfont->max_subfonts *= 2;
       xfont->subfonts = g_renew (PangoXSubfontInfo *, xfont->subfonts, xfont->max_subfonts);
     }
-  
+
   xfont->subfonts[xfont->n_subfonts - 1] = info;
-  
+
   return xfont->n_subfonts;
 }
 
@@ -1089,11 +1089,11 @@ pango_x_insert_subfont (PangoFont *font, const char *xlfd)
  *               the result must be freed using g_free().
  * @subfont_charsets: location to store a pointer to an array of subfont IDs for each found subfont;
  *               the result must be freed using g_free().
- * 
+ *
  * Lists the subfonts of a given font. The result is ordered first by charset,
  * and then within each charset, by the order of fonts in the font specification.
  *
- * Return value: length of the arrays stored in @subfont_ids and 
+ * Return value: length of the arrays stored in @subfont_ids and
  * @subfont_charsets.
  **/
 int
@@ -1113,7 +1113,7 @@ pango_x_list_subfonts (PangoFont        *font,
   g_return_val_if_fail (n_charsets == 0 || charsets != NULL, 0);
 
   fontmap = pango_x_font_map_for_display (xfont->display);
-  
+
   subfont_lists = g_new (PangoXSubfont *, n_charsets);
 
   for (j=0; j<n_charsets; j++)
@@ -1122,7 +1122,7 @@ pango_x_list_subfonts (PangoFont        *font,
       if (!subfont_lists[j])
 	{
 	  subfont_lists[j] = g_new (PangoXSubfont, xfont->n_fonts);
-	  
+
 	  for (i = 0; i < xfont->n_fonts; i++)
 	    {
 	      PangoXSubfont subfont = 0;
@@ -1131,14 +1131,14 @@ pango_x_list_subfonts (PangoFont        *font,
 	      if (xfont->size == -1)
 		{
 		  xlfd = name_for_charset (xfont->fonts[i], charsets[j]);
-	      
+
 		  if (xlfd)
 		    {
 		      int count;
 		      char **names = XListFonts (xfont->display, xlfd, 1, &count);
 		      if (count > 0)
 			subfont = pango_x_insert_subfont (font, names[0]);
-		      
+
 		      XFreeFontNames (names);
 		      g_free (xlfd);
 		    }
@@ -1152,7 +1152,7 @@ pango_x_list_subfonts (PangoFont        *font,
 		      g_free (xlfd);
 		    }
 		}
-		  
+
 	      subfont_lists[j][i] = subfont;
 	    }
 
@@ -1188,9 +1188,9 @@ pango_x_list_subfonts (PangoFont        *font,
  * @font: a #PangoFont which must be from the X backend.
  * @glyph: the index of a glyph in the font. (Formed
  *         using the #PANGO_X_MAKE_GLYPH macro)
- * 
+ *
  * Checks if the given glyph is present in a X font.
- * 
+ *
  * Return value: %TRUE if the glyph is present.
  **/
 gboolean
@@ -1206,7 +1206,7 @@ pango_x_has_glyph (PangoFont  *font,
   subfont = pango_x_find_subfont (font, subfont_index);
   if (!subfont)
     return FALSE;
-  
+
   cs = pango_x_get_per_char (font, subfont, char_index);
 
   if (cs && (cs->lbearing != cs->rbearing || cs->width != 0))
@@ -1219,10 +1219,10 @@ pango_x_has_glyph (PangoFont  *font,
  * pango_x_font_subfont_xlfd:
  * @font: a #PangoFont which must be from the X backend.
  * @subfont_id: the id of a subfont within the font.
- * 
+ *
  * Determines the X Logical Font Description for the specified
  * subfont.
- * 
+ *
  * Return value: A newly-allocated string containing the XLFD for the
  * subfont. This string must be freed with g_free().
  **/
@@ -1302,7 +1302,7 @@ pango_x_font_finalize (GObject *object)
 
   g_slist_foreach (xfont->metrics_by_lang, (GFunc)free_metrics_info, NULL);
   g_slist_free (xfont->metrics_by_lang);
-  
+
   if (xfont->xface)
     pango_x_face_remove (xfont->xface, (PangoFont *)xfont);
 
@@ -1336,13 +1336,13 @@ pango_x_get_shaper_map (PangoLanguage *language)
 {
   static guint engine_type_id = 0;
   static guint render_type_id = 0;
-  
+
   if (engine_type_id == 0)
     {
       engine_type_id = g_quark_from_static_string (PANGO_ENGINE_TYPE_SHAPE);
       render_type_id = g_quark_from_static_string (PANGO_RENDER_TYPE_X);
     }
-  
+
   return pango_find_map (language, engine_type_id, render_type_id);
 }
 
@@ -1396,14 +1396,14 @@ pango_x_get_per_char (PangoFont         *font,
       byte1 = (int)(char_index / 256) - fs->min_byte1;
       if (byte1 < 0 || byte1 >= subfont->range_byte1)
 	return NULL;
-	  
+
       byte2 = (int)(char_index % 256) - fs->min_char_or_byte2;
       if (byte2 < 0 || byte2 >= subfont->range_byte2)
 	return NULL;
 
       index = byte1 * subfont->range_byte2 + byte2;
     }
-  
+
   if (fs->per_char)
     return &fs->per_char[index];
   else
@@ -1425,7 +1425,7 @@ pango_x_find_glyph (PangoFont *font,
   subfont = pango_x_find_subfont (font, subfont_index);
   if (!subfont)
     return FALSE;
-  
+
   cs = pango_x_get_per_char (font, subfont, char_index);
 
   if (cs && (cs->lbearing != cs->rbearing || cs->width != 0))
@@ -1435,7 +1435,7 @@ pango_x_find_glyph (PangoFont *font,
 
       if (charstruct_return)
 	*charstruct_return = cs;
-      
+
       return TRUE;
     }
   else
@@ -1445,13 +1445,13 @@ pango_x_find_glyph (PangoFont *font,
 /**
  * pango_x_get_unknown_glyph:
  * @font: a #PangoFont.
- * 
+ *
  * Returns the index of a glyph suitable for drawing unknown characters;
  * you should generally use PANGO_GET_UNKNOWN_GLYPH() instead,
  * since that may return a glyph that provides a better representation
  * of a particular char. (E.g., by showing hex digits, or a glyph
  * representative of a certain Unicode range.)
- * 
+ *
  * Return value: a glyph index into @font.
  **/
 PangoGlyph
@@ -1471,12 +1471,12 @@ pango_x_get_unknown_glyph (PangoFont *font)
  *
  * Renders a #PangoLayoutLine onto an X drawable.
  */
-void 
+void
 pango_x_render_layout_line (Display          *display,
 			    Drawable          drawable,
 			    GC                gc,
 			    PangoLayoutLine  *line,
-			    int               x, 
+			    int               x,
 			    int               y)
 {
   GSList *tmp_list = line->runs;
@@ -1487,11 +1487,11 @@ pango_x_render_layout_line (Display          *display,
   PangoXContextInfo *info =
     g_object_get_qdata (G_OBJECT (context),
                         g_quark_from_static_string ("pango-x-info"));
-  
+
   int x_off = 0;
 
   pango_layout_line_get_extents (line,NULL, &overall_rect);
-  
+
   while (tmp_list)
     {
       PangoUnderline uline = PANGO_UNDERLINE_NONE;
@@ -1499,7 +1499,7 @@ pango_x_render_layout_line (Display          *display,
       PangoAttrColor fg_color, bg_color;
       gboolean fg_set, bg_set;
       GC fg_gc;
-      
+
       tmp_list = tmp_list->next;
 
       pango_x_get_item_properties (run->item, &uline, &fg_color, &fg_set, &bg_color, &bg_set);
@@ -1563,7 +1563,7 @@ pango_x_render_layout_line (Display          *display,
 		else
 		  XDrawLine (display, drawable, gc,
 			     point_x, y + 3, MIN (point_x + 1, end_x), y + 3);
-		
+
 		counter = (counter + 1) % 2;
 	      }
           }
@@ -1577,7 +1577,7 @@ pango_x_render_layout_line (Display          *display,
 
       if (fg_set && info->get_gc_func && info->free_gc_func)
 	info->free_gc_func (context, fg_gc);
-      
+
       x_off += logical_rect.width;
     }
 }
@@ -1593,12 +1593,12 @@ pango_x_render_layout_line (Display          *display,
  *
  * Renders a #PangoLayout onto an X drawable.
  */
-void 
+void
 pango_x_render_layout (Display         *display,
 		       Drawable         drawable,
 		       GC               gc,
 		       PangoLayout     *layout,
-		       int              x, 
+		       int              x,
 		       int              y)
 {
   PangoLayoutIter *iter;
@@ -1613,12 +1613,12 @@ pango_x_render_layout (Display         *display,
       PangoRectangle   logical_rect;
       PangoLayoutLine *line;
       int              baseline;
-      
+
       line = pango_layout_iter_get_line_readonly (iter);
-      
+
       pango_layout_iter_get_line_extents (iter, NULL, &logical_rect);
       baseline = pango_layout_iter_get_baseline (iter);
-      
+
       pango_x_render_layout_line (display, drawable, gc,
                                   line,
                                   x + PANGO_PIXELS (logical_rect.x),
@@ -1644,10 +1644,10 @@ pango_x_get_item_properties (PangoItem      *item,
 
   if (fg_set)
     *fg_set = FALSE;
-  
+
   if (bg_set)
     *bg_set = FALSE;
-  
+
   while (tmp_list)
     {
       PangoAttribute *attr = tmp_list->data;
@@ -1658,23 +1658,23 @@ pango_x_get_item_properties (PangoItem      *item,
 	  if (uline)
 	    *uline = ((PangoAttrInt *)attr)->value;
 	  break;
-	  
+
 	case PANGO_ATTR_FOREGROUND:
 	  if (fg_color)
 	    *fg_color = *((PangoAttrColor *)attr);
 	  if (fg_set)
 	    *fg_set = TRUE;
-	  
+
 	  break;
-	  
+
 	case PANGO_ATTR_BACKGROUND:
 	  if (bg_color)
 	    *bg_color = *((PangoAttrColor *)attr);
 	  if (bg_set)
 	    *bg_set = TRUE;
-	  
+
 	  break;
-	  
+
 	default:
 	  break;
 	}
@@ -1695,29 +1695,29 @@ pango_x_get_item_properties (PangoItem      *item,
  * Return value: %FALSE, always.
  */
 gboolean
-pango_x_apply_ligatures (PangoFont     *font, 
+pango_x_apply_ligatures (PangoFont     *font,
                          PangoXSubfont  subfont_id,
-                         gunichar     **glyphs, 
+                         gunichar     **glyphs,
                          int           *n_glyphs,
-                         int           **clusters) 
+                         int           **clusters)
 {
   return FALSE;
 }
-  
+
 /**
  * pango_x_find_first_subfont:
  * @font: A #PangoFont.
  * @rfont: A pointer to a #PangoXSubfont.
  * @charsets: An array of charsets.
  * @n_charsets: The number of charsets in @charsets.
- * 
+ *
  * Looks for subfonts with the @charset charset,
  * in @font, and puts the first one in *@rfont.
  *
  * Return value: %TRUE if *@rfont now contains a font.
  */
 gboolean
-pango_x_find_first_subfont (PangoFont      *font, 
+pango_x_find_first_subfont (PangoFont      *font,
                             char          **charsets,
 			    int             n_charsets,
                             PangoXSubfont  *rfont)
@@ -1751,22 +1751,22 @@ pango_x_find_first_subfont (PangoFont      *font,
  * @glyphs: A pointer to a #PangoGlyphString.
  * @text: UTF-8 string.
  * @n_chars: Number of UTF-8 seqs in @text.
- * 
+ *
  * This is a simple fallback shaper, that can be used
- * if no subfont that supports a given script is found. 
+ * if no subfont that supports a given script is found.
  * For every character in @text, it puts the unknown glyph.
  */
-void 
-pango_x_fallback_shape (PangoFont        *font, 
-                        PangoGlyphString *glyphs, 
-                        const char       *text, 
-                        int               n_chars) 
+void
+pango_x_fallback_shape (PangoFont        *font,
+                        PangoGlyphString *glyphs,
+                        const char       *text,
+                        int               n_chars)
 {
   PangoGlyph unknown_glyph = pango_x_get_unknown_glyph (font);
   PangoRectangle logical_rect;
   const char *p;
   int i;
-  
+
   g_return_if_fail (font);
   g_return_if_fail (glyphs);
   g_return_if_fail (text);
@@ -1784,7 +1784,7 @@ pango_x_fallback_shape (PangoFont        *font,
       glyphs->glyphs[i].geometry.width = logical_rect.width;
 
       glyphs->log_clusters[i] = p - text;
-      
+
       p = g_utf8_next_char (p);
     }
 }

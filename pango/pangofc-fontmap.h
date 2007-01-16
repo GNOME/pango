@@ -45,7 +45,7 @@ typedef struct _PangoFcFontMapPrivate PangoFcFontMapPrivate;
 
 /**
  * PangoFcFontMap:
- * 
+ *
  * #PangoFcFontMap is a base class for font map implementations
  * using the Fontconfig and FreeType libraries. To create a new
  * backend using Fontconfig and FreeType, you derive from this class
@@ -114,7 +114,7 @@ struct _PangoFcFontMapClass
 
   double       (*get_resolution)     (PangoFcFontMap             *fcfontmap,
 				      PangoContext               *context);
-  
+
   gconstpointer (*context_key_get)   (PangoFcFontMap             *fcfontmap,
 				      PangoContext               *context);
   gpointer     (*context_key_copy)   (PangoFcFontMap             *fcfontmap,
@@ -126,7 +126,7 @@ struct _PangoFcFontMapClass
   gboolean     (*context_key_equal)  (PangoFcFontMap             *fcfontmap,
 				      gconstpointer               key_a,
 				      gconstpointer               key_b);
-  
+
   void         (*context_substitute) (PangoFcFontMap             *fontmap,
 				      PangoContext               *context,
 			              FcPattern                  *pattern);
@@ -155,9 +155,9 @@ GType pango_fc_font_map_get_type (void);
  * PangoFcDecoderFindFunc:
  * @pattern: a fully resolved #FcPattern specifying the font on the system
  * @user_data: user data passed to pango_fc_font_map_add_decoder_find_func()
- * 
+ *
  * Callback function passed to pango_fc_font_map_add_decoder_find_func().
- * 
+ *
  * Return value: a new reference to a custom decoder for this pattern,
  *  or %NULL if the default decoder handling should be used.
  **/

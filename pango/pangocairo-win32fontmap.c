@@ -38,7 +38,7 @@ pango_cairo_win32_font_map_set_resolution (PangoCairoFontMap *cfontmap,
 					   double             dpi)
 {
   PangoCairoWin32FontMap *cwfontmap = PANGO_CAIRO_WIN32_FONT_MAP (cfontmap);
-  
+
   cwfontmap->dpi = dpi;
 }
 
@@ -54,7 +54,7 @@ static PangoRenderer *
 pango_cairo_win32_font_map_get_renderer (PangoCairoFontMap *cfontmap)
 {
   PangoCairoWin32FontMap *cwfontmap = PANGO_CAIRO_WIN32_FONT_MAP (cfontmap);
-  
+
   if (!cwfontmap->renderer)
     cwfontmap->renderer = g_object_new (PANGO_TYPE_CAIRO_RENDERER, NULL);
 
@@ -76,7 +76,7 @@ static void
 pango_cairo_win32_font_map_finalize (GObject *object)
 {
   PangoCairoWin32FontMap *cwfontmap = PANGO_CAIRO_WIN32_FONT_MAP (object);
-  
+
   if (cwfontmap->renderer)
     g_object_unref (cwfontmap->renderer);
 

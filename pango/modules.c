@@ -49,7 +49,7 @@ struct _PangoMap
   GArray *entries;
 };
 
-struct _PangoMapEntry 
+struct _PangoMapEntry
 {
   GSList *exact;
   GSList *fallback;
@@ -83,7 +83,7 @@ struct _PangoModule
   PangoEngine *(*create) (const gchar *id);
 };
 
-struct _PangoModuleClass 
+struct _PangoModuleClass
 {
   GTypeModuleClass parent_class;
 };
@@ -105,11 +105,11 @@ static GType pango_module_get_type (void);
  * @language: the language tag for which to find the map
  * @engine_type_id: the engine type for the map to find
  * @render_type_id: the render type for the map to find
- * 
+ *
  * Locate a #PangoMap for a particular engine type and render
  * type. The resulting map can be used to determine the engine
  * for each character.
- * 
+ *
  * Return value: the suitable #PangoMap.
  **/
 PangoMap *
@@ -158,7 +158,7 @@ pango_find_map (PangoLanguage *language,
       maps = g_list_prepend(maps, tmp_list->data);
       g_list_free_1(tmp_list);
     }
-  
+
   return map_info->map;
 }
 
@@ -175,24 +175,24 @@ pango_module_load (GTypeModule *module)
 	  g_warning ("%s", g_module_error());
 	  return FALSE;
 	}
-      
+
       /* extract symbols from the lib */
       if (!g_module_symbol (pango_module->library, "script_engine_init",
 			    (gpointer *)&pango_module->init) ||
-	  !g_module_symbol (pango_module->library, "script_engine_exit", 
+	  !g_module_symbol (pango_module->library, "script_engine_exit",
 			    (gpointer *)&pango_module->exit) ||
-	  !g_module_symbol (pango_module->library, "script_engine_list", 
+	  !g_module_symbol (pango_module->library, "script_engine_list",
 			    (gpointer *)&pango_module->list) ||
-	  !g_module_symbol (pango_module->library, "script_engine_create", 
+	  !g_module_symbol (pango_module->library, "script_engine_create",
 			    (gpointer *)&pango_module->create))
 	{
 	  g_warning ("%s", g_module_error());
 	  g_module_close (pango_module->library);
-	  
+
 	  return FALSE;
 	}
     }
-	    
+
   /* call the module's init function to let it */
   /* setup anything it needs to set up. */
   pango_module->init (module);
@@ -211,7 +211,7 @@ pango_module_unload (GTypeModule *module)
     {
       g_module_close (pango_module->library);
       pango_module->library = NULL;
-      
+
       pango_module->init = NULL;
       pango_module->exit = NULL;
       pango_module->list = NULL;
@@ -239,7 +239,7 @@ pango_module_class_init (PangoModuleClass *class)
   GObjectClass *gobject_class = G_OBJECT_CLASS (class);
 
   parent_class = G_OBJECT_CLASS (g_type_class_peek_parent (class));
-  
+
   module_class->load = pango_module_load;
   module_class->unload = pango_module_unload;
 
@@ -272,7 +272,7 @@ pango_engine_pair_get_engine (PangoEnginePair *pair)
 
 	  if (!warned_quark)
 	    warned_quark = g_quark_from_static_string ("pango-module-warned");
-	  
+
 	  if (!g_object_get_qdata (G_OBJECT (pair->module), warned_quark))
 	    {
 	      g_warning ("Failed to load Pango module '%s' for id '%s'", pair->module->path, pair->info.id);
@@ -309,7 +309,7 @@ handle_included_module (PangoIncludedModule *included_module,
       pair->info = engine_info[i];
       pair->module = module;
       pair->engine = NULL;
-      
+
       *engine_list = g_slist_prepend (*engine_list, pair);
     }
 }
@@ -343,7 +343,7 @@ find_or_create_module (const char *raw_path)
     {
       path = g_strdup (raw_path);
     }
-  
+
   module = g_hash_table_lookup (dlloaded_modules, path);
   if (module)
     g_free (path);
@@ -364,7 +364,7 @@ script_from_string (const char *str)
   GEnumValue *value;
   if (!class)
     class = g_type_class_ref (PANGO_TYPE_SCRIPT);
-  
+
   value = g_enum_get_value_by_nick (class, str);
   if (!value)
     return PANGO_SCRIPT_INVALID_CODE;
@@ -442,30 +442,30 @@ process_module_file (FILE *module_file)
 		  have_error = TRUE;
 		  goto error;
 		}
-	      
+
 	      script_info = g_slice_new (PangoEngineScriptInfo);
 	      script_info->script = script;
 	      script_info->langs = g_strdup (q + 1);
-	      
+
 	      scripts = g_list_prepend (scripts, script_info);
 	    }
 
 	  if (!pango_skip_space (&p))
 	    break;
-	  
+
 	  i++;
 	}
-      
+
       if (i<3)
 	{
 	  have_error = TRUE;
 	  goto error;
 	}
-      
+
       scripts = g_list_reverse (scripts);
       pair->info.n_scripts = g_list_length (scripts);
       pair->info.scripts = g_new (PangoEngineScriptInfo, pair->info.n_scripts);
-      
+
       tmp_list = scripts;
       for (i=0; i<pair->info.n_scripts; i++)
 	{
@@ -474,7 +474,7 @@ process_module_file (FILE *module_file)
 	}
 
       pair->engine = NULL;
-      
+
       dlloaded_engines = g_slist_prepend (dlloaded_engines, pair);
 
     error:
@@ -505,7 +505,7 @@ read_modules (void)
   int n;
 
   dlloaded_modules = g_hash_table_new (g_str_hash, g_str_equal);
-  
+
   if (!file_str)
     file_str = g_build_filename (pango_get_sysconf_subdirectory (),
 				 "pango.modules",
@@ -543,10 +543,10 @@ init_modules (void)
     return;
   else
     init = TRUE;
-  
+
   /* Make sure that the type system is initialized */
   g_type_init ();
-  
+
   for (i = 0; _pango_included_lang_modules[i].list; i++)
     pango_module_register (&_pango_included_lang_modules[i]);
   read_modules ();
@@ -558,7 +558,7 @@ map_add_engine (PangoMapInfo    *info,
 {
   PangoMap *map = info->map;
   int i;
- 
+
   for (i=0; i<pair->info.n_scripts; i++)
     {
       PangoScript script;
@@ -588,7 +588,7 @@ static void
 map_add_engine_list (PangoMapInfo *info,
 		     GSList       *engines,
 		     const char   *engine_type,
-		     const char   *render_type)  
+		     const char   *render_type)
 {
   GSList *tmp_list = engines;
 
@@ -610,7 +610,7 @@ build_map (PangoMapInfo *info)
 {
   const char *engine_type = g_quark_to_string (info->engine_type_id);
   const char *render_type = g_quark_to_string (info->render_type_id);
-  
+
   init_modules();
 
   if (!dlloaded_engines && !registered_engines)
@@ -628,25 +628,25 @@ build_map (PangoMapInfo *info)
 		     "You should create this file by running pango-querymodules.",
 		     filename);
 	  g_free (filename);
-	  
+
 	  no_module_warning = TRUE;
 	}
     }
-  
+
   info->map = g_slice_new (PangoMap);
   info->map->entries = g_array_new (FALSE, TRUE, sizeof (PangoMapEntry));
-			      
-  map_add_engine_list (info, dlloaded_engines, engine_type, render_type);  
-  map_add_engine_list (info, registered_engines, engine_type, render_type);  
+
+  map_add_engine_list (info, dlloaded_engines, engine_type, render_type);
+  map_add_engine_list (info, registered_engines, engine_type, render_type);
 }
 
 /**
  * pango_map_get_engine:
  * @map: a #PangoMap
  * @script: a #PangoScript
- * 
+ *
  * Returns the best engine listed in the map for a given script
- * 
+ *
  * Return value: the best engine, if one is listed for the script,
  *    or %NULL. The lookup may cause the engine to be loaded;
  *    once an engine is loaded, it won't be unloaded. If multiple
@@ -659,7 +659,7 @@ pango_map_get_engine (PangoMap   *map,
 {
   PangoMapEntry *entry = NULL;
   PangoMapEntry *common_entry = NULL;
-  
+
   if ((guint)script < map->entries->len)
     entry = &g_array_index (map->entries, PangoMapEntry, script);
 
@@ -700,7 +700,7 @@ append_engines (GSList **engine_list,
  *  handle this script.
  * @fallback_engines: location to store list of engines that approximately
  *  handle this script.
- * 
+ *
  * Finds engines in the map that handle the given script. The returned
  * lists should be freed with g_slist_free, but the engines in the
  * lists are owned by GLib and will be kept around permanently, so
@@ -716,7 +716,7 @@ pango_map_get_engines (PangoMap     *map,
 {
   PangoMapEntry *entry = NULL;
   PangoMapEntry *common_entry = NULL;
-  
+
   if ((guint)script < map->entries->len)
     entry = &g_array_index (map->entries, PangoMapEntry, script);
 
@@ -731,7 +731,7 @@ pango_map_get_engines (PangoMap     *map,
       else if (common_entry && common_entry->exact)
 	append_engines (exact_engines, common_entry->exact);
     }
-  
+
   if (fallback_engines)
     {
       *fallback_engines = NULL;
@@ -745,7 +745,7 @@ pango_map_get_engines (PangoMap     *map,
 /**
  * pango_module_register:
  * @module: a #PangoIncludedModule
- * 
+ *
  * Registers a statically linked module with Pango. The
  * #PangoIncludedModule structure that is passed in contains the
  * functions that would otherwise be loaded from a dynamically loaded
@@ -755,9 +755,9 @@ void
 pango_module_register (PangoIncludedModule *module)
 {
   GSList *tmp_list = NULL;
-  
+
   handle_included_module (module, &tmp_list);
 
   registered_engines = g_slist_concat (registered_engines,
-				       g_slist_reverse (tmp_list)); 
+				       g_slist_reverse (tmp_list));
 }

@@ -30,7 +30,7 @@
 #include "pango-ot.h"
 
 #include "basic-common.h"
-  
+
 /* No extra fields needed */
 typedef PangoEngineShape      BasicEngineFc;
 typedef PangoEngineShapeClass BasicEngineFcClass;
@@ -70,7 +70,7 @@ static PangoEngineScriptInfo basic_scripts[] = {
 
   /* Unicode-4.1 additions */
   { PANGO_SCRIPT_GLAGOLITIC, "*" },
-    
+
   /* Unicode-5.0 additions */
   { PANGO_SCRIPT_CUNEIFORM,  "*" },
   { PANGO_SCRIPT_PHOENICIAN, "*" },
@@ -93,16 +93,16 @@ swap_range (PangoGlyphString *glyphs,
 	    int               end)
 {
   int i, j;
-  
+
   for (i = start, j = end - 1; i < j; i++, j--)
     {
       PangoGlyphInfo glyph_info;
       gint log_cluster;
-      
+
       glyph_info = glyphs->glyphs[i];
       glyphs->glyphs[i] = glyphs->glyphs[j];
       glyphs->glyphs[j] = glyph_info;
-      
+
       log_cluster = glyphs->log_clusters[i];
       glyphs->log_clusters[i] = glyphs->log_clusters[j];
       glyphs->log_clusters[j] = log_cluster;
@@ -119,7 +119,7 @@ set_glyph (PangoFont        *font,
   PangoRectangle logical_rect;
 
   glyphs->glyphs[i].glyph = glyph;
-  
+
   glyphs->glyphs[i].geometry.x_offset = 0;
   glyphs->glyphs[i].geometry.y_offset = 0;
 
@@ -129,7 +129,7 @@ set_glyph (PangoFont        *font,
   glyphs->glyphs[i].geometry.width = logical_rect.width;
 }
 
-static void 
+static void
 fallback_shape (PangoEngineShape *engine,
 		PangoFont        *font,
 		const char       *text,
@@ -141,10 +141,10 @@ fallback_shape (PangoEngineShape *engine,
   glong n_chars = g_utf8_strlen (text, length);
   const char *p;
   int i;
-  
+
   pango_glyph_string_set_size (glyphs, n_chars);
   p = text;
-  
+
   for (i=0; i < n_chars; i++)
     {
       gunichar wc;
@@ -158,7 +158,7 @@ fallback_shape (PangoEngineShape *engine,
 	if (pango_get_mirror_char (wc, &mirrored_ch))
 	  {
 	    wc = mirrored_ch;
-	    
+
 	    g_unichar_to_utf8 (wc, buf);
 	  }
 
@@ -181,18 +181,18 @@ fallback_shape (PangoEngineShape *engine,
 	  else
 	    {
 	      set_glyph (font, glyphs, i, p - text, index);
-	      
+
 	      if (g_unichar_type (wc) == G_UNICODE_NON_SPACING_MARK)
 		{
 		  if (i > 0)
 		    {
 		      PangoRectangle logical_rect, ink_rect;
-		      
+
 		      glyphs->glyphs[i].geometry.width = MAX (glyphs->glyphs[i-1].geometry.width,
 							      glyphs->glyphs[i].geometry.width);
 		      glyphs->glyphs[i-1].geometry.width = 0;
 		      glyphs->log_clusters[i] = glyphs->log_clusters[i-1];
-		      
+
 		      /* Some heuristics to try to guess how overstrike glyphs are
 		       * done and compensate
 		       */
@@ -203,7 +203,7 @@ fallback_shape (PangoEngineShape *engine,
 		}
 	    }
 	}
-      
+
       p = g_utf8_next_char (p);
     }
 
@@ -269,7 +269,7 @@ get_ruleset (FT_Face face)
          if (pango_ot_info_find_script (info, PANGO_OT_TABLE_GPOS, script_tag, &script_index))
            for (j = 0; j < G_N_ELEMENTS (gpos_features); j++)
 	     {
-               PangoOTTag feature_tag = FT_MAKE_TAG (gpos_features[j][0], gpos_features[j][1], 
+               PangoOTTag feature_tag = FT_MAKE_TAG (gpos_features[j][0], gpos_features[j][1],
                                                      gpos_features[j][2], gpos_features[j][3]);
                guint feature_index;
 
@@ -283,18 +283,18 @@ get_ruleset (FT_Face face)
           if (pango_ot_info_find_script (info, PANGO_OT_TABLE_GSUB, script_tag, &script_index))
             for (j = 0; j < G_N_ELEMENTS (gsub_features); j++)
               {
-                PangoOTTag feature_tag = FT_MAKE_TAG (gsub_features[j][0], gsub_features[j][1], 
+                PangoOTTag feature_tag = FT_MAKE_TAG (gsub_features[j][0], gsub_features[j][1],
                                                       gsub_features[j][2], gsub_features[j][3]);
                 guint feature_index;
 
                 /* 0xffff means default language */
-                if (pango_ot_info_find_feature (info, PANGO_OT_TABLE_GSUB, feature_tag, 
+                if (pango_ot_info_find_feature (info, PANGO_OT_TABLE_GSUB, feature_tag,
                                                 script_index, 0xffff, &feature_index))
                   {
                     pango_ot_ruleset_add_feature (ruleset, PANGO_OT_TABLE_GSUB, feature_index, 0xffff);
                   }
               }
-      } 
+      }
 
     g_object_set_qdata_full (G_OBJECT (info), ruleset_quark, ruleset, (GDestroyNotify) g_object_unref);
   }
@@ -303,7 +303,7 @@ get_ruleset (FT_Face face)
 
 }
 
-static void 
+static void
 basic_engine_shape (PangoEngineShape *engine,
 		    PangoFont        *font,
 		    const char       *text,
@@ -366,7 +366,7 @@ basic_engine_shape (PangoEngineShape *engine,
 	if (pango_get_mirror_char (wc, &mirrored_ch))
 	  {
 	    wc = mirrored_ch;
-	    
+
 	    g_unichar_to_utf8 (wc, buf);
 	  }
 
@@ -377,7 +377,7 @@ basic_engine_shape (PangoEngineShape *engine,
       else
         {
 	  index = pango_fc_font_get_glyph (fc_font, wc);
-	  
+
 	  if (!index)
 	    {
 	      pango_ot_buffer_add_glyph (buffer, PANGO_GET_UNKNOWN_GLYPH ( wc),
@@ -387,12 +387,12 @@ basic_engine_shape (PangoEngineShape *engine,
 	    {
 	      if (g_unichar_type (wc) != G_UNICODE_NON_SPACING_MARK)
 		cluster = p - text;
-	      
+
 	      pango_ot_buffer_add_glyph (buffer, index,
 					 unknown_property, cluster);
 	    }
 	}
-      
+
       p = g_utf8_next_char (p);
     }
 
@@ -400,7 +400,7 @@ basic_engine_shape (PangoEngineShape *engine,
   pango_ot_ruleset_substitute (ruleset, buffer);
   pango_ot_ruleset_position (ruleset, buffer);
   pango_ot_buffer_output (buffer, glyphs);
-  
+
   pango_ot_buffer_destroy (buffer);
 
 out:
@@ -416,18 +416,18 @@ basic_engine_fc_class_init (PangoEngineShapeClass *class)
 PANGO_ENGINE_SHAPE_DEFINE_TYPE (BasicEngineFc, basic_engine_fc,
 				basic_engine_fc_class_init, NULL)
 
-void 
+void
 PANGO_MODULE_ENTRY(init) (GTypeModule *module)
 {
   basic_engine_fc_register_type (module);
 }
 
-void 
+void
 PANGO_MODULE_ENTRY(exit) (void)
 {
 }
 
-void 
+void
 PANGO_MODULE_ENTRY(list) (PangoEngineInfo **engines,
 			  int              *n_engines)
 {

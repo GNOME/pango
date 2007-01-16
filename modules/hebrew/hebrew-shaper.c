@@ -6,7 +6,7 @@
  *
  * Hebrew points positioning improvements 2001
  * Author: Dov Grobgeld <dov@imagic.weizmann.ac.il>
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
  * License as published by the Free Software Foundation; either
@@ -99,7 +99,7 @@ static const gint char_class_table[128] = {
 
   /*00*/ _ND, _ND, _ND, _ND, _ND, _ND, _ND, _ND,
          _ND, _ND, _ND, _ND, _ND, _ND, _ND, _ND,
-		
+
   /*10*/ _ND, _NS, _NS, _NS, _NS, _NS, _NS, _NS,
          _NS, _NS, _NS, _NS, _NS, _NS, _NS, _NS,
   /*20*/ _NS, _NS, _ND, _NS, _NS, _NS, _NS, _NS,
@@ -121,7 +121,7 @@ static const gint char_type_table[128] = {
 
   /*00*/ __ND, __ND, __ND, __ND, __ND, __ND, __ND, __ND,
          __ND, __ND, __ND, __ND, __ND, __ND, __ND, __ND,
-		
+
   /*10*/ __ND, __NS, __NS, __NS, __NS, __NS, __NS, __NS,
          __NS, __NS, __NS, __NS, __NS, __NS, __NS, __NS,
   /*20*/ __NS, __NS, __ND, __NS, __NS, __NS, __NS, __NS,
@@ -172,21 +172,21 @@ hebrew_shaper_get_next_cluster(const char      *text,
 			       gint		length,
 			       gunichar        *cluster,
 			       gint	       *num_chrs)
-{  
+{
   const char *p;
   gint n_chars = 0;
-  
+
   p = text;
 
-  while (p < text + length && n_chars < MAX_CLUSTER_CHRS)  
+  while (p < text + length && n_chars < MAX_CLUSTER_CHRS)
     {
       gunichar current = g_utf8_get_char (p);
-      
+
       if (!ishebrew (current) ||
 	  (n_chars == 0 && is_char_class(current, ~(NoDefine|SpacingLetter))))
 	{
 	  /* Not a legal Hebrew cluster */
-	  
+
 	  if (n_chars == 0)
 	    {
 	      cluster[n_chars++] = current;
@@ -235,7 +235,7 @@ hebrew_shaper_get_cluster_kerning(gunichar            *cluster,
 	x_offset[0] = -ink_rect[0].x - ink_rect[0].width;
 	width[0] = 0;
       }
-	
+
       return;
     }
 
@@ -250,14 +250,14 @@ hebrew_shaper_get_cluster_kerning(gunichar            *cluster,
       int gl = cluster[i];
       x_offset[i] = 0;
       y_offset[i] = 0;
-      
+
       /* Check if it is a point */
       if (gl < 0x5B0 || gl >= 0x05D0)
 	continue;
-      
+
       /* Center dot of VAV */
       if (gl == UNI_MAPIQ && base_char == UNI_VAV)
-	{   
+	{
 	  x_offset[i] = base_ink_x_offset - ink_rect[i].x;
 
 	  /* If VAV is a vertical bar without a roof, then we
@@ -286,14 +286,14 @@ hebrew_shaper_get_cluster_kerning(gunichar            *cluster,
 
       /* Dot over SHIN */
       else if (gl == UNI_SHIN_DOT && base_char == UNI_SHIN)
-	{   
+	{
 	  x_offset[i] = base_ink_x_offset + base_ink_width
 	    - ink_rect[i].x - ink_rect[i].width;
 	}
-      
+
       /* Dot over SIN */
       else if (gl == UNI_SIN_DOT && base_char == UNI_SHIN)
-	{  
+	{
 	  x_offset[i] = base_ink_x_offset - ink_rect[i].x;
 	}
 
@@ -301,10 +301,10 @@ hebrew_shaper_get_cluster_kerning(gunichar            *cluster,
 	 SHIN or VAV should stick out a bit to the left. */
       else if ((gl == UNI_SIN_DOT || gl == UNI_HOLAM)
 	       && base_char != UNI_SHIN && base_char != UNI_VAV)
-	{  
+	{
 	  x_offset[i] = base_ink_x_offset -ink_rect[i].x - ink_rect[i].width * 3/ 2;
 	}
-      
+
       /* VOWELS under resh or vav are right aligned, if they are
 	 narrower than the characters. Otherwise they are centered.
        */
@@ -316,7 +316,7 @@ hebrew_shaper_get_cluster_kerning(gunichar            *cluster,
 	       && ((gl >= UNI_SHEVA && gl <= UNI_QAMATS) ||
 		   gl == UNI_QUBUTS)
 	       && ink_rect[i].width < base_ink_width
-	       ) 
+	       )
 	{
 	  x_offset[i] = base_ink_x_offset + base_ink_width
 	    - ink_rect[i].x - ink_rect[i].width;
@@ -327,7 +327,7 @@ hebrew_shaper_get_cluster_kerning(gunichar            *cluster,
       else if ((base_char == UNI_FINAL_KAF
 		)
 	       && ((gl >= UNI_SHEVA && gl <= UNI_QAMATS) ||
-		   gl == UNI_QUBUTS)) 
+		   gl == UNI_QUBUTS))
 	{
 	  /* x are at 1/3 to take into accoun the stem */
 	  x_offset[i] = base_ink_x_offset - ink_rect[i].x
@@ -338,14 +338,14 @@ hebrew_shaper_get_cluster_kerning(gunichar            *cluster,
 	    + base_ink_height * 1/2 - ink_rect[i].height/2;
 	}
 
-      
+
       /* MAPIQ in PE or FINAL PE */
       else if (gl == UNI_MAPIQ
 	       && (base_char == UNI_PE || base_char == UNI_FINAL_PE))
 	{
 	  x_offset[i]= base_ink_x_offset - ink_rect[i].x
 	    + base_ink_width * 2/3 - ink_rect[i].width/2;
-	  
+
 	  /* Another option is to offset the MAPIQ in y...
 	     glyphs->glyphs[cluster_start_idx+i].geometry.y_offset
 	     -= base_ink_height/5; */
@@ -364,7 +364,7 @@ hebrew_shaper_get_cluster_kerning(gunichar            *cluster,
 	       && base_char == UNI_YOD)
 	{
 	  x_offset[i]=  base_ink_x_offset - ink_rect[i].x;
-	  
+
 	  /* Lower left in y */
 	  y_offset[i] = base_ink_y_offset - ink_rect[i].y
 	    + base_ink_height - ink_rect[i].height*1.75;
@@ -381,13 +381,13 @@ hebrew_shaper_get_cluster_kerning(gunichar            *cluster,
 
 	      width[cluster_length-1] += ink_rect[i].width*(1+space-kern);
 	    }
-	  
+
 	}
 
       /* VOWEL DOT next to any other character */
       else if ((gl == UNI_SIN_DOT || gl == UNI_HOLAM)
 	       && (base_char != UNI_VAV))
-	{   
+	{
 	  x_offset[i] = base_ink_x_offset -ink_rect[i].x;
 	}
 
@@ -425,12 +425,12 @@ hebrew_shaper_get_cluster_kerning(gunichar            *cluster,
 
       /* Center by default */
       else
-	{  
+	{
 	  x_offset[i] = base_ink_x_offset - ink_rect[i].x
 	    + base_ink_width/2 - ink_rect[i].width/2;
 	}
     }
-  
+
 }
 
 void
@@ -439,16 +439,16 @@ hebrew_shaper_swap_range (PangoGlyphString *glyphs,
 			  int               end)
 {
   int i, j;
-  
+
   for (i = start, j = end - 1; i < j; i++, j--)
     {
       PangoGlyphInfo glyph_info;
       gint log_cluster;
-      
+
       glyph_info = glyphs->glyphs[i];
       glyphs->glyphs[i] = glyphs->glyphs[j];
       glyphs->glyphs[j] = glyph_info;
-      
+
       log_cluster = glyphs->log_clusters[i];
       glyphs->log_clusters[i] = glyphs->log_clusters[j];
       glyphs->log_clusters[j] = log_cluster;
@@ -459,10 +459,10 @@ void
 hebrew_shaper_bidi_reorder(PangoGlyphString *glyphs)
 {
   int start, end;
-  
+
   /* Swap all glyphs */
   hebrew_shaper_swap_range (glyphs, 0, glyphs->num_glyphs);
-  
+
   /* Now reorder glyphs within each cluster back to LTR */
   for (start = 0; start < glyphs->num_glyphs;)
     {
@@ -470,7 +470,7 @@ hebrew_shaper_bidi_reorder(PangoGlyphString *glyphs)
       while (end < glyphs->num_glyphs &&
 	     glyphs->log_clusters[end] == glyphs->log_clusters[start])
 	end++;
-      
+
       hebrew_shaper_swap_range (glyphs, start, end);
       start = end;
     }

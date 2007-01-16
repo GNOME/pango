@@ -294,7 +294,7 @@ map_path_onto (cairo_t *cr, cairo_path_t *path)
 
   current_path = cairo_copy_path (cr);
   cairo_new_path (cr);
-  
+
   transform_path (current_path,
 		  (transform_point_func_t) point_on_path, &param);
 
@@ -325,7 +325,7 @@ draw_text (cairo_t *cr,
   cairo_font_options_destroy (font_options);
 
   layout = pango_cairo_create_layout (cr);
-  
+
   desc = pango_font_description_from_string (font);
   pango_layout_set_font_description (layout, desc);
   pango_font_description_free (desc);
@@ -361,7 +361,7 @@ draw_twisted (cairo_t *cr,
   /*path = cairo_copy_path (cr);*/
 
   cairo_new_path (cr);
-  
+
   draw_text (cr, x, y, font, text);
   map_path_onto (cr, path);
 
@@ -442,7 +442,7 @@ int main (int argc, char **argv)
   draw_wow (cr);
 
   cairo_destroy (cr);
-  
+
   status = cairo_surface_write_to_png (surface, filename);
   cairo_surface_destroy (surface);
 

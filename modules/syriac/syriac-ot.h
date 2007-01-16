@@ -7,7 +7,7 @@
  *
  * This file is based on the Arabic shaping code from FreeType 1 tree; original
  * copyright notice:
- *                                                                         
+ *
  *  The FreeType project -- a free and portable quality TrueType renderer.
  *
  *  Copyright 1996-2000 by
@@ -15,7 +15,7 @@
  *
  * The code, like the FreeType code it is derived from is dual-licensed
  * under the  GNU Public License and the FreeType license. See see
- * pango/opentype/FT-license.txt for full details of the FreeType 
+ * pango/opentype/FT-license.txt for full details of the FreeType
  * license.
  */
 
@@ -26,7 +26,7 @@
 
 G_BEGIN_DECLS
 
-typedef enum 
+typedef enum
 {
   isolated = 1 << 0,    /* nominal        */
   final    = 1 << 1,    /* right_joining */
@@ -50,7 +50,7 @@ typedef enum
   final3_p   = isolated | final   | initial | medial  | medial2 | final2
 } SyriacGlyphForm;
 
-typedef enum 
+typedef enum
 {
   right,
   left,			/* not used */

@@ -59,7 +59,7 @@ typedef struct _PangoXftWarningHistory PangoXftWarningHistory;
 
 struct _PangoXftWarningHistory {
   guint get_font		: 1;
-}; 
+};
 
 extern PangoXftWarningHistory _pango_xft_warning_history;
 

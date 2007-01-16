@@ -46,7 +46,7 @@ typedef struct _PangoFontset        PangoFontset;
  * @fontset: a #PangoFontset
  * @font: a font from @fontset
  * @data: callback data
- * 
+ *
  * A callback function used by pango_fontset_foreach() when enumerating
  * the fonts in a fontset.
  *
@@ -83,7 +83,7 @@ struct _PangoFontsetClass
   GObjectClass parent_class;
 
   /*< public >*/
-   
+
   PangoFont *       (*get_font)     (PangoFontset     *fontset,
 				     guint             wc);
 

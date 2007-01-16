@@ -43,7 +43,7 @@ struct _PangoXftFontMap
 
   Display *display;
   int screen;
-  
+
   /* Function to call on prepared patterns to do final
    * config tweaking.
    */
@@ -89,7 +89,7 @@ static void
 pango_xft_font_map_finalize (GObject *object)
 {
   PangoXftFontMap *xftfontmap = PANGO_XFT_FONT_MAP (object);
-  
+
   if (xftfontmap->renderer)
     g_object_unref (xftfontmap->renderer);
 
@@ -107,14 +107,14 @@ pango_xft_find_font_map (Display *display,
 			 int      screen)
 {
   GSList *tmp_list;
-  
+
   tmp_list = fontmaps;
   while (tmp_list)
     {
       PangoXftFontMap *xftfontmap = tmp_list->data;
 
       if (xftfontmap->display == display &&
-	  xftfontmap->screen == screen) 
+	  xftfontmap->screen == screen)
 	return PANGO_FONT_MAP (xftfontmap);
 
       tmp_list = tmp_list->next;
@@ -133,7 +133,7 @@ close_display_cb (Display   *display,
 		  XExtCodes *extcodes)
 {
   GSList *tmp_list;
-  
+
   tmp_list = fontmaps;
   while (tmp_list)
     {
@@ -162,7 +162,7 @@ register_display (Display *display)
     }
 
   registered_displays = g_slist_prepend (registered_displays, display);
-    
+
   extcodes = XAddExtension (display);
   XESetCloseDisplay (display, extcodes->extension, close_display_cb);
 }
@@ -171,11 +171,11 @@ register_display (Display *display)
  * pango_xft_get_font_map:
  * @display: an X display
  * @screen: the screen number of a screen within @display
- * 
+ *
  * Returns the #PangoXftFontmap for the given display and screen.
  * The fontmap is owned by Pango and will be valid until
  * the display is closed.
- * 
+ *
  * Return value: a #PangoFontMap object, owned by Pango.
  *
  * Since: 1.2
@@ -188,16 +188,16 @@ pango_xft_get_font_map (Display *display,
   PangoXftFontMap *xftfontmap;
 
   g_return_val_if_fail (display != NULL, NULL);
-  
+
   fontmap = pango_xft_find_font_map (display, screen);
   if (fontmap)
     return fontmap;
-  
+
   /* Make sure that the type system is initialized */
   g_type_init ();
 
   xftfontmap = (PangoXftFontMap *)g_object_new (PANGO_TYPE_XFT_FONT_MAP, NULL);
-  
+
   xftfontmap->display = display;
   xftfontmap->screen = screen;
 
@@ -212,7 +212,7 @@ pango_xft_get_font_map (Display *display,
  * pango_xft_shutdown_display:
  * @display: an X display
  * @screen: the screen number of a screen within @display
- * 
+ *
  * Release any resources that have been cached for the
  * combination of @display and @screen. Note that when the
  * X display is closed, resources are released automatically,
@@ -225,7 +225,7 @@ pango_xft_shutdown_display (Display *display,
 			    int      screen)
 {
   PangoFontMap *fontmap;
-  
+
   fontmap = pango_xft_find_font_map (display, screen);
   if (fontmap)
     {
@@ -233,11 +233,11 @@ pango_xft_shutdown_display (Display *display,
 
       fontmaps = g_slist_remove (fontmaps, fontmap);
       pango_fc_font_map_shutdown (PANGO_FC_FONT_MAP (fontmap));
-      
+
       xftfontmap->display = NULL;
       g_object_unref (fontmap);
     }
-}  
+}
 
 /**
  * pango_xft_set_default_substitute:
@@ -247,7 +247,7 @@ pango_xft_shutdown_display (Display *display,
  *        on #FcPattern objects.
  * @data: data to pass to @func
  * @notify: function to call when @data is no longer used.
- * 
+ *
  * Sets a function that will be called to do final configuration
  * substitution on a #FcPattern before it is used to load
  * the font. This function can be used to do things like set
@@ -263,14 +263,14 @@ pango_xft_set_default_substitute (Display                *display,
 				  GDestroyNotify          notify)
 {
   PangoXftFontMap *xftfontmap = (PangoXftFontMap *)pango_xft_get_font_map (display, screen);
-  
+
   if (xftfontmap->substitute_destroy)
     xftfontmap->substitute_destroy (xftfontmap->substitute_data);
 
   xftfontmap->substitute_func = func;
   xftfontmap->substitute_data = data;
   xftfontmap->substitute_destroy = notify;
-  
+
   pango_fc_font_map_cache_clear (PANGO_FC_FONT_MAP (xftfontmap));
 }
 
@@ -278,7 +278,7 @@ pango_xft_set_default_substitute (Display                *display,
  * pango_xft_substitute_changed:
  * @display: an X Display
  * @screen: the screen number of a screen within @display
- * 
+ *
  * Call this function any time the results of the
  * default substitution function set with
  * pango_xft_set_default_substitute() change.
@@ -292,7 +292,7 @@ pango_xft_substitute_changed (Display *display,
 			      int      screen)
 {
   PangoXftFontMap *xftfontmap = (PangoXftFontMap *)pango_xft_get_font_map (display, screen);
-  
+
   pango_fc_font_map_cache_clear (PANGO_FC_FONT_MAP (xftfontmap));
 }
 
@@ -315,9 +315,9 @@ _pango_xft_font_map_get_info (PangoFontMap *fontmap,
  * @screen: an X screen.
  *
  * Retrieves a #PangoContext appropriate for rendering with
- * Xft fonts on the given screen of the given display. 
+ * Xft fonts on the given screen of the given display.
  *
- * Return value: the new #PangoContext. 
+ * Return value: the new #PangoContext.
  **/
 PangoContext *
 pango_xft_get_context (Display *display,
@@ -334,10 +334,10 @@ pango_xft_get_context (Display *display,
 /**
  * _pango_xft_font_map_get_renderer:
  * @fontmap: a #PangoXftFontmap
- * 
+ *
  * Gets the singleton #PangoXFTRenderer for this fontmap.
- * 
- * Return value: 
+ *
+ * Return value:
  **/
 PangoRenderer *
 _pango_xft_font_map_get_renderer (PangoXftFontMap *xftfontmap)
@@ -355,7 +355,7 @@ pango_xft_font_map_default_substitute (PangoFcFontMap *fcfontmap,
 {
   PangoXftFontMap *xftfontmap = PANGO_XFT_FONT_MAP (fcfontmap);
   double d;
-	
+
   FcConfigSubstitute (NULL, pattern, FcMatchPattern);
   if (xftfontmap->substitute_func)
     xftfontmap->substitute_func (pattern, xftfontmap->substitute_data);

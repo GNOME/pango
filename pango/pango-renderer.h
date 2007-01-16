@@ -2,7 +2,7 @@
  * pango-renderer.h: Base class for rendering
  *
  * Copyright (C) 2004, Red Hat, Inc.
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
  * License as published by the Free Software Foundation; either
@@ -76,10 +76,10 @@ struct _PangoRenderer
   PangoUnderline underline;
   gboolean strikethrough;
   int active_count;
-  
+
   /*< public >*/
   PangoMatrix *matrix;		/* May be NULL */
-  
+
   /*< private >*/
   PangoRendererPrivate *priv;
 };
@@ -90,7 +90,7 @@ struct _PangoRenderer
  * @draw_rectangle: draws a rectangle
  * @draw_error_underline: draws a squiggly line that approximately
  * covers the given rectangle in the style of an underline used to
- * indicate a spelling error. 
+ * indicate a spelling error.
  * @draw_shape: draw content for a glyph shaped with #PangoAttrShape.
  *   @x, @y are the coordinates of the left edge of the baseline,
  *   in user coordinates.
@@ -173,7 +173,7 @@ struct _PangoRendererClass
 		       PangoLayoutRun *run);
 
   /*< private >*/
-  
+
   /* Padding for future expansion */
   void (*_pango_reserved1) (void);
   void (*_pango_reserved2) (void);

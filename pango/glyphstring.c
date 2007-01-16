@@ -64,14 +64,14 @@ pango_glyph_string_set_size (PangoGlyphString *string, gint new_len)
         string->space = 1;
       else
         string->space *= 2;
-      
+
       if (string->space < 0)
         {
 	  g_warning ("glyph string length overflows maximum integer size, truncated");
 	  new_len = string->space = G_MAXINT - 8;
 	}
     }
-  
+
   string->glyphs = g_realloc (string->glyphs, string->space * sizeof (PangoGlyphInfo));
   string->log_clusters = g_realloc (string->log_clusters, string->space * sizeof (gint));
   string->num_glyphs = new_len;
@@ -81,7 +81,7 @@ GType
 pango_glyph_string_get_type (void)
 {
   static GType our_type = 0;
-  
+
   if (our_type == 0)
     our_type = g_boxed_type_register_static (I_("PangoGlyphString"),
 					     (GBoxedCopyFunc)pango_glyph_string_copy,
@@ -176,7 +176,7 @@ pango_glyph_string_extents_range (PangoGlyphString *glyphs,
       ink_rect->width = 0;
       ink_rect->height = 0;
     }
-  
+
   if (logical_rect)
     {
       logical_rect->x = 0;
@@ -184,12 +184,12 @@ pango_glyph_string_extents_range (PangoGlyphString *glyphs,
       logical_rect->width = 0;
       logical_rect->height = 0;
     }
-  
+
   for (i = start; i < end; i++)
     {
       PangoRectangle glyph_ink;
       PangoRectangle glyph_logical;
-      
+
       PangoGlyphGeometry *geometry = &glyphs->glyphs[i].geometry;
 
       pango_font_get_glyph_extents (font, glyphs->glyphs[i].glyph,
@@ -208,12 +208,12 @@ pango_glyph_string_extents_range (PangoGlyphString *glyphs,
 	  else
 	    {
 	      int new_x, new_y;
-	      
+
 	      new_x = MIN (ink_rect->x, x_pos + glyph_ink.x + geometry->x_offset);
 	      ink_rect->width = MAX (ink_rect->x + ink_rect->width,
 				     x_pos + glyph_ink.x + glyph_ink.width + geometry->x_offset) - new_x;
 	      ink_rect->x = new_x;
-	      
+
 	      new_y = MIN (ink_rect->y, glyph_ink.y + geometry->y_offset);
 	      ink_rect->height = MAX (ink_rect->y + ink_rect->height,
 				      glyph_ink.y + glyph_ink.height + geometry->y_offset) - new_y;
@@ -242,7 +242,7 @@ pango_glyph_string_extents_range (PangoGlyphString *glyphs,
       x_pos += geometry->width;
     }
 }
-     
+
 /**
  * pango_glyph_string_extents:
  * @glyphs:   a #PangoGlyphString
@@ -251,12 +251,12 @@ pango_glyph_string_extents_range (PangoGlyphString *glyphs,
  *            or %NULL to indicate that the result is not needed.
  * @logical_rect: rectangle used to store the logical extents of the glyph string
  *            or %NULL to indicate that the result is not needed.
- * 
+ *
  * Compute the logical and ink extents of a glyph string. See the documentation
  * for pango_font_get_glyph_extents() for details about the interpretation
  * of the rectangles.
  */
-void 
+void
 pango_glyph_string_extents (PangoGlyphString *glyphs,
 			    PangoFont        *font,
 			    PangoRectangle   *ink_rect,
@@ -269,7 +269,7 @@ pango_glyph_string_extents (PangoGlyphString *glyphs,
 /**
  * pango_glyph_string_get_width:
  * @glyphs:   a #PangoGlyphString
- * 
+ *
  * Computes the logical width of the glyph string as can also be computed
  * using pango_glyph_string_extents().  However, since this only computes the
  * width, it's much faster.  This is in fact only a convenience function that
@@ -317,7 +317,7 @@ pango_glyph_string_get_logical_widths (PangoGlyphString *glyphs,
   int width = 0;
   int last_cluster_width = 0;
   const char *p = text;		/* Points to start of current cluster */
-  
+
   for (i=0; i<=glyphs->num_glyphs; i++)
     {
       int glyph_index = (embedding_level % 2 == 0) ? i : glyphs->num_glyphs - i - 1;
@@ -328,7 +328,7 @@ pango_glyph_string_get_logical_widths (PangoGlyphString *glyphs,
       if (i == glyphs->num_glyphs || p != text + glyphs->log_clusters[glyph_index])
 	{
 	  int next_cluster = last_cluster;
-	  
+
 	  if (i < glyphs->num_glyphs)
 	    {
 	      while (p < text + glyphs->log_clusters[glyph_index])
@@ -345,14 +345,14 @@ pango_glyph_string_get_logical_widths (PangoGlyphString *glyphs,
 		  p = g_utf8_next_char (p);
 		}
 	    }
-	  
+
 	  for (j = last_cluster; j < next_cluster; j++)
 	    logical_widths[j] = (width - last_cluster_width) / (next_cluster - last_cluster);
-	  
+
 	  last_cluster = next_cluster;
 	  last_cluster_width = width;
 	}
-      
+
       if (i < glyphs->num_glyphs)
 	width += glyphs->glyphs[glyph_index].geometry.width;
     }

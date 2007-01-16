@@ -7,7 +7,7 @@
  *
  * This file is based on the Arabic shaping code from FreeType 1 tree; original
  * copyright notice:
- *                                                                         
+ *
  *  The FreeType project -- a free and portable quality TrueType renderer.
  *
  *  Copyright 1996-2000 by
@@ -36,7 +36,7 @@ static const JoiningClass syriac[] =
   none, none, none, none,
   none, none, none, none,
   none, none, none, transparent,
-	
+
   /* U+0710 */
   right, none, dual, dual,
   dual, right, right, right,
@@ -83,7 +83,7 @@ Get_Joining_Class (gunichar*   string,
 
       if (pos >= length)
         return none;
-      
+
       if (string[pos] < 0x0700 ||
 	  string[pos] >= 0x074F)
 	{
@@ -91,10 +91,10 @@ Get_Joining_Class (gunichar*   string,
 	    return causing;
 	  else
 	    return none;
-	}   
+	}
       else
         j =  syriac[string[pos] - 0x0700];
-      
+
       if (!direction || j != transparent)
         return j;
     }
@@ -106,7 +106,7 @@ Get_Joining_Class (gunichar*   string,
  * with the Syriac rules from the Unicode-4.0 standard. The numbers
  * R1...R11  below do not correspond to either the Arabic or the Syriac
  * rule numbering from the Unicode standard.
- * 
+ *
  * Characters are here specified as appearing in the byte stream, i.e.
  * *not* in visual order. Joining classes are given in angle brackets,
  * glyph forms in square brackets.  Glyphs affected by a specific rule are
@@ -115,10 +115,10 @@ Get_Joining_Class (gunichar*   string,
  *
  * Glyphs: 0x0715 (Dalath), 0x0716 (Dalath Rish), 0x072A (Rish),
  *         0x0722 (Nun), 0x071F (Kaph)
- *   
+ *
  *
  *   R1: <anything1> <transparent> <anything2>
- *    
+ *
  *       apply joining rules for
  *       <anything1> <anything2> -> [shape1] [shape2]
  *       -> [shape1] [isolated] [shape2]
@@ -139,25 +139,25 @@ Get_Joining_Class (gunichar*   string,
  *
  *
  *   R3: <causing|right|dual> && <!(0x0715|0x0716|0x072A)> |<alaph>|
- *   
+ *
  *   	 -> [final2]
  *
- *   	 If the preceding glyph cannot be joined to the current 
- *   	 glyph and the preceding character is not a Dalath, Rish, 
- *   	 or Dotless Dalath Rish, then the Alaph takes this contextual 
+ *   	 If the preceding glyph cannot be joined to the current
+ *   	 glyph and the preceding character is not a Dalath, Rish,
+ *   	 or Dotless Dalath Rish, then the Alaph takes this contextual
  *   	 position.
  *
  *   	 The [final2] joining rule is placed ahead of the [final] to
  *   	 give it greater precedence when choosing the correct glyph.
  *   	 If it comes after the [final] rule, the incorrect glyph is
  *   	 inserted into position.
- *   	 
- *   	 
+ *
+ *
  *   R4: <0x0715|0x0715|0x072A> |<alaph>|
  *
  *   	 -> [final3]
  *
- *   	 If the previous glyph is a Dalath, Rish, or Dotless Dalath 
+ *   	 If the previous glyph is a Dalath, Rish, or Dotless Dalath
  *   	 Rish, then the Alaph takes this contextual position.
  *
  *   	 The [final3] joining rule is placed ahead of the [final] to
@@ -169,13 +169,13 @@ Get_Joining_Class (gunichar*   string,
  *   R5: <causing|right|dual> |<right>|
  *
  *   	 -> [final]
- * 
- * 
+ *
+ *
  *   R6: <causing|right|dual> |<dual>| <!(causing|right|dual)>
  *
  *   	 -> [final]
- *   	 
- * 
+ *
+ *
  *   R7: <causing|left|dual> |<dual>| <causing|right|dual>
  *
  *   	 -> [medial]
@@ -185,10 +185,10 @@ Get_Joining_Class (gunichar*   string,
  *
  *   	 -> [medial2]
  *
- *       If the Alaph glyph falls in the middle of a Syriac word and 
- *       the preceding character cannot be joined to, then the Alaph 
+ *       If the Alaph glyph falls in the middle of a Syriac word and
+ *       the preceding character cannot be joined to, then the Alaph
  *       takes this contextual position.
- *   	 
+ *
  *
  *   R9: |<left>| <causing|right|dual>
  *
@@ -238,7 +238,7 @@ syriac_assign_properties (gunichar    *string,
       /* R2 */
 
       if (string[i] == 0x0722 ||
-	  string[i] == 0x071F)  
+	  string[i] == 0x071F)
         if (previous == causing ||
             previous == right)
           if (!(next == causing ||
@@ -270,7 +270,7 @@ syriac_assign_properties (gunichar    *string,
          if (string[i - 1] == 0x0715 ||
               string[i - 1] == 0x0716 ||
               string[i - 1] == 0x072A)
-          {    
+          {
             properties[i] |= final3_p;
             continue;
           }
@@ -280,7 +280,7 @@ syriac_assign_properties (gunichar    *string,
       if (previous == causing ||
 	  previous == right   ||
 	  previous == dual)
-        if (current == right) 
+        if (current == right)
 	    {
 	      properties[i] |= final_p;
 	      continue;
@@ -352,10 +352,10 @@ syriac_assign_properties (gunichar    *string,
 	        continue;
 	      }
 
-      /* R11 */    
+      /* R11 */
 
       properties[i] |= isolated_p;
     }
-    
+
   return FT_Err_Ok;
 }

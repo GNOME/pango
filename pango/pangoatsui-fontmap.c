@@ -100,7 +100,7 @@ pango_atsui_family_list_faces (PangoFontFamily  *family,
   PangoATSUIFamily *atsuifamily = PANGO_ATSUI_FAMILY (family);
   NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 
-  if (atsuifamily->n_faces < 0) 
+  if (atsuifamily->n_faces < 0)
     {
       const char *real_family = get_real_family (atsuifamily->family_name);
       NSArray *members = [[NSFontManager sharedFontManager] availableMembersOfFontFamily:[NSString stringWithUTF8String:real_family]];
@@ -156,13 +156,13 @@ pango_atsui_family_finalize (GObject *object)
 
   g_free (family->family_name);
 
-  if (family->n_faces != -1) 
+  if (family->n_faces != -1)
     {
-      for (i = 0; i < family->n_faces; i++) 
+      for (i = 0; i < family->n_faces; i++)
 	{
 	  g_object_unref (family->faces[i]);
 	}
-      
+
       g_free (family->faces);
     }
 
@@ -174,7 +174,7 @@ pango_atsui_family_class_init (PangoFontFamilyClass *class)
 {
   GObjectClass *object_class = (GObjectClass *)class;
   int i;
-  
+
   pango_atsui_family_parent_class = g_type_class_peek_parent (class);
 
   object_class->finalize = pango_atsui_family_finalize;
@@ -212,12 +212,12 @@ pango_atsui_family_get_type (void)
         0,              /* n_preallocs */
         (GInstanceInitFunc) pango_atsui_family_init,
       };
-      
+
       object_type = g_type_register_static (PANGO_TYPE_FONT_FAMILY,
                                             I_("PangoATSUIFamily"),
                                             &object_info, 0);
     }
-  
+
   return object_type;
 }
 
@@ -230,7 +230,7 @@ pango_atsui_face_describe (PangoFontFace *face)
   PangoStyle pango_style;
   PangoVariant pango_variant;
   int weight;
-  
+
   description = pango_font_description_new ();
 
   pango_font_description_set_family (description, atsuiface->family->family_name);
@@ -251,7 +251,7 @@ pango_atsui_face_describe (PangoFontFace *face)
     pango_weight = PANGO_WEIGHT_ULTRABOLD;
   else if (weight == 13 || weight == 14)
     pango_weight = PANGO_WEIGHT_HEAVY;
-  else 
+  else
     g_assert_not_reached ();
 
   if (atsuiface->traits & NSItalicFontMask)
@@ -267,7 +267,7 @@ pango_atsui_face_describe (PangoFontFace *face)
   pango_font_description_set_weight (description, pango_weight);
   pango_font_description_set_style (description, pango_style);
 
-  return description;  
+  return description;
 }
 
 static const char *
@@ -331,12 +331,12 @@ pango_atsui_face_get_type (void)
         0,              /* n_preallocs */
         (GInstanceInitFunc) NULL,
       };
-      
+
       object_type = g_type_register_static (PANGO_TYPE_FONT_FACE,
                                             I_("PangoATSUIFace"),
                                             &object_info, 0);
     }
-  
+
   return object_type;
 }
 
@@ -354,7 +354,7 @@ static void
 pango_atsui_font_map_finalize (GObject *object)
 {
   PangoATSUIFontMap *fontmap = PANGO_ATSUI_FONT_MAP (object);
-  
+
   g_hash_table_destroy (fontmap->font_hash);
   g_hash_table_destroy (fontmap->families);
 
@@ -370,7 +370,7 @@ struct _FontHashKey {
 };
 
 /* Fowler / Noll / Vo (FNV) Hash (http://www.isthe.com/chongo/tech/comp/fnv/)
- * 
+ *
  * Not necessarily better than a lot of other hashes, but should be OK, and
  * well tested with binary data.
  */
@@ -388,7 +388,7 @@ hash_bytes_fnv (unsigned char *buffer,
       hval *= FNV_32_PRIME;
       hval ^= *buffer++;
     }
-  
+
   return hval;
 }
 
@@ -439,7 +439,7 @@ font_hash_key_free (FontHashKey *key)
   if (key->context_key)
     PANGO_ATSUI_FONT_MAP_GET_CLASS (key->fontmap)->context_key_free (key->fontmap,
 								     key->context_key);
-  
+
   g_slice_free (FontHashKey, key);
 }
 
@@ -447,7 +447,7 @@ static FontHashKey *
 font_hash_key_copy (FontHashKey *old)
 {
   FontHashKey *key = g_slice_new (FontHashKey);
-  
+
   key->fontmap = old->fontmap;
   key->matrix = old->matrix;
   key->desc = pango_font_description_copy (old->desc);
@@ -457,7 +457,7 @@ font_hash_key_copy (FontHashKey *old)
 											old->context_key);
   else
     key->context_key = NULL;
-      
+
   return key;
 }
 
@@ -487,7 +487,7 @@ font_hash_key_for_context (PangoATSUIFontMap *fcfontmap,
 {
   key->fontmap = fcfontmap;
   get_context_matrix (context, &key->matrix);
-  
+
   if (PANGO_ATSUI_FONT_MAP_GET_CLASS (fcfontmap)->context_key_get)
     key->context_key = (gpointer)PANGO_ATSUI_FONT_MAP_GET_CLASS (fcfontmap)->context_key_get (fcfontmap, context);
   else
@@ -523,7 +523,7 @@ pango_atsui_font_map_lookup (PangoATSUIFontMap *atsuifontmap,
 			     const char        *postscript_name)
 {
   FontHashKey key;
-  
+
   font_hash_key_for_context (atsuifontmap, context, &key);
   key.postscript_name = (char *)postscript_name;
   key.desc = desc;
@@ -558,33 +558,33 @@ pango_atsui_font_map_load_font (PangoFontMap               *fontmap,
       PangoATSUIFace *best_face = NULL;
       PangoATSUIFont *best_font;
       int i;
-      
+
       /* Force a listing of the available faces */
       pango_font_family_list_faces ((PangoFontFamily *)font_family, NULL, NULL);
 
       for (i = 0; i < font_family->n_faces; i++)
 	{
 	  new_desc = pango_font_face_describe (font_family->faces[i]);
-	  
+
 	  if (pango_font_description_better_match (description, best_desc, new_desc))
 	    {
 	      pango_font_description_free (best_desc);
 	      best_desc = new_desc;
 	      best_face = (PangoATSUIFace *)font_family->faces[i];
 	    }
-	  else 
+	  else
 	    {
 	      pango_font_description_free (new_desc);
 	    }
 	}
-      
+
       if (best_desc == NULL || best_face == NULL)
         return NULL;
 
       pango_font_description_set_size (best_desc, size);
 
       best_font = pango_atsui_font_map_lookup (atsuifontmap, context, best_desc, best_face->postscript_name);
-      
+
       if (best_font)
 	g_object_ref (best_font);
       else
@@ -632,7 +632,7 @@ pango_atsui_font_map_list_families (PangoFontMap      *fontmap,
   if (families)
     {
       int i = 0;
-	
+
       *families = g_new (PangoFontFamily *, *n_families);
 
       tmp_list = family_list;
@@ -643,11 +643,11 @@ pango_atsui_font_map_list_families (PangoFontMap      *fontmap,
 	  tmp_list = tmp_list->next;
 	}
     }
-  
+
   g_slist_free (family_list);
 }
 
-static void 
+static void
 pango_atsui_font_map_init (PangoATSUIFontMap *atsuifontmap)
 {
   NSArray *family_array;
@@ -659,7 +659,7 @@ pango_atsui_font_map_init (PangoATSUIFontMap *atsuifontmap)
   atsuifontmap->families = g_hash_table_new_full (g_str_hash, g_str_equal,
 						  g_free, g_object_unref);
 
-  
+
   atsuifontmap->font_hash = g_hash_table_new_full ((GHashFunc)font_hash_key_hash,
 						   (GEqualFunc)font_hash_key_equal,
 						   (GDestroyNotify)font_hash_key_free,

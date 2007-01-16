@@ -57,7 +57,7 @@ typedef struct _PangoXftRendererPrivate PangoXftRendererPrivate;
  */
 struct _PangoXftRenderer
 {
-  /*< private >*/	
+  /*< private >*/
   PangoRenderer parent_instance;
 
   Display *display;
@@ -73,7 +73,7 @@ struct _PangoXftRenderer
  *   the current color and other attributes for @part
  * @composite_glyphs: draw the specified glyphs using
  *   the current foreground color and other foreground
- *   attributes 
+ *   attributes
  *
  * The class structure for #PangoXftRenderer
  *
@@ -81,7 +81,7 @@ struct _PangoXftRenderer
  */
 struct _PangoXftRendererClass
 {
-  /*< private >*/	
+  /*< private >*/
   PangoRendererClass parent_class;
 
   /*< public >*/

@@ -162,7 +162,7 @@ scale_factor (int scale_level, double base)
   int i;
 
   /* 1.2 is the CSS scale factor between sizes */
-  
+
   if (scale_level > 0)
     {
       i = 0;
@@ -179,7 +179,7 @@ scale_factor (int scale_level, double base)
       while (i < 0)
         {
           factor /= 1.2;
-                  
+
           ++i;
         }
     }
@@ -214,24 +214,24 @@ open_tag_set_absolute_font_scale (OpenTag *ot,
   ot->scale_level = 0;
   ot->scale_level_delta = 0;
 }
-     
+
 static OpenTag*
 markup_data_open_tag (MarkupData   *md)
 {
   OpenTag *ot;
   OpenTag *parent = NULL;
-  
+
   if (md->attr_list == NULL)
     return NULL;
 
   if (md->tag_stack)
     parent = md->tag_stack->data;
-  
+
   ot = g_slice_new (OpenTag);
   ot->attrs = NULL;
   ot->start_index = md->index;
   ot->scale_level_delta = 0;
-  
+
   if (parent == NULL)
     {
       ot->base_scale_factor = 1.0;
@@ -246,7 +246,7 @@ markup_data_open_tag (MarkupData   *md)
       ot->has_base_font_size = parent->has_base_font_size;
       ot->scale_level = parent->scale_level;
     }
-  
+
   md->tag_stack = g_slist_prepend (md->tag_stack, ot);
 
   return ot;
@@ -278,7 +278,7 @@ markup_data_close_tag (MarkupData *md)
 
       a->start_index = ot->start_index;
       a->end_index = md->index;
-      
+
       md->to_apply = g_slist_prepend (md->to_apply, a);
 
       tmp_list = g_slist_next (tmp_list);
@@ -311,12 +311,12 @@ markup_data_close_tag (MarkupData *md)
 
       a->start_index = ot->start_index;
       a->end_index = md->index;
-          
+
       md->to_apply = g_slist_prepend (md->to_apply, a);
     }
-  
+
   g_slist_free (ot->attrs);
-  g_slice_free (OpenTag, ot);  
+  g_slice_free (OpenTag, ot);
 }
 
 static void
@@ -425,9 +425,9 @@ text_handler           (GMarkupParseContext *context,
   if (md->accel_marker == 0)
     {
       /* Just append all the text */
-      
+
       md->index += text_len;
-      
+
       g_string_append_len (md->text, text, text_len);
     }
   else
@@ -439,16 +439,16 @@ text_handler           (GMarkupParseContext *context,
       const gchar *range_end;
       gssize uline_index = -1;
       gsize uline_len = 0;	/* Quiet GCC */
-      
+
       range_end = NULL;
       range_start = text;
       p = text;
       end = text + text_len;
-      
+
       while (p != end)
         {
           gunichar c;
-          
+
           c = g_utf8_get_char (p);
 
           if (range_end)
@@ -487,19 +487,19 @@ text_handler           (GMarkupParseContext *context,
                    */
                   uline_index = md->index;
                   uline_len = g_utf8_next_char (p) - p;
-                  
+
                   /* set next range_start to include this char */
                   range_start = p;
                 }
 
               /* reset range_end */
               range_end = NULL;
-            }          
+            }
           else if (c == md->accel_marker)
             {
               range_end = p;
             }
-          
+
           p = g_utf8_next_char (p);
         }
 
@@ -517,17 +517,17 @@ text_handler           (GMarkupParseContext *context,
                                end - range_start);
           md->index += end - range_start;
         }
-      
+
       if (md->attr_list != NULL && uline_index >= 0)
         {
-          /* Add the underline indicating the accelerator */          
+          /* Add the underline indicating the accelerator */
           PangoAttribute *attr;
 
           attr = pango_attr_underline_new (PANGO_UNDERLINE_LOW);
 
           attr->start_index = uline_index;
           attr->end_index = uline_index + uline_len;
-          
+
           pango_attr_list_change (md->attr_list, attr);
         }
     }
@@ -556,7 +556,7 @@ static const GMarkupParser pango_markup_parser = {
  * @text: address of return location for text with tags stripped, or %NULL
  * @accel_char: address of return location for accelerator char, or %NULL
  * @error: address of return location for errors, or %NULL
- * 
+ *
  *
  * Parses marked-up text (see
  * <link linkend="PangoMarkupFormat">markup format</link>) to create
@@ -569,7 +569,7 @@ static const GMarkupParser pango_markup_parser = {
  * and the first character so marked will be returned in @accel_char.
  * Two @accel_marker characters following each other produce a single
  * literal @accel_marker character.
- * 
+ *
  * Return value: %FALSE if @error is set, otherwise %TRUE
  **/
 gboolean
@@ -587,9 +587,9 @@ pango_parse_markup (const char                 *markup_text,
   GSList *tmp_list;
   const char *p;
   const char *end;
-  
+
   g_return_val_if_fail (markup_text != NULL, FALSE);
-  
+
   md = g_slice_new (MarkupData);
 
   /* Don't bother creating these if they weren't requested;
@@ -602,22 +602,22 @@ pango_parse_markup (const char                 *markup_text,
     md->attr_list = NULL;
 
   md->text = g_string_new (NULL);
-  
+
   if (accel_char)
     *accel_char = 0;
 
   md->accel_marker = accel_marker;
   md->accel_char = 0;
-  
+
   md->index = 0;
   md->tag_stack = NULL;
   md->to_apply = NULL;
-  
+
   context = g_markup_parse_context_new (&pango_markup_parser,
                                         0, md, NULL);
 
   if (length < 0)
-    length = strlen (markup_text);  
+    length = strlen (markup_text);
 
   p = markup_text;
   end = markup_text + length;
@@ -662,7 +662,7 @@ pango_parse_markup (const char                 *markup_text,
       while (tmp_list != NULL)
         {
           PangoAttribute *attr = tmp_list->data;
-          
+
           /* Innermost tags before outermost */
           pango_attr_list_change (md->attr_list, attr);
 
@@ -671,7 +671,7 @@ pango_parse_markup (const char                 *markup_text,
       g_slist_free (md->to_apply);
       md->to_apply = NULL;
     }
-  
+
   if (attr_list)
     *attr_list = md->attr_list;
 
@@ -679,12 +679,12 @@ pango_parse_markup (const char                 *markup_text,
     *text = g_string_free (md->text, FALSE);
   else
     g_string_free (md->text, TRUE);
-  
+
   if (accel_char)
     *accel_char = md->accel_char;
-  
+
   g_assert (md->tag_stack == NULL);
-  
+
   g_slice_free (MarkupData, md);
 
   return TRUE;
@@ -695,7 +695,7 @@ pango_parse_markup (const char                 *markup_text,
   g_slist_foreach (md->to_apply, (GFunc) pango_attribute_destroy, NULL);
   g_slist_free (md->to_apply);
   g_string_free (md->text, TRUE);
-  
+
   if (md->attr_list)
     pango_attr_list_unref (md->attr_list);
 
@@ -782,7 +782,7 @@ parse_absolute_size (OpenTag               *tag,
 {
   SizeLevel level = Medium;
   double factor;
-  
+
   if (strcmp (size, "xx-small") == 0)
     level = XXSmall;
   else if (strcmp (size, "x-small") == 0)
@@ -807,7 +807,7 @@ parse_absolute_size (OpenTag               *tag,
   add_attribute (tag, pango_attr_scale_new (factor));
   if (tag)
     open_tag_set_absolute_font_scale (tag, factor);
-  
+
   return TRUE;
 }
 
@@ -979,7 +979,7 @@ span_parse_func     (MarkupData            *md,
   const char *fallback = NULL;
   const char *gravity = NULL;
   const char *gravity_hint = NULL;
-  
+
   g_markup_parse_context_get_position (context,
                                        &line_number, &char_number);
 
@@ -1134,7 +1134,7 @@ span_parse_func     (MarkupData            *md,
   if (G_UNLIKELY (style))
     {
       PangoStyle pango_style;
-      
+
       if (pango_parse_style (style, &pango_style, FALSE))
         add_attribute (tag, pango_attr_style_new (pango_style));
       else
@@ -1153,7 +1153,7 @@ span_parse_func     (MarkupData            *md,
   if (G_UNLIKELY (weight))
     {
       PangoWeight pango_weight;
-      
+
       if (pango_parse_weight (weight, &pango_weight, FALSE))
         add_attribute (tag,
                        pango_attr_weight_new (pango_weight));
@@ -1173,7 +1173,7 @@ span_parse_func     (MarkupData            *md,
   if (G_UNLIKELY (variant))
     {
       PangoVariant pango_variant;
-      
+
       if (pango_parse_variant (variant, &pango_variant, FALSE))
         add_attribute (tag, pango_attr_variant_new (pango_variant));
       else
@@ -1192,7 +1192,7 @@ span_parse_func     (MarkupData            *md,
   if (G_UNLIKELY (stretch))
     {
       PangoStretch pango_stretch;
-      
+
       if (pango_parse_stretch (stretch, &pango_stretch, FALSE))
         add_attribute (tag, pango_attr_stretch_new (pango_stretch));
       else
@@ -1222,7 +1222,7 @@ span_parse_func     (MarkupData            *md,
   if (G_UNLIKELY (background))
     {
       PangoColor color;
-      
+
       if (!span_parse_color ("background", background, &color, line_number, error))
         goto error;
 
@@ -1312,7 +1312,7 @@ span_parse_func     (MarkupData            *md,
   if (G_UNLIKELY (letter_spacing))
     {
       gint n = 0;
-      
+
       if (!span_parse_int ("letter_spacing", letter_spacing, &n, line_number, error))
         goto error;
 
@@ -1324,7 +1324,7 @@ span_parse_func     (MarkupData            *md,
       add_attribute (tag,
 		     pango_attr_language_new (pango_language_from_string (lang)));
     }
-  
+
   return TRUE;
 
  error:
@@ -1355,7 +1355,7 @@ markup_parse_func (MarkupData            *md,
                    GError               **error)
 {
   /* We don't do anything with this tag at the moment. */
-  
+
   return TRUE;
 }
 

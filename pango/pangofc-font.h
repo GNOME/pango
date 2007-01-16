@@ -42,7 +42,7 @@ typedef struct _PangoFcFontClass PangoFcFontClass;
 
 /**
  * PANGO_RENDER_TYPE_FC:
- * 
+ *
  * A string constant used to identify shape engines that work
  * with the fontconfig based backends. See the @engine_type field
  * of #PangoEngineInfo.
@@ -57,7 +57,7 @@ typedef struct _PangoFcFontClass PangoFcFontClass;
 
 /**
  * PangoFcFont:
- * 
+ *
  * #PangoFcFont is a base class for font implementations
  * using the Fontconfig and FreeType libraries and is used in
  * conjunction with #PangoFcFontMap. When deriving from this
@@ -74,7 +74,7 @@ struct _PangoFcFont
   gpointer priv;		    /* used internally */
   PangoMatrix matrix;		    /* used internally */
   PangoFontDescription *description;
-  
+
   GSList *metrics_by_lang;
 
   guint is_hinted : 1;

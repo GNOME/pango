@@ -38,7 +38,7 @@ substitute_func (FcPattern *pattern,
     {
       FcPatternDel (pattern, FC_HINTING);
       FcPatternAddBool (pattern, FC_HINTING, opt_hinting != HINT_NONE);
-      
+
       FcPatternDel (pattern, FC_AUTOHINT);
       FcPatternAddBool (pattern, FC_AUTOHINT, opt_hinting == HINT_AUTO);
     }
@@ -56,7 +56,7 @@ pangoft2_view_create (const PangoViewer *klass)
   return fontmap;
 }
 
-static void 
+static void
 pangoft2_view_destroy (gpointer instance)
 {
   g_object_unref (instance);
@@ -87,7 +87,7 @@ pangoft2_view_create_surface (gpointer instance,
   return bitmap;
 }
 
-static void 
+static void
 pangoft2_view_destroy_surface (gpointer instance,
 			       gpointer surface)
 {
@@ -109,7 +109,7 @@ render_callback (PangoLayout *layout,
 			   x, y);
 }
 
-static void 
+static void
 pangoft2_view_render (gpointer      instance,
 		      gpointer      surface,
 		      PangoContext *context,

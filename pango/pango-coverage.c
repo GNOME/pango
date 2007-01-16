@@ -34,7 +34,7 @@ typedef struct _PangoBlockInfo PangoBlockInfo;
 
 struct _PangoBlockInfo
 {
-  guchar *data;		
+  guchar *data;
   PangoCoverageLevel level;	/* Used if data == NULL */
 };
 
@@ -43,15 +43,15 @@ struct _PangoCoverage
   guint ref_count;
   int n_blocks;
   int data_size;
-  
+
   PangoBlockInfo *blocks;
 };
 
 /**
  * pango_coverage_new:
- * 
+ *
  * Create a new #PangoCoverage
- * 
+ *
  * Return value: the newly allocated #PangoCoverage,
  *               initialized to %PANGO_COVERAGE_NONE
  *               with a reference count of one, which
@@ -65,17 +65,17 @@ pango_coverage_new (void)
   coverage->n_blocks = N_BLOCKS_INCREMENT;
   coverage->blocks = g_new0 (PangoBlockInfo, coverage->n_blocks);
   coverage->ref_count = 1;
-  
+
   return coverage;
 }
 
 /**
  * pango_coverage_copy:
  * @coverage: a #PangoCoverage
- * 
- * Copy an existing #PangoCoverage. (This function may now be unnecessary 
+ *
+ * Copy an existing #PangoCoverage. (This function may now be unnecessary
  * since we refcount the structure. File a bug if you use it.)
- * 
+ *
  * Return value: the newly allocated #PangoCoverage,
  *               with a reference count of one, which
  *               should be freed with pango_coverage_unref().
@@ -102,17 +102,17 @@ pango_coverage_copy (PangoCoverage *coverage)
 	}
       else
 	result->blocks[i].data = NULL;
-	
+
       result->blocks[i].level = coverage->blocks[i].level;
     }
-  
+
   return result;
 }
 
 /**
  * pango_coverage_ref:
  * @coverage: a #PangoCoverage
- * 
+ *
  * Increase the reference count on the #PangoCoverage by one
  *
  * Return value: @coverage
@@ -130,7 +130,7 @@ pango_coverage_ref (PangoCoverage *coverage)
 /**
  * pango_coverage_unref:
  * @coverage: a #PangoCoverage
- * 
+ *
  * Increase the reference count on the #PangoCoverage by one.
  * if the result is zero, free the coverage and all associated memory.
  **/
@@ -138,7 +138,7 @@ void
 pango_coverage_unref (PangoCoverage *coverage)
 {
   int i;
-  
+
   g_return_if_fail (coverage != NULL);
   g_return_if_fail (coverage->ref_count > 0);
 
@@ -148,7 +148,7 @@ pango_coverage_unref (PangoCoverage *coverage)
     {
       for (i=0; i<coverage->n_blocks; i++)
 	g_free (coverage->blocks[i].data);
-      
+
       g_free (coverage->blocks);
       g_slice_free (PangoCoverage, coverage);
     }
@@ -158,9 +158,9 @@ pango_coverage_unref (PangoCoverage *coverage)
  * pango_coverage_get:
  * @coverage: a #PangoCoverage
  * @index_: the index to check
- * 
+ *
  * Determine whether a particular index is covered by @coverage
- * 
+ *
  * Return value: the coverage level of @coverage for character @index_.
  **/
 PangoCoverageLevel
@@ -168,7 +168,7 @@ pango_coverage_get (PangoCoverage *coverage,
 		    int            index)
 {
   int block_index;
-  
+
   g_return_val_if_fail (coverage != NULL, PANGO_COVERAGE_NONE);
   g_return_val_if_fail (index >= 0, PANGO_COVERAGE_NONE);
 
@@ -196,7 +196,7 @@ pango_coverage_get (PangoCoverage *coverage,
  * @coverage: a #PangoCoverage
  * @index_: the index to modify
  * @level: the new level for @index_
- * 
+ *
  * Modify a particular index within @coverage
  **/
 void
@@ -206,7 +206,7 @@ pango_coverage_set (PangoCoverage     *coverage,
 {
   int block_index, i;
   guchar *data;
-  
+
   g_return_if_fail (coverage != NULL);
   g_return_if_fail (index >= 0);
   g_return_if_fail (level >= 0 && level <= 3);
@@ -219,7 +219,7 @@ pango_coverage_set (PangoCoverage     *coverage,
 
       coverage->n_blocks =
 	N_BLOCKS_INCREMENT * ((block_index + N_BLOCKS_INCREMENT) / N_BLOCKS_INCREMENT);
-      
+
       coverage->blocks = g_renew (PangoBlockInfo, coverage->blocks, coverage->n_blocks);
       memset (coverage->blocks + old_n_blocks, 0,
 	      sizeof (PangoBlockInfo) * (coverage->n_blocks - old_n_blocks));
@@ -229,10 +229,10 @@ pango_coverage_set (PangoCoverage     *coverage,
   if (!data)
     {
       guchar byte;
-      
+
       if (level == coverage->blocks[block_index].level)
 	return;
-      
+
       data = g_new (guchar, 64);
       coverage->blocks[block_index].data = data;
 
@@ -240,7 +240,7 @@ pango_coverage_set (PangoCoverage     *coverage,
 	(coverage->blocks[block_index].level << 2) |
 	(coverage->blocks[block_index].level << 4) |
         (coverage->blocks[block_index].level << 6);
-      
+
       memset (data, byte, 64);
     }
 
@@ -252,7 +252,7 @@ pango_coverage_set (PangoCoverage     *coverage,
  * pango_coverage_max:
  * @coverage: a #PangoCoverage
  * @other: another #PangoCoverage
- * 
+ *
  * Set the coverage for each index in @coverage to be the max (better)
  * value of the current coverage for the index and the coverage for
  * the corresponding index in @other.
@@ -263,16 +263,16 @@ pango_coverage_max (PangoCoverage *coverage,
 {
   int block_index, i;
   int old_blocks;
-  
+
   g_return_if_fail (coverage != NULL);
-  
+
   old_blocks = MIN (coverage->n_blocks, other->n_blocks);
 
   if (other->n_blocks > coverage->n_blocks)
     {
       coverage->n_blocks = other->n_blocks;
       coverage->blocks = g_renew (PangoBlockInfo, coverage->blocks, coverage->n_blocks);
-      
+
       for (block_index = old_blocks; block_index < coverage->n_blocks; block_index++)
 	{
 	  if (other->blocks[block_index].data)
@@ -282,11 +282,11 @@ pango_coverage_max (PangoCoverage *coverage,
 	    }
 	  else
 	    coverage->blocks[block_index].data = NULL;
-	  
+
 	  coverage->blocks[block_index].level = other->blocks[block_index].level;
 	}
     }
-  
+
   for (block_index = 0; block_index < old_blocks; block_index++)
     {
       if (!coverage->blocks[block_index].data && !other->blocks[block_index].data)
@@ -296,7 +296,7 @@ pango_coverage_max (PangoCoverage *coverage,
       else if (coverage->blocks[block_index].data && other->blocks[block_index].data)
 	{
 	  guchar *data = coverage->blocks[block_index].data;
-	  
+
 	  for (i=0; i<64; i++)
 	    {
 	      int byte1 = data[i];
@@ -327,9 +327,9 @@ pango_coverage_max (PangoCoverage *coverage,
 	      coverage->blocks[block_index].data = dest;
 	      level = coverage->blocks[block_index].level;
 	    }
-	  
+
 	  byte2 = level | (level << 2) | (level << 4) | (level << 6);
-	  
+
 	  for (i=0; i<64; i++)
 	    {
 	      int byte1 = src[i];
@@ -352,7 +352,7 @@ pango_coverage_max (PangoCoverage *coverage,
  * @coverage: a #PangoCoverage
  * @bytes: location to store result (must be freed with g_free())
  * @n_bytes: location to store size of result
- * 
+ *
  * Convert a #PangoCoverage structure into a flat binary format
  **/
 void
@@ -364,7 +364,7 @@ pango_coverage_to_bytes   (PangoCoverage  *coverage,
   int size = 8 + 4 * coverage->n_blocks;
   guchar *data;
   int offset;
-  
+
   for (i=0; i<coverage->n_blocks; i++)
     {
       if (coverage->blocks[i].data)
@@ -376,7 +376,7 @@ pango_coverage_to_bytes   (PangoCoverage  *coverage,
   *(guint32 *)&data[0] = g_htonl (PANGO_COVERAGE_MAGIC); /* Magic */
   *(guint32 *)&data[4] = g_htonl (coverage->n_blocks);
   offset = 8;
-  
+
   for (i=0; i<coverage->n_blocks; i++)
     {
       guint32 header_val;
@@ -389,7 +389,7 @@ pango_coverage_to_bytes   (PangoCoverage  *coverage,
 	{
 	  guchar *data = coverage->blocks[i].data;
 	  guchar first_val = data[0];
-	  
+
 	  for (j = 1 ; j < 64; j++)
 	    if (data[j] != first_val)
 	      break;
@@ -436,10 +436,10 @@ pango_coverage_get_uint32 (guchar **ptr)
  * pango_coverage_from_bytes:
  * @bytes: binary data representing a #PangoCoverage
  * @n_bytes: the size of @bytes in bytes
- * 
+ *
  * Convert data generated from pango_converage_to_bytes() back
  * to a #PangoCoverage
- * 
+ *
  * Return value: a newly allocated #PangoCoverage, or %NULL if
  *               the data was invalid.
  **/
@@ -452,20 +452,20 @@ pango_coverage_from_bytes (guchar *bytes,
   int i;
 
   coverage->ref_count = 1;
-  
+
   if (n_bytes < 8)
     goto error;
 
   if (pango_coverage_get_uint32 (&ptr) != PANGO_COVERAGE_MAGIC)
     goto error;
-    
+
   coverage->n_blocks = pango_coverage_get_uint32 (&ptr);
   coverage->blocks = g_new0 (PangoBlockInfo, coverage->n_blocks);
 
   for (i = 0; i < coverage->n_blocks; i++)
     {
       guint val;
-      
+
       if (ptr + 4 > bytes + n_bytes)
 	goto error;
 
@@ -474,7 +474,7 @@ pango_coverage_from_bytes (guchar *bytes,
 	{
 	  if (ptr + 64 > bytes + n_bytes)
 	    goto error;
-	  
+
 	  coverage->blocks[i].data = g_new (guchar, 64);
 	  memcpy (coverage->blocks[i].data, ptr, 64);
 	  ptr += 64;
@@ -482,7 +482,7 @@ pango_coverage_from_bytes (guchar *bytes,
       else
 	coverage->blocks[i].level = val;
     }
-  
+
   return coverage;
 
  error:
@@ -490,5 +490,5 @@ pango_coverage_from_bytes (guchar *bytes,
   pango_coverage_unref (coverage);
   return NULL;
 }
-  
+
 

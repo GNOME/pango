@@ -32,7 +32,7 @@ static void fail (const char *format, ...) G_GNUC_PRINTF (1, 2) G_GNUC_NORETURN;
 static void fail (const char *format, ...)
 {
   char *str;
-  
+
   va_list args;
 
   va_start (args, format);
@@ -40,7 +40,7 @@ static void fail (const char *format, ...)
   va_end (args);
 
   fprintf (stderr, "Error: %s\n", str);
-  
+
   g_free (str);
 
   exit (1);
@@ -53,10 +53,10 @@ dump_text (const char *text)
   PangoLogAttr *attrs;
   int i;
   gunichar *ucs4;
-  
+
   if (!g_utf8_validate (text, -1, NULL))
     fail ("Invalid UTF-8 in file");
-  
+
   len = g_utf8_strlen (text, -1);
   attrs = g_new0 (PangoLogAttr, len + 1);
 
@@ -68,22 +68,22 @@ dump_text (const char *text)
                        len + 1);
 
   ucs4 = g_utf8_to_ucs4 (text, -1, NULL, NULL, NULL);
-  
+
   i = 0;
   while (i <= len)
     {
       char buf[7] = { '\0', };
       char *loc;
-      
+
       g_unichar_to_utf8 (ucs4[i], buf);
 
       if (*buf == '\n')
         loc = g_strdup ("\\n");
       else if (*buf == '\r')
         loc = g_strdup ("\\r");
-      else 
+      else
         loc = g_locale_from_utf8 (buf, -1, NULL, NULL, NULL);
-      
+
       g_print (CHFORMAT " (%s):\t line_break = %d mandatory_break = %d char_break = %d\n"
                "     \t\t white = %d cursor_position = %d\n"
                "     \t\t word_start = %d word_end = %d\n"
@@ -101,7 +101,7 @@ dump_text (const char *text)
                attrs[i].is_sentence_end);
 
       g_free (loc);
-      
+
       ++i;
     }
 
@@ -119,14 +119,14 @@ main (int    argc,
 
   if (argc < 2)
     fail ("must give a filename on the command line");
-  
+
   if (!g_file_get_contents (argv[1], &text, NULL, NULL))
     fail ("Couldn't open sample text file");
-  
+
   dump_text (text);
 
   g_free (text);
-  
+
   return 0;
 }
 

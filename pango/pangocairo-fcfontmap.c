@@ -38,7 +38,7 @@ pango_cairo_fc_font_map_set_resolution (PangoCairoFontMap *cfontmap,
 					double             dpi)
 {
   PangoCairoFcFontMap *cffontmap = (PangoCairoFcFontMap *) (cfontmap);
-  
+
   cffontmap->dpi = dpi;
 
   pango_fc_font_map_cache_clear ((PangoFcFontMap *) (cfontmap));
@@ -56,7 +56,7 @@ static PangoRenderer *
 pango_cairo_fc_font_map_get_renderer (PangoCairoFontMap *cfontmap)
 {
   PangoCairoFcFontMap *cffontmap = (PangoCairoFcFontMap *) (cfontmap);
-  
+
   if (!cffontmap->renderer)
     cffontmap->renderer = g_object_new (PANGO_TYPE_CAIRO_RENDERER, NULL);
 
@@ -78,7 +78,7 @@ static void
 pango_cairo_fc_font_map_finalize (GObject *object)
 {
   PangoCairoFcFontMap *cffontmap = (PangoCairoFcFontMap *) (object);
-  
+
   if (cffontmap->renderer)
     g_object_unref (cffontmap->renderer);
 
@@ -97,7 +97,7 @@ pango_cairo_fc_font_map_context_substitute (PangoFcFontMap *fcfontmap,
   if (context)
     cairo_ft_font_options_substitute (_pango_cairo_context_get_merged_font_options (context),
 				      pattern);
-  
+
   FcDefaultSubstitute (pattern);
 }
 
@@ -107,11 +107,11 @@ pango_cairo_fc_font_map_get_resolution_fc (PangoFcFontMap *fcfontmap,
 {
   PangoCairoFcFontMap *cffontmap = (PangoCairoFcFontMap *) (fcfontmap);
   double dpi;
-  
+
   if (context)
     {
       dpi = pango_cairo_context_get_resolution (context);
-      
+
       if (dpi <= 0)
 	dpi = cffontmap->dpi;
     }
@@ -157,7 +157,7 @@ pango_cairo_fc_font_map_context_key_equal (PangoFcFontMap *fcfontmap,
 {
   return cairo_font_options_equal (key_a, key_b);
 }
-  
+
 static PangoFcFont *
 pango_cairo_fc_font_map_create_font (PangoFcFontMap             *fcfontmap,
 				     PangoContext               *context,
@@ -175,16 +175,16 @@ pango_cairo_fc_font_map_class_init (PangoCairoFcFontMapClass *class)
   PangoFcFontMapClass *fcfontmap_class = PANGO_FC_FONT_MAP_CLASS (class);
 
   gobject_class->finalize  = pango_cairo_fc_font_map_finalize;
-  
+
   fcfontmap_class->context_substitute = pango_cairo_fc_font_map_context_substitute;
   fcfontmap_class->get_resolution = pango_cairo_fc_font_map_get_resolution_fc;
-  
+
   fcfontmap_class->context_key_get = pango_cairo_fc_font_map_context_key_get;
   fcfontmap_class->context_key_copy = pango_cairo_fc_font_map_context_key_copy;
   fcfontmap_class->context_key_free = pango_cairo_fc_font_map_context_key_free;
   fcfontmap_class->context_key_hash = pango_cairo_fc_font_map_context_key_hash;
   fcfontmap_class->context_key_equal = pango_cairo_fc_font_map_context_key_equal;
-  
+
   fcfontmap_class->create_font = pango_cairo_fc_font_map_create_font;
 }
 

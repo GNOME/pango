@@ -272,7 +272,7 @@ TT_Error  Build_Arabic_Glyph_Properties (TT_CharMap        char_map,
  *
  *   R7: If R1-R6 fail:
  *
- *       <anything> -> [isolated]                                     
+ *       <anything> -> [isolated]
  */
 
 /* `direction' can be -1, 0, or 1 to indicate the last non-transparent

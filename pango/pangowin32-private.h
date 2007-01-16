@@ -132,7 +132,7 @@ struct _PangoWin32Font
 
   /* Written by pango_win32_get_hfont: */
   HFONT hfont;
-  gint tm_ascent;     
+  gint tm_ascent;
   gint tm_descent;
   gint tm_overhang;
 
@@ -222,14 +222,14 @@ struct format_4_cmap
   guint16 search_range;
   guint16 entry_selector;
   guint16 range_shift;
-  
+
   guint16 reserved;
-  
+
   guint16 arrays[1];
 };
 
 struct format_12_cmap
-{ 
+{
   guint16 format;
   guint16 reserved;
   guint32 length;

@@ -109,7 +109,7 @@ void pango_extents_to_pixels (PangoRectangle *ink_rect,
  * @PANGO_DIRECTION_WEAK_LTR: A weak left-to-right direction
  * @PANGO_DIRECTION_WEAK_RTL: A weak right-to-left direction
  * @PANGO_DIRECTION_NEUTRAL: No direction specified
- * 
+ *
  * The #PangoDirection type represents a direction in the
  * Unicode bidirectional algorithm; not every value in this
  * enumeration makes sense for every usage of #PangoDirection;
@@ -125,7 +125,7 @@ void pango_extents_to_pixels (PangoRectangle *ink_rect,
  * enumeration as the writing direction of a block of
  * text and are no longer used; See #PangoGravity for how
  * vertical text is handled in Pango.
- **/			  
+ **/
 typedef enum {
   PANGO_DIRECTION_LTR,
   PANGO_DIRECTION_RTL,

@@ -113,7 +113,7 @@ struct _PangoEngineLangClass
 {
   /*< private >*/
   PangoEngineClass parent_class;
-  
+
   /*< public >*/
   void (*script_break) (PangoEngineLang *engine,
 			const char    *text,
@@ -182,7 +182,7 @@ struct _PangoEngineShapeClass
 {
   /*< private >*/
   PangoEngineClass parent_class;
-  
+
   /*< public >*/
   void (*script_shape) (PangoEngineShape *engine,
 			PangoFont        *font,
@@ -201,7 +201,7 @@ GType pango_engine_shape_get_type (void) G_GNUC_CONST;
 typedef struct _PangoEngineInfo PangoEngineInfo;
 typedef struct _PangoEngineScriptInfo PangoEngineScriptInfo;
 
-struct _PangoEngineScriptInfo 
+struct _PangoEngineScriptInfo
 {
   PangoScript script;
   const gchar *langs;
@@ -220,7 +220,7 @@ struct _PangoEngineInfo
  * script_engine_list:
  * @engines: location to store a pointer to an array of engines.
  * @n_engines: location to store the number of elements in @engines.
- * 
+ *
  * Function to be provided by a module to list the engines that the
  * module supplies. The function stores a pointer to an array
  * of #PangoEngineInfo structures and the length of that array in
@@ -236,7 +236,7 @@ void script_engine_list (PangoEngineInfo **engines,
  * script_engine_init:
  * @module: a #GTypeModule structure used to associate any
  *  GObject types created in this module with the module.
- * 
+ *
  * Function to be provided by a module to register any
  * GObject types in the module.
  **/
@@ -245,7 +245,7 @@ void script_engine_init (GTypeModule *module);
 
 /**
  * script_engine_exit:
- * 
+ *
  * Function to be provided by the module that is called
  * when the module is unloading. Frequently does nothing.
  **/
@@ -254,10 +254,10 @@ void script_engine_exit (void);
 /**
  * script_engine_create:
  * @id: the ID of an engine as reported by script_engine_list.
- * 
+ *
  * Function to be provided by the module to create an instance
  * of one of the engines implemented by the module.
- * 
+ *
  * Return value: a newly created #PangoEngine of the specified
  *  type, or %NULL if an error occurred. (In normal operation,
  *  a module should not return %NULL. A %NULL return is only

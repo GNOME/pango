@@ -59,7 +59,7 @@ maybe_add_gsub_feature (PangoOTRuleset *ruleset,
 			gulong          property_bit)
 {
   guint feature_index;
-  
+
   /* 0xffff == default language system */
   if (pango_ot_info_find_feature (info, PANGO_OT_TABLE_GSUB,
 				  tag, script_index, 0xffff, &feature_index))
@@ -75,7 +75,7 @@ maybe_add_gpos_feature (PangoOTRuleset *ruleset,
 			gulong          property_bit)
 {
   guint feature_index;
-  
+
   /* 0xffff == default language system */
   if (pango_ot_info_find_feature (info, PANGO_OT_TABLE_GPOS,
 				  tag, script_index, 0xffff, &feature_index))
@@ -93,7 +93,7 @@ get_ruleset (FT_Face face)
 
   if (!ruleset_quark)
     ruleset_quark = g_quark_from_string ("pango-syriac-ruleset");
-  
+
   if (!info)
     return NULL;
 
@@ -107,7 +107,7 @@ get_ruleset (FT_Face face)
       ruleset = pango_ot_ruleset_new (info);
 
 #define ALL_GLYPHS ~(gulong)0
-		
+
       if (pango_ot_info_find_script (info, PANGO_OT_TABLE_GSUB,
 				     syrc_tag, &script_index))
 	{
@@ -144,16 +144,16 @@ static void
 swap_range (PangoGlyphString *glyphs, int start, int end)
 {
   int i, j;
-  
+
   for (i = start, j = end - 1; i < j; i++, j--)
     {
       PangoGlyphInfo glyph_info;
       gint log_cluster;
-      
+
       glyph_info = glyphs->glyphs[i];
       glyphs->glyphs[i] = glyphs->glyphs[j];
       glyphs->glyphs[j] = glyph_info;
-      
+
       log_cluster = glyphs->log_clusters[i];
       glyphs->log_clusters[i] = glyphs->log_clusters[j];
       glyphs->log_clusters[j] = log_cluster;
@@ -171,7 +171,7 @@ set_glyph (PangoFont        *font,
   glyphs->log_clusters[i] = offset;
 }
 
-static void 
+static void
 fallback_shape (PangoEngineShape *engine,
 		PangoFont        *font,
 		const char       *text,
@@ -183,10 +183,10 @@ fallback_shape (PangoEngineShape *engine,
   glong n_chars = g_utf8_strlen (text, length);
   const char *p;
   int i;
-  
+
   pango_glyph_string_set_size (glyphs, n_chars);
   p = text;
-  
+
   for (i=0; i < n_chars; i++)
     {
       gunichar wc;
@@ -212,7 +212,7 @@ fallback_shape (PangoEngineShape *engine,
 
 	  set_glyph (font, glyphs, i, p - text, index);
 	}
-      
+
       p = g_utf8_next_char (p);
     }
 
@@ -222,17 +222,17 @@ fallback_shape (PangoEngineShape *engine,
       if (glyphs->glyphs[i].glyph)
 	{
 	  PangoRectangle logical_rect;
-	  
+
 	  pango_font_get_glyph_extents (font, glyphs->glyphs[i].glyph, NULL, &logical_rect);
 	  glyphs->glyphs[i].geometry.width = logical_rect.width;
 	}
       else
 	glyphs->glyphs[i].geometry.width = 0;
-      
+
       glyphs->glyphs[i].geometry.x_offset = 0;
       glyphs->glyphs[i].geometry.y_offset = 0;
     }
-  
+
   if (analysis->level % 2 != 0)
     {
       /* Swap all glyphs */
@@ -240,7 +240,7 @@ fallback_shape (PangoEngineShape *engine,
     }
 }
 
-static void 
+static void
 syriac_engine_shape (PangoEngineShape *engine,
 		     PangoFont        *font,
 		     const char       *text,
@@ -279,14 +279,14 @@ syriac_engine_shape (PangoEngineShape *engine,
   buffer = pango_ot_buffer_new (fc_font);
   pango_ot_buffer_set_rtl (buffer, analysis->level % 2 != 0);
   pango_ot_buffer_set_zero_width_marks (buffer, TRUE);
-    
+
   wcs = g_utf8_to_ucs4_fast (text, length, &n_chars);
   properties = g_new0 (gulong, n_chars);
-      
+
   syriac_assign_properties (wcs, properties, n_chars);
 
   g_free (wcs);
-  
+
   p = text;
   for (i=0; i < n_chars; i++)
     {
@@ -317,19 +317,19 @@ syriac_engine_shape (PangoEngineShape *engine,
 	    {
 	      if (g_unichar_type (wc) != G_UNICODE_NON_SPACING_MARK)
 		cluster = p - text;
-		    
+
 	      pango_ot_buffer_add_glyph (buffer, index,
 					 properties[i], cluster);
 	    }
 	}
-      
+
       p = g_utf8_next_char (p);
     }
 
   pango_ot_ruleset_substitute (ruleset, buffer);
   pango_ot_ruleset_position (ruleset, buffer);
   pango_ot_buffer_output (buffer, glyphs);
-  
+
   g_free (properties);
   pango_ot_buffer_destroy (buffer);
 
@@ -346,18 +346,18 @@ syriac_engine_fc_class_init (PangoEngineShapeClass *class)
 PANGO_ENGINE_SHAPE_DEFINE_TYPE (SyriacEngineFc, syriac_engine_fc,
 				syriac_engine_fc_class_init, NULL)
 
-void 
+void
 PANGO_MODULE_ENTRY(init) (GTypeModule *module)
 {
   syriac_engine_fc_register_type (module);
 }
 
-void 
+void
 PANGO_MODULE_ENTRY(exit) (void)
 {
 }
 
-void 
+void
 PANGO_MODULE_ENTRY(list) (PangoEngineInfo **engines,
 			  int              *n_engines)
 {

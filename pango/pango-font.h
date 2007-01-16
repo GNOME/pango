@@ -179,7 +179,7 @@ PangoFontMetrics *pango_font_metrics_new (void);
 struct _PangoFontMetrics
 {
   guint ref_count;
-  
+
   int ascent;
   int descent;
   int approximate_char_width;
@@ -229,7 +229,7 @@ struct _PangoFontFamilyClass
   GObjectClass parent_class;
 
   /*< public >*/
-  
+
   void  (*list_faces)      (PangoFontFamily  *family,
 		            PangoFontFace  ***faces,
 		            int              *n_faces);
@@ -258,8 +258,8 @@ GType      pango_font_face_get_type       (void) G_GNUC_CONST;
 
 PangoFontDescription *pango_font_face_describe       (PangoFontFace *face);
 G_CONST_RETURN char  *pango_font_face_get_face_name (PangoFontFace *face);
-void                  pango_font_face_list_sizes     (PangoFontFace  *face, 
-                                                      int           **sizes, 
+void                  pango_font_face_list_sizes     (PangoFontFace  *face,
+                                                      int           **sizes,
                                                       int            *n_sizes);
 
 #ifdef PANGO_ENABLE_BACKEND
@@ -280,11 +280,11 @@ struct _PangoFontFaceClass
   GObjectClass parent_class;
 
   /*< public >*/
-  
+
   const char           * (*get_face_name) (PangoFontFace *face);
   PangoFontDescription * (*describe)       (PangoFontFace *face);
-  void                   (*list_sizes)     (PangoFontFace  *face, 
-                                            int           **sizes, 
+  void                   (*list_sizes)     (PangoFontFace  *face,
+                                            int           **sizes,
                                             int            *n_sizes);
 
   /*< private >*/
@@ -340,7 +340,7 @@ struct _PangoFontClass
   GObjectClass parent_class;
 
   /*< public >*/
-  
+
   PangoFontDescription *(*describe)           (PangoFont      *font);
   PangoCoverage *       (*get_coverage)       (PangoFont      *font,
 					       PangoLanguage  *lang);

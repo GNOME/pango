@@ -168,7 +168,7 @@ output_body (PangoContext   *context,
   PangoRectangle logical_rect;
   int size, start_size, end_size, increment;
   int x = 0, y = 0;
-  
+
   if (!supports_matrix)
     {
       const PangoMatrix* matrix;
@@ -353,7 +353,7 @@ parse_enum (GType       type,
   if (!ret && error)
     {
       g_set_error(error,
-		  G_OPTION_ERROR, 
+		  G_OPTION_ERROR,
 		  G_OPTION_ERROR_BAD_VALUE,
 		  "Argument for %s must be one of %s",
 		  name,
@@ -413,12 +413,12 @@ parse_hinting (const char *name,
   else
     {
       g_set_error(error,
-		  G_OPTION_ERROR, 
+		  G_OPTION_ERROR,
 		  G_OPTION_ERROR_BAD_VALUE,
 		  "Argument for --hinting must be one of none/auto/full");
       ret = FALSE;
     }
-  
+
   return ret;
 }
 
@@ -442,7 +442,7 @@ backends_to_string (void)
 {
   GString *backends = g_string_new (NULL);
   const PangoViewer **viewer;
-  
+
   for (viewer = viewers; *viewer; viewer++)
     if ((*viewer)->id)
       {
@@ -450,7 +450,7 @@ backends_to_string (void)
 	g_string_append_c (backends, '/');
       }
   g_string_truncate (backends, MAX (0, (gint)backends->len - 1));
-  
+
   return g_string_free(backends,FALSE);
 }
 
@@ -463,7 +463,7 @@ backends_get_count (void)
   for (viewer = viewers; *viewer; viewer++)
     if ((*viewer)->id)
       i++;
-  
+
   return i;
 }
 
@@ -473,7 +473,7 @@ backend_description (void)
 {
  GString *description  = g_string_new("Pango backend to use for rendering ");
  int backends_count = backends_get_count ();
-  
+
  if (backends_count > 1)
    g_string_append_printf(description,"(default: %s)", (*viewers)->id);
  else if (backends_count == 1)
@@ -482,7 +482,7 @@ backend_description (void)
    g_string_append_printf(description,"(no backends found!)");
 
  return g_string_free(description,FALSE);
- 
+
 }
 
 
@@ -506,9 +506,9 @@ parse_backend (const char *name,
       gchar *backends = backends_to_string ();
 
       g_set_error(error,
-		  G_OPTION_ERROR, 
+		  G_OPTION_ERROR,
 		  G_OPTION_ERROR_BAD_VALUE,
-		  "Available --backend options are: %s", 
+		  "Available --backend options are: %s",
 		  backends);
       g_free(backends);
       ret = FALSE;
@@ -613,7 +613,7 @@ parse_options (int argc, char *argv[])
     {
       if (opt_text && argc != 1)
 	fail ("When specifying --text, no file should be given");
-	
+
       g_printerr ("Usage: %s [OPTION...] FILE\n", prog_name);
       exit (1);
     }

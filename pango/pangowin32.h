@@ -54,14 +54,14 @@ void           pango_win32_render_layout_line (HDC               hdc,
 					       int               y);
 void           pango_win32_render_layout      (HDC               hdc,
 					       PangoLayout      *layout,
-					       int               x, 
+					       int               x,
 					       int               y);
 
 void           pango_win32_render_transformed (HDC         hdc,
                                                const PangoMatrix *matrix,
                                                PangoFont         *font,
                                                PangoGlyphString  *glyphs,
-                                               int                x, 
+                                               int                x,
                                                int                y);
 
 #ifdef PANGO_ENABLE_ENGINE
@@ -91,10 +91,10 @@ double   pango_win32_font_get_metrics_factor (PangoFont *font);
  * Win32 fonts.
  */
 typedef struct _PangoWin32FontCache PangoWin32FontCache;
-  
+
 PangoWin32FontCache *pango_win32_font_cache_new          (void);
 void                 pango_win32_font_cache_free         (PangoWin32FontCache *cache);
- 
+
 HFONT                pango_win32_font_cache_load         (PangoWin32FontCache *cache,
 						          const LOGFONT       *logfont);
 void                 pango_win32_font_cache_unload       (PangoWin32FontCache *cache,

@@ -33,11 +33,11 @@ struct _PangoLayout
   /* If you add fields to PangoLayout, be sure to update both
    * the _copy function
    */
-  
+
   PangoContext *context;
   PangoAttrList *attrs;
   PangoFontDescription *font_desc;
-  
+
   gchar *text;
   int length;			/* length of text in bytes */
   int width;			/* wrap width, in device units */
@@ -51,7 +51,7 @@ struct _PangoLayout
 
   guint single_paragraph : 1;
   guint auto_dir : 1;
-  
+
   guint wrap : 2;		/* PangoWrapMode */
   guint is_wrapped : 1;		/* Whether the layout has any wrapped lines */
   guint ellipsize : 2;		/* PangoEllipsizeMode */
@@ -70,7 +70,7 @@ struct _PangoLayout
   int tab_width;		/* Cached width of a tab. -1 == not yet calculated */
 
   PangoTabArray *tabs;
-  
+
   GSList *lines;
 };
 

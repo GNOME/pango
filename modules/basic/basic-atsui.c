@@ -63,7 +63,7 @@ static PangoEngineScriptInfo basic_scripts[] = {
   { PANGO_SCRIPT_SHAVIAN,  "*" },
   { PANGO_SCRIPT_LINEAR_B, "*" },
   { PANGO_SCRIPT_UGARITIC, "*" },
-    
+
   { PANGO_SCRIPT_COMMON,   "" }
 };
 
@@ -86,7 +86,7 @@ set_glyph (PangoFont        *font,
   PangoRectangle logical_rect;
 
   glyphs->glyphs[i].glyph = glyph;
-  
+
   glyphs->glyphs[i].geometry.x_offset = 0;
   glyphs->glyphs[i].geometry.y_offset = 0;
 
@@ -95,7 +95,7 @@ set_glyph (PangoFont        *font,
   glyphs->glyphs[i].geometry.width = logical_rect.width;
 }
 
-static void 
+static void
 basic_engine_shape (PangoEngineShape *engine,
 		    PangoFont        *font,
 		    const char       *text,
@@ -124,23 +124,23 @@ basic_engine_shape (PangoEngineShape *engine,
 
   err = ATSUCreateTextLayout (&text_layout);
   err = ATSUSetTextPointerLocation (text_layout, utf16, 0, n16, n16);
-  
+
   err = ATSUCreateStyle(&style);
   fontID = pango_cairo_atsui_font_get_atsu_font_id (cafont);
-  
+
   err = ATSUSetAttributes(style,
 			  sizeof(styleTags) / sizeof(styleTags[0]),
 			  styleTags, styleSizes, styleValues);
-  
+
   err = ATSUSetRunStyle(text_layout,
 			style, kATSUFromTextBeginning, kATSUToTextEnd);
-  
+
   err = ATSUDirectGetLayoutDataArrayPtrFromTextLayout (text_layout, 0,
 						       kATSUDirectDataLayoutRecordATSLayoutRecordCurrent,
 						       (void *)&layout_records,
 						       &glyph_count);
 
-  
+
   p = text;
   pango_glyph_string_set_size (glyphs, glyph_count - 1);
 
@@ -148,16 +148,16 @@ basic_engine_shape (PangoEngineShape *engine,
     {
       gunichar wc;
       gunichar mirrored_ch;
-      
+
       wc = g_utf8_get_char (p);
-      
+
       if (analysis->level % 2)
 	if (pango_get_mirror_char (wc, &mirrored_ch))
 	  wc = mirrored_ch;
-      
+
       if (wc == 0xa0)	/* non-break-space */
 	wc = 0x20;
-      
+
       if (pango_is_zero_width (wc))
 	{
 	  set_glyph (font, glyphs, i, p - text, PANGO_GLYPH_EMPTY);
@@ -165,18 +165,18 @@ basic_engine_shape (PangoEngineShape *engine,
       else
 	{
 	  set_glyph (font, glyphs, i, p - text, layout_records[i].glyphID);
-	      
+
 	  if (g_unichar_type (wc) == G_UNICODE_NON_SPACING_MARK)
 	    {
 	      if (i > 0)
 		{
 		  PangoRectangle logical_rect, ink_rect;
-		  
+
 		  glyphs->glyphs[i].geometry.width = MAX (glyphs->glyphs[i-1].geometry.width,
 							  glyphs->glyphs[i].geometry.width);
 		  glyphs->glyphs[i-1].geometry.width = 0;
 		  glyphs->log_clusters[i] = glyphs->log_clusters[i-1];
-		  
+
 		  /* Some heuristics to try to guess how overstrike glyphs are
 		   * done and compensate
 		   */
@@ -192,7 +192,7 @@ basic_engine_shape (PangoEngineShape *engine,
 
   ATSUDirectReleaseLayoutDataArrayPtr (NULL, kATSUDirectDataLayoutRecordATSLayoutRecordCurrent,
 				       (void *)&layout_records);
-					
+
   ATSUDisposeTextLayout (text_layout);
 }
 
@@ -205,18 +205,18 @@ basic_engine_atsui_class_init (PangoEngineShapeClass *class)
 PANGO_ENGINE_SHAPE_DEFINE_TYPE (BasicEngineATSUI, basic_engine_atsui,
 				basic_engine_atsui_class_init, NULL);
 
-void 
+void
 PANGO_MODULE_ENTRY(init) (GTypeModule *module)
 {
   basic_engine_atsui_register_type (module);
 }
 
-void 
+void
 PANGO_MODULE_ENTRY(exit) (void)
 {
 }
 
-void 
+void
 PANGO_MODULE_ENTRY(list) (PangoEngineInfo **engines,
 			  int              *n_engines)
 {

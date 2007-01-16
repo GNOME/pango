@@ -49,7 +49,7 @@ x_view_create (const PangoViewer *klass)
   return instance;
 }
 
-void 
+void
 x_view_destroy (gpointer instance)
 {
   XViewer *x = (XViewer *)instance;
@@ -73,7 +73,7 @@ x_view_create_surface (gpointer instance,
   return (gpointer) pixmap;
 }
 
-void 
+void
 x_view_destroy_surface (gpointer instance,
 			gpointer surface)
 {
@@ -102,7 +102,7 @@ update (Display *display,
 	     extents.x, extents.y);
 
   XFreeGC (display, gc);
-	     
+
   XDestroyRegion (*update_region);
   *update_region = NULL;
 }
@@ -141,17 +141,17 @@ x_view_create_window (gpointer    instance,
 				bg, bg);
 
   XSelectInput (x->display, window, ExposureMask | KeyPressMask);
-  
+
   XMapWindow (x->display, window);
   XmbSetWMProperties (x->display, window,
 		      title,
 		      NULL, NULL, 0, NULL, NULL, NULL);
-  
+
   memset ((char *)&size_hints, 0, sizeof (XSizeHints));
   size_hints.flags = PSize | PMaxSize;
   size_hints.width = width; size_hints.height = height; /* for compat only */
   size_hints.max_width = width; size_hints.max_height = height;
-  
+
   XSetWMNormalHints (x->display, window, &size_hints);
 
   return (gpointer) window;
@@ -203,7 +203,7 @@ x_view_display (gpointer instance,
     {
       if (!XPending (x->display) && update_region)
 	update (x->display, pixmap, window, &update_region);
-	
+
       XNextEvent (x->display, &xev);
       switch (xev.xany.type) {
       case KeyPress:

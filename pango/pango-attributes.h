@@ -52,7 +52,7 @@ gchar      *pango_color_to_string(const PangoColor *color);
 
 typedef struct _PangoAttribute    PangoAttribute;
 typedef struct _PangoAttrClass    PangoAttrClass;
-				  
+
 typedef struct _PangoAttrString   PangoAttrString;
 typedef struct _PangoAttrLanguage PangoAttrLanguage;
 typedef struct _PangoAttrInt      PangoAttrInt;
@@ -164,7 +164,7 @@ struct _PangoAttrShape
   PangoAttribute attr;
   PangoRectangle ink_rect;
   PangoRectangle logical_rect;
-  
+
   gpointer              data;
   PangoAttrDataCopyFunc copy_func;
   GDestroyNotify        destroy_func;

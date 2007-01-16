@@ -70,7 +70,7 @@ struct _CharRange
   guint16 charsets;
 };
 
-struct _MaskTable 
+struct _MaskTable
 {
   int n_subfonts;
 
@@ -78,7 +78,7 @@ struct _MaskTable
   Charset **charsets;
 };
 
-struct _CharCache 
+struct _CharCache
 {
   guint ref_count;
   CharsetOrdering *ordering;
@@ -139,15 +139,15 @@ static PangoEngineInfo script_engines[] = {
  * PangoFont => CharCachePointer  ===\
  *                    |               \
  *              CharCachePointer  ======> CharCache => CharsetOrdering
- *                    |                       |======> MaskTable[0]    => {subfonts,charset}[n_subfonts], 
- *                    |                       |======> MaskTable[1]    => {subfonts,charset}[n_subfonts], 
+ *                    |                       |======> MaskTable[0]    => {subfonts,charset}[n_subfonts],
+ *                    |                       |======> MaskTable[1]    => {subfonts,charset}[n_subfonts],
  *                    |                       \======> MaskTable[...]  => {subfonts,charset}[n_subfonts]
  *                    |
  *              CharCachePointer  ======> CharCache => CharsetOrdering
- *                                            |======> MaskTable[0]    => {subfonts,charset}[n_subfonts], 
- *                                            |======> MaskTable[1]    => {subfonts,charset}[n_subfonts], 
+ *                                            |======> MaskTable[0]    => {subfonts,charset}[n_subfonts],
+ *                                            |======> MaskTable[1]    => {subfonts,charset}[n_subfonts],
  *                                            \======> MaskTable[...]  => {subfonts,charset}[n_subfonts]
- * 
+ *
  * A CharCache structure caches the lookup of what subfonts can be used for what characters for a pair of a Font
  * and CharsetOrdering. Multiple language tags can share the same CharsetOrdering - the list of CharCachePointer
  * structures that is attached to the font as object data provides lookups from language tag to charcache.
@@ -164,7 +164,7 @@ char_cache_new (CharsetOrdering *ordering)
   result->ordering = ordering;
   for (i=0; i<MAX_CHARSETS; i++)
     result->converters[i] = (GIConv)-1;
-  
+
   return result;
 }
 
@@ -178,18 +178,18 @@ char_cache_free (CharCache *cache)
       {
 	g_free (cache->mask_tables[i]->subfonts);
 	g_free (cache->mask_tables[i]->charsets);
-	
+
 	g_free (cache->mask_tables[i]);
       }
 
   for (i=0; i<MAX_CHARSETS; i++)
     if (cache->converters[i] != (GIConv)-1)
       g_iconv_close (cache->converters[i]);
-  
+
   g_free (cache);
 }
 
-static PangoGlyph 
+static PangoGlyph
 find_char (CharCache *cache, PangoFont *font, gunichar wc, const char *input)
 {
   int mask_index;
@@ -205,7 +205,7 @@ find_char (CharCache *cache, PangoFont *font, gunichar wc, const char *input)
       return PANGO_GET_UNKNOWN_GLYPH (wc);
       break;
     }
-  
+
   if (wc >= G_N_ELEMENTS (char_masks))
     mask_index = 0;
   else
@@ -231,16 +231,16 @@ find_char (CharCache *cache, PangoFont *font, gunichar wc, const char *input)
       for (i=0; i<(int)G_N_ELEMENTS(charsets); i++)
 	{
 	  int charset_index = cache->ordering->charsets[i];
-	  
+
 	  if (mask & (1 << charset_index))
 	    {
 	      charset_names[n_charsets] = charsets[charset_index].x_charset;
 	      charsets_map[n_charsets] = &charsets[charset_index];
-	      
+
 	      n_charsets++;
 	    }
 	}
-      
+
       mask_table->n_subfonts = pango_x_list_subfonts (font, (char**)charset_names, n_charsets, &mask_table->subfonts, &subfont_charsets);
 
       mask_table->charsets = g_new (Charset *, mask_table->n_subfonts);
@@ -272,15 +272,15 @@ find_char (CharCache *cache, PangoFont *font, gunichar wc, const char *input)
 		  mask_table->charsets[i] = NULL;
 		  continue;
 		}
-	      
-	      cache->converters[charset->index] = cd;      
+
+	      cache->converters[charset->index] = cd;
 	    }
-	  
+
 	  index = (*charset->conv_func) (cache, cd, input);
 	  glyph = PANGO_X_MAKE_GLYPH (mask_table->subfonts[i], index);
 
 	  if (pango_x_has_glyph (font, glyph))
-	    return glyph;	  
+	    return glyph;
 	}
     }
 
@@ -293,7 +293,7 @@ set_glyph (PangoFont *font, PangoGlyphString *glyphs, int i, int offset, PangoGl
   PangoRectangle logical_rect;
 
   glyphs->glyphs[i].glyph = glyph;
-  
+
   glyphs->glyphs[i].geometry.x_offset = 0;
   glyphs->glyphs[i].geometry.y_offset = 0;
 
@@ -309,14 +309,14 @@ conv_8bit (CharCache  *cache,
 	   const char *input)
 {
   char outbuf;
-  
+
   const char *inptr = input;
   size_t inbytesleft;
   char *outptr = &outbuf;
   size_t outbytesleft = 1;
 
   inbytesleft = g_utf8_next_char (input) - input;
-  
+
   g_iconv (cd, (char **)&inptr, &inbytesleft, &outptr, &outbytesleft);
 
   return (guchar)outbuf;
@@ -335,7 +335,7 @@ conv_eucjp (CharCache  *cache,
   size_t outbytesleft = 4;
 
   inbytesleft = g_utf8_next_char (input) - input;
-  
+
   g_iconv (cd, (char **)&inptr, &inbytesleft, &outptr, &outbytesleft);
 
   if ((guchar)outbuf[0] < 128)
@@ -361,7 +361,7 @@ conv_16bit (CharCache  *cache,
   size_t outbytesleft = 2;
 
   inbytesleft = g_utf8_next_char (input) - input;
-  
+
   g_iconv (cd, (char **)&inptr, &inbytesleft, &outptr, &outbytesleft);
 
   if ((guchar)outbuf[0] < 128)
@@ -383,7 +383,7 @@ conv_16bit_MSB_on (CharCache  *cache,
   size_t outbytesleft = 2;
 
   inbytesleft = g_utf8_next_char (input) - input;
-  
+
   g_iconv (cd, (char **)&inptr, &inbytesleft, &outptr, &outbytesleft);
 
   if ((guchar)outbuf[0] < 128)
@@ -406,7 +406,7 @@ conv_gb18030_1 (CharCache  *cache,
 
 
   inbytesleft = g_utf8_next_char (input) - input;
-  
+
   g_iconv (cd, (char **)&inptr, &inbytesleft, &outptr, &outbytesleft);
 
   if ((guchar)outbuf[0] < 128)
@@ -428,7 +428,7 @@ conv_euctw (CharCache  *cache,
   size_t outbytesleft = 4;
 
   inbytesleft = g_utf8_next_char (input) - input;
-  
+
   g_iconv (cd, (char **)&inptr, &inbytesleft, &outptr, &outbytesleft);
 
   /* The first two bytes determine which page of CNS to use; we
@@ -452,16 +452,16 @@ static void
 swap_range (PangoGlyphString *glyphs, int start, int end)
 {
   int i, j;
-  
+
   for (i = start, j = end - 1; i < j; i++, j--)
     {
       PangoGlyphInfo glyph_info;
       gint log_cluster;
-      
+
       glyph_info = glyphs->glyphs[i];
       glyphs->glyphs[i] = glyphs->glyphs[j];
       glyphs->glyphs[j] = glyph_info;
-      
+
       log_cluster = glyphs->log_clusters[i];
       glyphs->log_clusters[i] = glyphs->log_clusters[j];
       glyphs->log_clusters[j] = log_cluster;
@@ -475,12 +475,12 @@ char_caches_free (GSList *caches)
   while (tmp_list)
     {
       CharCachePointer *pointer = tmp_list->data;
-      
+
       pointer->cache->ref_count--;
       if (pointer->cache->ref_count == 0)
 	char_cache_free (pointer->cache);
       g_free (pointer);
-      
+
       tmp_list = tmp_list->next;
     }
   g_slist_free (caches);
@@ -496,7 +496,7 @@ ordering_for_lang (PangoLanguage *lang)
       if (pango_language_matches (lang, charset_orderings[i].langs))
 	return &charset_orderings[i];
     }
-  
+
   return &charset_orderings[i];
 }
 
@@ -547,15 +547,15 @@ get_char_cache (PangoFont     *font,
   pointer->cache = cache;
 
   caches = g_slist_prepend (caches, pointer);
-  
+
   g_object_steal_qdata (G_OBJECT (font), cache_id);
-  g_object_set_qdata_full (G_OBJECT (font), cache_id, 
+  g_object_set_qdata_full (G_OBJECT (font), cache_id,
 			   caches, (GDestroyNotify)char_caches_free);
 
   return cache;
 }
 
-static void 
+static void
 basic_engine_shape (PangoEngineShape *engine,
 		    PangoFont        *font,
 		    const char       *text,
@@ -589,13 +589,13 @@ basic_engine_shape (PangoEngineShape *engine,
       const char *input;
 
       wc = g_utf8_get_char (p);
-      
+
       input = p;
       if (analysis->level % 2)
 	if (pango_get_mirror_char (wc, &mirrored_ch))
 	  {
 	    wc = mirrored_ch;
-	    
+
 	    g_unichar_to_utf8 (wc, buf);
 	    input = buf;
 	  }
@@ -603,11 +603,11 @@ basic_engine_shape (PangoEngineShape *engine,
       if (wc == 0xa0)	/* non-break-space */
 	{
 	  wc = 0x20;
-	  
+
 	  g_unichar_to_utf8 (wc, buf);
 	  input = buf;
 	}
-		
+
       if (pango_is_zero_width (wc))
 	{
 	  set_glyph (font, glyphs, i, p - text, PANGO_GLYPH_EMPTY);
@@ -618,13 +618,13 @@ basic_engine_shape (PangoEngineShape *engine,
 	  if (index)
 	    {
 	      set_glyph (font, glyphs, i, p - text, index);
-	      
+
 	      if (g_unichar_type (wc) == G_UNICODE_NON_SPACING_MARK)
 		{
 		  if (i > 0)
 		    {
 		      PangoRectangle logical_rect, ink_rect;
-		      
+
 		      glyphs->glyphs[i].geometry.width = MAX (glyphs->glyphs[i-1].geometry.width,
 							      glyphs->glyphs[i].geometry.width);
 		      glyphs->glyphs[i-1].geometry.width = 0;
@@ -642,7 +642,7 @@ basic_engine_shape (PangoEngineShape *engine,
 	  else
 	    set_glyph (font, glyphs, i, p - text, PANGO_GET_UNKNOWN_GLYPH (wc));
 	}
-      
+
       p = g_utf8_next_char (p);
     }
 
@@ -654,7 +654,7 @@ basic_engine_shape (PangoEngineShape *engine,
 
       /* Swap all glyphs */
       swap_range (glyphs, 0, n_chars);
-      
+
       /* Now reorder glyphs within each cluster back to LTR */
       for (start=0; start<n_chars;)
 	{
@@ -662,7 +662,7 @@ basic_engine_shape (PangoEngineShape *engine,
 	  while (end < n_chars &&
 		 glyphs->log_clusters[end] == glyphs->log_clusters[start])
 	    end++;
-	  
+
 	  swap_range (glyphs, start, end);
 	  start = end;
 	}
@@ -693,18 +693,18 @@ basic_engine_x_class_init (PangoEngineShapeClass *class)
 PANGO_ENGINE_SHAPE_DEFINE_TYPE (BasicEngineX, basic_engine_x,
 				basic_engine_x_class_init, NULL)
 
-void 
+void
 PANGO_MODULE_ENTRY(init) (GTypeModule *module)
 {
   basic_engine_x_register_type (module);
 }
 
-void 
+void
 PANGO_MODULE_ENTRY(exit) (void)
 {
 }
 
-void 
+void
 PANGO_MODULE_ENTRY(list) (PangoEngineInfo **engines,
 			  int              *n_engines)
 {

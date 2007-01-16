@@ -57,28 +57,28 @@ pango_ot_info_get_type (void)
 	NULL,           /* init */
 	NULL,           /* value_table */
       };
-      
+
       object_type = g_type_register_static (G_TYPE_OBJECT,
                                             I_("PangoOTInfo"),
                                             &object_info, 0);
     }
-  
+
   return object_type;
 }
 
-static void 
+static void
 pango_ot_info_class_init (GObjectClass *object_class)
 {
   parent_class = g_type_class_peek_parent (object_class);
-  
+
   object_class->finalize = pango_ot_info_finalize;
 }
 
-static void 
+static void
 pango_ot_info_finalize (GObject *object)
 {
   PangoOTInfo *info = PANGO_OT_INFO (object);
-  
+
   if (info->gdef)
     {
       HB_Done_GDEF_Table (info->gdef);
@@ -101,9 +101,9 @@ pango_ot_info_finalize (GObject *object)
 static void
 pango_ot_info_finalizer (void *object)
 {
-  FT_Face face = object;	
+  FT_Face face = object;
   PangoOTInfo *info = face->generic.data;
-  
+
   info->face = NULL;
   g_object_unref (info);
 }
@@ -111,7 +111,7 @@ pango_ot_info_finalizer (void *object)
 /**
  * pango_ot_info_get:
  * @face: a <type>FT_Face</type>.
- * 
+ *
  * Returns the #PangoOTInfo structure for the given FreeType font.
  *
  * Return value: the #PangoOTInfo for @face. This object will have
@@ -130,7 +130,7 @@ pango_ot_info_get (FT_Face face)
     {
       info = face->generic.data = g_object_new (PANGO_TYPE_OT_INFO, NULL);
       face->generic.finalizer = pango_ot_info_finalizer;
-      
+
       info->face = face;
     }
 
@@ -163,7 +163,7 @@ compare_glyph_info (gconstpointer a,
     (info_a->glyph == info_b->glyph) ? 0 : 1;
 }
 
-/* Make a guess at the appropriate class for a glyph given 
+/* Make a guess at the appropriate class for a glyph given
  * a character code that maps to the glyph
  */
 static gboolean
@@ -176,7 +176,7 @@ get_glyph_class (gunichar   charcode,
   if ((charcode >= 0xFB50 && charcode <= 0xFDFF) || /* Arabic Presentation Forms-A */
       (charcode >= 0xFE70 && charcode <= 0XFEFF))   /* Arabic Presentation Forms-B */
     return FALSE;
-  
+
   switch (g_unichar_type (charcode))
     {
     case G_UNICODE_COMBINING_MARK:
@@ -223,7 +223,7 @@ synthesize_class_def (PangoOTInfo *info)
   FT_UInt glyph;
   unsigned int i, j;
   FT_CharMap old_charmap;
-  
+
   old_charmap = info->face->charmap;
 
   if (!old_charmap || !old_charmap->encoding != ft_encoding_unicode)
@@ -246,7 +246,7 @@ synthesize_class_def (PangoOTInfo *info)
 	  if (get_glyph_class (charcode, &glyph_info.class))
 	    g_array_append_val (glyph_infos, glyph_info);
 	}
-      
+
       charcode = FT_Get_Next_Char (info->face, charcode, &glyph);
     }
 
@@ -265,7 +265,7 @@ synthesize_class_def (PangoOTInfo *info)
 	{
 	  glyph_indices[j] = info->glyph;
 	  classes[j] = info->class;
-	  
+
 	  j++;
 	}
     }
@@ -282,7 +282,7 @@ synthesize_class_def (PangoOTInfo *info)
     FT_Set_Charmap (info->face, old_charmap);
 }
 
-HB_GDEF 
+HB_GDEF
 pango_ot_info_get_gdef (PangoOTInfo *info)
 {
   g_return_val_if_fail (PANGO_IS_OT_INFO (info), NULL);
@@ -290,13 +290,13 @@ pango_ot_info_get_gdef (PangoOTInfo *info)
   if (!(info->loaded & INFO_LOADED_GDEF))
     {
       FT_Error error;
-      
+
       info->loaded |= INFO_LOADED_GDEF;
 
       if (is_truetype (info->face))
 	{
 	  error = HB_Load_GDEF_Table (info->face, &info->gdef);
-	  
+
 	  if (error && error != FT_Err_Table_Missing)
 	    g_warning ("Error loading GDEF table %d", error);
 
@@ -315,12 +315,12 @@ HB_GSUB
 pango_ot_info_get_gsub (PangoOTInfo *info)
 {
   g_return_val_if_fail (PANGO_IS_OT_INFO (info), NULL);
-  
+
   if (!(info->loaded & INFO_LOADED_GSUB))
     {
       FT_Error error;
       HB_GDEF gdef = pango_ot_info_get_gdef (info);
-      
+
       info->loaded |= INFO_LOADED_GSUB;
 
       if (is_truetype (info->face))
@@ -331,7 +331,7 @@ pango_ot_info_get_gsub (PangoOTInfo *info)
 	    g_warning ("Error loading GSUB table %d", error);
 	}
     }
-  
+
   return info->gsub;
 }
 
@@ -339,7 +339,7 @@ HB_GPOS
 pango_ot_info_get_gpos (PangoOTInfo *info)
 {
   g_return_val_if_fail (PANGO_IS_OT_INFO (info), NULL);
-  
+
   if (!(info->loaded & INFO_LOADED_GPOS))
     {
       FT_Error error;
@@ -403,12 +403,12 @@ get_tables (PangoOTInfo      *info,
  * @table_type: the table type to obtain information about.
  * @script_tag: the tag of the script to find.
  * @script_index: location to store the index of the script, or %NULL.
- * 
+ *
  * Finds the index of a script.
  *
  * Return value: %TRUE if the script was found.
  **/
-gboolean 
+gboolean
 pango_ot_info_find_script (PangoOTInfo      *info,
 			   PangoOTTableType  table_type,
 			   PangoOTTag        script_tag,
@@ -443,10 +443,10 @@ pango_ot_info_find_script (PangoOTInfo      *info,
  * @script_index: the index of the script whose languages are searched.
  * @language_tag: the tag of the language to find.
  * @language_index: location to store the index of the language, or %NULL.
- * @required_feature_index: location to store the required feature index of 
+ * @required_feature_index: location to store the required feature index of
  *    the language, or %NULL.
- * 
- * Finds the index of a language and its required feature index.  
+ *
+ * Finds the index of a language and its required feature index.
  *
  * Return value: %TRUE if the language was found.
  **/
@@ -494,8 +494,8 @@ pango_ot_info_find_language (PangoOTInfo      *info,
  * @script_index: the index of the script.
  * @language_index: the index of the language whose features are searched,
  *     or %PANGO_OT_DEFAULT_LANGUAGE to use the default language of the script.
- * @feature_index: location to store the index of the feature, or %NULL. 
- * 
+ * @feature_index: location to store the index of the feature, or %NULL.
+ *
  * Finds the index of a feature.
  *
  * Return value: %TRUE if the feature was found.
@@ -553,7 +553,7 @@ pango_ot_info_find_feature  (PangoOTInfo      *info,
  * @info: a #PangoOTInfo.
  * @table_type: the table type to obtain information about.
  *
- * Obtains the list of available scripts. 
+ * Obtains the list of available scripts.
  *
  * Return value: a newly-allocated array containing the tags of the
  *   available scripts.
@@ -572,7 +572,7 @@ pango_ot_info_list_scripts (PangoOTInfo      *info,
     return NULL;
 
   result = g_new (PangoOTTag, script_list->ScriptCount + 1);
-  
+
   for (i=0; i < script_list->ScriptCount; i++)
     result[i] = script_list->ScriptRecord[i].ScriptTag;
 
@@ -587,12 +587,12 @@ pango_ot_info_list_scripts (PangoOTInfo      *info,
  * @table_type: the table type to obtain information about.
  * @script_index: the index of the script to list languages for.
  * @language_tag: unused parameter.
- * 
+ *
  * Obtains the list of available languages for a given script.
  *
  * Return value: a newly-allocated array containing the tags of the
  *   available languages.
- **/ 
+ **/
 PangoOTTag *
 pango_ot_info_list_languages (PangoOTInfo      *info,
 			      PangoOTTableType  table_type,
@@ -612,9 +612,9 @@ pango_ot_info_list_languages (PangoOTInfo      *info,
   g_return_val_if_fail (script_index < script_list->ScriptCount, NULL);
 
   script = &script_list->ScriptRecord[script_index].Script;
-  
+
   result = g_new (PangoOTTag, script->LangSysCount + 1);
-  
+
   for (i = 0; i < script->LangSysCount; i++)
     result[i] = script->LangSysRecord[i].LangSysTag;
 
@@ -623,12 +623,12 @@ pango_ot_info_list_languages (PangoOTInfo      *info,
   return result;
 }
 
-/** 
+/**
  * pango_ot_info_list_features:
  * @info: a #PangoOTInfo.
  * @table_type: the table type to obtain information about.
  * @tag: unused parameter.
- * @script_index: the index of the script to obtain information about. 
+ * @script_index: the index of the script to obtain information about.
  * @language_index: the index of the language to list features for, or
  *     %PANGO_OT_DEFAULT_LANGUAGE, to list features for the default
  *     language of the script.
@@ -636,7 +636,7 @@ pango_ot_info_list_languages (PangoOTInfo      *info,
  * Obtains the list of features for the given language of the given script.
  *
  * Return value: a newly-allocated array containing the tags of the
- * available features. 
+ * available features.
  **/
 PangoOTTag *
 pango_ot_info_list_features  (PangoOTInfo      *info,
@@ -672,7 +672,7 @@ pango_ot_info_list_features  (PangoOTInfo      *info,
     }
 
   result = g_new (PangoOTTag, lang_sys->FeatureCount + 1);
-  
+
   for (i = 0; i < lang_sys->FeatureCount; i++)
     {
       FT_UShort index = lang_sys->FeatureIndex[i];

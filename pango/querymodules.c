@@ -66,7 +66,7 @@ escape_string (const char *str)
   while (TRUE)
     {
       char c = *str++;
-      
+
       switch (c)
 	{
 	case '\0':
@@ -99,7 +99,7 @@ string_from_script (PangoScript script)
   GEnumValue *value;
   if (!class)
     class = g_type_class_ref (PANGO_TYPE_SCRIPT);
-  
+
   value = g_enum_get_value (class, script);
   if (!value)
     {
@@ -110,7 +110,7 @@ string_from_script (PangoScript script)
   return value->value_nick;
 }
 
-static void 
+static void
 query_module (const char *dir, const char *name)
 {
   void (*list) (PangoEngineInfo **engines, gint *n_engines);
@@ -125,12 +125,12 @@ query_module (const char *dir, const char *name)
     path = g_strdup (name);
   else
     path = g_build_filename (dir, name, NULL);
-  
+
   module = g_module_open (path, G_MODULE_BIND_LAZY | G_MODULE_BIND_LOCAL);
 
   if (!module)
     g_printerr ("Cannot load module %s: %s\n", path, g_module_error ());
-	  
+
   if (module &&
       GET_SYMBOL (module, "script_engine_list", list) &&
       GET_SYMBOL (module, "script_engine_init", init) &&
@@ -158,7 +158,7 @@ query_module (const char *dir, const char *name)
 	      quote = "";
 	      quoted_path = g_strdup (path);
 	    }
-	  
+
 	  g_printf ("%s%s%s %s %s %s", quote, quoted_path, quote,
 		    engines[i].id, engines[i].engine_type, engines[i].render_type);
 	  g_free (quoted_path);
@@ -176,11 +176,11 @@ query_module (const char *dir, const char *name)
     {
       g_printerr ("%s does not export Pango module API\n", path);
     }
-  
+
   g_free (path);
   if (module)
     g_module_close (module);
-}		       
+}
 
 static gboolean
 show_version(const char *name,
@@ -207,10 +207,10 @@ main (int argc, char **argv)
        "Show version numbers",                                             NULL},
       {NULL}
     };
-  
+
   context = g_option_context_new ("- [MODULE]...");
   g_option_context_add_main_entries (context, entries, NULL);
- 
+
   if (!g_option_context_parse (context, &argc, &argv, &parse_error))
     {
       if (parse_error != NULL)
@@ -223,11 +223,11 @@ main (int argc, char **argv)
 	}
       exit(1);
     }
-  
+
   g_option_context_free(context);
-  
+
   g_type_init ();
-  
+
   g_printf ("# Pango Modules file\n"
 	    "# Automatically generated file, do not edit\n"
 	    "#\n");
@@ -236,7 +236,7 @@ main (int argc, char **argv)
     {
       char **dirs;
       int i;
-      
+
       path = pango_config_key_get ("Pango/ModulesPath");
       if (!path)
 	path = g_build_filename (pango_get_lib_subdirectory (),
@@ -263,7 +263,7 @@ main (int argc, char **argv)
 		  if (len > SOEXT_LEN && strcmp (dent + len - SOEXT_LEN, SOEXT) == 0)
 		    query_module (dirs[i], dent);
 		}
-	      
+
 	      g_dir_close (dir);
 	    }
 	}
@@ -273,12 +273,12 @@ main (int argc, char **argv)
   else
     {
       cwd = g_get_current_dir ();
-      
+
       for (i=1; i<argc; i++)
 	query_module (cwd, argv[i]);
 
       g_free (cwd);
     }
-  
+
   return 0;
 }

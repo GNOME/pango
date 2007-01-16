@@ -19,7 +19,7 @@ draw_text (cairo_t *cr)
 
   /* Create a PangoLayout, set the font and text */
   layout = pango_cairo_create_layout (cr);
-  
+
   pango_layout_set_text (layout, "Text", -1);
   desc = pango_font_description_from_string (FONT);
   pango_layout_set_font_description (layout, desc);
@@ -39,10 +39,10 @@ draw_text (cairo_t *cr)
       cairo_set_source_rgb (cr, red, 0, 1.0 - red);
 
       cairo_rotate (cr, angle * G_PI / 180.);
-    
+
       /* Inform Pango to re-layout the text with the new transformation */
       pango_cairo_update_layout (cr, layout);
-    
+
       pango_layout_get_size (layout, &width, &height);
       cairo_move_to (cr, - ((double)width / PANGO_SCALE) / 2, - RADIUS);
       pango_cairo_show_layout (cr, layout);
@@ -72,13 +72,13 @@ int main (int argc, char **argv)
   surface = cairo_image_surface_create (CAIRO_FORMAT_ARGB32,
 					2 * RADIUS, 2 * RADIUS);
   cr = cairo_create (surface);
-				  
+
 
   cairo_set_source_rgb (cr, 1.0, 1.0, 1.0);
   cairo_paint (cr);
   draw_text (cr);
   cairo_destroy (cr);
-  
+
   status = cairo_surface_write_to_png (surface, filename);
   cairo_surface_destroy (surface);
 

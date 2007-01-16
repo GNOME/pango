@@ -25,7 +25,7 @@
 
 #include <pango/pangox.h>
 
-static void 
+static void
 pangox_view_destroy (gpointer instance)
 {
   XViewer *x = (XViewer *)instance;
@@ -52,7 +52,7 @@ pangox_view_get_context (gpointer instance)
   return context;
 }
 
-typedef struct 
+typedef struct
 {
   XViewer *x;
   Drawable drawable;
@@ -75,7 +75,7 @@ render_callback (PangoLayout *layout,
 			 x, y);
 }
 
-static void 
+static void
 pangox_view_render (gpointer      instance,
 		    gpointer      surface,
 		    PangoContext *context,

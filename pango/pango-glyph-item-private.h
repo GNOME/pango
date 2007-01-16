@@ -39,7 +39,7 @@ struct _PangoGlyphItemIter
 {
   PangoGlyphItem *glyph_item;
   const gchar *text;
-  
+
   int start_glyph;
   int start_index;
   int start_char;

@@ -36,7 +36,7 @@ default_substitute (FcPattern *pattern,
     {
       FcPatternDel (pattern, FC_HINTING);
       FcPatternAddBool (pattern, FC_HINTING, opt_hinting != HINT_NONE);
-      
+
       FcPatternDel (pattern, FC_AUTOHINT);
       FcPatternAddBool (pattern, FC_AUTOHINT, opt_hinting == HINT_AUTO);
     }
@@ -57,7 +57,7 @@ pangoxft_view_create (const PangoViewer *klass)
   return instance;
 }
 
-static void 
+static void
 pangoxft_view_destroy (gpointer instance)
 {
   XViewer *x = (XViewer *)instance;
@@ -75,7 +75,7 @@ pangoxft_view_get_context (gpointer instance)
   return pango_xft_get_context (x->display, x->screen);
 }
 
-typedef struct 
+typedef struct
 {
   XftDraw *draw;
   XftColor color;
@@ -96,7 +96,7 @@ render_callback (PangoLayout *layout,
 			   x * PANGO_SCALE, y * PANGO_SCALE);
 }
 
-static void 
+static void
 pangoxft_view_render (gpointer      instance,
 		      gpointer      surface,
 		      PangoContext *context,

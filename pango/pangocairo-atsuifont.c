@@ -122,7 +122,7 @@ pango_cairo_atsui_font_get_scaled_font (PangoCairoFont *font)
       if (!cafont->scaled_font)
 	g_error ("Unable to create ATSUI cairo scaled font.\nThis means out of memory or a cairo/fontconfig/FreeType bug");
     }
-  
+
   return cafont->scaled_font;
 }
 
@@ -153,7 +153,7 @@ pango_cairo_atsui_font_get_glyph_extents (PangoFont        *font,
 
   if (logical_rect)
     cairo_scaled_font_extents (scaled_font, &font_extents);
-	  
+
   cairo_glyph.index = glyph;
   cairo_glyph.x = 0;
   cairo_glyph.y = 0;
@@ -189,7 +189,7 @@ pango_cairo_atsui_font_get_glyph_extents (PangoFont        *font,
 	  ink_rect->width = extents.width * PANGO_SCALE;
 	  ink_rect->height = extents.height * PANGO_SCALE;
 	}
-      
+
       if (logical_rect)
 	{
 	  logical_rect->x = 0;
@@ -221,10 +221,10 @@ pango_cairo_atsui_font_get_metrics (PangoFont        *font,
 
   metrics->approximate_char_width = ats_metrics.avgAdvanceWidth * cafont->size * PANGO_SCALE;
   metrics->approximate_digit_width = ats_metrics.avgAdvanceWidth * cafont->size * PANGO_SCALE;
-  
+
   metrics->underline_position = ats_metrics.underlinePosition * cafont->size * PANGO_SCALE;
   metrics->underline_thickness = ats_metrics.underlineThickness * cafont->size * PANGO_SCALE;
-  
+
   metrics->strikethrough_position = metrics->ascent / 3;
   metrics->strikethrough_thickness = ats_metrics.underlineThickness * cafont->size * PANGO_SCALE;
 
@@ -273,12 +273,12 @@ _pango_cairo_atsui_font_new (PangoCairoATSUIFontMap     *cafontmap,
   const PangoMatrix *pango_ctm;
   ATSUFontID font_id;
 
-  cfstr = CFStringCreateWithCString (NULL, postscript_name, 
+  cfstr = CFStringCreateWithCString (NULL, postscript_name,
 				     kCFStringEncodingUTF8);
 
   font_ref = ATSFontFindFromPostScriptName (cfstr, kATSOptionFlagsDefault);
   font_id = FMGetFontFromATSFontRef (font_ref);
-  
+
   CFRelease (cfstr);
 
   if (!font_id)
@@ -296,7 +296,7 @@ _pango_cairo_atsui_font_new (PangoCairoATSUIFontMap     *cafontmap,
   if (!pango_font_description_get_size_is_absolute (desc))
     {
       /* FIXME: Need to handle dpi here. See other font implementations for more info. */
-    }  
+    }
 
   cairo_matrix_init_scale (&cafont->font_matrix, cafont->size, cafont->size);
   pango_ctm = pango_context_get_matrix (context);

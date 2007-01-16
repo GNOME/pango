@@ -26,7 +26,7 @@
 
 typedef struct _PangoOTRule PangoOTRule;
 
-struct _PangoOTRule 
+struct _PangoOTRule
 {
   gulong     property_bit;
   FT_UShort  feature_index;
@@ -59,30 +59,30 @@ pango_ot_ruleset_get_type (void)
         (GInstanceInitFunc)pango_ot_ruleset_init,
 	NULL            /* value_table */
       };
-      
+
       object_type = g_type_register_static (G_TYPE_OBJECT,
                                             I_("PangoOTRuleset"),
                                             &object_info, 0);
     }
-  
+
   return object_type;
 }
 
-static void 
+static void
 pango_ot_ruleset_class_init (GObjectClass *object_class)
 {
   parent_class = g_type_class_peek_parent (object_class);
-  
+
   object_class->finalize = pango_ot_ruleset_finalize;
 }
 
-static void 
+static void
 pango_ot_ruleset_init (PangoOTRuleset *ruleset)
 {
   ruleset->rules = g_array_new (FALSE, FALSE, sizeof (PangoOTRule));
 }
 
-static void 
+static void
 pango_ot_ruleset_finalize (GObject *object)
 {
   PangoOTRuleset *ruleset = PANGO_OT_RULESET (object);
@@ -162,9 +162,9 @@ pango_ot_ruleset_substitute  (PangoOTRuleset   *ruleset,
 			      PangoOTBuffer    *buffer)
 {
   unsigned int i;
-  
+
   HB_GSUB gsub = NULL;
-  
+
   g_return_if_fail (PANGO_IS_OT_RULESET (ruleset));
   g_return_if_fail (PANGO_IS_OT_INFO (ruleset->info));
 
@@ -206,9 +206,9 @@ pango_ot_ruleset_position (PangoOTRuleset   *ruleset,
 			   PangoOTBuffer    *buffer)
 {
   unsigned int i;
-  
+
   HB_GPOS gpos = NULL;
-  
+
   g_return_if_fail (PANGO_IS_OT_RULESET (ruleset));
   g_return_if_fail (PANGO_IS_OT_INFO (ruleset->info));
 

@@ -63,7 +63,7 @@ void           pango_x_render_layout      (Display          *display,
 					   Drawable          drawable,
 					   GC                gc,
 					   PangoLayout      *layout,
-					   int               x, 
+					   int               x,
 					   int               y);
 
 /* API for rendering modules
@@ -106,21 +106,21 @@ PangoXFontCache *pango_x_font_map_get_font_cache (PangoFontMap *font_map);
 
 char *pango_x_font_subfont_xlfd (PangoFont     *font,
 				 PangoXSubfont  subfont_id);
-  
-  
-gboolean pango_x_find_first_subfont (PangoFont     *font, 
+
+
+gboolean pango_x_find_first_subfont (PangoFont     *font,
                                      char         **charsets,
 				     int            n_charsets,
                                      PangoXSubfont *rfont);
 
-void pango_x_fallback_shape (PangoFont        *font, 
-                             PangoGlyphString *glyphs, 
-                             const char       *text, 
+void pango_x_fallback_shape (PangoFont        *font,
+                             PangoGlyphString *glyphs,
+                             const char       *text,
                              int               n_chars);
 
-gboolean pango_x_apply_ligatures (PangoFont     *font, 
-                                  PangoXSubfont  subfont, 
-                                  gunichar     **glyphs, 
+gboolean pango_x_apply_ligatures (PangoFont     *font,
+                                  PangoXSubfont  subfont,
+                                  gunichar     **glyphs,
                                   int           *n_glyphs,
                                   int          **clusters);
 

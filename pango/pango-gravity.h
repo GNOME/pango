@@ -33,7 +33,7 @@ G_BEGIN_DECLS
  * @PANGO_GRAVITY_NORTH: Glyphs are upside-down
  * @PANGO_GRAVITY_WEST: Glyphs are rotated 90 degrees counter-clockwise
  * @PANGO_GRAVITY_AUTO: Gravity is resolved from the context matrix
- * 
+ *
  * The #PangoGravity type represents the orientation of glyphs in a segment
  * of text.  This is useful when rendering vertical text layouts.  In
  * those situations, the layout is rotated using a non-identity PangoMatrix,
@@ -44,9 +44,9 @@ G_BEGIN_DECLS
  * pango_context_get_base_gravity().
  *
  * See also: #PangoGravityHint
- * 
+ *
  * Since: 1.16
- **/			  
+ **/
 typedef enum {
   PANGO_GRAVITY_SOUTH,
   PANGO_GRAVITY_EAST,
@@ -65,7 +65,7 @@ typedef enum {
  * Latin in East gravity), choose per-script gravity such that every script
  * respects the line progression.  This means, Latin and Arabic will take
  * opposite gravities and both flow top-to-bottom for example.
- * 
+ *
  * The #PangoGravityHint defines how horizontal scripts should behave in a
  * vertical context.  That is, English excerpt in a vertical paragraph for
  * example.

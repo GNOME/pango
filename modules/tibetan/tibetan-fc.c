@@ -2,9 +2,9 @@
  * tibetan-fc.c: Shaper for Tibetan script
  *
  * Copyright (C) 2005 DIT, Government of Bhutan <http://www.dit.gov.bt>
- * Contact person : Pema Geyleg <pema_geyleg@druknet.bt> 
+ * Contact person : Pema Geyleg <pema_geyleg@druknet.bt>
  *
- *  Based on code from khmer shapers developed by Jens Herden 
+ *  Based on code from khmer shapers developed by Jens Herden
  *  <jens@tibetanos.inf > and Javier Sola <javier@tibetanos.info>
  *
  * Based on code from other shapers
@@ -15,8 +15,8 @@
  * Copyright (C) 2001, 2002 IBM Corporation
  * Author: Eric Mader <mader@jtcsv.com>
  *
- * The first module for Tibetan shaper was developed by Mr. Karunakar under 
- * PanLocalization project. 
+ * The first module for Tibetan shaper was developed by Mr. Karunakar under
+ * PanLocalization project.
  * Mr. Chris Fynn, Mr.Javier Sola, Mr. Namgay Thinley were involved
  * while developing this shaper.
  *
@@ -98,18 +98,18 @@ static PangoEngineInfo script_engines[] =
 
 
 
-// Vocabulary 
-//     Base ->         A consonant in its full (not subscript) form. It is the 
+// Vocabulary
+//     Base ->         A consonant in its full (not subscript) form. It is the
 //                     center of the syllable, it can be souranded by subjoined consonants, vowels,
 //                     signs... but there is only one base in a stack, it has to be coded as
-//                     the first character of the syllable.Included here are also groups of base + subjoined 
-//										 which are represented by one single code point in unicode (e.g. 0F43) Also other characters that might take 
-//                     subjoined consonants or other combining characters.											
-//     Subjoined ->    Subjoined consonants and groups of subjoined consonants which have a single code-point 
+//                     the first character of the syllable.Included here are also groups of base + subjoined
+//										 which are represented by one single code point in unicode (e.g. 0F43) Also other characters that might take
+//                     subjoined consonants or other combining characters.
+//     Subjoined ->    Subjoined consonants and groups of subjoined consonants which have a single code-point
 //                     to repersent the group (even if each subjoined consonant is represented independently
 //                     by anothe code-point
-//     Tsa Phru -->    Tsa Phru character, Bhutanese people will always place it right after the base, but sometimes, due to 
-// 										"normalization"							
+//     Tsa Phru -->    Tsa Phru character, Bhutanese people will always place it right after the base, but sometimes, due to
+// 										"normalization"
 //										 is placed after all the subjoined consonants, and it is also permitted there.
 //     A Chung  Vowel lengthening mark --> . 0F71 It is placed after the base and any subjoined consonants but before any vowels
 //     Precomposed Sanskrit vowels --> The are combinations of subjoined consonants + vowels that have been assigned
@@ -117,13 +117,13 @@ static PangoEngineInfo script_engines[] =
 //                     They are avoided, and users are encouraged to use the combination of code-points that
 //                     represents the same sound instead of using this combined characters. This is included here
 //                     for compatibility with possible texts that use them (they are not in the Dzongkha keyboard).
-//     Halanta ->      The Halanta or Virama character 0F84 indicates that a consonant should not use its inheernt vowel, 
+//     Halanta ->      The Halanta or Virama character 0F84 indicates that a consonant should not use its inheernt vowel,
 //                     in spite of not having other vowels present. It is usually placed immediatly after a base consonant,
 //                     but in some special cases it can also be placed after a subjoined consonant, so this is also
 //                     permitted in this algorithm. (Halanta is always displayed in Tibetan not used as a connecting char)
 //
 //     Subjoined vowels -> Dependent vowels (matras) placed below the base and below all subjoined consonants. There
-//                     might be as much as three subjoined vowels in a given stack (only one in general text, but up 
+//                     might be as much as three subjoined vowels in a given stack (only one in general text, but up
 //                     to three for abreviations, they have to be permitted).
 //     Superscript vowels -> There are three superscript vowels, and they can be repeated or combined (up to three
 //                     times. They can combine with subjoined vowels, and are always coded after these.
@@ -137,19 +137,19 @@ static PangoEngineInfo script_engines[] =
 //     Digits ->       Digits are not considered as non-combining characters because there are a few characters which
 //                     combine with them, so they have to be considered independently.
 //     Digit combining marks -> dependent marks that combine with digits.
-//     
+//
 //     TODO
 //     There are a number of characters in the CJK block that are used in Tibetan script, two of these are symbols
 //     are used as bases for combining glyphs, and have not been encoded in Tibetan. As these characters are outside
 //     of the tibetan block, they have not been treated in this program.
-     
+
 
 enum TibetanCharClassValues
 {
   			CC_RESERVED             =  0, //Non Combining Characters
         CC_BASE                 =  1, // Base Consonants, Base Consonants with Subjoined attached in code point, Sanskrit base marks
         CC_SUBJOINED            =  2, // Subjoined Consonats, combination of more than Subjoined Consonants in the code point
-        CC_TSA_PHRU             =  3, // Tsa-Phru character 0F39 
+        CC_TSA_PHRU             =  3, // Tsa-Phru character 0F39
         CC_A_CHUNG              =  4, // Vowel Lenthening a-chung mark 0F71
         CC_COMP_SANSKRIT        =  5, // Precomposed Sanskrit vowels including Subjoined characters and vowels
         CC_HALANTA              =  6, // Halanta Character 0F84
@@ -197,24 +197,24 @@ enum
     // simple classes, they are used in the statetable (in this file) to control the length of a syllable
     // they are also used to know where a character should be placed (location in reference to the base character)
     // and also to know if a character, when independtly displayed, should be displayed with a dotted-circle to
-    // indicate error in syllable construction 
-    _xx = CC_RESERVED,                                    
-    _ba = CC_BASE,                                        
-    _sj = CC_SUBJOINED | CF_DOTTED_CIRCLE | CF_POS_BELOW, 
-    _tp = CC_TSA_PHRU  | CF_DOTTED_CIRCLE | CF_POS_ABOVE, 
-    _ac = CC_A_CHUNG |  CF_DOTTED_CIRCLE | CF_POS_BELOW,  
-    _cs = CC_COMP_SANSKRIT | CF_DOTTED_CIRCLE | CF_POS_BELOW, 
-    _ha = CC_HALANTA | CF_DOTTED_CIRCLE | CF_POS_BELOW,       
-    _bv = CC_BELOW_VOWEL | CF_DOTTED_CIRCLE | CF_POS_BELOW,  
-    _av = CC_ABOVE_VOWEL | CF_DOTTED_CIRCLE | CF_POS_ABOVE,   
-    _an = CC_ANUSVARA | CF_DOTTED_CIRCLE | CF_POS_ABOVE,      
-    _cb = CC_CANDRABINDU | CF_DOTTED_CIRCLE | CF_POS_ABOVE,   
-    _vs = CC_VISARGA | CF_DOTTED_CIRCLE| CF_POS_AFTER,        
-    _as = CC_ABOVE_S_MARK | CF_DOTTED_CIRCLE | CF_POS_ABOVE,  
-    _bs = CC_BELOW_S_MARK | CF_DOTTED_CIRCLE | CF_POS_BELOW,  
-    _di = CC_DIGIT | CF_DIGIT,                                
-    _pd = CC_PRE_DIGIT_MARK | CF_DOTTED_CIRCLE | CF_PREDIGIT | CF_POS_BEFORE , 
-    _bd = CC_POST_BELOW_DIGIT_M | CF_DOTTED_CIRCLE | CF_POS_AFTER  
+    // indicate error in syllable construction
+    _xx = CC_RESERVED,
+    _ba = CC_BASE,
+    _sj = CC_SUBJOINED | CF_DOTTED_CIRCLE | CF_POS_BELOW,
+    _tp = CC_TSA_PHRU  | CF_DOTTED_CIRCLE | CF_POS_ABOVE,
+    _ac = CC_A_CHUNG |  CF_DOTTED_CIRCLE | CF_POS_BELOW,
+    _cs = CC_COMP_SANSKRIT | CF_DOTTED_CIRCLE | CF_POS_BELOW,
+    _ha = CC_HALANTA | CF_DOTTED_CIRCLE | CF_POS_BELOW,
+    _bv = CC_BELOW_VOWEL | CF_DOTTED_CIRCLE | CF_POS_BELOW,
+    _av = CC_ABOVE_VOWEL | CF_DOTTED_CIRCLE | CF_POS_ABOVE,
+    _an = CC_ANUSVARA | CF_DOTTED_CIRCLE | CF_POS_ABOVE,
+    _cb = CC_CANDRABINDU | CF_DOTTED_CIRCLE | CF_POS_ABOVE,
+    _vs = CC_VISARGA | CF_DOTTED_CIRCLE| CF_POS_AFTER,
+    _as = CC_ABOVE_S_MARK | CF_DOTTED_CIRCLE | CF_POS_ABOVE,
+    _bs = CC_BELOW_S_MARK | CF_DOTTED_CIRCLE | CF_POS_BELOW,
+    _di = CC_DIGIT | CF_DIGIT,
+    _pd = CC_PRE_DIGIT_MARK | CF_DOTTED_CIRCLE | CF_PREDIGIT | CF_POS_BEFORE ,
+    _bd = CC_POST_BELOW_DIGIT_M | CF_DOTTED_CIRCLE | CF_POS_AFTER
 };
 
 
@@ -246,8 +246,8 @@ static const TibetanCharClass tibetanCharClasses[] =
   // 0    1    2    3    4    5    6    7    8    9   a     b   c    d     e   f
     _xx, _ba, _xx, _xx, _ba, _ba, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, // 0F00 - 0F0F 0
     _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _bd, _bd, _xx, _xx, _xx, _xx, _xx, _xx, // 0F10 - 0F1F 1
-    _di, _di, _di, _di, _di, _di, _di, _di, _di, _di, _xx, _xx, _xx, _xx, _xx, _xx, // 0F20 - 0F2F 2 
-    _xx, _xx, _xx, _xx, _xx, _bs, _xx, _bs, _xx, _tp, _xx, _xx, _xx, _xx, _bd, _pd, // 0F30 - 0F3F 3 
+    _di, _di, _di, _di, _di, _di, _di, _di, _di, _di, _xx, _xx, _xx, _xx, _xx, _xx, // 0F20 - 0F2F 2
+    _xx, _xx, _xx, _xx, _xx, _bs, _xx, _bs, _xx, _tp, _xx, _xx, _xx, _xx, _bd, _pd, // 0F30 - 0F3F 3
     _ba, _ba, _ba, _ba, _ba, _ba, _ba, _ba, _xx, _ba, _ba, _ba, _ba, _ba, _ba, _ba, // 0F40 - 0F4F 4
     _ba, _ba, _ba, _ba, _ba, _ba, _ba, _ba, _ba, _ba, _ba, _ba, _ba, _ba, _ba, _ba, // 0F50 - 0F5F 5
     _ba, _ba, _ba, _ba, _ba, _ba, _ba, _ba, _ba, _ba, _ba, _xx, _xx, _xx, _xx, _xx, // 0F60 - 0F6F 6
@@ -259,7 +259,7 @@ static const TibetanCharClass tibetanCharClasses[] =
     _xx, _xx, _xx, _xx, _xx, _xx, _bs, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, // 0FC0 - 0FCF c
     _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx,// 0FD0 - 0FDF  d
     _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, // 0FE0 - 0FEF e
-    _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, // 0FF0 - 0FFF f 
+    _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, // 0FF0 - 0FFF f
 };
 
 /* this define must reflect the range of tibetanCharClasses */
@@ -285,9 +285,9 @@ static const gint8 tibetanStateTable[][CC_COUNT] =
     //xx  ba  sj  tp  ac  cs  ha  bv  av  an  cb  vs  as  bs  di  pd  bd
     { 1,  2,  4,  3,  8,  7,  9, 10, 14, 13, 17, 18, 19, 19, 20, 21, 21,}, //  0 - ground state
     {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,}, //  1 - exit state (or sign to the right of the syllable)
-    {-1, -1,  4,  3,  8,  7,  9, 10, 14, 13, 17, 18, 19, 19, -1, -1, -1,}, //  2 - Base consonant    
+    {-1, -1,  4,  3,  8,  7,  9, 10, 14, 13, 17, 18, 19, 19, -1, -1, -1,}, //  2 - Base consonant
     {-1, -1,  5, -1,  8,  7, -1, 10, 14, 13, 17, 18, 19, 19, -1, -1, -1,}, //  3 - Tsa phru after base
-    {-1, -1,  4,  6,  8,  7,  9, 10, 14, 13, 17, 18, 19, 19, -1, -1, -1,}, //  4 - Subjoined consonant after base             
+    {-1, -1,  4,  6,  8,  7,  9, 10, 14, 13, 17, 18, 19, 19, -1, -1, -1,}, //  4 - Subjoined consonant after base
     {-1, -1,  5, -1,  8,  7, -1, 10, 14, 13, 17, 18, 19, 19, -1, -1, -1,}, //  5 - Subjoined consonant after tsa phru
     {-1, -1, -1, -1,  8,  7, -1, 10, 14, 13, 17, 18, 19, 19, -1, -1, -1,}, //  6 - Tsa phru after subjoined consonant
     {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 19, 19, -1, -1, -1,}, //  7 - Pre Composed Sanskrit
@@ -295,15 +295,15 @@ static const gint8 tibetanStateTable[][CC_COUNT] =
     {-1, -1, -1, -1, -1, -1, -1, -1, 14, 13, 17, -1, 19, 19, -1, -1, -1,}, //  9 - Halanta
     {-1, -1, -1, -1, -1, -1, -1, 11, 14, 13, 17, 18, 19, 19, -1, -1, -1,}, // 10 - below vowel 1
     {-1, -1, -1, -1, -1, -1, -1, 12, 14, 13, 17, 18, 19, 19, -1, -1, -1,}, // 11 - below vowel 2
-    {-1, -1, -1, -1, -1, -1, -1, -1, 14, 13, 17, 18, 19, 19, -1, -1, -1,}, // 12 - below vowel 3   
+    {-1, -1, -1, -1, -1, -1, -1, -1, 14, 13, 17, 18, 19, 19, -1, -1, -1,}, // 12 - below vowel 3
     {-1, -1, -1, -1, -1, -1, -1, -1, 14, 17, 17, 18, 19, 19, -1, -1, -1,}, // 13 - Anusvara before vowel
     {-1, -1, -1, -1, -1, -1, -1, -1, 15, 17, 17, 18, 19, 19, -1, -1, -1,}, // 14 - above vowel 1
     {-1, -1, -1, -1, -1, -1, -1, -1, 16, 17, 17, 18, 19, 19, -1, -1, -1,}, // 15 - above vowel 2
     {-1, -1, -1, -1, -1, -1, -1, -1, -1, 17, 17, 18, 19, 19, -1, -1, -1,}, // 16 - above vowel 3
-    {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 18, 19, 19, -1, -1, -1,}, // 17 - Anusvara or Candrabindu after vowel 
-    {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 19, 19, -1, -1, -1,}, // 18 - Visarga    
+    {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 18, 19, 19, -1, -1, -1,}, // 17 - Anusvara or Candrabindu after vowel
+    {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 19, 19, -1, -1, -1,}, // 18 - Visarga
     {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,}, // 19 - strss mark
-    {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 21, 21,}, // 20 - digit 
+    {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 21, 21,}, // 20 - digit
     {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,}, // 21 - digit mark
 };
 
@@ -532,19 +532,19 @@ tibetan_engine_shape (PangoEngineShape *engine,
         }
 
       /* If it encounters a digit followed by number pre combining mark, then reorder the two characters
-      * coeng Ro if they are present 
+      * coeng Ro if they are present
       */
       for (i = cursor; i < syllable; i += 1)
         {
           charClass = get_char_class (wcs[i]);
 
-          if ((charClass & CF_DIGIT ) 
+          if ((charClass & CF_DIGIT )
               && ( get_char_class (wcs[i+1]) & CF_PREDIGIT))
            {
          		 pango_ot_buffer_add_glyph (buffer, get_index (fc_font, C_PRE_NUMBER_MARK), pref_p, p - text);
          		 p = g_utf8_next_char (p);
          		 pango_ot_buffer_add_glyph (buffer, get_index (fc_font, wcs[i]), pref_p, p - text);
- 			       i += 1;          
+ 			       i += 1;
          } else {
           switch (charClass & CF_POS_MASK)
             {
@@ -555,7 +555,7 @@ tibetan_engine_shape (PangoEngineShape *engine,
               case CF_POS_AFTER :
 		             pango_ot_buffer_add_glyph (buffer, get_index (fc_font, wcs[i]), pstf_p, p - text);
 		             break;
-		
+
               case CF_POS_BELOW :
 		             pango_ot_buffer_add_glyph (buffer, get_index (fc_font, wcs[i]), blwf_p, p - text);
 		             break;
@@ -565,8 +565,8 @@ tibetan_engine_shape (PangoEngineShape *engine,
                   pango_ot_buffer_add_glyph (buffer, get_index (fc_font, wcs[i]), default_p, p - text);
                   break;
             } /* switch */
-           } 
-            
+           }
+
           p = g_utf8_next_char (p);
         } /* for */
 

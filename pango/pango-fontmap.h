@@ -63,7 +63,7 @@ struct _PangoFontMapClass
   GObjectClass parent_class;
 
   /*< public >*/
-  
+
   PangoFont *   (*load_font)     (PangoFontMap               *fontmap,
 				  PangoContext               *context,
 				  const PangoFontDescription *desc);
@@ -74,7 +74,7 @@ struct _PangoFontMapClass
 				  PangoContext               *context,
 				  const PangoFontDescription *desc,
 				  PangoLanguage              *language);
-  
+
   const char *shape_engine_type;
 
   /*< private >*/

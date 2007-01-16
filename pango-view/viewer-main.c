@@ -46,11 +46,11 @@ main (int    argc,
   int run;
   int width, height;
   gpointer surface;
-  
+
   g_type_init();
   setlocale (LC_ALL, "");
   parse_options (argc, argv);
-  
+
   view = opt_viewer;
 
   g_assert (view->id);
@@ -84,7 +84,7 @@ main (int    argc,
 	      GError *error;
 
 	      convert_argv[2] = opt_output;
-	      
+
 	      if (!g_spawn_async_with_pipes (NULL, (gchar **)convert_argv, NULL,
 					     G_SPAWN_SEARCH_PATH |
 					     G_SPAWN_STDOUT_TO_DEV_NULL |
@@ -134,7 +134,7 @@ main (int    argc,
 	  if (!view->write)
 	    fail ("%s viewer backend does not support displaying or writing", view->name);
 	  display_argv[2] = title;
-	  
+
 	  if (!g_spawn_async_with_pipes (NULL, (gchar **)display_argv, NULL,
 					 G_SPAWN_DO_NOT_REAP_CHILD |
 					 G_SPAWN_SEARCH_PATH |

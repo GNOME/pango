@@ -2,7 +2,7 @@
  * pangofc-decoder.h: Custom encoders/decoders on a per-font basis.
  *
  * Copyright (C) 2004 Red Hat Software
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
  * License as published by the Free Software Foundation; either
@@ -87,7 +87,7 @@ struct _PangoFcDecoderClass
 			      guint32         wc);
 
   /*< private >*/
-  
+
   /* Padding for future expansion */
   void (*_pango_reserved1) (void);
   void (*_pango_reserved2) (void);

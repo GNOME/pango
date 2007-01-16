@@ -50,7 +50,7 @@ set_color (PangoCairoRenderer *crenderer,
 	   PangoRenderPart     part)
 {
   PangoColor *color = pango_renderer_get_color ((PangoRenderer *) (crenderer), part);
-  
+
   if (color)
     cairo_set_source_rgb (crenderer->cr,
 			  color->red / 65535.,
@@ -133,7 +133,7 @@ _pango_cairo_renderer_draw_unknown_glyph (PangoCairoRenderer *crenderer,
   cairo_save (crenderer->cr);
   cairo_get_current_point (crenderer->cr, &temp_x, &temp_y);
 
-  hbi = _pango_cairo_font_get_hex_box_info ((PangoCairoFont *)font);      
+  hbi = _pango_cairo_font_get_hex_box_info ((PangoCairoFont *)font);
 
   if (!hbi || !_pango_cairo_font_install ((PangoCairoFont *) (hbi->font), crenderer->cr))
     {
@@ -179,7 +179,7 @@ done:
   cairo_move_to (crenderer->cr, temp_x, temp_y);
   cairo_restore (crenderer->cr);
 }
-     
+
 static void
 pango_cairo_renderer_draw_glyphs (PangoRenderer     *renderer,
 				  PangoFont         *font,
@@ -191,7 +191,7 @@ pango_cairo_renderer_draw_glyphs (PangoRenderer     *renderer,
 
   /* cairo_glyph_t is 24 bytes */
 #define MAX_STACK 40
-  
+
   int i, count;
   int x_position = 0;
   cairo_glyph_t *cairo_glyphs;
@@ -217,7 +217,7 @@ pango_cairo_renderer_draw_glyphs (PangoRenderer     *renderer,
 			  base_y + (double)(gi->geometry.y_offset) / PANGO_SCALE;
 
 	      _pango_cairo_renderer_draw_unknown_glyph (crenderer, font, gi, cx, cy);
-	    }	  
+	    }
 	  x_position += gi->geometry.width;
 	}
 
@@ -250,7 +250,7 @@ pango_cairo_renderer_draw_glyphs (PangoRenderer     *renderer,
               cairo_glyphs[count].y = cy;
               count++;
             }
-        }	  
+        }
       x_position += gi->geometry.width;
     }
 
@@ -258,13 +258,13 @@ pango_cairo_renderer_draw_glyphs (PangoRenderer     *renderer,
     cairo_glyph_path (crenderer->cr, cairo_glyphs, count);
   else
     cairo_show_glyphs (crenderer->cr, cairo_glyphs, count);
-  
+
   if (glyphs->num_glyphs > MAX_STACK)
     g_free (cairo_glyphs);
 
 done:
   cairo_restore (crenderer->cr);
-  
+
 #undef MAX_STACK
 }
 
@@ -287,13 +287,13 @@ pango_cairo_renderer_draw_rectangle (PangoRenderer     *renderer,
 
   cairo_rectangle (crenderer->cr,
 		   crenderer->x_offset + (double)x / PANGO_SCALE,
-		   crenderer->y_offset + (double)y / PANGO_SCALE, 
+		   crenderer->y_offset + (double)y / PANGO_SCALE,
 		   (double)width / PANGO_SCALE, (double)height / PANGO_SCALE);
 
   if (!crenderer->do_path)
     {
       cairo_fill (crenderer->cr);
-    
+
       cairo_restore (crenderer->cr);
     }
 }
@@ -304,11 +304,11 @@ pango_cairo_renderer_draw_rectangle (PangoRenderer     *renderer,
  *   A/  \    /  \    /  \     A/  \    /  \              |
  *    \   \  /    \  /   /D     \   \  /    \             |
  *     \   \/  C   \/   /        \   \/   C  \            | height = HEIGHT_SQUARES * square
- *      \      /\  F   /          \  F   /\   \           | 
+ *      \      /\  F   /          \  F   /\   \           |
  *       \    /  \    /            \    /  \   \G         |
  *        \  /    \  /              \  /    \  /          |
  *         \/      \/                \/      \/           -
- *         B                         B       
+ *         B                         B
  *         |---|
  *       unit_width = (HEIGHT_SQUARES - 1) * square
  *
@@ -336,16 +336,16 @@ draw_error_underline (cairo_t *cr,
 
   y_top = y;
   y_bottom = y + height;
-  
+
   /* Bottom of squiggle */
   cairo_move_to (cr, x - square / 2, y_top + square / 2); /* A */
   for (i = 0; i < width_units; i += 2)
     {
       double x_middle = x + (i + 1) * unit_width;
       double x_right = x + (i + 2) * unit_width;
-    
+
       cairo_line_to (cr, x_middle, y_bottom); /* B */
-      
+
       if (i + 1 == width_units)
 	/* Nothing */;
       else if (i + 2 == width_units)
@@ -353,14 +353,14 @@ draw_error_underline (cairo_t *cr,
       else
 	cairo_line_to (cr, x_right, y_top + square); /* C */
     }
-  
+
   /* Top of squiggle */
   for (i -= 2; i >= 0; i -= 2)
     {
       double x_left = x + i * unit_width;
       double x_middle = x + (i + 1) * unit_width;
       double x_right = x + (i + 2) * unit_width;
-      
+
       if (i + 1 == width_units)
 	cairo_line_to (cr, x_middle + square / 2, y_bottom - square / 2); /* G */
       else {
@@ -368,7 +368,7 @@ draw_error_underline (cairo_t *cr,
 	  cairo_line_to (cr, x_right, y_top); /* E */
 	cairo_line_to (cr, x_middle, y_bottom - square); /* F */
       }
-      
+
       cairo_line_to (cr, x_left, y_top);   /* H */
     }
 }
@@ -388,7 +388,7 @@ pango_cairo_renderer_draw_error_underline (PangoRenderer *renderer,
       cairo_save (cr);
 
       set_color (crenderer, PANGO_RENDER_PART_UNDERLINE);
-      
+
       cairo_new_path (cr);
     }
 
@@ -396,7 +396,7 @@ pango_cairo_renderer_draw_error_underline (PangoRenderer *renderer,
 			crenderer->x_offset + (double)x / PANGO_SCALE,
 			crenderer->y_offset + (double)y / PANGO_SCALE,
 			(double)width / PANGO_SCALE, (double)height / PANGO_SCALE);
-  
+
   if (!crenderer->do_path)
     {
       cairo_fill (cr);
@@ -487,21 +487,21 @@ _pango_cairo_do_glyph_string (cairo_t          *cr,
        * prepare_run() isn't called.
        */
 
-      pango_renderer_activate (renderer); 	 
-	   	 
-      pango_renderer_set_color (renderer, PANGO_RENDER_PART_FOREGROUND, NULL); 	 
-      pango_renderer_set_color (renderer, PANGO_RENDER_PART_BACKGROUND, NULL); 	 
-      pango_renderer_set_color (renderer, PANGO_RENDER_PART_UNDERLINE, NULL); 	 
-      pango_renderer_set_color (renderer, PANGO_RENDER_PART_STRIKETHROUGH, NULL); 	 
+      pango_renderer_activate (renderer);
+
+      pango_renderer_set_color (renderer, PANGO_RENDER_PART_FOREGROUND, NULL);
+      pango_renderer_set_color (renderer, PANGO_RENDER_PART_BACKGROUND, NULL);
+      pango_renderer_set_color (renderer, PANGO_RENDER_PART_UNDERLINE, NULL);
+      pango_renderer_set_color (renderer, PANGO_RENDER_PART_STRIKETHROUGH, NULL);
     }
-  
+
   pango_renderer_draw_glyphs (renderer, font, glyphs, 0, 0);
 
   if (!do_path)
     {
       pango_renderer_deactivate (renderer);
     }
-  
+
   release_renderer (crenderer, free_renderer);
 }
 
@@ -519,7 +519,7 @@ _pango_cairo_do_layout_line (cairo_t          *cr,
   cairo_get_current_point (cr, &crenderer->x_offset, &crenderer->y_offset);
 
   pango_renderer_draw_layout_line (renderer, line, 0, 0);
-  
+
   release_renderer (crenderer, free_renderer);
 }
 
@@ -531,24 +531,24 @@ _pango_cairo_do_layout (cairo_t     *cr,
   gboolean free_renderer;
   PangoCairoRenderer *crenderer = acquire_renderer (&free_renderer);
   PangoRenderer *renderer = (PangoRenderer *) crenderer;
-  
+
   crenderer->cr = cr;
   crenderer->do_path = do_path;
   cairo_get_current_point (cr, &crenderer->x_offset, &crenderer->y_offset);
 
   pango_renderer_draw_layout (renderer, layout, 0, 0);
-  
+
   release_renderer (crenderer, free_renderer);
 }
 
-static void 
-_pango_cairo_do_error_underline (cairo_t *cr,                                  
+static void
+_pango_cairo_do_error_underline (cairo_t *cr,
 				 double   x,
 				 double   y,
 				 double   width,
 				 double   height,
 				 gboolean do_path)
-{  
+{
   /* We don't use a renderer here, for a simple reason:
    * the only renderer we can get is the default renderer, that
    * is all implemented here, so we shortcircuit and make our
@@ -562,7 +562,7 @@ _pango_cairo_do_error_underline (cairo_t *cr,
 
   if (!do_path)
     cairo_fill (cr);
-} 
+}
 
 
 /* public wrapper of above to show or append path */
@@ -573,7 +573,7 @@ _pango_cairo_do_error_underline (cairo_t *cr,
  * @cr: a Cairo context
  * @font: a #PangoFont
  * @glyphs: a #PangoGlyphString
- * 
+ *
  * Draws the glyphs in @glyphs in the specified cairo context.
  * The origin of the glyphs (the left edge of the baseline) will
  * be drawn at the current point of the cairo context.
@@ -595,7 +595,7 @@ pango_cairo_show_glyph_string (cairo_t          *cr,
  * pango_cairo_show_layout_line:
  * @cr: a Cairo context
  * @line: a #PangoLayoutLine
- * 
+ *
  * Draws a #PangoLayoutLine in the specified cairo context.
  * The origin of the glyphs (the left edge of the line) will
  * be drawn at the current point of the cairo context.
@@ -616,7 +616,7 @@ pango_cairo_show_layout_line (cairo_t          *cr,
  * pango_cairo_show_layout:
  * @cr: a Cairo context
  * @layout: a Pango layout
- * 
+ *
  * Draws a #PangoLayoutLine in the specified cairo context.
  * The top-left corner of the #PangoLayout will be drawn
  * at the current point of the cairo context.
@@ -640,7 +640,7 @@ pango_cairo_show_layout (cairo_t     *cr,
  * @y: The Y coordinate of one corner of the rectangle
  * @width: Non-negative width of the rectangle
  * @height: Non-negative height of the rectangle
- * 
+ *
  * Draw a squiggly line in the specified cairo context that approximately
  * covers the given rectangle in the style of an underline used to indicate a
  * spelling error.  (The width of the underline is rounded to an integer
@@ -649,25 +649,25 @@ pango_cairo_show_layout (cairo_t     *cr,
  *
  * Since: 1.14
  **/
-void 
-pango_cairo_show_error_underline (cairo_t *cr,                                  
+void
+pango_cairo_show_error_underline (cairo_t *cr,
 			          double  x,
 			          double  y,
 			          double  width,
 			          double  height)
-{  
+{
   g_return_if_fail (cr != NULL);
-  g_return_if_fail ((width >= 0) && (height >= 0));  
-  
-  _pango_cairo_do_error_underline (cr, x, y, width, height, FALSE);                                 
-} 
+  g_return_if_fail ((width >= 0) && (height >= 0));
+
+  _pango_cairo_do_error_underline (cr, x, y, width, height, FALSE);
+}
 
 /**
  * pango_cairo_glyph_string_path
  * @cr: a Cairo context
  * @font: a #PangoFont
  * @glyphs: a #PangoGlyphString
- * 
+ *
  * Adds the glyphs in @glyphs to the current path in the specified
  * cairo context. The origin of the glyphs (the left edge of the baseline)
  * will be at the current point of the cairo context.
@@ -689,7 +689,7 @@ pango_cairo_glyph_string_path (cairo_t          *cr,
  * pango_cairo_layout_line_path:
  * @cr: a Cairo context
  * @line: a #PangoLayoutLine
- * 
+ *
  * Adds the text in #PangoLayoutLine to the current path in the
  * specified cairo context.  The origin of the glyphs (the left edge
  * of the line) will be at the current point of the cairo context.
@@ -710,7 +710,7 @@ pango_cairo_layout_line_path (cairo_t          *cr,
  * pango_cairo_layout_path:
  * @cr: a Cairo context
  * @layout: a Pango layout
- * 
+ *
  * Adds the text in a #PangoLayout to the current path in the
  * specified cairo context.  The top-left corner of the #PangoLayout
  * will be at the current point of the cairo context.
@@ -734,7 +734,7 @@ pango_cairo_layout_path (cairo_t     *cr,
  * @y: The Y coordinate of one corner of the rectangle
  * @width: Non-negative width of the rectangle
  * @height: Non-negative height of the rectangle
- * 
+ *
  * Add a squiggly line to the current path in the specified cairo context that
  * approximately covers the given rectangle in the style of an underline used
  * to indicate a spelling error.  (The width of the underline is rounded to an
@@ -743,8 +743,8 @@ pango_cairo_layout_path (cairo_t     *cr,
  *
  * Since: 1.14
  **/
-void 
-pango_cairo_error_underline_path (cairo_t *cr,                                  
+void
+pango_cairo_error_underline_path (cairo_t *cr,
 			          double   x,
 			          double   y,
 			          double   width,
@@ -752,6 +752,6 @@ pango_cairo_error_underline_path (cairo_t *cr,
 {
   g_return_if_fail (cr != NULL);
   g_return_if_fail ((width >= 0) && (height >= 0));
-  
-  _pango_cairo_do_error_underline (cr, x, y, width, height, TRUE);                                 
+
+  _pango_cairo_do_error_underline (cr, x, y, width, height, TRUE);
 }

@@ -130,7 +130,7 @@ static gboolean noteMatra(Output *output, const IndicOTClassTable *classTable, g
         } else {
             saveMatra(output, matra, matraClass);
         }
-	
+
 	return TRUE;
     } else
       return FALSE;
@@ -156,7 +156,7 @@ static void swapChars(Output *output, int a, int b)
 
 	output->fOutChars[output->fOutIndex + b] = output->fOutChars[output->fOutIndex + a];
 	output->fCharIndices[output->fOutIndex + b] = output->fCharIndices[output->fOutIndex + a];
-	output->fCharTags[output->fOutIndex + b] = pstf_p;	
+	output->fCharTags[output->fOutIndex + b] = pstf_p;
 
 	output->fOutChars[output->fOutIndex + a] = temp_char;
 	output->fCharIndices[output->fOutIndex + a] = temp_index;
@@ -181,7 +181,7 @@ static void writeMpre(Output *output)
         gulong tags = output->fMatraTags;
 	if (output->fMatraWordStart)
 	    tags &= ~init;
-	    
+
         output->fMPreOutIndex = output->fOutIndex;
         writeChar(output, output->fMpre, output->fMatraIndex, tags);
     }
@@ -414,7 +414,7 @@ glong indic_ot_reorder(const gunichar *chars, const glong *utf8_offsets, glong c
 
             /* note the base consonant for post-GSUB fixups */
 	    noteBaseConsonant(&output);
-	    
+
 	    /* write base consonant */
 	    for (i = baseConsonant; i < bcSpan; i += 1) {
 		writeChar(&output, chars[i], /*i*/ prev, nukt_p);
@@ -423,18 +423,18 @@ glong indic_ot_reorder(const gunichar *chars, const glong *utf8_offsets, glong c
             /* for the special conjuction of Cons+0x0d4d+0x0d31 or Cons+0x0d4d+0x0d30 of Malayalam */
 	    if ((baseConsonant - 2 >= 0) &&
 		(chars[baseConsonant - 1] == 0x0d4d) &&
-		((chars[baseConsonant] == 0x0d31) || 
+		((chars[baseConsonant] == 0x0d31) ||
 		 (chars[baseConsonant] == 0x0d30)) &&
-		((chars[baseConsonant - 2] >= 0x0d15) && 
+		((chars[baseConsonant - 2] >= 0x0d15) &&
 		 (chars[baseConsonant - 2] <= 0x0d39)))  {
       		swapChars (&output, -1, -3);
-        
+
                 if (mpreFixups) {
 		    if (mpreFixups->fFixupCount > 0) {
                         mpreFixups->fFixupCount--;
 		    }
-                }        
-	    }            
+                }
+	    }
 
 	    if ((class_table->scriptFlags & SF_MATRAS_AFTER_BASE) != 0) {
 		gboolean is_for_0C48 = FALSE;
@@ -447,11 +447,11 @@ glong indic_ot_reorder(const gunichar *chars, const glong *utf8_offsets, glong c
 			    writeMpost(&output);
 
                             is_for_0C48 = TRUE;
-                            break;			    
+                            break;
 			}
 		    }
 		}
-		
+
 		if (!is_for_0C48) {
 		    writeMbelow(&output);
 		    writeMabove(&output);
@@ -546,6 +546,6 @@ glong indic_ot_reorder(const gunichar *chars, const glong *utf8_offsets, glong c
     if (outMPreFixups) {
 	*outMPreFixups = mpreFixups;
     }
-    
+
     return getOutputIndex(&output);
 }

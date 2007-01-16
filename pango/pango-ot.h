@@ -37,7 +37,7 @@ typedef struct _PangoOTBuffer  PangoOTBuffer;
 typedef struct _PangoOTGlyph   PangoOTGlyph;
 typedef struct _PangoOTRuleset PangoOTRuleset;
 
-typedef enum 
+typedef enum
 {
   PANGO_OT_TABLE_GSUB,
   PANGO_OT_TABLE_GPOS

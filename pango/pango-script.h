@@ -92,7 +92,7 @@ typedef enum {                         /* ISO 15924 code */
       PANGO_SCRIPT_LINEAR_B,           /* Linb */
       PANGO_SCRIPT_TAI_LE,             /* Tale */
       PANGO_SCRIPT_UGARITIC,           /* Ugar */
-      
+
       /* Unicode-4.1 additions */
       PANGO_SCRIPT_NEW_TAI_LUE,        /* Talu */
       PANGO_SCRIPT_BUGINESE,           /* Bugi */

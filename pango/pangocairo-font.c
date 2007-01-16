@@ -82,7 +82,7 @@ _pango_cairo_font_install (PangoCairoFont *font,
 	}
       return FALSE;
     }
-  
+
   return (* PANGO_CAIRO_FONT_GET_IFACE (font)->install) (font, cr);
 }
 
@@ -91,7 +91,7 @@ _pango_cairo_font_get_font_face (PangoCairoFont *font)
 {
   g_return_val_if_fail (PANGO_IS_CAIRO_FONT (font), NULL);
   /* this function will be removed.  don't bother with warning history here */
-  
+
   return (* PANGO_CAIRO_FONT_GET_IFACE (font)->get_font_face) (font);
 }
 
@@ -107,7 +107,7 @@ _pango_cairo_font_get_scaled_font (PangoCairoFont *font)
 	}
       return NULL;
     }
-  
+
   return (* PANGO_CAIRO_FONT_GET_IFACE (font)->get_scaled_font) (font);
 }
 
@@ -119,8 +119,8 @@ _pango_cairo_hex_box_info_destroy (PangoCairoHexBoxInfo *hbi)
       g_object_unref (hbi->font);
       g_slice_free (PangoCairoHexBoxInfo, hbi);
     }
-}  
-   
+}
+
 PangoCairoHexBoxInfo *
 _pango_cairo_font_get_hex_box_info (PangoCairoFont *cfont)
 {
@@ -154,10 +154,10 @@ _pango_cairo_font_get_hex_box_info (PangoCairoFont *cfont)
   if (hbi)
     return hbi;
 
-  scaled_font = _pango_cairo_font_get_scaled_font (cfont);  
+  scaled_font = _pango_cairo_font_get_scaled_font (cfont);
   if (!scaled_font)
     {
-      g_object_set_data_full (G_OBJECT (cfont), "hex_box_info", NULL, NULL); 
+      g_object_set_data_full (G_OBJECT (cfont), "hex_box_info", NULL, NULL);
       return NULL;
     }
 
@@ -193,7 +193,7 @@ _pango_cairo_font_get_hex_box_info (PangoCairoFont *cfont)
 #define HINT(value, scale, scale_inv) (ceil ((value-1e-5) * scale) * scale_inv)
 #define HINT_X(value) HINT ((value), scale_x, scale_x_inv)
 #define HINT_Y(value) HINT ((value), scale_y, scale_y_inv)
-  
+
   /* create mini_font description */
   {
     PangoContext *context;
@@ -242,7 +242,7 @@ _pango_cairo_font_get_hex_box_info (PangoCairoFont *cfont)
 
 
   mini_cfont = (PangoCairoFont *) mini_font;
-  scaled_mini_font = _pango_cairo_font_get_scaled_font (mini_cfont);  
+  scaled_mini_font = _pango_cairo_font_get_scaled_font (mini_cfont);
 
   for (i = 0 ; i < 16 ; i++)
     {
@@ -294,7 +294,7 @@ _pango_cairo_font_get_hex_box_info (PangoCairoFont *cfont)
        hbi->box_descent = HINT_Y (hbi->box_descent);
     }
 
-  g_object_set_data_full (G_OBJECT (cfont), "hex_box_info", hbi, (GDestroyNotify)_pango_cairo_hex_box_info_destroy); 
+  g_object_set_data_full (G_OBJECT (cfont), "hex_box_info", hbi, (GDestroyNotify)_pango_cairo_hex_box_info_destroy);
 
   return hbi;
 }
@@ -305,7 +305,7 @@ _pango_cairo_get_glyph_extents_missing (PangoCairoFont *cfont,
 				        PangoRectangle *ink_rect,
 				        PangoRectangle *logical_rect)
 {
-  PangoCairoHexBoxInfo *hbi;  
+  PangoCairoHexBoxInfo *hbi;
   gint rows, cols;
 
   hbi = _pango_cairo_font_get_hex_box_info (cfont);
@@ -317,7 +317,7 @@ _pango_cairo_get_glyph_extents_missing (PangoCairoFont *cfont,
 
   rows = hbi->rows;
   cols = ((glyph & ~PANGO_GLYPH_UNKNOWN_FLAG) > 0xffff ? 6 : 4) / rows;
-  
+
   if (ink_rect)
     {
       ink_rect->x = PANGO_SCALE * hbi->pad_x;
@@ -325,13 +325,13 @@ _pango_cairo_get_glyph_extents_missing (PangoCairoFont *cfont,
       ink_rect->width = PANGO_SCALE * (3 * hbi->pad_x + cols * (hbi->digit_width + hbi->pad_x));
       ink_rect->height = PANGO_SCALE * hbi->box_height;
     }
-  
+
   if (logical_rect)
     {
       logical_rect->x = 0;
       logical_rect->y = PANGO_SCALE * (hbi->box_descent - (hbi->box_height + hbi->pad_y));
       logical_rect->width = PANGO_SCALE * (5 * hbi->pad_x + cols * (hbi->digit_width + hbi->pad_x));
       logical_rect->height = PANGO_SCALE * (hbi->box_height + 2 * hbi->pad_y);
-    }  
+    }
 }
 

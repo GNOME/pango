@@ -1,5 +1,5 @@
-/* 
- * mprefixups.c: Handle left matra placement 
+/*
+ * mprefixups.c: Handle left matra placement
  *
  * Author: Sivaraj Doddannan
  * Ported from IBM's ICU engine.  Original copyright:
@@ -43,7 +43,7 @@ MPreFixups *indic_mprefixups_new(glong char_count);
 void        indic_mprefixups_free(MPreFixups *mprefixups);
 void        indic_mprefixups_add(MPreFixups *mprefixups, glong baseIndex, glong mpreIndex);
 void        indic_mprefixups_apply(MPreFixups *mprefixups, PangoOTBuffer *buffer);
- 
+
 
 G_END_DECLS
 

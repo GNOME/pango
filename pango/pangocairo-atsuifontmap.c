@@ -37,7 +37,7 @@ static PangoRenderer *
 pango_cairo_atsui_font_map_get_renderer (PangoCairoFontMap *cfontmap)
 {
   PangoCairoATSUIFontMap *cwfontmap = PANGO_CAIRO_ATSUI_FONT_MAP (cfontmap);
-  
+
   if (!cwfontmap->renderer)
     cwfontmap->renderer = g_object_new (PANGO_TYPE_CAIRO_RENDERER, NULL);
 
@@ -49,7 +49,7 @@ pango_cairo_atsui_font_map_set_resolution (PangoCairoFontMap *cfontmap,
 					   double             dpi)
 {
   PangoCairoATSUIFontMap *cafontmap = PANGO_CAIRO_ATSUI_FONT_MAP (cfontmap);
-  
+
   cafontmap->dpi = dpi;
 }
 
@@ -88,7 +88,7 @@ static void
 pango_cairo_atsui_font_map_finalize (GObject *object)
 {
   PangoCairoATSUIFontMap *cafontmap = PANGO_CAIRO_ATSUI_FONT_MAP (object);
-  
+
   if (cafontmap->renderer)
     g_object_unref (cafontmap->renderer);
 

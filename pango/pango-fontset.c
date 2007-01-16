@@ -56,7 +56,7 @@ PangoFont *
 pango_fontset_get_font (PangoFontset  *fontset,
 			guint          wc)
 {
-  
+
   g_return_val_if_fail (PANGO_IS_FONTSET (fontset), NULL);
 
   return PANGO_FONTSET_GET_CLASS (fontset)->get_font (fontset, wc);
@@ -65,7 +65,7 @@ pango_fontset_get_font (PangoFontset  *fontset,
 /**
  * pango_fontset_get_metrics:
  * @fontset: a #PangoFontset
- * 
+ *
  * Get overall metric information for the fonts in the fontset.
  *
  * Return value: a #PangoFontMetrics object. The caller must call pango_font_metrics_unref()
@@ -84,7 +84,7 @@ pango_fontset_get_metrics (PangoFontset  *fontset)
  * @fontset: a #PangoFontset
  * @func: Callback function
  * @data: data to pass to the callback function
- * 
+ *
  * Iterates through all the fonts in a fontset, calling @func for
  * each one. If @func returns %TRUE, that stops the iteration.
  *
@@ -156,7 +156,7 @@ pango_fontset_real_get_metrics (PangoFontset  *fontset)
 	    {
 	      raw_metrics = pango_font_get_metrics (font, language);
 	      g_hash_table_insert (fonts_seen, font, font);
-	      
+
 	      if (count == 0)
 		{
 		  metrics->ascent = raw_metrics->ascent;
@@ -165,7 +165,7 @@ pango_fontset_real_get_metrics (PangoFontset  *fontset)
 		  metrics->approximate_digit_width = raw_metrics->approximate_digit_width;
 		}
 	      else
-		{ 
+		{
 		  metrics->ascent = MAX (metrics->ascent, raw_metrics->ascent);
 		  metrics->descent = MAX (metrics->descent, raw_metrics->descent);
 		  metrics->approximate_char_width += raw_metrics->approximate_char_width;
@@ -177,12 +177,12 @@ pango_fontset_real_get_metrics (PangoFontset  *fontset)
 	  else
 	    g_object_unref (font);
 	}
-	  
+
       p = g_utf8_next_char (p);
     }
 
   g_hash_table_destroy (fonts_seen);
-  
+
   if (count)
     {
       metrics->approximate_char_width /= count;
@@ -230,7 +230,7 @@ static PangoFontsetClass *simple_parent_class;	/* Parent class structure for Pan
 /**
  * pango_fontset_simple_new:
  * @language: a #PangoLanguage tag
- * 
+ *
  * Creates a new #PangoFontsetSimple for the given language.
  *
  * Return value: the newly allocated #PangoFontsetSimple, which should
@@ -240,10 +240,10 @@ PangoFontsetSimple *
 pango_fontset_simple_new (PangoLanguage *language)
 {
   PangoFontsetSimple *fontset;
-  
+
   fontset = g_object_new (PANGO_TYPE_FONTSET_SIMPLE, NULL);
   fontset->language = language;
-  
+
   return fontset;
 }
 
@@ -254,7 +254,7 @@ pango_fontset_simple_class_init (PangoFontsetSimpleClass *class)
   PangoFontsetClass *fontset_class = PANGO_FONTSET_CLASS (class);
 
   simple_parent_class = g_type_class_peek_parent (class);
-  
+
   object_class->finalize = pango_fontset_simple_finalize;
   fontset_class->get_font = pango_fontset_simple_get_font;
   fontset_class->get_metrics = pango_fontset_simple_get_metrics;
@@ -262,7 +262,7 @@ pango_fontset_simple_class_init (PangoFontsetSimpleClass *class)
   fontset_class->foreach = pango_fontset_simple_foreach;
 }
 
-static void 
+static void
 pango_fontset_simple_init (PangoFontsetSimple *fontset)
 {
   fontset->fonts = g_ptr_array_new ();
@@ -292,7 +292,7 @@ pango_fontset_simple_finalize (GObject *object)
       if (coverage)
 	pango_coverage_unref (coverage);
     }
-  
+
   g_ptr_array_free (fontset->coverages, TRUE);
 
   G_OBJECT_CLASS (simple_parent_class)->finalize (object);
@@ -317,7 +317,7 @@ pango_fontset_simple_append (PangoFontsetSimple *fontset,
  * pango_fontset_simple_size:
  * @fontset: a #PangoFontsetSimple.
  *
- * Returns the number of fonts in the fontset. 
+ * Returns the number of fonts in the fontset.
  *
  * Return value: the size of @fontset.
  **/
@@ -339,11 +339,11 @@ static PangoFontMetrics *
 pango_fontset_simple_get_metrics (PangoFontset  *fontset)
 {
   PangoFontsetSimple *simple = PANGO_FONTSET_SIMPLE (fontset);
-  
+
   if (simple->fonts->len == 1)
     return pango_font_get_metrics (PANGO_FONT (g_ptr_array_index(simple->fonts, 0)),
 				   simple->language);
-  
+
   return PANGO_FONTSET_CLASS (simple_parent_class)->get_metrics (fontset);
 }
 
@@ -358,21 +358,21 @@ pango_fontset_simple_get_font (PangoFontset  *fontset,
   PangoCoverage *coverage;
   int result = -1;
   unsigned int i;
-  
+
   for (i = 0; i < simple->fonts->len; i++)
     {
       coverage = g_ptr_array_index (simple->coverages, i);
-      
+
       if (coverage == NULL)
 	{
 	  font = g_ptr_array_index (simple->fonts, i);
-	  
+
 	  coverage = pango_font_get_coverage (font, simple->language);
 	  g_ptr_array_index (simple->coverages, i) = coverage;
 	}
-      
+
       level = pango_coverage_get (coverage, wc);
-      
+
       if (result == -1 || level > best_level)
 	{
 	  result = i;
@@ -393,7 +393,7 @@ pango_fontset_simple_foreach (PangoFontset           *fontset,
 {
   PangoFontsetSimple *simple = PANGO_FONTSET_SIMPLE (fontset);
   unsigned int i;
-  
+
   for (i = 0; i < simple->fonts->len; i++)
     {
       if ((*func) (fontset,

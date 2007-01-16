@@ -2745,7 +2745,7 @@ static const struct {
     gunichar    start;
     guint16     chars;
     guint16     script;
-} pango_script_table[] = { 
+} pango_script_table[] = {
  { 0x2000,    12, PANGO_SCRIPT_COMMON },
  { 0x200c,     2, PANGO_SCRIPT_INHERITED },
  { 0x200e,    86, PANGO_SCRIPT_COMMON },

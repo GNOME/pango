@@ -180,7 +180,7 @@ pango_ft2_font_render_glyph (PangoFont *font,
     }
 
   face = pango_ft2_font_get_face (font);
-  
+
   if (face)
     {
       PangoFT2RenderedGlyph *rendered;
@@ -308,7 +308,7 @@ pango_ft2_renderer_draw_glyph (PangoRenderer *renderer,
 	    {
 	      if ((*s) & (1 << (7 - (ix % 8))))
 		*d |= 0xff;
-		      
+
 	      if ((ix % 8) == 7)
 		s++;
 	      d++;
@@ -318,7 +318,7 @@ pango_ft2_renderer_draw_glyph (PangoRenderer *renderer,
 	  src  += rendered_glyph->bitmap.pitch;
 	}
       break;
-	      
+
     default:
       g_warning ("pango_ft2_render: "
 		 "Unrecognized glyph bitmap pixel mode %d\n",
@@ -549,10 +549,10 @@ pango_ft2_renderer_draw_trapezoid (PangoRenderer   *renderer,
  *
  * Since: 1.6
  */
-void 
+void
 pango_ft2_render_layout_subpixel (FT_Bitmap   *bitmap,
 				  PangoLayout *layout,
-				  int          x, 
+				  int          x,
 				  int          y)
 {
   PangoContext *context;
@@ -567,7 +567,7 @@ pango_ft2_render_layout_subpixel (FT_Bitmap   *bitmap,
   renderer = _pango_ft2_font_map_get_renderer (PANGO_FT2_FONT_MAP (fontmap));
 
   pango_ft2_renderer_set_bitmap (PANGO_FT2_RENDERER (renderer), bitmap);
-  
+
   pango_renderer_draw_layout (renderer, layout, x, y);
 }
 
@@ -580,10 +580,10 @@ pango_ft2_render_layout_subpixel (FT_Bitmap   *bitmap,
  *
  * Render a #PangoLayout onto a FreeType2 bitmap
  */
-void 
+void
 pango_ft2_render_layout (FT_Bitmap   *bitmap,
 			 PangoLayout *layout,
-			 int          x, 
+			 int          x,
 			 int          y)
 {
   pango_ft2_render_layout_subpixel (bitmap, layout, x * PANGO_SCALE, y * PANGO_SCALE);
@@ -604,10 +604,10 @@ pango_ft2_render_layout (FT_Bitmap   *bitmap,
  *
  * Since: 1.6
  */
-void 
+void
 pango_ft2_render_layout_line_subpixel (FT_Bitmap       *bitmap,
 				       PangoLayoutLine *line,
-				       int              x, 
+				       int              x,
 				       int              y)
 {
   PangoContext *context;
@@ -622,7 +622,7 @@ pango_ft2_render_layout_line_subpixel (FT_Bitmap       *bitmap,
   renderer = _pango_ft2_font_map_get_renderer (PANGO_FT2_FONT_MAP (fontmap));
 
   pango_ft2_renderer_set_bitmap (PANGO_FT2_RENDERER (renderer), bitmap);
-  
+
   pango_renderer_draw_layout_line (renderer, line, x, y);
 }
 
@@ -635,10 +635,10 @@ pango_ft2_render_layout_line_subpixel (FT_Bitmap       *bitmap,
  *
  * Render a #PangoLayoutLine onto a FreeType2 bitmap
  */
-void 
+void
 pango_ft2_render_layout_line (FT_Bitmap       *bitmap,
 			      PangoLayoutLine *line,
-			      int              x, 
+			      int              x,
 			      int              y)
 {
   pango_ft2_render_layout_line_subpixel (bitmap, line, x * PANGO_SCALE, y * PANGO_SCALE);
@@ -664,12 +664,12 @@ pango_ft2_render_layout_line (FT_Bitmap       *bitmap,
  *
  * Since: 1.6
  **/
-void 
+void
 pango_ft2_render_transformed (FT_Bitmap         *bitmap,
 			      const PangoMatrix *matrix,
 			      PangoFont         *font,
 			      PangoGlyphString  *glyphs,
-			      int                x, 
+			      int                x,
 			      int                y)
 {
   PangoFontMap *fontmap;
@@ -684,7 +684,7 @@ pango_ft2_render_transformed (FT_Bitmap         *bitmap,
 
   pango_ft2_renderer_set_bitmap (PANGO_FT2_RENDERER (renderer), bitmap);
   pango_renderer_set_matrix (renderer, matrix);
-  
+
   pango_renderer_draw_glyphs (renderer, font, glyphs, x, y);
 }
 
@@ -698,11 +698,11 @@ pango_ft2_render_transformed (FT_Bitmap         *bitmap,
  *
  * Renders a #PangoGlyphString onto a FreeType2 bitmap.
  **/
-void 
+void
 pango_ft2_render (FT_Bitmap        *bitmap,
 		  PangoFont        *font,
 		  PangoGlyphString *glyphs,
-		  int               x, 
+		  int               x,
 		  int               y)
 {
   pango_ft2_render_transformed (bitmap, NULL, font, glyphs, x * PANGO_SCALE, y * PANGO_SCALE);

@@ -98,7 +98,7 @@ reorder_items_recurse (GList *items, int n_items)
 
       tmp_list = tmp_list->next;
     }
-  
+
   if (min_level % 2)
     {
       if (i > level_start_i)

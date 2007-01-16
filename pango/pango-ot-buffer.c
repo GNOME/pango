@@ -36,7 +36,7 @@
  *               be freed with pango_ot_buffer_destroy().
  *
  * Since: 1.4
- **/ 
+ **/
 PangoOTBuffer *
 pango_ot_buffer_new (PangoFcFont *font)
 {
@@ -69,7 +69,7 @@ pango_ot_buffer_new (PangoFcFont *font)
  * Destroys a #PangoOTBuffer and free all associated memory.
  *
  * Since: 1.4
- **/ 
+ **/
 void
 pango_ot_buffer_destroy (PangoOTBuffer *buffer)
 {
@@ -85,7 +85,7 @@ pango_ot_buffer_destroy (PangoOTBuffer *buffer)
  * Empties a #PangoOTBuffer, make it ready to add glyphs to.
  *
  * Since: 1.4
- **/ 
+ **/
 void
 pango_ot_buffer_clear (PangoOTBuffer *buffer)
 {
@@ -104,7 +104,7 @@ pango_ot_buffer_clear (PangoOTBuffer *buffer)
  * features should be applied on this glyph.  See pango_ruleset_add_feature().
  *
  * Since: 1.4
- **/ 
+ **/
 void
 pango_ot_buffer_add_glyph (PangoOTBuffer *buffer,
 			   guint          glyph,
@@ -124,7 +124,7 @@ pango_ot_buffer_add_glyph (PangoOTBuffer *buffer,
  * is needed for proper horizontal positioning of right-to-left scripts.
  *
  * Since: 1.4
- **/ 
+ **/
 void
 pango_ot_buffer_set_rtl (PangoOTBuffer *buffer,
 			 gboolean       rtl)
@@ -137,7 +137,7 @@ pango_ot_buffer_set_rtl (PangoOTBuffer *buffer,
  * @buffer: a #PangoOTBuffer
  * @zero_width_marks: %TRUE if characters with a mark class should
  *  be forced to zero width.
- * 
+ *
  * Sets whether characters with a mark class should be forced to zero width.
  * This setting is needed for proper positioning of Arabic accents,
  * but will produce incorrect results with standard OpenType Indic
@@ -163,7 +163,7 @@ pango_ot_buffer_set_zero_width_marks (PangoOTBuffer     *buffer,
  * as buffer is not modified.
  *
  * Since: 1.4
- **/ 
+ **/
 void
 pango_ot_buffer_get_glyphs (PangoOTBuffer  *buffer,
 			    PangoOTGlyph  **glyphs,
@@ -180,16 +180,16 @@ static void
 swap_range (PangoGlyphString *glyphs, int start, int end)
 {
   int i, j;
-  
+
   for (i = start, j = end - 1; i < j; i++, j--)
     {
       PangoGlyphInfo glyph_info;
       gint log_cluster;
-      
+
       glyph_info = glyphs->glyphs[i];
       glyphs->glyphs[i] = glyphs->glyphs[j];
       glyphs->glyphs[j] = glyph_info;
-      
+
       log_cluster = glyphs->log_clusters[i];
       glyphs->log_clusters[i] = glyphs->log_clusters[j];
       glyphs->log_clusters[j] = log_cluster;
@@ -201,27 +201,27 @@ apply_gpos_ltr (PangoGlyphString *glyphs,
 		HB_Position      positions)
 {
   int i;
-	    
+
   for (i = 0; i < glyphs->num_glyphs; i++)
     {
       FT_Pos x_pos = positions[i].x_pos;
       FT_Pos y_pos = positions[i].y_pos;
       int back = i;
       int j;
-      
+
       while (positions[back].back != 0)
 	{
 	  back  -= positions[back].back;
 	  x_pos += positions[back].x_pos;
 	  y_pos += positions[back].y_pos;
 	}
-      
+
       for (j = back; j < i; j++)
 	glyphs->glyphs[i].geometry.x_offset -= glyphs->glyphs[j].geometry.width;
-      
+
       glyphs->glyphs[i].geometry.x_offset += PANGO_UNITS_26_6(x_pos);
       glyphs->glyphs[i].geometry.y_offset -= PANGO_UNITS_26_6(y_pos);
-      
+
       if (positions[i].new_advance)
 	glyphs->glyphs[i].geometry.width  = PANGO_UNITS_26_6(positions[i].x_advance);
       else
@@ -234,7 +234,7 @@ apply_gpos_rtl (PangoGlyphString *glyphs,
 		HB_Position      positions)
 {
   int i;
-  
+
   for (i = 0; i < glyphs->num_glyphs; i++)
     {
       int i_rev = glyphs->num_glyphs - i - 1;
@@ -252,13 +252,13 @@ apply_gpos_rtl (PangoGlyphString *glyphs,
 	}
 
       back = glyphs->num_glyphs - back_rev - 1;
-      
+
       for (j = i; j < back; j++)
 	glyphs->glyphs[i].geometry.x_offset += glyphs->glyphs[j].geometry.width;
-      
+
       glyphs->glyphs[i].geometry.x_offset += PANGO_UNITS_26_6(x_pos);
       glyphs->glyphs[i].geometry.y_offset -= PANGO_UNITS_26_6(y_pos);
-      
+
       if (positions[i_rev].new_advance)
 	glyphs->glyphs[i].geometry.width  = PANGO_UNITS_26_6(positions[i_rev].x_advance);
       else
@@ -276,7 +276,7 @@ apply_gpos_rtl (PangoGlyphString *glyphs,
  * resulting glyphs into a generic Pango glyph string.
  *
  * Since: 1.4
- **/ 
+ **/
 void
 pango_ot_buffer_output (PangoOTBuffer    *buffer,
 			PangoGlyphString *glyphs)
@@ -289,7 +289,7 @@ pango_ot_buffer_output (PangoOTBuffer    *buffer,
 
   face = pango_fc_font_lock_face (buffer->font);
   g_assert (face);
-  
+
   /* Copy glyphs into output glyph string */
   pango_glyph_string_set_size (glyphs, buffer->buffer->in_length);
 
@@ -297,7 +297,7 @@ pango_ot_buffer_output (PangoOTBuffer    *buffer,
   for (i = 0; i < buffer->buffer->in_length; i++)
     {
       HB_GlyphItem item = &buffer->buffer->in_string[i];
-      
+
       glyphs->glyphs[i].glyph = item->gindex;
 
       glyphs->log_clusters[i] = item->cluster;
@@ -311,14 +311,14 @@ pango_ot_buffer_output (PangoOTBuffer    *buffer,
 
   info = pango_ot_info_get (face);
   gdef = pango_ot_info_get_gdef (info);
-  
+
   /* Apply default positioning */
   for (i = 0; i < (unsigned int)glyphs->num_glyphs; i++)
     {
       if (glyphs->glyphs[i].glyph)
 	{
 	  PangoRectangle logical_rect;
-	  
+
 	  FT_UShort property;
 
 	  if (buffer->zero_width_marks &&
@@ -336,7 +336,7 @@ pango_ot_buffer_output (PangoOTBuffer    *buffer,
 	}
       else
 	glyphs->glyphs[i].geometry.width = 0;
-  
+
       glyphs->glyphs[i].geometry.x_offset = 0;
       glyphs->glyphs[i].geometry.y_offset = 0;
     }

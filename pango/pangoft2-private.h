@@ -119,7 +119,7 @@ typedef struct _PangoFT2WarningHistory PangoFT2WarningHistory;
 
 struct _PangoFT2WarningHistory {
   guint get_face		: 1;
-}; 
+};
 
 extern PangoFT2WarningHistory _pango_ft2_warning_history;
 

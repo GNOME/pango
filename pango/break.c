@@ -27,7 +27,7 @@
 
 #define PARAGRAPH_SEPARATOR 0x2029
 #define PARAGRAPH_SEPARATOR_STRING "\xE2\x80\xA9"
-  
+
 /* See http://www.unicode.org/unicode/reports/tr14/ if you hope
  * to understand the line breaking code.
  */
@@ -550,7 +550,7 @@ pango_default_break (const gchar   *text,
   g_return_if_fail (attrs != NULL);
 
   next = text;
-  
+
   prev_type = (GUnicodeType) -1;
   prev_break_type = G_UNICODE_BREAK_UNKNOWN;
   prev_was_break_space = FALSE;
@@ -602,7 +602,7 @@ pango_default_break (const gchar   *text,
             }
           else
 	    next_wc = g_utf8_get_char (next);
-	  
+
 	  next_break_type = g_unichar_break_type (next_wc);
           next_break_type = BREAK_TYPE_SAFE (next_break_type);
         }
@@ -617,7 +617,7 @@ pango_default_break (const gchar   *text,
 	{
 	  JamoType prev_end   = HangulJamoProps[prev_jamo].end  ;
 	  JamoType this_start = HangulJamoProps[     jamo].start;
-	  
+
 	  /* See comments before IS_JAMO */
 	  makes_hangul_syllable = (prev_end == this_start) || (prev_end + 1 == this_start);
 	}
@@ -724,7 +724,7 @@ pango_default_break (const gchar   *text,
               break;
             }
         }
-      
+
       /* If this is a grapheme boundary, we have to decide if backspace
        * deletes a character or the whole grapheme cluster */
       if (attrs[i].is_cursor_position)
@@ -740,7 +740,7 @@ pango_default_break (const gchar   *text,
 
       attrs[i].is_line_break = FALSE;
       attrs[i].is_mandatory_break = FALSE;
-      
+
       if (attrs[i].is_cursor_position) /* If it's not a grapheme boundary,
                                         * it's not a line break either
                                         */
@@ -751,13 +751,13 @@ pango_default_break (const gchar   *text,
 	  if (break_type == G_UNICODE_BREAK_SPACE &&
 	      next_break_type == G_UNICODE_BREAK_COMBINING_MARK)
 	    break_type = G_UNICODE_BREAK_IDEOGRAPHIC;
-		
+
           /* Unicode doesn't specify char wrap; we wrap around all chars
            * except where a line break is prohibited, which means we
            * effectively break everywhere except inside runs of spaces.
            */
-          attrs[i].is_char_break = TRUE;          
-          
+          attrs[i].is_char_break = TRUE;
+
 	  /* Make any necessary replacements first */
           switch (prev_break_type)
             {
@@ -902,13 +902,13 @@ pango_default_break (const gchar   *text,
               switch (break_op)
                 {
                 case BREAK_PROHIBITED:
-                  /* can't break here */                  
+                  /* can't break here */
                   attrs[i].is_char_break = FALSE;
                   break;
 
                 case BREAK_IF_SPACES:
                   /* break if prev char was space */
-                  if (prev_was_break_space)                    
+                  if (prev_was_break_space)
                     attrs[i].is_line_break = TRUE;
                   break;
 
@@ -922,7 +922,7 @@ pango_default_break (const gchar   *text,
                 }
             }
         }
-      
+
       if (break_type != G_UNICODE_BREAK_SPACE)
         {
           prev_break_type = break_type;
@@ -1035,7 +1035,7 @@ pango_default_break (const gchar   *text,
         }
 
       /* ---- Sentence breaks ---- */
-      
+
       /* The Unicode spec specifies sentence breakpoints, so that a piece of
        * text would be partitioned into sentences, and all characters would
        * be inside some sentence. This code implements that for is_sentence_boundary,
@@ -1065,14 +1065,14 @@ pango_default_break (const gchar   *text,
                   attrs[i].is_sentence_start = TRUE;            \
                   break;                                        \
                 }
-      
+
       /* No sentence break at the start of the text */
 
       /* default to not a sentence breakpoint */
       attrs[i].is_sentence_boundary = FALSE;
       attrs[i].is_sentence_start = FALSE;
       attrs[i].is_sentence_end = FALSE;
-      
+
       /* FIXME the Unicode spec lumps control/format chars with
        * line/para separators in descriptive text, but not in the
        * character class specs, in table 5-6, so who knows whether you
@@ -1390,7 +1390,7 @@ pango_default_break (const gchar   *text,
               possible_sentence_boundary = -1;
 
               MAYBE_START_NEW_SENTENCE;
-              
+
               break;
             }
           break;
@@ -1458,8 +1458,8 @@ pango_default_break (const gchar   *text,
 
       /* wc might not be a valid Unicode base character, but really all we
        * need to know is the last non-combining character */
-      if (type != G_UNICODE_COMBINING_MARK && 
-          type != G_UNICODE_ENCLOSING_MARK && 
+      if (type != G_UNICODE_COMBINING_MARK &&
+          type != G_UNICODE_ENCLOSING_MARK &&
           type != G_UNICODE_NON_SPACING_MARK)
         base_character = wc;
     }
@@ -1506,7 +1506,7 @@ pango_break (const gchar   *text,
 {
   g_return_if_fail (analysis != NULL);
   g_return_if_fail (attrs != NULL);
-  
+
   pango_default_break (text, length, analysis, attrs, attrs_len);
   tailor_break        (text, length, analysis, attrs, attrs_len);
 }
@@ -1517,7 +1517,7 @@ pango_break (const gchar   *text,
  * @length: length of @text in bytes, or -1 if nul-terminated
  * @paragraph_delimiter_index: return location for index of delimiter
  * @next_paragraph_start: return location for start of next paragraph
- * 
+ *
  * Locates a paragraph boundary in @text. A boundary is caused by
  * delimiter characters, such as a newline, carriage return, carriage
  * return-newline pair, or Unicode paragraph separator character.  The
@@ -1586,7 +1586,7 @@ pango_find_paragraph_boundary (const gchar *text,
               break;
             }
         }
-      
+
       if (*p == '\n' ||
            *p == '\r' ||
            !strncmp(p, PARAGRAPH_SEPARATOR_STRING,
@@ -1598,7 +1598,7 @@ pango_find_paragraph_boundary (const gchar *text,
 	}
       else
 	prev_sep = 0;
-      
+
       p = g_utf8_next_char (p);
     }
 
@@ -1729,7 +1729,7 @@ pango_get_log_attrs (const char    *text,
   chars_broken += tailor_segment (range_start, range_end, range_engine, chars_broken, &analysis, log_attrs);
 
   if (chars_broken + 1 < attrs_len)
-    g_warning ("pango_get_log_attrs: attrs_len should have been at least %d, but was %d.  Expect corrupted memory.", 
+    g_warning ("pango_get_log_attrs: attrs_len should have been at least %d, but was %d.  Expect corrupted memory.",
 	       chars_broken + 1,
 	       attrs_len);
 }

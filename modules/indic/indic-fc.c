@@ -45,7 +45,7 @@ struct _IndicEngineFc
 
 struct _PangoIndicInfo
 {
-  PangoOTTag               scriptTag; 
+  PangoOTTag               scriptTag;
   const IndicOTClassTable *classTable;
   const gchar             *gsubQuarkName;
   const gchar             *gposQuarkName;
@@ -139,7 +139,7 @@ maybe_add_GSUB_feature (PangoOTRuleset *ruleset,
 			gulong          property_bit)
 {
   guint feature_index;
-  
+
   /* 0xffff == default language system */
   if (pango_ot_info_find_feature (info, PANGO_OT_TABLE_GSUB,
 				  feature_tag, script_index, 0xffff, &feature_index))
@@ -316,7 +316,7 @@ expand_text(const gchar *text, glong length, glong **offsets, glong *n_chars)
 
 
 /* analysis->shape_engine has the PangoEngine... */
-static void 
+static void
 indic_engine_shape (PangoEngineShape *engine,
 		    PangoFont        *font,
 		    const char       *text,
@@ -352,15 +352,15 @@ indic_engine_shape (PangoEngineShape *engine,
   indic_info = indic_shape_engine->indicInfo;
 
   wc_in    = expand_text (text, length, &utf8_offsets, &n_chars);
- 
+
   n_glyphs = indic_ot_reorder (wc_in, utf8_offsets, n_chars, indic_info->classTable, NULL, NULL, NULL, NULL);
-  
+
   wc_out  = g_new (gunichar, n_glyphs);
   indices = g_new (glong,    n_glyphs);
   tags    = g_new (gulong,   n_glyphs);
 
   n_glyphs  = indic_ot_reorder (wc_in, utf8_offsets, n_chars, indic_info->classTable, wc_out, indices, tags, &mprefixups);
-  
+
   pango_glyph_string_set_size (glyphs, n_glyphs);
   buffer = pango_ot_buffer_new (fc_font);
 
@@ -409,18 +409,18 @@ indic_engine_fc_class_init (PangoEngineShapeClass *class)
 PANGO_ENGINE_SHAPE_DEFINE_TYPE (IndicEngineFc, indic_engine_fc,
 				indic_engine_fc_class_init, NULL)
 
-void 
+void
 PANGO_MODULE_ENTRY(init) (GTypeModule *module)
 {
   indic_engine_fc_register_type (module);
 }
 
-void 
+void
 PANGO_MODULE_ENTRY(exit) (void)
 {
 }
 
-void 
+void
 PANGO_MODULE_ENTRY(list) (PangoEngineInfo **engines,
 			  int              *n_engines)
 {
@@ -439,7 +439,7 @@ PANGO_MODULE_ENTRY(create) (const char *id)
 	{
 	  IndicEngineFc *engine = g_object_new (indic_engine_fc_type, NULL);
 	  engine->indicInfo = &indic_info[i];
-					      
+
 	  return (PangoEngine *)engine;
 	}
     }

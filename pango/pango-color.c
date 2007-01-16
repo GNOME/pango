@@ -31,7 +31,7 @@ GType
 pango_color_get_type (void)
 {
   static GType our_type = 0;
-  
+
   if (our_type == 0)
     our_type = g_boxed_type_register_static (I_("PangoColor"),
 					     (GBoxedCopyFunc) pango_color_copy,
@@ -43,12 +43,12 @@ pango_color_get_type (void)
 /**
  * pango_color_copy:
  * @src: color to copy
- * 
+ *
  * Creates a copy of @src, which should be freed with
  * pango_color_free(). Primarily used by language bindings,
  * not that useful otherwise (since colors can just be copied
  * by assignment in C).
- * 
+ *
  * Return value: the newly allocated #PangoColor, which should
  *               be freed with pango_color_free().
  **/
@@ -58,7 +58,7 @@ pango_color_copy (const PangoColor *src)
   PangoColor *ret;
 
   g_return_val_if_fail (src != NULL, NULL);
-  
+
   ret = g_slice_new (PangoColor);
 
   *ret = *src;
@@ -69,7 +69,7 @@ pango_color_copy (const PangoColor *src)
 /**
  * pango_color_free:
  * @color: an allocated #PangoColor
- * 
+ *
  * Frees a color allocated by pango_color_copy().
  **/
 void
@@ -178,13 +178,13 @@ find_color(const char *name,
   return TRUE;
 }
 
-static gboolean 
-hex (const char *spec, 
-    int len, 
+static gboolean
+hex (const char *spec,
+    int len,
     unsigned int *c)
 {
   const char *end;
-  *c = 0; 
+  *c = 0;
   for (end = spec + len; spec != end; spec++)
     if (g_ascii_isxdigit (*spec))
       *c = (*c << 4) | g_ascii_xdigit_value (*spec);
@@ -197,7 +197,7 @@ hex (const char *spec,
  * pango_color_parse:
  * @color: a #PangoColor structure in which to store the result
  * @spec: a string specifying the new color
- * 
+ *
  * Fill in the fields of a color from a string specification. The
  * string can either one of a large set of standard names. (Taken
  * from the X11 <filename>rgb.txt</filename> file), or it can be a hex value in the
@@ -224,10 +224,10 @@ pango_color_parse (PangoColor *color,
       len = strlen (spec);
       if (len % 3 || len < 3 || len > 12)
         return FALSE;
-      
+
       len /= 3;
 
-      if (!hex (spec, len, &r) || 
+      if (!hex (spec, len, &r) ||
 	  !hex (spec + len, len, &g) ||
 	  !hex (spec + len * 2, len, &b))
 	return FALSE;
@@ -243,7 +243,7 @@ pango_color_parse (PangoColor *color,
 	      r |= (r >> bits);
 	      g |= (g >> bits);
 	      b |= (b >> bits);
-	      bits *= 2;  
+	      bits *= 2;
 	    }
 	  color->red   = r;
 	  color->green = g;

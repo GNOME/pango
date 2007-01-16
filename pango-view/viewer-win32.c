@@ -110,7 +110,7 @@ split_paragraphs (char *text)
   gunichar wc;
   GList *result = NULL;
   char *last_para = text;
-  
+
   while (*p)
     {
       wc = g_utf8_get_char (p);
@@ -131,7 +131,7 @@ split_paragraphs (char *text)
 	  para->height = 0;
 
 	  last_para = next;
-	    
+
 	  result = g_list_prepend (result, para);
 	}
       if (!wc) /* incomplete character at end */
@@ -157,19 +157,19 @@ xy_to_cp (int width, int x, int y, Paragraph **para_return, int *index)
   while (para_list && height < y)
     {
       Paragraph *para = para_list->data;
-      
+
       if (height + para->height >= y)
 	{
 	  gboolean result = pango_layout_xy_to_index (para->layout,
 						      x * PANGO_SCALE,
-						      (y - height) * PANGO_SCALE, 
+						      (y - height) * PANGO_SCALE,
 						      index, NULL);
 	  if (result && para_return)
 	    *para_return = para;
 
 	  return result;
 	}
-      
+
       height += para->height;
       para_list = para_list->next;
     }
@@ -179,19 +179,19 @@ xy_to_cp (int width, int x, int y, Paragraph **para_return, int *index)
 
 /* Given a paragraph and offset in that paragraph, find the
  * bounding rectangle for the character at the offset.
- */ 
+ */
 void
 char_bounds (Paragraph *para, int index, int width, PangoRectangle *rect)
 {
   GList *para_list;
-  
+
   int height = 0;
-  
+
   para_list = paragraphs;
   while (para_list)
     {
       Paragraph *cur_para = para_list->data;
-      
+
       if (cur_para == para)
 	{
 	  PangoRectangle pos;
@@ -203,7 +203,7 @@ char_bounds (Paragraph *para, int index, int width, PangoRectangle *rect)
 	  rect->y = height + PANGO_PIXELS (pos.y);
 	  rect->height = PANGO_PIXELS (pos.height);
 	}
-      
+
       height += cur_para->height;
       para_list = para_list->next;
     }
@@ -256,7 +256,7 @@ size_allocate (GtkWidget *layout, GtkAllocation *allocation)
     {
       Paragraph *para = tmp_list->data;
       PangoRectangle logical_rect;
-	  
+
       tmp_list = tmp_list->next;
 
       pango_layout_set_alignment (para->layout,
@@ -265,7 +265,7 @@ size_allocate (GtkWidget *layout, GtkAllocation *allocation)
 
       pango_layout_get_extents (para->layout, NULL, &logical_rect);
       para->height = PANGO_PIXELS (logical_rect.height);
-      
+
       height += para->height;
     }
 
@@ -285,13 +285,13 @@ draw (GtkWidget *layout, GdkRectangle *area)
   guint height = 0;
   HDC hdc;
   const GdkGCValuesMask mask = GDK_GC_FOREGROUND|GDK_GC_BACKGROUND|GDK_GC_FONT;
-  
+
   gdk_draw_rectangle (GTK_LAYOUT (layout)->bin_window,
 		      layout->style->base_gc[layout->state],
 		      TRUE,
-		      area->x, area->y, 
+		      area->x, area->y,
 		      area->width, area->height);
-  
+
   gdk_gc_set_clip_rectangle (layout->style->text_gc[layout->state], area);
 
   hdc = gdk_win32_hdc_get (GTK_LAYOUT (layout)->bin_window,
@@ -303,7 +303,7 @@ draw (GtkWidget *layout, GdkRectangle *area)
     {
       Paragraph *para = tmp_list->data;
       tmp_list = tmp_list->next;
-      
+
       if (height + para->height >= GTK_LAYOUT (layout)->yoffset + area->y)
 	pango_win32_render_layout (hdc, para->layout,
 				   0, height - GTK_LAYOUT (layout)->yoffset);
@@ -334,7 +334,7 @@ button_press (GtkWidget *layout, GdkEventButton *event)
   Paragraph *para = NULL;
   int offset;
   gchar *message;
-  
+
   xy_to_cp (layout->allocation.width,
 	    event->x, event->y + GTK_LAYOUT (layout)->yoffset,
 	    &para, &offset);
@@ -344,14 +344,14 @@ button_press (GtkWidget *layout, GdkEventButton *event)
 
   highlight_para = para;
   highlight_offset = offset;
-  
+
   if (para)
     {
       gunichar wc;
 
       wc = g_utf8_get_char (para->text + offset);
       message = g_strdup_printf ("Current char: U%04x", wc);
-      
+
       xor_char (layout, NULL, highlight_para, highlight_offset);
     }
   else
@@ -365,7 +365,7 @@ static void
 checkbutton_toggled (GtkWidget *widget, gpointer data)
 {
   GList *para_list;
-  
+
   pango_context_set_base_dir (context, GTK_TOGGLE_BUTTON (widget)->active ? PANGO_DIRECTION_RTL : PANGO_DIRECTION_LTR);
 
   para_list = paragraphs;
@@ -415,7 +415,7 @@ set_style (GtkWidget *entry, gpointer data)
 {
   char *str = gtk_editable_get_chars (GTK_EDITABLE (entry), 0, -1);
   PangoFontDescription *tmp_desc;
-  
+
   tmp_desc = pango_font_description_from_string (str);
 
   pango_font_description_set_style(font_description, pango_font_description_get_style(tmp_desc));
@@ -425,7 +425,7 @@ set_style (GtkWidget *entry, gpointer data)
 
   pango_font_description_free (tmp_desc);
   g_free (str);
-  
+
   reload_font ();
 }
 
@@ -448,7 +448,7 @@ compare_font_descriptions (const PangoFontDescription *a, const PangoFontDescrip
 
   if (pango_font_description_get_style(a) != pango_font_description_get_style(b))
     return pango_font_description_get_style(a) - pango_font_description_get_style(b);
-  
+
   if (pango_font_description_get_stretch(a) != pango_font_description_get_stretch(b))
     return pango_font_description_get_stretch(a) - pango_font_description_get_stretch(b);
 
@@ -464,7 +464,7 @@ font_description_sort_func (const void *a, const void *b)
   return compare_font_descriptions (*(PangoFontDescription **)a, *(PangoFontDescription **)b);
 }
 
-typedef struct 
+typedef struct
 {
   PangoFontDescription **descs;
   int n_descs;
@@ -487,7 +487,7 @@ fill_styles_combo (GtkWidget *combo)
   int n_families;
   const char *family_name = pango_font_description_get_family(font_description);
 
-  /* 
+  /*
    * Now map back the given family name to the family. There are more efficient
    * ways to handle this but it should not matter much ...
    */
@@ -521,13 +521,13 @@ fill_styles_combo (GtkWidget *combo)
   for (i=0; i<info->n_descs; i++)
     {
       char *str;
-	
+
       PangoFontDescription *tmp_desc;
 
       tmp_desc = info->descs[i];
       pango_font_description_set_family(tmp_desc, NULL);
       pango_font_description_unset_fields(tmp_desc, PANGO_FONT_MASK_SIZE);
-      
+
       str = pango_font_description_to_string (tmp_desc);
       style_list = g_list_prepend (style_list, str);
     }
@@ -552,7 +552,7 @@ make_styles_combo ()
 
   styles_combo = combo;
   fill_styles_combo (combo);
-  
+
   return combo;
 }
 
@@ -570,7 +570,7 @@ make_families_menu ()
   PangoFontFamily **families;
   GList *family_list = NULL;
   int i;
-  
+
   pango_context_list_families (context, &families, &n_families);
   qsort (families, n_families, sizeof(char *), cmp_families);
 
@@ -578,7 +578,7 @@ make_families_menu ()
     family_list = g_list_prepend (family_list, pango_font_family_get_name (families[i]));
 
   family_list = g_list_reverse (family_list);
-  
+
   combo = gtk_combo_new ();
   gtk_combo_set_popdown_strings (GTK_COMBO (combo), family_list);
   gtk_combo_set_value_in_list (GTK_COMBO (combo), TRUE, FALSE);
@@ -588,7 +588,7 @@ make_families_menu ()
 
   gtk_signal_connect (GTK_OBJECT (GTK_COMBO (combo)->entry), "changed",
 		      GTK_SIGNAL_FUNC (set_family), NULL);
-  
+
   g_list_free (family_list);
 
   return combo;
@@ -604,15 +604,15 @@ make_font_selector (void)
   GtkWidget *option_menu;
   GtkWidget *spin_button;
   GtkAdjustment *adj;
-  
+
   hbox = gtk_hbox_new (FALSE, 4);
-  
+
   util_hbox = gtk_hbox_new (FALSE, 2);
   label = gtk_label_new ("Family:");
   gtk_box_pack_start (GTK_BOX (util_hbox), label, FALSE, FALSE, 0);
   option_menu = make_families_menu ();
   gtk_box_pack_start (GTK_BOX (util_hbox), option_menu, FALSE, FALSE, 0);
-  
+
   gtk_box_pack_start (GTK_BOX (hbox), util_hbox, FALSE, FALSE, 0);
 
   util_hbox = gtk_hbox_new (FALSE, 2);
@@ -620,7 +620,7 @@ make_font_selector (void)
   gtk_box_pack_start (GTK_BOX (util_hbox), label, FALSE, FALSE, 0);
   option_menu = make_styles_combo ();
   gtk_box_pack_start (GTK_BOX (util_hbox), option_menu, FALSE, FALSE, 0);
-  
+
   gtk_box_pack_start (GTK_BOX (hbox), util_hbox, FALSE, FALSE, 0);
 
   util_hbox = gtk_hbox_new (FALSE, 2);
@@ -642,11 +642,11 @@ make_font_selector (void)
 
   gtk_signal_connect (GTK_OBJECT (adj), "value_changed",
 		      GTK_SIGNAL_FUNC (font_size_changed), NULL);
-  
+
   return hbox;
 }
 
-int 
+int
 main (int argc, char **argv)
 {
   char *text;
@@ -657,7 +657,7 @@ main (int argc, char **argv)
   GtkWidget *checkbutton;
 
   gtk_init (&argc, &argv);
-  
+
   if (argc != 2)
     {
       fprintf (stderr, "Usage: %s FILE\n", g_get_prgname ());
@@ -702,13 +702,13 @@ main (int argc, char **argv)
 
   hbox = make_font_selector ();
   gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
-  
+
   scrollwin = gtk_scrolled_window_new (NULL, NULL);
   gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scrollwin),
 				  GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
-  
+
   gtk_box_pack_start (GTK_BOX (vbox), scrollwin, TRUE, TRUE, 0);
-  
+
   layout = gtk_layout_new (NULL, NULL);
   gtk_widget_set_events (layout, GDK_BUTTON_PRESS_MASK);
   gtk_widget_set_app_paintable (layout, TRUE);
@@ -743,6 +743,6 @@ main (int argc, char **argv)
   gtk_widget_show_all (window);
 
   gtk_main ();
-  
+
   return 0;
 }

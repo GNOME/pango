@@ -67,10 +67,10 @@ set_glyph (PangoFont *font, PangoGlyphString *glyphs, int i, int offset, PangoGl
 /* Add a Hangul tone mark glyph in a glyph string.
  * Non-spacing glyph works pretty much automatically.
  * Spacing-glyph takes some care:
- *   1. Make a room for a tone mark at the beginning(leftmost end) of a cluster 
+ *   1. Make a room for a tone mark at the beginning(leftmost end) of a cluster
  *   to attach it to.
  *   2. Adjust x_offset so that it is drawn to the left of a cluster.
- *   3. Set the logical width to zero. 
+ *   3. Set the logical width to zero.
  */
 
 static void
@@ -84,33 +84,33 @@ set_glyph_tone (PangoFont *font, PangoGlyphString *glyphs, int i,
   glyphs->glyphs[i].geometry.y_offset = 0;
   glyphs->log_clusters[i] = offset;
 
-  pango_font_get_glyph_extents (font, glyphs->glyphs[i].glyph, 
+  pango_font_get_glyph_extents (font, glyphs->glyphs[i].glyph,
 				&ink_rect, &logical_rect);
 
-  /* tone mark is not the first in a glyph string. We have info. on the 
-   * preceding glyphs in a glyph string 
+  /* tone mark is not the first in a glyph string. We have info. on the
+   * preceding glyphs in a glyph string
    */
     {
       int j = i - 1;
       /* search for the beg. of the preceding cluster */
-      while (j >= 0 && glyphs->log_clusters[j] == glyphs->log_clusters[i - 1]) 
+      while (j >= 0 && glyphs->log_clusters[j] == glyphs->log_clusters[i - 1])
 	j--;
 
-      /* In .._extents_range(...,start,end,...), to my surprise  start is 
-       * inclusive but end is exclusive !! 
+      /* In .._extents_range(...,start,end,...), to my surprise  start is
+       * inclusive but end is exclusive !!
        */
-      pango_glyph_string_extents_range (glyphs, j + 1, i, font, 
-					NULL, &logical_rect_cluster); 
+      pango_glyph_string_extents_range (glyphs, j + 1, i, font,
+					NULL, &logical_rect_cluster);
 
       /* logical_rect_cluster.width is all the offset we need so that the
        * inherent x_offset in the glyph (ink_rect.x) should be canceled out.
        */
       glyphs->glyphs[i].geometry.x_offset = - logical_rect_cluster.width
-					    - ink_rect.x ; 
-					    
+					    - ink_rect.x ;
+
 
       /* make an additional room for a tone mark if it has a spacing glyph
-       * because that's likely to be an indication that glyphs for other 
+       * because that's likely to be an indication that glyphs for other
        * characters in the font are not designed for combining with tone marks.
        */
       if (logical_rect.width)
@@ -140,7 +140,7 @@ render_tone (PangoFont *font, gunichar tone, PangoGlyphString *glyphs,
     {
       set_glyph_tone (font, glyphs, *n_glyphs, cluster_offset, index);
     }
-  else 
+  else
     {
       /* fall back : HTONE1(0x302e) => middle-dot, HTONE2(0x302f) => colon */
       index = find_char (font, tone == HTONE1 ? 0x00b7 : 0x003a);
@@ -148,7 +148,7 @@ render_tone (PangoFont *font, gunichar tone, PangoGlyphString *glyphs,
         {
           set_glyph_tone (font, glyphs, *n_glyphs, cluster_offset, index);
         }
-      else 
+      else
         set_glyph (font, glyphs, *n_glyphs, cluster_offset,
 		   PANGO_GET_UNKNOWN_GLYPH (tone));
     }
@@ -201,7 +201,7 @@ render_syllable (PangoFont *font, const char *str, int length,
    * I have seen no smart font which can render S+T as a syllable
    * form.
    */
-  
+
   if (length == 3 || length == 4)
     {
       p = str;
@@ -213,7 +213,7 @@ render_syllable (PangoFont *font, const char *str, int length,
 
       if (length == 4 && !IS_M(g_utf8_get_char(g_utf8_next_char(p))))
 	goto lvt_out;		/* draw the tone mark later */
-      
+
       if (IS_L_S(text[0]) && IS_V_S(text[1]) &&  IS_T_S(text[2]))
 	{
 	  composed = 3;
@@ -395,7 +395,7 @@ render_basic (PangoFont *font, gunichar wc,
   (*n_glyphs)++;
 }
 
-static void 
+static void
 hangul_engine_shape (PangoEngineShape *engine,
 		     PangoFont        *font,
 		     const char       *text,
@@ -469,18 +469,18 @@ hangul_engine_fc_class_init (PangoEngineShapeClass *class)
 PANGO_ENGINE_SHAPE_DEFINE_TYPE (HangulEngineFc, hangul_engine_fc,
 				hangul_engine_fc_class_init, NULL)
 
-void 
+void
 PANGO_MODULE_ENTRY(init) (GTypeModule *module)
 {
   hangul_engine_fc_register_type (module);
 }
 
-void 
+void
 PANGO_MODULE_ENTRY(exit) (void)
 {
 }
 
-void 
+void
 PANGO_MODULE_ENTRY(list) (PangoEngineInfo **engines,
 			  int              *n_engines)
 {

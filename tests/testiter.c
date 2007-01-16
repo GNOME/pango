@@ -38,13 +38,13 @@ static void verbose (const char *format, ...) G_GNUC_PRINTF (1, 2);
 static void
 verbose (const char *format, ...)
 {
-#ifdef VERBOSE  
+#ifdef VERBOSE
   va_list vap;
-  
+
   va_start (vap, format);
   vfprintf (stderr, format, vap);
   va_end (vap);
-#endif  
+#endif
 }
 
 #define LAYOUT_WIDTH (80 * PANGO_SCALE)
@@ -87,7 +87,7 @@ iter_char_test (PangoLayout *layout)
 
   text = pango_layout_get_text (layout);
   num_chars = g_utf8_strlen (text, -1);
-  
+
   iter = pango_layout_get_iter (layout);
   iter_next_ok = TRUE;
 
@@ -99,15 +99,15 @@ iter_char_test (PangoLayout *layout)
       index = pango_layout_iter_get_index (iter);
       ptr = text + index;
       char_str = g_strndup (ptr, g_utf8_next_char (ptr) - ptr);
-      verbose ("i=%d (visual), index = %d '%s':\n", 
+      verbose ("i=%d (visual), index = %d '%s':\n",
 	       i, index, char_str);
       g_free (char_str);
 
       pango_layout_iter_get_char_extents (iter, &extents);
       verbose ("  char extents: x=%d,y=%d w=%d,h=%d\n",
-	       extents.x, extents.y, 
+	       extents.x, extents.y,
 	       extents.width, extents.height);
-      
+
       run = pango_layout_iter_get_run (iter);
 
       if (run)
@@ -116,23 +116,23 @@ iter_char_test (PangoLayout *layout)
 	  pango_layout_iter_get_run_extents(iter, NULL, &run_extents);
 	  offset = run->item->offset;
 	  rtl = run->item->analysis.level%2;
-	  verbose ("  (current run: offset=%d,x=%d,len=%d,rtl=%d)\n", 
+	  verbose ("  (current run: offset=%d,x=%d,len=%d,rtl=%d)\n",
 		   offset, run_extents.x, run->item->length, rtl);
-	  
+
 	  /* Calculate expected x result using index_to_x */
-	  pango_glyph_string_index_to_x (run->glyphs, 
+	  pango_glyph_string_index_to_x (run->glyphs,
 					 (char *)(text + offset), run->item->length,
 					 &run->item->analysis,
 					 index - offset, FALSE, &leading_x);
-	  pango_glyph_string_index_to_x (run->glyphs, 
+	  pango_glyph_string_index_to_x (run->glyphs,
 					 (char *)(text + offset), run->item->length,
 					 &run->item->analysis,
 					 index - offset, TRUE, &trailing_x);
-	  
+
 	  x0 = run_extents.x + MIN (leading_x, trailing_x);
 	  x1 = run_extents.x + MAX (leading_x, trailing_x);
-	  
-	  verbose ("  (index_to_x ind=%d: expected x=%d, width=%d)\n", 
+
+	  verbose ("  (index_to_x ind=%d: expected x=%d, width=%d)\n",
 		   index - offset, x0, x1 - x0);
 
 	  g_assert (extents.x == x0);
@@ -142,7 +142,7 @@ iter_char_test (PangoLayout *layout)
 	{
 	  /* We're on a line terminator */
 	}
-      
+
       iter_next_ok = pango_layout_iter_next_char (iter);
       verbose ("more to go? %d\n", iter_next_ok);
     }
@@ -182,29 +182,29 @@ iter_cluster_test (PangoLayout *layout)
       g_assert (pango_layout_iter_get_run (iter));
 
       index = pango_layout_iter_get_index (iter);
-      
+
       pango_layout_iter_get_cluster_extents (iter, NULL, &extents);
-      
+
       iter_next_ok = pango_layout_iter_next_cluster (iter);
-      
+
       verbose ("index = %d:\n", index);
       verbose ("  cluster extents: x=%d,y=%d w=%d,h=%d\n",
-	       extents.x, extents.y, 
+	       extents.x, extents.y,
 	       extents.width, extents.height);
       verbose ("more to go? %d\n", iter_next_ok);
 
       /* All the clusters on a line should be next to each other and occupy
        * the entire line. They advance linearly from left to right */
       g_assert (extents.width >= 0);
-      
+
       if (last_line == line)
 	g_assert (extents.x == expected_next_x);
 
-      expected_next_x = extents.x + extents.width;      
+      expected_next_x = extents.x + extents.width;
 
       last_line = line;
     }
-  
+
   g_assert (!iter_next_ok);
 
   pango_layout_iter_free (iter);

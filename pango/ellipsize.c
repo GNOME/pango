@@ -35,7 +35,7 @@ typedef struct _LineIter       LineIter;
  * gap center position until:
  *
  *  line_width - gap_width + ellipsize_width <= goal_width
- * 
+ *
  * Line:  [-------------------------------------------]
  * Runs:  [------)[---------------)[------------------]
  * Gap center:                 *
@@ -81,27 +81,27 @@ struct _EllipsizeState
 {
   PangoLayout *layout;		/* Layout being ellipsized */
   PangoAttrList *attrs;		/* Attributes used for itemization/shaping */
-  
+
   RunInfo *run_info;		/* Array of information about each run */
   int n_runs;
 
   int total_width;		/* Original width of line in Pango units */
   int gap_center;		/* Goal for center of gap */
-  
+
   PangoGlyphItem *ellipsis_run;	/* Run created to hold ellipsis */
   int ellipsis_width;		/* Width of ellipsis, in Pango units */
   int ellipsis_is_cjk;		/* Whether the first character in the ellipsized
 				 * is wide; this triggers us to try to use a
 				 * mid-line ellipsis instead of a baseline
 				 */
-  
+
   PangoAttrIterator *line_start_attr; /* Cached PangoAttrIterator for the start of the run */
-  
+
   LineIter gap_start_iter;	/* Iteratator pointig to the first cluster in gap */
   int gap_start_x;		/* x position of start of gap, in Pango units */
   PangoAttrIterator *gap_start_attr; /* Attribute iterator pointing to a range containing
 				      * the first character in gap */
-  
+
   LineIter gap_end_iter;	/* Iterator pointing to last cluster in gap */
   int gap_end_x;		/* x position of end of gap, in Pango units */
 };
@@ -119,7 +119,7 @@ init_state (EllipsizeState  *state,
 
   state->layout = line->layout;
   state->attrs = attrs;
-  
+
   state->n_runs = g_slist_length (line->runs);
   state->run_info = g_new (RunInfo, state->n_runs);
 
@@ -170,7 +170,7 @@ get_cluster_width (LineIter *iter)
   PangoGlyphString *glyphs = run_iter->glyph_item->glyphs;
   int width = 0;
   int i;
-  
+
   if (run_iter->start_glyph < run_iter->end_glyph) /* LTR */
     {
       for (i = run_iter->start_glyph; i < run_iter->end_glyph; i++)
@@ -264,7 +264,7 @@ ends_at_ellipsization_boundary (EllipsizeState *state,
 
   if (iter->run_iter.end_char == run_info->run->item->num_chars && iter->run_index == state->n_runs - 1)
     return TRUE;
-      
+
   return state->layout->log_attrs[run_info->start_offset + iter->run_iter.end_char + 1].is_cursor_position;
 }
 
@@ -316,7 +316,7 @@ shape_ellipsis (EllipsizeState *state)
       pango_item_free (state->ellipsis_run->item);
       state->ellipsis_run->item = NULL;
     }
-  
+
   /* Create an attribute list
    */
   run_attrs = pango_attr_iterator_get_attrs (state->gap_start_attr);
@@ -352,17 +352,17 @@ shape_ellipsis (EllipsizeState *state)
 				   item->analysis.language, g_utf8_get_char (ellipsis_text)))
     {
       pango_item_free (item);
-      
+
       /* Modify the fallback iter while it is inside the PangoAttrList; Don't try this at home
        */
-      ((PangoAttrInt *)fallback)->value = TRUE; 
+      ((PangoAttrInt *)fallback)->value = TRUE;
 
       ellipsis_text = "...";
       item = itemize_text (state, ellipsis_text, attrs);
     }
-  
+
   pango_attr_list_unref (attrs);
-  
+
   state->ellipsis_run->item = item;
 
   /* Now shape
@@ -385,7 +385,7 @@ advance_iterator_to (PangoAttrIterator *iter,
 		     int                new_index)
 {
   int start, end;
-  
+
   do
     {
       pango_attr_iterator_range (iter, &start, &end);
@@ -428,7 +428,7 @@ update_ellipsis_shape (EllipsizeState *state)
       /* See if the current attribute range contains the new start position
        */
       int start, end;
-      
+
       pango_attr_iterator_range (state->gap_start_attr, &start, &end);
 
       if (state->gap_start_iter.run_iter.start_index < start)
@@ -445,7 +445,7 @@ update_ellipsis_shape (EllipsizeState *state)
       state->gap_start_attr = pango_attr_iterator_copy (state->line_start_attr);
       advance_iterator_to (state->gap_start_attr,
 			   state->run_info[state->gap_start_iter.run_index].run->item->offset);
-      
+
       recompute = TRUE;
     }
 
@@ -476,7 +476,7 @@ find_initial_span (EllipsizeState *state)
   int i;
   int x;
   int cluster_width;
-  
+
   switch (state->layout->ellipsize)
     {
     case PANGO_ELLIPSIZE_NONE:
@@ -509,7 +509,7 @@ find_initial_span (EllipsizeState *state)
       i--;
       x -= state->run_info[i].width;
     }
-  
+
   /* Find the cluster containing the gap center
    */
   state->gap_start_iter.run_index = i;
@@ -538,7 +538,7 @@ find_initial_span (EllipsizeState *state)
   state->gap_end_x = x + cluster_width;
 
   /* Expand the gap to a full span
-   */  
+   */
   while (!starts_at_ellipsization_boundary (state, &state->gap_start_iter))
     {
       line_iter_prev_cluster (state, &state->gap_start_iter);
@@ -594,7 +594,7 @@ remove_one_span (EllipsizeState *state)
 
   if (state->gap_end_x == new_gap_end_x && state->gap_start_x == new_gap_start_x)
     return FALSE;
-  
+
   /* In the case where we could remove a span from either end of the
    * gap, we look at which causes the smaller increase in the
    * MAX (gap_end - gap_center, gap_start - gap_center)
@@ -605,7 +605,7 @@ remove_one_span (EllipsizeState *state)
     {
       state->gap_start_iter = new_gap_start_iter;
       state->gap_start_x = new_gap_start_x;
-      
+
       update_ellipsis_shape (state);
     }
   else
@@ -719,7 +719,7 @@ current_width (EllipsizeState *state)
  * _pango_layout_line_ellipsize:
  * @line: a #PangoLayoutLine
  * @attrs: Attributes being used for itemization/shaping
- * 
+ *
  * Given a #PangoLayoutLine with the runs still in logical order, ellipsize
  * it according the layout's policy to fit within the set width of the layout.
  *
@@ -755,7 +755,7 @@ _pango_layout_line_ellipsize (PangoLayoutLine *line,
     }
 
   fixup_ellipsis_run (&state);
-  
+
   g_slist_free (line->runs);
   line->runs = get_run_list (&state);
   is_ellipsized = TRUE;

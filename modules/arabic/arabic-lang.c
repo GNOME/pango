@@ -123,18 +123,18 @@ arabic_engine_lang_class_init (PangoEngineLangClass *class)
 PANGO_ENGINE_LANG_DEFINE_TYPE (ArabicEngineLang, arabic_engine_lang,
 			       arabic_engine_lang_class_init, NULL)
 
-void 
+void
 PANGO_MODULE_ENTRY(init) (GTypeModule *module)
 {
   arabic_engine_lang_register_type (module);
 }
 
-void 
+void
 PANGO_MODULE_ENTRY(exit) (void)
 {
 }
 
-void 
+void
 PANGO_MODULE_ENTRY(list) (PangoEngineInfo **engines,
 			  int              *n_engines)
 {

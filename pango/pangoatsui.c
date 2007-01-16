@@ -92,7 +92,7 @@ pango_atsui_font_class_init (PangoATSUIFontClass *class)
   GObjectClass *object_class = G_OBJECT_CLASS (class);
   PangoFontClass *font_class = PANGO_FONT_CLASS (class);
 
-  object_class->finalize = pango_atsui_font_finalize; 
+  object_class->finalize = pango_atsui_font_finalize;
 
   font_class->describe = pango_atsui_font_describe;
   font_class->get_coverage = pango_atsui_font_get_coverage;

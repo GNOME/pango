@@ -29,7 +29,7 @@
 #include "viewer.h"
 
 
-typedef struct 
+typedef struct
 {
   Display *display;
   int screen;

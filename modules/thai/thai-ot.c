@@ -33,7 +33,7 @@ maybe_add_gsub_feature (PangoOTRuleset *ruleset,
 			gulong          property_bit)
 {
   guint feature_index;
-  
+
   /* 0xffff == default language system */
   if (pango_ot_info_find_feature (info, PANGO_OT_TABLE_GSUB,
 				  feature_tag, script_index, 0xffff, &feature_index))
@@ -211,7 +211,7 @@ lao_ot_get_ruleset (PangoFont *font)
 }
 
 
-void 
+void
 thai_ot_shape (PangoFont        *font,
                PangoGlyphString *glyphs)
 {

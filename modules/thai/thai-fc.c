@@ -63,10 +63,10 @@ static PangoEngineInfo script_engines[] = {
 /* TIS-to-Unicode glyph maps for characters 0x80-0xff
  */
 static const int tis620_0[128] = {
-    /**/ 0,      0,      0,      0,      0,      0,      0,      0, 
-    /**/ 0,      0,      0,      0,      0,      0,      0,      0, 
-    /**/ 0,      0,      0,      0,      0,      0,      0,      0, 
-    /**/ 0,      0,      0,      0,      0,      0,      0,      0, 
+    /**/ 0,      0,      0,      0,      0,      0,      0,      0,
+    /**/ 0,      0,      0,      0,      0,      0,      0,      0,
+    /**/ 0,      0,      0,      0,      0,      0,      0,      0,
+    /**/ 0,      0,      0,      0,      0,      0,      0,      0,
     0x0020, 0x0e01, 0x0e02, 0x0e03, 0x0e04, 0x0e05, 0x0e06, 0x0e07,
     0x0e08, 0x0e09, 0x0e0a, 0x0e0b, 0x0e0c, 0x0e0d, 0x0e0e, 0x0e0f,
     0x0e10, 0x0e11, 0x0e12, 0x0e13, 0x0e14, 0x0e15, 0x0e16, 0x0e17,
@@ -120,10 +120,10 @@ static const int tis620_2[128] = {
 };
 
 static const int lao_0[128] = {
-    /**/ 0,      0,      0,      0,      0,      0,      0,      0, 
-    /**/ 0,      0,      0,      0,      0,      0,      0,      0, 
-    /**/ 0,      0,      0,      0,      0,      0,      0,      0, 
-    /**/ 0,      0,      0,      0,      0,      0,      0,      0, 
+    /**/ 0,      0,      0,      0,      0,      0,      0,      0,
+    /**/ 0,      0,      0,      0,      0,      0,      0,      0,
+    /**/ 0,      0,      0,      0,      0,      0,      0,      0,
+    /**/ 0,      0,      0,      0,      0,      0,      0,      0,
     0x0020, 0x0e81, 0x0e82,      0, 0x0e84,      0,      0, 0x0e87,
     0x0e88,      0, 0x0e8a,      0,      0, 0x0e8d,      0,      0,
          0,      0,      0,      0, 0x0e94, 0x0e95, 0x0e96, 0x0e97,
@@ -162,7 +162,7 @@ thai_get_font_info (PangoFont *font)
 {
   ThaiFontInfo *font_info;
   GQuark info_id = g_quark_from_string ("thai-font-info");
-  
+
   font_info = g_object_get_qdata (G_OBJECT (font), info_id);
 
   if (!font_info)
@@ -172,7 +172,7 @@ thai_get_font_info (PangoFont *font)
        */
       font_info = g_new (ThaiFontInfo, 1);
       font_info->font = font;
-  
+
       /* detect font set by determining availibility of OT ruleset & glyphs */
       if (thai_ot_get_ruleset (font))
         font_info->font_set = THAI_FONT_TIS;
@@ -182,7 +182,7 @@ thai_get_font_info (PangoFont *font)
         font_info->font_set = THAI_FONT_TIS_MAC;
       else
         font_info->font_set = THAI_FONT_TIS;
-  
+
       g_object_set_qdata_full (G_OBJECT (font), info_id, font_info, (GDestroyNotify)g_free);
     }
 
@@ -249,18 +249,18 @@ thai_engine_fc_class_init (PangoEngineShapeClass *class)
 PANGO_ENGINE_SHAPE_DEFINE_TYPE (ThaiEngineFc, thai_engine_fc,
 				thai_engine_fc_class_init, NULL)
 
-void 
+void
 PANGO_MODULE_ENTRY(init) (GTypeModule *module)
 {
   thai_engine_fc_register_type (module);
 }
 
-void 
+void
 PANGO_MODULE_ENTRY(exit) (void)
 {
 }
 
-void 
+void
 PANGO_MODULE_ENTRY(list) (PangoEngineInfo **engines,
 			  int              *n_engines)
 {

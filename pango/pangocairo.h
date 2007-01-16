@@ -31,7 +31,7 @@ G_BEGIN_DECLS
 
 /**
  * PangoCairoFontMap:
- * 
+ *
  * #PangoCairoFontMap is an interface exported by font maps for
  * use with Cairo. The actual type of the font map will depend
  * on the particular font technology Cairo was compiled to use.
@@ -87,7 +87,7 @@ void pango_cairo_show_layout_line  (cairo_t          *cr,
 void pango_cairo_show_layout       (cairo_t          *cr,
 				    PangoLayout      *layout);
 
-void pango_cairo_show_error_underline (cairo_t       *cr,                                   
+void pango_cairo_show_error_underline (cairo_t       *cr,
 				       double         x,
 				       double         y,
 				       double         width,
@@ -103,8 +103,8 @@ void pango_cairo_layout_line_path  (cairo_t          *cr,
 				    PangoLayoutLine  *line);
 void pango_cairo_layout_path       (cairo_t          *cr,
 				    PangoLayout      *layout);
-					
-void pango_cairo_error_underline_path (cairo_t       *cr,                                   
+
+void pango_cairo_error_underline_path (cairo_t       *cr,
 				       double         x,
 				       double         y,
 				       double         width,

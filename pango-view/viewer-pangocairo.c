@@ -64,7 +64,7 @@ pangocairo_view_create (const PangoViewer *klass)
   return instance;
 }
 
-static void 
+static void
 pangocairo_view_destroy (gpointer instance)
 {
   CairoViewer *c = (CairoViewer *) instance;
@@ -90,7 +90,7 @@ pangocairo_view_get_context (gpointer instance)
   return context;
 }
 
-typedef struct 
+typedef struct
 {
   gpointer backend;
 
@@ -117,7 +117,7 @@ pangocairo_view_create_surface (gpointer instance,
   return surface;
 }
 
-static void 
+static void
 pangocairo_view_destroy_surface (gpointer instance,
 				 gpointer surface)
 {
@@ -149,7 +149,7 @@ render_callback (PangoLayout *layout,
       PangoRectangle ink, logical;
       double lw = cairo_get_line_width (cr);
       PangoLayoutIter* iter;
-      
+
       pango_layout_get_extents (layout, &ink, &logical);
 
       /* draw resolved gravity "roof" in blue */
@@ -184,7 +184,7 @@ render_callback (PangoLayout *layout,
       cairo_set_source_rgba (cr, 0.0, 0.0, 0.7, 0.2);
       cairo_stroke (cr);
       cairo_restore (cr);
-      
+
 
       /* draw block progression arrow in green */
       cairo_save (cr);
@@ -214,7 +214,7 @@ render_callback (PangoLayout *layout,
       cairo_set_source_rgba (cr, 0.0, 0.7, 0.0, 0.2);
       cairo_stroke (cr);
       cairo_restore (cr);
-      
+
       /* draw baselines with line direction arrow in orange */
       cairo_save (cr);
       cairo_set_source_rgba (cr, 1.0, 0.5, 0.0, 0.5);
@@ -298,11 +298,11 @@ transform_callback (PangoContext *context,
     }
 
   cairo_set_matrix (cr, &cairo_matrix);
-      
+
   pango_cairo_update_context (cr, context);
 }
 
-static void 
+static void
 pangocairo_view_render (gpointer      instance,
 			gpointer      surface,
 			PangoContext *context,
@@ -330,7 +330,7 @@ pangocairo_view_render (gpointer      instance,
 
   cairo_set_source_rgb (cr, 1.0, 1.0, 1.0);
   cairo_paint (cr);
-  
+
   cairo_set_source_rgb (cr, 0.0, 0.0, 0.0);
   do_output (context, render_callback, transform_callback, cr, state, NULL, NULL);
 

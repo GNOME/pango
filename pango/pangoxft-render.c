@@ -38,7 +38,7 @@ struct _PangoXftRendererPrivate
 
   Picture src_picture;
   Picture dest_picture;
-  
+
   XRenderPictFormat *mask_format;
 
   GArray *trapezoids;
@@ -146,7 +146,7 @@ pango_xft_renderer_set_property (GObject      *object,
 				 GParamSpec   *pspec)
 {
   PangoXftRenderer *xftrenderer = PANGO_XFT_RENDERER (object);
-	
+
   switch (prop_id)
     {
     case PROP_DISPLAY:
@@ -162,8 +162,8 @@ pango_xft_renderer_set_property (GObject      *object,
       xftrenderer->screen = g_value_get_int (value);
       break;
     default:
-      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);      
-      break;    
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+      break;
     }
 }
 
@@ -230,18 +230,18 @@ draw_glyph (PangoRenderer *renderer,
   if (pixel_x < -32768 || pixel_x > 32767 ||
       pixel_y < -32768 || pixel_y > 32767)
     return;
-      
+
   flush_trapezoids (xftrenderer);
 
   if (!xftrenderer->priv->glyphs)
     xftrenderer->priv->glyphs = g_array_new (FALSE, FALSE,
 					     sizeof (XftGlyphSpec));
-  
+
   if (xftrenderer->priv->glyph_font != font ||
       xftrenderer->priv->glyphs->len == MAX_GLYPHS)
     {
       flush_glyphs (xftrenderer);
-      
+
       xftrenderer->priv->glyph_font = g_object_ref (font);
     }
 
@@ -336,7 +336,7 @@ _pango_xft_renderer_draw_unknown_glyph (PangoRenderer    *renderer,
   int row, col;
   int cols;
   PangoGlyph glyph;
-  
+
   PangoFont *mini_font = _pango_xft_font_get_mini_font (xfont);
   XftFont *mini_xft_font = pango_xft_font_get_font (mini_font);
   if (!mini_xft_font)
@@ -344,14 +344,14 @@ _pango_xft_renderer_draw_unknown_glyph (PangoRenderer    *renderer,
       _pango_xft_renderer_draw_box_glyph (renderer, gi, glyph_x, glyph_y);
       return;
     }
-  
+
   glyph = gi->glyph & ~PANGO_GLYPH_UNKNOWN_FLAG;
-  
+
   ys[0] = glyph_y - PANGO_SCALE * xft_font->ascent + PANGO_SCALE * (((xft_font->ascent + xft_font->descent) - (xfont->mini_height * 2 + xfont->mini_pad * 5 + PANGO_SCALE / 2) / PANGO_SCALE) / 2);
   ys[1] = ys[0] + 2 * xfont->mini_pad + xfont->mini_height;
   ys[2] = ys[1] + xfont->mini_height + xfont->mini_pad;
 
-  xs[0] = glyph_x; 
+  xs[0] = glyph_x;
   xs[1] = xs[0] + 2 * xfont->mini_pad;
   xs[2] = xs[1] + xfont->mini_width + xfont->mini_pad;
   xs[3] = xs[2] + xfont->mini_width + xfont->mini_pad;
@@ -377,7 +377,7 @@ _pango_xft_renderer_draw_unknown_glyph (PangoRenderer    *renderer,
 		  xs[0], ys[0],
 		  xfont->mini_width * cols + xfont->mini_pad * (2 * cols + 1),
 		  xfont->mini_height * 2 + xfont->mini_pad * 5);
-      
+
       for (row = 0; row < 2; row++)
 	for (col = 0; col < cols; col++)
 	  {
@@ -448,7 +448,7 @@ pango_xft_renderer_draw_glyphs (PangoRenderer    *renderer,
 	      draw_glyph (renderer, font, gi->glyph, glyph_x, glyph_y);
 	    }
 	}
-      
+
       x_off += gi->geometry.width;
     }
 }
@@ -486,7 +486,7 @@ pango_xft_renderer_draw_trapezoid (PangoRenderer   *renderer,
   if (!xftrenderer->priv->trapezoids)
     xftrenderer->priv->trapezoids = g_array_new (FALSE, FALSE,
 						 sizeof (XTrapezoid));
-  
+
   if (xftrenderer->draw)
     {
       if (xftrenderer->priv->trapezoids->len > 0 &&
@@ -556,7 +556,7 @@ pango_xft_renderer_real_composite_trapezoids (PangoXftRenderer *xftrenderer,
 						    part);
       if (!color)
 	color = &xftrenderer->priv->default_color;
-	  
+
       xft_color.color.red = color->red;
       xft_color.color.green = color->green;
       xft_color.color.blue = color->blue;
@@ -595,7 +595,7 @@ pango_xft_renderer_real_composite_glyphs (PangoXftRenderer *xftrenderer,
 						    PANGO_RENDER_PART_FOREGROUND);
       if (!color)
       	color = &xftrenderer->priv->default_color;
-      
+
       xft_color.color.red = color->red;
       xft_color.color.green = color->green;
       xft_color.color.blue = color->blue;
@@ -615,10 +615,10 @@ get_renderer (PangoFontMap *fontmap,
   PangoRenderer *renderer;
   PangoXftRenderer *xftrenderer;
   PangoColor pango_color;
-  
+
   renderer = _pango_xft_font_map_get_renderer (PANGO_XFT_FONT_MAP (fontmap));
   xftrenderer = PANGO_XFT_RENDERER (renderer);
-  
+
   pango_xft_renderer_set_draw (xftrenderer, draw);
 
   pango_color.red = color->color.red;
@@ -634,7 +634,7 @@ static void
 release_renderer (PangoRenderer *renderer)
 {
   PangoXftRenderer *xftrenderer = PANGO_XFT_RENDERER (renderer);
-  
+
   xftrenderer->priv->alpha = 0xffff;
 }
 
@@ -651,11 +651,11 @@ release_renderer (PangoRenderer *renderer)
  *
  * Since: 1.8
  */
-void 
+void
 pango_xft_render_layout (XftDraw     *draw,
 			 XftColor    *color,
 			 PangoLayout *layout,
-			 int          x, 
+			 int          x,
 			 int          y)
 {
   PangoContext *context;
@@ -688,11 +688,11 @@ pango_xft_render_layout (XftDraw     *draw,
  *
  * Since: 1.8
  */
-void 
+void
 pango_xft_render_layout_line (XftDraw         *draw,
 			      XftColor        *color,
 			      PangoLayoutLine *line,
-			      int              x, 
+			      int              x,
 			      int              y)
 {
   PangoContext *context;
@@ -706,7 +706,7 @@ pango_xft_render_layout_line (XftDraw         *draw,
   context = pango_layout_get_context (line->layout);
   fontmap = pango_context_get_font_map (context);
   renderer = get_renderer (fontmap, draw, color);
-  
+
   pango_renderer_draw_layout_line (renderer, line, x, y);
 
   release_renderer (renderer);
@@ -733,13 +733,13 @@ pango_xft_render_layout_line (XftDraw         *draw,
  *
  * Since: 1.8
  **/
-void 
+void
 pango_xft_render_transformed (XftDraw          *draw,
 			      XftColor         *color,
 			      PangoMatrix      *matrix,
 			      PangoFont        *font,
 			      PangoGlyphString *glyphs,
-			      int               x, 
+			      int               x,
 			      int               y)
 {
   PangoFontMap *fontmap;
@@ -754,7 +754,7 @@ pango_xft_render_transformed (XftDraw          *draw,
   renderer = get_renderer (fontmap, draw, color);
 
   pango_renderer_set_matrix (renderer, matrix);
-  
+
   pango_renderer_draw_glyphs (renderer, font, glyphs, x, y);
 
   release_renderer (renderer);
@@ -783,7 +783,7 @@ pango_xft_render (XftDraw          *draw,
   g_return_if_fail (color != NULL);
   g_return_if_fail (PANGO_XFT_IS_FONT (font));
   g_return_if_fail (glyphs != NULL);
-  
+
   pango_xft_render_transformed (draw, color, NULL, font, glyphs,
 				x * PANGO_SCALE, y * PANGO_SCALE);
 }
@@ -817,16 +817,16 @@ pango_xft_picture_render (Display          *display,
   g_return_if_fail (dest_picture != None);
   g_return_if_fail (PANGO_XFT_IS_FONT (font));
   g_return_if_fail (glyphs != NULL);
-  
+
   fontmap = PANGO_FC_FONT (font)->fontmap;
   renderer = _pango_xft_font_map_get_renderer (PANGO_XFT_FONT_MAP (fontmap));
 
   pango_xft_renderer_set_pictures (PANGO_XFT_RENDERER (renderer),
 				   src_picture, dest_picture);
   pango_renderer_set_matrix (renderer, NULL);
-  
+
   pango_renderer_draw_glyphs (renderer, font, glyphs, x * PANGO_SCALE, y * PANGO_SCALE);
-  
+
   pango_xft_renderer_set_pictures (PANGO_XFT_RENDERER (renderer),
 				   None, None);
 }
@@ -835,7 +835,7 @@ pango_xft_picture_render (Display          *display,
  * pango_xft_renderer_new:
  * @display: an X display
  * @screen:   the index of the screen for @display to which rendering will be done
- * 
+ *
  * Create a new #PangoXftRenderer to allow rendering Pango objects
  * with the Xft library. You must call pango_xft_renderer_set_draw() before
  * using the renderer.
@@ -855,7 +855,7 @@ pango_xft_renderer_new (Display *display,
 			      "display", display,
 			      "screen", screen,
 			      NULL);
-  
+
   return PANGO_RENDERER (xftrenderer);
 }
 
@@ -863,7 +863,7 @@ pango_xft_renderer_new (Display *display,
  * pango_xft_renderer_set_draw:
  * @xftrenderer: a #PangoXftRenderer
  * @draw: a #XftDraw
- * 
+ *
  * Sets the #XftDraw object that the renderer is drawing to.
  * The renderer must not be currently active.
  *
@@ -882,7 +882,7 @@ pango_xft_renderer_set_draw (PangoXftRenderer *xftrenderer,
  * pango_xft_renderer_set_default_color:
  * @xftrenderer: a #XftRenderer
  * @default_color: the default foreground color
- * 
+ *
  * Sets the default foreground color for a #XftRenderer.
  *
  * Since: 1.8
@@ -892,6 +892,6 @@ pango_xft_renderer_set_default_color (PangoXftRenderer *xftrenderer,
 				      PangoColor       *default_color)
 {
   g_return_if_fail (PANGO_IS_XFT_RENDERER (xftrenderer));
-		    
+
   xftrenderer->priv->default_color = *default_color;
 }

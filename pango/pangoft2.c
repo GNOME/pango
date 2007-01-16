@@ -94,26 +94,26 @@ load_fallback_face (PangoFT2Font *ft2font,
   FcChar8 *filename2 = NULL;
   gchar *name;
   int id;
-  
+
   sans = FcPatternBuild (NULL,
 			 FC_FAMILY,     FcTypeString, "sans",
 			 FC_PIXEL_SIZE, FcTypeDouble, (double)ft2font->size / PANGO_SCALE,
 			 NULL);
-  
+
   _pango_ft2_font_map_default_substitute (fcfont->fontmap, sans);
 
   matched = FcFontMatch (NULL, sans, &result);
-  
+
   if (FcPatternGetString (matched, FC_FILE, 0, &filename2) != FcResultMatch)
     goto bail1;
-  
+
   if (FcPatternGetInteger (matched, FC_INDEX, 0, &id) != FcResultMatch)
     goto bail1;
-  
+
   error = FT_New_Face (_pango_ft2_font_map_get_library (fcfont->fontmap),
 		       (char *) filename2, id, &ft2font->face);
-  
-  
+
+
   if (error)
     {
     bail1:
@@ -141,7 +141,7 @@ set_transform (PangoFT2Font *ft2font)
   if (FcPatternGetMatrix (fcfont->font_pattern, FC_MATRIX, 0, &fc_matrix) == FcResultMatch)
     {
       FT_Matrix ft_matrix;
-      
+
       ft_matrix.xx = 0x10000L * fc_matrix->xx;
       ft_matrix.yy = 0x10000L * fc_matrix->yy;
       ft_matrix.xy = 0x10000L * fc_matrix->xy;
@@ -154,14 +154,14 @@ set_transform (PangoFT2Font *ft2font)
 /**
  * pango_ft2_font_get_face:
  * @font: a #PangoFont
- * 
+ *
  * Returns the native FreeType2 <type>FT_Face</type> structure used for this #PangoFont.
  * This may be useful if you want to use FreeType2 functions directly.
  *
  * Use pango_fc_font_lock_face() instead; when you are done with a
  * face from pango_fc_font_lock_face() you must call
  * pango_fc_font_unlock_face().
- * 
+ *
  * Return value: a pointer to a <type>FT_Face</type> structure, with the size set correctly
  **/
 FT_Face
@@ -219,7 +219,7 @@ pango_ft2_font_get_face (PangoFont *font)
 
       if (FcPatternGetString (pattern, FC_FILE, 0, &filename) != FcResultMatch)
 	      goto bail0;
-      
+
       if (FcPatternGetInteger (pattern, FC_INDEX, 0, &id) != FcResultMatch)
 	      goto bail0;
 
@@ -242,13 +242,13 @@ pango_ft2_font_get_face (PangoFont *font)
       if (error)
 	g_warning ("Error in FT_Set_Char_Size: %d", error);
     }
-  
+
   return ft2font->face;
 }
 
 G_DEFINE_TYPE (PangoFT2Font, pango_ft2_font, PANGO_TYPE_FC_FONT)
 
-static void 
+static void
 pango_ft2_font_init (PangoFT2Font *ft2font)
 {
   ft2font->face = NULL;
@@ -264,11 +264,11 @@ pango_ft2_font_class_init (PangoFT2FontClass *class)
   GObjectClass *object_class = G_OBJECT_CLASS (class);
   PangoFontClass *font_class = PANGO_FONT_CLASS (class);
   PangoFcFontClass *fc_font_class = PANGO_FC_FONT_CLASS (class);
-  
+
   object_class->finalize = pango_ft2_font_finalize;
-  
+
   font_class->get_glyph_extents = pango_ft2_font_get_glyph_extents;
-  
+
   fc_font_class->lock_face = pango_ft2_font_real_lock_face;
   fc_font_class->unlock_face = pango_ft2_font_real_unlock_face;
 }
@@ -298,7 +298,7 @@ pango_ft2_font_get_glyph_info (PangoFont   *font,
 
   return info;
 }
-     
+
 static void
 pango_ft2_font_get_glyph_extents (PangoFont      *font,
 				  PangoGlyph      glyph,
@@ -367,12 +367,12 @@ pango_ft2_font_get_glyph_extents (PangoFont      *font,
  * @font: a #PangoFont
  * @left: the left #PangoGlyph
  * @right: the right #PangoGlyph
- * 
+ *
  * Retrieves kerning information for a combination of two glyphs.
  *
  * Use pango_fc_font_kern_glyphs() instead.
- * 
- * Return value: The amount of kerning (in Pango units) to apply for 
+ *
+ * Return value: The amount of kerning (in Pango units) to apply for
  * the given combination of glyphs.
  **/
 int
@@ -381,7 +381,7 @@ pango_ft2_font_get_kerning (PangoFont *font,
 			    PangoGlyph right)
 {
   PangoFcFont *fc_font = PANGO_FC_FONT (font);
-  
+
   FT_Face face;
   FT_Error error;
   FT_Vector kerning;
@@ -425,7 +425,7 @@ pango_ft2_free_glyph_info_callback (gpointer key,
 {
   PangoFT2Font *font = PANGO_FT2_FONT (data);
   PangoFT2GlyphInfo *info = value;
-  
+
   if (font->glyph_cache_destroy && info->cached_glyph)
     (*font->glyph_cache_destroy) (info->cached_glyph);
 
@@ -447,7 +447,7 @@ pango_ft2_font_finalize (GObject *object)
   g_hash_table_foreach_remove (ft2font->glyph_info,
 			       pango_ft2_free_glyph_info_callback, object);
   g_hash_table_destroy (ft2font->glyph_info);
-  
+
   G_OBJECT_CLASS (pango_ft2_font_parent_class)->finalize (object);
 }
 
@@ -456,7 +456,7 @@ pango_ft2_font_finalize (GObject *object)
  * @font: a #PangoFT2Font.
  * @language: a language tag.
  * @returns: a #PangoCoverage.
- * 
+ *
  * Gets the #PangoCoverage for a #PangoFT2Font. Use pango_font_get_coverage() instead.
  **/
 PangoCoverage *
@@ -471,14 +471,14 @@ pango_ft2_font_get_coverage (PangoFont     *font,
 /**
  * pango_ft2_get_unknown_glyph:
  * @font: a #PangoFont
- * 
+ *
  * Return the index of a glyph suitable for drawing unknown characters with
  * @font, or %PANGO_GLYPH_EMPTY if no suitable glyph found.
- * 
+ *
  * If you want to draw an unknown-box for a character that is not covered
  * by the font,
  * use PANGO_GET_UNKNOWN_GLYPH() instead.
- * 
+ *
  * Return value: a glyph index into @font, or %PANGO_GLYPH_EMPTY
  **/
 PangoGlyph
@@ -545,12 +545,12 @@ _pango_ft2_font_get_cache_glyph_data (PangoFont *font,
 
   if (!PANGO_FT2_IS_FONT (font))
     return NULL;
-  
+
   info = pango_ft2_font_get_glyph_info (font, glyph_index, FALSE);
 
   if (info == NULL)
     return NULL;
-  
+
   return info->cached_glyph;
 }
 
@@ -563,7 +563,7 @@ _pango_ft2_font_set_cache_glyph_data (PangoFont     *font,
 
   if (!PANGO_FT2_IS_FONT (font))
     return;
-  
+
   info = pango_ft2_font_get_glyph_info (font, glyph_index, TRUE);
 
   info->cached_glyph = cached_glyph;
@@ -577,6 +577,6 @@ _pango_ft2_font_set_glyph_cache_destroy (PangoFont      *font,
 {
   if (!PANGO_FT2_IS_FONT (font))
     return;
-  
+
   PANGO_FT2_FONT (font)->glyph_cache_destroy = destroy_notify;
 }

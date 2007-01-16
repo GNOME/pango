@@ -59,11 +59,11 @@ init_tabs (PangoTabArray *array, gint start, gint end)
  * pango_tab_array_new:
  * @initial_size: Initial number of tab stops to allocate, can be 0
  * @positions_in_pixels: whether positions are in pixel units
- * 
+ *
  * Creates an array of @initial_size tab stops. Tab stops are specified in
  * pixel units if @positions_in_pixels is %TRUE, otherwise in Pango
  * units. All stops are initially at position 0.
- * 
+ *
  * Return value: the newly allocated #PangoTabArray, which should
  *               be freed with pango_tab_array_free().
  **/
@@ -93,7 +93,7 @@ pango_tab_array_new (gint initial_size,
     array->tabs = NULL;
 
   array->positions_in_pixels = positions_in_pixels;
-  
+
   return array;
 }
 
@@ -104,12 +104,12 @@ pango_tab_array_new (gint initial_size,
  * @first_alignment: alignment of first tab stop
  * @first_position: position of first tab stop
  * @varargs: additional alignment/position pairs
- * 
+ *
  * This is a convenience function that creates a #PangoTabArray
  * and allows you to specify the alignment and position of each
  * tab stop. You <emphasis>must</emphasis> provide an alignment
  * and position for @size tab stops.
- * 
+ *
  * Return value: the newly allocated #PangoTabArray, which should
  *               be freed with pango_tab_array_free().
  **/
@@ -125,7 +125,7 @@ pango_tab_array_new_with_positions (gint           size,
   int i;
 
   g_return_val_if_fail (size >= 0, NULL);
-  
+
   array = pango_tab_array_new (size, positions_in_pixels);
 
   if (size == 0)
@@ -136,7 +136,7 @@ pango_tab_array_new_with_positions (gint           size,
 
   if (size == 1)
     return array;
-  
+
   va_start (args, first_position);
 
   i = 1;
@@ -160,7 +160,7 @@ GType
 pango_tab_array_get_type (void)
 {
   static GType our_type = 0;
-  
+
   if (our_type == 0)
     our_type = g_boxed_type_register_static (I_("PangoTabArray"),
                                              (GBoxedCopyFunc)pango_tab_array_copy,
@@ -171,9 +171,9 @@ pango_tab_array_get_type (void)
 /**
  * pango_tab_array_copy:
  * @src: #PangoTabArray to copy
- * 
+ *
  * Copies a #PangoTabArray
- * 
+ *
  * Return value: the newly allocated #PangoTabArray, which should
  *               be freed with pango_tab_array_free().
  **/
@@ -183,7 +183,7 @@ pango_tab_array_copy (PangoTabArray *src)
   PangoTabArray *copy;
 
   g_return_val_if_fail (src != NULL, NULL);
-  
+
   copy = pango_tab_array_new (src->size, src->positions_in_pixels);
 
   memcpy (copy->tabs, src->tabs, sizeof(PangoTab)*src->size);
@@ -196,7 +196,7 @@ pango_tab_array_copy (PangoTabArray *src)
  * @tab_array: a #PangoTabArray
  *
  * Frees a tab array and associated resources.
- * 
+ *
  **/
 void
 pango_tab_array_free   (PangoTabArray *tab_array)
@@ -204,23 +204,23 @@ pango_tab_array_free   (PangoTabArray *tab_array)
   g_return_if_fail (tab_array != NULL);
 
   g_free (tab_array->tabs);
-  
+
   g_slice_free (PangoTabArray, tab_array);
 }
 
 /**
  * pango_tab_array_get_size:
  * @tab_array: a #PangoTabArray
- * 
+ *
  * Gets the number of tab stops in @tab_array.
- * 
+ *
  * Return value: the number of tab stops in the array.
  **/
 gint
 pango_tab_array_get_size (PangoTabArray *tab_array)
 {
   g_return_val_if_fail (tab_array != NULL, 0);
-  
+
   return tab_array->size;
 }
 
@@ -228,7 +228,7 @@ pango_tab_array_get_size (PangoTabArray *tab_array)
  * pango_tab_array_resize:
  * @tab_array: a #PangoTabArray
  * @new_size: new size of the array
- * 
+ *
  * Resizes a tab array. You must subsequently initialize any tabs that
  * were added as a result of growing the array.
  *
@@ -240,20 +240,20 @@ pango_tab_array_resize (PangoTabArray *tab_array,
   if (new_size > tab_array->allocated)
     {
       gint current_end = tab_array->allocated;
-      
+
       /* Ratchet allocated size up above the index. */
       if (tab_array->allocated == 0)
         tab_array->allocated = 2;
-      
+
       while (new_size > tab_array->allocated)
         tab_array->allocated = tab_array->allocated * 2;
-      
+
       tab_array->tabs = g_renew (PangoTab, tab_array->tabs,
 				 tab_array->allocated);
-      
+
       init_tabs (tab_array, current_end, tab_array->allocated);
     }
-  
+
   tab_array->size = new_size;
 }
 
@@ -267,7 +267,7 @@ pango_tab_array_resize (PangoTabArray *tab_array,
  * Sets the alignment and location of a tab stop.
  * @alignment must always be #PANGO_TAB_LEFT in the current
  * implementation.
- * 
+ *
  **/
 void
 pango_tab_array_set_tab  (PangoTabArray *tab_array,
@@ -282,7 +282,7 @@ pango_tab_array_set_tab  (PangoTabArray *tab_array,
 
   if (tab_index >= tab_array->size)
     pango_tab_array_resize (tab_array, tab_index + 1);
-  
+
   tab_array->tabs[tab_index].alignment = alignment;
   tab_array->tabs[tab_index].location = location;
 }
@@ -295,7 +295,7 @@ pango_tab_array_set_tab  (PangoTabArray *tab_array,
  * @location: location to store tab position, or %NULL
  *
  * Gets the alignment and position of a tab stop.
- * 
+ *
  **/
 void
 pango_tab_array_get_tab  (PangoTabArray *tab_array,
@@ -323,7 +323,7 @@ pango_tab_array_get_tab  (PangoTabArray *tab_array,
  * If non-%NULL, @alignments and @locations are filled with allocated
  * arrays of length pango_tab_array_get_size(). You must free the
  * returned array.
- * 
+ *
  **/
 void
 pango_tab_array_get_tabs (PangoTabArray *tab_array,
@@ -331,7 +331,7 @@ pango_tab_array_get_tabs (PangoTabArray *tab_array,
                           gint          **locations)
 {
   gint i;
-  
+
   g_return_if_fail (tab_array != NULL);
 
   if (alignments)
@@ -339,7 +339,7 @@ pango_tab_array_get_tabs (PangoTabArray *tab_array,
 
   if (locations)
     *locations = g_new (gint, tab_array->size);
-  
+
   i = 0;
   while (i < tab_array->size)
     {
@@ -355,16 +355,16 @@ pango_tab_array_get_tabs (PangoTabArray *tab_array,
 /**
  * pango_tab_array_get_positions_in_pixels:
  * @tab_array: a #PangoTabArray
- * 
+ *
  * Returns %TRUE if the tab positions are in pixels, %FALSE if they are
  * in Pango units.
- * 
+ *
  * Return value: whether positions are in pixels.
  **/
 gboolean
 pango_tab_array_get_positions_in_pixels (PangoTabArray *tab_array)
 {
   g_return_val_if_fail (tab_array != NULL, FALSE);
-  
+
   return tab_array->positions_in_pixels;
 }

@@ -43,7 +43,7 @@
 static HDC pre_render (int width, int height);
 static void post_render (HDC hdc, const char* sFile);
 
-static float 
+static float
 calc_duration (GTimeVal *tv1, GTimeVal *tv0)
 {
   return (  ((float)tv1->tv_sec - tv0->tv_sec)
@@ -118,7 +118,7 @@ int main (int argc, char **argv)
       family_name = g_strdup (pango_font_description_get_family (desc));
 
       font = pango_font_map_load_font (fontmap, context, desc);
-      
+
       coverage = pango_font_get_coverage (font, lang);
 
       /* ... */
@@ -188,7 +188,7 @@ int main (int argc, char **argv)
       g_get_current_time (&tv1);
       g_print ("\tpango_font_map_load_font took %.3f sec\n", calc_duration (&tv1, &tv0));
 
-      if (font) 
+      if (font)
         {
           PangoItem     *item;
           PangoGlyphString * glyphs;
@@ -213,7 +213,7 @@ int main (int argc, char **argv)
           item->analysis.font = g_object_ref (font);
           pango_shape ( s, sizeof(s), &(item->analysis), glyphs);
 
-          if (hdc) 
+          if (hdc)
             {
               /* the positioning isn't correct */
               char* name = g_strdup_printf ("%s (%s%s)",
@@ -228,7 +228,7 @@ int main (int argc, char **argv)
               g_get_current_time (&tv0);
               pango_win32_render (hdc, font, glyphs, 200, line);
               g_get_current_time (&tv1);
-              g_print ("\tpango_win32_render took %.3f sec\n", 
+              g_print ("\tpango_win32_render took %.3f sec\n",
                        calc_duration (&tv1, &tv0));
               line += (3 * my_font_size / 2);
               g_free(name);
@@ -238,7 +238,7 @@ int main (int argc, char **argv)
           pango_glyph_string_free (glyphs);
           pango_item_free (item);
 
-          pango_coverage_unref (coverage); 
+          pango_coverage_unref (coverage);
           g_object_unref (font);
         }
       pango_font_description_free (desc);
@@ -278,7 +278,7 @@ pre_render (int width, int height)
 			     WS_DISABLED,
 			     0, 0, width, height,
 			     GetDesktopWindow(),
-			     NULL, 
+			     NULL,
 			     GetModuleHandle(NULL),
 			     NULL);
 
@@ -385,7 +385,7 @@ SaveBitmap (HBITMAP hBmp, const char* pszFile)
   DWORD cb;                   /* incremental count of bytes */
   DWORD dwTmp;
   HDC hDC;
-  
+
   pbih = (PBITMAPINFOHEADER) pbmi;
   lpBits = (LPBYTE) GlobalAlloc(GMEM_FIXED, pbih->biSizeImage);
   if (!lpBits)
@@ -406,7 +406,7 @@ SaveBitmap (HBITMAP hBmp, const char* pszFile)
 		   CREATE_ALWAYS,
 		   FILE_ATTRIBUTE_NORMAL,
 		   (HANDLE) NULL);
-  
+
   if (hf == INVALID_HANDLE_VALUE)
     return FALSE;
   hdr.bfType = 0x4d42;        /* 0x42 = "B" 0x4d = "M" */
@@ -433,13 +433,13 @@ SaveBitmap (HBITMAP hBmp, const char* pszFile)
   dwTotal = cb = pbih->biSizeImage;
 
   if (!WriteFile(hf, (LPSTR) lpBits, (int) cb,
-                 (LPDWORD) &dwTotal, (LPOVERLAPPED) NULL)) 
+                 (LPDWORD) &dwTotal, (LPOVERLAPPED) NULL))
       return FALSE;
 
   /* Close the .BMP file. */
   if (!CloseHandle(hf))
     return FALSE;
-  
+
   /* Free memory. */
   GlobalFree((HGLOBAL)lpBits);
   GlobalFree((HGLOBAL)pbmi);
@@ -447,4 +447,4 @@ SaveBitmap (HBITMAP hBmp, const char* pszFile)
   DeleteDC(hDC);
   } // C sucks
   return TRUE;
-} 
+}

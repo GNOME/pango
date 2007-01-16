@@ -50,7 +50,7 @@ struct _PangoContext
 struct _PangoContextClass
 {
   GObjectClass parent_class;
-  
+
 };
 
 static void pango_context_finalize    (GObject           *object);
@@ -63,7 +63,7 @@ pango_context_init (PangoContext *context)
   context->base_dir = PANGO_DIRECTION_WEAK_LTR;
   context->resolved_gravity = context->base_gravity = PANGO_GRAVITY_SOUTH;
   context->gravity_hint = PANGO_GRAVITY_HINT_NATURAL;
-    
+
   context->language = NULL;
   context->font_map = NULL;
 
@@ -80,7 +80,7 @@ static void
 pango_context_class_init (PangoContextClass *klass)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (klass);
-  
+
   object_class->finalize = pango_context_finalize;
 }
 
@@ -97,14 +97,14 @@ pango_context_finalize (GObject *object)
   pango_font_description_free (context->font_desc);
   if (context->matrix)
     pango_matrix_free (context->matrix);
-  
+
   G_OBJECT_CLASS (pango_context_parent_class)->finalize (object);
 }
 
 
 /**
  * pango_context_new:
- * 
+ *
  * Creates a new #PangoContext initialized to default value.
  *
  * This function is only useful when implementing a new backend
@@ -116,9 +116,9 @@ pango_context_finalize (GObject *object)
  * If you are using Pango as part of a higher-level system,
  * that system may have it's own ways of create a #PangoContext.
  * For instance, the GTK+ toolkit has, among others,
- * gdk_pango_context_get_for_screen(), and 
+ * gdk_pango_context_get_for_screen(), and
  * gtk_widget_get_pango_context().
- * 
+ *
  * Return value: the newly allocated #PangoContext, which should
  *               be freed with g_object_unref().
  **/
@@ -128,7 +128,7 @@ pango_context_new (void)
   PangoContext *context;
 
   context = g_object_new (PANGO_TYPE_CONTEXT, NULL);
-  
+
   return context;
 }
 
@@ -146,7 +146,7 @@ update_resolved_gravity (PangoContext *context)
  * @context: a #PangoContext
  * @matrix: a #PangoMatrix, or %NULL to unset any existing matrix.
  *  (No matrix set is the same as setting the identity matrix.)
- * 
+ *
  * Sets the transformation matrix that will be applied when rendering
  * with this context. Note that reported metrics are in the user space
  * coordinates before the application of the matrix, not device-space
@@ -198,7 +198,7 @@ pango_context_get_matrix (PangoContext *context)
  * pango_context_set_font_map:
  * @context: a #PangoContext
  * @font_map: the #PangoFontMap to set.
- * 
+ *
  * Sets the font map to be searched when fonts are looked-up in this context.
  * This is only for internal use by Pango backends, a #PangoContext obtained
  * via one of the recommended methods should already have a suitable font map.
@@ -222,9 +222,9 @@ pango_context_set_font_map (PangoContext *context,
 /**
  * pango_context_get_font_map:
  * @context: a #PangoContext
- * 
+ *
  * Gets the #PangoFontmap used to look up fonts for this context.
- * 
+ *
  * Return value: the font map for the #PangoContext. This value
  *  is owned by Pango and should not be unreferenced.
  *
@@ -244,7 +244,7 @@ pango_context_get_font_map (PangoContext *context)
  * @families: location to store a pointer to an array of #PangoFontFamily *.
  *            This array should be freed with g_free().
  * @n_families: location to store the number of elements in @descs
- * 
+ *
  * List all families for a context.
  **/
 void
@@ -257,16 +257,16 @@ pango_context_list_families (PangoContext          *context,
 
   if (n_families == NULL)
     return;
-  
+
   if (context->font_map == NULL)
     {
       *n_families = 0;
       if (families)
 	*families = NULL;
-      
+
       return;
     }
-  else 
+  else
     pango_font_map_list_families (context->font_map, families, n_families);
 }
 
@@ -274,7 +274,7 @@ pango_context_list_families (PangoContext          *context,
  * pango_context_load_font:
  * @context: a #PangoContext
  * @desc: a #PangoFontDescription describing the font to load
- * 
+ *
  * Loads the font in one of the fontmaps in the context
  * that is the closest match for @desc.
  *
@@ -286,7 +286,7 @@ pango_context_load_font (PangoContext               *context,
 {
   g_return_val_if_fail (context != NULL, NULL);
   g_return_val_if_fail (pango_font_description_get_family (desc) != NULL, NULL);
-  
+
   return pango_font_map_load_font (context->font_map, context, desc);
 }
 
@@ -295,7 +295,7 @@ pango_context_load_font (PangoContext               *context,
  * @context: a #PangoContext
  * @desc: a #PangoFontDescription describing the fonts to load
  * @language: a #PangoLanguage the fonts will be used for
- * 
+ *
  * Load a set of fonts in the context that can be used to render
  * a font matching @desc.
  *
@@ -317,7 +317,7 @@ pango_context_load_fontset (PangoContext               *context,
  * pango_context_set_font_description:
  * @context: a #PangoContext
  * @desc: the new pango font description
- * 
+ *
  * Set the default font description for the context
  **/
 void
@@ -334,9 +334,9 @@ pango_context_set_font_description (PangoContext               *context,
 /**
  * pango_context_get_font_description:
  * @context: a #PangoContext
- * 
+ *
  * Retrieve the default font description for the context.
- * 
+ *
  * Return value: a pointer to the context's default font description.
  *               This value must not be modified or freed.
  **/
@@ -344,7 +344,7 @@ PangoFontDescription *
 pango_context_get_font_description (PangoContext *context)
 {
   g_return_val_if_fail (context != NULL, NULL);
-  
+
   return context->font_desc;
 }
 
@@ -352,7 +352,7 @@ pango_context_get_font_description (PangoContext *context)
  * pango_context_set_language:
  * @context: a #PangoContext
  * @language: the new language tag.
- * 
+ *
  * Sets the global language tag for the context.  The default language
  * for the locale of the running process can be found using
  * pango_language_get_default().
@@ -369,9 +369,9 @@ pango_context_set_language (PangoContext *context,
 /**
  * pango_context_get_language:
  * @context: a #PangoContext
- * 
+ *
  * Retrieves the global language tag for the context.
- * 
+ *
  * Return value: the global language tag.
  **/
 PangoLanguage *
@@ -386,7 +386,7 @@ pango_context_get_language (PangoContext *context)
  * pango_context_set_base_dir:
  * @context: a #PangoContext
  * @direction: the new base direction
- * 
+ *
  * Sets the base direction for the context.
  *
  * The base direction is used in applying the Unicode bidirectional
@@ -394,7 +394,7 @@ pango_context_get_language (PangoContext *context)
  * %PANGO_DIRECTION_RTL, then the value will be used as the paragraph
  * direction in the Unicode bidirectional algorithm.  A value of
  * %PANGO_DIRECTION_WEAK_LTR or %PANGO_DIRECTION_WEAK_RTL is used only
- * for paragraphs that do not contain any strong characters themselves. 
+ * for paragraphs that do not contain any strong characters themselves.
  **/
 void
 pango_context_set_base_dir (PangoContext  *context,
@@ -408,10 +408,10 @@ pango_context_set_base_dir (PangoContext  *context,
 /**
  * pango_context_get_base_dir:
  * @context: a #PangoContext
- * 
+ *
  * Retrieves the base direction for the context. See
  * pango_context_set_base_dir().
- * 
+ *
  * Return value: the base direction for the context.
  **/
 PangoDirection
@@ -426,7 +426,7 @@ pango_context_get_base_dir (PangoContext *context)
  * pango_context_set_base_gravity:
  * @context: a #PangoContext
  * @gravity: the new base gravity
- * 
+ *
  * Sets the base gravity for the context.
  *
  * The base gravity is used in laying vertical text out.
@@ -447,10 +447,10 @@ pango_context_set_base_gravity (PangoContext  *context,
 /**
  * pango_context_get_base_gravity:
  * @context: a #PangoContext
- * 
+ *
  * Retrieves the base gravity for the context. See
  * pango_context_set_base_gravity().
- * 
+ *
  * Return value: the base gravity for the context.
  *
  * Since: 1.16
@@ -466,12 +466,12 @@ pango_context_get_base_gravity (PangoContext *context)
 /**
  * pango_context_get_gravity:
  * @context: a #PangoContext
- * 
+ *
  * Retrieves the gravity for the context. This is similar to
  * pango_context_get_base_gravity(), except for when the base gravity
  * is %PANGO_GRAVITY_AUTO for which pango_gravity_get_for_matrix() is used
  * to return the gravity from the current context matrix.
- * 
+ *
  * Return value: the resolved gravity for the context.
  *
  * Since: 1.16
@@ -488,7 +488,7 @@ pango_context_get_gravity (PangoContext *context)
  * pango_context_set_gravity_hint:
  * @context: a #PangoContext
  * @hint: the new gravity hint
- * 
+ *
  * Sets the gravity hint for the context.
  *
  * The gravity hint is used in laying vertical text out, and is only relevant
@@ -509,10 +509,10 @@ pango_context_set_gravity_hint (PangoContext    *context,
 /**
  * pango_context_get_gravity_hint:
  * @context: a #PangoContext
- * 
+ *
  * Retrieves the gravity hint for the context. See
  * pango_context_set_gravity_hint() for details.
- * 
+ *
  * Return value: the gravity hint for the context.
  *
  * Since: 1.16
@@ -532,7 +532,7 @@ advance_attr_iterator_to (PangoAttrIterator *iterator,
 			  int                start_index)
 {
   int start_range, end_range;
-  
+
   pango_attr_iterator_range (iterator, &start_range, &end_range);
 
   while (start_index >= end_range)
@@ -581,11 +581,11 @@ static ShaperFontCache *
 get_shaper_font_cache (PangoFontset *fontset)
 {
   ShaperFontCache *cache;
-  
+
   static GQuark cache_quark = 0;
   if (!cache_quark)
     cache_quark = g_quark_from_static_string ("pango-shaper-font-cache");
-  
+
   cache = g_object_get_qdata (G_OBJECT (fontset), cache_quark);
   if (!cache)
     {
@@ -607,7 +607,7 @@ shaper_font_cache_get (ShaperFontCache   *cache,
 		       PangoFont        **font)
 {
   ShaperFontElement *element;
-  
+
   element = g_hash_table_lookup (cache->hash, GUINT_TO_POINTER (wc));
   if (element)
     {
@@ -629,7 +629,7 @@ shaper_font_cache_insert (ShaperFontCache   *cache,
   ShaperFontElement *element = g_slice_new (ShaperFontElement);
   element->shape_engine = shape_engine;
   element->font = font;
-  
+
   g_hash_table_insert (cache->hash, GUINT_TO_POINTER (wc), element);
 }
 
@@ -650,7 +650,7 @@ struct _ItemizeState
   PangoContext *context;
   const char *text;
   const char *end;
-  
+
   const char *run_start;
   const char *run_end;
 
@@ -677,19 +677,19 @@ struct _ItemizeState
   gboolean copy_extra_attrs;
 
   ChangedFlags changed;
-  
+
   PangoScriptIter *script_iter;
   const char *script_end;
   PangoScript script;
 
   PangoLanguage *derived_lang;
   PangoEngineLang *lang_engine;
-  
+
   PangoFontset *current_fonts;
   ShaperFontCache *cache;
   PangoFont *base_font;
   gboolean enable_fallback;
-  
+
   GSList *exact_engines;
   GSList *fallback_engines;
 };
@@ -704,7 +704,7 @@ update_embedding_end (ItemizeState *state)
       state->embedding_end_offset++;
       state->embedding_end = g_utf8_next_char (state->embedding_end);
     }
-  
+
   state->changed |= EMBEDDING_CHANGED;
 }
 
@@ -713,7 +713,7 @@ find_attribute (GSList        *attr_list,
                 PangoAttrType  type)
 {
   GSList *node;
-  
+
   for (node = attr_list; node; node = node->next)
     if (((PangoAttribute *) node->data)->klass->type == type)
       return (PangoAttribute *) node->data;
@@ -727,7 +727,7 @@ update_attr_iterator (ItemizeState *state)
   PangoLanguage *old_lang;
   PangoAttribute *attr;
   int end_index;
-  
+
   pango_attr_iterator_range (state->attr_iter, NULL, &end_index);
   if (end_index < state->end - state->text)
     state->attr_end = state->text + end_index;
@@ -749,7 +749,7 @@ update_attr_iterator (ItemizeState *state)
 
   if (!state->lang)
     state->lang = state->context->language;
-  
+
   attr = find_attribute (state->extra_attrs, PANGO_ATTR_FALLBACK);
   state->enable_fallback = (attr == NULL || ((PangoAttrInt *)attr)->value);
 
@@ -776,7 +776,7 @@ update_end (ItemizeState *state)
 
 static void
 itemize_state_init (ItemizeState      *state,
-		    PangoContext      *context, 
+		    PangoContext      *context,
 		    const char        *text,
 		    PangoDirection     base_dir,
 		    int                start_index,
@@ -794,12 +794,12 @@ itemize_state_init (ItemizeState      *state,
   state->item = NULL;
 
   state->run_start = text + start_index;
-  
+
   /* First, apply the bidirectional algorithm to break
    * the text into directional runs.
    */
   state->embedding_levels = pango_log2vis_get_embedding_levels (text + start_index, length, &base_dir);
-  
+
   state->embedding_end_offset = 0;
   state->embedding_end = text + start_index;
   update_embedding_end (state);
@@ -836,7 +836,7 @@ itemize_state_init (ItemizeState      *state,
       state->lang = state->context->language;
       state->extra_attrs = NULL;
       state->copy_extra_attrs = FALSE;
-  
+
       state->attr_end = state->end;
       state->enable_fallback = TRUE;
     }
@@ -865,7 +865,7 @@ itemize_state_init (ItemizeState      *state,
   state->exact_engines = NULL;
   state->fallback_engines = NULL;
   state->base_font = NULL;
-  
+
   state->changed = EMBEDDING_CHANGED | SCRIPT_CHANGED | LANG_CHANGED | FONT_CHANGED;
 }
 
@@ -908,7 +908,7 @@ copy_attr_slist (GSList *attr_slist)
 {
   GSList *new_list = NULL;
   GSList *l;
-  
+
   for (l = attr_slist; l; l = l->next)
     new_list = g_slist_prepend (new_list, pango_attribute_copy (l->data));
 
@@ -921,7 +921,7 @@ itemize_state_fill_shaper (ItemizeState     *state,
 			   PangoFont        *font)
 {
   GList *l;
-  
+
   for (l = state->result; l; l = l->next)
     {
       PangoItem *item = l->data;
@@ -976,7 +976,7 @@ itemize_state_add_character (ItemizeState     *state,
   if (font)
     g_object_ref (font);
   state->item->analysis.font = font;
-  
+
   state->item->analysis.level = state->embedding;
   state->item->analysis.gravity = state->resolved_gravity;
 
@@ -1014,7 +1014,7 @@ itemize_state_add_character (ItemizeState     *state,
   state->item->analysis.flags = state->centered_baseline ? PANGO_ANALYSIS_FLAG_CENTERED_BASELINE : 0;
 
   state->item->analysis.language = state->derived_lang;
-  
+
   if (state->copy_extra_attrs)
     {
       state->item->analysis.extra_attrs = copy_attr_slist (state->extra_attrs);
@@ -1124,7 +1124,7 @@ get_shaper_and_font (ItemizeState      *state,
   info.engines = state->exact_engines;
   if (state->enable_fallback)
     pango_fontset_foreach (state->current_fonts, get_shaper_and_font_foreach, &info);
-  else 
+  else
     get_shaper_and_font_foreach (NULL, get_base_font (state), &info);
 
   if (info.shape_engine)
@@ -1142,7 +1142,7 @@ get_shaper_and_font (ItemizeState      *state,
   info.engines = state->fallback_engines;
   if (state->enable_fallback)
     pango_fontset_foreach (state->current_fonts, get_shaper_and_font_foreach, &info);
-  else 
+  else
     get_shaper_and_font_foreach (NULL, get_base_font (state), &info);
 
   *shape_engine = info.shape_engine;
@@ -1151,7 +1151,7 @@ get_shaper_and_font (ItemizeState      *state,
   /* skip caching if fallback disabled (see above) */
   if (state->enable_fallback)
     shaper_font_cache_insert (state->cache, wc, *shape_engine, *font);
-      
+
   return *shape_engine != NULL;
 }
 
@@ -1169,7 +1169,7 @@ compute_derived_language (PangoLanguage *lang,
 			  PangoScript    script)
 {
   PangoLanguage *derived_lang;
-  
+
   /* Make sure the language tag is consistent with the derived
    * script. There is no point in marking up a section of
    * Arabic text with the "en" language tag.
@@ -1198,13 +1198,13 @@ get_lang_map (PangoLanguage *lang)
 {
   static guint engine_type_id = 0;
   static guint render_type_id = 0;
-  
+
   if (engine_type_id == 0)
     {
       engine_type_id = g_quark_from_static_string (PANGO_ENGINE_TYPE_LANG);
       render_type_id = g_quark_from_static_string (PANGO_RENDER_TYPE_NONE);
     }
-	       
+
   return pango_find_map (lang, engine_type_id, render_type_id);
 }
 
@@ -1250,7 +1250,7 @@ itemize_state_update_for_new_run (ItemizeState *state)
       if (old_derived_lang != state->derived_lang)
 	state->changed |= DERIVED_LANG_CHANGED;
     }
-      
+
   if ((state->changed & DERIVED_LANG_CHANGED) || !state->lang_engine)
     {
       PangoMap *lang_map = get_lang_map (state->derived_lang);
@@ -1259,7 +1259,7 @@ itemize_state_update_for_new_run (ItemizeState *state)
 
   if (state->changed & (SCRIPT_CHANGED | DERIVED_LANG_CHANGED))
     itemize_state_reset_shape_engines (state);
-  
+
   if (state->changed & (FONT_CHANGED | DERIVED_LANG_CHANGED) &&
       state->current_fonts)
     {
@@ -1339,12 +1339,12 @@ itemize_state_process_run (ItemizeState *state)
         {
 	  get_shaper_and_font (state, wc, &shape_engine, &font);
 	}
-	
+
       itemize_state_add_character (state,
 				   shape_engine, font,
 				   is_forced_break || last_was_forced_break,
 				   p);
-      
+
       last_was_forced_break = is_forced_break;
     }
 
@@ -1354,7 +1354,7 @@ itemize_state_process_run (ItemizeState *state)
     {
       PangoEngineShape *shape_engine;
       PangoFont *font;
-      
+
       if (!get_shaper_and_font (state, ' ', &shape_engine, &font))
 	{
 	  shape_engine = _pango_get_fallback_shaper ();
@@ -1404,7 +1404,7 @@ itemize_state_finish (ItemizeState *state)
  * Since: 1.4
  */
 GList *
-pango_itemize_with_base_dir (PangoContext      *context, 
+pango_itemize_with_base_dir (PangoContext      *context,
 			     PangoDirection     base_dir,
 			     const char        *text,
 			     int                start_index,
@@ -1424,18 +1424,18 @@ pango_itemize_with_base_dir (PangoContext      *context,
 
   itemize_state_init (&state, context, text, base_dir, start_index, length,
 		      attrs, cached_iter, NULL);
-  
-  do 
+
+  do
     itemize_state_process_run (&state);
   while (itemize_state_next (&state));
 
   itemize_state_finish (&state);
-  
+
   return g_list_reverse (state.result);
 }
 
 static GList *
-itemize_with_font (PangoContext               *context, 
+itemize_with_font (PangoContext               *context,
 		   const char                 *text,
 		   int                         start_index,
 		   int                         length,
@@ -1449,12 +1449,12 @@ itemize_with_font (PangoContext               *context,
   itemize_state_init (&state, context, text, context->base_dir, start_index, length,
 		      NULL, NULL, desc);
 
-  do 
+  do
     itemize_state_process_run (&state);
   while (itemize_state_next (&state));
 
   itemize_state_finish (&state);
-  
+
   return g_list_reverse (state.result);
 }
 
@@ -1484,7 +1484,7 @@ itemize_with_font (PangoContext               *context,
  * Return value: a #GList of #PangoItem structures.
  */
 GList *
-pango_itemize (PangoContext      *context, 
+pango_itemize (PangoContext      *context,
 	       const char        *text,
                int                start_index,
 	       int                length,
@@ -1538,7 +1538,7 @@ static void
 update_metrics_from_items (PangoFontMetrics *metrics,
 			   PangoLanguage    *language,
 			   GList            *items)
-			   
+
 {
   GHashTable *fonts_seen = g_hash_table_new (NULL, NULL);
   int count = 0;
@@ -1557,14 +1557,14 @@ update_metrics_from_items (PangoFontMetrics *metrics,
 	  /* metrics will already be initialized from the first font in the fontset */
 	  metrics->ascent = MAX (metrics->ascent, raw_metrics->ascent);
 	  metrics->descent = MAX (metrics->descent, raw_metrics->descent);
-	  
+
 	  if (count == 0)
 	    {
 	      metrics->approximate_char_width = raw_metrics->approximate_char_width;
 	      metrics->approximate_digit_width = raw_metrics->approximate_digit_width;
 	    }
 	  else
-	    { 
+	    {
 	      metrics->approximate_char_width += raw_metrics->approximate_char_width;
 	      metrics->approximate_digit_width += raw_metrics->approximate_digit_width;
 	    }
@@ -1572,9 +1572,9 @@ update_metrics_from_items (PangoFontMetrics *metrics,
 	  pango_font_metrics_unref (raw_metrics);
 	}
     }
-  
+
   g_hash_table_destroy (fonts_seen);
-  
+
   if (count)
     {
       metrics->approximate_char_width /= count;
@@ -1592,7 +1592,7 @@ update_metrics_from_items (PangoFontMetrics *metrics,
  *            large enough to cover a range of languages will be returned.
  *            The process of determining such metrics is slow, so it is best
  *            to always make sure some real language tag will be used.
- * 
+ *
  * Get overall metric information for a particular font
  * description.  Since the metrics may be substantially different for
  * different scripts, a language tag can be provided to indicate that
@@ -1618,7 +1618,7 @@ pango_context_get_metrics (PangoContext                 *context,
   PangoFontMetrics *metrics;
   const char *sample_str;
   GList *items;
-  
+
   g_return_val_if_fail (PANGO_IS_CONTEXT (context), NULL);
   g_return_val_if_fail (desc != NULL, NULL);
 
@@ -1627,15 +1627,15 @@ pango_context_get_metrics (PangoContext                 *context,
 
   current_fonts = pango_font_map_load_fontset (context->font_map, context, desc, language);
   metrics = get_base_metrics (current_fonts);
-  
+
   sample_str = pango_language_get_sample_string (language);
   items = itemize_with_font (context, sample_str, 0, strlen (sample_str), desc);
 
-  update_metrics_from_items (metrics, language, items);  
+  update_metrics_from_items (metrics, language, items);
 
   g_list_foreach (items, (GFunc)pango_item_free, NULL);
   g_list_free (items);
-  
+
   g_object_unref (current_fonts);
 
   return metrics;

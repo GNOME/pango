@@ -37,19 +37,19 @@ struct _PangoLogAttr
   guint is_mandatory_break : 1; /* Must break line in front of character */
 
   guint is_char_break : 1;      /* Can break here when doing char wrap */
-  
+
   guint is_white : 1;           /* Whitespace character */
 
   /* cursor can appear in front of character (i.e. this is a grapheme
    * boundary, or the first character in the text)
    */
   guint is_cursor_position : 1;
-  
+
   /* Note that in degenerate cases, you could have both start/end set on
    * some text, most likely for sentences (e.g. no space after a period, so
    * the next sentence starts right away)
    */
-  
+
   guint is_word_start : 1;      /* first character in a word */
   guint is_word_end   : 1;      /* is first non-word char after a word */
 
@@ -66,17 +66,17 @@ struct _PangoLogAttr
   guint is_sentence_end : 1;    /* first non-sentence char after a sentence */
 
   /* if set, backspace deletes one character rather than
-   * the entire grapheme cluster  
+   * the entire grapheme cluster
    */
-  guint backspace_deletes_character : 1; 
+  guint backspace_deletes_character : 1;
 };
 
 /* Determine information about cluster/word/line breaks in a string
  * of Unicode text.
  */
-void pango_break (const gchar   *text, 
-		  int            length, 
-		  PangoAnalysis *analysis, 
+void pango_break (const gchar   *text,
+		  int            length,
+		  PangoAnalysis *analysis,
 		  PangoLogAttr  *attrs,
                   int            attrs_len);
 

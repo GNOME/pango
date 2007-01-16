@@ -26,9 +26,9 @@
 
 /**
  * pango_item_new:
- * 
+ *
  * Creates a new #PangoItem structure initialized to default values.
- * 
+ *
  * Return value: the newly allocated #PangoItem, which should
  *               be freed with pango_item_free().
  **/
@@ -43,9 +43,9 @@ pango_item_new (void)
 /**
  * pango_item_copy:
  * @item: a #PangoItem
- * 
+ *
  * Copy an existing #PangoItem structure.
- * 
+ *
  * Return value: the newly allocated #PangoItem, which should
  *               be freed with pango_item_free().
  **/
@@ -62,7 +62,7 @@ pango_item_copy (PangoItem *item)
   result->analysis = item->analysis;
   if (result->analysis.font)
     g_object_ref (result->analysis.font);
-  
+
   extra_attrs = NULL;
   tmp_list = item->analysis.extra_attrs;
   while (tmp_list)
@@ -79,7 +79,7 @@ pango_item_copy (PangoItem *item)
 /**
  * pango_item_free:
  * @item: a #PangoItem
- * 
+ *
  * Free a #PangoItem and all associated memory.
  **/
 void
@@ -101,7 +101,7 @@ GType
 pango_item_get_type (void)
 {
   static GType our_type = 0;
-  
+
   if (our_type == 0)
     our_type = g_boxed_type_register_static (I_("PangoItem"),
                                              (GBoxedCopyFunc) pango_item_copy,
@@ -114,7 +114,7 @@ pango_item_get_type (void)
  * @orig: a #PangoItem
  * @split_index: byte index of position to split item, relative to the start of the item
  * @split_offset: number of chars between start of @orig and @split_index
- * 
+ *
  * Modifies @orig to cover only the text after @split_index, and
  * returns a new item that covers the text before @split_index that
  * used to be in @orig. You can think of @split_index as the length of
@@ -125,7 +125,7 @@ pango_item_get_type (void)
  * chars, and must be provided because the text used to generate the
  * item isn't available, so pango_item_split() can't count the char
  * length of the split items itself.
- * 
+ *
  * Return value: new item representing text before @split_index, which
  *               should be freed with pango_item_free().
  **/
@@ -142,14 +142,14 @@ pango_item_split (PangoItem  *orig,
   g_return_val_if_fail (split_index < orig->length, NULL);
   g_return_val_if_fail (split_offset > 0, NULL);
   g_return_val_if_fail (split_offset < orig->num_chars, NULL);
-  
+
   new_item = pango_item_copy (orig);
   new_item->length = split_index;
   new_item->num_chars = split_offset;
-  
+
   orig->offset += split_index;
   orig->length -= split_index;
   orig->num_chars -= split_offset;
-  
+
   return new_item;
 }

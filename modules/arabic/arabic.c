@@ -1,9 +1,9 @@
-/* Pango - Arabic module 
+/* Pango - Arabic module
  * arabic module
  *
  * (C) 2000 Karl Koehler<koehler@or.uni-bonn.de>
- *          Owen Taylor <otaylor@redhat.com> 
- * 
+ *          Owen Taylor <otaylor@redhat.com>
+ *
  */
 
 #include <stdio.h>
@@ -12,7 +12,7 @@
 #include "pango-engine.h"
 #include "pangox.h"
 
-#include "arconv.h" 
+#include "arconv.h"
 #include "mulefont.h"
 #include "langboxfont.h"
 #include "naqshfont.h"
@@ -44,7 +44,7 @@ static gint n_script_engines = G_N_ELEMENTS (script_engines);
 
 static ArabicFontInfo*
 arabic_unicodeinit(PangoFont  *font, PangoXSubfont subfont)
-{ 
+{
     ArabicFontInfo    *fs = NULL;
 
     if (subfont != 0)
@@ -65,7 +65,7 @@ arabic_unicodeinit(PangoFont  *font, PangoXSubfont subfont)
                     if ( pango_x_has_glyph /* Lam-Min alone */
                          (font,PANGO_X_MAKE_GLYPH(subfont,0xFC42)))
                         {
-                            fs->level |= ar_lig; 
+                            fs->level |= ar_lig;
                             /* extra ligatures in font, hopefully */
                         }
                 }
@@ -77,26 +77,26 @@ static ArabicFontInfo*
 find_unic_font (PangoFont *font)
 {
     static char *charsets[] = {
-        "iso10646-1",  
+        "iso10646-1",
         "iso8859-6.8x",
         "mulearabic-2",
 	"urdunaqsh-0",
 /*          "symbol-0" */
     };
-    
+
     ArabicFontInfo    *fs = NULL;
     PangoXSubfont     *subfonts;
     int               *subfont_charsets;
     int                n_subfonts;
     int                i;
-    
+
     GQuark info_id = g_quark_from_string ("arabic-font-info");
     fs = g_object_get_qdata (G_OBJECT (font), info_id);
     if (fs) return fs;
 
-    n_subfonts = pango_x_list_subfonts (font, charsets, 4, 
+    n_subfonts = pango_x_list_subfonts (font, charsets, 4,
                                         &subfonts, &subfont_charsets);
-    
+
     for (i=0; i < n_subfonts; i++)
         {
             if  ( !strcmp (charsets[subfont_charsets[i]], "mulearabic-2"))
@@ -112,23 +112,23 @@ find_unic_font (PangoFont *font)
                     if (getenv("PANGO_AR_NOLBOXFONT") == NULL )
 #endif
                         fs = arabic_lboxinit(font);
-                } 
+                }
             else if ( !strcmp (charsets[subfont_charsets[i]], "urdunaqsh-0"))
                 {
 #ifdef DEBUG
                     if (getenv("PANGO_AR_NONQFONT") == NULL )
 #endif
                         fs = urdu_naqshinit(font);
-                } 
+                }
             else
-                { 
+                {
 #ifdef DEBUG
                     if (getenv("PANGO_AR_NOUNIFONT") == NULL )
 #endif
                         fs = arabic_unicodeinit(font,subfonts[i]);
                 }
-            if (fs){ 
-                g_object_set_qdata_full (G_OBJECT (font), info_id, 
+            if (fs){
+                g_object_set_qdata_full (G_OBJECT (font), info_id,
                                          fs, (GDestroyNotify)g_free);
                 break;
             }
@@ -143,14 +143,14 @@ find_unic_font (PangoFont *font)
 
 
 static void
-set_glyph (PangoGlyphString *glyphs, 
+set_glyph (PangoGlyphString *glyphs,
            PangoFont *font, PangoXSubfont subfont,
            int i, int cluster_start, int glyph, int is_vowel)
 {
     PangoRectangle logical_rect;
 
     glyphs->glyphs[i].glyph = PANGO_X_MAKE_GLYPH (subfont, glyph);
-  
+
     glyphs->glyphs[i].geometry.x_offset = 0;
     glyphs->glyphs[i].geometry.y_offset = 0;
 
@@ -169,11 +169,11 @@ set_glyph (PangoGlyphString *glyphs,
 
 /* The following thing is actually critical ... */
 
-static void 
-arabic_engine_shape (PangoFont        *font, 
+static void
+arabic_engine_shape (PangoFont        *font,
                      const char       *text,
                      int               length,
-                     PangoAnalysis    *analysis, 
+                     PangoAnalysis    *analysis,
                      PangoGlyphString *glyphs)
 {
     PangoXSubfont   subfont;
@@ -191,20 +191,20 @@ arabic_engine_shape (PangoFont        *font,
 
     /* We hope there is a suitible font installed ..
      */
-  
+
     if (! (fs = find_unic_font (font)) )
         {
 
             PangoGlyph unknown_glyph = pango_x_get_unknown_glyph (font);
-            
+
             n_chars = g_utf8_strlen(text,length);
             pango_glyph_string_set_size (glyphs, n_chars);
 
             p = text;
             for (i=0; i<n_chars; i++)
                 {
-                    set_glyph (glyphs, font, 
-                               PANGO_X_GLYPH_SUBFONT (unknown_glyph), i, 
+                    set_glyph (glyphs, font,
+                               PANGO_X_GLYPH_SUBFONT (unknown_glyph), i,
                                p - text, PANGO_X_GLYPH_INDEX (unknown_glyph),0);
                     p = g_utf8_next_char (p);
                 }
@@ -216,12 +216,12 @@ arabic_engine_shape (PangoFont        *font,
     if (analysis->level % 2 == 0)
         {
             wc      = g_utf8_to_ucs4_fast(text,length,&n_chars);
-            /* We were called on a LTR directional run (e.g. some numbers); 
+            /* We were called on a LTR directional run (e.g. some numbers);
                fallback as simple as possible */
             pango_glyph_string_set_size (glyphs, n_chars);
 
         }
-    else 
+    else
         {
             wc      = (gunichar *)g_malloc(sizeof(gunichar)* (length) ); /* length is succicient: all arabic chars use at
 									    least 2 bytes in utf-8 encoding */
@@ -233,7 +233,7 @@ arabic_engine_shape (PangoFont        *font,
 
     p    = text;
     pold = p;
-    i    = 0; 
+    i    = 0;
     subfont = fs->subfonts[0];
 
     while(i < n_chars)
@@ -243,11 +243,11 @@ arabic_engine_shape (PangoFont        *font,
                     p = g_utf8_next_char (p);
 #ifdef DEBUG
                     fprintf(stderr,"NULL-character detected in generated string.!");
-#endif          
+#endif
                     i++;
                 }
-            else 
-                {   
+            else
+                {
                     int cluster_start ;
                     int is_vowel      = arabic_isvowel(wc[i]);
                     cluster_start     = is_vowel ? pold - text : p - text;
@@ -265,7 +265,7 @@ arabic_engine_shape (PangoFont        *font,
                                                        &(wc[i+1]),
                                                        fs->subfonts);
                                 }
-                            else 
+                            else
                                 arabic_lbox_recode(&subfont,&(wc[i]),NULL,
                                                    fs->subfonts);
                         }
@@ -277,14 +277,14 @@ arabic_engine_shape (PangoFont        *font,
                                                       &(wc[i+1]),
                                                       fs->subfonts);
                                 }
-                            else 
+                            else
                                 urdu_naqsh_recode(&subfont,&(wc[i]),NULL,
                                                   fs->subfonts);
                         }
-                    
+
                     set_glyph(glyphs, font, subfont, n_chars - i - 1,
                               cluster_start, wc[i], is_vowel);
-      
+
                     pold = p;
                     p    = g_utf8_next_char (p);
                     i++;
@@ -314,7 +314,7 @@ static PangoEngine *
 arabic_engine_x_new ()
 {
     PangoEngineShape *result;
-  
+
     result = g_new (PangoEngineShape, 1);
 
     result->engine.id = "ArabicScriptEngine";
@@ -339,7 +339,7 @@ arabic_engine_x_new ()
 #define MODULE_ENTRY(func) func
 #endif
 
-void 
+void
 MODULE_ENTRY(script_engine_list) (PangoEngineInfo **engines, int *n_engines)
 {
     *engines   = script_engines;
@@ -355,7 +355,7 @@ MODULE_ENTRY(script_engine_load) (const char *id)
     return NULL;
 }
 
-void 
+void
 MODULE_ENTRY(script_engine_unload) (PangoEngine *engine)
 {
 }

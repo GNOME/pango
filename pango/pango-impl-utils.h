@@ -80,12 +80,12 @@ prefix ## _get_type (void)				                   \
 typedef struct _PangoWarningHistory PangoWarningHistory;
 
 struct _PangoWarningHistory {
-  guint shape_font		: 1; 
+  guint shape_font		: 1;
   guint shape_shape_engine	: 1;
   guint get_glyph_extents	: 1;
   guint get_metrics		: 1;
   guint get_font_map		: 1;
-}; 
+};
 
 extern PangoWarningHistory _pango_warning_history;
 

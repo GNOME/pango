@@ -57,9 +57,9 @@ static PangoAttribute *pango_attr_size_new_internal (int                   size,
 /**
  * pango_attr_type_register:
  * @name: an identifier for the type (currently unused.)
- * 
+ *
  * Allocate a new attribute type ID.
- * 
+ *
  * Return value: the new type ID.
  **/
 PangoAttrType
@@ -73,9 +73,9 @@ pango_attr_type_register (const gchar *name)
 /**
  * pango_attribute_copy:
  * @attr: a #PangoAttribute
- * 
+ *
  * Make a copy of an attribute.
- * 
+ *
  * Return value: the newly allocated #PangoAttribute, which should be
  *               freed with pango_attribute_destroy().
  **/
@@ -96,7 +96,7 @@ pango_attribute_copy (const PangoAttribute *attr)
 /**
  * pango_attribute_destroy:
  * @attr: a #PangoAttribute.
- * 
+ *
  * Destroy a #PangoAttribute and free all associated memory.
  **/
 void
@@ -111,11 +111,11 @@ pango_attribute_destroy (PangoAttribute *attr)
  * pango_attribute_equal:
  * @attr1: a #PangoAttribute
  * @attr2: another #PangoAttribute
- * 
+ *
  * Compare two attributes for equality. This compares only the
  * actual value of the two attributes and not the ranges that the
  * attributes apply to.
- * 
+ *
  * Return value: %TRUE if the two attributes have the same value.
  **/
 gboolean
@@ -168,9 +168,9 @@ pango_attr_string_new (const PangoAttrClass *klass,
 /**
  * pango_attr_family_new:
  * @family: the family or comma separated list of families
- * 
+ *
  * Create a new font family attribute.
- * 
+ *
  * Return value: the newly allocated #PangoAttribute, which should be
  *               freed with pango_attribute_destroy().
  **/
@@ -185,7 +185,7 @@ pango_attr_family_new (const char *family)
   };
 
   g_return_val_if_fail (family != NULL, NULL);
-  
+
   return pango_attr_string_new (&klass, family);
 }
 
@@ -213,9 +213,9 @@ pango_attr_language_equal (const PangoAttribute *attr1,
 /**
  * pango_attr_language_new:
  * @language: language tag
- * 
- * Create a new language tag attribute. 
- * 
+ *
+ * Create a new language tag attribute.
+ *
  * Return value: the newly allocated #PangoAttribute, which should be
  *               freed with pango_attribute_destroy().
  **/
@@ -223,7 +223,7 @@ PangoAttribute *
 pango_attr_language_new (PangoLanguage *language)
 {
   PangoAttrLanguage *result;
-  
+
   static const PangoAttrClass klass = {
     PANGO_ATTR_LANGUAGE,
     pango_attr_language_copy,
@@ -232,7 +232,7 @@ pango_attr_language_new (PangoLanguage *language)
   };
 
   g_return_val_if_fail (language != NULL, NULL);
-  
+
   result = g_slice_new (PangoAttrLanguage);
 
   result->attr.klass = &klass;
@@ -245,7 +245,7 @@ static PangoAttribute *
 pango_attr_color_copy (const PangoAttribute *attr)
 {
   const PangoAttrColor *color_attr = (PangoAttrColor *)attr;
-  
+
   return pango_attr_color_new (attr->klass,
 			       color_attr->color.red,
                                color_attr->color.green,
@@ -292,9 +292,9 @@ pango_attr_color_new (const PangoAttrClass *klass,
  * @red: the red value (ranging from 0 to 65535)
  * @green: the green value
  * @blue: the blue value
- * 
+ *
  * Create a new foreground color attribute.
- * 
+ *
  * Return value: the newly allocated #PangoAttribute, which should be
  *               freed with pango_attribute_destroy().
  **/
@@ -318,9 +318,9 @@ pango_attr_foreground_new (guint16 red,
  * @red: the red value (ranging from 0 to 65535)
  * @green: the green value
  * @blue: the blue value
- * 
+ *
  * Create a new background color attribute.
- * 
+ *
  * Return value: the newly allocated #PangoAttribute, which should be
  *               freed with pango_attribute_destroy().
  **/
@@ -343,7 +343,7 @@ static PangoAttribute *
 pango_attr_int_copy (const PangoAttribute *attr)
 {
   const PangoAttrInt *int_attr = (PangoAttrInt *)attr;
-  
+
   return pango_attr_int_new (attr->klass, int_attr->value);
 }
 
@@ -361,7 +361,7 @@ pango_attr_int_equal (const PangoAttribute *attr1,
 {
   const PangoAttrInt *int_attr1 = (const PangoAttrInt *)attr1;
   const PangoAttrInt *int_attr2 = (const PangoAttrInt *)attr2;
-  
+
   return (int_attr1->value == int_attr2->value);
 }
 
@@ -380,7 +380,7 @@ static PangoAttribute *
 pango_attr_float_copy (const PangoAttribute *attr)
 {
   const PangoAttrFloat *float_attr = (PangoAttrFloat *)attr;
-  
+
   return pango_attr_float_new (attr->klass, float_attr->value);
 }
 
@@ -398,7 +398,7 @@ pango_attr_float_equal (const PangoAttribute *attr1,
 {
   const PangoAttrFloat *float_attr1 = (const PangoAttrFloat *)attr1;
   const PangoAttrFloat *float_attr2 = (const PangoAttrFloat *)attr2;
-  
+
   return (float_attr1->value == float_attr2->value);
 }
 
@@ -438,7 +438,7 @@ pango_attr_size_equal (const PangoAttribute *attr1,
 {
   const PangoAttrSize *size_attr1 = (const PangoAttrSize *)attr1;
   const PangoAttrSize *size_attr2 = (const PangoAttrSize *)attr2;
-  
+
   return size_attr1->size == size_attr2->size;
 }
 
@@ -447,7 +447,7 @@ pango_attr_size_new_internal (int size,
 			      gboolean absolute)
 {
   PangoAttrSize *result;
-  
+
   static const PangoAttrClass klass = {
     PANGO_ATTR_SIZE,
     pango_attr_size_copy,
@@ -472,9 +472,9 @@ pango_attr_size_new_internal (int size,
 /**
  * pango_attr_size_new:
  * @size: the font size, in %PANGO_SCALE<!-- -->ths of a point.
- * 
+ *
  * Create a new font-size attribute in fractional points.
- * 
+ *
  * Return value: the newly allocated #PangoAttribute, which should be
  *               freed with pango_attribute_destroy().
  **/
@@ -487,9 +487,9 @@ pango_attr_size_new (int size)
 /**
  * pango_attr_size_new_absolute:
  * @size: the font size, in %PANGO_SCALE<!-- -->ths of a device unit.
- * 
+ *
  * Create a new font-size attribute in device units.
- * 
+ *
  * Return value: the newly allocated #PangoAttribute, which should be
  *               freed with pango_attribute_destroy().
  *
@@ -504,9 +504,9 @@ pango_attr_size_new_absolute (int size)
 /**
  * pango_attr_style_new:
  * @style: the slant style
- * 
+ *
  * Create a new font slant style attribute.
- * 
+ *
  * Return value: the newly allocated #PangoAttribute, which should be
  *               freed with pango_attribute_destroy().
  **/
@@ -526,9 +526,9 @@ pango_attr_style_new (PangoStyle style)
 /**
  * pango_attr_weight_new:
  * @weight: the weight
- * 
+ *
  * Create a new font weight attribute.
- * 
+ *
  * Return value: the newly allocated #PangoAttribute, which should be
  *               freed with pango_attribute_destroy().
  **/
@@ -550,7 +550,7 @@ pango_attr_weight_new (PangoWeight weight)
  * @variant: the variant
  *
  * Create a new font variant attribute (normal or small caps)
- * 
+ *
  * Return value: the newly allocated #PangoAttribute, which should be
  *               freed with pango_attribute_destroy().
  **/
@@ -570,9 +570,9 @@ pango_attr_variant_new (PangoVariant variant)
 /**
  * pango_attr_stretch_new:
  * @stretch: the stretch
- * 
+ *
  * Create a new font stretch attribute
- * 
+ *
  * Return value: the newly allocated #PangoAttribute, which should be
  *               freed with pango_attribute_destroy().
  **/
@@ -593,7 +593,7 @@ static PangoAttribute *
 pango_attr_font_desc_copy (const PangoAttribute *attr)
 {
   const PangoAttrFontDesc *desc_attr = (const PangoAttrFontDesc *)attr;
-  
+
   return pango_attr_font_desc_new (desc_attr->desc);
 }
 
@@ -612,18 +612,18 @@ pango_attr_font_desc_equal (const PangoAttribute *attr1,
 {
   const PangoAttrFontDesc *desc_attr1 = (const PangoAttrFontDesc *)attr1;
   const PangoAttrFontDesc *desc_attr2 = (const PangoAttrFontDesc *)attr2;
-  
+
   return pango_font_description_equal (desc_attr1->desc, desc_attr2->desc);
 }
 
 /**
  * pango_attr_font_desc_new:
  * @desc: the font description
- * 
+ *
  * Create a new font description attribute. This attribute
  * allows setting family, style, weight, variant, stretch,
  * and size simultaneously.
- * 
+ *
  * Return value:  the newly allocated #PangoAttribute, which should be
  *               freed with pango_attribute_destroy().
  **/
@@ -648,9 +648,9 @@ pango_attr_font_desc_new (const PangoFontDescription *desc)
 /**
  * pango_attr_underline_new:
  * @underline: the underline style.
- * 
+ *
  * Create a new underline-style attribute.
- * 
+ *
  * Return value: the newly allocated #PangoAttribute, which should be
  *               freed with pango_attribute_destroy().
  **/
@@ -672,11 +672,11 @@ pango_attr_underline_new (PangoUnderline underline)
  * @red: the red value (ranging from 0 to 65535)
  * @green: the green value
  * @blue: the blue value
- * 
+ *
  * Create a new underline color attribute. This attribute
  * modifies the color of underlines. If not set, underlines
  * will use the foreground color.
- * 
+ *
  * Return value: the newly allocated #PangoAttribute, which should be
  *               freed with pango_attribute_destroy().
  *
@@ -700,9 +700,9 @@ pango_attr_underline_color_new (guint16 red,
 /**
  * pango_attr_strikethrough_new:
  * @strikethrough: %TRUE if the text should be struck-through.
- * 
+ *
  * Create a new strike-through attribute.
- * 
+ *
  * Return value: the newly allocated #PangoAttribute, which should be
  *               freed with pango_attribute_destroy().
  **/
@@ -724,11 +724,11 @@ pango_attr_strikethrough_new (gboolean strikethrough)
  * @red: the red value (ranging from 0 to 65535)
  * @green: the green value
  * @blue: the blue value
- * 
+ *
  * Create a new strikethrough color attribute. This attribute
  * modifies the color of strikethrough lines. If not set, strikethrough
  * lines will use the foreground color.
- * 
+ *
  * Return value: the newly allocated #PangoAttribute, which should be
  *               freed with pango_attribute_destroy().
  *
@@ -753,9 +753,9 @@ pango_attr_strikethrough_color_new (guint16 red,
  * pango_attr_rise_new:
  * @rise: the amount that the text should be displaced vertically,
  *        in Pango units. Positive values displace the text upwards.
- * 
+ *
  * Create a new baseline displacement attribute.
- * 
+ *
  * Return value: the newly allocated #PangoAttribute, which should be
  *               freed with pango_attribute_destroy().
  **/
@@ -775,10 +775,10 @@ pango_attr_rise_new (int rise)
 /**
  * pango_attr_scale_new:
  * @scale_factor: factor to scale the font
- * 
+ *
  * Create a new font size scale attribute. The base font for the
  * affected text will have its size multiplied by @scale_factor.
- * 
+ *
  * Return value: the newly allocated #PangoAttribute, which should be
  *               freed with pango_attribute_destroy().
  **/
@@ -797,16 +797,16 @@ pango_attr_scale_new (double scale_factor)
 
 /**
  * pango_attr_fallback_new:
- * @enable_fallback: %TRUE if we should fall back on other fonts 
+ * @enable_fallback: %TRUE if we should fall back on other fonts
  *                   for characters the active font is missing.
- * 
+ *
  * Create a new font fallback attribute.
  *
  * If fallback is disabled, characters will only be used from the
  * closest matching font on the system. No fallback will be done to
  * other fonts on the system that might contain the characters in the
  * text.
- * 
+ *
  * Return value: the newly allocated #PangoAttribute, which should be
  *               freed with pango_attribute_destroy().
  *
@@ -829,9 +829,9 @@ pango_attr_fallback_new (gboolean enable_fallback)
  * pango_attr_letter_spacing_new:
  * @letter_spacing: amount of extra space to add between graphemes
  *   of the text, in Pango units.
- * 
+ *
  * Create a new letter-spacing attribute.
- * 
+ *
  * Return value: the newly allocated #PangoAttribute, which should be
  *               freed with pango_attribute_destroy().
  *
@@ -860,7 +860,7 @@ pango_attr_shape_copy (const PangoAttribute *attr)
     data = shape_attr->copy_func (shape_attr->data);
   else
     data = shape_attr->data;
-  
+
   return pango_attr_shape_new_with_data (&shape_attr->ink_rect, &shape_attr->logical_rect,
 					 data, shape_attr->copy_func, shape_attr->destroy_func);
 }
@@ -869,10 +869,10 @@ static void
 pango_attr_shape_destroy (PangoAttribute *attr)
 {
   PangoAttrShape *shape_attr = (PangoAttrShape *)attr;
-  
+
   if (shape_attr->destroy_func)
     shape_attr->destroy_func (shape_attr->data);
-  
+
   g_slice_free (PangoAttrShape, shape_attr);
 }
 
@@ -904,11 +904,11 @@ pango_attr_shape_equal (const PangoAttribute *attr1,
  *                as a pointer.
  * @destroy_func: function to free @data when the attribute
  *                is freed, or %NULL
- * 
+ *
  * Like pango_attr_shape_new(), but a user data pointer is also
  * provided; this pointer can be accessed when later
  * rendering the glyph.
- * 
+ *
  * Return value: the newly allocated #PangoAttribute, which should be
  *               freed with pango_attribute_destroy().
  *
@@ -932,7 +932,7 @@ pango_attr_shape_new_with_data (const PangoRectangle  *ink_rect,
 
   g_return_val_if_fail (ink_rect != NULL, NULL);
   g_return_val_if_fail (logical_rect != NULL, NULL);
-  
+
   result = g_slice_new (PangoAttrShape);
   result->attr.klass = &klass;
   result->ink_rect = *ink_rect;
@@ -948,12 +948,12 @@ pango_attr_shape_new_with_data (const PangoRectangle  *ink_rect,
  * pango_attr_shape_new:
  * @ink_rect:     ink rectangle to assign to each character
  * @logical_rect: logical rectangle to assign to each character
- * 
+ *
  * Create a new shape attribute. A shape is used to impose a
  * particular ink and logical rectangle on the result of shaping a
  * particular glyph. This might be used, for instance, for
  * embedding a picture or a widget inside a #PangoLayout.
- * 
+ *
  * Return value: the newly allocated #PangoAttribute, which should be
  *               freed with pango_attribute_destroy().
  **/
@@ -971,9 +971,9 @@ pango_attr_shape_new (const PangoRectangle *ink_rect,
 /**
  * pango_attr_gravity_new:
  * @gravity: the gravity value; should not be %PANGO_GRAVITY_AUTO.
- * 
+ *
  * Create a new gravity attribute.
- * 
+ *
  * Return value: the newly allocated #PangoAttribute, which should be
  *               freed with pango_attribute_destroy().
  *
@@ -997,9 +997,9 @@ pango_attr_gravity_new (PangoGravity gravity)
 /**
  * pango_attr_gravity_hint_new:
  * @hint: the gravity hint value.
- * 
+ *
  * Create a new gravity hint attribute.
- * 
+ *
  * Return value: the newly allocated #PangoAttribute, which should be
  *               freed with pango_attribute_destroy().
  *
@@ -1027,7 +1027,7 @@ GType
 pango_attr_list_get_type (void)
 {
   static GType our_type = 0;
-  
+
   if (our_type == 0)
     our_type = g_boxed_type_register_static (I_("PangoAttrList"),
 					     (GBoxedCopyFunc) pango_attr_list_copy,
@@ -1038,9 +1038,9 @@ pango_attr_list_get_type (void)
 
 /**
  * pango_attr_list_new:
- * 
+ *
  * Create a new empty attribute list with a reference count of one.
- * 
+ *
  * Return value: the newly allocated #PangoAttrList, which should
  *               be freed with pango_attr_list_unref().
  **/
@@ -1052,14 +1052,14 @@ pango_attr_list_new (void)
   list->ref_count = 1;
   list->attributes = NULL;
   list->attributes_tail = NULL;
-  
+
   return list;
 }
 
 /**
  * pango_attr_list_ref:
  * @list: a #PangoAttrList
- * 
+ *
  * Increase the reference count of the given attribute list by one.
  *
  * Return value: The attribute list passed in
@@ -1079,7 +1079,7 @@ pango_attr_list_ref (PangoAttrList *list)
 /**
  * pango_attr_list_unref:
  * @list: a #PangoAttrList
- * 
+ *
  * Decrease the reference count of the given attribute list by one.
  * If the result is zero, free the attribute list and the attributes
  * it contains.
@@ -1088,7 +1088,7 @@ void
 pango_attr_list_unref (PangoAttrList *list)
 {
   GSList *tmp_list;
-  
+
   g_return_if_fail (list != NULL);
   g_return_if_fail (list->ref_count > 0);
 
@@ -1113,7 +1113,7 @@ pango_attr_list_unref (PangoAttrList *list)
 /**
  * pango_attr_list_copy:
  * @list: a #PangoAttrList
- * 
+ *
  * Copy @list and return an identical new list.
  *
  * Return value: the newly allocated #PangoAttrList, with a
@@ -1126,7 +1126,7 @@ pango_attr_list_copy (PangoAttrList *list)
   PangoAttrList *new;
   GSList *iter;
   GSList *new_attrs;
-  
+
   g_return_val_if_fail (list != NULL, NULL);
 
   new = pango_attr_list_new ();
@@ -1144,7 +1144,7 @@ pango_attr_list_copy (PangoAttrList *list)
   /* we're going to reverse the nodes, so head becomes tail */
   new->attributes_tail = new_attrs;
   new->attributes = g_slist_reverse (new_attrs);
-  
+
   return new;
 }
 
@@ -1175,7 +1175,7 @@ pango_attr_list_insert_internal (PangoAttrList  *list,
       while (1)
 	{
 	  PangoAttribute *tmp_attr = tmp_list->data;
-	  
+
 	  if (tmp_attr->start_index > start_index ||
 	      (before && tmp_attr->start_index == start_index))
 	    {
@@ -1193,7 +1193,7 @@ pango_attr_list_insert_internal (PangoAttrList  *list,
 
 	      break;
 	    }
-	  
+
 	  prev = tmp_list;
 	  tmp_list = tmp_list->next;
 	}
@@ -1205,7 +1205,7 @@ pango_attr_list_insert_internal (PangoAttrList  *list,
  * @list: a #PangoAttrList
  * @attr: the attribute to insert. Ownership of this value is
  *        assumed by the list.
- * 
+ *
  * Insert the given attribute into the #PangoAttrList. It will
  * be inserted after all other attributes with a matching
  * @start_index.
@@ -1225,7 +1225,7 @@ pango_attr_list_insert (PangoAttrList  *list,
  * @list: a #PangoAttrList
  * @attr: the attribute to insert. Ownership of this value is
  *        assumed by the list.
- * 
+ *
  * Insert the given attribute into the #PangoAttrList. It will
  * be inserted before all other attributes with a matching
  * @start_index.
@@ -1245,7 +1245,7 @@ pango_attr_list_insert_before (PangoAttrList  *list,
  * @list: a #PangoAttrList
  * @attr: the attribute to insert. Ownership of this value is
  *        assumed by the list.
- * 
+ *
  * Insert the given attribute into the #PangoAttrList. It will
  * replace any attributes of the same type on that segment
  * and be merged with any adjoining attributes that are identical.
@@ -1253,7 +1253,7 @@ pango_attr_list_insert_before (PangoAttrList  *list,
  * This function is slower than pango_attr_list_insert() for
  * creating a attribute list in order (potentially much slower
  * for large lists). However, pango_attr_list_insert() is not
- * suitable for continually changing a set of attributes 
+ * suitable for continually changing a set of attributes
  * since it never removes or combines existing attributes.
  **/
 void
@@ -1271,7 +1271,7 @@ pango_attr_list_change (PangoAttrList  *list,
       pango_attribute_destroy (attr);
       return;
     }
-  
+
   tmp_list = list->attributes;
   prev = NULL;
   while (1)
@@ -1286,15 +1286,15 @@ pango_attr_list_change (PangoAttrList  *list,
 	  link = g_slist_alloc ();
 	  link->next = tmp_list;
 	  link->data = attr;
-	  
+
 	  if (prev)
 	    prev->next = link;
 	  else
 	    list->attributes = link;
-	  
+
 	  if (!tmp_list)
 	    list->attributes_tail = link;
-	  
+
 	  prev = link;
 	  tmp_list = prev->next;
 	  break;
@@ -1320,12 +1320,12 @@ pango_attr_list_change (PangoAttrList  *list,
 		}
 	      tmp_attr->end_index = end_index;
 	      pango_attribute_destroy (attr);
-	      
+
 	      attr = tmp_attr;
-	      
+
 	      prev = tmp_list;
 	      tmp_list = tmp_list->next;
-	      
+
 	      break;
 	    }
 	  else
@@ -1364,7 +1364,7 @@ pango_attr_list_change (PangoAttrList  *list,
 
   g_assert (prev->data == attr);
   g_assert (prev->next == tmp_list);
-  
+
   /* We now have the range inserted into the list one way or the
    * other. Fix up the remainder
    */
@@ -1382,13 +1382,13 @@ pango_attr_list_change (PangoAttrList  *list,
 	      /* We can merge the new attribute with this attribute.
 	       */
 	      attr->end_index = MAX (end_index, tmp_attr->end_index);
-	      
+
 	      pango_attribute_destroy (tmp_attr);
 	      prev->next = tmp_list->next;
 
 	      if (!prev->next)
 		list->attributes_tail = prev;
-	      
+
 	      g_slist_free_1 (tmp_list);
 	      tmp_list = prev->next;
 
@@ -1403,7 +1403,7 @@ pango_attr_list_change (PangoAttrList  *list,
 	       */
 	      GSList *tmp_list2;
 	      GSList *prev2;
-	      
+
 	      tmp_attr->start_index = attr->end_index;
 
 	      tmp_list2 = tmp_list->next;
@@ -1426,7 +1426,7 @@ pango_attr_list_change (PangoAttrList  *list,
 	      if (prev2 != tmp_list)
 		{
 		  GSList *old_next = tmp_list->next;
-		  
+
 		  prev->next = old_next;
 		  prev2->next = tmp_list;
 		  tmp_list->next = tmp_list2;
@@ -1440,7 +1440,7 @@ pango_attr_list_change (PangoAttrList  *list,
 		}
 	    }
 	}
-      
+
       prev = tmp_list;
       tmp_list = tmp_list->next;
     }
@@ -1454,7 +1454,7 @@ pango_attr_list_change (PangoAttrList  *list,
  * @len: the length of the spliced segment. (Note that this
  *       must be specified since the attributes in @other
  *       may only be present at some subsection of this range)
- * 
+ *
  * This function opens up a hole in @list, fills it in with attributes from
  * the left, and then merges @other on top of the hole.
  *
@@ -1474,9 +1474,9 @@ pango_attr_list_splice (PangoAttrList *list,
 {
   GSList *tmp_list;
   guint upos, ulen;
-  
+
   g_return_if_fail (list != NULL);
-  g_return_if_fail (other != NULL); 
+  g_return_if_fail (other != NULL);
   g_return_if_fail (pos >= 0);
   g_return_if_fail (len >= 0);
 
@@ -1487,7 +1487,7 @@ pango_attr_list_splice (PangoAttrList *list,
  * isn't defined in the C standard for signed integers
  */
 #define CLAMP_ADD(a,b) (((a) + (b) < (a)) ? G_MAXUINT : (a) + (b))
-  
+
   tmp_list = list->attributes;
   while (tmp_list)
     {
@@ -1523,7 +1523,7 @@ pango_attr_list_splice (PangoAttrList *list,
        * pango_attr_list_change() will take care of deleting it.
        */
       pango_attr_list_change (list, attr);
-      
+
       tmp_list = tmp_list->next;
     }
 #undef CLAMP_ADD
@@ -1532,10 +1532,10 @@ pango_attr_list_splice (PangoAttrList *list,
 /**
  * pango_attr_list_get_iterator:
  * @list: a #PangoAttrList
- * 
+ *
  * Create a iterator initialized to the beginning of the list.
  * @list must not be modified until this iterator is freed.
- * 
+ *
  * Return value: the newly allocated #PangoAttrIterator, which should
  *               be freed with pango_attr_iterator_destroy().
  **/
@@ -1564,7 +1564,7 @@ pango_attr_list_get_iterator (PangoAttrList  *list)
  * @iterator: a #PangoAttrIterator
  * @start: location to store the start of the range
  * @end: location to store the end of the range
- * 
+ *
  * Get the range of the current segment. Note that the
  * stored return values are signed, not unsigned like
  * the values in #PangoAttribute. To deal with this API
@@ -1587,9 +1587,9 @@ pango_attr_iterator_range (PangoAttrIterator *iterator,
 /**
  * pango_attr_iterator_next:
  * @iterator: a #PangoAttrIterator
- * 
+ *
  * Advance the iterator until the next change of style.
- * 
+ *
  * Return value: %FALSE if the iterator is at the end of the list, otherwise %TRUE
  **/
 gboolean
@@ -1604,7 +1604,7 @@ pango_attr_iterator_next (PangoAttrIterator *iterator)
 
   iterator->start_index = iterator->end_index;
   iterator->end_index = G_MAXUINT;
-  
+
   tmp_list = iterator->attribute_stack;
   while (tmp_list)
     {
@@ -1620,7 +1620,7 @@ pango_attr_iterator_next (PangoAttrIterator *iterator)
 	{
 	  iterator->end_index = MIN (iterator->end_index, attr->end_index);
 	}
-      
+
       tmp_list = next;
     }
 
@@ -1644,7 +1644,7 @@ pango_attr_iterator_next (PangoAttrIterator *iterator)
 /**
  * pango_attr_iterator_copy:
  * @iterator: a #PangoAttrIterator.
- * 
+ *
  * Copy a #PangoAttrIterator
  *
  * Return value: the newly allocated #PangoAttrIterator, which should
@@ -1669,14 +1669,14 @@ pango_attr_iterator_copy (PangoAttrIterator *iterator)
 /**
  * pango_attr_iterator_destroy:
  * @iterator: a #PangoAttrIterator.
- * 
+ *
  * Destroy a #PangoAttrIterator and free all associated memory.
  **/
 void
 pango_attr_iterator_destroy (PangoAttrIterator *iterator)
 {
   g_return_if_fail (iterator != NULL);
-  
+
   g_list_free (iterator->attribute_stack);
   g_slice_free (PangoAttrIterator, iterator);
 }
@@ -1685,12 +1685,12 @@ pango_attr_iterator_destroy (PangoAttrIterator *iterator)
  * pango_attr_iterator_get:
  * @iterator: a #PangoAttrIterator
  * @type: the type of attribute to find.
- * 
+ *
  * Find the current attribute of a particular type at the iterator
  * location. When multiple attributes of the same type overlap,
  * the attribute whose range starts closest to the current location
  * is used.
- * 
+ *
  * Return value: the current attribute of the given type, or %NULL
  *               if no attribute of that type applies to the current
  *               location.
@@ -1752,13 +1752,13 @@ pango_attr_iterator_get_font (PangoAttrIterator     *iterator,
 
   g_return_if_fail (iterator != NULL);
   g_return_if_fail (desc != NULL);
-  
+
   if (language)
     *language = NULL;
-  
+
   if (extra_attrs)
     *extra_attrs = NULL;
-  
+
   tmp_list1 = iterator->attribute_stack;
   while (tmp_list1)
     {
@@ -1773,7 +1773,7 @@ pango_attr_iterator_get_font (PangoAttrIterator     *iterator,
 	    mask |= new_mask;
 	    pango_font_description_unset_fields (desc, new_mask);
 	    pango_font_description_merge_static (desc, ((PangoAttrFontDesc *)attr)->desc, FALSE);
-	    
+
 	    break;
           }
 	case PANGO_ATTR_FAMILY:
@@ -1846,7 +1846,7 @@ pango_attr_iterator_get_font (PangoAttrIterator     *iterator,
 	  if (extra_attrs)
 	    {
 	      gboolean found = FALSE;
-	  
+
 	      tmp_list2 = *extra_attrs;
 	      while (tmp_list2)
 		{
@@ -1877,11 +1877,11 @@ pango_attr_iterator_get_font (PangoAttrIterator     *iterator,
  * @func: callback function; returns %TRUE if an attribute
  *        should be filtered out.
  * @data: Data to be passed to @func
- * 
+ *
  * Given a #PangoAttrList and callback function, removes any elements
  * of @list for which @func returns %TRUE and inserts them into
  * a new list.
- * 
+ *
  * Return value: the new #PangoAttrList or %NULL if
  *  no attributes of the given types were found.
  *
@@ -1896,7 +1896,7 @@ pango_attr_list_filter (PangoAttrList       *list,
   PangoAttrList *new = NULL;
   GSList *tmp_list;
   GSList *prev;
-  
+
   g_return_val_if_fail (list != NULL, NULL);
 
   tmp_list = list->attributes;
@@ -1910,14 +1910,14 @@ pango_attr_list_filter (PangoAttrList       *list,
 	{
 	  if (!tmp_list->next)
 	    list->attributes_tail = prev;
-	  
+
 	  if (prev)
 	    prev->next = tmp_list->next;
 	  else
 	    list->attributes = tmp_list->next;
-	  
+
 	  tmp_list->next = NULL;
-	  
+
 	  if (!new)
 	    {
 	      new = pango_attr_list_new ();
@@ -1944,10 +1944,10 @@ pango_attr_list_filter (PangoAttrList       *list,
 /**
  * pango_attr_iterator_get_attrs:
  * @iterator: a #PangoAttrIterator
- * 
+ *
  * Gets a list of all attributes at the current position of the
  * iterator.
- * 
+ *
  * Return value: a list of all attributes for the current range.
  *   To free this value, call pango_attribute_destroy() on
  *   each value and g_slist_free() on the list.

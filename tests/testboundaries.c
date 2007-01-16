@@ -71,7 +71,7 @@ static void fail (const char *format, ...)
 {
   char *str;
   char *line_text;
-  
+
   va_list args;
 
   va_start (args, format);
@@ -79,7 +79,7 @@ static void fail (const char *format, ...)
   va_end (args);
 
   line_text = g_strndup (line_start, line_end - line_start);
-  
+
   fprintf (stderr, "line %d offset %d char is " CHFORMAT ": %s\n (line is '%s')\n", line, offset, current_wc, str, line_text);
   g_free (str);
   g_free (line_text);
@@ -112,13 +112,13 @@ log_attr_foreach (const char     *text,
   gunichar next_wc;
   GUnicodeType prev_type;
   GUnicodeType next_type;
-  
+
   if (next == end)
     return;
 
   offset = 0;
   line = 0;
-  
+
   prev_type = (GUnicodeType) -1;
   prev_wc = 0;
 
@@ -127,7 +127,7 @@ log_attr_foreach (const char     *text,
 
   line_start = text;
   line_end = text;
-  
+
   while (next_wc != 0)
     {
       GUnicodeType type;
@@ -137,10 +137,10 @@ log_attr_foreach (const char     *text,
       type = next_type;
 
       current_wc = wc;
-      
+
       next = g_utf8_next_char (next);
       line_end = next;
-      
+
       if (next >= end)
         next_wc = 0;
       else
@@ -155,7 +155,7 @@ log_attr_foreach (const char     *text,
                 i != 0 ? &attrs[i-1] : NULL,
                 next_wc != 0 ? &attrs[i+1] : NULL,
                 data);
-            
+
       prev_type = type;
       prev_wc = wc;
       ++i;
@@ -190,7 +190,7 @@ check_line_char (gunichar      wc,
     prev_break_type = g_unichar_break_type (prev_wc);
   else
     prev_break_type = G_UNICODE_BREAK_UNKNOWN;
-  
+
   if (wc == '\n')
     {
       if (prev_wc == '\r')
@@ -198,11 +198,11 @@ check_line_char (gunichar      wc,
           if (attr->is_line_break)
             fail ("line break between \\r and \\n");
         }
-      
+
       if (next_attr && !next_attr->is_line_break)
         fail ("no line break after \\n");
     }
-  
+
   if (attr->is_line_break && prev_wc == 0)
     fail ("first char in string should not be marked as a line break");
 
@@ -217,13 +217,13 @@ check_line_char (gunichar      wc,
   if (attr->is_mandatory_break && !attr->is_line_break)
     fail ("mandatory breaks must also be marked as regular breaks");
 
-  
-  
+
+
   /* FIXME use the break tables from break.c to automatically
    * check invariants for each cell in the table. Shouldn't
    * be that hard to do.
    */
-  
+
   if (break_type == G_UNICODE_BREAK_OPEN_PUNCTUATION &&
       prev_break_type == G_UNICODE_BREAK_OPEN_PUNCTUATION &&
       attr->is_line_break &&
@@ -240,7 +240,7 @@ check_line_char (gunichar      wc,
       prev_break_type == G_UNICODE_BREAK_ALPHABETIC &&
       attr->is_line_break &&
       !attr->is_mandatory_break)
-    fail ("can't break letter-quotemark sequence");  
+    fail ("can't break letter-quotemark sequence");
 }
 
 static void
@@ -296,7 +296,7 @@ print_sentences (const char   *text,
           g_free (s);
           last = p;
         }
-      
+
       p = g_utf8_next_char (p);
       ++i;
     }
@@ -310,7 +310,7 @@ check_invariants (const char *text)
 
   if (!g_utf8_validate (text, -1, NULL))
     fail ("Invalid UTF-8 in test text");
-  
+
   len = g_utf8_strlen (text, -1);
   attrs = g_new0 (PangoLogAttr, len + 1);
 
@@ -320,7 +320,7 @@ check_invariants (const char *text)
                        pango_language_from_string ("C"),
                        attrs,
                        len + 1);
-  
+
   check_line_invariants (text, attrs);
   check_sentence_invariants (text, attrs);
   check_grapheme_invariants (text, attrs);
@@ -329,12 +329,12 @@ check_invariants (const char *text)
 #if 0
   print_sentences (text, attrs);
 #endif
-  
+
   g_free (attrs);
 }
 
 int
-main (int argc, char *argv[]) 
+main (int argc, char *argv[])
 {
   gchar *text;
   const gchar *srcdir;
@@ -347,16 +347,16 @@ main (int argc, char *argv[])
     srcdir = ".";
 
   filename = g_strdup_printf ("%s/boundaries.utf8", srcdir);
-  
+
   if (!g_file_get_contents (filename, &text, NULL, NULL))
     fail ("Couldn't open sample text file");
-  
+
   check_invariants (text);
 
   g_free (text);
 
   printf ("testboundaries passed\n");
-  
+
   return 0;
 }
 

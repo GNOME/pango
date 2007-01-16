@@ -58,7 +58,7 @@ struct _PangoFcFontPrivate
 {
   PangoFcDecoder *decoder;
   gpointer context_key;
-  GUnicharToGlyphCacheEntry *char_to_glyph_cache;  
+  GUnicharToGlyphCacheEntry *char_to_glyph_cache;
 };
 
 #define GLYPH_CACHE_NUM_ENTRIES 256 /* should be power of two */
@@ -100,7 +100,7 @@ pango_fc_font_class_init (PangoFcFontClass *class)
   class->has_char = pango_fc_font_real_has_char;
   class->get_glyph = pango_fc_font_real_get_glyph;
   class->get_unknown_glyph = NULL;
-  
+
   object_class->finalize = pango_fc_font_finalize;
   object_class->set_property = pango_fc_font_set_property;
   font_class->describe = pango_fc_font_describe;
@@ -109,7 +109,7 @@ pango_fc_font_class_init (PangoFcFontClass *class)
   font_class->get_coverage = pango_fc_font_get_coverage;
   font_class->get_metrics = pango_fc_font_get_metrics;
   font_class->get_font_map = pango_fc_font_get_font_map;
-  
+
   g_object_class_install_property (object_class, PROP_PATTERN,
 				   g_param_spec_pointer ("pattern",
 							 "Pattern",
@@ -141,7 +141,7 @@ pango_fc_font_finalize (GObject *object)
   PangoFcFontPrivate *priv = fcfont->priv;
 
   g_slist_foreach (fcfont->metrics_by_lang, (GFunc)free_metrics_info, NULL);
-  g_slist_free (fcfont->metrics_by_lang);  
+  g_slist_free (fcfont->metrics_by_lang);
 
   if (fcfont->fontmap)
     _pango_fc_font_map_remove (PANGO_FC_FONT_MAP (fcfont->fontmap), fcfont);
@@ -165,7 +165,7 @@ pattern_is_hinted (FcPattern *pattern)
   if (FcPatternGetBool (pattern,
 			FC_HINTING, 0, &hinting) != FcResultMatch)
     hinting = FcTrue;
-  
+
   return hinting;
 }
 
@@ -177,7 +177,7 @@ pattern_is_transformed (FcPattern *pattern)
   if (FcPatternGetMatrix (pattern, FC_MATRIX, 0, &fc_matrix) == FcResultMatch)
     {
       FT_Matrix ft_matrix;
-      
+
       ft_matrix.xx = 0x10000L * fc_matrix->xx;
       ft_matrix.yy = 0x10000L * fc_matrix->yy;
       ft_matrix.xy = 0x10000L * fc_matrix->xy;
@@ -203,7 +203,7 @@ pango_fc_font_set_property (GObject       *object,
       {
 	PangoFcFont *fcfont = PANGO_FC_FONT (object);
 	FcPattern *pattern = g_value_get_pointer (value);
-  
+
 	g_return_if_fail (pattern != NULL);
 	g_return_if_fail (fcfont->font_pattern == NULL);
 
@@ -216,7 +216,7 @@ pango_fc_font_set_property (GObject       *object,
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
-      break;    
+      break;
     }
 }
 
@@ -246,13 +246,13 @@ pango_fc_get_shaper_map (PangoLanguage *language)
 {
   static guint engine_type_id = 0;
   static guint render_type_id = 0;
-  
+
   if (engine_type_id == 0)
     {
       engine_type_id = g_quark_from_static_string (PANGO_ENGINE_TYPE_SHAPE);
       render_type_id = g_quark_from_static_string (PANGO_RENDER_TYPE_FC);
     }
-  
+
   return pango_find_map (language, engine_type_id, render_type_id);
 }
 
@@ -322,7 +322,7 @@ get_face_metrics (PangoFcFont      *fcfont,
       ft_matrix.yy = 0x10000L * fc_matrix->yy;
       ft_matrix.xy = 0x10000L * fc_matrix->xy;
       ft_matrix.yx = 0x10000L * fc_matrix->yx;
-      
+
       have_transform = (ft_matrix.xx != 0x10000 || ft_matrix.xy != 0 ||
 			ft_matrix.yx != 0 || ft_matrix.yy != 0x10000);
     }
@@ -330,12 +330,12 @@ get_face_metrics (PangoFcFont      *fcfont,
   if (have_transform)
     {
       FT_Vector	vector;
-      
+
       vector.x = 0;
       vector.y = face->size->metrics.descender;
       FT_Vector_Transform (&vector, &ft_matrix);
       metrics->descent = - PANGO_UNITS_26_6 (vector.y);
-      
+
       vector.x = 0;
       vector.y = face->size->metrics.ascender;
       FT_Vector_Transform (&vector, &ft_matrix);
@@ -369,7 +369,7 @@ get_face_metrics (PangoFcFont      *fcfont,
   else
     {
       FT_Fixed ft_thickness, ft_position;
-      
+
       ft_thickness = FT_MulFix (face->underline_thickness, face->size->metrics.y_scale);
       metrics->underline_thickness = PANGO_UNITS_26_6 (ft_thickness);
 
@@ -381,7 +381,7 @@ get_face_metrics (PangoFcFont      *fcfont,
   if (os2 && os2->version != 0xFFFF && os2->yStrikeoutSize != 0)
     {
       FT_Fixed ft_thickness, ft_position;
-      
+
       ft_thickness = FT_MulFix (os2->yStrikeoutSize, face->size->metrics.y_scale);
       metrics->strikethrough_thickness = PANGO_UNITS_26_6 (ft_thickness);
 
@@ -404,7 +404,7 @@ get_face_metrics (PangoFcFont      *fcfont,
       pango_quantize_line_geometry (&metrics->strikethrough_thickness,
 				    &metrics->strikethrough_position);
     }
-  
+
   PANGO_FC_FONT_UNLOCK_FACE (fcfont);
 }
 
@@ -442,19 +442,19 @@ pango_fc_font_create_metrics_for_context (PangoFcFont   *fcfont,
   PangoLanguage *language = pango_context_get_language (context);
   const char *sample_str = pango_language_get_sample_string (language);
   PangoFontDescription *desc = pango_font_describe_with_absolute_size (fcfont);
-  
+
   metrics = pango_font_metrics_new ();
-  
+
   get_face_metrics (fcfont, metrics);
-  
+
   layout = pango_layout_new (context);
   pango_layout_set_font_description (layout, desc);
   pango_font_description_free (desc);
-  
-  pango_layout_set_text (layout, sample_str, -1);      
+
+  pango_layout_set_text (layout, sample_str, -1);
   pango_layout_get_extents (layout, NULL, &extents);
-  
-  metrics->approximate_char_width = 
+
+  metrics->approximate_char_width =
     extents.width / g_utf8_strlen (sample_str, -1);
 
   pango_layout_set_text (layout, "0123456789", -1);
@@ -474,15 +474,15 @@ pango_fc_font_get_metrics (PangoFont     *font,
 {
   PangoFcFont *fcfont = PANGO_FC_FONT (font);
   PangoFcMetricsInfo *info = NULL; /* Quiet gcc */
-  GSList *tmp_list;      
+  GSList *tmp_list;
 
   const char *sample_str = pango_language_get_sample_string (language);
-  
+
   tmp_list = fcfont->metrics_by_lang;
   while (tmp_list)
     {
       info = tmp_list->data;
-      
+
       if (info->sample_str == sample_str)    /* We _don't_ need strcmp */
 	break;
 
@@ -498,9 +498,9 @@ pango_fc_font_get_metrics (PangoFont     *font,
 
       info = g_slice_new0 (PangoFcMetricsInfo);
 
-      fcfont->metrics_by_lang = g_slist_prepend (fcfont->metrics_by_lang, 
+      fcfont->metrics_by_lang = g_slist_prepend (fcfont->metrics_by_lang,
 						 info);
-	
+
       info->sample_str = sample_str;
 
       context = pango_fc_font_map_create_context (PANGO_FC_FONT_MAP (fcfont->fontmap));
@@ -566,7 +566,7 @@ pango_fc_font_real_get_glyph (PangoFcFont *font,
 
       entry->ch = wc;
       entry->glyph = index;
-      
+
       PANGO_FC_FONT_UNLOCK_FACE (font);
     }
 
@@ -606,7 +606,7 @@ void
 pango_fc_font_unlock_face (PangoFcFont *font)
 {
   g_return_if_fail (PANGO_IS_FC_FONT (font));
-   
+
   PANGO_FC_FONT_UNLOCK_FACE (font);
 }
 
@@ -614,9 +614,9 @@ pango_fc_font_unlock_face (PangoFcFont *font)
  * pango_fc_font_has_char:
  * @font: a #PangoFcFont
  * @wc: Unicode codepoint to look up
- * 
+ *
  * Determines whether @font has a glyph for the codepoint @wc.
- * 
+ *
  * Return value: %TRUE if @font has the requested codepoint.
  *
  * Since: 1.4
@@ -643,11 +643,11 @@ pango_fc_font_has_char (PangoFcFont *font,
  * pango_fc_font_get_glyph:
  * @font: a #PangoFcFont
  * @wc: Unicode character to look up
- * 
+ *
  * Gets the glyph index for a given Unicode character
  * for @font. If you only want to determine
  * whether the font has the glyph, use pango_fc_font_has_char().
- * 
+ *
  * Return value: the glyph index, or 0, if the Unicode
  *   character doesn't exist in the font.
  *
@@ -709,10 +709,10 @@ _pango_fc_font_shutdown (PangoFcFont *font)
  * pango_fc_font_kern_glyphs
  * @font: a #PangoFcFont
  * @glyphs: a #PangoGlyphString
- * 
+ *
  * Adjust each adjacent pair of glyphs in @glyphs according to
  * kerning information in @font.
- * 
+ *
  * Since: 1.4
  **/
 void
@@ -736,7 +736,7 @@ pango_fc_font_kern_glyphs (PangoFcFont      *font,
       PANGO_FC_FONT_UNLOCK_FACE (font);
       return;
     }
-  
+
   for (i = 1; i < glyphs->num_glyphs; ++i)
     {
       error = FT_Get_Kerning (face,
@@ -748,7 +748,7 @@ pango_fc_font_kern_glyphs (PangoFcFont      *font,
       if (error == FT_Err_Ok)
 	glyphs->glyphs[i-1].geometry.width += PANGO_UNITS_26_6 (kerning.x);
     }
-  
+
   PANGO_FC_FONT_UNLOCK_FACE (font);
 }
 
@@ -821,7 +821,7 @@ get_per_char (FT_Face      face,
 {
   FT_Error error;
   FT_Glyph_Metrics *result;
-	
+
   error = FT_Load_Glyph (face, glyph, load_flags);
   if (error == FT_Err_Ok)
     result = &face->glyph->metrics;
@@ -838,7 +838,7 @@ get_per_char (FT_Face      face,
  * @glyph: the glyph index to load
  * @ink_rect: location to store ink extents of the glyph, or %NULL
  * @logical_rect: location to store logical extents of the glyph or %NULL
- * 
+ *
  * Gets the extents of a single glyph from a font. The extents are in
  * user space; that is, they are not transformed by any matrix in effect
  * for the font.
@@ -869,7 +869,7 @@ pango_fc_font_get_raw_extents (PangoFcFont    *fcfont,
     gm = NULL;
   else
     gm = get_per_char (face, load_flags, glyph);
-  
+
   if (gm)
     {
       if (ink_rect)
@@ -893,10 +893,10 @@ pango_fc_font_get_raw_extents (PangoFcFont    *fcfont,
 	  else
 	    {
 	      FT_Fixed ascender, descender;
-	      
+
 	      ascender = FT_MulFix (face->ascender, face->size->metrics.y_scale);
 	      descender = FT_MulFix (face->descender, face->size->metrics.y_scale);
-	      
+
 	      logical_rect->y = - PANGO_UNITS_26_6 (ascender);
 	      logical_rect->height = PANGO_UNITS_26_6 (ascender - descender);
 	    }
@@ -920,7 +920,7 @@ pango_fc_font_get_raw_extents (PangoFcFont    *fcfont,
 	  logical_rect->height = 0;
 	}
     }
-      
+
   PANGO_FC_FONT_UNLOCK_FACE (fcfont);
 }
 

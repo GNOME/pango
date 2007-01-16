@@ -38,7 +38,7 @@ G_BEGIN_DECLS
 
 typedef struct _PangoOTInfoClass PangoOTInfoClass;
 
-struct _PangoOTInfo 
+struct _PangoOTInfo
 {
   GObject parent_instance;
 

@@ -42,7 +42,7 @@ struct _PangoXFont
    * of length n_fonts
    */
   GHashTable *subfonts_by_charset;
-  
+
   PangoXSubfontInfo **subfonts;
 
   int n_subfonts;
@@ -55,7 +55,7 @@ struct _PangoXFont
    * in use.
    */
   gboolean in_cache;
-  
+
   PangoXFace *xface;	/* Used to remove cached fonts */
 };
 
@@ -114,7 +114,7 @@ void           pango_x_fontmap_cache_add       (PangoFontMap    *fontmap,
 void           pango_x_fontmap_cache_remove    (PangoFontMap    *fontmap,
 						PangoXFont      *xfont);
 
-Atom           pango_x_fontmap_atom_from_name (PangoFontMap *fontmap, 
+Atom           pango_x_fontmap_atom_from_name (PangoFontMap *fontmap,
                                                const char   *atomname);
 const char    *pango_x_fontmap_name_from_atom  (PangoFontMap *fontmap,
                                                 Atom          atom);

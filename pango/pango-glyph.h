@@ -40,7 +40,7 @@ typedef gint32 PangoGlyphUnit;
 struct _PangoGlyphGeometry
 {
   PangoGlyphUnit width;
-  PangoGlyphUnit x_offset;  
+  PangoGlyphUnit x_offset;
   PangoGlyphUnit y_offset;
 };
 
@@ -51,7 +51,7 @@ struct _PangoGlyphVisAttr
   guint is_cluster_start : 1;
 };
 
-/* A single glyph 
+/* A single glyph
  */
 struct _PangoGlyphInfo
 {
