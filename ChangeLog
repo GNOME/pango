@@ -1,5 +1,14 @@
 2007-01-16  Behdad Esfahbod  <behdad@gnome.org>
 
+	Bug 397337 – Use is_ellipsized and is_wrapped to optimize property
+	changes
+
+	* pango/pango-layout.c (pango_layout_set_wrap),
+	(pango_layout_set_ellipsize): Using is_ellipsized and is_wrapped, 
+	only clear lines if wrap/ellipsize change has any effect on the lines.
+
+2007-01-16  Behdad Esfahbod  <behdad@gnome.org>
+
 	*.c, *.h: Removed spaces followed b tabs.
 
 2007-01-16  Behdad Esfahbod  <behdad@gnome.org>

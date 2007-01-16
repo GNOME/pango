@@ -388,8 +388,10 @@ pango_layout_set_wrap (PangoLayout  *layout,
 
   if (layout->wrap != wrap)
     {
-      pango_layout_clear_lines (layout);
       layout->wrap = wrap;
+
+      if (layout->is_wrapped)
+	pango_layout_clear_lines (layout);
     }
 }
 
@@ -856,7 +858,8 @@ pango_layout_set_ellipsize (PangoLayout        *layout,
     {
       layout->ellipsize = ellipsize;
 
-      pango_layout_clear_lines (layout);
+      if (layout->is_ellipsized || layout->is_wrapped)
+	pango_layout_clear_lines (layout);
     }
 }
 
