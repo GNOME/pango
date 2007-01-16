@@ -70,6 +70,9 @@ _fancy_cairo_stroke (cairo_t *cr, cairo_bool_t preserve)
   cairo_path_data_t *data;
   const double dash[] = {10, 10};
 
+  cairo_save (cr);
+  cairo_set_source_rgb (cr, 1.0, 0.0, 0.0);
+
   line_width = cairo_get_line_width (cr);
   path = cairo_copy_path (cr);
   cairo_new_path (cr);
@@ -151,6 +154,8 @@ _fancy_cairo_stroke (cairo_t *cr, cairo_bool_t preserve)
     cairo_append_path (cr, path);
 
   cairo_path_destroy (path);
+
+  cairo_restore (cr);
 }
 
 void
@@ -205,7 +210,8 @@ point_on_path (parametrized_path_t *param,
   parametrization_t *parametrization = param->parametrization;
 
   for (i=0; i + path->data[i].header.length < path->num_data &&
-            d > parametrization[i];
+            (d > parametrization[i] ||
+	     path->data[i].header.type == CAIRO_PATH_MOVE_TO);
        i += path->data[i].header.length) {
     d -= parametrization[i];
     data = &path->data[i];
@@ -296,22 +302,18 @@ map_path_onto (cairo_t *cr, cairo_path_t *path)
 }
 
 
-static void
-draw_path (cairo_t *cr)
-{
-  cairo_move_to (cr, 50, 700);
-  cairo_line_to (cr, 300, 750);
-  cairo_curve_to (cr, 550, 800, 900, 700, 900, 400);
-  cairo_curve_to (cr, 900, 0, 600, 300, 100, 100);
-}
+typedef void (*draw_path_func_t) (cairo_t *cr);
 
 static void
-draw_text (cairo_t *cr)
+draw_text (cairo_t *cr,
+	   double x,
+	   double y,
+	   const char *font,
+	   const char *text)
 {
   PangoLayout *layout;
   PangoLayoutLine *line;
   PangoFontDescription *desc;
-  PangoRectangle logical_rect;
   cairo_font_options_t *font_options;
 
   font_options = cairo_font_options_create ();
@@ -324,45 +326,92 @@ draw_text (cairo_t *cr)
 
   layout = pango_cairo_create_layout (cr);
   
-  desc = pango_font_description_from_string ("Serif 72");
+  desc = pango_font_description_from_string (font);
   pango_layout_set_font_description (layout, desc);
   pango_font_description_free (desc);
 
-  pango_layout_set_text (layout, "It was a dream... Oh Just a dream...", -1);
+  pango_layout_set_text (layout, text, -1);
 
   /* Use pango_layout_get_line() instead of pango_layout_get_line_readonly()
    * for older versions of pango
    */
   line = pango_layout_get_line_readonly (layout, 0);
 
+  cairo_move_to (cr, x, y);
   pango_cairo_layout_line_path (cr, line);
 
   g_object_unref (layout);
 }
 
 static void
-draw (cairo_t *cr)
+draw_twisted (cairo_t *cr,
+	      double x,
+	      double y,
+	      const char *font,
+	      const char *text)
 {
   cairo_path_t *path;
 
+  cairo_save (cr);
+
   /* Decrease tolerance a bit, since it's going to be magnified */
   cairo_set_tolerance (cr, 0.05);
-
-  cairo_set_source_rgb (cr, 1.0, 0.0, 0.0);
-  draw_path (cr);
-  fancy_cairo_stroke_preserve (cr);
 
   path = cairo_copy_path_flat (cr);
   /*path = cairo_copy_path (cr);*/
 
   cairo_new_path (cr);
   
-  draw_text (cr);
+  draw_text (cr, x, y, font, text);
   map_path_onto (cr, path);
-  cairo_set_source_rgba (cr, 0.3, 0.3, 1.0, 0.3);
+
   cairo_fill_preserve (cr);
+
+  cairo_save (cr);
   cairo_set_source_rgb (cr, 0.1, 0.1, 0.1);
   cairo_stroke (cr);
+  cairo_restore (cr);
+
+  cairo_restore (cr);
+}
+
+static void
+draw_dream (cairo_t *cr)
+{
+  cairo_move_to (cr, 50, 650);
+
+  cairo_rel_line_to (cr, 250, 50);
+  cairo_rel_curve_to (cr, 250, 50, 600, -50, 600, -250);
+  cairo_rel_curve_to (cr, 0, -400, -300, -100, -800, -300);
+
+  cairo_set_line_width (cr, 1.5);
+  cairo_set_source_rgba (cr, 0.3, 0.3, 1.0, 0.3);
+
+  fancy_cairo_stroke_preserve (cr);
+
+  draw_twisted (cr,
+		0, 0,
+		"Serif 72",
+		"It was a dream... Oh Just a dream...");
+}
+
+static void
+draw_wow (cairo_t *cr)
+{
+  cairo_move_to (cr, 400, 780);
+
+  cairo_rel_curve_to (cr, 50, -50, 150, -50, 200, 0);
+
+  cairo_scale (cr, 1.0, 2.0);
+  cairo_set_line_width (cr, 2.0);
+  cairo_set_source_rgba (cr, 0.3, 1.0, 0.3, 1.0);
+
+  fancy_cairo_stroke_preserve (cr);
+
+  draw_twisted (cr,
+		-20, -150,
+		"Serif 60",
+		"WOW!");
 }
 
 int main (int argc, char **argv)
@@ -381,15 +430,17 @@ int main (int argc, char **argv)
   filename = argv[1];
 
   surface = cairo_image_surface_create (CAIRO_FORMAT_ARGB32,
-					500, 500);
+					1000, 800);
   cr = cairo_create (surface);
 
-  cairo_translate (cr, 0, 50);
-  cairo_scale (cr, 0.5, 0.5);
+  /* cairo_scale (cr, 0.5, 0.5); */
 
   cairo_set_source_rgb (cr, 1.0, 1.0, 1.0);
   cairo_paint (cr);
-  draw (cr);
+
+  draw_dream (cr);
+  draw_wow (cr);
+
   cairo_destroy (cr);
   
   status = cairo_surface_write_to_png (surface, filename);
