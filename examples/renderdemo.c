@@ -334,7 +334,7 @@ do_output (PangoContext     *context,
 }
 
 static gboolean
-parse_enum (GType      *type,
+parse_enum (GType       type,
 	    int        *value,
 	    const char *name,
 	    const char *arg,
