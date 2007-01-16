@@ -1,5 +1,29 @@
 2007-01-16  Behdad Esfahbod  <behdad@gnome.org>
 
+	* configure.in: Generate .bz2 tarball instead of .gz.
+
+2007-01-16  Behdad Esfahbod  <behdad@gnome.org>
+
+	* pango-view/Makefile.am:
+	* pango-view/renderdemo.c:
+	* pango-view/renderdemo.h:
+	* pango-view/viewer-main.c:
+	* pango-view/viewer-pangocairo.c:
+	* pango-view/viewer-pangoft2.c:
+	* pango-view/viewer-pangox.c:
+	* pango-view/viewer-pangoxft.c:
+	* pango-view/viewer-render.c:
+	* pango-view/viewer-render.h:
+	* pango-view/viewer-x.c:
+	Rename renderdemo.[ch] to viewer-render.[ch].
+
+2007-01-16  Behdad Esfahbod  <behdad@gnome.org>
+
+	* pango-view/Makefile.am: Rename HELLO.utf8 and GLASS.utf8 to
+	HELLO.txt and GLASS.txt.
+
+2007-01-16  Behdad Esfahbod  <behdad@gnome.org>
+
 	* examples/pango-view.c:
 	* examples/pangocairo-view.c:
 	* examples/pangoft2-view.c:
