@@ -1,5 +1,16 @@
 2007-01-16  Behdad Esfahbod  <behdad@gnome.org>
 
+	* examples/cairotwisted.c (draw_text):
+	* pango/pangocairo-win32font.c (max_glyph_width):
+	* pango/pangofc-font.c (max_glyph_width):
+	* pango/pangowin32.c (max_glyph_width),
+	(pango_win32_render_layout):
+	* pango/pangox.c (pango_x_render_layout):
+	Use pango_layout(_iter)?_get_line_readonly() instead of
+	pango_layout(_iter)?_get_line().
+
+2007-01-16  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/pango-attributes.h:
 	* pango/pango-attributes.c:
 	New attribute types PANGO_ATTR_GRAVITY and PANGO_ATTR_GRAVITY_HINT.

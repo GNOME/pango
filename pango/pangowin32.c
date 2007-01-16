@@ -533,7 +533,7 @@ max_glyph_width (PangoLayout *layout)
   int max_width = 0;
   GSList *l, *r;
 
-  for (l = pango_layout_get_lines (layout); l; l = l->next)
+  for (l = pango_layout_get_lines_readonly (layout); l; l = l->next)
     {
       PangoLayoutLine *line = l->data;
 
@@ -1052,7 +1052,7 @@ pango_win32_render_layout (HDC          hdc,
       PangoLayoutLine *line;
       int              baseline;
       
-      line = pango_layout_iter_get_line (iter);
+      line = pango_layout_iter_get_line_readonly (iter);
       
       pango_layout_iter_get_line_extents (iter, NULL, &logical_rect);
       baseline = pango_layout_iter_get_baseline (iter);

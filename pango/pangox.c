@@ -1614,7 +1614,7 @@ pango_x_render_layout (Display         *display,
       PangoLayoutLine *line;
       int              baseline;
       
-      line = pango_layout_iter_get_line (iter);
+      line = pango_layout_iter_get_line_readonly (iter);
       
       pango_layout_iter_get_line_extents (iter, NULL, &logical_rect);
       baseline = pango_layout_iter_get_baseline (iter);

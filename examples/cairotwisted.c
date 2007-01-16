@@ -330,7 +330,10 @@ draw_text (cairo_t *cr)
 
   pango_layout_set_text (layout, "It was a dream... Oh Just a dream...", -1);
 
-  line = pango_layout_get_line (layout, 0);
+  /* Use pango_layout_get_line() instead of pango_layout_get_line_readonly()
+   * for older versions of pango
+   */
+  line = pango_layout_get_line_readonly (layout, 0);
 
   pango_cairo_layout_line_path (cr, line);
 
