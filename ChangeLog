@@ -1,5 +1,19 @@
 2007-01-16  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango/ellipsize.c (get_cluster_width): Fix width calculation.
+	Was causing ellipsization to stop at a zero-width glyph that was
+	part of a bigger cluster.
+
+	* pango/ellipsize.c (remove_one_span): Skip over zero-width clusters,
+	otherwise ellipsization will stop at a zero-width cluster.
+
+	* pango/pango-glyph-item.c (_pango_glyph_item_iter_next_cluster),
+	(_pango_glyph_item_iter_prev_cluster): Fix yet another bug with
+	in prev_cluster that was making it not work for any interesting
+	cluster.
+
+2007-01-16  Behdad Esfahbod  <behdad@gnome.org>
+
 	* examples/cairotwisted.c (point_on_path), (draw_text),
 	(draw_twisted), (draw_dream), (draw_wow), (main):
 	Improve text-on-path example.
