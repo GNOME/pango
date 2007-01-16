@@ -864,7 +864,7 @@ pango_layout_get_ellipsize (PangoLayout *layout)
 gboolean
 pango_layout_is_ellipsized (PangoLayout *layout)
 {
-  g_return_if_fail (layout != NULL);
+  g_return_val_if_fail (layout != NULL, FALSE);
 
   pango_layout_check_lines (layout);
 
