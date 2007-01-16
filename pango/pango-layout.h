@@ -135,9 +135,9 @@ int            pango_layout_get_spacing          (PangoLayout                *la
 void           pango_layout_set_justify          (PangoLayout                *layout,
 						  gboolean                    justify);
 gboolean       pango_layout_get_justify          (PangoLayout                *layout);
-void           pango_layout_set_auto_dir          (PangoLayout                *layout,
+void           pango_layout_set_auto_dir         (PangoLayout                *layout,
 						  gboolean                    auto_dir);
-gboolean       pango_layout_get_auto_dir          (PangoLayout                *layout);
+gboolean       pango_layout_get_auto_dir         (PangoLayout                *layout);
 void           pango_layout_set_alignment        (PangoLayout                *layout,
 						  PangoAlignment              alignment);
 PangoAlignment pango_layout_get_alignment        (PangoLayout                *layout);
