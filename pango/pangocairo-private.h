@@ -36,7 +36,7 @@ struct _PangoCairoFontMapIface
   GTypeInterface g_iface;
 
   void           (*set_resolution) (PangoCairoFontMap *fontmap,
-			 	    double             dpi);
+				    double             dpi);
   double         (*get_resolution) (PangoCairoFontMap *fontmap);
   PangoRenderer *(*get_renderer)   (PangoCairoFontMap *fontmap);
 };

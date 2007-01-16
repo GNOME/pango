@@ -184,7 +184,7 @@ struct _IndicOTClassTable
 {
   gunichar	      firstChar;
   gunichar	      lastChar;
-  glong  	      worstCaseExpansion;
+  glong		      worstCaseExpansion;
   IndicOTScriptFlags  scriptFlags;
 
   const IndicOTCharClass  *charClasses;

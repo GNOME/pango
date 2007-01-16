@@ -191,7 +191,7 @@ scripts_for_file (const char *base_dir,
 	  if (comment)
 	    *comment = '\0';
 	  g_strstrip (str);
-	  if (str[0] != '\0') 	/* Empty */
+	  if (str[0] != '\0')	/* Empty */
 	    scripts_for_line (base_dir, file_part, str, info);
 	  g_free (str);
 	  break;

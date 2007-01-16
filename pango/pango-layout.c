@@ -3274,14 +3274,14 @@ line_set_resolved_dir (PangoLayoutLine *line,
     }
 
   /* The direction vs. gravity dance:
-   * 	- If gravity is SOUTH, leave direction untouched.
-   * 	- If gravity is NORTH, switch direction.
-   * 	- If gravity is EAST, set to LTR, as
-   * 	  it's a clockwise-rotated layout, so the rotated
-   * 	  top is unrotated left.
-   * 	- If gravity is WEST, set to RTL, as
-   * 	  it's a counter-clockwise-rotated layout, so the rotated
-   * 	  top is unrotated right.
+   *	- If gravity is SOUTH, leave direction untouched.
+   *	- If gravity is NORTH, switch direction.
+   *	- If gravity is EAST, set to LTR, as
+   *	  it's a clockwise-rotated layout, so the rotated
+   *	  top is unrotated left.
+   *	- If gravity is WEST, set to RTL, as
+   *	  it's a counter-clockwise-rotated layout, so the rotated
+   *	  top is unrotated right.
    *
    * A similar dance is performed in pango-context.c:
    * itemize_state_add_character().  Keep in synch.

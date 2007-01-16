@@ -140,50 +140,50 @@ Get_Joining_Class (gunichar*   string,
  *
  *   R3: <causing|right|dual> && <!(0x0715|0x0716|0x072A)> |<alaph>|
  *
- *   	 -> [final2]
+ *	 -> [final2]
  *
- *   	 If the preceding glyph cannot be joined to the current
- *   	 glyph and the preceding character is not a Dalath, Rish,
- *   	 or Dotless Dalath Rish, then the Alaph takes this contextual
- *   	 position.
+ *	 If the preceding glyph cannot be joined to the current
+ *	 glyph and the preceding character is not a Dalath, Rish,
+ *	 or Dotless Dalath Rish, then the Alaph takes this contextual
+ *	 position.
  *
- *   	 The [final2] joining rule is placed ahead of the [final] to
- *   	 give it greater precedence when choosing the correct glyph.
- *   	 If it comes after the [final] rule, the incorrect glyph is
- *   	 inserted into position.
+ *	 The [final2] joining rule is placed ahead of the [final] to
+ *	 give it greater precedence when choosing the correct glyph.
+ *	 If it comes after the [final] rule, the incorrect glyph is
+ *	 inserted into position.
  *
  *
  *   R4: <0x0715|0x0715|0x072A> |<alaph>|
  *
- *   	 -> [final3]
+ *	 -> [final3]
  *
- *   	 If the previous glyph is a Dalath, Rish, or Dotless Dalath
- *   	 Rish, then the Alaph takes this contextual position.
+ *	 If the previous glyph is a Dalath, Rish, or Dotless Dalath
+ *	 Rish, then the Alaph takes this contextual position.
  *
- *   	 The [final3] joining rule is placed ahead of the [final] to
- *   	 give it greater precedence when choosing the correct glyph.
- *   	 If it comes after the [final] rule, the incorrect glyph is
- *   	 inserted into position.
+ *	 The [final3] joining rule is placed ahead of the [final] to
+ *	 give it greater precedence when choosing the correct glyph.
+ *	 If it comes after the [final] rule, the incorrect glyph is
+ *	 inserted into position.
  *
  *
  *   R5: <causing|right|dual> |<right>|
  *
- *   	 -> [final]
+ *	 -> [final]
  *
  *
  *   R6: <causing|right|dual> |<dual>| <!(causing|right|dual)>
  *
- *   	 -> [final]
+ *	 -> [final]
  *
  *
  *   R7: <causing|left|dual> |<dual>| <causing|right|dual>
  *
- *   	 -> [medial]
+ *	 -> [medial]
  *
  *
  *   R8: <causing|right> |<alaph>| <causing|right|dual>
  *
- *   	 -> [medial2]
+ *	 -> [medial2]
  *
  *       If the Alaph glyph falls in the middle of a Syriac word and
  *       the preceding character cannot be joined to, then the Alaph
@@ -192,7 +192,7 @@ Get_Joining_Class (gunichar*   string,
  *
  *   R9: |<left>| <causing|right|dual>
  *
- *   	 -> [initial]
+ *	 -> [initial]
  *
  *
  *   R10: <!(causing|left|dual)> |<dual>| <causing|right|dual>

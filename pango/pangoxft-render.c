@@ -594,7 +594,7 @@ pango_xft_renderer_real_composite_glyphs (PangoXftRenderer *xftrenderer,
       PangoColor *color = pango_renderer_get_color (PANGO_RENDERER (xftrenderer),
 						    PANGO_RENDER_PART_FOREGROUND);
       if (!color)
-      	color = &xftrenderer->priv->default_color;
+	color = &xftrenderer->priv->default_color;
 
       xft_color.color.red = color->red;
       xft_color.color.green = color->green;

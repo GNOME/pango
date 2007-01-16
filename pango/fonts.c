@@ -709,7 +709,7 @@ pango_font_description_copy_static (const PangoFontDescription *desc)
  * being loaded, but still compare %FALSE.)
  *
  * Return value: %TRUE if the two font descriptions are identical,
- * 		 %FALSE otherwise.
+ *		 %FALSE otherwise.
  **/
 gboolean
 pango_font_description_equal (const PangoFontDescription  *desc1,

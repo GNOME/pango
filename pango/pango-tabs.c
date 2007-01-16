@@ -28,7 +28,7 @@ typedef struct _PangoTab PangoTab;
 
 struct _PangoTab
 {
-  gint location; 	        /* Offset in pixels of this tab stop
+  gint location;	        /* Offset in pixels of this tab stop
 				 * from the left margin of the text.
 				 */
   PangoTabAlign alignment;      /* Where the tab stop appears relative

@@ -50,7 +50,7 @@ typedef struct _FontHashKey         FontHashKey;
 
 struct _PangoFcFontMapPrivate
 {
-  GHashTable *fontset_hash; 	/* Maps PangoFontDescription -> PangoFcPatternSet  */
+  GHashTable *fontset_hash;	/* Maps PangoFontDescription -> PangoFcPatternSet  */
 
   /* pattern_hash is used to make sure we only store one copy of
    * each identical pattern. (Speeds up lookup).
@@ -842,8 +842,8 @@ pango_fc_make_pattern (const  PangoFontDescription *description,
 #ifdef FC_VERTICAL_LAYOUT
 			    FC_VERTICAL_LAYOUT,  FcTypeBool, vertical,
 #endif
- 			    FC_SIZE,  FcTypeDouble,  pixel_size * (72. / dpi),
- 			    FC_PIXEL_SIZE,  FcTypeDouble,  pixel_size,
+			    FC_SIZE,  FcTypeDouble,  pixel_size * (72. / dpi),
+			    FC_PIXEL_SIZE,  FcTypeDouble,  pixel_size,
 			    NULL);
 
   families = g_strsplit (pango_font_description_get_family (description), ",", -1);

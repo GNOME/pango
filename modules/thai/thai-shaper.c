@@ -193,7 +193,7 @@ get_adjusted_glyphs_list (ThaiFontInfo *font_info,
 	    return 3;
 	  }
 	else if (is_char_type (cluster[0], UpTailCons) &&
-	  	 is_char_type (cluster[1], SaraAm))
+		 is_char_type (cluster[1], SaraAm))
 	  {
 	    glyph_lists[0] =
 		thai_make_glyph_tis (font_info, ucs2tis (cluster[0]));
@@ -203,7 +203,7 @@ get_adjusted_glyphs_list (ThaiFontInfo *font_info,
 	    return 3;
 	  }
 	else if (is_char_type (cluster[0], NoTailCons|BotTailCons|SpltTailCons) &&
-	  	 is_char_type (cluster[1], AboveVowel))
+		 is_char_type (cluster[1], AboveVowel))
 	  {
 	    glyph_lists[0] =
 		thai_make_glyph_tis (font_info, ucs2tis (cluster[0]));
@@ -212,25 +212,25 @@ get_adjusted_glyphs_list (ThaiFontInfo *font_info,
 	    return 2;
 	  }
 	else if (is_char_type (cluster[0], NoTailCons|BotTailCons|SpltTailCons) &&
-	  	 is_char_type (cluster[1], AboveDiac|Tone))
+		 is_char_type (cluster[1], AboveDiac|Tone))
 	  {
 	    glyph_lists[0] =
 		thai_make_glyph_tis (font_info, ucs2tis (cluster[0]));
 	    glyph_lists[1] = thai_make_glyph_tis (font_info,
-		    	shiftdown_tone_ad (ucs2tis (cluster[1]), shaping_table));
+			shiftdown_tone_ad (ucs2tis (cluster[1]), shaping_table));
 	    return 2;
 	  }
 	else if (is_char_type (cluster[0], UpTailCons) &&
-	  	 is_char_type (cluster[1], AboveVowel))
+		 is_char_type (cluster[1], AboveVowel))
 	  {
 	    glyph_lists[0] =
 		thai_make_glyph_tis (font_info, ucs2tis (cluster[0]));
 	    glyph_lists[1] = thai_make_glyph_tis (font_info,
-		    	shiftleft_av (ucs2tis (cluster[1]), shaping_table));
+			shiftleft_av (ucs2tis (cluster[1]), shaping_table));
 	    return 2;
 	  }
 	else if (is_char_type (cluster[0], UpTailCons) &&
-	  	 is_char_type (cluster[1], AboveDiac|Tone))
+		 is_char_type (cluster[1], AboveDiac|Tone))
 	  {
 	    glyph_lists[0] =
 		thai_make_glyph_tis (font_info, ucs2tis (cluster[0]));
@@ -239,7 +239,7 @@ get_adjusted_glyphs_list (ThaiFontInfo *font_info,
 	    return 2;
 	  }
 	else if (is_char_type (cluster[0], NoTailCons|UpTailCons) &&
-	  	 is_char_type (cluster[1], BelowVowel|BelowDiac))
+		 is_char_type (cluster[1], BelowVowel|BelowDiac))
 	  {
 	    glyph_lists[0] =
 		thai_make_glyph_tis (font_info, ucs2tis (cluster[0]));
@@ -258,10 +258,10 @@ get_adjusted_glyphs_list (ThaiFontInfo *font_info,
 	    return 2;
 	  }
 	else if (is_char_type (cluster[0], SpltTailCons) &&
-	  	 is_char_type (cluster[1], BelowVowel|BelowDiac))
+		 is_char_type (cluster[1], BelowVowel|BelowDiac))
 	  {
 	    glyph_lists[0] = thai_make_glyph_tis (font_info,
-		    		tailcutcons (ucs2tis (cluster[0]), shaping_table));
+			       tailcutcons (ucs2tis (cluster[0]), shaping_table));
 	    glyph_lists[1] =
 		thai_make_glyph_tis (font_info, ucs2tis (cluster[1]));
 	    return 2;
@@ -301,7 +301,7 @@ get_adjusted_glyphs_list (ThaiFontInfo *font_info,
 	    glyph_lists[1] = thai_make_glyph_tis (font_info,
 				shiftleft_tone_ad (shaping_table->AmComp[0], shaping_table));
 	    glyph_lists[2] = thai_make_glyph_tis (font_info,
-		    		shiftleft_tone_ad (ucs2tis (cluster[1]), shaping_table));
+				shiftleft_tone_ad (ucs2tis (cluster[1]), shaping_table));
 	    glyph_lists[3] = thai_make_glyph_tis (font_info, shaping_table->AmComp[1]);
 	    return 4;
 	  }
@@ -314,7 +314,7 @@ get_adjusted_glyphs_list (ThaiFontInfo *font_info,
 	    glyph_lists[1] = thai_make_glyph_tis (font_info,
 				shiftleft_av (ucs2tis (cluster[1]), shaping_table));
 	    glyph_lists[2] = thai_make_glyph_tis (font_info,
-		    		shiftleft_tone_ad (ucs2tis (cluster[2]), shaping_table));
+				shiftleft_tone_ad (ucs2tis (cluster[2]), shaping_table));
 	    return 3;
 	  }
 	else if (is_char_type (cluster[0], UpTailCons) &&
@@ -347,11 +347,11 @@ get_adjusted_glyphs_list (ThaiFontInfo *font_info,
 		 is_char_type (cluster[2], AboveDiac|Tone))
 	  {
 	    glyph_lists[0] = thai_make_glyph_tis (font_info,
-		    		tailcutcons (ucs2tis (cluster[0]), shaping_table));
+				tailcutcons (ucs2tis (cluster[0]), shaping_table));
 	    glyph_lists[1] =
 		thai_make_glyph_tis (font_info, ucs2tis (cluster[1]));
 	    glyph_lists[2] = thai_make_glyph_tis (font_info,
-		    		shiftdown_tone_ad (ucs2tis (cluster[2]), shaping_table));
+				shiftdown_tone_ad (ucs2tis (cluster[2]), shaping_table));
 	    return 3;
 	  }
 	else if (is_char_type (cluster[0], BotTailCons) &&
@@ -361,7 +361,7 @@ get_adjusted_glyphs_list (ThaiFontInfo *font_info,
 	    glyph_lists[0] =
 		thai_make_glyph_tis (font_info, ucs2tis (cluster[0]));
 	    glyph_lists[1] = thai_make_glyph_tis (font_info,
-		    		shiftdown_bv_bd (ucs2tis (cluster[1]), shaping_table));
+				shiftdown_bv_bd (ucs2tis (cluster[1]), shaping_table));
 	    glyph_lists[2] = thai_make_glyph_tis (font_info,
 				shiftdown_tone_ad (ucs2tis (cluster[2]), shaping_table));
 	    return 3;

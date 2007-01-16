@@ -48,7 +48,7 @@ pango_atsui_font_describe (PangoFont *font)
 
 static PangoCoverage *
 pango_atsui_font_get_coverage (PangoFont     *font,
- 	                       PangoLanguage *language)
+	                       PangoLanguage *language)
 {
   PangoCoverage *coverage;
   int i;

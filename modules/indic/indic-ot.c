@@ -265,7 +265,7 @@ glong indic_ot_reorder(const gunichar *chars, const glong *utf8_offsets, glong c
 	last_in_word = TRUE;
 	switch (indic_ot_get_char_class(class_table, chars[prev]) & CF_CLASS_MASK) {
 	case CC_RESERVED:
-  	    last_in_word = FALSE;
+	    last_in_word = FALSE;
 	    /* Fall through */
 	case CC_INDEPENDENT_VOWEL:
 	case CC_ZERO_WIDTH_MARK:
@@ -427,7 +427,7 @@ glong indic_ot_reorder(const gunichar *chars, const glong *utf8_offsets, glong c
 		 (chars[baseConsonant] == 0x0d30)) &&
 		((chars[baseConsonant - 2] >= 0x0d15) &&
 		 (chars[baseConsonant - 2] <= 0x0d39)))  {
-      		swapChars (&output, -1, -3);
+		swapChars (&output, -1, -3);
 
 		if (mpreFixups) {
 		    if (mpreFixups->fFixupCount > 0) {

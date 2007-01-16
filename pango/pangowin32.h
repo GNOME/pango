@@ -98,7 +98,7 @@ void                 pango_win32_font_cache_free         (PangoWin32FontCache *c
 HFONT                pango_win32_font_cache_load         (PangoWin32FontCache *cache,
 							  const LOGFONT       *logfont);
 void                 pango_win32_font_cache_unload       (PangoWin32FontCache *cache,
-						     	  HFONT                hfont);
+							  HFONT                hfont);
 
 PangoFontMap        *pango_win32_font_map_for_display    (void);
 void                 pango_win32_shutdown_display        (void);

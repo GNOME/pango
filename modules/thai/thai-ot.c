@@ -123,7 +123,7 @@ thai_ot_get_ruleset (PangoFont *font)
 
 	  if (n > 0)
 	    g_object_set_qdata_full (G_OBJECT (info), ruleset_quark, ruleset,
-	    		             (GDestroyNotify)g_object_unref);
+			             (GDestroyNotify)g_object_unref);
 	  else
 	    {
 	      g_object_unref (ruleset);
@@ -196,7 +196,7 @@ lao_ot_get_ruleset (PangoFont *font)
 
 	  if (n > 0)
 	    g_object_set_qdata_full (G_OBJECT (info), ruleset_quark, ruleset,
-	    		             (GDestroyNotify)g_object_unref);
+			             (GDestroyNotify)g_object_unref);
 	  else
 	    {
 	      g_object_unref (ruleset);

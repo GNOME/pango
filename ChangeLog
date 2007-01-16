@@ -1,5 +1,9 @@
 2007-01-16  Behdad Esfahbod  <behdad@gnome.org>
 
+	*.c, *.h: Removed spaces followed b tabs.
+
+2007-01-16  Behdad Esfahbod  <behdad@gnome.org>
+
 	*.c, *.h: Replace preceding sequences of 8 spaces with tabs.
 
 2007-01-16  Behdad Esfahbod  <behdad@gnome.org>

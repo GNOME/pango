@@ -31,11 +31,11 @@ G_BEGIN_DECLS
 #define PANGO_DEFINE_TYPE_FULL(name, prefix,				   \
 			       class_init, instance_init,		   \
 			       parent_type, abstract)			   \
-GType								   	   \
+GType									   \
 prefix ## _get_type (void)				                   \
 {									   \
   static GType object_type = 0;						   \
-  									   \
+									   \
   if (!object_type)							   \
     {									   \
       static const GTypeInfo object_info =				   \
@@ -51,10 +51,10 @@ prefix ## _get_type (void)				                   \
 	  (GInstanceInitFunc) instance_init,				   \
 	  NULL           /* value_table */				   \
 	};								   \
-      									   \
-      object_type = g_type_register_static (parent_type,	   	   \
+									   \
+      object_type = g_type_register_static (parent_type,		   \
 					    g_intern_static_string (# name), \
-					    &object_info, abstract); 	   \
+					    &object_info, abstract);	   \
     }									   \
 									   \
   return object_type;							   \

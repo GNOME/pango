@@ -543,10 +543,10 @@ tibetan_engine_shape (PangoEngineShape *engine,
 	  if ((charClass & CF_DIGIT )
 	      && ( get_char_class (wcs[i+1]) & CF_PREDIGIT))
 	   {
-	 		 pango_ot_buffer_add_glyph (buffer, get_index (fc_font, C_PRE_NUMBER_MARK), pref_p, p - text);
-	 		 p = g_utf8_next_char (p);
-	 		 pango_ot_buffer_add_glyph (buffer, get_index (fc_font, wcs[i]), pref_p, p - text);
- 			       i += 1;
+			 pango_ot_buffer_add_glyph (buffer, get_index (fc_font, C_PRE_NUMBER_MARK), pref_p, p - text);
+			 p = g_utf8_next_char (p);
+			 pango_ot_buffer_add_glyph (buffer, get_index (fc_font, wcs[i]), pref_p, p - text);
+			       i += 1;
 	 } else {
 	  switch (charClass & CF_POS_MASK)
 	    {

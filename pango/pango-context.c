@@ -981,15 +981,15 @@ itemize_state_add_character (ItemizeState     *state,
   state->item->analysis.gravity = state->resolved_gravity;
 
   /* The level vs. gravity dance:
-   * 	- If gravity is SOUTH, leave level untouched.
-   * 	- If gravity is NORTH, step level one up, to
-   * 	  not get mirrored upside-down text.
-   * 	- If gravity is EAST, step up to an even level, as
-   * 	  it's a clockwise-rotated layout, so the rotated
-   * 	  top is unrotated left.
-   * 	- If gravity is WEST, step up to an odd level, as
-   * 	  it's a counter-clockwise-rotated layout, so the rotated
-   * 	  top is unrotated right.
+   *	- If gravity is SOUTH, leave level untouched.
+   *	- If gravity is NORTH, step level one up, to
+   *	  not get mirrored upside-down text.
+   *	- If gravity is EAST, step up to an even level, as
+   *	  it's a clockwise-rotated layout, so the rotated
+   *	  top is unrotated left.
+   *	- If gravity is WEST, step up to an odd level, as
+   *	  it's a counter-clockwise-rotated layout, so the rotated
+   *	  top is unrotated right.
    *
    * A similar dance is performed in pango-layout.c:
    * line_set_resolved_dir().  Keep in synch.

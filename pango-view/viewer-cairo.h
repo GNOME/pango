@@ -32,7 +32,7 @@ struct _CairoViewerIface
   const PangoViewer *backend_class;
 
   cairo_surface_t * (*create_surface) (gpointer instance,
-  				       gpointer surface,
+				       gpointer surface,
 				       int      width,
 				       int      height);
 };

@@ -399,9 +399,9 @@ xft_font_get_font (PangoFont *font)
 	{
 	  gchar *name = pango_font_description_to_string (fcfont->description);
 	  g_warning ("Cannot open font file for font %s", name);
-  	  g_free (name);
+	  g_free (name);
 
- 	  load_fallback_font (xfont);
+	  load_fallback_font (xfont);
 	}
     }
 
