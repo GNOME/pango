@@ -717,17 +717,20 @@ current_width (EllipsizeState *state)
  * 
  * Given a #PangoLayoutLine with the runs still in logical order, ellipsize
  * it according the layout's policy to fit within the set width of the layout.
+ *
+ * Return value: whether the line had to be ellipsized
  **/
-void
+gboolean
 _pango_layout_line_ellipsize (PangoLayoutLine *line,
 			      PangoAttrList   *attrs)
 {
   EllipsizeState state;
   int goal_width;
+  gboolean is_ellipsized = FALSE;
 
   if (line->layout->ellipsize == PANGO_ELLIPSIZE_NONE ||
       line->layout->width < 0)
-    return;
+    goto ret;
 
   init_state (&state, line, attrs);
 
@@ -750,7 +753,10 @@ _pango_layout_line_ellipsize (PangoLayoutLine *line,
   
   g_slist_free (line->runs);
   line->runs = get_run_list (&state);
+  is_ellipsized = TRUE;
 
  out:
   free_state (&state);
+ ret:
+  return is_ellipsized;
 }

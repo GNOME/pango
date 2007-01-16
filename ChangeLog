@@ -1,5 +1,27 @@
 2007-01-16  Behdad Esfahbod  <behdad@gnome.org>
 
+	Bug 363510 – Ability to query whether a PangoLayout is effectively
+	ellipsized (as opposed to the set_ellpisize()/get_ellipsize() methods
+	which only set a request, or return the set request respectively)
+	Patch from Milosz Derezynski
+
+	* pango/pango-layout.h:
+	* pango/ellipsize.c (_pango_layout_line_ellipsize):
+	* pango/pango-layout-private.h:
+	* pango/pango-layout.c (pango_layout_init), (pango_layout_copy),
+	(pango_layout_is_ellipsized), (pango_layout_clear_lines),
+	(pango_layout_line_postprocess):
+	New public function:
+
+		pango_layout_is_ellipsized()
+
+	* pango/pango.def:
+	* docs/tmpl/layout.sgml:
+	* docs/pango-sections.txt:
+	Update.
+
+2007-01-16  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/pango-renderer.c (pango_renderer_draw_layout_line): Fix
 	background rendering being off in presence of rise attributes.
 

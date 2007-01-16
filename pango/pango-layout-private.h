@@ -52,6 +52,7 @@ struct _PangoLayout
   
   guint wrap : 2;		/* PangoWrapMode */
   guint ellipsize : 2;		/* PangoEllipsizeMode */
+  guint is_ellipsized : 1;	/* Whether the layout has any ellipsized lines */
 
   /* some caching */
   guint logical_rect_cached : 1;
@@ -72,7 +73,7 @@ struct _PangoLayout
 
 G_END_DECLS
 
-void _pango_layout_line_ellipsize (PangoLayoutLine *line,
+gboolean _pango_layout_line_ellipsize (PangoLayoutLine *line,
 				   PangoAttrList   *attrs);
 PangoLayoutLine* _pango_layout_iter_get_line_readonly (PangoLayoutIter *iter);
 

@@ -153,6 +153,7 @@ gboolean       pango_layout_get_single_paragraph_mode (PangoLayout              
 void               pango_layout_set_ellipsize (PangoLayout        *layout,
 					       PangoEllipsizeMode  ellipsize);
 PangoEllipsizeMode pango_layout_get_ellipsize (PangoLayout        *layout);
+gboolean pango_layout_is_ellipsized           (PangoLayout *layout);
 
 void           pango_layout_context_changed (PangoLayout    *layout);
 

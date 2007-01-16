@@ -448,6 +448,7 @@ PangoWrapMode
 PANGO_TYPE_WRAP_MODE
 pango_layout_set_ellipsize
 pango_layout_get_ellipsize
+pango_layout_is_ellipsized
 PangoEllipsizeMode
 PANGO_TYPE_ELLIPSIZE_MODE
 pango_layout_set_indent

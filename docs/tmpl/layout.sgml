@@ -245,6 +245,15 @@ The #GObject type for #PangoWrapMode.
 @Returns: 
 
 
+<!-- ##### FUNCTION pango_layout_is_ellipsized ##### -->
+<para>
+
+</para>
+
+@layout: 
+@Returns: 
+
+
 <!-- ##### ENUM PangoEllipsizeMode ##### -->
 <para>
 
