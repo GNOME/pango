@@ -1,3 +1,10 @@
+2007-01-17  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 395328 – Map kATSDeletedGlyphcode to PANGO_GLYPH_EMPTY
+
+	* modules/basic/basic-atsui.c (set_glyph): Handle
+	kATSDeletedGlyphcode.
+
 2007-01-16  Behdad Esfahbod  <behdad@gnome.org>
 
 	* pango/ellipsize.c (get_cluster_width): Fix width calculation.

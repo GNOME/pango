@@ -85,7 +85,8 @@ set_glyph (PangoFont        *font,
 {
   PangoRectangle logical_rect;
 
-  glyphs->glyphs[i].glyph = glyph;
+  glyphs->glyphs[i].glyph = G_UNLIKELY (glyph == kATSDeletedGlyphcode) ?
+			    PANGO_GLYPH_EMPTY : glyph;
   
   glyphs->glyphs[i].geometry.x_offset = 0;
   glyphs->glyphs[i].geometry.y_offset = 0;
