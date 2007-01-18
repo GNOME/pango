@@ -173,6 +173,7 @@ pango_ft2_font_get_face (PangoFont *font)
   FcPattern *pattern;
   FcChar8 *filename;
   FcBool antialias, hinting, autohint;
+  int hintstyle;
   int id;
 
   if (G_UNLIKELY (!PANGO_FT2_IS_FONT (font)))
@@ -206,8 +207,21 @@ pango_ft2_font_get_face (PangoFont *font)
 			    FC_HINTING, 0, &hinting) != FcResultMatch)
 	hinting = FcTrue;
 
-      if (!hinting)
-	ft2font->load_flags |= FT_LOAD_NO_HINTING;
+      if (FcPatternGetInteger (pattern, FC_HINT_STYLE, 0, &hintstyle) != FcResultMatch)
+	hintstyle = FC_HINT_FULL;
+
+      if (!hinting || hintstyle == FC_HINT_NONE)
+          ft2font->load_flags |= FT_LOAD_NO_HINTING;
+      
+      switch (hintstyle) {
+      case FC_HINT_SLIGHT:
+      case FC_HINT_MEDIUM:
+	ft2font->load_flags |= FT_LOAD_TARGET_LIGHT;
+	break;
+      default:
+	ft2font->load_flags |= FT_LOAD_TARGET_NORMAL;
+	break;
+      }
 
       /* force autohinting if requested */
       if (FcPatternGetBool (pattern,
