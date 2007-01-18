@@ -1,3 +1,112 @@
+Overview of changes between 1.15.3 and 1.15.4
+==============================================
+General:
+- Finish vertical text support.
+- Fix various bugs that could cause ellipsization to stop prematurely.
+- Fix rendering of background color being off in presence of rise attribute.
+- Improved text-on-path example (examples/cairotwisted.c)
+
+Win32 Improvements:
+- Don't check for X and don't warn about missing fontconfig. [Tor Lillqvist]
+- Automatically use -mms-bitfields on Windows when building with gcc. [Tor]
+- Update makefile.msv. [Hans Breuer]
+
+Code base cleanups:
+- Whitespace cleanups.  Hopefully patches still apply using patch -l
+- Replace C++-style // comments with C-style /* */ ones.
+- Move the pango-view tool from examples/ into pango-view/.  The examples/
+  dir is still available and for simple examples only.
+
+Public API changes:
+
+- New PangoLayout query functions:
+
+	pango_layout_is_wrapped()
+	pango_layout_is_ellipsized()
+	pango_layout_get_unknown_glyphs_count()
+
+  The is_wrapped and is_ellipsized functions return whether the layout
+  had to wrap/ellipsize any paragraphs, as opposed to the get_wrap and
+  get_ellipsize that return the wrap/ellipsize mode set.
+
+- Misc new function:
+	pango_parse_enum()
+
+  This is more a convenience function for internal use, but set public
+  to go with other pango_parse_* functions.  Bindings should feel free
+  to ignore this.
+
+
+- New header files:
+
+  Moved gravity and matrix stuff into their own header files pango-gravity.h
+  and pango-matrix.h.  Both are included from pango-types.h.
+
+- Vertical text:
+
+  New attribute types:
+
+	PANGO_ATTR_GRAVITY
+	PANGO_ATTR_GRAVITY_HINT.
+
+  New enum type:
+
+	PangoGravityHint
+
+  New macro:
+
+	PANGO_GRAVITY_IS_VERTICAL()
+
+  New public functions:
+
+	pango_attr_gravity_new()
+	pango_attr_gravity_hint_new()
+	pango_gravity_hint_get_type
+	pango_context_set_gravity_hint()
+	pango_context_get_gravity_hint()
+	pango_gravity_get_for_matrix()
+	pango_gravity_get_for_script()
+
+  Removed:
+	pango_matrix_to_gravity()
+
+  replaced by pango_gravity_get_for_matrix()
+  
+  Gravity API added in previous releases:
+
+	PangoGravity
+        pango_gravity_get_type
+        pango_context_get_base_gravity
+        pango_context_get_gravity
+        pango_context_set_base_gravity
+	pango_font_description_get_gravity
+	pango_font_description_set_gravity
+	pango_gravity_to_rotation
+
+  A tip on using the vertical text support: If you just want to get correct
+  behavior in rotated labels (say, vertical Chinese/Japanese, but rotated
+  Latin, etc), all you need to do is to set the context gravity to
+  PANGO_GRAVITY_AUTO.  You can do this for example
+
+	#if defined(PANGO_VERSION_CHECK) && PANGO_VERSION_CHECK(1,15,4)
+	  pango_context_set_gravity (context, PANGO_GRAVITY_AUTO);
+	#endif
+
+Bugs fixed in this release:
+	Bug 395328 – Map kATSDeletedGlyphcode to PANGO_GLYPH_EMPTY
+	Bug 397337 – Use is_ellipsized and is_wrapped to optimize property
+		     changes
+	Bug 328585 – Need to know if a layout has unknown glyphs
+		     Patch from LingNing Zhang
+	Bug 326693 – PangoLayouts should be query-able about their
+		     effective properties (width / wrapped / ellipsized / etc)
+	Bug 397327 – pango-layout.c: 'pango_layout_is_ellipsized' must return
+		     a value
+	Bug 323173 – Add layout of mixed direction text for vertical layout
+	Bug 394453 – Use -mms-bitfields
+	Bug 392628 – Don't check for X on win32
+
+
 Overview of changes between 1.15.2 and 1.15.3
 ==============================================
 - Fix Hangul crasher and other Hangul bugs introduced in 1.15.2
