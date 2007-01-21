@@ -1,3 +1,11 @@
+2007-01-21  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 398238 – pangorc file missing from tests directory
+
+	* pango-view/Makefile.am:
+	* tests/Makefile.am:
+	Don't use $<. Doesn't work with Sun's make.
+
 2007-01-18  Behdad Esfahbod  <behdad@gnome.org>
 
 	* configure.in: Require automake 1.9.

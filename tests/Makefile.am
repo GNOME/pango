@@ -79,6 +79,6 @@ all-unicode.txt: gen-all-unicode$(EXEEXT)
 	./gen-all-unicode > all-unicode.txt
 
 pangorc: $(srcdir)/../modules/pangorc
-	cp $< $@
+	cp $(srcdir)/../modules/pangorc $@
 
 $(noinst_PROGRAMS) $(check_PROGRAMS): pangorc

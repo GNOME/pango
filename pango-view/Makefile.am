@@ -185,4 +185,4 @@ endif
 BUILT_SOURCES = pangorc
 
 pangorc: $(srcdir)/../modules/pangorc
-	cp $< $@
+	cp $(srcdir)/../modules/pangorc $@
