@@ -42,7 +42,7 @@ AC_INIT(pango, pango_version(),
 
 AC_CONFIG_SRCDIR([ChangeLog])
 
-AM_INIT_AUTOMAKE(1.7 gnits dist-bzip2 no-dist-gzip)
+AM_INIT_AUTOMAKE(1.9 gnits dist-bzip2 no-dist-gzip)
 AM_CONFIG_HEADER([config.h])
 
 

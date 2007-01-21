@@ -1,5 +1,9 @@
 2007-01-18  Behdad Esfahbod  <behdad@gnome.org>
 
+	* configure.in: Require automake 1.9.
+
+2007-01-18  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/pangoft2.c (pango_ft2_font_get_face): Respect FC_HINT_STYLE.
 	Patch has been in Fedora for ages.
 
