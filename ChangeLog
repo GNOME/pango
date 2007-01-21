@@ -1,3 +1,9 @@
+2007-01-21  Tor Lillqvist  <tml@novell.com>
+
+	* configure.in: Add AC_MSG_RESULT([no]) to the failed branch of
+	PKG_CHECK_MODULES tests to make the output from configure
+	cleaner.
+
 2007-01-21  Behdad Esfahbod  <behdad@gnome.org>
 
 	Bug 398238 – pangorc file missing from tests directory
