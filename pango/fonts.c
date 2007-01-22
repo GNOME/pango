@@ -1338,13 +1338,25 @@ pango_font_get_metrics (PangoFont        *font,
 {
   if (G_UNLIKELY (!PANGO_IS_FONT (font)))
     {
+      PangoFontMetrics *metrics;
 
       if (!_pango_warning_history.get_metrics)
 	{
 	  _pango_warning_history.get_metrics = TRUE;
 	  g_warning (bad_font_warning, "pango_font_get_metrics");
 	}
-      return pango_font_metrics_new ();
+      metrics = pango_font_metrics_new ();
+
+      metrics->ascent = PANGO_SCALE * PANGO_UNKNOWN_GLYPH_HEIGHT;
+      metrics->descent = 0;
+      metrics->approximate_char_width = PANGO_SCALE * PANGO_UNKNOWN_GLYPH_WIDTH;
+      metrics->approximate_digit_width = PANGO_SCALE * PANGO_UNKNOWN_GLYPH_WIDTH;
+      metrics->underline_position = -PANGO_SCALE;
+      metrics->underline_thickness = PANGO_SCALE;
+      metrics->strikethrough_position = PANGO_SCALE * PANGO_UNKNOWN_GLYPH_HEIGHT / 2;
+      metrics->strikethrough_thickness = PANGO_SCALE;
+
+      return metrics;
     }
 
   return PANGO_FONT_GET_CLASS (font)->get_metrics (font, language);

@@ -1,3 +1,8 @@
+2007-01-22  Behdad Esfahbod  <behdad@gnome.org>
+
+	* pango/fonts.c (pango_font_get_metrics): Populate metrics for
+	NULL/broken fonts.  Now our glyph boxes have underlines too. Yay!
+
 2007-01-21  Tor Lillqvist  <tml@novell.com>
 
 	* configure.in: Add AC_MSG_RESULT([no]) to the failed branch of
