@@ -1,3 +1,11 @@
+Overview of changes between 1.15.4 and 1.15.5
+==============================================
+- Fix the "menu accels are two chars wide" bug that was introduced in 1.15.4
+- Respect FC_HINT_STYLE in the ft2 backend.  Patch has been in Fedora for ages.
+- Require automake 1.9
+Bugs fixed in this release:
+	Bug 398238 – pangorc file missing from tests directory
+
 Overview of changes between 1.15.3 and 1.15.4
 ==============================================
 General:

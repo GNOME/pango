@@ -1,5 +1,13 @@
 2007-01-22  Behdad Esfahbod  <behdad@gnome.org>
 
+	* === Released 1.15.5 ===
+
+	* configure.in: Version 1.15.5
+
+	* NEWS: Updated.
+
+2007-01-22  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/pango-glyph-item.c (_pango_glyph_item_iter_next_cluster):
 	Fix the "menu accels are two chars wide" bug that was introduced
 	by the recent changes in this function, in 1.15.4.  Apparently
