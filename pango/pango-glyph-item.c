@@ -183,7 +183,7 @@ _pango_glyph_item_iter_next_cluster (PangoGlyphItemIter *iter)
   
   if (LTR (iter->glyph_item))
     {
-      cluster = glyphs->log_clusters[glyph_index + 1];
+      cluster = glyphs->log_clusters[glyph_index];
       while (TRUE)
 	{
 	  glyph_index++;
@@ -206,7 +206,7 @@ _pango_glyph_item_iter_next_cluster (PangoGlyphItemIter *iter)
     }
   else			/* RTL */
     {
-      cluster = glyphs->log_clusters[glyph_index - 1];
+      cluster = glyphs->log_clusters[glyph_index];
       while (TRUE)
 	{
 	  glyph_index--;
