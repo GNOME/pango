@@ -1,5 +1,12 @@
 2007-01-22  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango/pango-glyph-item.c (_pango_glyph_item_iter_next_cluster):
+	Fix the "menu accels are two chars wide" bug that was introduced
+	by the recent changes in this function, in 1.15.4.  Apparently
+	glyph_index means separate things in next_cluster and prev_cluster.
+
+2007-01-22  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/fonts.c (pango_font_get_metrics): Populate metrics for
 	NULL/broken fonts.  Now our glyph boxes have underlines too. Yay!
 
