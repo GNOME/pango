@@ -1,3 +1,11 @@
+2007-01-23  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 399738 – pango 1.15.5 won't compile on Mac OS X: 'FC_HINT_STYLE'
+	undeclared (first use in this function)
+
+	* pango/pangoft2.c (pango_ft2_font_get_face): Don't use FC_HINT_STYLE
+	if it's not defined (old fontconfig versions).
+
 2007-01-22  Behdad Esfahbod  <behdad@gnome.org>
 
 	* === Released 1.15.5 ===

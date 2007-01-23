@@ -207,6 +207,7 @@ pango_ft2_font_get_face (PangoFont *font)
 			    FC_HINTING, 0, &hinting) != FcResultMatch)
 	hinting = FcTrue;
 
+#ifdef FC_HINT_STYLE
       if (FcPatternGetInteger (pattern, FC_HINT_STYLE, 0, &hintstyle) != FcResultMatch)
 	hintstyle = FC_HINT_FULL;
 
@@ -222,6 +223,10 @@ pango_ft2_font_get_face (PangoFont *font)
 	ft2font->load_flags |= FT_LOAD_TARGET_NORMAL;
 	break;
       }
+#else
+      if (!hinting)
+          ft2font->load_flags |= FT_LOAD_NO_HINTING;
+#endif
 
       /* force autohinting if requested */
       if (FcPatternGetBool (pattern,
