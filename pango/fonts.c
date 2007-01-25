@@ -29,7 +29,7 @@
 #include "pango-fontmap.h"
 #include "pango-impl-utils.h"
 
-static const char bad_font_warning[] = "%s called with bad font, expect ugly output";
+static const char bad_font_warning[] = "%s called with null font argument, expect ugly output";
 
 struct _PangoFontDescription
 {
@@ -1336,7 +1336,7 @@ PangoFontMetrics *
 pango_font_get_metrics (PangoFont        *font,
 			PangoLanguage    *language)
 {
-  if (G_UNLIKELY (!PANGO_IS_FONT (font)))
+  if (G_UNLIKELY (!font))
     {
       PangoFontMetrics *metrics;
 
@@ -1375,7 +1375,7 @@ pango_font_get_metrics (PangoFont        *font,
 PangoFontMap *
 pango_font_get_font_map (PangoFont *font)
 {
-  if (G_UNLIKELY (!PANGO_IS_FONT (font)))
+  if (G_UNLIKELY (!font))
     {
 
       if (!_pango_warning_history.get_font_map)

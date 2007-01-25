@@ -1,3 +1,9 @@
+2007-01-24  Behdad Esfahbod  <behdad@gnome.org>
+
+	* pango/fonts.c (pango_font_get_metrics),
+	(pango_font_get_font_map): Remove PANGO_IS_FONT() check. Just
+	do NULL-checking.
+
 2007-01-23  Behdad Esfahbod  <behdad@gnome.org>
 
 	Bug 399738 – pango 1.15.5 won't compile on Mac OS X: 'FC_HINT_STYLE'
