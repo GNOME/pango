@@ -1,3 +1,11 @@
+2007-01-29  Behdad Esfahbod  <behdad@gnome.org>
+
+	* === Released 1.14.10 ===
+
+	* configure.in: Version 1.14.10
+
+	* NEWS: Updated.
+
 2007-01-22  Behdad Esfahbod  <behdad@gnome.org>
 
 	* pango/pango-glyph-item.c (_pango_glyph_item_iter_next_cluster):

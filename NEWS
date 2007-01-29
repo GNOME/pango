@@ -1,3 +1,24 @@
+Overview of changes between 1.14.9 and 1.14.10
+==============================================
+- Spell-checked docs.
+- Fix various bugs that could cause ellipsization to stop prematurely.
+- Fix rendering of background color being off in presence of rise attribute.
+* Bugs fixed in this release:
+	* pango/pango-renderer.c (pango_renderer_draw_layout_line): Fix
+	background rendering being off in presence of rise attributes.
+
+	Bug 326099 – Setting width, indentation and ellipsizing doesn't work
+		as I would expect
+	Bug 319808 – Patch to let pango support artifical italic, bold and
+		bold italic styles for the fonts which don't have these styles.
+		Patch from James Su
+	Red Hat Bug 211574: [hi/ml/si_LK] cursor naviation is wrong when
+		using ZWJ (200d)
+		Patch from LingNing Zhang
+	Bug 394453 – Use -mms-bitfields (win32)
+	Bug 392628 – Don't check for X on win32
+	Bug 392789 – vpath build fails in basic module (win32)
+
 Overview of changes between 1.14.8 and 1.14.9
 ==============================================
 * Add Thai langauage engine.
