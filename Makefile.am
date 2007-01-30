@@ -27,7 +27,7 @@ EXTRA_DIST = 			\
 	MAINTAINERS		\
 	HACKING			\
 	README.win32		\
-	pango-zip.sh		\
+	pango-zip.sh.in		\
 	sanitize-la.sh
 MAINTAINERCLEANFILES = \
 	$(srcdir)/INSTALL \
