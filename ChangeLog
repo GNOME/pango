@@ -1,5 +1,7 @@
 2007-01-30  Tor Lillqvist  <tml@novell.com>
 
+	* pango-zip.sh.in: Include also the COPYING file in the zipfiles.
+
 	* Makefile.am (EXTRA_DIST): Include just pango-zip.sh.in in the
 	tarball, not pango-zip.sh.
 
