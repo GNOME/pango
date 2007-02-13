@@ -1,3 +1,12 @@
+Overview of changes between 1.15.5 and 1.15.6
+==============================================
+- Fix possible crasher in win32 font selection [Owen Taylor]
+- Misc build fixes.
+- Bugs fixed in this release:
+	Bug 399738 – pango 1.15.5 won't compile on Mac OS X: 'FC_HINT_STYLE'
+		undeclared (first use in this function)
+	Bug 404295 – Crash initializing pango-win32 fontmap
+
 Overview of changes between 1.15.4 and 1.15.5
 ==============================================
 - Fix the "menu accels are two chars wide" bug that was introduced in 1.15.4
