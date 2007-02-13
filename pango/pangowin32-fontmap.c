@@ -774,6 +774,7 @@ pango_win32_insert_font (PangoWin32FontMap *win32fontmap,
 			 LOGFONT           *lfp)
 {
   LOGFONT *lfp2 = NULL;
+  PangoFontDescription *description;
   PangoWin32Family *font_family;
   PangoWin32Face *win32face;
   PangoWin32SizeInfo *size_info;
@@ -839,8 +840,19 @@ pango_win32_insert_font (PangoWin32FontMap *win32fontmap,
   
   PING(("g_slist_length(size_info->logfonts)=%d", g_slist_length(size_info->logfonts)));
 
+  description = pango_win32_font_description_from_logfont (lfp2);
+
+  /* In some cases, extracting a name for a font can fail; such fonts
+   * aren't usable for us
+   */
+  if (!pango_font_description_get_family (description))
+    {
+      pango_font_description_free (description);
+      return;
+    }
+
   win32face = g_object_new (PANGO_WIN32_TYPE_FACE, NULL);
-  win32face->description = pango_win32_font_description_from_logfont (lfp2);
+  win32face->description = description;
 
   win32face->cached_fonts = NULL;
   

@@ -1,3 +1,10 @@
+2007-02-13  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pangowin32-fontmap.c (pango_win32_insert_font): If
+	something has gone wrong in setting the family of the font
+	description, don't bother with the font as it isn't usable and
+	will cause crashes later anyway. (#404295)
+
 2007-01-31  Tor Lillqvist  <tml@novell.com>
 
 	* pango/Makefile.am: Use pangocairo.def only on Win32, not
