@@ -1,3 +1,9 @@
+2007-02-16  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 407087 – autogen.sh wants automake-1.7
+
+	* autogen.sh: Require automake 1.9, like configure.in does.
+
 2007-02-12  Behdad Esfahbod  <behdad@gnome.org>
 
 	* === Released 1.15.6 ===
