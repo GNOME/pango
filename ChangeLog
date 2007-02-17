@@ -1,5 +1,13 @@
 2007-02-16  Behdad Esfahbod  <behdad@gnome.org>
 
+	Bug 355987 – choosing font/shaper for spaces breaks Arabic runs on
+	spaces
+
+	* pango/pango-context.c (itemize_state_process_run): Don't choose
+	shaper for ASCII space char.
+
+2007-02-16  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 407087 – autogen.sh wants automake-1.7
 
 	* autogen.sh: Require automake 1.9, like configure.in does.

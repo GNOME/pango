@@ -1311,24 +1311,15 @@ itemize_state_process_run (ItemizeState *state)
       /* We don't want space characters to affect font selection; in general,
        * it's always wrong to select a font just to render a space.  But until
        * we have a better solution, choosing a font for spaces seems to work
-       * better.
-       *
-       * The exception of U+3000 (IDEOGRAPHIC SPACE) here is because we
-       * want to choose an ideographic space that matches ideographic text
-       * in cell width. Even if we were emulating missing spaces, an
-       * emulated ideographic space for the primary font wouldn't be the
-       * right size.
+       * better.  However, all fonts are assumed to cover ASCII space, so that
+       * one is an exception.  See bug #355987.
        *
        * The exception of PrivateUse and Unassigned characters is necessary
        * to be able to render any of them. (for private or being encoded
        * scripts, etc.)
        */
-      /*
-      if (G_UNLIKELY (!g_unichar_isgraph (wc) && wc != 0x3000 &&
-		      g_unichar_type (wc) != G_UNICODE_PRIVATE_USE &&
-		      g_unichar_type (wc) != G_UNICODE_UNASSIGNED))
-	*/
-      if (G_UNLIKELY (!g_unichar_isprint (wc) &&
+      if (wc == 0x0020 ||
+	  G_UNLIKELY (!g_unichar_isprint (wc) &&
 		      g_unichar_type (wc) != G_UNICODE_PRIVATE_USE &&
 		      g_unichar_type (wc) != G_UNICODE_UNASSIGNED))
 	{
