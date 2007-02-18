@@ -250,7 +250,7 @@ if $have_fontconfig ; then
   # Checks for Xft/XRender
   #
   if $have_x && $have_freetype ; then
-    PKG_CHECK_MODULES(XFT, xft >= 2.0.0, have_xft=true, AC_MSG_RESULT([no]))
+    PKG_CHECK_MODULES(XFT, xft >= 2.0.0 xrender, have_xft=true, AC_MSG_RESULT([no]))
     if $have_xft ; then
       AC_DEFINE(HAVE_XFT, 1, [Have Xft library])
     fi

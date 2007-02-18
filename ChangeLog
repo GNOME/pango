@@ -3,6 +3,13 @@
 	Bug 409212 – Missing link flag prevents build with "-z defs" ld flags
 	Patch from Loïc Minier
 
+	* configure.in: Add xrender to pkg-config requirements for pangoxft.
+
+2007-02-18  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 409212 – Missing link flag prevents build with "-z defs" ld flags
+	Patch from Loïc Minier
+
 	* pango/Makefile.am: Add $(X_LIBS) to pangoxft_LDADD.
 
 2007-02-16  Behdad Esfahbod  <behdad@gnome.org>
