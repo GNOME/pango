@@ -239,6 +239,7 @@ libpangoxft_1_0_la_LIBADD =			\
 	libpangoft2-$(PANGO_API_VERSION).la	\
 	libpango-$(PANGO_API_VERSION).la	\
 	$(GLIB_LIBS)				\
+	$(X_LIBS)				\
 	$(XFT_LIBS)				\
 	$(libm)
 libpangoxft_1_0_la_DEPENDENCIES =		\
