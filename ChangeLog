@@ -1,3 +1,11 @@
+2007-02-20  Stefan Kost  <ensonic@users.sf.net>
+
+	Xrefs for glib and cairo in the docs. Add object hierarchy to the docs.
+
+	* configure.in:
+	* docs/Makefile.am:
+	* docs/pango-docs.sgml:
+
 2007-02-18  Behdad Esfahbod  <behdad@gnome.org>
 
 	Bug 409212 – Missing link flag prevents build with "-z defs" ld flags

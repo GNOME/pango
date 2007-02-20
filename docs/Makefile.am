@@ -80,7 +80,8 @@ HTML_IMAGES =				\
 	rotated-text.png
 
 # Extra options to supply to gtkdoc-fixref
-FIXXREF_OPTIONS=
+FIXXREF_OPTIONS=--extra-dir=$(GLIB_PREFIX)/share/gtk-doc/html/glib \
+	--extra-dir=$(CAIRO_PREFIX)/share/gtk-doc/html/cairo
 
 include $(top_srcdir)/gtk-doc.make
 

@@ -30,6 +30,7 @@
 <!ENTITY pango-Version SYSTEM "xml/pango-version.xml">
 <!ENTITY pango-Vertical-Text SYSTEM "xml/vertical.xml">
 <!ENTITY version SYSTEM "version.xml">
+<!ENTITY pango-tree-index SYSTEM "xml/tree_index.sgml">
 ]>
 <book id="index">
   <bookinfo>
@@ -82,6 +83,10 @@
     &pango-querymodules;
   </chapter>
 
+  <chapter id="pango-hierarchy">
+    <title>Object Hierarchy</title>
+    &pango-tree-index;
+  </chapter>
   <index/>
 
   <index role="deprecated">

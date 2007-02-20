@@ -627,6 +627,12 @@ fi
 
 AM_CONDITIONAL(ENABLE_MAN, test x$enable_man != xno)
 
+GLIB_PREFIX="`$PKG_CONFIG --variable=prefix glib-2.0`"
+CAIRO_PREFIX="`pkg-config --variable=prefix cairo`"
+
+AC_SUBST(GLIB_PREFIX)
+AC_SUBST(CAIRO_PREFIX)
+
 dnl ********************************************************
 dnl * Options to pass to libtool
 dnl ********************************************************
