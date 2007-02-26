@@ -1,3 +1,17 @@
+Overview of changes between 1.15.6 and 1.16.0
+==============================================
+- Improved docs, with an object hierarchy and cross references to glib and
+  cairo docs now (may require rebuilding the docs to correctly detect glib
+  and cairo prefixes).
+- Improved font selection for space characters
+- Misc build system fixes
+- Bugs fixed in this release:
+	Bug 407087 – autogen.sh wants automake-1.7
+	Bug 409212 – Missing link flag prevents build with "-z defs" ld flags
+		     Patch from Loïc Minier
+	Bug 355987 – choosing font/shaper for spaces breaks Arabic runs on
+		     spaces
+
 Overview of changes between 1.15.5 and 1.15.6
 ==============================================
 - Fix possible crasher in win32 font selection [Owen Taylor]

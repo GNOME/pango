@@ -36,7 +36,7 @@ For more information about Pango, see:
 Dependencies
 ============
 
-Pango depends on version 2.10.0 or newer of the GLib library; more 
+Pango depends on version 2.12.0 or newer of the GLib library; more 
 information about GLib can be found at http://www.gtk.org/.
 
 When using client side fonts, the fontconfig library
@@ -55,16 +55,6 @@ version 2 of the Xft library to manage client side fonts. Version 2 of
 Xft is available from http://xlibs.freedesktop.org/release/.  You'll
 need the libXft package, and possibly the libXrender and renderext
 packages as well.  You'll also need fontconfig (see below.)
-
-Note that an earlier version of Xft is shipped with version
-of XFree86 up to 4.2. This version does not work with Pango-1.8;
-Pango-1.8 requires version 2 of Xft, which is present in XFree86-4.3
-and X11R6.7 and newer versions of those.
-
-After installing fontconfig, it may be necessary to edit
-the fonts.conf file, found at $(sysconfdir)/fonts/fonts.conf
-(usually /etc/fonts/fonts.conf) to point at the fonts
-on your system.
 
 Installation of Pango on Win32 is possible, but is not documented
 here. See http://www.gimp.org/~tml/gimp/win32/downloads.html
@@ -102,4 +92,4 @@ otaylor@redhat.com
 Behdad Esfahbod
 behdad@gnome.org
 
-13 March 2006
+26 February 2007
