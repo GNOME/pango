@@ -98,7 +98,7 @@ struct _PangoWin32FontMap
   /* Map Pango family names to PangoWin32Family structs */
   GHashTable *families;
 
-  /* Map LOGFONTS (taking into account only the lfFaceName, lfItalic
+  /* Map LOGFONTWs (taking into account only the lfFaceName, lfItalic
    * and lfWeight fields) to PangoWin32SizeInfo structs.
    */
   GHashTable *size_infos;
@@ -123,7 +123,7 @@ struct _PangoWin32Font
 {
   PangoFont font;
 
-  LOGFONT logfont;
+  LOGFONTW logfontw;
   int size;
 
   GSList *metrics_by_lang;
@@ -159,7 +159,7 @@ struct _PangoWin32Face
 {
   PangoFontFace parent_instance;
 
-  LOGFONT logfont;
+  LOGFONTW logfontw;
   PangoFontDescription *description;
   PangoCoverage *coverages[PANGO_WIN32_N_COVERAGES];
   char *face_name;
@@ -258,14 +258,14 @@ struct name_record
 
 GType pango_win32_font_get_type (void);
 
-PangoWin32Font *pango_win32_font_new                (PangoFontMap   *fontmap,
-						     const LOGFONT  *lfp,
+PangoWin32Font *pango_win32_font_neww               (PangoFontMap   *fontmap,
+						     const LOGFONTW *lfp,
 						     int             size);
 PangoMap *      pango_win32_get_shaper_map          (PangoLanguage  *lang);
-void            pango_win32_make_matching_logfont   (PangoFontMap   *fontmap,
-						     const LOGFONT  *lfp,
+void            pango_win32_make_matching_logfontw  (PangoFontMap   *fontmap,
+						     const LOGFONTW *lfp,
 						     int             size,
-						     LOGFONT        *out);
+						     LOGFONTW       *out);
 PangoCoverage * pango_win32_font_entry_get_coverage (PangoWin32Face *face,
 						     PangoLanguage  *lang);
 void            pango_win32_font_entry_set_coverage (PangoWin32Face *face,

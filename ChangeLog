@@ -1,3 +1,85 @@
+2007-02-26  Tor Lillqvist  <tml@novell.com>
+
+	This change was supposed to go in the trunk before 1.16.0, but it
+	didn't quite get there in time. So, to have a clear cut for this
+	somewhat fundamental change in underlying workings (although there
+	should be no user-visible changes), I will build and distribute
+	Win32 binaries only starting from 1.16.1.
+
+	Use wide character API for fonts on Windows. Rename functions and
+	variables that deal with LOGFONTW structs to emphasize
+	this. (#407315)
+
+	* pango/pangowin32.c
+	* pango/pangowin32-fontcache.c
+	* pango/pangowin32-fontmap.c: Use LOGFONTW all over the place
+	instead of LOGFONT, and adapt code accordingly. Use wide character
+	Win32 API.
+
+	* pango/pangowin32.c (pango_win32_font_neww): Renamed from
+	pango_win32_font_new(), as it now takes a LOGFONTW pointer. This
+	is a private function and can be renamed though it is exported as
+	it is used from the pangocairo DLL.
+	(pango_win32_font_logfont): Mention explicitly in doc comment that
+	it returns a LOGFONTA, and recommend to use
+	pango_win32_font_logfontw() instead.
+	(pango_win32_font_logfontw): New function.
+
+	* pango/pangowin32-fontcache.c
+	(pango_win32_font_cache_load): Must keep this function that takes
+	a LOGFONTA pointer as it is declared in the public header.
+	(pango_win32_font_cache_loadw): New public function that takes a
+	LOGFONTW pointer.
+
+	* pango/pangowin32-fontmap.c
+	(pango_win32_font_description_from_logfont): Mention explicitly in
+	the doc comment that it takes a LOGFONTA pointer.
+	(pango_win32_font_description_from_logfontw): New public function
+	that takes a LOGFONTW pointer.
+	(pango_win32_make_matching_logfontw): Rename from
+	pango_win32_make_matching_logfont() to emphasize it takes a
+	LOGFONTW pointer.
+
+	* pango/pangowin32.h: Declare new public functions.
+
+	* pango/pangowin32-private.h: Declare new private functions, drop
+	removed ones.
+
+	* pango/pangocairo-win32font.c (_pango_cairo_win32_font_new):
+	Simplify now that we call pango_win32_make_matching_logfontw().
+
+	* pango/pangowin32.def: Add new functions, rename internal
+	functions that now use LOGFONTW.
+
+2007-02-26  Tor Lillqvist  <tml@novell.com>
+
+	Fix brokenness in the code that tries to ensure that all fonts
+	also have italic variants. Now the code hopefully actually does
+	what it was supposed to. (Which is not necessarily the right thing
+	to do, though. It can be argued that we should not list
+	synthesized italic font styles, we should just silently generate
+	them if asked for. We don't want synthesized italic (or synthesized
+	bold) styles showing up in the font selector. They don't show up
+	when using a fontconfig-based Pango backend either.) (#110521)
+	
+	* pango/pangowin32-fontmap.c
+	(logfont_nosize_hash, logfont_nosize_equal): Don't use the
+	lfItalic field as such, just its nonzeroness. When being
+	enumerated, italic fonts show up with lfItalic=255, but our code
+	looks up italic versions of fonts by passing a key LOGFONT with
+	lfItalic=1.
+	(first_match): Not needed any more, see below.
+	(ensure_italic): This is now called on the entries in the
+	size_infos hash table, not families. The code used to randomly
+	look for the first matching font in size_infoswith the family name
+	being handled.
+	(pango_win32_font_map_init): Iterate through the size_infos hash
+	table with ensure_italic, not through the families table.
+
+	* pango/pangowin32-fontcache.c
+	(logfontw_hash, logfontw_equal): Look at just nonzeroness of
+	lfItalic here, too.
+	
 2007-02-26  Behdad Esfahbod  <behdad@gnome.org>
 
 	* === Released 1.16.0 ===

@@ -4,6 +4,7 @@
  * Copyright (C) 2000 Red Hat Software
  * Copyright (C) 2000 Tor Lillqvist
  * Copyright (C) 2001 Alexander Larsson
+ * Copyright (C) 2007 Novell, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -52,7 +53,7 @@ struct _PangoWin32Family
 
 struct _PangoWin32SizeInfo
 {
-  GSList *logfonts;
+  GSList *logfontws;
 };
 
 #define PANGO_WIN32_TYPE_FAMILY              (pango_win32_family_get_type ())
@@ -75,18 +76,18 @@ static PangoFont *pango_win32_font_map_load_font     (PangoFontMap              
 						      PangoContext                 *context,
 						      const PangoFontDescription   *description);
 static void       pango_win32_font_map_list_families (PangoFontMap                 *fontmap,
-						       PangoFontFamily            ***families,
-						       int                          *n_families);
+						      PangoFontFamily            ***families,
+						      int                          *n_families);
 
-static PangoFont *pango_win32_font_map_real_find_font (PangoWin32FontMap          *win32fontmap,
-						       PangoContext               *context,
-						       PangoWin32Face             *face,
-						       const PangoFontDescription *description);
+static PangoFont *pango_win32_font_map_real_find_font (PangoWin32FontMap           *win32fontmap,
+						       PangoContext                *context,
+						       PangoWin32Face              *face,
+						       const PangoFontDescription  *description);
 
 static void       pango_win32_fontmap_cache_clear    (PangoWin32FontMap            *win32fontmap);
 
 static void       pango_win32_insert_font            (PangoWin32FontMap            *fontmap,
-						      LOGFONT                      *lfp);
+						      LOGFONTW                     *lfp);
 
 static PangoWin32FontMap *default_fontmap = NULL;
 
@@ -96,7 +97,7 @@ G_DEFINE_TYPE (PangoWin32FontMap, pango_win32_font_map, PANGO_TYPE_FONT_MAP)
   (((c) >= 'A' && (c) <= 'Z') ? (c) - 'A' + 'a' : (c))
 
 static guint
-case_insensitive_hash (const char *key)
+case_insensitive_str_hash (const char *key)
 {
   const char *p = key;
   guint h = TOLOWER (*p);
@@ -111,37 +112,63 @@ case_insensitive_hash (const char *key)
 }
 
 static gboolean
-case_insensitive_equal (const char *key1,
-			const char *key2)
+case_insensitive_str_equal (const char *key1,
+			    const char *key2)
 {
-  return (g_ascii_strcasecmp (key1, key2) == 0);
+  while (*key1 && *key2 && TOLOWER (*key1) == TOLOWER (*key2))
+    key1++, key2++;
+  return (!*key1 && !*key2);
 }
 
-/* A hash function for LOGFONTs that takes into consideration only
+static guint
+case_insensitive_wcs_hash (const wchar_t *key)
+{
+  const wchar_t *p = key;
+  guint h = TOLOWER (*p);
+
+  if (h)
+    {
+      for (p += 1; *p != '\0'; p++)
+	h = (h << 5) - h + TOLOWER (*p);
+    }
+
+  return h;
+}
+
+static gboolean
+case_insensitive_wcs_equal (const wchar_t *key1,
+			    const wchar_t *key2)
+{
+  while (*key1 && *key2 && TOLOWER (*key1) == TOLOWER (*key2))
+    key1++, key2++;
+  return (!*key1 && !*key2);
+}
+
+/* A hash function for LOGFONTWs that takes into consideration only
  * those fields that indicate a specific .ttf file is in use:
  * lfFaceName, lfItalic and lfWeight. Dunno how correct this is.
  */
 static guint
-logfont_nosize_hash (const LOGFONT *lfp)
+logfontw_nosize_hash (const LOGFONTW *lfp)
 {
-  return case_insensitive_hash (lfp->lfFaceName) + lfp->lfItalic + lfp->lfWeight;
+  return case_insensitive_wcs_hash (lfp->lfFaceName) + (lfp->lfItalic != 0) + lfp->lfWeight;
 }
 
 /* Ditto comparison function */
 static gboolean
-logfont_nosize_equal (const LOGFONT *lfp1,
-		      const LOGFONT *lfp2)
+logfontw_nosize_equal (const LOGFONTW *lfp1,
+		       const LOGFONTW *lfp2)
 {
-  return (case_insensitive_equal (lfp1->lfFaceName, lfp2->lfFaceName)
-	  && lfp1->lfItalic == lfp2->lfItalic
+  return (case_insensitive_wcs_equal (lfp1->lfFaceName, lfp2->lfFaceName)
+	  && (lfp1->lfItalic != 0) == (lfp2->lfItalic != 0)
 	  && lfp1->lfWeight == lfp2->lfWeight);
 }
 
 static int CALLBACK
-pango_win32_inner_enum_proc (LOGFONT    *lfp,
-			     TEXTMETRIC *metrics,
-			     DWORD       fontType,
-			     LPARAM      lParam)
+pango_win32_inner_enum_proc (LOGFONTW    *lfp,
+			     TEXTMETRICW *metrics,
+			     DWORD        fontType,
+			     LPARAM       lParam)
 {
   PangoWin32FontMap *win32fontmap = (PangoWin32FontMap *)lParam;
 
@@ -155,39 +182,25 @@ pango_win32_inner_enum_proc (LOGFONT    *lfp,
 }
 
 static int CALLBACK
-pango_win32_enum_proc (LOGFONT    *lfp,
-		       TEXTMETRIC *metrics,
-		       DWORD       fontType,
-		       LPARAM      lParam)
+pango_win32_enum_proc (LOGFONTW    *lfp,
+		       TEXTMETRICW *metrics,
+		       DWORD        fontType,
+		       LPARAM       lParam)
 {
-  LOGFONT lf;
+  LOGFONTW lf;
 
-  PING(("%s", lfp->lfFaceName));
+  PING(("%S", lfp->lfFaceName));
 
   if (fontType != TRUETYPE_FONTTYPE)
     return 1;
 
   lf = *lfp;
 
-  EnumFontFamiliesExA (pango_win32_hdc, &lf,
-		       (FONTENUMPROC) pango_win32_inner_enum_proc,
+  EnumFontFamiliesExW (pango_win32_hdc, &lf,
+		       (FONTENUMPROCW) pango_win32_inner_enum_proc,
 		       lParam, 0);
 
   return 1;
-}
-
-static gboolean
-first_match (gpointer key,
-	    gpointer value,
-	    gpointer user_data)
-{
-  LOGFONT *lfp = (LOGFONT *)key;
-  LOGFONT *lfp2 = (LOGFONT *)((PangoWin32SizeInfo *)value)->logfonts->data;
-  gchar *name = (gchar *)user_data;
-
-  if (strcmp (lfp->lfFaceName, name) == 0 && lfp->lfWeight == lfp2->lfWeight)
-    return TRUE;
-  return FALSE;
 }
 
 typedef struct _ItalicHelper
@@ -202,42 +215,41 @@ ensure_italic (gpointer key,
 	       gpointer user_data)
 {
   ItalicHelper *helper = (ItalicHelper *)user_data;
-  /* PangoWin32Family *win32family = (PangoWin32Family *)value; */
+  PangoWin32SizeInfo *sip = (PangoWin32SizeInfo *) value;
+  GSList *list = sip->logfontws;
 
-  PangoWin32SizeInfo *sip = (PangoWin32SizeInfo *)g_hash_table_find (helper->fontmap->size_infos, first_match, key);
-  if (sip)
+  while (list)
     {
-      GSList *list = sip->logfonts;
-
-      while (list)
+      LOGFONTW *lfp = (LOGFONTW *) list->data;
+      PING(("%S it=%d wt=%ld", lfp->lfFaceName, lfp->lfItalic, lfp->lfWeight));
+      if (!lfp->lfItalic)
 	{
-	  LOGFONT *lfp = (LOGFONT *)list->data;
-	  if (!lfp->lfItalic)
+	  /* we have a non italic variant, look if there is an italic */
+	  LOGFONTW logfontw = *lfp;
+	  logfontw.lfItalic = 1;
+	  sip = (PangoWin32SizeInfo *) g_hash_table_lookup (helper->fontmap->size_infos, &logfontw);
+	  if (!sip)
 	    {
-	      /* we have a non italic variant, look if there is an italic */
-	      LOGFONT logfont = *lfp;
-	      logfont.lfItalic = 1;
-	      sip = (PangoWin32SizeInfo *)g_hash_table_find (helper->fontmap->size_infos, first_match, &logfont);
-	      if (!sip)
-		{
-		  /* remember the non italic variant to be added later as italic */
-		  helper->list = g_slist_append (helper->list, lfp);
-		}
+	      /* remember the non italic variant to be added later as italic */
+	      PING(("synthesizing italic"));
+	      helper->list = g_slist_append (helper->list, lfp);
 	    }
-	  list = list->next;
 	}
+      list = list->next;
     }
 }
 
 static void
 pango_win32_font_map_init (PangoWin32FontMap *win32fontmap)
 {
-  LOGFONT logfont;
+  LOGFONTW logfont;
+  ItalicHelper helper = { win32fontmap, NULL };
+  GSList *list;
 
-  win32fontmap->families = g_hash_table_new ((GHashFunc) case_insensitive_hash,
-					     (GEqualFunc) case_insensitive_equal);
+  win32fontmap->families = g_hash_table_new ((GHashFunc) case_insensitive_str_hash,
+					     (GEqualFunc) case_insensitive_str_equal);
   win32fontmap->size_infos =
-    g_hash_table_new ((GHashFunc) logfont_nosize_hash, (GEqualFunc) logfont_nosize_equal);
+    g_hash_table_new ((GHashFunc) logfontw_nosize_hash, (GEqualFunc) logfontw_nosize_equal);
   win32fontmap->n_fonts = 0;
 
   win32fontmap->font_cache = pango_win32_font_cache_new ();
@@ -245,26 +257,23 @@ pango_win32_font_map_init (PangoWin32FontMap *win32fontmap)
 
   memset (&logfont, 0, sizeof (logfont));
   logfont.lfCharSet = DEFAULT_CHARSET;
-  EnumFontFamiliesExA (pango_win32_hdc, &logfont, (FONTENUMPROC) pango_win32_enum_proc,
-		       (LPARAM)win32fontmap, 0);
+  EnumFontFamiliesExW (pango_win32_hdc, &logfont,
+		       (FONTENUMPROCW) pango_win32_enum_proc,
+		       (LPARAM) win32fontmap, 0);
 
-  /* create synthetic italic entries */
-  {
-    ItalicHelper helper = { win32fontmap, NULL };
-    GSList *list;
+  /* Create synthetic italic entries */
+  g_hash_table_foreach (win32fontmap->size_infos, ensure_italic, &helper);
 
-    g_hash_table_foreach (win32fontmap->families, ensure_italic, &helper);
-    /* cant modify while iterating */
-    list = helper.list;
-    while (list)
-      {
-	LOGFONT logfont = *((LOGFONT *)list->data);
-	logfont.lfItalic = 1;
-	pango_win32_insert_font (win32fontmap, &logfont);
-	list = list->next;
-      }
-    g_slist_free (helper.list);
-  }
+  /* Can't modify while iterating */
+  list = helper.list;
+  while (list)
+    {
+      LOGFONTW logfontw = *((LOGFONTW *)list->data);
+      logfontw.lfItalic = 1;
+      pango_win32_insert_font (win32fontmap, &logfontw);
+      list = list->next;
+    }
+  g_slist_free (helper.list);
 
   win32fontmap->resolution = (PANGO_SCALE / (double) GetDeviceCaps (pango_win32_hdc, LOGPIXELSY)) * 72.0;
 }
@@ -540,7 +549,7 @@ pango_win32_font_map_real_find_font (PangoWin32FontMap          *win32fontmap,
   if (pango_font_description_get_size_is_absolute (description))
     size = (int) 0.5 + (size * win32fontmap->resolution) / PANGO_SCALE;
 
-  PING(("got best match:%s size=%d",face->logfont.lfFaceName,size));
+  PING(("got best match:%S size=%d",face->logfontw.lfFaceName,size));
 
   while (tmp_list)
     {
@@ -558,7 +567,7 @@ pango_win32_font_map_real_find_font (PangoWin32FontMap          *win32fontmap,
       tmp_list = tmp_list->next;
     }
 
-  win32font = pango_win32_font_new (fontmap, &face->logfont, size);
+  win32font = pango_win32_font_neww (fontmap, &face->logfontw, size);
 
   if (!win32font)
     return NULL;
@@ -571,7 +580,7 @@ pango_win32_font_map_real_find_font (PangoWin32FontMap          *win32fontmap,
 }
 
 static gchar *
-get_family_name (const LOGFONT *lfp)
+get_family_nameA (const LOGFONTA *lfp)
 {
   HFONT hfont;
   HFONT oldhfont;
@@ -696,13 +705,13 @@ get_family_name (const LOGFONT *lfp)
 
 /**
  * pango_win32_font_description_from_logfont:
- * @lfp: a LOGFONT
+ * @lfp: a LOGFONTA
  *
- * Creates a #PangoFontDescription that matches the specified LOGFONT.
+ * Creates a #PangoFontDescription that matches the specified LOGFONTA.
  *
- * The face name, italicness and weight fields in the LOGFONT are used
+ * The face name, italicness and weight fields in the LOGFONTA are used
  * to set up the resulting #PangoFontDescription. If the face name in
- * the LOGFONT contains non-ASCII characters the font is temporarily
+ * the LOGFONTA contains non-ASCII characters the font is temporarily
  * loaded (using CreateFontIndirect()) and an ASCII (usually English)
  * name for it is looked up from the font name tables in the font
  * data. If that doesn't work, the face name is converted from the
@@ -723,7 +732,7 @@ pango_win32_font_description_from_logfont (const LOGFONT *lfp)
   PangoWeight weight;
   PangoStretch stretch;
 
-  family = get_family_name (lfp);
+  family = get_family_nameA (lfp);
 
   if (!lfp->lfItalic)
     style = PANGO_STYLE_NORMAL;
@@ -764,24 +773,220 @@ pango_win32_font_description_from_logfont (const LOGFONT *lfp)
   return description;
 }
 
-/* This inserts the given font into the size_infos table. If a SizeInfo
- * already exists with the same typeface name, then the font is added
- * to the SizeInfos list, else a new SizeInfo is created and inserted
- * in the table.
+static gchar *
+get_family_nameW (const LOGFONTW *lfp)
+{
+  HFONT hfont;
+  HFONT oldhfont;
+
+  struct name_header header;
+  struct name_record record;
+
+  gint unicode_ix = -1, mac_ix = -1, microsoft_ix = -1;
+  gint name_ix;
+  gchar *codeset;
+
+  gchar *string = NULL;
+  gchar *name;
+
+  gint i, l;
+  gsize nbytes;
+
+  /* If lfFaceName is ASCII, assume it is the common (English) name
+   * for the font. Is this valid? Do some TrueType fonts have
+   * different names in French, German, etc, and does the system
+   * return these if the locale is set to use French, German, etc?
+   */
+  l = wcslen (lfp->lfFaceName);
+  for (i = 0; i < l; i++)
+    if (lfp->lfFaceName[i] < ' ' || lfp->lfFaceName[i] > '~')
+      break;
+
+  if (i == l)
+    return g_utf16_to_utf8 (lfp->lfFaceName, -1, NULL, NULL, NULL);
+
+  if ((hfont = CreateFontIndirectW (lfp)) == NULL)
+    goto fail0;
+
+  if ((oldhfont = SelectObject (pango_win32_hdc, hfont)) == NULL)
+    goto fail1;
+
+  if (!pango_win32_get_name_header (pango_win32_hdc, &header))
+    goto fail2;
+
+  PING (("%d name records", header.num_records));
+
+  for (i = 0; i < header.num_records; i++)
+    {
+      if (!pango_win32_get_name_record (pango_win32_hdc, i, &record))
+	goto fail2;
+
+      if ((record.name_id != 1 && record.name_id != 16) || record.string_length <= 0)
+	continue;
+
+      PING(("platform:%d encoding:%d language:%04x name_id:%d",
+	    record.platform_id, record.encoding_id, record.language_id, record.name_id));
+
+      if (record.platform_id == APPLE_UNICODE_PLATFORM_ID ||
+	  record.platform_id == ISO_PLATFORM_ID)
+	unicode_ix = i;
+      else if (record.platform_id == MACINTOSH_PLATFORM_ID &&
+	       record.encoding_id == 0 && /* Roman */
+	       record.language_id == 0)	/* English */
+	mac_ix = i;
+      else if (record.platform_id == MICROSOFT_PLATFORM_ID)
+	if ((microsoft_ix == -1 ||
+	     PRIMARYLANGID (record.language_id) == LANG_ENGLISH) &&
+	    (record.encoding_id == SYMBOL_ENCODING_ID ||
+	     record.encoding_id == UNICODE_ENCODING_ID ||
+	     record.encoding_id == UCS4_ENCODING_ID))
+	  microsoft_ix = i;
+    }
+
+  if (microsoft_ix >= 0)
+    name_ix = microsoft_ix;
+  else if (mac_ix >= 0)
+    name_ix = mac_ix;
+  else if (unicode_ix >= 0)
+    name_ix = unicode_ix;
+  else
+    goto fail2;
+
+  if (!pango_win32_get_name_record (pango_win32_hdc, name_ix, &record))
+    goto fail2;
+
+  string = g_malloc (record.string_length + 1);
+  if (GetFontData (pango_win32_hdc, NAME,
+		   header.string_storage_offset + record.string_offset,
+		   string, record.string_length) != record.string_length)
+    goto fail2;
+
+  string[record.string_length] = '\0';
+
+  if (name_ix == microsoft_ix)
+    if (record.encoding_id == SYMBOL_ENCODING_ID ||
+	record.encoding_id == UNICODE_ENCODING_ID)
+      codeset = "UTF-16BE";
+    else
+      codeset = "UCS-4BE";
+  else if (name_ix == mac_ix)
+    codeset = "MacRoman";
+  else /* name_ix == unicode_ix */
+    codeset = "UCS-4BE";
+
+  name = g_convert (string, record.string_length, "UTF-8", codeset, NULL, &nbytes, NULL);
+  if (name == NULL)
+    goto fail2;
+  g_free (string);
+
+  PING(("%s", name));
+
+  SelectObject (pango_win32_hdc, oldhfont);
+  DeleteObject (hfont);
+
+  return name;
+
+ fail2:
+  g_free (string);
+  SelectObject (pango_win32_hdc, oldhfont);
+
+ fail1:
+  DeleteObject (hfont);
+
+ fail0:
+  return g_utf16_to_utf8 (lfp->lfFaceName, -1, NULL, NULL, NULL);
+}
+
+/**
+ * pango_win32_font_description_from_logfontw:
+ * @lfp: a LOGFONTW
+ *
+ * Creates a #PangoFontDescription that matches the specified LOGFONTW.
+ *
+ * The face name, italicness and weight fields in the LOGFONTW are used
+ * to set up the resulting #PangoFontDescription. If the face name in
+ * the LOGFONTW contains non-ASCII characters the font is temporarily
+ * loaded (using CreateFontIndirect()) and an ASCII (usually English)
+ * name for it is looked up from the font name tables in the font
+ * data. If that doesn't work, the face name is converted from UTF-16
+ * to UTF-8 and that is used.
+ *
+ * Return value: the newly allocated #PangoFontDescription, which
+ *  should be freed using pango_font_description_free()
+ *
+ * Since: 1.16
+ */
+PangoFontDescription *
+pango_win32_font_description_from_logfontw (const LOGFONTW *lfp)
+{
+  PangoFontDescription *description;
+  gchar *family;
+  PangoStyle style;
+  PangoVariant variant;
+  PangoWeight weight;
+  PangoStretch stretch;
+
+  family = get_family_nameW (lfp);
+
+  if (!lfp->lfItalic)
+    style = PANGO_STYLE_NORMAL;
+  else
+    style = PANGO_STYLE_ITALIC;
+
+  variant = PANGO_VARIANT_NORMAL;
+
+  /* The PangoWeight values PANGO_WEIGHT_* map exactly do Windows FW_*
+   * values.  Is this on purpose? Quantize the weight to exact
+   * PANGO_WEIGHT_* values. Is this a good idea?
+   */
+  if (lfp->lfWeight == FW_DONTCARE)
+    weight = PANGO_WEIGHT_NORMAL;
+  else if (lfp->lfWeight <= (FW_ULTRALIGHT + FW_LIGHT) / 2)
+    weight = PANGO_WEIGHT_ULTRALIGHT;
+  else if (lfp->lfWeight <= (FW_LIGHT + FW_NORMAL) / 2)
+    weight = PANGO_WEIGHT_LIGHT;
+  else if (lfp->lfWeight <= (FW_NORMAL + FW_BOLD) / 2)
+    weight = PANGO_WEIGHT_NORMAL;
+  else if (lfp->lfWeight <= (FW_BOLD + FW_ULTRABOLD) / 2)
+    weight = PANGO_WEIGHT_BOLD;
+  else if (lfp->lfWeight <= (FW_ULTRABOLD + FW_HEAVY) / 2)
+    weight = PANGO_WEIGHT_ULTRABOLD;
+  else
+    weight = PANGO_WEIGHT_HEAVY;
+
+  /* XXX No idea how to figure out the stretch */
+  stretch = PANGO_STRETCH_NORMAL;
+
+  description = pango_font_description_new ();
+  pango_font_description_set_family (description, family);
+  pango_font_description_set_style (description, style);
+  pango_font_description_set_weight (description, weight);
+  pango_font_description_set_stretch (description, stretch);
+  pango_font_description_set_variant (description, variant);
+
+  return description;
+}
+
+
+/* This inserts the given font into the size_infos table. If a
+ * SizeInfo already exists with the same typeface name, italicness and
+ * weight, then the font is added to the SizeInfo's list, else a
+ * new SizeInfo is created and inserted in the table.
  */
 static void
 pango_win32_insert_font (PangoWin32FontMap *win32fontmap,
-			 LOGFONT           *lfp)
+			 LOGFONTW          *lfp)
 {
-  LOGFONT *lfp2 = NULL;
+  LOGFONTW *lfp2 = NULL;
   PangoFontDescription *description;
   PangoWin32Family *font_family;
   PangoWin32Face *win32face;
   PangoWin32SizeInfo *size_info;
   GSList *tmp_list;
   gint i;
+  gchar *p;
 
-  PING(("face=%s,charset=%d,it=%d,wt=%ld,ht=%ld",lfp->lfFaceName,lfp->lfCharSet,lfp->lfItalic,lfp->lfWeight,lfp->lfHeight));
+  PING(("face=%S,charset=%d,it=%d,wt=%ld,ht=%ld",lfp->lfFaceName,lfp->lfCharSet,lfp->lfItalic,lfp->lfWeight,lfp->lfHeight));
 
   /* Ignore Symbol fonts (which don't have any Unicode mapping
    * table). We could also be fancy and use the PostScript glyph name
@@ -791,27 +996,28 @@ pango_win32_insert_font (PangoWin32FontMap *win32fontmap,
   if (lfp->lfCharSet == SYMBOL_CHARSET)
     return;
 
-  /* First insert the LOGFONT into the list of LOGFONTs for the typeface name
+  /* First insert the LOGFONTW into the list of LOGFONTWs for the
+   * typeface name, italicness and weight.
    */
   size_info = g_hash_table_lookup (win32fontmap->size_infos, lfp);
   if (!size_info)
     {
       PING(("SizeInfo not found"));
       size_info = g_new (PangoWin32SizeInfo, 1);
-      size_info->logfonts = NULL;
+      size_info->logfontws = NULL;
 
-      lfp2 = g_new (LOGFONT, 1);
+      lfp2 = g_new (LOGFONTW, 1);
       *lfp2 = *lfp;
       g_hash_table_insert (win32fontmap->size_infos, lfp2, size_info);
     }
   else
     {
-      /* Don't store logfonts that differ only in charset
+      /* Don't store LOGFONTWs that differ only in charset
        */
-      tmp_list = size_info->logfonts;
+      tmp_list = size_info->logfontws;
       while (tmp_list)
 	{
-	  LOGFONT *rover = tmp_list->data;
+	  LOGFONTW *rover = tmp_list->data;
 
 	  /* We know that lfWeight, lfItalic and lfFaceName match.  We
 	   * don't check lfHeight and lfWidth, those are used
@@ -832,15 +1038,15 @@ pango_win32_insert_font (PangoWin32FontMap *win32fontmap,
 
   if (lfp2 == NULL)
     {
-      lfp2 = g_new (LOGFONT, 1);
+      lfp2 = g_new (LOGFONTW, 1);
       *lfp2 = *lfp;
     }
 
-  size_info->logfonts = g_slist_prepend (size_info->logfonts, lfp2);
+  size_info->logfontws = g_slist_prepend (size_info->logfontws, lfp2);
 
-  PING(("g_slist_length(size_info->logfonts)=%d", g_slist_length(size_info->logfonts)));
+  PING(("g_slist_length(size_info->logfontws)=%d", g_slist_length(size_info->logfontws)));
 
-  description = pango_win32_font_description_from_logfont (lfp2);
+  description = pango_win32_font_description_from_logfontw (lfp2);
 
   /* In some cases, extracting a name for a font can fail; such fonts
    * aren't usable for us
@@ -858,7 +1064,7 @@ pango_win32_insert_font (PangoWin32FontMap *win32fontmap,
 
   for (i = 0; i < PANGO_WIN32_N_COVERAGES; i++)
      win32face->coverages[i] = NULL;
-  win32face->logfont = *lfp;
+  win32face->logfontw = *lfp;
   win32face->cmap_format = 0;
   win32face->cmap = NULL;
 
@@ -905,31 +1111,33 @@ pango_win32_insert_font (PangoWin32FontMap *win32fontmap,
   /* Some other magic names */
 
   /* Recognize just "courier" for "courier new" */
-  if (g_ascii_strcasecmp (win32face->logfont.lfFaceName, "courier new") == 0)
+  p = g_utf16_to_utf8 (win32face->logfontw.lfFaceName, -1, NULL, NULL, NULL);
+  if (p && g_ascii_strcasecmp (p, "courier new") == 0)
     {
       font_family = pango_win32_get_font_family (win32fontmap, "courier");
       font_family->font_entries = g_slist_append (font_family->font_entries, win32face);
       win32fontmap->n_fonts++;
     }
+  g_free (p);
 #endif
 }
 
-/* Given a LOGFONT and size, make a matching LOGFONT corresponding to
+/* Given a LOGFONTW and size, make a matching LOGFONTW corresponding to
  * an installed font.
  */
 void
-pango_win32_make_matching_logfont (PangoFontMap  *fontmap,
-				   const LOGFONT *lfp,
-				   int            size,
-				   LOGFONT       *out)
+pango_win32_make_matching_logfontw (PangoFontMap   *fontmap,
+				    const LOGFONTW *lfp,
+				    int             size,
+				    LOGFONTW       *out)
 {
   PangoWin32FontMap *win32fontmap;
   GSList *tmp_list;
   PangoWin32SizeInfo *size_info;
-  LOGFONT *closest_match = NULL;
+  LOGFONTW *closest_match = NULL;
   gint match_distance = 0;
 
-  PING(("lfp.face=%s,wt=%ld,ht=%ld,size:%d",lfp->lfFaceName,lfp->lfWeight,lfp->lfHeight,size));
+  PING(("lfp.face=%S,wt=%ld,ht=%ld,size:%d",lfp->lfFaceName,lfp->lfWeight,lfp->lfHeight,size));
   win32fontmap = PANGO_WIN32_FONT_MAP (fontmap);
 
   size_info = g_hash_table_lookup (win32fontmap->size_infos, lfp);
@@ -940,11 +1148,11 @@ pango_win32_make_matching_logfont (PangoFontMap  *fontmap,
       return;
     }
 
-  tmp_list = size_info->logfonts;
+  tmp_list = size_info->logfontws;
   while (tmp_list)
     {
-      LOGFONT *tmp_logfont = tmp_list->data;
-      int font_size = abs (tmp_logfont->lfHeight);
+      LOGFONTW *tmp_logfontw = tmp_list->data;
+      int font_size = abs (tmp_logfontw->lfHeight);
 
       if (size != -1)
 	{
@@ -954,7 +1162,7 @@ pango_win32_make_matching_logfont (PangoFontMap  *fontmap,
 	      new_distance < match_distance ||
 	      (new_distance < PANGO_SCALE && font_size != 0))
 	    {
-	      closest_match = tmp_logfont;
+	      closest_match = tmp_logfontw;
 	      match_distance = new_distance;
 	    }
 	}

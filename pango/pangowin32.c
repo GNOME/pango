@@ -4,6 +4,7 @@
  * Copyright (C) 1999 Red Hat Software
  * Copyright (C) 2000 Tor Lillqvist
  * Copyright (C) 2001 Alexander Larsson
+ * Copyright (C) 2007 Novell, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -93,11 +94,11 @@ pango_win32_get_hfont (PangoFont *font)
     {
       cache = pango_win32_font_map_get_font_cache (win32font->fontmap);
 
-      win32font->hfont = pango_win32_font_cache_load (cache, &win32font->logfont);
+      win32font->hfont = pango_win32_font_cache_loadw (cache, &win32font->logfontw);
       if (!win32font->hfont)
 	{
-	  gchar *face_utf8 = g_locale_to_utf8 (win32font->logfont.lfFaceName,
-					       -1, NULL, NULL, NULL);
+	  gchar *face_utf8 = g_utf16_to_utf8 (win32font->logfontw.lfFaceName,
+					      -1, NULL, NULL, NULL);
 	  g_warning ("Cannot load font '%s\n", face_utf8);
 	  g_free (face_utf8);
 	  return NULL;
@@ -216,9 +217,9 @@ pango_win32_font_class_init (PangoWin32FontClass *class)
 }
 
 PangoWin32Font *
-pango_win32_font_new (PangoFontMap  *fontmap,
-		      const LOGFONT *lfp,
-		      int	     size)
+pango_win32_font_neww (PangoFontMap   *fontmap,
+		       const LOGFONTW *lfp,
+		       int	      size)
 {
   PangoWin32Font *result;
 
@@ -231,8 +232,7 @@ pango_win32_font_new (PangoFontMap  *fontmap,
   g_object_ref (fontmap);
 
   result->size = size;
-  pango_win32_make_matching_logfont (fontmap, lfp, size,
-				     &result->logfont);
+  pango_win32_make_matching_logfontw (fontmap, lfp, size, &result->logfontw);
 
   return result;
 }
@@ -676,22 +676,60 @@ pango_win32_font_real_get_metrics_factor (PangoFont *font)
  * pango_win32_font_logfont:
  * @font: a #PangoFont which must be from the Win32 backend
  *
- * Determine the LOGFONT struct for the specified font.
+ * Determine the LOGFONTA struct for the specified font. Note that
+ * Pango internally uses LOGFONTW structs, so if converting the UTF-16
+ * face name in the LOGFONTW struct to system codepage fails, the
+ * returned LOGFONTA will have an emppty face name. To get the
+ * LOGFONTW of a PangoFont, use pango_win32_font_logfontw(). It
+ * is recommended to do that always even if you don't expect
+ * to come across fonts with odd names.
  *
- * Return value: A newly allocated LOGFONT struct. It must be
+ * Return value: A newly allocated LOGFONTA struct. It must be
  * freed with g_free().
  **/
-LOGFONT *
+LOGFONTA *
 pango_win32_font_logfont (PangoFont *font)
 {
   PangoWin32Font *win32font = (PangoWin32Font *)font;
-  LOGFONT *lfp;
+  LOGFONTA *lfp;
 
   g_return_val_if_fail (font != NULL, NULL);
   g_return_val_if_fail (PANGO_WIN32_IS_FONT (font), NULL);
 
-  lfp = g_new (LOGFONT, 1);
-  *lfp = win32font->logfont;
+  lfp = g_new (LOGFONTA, 1);
+
+  *lfp = *(LOGFONTA*) &win32font->logfontw;
+  if (!WideCharToMultiByte (CP_ACP, 0,
+			    win32font->logfontw.lfFaceName, -1,
+			    lfp->lfFaceName, G_N_ELEMENTS (lfp->lfFaceName),
+			    NULL, NULL))
+    lfp->lfFaceName[0] = '\0';
+
+  return lfp;
+}
+
+/**
+ * pango_win32_font_logfontw:
+ * @font: a #PangoFont which must be from the Win32 backend
+ * 
+ * Determine the LOGFONTW struct for the specified font.
+ * 
+ * Return value: A newly allocated LOGFONTW struct. It must be
+ * freed with g_free().
+ *
+ *Since: 1.16
+ **/
+LOGFONTW *
+pango_win32_font_logfontw (PangoFont *font)
+{
+  PangoWin32Font *win32font = (PangoWin32Font *)font;
+  LOGFONTW *lfp;
+
+  g_return_val_if_fail (font != NULL, NULL);
+  g_return_val_if_fail (PANGO_WIN32_IS_FONT (font), NULL);
+
+  lfp = g_new (LOGFONTW, 1);
+  *lfp = win32font->logfontw;
 
   return lfp;
 }

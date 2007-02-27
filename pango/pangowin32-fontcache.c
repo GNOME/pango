@@ -1,8 +1,9 @@
 /* Pango
- * pangowin32-fontcache.c: Cache of HFONTs by LOGFONT
+ * pangowin32-fontcache.c: Cache of HFONTs by LOGFONTW
  *
  * Copyright (C) 2000 Red Hat Software
  * Copyright (C) 2000 Tor Lillqvist
+ * Copyright (C) 2007 Novell, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -46,15 +47,15 @@ struct _PangoWin32FontCache
 
 struct _CacheEntry
 {
-  LOGFONT logfont;
-  HFONT   hfont;
+  LOGFONTW logfontw;
+  HFONT hfont;
 
   gint ref_count;
   GList *mru;
 };
 
 static void
-free_cache_entry (LOGFONT             *logfont,
+free_cache_entry (LOGFONTW            *logfont,
 		  CacheEntry          *entry,
 		  PangoWin32FontCache *cache)
 {
@@ -87,28 +88,42 @@ pango_win32_font_cache_free (PangoWin32FontCache *cache)
 }
 
 static guint
-logfont_hash (gconstpointer v)
+wcs_hash (gconstpointer v)
 {
-  const LOGFONT *lfp = v;
+  /* 31 bit hash function */
+  const wchar_t *p = v;
+  guint32 h = *p;
 
-  return g_str_hash (lfp->lfFaceName) +
-    lfp->lfItalic +
+  if (h)
+    for (p += 1; *p != '\0'; p++)
+      h = (h << 5) - h + *p;
+
+  return h;
+}
+
+static guint
+logfontw_hash (gconstpointer v)
+{
+  const LOGFONTW *lfp = v;
+
+  return wcs_hash (lfp->lfFaceName) +
+    (lfp->lfItalic != 0) +
     lfp->lfWeight/10 +
     lfp->lfOrientation +
     abs (lfp->lfHeight) * 10;
 }
 
 static gint
-logfont_equal (gconstpointer   v1,
-	       gconstpointer   v2)
+logfontw_equal (gconstpointer v1,
+		gconstpointer v2)
 {
-  const LOGFONT *lfp1 = v1, *lfp2 = v2;
+  const LOGFONTW *lfp1 = v1, *lfp2 = v2;
 
-  return (strcmp (lfp1->lfFaceName, lfp2->lfFaceName) == 0
+  return (wcscmp (lfp1->lfFaceName, lfp2->lfFaceName) == 0
 	  && lfp1->lfPitchAndFamily == lfp2->lfPitchAndFamily
 	  && lfp1->lfStrikeOut == lfp2->lfStrikeOut
 	  && lfp1->lfUnderline == lfp2->lfUnderline
-	  && lfp1->lfItalic == lfp2->lfItalic
+	  && (lfp1->lfItalic != 0) == (lfp2->lfItalic != 0)
 	  && lfp1->lfWeight == lfp2->lfWeight
 	  && lfp1->lfOrientation == lfp2->lfOrientation
 	  && lfp1->lfEscapement == lfp2->lfEscapement
@@ -131,7 +146,7 @@ pango_win32_font_cache_new (void)
 
   cache = g_slice_new (PangoWin32FontCache);
 
-  cache->forward = g_hash_table_new (logfont_hash, logfont_equal);
+  cache->forward = g_hash_table_new (logfontw_hash, logfontw_equal);
   cache->back = g_hash_table_new (g_direct_hash, g_direct_equal);
 
   cache->mru = NULL;
@@ -150,7 +165,7 @@ cache_entry_unref (PangoWin32FontCache *cache,
     {
       PING (("removing cache entry %p", entry->hfont));
 
-      g_hash_table_remove (cache->forward, &entry->logfont);
+      g_hash_table_remove (cache->forward, &entry->logfontw);
       g_hash_table_remove (cache->back, entry->hfont);
 
       free_cache_entry (NULL, entry, cache);
@@ -160,9 +175,9 @@ cache_entry_unref (PangoWin32FontCache *cache,
 /**
  * pango_win32_font_cache_load:
  * @cache: a #PangoWin32FontCache
- * @logfont: a pointer to a LOGFONT structure describing the font to load.
+ * @logfont: a pointer to a LOGFONTA structure describing the font to load.
  *
- * Creates a HFONT from a LOGFONT. The
+ * Creates a HFONT from a LOGFONTA. The
  * result may be newly loaded, or it may have been previously
  * stored
  *
@@ -172,10 +187,42 @@ cache_entry_unref (PangoWin32FontCache *cache,
  **/
 HFONT
 pango_win32_font_cache_load (PangoWin32FontCache *cache,
-			     const LOGFONT       *lfp)
+			     const LOGFONTA      *lfp)
+{
+  LOGFONTW lf;
+
+  /* We know that the lfFaceName is the last member in the structs */
+  *(LOGFONTA *)&lf = *lfp;
+  
+  if (!MultiByteToWideChar (CP_ACP, MB_ERR_INVALID_CHARS,
+			    lfp->lfFaceName, -1,
+			    lf.lfFaceName, G_N_ELEMENTS (lf.lfFaceName)))
+    return NULL;
+
+  return pango_win32_font_cache_loadw (cache, &lf);
+}
+
+/**
+ * pango_win32_font_cache_loadw:
+ * @cache: a #PangoWin32FontCache
+ * @logfont: a pointer to a LOGFONTW structure describing the font to load.
+ *
+ * Creates a HFONT from a LOGFONTW. The
+ * result may be newly loaded, or it may have been previously
+ * stored
+ *
+ * Return value: The font structure, or %NULL if the font could
+ * not be loaded. In order to free this structure, you must call
+ * pango_win32_font_cache_unload().
+ *
+ * Since: 1.16
+ **/
+HFONT
+pango_win32_font_cache_loadw (PangoWin32FontCache *cache,
+			      const LOGFONTW      *lfp)
 {
   CacheEntry *entry;
-  LOGFONT lf;
+  LOGFONTW lf;
   HFONT hfont;
   int tries;
 
@@ -229,14 +276,14 @@ pango_win32_font_cache_load (PangoWin32FontCache *cache,
 		 "height=%ld,width=%ld,escapement=%ld,orientation=%ld,"
 		 "weight=%ld,%s%s%s"
 		 "charset=%d,outprecision=%d,clipprecision=%d,"
-		 "quality=%d,pitchandfamily=%#.02x,facename=\"%s\")",
+		 "quality=%d,pitchandfamily=%#.02x,facename=\"%S\")",
 		 lf.lfHeight, lf.lfWidth, lf.lfEscapement, lf.lfOrientation,
 		 lf.lfWeight, (lf.lfItalic ? "italic," : ""),
 		 (lf.lfUnderline ? "underline," : ""),
 		 (lf.lfStrikeOut ? "strikeout," : ""),
 		 lf.lfCharSet, lf.lfOutPrecision, lf.lfClipPrecision,
 		 lf.lfQuality, lf.lfPitchAndFamily, lf.lfFaceName));
-	  hfont = CreateFontIndirect (&lf);
+	  hfont = CreateFontIndirectW (&lf);
 
 	  if (hfont != NULL)
 	    {
@@ -247,42 +294,50 @@ pango_win32_font_cache_load (PangoWin32FontCache *cache,
 	  /* If we fail, try some similar fonts often found on Windows. */
 	  if (tries == 0)
 	    {
-	      if (g_ascii_strcasecmp (lf.lfFaceName, "helvetica") == 0)
-		strcpy (lf.lfFaceName, "arial");
-	      else if (g_ascii_strcasecmp (lf.lfFaceName, "new century schoolbook") == 0)
-		strcpy (lf.lfFaceName, "century schoolbook");
-	      else if (g_ascii_strcasecmp (lf.lfFaceName, "courier") == 0)
-		strcpy (lf.lfFaceName, "courier new");
-	      else if (g_ascii_strcasecmp (lf.lfFaceName, "lucida") == 0)
-		strcpy (lf.lfFaceName, "lucida sans unicode");
-	      else if (g_ascii_strcasecmp (lf.lfFaceName, "lucidatypewriter") == 0)
-		strcpy (lf.lfFaceName, "lucida console");
-	      else if (g_ascii_strcasecmp (lf.lfFaceName, "times") == 0)
-		strcpy (lf.lfFaceName, "times new roman");
+	      gchar *p = g_utf16_to_utf8 (lf.lfFaceName, -1, NULL, NULL, NULL);
+	      if (!p)
+		; /* Nothing */
+	      else if (g_ascii_strcasecmp (p, "helvetica") == 0)
+		wcscpy (lf.lfFaceName, L"arial");
+	      else if (g_ascii_strcasecmp (p, "new century schoolbook") == 0)
+		wcscpy (lf.lfFaceName, L"century schoolbook");
+	      else if (g_ascii_strcasecmp (p, "courier") == 0)
+		wcscpy (lf.lfFaceName, L"courier new");
+	      else if (g_ascii_strcasecmp (p, "lucida") == 0)
+		wcscpy (lf.lfFaceName, L"lucida sans unicode");
+	      else if (g_ascii_strcasecmp (p, "lucidatypewriter") == 0)
+		wcscpy (lf.lfFaceName, L"lucida console");
+	      else if (g_ascii_strcasecmp (p, "times") == 0)
+		wcscpy (lf.lfFaceName, L"times new roman");
+	      g_free (p);
 	    }
 	  else if (tries == 1)
 	    {
-	      if (g_ascii_strcasecmp (lf.lfFaceName, "courier") == 0)
+	      gchar *p = g_utf16_to_utf8 (lf.lfFaceName, -1, NULL, NULL, NULL);
+	      if (!p)
+		; /* Nothing */
+	      else if (g_ascii_strcasecmp (p, "courier") == 0)
 		{
-		  strcpy (lf.lfFaceName, "");
+		  wcscpy (lf.lfFaceName, L"");
 		  lf.lfPitchAndFamily |= FF_MODERN;
 		}
-	      else if (g_ascii_strcasecmp (lf.lfFaceName, "times new roman") == 0)
+	      else if (g_ascii_strcasecmp (p, "times new roman") == 0)
 		{
-		  strcpy (lf.lfFaceName, "");
+		  wcscpy (lf.lfFaceName, L"");
 		  lf.lfPitchAndFamily |= FF_ROMAN;
 		}
-	      else if (g_ascii_strcasecmp (lf.lfFaceName, "helvetica") == 0
-		       || g_ascii_strcasecmp (lf.lfFaceName, "lucida") == 0)
+	      else if (g_ascii_strcasecmp (p, "helvetica") == 0
+		       || g_ascii_strcasecmp (p, "lucida") == 0)
 		{
-		  strcpy (lf.lfFaceName, "");
+		  wcscpy (lf.lfFaceName, L"");
 		  lf.lfPitchAndFamily |= FF_SWISS;
 		}
 	      else
 		{
-		  strcpy (lf.lfFaceName, "");
+		  wcscpy (lf.lfFaceName, L"");
 		  lf.lfPitchAndFamily = (lf.lfPitchAndFamily & 0x0F) | FF_DONTCARE;
 		}
+	      g_free (p);
 	    }
 	  else
 	    break;
@@ -294,13 +349,13 @@ pango_win32_font_cache_load (PangoWin32FontCache *cache,
 
       entry = g_slice_new (CacheEntry);
 
-      entry->logfont = lf;
+      entry->logfontw = lf;
       entry->hfont = hfont;
 
       entry->ref_count = 1;
       entry->mru = NULL;
 
-      g_hash_table_insert (cache->forward, &entry->logfont, entry);
+      g_hash_table_insert (cache->forward, &entry->logfontw, entry);
       g_hash_table_insert (cache->back, entry->hfont, entry);
     }
 

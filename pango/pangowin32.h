@@ -96,7 +96,9 @@ PangoWin32FontCache *pango_win32_font_cache_new          (void);
 void                 pango_win32_font_cache_free         (PangoWin32FontCache *cache);
 
 HFONT                pango_win32_font_cache_load         (PangoWin32FontCache *cache,
-							  const LOGFONT       *logfont);
+							  const LOGFONTA      *logfont);
+HFONT                pango_win32_font_cache_loadw        (PangoWin32FontCache *cache,
+							  const LOGFONTW      *logfont);
 void                 pango_win32_font_cache_unload       (PangoWin32FontCache *cache,
 							  HFONT                hfont);
 
@@ -104,9 +106,12 @@ PangoFontMap        *pango_win32_font_map_for_display    (void);
 void                 pango_win32_shutdown_display        (void);
 PangoWin32FontCache *pango_win32_font_map_get_font_cache (PangoFontMap       *font_map);
 
-LOGFONT             *pango_win32_font_logfont            (PangoFont          *font);
+LOGFONTA            *pango_win32_font_logfont            (PangoFont          *font);
+LOGFONTW            *pango_win32_font_logfontw           (PangoFont          *font);
 
-PangoFontDescription *pango_win32_font_description_from_logfont (const LOGFONT *lfp);
+PangoFontDescription *pango_win32_font_description_from_logfont (const LOGFONTA *lfp);
+
+PangoFontDescription *pango_win32_font_description_from_logfontw (const LOGFONTW *lfp);
 
 G_END_DECLS
 

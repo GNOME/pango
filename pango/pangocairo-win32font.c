@@ -84,20 +84,7 @@ pango_cairo_win32_font_get_font_face (PangoCairoFont *font)
 
   if (cwfont->font_face == NULL)
     {
-      LOGFONTW logfontw;
-
-      /* Count here on the fact that all the struct fields are the
-       * same for LOGFONTW and LOGFONTA except lfFaceName which is the
-       * last field
-       */
-      memcpy (&logfontw, &win32font->logfont, sizeof (LOGFONTA));
-
-      if (!MultiByteToWideChar (CP_ACP, MB_ERR_INVALID_CHARS,
-				win32font->logfont.lfFaceName, -1,
-				logfontw.lfFaceName, G_N_ELEMENTS (logfontw.lfFaceName)))
-	logfontw.lfFaceName[0] = 0; /* Hopefully this will select some font */
-
-      cwfont->font_face = cairo_win32_font_face_create_for_logfontw (&logfontw);
+      cwfont->font_face = cairo_win32_font_face_create_for_logfontw (&win32font->logfontw);
 
       /* Failure of the above should only occur for out of memory,
        * we can't proceed at that point
@@ -544,10 +531,10 @@ _pango_cairo_win32_font_new (PangoCairoWin32FontMap     *cwfontmap,
   else
     cairo_matrix_init_identity (&cwfont->ctm);
 
-  pango_win32_make_matching_logfont (win32font->fontmap,
-				     &face->logfont,
-				     win32font->size,
-				     &win32font->logfont);
+  pango_win32_make_matching_logfontw (win32font->fontmap,
+				      &face->logfontw,
+				      win32font->size,
+				      &win32font->logfontw);
 
   cwfont->options = cairo_font_options_copy (_pango_cairo_context_get_merged_font_options (context));
 
