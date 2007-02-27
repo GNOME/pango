@@ -92,7 +92,7 @@ logfont_hash (gconstpointer v)
   const LOGFONT *lfp = v;
 
   return g_str_hash (lfp->lfFaceName) +
-    lfp->lfItalic +
+    (lfp->lfItalic != 0) +
     lfp->lfWeight/10 +
     lfp->lfOrientation +
     abs (lfp->lfHeight) * 10;
@@ -108,7 +108,7 @@ logfont_equal (gconstpointer   v1,
 	  && lfp1->lfPitchAndFamily == lfp2->lfPitchAndFamily
 	  && lfp1->lfStrikeOut == lfp2->lfStrikeOut
 	  && lfp1->lfUnderline == lfp2->lfUnderline
-	  && lfp1->lfItalic == lfp2->lfItalic
+	  && (lfp1->lfItalic != 0) == (lfp2->lfItalic != 0)
 	  && lfp1->lfWeight == lfp2->lfWeight
 	  && lfp1->lfOrientation == lfp2->lfOrientation
 	  && lfp1->lfEscapement == lfp2->lfEscapement

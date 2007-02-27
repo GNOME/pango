@@ -1,3 +1,31 @@
+2007-02-26  Tor Lillqvist  <tml@novell.com>
+
+	* pango/pangowin32-fontmap.c: Fix brokenness in the code that
+	tries to ensure that all fonts also have italic variants. Now the
+	code hopefully actually does what it was supposed to. (Which is
+	not necessarily the right thing to do, though. It can be argued
+	that we should not list synthesized italic font styles, we should
+	just silently generate them if asked for. We don't want
+	synthesized italic (or synthesized bold) styles showing up in the
+	font selector. They don't show up when using a fontconfig-based
+	Pango backend either.) (#110521)
+	(logfont_nosize_hash, logfont_nosize_equal): Don't use the
+	lfItalic field as such, just its nonzeroness. When being
+	enumerated, italic fonts show up with lfItalic=255, but our code
+	looks up italic versions of fonts by passing a key LOGFONT with
+	lfItalic=1.
+	(first_match): Not needed any more, see below.
+	(ensure_italic): This is now called on the entries in the
+	size_infos hash table, not families. The code used to randomly
+	look for the first matching font in size_infoswith the family name
+	being handled.
+	(pango_win32_font_map_init): Iterate through the size_infos hash
+	table with ensure_italic, not through the families table.
+
+	* pango/pangowin32-fontcache.c
+	(logfont_hash, logfont_equal): Look at just nonzeroness of
+	lfItalic here, too.
+	
 2007-02-13  Owen Taylor  <otaylor@redhat.com>
 
 	* pango/pangowin32-fontmap.c (pango_win32_insert_font): If

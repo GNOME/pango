@@ -124,7 +124,7 @@ case_insensitive_equal (const char *key1,
 static guint
 logfont_nosize_hash (const LOGFONT *lfp)
 {
-  return case_insensitive_hash (lfp->lfFaceName) + lfp->lfItalic + lfp->lfWeight;
+  return case_insensitive_hash (lfp->lfFaceName) + (lfp->lfItalic != 0) + lfp->lfWeight;
 }
 
 /* Ditto comparison function */
@@ -133,7 +133,7 @@ logfont_nosize_equal (const LOGFONT *lfp1,
 		      const LOGFONT *lfp2)
 {
   return (case_insensitive_equal (lfp1->lfFaceName, lfp2->lfFaceName)
-	  && lfp1->lfItalic == lfp2->lfItalic
+	  && (lfp1->lfItalic != 0) == (lfp2->lfItalic != 0)
 	  && lfp1->lfWeight == lfp2->lfWeight);
 }
   
@@ -176,20 +176,6 @@ pango_win32_enum_proc (LOGFONT    *lfp,
   return 1;
 }
 
-static gboolean 
-first_match (gpointer key, 
-            gpointer value, 
-	    gpointer user_data)
-{
-  LOGFONT *lfp = (LOGFONT *)key;
-  LOGFONT *lfp2 = (LOGFONT *)((PangoWin32SizeInfo *)value)->logfonts->data;
-  gchar *name = (gchar *)user_data;
-  
-  if (strcmp (lfp->lfFaceName, name) == 0 && lfp->lfWeight == lfp2->lfWeight)
-    return TRUE;
-  return FALSE;
-}
-
 typedef struct _ItalicHelper
 {
   PangoWin32FontMap *fontmap;
@@ -202,30 +188,27 @@ ensure_italic (gpointer key,
                gpointer user_data)
 {
   ItalicHelper *helper = (ItalicHelper *)user_data;
-  /* PangoWin32Family *win32family = (PangoWin32Family *)value; */
+  PangoWin32SizeInfo *sip = (PangoWin32SizeInfo *) value;
+  GSList *list = sip->logfonts;
 
-  PangoWin32SizeInfo *sip = (PangoWin32SizeInfo *)g_hash_table_find (helper->fontmap->size_infos, first_match, key);
-  if (sip)
+  while (list)
     {
-      GSList *list = sip->logfonts;
-
-      while (list)
-        {
-	  LOGFONT *lfp = (LOGFONT *)list->data;
-          if (!lfp->lfItalic)
-            {
-	      /* we have a non italic variant, look if there is an italic */
-	      LOGFONT logfont = *lfp;
-	      logfont.lfItalic = 1;
-	      sip = (PangoWin32SizeInfo *)g_hash_table_find (helper->fontmap->size_infos, first_match, &logfont);
-	      if (!sip)
-	        {
-		  /* remember the non italic variant to be added later as italic */
-		  helper->list = g_slist_append (helper->list, lfp);
-		}
+      LOGFONT *lfp = (LOGFONT *)list->data;
+      PING(("%s it=%d wt=%ld", lfp->lfFaceName, lfp->lfItalic, lfp->lfWeight));
+      if (!lfp->lfItalic)
+	{
+	  /* we have a non italic variant, look if there is an italic */
+	  LOGFONT logfont = *lfp;
+	  logfont.lfItalic = 1;
+	  sip = (PangoWin32SizeInfo *)g_hash_table_lookup (helper->fontmap->size_infos, &logfont);
+	  if (!sip)
+	    {
+	      /* remember the non italic variant to be added later as italic */
+	      PING(("synthesizing italic"));
+	      helper->list = g_slist_append (helper->list, lfp);
 	    }
-	  list = list->next;
 	}
+      list = list->next;
     }
 }
 
@@ -253,7 +236,7 @@ pango_win32_font_map_init (PangoWin32FontMap *win32fontmap)
     ItalicHelper helper = { win32fontmap, NULL };
     GSList *list;
 
-    g_hash_table_foreach (win32fontmap->families, ensure_italic, &helper);
+    g_hash_table_foreach (win32fontmap->size_infos, ensure_italic, &helper);
     /* cant modify while iterating */
     list = helper.list;
     while (list)
