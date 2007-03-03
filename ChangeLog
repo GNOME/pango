@@ -1,3 +1,12 @@
+2007-03-03  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 414297 – Fails to build with --enable-static
+		--with-included-modules in thai lang module
+	Patch from Loïc Minier
+
+	* modules/thai/Makefile.am: Include LIBTHAI_LIBS in static module
+	too.
+
 2007-02-27  Behdad Esfahbod  <behdad@gnome.org>
 
 	Bug 412654 – SED variable undefined in the `libtool --config' output
