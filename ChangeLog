@@ -1,3 +1,12 @@
+2007-03-03  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 414297 – Fails to build with --enable-static
+		--with-included-modules in thai lang module
+	Patch from Loïc Minier
+
+	* modules/thai/Makefile.am: Include LIBTHAI_LIBS in static module
+	too.
+
 2007-02-26  Tor Lillqvist  <tml@novell.com>
 
 	* pango/pangowin32-fontmap.c: Fix brokenness in the code that
@@ -45,6 +54,7 @@
 	* Makefile.am (EXTRA_DIST): Include just pango-zip.sh.in in the
 	tarball, not pango-zip.sh.
 
+>>>>>>> .r2207
 2007-01-29  Behdad Esfahbod  <behdad@gnome.org>
 
 	* === Released 1.14.10 ===
