@@ -1,3 +1,22 @@
+2007-03-07  Tor Lillqvist  <tml@novell.com>
+
+	* configure.in
+	* modules/basic/Makefile.am
+	* modules/basic/basic-win32.c: Make building with Uniscribe (using
+	the <usp10.h> header) mandatory. Mingw's w32api headers do include
+	usp10.h now so one doesn't need to copy it from the Platform SDK
+	any longer. At runtime using Uniscribe is still optional,
+	depending on whether usp10.dll is found or not. I think it
+	isn't necessarily present on Windows 2000 machines, for instance.
+
+	* modules/basic/basic-win32.c (lang_name): Instead of a hardcoded
+	case statement, use GetLocaleInfo() to get the language ISO639
+	code.
+	(charset_name): Remove, unused.
+	(itemize_shape_and_place, uniscribe_shape, basic_engine_shape):
+	Constify the PangoAnalysis parameter to match the prototype of
+	PangoEngineShapeClass::script_shape().
+
 2007-03-03  Behdad Esfahbod  <behdad@gnome.org>
 
 	Bug 414297 – Fails to build with --enable-static

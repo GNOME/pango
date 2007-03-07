@@ -43,30 +43,7 @@ typedef PangoEngineShapeClass BasicEngineWin32Class ;
 
 static gboolean pango_win32_debug = FALSE;
 
-#ifdef HAVE_USP10_H
-
-#include "usp10.h"
-
-/* Some languages missing from mingw ("w32api") headers */
-
-#ifndef LANG_INVARIANT
-#define LANG_INVARIANT 0x7f
-#endif
-#ifndef LANG_DIVEHI
-#define LANG_DIVEHI 0x65
-#endif
-#ifndef LANG_GALICIAN
-#define LANG_GALICIAN 0x56
-#endif
-#ifndef LANG_KYRGYZ
-#define LANG_KYRGYZ 0x40
-#endif
-#ifndef LANG_MONGOLIAN
-#define LANG_MONGOLIAN 0x50
-#endif
-#ifndef LANG_SYRIAC
-#define LANG_SYRIAC 0x5a
-#endif
+#include <usp10.h>
 
 static gboolean have_uniscribe = FALSE;
 
@@ -122,14 +99,10 @@ static const SCRIPT_PROPERTIES **scripts;
 static int nscripts;
 #endif
 
-#endif
-
-#ifdef HAVE_USP10_H
 static PangoEngineScriptInfo uniscribe_scripts[] = {
   /* We claim to cover everything ;-) */
   { PANGO_SCRIPT_COMMON,  "" },
 };
-#endif
 
 static PangoEngineScriptInfo basic_scripts[] = {
   /* Those characters that can be rendered legibly without Uniscribe.
@@ -228,204 +201,28 @@ swap_range (PangoGlyphString *glyphs,
 
 #ifdef BASIC_WIN32_DEBUGGING
 
-#if 0
-
-static char *
-charset_name (int charset)
-{
-  static char unk[10];
-
-  switch (charset)
-    {
-#define CASE(n) case n##_CHARSET: return #n
-      CASE (ANSI);
-      CASE (DEFAULT);
-      CASE (SYMBOL);
-      CASE (SHIFTJIS);
-      CASE (HANGEUL);
-      CASE (GB2312);
-      CASE (CHINESEBIG5);
-      CASE (OEM);
-      CASE (JOHAB);
-      CASE (HEBREW);
-      CASE (ARABIC);
-      CASE (GREEK);
-      CASE (TURKISH);
-      CASE (VIETNAMESE);
-      CASE (THAI);
-      CASE (EASTEUROPE);
-      CASE (RUSSIAN);
-      CASE (MAC);
-      CASE (BALTIC);
-#undef CASE
-    default:
-      sprintf (unk, "%d", charset);
-      return unk;
-    }
-}
-
-#endif
-
 static char *
 lang_name (int lang)
 {
-  static char unk[10];
+  LCID lcid = MAKELCID (lang, SORT_DEFAULT);
+  wchar_t iso639[10];
+  static char retval[10];
+  gchar *utf8_lang;
 
-  switch (PRIMARYLANGID (lang))
+  if (!GetLocaleInfoW (lcid, LOCALE_SISO639LANGNAME, iso639, G_N_ELEMENTS (iso639)) ||
+      (utf8_lang = g_utf16_to_utf8 (iso639, -1, NULL, NULL, NULL)) == NULL ||
+      strlen (utf8_lang) >= sizeof (retval))
+    sprintf (retval, "%#02x", lang);
+  else
     {
-#define CASE(n) case LANG_##n: return #n
-      CASE (NEUTRAL);
-#ifdef LANG_INVARIANT
-      CASE (INVARIANT);
-#endif
-      CASE (AFRIKAANS);
-      CASE (ALBANIAN);
-      CASE (ARABIC);
-#ifdef LANG_ARMENIAN
-      CASE (ARMENIAN);
-#endif
-#ifdef LANG_ASSAMESE
-      CASE (ASSAMESE);
-#endif
-#ifdef LANG_AZERI
-      CASE (AZERI);
-#endif
-      CASE (BASQUE);
-      CASE (BELARUSIAN);
-#ifdef LANG_BENGALI
-      CASE (BENGALI);
-#endif
-      CASE (BULGARIAN);
-      CASE (CATALAN);
-      CASE (CHINESE);
-      CASE (CROATIAN);
-      CASE (CZECH);
-      CASE (DANISH);
-#ifdef LANG_DIVEHI
-      CASE (DIVEHI);
-#endif
-      CASE (DUTCH);
-      CASE (ENGLISH);
-      CASE (ESTONIAN);
-      CASE (FAEROESE);
-      CASE (FARSI);
-      CASE (FINNISH);
-      CASE (FRENCH);
-#ifdef LANG_GALICIAN
-      CASE (GALICIAN);
-#endif
-#ifdef LANG_GEORGIAN
-      CASE (GEORGIAN);
-#endif
-      CASE (GERMAN);
-      CASE (GREEK);
-#ifdef LANG_GUJARATI
-      CASE (GUJARATI);
-#endif
-      CASE (HEBREW);
-#ifdef LANG_HINDI
-      CASE (HINDI);
-#endif
-      CASE (HUNGARIAN);
-      CASE (ICELANDIC);
-      CASE (INDONESIAN);
-      CASE (ITALIAN);
-      CASE (JAPANESE);
-#ifdef LANG_KANNADA
-      CASE (KANNADA);
-#endif
-#ifdef LANG_KASHMIRI
-      CASE (KASHMIRI);
-#endif
-#ifdef LANG_KAZAK
-      CASE (KAZAK);
-#endif
-#ifdef LANG_KONKANI
-      CASE (KONKANI);
-#endif
-      CASE (KOREAN);
-#ifdef LANG_KYRGYZ
-      CASE (KYRGYZ);
-#endif
-      CASE (LATVIAN);
-      CASE (LITHUANIAN);
-#ifdef LANG_MACEDONIAN
-      CASE (MACEDONIAN);
-#endif
-#ifdef LANG_MALAY
-      CASE (MALAY);
-#endif
-#ifdef LANG_MALAYALAM
-      CASE (MALAYALAM);
-#endif
-#ifdef LANG_MANIPURI
-      CASE (MANIPURI);
-#endif
-#ifdef LANG_MARATHI
-      CASE (MARATHI);
-#endif
-#ifdef LANG_MONGOLIAN
-      CASE (MONGOLIAN);
-#endif
-#ifdef LANG_NEPALI
-      CASE (NEPALI);
-#endif
-      CASE (NORWEGIAN);
-#ifdef LANG_ORIYA
-      CASE (ORIYA);
-#endif
-      CASE (POLISH);
-      CASE (PORTUGUESE);
-#ifdef LANG_PUNJABI
-      CASE (PUNJABI);
-#endif
-      CASE (ROMANIAN);
-      CASE (RUSSIAN);
-#ifdef LANG_SANSKRIT
-      CASE (SANSKRIT);
-#endif
-#ifdef LANG_SINDHI
-      CASE (SINDHI);
-#endif
-      CASE (SLOVAK);
-      CASE (SLOVENIAN);
-      CASE (SPANISH);
-#ifdef LANG_SWAHILI
-      CASE (SWAHILI);
-#endif
-      CASE (SWEDISH);
-#ifdef LANG_SYRIAC
-      CASE (SYRIAC);
-#endif
-#ifdef LANG_TAMIL
-      CASE (TAMIL);
-#endif
-#ifdef LANG_TATAR
-      CASE (TATAR);
-#endif
-#ifdef LANG_TELUGU
-      CASE (TELUGU);
-#endif
-      CASE (THAI);
-      CASE (TURKISH);
-      CASE (UKRAINIAN);
-#ifdef LANG_URDU
-      CASE (URDU);
-#endif
-#ifdef LANG_UZBEK
-      CASE (UZBEK);
-#endif
-      CASE (VIETNAMESE);
-#undef CASE
-    default:
-      sprintf (unk, "%#02x", lang);
-      return unk;
+      strcpy (retval, utf8_lang);
+      g_free (utf8_lang);
     }
+
+  return retval;
 }
 
 #endif /* BASIC_WIN32_DEBUGGING */
-
-#ifdef HAVE_USP10_H
 
 static WORD
 make_langid (PangoLanguage *lang)
@@ -704,13 +501,13 @@ convert_log_clusters_to_byte_offsets (const char       *text,
 }
 
 static gboolean
-itemize_shape_and_place (PangoFont        *font,
-			 HDC               hdc,
-			 wchar_t          *wtext,
-			 int               wlen,
-			 PangoAnalysis    *analysis,
-			 PangoGlyphString *glyphs,
-			 SCRIPT_CACHE     *script_cache)
+itemize_shape_and_place (PangoFont           *font,
+			 HDC                  hdc,
+			 wchar_t             *wtext,
+			 int                  wlen,
+			 const PangoAnalysis *analysis,
+			 PangoGlyphString    *glyphs,
+			 SCRIPT_CACHE        *script_cache)
 {
   int i;
   int item, nitems, item_step;
@@ -877,11 +674,11 @@ itemize_shape_and_place (PangoFont        *font,
 }
 
 static gboolean
-uniscribe_shape (PangoFont        *font,
-		 const char       *text,
-		 gint              length,
-		 PangoAnalysis    *analysis,
-		 PangoGlyphString *glyphs)
+uniscribe_shape (PangoFont           *font,
+		 const char          *text,
+		 gint                 length,
+		 const PangoAnalysis *analysis,
+		 PangoGlyphString    *glyphs)
 {
   wchar_t *wtext;
   long wlen;
@@ -953,15 +750,13 @@ text_is_simple (const char *text,
   return retval;
 }
 
-#endif /* HAVE_USP10_H */
-
 static void
-basic_engine_shape (PangoEngineShape *engine,
-		    PangoFont        *font,
-		    const char       *text,
-		    gint              length,
-		    PangoAnalysis    *analysis,
-		    PangoGlyphString *glyphs)
+basic_engine_shape (PangoEngineShape 	*engine,
+		    PangoFont        	*font,
+		    const char       	*text,
+		    int              	 length,
+		    const PangoAnalysis *analysis,
+		    PangoGlyphString    *glyphs)
 {
   int n_chars;
   int i;
@@ -972,14 +767,10 @@ basic_engine_shape (PangoEngineShape *engine,
   g_return_if_fail (length >= 0);
   g_return_if_fail (analysis != NULL);
 
-#ifdef HAVE_USP10_H
-
   if (have_uniscribe &&
       !text_is_simple (text, length) &&
       uniscribe_shape (font, text, length, analysis, glyphs))
     return;
-
-#endif
 
   n_chars = g_utf8_strlen (text, length);
 
@@ -1066,7 +857,6 @@ basic_engine_shape (PangoEngineShape *engine,
 static void
 init_uniscribe (void)
 {
-#ifdef HAVE_USP10_H
   HMODULE usp10_dll;
 
   have_uniscribe = FALSE;
@@ -1094,7 +884,6 @@ init_uniscribe (void)
 #endif
       hdc = pango_win32_get_dc ();
     }
-#endif
 }
 
 static void
@@ -1131,7 +920,6 @@ PANGO_MODULE_ENTRY(list) (PangoEngineInfo **engines,
   script_engines[0].scripts = basic_scripts;
   script_engines[0].n_scripts = G_N_ELEMENTS (basic_scripts);
 
-#ifdef HAVE_USP10_H
   if (have_uniscribe)
     {
 #if 0
@@ -1154,7 +942,6 @@ PANGO_MODULE_ENTRY(list) (PangoEngineInfo **engines,
       script_engines[0].n_scripts = G_N_ELEMENTS (uniscribe_scripts);
 #endif
     }
-#endif
 
   *engines = script_engines;
   *n_engines = G_N_ELEMENTS (script_engines);
