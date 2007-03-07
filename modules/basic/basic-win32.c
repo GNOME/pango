@@ -205,19 +205,10 @@ static char *
 lang_name (int lang)
 {
   LCID lcid = MAKELCID (lang, SORT_DEFAULT);
-  wchar_t iso639[10];
   static char retval[10];
-  gchar *utf8_lang;
 
-  if (!GetLocaleInfoW (lcid, LOCALE_SISO639LANGNAME, iso639, G_N_ELEMENTS (iso639)) ||
-      (utf8_lang = g_utf16_to_utf8 (iso639, -1, NULL, NULL, NULL)) == NULL ||
-      strlen (utf8_lang) >= sizeof (retval))
+  if (!GetLocaleInfo (lcid, LOCALE_SISO639LANGNAME, retval, G_N_ELEMENTS (retval)))
     sprintf (retval, "%#02x", lang);
-  else
-    {
-      strcpy (retval, utf8_lang);
-      g_free (utf8_lang);
-    }
 
   return retval;
 }
