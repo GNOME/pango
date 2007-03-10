@@ -12,9 +12,9 @@ multiple options for rendering with each.
    Rendering can be with with Cairo or Xft libraries, or directly
    to an in-memory buffer with no additional libraries.
 
- - Native fonts on Microsoft Windows. (Optionally using Uniscribe
-   for complex-text handling). Rendering can be done via Cairo 
-   or directly using the native Win32 API.
+ - Native fonts on Microsoft Windows using Uniscribe for complex script
+   handling. Rendering can be done via Cairo or directly using the
+   native Win32 API.
 
   - Native fonts on MacOS X, rendering via Cairo.
 
