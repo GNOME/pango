@@ -493,7 +493,7 @@ _pango_cairo_win32_font_new (PangoCairoWin32FontMap     *cwfontmap,
 	{
 	  g_object_ref (win32font);
 	  if (win32font->in_cache)
-	    pango_win32_fontmap_cache_remove (PANGO_FONT_MAP (win32fontmap), win32font);
+	    _pango_win32_fontmap_cache_remove (PANGO_FONT_MAP (win32fontmap), win32font);
 
 	  return PANGO_FONT (win32font);
 	}
@@ -531,10 +531,10 @@ _pango_cairo_win32_font_new (PangoCairoWin32FontMap     *cwfontmap,
   else
     cairo_matrix_init_identity (&cwfont->ctm);
 
-  pango_win32_make_matching_logfontw (win32font->fontmap,
-				      &face->logfontw,
-				      win32font->size,
-				      &win32font->logfontw);
+  _pango_win32_make_matching_logfontw (win32font->fontmap,
+				       &face->logfontw,
+				       win32font->size,
+				       &win32font->logfontw);
 
   cwfont->options = cairo_font_options_copy (_pango_cairo_context_get_merged_font_options (context));
 

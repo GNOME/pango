@@ -1,3 +1,20 @@
+2007-03-10  Tor Lillqvist  <tml@novell.com>
+
+	* pango/pangowin32-private.h
+	* pango/pangowin32.c
+	* pango/pangowin32-fontcache.c
+	* pango/pangowin32-fontmap.c
+	* pango/pangocairo-win32font.c
+	* pango/pangowin32.def: Move functions defined in one file and
+	used in another to the file where used, make them static, and drop
+	from pangowin32-private.h. Prefix all private non-static functions
+	with underscore. Also functions used only by the pangocairo DLL
+	are considered private. (#120195)
+
+2007-03-10  Tor Lillqvist  <tml@novell.com>
+
+	* README: Uniscribe is optional only at run-time.
+
 2007-03-07  Tor Lillqvist  <tml@novell.com>
 
 	* configure.in

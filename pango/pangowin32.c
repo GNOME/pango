@@ -32,14 +32,16 @@
 #include "pangowin32.h"
 #include "pangowin32-private.h"
 
+#define MAX_FREED_FONTS 16
+
 #define CH_IS_UNIHAN_BMP(ch) ((ch) >= 0x3400 && (ch) <= 0x9FFF)
 #define CH_IS_UNIHAN(ch) (CH_IS_UNIHAN_BMP (ch) || \
 			  ((ch) >= 0x20000 && (ch) <= 0x2A6DF) ||	\
 			  ((ch) >= 0x2F800 && (ch) <= 0x2FA1F))
 
-HDC pango_win32_hdc;
-OSVERSIONINFO pango_win32_os_version_info;
-gboolean pango_win32_debug = FALSE;
+HDC _pango_win32_hdc;
+OSVERSIONINFO _pango_win32_os_version_info;
+gboolean _pango_win32_debug = FALSE;
 
 static void pango_win32_font_dispose    (GObject             *object);
 static void pango_win32_font_finalize   (GObject             *object);
@@ -104,8 +106,8 @@ pango_win32_get_hfont (PangoFont *font)
 	  return NULL;
 	}
 
-      SelectObject (pango_win32_hdc, win32font->hfont);
-      GetTextMetrics (pango_win32_hdc, &tm);
+      SelectObject (_pango_win32_hdc, win32font->hfont);
+      GetTextMetrics (_pango_win32_hdc, &tm);
 
       win32font->tm_overhang = tm.tmOverhang;
       win32font->tm_descent = tm.tmDescent;
@@ -133,10 +135,10 @@ pango_win32_get_context (void)
   return result;
 }
 
-G_DEFINE_TYPE (PangoWin32Font, pango_win32_font, PANGO_TYPE_FONT)
+G_DEFINE_TYPE (PangoWin32Font, _pango_win32_font, PANGO_TYPE_FONT)
 
 static void
-pango_win32_font_init (PangoWin32Font *win32font)
+_pango_win32_font_init (PangoWin32Font *win32font)
 {
   win32font->size = -1;
 
@@ -155,14 +157,14 @@ pango_win32_font_init (PangoWin32Font *win32font)
 HDC
 pango_win32_get_dc (void)
 {
-  if (pango_win32_hdc == NULL)
+  if (_pango_win32_hdc == NULL)
     {
-      pango_win32_hdc = CreateDC ("DISPLAY", NULL, NULL, NULL);
-      memset (&pango_win32_os_version_info, 0,
-	      sizeof (pango_win32_os_version_info));
-      pango_win32_os_version_info.dwOSVersionInfoSize =
+      _pango_win32_hdc = CreateDC ("DISPLAY", NULL, NULL, NULL);
+      memset (&_pango_win32_os_version_info, 0,
+	      sizeof (_pango_win32_os_version_info));
+      _pango_win32_os_version_info.dwOSVersionInfoSize =
 	sizeof (OSVERSIONINFO);
-      GetVersionEx (&pango_win32_os_version_info);
+      GetVersionEx (&_pango_win32_os_version_info);
 
       /* Also do some generic pangowin32 initialisations... this function
        * is a suitable place for those as it is called from a couple
@@ -170,11 +172,11 @@ pango_win32_get_dc (void)
        */
 #ifdef PANGO_WIN32_DEBUGGING
       if (getenv ("PANGO_WIN32_DEBUG") != NULL)
-	pango_win32_debug = TRUE;
+	_pango_win32_debug = TRUE;
 #endif
     }
 
-  return pango_win32_hdc;
+  return _pango_win32_hdc;
 }
 
 /**
@@ -189,11 +191,11 @@ pango_win32_get_dc (void)
 gboolean
 pango_win32_get_debug_flag (void)
 {
-  return pango_win32_debug;
+  return _pango_win32_debug;
 }
 
 static void
-pango_win32_font_class_init (PangoWin32FontClass *class)
+_pango_win32_font_class_init (PangoWin32FontClass *class)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (class);
   PangoFontClass *font_class = PANGO_FONT_CLASS (class);
@@ -214,27 +216,6 @@ pango_win32_font_class_init (PangoWin32FontClass *class)
   class->get_metrics_factor = pango_win32_font_real_get_metrics_factor;
 
   pango_win32_get_dc ();
-}
-
-PangoWin32Font *
-pango_win32_font_neww (PangoFontMap   *fontmap,
-		       const LOGFONTW *lfp,
-		       int	      size)
-{
-  PangoWin32Font *result;
-
-  g_return_val_if_fail (fontmap != NULL, NULL);
-  g_return_val_if_fail (lfp != NULL, NULL);
-
-  result = (PangoWin32Font *)g_object_new (PANGO_TYPE_WIN32_FONT, NULL);
-
-  result->fontmap = fontmap;
-  g_object_ref (fontmap);
-
-  result->size = size;
-  pango_win32_make_matching_logfontw (fontmap, lfp, size, &result->logfontw);
-
-  return result;
 }
 
 /**
@@ -264,7 +245,7 @@ pango_win32_render (HDC               hdc,
   g_return_if_fail (glyphs != NULL);
 
 #ifdef PANGO_WIN32_DEBUGGING
-  if (pango_win32_debug)
+  if (_pango_win32_debug)
     {
       PING (("num_glyphs:%d", glyphs->num_glyphs));
       for (i = 0; i < glyphs->num_glyphs; i++)
@@ -372,7 +353,7 @@ pango_win32_render (HDC               hdc,
 	  i++;
 	}
 #ifdef PANGO_WIN32_DEBUGGING
-      if (pango_win32_debug)
+      if (_pango_win32_debug)
 	{
 	  g_print ("ExtTextOutW at %d,%d deltas:",
 		   x + PANGO_PIXELS (start_x_offset),
@@ -487,10 +468,10 @@ pango_win32_font_get_glyph_extents (PangoFont      *font,
       memset (&gm, 0, sizeof (gm));
 
       hfont = pango_win32_get_hfont (font);
-      SelectObject (pango_win32_hdc, hfont);
-      /* FIXME: (Alex) This constant reuse of pango_win32_hdc is
+      SelectObject (_pango_win32_hdc, hfont);
+      /* FIXME: (Alex) This constant reuse of _pango_win32_hdc is
 	 not thread-safe */
-      res = GetGlyphOutlineA (pango_win32_hdc,
+      res = GetGlyphOutlineA (_pango_win32_hdc,
 			      glyph_index,
 			      GGO_METRICS | GGO_GLYPH_INDEX,
 			      &gm,
@@ -589,8 +570,8 @@ pango_win32_font_get_metrics (PangoFont     *font,
 	  PangoCoverage *coverage;
 	  TEXTMETRIC tm;
 
-	  SelectObject (pango_win32_hdc, hfont);
-	  GetTextMetrics (pango_win32_hdc, &tm);
+	  SelectObject (_pango_win32_hdc, hfont);
+	  GetTextMetrics (_pango_win32_hdc, &tm);
 
 	  metrics->ascent = tm.tmAscent * PANGO_SCALE;
 	  metrics->descent = tm.tmDescent * PANGO_SCALE;
@@ -794,6 +775,23 @@ pango_win32_font_get_metrics_factor (PangoFont *font)
 }
 
 static void
+pango_win32_fontmap_cache_add (PangoFontMap   *fontmap,
+			       PangoWin32Font *win32font)
+{
+  PangoWin32FontMap *win32fontmap = PANGO_WIN32_FONT_MAP (fontmap);
+
+  if (win32fontmap->freed_fonts->length == MAX_FREED_FONTS)
+    {
+      PangoWin32Font *old_font = g_queue_pop_tail (win32fontmap->freed_fonts);
+      g_object_unref (old_font);
+    }
+
+  g_object_ref (win32font);
+  g_queue_push_head (win32fontmap->freed_fonts, win32font);
+  win32font->in_cache = TRUE;
+}
+
+static void
 pango_win32_font_dispose (GObject *object)
 {
   PangoWin32Font *win32font = PANGO_WIN32_FONT (object);
@@ -805,7 +803,7 @@ pango_win32_font_dispose (GObject *object)
   if (!win32font->in_cache && win32font->fontmap)
     pango_win32_fontmap_cache_add (win32font->fontmap, win32font);
 
-  G_OBJECT_CLASS (pango_win32_font_parent_class)->dispose (object);
+  G_OBJECT_CLASS (_pango_win32_font_parent_class)->dispose (object);
 }
 
 static void
@@ -813,6 +811,13 @@ free_metrics_info (PangoWin32MetricsInfo *info)
 {
   pango_font_metrics_unref (info->metrics);
   g_free (info);
+}
+
+static void
+pango_win32_font_entry_remove (PangoWin32Face *face,
+			       PangoFont      *font)
+{
+  face->cached_fonts = g_slist_remove (face->cached_fonts, font);
 }
 
 static void
@@ -834,7 +839,7 @@ pango_win32_font_finalize (GObject *object)
 
   g_object_unref (win32font->fontmap);
 
-  G_OBJECT_CLASS (pango_win32_font_parent_class)->finalize (object);
+  G_OBJECT_CLASS (_pango_win32_font_parent_class)->finalize (object);
 }
 
 static PangoFontDescription *
@@ -861,7 +866,7 @@ pango_win32_font_describe_absolute (PangoFont *font)
   return desc;
 }
 
-PangoMap *
+static PangoMap *
 pango_win32_get_shaper_map (PangoLanguage *lang)
 {
   static guint engine_type_id = 0;
@@ -874,6 +879,45 @@ pango_win32_get_shaper_map (PangoLanguage *lang)
     }
 
   return pango_find_map (lang, engine_type_id, render_type_id);
+}
+
+static gint
+pango_win32_coverage_language_classify (PangoLanguage *lang)
+{
+  if (pango_language_matches (lang, "zh-tw"))
+    return PANGO_WIN32_COVERAGE_ZH_TW;
+  else if (pango_language_matches (lang, "zh-cn"))
+    return PANGO_WIN32_COVERAGE_ZH_CN;
+  else if (pango_language_matches (lang, "ja"))
+    return PANGO_WIN32_COVERAGE_JA;
+  else if (pango_language_matches (lang, "ko"))
+    return PANGO_WIN32_COVERAGE_KO;
+  else if (pango_language_matches (lang, "vi"))
+    return PANGO_WIN32_COVERAGE_VI;
+  else
+    return PANGO_WIN32_COVERAGE_UNSPEC;
+}
+
+static PangoCoverage *
+pango_win32_font_entry_get_coverage (PangoWin32Face *face,
+				     PangoLanguage  *lang)
+{
+  gint i = pango_win32_coverage_language_classify (lang);
+  if (face->coverages[i])
+    {
+      pango_coverage_ref (face->coverages[i]);
+      return face->coverages[i];
+    }
+
+  return NULL;
+}
+
+static void
+pango_win32_font_entry_set_coverage (PangoWin32Face *face,
+				     PangoCoverage  *coverage,
+				     PangoLanguage  *lang)
+{
+  face->coverages[pango_win32_coverage_language_classify (lang)] = pango_coverage_ref (coverage);
 }
 
 static PangoCoverage *
@@ -1400,15 +1444,15 @@ font_get_cmap (PangoFont *font)
   if (win32font->win32face->cmap)
     return win32font->win32face->cmap;
 
-  pango_win32_font_select_font (font, pango_win32_hdc);
+  pango_win32_font_select_font (font, _pango_win32_hdc);
 
   /* Prefer the format 12 cmap */
-  if ((cmap = get_format_12_cmap (pango_win32_hdc)) != NULL)
+  if ((cmap = get_format_12_cmap (_pango_win32_hdc)) != NULL)
     {
       win32font->win32face->cmap_format = 12;
       win32font->win32face->cmap = cmap;
     }
-  else if ((cmap = get_format_4_cmap (pango_win32_hdc)) != NULL)
+  else if ((cmap = get_format_4_cmap (_pango_win32_hdc)) != NULL)
     {
       win32font->win32face->cmap_format = 4;
       win32font->win32face->cmap = cmap;
@@ -1498,8 +1542,8 @@ pango_win32_font_get_glyph_index (PangoFont *font,
 }
 
 gboolean
-pango_win32_get_name_header (HDC                 hdc,
-			     struct name_header *header)
+_pango_win32_get_name_header (HDC                 hdc,
+			      struct name_header *header)
 {
   if (GetFontData (hdc, NAME, 0, header, sizeof (*header)) != sizeof (*header))
     return FALSE;
@@ -1511,9 +1555,9 @@ pango_win32_get_name_header (HDC                 hdc,
 }
 
 gboolean
-pango_win32_get_name_record (HDC                 hdc,
-			     gint                i,
-			     struct name_record *record)
+_pango_win32_get_name_record (HDC                 hdc,
+			      gint                i,
+			      struct name_record *record)
 {
   if (GetFontData (hdc, NAME, 6 + i * sizeof (*record),
 		   record, sizeof (*record)) != sizeof (*record))
@@ -1543,19 +1587,19 @@ font_has_name_in (PangoFont                       *font,
     return TRUE;
 
   hfont = pango_win32_get_hfont (font);
-  oldhfont = SelectObject (pango_win32_hdc, hfont);
+  oldhfont = SelectObject (_pango_win32_hdc, hfont);
 
-  if (!pango_win32_get_name_header (pango_win32_hdc, &header))
+  if (!_pango_win32_get_name_header (_pango_win32_hdc, &header))
     {
-      SelectObject (pango_win32_hdc, oldhfont);
+      SelectObject (_pango_win32_hdc, oldhfont);
       return FALSE;
     }
 
   for (i = 0; i < header.num_records; i++)
     {
-      if (!pango_win32_get_name_record (pango_win32_hdc, i, &record))
+      if (!_pango_win32_get_name_record (_pango_win32_hdc, i, &record))
 	{
-	  SelectObject (pango_win32_hdc, oldhfont);
+	  SelectObject (_pango_win32_hdc, oldhfont);
 	  return FALSE;
 	}
 
@@ -1587,7 +1631,7 @@ font_has_name_in (PangoFont                       *font,
 	  }
     }
 
-  SelectObject (pango_win32_hdc, oldhfont);
+  SelectObject (_pango_win32_hdc, oldhfont);
   return retval;
 }
 
@@ -1643,7 +1687,7 @@ pango_win32_font_calc_coverage (PangoFont     *font,
 	  if (id_range_offset[i] == 0)
 	    {
 #ifdef PANGO_WIN32_DEBUGGING
-	      if (pango_win32_debug)
+	      if (_pango_win32_debug)
 		{
 		  if (end_count[i] == start_count[i])
 		    g_print ("%04x ", start_count[i]);
@@ -1684,7 +1728,7 @@ pango_win32_font_calc_coverage (PangoFont     *font,
 #ifdef PANGO_WIN32_DEBUGGING
 		  else if (ch0 < G_MAXUINT)
 		    {
-		      if (pango_win32_debug)
+		      if (_pango_win32_debug)
 			{
 			  if (ch > ch0 + 2)
 			    g_print ("%04x:%04x ", ch0, ch - 1);
@@ -1698,7 +1742,7 @@ pango_win32_font_calc_coverage (PangoFont     *font,
 #ifdef PANGO_WIN32_DEBUGGING
 	      if (ch0 < G_MAXUINT)
 		{
-		  if (pango_win32_debug)
+		  if (_pango_win32_debug)
 		    {
 		      if (ch > ch0 + 2)
 			g_print ("%04x:%04x ", ch0, ch - 1);
@@ -1717,7 +1761,7 @@ pango_win32_font_calc_coverage (PangoFont     *font,
       for (i = 0; i < cmap12->count; i++)
 	{
 #ifdef PANGO_WIN32_DEBUGGING
-	  if (pango_win32_debug)
+	  if (_pango_win32_debug)
 	    {
 	      if (cmap12->groups[i*3+0] == cmap12->groups[i*3+1])
 		g_print ("%04x ", cmap12->groups[i*3+0]);
@@ -1737,7 +1781,7 @@ pango_win32_font_calc_coverage (PangoFont     *font,
   else
     g_assert_not_reached ();
 #ifdef PANGO_WIN32_DEBUGGING
-  if (pango_win32_debug)
+  if (_pango_win32_debug)
     g_print ("\n");
 #endif
 }

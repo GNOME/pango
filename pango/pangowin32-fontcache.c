@@ -245,9 +245,9 @@ pango_win32_font_cache_loadw (PangoWin32FontCache *cache,
        * settings ask for it.
        */
       if (font_smoothing &&
-	  (pango_win32_os_version_info.dwMajorVersion > 5 ||
-	   (pango_win32_os_version_info.dwMajorVersion == 5 &&
-	    pango_win32_os_version_info.dwMinorVersion >= 1)))
+	  (_pango_win32_os_version_info.dwMajorVersion > 5 ||
+	   (_pango_win32_os_version_info.dwMajorVersion == 5 &&
+	    _pango_win32_os_version_info.dwMinorVersion >= 1)))
 	{
 	  UINT smoothing_type;
 
