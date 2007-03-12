@@ -1,5 +1,12 @@
 2007-03-12  Behdad Esfahbod  <behdad@gnome.org>
 
+	* docs/pango-sections.txt:
+	* pango/pangowin32-fontmap.c:
+	* pango/pangowin32.c:
+	Add new symbols to docs.
+
+2007-03-12  Behdad Esfahbod  <behdad@gnome.org>
+
 	* === Released 1.16.1 ===
 
 	* configure.in: Version 1.16.1

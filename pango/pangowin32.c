@@ -698,7 +698,7 @@ pango_win32_font_logfont (PangoFont *font)
  * Return value: A newly allocated LOGFONTW struct. It must be
  * freed with g_free().
  *
- *Since: 1.16
+ * Since: 1.16
  **/
 LOGFONTW *
 pango_win32_font_logfontw (PangoFont *font)
