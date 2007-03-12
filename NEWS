@@ -1,3 +1,23 @@
+Overview of changes between 1.16.0 and 1.16.1
+==============================================
+- Improved Win32 backend: The Win32 backend has been
+  updated to always require Uniscribe at compile-time (it still
+  is optional at run-time), and to use the wide-character variants
+  of Windows APIs which improves the backend in many ways.  The
+  1.16.0 release is obsolete as far as the Win32 backend is
+  concerned, and official DLLs were not built for it.
+- Misc build system fixes
+- Bugs fixed in this release:
+	Bug 110521 – can't find bold and/or italic fonts on win32
+	Bug 120195 – there are some functions in pangowin32-fontmap.c that
+		might maybe should be static
+	Bug 407315 – Use wide character Win32 API in the pangowin32 code
+	Bug 412654 – SED variable undefined in the `libtool --config' output
+		used by configure
+	Bug 414297 – Fails to build with --enable-static
+		--with-included-modules in thai lang module
+		Patch from Loïc Minier
+
 Overview of changes between 1.15.6 and 1.16.0
 ==============================================
 - Improved docs, with an object hierarchy and cross references to glib and

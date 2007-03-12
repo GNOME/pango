@@ -1,3 +1,13 @@
+2007-03-12  Behdad Esfahbod  <behdad@gnome.org>
+
+	* === Released 1.16.1 ===
+
+	* configure.in: Version 1.16.1
+
+	* NEWS: Updated.
+
+	* README: Updated.
+
 2007-03-10  Tor Lillqvist  <tml@novell.com>
 
 	* pango/pangowin32-private.h
