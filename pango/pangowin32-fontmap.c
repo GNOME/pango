@@ -63,6 +63,8 @@ struct _PangoWin32SizeInfo
 
 static GType      pango_win32_face_get_type          (void);
 
+static GType      pango_win32_family_get_type        (void);
+
 static void       pango_win32_face_list_sizes        (PangoFontFace  *face,
 						      int           **sizes,
 						      int            *n_sizes);
@@ -737,7 +739,7 @@ get_family_nameA (const LOGFONTA *lfp)
  * Return value: the newly allocated #PangoFontDescription, which
  *  should be freed using pango_font_description_free()
  *
- * Since: 1.16
+ * Since: 1.12
  */
 PangoFontDescription *
 pango_win32_font_description_from_logfont (const LOGFONT *lfp)

@@ -1,3 +1,8 @@
+2007-03-14  Tor Lillqvist  <tml@novell.com>
+
+	* pango/pangowin32-fontmap.c: Add missing declaration of
+	pango_win32_family_get_type(). (#417946, Ivan Wong)
+
 2007-03-12  Behdad Esfahbod  <behdad@gnome.org>
 
 	* docs/pango-sections.txt:
