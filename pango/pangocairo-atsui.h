@@ -48,7 +48,7 @@ GType pango_cairo_atsui_font_map_get_type (void);
 PangoATSUIFont *
 _pango_cairo_atsui_font_new (PangoCairoATSUIFontMap     *cafontmap,
 			     PangoContext               *context,
-			     const char                 *postscript_name,
+			     PangoATSUIFace             *face,
 			     const PangoFontDescription *desc);
 
 G_END_DECLS

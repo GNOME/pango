@@ -2,7 +2,7 @@
  * pangocairo-atsuifont.c
  *
  * Copyright (C) 2000-2005 Red Hat Software
- * Copyright (C) 2005 Imendio AB
+ * Copyright (C) 2005-2007 Imendio AB
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -263,9 +263,10 @@ pango_cairo_atsui_font_init (PangoCairoATSUIFont *cafont)
 PangoATSUIFont *
 _pango_cairo_atsui_font_new (PangoCairoATSUIFontMap     *cafontmap,
 			     PangoContext               *context,
-			     const char                 *postscript_name,
+			     PangoATSUIFace             *face,
 			     const PangoFontDescription *desc)
 {
+  const char *postscript_name;
   PangoCairoATSUIFont *cafont;
   PangoATSUIFont *afont;
   CFStringRef cfstr;
@@ -273,6 +274,7 @@ _pango_cairo_atsui_font_new (PangoCairoATSUIFontMap     *cafontmap,
   const PangoMatrix *pango_ctm;
   ATSUFontID font_id;
 
+  postscript_name = _pango_atsui_face_get_postscript_name (face);
   cfstr = CFStringCreateWithCString (NULL, postscript_name,
 				     kCFStringEncodingUTF8);
 
@@ -288,7 +290,7 @@ _pango_cairo_atsui_font_new (PangoCairoATSUIFontMap     *cafontmap,
   afont = PANGO_ATSUI_FONT (cafont);
 
   afont->desc = pango_font_description_copy (desc);
-  afont->postscript_name = g_strdup (postscript_name);
+  afont->face = face;
 
   cafont->size = (double) pango_font_description_get_size (desc) / PANGO_SCALE;
   cafont->font_id = font_id;

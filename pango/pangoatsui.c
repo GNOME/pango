@@ -1,7 +1,7 @@
 /* Pango
  * pangatsui.c
  *
- * Copyright (C) 2005 Imendio AB
+ * Copyright (C) 2005-2007 Imendio AB
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -30,7 +30,6 @@ pango_atsui_font_finalize (GObject *object)
 {
   PangoATSUIFont *font = (PangoATSUIFont *)object;
 
-  g_free (font->postscript_name);
   pango_font_description_free (font->desc);
 
   g_object_unref (font->fontmap);
@@ -50,18 +49,8 @@ static PangoCoverage *
 pango_atsui_font_get_coverage (PangoFont     *font,
 	                       PangoLanguage *language)
 {
-  PangoCoverage *coverage;
-  int i;
-
-  /* FIXME: Currently we say that all fonts have the
-   * 255 first glyphs. This is not true.
-   */
-  coverage = pango_coverage_new ();
-
-  for (i = 0; i < 256; i++)
-    pango_coverage_set (coverage, i, PANGO_COVERAGE_EXACT);
-
-  return coverage;
+  return pango_coverage_ref (_pango_atsui_face_get_coverage (PANGO_ATSUI_FONT (font)->face,
+							     language));
 }
 
 static PangoEngineShape *

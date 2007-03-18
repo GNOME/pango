@@ -2,7 +2,7 @@
  * pangoatsui-private.h:
  *
  * Copyright (C) 2003 Red Hat Software
- * Copyright (C) 2005 Imendio AB
+ * Copyright (C) 2005-2007 Imendio AB
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -44,6 +44,9 @@ G_BEGIN_DECLS
 
 #define PANGO_RENDER_TYPE_ATSUI "PangoRenderATSUI"
 
+typedef struct _PangoATSUIFamily       PangoATSUIFamily;
+typedef struct _PangoATSUIFace         PangoATSUIFace;
+
 typedef struct _PangoATSUIFontMap      PangoATSUIFontMap;
 typedef struct _PangoATSUIFontMapClass PangoATSUIFontMapClass;
 typedef struct _PangoATSUIFont         PangoATSUIFont;
@@ -74,17 +77,17 @@ struct _PangoATSUIFontMapClass
 				      gconstpointer               key_a,
 				      gconstpointer               key_b);
 
-  PangoATSUIFont * (* create_font) (PangoATSUIFontMap          *fontmap,
-				    PangoContext               *context,
-				    const char                 *postscript_name,
-				    const PangoFontDescription *desc);
+  PangoATSUIFont * (* create_font)   (PangoATSUIFontMap          *fontmap,
+				      PangoContext               *context,
+				      PangoATSUIFace             *face,
+				      const PangoFontDescription *desc);
 };
 
 struct _PangoATSUIFont
 {
   PangoFont parent_instance;
 
-  char *postscript_name;
+  PangoATSUIFace *face;
   PangoFontDescription *desc;
   PangoMatrix matrix;
   gpointer context_key;
@@ -99,6 +102,10 @@ struct _PangoATSUIFontClass
 
 GType pango_atsui_font_map_get_type (void);
 GType pango_atsui_font_get_type (void);
+
+const char *   _pango_atsui_face_get_postscript_name (PangoATSUIFace *face);
+PangoCoverage *_pango_atsui_face_get_coverage        (PangoATSUIFace *face,
+						      PangoLanguage  *language);
 
 G_END_DECLS
 

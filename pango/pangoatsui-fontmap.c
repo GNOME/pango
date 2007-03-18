@@ -2,7 +2,7 @@
  * pangoatsui-fontmap.c
  *
  * Copyright (C) 2000-2003 Red Hat, Inc.
- * Copyright (C) 2005 Imendio AB
+ * Copyright (C) 2005-2007 Imendio AB
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -29,8 +29,6 @@
 
 #import <Cocoa/Cocoa.h>
 
-typedef struct _PangoATSUIFamily PangoATSUIFamily;
-typedef struct _PangoATSUIFace   PangoATSUIFace;
 typedef struct _FontHashKey      FontHashKey;
 
 struct _PangoATSUIFamily
@@ -56,6 +54,8 @@ struct _PangoATSUIFace
   PangoFontFace parent_instance;
 
   PangoATSUIFamily *family;
+
+  PangoCoverage *coverage;
 
   char *postscript_name;
   char *style_name;
@@ -292,6 +292,9 @@ pango_atsui_face_finalize (GObject *object)
 {
   PangoATSUIFace *atsuiface = PANGO_ATSUI_FACE (object);
 
+  if (atsuiface->coverage)
+    pango_coverage_unref (atsuiface->coverage);
+
   g_free (atsuiface->postscript_name);
   g_free (atsuiface->style_name);
 
@@ -338,6 +341,34 @@ pango_atsui_face_get_type (void)
     }
 
   return object_type;
+}
+
+const char *
+_pango_atsui_face_get_postscript_name (PangoATSUIFace *face)
+{
+  return face->postscript_name;
+}
+
+PangoCoverage *
+_pango_atsui_face_get_coverage (PangoATSUIFace *face,
+				PangoLanguage  *language)
+{
+  int i;
+
+  /* Note: We currently fake the coverage by reporting that the 255 first 
+   * glyphs exist in all fonts, which is not true. It's unclear how to get
+   * this done correctly.
+   */
+
+  if (face->coverage)
+    return face->coverage;
+
+  face->coverage = pango_coverage_new ();
+
+  for (i = 0; i < 256; i++)
+    pango_coverage_set (face->coverage, i, PANGO_COVERAGE_EXACT);
+
+  return face->coverage;
 }
 
 static void pango_atsui_font_map_class_init (PangoATSUIFontMapClass *class);
@@ -507,7 +538,7 @@ pango_atsui_font_map_add (PangoATSUIFontMap *atsuifontmap,
   atsuifont->fontmap = g_object_ref (atsuifontmap);
 
   font_hash_key_for_context (atsuifontmap, context, &key);
-  key.postscript_name = atsuifont->postscript_name;
+  key.postscript_name = (char *)_pango_atsui_face_get_postscript_name (atsuifont->face);
   key.desc = atsuifont->desc;
 
   key_copy = font_hash_key_copy (&key);
@@ -517,15 +548,15 @@ pango_atsui_font_map_add (PangoATSUIFontMap *atsuifontmap,
 }
 
 static PangoATSUIFont *
-pango_atsui_font_map_lookup (PangoATSUIFontMap *atsuifontmap,
-			     PangoContext      *context,
+pango_atsui_font_map_lookup (PangoATSUIFontMap    *atsuifontmap,
+			     PangoContext         *context,
 			     PangoFontDescription *desc,
-			     const char        *postscript_name)
+			     PangoATSUIFace       *face)
 {
   FontHashKey key;
 
   font_hash_key_for_context (atsuifontmap, context, &key);
-  key.postscript_name = (char *)postscript_name;
+  key.postscript_name = (char *)_pango_atsui_face_get_postscript_name (face);
   key.desc = desc;
 
   return g_hash_table_lookup (atsuifontmap->font_hash, &key);
@@ -549,9 +580,10 @@ pango_atsui_font_map_load_font (PangoFontMap               *fontmap,
     return NULL;
 
   name = g_utf8_casefold (pango_font_description_get_family (description), -1);
-
   font_family = g_hash_table_lookup (atsuifontmap->families, name);
+
   g_free (name);
+
   if (font_family)
     {
       PangoFontDescription *best_desc = NULL, *new_desc;
@@ -583,23 +615,31 @@ pango_atsui_font_map_load_font (PangoFontMap               *fontmap,
 
       pango_font_description_set_size (best_desc, size);
 
-      best_font = pango_atsui_font_map_lookup (atsuifontmap, context, best_desc, best_face->postscript_name);
+      best_font = pango_atsui_font_map_lookup (atsuifontmap, 
+					       context, 
+					       best_desc, 
+					       best_face);
 
       if (best_font)
 	g_object_ref (best_font);
       else
 	{
-	  best_font = (* PANGO_ATSUI_FONT_MAP_GET_CLASS (atsuifontmap)->create_font) (atsuifontmap, context,
-										      best_face->postscript_name, best_desc);
+	  PangoATSUIFontMapClass *klass;
 
+	  klass = PANGO_ATSUI_FONT_MAP_GET_CLASS (atsuifontmap);
+	  best_font = klass->create_font (atsuifontmap, context, 
+					  best_face, best_desc);
+	  
 	  if (best_font)
 	    pango_atsui_font_map_add (atsuifontmap, context, best_font);
 	    /* TODO: Handle the else case here. */
 	}
 
       pango_font_description_free (best_desc);
+
       return PANGO_FONT (best_font);
     }
+
   return NULL;
 }
 

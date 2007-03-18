@@ -76,12 +76,12 @@ G_DEFINE_TYPE_WITH_CODE (PangoCairoATSUIFontMap, pango_cairo_atsui_font_map, PAN
 static PangoATSUIFont *
 pango_cairo_atsui_font_map_create_font (PangoATSUIFontMap          *fontmap,
 					PangoContext               *context,
-					const char                 *postscript_name,
+					PangoATSUIFace             *face,
 					const PangoFontDescription *desc)
 
 {
-  return _pango_cairo_atsui_font_new (PANGO_CAIRO_ATSUI_FONT_MAP (fontmap), context,
-				      postscript_name, desc);
+  return _pango_cairo_atsui_font_new (PANGO_CAIRO_ATSUI_FONT_MAP (fontmap), 
+				      context, face, desc);
 }
 
 static void

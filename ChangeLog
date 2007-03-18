@@ -1,3 +1,21 @@
+2007-03-18  Richard Hult  <richard@imendio.com>
+
+	Bug 419262 - Don't create coverage every time it's asked for
+
+	* pango/pangoatsui.c: (pango_atsui_font_get_coverage):
+	* pango/pangoatsui-fontmap.c: Pass around a PangoATSUIFace instead of
+	the postscript name string. Move the coverage creation from the font to
+	the face, and get the coverage from the face instead of creating it 
+	every time.
+
+	* pango/pangocairo-atsui.h:
+	* pango/pangocairo-atsuifont.c: (_pango_cairo_atsui_font_new): Use the
+	face instead of the postscript name.
+
+	* pango/pangoatsui-private.h:
+	* pango/pangocairo-atsuifontmap.c: Add getters for the postscript name
+	and coverage for the face.
+
 2007-03-14  Tor Lillqvist  <tml@novell.com>
 
 	* pango/pangowin32-fontmap.c: Add missing declaration of
