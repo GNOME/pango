@@ -1,3 +1,8 @@
+2007-04-01  Behdad Esfahbod  <behdad@gnome.org>
+
+	* modules/Makefile.am: Add EXEEXT around to make it build on OS/2
+	Patch from Dave Yeo.
+
 2007-03-18  Richard Hult  <richard@imendio.com>
 
 	Bug 419262 - Don't create coverage every time it's asked for

@@ -26,13 +26,13 @@ RUN_QUERY_MODULES_TEST=test -z "$(DESTDIR)"
 all-local: pango.modules
 endif
 
-install-data-local: $(top_builddir)/pango/pango-querymodules
+install-data-local: $(top_builddir)/pango/pango-querymodules$(EXEEXT)
 	@if $(RUN_QUERY_MODULES_TEST) ; then 				\
 	  echo $(mkinstalldirs) $(DESTDIR)$(sysconfdir)/pango \&\& 	\
-	  $(top_builddir)/pango/pango-querymodules 			\
+	  $(top_builddir)/pango/pango-querymodules$(EXEEXT) 			\
 		\> $(DESTDIR)$(sysconfdir)/pango/pango.modules ;	\
 	  $(mkinstalldirs) $(DESTDIR)$(sysconfdir)/pango && 		\
-	  $(top_builddir)/pango/pango-querymodules 			\
+	  $(top_builddir)/pango/pango-querymodules$(EXEEXT) 			\
 		> $(DESTDIR)$(sysconfdir)/pango/pango.modules ;		\
 	else								\
 	  echo "***" ; 							\
@@ -49,10 +49,10 @@ uninstall-local:
 pango.modules:						\
 	$(SUBDIRS)					\
 	$(top_builddir)/config.status			\
-	$(top_builddir)/pango/pango-querymodules
+	$(top_builddir)/pango/pango-querymodules$(EXEEXT)
 	@if find . -name '*.la' | grep -v '\.libs' | grep -v libpango | grep '.' > /dev/null ; then \
           echo "Writing a pango.modules file to use with tests/examples."; \
-          $(top_builddir)/pango/pango-querymodules `find . -name '*.la' | grep -v '\.libs' | grep -v libpango` > $@ ;\
+          $(top_builddir)/pango/pango-querymodules$(EXEEXT) `find . -name '*.la' | grep -v '\.libs' | grep -v libpango` > $@ ;\
 	else \
           echo "No dynamic modules found; will use only static modules for tests/examples."; \
 	  > $@; \
