@@ -177,6 +177,16 @@ HFONTs by their LOGFONT descriptions.
 @Returns: 
 
 
+<!-- ##### FUNCTION pango_win32_font_cache_loadw ##### -->
+<para>
+
+</para>
+
+@cache: 
+@logfont: 
+@Returns: 
+
+
 <!-- ##### FUNCTION pango_win32_font_cache_unload ##### -->
 <para>
 
@@ -219,7 +229,25 @@ HFONTs by their LOGFONT descriptions.
 @Returns: 
 
 
+<!-- ##### FUNCTION pango_win32_font_logfontw ##### -->
+<para>
+
+</para>
+
+@font: 
+@Returns: 
+
+
 <!-- ##### FUNCTION pango_win32_font_description_from_logfont ##### -->
+<para>
+
+</para>
+
+@lfp: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_win32_font_description_from_logfontw ##### -->
 <para>
 
 </para>
