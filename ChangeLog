@@ -1,3 +1,12 @@
+2007-04-03  Behdad Esfahbod  <behdad@gnome.org>
+
+	* pango/opentype/harfbuzz-gdef.c (_HB_GDEF_Check_Property):
+	* pango/opentype/harfbuzz-gpos.c (HB_Done_GPOS_Table),
+	(Lookup_PairPos):
+	* pango/opentype/harfbuzz-open.c (Get_Class1):
+	Copy fixes from harfbuzz stable branch.  Includes a leak fix,
+	a kerning fix, and an array out-of-bound access fix.
+
 2007-04-01  Behdad Esfahbod  <behdad@gnome.org>
 
 	* modules/Makefile.am: Add EXEEXT around to make it build on OS/2
