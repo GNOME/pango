@@ -1,3 +1,13 @@
+Overview of changes between 1.16.1 and 1.16.2
+==============================================
+- Fixed various bug in the OpenType Layout code (HarfBuzz)
+- Improved documentation
+- Improved ATSUI backend
+- Misc build system fixes
+- Bugs fixed in this release:
+	Bug 417946 – pangowin32-fontmap.c:using function without prototype
+	Bug 419262 - Don't create coverage every time it's asked for
+
 Overview of changes between 1.16.0 and 1.16.1
 ==============================================
 - Improved Win32 backend: The Win32 backend has been
