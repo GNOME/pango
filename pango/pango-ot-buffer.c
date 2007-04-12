@@ -22,9 +22,7 @@
 #include <config.h>
 
 #include "pango-ot-private.h"
-
-#define PANGO_SCALE_26_6 (PANGO_SCALE / (1<<6))
-#define PANGO_UNITS_26_6(d) (PANGO_SCALE_26_6 * (d))
+#include "pangofc-private.h"
 
 /**
  * pango_ot_buffer_new
@@ -198,7 +196,8 @@ swap_range (PangoGlyphString *glyphs, int start, int end)
 
 static void
 apply_gpos_ltr (PangoGlyphString *glyphs,
-		HB_Position      positions)
+		HB_Position      positions,
+		gboolean         is_hinted)
 {
   int i;
 
@@ -208,6 +207,19 @@ apply_gpos_ltr (PangoGlyphString *glyphs,
       FT_Pos y_pos = positions[i].y_pos;
       int back = i;
       int j;
+      int adjustment;
+
+
+      adjustment = PANGO_UNITS_26_6(positions[i].x_advance);
+
+      if (is_hinted)
+	adjustment = PANGO_UNITS_ROUND (adjustment);
+
+      if (positions[i].new_advance)
+	glyphs->glyphs[i].geometry.width  = adjustment;
+      else
+	glyphs->glyphs[i].geometry.width += adjustment;
+
 
       while (positions[back].back != 0)
 	{
@@ -221,17 +233,13 @@ apply_gpos_ltr (PangoGlyphString *glyphs,
 
       glyphs->glyphs[i].geometry.x_offset += PANGO_UNITS_26_6(x_pos);
       glyphs->glyphs[i].geometry.y_offset -= PANGO_UNITS_26_6(y_pos);
-
-      if (positions[i].new_advance)
-	glyphs->glyphs[i].geometry.width  = PANGO_UNITS_26_6(positions[i].x_advance);
-      else
-	glyphs->glyphs[i].geometry.width += PANGO_UNITS_26_6(positions[i].x_advance);
     }
 }
 
 static void
 apply_gpos_rtl (PangoGlyphString *glyphs,
-		HB_Position      positions)
+		HB_Position      positions,
+		gboolean         is_hinted)
 {
   int i;
 
@@ -243,6 +251,19 @@ apply_gpos_rtl (PangoGlyphString *glyphs,
       FT_Pos x_pos = positions[i_rev].x_pos;
       FT_Pos y_pos = positions[i_rev].y_pos;
       int j;
+      int adjustment;
+
+
+      adjustment = PANGO_UNITS_26_6(positions[i_rev].x_advance);
+
+      if (is_hinted)
+	adjustment = PANGO_UNITS_ROUND (adjustment);
+
+      if (positions[i_rev].new_advance)
+	glyphs->glyphs[i].geometry.width  = adjustment;
+      else
+	glyphs->glyphs[i].geometry.width += adjustment;
+
 
       while (positions[back_rev].back != 0)
 	{
@@ -258,11 +279,6 @@ apply_gpos_rtl (PangoGlyphString *glyphs,
 
       glyphs->glyphs[i].geometry.x_offset += PANGO_UNITS_26_6(x_pos);
       glyphs->glyphs[i].geometry.y_offset -= PANGO_UNITS_26_6(y_pos);
-
-      if (positions[i_rev].new_advance)
-	glyphs->glyphs[i].geometry.width  = PANGO_UNITS_26_6(positions[i_rev].x_advance);
-      else
-	glyphs->glyphs[i].geometry.width += PANGO_UNITS_26_6(positions[i_rev].x_advance);
     }
 }
 
@@ -350,9 +366,9 @@ pango_ot_buffer_output (PangoOTBuffer    *buffer,
   if (buffer->applied_gpos)
     {
       if (buffer->rtl)
-	apply_gpos_rtl (glyphs, buffer->buffer->positions);
+	apply_gpos_rtl (glyphs, buffer->buffer->positions, buffer->font->is_hinted);
       else
-	apply_gpos_ltr (glyphs, buffer->buffer->positions);
+	apply_gpos_ltr (glyphs, buffer->buffer->positions, buffer->font->is_hinted);
     }
   else
     pango_fc_font_kern_glyphs (buffer->font, glyphs);

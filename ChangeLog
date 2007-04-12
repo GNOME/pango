@@ -1,3 +1,16 @@
+2007-04-12  Behdad Esfahbod  <behdad@gnome.org>
+
+	* pango/pango-ot-buffer.c (apply_gpos_ltr), (apply_gpos_rtl),
+	(pango_ot_buffer_output):
+	* pango/pango-types.h:
+	* pango/pangofc-font.c (pango_fc_font_kern_glyphs):
+	* pango/pangofc-private.h:
+	Quantize kerning adjustment, otherwise all the metrics hinting
+	effort will be ruined by a non-whole-pixel kerning value.
+	In the future we want to take lsb_delta and rsb_delta into the
+	game before quantizing the adjustment here, but we don't have
+	those values handy right now.
+
 2007-04-09  Behdad Esfahbod  <behdad@gnome.org>
 
 	* === Released 1.16.2 ===

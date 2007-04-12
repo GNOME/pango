@@ -723,6 +723,7 @@ pango_fc_font_kern_glyphs (PangoFcFont      *font,
   FT_Error error;
   FT_Vector kerning;
   int i;
+  gboolean hinting = font->is_hinted;
 
   g_return_if_fail (PANGO_IS_FC_FONT (font));
   g_return_if_fail (glyphs != NULL);
@@ -745,8 +746,14 @@ pango_fc_font_kern_glyphs (PangoFcFont      *font,
 			      ft_kerning_default,
 			      &kerning);
 
-      if (error == FT_Err_Ok)
-	glyphs->glyphs[i-1].geometry.width += PANGO_UNITS_26_6 (kerning.x);
+      if (error == FT_Err_Ok) {
+	int adjustment = PANGO_UNITS_26_6 (kerning.x);
+
+	if (hinting)
+	  adjustment = PANGO_UNITS_ROUND (adjustment);
+
+	glyphs->glyphs[i-1].geometry.width += adjustment;
+      }
     }
 
   PANGO_FC_FONT_UNLOCK_FACE (font);

@@ -53,6 +53,8 @@ typedef guint32 PangoGlyph;
  * That's unlikely to matter for practical use and the expression is much
  * more compact and faster than alternatives that work exactly for both
  * integers and floating point.
+ *
+ * PANGO_PIXELS also behaves differently for +512 and -512.
  */
 
 int    pango_units_from_double (double d) G_GNUC_CONST;
