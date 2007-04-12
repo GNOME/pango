@@ -63,7 +63,6 @@
 	* Makefile.am (EXTRA_DIST): Include just pango-zip.sh.in in the
 	tarball, not pango-zip.sh.
 
->>>>>>> .r2207
 2007-01-29  Behdad Esfahbod  <behdad@gnome.org>
 
 	* === Released 1.14.10 ===
