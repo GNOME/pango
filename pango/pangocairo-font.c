@@ -280,9 +280,13 @@ _pango_cairo_font_get_hex_box_info (PangoCairoFont *cfont)
 
   hbi->box_height = 3 * hbi->pad_y + rows * (hbi->pad_y + hbi->digit_height);
 
-  if (rows == 1)
+  if (rows == 1 || hbi->box_height <= font_extents.ascent)
     {
-      hbi->box_descent = hbi->pad_y;
+      hbi->box_descent = 2 * hbi->pad_y;
+    }
+  else if (hbi->box_height <= font_extents.ascent + font_extents.descent - 2 * hbi->pad_y)
+    {
+      hbi->box_descent = 2 * hbi->pad_y + hbi->box_height - font_extents.ascent;
     }
   else
     {

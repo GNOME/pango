@@ -1,3 +1,8 @@
+2007-04-18  Behdad Esfahbod  <behdad@gnome.org>
+
+	* pango/pangocairo-font.c (_pango_cairo_font_get_hex_box_info):
+	Improved hexbox position.
+
 2007-04-12  Behdad Esfahbod  <behdad@gnome.org>
 
 	* pango/pango-ot-buffer.c (apply_gpos_ltr), (apply_gpos_rtl),
