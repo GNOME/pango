@@ -1,3 +1,11 @@
+2007-04-23  Behdad Esfahbod  <behdad@gnome.org>
+
+	* === Released 1.16.3 ===
+
+	* configure.in: Version 1.16.3
+
+	* NEWS: Updated.
+
 2007-04-18  Behdad Esfahbod  <behdad@gnome.org>
 
 	* pango/pangocairo-font.c (_pango_cairo_font_get_hex_box_info):

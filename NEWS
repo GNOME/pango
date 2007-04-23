@@ -1,3 +1,10 @@
+Overview of changes between 1.16.2 and 1.16.3
+==============================================
+- Quantize kerning value if metrics hinting is on.  This greatly improves
+  screen text rendering with certain fonts like DejaVu Sans.
+  See: http://behdad.org/blog/mces/image/metricshinting-kerning.png
+- Improved hex-box positioning in the cairo backend
+
 Overview of changes between 1.16.1 and 1.16.2
 ==============================================
 - Fixed various bug in the OpenType Layout code (HarfBuzz)
