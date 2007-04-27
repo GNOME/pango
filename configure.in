@@ -599,11 +599,19 @@ fi
 
 AM_CONDITIONAL(ENABLE_MAN, test x$enable_man != xno)
 
-GLIB_PREFIX="`$PKG_CONFIG --variable=prefix glib-2.0`"
-CAIRO_PREFIX="`pkg-config --variable=prefix cairo`"
+AC_ARG_ENABLE(doc-cross-references,
+              AC_HELP_STRING([--disable-doc-cross-references],
+                             [cross reference glib and cairo symbols @<:@default=yes@:>@]),
+	      enable_doc_cross_references=$enableval,
+	      enable_doc_cross_references=yes)
 
-AC_SUBST(GLIB_PREFIX)
-AC_SUBST(CAIRO_PREFIX)
+if test "x$enable_doc_cross_references" != xno ; then
+	GLIB_PREFIX="`$PKG_CONFIG --variable=prefix glib-2.0`"
+	CAIRO_PREFIX="`pkg-config --variable=prefix cairo`"
+	AC_SUBST(GLIB_PREFIX)
+	AC_SUBST(CAIRO_PREFIX)
+fi
+AM_CONDITIONAL(ENABLE_DOC_CROSS_REFERENCES, test x$enable_doc_cross_references != xno)
 
 dnl ********************************************************
 dnl * Options to pass to libtool

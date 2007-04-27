@@ -79,9 +79,11 @@ HTML_IMAGES =				\
 	layout.gif			\
 	rotated-text.png
 
+if ENABLE_DOC_CROSS_REFERENCES
 # Extra options to supply to gtkdoc-fixref
 FIXXREF_OPTIONS=--extra-dir=$(GLIB_PREFIX)/share/gtk-doc/html/glib \
 	--extra-dir=$(CAIRO_PREFIX)/share/gtk-doc/html/cairo
+endif
 
 include $(top_srcdir)/gtk-doc.make
 
@@ -104,7 +106,8 @@ EXTRA_DIST +=				\
 
 BUILT_EXTRA_DIST = $(man_MANS)
 
-dist-hook-local:
+# force doc rebulid after configure
+dist-hook-local: dist-local-check-no-cross-references maintainer-clean-local all-local
 	files='$(BUILT_EXTRA_DIST)';				\
 	for f in $$files; do					\
 	  if test -f $$f; then d=.; else d=$(srcdir); fi;	\
@@ -114,5 +117,18 @@ dist-hook-local:
 	for f in $(srcdir)/TEXT/* ; do				\
 	  test -f $$f && cp -p $$f $(distdir)/TEXT;		\
 	done
+
+#
+# Require gtk-doc when making dist
+#
+if ENABLE_DOC_CROSS_REFERENCES
+dist-local-check-no-cross-references:
+	@echo "*** --disable-doc-cross-references must be used in order to make dist"
+	@false
+else
+dist-local-check-no-cross-references:
+endif
+
+.PHONY: dist-local-check-no-cross-references
 
 TESTS = check.docs

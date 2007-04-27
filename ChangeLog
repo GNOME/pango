@@ -1,3 +1,13 @@
+2007-04-27  Behdad Esfahbod  <behdad@gnome.org>
+
+	* configure.in: Add --disable-doc-cross-references.
+
+	* docs/Makefile.am: Make sure --disable-doc-cross-references is
+	set in order to make dist.
+
+	* Makefile.am: Add --disable-doc-cross-references to
+	DISTCHECK_CONFIGURE_FLAGS.
+
 2007-04-23  Behdad Esfahbod  <behdad@gnome.org>
 
 	* === Released 1.16.3 ===
