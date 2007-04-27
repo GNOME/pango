@@ -97,12 +97,12 @@ set_glyph (PangoFont        *font,
 }
 
 static void
-basic_engine_shape (PangoEngineShape *engine,
-		    PangoFont        *font,
-		    const char       *text,
-		    gint              length,
-		    PangoAnalysis    *analysis,
-		    PangoGlyphString *glyphs)
+basic_engine_shape (PangoEngineShape    *engine,
+		    PangoFont           *font,
+		    const char          *text,
+		    gint                 length,
+		    const PangoAnalysis *analysis,
+		    PangoGlyphString    *glyphs)
 {
   gunichar2 *utf16;
   long n16;

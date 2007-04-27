@@ -1,5 +1,10 @@
 2007-04-27  Richard Hult  <richard@imendio.com>
 
+	* modules/basic/basic-atsui.c (basic_engine_shape): Correct the
+	signature by making PangoAnalysis const, fixes build warning.
+
+2007-04-27  Richard Hult  <richard@imendio.com>
+
 	* pango/pangocairo-atsuifont.c (pango_cairo_atsui_font_get_metrics): 
 	Use maxAdvanceWidth instead of avgAdvanceWidth, the latter is 0 for
 	many fonts. This is a temporary solution, see bug #433805 for details.
