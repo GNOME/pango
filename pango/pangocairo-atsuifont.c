@@ -219,8 +219,8 @@ pango_cairo_atsui_font_get_metrics (PangoFont        *font,
   metrics->ascent = ats_metrics.ascent * cafont->size * PANGO_SCALE;
   metrics->descent = -ats_metrics.descent * cafont->size * PANGO_SCALE;
 
-  metrics->approximate_char_width = ats_metrics.avgAdvanceWidth * cafont->size * PANGO_SCALE;
-  metrics->approximate_digit_width = ats_metrics.avgAdvanceWidth * cafont->size * PANGO_SCALE;
+  metrics->approximate_char_width = ats_metrics.maxAdvanceWidth * cafont->size * PANGO_SCALE;
+  metrics->approximate_digit_width = ats_metrics.maxAdvanceWidth * cafont->size * PANGO_SCALE;
 
   metrics->underline_position = ats_metrics.underlinePosition * cafont->size * PANGO_SCALE;
   metrics->underline_thickness = ats_metrics.underlineThickness * cafont->size * PANGO_SCALE;
