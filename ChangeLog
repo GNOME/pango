@@ -1,5 +1,13 @@
 2007-04-27  Behdad Esfahbod  <behdad@gnome.org>
 
+	* === Released 1.16.4 ===
+
+	* configure.in: Version 1.16.4
+
+	* NEWS: Updated.
+
+2007-04-27  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 432991 – developer docs for libpango are broken
 
 	* configure.in: Add --disable-doc-cross-references.

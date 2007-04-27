@@ -1,3 +1,12 @@
+Overview of changes between 1.16.3 and 1.16.4
+==============================================
+- Add new configure option --disable-doc-cross-references and make
+  sure releases are made using it.  Distributions are encouraged to
+  build with --enable-gtk-doc such that their Pango docs correctly
+  cross reference glib and cairo docs.
+- Bugs fixed in this release:
+	Bug 432991 – developer docs for libpango are broken
+
 Overview of changes between 1.16.2 and 1.16.3
 ==============================================
 - Quantize kerning value if metrics hinting is on.  This greatly improves
