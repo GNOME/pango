@@ -219,6 +219,8 @@ pango_cairo_atsui_font_get_metrics (PangoFont        *font,
   metrics->ascent = ats_metrics.ascent * cafont->size * PANGO_SCALE;
   metrics->descent = -ats_metrics.descent * cafont->size * PANGO_SCALE;
 
+  /* TODO: the following two are not really what they should be. 
+   * See bug 433805 */
   metrics->approximate_char_width = ats_metrics.maxAdvanceWidth * cafont->size * PANGO_SCALE;
   metrics->approximate_digit_width = ats_metrics.maxAdvanceWidth * cafont->size * PANGO_SCALE;
 
