@@ -1,3 +1,28 @@
+2007-04-30  Behdad Esfahbod  <behdad@gnome.org>
+
+	* pango/pango-types.h: Move PANGO_UNITS_ROUND here...
+	* pango/pangofc-private.h: ...from here.
+
+	* pango/pango-gravity.c: Document that pango_gravity_to_rotation()
+	returns angle in radians but pango_matrix_rotate() takes degrees.
+
+	* pango/pango-layout.c (pango_layout_run_get_extents):
+	* pango/pango-renderer.c (pango_renderer_draw_layout_line):
+	Retain metrics hinting when centering baseline (used for Latin, etc
+	in vertical mode).
+
+	* pango/pangocairo-fcfont.c (pango_cairo_fc_font_get_metrics),
+	(pango_cairo_fc_font_glyph_extents_cache_init): Respect metrics
+	hinting setting when moving glyphs around for vertical writing.
+
+	* pango/pangocairo-fcfont.c (_pango_cairo_fc_font_new): Apply
+	the gravity rotation before the pattern's matrix, such that
+	vertical text gets correct italic direction.
+
+	* pango/pangocairo-font.c (_pango_cairo_font_get_hex_box_info):
+	Make hexbox font inherit most properties from the current font.
+	That is, bold hexbox digits for a bold font, etc.
+
 2007-04-30  Tor Lillqvist  <tml@novell.com>
 
 	* pango/pangowin32-fontmap.c (get_family_nameA, get_family_nameW):

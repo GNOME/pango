@@ -57,6 +57,10 @@ typedef guint32 PangoGlyph;
  * PANGO_PIXELS also behaves differently for +512 and -512.
  */
 
+#define PANGO_UNITS_ROUND(d)				\
+  (((d) + (PANGO_SCALE >> 1)) & ~(PANGO_SCALE - 1))
+
+
 int    pango_units_from_double (double d) G_GNUC_CONST;
 double pango_units_to_double (int i) G_GNUC_CONST;
 

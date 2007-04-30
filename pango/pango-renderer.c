@@ -516,7 +516,15 @@ pango_renderer_draw_layout_line (PangoRenderer    *renderer,
       state.logical_rect_end = x + x_off + glyph_string_width;
 
       if (run->item->analysis.flags & PANGO_ANALYSIS_FLAG_CENTERED_BASELINE)
-	rise += logical_rect.y + logical_rect.height / 2;
+	{
+	  gboolean is_hinted = (logical_rect.y & logical_rect.height & (PANGO_SCALE - 1)) == 0;
+	  int adjustment = logical_rect.y + logical_rect.height / 2;
+
+	  if (is_hinted)
+	    adjustment = PANGO_UNITS_ROUND (adjustment);
+
+	  rise += adjustment;
+	}
 
 
       if (renderer->priv->color_set[PANGO_RENDER_PART_BACKGROUND])

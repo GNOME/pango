@@ -142,10 +142,11 @@ _pango_cairo_font_get_hex_box_info (PangoCairoFont *cfont)
   cairo_font_options_t *font_options;
   cairo_font_extents_t font_extents;
   double size, mini_size;
-  PangoFontDescription *desc, *mini_desc;
+  PangoFontDescription *desc;
   cairo_scaled_font_t *scaled_font, *scaled_mini_font;
   PangoMatrix pango_ctm;
   cairo_matrix_t cairo_ctm;
+  PangoGravity gravity;
 
   if (!cfont)
     return NULL;
@@ -164,8 +165,16 @@ _pango_cairo_font_get_hex_box_info (PangoCairoFont *cfont)
   font_options = cairo_font_options_create ();
   cairo_scaled_font_get_font_options (scaled_font, font_options);
   is_hinted = (cairo_font_options_get_hint_metrics(font_options) != CAIRO_HINT_METRICS_OFF);
+  desc = pango_font_describe_with_absolute_size ((PangoFont *)cfont);
+  size = pango_font_description_get_size (desc) / (1.*PANGO_SCALE);
+  gravity = pango_font_description_get_gravity (desc);
 
   cairo_scaled_font_get_ctm (scaled_font, &cairo_ctm);
+  /* I started adding support for vertical hexboxes here, but it's too much
+   * work.  Easier to do with cairo user fonts and vertical writing mode
+   * support in cairo.
+   */
+  /*cairo_matrix_rotate (&cairo_ctm, pango_gravity_to_rotation (gravity));*/
   pango_ctm.xx = cairo_ctm.xx;
   pango_ctm.yx = cairo_ctm.yx;
   pango_ctm.xy = cairo_ctm.xy;
@@ -201,12 +210,15 @@ _pango_cairo_font_get_hex_box_info (PangoCairoFont *cfont)
 
     fontmap = pango_font_get_font_map ((PangoFont *)cfont);
 
-    desc = pango_font_describe_with_absolute_size ((PangoFont *)cfont);
-    size = pango_font_description_get_size (desc) / (1.*PANGO_SCALE);
+    /* we inherit most font properties for the mini font.  just
+     * change family and size.  means, you get bold hex digits
+     * in the hexbox for a bold font.
+     */
 
-    mini_desc = pango_font_description_new ();
-    pango_font_description_set_family_static (mini_desc, "monospace");
+    /* We should rotate the box, not glyphs */
+    pango_font_description_unset_fields (desc, PANGO_FONT_MASK_GRAVITY);
 
+    pango_font_description_set_family_static (desc, "monospace");
 
     rows = 2;
     mini_size = size / 2.4;
@@ -221,7 +233,7 @@ _pango_cairo_font_get_hex_box_info (PangoCairoFont *cfont)
 	  }
       }
 
-    pango_font_description_set_absolute_size (mini_desc, mini_size * PANGO_SCALE);
+    pango_font_description_set_absolute_size (desc, mini_size * PANGO_SCALE);
 
 
     /* load mini_font */
@@ -231,10 +243,8 @@ _pango_cairo_font_get_hex_box_info (PangoCairoFont *cfont)
     pango_context_set_matrix (context, &pango_ctm);
     pango_context_set_language (context, pango_language_from_string ("en"));
     pango_cairo_context_set_font_options (context, font_options);
-    mini_font = pango_font_map_load_font (fontmap, context, mini_desc);
-    pango_font_description_free (mini_desc);
+    mini_font = pango_font_map_load_font (fontmap, context, desc);
 
-    pango_font_description_free (desc);
     g_object_unref (context);
   }
 

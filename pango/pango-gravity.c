@@ -29,8 +29,12 @@
  * pango_gravity_to_rotation:
  * @gravity: gravity to query
  *
- * Converts a #PangoGravity value to its rotation value.
+ * Converts a #PangoGravity value to its natural rotation in radians.
  * @gravity should not be %PANGO_GRAVITY_AUTO.
+ *
+ * Note that pango_matrix_rotate() takes angle in degrees, not radians.
+ * So, to call pango_matrix_rotate() with the output of this function
+ * you should multiply it by (180. / G_PI).
  *
  * Return value: the rotation value corresponding to @gravity.
  *

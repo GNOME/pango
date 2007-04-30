@@ -245,11 +245,14 @@ pango_cairo_fc_font_get_metrics (PangoFont     *font,
 	    break;
 	  case PANGO_GRAVITY_EAST:
 	  case PANGO_GRAVITY_WEST:
-	    info->metrics->ascent = height / 2;
+	    {
+	      int ascent = height / 2;
+	      if (fcfont->is_hinted)
+	        ascent = PANGO_UNITS_ROUND (ascent);
+	      info->metrics->ascent = ascent;
+	    }
 	}
       shift = (height - info->metrics->ascent) - info->metrics->descent;
-      if (fcfont->is_hinted)
-	shift &= ~(PANGO_SCALE - 1);
       info->metrics->descent += shift;
       info->metrics->underline_position -= shift;
       info->metrics->strikethrough_position -= shift;
@@ -307,7 +310,13 @@ pango_cairo_fc_font_glyph_extents_cache_init (PangoCairoFcFont *cffont)
 	break;
       case PANGO_GRAVITY_EAST:
       case PANGO_GRAVITY_WEST:
-	cffont->font_extents.y = - pango_units_from_double ((font_extents.ascent + font_extents.descent) * 0.5);
+	{
+	  PangoFcFont *fcfont = (PangoFcFont *) (cffont);
+	  int ascent = pango_units_from_double (font_extents.ascent + font_extents.descent) / 2;
+	  if (fcfont->is_hinted)
+	    ascent = PANGO_UNITS_ROUND (ascent);
+	  cffont->font_extents.y = - ascent;
+	}
     }
 
   cffont->glyph_extents_cache = g_new0 (GlyphExtentsCacheEntry, GLYPH_CACHE_NUM_ENTRIES);
@@ -507,21 +516,29 @@ _pango_cairo_fc_font_new (PangoCairoFcFontMap        *cffontmap,
 
   cffont->gravity = pango_font_description_get_gravity (desc);
 
+  /* first apply gravity rotation, then pattern matrix, such that
+   * vertical italic text comes out "correct".  we don't do anything
+   * like baseline adjustment etc though.  should be specially
+   * handled when we support italic correction. */
+  cairo_matrix_init_rotate(&cffont->font_matrix,
+			  pango_gravity_to_rotation (cffont->gravity));
+
   if  (FcPatternGetMatrix (pattern,
 			   FC_MATRIX, 0, &fc_matrix) == FcResultMatch)
     {
-      cairo_matrix_init (&cffont->font_matrix,
+      cairo_matrix_t matrix;
+
+      cairo_matrix_init (&matrix,
 			 fc_matrix->xx,
 			 - fc_matrix->yx,
 			 - fc_matrix->xy,
 			 fc_matrix->yy,
 			 0., 0.);
-    }
-  else
-    cairo_matrix_init_identity (&cffont->font_matrix);
 
-  cairo_matrix_rotate(&cffont->font_matrix,
-		      pango_gravity_to_rotation (cffont->gravity));
+      cairo_matrix_multiply (&cffont->font_matrix,
+			     &matrix,
+			     &cffont->font_matrix);
+    }
 
   pango_ctm = pango_context_get_matrix (context);
 

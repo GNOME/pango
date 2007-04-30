@@ -4309,7 +4309,15 @@ pango_layout_run_get_extents (PangoLayoutRun *run,
     }
 
   if (run->item->analysis.flags & PANGO_ANALYSIS_FLAG_CENTERED_BASELINE)
-    properties.rise += run_logical->y + run_logical->height / 2;
+    {
+      gboolean is_hinted = (run_logical->y & run_logical->height & (PANGO_SCALE - 1)) == 0;
+      int adjustment = run_logical->y + run_logical->height / 2;
+
+      if (is_hinted)
+	adjustment = PANGO_UNITS_ROUND (adjustment);
+
+      properties.rise += adjustment;
+    }
 
   if (properties.rise != 0)
     {

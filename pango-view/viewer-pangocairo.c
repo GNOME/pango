@@ -319,6 +319,8 @@ pangocairo_view_render (gpointer      instance,
       /* This is annoying ... we have to create a temporary surface just to
        * get the extents of the text.
        */
+      /* image surface here is not good as it may have font options different
+       * from the target surface */
       cs = cairo_image_surface_create (CAIRO_FORMAT_RGB24, 1, 1);
       cr = cairo_create (cs);
       cairo_surface_destroy (cs);
