@@ -41,6 +41,7 @@ Converts a dimension to device units by rounding.
 </para>
 
 @d: a dimension in Pango units.
+@Returns: rounded dimension in device units.
 
 
 <!-- ##### MACRO PANGO_PIXELS_FLOOR ##### -->
@@ -49,6 +50,8 @@ Converts a dimension to device units by flooring.
 </para>
 
 @d: a dimension in Pango units.
+@Returns: floored dimension in device units.
+@Since: 1.14
 
 
 <!-- ##### MACRO PANGO_PIXELS_CEIL ##### -->
@@ -57,6 +60,20 @@ Converts a dimension to device units by ceiling.
 </para>
 
 @d: a dimension in Pango units.
+@Returns: ceiled dimension in device units.
+@Since: 1.14
+
+
+<!-- ##### MACRO PANGO_UNITS_ROUND ##### -->
+<para>
+Rounds a dimension to whole device units, but does not
+convert it to device units.
+
+</para>
+
+@d: a dimension in Pango units.
+@Returns: rounded dimension in Pango units.
+@Since: 1.18
 
 
 <!-- ##### FUNCTION pango_units_to_double ##### -->

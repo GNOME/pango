@@ -1,5 +1,11 @@
 2007-04-30  Behdad Esfahbod  <behdad@gnome.org>
 
+	* docs/pango-sections.txt:
+	* docs/tmpl/glyphs.sgml:
+	Add PANGO_UNITS_ROUND to docs.
+
+2007-04-30  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/pango-types.h: Move PANGO_UNITS_ROUND here...
 	* pango/pangofc-private.h: ...from here.
 

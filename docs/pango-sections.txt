@@ -73,6 +73,7 @@ PANGO_SCALE
 PANGO_PIXELS
 PANGO_PIXELS_FLOOR
 PANGO_PIXELS_CEIL
+PANGO_UNITS_ROUND
 pango_units_to_double
 pango_units_from_double
 PangoRectangle
