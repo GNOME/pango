@@ -690,7 +690,8 @@ get_family_nameA (const LOGFONTA *lfp)
 
   if (name_ix == microsoft_ix)
     if (record.encoding_id == SYMBOL_ENCODING_ID ||
-	record.encoding_id == UNICODE_ENCODING_ID)
+	record.encoding_id == UNICODE_ENCODING_ID ||
+	record.encoding_id == UCS4_ENCODING_ID)
       codeset = "UTF-16BE";
     else
       codeset = "UCS-4BE";
@@ -884,7 +885,8 @@ get_family_nameW (const LOGFONTW *lfp)
 
   if (name_ix == microsoft_ix)
     if (record.encoding_id == SYMBOL_ENCODING_ID ||
-	record.encoding_id == UNICODE_ENCODING_ID)
+	record.encoding_id == UNICODE_ENCODING_ID ||
+	record.encoding_id == UCS4_ENCODING_ID)
       codeset = "UTF-16BE";
     else
       codeset = "UCS-4BE";

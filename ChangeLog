@@ -1,3 +1,9 @@
+2007-04-30  Tor Lillqvist  <tml@novell.com>
+
+	* pango/pangowin32-fontmap.c (get_family_nameA, get_family_nameW):
+	A font name in encoding UCS4_ENCODING_ID actually is in UTF-16,
+	not UCS-4. (#429397, Akihiro Okamura)
+
 2007-04-27  Richard Hult  <richard@imendio.com>
 
 	* modules/basic/basic-atsui.c (basic_engine_shape): Correct the
