@@ -1,5 +1,10 @@
 2007-04-30  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango/opentype/Makefile.am: Link freetype to harfbuzz-dump, for
+	those systems that don't track dependencies automatically.
+
+2007-04-30  Behdad Esfahbod  <behdad@gnome.org>
+
 	* docs/pango-sections.txt:
 	* docs/tmpl/glyphs.sgml:
 	Add PANGO_UNITS_ROUND to docs.
