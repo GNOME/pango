@@ -1,3 +1,8 @@
+2007-04-28  Mathias Hasselmann  <mathias.hasselmann@gmx.de>
+
+	* pango-view/viewer-render.c (make_layout), (parse_alignment),
+	(parse_options): Add option for testing text alignment.
+
 2007-04-30  Behdad Esfahbod  <behdad@gnome.org>
 
 	* pango/opentype/Makefile.am: Link freetype to harfbuzz-dump, for

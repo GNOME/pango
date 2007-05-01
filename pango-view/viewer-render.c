@@ -55,6 +55,7 @@ gboolean opt_waterfall = FALSE;
 int opt_width = -1;
 int opt_indent = 0;
 int opt_runs = 1;
+PangoAlignment opt_align = PANGO_ALIGN_LEFT;
 PangoEllipsizeMode opt_ellipsize = PANGO_ELLIPSIZE_NONE;
 PangoGravity opt_gravity = PANGO_GRAVITY_SOUTH;
 PangoGravityHint opt_gravity_hint = PANGO_GRAVITY_HINT_NATURAL;
@@ -100,7 +101,7 @@ make_layout(PangoContext *context,
 	    double        size)
 {
   static PangoFontDescription *font_description;
-  PangoDirection base_dir;
+  PangoAlignment align;
   PangoLayout *layout;
 
   layout = pango_layout_new (context);
@@ -125,9 +126,16 @@ make_layout(PangoContext *context,
   if (opt_indent != 0)
     pango_layout_set_indent (layout, (opt_indent * opt_dpi * PANGO_SCALE + 36) / 72);
 
-  base_dir = pango_context_get_base_dir (context);
-  pango_layout_set_alignment (layout,
-			      base_dir == PANGO_DIRECTION_LTR ? PANGO_ALIGN_LEFT : PANGO_ALIGN_RIGHT);
+  align = opt_align;
+  if (align != PANGO_ALIGN_CENTER &&
+      pango_context_get_base_dir (context) != PANGO_DIRECTION_LTR) {
+    /* pango reverses left and right if base dir ir rtl.  so we should
+     * reverse to cancel that.  unfortunately it also does that for
+     * rtl paragraphs, so we cannot really get left/right.  all we get
+     * is default/other-side. */
+    align = PANGO_ALIGN_LEFT + PANGO_ALIGN_RIGHT - align;
+  }
+  pango_layout_set_alignment (layout, align);
 
   pango_layout_set_font_description (layout, font_description);
 
@@ -367,6 +375,16 @@ parse_enum (GType       type,
 }
 
 static gboolean
+parse_align (const char *name,
+	     const char *arg,
+	     gpointer    data,
+	     GError **error)
+{
+  return parse_enum (PANGO_TYPE_ALIGNMENT, &opt_align,
+		     name, arg, data, error);
+}
+
+static gboolean
 parse_ellipsis (const char *name,
 		const char *arg,
 		gpointer    data,
@@ -549,6 +567,8 @@ parse_options (int argc, char *argv[])
      "Do not display (just write to file or whatever)",			NULL},
     {"dpi",		0, 0, G_OPTION_ARG_INT,				&opt_dpi,
      "Set the resolution",					    "number"},
+    {"align",		0, 0, G_OPTION_ARG_CALLBACK,			&parse_align,
+     "Text alignment",				         "left/center/right"},
     {"ellipsize",	0, 0, G_OPTION_ARG_CALLBACK,			&parse_ellipsis,
      "Ellipsization mode",				  "start/middle/end"},
     {"font",		0, 0, G_OPTION_ARG_STRING,			&opt_font,
