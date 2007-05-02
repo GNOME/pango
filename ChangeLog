@@ -1,3 +1,8 @@
+2007-05-02  Mathias Hasselmann  <mathias.hasselmann@gmx.de>
+
+	* pango-view/viewer-render.c (make_layout), (parse_options):
+	Add --justify.
+
 2007-05-02  Behdad Esfahbod  <behdad@gnome.org>
 
 	Bug 355789 – Pango misaligns word-wrapped text due to trailing

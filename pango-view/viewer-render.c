@@ -54,6 +54,7 @@ const char *opt_text = NULL;
 gboolean opt_waterfall = FALSE;
 int opt_width = -1;
 int opt_indent = 0;
+gboolean opt_justify = 0;
 int opt_runs = 1;
 PangoAlignment opt_align = PANGO_ALIGN_LEFT;
 PangoEllipsizeMode opt_ellipsize = PANGO_ELLIPSIZE_NONE;
@@ -112,6 +113,7 @@ make_layout(PangoContext *context,
 
   pango_layout_set_auto_dir (layout, opt_auto_dir);
   pango_layout_set_ellipsize (layout, opt_ellipsize);
+  pango_layout_set_justify (layout, opt_justify);
 
   font_description = get_font_description ();
   if (size > 0)
@@ -583,6 +585,8 @@ parse_options (int argc, char *argv[])
      "Hinting style",					    "none/auto/full"},
     {"indent",		0, 0, G_OPTION_ARG_INT,				&opt_indent,
      "Width in points to indent paragraphs",			    "points"},
+    {"justify",		0, 0, G_OPTION_ARG_NONE,			&opt_justify,
+     "Align paragraph lines to be justified",			    	NULL},
     {"margin",		0, 0, G_OPTION_ARG_INT,				&opt_margin,
      "Set the margin on the output in pixels",			    "pixels"},
     {"markup",		0, 0, G_OPTION_ARG_NONE,			&opt_markup,
