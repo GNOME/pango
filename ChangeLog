@@ -1,3 +1,8 @@
+2007-05-02  Behdad Esfahbod  <behdad@gnome.org>
+
+	* pango/pango-layout-private.h: Remove stale prototype of
+	_pango_layout_iter_get_line_readonly().
+
 2007-05-01  Behdad Esfahbod  <behdad@gnome.org>
 
 	* pango/pango-layout.c (get_items_log_attrs): Add note about
