@@ -161,7 +161,8 @@ static PangoAttrList *pango_layout_get_effective_attributes (PangoLayout *layout
 
 static PangoLayoutLine * pango_layout_line_new         (PangoLayout     *layout);
 static void              pango_layout_line_postprocess (PangoLayoutLine *line,
-							ParaBreakState  *state);
+							ParaBreakState  *state,
+							gboolean         wrapped);
 
 static int *pango_layout_line_get_log2vis_map (PangoLayoutLine  *line,
 					       gboolean          strong);
@@ -3321,6 +3322,7 @@ process_line (PangoLayout    *layout,
   int break_remaining_width = 0;    /* Remaining width before adding run with break */
   int break_start_offset = 0;	    /* Start width before adding run with break */
   GSList *break_link = NULL;        /* Link holding run before break */
+  gboolean wrapped = FALSE;         /* If we had to wrap the line */
 
   line = pango_layout_line_new (layout);
   line->start_index = state->line_start_index;
@@ -3365,12 +3367,12 @@ process_line (PangoLayout    *layout,
 	  break;
 
 	case BREAK_EMPTY_FIT:
-	  layout->is_wrapped = TRUE;
+	  wrapped = TRUE;
 	  goto done;
 
 	case BREAK_SOME_FIT:
 	  state->start_offset += old_num_chars - item->num_chars;
-	  layout->is_wrapped = TRUE;
+	  wrapped = TRUE;
 	  goto done;
 
 	case BREAK_NONE_FIT:
@@ -3390,7 +3392,7 @@ process_line (PangoLayout    *layout,
 
 	  state->start_offset += old_num_chars - item->num_chars;
 
-	  layout->is_wrapped = TRUE;
+	  wrapped = TRUE;
 	  goto done;
 
 	case BREAK_LINE_SEPARATOR:
@@ -3401,7 +3403,8 @@ process_line (PangoLayout    *layout,
     }
 
  done:
-  pango_layout_line_postprocess (line, state);
+  layout->is_wrapped = layout->is_wrapped || wrapped;
+  pango_layout_line_postprocess (line, state, wrapped);
   layout->lines = g_slist_prepend (layout->lines, line);
   state->first_line = FALSE;
   state->line_start_index += line->length;
@@ -4699,7 +4702,8 @@ adjust_line_letter_spacing (PangoLayoutLine *line)
 
 static void
 pango_layout_line_postprocess (PangoLayoutLine *line,
-			       ParaBreakState  *state)
+			       ParaBreakState  *state,
+			       gboolean         wrapped)
 {
   /* NB: the runs are in reverse order at this point, since we prepended them to the list
    */

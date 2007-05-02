@@ -1,5 +1,12 @@
 2007-05-02  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango/pango-layout.c (process_line),
+	(pango_layout_line_postprocess): Add a "wrapped" argument to
+	pango_layout_line_postprocess().  Going to use it for eg whether we
+	should justify the line.
+
+2007-05-02  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/pango-layout.c (process_line): Set is_wrapped to true on
 	BREAK_EMPTY_FIT too.
 
