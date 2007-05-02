@@ -74,9 +74,9 @@ struct _PangoLayout
   GSList *lines;
 };
 
-G_END_DECLS
-
 gboolean _pango_layout_line_ellipsize (PangoLayoutLine *line,
-				   PangoAttrList   *attrs);
+				       PangoAttrList   *attrs);
+
+G_END_DECLS
 
 #endif /* __PANGO_LAYOUT_PRIVATE_H__ */
