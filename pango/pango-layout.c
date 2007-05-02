@@ -2989,7 +2989,8 @@ struct _ParaBreakState
   GList *items;			/* This paragraph turned into items */
   PangoDirection base_dir;	/* Current resolved base direction */
   gboolean first_line;		/* TRUE if this is the first line of the paragraph */
-  int line_start_index;		/* Start index of line in layout->text */
+  int line_start_index;		/* Start index (byte offset) of line in layout->text */
+  int line_start_offset;	/* Character offset of line in layout->text */
 
   int remaining_width;		/* Amount of space remaining on line; < 0 is infinite */
 
@@ -3408,6 +3409,7 @@ process_line (PangoLayout    *layout,
   layout->lines = g_slist_prepend (layout->lines, line);
   state->first_line = FALSE;
   state->line_start_index += line->length;
+  state->line_start_offset = state->start_offset;
 }
 
 static void
@@ -3647,6 +3649,7 @@ pango_layout_check_lines (PangoLayout *layout)
 	  state.first_line = TRUE;
 	  state.base_dir = base_dir;
 	  state.start_offset = start_offset;
+	  state.line_start_offset = start_offset;
 	  state.line_start_index = start - layout->text;
 
 	  state.glyphs = NULL;
