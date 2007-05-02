@@ -1,3 +1,10 @@
+2007-05-02  Behdad Esfahbod  <behdad@gnome.org>
+
+	* docs/tmpl/main.sgml:
+	* pango/break.c (pango_default_break):
+	* pango/pango-break.h:
+	Add is_expandable_space to PangoLogAttr.
+
 2007-05-02  Mathias Hasselmann  <mathias.hasselmann@gmx.de>
 
 	* pango-view/viewer-render.c (make_layout), (parse_options):

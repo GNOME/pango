@@ -40,14 +40,14 @@ struct _PangoLogAttr
 
   guint is_white : 1;           /* Whitespace character */
 
-  /* cursor can appear in front of character (i.e. this is a grapheme
-   * boundary, or the first character in the text)
+  /* Cursor can appear in front of character (i.e. this is a grapheme
+   * boundary, or the first character in the text).
    */
   guint is_cursor_position : 1;
 
   /* Note that in degenerate cases, you could have both start/end set on
    * some text, most likely for sentences (e.g. no space after a period, so
-   * the next sentence starts right away)
+   * the next sentence starts right away).
    */
 
   guint is_word_start : 1;      /* first character in a word */
@@ -65,10 +65,15 @@ struct _PangoLogAttr
   guint is_sentence_start : 1;  /* first character in a sentence */
   guint is_sentence_end : 1;    /* first non-sentence char after a sentence */
 
-  /* if set, backspace deletes one character rather than
-   * the entire grapheme cluster
+  /* If set, backspace deletes one character rather than
+   * the entire grapheme cluster.
    */
   guint backspace_deletes_character : 1;
+
+  /* Only few space variants (U+0020 and U+00A0) have variable
+   * width during justification.
+   */
+  guint is_expandable_space : 1;
 };
 
 /* Determine information about cluster/word/line breaks in a string

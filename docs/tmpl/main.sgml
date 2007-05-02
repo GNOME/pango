@@ -471,6 +471,8 @@ about the attributes of a single character.
                               bit is set on all grapheme boundaries except
                               those following Latin, Cyrillic or Greek base
                               characters.
+@is_expandable_space: is a whitespace character that can possiblye be
+                      expanded for justification purposes. (Since: 1.18)
 
 <!-- ##### FUNCTION pango_shape ##### -->
 <para>
