@@ -25,6 +25,7 @@
 #include "pango-item.h"
 #include "pango-engine.h"
 #include "pango-impl-utils.h"
+#include "pango-glyph-item-private.h"
 #include <string.h>
 
 #include "pango-layout-private.h"
@@ -623,7 +624,8 @@ pango_layout_get_font_description (PangoLayout *layout)
  * the justification may be done in more complex ways, like extending
  * the characters.
  *
- * Note that as of Pango-1.16, this functionality is not yet implemented.
+ * Note that this setting is not implemented and so is ignored in Pango
+ * older than 1.18.
  **/
 void
 pango_layout_set_justify (PangoLayout *layout,
@@ -4625,7 +4627,6 @@ zero_line_final_space (PangoLayoutLine *line,
   PangoGlyphString *glyphs = run->glyphs;
   int glyph = item->analysis.level % 2 ? 0 : glyphs->num_glyphs - 1;
   const char *p;
-  int index;
 
   /* if the final char of line forms a cluster, and it's
    * a whitespace char, zero its glyph's width as it's been wrapped
@@ -4731,6 +4732,99 @@ adjust_line_letter_spacing (PangoLayoutLine *line)
 }
 
 static void
+justify_clusters (PangoLayoutLine *line,
+		  ParaBreakState  *state)
+{
+
+}
+
+static void
+justify_words (PangoLayoutLine *line,
+	       ParaBreakState  *state)
+{
+  const gchar *text = line->layout->text;
+  const PangoLogAttr *log_attrs = line->layout->log_attrs;
+
+  int offset;
+  int total_remaining_width, total_space_width = 0;
+  int added_so_far, spaces_so_far;
+  GSList *run_iter;
+  enum {
+    MEASURE,
+    ADJUST
+  } mode;
+
+  total_remaining_width = state->remaining_width;
+  if (total_remaining_width <= 0)
+    return;
+
+  for (mode = MEASURE; mode <= ADJUST; mode++)
+    {
+      added_so_far = 0;
+      spaces_so_far = 0;
+
+      offset = state->line_start_offset;
+      for (run_iter = line->runs; run_iter; run_iter = run_iter->next)
+	{
+	  PangoLayoutRun *run = run_iter->data;
+	  PangoGlyphString *glyphs = run->glyphs;
+	  PangoGlyphItemIter cluster_iter;
+	  gboolean have_cluster;
+
+	  for (have_cluster = _pango_glyph_item_iter_init_start (&cluster_iter, run, text);
+	       have_cluster;
+	       have_cluster = _pango_glyph_item_iter_next_cluster (&cluster_iter))
+	    {
+	      int i;
+	      int dir;
+
+	      if (!log_attrs[offset + cluster_iter.start_char].is_expandable_space)
+		continue;
+
+	      dir = (cluster_iter.start_glyph < cluster_iter.end_glyph) ? 1 : -1;
+	      for (i = cluster_iter.start_glyph; i != cluster_iter.end_glyph; i += dir)
+		{
+		  int glyph_width = glyphs->glyphs[i].geometry.width;
+
+		  if (glyph_width == 0)
+		    continue;
+
+		  spaces_so_far += glyph_width;
+
+		  if (mode == ADJUST)
+		    {
+		      int adjustment;
+
+		      adjustment = ((guint64) spaces_so_far * total_remaining_width) / total_space_width - added_so_far;
+		      /* hint to full pixel if original space was so */
+		      if ((glyph_width & (PANGO_SCALE - 1)) == 0)
+			adjustment = PANGO_UNITS_ROUND (adjustment);
+
+		      glyphs->glyphs[i].geometry.width += adjustment;
+		      added_so_far += adjustment;
+		    }
+		}
+	    }
+
+	  offset += glyphs->num_glyphs;
+	}
+
+      if (mode == MEASURE)
+	{
+	  total_space_width = spaces_so_far;
+
+	  if (total_space_width == 0)
+	    {
+	      justify_clusters (line, state);
+	      return;
+	    }
+	}
+    }
+
+  state->remaining_width -= added_so_far;
+}
+
+static void
 pango_layout_line_postprocess (PangoLayoutLine *line,
 			       ParaBreakState  *state,
 			       gboolean         wrapped)
@@ -4761,6 +4855,11 @@ pango_layout_line_postprocess (PangoLayoutLine *line,
   /* Fixup letter spacing between runs
    */
   adjust_line_letter_spacing (line);
+
+ /* Distribute extra space between words if justifying and line was wrapped
+  */
+ if (wrapped && line->layout->justify)
+   justify_words (line, state);
 }
 
 static void

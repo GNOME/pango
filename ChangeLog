@@ -1,5 +1,14 @@
 2007-05-02  Behdad Esfahbod  <behdad@gnome.org>
 
+	Bug 64538 – pango_layout_set_justify() doesn't work
+
+	* pango/pango-layout.c (zero_line_final_space), (justify_clusters),
+	(justify_words), (pango_layout_line_postprocess): Implement
+	justification by expanding spaces!
+	Based on early patch from Mathias Hasselmann.
+
+2007-05-02  Behdad Esfahbod  <behdad@gnome.org>
+
 	Patch from Mathias Hasselmann
 
 	* docs/tmpl/main.sgml:
