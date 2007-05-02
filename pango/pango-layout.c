@@ -4615,6 +4615,33 @@ is_tab_run (PangoLayout    *layout,
   return (layout->text[run->item->offset] == '\t');
 }
 
+static void
+zero_line_final_space (PangoLayoutLine *line,
+		       ParaBreakState  *state,
+		       PangoLayoutRun  *run)
+{
+  PangoLayout *layout = line->layout;
+  PangoItem *item = run->item;
+  PangoGlyphString *glyphs = run->glyphs;
+  int glyph = item->analysis.level % 2 ? 0 : glyphs->num_glyphs - 1;
+  const char *p;
+  int index;
+
+  /* if the final char of line forms a cluster, and it's
+   * a whitespace char, zero its glyph's width as it's been wrapped
+   */
+
+  if (glyphs->num_glyphs < 1 || state->start_offset == 0 ||
+      !layout->log_attrs[state->start_offset - 1].is_white)
+    return;
+
+  p = g_utf8_prev_char (layout->text + item->offset + item->length);
+  if (p != layout->text + item->offset + glyphs->log_clusters[glyph])
+    return;
+
+  glyphs->glyphs[glyph].geometry.width = 0;
+}
+
 /* When doing shaping, we add the letter spacing value for a
  * run after every grapheme in the run. This produces ugly
  * asymmetrical results, so what this routine is redistributes
@@ -4708,6 +4735,8 @@ pango_layout_line_postprocess (PangoLayoutLine *line,
 			       ParaBreakState  *state,
 			       gboolean         wrapped)
 {
+  PangoLayoutRun *last_run = line->runs->data;
+  
   /* NB: the runs are in reverse order at this point, since we prepended them to the list
    */
 
@@ -4719,6 +4748,11 @@ pango_layout_line_postprocess (PangoLayoutLine *line,
    */
   if (_pango_layout_line_ellipsize (line, state->attrs))
     line->layout->is_ellipsized = TRUE;
+
+  /* Truncate the logical-final whitespace in the line if we broke the line at it
+   */
+  if (wrapped)
+    zero_line_final_space (line, state, last_run);
 
   /* Now convert logical to visual order
    */

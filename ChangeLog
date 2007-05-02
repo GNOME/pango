@@ -1,5 +1,14 @@
 2007-05-02  Behdad Esfahbod  <behdad@gnome.org>
 
+	Bug 355789 – Pango misaligns word-wrapped text due to trailing
+	whitespace
+
+	* pango/pango-layout.c (zero_line_final_space),
+	(pango_layout_line_postprocess): Make logical-final whitespace
+	on wrapped lines zero-width.
+
+2007-05-02  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/pango-layout.c (process_line), (pango_layout_check_lines):
 	Keep track of line start_offset in break state.
 
