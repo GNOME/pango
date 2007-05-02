@@ -2976,6 +2976,20 @@ can_break_in (PangoLayout *layout,
   return FALSE;
 }
 
+static inline void
+distribute_letter_spacing (int  letter_spacing,
+			   int *space_left,
+			   int *space_right)
+{
+  *space_left = letter_spacing / 2;
+  /* hinting */
+  if ((letter_spacing & (PANGO_SCALE - 1)) == 0)
+    {
+      *space_left = PANGO_UNITS_ROUND (*space_left);
+    }
+  *space_right = letter_spacing - *space_left;
+}
+
 typedef enum
 {
   BREAK_NONE_FIT,
@@ -3026,6 +3040,7 @@ shape_run (PangoLayoutLine *line,
       if (state->properties.letter_spacing)
 	{
 	  PangoGlyphItem glyph_item;
+	  int space_left, space_right;
 
 	  glyph_item.item = item;
 	  glyph_item.glyphs = glyphs;
@@ -3035,11 +3050,11 @@ shape_run (PangoLayoutLine *line,
 					 layout->log_attrs + state->start_offset,
 					 state->properties.letter_spacing);
 
-	  /* We put all the letter spacing after the last glyph, then
-	   * will go back and redistribute it at the beginning and the
-	   * end in a post-processing step over the whole line.
-	   */
-	  glyphs->glyphs[glyphs->num_glyphs - 1].geometry.width += state->properties.letter_spacing;
+	  distribute_letter_spacing (state->properties.letter_spacing, &space_left, &space_right);
+
+	  glyphs->glyphs[0].geometry.width += space_left;
+	  glyphs->glyphs[0].geometry.x_offset += space_left;
+	  glyphs->glyphs[glyphs->num_glyphs - 1].geometry.width += space_right;
 	}
     }
 
@@ -3072,6 +3087,35 @@ insert_run (PangoLayoutLine *line,
   line->runs = g_slist_prepend (line->runs, run);
   line->length += run_item->length;
 }
+
+#if 0
+# define DEBUG debug
+void
+debug (const char *where, PangoLayoutLine *line, ParaBreakState *state)
+{
+  int line_width = 0;
+
+  GSList *tmp_list;
+
+  tmp_list = line->runs;
+  while (tmp_list)
+    {
+      PangoLayoutRun *run = tmp_list->data;
+
+      line_width += pango_glyph_string_get_width (run->glyphs);
+
+      tmp_list = tmp_list->next;
+    }
+
+  g_message ("rem %d + line %d = %d		%s",
+	     state->remaining_width,
+	     line_width,
+	     state->remaining_width + line_width,
+	     where);
+}
+#else
+# define DEBUG(where, line, state) do { } while (0)
+#endif
 
 /* Tries to insert as much as possible of the item at the head of
  * state->items onto @line. Five results are possible:
@@ -3139,8 +3183,7 @@ process_item (PangoLayout     *layout,
   width = 0;
   if (processing_new_item)
     {
-      for (i = 0; i < state->glyphs->num_glyphs; i++)
-	width += state->glyphs->glyphs[i].geometry.width;
+      width = pango_glyph_string_get_width (state->glyphs);
     }
   else
     {
@@ -3171,13 +3214,6 @@ process_item (PangoLayout     *layout,
 	  pango_glyph_string_get_logical_widths (state->glyphs,
 						 layout->text + item->offset, item->length, item->analysis.level,
 						 state->log_widths);
-
-	  /* The extra run letter spacing is actually divided after
-	   * the last and before the first, but it works to
-	   * account it all on the last
-	   */
-	  if (item->num_chars > 0)
-	    state->log_widths[item->num_chars - 1] += state->properties.letter_spacing;
 	}
 
     retry_break:
@@ -3186,7 +3222,7 @@ process_item (PangoLayout     *layout,
        */
       while (--num_chars >= 0)
 	{
-	  width -= (state->log_widths)[state->log_widths_offset + num_chars];
+	  width -= state->log_widths[state->log_widths_offset + num_chars];
 
 	  /* If there are no previous runs we have to take care to grab at least one char. */
 	  if (can_break_at (layout, state->start_offset + num_chars, retrying_with_char_breaks) &&
@@ -3231,12 +3267,20 @@ process_item (PangoLayout     *layout,
 	  else
 	    {
 	      PangoItem *new_item;
+	      int new_break_width;
 
 	      length = g_utf8_offset_to_pointer (layout->text + item->offset, break_num_chars) - (layout->text + item->offset);
 
 	      new_item = pango_item_split (item, length, break_num_chars);
+	      
+	      /* reshaping may slightly change the item width */
+
+	      state->remaining_width += break_width;
 
 	      insert_run (line, state, new_item, FALSE);
+
+	      break_width = pango_glyph_string_get_width (((PangoGlyphItem *)(line->runs->data))->glyphs);
+	      state->remaining_width -= break_width;
 
 	      state->log_widths_offset += break_num_chars;
 
@@ -3338,6 +3382,7 @@ process_line (PangoLayout    *layout,
     state->remaining_width = (layout->indent >= 0) ? layout->width - layout->indent : layout->width;
   else
     state->remaining_width = (layout->indent >= 0) ? layout->width : layout->width + layout->indent;
+  DEBUG ("starting to fill line", line, state);
 
   while (state->items)
     {
@@ -4604,10 +4649,43 @@ get_item_letter_spacing (PangoItem *item)
 }
 
 static void
-adjust_final_space (PangoGlyphString *glyphs,
-		    int               adjustment)
+pad_glyphstring_right (PangoGlyphString *glyphs,
+		       ParaBreakState   *state,
+		       int               adjustment)
 {
-  glyphs->glyphs[glyphs->num_glyphs - 1].geometry.width += adjustment;
+  int glyph = glyphs->num_glyphs - 1;
+
+  while (glyph >= 0 && glyphs->glyphs[glyph].geometry.width == 0)
+    glyph--;
+
+  if (glyph < 0)
+    return;
+
+  state->remaining_width -= adjustment;
+  glyphs->glyphs[glyph].geometry.width += adjustment;
+  if (glyphs->glyphs[glyph].geometry.width < 0)
+    {
+      state->remaining_width += glyphs->glyphs[glyph].geometry.width;
+      glyphs->glyphs[glyph].geometry.width = 0;
+    }
+}
+
+static void
+pad_glyphstring_left (PangoGlyphString *glyphs,
+		      ParaBreakState   *state,
+		      int               adjustment)
+{
+  int glyph = 0;
+
+  while (glyph < glyphs->num_glyphs && glyphs->glyphs[glyph].geometry.width == 0)
+    glyph++;
+
+  if (glyph == glyphs->num_glyphs)
+    return;
+
+  state->remaining_width -= adjustment;
+  glyphs->glyphs[glyph].geometry.width += adjustment;
+  glyphs->glyphs[glyph].geometry.x_offset += adjustment;
 }
 
 static gboolean
@@ -4640,6 +4718,7 @@ zero_line_final_space (PangoLayoutLine *line,
   if (p != layout->text + item->offset + glyphs->log_clusters[glyph])
     return;
 
+  state->remaining_width += glyphs->glyphs[glyph].geometry.width;
   glyphs->glyphs[glyph].geometry.width = 0;
 }
 
@@ -4656,7 +4735,8 @@ zero_line_final_space (PangoLayoutLine *line,
  * cases.
  */
 static void
-adjust_line_letter_spacing (PangoLayoutLine *line)
+adjust_line_letter_spacing (PangoLayoutLine *line,
+			    ParaBreakState  *state)
 {
   PangoLayout *layout = line->layout;
   gboolean reversed;
@@ -4700,7 +4780,7 @@ adjust_line_letter_spacing (PangoLayoutLine *line)
 
       if (is_tab_run (layout, run))
 	{
-	  adjust_final_space (run->glyphs, tab_adjustment);
+	  pad_glyphstring_right (run->glyphs, state, tab_adjustment);
 	  tab_adjustment = 0;
 	}
       else
@@ -4708,19 +4788,32 @@ adjust_line_letter_spacing (PangoLayoutLine *line)
 	  PangoLayoutRun *visual_next_run = reversed ? last_run : next_run;
 	  PangoLayoutRun *visual_last_run = reversed ? next_run : last_run;
 	  int run_spacing = get_item_letter_spacing (run->item);
-	  int adjustment = run_spacing / 2;
+	  int space_left, space_right;
 
-	  if (visual_last_run && !is_tab_run (layout, visual_last_run))
-	    adjust_final_space (visual_last_run->glyphs, adjustment);
-	  else
-	    tab_adjustment += adjustment;
+	  distribute_letter_spacing (run_spacing, &space_left, &space_right);
 
-	  if (visual_next_run && !is_tab_run (layout, visual_next_run))
-	    adjust_final_space (run->glyphs, - adjustment);
-	  else
+	  if (run->glyphs->glyphs[0].geometry.width == 0)
 	    {
-	      adjust_final_space (run->glyphs, - run_spacing);
-	      tab_adjustment += run_spacing - adjustment;
+	      /* we've zeroed this space glyph at the end of line, now remove
+	       * the letter spacing added to its adjacent glyph */
+	      pad_glyphstring_left (run->glyphs, state, - space_left);
+	    }
+	  else if (!visual_last_run || is_tab_run (layout, visual_last_run))
+	    {
+	      pad_glyphstring_left (run->glyphs, state, - space_left);
+	      tab_adjustment += space_left;
+	    }
+
+	  if (run->glyphs->glyphs[run->glyphs->num_glyphs - 1].geometry.width == 0)
+	    {
+	      /* we've zeroed this space glyph at the end of line, now remove
+	       * the letter spacing added to its adjacent glyph */
+	      pad_glyphstring_right (run->glyphs, state, - space_right);
+	    }
+	  else if (!visual_next_run || is_tab_run (layout, visual_next_run))
+	    {
+	      pad_glyphstring_right (run->glyphs, state, - space_right);
+	      tab_adjustment += space_right;
 	    }
 	}
 
@@ -4838,6 +4931,8 @@ pango_layout_line_postprocess (PangoLayoutLine *line,
    */
   line->runs = g_slist_reverse (line->runs);
 
+  DEBUG ("postprocessing", line, state);
+
   /* Ellipsize the line if necessary
    */
   if (_pango_layout_line_ellipsize (line, state->attrs))
@@ -4848,18 +4943,26 @@ pango_layout_line_postprocess (PangoLayoutLine *line,
   if (wrapped)
     zero_line_final_space (line, state, last_run);
 
+  DEBUG ("after removing final space", line, state);
+
   /* Now convert logical to visual order
    */
   pango_layout_line_reorder (line);
 
+  DEBUG ("after reordering", line, state);
+
   /* Fixup letter spacing between runs
    */
-  adjust_line_letter_spacing (line);
+  adjust_line_letter_spacing (line, state);
 
- /* Distribute extra space between words if justifying and line was wrapped
-  */
- if (wrapped && line->layout->justify)
-   justify_words (line, state);
+  DEBUG ("after letter spacing", line, state);
+
+  /* Distribute extra space between words if justifying and line was wrapped
+   */
+  if (wrapped && line->layout->justify)
+    justify_words (line, state);
+
+  DEBUG ("after justification", line, state);
 }
 
 static void

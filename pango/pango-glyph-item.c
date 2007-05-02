@@ -615,19 +615,50 @@ pango_glyph_item_letter_space (PangoGlyphItem *glyph_item,
 			       int             letter_spacing)
 {
   PangoGlyphItemIter iter;
+  PangoGlyphInfo *glyphs = glyph_item->glyphs->glyphs;
   gboolean have_cluster;
+  int space_left, space_right;
+
+  space_left = letter_spacing / 2;
+
+  /* hinting */
+  if ((letter_spacing & (PANGO_SCALE - 1)) == 0)
+    {
+      space_left = PANGO_UNITS_ROUND (space_left);
+    }
+
+  space_right = letter_spacing - space_left;
 
   for (have_cluster = _pango_glyph_item_iter_init_start (&iter, glyph_item, text);
        have_cluster;
        have_cluster = _pango_glyph_item_iter_next_cluster (&iter))
     {
-      if (iter.start_char > 0 &&
-	  log_attrs[iter.start_char].is_cursor_position)
+      if (!log_attrs[iter.start_char].is_cursor_position)
+        continue;
+
+      if (iter.start_glyph < iter.end_glyph) /* LTR */
 	{
-	  if (iter.start_glyph < iter.end_glyph) /* LTR */
-	    glyph_item->glyphs->glyphs[iter.start_glyph - 1].geometry.width += letter_spacing;
-	  else			                 /* RTL */
-	    glyph_item->glyphs->glyphs[iter.start_glyph].geometry.width += letter_spacing;
+	  if (iter.start_char > 0)
+	    {
+	      glyphs[iter.start_glyph].geometry.width    += space_left ;
+	      glyphs[iter.start_glyph].geometry.x_offset += space_left ;
+	    }
+	  if (iter.end_char < glyph_item->item->num_chars)
+	    {
+	      glyphs[iter.end_glyph-1].geometry.width    += space_right;
+	    }
+	}
+      else			                 /* RTL */
+	{
+	  if (iter.start_char > 0)
+	    {
+	      glyphs[iter.start_glyph].geometry.width    += space_right;
+	    }
+	  if (iter.end_char < glyph_item->item->num_chars)
+	    {
+	      glyphs[iter.end_glyph+1].geometry.x_offset += space_left ;
+	      glyphs[iter.end_glyph+1].geometry.width    += space_left ;
+	    }
 	}
     }
 }

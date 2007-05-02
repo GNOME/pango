@@ -1,5 +1,17 @@
 2007-05-02  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango/pango-glyph-item.c (pango_glyph_item_letter_space):
+	* pango/pango-item.c (pango_item_split):
+	* pango/pango-layout.c (distribute_letter_spacing), (shape_run),
+	(debug), (process_item), (process_line), (pad_glyphstring_right),
+	(pad_glyphstring_left), (zero_line_final_space),
+	(adjust_line_letter_spacing), (pango_layout_line_postprocess):
+	Fix letter-spacing with justification.  We now distribute
+	letter-spacing equally on both sides of clusters, instead of putting
+	it all on one side.
+
+2007-05-02  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 64538 – pango_layout_set_justify() doesn't work
 
 	* pango/pango-layout.c (zero_line_final_space), (justify_clusters),

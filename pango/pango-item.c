@@ -137,7 +137,6 @@ pango_item_split (PangoItem  *orig,
   PangoItem *new_item;
 
   g_return_val_if_fail (orig != NULL, NULL);
-  g_return_val_if_fail (orig->length > 0, NULL);
   g_return_val_if_fail (split_index > 0, NULL);
   g_return_val_if_fail (split_index < orig->length, NULL);
   g_return_val_if_fail (split_offset > 0, NULL);
