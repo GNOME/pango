@@ -1,5 +1,7 @@
 2007-05-02  Behdad Esfahbod  <behdad@gnome.org>
 
+	Patch from Mathias Hasselmann
+
 	* docs/tmpl/main.sgml:
 	* pango/break.c (pango_default_break):
 	* pango/pango-break.h:
