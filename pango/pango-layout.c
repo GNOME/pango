@@ -3445,6 +3445,10 @@ get_items_log_attrs (const char   *text,
 	  tmp_item.length += para_delimiter_len;
 	}
 
+      /* XXX This is wrong.  we should call pango_default_break on the entire
+       * layout text and then tailor_break on each lang_engine change, like
+       * pango_get_log_attrs does.
+       */
       pango_break (text + index, tmp_item.length, &tmp_item.analysis,
 		   log_attrs + offset, tmp_item.num_chars + 1);
 

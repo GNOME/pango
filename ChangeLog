@@ -1,3 +1,8 @@
+2007-05-01  Behdad Esfahbod  <behdad@gnome.org>
+
+	* pango/pango-layout.c (get_items_log_attrs): Add note about
+	how we should not be using pango_break() here.
+
 2007-04-28  Mathias Hasselmann  <mathias.hasselmann@gmx.de>
 
 	* pango-view/viewer-render.c (make_layout), (parse_alignment),
