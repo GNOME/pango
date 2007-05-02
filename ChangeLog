@@ -1,5 +1,10 @@
 2007-05-02  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango/pango-layout.c (process_line): Set is_wrapped to true on
+	BREAK_EMPTY_FIT too.
+
+2007-05-02  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/pango-layout-private.h: Remove stale prototype of
 	_pango_layout_iter_get_line_readonly().
 

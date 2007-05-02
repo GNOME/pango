@@ -3365,6 +3365,7 @@ process_line (PangoLayout    *layout,
 	  break;
 
 	case BREAK_EMPTY_FIT:
+	  layout->is_wrapped = TRUE;
 	  goto done;
 
 	case BREAK_SOME_FIT:
