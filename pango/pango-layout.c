@@ -3273,13 +3273,16 @@ process_item (PangoLayout     *layout,
 
 	      new_item = pango_item_split (item, length, break_num_chars);
 	      
-	      /* reshaping may slightly change the item width */
+	      /* reshaping may slightly change the item width.  update
+	       * remaining_with if we are justifying */
 
 	      state->remaining_width += break_width;
 
 	      insert_run (line, state, new_item, FALSE);
 
-	      break_width = pango_glyph_string_get_width (((PangoGlyphItem *)(line->runs->data))->glyphs);
+	      if (layout->justify)
+		break_width = pango_glyph_string_get_width (((PangoGlyphItem *)(line->runs->data))->glyphs);
+
 	      state->remaining_width -= break_width;
 
 	      state->log_widths_offset += break_num_chars;
@@ -4828,7 +4831,93 @@ static void
 justify_clusters (PangoLayoutLine *line,
 		  ParaBreakState  *state)
 {
+  int offset;
+  int total_remaining_width, total_gaps = 0;
+  int added_so_far, gaps_so_far;
+  gboolean is_hinted;
+  GSList *run_iter;
+  enum {
+    MEASURE,
+    ADJUST
+  } mode;
 
+  total_remaining_width = state->remaining_width;
+  if (total_remaining_width <= 0)
+    return;
+
+  /* hint to full pixel if total remaining width was so */
+  is_hinted = (total_remaining_width & (PANGO_SCALE - 1)) == 0;
+
+  for (mode = MEASURE; mode <= ADJUST; mode++)
+    {
+      added_so_far = 0;
+      gaps_so_far = 0;
+
+      for (run_iter = line->runs; run_iter; run_iter = run_iter->next)
+	{
+	  PangoLayoutRun *run = run_iter->data;
+	  PangoGlyphString *glyphs = run->glyphs;
+	  PangoGlyphItemIter cluster_iter;
+	  gboolean have_cluster;
+	  gboolean is_first_gap = TRUE;
+
+	  int i;
+
+	  for (i = 0; i < glyphs->num_glyphs; i++)
+	    {
+	      if (!glyphs->glyphs[i].attr.is_cluster_start)
+	        continue;
+
+	      /* also don't expand zero-width spaces at the end of runs */
+	      if (glyphs->glyphs[i].geometry.width == 0)
+	        {
+		  if (i == glyphs->num_glyphs -1)
+		    continue;
+
+		  if (i == 0 && glyphs->num_glyphs > 1 && glyphs->glyphs[i+1].attr.is_cluster_start)
+		    continue;
+		}
+
+	      if (is_first_gap)
+	        {
+		  is_first_gap = FALSE;
+		  continue;
+		}
+
+	      gaps_so_far++;
+
+	      if (mode == ADJUST)
+		{
+		  int adjustment, space_left, space_right;
+
+		  adjustment = (gaps_so_far * total_remaining_width) / total_gaps - added_so_far;
+		  if (is_hinted)
+		    adjustment = PANGO_UNITS_ROUND (adjustment);
+		  /* distribute to before/after */
+		  distribute_letter_spacing (adjustment, &space_left, &space_right);
+
+		  glyphs->glyphs[i-1].geometry.width    += space_left ;
+		  glyphs->glyphs[i  ].geometry.width    += space_right;
+		  glyphs->glyphs[i  ].geometry.x_offset += space_right;
+
+		  added_so_far += adjustment;
+		}
+	    }
+	}
+
+      if (mode == MEASURE)
+	{
+	  total_gaps = gaps_so_far;
+
+	  if (total_gaps == 0)
+	    {
+	      /* a single cluster, can't really justify it */
+	      return;
+	    }
+	}
+    }
+
+  state->remaining_width -= added_so_far;
 }
 
 static void
@@ -4841,6 +4930,7 @@ justify_words (PangoLayoutLine *line,
   int offset;
   int total_remaining_width, total_space_width = 0;
   int added_so_far, spaces_so_far;
+  gboolean is_hinted;
   GSList *run_iter;
   enum {
     MEASURE,
@@ -4850,6 +4940,9 @@ justify_words (PangoLayoutLine *line,
   total_remaining_width = state->remaining_width;
   if (total_remaining_width <= 0)
     return;
+
+  /* hint to full pixel if total remaining width was so */
+  is_hinted = (total_remaining_width & (PANGO_SCALE - 1)) == 0;
 
   for (mode = MEASURE; mode <= ADJUST; mode++)
     {
@@ -4889,8 +4982,7 @@ justify_words (PangoLayoutLine *line,
 		      int adjustment;
 
 		      adjustment = ((guint64) spaces_so_far * total_remaining_width) / total_space_width - added_so_far;
-		      /* hint to full pixel if original space was so */
-		      if ((glyph_width & (PANGO_SCALE - 1)) == 0)
+		      if (is_hinted)
 			adjustment = PANGO_UNITS_ROUND (adjustment);
 
 		      glyphs->glyphs[i].geometry.width += adjustment;

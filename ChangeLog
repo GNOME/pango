@@ -1,5 +1,13 @@
 2007-05-02  Behdad Esfahbod  <behdad@gnome.org>
 
+	Bug 64538 – pango_layout_set_justify() doesn't work
+
+	* pango/pango-layout.c (process_item), (justify_clusters),
+	(justify_words): If no space found, justify by inserting space
+	between clusters.
+
+2007-05-02  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/pango-glyph-item.c (pango_glyph_item_letter_space):
 	* pango/pango-item.c (pango_item_split):
 	* pango/pango-layout.c (distribute_letter_spacing), (shape_run),
