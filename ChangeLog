@@ -1,5 +1,13 @@
 2007-05-03  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango/pango-layout.c (process_item): When breaking item to fit it
+	into current line, go from the beginning, adding char at a time until
+	it doesn't fit anymore instead of removing chars from the end.  The
+	difference is a O(n) as opposed to O(n^2) algorithm were n is the
+	number of lines in the paragraph (assuming constant chars per line).
+
+2007-05-03  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango-view/viewer-render.c (output_body), (do_output): Save
 	one layout rendering per view.  Down to two from three now.
 

@@ -3218,11 +3218,13 @@ process_item (PangoLayout     *layout,
 
     retry_break:
 
-      /* Shorten the item by one line break
+      /* See how much of the item we can stuff in the line
        */
-      while (--num_chars >= 0)
+      width = 0;
+      for (num_chars = 0; num_chars < item->num_chars; num_chars++)
 	{
-	  width -= state->log_widths[state->log_widths_offset + num_chars];
+	  if (width > state->remaining_width)
+	    break;
 
 	  /* If there are no previous runs we have to take care to grab at least one char. */
 	  if (can_break_at (layout, state->start_offset + num_chars, retrying_with_char_breaks) &&
@@ -3230,10 +3232,9 @@ process_item (PangoLayout     *layout,
 	    {
 	      break_num_chars = num_chars;
 	      break_width = width;
-
-	      if (width <= state->remaining_width || (num_chars == 1 && !line->runs))
-		break;
 	    }
+
+	  width += state->log_widths[state->log_widths_offset + num_chars];
 	}
 
       if (layout->wrap == PANGO_WRAP_WORD_CHAR && force_fit && break_width > state->remaining_width && !retrying_with_char_breaks)
