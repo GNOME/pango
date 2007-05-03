@@ -1,5 +1,10 @@
 2007-05-02  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango-view/test-justify.txt: New test text with long Latin and
+	Arabic lines, suitable for --justify testing.
+
+2007-05-02  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 64538 – pango_layout_set_justify() doesn't work
 
 	* pango/pango-layout.c (process_item), (justify_clusters),
