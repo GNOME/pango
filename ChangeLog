@@ -1,5 +1,12 @@
 2007-05-03  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango-view/test-long-paragraph.txt: New test text that contains a
+	Persian monologue by YarAli PourMoghaddam which is a single paragraph
+	of more than 10,000 chars and 2,400 words.  Used for testing the
+	effect of previous change.
+
+2007-05-03  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/pango-layout.c (process_item): When breaking item to fit it
 	into current line, go from the beginning, adding char at a time until
 	it doesn't fit anymore instead of removing chars from the end.  The
