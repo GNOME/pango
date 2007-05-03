@@ -1390,7 +1390,9 @@ itemize_state_finish (ItemizeState *state)
  * computing bidirectional levels (see pango_context_set_base_dir ()),
  * is specified explicitly rather than gotten from the #PangoContext.
  *
- * Return value: a #GList of #PangoItem structures.
+ * Return value: a #GList of #PangoItem structures.  The items should be
+ * freed using pango_item_free() probably in combination with g_list_foreach(),
+ * and the list itself using g_list_free().
  *
  * Since: 1.4
  */
