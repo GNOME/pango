@@ -165,8 +165,7 @@ get_options_string (void)
 }
 
 static void
-output_body (PangoContext   *context,
-	     const char     *text,
+output_body (PangoLayout    *layout,
 	     RenderCallback  render_cb,
 	     gpointer        cb_context,
 	     gpointer        cb_data,
@@ -174,7 +173,6 @@ output_body (PangoContext   *context,
 	     int            *height,
 	     gboolean        supports_matrix)
 {
-  PangoLayout *layout;
   PangoRectangle logical_rect;
   int size, start_size, end_size, increment;
   int x = 0, y = 0;
@@ -183,6 +181,7 @@ output_body (PangoContext   *context,
     {
       const PangoMatrix* matrix;
       const PangoMatrix identity = PANGO_MATRIX_INIT;
+      PangoContext *context = pango_layout_get_context (layout);
       matrix = pango_context_get_matrix (context);
       if (matrix)
 	{
@@ -190,6 +189,7 @@ output_body (PangoContext   *context,
 	  y += matrix->y0;
 	}
       pango_context_set_matrix (context, &identity);
+      pango_layout_context_changed (layout);
     }
 
   if (opt_waterfall)
@@ -209,7 +209,14 @@ output_body (PangoContext   *context,
 
   for (size = start_size; size <= end_size; size += increment)
     {
-      layout = make_layout (context, text, size);
+      if (size > 0)
+        {
+	  PangoFontDescription *desc = pango_font_description_copy (pango_layout_get_font_description (layout));
+	  pango_font_description_set_size (desc, size * PANGO_SCALE);
+	  pango_layout_set_font_description (layout, desc);
+	  pango_font_description_free (desc);
+	}
+
       pango_layout_get_extents (layout, NULL, &logical_rect);
 
       if (render_cb)
@@ -218,8 +225,6 @@ output_body (PangoContext   *context,
       *width = MAX (*width, PANGO_PIXELS (logical_rect.x + logical_rect.width));
       *width = MAX (*width, PANGO_PIXELS (pango_layout_get_width (layout)));
       *height += PANGO_PIXELS (logical_rect.height);
-
-      g_object_unref (layout);
     }
 }
 
@@ -302,10 +307,11 @@ do_output (PangoContext     *context,
   pango_context_set_base_gravity (context, opt_gravity);
   pango_context_set_gravity_hint (context, opt_gravity_hint);
 
+  layout = make_layout (context, text, -1);
+
   set_transform (context, transform_cb, cb_context, cb_data, &matrix);
 
-  output_body (context,
-	       text,
+  output_body (layout,
 	       NULL, NULL, NULL,
 	       &rotated_width, &rotated_height,
 	       supports_matrix);
@@ -322,8 +328,7 @@ do_output (PangoContext     *context,
   set_transform (context, transform_cb, cb_context, cb_data, &matrix);
 
   if (render_cb)
-    output_body (context,
-		 text,
+    output_body (layout,
 		 render_cb, cb_context, cb_data,
 		 &rotated_width, &rotated_height,
 		 supports_matrix);
@@ -341,6 +346,7 @@ do_output (PangoContext     *context,
 
   pango_context_set_matrix (context, orig_matrix);
   pango_matrix_free (orig_matrix);
+  g_object_unref (layout);
 }
 
 static gboolean
