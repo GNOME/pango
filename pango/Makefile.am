@@ -268,6 +268,7 @@ libpangocairo_1_0_la_LIBADD =			\
 libpangocairo_1_0_la_DEPENDENCIES =		\
 	libpango-$(PANGO_API_VERSION).la
 libpangocairo_1_0_la_SOURCES =  \
+	pangocairo-context.c    \
 	pangocairo-font.c	\
 	pangocairo-fontmap.c    \
 	pangocairo-render.c	\

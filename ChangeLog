@@ -1,3 +1,11 @@
+2007-05-04  Behdad Esfahbod  <behdad@gnome.org>
+
+	* pango/Makefile.am:
+	* pango/pangocairo-context.c:
+	* pango/pangocairo-fontmap.c:
+	Rip non-fontmap stuff from pangocairo-fontmap.c into
+	pangocairo-context.c.
+
 2007-05-03  Behdad Esfahbod  <behdad@gnome.org>
 
 	* pango/pango-context.c (pango_itemize): Improve docs about freeing
