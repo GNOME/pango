@@ -1,8 +1,10 @@
 EXPORTS
 	pango_cairo_context_get_font_options
 	pango_cairo_context_get_resolution
+	pango_cairo_context_get_shape_renderer
 	pango_cairo_context_set_font_options
 	pango_cairo_context_set_resolution
+	pango_cairo_context_set_shape_renderer
 	pango_cairo_create_layout
 	pango_cairo_error_underline_path
 ;	pango_cairo_fc_font_get_type
