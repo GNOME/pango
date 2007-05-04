@@ -525,6 +525,7 @@ pango_layout_get_spacing (PangoLayout *layout)
  * @attrs: a #PangoAttrList
  *
  * Sets the text attributes for a layout object.
+ * References @attrs, so the caller can unref its reference.
  **/
 void
 pango_layout_set_attributes (PangoLayout   *layout,

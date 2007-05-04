@@ -1,5 +1,20 @@
 2007-05-04  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango/pangocairo.h:
+	* pango/pangocairo-context.c:
+	* pango/pangocairo-render.c:
+	New API
+
+		PangoCairoShapeRendererFunc and
+		pango_cairo_context_[sg]et_shape_renderer() 
+
+	* docs/pango-sections.txt, docs/tmpl/pangocairo.sgml: Document new API.
+
+	* examples/Makefile.am, examples/cairoshape.c: New example to show off
+	new API/feature.
+
+2007-05-04  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/Makefile.am:
 	* pango/pangocairo-context.c:
 	* pango/pangocairo-fontmap.c:

@@ -34,6 +34,10 @@ struct _PangoCairoContextInfo
   cairo_font_options_t *set_options;
   cairo_font_options_t *surface_options;
   cairo_font_options_t *merged_options;
+
+  PangoCairoShapeRendererFunc shape_renderer_func;
+  gpointer                    shape_renderer_data;
+  GDestroyNotify              shape_renderer_notify;
 };
 
 static void
@@ -45,6 +49,9 @@ free_context_info (PangoCairoContextInfo *info)
     cairo_font_options_destroy (info->surface_options);
   if (info->merged_options)
     cairo_font_options_destroy (info->merged_options);
+
+  if (info->shape_renderer_notify)
+    info->shape_renderer_notify (info->shape_renderer_data);
 
   g_slice_free (PangoCairoContextInfo, info);
 }
@@ -63,11 +70,8 @@ get_context_info (PangoContext *context,
 
   if (G_UNLIKELY (!info) && create)
     {
-      info = g_slice_new (PangoCairoContextInfo);
+      info = g_slice_new0 (PangoCairoContextInfo);
       info->dpi = -1.0;
-      info->set_options = NULL;
-      info->surface_options = NULL;
-      info->merged_options = NULL;
 
       g_object_set_qdata_full (G_OBJECT (context), context_info_quark,
 			       info, (GDestroyNotify)free_context_info);
@@ -259,6 +263,83 @@ _pango_cairo_context_get_merged_font_options (PangoContext *context)
     }
 
   return info->merged_options;
+}
+
+/**
+ * pango_cairo_context_set_shape_renderer:
+ * @context: a #PangoContext, from pango_cairo_font_map_create_context()
+ * @func: Callback function for rendering attributes of type
+ * %PANGO_ATTR_SHAPE, or %NULL to disable shape rendering.
+ * @data: User data that will be passed to @func.
+ * @dnotify: Callback that will be called when the
+ *           context is freed to release @data, or %NULL.
+ *
+ * Sets callback function for context to use for rendering attributes
+ * of type %PANGO_ATTR_SHAPE.  See #PangoCairoShapeRendererFunc for
+ * details.
+ *
+ * Since: 1.18
+ */
+void
+pango_cairo_context_set_shape_renderer (PangoContext                *context,
+					PangoCairoShapeRendererFunc  func,
+					gpointer                     data,
+					GDestroyNotify               dnotify)
+{
+  PangoCairoContextInfo *info;
+
+  g_return_if_fail (PANGO_IS_CONTEXT (context));
+
+  info  = get_context_info (context, TRUE);
+
+  if (info->shape_renderer_notify)
+    info->shape_renderer_notify (info->shape_renderer_data);
+
+  info->shape_renderer_func   = func;
+  info->shape_renderer_data   = data;
+  info->shape_renderer_notify = dnotify;
+}
+
+/**
+ * pango_cairo_context_get_shape_renderer:
+ * @context: a #PangoContext, from pango_cairo_font_map_create_context()
+ * @data: Pointer to #gpointer to return user data
+ *
+ * Sets callback function for context to use for rendering attributes
+ * of type %PANGO_ATTR_SHAPE.  See #PangoCairoShapeRendererFunc for
+ * details.
+ *
+ * Retrieves callback function and associated user data for rendering
+ * attributes of type %PANGO_ATTR_SHAPE as set by
+ * pango_cairo_context_set_shape_renderer(), if any.
+ *
+ * Return value: the shape rendering callback previously set on the context, or %NULL
+ *   if no shape rendering callback have been set.
+ *
+ * Since: 1.18
+ */
+PangoCairoShapeRendererFunc
+pango_cairo_context_get_shape_renderer (PangoContext                *context,
+					gpointer                    *data)
+{
+  PangoCairoContextInfo *info;
+
+  g_return_val_if_fail (PANGO_IS_CONTEXT (context), NULL);
+
+  info = get_context_info (context, FALSE);
+
+  if (info)
+    {
+      if (data)
+        *data = info->shape_renderer_data;
+      return info->shape_renderer_func;
+    }
+  else
+    {
+      if (data)
+        *data = NULL;
+      return NULL;
+    }
 }
 
 /**

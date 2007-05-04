@@ -1,4 +1,5 @@
-#include <config.h>
+/* example to use pangocairo to render text projected on a path */
+
 #include <math.h>
 #include <stdlib.h>
 #include <pango/pangocairo.h>

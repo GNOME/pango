@@ -15,7 +15,7 @@ INCLUDES =				\
 noinst_PROGRAMS =
 
 if HAVE_CAIRO_PNG
-noinst_PROGRAMS += cairosimple cairotwisted
+noinst_PROGRAMS += cairosimple cairotwisted cairoshape
 
 cairosimple_LDADD =					\
 	../pango/libpango-$(PANGO_API_VERSION).la	\
@@ -27,4 +27,5 @@ cairosimple_LDADD +=					\
 	../pango/libpangoft2-$(PANGO_API_VERSION).la
 endif
 cairotwisted_LDADD = $(cairosimple_LDADD)
+cairoshape_LDADD   = $(cairosimple_LDADD)
 endif

@@ -44,6 +44,11 @@ G_BEGIN_DECLS
 
 typedef struct _PangoCairoFontMap      PangoCairoFontMap;
 
+typedef void (* PangoCairoShapeRendererFunc) (cairo_t        *cr,
+					      PangoAttrShape *attr,
+					      gboolean        do_path,
+					      gpointer        data);
+
 /*
  * PangoCairoFontMap
  */
@@ -69,6 +74,13 @@ const cairo_font_options_t *pango_cairo_context_get_font_options (PangoContext  
 void               pango_cairo_context_set_resolution     (PangoContext       *context,
 							   double              dpi);
 double             pango_cairo_context_get_resolution     (PangoContext       *context);
+
+void                        pango_cairo_context_set_shape_renderer (PangoContext                *context,
+								    PangoCairoShapeRendererFunc  func,
+								    gpointer                     data,
+								    GDestroyNotify               dnotify);
+PangoCairoShapeRendererFunc pango_cairo_context_get_shape_renderer (PangoContext                *context,
+								    gpointer                    *data);
 
 /* Convenience
  */
