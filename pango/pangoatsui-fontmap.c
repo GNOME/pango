@@ -62,6 +62,7 @@ struct _PangoATSUIFace
 
   int weight;
   int traits;
+  guint synthetic_italic : 1;
 };
 
 static GType pango_atsui_family_get_type (void);
@@ -98,18 +99,30 @@ pango_atsui_family_list_faces (PangoFontFamily  *family,
 			       int              *n_faces)
 {
   PangoATSUIFamily *atsuifamily = PANGO_ATSUI_FAMILY (family);
-  NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 
   if (atsuifamily->n_faces < 0)
     {
+      NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
       const char *real_family = get_real_family (atsuifamily->family_name);
-      NSArray *members = [[NSFontManager sharedFontManager] availableMembersOfFontFamily:[NSString stringWithUTF8String:real_family]];
-      int i;
+      NSFontManager *manager = [NSFontManager sharedFontManager];
+      NSArray *members = [manager availableMembersOfFontFamily:[NSString stringWithUTF8String:real_family]];
+      int i, count;
+      GHashTable *hash_table;
+      GList *faces = NULL, *l;
+      GList *synthetic_faces = NULL;
 
-      atsuifamily->n_faces = [members count];
-      atsuifamily->faces = g_new (PangoFontFace *, atsuifamily->n_faces);
+      /* The NSFontManager API returns italic faces for some families
+       * even if they don't exist. When using Cocoa to create
+       * instances of those fonts, Cocoa synthesizes italic versions
+       * by applying a shear transformation. We do that manually for
+       * those fonts in pangocairo-atsuifont.c. For many other fonts,
+       * there is no italic face at all, so we create synthesized
+       * versions of those like in the win32 and fontconfig backends.
+       */
+      hash_table = g_hash_table_new (g_direct_hash, g_direct_equal);
 
-      for (i = 0; i < atsuifamily->n_faces; i++)
+      count = [members count];
+      for (i = 0; i < count; i++)
 	{
 	  PangoATSUIFace *face = g_object_new (PANGO_TYPE_ATSUI_FACE, NULL);
 	  NSArray *font_array = [members objectAtIndex:i];
@@ -120,8 +133,48 @@ pango_atsui_family_list_faces (PangoFontFamily  *family,
 	  face->weight = [[font_array objectAtIndex:2] intValue];
 	  face->traits = [[font_array objectAtIndex:3] intValue];
 
-	  atsuifamily->faces[i] = (PangoFontFace *)face;
+	  faces = g_list_prepend (faces, face);
+
+	  if (face->traits & NSItalicFontMask)
+	    g_hash_table_insert (hash_table, GINT_TO_POINTER (face->weight), face);
 	}
+
+      for (l = faces; l; l = l->next)
+	{
+	  PangoATSUIFace *face = l->data;
+
+	  if (!g_hash_table_lookup (hash_table, GINT_TO_POINTER (face->weight)))
+	    {
+	      PangoATSUIFace *italic_face = g_object_new (PANGO_TYPE_ATSUI_FACE, NULL);
+
+	      italic_face->family = atsuifamily;
+	      italic_face->postscript_name = g_strdup (face->postscript_name);
+	      italic_face->weight = face->weight;
+	      italic_face->traits = face->traits | NSItalicFontMask;
+	      italic_face->synthetic_italic = TRUE;
+
+	      /* Try to create a sensible face name. */
+	      if (strcasecmp (face->style_name, "regular") == 0)
+		italic_face->style_name = g_strdup ("Oblique");
+	      else 
+		italic_face->style_name = g_strdup_printf ("%s Oblique", face->style_name);
+
+	      synthetic_faces = g_list_prepend (synthetic_faces, italic_face);
+	    }
+	}
+
+      faces = g_list_concat (faces, synthetic_faces);
+
+      atsuifamily->n_faces = g_list_length (faces);
+      atsuifamily->faces = g_new (PangoFontFace *, atsuifamily->n_faces);
+
+      for (l = faces, i = 0; l; l = l->next, i++)
+	atsuifamily->faces[i] = l->data;
+
+      g_list_free (faces);
+      g_hash_table_destroy (hash_table);
+
+      [pool release];
     }
 
   if (n_faces)
@@ -129,8 +182,6 @@ pango_atsui_family_list_faces (PangoFontFamily  *family,
 
   if (faces)
     *faces = g_memdup (atsuifamily->faces, atsuifamily->n_faces * sizeof (PangoFontFace *));
-
-  [pool release];
 }
 
 static const char *
@@ -159,9 +210,7 @@ pango_atsui_family_finalize (GObject *object)
   if (family->n_faces != -1)
     {
       for (i = 0; i < family->n_faces; i++)
-	{
-	  g_object_unref (family->faces[i]);
-	}
+	g_object_unref (family->faces[i]);
 
       g_free (family->faces);
     }
@@ -266,6 +315,7 @@ pango_atsui_face_describe (PangoFontFace *face)
 
   pango_font_description_set_weight (description, pango_weight);
   pango_font_description_set_style (description, pango_style);
+  pango_font_description_set_variant (description, pango_variant);
 
   return description;
 }
@@ -347,6 +397,12 @@ const char *
 _pango_atsui_face_get_postscript_name (PangoATSUIFace *face)
 {
   return face->postscript_name;
+}
+
+gboolean
+_pango_atsui_face_get_synthetic_italic (PangoATSUIFace *face)
+{
+  return face->synthetic_italic;
 }
 
 PangoCoverage *
@@ -562,6 +618,38 @@ pango_atsui_font_map_lookup (PangoATSUIFontMap    *atsuifontmap,
   return g_hash_table_lookup (atsuifontmap->font_hash, &key);
 }
 
+static gboolean
+find_best_match (PangoATSUIFamily            *font_family,
+		 const PangoFontDescription  *description,
+		 PangoFontDescription       **best_description,
+		 PangoATSUIFace             **best_face)
+{
+  PangoFontDescription *new_desc;
+  int i;
+
+  *best_description = NULL;
+  *best_face = NULL;
+
+  for (i = 0; i < font_family->n_faces; i++)
+    {
+      new_desc = pango_font_face_describe (font_family->faces[i]);
+
+      if (pango_font_description_better_match (description, *best_description, new_desc))
+	{
+	  pango_font_description_free (*best_description);
+	  *best_description = new_desc;
+	  *best_face = (PangoATSUIFace *)font_family->faces[i];
+	}
+      else
+	pango_font_description_free (new_desc);
+    }
+
+  if (*best_description)
+    return TRUE;
+
+  return FALSE;
+}
+
 static PangoFont *
 pango_atsui_font_map_load_font (PangoFontMap               *fontmap,
 				PangoContext               *context,
@@ -572,52 +660,31 @@ pango_atsui_font_map_load_font (PangoFontMap               *fontmap,
   gchar *name;
   gint size;
 
-  g_return_val_if_fail (description != NULL, NULL);
-
   size = pango_font_description_get_size (description);
-
   if (size < 0)
     return NULL;
 
   name = g_utf8_casefold (pango_font_description_get_family (description), -1);
   font_family = g_hash_table_lookup (atsuifontmap->families, name);
-
   g_free (name);
 
   if (font_family)
     {
-      PangoFontDescription *best_desc = NULL, *new_desc;
-      PangoATSUIFace *best_face = NULL;
+      PangoFontDescription *best_description;
+      PangoATSUIFace *best_face;
       PangoATSUIFont *best_font;
-      int i;
 
       /* Force a listing of the available faces */
       pango_font_family_list_faces ((PangoFontFamily *)font_family, NULL, NULL);
 
-      for (i = 0; i < font_family->n_faces; i++)
-	{
-	  new_desc = pango_font_face_describe (font_family->faces[i]);
-
-	  if (pango_font_description_better_match (description, best_desc, new_desc))
-	    {
-	      pango_font_description_free (best_desc);
-	      best_desc = new_desc;
-	      best_face = (PangoATSUIFace *)font_family->faces[i];
-	    }
-	  else
-	    {
-	      pango_font_description_free (new_desc);
-	    }
-	}
-
-      if (best_desc == NULL || best_face == NULL)
+      if (!find_best_match (font_family, description, &best_description, &best_face))
 	return NULL;
-
-      pango_font_description_set_size (best_desc, size);
+      
+      pango_font_description_set_size (best_description, size);
 
       best_font = pango_atsui_font_map_lookup (atsuifontmap, 
 					       context, 
-					       best_desc, 
+					       best_description, 
 					       best_face);
 
       if (best_font)
@@ -628,16 +695,16 @@ pango_atsui_font_map_load_font (PangoFontMap               *fontmap,
 
 	  klass = PANGO_ATSUI_FONT_MAP_GET_CLASS (atsuifontmap);
 	  best_font = klass->create_font (atsuifontmap, context, 
-					  best_face, best_desc);
+					  best_face, best_description);
 	  
 	  if (best_font)
 	    pango_atsui_font_map_add (atsuifontmap, context, best_font);
 	    /* TODO: Handle the else case here. */
 	}
 
-      pango_font_description_free (best_desc);
+      pango_font_description_free (best_description);
 
-      return PANGO_FONT (best_font);
+      return (PangoFont *)best_font;
     }
 
   return NULL;

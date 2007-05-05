@@ -1,3 +1,14 @@
+2007-05-05  Richard Hult  <richard@imendio.com>
+
+	Bug 434160 - [atsui] Italic versions of some faces can't be created
+
+	* pango/pangoatsui-fontmap.c:
+	* pango/pangoatsui-private.h:
+	* pango/pangocairo-atsuifont.c: Follow the other backends and create
+	italic faces when they are not available. Apply synthetic italic
+	in two cases, when the font manager hands out italic faces that are
+	not in fact italic, and for the ones we've created ourselves.
+
 2007-05-04  Behdad Esfahbod  <behdad@gnome.org>
 
 	Bug 435709 – pango_cairo_context_[sg]et_shape_renderer()

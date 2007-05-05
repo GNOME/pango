@@ -22,6 +22,8 @@
 
 #include <config.h>
 
+#import <Cocoa/Cocoa.h>
+
 #include "pangoatsui-private.h"
 #include "pangocairo.h"
 #include "pangocairo-private.h"
@@ -269,6 +271,7 @@ _pango_cairo_atsui_font_new (PangoCairoATSUIFontMap     *cafontmap,
 			     const PangoFontDescription *desc)
 {
   const char *postscript_name;
+  gboolean synthesize_italic = FALSE;
   PangoCairoATSUIFont *cafont;
   PangoATSUIFont *afont;
   CFStringRef cfstr;
@@ -277,14 +280,46 @@ _pango_cairo_atsui_font_new (PangoCairoATSUIFontMap     *cafontmap,
   ATSUFontID font_id;
 
   postscript_name = _pango_atsui_face_get_postscript_name (face);
+  
   cfstr = CFStringCreateWithCString (NULL, postscript_name,
 				     kCFStringEncodingUTF8);
-
   font_ref = ATSFontFindFromPostScriptName (cfstr, kATSOptionFlagsDefault);
-  font_id = FMGetFontFromATSFontRef (font_ref);
-
   CFRelease (cfstr);
 
+  /* We synthesize italic in two cases. The first is when
+   * NSFontManager has handed out a face that it claims has italic but
+   * it doesn't. The other is when an italic face is requested that
+   * doesn't have a real version.
+   */
+  if (font_ref == kATSFontRefUnspecified && 
+      pango_font_description_get_style (desc) != PANGO_STYLE_NORMAL)
+    {
+      NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+      NSString *nsname;
+      NSFont *nsfont, *converted_font;
+      gdouble size;
+
+      size = (double) pango_font_description_get_size (desc) / PANGO_SCALE;
+
+      nsname = [NSString stringWithUTF8String:postscript_name];
+      nsfont = [NSFont fontWithName:nsname size:size];
+
+      converted_font = [[NSFontManager sharedFontManager] convertFont:nsfont
+			toHaveTrait:NSUnitalicFontMask];
+      font_ref = ATSFontFindFromPostScriptName ((CFStringRef) [converted_font fontName],
+						kATSOptionFlagsDefault);
+
+      [pool release];
+
+      synthesize_italic = TRUE;
+    }
+  else if (_pango_atsui_face_get_synthetic_italic (face))
+    synthesize_italic = TRUE;
+
+  if (font_ref == kATSFontRefUnspecified)
+    return NULL;
+
+  font_id = FMGetFontFromATSFontRef (font_ref);
   if (!font_id)
     return NULL;
 
@@ -313,6 +348,20 @@ _pango_cairo_atsui_font_new (PangoCairoATSUIFontMap     *cafontmap,
 		       0., 0.);
   else
     cairo_matrix_init_identity (&cafont->ctm);
+
+  if (synthesize_italic)
+    {
+      cairo_matrix_t shear, result;
+
+      /* Apply a shear matrix, matching what Cocoa does. */
+      cairo_matrix_init (&shear,
+			 1, 0, 
+			 0.25, 1,
+			 0, 0);
+
+      cairo_matrix_multiply (&result, &shear, &cafont->font_matrix);
+      cafont->font_matrix = result;
+    }
 
   cafont->options = cairo_font_options_copy (_pango_cairo_context_get_merged_font_options (context));
 

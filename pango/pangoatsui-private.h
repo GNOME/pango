@@ -103,9 +103,10 @@ struct _PangoATSUIFontClass
 GType pango_atsui_font_map_get_type (void);
 GType pango_atsui_font_get_type (void);
 
-const char *   _pango_atsui_face_get_postscript_name (PangoATSUIFace *face);
-PangoCoverage *_pango_atsui_face_get_coverage        (PangoATSUIFace *face,
-						      PangoLanguage  *language);
+const char *   _pango_atsui_face_get_postscript_name  (PangoATSUIFace *face);
+PangoCoverage *_pango_atsui_face_get_coverage         (PangoATSUIFace *face,
+						       PangoLanguage  *language);
+gboolean       _pango_atsui_face_get_synthetic_italic (PangoATSUIFace *face);
 
 G_END_DECLS
 
