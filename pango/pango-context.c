@@ -855,7 +855,7 @@ itemize_state_init (ItemizeState      *state,
     state->font_desc_gravity = PANGO_GRAVITY_AUTO;
 
   state->gravity = PANGO_GRAVITY_AUTO;
-  state->centered_baseline = FALSE;
+  state->centered_baseline = PANGO_GRAVITY_IS_VERTICAL (state->context->resolved_gravity);
   state->gravity_hint = state->context->gravity_hint;
   state->resolved_gravity = PANGO_GRAVITY_AUTO;
   state->derived_lang = NULL;
@@ -1220,7 +1220,6 @@ itemize_state_update_for_new_run (ItemizeState *state)
       if (state->font_desc_gravity != PANGO_GRAVITY_AUTO)
 	{
 	  state->resolved_gravity = state->font_desc_gravity;
-	  state->centered_baseline = PANGO_GRAVITY_IS_VERTICAL (state->resolved_gravity);
 	}
       else
 	{
@@ -1230,7 +1229,6 @@ itemize_state_update_for_new_run (ItemizeState *state)
 	  if (G_LIKELY (gravity == PANGO_GRAVITY_AUTO))
 	    gravity = state->context->resolved_gravity;
 
-	  state->centered_baseline = PANGO_GRAVITY_IS_VERTICAL (gravity);
 	  state->resolved_gravity = pango_gravity_get_for_script (state->script,
 								  gravity,
 								  gravity_hint);
