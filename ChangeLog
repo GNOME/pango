@@ -1,5 +1,18 @@
 2007-05-08  Behdad Esfahbod  <behdad@gnome.org>
 
+	Bug 436988 – Adding PangoScript to PangoAnalysis
+
+	* pango/pango-item.h:
+	* pango/pango-context.c (itemize_state_add_character):
+	Add a 'script' member to PangoAnalysis.  It's added as a guint8
+	in the padding available in that struct, though it's value is a
+	PangoScript.
+
+	* pango/pangox.c (itemize_string_foreach):
+	Update.
+
+2007-05-08  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 416515 – Time is not aligned with date on vertical panel
 
 	* pango/pango-context.c (itemize_state_init),

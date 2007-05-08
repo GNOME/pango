@@ -754,15 +754,13 @@ itemize_string_foreach (PangoFont     *font,
 	  (finished ||
 	   (shaper != last_shaper || last_level != embedding_levels[i])))
 	{
-	  PangoAnalysis analysis;
+	  PangoAnalysis analysis = {0};
 	  int j;
 
 	  analysis.shape_engine = last_shaper;
-	  analysis.lang_engine = NULL;
 	  analysis.font = font;
 	  analysis.language = language;
 	  analysis.level = last_level;
-	  analysis.extra_attrs = NULL;
 
 	  pango_shape (start, p - start, &analysis, glyph_str);
 

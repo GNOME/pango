@@ -1013,6 +1013,7 @@ itemize_state_add_character (ItemizeState     *state,
 
   state->item->analysis.flags = state->centered_baseline ? PANGO_ANALYSIS_FLAG_CENTERED_BASELINE : 0;
 
+  state->item->analysis.script = state->script;
   state->item->analysis.language = state->derived_lang;
 
   if (state->copy_extra_attrs)

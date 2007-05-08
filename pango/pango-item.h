@@ -42,7 +42,9 @@ struct _PangoAnalysis
   guint8 gravity; /* PangoGravity */
   guint8 flags;
 
+  guint8 script; /* PangoScript */
   PangoLanguage *language;
+
   GSList *extra_attrs;
 };
 
