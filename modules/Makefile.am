@@ -22,17 +22,17 @@ CLEANFILES =		\
 if CROSS_COMPILING
 RUN_QUERY_MODULES_TEST=false
 else
-RUN_QUERY_MODULES_TEST=test -z "$(DESTDIR)"
+RUN_QUERY_MODULES_TEST=true
 all-local: pango.modules
 endif
 
 install-data-local: $(top_builddir)/pango/pango-querymodules$(EXEEXT)
-	@if $(RUN_QUERY_MODULES_TEST) ; then 				\
+	@if $(RUN_QUERY_MODULES_TEST) && test -z "$(DESTDIR)" ; then 	\
 	  echo $(mkinstalldirs) $(DESTDIR)$(sysconfdir)/pango \&\& 	\
-	  $(top_builddir)/pango/pango-querymodules$(EXEEXT) 			\
+	  $(top_builddir)/pango/pango-querymodules$(EXEEXT) 		\
 		\> $(DESTDIR)$(sysconfdir)/pango/pango.modules ;	\
 	  $(mkinstalldirs) $(DESTDIR)$(sysconfdir)/pango && 		\
-	  $(top_builddir)/pango/pango-querymodules$(EXEEXT) 			\
+	  $(top_builddir)/pango/pango-querymodules$(EXEEXT) 		\
 		> $(DESTDIR)$(sysconfdir)/pango/pango.modules ;		\
 	else								\
 	  echo "***" ; 							\
@@ -50,11 +50,14 @@ pango.modules:						\
 	$(SUBDIRS)					\
 	$(top_builddir)/config.status			\
 	$(top_builddir)/pango/pango-querymodules$(EXEEXT)
-	@if find . -name '*.la' | grep -v '\.libs' | grep -v libpango | grep '.' > /dev/null ; then \
+	@if $(RUN_QUERY_MODULES_TEST) && find . -name '*.la' | grep -v '\.libs' | grep -v libpango | grep '.' > /dev/null ; then \
           echo "Writing a pango.modules file to use with tests/examples."; \
           $(top_builddir)/pango/pango-querymodules$(EXEEXT) `find . -name '*.la' | grep -v '\.libs' | grep -v libpango` > $@ ;\
 	else \
-          echo "No dynamic modules found; will use only static modules for tests/examples."; \
+          echo "***" ; \
+	  echo "*** No dynamic modules found, or cross-compiling" ; \
+	  echo "*** Will use only static modules for tests and examples." ; \
+	  echo "***" ; \
 	  > $@; \
 	fi
 
