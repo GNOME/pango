@@ -1,5 +1,15 @@
 2007-05-08  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango/Makefile.am:
+	* pango/pango-script.h:
+	* pango/pango-types.h:
+	* pango/pango-utils.c:
+	* pango/pango-language.c:
+	* pango/pango-language.h:
+	Move PangoLanguage stuff into pango-language.[ch]
+
+2007-05-08  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 436988 – Adding PangoScript to PangoAnalysis
 
 	* pango/pango-item.h:

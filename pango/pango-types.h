@@ -65,23 +65,6 @@ int    pango_units_from_double (double d) G_GNUC_CONST;
 double pango_units_to_double (int i) G_GNUC_CONST;
 
 
-/* Dummy typedef - internally it's a 'const char *' */
-typedef struct _PangoLanguage PangoLanguage;
-
-#define PANGO_TYPE_LANGUAGE (pango_language_get_type ())
-
-GType          pango_language_get_type    (void);
-PangoLanguage *pango_language_from_string (const char *language);
-
-#define pango_language_to_string(language) ((const char *)language)
-
-G_CONST_RETURN char *pango_language_get_sample_string (PangoLanguage *language);
-PangoLanguage *pango_language_get_default (void);
-
-gboolean      pango_language_matches  (PangoLanguage *language,
-				       const char *range_list);
-
-
 
 /* A rectangle. Used to store logical and physical extents of glyphs,
  * runs, strings, etc.
@@ -152,12 +135,12 @@ gboolean       pango_get_mirror_char        (gunichar     ch,
 #endif
 
 
+#include <pango/pango-gravity.h>
+#include <pango/pango-language.h>
 #include <pango/pango-matrix.h>
 #include <pango/pango-script.h>
-#include <pango/pango-gravity.h>
 
 
 G_END_DECLS
 
 #endif /* __PANGO_TYPES_H__ */
-

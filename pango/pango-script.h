@@ -24,6 +24,8 @@
 
 #include <glib.h>
 
+#include <pango/pango-language.h>
+
 G_BEGIN_DECLS
 
 /**
@@ -110,8 +112,6 @@ typedef enum {                         /* ISO 15924 code */
       PANGO_SCRIPT_PHAGS_PA,           /* Phag */
       PANGO_SCRIPT_NKO                 /* Nkoo */
 } PangoScript;
-
-#include <pango/pango-types.h>
 
 PangoScript pango_script_for_unichar         (gunichar             ch);
 

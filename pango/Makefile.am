@@ -80,6 +80,7 @@ libpango_1_0_la_SOURCES =			\
 	pango-gravity.c				\
 	pango-impl-utils.h			\
 	pango-item.c				\
+	pango-language.c			\
 	pango-layout.c				\
 	pango-layout-private.h			\
 	pango-markup.c				\
@@ -109,6 +110,7 @@ pango_headers =		   \
 	pango-glyph-item.h \
 	pango-gravity.h    \
 	pango-item.h	   \
+	pango-language.h   \
 	pango-layout.h	   \
 	pango-matrix.h     \
 	pango-modules.h	   \
