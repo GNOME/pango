@@ -19,10 +19,11 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#include <glib.h>
-
 #ifndef __PANGO_MATRIX_H__
 #define __PANGO_MATRIX_H__
+
+#include <glib.h>
+#include <glib-object.h>
 
 G_BEGIN_DECLS
 
@@ -80,6 +81,7 @@ struct _PangoMatrix
  **/
 #define PANGO_MATRIX_INIT { 1., 0., 0., 1., 0., 0. }
 
+/* for PangoRectangle */
 #include <pango/pango-types.h>
 
 GType pango_matrix_get_type (void);

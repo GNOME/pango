@@ -1,5 +1,9 @@
 2007-05-08  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango/pango-matrix.h: Minor include reordering.
+
+2007-05-08  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/Makefile.am:
 	* pango/pango-script.h:
 	* pango/pango-types.h:
