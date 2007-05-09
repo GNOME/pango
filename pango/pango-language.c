@@ -380,3 +380,95 @@ pango_language_get_sample_string (PangoLanguage *language)
 
   return result;
 }
+
+#include "pango-script-lang-table.h"
+
+/* The fact that this comparison function works is dependent
+ * on a property of the pango_script_lang_table which accidental rather
+ * than inherent.
+ *
+ * The property is if we take any element in the table and suffix it
+ * <elem>-<suffix> then that must strcmp() between any elements
+ * preceding the element in the table and any element following in the
+ * table. So, if we had something like:
+ *
+ * 'zh'
+ *' zh-cn'
+ *
+ * in the table we would have a problem since 'zh-tw' follows 'zh-cn'.
+ * On the other hand:
+ *
+ * 'zh'
+ * 'zha'
+ *
+ * Works because 'zh-tw' precedes 'zha'.
+ */
+static int
+script_for_lang_compare (gconstpointer key,
+			 gconstpointer member)
+{
+  PangoLanguage *lang = (PangoLanguage *)key;
+  const PangoScriptForLang *script_for_lang = member;
+
+  if (pango_language_matches (lang, script_for_lang->lang))
+    return 0;
+  else
+    return strcmp (pango_language_to_string (lang),
+		   script_for_lang->lang);
+}
+
+/**
+ * pango_language_includes_script:
+ * @language: a #PangoLanguage
+ * @script: a #PangoScript
+ *
+ * Determines if @script is one of the scripts used to
+ * write @language. The returned value is conservative;
+ * if nothing is known about the language tag @language,
+ * %TRUE will be returned, since, as far as Pango knows,
+ * @script might be used to write @language.
+ *
+ * This routine is used in Pango's itemization process when
+ * determining if a supplied language tag is relevant to
+ * a particular section of text. It probably is not useful for
+ * applications in most circumstances.
+ *
+ * Return value: %TRUE if @script is one of the scripts used
+ * to write @language, or if nothing is known about @language.
+ *
+ * Since: 1.4
+ **/
+gboolean
+pango_language_includes_script (PangoLanguage *language,
+				PangoScript    script)
+{
+  PangoScriptForLang *script_for_lang;
+  unsigned int j;
+
+  g_return_val_if_fail (language != NULL, FALSE);
+
+#define REAL_SCRIPT(script) \
+  ((script) > PANGO_SCRIPT_INHERITED)
+
+  if (!REAL_SCRIPT (script))
+    return TRUE;
+
+  /* This bsearch could be optimized to occur only once if
+   * we store the pointer to the PangoScriptForLang in the
+   * same block as the string value for the PangoLanguage.
+   */
+  script_for_lang = bsearch (pango_language_to_string (language),
+			     pango_script_for_lang,
+			     G_N_ELEMENTS (pango_script_for_lang),
+			     sizeof (PangoScriptForLang),
+			     script_for_lang_compare);
+  if (!script_for_lang)
+    return TRUE;
+
+  for (j = 0; j < G_N_ELEMENTS (script_for_lang->scripts); j++)
+    if (script_for_lang->scripts[j] == script)
+      return TRUE;
+
+  return FALSE;
+}
+

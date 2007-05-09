@@ -1,3 +1,10 @@
+2007-05-09  Behdad Esfahbod  <behdad@gnome.org>
+
+	* pango/pango-language.c (script_for_lang_compare),
+	(pango_language_includes_script):
+	* pango/pango-script.c: Move pango_language_includes_script() from
+	pango-script.c to pango-language.c that it belongs.
+
 2007-05-08  Behdad Esfahbod  <behdad@gnome.org>
 
 	* pango/pango-matrix.h: Minor include reordering.
