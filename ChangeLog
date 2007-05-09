@@ -1,5 +1,13 @@
 2007-05-09  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango/pango-script-lang-table.h:  Update from latest fontconfig
+	sources.
+
+	* tools/gen-script-for-lang.c (scripts_for_line): Make it handle
+	PANGO_SCRIPT_UNKNOWN.
+
+2007-05-09  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/pango-language.c (script_for_lang_compare),
 	(pango_language_includes_script):
 	* pango/pango-script.c: Move pango_language_includes_script() from

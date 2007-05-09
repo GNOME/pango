@@ -136,6 +136,13 @@ scripts_for_line (const char  *base_dir,
 	  script != PANGO_SCRIPT_INHERITED)
 	{
 	  int j;
+
+	  if (script == PANGO_SCRIPT_UNKNOWN)
+	    {
+	       g_message ("Script unknown for U+%04X", ch);
+	       continue;
+	    }
+
 	  for (j = 0; j < MAX_SCRIPTS; j++)
 	    {
 	      if (info->scripts[j] == script)
