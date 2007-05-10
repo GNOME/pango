@@ -1,3 +1,11 @@
+2007-05-07  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 436154 – Error building the pango.modules file while cross
+	compiling
+
+	* modules/Makefile.am: Make local pango.module generation work with
+	cross-compilation.
+
 2007-05-05  Richard Hult  <richard@imendio.com>
 
 	Bug 434160 - [atsui] Italic versions of some faces can't be created
