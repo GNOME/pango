@@ -1,3 +1,12 @@
+2007-05-10  Behdad Esfahbod  <behdad@gnome.org>
+
+	* pango/pangofc-fontmap.c (pango_fc_font_description_from_pattern),
+	(pango_fc_face_describe): Don't set gravity in
+	pango_fc_font_description_from_pattern() if it was not set on the
+	pattern.  This is a bit different from other properties, but that
+	really is how gravity works (unlike say weight that not having it said
+	means normal weight).
+
 2007-05-09  Behdad Esfahbod  <behdad@gnome.org>
 
 	* pango/pango-script-lang-table.h:  Update from latest fontconfig

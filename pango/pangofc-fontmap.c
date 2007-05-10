@@ -1634,15 +1634,15 @@ pango_fc_font_description_from_pattern (FcPattern *pattern, gboolean include_siz
   if (include_size && FcPatternGetDouble (pattern, FC_SIZE, 0, &size) == FcResultMatch)
     pango_font_description_set_size (desc, size * PANGO_SCALE);
 
+  /* gravity is a bit different.  we don't want to set it if it was not set on
+   * the pattern */
   if (FcPatternGetString (pattern, PANGO_FC_GRAVITY, 0, (FcChar8 **)&s) == FcResultMatch)
     {
       GEnumValue *value = g_enum_get_value_by_nick (get_gravity_class (), s);
       gravity = value->value;
-    }
-  else
-    gravity = PANGO_GRAVITY_SOUTH;
 
-  pango_font_description_set_gravity (desc, gravity);
+      pango_font_description_set_gravity (desc, gravity);
+    }
 
   return desc;
 }
@@ -1702,10 +1702,6 @@ pango_fc_face_describe (PangoFontFace *face)
     {
       desc = pango_fc_font_description_from_pattern (result_pattern, FALSE);
       FcPatternDestroy (result_pattern);
-      /* Unset gravity.  We want gravity to be set to descriptions of fonts,
-       * but not faces.
-       */
-      pango_font_description_unset_fields (desc, PANGO_FONT_MASK_GRAVITY);
     }
 
   FcPatternDestroy (match_pattern);
