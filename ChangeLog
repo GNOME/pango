@@ -1,3 +1,15 @@
+2007-05-08  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 416515 – Time is not aligned with date on vertical panel
+
+	* pango/pango-context.c (itemize_state_init),
+	(itemize_state_update_for_new_run): centered_baseline should only
+	be set from context->resolved_gravity and never changed through
+	markup.  This means that pango_context_set_base_gravity has no
+	equivalent markup.  Doesn't sound limiting to me: you need to rotate
+	the layout to get real vertical, so it's not just a matter of markup
+	anyway.  At least not at this point.
+
 2007-05-07  Behdad Esfahbod  <behdad@gnome.org>
 
 	Bug 436154 – Error building the pango.modules file while cross

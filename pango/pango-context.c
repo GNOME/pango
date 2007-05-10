@@ -1013,7 +1013,6 @@ itemize_state_add_character (ItemizeState     *state,
 
   state->item->analysis.flags = state->centered_baseline ? PANGO_ANALYSIS_FLAG_CENTERED_BASELINE : 0;
 
-  state->item->analysis.script = state->script;
   state->item->analysis.language = state->derived_lang;
 
   if (state->copy_extra_attrs)
@@ -1389,9 +1388,7 @@ itemize_state_finish (ItemizeState *state)
  * computing bidirectional levels (see pango_context_set_base_dir ()),
  * is specified explicitly rather than gotten from the #PangoContext.
  *
- * Return value: a #GList of #PangoItem structures.  The items should be
- * freed using pango_item_free() probably in combination with g_list_foreach(),
- * and the list itself using g_list_free().
+ * Return value: a #GList of #PangoItem structures.
  *
  * Since: 1.4
  */
