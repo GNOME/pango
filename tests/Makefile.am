@@ -44,29 +44,16 @@ check_PROGRAMS = testboundaries testcolor testscript
 if HAVE_CAIRO
 check_PROGRAMS += testiter
 endif
-
-gen_all_unicode_SOURCES = gen-all-unicode.c
-
-testboundaries_SOURCES = testboundaries.c
-
-testcolor_SOURCES = testcolor.c
-
-testiter_SOURCES = testiter.c
-
-testscript_SOURCES = testscript.c
-
-
-dump_boundaries_SOURCES = dump-boundaries.c
+if HAVE_FREETYPE
+check_PROGRAMS += test-ot-tags
+endif
 
 gen_all_unicode_LDADD = $(GLIB_LIBS)
-
 testboundaries_LDADD = ../pango/libpango-$(PANGO_API_VERSION).la
-
 testcolor_LDADD = ../pango/libpango-$(PANGO_API_VERSION).la
-
 testiter_LDADD = ../pango/libpango-$(PANGO_API_VERSION).la ../pango/libpangocairo-$(PANGO_API_VERSION).la 
-
 testscript_LDADD = ../pango/libpango-$(PANGO_API_VERSION).la
+test_ot_tags_LDADD = ../pango/libpango-$(PANGO_API_VERSION).la ../pango/libpangoft2-$(PANGO_API_VERSION).la 
 
 dump_boundaries_LDADD = ../pango/libpango-$(PANGO_API_VERSION).la
 

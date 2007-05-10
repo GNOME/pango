@@ -1,5 +1,39 @@
 2007-05-10  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango/Makefile.am:
+	* pango/pango-ot.h:
+	* pango/pango-ot-tag.c (pango_ot_tag_from_script),
+	(pango_ot_tag_to_script), (lang_compare_first_component),
+	(pango_ot_tag_from_language), (pango_ot_tag_to_language):
+	New public API:
+
+		PANGO_OT_DEFAULT_SCRIPT
+		pango_ot_tag_from_script()
+		pango_ot_tag_to_script()
+		pango_ot_tag_from_language()
+		pango_ot_tag_to_language()
+
+	* tests/Makefile.am:
+	* tests/test-ot-tags.c:
+	Test case for new functions.
+
+	* pango/pangoft2.def:
+	* docs/pango-docs.sgml:
+	* docs/pango-sections.txt:
+	* docs/tmpl/main.sgml:
+	* docs/tmpl/opentype.sgml:
+	Updated.
+
+2007-05-10  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 437534 – pango_language_includes_script is buggy
+
+	* pango/pango-language.c (lang_compare_first_component),
+	(lang_info_compare), (script_for_lang_compare),
+	(pango_language_includes_script): Fix script_for_lang table lookup.
+
+2007-05-10  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/pangofc-fontmap.c (pango_fc_font_description_from_pattern),
 	(pango_fc_face_describe): Don't set gravity in
 	pango_fc_font_description_from_pattern() if it was not set on the

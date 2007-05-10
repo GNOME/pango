@@ -1,7 +1,7 @@
 /* Pango
  * pango-ot.h:
  *
- * Copyright (C) 2000 Red Hat Software
+ * Copyright (C) 2000,2007 Red Hat Software
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -25,12 +25,14 @@
 #include <pango/pangofc-font.h>
 #include <pango/pango-glyph.h>
 #include <pango/pango-font.h>
+#include <pango/pango-script.h>
+#include <pango/pango-language.h>
 
 G_BEGIN_DECLS
 
 #ifdef PANGO_ENABLE_ENGINE
 
-typedef guint32  PangoOTTag;
+typedef guint32 PangoOTTag;
 
 typedef struct _PangoOTInfo    PangoOTInfo;
 typedef struct _PangoOTBuffer  PangoOTBuffer;
@@ -44,8 +46,9 @@ typedef enum
 } PangoOTTableType;
 
 
-#define PANGO_OT_ALL_GLYPHS		((guint)0xFFFF)
-#define PANGO_OT_DEFAULT_LANGUAGE	((guint)0xFFFF)
+#define PANGO_OT_ALL_GLYPHS		((guint) 0xFFFF)
+#define PANGO_OT_DEFAULT_LANGUAGE	((PangoOTTag) 0xFFFF)
+#define PANGO_OT_DEFAULT_SCRIPT		((PangoOTTag) FT_MAKE_TAG ('D', 'F', 'L', 'T'))
 
 /* Note that this must match HB_GlyphItem */
 struct _PangoOTGlyph
@@ -117,6 +120,11 @@ void            pango_ot_ruleset_substitute  (PangoOTRuleset   *ruleset,
 					      PangoOTBuffer    *buffer);
 void            pango_ot_ruleset_position    (PangoOTRuleset   *ruleset,
 					      PangoOTBuffer    *buffer);
+
+PangoScript     pango_ot_tag_to_script     (PangoOTTag     script_tag);
+PangoOTTag      pango_ot_tag_from_script   (PangoScript    script);
+PangoLanguage*  pango_ot_tag_to_language   (PangoOTTag     language_tag);
+PangoOTTag      pango_ot_tag_from_language (PangoLanguage *language);
 
 #endif /* PANGO_ENABLE_ENGINE */
 

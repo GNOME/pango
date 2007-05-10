@@ -943,6 +943,7 @@ PangoOTRuleset
 PangoOTTableType
 PANGO_OT_ALL_GLYPHS
 PANGO_OT_DEFAULT_LANGUAGE
+PANGO_OT_DEFAULT_SCRIPT
 pango_ot_info_get
 pango_ot_info_find_script
 pango_ot_info_find_language
@@ -962,6 +963,10 @@ pango_ot_ruleset_new
 pango_ot_ruleset_add_feature
 pango_ot_ruleset_substitute
 pango_ot_ruleset_position
+pango_ot_tag_from_language
+pango_ot_tag_from_script
+pango_ot_tag_to_language
+pango_ot_tag_to_script
 </SECTION>
 
 <SECTION>

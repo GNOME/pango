@@ -96,8 +96,16 @@ feature should be applied to all glyphs.
 
 <!-- ##### MACRO PANGO_OT_DEFAULT_LANGUAGE ##### -->
 <para>
-This is used as the language index in pango_ot_info_find_feature() when a
+This is used as the language index in pango_ot_info_find_feature() when
 the default language system of the script is desired.
+</para>
+
+
+
+<!-- ##### MACRO PANGO_OT_DEFAULT_SCRIPT ##### -->
+<para>
+Expands to the #PangoOTTag corresponding to the special OpenType
+script tag 'DFLT'.
 </para>
 
 
@@ -295,5 +303,41 @@ the default language system of the script is desired.
 
 @ruleset: 
 @buffer: 
+
+
+<!-- ##### FUNCTION pango_ot_tag_from_language ##### -->
+<para>
+
+</para>
+
+@language: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_ot_tag_from_script ##### -->
+<para>
+
+</para>
+
+@script: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_ot_tag_to_language ##### -->
+<para>
+
+</para>
+
+@language_tag: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_ot_tag_to_script ##### -->
+<para>
+
+</para>
+
+@script_tag: 
+@Returns: 
 
 

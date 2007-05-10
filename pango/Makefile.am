@@ -218,7 +218,8 @@ libpangoft2_1_0_la_SOURCES =   	\
 	pango-ot-private.h	\
 	pango-ot-buffer.c	\
 	pango-ot-info.c		\
-	pango-ot-ruleset.c
+	pango-ot-ruleset.c      \
+	pango-ot-tag.c
 
 
 if OS_WIN32
