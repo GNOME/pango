@@ -414,7 +414,7 @@ pango_script_get_sample_language (PangoScript script)
    * (Shavian for English, Osmanya for Somali, etc), typically
    * have no sample language
    */
-  const char sample_languages[][4] = {
+  static const char sample_languages[][4] = {
     "",    /* PANGO_SCRIPT_COMMON */
     "",    /* PANGO_SCRIPT_INHERITED */
     "ar",  /* PANGO_SCRIPT_ARABIC */

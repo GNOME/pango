@@ -302,11 +302,29 @@ typedef struct {
 } LangInfo;
 
 static int
-lang_info_compare (const void *key, const void *val)
+lang_compare_first_component (gconstpointer pa,
+			      gconstpointer pb)
+{
+  const char *a = pa, *b = pb;
+  unsigned int da, db;
+  const char *p;
+
+  p = strstr (a, "-");
+  da = p ? (unsigned int) (p - a) : strlen (a);
+
+  p = strstr (b, "-");
+  db = p ? (unsigned int) (p - b) : strlen (b);
+   
+  return strncmp (a, b, MAX (da, db));
+}
+
+static int
+lang_info_compare (gconstpointer key,
+		   gconstpointer val)
 {
   const LangInfo *lang_info = val;
 
-  return strncmp (key, lang_info->lang, 2);
+  return lang_compare_first_component (key, lang_info->lang);
 }
 
 /* The following array is supposed to contain enough text to tickle all necessary fonts for each
@@ -383,26 +401,6 @@ pango_language_get_sample_string (PangoLanguage *language)
 
 #include "pango-script-lang-table.h"
 
-/* The fact that this comparison function works is dependent
- * on a property of the pango_script_lang_table which accidental rather
- * than inherent.
- *
- * The property is if we take any element in the table and suffix it
- * <elem>-<suffix> then that must strcmp() between any elements
- * preceding the element in the table and any element following in the
- * table. So, if we had something like:
- *
- * 'zh'
- *' zh-cn'
- *
- * in the table we would have a problem since 'zh-tw' follows 'zh-cn'.
- * On the other hand:
- *
- * 'zh'
- * 'zha'
- *
- * Works because 'zh-tw' precedes 'zha'.
- */
 static int
 script_for_lang_compare (gconstpointer key,
 			 gconstpointer member)
@@ -410,11 +408,7 @@ script_for_lang_compare (gconstpointer key,
   PangoLanguage *lang = (PangoLanguage *)key;
   const PangoScriptForLang *script_for_lang = member;
 
-  if (pango_language_matches (lang, script_for_lang->lang))
-    return 0;
-  else
-    return strcmp (pango_language_to_string (lang),
-		   script_for_lang->lang);
+  return lang_compare_first_component (lang, script_for_lang->lang);
 }
 
 /**
@@ -444,6 +438,7 @@ pango_language_includes_script (PangoLanguage *language,
 {
   PangoScriptForLang *script_for_lang;
   unsigned int j;
+  const char *lang_str;
 
   g_return_val_if_fail (language != NULL, FALSE);
 
@@ -453,17 +448,46 @@ pango_language_includes_script (PangoLanguage *language,
   if (!REAL_SCRIPT (script))
     return TRUE;
 
+  lang_str = pango_language_to_string (language);
+
   /* This bsearch could be optimized to occur only once if
    * we store the pointer to the PangoScriptForLang in the
    * same block as the string value for the PangoLanguage.
    */
-  script_for_lang = bsearch (pango_language_to_string (language),
+  script_for_lang = bsearch (lang_str,
 			     pango_script_for_lang,
 			     G_N_ELEMENTS (pango_script_for_lang),
 			     sizeof (PangoScriptForLang),
 			     script_for_lang_compare);
   if (!script_for_lang)
     return TRUE;
+  else
+    {
+      gboolean found = FALSE;
+
+      /* find the best matching language */
+     
+      /* go to the final one matching in the first component */
+      while (script_for_lang + 1 < pango_script_for_lang + G_N_ELEMENTS (pango_script_for_lang) &&
+	     script_for_lang_compare (lang_str, script_for_lang + 1) == 0)
+        script_for_lang++;
+
+      /* go back, find which one matches completely */
+      while (script_for_lang >= pango_script_for_lang &&
+	     script_for_lang_compare (lang_str, script_for_lang) == 0)
+        {
+	  if (pango_language_matches (language, script_for_lang->lang))
+	    {
+	      found = TRUE;
+	      break;
+	    }
+
+          script_for_lang--;
+	}
+
+      if (!found)
+        return TRUE;
+    }
 
   for (j = 0; j < G_N_ELEMENTS (script_for_lang->scripts); j++)
     if (script_for_lang->scripts[j] == script)
@@ -471,4 +495,3 @@ pango_language_includes_script (PangoLanguage *language,
 
   return FALSE;
 }
-
