@@ -1,5 +1,26 @@
 2007-05-10  Behdad Esfahbod  <behdad@gnome.org>
 
+	* modules/arabic/arabic-fc.c (maybe_add_gsub_feature),
+	(maybe_add_gpos_feature), (get_ruleset):
+	* modules/basic/basic-fc.c (get_ruleset):
+	* modules/hebrew/hebrew-fc.c (maybe_add_gsub_feature),
+	(maybe_add_gpos_feature), (get_ruleset):
+	* modules/indic/indic-fc.c (maybe_add_GSUB_feature),
+	(maybe_add_GPOS_feature):
+	* modules/khmer/khmer-fc.c (maybe_add_GSUB_feature),
+	(maybe_add_GPOS_feature):
+	* modules/syriac/syriac-fc.c (maybe_add_gsub_feature),
+	(maybe_add_gpos_feature), (get_ruleset):
+	* modules/thai/thai-ot.c (maybe_add_gsub_feature),
+	(maybe_add_gpos_feature), (thai_ot_get_ruleset),
+	(lao_ot_get_ruleset):
+	* modules/tibetan/tibetan-fc.c (maybe_add_GSUB_feature),
+	(maybe_add_GPOS_feature):
+	Use PANGO_OT_DEFAULT_LANGUAGE and PANGO_OT_ALL_GLYPHS instead
+	of hardcoded 0xFFFF.
+
+2007-05-10  Behdad Esfahbod  <behdad@gnome.org>
+
 	* ChangeLog.pre-1-16: Split ChangeLog.
 
 2007-05-10  Behdad Esfahbod  <behdad@gnome.org>

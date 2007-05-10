@@ -60,9 +60,8 @@ maybe_add_gsub_feature (PangoOTRuleset *ruleset,
 {
   guint feature_index;
 
-  /* 0xffff == default language system */
   if (pango_ot_info_find_feature (info, PANGO_OT_TABLE_GSUB,
-				  tag, script_index, 0xffff, &feature_index))
+				  tag, script_index, PANGO_OT_DEFAULT_LANGUAGE, &feature_index))
     pango_ot_ruleset_add_feature (ruleset, PANGO_OT_TABLE_GSUB, feature_index,
 				  property_bit);
 }
@@ -76,9 +75,8 @@ maybe_add_gpos_feature (PangoOTRuleset *ruleset,
 {
   guint feature_index;
 
-  /* 0xffff == default language system */
   if (pango_ot_info_find_feature (info, PANGO_OT_TABLE_GPOS,
-				  tag, script_index, 0xffff, &feature_index))
+				  tag, script_index, PANGO_OT_DEFAULT_LANGUAGE, &feature_index))
     pango_ot_ruleset_add_feature (ruleset, PANGO_OT_TABLE_GPOS, feature_index,
 				  property_bit);
 }
@@ -106,12 +104,10 @@ get_ruleset (FT_Face face)
 
       ruleset = pango_ot_ruleset_new (info);
 
-#define ALL_GLYPHS ~(gulong)0
-
       if (pango_ot_info_find_script (info, PANGO_OT_TABLE_GSUB,
 				     syrc_tag, &script_index))
 	{
-	  maybe_add_gsub_feature (ruleset, info, script_index, FT_MAKE_TAG ('c','c','m','p'), ALL_GLYPHS);
+	  maybe_add_gsub_feature (ruleset, info, script_index, FT_MAKE_TAG ('c','c','m','p'), PANGO_OT_ALL_GLYPHS);
 	  maybe_add_gsub_feature (ruleset, info, script_index, FT_MAKE_TAG ('i','s','o','l'), isolated);
 	  maybe_add_gsub_feature (ruleset, info, script_index, FT_MAKE_TAG ('f','i','n','a'), final);
 	  maybe_add_gsub_feature (ruleset, info, script_index, FT_MAKE_TAG ('f','i','n','2'), final2);
@@ -119,18 +115,18 @@ get_ruleset (FT_Face face)
 	  maybe_add_gsub_feature (ruleset, info, script_index, FT_MAKE_TAG ('m','e','d','i'), medial);
 	  maybe_add_gsub_feature (ruleset, info, script_index, FT_MAKE_TAG ('m','e','d','2'), medial2);
 	  maybe_add_gsub_feature (ruleset, info, script_index, FT_MAKE_TAG ('i','n','i','t'), initial);
-	  maybe_add_gsub_feature (ruleset, info, script_index, FT_MAKE_TAG ('r','l','i','g'), ALL_GLYPHS);
-	  maybe_add_gsub_feature (ruleset, info, script_index, FT_MAKE_TAG ('c','a','l','t'), ALL_GLYPHS);
-	  maybe_add_gsub_feature (ruleset, info, script_index, FT_MAKE_TAG ('l','i','g','a'), ALL_GLYPHS);
-	  maybe_add_gsub_feature (ruleset, info, script_index, FT_MAKE_TAG ('d','l','i','g'), ALL_GLYPHS);
+	  maybe_add_gsub_feature (ruleset, info, script_index, FT_MAKE_TAG ('r','l','i','g'), PANGO_OT_ALL_GLYPHS);
+	  maybe_add_gsub_feature (ruleset, info, script_index, FT_MAKE_TAG ('c','a','l','t'), PANGO_OT_ALL_GLYPHS);
+	  maybe_add_gsub_feature (ruleset, info, script_index, FT_MAKE_TAG ('l','i','g','a'), PANGO_OT_ALL_GLYPHS);
+	  maybe_add_gsub_feature (ruleset, info, script_index, FT_MAKE_TAG ('d','l','i','g'), PANGO_OT_ALL_GLYPHS);
 	}
 
       if (pango_ot_info_find_script (info, PANGO_OT_TABLE_GPOS,
 				     syrc_tag, &script_index))
 	{
-	  maybe_add_gpos_feature (ruleset, info, script_index, FT_MAKE_TAG ('k','e','r','n'), ALL_GLYPHS);
-	  maybe_add_gpos_feature (ruleset, info, script_index, FT_MAKE_TAG ('m','a','r','k'), ALL_GLYPHS);
-	  maybe_add_gpos_feature (ruleset, info, script_index, FT_MAKE_TAG ('m','k','m','k'), ALL_GLYPHS);
+	  maybe_add_gpos_feature (ruleset, info, script_index, FT_MAKE_TAG ('k','e','r','n'), PANGO_OT_ALL_GLYPHS);
+	  maybe_add_gpos_feature (ruleset, info, script_index, FT_MAKE_TAG ('m','a','r','k'), PANGO_OT_ALL_GLYPHS);
+	  maybe_add_gpos_feature (ruleset, info, script_index, FT_MAKE_TAG ('m','k','m','k'), PANGO_OT_ALL_GLYPHS);
 	}
 
       g_object_set_qdata_full (G_OBJECT (info), ruleset_quark, ruleset,

@@ -273,10 +273,9 @@ get_ruleset (FT_Face face)
 						     gpos_features[j][2], gpos_features[j][3]);
 	       guint feature_index;
 
-	       /* 0xffff means default language */
-	       if (pango_ot_info_find_feature (info, PANGO_OT_TABLE_GPOS, feature_tag, script_index, 0xffff,&feature_index))
+	       if (pango_ot_info_find_feature (info, PANGO_OT_TABLE_GPOS, feature_tag, script_index, PANGO_OT_DEFAULT_LANGUAGE ,&feature_index))
 	       {
-		 pango_ot_ruleset_add_feature (ruleset, PANGO_OT_TABLE_GPOS, feature_index, 0xffff);
+		 pango_ot_ruleset_add_feature (ruleset, PANGO_OT_TABLE_GPOS, feature_index, PANGO_OT_ALL_GLYPHS);
 	       }
 	     }
 
@@ -287,11 +286,10 @@ get_ruleset (FT_Face face)
 						      gsub_features[j][2], gsub_features[j][3]);
 		guint feature_index;
 
-		/* 0xffff means default language */
 		if (pango_ot_info_find_feature (info, PANGO_OT_TABLE_GSUB, feature_tag,
-						script_index, 0xffff, &feature_index))
+						script_index, PANGO_OT_DEFAULT_LANGUAGE, &feature_index))
 		  {
-		    pango_ot_ruleset_add_feature (ruleset, PANGO_OT_TABLE_GSUB, feature_index, 0xffff);
+		    pango_ot_ruleset_add_feature (ruleset, PANGO_OT_TABLE_GSUB, feature_index, PANGO_OT_ALL_GLYPHS);
 		  }
 	      }
       }

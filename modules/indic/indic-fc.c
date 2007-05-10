@@ -140,14 +140,9 @@ maybe_add_GSUB_feature (PangoOTRuleset *ruleset,
 {
   guint feature_index;
 
-  /* 0xffff == default language system */
   if (pango_ot_info_find_feature (info, PANGO_OT_TABLE_GSUB,
-				  feature_tag, script_index, 0xffff, &feature_index))
+				  feature_tag, script_index, PANGO_OT_DEFAULT_LANGUAGE, &feature_index))
     {
-      /*
-      printf("Added GSUB feature '%c%c%c%c' = %8.8X\n", feature_tag>>24, feature_tag>>16&0xFF, feature_tag>>8&0xFF, feature_tag&0xFF, property_bit);
-      */
-
       pango_ot_ruleset_add_feature (ruleset, PANGO_OT_TABLE_GSUB, feature_index,
 				    property_bit);
     }
@@ -163,12 +158,8 @@ maybe_add_GPOS_feature (PangoOTRuleset *ruleset,
   guint feature_index;
 
   if (pango_ot_info_find_feature (info, PANGO_OT_TABLE_GPOS,
-				  feature_tag,script_index, 0xffff, &feature_index))
+				  feature_tag,script_index, PANGO_OT_DEFAULT_LANGUAGE, &feature_index))
     {
-      /*
-      printf("Added GPOS feature '%c%c%c%c' = %8.8X\n", feature_tag>>24, feature_tag>>16&0xFF, feature_tag>>8&0xFF, feature_tag&0xFF, property_bit);
-      */
-
       pango_ot_ruleset_add_feature (ruleset, PANGO_OT_TABLE_GPOS, feature_index,
 				    property_bit);
     }

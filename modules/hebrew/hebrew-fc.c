@@ -153,9 +153,8 @@ maybe_add_gsub_feature (PangoOTRuleset *ruleset,
 {
   guint feature_index;
 
-  /* 0xffff == default language system */
   if (pango_ot_info_find_feature (info, PANGO_OT_TABLE_GSUB,
-				  tag, script_index, 0xffff, &feature_index))
+				  tag, script_index, PANGO_OT_DEFAULT_LANGUAGE, &feature_index))
     pango_ot_ruleset_add_feature (ruleset, PANGO_OT_TABLE_GSUB, feature_index,
 				  property_bit);
 }
@@ -169,9 +168,8 @@ maybe_add_gpos_feature (PangoOTRuleset *ruleset,
 {
   guint feature_index;
 
-  /* 0xffff == default language system */
   if (pango_ot_info_find_feature (info, PANGO_OT_TABLE_GPOS,
-				  tag, script_index, 0xffff, &feature_index))
+				  tag, script_index, PANGO_OT_DEFAULT_LANGUAGE, &feature_index))
     pango_ot_ruleset_add_feature (ruleset, PANGO_OT_TABLE_GPOS, feature_index,
 				  property_bit);
 }
@@ -203,9 +201,9 @@ get_ruleset (FT_Face face)
 
 	  /* Again, tags from the SBL font. */
 	  maybe_add_gpos_feature (ruleset, info, script_index,
-				  FT_MAKE_TAG ('k','e','r','n'), 0xFFFF);
+				  FT_MAKE_TAG ('k','e','r','n'), PANGO_OT_ALL_GLYPHS);
 	  maybe_add_gpos_feature (ruleset, info, script_index,
-				  FT_MAKE_TAG ('m','a','r','k'), 0xFFFF);
+				  FT_MAKE_TAG ('m','a','r','k'), PANGO_OT_ALL_GLYPHS);
 	}
       else
 	/* Return NULL to trigger use of heuristics if there is no
@@ -218,10 +216,10 @@ get_ruleset (FT_Face face)
 	{
 	  /* Add the features that we want */
 	  maybe_add_gsub_feature (ruleset, info, script_index,
-				  FT_MAKE_TAG ('c','c','m','p'), 0xFFFF);
+				  FT_MAKE_TAG ('c','c','m','p'), PANGO_OT_ALL_GLYPHS);
 
 	  maybe_add_gsub_feature (ruleset, info, script_index,
-				  FT_MAKE_TAG ('r','l','i','g'), 0xFFFF);
+				  FT_MAKE_TAG ('r','l','i','g'), PANGO_OT_ALL_GLYPHS);
 	}
 
       g_object_set_qdata_full (G_OBJECT (info), ruleset_quark, ruleset,

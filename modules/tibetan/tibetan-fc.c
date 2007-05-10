@@ -391,9 +391,8 @@ maybe_add_GSUB_feature (PangoOTRuleset *ruleset,
 {
   guint feature_index;
 
-  /* 0xffff == default language system */
   if (pango_ot_info_find_feature (info, PANGO_OT_TABLE_GSUB,
-				  tag, script_index, 0xffff, &feature_index))
+				  tag, script_index, PANGO_OT_DEFAULT_LANGUAGE, &feature_index))
     pango_ot_ruleset_add_feature (ruleset, PANGO_OT_TABLE_GSUB, feature_index,
 				  property_bit);
 }
@@ -408,9 +407,8 @@ maybe_add_GPOS_feature (PangoOTRuleset *ruleset,
 {
   guint feature_index;
 
-  /* 0xffff == default language system */
   if (pango_ot_info_find_feature (info, PANGO_OT_TABLE_GPOS,
-				  tag, script_index, 0xffff, &feature_index))
+				  tag, script_index, PANGO_OT_DEFAULT_LANGUAGE, &feature_index))
     pango_ot_ruleset_add_feature (ruleset, PANGO_OT_TABLE_GPOS, feature_index,
 				  property_bit);
 }

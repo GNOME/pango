@@ -34,9 +34,8 @@ maybe_add_gsub_feature (PangoOTRuleset *ruleset,
 {
   guint feature_index;
 
-  /* 0xffff == default language system */
   if (pango_ot_info_find_feature (info, PANGO_OT_TABLE_GSUB,
-				  feature_tag, script_index, 0xffff, &feature_index))
+				  feature_tag, script_index, PANGO_OT_DEFAULT_LANGUAGE, &feature_index))
     {
       pango_ot_ruleset_add_feature (ruleset, PANGO_OT_TABLE_GSUB, feature_index,
 				    property_bit);
@@ -55,7 +54,7 @@ maybe_add_gpos_feature (PangoOTRuleset *ruleset,
   guint feature_index;
 
   if (pango_ot_info_find_feature (info, PANGO_OT_TABLE_GPOS,
-				  feature_tag, script_index, 0xffff, &feature_index))
+				  feature_tag, script_index, PANGO_OT_DEFAULT_LANGUAGE, &feature_index))
     {
       pango_ot_ruleset_add_feature (ruleset, PANGO_OT_TABLE_GPOS, feature_index,
 				    property_bit);
@@ -101,10 +100,10 @@ thai_ot_get_ruleset (PangoFont *font)
 	    {
 	      n += maybe_add_gsub_feature (ruleset, info, script_index,
 					   FT_MAKE_TAG ('c','c','m','p'),
-					   0xFFFF);
+					   PANGO_OT_ALL_GLYPHS);
 	      n += maybe_add_gsub_feature (ruleset, info, script_index,
 					   FT_MAKE_TAG ('l','i','g','a'),
-					   0xFFFF);
+					   PANGO_OT_ALL_GLYPHS);
 	    }
 
 	  if (pango_ot_info_find_script (info, PANGO_OT_TABLE_GPOS,
@@ -112,13 +111,13 @@ thai_ot_get_ruleset (PangoFont *font)
 	    {
 	      n += maybe_add_gpos_feature (ruleset, info, script_index,
 					   FT_MAKE_TAG ('k','e','r','n'),
-					   0xFFFF);
+					   PANGO_OT_ALL_GLYPHS);
 	      n += maybe_add_gpos_feature (ruleset, info, script_index,
 					   FT_MAKE_TAG ('m','a','r','k'),
-					   0xFFFF);
+					   PANGO_OT_ALL_GLYPHS);
 	      n += maybe_add_gpos_feature (ruleset, info, script_index,
 					   FT_MAKE_TAG ('m','k','m','k'),
-					   0xFFFF);
+					   PANGO_OT_ALL_GLYPHS);
 	    }
 
 	  if (n > 0)
@@ -174,10 +173,10 @@ lao_ot_get_ruleset (PangoFont *font)
 	    {
 	      n += maybe_add_gsub_feature (ruleset, info, script_index,
 					   FT_MAKE_TAG ('c','c','m','p'),
-					   0xFFFF);
+					   PANGO_OT_ALL_GLYPHS);
 	      n += maybe_add_gsub_feature (ruleset, info, script_index,
 					   FT_MAKE_TAG ('l','i','g','a'),
-					   0xFFFF);
+					   PANGO_OT_ALL_GLYPHS);
 	    }
 
 	  if (pango_ot_info_find_script (info, PANGO_OT_TABLE_GPOS,
@@ -185,13 +184,13 @@ lao_ot_get_ruleset (PangoFont *font)
 	    {
 	      n += maybe_add_gpos_feature (ruleset, info, script_index,
 					   FT_MAKE_TAG ('k','e','r','n'),
-					   0xFFFF);
+					   PANGO_OT_ALL_GLYPHS);
 	      n += maybe_add_gpos_feature (ruleset, info, script_index,
 					   FT_MAKE_TAG ('m','a','r','k'),
-					   0xFFFF);
+					   PANGO_OT_ALL_GLYPHS);
 	      n += maybe_add_gpos_feature (ruleset, info, script_index,
 					   FT_MAKE_TAG ('m','k','m','k'),
-					   0xFFFF);
+					   PANGO_OT_ALL_GLYPHS);
 	    }
 
 	  if (n > 0)
