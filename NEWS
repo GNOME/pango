@@ -1,3 +1,129 @@
+Overview of changes between 1.16.4 and 1.17.0
+==============================================
+
+General:
+
+- Text justification.  A simple justification algorithm is implemented
+  that tries to justify by expanding spaces in the line, and if none
+  found, by adjust letter spacing.  [Based on patch by Mathias
+  Hasselmann]
+
+- The pango_script_get_sample_language() function is modified to use
+  the value of environment variables PANGO_LANGUAGE or LANGUAGE
+  (checked in that order) to make guess better languages for scripts.
+  The env var should be a list of language tags, like "en:fa" for
+  example where in effect makes Pango choose Persian (fa) fonts
+  instead of Arabic (ar) fonts when a run of text in the Arabic script
+  is found in an otherwise non-Arabic layout.
+
+  This trick is also useful for East Asian languages.  For example a
+  Japanese user that cannot set her primary language to Japanese can
+  still set PANGO_LANGUAGE="ja" and Pango will map CJK characters to
+  Japanese.
+
+  The LANGUAGE env var is a standard gettext variable listing
+  languages the user wants to receive UI translated messages in.
+  However, since most packages don't provide separate English
+  translations, setting LANGUAGE="en:ja" doesn't have the intended
+  effect and UI messages will be shown in Japanese.  For these
+  situations one can use LANGUAGE="en:C:ja".  Pango skips the special
+  language tag 'C'.
+
+- Simplified embedded-shape rendering with pangocairo backends do.
+  [Richard Hult]
+
+- New header file: Moved PangoLanguage APIs into its own header
+  pango-language.h, which is included from pango-types.h.
+
+- ATSUI backend now lists synthesized italic faces like other
+
+- Misc optimizations and fixes.
+
+OpenType Layout Engine Improvements:
+
+- Vertical glyph variants are not selected in vertical text if the
+  font supports them.
+
+- Instead of hardcoded OpenType script tag in each module, and using
+  Default Language System unconditionally, Pango will now find and use
+  the script/lang-sys pair that best matches the detected script and
+  language of a run of text.  Moreover, it also applies the OpenType
+  'locl' feature.
+  
+  These, plus the PANGO_LANGUAGE env var, give font designers and
+  users lots of options to provide/choose language-specific glyph
+  variants.
+  
+  Only basic, arabic, and syriac modules updated to take advantage of
+  the new support so far.
+
+New pango-view command line options:
+
+	--align
+	--justify
+	--language
+
+Public API Changes:
+
+- New public pangocairo API:
+
+	PangoCairoShapeRendererFunc
+	pango_cairo_context_set_shape_renderer() 
+	pango_cairo_context_get_shape_renderer() 
+
+  These are used by the default pangocairo renderer to render shape
+  attributes (see examples/cairoshape.c).  Cairo-based PangoRenderer
+  implementations outside Pango may want to implement the draw_shape()
+  method similarly to provide compatibility with these new APIs.  (See
+  bug #437533 for GdkPangoRenderer for example.)
+
+- Other public API changes:
+
+	New is_expandable_space member in PangoLogAttr
+	New macro PANGO_UNITS_ROUND()
+
+- New OpenType engine API.  These are engine API, for use by Pango
+  modules, and typically need not to be bound by language bindings:
+
+	PANGO_OT_NO_FEATURE
+	PANGO_OT_NO_SCRIPT
+	PANGO_OT_TAG_DEFAULT_SCRIPT
+	PANGO_OT_TAG_DEFAULT_LANGUAGE
+	PangoOTFeatureMap
+	PangoOTRulesetDescription
+	pango_ot_ruleset_get_for()
+	pango_ot_ruleset_new_for()
+	pango_ot_ruleset_maybe_add_feature()
+	pango_ot_ruleset_maybe_add_features()
+	pango_ot_ruleset_description_hash()
+	pango_ot_ruleset_description_equal()
+	pango_ot_ruleset_description_copy()
+	pango_ot_ruleset_description_free()
+	pango_ot_tag_from_script()
+	pango_ot_tag_to_script()
+	pango_ot_tag_from_language()
+	pango_ot_tag_to_language()
+
+- Bugs fixed in this release:
+
+	Bug 64538 – pango_layout_set_justify() doesn't work
+	Bug 325714 – Pango should respect $LANGUAGE
+	Bug 414264 – Pango vertical writing support is different with real
+		     CJK usage.
+	Bug 416515 – Time is not aligned with date on vertical panel
+	Bug 429397 – Updated MS Mincho/Gothic are not listed in font dialog
+		     properly on Vista/
+	Bug 433805 – [Atsui] Approximate char/digit width width often 0
+		     (worked around)
+	Bug 434160 - [atsui] Italic versions of some faces can't be created
+	Bug 435709 – pango_cairo_context_[sg]et_shape_renderer()
+	Bug 355789 – Pango misaligns word-wrapped text due to trailing
+		     whitespace
+	Bug 436154 – Error building the pango.modules file while cross
+		     compiling
+	Bug 436988 – Adding PangoScript to PangoAnalysis
+	Bug 437534 – pango_language_includes_script is buggy
+
 Overview of changes between 1.16.3 and 1.16.4
 ==============================================
 - Add new configure option --disable-doc-cross-references and make
