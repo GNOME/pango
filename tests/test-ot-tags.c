@@ -57,7 +57,7 @@ test_script_tags (void)
 
       if (i <= PANGO_SCRIPT_INHERITED || i == PANGO_SCRIPT_UNKNOWN)
         {
-	  ASSERT (tag == PANGO_OT_DEFAULT_SCRIPT);
+	  ASSERT (tag == PANGO_OT_TAG_DEFAULT_SCRIPT);
 	  ASSERT (j == PANGO_SCRIPT_COMMON);
         }
       else if (tag == FT_MAKE_TAG ('k', 'a', 'n', 'a'))
@@ -103,13 +103,13 @@ test_language_tags (void)
 
       if (i == 0)
         {
-	  ASSERT (tag == PANGO_OT_DEFAULT_LANGUAGE);
+	  ASSERT (tag == PANGO_OT_TAG_DEFAULT_LANGUAGE);
 	  ASSERT (strcmp (pango_language_to_string (m), "xx") == 0);
 	}
       else
         {
-	  if (tag == PANGO_OT_DEFAULT_LANGUAGE)
-	    g_error ("Got PANGO_OT_DEFAULT_LANGUAGE for language '%s'", pango_language_to_string (l));
+	  if (tag == PANGO_OT_TAG_DEFAULT_LANGUAGE)
+	    g_error ("Got PANGO_OT_TAG_DEFAULT_LANGUAGE for language '%s'", pango_language_to_string (l));
 
 	  if (!pango_language_matches (l, pango_language_to_string (m)))
 	    g_error ("Got back %s for language %s (OT tag '%c%c%c%c')",
