@@ -1,3 +1,12 @@
+2007-05-14  Behdad Esfahbod  <behdad@gnome.org>
+
+	* pango/pango-ot-buffer.c (pango_ot_buffer_get_glyphs),
+	(pango_ot_buffer_output):
+	* pango/pango-ot-ruleset.c (pango_ot_ruleset_substitute),
+	(pango_ot_ruleset_position):
+	* pango/pango-ot.h:
+	Mark some arguments const.
+
 2007-05-13  Behdad Esfahbod  <behdad@gnome.org>
 
 	Part of Bug 325714 – Pango should respect $LANGUAGE

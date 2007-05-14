@@ -163,9 +163,9 @@ pango_ot_buffer_set_zero_width_marks (PangoOTBuffer     *buffer,
  * Since: 1.4
  **/
 void
-pango_ot_buffer_get_glyphs (PangoOTBuffer  *buffer,
-			    PangoOTGlyph  **glyphs,
-			    int            *n_glyphs)
+pango_ot_buffer_get_glyphs (const PangoOTBuffer  *buffer,
+			    PangoOTGlyph        **glyphs,
+			    int                  *n_glyphs)
 {
   if (glyphs)
     *glyphs = (PangoOTGlyph *)buffer->buffer->in_string;
@@ -294,8 +294,8 @@ apply_gpos_rtl (PangoGlyphString *glyphs,
  * Since: 1.4
  **/
 void
-pango_ot_buffer_output (PangoOTBuffer    *buffer,
-			PangoGlyphString *glyphs)
+pango_ot_buffer_output (const PangoOTBuffer *buffer,
+			PangoGlyphString    *glyphs)
 {
   FT_Face face;
   PangoOTInfo *info;

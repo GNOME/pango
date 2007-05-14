@@ -342,8 +342,8 @@ pango_ot_ruleset_maybe_add_features (PangoOTRuleset          *ruleset,
  * Since: 1.4
  **/
 void
-pango_ot_ruleset_substitute  (PangoOTRuleset   *ruleset,
-			      PangoOTBuffer    *buffer)
+pango_ot_ruleset_substitute  (const PangoOTRuleset *ruleset,
+			      PangoOTBuffer        *buffer)
 {
   unsigned int i;
 
@@ -386,8 +386,8 @@ pango_ot_ruleset_substitute  (PangoOTRuleset   *ruleset,
  * Since: 1.4
  **/
 void
-pango_ot_ruleset_position (PangoOTRuleset   *ruleset,
-			   PangoOTBuffer    *buffer)
+pango_ot_ruleset_position (const PangoOTRuleset *ruleset,
+			   PangoOTBuffer        *buffer)
 {
   unsigned int i;
 

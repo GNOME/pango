@@ -112,11 +112,11 @@ void           pango_ot_buffer_add_glyph  (PangoOTBuffer     *buffer,
 					   guint              glyph,
 					   guint              properties,
 					   guint              cluster);
-void           pango_ot_buffer_get_glyphs (PangoOTBuffer     *buffer,
-					   PangoOTGlyph     **glyphs,
-					   int               *n_glyphs);
-void           pango_ot_buffer_output     (PangoOTBuffer     *buffer,
-					   PangoGlyphString  *glyphs);
+void           pango_ot_buffer_get_glyphs (const PangoOTBuffer  *buffer,
+					   PangoOTGlyph        **glyphs,
+					   int                  *n_glyphs);
+void           pango_ot_buffer_output     (const PangoOTBuffer  *buffer,
+					   PangoGlyphString     *glyphs);
 
 void           pango_ot_buffer_set_zero_width_marks (PangoOTBuffer     *buffer,
 						     gboolean           zero_width_marks);
@@ -137,10 +137,10 @@ int             pango_ot_ruleset_maybe_add_features (PangoOTRuleset          *ru
 						     PangoOTTableType         table_type,
 						     const PangoOTFeatureMap *features,
 						     int                      n_features);
-void            pango_ot_ruleset_substitute  (PangoOTRuleset   *ruleset,
-					      PangoOTBuffer    *buffer);
-void            pango_ot_ruleset_position    (PangoOTRuleset   *ruleset,
-					      PangoOTBuffer    *buffer);
+void            pango_ot_ruleset_substitute  (const PangoOTRuleset   *ruleset,
+					      PangoOTBuffer          *buffer);
+void            pango_ot_ruleset_position    (const PangoOTRuleset   *ruleset,
+					      PangoOTBuffer          *buffer);
 PangoScript     pango_ot_tag_to_script     (PangoOTTag     script_tag);
 PangoOTTag      pango_ot_tag_from_script   (PangoScript    script);
 PangoLanguage*  pango_ot_tag_to_language   (PangoOTTag     language_tag);
