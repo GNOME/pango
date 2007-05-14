@@ -106,21 +106,21 @@ static const char ot_scripts[][4] = {
  * The %PANGO_SCRIPT_COMMON, %PANGO_SCRIPT_INHERITED, and
  * %PANGO_SCRIPT_UNKNOWN scripts are mapped to the OpenType
  * 'DFLT' script tag that is also defined as
- * %PANGO_OT_DEFAULT_SCRIPT.
+ * %PANGO_OT_TAG_DEFAULT_SCRIPT.
  *
  * Note that multiple #PangoScript values may map to the same
  * OpenType script tag.  In particular, %PANGO_SCRIPT_HIRAGANA
  * and %PANGO_SCRIPT_KATAKANA both map to the OT tag 'kana'.
  *
  * Return value: #PangoOTTag corresponding to @script or
- * %PANGO_OT_DEFAULT_SCRIPT if none found.
+ * %PANGO_OT_TAG_DEFAULT_SCRIPT if none found.
  *
  * Since: 1.18
  **/
 PangoOTTag
 pango_ot_tag_from_script (PangoScript script)
 {
-  g_return_val_if_fail (script >= 0 && (guint)script < G_N_ELEMENTS (ot_scripts), PANGO_OT_DEFAULT_SCRIPT);
+  g_return_val_if_fail (script >= 0 && (guint)script < G_N_ELEMENTS (ot_scripts), PANGO_OT_TAG_DEFAULT_SCRIPT);
 
   return GUINT32_FROM_BE (* (PangoOTTag *) ot_scripts[script]);
 }
@@ -189,7 +189,9 @@ static const LangTag ot_languages[] = {
   {"ay",	"AYM "},
   {"az",	"AZE "},
   {"ba",	"BSH "},
+  {"bal",	"BLI "},
   {"bem",	"BEM "},
+  {"ber",	"BBR "},
   {"bg",	"BGR "},
   {"bho",	"BHO "},
   {"bik",	"BIK "},
@@ -198,6 +200,7 @@ static const LangTag ot_languages[] = {
   {"bn",	"BEN "},
   {"bo",	"TIB "},
   {"br",	"BRE "},
+  {"brh",	"BRH "},
   {"ca",	"CAT "},
   {"ce",	"CHE "},
   {"ceb",	"CEB "},
@@ -212,18 +215,22 @@ static const LangTag ot_languages[] = {
   {"cy",	"WEL "},
   {"da",	"DAN "},
   {"dar",	"DAR "},
+  {"de",	"DEU "},
   {"din",	"DNK "},
   {"doi",	"DGR "},
+  {"dsb",	"LSB "},
   {"dv",	"DHV "},
   {"dz",	"DZN "},
   {"ee",	"EWE "},
   {"efi",	"EFI "},
+  {"el",	"ELL "},
   {"en",	"ENG "},
   {"eo",	"NTO "},
   {"es",	"ESP "},
   {"et",	"ETI "},
   {"eu",	"EUQ "},
   {"fa",	"FAR "},
+  {"ff",	"FUL "},
   {"fi",	"FIN "},
   {"fil",	"PIL "},
   {"fj",	"FJI "},
@@ -231,6 +238,7 @@ static const LangTag ot_languages[] = {
   {"fon",	"FON "},
   {"fr",	"FRA "},
   {"fur",	"FRL "},
+  {"fy",	"FRI "},
   {"ga",	"IRI "},
   {"gaa",	"GAD "},
   {"gd",	"GAE "},
@@ -249,6 +257,8 @@ static const LangTag ot_languages[] = {
   {"hy",	"HYE "},
   {"id",	"IND "},
   {"ig",	"IBO "},
+  {"inc",	"SRK "},
+  {"ine",	"KHW "},
   {"inh",	"ING "},
   {"is",	"ISL "},
   {"it",	"ITA "},
@@ -262,6 +272,7 @@ static const LangTag ot_languages[] = {
   {"ki",	"KIK "},
   {"kk",	"KAZ "},
   {"kl",	"GRN "},
+  {"km",	"KHM "},
   {"kn",	"KAN "},
   {"ko",	"KOR "},
   {"kok",	"KOK "},
@@ -273,15 +284,23 @@ static const LangTag ot_languages[] = {
   {"ku",	"KUR "},
   {"kum",	"KUM "},
   {"ky",	"KIR "},
+  {"la",	"LAT "},
+  {"lad",	"JUD "},
+  {"lbj",	"LDK "},
   {"ln",	"LIN "},
+  {"lo",	"LAO "},
   {"lt",	"LTH "},
+  {"lv",	"LVI "},
   {"mai",	"MTH "},
   {"mdf",	"MOK "},
   {"men",	"MDE "},
   {"mg",	"MLG "},
   {"mi",	"MRI "},
+  {"mkh",	"KUY "},
+  {"ml",	"MLR "},
   {"mnc",	"MCH "},
   {"mni",	"MNI "},
+  {"mnk",	"MND "},
   {"mo",	"MOL "},
   {"mr",	"MAR "},
   {"ms",	"MLY "},
@@ -289,10 +308,11 @@ static const LangTag ot_languages[] = {
   {"mwr",	"MAW "},
   {"my",	"BRM "},
   {"myv",	"ERZ "},
-  {"nl",	"FLE "},
+  {"ne",	"NEP "},
   {"nl",	"NLD "},
   {"no",	"NOR "},
   {"ny",	"CHI "},
+  {"oc",	"PRO "},
   {"om",	"ORO "},
   {"or",	"ORI "},
   {"os",	"OSS "},
@@ -326,7 +346,10 @@ static const LangTag ot_languages[] = {
   {"sv",	"SVE "},
   {"sw",	"SWK "},
   {"syr",	"SYR "},
+  {"ta",	"TAM "},
+  {"te",	"TEL "},
   {"tg",	"TAJ "},
+  {"th",	"THA "},
   {"ti",	"TGY "},
   {"tig",	"TGR "},
   {"tk",	"TKM "},
@@ -344,6 +367,7 @@ static const LangTag ot_languages[] = {
   {"wo",	"WLF "},
   {"xal",	"KLM "},
   {"xh",	"XHS "},
+  {"yi",	"JII "},
   {"yo",	"YBA "},
   {"zh-cn",	"ZHS "},
   {"zh-hk",	"ZHH "},
@@ -377,19 +401,24 @@ lang_compare_first_component (gconstpointer pa,
  * Finds the OpenType language-system tag best describing @language.
  *
  * Return value: #PangoOTTag best matching @language or
- * %PANGO_OT_DEFAULT_LANGUAGE if none found.
+ * %PANGO_OT_TAG_DEFAULT_LANGUAGE if none found.
  *
  * Since: 1.18
  **/
 PangoOTTag
 pango_ot_tag_from_language (PangoLanguage *language)
 {
-  const char *lang_str = pango_language_to_string (language);
+  const char *lang_str;
+  LangTag *lang_tag;
+
+  g_return_val_if_fail (language != NULL, PANGO_OT_TAG_DEFAULT_LANGUAGE);
+
+  lang_str = pango_language_to_string (language);
 
   /* find a language matching in the first component */
-  LangTag *lang_tag = bsearch (lang_str, ot_languages,
-			       G_N_ELEMENTS (ot_languages), sizeof (LangTag),
-			       lang_compare_first_component);
+  lang_tag = bsearch (lang_str, ot_languages,
+		      G_N_ELEMENTS (ot_languages), sizeof (LangTag),
+		      lang_compare_first_component);
 
   /* we now need to find the best language matching */
   if (lang_tag)
@@ -421,7 +450,7 @@ pango_ot_tag_from_language (PangoLanguage *language)
   if (lang_tag)
     return GUINT32_FROM_BE (* (PangoOTTag *) lang_tag->tag);
 
-  return PANGO_OT_DEFAULT_LANGUAGE;
+  return PANGO_OT_TAG_DEFAULT_LANGUAGE;
 }
 
 /**

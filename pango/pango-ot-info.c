@@ -404,7 +404,15 @@ get_tables (PangoOTInfo      *info,
  * @script_tag: the tag of the script to find.
  * @script_index: location to store the index of the script, or %NULL.
  *
- * Finds the index of a script.
+ * Finds the index of a script.  If not found, tries to find the 'DFLT'
+ * and then 'dflt' scripts and return the index of that in @script_index.
+ * If none of those is found either, %PANGO_OT_NO_SCRIPT is placed in
+ * @script_index.
+ *
+ * All other functions taking an input script_index parameter know
+ * how to handle %PANGO_OT_NO_SCRIPT, so one can ignore the return
+ * value of this function completely and proceed, to enjoy the automatic
+ * fallback to the 'DFLT'/'dflt' script.
  *
  * Return value: %TRUE if the script was found.
  **/
@@ -416,6 +424,9 @@ pango_ot_info_find_script (PangoOTInfo      *info,
 {
   HB_ScriptList *script_list;
   int i;
+
+  if (script_index)
+    *script_index = PANGO_OT_NO_SCRIPT;
 
   g_return_val_if_fail (PANGO_IS_OT_INFO (info), FALSE);
 
@@ -433,6 +444,34 @@ pango_ot_info_find_script (PangoOTInfo      *info,
 	}
     }
 
+  /* try finding 'DFLT' */
+  script_tag = PANGO_OT_TAG_DEFAULT_SCRIPT;
+
+  for (i=0; i < script_list->ScriptCount; i++)
+    {
+      if (script_list->ScriptRecord[i].ScriptTag == script_tag)
+	{
+	  if (script_index)
+	    *script_index = i;
+
+	  return FALSE;
+	}
+    }
+
+  /* try with 'dflt'; MS site has had typos and many fonts use it now :( */
+  script_tag = FT_MAKE_TAG ('d', 'f', 'l', 't');
+
+  for (i=0; i < script_list->ScriptCount; i++)
+    {
+      if (script_list->ScriptRecord[i].ScriptTag == script_tag)
+	{
+	  if (script_index)
+	    *script_index = i;
+
+	  return FALSE;
+	}
+    }
+
   return FALSE;
 }
 
@@ -447,6 +486,13 @@ pango_ot_info_find_script (PangoOTInfo      *info,
  *    the language, or %NULL.
  *
  * Finds the index of a language and its required feature index.
+ * If the language is not found, sets @language_index to
+ * PANGO_OT_DEFAULT_LANGUAGE and the required feature of the default language
+ * system is returned in required_feature_index.  For best compatibility with
+ * some fonts, also searches the language system tag 'dflt' before falling
+ * back to the default language system, but that is transparent to the user.
+ * The user can simply ignore the return value of this function to
+ * automatically fall back to the default language system.
  *
  * Return value: %TRUE if the language was found.
  **/
@@ -462,7 +508,15 @@ pango_ot_info_find_language (PangoOTInfo      *info,
   HB_Script *script;
   int i;
 
+  if (language_index)
+    *language_index = PANGO_OT_DEFAULT_LANGUAGE;
+  if (required_feature_index)
+    *required_feature_index = PANGO_OT_NO_FEATURE;
+
   g_return_val_if_fail (PANGO_IS_OT_INFO (info), FALSE);
+
+  if (script_index == PANGO_OT_NO_SCRIPT)
+    return FALSE;
 
   if (!get_tables (info, table_type, &script_list, NULL))
     return FALSE;
@@ -483,6 +537,27 @@ pango_ot_info_find_language (PangoOTInfo      *info,
 	}
     }
 
+  /* try with 'dflt'; MS site has had typos and many fonts use it now :( */
+  language_tag = FT_MAKE_TAG ('d', 'f', 'l', 't');
+
+  for (i = 0; i < script->LangSysCount; i++)
+    {
+      if (script->LangSysRecord[i].LangSysTag == language_tag)
+	{
+	  if (language_index)
+	    *language_index = i;
+	  if (required_feature_index)
+	    *required_feature_index = script->LangSysRecord[i].LangSys.ReqFeatureIndex;
+	  return FALSE;
+	}
+    }
+
+  /* DefaultLangSys */
+  if (language_index)
+    *language_index = PANGO_OT_DEFAULT_LANGUAGE;
+  if (required_feature_index)
+    *required_feature_index = script->DefaultLangSys.ReqFeatureIndex;
+
   return FALSE;
 }
 
@@ -496,7 +571,15 @@ pango_ot_info_find_language (PangoOTInfo      *info,
  *     or %PANGO_OT_DEFAULT_LANGUAGE to use the default language of the script.
  * @feature_index: location to store the index of the feature, or %NULL.
  *
- * Finds the index of a feature.
+ * Finds the index of a feature.  If the feature is not found, sets
+ * @feature_index to PANGO_OT_NO_FEATURE, which is safe to pass to
+ * pango_ot_ruleset_add_feature() and similar functions.
+ *
+ * In the future, this may set @feature_index to an special value that if used
+ * in pango_ot_ruleset_add_feature() will ask Pango to synthesize the
+ * requested feature based on Unicode properties and data.  However, this
+ * function will still return %FALSE in those cases.  So, users may want to
+ * ignore the return value of this function in certain cases.
  *
  * Return value: %TRUE if the feature was found.
  **/
@@ -515,7 +598,13 @@ pango_ot_info_find_feature  (PangoOTInfo      *info,
 
   int i;
 
+  if (feature_index)
+    *feature_index = PANGO_OT_NO_FEATURE;
+
   g_return_val_if_fail (PANGO_IS_OT_INFO (info), FALSE);
+
+  if (script_index == PANGO_OT_NO_SCRIPT)
+    return FALSE;
 
   if (!get_tables (info, table_type, &script_list, &feature_list))
     return FALSE;
@@ -555,8 +644,8 @@ pango_ot_info_find_feature  (PangoOTInfo      *info,
  *
  * Obtains the list of available scripts.
  *
- * Return value: a newly-allocated array containing the tags of the
- *   available scripts.
+ * Return value: a newly-allocated zero-terminated array containing the tags of the
+ *   available scripts that should be freed using g_free().
  **/
 PangoOTTag *
 pango_ot_info_list_scripts (PangoOTInfo      *info,
@@ -590,8 +679,8 @@ pango_ot_info_list_scripts (PangoOTInfo      *info,
  *
  * Obtains the list of available languages for a given script.
  *
- * Return value: a newly-allocated array containing the tags of the
- *   available languages.
+ * Return value: a newly-allocated zero-terminated array containing the tags of the
+ *   available languages that should be freed using g_free().
  **/
 PangoOTTag *
 pango_ot_info_list_languages (PangoOTInfo      *info,
@@ -605,6 +694,13 @@ pango_ot_info_list_languages (PangoOTInfo      *info,
   int i;
 
   g_return_val_if_fail (PANGO_IS_OT_INFO (info), NULL);
+
+  if (script_index == PANGO_OT_NO_SCRIPT)
+    {
+      result = g_new (PangoOTTag, 1);
+      result[0] = 0;
+      return result;
+    }
 
   if (!get_tables (info, table_type, &script_list, NULL))
     return NULL;
@@ -635,8 +731,8 @@ pango_ot_info_list_languages (PangoOTInfo      *info,
  *
  * Obtains the list of features for the given language of the given script.
  *
- * Return value: a newly-allocated array containing the tags of the
- * available features.
+ * Return value: a newly-allocated zero-terminated array containing the tags of the
+ * available features that should be freed using g_free().
  **/
 PangoOTTag *
 pango_ot_info_list_features  (PangoOTInfo      *info,
@@ -655,6 +751,13 @@ pango_ot_info_list_features  (PangoOTInfo      *info,
   int i;
 
   g_return_val_if_fail (PANGO_IS_OT_INFO (info), NULL);
+
+  if (script_index == PANGO_OT_NO_SCRIPT)
+    {
+      result = g_new (PangoOTTag, 1);
+      result[0] = 0;
+      return result;
+    }
 
   if (!get_tables (info, table_type, &script_list, &feature_list))
     return NULL;

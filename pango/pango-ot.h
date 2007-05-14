@@ -34,10 +34,11 @@ G_BEGIN_DECLS
 
 typedef guint32 PangoOTTag;
 
-typedef struct _PangoOTInfo    PangoOTInfo;
-typedef struct _PangoOTBuffer  PangoOTBuffer;
-typedef struct _PangoOTGlyph   PangoOTGlyph;
-typedef struct _PangoOTRuleset PangoOTRuleset;
+typedef struct _PangoOTInfo       PangoOTInfo;
+typedef struct _PangoOTBuffer     PangoOTBuffer;
+typedef struct _PangoOTGlyph      PangoOTGlyph;
+typedef struct _PangoOTRuleset    PangoOTRuleset;
+typedef struct _PangoOTFeatureMap PangoOTFeatureMap;
 
 typedef enum
 {
@@ -47,8 +48,12 @@ typedef enum
 
 
 #define PANGO_OT_ALL_GLYPHS		((guint) 0xFFFF)
-#define PANGO_OT_DEFAULT_LANGUAGE	((PangoOTTag) 0xFFFF)
-#define PANGO_OT_DEFAULT_SCRIPT		((PangoOTTag) FT_MAKE_TAG ('D', 'F', 'L', 'T'))
+#define PANGO_OT_NO_FEATURE		((guint) 0xFFFF)
+#define PANGO_OT_NO_SCRIPT		((guint) 0xFFFF)
+#define PANGO_OT_DEFAULT_LANGUAGE	((guint) 0xFFFF)
+
+#define PANGO_OT_TAG_DEFAULT_SCRIPT		((PangoOTTag) (FT_MAKE_TAG ('D', 'F', 'L', 'T')))
+#define PANGO_OT_TAG_DEFAULT_LANGUAGE		((PangoOTTag) (FT_MAKE_TAG ('d', 'f', 'l', 't')))
 
 /* Note that this must match HB_GlyphItem */
 struct _PangoOTGlyph
@@ -59,6 +64,12 @@ struct _PangoOTGlyph
   gushort  component;
   gushort  ligID;
   gushort  property_cache;    /* Internal */
+};
+
+struct _PangoOTFeatureMap
+{
+  char     feature_name[5];
+  gulong   property_bit;
 };
 
 PangoOTInfo *pango_ot_info_get (FT_Face face);
@@ -111,16 +122,25 @@ void           pango_ot_buffer_set_zero_width_marks (PangoOTBuffer     *buffer,
 						     gboolean           zero_width_marks);
 
 PangoOTRuleset *pango_ot_ruleset_new (PangoOTInfo       *info);
-
+PangoOTRuleset *pango_ot_ruleset_new_for (PangoOTInfo       *info,
+					  PangoScript        script,
+					  PangoLanguage     *language);
 void            pango_ot_ruleset_add_feature (PangoOTRuleset   *ruleset,
 					      PangoOTTableType  table_type,
 					      guint             feature_index,
 					      gulong            property_bit);
+gboolean        pango_ot_ruleset_maybe_add_feature (PangoOTRuleset   *ruleset,
+						    PangoOTTableType  table_type,
+						    PangoOTTag        feature_tag,
+						    gulong            property_bit);
+int             pango_ot_ruleset_maybe_add_features (PangoOTRuleset          *ruleset,
+						     PangoOTTableType         table_type,
+						     const PangoOTFeatureMap *features,
+						     int                      n_features);
 void            pango_ot_ruleset_substitute  (PangoOTRuleset   *ruleset,
 					      PangoOTBuffer    *buffer);
 void            pango_ot_ruleset_position    (PangoOTRuleset   *ruleset,
 					      PangoOTBuffer    *buffer);
-
 PangoScript     pango_ot_tag_to_script     (PangoOTTag     script_tag);
 PangoOTTag      pango_ot_tag_from_script   (PangoScript    script);
 PangoLanguage*  pango_ot_tag_to_language   (PangoOTTag     language_tag);

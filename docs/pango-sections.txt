@@ -941,9 +941,13 @@ PangoOTBuffer
 PangoOTGlyph
 PangoOTRuleset
 PangoOTTableType
+PangoOTFeatureMap
 PANGO_OT_ALL_GLYPHS
+PANGO_OT_NO_FEATURE
+PANGO_OT_NO_SCRIPT
 PANGO_OT_DEFAULT_LANGUAGE
-PANGO_OT_DEFAULT_SCRIPT
+PANGO_OT_TAG_DEFAULT_LANGUAGE
+PANGO_OT_TAG_DEFAULT_SCRIPT
 pango_ot_info_get
 pango_ot_info_find_script
 pango_ot_info_find_language
@@ -960,7 +964,10 @@ pango_ot_buffer_set_zero_width_marks
 pango_ot_buffer_get_glyphs
 pango_ot_buffer_output
 pango_ot_ruleset_new
+pango_ot_ruleset_new_for
 pango_ot_ruleset_add_feature
+pango_ot_ruleset_maybe_add_feature
+pango_ot_ruleset_maybe_add_features
 pango_ot_ruleset_substitute
 pango_ot_ruleset_position
 pango_ot_tag_from_language

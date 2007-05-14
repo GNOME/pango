@@ -86,6 +86,17 @@ identify the various OpenType tables in the
 @PANGO_OT_TABLE_GSUB: The GSUB table.
 @PANGO_OT_TABLE_GPOS: The GPOS table.
 
+<!-- ##### STRUCT PangoOTFeatureMap ##### -->
+<para>
+The <type>PangoOTFeatureMap</type> typedef is used to represent an OpenType
+feature with the property bit associated with it.  The feature tag is
+represented as a char array instead of a #PangoOTTag for convenience.
+</para>
+
+@feature_name: feature tag in represented as four-letter ASCII string.
+@property_bit: the property bit to use for this feature.  See
+	       pango_ot_ruleset_add_feature() for details.
+
 <!-- ##### MACRO PANGO_OT_ALL_GLYPHS ##### -->
 <para>
 This is used as the property bit in pango_ot_ruleset_add_feature() when a
@@ -94,18 +105,60 @@ feature should be applied to all glyphs.
 
 
 
-<!-- ##### MACRO PANGO_OT_DEFAULT_LANGUAGE ##### -->
+<!-- ##### MACRO PANGO_OT_NO_FEATURE ##### -->
 <para>
-This is used as the language index in pango_ot_info_find_feature() when
-the default language system of the script is desired.
+This is used as a feature index that represent no feature, that is, should be
+skipped.  It may be returned as feature index by pango_ot_info_find_feature()
+if the feature is not found, and pango_ot_rulset_add_feature() function
+automatically skips this value, so no special handling is required by the
+user.
 </para>
 
 
 
-<!-- ##### MACRO PANGO_OT_DEFAULT_SCRIPT ##### -->
+<!-- ##### MACRO PANGO_OT_NO_SCRIPT ##### -->
 <para>
-Expands to the #PangoOTTag corresponding to the special OpenType
-script tag 'DFLT'.
+This is used as a script index that represent no script, that is, when the
+requested script was not found, and a default ('DFLT') script was not found
+either.  It may be returned as script index by pango_ot_info_find_script()
+if the script or a default script are not found, all other functions
+taking a script index essentially return if the input script index is
+this value, so no special handling is required by the user.
+</para>
+
+
+
+<!-- ##### MACRO PANGO_OT_DEFAULT_LANGUAGE ##### -->
+<para>
+This is used as the language index in pango_ot_info_find_feature() when
+the default language system of the script is desired.
+
+It is also returned by pango_ot_info_find_language() if the requested language
+is not found, or the requested language tag was PANGO_OT_TAG_DEFAULT_LANGUAGE.
+The end result is that one can always call pango_ot_tag_from_language()
+followed by pango_ot_info_find_language() and pass the result to
+pango_ot_info_find_feature() without having to worry about falling back to
+default language system explicitly.
+</para>
+
+
+
+<!-- ##### MACRO PANGO_OT_TAG_DEFAULT_LANGUAGE ##### -->
+<para>
+This is a #PangoOTTag representing a special language tag 'dflt'.  It is
+returned as language tag by pango_ot_tag_from_language() if the requested
+language is not found.  It is safe to pass this value to
+pango_ot_info_find_language() as that function falls back to returning default
+language-system if the requested language tag is not found.
+</para>
+
+
+
+<!-- ##### MACRO PANGO_OT_TAG_DEFAULT_SCRIPT ##### -->
+<para>
+This is a #PangoOTTag representing the special script tag 'DFLT'.  It is
+returned as script tag by pango_ot_tag_from_script() if the requested script
+is not found.
 </para>
 
 
@@ -276,6 +329,17 @@ script tag 'DFLT'.
 @Returns: 
 
 
+<!-- ##### FUNCTION pango_ot_ruleset_new_for ##### -->
+<para>
+
+</para>
+
+@info: 
+@script: 
+@language: 
+@Returns: 
+
+
 <!-- ##### FUNCTION pango_ot_ruleset_add_feature ##### -->
 <para>
 
@@ -285,6 +349,30 @@ script tag 'DFLT'.
 @table_type: 
 @feature_index: 
 @property_bit: 
+
+
+<!-- ##### FUNCTION pango_ot_ruleset_maybe_add_feature ##### -->
+<para>
+
+</para>
+
+@ruleset: 
+@table_type: 
+@feature_tag: 
+@property_bit: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_ot_ruleset_maybe_add_features ##### -->
+<para>
+
+</para>
+
+@ruleset: 
+@table_type: 
+@features: 
+@n_features: 
+@Returns: 
 
 
 <!-- ##### FUNCTION pango_ot_ruleset_substitute ##### -->

@@ -71,6 +71,9 @@ struct _PangoOTRuleset
 
   GArray *rules;
   PangoOTInfo *info;
+
+  guint script_index[2];
+  guint language_index[2];
 };
 
 struct _PangoOTRulesetClass

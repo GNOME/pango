@@ -132,7 +132,7 @@ int main (int argc, char **argv)
 }
 </programlisting>
 </example>
-<figure>
+<figure id="rotated-example-output">
   <title>Output of <xref linkend="rotated-example"/></title>
   <graphic fileref="rotated-text.png" format="PNG"/>
 </figure>
