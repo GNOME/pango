@@ -1,5 +1,13 @@
 2007-05-14  Behdad Esfahbod  <behdad@gnome.org>
 
+	Part of Bug 414264 – Pango vertical writing support is different with
+	real CJK usage.
+
+	* pango-view/test-mixed.txt: Add a line of Japanese text that
+	has brackets that should be rotated in vertical text.
+
+2007-05-14  Behdad Esfahbod  <behdad@gnome.org>
+
 	Part of Bug 325714 – Pango should respect $LANGUAGE
 
 	* pango/pango-ot.h:
