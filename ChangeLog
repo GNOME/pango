@@ -1,5 +1,11 @@
 2007-05-14  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango/pango-language.c (pango_script_get_sample_language):
+	* pango/pango-script.c: Move pango_script_get_sample_language()
+	from pango-script.c to pango-language.c.  Fits better.
+
+2007-05-14  Behdad Esfahbod  <behdad@gnome.org>
+
 	Part of Bug 325714 – Pango should respect $LANGUAGE
 	Bug 414264 – Pango vertical writing support is different with real
 	CJK usage.
