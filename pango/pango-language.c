@@ -29,6 +29,8 @@
 #include "pango-language.h"
 #include "pango-impl-utils.h"
 
+#define LANGUAGE_SEPARATORS ";:, \t"
+
 static const char canon_map[256] = {
    0,   0,   0,   0,   0,   0,   0,   0,    0,   0,   0,   0,   0,   0,   0,   0,
    0,   0,   0,   0,   0,   0,   0,   0,    0,   0,   0,   0,   0,   0,   0,   0,
@@ -277,7 +279,7 @@ pango_language_matches (PangoLanguage *language,
 
   while (!done)
     {
-      const char *end = strpbrk (p, ";:, \t");
+      const char *end = strpbrk (p, LANGUAGE_SEPARATORS);
       if (!end)
 	{
 	  end = p + strlen (p);
@@ -497,6 +499,85 @@ pango_language_includes_script (PangoLanguage *language,
   return FALSE;
 }
 
+static PangoLanguage **
+parse_default_languages (void)
+{
+  char *p;
+  gboolean done = FALSE;
+  GArray *langs;
+
+  p = getenv ("PANGO_LANGUAGE");
+
+  if (p == NULL)
+    p = getenv ("LANGUAGE");
+
+  if (p == NULL)
+    return NULL;
+
+  p = g_strdup (p);
+
+  langs = g_array_new (TRUE, FALSE, sizeof (PangoLanguage *));
+
+  while (!done)
+    {
+      char *end = strpbrk (p, LANGUAGE_SEPARATORS);
+      if (!end)
+	{
+	  end = p + strlen (p);
+	  done = TRUE;
+	}
+      else
+        *end = '\0';
+
+      /* skip empty languages, and skip the language 'C' */
+      if (p != end && !(p + 1 == end && *p == 'C'))
+        {
+	  PangoLanguage *l = pango_language_from_string (p);
+	  
+	  g_array_append_val (langs, l);
+	}
+
+      if (!done)
+	p = end + 1;
+    }
+
+  return (PangoLanguage **) g_array_free (langs, FALSE);
+}
+
+static PangoLanguage *
+_pango_script_get_default_language (PangoScript script)
+{
+  static gboolean initialized = FALSE;
+  static PangoLanguage * const * languages = NULL;
+  static GHashTable *hash = NULL;
+  PangoLanguage *result, * const * p;
+
+  if (G_UNLIKELY (!initialized))
+    {
+      languages = parse_default_languages ();
+
+      if (languages)
+	hash = g_hash_table_new (NULL, NULL);
+
+      initialized = TRUE;
+    }
+
+  if (!languages)
+    return NULL;
+
+  if (g_hash_table_lookup_extended (hash, GINT_TO_POINTER (script), NULL, (gpointer *) (gpointer) &result))
+    return result;
+
+  for (p = languages; *p; p++)
+    if (pango_language_includes_script (*p, script))
+      break;
+  result = *p;
+
+  g_hash_table_insert (hash, GINT_TO_POINTER (script), result);
+
+  return result;
+}
+
 /**
  * pango_script_get_sample_language:
  * @script: a #PangoScript
@@ -516,6 +597,21 @@ pango_language_includes_script (PangoLanguage *language,
  * significantly different sets of Han characters and forms
  * of shared characters. No sample language can be provided
  * for many historical scripts as well.
+ *
+ * As of 1.18, this function checks the environment variables
+ * PANGO_LANGUAGE and LANGUAGE (checked in that order) first.
+ * If one of them is set, it is parsed as a list of language tags
+ * separated by colons or other separators.  This function
+ * will return the first language in the parsed list that Pango
+ * believes may use @script for writing.  This last predicate
+ * is tested using pango_language_includes_script().  This can
+ * be used to control Pango's font selection for non-primary
+ * languages.  For example, a PANGO_LANGUAGE enviroment variable
+ * set to "en:fa" makes Pango choose fonts suitable for Persian (fa) 
+ * instead of Arabic (ar) when a segment of Arabic text is found
+ * in an otherwise non-Arabic text.  The same trick can be used to
+ * choose a default language for %PANGO_SCRIPT_HAN when setting
+ * context language is not feasible.
  *
  * Return value: a #PangoLanguage that is representative
  * of the script, or %NULL if no such language exists.
@@ -616,9 +712,14 @@ pango_script_get_sample_language (PangoScript script)
     "nqo"  /* PANGO_SCRIPT_NKO */
   };
   const char *sample_language;
+  PangoLanguage *result;
 
   g_return_val_if_fail (script >= 0, NULL);
   g_return_val_if_fail ((guint)script < G_N_ELEMENTS (sample_languages), NULL);
+
+  result = _pango_script_get_default_language (script);
+  if (result)
+    return result;
 
   sample_language = sample_languages[script];
 

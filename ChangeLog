@@ -1,5 +1,18 @@
 2007-05-14  Behdad Esfahbod  <behdad@gnome.org>
 
+	Bug 325714 – Pango should respect $LANGUAGE
+
+	* pango/pango-language.c (pango_language_matches),
+	(parse_default_languages), (_pango_script_get_default_language),
+	(pango_script_get_sample_language):
+	Make pango_script_get_sample_language() use the value of env var
+	PANGO_LANGUAGE or LANGUAGE (checked in that order) to make better
+	guesses.  The env var should be a list of language tags, like "en:fa"
+	for example where makes Pango choose Persian (fa) fonts instead of
+	Arabic (ar) fonts...
+
+2007-05-14  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/pango-language.c (pango_script_get_sample_language):
 	* pango/pango-script.c: Move pango_script_get_sample_language()
 	from pango-script.c to pango-language.c.  Fits better.
