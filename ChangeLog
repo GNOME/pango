@@ -1,3 +1,8 @@
+2007-05-13  Behdad Esfahbod  <behdad@gnome.org>
+
+	* pango-view/viewer-render.c (do_output), (parse_options):
+	Add --language.
+
 2007-05-10  Behdad Esfahbod  <behdad@gnome.org>
 
 	* modules/arabic/arabic-fc.c (maybe_add_gsub_feature),

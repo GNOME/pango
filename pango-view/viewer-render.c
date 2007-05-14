@@ -65,6 +65,7 @@ PangoWrapMode opt_wrap = PANGO_WRAP_WORD_CHAR;
 gboolean opt_wrap_set = FALSE;
 const char *opt_pangorc = NULL;
 const PangoViewer *opt_viewer = NULL;
+const char *opt_language = NULL;
 
 /* Text (or markup) to render */
 static char *text;
@@ -273,7 +274,9 @@ do_output (PangoContext     *context,
 
   set_transform (context, transform_cb, cb_context, cb_data, NULL);
 
-  pango_context_set_language (context, pango_language_get_default ());
+  pango_context_set_language (context,
+			      opt_language ? pango_language_from_string (opt_language)
+					   : pango_language_get_default ());
   pango_context_set_base_dir (context,
 			      opt_rtl ? PANGO_DIRECTION_RTL : PANGO_DIRECTION_LTR);
 
@@ -562,7 +565,7 @@ show_version(const char *name,
 void
 parse_options (int argc, char *argv[])
 {
-  gchar *backend_options = backends_to_string();
+  gchar *backend_options = backends_to_string ();
   GOptionFlags backend_flag = backends_get_count () > 1 ? 0 : G_OPTION_FLAG_HIDDEN;
   gchar *backend_desc = backend_description ();
   GOptionEntry entries[] =
@@ -593,6 +596,8 @@ parse_options (int argc, char *argv[])
      "Width in points to indent paragraphs",			    "points"},
     {"justify",		0, 0, G_OPTION_ARG_NONE,			&opt_justify,
      "Align paragraph lines to be justified",			    	NULL},
+    {"language",	0, 0, G_OPTION_ARG_STRING,			&opt_language,
+     "Language to use for font selection",			    "en_US/etc"},
     {"margin",		0, 0, G_OPTION_ARG_INT,				&opt_margin,
      "Set the margin on the output in pixels",			    "pixels"},
     {"markup",		0, 0, G_OPTION_ARG_NONE,			&opt_markup,
