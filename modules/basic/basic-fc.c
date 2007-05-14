@@ -39,23 +39,27 @@ typedef PangoEngineShapeClass BasicEngineFcClass;
 #define RENDER_TYPE PANGO_RENDER_TYPE_FC
 
 static PangoEngineScriptInfo basic_scripts[] = {
+  /* Listed in OpenType "Standard scripts" standard */
+  { PANGO_SCRIPT_LATIN,    "*" },
+  { PANGO_SCRIPT_CYRILLIC, "*" },
+  { PANGO_SCRIPT_GREEK,    "*" },
   { PANGO_SCRIPT_ARMENIAN, "*" },
+  { PANGO_SCRIPT_GEORGIAN, "*" },
+  { PANGO_SCRIPT_RUNIC,    "*" },
+  { PANGO_SCRIPT_OGHAM,    "*" },
+
+  /* The following are simple and can be shaped easily too */
+
   { PANGO_SCRIPT_BOPOMOFO, "*" },
   { PANGO_SCRIPT_CHEROKEE, "*" },
   { PANGO_SCRIPT_COPTIC,   "*" },
-  { PANGO_SCRIPT_CYRILLIC, "*" },
   { PANGO_SCRIPT_DESERET,  "*" },
   { PANGO_SCRIPT_ETHIOPIC, "*" },
-  { PANGO_SCRIPT_GEORGIAN, "*" },
   { PANGO_SCRIPT_GOTHIC,   "*" },
-  { PANGO_SCRIPT_GREEK,    "*" },
   { PANGO_SCRIPT_HAN,      "*" },
   { PANGO_SCRIPT_HIRAGANA, "*" },
   { PANGO_SCRIPT_KATAKANA, "*" },
-  { PANGO_SCRIPT_LATIN,    "*" },
-  { PANGO_SCRIPT_OGHAM,    "*" },
   { PANGO_SCRIPT_OLD_ITALIC, "*" },
-  { PANGO_SCRIPT_RUNIC,     "*" },
   { PANGO_SCRIPT_CANADIAN_ABORIGINAL, "*" },
   { PANGO_SCRIPT_YI,       "*" },
 
@@ -75,6 +79,7 @@ static PangoEngineScriptInfo basic_scripts[] = {
   { PANGO_SCRIPT_CUNEIFORM,  "*" },
   { PANGO_SCRIPT_PHOENICIAN, "*" },
 
+  /* In fact any script we don't know how to shape can go here */
   { PANGO_SCRIPT_COMMON,   "" }
 };
 
@@ -87,219 +92,27 @@ static PangoEngineInfo script_engines[] = {
   }
 };
 
-static void
-swap_range (PangoGlyphString *glyphs,
-	    int               start,
-	    int               end)
+static const PangoOTFeatureMap gsub_features[] =
 {
-  int i, j;
-
-  for (i = start, j = end - 1; i < j; i++, j--)
-    {
-      PangoGlyphInfo glyph_info;
-      gint log_cluster;
-
-      glyph_info = glyphs->glyphs[i];
-      glyphs->glyphs[i] = glyphs->glyphs[j];
-      glyphs->glyphs[j] = glyph_info;
-
-      log_cluster = glyphs->log_clusters[i];
-      glyphs->log_clusters[i] = glyphs->log_clusters[j];
-      glyphs->log_clusters[j] = log_cluster;
-    }
-}
-
-static void
-set_glyph (PangoFont        *font,
-	   PangoGlyphString *glyphs,
-	   int               i,
-	   int               offset,
-	   PangoGlyph        glyph)
-{
-  PangoRectangle logical_rect;
-
-  glyphs->glyphs[i].glyph = glyph;
-
-  glyphs->glyphs[i].geometry.x_offset = 0;
-  glyphs->glyphs[i].geometry.y_offset = 0;
-
-  glyphs->log_clusters[i] = offset;
-
-  pango_font_get_glyph_extents (font, glyphs->glyphs[i].glyph, NULL, &logical_rect);
-  glyphs->glyphs[i].geometry.width = logical_rect.width;
-}
-
-static void
-fallback_shape (PangoEngineShape *engine,
-		PangoFont        *font,
-		const char       *text,
-		gint              length,
-		const PangoAnalysis *analysis,
-		PangoGlyphString *glyphs)
-{
-  PangoFcFont *fc_font = PANGO_FC_FONT (font);
-  glong n_chars = g_utf8_strlen (text, length);
-  const char *p;
-  int i;
-
-  pango_glyph_string_set_size (glyphs, n_chars);
-  p = text;
-
-  for (i=0; i < n_chars; i++)
-    {
-      gunichar wc;
-      gunichar mirrored_ch;
-      PangoGlyph index;
-      char buf[6];
-
-      wc = g_utf8_get_char (p);
-
-      if (analysis->level % 2)
-	if (pango_get_mirror_char (wc, &mirrored_ch))
-	  {
-	    wc = mirrored_ch;
-
-	    g_unichar_to_utf8 (wc, buf);
-	  }
-
-      if (wc == 0xa0)	/* non-break-space */
-	wc = 0x20;
-
-      if (pango_is_zero_width (wc))
-	{
-	  set_glyph (font, glyphs, i, p - text, PANGO_GLYPH_EMPTY);
-	}
-      else
-	{
-	  index = pango_fc_font_get_glyph (fc_font, wc);
-
-	  if (!index)
-	    {
-	      index = PANGO_GET_UNKNOWN_GLYPH ( wc);
-	      set_glyph (font, glyphs, i, p - text, index);
-	    }
-	  else
-	    {
-	      set_glyph (font, glyphs, i, p - text, index);
-
-	      if (g_unichar_type (wc) == G_UNICODE_NON_SPACING_MARK)
-		{
-		  if (i > 0)
-		    {
-		      PangoRectangle logical_rect, ink_rect;
-
-		      glyphs->glyphs[i].geometry.width = MAX (glyphs->glyphs[i-1].geometry.width,
-							      glyphs->glyphs[i].geometry.width);
-		      glyphs->glyphs[i-1].geometry.width = 0;
-		      glyphs->log_clusters[i] = glyphs->log_clusters[i-1];
-
-		      /* Some heuristics to try to guess how overstrike glyphs are
-		       * done and compensate
-		       */
-		      pango_font_get_glyph_extents (font, glyphs->glyphs[i].glyph, &ink_rect, &logical_rect);
-		      if (logical_rect.width == 0 && ink_rect.x == 0)
-			glyphs->glyphs[i].geometry.x_offset = (glyphs->glyphs[i].geometry.width - ink_rect.width) / 2;
-		    }
-		}
-	    }
-	}
-
-      p = g_utf8_next_char (p);
-    }
-
-  if (analysis->level % 2 != 0)
-    {
-      /* Swap all glyphs */
-      swap_range (glyphs, 0, glyphs->num_glyphs);
-    }
-}
-
-static const gchar scripts[][5] =
-{
-  "latn",
-  "cyrl",
-  "grek",
-  "armn",
-  "geor",
-  "runr",
-  "ogam"
+  {"ccmp", PANGO_OT_ALL_GLYPHS},
+  {"locl", PANGO_OT_ALL_GLYPHS},
+  {"liga", PANGO_OT_ALL_GLYPHS},
+  {"clig", PANGO_OT_ALL_GLYPHS}
 };
 
-static const gchar gsub_features[][5] =
+static const PangoOTFeatureMap gpos_features[] =
 {
-  "ccmp",
-  "liga",
-  "clig",
+  {"kern", PANGO_OT_ALL_GLYPHS},
+  {"mark", PANGO_OT_ALL_GLYPHS},
+  {"mkmk", PANGO_OT_ALL_GLYPHS}
 };
 
-static const gchar gpos_features[][5] =
+static const PangoOTFeatureMap vertical_gsub_features[] =
 {
-  "kern",
-  "mark",
-  "mkmk"
+  {"ccmp", PANGO_OT_ALL_GLYPHS},
+  {"locl", PANGO_OT_ALL_GLYPHS},
+  {"vert", PANGO_OT_ALL_GLYPHS}
 };
-
-static PangoOTRuleset *
-get_ruleset (FT_Face face)
-{
-  PangoOTRuleset *ruleset;
-  PangoOTInfo *info = NULL;
-  static GQuark ruleset_quark = 0;
-  unsigned int i, j;
-
-  info = pango_ot_info_get (face);
-  if (!info)
-	  return NULL;
-
-  if (!ruleset_quark)
-	  ruleset_quark = g_quark_from_string ("pango-basic-ruleset");
-
-  ruleset = g_object_get_qdata (G_OBJECT (info), ruleset_quark);
-
-  if (!ruleset)
-  {
-    ruleset = pango_ot_ruleset_new (info);
-
-    for (i = 0; i < G_N_ELEMENTS (scripts); i++)
-      {
-	 PangoOTTag script_tag = FT_MAKE_TAG (scripts[i][0], scripts[i][1], scripts[i][2], scripts[i][3]);
-	 guint script_index;
-
-
-	 if (pango_ot_info_find_script (info, PANGO_OT_TABLE_GPOS, script_tag, &script_index))
-	   for (j = 0; j < G_N_ELEMENTS (gpos_features); j++)
-	     {
-	       PangoOTTag feature_tag = FT_MAKE_TAG (gpos_features[j][0], gpos_features[j][1],
-						     gpos_features[j][2], gpos_features[j][3]);
-	       guint feature_index;
-
-	       if (pango_ot_info_find_feature (info, PANGO_OT_TABLE_GPOS, feature_tag, script_index, PANGO_OT_DEFAULT_LANGUAGE ,&feature_index))
-	       {
-		 pango_ot_ruleset_add_feature (ruleset, PANGO_OT_TABLE_GPOS, feature_index, PANGO_OT_ALL_GLYPHS);
-	       }
-	     }
-
-	  if (pango_ot_info_find_script (info, PANGO_OT_TABLE_GSUB, script_tag, &script_index))
-	    for (j = 0; j < G_N_ELEMENTS (gsub_features); j++)
-	      {
-		PangoOTTag feature_tag = FT_MAKE_TAG (gsub_features[j][0], gsub_features[j][1],
-						      gsub_features[j][2], gsub_features[j][3]);
-		guint feature_index;
-
-		if (pango_ot_info_find_feature (info, PANGO_OT_TABLE_GSUB, feature_tag,
-						script_index, PANGO_OT_DEFAULT_LANGUAGE, &feature_index))
-		  {
-		    pango_ot_ruleset_add_feature (ruleset, PANGO_OT_TABLE_GSUB, feature_index, PANGO_OT_ALL_GLYPHS);
-		  }
-	      }
-      }
-
-    g_object_set_qdata_full (G_OBJECT (info), ruleset_quark, ruleset, (GDestroyNotify) g_object_unref);
-  }
-
-  return ruleset;
-
-}
 
 static void
 basic_engine_shape (PangoEngineShape *engine,
@@ -311,14 +124,13 @@ basic_engine_shape (PangoEngineShape *engine,
 {
   PangoFcFont *fc_font;
   FT_Face face;
-  PangoOTRuleset *ruleset;
+  PangoOTRulesetDescription desc;
+  const PangoOTRuleset *ruleset;
   PangoOTBuffer *buffer;
-  gint unknown_property = 0;
   glong n_chars;
   const char *p;
   int cluster = 0;
   int i;
-  gboolean vertical;
 
   g_return_if_fail (font != NULL);
   g_return_if_fail (text != NULL);
@@ -330,20 +142,29 @@ basic_engine_shape (PangoEngineShape *engine,
   if (!face)
     return;
 
-  vertical = PANGO_GRAVITY_IS_VERTICAL (analysis->gravity);
-  if (vertical)
+  desc.script = analysis->script;
+  desc.language = analysis->language;
+
+  if (PANGO_GRAVITY_IS_VERTICAL (analysis->gravity))
     {
-      fallback_shape (engine, font, text, length, analysis, glyphs);
-      goto out;
+      desc.n_static_gsub_features = G_N_ELEMENTS (vertical_gsub_features);
+      desc.static_gsub_features = vertical_gsub_features;
+      desc.n_static_gpos_features = 0;
+      desc.static_gpos_features = NULL;
+    }
+  else
+    {
+      desc.n_static_gsub_features = G_N_ELEMENTS (gsub_features);
+      desc.static_gsub_features = gsub_features;
+      desc.n_static_gpos_features = G_N_ELEMENTS (gpos_features);
+      desc.static_gpos_features = gpos_features;
     }
 
-  ruleset = get_ruleset (face);
-  if (!ruleset)
-    {
-      fallback_shape (engine, font, text, length, analysis, glyphs);
-      pango_fc_font_kern_glyphs (fc_font, glyphs);
-      goto out;
-    }
+  /* TODO populate other_features from analysis->extra_attrs */
+  desc.n_other_features = 0;
+  desc.other_features = NULL;
+
+  ruleset = pango_ot_ruleset_get_for (pango_ot_info_get (face), &desc);
 
   buffer = pango_ot_buffer_new (fc_font);
   pango_ot_buffer_set_rtl (buffer, analysis->level % 2 != 0);
@@ -355,41 +176,29 @@ basic_engine_shape (PangoEngineShape *engine,
   for (i=0; i < n_chars; i++)
     {
       gunichar wc;
-      gunichar mirrored_ch;
-      PangoGlyph index;
-      char buf[6];
+      PangoGlyph glyph;
 
       wc = g_utf8_get_char (p);
-      if (analysis->level % 2)
-	if (pango_get_mirror_char (wc, &mirrored_ch))
-	  {
-	    wc = mirrored_ch;
 
-	    g_unichar_to_utf8 (wc, buf);
-	  }
+      if (g_unichar_type (wc) != G_UNICODE_NON_SPACING_MARK)
+	cluster = p - text;
 
-      if (pango_is_zero_width (wc))	/* Zero-width characters */
-	{
-	  pango_ot_buffer_add_glyph (buffer, PANGO_GLYPH_EMPTY, unknown_property, p - text);
-	}
+      if (pango_is_zero_width (wc))
+        glyph = PANGO_GLYPH_EMPTY;
       else
-	{
-	  index = pango_fc_font_get_glyph (fc_font, wc);
+        {
+	  gunichar c = wc;
 
-	  if (!index)
-	    {
-	      pango_ot_buffer_add_glyph (buffer, PANGO_GET_UNKNOWN_GLYPH ( wc),
-					 unknown_property, p - text);
-	    }
-	  else
-	    {
-	      if (g_unichar_type (wc) != G_UNICODE_NON_SPACING_MARK)
-		cluster = p - text;
+	  if (analysis->level % 2)
+	    g_unichar_get_mirror_char (c, &c);
 
-	      pango_ot_buffer_add_glyph (buffer, index,
-					 unknown_property, cluster);
-	    }
+	  glyph = pango_fc_font_get_glyph (fc_font, c);
 	}
+
+      if (!glyph)
+	glyph = PANGO_GET_UNKNOWN_GLYPH (wc);
+
+      pango_ot_buffer_add_glyph (buffer, glyph, 0, cluster);
 
       p = g_utf8_next_char (p);
     }
@@ -401,7 +210,6 @@ basic_engine_shape (PangoEngineShape *engine,
 
   pango_ot_buffer_destroy (buffer);
 
-out:
   pango_fc_font_unlock_face (fc_font);
 }
 

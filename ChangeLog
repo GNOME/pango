@@ -1,5 +1,25 @@
 2007-05-14  Behdad Esfahbod  <behdad@gnome.org>
 
+	Part of Bug 325714 – Pango should respect $LANGUAGE
+	Bug 414264 – Pango vertical writing support is different with real
+	CJK usage.
+
+	* modules/arabic/arabic-fc.c (arabic_engine_shape):
+	* modules/basic/basic-fc.c (basic_engine_shape):
+	* modules/syriac/syriac-fc.c (syriac_engine_shape):
+	Remove fallback_shape() paths.  Remove get_ruleset().
+	Use pango_ot_ruleset_get_for(), that correctly works for multiple
+	languages.  Also makes basic shaper apply the 'vert' feature for
+	vertical text.  Removes a net 500 lines.
+
+	Other OpenType modules need to be ported over time, however some
+	extensions may be needed.  For example, the Hebrew shaper uses
+	fallback code if no GPOS tables are available.  Currently using
+	pango_ot_ruleset_get_for() one cannot see which features were
+	found.
+
+2007-05-14  Behdad Esfahbod  <behdad@gnome.org>
+
 	Part of Bug 414264 – Pango vertical writing support is different with
 	real CJK usage.
 

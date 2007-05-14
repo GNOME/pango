@@ -49,199 +49,30 @@ static PangoEngineInfo script_engines[] = {
   }
 };
 
-static void
-maybe_add_gsub_feature (PangoOTRuleset *ruleset,
-			PangoOTInfo    *info,
-			guint           script_index,
-			PangoOTTag      tag,
-			gulong          property_bit)
+static const PangoOTFeatureMap gsub_features[] =
 {
-  guint feature_index;
+  {"ccmp", PANGO_OT_ALL_GLYPHS},
+  {"locl", PANGO_OT_ALL_GLYPHS},
+  {"isol", isolated},
+  {"fina", final},
+  {"medi", medial},
+  {"init", initial},
+  {"rlig", PANGO_OT_ALL_GLYPHS},
+  {"calt", PANGO_OT_ALL_GLYPHS},
+  {"liga", PANGO_OT_ALL_GLYPHS},
+  /* 'dlig' should be turned-on/off-able.  lets turn off for now. */
+  /* {"dlig", PANGO_OT_ALL_GLYPHS}, */
+  {"cswh", PANGO_OT_ALL_GLYPHS},
+  {"mset", PANGO_OT_ALL_GLYPHS}
+};
 
-  if (pango_ot_info_find_feature (info, PANGO_OT_TABLE_GSUB,
-				  tag, script_index, PANGO_OT_DEFAULT_LANGUAGE, &feature_index))
-    pango_ot_ruleset_add_feature (ruleset, PANGO_OT_TABLE_GSUB, feature_index,
-				  property_bit);
-}
-
-static void
-maybe_add_gpos_feature (PangoOTRuleset *ruleset,
-			PangoOTInfo    *info,
-			guint           script_index,
-			PangoOTTag      tag,
-			gulong          property_bit)
+static const PangoOTFeatureMap gpos_features[] =
 {
-  guint feature_index;
-
-  if (pango_ot_info_find_feature (info, PANGO_OT_TABLE_GPOS,
-				  tag, script_index, PANGO_OT_DEFAULT_LANGUAGE, &feature_index))
-    pango_ot_ruleset_add_feature (ruleset, PANGO_OT_TABLE_GPOS, feature_index,
-				  property_bit);
-}
-
-static PangoOTRuleset *
-get_ruleset (FT_Face face)
-{
-  PangoOTRuleset *ruleset;
-  static GQuark ruleset_quark = 0;
-
-  PangoOTInfo *info = pango_ot_info_get (face);
-
-  if (!ruleset_quark)
-    ruleset_quark = g_quark_from_string ("pango-arabic-ruleset");
-
-  if (!info)
-    return NULL;
-
-  ruleset = g_object_get_qdata (G_OBJECT (info), ruleset_quark);
-
-  if (!ruleset)
-    {
-      PangoOTTag arab_tag = FT_MAKE_TAG ('a', 'r', 'a', 'b');
-      guint script_index;
-
-      ruleset = pango_ot_ruleset_new (info);
-
-      /* according to the Arabic OpenType spec, available here:
-       * http://www.microsoft.com/typography/otfntdev/arabicot/features.htm
-       */
-      if (pango_ot_info_find_script (info, PANGO_OT_TABLE_GSUB,
-				     arab_tag, &script_index))
-	{
-	  /* Language based forms: */
-	  maybe_add_gsub_feature (ruleset, info, script_index, FT_MAKE_TAG ('c','c','m','p'), PANGO_OT_ALL_GLYPHS);
-	  maybe_add_gsub_feature (ruleset, info, script_index, FT_MAKE_TAG ('i','s','o','l'), isolated);
-	  maybe_add_gsub_feature (ruleset, info, script_index, FT_MAKE_TAG ('f','i','n','a'), final);
-	  maybe_add_gsub_feature (ruleset, info, script_index, FT_MAKE_TAG ('m','e','d','i'), medial);
-	  maybe_add_gsub_feature (ruleset, info, script_index, FT_MAKE_TAG ('i','n','i','t'), initial);
-	  maybe_add_gsub_feature (ruleset, info, script_index, FT_MAKE_TAG ('r','l','i','g'), PANGO_OT_ALL_GLYPHS);
-	  maybe_add_gsub_feature (ruleset, info, script_index, FT_MAKE_TAG ('c','a','l','t'), PANGO_OT_ALL_GLYPHS);
-
-	  /* Typographical forms: */
-	  maybe_add_gsub_feature (ruleset, info, script_index, FT_MAKE_TAG ('l','i','g','a'), PANGO_OT_ALL_GLYPHS);
-	  /* this one should be turned-on/off-able.  lets turn off for now. */
-	  /* maybe_add_gsub_feature (ruleset, info, script_index, FT_MAKE_TAG ('d','l','i','g'), PANGO_OT_ALL_GLYPHS); */
-	  maybe_add_gsub_feature (ruleset, info, script_index, FT_MAKE_TAG ('c','s','w','h'), PANGO_OT_ALL_GLYPHS);
-	  maybe_add_gsub_feature (ruleset, info, script_index, FT_MAKE_TAG ('m','s','e','t'), PANGO_OT_ALL_GLYPHS);
-	}
-
-      if (pango_ot_info_find_script (info, PANGO_OT_TABLE_GPOS,
-				     arab_tag, &script_index))
-	{
-	  /* Positioning features: */
-	  maybe_add_gpos_feature (ruleset, info, script_index, FT_MAKE_TAG ('c','u','r','s'), PANGO_OT_ALL_GLYPHS);
-	  maybe_add_gpos_feature (ruleset, info, script_index, FT_MAKE_TAG ('k','e','r','n'), PANGO_OT_ALL_GLYPHS);
-	  maybe_add_gpos_feature (ruleset, info, script_index, FT_MAKE_TAG ('m','a','r','k'), PANGO_OT_ALL_GLYPHS);
-	  maybe_add_gpos_feature (ruleset, info, script_index, FT_MAKE_TAG ('m','k','m','k'), PANGO_OT_ALL_GLYPHS);
-	}
-
-      g_object_set_qdata_full (G_OBJECT (info), ruleset_quark, ruleset,
-			       (GDestroyNotify)g_object_unref);
-    }
-
-  return ruleset;
-}
-
-static void
-swap_range (PangoGlyphString *glyphs, int start, int end)
-{
-  int i, j;
-
-  for (i = start, j = end - 1; i < j; i++, j--)
-    {
-      PangoGlyphInfo glyph_info;
-      gint log_cluster;
-
-      glyph_info = glyphs->glyphs[i];
-      glyphs->glyphs[i] = glyphs->glyphs[j];
-      glyphs->glyphs[j] = glyph_info;
-
-      log_cluster = glyphs->log_clusters[i];
-      glyphs->log_clusters[i] = glyphs->log_clusters[j];
-      glyphs->log_clusters[j] = log_cluster;
-    }
-}
-
-static void
-set_glyph (PangoFont *font, PangoGlyphString *glyphs, int i, int offset, PangoGlyph glyph)
-{
-  glyphs->glyphs[i].glyph = glyph;
-  glyphs->log_clusters[i] = offset;
-}
-
-static void
-fallback_shape (PangoEngineShape *engine,
-		PangoFont        *font,
-		const char       *text,
-		gint              length,
-		const PangoAnalysis *analysis,
-		PangoGlyphString *glyphs)
-{
-  PangoFcFont *fc_font = PANGO_FC_FONT (font);
-  glong n_chars = g_utf8_strlen (text, length);
-  const char *p;
-  int i;
-
-  pango_glyph_string_set_size (glyphs, n_chars);
-  p = text;
-
-  for (i=0; i < n_chars; i++)
-    {
-      gunichar wc;
-      gunichar mirrored_ch;
-      PangoGlyph index;
-      char buf[6];
-
-      wc = g_utf8_get_char (p);
-
-      if (analysis->level % 2)
-	if (pango_get_mirror_char (wc, &mirrored_ch))
-	  {
-	    wc = mirrored_ch;
-
-	    g_unichar_to_utf8 (wc, buf);
-	  }
-
-      if (pango_is_zero_width (wc))
-	{
-	  set_glyph (font, glyphs, i, p - text, PANGO_GLYPH_EMPTY);
-	}
-      else
-	{
-	  index = pango_fc_font_get_glyph (fc_font, wc);
-
-	  if (!index)
-	    index = PANGO_GET_UNKNOWN_GLYPH ( wc);
-
-	  set_glyph (font, glyphs, i, p - text, index);
-	}
-
-      p = g_utf8_next_char (p);
-    }
-
-  /* Apply default positioning */
-  for (i = 0; i < glyphs->num_glyphs; i++)
-    {
-      if (glyphs->glyphs[i].glyph)
-	{
-	  PangoRectangle logical_rect;
-
-	  pango_font_get_glyph_extents (font, glyphs->glyphs[i].glyph, NULL, &logical_rect);
-	  glyphs->glyphs[i].geometry.width = logical_rect.width;
-	}
-      else
-	glyphs->glyphs[i].geometry.width = 0;
-
-      glyphs->glyphs[i].geometry.x_offset = 0;
-      glyphs->glyphs[i].geometry.y_offset = 0;
-    }
-
-  if (analysis->level % 2 != 0)
-    {
-      /* Swap all glyphs */
-      swap_range (glyphs, 0, glyphs->num_glyphs);
-    }
-}
+  {"curs", PANGO_OT_ALL_GLYPHS},
+  {"kern", PANGO_OT_ALL_GLYPHS},
+  {"mark", PANGO_OT_ALL_GLYPHS},
+  {"mkmk", PANGO_OT_ALL_GLYPHS}
+};
 
 static void
 arabic_engine_shape (PangoEngineShape *engine,
@@ -253,7 +84,8 @@ arabic_engine_shape (PangoEngineShape *engine,
 {
   PangoFcFont *fc_font;
   FT_Face face;
-  PangoOTRuleset *ruleset;
+  PangoOTRulesetDescription desc;
+  const PangoOTRuleset *ruleset;
   PangoOTBuffer *buffer;
   gulong *properties = NULL;
   glong n_chars;
@@ -272,12 +104,19 @@ arabic_engine_shape (PangoEngineShape *engine,
   if (!face)
     return;
 
-  ruleset = get_ruleset (face);
-  if (!ruleset)
-    {
-      fallback_shape (engine, font, text, length, analysis, glyphs);
-      goto out;
-    }
+  desc.script = analysis->script;
+  desc.language = analysis->language;
+
+  desc.n_static_gsub_features = G_N_ELEMENTS (gsub_features);
+  desc.static_gsub_features = gsub_features;
+  desc.n_static_gpos_features = G_N_ELEMENTS (gpos_features);
+  desc.static_gpos_features = gpos_features;
+
+  /* TODO populate other_features from analysis->extra_attrs */
+  desc.n_other_features = 0;
+  desc.other_features = NULL;
+
+  ruleset = pango_ot_ruleset_get_for (pango_ot_info_get (face), &desc);
 
   buffer = pango_ot_buffer_new (fc_font);
   pango_ot_buffer_set_rtl (buffer, analysis->level % 2 != 0);
@@ -294,64 +133,52 @@ arabic_engine_shape (PangoEngineShape *engine,
   for (i=0; i < n_chars; i++)
     {
       gunichar wc;
-      gunichar mirrored_ch;
-      PangoGlyph index;
-      char buf[6];
+      PangoGlyph glyph;
 
       wc = g_utf8_get_char (p);
 
-      if (analysis->level % 2)
-	if (pango_get_mirror_char (wc, &mirrored_ch))
-	  {
-	    wc = mirrored_ch;
+      if (g_unichar_type (wc) != G_UNICODE_NON_SPACING_MARK)
+	cluster = p - text;
 
-	    g_unichar_to_utf8 (wc, buf);
-	  }
-
-      if (pango_is_zero_width (wc))	/* Zero-width characters */
-	{
-	  pango_ot_buffer_add_glyph (buffer, PANGO_GLYPH_EMPTY, properties[i], p - text);
-	}
+      if (pango_is_zero_width (wc))
+        glyph = PANGO_GLYPH_EMPTY;
       else
-	{
+        {
+	  gunichar c = wc;
+
+	  if (analysis->level % 2)
+	    g_unichar_get_mirror_char (c, &c);
+
 	  /* Hack - Microsoft fonts are strange and don't contain the
 	   * correct rules to shape ARABIC LETTER FARSI YEH in
 	   * medial/initial position. It looks identical to ARABIC LETTER
 	   * YEH in these positions, so we substitute if the font contains
 	   * ARABIC LETTER YEH
 	   */
-	  if (wc == 0x6cc && ruleset && pango_fc_font_get_glyph (fc_font, 0x64a) &&
-	      ((properties[i] & (initial | medial)) != (initial | medial)))
-	    wc = 0x64a;
+	  if (c == 0x6cc &&
+	      ((properties[i] & (initial | medial)) != (initial | medial)) &&
+	      pango_fc_font_has_char (fc_font, 0x64a))
+	    c = 0x64a;
 
-	  index = pango_fc_font_get_glyph (fc_font, wc);
-
-	  if (!index)
-	    {
-	      pango_ot_buffer_add_glyph (buffer, PANGO_GET_UNKNOWN_GLYPH ( wc),
-					 properties[i], p - text);
-	    }
-	  else
-	    {
-	      if (g_unichar_type (wc) != G_UNICODE_NON_SPACING_MARK)
-		cluster = p - text;
-
-	      pango_ot_buffer_add_glyph (buffer, index,
-					 properties[i], cluster);
-	    }
+	  glyph = pango_fc_font_get_glyph (fc_font, c);
 	}
+
+      if (!glyph)
+	glyph = PANGO_GET_UNKNOWN_GLYPH (wc);
+
+      pango_ot_buffer_add_glyph (buffer, glyph, properties[i], cluster);
 
       p = g_utf8_next_char (p);
     }
+
+  g_free (properties);
 
   pango_ot_ruleset_substitute (ruleset, buffer);
   pango_ot_ruleset_position (ruleset, buffer);
   pango_ot_buffer_output (buffer, glyphs);
 
-  g_free (properties);
   pango_ot_buffer_destroy (buffer);
 
- out:
   pango_fc_font_unlock_face (fc_font);
 }
 
