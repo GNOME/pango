@@ -371,7 +371,10 @@ pango_ot_buffer_output (const PangoOTBuffer *buffer,
 	apply_gpos_ltr (glyphs, buffer->buffer->positions, buffer->font->is_hinted);
     }
   else
-    pango_fc_font_kern_glyphs (buffer->font, glyphs);
+    {
+      /* FIXME we should only do this if the 'kern' feature was requested */
+      pango_fc_font_kern_glyphs (buffer->font, glyphs);
+    }
 
   pango_fc_font_unlock_face (buffer->font);
 }
