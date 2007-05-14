@@ -1,5 +1,40 @@
 2007-05-13  Behdad Esfahbod  <behdad@gnome.org>
 
+	Part of Bug 325714 – Pango should respect $LANGUAGE
+
+	* pango/pango-ot.h:
+	* pango/pango-ot-private.h:
+	* pango/pango-ot-tag.c (pango_ot_tag_from_script),
+	(pango_ot_tag_from_language):
+	* pango/pango-ot-info.c (pango_ot_info_find_script),
+	(pango_ot_info_find_language), (pango_ot_info_find_feature),
+	(pango_ot_info_list_languages), (pango_ot_info_list_features):
+	* pango/pango-ot-ruleset.c (pango_ot_ruleset_new),
+	(pango_ot_ruleset_new_for), (pango_ot_ruleset_add_feature),
+	(pango_ot_ruleset_maybe_add_feature),
+	(pango_ot_ruleset_maybe_add_features):
+	Add new engine API:
+
+		PANGO_OT_NO_FEATURE
+		PANGO_OT_NO_SCRIPT
+		PANGO_OT_TAG_DEFAULT_SCRIPT
+		PANGO_OT_TAG_DEFAULT_LANGUAGE
+		pango_ot_ruleset_new_for()
+		pango_ot_ruleset_maybe_add_feature()
+		pango_ot_ruleset_maybe_add_features()
+	
+	Using pango_ot_ruleset_new_for() and
+	pango_ot_ruleset_maybe_add_features() drastically simplifies ruleset
+	building in modules, and does correct script and language selection
+	too.  Modules need to be updated to use it though.
+
+	* docs/pango-docs.sgml:
+	* docs/pango-sections.txt:
+	* docs/tmpl/opentype.sgml:
+	Update.
+
+2007-05-13  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango-view/viewer-render.c (do_output), (parse_options):
 	Add --language.
 
