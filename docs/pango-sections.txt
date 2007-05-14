@@ -940,6 +940,7 @@ PangoOTInfo
 PangoOTBuffer
 PangoOTGlyph
 PangoOTRuleset
+PangoOTRulesetDescription
 PangoOTTableType
 PangoOTFeatureMap
 PANGO_OT_ALL_GLYPHS
@@ -963,6 +964,7 @@ pango_ot_buffer_set_rtl
 pango_ot_buffer_set_zero_width_marks
 pango_ot_buffer_get_glyphs
 pango_ot_buffer_output
+pango_ot_ruleset_get_for
 pango_ot_ruleset_new
 pango_ot_ruleset_new_for
 pango_ot_ruleset_add_feature
@@ -970,6 +972,10 @@ pango_ot_ruleset_maybe_add_feature
 pango_ot_ruleset_maybe_add_features
 pango_ot_ruleset_substitute
 pango_ot_ruleset_position
+pango_ot_ruleset_description_copy
+pango_ot_ruleset_description_equal
+pango_ot_ruleset_description_free
+pango_ot_ruleset_description_hash
 pango_ot_tag_from_language
 pango_ot_tag_from_script
 pango_ot_tag_to_language

@@ -1,5 +1,37 @@
 2007-05-14  Behdad Esfahbod  <behdad@gnome.org>
 
+	Part of Bug 325714 – Pango should respect $LANGUAGE
+
+	* pango/pango-ot.h:
+	* pango/pango-ot-ruleset.c (pango_ot_ruleset_get_for),
+	(pango_ot_ruleset_description_hash),
+	(pango_ot_ruleset_description_equal),
+	(pango_ot_ruleset_description_copy),
+	(pango_ot_ruleset_description_free):
+	Add new engine API:
+
+		PangoOTRulesetDescription
+		pango_ot_ruleset_get_for()
+		pango_ot_ruleset_description_hash()
+		pango_ot_ruleset_description_equal()
+		pango_ot_ruleset_description_copy()
+		pango_ot_ruleset_description_free()
+	
+	The main addition is pango_ot_ruleset_get_for() that
+	takes a ruleset description, ie. script/language and list
+	of GSUB/GPOS features to apply, and returns a ruleset.
+	It manages all the work to cache rulesets, so modules
+	don't have to do that anymore.  Given that modules do not
+	deal with just one ruleset anymore (because we want to
+	respect language, and allow user-selected features), this
+	makes their life way easier.
+
+	* docs/pango-sections.txt:
+	* docs/tmpl/opentype.sgml:
+	Update.
+
+2007-05-14  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/pango-ot-buffer.c (pango_ot_buffer_get_glyphs),
 	(pango_ot_buffer_output):
 	* pango/pango-ot-ruleset.c (pango_ot_ruleset_substitute),

@@ -68,7 +68,6 @@ Converts a dimension to device units by ceiling.
 <para>
 Rounds a dimension to whole device units, but does not
 convert it to device units.
-
 </para>
 
 @d: a dimension in Pango units.

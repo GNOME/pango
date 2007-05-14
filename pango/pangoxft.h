@@ -1,5 +1,5 @@
 /* Pango
- * pangox.h:
+ * pangoxft.h:
  *
  * Copyright (C) 1999 Red Hat Software
  * Copyright (C) 2000 SuSE Linux Ltd

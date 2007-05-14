@@ -65,16 +65,37 @@ It contains the following fields.
 
 <!-- ##### STRUCT PangoOTRuleset ##### -->
 <para>
-The #PangoOTRuleSet structure holds a
+The #PangoOTRuleset structure holds a
 set of features selected from the tables in an OpenType font.
 (A feature is an operation such as adjusting glyph positioning
 that should be applied to a text feature such as a certain
-type of accent.) A #PangoOTRuleSet
+type of accent.) A #PangoOTRuleset
 is created with pango_ot_ruleset_new(), features are added
 to it with pango_ot_ruleset_add_feature(), then it is
 applied to a #PangoGlyphString with pango_ot_ruleset_shape().
 </para>
 
+
+<!-- ##### STRUCT PangoOTRulesetDescription ##### -->
+<para>
+The #PangoOTRuleset structure holds all the information needed
+to build a complete #PangoOTRuleset from an OpenType font.
+The main use of this struct is to act as the key for a per-font
+hash of rulesets.  The user populates a ruleset description and
+gets the ruleset using pango_ot_ruleset_get_for().
+</para>
+
+@script: a #PangoScript.
+@language: a #PangoLanguage.
+@static_gsub_features: static map of GSUB features, or %NULL.
+@n_static_gsub_features: length of @static_gsub_features, or 0.
+@static_gpos_features: static map of GPOS features, or %NULL.
+@n_static_gpos_features: length of @static_gpos_features, or 0.
+@other_features: map of extra features to add to both GSUB and GPOS, or %NULL.
+                 Unlike the static maps, this pointer need not live beyond
+		 the life of function calls taking this struct.
+@n_other_features: length of @other_features, or 0.
+@Since: 1.18
 
 <!-- ##### ENUM PangoOTTableType ##### -->
 <para>
@@ -96,6 +117,7 @@ represented as a char array instead of a #PangoOTTag for convenience.
 @feature_name: feature tag in represented as four-letter ASCII string.
 @property_bit: the property bit to use for this feature.  See
 	       pango_ot_ruleset_add_feature() for details.
+@Since: 1.18
 
 <!-- ##### MACRO PANGO_OT_ALL_GLYPHS ##### -->
 <para>
@@ -103,6 +125,7 @@ This is used as the property bit in pango_ot_ruleset_add_feature() when a
 feature should be applied to all glyphs.
 </para>
 
+@Since: 1.16
 
 
 <!-- ##### MACRO PANGO_OT_NO_FEATURE ##### -->
@@ -114,6 +137,7 @@ automatically skips this value, so no special handling is required by the
 user.
 </para>
 
+@Since: 1.18
 
 
 <!-- ##### MACRO PANGO_OT_NO_SCRIPT ##### -->
@@ -126,6 +150,7 @@ taking a script index essentially return if the input script index is
 this value, so no special handling is required by the user.
 </para>
 
+@Since: 1.18
 
 
 <!-- ##### MACRO PANGO_OT_DEFAULT_LANGUAGE ##### -->
@@ -141,6 +166,7 @@ pango_ot_info_find_feature() without having to worry about falling back to
 default language system explicitly.
 </para>
 
+@Since: 1.16
 
 
 <!-- ##### MACRO PANGO_OT_TAG_DEFAULT_LANGUAGE ##### -->
@@ -152,6 +178,7 @@ pango_ot_info_find_language() as that function falls back to returning default
 language-system if the requested language tag is not found.
 </para>
 
+@Since: 1.18
 
 
 <!-- ##### MACRO PANGO_OT_TAG_DEFAULT_SCRIPT ##### -->
@@ -161,6 +188,7 @@ returned as script tag by pango_ot_tag_from_script() if the requested script
 is not found.
 </para>
 
+@Since: 1.18
 
 
 <!-- ##### FUNCTION pango_ot_info_get ##### -->
@@ -320,6 +348,16 @@ is not found.
 @glyphs: 
 
 
+<!-- ##### FUNCTION pango_ot_ruleset_get_for ##### -->
+<para>
+
+</para>
+
+@info: 
+@desc: 
+@Returns: 
+
+
 <!-- ##### FUNCTION pango_ot_ruleset_new ##### -->
 <para>
 
@@ -391,6 +429,42 @@ is not found.
 
 @ruleset: 
 @buffer: 
+
+
+<!-- ##### FUNCTION pango_ot_ruleset_description_copy ##### -->
+<para>
+
+</para>
+
+@desc: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_ot_ruleset_description_equal ##### -->
+<para>
+
+</para>
+
+@desc1: 
+@desc2: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_ot_ruleset_description_free ##### -->
+<para>
+
+</para>
+
+@desc: 
+
+
+<!-- ##### FUNCTION pango_ot_ruleset_description_hash ##### -->
+<para>
+
+</para>
+
+@desc: 
+@Returns: 
 
 
 <!-- ##### FUNCTION pango_ot_tag_from_language ##### -->

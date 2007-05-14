@@ -39,6 +39,7 @@ typedef struct _PangoOTBuffer     PangoOTBuffer;
 typedef struct _PangoOTGlyph      PangoOTGlyph;
 typedef struct _PangoOTRuleset    PangoOTRuleset;
 typedef struct _PangoOTFeatureMap PangoOTFeatureMap;
+typedef struct _PangoOTRulesetDescription PangoOTRulesetDescription;
 
 typedef enum
 {
@@ -71,6 +72,18 @@ struct _PangoOTFeatureMap
   char     feature_name[5];
   gulong   property_bit;
 };
+
+struct _PangoOTRulesetDescription {
+  PangoScript               script;
+  PangoLanguage            *language;
+  const PangoOTFeatureMap  *static_gsub_features;
+  guint                   n_static_gsub_features;
+  const PangoOTFeatureMap  *static_gpos_features;
+  guint                   n_static_gpos_features;
+  const PangoOTFeatureMap  *other_features;
+  guint                   n_other_features;
+};
+
 
 PangoOTInfo *pango_ot_info_get (FT_Face face);
 
@@ -121,6 +134,8 @@ void           pango_ot_buffer_output     (const PangoOTBuffer  *buffer,
 void           pango_ot_buffer_set_zero_width_marks (PangoOTBuffer     *buffer,
 						     gboolean           zero_width_marks);
 
+const PangoOTRuleset *pango_ot_ruleset_get_for (PangoOTInfo                     *info,
+						const PangoOTRulesetDescription *desc);
 PangoOTRuleset *pango_ot_ruleset_new (PangoOTInfo       *info);
 PangoOTRuleset *pango_ot_ruleset_new_for (PangoOTInfo       *info,
 					  PangoScript        script,
@@ -133,10 +148,10 @@ gboolean        pango_ot_ruleset_maybe_add_feature (PangoOTRuleset   *ruleset,
 						    PangoOTTableType  table_type,
 						    PangoOTTag        feature_tag,
 						    gulong            property_bit);
-int             pango_ot_ruleset_maybe_add_features (PangoOTRuleset          *ruleset,
+guint           pango_ot_ruleset_maybe_add_features (PangoOTRuleset          *ruleset,
 						     PangoOTTableType         table_type,
 						     const PangoOTFeatureMap *features,
-						     int                      n_features);
+						     guint                    n_features);
 void            pango_ot_ruleset_substitute  (const PangoOTRuleset   *ruleset,
 					      PangoOTBuffer          *buffer);
 void            pango_ot_ruleset_position    (const PangoOTRuleset   *ruleset,
@@ -145,6 +160,13 @@ PangoScript     pango_ot_tag_to_script     (PangoOTTag     script_tag);
 PangoOTTag      pango_ot_tag_from_script   (PangoScript    script);
 PangoLanguage*  pango_ot_tag_to_language   (PangoOTTag     language_tag);
 PangoOTTag      pango_ot_tag_from_language (PangoLanguage *language);
+
+guint           pango_ot_ruleset_description_hash  (const PangoOTRulesetDescription *desc);
+gboolean        pango_ot_ruleset_description_equal (const PangoOTRulesetDescription *desc1,
+						    const PangoOTRulesetDescription *desc2);
+PangoOTRulesetDescription *pango_ot_ruleset_description_copy  (const PangoOTRulesetDescription *desc);
+void            pango_ot_ruleset_description_free  (PangoOTRulesetDescription       *desc);
+
 
 #endif /* PANGO_ENABLE_ENGINE */
 
