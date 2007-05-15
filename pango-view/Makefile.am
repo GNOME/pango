@@ -7,8 +7,12 @@ TEST_TEXTS =			\
 	test-gurmukhi.txt	\
 	test-hebrew.txt		\
 	test-ipa.txt		\
+	test-justify.txt	\
 	test-lao.txt		\
 	test-latin.txt		\
+	test-long-paragraph.txt	\
+	test-mixed.markup	\
+	test-mixed.txt		\
 	test-syriac.txt		\
 	test-tamil.txt		\
 	test-thai.txt		\

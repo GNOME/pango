@@ -1,3 +1,11 @@
+2007-05-15  Behdad Esfahbod  <behdad@gnome.org>
+
+	* pango-view/Makefile.am: Add various test txt files recently
+	added.
+
+	* pango-view/test-mixed.markup: A language-tagged version of
+	test-mixed.txt.
+
 2007-05-14  Behdad Esfahbod  <behdad@gnome.org>
 
 	* === Released 1.17.0 ===
