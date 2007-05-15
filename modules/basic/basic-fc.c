@@ -142,30 +142,6 @@ basic_engine_shape (PangoEngineShape *engine,
   if (!face)
     return;
 
-  desc.script = analysis->script;
-  desc.language = analysis->language;
-
-  if (PANGO_GRAVITY_IS_VERTICAL (analysis->gravity))
-    {
-      desc.n_static_gsub_features = G_N_ELEMENTS (vertical_gsub_features);
-      desc.static_gsub_features = vertical_gsub_features;
-      desc.n_static_gpos_features = 0;
-      desc.static_gpos_features = NULL;
-    }
-  else
-    {
-      desc.n_static_gsub_features = G_N_ELEMENTS (gsub_features);
-      desc.static_gsub_features = gsub_features;
-      desc.n_static_gpos_features = G_N_ELEMENTS (gpos_features);
-      desc.static_gpos_features = gpos_features;
-    }
-
-  /* TODO populate other_features from analysis->extra_attrs */
-  desc.n_other_features = 0;
-  desc.other_features = NULL;
-
-  ruleset = pango_ot_ruleset_get_for (pango_ot_info_get (face), &desc);
-
   buffer = pango_ot_buffer_new (fc_font);
   pango_ot_buffer_set_rtl (buffer, analysis->level % 2 != 0);
 
@@ -203,6 +179,29 @@ basic_engine_shape (PangoEngineShape *engine,
       p = g_utf8_next_char (p);
     }
 
+  desc.script = analysis->script;
+  desc.language = analysis->language;
+
+  if (PANGO_GRAVITY_IS_VERTICAL (analysis->gravity))
+    {
+      desc.n_static_gsub_features = G_N_ELEMENTS (vertical_gsub_features);
+      desc.static_gsub_features = vertical_gsub_features;
+      desc.n_static_gpos_features = 0;
+      desc.static_gpos_features = NULL;
+    }
+  else
+    {
+      desc.n_static_gsub_features = G_N_ELEMENTS (gsub_features);
+      desc.static_gsub_features = gsub_features;
+      desc.n_static_gpos_features = G_N_ELEMENTS (gpos_features);
+      desc.static_gpos_features = gpos_features;
+    }
+
+  /* TODO populate other_features from analysis->extra_attrs */
+  desc.n_other_features = 0;
+  desc.other_features = NULL;
+
+  ruleset = pango_ot_ruleset_get_for (pango_ot_info_get (face), &desc);
 
   pango_ot_ruleset_substitute (ruleset, buffer);
   pango_ot_ruleset_position (ruleset, buffer);

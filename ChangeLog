@@ -1,5 +1,12 @@
 2007-05-15  Behdad Esfahbod  <behdad@gnome.org>
 
+	* modules/arabic/arabic-fc.c (arabic_engine_shape):
+	* modules/basic/basic-fc.c (basic_engine_shape):
+	* modules/syriac/syriac-fc.c (syriac_engine_shape):
+	Move ruleset creation after populating buffer.
+
+2007-05-15  Behdad Esfahbod  <behdad@gnome.org>
+
 	* modules/indic/indic-fc.c (indic_engine_shape), (create):
 	Port to new OpenType APIs.
 
