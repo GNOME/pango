@@ -40,15 +40,7 @@ typedef PangoEngineShapeClass IndicEngineFcClass ; /* No extra fields needed */
 struct _IndicEngineFc
 {
   PangoEngineShape shapeEngine;
-  const PangoIndicInfo  *indicInfo;
-};
-
-struct _PangoIndicInfo
-{
-  PangoOTTag               scriptTag;
   const IndicOTClassTable *classTable;
-  const gchar             *gsubQuarkName;
-  const gchar             *gposQuarkName;
 };
 
 #define ENGINE_SUFFIX "ScriptEngineFc"
@@ -56,18 +48,7 @@ struct _PangoIndicInfo
 
 #define INDIC_ENGINE_INFO(script) {#script ENGINE_SUFFIX, PANGO_ENGINE_TYPE_SHAPE, RENDER_TYPE, script##_scripts, G_N_ELEMENTS(script##_scripts)}
 
-#define PANGO_INDIC_INFO(script) {OT_TAG_##script, &script##_class_table, "pango-indic-" #script "-GSUB-ruleset", "pango-indic-" #script "-GPOS-rulsest"}
-
-#define OT_TAG_deva FT_MAKE_TAG('d','e','v','a')
-#define OT_TAG_beng FT_MAKE_TAG('b','e','n','g')
-#define OT_TAG_guru FT_MAKE_TAG('g','u','r','u')
-#define OT_TAG_gujr FT_MAKE_TAG('g','u','j','r')
-#define OT_TAG_orya FT_MAKE_TAG('o','r','y','a')
-#define OT_TAG_taml FT_MAKE_TAG('t','a','m','l')
-#define OT_TAG_telu FT_MAKE_TAG('t','e','l','u')
-#define OT_TAG_knda FT_MAKE_TAG('k','n','d','a')
-#define OT_TAG_mlym FT_MAKE_TAG('m','l','y','m')
-#define OT_TAG_sinh FT_MAKE_TAG('s','i','n','h')
+#define INDIC_OT_CLASS_TABLE(script) &script##_class_table
 
 static PangoEngineScriptInfo deva_scripts[] = {
   { PANGO_SCRIPT_DEVANAGARI, "*" }
@@ -124,123 +105,36 @@ static PangoEngineInfo script_engines[] = {
  * in a macro that calls a body macro that can be redefined, or by
  * putting the pointers to the PangoEngineInfo in PangoIndicInfo...
  */
-static const PangoIndicInfo indic_info[] = {
-  PANGO_INDIC_INFO(deva), PANGO_INDIC_INFO(beng), PANGO_INDIC_INFO(guru),
-  PANGO_INDIC_INFO(gujr), PANGO_INDIC_INFO(orya), PANGO_INDIC_INFO(taml),
-  PANGO_INDIC_INFO(telu), PANGO_INDIC_INFO(knda), PANGO_INDIC_INFO(mlym),
-  PANGO_INDIC_INFO(sinh)
+static const IndicOTClassTable *indic_ot_class_tables[] = {
+  INDIC_OT_CLASS_TABLE(deva), INDIC_OT_CLASS_TABLE(beng), INDIC_OT_CLASS_TABLE(guru),
+  INDIC_OT_CLASS_TABLE(gujr), INDIC_OT_CLASS_TABLE(orya), INDIC_OT_CLASS_TABLE(taml),
+  INDIC_OT_CLASS_TABLE(telu), INDIC_OT_CLASS_TABLE(knda), INDIC_OT_CLASS_TABLE(mlym),
+  INDIC_OT_CLASS_TABLE(sinh)
 };
 
-static void
-maybe_add_GSUB_feature (PangoOTRuleset *ruleset,
-			PangoOTInfo    *info,
-			guint           script_index,
-			PangoOTTag      feature_tag,
-			gulong          property_bit)
+static const PangoOTFeatureMap gsub_features[] =
 {
-  guint feature_index;
+  {"init", init},
+  {"nukt", nukt},
+  {"akhn", akhn},
+  {"rphf", rphf},
+  {"blwf", blwf},
+  {"half", half},
+  {"pstf", pstf},
+  {"vatu", vatu},
+  {"pres", pres},
+  {"blws", blws},
+  {"abvs", abvs},
+  {"psts", psts},
+  {"haln", haln}
+};
 
-  if (pango_ot_info_find_feature (info, PANGO_OT_TABLE_GSUB,
-				  feature_tag, script_index, PANGO_OT_DEFAULT_LANGUAGE, &feature_index))
-    {
-      pango_ot_ruleset_add_feature (ruleset, PANGO_OT_TABLE_GSUB, feature_index,
-				    property_bit);
-    }
-}
-
-static void
-maybe_add_GPOS_feature (PangoOTRuleset *ruleset,
-			PangoOTInfo    *info,
-			guint           script_index,
-			PangoOTTag      feature_tag,
-			gulong          property_bit)
+static const PangoOTFeatureMap gpos_features[] =
 {
-  guint feature_index;
-
-  if (pango_ot_info_find_feature (info, PANGO_OT_TABLE_GPOS,
-				  feature_tag,script_index, PANGO_OT_DEFAULT_LANGUAGE, &feature_index))
-    {
-      pango_ot_ruleset_add_feature (ruleset, PANGO_OT_TABLE_GPOS, feature_index,
-				    property_bit);
-    }
-}
-
-static PangoOTRuleset *
-get_gsub_ruleset (FT_Face face, const PangoIndicInfo *indic_info)
-{
-  PangoOTInfo    *info = pango_ot_info_get (face);
-  GQuark          ruleset_quark = g_quark_from_string (indic_info->gsubQuarkName);
-  PangoOTRuleset *ruleset;
-
-  if (!info)
-    return NULL;
-
-  ruleset = g_object_get_qdata (G_OBJECT (info), ruleset_quark);
-
-  if (!ruleset)
-    {
-      guint    script_index;
-
-      ruleset = pango_ot_ruleset_new (info);
-
-     if (pango_ot_info_find_script (info, PANGO_OT_TABLE_GSUB,
-				     indic_info->scriptTag, &script_index))
-	{
-	  maybe_add_GSUB_feature (ruleset, info, script_index, FT_MAKE_TAG ('i','n','i','t'), init);
-	  maybe_add_GSUB_feature (ruleset, info, script_index, FT_MAKE_TAG ('n','u','k','t'), nukt);
-	  maybe_add_GSUB_feature (ruleset, info, script_index, FT_MAKE_TAG ('a','k','h','n'), akhn);
-	  maybe_add_GSUB_feature (ruleset, info, script_index, FT_MAKE_TAG ('r','p','h','f'), rphf);
-	  maybe_add_GSUB_feature (ruleset, info, script_index, FT_MAKE_TAG ('b','l','w','f'), blwf);
-	  maybe_add_GSUB_feature (ruleset, info, script_index, FT_MAKE_TAG ('h','a','l','f'), half);
-	  maybe_add_GSUB_feature (ruleset, info, script_index, FT_MAKE_TAG ('p','s','t','f'), pstf);
-	  maybe_add_GSUB_feature (ruleset, info, script_index, FT_MAKE_TAG ('v','a','t','u'), vatu);
-	  maybe_add_GSUB_feature (ruleset, info, script_index, FT_MAKE_TAG ('p','r','e','s'), pres);
-	  maybe_add_GSUB_feature (ruleset, info, script_index, FT_MAKE_TAG ('b','l','w','s'), blws);
-	  maybe_add_GSUB_feature (ruleset, info, script_index, FT_MAKE_TAG ('a','b','v','s'), abvs);
-	  maybe_add_GSUB_feature (ruleset, info, script_index, FT_MAKE_TAG ('p','s','t','s'), psts);
-	  maybe_add_GSUB_feature (ruleset, info, script_index, FT_MAKE_TAG ('h','a','l','n'), haln);
-	}
-
-      g_object_set_qdata_full (G_OBJECT (info), ruleset_quark, ruleset,
-			       (GDestroyNotify)g_object_unref);
-    }
-
-  return ruleset;
-}
-
-
-static PangoOTRuleset *
-get_gpos_ruleset (FT_Face face, const PangoIndicInfo *indic_info)
-{
-  PangoOTInfo    *info = pango_ot_info_get (face);
-  GQuark          ruleset_quark = g_quark_from_string (indic_info->gposQuarkName);
-  PangoOTRuleset *ruleset;
-
-  if (!info)
-    return NULL;
-
-  ruleset = g_object_get_qdata (G_OBJECT (info), ruleset_quark);
-
-  if (!ruleset)
-    {
-      guint    script_index;
-
-      ruleset = pango_ot_ruleset_new (info);
-
-      if (pango_ot_info_find_script (info, PANGO_OT_TABLE_GPOS,
-				     indic_info->scriptTag, &script_index))
-	{
-	  maybe_add_GPOS_feature (ruleset, info, script_index, FT_MAKE_TAG ('b','l','w','m'), blwm);
-	  maybe_add_GPOS_feature (ruleset, info, script_index, FT_MAKE_TAG ('a','b','v','m'), abvm);
-	  maybe_add_GPOS_feature (ruleset, info, script_index, FT_MAKE_TAG ('d','i','s','t'), dist);
-	}
-
-      g_object_set_qdata_full (G_OBJECT (info), ruleset_quark, ruleset,
-			       (GDestroyNotify)g_object_unref);
-    }
-
-  return ruleset;
-}
+  {"blwm", blwm},
+  {"abvm", abvm},
+  {"dist", dist}
+};
 
 static void
 set_glyphs (PangoFont      *font,
@@ -317,7 +211,8 @@ indic_engine_shape (PangoEngineShape *engine,
 {
   PangoFcFont *fc_font;
   FT_Face face;
-  PangoOTRuleset *gsub_ruleset, *gpos_ruleset;
+  PangoOTRulesetDescription desc;
+  const PangoOTRuleset *ruleset;
   PangoOTBuffer *buffer;
   glong i, n_chars, n_glyphs;
   gulong *tags = NULL;
@@ -325,7 +220,6 @@ indic_engine_shape (PangoEngineShape *engine,
   glong *utf8_offsets = NULL;
   glong *indices = NULL;
   IndicEngineFc *indic_shape_engine = NULL;
-  const PangoIndicInfo *indic_info = NULL;
   MPreFixups *mprefixups;
 
   g_return_if_fail (font != NULL);
@@ -340,28 +234,38 @@ indic_engine_shape (PangoEngineShape *engine,
 
   indic_shape_engine = (IndicEngineFc *) engine;
 
-  indic_info = indic_shape_engine->indicInfo;
-
   wc_in    = expand_text (text, length, &utf8_offsets, &n_chars);
 
-  n_glyphs = indic_ot_reorder (wc_in, utf8_offsets, n_chars, indic_info->classTable, NULL, NULL, NULL, NULL);
+  n_glyphs = indic_ot_reorder (wc_in, utf8_offsets, n_chars, indic_shape_engine->classTable, NULL, NULL, NULL, NULL);
 
   wc_out  = g_new (gunichar, n_glyphs);
   indices = g_new (glong,    n_glyphs);
   tags    = g_new (gulong,   n_glyphs);
 
-  n_glyphs  = indic_ot_reorder (wc_in, utf8_offsets, n_chars, indic_info->classTable, wc_out, indices, tags, &mprefixups);
+  n_glyphs  = indic_ot_reorder (wc_in, utf8_offsets, n_chars, indic_shape_engine->classTable, wc_out, indices, tags, &mprefixups);
 
   pango_glyph_string_set_size (glyphs, n_glyphs);
   buffer = pango_ot_buffer_new (fc_font);
 
   set_glyphs(font, wc_out, tags, n_glyphs, buffer,
-	     (indic_info->classTable->scriptFlags & SF_PROCESS_ZWJ) != 0);
+	     (indic_shape_engine->classTable->scriptFlags & SF_PROCESS_ZWJ) != 0);
+
+  desc.script = analysis->script;
+  desc.language = analysis->language;
+
+  desc.n_static_gsub_features = G_N_ELEMENTS (gsub_features);
+  desc.static_gsub_features = gsub_features;
+  desc.n_static_gpos_features = G_N_ELEMENTS (gpos_features);
+  desc.static_gpos_features = gpos_features;
+
+  /* TODO populate other_features from analysis->extra_attrs */
+  desc.n_other_features = 0;
+  desc.other_features = NULL;
+
+  ruleset = pango_ot_ruleset_get_for (pango_ot_info_get (face), &desc);
 
   /* do gsub processing */
-  gsub_ruleset = get_gsub_ruleset (face, indic_info);
-  if (gsub_ruleset != NULL)
-    pango_ot_ruleset_substitute (gsub_ruleset, buffer);
+  pango_ot_ruleset_substitute (ruleset, buffer);
 
   /* Fix pre-modifiers for some scripts before base consonant */
   if (mprefixups)
@@ -371,9 +275,7 @@ indic_engine_shape (PangoEngineShape *engine,
     }
 
   /* do gpos processing */
-  gpos_ruleset = get_gpos_ruleset (face, indic_info);
-  if (gpos_ruleset != NULL)
-    pango_ot_ruleset_position (gpos_ruleset, buffer);
+  pango_ot_ruleset_position (ruleset, buffer);
 
   pango_ot_buffer_output (buffer, glyphs);
 
@@ -429,7 +331,7 @@ PANGO_MODULE_ENTRY(create) (const char *id)
       if (!strcmp(id, script_engines[i].id))
 	{
 	  IndicEngineFc *engine = g_object_new (indic_engine_fc_type, NULL);
-	  engine->indicInfo = &indic_info[i];
+	  engine->classTable = indic_ot_class_tables[i];
 
 	  return (PangoEngine *)engine;
 	}

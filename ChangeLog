@@ -1,5 +1,10 @@
 2007-05-15  Behdad Esfahbod  <behdad@gnome.org>
 
+	* modules/indic/indic-fc.c (indic_engine_shape), (create):
+	Port to new OpenType APIs.
+
+2007-05-15  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 436699 – N'Ko support
 	Patch by Eugeniy Meshcheryakov
 
