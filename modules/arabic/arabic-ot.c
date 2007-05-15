@@ -152,6 +152,42 @@ static const joining_class  arabic_supplement[] =
   none, none, none, none
 };
 
+/*     Here a table of the joining classes for characters in the range
+ *     U+07C0 - U+07FF.
+ *
+ *     The following character also has a joining class:
+ *
+ *     U+200C  ZERO WIDTH NON-JOINER  -> causing
+ *
+ *     All other characters are given the joining class `none'.
+ */
+static const joining_class nko[] =
+{
+  /* U+07C0 */
+  none, none, none, none,
+  none, none, none, none,
+  none, none, dual, dual,
+  dual, dual, dual, dual,
+
+  /* U+07D0 */
+  dual, dual, dual, dual,
+  dual, dual, dual, dual,
+  dual, dual, dual, dual,
+  dual, dual, dual, dual,
+
+  /* U+07E0 */
+  dual, dual, dual, dual,
+  dual, dual, dual, dual,
+  dual, dual, dual, transparent,
+  transparent, transparent, transparent, transparent,
+
+  /* U+07F0 */
+  transparent, transparent, transparent, transparent,
+  none, none, none, none,
+  none, none, causing, none,
+  none, none, none, none,
+};
+
 #if 0
 struct cgc_
 {
@@ -304,6 +340,9 @@ static joining_class  Get_Joining_Class (gunichar*   string,
       else if (string[pos] >= 0x0750 &&
 	  string[pos] < 0x0780)
 	j = arabic_supplement[string[pos] - 0x0750];
+      else if (string[pos] >= 0x07C0 &&
+	  string[pos] < 0x0800)
+	j = nko[string[pos] - 0x07C0];
       else if (string[pos] == 0x200D)
 	return causing;
       else

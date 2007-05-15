@@ -1,3 +1,12 @@
+2007-05-15  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 436699 – N'Ko support
+	Patch by Eugeniy Meshcheryakov
+
+	* modules/arabic/arabic-fc.c (create):
+	* modules/arabic/arabic-ot.c (Get_Joining_Class):
+	Add N'Ko support to the Arabic module.
+
 2007-05-15  Richard Hult  <richard@imendio.com>
 
 	Bug 433805 - [Atsui] Approximate char/digit width width often 0

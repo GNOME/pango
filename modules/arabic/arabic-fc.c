@@ -38,6 +38,7 @@ typedef PangoEngineShapeClass ArabicEngineFcClass ;
 
 static PangoEngineScriptInfo arabic_scripts[] = {
   { PANGO_SCRIPT_ARABIC, "*" },
+  { PANGO_SCRIPT_NKO, "*" }
 };
 
 static PangoEngineInfo script_engines[] = {
