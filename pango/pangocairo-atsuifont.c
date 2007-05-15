@@ -42,6 +42,9 @@ struct _PangoCairoATSUIFont
   cairo_font_options_t *options;
 
   double size;
+  int absolute_size;
+
+  GSList *metrics_by_lang;
 };
 
 struct _PangoCairoATSUIFontClass
@@ -202,17 +205,45 @@ pango_cairo_atsui_font_get_glyph_extents (PangoFont        *font,
     }
 }
 
+static int
+max_glyph_width (PangoLayout *layout)
+{
+  int max_width = 0;
+  GSList *l, *r;
+
+  for (l = pango_layout_get_lines_readonly (layout); l; l = l->next)
+    {
+      PangoLayoutLine *line = l->data;
+
+      for (r = line->runs; r; r = r->next)
+	{
+	  PangoGlyphString *glyphs = ((PangoGlyphItem *)r->data)->glyphs;
+	  int i;
+
+	  for (i = 0; i < glyphs->num_glyphs; i++)
+	    if (glyphs->glyphs[i].geometry.width > max_width)
+	      max_width = glyphs->glyphs[i].geometry.width;
+	}
+    }
+
+  return max_width;
+}
 
 static PangoFontMetrics *
-pango_cairo_atsui_font_get_metrics (PangoFont        *font,
-				    PangoLanguage    *language)
+create_metrics_for_context (PangoFont    *font,
+			    PangoContext *context)
 {
   PangoCairoATSUIFont *cafont = PANGO_CAIRO_ATSUI_FONT (font);
   ATSFontRef ats_font;
   ATSFontMetrics ats_metrics;
   PangoFontMetrics *metrics;
+  PangoFontDescription *font_desc;
+  PangoLayout *layout;
+  PangoRectangle extents;
+  PangoLanguage *language = pango_context_get_language (context);
+  const char *sample_str = pango_language_get_sample_string (language);
 
-  ats_font = FMGetATSFontRefFromFont(cafont->font_id);
+  ats_font = FMGetATSFontRefFromFont (cafont->font_id);
 
   ATSFontGetHorizontalMetrics (ats_font, kATSOptionFlagsDefault, &ats_metrics);
 
@@ -221,24 +252,109 @@ pango_cairo_atsui_font_get_metrics (PangoFont        *font,
   metrics->ascent = ats_metrics.ascent * cafont->size * PANGO_SCALE;
   metrics->descent = -ats_metrics.descent * cafont->size * PANGO_SCALE;
 
-  /* TODO: the following two are not really what they should be. 
-   * See bug 433805 */
-  metrics->approximate_char_width = ats_metrics.maxAdvanceWidth * cafont->size * PANGO_SCALE;
-  metrics->approximate_digit_width = ats_metrics.maxAdvanceWidth * cafont->size * PANGO_SCALE;
-
   metrics->underline_position = ats_metrics.underlinePosition * cafont->size * PANGO_SCALE;
   metrics->underline_thickness = ats_metrics.underlineThickness * cafont->size * PANGO_SCALE;
 
   metrics->strikethrough_position = metrics->ascent / 3;
   metrics->strikethrough_thickness = ats_metrics.underlineThickness * cafont->size * PANGO_SCALE;
 
+  layout = pango_layout_new (context);
+  font_desc = pango_font_describe_with_absolute_size (font);
+  pango_layout_set_font_description (layout, font_desc);
+  pango_layout_set_text (layout, sample_str, -1);
+  pango_layout_get_extents (layout, NULL, &extents);
+
+  metrics->approximate_char_width = extents.width / g_utf8_strlen (sample_str, -1);
+
+  pango_layout_set_text (layout, "0123456789", -1);
+  metrics->approximate_digit_width = max_glyph_width (layout);
+
+  pango_font_description_free (font_desc);
+  g_object_unref (layout);
+
   return metrics;
+}
+
+typedef struct
+{
+  const char *sample_str;
+  PangoFontMetrics *metrics;
+} PangoATSUIMetricsInfo;
+
+static PangoFontMetrics *
+pango_cairo_atsui_font_get_metrics (PangoFont        *font,
+				    PangoLanguage    *language)
+{
+  PangoCairoATSUIFont *cafont = PANGO_CAIRO_ATSUI_FONT (font);
+  PangoATSUIMetricsInfo *info;
+  GSList *tmp_list;
+  const char *sample_str = pango_language_get_sample_string (language);
+
+  tmp_list = cafont->metrics_by_lang;
+  while (tmp_list)
+    {
+      info = tmp_list->data;
+
+      if (info->sample_str == sample_str)    /* We _don't_ need strcmp */
+	break;
+
+      tmp_list = tmp_list->next;
+    }
+
+  if (!tmp_list)
+    {
+      PangoContext *context;
+
+      if (!pango_font_get_font_map (font))
+	return pango_font_metrics_new ();
+
+      info = g_slice_new0 (PangoATSUIMetricsInfo);
+
+      cafont->metrics_by_lang = g_slist_prepend (cafont->metrics_by_lang,
+						 info);
+
+      info->sample_str = sample_str;
+
+      context = pango_context_new ();
+      pango_context_set_font_map (context, pango_font_get_font_map (font));
+      pango_context_set_language (context, language);
+      pango_cairo_context_set_font_options (context, cafont->options);
+
+      info->metrics = create_metrics_for_context (font, context);
+
+      g_object_unref (context);
+    }
+
+  return pango_font_metrics_ref (info->metrics);
+}
+
+static PangoFontDescription *
+pango_cairo_atsui_font_describe_absolute (PangoFont *font)
+{
+  PangoFontDescription *desc;
+  PangoATSUIFont *afont = PANGO_ATSUI_FONT (font);
+  PangoCairoATSUIFont *cafont = PANGO_CAIRO_ATSUI_FONT (font);
+
+  desc = pango_font_description_copy (afont->desc);
+  pango_font_description_set_absolute_size (desc, cafont->absolute_size);
+
+  return desc;
+}
+
+static void
+free_metrics_info (PangoATSUIMetricsInfo *info)
+{
+  pango_font_metrics_unref (info->metrics);
+  g_slice_free (PangoATSUIMetricsInfo, info);
 }
 
 static void
 pango_cairo_atsui_font_finalize (GObject *object)
 {
   PangoCairoATSUIFont *cafont = PANGO_CAIRO_ATSUI_FONT (object);
+
+  g_slist_foreach (cafont->metrics_by_lang, (GFunc)free_metrics_info, NULL);
+  g_slist_free (cafont->metrics_by_lang);
 
   cairo_font_face_destroy (cafont->font_face);
   cairo_scaled_font_destroy (cafont->scaled_font);
@@ -257,6 +373,7 @@ pango_cairo_atsui_font_class_init (PangoCairoATSUIFontClass *class)
 
   font_class->get_metrics = pango_cairo_atsui_font_get_metrics;
   font_class->get_glyph_extents = pango_cairo_atsui_font_get_glyph_extents;
+  font_class->describe_absolute = pango_cairo_atsui_font_describe_absolute;
 }
 
 static void
@@ -278,6 +395,7 @@ _pango_cairo_atsui_font_new (PangoCairoATSUIFontMap     *cafontmap,
   ATSFontRef font_ref;
   const PangoMatrix *pango_ctm;
   ATSUFontID font_id;
+  double dpi;
 
   postscript_name = _pango_atsui_face_get_postscript_name (face);
   
@@ -332,10 +450,20 @@ _pango_cairo_atsui_font_new (PangoCairoATSUIFontMap     *cafontmap,
   cafont->size = (double) pango_font_description_get_size (desc) / PANGO_SCALE;
   cafont->font_id = font_id;
 
-  if (!pango_font_description_get_size_is_absolute (desc))
+  if (context)
     {
-      /* FIXME: Need to handle dpi here. See other font implementations for more info. */
+      dpi = pango_cairo_context_get_resolution (context);
+
+      if (dpi <= 0)
+	dpi = cafontmap->dpi;
     }
+  else
+    dpi = cafontmap->dpi;
+
+  cafont->absolute_size = cafont->size;
+
+  if (!pango_font_description_get_size_is_absolute (desc))
+    cafont->size *= dpi / 72.;
 
   cairo_matrix_init_scale (&cafont->font_matrix, cafont->size, cafont->size);
   pango_ctm = pango_context_get_matrix (context);

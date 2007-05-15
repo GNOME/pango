@@ -109,4 +109,5 @@ pango_cairo_atsui_font_map_class_init (PangoCairoATSUIFontMapClass *class)
 static void
 pango_cairo_atsui_font_map_init (PangoCairoATSUIFontMap *cafontmap)
 {
+  cafontmap->dpi = 72.;
 }

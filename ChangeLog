@@ -1,3 +1,15 @@
+2007-05-15  Richard Hult  <richard@imendio.com>
+
+	Bug 433805 - [Atsui] Approximate char/digit width width often 0
+
+	* pango/pangocairo-atsuifont.c:
+	(pango_cairo_atsui_font_get_metrics): Improve the metrics so it really
+	is average instead of max glyph width. Also keep the metrics per 
+	language in the font so it's not constantly recreated.
+	(pango_cairo_atsui_font_describe_absolute): Implement.
+
+	* pango/pangocairo-atsuifontmap.c: Set default resolution.
+
 2007-05-15  Behdad Esfahbod  <behdad@gnome.org>
 
 	* pango-view/Makefile.am: Add various test txt files recently
