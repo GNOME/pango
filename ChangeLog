@@ -1,5 +1,9 @@
 2007-05-15  Behdad Esfahbod  <behdad@gnome.org>
 
+	Bug 385168 – indic, khmer, and tibetan modules don't apply ccmp
+	Bug 385477 – kern feature is not supported in OpenType layout for
+	Tibetan.
+
 	* modules/khmer/khmer-fc.c (khmer_engine_shape):
 	* modules/tibetan/tibetan-fc.c (tibetan_engine_shape):
 	Port to new OpenType APIs.  Add standard features (ccmp,
