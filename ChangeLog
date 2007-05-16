@@ -1,5 +1,10 @@
 2007-05-15  Behdad Esfahbod  <behdad@gnome.org>
 
+	* modules/indic/indic-fc.c:
+	Add ccmp, locl, calt; kern, mark, and mkmk features.
+
+2007-05-15  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/pango-ot.h:
 	* pango/pango-ot-private.h:
 	* pango/pango-ot-ruleset.c (pango_ot_ruleset_add_feature),

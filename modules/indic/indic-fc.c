@@ -114,6 +114,8 @@ static const IndicOTClassTable *indic_ot_class_tables[] = {
 
 static const PangoOTFeatureMap gsub_features[] =
 {
+  {"ccmp", PANGO_OT_ALL_GLYPHS},
+  {"locl", PANGO_OT_ALL_GLYPHS},
   {"init", init},
   {"nukt", nukt},
   {"akhn", akhn},
@@ -126,14 +128,18 @@ static const PangoOTFeatureMap gsub_features[] =
   {"blws", blws},
   {"abvs", abvs},
   {"psts", psts},
-  {"haln", haln}
+  {"haln", haln},
+  {"calt", PANGO_OT_ALL_GLYPHS}
 };
 
 static const PangoOTFeatureMap gpos_features[] =
 {
   {"blwm", blwm},
   {"abvm", abvm},
-  {"dist", dist}
+  {"dist", dist},
+  {"kern", PANGO_OT_ALL_GLYPHS},
+  {"mark", PANGO_OT_ALL_GLYPHS},
+  {"mkmk", PANGO_OT_ALL_GLYPHS}
 };
 
 static void
