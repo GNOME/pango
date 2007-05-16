@@ -1,5 +1,12 @@
 2007-05-16  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango-view/Makefile.am:
+	* pango-view/test-opentype-language.markup:
+	Add a test file showing off OpenType language-system support
+	used with DejaVu Sans.
+
+2007-05-16  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 438814 – synaptic crash with pango 1.17.0
 
 	* pango/pango-layout.c (process_item): Make sure we find some break
