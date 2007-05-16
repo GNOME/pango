@@ -31,11 +31,11 @@
 #include <string.h>
 
 #include <glib.h>
+#include "pango-ot.h"
 #include "pango-engine.h"
 #include "pangofc-font.h"
 
 #include "thai-shaper.h"
-#include "thai-ot.h"
 
 /* No extra fields needed */
 typedef PangoEngineShape      ThaiEngineFc;
@@ -157,15 +157,19 @@ contain_glyphs(PangoFont *font, const int glyph_map[128])
 /* Returns a structure with information we will use to rendering given the
  * #PangoFont. This is computed once per font and cached for later retrieval.
  */
-ThaiFontInfo *
-thai_get_font_info (PangoFont *font)
+static ThaiFontInfo *
+thai_get_font_info (PangoFont            *font,
+		    const PangoOTRuleset *ruleset)
 {
   ThaiFontInfo *font_info;
-  GQuark info_id = g_quark_from_string ("thai-font-info");
+  static GQuark info_id = 0;
+  
+  if (G_UNLIKELY (!info_id))
+    info_id = g_quark_from_string ("thai-font-info");
 
   font_info = g_object_get_qdata (G_OBJECT (font), info_id);
 
-  if (!font_info)
+  if (G_UNLIKELY (!font_info))
     {
       /* No cached information not found, so we need to compute it
        * from scratch
@@ -174,7 +178,7 @@ thai_get_font_info (PangoFont *font)
       font_info->font = font;
 
       /* detect font set by determining availibility of OT ruleset & glyphs */
-      if (thai_ot_get_ruleset (font))
+      if (pango_ot_ruleset_get_feature_count (ruleset, NULL, NULL))
 	font_info->font_set = THAI_FONT_TIS;
       else if (contain_glyphs(font, tis620_2))
 	font_info->font_set = THAI_FONT_TIS_WIN;
@@ -234,10 +238,83 @@ thai_make_glyph_uni (ThaiFontInfo *font_info, gunichar uc)
     return PANGO_GET_UNKNOWN_GLYPH ( uc);
 }
 
+static const PangoOTFeatureMap gsub_features[] =
+{
+  {"ccmp", PANGO_OT_ALL_GLYPHS},
+  {"locl", PANGO_OT_ALL_GLYPHS},
+  {"liga", PANGO_OT_ALL_GLYPHS},
+};
+
+static const PangoOTFeatureMap gpos_features[] =
+{
+  {"kern", PANGO_OT_ALL_GLYPHS},
+  {"mark", PANGO_OT_ALL_GLYPHS},
+  {"mkmk", PANGO_OT_ALL_GLYPHS}
+};
+
+static void
+thai_engine_shape (PangoEngineShape *engine,
+		   PangoFont        *font,
+		   const char       *text,
+		   gint              length,
+		   const PangoAnalysis *analysis,
+		   PangoGlyphString *glyphs)
+{
+  PangoFcFont *fc_font;
+  FT_Face face;
+  PangoOTRulesetDescription desc;
+  const PangoOTRuleset *ruleset;
+  PangoOTBuffer *buffer;
+  gint i;
+  ThaiFontInfo *font_info;
+
+  g_return_if_fail (font != NULL);
+  g_return_if_fail (text != NULL);
+  g_return_if_fail (length >= 0);
+  g_return_if_fail (analysis != NULL);
+
+  fc_font = PANGO_FC_FONT (font);
+  face = pango_fc_font_lock_face (fc_font);
+  if (!face)
+    return;
+
+  desc.script = analysis->script;
+  desc.language = analysis->language;
+
+  desc.n_static_gsub_features = G_N_ELEMENTS (gsub_features);
+  desc.static_gsub_features = gsub_features;
+  desc.n_static_gpos_features = G_N_ELEMENTS (gpos_features);
+  desc.static_gpos_features = gpos_features;
+
+  /* TODO populate other_features from analysis->extra_attrs */
+  desc.n_other_features = 0;
+  desc.other_features = NULL;
+
+  ruleset = pango_ot_ruleset_get_for (pango_ot_info_get (face), &desc);
+
+  font_info = thai_get_font_info (font, ruleset);
+
+  thai_set_glyphs (font_info, text, length, analysis->script, glyphs); 
+
+  buffer = pango_ot_buffer_new (PANGO_FC_FONT (font));
+
+  for (i = 0; i < glyphs->num_glyphs; i++)
+    pango_ot_buffer_add_glyph (buffer,
+			       glyphs->glyphs[i].glyph,
+			       0,
+			       glyphs->log_clusters[i]);
+
+  pango_ot_ruleset_substitute (ruleset, buffer);
+  pango_ot_ruleset_position (ruleset, buffer);
+
+  pango_ot_buffer_output (buffer, glyphs);
+  pango_ot_buffer_destroy (buffer);
+}
+
 PangoGlyph
 thai_make_unknown_glyph (ThaiFontInfo *font_info, gunichar uc)
 {
-  return PANGO_GET_UNKNOWN_GLYPH ( uc);
+  return PANGO_GET_UNKNOWN_GLYPH (uc);
 }
 
 static void

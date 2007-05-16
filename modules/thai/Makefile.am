@@ -13,7 +13,7 @@ endif
 endif
 endif
 
-thai_fc_sources = $(shaper_sources) thai-fc.c thai-ot.c thai-ot.h
+thai_fc_sources = $(shaper_sources) thai-fc.c
 
 pango_thai_fc_la_LDFLAGS = -module $(MODULE_LIBTOOL_OPTIONS)
 pango_thai_fc_la_LIBADD = $(pangoft2libs)

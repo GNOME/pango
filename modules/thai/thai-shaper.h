@@ -55,9 +55,6 @@ struct _ThaiFontInfo
 /*
  * Abstract methods (implemented by each shaper module)
  */
-ThaiFontInfo *
-thai_get_font_info (PangoFont *font);
-
 PangoGlyph
 thai_get_glyph_tis (ThaiFontInfo *font_info, guchar c);
 
@@ -73,16 +70,11 @@ thai_make_glyph_uni (ThaiFontInfo *font_info, gunichar uc);
 PangoGlyph
 thai_make_unknown_glyph (ThaiFontInfo *font_info, gunichar uc);
 
-/*
- * Public functions
- */
 void
-thai_engine_shape (PangoEngineShape *engine,
-		   PangoFont        *font,
-		   const char       *text,
-		   gint              length,
-		   const PangoAnalysis *analysis,
-		   PangoGlyphString *glyphs);
+thai_set_glyphs (ThaiFontInfo     *font_info,
+		 const char       *text,
+		 gint              length,
+		 PangoScript       script,
+		 PangoGlyphString *glyphs);
 
 #endif /* __THAI_SHAPER_H__ */
-

@@ -33,7 +33,6 @@
 #include "pango-engine.h"
 #include "thai-charprop.h"
 #include "thai-shaper.h"
-#include "thai-ot.h"
 
 #define MAX_CLUSTER_CHRS	256
 #define MAX_GLYPHS		256
@@ -392,13 +391,14 @@ get_adjusted_glyphs_list (ThaiFontInfo *font_info,
 
 static gint
 get_glyphs_list (ThaiFontInfo	*font_info,
+		 PangoScript     script,
 		 gunichar	*cluster,
 		 gint		num_chrs,
 		 PangoGlyph	*glyph_lists)
 {
   gint i;
 
-  switch (pango_script_for_unichar (cluster[0]))
+  switch (script)
     {
       case PANGO_SCRIPT_THAI:
 	switch (font_info->font_set)
@@ -444,6 +444,7 @@ get_glyphs_list (ThaiFontInfo	*font_info,
 
 static void
 add_cluster (ThaiFontInfo	*font_info,
+	     PangoScript         script,
 	     PangoGlyphString	*glyphs,
 	     gint		cluster_start,
 	     gunichar		*cluster,
@@ -455,14 +456,14 @@ add_cluster (ThaiFontInfo	*font_info,
 
   if (isthai (cluster[0]))
     {
-      num_glyphs = get_glyphs_list(font_info, cluster, num_chrs, glyphs_list);
+      num_glyphs = get_glyphs_list(font_info, script, cluster, num_chrs, glyphs_list);
       for (i=0; i<num_glyphs; i++)
 	add_glyph (font_info, glyphs, cluster_start, glyphs_list[i],
 		   i == 0 ? FALSE : TRUE);
     }
   else if (islao (cluster[0]))
     {
-      num_glyphs = get_glyphs_list(font_info, cluster, num_chrs, glyphs_list);
+      num_glyphs = get_glyphs_list(font_info, script, cluster, num_chrs, glyphs_list);
       for (i=0; i<num_glyphs; i++)
 	add_glyph (font_info, glyphs, cluster_start, glyphs_list[i],
 		   i == 0 ? FALSE : TRUE);
@@ -524,35 +525,24 @@ get_next_cluster(const char	*text,
 }
 
 void
-thai_engine_shape (PangoEngineShape *engine,
-		   PangoFont        *font,
-		   const char       *text,
-		   gint              length,
-		   const PangoAnalysis *analysis,
-		   PangoGlyphString *glyphs)
+thai_set_glyphs (ThaiFontInfo     *font_info,
+		 const char       *text,
+		 gint              length,
+		 PangoScript       script,
+		 PangoGlyphString *glyphs)
 {
   gint n_chars;
   const char *p;
-  ThaiFontInfo *font_info;
   const char *log_cluster;
   gunichar cluster[MAX_CLUSTER_CHRS];
 
-  g_return_if_fail (font != NULL);
-  g_return_if_fail (text != NULL);
-  g_return_if_fail (length >= 0);
-  g_return_if_fail (analysis != NULL);
-
   pango_glyph_string_set_size (glyphs, 0);
-
-  font_info = thai_get_font_info (font);
 
   p = text;
   while (p < text + length)
     {
 	log_cluster = p;
 	p = get_next_cluster (p, text + length - p, cluster, &n_chars);
-	add_cluster (font_info, glyphs, log_cluster - text, cluster, n_chars);
+	add_cluster (font_info, script, glyphs, log_cluster - text, cluster, n_chars);
     }
-  thai_ot_shape (font, glyphs);
 }
-

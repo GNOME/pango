@@ -1,5 +1,19 @@
 2007-05-15  Behdad Esfahbod  <behdad@gnome.org>
 
+	* modules/thai/Makefile.am:
+	* modules/thai/thai-fc.c (thai_get_font_info), (thai_engine_shape),
+	(thai_make_unknown_glyph):
+	* modules/thai/thai-shaper.c (get_glyphs_list), (add_cluster),
+	(thai_set_glyphs):
+	* modules/thai/thai-shaper.h:
+	Port to new OpenType APIs and cleanup a bit.  Add standard features.
+
+	* modules/thai/thai-ot.c:
+	* modules/thai/thai-ot.h:
+	Removed.  Not needed anymore.
+
+2007-05-15  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 385168 – indic, khmer, and tibetan modules don't apply ccmp
 	Bug 385477 – kern feature is not supported in OpenType layout for
 	Tibetan.
