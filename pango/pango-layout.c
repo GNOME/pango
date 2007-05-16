@@ -3224,7 +3224,7 @@ process_item (PangoLayout     *layout,
       width = 0;
       for (num_chars = 0; num_chars < item->num_chars; num_chars++)
 	{
-	  if (width > state->remaining_width)
+	  if (width > state->remaining_width && break_num_chars < item->num_chars)
 	    break;
 
 	  /* If there are no previous runs we have to take care to grab at least one char. */

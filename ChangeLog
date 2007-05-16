@@ -1,3 +1,10 @@
+2007-05-16  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 438814 – synaptic crash with pango 1.17.0
+
+	* pango/pango-layout.c (process_item): Make sure we find some break
+	point even if overflowing the line.
+
 2007-05-15  Behdad Esfahbod  <behdad@gnome.org>
 
 	* modules/hebrew/hebrew-fc.c (hebrew_engine_shape):
