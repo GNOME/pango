@@ -1,5 +1,12 @@
 2007-05-15  Behdad Esfahbod  <behdad@gnome.org>
 
+	* modules/khmer/khmer-fc.c (khmer_engine_shape):
+	* modules/tibetan/tibetan-fc.c (tibetan_engine_shape):
+	Port to new OpenType APIs.  Add standard features (ccmp,
+	locl, calt, kern, mark, mkmk).
+
+2007-05-15  Behdad Esfahbod  <behdad@gnome.org>
+
 	* modules/indic/indic-fc.c:
 	Add ccmp, locl, calt; kern, mark, and mkmk features.
 

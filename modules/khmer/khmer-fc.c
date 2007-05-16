@@ -352,17 +352,16 @@ enum property_flags
   dist = 0x0200,
   blwm = 0x0400,
   abvm = 0x0800,
-  mkmk = 0x1000
 };
 
 
 enum properties
 {
-  blwf_p    = /*(blwf | blws | clig | dist | blwm | mkmk)*/ (abvf | pref | pstf | pres | abvs | psts | abvm),
-  pstf_p    = /*(blwf | blws | pref | pres | pstf | psts | clig | dist | blwm)*/ (abvf | abvs | abvm | mkmk),
-  abvf_p    = /*(abvf | abvs | clig | dist | abvm | mkmk)*/ (pref | pstf | blwf | pres | blws | psts | blwm),
-  pref_p    = /*(pref | pres | clig | dist)*/ (abvf | pstf | blwf | blws | abvs | psts | blwm | abvm | mkmk),
-  default_p = /*(pres | blws | clig | dist | abvm | blwm | mkmk)*/ (pref | blwf |abvf | pstf | abvs | psts)
+  blwf_p    = /*(blwf | blws | clig | dist | blwm)*/ (abvf | pref | pstf | pres | abvs | psts | abvm),
+  pstf_p    = /*(blwf | blws | pref | pres | pstf | psts | clig | dist | blwm)*/ (abvf | abvs | abvm),
+  abvf_p    = /*(abvf | abvs | clig | dist | abvm)*/ (pref | pstf | blwf | pres | blws | psts | blwm),
+  pref_p    = /*(pref | pres | clig | dist)*/ (abvf | pstf | blwf | blws | abvs | psts | blwm | abvm),
+  default_p = /*(pres | blws | clig | dist | abvm | blwm)*/ (pref | blwf |abvf | pstf | abvs | psts)
 };
 
 
@@ -414,93 +413,31 @@ find_syllable (const gunichar *chars,
   return cursor;
 }
 
-
-static void
-maybe_add_GSUB_feature (PangoOTRuleset *ruleset,
-			PangoOTInfo    *info,
-			guint           script_index,
-			PangoOTTag      tag,
-			gulong          property_bit)
+static const PangoOTFeatureMap gsub_features[] =
 {
-  guint feature_index;
+  {"ccmp", PANGO_OT_ALL_GLYPHS},
+  {"locl", PANGO_OT_ALL_GLYPHS},
+  {"pref", pref},
+  {"blwf", blwf},
+  {"abvf", abvf},
+  {"pstf", pstf},
+  {"pres", pres},
+  {"blws", blws},
+  {"abvs", abvs},
+  {"psts", psts},
+  {"clig", clig},
+  {"calt", PANGO_OT_ALL_GLYPHS}
+};
 
-  if (pango_ot_info_find_feature (info, PANGO_OT_TABLE_GSUB,
-				  tag, script_index, PANGO_OT_DEFAULT_LANGUAGE, &feature_index))
-    pango_ot_ruleset_add_feature (ruleset, PANGO_OT_TABLE_GSUB, feature_index,
-				  property_bit);
-}
-
-
-static void
-maybe_add_GPOS_feature (PangoOTRuleset *ruleset,
-			PangoOTInfo    *info,
-			guint           script_index,
-			PangoOTTag      tag,
-			gulong          property_bit)
+static const PangoOTFeatureMap gpos_features[] =
 {
-  guint feature_index;
-
-  if (pango_ot_info_find_feature (info, PANGO_OT_TABLE_GPOS,
-				  tag, script_index, PANGO_OT_DEFAULT_LANGUAGE, &feature_index))
-    pango_ot_ruleset_add_feature (ruleset, PANGO_OT_TABLE_GPOS, feature_index,
-				  property_bit);
-}
-
-
-static PangoOTRuleset *
-get_ruleset (FT_Face face)
-{
-  PangoOTRuleset *ruleset;
-  static GQuark ruleset_quark = 0;
-
-  PangoOTInfo *info = pango_ot_info_get (face);
-
-  if (!ruleset_quark)
-    ruleset_quark = g_quark_from_string ("pango-khmer-ruleset");
-
-  if (!info)
-    return NULL;
-
-  ruleset = g_object_get_qdata (G_OBJECT (info), ruleset_quark);
-
-  if (!ruleset)
-    {
-      PangoOTTag khmer_tag = FT_MAKE_TAG ('k', 'h', 'm', 'r');
-      guint script_index;
-
-      ruleset = pango_ot_ruleset_new (info);
-
-      if (pango_ot_info_find_script (info, PANGO_OT_TABLE_GSUB,
-				      khmer_tag, &script_index))
-	{
-	  maybe_add_GSUB_feature (ruleset, info, script_index, FT_MAKE_TAG ('p','r','e','f'), pref);
-	  maybe_add_GSUB_feature (ruleset, info, script_index, FT_MAKE_TAG ('b','l','w','f'), blwf);
-	  maybe_add_GSUB_feature (ruleset, info, script_index, FT_MAKE_TAG ('a','b','v','f'), abvf);
-	  maybe_add_GSUB_feature (ruleset, info, script_index, FT_MAKE_TAG ('p','s','t','f'), pstf);
-
-	  maybe_add_GSUB_feature (ruleset, info, script_index, FT_MAKE_TAG ('p','r','e','s'), pres);
-	  maybe_add_GSUB_feature (ruleset, info, script_index, FT_MAKE_TAG ('b','l','w','s'), blws);
-	  maybe_add_GSUB_feature (ruleset, info, script_index, FT_MAKE_TAG ('a','b','v','s'), abvs);
-	  maybe_add_GSUB_feature (ruleset, info, script_index, FT_MAKE_TAG ('p','s','t','s'), psts);
-	  maybe_add_GSUB_feature (ruleset, info, script_index, FT_MAKE_TAG ('c','l','i','g'), clig);
-	}
-
-      if (pango_ot_info_find_script (info, PANGO_OT_TABLE_GPOS,
-				      khmer_tag, &script_index))
-	{
-	  maybe_add_GPOS_feature (ruleset, info, script_index, FT_MAKE_TAG ('d','i','s','t'), dist);
-	  maybe_add_GPOS_feature (ruleset, info, script_index, FT_MAKE_TAG ('b','l','w','m'), blwm);
-	  maybe_add_GPOS_feature (ruleset, info, script_index, FT_MAKE_TAG ('a','b','v','m'), abvm);
-	  maybe_add_GPOS_feature (ruleset, info, script_index, FT_MAKE_TAG ('m','k','m','k'), mkmk);
-	}
-
-      g_object_set_qdata_full (G_OBJECT (info), ruleset_quark, ruleset,
-				(GDestroyNotify)g_object_unref);
-    }
-
-  return ruleset;
-}
-
+  {"dist", dist},
+  {"blwm", blwm},
+  {"abvm", abvm},
+  {"kern", PANGO_OT_ALL_GLYPHS},
+  {"mark", PANGO_OT_ALL_GLYPHS},
+  {"mkmk", PANGO_OT_ALL_GLYPHS}
+};
 
 static PangoGlyph
 get_index (PangoFcFont *fc_font, gunichar wc)
@@ -522,7 +459,8 @@ khmer_engine_shape (PangoEngineShape *engine,
 {
   PangoFcFont *fc_font;
   FT_Face face;
-  PangoOTRuleset *ruleset;
+  PangoOTRulesetDescription desc;
+  const PangoOTRuleset *ruleset;
   PangoOTBuffer *buffer;
   glong n_chars;
   gunichar *wcs;
@@ -715,14 +653,22 @@ khmer_engine_shape (PangoEngineShape *engine,
       cursor = syllable; /* move the pointer to the start of next syllable */
     } /* while */
 
-  /* do gsub processing */
-  ruleset = get_ruleset (face);
-  if (ruleset != NULL)
-    {
-      pango_ot_ruleset_substitute (ruleset, buffer);
-      pango_ot_ruleset_position (ruleset, buffer);
-    }
+  desc.script = analysis->script;
+  desc.language = analysis->language;
 
+  desc.n_static_gsub_features = G_N_ELEMENTS (gsub_features);
+  desc.static_gsub_features = gsub_features;
+  desc.n_static_gpos_features = G_N_ELEMENTS (gpos_features);
+  desc.static_gpos_features = gpos_features;
+
+  /* TODO populate other_features from analysis->extra_attrs */
+  desc.n_other_features = 0;
+  desc.other_features = NULL;
+
+  ruleset = pango_ot_ruleset_get_for (pango_ot_info_get (face), &desc);
+
+  pango_ot_ruleset_substitute (ruleset, buffer);
+  pango_ot_ruleset_position (ruleset, buffer);
   pango_ot_buffer_output (buffer, glyphs);
 
   g_free (wcs);
