@@ -1,5 +1,20 @@
 2007-05-15  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango/pango-ot.h:
+	* pango/pango-ot-private.h:
+	* pango/pango-ot-ruleset.c (pango_ot_ruleset_add_feature),
+	(pango_ot_ruleset_get_feature_count):
+	Add new engine API:
+
+		pango_ot_ruleset_get_feature_count()
+
+	* docs/pango-sections.txt:
+	* docs/tmpl/opentype.sgml:
+	* pango/pangoft2.def:
+	Updated.
+
+2007-05-15  Behdad Esfahbod  <behdad@gnome.org>
+
 	* modules/arabic/arabic-fc.c (arabic_engine_shape):
 	* modules/basic/basic-fc.c (basic_engine_shape):
 	* modules/syriac/syriac-fc.c (syriac_engine_shape):
