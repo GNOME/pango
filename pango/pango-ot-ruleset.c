@@ -317,6 +317,8 @@ pango_ot_ruleset_add_feature (PangoOTRuleset   *ruleset,
   tmp_rule.property_bit = property_bit;
 
   g_array_append_val (ruleset->rules, tmp_rule);
+
+  ruleset->n_features[table_type]++;
 }
 
 /**
@@ -410,6 +412,34 @@ pango_ot_ruleset_maybe_add_features (PangoOTRuleset          *ruleset,
     }
 
   return n_found_features;
+}
+
+/**
+ * pango_ot_ruleset_get_feature_count:
+ * @ruleset: a #PangoOTRuleset.
+ * @n_gsub_features: location to store number of GSUB features, or %NULL.
+ * @n_gpos_features: location to store number of GPOS features, or %NULL.
+ *
+ * Gets the number of GSUB and GPOS features in the ruleset.
+ *
+ * Return value: Total number of features in the @ruleset.
+ *
+ * Since: 1.18
+ **/
+guint
+pango_ot_ruleset_get_feature_count (const PangoOTRuleset   *ruleset,
+				    guint                  *n_gsub_features,
+				    guint                  *n_gpos_features)
+{
+  g_return_val_if_fail (PANGO_IS_OT_RULESET (ruleset), 0);
+  
+  if (n_gsub_features)
+    *n_gsub_features = ruleset->n_features[PANGO_OT_TABLE_GSUB];
+
+  if (n_gpos_features)
+    *n_gpos_features = ruleset->n_features[PANGO_OT_TABLE_GPOS];
+
+  return ruleset->n_features[PANGO_OT_TABLE_GSUB] + ruleset->n_features[PANGO_OT_TABLE_GPOS];
 }
 
 /**

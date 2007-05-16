@@ -152,6 +152,9 @@ guint           pango_ot_ruleset_maybe_add_features (PangoOTRuleset          *ru
 						     PangoOTTableType         table_type,
 						     const PangoOTFeatureMap *features,
 						     guint                    n_features);
+guint           pango_ot_ruleset_get_feature_count (const PangoOTRuleset   *ruleset,
+						    guint                  *n_gsub_features,
+						    guint                  *n_gpos_features);
 void            pango_ot_ruleset_substitute  (const PangoOTRuleset   *ruleset,
 					      PangoOTBuffer          *buffer);
 void            pango_ot_ruleset_position    (const PangoOTRuleset   *ruleset,

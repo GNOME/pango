@@ -62,6 +62,7 @@ EXPORTS
 	pango_ot_ruleset_description_equal
 	pango_ot_ruleset_description_free
 	pango_ot_ruleset_description_hash
+	pango_ot_ruleset_get_feature_count
 	pango_ot_ruleset_get_for
 	pango_ot_ruleset_get_type
 	pango_ot_ruleset_maybe_add_feature

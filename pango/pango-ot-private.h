@@ -72,6 +72,8 @@ struct _PangoOTRuleset
   GArray *rules;
   PangoOTInfo *info;
 
+  /* the index into these arrays is a PangoOTTableType */
+  guint n_features[2];
   guint script_index[2];
   guint language_index[2];
 };

@@ -413,6 +413,17 @@ is not found.
 @Returns: 
 
 
+<!-- ##### FUNCTION pango_ot_ruleset_get_feature_count ##### -->
+<para>
+
+</para>
+
+@ruleset: 
+@n_gsub_features: 
+@n_gpos_features: 
+@Returns: 
+
+
 <!-- ##### FUNCTION pango_ot_ruleset_substitute ##### -->
 <para>
 
