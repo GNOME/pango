@@ -1,5 +1,10 @@
 2007-05-15  Behdad Esfahbod  <behdad@gnome.org>
 
+	* modules/hebrew/hebrew-fc.c (hebrew_engine_shape):
+	Port to new OpenType APIs.  Add standard features.
+
+2007-05-15  Behdad Esfahbod  <behdad@gnome.org>
+
 	* modules/thai/Makefile.am:
 	* modules/thai/thai-fc.c (thai_get_font_info), (thai_engine_shape),
 	(thai_make_unknown_glyph):
