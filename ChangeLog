@@ -1,5 +1,13 @@
 2007-05-16  Behdad Esfahbod  <behdad@gnome.org>
 
+	Bug 438705 – Test runs non-existent "/bin/bash" on HP-UX 11.11
+
+	* docs/check.docs:
+	* pango/check.defs:
+	Use /bin/sh instead of /bin/bash.
+
+2007-05-16  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango-view/Makefile.am:
 	* pango-view/test-opentype-language.markup:
 	Add a test file showing off OpenType language-system support
