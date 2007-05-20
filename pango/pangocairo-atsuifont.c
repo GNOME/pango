@@ -460,7 +460,7 @@ _pango_cairo_atsui_font_new (PangoCairoATSUIFontMap     *cafontmap,
   else
     dpi = cafontmap->dpi;
 
-  cafont->absolute_size = cafont->size;
+  cafont->absolute_size = pango_font_description_get_size (desc);
 
   if (!pango_font_description_get_size_is_absolute (desc))
     cafont->size *= dpi / 72.;

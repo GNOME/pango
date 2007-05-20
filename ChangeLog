@@ -1,3 +1,9 @@
+2007-05-20  Richard Hult  <richard@imendio.com>
+
+	* pango/pangocairo-atsuifont.c: (_pango_cairo_atsui_font_new): Improve
+	the fix for bug #433805 so that the metrics actually are right, thanks
+	to Mitch for noticing and debugging help.
+
 2007-05-16  Behdad Esfahbod  <behdad@gnome.org>
 
 	Bug 438705 – Test runs non-existent "/bin/bash" on HP-UX 11.11
