@@ -34,6 +34,7 @@ struct _PangoContext
 {
   GObject parent_instance;
 
+  PangoLanguage *set_language;
   PangoLanguage *language;
   PangoDirection base_dir;
   PangoGravity base_gravity;
@@ -64,7 +65,8 @@ pango_context_init (PangoContext *context)
   context->resolved_gravity = context->base_gravity = PANGO_GRAVITY_SOUTH;
   context->gravity_hint = PANGO_GRAVITY_HINT_NATURAL;
 
-  context->language = NULL;
+  context->set_language = NULL;
+  context->language = pango_language_get_default ();
   context->font_map = NULL;
 
   context->font_desc = pango_font_description_new ();
@@ -363,7 +365,11 @@ pango_context_set_language (PangoContext *context,
 {
   g_return_if_fail (context != NULL);
 
-  context->language = language;
+  context->set_language = language;
+  if (language)
+    context->language = language;
+  else
+    context->language = pango_language_get_default ();
 }
 
 /**
@@ -379,7 +385,7 @@ pango_context_get_language (PangoContext *context)
 {
   g_return_val_if_fail (context != NULL, NULL);
 
-  return context->language;
+  return context->set_language;
 }
 
 /**
