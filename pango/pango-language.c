@@ -415,7 +415,7 @@ script_for_lang_compare (gconstpointer key,
 
 /**
  * pango_language_includes_script:
- * @language: a #PangoLanguage
+ * @language: a #PangoLanguage, or %NULL
  * @script: a #PangoScript
  *
  * Determines if @script is one of the scripts used to
@@ -430,7 +430,8 @@ script_for_lang_compare (gconstpointer key,
  * applications in most circumstances.
  *
  * Return value: %TRUE if @script is one of the scripts used
- * to write @language, or if nothing is known about @language,
+ * to write @language or if nothing is known about @language
+ * (including the case that @language is %NULL),
  * %FALSE otherwise.
  *
  * Since: 1.4
@@ -443,12 +444,10 @@ pango_language_includes_script (PangoLanguage *language,
   unsigned int j;
   const char *lang_str;
 
-  g_return_val_if_fail (language != NULL, FALSE);
-
 #define REAL_SCRIPT(script) \
   ((script) > PANGO_SCRIPT_INHERITED)
 
-  if (!REAL_SCRIPT (script))
+  if (language == NULL || !REAL_SCRIPT (script))
     return TRUE;
 
   lang_str = pango_language_to_string (language);

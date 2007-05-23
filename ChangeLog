@@ -1,3 +1,11 @@
+2007-05-22  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 440603 – Minor ABI change
+
+	* pango/pango-language.c (pango_language_includes_script):
+	* pango/pango-ot-tag.c (pango_ot_tag_from_language):
+	Accept language == NULL as legitimate input.
+
 2007-05-20  Richard Hult  <richard@imendio.com>
 
 	* pango/pangocairo-atsuifont.c: (_pango_cairo_atsui_font_new): Improve

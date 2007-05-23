@@ -99,7 +99,7 @@ static const char ot_scripts[][4] = {
 
 /**
  * pango_ot_tag_from_script:
- * @script: A #PangoScript.
+ * @script: A #PangoScript
  *
  * Finds the OpenType script tag corresponding to @script.
  *
@@ -127,7 +127,7 @@ pango_ot_tag_from_script (PangoScript script)
 
 /**
  * pango_ot_tag_to_script:
- * @script_tag: A #PangoOTTag OpenType script tag.
+ * @script_tag: A #PangoOTTag OpenType script tag
  *
  * Finds the #PangoScript corresponding to @script_tag.
  *
@@ -396,12 +396,13 @@ lang_compare_first_component (gconstpointer pa,
 
 /**
  * pango_ot_tag_from_language:
- * @language: A #PangoLanguage.
+ * @language: A #PangoLanguage, or %NULL
  *
  * Finds the OpenType language-system tag best describing @language.
  *
  * Return value: #PangoOTTag best matching @language or
- * %PANGO_OT_TAG_DEFAULT_LANGUAGE if none found.
+ * %PANGO_OT_TAG_DEFAULT_LANGUAGE if none found or if @language
+ * is %NULL.
  *
  * Since: 1.18
  **/
@@ -411,7 +412,8 @@ pango_ot_tag_from_language (PangoLanguage *language)
   const char *lang_str;
   LangTag *lang_tag;
 
-  g_return_val_if_fail (language != NULL, PANGO_OT_TAG_DEFAULT_LANGUAGE);
+  if (language == NULL)
+    return PANGO_OT_TAG_DEFAULT_LANGUAGE;
 
   lang_str = pango_language_to_string (language);
 
@@ -455,7 +457,7 @@ pango_ot_tag_from_language (PangoLanguage *language)
 
 /**
  * pango_ot_tag_to_language:
- * @language_tag: A #PangoOTTag OpenType language-system tag.
+ * @language_tag: A #PangoOTTag OpenType language-system tag
  *
  * Finds a #PangoLanguage corresponding to @language_tag.
  *
