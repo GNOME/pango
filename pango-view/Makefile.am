@@ -13,6 +13,7 @@ TEST_TEXTS =			\
 	test-long-paragraph.txt	\
 	test-mixed.markup	\
 	test-mixed.txt		\
+	test-nko.txt		\
 	test-opentype-language.markup \
 	test-syriac.txt		\
 	test-tamil.txt		\

@@ -1,5 +1,11 @@
 2007-05-22  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango-view/Makefile.am:
+	* pango-view/test-nko.txt:
+	New test text for N'Ko.
+
+2007-05-22  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 440603 – Minor ABI change
 
 	* pango/pango-language.c (pango_language_includes_script):
