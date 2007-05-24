@@ -1,3 +1,8 @@
+2007-05-24  Behdad Esfahbod  <behdad@gnome.org>
+
+	* docs/tmpl/vertical.sgml: Document how Pango's vertical text support
+	works.
+
 2007-05-23  Behdad Esfahbod  <behdad@gnome.org>
 
 	Part of Bug 440603 – Minor ABI change
