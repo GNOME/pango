@@ -420,22 +420,6 @@ glong indic_ot_reorder(const gunichar *chars, const glong *utf8_offsets, glong c
 		writeChar(&output, chars[i], /*i*/ prev, nukt_p);
 	    }
 
-	    /* for the special conjuction of Cons+0x0d4d+0x0d31 or Cons+0x0d4d+0x0d30 of Malayalam */
-	    if ((baseConsonant - 2 >= 0) &&
-		(chars[baseConsonant - 1] == 0x0d4d) &&
-		((chars[baseConsonant] == 0x0d31) ||
-		 (chars[baseConsonant] == 0x0d30)) &&
-		((chars[baseConsonant - 2] >= 0x0d15) &&
-		 (chars[baseConsonant - 2] <= 0x0d39)))  {
-		swapChars (&output, -1, -3);
-
-		if (mpreFixups) {
-		    if (mpreFixups->fFixupCount > 0) {
-			mpreFixups->fFixupCount--;
-		    }
-		}
-	    }
-
 	    if ((class_table->scriptFlags & SF_MATRAS_AFTER_BASE) != 0) {
 		gboolean is_for_0C48 = FALSE;
 		if (output.fOutChars != NULL) {  /*for 0x0C48 of Telugu*/

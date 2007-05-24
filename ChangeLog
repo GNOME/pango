@@ -1,5 +1,13 @@
 2007-05-24  Behdad Esfahbod  <behdad@gnome.org>
 
+	Bug 357790 – Rendering problem for malayalam consonant RA (U+0D30)
+
+	* modules/indic/indic-ot-class-tables.c:
+	* modules/indic/indic-ot.c (indic_ot_reorder):
+	Commit remaining fix for malayalam.
+
+2007-05-24  Behdad Esfahbod  <behdad@gnome.org>
+
 	* docs/tmpl/opentype.sgml:
 	* docs/tmpl/pango-engine-lang.sgml:
 	* docs/tmpl/pango-engine-shape.sgml:
