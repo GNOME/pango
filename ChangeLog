@@ -1,5 +1,12 @@
 2007-05-24  Behdad Esfahbod  <behdad@gnome.org>
 
+	* docs/tmpl/opentype.sgml:
+	* docs/tmpl/pango-engine-lang.sgml:
+	* docs/tmpl/pango-engine-shape.sgml:
+	Add stability note.
+
+2007-05-24  Behdad Esfahbod  <behdad@gnome.org>
+
 	* docs/tmpl/vertical.sgml: Document how Pango's vertical text support
 	works.
 

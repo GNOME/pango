@@ -17,7 +17,7 @@ These engines are used in pango_break().
 </para>
 
 <!-- ##### SECTION Stability_Level ##### -->
-
+Part of Pango's engine API, and may change between module version changes
 
 <!-- ##### STRUCT PangoEngineLang ##### -->
 <para>

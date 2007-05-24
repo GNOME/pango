@@ -9,7 +9,8 @@ Laying text out in vertical directions
 Since 1.16, Pango is able to correctly lay vertical text out.  In fact, it can
 set layouts of mixed vertical and non-vertical text.  This section describes
 the types used for setting vertical text parameters.
-
+</para>
+<para>
 The way this is implemented is through the concept of
 <firstterm>gravity</firstterm>.  Gravity of normal Latin text is south.  A
 gravity value of east means that glyphs will be rotated ninety degrees
@@ -18,7 +19,8 @@ and rotate the layout using the matrix machinery already in place.  This has
 the huge advantage that most algorithms working on a #PangoLayout do not need
 any change as the assumption that lines run in the X direction and stack in
 the Y direction holds even for vertical text layouts.
-
+</para>
+<para>
 Applications should only need to set base gravity on #PangoContext in use, and
 let Pango decide the gravity assigned to each run of text.  This automatically
 handles text with mixed scripts.  A very common use is to set the context base
