@@ -1,5 +1,5 @@
 /*
-  This file was automatically created from UnicodeData.txt version 4.1.0
+  This file was automatically created from UnicodeData.txt version 5.0.0
   by fribidi_create_char_types
 */
 

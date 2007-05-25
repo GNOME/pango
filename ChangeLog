@@ -1,3 +1,8 @@
+2007-05-25  Behdad Esfahbod  <behdad@gnome.org>
+
+	* pango/mini-fribidi/fribidi_tab_char_type_2.i:
+	Fix wrong Unicode version in header.
+
 2007-05-24  Behdad Esfahbod  <behdad@gnome.org>
 
 	Bug 357790 – Rendering problem for malayalam consonant RA (U+0D30)
