@@ -1,5 +1,13 @@
 2007-05-28  Behdad Esfahbod  <behdad@gnome.org>
 
+	* === Released 1.17.1 ===
+
+	* configure.in: Version 1.17.1
+
+	* NEWS: Updated.
+
+2007-05-28  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango-view/test-mixed.markup:
 	* pango-view/test-mixed.txt:
 	Fix Japanese text.  Patch from Ben Konrath

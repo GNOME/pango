@@ -1,3 +1,40 @@
+Overview of changes between 1.17.0 and 1.17.1
+==============================================
+
+- Ported the rest of OpenType shapers to the new OpenType APIs and
+  added standard features to them: Hebrew, Indic, Khmer, Thai, and Tibetan.
+
+- Added N'Ko support to the Arabic module. [Eugeniy Meshcheryakov]
+
+- Small Indic module fix for Malayalam.
+
+- Fixed font metrics returned by the ATSUI backend. [Richard Hult]
+
+- Make itemization use pango_language_get_default() if context has no
+  language set on it.  Ditto for pango_context_get_metrics() if both
+  input language and context language are NULL.
+
+- Improved documentation on vertical text, also added stability note
+  to those parts of Pango API that are not indefinitely stable (shaper
+  and language engine APIs).
+
+- Misc bug fixes.
+
+- New OpenType engine API:
+
+	pango_ot_ruleset_get_feature_count()
+
+- Bugs fixed in this release:
+
+	Bug 357790 – Rendering problem for malayalam consonant RA (U+0D30)
+	Bug 385168 – indic, khmer, and tibetan modules don't apply ccmp
+	Bug 385477 – kern feature is not supported in OpenType layout for Tibetan.
+	Bug 433805 - [Atsui] Approximate char/digit width width often 0
+	Bug 436699 – N'Ko support
+	Bug 438705 – Test runs non-existent "/bin/bash" on HP-UX 11.11
+	Bug 438814 – synaptic crash with pango 1.17.0
+	Bug 440603 – Minor ABI change
+
 Overview of changes between 1.16.4 and 1.17.0
 ==============================================
 
