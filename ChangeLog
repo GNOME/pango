@@ -1,3 +1,7 @@
+2007-05-31  Behdad Esfahbod  <behdad@gnome.org>
+
+	* pango/pango-layout.c: Improve docs.
+
 2007-05-28  Behdad Esfahbod  <behdad@gnome.org>
 
 	* === Released 1.17.1 ===

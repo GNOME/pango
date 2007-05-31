@@ -2513,6 +2513,11 @@ pango_layout_get_extents (PangoLayout    *layout,
  * Computes the logical and ink extents of @layout in device units.
  * This function just calls pango_layout_get_extents() followed by
  * pango_extents_to_pixels().
+ *
+ * See pango_extents_to_pixels() for details of how ink and logical rectangles
+ * are rounded to pixels.  In certain situations you may want to use
+ * pango_layout_get_extents() directly and pass the resulting logical
+ * rectangle to pango_extents_to_pixels() as an ink rectangle().
  **/
 void
 pango_layout_get_pixel_extents (PangoLayout *layout,
