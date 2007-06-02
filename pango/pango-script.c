@@ -257,7 +257,7 @@ get_pair_index (gunichar ch)
 }
 
 #define REAL_SCRIPT(script) \
-  ((script) > PANGO_SCRIPT_INHERITED)
+  ((script) > PANGO_SCRIPT_INHERITED && (script) != PANGO_SCRIPT_UNKNOWN)
 
 #define SAME_SCRIPT(script1, script2) \
   (!REAL_SCRIPT (script1) || !REAL_SCRIPT (script2) || (script1) == (script2))

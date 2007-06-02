@@ -1,3 +1,11 @@
+2007-06-02  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 443206 – PANGO_SCRIPT_UNKNOWN should not cause a run break
+	Patch from Martin Hosken
+
+	* pango/pango-script.c: Treat Unknown script like Common and other
+	non-"real" scripts.
+
 2007-05-31  Behdad Esfahbod  <behdad@gnome.org>
 
 	* pango/pango-layout.c: Improve docs.
