@@ -3281,7 +3281,7 @@ process_item (PangoLayout     *layout,
 	      new_item = pango_item_split (item, length, break_num_chars);
 	      
 	      /* reshaping may slightly change the item width.  update
-	       * remaining_with if we are justifying */
+	       * remaining_width if we are justifying */
 
 	      state->remaining_width += break_width;
 

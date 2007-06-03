@@ -1,5 +1,13 @@
 2007-06-03  Behdad Esfahbod  <behdad@gnome.org>
 
+	* docs/tmpl/main.sgml:
+	* pango/pango-layout.c (process_item):
+	* pango/pango-ot-info.c:
+	* pango/pango-renderer.c (pango_renderer_draw_layout_line):
+	Fix various typos reported by Peter Moulder.
+
+2007-06-03  Behdad Esfahbod  <behdad@gnome.org>
+
 	* docs/pango-sections.txt:
 	* docs/tmpl/opentype.sgml:
 	* modules/arabic/arabic-fc.c (arabic_engine_shape):

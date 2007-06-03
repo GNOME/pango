@@ -645,7 +645,7 @@ pango_ot_info_find_feature  (PangoOTInfo      *info,
  * Obtains the list of available scripts.
  *
  * Return value: a newly-allocated zero-terminated array containing the tags of the
- *   available scripts that should be freed using g_free().
+ *   available scripts.  Should be freed using g_free().
  **/
 PangoOTTag *
 pango_ot_info_list_scripts (PangoOTInfo      *info,
@@ -680,7 +680,7 @@ pango_ot_info_list_scripts (PangoOTInfo      *info,
  * Obtains the list of available languages for a given script.
  *
  * Return value: a newly-allocated zero-terminated array containing the tags of the
- *   available languages that should be freed using g_free().
+ *   available languages.  Should be freed using g_free().
  **/
 PangoOTTag *
 pango_ot_info_list_languages (PangoOTInfo      *info,
@@ -732,7 +732,7 @@ pango_ot_info_list_languages (PangoOTInfo      *info,
  * Obtains the list of features for the given language of the given script.
  *
  * Return value: a newly-allocated zero-terminated array containing the tags of the
- * available features that should be freed using g_free().
+ * available features.  Should be freed using g_free().
  **/
 PangoOTTag *
 pango_ot_info_list_features  (PangoOTInfo      *info,

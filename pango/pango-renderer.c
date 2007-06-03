@@ -517,7 +517,7 @@ pango_renderer_draw_layout_line (PangoRenderer    *renderer,
 
       if (run->item->analysis.flags & PANGO_ANALYSIS_FLAG_CENTERED_BASELINE)
 	{
-	  gboolean is_hinted = (logical_rect.y & logical_rect.height & (PANGO_SCALE - 1)) == 0;
+	  gboolean is_hinted = ((logical_rect.y | logical_rect.height) & (PANGO_SCALE - 1)) == 0;
 	  int adjustment = logical_rect.y + logical_rect.height / 2;
 
 	  if (is_hinted)
