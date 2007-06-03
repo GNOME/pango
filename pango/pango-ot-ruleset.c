@@ -95,12 +95,14 @@ pango_ot_ruleset_finalize (GObject *object)
 }
 
 /**
- * pango_ot_ruleset_get_for:
+ * pango_ot_ruleset_get_for_description:
  * @info: a #PangoOTInfo.
  * @desc: a #PangoOTRulesetDescription.
  *
  * Returns a ruleset for the given OpenType info and ruleset
- * description.  The returned ruleset should not be modified.
+ * description.  Rulesets are created on demand using
+ * pango_ot_ruleset_new_from_description().
+ * The returned ruleset should not be modified or destroyed.
  *
  * The static feature map members of @desc should be alive as
  * long as @info is.
@@ -111,8 +113,8 @@ pango_ot_ruleset_finalize (GObject *object)
  * Since: 1.18
  **/
 const PangoOTRuleset *
-pango_ot_ruleset_get_for (PangoOTInfo                     *info,
-			  const PangoOTRulesetDescription *desc)
+pango_ot_ruleset_get_for_description (PangoOTInfo                     *info,
+				      const PangoOTRulesetDescription *desc)
 {
   PangoOTRuleset *ruleset;
   static GQuark rulesets_quark = 0;
@@ -140,28 +142,7 @@ pango_ot_ruleset_get_for (PangoOTInfo                     *info,
 
   if (!ruleset)
     {
-      ruleset = pango_ot_ruleset_new_for (info,
-					  desc->script,
-					  desc->language);
-
-      if (desc->n_static_gsub_features)
-	pango_ot_ruleset_maybe_add_features (ruleset, PANGO_OT_TABLE_GSUB,
-					     desc->static_gsub_features,
-					     desc->n_static_gsub_features);
-      if (desc->n_static_gpos_features)
-	pango_ot_ruleset_maybe_add_features (ruleset, PANGO_OT_TABLE_GPOS,
-					     desc->static_gpos_features,
-					     desc->n_static_gpos_features);
-
-      if (desc->n_other_features)
-        {
-	  pango_ot_ruleset_maybe_add_features (ruleset, PANGO_OT_TABLE_GSUB,
-					       desc->other_features,
-					       desc->n_other_features);
-	  pango_ot_ruleset_maybe_add_features (ruleset, PANGO_OT_TABLE_GPOS,
-					       desc->other_features,
-					       desc->n_other_features);
-	}
+      ruleset = pango_ot_ruleset_new_from_description (info, desc);
 
       g_hash_table_insert (rulesets,
 			   pango_ot_ruleset_description_copy (desc),
@@ -282,6 +263,61 @@ pango_ot_ruleset_new_for (PangoOTInfo       *info,
       /* add required feature of the language */
       pango_ot_ruleset_add_feature (ruleset, table_type,
 				    feature_index, PANGO_OT_ALL_GLYPHS);
+    }
+
+  return ruleset;
+}
+
+/**
+ * pango_ot_ruleset_new_from_description:
+ * @info: a #PangoOTInfo.
+ * @desc: a #PangoOTRulesetDescription.
+ *
+ * Creates a new #PangoOTRuleset for the given OpenType infor and
+ * matching the given ruleset description.
+ *
+ * This is a convenience function that calls pango_ot_ruleset_new_for() and
+ * adds the static GSUB/GPOS features to the resulting ruleset, followed by
+ * adding other features to both GSUB and GPOS.
+ *
+ * The static feature map members of @desc should be alive as
+ * long as @info is.
+ *
+ * Return value: the newly allocated #PangoOTRuleset, which
+ *               should be freed with g_object_unref().
+ *
+ * Since: 1.18
+ **/
+PangoOTRuleset *
+pango_ot_ruleset_new_from_description (PangoOTInfo                     *info,
+				       const PangoOTRulesetDescription *desc)
+{
+  PangoOTRuleset *ruleset;
+
+  g_return_val_if_fail (info != NULL, NULL);
+  g_return_val_if_fail (desc != NULL, NULL);
+
+  ruleset = pango_ot_ruleset_new_for (info,
+				      desc->script,
+				      desc->language);
+
+  if (desc->n_static_gsub_features)
+    pango_ot_ruleset_maybe_add_features (ruleset, PANGO_OT_TABLE_GSUB,
+					 desc->static_gsub_features,
+					 desc->n_static_gsub_features);
+  if (desc->n_static_gpos_features)
+    pango_ot_ruleset_maybe_add_features (ruleset, PANGO_OT_TABLE_GPOS,
+					 desc->static_gpos_features,
+					 desc->n_static_gpos_features);
+
+  if (desc->n_other_features)
+    {
+      pango_ot_ruleset_maybe_add_features (ruleset, PANGO_OT_TABLE_GSUB,
+					   desc->other_features,
+					   desc->n_other_features);
+      pango_ot_ruleset_maybe_add_features (ruleset, PANGO_OT_TABLE_GPOS,
+					   desc->other_features,
+					   desc->n_other_features);
     }
 
   return ruleset;
@@ -627,8 +663,8 @@ pango_ot_ruleset_description_equal (const PangoOTRulesetDescription *desc1,
  *
  * Creates a copy of @desc, which should be freed with
  * pango_ot_ruleset_description_free(). Primarily used internally
- * by pango_ot_ruleset_get_for() to cache rulesets for ruleset
- * descriptions.
+ * by pango_ot_ruleset_get_for_description() to cache rulesets for
+ * ruleset descriptions.
  *
  * Return value: the newly allocated #PangoOTRulesetDescription, which
  *               should be freed with pango_ot_ruleset_description_free().

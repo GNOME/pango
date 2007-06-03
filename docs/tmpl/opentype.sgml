@@ -82,7 +82,8 @@ The #PangoOTRuleset structure holds all the information needed
 to build a complete #PangoOTRuleset from an OpenType font.
 The main use of this struct is to act as the key for a per-font
 hash of rulesets.  The user populates a ruleset description and
-gets the ruleset using pango_ot_ruleset_get_for().
+gets the ruleset using pango_ot_ruleset_get_for_description()
+or create a new one using pango_ot_ruleset_new_from_description().
 </para>
 
 @script: a #PangoScript.
@@ -348,7 +349,7 @@ is not found.
 @glyphs: 
 
 
-<!-- ##### FUNCTION pango_ot_ruleset_get_for ##### -->
+<!-- ##### FUNCTION pango_ot_ruleset_get_for_description ##### -->
 <para>
 
 </para>
@@ -375,6 +376,16 @@ is not found.
 @info: 
 @script: 
 @language: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_ot_ruleset_new_from_description ##### -->
+<para>
+
+</para>
+
+@info: 
+@desc: 
 @Returns: 
 
 

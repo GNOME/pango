@@ -268,7 +268,7 @@ indic_engine_shape (PangoEngineShape *engine,
   desc.n_other_features = 0;
   desc.other_features = NULL;
 
-  ruleset = pango_ot_ruleset_get_for (pango_ot_info_get (face), &desc);
+  ruleset = pango_ot_ruleset_get_for_description (pango_ot_info_get (face), &desc);
 
   /* do gsub processing */
   pango_ot_ruleset_substitute (ruleset, buffer);

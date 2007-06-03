@@ -134,12 +134,14 @@ void           pango_ot_buffer_output     (const PangoOTBuffer  *buffer,
 void           pango_ot_buffer_set_zero_width_marks (PangoOTBuffer     *buffer,
 						     gboolean           zero_width_marks);
 
-const PangoOTRuleset *pango_ot_ruleset_get_for (PangoOTInfo                     *info,
-						const PangoOTRulesetDescription *desc);
+const PangoOTRuleset *pango_ot_ruleset_get_for_description (PangoOTInfo                     *info,
+							    const PangoOTRulesetDescription *desc);
 PangoOTRuleset *pango_ot_ruleset_new (PangoOTInfo       *info);
 PangoOTRuleset *pango_ot_ruleset_new_for (PangoOTInfo       *info,
 					  PangoScript        script,
 					  PangoLanguage     *language);
+PangoOTRuleset *pango_ot_ruleset_new_from_description (PangoOTInfo                     *info,
+						       const PangoOTRulesetDescription *desc);
 void            pango_ot_ruleset_add_feature (PangoOTRuleset   *ruleset,
 					      PangoOTTableType  table_type,
 					      guint             feature_index,

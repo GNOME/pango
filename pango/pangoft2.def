@@ -63,12 +63,13 @@ EXPORTS
 	pango_ot_ruleset_description_free
 	pango_ot_ruleset_description_hash
 	pango_ot_ruleset_get_feature_count
-	pango_ot_ruleset_get_for
+	pango_ot_ruleset_get_for_description
 	pango_ot_ruleset_get_type
 	pango_ot_ruleset_maybe_add_feature
 	pango_ot_ruleset_maybe_add_features
 	pango_ot_ruleset_new
 	pango_ot_ruleset_new_for
+	pango_ot_ruleset_new_from_description
 	pango_ot_ruleset_position
 	pango_ot_ruleset_substitute
 	pango_ot_tag_from_language

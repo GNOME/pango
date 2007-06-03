@@ -1,3 +1,24 @@
+2007-06-03  Behdad Esfahbod  <behdad@gnome.org>
+
+	* docs/pango-sections.txt:
+	* docs/tmpl/opentype.sgml:
+	* modules/arabic/arabic-fc.c (arabic_engine_shape):
+	* modules/basic/basic-fc.c (basic_engine_shape):
+	* modules/hebrew/hebrew-fc.c (hebrew_engine_shape):
+	* modules/indic/indic-fc.c (indic_engine_shape):
+	* modules/khmer/khmer-fc.c (khmer_engine_shape):
+	* modules/syriac/syriac-fc.c (syriac_engine_shape):
+	* modules/thai/thai-fc.c (thai_engine_shape):
+	* modules/tibetan/tibetan-fc.c (tibetan_engine_shape):
+	* pango/pango-ot-ruleset.c (pango_ot_ruleset_get_for_description),
+	(pango_ot_ruleset_new_from_description):
+	* pango/pango-ot.h:
+	* pango/pangoft2.def:
+	Rename pango_ot_ruleset_get_for() to
+	pango_ot_ruleset_get_for_description().
+
+	New engine API: pango_ot_ruleset_new_from_description().
+
 2007-06-02  Behdad Esfahbod  <behdad@gnome.org>
 
 	Bug 443206 – PANGO_SCRIPT_UNKNOWN should not cause a run break
