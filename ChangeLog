@@ -1,3 +1,11 @@
+2007-06-04  Behdad Esfahbod  <behdad@gnome.org>
+
+	* === Released 1.17.2 ===
+
+	* configure.in: Version 1.17.2
+
+	* NEWS: Updated.
+
 2007-06-03  Behdad Esfahbod  <behdad@gnome.org>
 
 	* docs/tmpl/main.sgml:

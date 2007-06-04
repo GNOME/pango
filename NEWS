@@ -1,3 +1,20 @@
+Overview of changes between 1.17.1 and 1.17.2
+==============================================
+- Rename recently added pango_ot_ruleset_get_for() to
+  pango_ot_ruleset_get_for_description().
+
+- New engine API: pango_ot_ruleset_new_from_description().
+
+- Treat Unknown script like Common and other non-"real" scripts.
+  [Martin Hosken]
+
+- Misc typo fixes [Peter Moulder]
+
+- Bugs fixed in this release:
+
+	Bug 443206 – PANGO_SCRIPT_UNKNOWN should not cause a run break
+	Patch from Martin Hosken
+
 Overview of changes between 1.17.0 and 1.17.1
 ==============================================
 
