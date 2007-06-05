@@ -103,8 +103,9 @@ fallback_engine_shape (PangoEngineShape *engine,
 		       PangoGlyphString *glyphs)
 {
   int n_chars;
-  int i;
   const char *p;
+  int cluster = 0;
+  int i;
 
   n_chars = text ? g_utf8_strlen (text, length) : 0;
 
@@ -113,8 +114,19 @@ fallback_engine_shape (PangoEngineShape *engine,
   p = text;
   for (i = 0; i < n_chars; i++)
     {
+      gunichar wc;
+      PangoGlyph glyph;
       PangoRectangle logical_rect;
-      PangoGlyph glyph = g_utf8_get_char (p) | PANGO_GLYPH_UNKNOWN_FLAG;
+
+      wc = g_utf8_get_char (p);
+
+      if (g_unichar_type (wc) != G_UNICODE_NON_SPACING_MARK)
+	cluster = p - text;
+
+      if (pango_is_zero_width (wc))
+	glyph = PANGO_GLYPH_EMPTY;
+      else
+	glyph = PANGO_GET_UNKNOWN_GLYPH (wc);
 
       pango_font_get_glyph_extents (analysis->font, glyph, NULL, &logical_rect);
 
@@ -124,7 +136,7 @@ fallback_engine_shape (PangoEngineShape *engine,
       glyphs->glyphs[i].geometry.y_offset = 0;
       glyphs->glyphs[i].geometry.width = logical_rect.width;
 
-      glyphs->log_clusters[i] = p - text;
+      glyphs->log_clusters[i] = cluster;
 
       p = g_utf8_next_char (p);
     }

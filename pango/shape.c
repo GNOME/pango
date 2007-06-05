@@ -46,6 +46,8 @@ pango_shape (const gchar      *text,
   int i;
   int last_cluster;
 
+  glyphs->num_glyphs = 0;
+
   if (G_LIKELY (PANGO_IS_ENGINE_SHAPE (analysis->shape_engine) && PANGO_IS_FONT (analysis->font)))
     {
       _pango_engine_shape_shape (analysis->shape_engine, analysis->font,

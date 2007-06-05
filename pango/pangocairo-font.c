@@ -241,7 +241,7 @@ _pango_cairo_font_get_hex_box_info (PangoCairoFont *cfont)
     context = pango_cairo_font_map_create_context ((PangoCairoFontMap *) (fontmap));
 
     pango_context_set_matrix (context, &pango_ctm);
-    pango_context_set_language (context, pango_language_from_string ("en"));
+    pango_context_set_language (context, pango_script_get_sample_language (PANGO_SCRIPT_LATIN));
     pango_cairo_context_set_font_options (context, font_options);
     mini_font = pango_font_map_load_font (fontmap, context, desc);
 
@@ -265,6 +265,12 @@ _pango_cairo_font_get_hex_box_info (PangoCairoFont *cfont)
     }
 
   cairo_scaled_font_extents (scaled_font, &font_extents);
+  if (font_extents.ascent + font_extents.descent <= 0)
+    {
+      font_extents.ascent = PANGO_UNKNOWN_GLYPH_HEIGHT;
+      font_extents.descent = 0;
+    }
+
   pad = (font_extents.ascent + font_extents.descent) / 43;
   pad = MIN (pad, mini_size);
 

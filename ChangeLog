@@ -1,5 +1,18 @@
 2007-06-04  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango/shape.c (pango_shape): Zero glyphs->num_glyphs before
+	calling into shape engine.
+
+	* pango/pango-engine.c (fallback_engine_shape): Improve, to support
+	clusters and what not.
+
+	* pango/pangocairo-font.c (_pango_cairo_font_get_hex_box_info):
+	Use "pango_script_get_sample_language (PANGO_SCRIPT_LATIN)" instead
+	of hardcoding "en".
+	Handle cairo_scaled_font_extents() failure.
+
+2007-06-04  Behdad Esfahbod  <behdad@gnome.org>
+
 	* === Released 1.17.2 ===
 
 	* configure.in: Version 1.17.2
