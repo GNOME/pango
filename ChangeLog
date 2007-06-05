@@ -1,3 +1,13 @@
+2007-06-05  Behdad Esfahbod  <behdad@gnome.org>
+
+	* pango/fonts.c (pango_font_description_merge),
+	(pango_font_description_merge_static),
+	(pango_font_description_copy),
+	(pango_font_description_copy_static),
+	(pango_font_description_hash), (pango_font_description_to_string),
+	(pango_font_description_to_filename):
+	Add missing g_return_if_fail()s.  Pointed out by fcrozat.
+
 2007-06-04  Behdad Esfahbod  <behdad@gnome.org>
 
 	* pango/shape.c (pango_shape): Zero glyphs->num_glyphs before

@@ -535,7 +535,12 @@ pango_font_description_merge (PangoFontDescription       *desc,
 			      const PangoFontDescription *desc_to_merge,
 			      gboolean                    replace_existing)
 {
-  gboolean family_merged = desc_to_merge->family_name && (replace_existing || !desc->family_name);
+  gboolean family_merged;
+
+  g_return_if_fail (desc != NULL);
+  g_return_if_fail (desc_to_merge != NULL);
+
+  family_merged = desc_to_merge->family_name && (replace_existing || !desc->family_name);
 
   pango_font_description_merge_static (desc, desc_to_merge, replace_existing);
 
@@ -567,6 +572,7 @@ pango_font_description_merge_static (PangoFontDescription       *desc,
   PangoFontMask new_mask;
 
   g_return_if_fail (desc != NULL);
+  g_return_if_fail (desc_to_merge != NULL);
 
   if (replace_existing)
     new_mask = desc_to_merge->mask;
@@ -660,7 +666,11 @@ pango_font_description_better_match (const PangoFontDescription *desc,
 PangoFontDescription *
 pango_font_description_copy  (const PangoFontDescription  *desc)
 {
-  PangoFontDescription *result = g_slice_new (PangoFontDescription);
+  PangoFontDescription *result;
+
+  g_return_val_if_fail (desc != NULL, NULL);
+
+  result = g_slice_new (PangoFontDescription);
 
   *result = *desc;
 
@@ -688,7 +698,11 @@ pango_font_description_copy  (const PangoFontDescription  *desc)
 PangoFontDescription *
 pango_font_description_copy_static (const PangoFontDescription *desc)
 {
-  PangoFontDescription *result = g_slice_new (PangoFontDescription);
+  PangoFontDescription *result;
+
+  g_return_val_if_fail (desc != NULL, NULL);
+
+  result = g_slice_new (PangoFontDescription);
 
   *result = *desc;
   if (result->family_name)
@@ -762,6 +776,8 @@ pango_font_description_hash (const PangoFontDescription *desc)
 {
   guint hash = 0;
 
+  g_return_val_if_fail (desc != NULL, 0);
+
   if (desc->family_name)
     hash = case_insensitive_hash (desc->family_name);
   hash ^= desc->size;
@@ -777,7 +793,7 @@ pango_font_description_hash (const PangoFontDescription *desc)
 
 /**
  * pango_font_description_free:
- * @desc: a #PangoFontDescription
+ * @desc: a #PangoFontDescription, or %NULL
  *
  * Frees a font description.
  **/
@@ -795,7 +811,7 @@ pango_font_description_free  (PangoFontDescription  *desc)
 
 /**
  * pango_font_descriptions_free:
- * @descs: a pointer to an array of #PangoFontDescription
+ * @descs: a pointer to an array of #PangoFontDescription, or %NULL
  * @n_descs: number of font descriptions in @descs
  *
  * Frees a list of font descriptions from pango_font_map_list_fonts()
@@ -1085,7 +1101,11 @@ append_field (GString *str, const FieldMap *map, int n_elements, int val)
 char *
 pango_font_description_to_string (const PangoFontDescription  *desc)
 {
-  GString *result = g_string_new (NULL);
+  GString *result;
+
+  g_return_val_if_fail (desc != NULL, NULL);
+
+  result = g_string_new (NULL);
 
   if (desc->family_name && desc->mask & PANGO_FONT_MASK_FAMILY)
     {
@@ -1151,8 +1171,12 @@ pango_font_description_to_string (const PangoFontDescription  *desc)
 char *
 pango_font_description_to_filename (const PangoFontDescription  *desc)
 {
-  char *result = pango_font_description_to_string (desc);
+  char *result;
   char *p;
+
+  g_return_val_if_fail (desc != NULL, NULL);
+
+  result = pango_font_description_to_string (desc);
 
   p = result;
   while (*p)
