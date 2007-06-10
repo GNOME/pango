@@ -128,7 +128,7 @@ _pango_cairo_renderer_draw_unknown_glyph (PangoCairoRenderer *crenderer,
   int rows, cols;
   char hexbox_string[2] = {0, 0};
   double temp_x, temp_y;
-  PangoCairoHexBoxInfo *hbi;
+  PangoCairoFontHexBoxInfo *hbi;
   gunichar ch;
 
   cairo_save (crenderer->cr);
@@ -136,7 +136,7 @@ _pango_cairo_renderer_draw_unknown_glyph (PangoCairoRenderer *crenderer,
 
   hbi = _pango_cairo_font_get_hex_box_info ((PangoCairoFont *)font);
 
-  if (!hbi || !_pango_cairo_font_install ((PangoCairoFont *) (hbi->font), crenderer->cr))
+  if (!hbi || !_pango_cairo_font_install ((PangoFont *)(hbi->font), crenderer->cr))
     {
       _pango_cairo_renderer_draw_box_glyph (crenderer, gi, cx, cy);
       goto done;
@@ -204,7 +204,7 @@ pango_cairo_renderer_draw_glyphs (PangoRenderer     *renderer,
   if (!crenderer->do_path)
     set_color (crenderer, PANGO_RENDER_PART_FOREGROUND);
 
-  if (!_pango_cairo_font_install ((PangoCairoFont *) (font), crenderer->cr))
+  if (!_pango_cairo_font_install (font, crenderer->cr))
     {
       for (i = 0; i < glyphs->num_glyphs; i++)
 	{
@@ -454,8 +454,6 @@ static PangoCairoRenderer *
 acquire_renderer (gboolean *free_renderer)
 {
   PangoCairoRenderer *renderer;
-
-  /* renderer = _pango_cairo_font_map_get_renderer (PANGO_CAIRO_FONT_MAP (fontmap)); */
 
   if (G_LIKELY (G_TRYLOCK (cached_renderer)))
     {

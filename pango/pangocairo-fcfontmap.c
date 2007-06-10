@@ -52,23 +52,11 @@ pango_cairo_fc_font_map_get_resolution_cairo (PangoCairoFontMap *cfontmap)
   return cffontmap->dpi;
 }
 
-static PangoRenderer *
-pango_cairo_fc_font_map_get_renderer (PangoCairoFontMap *cfontmap)
-{
-  PangoCairoFcFontMap *cffontmap = (PangoCairoFcFontMap *) (cfontmap);
-
-  if (!cffontmap->renderer)
-    cffontmap->renderer = g_object_new (PANGO_TYPE_CAIRO_RENDERER, NULL);
-
-  return cffontmap->renderer;
-}
-
 static void
 cairo_font_map_iface_init (PangoCairoFontMapIface *iface)
 {
   iface->set_resolution = pango_cairo_fc_font_map_set_resolution;
   iface->get_resolution = pango_cairo_fc_font_map_get_resolution_cairo;
-  iface->get_renderer = pango_cairo_fc_font_map_get_renderer;
 }
 
 G_DEFINE_TYPE_WITH_CODE (PangoCairoFcFontMap, pango_cairo_fc_font_map, PANGO_TYPE_FC_FONT_MAP,

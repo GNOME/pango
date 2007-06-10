@@ -181,19 +181,3 @@ pango_cairo_font_map_create_context (PangoCairoFontMap *fontmap)
 
   return context;
 }
-
-/**
- * _pango_cairo_font_map_get_renderer:
- * @fontmap: a #PangoCairoFontmap
- *
- * Gets the singleton #PangoCairoRenderer for this fontmap.
- *
- * Return value: the singleton renderer
- **/
-PangoRenderer *
-_pango_cairo_font_map_get_renderer (PangoCairoFontMap *fontmap)
-{
-  g_return_val_if_fail (PANGO_IS_CAIRO_FONT_MAP (fontmap), NULL);
-
-  return (* PANGO_CAIRO_FONT_MAP_GET_IFACE (fontmap)->get_renderer) (fontmap);
-}

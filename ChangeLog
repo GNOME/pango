@@ -1,3 +1,23 @@
+2007-06-09  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 337593 – move glyph extents code (and cache) from
+	pangocairo-*font.c into pangocairo-font.c
+
+	* pango/pangocairo-fontmap.c:
+	* pango/pangocairo-fcfontmap.c:
+	Remove per-fontmap renderer.  We've not been using it for a while
+	and there is no reason to use it.
+
+	* pango/pangocairo-font.c
+	* pango/pangocairo-fcfont.c:
+	Most most code (including glyph extents caching) from fcfont.c to
+	font.c.  Simplifies individual backends a lot. ATSUI and Win32
+	cairo backends should adapt.
+
+	* pango/pangocairo-render.c
+	* pango/pangocairo-private.h:
+	Update to reflect above changes.
+
 2007-06-05  Behdad Esfahbod  <behdad@gnome.org>
 
 	* pango/fonts.c (pango_font_description_merge),

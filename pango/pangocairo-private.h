@@ -27,6 +27,7 @@
 
 G_BEGIN_DECLS
 
+
 #define PANGO_CAIRO_FONT_MAP_GET_IFACE(obj)  (G_TYPE_INSTANCE_GET_INTERFACE ((obj), PANGO_TYPE_CAIRO_FONT_MAP, PangoCairoFontMapIface))
 
 typedef struct _PangoCairoFontMapIface PangoCairoFontMapIface;
@@ -38,10 +39,8 @@ struct _PangoCairoFontMapIface
   void           (*set_resolution) (PangoCairoFontMap *fontmap,
 				    double             dpi);
   double         (*get_resolution) (PangoCairoFontMap *fontmap);
-  PangoRenderer *(*get_renderer)   (PangoCairoFontMap *fontmap);
 };
 
-PangoRenderer *_pango_cairo_font_map_get_renderer (PangoCairoFontMap *cfontmap);
 
 #define PANGO_CAIRO_FONT_GET_IFACE(obj) (G_TYPE_INSTANCE_GET_INTERFACE ((obj), PANGO_TYPE_CAIRO_FONT, PangoCairoFontIface))
 
@@ -49,27 +48,82 @@ PangoRenderer *_pango_cairo_font_map_get_renderer (PangoCairoFontMap *cfontmap);
 #define PANGO_CAIRO_FONT(object)    (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_TYPE_CAIRO_FONT, PangoCairoFont))
 #define PANGO_IS_CAIRO_FONT(object) (G_TYPE_CHECK_INSTANCE_TYPE ((object), PANGO_TYPE_CAIRO_FONT))
 
-typedef struct _PangoCairoFont      PangoCairoFont;
-typedef struct _PangoCairoFontIface PangoCairoFontIface;
+typedef struct _PangoCairoFont                       PangoCairoFont;
+typedef struct _PangoCairoFontIface                  PangoCairoFontIface;
+typedef struct _PangoCairoFontPrivate                PangoCairoFontPrivate;
+typedef struct _PangoCairoFontHexBoxInfo             PangoCairoFontHexBoxInfo;
+typedef struct _PangoCairoFontPrivateScaledFontData  PangoCairoFontPrivateScaledFontData;
+typedef struct _PangoCairoFontGlyphExtentsCacheEntry PangoCairoFontGlyphExtentsCacheEntry;
+
+struct _PangoCairoFontHexBoxInfo
+{
+  PangoCairoFont *font;
+  int rows;
+  double digit_width;
+  double digit_height;
+  double pad_x;
+  double pad_y;
+  double line_width;
+  double box_descent;
+  double box_height;
+};
+
+struct _PangoCairoFontPrivateScaledFontData
+{
+  cairo_matrix_t font_matrix;
+  cairo_matrix_t ctm;
+  cairo_font_options_t *options;
+};
+
+struct _PangoCairoFontPrivate
+{
+  PangoCairoFont *cfont;
+   
+  PangoCairoFontPrivateScaledFontData *data;
+
+  cairo_scaled_font_t *scaled_font;
+  PangoCairoFontHexBoxInfo *hbi;
+
+  gboolean is_hinted;
+  PangoGravity gravity;
+
+  PangoRectangle font_extents;
+  PangoCairoFontGlyphExtentsCacheEntry *glyph_extents_cache;
+
+  GSList *metrics_by_lang;
+};
 
 struct _PangoCairoFontIface
 {
   GTypeInterface g_iface;
 
-  gboolean (*install) (PangoCairoFont *font,
-		       cairo_t        *cr);
+  cairo_font_face_t *(*create_font_face) (PangoCairoFont *cfont);
+  PangoFontMetrics *(*create_metrics_for_context) (PangoCairoFont *cfont,
+						   PangoContext   *context);
 
-  cairo_font_face_t *(*get_font_face) (PangoCairoFont *font);
-
-  cairo_scaled_font_t *(*get_scaled_font) (PangoCairoFont *font);
+  gssize cf_priv_offset;
 };
 
 GType pango_cairo_font_get_type (void);
 
-gboolean _pango_cairo_font_install (PangoCairoFont *font,
-				    cairo_t        *cr);
-cairo_font_face_t *_pango_cairo_font_get_font_face (PangoCairoFont *font);
-cairo_scaled_font_t *_pango_cairo_font_get_scaled_font (PangoCairoFont *font);
+gboolean _pango_cairo_font_install (PangoFont *font,
+				    cairo_t   *cr);
+PangoFontMetrics * _pango_cairo_font_get_metrics (PangoFont     *font,
+						  PangoLanguage *language);
+PangoCairoFontHexBoxInfo *_pango_cairo_font_get_hex_box_info (PangoCairoFont *cfont);
+
+void _pango_cairo_font_private_initialize (PangoCairoFontPrivate      *cf_priv,
+					   PangoCairoFont             *font,
+					   PangoContext               *context,
+					   const PangoFontDescription *desc,
+					   const cairo_matrix_t       *font_matrix);
+void _pango_cairo_font_private_finalize (PangoCairoFontPrivate *cf_priv);
+cairo_scaled_font_t *_pango_cairo_font_private_get_scaled_font (PangoCairoFontPrivate *cf_priv);
+gboolean _pango_cairo_font_private_is_metrics_hinted (PangoCairoFontPrivate *cf_priv);
+void _pango_cairo_font_private_get_glyph_extents (PangoCairoFontPrivate *cf_priv,
+						  PangoGlyph             glyph,
+						  PangoRectangle        *ink_rect,
+						  PangoRectangle        *logical_rect);
 
 #define PANGO_TYPE_CAIRO_RENDERER            (pango_cairo_renderer_get_type())
 #define PANGO_CAIRO_RENDERER(object)         (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_TYPE_CAIRO_RENDERER, PangoCairoRenderer))
@@ -79,35 +133,13 @@ typedef struct _PangoCairoRenderer PangoCairoRenderer;
 
 GType pango_cairo_renderer_get_type    (void);
 
+
 const cairo_font_options_t *_pango_cairo_context_get_merged_font_options (PangoContext *context);
 
-
-typedef struct _PangoCairoHexBoxInfo PangoCairoHexBoxInfo;
-
-struct _PangoCairoHexBoxInfo
-{
-	PangoFont *font;
-	int rows;
-	double digit_width;
-	double digit_height;
-	double pad_x;
-	double pad_y;
-	double line_width;
-	double box_descent;
-	double box_height;
-};
-
-PangoCairoHexBoxInfo *_pango_cairo_font_get_hex_box_info (PangoCairoFont *font);
-
-void _pango_cairo_get_glyph_extents_missing (PangoCairoFont *cfont,
-					     PangoGlyph      glyph,
-					     PangoRectangle *ink_rect,
-					     PangoRectangle *logical_rect);
 
 typedef struct _PangoCairoWarningHistory PangoCairoWarningHistory;
 
 struct _PangoCairoWarningHistory {
-  guint font_install		: 1;
   guint font_get_scaled_font	: 1;
 };
 
