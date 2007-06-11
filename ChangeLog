@@ -1,5 +1,10 @@
 2007-06-11  Behdad Esfahbod  <behdad@gnome.org>
 
+	* docs/pango_markup.sgml: Add 'gravity', 'gravity_hint', and
+	'letter_spacing' span attributes.
+
+2007-06-11  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 438801 – underline should add "error" type.
 
 	* docs/pango_markup.sgml: Add "error" underline type to docs.

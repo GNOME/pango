@@ -170,6 +170,24 @@ A language code, indicating the text language
 </para></listitem>
 </varlistentry>
 
+<varlistentry><term>letter_spacing</term>
+<listitem><para>
+Inter-letter spacing in 1024ths of a point.
+</para></listitem>
+</varlistentry>
+
+<varlistentry><term>gravity</term>
+<listitem><para>
+One of 'south', 'east', 'north', 'west', 'auto'.
+</para></listitem>
+</varlistentry>
+
+<varlistentry><term>gravity_hint</term>
+<listitem><para>
+One of 'natural', 'strong', 'line'.
+</para></listitem>
+</varlistentry>
+
 </variablelist>
 
 </para>
