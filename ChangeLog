@@ -1,5 +1,10 @@
 2007-06-11  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango/pangocairo-fontmap.c: Make sure all enabled font backends
+	included (reported by Vincent Isambart).
+
+2007-06-11  Behdad Esfahbod  <behdad@gnome.org>
+
 	* docs/pango_markup.sgml: Add 'gravity', 'gravity_hint', and
 	'letter_spacing' span attributes.
 

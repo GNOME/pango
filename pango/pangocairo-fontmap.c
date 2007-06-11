@@ -27,9 +27,11 @@
 
 #if defined (HAVE_CAIRO_ATSUI)
 #  include "pangocairo-atsui.h"
-#elif defined (HAVE_CAIRO_WIN32)
+#endif
+#if defined (HAVE_CAIRO_WIN32)
 #  include "pangocairo-win32.h"
-#elif defined (HAVE_CAIRO_FREETYPE)
+#endif
+#if defined (HAVE_CAIRO_FREETYPE)
 #  include "pangocairo-fc.h"
 #endif
 
