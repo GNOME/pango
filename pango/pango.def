@@ -132,6 +132,7 @@ EXPORTS
 	pango_font_face_describe
 	pango_font_face_get_face_name
 	pango_font_face_get_type
+	pango_font_face_is_synthesized
 	pango_font_face_list_sizes
 	pango_font_family_get_name
 	pango_font_family_get_type

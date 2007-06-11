@@ -1,3 +1,22 @@
+2007-06-11  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 440588 – Add pango_font_face_is_synthesized()
+
+	* pango/pango-font.h:
+	* pango/fonts.c:
+	New PangoFontFace method is_synthesized.
+	New public API:
+
+		pango_font_face_is_synthesized()
+
+	* pango/pangofc-fontmap.c (pango_fc_face_is_synthesized):
+	Implement new method.
+
+	* docs/pango-sections.txt:
+	* docs/tmpl/fonts.sgml:
+	* pango/pango.def:
+	Update.
+
 2007-06-12  Richard Hult  <richard@imendio.com>
 
 	* pango/pangocairo-atsuifont.c:

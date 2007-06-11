@@ -1806,15 +1806,11 @@ pango_fc_face_list_sizes (PangoFontFace  *face,
 }
 
 static gboolean
-pango_fc_family_is_monospace (PangoFontFamily *family)
+pango_fc_face_is_synthesized (PangoFontFace *face)
 {
-  PangoFcFamily *fcfamily = PANGO_FC_FAMILY (family);
+  PangoFcFace *fcface = PANGO_FC_FACE (face);
 
-  return fcfamily->spacing == FC_MONO ||
-#ifdef FC_DUAL
-	 fcfamily->spacing == FC_DUAL ||
-#endif
-	 fcfamily->spacing == FC_CHARCELL;
+  return fcface->fake;
 }
 
 static void
@@ -1823,6 +1819,7 @@ pango_fc_face_class_init (PangoFontFaceClass *class)
   class->describe = pango_fc_face_describe;
   class->get_face_name = pango_fc_face_get_face_name;
   class->list_sizes = pango_fc_face_list_sizes;
+  class->is_synthesized = pango_fc_face_is_synthesized;
 }
 
 static GType
@@ -2000,6 +1997,18 @@ pango_fc_family_get_name (PangoFontFamily  *family)
   PangoFcFamily *fcfamily = PANGO_FC_FAMILY (family);
 
   return fcfamily->family_name;
+}
+
+static gboolean
+pango_fc_family_is_monospace (PangoFontFamily *family)
+{
+  PangoFcFamily *fcfamily = PANGO_FC_FAMILY (family);
+
+  return fcfamily->spacing == FC_MONO ||
+#ifdef FC_DUAL
+	 fcfamily->spacing == FC_DUAL ||
+#endif
+	 fcfamily->spacing == FC_CHARCELL;
 }
 
 static void

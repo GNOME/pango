@@ -1773,6 +1773,29 @@ pango_font_face_describe (PangoFontFace *face)
 }
 
 /**
+ * pango_font_face_is_synthesized:
+ * @face: a #PangoFontFace
+ *
+ * Returns whether a #PangoFontFace is synthesized by the underlying
+ * font rendering engine from another face, perhaps by shearing, emboldening,
+ * or lightening it.
+ *
+ * Return value: whether @face is synthesized.
+ *
+ * Since: 1.18
+ **/
+gboolean
+pango_font_face_is_synthesized (PangoFontFace  *face)
+{
+  g_return_val_if_fail (PANGO_IS_FONT_FACE (face), NULL);
+
+  if (PANGO_FONT_FACE_GET_CLASS (face)->is_synthesized != NULL)
+    return PANGO_FONT_FACE_GET_CLASS (face)->is_synthesized (face);
+  else
+    return FALSE;
+}
+
+/**
  * pango_font_face_get_face_name:
  * @face: a #PangoFontFace.
  *

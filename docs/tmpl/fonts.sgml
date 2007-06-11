@@ -773,6 +773,15 @@ Returns %TRUE if @object is a #PangoFontFace.
 @Returns: 
 
 
+<!-- ##### FUNCTION pango_font_face_is_synthesized ##### -->
+<para>
+
+</para>
+
+@face: 
+@Returns: 
+
+
 <!-- ##### STRUCT PangoFontMap ##### -->
 <para>
 The #PangoFontMap represents the set of fonts available for a
