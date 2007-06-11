@@ -351,6 +351,14 @@ pango_atsui_face_finalize (GObject *object)
   G_OBJECT_CLASS (pango_atsui_face_parent_class)->finalize (object);
 }
 
+static gboolean
+pango_atsui_face_is_synthesized (PangoFontFace *face)
+{
+  PangoATSUIFace *atsuiface = PANGO_ATSUI_FACE (face);
+
+  return atsuiface->synthetic_italic;
+}
+
 static void
 pango_atsui_face_class_init (PangoFontFaceClass *class)
 {
@@ -363,6 +371,7 @@ pango_atsui_face_class_init (PangoFontFaceClass *class)
   class->describe = pango_atsui_face_describe;
   class->get_face_name = pango_atsui_face_get_face_name;
   class->list_sizes = pango_atsui_face_list_sizes;
+  class->is_synthesized = pango_atsui_face_is_synthesized;
 }
 
 GType

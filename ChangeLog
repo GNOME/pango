@@ -1,3 +1,8 @@
+2007-06-12  Richard Hult  <richard@imendio.com>
+
+	* pango/pangoatsui-fontmap.c (pango_atsui_face_is_synthesized):
+	Implement is_synthesized for the ATSUI backend.
+
 2007-06-11  Behdad Esfahbod  <behdad@gnome.org>
 
 	Bug 440588 – Add pango_font_face_is_synthesized()
