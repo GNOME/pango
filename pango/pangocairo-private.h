@@ -39,6 +39,8 @@ struct _PangoCairoFontMapIface
   void           (*set_resolution) (PangoCairoFontMap *fontmap,
 				    double             dpi);
   double         (*get_resolution) (PangoCairoFontMap *fontmap);
+
+  cairo_font_type_t (*get_font_type) (PangoCairoFontMap *fontmap);
 };
 
 

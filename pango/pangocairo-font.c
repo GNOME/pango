@@ -140,8 +140,20 @@ done:
   return cf_priv->scaled_font;
 }
 
-static cairo_scaled_font_t *
-_pango_cairo_font_get_scaled_font (PangoFont *cfont)
+/**
+ * pango_cairo_font_get_scaled_font:
+ * @font: a #PangoFont from a #PangoCairoFontMap
+ *
+ * Gets the #cairo_scaled_font_t used by @font.
+ * The scaled font can be referenced and ketp using
+ * cairo_scaled_font_reference().
+ *
+ * Return value: the #cairo_scaled_font_t used by @font
+ *
+ * Since: 1.18
+ **/
+cairo_scaled_font_t *
+pango_cairo_font_get_scaled_font (PangoFont *cfont)
 {
   PangoCairoFontPrivate *cf_priv;
 
@@ -150,7 +162,7 @@ _pango_cairo_font_get_scaled_font (PangoFont *cfont)
       if (!_pango_cairo_warning_history.font_get_scaled_font)
 	{
 	  _pango_cairo_warning_history.font_get_scaled_font = TRUE;
-	  g_warning ("_pango_cairo_font_get_scaled_font called with bad font, expect ugly output");
+	  g_warning ("pango_cairo_font_get_scaled_font called with bad font, expect ugly output");
 	}
       return NULL;
     }
@@ -174,7 +186,7 @@ gboolean
 _pango_cairo_font_install (PangoFont *font,
 			   cairo_t   *cr)
 {
-  cairo_scaled_font_t *scaled_font = _pango_cairo_font_get_scaled_font (font);
+  cairo_scaled_font_t *scaled_font = pango_cairo_font_get_scaled_font (font);
 
   if (G_UNLIKELY (scaled_font == NULL || cairo_scaled_font_status (scaled_font) != CAIRO_STATUS_SUCCESS))
     return FALSE;
@@ -392,7 +404,7 @@ _pango_cairo_font_private_get_hex_box_info (PangoCairoFontPrivate *cf_priv)
   cairo_font_options_destroy (font_options);
 
 
-  scaled_mini_font = _pango_cairo_font_get_scaled_font (mini_font);
+  scaled_mini_font = pango_cairo_font_get_scaled_font (mini_font);
 
   for (i = 0 ; i < 16 ; i++)
     {

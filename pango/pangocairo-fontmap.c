@@ -95,7 +95,52 @@ pango_cairo_font_map_new (void)
   return g_object_new (PANGO_TYPE_CAIRO_WIN32_FONT_MAP, NULL);
 #elif defined(HAVE_CAIRO_FREETYPE)
   return g_object_new (PANGO_TYPE_CAIRO_FC_FONT_MAP, NULL);
+#else
+  g_assert_not_reached ();
+  return NULL;
 #endif
+}
+
+/**
+ * pango_cairo_font_map_new_for_font_type:
+ *
+ * Creates a new #PangoCairoFontMap object of the type suitable
+ * to be used with cairo font backend of type @fonttype.
+ *
+ * In most cases one should simply use @pango_cairo_font_map_new(),
+ * or in fact in most of those cases, just use
+ * @pango_cairo_font_map_get_default().
+ *
+ * Return value: the newly allocated #PangoFontMap of suitable type
+ *               which should be freed with g_object_unref(),
+ *               or %NULL if the requested cairo font backend is
+ *               not supported.
+ *
+ * Since: 1.18
+ **/
+PangoFontMap *
+pango_cairo_font_map_new_for_font_type (cairo_font_type_t fonttype)
+{
+  /* Make sure that the type system is initialized */
+  g_type_init ();
+
+  switch (fonttype)
+  {
+#if defined(HAVE_CAIRO_ATSUI)
+    case CAIRO_FONT_TYPE_ATSUI:
+      return g_object_new (PANGO_TYPE_CAIRO_ATSUI_FONT_MAP, NULL);
+#endif
+#if defined(HAVE_CAIRO_WIN32)
+    case CAIRO_FONT_TYPE_WIN32:
+      return g_object_new (PANGO_TYPE_CAIRO_WIN32_FONT_MAP, NULL);
+#endif
+#if defined(HAVE_CAIRO_FREETYPE)
+    case CAIRO_FONT_TYPE_FT:
+      return g_object_new (PANGO_TYPE_CAIRO_FC_FONT_MAP, NULL);
+#endif
+    default:
+      return NULL;
+  }
 }
 
 /**
@@ -113,7 +158,7 @@ pango_cairo_font_map_get_default (void)
 {
   static PangoFontMap *default_font_map = NULL;
 
-  if (!default_font_map)
+  if (G_UNLIKELY (!default_font_map))
     default_font_map = pango_cairo_font_map_new ();
 
   return default_font_map;
@@ -180,4 +225,22 @@ pango_cairo_font_map_create_context (PangoCairoFontMap *fontmap)
   pango_context_set_font_map (context, PANGO_FONT_MAP (fontmap));
 
   return context;
+}
+
+/**
+ * pango_cairo_font_map_get_font_type:
+ * @fontmap: a #PangoCairoFontMap
+ *
+ * Gets the type of Cairo font backend that @fontmap uses.  
+ *
+ * Return value: the #cairo_font_type_t cairo font backend type
+ *
+ * Since: 1.18
+ **/
+cairo_font_type_t
+pango_cairo_font_map_get_font_type (PangoCairoFontMap *fontmap)
+{
+  g_return_val_if_fail (PANGO_IS_CAIRO_FONT_MAP (fontmap), CAIRO_FONT_TYPE_TOY);
+
+  return (* PANGO_CAIRO_FONT_MAP_GET_IFACE (fontmap)->get_font_type) (fontmap);
 }

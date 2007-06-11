@@ -602,7 +602,7 @@ _pango_cairo_do_error_underline (cairo_t *cr,
 /**
  * pango_cairo_show_glyph_string:
  * @cr: a Cairo context
- * @font: a #PangoFont
+ * @font: a #PangoFont from a #PangoCairoFontMap
  * @glyphs: a #PangoGlyphString
  *
  * Draws the glyphs in @glyphs in the specified cairo context.
@@ -696,7 +696,7 @@ pango_cairo_show_error_underline (cairo_t *cr,
 /**
  * pango_cairo_glyph_string_path
  * @cr: a Cairo context
- * @font: a #PangoFont
+ * @font: a #PangoFont from a #PangoCairoFontMap
  * @glyphs: a #PangoGlyphString
  *
  * Adds the glyphs in @glyphs to the current path in the specified

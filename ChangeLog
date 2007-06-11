@@ -1,3 +1,28 @@
+2007-06-10  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 347236 – provide pango_cairo_font_get_scaled_font
+	Bug 347235 – Add pango_cairo_font_map_get_font_type
+	Bug 353291 – Provide pango_cairo_font_map_new_for_font_type
+
+	* pango/pangocairo-font.c: New public API:
+
+		pango_cairo_font_get_scaled_font()
+
+	* pango/pangocairo-fontmap.c: New public API:
+
+		pango_cairo_font_map_new_for_font_type()
+		pango_cairo_font_map_get_font_type()
+
+	* pango/pangocairo-fcfontmap.c:
+	Implement get_font_type() method.
+
+	* pango/pangocairo.h:
+	* pango/pangocairo-private.h:
+	* docs/pango-sections.txt:
+	* docs/tmpl/pangocairo.sgml:
+	* pango/pangocairo.def:
+	Update.
+
 2007-06-09  Behdad Esfahbod  <behdad@gnome.org>
 
 	Bug 337593 – move glyph extents code (and cache) from

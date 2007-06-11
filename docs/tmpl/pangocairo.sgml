@@ -151,6 +151,14 @@ int main (int argc, char **argv)
 </para>
 
 
+<!-- ##### FUNCTION pango_cairo_font_map_get_default ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+
 <!-- ##### FUNCTION pango_cairo_font_map_new ##### -->
 <para>
 
@@ -159,11 +167,21 @@ int main (int argc, char **argv)
 @Returns: 
 
 
-<!-- ##### FUNCTION pango_cairo_font_map_get_default ##### -->
+<!-- ##### FUNCTION pango_cairo_font_map_new_for_font_type ##### -->
 <para>
 
 </para>
 
+@fonttype: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_cairo_font_map_get_font_type ##### -->
+<para>
+
+</para>
+
+@fontmap: 
 @Returns: 
 
 
@@ -191,6 +209,15 @@ int main (int argc, char **argv)
 </para>
 
 @fontmap: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_cairo_font_get_scaled_font ##### -->
+<para>
+
+</para>
+
+@font: 
 @Returns: 
 
 
