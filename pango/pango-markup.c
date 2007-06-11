@@ -664,7 +664,7 @@ pango_parse_markup (const char                 *markup_text,
 	  PangoAttribute *attr = tmp_list->data;
 
 	  /* Innermost tags before outermost */
-	  pango_attr_list_change (md->attr_list, attr);
+	  pango_attr_list_insert (md->attr_list, attr);
 
 	  tmp_list = g_slist_next (tmp_list);
 	}

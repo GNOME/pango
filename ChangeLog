@@ -1,5 +1,15 @@
 2007-06-11  Behdad Esfahbod  <behdad@gnome.org>
 
+	Bug 446355 – the parsing with pango_parse_markup is not coherent
+
+	* pango/pango-markup.c (pango_parse_markup): Use
+	pango_attr_list_insert() instead of pango_attr_list_change() as
+	merging adjacent attributes of the same kind is not a safe operation
+	and can change the derived font of a segment in an unexpected and
+	incorrect way.
+
+2007-06-11  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/pangocairo-fontmap.c: Make sure all enabled font backends
 	included (reported by Vincent Isambart).
 
