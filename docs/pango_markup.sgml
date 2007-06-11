@@ -123,7 +123,7 @@ An RGB color specification such as '#00FF00' or a color name such as
 
 <varlistentry><term>underline</term>
 <listitem><para>
-One of 'single', 'double', 'low', 'none'
+One of 'none', 'single', 'double', 'low', 'error'
 </para></listitem>
 </varlistentry>
 

@@ -1,3 +1,9 @@
+2007-06-11  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 438801 – underline should add "error" type.
+
+	* docs/pango_markup.sgml: Add "error" underline type to docs.
+
 2007-06-10  Behdad Esfahbod  <behdad@gnome.org>
 
 	Bug 347236 – provide pango_cairo_font_get_scaled_font
