@@ -1,3 +1,9 @@
+2007-06-12  Richard Hult  <richard@imendio.com>
+
+	* pango/pangocairo-atsuifont.c:
+	* pango/pangocairo-atsuifontmap.c: Update for the changes to
+	PangoCairoFontMap and PangoCairoFont.
+
 2007-06-11  Behdad Esfahbod  <behdad@gnome.org>
 
 	Bug 446355 – the parsing with pango_parse_markup is not coherent

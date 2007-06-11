@@ -33,17 +33,6 @@ struct _PangoCairoATSUIFontMapClass
   PangoATSUIFontMapClass parent_class;
 };
 
-static PangoRenderer *
-pango_cairo_atsui_font_map_get_renderer (PangoCairoFontMap *cfontmap)
-{
-  PangoCairoATSUIFontMap *cwfontmap = PANGO_CAIRO_ATSUI_FONT_MAP (cfontmap);
-
-  if (!cwfontmap->renderer)
-    cwfontmap->renderer = g_object_new (PANGO_TYPE_CAIRO_RENDERER, NULL);
-
-  return cwfontmap->renderer;
-}
-
 static void
 pango_cairo_atsui_font_map_set_resolution (PangoCairoFontMap *cfontmap,
 					   double             dpi)
@@ -66,7 +55,6 @@ cairo_font_map_iface_init (PangoCairoFontMapIface *iface)
 {
   iface->set_resolution = pango_cairo_atsui_font_map_set_resolution;
   iface->get_resolution = pango_cairo_atsui_font_map_get_resolution;
-  iface->get_renderer = pango_cairo_atsui_font_map_get_renderer;
 }
 
 G_DEFINE_TYPE_WITH_CODE (PangoCairoATSUIFontMap, pango_cairo_atsui_font_map, PANGO_TYPE_ATSUI_FONT_MAP,
