@@ -92,13 +92,13 @@ struct _PangoOTBuffer
   guint applied_gpos : 1;
 };
 
-GType pango_ot_info_get_type (void);
+GType pango_ot_info_get_type (void) G_GNUC_CONST;
 
 HB_GDEF pango_ot_info_get_gdef (PangoOTInfo *info);
 HB_GSUB pango_ot_info_get_gsub (PangoOTInfo *info);
 HB_GPOS pango_ot_info_get_gpos (PangoOTInfo *info);
 
-GType pango_ot_ruleset_get_type (void);
+GType pango_ot_ruleset_get_type (void) G_GNUC_CONST;
 
 G_END_DECLS
 

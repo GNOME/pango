@@ -149,7 +149,7 @@ void           pango_fc_font_map_shutdown       (PangoFcFontMap *fcfontmap);
 
 #endif
 
-GType pango_fc_font_map_get_type (void);
+GType pango_fc_font_map_get_type (void) G_GNUC_CONST;
 
 /**
  * PangoFcDecoderFindFunc:

@@ -84,14 +84,14 @@ struct _PangoGlyphString {
 PangoGlyphString *pango_glyph_string_new      (void);
 void              pango_glyph_string_set_size (PangoGlyphString *string,
 					       gint              new_len);
-GType             pango_glyph_string_get_type (void);
+GType             pango_glyph_string_get_type (void) G_GNUC_CONST;
 PangoGlyphString *pango_glyph_string_copy     (PangoGlyphString *string);
 void              pango_glyph_string_free     (PangoGlyphString *string);
 void              pango_glyph_string_extents  (PangoGlyphString *glyphs,
 					       PangoFont        *font,
 					       PangoRectangle   *ink_rect,
 					       PangoRectangle   *logical_rect);
-int               pango_glyph_string_get_width(PangoGlyphString *glyphs);
+int               pango_glyph_string_get_width(PangoGlyphString *glyphs) G_GNUC_PURE;
 
 void              pango_glyph_string_extents_range  (PangoGlyphString *glyphs,
 						     int               start,

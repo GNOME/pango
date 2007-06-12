@@ -166,14 +166,14 @@ void            pango_ot_ruleset_substitute  (const PangoOTRuleset   *ruleset,
 					      PangoOTBuffer          *buffer);
 void            pango_ot_ruleset_position    (const PangoOTRuleset   *ruleset,
 					      PangoOTBuffer          *buffer);
-PangoScript     pango_ot_tag_to_script     (PangoOTTag     script_tag);
-PangoOTTag      pango_ot_tag_from_script   (PangoScript    script);
-PangoLanguage*  pango_ot_tag_to_language   (PangoOTTag     language_tag);
-PangoOTTag      pango_ot_tag_from_language (PangoLanguage *language);
+PangoScript     pango_ot_tag_to_script     (PangoOTTag     script_tag) G_GNUC_CONST;
+PangoOTTag      pango_ot_tag_from_script   (PangoScript    script) G_GNUC_CONST;
+PangoLanguage  *pango_ot_tag_to_language   (PangoOTTag     language_tag) G_GNUC_CONST;
+PangoOTTag      pango_ot_tag_from_language (PangoLanguage *language) G_GNUC_CONST;
 
-guint           pango_ot_ruleset_description_hash  (const PangoOTRulesetDescription *desc);
+guint           pango_ot_ruleset_description_hash  (const PangoOTRulesetDescription *desc) G_GNUC_PURE;
 gboolean        pango_ot_ruleset_description_equal (const PangoOTRulesetDescription *desc1,
-						    const PangoOTRulesetDescription *desc2);
+						    const PangoOTRulesetDescription *desc2) G_GNUC_PURE;
 PangoOTRulesetDescription *pango_ot_ruleset_description_copy  (const PangoOTRulesetDescription *desc);
 void            pango_ot_ruleset_description_free  (PangoOTRulesetDescription       *desc);
 

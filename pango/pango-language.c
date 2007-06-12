@@ -193,13 +193,14 @@ _pango_get_lc_ctype (void)
 PangoLanguage *
 pango_language_get_default (void)
 {
-  gchar *lang;
-  PangoLanguage *result;
+  static PangoLanguage *result = NULL;
 
-  lang = _pango_get_lc_ctype ();
-
-  result = pango_language_from_string (lang);
-  g_free (lang);
+  if (G_UNLIKELY (!result))
+    {
+      gchar *lang = _pango_get_lc_ctype ();
+      result = pango_language_from_string (lang);
+      g_free (lang);
+    }
 
   return result;
 }

@@ -241,7 +241,7 @@ typedef struct _PangoLayoutIter PangoLayoutIter;
 
 #define PANGO_TYPE_LAYOUT_ITER         (pango_layout_iter_get_type ())
 
-GType            pango_layout_iter_get_type (void);
+GType            pango_layout_iter_get_type (void) G_GNUC_CONST;
 
 PangoLayoutIter *pango_layout_get_iter  (PangoLayout     *layout);
 void             pango_layout_iter_free (PangoLayoutIter *iter);

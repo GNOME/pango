@@ -100,8 +100,8 @@ struct _PangoATSUIFontClass
   PangoFontClass parent_class;
 };
 
-GType pango_atsui_font_map_get_type (void);
-GType pango_atsui_font_get_type (void);
+GType pango_atsui_font_map_get_type (void) G_GNUC_CONST;
+GType pango_atsui_font_get_type (void) G_GNUC_CONST;
 
 const char *   _pango_atsui_face_get_postscript_name  (PangoATSUIFace *face);
 PangoCoverage *_pango_atsui_face_get_coverage         (PangoATSUIFace *face,

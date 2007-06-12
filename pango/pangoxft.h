@@ -63,13 +63,13 @@ void pango_xft_set_default_substitute (Display                *display,
 void pango_xft_substitute_changed     (Display                *display,
 				       int                     screen);
 
-GType pango_xft_font_map_get_type (void);
+GType pango_xft_font_map_get_type (void) G_GNUC_CONST;
 
 #define PANGO_XFT_FONT(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_TYPE_XFT_FONT, PangoXftFont))
 #define PANGO_TYPE_XFT_FONT              (pango_xft_font_get_type ())
 #define PANGO_XFT_IS_FONT(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), PANGO_TYPE_XFT_FONT))
 
-GType      pango_xft_font_get_type (void);
+GType      pango_xft_font_get_type (void) G_GNUC_CONST;
 
 /* For shape engines
  */

@@ -84,7 +84,7 @@ struct _PangoMatrix
 /* for PangoRectangle */
 #include <pango/pango-types.h>
 
-GType pango_matrix_get_type (void);
+GType pango_matrix_get_type (void) G_GNUC_CONST;
 
 PangoMatrix *pango_matrix_copy   (const PangoMatrix *matrix);
 void         pango_matrix_free   (PangoMatrix *matrix);
@@ -109,7 +109,7 @@ void pango_matrix_transform_rectangle (const PangoMatrix *matrix,
 				       PangoRectangle    *rect);
 void pango_matrix_transform_pixel_rectangle (const PangoMatrix *matrix,
 					     PangoRectangle    *rect);
-double pango_matrix_get_font_scale_factor (const PangoMatrix *matrix);
+double pango_matrix_get_font_scale_factor (const PangoMatrix *matrix) G_GNUC_PURE;
 
 
 G_END_DECLS

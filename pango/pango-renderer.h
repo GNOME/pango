@@ -181,7 +181,7 @@ struct _PangoRendererClass
   void (*_pango_reserved4) (void);
 };
 
-GType pango_renderer_get_type    (void);
+GType pango_renderer_get_type    (void) G_GNUC_CONST;
 
 void pango_renderer_draw_layout          (PangoRenderer    *renderer,
 					  PangoLayout      *layout,

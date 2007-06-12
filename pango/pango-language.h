@@ -32,16 +32,16 @@ typedef struct _PangoLanguage PangoLanguage;
 
 #define PANGO_TYPE_LANGUAGE (pango_language_get_type ())
 
-GType          pango_language_get_type    (void);
+GType          pango_language_get_type    (void) G_GNUC_CONST;
 PangoLanguage *pango_language_from_string (const char *language);
 
 #define pango_language_to_string(language) ((const char *)language)
 
-G_CONST_RETURN char *pango_language_get_sample_string (PangoLanguage *language);
-PangoLanguage *pango_language_get_default (void);
+G_CONST_RETURN char *pango_language_get_sample_string (PangoLanguage *language) G_GNUC_CONST;
+PangoLanguage *pango_language_get_default (void) G_GNUC_CONST;
 
 gboolean      pango_language_matches  (PangoLanguage *language,
-				       const char *range_list);
+				       const char *range_list) G_GNUC_PURE;
 
 G_END_DECLS
 

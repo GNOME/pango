@@ -106,7 +106,7 @@ struct _PangoCairoFontIface
   gssize cf_priv_offset;
 };
 
-GType pango_cairo_font_get_type (void);
+GType pango_cairo_font_get_type (void) G_GNUC_CONST;
 
 gboolean _pango_cairo_font_install (PangoFont *font,
 				    cairo_t   *cr);
@@ -133,7 +133,7 @@ void _pango_cairo_font_private_get_glyph_extents (PangoCairoFontPrivate *cf_priv
 
 typedef struct _PangoCairoRenderer PangoCairoRenderer;
 
-GType pango_cairo_renderer_get_type    (void);
+GType pango_cairo_renderer_get_type    (void) G_GNUC_CONST;
 
 
 const cairo_font_options_t *_pango_cairo_context_get_merged_font_options (PangoContext *context);

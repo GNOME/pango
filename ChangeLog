@@ -1,5 +1,38 @@
 2007-06-11  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango/pango-attributes.h:
+	* pango/pango-font.h:
+	* pango/pango-glyph.h:
+	* pango/pango-gravity.h:
+	* pango/pango-language.h:
+	* pango/pango-layout.h:
+	* pango/pango-matrix.h:
+	* pango/pango-ot-private.h:
+	* pango/pango-ot.h:
+	* pango/pango-renderer.h:
+	* pango/pango-script.h:
+	* pango/pango-tabs.h:
+	* pango/pango-utils.h:
+	* pango/pangoatsui-private.h:
+	* pango/pangocairo-atsui.h:
+	* pango/pangocairo-atsuifont.h:
+	* pango/pangocairo-fc.h:
+	* pango/pangocairo-private.h:
+	* pango/pangocairo-win32.h:
+	* pango/pangocairo.h:
+	* pango/pangofc-decoder.h:
+	* pango/pangofc-font.h:
+	* pango/pangofc-fontmap.h:
+	* pango/pangoft2-private.h:
+	* pango/pangoft2.h:
+	* pango/pangowin32-private.h:
+	* pango/pangox-private.h:
+	* pango/pangoxft-render.h:
+	* pango/pangoxft.h:
+	Add G_GNUC_CONST and G_GNUC_PURE annotations.
+
+2007-06-11  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/pango-ot.h: New engine public macros:
 	
 		PANGO_OT_TAG_MAKE()

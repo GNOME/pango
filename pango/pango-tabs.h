@@ -50,7 +50,7 @@ PangoTabArray  *pango_tab_array_new_with_positions  (gint           size,
 						     PangoTabAlign  first_alignment,
 						     gint           first_position,
 						     ...);
-GType           pango_tab_array_get_type            (void);
+GType           pango_tab_array_get_type            (void) G_GNUC_CONST;
 PangoTabArray  *pango_tab_array_copy                (PangoTabArray *src);
 void            pango_tab_array_free                (PangoTabArray *tab_array);
 gint            pango_tab_array_get_size            (PangoTabArray *tab_array);

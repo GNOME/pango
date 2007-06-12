@@ -98,7 +98,7 @@ typedef enum {
 #include <pango/pango-script.h>
 
 double       pango_gravity_to_rotation    (PangoGravity       gravity) G_GNUC_CONST;
-PangoGravity pango_gravity_get_for_matrix (const PangoMatrix *matrix);
+PangoGravity pango_gravity_get_for_matrix (const PangoMatrix *matrix) G_GNUC_PURE;
 PangoGravity pango_gravity_get_for_script (PangoScript        script,
 					   PangoGravity       base_gravity,
 					   PangoGravityHint   hint) G_GNUC_CONST;

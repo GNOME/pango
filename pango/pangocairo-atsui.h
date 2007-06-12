@@ -43,7 +43,7 @@ struct _PangoCairoATSUIFontMap
   gdouble dpi;
 };
 
-GType pango_cairo_atsui_font_map_get_type (void);
+GType pango_cairo_atsui_font_map_get_type (void) G_GNUC_CONST;
 
 PangoATSUIFont *
 _pango_cairo_atsui_font_new (PangoCairoATSUIFontMap     *cafontmap,

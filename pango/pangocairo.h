@@ -52,7 +52,7 @@ typedef void (* PangoCairoShapeRendererFunc) (cairo_t        *cr,
 /*
  * PangoCairoFontMap
  */
-GType         pango_cairo_font_map_get_type          (void);
+GType         pango_cairo_font_map_get_type          (void) G_GNUC_CONST;
 
 PangoFontMap *pango_cairo_font_map_new               (void);
 PangoFontMap *pango_cairo_font_map_new_for_font_type (cairo_font_type_t fonttype);

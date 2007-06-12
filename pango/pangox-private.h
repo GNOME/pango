@@ -92,7 +92,7 @@ struct _PangoXFontMap
   Window coverage_win;
 };
 
-GType    pango_x_font_map_get_type   (void);
+GType    pango_x_font_map_get_type   (void) G_GNUC_CONST;
 
 PangoXFont *   pango_x_font_new                (PangoFontMap    *fontmap,
 						const char      *spec,

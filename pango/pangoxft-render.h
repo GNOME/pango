@@ -95,7 +95,7 @@ struct _PangoXftRendererClass
 				int               n_glyphs);
 };
 
-GType pango_xft_renderer_get_type    (void);
+GType pango_xft_renderer_get_type    (void) G_GNUC_CONST;
 
 PangoRenderer *pango_xft_renderer_new                 (Display          *display,
 						       int               screen);

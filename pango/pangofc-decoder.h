@@ -95,7 +95,7 @@ struct _PangoFcDecoderClass
   void (*_pango_reserved4) (void);
 };
 
-GType      pango_fc_decoder_get_type    (void);
+GType      pango_fc_decoder_get_type    (void) G_GNUC_CONST;
 
 FcCharSet *pango_fc_decoder_get_charset (PangoFcDecoder *decoder,
 					 PangoFcFont    *fcfont);

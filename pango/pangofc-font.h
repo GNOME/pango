@@ -142,7 +142,7 @@ void       pango_fc_font_kern_glyphs       (PangoFcFont      *font,
 
 #endif /* PANGO_ENABLE_ENGINE || PANGO_ENABLE_BACKEND */
 
-GType      pango_fc_font_get_type (void);
+GType      pango_fc_font_get_type (void) G_GNUC_CONST;
 
 FT_Face    pango_fc_font_lock_face         (PangoFcFont      *font);
 void       pango_fc_font_unlock_face       (PangoFcFont      *font);

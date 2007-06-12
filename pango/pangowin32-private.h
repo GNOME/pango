@@ -256,14 +256,14 @@ struct name_record
   guint16 string_offset;
 };
 
-GType           _pango_win32_font_get_type          (void);
+GType           _pango_win32_font_get_type          (void) G_GNUC_CONST;
 
 void            _pango_win32_make_matching_logfontw (PangoFontMap   *fontmap,
 						     const LOGFONTW *lfp,
 						     int             size,
 						     LOGFONTW       *out);
 
-GType           _pango_win32_font_map_get_type      (void);
+GType           _pango_win32_font_map_get_type      (void) G_GNUC_CONST;
 
 void            _pango_win32_fontmap_cache_remove   (PangoFontMap   *fontmap,
 						     PangoWin32Font *xfont);
