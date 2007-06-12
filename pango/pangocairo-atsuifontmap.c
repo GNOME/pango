@@ -50,11 +50,18 @@ pango_cairo_atsui_font_map_get_resolution (PangoCairoFontMap *cfontmap)
   return cafontmap->dpi;
 }
 
+static cairo_font_type_t
+pango_cairo_atsui_font_map_get_font_type (PangoCairoFontMap *cfontmap)
+{
+  return CAIRO_FONT_TYPE_ATSUI;
+}
+
 static void
 cairo_font_map_iface_init (PangoCairoFontMapIface *iface)
 {
   iface->set_resolution = pango_cairo_atsui_font_map_set_resolution;
   iface->get_resolution = pango_cairo_atsui_font_map_get_resolution;
+  iface->get_font_type  = pango_cairo_atsui_font_map_get_font_type;
 }
 
 G_DEFINE_TYPE_WITH_CODE (PangoCairoATSUIFontMap, pango_cairo_atsui_font_map, PANGO_TYPE_ATSUI_FONT_MAP,

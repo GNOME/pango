@@ -1,3 +1,8 @@
+2007-06-12  Richard Hult  <richard@imendio.com>
+
+	* pango/pangocairo-atsuifontmap.c: Implement
+	get_font_type().
+
 2007-06-12  Tor Lillqvist  <tml@novell.com>
 
 	* pango/pangowin32-fontmap.c: Implement
