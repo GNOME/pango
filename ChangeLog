@@ -1,9 +1,15 @@
 2007-06-12  Tor Lillqvist  <tml@novell.com>
 
+	* pango/pangowin32-fontmap.c: Implement
+	PangoCairoWin32FontMap::get_font_type().
+
+2007-06-12  Tor Lillqvist  <tml@novell.com>
+
 	* pango/pangowin32-private.h (struct PangoWin32Face): Add
 	is_synthetic field.
 
-	* pango/pangowin32-fontmap.c: Implement is_synthesized.
+	* pango/pangowin32-fontmap.c: Implement
+	PangoWin32Face::is_synthesized().
 
 	* pango/pangocairo-win32font.c
 	* pango/pangocairo-win32fontmap.c: Update for the changes to
