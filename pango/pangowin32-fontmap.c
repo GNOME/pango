@@ -85,7 +85,8 @@ static PangoFont *pango_win32_font_map_real_find_font (PangoWin32FontMap        
 static void       pango_win32_fontmap_cache_clear    (PangoWin32FontMap            *win32fontmap);
 
 static void       pango_win32_insert_font            (PangoWin32FontMap            *fontmap,
-						      LOGFONTW                     *lfp);
+						      LOGFONTW                     *lfp,
+						      gboolean			    is_synthetic);
 
 static PangoWin32FontMap *default_fontmap = NULL;
 
@@ -174,7 +175,7 @@ pango_win32_inner_enum_proc (LOGFONTW    *lfp,
    * Asian fonts with @ prepended to their name, ignore them.
    */
   if (lfp->lfFaceName[0] != '@')
-    pango_win32_insert_font (win32fontmap, lfp);
+    pango_win32_insert_font (win32fontmap, lfp, FALSE);
 
   return 1;
 }
@@ -268,7 +269,7 @@ _pango_win32_font_map_init (PangoWin32FontMap *win32fontmap)
     {
       LOGFONTW logfontw = *((LOGFONTW *)list->data);
       logfontw.lfItalic = 1;
-      pango_win32_insert_font (win32fontmap, &logfontw);
+      pango_win32_insert_font (win32fontmap, &logfontw, TRUE);
       list = list->next;
     }
   g_slist_free (helper.list);
@@ -996,7 +997,8 @@ pango_win32_font_description_from_logfontw (const LOGFONTW *lfp)
  */
 static void
 pango_win32_insert_font (PangoWin32FontMap *win32fontmap,
-			 LOGFONTW          *lfp)
+			 LOGFONTW          *lfp,
+			 gboolean	    is_synthetic)
 {
   LOGFONTW *lfp2 = NULL;
   PangoFontDescription *description;
@@ -1079,15 +1081,19 @@ pango_win32_insert_font (PangoWin32FontMap *win32fontmap,
     }
 
   win32face = g_object_new (PANGO_WIN32_TYPE_FACE, NULL);
-  win32face->description = description;
 
-  win32face->cached_fonts = NULL;
+  win32face->logfontw = *lfp;
+  win32face->description = description;
 
   for (i = 0; i < PANGO_WIN32_N_COVERAGES; i++)
      win32face->coverages[i] = NULL;
-  win32face->logfontw = *lfp;
+
+  win32face->is_synthetic = is_synthetic;
+
   win32face->cmap_format = 0;
   win32face->cmap = NULL;
+
+  win32face->cached_fonts = NULL;
 
   font_family =
     pango_win32_get_font_family (win32fontmap,
@@ -1230,12 +1236,21 @@ pango_win32_face_get_face_name (PangoFontFace *face)
   return win32face->face_name;
 }
 
+static gboolean
+pango_win32_face_is_synthesized (PangoFontFace *face)
+{
+  PangoWin32Face *win32face = PANGO_WIN32_FACE (face);
+
+  return win32face->is_synthetic;
+}
+
 static void
 pango_win32_face_class_init (PangoFontFaceClass *class)
 {
   class->describe = pango_win32_face_describe;
   class->get_face_name = pango_win32_face_get_face_name;
   class->list_sizes = pango_win32_face_list_sizes;
+  class->is_synthesized = pango_win32_face_is_synthesized;
 }
 
 static void

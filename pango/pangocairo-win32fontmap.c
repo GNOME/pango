@@ -50,23 +50,11 @@ pango_cairo_win32_font_map_get_resolution (PangoCairoFontMap *cfontmap)
   return cwfontmap->dpi;
 }
 
-static PangoRenderer *
-pango_cairo_win32_font_map_get_renderer (PangoCairoFontMap *cfontmap)
-{
-  PangoCairoWin32FontMap *cwfontmap = PANGO_CAIRO_WIN32_FONT_MAP (cfontmap);
-
-  if (!cwfontmap->renderer)
-    cwfontmap->renderer = g_object_new (PANGO_TYPE_CAIRO_RENDERER, NULL);
-
-  return cwfontmap->renderer;
-}
-
 static void
 cairo_font_map_iface_init (PangoCairoFontMapIface *iface)
 {
   iface->set_resolution = pango_cairo_win32_font_map_set_resolution;
   iface->get_resolution = pango_cairo_win32_font_map_get_resolution;
-  iface->get_renderer = pango_cairo_win32_font_map_get_renderer;
 }
 
 G_DEFINE_TYPE_WITH_CODE (PangoCairoWin32FontMap, pango_cairo_win32_font_map, PANGO_TYPE_WIN32_FONT_MAP,

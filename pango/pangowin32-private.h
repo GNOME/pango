@@ -163,6 +163,7 @@ struct _PangoWin32Face
   PangoFontDescription *description;
   PangoCoverage *coverages[PANGO_WIN32_N_COVERAGES];
   char *face_name;
+  gboolean is_synthetic;
 
   guint16 cmap_format;
   gpointer cmap;

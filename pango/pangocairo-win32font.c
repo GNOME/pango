@@ -40,23 +40,11 @@
 
 typedef struct _PangoCairoWin32Font      PangoCairoWin32Font;
 typedef struct _PangoCairoWin32FontClass PangoCairoWin32FontClass;
-typedef struct _PangoCairoWin32GlyphInfo PangoCairoWin32GlyphInfo;
 
 struct _PangoCairoWin32Font
 {
   PangoWin32Font font;
-
-  int size;
-
-  cairo_font_face_t *font_face;
-  cairo_scaled_font_t *scaled_font;
-
-  cairo_matrix_t font_matrix;
-  cairo_matrix_t ctm;
-  cairo_font_options_t *options;
-
-  GSList *metrics_by_lang;
-  GHashTable *glyph_info;
+  PangoCairoFontPrivate cf_priv;
 };
 
 struct _PangoCairoWin32FontClass
@@ -64,204 +52,31 @@ struct _PangoCairoWin32FontClass
   PangoWin32FontClass  parent_class;
 };
 
-struct _PangoCairoWin32GlyphInfo
-{
-  PangoRectangle logical_rect;
-  PangoRectangle ink_rect;
-};
-
 GType pango_cairo_win32_font_get_type (void);
 
-/*******************************
- *       Utility functions     *
- *******************************/
+static cairo_font_face_t *pango_cairo_win32_font_create_font_face           (PangoCairoFont *font);
+static PangoFontMetrics  *pango_cairo_win32_font_create_metrics_for_context (PangoCairoFont *font,
+									     PangoContext    *context);
 
-static cairo_font_face_t *
-pango_cairo_win32_font_get_font_face (PangoCairoFont *font)
-{
-  PangoCairoWin32Font *cwfont = PANGO_CAIRO_WIN32_FONT (font);
-  PangoWin32Font *win32font = PANGO_WIN32_FONT (cwfont);
-
-  if (cwfont->font_face == NULL)
-    {
-      cwfont->font_face = cairo_win32_font_face_create_for_logfontw (&win32font->logfontw);
-
-      /* Failure of the above should only occur for out of memory,
-       * we can't proceed at that point
-       */
-      if (!cwfont->font_face)
-	g_error ("Unable to create Win32 cairo font face.\nThis means out of memory or a cairo/fontconfig/FreeType bug");
-    }
-
-  return cwfont->font_face;
-}
-
-static cairo_scaled_font_t *
-pango_cairo_win32_font_get_scaled_font (PangoCairoFont *font)
-{
-  PangoCairoWin32Font *cwfont = PANGO_CAIRO_WIN32_FONT (font);
-
-  if (!cwfont->scaled_font)
-    {
-      cairo_font_face_t *font_face;
-
-      font_face = pango_cairo_win32_font_get_font_face (font);
-      cwfont->scaled_font = cairo_scaled_font_create (font_face,
-						      &cwfont->font_matrix,
-						      &cwfont->ctm,
-						      cwfont->options);
-
-      /* Failure of the above should only occur for out of memory,
-       * we can't proceed at that point
-       */
-      if (!cwfont->scaled_font)
-	g_error ("Unable to create Win32 cairo scaled font.\nThis means out of memory or a cairo/fontconfig/FreeType bug");
-    }
-
-  return cwfont->scaled_font;
-}
-
-/********************************
- *    Method implementations    *
- ********************************/
-
-static gboolean
-pango_cairo_win32_font_install (PangoCairoFont *font,
-				cairo_t        *cr)
-{
-  PangoCairoWin32Font *cwfont = PANGO_CAIRO_WIN32_FONT (font);
-
-  cairo_set_font_face (cr,
-		       pango_cairo_win32_font_get_font_face (font));
-  cairo_set_font_matrix (cr, &cwfont->font_matrix);
-  cairo_set_font_options (cr, cwfont->options);
-
-  return TRUE;
-}
 
 static void
 cairo_font_iface_init (PangoCairoFontIface *iface)
 {
-  iface->install = pango_cairo_win32_font_install;
-  iface->get_font_face = pango_cairo_win32_font_get_font_face;
-  iface->get_scaled_font = pango_cairo_win32_font_get_scaled_font;
+  iface->create_font_face = pango_cairo_win32_font_create_font_face;
+  iface->create_metrics_for_context = pango_cairo_win32_font_create_metrics_for_context;
+  iface->cf_priv_offset = G_STRUCT_OFFSET (PangoCairoWin32Font, cf_priv);
 }
 
 G_DEFINE_TYPE_WITH_CODE (PangoCairoWin32Font, pango_cairo_win32_font, PANGO_TYPE_WIN32_FONT,
     { G_IMPLEMENT_INTERFACE (PANGO_TYPE_CAIRO_FONT, cairo_font_iface_init) });
 
-static void
-free_metrics_info (PangoWin32MetricsInfo *info)
+static cairo_font_face_t *
+pango_cairo_win32_font_create_font_face (PangoCairoFont *font)
 {
-  pango_font_metrics_unref (info->metrics);
-  g_slice_free (PangoWin32MetricsInfo, info);
-}
+  PangoCairoWin32Font *cwfont = PANGO_CAIRO_WIN32_FONT (font);
+  PangoWin32Font *win32font =  &cwfont->font;
 
-static void
-pango_cairo_win32_font_finalize (GObject *object)
-{
-  PangoCairoWin32Font *cwfont = PANGO_CAIRO_WIN32_FONT (object);
-
-  g_hash_table_destroy (cwfont->glyph_info);
-
-  g_slist_foreach (cwfont->metrics_by_lang, (GFunc)free_metrics_info, NULL);
-  g_slist_free (cwfont->metrics_by_lang);
-
-  if (cwfont->scaled_font)
-    cairo_scaled_font_destroy (cwfont->scaled_font);
-
-  if (cwfont->options)
-    cairo_font_options_destroy (cwfont->options);
-
-  G_OBJECT_CLASS (pango_cairo_win32_font_parent_class)->finalize (object);
-}
-
-static void
-compute_glyph_extents (PangoFont        *font,
-		       PangoGlyph        glyph,
-		       PangoRectangle   *ink_rect,
-		       PangoRectangle   *logical_rect)
-{
-  PangoCairoFont *cfont = (PangoCairoFont *)font;
-  cairo_scaled_font_t *scaled_font = pango_cairo_win32_font_get_scaled_font (PANGO_CAIRO_FONT (cfont));
-
-  /* It may well be worth caching the font_extents here, since getting them
-   * is pretty expensive.
-   */
-  cairo_font_extents_t font_extents;
-  cairo_text_extents_t extents;
-  cairo_glyph_t cairo_glyph;
-
-  cairo_scaled_font_extents (scaled_font, &font_extents);
-
-  logical_rect->x = 0;
-  logical_rect->y = - font_extents.ascent * PANGO_SCALE;
-  logical_rect->width = 0;
-  logical_rect->height = (font_extents.ascent + font_extents.descent) * PANGO_SCALE;
-
-  if (glyph == PANGO_GLYPH_EMPTY)
-    {
-      /* already initialized above */
-    }
-  else if (glyph & PANGO_GLYPH_UNKNOWN_FLAG)
-    {
-      /* space for the hex box */
-      _pango_cairo_get_glyph_extents_missing(cfont, glyph, ink_rect, logical_rect);
-    }
-  else
-    {
-      cairo_glyph.index = glyph;
-      cairo_glyph.x = 0;
-      cairo_glyph.y = 0;
-
-      cairo_scaled_font_glyph_extents (scaled_font,
-				       &cairo_glyph, 1, &extents);
-
-      ink_rect->x = extents.x_bearing * PANGO_SCALE;
-      ink_rect->y = extents.y_bearing * PANGO_SCALE;
-      ink_rect->width = extents.width * PANGO_SCALE;
-      ink_rect->height = extents.height * PANGO_SCALE;
-
-      logical_rect->width = extents.x_advance * PANGO_SCALE;
-    }
-}
-
-static PangoCairoWin32GlyphInfo *
-pango_cairo_win32_font_get_glyph_info (PangoFont   *font,
-				       PangoGlyph   glyph)
-{
-  PangoCairoWin32Font *cwfont = (PangoCairoWin32Font *)font;
-  PangoCairoWin32GlyphInfo *info;
-
-  info = g_hash_table_lookup (cwfont->glyph_info, GUINT_TO_POINTER (glyph));
-  if (!info)
-    {
-      info = g_new0 (PangoCairoWin32GlyphInfo, 1);
-
-      compute_glyph_extents (font, glyph,
-			     &info->ink_rect,
-			     &info->logical_rect);
-
-      g_hash_table_insert (cwfont->glyph_info, GUINT_TO_POINTER (glyph), info);
-    }
-
-  return info;
-}
-
-static void
-pango_cairo_win32_font_get_glyph_extents (PangoFont        *font,
-					  PangoGlyph        glyph,
-					  PangoRectangle   *ink_rect,
-					  PangoRectangle   *logical_rect)
-{
-  PangoCairoWin32GlyphInfo *info;
-
-  info = pango_cairo_win32_font_get_glyph_info (font, glyph);
-
-  if (ink_rect)
-    *ink_rect = info->ink_rect;
-  if (logical_rect)
-    *logical_rect = info->logical_rect;
+  return cairo_win32_font_face_create_for_logfontw (&win32font->logfontw);
 }
 
 static int
@@ -289,10 +104,9 @@ max_glyph_width (PangoLayout *layout)
 }
 
 static PangoFontMetrics *
-create_metrics_for_context (PangoFont    *font,
-			    PangoContext *context)
+pango_cairo_win32_font_create_metrics_for_context (PangoCairoFont *font,
+                                                   PangoContext   *context)
 {
-  PangoCairoWin32Font *cwfont = PANGO_CAIRO_WIN32_FONT (font);
   PangoFontMetrics *metrics;
   PangoFontDescription *font_desc;
   PangoLayout *layout;
@@ -305,7 +119,7 @@ create_metrics_for_context (PangoFont    *font,
 
   metrics = pango_font_metrics_new ();
 
-  scaled_font = pango_cairo_win32_font_get_scaled_font (PANGO_CAIRO_FONT (cwfont));
+  scaled_font = pango_cairo_font_get_scaled_font ((PangoFont *) font);
 
   cairo_scaled_font_extents (scaled_font, &font_extents);
   cairo_win32_scaled_font_done_font (scaled_font);
@@ -328,7 +142,7 @@ create_metrics_for_context (PangoFont    *font,
 				&metrics->strikethrough_position);
 
   layout = pango_layout_new (context);
-  font_desc = pango_font_describe_with_absolute_size (font);
+  font_desc = pango_font_describe_with_absolute_size ((PangoFont *) font);
   pango_layout_set_font_description (layout, font_desc);
   pango_layout_set_text (layout, sample_str, -1);
   pango_layout_get_extents (layout, NULL, &extents);
@@ -344,59 +158,31 @@ create_metrics_for_context (PangoFont    *font,
   return metrics;
 }
 
-static PangoFontMetrics *
-pango_cairo_win32_font_get_metrics (PangoFont        *font,
-				    PangoLanguage    *language)
+static void
+pango_cairo_win32_font_finalize (GObject *object)
 {
-  PangoWin32Font *win32font = PANGO_WIN32_FONT (font);
-  PangoCairoWin32Font *cwfont = PANGO_CAIRO_WIN32_FONT (font);
-  PangoWin32MetricsInfo *info = NULL; /* Quiet gcc */
-  GSList *tmp_list;
-  const char *sample_str = pango_language_get_sample_string (language);
+  G_OBJECT_CLASS (pango_cairo_win32_font_parent_class)->finalize (object);
+}
 
-  tmp_list = cwfont->metrics_by_lang;
-  while (tmp_list)
-    {
-      info = tmp_list->data;
+static void
+pango_cairo_win32_font_get_glyph_extents (PangoFont        *font,
+					  PangoGlyph        glyph,
+					  PangoRectangle   *ink_rect,
+					  PangoRectangle   *logical_rect)
+{
+  PangoCairoWin32Font *cwfont = (PangoCairoWin32Font *) font;
 
-      if (info->sample_str == sample_str)    /* We _don't_ need strcmp */
-	break;
-
-      tmp_list = tmp_list->next;
-    }
-
-  if (!tmp_list)
-    {
-      PangoContext *context;
-
-      if (!win32font->fontmap)
-	return pango_font_metrics_new ();
-
-      info = g_slice_new0 (PangoWin32MetricsInfo);
-
-      cwfont->metrics_by_lang = g_slist_prepend (cwfont->metrics_by_lang,
-						 info);
-
-      info->sample_str = sample_str;
-
-      context = pango_context_new ();
-      pango_context_set_font_map (context, win32font->fontmap);
-      pango_context_set_language (context, language);
-      pango_cairo_context_set_font_options (context, cwfont->options);
-
-      info->metrics = create_metrics_for_context (font, context);
-
-      g_object_unref (context);
-    }
-
-  return pango_font_metrics_ref (info->metrics);
+  _pango_cairo_font_private_get_glyph_extents (&cwfont->cf_priv,
+					       glyph,
+					       ink_rect,
+					       logical_rect);
 }
 
 static gboolean
 pango_cairo_win32_font_select_font (PangoFont *font,
 				    HDC        hdc)
 {
-  cairo_scaled_font_t *scaled_font = pango_cairo_win32_font_get_scaled_font (PANGO_CAIRO_FONT (font));
+  cairo_scaled_font_t *scaled_font = _pango_cairo_font_private_get_scaled_font (&PANGO_CAIRO_WIN32_FONT (font)->cf_priv);
 
   return cairo_win32_scaled_font_select_font (scaled_font, hdc) == CAIRO_STATUS_SUCCESS;
 }
@@ -404,7 +190,7 @@ pango_cairo_win32_font_select_font (PangoFont *font,
 static void
 pango_cairo_win32_font_done_font (PangoFont *font)
 {
-  cairo_scaled_font_t *scaled_font = pango_cairo_win32_font_get_scaled_font (PANGO_CAIRO_FONT (font));
+  cairo_scaled_font_t *scaled_font = _pango_cairo_font_private_get_scaled_font (&PANGO_CAIRO_WIN32_FONT (font)->cf_priv);
 
   cairo_win32_scaled_font_done_font (scaled_font);
 }
@@ -413,7 +199,7 @@ static double
 pango_cairo_win32_font_get_metrics_factor (PangoFont *font)
 {
   PangoWin32Font *win32font = PANGO_WIN32_FONT (font);
-  cairo_scaled_font_t *scaled_font = pango_cairo_win32_font_get_scaled_font (PANGO_CAIRO_FONT (font));
+  cairo_scaled_font_t *scaled_font = _pango_cairo_font_private_get_scaled_font (&PANGO_CAIRO_WIN32_FONT (font)->cf_priv);
 
   return cairo_win32_scaled_font_get_metrics_factor (scaled_font) * win32font->size;
 }
@@ -428,7 +214,7 @@ pango_cairo_win32_font_class_init (PangoCairoWin32FontClass *class)
   object_class->finalize = pango_cairo_win32_font_finalize;
 
   font_class->get_glyph_extents = pango_cairo_win32_font_get_glyph_extents;
-  font_class->get_metrics = pango_cairo_win32_font_get_metrics;
+  font_class->get_metrics = _pango_cairo_font_get_metrics;
 
   win32_font_class->select_font = pango_cairo_win32_font_select_font;
   win32_font_class->done_font = pango_cairo_win32_font_done_font;
@@ -438,10 +224,6 @@ pango_cairo_win32_font_class_init (PangoCairoWin32FontClass *class)
 static void
 pango_cairo_win32_font_init (PangoCairoWin32Font *cwfont)
 {
-  cwfont->glyph_info = g_hash_table_new_full (g_direct_hash,
-					      NULL,
-					      NULL,
-					      (GDestroyNotify)g_free);
 }
 
 /********************
@@ -456,7 +238,6 @@ _pango_cairo_win32_font_new (PangoCairoWin32FontMap     *cwfontmap,
 {
   PangoCairoWin32Font *cwfont;
   PangoWin32Font *win32font;
-  const PangoMatrix *pango_ctm;
   double size;
   double dpi;
 #define USE_FACE_CACHED_FONTS
@@ -464,6 +245,7 @@ _pango_cairo_win32_font_new (PangoCairoWin32FontMap     *cwfontmap,
   PangoWin32FontMap *win32fontmap;
   GSList *tmp_list;
 #endif
+  cairo_matrix_t font_matrix;
 
   g_return_val_if_fail (PANGO_IS_CAIRO_WIN32_FONT_MAP (cwfontmap), NULL);
 
@@ -517,26 +299,20 @@ _pango_cairo_win32_font_new (PangoCairoWin32FontMap     *cwfontmap,
    */
   win32font->size = size * PANGO_SCALE;
 
-  cairo_matrix_init_scale (&cwfont->font_matrix,
-			   size, size);
-
-  pango_ctm = pango_context_get_matrix (context);
-  if (pango_ctm)
-    cairo_matrix_init (&cwfont->ctm,
-		       pango_ctm->xx,
-		       pango_ctm->yx,
-		       pango_ctm->xy,
-		       pango_ctm->yy,
-		       0., 0.);
-  else
-    cairo_matrix_init_identity (&cwfont->ctm);
-
   _pango_win32_make_matching_logfontw (win32font->fontmap,
 				       &face->logfontw,
 				       win32font->size,
 				       &win32font->logfontw);
 
-  cwfont->options = cairo_font_options_copy (_pango_cairo_context_get_merged_font_options (context));
+  cairo_matrix_init_identity (&font_matrix);
+
+  cairo_matrix_scale (&font_matrix, size, size);
+
+  _pango_cairo_font_private_initialize (&cwfont->cf_priv,
+					(PangoCairoFont *) cwfont,
+					context,
+					desc,
+					&font_matrix);
 
   return PANGO_FONT (cwfont);
 }
