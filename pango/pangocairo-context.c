@@ -25,6 +25,8 @@
 #include "pangocairo-private.h"
 #include "pango-impl-utils.h"
 
+#include <string.h>
+
 typedef struct _PangoCairoContextInfo PangoCairoContextInfo;
 
 struct _PangoCairoContextInfo
@@ -80,6 +82,63 @@ get_context_info (PangoContext *context,
   return info;
 }
 
+static gboolean
+_pango_cairo_update_context (cairo_t      *cr,
+			     PangoContext *context)
+{
+  PangoCairoContextInfo *info;
+  cairo_matrix_t cairo_matrix;
+  cairo_surface_t *target;
+  PangoMatrix pango_matrix;
+  const PangoMatrix *layout_matrix, identity_matrix = PANGO_MATRIX_INIT;
+  gboolean changed = FALSE;
+
+  info = get_context_info (context, TRUE);
+
+  cairo_get_matrix (cr, &cairo_matrix);
+  pango_matrix.xx = cairo_matrix.xx;
+  pango_matrix.yx = cairo_matrix.yx;
+  pango_matrix.xy = cairo_matrix.xy;
+  pango_matrix.yy = cairo_matrix.yy;
+  pango_matrix.x0 = cairo_matrix.x0;
+  pango_matrix.y0 = cairo_matrix.y0;
+
+  layout_matrix = pango_context_get_matrix (context);
+  if (!layout_matrix)
+    layout_matrix = &identity_matrix;
+
+  if (0 != memcmp (&pango_matrix, layout_matrix, sizeof (pango_matrix)))
+    changed = TRUE;
+
+  pango_context_set_matrix (context, &pango_matrix);
+
+
+  target = cairo_get_target (cr);
+
+  if (!info->surface_options) {
+    info->surface_options = cairo_font_options_create ();
+    changed = TRUE;
+    cairo_surface_get_font_options (target, info->surface_options);
+  } else {
+    cairo_font_options_t *surface_options = cairo_font_options_create ();
+    cairo_surface_get_font_options (target, surface_options);
+    if (!cairo_font_options_equal (surface_options, info->surface_options))
+      {
+	cairo_surface_get_font_options (target, info->surface_options);
+	changed = TRUE;
+      }
+    cairo_font_options_destroy (surface_options);
+  }
+
+  if (info->merged_options)
+    {
+      cairo_font_options_destroy (info->merged_options);
+      info->merged_options = NULL;
+    }
+
+  return changed;
+}
+
 /**
  * pango_cairo_update_context:
  * @cr: a Cairo context
@@ -97,37 +156,10 @@ void
 pango_cairo_update_context (cairo_t      *cr,
 			    PangoContext *context)
 {
-  PangoCairoContextInfo *info;
-  cairo_matrix_t cairo_matrix;
-  cairo_surface_t *target;
-  PangoMatrix pango_matrix;
-
   g_return_if_fail (cr != NULL);
   g_return_if_fail (PANGO_IS_CONTEXT (context));
 
-  info = get_context_info (context, TRUE);
-
-  cairo_get_matrix (cr, &cairo_matrix);
-  pango_matrix.xx = cairo_matrix.xx;
-  pango_matrix.yx = cairo_matrix.yx;
-  pango_matrix.xy = cairo_matrix.xy;
-  pango_matrix.yy = cairo_matrix.yy;
-  pango_matrix.x0 = cairo_matrix.x0;
-  pango_matrix.y0 = cairo_matrix.y0;
-
-  pango_context_set_matrix (context, &pango_matrix);
-
-  if (!info->surface_options)
-    info->surface_options = cairo_font_options_create ();
-
-  target = cairo_get_target (cr);
-  cairo_surface_get_font_options (target, info->surface_options);
-
-  if (info->merged_options)
-    {
-      cairo_font_options_destroy (info->merged_options);
-      info->merged_options = NULL;
-    }
+  (void) _pango_cairo_update_context (cr, context);
 }
 
 /**
@@ -400,7 +432,7 @@ pango_cairo_update_layout (cairo_t     *cr,
   g_return_if_fail (cr != NULL);
   g_return_if_fail (PANGO_IS_LAYOUT (layout));
 
-  pango_cairo_update_context (cr, pango_layout_get_context (layout));
-  pango_layout_context_changed (layout);
+  if (_pango_cairo_update_context (cr, pango_layout_get_context (layout)))
+    pango_layout_context_changed (layout);
 }
 

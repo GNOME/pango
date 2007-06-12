@@ -1,3 +1,11 @@
+2007-06-12  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 445832 – pango_cairo_update_layout() always invalidates layout
+
+	* pango/pangocairo-context.c (_pango_cairo_update_context),
+	(pango_cairo_update_context), (pango_cairo_update_layout):
+	Don't invalidate layout if matrix and font options didn't change.
+
 2007-06-11  Behdad Esfahbod  <behdad@gnome.org>
 
 	* pango/pango-attributes.h:
