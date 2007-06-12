@@ -1,6 +1,6 @@
 2007-06-12  Tor Lillqvist  <tml@novell.com>
 
-	* pango/pangowin32-private.h (struct PangoWin32Face: Add
+	* pango/pangowin32-private.h (struct PangoWin32Face): Add
 	is_synthetic field.
 
 	* pango/pangowin32-fontmap.c: Implement is_synthesized.
