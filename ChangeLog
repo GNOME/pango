@@ -1,3 +1,10 @@
+2007-06-12  Behdad Esfahbod  <behdad@gnome.org>
+
+	* pango/pango-attributes.c (pango_attr_font_desc_equal):
+	Compare set fields of two font descriptions for equality
+	too, as pango_font_description_equal() doesn't check the
+	mask.
+
 2007-06-12  Richard Hult  <richard@imendio.com>
 
 	* pango/pangocairo-atsuifontmap.c: Implement

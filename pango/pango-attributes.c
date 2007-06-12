@@ -613,7 +613,9 @@ pango_attr_font_desc_equal (const PangoAttribute *attr1,
   const PangoAttrFontDesc *desc_attr1 = (const PangoAttrFontDesc *)attr1;
   const PangoAttrFontDesc *desc_attr2 = (const PangoAttrFontDesc *)attr2;
 
-  return pango_font_description_equal (desc_attr1->desc, desc_attr2->desc);
+  return pango_font_description_get_set_fields (desc_attr1->desc) ==
+         pango_font_description_get_set_fields (desc_attr2->desc) &&
+	 pango_font_description_equal (desc_attr1->desc, desc_attr2->desc);
 }
 
 /**
