@@ -22,9 +22,8 @@ Part of Pango's engine API, but stable
 <!-- ##### TYPEDEF PangoOTTag ##### -->
 <para>
 The <type>PangoOTTag</type> typedef is used to represent TrueType and OpenType
-four letter tags inside Pango. Use the <function>FT_MAKE_TAG()</function> macro
-defined in the FreeType2 header <filename>freetype/freetype.h</filename> to 
-create <type>PangoOTTag</type>s manually.
+four letter tags inside Pango. Use PANGO_OT_TAG_MAKE()
+or PANGO_OT_TAG_MAKE_FROM_STRING() macros to create <type>PangoOTTag</type>s manually.
 </para>
 
 
@@ -119,6 +118,31 @@ represented as a char array instead of a #PangoOTTag for convenience.
 @property_bit: the property bit to use for this feature.  See
 	       pango_ot_ruleset_add_feature() for details.
 @Since: 1.18
+
+<!-- ##### MACRO PANGO_OT_TAG_MAKE ##### -->
+<para>
+Creates a #PangoOTTag from four characters.  This is similar and
+compatible with the <function>FT_MAKE_TAG()</function> macro from
+FreeType.
+</para>
+
+@c1: First character.
+@c2: Second character.
+@c3: Third character.
+@c4: Fourth character.
+
+
+<!-- ##### MACRO PANGO_OT_TAG_MAKE_FROM_STRING ##### -->
+<para>
+Creates a #PangoOTTag from a string. The string should be at least
+four characters long (pad with space characters if needed), and need
+not be nul-terminated.  This is a convenience wrapper around
+PANGO_OT_TAG_MAKE(), but cannot be used in certain situations, for
+example, as a switch expression, as it dereferences pointers.
+</para>
+
+@s: The string representation of the tag.
+
 
 <!-- ##### MACRO PANGO_OT_ALL_GLYPHS ##### -->
 <para>

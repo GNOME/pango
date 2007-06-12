@@ -1,3 +1,23 @@
+2007-06-11  Behdad Esfahbod  <behdad@gnome.org>
+
+	* pango/pango-ot.h: New engine public macros:
+	
+		PANGO_OT_TAG_MAKE()
+		PANGO_OT_TAG_MAKE_FROM_STRING()
+
+	* docs/pango-sections.txt:
+	* docs/tmpl/opentype.sgml:
+	Update.
+
+2007-06-11  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 446018 – Bus error in the pango_ot_tag_from_language()
+
+	* pango/pango-ot-tag.c (pango_ot_tag_from_script),
+	(pango_ot_tag_to_script), (pango_ot_tag_from_language),
+	(pango_ot_tag_to_language): Make sure int access is
+	aligned.
+
 2007-06-12  Richard Hult  <richard@imendio.com>
 
 	* pango/pangoatsui-fontmap.c (pango_atsui_face_is_synthesized):

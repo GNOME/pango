@@ -23,78 +23,83 @@
 
 #include "pango-ot.h"
 
+typedef union {
+  char string[4];
+  guint32 integer;
+} Tag;
+
 /*
  * complete list at:
  * http://www.microsoft.com/typography/developers/opentype/scripttags.aspx
  */
-static const char ot_scripts[][4] = {
-  "DFLT",	/* PANGO_SCRIPT_COMMON */
-  "DFLT",	/* PANGO_SCRIPT_INHERITED */
-  "arab",	/* PANGO_SCRIPT_ARABIC */
-  "armn",	/* PANGO_SCRIPT_ARMENIAN */
-  "beng",	/* PANGO_SCRIPT_BENGALI */
-  "bopo",	/* PANGO_SCRIPT_BOPOMOFO */
-  "cher",	/* PANGO_SCRIPT_CHEROKEE */
-  "copt",	/* PANGO_SCRIPT_COPTIC */
-  "cyrl",	/* PANGO_SCRIPT_CYRILLIC */
-  "dsrt",	/* PANGO_SCRIPT_DESERET */
-  "deva",	/* PANGO_SCRIPT_DEVANAGARI */
-  "ethi",	/* PANGO_SCRIPT_ETHIOPIC */
-  "geor",	/* PANGO_SCRIPT_GEORGIAN */
-  "goth",	/* PANGO_SCRIPT_GOTHIC */
-  "grek",	/* PANGO_SCRIPT_GREEK */
-  "gujr",	/* PANGO_SCRIPT_GUJARATI */
-  "guru",	/* PANGO_SCRIPT_GURMUKHI */
-  "hani",	/* PANGO_SCRIPT_HAN */
-  "hang",	/* PANGO_SCRIPT_HANGUL */
-  "hebr",	/* PANGO_SCRIPT_HEBREW */
-  "kana",	/* PANGO_SCRIPT_HIRAGANA */
-  "knda",	/* PANGO_SCRIPT_KANNADA */
-  "kana",	/* PANGO_SCRIPT_KATAKANA */
-  "khmr",	/* PANGO_SCRIPT_KHMER */
-  "lao ",	/* PANGO_SCRIPT_LAO */
-  "latn",	/* PANGO_SCRIPT_LATIN */
-  "mlym",	/* PANGO_SCRIPT_MALAYALAM */
-  "mong",	/* PANGO_SCRIPT_MONGOLIAN */
-  "mymr",	/* PANGO_SCRIPT_MYANMAR */
-  "ogam",	/* PANGO_SCRIPT_OGHAM */
-  "ital",	/* PANGO_SCRIPT_OLD_ITALIC */
-  "orya",	/* PANGO_SCRIPT_ORIYA */
-  "runr",	/* PANGO_SCRIPT_RUNIC */
-  "sinh",	/* PANGO_SCRIPT_SINHALA */
-  "syrc",	/* PANGO_SCRIPT_SYRIAC */
-  "taml",	/* PANGO_SCRIPT_TAMIL */
-  "telu",	/* PANGO_SCRIPT_TELUGU */
-  "thaa",	/* PANGO_SCRIPT_THAANA */
-  "thai",	/* PANGO_SCRIPT_THAI */
-  "tibt",	/* PANGO_SCRIPT_TIBETAN */
-  "cans",	/* PANGO_SCRIPT_CANADIAN_ABORIGINAL */
-  "yi  ",	/* PANGO_SCRIPT_YI */
-  "tglg",	/* PANGO_SCRIPT_TAGALOG */
-  "hano",	/* PANGO_SCRIPT_HANUNOO */
-  "buhd",	/* PANGO_SCRIPT_BUHID */
-  "tagb",	/* PANGO_SCRIPT_TAGBANWA */
-  "brai",	/* PANGO_SCRIPT_BRAILLE */
-  "cprt",	/* PANGO_SCRIPT_CYPRIOT */
-  "limb",	/* PANGO_SCRIPT_LIMBU */
-  "osma",	/* PANGO_SCRIPT_OSMANYA */
-  "shaw",	/* PANGO_SCRIPT_SHAVIAN */
-  "linb",	/* PANGO_SCRIPT_LINEAR_B */
-  "tale",	/* PANGO_SCRIPT_TAI_LE */
-  "ugar",	/* PANGO_SCRIPT_UGARITIC */
-  "talu",	/* PANGO_SCRIPT_NEW_TAI_LUE */
-  "bugi",	/* PANGO_SCRIPT_BUGINESE */
-  "glag",	/* PANGO_SCRIPT_GLAGOLITIC */
-  "tfng",	/* PANGO_SCRIPT_TIFINAGH */
-  "sylo",	/* PANGO_SCRIPT_SYLOTI_NAGRI */
-  "xpeo",	/* PANGO_SCRIPT_OLD_PERSIAN */
-  "khar",	/* PANGO_SCRIPT_KHAROSHTHI */
-  "DFLT",	/* PANGO_SCRIPT_UNKNOWN */
-  "bali",	/* PANGO_SCRIPT_BALINESE */
-  "xsux",	/* PANGO_SCRIPT_CUNEIFORM */
-  "phnx",	/* PANGO_SCRIPT_PHOENICIAN */
-  "phag",	/* PANGO_SCRIPT_PHAGS_PA */
-  "nko "	/* PANGO_SCRIPT_NKO */
+static const Tag ot_scripts[] = {
+  {"DFLT"},	/* PANGO_SCRIPT_COMMON */
+  {"DFLT"},	/* PANGO_SCRIPT_INHERITED */
+  {"arab"},	/* PANGO_SCRIPT_ARABIC */
+  {"armn"},	/* PANGO_SCRIPT_ARMENIAN */
+  {"beng"},	/* PANGO_SCRIPT_BENGALI */
+  {"bopo"},	/* PANGO_SCRIPT_BOPOMOFO */
+  {"cher"},	/* PANGO_SCRIPT_CHEROKEE */
+  {"copt"},	/* PANGO_SCRIPT_COPTIC */
+  {"cyrl"},	/* PANGO_SCRIPT_CYRILLIC */
+  {"dsrt"},	/* PANGO_SCRIPT_DESERET */
+  {"deva"},	/* PANGO_SCRIPT_DEVANAGARI */
+  {"ethi"},	/* PANGO_SCRIPT_ETHIOPIC */
+  {"geor"},	/* PANGO_SCRIPT_GEORGIAN */
+  {"goth"},	/* PANGO_SCRIPT_GOTHIC */
+  {"grek"},	/* PANGO_SCRIPT_GREEK */
+  {"gujr"},	/* PANGO_SCRIPT_GUJARATI */
+  {"guru"},	/* PANGO_SCRIPT_GURMUKHI */
+  {"hani"},	/* PANGO_SCRIPT_HAN */
+  {"hang"},	/* PANGO_SCRIPT_HANGUL */
+  {"hebr"},	/* PANGO_SCRIPT_HEBREW */
+  {"kana"},	/* PANGO_SCRIPT_HIRAGANA */
+  {"knda"},	/* PANGO_SCRIPT_KANNADA */
+  {"kana"},	/* PANGO_SCRIPT_KATAKANA */
+  {"khmr"},	/* PANGO_SCRIPT_KHMER */
+  {"lao "},	/* PANGO_SCRIPT_LAO */
+  {"latn"},	/* PANGO_SCRIPT_LATIN */
+  {"mlym"},	/* PANGO_SCRIPT_MALAYALAM */
+  {"mong"},	/* PANGO_SCRIPT_MONGOLIAN */
+  {"mymr"},	/* PANGO_SCRIPT_MYANMAR */
+  {"ogam"},	/* PANGO_SCRIPT_OGHAM */
+  {"ital"},	/* PANGO_SCRIPT_OLD_ITALIC */
+  {"orya"},	/* PANGO_SCRIPT_ORIYA */
+  {"runr"},	/* PANGO_SCRIPT_RUNIC */
+  {"sinh"},	/* PANGO_SCRIPT_SINHALA */
+  {"syrc"},	/* PANGO_SCRIPT_SYRIAC */
+  {"taml"},	/* PANGO_SCRIPT_TAMIL */
+  {"telu"},	/* PANGO_SCRIPT_TELUGU */
+  {"thaa"},	/* PANGO_SCRIPT_THAANA */
+  {"thai"},	/* PANGO_SCRIPT_THAI */
+  {"tibt"},	/* PANGO_SCRIPT_TIBETAN */
+  {"cans"},	/* PANGO_SCRIPT_CANADIAN_ABORIGINAL */
+  {"yi  "},	/* PANGO_SCRIPT_YI */
+  {"tglg"},	/* PANGO_SCRIPT_TAGALOG */
+  {"hano"},	/* PANGO_SCRIPT_HANUNOO */
+  {"buhd"},	/* PANGO_SCRIPT_BUHID */
+  {"tagb"},	/* PANGO_SCRIPT_TAGBANWA */
+  {"brai"},	/* PANGO_SCRIPT_BRAILLE */
+  {"cprt"},	/* PANGO_SCRIPT_CYPRIOT */
+  {"limb"},	/* PANGO_SCRIPT_LIMBU */
+  {"osma"},	/* PANGO_SCRIPT_OSMANYA */
+  {"shaw"},	/* PANGO_SCRIPT_SHAVIAN */
+  {"linb"},	/* PANGO_SCRIPT_LINEAR_B */
+  {"tale"},	/* PANGO_SCRIPT_TAI_LE */
+  {"ugar"},	/* PANGO_SCRIPT_UGARITIC */
+  {"talu"},	/* PANGO_SCRIPT_NEW_TAI_LUE */
+  {"bugi"},	/* PANGO_SCRIPT_BUGINESE */
+  {"glag"},	/* PANGO_SCRIPT_GLAGOLITIC */
+  {"tfng"},	/* PANGO_SCRIPT_TIFINAGH */
+  {"sylo"},	/* PANGO_SCRIPT_SYLOTI_NAGRI */
+  {"xpeo"},	/* PANGO_SCRIPT_OLD_PERSIAN */
+  {"khar"},	/* PANGO_SCRIPT_KHAROSHTHI */
+  {"DFLT"},	/* PANGO_SCRIPT_UNKNOWN */
+  {"bali"},	/* PANGO_SCRIPT_BALINESE */
+  {"xsux"},	/* PANGO_SCRIPT_CUNEIFORM */
+  {"phnx"},	/* PANGO_SCRIPT_PHOENICIAN */
+  {"phag"},	/* PANGO_SCRIPT_PHAGS_PA */
+  {"nko "}	/* PANGO_SCRIPT_NKO */
 };
 
 /**
@@ -122,7 +127,7 @@ pango_ot_tag_from_script (PangoScript script)
 {
   g_return_val_if_fail (script >= 0 && (guint)script < G_N_ELEMENTS (ot_scripts), PANGO_OT_TAG_DEFAULT_SCRIPT);
 
-  return GUINT32_FROM_BE (* (PangoOTTag *) ot_scripts[script]);
+  return GUINT32_FROM_BE (ot_scripts[script].integer);
 }
 
 /**
@@ -154,7 +159,7 @@ pango_ot_tag_to_script (PangoOTTag script_tag)
 
   for (i = 0; i < (PangoScript) G_N_ELEMENTS (ot_scripts); i++)
     {
-      guint32 tag = * (guint32 *) ot_scripts[i];
+      guint32 tag = ot_scripts[i].integer;
 
       if (tag == be_tag)
         return i;
@@ -166,7 +171,7 @@ pango_ot_tag_to_script (PangoOTTag script_tag)
 
 typedef struct {
   char language[6];
-  char tag[4];
+  Tag tag;
 } LangTag;
 
 /*
@@ -178,203 +183,203 @@ typedef struct {
  * free to add.  Keep sorted for bsearch purpose.
  */
 static const LangTag ot_languages[] = {
-  {"aa",	"AFR "},
-  {"ab",	"ABK "},
-  {"ady",	"ADY "},
-  {"af",	"AFK "},
-  {"am",	"AMH "},
-  {"ar",	"ARA "},
-  {"as",	"ASM "},
-  {"awa",	"AWA "},
-  {"ay",	"AYM "},
-  {"az",	"AZE "},
-  {"ba",	"BSH "},
-  {"bal",	"BLI "},
-  {"bem",	"BEM "},
-  {"ber",	"BBR "},
-  {"bg",	"BGR "},
-  {"bho",	"BHO "},
-  {"bik",	"BIK "},
-  {"bin",	"EDO "},
-  {"bm",	"BMB "},
-  {"bn",	"BEN "},
-  {"bo",	"TIB "},
-  {"br",	"BRE "},
-  {"brh",	"BRH "},
-  {"ca",	"CAT "},
-  {"ce",	"CHE "},
-  {"ceb",	"CEB "},
-  {"chp",	"CHP "},
-  {"chr",	"CHR "},
-  {"cop",	"COP "},
-  {"cr",	"CRE "},
-  {"crh",	"CRT "},
-  {"cs",	"CSY "},
-  {"cu",	"CSL "},
-  {"cv",	"CHU "},
-  {"cy",	"WEL "},
-  {"da",	"DAN "},
-  {"dar",	"DAR "},
-  {"de",	"DEU "},
-  {"din",	"DNK "},
-  {"doi",	"DGR "},
-  {"dsb",	"LSB "},
-  {"dv",	"DHV "},
-  {"dz",	"DZN "},
-  {"ee",	"EWE "},
-  {"efi",	"EFI "},
-  {"el",	"ELL "},
-  {"en",	"ENG "},
-  {"eo",	"NTO "},
-  {"es",	"ESP "},
-  {"et",	"ETI "},
-  {"eu",	"EUQ "},
-  {"fa",	"FAR "},
-  {"ff",	"FUL "},
-  {"fi",	"FIN "},
-  {"fil",	"PIL "},
-  {"fj",	"FJI "},
-  {"fo",	"FOS "},
-  {"fon",	"FON "},
-  {"fr",	"FRA "},
-  {"fur",	"FRL "},
-  {"fy",	"FRI "},
-  {"ga",	"IRI "},
-  {"gaa",	"GAD "},
-  {"gd",	"GAE "},
-  {"gl",	"GAL "},
-  {"gn",	"GUA "},
-  {"gon",	"GON "},
-  {"gu",	"GUJ "},
-  {"ha",	"HAU "},
-  {"he",	"IWR "},
-  {"hi",	"HIN "},
-  {"hil",	"HIL "},
-  {"hr",	"HRV "},
-  {"hsb",	"USB "},
-  {"ht",	"HAI "},
-  {"hu",	"HUN "},
-  {"hy",	"HYE "},
-  {"id",	"IND "},
-  {"ig",	"IBO "},
-  {"inc",	"SRK "},
-  {"ine",	"KHW "},
-  {"inh",	"ING "},
-  {"is",	"ISL "},
-  {"it",	"ITA "},
-  {"iu",	"INU "},
-  {"ja",	"JAN "},
-  {"jv",	"JAV "},
-  {"ka",	"KAT "},
-  {"kam",	"KMB "},
-  {"kbd",	"KAB "},
-  {"kha",	"KSI "},
-  {"ki",	"KIK "},
-  {"kk",	"KAZ "},
-  {"kl",	"GRN "},
-  {"km",	"KHM "},
-  {"kn",	"KAN "},
-  {"ko",	"KOR "},
-  {"kok",	"KOK "},
-  {"kpe",	"KPL "},
-  {"kr",	"KNR "},
-  {"krl",	"KRL "},
-  {"kru",	"KUU "},
-  {"ks",	"KSH "},
-  {"ku",	"KUR "},
-  {"kum",	"KUM "},
-  {"ky",	"KIR "},
-  {"la",	"LAT "},
-  {"lad",	"JUD "},
-  {"lbj",	"LDK "},
-  {"ln",	"LIN "},
-  {"lo",	"LAO "},
-  {"lt",	"LTH "},
-  {"lv",	"LVI "},
-  {"mai",	"MTH "},
-  {"mdf",	"MOK "},
-  {"men",	"MDE "},
-  {"mg",	"MLG "},
-  {"mi",	"MRI "},
-  {"mkh",	"KUY "},
-  {"ml",	"MLR "},
-  {"mnc",	"MCH "},
-  {"mni",	"MNI "},
-  {"mnk",	"MND "},
-  {"mo",	"MOL "},
-  {"mr",	"MAR "},
-  {"ms",	"MLY "},
-  {"mt",	"MTS "},
-  {"mwr",	"MAW "},
-  {"my",	"BRM "},
-  {"myv",	"ERZ "},
-  {"ne",	"NEP "},
-  {"nl",	"NLD "},
-  {"no",	"NOR "},
-  {"ny",	"CHI "},
-  {"oc",	"PRO "},
-  {"om",	"ORO "},
-  {"or",	"ORI "},
-  {"os",	"OSS "},
-  {"pa",	"PAN "},
-  {"pi",	"PAL "},
-  {"pl",	"PLK "},
-  {"ps",	"PAS "},
-  {"pt",	"PTG "},
-  {"ro",	"ROM "},
-  {"rom",	"ROY "},
-  {"ru",	"RUS "},
-  {"sa",	"SAN "},
-  {"sat",	"SAT "},
-  {"sd",	"SND "},
-  {"sel",	"SEL "},
-  {"sg",	"SGO "},
-  {"shn",	"SHN "},
-  {"si",	"SNH "},
-  {"sid",	"SID "},
-  {"sk",	"SKY "},
-  {"sl",	"SLV "},
-  {"sm",	"SMO "},
-  {"smj",	"LSM "},
-  {"smn",	"ISM "},
-  {"sms",	"SKS "},
-  {"snk",	"SNK "},
-  {"so",	"SML "},
-  {"sq",	"SQI "},
-  {"sr",	"SRB "},
-  {"srr",	"SRR "},
-  {"sv",	"SVE "},
-  {"sw",	"SWK "},
-  {"syr",	"SYR "},
-  {"ta",	"TAM "},
-  {"te",	"TEL "},
-  {"tg",	"TAJ "},
-  {"th",	"THA "},
-  {"ti",	"TGY "},
-  {"tig",	"TGR "},
-  {"tk",	"TKM "},
-  {"tn",	"TNA "},
-  {"tr",	"TRK "},
-  {"ts",	"TSG "},
-  {"tw",	"TWI "},
-  {"udm",	"UDM "},
-  {"ug",	"UYG "},
-  {"uk",	"UKR "},
-  {"ur",	"URD "},
-  {"uz",	"UZB "},
-  {"ve",	"VEN "},
-  {"vi",	"VIT "},
-  {"wo",	"WLF "},
-  {"xal",	"KLM "},
-  {"xh",	"XHS "},
-  {"yi",	"JII "},
-  {"yo",	"YBA "},
-  {"zh-cn",	"ZHS "},
-  {"zh-hk",	"ZHH "},
-  {"zh-mo",	"ZHT "},
-  {"zh-sg",	"ZHS "},
-  {"zh-tw",	"ZHT "},
-  {"zu",	"ZUL "}
+  {"aa",	{"AFR "}},
+  {"ab",	{"ABK "}},
+  {"ady",	{"ADY "}},
+  {"af",	{"AFK "}},
+  {"am",	{"AMH "}},
+  {"ar",	{"ARA "}},
+  {"as",	{"ASM "}},
+  {"awa",	{"AWA "}},
+  {"ay",	{"AYM "}},
+  {"az",	{"AZE "}},
+  {"ba",	{"BSH "}},
+  {"bal",	{"BLI "}},
+  {"bem",	{"BEM "}},
+  {"ber",	{"BBR "}},
+  {"bg",	{"BGR "}},
+  {"bho",	{"BHO "}},
+  {"bik",	{"BIK "}},
+  {"bin",	{"EDO "}},
+  {"bm",	{"BMB "}},
+  {"bn",	{"BEN "}},
+  {"bo",	{"TIB "}},
+  {"br",	{"BRE "}},
+  {"brh",	{"BRH "}},
+  {"ca",	{"CAT "}},
+  {"ce",	{"CHE "}},
+  {"ceb",	{"CEB "}},
+  {"chp",	{"CHP "}},
+  {"chr",	{"CHR "}},
+  {"cop",	{"COP "}},
+  {"cr",	{"CRE "}},
+  {"crh",	{"CRT "}},
+  {"cs",	{"CSY "}},
+  {"cu",	{"CSL "}},
+  {"cv",	{"CHU "}},
+  {"cy",	{"WEL "}},
+  {"da",	{"DAN "}},
+  {"dar",	{"DAR "}},
+  {"de",	{"DEU "}},
+  {"din",	{"DNK "}},
+  {"doi",	{"DGR "}},
+  {"dsb",	{"LSB "}},
+  {"dv",	{"DHV "}},
+  {"dz",	{"DZN "}},
+  {"ee",	{"EWE "}},
+  {"efi",	{"EFI "}},
+  {"el",	{"ELL "}},
+  {"en",	{"ENG "}},
+  {"eo",	{"NTO "}},
+  {"es",	{"ESP "}},
+  {"et",	{"ETI "}},
+  {"eu",	{"EUQ "}},
+  {"fa",	{"FAR "}},
+  {"ff",	{"FUL "}},
+  {"fi",	{"FIN "}},
+  {"fil",	{"PIL "}},
+  {"fj",	{"FJI "}},
+  {"fo",	{"FOS "}},
+  {"fon",	{"FON "}},
+  {"fr",	{"FRA "}},
+  {"fur",	{"FRL "}},
+  {"fy",	{"FRI "}},
+  {"ga",	{"IRI "}},
+  {"gaa",	{"GAD "}},
+  {"gd",	{"GAE "}},
+  {"gl",	{"GAL "}},
+  {"gn",	{"GUA "}},
+  {"gon",	{"GON "}},
+  {"gu",	{"GUJ "}},
+  {"ha",	{"HAU "}},
+  {"he",	{"IWR "}},
+  {"hi",	{"HIN "}},
+  {"hil",	{"HIL "}},
+  {"hr",	{"HRV "}},
+  {"hsb",	{"USB "}},
+  {"ht",	{"HAI "}},
+  {"hu",	{"HUN "}},
+  {"hy",	{"HYE "}},
+  {"id",	{"IND "}},
+  {"ig",	{"IBO "}},
+  {"inc",	{"SRK "}},
+  {"ine",	{"KHW "}},
+  {"inh",	{"ING "}},
+  {"is",	{"ISL "}},
+  {"it",	{"ITA "}},
+  {"iu",	{"INU "}},
+  {"ja",	{"JAN "}},
+  {"jv",	{"JAV "}},
+  {"ka",	{"KAT "}},
+  {"kam",	{"KMB "}},
+  {"kbd",	{"KAB "}},
+  {"kha",	{"KSI "}},
+  {"ki",	{"KIK "}},
+  {"kk",	{"KAZ "}},
+  {"kl",	{"GRN "}},
+  {"km",	{"KHM "}},
+  {"kn",	{"KAN "}},
+  {"ko",	{"KOR "}},
+  {"kok",	{"KOK "}},
+  {"kpe",	{"KPL "}},
+  {"kr",	{"KNR "}},
+  {"krl",	{"KRL "}},
+  {"kru",	{"KUU "}},
+  {"ks",	{"KSH "}},
+  {"ku",	{"KUR "}},
+  {"kum",	{"KUM "}},
+  {"ky",	{"KIR "}},
+  {"la",	{"LAT "}},
+  {"lad",	{"JUD "}},
+  {"lbj",	{"LDK "}},
+  {"ln",	{"LIN "}},
+  {"lo",	{"LAO "}},
+  {"lt",	{"LTH "}},
+  {"lv",	{"LVI "}},
+  {"mai",	{"MTH "}},
+  {"mdf",	{"MOK "}},
+  {"men",	{"MDE "}},
+  {"mg",	{"MLG "}},
+  {"mi",	{"MRI "}},
+  {"mkh",	{"KUY "}},
+  {"ml",	{"MLR "}},
+  {"mnc",	{"MCH "}},
+  {"mni",	{"MNI "}},
+  {"mnk",	{"MND "}},
+  {"mo",	{"MOL "}},
+  {"mr",	{"MAR "}},
+  {"ms",	{"MLY "}},
+  {"mt",	{"MTS "}},
+  {"mwr",	{"MAW "}},
+  {"my",	{"BRM "}},
+  {"myv",	{"ERZ "}},
+  {"ne",	{"NEP "}},
+  {"nl",	{"NLD "}},
+  {"no",	{"NOR "}},
+  {"ny",	{"CHI "}},
+  {"oc",	{"PRO "}},
+  {"om",	{"ORO "}},
+  {"or",	{"ORI "}},
+  {"os",	{"OSS "}},
+  {"pa",	{"PAN "}},
+  {"pi",	{"PAL "}},
+  {"pl",	{"PLK "}},
+  {"ps",	{"PAS "}},
+  {"pt",	{"PTG "}},
+  {"ro",	{"ROM "}},
+  {"rom",	{"ROY "}},
+  {"ru",	{"RUS "}},
+  {"sa",	{"SAN "}},
+  {"sat",	{"SAT "}},
+  {"sd",	{"SND "}},
+  {"sel",	{"SEL "}},
+  {"sg",	{"SGO "}},
+  {"shn",	{"SHN "}},
+  {"si",	{"SNH "}},
+  {"sid",	{"SID "}},
+  {"sk",	{"SKY "}},
+  {"sl",	{"SLV "}},
+  {"sm",	{"SMO "}},
+  {"smj",	{"LSM "}},
+  {"smn",	{"ISM "}},
+  {"sms",	{"SKS "}},
+  {"snk",	{"SNK "}},
+  {"so",	{"SML "}},
+  {"sq",	{"SQI "}},
+  {"sr",	{"SRB "}},
+  {"srr",	{"SRR "}},
+  {"sv",	{"SVE "}},
+  {"sw",	{"SWK "}},
+  {"syr",	{"SYR "}},
+  {"ta",	{"TAM "}},
+  {"te",	{"TEL "}},
+  {"tg",	{"TAJ "}},
+  {"th",	{"THA "}},
+  {"ti",	{"TGY "}},
+  {"tig",	{"TGR "}},
+  {"tk",	{"TKM "}},
+  {"tn",	{"TNA "}},
+  {"tr",	{"TRK "}},
+  {"ts",	{"TSG "}},
+  {"tw",	{"TWI "}},
+  {"udm",	{"UDM "}},
+  {"ug",	{"UYG "}},
+  {"uk",	{"UKR "}},
+  {"ur",	{"URD "}},
+  {"uz",	{"UZB "}},
+  {"ve",	{"VEN "}},
+  {"vi",	{"VIT "}},
+  {"wo",	{"WLF "}},
+  {"xal",	{"KLM "}},
+  {"xh",	{"XHS "}},
+  {"yi",	{"JII "}},
+  {"yo",	{"YBA "}},
+  {"zh-cn",	{"ZHS "}},
+  {"zh-hk",	{"ZHH "}},
+  {"zh-mo",	{"ZHT "}},
+  {"zh-sg",	{"ZHS "}},
+  {"zh-tw",	{"ZHT "}},
+  {"zu",	{"ZUL "}}
 };
 
 static int
@@ -450,7 +455,7 @@ pango_ot_tag_from_language (PangoLanguage *language)
     }
 
   if (lang_tag)
-    return GUINT32_FROM_BE (* (PangoOTTag *) lang_tag->tag);
+    return GUINT32_FROM_BE (lang_tag->tag.integer);
 
   return PANGO_OT_TAG_DEFAULT_LANGUAGE;
 }
@@ -474,7 +479,7 @@ pango_ot_tag_to_language (PangoOTTag language_tag)
 
   for (i = 0; i < (int) G_N_ELEMENTS (ot_languages); i++)
     {
-      guint32 tag = * (guint32 *) ot_languages[i].tag;
+      guint32 tag = ot_languages[i].tag.integer;
 
       if (tag == be_tag)
         return pango_language_from_string (ot_languages[i].language);

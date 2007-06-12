@@ -105,6 +105,7 @@ pango_cairo_font_map_new (void)
 
 /**
  * pango_cairo_font_map_new_for_font_type:
+ * @fonttype: desired #cairo_font_type_t
  *
  * Creates a new #PangoCairoFontMap object of the type suitable
  * to be used with cairo font backend of type @fonttype.

@@ -34,6 +34,12 @@ G_BEGIN_DECLS
 
 typedef guint32 PangoOTTag;
 
+#define PANGO_OT_TAG_MAKE(c1,c2,c3,c4)		((PangoOTTag) FT_MAKE_TAG (c1, c2, c3, c4))
+#define PANGO_OT_TAG_MAKE_FROM_STRING(s)	(PANGO_OT_TAG_MAKE(((const char *) s)[0], \
+								   ((const char *) s)[1], \
+								   ((const char *) s)[2], \
+								   ((const char *) s)[3]))
+
 typedef struct _PangoOTInfo       PangoOTInfo;
 typedef struct _PangoOTBuffer     PangoOTBuffer;
 typedef struct _PangoOTGlyph      PangoOTGlyph;
@@ -47,14 +53,13 @@ typedef enum
   PANGO_OT_TABLE_GPOS
 } PangoOTTableType;
 
+#define PANGO_OT_ALL_GLYPHS			((guint) 0xFFFF)
+#define PANGO_OT_NO_FEATURE			((guint) 0xFFFF)
+#define PANGO_OT_NO_SCRIPT			((guint) 0xFFFF)
+#define PANGO_OT_DEFAULT_LANGUAGE		((guint) 0xFFFF)
 
-#define PANGO_OT_ALL_GLYPHS		((guint) 0xFFFF)
-#define PANGO_OT_NO_FEATURE		((guint) 0xFFFF)
-#define PANGO_OT_NO_SCRIPT		((guint) 0xFFFF)
-#define PANGO_OT_DEFAULT_LANGUAGE	((guint) 0xFFFF)
-
-#define PANGO_OT_TAG_DEFAULT_SCRIPT		((PangoOTTag) (FT_MAKE_TAG ('D', 'F', 'L', 'T')))
-#define PANGO_OT_TAG_DEFAULT_LANGUAGE		((PangoOTTag) (FT_MAKE_TAG ('d', 'f', 'l', 't')))
+#define PANGO_OT_TAG_DEFAULT_SCRIPT		PANGO_OT_TAG_MAKE ('D', 'F', 'L', 'T')
+#define PANGO_OT_TAG_DEFAULT_LANGUAGE		PANGO_OT_TAG_MAKE ('d', 'f', 'l', 't')
 
 /* Note that this must match HB_GlyphItem */
 struct _PangoOTGlyph
