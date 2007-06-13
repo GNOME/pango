@@ -12,7 +12,7 @@
 
 2007-06-12  Tor Lillqvist  <tml@novell.com>
 
-	* pango/pangowin32-fontmap.c: Implement
+	* pango/pangocairo-win32fontmap.c: Implement
 	PangoCairoWin32FontMap::get_font_type().
 
 2007-06-12  Tor Lillqvist  <tml@novell.com>
