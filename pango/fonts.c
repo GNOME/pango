@@ -1787,7 +1787,7 @@ pango_font_face_describe (PangoFontFace *face)
 gboolean
 pango_font_face_is_synthesized (PangoFontFace  *face)
 {
-  g_return_val_if_fail (PANGO_IS_FONT_FACE (face), NULL);
+  g_return_val_if_fail (PANGO_IS_FONT_FACE (face), FALSE);
 
   if (PANGO_FONT_FACE_GET_CLASS (face)->is_synthesized != NULL)
     return PANGO_FONT_FACE_GET_CLASS (face)->is_synthesized (face);

@@ -1,3 +1,10 @@
+2007-06-13  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 447189 – fonts.c: pango_font_face_is_synthesized returns NULL
+
+	* pango/fonts.c (pango_font_face_is_synthesized): Fix
+	return value.
+
 2007-06-12  Behdad Esfahbod  <behdad@gnome.org>
 
 	* pango/pango-attributes.c (pango_attr_font_desc_equal):
