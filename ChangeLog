@@ -1,3 +1,9 @@
+2007-06-14  Behdad Esfahbod  <behdad@gnome.org>
+
+	* pango/pangocairo-font.c
+	(_pango_cairo_font_private_scaled_font_data_destroy):
+	Check for NULL before dereferencing.  Patch from Keith Packard.
+
 2007-06-13  Behdad Esfahbod  <behdad@gnome.org>
 
 	Bug 447189 – fonts.c: pango_font_face_is_synthesized returns NULL

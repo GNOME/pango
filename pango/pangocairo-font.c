@@ -75,8 +75,11 @@ _pango_cairo_font_private_scaled_font_data_create (void)
 static void
 _pango_cairo_font_private_scaled_font_data_destroy (PangoCairoFontPrivateScaledFontData *data)
 {
-  cairo_font_options_destroy (data->options);
-  g_slice_free (PangoCairoFontPrivateScaledFontData, data);
+  if (data)
+    {
+      cairo_font_options_destroy (data->options);
+      g_slice_free (PangoCairoFontPrivateScaledFontData, data);
+    }
 }
 
 cairo_scaled_font_t *
