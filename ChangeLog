@@ -1,3 +1,7 @@
+2007-06-15  Hans Breuer  <hans@breuer.org>
+
+	* pango/makefile.msc : updated
+
 2007-06-14  Behdad Esfahbod  <behdad@gnome.org>
 
 	* pango/pangocairo-font.c

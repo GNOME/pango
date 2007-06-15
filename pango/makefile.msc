@@ -10,7 +10,8 @@ PANGO_VER = 1.0
 PANGO_MODULE_VERSION = 1.6.0
 
 # INCLUDES = -I .. -I .
-# DEFINES = -DPACKAGE=\"Pango\" -DVERSION=\"$(PANGO_VER)\"
+# -DHAVE_USP10_H 
+# DEFINES = -DPACKAGE=\"Pango\" -DVERSION=\"$(PANGO_VER)\" 
 # DEPCFLAGS = $(GLIB_CFLAGS) $(LIBICONV_CFLAGS) $(FREETYPE2_CFLAGS)
 
 !IFNDEF PACKAGE
@@ -48,7 +49,11 @@ PKG_CFLAGS = -FImsvc_recommended_pragmas.h -I.. -I. -I$(PRJ_TOP) \
 		-DPANGO_ENABLE_BACKEND -DPANGO_ENABLE_ENGINE \
 		-DMODULE_VERSION=\"$(PANGO_MODULE_VERSION)\" \
 		$(GLIB_CFLAGS) $(LIBICONV_CFLAGS) \
-		$(X11_CFLAGS)  -DSYSCONFDIR=\"/etc\"
+		$(X11_CFLAGS)  -DSYSCONFDIR=\"/etc\" \
+		-DPANGO_BINARY_AGE=0 
+
+#-DHAVE_USP10_H
+		
 
 !IFDEF OBJS_pango
 # don't link with itself
@@ -104,9 +109,11 @@ OBJECTS = \
 	pango-fontset.obj \
 	pango-fontmap.obj \
 	pango-glyph-item.obj \
+	pango-gravity.obj \
 	pango-item.obj \
 	pango-markup.obj \
 	pango-matrix.obj \
+	pango-language.obj \
 	pango-layout.obj \
 	pango-renderer.obj \
 	pango-script.obj \
@@ -137,6 +144,9 @@ fribidi_types.obj : mini-fribidi\fribidi_types.c
 fribidi_char_type.obj : mini-fribidi\fribidi_char_type.c
 	$(CC) $(PKG_CFLAGS) -GD -c mini-fribidi\fribidi_char_type.c
 
+testfonts.obj : ..\examples\pangowin32tobmp.c
+	$(CC) $(PKG_CFLAGS) -GD  -Fotestfonts.obj -c ..\examples\pangowin32tobmp.c
+
 !IFDEF OBJS_pangowin32
 PKG_CFLAGS = $(PKG_CFLAGS) -DPANGO_MODULE_PREFIX=_pango_basic_win32
 OBJECTS = \
@@ -160,6 +170,7 @@ OBJECTS = \
 	\
 	pango-ot-buffer.obj \
 	pango-ot-info.obj \
+	pango-ot-tag.obj \
 	pango-ot-ruleset.obj \
 	\
 	basic-fc.obj
@@ -183,6 +194,7 @@ PKG_CFLAGS = \
 	$(PKG_CFLAGS) $(FONTCONFIG_CFLAGS) $(FREETYPE2_CFLAGS) \
 	-DHAVE_CAIRO_WIN32 $(CAIRO_CFLAGS)
 OBJECTS = \
+        pangocairo-context.obj \
         pangocairo-font.obj \
         pangocairo-fontmap.obj \
         pangocairo-render.obj \
@@ -224,6 +236,7 @@ pango_headers=		   \
 	pango-fontset.h    \
 	pango-glyph.h	   \
 	pango-glyph-item.h \
+	pango-gravity.h    \
 	pango-item.h	   \
 	pango-layout.h	   \
 	pango-modules.h	   \
@@ -263,7 +276,9 @@ $(PACKAGE).exe : $(PKG_LINK) $(OBJECTS)
 	$(CC) $(CFLAGS) -Fe$(PACKAGE).exe $(OBJECTS) $(PKG_LINK) gdi32.lib user32.lib
 
 $(PRJ_TOP)\config.h.win32 : makefile.msc
-	echo /*empty*/ > $(PRJ_TOP)\config.h.win32
+	echo /*almostempty*/ > $(PRJ_TOP)\config.h.win32
+	echo #define PANGO_BINARY_AGE 0 >> $(PRJ_TOP)\config.h.win32
+	echo #define DHAVE_USP10_H 1 >> $(PRJ_TOP)\config.h.win32
 
 $(PRJ_TOP)\config.h: $(PRJ_TOP)\config.h.win32
 	copy $(PRJ_TOP)\config.h.win32 $(PRJ_TOP)\config.h
