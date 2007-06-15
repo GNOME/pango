@@ -557,7 +557,6 @@ static const GMarkupParser pango_markup_parser = {
  * @accel_char: address of return location for accelerator char, or %NULL
  * @error: address of return location for errors, or %NULL
  *
- *
  * Parses marked-up text (see
  * <link linkend="PangoMarkupFormat">markup format</link>) to create
  * a plain-text string and an attribute list.
@@ -569,6 +568,9 @@ static const GMarkupParser pango_markup_parser = {
  * and the first character so marked will be returned in @accel_char.
  * Two @accel_marker characters following each other produce a single
  * literal @accel_marker character.
+ *
+ * If any error happens, none of the output arguments are touched except
+ * for @error.
  *
  * Return value: %FALSE if @error is set, otherwise %TRUE
  **/
