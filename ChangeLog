@@ -1,5 +1,13 @@
 2007-06-18  Behdad Esfahbod  <behdad@gnome.org>
 
+	* === Released 1.17.3 ===
+
+	* configure.in: Version 1.17.3
+
+	* NEWS: Updated.
+
+2007-06-18  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 448342 – pango_layout_index_to_line_x() counts lines from 1
 
 	* pango/pango-layout.c (pango_layout_index_to_line):
