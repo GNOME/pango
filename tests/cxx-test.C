@@ -22,6 +22,10 @@
 #include <pango/pangoft2.h>
 #endif
 
+#ifdef HAVE_CAIRO
+#include <pango/pangocairo.h>
+#endif
+
 int
 main ()
 {
