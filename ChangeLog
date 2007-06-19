@@ -1,5 +1,12 @@
 2007-06-18  Behdad Esfahbod  <behdad@gnome.org>
 
+	Bug 448342 – pango_layout_index_to_line_x() counts lines from 1
+
+	* pango/pango-layout.c (pango_layout_index_to_line):
+	Count lines from zero, not one!
+
+2007-06-18  Behdad Esfahbod  <behdad@gnome.org>
+
 	* configure.in:
 	* tests/cxx-test.C: Include pangocairo.h too.
 

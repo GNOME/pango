@@ -1428,7 +1428,7 @@ pango_layout_index_to_line (PangoLayout      *layout,
   GSList *line_list;
   PangoLayoutLine *line = NULL;
   PangoLayoutLine *prev_line = NULL;
-  int i = 0;
+  int i = -1;
 
   line_list = tmp_list = layout->lines;
   while (tmp_list)
