@@ -1,3 +1,9 @@
+2007-06-18  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 447568 – improve docs on what absolute size means
+
+	* pango/fonts.c: Improve docs.
+
 2007-06-15  Hans Breuer  <hans@breuer.org>
 
 	* pango/makefile.msc : updated

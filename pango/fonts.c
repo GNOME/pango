@@ -387,7 +387,8 @@ pango_font_description_get_size (const PangoFontDescription *desc)
  *   value of 10 * PANGO_SCALE gives a 10 pixel font.
  *
  * Sets the size field of a font description, in device units. This is mutually
- * exclusive with pango_font_description_set_size().
+ * exclusive with pango_font_description_set_size() which sets the font size
+ * in points.
  *
  * Since: 1.8
  **/
@@ -407,7 +408,7 @@ pango_font_description_set_absolute_size (PangoFontDescription *desc,
  * pango_font_description_get_size_is_absolute:
  * @desc: a #PangoFontDescription
  *
- * Determines whether the size of the font is in points or device units.
+ * Determines whether the size of the font is in points (not absolute) or device units (absolute).
  * See pango_font_description_set_size() and pango_font_description_set_absolute_size().
  *
  * Return value: whether the size for the font description is in
@@ -1178,6 +1179,9 @@ pango_font_description_to_filename (const PangoFontDescription  *desc)
 
   result = pango_font_description_to_string (desc);
 
+  /* XXX This should be rewritten to read char-by-char instead
+   * of byte-by-byte, to be Unicode safe.
+   */
   p = result;
   while (*p)
     {
