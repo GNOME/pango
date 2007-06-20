@@ -3799,7 +3799,7 @@ pango_layout_line_get_type (void)
 {
   static GType our_type = 0;
 
-  if (our_type == 0)
+  if (G_UNLIKELY (our_type == 0))
     our_type = g_boxed_type_register_static (I_("PangoLayoutLine"),
 					     (GBoxedCopyFunc) pango_layout_line_ref,
 					     (GBoxedFreeFunc) pango_layout_line_unref);
@@ -5314,7 +5314,7 @@ pango_layout_iter_get_type (void)
 {
   static GType our_type = 0;
 
-  if (our_type == 0)
+  if (G_UNLIKELY (our_type == 0))
     our_type = g_boxed_type_register_static (I_("PangoLayoutIter"),
 					     (GBoxedCopyFunc) pango_layout_iter_copy,
 					     (GBoxedFreeFunc) pango_layout_iter_free);

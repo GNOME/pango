@@ -178,7 +178,7 @@ pango_x_font_map_get_type (void)
 {
   static GType object_type = 0;
 
-  if (!object_type)
+  if (G_UNLIKELY (!object_type))
     {
       const GTypeInfo object_info =
       {
@@ -1490,7 +1490,7 @@ pango_x_face_get_type (void)
 {
   static GType object_type = 0;
 
-  if (!object_type)
+  if (G_UNLIKELY (!object_type))
     {
       const GTypeInfo object_info =
       {
@@ -1649,7 +1649,7 @@ pango_x_family_get_type (void)
 {
   static GType object_type = 0;
 
-  if (!object_type)
+  if (G_UNLIKELY (!object_type))
     {
       const GTypeInfo object_info =
       {

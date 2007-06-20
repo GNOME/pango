@@ -1,3 +1,29 @@
+2007-06-20  Behdad Esfahbod  <behdad@gnome.org>
+
+	* pango/fonts.c (pango_font_description_get_type),
+	(pango_font_metrics_get_type):
+	* pango/glyphstring.c (pango_glyph_string_get_type):
+	* pango/pango-attributes.c (pango_attr_list_get_type):
+	* pango/pango-color.c (pango_color_get_type):
+	* pango/pango-item.c (pango_item_get_type):
+	* pango/pango-language.c (pango_language_get_type):
+	* pango/pango-layout.c (pango_layout_line_get_type),
+	(pango_layout_iter_get_type):
+	* pango/pango-matrix.c (pango_matrix_get_type):
+	* pango/pango-ot-info.c (pango_ot_info_get_type):
+	* pango/pango-ot-ruleset.c (pango_ot_ruleset_get_type):
+	* pango/pango-tabs.c (pango_tab_array_get_type):
+	* pango/pangoatsui-fontmap.c (pango_atsui_family_get_type),
+	(pango_atsui_face_get_type):
+	* pango/pangofc-fontmap.c (pango_fc_face_get_type),
+	(pango_fc_family_get_type):
+	* pango/pangowin32-fontmap.c (pango_win32_family_get_type),
+	(pango_win32_face_get_type):
+	* pango/pangox-fontmap.c (pango_x_font_map_get_type),
+	(pango_x_face_get_type), (pango_x_family_get_type):
+	* pango/pangox.c (pango_x_font_get_type):
+	Add G_UNLIKELY() to type registration block in _get_type() functions.
+
 2007-06-18  Behdad Esfahbod  <behdad@gnome.org>
 
 	* === Released 1.17.3 ===

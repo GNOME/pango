@@ -32,7 +32,7 @@ pango_color_get_type (void)
 {
   static GType our_type = 0;
 
-  if (our_type == 0)
+  if (G_UNLIKELY (our_type == 0))
     our_type = g_boxed_type_register_static (I_("PangoColor"),
 					     (GBoxedCopyFunc) pango_color_copy,
 					     (GBoxedFreeFunc) pango_color_free);
