@@ -195,6 +195,16 @@ Function type for doing final config tweaking on prepared FcPatterns.
 </para>
 
 
+<!-- ##### ARG PangoXftRenderer:display ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG PangoXftRenderer:screen ##### -->
+<para>
+
+</para>
+
 <!-- ##### STRUCT PangoXftRendererClass ##### -->
 <para>
 
