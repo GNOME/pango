@@ -1,3 +1,21 @@
+2007-06-24  Richard Hult  <richard@imendio.com>
+
+	Bug 449543 - Ship pangoatsui.h
+
+	* pango/pangoatsui-fontmap.c:
+	* pango/pangoatsui-private.h:
+	* pango/pangoatsui.c:
+	* pango/pangoatsui.h:
+	* pango/pangocairo-atsuifont.c:
+	* pango/pangocairo-atsuifont.h: Move get_atsu_font_id from the
+	cairo atsui font class to the atsui base class. Make the members
+	of the atsui font private and adapt all users of them.
+
+	* pango/Makefile.am: Ship pangoatsui.h.
+
+	* modules/basic/basic-atsui.c: (basic_engine_shape): Adapt to the
+	above changes.
+
 2007-06-21  Behdad Esfahbod  <behdad@gnome.org>
 
 	* docs/pango.types: Add missing types.

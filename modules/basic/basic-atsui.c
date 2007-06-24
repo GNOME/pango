@@ -27,7 +27,6 @@
 #include "pango-utils.h"
 #include "pango-fontmap.h"
 #include "pangoatsui.h"
-#include "pangocairo-atsuifont.h"
 
 /* No extra fields needed */
 typedef PangoEngineShape      BasicEngineATSUI;
@@ -112,14 +111,12 @@ basic_engine_shape (PangoEngineShape    *engine,
   ItemCount glyph_count;
   int i;
   const char *p;
-  PangoCairoATSUIFont *cafont = PANGO_CAIRO_ATSUI_FONT (font);
+  PangoATSUIFont *afont = PANGO_ATSUI_FONT (font);
   ATSUStyle style;
   ATSUFontID fontID;
-  ATSUAttributeTag styleTags[] =
-    { kATSUFontTag };
+  ATSUAttributeTag styleTags[] = { kATSUFontTag };
   ATSUAttributeValuePtr styleValues[] = { &fontID };
-  ByteCount styleSizes[] =
-    { sizeof(ATSUFontID) };
+  ByteCount styleSizes[] = { sizeof (ATSUFontID) };
 
   utf16 = g_utf8_to_utf16 (text, length, NULL, &n16, NULL);
 
@@ -127,7 +124,7 @@ basic_engine_shape (PangoEngineShape    *engine,
   err = ATSUSetTextPointerLocation (text_layout, utf16, 0, n16, n16);
 
   err = ATSUCreateStyle(&style);
-  fontID = pango_cairo_atsui_font_get_atsu_font_id (cafont);
+  fontID = pango_atsui_font_get_atsu_font_id (afont);
 
   err = ATSUSetAttributes(style,
 			  sizeof(styleTags) / sizeof(styleTags[0]),
@@ -140,7 +137,6 @@ basic_engine_shape (PangoEngineShape    *engine,
 						       kATSUDirectDataLayoutRecordATSLayoutRecordCurrent,
 						       (void *)&layout_records,
 						       &glyph_count);
-
 
   p = text;
   pango_glyph_string_set_size (glyphs, glyph_count - 1);

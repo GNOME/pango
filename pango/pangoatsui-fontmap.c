@@ -597,18 +597,17 @@ pango_atsui_font_map_add (PangoATSUIFontMap *atsuifontmap,
 {
   FontHashKey key;
   FontHashKey *key_copy;
+  PangoATSUIFace *face;
 
-  g_assert (atsuifont->fontmap == NULL);
-
-  atsuifont->fontmap = g_object_ref (atsuifontmap);
+  _pango_atsui_font_set_font_map (atsuifont, atsuifontmap);
 
   font_hash_key_for_context (atsuifontmap, context, &key);
-  key.postscript_name = (char *)_pango_atsui_face_get_postscript_name (atsuifont->face);
-  key.desc = atsuifont->desc;
+  face = _pango_atsui_font_get_face (atsuifont);
+  key.postscript_name = (char *)_pango_atsui_face_get_postscript_name (face);
+  key.desc = _pango_atsui_font_get_font_description (atsuifont);
 
   key_copy = font_hash_key_copy (&key);
-  atsuifont->context_key = key_copy->context_key;
-  atsuifont->matrix = key.matrix;
+  _pango_atsui_font_set_context_key (atsuifont, key_copy->context_key);
   g_hash_table_insert (atsuifontmap->font_hash, key_copy, g_object_ref (atsuifont));
 }
 

@@ -179,10 +179,9 @@ static PangoFontDescription *
 pango_cairo_atsui_font_describe_absolute (PangoFont *font)
 {
   PangoFontDescription *desc;
-  PangoATSUIFont *afont = (PangoATSUIFont *) font;
   PangoCairoATSUIFont *cafont = (PangoCairoATSUIFont *) font;
 
-  desc = pango_font_description_copy (afont->desc);
+  desc = pango_font_describe (font);
   pango_font_description_set_absolute_size (desc, cafont->absolute_size);
 
   return desc;
@@ -275,8 +274,8 @@ _pango_cairo_atsui_font_new (PangoCairoATSUIFontMap     *cafontmap,
   cafont = g_object_new (PANGO_TYPE_CAIRO_ATSUI_FONT, NULL);
   afont = PANGO_ATSUI_FONT (cafont);
 
-  afont->desc = pango_font_description_copy (desc);
-  afont->face = face;
+  _pango_atsui_font_set_font_description (afont, desc);
+  _pango_atsui_font_set_face (afont, face);
 
   size = (double) pango_font_description_get_size (desc) / PANGO_SCALE;
   cafont->font_id = font_id;

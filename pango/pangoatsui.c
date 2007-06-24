@@ -21,18 +21,31 @@
 
 #include <config.h>
 
+#include "pangoatsui.h"
 #include "pangoatsui-private.h"
 
 G_DEFINE_TYPE (PangoATSUIFont, pango_atsui_font, PANGO_TYPE_FONT);
 
+struct _PangoATSUIFontPrivate
+{
+  PangoATSUIFace *face;
+  PangoFontDescription *desc;
+  gpointer context_key;
+
+  ATSUFontID font_id;
+
+  PangoFontMap *fontmap;
+};
+
 static void
 pango_atsui_font_finalize (GObject *object)
 {
-  PangoATSUIFont *font = (PangoATSUIFont *)object;
+  PangoATSUIFont *afont = (PangoATSUIFont *)object;
+  PangoATSUIFontPrivate *priv = afont->priv;
 
-  pango_font_description_free (font->desc);
+  pango_font_description_free (priv->desc);
 
-  g_object_unref (font->fontmap);
+  g_object_unref (priv->fontmap);
 
   G_OBJECT_CLASS (pango_atsui_font_parent_class)->finalize (object);
 }
@@ -40,17 +53,21 @@ pango_atsui_font_finalize (GObject *object)
 static PangoFontDescription *
 pango_atsui_font_describe (PangoFont *font)
 {
-  PangoATSUIFont *atsuifont = PANGO_ATSUI_FONT (font);
+  PangoATSUIFont *afont = (PangoATSUIFont *)font;
+  PangoATSUIFontPrivate *priv = afont->priv;
 
-  return pango_font_description_copy (atsuifont->desc);
+  return pango_font_description_copy (priv->desc);
 }
 
 static PangoCoverage *
 pango_atsui_font_get_coverage (PangoFont     *font,
 	                       PangoLanguage *language)
 {
-  return pango_coverage_ref (_pango_atsui_face_get_coverage (PANGO_ATSUI_FONT (font)->face,
-							     language));
+  PangoATSUIFont *afont = (PangoATSUIFont *)font;
+  PangoATSUIFontPrivate *priv = afont->priv;
+
+  return pango_coverage_ref (_pango_atsui_face_get_coverage (priv->face,
+                                                             language));
 }
 
 static PangoEngineShape *
@@ -65,14 +82,17 @@ pango_atsui_font_find_shaper (PangoFont     *font,
 static PangoFontMap *
 pango_atsui_font_get_font_map (PangoFont *font)
 {
-  PangoATSUIFont *atsuifont = (PangoATSUIFont *)font;
+  PangoATSUIFont *afont = (PangoATSUIFont *)font;
 
-  return atsuifont->fontmap;
+  return afont->priv->fontmap;
 }
 
 static void
-pango_atsui_font_init (PangoATSUIFont *font)
+pango_atsui_font_init (PangoATSUIFont *afont)
 {
+  afont->priv = G_TYPE_INSTANCE_GET_PRIVATE (afont,
+                                             PANGO_TYPE_ATSUI_FONT,
+                                             PangoATSUIFontPrivate);
 }
 
 static void
@@ -87,8 +107,85 @@ pango_atsui_font_class_init (PangoATSUIFontClass *class)
   font_class->get_coverage = pango_atsui_font_get_coverage;
   font_class->find_shaper = pango_atsui_font_find_shaper;
   font_class->get_font_map = pango_atsui_font_get_font_map;
+
+  g_type_class_add_private (object_class, sizeof (PangoATSUIFontPrivate));
 }
 
+void
+_pango_atsui_font_set_font_description (PangoATSUIFont             *font,
+                                        const PangoFontDescription *desc)
+{
+  PangoATSUIFontPrivate *priv = font->priv;
 
+  priv->desc = pango_font_description_copy (desc);
+}
 
+PangoFontDescription *
+_pango_atsui_font_get_font_description (PangoATSUIFont *font)
+{
+  PangoATSUIFontPrivate *priv = font->priv;
 
+  return priv->desc;
+}
+
+void
+_pango_atsui_font_set_font_map (PangoATSUIFont    *font,
+                                PangoATSUIFontMap *fontmap)
+{
+  PangoATSUIFontPrivate *priv = font->priv;
+
+  g_assert (priv->fontmap == NULL);
+  
+  priv->fontmap = g_object_ref (fontmap);
+}
+
+void
+_pango_atsui_font_set_face (PangoATSUIFont *afont, 
+                            PangoATSUIFace *face)
+{
+  PangoATSUIFontPrivate *priv = afont->priv;
+
+  priv->face = face;
+}
+
+PangoATSUIFace *
+_pango_atsui_font_get_face (PangoATSUIFont *afont)
+{
+  PangoATSUIFontPrivate *priv = afont->priv;
+
+  return priv->face;
+}
+
+gpointer
+_pango_atsui_font_get_context_key (PangoATSUIFont *afont)
+{
+  PangoATSUIFontPrivate *priv = afont->priv;
+
+  return priv->context_key;
+}
+
+void
+_pango_atsui_font_set_context_key (PangoATSUIFont *afont,
+                                   gpointer        context_key)
+{
+  PangoATSUIFontPrivate *priv = afont->priv;
+
+  priv->context_key = context_key;
+}
+
+void
+_pango_atsui_font_set_atsu_font_id (PangoATSUIFont *font,
+                                    ATSUFontID      font_id)
+{
+  PangoATSUIFontPrivate *priv = font->priv;
+
+  priv->font_id = font_id;
+}
+
+ATSUFontID
+pango_atsui_font_get_atsu_font_id (PangoATSUIFont *font)
+{
+  PangoATSUIFontPrivate *priv = font->priv;
+
+  return priv->font_id;
+}

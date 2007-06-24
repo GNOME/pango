@@ -33,6 +33,4 @@ typedef struct _PangoCairoATSUIFontClass PangoCairoATSUIFontClass;
 
 GType pango_cairo_atsui_font_get_type (void) G_GNUC_CONST;
 
-ATSUFontID pango_cairo_atsui_font_get_atsu_font_id (PangoCairoATSUIFont *cafont);
-
 #endif /* __PANGOCAIRO_ATSUIFONT_H__ */

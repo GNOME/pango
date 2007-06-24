@@ -311,6 +311,7 @@ libpangocairo_1_0_la_SOURCES += \
 	pangocairo-atsuifont.c	\
 	pangocairo-atsuifont.h	\
 	pangocairo-atsuifontmap.c
+pangoinclude_HEADERS += pangoatsui.h
 
 libpangocairo_1_0_la_CFLAGS = -xobjective-c
 libpangocairo_1_0_la_LDFLAGS += -framework CoreFoundation -framework Carbon -framework Cocoa
