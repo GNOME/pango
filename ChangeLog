@@ -1,3 +1,11 @@
+2007-06-26  Richard Hult  <richard@imendio.com>
+
+	* pango/pangoatsui.c: (_pango_atsui_font_set_atsu_font_id):
+	* pango/pangocairo-atsuifont.c:
+	(pango_cairo_atsui_font_create_metrics_for_context),
+	(_pango_cairo_atsui_font_new): Move the remaining uses of font_id
+	from PangoCairoATSUIFont to PangoATSUIFont.
+
 2007-06-24  Richard Hult  <richard@imendio.com>
 
 	Bug 449543 - Ship pangoatsui.h

@@ -182,6 +182,16 @@ _pango_atsui_font_set_atsu_font_id (PangoATSUIFont *font,
   priv->font_id = font_id;
 }
 
+/**
+ * pango_atsui_font_get_atsu_font_id:
+ * @font: A #PangoATSUIFont
+ *
+ * Returns the ATSUFontID of a font.
+ *
+ * Return value: the ATSUFontID associated to @font.
+ *
+ * Since: 1.18
+ */
 ATSUFontID
 pango_atsui_font_get_atsu_font_id (PangoATSUIFont *font)
 {

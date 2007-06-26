@@ -35,8 +35,6 @@ struct _PangoCairoATSUIFont
   PangoATSUIFont font;
   PangoCairoFontPrivate cf_priv;
 
-  ATSUFontID font_id;
-
   double size;
   int absolute_size;
 };
@@ -51,23 +49,6 @@ struct _PangoCairoATSUIFontClass
 static cairo_font_face_t *pango_cairo_atsui_font_create_font_face           (PangoCairoFont *font);
 static PangoFontMetrics  *pango_cairo_atsui_font_create_metrics_for_context (PangoCairoFont *font,
                                                                             PangoContext    *context);
-
-
-/**
- * pango_cairo_atsui_font_get_atsu_font_id:
- * @cafont: A #PangoCairoATSUIFont
- *
- * Returns the ATSUFontID of a font.
- *
- * Return value: the ATSUFontID associated to @cafont.
- *
- * Since: 1.12
- */
-ATSUFontID
-pango_cairo_atsui_font_get_atsu_font_id (PangoCairoATSUIFont *cafont)
-{
-  return cafont->font_id;
-}
 
 static void
 cairo_font_iface_init (PangoCairoFontIface *iface)
@@ -100,9 +81,11 @@ pango_cairo_atsui_font_get_glyph_extents (PangoFont      *font,
 static cairo_font_face_t *
 pango_cairo_atsui_font_create_font_face (PangoCairoFont *font)
 {
-  PangoCairoATSUIFont *cafont = (PangoCairoATSUIFont *) (font);
+  PangoATSUIFont *afont = (PangoATSUIFont *) (font);
+  ATSUFontID font_id;
 
-  return cairo_atsui_font_face_create_for_atsu_font_id (cafont->font_id);
+  font_id = pango_atsui_font_get_atsu_font_id (afont);
+  return cairo_atsui_font_face_create_for_atsu_font_id (font_id);
 }
 
 static int
@@ -134,6 +117,7 @@ pango_cairo_atsui_font_create_metrics_for_context (PangoCairoFont *font,
                                                    PangoContext   *context)
 {
   PangoCairoATSUIFont *cafont = (PangoCairoATSUIFont *) font;
+  PangoATSUIFont *afont = (PangoATSUIFont *) font;
   ATSFontRef ats_font;
   ATSFontMetrics ats_metrics;
   PangoFontMetrics *metrics;
@@ -143,7 +127,7 @@ pango_cairo_atsui_font_create_metrics_for_context (PangoCairoFont *font,
   PangoLanguage *language = pango_context_get_language (context);
   const char *sample_str = pango_language_get_sample_string (language);
 
-  ats_font = FMGetATSFontRefFromFont (cafont->font_id);
+  ats_font = FMGetATSFontRefFromFont (pango_atsui_font_get_atsu_font_id (afont));
 
   ATSFontGetHorizontalMetrics (ats_font, kATSOptionFlagsDefault, &ats_metrics);
 
@@ -278,7 +262,7 @@ _pango_cairo_atsui_font_new (PangoCairoATSUIFontMap     *cafontmap,
   _pango_atsui_font_set_face (afont, face);
 
   size = (double) pango_font_description_get_size (desc) / PANGO_SCALE;
-  cafont->font_id = font_id;
+  _pango_atsui_font_set_atsu_font_id (afont, font_id);
 
   if (context)
     {
