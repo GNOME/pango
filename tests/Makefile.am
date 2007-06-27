@@ -31,7 +31,11 @@ INCLUDES += -DHAVE_WIN32
 endif
 
 
+if CROSS_COMPILING
+TESTS=
+else
 TESTS=runtests.sh
+endif
 
 TESTS_ENVIRONMENT =                    \
    srcdir=$(srcdir)                    \

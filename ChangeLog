@@ -1,3 +1,11 @@
+2007-06-27  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 451547 – FAIL: runtests.sh
+
+	* tests/Makefile.am: Don't run tests if cross-compiling.
+	(though cross-compiling tests work under scratchbox, so I'm not
+	quite sure how good this change is.)
+
 2007-06-26  Richard Hult  <richard@imendio.com>
 
 	* pango/pangoatsui.c: (_pango_atsui_font_set_atsu_font_id):
