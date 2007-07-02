@@ -1,3 +1,11 @@
+2007-07-02  Behdad Esfahbod  <behdad@gnome.org>
+
+	* === Released 1.17.4 ===
+
+	* configure.in: Version 1.17.4
+
+	* NEWS: Updated.
+
 2007-06-27  Behdad Esfahbod  <behdad@gnome.org>
 
 	Bug 451547 – FAIL: runtests.sh

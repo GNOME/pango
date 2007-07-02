@@ -26,12 +26,3 @@ an ATSUI font used with the cairo backend.
 </para>
 
 
-<!-- ##### FUNCTION pango_cairo_atsui_font_get_atsu_font_id ##### -->
-<para>
-
-</para>
-
-@cafont: 
-@Returns: 
-
-

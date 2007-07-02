@@ -1,3 +1,13 @@
+Overview of changes between 1.17.3 and 1.17.4
+==============================================
+- Refactored the ATSUI font backend and install pangoatsui.h
+  that has a single function pango_atsui_font_get_atsu_font_id() and
+  a couple of types.
+
+- Bugs fixed in this release:
+	Bug 451547 – FAIL: runtests.sh
+	Bug 449543 - Ship pangoatsui.h
+
 Overview of changes between 1.17.2 and 1.17.3
 ==============================================
 - Extensive pangocairo internal code refactoring and cleanup
