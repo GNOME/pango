@@ -33,8 +33,6 @@
 #include "pango-engine.h"
 #include "pango-utils.h"
 
-#include "basic-common.h"
-
 /* No extra fields needed */
 typedef PangoEngineShape      BasicEngineWin32;
 typedef PangoEngineShapeClass BasicEngineWin32Class ;

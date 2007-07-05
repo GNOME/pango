@@ -1,3 +1,12 @@
+2007-07-05  Behdad Esfahbod  <behdad@gnome.org>
+
+	* modules/basic/Makefile.am:
+	* modules/basic/basic-fc.c:
+	* modules/basic/basic-win32.c:
+	* modules/basic/basic-x.c:
+	* modules/basic/basic-common.h:
+	Remove unused empty header file basic-common.h
+
 2007-07-02  Behdad Esfahbod  <behdad@gnome.org>
 
 	* === Released 1.17.4 ===

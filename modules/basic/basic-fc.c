@@ -29,8 +29,6 @@
 #include "pangofc-font.h"
 #include "pango-ot.h"
 
-#include "basic-common.h"
-
 /* No extra fields needed */
 typedef PangoEngineShape      BasicEngineFc;
 typedef PangoEngineShapeClass BasicEngineFcClass;

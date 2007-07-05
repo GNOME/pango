@@ -28,8 +28,6 @@
 #undef PANGO_DISABLE_DEPRECATED
 #include "pangox.h"
 
-#include "basic-common.h"
-
 /* No extra fields needed */
 typedef PangoEngineShape      BasicEngineX;
 typedef PangoEngineShapeClass BasicEngineXClass ;

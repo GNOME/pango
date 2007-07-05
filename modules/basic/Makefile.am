@@ -70,6 +70,5 @@ libpango_basic_atsui_la_SOURCES = basic-atsui.c
 libpango_basic_atsui_la_CFLAGS = -DPANGO_MODULE_PREFIX=_pango_basic_atsui
 
 EXTRA_DIST =		\
-	basic-common.h	\
 	tables-big.i	\
 	tables-small.i
