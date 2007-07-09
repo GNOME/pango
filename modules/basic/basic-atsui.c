@@ -36,33 +36,6 @@ typedef PangoEngineShapeClass BasicEngineATSUIClass ;
 #define RENDER_TYPE PANGO_RENDER_TYPE_ATSUI
 
 static PangoEngineScriptInfo basic_scripts[] = {
-  { PANGO_SCRIPT_ARMENIAN, "*" },
-  { PANGO_SCRIPT_BOPOMOFO, "*" },
-  { PANGO_SCRIPT_CHEROKEE, "*" },
-  { PANGO_SCRIPT_COPTIC,   "*" },
-  { PANGO_SCRIPT_CYRILLIC, "*" },
-  { PANGO_SCRIPT_DESERET,  "*" },
-  { PANGO_SCRIPT_ETHIOPIC, "*" },
-  { PANGO_SCRIPT_GEORGIAN, "*" },
-  { PANGO_SCRIPT_GOTHIC,   "*" },
-  { PANGO_SCRIPT_GREEK,    "*" },
-  { PANGO_SCRIPT_HAN,      "*" },
-  { PANGO_SCRIPT_HIRAGANA, "*" },
-  { PANGO_SCRIPT_KATAKANA, "*" },
-  { PANGO_SCRIPT_LATIN,    "*" },
-  { PANGO_SCRIPT_OGHAM,    "*" },
-  { PANGO_SCRIPT_OLD_ITALIC, "*" },
-  { PANGO_SCRIPT_RUNIC,     "*" },
-  { PANGO_SCRIPT_CANADIAN_ABORIGINAL, "*" },
-  { PANGO_SCRIPT_YI,       "*" },
-  { PANGO_SCRIPT_BRAILLE,  "*" },
-  { PANGO_SCRIPT_CYPRIOT,  "*" },
-  { PANGO_SCRIPT_LIMBU,    "*" },
-  { PANGO_SCRIPT_OSMANYA,  "*" },
-  { PANGO_SCRIPT_SHAVIAN,  "*" },
-  { PANGO_SCRIPT_LINEAR_B, "*" },
-  { PANGO_SCRIPT_UGARITIC, "*" },
-
   { PANGO_SCRIPT_COMMON,   "" }
 };
 
