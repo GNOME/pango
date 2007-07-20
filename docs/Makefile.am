@@ -53,12 +53,16 @@ INCLUDES =               	\
 	$(FREETYPE_CFLAGS)	\
 	$(X_CFLAGS)
 
-# libpangoxft.la pulls in libpango.la and libpangoft2.la;
+# libpangoxft.la and/or libpangocairo.la pull in libpango.la
+# and libpangoft2.la;
 # We're assuming here that we'll only regenerate the
 # HTML docs on Unix. We don't get introspection on Win32
-# specific types, but that isn't a bug deal.
+# specific types, but that isn't a big deal.
+
+if HAVE_XFT
 GTKDOC_LIBS =						\
 	$(top_builddir)/pango/libpangoxft-1.0.la
+endif
 
 if HAVE_CAIRO
 GTKDOC_LIBS += $(top_builddir)/pango/libpangocairo-1.0.la
