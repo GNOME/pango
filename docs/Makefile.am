@@ -59,9 +59,10 @@ INCLUDES =               	\
 # HTML docs on Unix. We don't get introspection on Win32
 # specific types, but that isn't a big deal.
 
+GTKDOC_LIBS =
+
 if HAVE_XFT
-GTKDOC_LIBS =						\
-	$(top_builddir)/pango/libpangoxft-1.0.la
+GTKDOC_LIBS += $(top_builddir)/pango/libpangoxft-1.0.la
 endif
 
 if HAVE_CAIRO
