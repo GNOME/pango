@@ -1,3 +1,12 @@
+2007-07-21  Behdad Esfahbod  <behdad@gnome.org>
+
+	* modules/arabic/arabic-fc.c:
+	* modules/basic/basic-fc.c:
+	* modules/hebrew/hebrew-fc.c:
+	* modules/syriac/syriac-fc.c:
+	* modules/thai/thai-fc.c:
+	Update copyright headers.
+
 2007-07-10  Behdad Esfahbod  <behdad@gnome.org>
 
 	* modules/basic/basic-atsui.c: Remove list of supported scripts.

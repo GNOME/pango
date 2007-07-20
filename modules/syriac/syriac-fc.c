@@ -1,11 +1,12 @@
 /* Pango
  * syriac-fc.h:
  *
- * Copyright (C) 2000, 2003 Red Hat Software
- * Author: Owen Taylor <otaylor@redhat.com>
- *
+ * Copyright (C) 2000, 2003, 2007 Red Hat Software
  * Copyright (C) 2004 Emil Soleyman-Zomalan
- * Author: Emil Soleyman-Zomalan <emil@soleyman.com>
+ * Authors:
+ *   Owen Taylor <otaylor@redhat.com>
+ *   Emil Soleyman-Zomalan <emil@soleyman.com>
+ *   Behdad Esfahbod <behdad@behdad.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public

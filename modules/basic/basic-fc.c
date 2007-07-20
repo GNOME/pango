@@ -1,8 +1,10 @@
 /* Pango
  * basic-fc.c: Basic shaper for FreeType-based backends
  *
- * Copyright (C) 2000 Red Hat Software
- * Author: Owen Taylor <otaylor@redhat.com>
+ * Copyright (C) 2000, 2007 Red Hat Software
+ * Authors:
+ *   Owen Taylor <otaylor@redhat.com>
+ *   Behdad Esfahbod <behdad@behdad.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public

@@ -1,14 +1,14 @@
 /* Pango
- * thai-xft.c:
+ * thai-fc.c:
  *
- * Copyright (C) 1999 Red Hat Software
- * Author: Owen Taylor <otaylor@redhat.com>
- *
+ * Copyright (C) 1999, 2007 Red Hat Software
  * Copyright (C) 2002 NECTEC
- * Author: Theppitak Karoonboonyanan <thep@links.nectec.or.th>
- *
  * Copyright (c) 1996-2000 by Sun Microsystems, Inc.
- * Author: Chookij Vanatham <Chookij.Vanatham@Eng.Sun.COM>
+ * Authors:
+ *   Owen Taylor <otaylor@redhat.com>
+ *   Theppitak Karoonboonyanan <thep@links.nectec.or.th>
+ *   Chookij Vanatham <Chookij.Vanatham@Eng.Sun.COM>
+ *   Behdad Esfahbod <behdad@behdad.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
