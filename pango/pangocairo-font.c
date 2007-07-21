@@ -148,7 +148,7 @@ done:
  * @font: a #PangoFont from a #PangoCairoFontMap
  *
  * Gets the #cairo_scaled_font_t used by @font.
- * The scaled font can be referenced and ketp using
+ * The scaled font can be referenced and kept using
  * cairo_scaled_font_reference().
  *
  * Return value: the #cairo_scaled_font_t used by @font
@@ -156,7 +156,7 @@ done:
  * Since: 1.18
  **/
 cairo_scaled_font_t *
-pango_cairo_font_get_scaled_font (PangoFont *cfont)
+pango_cairo_font_get_scaled_font (PangoCairoFont *cfont)
 {
   PangoCairoFontPrivate *cf_priv;
 

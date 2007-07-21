@@ -30,7 +30,7 @@ G_BEGIN_DECLS
 
 #define PANGO_TYPE_ATSUI_FONT       (pango_atsui_font_get_type ())
 #define PANGO_ATSUI_FONT(object)    (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_TYPE_ATSUI_FONT, PangoATSUIFont))
-#define PANGO_ATSUI_IS_FONT(object) (G_TYPE_CHECK_INSTANCE_TYPE ((object), PANGO_TYPE_ATSUI_FONT))
+#define PANGO_IS_ATSUI_FONT(object) (G_TYPE_CHECK_INSTANCE_TYPE ((object), PANGO_TYPE_ATSUI_FONT))
 
 typedef struct _PangoATSUIFont         PangoATSUIFont;
 typedef struct _PangoATSUIFontClass    PangoATSUIFontClass;
@@ -42,7 +42,7 @@ typedef struct _PangoATSUIFontClass    PangoATSUIFontClass;
 #ifdef PANGO_ENABLE_BACKEND
 
 #define PANGO_ATSUI_FONT_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST ((klass), PANGO_TYPE_ATSUI_FONT, PangoATSUIFontClass))
-#define PANGO_ATSUI_IS_FONT_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), PANGO_TYPE_ATSUI_FONT))
+#define PANGO_IS_ATSUI_FONT_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), PANGO_TYPE_ATSUI_FONT))
 #define PANGO_ATSUI_FONT_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS ((obj), PANGO_TYPE_ATSUI_FONT, PangoATSUIFontClass))
 
 typedef struct _PangoATSUIFontPrivate  PangoATSUIFontPrivate;

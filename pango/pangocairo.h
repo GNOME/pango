@@ -30,6 +30,20 @@
 G_BEGIN_DECLS
 
 /**
+ * PangoCairoFont:
+ *
+ * #PangoCairoFont is an interface exported by fonts for
+ * use with Cairo. The actual type of the font will depend
+ * on the particular font technology Cairo was compiled to use.
+ *
+ * Since: 1.18
+ **/
+typedef struct _PangoCairoFont      PangoCairoFont;
+#define PANGO_TYPE_CAIRO_FONT       (pango_cairo_font_get_type ())
+#define PANGO_CAIRO_FONT(object)    (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_TYPE_CAIRO_FONT, PangoCairoFont))
+#define PANGO_IS_CAIRO_FONT(object) (G_TYPE_CHECK_INSTANCE_TYPE ((object), PANGO_TYPE_CAIRO_FONT))
+
+/**
  * PangoCairoFontMap:
  *
  * #PangoCairoFontMap is an interface exported by font maps for
@@ -38,11 +52,10 @@ G_BEGIN_DECLS
  *
  * Since: 1.10
  **/
+typedef struct _PangoCairoFontMap        PangoCairoFontMap;
 #define PANGO_TYPE_CAIRO_FONT_MAP       (pango_cairo_font_map_get_type ())
 #define PANGO_CAIRO_FONT_MAP(object)    (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_TYPE_CAIRO_FONT_MAP, PangoCairoFontMap))
 #define PANGO_IS_CAIRO_FONT_MAP(object) (G_TYPE_CHECK_INSTANCE_TYPE ((object), PANGO_TYPE_CAIRO_FONT_MAP))
-
-typedef struct _PangoCairoFontMap      PangoCairoFontMap;
 
 typedef void (* PangoCairoShapeRendererFunc) (cairo_t        *cr,
 					      PangoAttrShape *attr,
@@ -65,9 +78,11 @@ double        pango_cairo_font_map_get_resolution (PangoCairoFontMap *fontmap);
 PangoContext *pango_cairo_font_map_create_context (PangoCairoFontMap *fontmap);
 
 /*
- * PangoFont methods available to PangoCairo fonts
+ * PangoCairoFont
  */
-cairo_scaled_font_t *pango_cairo_font_get_scaled_font (PangoFont *font);
+GType         pango_cairo_font_get_type               (void) G_GNUC_CONST;
+
+cairo_scaled_font_t *pango_cairo_font_get_scaled_font (PangoCairoFont *font);
 
 /* Update a Pango context for the current state of a cairo context
  */

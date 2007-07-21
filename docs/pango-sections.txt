@@ -822,6 +822,7 @@ pango_xft_renderer_get_type
 <SECTION>
 <TITLE>Cairo Rendering</TITLE>
 <FILE>pangocairo</FILE>
+PangoCairoFont
 PangoCairoFontMap
 pango_cairo_font_map_get_default
 pango_cairo_font_map_new
@@ -850,25 +851,39 @@ pango_cairo_layout_line_path
 pango_cairo_layout_path
 pango_cairo_error_underline_path
 <SUBSECTION Standard>
+PANGO_CAIRO_FONT
 PANGO_CAIRO_FONT_MAP
+PANGO_IS_CAIRO_FONT
 PANGO_IS_CAIRO_FONT_MAP
+PANGO_TYPE_CAIRO_FONT
 PANGO_TYPE_CAIRO_FONT_MAP
+pango_cairo_font_get_type
 pango_cairo_font_map_get_type
 </SECTION>
 
 <SECTION>
 <TITLE>ATSUI Fonts</TITLE>
 <FILE>atsui-fonts</FILE>
-PangoCairoATSUIFont
-pango_cairo_atsui_font_get_atsu_font_id
+PANGO_RENDER_TYPE_ATSUI
+pango_atsui_font_get_atsu_font_id
 <SUBSECTION Standard>
-PangoCairoATSUIFontClass
+PANGO_ATSUI_FONT
+PANGO_ATSUI_FONT_CLASS
+PANGO_ATSUI_FONT_GET_CLASS
 PANGO_CAIRO_ATSUI_FONT
 PANGO_CAIRO_ATSUI_FONT_CLASS
 PANGO_CAIRO_ATSUI_FONT_GET_CLASS
-PANGO_CAIRO_IS_FONT_CLASS
-PANGO_RENDER_TYPE_ATSUI
+PANGO_IS_ATSUI_FONT
+PANGO_IS_ATSUI_FONT_CLASS
+PANGO_IS_CAIRO_ATSUI_FONT_CLASS
+PANGO_TYPE_ATSUI_FONT
 PANGO_TYPE_CAIRO_ATSUI_FONT
+PangoATSUIFont
+PangoATSUIFontClass
+PangoATSUIFontPrivate
+PangoCairoATSUIFont
+PangoCairoATSUIFontClass
+pango_atsui_font_get_type
 pango_cairo_atsui_font_get_type
 </SECTION>
 

@@ -23,6 +23,7 @@ IGNORE_HFILES=			\
 	opentype		\
 	module-defs.h		\
 	modules.h		\
+	pangoatsui-private.h	\
 	pangocairo-private.h	\
 	pangocairo-fc.h		\
 	pangocairo-win32.h	\

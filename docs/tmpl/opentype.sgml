@@ -17,7 +17,7 @@ shaping engines
 </para>
 
 <!-- ##### SECTION Stability_Level ##### -->
-Part of Pango's engine API, but stable
+Unstable
 
 <!-- ##### TYPEDEF PangoOTTag ##### -->
 <para>

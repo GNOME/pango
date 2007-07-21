@@ -46,11 +46,6 @@ struct _PangoCairoFontMapIface
 
 #define PANGO_CAIRO_FONT_GET_IFACE(obj) (G_TYPE_INSTANCE_GET_INTERFACE ((obj), PANGO_TYPE_CAIRO_FONT, PangoCairoFontIface))
 
-#define PANGO_TYPE_CAIRO_FONT       (pango_cairo_font_get_type ())
-#define PANGO_CAIRO_FONT(object)    (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_TYPE_CAIRO_FONT, PangoCairoFont))
-#define PANGO_IS_CAIRO_FONT(object) (G_TYPE_CHECK_INSTANCE_TYPE ((object), PANGO_TYPE_CAIRO_FONT))
-
-typedef struct _PangoCairoFont                       PangoCairoFont;
 typedef struct _PangoCairoFontIface                  PangoCairoFontIface;
 typedef struct _PangoCairoFontPrivate                PangoCairoFontPrivate;
 typedef struct _PangoCairoFontHexBoxInfo             PangoCairoFontHexBoxInfo;
@@ -105,8 +100,6 @@ struct _PangoCairoFontIface
 
   gssize cf_priv_offset;
 };
-
-GType pango_cairo_font_get_type (void) G_GNUC_CONST;
 
 gboolean _pango_cairo_font_install (PangoFont *font,
 				    cairo_t   *cr);

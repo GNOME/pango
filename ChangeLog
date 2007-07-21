@@ -1,5 +1,23 @@
 2007-07-21  Behdad Esfahbod  <behdad@gnome.org>
 
+	Part of Bug 347236 – provide pango_cairo_font_get_scaled_font
+
+	* docs/Makefile.am:
+	* docs/pango-sections.txt:
+	* docs/tmpl/atsui-fonts.sgml:
+	* docs/tmpl/opentype.sgml:
+	* docs/tmpl/pango-engine-lang.sgml:
+	* docs/tmpl/pango-engine-shape.sgml:
+	* docs/tmpl/pangocairo.sgml:
+	* pango/pangoatsui.h:
+	* pango/pangocairo-atsuifont.h:
+	* pango/pangocairo-font.c (pango_cairo_font_get_scaled_font):
+	* pango/pangocairo-private.h:
+	* pango/pangocairo.h:
+	Export PangoCairoFont and cleanup various standard macros.
+
+2007-07-21  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 449482 – Build error when xft not present
 
 	* docs/Makefile.am: Make docs build without xft.
