@@ -43,11 +43,11 @@ struct _PangoATSUIFamily
 
 #define PANGO_TYPE_ATSUI_FAMILY              (pango_atsui_family_get_type ())
 #define PANGO_ATSUI_FAMILY(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_TYPE_ATSUI_FAMILY, PangoATSUIFamily))
-#define PANGO_ATSUI_IS_FAMILY(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), PANGO_TYPE_ATSUI_FAMILY))
+#define PANGO_IS_ATSUI_FAMILY(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), PANGO_TYPE_ATSUI_FAMILY))
 
 #define PANGO_TYPE_ATSUI_FACE              (pango_atsui_face_get_type ())
 #define PANGO_ATSUI_FACE(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_TYPE_ATSUI_FACE, PangoATSUIFace))
-#define PANGO_ATSUI_IS_FACE(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), PANGO_TYPE_ATSUI_FACE))
+#define PANGO_IS_ATSUI_FACE(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), PANGO_TYPE_ATSUI_FACE))
 
 struct _PangoATSUIFace
 {
