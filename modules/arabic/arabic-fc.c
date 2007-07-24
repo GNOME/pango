@@ -95,6 +95,7 @@ arabic_engine_shape (PangoEngineShape *engine,
   gunichar *wcs;
   const char *p;
   int cluster = 0;
+  gboolean rtl = analysis->level % 2 != 0;
   int i;
 
   g_return_if_fail (font != NULL);
@@ -108,13 +109,13 @@ arabic_engine_shape (PangoEngineShape *engine,
     return;
 
   buffer = pango_ot_buffer_new (fc_font);
-  pango_ot_buffer_set_rtl (buffer, analysis->level % 2 != 0);
+  pango_ot_buffer_set_rtl (buffer, rtl);
   pango_ot_buffer_set_zero_width_marks (buffer, TRUE);
 
   wcs = g_utf8_to_ucs4_fast (text, length, &n_chars);
   properties = g_new0 (gulong, n_chars);
 
-  Arabic_Assign_Properties (wcs, properties, n_chars);
+  Arabic_Assign_Properties (wcs, properties, n_chars, !rtl);
 
   g_free (wcs);
 

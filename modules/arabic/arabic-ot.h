@@ -68,7 +68,8 @@ typedef enum joining_class_  joining_class;
 
 FT_Error  Arabic_Assign_Properties (gunichar   *string,
 				    gulong     *properties,
-				    int         length);
+				    int         length,
+				    gboolean    reverse);
 #if 0
 TT_Error  Build_Arabic_Glyph_Properties (TT_CharMap        char_map,
 					 TT_UShort         max_glyphs,

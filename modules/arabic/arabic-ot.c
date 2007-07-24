@@ -319,7 +319,8 @@ TT_Error  Build_Arabic_Glyph_Properties (TT_CharMap        char_map,
 static joining_class  Get_Joining_Class (gunichar*   string,
 					 int         pos,
 					 int         length,
-					 int         direction)
+					 int         direction,
+					 gboolean    reverse)
 {
   joining_class  j;
 
@@ -349,17 +350,22 @@ static joining_class  Get_Joining_Class (gunichar*   string,
 	return none;
 
       if (!direction || j != transparent)
-	return j;
+        {
+	  if (G_UNLIKELY (reverse))
+	    return j == right ? left : j == left ? right : j;
+	  else
+	    return j;
+	}
     }
 }
 
 
 FT_Error  Arabic_Assign_Properties (gunichar    *string,
 				    gulong      *properties,
-				    int          length)
+				    int          length,
+				    gboolean     reverse)
 {
   joining_class  previous, current, next;
-
   int      i;
 
   if (!string || !properties || length == 0)
@@ -367,9 +373,9 @@ FT_Error  Arabic_Assign_Properties (gunichar    *string,
 
   for (i = 0; i < length; i++)
     {
-      previous = Get_Joining_Class (string, i, length, -1);
-      current  = Get_Joining_Class (string, i, length,  0);
-      next     = Get_Joining_Class (string, i, length,  1);
+      previous = Get_Joining_Class (string, i, length, -1, reverse);
+      current  = Get_Joining_Class (string, i, length,  0, reverse);
+      next     = Get_Joining_Class (string, i, length,  1, reverse);
 
       /* R1 */
 
@@ -386,7 +392,7 @@ FT_Error  Arabic_Assign_Properties (gunichar    *string,
 	  previous == dual   )
 	if (current == right)
 	  {
-	    properties[i] |= final_p;
+	    properties[i] |= reverse ? initial_p : final_p;
 	    continue;
 	  }
 
@@ -397,7 +403,7 @@ FT_Error  Arabic_Assign_Properties (gunichar    *string,
 	    next == right   ||
 	    next == dual   )
 	  {
-	    properties[i] |= initial_p;
+	    properties[i] |= reverse ? final_p : initial_p;
 	    continue;
 	  }
 
@@ -425,7 +431,7 @@ FT_Error  Arabic_Assign_Properties (gunichar    *string,
 		next == right   ||
 		next == dual   ))
 	    {
-	      properties[i] |= final_p;
+	      properties[i] |= reverse ? initial_p : final_p;
 	      continue;
 	    }
 
@@ -439,7 +445,7 @@ FT_Error  Arabic_Assign_Properties (gunichar    *string,
 	      next == right   ||
 	      next == dual   )
 	    {
-	      properties[i] |= initial_p;
+	      properties[i] |= reverse ? final_p : initial_p;
 	      continue;
 	    }
 

@@ -1,3 +1,13 @@
+2007-07-24  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 150883 – Unicode LRO defect
+
+	* modules/arabic/arabic-fc.c (arabic_engine_shape):
+	* modules/arabic/arabic-ot.c (Get_Joining_Class),
+	(Arabic_Assign_Properties):
+	* modules/arabic/arabic-ot.h:
+	Correctly handle Arabic shaping in left-to-right runs.
+
 2007-07-21  Behdad Esfahbod  <behdad@gnome.org>
 
 	Part of Bug 347236 – provide pango_cairo_font_get_scaled_font
