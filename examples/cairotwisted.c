@@ -1,4 +1,5 @@
 /* example to use pangocairo to render text projected on a path */
+/* Written by Behdad Esfahbod, 2006.  Not copyrighted, in public domain. */
 
 #include <math.h>
 #include <stdlib.h>
