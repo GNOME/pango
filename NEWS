@@ -1,3 +1,14 @@
+Overview of changes between 1.16.4 and 1.16.5
+==============================================
+- ATSUI backend now lists synthesized italic faces like other
+- Misc optimizations and fixes.
+- Bugs fixed in this release:
+	Bug 443206 – PANGO_SCRIPT_UNKNOWN should not cause a run break
+		Patch from Martin Hosken
+	Bug 416515 – Time is not aligned with date on vertical panel
+	Bug 436154 – Error building the pango.modules file while cross compiling
+	Bug 434160 - [atsui] Italic versions of some faces can't be created
+
 Overview of changes between 1.16.3 and 1.16.4
 ==============================================
 - Add new configure option --disable-doc-cross-references and make

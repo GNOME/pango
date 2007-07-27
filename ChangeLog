@@ -1,3 +1,11 @@
+2007-07-27  Behdad Esfahbod  <behdad@gnome.org>
+
+	* === Released 1.16.5 ===
+
+	* configure.in: Version 1.16.5
+
+	* NEWS: Updated.
+
 2007-06-02  Behdad Esfahbod  <behdad@gnome.org>
 
 	Bug 443206 – PANGO_SCRIPT_UNKNOWN should not cause a run break
