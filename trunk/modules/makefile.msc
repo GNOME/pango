@@ -1,0 +1,63 @@
+# modles for the ft2 backend, don't include 'basic'
+# here it is built-in pangoft.dll, see ../pango/makefile.msc
+MODULES = arabic hangul hebrew indic syriac thai khmer
+
+!IFNDEF MODULE
+
+# The main target
+all : sub-all
+
+sub-all: 
+	for %d in ($(MODULES)) do nmake -nologo -f makefile.msc sub-one THIS=%d
+
+sub-one:
+	cd $(THIS)
+	nmake -nologo -f ..\makefile.msc libpango-$(THIS)-fc.dll MODULE=$(THIS) OBJ_$(THIS)=1
+	cd ..
+
+clean:
+	for %d in ($(MODULE)) do nmake -nologo -f makefile.msc sub-clean THIS=%d
+
+!ELSE
+
+TOP = ..\..\..
+!INCLUDE $(TOP)\glib\build\win32\make.msc
+
+!IFDEF OBJ_arabic
+OBJECTS = arabic-fc.obj arabic-ot.obj
+!ENDIF
+
+!IFDEF OBJ_hebrew
+OBJECTS = hebrew-fc.obj hebrew-shaper.obj
+!ENDIF
+
+!IFDEF OBJ_indic
+OBJECTS = indic-fc.obj indic-ot.obj indic-ot-class-tables.obj mprefixups.obj 
+!ENDIF
+
+!IFDEF OBJ_khmer
+OBJECTS = khmer_fc.obj
+!ENDIF
+
+!IFDEF OBJ_syriac
+OBJECTS = syriac-fc.obj syriac-ot.obj
+!ENDIF
+
+!IFDEF OBJ_thai
+OBJECTS = thai-fc.obj thai-shaper.obj
+!ENDIF
+
+!IFNDEF OBJECTS
+OBJECTS = $(MODULE)-fc.obj
+!ENDIF
+
+INCLUDES = -I ..\.. -I ..\..\pango $(GLIB_CFLAGS) $(FREETYPE2_CFLAGS)
+DEFINES = -DPANGO_ENABLE_ENGINE
+LINKS = $(FREETYPE_LIBS) $(GLIB_LIBS) \
+	..\..\pango\pango-1.0.lib ..\..\pango\pangoft2-1.0.lib
+
+libpango-$(MODULE)-fc.dll : $(OBJECTS) ..\module.def
+	$(CC) $(CFLAGS) -LD -Fe$@ $(OBJECTS) $(LINKS) $(LDFLAGS) /def:..\module.def
+
+# MODULE
+!ENDIF 

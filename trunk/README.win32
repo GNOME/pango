@@ -1,0 +1,50 @@
+The Pango backends written for Win32 is pangowin32. Pangowin32 uses
+the Win32 GDI font API. GTK+ 2.8 and later on Win32 however actually
+uses the pangocairo backend (which then uses only small parts of
+pangowin32). Much of the GDI font API calls are in cairo.
+
+The pangoft2 backend was originally written with Win32 in mind, but
+its main use nowadays is on other platforms than Win32.
+
+There are two ways to build Pango for Win32:
+
+1) Use gcc (mingw), libtool, make, like on Unix.
+
+If building from CVS, run the autogen.sh script that runs aclocal,
+automake, autoconf and configure to build makefiles etc. This is what
+tml@novell.com uses. Pass the same switches to autogen.sh that you
+would pass to the configure script.
+
+If building from a tarball, just running the configure script and then
+make should be enough. But, as always, you need to understand what is
+happening and follow the progress in case manual intervention is
+needed.
+
+If you want to support complex scripts (which you should!), you need
+the usp10.h header from the Platform SDK. Otherwise the basic-win32
+shaper module won' use Uniscribe and for instance Arabic and Indic
+scripts will look like crap. (Yes, complex script support *is*
+important. It is one of the main selling points of GTK+ and Pango.)
+Pass the --with-usp10 flag to the configure script to tell it where
+you have the Platform SDK (or other source of an "usp10.h" or
+"include/usp10.h" file).
+
+tml ran the configure script like this when building binaries for
+Pango 1.10.0:
+
+PATH=/devel/dist/glib-2.8.0/bin:$PATH ACLOCAL_FLAGS="-I /devel/dist/glib-2.8.0/share/aclocal" PKG_CONFIG_PATH=/devel/dist/glib-2.8.0/lib/pkgconfig:$PKG_CONFIG_PATH CC='gcc -mtune=pentium3' CPPFLAGS='-I/opt/gnu/include' LDFLAGS='-L/opt/gnu/lib' CFLAGS=-O ./configure --disable-gtk-doc --with-usp10=/opt/psdk  --without-x --prefix=c:/devel/target/pango-1.10.0
+
+The pango.modules file tends not to get automatically set up correctly
+on Win32. Check that. Also make sure you set up a pango.aliases file
+if you want to support non-Latin scripts. pango.aliases file used by
+tml looks like this:
+
+tahoma = "tahoma,browallia new,mingliu,simhei,gulimche,ms gothic,latha,mangal"
+sans = "arial,browallia new,mingliu,simhei,gulimche,ms gothic,latha,mangal"
+serif = "times new roman,angsana new,mingliu,simsun,gulimche,ms gothic,latha,mangal"
+monospace = "courier new,courier monothai,mingliu,simsun,gulimche,ms gothic,latha,mangal"
+
+2) Use MSVC and nmake. Use the makefile.msc makefiles. These makefiles
+are supported by Hans Breuer. They requires manual editing. You need
+to have the source code to some suitable version of glib in a sibling
+directory. Ask Hans for advice.

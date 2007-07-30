@@ -1,0 +1,290 @@
+TOP = ../..
+!INCLUDE $(TOP)/glib/build/win32/make.msc
+
+!IFNDEF PERL
+PERL = perl
+!ENDIF
+
+# Possibly override Pango version from build/win32/module.defs
+PANGO_VER = 1.0
+PANGO_MODULE_VERSION = 1.6.0
+
+# INCLUDES = -I .. -I .
+# -DHAVE_USP10_H 
+# DEFINES = -DPACKAGE=\"Pango\" -DVERSION=\"$(PANGO_VER)\" 
+# DEPCFLAGS = $(GLIB_CFLAGS) $(LIBICONV_CFLAGS) $(FREETYPE2_CFLAGS)
+
+!IFNDEF PACKAGE
+
+DLLS = pango pangowin32 pangoft2 pangocairo # pangox
+EXES = querymodules testfonts
+#? test1 test2 test3 test4 test5
+
+# The main target
+all : \
+	sub-all
+
+sub-all: 
+	for %d in ($(DLLS)) do nmake -nologo -f makefile.msc sub-one-dll THIS=%d
+	for %d in ($(DLLS)) do nmake -nologo -f makefile.msc sub-one-lib THIS=%d
+	for %d in ($(EXES)) do nmake -nologo -f makefile.msc sub-one-exe THIS=%d
+
+sub-one-lib:
+	nmake -nologo -f makefile.msc $(THIS)-$(PANGO_VER)s.lib PACKAGE=$(THIS) OBJS_$(THIS)=1
+
+sub-one-dll:
+	nmake -nologo -f makefile.msc lib$(THIS)-$(PANGO_VER)-0.dll PACKAGE=$(THIS) OBJS_$(THIS)=1
+
+sub-one-exe:
+	nmake -nologo -f makefile.msc $(THIS).exe PACKAGE=$(THIS) OBJS_$(THIS)=1
+
+!ELSE
+
+PRJ_TOP = ..
+PKG_VER = $(PANGO_VER)
+PKG_DEF = $(PACKAGE).def
+
+PKG_CFLAGS = -FImsvc_recommended_pragmas.h -I.. -I. -I$(PRJ_TOP) \
+		-DPACKAGE=\"Pango\" -DVERSION=\"$(PANGO_VER)\" \
+		-DPANGO_ENABLE_BACKEND -DPANGO_ENABLE_ENGINE \
+		-DMODULE_VERSION=\"$(PANGO_MODULE_VERSION)\" \
+		$(GLIB_CFLAGS) $(LIBICONV_CFLAGS) \
+		$(X11_CFLAGS)  -DSYSCONFDIR=\"/etc\" \
+		-DPANGO_BINARY_AGE=0 
+
+#-DHAVE_USP10_H
+		
+
+!IFDEF OBJS_pango
+# don't link with itself
+PKG_LINK = $(GLIB_LIBS) $(FONTCONFIG_LIBS)
+!ENDIF
+
+!IFDEF OBJS_pangowin32
+PKG_LINK = $(GLIB_LIBS) $(LIBICONV_LIBS) \
+	pango-$(PANGO_VER).lib
+!ENDIF
+
+!IFDEF OBJS_pangoft2
+PKG_CFLAGS = $(PKG_CFLAGS) $(FREETYPE2_CFLAGS) $(FONTCONFIG_CFLAGS) \
+	-DPANGO_MODULE_PREFIX=_pango_basic_ft2
+
+PKG_LINK = $(GLIB_LIBS) $(LIBICONV_LIBS) $(FREETYPE2_LIBS) $(FONTCONFIG_LIBS) \
+	pango-$(PANGO_VER).lib opentype\pango-ot.lib
+!ENDIF
+
+!IFDEF OBJS_pangox
+PKG_LINK = $(GLIB_LIBS) $(LIBICONV_LIBS) \
+	pango-$(PANGO_VER).lib $(X11_LIBS)
+!ENDIF
+
+!IFDEF OBJS_pangocairo
+PKG_LINK = $(GLIB_LIBS) $(LIBICONV_LIBS) \
+	pango-$(PANGO_VER).lib $(CAIRO_LIBS) \
+	pangowin32-$(PANGO_VER).lib $(FONTCONFIG_LIBS) 
+!ENDIF
+
+!IF DEFINED (OBJS_querymodules) || DEFINED (OBJS_testfonts)
+PKG_LINK = $(GLIB_LIBS) $(LIBICONV_LIBS) \
+	pango-$(PANGO_VER).lib pangowin32-$(PANGO_VER).lib
+!ENDIF
+
+!IFDEF OBJS_pango
+OBJECTS = \
+	pango-enum-types.obj \
+	\
+	module-defs-lang.obj \
+	\
+	break.obj \
+	ellipsize.obj \
+	fonts.obj \
+	glyphstring.obj \
+	mapping.obj \
+	modules.obj \
+	pango-attributes.obj \
+	pango-engine.obj \
+	pango-color.obj \
+	pango-context.obj \
+	pango-coverage.obj \
+	pango-fontset.obj \
+	pango-fontmap.obj \
+	pango-glyph-item.obj \
+	pango-gravity.obj \
+	pango-item.obj \
+	pango-markup.obj \
+	pango-matrix.obj \
+	pango-language.obj \
+	pango-layout.obj \
+	pango-renderer.obj \
+	pango-script.obj \
+	pango-tabs.obj \
+	pango-utils.obj \
+	reorder-items.obj \
+	shape.obj \
+	\
+	fribidi.obj \
+	fribidi_types.obj \
+	fribidi_char_type.obj
+!ENDIF
+
+basic-win32.obj : ..\modules\basic\basic-win32.c
+	$(CC) $(PKG_CFLAGS) -GD -DPANGO_MODULE_PREFIX=_pango_basic_win32 -c ..\modules\basic\basic-win32.c
+
+basic-fc.obj : ..\modules\basic\basic-fc.c
+	$(CC) $(PKG_CFLAGS) -GD -DPANGO_MODULE_PREFIX=_pango_basic_ft2 -c ..\modules\basic\basic-fc.c
+
+basic-x.obj : ..\modules\basic\basic-x.c
+	$(CC) $(PKG_CFLAGS) -GD -DPANGO_MODULE_PREFIX=_pango_basic_xs -c ..\modules\basic\basic-x.c
+
+
+fribidi.obj : mini-fribidi\fribidi.c
+	$(CC) $(PKG_CFLAGS) -GD -c mini-fribidi\fribidi.c
+fribidi_types.obj : mini-fribidi\fribidi_types.c
+	$(CC) $(PKG_CFLAGS) -GD -c mini-fribidi\fribidi_types.c
+fribidi_char_type.obj : mini-fribidi\fribidi_char_type.c
+	$(CC) $(PKG_CFLAGS) -GD -c mini-fribidi\fribidi_char_type.c
+
+testfonts.obj : ..\examples\pangowin32tobmp.c
+	$(CC) $(PKG_CFLAGS) -GD  -Fotestfonts.obj -c ..\examples\pangowin32tobmp.c
+
+!IFDEF OBJS_pangowin32
+PKG_CFLAGS = $(PKG_CFLAGS) -DPANGO_MODULE_PREFIX=_pango_basic_win32
+OBJECTS = \
+	module-defs-win32.obj \
+	pangowin32.obj \
+	pangowin32-fontcache.obj \
+	pangowin32-fontmap.obj \
+#	pangowin32-render.obj \
+	basic-win32.obj
+!ENDIF
+
+!IFDEF OBJS_pangoft2 
+OBJECTS = \
+	module-defs-fc.obj \
+	pangofc-decoder.obj \
+	pangofc-font.obj \
+	pangofc-fontmap.obj \
+	pangoft2.obj \
+	pangoft2-fontmap.obj \
+	pangoft2-render.obj \
+	\
+	pango-ot-buffer.obj \
+	pango-ot-info.obj \
+	pango-ot-tag.obj \
+	pango-ot-ruleset.obj \
+	\
+	basic-fc.obj
+
+PKG_CFLAGS = $(PKG_CFLAGS) $(FONTCONFIG_CFLAGS) $(FREETYPE2_CFLAGS)
+!ENDIF
+
+!IFDEF OBJS_pangox
+OBJECTS = \
+	module-defs-x.obj \
+	pangox.obj \
+	pangox-fontcache.obj \
+	pangox-fontmap.obj \
+	pango-indic.obj \
+	basic-x.obj
+!ENDIF
+
+# -DHAVE_CAIRO_FREETYPE
+!IFDEF OBJS_pangocairo
+PKG_CFLAGS = \
+	$(PKG_CFLAGS) $(FONTCONFIG_CFLAGS) $(FREETYPE2_CFLAGS) \
+	-DHAVE_CAIRO_WIN32 $(CAIRO_CFLAGS)
+OBJECTS = \
+        pangocairo-context.obj \
+        pangocairo-font.obj \
+        pangocairo-fontmap.obj \
+        pangocairo-render.obj \
+        pangocairo-win32font.obj \
+        pangocairo-win32fontmap.obj \
+#        pangocairo-fcfont.obj \
+#        pangocairo-fcfontmap.obj \
+!ENDIF
+
+!IFDEF OBJS_querymodules
+PKG_CFLAGS = $(PKG_CFLAGS) \
+	-DPACKAGE_NAME=\"Pango\" -DPACKAGE_VERSION=\"$(PANGO_VER)\"
+OBJECTS = \
+	querymodules.obj
+!ENDIF
+
+!IFNDEF OBJECTS
+OBJECTS = $(PACKAGE).obj
+!ENDIF
+
+module-defs-win32.c : module-defs-win32.c.win32
+	copy module-defs-win32.c.win32 module-defs-win32.c
+
+module-defs-fc.c : module-defs-fc.c.win32
+	copy module-defs-fc.c.win32 module-defs-fc.c
+
+module-defs-lang.c : module-defs-lang.c.win32
+	copy module-defs-lang.c.win32 module-defs-lang.c
+
+pango_headers=		   \
+	pango.h		   \
+	pango-attributes.h \
+	pango-break.h	   \
+	pango-context.h	   \
+	pango-coverage.h   \
+	pango-engine.h	   \
+	pango-font.h       \
+	pango-fontmap.h	   \
+	pango-fontset.h    \
+	pango-glyph.h	   \
+	pango-glyph-item.h \
+	pango-gravity.h    \
+	pango-item.h	   \
+	pango-layout.h	   \
+	pango-modules.h	   \
+	pango-renderer.h   \
+	pango-script.h	   \
+	pango-tabs.h	   \
+	pango-types.h	   \
+	pango-utils.h	   \
+	pangofc-font.h	   \
+	pangofc-fontmap.h
+
+pango-enum-types.h: $(pango_headers) makefile.msc
+	$(PERL) $(GLIB)\gobject\glib-mkenums  \
+		--fhead "#ifndef __PANGO_ENUM_TYPES_H__\n#define __PANGO_ENUM_TYPES_H__\n\n#include <glib-object.h>\n\nG_BEGIN_DECLS\n" \
+		--fprod "/* enumerations from \"@filename@\" */\n" \
+		--vhead "GType @enum_name@_get_type (void);\n#define PANGO_TYPE_@ENUMSHORT@ (@enum_name@_get_type())\n" 	\
+		--ftail "G_END_DECLS\n#endif /* __PANGO_ENUM_TYPES_H__ */" \
+		$(pango_headers) > pango-enum-types.h
+
+pango-enum-types.c: $(pango_headers) pango-enum-types.h makefile.msc
+	$(PERL) $(GLIB)\gobject\glib-mkenums  \
+		--fhead "#include <pango.h>" \
+		--fprod "\n/* enumerations from \"@filename@\" */" \
+		--vhead "GType\n@enum_name@_get_type (void)\n{\n  static GType etype = 0;\n  if (etype == 0) {\n    static const G@Type@Value values[] = {" 	\
+		--vprod "      { @VALUENAME@, \"@VALUENAME@\", \"@valuenick@\" }," \
+		--vtail "      { 0, NULL, NULL }\n    };\n    etype = g_@type@_register_static (\"@EnumName@\", values);\n  }\n  return etype;\n}\n" \
+		$(pango_headers) > pango-enum-types.c
+
+$(PACKAGE)-$(PKG_VER)s.lib : $(OBJECTS) $(PRJ_TOP)\config.h
+	lib /out:$(PACKAGE)-$(PKG_VER)s.lib $(OBJECTS)
+
+lib$(PACKAGE)-$(PKG_VER)-0.dll : $(OBJECTS) $(PKG_DEF) $(PRJ_TOP)\config.h
+	$(CC) $(CFLAGS) -LD -Fe$@ $(OBJECTS) $(PKG_LINK) \
+	user32.lib gdi32.lib advapi32.lib $(LDFLAGS) /implib:$(PACKAGE)-$(PKG_VER).lib /def:$(PKG_DEF)
+
+$(PACKAGE).exe : $(PKG_LINK) $(OBJECTS)
+	$(CC) $(CFLAGS) -Fe$(PACKAGE).exe $(OBJECTS) $(PKG_LINK) gdi32.lib user32.lib
+
+$(PRJ_TOP)\config.h.win32 : makefile.msc
+	echo /*almostempty*/ > $(PRJ_TOP)\config.h.win32
+	echo #define PANGO_BINARY_AGE 0 >> $(PRJ_TOP)\config.h.win32
+	echo #define DHAVE_USP10_H 1 >> $(PRJ_TOP)\config.h.win32
+
+$(PRJ_TOP)\config.h: $(PRJ_TOP)\config.h.win32
+	copy $(PRJ_TOP)\config.h.win32 $(PRJ_TOP)\config.h
+
+
+.c.obj :
+	$(CC) $(CFLAGS) -GD -c $(PKG_CFLAGS) $<
+
+!ENDIF #PACKAGE

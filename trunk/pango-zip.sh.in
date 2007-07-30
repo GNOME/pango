@@ -1,0 +1,52 @@
+#!/bin/sh
+
+# Build zipfiles for Pango on Win32: separate runtime and developer packages
+
+ZIP=/tmp/pango-@PANGO_VERSION@.zip
+DEVZIP=/tmp/pango-dev-@PANGO_VERSION@.zip
+cd @prefix@
+
+mkdir -p share/doc/pango-@PANGO_VERSION@
+cp -p @abs_srcdir@/COPYING share/doc/pango-@PANGO_VERSION@
+
+mkdir -p share/doc/pango-dev-@PANGO_VERSION@
+cp -p @abs_srcdir@/COPYING share/doc/pango-dev-@PANGO_VERSION@
+
+rm $ZIP
+zip $ZIP -@ <<EOF
+bin/pango-querymodules.exe
+etc/pango/pango.aliases
+etc/pango/pango.modules
+bin/libpango-@PANGO_API_VERSION@-@PANGO_CURRENT_MINUS_AGE@.dll
+bin/libpangoft2-@PANGO_API_VERSION@-@PANGO_CURRENT_MINUS_AGE@.dll
+bin/libpangowin32-@PANGO_API_VERSION@-@PANGO_CURRENT_MINUS_AGE@.dll
+bin/libpangocairo-@PANGO_API_VERSION@-@PANGO_CURRENT_MINUS_AGE@.dll
+EOF
+
+zip $ZIP lib/pango/@PANGO_MODULE_VERSION@/modules/*.dll
+
+zip -r $ZIP share/doc/pango-@PANGO_VERSION@
+
+rm $DEVZIP
+zip -r $DEVZIP -@ <<EOF
+include/pango-1.0
+lib/libpango-@PANGO_API_VERSION@.dll.a
+lib/pango-@PANGO_API_VERSION@.lib
+lib/pango-@PANGO_API_VERSION@.def
+lib/libpangoft2-@PANGO_API_VERSION@.dll.a
+lib/pangoft2-@PANGO_API_VERSION@.lib
+lib/pangoft2-@PANGO_API_VERSION@.def
+lib/libpangowin32-@PANGO_API_VERSION@.dll.a
+lib/pangowin32-@PANGO_API_VERSION@.lib
+lib/pangowin32-@PANGO_API_VERSION@.def
+lib/libpangocairo-@PANGO_API_VERSION@.dll.a
+lib/pangocairo-@PANGO_API_VERSION@.lib
+lib/pangocairo-@PANGO_API_VERSION@.def
+lib/pkgconfig/pango.pc
+lib/pkgconfig/pangoft2.pc
+lib/pkgconfig/pangowin32.pc
+lib/pkgconfig/pangocairo.pc
+share/gtk-doc/html/pango
+EOF
+
+zip -r $DEVZIP share/doc/pango-dev-@PANGO_VERSION@

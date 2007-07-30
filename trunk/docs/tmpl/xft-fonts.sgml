@@ -1,0 +1,308 @@
+<!-- ##### SECTION Title ##### -->
+Xft Fonts and Rendering
+
+<!-- ##### SECTION Short_Description ##### -->
+Font handling and rendering with the Xft backend
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+The Xft library is a library for displaying fonts on the X window
+system; internally it uses the fontconfig library to locate font
+files, and the FreeType library to load and render fonts. The
+Xft backend is the recommended Pango font backend for screen
+display with X. (The <link linkend="pango-Cairo-Rendering">Cairo back end</link> is another possibility.)
+</para>
+<para>
+Using the Xft backend is generally straightforward;
+pango_xft_get_context() creates a context for a specified display
+and screen. You can then create a #PangoLayout with that context
+and render it with pango_xft_render_layout(). At a more advanced
+level, the low-level fontconfig options used for rendering fonts
+can be affected using pango_xft_set_default_substitute(), and
+pango_xft_substitute_changed().
+</para>
+<para>
+A range of functions for drawing pieces of a layout, such as
+individual layout lines and glyphs strings are provided.  You can also
+directly create a #PangoXftRenderer. Finally, in some advanced cases, it
+is useful to derive from #PangoXftRenderer. Deriving from
+#PangoXftRenderer is useful for two reasons. One reason is be to
+support custom attributes by overriding #PangoRendererClass virtual
+functions like 'prepare_run' or 'draw_shape'. The reason is to
+customize exactly how the final bits are drawn to the destination by
+overriding the #PangoXftRendererClass virtual functions
+'composite_glyphs' and 'composite_trapezoids'.
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### STRUCT PangoXftFont ##### -->
+<para>
+#PangoXftFont is an implementation of #PangoFcFont using the Xft
+library for rendering.  It is used in conjunction with #PangoXftFontMap.
+</para>
+
+
+<!-- ##### STRUCT PangoXftFontMap ##### -->
+<para>
+#PangoXftFontMap is an implementation of #PangoFcFontMap suitable for
+the Xft library as the renderer.  It is used in to create fonts of
+type #PangoXftFont.
+</para>
+
+
+<!-- ##### MACRO PANGO_RENDER_TYPE_XFT ##### -->
+<para>
+A string constant that was used to identify shape engines that work
+with the Xft backend. See %PANGO_RENDER_TYPE_FC for the replacement.
+</para>
+
+
+
+<!-- ##### FUNCTION pango_xft_get_context ##### -->
+<para>
+
+</para>
+
+@display: 
+@screen: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_xft_get_font_map ##### -->
+<para>
+
+</para>
+
+@display: 
+@screen: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_xft_set_default_substitute ##### -->
+<para>
+
+</para>
+
+@display: 
+@screen: 
+@func: 
+@data: 
+@notify: 
+
+
+<!-- ##### USER_FUNCTION PangoXftSubstituteFunc ##### -->
+<para>
+Function type for doing final config tweaking on prepared FcPatterns.
+</para>
+
+@pattern: the FcPattern to tweak.
+@data: user data.
+
+
+<!-- ##### FUNCTION pango_xft_substitute_changed ##### -->
+<para>
+
+</para>
+
+@display: 
+@screen: 
+
+
+<!-- ##### FUNCTION pango_xft_shutdown_display ##### -->
+<para>
+
+</para>
+
+@display: 
+@screen: 
+
+
+<!-- ##### FUNCTION pango_xft_font_get_font ##### -->
+<para>
+
+</para>
+
+@font: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_xft_font_get_display ##### -->
+<para>
+
+</para>
+
+@font: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_xft_font_has_char ##### -->
+<para>
+
+</para>
+
+@font: 
+@wc: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_xft_font_lock_face ##### -->
+<para>
+
+</para>
+
+@font: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_xft_font_unlock_face ##### -->
+<para>
+
+</para>
+
+@font: 
+
+
+<!-- ##### FUNCTION pango_xft_font_get_glyph ##### -->
+<para>
+
+</para>
+
+@font: 
+@wc: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_xft_font_get_unknown_glyph ##### -->
+<para>
+
+</para>
+
+@font: 
+@wc: 
+@Returns: 
+
+
+<!-- ##### STRUCT PangoXftRenderer ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### ARG PangoXftRenderer:display ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG PangoXftRenderer:screen ##### -->
+<para>
+
+</para>
+
+<!-- ##### STRUCT PangoXftRendererClass ##### -->
+<para>
+
+</para>
+
+@composite_trapezoids: 
+@composite_glyphs: 
+
+<!-- ##### FUNCTION pango_xft_renderer_new ##### -->
+<para>
+
+</para>
+
+@display: 
+@screen: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_xft_renderer_set_draw ##### -->
+<para>
+
+</para>
+
+@xftrenderer: 
+@draw: 
+
+
+<!-- ##### FUNCTION pango_xft_renderer_set_default_color ##### -->
+<para>
+
+</para>
+
+@xftrenderer: 
+@default_color: 
+
+
+<!-- ##### FUNCTION pango_xft_render ##### -->
+<para>
+
+</para>
+
+@draw: 
+@color: 
+@font: 
+@glyphs: 
+@x: 
+@y: 
+
+
+<!-- ##### FUNCTION pango_xft_picture_render ##### -->
+<para>
+
+</para>
+
+@display: 
+@src_picture: 
+@dest_picture: 
+@font: 
+@glyphs: 
+@x: 
+@y: 
+
+
+<!-- ##### FUNCTION pango_xft_render_transformed ##### -->
+<para>
+
+</para>
+
+@draw: 
+@color: 
+@matrix: 
+@font: 
+@glyphs: 
+@x: 
+@y: 
+
+
+<!-- ##### FUNCTION pango_xft_render_layout_line ##### -->
+<para>
+
+</para>
+
+@draw: 
+@color: 
+@line: 
+@x: 
+@y: 
+
+
+<!-- ##### FUNCTION pango_xft_render_layout ##### -->
+<para>
+
+</para>
+
+@draw: 
+@color: 
+@layout: 
+@x: 
+@y: 
+
+

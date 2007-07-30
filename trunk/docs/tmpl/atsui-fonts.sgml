@@ -1,0 +1,37 @@
+<!-- ##### SECTION Title ##### -->
+ATSUI Fonts
+
+<!-- ##### SECTION Short_Description ##### -->
+Font handling with ATSUI fonts
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+The macros and functions in this section are used to access fonts natively on
+MacOS systems using the ATSUI text rendering subsystem.
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### MACRO PANGO_RENDER_TYPE_ATSUI ##### -->
+<para>
+A string constant identifying the ATSUI renderer. The associated quark (see
+g_quark_from_string()) is used to identify the renderer in pango_find_map().
+</para>
+
+
+
+<!-- ##### FUNCTION pango_atsui_font_get_atsu_font_id ##### -->
+<para>
+
+</para>
+
+@font: 
+@Returns: 
+
+

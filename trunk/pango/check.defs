@@ -1,0 +1,29 @@
+#!/bin/sh
+
+LANG=C
+
+test -z "$srcdir" && srcdir=.
+status=0
+
+get_pango_syms='nm "$so" | grep " T " | cut -d" " -f3'
+if [ "`uname -s`" = "Linux" ]; then
+	get_pango_syms='objdump -t "$so" | sed -n "/.*g *F *\.\(opd\|text\).* \(.*pango_.*\)$/s//\2/p"'
+fi
+
+for def in $srcdir/*.def; do
+	lib=${def%.def}
+	lib=${lib##*/}
+	so=.libs/lib${lib}-1.0.so
+
+	test -f "$so" || continue
+	echo Checking $def
+
+	expected=$lib.expected
+	list=$lib.list
+	eval $get_pango_syms | sort -u > "$expected"
+	cut -f 2 "$def" | grep -v EXPORTS | sort -u > "$list"
+
+	diff "$list" "$expected" && rm -f "$list" "$expected" || status=1
+done
+
+exit $status

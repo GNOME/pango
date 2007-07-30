@@ -1,0 +1,110 @@
+<!-- ##### SECTION Title ##### -->
+Version Checking
+
+<!-- ##### SECTION Short_Description ##### -->
+Tools for checking Pango version at compile- and run-time.
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+The capital-letter macros defined here can be used to check the version of
+Pango at compile-time, and to <firstterm>encode</firstterm> Pango versions into
+integers.
+
+The functions can be used to check the version of the linked Pango library
+at run-time.
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### MACRO PANGO_VERSION_ENCODE ##### -->
+<para>
+This macro encodes the given Pango version into an integer.  The numbers
+returned by %PANGO_VERSION and pango_version() are encoded using this macro.
+Two encoded version numbers can be compared as integers.
+</para>
+
+@major: the major component of the version number
+@minor: the minor component of the version number
+@micro: the micro component of the version number
+
+
+<!-- ##### MACRO PANGO_VERSION ##### -->
+<para>
+The version of Pango available at compile-time, encoded using
+PANGO_VERSION_ENCODE().
+</para>
+
+
+
+<!-- ##### MACRO PANGO_VERSION_MAJOR ##### -->
+<para>
+The major component of the version of Pango available at compile-time.
+</para>
+
+
+
+<!-- ##### MACRO PANGO_VERSION_MINOR ##### -->
+<para>
+The minor component of the version of Pango available at compile-time.
+</para>
+
+
+
+<!-- ##### MACRO PANGO_VERSION_MICRO ##### -->
+<para>
+The micro component of the version of Pango available at compile-time.
+</para>
+
+
+
+<!-- ##### MACRO PANGO_VERSION_STRING ##### -->
+<para>
+A string literal containing the version of Pango available at compile-time.
+</para>
+
+
+
+<!-- ##### MACRO PANGO_VERSION_CHECK ##### -->
+<para>
+Checks that the version of Pango available at compile-time is not older than
+the provided version number.
+</para>
+
+@major: the major component of the version number
+@minor: the minor component of the version number
+@micro: the micro component of the version number
+
+
+<!-- ##### FUNCTION pango_version ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_version_string ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_version_check ##### -->
+<para>
+
+</para>
+
+@required_major: 
+@required_minor: 
+@required_micro: 
+@Returns: 
+
+

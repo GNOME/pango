@@ -1,0 +1,551 @@
+<!-- ##### SECTION Title ##### -->
+OpenType Font Handling
+
+<!-- ##### SECTION Short_Description ##### -->
+Obtaining information from OpenType tables
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+Functions and macros in this section are used to implement the OpenType Layout
+features and algorithms.  These are mostly useful when writing Fontconfig-based
+shaping engines
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+Unstable
+
+<!-- ##### TYPEDEF PangoOTTag ##### -->
+<para>
+The <type>PangoOTTag</type> typedef is used to represent TrueType and OpenType
+four letter tags inside Pango. Use PANGO_OT_TAG_MAKE()
+or PANGO_OT_TAG_MAKE_FROM_STRING() macros to create <type>PangoOTTag</type>s manually.
+</para>
+
+
+<!-- ##### STRUCT PangoOTInfo ##### -->
+<para>
+The #PangoOTInfo struct contains the various 
+tables associated with an OpenType font. It contains only private fields and
+should only be accessed via the <function>pango_ot_info_*</function> functions
+which are documented below. To obtain a #PangoOTInfo,
+use pango_ot_info_new().
+</para>
+
+
+<!-- ##### STRUCT PangoOTBuffer ##### -->
+<para>
+The #PangoOTBuffer structure is used to store strings of glyphs associated
+with a #PangoFcFont, suitable for OpenType layout processing.  It contains
+only private fields and should only be accessed via the
+<function>pango_ot_buffer_*</function> functions which are documented below.
+To obtain a #PangoOTBuffer, use pango_ot_buffer_new().
+</para>
+
+
+<!-- ##### STRUCT PangoOTGlyph ##### -->
+<para>
+The #PangoOTGlyph structure represents a single glyph together with
+information used for OpenType layout processing of the glyph.
+It contains the following fields.
+</para>
+
+@glyph: the glyph itself.
+@properties: the properties value, identifying which features should be
+	     applied on this glyph.  See pango_ruleset_add_feature().
+@cluster: the cluster that this glyph belongs to.
+@component: a component value, set by the OpenType layout engine.
+@ligID: a ligature index value, set by the OpenType layout engine.
+@property_cache: for internal use.
+
+<!-- ##### STRUCT PangoOTRuleset ##### -->
+<para>
+The #PangoOTRuleset structure holds a
+set of features selected from the tables in an OpenType font.
+(A feature is an operation such as adjusting glyph positioning
+that should be applied to a text feature such as a certain
+type of accent.) A #PangoOTRuleset
+is created with pango_ot_ruleset_new(), features are added
+to it with pango_ot_ruleset_add_feature(), then it is
+applied to a #PangoGlyphString with pango_ot_ruleset_shape().
+</para>
+
+
+<!-- ##### STRUCT PangoOTRulesetDescription ##### -->
+<para>
+The #PangoOTRuleset structure holds all the information needed
+to build a complete #PangoOTRuleset from an OpenType font.
+The main use of this struct is to act as the key for a per-font
+hash of rulesets.  The user populates a ruleset description and
+gets the ruleset using pango_ot_ruleset_get_for_description()
+or create a new one using pango_ot_ruleset_new_from_description().
+</para>
+
+@script: a #PangoScript.
+@language: a #PangoLanguage.
+@static_gsub_features: static map of GSUB features, or %NULL.
+@n_static_gsub_features: length of @static_gsub_features, or 0.
+@static_gpos_features: static map of GPOS features, or %NULL.
+@n_static_gpos_features: length of @static_gpos_features, or 0.
+@other_features: map of extra features to add to both GSUB and GPOS, or %NULL.
+                 Unlike the static maps, this pointer need not live beyond
+		 the life of function calls taking this struct.
+@n_other_features: length of @other_features, or 0.
+@Since: 1.18
+
+<!-- ##### ENUM PangoOTTableType ##### -->
+<para>
+The <type>PangoOTTableType</type> enumeration values are used to
+identify the various OpenType tables in the
+<function>pango_ot_info_*</function> functions.
+</para>
+
+@PANGO_OT_TABLE_GSUB: The GSUB table.
+@PANGO_OT_TABLE_GPOS: The GPOS table.
+
+<!-- ##### STRUCT PangoOTFeatureMap ##### -->
+<para>
+The <type>PangoOTFeatureMap</type> typedef is used to represent an OpenType
+feature with the property bit associated with it.  The feature tag is
+represented as a char array instead of a #PangoOTTag for convenience.
+</para>
+
+@feature_name: feature tag in represented as four-letter ASCII string.
+@property_bit: the property bit to use for this feature.  See
+	       pango_ot_ruleset_add_feature() for details.
+@Since: 1.18
+
+<!-- ##### MACRO PANGO_OT_TAG_MAKE ##### -->
+<para>
+Creates a #PangoOTTag from four characters.  This is similar and
+compatible with the <function>FT_MAKE_TAG()</function> macro from
+FreeType.
+</para>
+
+@c1: First character.
+@c2: Second character.
+@c3: Third character.
+@c4: Fourth character.
+
+
+<!-- ##### MACRO PANGO_OT_TAG_MAKE_FROM_STRING ##### -->
+<para>
+Creates a #PangoOTTag from a string. The string should be at least
+four characters long (pad with space characters if needed), and need
+not be nul-terminated.  This is a convenience wrapper around
+PANGO_OT_TAG_MAKE(), but cannot be used in certain situations, for
+example, as a switch expression, as it dereferences pointers.
+</para>
+
+@s: The string representation of the tag.
+
+
+<!-- ##### MACRO PANGO_OT_ALL_GLYPHS ##### -->
+<para>
+This is used as the property bit in pango_ot_ruleset_add_feature() when a
+feature should be applied to all glyphs.
+</para>
+
+@Since: 1.16
+
+
+<!-- ##### MACRO PANGO_OT_NO_FEATURE ##### -->
+<para>
+This is used as a feature index that represent no feature, that is, should be
+skipped.  It may be returned as feature index by pango_ot_info_find_feature()
+if the feature is not found, and pango_ot_rulset_add_feature() function
+automatically skips this value, so no special handling is required by the
+user.
+</para>
+
+@Since: 1.18
+
+
+<!-- ##### MACRO PANGO_OT_NO_SCRIPT ##### -->
+<para>
+This is used as a script index that represent no script, that is, when the
+requested script was not found, and a default ('DFLT') script was not found
+either.  It may be returned as script index by pango_ot_info_find_script()
+if the script or a default script are not found, all other functions
+taking a script index essentially return if the input script index is
+this value, so no special handling is required by the user.
+</para>
+
+@Since: 1.18
+
+
+<!-- ##### MACRO PANGO_OT_DEFAULT_LANGUAGE ##### -->
+<para>
+This is used as the language index in pango_ot_info_find_feature() when
+the default language system of the script is desired.
+
+It is also returned by pango_ot_info_find_language() if the requested language
+is not found, or the requested language tag was PANGO_OT_TAG_DEFAULT_LANGUAGE.
+The end result is that one can always call pango_ot_tag_from_language()
+followed by pango_ot_info_find_language() and pass the result to
+pango_ot_info_find_feature() without having to worry about falling back to
+default language system explicitly.
+</para>
+
+@Since: 1.16
+
+
+<!-- ##### MACRO PANGO_OT_TAG_DEFAULT_LANGUAGE ##### -->
+<para>
+This is a #PangoOTTag representing a special language tag 'dflt'.  It is
+returned as language tag by pango_ot_tag_from_language() if the requested
+language is not found.  It is safe to pass this value to
+pango_ot_info_find_language() as that function falls back to returning default
+language-system if the requested language tag is not found.
+</para>
+
+@Since: 1.18
+
+
+<!-- ##### MACRO PANGO_OT_TAG_DEFAULT_SCRIPT ##### -->
+<para>
+This is a #PangoOTTag representing the special script tag 'DFLT'.  It is
+returned as script tag by pango_ot_tag_from_script() if the requested script
+is not found.
+</para>
+
+@Since: 1.18
+
+
+<!-- ##### FUNCTION pango_ot_info_get ##### -->
+<para>
+
+</para>
+
+@face: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_ot_info_find_script ##### -->
+<para>
+
+</para>
+
+@info: 
+@table_type: 
+@script_tag: 
+@script_index: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_ot_info_find_language ##### -->
+<para>
+
+</para>
+
+@info: 
+@table_type: 
+@script_index: 
+@language_tag: 
+@language_index: 
+@required_feature_index: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_ot_info_find_feature ##### -->
+<para>
+
+</para>
+
+@info: 
+@table_type: 
+@feature_tag: 
+@script_index: 
+@language_index: 
+@feature_index: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_ot_info_list_scripts ##### -->
+<para>
+
+</para>
+
+@info: 
+@table_type: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_ot_info_list_languages ##### -->
+<para>
+
+</para>
+
+@info: 
+@table_type: 
+@script_index: 
+@language_tag: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_ot_info_list_features ##### -->
+<para>
+
+</para>
+
+@info: 
+@table_type: 
+@tag: 
+@script_index: 
+@language_index: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_ot_buffer_new ##### -->
+<para>
+
+</para>
+
+@font: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_ot_buffer_destroy ##### -->
+<para>
+
+</para>
+
+@buffer: 
+
+
+<!-- ##### FUNCTION pango_ot_buffer_clear ##### -->
+<para>
+
+</para>
+
+@buffer: 
+
+
+<!-- ##### FUNCTION pango_ot_buffer_add_glyph ##### -->
+<para>
+
+</para>
+
+@buffer: 
+@glyph: 
+@properties: 
+@cluster: 
+
+
+<!-- ##### FUNCTION pango_ot_buffer_set_rtl ##### -->
+<para>
+
+</para>
+
+@buffer: 
+@rtl: 
+
+
+<!-- ##### FUNCTION pango_ot_buffer_set_zero_width_marks ##### -->
+<para>
+
+</para>
+
+@buffer: 
+@zero_width_marks: 
+
+
+<!-- ##### FUNCTION pango_ot_buffer_get_glyphs ##### -->
+<para>
+
+</para>
+
+@buffer: 
+@glyphs: 
+@n_glyphs: 
+
+
+<!-- ##### FUNCTION pango_ot_buffer_output ##### -->
+<para>
+
+</para>
+
+@buffer: 
+@glyphs: 
+
+
+<!-- ##### FUNCTION pango_ot_ruleset_get_for_description ##### -->
+<para>
+
+</para>
+
+@info: 
+@desc: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_ot_ruleset_new ##### -->
+<para>
+
+</para>
+
+@info: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_ot_ruleset_new_for ##### -->
+<para>
+
+</para>
+
+@info: 
+@script: 
+@language: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_ot_ruleset_new_from_description ##### -->
+<para>
+
+</para>
+
+@info: 
+@desc: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_ot_ruleset_add_feature ##### -->
+<para>
+
+</para>
+
+@ruleset: 
+@table_type: 
+@feature_index: 
+@property_bit: 
+
+
+<!-- ##### FUNCTION pango_ot_ruleset_maybe_add_feature ##### -->
+<para>
+
+</para>
+
+@ruleset: 
+@table_type: 
+@feature_tag: 
+@property_bit: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_ot_ruleset_maybe_add_features ##### -->
+<para>
+
+</para>
+
+@ruleset: 
+@table_type: 
+@features: 
+@n_features: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_ot_ruleset_get_feature_count ##### -->
+<para>
+
+</para>
+
+@ruleset: 
+@n_gsub_features: 
+@n_gpos_features: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_ot_ruleset_substitute ##### -->
+<para>
+
+</para>
+
+@ruleset: 
+@buffer: 
+
+
+<!-- ##### FUNCTION pango_ot_ruleset_position ##### -->
+<para>
+
+</para>
+
+@ruleset: 
+@buffer: 
+
+
+<!-- ##### FUNCTION pango_ot_ruleset_description_copy ##### -->
+<para>
+
+</para>
+
+@desc: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_ot_ruleset_description_equal ##### -->
+<para>
+
+</para>
+
+@desc1: 
+@desc2: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_ot_ruleset_description_free ##### -->
+<para>
+
+</para>
+
+@desc: 
+
+
+<!-- ##### FUNCTION pango_ot_ruleset_description_hash ##### -->
+<para>
+
+</para>
+
+@desc: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_ot_tag_from_language ##### -->
+<para>
+
+</para>
+
+@language: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_ot_tag_from_script ##### -->
+<para>
+
+</para>
+
+@script: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_ot_tag_to_language ##### -->
+<para>
+
+</para>
+
+@language_tag: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_ot_tag_to_script ##### -->
+<para>
+
+</para>
+
+@script_tag: 
+@Returns: 
+
+

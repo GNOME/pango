@@ -1,0 +1,147 @@
+<!-- ##### SECTION Title ##### -->
+Tab Stops
+
+<!-- ##### SECTION Short_Description ##### -->
+Structures for storing tab stops
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+Functions in this section are used to deal with #PangoTabArray objects
+that can be used to set tab stop positions in a #PangoLayout.
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### STRUCT PangoTabArray ##### -->
+<para>
+A #PangoTabArray struct contains an array
+of tab stops. Each tab stop has an alignment and a position.
+</para>
+
+
+<!-- ##### MACRO PANGO_TYPE_TAB_ARRAY ##### -->
+<para>
+The #GObject type for #PangoTabArray.
+</para>
+
+
+
+<!-- ##### ENUM PangoTabAlign ##### -->
+<para>
+A #PangoTabAlign specifies where a tab stop appears relative to the text.
+</para>
+
+@PANGO_TAB_LEFT: the tab stop appears to the left of the text.
+
+<!-- ##### MACRO PANGO_TYPE_TAB_ALIGN ##### -->
+<para>
+The #GObject type for #PangoTabAlign.
+</para>
+
+
+
+<!-- ##### FUNCTION pango_tab_array_new ##### -->
+<para>
+
+</para>
+
+@initial_size: 
+@positions_in_pixels: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_tab_array_new_with_positions ##### -->
+<para>
+
+</para>
+
+@size: 
+@positions_in_pixels: 
+@first_alignment: 
+@first_position: 
+@Varargs: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_tab_array_copy ##### -->
+<para>
+
+</para>
+
+@src: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_tab_array_free ##### -->
+<para>
+
+</para>
+
+@tab_array: 
+
+
+<!-- ##### FUNCTION pango_tab_array_get_size ##### -->
+<para>
+
+</para>
+
+@tab_array: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_tab_array_resize ##### -->
+<para>
+
+</para>
+
+@tab_array: 
+@new_size: 
+
+
+<!-- ##### FUNCTION pango_tab_array_set_tab ##### -->
+<para>
+
+</para>
+
+@tab_array: 
+@tab_index: 
+@alignment: 
+@location: 
+
+
+<!-- ##### FUNCTION pango_tab_array_get_tab ##### -->
+<para>
+
+</para>
+
+@tab_array: 
+@tab_index: 
+@alignment: 
+@location: 
+
+
+<!-- ##### FUNCTION pango_tab_array_get_tabs ##### -->
+<para>
+
+</para>
+
+@tab_array: 
+@alignments: 
+@locations: 
+
+
+<!-- ##### FUNCTION pango_tab_array_get_positions_in_pixels ##### -->
+<para>
+
+</para>
+
+@tab_array: 
+@Returns: 
+
+

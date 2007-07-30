@@ -1,0 +1,1023 @@
+<!-- ##### SECTION Title ##### -->
+Fonts
+
+<!-- ##### SECTION Short_Description ##### -->
+Structures representing abstract fonts
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+Pango supports a flexible architecture where a
+particular rendering architecture can supply an
+implementation of fonts. The #PangoFont structure
+represents an abstract rendering-system-independent font.
+Pango provides routines to list available fonts, and
+to load a font of a given description.
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### STRUCT PangoFontDescription ##### -->
+<para>
+The #PangoFontDescription structure represents the description
+of an ideal font. These structures are used both to list
+what fonts are available on the system and also for specifying
+the characteristics of a font to load.
+</para>
+
+
+<!-- ##### MACRO PANGO_TYPE_FONT_DESCRIPTION ##### -->
+<para>
+The #GObject type for #PangoFontDescription.
+</para>
+
+
+
+<!-- ##### ENUM PangoStyle ##### -->
+<para>
+</para>
+
+@PANGO_STYLE_NORMAL: 
+@PANGO_STYLE_OBLIQUE: 
+@PANGO_STYLE_ITALIC: 
+
+<!-- ##### MACRO PANGO_TYPE_STYLE ##### -->
+<para>
+The #GObject type for #PangoStyle.
+</para>
+
+
+
+<!-- ##### ENUM PangoWeight ##### -->
+<para>
+An enumeration specifying the weight (boldness) of a font. This is a numerical
+value ranging from 100 to 900, but there are some predefined values:
+</para>
+
+@PANGO_WEIGHT_ULTRALIGHT: the ultralight weight (= 200)
+@PANGO_WEIGHT_LIGHT:  the light weight (=300)
+@PANGO_WEIGHT_NORMAL: the default weight (= 400)
+@PANGO_WEIGHT_SEMIBOLD: a weight intermediate between normal and bold (=600)
+@PANGO_WEIGHT_BOLD: the bold weight (= 700)
+@PANGO_WEIGHT_ULTRABOLD: the ultrabold weight (= 800)
+@PANGO_WEIGHT_HEAVY: the heavy weight (= 900)
+
+<!-- ##### MACRO PANGO_TYPE_WEIGHT ##### -->
+<para>
+The #GObject type for #PangoWeight.
+</para>
+
+
+
+<!-- ##### ENUM PangoVariant ##### -->
+<para>
+An enumeration specifying capitalization variant of the font.
+</para>
+
+@PANGO_VARIANT_NORMAL: A normal font.
+@PANGO_VARIANT_SMALL_CAPS: A font with the lower case characters
+  replaced by smaller variants of the capital characters.
+
+<!-- ##### MACRO PANGO_TYPE_VARIANT ##### -->
+<para>
+The #GObject type for #PangoVariant.
+</para>
+
+
+
+<!-- ##### ENUM PangoStretch ##### -->
+<para>
+An enumeration specifying the width of the font relative to other designs
+within a family.
+</para>
+
+@PANGO_STRETCH_ULTRA_CONDENSED: ultra condensed width
+@PANGO_STRETCH_EXTRA_CONDENSED: extra condensed width
+@PANGO_STRETCH_CONDENSED: condensed width
+@PANGO_STRETCH_SEMI_CONDENSED: semi condensed width
+@PANGO_STRETCH_NORMAL: the normal width
+@PANGO_STRETCH_SEMI_EXPANDED: semi expanded width
+@PANGO_STRETCH_EXPANDED: expanded width
+@PANGO_STRETCH_EXTRA_EXPANDED: extra expanded width
+@PANGO_STRETCH_ULTRA_EXPANDED: ultra expanded width
+
+<!-- ##### MACRO PANGO_TYPE_STRETCH ##### -->
+<para>
+The #GObject type for #PangoStretch.
+</para>
+
+
+
+<!-- ##### ENUM PangoFontMask ##### -->
+<para>
+The bits in a #PangoFontMask correspond to fields in a  
+#PangoFontDescription that have been set.
+</para>
+
+@PANGO_FONT_MASK_FAMILY: the font family is specified.
+@PANGO_FONT_MASK_STYLE: the font style is specified.
+@PANGO_FONT_MASK_VARIANT: the font variant is specified.
+@PANGO_FONT_MASK_WEIGHT: the font weight is specified.
+@PANGO_FONT_MASK_STRETCH: the font stretch is specified.
+@PANGO_FONT_MASK_SIZE: the font size is specified.
+@PANGO_FONT_MASK_GRAVITY: the font gravity is specified (Since: 1.16.)
+
+<!-- ##### MACRO PANGO_TYPE_FONT_MASK ##### -->
+<para>
+The #GObject type for #PangoFontMask.
+</para>
+
+
+
+<!-- ##### FUNCTION pango_font_description_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_font_description_copy ##### -->
+<para>
+
+</para>
+
+@desc: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_font_description_copy_static ##### -->
+<para>
+
+</para>
+
+@desc: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_font_description_hash ##### -->
+<para>
+
+</para>
+
+@desc: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_font_description_equal ##### -->
+<para>
+
+</para>
+
+@desc1: 
+@desc2: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_font_description_free ##### -->
+<para>
+
+</para>
+
+@desc: 
+
+
+<!-- ##### FUNCTION pango_font_descriptions_free ##### -->
+<para>
+
+</para>
+
+@descs: 
+@n_descs: 
+
+
+<!-- ##### FUNCTION pango_font_description_set_family ##### -->
+<para>
+
+</para>
+
+@desc: 
+@family: 
+
+
+<!-- ##### FUNCTION pango_font_description_set_family_static ##### -->
+<para>
+
+</para>
+
+@desc: 
+@family: 
+
+
+<!-- ##### FUNCTION pango_font_description_get_family ##### -->
+<para>
+
+</para>
+
+@desc: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_font_description_set_style ##### -->
+<para>
+
+</para>
+
+@desc: 
+@style: 
+
+
+<!-- ##### FUNCTION pango_font_description_get_style ##### -->
+<para>
+
+</para>
+
+@desc: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_font_description_set_variant ##### -->
+<para>
+
+</para>
+
+@desc: 
+@variant: 
+
+
+<!-- ##### FUNCTION pango_font_description_get_variant ##### -->
+<para>
+
+</para>
+
+@desc: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_font_description_set_weight ##### -->
+<para>
+
+</para>
+
+@desc: 
+@weight: 
+
+
+<!-- ##### FUNCTION pango_font_description_get_weight ##### -->
+<para>
+
+</para>
+
+@desc: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_font_description_set_stretch ##### -->
+<para>
+
+</para>
+
+@desc: 
+@stretch: 
+
+
+<!-- ##### FUNCTION pango_font_description_get_stretch ##### -->
+<para>
+
+</para>
+
+@desc: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_font_description_set_size ##### -->
+<para>
+
+</para>
+
+@desc: 
+@size: 
+
+
+<!-- ##### FUNCTION pango_font_description_get_size ##### -->
+<para>
+
+</para>
+
+@desc: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_font_description_set_absolute_size ##### -->
+<para>
+
+</para>
+
+@desc: 
+@size: 
+
+
+<!-- ##### FUNCTION pango_font_description_get_size_is_absolute ##### -->
+<para>
+
+</para>
+
+@desc: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_font_description_set_gravity ##### -->
+<para>
+
+</para>
+
+@desc: 
+@gravity: 
+
+
+<!-- ##### FUNCTION pango_font_description_get_gravity ##### -->
+<para>
+
+</para>
+
+@desc: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_font_description_get_set_fields ##### -->
+<para>
+
+</para>
+
+@desc: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_font_description_unset_fields ##### -->
+<para>
+
+</para>
+
+@desc: 
+@to_unset: 
+
+
+<!-- ##### FUNCTION pango_font_description_merge ##### -->
+<para>
+
+</para>
+
+@desc: 
+@desc_to_merge: 
+@replace_existing: 
+
+
+<!-- ##### FUNCTION pango_font_description_merge_static ##### -->
+<para>
+
+</para>
+
+@desc: 
+@desc_to_merge: 
+@replace_existing: 
+
+
+<!-- ##### FUNCTION pango_font_description_better_match ##### -->
+<para>
+
+</para>
+
+@desc: 
+@old_match: 
+@new_match: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_font_description_from_string ##### -->
+<para>
+
+</para>
+
+@str: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_font_description_to_string ##### -->
+<para>
+
+</para>
+
+@desc: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_font_description_to_filename ##### -->
+<para>
+
+</para>
+
+@desc: 
+@Returns: 
+
+
+<!-- ##### STRUCT PangoFontMetrics ##### -->
+<para>
+A #PangoFontMetrics structure holds the overall metric information
+for a font (possibly restricted to a script). The fields of this
+structure are private to implementations of a font backend. See
+the documentation of the corresponding getters for documentation
+of their meaning.
+</para>
+
+@ref_count: reference count.  Used internally.  See pango_font_metrics_ref()
+            and pango_font_metrics_unref().
+@ascent: the distance from the baseline to the highest point of the glyphs of
+	 the font. This is positive in practically all fonts.
+@descent: the distance from the baseline to the lowest point of the glyphs of
+	 the font. This is positive in practically all fonts.
+@approximate_char_width: approximate average width of the regular glyphs of
+         the font.
+@approximate_digit_width: approximate average width of the glyphs for digits
+         of the font.
+@underline_position: position of the underline. This is normally negative.
+@underline_thickness: thickness of the underline.
+@strikethrough_position: position of the strikethrough line. This is
+	 normally positive.
+@strikethrough_thickness: thickness of the strikethrough line.
+
+<!-- ##### MACRO PANGO_TYPE_FONT_METRICS ##### -->
+<para>
+The #GObject type for #PangoFontMetrics.
+</para>
+
+
+
+<!-- ##### FUNCTION pango_font_metrics_ref ##### -->
+<para>
+
+</para>
+
+@metrics: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_font_metrics_unref ##### -->
+<para>
+
+</para>
+
+@metrics: 
+
+
+<!-- ##### FUNCTION pango_font_metrics_get_ascent ##### -->
+<para>
+
+</para>
+
+@metrics: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_font_metrics_get_descent ##### -->
+<para>
+
+</para>
+
+@metrics: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_font_metrics_get_approximate_char_width ##### -->
+<para>
+
+</para>
+
+@metrics: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_font_metrics_get_approximate_digit_width ##### -->
+<para>
+
+</para>
+
+@metrics: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_font_metrics_get_underline_thickness ##### -->
+<para>
+
+</para>
+
+@metrics: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_font_metrics_get_underline_position ##### -->
+<para>
+
+</para>
+
+@metrics: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_font_metrics_get_strikethrough_thickness ##### -->
+<para>
+
+</para>
+
+@metrics: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_font_metrics_get_strikethrough_position ##### -->
+<para>
+
+</para>
+
+@metrics: 
+@Returns: 
+
+
+<!-- ##### STRUCT PangoFont ##### -->
+<para>
+The #PangoFont structure is used to represent
+a font in a rendering-system-independent matter.
+To create an implementation of a #PangoFont,
+the rendering-system specific code should allocate
+a larger structure that contains a nested
+#PangoFont, fill in the <structfield>klass</structfield> member of
+the nested #PangoFont with a pointer to
+a appropriate #PangoFontClass, then call
+pango_font_init() on the structure.
+</para>
+<para>
+The #PangoFont structure contains one member
+which the implementation fills in.
+</para>
+
+
+<!-- ##### MACRO PANGO_TYPE_FONT ##### -->
+<para>
+The #GObject type for #PangoFont.
+</para>
+
+
+
+<!-- ##### MACRO PANGO_FONT ##### -->
+<para>
+Casts a #GObject to a #PangoFont.
+</para>
+
+@object: a #GObject.
+
+
+<!-- ##### MACRO PANGO_IS_FONT ##### -->
+<para>
+Returns %TRUE if @object is a #PangoFont.
+</para>
+
+@object: a #GObject.
+
+
+<!-- ##### FUNCTION pango_font_find_shaper ##### -->
+<para>
+
+</para>
+
+@font: 
+@language: 
+@ch: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_font_describe ##### -->
+<para>
+
+</para>
+
+@font: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_font_describe_with_absolute_size ##### -->
+<para>
+
+</para>
+
+@font: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_font_get_coverage ##### -->
+<para>
+
+</para>
+
+@font: 
+@language: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_font_get_glyph_extents ##### -->
+<para>
+
+</para>
+
+@font: 
+@glyph: 
+@ink_rect: 
+@logical_rect: 
+
+
+<!-- ##### FUNCTION pango_font_get_metrics ##### -->
+<para>
+
+</para>
+
+@font: 
+@language: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_font_get_font_map ##### -->
+<para>
+
+</para>
+
+@font: 
+@Returns: 
+
+
+<!-- ##### STRUCT PangoFontFamily ##### -->
+<para>
+The #PangoFontFamily structure is used to represent a family of related 
+font faces. The faces in a family share a common design, but differ in 
+slant, weight, width and other aspects.
+</para>
+
+
+<!-- ##### MACRO PANGO_TYPE_FONT_FAMILY ##### -->
+<para>
+The #GObject type for #PangoFontFamily.
+</para>
+
+
+
+<!-- ##### MACRO PANGO_FONT_FAMILY ##### -->
+<para>
+Casts a #GObject to a #PangoFontFamily.
+</para>
+
+@object: a #GObject.
+
+
+<!-- ##### MACRO PANGO_IS_FONT_FAMILY ##### -->
+<para>
+Returns %TRUE if @object is a #PangoFontFamily.
+</para>
+
+@object: a #GObject.
+
+
+<!-- ##### FUNCTION pango_font_family_get_name ##### -->
+<para>
+
+</para>
+
+@family: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_font_family_is_monospace ##### -->
+<para>
+
+</para>
+
+@family: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_font_family_list_faces ##### -->
+<para>
+
+</para>
+
+@family: 
+@faces: 
+@n_faces: 
+
+
+<!-- ##### STRUCT PangoFontFace ##### -->
+<para>
+The #PangoFontFace structure is used to represent a group of fonts with 
+the same family, slant, weight, width, but varying sizes.
+</para>
+
+
+<!-- ##### MACRO PANGO_TYPE_FONT_FACE ##### -->
+<para>
+The #GObject type for #PangoFontFace.
+</para>
+
+
+
+<!-- ##### MACRO PANGO_FONT_FACE ##### -->
+<para>
+Casts a #GObject to a #PangoFontFace.
+</para>
+
+@object: a #GObject.
+
+
+<!-- ##### MACRO PANGO_IS_FONT_FACE ##### -->
+<para>
+Returns %TRUE if @object is a #PangoFontFace.
+</para>
+
+@object: a #GObject.
+
+
+<!-- ##### FUNCTION pango_font_face_get_face_name ##### -->
+<para>
+
+</para>
+
+@face: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_font_face_list_sizes ##### -->
+<para>
+
+</para>
+
+@face: 
+@sizes: 
+@n_sizes: 
+
+
+<!-- ##### FUNCTION pango_font_face_describe ##### -->
+<para>
+
+</para>
+
+@face: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_font_face_is_synthesized ##### -->
+<para>
+
+</para>
+
+@face: 
+@Returns: 
+
+
+<!-- ##### STRUCT PangoFontMap ##### -->
+<para>
+The #PangoFontMap represents the set of fonts available for a
+particular rendering system. This is a virtual object with
+implementations being specific to particular rendering systems.  To
+create an implementation of a #PangoFontMap, the rendering-system
+specific code should allocate a larger structure that contains a nested
+#PangoFontMap, fill in the <structfield>klass</structfield> member of the nested #PangoFontMap with a
+pointer to a appropriate #PangoFontMapClass, then call
+pango_font_map_init() on the structure.
+</para>
+<para>
+The #PangoFontMap structure contains one member which the implementation
+fills in.
+</para>
+
+
+<!-- ##### MACRO PANGO_TYPE_FONT_MAP ##### -->
+<para>
+The #GObject type for #PangoFontMap.
+</para>
+
+
+
+<!-- ##### MACRO PANGO_FONT_MAP ##### -->
+<para>
+Casts a #GObject to a #PangoFontMap. 
+</para>
+
+@object: a #GObject.
+
+
+<!-- ##### MACRO PANGO_IS_FONT_MAP ##### -->
+<para>
+Returns %TRUE if @object is a #PangoFontMap.
+</para>
+
+@object: a #GObject.
+
+
+<!-- ##### STRUCT PangoFontMapClass ##### -->
+<para>
+The #PangoFontMapClass structure holds the virtual functions for
+a particular #PangoFontMap implementation.
+</para>
+
+@parent_class: parent #GObjectClass.
+@load_font: a function to load a font with a given description. See
+            pango_font_map_load_font().
+@list_families: A function to list available font families. See
+                pango_font_map_list_families().
+@load_fontset: a function to load a fontset with a given given description
+             suitable for a particular language. See
+	     pango_font_map_load_fontset().
+@shape_engine_type: the type of rendering-system-dependent engines that
+             can handle fonts of this fonts loaded with this fontmap.
+
+<!-- ##### MACRO PANGO_FONT_MAP_CLASS ##### -->
+<para>
+Casts a #GObject to a #PangoFontMapClass.
+</para>
+
+@klass: a #GObject.
+
+
+<!-- ##### MACRO PANGO_IS_FONT_MAP_CLASS ##### -->
+<para>
+Returns %TRUE if @klass is a subtype of #PangoFontMapClass.
+</para>
+
+@klass: a #GObject.
+
+
+<!-- ##### MACRO PANGO_FONT_MAP_GET_CLASS ##### -->
+<para>
+Returns the type of a #PangoFontMap.
+</para>
+
+@obj: a #PangoFontMap.
+
+
+<!-- ##### FUNCTION pango_font_map_load_font ##### -->
+<para>
+
+</para>
+
+@fontmap: 
+@context: 
+@desc: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_font_map_load_fontset ##### -->
+<para>
+
+</para>
+
+@fontmap: 
+@context: 
+@desc: 
+@language: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_font_map_list_families ##### -->
+<para>
+
+</para>
+
+@fontmap: 
+@families: 
+@n_families: 
+
+
+<!-- ##### FUNCTION pango_font_map_get_shape_engine_type ##### -->
+<para>
+
+</para>
+
+@fontmap: 
+@Returns: 
+
+
+<!-- ##### STRUCT PangoFontset ##### -->
+<para>
+A #PangoFontset represents a set of #PangoFont to use
+when rendering text. It is the result of resolving a
+#PangoFontDescription against a particular #PangoContext.
+It has operations for finding the component font for
+a particular Unicode character, and for finding a composite
+set of metrics for the entire fontset.
+</para>
+
+
+<!-- ##### MACRO PANGO_TYPE_FONTSET ##### -->
+<para>
+The #GObject type for #PangoFontset.
+</para>
+
+
+
+<!-- ##### STRUCT PangoFontsetClass ##### -->
+<para>
+The #PangoFontsetClass structure holds the virtual functions for
+a particular #PangoFontset implementation.
+</para>
+
+@parent_class: parent #GObjectClass.
+@get_font: a function to get the font in the fontset that contains the 
+   best glyph for the given Unicode character; see pango_fontset_get_font().
+@get_metrics: a function to get overall metric information for the fonts 
+   in the fontset; see pango_fontset_get_metrics().
+@get_language: a function to get the language of the fontset.
+@foreach: a function to loop over the fonts in the fontset. See
+   pango_fontset_foreach().
+
+<!-- ##### FUNCTION pango_fontset_get_font ##### -->
+<para>
+
+</para>
+
+@fontset: 
+@wc: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_fontset_get_metrics ##### -->
+<para>
+
+</para>
+
+@fontset: 
+@Returns: 
+
+
+<!-- ##### USER_FUNCTION PangoFontsetForeachFunc ##### -->
+<para>
+
+</para>
+
+@fontset: 
+@font: 
+@data: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_fontset_foreach ##### -->
+<para>
+
+</para>
+
+@fontset: 
+@func: 
+@data: 
+
+
+<!-- ##### STRUCT PangoFontsetSimple ##### -->
+<para>
+#PangoFontsetSimple is a implementation of the abstract
+#PangoFontset base class in terms of an array of fonts,
+which the creator provides when constructing the
+#PangoFontsetSimple.
+</para>
+
+
+<!-- ##### MACRO PANGO_TYPE_FONTSET_SIMPLE ##### -->
+<para>
+The #GObject type for #PangoFontsetSimple.
+</para>
+
+
+
+<!-- ##### FUNCTION pango_fontset_simple_new ##### -->
+<para>
+
+</para>
+
+@language: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_fontset_simple_append ##### -->
+<para>
+
+</para>
+
+@fontset: 
+@font: 
+
+
+<!-- ##### FUNCTION pango_fontset_simple_size ##### -->
+<para>
+
+</para>
+
+@fontset: 
+@Returns: 
+
+

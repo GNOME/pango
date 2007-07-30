@@ -1,0 +1,122 @@
+<!-- ##### SECTION Title ##### -->
+PangoFcFont
+
+<!-- ##### SECTION Short_Description ##### -->
+Base font class for Fontconfig-based backends
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+#PangoFcFont is a base class for font implementation using the
+Fontconfig and FreeType libraries. It is used in the
+<link linkend="pango-Xft-Fonts-and-Rendering">Xft</link> and
+<link linkend="pango-FreeType-Fonts-and-Rendering">FreeType</link>
+backends shipped with Pango, but can also be used when creating
+new backends. Any backend deriving from this base class will 
+take advantage of the wide range of shapers implemented using
+FreeType that come with Pango.
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+<variablelist>
+
+<varlistentry>
+<term>#PangoFcFontMap</term>
+<listitem><para>The base class for font maps; creating a new
+Fontconfig-based backend involves deriving from both
+#PangoFcFontMap and #PangoFcFont.
+.</para></listitem>
+</varlistentry>
+
+</variablelist>
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### STRUCT PangoFcFont ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### ARG PangoFcFont:pattern ##### -->
+<para>
+
+</para>
+
+<!-- ##### STRUCT PangoFcFontClass ##### -->
+<para>
+
+</para>
+
+@lock_face: 
+@unlock_face: 
+@has_char: 
+@get_glyph: 
+@get_unknown_glyph: 
+@shutdown: 
+
+<!-- ##### MACRO PANGO_RENDER_TYPE_FC ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### FUNCTION pango_fc_font_lock_face ##### -->
+<para>
+
+</para>
+
+@font: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_fc_font_unlock_face ##### -->
+<para>
+
+</para>
+
+@font: 
+
+
+<!-- ##### FUNCTION pango_fc_font_has_char ##### -->
+<para>
+
+</para>
+
+@font: 
+@wc: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_fc_font_get_glyph ##### -->
+<para>
+
+</para>
+
+@font: 
+@wc: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_fc_font_get_unknown_glyph ##### -->
+<para>
+
+</para>
+
+@font: 
+@wc: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_fc_font_kern_glyphs ##### -->
+<para>
+
+</para>
+
+@font: 
+@glyphs: 
+
+

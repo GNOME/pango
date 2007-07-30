@@ -1,0 +1,116 @@
+<!-- ##### SECTION Title ##### -->
+Engines
+
+<!-- ##### SECTION Short_Description ##### -->
+Language-specific and rendering-system-specific processing
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+Pango utilizes a module architecture in which the language-specific
+and render-system-specific components are provided by loadable
+modules. Each loadable module supplies one or more
+<firstterm>engines</firstterm>.  Each <firstterm>engine</firstterm>
+has an associated <firstterm>engine type</firstterm> and
+<firstterm>render type</firstterm>. These two types are represented by
+strings.
+</para>
+<para>
+Each dynamically-loaded module exports several functions which provide
+the public API. These functions are script_engine_list(),
+script_engine_init() and script_engine_exit, and
+script_engine_create(). The latter three functions are used when
+creating engines from the module at run time, while the first
+function is used when building a catalog of all available modules.
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### STRUCT PangoEngineInfo ##### -->
+<para>
+The #PangoEngineInfo structure contains information about a particular
+engine. It contains the following fields:
+</para>
+
+@id: a unique string ID for the engine.
+@engine_type: a string identifying the engine type.
+@render_type: a string identifying the render type.
+@scripts: array of scripts this engine supports.
+@n_scripts: number of items in @scripts.
+
+<!-- ##### STRUCT PangoEngineScriptInfo ##### -->
+<para>
+The #PangoEngineScriptInfo structure contains
+information about how the shaper covers a particular
+script.
+</para>
+
+@script: a #PangoScript. The value %PANGO_SCRIPT_COMMON has
+        the special meaning here of "all scripts"
+@langs: a semicolon separated list of languages that this
+        engine handles for this script. This may be empty, 
+        in which case the engine is saying that it is a
+        fallback choice for all languages for this range,
+        but should not be used if another engine 
+        indicates that it is specific for the language for
+        a given code point. An entry in this list of "*"
+        indicates that this engine is specific to all
+        languages for this range.
+
+<!-- ##### STRUCT PangoEngine ##### -->
+<para>
+</para>
+
+
+<!-- ##### STRUCT PangoEngineClass ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### MACRO PANGO_RENDER_TYPE_NONE ##### -->
+<para>
+A string constant defining the render type
+for engines that are not rendering-system 
+specific.
+</para>
+
+
+
+<!-- ##### FUNCTION script_engine_list ##### -->
+<para>
+</para>
+
+@engines: location to store a pointer to an array of engines.
+@n_engines: location to store the number of elements in @engines.
+
+
+<!-- ##### FUNCTION script_engine_init ##### -->
+<para>
+
+</para>
+
+@module: 
+
+
+<!-- ##### FUNCTION script_engine_exit ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### FUNCTION script_engine_create ##### -->
+<para>
+
+</para>
+
+@id: 
+@Returns: 
+
+

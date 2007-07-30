@@ -1,0 +1,225 @@
+<!-- ##### SECTION Title ##### -->
+Miscellaneous Utilities
+
+<!-- ##### SECTION Short_Description ##### -->
+Various convenience and utility functions
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+The functions and utilities in this section are mostly used from Pango
+backends and modules, but may be useful for other purposes too.
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### FUNCTION pango_split_file_list ##### -->
+<para>
+
+</para>
+
+@str: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_trim_string ##### -->
+<para>
+
+</para>
+
+@str: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_read_line ##### -->
+<para>
+
+</para>
+
+@stream: 
+@str: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_skip_space ##### -->
+<para>
+
+</para>
+
+@pos: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_scan_word ##### -->
+<para>
+
+</para>
+
+@pos: 
+@out: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_scan_string ##### -->
+<para>
+
+</para>
+
+@pos: 
+@out: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_scan_int ##### -->
+<para>
+
+</para>
+
+@pos: 
+@out: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_config_key_get ##### -->
+<para>
+
+</para>
+
+@key: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_lookup_aliases ##### -->
+<para>
+
+</para>
+
+@fontname: 
+@families: 
+@n_families: 
+
+
+<!-- ##### FUNCTION pango_parse_enum ##### -->
+<para>
+
+</para>
+
+@type: 
+@str: 
+@value: 
+@warn: 
+@possible_values: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_parse_style ##### -->
+<para>
+
+</para>
+
+@str: 
+@style: 
+@warn: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_parse_variant ##### -->
+<para>
+
+</para>
+
+@str: 
+@variant: 
+@warn: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_parse_weight ##### -->
+<para>
+
+</para>
+
+@str: 
+@weight: 
+@warn: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_parse_stretch ##### -->
+<para>
+
+</para>
+
+@str: 
+@stretch: 
+@warn: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_get_sysconf_subdirectory ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_get_lib_subdirectory ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_log2vis_get_embedding_levels ##### -->
+<para>
+
+</para>
+
+@text: 
+@length: 
+@pbase_dir: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_language_get_default ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_language_get_sample_string ##### -->
+<para>
+
+</para>
+
+@language: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_is_zero_width ##### -->
+<para>
+
+</para>
+
+@ch: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_quantize_line_geometry ##### -->
+<para>
+
+</para>
+
+@thickness: 
+@position: 
+
+

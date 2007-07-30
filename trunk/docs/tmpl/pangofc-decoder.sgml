@@ -1,0 +1,55 @@
+<!-- ##### SECTION Title ##### -->
+PangoFcDecoder
+
+<!-- ##### SECTION Short_Description ##### -->
+Custom font encoding handling
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+PangoFcDecoder represents a decoder that an application provides
+for handling a font that is encoded in a custom way.
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### STRUCT PangoFcDecoder ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### STRUCT PangoFcDecoderClass ##### -->
+<para>
+
+</para>
+
+@get_charset: 
+@get_glyph: 
+
+<!-- ##### FUNCTION pango_fc_decoder_get_charset ##### -->
+<para>
+
+</para>
+
+@decoder: 
+@fcfont: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_fc_decoder_get_glyph ##### -->
+<para>
+
+</para>
+
+@decoder: 
+@fcfont: 
+@wc: 
+@Returns: 
+
+

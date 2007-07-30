@@ -1,0 +1,1636 @@
+Overview of changes between 1.17.4 and 1.17.5
+==============================================
+- Export PangoCairoFont and cleanup various standard macros.
+
+- Bugs fixed in this release:
+	Bug 150883 – Unicode LRO defect
+	Bug 449482 – Build error when xft not present
+	Part of Bug 347236 – provide pango_cairo_font_get_scaled_font
+
+Overview of changes between 1.17.3 and 1.17.4
+==============================================
+- Refactored the ATSUI font backend and install pangoatsui.h
+  that has a single function pango_atsui_font_get_atsu_font_id() and
+  a couple of types.
+
+- Bugs fixed in this release:
+	Bug 451547 – FAIL: runtests.sh
+	Bug 449543 - Ship pangoatsui.h
+
+Overview of changes between 1.17.2 and 1.17.3
+==============================================
+- Extensive pangocairo internal code refactoring and cleanup
+
+- New public API:
+
+	pango_font_face_is_synthesized()
+
+	pango_cairo_font_get_scaled_font()
+	pango_cairo_font_map_new_for_font_type()
+	pango_cairo_font_map_get_font_type()
+
+- New engine macros:
+	
+	PANGO_OT_TAG_MAKE()
+	PANGO_OT_TAG_MAKE_FROM_STRING()
+
+- New PangoFontFace method is_synthesized.
+
+- Misc bug fixes
+- Bugs fixed in this release:
+	Bug 337593 – move glyph extents code (and cache) from
+		pangocairo-*font.c into pangocairo-font.c
+	Bug 347235 – Add pango_cairo_font_map_get_font_type
+	Bug 347236 – provide pango_cairo_font_get_scaled_font
+	Bug 353291 – Provide pango_cairo_font_map_new_for_font_type
+	Bug 438801 – underline should add "error" type.
+	Bug 440588 – Add pango_font_face_is_synthesized()
+	Bug 445832 – pango_cairo_update_layout() always invalidates layout
+	Bug 446018 – Bus error in the pango_ot_tag_from_language()
+	Bug 446355 – the parsing with pango_parse_markup is not coherent
+	Bug 447189 – fonts.c: pango_font_face_is_synthesized returns NULL
+	Bug 447568 – improve docs on what absolute size means
+	Bug 448342 – pango_layout_index_to_line_x() counts lines from 1
+
+Overview of changes between 1.17.1 and 1.17.2
+==============================================
+- Rename recently added pango_ot_ruleset_get_for() to
+  pango_ot_ruleset_get_for_description().
+
+- New engine API: pango_ot_ruleset_new_from_description().
+
+- Treat Unknown script like Common and other non-"real" scripts.
+  [Martin Hosken]
+
+- Misc typo fixes [Peter Moulder]
+
+- Bugs fixed in this release:
+
+	Bug 443206 – PANGO_SCRIPT_UNKNOWN should not cause a run break
+	Patch from Martin Hosken
+
+Overview of changes between 1.17.0 and 1.17.1
+==============================================
+
+- Ported the rest of OpenType shapers to the new OpenType APIs and
+  added standard features to them: Hebrew, Indic, Khmer, Thai, and Tibetan.
+
+- Added N'Ko support to the Arabic module. [Eugeniy Meshcheryakov]
+
+- Small Indic module fix for Malayalam.
+
+- Fixed font metrics returned by the ATSUI backend. [Richard Hult]
+
+- Make itemization use pango_language_get_default() if context has no
+  language set on it.  Ditto for pango_context_get_metrics() if both
+  input language and context language are NULL.
+
+- Improved documentation on vertical text, also added stability note
+  to those parts of Pango API that are not indefinitely stable (shaper
+  and language engine APIs).
+
+- Misc bug fixes.
+
+- New OpenType engine API:
+
+	pango_ot_ruleset_get_feature_count()
+
+- Bugs fixed in this release:
+
+	Bug 357790 – Rendering problem for malayalam consonant RA (U+0D30)
+	Bug 385168 – indic, khmer, and tibetan modules don't apply ccmp
+	Bug 385477 – kern feature is not supported in OpenType layout for Tibetan.
+	Bug 433805 - [Atsui] Approximate char/digit width width often 0
+	Bug 436699 – N'Ko support
+	Bug 438705 – Test runs non-existent "/bin/bash" on HP-UX 11.11
+	Bug 438814 – synaptic crash with pango 1.17.0
+	Bug 440603 – Minor ABI change
+
+Overview of changes between 1.16.4 and 1.17.0
+==============================================
+
+General:
+
+- Text justification.  A simple justification algorithm is implemented
+  that tries to justify by expanding spaces in the line, and if none
+  found, by adjust letter spacing.  [Based on patch by Mathias
+  Hasselmann]
+
+- The pango_script_get_sample_language() function is modified to use
+  the value of environment variables PANGO_LANGUAGE or LANGUAGE
+  (checked in that order) to make guess better languages for scripts.
+  The env var should be a list of language tags, like "en:fa" for
+  example where in effect makes Pango choose Persian (fa) fonts
+  instead of Arabic (ar) fonts when a run of text in the Arabic script
+  is found in an otherwise non-Arabic layout.
+
+  This trick is also useful for East Asian languages.  For example a
+  Japanese user that cannot set her primary language to Japanese can
+  still set PANGO_LANGUAGE="ja" and Pango will map CJK characters to
+  Japanese.
+
+  The LANGUAGE env var is a standard gettext variable listing
+  languages the user wants to receive UI translated messages in.
+  However, since most packages don't provide separate English
+  translations, setting LANGUAGE="en:ja" doesn't have the intended
+  effect and UI messages will be shown in Japanese.  For these
+  situations one can use LANGUAGE="en:C:ja".  Pango skips the special
+  language tag 'C'.
+
+- Simplified embedded-shape rendering with pangocairo backends do.
+  [Richard Hult]
+
+- New header file: Moved PangoLanguage APIs into its own header
+  pango-language.h, which is included from pango-types.h.
+
+- ATSUI backend now lists synthesized italic faces like other
+
+- Misc optimizations and fixes.
+
+OpenType Layout Engine Improvements:
+
+- Vertical glyph variants are not selected in vertical text if the
+  font supports them.
+
+- Instead of hardcoded OpenType script tag in each module, and using
+  Default Language System unconditionally, Pango will now find and use
+  the script/lang-sys pair that best matches the detected script and
+  language of a run of text.  Moreover, it also applies the OpenType
+  'locl' feature.
+  
+  These, plus the PANGO_LANGUAGE env var, give font designers and
+  users lots of options to provide/choose language-specific glyph
+  variants.
+  
+  Only basic, arabic, and syriac modules updated to take advantage of
+  the new support so far.
+
+New pango-view command line options:
+
+	--align
+	--justify
+	--language
+
+Public API Changes:
+
+- New public pangocairo API:
+
+	PangoCairoShapeRendererFunc
+	pango_cairo_context_set_shape_renderer() 
+	pango_cairo_context_get_shape_renderer() 
+
+  These are used by the default pangocairo renderer to render shape
+  attributes (see examples/cairoshape.c).  Cairo-based PangoRenderer
+  implementations outside Pango may want to implement the draw_shape()
+  method similarly to provide compatibility with these new APIs.  (See
+  bug #437533 for GdkPangoRenderer for example.)
+
+- Other public API changes:
+
+	New is_expandable_space member in PangoLogAttr
+	New macro PANGO_UNITS_ROUND()
+
+- New OpenType engine API.  These are engine API, for use by Pango
+  modules, and typically need not to be bound by language bindings:
+
+	PANGO_OT_NO_FEATURE
+	PANGO_OT_NO_SCRIPT
+	PANGO_OT_TAG_DEFAULT_SCRIPT
+	PANGO_OT_TAG_DEFAULT_LANGUAGE
+	PangoOTFeatureMap
+	PangoOTRulesetDescription
+	pango_ot_ruleset_get_for()
+	pango_ot_ruleset_new_for()
+	pango_ot_ruleset_maybe_add_feature()
+	pango_ot_ruleset_maybe_add_features()
+	pango_ot_ruleset_description_hash()
+	pango_ot_ruleset_description_equal()
+	pango_ot_ruleset_description_copy()
+	pango_ot_ruleset_description_free()
+	pango_ot_tag_from_script()
+	pango_ot_tag_to_script()
+	pango_ot_tag_from_language()
+	pango_ot_tag_to_language()
+
+- Bugs fixed in this release:
+
+	Bug 64538 – pango_layout_set_justify() doesn't work
+	Bug 325714 – Pango should respect $LANGUAGE
+	Bug 414264 – Pango vertical writing support is different with real
+		     CJK usage.
+	Bug 416515 – Time is not aligned with date on vertical panel
+	Bug 429397 – Updated MS Mincho/Gothic are not listed in font dialog
+		     properly on Vista/
+	Bug 433805 – [Atsui] Approximate char/digit width width often 0
+		     (worked around)
+	Bug 434160 - [atsui] Italic versions of some faces can't be created
+	Bug 435709 – pango_cairo_context_[sg]et_shape_renderer()
+	Bug 355789 – Pango misaligns word-wrapped text due to trailing
+		     whitespace
+	Bug 436154 – Error building the pango.modules file while cross
+		     compiling
+	Bug 436988 – Adding PangoScript to PangoAnalysis
+	Bug 437534 – pango_language_includes_script is buggy
+
+Overview of changes between 1.16.3 and 1.16.4
+==============================================
+- Add new configure option --disable-doc-cross-references and make
+  sure releases are made using it.  Distributions are encouraged to
+  build with --enable-gtk-doc such that their Pango docs correctly
+  cross reference glib and cairo docs.
+- Bugs fixed in this release:
+	Bug 432991 – developer docs for libpango are broken
+
+Overview of changes between 1.16.2 and 1.16.3
+==============================================
+- Quantize kerning value if metrics hinting is on.  This greatly improves
+  screen text rendering with certain fonts like DejaVu Sans.
+  See: http://behdad.org/blog/mces/image/metricshinting-kerning.png
+- Improved hex-box positioning in the cairo backend
+
+Overview of changes between 1.16.1 and 1.16.2
+==============================================
+- Fixed various bug in the OpenType Layout code (HarfBuzz)
+- Improved documentation
+- Improved ATSUI backend
+- Misc build system fixes
+- Bugs fixed in this release:
+	Bug 417946 – pangowin32-fontmap.c:using function without prototype
+	Bug 419262 - Don't create coverage every time it's asked for
+
+Overview of changes between 1.16.0 and 1.16.1
+==============================================
+- Improved Win32 backend: The Win32 backend has been
+  updated to always require Uniscribe at compile-time (it still
+  is optional at run-time), and to use the wide-character variants
+  of Windows APIs which improves the backend in many ways.  The
+  1.16.0 release is obsolete as far as the Win32 backend is
+  concerned, and official DLLs were not built for it.
+- Misc build system fixes
+- Bugs fixed in this release:
+	Bug 110521 – can't find bold and/or italic fonts on win32
+	Bug 120195 – there are some functions in pangowin32-fontmap.c that
+		might maybe should be static
+	Bug 407315 – Use wide character Win32 API in the pangowin32 code
+	Bug 412654 – SED variable undefined in the `libtool --config' output
+		used by configure
+	Bug 414297 – Fails to build with --enable-static
+		--with-included-modules in thai lang module
+		Patch from Loïc Minier
+
+Overview of changes between 1.15.6 and 1.16.0
+==============================================
+- Improved docs, with an object hierarchy and cross references to glib and
+  cairo docs now (may require rebuilding the docs to correctly detect glib
+  and cairo prefixes).
+- Improved font selection for space characters
+- Misc build system fixes
+- Bugs fixed in this release:
+	Bug 407087 – autogen.sh wants automake-1.7
+	Bug 409212 – Missing link flag prevents build with "-z defs" ld flags
+		     Patch from Loïc Minier
+	Bug 355987 – choosing font/shaper for spaces breaks Arabic runs on
+		     spaces
+
+Overview of changes between 1.15.5 and 1.15.6
+==============================================
+- Fix possible crasher in win32 font selection [Owen Taylor]
+- Misc build fixes.
+- Bugs fixed in this release:
+	Bug 399738 – pango 1.15.5 won't compile on Mac OS X: 'FC_HINT_STYLE'
+		undeclared (first use in this function)
+	Bug 404295 – Crash initializing pango-win32 fontmap
+
+Overview of changes between 1.15.4 and 1.15.5
+==============================================
+- Fix the "menu accels are two chars wide" bug that was introduced in 1.15.4
+- Respect FC_HINT_STYLE in the ft2 backend.  Patch has been in Fedora for ages.
+- Require automake 1.9
+Bugs fixed in this release:
+	Bug 398238 – pangorc file missing from tests directory
+
+Overview of changes between 1.15.3 and 1.15.4
+==============================================
+General:
+- Finish vertical text support.
+- Fix various bugs that could cause ellipsization to stop prematurely.
+- Fix rendering of background color being off in presence of rise attribute.
+- Improved text-on-path example (examples/cairotwisted.c)
+
+Win32 Improvements:
+- Don't check for X and don't warn about missing fontconfig. [Tor Lillqvist]
+- Automatically use -mms-bitfields on Windows when building with gcc. [Tor]
+- Update makefile.msv. [Hans Breuer]
+
+Code base cleanups:
+- Whitespace cleanups.  Hopefully patches still apply using patch -l
+- Replace C++-style // comments with C-style /* */ ones.
+- Move the pango-view tool from examples/ into pango-view/.  The examples/
+  dir is still available and for simple examples only.
+
+Public API changes:
+
+- New PangoLayout query functions:
+
+	pango_layout_is_wrapped()
+	pango_layout_is_ellipsized()
+	pango_layout_get_unknown_glyphs_count()
+
+  The is_wrapped and is_ellipsized functions return whether the layout
+  had to wrap/ellipsize any paragraphs, as opposed to the get_wrap and
+  get_ellipsize that return the wrap/ellipsize mode set.
+
+- Misc new function:
+	pango_parse_enum()
+
+  This is more a convenience function for internal use, but set public
+  to go with other pango_parse_* functions.  Bindings should feel free
+  to ignore this.
+
+
+- New header files:
+
+  Moved gravity and matrix stuff into their own header files pango-gravity.h
+  and pango-matrix.h.  Both are included from pango-types.h.
+
+- Vertical text:
+
+  New attribute types:
+
+	PANGO_ATTR_GRAVITY
+	PANGO_ATTR_GRAVITY_HINT.
+
+  New enum type:
+
+	PangoGravityHint
+
+  New macro:
+
+	PANGO_GRAVITY_IS_VERTICAL()
+
+  New public functions:
+
+	pango_attr_gravity_new()
+	pango_attr_gravity_hint_new()
+	pango_gravity_hint_get_type
+	pango_context_set_gravity_hint()
+	pango_context_get_gravity_hint()
+	pango_gravity_get_for_matrix()
+	pango_gravity_get_for_script()
+
+  Removed:
+	pango_matrix_to_gravity()
+
+  replaced by pango_gravity_get_for_matrix()
+  
+  Gravity API added in previous releases:
+
+	PangoGravity
+        pango_gravity_get_type
+        pango_context_get_base_gravity
+        pango_context_get_gravity
+        pango_context_set_base_gravity
+	pango_font_description_get_gravity
+	pango_font_description_set_gravity
+	pango_gravity_to_rotation
+
+  A tip on using the vertical text support: If you just want to get correct
+  behavior in rotated labels (say, vertical Chinese/Japanese, but rotated
+  Latin, etc), all you need to do is to set the context gravity to
+  PANGO_GRAVITY_AUTO.  You can do this for example
+
+	#if defined(PANGO_VERSION_CHECK) && PANGO_VERSION_CHECK(1,15,4)
+	  pango_context_set_gravity (context, PANGO_GRAVITY_AUTO);
+	#endif
+
+Bugs fixed in this release:
+	Bug 395328 – Map kATSDeletedGlyphcode to PANGO_GLYPH_EMPTY
+	Bug 397337 – Use is_ellipsized and is_wrapped to optimize property
+		     changes
+	Bug 328585 – Need to know if a layout has unknown glyphs
+		     Patch from LingNing Zhang
+	Bug 326693 – PangoLayouts should be query-able about their
+		     effective properties (width / wrapped / ellipsized / etc)
+	Bug 397327 – pango-layout.c: 'pango_layout_is_ellipsized' must return
+		     a value
+	Bug 323173 – Add layout of mixed direction text for vertical layout
+	Bug 394453 – Use -mms-bitfields
+	Bug 392628 – Don't check for X on win32
+
+
+Overview of changes between 1.15.2 and 1.15.3
+==============================================
+- Fix Hangul crasher and other Hangul bugs introduced in 1.15.2
+- Spell-checked docs
+- Build fixes
+- Don't introduce bitfields in public structs.  This changes some public API
+  that was broken in the 1.15 series.  The new struct is backward compatible
+  with the older Pango series, but not with earlier 1.15.x devel releases.
+
+- New Public API:
+
+  * PangoAnalysis.flags and PANGO_ANALYSIS_FLAGS_CENTERED_BASELINE.  These are
+    mostly only useful for the vertical text support in Pango, but language
+    bindings probably want to update their bindings for PangoAnalysis to
+    include these.
+
+  * New PangoMatrix methods:
+
+	pango_matrix_transform_distance()
+	pango_matrix_transform_point()
+	pango_matrix_transform_rectangle()
+	pango_matrix_transform_pixel_rectangle()
+
+    The transform_rectangle methods are particularly useful when an
+    app/toolkit wants to know the extents of a rotated layout in device
+    coordinates.  It will be used by Gtk+ for example, and is used by the
+    pango-view tool too.  The _pixel_ variant takes a PangoRectangle in device
+    units instead of Pango units.
+
+  * Unit conversion helpers:
+
+	pango_units_from_double()
+	pango_units_to_double()
+	pango_extents_to_pixels()
+
+    The first two just convert between Pango units (fixed precision) and
+    double floating-point numbers.  The current implementations are as simple
+    as "(int)floor (d * PANGO_SCALE + 0.5)" and "(double)i / PANGO_SCALE", but
+    the idea is to have optimized versions of these that do not use the FPU in
+    the future.  That will be appreciated by embedded devices without FPU
+    units.  Since the functionality can be generally useful, the API is made
+    public.
+
+    The pango_extents_to_pixels() function in conjunction with
+    pango_matrix_transform_rectangle() makes it possible to convert extents to
+    device space and round then, instead of having to transform rounded
+    user-space extents.
+
+- Bugs fixed in this release:
+	Bug 351496 – PangoAnalysis::gravity breaks binary compatibility
+	Bug 388702 – Crash when there's no Hangul glyph in the font.
+	Bug 384543 – FcFontMatch misuse
+	Bug 392789 – vpath build fails in basic module
+		     Patch from J. Ali Harlow
+	Bug 390877 – Don't feed pango-features.h to glib-mkenums
+		     Patch from Yevgen Muntyan
+
+
+Overview of changes between 1.15.1 and 1.15.2
+==============================================
+* Engines:
+  - Improved Hangul shaper engine
+  - Improved Indic shaper and language engines
+  - Require libthai >= 0.1.7 for the Thai language engine
+
+* Optimizations:
+  - Avoid some floating-point operations.  Should cut the number of float
+    ops per expose event in pangocairo to a half.
+  - Cache ink and logical extents for PangoLayout
+
+* New Public API:
+
+  - New, generated, public header file pango-features.h.  Included by
+    pango.h.  Currently contains the version information.  In the future,
+    can be expanded to define which backends have been enabled, etc.
+
+  - Public macros and functions for compile- and run-time version checking:
+
+	PANGO_VERSION_ENCODE()
+	PANGO_VERSION_MAJOR
+	PANGO_VERSION_MINOR
+	PANGO_VERSION_MICRO
+	PANGO_VERSION
+	PANGO_VERSION_STRING
+	PANGO_VERSION_CHECK()
+	pango_version()
+	pango_version_string()
+	pango_version_check()
+
+    The scheme chosen here is a mixture of approaches taken by glib and cairo.
+    The advantage over the glib model is that there are no public variables,
+    but it still gives access to a string and numerical representation of the
+    version number at compile- and run-time.
+    
+    The macros enable conditional compilation of code depending on newer Pango
+    APIs, while the runtime functions allow refusing to run against old
+    versions of the library.
+
+  - New, readonly, version of methods that give read/write access to the
+    internals of PangoLayout:
+
+	pango_layout_get_line_readonly()
+	pango_layout_get_lines_readonly()
+	pango_layout_iter_get_line_readonly()
+	pango_layout_iter_get_run_readonly()
+
+    These should be used when you do not intend to modify the run/line,
+    which is most of the time the case.  The only exception known to me
+    is Firefox that adjusts glyph widths to do justification.  Most other
+    uses that do not write to the returned structs (or structs accessible from
+    them) should be ported to the new readonly API to benefit from major
+    optimizations (in this case, line extents caching).  The list includes,
+    but is not limited to, Gtk+, SWT, ClassPath, gnome-applets, libgnomeprint,
+    xmlroff, GtkMathView, Conglomerate, Dia, Anjuta, wxWindows, The Gimp, 
+    and various other applications/libraries:
+
+      http://www.google.com/codesearch?hl=en&q=+pango_layout_(iter_)%3Fget_(lines%3F%7Crun)%5B%5E_%5D&start=50&sa=N
+
+    Worth noting here is that, many uses of pango_layout_get_lines() can be
+    replaced by a pango_layout_get_iter() that works both more elegantly and
+    more efficiently.  The versioning macros introduced in this release can be
+    used to make code use these new symbols without breaking compilation
+    against older Pango (though, such code compiled with the new Pango cannot
+    be run against an older Pango).
+
+  - pango_language_get_default(): Note that, this does not make Pango
+    fallback to the default language automatically (yet), but the user can
+    use this function to set the default language of the locale on a context:
+
+	  pango_context_set_language (context, pango_language_get_default());
+
+    This essentially deprecates gtk_get_default_language().  The pango-view
+    tool has been updated to use this feature, so it now respects $LANG when
+    choosing fonts.
+
+  - pango_color_to_string().
+
+* Bugs fixed in this release:
+	Bug 326099 – Setting width, indentation and ellipsizing doesn't work
+		     as I would expect
+	Bug 385478 – Fix tests on OPD platform
+	Bug 319808 – Patch to let pango support artifical italic, bold and
+		     bold italic styles for the fonts which don't have these styles.
+		     Patch from James Su
+	Bug 385321 – Worst case expansion for Sinhala
+		     Patch from Harshula
+	Red Hat Bug 211574: [hi/ml/si_LK] cursor naviation is wrong when
+		     using ZWJ (200d)
+		     Patch from LingNing Zhang
+	Red Hat Bug 216424: [te_IN] pango - consonant + dependent vowel (ai)
+		     Composed char is not rendering properly
+		     Patch from LingNing Zhang
+	Bug 373856 – Wish: Function to convert a GdkColor to a string
+		     Patch from Matthew Barnes
+	Red Hat Bug 216850: Issue in combination with vowels (ml_IN)
+		     Patch from LingNing Zhang
+	Bug 382437 – tests/testboundaries fails
+	Bug 333982 – Fallback to $LANG whenever NULL PangoLanguage is used
+		     Patch from LingNing Zhang
+
+Overview of changes between 1.15.0 and 1.15.1
+==============================================
+* Add Thai langauage engine. (currently makes tests/testboundary fail.)
+* Add Lao and improved Thai sample text.
+* Improved Indic module.
+* Output correct path for hexboxes in pango_cairo_layout_path().
+* Implement get_resolution method for the FT2 fontmap.  Shouldn't make
+  any difference whatsoever.  Open a bug if it does.
+* Misc small fixes.
+
+* Optimizations:
+  - Rework PangoLayout algorithms to avoid calling a recursive call to
+    pango_layout_get_extents().  Avoids one pango_font_get_glyph_extents()
+    call per glyph per layout rendering.  We now make 2 such calls.
+  - Don't cache run_logical_rect in PangoLayoutIter.
+    Avoids one pango_font_get_glyph_extents() call per glyph per layout
+    rendering.  We are down to 1 now.
+  - Cache line extents.  This avoids the final pango_font_get_glyph_extents()
+    call per glyph per layout rendering.  Now we don't make any
+    pango_font_get_glyph_extents() calls when rendering a layout (some
+    conditions apply)!
+  - Replace PANGO_IS_RENDERER with PANGO_IS_RENDERER_FAST for most
+    internal uses, that is, just a NULL-check.
+  - Use simple, fast, casts instead of PANGO_CAIRO_*() macros where the
+    object cannot have reached us if it wasn't of the right type.
+
+* Bugs fixed in this release:
+	Bug 135683 – Cache glyphstring extents
+	Red Hat Bug 211964: [ta] Rendering issue with Tamil
+		Patch from LingNing Zhang
+	Red Hat Bug 213632: ZWJ (200d) and ZWNJ (200c) showing same output
+		Patch from LingNing Zhang
+	Bug 371388 – Add Thai langauage engine
+		Patch from Theppitak Karoonboonyanan
+	Bug 377975 – bug in _pango_glyph_item_iter_next_cluster
+	Bug 369670 – Checked g_free calls
+
+Changes that also appeared between 1.14.7 and 1.14.8
+=====================================================
+* Improved thread-safety.  Pango is still NOT thread-safe, but this fixes
+  lots of crashes using pangocairo from multiple threads.
+* Fix out-of-bounds array access.
+* Improved Indic shaper.
+* Improved Arabic language engine.
+* Choose shaper/font for unassigned Unicode codepoints.
+* Build fixes.
+* Bugs fixed in this release:
+	Bug 356666 – pango is not thread-safe, nautilus does not honour that
+	Bug 352795 – configure.in: Bug in "checking Whether to write
+	             dependencies into .pc files"
+	Bug 350132 – backspacing doesn't work properly for Arabic
+	Bug 330407 – Multiple dependant vowel signs (indic) displayed as one
+	Patch from LingNing Zhang
+
+Overview of changes between 1.14.7 and 1.15.0
+==============================================
+* Add basic support for vertical text.  (PangoGravity and related API)
+* New PangoCairo example (examples/cairotwisted) to lay text out on a path
+* Fix various bugs in the way language engines are used.  Add simple Arabic
+  and Indic language engines. (Backported to 1.14.6)
+* Step module interface version up to 1.6.0
+* Misc small cleanups.
+* Bugs fixed in this release:
+        Bug 330407 – Multiple dependant vowel signs (indic) displayed as one
+        Bug 359043 – PangoRenderer does not show in API docs
+        Bug 359046 – renderdemo.c unconditionally use GLib 2.12
+        Bug 357228 – Remove aix specific hack from configure.in
+        Part of Bug 350132 – backspacing doesn't work properly for Arabic
+        Bug 356194 – more pango_get_log_attrs problems
+        Bug 355820 – pango_get_log_attrs broken
+        Bug 352811 – SIGSEGV with pango(cairo)-view on HP-UX
+        Bug 351496 – PangoAnalysis::gravity breaks binary compatibility
+        Bug 351585 – API documentation issues with 2.15 release
+
+Overview of changes between 1.14.6 and 1.14.7
+==============================================
+* Fixed broken build with included lang modules.
+* Bugs fixed in this release:
+	Bug 361938 – Can't include *-lang modules (./configure
+		     --with-included-modules fails)
+
+Overview of changes between 1.14.5 and 1.14.6
+==============================================
+* Backport language-engine handling fixes from HEAD.
+* Add simple Arabic and Indic language engines.
+* Indic shaper fixes.
+* Bugs fixed in this release:
+	Bug 353877 – Sinhala is_cursor_position and
+		     backspace_deletes_character issues
+		     Patch from Akira TAGOH
+	Bug 358224 – Telugu Character U+0C31 does not render its below-base
+		     form.
+		     Patch from Rahul Bhalerao
+	Bug 358174 – Reph and Vattu forms of Assamese character RA(U+09F0)
+		     are not rendered.
+		     Patch from Rahul Bhalerao
+
+Overview of changes between 1.14.4 and 1.14.5
+==============================================
+* Indic shaper fixes.
+* Misc bug fixes.
+* Bugs fixed in this release:
+	Bug 356685 – [or_IN] Rendering of consonant+0x0B4D+0x0B2F is wrong
+	             Patch from Rahul Bhalerao
+	Bug 357790 – Rendering problem for malayalam consonant RA (U+0D30)
+	             Patch from Rahul Bhalerao
+	Bug 349813 – typo in docs for pango_layout_move_cursor_visually
+	Bug 357686 – pangocairo-font.c: illegal g_object_unref in
+	             pango_cairo_font_get_hex_box_info
+
+Overview of changes between 1.14.3 and 1.14.4
+==============================================
+* Indic shaper fixes.
+* Misc bug fixes.
+* Bugs fixed in this release:
+	Bug 351223 – the conjuction of Con + 0x0d4d +0x0d31 of Malayalam is
+	             wrong
+	             Patch from LingNing Zhang
+	Bug 355750 – The glyphs of the conjuctions about Cons+0x0d4d+0x0d32 of
+	             Malayalm are wrong.
+	             Patch from LingNing Zhang
+	Bug 349876 – U+0x0904 of Devanagari need be "independent vowel", but
+	             it is "reserved" in Pango
+	             Patch from LingNing Zhang
+	Bug 355550 – Miscalculation of logical attributes in
+	             pango_get_log_attrs()
+	             Patch from Theppitak Karoonboonyanan
+	Bug 355697 – The IndicOTClassTable of Oriya has a error.
+	Bug 355782 – Misaligned extents in pango
+	Bug 355605 – hexbox with 0000 in it
+	Bug 355435 – Invalid calls to pango_map_get_engine()
+	             Patch from Theppitak Karoonboonyanan
+	Bug 347146 – underline/overstrike spaces
+	Bug 352535 – Ink extents of empty glyph
+
+Overview of changes between 1.14.2 and 1.14.3
+==============================================
+* Win32 build improvement. [Tor Lillqist]
+* Bugs fixed in this release:
+	Bug 353525 – libpangoft2-1.0.so.0: undefined reference to
+	             `pango_font_description_get_gravity'
+	Bug 349813 – typo in docs for pango_layout_move_cursor_visually
+
+Overview of changes between 1.14.1 and 1.14.2
+==============================================
+* Find shaper/font for Private Use and space characters.
+  Part of Bug 145275 – Font selection for space characters
+
+Overview of changes between 1.14.0 and 1.14.1
+==============================================
+* Increased fontset cache size from 16 to 64.  This should make
+  firefox+pango A LOT faster.
+* Bugs fixed in this release:
+	Bug 352114 – pango-1.14: generated docs still contain old example code
+	Part of Bug 348825 – pango should optimize away calls to FcFontSort as
+	                     much as possible
+	Bug 351585 – API documentation issues with 2.15 release
+
+
+Overview of changes between 1.13.5 and 1.14.0
+==============================================
+* Make pango-view accept non-ASCII --text.
+* Require cairo-1.2.2 for the important bug fixes it has.
+
+Overview of changes between 1.13.4 and 1.13.5
+==============================================
+* Indic shaper improvements.
+* Misc fixes.
+* Bugs fixed in this release:
+	Bug 121672 – Ra (vattu) not rendered properly in Malayalam
+	             Patch from LingNing Zhang
+	Bug 335811 – Some conjugates of Malayalam are wrong.
+	             Patch from LingNing Zhang
+
+Overview of changes between 1.13.3 and 1.13.4
+==============================================
+* Update to Unicode Character Database 5.0.0.
+* Misc fixes.
+* Bugs fixed in this release:
+	Bug 336282 – Update to Unicode Character Database 5.0.0
+	Bug 347073 – Allow empty GPOS table
+	Bug 347021 – atsui crash when a matching font cannot be found.
+	             Patch from Brian Tarricone.
+
+Overview of changes between 1.13.2 and 1.13.3
+==============================================
+* Improved build system.  Using gnome-autogen.sh now.
+  (gnome-common needed for bootstrapping)
+* Improved documentation.  Docs now include list of new API for
+  each stable version of Pango.
+* New public API:
+	- pango_glyph_string_get_width
+* Little performance improvement.
+* Misc fixes.
+* Bugs fixed in this release:
+	Bug 330603 – pango_scan_int invokes undefined behaviour
+	Bug 315599 – PangoAttribute remains in wrong context.
+	Bug 163677 – pango_attr_list_splice: inconsistent docs
+		     Patch from Morten Welinder
+	Bug 345070 – [ml_IN] not render for combination with ZWJ
+		     Patch from LingNing Zhang
+	Bug 345274 – list of new symbols for each version is missing in docs
+		     Patch from Priit Laes
+	Bug 346297 – autogen doesn't work with automake-1.6
+		     Patch from Priit Laes
+	Bug 135683 – Cache glyphstring extents
+	Bug 344766 – Memory leak in get_ruleset() in modules/basic/basic-fc.c
+	Bug 345600 – cvs build error in pango/opentype/Makefile
+	Bug 345511 – -no-undefined problem with new libtool
+
+Overview of changes between 1.13.1 and 1.13.2
+==============================================
+* Improved hexbox drawing, and font metrics calculations.
+* Synthesize italic variants on win32 [Hans Breuer]
+* New public API:
+	- pango_cairo_show_error_underline
+	- pango_cairo_error_underline_path
+	- pango_font_describe_with_absolute_size
+* Misc fixes.
+* Bugs fixed in this release:
+	Bug 326960 – hex box drawing for win32 and atsui backends of cairo
+	Bug 343717 – License information in unclear.
+	Bug 343355 – Add pango_cairo_show_error_underline &
+	             pango_cairo_error_underline_path
+	Bug 343966 – pango Cygwin build fixes
+	             Patch from Cygwin Ports maintainer.
+	Bug 343796 – Italic Chinese character can't be show correctly in
+	             Win32.
+	Bug 314114 – max_x_advance not appropriate for
+	             approximate_(char|digit)_width
+	Bug 341138 – Using TTC font, Gtk2 programs begin to eating big memory
+	             and have many cpu usage.
+	             Patch from Yong Li.
+	Bug 336153 – Mark to mark positioning (Lookup Type 6) isn't correct
+	             when using MarkAttchmentType
+	             Patch from Tin Myo Htet.
+	Bug 333984 – pango_language_from_string improvements
+	Bug 125378 – Better underline thickness handling
+	Bug 339730 – Pango needlessly falls back away from a Type 1 font into
+	             a TTF font
+	Bug 342562 – Support absolute sizes in
+	             pango_font_description_to/from_string
+	Bug 341922 – pango should handle more characters as zero width
+	             Patch from Roozbeh Pournader
+	Bug 342525 – With PangoFc and PangoWin32, approximate digit width is
+	             not what it says
+	Bug 342079 – pangoatsui-private.h missing from release
+
+Overview of changes between 1.13.0 and 1.13.1
+==============================================
+* Increased robustness against broken pango.modules
+* Improved build infrastructure:
+  - Remove CAIRO_CFLAGS from pangocairo.pc.in, as it Require's cairo already.
+  - Use -no-undefined on Unix too.
+* Improved documentation.
+* Misc fixes.
+* Bugs fixed in this release:
+	Bug 307196 – Unhinted fonts are measured incorrectly and drawing
+	             problems occur as a result
+	Bug 329547 – pango_layout_get_pixel_extents and
+	             pango_layout_get_pixel_size cause off-by-one metrics
+	Bug 339747 – pango_font_metrics_get_approximate_digit_width docs
+	Bug 339749 – pango_language_from_string issues
+	             Patch from Morten Welinder.
+	Bug 333771 – Use gmodule-no-export-2.0 instead of gmodule-2.0 in
+	             pango-uninstalled.pc.in
+	Bug 337594 – pango_glyph_string_extents_range possible bug
+	Bug 329664 – Move gunichar_to_glyph cache from PangoCairoFcFont to
+	             PangoFcFont
+	             Patch from LingNing Zhang.
+	Bug 322374 – Examples does not build on MacOS X
+	Bug 340229 – pango_font_description_from_string does not do bound
+	             checking
+	Bug 329483 – hinting hexbox in cairo backend doesn't handle absolute
+	             font size
+	Bug 340040 – pangocairo hex box hinting falls apart with PS/PDF
+	             backends
+	Bug 71033 – make size 0 fonts work
+
+Overview of changes between 1.12.0 and 1.13.0
+==============================================
+* Fix incorrect rendering when in x86 64-bit precision mode
+  https://bugs.freedesktop.org/show_bug.cgi?id=5200
+* Fix non-OpenType fonts losing kerning in 1.12.0 [#336026, Denis Jacquerye]
+* Fix blurred underlines on Win32 [#332656, Tor Lillqvist]
+* Build fix when having both Win32 and FreeType cairo backends available
+  [#337502, Alexander Larsson]
+* Moved the OpenType Layout code into a new project called HarfBuzz:
+  http://www.freedesktop.org/wiki/Software/HarfBuzz
+* Improved documentation.
+* Misc bug fixes.
+* Fixed many compiler warnings.
+* Bugs fixed in this release:
+  332656,335840,334802,337029,337821,338343
+
+Overview of changes between 1.11.99 and 1.12.0
+==============================================
+* Compilations fixes for MSVC. [#333115, Tor Lillqvist]
+* More NULL-check against unusable fonts, helps with Win32 fonts without
+  a Unicode cmap. [Tor]
+* Use g_print instead of printf for debugging output in Win32 backend.
+  [#332855, Tor]
+
+Overview of changes between 1.11.6 and 1.11.99
+==============================================
+* Fix problem recently introduced that made Win32 backend render boxes
+  only. [#332538, Hans Breuer]
+* Insert '?' chars instead of invalid UTF-8 sequences in
+  pango_layout_set_text [#33195]
+* Bugs fixed in this release:
+  332167,332538,331995
+
+Overview of changes between 1.11.5 and 1.11.6
+=============================================
+* Do not export macros PANGO_GLYPH_EMPTY, PANGO_GLYPH_UNKNOWN_FLAG and
+  PANGO_GET_UNKNOWN_GLYPH publicly; just in the engine/backend interface.
+* Fix a few crashers, especially when a font cannot be read. [#314239]
+* Change some g_critical's to g_warning, where it's not application's
+  fault. [#331723]
+* Bugs fixed in this release:
+  330795,331038,329148,331994,331995,331996,314239,331723
+
+Overview of changes between 1.11.4 and 1.11.5
+=============================================
+* Cleanup work on the win32 backend.  Families are not listed all
+  in lower case anymore.
+* New public function: pango_win32_font_description_from_logfont.
+* pango-view accepts --wrap now, and lists backends in --help output.
+* A couple minor bug fixes.
+
+Overview of changes between 1.11.3 and 1.11.4
+=============================================
+* Major change in the low-level interface of Pango.  The special value
+  PANGO_GLYPH_EMPTY is now defined to mean a "draw nothing" glyph.  This
+  was what glyph 0 was used for previously.  As a result, bumped up the
+  Pango module version, meaning that modules compiled against earlier
+  versions are probably not compatible with this release. [#73147]
+* New framework in examples for building a binary called pango-view,
+  that can be used to render a text file using any of the available
+  backends.  This is installed into bindir now.
+* Enhancements to the FT2 backend, to draw boxes on missing glyphs.
+* Better hexbox drawing for cairo backend:  Hinting hexbox, and
+  drawing a single-row hexbox for very small font sizes.
+* Improved documentation.
+
+Overview of changes between 1.11.2 and 1.11.3
+=============================================
+* Do not crash if the shapers fail.
+* Use g_slice for various struct allocations.
+* 100% symbol coverage in docs.
+* Misc bug fixes and documentation improvements.
+* Janitory works, like removing unneeded files.
+
+Overview of changes between 1.11.1 and 1.11.2
+=============================================
+* Draw hex box on missing glyphs for cairo-fc backend.
+* New --with-dynamic-modules option added to configure.
+* Use g_slice for various small memory allocations [Matthias Clasen]
+* Misc bug fixes, optimizations, and documentation improvements.
+
+Overview of changes between 1.11.0 and 1.11.1
+=============================================
+* ATSUI support for the cairo backend. [Anders Carlsson]
+* Fixed a couple of regressions with font size and scaling.
+* Draw a dashed empty box on missing glyphs for cairo-fc backend.
+* Support OpenType features for basic (Latin/Greek/...) module.
+* Support swash feature in Arabic module.
+* Misc bug fixes.
+* Misc documentation improvements.
+
+Optimizations:
+
+* Cache GObject private data in PangoFcFont.priv [Federico Mena Quintero]
+* Add a constant-sized light-weight cache for glyph extents.
+* Use g_slice_* instead of GMemChunk in mini-fribidi.
+
+
+Overview of changes between 1.10.1 and 1.11.0
+=============================================
+* Line-breaking algorithm updated to Unicode 4.1.
+* Code borrowed from GNU FriBidi resynched to version 1.0.7.
+* New improved Tibetan shaper module. [Pema Geyleg]
+* Bug fix in Khmer shaper module. [Jens Herden]
+* Respect fontconfig reassignment of font pixelsize. [Funda Wang]
+* Make OpenType GPOS handling more robust/correct. [Greg Aumann]
+* Various documentation fixes and improvements.
+* Various gcc warning fixes.
+* Misc bug fixes.
+
+Optimizations:
+
+* Add a lazy fixed-size per-font cache to map characters to glyphs,
+  in the cairo backend. [Federico Mena Quintero]
+* Optimize character to script mapping by adding a linear table for
+  characters < U+2000, and also caching the last mid point in
+  bsearch. [Federico, Matthias Clasen]
+* Enabled mini-fribidi's trashstack instead of direct mallocs.
+* Short circuit the bidi algorithm for provably unidirectional text.
+* Make mini-fribidi process UTF-8 directly.
+* Several strlen and g_utf8_strlen calls removed. [Owen Taylor, Billy Biggs]
+* Use call tables in the OpenType layout code.
+* Use quarks for accessing GObject data. [Federico]
+* Open Pango modules with lazy-bind flags. [John Rice]
+* Use new negative offsets in g_utf8_pointer_to_offset to avoid
+  scanning from the beginning of line on cursor movement.
+* Avoid redundant PANGO_IS_FC_FONT checks.
+
+Overview of changes between 1.10.0 and 1.10.1
+=============================================
+* Add various forms of caching to the Win32 backend, greatly
+  improving performance [Tor Lillqvist]
+* Fix problem with colors leaking from a Pango item to 
+  subsequently drawn strings. [Choe Hwanjin]
+* Fix bug where error underlines would be drawn 1024 times
+  too big in the Cairo backend. [Luis Villa]
+* Misc bug and build fixes [Jean Brefort, Matthias Clasen, 
+  Behdad Esfahbod, Kazuki Iwamoto]
+
+Overview of changes between 1.9.1 and 1.10.0
+============================================
+* Update script tables, bidi tables, and Arabic joining tables for Unicode 4.1 
+  [Roozbeh Pournader, Behdad Esfahbod]
+* Misc bug and build fixes [Sebastien Bacher, Hans Breuer, Behdad, 
+  J. Ali Harlow, Tor Lillqvist, Keith Packard, Vittorio Palmisano, Manish Singh]
+
+Overview of changes between 1.9.0 and 1.9.1
+==========================================
+* Support setting of font options and DPI on PangoContext for
+  the Cairo backend.
+* Adapt to recent Cairo API changes
+* Win32 build improvements [Tor Lillqvist]
+* Misc bug fixes [Hans Breuer, Thomas Fitzsimmons, Kazuki IWAMOTO]
+	
+Overview of changes between 1.8.x and 1.9.x
+===========================================
+* Add Cairo support; PangoCairoFontmap is an interface with
+  implementations for Fontconfig fonts and Win32 fonts
+* Extend PangoFcFontmap to allow more customization by subclasses
+* Handle NULL language better for pango_context_get_metrics()
+* misc optimization [Paolo Borelli, Behdad Esfahbod]
+* Misc bug and build fixes [Hans Breuer, Damien Carbery, 
+  Keith Packard, Manish Singh]
+* Doc fixes [Tim Janik]
+
+============================================================
+
+Overview of changes between 1.8.1 and 1.8.2
+===========================================
+* Add Khmer support [Jens Herden, Javier Sola]
+* Fix bugs and crashes in the operation of PangoLayoutIter [Amit Aronovitch]
+* Increase sharing of data between different copies of Pango
+  [Tommi Komulainen, Ross Burton]
+* Remove dependence of opentype code on FreeType internals [David Turner,
+  Behdad Esfahbod]
+* Cache metrics for the Win32 backend [Tor Lillqvist]
+* Improve handling of RTL text when passing it to Uniscribe [Tor]
+* Support for TrueType fonts on Win32 with characters outside the BMP [Tor]
+* Handle alpha in XftColors again. [Mikael Magnusson]
+* Better handling of MacThai encoded fonts [Theppitak Karoonboonyanan]
+* Handle zero width chars properly in Hangul backend 
+  [Young-Ho Cha, Changwoo Ryu]
+* Fix Oriya character classification [Gora Mohanty, Gautam Sengupta]
+* PangoAttrIterator bug fixes [Morten Welinder]
+* Clean up copyright/licensing information [William N. Ray]
+* Misc bug and build fixes [Sebastien Bacher, Brandon Bergren,
+  Chris Blizzard, Paolo Borelli, Behdad, Harshula, Alex Jones, Aivars Kalvans, 
+  Stepan Kasal,  Karel Kulhavy, Ryan Lortie, Ben Maurer, Sukhjinder Sidhu, 
+  Manish Singh, Emil Soleyman-Zomalan, Morten]
+
+Overview of changes between 1.8.0 and 1.8.1
+===========================================
+* Fix several problems with conjuct formation in Sinhala [Harshula]
+* Fix problems that were causing fonts to be missized and
+  not print in GtkHTML [Ross Burton]
+* Fix compilation with old fontconfig [Vincent Noel] and
+  old FreeType [Andrew P. Lentvorski, Jr]
+* Work around problem with glyphs in monospace fonts being truncated
+  by Xft [Billy Biggs]
+* Misc bug fixes [Damon Chaplin, Matthias Clasen, Kees Cook, Nick Lamb, 
+  Adam Sampson,Manish Singh, Morten Welinder]
+* Misc build fixes [Sebastien Bacher, Matthias Clasen, Tor Lillquist]
+* Doc improvements [Torsten Schoenfeld, Billy Biggs, Morten Welinder]
+
+Overview of changes between 1.7.0 and 1.8.0
+===========================================
+* Add Sinhala support to the Indic module [Anuradha Ratnaweera]
+* Add Tibetan module [G Karunakar, Pema Geyleg]
+* Support pixel sizes for fonts [Chris Lahey]
+* Add pango_layout_get_font_description() [Morten Welinder]
+* Add PANGO_WEIGHT_SEMIBOLD [Lars Clausen]
+* Report underline metrics on Win32 [Tor]
+* Handle GLib-2.6.0 win32 filename encoding changes [Tor Lillqvist,
+  Robert Ögren]
+* Fix crash when drawing long strings
+* Misc fixes [Matthias Clasen, Dan Winship]
+
+Overview of changes between 1.6.x and 1.7.0
+===========================================
+
+* Add PangoRenderer, a subclassable driver object holding the 
+  logic for rendering PangoLayout.
+* Support transformed rendering for the Xft backend
+* Add Lao support in Thai Module [Theppitak Karoonboonyanan]
+* Support Thai OpenType fonts [Theppitak]
+* Add Syriac module [Emil Soleyman-Zomalan]
+* Add underline-color and strikethrough-color attributes
+  [Morten Welinder]
+* Add pango_win32_render_transformed() [Hans Breuer]
+* Misc fixes [Hans Breuer, Matthias Clasen, Manish Singh,
+   Morten Welinder]
+* Documentation improvements
+
+============================================================
+
+Overview of changes since 1.6.0
+===============================
+* Fix several problem when computing font and selecting fonts
+  metrics for CJK [Felipe Heidrich, Federic Zhang]
+* Win32 bug fixes [Tor Lillqvist, Kazuki Iwamoto, Ivan Wong]
+* Misc bug fixes [Vincent Berger, Paolo Borelli, Behdad Esfahbod, 
+  Leon Ho, Arun M, Kjartan Maraas, Vincent Noel, Christian Persch, 
+  Enrico Scholz, Sukhjinder Sidhu, Morten Welinder]
+
+Overview of changes between 1.5.2 and 1.6.0
+===========================================
+* Add OpenType support for Hebrew [Dov Grobgeld]
+* Win32 bug and build fixes [Tor Lillqvist, Hans Breuer, John Ehresman]
+* Misc bug fixes [Behdad Esfahbod, Jatin Nansi]
+
+Overview of changes between 1.5.1 and 1.5.2
+===========================================
+* Support 'init' feature for Bengali [Sayamindu Dasgupta]
+* Allow 32-bit property fields in OpenType code
+* Optimize repeated property lookups in OpenType code
+* Misc bug fixes [Behdad, Keith Sharp, Morten Welinder]
+
+Overview of changes between 1.5.0 and 1.5.1
+===========================================
+* Add ellipsization support to PangoLayout
+* Add pango_context_get_font_map().
+* Fix metrics for the Xft backend when a transform is in effect
+* Separate out backend-independent parts of pangoft2topgm for
+  future rendering testbeds.
+* Code cleanups (use G_DEFINE_TYPE, make PangoMatrix parameters const)
+* Add a GType for PangoMatrix [Torsten Schoenfeld]
+* Misc bug fixes [Morten Welinder]
+
+Overview of changes between 1.4.x and 1.5.0
+===========================================
+* Allow applications to provide custom font decoders [Chris Blizzard]
+* Add support for setting a transformation matrix on a PangoContext
+* Add support for rotated rendering to the FT2 backend
+* Add metrics for underline and strikethrough position and thickness.
+* Add letter-spacing attribute and implement in PangoLayout
+* OpenType support in Thai Module [Theppitak Karoonboonyanan]
+* Add Add PANGO_TYPE_LAYOUT_ITER [Johan Dahlin]
+
+============================================================
+
+Overview of changes between 1.4.0 and 1.4.1
+===========================================
+* Win32 bug fixes [Tor Lillqvist, John Ehresman]
+* Thai rendering improvements including OpenType support
+  [Theppitak Karoonboonyanan]
+* Fix common crash in Hangul shaper [Changwoo Ryu]
+* Fix various problems with language tag selection [Frederic Zhang]
+* Documentation improvements [Felipe Heidrich, Doug Quale]
+* Fix crash in line break code [Jeroen Zwartepoorte, Billy Biggs]
+* Build fixes [J. Ali Harlow, Noah Misch]
+* OpenType engine fixes [Kailash C. Chowksey, Sayamindu Dasgupta, Aamir Wali,
+  Masatake YAMATO, Soheil Hassas Yeganeh]
+* Indic module bug fixes [Chris Blizzard, Rajkumar S, Taneem Ahmed,
+  Jungshik Shin]
+* Misc bug fixes [Stanislav Brabec, Anders Carlsson, Behdad Esfahbod, 
+  Jody Goldberg, Theppitak, Sven Neumann, Manish Singh, Morten Welinder]
+
+Overview of changes between 1.3.6 and 1.4.0
+===========================================
+* Use FC_WIDTH when available so that multiple width fonts are
+  selected properly [Manish Singh]
+
+Overview of changes between 1.3.5 and 1.3.6
+===========================================
+* Improve handling of some Kannada vowels [Kailash C. Chowksey]
+* Fix problem with excess symbol exports on Linux [James Henstridge]
+* Win32 build fixes [Hans Breuer, John Ehresman, Tor Lillqvist, Cedric Gustin, 
+  J. Ali Harlow]
+
+Overview of changes between 1.3.3 and 1.3.5
+===========================================
+* Add support for automatically determining the base direction for
+  PangoLayout from the contained text [Dov Grobgeld]
+* Major rework of internal opentype interfaces to fix
+  problems with GPOS. Turn on GPOS handling for Arabic.
+* Add a PangoAttribute to turn off font fallback [Noah Levitt]
+* Add wavy error-indication underlines [Nicolas Setton]
+* Improve handling of BENGALI LETTER A/E [Sayamindu Dasgupta]
+* Win32 bug fixes and improvements [J. Ali Harlow, Hans Breuer]
+* Misc bug fixes [Noah, Roozbeh Pournader]
+
+Overview of changes between 1.3.2 and 1.3.3
+===========================================
+* Add pango_font_face_list_sizes() [Noah Levitt]
+* Add pango_font_family_is_monospace [Noah]
+* Do OpenType processing for CFF fonts [Manjunath Sripadarao]
+* Fix wrong sign for GPOS vertical positioning
+* Fix up -uninstalled .pc files [Laszlo Peter]
+* Misc bug and build fixes fixes [Rodney Dawes, Theppitak Karoonboonyanan,
+  Noah, Kjartan Maraas, Julio M. Merino Vidal, Christian Persch, 
+  Torsten Schoenfeld, Manish Singh, Mariano Suárez-Alvarez, Morten Welinder,
+  Masatake YAMATO]
+
+Overview of changes between 1.3.1 and 1.3.2
+===========================================
+* Correct a mixup between ZWJ and ZWNJ in the Arabic
+  engine  [Roozbeh Pournader]
+* Build and bug fixes for Win32  [Hans Breuer]
+* Fix a problem with RTL scripts on Win32  [Tor Lillqvist, Shoshannah Forbes]
+* Documentation improvements  [Ross Burton, Matthias Clasen]
+
+Overview of changes between 1.3.0 and 1.3.1
+===========================================
+* Support non-Unicode font encodings when supported by fontconfig
+  [Sven Neumann]
+* Draw 6-digit hex boxes for > U+FFFF [Noah Levitt]
+* Update to latest fribidi [Noah]
+* Honor U+2028 LINE SEPARATOR [Noah]
+* Fix a problem with iteration by chars [Mariano Suárez-Alvarez]
+* Misc bug and build fixes [Jeff Bonggren, Martin Kretzschmar, 
+  Noah, Sven Neumann, Padraig O'Briain, Manish Singh, 
+  Morten Welinder]
+* Fix header file includes to work with recent FreeType.
+
+Overview of changes between 1.2.x and 1.3.0
+===========================================
+* Share modules between the FT2 and Xft backend. Export PangoFcFont
+  and PangoFcFontMap base classes so that other fontconfig based
+  backends can be written and use these same modules.
+* Redo module system to use GTypeModule and work much like GTK+ theme
+  engines and input method modules.
+* Change modules to declare coverage by script, rather than by code
+  point. Add a ->covers callback so that modules can dynamically
+  decide whether they can cover a particular codepoint with a given
+  font. (This will allow multiple modules to handle a script for
+  different types fonts.)
+* Complete rewrite of itemization pass. Now uses script information to
+  improve language tags. This solves problems with incorrect language
+  tags resulting in drastically wrong fonts being selected by
+  fontconfig.
+* Add backspace-deletes-character PangoLogAttr; will allow proper
+  deletion behavior for non-Western scripts.  [Noah Levitt]
+* Add pango_fc_font_kern_glyphs(), which speeds up kerning a lot over
+  doing it pair-by-pair. [Soeren Sandmann]. Kern in the Xft backend as
+  well as the FT2 backend.
+* Remove the X font backend, except a minimal set of stubs to maintain
+  binary compatibility.
+* Many improvements to pangoft2topgm to allow displaying PangoMarkup,
+  saving to different file formats, etc.
+* Convert build system to automake-1.7; many cleanups and
+  improvements. [James Henstridge]
+* Documentation additions and improvements [Matthias Clasen, Martin
+  Pool]; add man pages for the included binaries.  [Matthias]
+* Misc bug and build fixes [Josh Beam, Tony Graham, Kaushal Kumar,
+  Noah, Mehran Mehr, Soeren, Morten Welinder]
+* Win32 build fixes [Tor Lillqvist, Hans Breuer]
+
+============================================================
+
+Overview of Changes in Pango 1.2.5
+==================================
+* Fix a problem where the indic-xft shaper didn't get linked
+  against all necessary files.
+
+Overview of Changes in Pango 1.2.4
+==================================
+* Win32 [Tor Lillqvist]
+  - Avoid calling Uniscribe when not necessary [Hans Breuer]
+  - Build fixes
+* Indic shaper
+  - Add pre-base-matra fixup code from ICU [Sivaraj Doddannan]
+  - Port of Bengali rendering fix from ICU [Taneem Ahmed]
+* OpenType
+  - Port various fixes by Werner Lemberg from FreeType version
+  - Port various fixes by Lars Knoll from Qt version
+  - Many other bug fixes [Kailash C. Chowksey, Me]
+* Fix bugs in FT2 rendering code [Sven Neumann]
+* Remove Qt-based example program; was causing compilation problems 
+  for a lot of people.
+* Doc fixes [Noah Levitt]
+* Misc bug fixes [Dave Cuthbert, Damon Chaplin, Christophe Fergeau,
+  Tony Graham, Morten Welinder]
+* Build fixes [Sven Neumann, Benedikt Spranger]
+
+Overview of Changes in Pango 1.2.3
+==================================
+* Fix operation with --disable-debug [Jeff Waugh]
+* Improve handling of ink rectangle extents for empty runs
+* Fix problem with keynav at line boundaries for RTL text [Matthias Clasen]
+
+Overview of Changes in Pango 1.2.2
+==================================
+* Cache fontsets for the Xft and FT2 backends, a large speedup for short 
+  strings [Owen Taylor, Soeren Sandmann]
+* Make built in rendering functions, especially the FT2 one,
+   work more like the GDK implementation [Sven Neumann]
+* Add an indic-ft2 module [Kapil Chowskey], 
+  Add a thai-ft2 module [Theppitak Karoonboonyanan]
+* Optimize pango_x_render() by drawing multiple character with
+  a single request when possible [Morten Welinder]
+* Change the handling of attributes that cover only partial glyphs
+  [Owen, Taneem Ahmed, Sunil Mohan Adapa]
+* Fix problems with Arial Unicode and the Opentype code [Owen, Noah Levitt]
+* Fix common crash for fonts missing a GDEF table
+* Fix common portability problem with informative output at end 
+  of configure.
+* Build cleanups and fixes [Tim Mooney, Chris Ross, Akira Tagoh, 
+  Will Partain, James Su]
+* Miscellaneous bug fixes and cleanups [Simon Budig, Rick Jones, 
+  Noah, Padraig O'Briain, Benjamin Otte, Andrey Panov, Federic Zhang]
+* Documentation fixes [Tim, Sven]
+
+Overview of Changes in Pango 1.2.1
+==================================
+* Handle older TrueType Open Arabic fonts.
+* Make Win32 backend handle a common TrueType font bug [Tor Lillqvist]
+* Fix crash with some non-BMP characters [Morten Welinder]
+* Avoid crashing on font descriptions like " 12" [Padraig O'Briain]
+* Minor build fixes [Rich Burridge, Sven Neumann]
+
+============================================================
+
+Changes between 1.1.6 and 1.2.0
+
+* Documentation fixes
+
+Changes between 1.1.5 and 1.1.6
+
+* Fix crash with isolated Hangul tone marks.
+* Improve font solection for Hangul tone marks
+* Improve range definitions for basic-xft [Jungshik Shin]
+* Docs improvements [Matthias Clasen]
+
+Changes between 1.1.4 and 1.1.5
+
+* Fix wrap-around coordinate problems for X, Xt.
+* Draw unknown character boxes with X primitives for the
+  X backend instead of hoping for a suitable glyph [Morten Welinder]
+* Fix crash with FT2 arabic shaper from using face->generic.data
+  for two things.
+* For Xft/FT2, give an informative error mesage when no fonts are found.
+* Support shape modules with ranges beyond the BMP [Federic Zhang]
+* Use octal escapes rather than literal UTF-8 [Arnaud Charlet]
+* Use g_[sf]printf where appropriate [Matthias Clasen]
+* Doc improvements [Matthias]
+* Misc build and bug fixes [Tony Graham, Kjartan Maraas]
+
+Changes between 1.1.3 and 1.1.4
+
+* Fix the Arabic-words-broken-by-underlines problem by
+  stripping out non-shape affecting attributes then adding them
+  back after shaping.
+* Hangul shaper fixes [Changwoo Ryu, Jungshik Shin]
+* Handle compatability ideographs in basic-x shaper [Federic Zhang]
+* Rename function parameters to avoid shadowing system headres
+  [Soeren Sandmann]
+* Fix memory leak in Win32 backend [Tor Lillqvist]
+* Fix crasher problem with non-BMP characters [He Qiangqiang]
+* Implement pango_ft2_font_map_set_default_substitute() [Matthias Clasen]
+* Doc improvements [Matthias Clasen, Michael R. Walton, Jungshik Shin]
+* Misc bug and build fixes [Dagfinn I. Mannsåker, Tony Graham,
+  Dan Mills, Sebastian Wilhelmi]
+
+Changes between 1.1.2 and 1.1.3
+
+* Hangul module bug fixes and improvements [Changwoo Ryu, Jungshik Shin]
+  - Move rendering of precomposed characters to hangul-xft shaper
+  - Handle Hangul tone marks
+* Win32 improvements [Tor Lillqvist]
+  - Use Uniscribe when present
+* Some doc build fixes [Matthias Clasen]
+* Code cleanup [Manish Singh]
+* Fix assertion failure in PangoLayout [Alex Larsson]
+* Fix memory leak when freeing fontmaps [Sven Neumann]
+
+Changes between 1.1.1 and 1.1.2
+
+* Add a new wrap mode for PangoLayout - PANGO_WRAP_WORD_CHAR [Alex Larsson]
+* Win32 work [Tor Lillqvist]
+  - Handle choosing the right font for CJK languages based on language tags. 
+  - Fix boxes showing up for tabs [Florent Duguet]
+  - Better handling of finding ASCII font names.
+  - Cygwin compilation fix [Masahiro Sakai]
+  - Fix --with-included-modules on win32 [Arnaud Charlet]
+  - Various build fixes and cleanups
+* Indic module improvements [Eric Mader]
+* Fixes to generic OpenType handling [Eric]
+* Improve language specific charset ordering basic-x11 [James Su, Brian Yuan]
+* Some merges of fixes by Werner Lemberg to the original 
+  FreeType OpenType code.
+* Robustify and otherwise improve pango_color_parse() [Matthias Clasen]
+* Some cross-compiling fixes [J. Ali Harlow]
+* Bug fix for pango_scan_int() needed for recent GTK+.
+
+Changes between 1.1.0 and 1.1.1
+
+* Merge a lot of the code between the Xft and FT2 backend,
+  so that the FT2 backend gets the recent improvements to Xft.
+* Add proper language tag support to the Xft/FT2 backends.
+* Various effienciency fixes for the Xft/FT2 backends.
+
+Changes between 1.0.x and 1.1.0
+
+* Support for version 2 of the Xft library. [Keith Packard]
+* Convert the freetype backend over to using fontconfig,
+  instead of MiniXft for font cataloging.
+* A port of the Indic OpenType code from ICU to Pango. [Eric Mader]
+* A new hangul-xft [Changwoo Ryu]
+* Bug-fixes to the OpenType handling code.
+* Various cleanups to the PangoXft and PangoFT2 public APIs.
+* Docs switched over to DocBook XML. [Matthias Clasen]
+
+============================================================
+
+Changes between 1.0.3 and 1.0.4
+
+* Add Thai shaper for Xft  [Theppitak Karoonboonyanan]
+* Support GB-18030, BIG5-HKSCS, CNS-11643, GBK encodings for
+  basic-x shaper [Qingjiang (Brian) Yuan]
+* Support ksc5601.1992-3 fonts in hangul-x shpaer 
+  [Qingjiang (Brian) Yuan, Changwoo Ryu]
+* Support new Arabic characters in Unicode 3.2 [Roozbeh Pournader]
+* Bug fixes [Jacob Berkman, Arnaud Charlet, David L. Cooper II, 
+  Choe Hwangjin, Alex Larsson, Sven Neumann, Matthias Warkus, Yao Zhang]
+
+Changes between 1.0.2 and 1.0.3
+
+* Change algorithm for mapping points to pixels on
+  Windows to match the system method. [Joaquin Cuenca Abela,
+  Tor Lillqvist]
+* Fix family listing for the FT2 backend. [Sven Neumann]
+* Fix memory leak in pango_font_real_get_metrics() [Matthias Clasen]
+* Some compilation warning fixes. [David L. Cooper II]
+* Fix passing attr_list == NULL to pango_parse_markip [Andreas J. Guelzow]
+
+Changes between 1.0.1 and 1.0.2
+
+* Support building with FreeType 2.1.0
+* List Sans,Serif,Monospace when listing fonts for the
+  Xft and FT2 backends. (Xavier Cho)
+* Portability fixes. (David L. Cooper II, Jacob Berkman)
+* Fix problem with pango-querymodules using g_print().
+
+Changes between 1.0.0 and 1.0.1
+
+* Documentation improvements [Matthias Clasen]
+* Use new API in FreeType 2.0.9 to greatly speed up coverage
+  calculation for Xft and FT2 backends.
+* Some fixes for reading of OpenType tables.
+* Add -D_REENTRANT to compilation when necessary. [Sven Neumann]
+* Try and enable ClearType for Win32 backend. [Tor Lillqvist]
+* Fixes for Korean glyphs in the basic-x shaper [Changwoo Ryu]
+* Improvements for computation of average char/digit width [Sven Neumann]
+* Bug and error reporting fixes 
+  [Arnaud Charlet, Erwann Chenede, Mikael Hallendal, Stefan Israelsson, 
+   Alex Larsson, Soeren Sandmann, Dan Winship]
+
+============================================================
+
+Changes between 1.0.0 rc2 and 1.0.0
+
+* Updated README files.
+* Minor build fixes [Tor Lillqvist, Jacob Berkman]
+
+Changes between 1.0.0 rc1 and 1.0.0 rc2
+
+* Fix missing weight names when parsing font names [Arnaud Charlet]
+* Build fixes [Martin Gansser, Manish Singh]
+
+Changes between 0.26 and 1.0.0 rc1
+
+* Try to build libraries with only shared library dependencies
+  on Xft to deal with transition to Xft2.
+* Efficiency improvements for Xft backend
+* Bug, build and portability fixes
+
+Contributors: Jacob Berkman, Abel Cheung, David L. Cooper II, 
+  Miroslaw Dobrzanski-Neumann, , Dov Grobgeld, Alex Larsson, Tor Lillqvist, 
+  Sven Neumann, Gediminas Paulauskas, Manish Singh, Raymond Wan, 
+  Richard Warren.
+
+Changes between 0.25 and 0.26
+
+* Fixes for AIX compilation [Miroslaw Dobrzanski-Neumann]
+* Fix zero-width characters being displayed [Sven Neumann]
+* Add some padding to class structures [Owen Taylor]
+
+Changes between 0.24 and 0.25
+
+* Win32 fixes [Tor Lillqvist, Hans Breuer]
+* Cleanup of <ctype.h> [Darin Adler]
+* Bug and build fixes [Anders Carlsson, Sven Neumann, Havoc Pennington,
+  Morten Welinder]
+
+Changes between 0.23 and 0.24
+
+* Win32 backend improvements [Tor Lillqvist]
+* Doc improvements [Havoc Pennington, Dennis Bjorklund]
+* Fix problem where "foo\n" was treated as one paragraph by pango-layout,
+  not two. [Arjan J. Molenaar, Owen Taylor]
+* Add glyph caching to FT2 backend [Alex Larsson]
+* Try to make configure checks for Qt-based example more robust [Owen]
+* New example program for FT2 backend [Dov Grobgeld]
+* Arabic shaper for FT2 backend [Andreas Bogk, Sven Neumann]
+* Bug fixes
+
+Other contributors: Mikael Hermansson, Darin Adler, Hidetoshi Tajima, Zack Rusin, 
+  Jacob Berkman, Jason Tackaberry, Evan Martin, Matthias Clasen
+
+Changes between 0.22 and 0.23
+
+* Documentation improvements [Matthias Clasen]
+* Win32 fixes [Hans Breuer]
+* Improve search for XftConfig [Manish Singh]
+* Fixes for crashes in Hangul shaper [Owen Taylor]
+* Improvements to Arabic shapers for X and Xft [Roozbeh Pournader]
+* Add jisx0212, jisx0201, Big5 support to basic shaper [HideToshi Tajima]
+* Many bug fixes
+
+Other contributors: Darin Adler, Dennis Dementiev, Sebastian Klemke, 
+  Alex Larsson, Sven Neumann, Joshua Pritikin, Padraig O'Briain, 
+  Kristian Rietveld, Sebastian Wilhelmi
+
+Changes between 0.21 and 0.22
+
+* Documentation improvements [Matthias Clasen]
+* Win32 fixes [Tor Lillqvist, Hans Breuer]
+* Improve line-breaking algorithm to not be O(n^2) [Alex Larsson]
+* API addition to render to Xrender drawable
+* Restructure so that "font sets" are handled by the core 
+  for all backends [Alex]
+* Use the Xft font configuration scheme for the FT2 backend as well [Alex]
+
+Other Contributors: Darin Alder, Sven Neumann, Raymond Wan
+
+Changes between 0.20 and 0.21
+
+* Documentation improvements. [Matthias Clasen, Sven Neumann]
+* pango_break() now reports n + 1 attributes for n characters, not n. [Havoc Pennington]
+* Win32 fixes, including support for configure.in on Win32. [Tor Lillqvist]
+* Bug fixes [Tony Graham, Eric Lemings, Manish Singh, Sven Neumann, Matt Wilson, 
+             Frank Belew]
+
+Changes between 0.19 and 0.20
+
+* Change PangoFontDescription to save values for unset fields
+* Fix for compilation with FreeType 2.0.4 [Havoc Pennington]
+* Add PANGO_TYPE_FONT_METRICS [James Henstridge]
+* Win32 fixes and updates [Hans Breuer
+* PangoLayout bug fixes [Alex Larsson, Padraig O'Briain]
+* Misc fixes and cleanups.
+
+Other contributors: Matthias Clasen, Tony Graham, Mario Motta, Sven Neumann
+
+Changes between 0.18 and 0.19
+
+* Change font listing API to be more extensible. Instead of
+  using family names and 
+* Make PangoMetrics and PangoFontDescription opaque heap-allocated
+  structures to allow extension going forward.
+* Allow for PangoFontDescription structures with unspecified
+  style/variant/stretch/weight.
+* Add PANGO_ENABLE_BACKEND and PANGO_ENABLE_ENGINE #defines to
+  protect parts of the API where we don't want to guarantee
+  source binary compatibility for 1.x.
+* Bug fixes.
+
+Changes between 0.17 and 0.18
+
+* Add PangoLanguage type for language tags, use consistently.
+* Add support for different font orderings for different lanuages to
+  basic shaper.
+* Win32 fixes [Alex,Hans]
+* Add pango_context_get_metrics() to get metrics for a font description
+* Add GTypes for various types [James]
+* Lots of warning fixes [Darin]
+* Fix to PangoLayout for lines with only tabs on them [Matthias]
+* Improve compositing of glyphs for pangoft2 backend [Sven]
+* Export pango_color_parse().
+* Adapt to changes in GLib.
+* Build and bug fixes.
+
+Changes between 0.16 and 0.17
+
+* Build/bug fixes
+* Cursor motion is now by graphemes (logical editing units) rather than 
+  by characters
+* Optionally support jumping cursor instead of split cursor
+
+Changes between 0.15 and 0.16
+
+* Ability to make newlines in a PangoLayout display as regular characters
+  (useful for, e.g., having an entry widget with embedded newlines.)
+* Build fixes
+* Bug fixes
+
+Changes between 0.14 and 0.15
+
+* New version of Tamil shaper from Vikram Subramanian
+* Update mini-fribidi to correspond to the latest FriBidi CVS
+* Win32 fixes
+* More documentation
+* Various minor bug and build fixes. 
+
+
+Changes between 0.13 and 0.14
+
+* Win32 improvements [Tor]
+* Much better boundary resolution using algorithms from the Unicode
+  standard [Havoc]
+* Initial support for anti-aliased TrueType and OpenType fonts
+  using the Xft and Xrender libraries from XFree86 4. [Owen]
+* Fix the FreeType support on Unix so it can be used for the frame-buffer 
+  port of GTK+. [Alex]
+* Fix up module building [Alex]
+* Add average-character-width font metric [Havoc]
+* Bug fixes
+
+
+Changes between 0.12 and 0.13
+
+* Win32 Support [Tor]
+* Per-display caching of font coverage on the root window  [Owen]
+* Handling of embedded non-characters in PangoLayout [Elliot]
+* Mapping table fixes and improvements [KUSANO Takayuki, Abigail, Owen]
+* Adjustable tab handling in PangoLayout [Havoc]
+* Add relative font-scaling attribute [Havoc]
+* Add function to convert XML/GMarkup description to a PangoAttrList [Havoc]
+* New version of Arabic shaper [Karl]
+* Enhanced Indic support with ligature tables from the font and
+  many more languages [Abigail]
+* Include FriBidi core that provides the features that Pango needs and
+  can be used instead of separately installed fribidi. [Owen]
+* Add PangoLayoutIterator that abstracts the geometry operations for
+  iterating over the lines/items/clusters/chars in a layout [Havoc]
+* Bug fixes, and more bug fixes
+
+
+What is new in GScript 0.1:
+
+* Initial release
+
+
+# Local Variables:
+# coding: utf-8
+# End:
+# vim: encoding=utf-8:

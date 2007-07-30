@@ -1,0 +1,124 @@
+<?xml version="1.0"?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN" 
+               "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd" [
+<!ENTITY pango-Text-Processing SYSTEM "xml/main.xml">
+<!ENTITY pango-Glyph-Storage SYSTEM "xml/glyphs.xml">
+<!ENTITY pango-Coverage-Maps SYSTEM "xml/coverage-maps.xml">
+<!ENTITY pango-Fonts SYSTEM "xml/fonts.xml">
+<!ENTITY pango-Text-Attributes SYSTEM "xml/text-attributes.xml">
+<!ENTITY pango-Tab-Stops SYSTEM "xml/tab-stops.xml">
+<!ENTITY pango-Layout-Objects SYSTEM "xml/layout.xml">
+<!ENTITY pango-Scripts SYSTEM "xml/scripts.xml">
+<!ENTITY pango-Engines SYSTEM "xml/engines.xml">
+<!ENTITY PangoEngineLang SYSTEM "xml/pango-engine-lang.xml">
+<!ENTITY PangoEngineShape SYSTEM "xml/pango-engine-shape.xml">
+<!ENTITY PangoRenderer SYSTEM "xml/pango-renderer.xml">
+<!ENTITY pango-Modules SYSTEM "xml/modules.xml">
+<!ENTITY pango-X-Fonts-and-Rendering SYSTEM "xml/x-fonts.xml">
+<!ENTITY pango-Win32-Fonts-and-Rendering SYSTEM "xml/win32-fonts.xml">
+<!ENTITY pango-FreeType-Fonts-and-Rendering SYSTEM "xml/freetype-fonts.xml">
+<!ENTITY pango-Xft-Fonts-and-Rendering SYSTEM "xml/xft-fonts.xml">
+<!ENTITY pango-ATSUI-Fonts SYSTEM "xml/atsui-fonts.xml">
+<!ENTITY pangocairo SYSTEM "xml/pangocairo.xml">
+<!ENTITY PangoFcFontMap SYSTEM "xml/pangofc-fontmap.xml">
+<!ENTITY PangoFcFont SYSTEM "xml/pangofc-font.xml">
+<!ENTITY PangoFcDecoder SYSTEM "xml/pangofc-decoder.xml">
+<!ENTITY pango-OpenType-Font-Handling SYSTEM "xml/opentype.xml">
+<!ENTITY pango-Misc-Utils SYSTEM "xml/utils.xml">
+<!ENTITY markup-format SYSTEM "pango_markup.sgml">
+<!ENTITY pango-querymodules SYSTEM "pango-querymodules.xml">
+<!ENTITY pango-Version SYSTEM "xml/pango-version.xml">
+<!ENTITY pango-Vertical-Text SYSTEM "xml/vertical.xml">
+<!ENTITY version SYSTEM "version.xml">
+<!ENTITY pango-tree-index SYSTEM "xml/tree_index.sgml">
+]>
+<book id="index">
+  <bookinfo>
+    <title>Pango Reference Manual</title>
+    <releaseinfo>for Pango &version;</releaseinfo>
+  </bookinfo>
+
+  <chapter id="pango">
+    <title>Basic Pango Interfaces</title>
+    &pango-Text-Processing;
+    &pango-Glyph-Storage;
+    &pango-Fonts;
+    &pango-Text-Attributes;
+    &pango-Tab-Stops;
+    &markup-format;
+    &pango-Layout-Objects;
+    &pango-Scripts;
+    &pango-Vertical-Text;
+  </chapter>
+
+  <chapter id="rendering">
+    <title>Rendering with Pango</title>
+    &pango-Win32-Fonts-and-Rendering;
+    &pango-FreeType-Fonts-and-Rendering;
+    &pango-Xft-Fonts-and-Rendering;
+    &pangocairo;
+    &pango-ATSUI-Fonts;
+    &pango-X-Fonts-and-Rendering;
+  </chapter>
+
+  <chapter id="lowlevel">
+    <title>Low Level Functionality</title>
+    &PangoRenderer;
+    &PangoFcFontMap;
+    &PangoFcFont;
+    &PangoFcDecoder;
+    &pango-OpenType-Font-Handling;
+    &pango-Coverage-Maps;
+    &pango-Engines;
+    &PangoEngineLang;
+    &PangoEngineShape;
+    &pango-Modules;
+    &pango-Misc-Utils;
+    &pango-Version;
+    </chapter>
+
+  <chapter id="tools">
+    <title>Pango Tools</title>
+
+    &pango-querymodules;
+  </chapter>
+
+  <chapter id="pango-hierarchy">
+    <title>Object Hierarchy</title>
+    &pango-tree-index;
+  </chapter>
+
+  <index id="index-all">
+    <title>Index</title>
+  </index>
+  <index id="index-deprecated" role="deprecated">
+    <title>Index of deprecated symbols</title>
+  </index>
+  <index id="index-1.2" role="1.2">
+    <title>Index of new symbols in 1.2</title>
+  </index>
+  <index id="index-1.4" role="1.4">
+    <title>Index of new symbols in 1.4</title>
+  </index>
+  <index id="index-1.6" role="1.6">
+    <title>Index of new symbols in 1.6</title>
+  </index>
+  <index id="index-1.8" role="1.8">
+    <title>Index of new symbols in 1.8</title>
+  </index>
+  <index id="index-1.10" role="1.10">
+    <title>Index of new symbols in 1.10</title>
+  </index>
+  <index id="index-1.12" role="1.12">
+    <title>Index of new symbols in 1.12</title>
+  </index>
+  <index id="index-1.14" role="1.14">
+    <title>Index of new symbols in 1.14</title>
+  </index>
+  <index id="index-1.16" role="1.16">
+    <title>Index of new symbols in 1.16</title>
+  </index>
+  <index id="index-1.18" role="1.18">
+    <title>Index of new symbols in 1.18</title>
+  </index>
+</book>

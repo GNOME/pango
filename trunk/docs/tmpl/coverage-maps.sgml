@@ -1,0 +1,136 @@
+<!-- ##### SECTION Title ##### -->
+Coverage Maps
+
+<!-- ##### SECTION Short_Description ##### -->
+Unicode character range coverage storage
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+It is often necessary in Pango to determine if a particular font can
+represent a particular character, and also how well it can represent
+that character. The #PangoCoverage is a data structure that is used
+to represent that information.
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### ENUM PangoCoverageLevel ##### -->
+<para>
+Used to indicate how well a font can represent a particular Unicode
+character point for a particular script.
+</para>
+
+@PANGO_COVERAGE_NONE: The character is not representable with the font.
+@PANGO_COVERAGE_FALLBACK: The character is represented in a way that may be
+                          comprehensible but is not the correct graphical form.
+                          For instance, a Hangul character represented as a
+                          a sequence of Jamos, or a Latin transliteration of
+                          a Cyrillic word.
+@PANGO_COVERAGE_APPROXIMATE: The character is represented as basically the correct
+                             graphical form, but with a stylistic variant inappropriate for
+                             the current script.
+@PANGO_COVERAGE_EXACT: The character is represented as the correct graphical form.
+
+<!-- ##### MACRO PANGO_TYPE_COVERAGE_LEVEL ##### -->
+<para>
+The #GObject type for #PangoCoverageLevel.
+</para>
+
+
+
+<!-- ##### STRUCT PangoCoverage ##### -->
+<para>
+The #PangoCoverage structure represents a map from Unicode characters
+to #PangoCoverageLevel. It is an opaque structure with no public fields.
+</para>
+
+
+<!-- ##### FUNCTION pango_coverage_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_coverage_ref ##### -->
+<para>
+
+</para>
+
+@coverage: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_coverage_unref ##### -->
+<para>
+
+</para>
+
+@coverage: 
+
+
+<!-- ##### FUNCTION pango_coverage_copy ##### -->
+<para>
+
+</para>
+
+@coverage: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_coverage_get ##### -->
+<para>
+
+</para>
+
+@coverage: 
+@index_: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_coverage_max ##### -->
+<para>
+
+</para>
+
+@coverage: 
+@other: 
+
+
+<!-- ##### FUNCTION pango_coverage_set ##### -->
+<para>
+
+</para>
+
+@coverage: 
+@index_: 
+@level: 
+
+
+<!-- ##### FUNCTION pango_coverage_to_bytes ##### -->
+<para>
+
+</para>
+
+@coverage: 
+@bytes: 
+@n_bytes: 
+
+
+<!-- ##### FUNCTION pango_coverage_from_bytes ##### -->
+<para>
+
+</para>
+
+@bytes: 
+@n_bytes: 
+@Returns: 
+
+

@@ -1,0 +1,25 @@
+/* Hand-written, for builds using Microsoft's compiler and makefile.msc,
+ * where the configure mechanism isn't used.
+ */
+
+#include "modules.h"
+
+#ifdef PANGO_MODULE_PREFIX
+void         _pango_basic_win32_script_engine_list   (PangoEngineInfo **engines,
+                                                      gint             *n_engines);
+void         _pango_basic_win32_script_engine_init   (GTypeModule      *module);
+void         _pango_basic_win32_script_engine_exit   (void);
+PangoEngine *_pango_basic_win32_script_engine_create (const char       *id);
+#endif
+
+PangoIncludedModule _pango_included_win32_modules[] = {
+#ifdef PANGO_MODULE_PREFIX
+ { 
+   _pango_basic_win32_script_engine_list,  
+   _pango_basic_win32_script_engine_init, 
+   _pango_basic_win32_script_engine_exit,  
+   _pango_basic_win32_script_engine_create 
+ },
+#endif
+ { NULL, NULL, NULL },
+};

@@ -1,0 +1,31 @@
+/* Hand-written. Once the GNU configure mechanism is used
+ * on Win32, too, can be generated.
+*/
+
+#include "modules.h"
+
+#ifdef PANGO_MODULE_PREFIX
+/* by defining PANGO_MODULE_PREFIX the basic module gets include in the
+ * backend library, here ../modules/basic/basic-fc.c
+ * It helps the backend to not fall on its nose even with a screwed module
+ * configuration. There should be at least enough fonts available to show
+ * an error message ...
+ */
+void         _pango_basic_ft2_script_engine_list   (PangoEngineInfo **engines,
+                                                    gint             *n_engines);
+void         _pango_basic_ft2_script_engine_init   (GTypeModule      *module);
+void         _pango_basic_ft2_script_engine_exit   (void);
+PangoEngine *_pango_basic_ft2_script_engine_create (const char       *id);
+#endif
+
+PangoIncludedModule _pango_included_fc_modules[] = {
+#ifdef PANGO_MODULE_PREFIX
+ { 
+   _pango_basic_ft2_script_engine_list,  
+   _pango_basic_ft2_script_engine_init, 
+   _pango_basic_ft2_script_engine_exit,  
+   _pango_basic_ft2_script_engine_create 
+ },
+#endif
+ { NULL, NULL, NULL },
+};

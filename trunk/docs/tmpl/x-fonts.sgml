@@ -1,0 +1,313 @@
+<!-- ##### SECTION Title ##### -->
+Deprecated X font backend
+
+<!-- ##### SECTION Short_Description ##### -->
+Font handling and rendering with the deprecated X font backend
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+The functions and macros in this section are for use with the old
+X font backend which used server-side bitmap fonts. This font backend
+is no longer supported, and attempts to use it will produce
+unpredictable results. Use the <link linkend="pango-Xft-Fonts-and-Rendering">Xft</link>
+or <link linkend="pango-Cairo-Rendering">Cairo</link> backend instead.
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### MACRO PANGO_RENDER_TYPE_X ##### -->
+<para>
+A string constant identifying the X renderer. The associated quark (see 
+g_quark_from_string()) is used to identify the renderer in pango_find_map(). 
+</para>
+
+
+
+<!-- ##### FUNCTION pango_x_get_context ##### -->
+<para>
+
+</para>
+
+@display: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_x_context_set_funcs ##### -->
+<para>
+
+</para>
+
+@context: 
+@get_gc_func: 
+@free_gc_func: 
+
+
+<!-- ##### USER_FUNCTION PangoGetGCFunc ##### -->
+<para>
+Specifies the type of the function used to create a new GC for a given
+color. 
+</para>
+
+@context: a #PangoContext.
+@color: the color to create a new GC for.
+@base_gc: the GC to base the new GC on.
+@Returns: the new GC.
+
+
+<!-- ##### USER_FUNCTION PangoFreeGCFunc ##### -->
+<para>
+Specifies the type of the function used to free a GC created with 
+the corresponding #PangoGetGCFunc function.
+</para>
+
+@context: a #PangoContext.
+@gc: the GC to free.
+
+
+<!-- ##### FUNCTION pango_x_render ##### -->
+<para>
+
+</para>
+
+@display: 
+@d: 
+@gc: 
+@font: 
+@glyphs: 
+@x: 
+@y: 
+
+
+<!-- ##### FUNCTION pango_x_render_layout_line ##### -->
+<para>
+
+</para>
+
+@display: 
+@drawable: 
+@gc: 
+@line: 
+@x: 
+@y: 
+
+
+<!-- ##### FUNCTION pango_x_render_layout ##### -->
+<para>
+
+</para>
+
+@display: 
+@drawable: 
+@gc: 
+@layout: 
+@x: 
+@y: 
+
+
+<!-- ##### TYPEDEF PangoXSubfont ##### -->
+<para>
+The #PangoXSubFont type is an integer ID that identifies one
+particular X font within the fonts referenced in a #PangoFont.
+</para>
+
+
+<!-- ##### MACRO PANGO_X_MAKE_GLYPH ##### -->
+<para>
+Make a glyph index from a #PangoXSubFont index and a index
+of a character with the corresponding X font.
+</para>
+
+@subfont: a #PangoXSubfont index
+@index_: the index of a character within an X font.
+
+
+<!-- ##### MACRO PANGO_X_GLYPH_SUBFONT ##### -->
+<para>
+Extract the subfont index from a glyph index.
+</para>
+
+@glyph: a #PangoGlyphIndex
+
+
+<!-- ##### MACRO PANGO_X_GLYPH_INDEX ##### -->
+<para>
+Extract the character index within the X font from a
+glyph index.
+</para>
+
+@glyph: a #PangoGlyphIndex
+
+
+<!-- ##### FUNCTION pango_x_load_font ##### -->
+<para>
+
+</para>
+
+@display: 
+@spec: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_x_get_unknown_glyph ##### -->
+<para>
+
+</para>
+
+@font: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_x_has_glyph ##### -->
+<para>
+
+</para>
+
+@font: 
+@glyph: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_x_list_subfonts ##### -->
+<para>
+
+</para>
+
+@font: 
+@charsets: 
+@n_charsets: 
+@subfont_ids: 
+@subfont_charsets: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_x_font_map_for_display ##### -->
+<para>
+
+</para>
+
+@display: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_x_shutdown_display ##### -->
+<para>
+
+</para>
+
+@display: 
+
+
+<!-- ##### FUNCTION pango_x_font_map_get_font_cache ##### -->
+<para>
+
+</para>
+
+@font_map: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_x_font_subfont_xlfd ##### -->
+<para>
+
+</para>
+
+@font: 
+@subfont_id: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_x_find_first_subfont ##### -->
+<para>
+
+</para>
+
+@font: 
+@charsets: 
+@n_charsets: 
+@rfont: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_x_font_get_unknown_glyph ##### -->
+<para>
+
+</para>
+
+@font: 
+@wc: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_x_apply_ligatures ##### -->
+<para>
+
+</para>
+
+@font: 
+@subfont: 
+@glyphs: 
+@n_glyphs: 
+@clusters: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_x_fallback_shape ##### -->
+<para>
+
+</para>
+
+@font: 
+@glyphs: 
+@text: 
+@n_chars: 
+
+
+<!-- ##### STRUCT PangoXFontCache ##### -->
+<para>
+A #PangoXFontCache caches
+<type>XFontStructs</type> for a single display by their XLFD name. 
+</para>
+
+
+<!-- ##### FUNCTION pango_x_font_cache_new ##### -->
+<para>
+
+</para>
+
+@display: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_x_font_cache_free ##### -->
+<para>
+
+</para>
+
+@cache: 
+
+
+<!-- ##### FUNCTION pango_x_font_cache_load ##### -->
+<para>
+
+</para>
+
+@cache: 
+@xlfd: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_x_font_cache_unload ##### -->
+<para>
+
+</para>
+
+@cache: 
+@fs: 
+
+

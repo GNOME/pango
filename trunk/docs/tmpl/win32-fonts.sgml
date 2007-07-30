@@ -1,0 +1,258 @@
+<!-- ##### SECTION Title ##### -->
+Win32 Fonts and Rendering
+
+<!-- ##### SECTION Short_Description ##### -->
+Functions for shape engines to manipulate Win32 fonts
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+The macros and functions in this section are used to access fonts natively on
+Win32 systems and to render text in conjunction with Win32 APIs.
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### MACRO PANGO_RENDER_TYPE_WIN32 ##### -->
+<para>
+A string constant identifying the Win32 renderer. The associated quark (see
+g_quark_from_string()) is used to identify the renderer in pango_find_map().
+</para>
+
+
+
+<!-- ##### FUNCTION pango_win32_get_context ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_win32_render ##### -->
+<para>
+
+</para>
+
+@hdc: 
+@font: 
+@glyphs: 
+@x: 
+@y: 
+
+
+<!-- ##### FUNCTION pango_win32_render_transformed ##### -->
+<para>
+
+</para>
+
+@hdc: 
+@matrix: 
+@font: 
+@glyphs: 
+@x: 
+@y: 
+
+
+<!-- ##### FUNCTION pango_win32_render_layout_line ##### -->
+<para>
+
+</para>
+
+@hdc: 
+@line: 
+@x: 
+@y: 
+
+
+<!-- ##### FUNCTION pango_win32_render_layout ##### -->
+<para>
+
+</para>
+
+@hdc: 
+@layout: 
+@x: 
+@y: 
+
+
+<!-- ##### FUNCTION pango_win32_get_unknown_glyph ##### -->
+<para>
+
+</para>
+
+@font: 
+@wc: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_win32_font_get_glyph_index ##### -->
+<para>
+
+</para>
+
+@font: 
+@wc: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_win32_font_select_font ##### -->
+<para>
+
+</para>
+
+@font: 
+@hdc: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_win32_font_done_font ##### -->
+<para>
+
+</para>
+
+@font: 
+
+
+<!-- ##### FUNCTION pango_win32_font_get_metrics_factor ##### -->
+<para>
+
+</para>
+
+@font: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_win32_get_debug_flag ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_win32_get_dc ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+
+<!-- ##### STRUCT PangoWin32FontCache ##### -->
+<para>
+A #PangoWin32FontCache caches
+HFONTs by their LOGFONT descriptions. 
+</para>
+
+
+<!-- ##### FUNCTION pango_win32_font_cache_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_win32_font_cache_free ##### -->
+<para>
+
+</para>
+
+@cache: 
+
+
+<!-- ##### FUNCTION pango_win32_font_cache_load ##### -->
+<para>
+
+</para>
+
+@cache: 
+@logfont: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_win32_font_cache_loadw ##### -->
+<para>
+
+</para>
+
+@cache: 
+@logfont: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_win32_font_cache_unload ##### -->
+<para>
+
+</para>
+
+@cache: 
+@hfont: 
+
+
+<!-- ##### FUNCTION pango_win32_font_map_for_display ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_win32_shutdown_display ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### FUNCTION pango_win32_font_map_get_font_cache ##### -->
+<para>
+
+</para>
+
+@font_map: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_win32_font_logfont ##### -->
+<para>
+
+</para>
+
+@font: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_win32_font_logfontw ##### -->
+<para>
+
+</para>
+
+@font: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_win32_font_description_from_logfont ##### -->
+<para>
+
+</para>
+
+@lfp: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_win32_font_description_from_logfontw ##### -->
+<para>
+
+</para>
+
+@lfp: 
+@Returns: 
+
+

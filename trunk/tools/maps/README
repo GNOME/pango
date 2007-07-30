@@ -1,0 +1,12 @@
+This directory is intentionally empty. It is located
+here so that mapping tables can be put here when
+running the make-table.sh script in the parent directory.
+
+However, the mapping tables that I've used are those
+provided by the Unicode consortium, which can't be
+distributed in their original form, though the data
+is freely useable.
+
+Owen Taylor
+otaylor@redhat.com
+10 Jul 1999

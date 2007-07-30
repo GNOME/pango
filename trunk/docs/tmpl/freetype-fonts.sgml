@@ -1,0 +1,222 @@
+<!-- ##### SECTION Title ##### -->
+FreeType Fonts and Rendering
+
+<!-- ##### SECTION Short_Description ##### -->
+Functions for shape engines to manipulate FreeType fonts
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+The macros and functions in this section are used to access fonts and render
+text to bitmaps using the FreeType 2 library.
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### STRUCT PangoFT2FontMap ##### -->
+<para>
+The #PangoFT2FontMap is the #PangoFontMap implementation for FreeType fonts.
+</para>
+
+
+<!-- ##### MACRO PANGO_RENDER_TYPE_FT2 ##### -->
+<para>
+A string constant that was used to identify shape engines that work
+with the FreeType backend. See %PANGO_RENDER_TYPE_FC for the replacement.
+</para>
+
+
+
+<!-- ##### FUNCTION pango_ft2_font_map_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_ft2_font_map_set_resolution ##### -->
+<para>
+
+</para>
+
+@fontmap: 
+@dpi_x: 
+@dpi_y: 
+
+
+<!-- ##### FUNCTION pango_ft2_font_map_create_context ##### -->
+<para>
+
+</para>
+
+@fontmap: 
+@Returns: 
+
+
+<!-- ##### USER_FUNCTION PangoFT2SubstituteFunc ##### -->
+<para>
+Function type for doing final config tweaking on prepared FcPatterns.
+</para>
+
+@pattern: the <type>FcPattern</type> to tweak.
+@data: user data.
+
+
+<!-- ##### FUNCTION pango_ft2_font_map_set_default_substitute ##### -->
+<para>
+
+</para>
+
+@fontmap: 
+@func: 
+@data: 
+@notify: 
+
+
+<!-- ##### FUNCTION pango_ft2_font_map_substitute_changed ##### -->
+<para>
+
+</para>
+
+@fontmap: 
+
+
+<!-- ##### FUNCTION pango_ft2_get_context ##### -->
+<para>
+
+</para>
+
+@dpi_x: 
+@dpi_y: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_ft2_render ##### -->
+<para>
+
+</para>
+
+@bitmap: 
+@font: 
+@glyphs: 
+@x: 
+@y: 
+
+
+<!-- ##### FUNCTION pango_ft2_render_transformed ##### -->
+<para>
+
+</para>
+
+@bitmap: 
+@matrix: 
+@font: 
+@glyphs: 
+@x: 
+@y: 
+
+
+<!-- ##### FUNCTION pango_ft2_render_layout_line ##### -->
+<para>
+
+</para>
+
+@bitmap: 
+@line: 
+@x: 
+@y: 
+
+
+<!-- ##### FUNCTION pango_ft2_render_layout_line_subpixel ##### -->
+<para>
+
+</para>
+
+@bitmap: 
+@line: 
+@x: 
+@y: 
+
+
+<!-- ##### FUNCTION pango_ft2_render_layout ##### -->
+<para>
+
+</para>
+
+@bitmap: 
+@layout: 
+@x: 
+@y: 
+
+
+<!-- ##### FUNCTION pango_ft2_render_layout_subpixel ##### -->
+<para>
+
+</para>
+
+@bitmap: 
+@layout: 
+@x: 
+@y: 
+
+
+<!-- ##### FUNCTION pango_ft2_get_unknown_glyph ##### -->
+<para>
+
+</para>
+
+@font: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_ft2_font_get_kerning ##### -->
+<para>
+
+</para>
+
+@font: 
+@left: 
+@right: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_ft2_font_get_face ##### -->
+<para>
+
+</para>
+
+@font: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_ft2_font_get_coverage ##### -->
+<para>
+
+</para>
+
+@font: 
+@language: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_ft2_font_map_for_display ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_ft2_shutdown_display ##### -->
+<para>
+
+</para>
+
+
+

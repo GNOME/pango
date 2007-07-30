@@ -1,0 +1,488 @@
+Wed Dec 15 23:49:14 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* === Released 1.8.0 ===
+	
+	* configure.in: Version 1.8.0
+
+	* NEWS: Update.
+
+	* README: Updates.
+
+Wed Dec 15 23:13:57 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* modules/basic/basic-win32.c (uniscribe_shape): Emergency
+	fix for #151068... if uniscribe shaping comes up with
+	no glyphs, fall back to non-uniscribe shaping.
+
+Wed Dec 15 22:09:42 2004  Owen Taylor  <otaylor@redhat.com>
+
+	Add pixel sizes for fonts (#119081, patch from Chris Lahey)
+
+	* pango/fonts.c pango/pango-font.h: 
+	Add pango_font_description_set_absolute_size(),
+	pango_font_description_get_size_is_absolute()
+
+	* pango/pango-attributes.[ch]: Add pango_attr_size_new_absolute(),
+	change PANGO_ATTR_SIZE from PangoAttrInt to PangoAttrSize 
+	(preserves compat because first component is identical)
+
+	* pango/pangowin32-fontmap.c (pango_win32_font_map_load_font): 
+	For absolute sizes, convert pixels to points, before 
+	calling pango_win32_font_new().
+
+	* pango/pangofc-fontmap.c pango/pangoft2.c pango/pangoxft-font.c: 
+	Handle absolute sizes.
+
+Wed Dec 15 18:50:18 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* modules/indic/indic-fc.c modules/indic/indic-ot.h:
+	Force zero-width marks to glyph index 0 so they
+	won't be drawn. (#145233, Aniruddha Shankar)
+
+Wed Dec 15 11:15:37 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* configure.in modules/Makefile.am modules/tibetan/*:
+	Add simple tibetan module. (#148566, G Karunakar)
+
+Wed Dec 15 08:38:52 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* modules/indic/indic-ot-class-tables.c: Split
+	U+DDE as U+DD9, U+DDF.
+
+Tue Dec 14 20:44:53 2004  Owen Taylor  <otaylor@redhat.com>
+
+	Sinhala support (#153517, Anuradha Ratnaweera)
+
+	* modules/indic/indic-ot.h modules/indic/indic-fc.c 
+	modules/indic/indic-ot-class-tables.c: Add tables for Sinhala.
+
+	* modules/indic/indic-ot.c (indic_ot_reorder): Add handling
+	of Virama for two-part dependent vowels.
+
+Tue Dec 14 18:36:57 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-layout.c (pango_layout_copy): Copy 
+	layout->auto_dir. (#153547, Morten Welinder)
+
+Tue Dec 14 18:32:46 2004  Owen Taylor  <otaylor@redhat.com>
+ 
+ 	* pango/Makefile.am (libpangoft2_1_0_la_LIBADD): Add $(libm),
+ 	needed for no-undefined platforms like AIX. (#160773,
+ 	Vincent Berger)
+ 
+Tue Dec 14 18:08:36 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-font.h: Add PANGO_WEIGHT_SEMIBOLD. 
+	(#86957, Lars Clausen)
+
+	* pango/fonts.c: s/600/PANGO_WEIGHT_SEMIBOLD.
+
+	* pango/pangofc-fontmap.c (pango_fc_convert_weight_to_fc)
+	* pango/pangofc-fontmap.c (pango_fc_convert_weight_to_pango):
+	Handle PANGO_WEIGHT_SEMIBOLD, use additional weights added
+	in fontconfig-2.2.
+
+2004-12-14  Dan Winship  <danw@novell.com>
+
+	* examples/Makefile.am (INCLUDES): add XFT_CFLAGS
+
+Tue Dec 14 17:27:14 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* modules/indic/indic-ot-class-tables.c (guruCharClasses): 
+	Add the correct char classes for Unicode-4.0 characters
+	U+A01, U+A03. (#158943, Sukhjinder Sidhu)
+
+2004-12-14  Matthias Clasen  <mclasen@redhat.com>
+
+	* pango.pc.in: Require gmodule-no-export
+
+	* configure.in: Use gmodule-no-export-2.0.pc, require glib 2.5.7
+	
+2004-12-14  Tor Lillqvist  <tml@iki.fi>
+
+	* pango/pangowin32.c (pango_win32_font_get_metrics): Set also
+	underline and strikethrough position and thickness. (#161205)
+
+Mon Dec 13 14:44:40 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-layout.[ch] pango/pango.def docs/pango-sections.txt: 
+	Add pango_layout_get_font_description. (#153548, Morten Welinder)
+
+	* pango/pango-layout.c (pango_layout_set_font_description):
+	Guard against the same description being set back.
+
+2004-12-12  Tor Lillqvist  <tml@iki.fi>
+
+	* pango/modules.c (read_modules)
+	* pango/pango-utils.c (read_alias_file,read_config_file): Use
+	gstdio wrappers. (#16111, Robert Ögren)
+
+	* pango/pangoft2-fontmap.c: Remove unneded includes of <dirent.h>
+	and <windows.h>.
+
+Fri Dec 10 16:30:40 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pangoxft-render.c (draw_glyph): Fix problem
+	where the font would get unset after flushing at MAX_GLYPHS.
+	(#160978)
+
+Thu Dec  2 15:47:44 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* === Released 1.7.0 ===
+
+	* NEWS: Update.
+
+Thu Dec  2 15:31:33 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/break.c (pango_default_break): Ignore formatting
+	characters when determining word boundaries (Part of 
+	#97545, Behdad Esfahbod)
+
+2004-11-30  Matthias Clasen  <mclasen@redhat.com>
+
+	* pango/pango-renderer.c (pango_renderer_default_prepare_run): Set
+	the background color instead of setting underline twice.
+
+2004-11-28  Theppitak Karoonboonyanan  <thep@linux.thai.net>
+
+	Add Lao support to Thai module. (#156781)
+
+	* modules/thai/Makefile.am modules/thai/thai-shaper.[ch]
+	+modules/thai/thai-charprop.[ch]: Split WTT tables into a separate
+	source. Extend the tables for Lao. 3 new classes are added (AM for
+	SaraAm, AD4 for Nikkhahit, BCON for Lao semivowels). Now the range
+	0x00-0x7f in TIS is used to store Lao characters. Rewrite ucs2tis()
+	et al macros accordingly.
+
+	* modules/thai/thai-shaper.c (get_next_cluster): Rewrite the
+	clusterization code, so it's not specific to Thai-English texts. (Note
+	that the special case of SaraAm is now handled by the new WTT character
+	class. So, the extra checks are now eliminated.)
+
+	* modules/thai/thai-shaper.c (get_glyphs_list, add_cluster):
+	Add glyph calculation for Lao clusters.
+
+	* modules/thai/thai-shaper.c (ThaiShapeTable structs,
+	get_adjusted_glyphs_list): Generalize the shaping maps according to
+	the new 8-bit internal encoding scheme. Now the character ranges are
+	relocatable rather than hard-coded.  Add Lao shaping table.
+
+	* modules/thai/thai-shaper.c (get_adjusted_glyphs_list): Add special
+	case for Lao, where clusters can be longer than those of Thai.
+
+	* modules/thai/thai-fc.c (get_glyph_index_tis): Add Lao glyphs lookup.
+
+	* modules/thai/thai-ot.c (thai_ot_shape, +lao_ot_get_ruleset): Add Lao
+	OT rulesets retrieval.
+
+	* modules/thai/thai-fc.c (PangoEngineScriptInfo thai_scripts[]):
+	Add Lao script entry.
+
+Thu Nov 25 14:10:53 2004  Manish Singh  <yosh@gimp.org>
+
+	* autogen.sh: rm autom4te.cache, since it might interfere with
+	differing autoconf versions.
+
+Tue Nov 23 10:23:43 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-attributes.[ch]: Add underline_color
+	and strikethrough_color attribute types. (#147616, Morten 
+	Welinder)
+
+	* pango/pango-markup.c docs/pango_markup.sgml: Add
+	corresponding 'underline_color' and 
+	'strikethrough_color' attributes for <span>.
+
+	* pango/pango-renderer.c (pango_renderer_default_prepare_run):
+	Implement underline and strikethrough colors.
+
+	* pango/pango-renderer.c: Fix some bigs with updating
+	underlines/strikethrough state.
+
+	* pango/pango-renderer.c (get_total_matrix): Fix a const
+	warning.
+
+	* docs/pango-sections.txt: Update
+	
+Mon Nov 22 15:53:37 2004  Manish Singh  <yosh@gimp.org>
+
+	* modules/thai/Makefile.am: Remove stray 'x' character.
+
+Mon Nov 22 18:30:14 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/opentype/Makefile.am pango/Makefile.am
+	modules/*/Makefile.am: Set G_LOG_DOMAIN (#151923,
+	Hans Breuer)
+
+Mon Nov 22 15:21:11 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* modules/syriac configure.in modules/Makefile.am
+	modules/makefile.msc: Add Syriac module by Emil 
+	Soleyman-Zomalan. (#147779)
+
+	* examples/Makefile.am examples/syriac.utf: Syriac
+	example text.
+
+2004-11-21  Hans Breuer  <hans@breuer.org>
+
+	* pango/makefile.msc : updated
+
+	* pango/pangowin32.[ch] pango/pangowin32.def : implement
+	pango_win32_render_transformed() by using the transformation
+	capabilities of GDI (not available on win9x)
+
+Sun Nov 21 11:43:00 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/break.c: Turn off backspace-deletes-character behavior
+	for Kana and Hangul. It's wrong for Kana, and for Hangul it's 
+	theoretically right but interacts badly with current input 
+	methods. (#155897, Leon Ho)
+
+Sun Nov 21 11:40:03 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-layout.c (pango_layout_get_log_attrs): Return n+1
+	logical attributes not n logical attributes (#155912)
+
+Sun Nov 21 10:52:03 2004  Owen Taylor  <otaylor@redhat.com>
+ 
+ 	* pango/pango-context.c: Don't just call pango_fontset_get_metrics()
+ 	to implement pango_context_get_metrics(), since that skips our 
+ 	normal font selection algorithm. Rather itemize the sample string
+ 	and get the metrics from that. (#149438, Felipe Heidrich)
+ 
+Sun Nov 21 10:46:34 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-layout.c (pango_layout_set_text): Fix UTF8 => UTF-8
+	in warning and doc comment. (#153551, Morten Welinder)
+
+Sat Nov 20 23:50:40 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pangoxft-font.c (get_glyph_extents_missing): Fix double
+	multiplication by PANGO_SCALE. (#157419, Matthias Clasen)
+
+	* pango/pangoxft-render.c (box_in_bounds): Fix sign typo.
+
+	* pango/pangoxft-render.c (pango_xft_renderer_draw_glyphs): 
+	* pango/pangoxft-font.c (get_glyph_extents_missing): 
+	Adjust vertical positioning so that we get integral positioning of 
+	the box without a transform.
+
+Fri Nov 19 18:45:24 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-renderer.c (pango_renderer_default_draw_error_underline):
+	Fix crash when renderer->matrix is NULL.
+
+Fri Nov 19 17:44:33 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-renderer.[ch]: Remove color_set() virtual
+	function ... it's not absolutely necessary for chaining
+	renderers, and it's not clear that chaining renderers
+	is actually useful, anyways.
+
+	* pango/pango-renderer.[ch] (pango_renderer_set_color): Constify
+	color argument.
+
+	* pango/pango-render.c: Fix various bugs.
+
+	* pango/pango-attributes.[ch] (pango_attr_shape_new_with_data):
+	Add the ability to create a shape attribute with user data.
+
+	* pango/pango-renderer.[ch] (PangoRendererClass): Add a draw_shape
+	virtual function, to draw content for PangoAttrShape.
+
+	* pango/pangoxft-fontmap.c (pango_xft_shutdown_display): 
+	Add note to docs that XCloseDisplay() will automatically take care
+	of releasing Pango's allocated resources for the display.
+	
+	* docs/Makefile.am (SCAN_OPTIONS): Add the appropriate 
+	--deprecated-guards option.
+	
+	* docs/tmpl/xft-fonts.sgml: Add long description.
+
+	* docs/tmpl/x-fonts.sgml: Document as dead.
+
+2004-10-26  Matthias Clasen  <mclasen@redhat.com>
+
+	* docs/tmpl/text-attributes.sgml: Document PANGO_UNDERLINE_ERROR
+	as a 1.4 addition.  (#156533, Morten Welinder)
+
+2004-10-12  Theppitak Karoonboonyanan  <thep@linux.thai.net>
+
+	* modules/thai/thai-shaper.h (thai_get_glyph_tis,
+	thai_make_glyph_tis): Use guchar instead of gchar as argument type.
+
+	* modules/thai/thai-fc.c (thai_get_glyph_tis, thai_make_glyph_tis):
+	Make *_tis functions wrappers to *_uni functions.
+
+2004-10-09  Theppitak Karoonboonyanan  <thep@linux.thai.net>
+
+	Explicitly handle dangling upper/lower marks by optionally using
+	dottedcircle as base, rather than requiring it.
+
+	* modules/thai/thai-shaper.h: Explicitly declare make_glyph and
+	get_glyph functions for 8-bit and Unicode chars as separate functions.
+
+	* modules/thai/thai-shaper.c (get_adjusted_glyphs_list): Rename
+	function calls to the new ones. Conditionally use dottedcircle glyph
+	as base for dangling upper/lower marks if available; simply expand
+	width to that of inkrect otherwise.
+
+	* modules/thai/thai-fc.c: Implement those new functions declared in
+	thai-shaper.h. Remove 0x25cc from tis620_2 glyph set.
+
+2004-10-08  Theppitak Karoonboonyanan  <thep@linux.thai.net>
+
+	* modules/thai/thai-ot.c (thai_ot_get_ruleset): Return NULL if ruleset
+	is empty, to indicate the lack of OT features.
+
+	* modules/thai/thai-fc.c (tis620_1): Fix the PUA glyph table, after
+	actually checked with sample OSX (Jaguar) fonts. This actually turns
+	on PUA-based shaping with Thai OSX fonts in Pango.
+
+2004-10-07  Theppitak Karoonboonyanan  <thep@linux.thai.net>
+
+	* modules/thai/thai-shaper.c (groups, group1_map, group2_map):
+	Remove unused data for XTIS.
+
+	* modules/thai/thai-shaper.[ch] (enum ThaiFontSet, get_glyphs_list),
+	modules/thai/thai-fc.c (thai_get_font_info, thai_make_glyph):
+	Remove THAI_FONT_ISO10646 font set, as it's already covered by
+	THAI_FONT_TIS.
+
+Sat Oct  2 10:08:13 2004  Manish Singh  <yosh@gimp.org>
+
+	* modules/thai/thai-ot.c (thai_ot_get_ruleset): Use
+	g_return_val_if_fail() instead of g_return_if_fail() since this
+	function returns a value.
+
+2004-10-02  Theppitak Karoonboonyanan  <thep@linux.thai.net>
+
+	Make Thai module prefer OpenType tables, if available, to PUA
+	substitutions. (#153927)
+
+	* modules/thai/thai-ot.[ch]:
+	Merge get_gsub_ruleset() and get_gpos_ruleset() into an exported
+	function thai_ot_get_ruleset(). Rearrange thai_ot_shape() to call
+	it properly.
+
+	* modules/thai/thai-fc.c:
+	Try OT ruleset before PUA glyph sets.
+
+2004-09-25  Tor Lillqvist  <tml@iki.fi>
+
+	* pango/pango.def: Add the new pango_renderer_* symbols.
+
+	* modules/basic/basic-win32.c (basic_engine_covers,
+	basic_engine_win32_class_init): Remove the implementation of the
+	covers method. It was wrong anyway, and unnecessary. No need to
+	override the default implementation. (#152997)
+
+Fri Sep 24 15:05:02 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-renderer.c (pango_renderer_draw_glyphs): 
+	Activate the renderer.
+
+	* pango/pango-renderer.c (pango_renderer_get_color,
+	pango_renderer_draw_rectangle, pango_renderer_draw_trapezoid,
+	pango_renderer_draw_error_underline, pango_renderer_draw_glyph): 
+	Require the renderer to be active.
+
+Fri Sep 24 12:59:22 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* configure.in: Up version to 1.7.0.
+
+	* pango/pango-renderer.[ch] pango/pango.h pango/Makefile.am: 
+	Add PangoRenderer, a base class that is subclassed to produce 
+	rendering drivers for different backends and purposes.
+
+	* pango/pangoft2-private.h pango/pangoft2-render.c 
+	pango/pangoft2.c: Move rendering into pangoft2-render.c,
+	use PangoRenderer.
+
+	* pango/pangoft2-fontmap.c pango/pangoft2-private.h: Add
+	_pango_ft2_font_map_get_renderer() to retrieve a singleton
+	fontmap for the fontmap.
+
+	* pango/pangoxft-render.[ch] pango/pangoxft.c pango/Makefile.am: 
+	Make Xft rendering use PangoRenderer, add publically 
+	visible, subclassable PangoXftRenderer.
+
+	* pango/pangoxft-fontmap.c pango/pangoxft-private.h: Add
+	_pango_xft_font_map_get_renderer() to retrieve a singleton
+	fontmap for the fontmap.
+
+	* examples/xftview.c examples/Makefile.am: Add a test program
+	using the Xft backend.
+
+	* docs/*: Update minimally for PangoRenderer.
+
+Wed Sep 22 16:15:40 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pangoxft-font.c (pango_xft_font_get_glyph_extents): Use
+	get_glyph_extents_raw() when hinting is disabled as well
+	as when we are transforming. (#152529, Vincent Noel)
+
+	* pango/pangofc-font.c (pango_fc_font_get_raw_extents): Duplicate
+	the fix for non-scalable fonts from get_face_metrics() here as
+	well.
+
+Wed Sep 22 15:57:30 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-layout.c (pango_layout_get_ellipsize): Fix
+	typo in docs. (#153390, Paolo Borelli)
+
+Wed Sep 22 14:07:47 2004  Owen Taylor  <otaylor@redhat.com>
+
+	Cleanups from 'sparse', #149922, Kjartan Maraas
+
+	* pango/pango-utils.c (read_config): () => (void) in
+	definition.
+
+	* pango/pangofc-fontmap.c (pango_fc_font_map_list_families):
+	Initialize *n_families, not n_families.
+
+	* pango/pangofc-fontmap.c pango/pangoft2.c opentype/ftxgdef.c 
+	opentype/ftxgpos.c opentype/ftxgsub.c: : Fix various 0/NULL 
+	confusion.
+
+Mon Sep 20 13:57:35 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* modules/indic/mprefixups.c (indic_mprefixups_apply): 
+	Fix various bugs, make more robust. (#151689, Arun M)
+
+Mon Sep 13 11:06:47 2004  Owen Taylor  <otaylor@redhat.com>
+ 
+ 	* pango/ellipsize.c (init_state): Initialize 
+ 	ellipsis_is_cjk (#151901, Christian Persch)
+ 
+Mon Sep 13 10:18:51 2004  Owen Taylor  <otaylor@redhat.com>
+
+ 	* pango/pango-context.c (itemize_state_process_run): 
+ 	Except ideographic spaces from the !g_unichar_isgraph() test.
+ 	(#145275, Federic Zhang)
+	
+Mon Sep 20 12:17:37 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pangofc-font.c (get_face_metrics): 
+	Don't use face->ascender/descender for non-scalable fonts,
+	since they aren't set. (#Enrico Scholz, 
+	https://bugzilla.redhat.com/bugzilla/show_bug.cgi?id=129246)
+
+2004-09-18  Tor Lillqvist  <tml@iki.fi>
+
+	* pango/pango.def: Add pango_context_set_matrix. (#152883, Ivan
+	Wong)
+
+2004-09-15  Tor Lillqvist  <tml@iki.fi>
+
+	* pango/pangowin32-fontmap.c (pango_win32_insert_font): Ignore
+	fonts in SYMBOL_CHARSET. They don't have any Unicode mapping
+	table. (#149643)
+
+	* pango/querymodules.c (string_needs_escape, escape_string):
+	Escape also backslashes. (#152607, Kazuki Iwamoto)
+
+Local Variables:
+coding: utf-8
+End:
+vim: encoding=utf-8:

@@ -1,0 +1,1762 @@
+Tue Mar 16 11:24:46 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* === Released 1.4.0 ===
+
+	* configure.in: Version 1.4.0, interface ago 0. Require
+	glib-2.4.0.
+
+	* NEWS: Updates.
+
+	* README: Some updates; include details about the FreeType
+	license of the OpenType code.
+
+Thu Mar 11 17:28:06 2004  Manish Singh  <yosh@gimp.org>
+
+	* pango/pangofc-fontmap.c: Convert PangoStretch to and from FC_WIDTH,
+	so we can actually get fontconfig to match on condensed and expanded
+	versions of fonts, and have the info survive a pango_fc_face_describe
+	roundtrip. Fixes #131561.
+
+	* pango/pangox-fontmap.c: Remove unused function
+	free_coverages_foreach.
+
+Tue Mar  9 09:21:07 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* === Released 1.3.6 ===
+
+	* configure.in: version 1.3.6, interface age 1
+
+	* NEWS: Updates.
+
+2004-03-05  Tor Lillqvist  <tml@iki.fi>
+
+	* pango/pango.def
+	* pango/pangoft2.def: Add missing entries. (#136339, J. Ali Harlow)
+
+Fri Mar  5 14:56:57 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* modules/indic/indic-ot-class-tables.c (kndaCharClasses): Change
+	U+0CC3/U+0CC4/U+0CD5 to _lm (length mark) so that they get ordered
+	after the below base forms. (#118108, Kailash C. Chowksey)
+
+2004-03-04  Tor Lillqvist  <tml@iki.fi>
+
+	* pango/module-defs-win32.c.win32: Clarify comment.
+
+2004-03-03  Hans Breuer  <hans@breuer.org>
+
+	* pango/module-defs-win32.c.win32 : if PANGO_MODULE_PREFIX is 
+	defined include the basic backend shaper (should have been 
+	commited at 2003-12-12, too)
+
+	* pango/makefile.msc : generate correct type for PangoFontMask
+	(bug #135892, John Ehresman)
+	* pango/opentype/makefile.msc : updated
+
+	* pango/pango.def pango/pangoft2.def : more updatd externals
+
+Wed Mar  3 16:00:10 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* configure.in: Strip out the "export-dynamic" libtool
+	option from library link lines. (#124687, James Henstridge)
+
+2004-03-03  Tor Lillqvist  <tml@iki.fi>
+
+	* NEWS: Correct spelling of my name.
+
+	* pango/Makefile.am (libpango_1_0_la_DEPENDENCIES): Add
+	pango-win32res.lo. (135581, J. Ali Harlow)
+
+	* configure.in: Move check for native Win32 (mingw) a bit
+	earlier. If Win32, disable static builds (like GLib does).
+
+	* pango/pango.def
+	* pango/pangoft2.def: Add some missing symbols. (#135945, Cedric
+	Gustin; #135980, J. Ali Harlow)
+
+	* pango/pangowin32-fontmap.c (pango_win32_family_get_name): Can be
+	static.
+
+Mon Mar  1 19:24:09 2004  Owen Taylor  <otaylor@redhat.com>
+
+	 * === Released 1.3.5 ===
+
+	* configure.in: Version 1.3.5 (1.3.4 skipped), interface age 0.
+	
+	* NEWS: Update
+
+	* modules/arabic/arabic-fc.c (arabic_engine_shape): 
+	Fix a crash from left-over handling of clusters
+	for non-spacing marks.
+
+Mon Mar  1 20:32:06 2004  Tim Janik  <timj@gtk.org>
+
+        * autogen.sh:
+        - exit with $? instead of 1 in case of failure
+        - exit with $? if ./configure failed
+          (that's so autogen.sh && make lines work)
+        - removed --enable-gtk-doc option
+        - added $AUTOGEN_CONFIGURE_ARGS
+
+Fri Feb 27 11:23:21 2004  Owen Taylor  <otaylor@redhat.com>
+ 
+ 	Patch from Dov Grobgeld to add auto-direction to PangoLayout
+ 	(more of #70451)
+ 
+ 	* examples/pangofttopgm.c: Add --no-auto-dir argument.
+ 
+	* pango-layout.[ch]: Add pango_layout_set_auto_dir()
+ 	defaulting to TRUE; resolve paragraph direction within
+ 	a layout by propagating base direction downwards
+ 	from paragraph to paragraph.
+ 
+	* pango-context.[ch]: Add pango_itemize_with_base_dir()
+ 	which overrides the base direction from the PangoContext.
+ 
+Mon Mar  1 10:01:58 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* docs/tmpl/text-attributes.sgml: Document %PANGO_UNDERLINE_ERROR.
+
+	* pango/pangofc-fontmap.c: Pango*Fc*FontmapPrivate. Make compile.
+
+2004-03-01  Murray Cumming  <murrayc@murrayc.com>
+
+	* pango/pango-attributes.h: Removed trailing commas from the
+	enums - which causes warnings that break warnings-as-errors builds.
+
+Mon Mar  1 09:43:38 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pangofc-fontmap.c (pango_fc_font_map_finalize):
+	Remove the INSTANCE_PRIVATE_DATA_WORKS #ifdefs,
+	since it does work now.
+
+Sun Feb 29 15:54:51 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pangowin32.c pango/pangox.c pango/pangoft2.c:
+	Fix up off-by-one for right bound when drawing
+	PANGO_UNDERLINE_ERROR.
+
+Sun Feb 29 15:31:09 2004  Owen Taylor  <otaylor@redhat.com>
+
+	Patch from Nicolas Setton, #114237
+
+	* pango/pango-attributes.h pango/pango-markup.c: Add a 
+	new underline type, PANGO_UNDERLINE_ERROR.
+
+	* pango/pangowin32.c pango/pangox.c pango/pangoft2.c:
+	Implement drawing of PANGO_UNDERLINE_ERROR.
+
+	* pango/pango-layout.c (pango_layout_run_get_extents):
+	Handle PANGO_UNDERLINE_ERROR.
+
+2003-02-29  Noah Levitt  <nlevitt@columbia.edu>
+
+	* docs/pango_markup.sgml:
+	* docs/tmpl/text-attributes.sgml:
+	* pango/pango-attributes.c:
+	* pango/pango-attributes.h:
+	* pango/pango-context.c:
+	* pango/pango-markup.c: New attribute to turn font fallback on or off.
+	(#105553)
+
+Sun Feb 29 10:54:55 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* modules/arabic/arabic-ot.c (arabic): Add joining
+	classes for new Unicode-4.0 characters U+06EE, U+06EF, U+06FF.
+	(Patch by Roozbeh Pournader from #117282)
+
+Sun Feb 29 09:25:13 2004  Owen Taylor  <otaylor@redhat.com>
+
+	Rework opentype interfaces and other changes to make GPOS
+	work for Arabic. (Most of #117282, #121060)
+
+	* pango/opentype/otlbuffer.[ch]: OTL_Buffer that
+	acts as a replacement for the separate GSUB and
+	GPOS string structures and hides many of the internal
+	details.
+
+	* pango/opentype/ftxgsub.[ch] pango/opentype/ftxgpos.[ch]:
+	Adapt to OTL_Buffer.
+
+	* pango/opentype/ftxgpos.c: Redo handling of cursive
+	chains so that it actually works.
+
+	* pango/pango-ot.h pango/opentype/pango-ot-buffer.c:
+	Pango wrapper around OTL_Buffer.
+
+	* pango/pango-ot.h pango/pango-ot-ruleset.c pango/pango-ot-buffer.c:
+	Split pango_ot_ruleset_shape() into pango_ot_ruleset_substitute(),
+	pango_ot_ruleset_position(), make them act on
+	PangoOTBuffer, add a separate pango_ot_buffer_output()
+	which does the default positioning and writes to a 
+	PangoGlyphString.
+
+	* modules/arabic/arabic-fc.c modules/indic/indic-fc.c
+	modules/indic/mprefixups.[ch]: Adapt to new OpenType
+	interfaces; add GPOS features for Arabic.
+
+	* pango/opentype/pango-ot-info.c: Don't derive class information
+	from Unicode properties for Arabic presentation forms,
+	let the shaping process derive the properties.
+
+2004-02-28  Hans Breuer  <hans@breuer.org>
+
+	* pango/modules/basic/basic-win32.c : use uniscribe_scripts instead of
+	uniscribe_ranges (does show only with HAVE_USP10_H, which I don't)
+	patch from J. Ali Harlow <ali@juiblex.co.uk>, fixes bug #135504
+
+2004-02-28  Hans Breuer  <hans@breuer.org>
+
+	* pango/pango.def : updated externals including
+	patch from J. Ali Harlow <ali@juiblex.co.uk>, fixes bug #135518
+
+	* pango/pangowin32-fontmap.c : implement list_sizes() and
+	is_monospace() members
+
+Fri Feb 27 14:26:34 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* modules/indic/indic-ot-class-tables.c (bengCharClasses):
+	Mark BENGALI LETTER A (U+0985) and BENGALI LETTER E (U+098F)
+	as consonants which gives better behavior when they
+	are combined with halant, though it isn't exactly right.
+	(#118299, Sayamindu Dasgupta)
+
+Fri Feb 27 11:24:50 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/mini-fribidi/fribidi.c (pango_log2vis_get_embedding_levels):
+	Handle PANGO_DIRECTION_NEUTRAL.
+
+Fri Feb 27 09:30:10 2004  Owen Taylor  <otaylor@redhat.com>
+
+	Add some new enum and values and utilities for supporting
+	automatically determined base direction. (#70451, based
+	on changes by Dov Grobgeld)
+	
+	* pango/pango-types.h docs/tmpl/main.sgml: Add 
+	PANGO_DIRECTION_WEAK_RTL/LTR, extend the docs for
+	PangoDirection.
+
+	* pango/pango-types.h pango/pango-utils.h: Move
+	pango_get_mirror_char() to pango-types.h.
+
+	* pango/mini-fribidi/fribidi.c (pango_log2vis_get_embedding_levels):
+	Handle new values of PangoDirection, handle 
+	PANGO_DIRECTION_TTB_LTR/RTL as aliases for PANGO_DIRECTION_RTL/LTR.
+
+	* pango/mini-fribidi/fribidi.c pango/pango-types.h: Add
+	pango_unichar_direction().
+
+	* pango/pango-utils.c pango/pango-types.h: Add
+	pango_find_base_dir()
+
+2003-02-26  Noah Levitt  <nlevitt@columbia.edu>
+
+	* pango/pangofc-fontmap.c: Use g_array_sort correctly.
+
+Tue Feb 24 14:29:26 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* === Released 1.3.3 ===
+
+	* configure.in: Version 1.3.3, interface age 3.
+
+	* NEWS: Updates
+
+2003-02-23  Noah Levitt  <nlevitt@columbia.edu>
+
+	* pango/pangowin32-fontmap.c: 
+	* pango/pangofc-fontmap.c:
+	* pango/pango-font.h:
+	* pango/fonts.c: New API pango_font_family_is_monospace. (#108728)
+
+2003-02-23  Noah Levitt  <nlevitt@columbia.edu>
+
+	* pango/fonts.c (pango_font_face_list_sizes):
+	* pango/pangofc-fontmap.c (pango_fc_face_list_sizes): Handle
+	NULL for sizes and n_sizes.
+
+2003-02-22  Noah Levitt  <nlevitt@columbia.edu>
+
+	* pango/pangofc-fontmap.c (pango_fc_face_list_sizes): Handle
+	possibility of FcPatternGetDouble(FC_DPI) failing.
+
+2003-02-22  Noah Levitt  <nlevitt@columbia.edu>
+
+	* pango/pango-font.h:
+	* pango/pangofc-fontmap.c:
+	* pango/pangowin32-fontmap.c: 
+	* pango/fonts.c (pango_font_face_list_sizes): New API for
+	getting available sizes for a bitmap font face. (#99235)
+
+Sat Feb 21 11:31:16 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-layout.c (pango_layout_set_justify): Add
+	a docs note about non-implementedness. (#64538)
+
+Sat Feb 21 09:49:23 2004  Owen Taylor  <otaylor@redhat.com>
+	
+	* pango/opentype/pango-ot-ruleset.c (pango_ot_ruleset_shape): 
+	Sign convention for y offsets is opposite between 
+	PangoGlyphString and FT code. (#132591)
+
+2003-02-19  Noah Levitt  <nlevitt@columbia.edu>
+
+	* pango/pangofc-font.c (pango_fc_font_get_metrics):
+	* pango/pangowin32.c (pango_win32_font_get_metrics): Make
+	approximate_digit_width the width of the widest digit, rather than the
+	average.
+
+Thu Feb 19 10:44:17 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-context.c (compute_derived_language):
+	Use 'xx' as the language for cases where we 
+	the language tag mismatches the script but we don't
+	have a good language tag for the script.
+	(#123581)
+
+Tue Feb 17 23:15:13 2004  Laszlo Peter  <laca@sun.com>
+
+	* pango-uninstalled.pc.in: use @PANGO_API_VERSION@
+	* pangoft2-uninstalled.pc.in: use @PANGO_API_VERSION@
+	* pangox-uninstalled.pc.in: use @PANGO_API_VERSION@
+	* pangoxft-uninstalled.pc.in: use @PANGO_API_VERSION@
+
+Mon Jan 26 10:30:06 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/modules/thai/thai-shaper.c: Reapply the patch
+	from #124175 that somehow got reverted.
+	
+Fri Feb 13 10:54:18 2004  Owen Taylor  <otaylor@redhat.com>
+
+	Memory leak fixes from Masatake YAMATO, #130652
+
+	* pango/opentype/ftxgdef.c (TT_Done_GDEF_Table):
+	Free the gdef table as well as the contained data.
+
+	* pango/opentype/ftxgdef.c (TT_GDEF_Build_ClassDefinition): 
+	Set gcd->loaded, so that the contents get freed later.
+
+Fri Feb 13 10:19:16 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* configure.in: Skip the xslt and stylesheet checks
+	unless --enable-man is specified. (#134133, 
+	Julio M. Merino Vidal)
+
+Tue Feb 10 19:03:44 2004  Manish Singh  <yosh@gimp.org>
+
+	* pango/pango-context.c (itemize_state_init): initialize font_desc
+	to NULL.
+
+Tue Feb 10 14:33:54 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-markup.c: Handle 'tag' being NULL
+	in a bunch of places. (#122844, Noah Levitt)
+
+Tue Feb 10 14:28:41 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-context.c (update_attr_iterator): Fix
+	a leak of a font descriptor. (#131909, Kjartan Maraas, 
+	Christian Persch)
+
+Tue Feb 10 14:13:04 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-tabs.c (pango_tab_array_resize): Fix
+	the amount of memory being allocated. (#132994,
+	Torsten Schoenfeld)
+
+Mon Feb  9 09:52:24 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-attributes.c (pango_attr_iterator_next): Fix
+	infinite loop introduced with last change. (#133749,
+	reported by Mariano Suárez-Alvarez)
+
+Thu Feb  5 16:30:46 2004  Owen Taylor  <otaylor@redhat.com>
+
+	Fix problem with empty markup tags (#128102, Christian Persch)
+
+	* pango/pango-context.c (itemize_state_process_run): Assert
+	that the run is non-empty.
+
+	* pango/pango-attributes.c (pango_attr_list_change): 
+	Just ignore empty attributes.
+
+	* pango/pango-attributes.c (pango_attr_iterator_next): 
+	Skip empty attributes.
+
+Thu Feb  5 15:28:44 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-layout.c (pango_layout_set_font_description):
+	Accept NULL for desc as documented. (#133001, Torsten Schoenfeld)
+
+Thu Feb  5 15:21:49 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-layout.c (pango_layout_check_lines): 
+	Redo the last commit once again.
+
+Thu Feb  5 15:16:04 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-layout.c (pango_layout_check_lines): Fix 
+	stupid cut-and-pasto from last commit.
+
+Thu Feb  5 15:09:58 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-layout.c (pango_layout_check_lines):
+	Set is_paragraph_start here too. (#131356, 
+	Morten Welinder)
+
+Wed Jan 28 17:47:52 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* configure.in: Require GLib-2.3.1. (#132695,
+	Rodney Dawes.)
+
+Mon Jan 26 14:20:34 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/opentype/pango-ot-info.c (is_truetype): Support
+	CFF fonts as well. (#131202, Manjunath Sripadarao)
+
+Mon Jan 26 10:30:06 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/modules/thai/thai-shaper.c: Fix up glyph addition
+	code so that it works properly with the typical
+	TrueType fonts that have 0 width for combining
+	characters. (#124175, Theppitak Karoonboonyanan)
+
+Fri Jan 23 16:05:31 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-markup.c (open_tag_free): Fix some
+	more problems with NULL attribute lists.
+
+Thu Jan 22 12:36:10 2004  Owen Taylor  <otaylor@redhat.com>
+
+	* === Released 1.3.2 ===
+
+	* configure.in: Version 1.3.2, interface age 2.
+
+	* NEWS: Tweak.
+
+Wed Jan 21 00:50:56 2004  Matthias Clasen  <maclas@gmx.de>
+
+	* NEWS: Updates for 1.3.2.
+
+2004-01-06  Roozbeh Pournader  <roozbeh@sharif.edu>
+
+	* modules/arabic/arabic-ot.c: Corrected a mistake between ZWJ and
+	ZWNJ. (#130517)
+
+Fri Dec 19 22:20:18 2003  Matthias Clasen  <maclas@gmx.de>
+
+	* docs/tmpl/layout.sgml: Document all members of PangoLayoutLine.
+
+Thu Dec 18 01:20:31 2003  Matthias Clasen  <maclas@gmx.de>
+
+	* pango/pango-attributes.c (pango_attr_size_new): Correct the 
+	documentation.  (#128431, Ross Burton)
+
+2003-12-13  Hans Breuer  <hans@breuer.org>
+
+	* pango/pango.def pangoft2.def : moved pango_fc_*
+	to the latter where they live on *nix too.
+
+	* pango/makefile.msc : make it build again (including
+	the Ft2 backend)
+
+	* pango/module-defs-fc.c.win32 : if PANGO_MODULE_PREFIX is defined
+	include the basic backend shaper
+
+	* pango/pangowin32.c (pango_win32_render_layout) : 
+	initialize iter before first usage to avoid immediate crashing
+
+	* pango/opentype/makefile.msc
+            pango/modules/makefile.msc : finally build with mscv, too.
+	[completely untested cause I'm not able to type, write or read
+	any of these languages]
+
+	* modules/modules.def : follow module function renaming/changes
+
+	* modules/basic/basic-win32.c : register the right engine, i.e.
+	make it compile
+
+2003-12-08  Tor Lillqvist  <tml@iki.fi>
+
+	* modules/basic/basic-win32.c (convert_log_clusters_to_byte_offsets):
+	Simplify.
+
+	(itemize_shape_and_place): Fix problem with RTL scripts: If
+	ScriptItemize() returns several items, must handle them in reverse
+	order. (#128812, reported by Shoshannah Forbes)
+
+Mon Dec  8 12:57:03 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* === Released 1.3.1 ===
+
+	* NEWS: Further updates for 1.3.1
+
+	* pango/pango-script.c (pango_script_iter_next): Put in
+	a hopefully-correct fix for a problem with invalid values of
+	start_sp causing out-of-bounds writes. (#125928,
+	Morten Welinder)
+
+2003-12-07  Tor Lillqvist  <tml@iki.fi>
+
+	* pango/Makefile.am: Fix problems when building outside srcdir for
+	Win32. (#122167, Jeff Bonggren)
+
+2003-12-05  Sven Neumann  <sven@gimp.org>
+
+	* pango/pangoft2-fontmap.c: initialize the fontmap's resolution 
+	to some sane default values. Fixes bug #123602.
+
+2003-12-04  Noah Levitt  <nlevitt@columbia.edu>
+
+	* pango/pango-context.c:
+	* pango/pango-layout.c: Honor U+2028 LINE SEPARATOR. (#85745)
+
+2003-11-25  Noah Levitt  <nlevitt@columbia.edu>
+
+	* examples/pangoft2topgm.c: Add --indent=n option.
+
+	* pango/pango-layout.[ch]: Indent the first line of every paragraph,
+	not just the first line in the layout. (#66626)
+
+2003-11-25  Noah Levitt  <nlevitt@columbia.edu>
+
+	* pango-utils.c (lang_texts[]): Italian is "it"; "iw" is deprecated
+	for Hebrew, should be "he".
+
+2003-11-20  Manish Singh  <yosh@gimp.org>
+
+	* pango/pangoft2-private.h: #include <fontconfig/fcfreetype.h> for
+	FcFreeTypeCharIndex().
+
+2003-11-20  Sven Neumann  <sven@gimp.org>
+
+	* pango/pangoft2-fontmap.c: reverted the patch for bug #123602
+	since I only applied it accidentally. I still believe the patch
+	should go in though.
+
+	* pango/pangoft2.c: really applied the fix for #101856 as
+	described below.
+
+2003-11-20  Noah Levitt  <nlevitt@columbia.edu>
+
+	* pango/pango-utils.c:
+	* pango/mini-fribidi/Makefile.am:
+	* pango/mini-fribidi/README:
+	* pango/mini-fribidi/fribidi.c:
+	* pango/mini-fribidi/fribidi.patch:
+	* pango/mini-fribidi/fribidi_char_type.c:
+	* pango/mini-fribidi/fribidi_tab_char_type_2.i:
+	* pango/mini-fribidi/fribidi_types.c:
+	* pango/mini-fribidi/fribidi_types.h:
+	* pango/mini-fribidi/fribidi_types.i: Update to latest fribidi.
+	(#68435)
+
+2003-11-18  Noah Levitt  <nlevitt@columbia.edu>
+
+	* pango/pangxft-font.c (pango_xft_real_render): Draw 6-digit hex boxes
+	for > U+FFFF. (#101081)
+
+2003-11-18  Morten Welinder  <terra@gnome.org>
+
+	* pango/pango-attributes.c (pango_attr_iterator_get_font): Fix
+	_SCALE semantics.  Fixes bug 121543; patch from Owen.
+
+2003-11-18  Sven Neumann  <sven@gimp.org>
+
+	* pango/pangoft2.c: removed the set_unicode_charmap() call.  Made
+	pango_ft2_font_real_get_glyph() use FcFreeTypeCharIndex() rather
+	than FT_Get_Char_Index(). Made pango_ft2_font_real_has_char() use
+	FcCharSetHasChar().  This allows to use PangoFT2 with all font
+	encodings supported by fontconfig and fixes bug #101856.
+
+Wed Nov 12 16:11:47 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* configure.in: Version 1.3.1, interface age 1.
+
+	* NEWS: Updates for 1.3.1
+
+2003-11-12  Padraig O'Briain  <padraig.obriain@sun.com>
+
+	* pango/modules.c: Make parent_class variable static.
+
+Sat Nov  1 09:32:15 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-ot.h pango/pangofc-font.h modules/indic/indic-ot.h
+	pango/pangoft2.c pango/opentype/pango-ot-info.c
+	pango/opentype/pango-ot-ruleset.c pango/opentype/ottest.c
+        pango/opentype/ftxopen.[ch] pango/opentype/ftxgdef.c
+	pango/opentype/ftxgsub.c pango/opentype/ftxgpos.c: 
+	Switch over to recommended Freetype system of 
+	include ft2build.h then #include FT_FREETYPE_H.
+	Fixes ftmodule.h problem with current Freetype CVS.
+	(#125548)
+
+Fri Oct 31 13:01:25 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/Makefile.am (libpangox_1_0_la_LDFLAGS): Fix some
+	leftover references to INCLUDE_XFT_MODULES, 
+	INCLUDED_FC_MODULES. (#125588, Martin Kretzschmar)
+
+	* pango/pangox-fontmap.c (pango_x_face_get_coverage): 
+	Fix some code that was never quite finished.
+
+Fri Oct 31 12:32:38 2003  Owen Taylor  <otaylor@redhat.com>
+ 
+ 	Fix one problem with iteration by chars (Part of
+ 	#89541, Mariano Suárez-Alvarez)
+ 
+	* Pango/pango-layout.c (cluster_end_index): Fix to 
+ 	be item relative, like iter->cluster_index.
+ 
+ 	* pango/pango-layout.c (pango_layout_iter_next_char): 
+ 	Adapt.
+ 
+Fri Oct 24 00:09:17 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* === Released 1.3.0 ===
+
+	* pango/module-defs-fc.c.win32 pango/module-defs-fc.c.win32: 
+	Add the -fc version, remove the -ft2 version. Not sure this
+	file is actually needed any more.
+
+	* pango/Makefile.am (libpango_1_0_la_SOURCES): Add 
+	pango-impl-utils.h, pango-script-lang-table.h.
+
+	* docs/Makefile.am (dist-hook-local): Distribute generated
+	manpage.
+
+	* tests/Makefile.am (CLEANFILES): Add pango.modules
+
+Wed Oct 15 17:18:37 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-context.c (itemize_state_init): Initialize
+	state->lang. (#124047, Morten Welinder)
+
+Tue Oct 14 19:00:17 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* modules/hebrew/hebrew-fc.c (hebrew_engine_shape): 
+	Remove an unused variable. (#122680, Kjartan Maraas)
+
+Wed Oct  1 12:40:38 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-script.c (pango_script_get_sample_language): 
+	Fix a c99-ism, include stdlib.h for bsearch. 
+	(#123616, Kaushal Kumar)
+
+2003-09-30  Matthias Clasen  <maclas@gmx.de>
+
+	* pango/pango-engine.h (struct _PangoEngineShapeClass): Replace
+	get_coverage by covers in the doc comment.
+
+	* pango/pango-script.c (pango_language_includes_script) 
+	(pango_script_get_sample_language): 
+	* pango/pango-fontset.c (pango_fontset_foreach): 
+	* pango/pango-fontmap.c (pango_font_map_get_shape_engine_type): 
+	* pango/modules.c (pango_map_get_engines):
+	* pango/pango-fontset.h (PangoFontsetForEachFunc): Fix typos and 
+	add "Since: 1.4" tags. 
+
+	* docs/pango-sections.txt: Add PangoFontsetForeachFunc,
+	pango_fontset_foreach(), pango_font_map_get_shape_engine_type(),
+	PangoScriptForLang, pango_script_get_sample_language() and
+	pango_language_includes_script(), remove pango_map_get_entry().
+
+Wed Sep 24 18:29:34 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* modules/hebrew/hebrew-shaper.c (hebrew_shaper_get_next_cluster):
+	Handle non-hebrew characters.
+
+2003-09-25  Matthias Clasen  <maclas@gmx.de>
+
+	* pango/break.c (pango_default_break): Only reset the word 
+	type to WordNone at a word end if it is not also a word 
+	start. Otherwise both 't' and 'e' are classified as word 
+	start in '123test'.  (#122754, Hidetoshi Tajima)
+	
+Tue Sep 23 19:43:05 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-context.c (itemize_state_add_character): Don't
+	break runs when we hit neutral characters.
+
+Tue Sep 23 18:03:57 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-engines.[ch] pango/pango-engines-private.h: 
+	Modules now declare a list of scripts that they cover instead of a
+	list of code point ranges. Also, there is now a ->covers() virtual
+	function that allows a module to decide live whether the font
+	covers a particular codepoint; remove old get_coverage() method.
+
+	* pango/pango-fontset.[ch]: Add a foreach() function to 
+	iterate over all the fonts in a fontset (with a true
+	return stopping iteration).
+
+	* pango/pango-context.c: Complete rewrite using script-run
+	information to improve language tags. Switch to an approach
+	where we handle one run at a time rather than computing
+	information for each character individually then later
+	breaking the result into runs.
+	
+	* pango/pango-fontset.[ch]: Switch over to using
+	pango-impl-utils.h.
+
+	* modules/basic/basic-x.c pango/pangox-fontmap.c: Adapt to
+	the change from get_coverage => covers.
+
+	* pango/pango-modules.h pango/modules.c: Switch PangoMap
+	over to being based on script rather than being based
+	on codepoint. Remove the no longer needed pango_map_get_entry().
+
+	* pango/modules.c: Handle new script-based modules.
+
+	* pango/pango-fc-fontmap.c pango/pango-win32-fontmap.c 
+	pango/pang-fontmap.[ch]: Add a shape_engine_type field
+	to PangoFontmapClass, pango_font_map_get_shape_engine_type();
+	this allows generic code to find a shaper for a particular
+	fontmap.
+
+	* pango/pango-script.[ch]: Add pango_script_get_sample_language(),
+	pango_language_includes_script(); functions for determining
+	the relationship between scripts and language.
+
+	* tools/gen-script-for-lang.c: Modify to spit out a
+	useful table.
+
+	* pango/pango-script-lang-table.h: Version of table
+	generated from current fontconfig data.
+
+	* pango/pangox.c: Remove complicated code to compute
+	coverages; no longer useful now that we just have
+	the basic shaper as a legacy thing.
+
+	* modules/*/*.c: Adapt to identifying shape engines
+	by language range.
+
+	* modules/thai/thai-fc.c modules/thai/thai-shaper.[ch]:
+	Remove now unused "has_glyph" function and XTIS support.
+
+	* modules/thai/thai-fc.c: Handle non-Thai characters
+	as well, since the Thai module now gets spaces,
+	punctuation, and so forth.
+
+Mon Sep 15 17:16:59 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/opentype/fterrcompat.h: Fix gcc-3.3 versions of 
+	macros to have the right return value.
+
+Mon Sep 15 17:07:58 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/Makefile.am: Add property dependencies on mini-fribidi
+	and opentype convenience libraries.
+
+Tue Sep  9 12:21:02 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pangofc-fontmap.c (pango_fc_font_description_from_pattern): 
+	Fix a g_assert() with a side-effect. (Maybe #121742?)
+
+Mon Sep 15 15:48:25 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* examples/Makefile.am examples/argcontext.c examples/argcontext.h:
+	Borrow argument parsing code from GDK.
+
+	* examples/pangoft2topgm.c: Use argcontext.[ch]. Add options
+	--header to display options in a header in the image, --text
+	to pass the text on the command line, --width to set a 
+	wrap width. Add autoconversion to non-PGM output formats
+	via 'convert' for  --output="foo.png" etc.
+
+2003-09-12  Matthias Clasen  <maclas@gmx.de>
+
+	* pango/pango-context.c (pango_context_set_font_map) 
+	(pango_context_new): Document these funcions as backends-only, and 
+	explain how to obtain initialized contexts.  (#121881, Martin Pool)
+	
+Tue Sep  9 12:17:07 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* tools/Makefile.am (EXTRA_DIST): Remove reference
+	to now-gone make-table.sh (#121393, Josh Beam)
+
+2003-09-02  Noah Levitt  <nlevitt@columbia.edu>
+
+	* tests/.cvsignore:
+	* tests/Makefile.am:
+	* tests/pangorc: Fix tests so that can be run before "make install"
+	has been. (#119831)
+
+Mon Aug 25 10:17:21 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/opentype/ftxgsub.c (Lookup_ChainContextSubst3)
+	* pango/opentype/ftxgpos.c (Lookup_ChainContextPos3):
+	Fix problems where the coverage wasn't being checked
+	for the first input glyph. (#118639, Kailash C. Chowksey)
+
+Mon Aug 25 10:11:59 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/Makefile.am (EXTRA_DIST): add testfonts.c to
+	EXTRA_DIST until bug #104151 is sorted out.
+
+Sun Aug 24 12:35:25 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/querymodules.c: Remove a stray ; (#120528,
+	Mehran Mehr)
+
+Fri Aug 22 18:09:52 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/opentype/fterrcompat.h: Add some macro definitions
+	for gcc-3.3 that suppress the bogus strict-aliasing 
+	warnings.
+
+	* pango/pango-utils.c (read_config_file): Use 
+	g_hash_table_new_full() to simplify code and fix
+	gcc-3.3 warnings.
+
+	* pango/pangox-fontmap.c (pango_x_real_get_coverage_win)
+	* pango/querymodules.c (query_module): Suppress gcc-3.3
+	warnings.
+
+	* pango/modules.c (pango_find_map): Fix warning from
+	missing declaration of pango_module_get_type().
+
+	* pango/pango-context.c/pango-engine.c: Fix name confusion
+	for pango_get_fallback_shaper().
+
+Fri Aug 22 17:29:42 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* examples/Makefile.am (pango.modules): Add a dependency
+	on pango-querymodules... Really needs to depend on the
+	modules too, but this at least will reduce the chances
+	of it not getting rebuild when necessary.
+
+Thu Aug 21 00:29:46 2003  Soeren Sandmann  <sandmann@daimi.au.dk>
+
+	* pango/pangofc-fontmap.c (pango_fc_face_get_type): Remove
+	ABSTRACT from g_type_register_static() call
+
+2003-08-20  Noah Levitt  <nlevitt@columbia.edu>
+
+	* configure.in: Bump version to 1.3.0.
+
+Fri Aug 15 16:34:14 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* configure.in: get the cflags for gmodule-2.0 as
+	well as gthread-2.0. (#119953, Benedikt Spranger)
+
+2003-08-14  Noah Levitt  <nlevitt@columbia.edu>
+
+	* docs/tmpl/main.sgml:
+	* pango/break.c:
+	* pango/pango-break.h: Add backspace_deletes_character to
+        PangoLogAttr. (#114483)
+
+Thu Aug 14 10:41:21 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/modules.c (init_modules): Call g_type_init()
+	(#119830, Noah Levitt)
+
+2003-08-11  Matthias Clasen  <maclas@gmx.de>
+
+	* acinclude.m4: Copy newer versions of JH_CHECK_XML_CATALOG and
+	JH_PATH_XML_CATALOG from gtk-doc to enable configuring without
+	xmlcatalog in PATH.  (#119115) 
+
+Fri Aug  8 12:59:42 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pangoft2-fontmap.c (pango_ft2_font_map_default_substitute):
+	Move DPI substitution before FcDefaultSubstitute so
+	it actually works.
+
+Fri Aug  8 11:45:15 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* examples/pangoft2topgm.c: Replace --family/--scale
+	options with a single --font
+
+Fri Aug  8 11:33:24 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* examples/pangoft2topgm.c: Add option to run 'display'
+	on the output as well as/instead of specifying output
+	file name.
+
+Fri Aug  8 10:33:31 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pangoft2.h: Deprecate pango_ft2_get_context(),
+	pango_ft2_font_map_for_display(), pango_ft2_shutdown_display();
+	the explicit 
+
+	* pango/pangoft2-fontmap.c (pango_ft2_shutdown_display):
+	Add docs about deprecations.
+
+	* examples/Makefile.am (INCLUDES): Add -DPANGO_DISABLE_DEPRECATED
+
+	* examples/pangoft2topgm.c: Fix deprecated usages; add
+	--dpi and --markup options. Improve error handling.
+
+Fri Aug  8 10:03:03 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* examples/pangoft2topgm.c: Get rid of a bunch of 
+	leftovers from the conversion from viewer; add
+	--waterfall to create a waterfall output at different
+	sizes, and --margin to set the margin.
+
+2003-08-05  Tor Lillqvist  <tml@iki.fi>
+
+	* modules/basic/basic-win32.c (text_is_simple): New function. Uses
+	the Uniscribe ScriptIsSimple() function to check if Uniscribe
+	shaping is needed for a piece of text.
+
+	(basic_engine_shape): Use it, to avoid calling Uniscribe to shape
+	non-complex text. Produces dramatic speedup according to tests by
+	Hans Breuer.
+
+	(init_uniscribe): No need for the PANGO_WIN32_NO_UNISCRIBE
+	environment variable any longer.
+
+Mon Aug  4 01:12:35 2003  Soeren Sandmann  <sandmann@daimi.au.dk>
+
+	* tools/gen-script-for-lang.c (get_script_name): Fix C99 variable
+	declaration.
+
+Sun Aug  3 18:37:46 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pangofc-font.c (get_face_metrics): Fix sign 
+	of metrics->descent.
+
+	* pango/pango-engine-private.h: fix include (Noah Levitt)
+
+Sat Aug  2 23:19:16 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-engine.[ch] modules/*/*-{fc,win32,x}.c
+	pango/modules.c pango/break.c pango/pango-context.c
+	pango/pango-layout.c pango/pango-modules.h 
+	pango/querymodules.c pango/shape.c: Make 
+	PangoEngine{,Lang,Shape} GObjects, and use a
+	GTypeModule-based module-loading system closely based
+	on the one used for GtkIMContext and GtkThemeEngine.
+
+	* pango/pango-impl-utils.h: OK, I'm tired of typing
+	in get_type() functions.
+
+	* pango/pango-script.[ch] pango/pango-script-table.h
+	tests/testscript.c tools/gen-script-table.pl: Add port
+	of script-range code from ICU in preparation for future
+	use. (#91542)
+
+	* tools/gen-script-for-lang.c: Utility program to determine
+	the script for each fontconfig .orth file.
+
+	* docs/tmpl/{scripts.sgml,pango-engine-lang.sgml,
+	pango-engine-shape.sgml} docs/pango-sections.txt docs/pango-docs.sgml:
+	Redo to go along with the above changes.
+
+	* configure.in: chmod +x tests/runtests.sh
+
+2003-08-03  Noah Levitt  <nlevitt@columbia.edu>
+
+	* pango/Makefile.am (libpangoxft_1_0_la_DEPENDENCIES): Really make
+	pangoxft depend on pangoft2. (#119024)
+
+Sat Aug  2 14:33:28 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/Makefile.am (libpangoxft_1_0_la_LIBADD): Make
+	pangoxft depend on pangoft2.
+
+	* pango/pangofc-fontmap.[ch]: Make pangofc-fontmap.cI
+	into a real base class.
+
+	* pango/pangofc-font.[ch]: Move some of the pangoxft/
+	pangoft2 implementation here.
+
+	* pango/pangoft2.c pango/pangoft2-fontmap.c
+	pango/pangoft2-private.h pango/pangoxft-font.c
+	pango/pangoxft2-fontmap.c pango/pangoxft-private.h: Adapt
+	to the new scheme
+
+	* modules/*/Makefile.am Modules/*/*/*-fc.c: Don't build
+	separate FT2 and Xft shapers, just build one Fc shaper.
+
+	* docs/pango-sections.txt docs/pango-docs.sgml
+	docs/tmpl/pangofc-font{,map}.sgml: Basic docs for
+	the new stuff.
+
+	* configure.in: Up pango_module_version to 1.4.0.
+
+Sat Aug  2 14:18:20 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* modules/hangul/Makefile.am (EXTRA_DIST): Remove some
+	leftovers.
+
+Sat Aug  2 14:10:31 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/Makefile.am pango/pango-intset.[ch] pango/pango-indic.[ch]: 
+	Remove.
+	
+	* pango/pangox.c (pango_x_apply_ligatures): Make a noop, 
+	remove associated code.
+
+	* pango/pangox-fontmap.c pango/pangox.[ch]: Deprecate everything.
+
+Sat Aug  2 13:17:45 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* configure.in
+	modules/arabic/{Makefile.am arconv.[ch],langboxfont.[ch],
+	mulefont.[ch],naqshfont.[ch],arabic-x.c}
+	modules/hangul/{Makefile.am,hangul-x.c,tables-johabfont.i,
+	tables-ksc5601.i}
+	modules/hebrew/{Makefile.am,hebrew-x.c}
+	modules/indic/{Makefile.am,*-x.c}
+	modules/tamil
+	modules/thai/{Makefile.am,thai-x.c}:
+        Remove old X font shapers.
+
+Sat Aug  2 16:40:19 2003  Soeren Sandmann  <sandmann@daimi.au.dk>
+
+	Add API to kern a complete glyph string. Remove API to kern
+	individual glyph pairs.
+
+	* modules/basic/basic-fc.c (basic_engine_shape): use
+	pango_fc_font_kern_glyphs() instead of pango_fc_font_get_kerning().
+
+	* pango/pangoft2.c (pango_ft2_font_real_kern_glyphs): add this
+	function, remove pango_ft2_font_real_get_kerning().
+
+	* pango/pangoxft-font.c (pango_xft_font_real_kern_glyphs): add
+	this function, remove pango_xft_font_real_get_kerning().
+
+	* pango/pangofc-font.c (pango_fc_font_kern_glyphs): new
+	function. Remove pango_fc_font_get_kerning().
+
+	* pango/pangofc-font.h: remove pango_fc_font_get_kerning(), add
+	pango_fc_font_kern_glyphs().
+
+Tue Jul 29 09:58:13 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/opentype/ftxgdef.c (Check_Property): Rewrite
+	handling of IGNORE_SPECIAL_MARKS to be properly
+	"ignore marks of attachment type different than
+	specified. (#118456, Kailash C. Chowksey)
+
+Sat Jul 26 09:41:22 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/opentype/ftxgsub.c (Lookup_LigatureSubst):
+	Revert back out the FreeType patch preventing
+	ligatures of not-originally adjacent glyphs;
+	it doesn't work for all scripts. (#118472,
+	Kailash C. Chowksey)
+
+Sat Jul 26 22:30:59 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/opentype/ftxgsub.c (Lookup_ChainContextSubst{1,2,3}):
+	Check for lookahead glyphs in the right place. (Patch
+	from Kailash C. Chowksey, #116860)
+
+	* pango/opentype/ftxgpos.c (Lookup_ChainContextPos{1,2,3}):
+	Same fix here.
+
+Sat Jul 26 22:12:46 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/opentype/ftxgsub.c (Do_String_Lookup,
+	TT_GSUB_Apply_String): Fix return value to only
+	contain TTO_Err_Not_Covered if *no* lookups
+	matched. Fix memory leaks on error in Apply_String().
+
+Sat Jul 26 22:09:44 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* modules/indic/indic-ot.c (indic_ot_reorder): 
+	Fix problem where NULL mpreFixups wasn't getting
+	returned properly.
+
+Sat Jul 26 21:06:26 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/opentype/ftxgsub.c (Load_EmptyOrClassDefinition):
+	Fix confusion between boolean and FT_Error return.
+	(GSUB equivalent of fix for #108358)
+
+Sat Jul 26 10:52:20 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/opentype/ftxgpos.c (Lookup_ContextPos2): 
+	* pango/opentype/ftxgsub.c (Lookup_ContextSubst2): Move
+	allocation afer initial checks, fixing memory leak.
+
+	* pango/opentype/ftxgsub.c (Lookup_ChainContextSubst2): 
+	Fix some more error return memory leaks that weren't
+	fixed in the Qt changes.
+
+Sat Jul 26 10:43:20 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/opentype/ftxgsub.c pango/opentype/ftxgpos.c:
+	Fix various memory leaks from error returns that should 
+	have been jumps to cleanup blocks. (From Qt, Lars Knoll)
+
+Sat Jul 26 10:30:24 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/opentype/ftxgpos.c: Fix additional places where 
+	TTO_Err_Not_Covered wasn't considered a successful return 
+	from Get_Class. (From Qt, Lars Knoll)
+
+Sat Jul 26 09:41:22 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/opentype/ftxgsub.c (Lookup_LigatureSubst):
+	If applying a ligature lookup makes adjacent two glyphs
+	that were not originally adjacent, avoid making
+	subsequent ligatures between those glyphs.
+	(From FreeType, Werner Lemberg, 2001-08-22, 2001-08-23)
+
+Sat Jul 26 09:16:57 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/opentype/ftxgpos.c pango/opentype/ftxopen.c:
+	Fix some FreeType1 variable declarations that snuck
+	in from the last commits (Christophe Fergeau, 
+	#118363)
+
+Fri Jul 25 23:38:07 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/opentype/ftxgpos.c pango/opentype/ftxgsub.c:
+	OpenType-1.4 update: backtrack information is stored with the
+	item closest to the input first (From FreeType,
+	Werner Lemberg,	2002-09-26)
+
+Fri Jul 25 23:07:06 2003  Owen Taylor  <otaylor@redhat.com>
+
+	Update of GPOS and GSUB support to OpenType 1.3 
+	(From FreeType, Werner Lemberg,	2001-08-08)
+
+	* pango/opentype/ftxopen.h: Add RIGHT_TO_LEFT LookupFlag
+
+	* pango/opentype/ftxgpos.c (GPOS_Instance): Add 'first'
+	member to mark the beginning of a chain of cursive connections.
+	
+	* pango/opentype/ftxgpos.c (Do_String_Lookup): If the
+	RIGHT_TO_FLAG flag is set, shift cursive chain up so
+	last glyph is on the baseline.
+
+Fri Jul 25 22:59:13 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/opentype/ftx{gpos,gsub}.h pango/opentype/ftxgdef.c: 
+	Add GPOS_LOOKUP_EXTENSION, GSUB_LOOKUP_EXTENSION, which
+	allow lookup information to be stored at 32-bit offets
+	via a double indirection. (From FreeType, Werner Lemberg,
+	2001-08-08)
+	
+Fri Jul 25 22:25:48 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/opentype/ftxgsub.c (Lookup_ContextSubst2,
+	Lookup_ChainContextSubst2): Fix a couple of
+	places where TTO_Err_Not_Covered wasn't considered
+	a successful return from Get_Class -- it means
+	use class index 0. (From FreeType, Werner Lemberg,
+	2001-08-06)
+
+Fri Jul 25 20:12:00 2003  Owen Taylor  <otaylor@redhat.com>
+
+	Improvements to OpenType-dumping code, based on
+	changes in Qt by Lars Knoll.
+
+	* pango/opentype/ottest.c: Tweak the debugging output,
+	suppress some warnings.
+
+	* pango/opentype/disasm.c: Add support for 
+	GSUB Context/Chain GPOS MarkBase lookups, improve 
+	output in various ways.
+
+Fri Jul 25 12:07:21 2003  Owen Taylor  <otaylor@redhat.com>
+
+        * modules/indic/mprefixups.[ch] modules/indic/indic-ot.[ch]
+        modules/indic/indic-fc.c: Port pre-base-mantra
+        fixup code from ICU, as needed for Tamil and Malayalam.
+        (Based on patch from Sivaraj Doddannan, #111166)
+
+Fri Jul 25 11:06:14 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* modules/indic/indic-ot.[ch]: Port of some fixes from
+	ICU.
+	
+	   "Fixed problems w/ backing off the front of a syllable if 
+	    all consonants have post-base form... Fix tag list for base 
+	    consonant so that it doesn't have 'pstf'""
+
+	Based on patch from Taneem Ahmed (#118297)
+
+2003-07-25  Noah Levitt  <nlevitt@columbia.edu>
+
+	* docs/tmpl/engines.sgml:
+	* docs/tmpl/glyphs.sgml:
+	* docs/tmpl/main.sgml: Get rid of explicit tables detailing the
+	members of structs, use the automatic things instead. (#117857)
+
+2003-07-25  Sven Neumann  <sven@gimp.org>
+
+	* pango/pangoft2.c (pango_ft2_render_layout_line): removed
+	redundant call to pango_layout_line_get_extents() (#116822).
+
+	* pango/pangoft2.c (pango_ft2_render): fixed source bitmap offset
+	for the monochrome case; some code cleanup (#116837).
+
+Thu Jul 24 18:03:32 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* modules/*/Makefile.am: Remove leftover FRIBIDI_LIBS
+	reference. (Pointed out by Sven Neumann)
+
+Thu Jul 24 17:06:38 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-item.c (pango_item_copy/free): Handle
+	NULL item->analysis.font. (#114576, Morten Welinder)
+
+Thu Jul 24 17:04:21 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/opentype/pango-ot-ruleset.c (pango_ot_ruleset_shape): 
+	Fix uses of g_assert() around statements with side effects.
+	(#115498, patch from David Cuthbert)
+
+Thu Jul 24 16:40:12 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* configure.in tests/runtests.sh.in: Generate
+	runtest.sh so we can use ECHO_C, ECHO_N, SHELL
+	(#114944)
+
+Thu Jul 24 15:55:31 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* configure.in: Clean up checks for usp10.h
+
+	* configure.in: Remove configure option for XftConfig
+	location.
+
+	* acconfig.h: Remove, not needed with autoconf-2.5x.
+	(#114916, Tony Graham)
+
+Thu Jul 24 15:37:16 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* configure.in pango/Makefile.am pango.pc.in: Remove
+	vestiges of support for external fribidi library.
+
+Thu Jul 24 15:09:22 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* configure.in examples/Makefile.am examples/viewer-qt.{cc,h}:
+	Remove Qt-based example; it was only testing the obsolete
+	pango-x backend, and was causing more problems for people
+	trying to configure Pango then it was worth.
+
+	* examples/viewer.c: Remove obsolete test case from CVS.
+
+Thu Jul 24 15:02:56 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/glyphstring.c (pango_glyph_string_get_logical_widths): 
+	Fix up right-to-left case. (Based on patch from
+	Damon Chaplin, #117325)
+
+Thu Jul 24 14:35:48 2003  Owen Taylor  <otaylor@redhat.com>
+ 
+ 	* pango/pango-utils.c (pango_language_matches): Increment
+ 	past the ';' for a list with multiple elements. (#117180,
+ 	John Finlay)
+ 
+2003-07-20  Hans Breuer  <hans@breuer.org>
+
+	* pango/makefile.msc : updated to generate libtool
+	compatible dll names, define the right PANGO_MODULE_PREFIX,
+	pangoft2 still not build with msvc
+
+	* module/basic-win32.c : some #ifdef's for missing
+	LANG_* constants to make it compile with msvc50
+
+	* pango/pango.def : updated externals
+
+2003-06-25  Matthias Clasen  <maclas@gmx.de>
+
+
+	* pango/pango-layout.c: 
+	* pango/pango-tabs.c: 
+	* pango/pango-attributes.c: 
+	* docs/tmpl/layout.sgml: 
+	* docs/tmpl/text-attributes.sgml: Doc markup and typo fixes.
+
+2003-06-17  Matthias Clasen  <maclas@gmx.de>
+
+	* docs/Makefile.am: Add rule to regenerate man pages from 
+	Docbook.
+	(man_MANS): Add pango-querymodules.1.
+	(content_files): Add pangoe-querymodules.xml.
+
+	* docs/pango-querymodules.xml: New refentry.
+
+	* docs/pango-querymodules.1: Man page generated from the .xml source.
+
+	* docs/pango-docs.sgml: Include pango-querymodules.xml.
+
+	* acinclude.m4 (JH_PATH_XML_CATALOG, JH_CHECK_XML_CATALOG): New
+	macros to check for XML catalog contents and path, borrowed from
+	gtk-doc. 
+	
+	* configure.in: New option --enable-man to enable regeneration of
+	man pages from Docbook, if the necessary tools are found.
+
+	* docs/pango-docs.sgml: Add an autogenerated index.
+
+2003-06-13  Tor Lillqvist  <tml@iki.fi>
+
+	* pango-zip.sh.in (DLLDIR): libtool 1.5 installs DLLs in the bin
+	directory, so look there, too. Include the gtk-doc directory.
+
+Thu Jun  5 14:53:40 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-layout.c (pango_layout_move_cursor_visually):
+	Fix bug in determining when we cross line boundaries.
+	(#103421, Matthias Clasen)
+
+Wed Jun  4 14:32:47 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/glyphstring.c (pango_glyph_string_extents_range): 
+	Improve handling of empty ink rectangles; rework for
+	simplicity. (#103662)
+
+2003-06-04  Tor Lillqvist  <tml@iki.fi>
+
+	* modules/thai/thai-x.c: Need config.h here, too, for
+	HAVE_X. Thanks to Patrick Welche.
+
+Mon Jun  2 10:43:15 PDT 2003 Keith Packard <keithp@keithp.com
+
+	* pango/pangoxft-font.c (pango_xft_font_real_get_kerning):
+	was returning with FT_Face locked. (#114226)
+
+Mon Jun  2 12:10:11 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-glyph-item.c (pango_glyph_item_apply_attrs):
+	Don't put statements with side-effects inside g_assert()!
+	(#114137, Jeff Waugh)
+
+2003-05-30  Tor Lillqvist  <tml@iki.fi>
+
+	* pango/pangoft2.def: Add pango_ft2_font_map_set_default_substitute.
+
+Thu May 29 20:05:45 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-glyph-item.c: Fix a stupid bug in the
+	shortcircuit case.
+
+Thu May 29 18:49:00 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* modules/indic/indic-fc.c: Use the correct tags at
+	the GPOS stage, taking into account changes during
+	the GSUB stage. (#112433)
+
+Thu May 29 18:37:58 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-glyph-item.c (pango_glyph_item_apply_attrs):
+	When applying attribute to a glyph item, handle attributes
+	that split clusters by giving the cluster all the attributes
+	that apply to it. (Previously caused a crash, #104976
+	Taneem Ahmed, Sunil Mohan Adapa)
+
+2003-05-29  Tor Lillqvist  <tml@iki.fi>
+
+	* acconfig.h: Add HAVE_X.
+
+	* configure.in: Set HAVE_X.
+
+	* modules/thai/thai-shaper.h: Don't include pangox.h unless
+	HAVE_X. Also leave out the PangoXSubfont field unless HAVE_X.
+
+	* modules/hangul/Makefile.am
+	* modules/indic/Makefile.am
+	* modules/thai/Makefile.am: Use -no-undefined on Windows.
+
+	* modules/thai/thai-shaper.c: Include config.h for HAVE_X.
+
+	* README.win32: Some minor edits.
+
+	* pango/pango.def: Add pango_fc_* entries.
+
+	* pango/pangoft2.def: Add some missing entries.
+
+Wed May 28 17:43:16 2003  Owen Taylor  <otaylor@redhat.com>
+
+	(#107630, Federic Zhang)
+
+	* tools/compress-table.pl (convert): Make read the
+	maps directly.
+
+	* tools/make-table.pl: Remove.
+
+2003-05-28  Sven Neumann  <sven@gimp.org>
+
+	* pango/pangoft2.c (pango_ft2_render): added support for rise,
+	strikethru and shape attributes. (#109900).
+
+Tue May 27 18:37:44 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/mini-fribidi/fribidi.c (fribidi_analyse_string): 
+	Limit the size of the buffers we alloca(). (#104328)
+
+Tue May 27 16:51:32 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* configure.in: Clean up so that tests for Xft/FreeType
+	are only run when we find fontconfig. (#112027,
+	Tim Mooney)
+
+	* README: Rewrite the text about fontconfig dependencies
+	to be clearer and not to have stale links to 
+	http://keithp.com/fonts/. (#112027, Tim Mooney)
+
+Tue May 27 16:06:34 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pangox.c (pango_x_render): Patch from Morten
+	Welinder to collect characters into runs of the
+	same font with natural offsets before drawing them. 
+	(#106892, Morten Welinder)
+
+Tue May 27 15:01:24 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pangoxft-font.c (pango_xft_font_get_metrics): 
+	Get the fontnmap for the right screen (#113452, 
+	Morten Welinder)
+
+Tue May 27 12:36:50 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* configure.in: Fix typo for FreeType dependencies
+	in the enable_explicit_deps case. (#113333, James Su)
+
+Tue May 27 12:32:43 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-context.c (pango_context_new)
+	  pango/pango-layout.c (pango_context_new)
+	  pango/pango-win32.c (pango_win32_font_map_for_display)
+	  pango/pangox-fontmap.c (pango_x_font_map_for_display)
+	  pango/pangox.c (pango_x_font_new): Use g_object_new()
+	rather than g_type_create_instance() (Patch from
+	Benjamin Otte, #112786)
+
+Tue May 27 12:19:53 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* examples/pangoft2topgm.c (main): Add code to check
+	for "./pangorc" so that it works uninstalled.
+
+Fri May  2 17:20:23 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/mapping.c (pango_glyph_string_x_to_index): 
+	Fix some incorrect edge cases for RTL text.
+	(#102952, Padraig O'Briain)
+
+Fri May  2 14:21:20 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-layout.c (update_run): Fix a harmless
+	uninitialized memory read. (#109625, Rich Burridge)
+
+Wed Apr 30 16:46:52 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/fonts.c (pango_font_description_hash): Hash
+	case insensitively (#106942, Morten Welinder)
+
+Tue Apr 29 18:02:31 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* configure.in: Add the fonconfig cflags/libs to 
+	FREETYPE_CFLAGS/LIBS. (#111326, Noah Levitt)
+
+	* {pango,tests,examples}/Makefile.am: Remove now
+	unnecessary references to FONTCONFIG_CFLAGS/LIBS.
+
+Thu Apr 24 19:12:05 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* autogen.sh (have_libtool): Accept libtool-1.5. (#111482)
+
+2003-04-23  Matthias Clasen  <maclas@gmx.de>
+
+	* docs/tmpl/glyphs.sgml: Remove outdated information about PangoGlyph.
+
+Wed Apr 16 03:46:42 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/opentype/pango-ot-info.c (synthesize_class_def):
+	More careful handling of face->charmap; if is NULL,
+	try to set a unicode charmap, if that doesn't succeed,
+	return. (Hopefully fixes #106550)
+	
+Tue Apr 15 11:49:39 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/opentype/ftxg{sub/pos}.c: When loading
+	in Load_Chain{Sub,Pos}ClassRule, the limit we
+	have only applies to the input ClassDef table.
+	Fixes problem with Arial Unicode. Much help from 
+	Noah Levitt in tracing this down.
+
+Tue Apr 15 09:19:21 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/fonts.c (pango_font_description_set_family): 
+	Free the right string.
+
+Tue Apr 15 07:03:19 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pangofc-font.h: Always include freetype.h
+	even when not ENABLE_ENGINE | ENABLE_BACKEND.
+
+Tue Apr 15 06:57:02 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/opentype/ftxgpos.c: Fix mispelled constant
+	from last commit.
+
+Tue Apr 15 06:03:39 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/opentype/ftxgpos.c: Fix confusion between
+	boolean and FT_Error return. (#108358, Noah Levitt)
+
+	* pango/opentype/ftxopen.c (Get_Class1): index is
+	allowed to be NULL. (#108358, Noah Levitt)
+
+Tue Apr 15 05:47:35 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* configure.in: Don't look for Xft unless we found
+	FreeType. (#109573)
+
+Tue Apr 15 05:34:05 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/fonts.c (pango_font_description_set_family):
+	Switch around the code so that 
+	pango_font_description_set_family (desc,
+	  pango_font_description_set_family (desc))
+        in the case where desc->static_family is TRUE.
+	(#106964, Morten Welinder)
+
+Tue Apr 15 05:13:56 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* configure.in: Avoid complex quoting mess that
+	didn't work with all shells. (#108001)
+
+Tue Apr 15 05:00:39 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/opentype/pango-ot-info.c (synthesize_class_def): 
+	Fix infinite loop in the case where the charmap contains
+	a character > 65535. (#106550, Morten Welinder.)
+
+Tue Apr 15 04:53:56 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* modules/indic/indic-ot.h (enum): Cast some enumeration
+	members that are bigger than signed integers to (int) to fix
+	warning on AIX. (#107924)
+
+Tue Apr 15 04:39:48 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-coverage.c (pango_coverage_set): Fix
+	off-by-one error. (#108620, Noah Levitt)
+
+Tue Apr 15 03:54:01 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* modules/hangul/hangul-{x,fc}.c: Fix out-of-bounds read
+	where the value wasn't actually used. (#106744, Morten Welinder)
+
+Tue Apr 15 03:47:37 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-attributes.c (pango_attr_iterator_next): Return 
+	FALSE, not -1 in g_return_val_if_fail(). (#107666, Morten
+	Welinder.)
+
+Tue Apr 15 00:07:21 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pangoft2.[ch]: Fix some stupid type registration/
+	class size problems from last commit.
+
+Mon Apr 14 06:02:34 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* modules/thai/{thai-fc.c,thai-shaper.c,thai-x.c}:
+
+	* modules/*/*-{xft,x,win32.c} pango/pango-engine.h
+	modules/*/Makefile.am: Switch over the way that
+	module entry points work, taking advantage of the
+	new automake capability for per-target CFLAGS for
+	shared sources.
+
+	* pango/pangofc-font.[ch] pango/pangoxft-font.c
+	pango/pangoft2.c: Add a base class for
+	PangoXft and PangoFT2 font classes so code can
+	be shared between FT2 and Xft backends.
+
+	* configure.in modules/*/Makefile.am
+	modules/{arabic,basic,hangul,hebrew,indic,thai}: Move
+	*-xft.c to *-fc.c and share between Xft and FT2 backends;
+	adds FT2 backend capabilities for hangul/indic/thai.
+
+	* pango/pangoxft.h pango/pangoft2.h: Deprecate
+	APIs that moved into PangoFcFont
+
+	* modules/basic/basic-fc.c (set_glyph): Add kerning
+	handling from FT2 backend.
+
+2003-04-03  Sven Neumann  <sven@gimp.org>
+
+	* pango/pangoft2.c (pango_ft2_font_get_face)
+	(pango_ft2_font_render_glyph): disable antialiasing if requested.
+	Fixes bug #109370.
+
+	* pango/pangoft2.c (pango_ft2_render): fixed rendering of
+	monochrome bitmaps.
+
+2003-04-02  Sven Neumann  <sven@gimp.org>
+
+	* pango/pangoft2.c (pango_ft2_render_layout)
+	* pango/pangowin32.c (pango_win32_render_layout)
+	* pango/pangox.c (pango_x_render_layout): use a PangoLayoutIter to
+	iterate over the lines and let render_layout_line() do the actual
+	rendering. Fixes bug #105292.
+
+2003-03-28  Sven Neumann  <sven@gimp.org>
+
+	* pango/pangoft2-fontmap.c
+	* pango/pangoxft-fontmap.c: fixed typos in inline docs.
+
+2003-03-09  James Henstridge  <james@daa.com.au>
+
+	* autogen.sh: make similar changes to the ones on glib head (call
+	gtk-docize, etc).
+
+	* configure.in: move some calculations into M4 macros, rather than
+	calculating them when configure runs.
+	Use AC_HELP_STRING where appropriate.
+	Replace gtk-doc checks with a call to GTK_DOC_CHECK.
+	Replace AC_OUTPUT_COMMANDS() call with a number of calls to
+	AC_CONFIG_COMMANDS (once per created file).
+	Get rid of the "chmod +x pango-config" bit, because there is no
+	pango-config anymore.
+
+	* Makefile.am: get rid of custom distcheck rule, and set
+	DISTCHECK_CONFIGURE_FLAGS, which is equivalent.
+	Use += to select which .pc files to install.
+
+	* pango/Makefile.am: Add rules to rebuild module-defs* files, and
+	remove them on clean.
+	Reorder so that rules related to each individual library are next
+	to each other.
+	Use BUILT_SOURCES for built sources.
+
+	* pango/opentype/Makefile.am: don't use STRIP_BEGIN/STRIP_END.
+
+	* modules/*/Makefile.am: simplify module makefiles through use of
+	+=, and regularise them a bit (fixed a few bugs in the process).
+
+	* docs/Makefile.am: remove common rules, and instead include
+	gtk-doc.make.
+
+	* examples/Makefile.am: add pango.modules to CLEANFILES.
+
+	* tests/Makefile.am: remove temporary files on clean.
+
+Mon Feb 17 13:06:39 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* configure.in **/Makefile.am: Add an --enable-debug
+	configure argument defaulting to 'yes' for unstable
+	releases and 'minimum' for stable releases. 
+	For minimum, -DG_DISABLE_CAST_CHECKS.
+
+	* pango/pangofc-fontmap.cI pango/pangoft2-fontmap.c
+	pango/pangoxft-fontmap.c: Add caching of fontsets
+	(#104495, initial patch and review by Soeren Sandmann)
+
+	* pango/pangofc-fontmap.cI pango/pangoft2-fontmap.c
+	pango/pangoxft-fontmap.c pango/pangoft2-private.h
+	pango/pangoxft-private.h: Remove cache of recently freed 
+	fonts; not necessary now that we cache fontsets.
+
+	* pango/pangofc-fontmap.cI (pango_fc_pattern_set_free):
+	Rename from pango_fc_font_set_free to reflect
+	what it actually does.
+	
+	* pango/pangofc-fontmap.cI pango/pangoft-fontmap.c
+	pango/pangoxft-fontmap.c: Combine clear-the-cache
+	functions; we didn't need separate clear-the-font-cache
+	and clear-the-pattern-cache functions.
+
+Sun Feb 16 09:10:12 2003  Chema Celorio  <chema@celorio.com>
+
+	* pango/pangoft2.c (pango_ft2_render_layout): fix a typo
+	in the @bitmap argument description. s/line/layout
+
+Wed Feb 12 17:20:15 2003  Owen Taylor  <otaylor@redhat.com>
+
+        * configure.in: Simplify 'test x$have_x != xfalse'
+        to $have_x.
+
+Wed Feb 12 17:17:12 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* configure.in: If --without-x is specified, don't
+	try to build Xft backend either. (#105210, patch
+	from Akira Tagoh)
+
+Wed Feb 12 17:09:00 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-context.c: Fix bug where language
+	tag changes were not causing the font to be
+	looked up again. (bugzilla.redhat.com #84034)
+
+Wed Feb 12 16:59:23 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* configure.in pango/opentype/fterrcompat.h README: 
+	Up the FreeType version requirement to 2.0.9.
+	(2.2.1 had a compilation failure with older versions,
+	this catches it more cleanly, and removes some unneeded
+	checks. #105302, problem reported by Will Partain.)
+
+Wed Feb 12 16:48:46 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-layout.c (pango_layout_set_text):
+	Guard against 
+	pango_layout_set_text (pango_layout_get_text (layout));
+	(#105612, Morten Welinder)
+
+Wed Feb 12 16:44:05 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* examples/viewer-qt.cc: Remove call to
+	QApplication::setStyle (new QCDEStyle())... didn't
+	make sense and caused problems if CDEStyle wasn't
+	compiled into Qt. (#105264, Andrey Panov)
+
+Wed Feb 12 16:41:03 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* modules/hangul/Makefile.am (libpango_hangul_x_la_SOURCES): 
+	Fix typo where xft_sources was used again. (#105219,
+	Chris Ross)
+
+Thu Jan 30 16:41:46 2003  Owen Taylor  <otaylor@redhat.com>
+
+        * Makefile.am (EXTRA_DIST): Remove spec.spec.in from
+        EXTRA_DIST, and from dist rules. (#102231)
+
+	* configure.in: Don't generate pango.spec.
+
+Tue Jan 28 18:20:45 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-coverage.c (pango_coverage_set/get): Fix 
+	an off-by-one error when checking if are off the end
+	of the coverage array. (#102284, Morten Welinder.)
+
+	* pango/pango-coverage.c (pango_coverage_get/set): Add
+	g_return_if_fail for index >= 0.
+
+2003-01-29  Tor Lillqvist  <tml@iki.fi>
+
+	* pango/pangowin32.c (pango_win32_font_calc_coverage): Break out
+	of loop if char is 0xFFFF. Some fonts have tables terminated like
+	this.
+
+Tue Jan 28 15:18:24 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* autogen.sh (have_automake): Fix version in complaint
+	message about automake. (#104366, Rich Burridge)
+
+2003-01-20  Sven Neumann  <sven@gimp.org>
+
+	* configure.in: fixed configure output which was wrong in case
+	freetype is available but fontconfig isn't (bug #103917).
+
+2003-01-17  Padraig O'Briain  <padraig.obriain@sun.com>
+
+	* pango/fonts.c (pango_font_description_from_string): Avoid crash
+	with string such as " 12" (bug #103674)
+
+Fri Jan 10 18:56:36 2003  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/opentype/ftxgdef.c: Export TT_New_GDEF_Table
+	to create an empty GDEF table.
+
+	* pango/opentype/pango-ot-info.c: If the font doesn't
+	have a class definition table, synthesize one using
+	the charmap and the unicode properties of characters
+	in the charmap. (Needed to make things work with various
+	old Arabic fonts, such as the KACST fonts)
+
+Local Variables:
+coding: utf-8
+End:
+vim: encoding=utf-8:
