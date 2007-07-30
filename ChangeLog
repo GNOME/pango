@@ -1,3 +1,11 @@
+2007-07-30  Behdad Esfahbod  <behdad@gnome.org>
+
+	* === Released 1.17.5 ===
+
+	* configure.in: Version 1.17.5
+
+	* NEWS: Updated.
+
 2007-07-24  Behdad Esfahbod  <behdad@gnome.org>
 
 	Bug 150883 – Unicode LRO defect

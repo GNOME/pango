@@ -1,3 +1,12 @@
+Overview of changes between 1.17.4 and 1.17.5
+==============================================
+- Export PangoCairoFont and cleanup various standard macros.
+
+- Bugs fixed in this release:
+	Bug 150883 – Unicode LRO defect
+	Bug 449482 – Build error when xft not present
+	Part of Bug 347236 – provide pango_cairo_font_get_scaled_font
+
 Overview of changes between 1.17.3 and 1.17.4
 ==============================================
 - Refactored the ATSUI font backend and install pangoatsui.h
