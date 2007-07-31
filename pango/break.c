@@ -558,7 +558,10 @@ pango_default_break (const gchar   *text,
   prev_jamo = NO_JAMO;
 
   if (length == 0 || *text == '\0')
-    next_wc = PARAGRAPH_SEPARATOR;
+    {
+      next_wc = PARAGRAPH_SEPARATOR;
+      almost_done = TRUE;
+    }
   else
     next_wc = g_utf8_get_char (next);
 
@@ -627,9 +630,6 @@ pango_default_break (const gchar   *text,
        */
       attrs[i].is_white = g_unichar_isspace (wc);
 
-      /* Just few spaces have variable width. So explicitly mark them.
-       */
-      attrs[i].is_expandable_space = (0x0020 == wc || 0x00A0 == wc);
 
       /* ---- Cursor position breaks (Grapheme breaks) ---- */
 

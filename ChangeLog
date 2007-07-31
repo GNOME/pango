@@ -1,3 +1,10 @@
+2007-07-31  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 462137 – memory corruption in pango_default_break
+
+	* pango/break.c (pango_default_break): Handle the case of
+	an empty string correctly.
+
 2007-07-27  Behdad Esfahbod  <behdad@gnome.org>
 
 	* === Released 1.16.5 ===
