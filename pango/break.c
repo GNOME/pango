@@ -558,7 +558,10 @@ pango_default_break (const gchar   *text,
   prev_jamo = NO_JAMO;
 
   if (length == 0 || *text == '\0')
-    next_wc = PARAGRAPH_SEPARATOR;
+    {
+      next_wc = PARAGRAPH_SEPARATOR;
+      almost_done = TRUE;
+    }
   else
     next_wc = g_utf8_get_char (next);
 
