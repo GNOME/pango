@@ -1,5 +1,14 @@
 2007-07-31  Behdad Esfahbod  <behdad@gnome.org>
 
+	Bug 451682 – Cursor positioning for Sinhala is broken
+	Based on patch from Harshula
+
+	* modules/indic/indic-lang.c (not_cursor_position),
+	(indic_engine_break):
+	Clean up cursor position stuff.
+
+2007-07-31  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 462137 – memory corruption in pango_default_break
 
 	* pango/break.c (pango_default_break): Handle the case of

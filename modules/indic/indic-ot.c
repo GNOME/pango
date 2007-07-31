@@ -143,27 +143,6 @@ static void noteBaseConsonant(Output *output)
     }
 }
 
-static void swapChars(Output *output, int a, int b)
-{
-    if (output->fOutChars != NULL) {
-	gunichar temp_char;
-	guint32 temp_index;
-	gulong temp_tag;
-
-	temp_char = output->fOutChars[output->fOutIndex + b];
-	temp_index = output->fCharIndices[output->fOutIndex + b];
-	temp_tag = output->fCharTags[output->fOutIndex + b];
-
-	output->fOutChars[output->fOutIndex + b] = output->fOutChars[output->fOutIndex + a];
-	output->fCharIndices[output->fOutIndex + b] = output->fCharIndices[output->fOutIndex + a];
-	output->fCharTags[output->fOutIndex + b] = pstf_p;
-
-	output->fOutChars[output->fOutIndex + a] = temp_char;
-	output->fCharIndices[output->fOutIndex + a] = temp_index;
-	output->fCharTags[output->fOutIndex + a] = temp_tag;
-    }
-}
-
 static void writeChar(Output *output, gunichar ch, guint32 charIndex, gulong charTags)
 {
     if (output->fOutChars != NULL) {

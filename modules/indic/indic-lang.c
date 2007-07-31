@@ -82,6 +82,14 @@ static PangoEngineInfo script_engines[] = {
   INDIC_ENGINE_INFO(sinh)
 };
 
+static void
+not_cursor_position (PangoLogAttr *attr)
+{
+  attr->is_cursor_position = FALSE;
+  attr->is_char_break = FALSE;
+  attr->is_line_break = FALSE;
+  attr->is_mandatory_break = FALSE;
+}
 
 static void
 indic_engine_break (PangoEngineLang *engine,
@@ -93,7 +101,7 @@ indic_engine_break (PangoEngineLang *engine,
 {
   const gchar *p, *next = NULL, *next_next;
   gunichar prev_wc, this_wc, next_wc, next_next_wc;
-  gboolean makes_rephaya_syllable = FALSE;
+  gboolean is_conjunct = FALSE;
   int i;
 
   for (p = text, prev_wc = 0, i = 0;
@@ -117,61 +125,54 @@ indic_engine_break (PangoEngineLang *engine,
       else
 	next_next_wc = 0;
 
-      if (prev_wc != 0 && this_wc == 0x0DBB &&
-	  next_wc == 0x0DCA && next_next_wc == 0x200D)
-	{
-	  /* Determine whether or not this forms a Rephaya syllable.
-	   * SINHALA LETTER + U+0DBB U+0DCA U+200D + SINHALA LETTER is
-	   * the kind of Rephaya.
+      switch (analysis->script)
+      {
+        case PANGO_SCRIPT_SINHALA:
+	  /*
+	   * TODO: The cursor position should be based on the state table.
+	   *       This is the wrong place to be doing this.
 	   */
-	  makes_rephaya_syllable = TRUE;
-	  attrs[i].is_cursor_position = FALSE;
-	  attrs[i].is_char_break = FALSE;
-	  attrs[i].is_line_break = FALSE;
-	  attrs[i].is_mandatory_break = FALSE;
-	}
-      else if (prev_wc == 0x200D &&
-		(makes_rephaya_syllable || this_wc == 0x0DBB || this_wc == 0x0DBA))
-	{
-	  /* fixes the cursor break in Sinhala.
-	   * SINHALA LETTER + SINHALA VOWEL + ZWJ + 0x0DBB/0x0DBA is
-	   * the kind of Rakaransaya/Yansaya. these characters has to
-	   * be dealt as one character.
+
+	  /*
+	   * The cursor should treat as a single glyph:
+	   * SINHALA CONS + 0x0DCA + 0x200D + SINHALA CONS
+	   * SINHALA CONS + 0x200D + 0x0DCA + SINHALA CONS
 	   */
-	  attrs[i].is_cursor_position = FALSE;
-	  attrs[i].is_char_break = FALSE;
-	  attrs[i].is_line_break = FALSE;
-	  attrs[i].is_mandatory_break = FALSE;
-	  makes_rephaya_syllable = FALSE;
-	}
-      else if (this_wc == 0x200D &&
-		((makes_rephaya_syllable && next_wc != 0) ||
-		 (next_wc == 0x0DBB || next_wc == 0x0DBA)))
-	{
-	  attrs[i].is_cursor_position = FALSE;
-	  attrs[i].is_char_break = FALSE;
-	  attrs[i].is_line_break = FALSE;
-	  attrs[i].is_mandatory_break = FALSE;
-	}
-      else if (prev_wc != 0 && (this_wc == 0x200D || this_wc == 0x200C))
-	{
-	  if (next_wc != 0)
+	  if ((this_wc == 0x0DCA && next_wc == 0x200D)
+	      || (this_wc == 0x200D && next_wc == 0x0DCA))
 	    {
-	      if  (next_next_wc == 0)
+	      not_cursor_position(&attrs[i]);
+	      not_cursor_position(&attrs[i + 1]);
+	      is_conjunct = TRUE;
+	    }
+	  else if (is_conjunct
+		   && (prev_wc == 0x200D || prev_wc == 0x0DCA)
+		   && this_wc >= 0x0D9A
+		   && this_wc <= 0x0DC6)
+	    {
+	      not_cursor_position(&attrs[i]);
+	      is_conjunct = FALSE;
+	    }
+	  /*
+	   * Consonant clusters do NOT result in implicit conjuncts
+	   * in SINHALA orthography.
+	   */
+	  else if (!is_conjunct && prev_wc == 0x0DCA && this_wc != 0x200D)
+	    {
+	      not_cursor_position(&attrs[i]);
+	    }
+
+	  break;
+
+	default:
+
+	  if (prev_wc != 0 && (this_wc == 0x200D || this_wc == 0x200C))
+	    {
+	      not_cursor_position(&attrs[i]);
+	      if (next_wc != 0)
 		{
-		  attrs[i].is_cursor_position = FALSE;
-		  attrs[i].is_char_break = FALSE;
-		  attrs[i].is_line_break = FALSE;
-		  attrs[i].is_mandatory_break = FALSE;
-
-		  i++;
-
-		  attrs[i].is_cursor_position = FALSE;
-		  attrs[i].is_char_break = FALSE;
-		  attrs[i].is_line_break = FALSE;
-		  attrs[i].is_mandatory_break = FALSE;
-		}
-	      else if ((next_next_wc != 0) &&
+		  not_cursor_position(&attrs[i+1]);
+		  if ((next_next_wc != 0) &&
 		       (next_wc == 0x09CD ||	/* Bengali */
 			next_wc == 0x0ACD ||	/* Gujarati */
 			next_wc == 0x094D ||	/* Hindi */
@@ -180,33 +181,15 @@ indic_engine_break (PangoEngineLang *engine,
 			next_wc == 0x0B4D ||	/* Oriya */
 			next_wc == 0x0A4D ||	/* Punjabi */
 			next_wc == 0x0BCD ||	/* Tamil */
-			next_wc == 0x0C4D ||	/* Telugu */
-			next_wc == 0x0DCA))  /*Sinhala*/
-		{
-		  attrs[i].is_cursor_position = FALSE;
-		  attrs[i].is_char_break = FALSE;
-		  attrs[i].is_line_break = FALSE;
-		  attrs[i].is_mandatory_break = FALSE;
-
-		  i++;
-
-		  attrs[i].is_cursor_position = FALSE;
-		  attrs[i].is_char_break = FALSE;
-		  attrs[i].is_line_break = FALSE;
-		  attrs[i].is_mandatory_break = FALSE;
-
-		  i++;
-		  attrs[i].is_cursor_position = FALSE;
+			next_wc == 0x0C4D))	/* Telugu */
+		    {
+		      not_cursor_position(&attrs[i+2]);
+		    }
 		}
 	    }
-	  else
-	    {
-	      attrs[i].is_cursor_position = FALSE;
-	      attrs[i].is_char_break = FALSE;
-	      attrs[i].is_line_break = FALSE;
-	      attrs[i].is_mandatory_break = FALSE;
-	    }
-	}
+
+	  break;
+      }
     }
 }
 
