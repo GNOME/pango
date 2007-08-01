@@ -1,3 +1,11 @@
+2007-08-01  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 451682 – Cursor positioning for Sinhala is broken
+	Based on patch from Harshula
+
+	* modules/indic/indic-lang.c (indic_engine_break): Fix bug that
+	I introduced in the patch.
+
 2007-07-31  Behdad Esfahbod  <behdad@gnome.org>
 
 	Bug 451682 – Cursor positioning for Sinhala is broken

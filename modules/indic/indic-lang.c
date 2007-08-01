@@ -159,7 +159,7 @@ indic_engine_break (PangoEngineLang *engine,
 	   */
 	  else if (!is_conjunct && prev_wc == 0x0DCA && this_wc != 0x200D)
 	    {
-	      not_cursor_position(&attrs[i]);
+	      attrs[i].is_cursor_position = TRUE;
 	    }
 
 	  break;
