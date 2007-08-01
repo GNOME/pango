@@ -3889,7 +3889,7 @@ pango_layout_line_x_to_index (PangoLayoutLine *line,
     }
   while (last_offset > first_offset && !layout->log_attrs[last_offset].is_cursor_position);
 
-  /* This is a HACK. If a program only keeps track if cursor (etc)
+  /* This is a HACK. If a program only keeps track of cursor (etc)
    * indices and not the trailing flag, then the trailing index of the
    * last character on a wrapped line is identical to the leading
    * index of the next line. So, we fake it and set the trailing flag

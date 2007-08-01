@@ -64,7 +64,6 @@ libpango_1_0_la_SOURCES =			\
 	ellipsize.c				\
 	fonts.c					\
 	glyphstring.c				\
-	mapping.c				\
 	modules.c				\
 	pango-attributes.c			\
 	pango-color.c				\

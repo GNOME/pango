@@ -1,5 +1,16 @@
 2007-08-01  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango/Makefile.am:
+	* pango/glyphstring.c (pango_glyph_string_index_to_x),
+	(pango_glyph_string_x_to_index):
+	* pango/mapping.c:
+	Move contents of mapping.c to glyphstring.c where they belong.
+
+	* pango/pango-layout.c (pango_layout_line_x_to_index):
+	Fix typo.
+
+2007-08-01  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 451682 – Cursor positioning for Sinhala is broken
 	Based on patch from Harshula
 
