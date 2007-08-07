@@ -1,5 +1,9 @@
 2007-08-07  Behdad Esfahbod  <behdad@gnome.org>
 
+	* MAINTAINERS: Add Userid field.
+
+2007-08-07  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 464183 – Minimum tab width enforcement in pango-layout breaks
 	TabArray positions
 	Patch by David Trowbridge
