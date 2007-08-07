@@ -1,3 +1,12 @@
+2007-08-07  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 464183 – Minimum tab width enforcement in pango-layout breaks
+	TabArray positions
+	Patch by David Trowbridge
+
+	* pango/pango-layout.c (get_tab_pos), (shape_tab): Don't enforce any
+	minimum space between tabs if tab-array is set on the layout.
+
 2007-08-01  Behdad Esfahbod  <behdad@gnome.org>
 
 	* pango/Makefile.am:

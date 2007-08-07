@@ -2818,10 +2818,13 @@ ensure_tab_width (PangoLayout *layout)
  * all tabs are left-aligned.
  */
 static int
-get_tab_pos (PangoLayout *layout, int index)
+get_tab_pos (PangoLayout *layout, int index, gboolean *is_default)
 {
   gint n_tabs;
   gboolean in_pixels;
+
+  if (is_default)
+    *is_default = FALSE;
 
   if (layout->tabs)
     {
@@ -2883,6 +2886,9 @@ get_tab_pos (PangoLayout *layout, int index)
     {
       /* No tab array set, so use default tab width
        */
+      if (is_default)
+	*is_default = FALSE;
+
       return layout->tab_width * index;
     }
 }
@@ -2930,8 +2936,15 @@ shape_tab (PangoLayoutLine  *line,
 
   for (i=0;;i++)
     {
-      int tab_pos = get_tab_pos (line->layout, i);
-      if (tab_pos >= current_width + space_width)
+      gboolean is_default;
+      int tab_pos = get_tab_pos (line->layout, i, &is_default);
+      /* Make sure there is at least a space-width of space between
+       * tab-aligned text and the text before it.  However, only do
+       * this if no tab array is set on the layout, ie. using default
+       * tab positions.  If use has set tab positions, respect it to
+       * the pixel.
+       */
+      if (tab_pos >= current_width + (is_default ? space_width : 0))
 	{
 	  glyphs->glyphs[0].geometry.width = tab_pos - current_width;
 	  break;
