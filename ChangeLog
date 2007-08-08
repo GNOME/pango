@@ -1,3 +1,7 @@
+2007-08-08  Behdad Esfahbod  <behdad@gnome.org>
+
+	* docs/check.docs: Fix typo.
+
 2007-08-07  Behdad Esfahbod  <behdad@gnome.org>
 
 	Bug 464270 – ellipsize doesn't work consistent

@@ -22,7 +22,7 @@ fi
 if ! grep '^0 symbols incomplete' pango-undocumented.txt >/dev/null ||
    ! grep '^0 not documented'     pango-undocumented.txt >/dev/null; then
 	echo Incomplete or undocumented symbols:
-	cat pango-unused.txt
+	cat pango-undocumented.txt
 	status=1
 fi
 
