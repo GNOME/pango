@@ -114,7 +114,7 @@ init_state (EllipsizeState  *state,
 	    PangoAttrList   *attrs)
 {
   GSList *l;
-  int i, j;
+  int i;
   int start_offset;
 
   state->layout = line->layout;
@@ -130,11 +130,7 @@ init_state (EllipsizeState  *state,
   for (l = line->runs, i = 0; l; l = l->next, i++)
     {
       PangoGlyphItem *run = l->data;
-      int width = 0;
-
-      for (j = 0; j < run->glyphs->num_glyphs; j++)
-	width += run->glyphs->glyphs[j].geometry.width;
-
+      int width = pango_glyph_string_get_width (run->glyphs);
       state->run_info[i].run = run;
       state->run_info[i].width = width;
       state->run_info[i].start_offset = start_offset;

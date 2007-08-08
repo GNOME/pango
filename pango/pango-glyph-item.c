@@ -280,6 +280,7 @@ _pango_glyph_item_iter_prev_cluster (PangoGlyphItemIter *iter)
 
 	  if (glyphs->log_clusters[glyph_index] != cluster)
 	    {
+	      glyph_index++;
 	      iter->start_index = item->offset + glyphs->log_clusters[glyph_index];
 	      iter->start_char -= g_utf8_strlen (iter->text + iter->start_index,
 						 iter->end_index - iter->start_index);
@@ -303,6 +304,7 @@ _pango_glyph_item_iter_prev_cluster (PangoGlyphItemIter *iter)
 
 	  if (glyphs->log_clusters[glyph_index] != cluster)
 	    {
+	      glyph_index--;
 	      iter->start_index = item->offset + glyphs->log_clusters[glyph_index];
 	      iter->start_char -= g_utf8_strlen (iter->text + iter->start_index,
 						 iter->end_index - iter->start_index);

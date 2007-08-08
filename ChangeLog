@@ -1,5 +1,14 @@
 2007-08-07  Behdad Esfahbod  <behdad@gnome.org>
 
+	Bug 464270 – ellipsize doesn't work consistent
+
+	* pango/pango-glyph-item.c (_pango_glyph_item_iter_prev_cluster):
+	Fix.  Was jumping two clusters at a time.  Oops!
+
+	* pango/ellipsize.c (init_state): Minor cleanup.
+
+2007-08-07  Behdad Esfahbod  <behdad@gnome.org>
+
 	* MAINTAINERS: Add Userid field.
 
 2007-08-07  Behdad Esfahbod  <behdad@gnome.org>
