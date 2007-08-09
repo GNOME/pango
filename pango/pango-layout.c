@@ -2823,18 +2823,19 @@ get_tab_pos (PangoLayout *layout, int index, gboolean *is_default)
   gint n_tabs;
   gboolean in_pixels;
 
-  if (is_default)
-    *is_default = FALSE;
-
   if (layout->tabs)
     {
       n_tabs = pango_tab_array_get_size (layout->tabs);
       in_pixels = pango_tab_array_get_positions_in_pixels (layout->tabs);
+      if (is_default)
+	*is_default = FALSE;
     }
   else
     {
       n_tabs = 0;
       in_pixels = FALSE;
+      if (is_default)
+	*is_default = TRUE;
     }
 
   if (index < n_tabs)
@@ -2886,9 +2887,6 @@ get_tab_pos (PangoLayout *layout, int index, gboolean *is_default)
     {
       /* No tab array set, so use default tab width
        */
-      if (is_default)
-	*is_default = FALSE;
-
       return layout->tab_width * index;
     }
 }
@@ -2944,7 +2942,7 @@ shape_tab (PangoLayoutLine  *line,
        * tab positions.  If use has set tab positions, respect it to
        * the pixel.
        */
-      if (tab_pos >= current_width + (is_default ? space_width : 0))
+      if (tab_pos >= current_width + (is_default ? space_width : 1))
 	{
 	  glyphs->glyphs[0].geometry.width = tab_pos - current_width;
 	  break;

@@ -1,3 +1,12 @@
+2007-08-09  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 465174 – TextView is ignoring multiple consecutive \t's
+
+	* pango/pango-layout.c (get_tab_pos), (shape_tab): Fix two problems
+	introduced with fix for bug 464183.  The code now semantically
+	matches what it was before changes leading to revision 1734 for
+	the case that user has set no tabs.
+
 2007-08-08  Behdad Esfahbod  <behdad@gnome.org>
 
 	* docs/check.docs: Fix typo.
