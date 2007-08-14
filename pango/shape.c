@@ -25,6 +25,8 @@
 #include "pango-glyph.h"
 #include "pango-engine-private.h"
 
+#include <string.h>
+
 /**
  * pango_shape:
  * @text:      the text to process
@@ -56,29 +58,47 @@ pango_shape (const gchar      *text,
       if (G_UNLIKELY (glyphs->num_glyphs == 0))
 	{
 	  /* If a font has been correctly chosen, but no glyphs are output,
-	   * there's probably something wrong with the shaper.  Trying to be
-	   * informative, we print out the font description, but to not
-	   * flood the terminal with zillions of the message, we set a flag
-	   * on the font to only err once per font.
+	   * there's probably something wrong with the shaper, or the font.
+	   *
+	   * Trying to be informative, we print out the font description,
+	   * shaper name, and the text, but to not flood the terminal with
+	   * zillions of the message, we set a flag to only err once per
+	   * font/engine pair.
+	   *
+	   * To do the flag fast, we use the engine qname to qflag the font,
+	   * but also the font description to flag the engine.  This is
+	   * supposed to be fast to check, but also avoid writing out
+	   * duplicate warnings when a new PangoFont is created.
 	   */
-	  static GQuark warned_quark = 0;
-
-	  if (!warned_quark)
-	    warned_quark = g_quark_from_static_string ("pango-shaper-warned");
+	  GType engine_type = G_OBJECT_TYPE (analysis->shape_engine);
+	  GQuark warned_quark = g_type_qname (engine_type);
 
 	  if (!g_object_get_qdata (G_OBJECT (analysis->font), warned_quark))
 	    {
 	      PangoFontDescription *desc;
-	      char *s;
+	      char *font_name;
+	      const char *engine_name;
 
 	      desc = pango_font_describe (analysis->font);
-	      s = pango_font_description_to_string (desc);
+	      font_name = pango_font_description_to_string (desc);
 	      pango_font_description_free (desc);
 
-	      /* TODO: Write out the beginning excerpt of text here? */
-	      g_warning ("shape engine failure, expect ugly output. the offending font is '%s'", s);
+	      if (!g_object_get_data (G_OBJECT (analysis->shape_engine), font_name))
+	        {
+		  engine_name = g_type_name (engine_type);
+		  if (!engine_name)
+		    engine_name = "(unknown)";
 
-	      g_free (s);
+		  g_warning ("shaping failure, expect ugly output. shape-engine='%s', font='%s', text='%.*s'",
+			     engine_name,
+			     font_name,
+			     length == -1 ? (gint) strlen (text) : length, text);
+
+		  g_object_set_data_full (G_OBJECT (analysis->shape_engine), font_name,
+					  GINT_TO_POINTER (1), NULL);
+	        }
+
+	      g_free (font_name);
 
 	      g_object_set_qdata_full (G_OBJECT (analysis->font), warned_quark,
 				       GINT_TO_POINTER (1), NULL);

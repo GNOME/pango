@@ -560,14 +560,19 @@ pango_fc_font_real_get_glyph (PangoFcFont *font,
   if (entry->ch != wc)
     {
       face = PANGO_FC_FONT_LOCK_FACE (font);
-      index = FcFreeTypeCharIndex (face, wc);
-      if (index > (FT_UInt)face->num_glyphs)
-	index = 0;
+      if (G_LIKELY (face))
+        {
+	  index = FcFreeTypeCharIndex (face, wc);
+	  if (index > (FT_UInt)face->num_glyphs)
+	    index = 0;
+
+	  PANGO_FC_FONT_UNLOCK_FACE (font);
+	}
+      else
+        index = 0;
 
       entry->ch = wc;
       entry->glyph = index;
-
-      PANGO_FC_FONT_UNLOCK_FACE (font);
     }
 
   return entry->glyph;
@@ -729,7 +734,7 @@ pango_fc_font_kern_glyphs (PangoFcFont      *font,
   g_return_if_fail (glyphs != NULL);
 
   face = PANGO_FC_FONT_LOCK_FACE (font);
-  if (!face)
+  if (G_UNLIKELY (!face))
     return;
 
   if (!FT_HAS_KERNING (face))
@@ -871,6 +876,12 @@ pango_fc_font_get_raw_extents (PangoFcFont    *fcfont,
   g_return_if_fail (PANGO_IS_FC_FONT (fcfont));
 
   face = PANGO_FC_FONT_LOCK_FACE (fcfont);
+  if (G_UNLIKELY (!face))
+    {
+      /* Get generic unknown-glyph extents. */
+      pango_font_get_glyph_extents (NULL, glyph, ink_rect, logical_rect);
+      return;
+    }
 
   if (glyph == PANGO_GLYPH_EMPTY)
     gm = NULL;

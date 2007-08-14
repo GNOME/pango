@@ -1,5 +1,17 @@
 2007-08-14  Behdad Esfahbod  <behdad@gnome.org>
 
+	Bug 466755 – pango hangul is crashing in gnome-about because it is
+	failing to retrieve a font.
+
+	* pango/pangofc-font.c (pango_fc_font_real_get_glyph),
+	(pango_fc_font_kern_glyphs), (pango_fc_font_get_raw_extents):
+	Protect against NULL face.
+
+	* pango/shape.c (pango_shape): Improve error message by writing
+	out shaping engine type name and the text too.
+
+2007-08-14  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/pango-script.h (pango_script_for_unichar): Mark G_GNUC_CONST.
 
 2007-08-09  Behdad Esfahbod  <behdad@gnome.org>
