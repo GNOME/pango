@@ -1,3 +1,7 @@
+2007-08-14  Behdad Esfahbod  <behdad@gnome.org>
+
+	* pango/pango-script.h (pango_script_for_unichar): Mark G_GNUC_CONST.
+
 2007-08-09  Behdad Esfahbod  <behdad@gnome.org>
 
 	Bug 465174 – TextView is ignoring multiple consecutive \t's

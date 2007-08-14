@@ -113,7 +113,7 @@ typedef enum {                         /* ISO 15924 code */
       PANGO_SCRIPT_NKO                 /* Nkoo */
 } PangoScript;
 
-PangoScript pango_script_for_unichar         (gunichar             ch);
+PangoScript pango_script_for_unichar         (gunichar             ch) G_GNUC_CONST;
 
 PangoScriptIter *pango_script_iter_new       (const char          *text,
 					      int                  length);
