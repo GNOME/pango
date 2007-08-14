@@ -491,7 +491,7 @@ pango_glyph_string_index_to_x (PangoGlyphString *glyphs,
 
 /**
  * pango_glyph_string_x_to_index:
- * @glyphs:    the glyphs return from pango_shape()
+ * @glyphs:    the glyphs returned from pango_shape()
  * @text:      the text for the run
  * @length:    the number of bytes (not characters) in text.
  * @analysis:  the analysis information return from pango_itemize()
