@@ -3891,22 +3891,13 @@ pango_layout_line_x_to_index (PangoLayoutLine *line,
 	  int pos;
 	  int char_index;
 
-	  char_index = run->item->offset;
+	  pango_glyph_string_x_to_index (run->glyphs,
+					 layout->text + run->item->offset, run->item->length,
+					 &run->item->analysis,
+					 x_pos - start_pos,
+					 &pos, &char_trailing);
 
-	  if (properties.shape_set)
-	    {
-	      char_trailing = FALSE;
-	    }
-	  else
-	    {
-	      pango_glyph_string_x_to_index (run->glyphs,
-					     layout->text + run->item->offset, run->item->length,
-					     &run->item->analysis,
-					     x_pos - start_pos,
-					     &pos, &char_trailing);
-
-	      char_index += pos;
-	    }
+	  char_index = run->item->offset + pos;
 
 	  /* Convert from characters to graphemes */
 
