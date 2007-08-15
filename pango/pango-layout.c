@@ -1364,43 +1364,35 @@ pango_layout_line_index_to_x (PangoLayoutLine  *line,
 
       if (run->item->offset <= index && run->item->offset + run->item->length > index)
 	{
-	  if (properties.shape_set)
+	  int offset = g_utf8_pointer_to_offset (layout->text, layout->text + index);
+	  if (trailing)
 	    {
-	      if (x_pos)
-		*x_pos = width + (trailing > 0 ? pango_glyph_string_get_width (run->glyphs) : 0);
+	      while (index < line->start_index + line->length &&
+		     offset + 1 < layout->n_chars &&
+		     !layout->log_attrs[offset + 1].is_cursor_position)
+		{
+		  offset++;
+		  index = g_utf8_next_char (layout->text + index) - layout->text;
+		}
 	    }
 	  else
 	    {
-	      int offset = g_utf8_pointer_to_offset (layout->text, layout->text + index);
-	      if (trailing)
+	      while (index > line->start_index &&
+		     !layout->log_attrs[offset].is_cursor_position)
 		{
-		  while (index < line->start_index + line->length &&
-			 offset + 1 < layout->n_chars &&
-			 !layout->log_attrs[offset + 1].is_cursor_position)
-		    {
-		      offset++;
-		      index = g_utf8_next_char (layout->text + index) - layout->text;
-		    }
-		}
-	      else
-		{
-		  while (index > line->start_index &&
-			 !layout->log_attrs[offset].is_cursor_position)
-		    {
-		      offset--;
-		      index = g_utf8_prev_char (layout->text + index) - layout->text;
-		    }
-
+		  offset--;
+		  index = g_utf8_prev_char (layout->text + index) - layout->text;
 		}
 
-	      pango_glyph_string_index_to_x (run->glyphs,
-					     layout->text + run->item->offset,
-					     run->item->length,
-					     &run->item->analysis,
-					     index - run->item->offset, trailing, x_pos);
-	      if (x_pos)
-		*x_pos += width;
 	    }
+
+	  pango_glyph_string_index_to_x (run->glyphs,
+					 layout->text + run->item->offset,
+					 run->item->length,
+					 &run->item->analysis,
+					 index - run->item->offset, trailing, x_pos);
+	  if (x_pos)
+	    *x_pos += width;
 
 	  return;
 	}

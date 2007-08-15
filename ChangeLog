@@ -1,5 +1,15 @@
 2007-08-15  Behdad Esfahbod  <behdad@gnome.org>
 
+	Bug 467077 – Remove special-case for shape attribute in
+	pango_layout_line_index_to_x()
+
+	* pango/pango-layout.c (pango_layout_line_index_to_x): Remove
+	special-casing for shape-attribute runs.  It all works because
+	pango_glyph_string_index_to_x() is perfectly correct to run on glyphs
+	returned by _pango_shape_shape().
+
+2007-08-15  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 462420 – Clicking on pixbuf should move the cursor to the position
 	nearest to the click point
 
