@@ -374,8 +374,8 @@ pango_glyph_string_get_logical_widths (PangoGlyphString *glyphs,
  * @length:    the number of bytes (not characters) in @text.
  * @analysis:  the analysis information return from pango_itemize()
  * @index_:    the byte index within @text
- * @trailing:  whether we should compute the result for the beginning
- *             or end of the character.
+ * @trailing:  whether we should compute the result for the beginning (%FALSE)
+ *             or end (%TRUE) of the character.
  * @x_pos:     location to store result
  *
  * Converts from character position to x position. (X position
