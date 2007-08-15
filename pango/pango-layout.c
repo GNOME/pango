@@ -3824,7 +3824,7 @@ pango_layout_line_get_type (void)
  *             from the left edge of the line.
  * @index_:    location to store calculated byte index for
  *             the grapheme in which the user clicked.
- * @trailing:  location to store a integer indicating where
+ * @trailing:  location to store an integer indicating where
  *             in the grapheme the user clicked. It will either
  *             be zero, or the number of characters in the
  *             grapheme. 0 represents the trailing edge of the grapheme.

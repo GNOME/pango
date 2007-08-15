@@ -497,7 +497,7 @@ pango_glyph_string_index_to_x (PangoGlyphString *glyphs,
  * @analysis:  the analysis information return from pango_itemize()
  * @x_pos:     the x offset (in #PangoGlyphUnit)
  * @index_:    location to store calculated byte index within @text
- * @trailing:  location to store a integer indicating where
+ * @trailing:  location to store a boolean indicating
  *             whether the user clicked on the leading or trailing
  *             edge of the character.
  *
@@ -607,7 +607,7 @@ pango_glyph_string_x_to_index (PangoGlyphString *glyphs,
       if (index)
 	*index = start_index;
       if (trailing)
-	*trailing = 0;
+	*trailing = FALSE;
     }
   else
     {
@@ -635,7 +635,7 @@ pango_glyph_string_x_to_index (PangoGlyphString *glyphs,
 	    }
 
 	  if (trailing)
-	    *trailing = (cp - (int)cp >= 0.5) ? 1 : 0;
+	    *trailing = (cp - (int)cp >= 0.5) ? TRUE : FALSE;
 	}
       else /* Right-to-left */
 	{
@@ -656,7 +656,7 @@ pango_glyph_string_x_to_index (PangoGlyphString *glyphs,
 	  if (trailing)
 	    {
 	      double cp_flip = cluster_chars - cp;
-	      *trailing = (cp_flip - (int)cp_flip >= 0.5) ? 0 : 1;
+	      *trailing = (cp_flip - (int)cp_flip >= 0.5) ? FALSE : TRUE;
 	    }
 	}
     }
