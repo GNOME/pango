@@ -1,5 +1,12 @@
 2007-08-15  Behdad Esfahbod  <behdad@gnome.org>
 
+	Bug 462630 – pango_cairo_context_set_font_options() and some others
+	don't have a Since: tag
+
+	* pango/pangocairo-context.c: Add missing Since tags to docs.
+
+2007-08-15  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 467077 – Remove special-case for shape attribute in
 	pango_layout_line_index_to_x()
 

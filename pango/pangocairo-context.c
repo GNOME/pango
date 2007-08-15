@@ -215,6 +215,8 @@ pango_cairo_context_get_resolution (PangoContext *context)
  * Sets the font options used when rendering text with this context.
  * These options override any options that pango_cairo_update_context()
  * derives from the target surface.
+ *
+ * Since: 1.10
  */
 void
 pango_cairo_context_set_font_options (PangoContext               *context,
@@ -252,6 +254,8 @@ pango_cairo_context_set_font_options (PangoContext               *context,
  * Return value: the font options previously set on the context, or %NULL
  *   if no options have been set. This value is owned by the context
  *   and must not be modified or freed.
+ *
+ * Since: 1.10
  **/
 G_CONST_RETURN cairo_font_options_t *
 pango_cairo_context_get_font_options (PangoContext *context)
