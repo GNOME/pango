@@ -3827,7 +3827,7 @@ pango_layout_line_get_type (void)
  * @trailing:  location to store an integer indicating where
  *             in the grapheme the user clicked. It will either
  *             be zero, or the number of characters in the
- *             grapheme. 0 represents the trailing edge of the grapheme.
+ *             grapheme. 0 represents the leading edge of the grapheme.
  *
  * Converts from x offset to the byte index of the corresponding
  * character within the text of the layout. If @x_pos is outside the line,
