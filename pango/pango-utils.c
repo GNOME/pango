@@ -1641,3 +1641,80 @@ pango_extents_to_pixels (PangoRectangle *ink_rect,
       logical_rect->height = PANGO_PIXELS (orig_y + logical_rect->height) - logical_rect->y;
     }
 }
+
+
+
+
+
+/*********************************************************
+ * Some internal functions for handling PANGO_ATTR_SHAPE *
+ ********************************************************/
+
+void
+_pango_shape_shape (const char       *text,
+		    gint              n_chars,
+		    PangoRectangle   *shape_ink,
+		    PangoRectangle   *shape_logical,
+		    PangoGlyphString *glyphs)
+{
+  int i;
+  const char *p;
+
+  pango_glyph_string_set_size (glyphs, n_chars);
+
+  for (i=0, p = text; i < n_chars; i++, p = g_utf8_next_char (p))
+    {
+      glyphs->glyphs[i].glyph = PANGO_GLYPH_EMPTY;
+      glyphs->glyphs[i].geometry.x_offset = 0;
+      glyphs->glyphs[i].geometry.y_offset = 0;
+      glyphs->glyphs[i].geometry.width = shape_logical->width;
+      glyphs->glyphs[i].attr.is_cluster_start = 1;
+
+      glyphs->log_clusters[i] = p - text;
+    }
+}
+
+void
+_pango_shape_get_extents (gint              n_chars,
+			  PangoRectangle   *shape_ink,
+			  PangoRectangle   *shape_logical,
+			  PangoRectangle   *ink_rect,
+			  PangoRectangle   *logical_rect)
+{
+  if (n_chars > 0)
+    {
+      if (ink_rect)
+	{
+	  ink_rect->x = MIN (shape_ink->x, shape_ink->x + shape_logical->width * (n_chars - 1));
+	  ink_rect->width = MAX (shape_ink->width, shape_ink->width + shape_logical->width * (n_chars - 1));
+	  ink_rect->y = shape_ink->y;
+	  ink_rect->height = shape_ink->height;
+	}
+      if (logical_rect)
+	{
+	  logical_rect->x = MIN (shape_logical->x, shape_logical->x + shape_logical->width * (n_chars - 1));
+	  logical_rect->width = MAX (shape_logical->width, shape_logical->width + shape_logical->width * (n_chars - 1));
+	  logical_rect->y = shape_logical->y;
+	  logical_rect->height = shape_logical->height;
+	}
+    }
+  else
+    {
+      if (ink_rect)
+	{
+	  ink_rect->x = 0;
+	  ink_rect->y = 0;
+	  ink_rect->width = 0;
+	  ink_rect->height = 0;
+	}
+
+      if (logical_rect)
+	{
+	  logical_rect->x = 0;
+	  logical_rect->y = 0;
+	  logical_rect->width = 0;
+	  logical_rect->height = 0;
+	}
+    }
+}
+

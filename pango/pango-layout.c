@@ -1367,7 +1367,7 @@ pango_layout_line_index_to_x (PangoLayoutLine  *line,
 	  if (properties.shape_set)
 	    {
 	      if (x_pos)
-		*x_pos = width + (trailing > 0 ? properties.shape_logical_rect->width : 0);
+		*x_pos = width + (trailing > 0 ? pango_glyph_string_get_width (run->glyphs) : 0);
 	    }
 	  else
 	    {
@@ -1405,10 +1405,7 @@ pango_layout_line_index_to_x (PangoLayoutLine  *line,
 	  return;
 	}
 
-      if (!properties.shape_set)
-	width += pango_glyph_string_get_width (run->glyphs);
-      else
-	width += properties.shape_logical_rect->width;
+      width += pango_glyph_string_get_width (run->glyphs);
 
       run_list = run_list->next;
     }
@@ -2629,79 +2626,6 @@ pango_layout_line_leaked (PangoLayoutLine *line)
 }
 
 
-/************************************************
- * Some functions for handling PANGO_ATTR_SHAPE *
- ************************************************/
-
-static void
-imposed_shape (const char       *text,
-	       gint              n_chars,
-	       PangoRectangle   *shape_ink,
-	       PangoRectangle   *shape_logical,
-	       PangoGlyphString *glyphs)
-{
-  int i;
-  const char *p;
-
-  pango_glyph_string_set_size (glyphs, n_chars);
-
-  for (i=0, p = text; i < n_chars; i++, p = g_utf8_next_char (p))
-    {
-      glyphs->glyphs[i].glyph = PANGO_GLYPH_EMPTY;
-      glyphs->glyphs[i].geometry.x_offset = 0;
-      glyphs->glyphs[i].geometry.y_offset = 0;
-      glyphs->glyphs[i].geometry.width = shape_logical->width;
-      glyphs->glyphs[i].attr.is_cluster_start = 1;
-
-      glyphs->log_clusters[i] = p - text;
-    }
-}
-
-static void
-imposed_extents (gint              n_chars,
-		 PangoRectangle   *shape_ink,
-		 PangoRectangle   *shape_logical,
-		 PangoRectangle   *ink_rect,
-		 PangoRectangle   *logical_rect)
-{
-  if (n_chars > 0)
-    {
-      if (ink_rect)
-	{
-	  ink_rect->x = MIN (shape_ink->x, shape_ink->x + shape_logical->width * (n_chars - 1));
-	  ink_rect->width = MAX (shape_ink->width, shape_ink->width + shape_logical->width * (n_chars - 1));
-	  ink_rect->y = shape_ink->y;
-	  ink_rect->height = shape_ink->height;
-	}
-      if (logical_rect)
-	{
-	  logical_rect->x = MIN (shape_logical->x, shape_logical->x + shape_logical->width * (n_chars - 1));
-	  logical_rect->width = MAX (shape_logical->width, shape_logical->width + shape_logical->width * (n_chars - 1));
-	  logical_rect->y = shape_logical->y;
-	  logical_rect->height = shape_logical->height;
-	}
-    }
-  else
-    {
-      if (ink_rect)
-	{
-	  ink_rect->x = 0;
-	  ink_rect->y = 0;
-	  ink_rect->width = 0;
-	  ink_rect->height = 0;
-	}
-
-      if (logical_rect)
-	{
-	  logical_rect->x = 0;
-	  logical_rect->y = 0;
-	  logical_rect->width = 0;
-	  logical_rect->height = 0;
-	}
-    }
-}
-
-
 /*****************
  * Line Breaking *
  *****************/
@@ -3048,9 +2972,9 @@ shape_run (PangoLayoutLine *line,
   else
     {
       if (state->properties.shape_set)
-	imposed_shape (layout->text + item->offset, item->num_chars,
-		       state->properties.shape_ink_rect, state->properties.shape_logical_rect,
-		       glyphs);
+	_pango_shape_shape (layout->text + item->offset, item->num_chars,
+			    state->properties.shape_ink_rect, state->properties.shape_logical_rect,
+			    glyphs);
       else
 	pango_shape (layout->text + item->offset, item->length, &item->analysis, glyphs);
 
@@ -3955,10 +3879,7 @@ pango_layout_line_x_to_index (PangoLayoutLine *line,
 
       pango_layout_get_item_properties (run->item, &properties);
 
-      if (properties.shape_set)
-	logical_width = properties.shape_logical_rect->width;
-      else
-	logical_width = pango_glyph_string_get_width (run->glyphs);
+      logical_width = pango_glyph_string_get_width (run->glyphs);
 
       if (x_pos >= start_pos && x_pos < start_pos + logical_width)
 	{
@@ -4281,26 +4202,6 @@ pango_layout_line_get_empty_extents (PangoLayoutLine *line,
     }
 }
 
-static int
-pango_layout_run_get_width (PangoLayoutRun *run)
-{
-  ItemProperties properties;
-
-  pango_layout_get_item_properties (run->item, &properties);
-
-  if (properties.shape_set) {
-    PangoRectangle run_logical;
-
-    imposed_extents (run->item->num_chars,
-		     properties.shape_ink_rect,
-		     properties.shape_logical_rect,
-		     NULL, &run_logical);
-
-    return run_logical.width;
-  } else
-    return pango_glyph_string_get_width (run->glyphs);
-}
-
 static void
 pango_layout_run_get_extents (PangoLayoutRun *run,
 			      PangoRectangle *run_ink,
@@ -4321,10 +4222,10 @@ pango_layout_run_get_extents (PangoLayoutRun *run,
     run_logical = &logical;
 
   if (properties.shape_set)
-    imposed_extents (run->item->num_chars,
-		     properties.shape_ink_rect,
-		     properties.shape_logical_rect,
-		     run_ink, run_logical);
+    _pango_shape_get_extents (run->item->num_chars,
+			      properties.shape_ink_rect,
+			      properties.shape_logical_rect,
+			      run_ink, run_logical);
   else
     pango_glyph_string_extents (run->glyphs, run->item->analysis.font,
 				run_ink, run_logical);
@@ -5244,7 +5145,7 @@ update_run (PangoLayoutIter *iter,
 
   if (iter->run)
     {
-      iter->run_width = pango_layout_run_get_width (iter->run);
+      iter->run_width = pango_glyph_string_get_width (iter->run->glyphs);
     }
   else
     {

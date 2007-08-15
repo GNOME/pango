@@ -24,7 +24,7 @@
 #define __PANGO_IMPL_UTILS_H__
 
 #include <glib-object.h>
-#include <pango/pango-utils.h>
+#include <pango/pango.h>
 
 G_BEGIN_DECLS
 
@@ -93,6 +93,19 @@ extern PangoWarningHistory _pango_warning_history;
 /* String interning for static strings */
 #define I_(string) g_intern_static_string (string)
 
+
+/* Some functions for handling PANGO_ATTR_SHAPE */
+void _pango_shape_shape (const char       *text,
+			 gint              n_chars,
+			 PangoRectangle   *shape_ink,
+			 PangoRectangle   *shape_logical,
+			 PangoGlyphString *glyphs);
+
+void _pango_shape_get_extents (gint              n_chars,
+			       PangoRectangle   *shape_ink,
+			       PangoRectangle   *shape_logical,
+			       PangoRectangle   *ink_rect,
+			       PangoRectangle   *logical_rect);
 
 G_END_DECLS
 

@@ -1,3 +1,17 @@
+2007-08-15  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 467056 – Shape attribute handling is not consistent
+
+	* pango/pango-impl-utils.h:
+	* pango/pango-layout.c (pango_layout_line_index_to_x), (shape_run),
+	(pango_layout_line_x_to_index), (pango_layout_run_get_extents),
+	(update_run):
+	* pango/pango-renderer.c (pango_renderer_draw_layout_line):
+	* pango/pango-utils.c (_pango_shape_shape),
+	(_pango_shape_get_extents):
+	Fix handling of extents for shaped runs.  Previsouly a shaped run
+	with more than one character was not correctly positioned.
+
 2007-08-14  Behdad Esfahbod  <behdad@gnome.org>
 
 	Bug 466755 – pango hangul is crashing in gnome-about because it is

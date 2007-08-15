@@ -427,6 +427,7 @@ draw_shaped_glyphs (PangoRenderer    *renderer,
     }
 }
 
+
 /**
  * pango_renderer_draw_layout_line:
  * @renderer: a #PangoRenderer
@@ -490,11 +491,14 @@ pango_renderer_draw_layout_line (PangoRenderer    *renderer,
 
       if (shape_attr)
 	{
-	  ink_rect = shape_attr->ink_rect;
-	  logical_rect = shape_attr->logical_rect;
 	  ink = &ink_rect;
 	  logical = &logical_rect;
-	  glyph_string_width = shape_attr->logical_rect.width;
+          _pango_shape_get_extents (run->glyphs->num_glyphs,
+				    &shape_attr->ink_rect,
+				    &shape_attr->logical_rect,
+				    ink,
+				    logical);
+	  glyph_string_width = logical->width;
 	}
       else
 	{
