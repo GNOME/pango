@@ -1,3 +1,9 @@
+2007-08-20  Behdad Esfahbod  <behdad@gnome.org>
+
+	* pango/opentype/harfbuzz-gsub.c (GSUB_Do_String_Lookup): Don't
+	ignore error return value of hb_buffer_copy_output_glyph().  Patch
+	sent to harfbuzz-list.
+
 2007-08-15  Behdad Esfahbod  <behdad@gnome.org>
 
 	Bug 462630 – pango_cairo_context_set_font_options() and some others
