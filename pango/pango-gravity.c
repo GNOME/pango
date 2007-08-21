@@ -223,8 +223,10 @@ const PangoScriptProperties script_properties[] =
 static PangoScriptProperties
 get_script_properties (PangoScript script)
 {
+  g_return_val_if_fail (script >= 0, script_properties[0]);
+
   if ((guint)script >= G_N_ELEMENTS (script_properties))
-    script = 0;
+    return script_properties[0];
 
   return script_properties[script];
 }

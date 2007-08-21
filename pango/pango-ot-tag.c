@@ -125,7 +125,10 @@ static const Tag ot_scripts[] = {
 PangoOTTag
 pango_ot_tag_from_script (PangoScript script)
 {
-  g_return_val_if_fail (script >= 0 && (guint)script < G_N_ELEMENTS (ot_scripts), PANGO_OT_TAG_DEFAULT_SCRIPT);
+  g_return_val_if_fail (script >= 0, PANGO_OT_TAG_DEFAULT_SCRIPT);
+
+  if ((guint)script >= G_N_ELEMENTS (ot_scripts))
+    return PANGO_OT_TAG_DEFAULT_SCRIPT;
 
   return GUINT32_FROM_BE (ot_scripts[script].integer);
 }

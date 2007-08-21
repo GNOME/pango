@@ -58,7 +58,6 @@
 #include <string.h>
 
 #include "pango-script.h"
-#include "pango-script-table.h"
 
 #define PAREN_STACK_DEPTH 128
 
@@ -83,33 +82,6 @@ struct _PangoScriptIter
   int paren_sp;
 };
 
-#define PANGO_SCRIPT_TABLE_MIDPOINT (G_N_ELEMENTS (pango_script_table) / 2)
-
-static inline PangoScript
-pango_script_for_unichar_bsearch (gunichar ch)
-{
-  int lower = 0;
-  int upper = G_N_ELEMENTS (pango_script_table) - 1;
-  static int saved_mid = PANGO_SCRIPT_TABLE_MIDPOINT;
-  int mid = saved_mid;
-
-
-  do
-    {
-      if (ch < pango_script_table[mid].start)
-	upper = mid - 1;
-      else if (ch >= pango_script_table[mid].start + pango_script_table[mid].chars)
-	lower = mid + 1;
-      else
-	return pango_script_table[saved_mid = mid].script;
-
-      mid = (lower + upper) / 2;
-    }
-  while (lower <= upper);
-
-  return PANGO_SCRIPT_UNKNOWN;
-}
-
 /**
  * pango_script_for_unichar:
  * @ch: a Unicode character
@@ -119,6 +91,9 @@ pango_script_for_unichar_bsearch (gunichar ch)
  * valid Unicode character; if you pass in invalid character, the
  * result is undefined.
  *
+ * As of Pango 1.18, this function simply returns the return value of
+ * g_unichar_get_script().
+ *
  * Return value: the #PangoScript for the character.
  *
  * Since: 1.4
@@ -126,10 +101,7 @@ pango_script_for_unichar_bsearch (gunichar ch)
 PangoScript
 pango_script_for_unichar (gunichar ch)
 {
-  if (ch < G_N_ELEMENTS (pango_script_easy_table))
-    return pango_script_easy_table[ch];
-  else
-    return pango_script_for_unichar_bsearch (ch);
+  return g_unichar_get_script (ch);
 }
 
 /**********************************************************************/

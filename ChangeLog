@@ -1,5 +1,28 @@
 2007-08-20  Behdad Esfahbod  <behdad@gnome.org>
 
+	Bug 348348 – Add a way to get the script name of a gunichar
+
+	* configure.in: Require glib 2.14, for GUnicodeScript stuff.
+
+	* docs/tmpl/scripts.sgml: Document that #PangoScript is
+	interchangeable with GUnicodeScript.
+
+	* pango/pango-script.c (pango_script_for_unichar): Use
+	g_unichar_get_script(), and document it.
+
+	* tools/Makefile.am:
+	* tools/gen-script-table.pl:
+	* pango/Makefile.am:
+	* pango/pango-script-table.h:
+	Remove pango-script-table.h and its generator.
+
+	* pango/pango-gravity.c (get_script_properties):
+	* pango/pango-language.c (pango_script_get_sample_language):
+	* pango/pango-ot-tag.c (pango_ot_tag_from_script):
+	Protect against unexpected script values.
+
+2007-08-20  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/opentype/harfbuzz-gsub.c (GSUB_Do_String_Lookup): Don't
 	ignore error return value of hb_buffer_copy_output_glyph().  Patch
 	sent to harfbuzz-list.

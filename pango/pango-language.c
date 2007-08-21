@@ -434,7 +434,7 @@ script_for_lang_compare (gconstpointer key,
  * to write @language or if nothing is known about @language
  * (including the case that @language is %NULL),
  * %FALSE otherwise.
- *
+ 
  * Since: 1.4
  **/
 gboolean
@@ -715,7 +715,9 @@ pango_script_get_sample_language (PangoScript script)
   PangoLanguage *result;
 
   g_return_val_if_fail (script >= 0, NULL);
-  g_return_val_if_fail ((guint)script < G_N_ELEMENTS (sample_languages), NULL);
+
+  if ((guint)script >= G_N_ELEMENTS (sample_languages))
+    return NULL;
 
   result = _pango_script_get_default_language (script);
   if (result)

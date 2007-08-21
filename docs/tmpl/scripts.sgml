@@ -31,8 +31,8 @@ The #PangoScript enumeration identifies different writing
 systems. The values correspond to the names as defined in the
 Unicode standard.
 Note that new types may be added in the future. Applications should be ready
-to handle unknown values.
-See <ulink
+to handle unknown values.  This enumeration is interchangeable with
+#GUnicodeScript.  See <ulink
 url="http://www.unicode.org/reports/tr24/">Unicode Standard Annex
 #24: Script names</ulink>.
 </para>
