@@ -36,8 +36,8 @@ For more information about Pango, see:
 Dependencies
 ============
 
-Pango depends on version 2.12.0 or newer of the GLib library; more 
-information about GLib can be found at http://www.gtk.org/.
+Pango depends on the GLib library; more information about GLib can
+be found at http://www.gtk.org/.
 
 When using client side fonts, the fontconfig library
 (http://www.fontconfig.org) to look up fonts. At least version 2.0.9
