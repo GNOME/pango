@@ -1,3 +1,31 @@
+Overview of changes between 1.17.5 and 1.18.0
+==============================================
+- Make pango_script_for_unichar() just call g_unichar_get_script(),
+  and document that PangoScript and GUnicodeScript are interchangeable
+  enumerations.
+
+- Misc bug fixes
+
+- Bugs fixed in this release:
+	Bug 348348 – Add a way to get the script name of a gunichar
+	Bug 451682 – Cursor positioning for Sinhala is broken
+		Based on patch from Harshula
+	Bug 462137 – memory corruption in pango_default_break
+	Bug 462420 – Clicking on pixbuf should move the cursor to the position
+		nearest to the click point
+	Bug 462630 – pango_cairo_context_set_font_options() and some others
+		don't have a Since: tag
+	Bug 464183 – Minimum tab width enforcement in pango-layout breaks
+		TabArray positions
+		Patch by David Trowbridge
+	Bug 464270 – ellipsize doesn't work consistent
+	Bug 465174 – TextView is ignoring multiple consecutive \t's
+	Bug 466755 – pango hangul is crashing in gnome-about because it is
+		failing to retrieve a font.
+	Bug 467056 – Shape attribute handling is not consistent
+	Bug 467077 – Remove special-case for shape attribute in
+		pango_layout_line_index_to_x()
+
 Overview of changes between 1.17.4 and 1.17.5
 ==============================================
 - Export PangoCairoFont and cleanup various standard macros.
