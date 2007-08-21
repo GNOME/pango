@@ -1,3 +1,13 @@
+2007-08-21  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 463430 – Gets stuck while "formatting message"
+
+	* pango/opentype/harfbuzz-gpos.c (Lookup_PairPos1),
+	(Lookup_PairPos2), (Lookup_PairPos), (Do_ContextPos):
+	* pango/opentype/harfbuzz-gsub.c (Do_ContextSubst):
+	Change type of intermediate index variable from FT_UShort to
+	FT_ULong as it was overlowing with more than 65536 glyphs.
+
 2007-08-20  Behdad Esfahbod  <behdad@gnome.org>
 
 	* README: Remove reference to required version of glib.  It falls
