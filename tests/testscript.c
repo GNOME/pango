@@ -59,7 +59,6 @@
 #include <string.h>
 
 #include "pango/pango-script.h"
-#include "pango/pango-script-table.h"
 
 #undef VERBOSE
 
@@ -137,34 +136,6 @@ unescape (const char *text)
     }
 
   return g_string_free (result, FALSE);
-}
-
-static void
-test_script_lookup (void)
-{
-  gunichar ch;
-  unsigned int i;
-  int j;
-
-  for (ch = 0; ch < G_N_ELEMENTS (pango_script_easy_table); ch++)
-    ASSERT (pango_script_for_unichar (ch) == pango_script_easy_table[ch]);
-
-  for (i = 0; i < G_N_ELEMENTS (pango_script_table); i++)
-    {
-      while (ch < pango_script_table[i].start)
-	{
-	  ASSERT (pango_script_for_unichar (ch) == PANGO_SCRIPT_UNKNOWN);
-	  ch++;
-	}
-
-      for (j = 0; j < pango_script_table[i].chars; j++)
-	{
-	  ASSERT (pango_script_for_unichar (ch) == pango_script_table[i].script);
-	  ch++;
-	}
-    }
-
-  ASSERT (pango_script_for_unichar (ch) == PANGO_SCRIPT_UNKNOWN);
 }
 
 static void
@@ -253,7 +224,6 @@ main (int argc, char **argv)
 {
   g_setenv ("PANGO_RC_FILE", "./pangorc", TRUE);
 
-  test_script_lookup ();
   test_script_iter ();
 
   return 0;
