@@ -23,6 +23,7 @@
 #include <stdlib.h>
 
 #include "pango-renderer.h"
+#include "pango-impl-utils.h"
 
 #define N_RENDER_PARTS 4
 

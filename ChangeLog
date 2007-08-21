@@ -1,5 +1,11 @@
 2007-08-21  Behdad Esfahbod  <behdad@gnome.org>
 
+	Bug 468953 – pango-renderer.c: using function without prototype
+
+	* pango/pango-renderer.c: #include <pango-impl-utils.h>
+
+2007-08-21  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 463430 – Gets stuck while "formatting message"
 
 	* pango/opentype/harfbuzz-gpos.c (Lookup_PairPos1),
