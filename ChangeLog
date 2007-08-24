@@ -1,3 +1,10 @@
+2007-08-24  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 470042 – missing Macedonian OT tag
+	Patch from Denis Jacquerye
+
+	* pango/pango-ot-tag.c: Add Macedoninan language tag.
+
 2007-08-21  Behdad Esfahbod  <behdad@gnome.org>
 
 	Bug 468953 – pango-renderer.c: using function without prototype

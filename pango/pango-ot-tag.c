@@ -304,6 +304,7 @@ static const LangTag ot_languages[] = {
   {"men",	{"MDE "}},
   {"mg",	{"MLG "}},
   {"mi",	{"MRI "}},
+  {"mk",	{"MKD "}},
   {"mkh",	{"KUY "}},
   {"ml",	{"MLR "}},
   {"mnc",	{"MCH "}},
