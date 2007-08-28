@@ -1,3 +1,13 @@
+Overview of changes between 1.18.0 and 1.18.1
+==============================================
+- Misc bug fixes, including fix for an infinite-loop bug.
+
+- Bugs fixed in this release:
+	Bug 470042 – missing Macedonian OT tag
+		Patch from Denis Jacquerye
+	Bug 468953 – pango-renderer.c: using function without prototype
+	Bug 463430 – Gets stuck while "formatting message"
+
 Overview of changes between 1.17.5 and 1.18.0
 ==============================================
 - Make pango_script_for_unichar() just call g_unichar_get_script(),
