@@ -1,3 +1,9 @@
+2007-08-28  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 410152 – testboundaries test fails
+
+	* configure.in: Require libthai >= 0.1.9
+
 2007-08-27  Behdad Esfahbod  <behdad@gnome.org>
 
 	* === Released 1.18.1 ===

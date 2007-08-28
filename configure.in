@@ -436,7 +436,7 @@ fi
 # Checks for LibThai
 #
 have_libthai=false
-LIBTHAI_REQUIRED_VERSION=0.1.7
+LIBTHAI_REQUIRED_VERSION=0.1.9
 PKG_CHECK_MODULES(LIBTHAI, libthai >= $LIBTHAI_REQUIRED_VERSION, have_libthai=true, AC_MSG_RESULT([no]))
 
 #
