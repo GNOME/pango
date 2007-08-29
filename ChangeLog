@@ -1,3 +1,11 @@
+2007-08-29  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 302952 – The placement of a diacritic marks for an arabic ligature
+	is not correct
+
+	* pango/opentype/harfbuzz-buffer.c (hb_buffer_allocate_ligid): Don't
+	use zero as allocated ligature id.  Zero means no ligature id.
+
 2007-08-28  Behdad Esfahbod  <behdad@gnome.org>
 
 	* pango/pango-ot-ruleset.c (pango_ot_ruleset_init),
