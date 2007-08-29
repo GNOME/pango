@@ -1,5 +1,11 @@
 2007-08-28  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango/pango-ot-ruleset.c (pango_ot_ruleset_init),
+	(pango_ot_ruleset_new): Move ruleset initialization to _init()
+	instead of _new().
+
+2007-08-28  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 410152 – testboundaries test fails
 
 	* configure.in: Require libthai >= 0.1.9

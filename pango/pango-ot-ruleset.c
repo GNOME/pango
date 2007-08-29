@@ -80,6 +80,10 @@ static void
 pango_ot_ruleset_init (PangoOTRuleset *ruleset)
 {
   ruleset->rules = g_array_new (FALSE, FALSE, sizeof (PangoOTRule));
+  ruleset->script_index[0]   = PANGO_OT_NO_SCRIPT;
+  ruleset->script_index[1]   = PANGO_OT_NO_SCRIPT;
+  ruleset->language_index[0] = PANGO_OT_DEFAULT_LANGUAGE;
+  ruleset->language_index[1] = PANGO_OT_DEFAULT_LANGUAGE;
 }
 
 static void
@@ -172,11 +176,6 @@ pango_ot_ruleset_new (PangoOTInfo *info)
 
   ruleset->info = info;
   g_object_add_weak_pointer (ruleset->info, &ruleset->info);
-
-  ruleset->script_index[0]   = PANGO_OT_NO_SCRIPT;
-  ruleset->script_index[1]   = PANGO_OT_NO_SCRIPT;
-  ruleset->language_index[0] = PANGO_OT_DEFAULT_LANGUAGE;
-  ruleset->language_index[1] = PANGO_OT_DEFAULT_LANGUAGE;
 
   return ruleset;
 }
