@@ -1734,7 +1734,7 @@ pango_get_log_attrs (const char    *text,
 
   chars_broken += tailor_segment (range_start, range_end, range_engine, chars_broken, &analysis, log_attrs);
 
-  if (chars_broken + 1 < attrs_len)
+  if (chars_broken + 1 > attrs_len)
     g_warning ("pango_get_log_attrs: attrs_len should have been at least %d, but was %d.  Expect corrupted memory.",
 	       chars_broken + 1,
 	       attrs_len);

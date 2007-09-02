@@ -1,3 +1,9 @@
+2007-09-02  Mathias Hasselmann  <mathias.hasselmann@gmx.de>
+
+	Bug 472891 – Bad consistency check in pango_get_log_attrs
+
+	* pango/break.c: Invert the consistency check.
+
 2007-08-29  Behdad Esfahbod  <behdad@gnome.org>
 
 	Bug 302952 – The placement of a diacritic marks for an arabic ligature
