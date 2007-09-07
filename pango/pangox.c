@@ -156,6 +156,12 @@ pango_x_get_font_struct (PangoFont *font, PangoXSubfontInfo *info)
   return info->font_struct;
 }
 
+static void
+free_context_info (PangoXContextInfo *info)
+{
+  g_slice_free (PangoXContextInfo, info);
+}
+
 /**
  * pango_x_get_context:
  * @display: an X display (As returned by XOpenDisplay().)
@@ -185,12 +191,12 @@ pango_x_get_context (Display *display)
 
   result = pango_context_new ();
 
-  info = g_new (PangoXContextInfo, 1);
+  info = g_slice_new (PangoXContextInfo);
   info->get_gc_func = NULL;
   info->free_gc_func = NULL;
   g_object_set_qdata_full (G_OBJECT (result),
 			   g_quark_from_static_string ("pango-x-info"),
-			   info, (GDestroyNotify)g_free);
+			   info, (GDestroyNotify)free_context_info);
 
   pango_context_set_font_map (result, pango_x_font_map_for_display (display));
 
@@ -255,10 +261,11 @@ static void
 pango_x_font_init (PangoXFont *xfont)
 {
   xfont->subfonts_by_charset = g_hash_table_new (g_str_hash, g_str_equal);
-  xfont->subfonts = g_new (PangoXSubfontInfo *, 1);
 
   xfont->n_subfonts = 0;
   xfont->max_subfonts = 1;
+
+  xfont->subfonts = g_new (PangoXSubfontInfo *, xfont->max_subfonts);
 
   xfont->metrics_by_lang = NULL;
 
@@ -962,7 +969,7 @@ pango_x_font_get_metrics (PangoFont        *font,
     {
       PangoFontMetrics *metrics;
 
-      info = g_new0 (PangoXMetricsInfo, 1);
+      info = g_slice_new0 (PangoXMetricsInfo);
 
       xfont->metrics_by_lang = g_slist_prepend (xfont->metrics_by_lang, info);
 
@@ -1060,7 +1067,7 @@ pango_x_insert_subfont (PangoFont *font, const char *xlfd)
   PangoXFont *xfont = (PangoXFont *)font;
   PangoXSubfontInfo *info;
 
-  info = g_new (PangoXSubfontInfo, 1);
+  info = g_slice_new (PangoXSubfontInfo);
 
   info->xlfd = g_strdup (xlfd);
   info->font_struct = NULL;
@@ -1270,7 +1277,7 @@ static void
 free_metrics_info (PangoXMetricsInfo *info)
 {
   pango_font_metrics_unref (info->metrics);
-  g_free (info);
+  g_slice_free (PangoXMetricsInfo, info);
 }
 
 static void
@@ -1290,7 +1297,7 @@ pango_x_font_finalize (GObject *object)
       if (info->font_struct)
 	pango_x_font_cache_unload (cache, info->font_struct);
 
-      g_free (info);
+      g_slice_free (PangoXSubfontInfo, info);
     }
 
   g_free (xfont->subfonts);
