@@ -1,3 +1,10 @@
+2007-09-07  Behdad Esfahbod  <behdad@gnome.org>
+
+	Patch from Chris Wilson
+
+	* pango/pangoft2.c (load_fallback_face): Use g_error() instead
+	of g_warning()+exit().
+
 2007-09-02  Mathias Hasselmann  <mathias.hasselmann@gmx.de>
 
 	Bug 472891 – Bad consistency check in pango_get_log_attrs

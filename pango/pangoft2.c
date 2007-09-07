@@ -118,8 +118,7 @@ load_fallback_face (PangoFT2Font *ft2font,
     {
     bail1:
       name = pango_font_description_to_string (fcfont->description);
-      g_warning ("Unable to open font file %s for font %s, exiting\n", filename2, name);
-      exit (1);
+      g_error ("Unable to open font file %s for font %s, exiting\n", filename2, name);
     }
   else
     {
