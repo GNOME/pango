@@ -60,7 +60,7 @@ free_cache_entry (char            *xlfd,
   g_free (entry->xlfd);
   XFreeFont (cache->display, entry->fs);
 
-  g_free (entry);
+  g_slice_free (CacheEntry, entry);
 }
 
 /**
@@ -81,6 +81,8 @@ pango_x_font_cache_free (PangoXFontCache *cache)
   g_hash_table_destroy (cache->back);
 
   g_list_free (cache->mru);
+
+  g_slice_free (PangoXFontCache, cache);
 }
 
 /**
@@ -99,7 +101,7 @@ pango_x_font_cache_new (Display *display)
 
   g_return_val_if_fail (display != NULL, NULL);
 
-  cache = g_new (PangoXFontCache, 1);
+  cache = g_slice_new (PangoXFontCache);
 
   cache->display = display;
 
@@ -161,7 +163,7 @@ pango_x_font_cache_load (PangoXFontCache *cache,
       if (!fs)
 	return NULL;
 
-      entry = g_new (CacheEntry, 1);
+      entry = g_slice_new (CacheEntry);
 
       entry->xlfd = g_strdup (xlfd);
       entry->fs = fs;

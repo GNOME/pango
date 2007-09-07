@@ -1,5 +1,18 @@
 2007-09-07  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango/pangox-fontcache.c (free_cache_entry),
+	(pango_x_font_cache_free), (pango_x_font_cache_new),
+	(pango_x_font_cache_load):
+	* pango/pangox-fontmap.c (pango_x_font_map_finalize),
+	(pango_x_insert_font):
+	* pango/pangox.c (free_context_info), (pango_x_get_context),
+	(pango_x_font_init), (pango_x_font_get_metrics),
+	(pango_x_insert_subfont), (free_metrics_info),
+	(pango_x_font_finalize):
+	Switch some g_new (*, 1) to g_slice_new ()... I know...
+
+2007-09-07  Behdad Esfahbod  <behdad@gnome.org>
+
 	Patch from Chris Wilson
 
 	* pango/pangoft2.c (load_fallback_face): Use g_error() instead

@@ -374,7 +374,12 @@ pango_x_font_map_finalize (GObject *object)
 
   pango_x_font_cache_free (xfontmap->font_cache);
 
-  /* FIXME: Lots more here */
+  /* FIXME: None of these hashtables free their key/values
+  g_hash_table_destroy (xfontmap->families);
+  g_hash_table_destroy (xfontmap->size_infos);
+  g_hash_table_destroy (xfontmap->to_atom_cache);
+  g_hash_table_destroy (xfontmap->from_atom_cache);
+  */
 
   fontmaps = g_list_remove (fontmaps, xfontmap);
 
@@ -1100,7 +1105,7 @@ pango_x_insert_font (PangoXFontMap *xfontmap,
   size_info = g_hash_table_lookup (xfontmap->size_infos, identifier);
   if (!size_info)
     {
-      size_info = g_new (PangoXSizeInfo, 1);
+      size_info = g_slice_new (PangoXSizeInfo);
       size_info->identifier = identifier;
       size_info->xlfds = NULL;
 

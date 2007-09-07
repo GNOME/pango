@@ -697,7 +697,7 @@ pango_ot_info_list_languages (PangoOTInfo      *info,
 
   if (script_index == PANGO_OT_NO_SCRIPT)
     {
-      result = g_new (PangoOTTag, 1);
+      result = g_new (PangoOTTag, 0+1);
       result[0] = 0;
       return result;
     }
@@ -754,7 +754,7 @@ pango_ot_info_list_features  (PangoOTInfo      *info,
 
   if (script_index == PANGO_OT_NO_SCRIPT)
     {
-      result = g_new (PangoOTTag, 1);
+      result = g_new (PangoOTTag, 0+1);
       result[0] = 0;
       return result;
     }
