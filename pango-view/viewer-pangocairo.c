@@ -47,7 +47,7 @@ pangocairo_view_create (const PangoViewer *klass)
   instance->iface = get_default_cairo_viewer_iface ();
   instance->backend = instance->iface->backend_class->create (instance->iface->backend_class);
 
-  instance->fontmap = pango_cairo_font_map_get_default ();
+  instance->fontmap = pango_cairo_font_map_new ();
   pango_cairo_font_map_set_resolution (PANGO_CAIRO_FONT_MAP (instance->fontmap), opt_dpi);
 
   instance->font_options = cairo_font_options_create ();

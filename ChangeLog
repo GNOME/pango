@@ -1,5 +1,14 @@
 2007-09-07  Behdad Esfahbod  <behdad@gnome.org>
 
+	Bug 474708 – pangocairo leaks memory
+
+	* pango-view/viewer-pangocairo.c (pangocairo_view_create):
+	Use pango_cairo_font_map_new() instead of
+	pango_cairo_font_map_get_default(), so the font map is freed at the
+	end so we can use valgrind to detect leaks without noise.
+
+2007-09-07  Behdad Esfahbod  <behdad@gnome.org>
+
 	Part of Bug 474708 – pangocairo leaks memory
 
 	* pango/pangocairo-font.c
