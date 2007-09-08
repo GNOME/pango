@@ -1,5 +1,25 @@
 2007-09-07  Behdad Esfahbod  <behdad@gnome.org>
 
+	Part of Bug 474708 – pangocairo leaks memory
+
+	* pango/pangocairo-font.c
+	(_pango_cairo_font_private_get_hex_box_info):
+	Fix a couple leaks.
+
+	* pango/pangocairo-atsui.h:
+	* pango/pangocairo-atsuifontmap.c
+	(pango_cairo_atsui_font_map_finalize):
+	* pango/pangocairo-fc.h:
+	* pango/pangocairo-fcfontmap.c (pango_cairo_fc_font_map_finalize):
+	* pango/pangocairo-win32.h:
+	* pango/pangocairo-win32fontmap.c
+	(pango_cairo_win32_font_map_finalize):
+	Remove unused leftover renderer variable.
+
+	* pango/pangofc-fontmap.c (pango_fc_font_map_finalize): Fix thinko.
+
+2007-09-07  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/pangox-fontcache.c (free_cache_entry),
 	(pango_x_font_cache_free), (pango_x_font_cache_new),
 	(pango_x_font_cache_load):

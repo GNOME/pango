@@ -72,9 +72,6 @@ pango_cairo_win32_font_map_finalize (GObject *object)
 {
   PangoCairoWin32FontMap *cwfontmap = PANGO_CAIRO_WIN32_FONT_MAP (object);
 
-  if (cwfontmap->renderer)
-    g_object_unref (cwfontmap->renderer);
-
   G_OBJECT_CLASS (pango_cairo_win32_font_map_parent_class)->finalize (object);
 }
 

@@ -38,8 +38,6 @@ struct _PangoCairoATSUIFontMap
 {
   PangoATSUIFontMap parent_instance;
 
-  PangoRenderer *renderer;
-
   gdouble dpi;
 };
 

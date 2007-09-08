@@ -84,9 +84,6 @@ pango_cairo_atsui_font_map_finalize (GObject *object)
 {
   PangoCairoATSUIFontMap *cafontmap = PANGO_CAIRO_ATSUI_FONT_MAP (object);
 
-  if (cafontmap->renderer)
-    g_object_unref (cafontmap->renderer);
-
   G_OBJECT_CLASS (pango_cairo_atsui_font_map_parent_class)->finalize (object);
 }
 

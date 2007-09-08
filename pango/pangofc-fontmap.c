@@ -554,7 +554,7 @@ font_hash_key_for_context (PangoFcFontMap *fcfontmap,
     key->context_key = NULL;
 }
 
-/* Add a mapping from xfont->font_pattern to xfont */
+/* Add a mapping from fcfont->font_pattern to fcfont */
 static void
 pango_fc_font_map_add (PangoFcFontMap *fcfontmap,
 		       PangoContext   *context,

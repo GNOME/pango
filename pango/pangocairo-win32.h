@@ -39,8 +39,6 @@ struct _PangoCairoWin32FontMap
   PangoWin32FontMap parent_instance;
 
   double dpi;
-
-  PangoRenderer *renderer;
 };
 
 GType pango_cairo_win32_font_map_get_type (void) G_GNUC_CONST;

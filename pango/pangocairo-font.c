@@ -404,6 +404,7 @@ _pango_cairo_font_private_get_hex_box_info (PangoCairoFontPrivate *cf_priv)
     g_object_unref (context);
   }
 
+  pango_font_description_free (desc);
   cairo_font_options_destroy (font_options);
 
 
@@ -469,6 +470,7 @@ _pango_cairo_font_private_get_hex_box_info (PangoCairoFontPrivate *cf_priv)
        hbi->box_descent = HINT_Y (hbi->box_descent);
     }
 
+  cf_priv->hbi = hbi;
   return hbi;
 }
 

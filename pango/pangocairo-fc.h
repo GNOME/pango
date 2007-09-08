@@ -40,7 +40,6 @@ struct _PangoCairoFcFontMap
   double dpi;
 
   FT_Library library;
-  PangoRenderer *renderer;
 };
 
 GType pango_cairo_fc_font_map_get_type (void) G_GNUC_CONST;
