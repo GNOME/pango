@@ -1,3 +1,11 @@
+2007-09-17  Behdad Esfahbod  <behdad@gnome.org>
+
+	* === Released 1.18.2 ===
+
+	* configure.in: Version 1.18.2
+
+	* NEWS: Updated.
+
 2007-09-07  Behdad Esfahbod  <behdad@gnome.org>
 
 	Bug 474708 – pangocairo leaks memory

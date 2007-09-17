@@ -1,3 +1,15 @@
+Overview of changes between 1.18.1 and 1.18.2
+==============================================
+- Require libthai >= 0.1.9 for enabling thai-lang module
+- Misc bug fixes
+- Bugs fixed in this release:
+	Bug 474708 – pangocairo leaks memory
+	Bug 472891 – Bad consistency check in pango_get_log_attrs
+		Patch from Mathias Hasselmann
+	Bug 302952 – The placement of a diacritic marks for an arabic ligature
+		is not correct
+	Bug 410152 – testboundaries test fails
+
 Overview of changes between 1.18.0 and 1.18.1
 ==============================================
 - Misc bug fixes, including fix for an infinite-loop bug.
