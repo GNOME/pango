@@ -592,7 +592,7 @@ pango_fc_font_map_lookup (PangoFcFontMap *fcfontmap,
   return g_hash_table_lookup (priv->font_hash, &key);
 }
 
-/* Remove mapping from xfont->font_pattern to xfont */
+/* Remove mapping from fcfont->font_pattern to fcfont */
 void
 _pango_fc_font_map_remove (PangoFcFontMap *fcfontmap,
 			   PangoFcFont    *fcfont)
