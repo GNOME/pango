@@ -1,5 +1,9 @@
 2007-10-11  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango/opentype/*: Allocate buffer->positions lazily.
+
+2007-10-11  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 485621 – Get rid of freetype memory allocator in harfbuzz
 
 	* pango/opentype/*: Remove all occurences of FT_Memory.  Use
