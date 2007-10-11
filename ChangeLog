@@ -1,5 +1,12 @@
 2007-10-11  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango/opentype/*: Mark internal symbols as HB_INTERNAL and
+	define that to static in harfbuzz.c.
+
+	* pango/opentype/harfbuzz-buffer-internal.h: New file.
+
+2007-10-11  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/opentype/ftglue.[ch]: Remove FTGLUE_API/APIDEF cruft.
 
 2007-10-11  Behdad Esfahbod  <behdad@gnome.org>
