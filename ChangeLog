@@ -1,5 +1,9 @@
 2007-10-11  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango/opentype/harfbuzz-buffer.c: Move some code around.
+
+2007-10-11  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/opentype/harfbuzz-buffer.[ch]: Rename buffer->inplace to
 	buffer->separate_out with the inverted meaning, such that buffer
 	is initialization is memset(0).
