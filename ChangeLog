@@ -1,5 +1,17 @@
 2007-10-11  Behdad Esfahbod  <behdad@gnome.org>
 
+	Bug 485566 – Cache one OpenType Buffer
+
+	* pango/pango-ot-buffer.c (acquire_buffer), (release_buffer),
+	(pango_ot_buffer_new), (pango_ot_buffer_destroy):
+	* pango/pango-ot-private.h:
+	Cache one HB_Buffer that is acquired using a lock.  A new one is
+	created if the shared buffer is locked.  The shared buffer is
+	cleared when released.  May want to make it free shared buffer if
+	buffer->allocated is too large.  Not sure.
+
+2007-10-11  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/opentype/*: Mark internal symbols as HB_INTERNAL and
 	define that to static in harfbuzz.c.
 

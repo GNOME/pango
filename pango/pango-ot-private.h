@@ -86,6 +86,7 @@ struct _PangoOTRulesetClass
 struct _PangoOTBuffer
 {
   HB_Buffer buffer;
+  gboolean should_free_hb_buffer;
   PangoFcFont *font;
   guint rtl : 1;
   guint zero_width_marks : 1;

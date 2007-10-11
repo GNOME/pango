@@ -24,6 +24,44 @@
 #include "pango-ot-private.h"
 #include "pangofc-private.h"
 
+/* cache a single HB_Buffer */
+static HB_Buffer cached_buffer = NULL;
+G_LOCK_DEFINE_STATIC (cached_buffer);
+
+static HB_Buffer
+acquire_buffer (gboolean *free_buffer)
+{
+  HB_Buffer buffer;
+
+  if (G_LIKELY (G_TRYLOCK (cached_buffer)))
+    {
+      if (G_UNLIKELY (!cached_buffer))
+	hb_buffer_new (&cached_buffer);
+
+      buffer = cached_buffer;
+      *free_buffer = FALSE;
+    }
+  else
+    {
+      hb_buffer_new (&buffer);
+      *free_buffer = TRUE;
+    }
+
+  return buffer;
+}
+
+static void
+release_buffer (HB_Buffer buffer, gboolean free_buffer)
+{
+  if (G_LIKELY (!free_buffer))
+    {
+      hb_buffer_clear (buffer);
+      G_UNLOCK (cached_buffer);
+    }
+  else
+    hb_buffer_free (buffer);
+}
+
 /**
  * pango_ot_buffer_new
  * @font: a #PangoFcFont
@@ -40,9 +78,7 @@ pango_ot_buffer_new (PangoFcFont *font)
 {
   PangoOTBuffer *buffer = g_slice_new (PangoOTBuffer);
 
-  if (hb_buffer_new (&buffer->buffer) != HB_Err_Ok)
-    g_warning ("Allocation of HB_Buffer failed"); /* this doesn't happen */
-
+  buffer->buffer = acquire_buffer (&buffer->should_free_hb_buffer);
   buffer->font = g_object_ref (font);
   buffer->applied_gpos = FALSE;
   buffer->rtl = FALSE;
@@ -62,7 +98,7 @@ pango_ot_buffer_new (PangoFcFont *font)
 void
 pango_ot_buffer_destroy (PangoOTBuffer *buffer)
 {
-  hb_buffer_free (buffer->buffer);
+  release_buffer (buffer->buffer, buffer->should_free_hb_buffer);
   g_object_unref (buffer->font);
   g_slice_free (PangoOTBuffer, buffer);
 }
