@@ -1,5 +1,9 @@
 2007-10-11  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango/opentype/harfbuzz-buffer.c: Some more cleanup.
+
+2007-10-11  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/opentype/harfbuzz-buffer.c: Move some code around.
 
 2007-10-11  Behdad Esfahbod  <behdad@gnome.org>
