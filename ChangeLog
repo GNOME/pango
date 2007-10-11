@@ -1,5 +1,9 @@
 2007-10-11  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango/opentype/harfbuzz.c: Same here.
+
+2007-10-11  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/opentype/Makefile.am: Don't include harfbuzz-dump.[ch] in
 	libharfbuzz.a.  Those are just used by the harfbuzz-dump tool.
 
