@@ -202,8 +202,8 @@ set_unicode_charmap (FT_Face face)
   for (charmap = 0; charmap < face->num_charmaps; charmap++)
     if (face->charmaps[charmap]->encoding == ft_encoding_unicode)
       {
-	FT_Error error = FT_Set_Charmap(face, face->charmaps[charmap]);
-	return error == FT_Err_Ok;
+	HB_Error error = FT_Set_Charmap(face, face->charmaps[charmap]);
+	return error == HB_Err_Ok;
       }
 
   return FALSE;
@@ -289,7 +289,7 @@ pango_ot_info_get_gdef (PangoOTInfo *info)
 
   if (!(info->loaded & INFO_LOADED_GDEF))
     {
-      FT_Error error;
+      HB_Error error;
 
       info->loaded |= INFO_LOADED_GDEF;
 
@@ -297,7 +297,7 @@ pango_ot_info_get_gdef (PangoOTInfo *info)
 	{
 	  error = HB_Load_GDEF_Table (info->face, &info->gdef);
 
-	  if (error && error != FT_Err_Table_Missing)
+	  if (error && error != HB_Err_Table_Missing)
 	    g_warning ("Error loading GDEF table %d", error);
 
 	  if (!info->gdef)
@@ -318,7 +318,7 @@ pango_ot_info_get_gsub (PangoOTInfo *info)
 
   if (!(info->loaded & INFO_LOADED_GSUB))
     {
-      FT_Error error;
+      HB_Error error;
       HB_GDEF gdef = pango_ot_info_get_gdef (info);
 
       info->loaded |= INFO_LOADED_GSUB;
@@ -327,7 +327,7 @@ pango_ot_info_get_gsub (PangoOTInfo *info)
 	{
 	  error = HB_Load_GSUB_Table (info->face, &info->gsub, gdef);
 
-	  if (error && error != FT_Err_Table_Missing)
+	  if (error && error != HB_Err_Table_Missing)
 	    g_warning ("Error loading GSUB table %d", error);
 	}
     }
@@ -342,7 +342,7 @@ pango_ot_info_get_gpos (PangoOTInfo *info)
 
   if (!(info->loaded & INFO_LOADED_GPOS))
     {
-      FT_Error error;
+      HB_Error error;
       HB_GDEF gdef = pango_ot_info_get_gdef (info);
 
       info->loaded |= INFO_LOADED_GPOS;
@@ -351,7 +351,7 @@ pango_ot_info_get_gpos (PangoOTInfo *info)
 	{
 	  error = HB_Load_GPOS_Table (info->face, &info->gpos, gdef);
 
-	  if (error && error != FT_Err_Table_Missing)
+	  if (error && error != HB_Err_Table_Missing)
 	    g_warning ("Error loading GPOS table %d", error);
 	}
     }

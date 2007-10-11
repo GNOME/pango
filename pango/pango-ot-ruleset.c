@@ -564,7 +564,7 @@ pango_ot_ruleset_position (const PangoOTRuleset *ruleset,
 
   if (HB_GPOS_Apply_String (ruleset->info->face, gpos, 0, buffer->buffer,
 			    FALSE /* enable device-dependant values */,
-			    buffer->rtl) == FT_Err_Ok)
+			    buffer->rtl) == HB_Err_Ok)
     buffer->applied_gpos = TRUE;
 }
 

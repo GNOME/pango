@@ -1,3 +1,20 @@
+2007-10-10  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 485559 – Boston Summit HarfBuzz optimizations
+
+	* pango/opentype/*: HarfBuzz hacking to:
+
+	  - Rename last remaining FT_Err stuff to HB_Err.
+
+	  - Fix a couple invalid table paths to be permissive so
+	    fonts work better.  Particularly GDEF table for Nafees
+	    Nastaliq is loaded and works great now.
+
+	  - Optimize harfbuzz buffer to not copy/swap for simple
+	  one-to-one and "copy" GSUB operations.
+
+	* pango/pango-ot*: Update to FT_Err to HB_Err renaming.
+
 2007-09-21  Behdad Esfahbod  <behdad@gnome.org>
 
 	* pango/pangofc-fontmap.c: Fix typo in comments.

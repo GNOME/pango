@@ -47,7 +47,7 @@ pango_ot_buffer_new (PangoFcFont *font)
   PangoOTBuffer *buffer = g_slice_new (PangoOTBuffer);
   FT_Face face = pango_fc_font_lock_face (font);
 
-  if (hb_buffer_new (face->memory, &buffer->buffer) != FT_Err_Ok)
+  if (hb_buffer_new (face->memory, &buffer->buffer) != HB_Err_Ok)
     g_warning ("Allocation of HB_Buffer failed"); /* this doesn't happen */
 
   buffer->font = g_object_ref (font);
@@ -339,7 +339,7 @@ pango_ot_buffer_output (const PangoOTBuffer *buffer,
 
 	  if (buffer->zero_width_marks &&
 	      gdef &&
-	      HB_GDEF_Get_Glyph_Property (gdef, glyphs->glyphs[i].glyph, &property) == FT_Err_Ok &&
+	      HB_GDEF_Get_Glyph_Property (gdef, glyphs->glyphs[i].glyph, &property) == HB_Err_Ok &&
 	      (property == HB_GDEF_MARK || (property & HB_LOOKUP_FLAG_IGNORE_SPECIAL_MARKS) != 0))
 	    {
 	      glyphs->glyphs[i].geometry.width = 0;
