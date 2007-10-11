@@ -1,5 +1,10 @@
 2007-10-11  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango/opentype/Makefile.am: Build harfbuzz.c instead of individual
+	source files, to let compiler go wild with optimizations!
+
+2007-10-11  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/opentype/harfbuzz.c: Same here.
 
 2007-10-11  Behdad Esfahbod  <behdad@gnome.org>
