@@ -38,24 +38,15 @@
 PangoOTBuffer *
 pango_ot_buffer_new (PangoFcFont *font)
 {
-  /* We lock the font here immediately for the silly reason
-   * of getting the FT_Memory; otherwise we'd have to
-   * add a new operation to PangoFcFontmap; callers will
-   * probably already have the font locked, however,
-   * so there is little performance penalty.
-   */
   PangoOTBuffer *buffer = g_slice_new (PangoOTBuffer);
-  FT_Face face = pango_fc_font_lock_face (font);
 
-  if (hb_buffer_new (face->memory, &buffer->buffer) != HB_Err_Ok)
+  if (hb_buffer_new (&buffer->buffer) != HB_Err_Ok)
     g_warning ("Allocation of HB_Buffer failed"); /* this doesn't happen */
 
   buffer->font = g_object_ref (font);
   buffer->applied_gpos = FALSE;
   buffer->rtl = FALSE;
   buffer->zero_width_marks = FALSE;
-
-  pango_fc_font_unlock_face (font);
 
   return buffer;
 }

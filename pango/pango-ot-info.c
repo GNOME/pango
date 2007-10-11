@@ -301,7 +301,7 @@ pango_ot_info_get_gdef (PangoOTInfo *info)
 	    g_warning ("Error loading GDEF table %d", error);
 
 	  if (!info->gdef)
-	    error = HB_New_GDEF_Table (info->face, &info->gdef);
+	    error = HB_New_GDEF_Table (&info->gdef);
 
 	  if (info->gdef && !info->gdef->GlyphClassDef.loaded)
 	    synthesize_class_def (info);
