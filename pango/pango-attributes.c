@@ -1166,7 +1166,7 @@ pango_attr_list_insert_internal (PangoAttrList  *list,
   else if (((PangoAttribute *)list->attributes_tail->data)->start_index < start_index ||
 	   (!before && ((PangoAttribute *)list->attributes_tail->data)->start_index == start_index))
     {
-      g_slist_append (list->attributes_tail, attr);
+      list->attributes_tail = g_slist_append (list->attributes_tail, attr);
       list->attributes_tail = list->attributes_tail->next;
       g_assert (list->attributes_tail);
     }

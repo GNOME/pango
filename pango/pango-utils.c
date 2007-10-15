@@ -512,7 +512,6 @@ pango_scan_string (const char **pos, GString *out)
 gboolean
 pango_scan_int (const char **pos, int *out)
 {
-  unsigned int i = 0;
   char *end;
   long temp;
 

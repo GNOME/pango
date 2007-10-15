@@ -876,8 +876,6 @@ span_parse_boolean (const char *attr_name,
 		    int line_number,
 		    GError **error)
 {
-  const char *end = attr_val;
-
   if (strcmp (attr_val, "true") == 0 ||
       strcmp (attr_val, "yes") == 0 ||
       strcmp (attr_val, "t") == 0 ||

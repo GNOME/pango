@@ -3201,7 +3201,6 @@ process_item (PangoLayout     *layout,
 	  else
 	    {
 	      PangoItem *new_item;
-	      int new_break_width;
 
 	      length = g_utf8_offset_to_pointer (layout->text + item->offset, break_num_chars) - (layout->text + item->offset);
 
@@ -4733,7 +4732,6 @@ static void
 justify_clusters (PangoLayoutLine *line,
 		  ParaBreakState  *state)
 {
-  int offset;
   int total_remaining_width, total_gaps = 0;
   int added_so_far, gaps_so_far;
   gboolean is_hinted;
@@ -4759,8 +4757,6 @@ justify_clusters (PangoLayoutLine *line,
 	{
 	  PangoLayoutRun *run = run_iter->data;
 	  PangoGlyphString *glyphs = run->glyphs;
-	  PangoGlyphItemIter cluster_iter;
-	  gboolean have_cluster;
 	  gboolean is_first_gap = TRUE;
 
 	  int i;

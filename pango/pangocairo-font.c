@@ -189,7 +189,7 @@ gboolean
 _pango_cairo_font_install (PangoFont *font,
 			   cairo_t   *cr)
 {
-  cairo_scaled_font_t *scaled_font = pango_cairo_font_get_scaled_font (font);
+  cairo_scaled_font_t *scaled_font = pango_cairo_font_get_scaled_font ((PangoCairoFont *)font);
 
   if (G_UNLIKELY (scaled_font == NULL || cairo_scaled_font_status (scaled_font) != CAIRO_STATUS_SUCCESS))
     return FALSE;

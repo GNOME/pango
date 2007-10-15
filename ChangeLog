@@ -1,3 +1,22 @@
+2007-10-15  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 481537 – compiler warning fixes
+	Patch from Kjartan Maraas
+
+	* pango/break.c (pango_get_log_attrs):
+	* pango/pango-attributes.c (pango_attr_list_insert_internal):
+	* pango/pango-layout.c (process_item), (justify_clusters):
+	* pango/pango-markup.c (span_parse_boolean):
+	* pango/pango-ot-ruleset.c (pango_ot_ruleset_finalize),
+	(pango_ot_ruleset_new):
+	* pango/pango-utils.c (pango_scan_int):
+	* pango/pangocairo-font.c (_pango_cairo_font_install):
+	* pango/pangofc-font.c (pango_fc_font_create_metrics_for_context):
+	* pango/pangoft2.c (load_fallback_face):
+	* pango/pangox-fontmap.c (pango_x_get_coverage_win):
+	* pango/pangox.c (itemize_string_foreach):
+	Fix warnings.
+
 2007-10-11  Behdad Esfahbod  <behdad@gnome.org>
 
 	Bug 485566 – Cache one OpenType Buffer

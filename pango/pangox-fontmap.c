@@ -645,7 +645,7 @@ pango_x_get_coverage_win (PangoXFontMap *xfontmap)
 	    XCreateWindow (persistant_display,
 			   DefaultRootWindow (persistant_display),
 			   -100, -100, 10, 10, 0, 0,
-			   InputOnly, CopyFromParent,
+			   InputOnly, (Visual *)CopyFromParent,
 			   CWOverrideRedirect, &attr);
 
 	  XChangeProperty (persistant_display,

@@ -441,7 +441,7 @@ pango_fc_font_create_metrics_for_context (PangoFcFont   *fcfont,
   PangoRectangle extents;
   PangoLanguage *language = pango_context_get_language (context);
   const char *sample_str = pango_language_get_sample_string (language);
-  PangoFontDescription *desc = pango_font_describe_with_absolute_size (fcfont);
+  PangoFontDescription *desc = pango_font_describe_with_absolute_size (PANGO_FONT (fcfont));
 
   metrics = pango_font_metrics_new ();
 

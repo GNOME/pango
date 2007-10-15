@@ -1682,7 +1682,7 @@ pango_get_log_attrs (const char    *text,
   PangoEngineLang *range_engine;
   static guint engine_type_id = 0;
   static guint render_type_id = 0;
-  PangoAnalysis analysis = { 0 };
+  PangoAnalysis analysis = { NULL };
   PangoScriptIter *iter;
 
   g_return_if_fail (length == 0 || text != NULL);

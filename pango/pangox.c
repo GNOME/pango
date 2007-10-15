@@ -761,7 +761,7 @@ itemize_string_foreach (PangoFont     *font,
 	  (finished ||
 	   (shaper != last_shaper || last_level != embedding_levels[i])))
 	{
-	  PangoAnalysis analysis = {0};
+	  PangoAnalysis analysis = { NULL };
 	  int j;
 
 	  analysis.shape_engine = last_shaper;

@@ -93,7 +93,7 @@ pango_ot_ruleset_finalize (GObject *object)
 
   g_array_free (ruleset->rules, TRUE);
   if (ruleset->info)
-    g_object_remove_weak_pointer (ruleset->info, &ruleset->info);
+    g_object_remove_weak_pointer (G_OBJECT (ruleset->info), &ruleset->info);
 
   parent_class->finalize (object);
 }
@@ -175,7 +175,7 @@ pango_ot_ruleset_new (PangoOTInfo *info)
   ruleset = g_object_new (PANGO_TYPE_OT_RULESET, NULL);
 
   ruleset->info = info;
-  g_object_add_weak_pointer (ruleset->info, &ruleset->info);
+  g_object_add_weak_pointer (G_OBJECT (ruleset->info), &ruleset->info);
 
   return ruleset;
 }
