@@ -786,6 +786,7 @@ pango_win32_font_description_from_logfont (const LOGFONT *lfp)
 
   description = pango_font_description_new ();
   pango_font_description_set_family (description, family);
+  g_free(family);
   pango_font_description_set_style (description, style);
   pango_font_description_set_weight (description, weight);
   pango_font_description_set_stretch (description, stretch);
@@ -981,6 +982,7 @@ pango_win32_font_description_from_logfontw (const LOGFONTW *lfp)
 
   description = pango_font_description_new ();
   pango_font_description_set_family (description, family);
+  g_free(family);
   pango_font_description_set_style (description, style);
   pango_font_description_set_weight (description, weight);
   pango_font_description_set_stretch (description, stretch);
