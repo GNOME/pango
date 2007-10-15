@@ -114,6 +114,11 @@ static const PangoOTFeatureMap vertical_gsub_features[] =
   {"vert", PANGO_OT_ALL_GLYPHS}
 };
 
+static const PangoOTFeatureMap vertical_gpos_features[] =
+{
+  {"vkrn", PANGO_OT_ALL_GLYPHS}
+};
+
 static void
 basic_engine_shape (PangoEngineShape *engine,
 		    PangoFont        *font,
@@ -186,8 +191,8 @@ basic_engine_shape (PangoEngineShape *engine,
     {
       desc.n_static_gsub_features = G_N_ELEMENTS (vertical_gsub_features);
       desc.static_gsub_features = vertical_gsub_features;
-      desc.n_static_gpos_features = 0;
-      desc.static_gpos_features = NULL;
+      desc.n_static_gpos_features = G_N_ELEMENTS (vertical_gpos_features);
+      desc.static_gpos_features = vertical_gpos_features;
     }
   else
     {

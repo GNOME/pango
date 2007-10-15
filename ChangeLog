@@ -1,5 +1,13 @@
 2007-10-15  Behdad Esfahbod  <behdad@gnome.org>
 
+	Bug 486932 – Apply vkrn GPOS feature in vertical writing
+
+	* modules/basic/basic-fc.c (basic_engine_shape): Apply vkrn
+	GPOS feature in vertical writing mode.  Previously we had
+	no GPOS feature for vertical mode.
+
+2007-10-15  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 481537 – compiler warning fixes
 	Patch from Kjartan Maraas
 
