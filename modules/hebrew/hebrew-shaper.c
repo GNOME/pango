@@ -5,7 +5,7 @@
  * Author: Chookij Vanatham <Chookij.Vanatham@Eng.Sun.COM>
  *
  * Hebrew points positioning improvements 2001
- * Author: Dov Grobgeld <dov@imagic.weizmann.ac.il>
+ * Author: Dov Grobgeld <dov.grobgeld@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
