@@ -20,6 +20,54 @@ two_points_distance (cairo_path_data_t *a, cairo_path_data_t *b)
   return sqrt (dx * dx + dy * dy);
 }
 
+static double
+curve_length (double x0, double y0,
+	      double x1, double y1,
+	      double x2, double y2,
+	      double x3, double y3)
+{
+  cairo_surface_t *surface;
+  cairo_t *cr;
+  cairo_path_t *path;
+  cairo_path_data_t *data, current_point;
+  int i;
+  double length;
+
+  surface = cairo_image_surface_create (CAIRO_FORMAT_A8, 0, 0);
+  cr = cairo_create (surface);
+  cairo_surface_destroy (surface);
+
+  cairo_move_to (cr, x0, y0);
+  cairo_curve_to (cr, x1, y1, x2, y2, x3, y3);
+
+  length = 0;
+  path = cairo_copy_path_flat (cr);
+  for (i=0; i < path->num_data; i += path->data[i].header.length) {
+    data = &path->data[i];
+    switch (data->header.type) {
+
+    case CAIRO_PATH_MOVE_TO:
+	current_point = data[1];
+	break;
+
+    case CAIRO_PATH_LINE_TO:
+	length += two_points_distance (&current_point, &data[1]);
+	current_point = data[1];
+	break;
+
+    default:
+    case CAIRO_PATH_CURVE_TO:
+    case CAIRO_PATH_CLOSE_PATH:
+	g_assert_not_reached ();
+    }
+  }
+  cairo_path_destroy (path);
+
+  cairo_destroy (cr);
+
+  return length;
+}
+
 typedef double parametrization_t;
 
 static parametrization_t *
@@ -43,20 +91,22 @@ parametrize_path (cairo_path_t *path)
 	current_point = data[1];
 	break;
     case CAIRO_PATH_CURVE_TO:
-	/*
+	/* naive curve-length, treating bezier as three line segments:
+	parametrization[i] = two_points_distance (&current_point, &data[1])
+			   + two_points_distance (&data[1], &data[2])
+			   + two_points_distance (&data[2], &data[3]);
+	*/
 	parametrization[i] = curve_length (current_point.point.x, current_point.point.x,
 					   data[1].point.x, data[1].point.y,
 					   data[2].point.x, data[2].point.y,
 					   data[3].point.x, data[3].point.y);
-					   */
-	parametrization[i] = two_points_distance (&current_point, &data[1]);
-	parametrization[i] += two_points_distance (&data[1], &data[2]);
-	parametrization[i] += two_points_distance (&data[2], &data[3]);
 
 	current_point = data[3];
 	break;
     case CAIRO_PATH_CLOSE_PATH:
 	break;
+    default:
+	g_assert_not_reached ();
     }
   }
 
@@ -96,6 +146,8 @@ _fancy_cairo_stroke (cairo_t *cr, cairo_bool_t preserve)
 	break;
     case CAIRO_PATH_CLOSE_PATH:
 	break;
+    default:
+	g_assert_not_reached ();
     }
   }
   cairo_stroke (cr);
@@ -125,6 +177,8 @@ _fancy_cairo_stroke (cairo_t *cr, cairo_bool_t preserve)
     case CAIRO_PATH_CLOSE_PATH:
 	cairo_rel_line_to (cr, 0, 0);
 	break;
+    default:
+	g_assert_not_reached ();
     }
   }
   cairo_rel_line_to (cr, 0, 0);
@@ -148,6 +202,8 @@ _fancy_cairo_stroke (cairo_t *cr, cairo_bool_t preserve)
     case CAIRO_PATH_CLOSE_PATH:
 	cairo_close_path (cr);
 	break;
+    default:
+	g_assert_not_reached ();
     }
   }
   cairo_stroke (cr);
@@ -192,6 +248,8 @@ transform_path (cairo_path_t *path, transform_point_func_t f, void *closure)
       break;
     case CAIRO_PATH_CLOSE_PATH:
       break;
+    default:
+	g_assert_not_reached ();
     }
   }
 }
@@ -229,6 +287,8 @@ point_on_path (parametrized_path_t *param,
 	break;
     case CAIRO_PATH_CLOSE_PATH:
 	break;
+    default:
+	g_assert_not_reached ();
     }
   }
   data = &path->data[i];
@@ -282,6 +342,8 @@ point_on_path (parametrized_path_t *param,
       break;
   case CAIRO_PATH_CLOSE_PATH:
       break;
+  default:
+      g_assert_not_reached ();
   }
 }
 
@@ -357,10 +419,10 @@ draw_twisted (cairo_t *cr,
   cairo_save (cr);
 
   /* Decrease tolerance a bit, since it's going to be magnified */
-  cairo_set_tolerance (cr, 0.05);
+  cairo_set_tolerance (cr, 0.1);
 
   path = cairo_copy_path_flat (cr);
-  /*path = cairo_copy_path (cr);*/
+/*path = cairo_copy_path (cr);*/
 
   cairo_new_path (cr);
 

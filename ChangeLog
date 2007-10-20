@@ -1,3 +1,9 @@
+2007-10-20  Behdad Esfahbod  <behdad@gnome.org>
+
+	* examples/cairotwisted.c (curve_length): Implement bezier curve
+	length function that flattens the curve and sum the length of straight
+	lines approximating it.
+
 2007-10-15  Behdad Esfahbod  <behdad@gnome.org>
 
 	Bug 483600 – Leak of font family name in
