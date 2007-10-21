@@ -1,3 +1,13 @@
+2007-10-21  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 488840 – harfbuzz: protect against ligid overflow
+
+	* pango/opentype/harfbuzz-buffer.c (_hb_buffer_allocate_ligid):
+	Never return zero, even in case of overflow.
+
+	* pango/opentype/harfbuzz-impl.h: Define dummy HB_LIKELY() and
+	HB_UNLIKELY(), to be filled later.
+
 2007-10-20  Behdad Esfahbod  <behdad@gnome.org>
 
 	* examples/cairotwisted.c (curve_length): Implement bezier curve
