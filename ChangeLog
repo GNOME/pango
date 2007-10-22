@@ -1,5 +1,10 @@
 2007-10-21  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango/pango-layout.h: Remove obsolete comment. PangoLayoutRun is
+	not deprecated.  It's just same type as PangoGlyphItem.
+
+2007-10-21  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 488840 – harfbuzz: protect against ligid overflow
 
 	* pango/opentype/harfbuzz-buffer.c (_hb_buffer_allocate_ligid):

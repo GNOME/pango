@@ -33,7 +33,6 @@ typedef struct _PangoLayout      PangoLayout;
 typedef struct _PangoLayoutClass PangoLayoutClass;
 typedef struct _PangoLayoutLine  PangoLayoutLine;
 
-/* For backwards compatiblity */
 typedef PangoGlyphItem PangoLayoutRun;
 
 typedef enum {
