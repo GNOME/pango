@@ -1,3 +1,8 @@
+2007-10-22  Behdad Esfahbod  <behdad@gnome.org>
+
+	* docs/tmpl/layout.sgml: Remove obsolete comment. PangoLayoutRun
+	is not deprecated.  It's just same type as PangoGlyphItem.
+
 2007-10-21  Behdad Esfahbod  <behdad@gnome.org>
 
 	* pango/pango-layout.h: Remove obsolete comment. PangoLayoutRun is

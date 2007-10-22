@@ -789,7 +789,7 @@ code specific to each rendering system.
 <para>
 The #PangoLayoutRun structure represents a single run within
 a #PangoLayoutLine; it is simply an alternate name for
-#PangoGlyphItem, present for backwards compatibility.
+#PangoGlyphItem.
 See the #PangoGlyphItem docs for details on the fields.
 </para>
 
