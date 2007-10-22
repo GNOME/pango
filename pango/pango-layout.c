@@ -5427,6 +5427,27 @@ pango_layout_iter_at_last_line (PangoLayoutIter *iter)
   return iter->line_extents_link->next == NULL;
 }
 
+/**
+ * pango_layout_iter_get_layout:
+ * @iter: a #PangoLayoutIter
+ *
+ * Gets the layout associated with a #PangoLayoutIter.
+ *
+ * Return value: the layout associated with @iter.
+ *
+ * Since: 1.20
+ **/
+PangoLayout*
+pango_layout_iter_get_layout (PangoLayoutIter *iter)
+{
+  /* check is redundant as it simply checks that iter->layout is not NULL */
+  if (ITER_IS_INVALID (iter))
+    return NULL;
+
+  return iter->layout;
+}
+
+
 static gboolean
 line_is_terminated (PangoLayoutIter *iter)
 {

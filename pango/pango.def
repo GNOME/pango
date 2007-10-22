@@ -249,6 +249,7 @@ EXPORTS
 	pango_layout_iter_get_cluster_extents
 	pango_layout_iter_get_index
 	pango_layout_iter_get_layout_extents
+	pango_layout_iter_get_layout
 	pango_layout_iter_get_line
 	pango_layout_iter_get_line_extents
 	pango_layout_iter_get_line_readonly

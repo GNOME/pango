@@ -1,5 +1,16 @@
 2007-10-22  Behdad Esfahbod  <behdad@gnome.org>
 
+	Bug 471571 – Add pango_layout_iter_get_layout()
+
+	* docs/pango-sections.txt:
+	* docs/tmpl/layout.sgml:
+	* pango/pango-layout.c (pango_layout_iter_get_layout):
+	* pango/pango-layout.h:
+	* pango/pango.def:
+	Add trivial yet missing pango_layout_iter_get_layout().
+
+2007-10-22  Behdad Esfahbod  <behdad@gnome.org>
+
 	* docs/tmpl/layout.sgml: Remove obsolete comment. PangoLayoutRun
 	is not deprecated.  It's just same type as PangoGlyphItem.
 

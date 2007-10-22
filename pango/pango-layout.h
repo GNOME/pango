@@ -245,12 +245,13 @@ GType            pango_layout_iter_get_type (void) G_GNUC_CONST;
 PangoLayoutIter *pango_layout_get_iter  (PangoLayout     *layout);
 void             pango_layout_iter_free (PangoLayoutIter *iter);
 
-int              pango_layout_iter_get_index (PangoLayoutIter *iter);
-PangoLayoutRun  *pango_layout_iter_get_run   (PangoLayoutIter *iter);
+int              pango_layout_iter_get_index  (PangoLayoutIter *iter);
+PangoLayoutRun  *pango_layout_iter_get_run    (PangoLayoutIter *iter);
 PangoLayoutRun  *pango_layout_iter_get_run_readonly   (PangoLayoutIter *iter);
-PangoLayoutLine *pango_layout_iter_get_line  (PangoLayoutIter *iter);
+PangoLayoutLine *pango_layout_iter_get_line   (PangoLayoutIter *iter);
 PangoLayoutLine *pango_layout_iter_get_line_readonly  (PangoLayoutIter *iter);
 gboolean         pango_layout_iter_at_last_line (PangoLayoutIter *iter);
+PangoLayout     *pango_layout_iter_get_layout (PangoLayoutIter *iter);
 
 gboolean pango_layout_iter_next_char    (PangoLayoutIter *iter);
 gboolean pango_layout_iter_next_cluster (PangoLayoutIter *iter);
