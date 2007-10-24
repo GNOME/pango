@@ -1,5 +1,22 @@
 2007-10-24  Behdad Esfahbod  <behdad@gnome.org>
 
+	Bug 471601 – Pass pango version information to fontconfig
+
+	* pango/pangofc-fontmap.h:
+	New public API:
+	
+		PANGO_FC_GRAVITY
+		PANGO_FC_VERSION
+
+	* pango/pangofc-fontmap.c (pango_fc_make_pattern):
+	Set PANGO_FC_VERSION in pattern.
+
+	* docs/pango-sections.txt:
+	* docs/tmpl/pangofc-fontmap.sgml:
+	Update.
+
+2007-10-24  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 472629 – Add pango_renderer_get_layout(_line)
 
 	* pango/pango-renderer.h:

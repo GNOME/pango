@@ -834,6 +834,7 @@ pango_fc_make_pattern (const  PangoFontDescription *description,
    * dpi values.
    */
   pattern = FcPatternBuild (NULL,
+			    PANGO_FC_VERSION, FcTypeInteger, pango_version(),
 			    FC_WEIGHT, FcTypeInteger, weight,
 			    FC_SLANT,  FcTypeInteger, slant,
 #ifdef FC_WIDTH

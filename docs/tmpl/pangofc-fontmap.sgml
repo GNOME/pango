@@ -56,24 +56,6 @@ Fontconfig-based backend involves deriving from both
 @context_substitute: 
 @create_font: 
 
-<!-- ##### FUNCTION pango_fc_font_description_from_pattern ##### -->
-<para>
-
-</para>
-
-@pattern: 
-@include_size: 
-@Returns: 
-
-
-<!-- ##### FUNCTION pango_fc_font_map_cache_clear ##### -->
-<para>
-
-</para>
-
-@fcfontmap: 
-
-
 <!-- ##### FUNCTION pango_fc_font_map_create_context ##### -->
 <para>
 
@@ -83,12 +65,14 @@ Fontconfig-based backend involves deriving from both
 @Returns: 
 
 
-<!-- ##### FUNCTION pango_fc_font_map_shutdown ##### -->
+<!-- ##### USER_FUNCTION PangoFcDecoderFindFunc ##### -->
 <para>
 
 </para>
 
-@fcfontmap: 
+@pattern: 
+@user_data: 
+@Returns: 
 
 
 <!-- ##### FUNCTION pango_fc_font_map_add_decoder_find_func ##### -->
@@ -102,13 +86,43 @@ Fontconfig-based backend involves deriving from both
 @dnotify: 
 
 
-<!-- ##### USER_FUNCTION PangoFcDecoderFindFunc ##### -->
+<!-- ##### FUNCTION pango_fc_font_map_cache_clear ##### -->
+<para>
+
+</para>
+
+@fcfontmap: 
+
+
+<!-- ##### FUNCTION pango_fc_font_map_shutdown ##### -->
+<para>
+
+</para>
+
+@fcfontmap: 
+
+
+<!-- ##### FUNCTION pango_fc_font_description_from_pattern ##### -->
 <para>
 
 </para>
 
 @pattern: 
-@user_data: 
+@include_size: 
 @Returns: 
+
+
+<!-- ##### MACRO PANGO_FC_GRAVITY ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO PANGO_FC_VERSION ##### -->
+<para>
+
+</para>
+
 
 

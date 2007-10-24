@@ -42,8 +42,6 @@ struct _PangoFcMetricsInfo
    ((d) - PANGO_SCALE_26_6 / 2) / PANGO_SCALE_26_6)
 #define PANGO_UNITS_26_6(d) (PANGO_SCALE_26_6 * (d))
 
-#define PANGO_FC_GRAVITY "pangogravity"
-
 void _pango_fc_font_shutdown (PangoFcFont *fcfont);
 
 void           _pango_fc_font_map_remove          (PangoFcFontMap *fcfontmap,
