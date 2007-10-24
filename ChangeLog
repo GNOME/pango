@@ -3,6 +3,16 @@
 	Bug 478865 – Drastically reduce number of PangoFont objects created
 	for rotating text
 
+	* pango/pangofc-fontmap.c (fontset_hash_key_hash),
+	(get_scaled_size), (pango_fc_font_map_get_patterns):
+	Use a Pango-unit int for scaled-size instead of double.
+	Merges even more queries...
+
+2007-10-24  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 478865 – Drastically reduce number of PangoFont objects created
+	for rotating text
+
 	* pango/pangofc-fontmap.c (fontset_hash_key_equal),
 	(fontset_hash_key_hash), (fontset_hash_key_copy),
 	(get_scaled_size), (pango_fc_font_map_get_patterns):

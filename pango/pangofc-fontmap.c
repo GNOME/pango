@@ -279,7 +279,7 @@ struct _FontsetHashKey {
   PangoFcFontMap *fontmap;
   PangoLanguage *language;
   PangoFontDescription *desc;
-  double scaled_size;
+  int scaled_size;
   gpointer context_key;
 };
 
@@ -337,16 +337,14 @@ fontset_hash_key_hash (const FontsetHashKey *key)
 {
     guint32 hash = FNV1_32_INIT;
 
-    hash = hash_bytes_fnv ((unsigned char*)&key->scaled_size,
-			   sizeof(double),
-			   hash);
- 
     if (key->context_key)
       hash ^= PANGO_FC_FONT_MAP_GET_CLASS (key->fontmap)->context_key_hash (key->fontmap,
 									    key->context_key);
 
+    /* 1237 is just an abitrary prime */
     return (hash ^
 	    GPOINTER_TO_UINT (key->language) ^
+	    (key->scaled_size * 1237) ^
 	    pango_font_description_hash (key->desc));
 }
 
@@ -1013,21 +1011,21 @@ pango_fc_font_map_get_resolution (PangoFcFontMap *fcfontmap,
   return fcfontmap->priv->dpi;
 }
 
-static double
+static int
 get_scaled_size (PangoFcFontMap             *fcfontmap,
 		 PangoContext               *context,
 		 const PangoFontDescription *desc)
 {
-  int size = pango_font_description_get_size (desc);
+  double size = pango_font_description_get_size (desc);
 
   if (!pango_font_description_get_size_is_absolute (desc))
     {
       double dpi = pango_fc_font_map_get_resolution (fcfontmap, context);
 
-      size = (int)(0.5 + size * dpi / 72.);
+      size = size * dpi / 72.;
     }
 
-  return pango_matrix_get_font_scale_factor (pango_context_get_matrix (context)) * size / PANGO_SCALE;
+  return .5 + pango_matrix_get_font_scale_factor (pango_context_get_matrix (context)) * size;
 }
 
 static PangoFcPatternSet *
@@ -1065,7 +1063,7 @@ pango_fc_font_map_get_patterns (PangoFontMap               *fontmap,
   if (patterns == NULL)
     {
       pattern = pango_fc_make_pattern (desc, language,
-				       key.scaled_size,
+				       key.scaled_size / 1024.,
 				       pango_fc_font_map_get_resolution (fcfontmap, context));
 
       pango_fc_default_substitute (fcfontmap, context, pattern);
