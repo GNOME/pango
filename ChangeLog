@@ -1,5 +1,10 @@
 2007-10-24  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango/opentype/*: New header file harfbuzz-global.h.  Rename
+	FT_* int types to HB_* types.
+
+2007-10-24  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/opentype/harfbuzz-gpos-private.h:
 	* pango/opentype/harfbuzz-gsub-private.h:
 	Add commented-out dummy struct for Extension lookups.
