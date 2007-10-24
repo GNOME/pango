@@ -1,5 +1,10 @@
 2007-10-24  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango/pango-attributes.c: Fix couple Oopses from my last
+	commit.
+
+2007-10-24  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 469641 – Initialize attribute start/end to [0..MAXUINT]
 
 	* pango/pango-attributes.h:

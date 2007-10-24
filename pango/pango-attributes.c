@@ -298,7 +298,7 @@ pango_attr_color_new (const PangoAttrClass *klass,
 		      guint16               blue)
 {
   PangoAttrColor *result = g_slice_new (PangoAttrColor);
-  pango_attribute_init (&result->attr, &klass);
+  pango_attribute_init (&result->attr, klass);
   result->color.red = red;
   result->color.green = green;
   result->color.blue = blue;
@@ -389,7 +389,7 @@ pango_attr_int_new (const PangoAttrClass *klass,
 		    int                   value)
 {
   PangoAttrInt *result = g_slice_new (PangoAttrInt);
-  pango_attribute_init (&result->attr, &klass);
+  pango_attribute_init (&result->attr, klass);
   result->value = value;
 
   return (PangoAttribute *)result;
