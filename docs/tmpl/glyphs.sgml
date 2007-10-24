@@ -517,6 +517,7 @@ The #GObject type for #PangoGlyphString.
 The #GObject type for #PangoGlyphItem.
 </para>
 
+@Since: 1.20
 
 
 <!-- ##### FUNCTION pango_glyph_item_split ##### -->

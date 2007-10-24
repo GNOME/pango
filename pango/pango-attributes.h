@@ -176,12 +176,14 @@ struct _PangoAttrFontDesc
   PangoFontDescription *desc;
 };
 
-PangoAttrType    pango_attr_type_register (const gchar          *name);
+PangoAttrType    pango_attr_type_register    (const gchar          *name);
 
-PangoAttribute * pango_attribute_copy          (const PangoAttribute *attr);
-void             pango_attribute_destroy       (PangoAttribute       *attr);
-gboolean         pango_attribute_equal         (const PangoAttribute *attr1,
-						const PangoAttribute *attr2) G_GNUC_PURE;
+void             pango_attribute_init        (PangoAttribute       *attr,
+					      const PangoAttrClass *klass);
+PangoAttribute * pango_attribute_copy        (const PangoAttribute *attr);
+void             pango_attribute_destroy     (PangoAttribute       *attr);
+gboolean         pango_attribute_equal       (const PangoAttribute *attr1,
+					      const PangoAttribute *attr2) G_GNUC_PURE;
 
 PangoAttribute *pango_attr_language_new      (PangoLanguage              *language);
 PangoAttribute *pango_attr_family_new        (const char                 *family);

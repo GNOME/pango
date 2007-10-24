@@ -1,5 +1,28 @@
 2007-10-24  Behdad Esfahbod  <behdad@gnome.org>
 
+	Bug 469641 – Initialize attribute start/end to [0..MAXUINT]
+
+	* pango/pango-attributes.h:
+	* pango/pango-attributes.c:
+	New public API:
+	
+		pango_attribute_init()
+
+	* pango/pango-attributes.c:
+	(pango_attr_string_new), (pango_attr_language_new),
+	(pango_attr_color_new), (pango_attr_int_new),
+	(pango_attr_float_new), (pango_attr_size_new_internal),
+	(pango_attr_font_desc_new), (pango_attr_shape_new_with_data):
+	Initialize attributes using pango_attribute_init().
+
+	* pango/pango.def:
+	* docs/pango-docs.sgml:
+	* docs/pango-sections.txt:
+	* docs/tmpl/text-attributes.sgml:
+	Update.
+
+2007-10-24  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 471577 – GBoxed GType for PangoGlyphItem
 
 	* pango/pango-glyph-item.h:

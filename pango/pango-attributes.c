@@ -71,6 +71,29 @@ pango_attr_type_register (const gchar *name)
 }
 
 /**
+ * pango_attribute_init:
+ * @attr: a #PangoAttribute
+ * @klass: a #PangoAttributeClass
+ *
+ * Initializes @attr's klass to @klass, it's start_index to zero,
+ * and end_index to %G_MAXUINT such that the attribute applies
+ * to the entire text by default.
+ *
+ * Since: 1.20
+ **/
+void
+pango_attribute_init (PangoAttribute       *attr,
+		      const PangoAttrClass *klass)
+{
+  g_return_if_fail (attr != NULL);
+  g_return_if_fail (klass != NULL);
+
+  attr->klass = klass;
+  attr->start_index = 0;
+  attr->end_index = G_MAXUINT;
+}
+
+/**
  * pango_attribute_copy:
  * @attr: a #PangoAttribute
  *
@@ -158,8 +181,7 @@ pango_attr_string_new (const PangoAttrClass *klass,
 		       const char           *str)
 {
   PangoAttrString *result = g_slice_new (PangoAttrString);
-
-  result->attr.klass = klass;
+  pango_attribute_init (&result->attr, klass);
   result->value = g_strdup (str);
 
   return (PangoAttribute *)result;
@@ -231,11 +253,8 @@ pango_attr_language_new (PangoLanguage *language)
     pango_attr_language_equal
   };
 
-  g_return_val_if_fail (language != NULL, NULL);
-
   result = g_slice_new (PangoAttrLanguage);
-
-  result->attr.klass = &klass;
+  pango_attribute_init (&result->attr, &klass);
   result->value = language;
 
   return (PangoAttribute *)result;
@@ -279,7 +298,7 @@ pango_attr_color_new (const PangoAttrClass *klass,
 		      guint16               blue)
 {
   PangoAttrColor *result = g_slice_new (PangoAttrColor);
-  result->attr.klass = klass;
+  pango_attribute_init (&result->attr, &klass);
   result->color.red = red;
   result->color.green = green;
   result->color.blue = blue;
@@ -370,7 +389,7 @@ pango_attr_int_new (const PangoAttrClass *klass,
 		    int                   value)
 {
   PangoAttrInt *result = g_slice_new (PangoAttrInt);
-  result->attr.klass = klass;
+  pango_attribute_init (&result->attr, &klass);
   result->value = value;
 
   return (PangoAttribute *)result;
@@ -407,7 +426,7 @@ pango_attr_float_new  (const PangoAttrClass *klass,
 		       double                value)
 {
   PangoAttrFloat *result = g_slice_new (PangoAttrFloat);
-  result->attr.klass = klass;
+  pango_attribute_init (&result->attr, klass);
   result->value = value;
 
   return (PangoAttribute *)result;
@@ -462,7 +481,7 @@ pango_attr_size_new_internal (int size,
   };
 
   result = g_slice_new (PangoAttrSize);
-  result->attr.klass = absolute ? &absolute_klass : &klass;
+  pango_attribute_init (&result->attr, absolute ? &absolute_klass : &klass);
   result->size = size;
   result->absolute = absolute;
 
@@ -640,7 +659,7 @@ pango_attr_font_desc_new (const PangoFontDescription *desc)
   };
 
   PangoAttrFontDesc *result = g_slice_new (PangoAttrFontDesc);
-  result->attr.klass = &klass;
+  pango_attribute_init (&result->attr, &klass);
   result->desc = pango_font_description_copy (desc);
 
   return (PangoAttribute *)result;
@@ -936,7 +955,7 @@ pango_attr_shape_new_with_data (const PangoRectangle  *ink_rect,
   g_return_val_if_fail (logical_rect != NULL, NULL);
 
   result = g_slice_new (PangoAttrShape);
-  result->attr.klass = &klass;
+  pango_attribute_init (&result->attr, &klass);
   result->ink_rect = *ink_rect;
   result->logical_rect = *logical_rect;
   result->data = data;
