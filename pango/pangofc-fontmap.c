@@ -277,10 +277,9 @@ pango_fc_coverage_key_equal (PangoFcCoverageKey *key1,
 
 struct _FontsetHashKey {
   PangoFcFontMap *fontmap;
-  PangoMatrix matrix;
   PangoLanguage *language;
   PangoFontDescription *desc;
-  int size;			/* scaled via the current DPI */
+  double scaled_size;
   gpointer context_key;
 };
 
@@ -318,13 +317,9 @@ static gboolean
 fontset_hash_key_equal (const FontsetHashKey *key_a,
 			const FontsetHashKey *key_b)
 {
-  if (key_a->size == key_b->size &&
+  if (key_a->scaled_size == key_b->scaled_size &&
       pango_font_description_equal (key_a->desc, key_b->desc) &&
-      key_a->language == key_b->language &&
-      key_a->matrix.xx == key_b->matrix.xx &&
-      key_a->matrix.xy == key_b->matrix.xy &&
-      key_a->matrix.yx == key_b->matrix.yx &&
-      key_a->matrix.yy == key_b->matrix.yy)
+      key_a->language == key_b->language)
     {
       if (key_a->context_key)
 	return PANGO_FC_FONT_MAP_GET_CLASS (key_a->fontmap)->context_key_equal (key_a->fontmap,
@@ -342,19 +337,16 @@ fontset_hash_key_hash (const FontsetHashKey *key)
 {
     guint32 hash = FNV1_32_INIT;
 
-    /* We do a bytewise hash on the context matrix */
-    hash = hash_bytes_fnv ((unsigned char *)(&key->matrix),
-			   sizeof(double) * 4,
+    hash = hash_bytes_fnv ((unsigned char*)&key->scaled_size,
+			   sizeof(double),
 			   hash);
-
+ 
     if (key->context_key)
       hash ^= PANGO_FC_FONT_MAP_GET_CLASS (key->fontmap)->context_key_hash (key->fontmap,
 									    key->context_key);
 
-    /* 1237 is just an abitrary prime */
     return (hash ^
 	    GPOINTER_TO_UINT (key->language) ^
-	    (key->size * 1237) ^
 	    pango_font_description_hash (key->desc));
 }
 
@@ -376,10 +368,9 @@ fontset_hash_key_copy (FontsetHashKey *old)
   FontsetHashKey *key = g_slice_new (FontsetHashKey);
 
   key->fontmap = old->fontmap;
-  key->matrix = old->matrix;
   key->language = old->language;
   key->desc = pango_font_description_copy (old->desc);
-  key->size = old->size;
+  key->scaled_size = old->scaled_size;
   if (old->context_key)
     key->context_key = PANGO_FC_FONT_MAP_GET_CLASS (key->fontmap)->context_key_copy (key->fontmap,
 										     old->context_key);
@@ -1022,21 +1013,21 @@ pango_fc_font_map_get_resolution (PangoFcFontMap *fcfontmap,
   return fcfontmap->priv->dpi;
 }
 
-static int
-get_unscaled_size (PangoFcFontMap             *fcfontmap,
-		   PangoContext               *context,
-		   const PangoFontDescription *desc)
+static double
+get_scaled_size (PangoFcFontMap             *fcfontmap,
+		 PangoContext               *context,
+		 const PangoFontDescription *desc)
 {
   int size = pango_font_description_get_size (desc);
 
-  if (pango_font_description_get_size_is_absolute (desc))
-    return size;
-  else
+  if (!pango_font_description_get_size_is_absolute (desc))
     {
       double dpi = pango_fc_font_map_get_resolution (fcfontmap, context);
 
-      return (int)(0.5 + size * dpi / 72.);
+      size = (int)(0.5 + size * dpi / 72.);
     }
+
+  return pango_matrix_get_font_scale_factor (pango_context_get_matrix (context)) * size / PANGO_SCALE;
 }
 
 static PangoFcPatternSet *
@@ -1052,17 +1043,17 @@ pango_fc_font_map_get_patterns (PangoFontMap               *fontmap,
   int f;
   PangoFcPatternSet *patterns;
   FcFontSet *font_patterns;
+  PangoMatrix matrix;
   FontsetHashKey key;
 
   if (!language && context)
     language = pango_context_get_language (context);
 
   key.fontmap = fcfontmap;
-  get_context_matrix (context, &key.matrix);
+  key.scaled_size = get_scaled_size (fcfontmap, context, desc);
   key.language = language;
   key.desc = pango_font_description_copy_static (desc);
   pango_font_description_unset_fields (key.desc, PANGO_FONT_MASK_SIZE);
-  key.size = get_unscaled_size (fcfontmap, context, desc);
 
   if (PANGO_FC_FONT_MAP_GET_CLASS (fcfontmap)->context_key_get)
     key.context_key = (gpointer)PANGO_FC_FONT_MAP_GET_CLASS (fcfontmap)->context_key_get (fcfontmap, context);
@@ -1073,10 +1064,8 @@ pango_fc_font_map_get_patterns (PangoFontMap               *fontmap,
 
   if (patterns == NULL)
     {
-      double scale_factor = pango_matrix_get_font_scale_factor (&key.matrix);
-      double scaled_size = key.size * scale_factor / PANGO_SCALE;
       pattern = pango_fc_make_pattern (desc, language,
-				       scaled_size,
+				       key.scaled_size,
 				       pango_fc_font_map_get_resolution (fcfontmap, context));
 
       pango_fc_default_substitute (fcfontmap, context, pattern);

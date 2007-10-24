@@ -1,5 +1,16 @@
 2007-10-24  Behdad Esfahbod  <behdad@gnome.org>
 
+	Bug 478865 – Drastically reduce number of PangoFont objects created
+	for rotating text
+
+	* pango/pangofc-fontmap.c (fontset_hash_key_equal),
+	(fontset_hash_key_hash), (fontset_hash_key_copy),
+	(get_scaled_size), (pango_fc_font_map_get_patterns):
+	Only keep scaled-size in fontset hash, instead of unscaled-size
+	and context matrix.
+
+2007-10-24  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 471568 – Optimizations in _pango_cairo_update_context()
 
 	* pango/pangocairo-context.c (_pango_cairo_update_context):
