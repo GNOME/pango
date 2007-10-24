@@ -89,7 +89,7 @@ static PangoFontDescription *pango_fc_font_describe_absolute (PangoFont        *
 #define PANGO_FC_FONT_LOCK_FACE(font)	(PANGO_FC_FONT_GET_CLASS (font)->lock_face (font))
 #define PANGO_FC_FONT_UNLOCK_FACE(font)	(PANGO_FC_FONT_GET_CLASS (font)->unlock_face (font))
 
-G_DEFINE_TYPE (PangoFcFont, pango_fc_font, PANGO_TYPE_FONT)
+G_DEFINE_ABSTRACT_TYPE (PangoFcFont, pango_fc_font, PANGO_TYPE_FONT)
 
 static void
 pango_fc_font_class_init (PangoFcFontClass *class)

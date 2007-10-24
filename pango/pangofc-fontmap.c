@@ -158,7 +158,7 @@ static gboolean fontset_hash_key_equal (const FontsetHashKey *key_a,
 					const FontsetHashKey *key_b);
 static void     fontset_hash_key_free  (FontsetHashKey       *key);
 
-G_DEFINE_TYPE (PangoFcFontMap, pango_fc_font_map, PANGO_TYPE_FONT_MAP)
+G_DEFINE_ABSTRACT_TYPE (PangoFcFontMap, pango_fc_font_map, PANGO_TYPE_FONT_MAP)
 
 static void
 pango_fc_font_map_init (PangoFcFontMap *fcfontmap)

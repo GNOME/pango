@@ -1199,7 +1199,7 @@ pango_font_description_to_filename (const PangoFontDescription  *desc)
   return result;
 }
 
-G_DEFINE_TYPE (PangoFont, pango_font, G_TYPE_OBJECT)
+G_DEFINE_ABSTRACT_TYPE (PangoFont, pango_font, G_TYPE_OBJECT)
 
 static void
 pango_font_class_init (PangoFontClass *class)
@@ -1660,7 +1660,7 @@ pango_font_metrics_get_strikethrough_thickness (PangoFontMetrics *metrics)
  * PangoFontFamily
  */
 
-G_DEFINE_TYPE (PangoFontFamily, pango_font_family, G_TYPE_OBJECT)
+G_DEFINE_ABSTRACT_TYPE (PangoFontFamily, pango_font_family, G_TYPE_OBJECT)
 
 static void
 pango_font_family_class_init (PangoFontFamilyClass *class)
@@ -1749,7 +1749,7 @@ pango_font_family_is_monospace (PangoFontFamily  *family)
  * PangoFontFace
  */
 
-G_DEFINE_TYPE (PangoFontFace, pango_font_face, G_TYPE_OBJECT)
+G_DEFINE_ABSTRACT_TYPE (PangoFontFace, pango_font_face, G_TYPE_OBJECT)
 
 static void
 pango_font_face_class_init (PangoFontFaceClass *class)

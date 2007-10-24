@@ -1,5 +1,23 @@
 2007-10-24  Behdad Esfahbod  <behdad@gnome.org>
 
+	Bug 472924 – Mark some classes abstract
+
+	* pango/fonts.c:
+	* pango/pango-fontmap.c:
+	* pango/pangofc-font.c:
+	* pango/pangofc-fontmap.c:
+	Public API chance:
+	Mark the following types as abstract:
+
+		PangoFont
+		PangoFontFace
+		PangoFontFamily
+		PangoFontMap
+		PangoFcFont
+		PangoFcFontMap
+
+2007-10-24  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 472303 – Make PANGO_GLYPH_EMPTY and PANGO_GLYPH_UNKNOWN_FLAG public
 
 	* pango/pango-font.h: Make PANGO_GLYPH_EMPTY, PANGO_GLYPH_UNKNOWN_FLAG,

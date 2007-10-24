@@ -30,7 +30,7 @@ static PangoFontset *pango_font_map_real_load_fontset (PangoFontMap             
 						       PangoLanguage              *language);
 
 
-G_DEFINE_TYPE (PangoFontMap, pango_font_map, G_TYPE_OBJECT)
+G_DEFINE_ABSTRACT_TYPE (PangoFontMap, pango_font_map, G_TYPE_OBJECT)
 
 static void
 pango_font_map_class_init (PangoFontMapClass *class)
