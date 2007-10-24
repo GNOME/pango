@@ -107,7 +107,8 @@ _pango_cairo_update_context (cairo_t      *cr,
   if (!layout_matrix)
     layout_matrix = &identity_matrix;
 
-  if (0 != memcmp (&pango_matrix, layout_matrix, sizeof (pango_matrix)))
+  /* ignore translation offsets */
+  if (0 != memcmp (&pango_matrix, layout_matrix, 4 * sizeof (double)))
     changed = TRUE;
 
   pango_context_set_matrix (context, &pango_matrix);
