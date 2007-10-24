@@ -1,5 +1,26 @@
 2007-10-24  Behdad Esfahbod  <behdad@gnome.org>
 
+	Bug 472629 – Add pango_renderer_get_layout(_line)
+
+	* pango/pango-renderer.h:
+	* pango/pango-renderer.c:
+	New public API:
+
+		pango_renderer_get_layout()
+		pango_renderer_get_layout_line()
+
+	* pango/pangocairo-render.c (pango_cairo_renderer_draw_shape),
+	(release_renderer), (_pango_cairo_do_layout_line),
+	(_pango_cairo_do_layout): Use above API to simplify
+	shape_renderer implementation.
+
+	* pango/pango.def:
+	* docs/pango-sections.txt:
+	* docs/tmpl/pango-renderer.sgml:
+	Update.
+
+2007-10-24  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/pango-attributes.c: Fix couple Oopses from my last
 	commit.
 

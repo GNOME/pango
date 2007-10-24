@@ -660,6 +660,8 @@ pango_renderer_set_color
 pango_renderer_get_color
 pango_renderer_set_matrix
 pango_renderer_get_matrix
+pango_renderer_get_layout
+pango_renderer_get_layout_line
 <SUBSECTION Standard>
 PANGO_RENDERER
 PANGO_IS_RENDERER

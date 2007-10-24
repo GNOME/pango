@@ -36,8 +36,6 @@ struct _PangoCairoRenderer
   cairo_t *cr;
   gboolean do_path;
   double x_offset, y_offset;
-  PangoCairoShapeRendererFunc shape_renderer;
-  gpointer                    shape_renderer_data;
 };
 
 struct _PangoCairoRendererClass
@@ -414,11 +412,24 @@ pango_cairo_renderer_draw_shape (PangoRenderer  *renderer,
 {
   PangoCairoRenderer *crenderer = (PangoCairoRenderer *) (renderer);
   cairo_t *cr = crenderer->cr;
-  double base_x = crenderer->x_offset + (double)x / PANGO_SCALE;
-  double base_y = crenderer->y_offset + (double)y / PANGO_SCALE;
+  PangoLayout *layout;
+  PangoCairoShapeRendererFunc shape_renderer;
+  gpointer                    shape_renderer_data;
+  double base_x, base_y;
 
-  if (!crenderer->shape_renderer)
+  layout = pango_renderer_get_layout (renderer);
+
+  if (!layout)
+  	return;
+
+  shape_renderer = pango_cairo_context_get_shape_renderer (pango_layout_get_context (layout),
+							   &shape_renderer_data);
+
+  if (!shape_renderer)
     return;
+
+  base_x = crenderer->x_offset + (double)x / PANGO_SCALE;
+  base_y = crenderer->y_offset + (double)y / PANGO_SCALE;
 
   cairo_save (cr);
   if (!crenderer->do_path)
@@ -426,7 +437,7 @@ pango_cairo_renderer_draw_shape (PangoRenderer  *renderer,
 
   cairo_move_to (cr, base_x, base_y);
 
-  crenderer->shape_renderer (cr, attr, crenderer->do_path, crenderer->shape_renderer_data);
+  shape_renderer (cr, attr, crenderer->do_path, shape_renderer_data);
 
   cairo_restore (cr);
 }
@@ -479,8 +490,6 @@ release_renderer (PangoCairoRenderer *renderer, gboolean free_renderer)
     {
       renderer->cr = NULL;
       renderer->do_path = FALSE;
-      renderer->shape_renderer = NULL;
-      renderer->shape_renderer_data = NULL;
       renderer->x_offset = 0.;
       renderer->y_offset = 0.;
 
@@ -543,8 +552,6 @@ _pango_cairo_do_layout_line (cairo_t          *cr,
 
   crenderer->cr = cr;
   crenderer->do_path = do_path;
-  crenderer->shape_renderer = pango_cairo_context_get_shape_renderer (pango_layout_get_context (line->layout),
-								      &crenderer->shape_renderer_data);
   cairo_get_current_point (cr, &crenderer->x_offset, &crenderer->y_offset);
 
   pango_renderer_draw_layout_line (renderer, line, 0, 0);
@@ -563,8 +570,6 @@ _pango_cairo_do_layout (cairo_t     *cr,
 
   crenderer->cr = cr;
   crenderer->do_path = do_path;
-  crenderer->shape_renderer = pango_cairo_context_get_shape_renderer (pango_layout_get_context (layout),
-								      &crenderer->shape_renderer_data);
   cairo_get_current_point (cr, &crenderer->x_offset, &crenderer->y_offset);
 
   pango_renderer_draw_layout (renderer, layout, 0, 0);

@@ -328,6 +328,8 @@ EXPORTS
 	pango_renderer_draw_rectangle
 	pango_renderer_draw_trapezoid
 	pango_renderer_get_color
+	pango_renderer_get_layout
+	pango_renderer_get_layout_line
 	pango_renderer_get_matrix
 	pango_renderer_get_type
 	pango_renderer_part_changed

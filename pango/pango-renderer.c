@@ -54,6 +54,7 @@ struct _PangoRendererPrivate
   PangoColor color[N_RENDER_PARTS];
   gboolean color_set[N_RENDER_PARTS];
 
+  PangoLayoutLine *line;
   LineState *line_state;
 };
 
@@ -469,6 +470,7 @@ pango_renderer_draw_layout_line (PangoRenderer    *renderer,
 
   pango_renderer_activate (renderer);
 
+  renderer->priv->line = line;
   renderer->priv->line_state = &state;
 
   state.underline = PANGO_UNDERLINE_NONE;
@@ -594,6 +596,7 @@ pango_renderer_draw_layout_line (PangoRenderer    *renderer,
   draw_strikethrough (renderer, &state);
 
   renderer->priv->line_state = NULL;
+  renderer->priv->line = NULL;
 
   pango_renderer_deactivate (renderer);
 }
@@ -1277,4 +1280,51 @@ pango_renderer_get_matrix (PangoRenderer *renderer)
   g_return_val_if_fail (PANGO_IS_RENDERER (renderer), NULL);
 
   return renderer->matrix;
+}
+
+/**
+ * pango_renderer_get_layout:
+ * @renderer: a #PangoRenderer
+ *
+ * Gets the layout currently being rendered using @renderer.
+ * Calling this function only makes sense from inside a subclass's
+ * methods, like in its draw_shape<!---->() for example.
+ *
+ * The returned layout should not be modified while still being
+ * rendered.
+ *
+ * Return value: the layout, or %NULL if no layout is being
+ *  rendered using @renderer at this time.
+ *
+ * Since: 1.20
+ **/
+PangoLayout *
+pango_renderer_get_layout      (PangoRenderer     *renderer)
+{
+  if (G_UNLIKELY (renderer->priv->line == NULL))
+    return NULL;
+
+  return renderer->priv->line->layout;
+}
+
+/**
+ * pango_renderer_get_layout_line:
+ * @renderer: a #PangoRenderer
+ *
+ * Gets the layout line currently being rendered using @renderer.
+ * Calling this function only makes sense from inside a subclass's
+ * methods, like in its draw_shape<!---->() for example.
+ *
+ * The returned layout line should not be modified while still being
+ * rendered.
+ *
+ * Return value: the layout line, or %NULL if no layout line is being
+ *  rendered using @renderer at this time.
+ *
+ * Since: 1.20
+ **/
+PangoLayoutLine *
+pango_renderer_get_layout_line (PangoRenderer     *renderer)
+{
+  return renderer->priv->line;
 }

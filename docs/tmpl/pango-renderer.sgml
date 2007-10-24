@@ -210,3 +210,21 @@ The #GObject type for #PangoRenderPart.
 @Returns: 
 
 
+<!-- ##### FUNCTION pango_renderer_get_layout ##### -->
+<para>
+
+</para>
+
+@renderer: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_renderer_get_layout_line ##### -->
+<para>
+
+</para>
+
+@renderer: 
+@Returns: 
+
+
