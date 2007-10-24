@@ -1,5 +1,13 @@
 2007-10-24  Behdad Esfahbod  <behdad@gnome.org>
 
+	Bug 471568 – Optimizations in _pango_cairo_update_context()
+
+	* pango/pangocairo-context.c (_pango_cairo_update_context):
+	Skip change notification about matrix changes if merged font
+	options for the context set metrics hinting to off.
+
+2007-10-24  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 489909 – pango_cairo_update_context() should ignore matrix
 	translation
 

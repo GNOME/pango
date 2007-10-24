@@ -90,28 +90,11 @@ _pango_cairo_update_context (cairo_t      *cr,
   cairo_matrix_t cairo_matrix;
   cairo_surface_t *target;
   PangoMatrix pango_matrix;
-  const PangoMatrix *layout_matrix, identity_matrix = PANGO_MATRIX_INIT;
+  const PangoMatrix *current_matrix, identity_matrix = PANGO_MATRIX_INIT;
+  const cairo_font_options_t *merged_options;
   gboolean changed = FALSE;
 
   info = get_context_info (context, TRUE);
-
-  cairo_get_matrix (cr, &cairo_matrix);
-  pango_matrix.xx = cairo_matrix.xx;
-  pango_matrix.yx = cairo_matrix.yx;
-  pango_matrix.xy = cairo_matrix.xy;
-  pango_matrix.yy = cairo_matrix.yy;
-  pango_matrix.x0 = cairo_matrix.x0;
-  pango_matrix.y0 = cairo_matrix.y0;
-
-  layout_matrix = pango_context_get_matrix (context);
-  if (!layout_matrix)
-    layout_matrix = &identity_matrix;
-
-  /* ignore translation offsets */
-  if (0 != memcmp (&pango_matrix, layout_matrix, 4 * sizeof (double)))
-    changed = TRUE;
-
-  pango_context_set_matrix (context, &pango_matrix);
 
 
   target = cairo_get_target (cr);
@@ -136,6 +119,30 @@ _pango_cairo_update_context (cairo_t      *cr,
       cairo_font_options_destroy (info->merged_options);
       info->merged_options = NULL;
     }
+
+  merged_options = _pango_cairo_context_get_merged_font_options (context);
+
+
+  cairo_get_matrix (cr, &cairo_matrix);
+  pango_matrix.xx = cairo_matrix.xx;
+  pango_matrix.yx = cairo_matrix.yx;
+  pango_matrix.xy = cairo_matrix.xy;
+  pango_matrix.yy = cairo_matrix.yy;
+  pango_matrix.x0 = cairo_matrix.x0;
+  pango_matrix.y0 = cairo_matrix.y0;
+
+  current_matrix = pango_context_get_matrix (context);
+  if (!current_matrix)
+    current_matrix = &identity_matrix;
+
+  /* layout is matrix-independent if metrics-hinting is off.
+   * also ignore matrix translation offsets */
+  if ((cairo_font_options_get_hint_metrics (merged_options) != CAIRO_HINT_METRICS_OFF) &&
+      (0 != memcmp (&pango_matrix, current_matrix, 4 * sizeof (double))))
+    changed = TRUE;
+
+  pango_context_set_matrix (context, &pango_matrix);
+
 
   return changed;
 }
