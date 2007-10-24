@@ -179,7 +179,7 @@ PangoFontDescription *pango_fc_font_description_from_pattern (FcPattern *pattern
  * fontconfig pattern it passes to fontconfig if a #PangoGravity other
  * than %PangoGravitySouth is desired.
  *
- * The property will have a PangoGravity value as a string, like "east".
+ * The property will have a #PangoGravity value as a string, like "east".
  *
  * Since: 1.20
  */
