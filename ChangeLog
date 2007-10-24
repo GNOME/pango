@@ -1,5 +1,13 @@
 2007-10-24  Behdad Esfahbod  <behdad@gnome.org>
 
+	Bug 472303 – Make PANGO_GLYPH_EMPTY and PANGO_GLYPH_UNKNOWN_FLAG public
+
+	* pango/pango-font.h: Make PANGO_GLYPH_EMPTY, PANGO_GLYPH_UNKNOWN_FLAG,
+	and PANGO_GET_UNKNOWN_GLYPH() public.  Previously they were only
+	defined for backend/engine implementations.
+
+2007-10-24  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 471601 – Pass pango version information to fontconfig
 
 	* pango/pangofc-fontmap.h:
