@@ -1,3 +1,13 @@
+Overview of changes between 1.18.2 and 1.18.3
+==============================================
+- Two OpenType engine fixes.  Makes Nafees Nastaliq font
+  work great, and avoids warnings with some other fonts.
+- Fix minor leak in win32 backend.
+- Bugs fixed in this release:
+	Bug 483600 – Leak of font family name in
+	pango_win32_font_description_from_logfont(w)
+	Patch from Daniel Atallah
+
 Overview of changes between 1.18.1 and 1.18.2
 ==============================================
 - Require libthai >= 0.1.9 for enabling thai-lang module
