@@ -42,7 +42,7 @@ pango_color_get_type (void)
 
 /**
  * pango_color_copy:
- * @src: color to copy
+ * @src: color to copy, may be %NULL
  *
  * Creates a copy of @src, which should be freed with
  * pango_color_free(). Primarily used by language bindings,
@@ -50,14 +50,16 @@ pango_color_get_type (void)
  * by assignment in C).
  *
  * Return value: the newly allocated #PangoColor, which should
- *               be freed with pango_color_free().
+ *               be freed with pango_color_free(), or %NULL
+ *               if @src was %NULL.
  **/
 PangoColor*
 pango_color_copy (const PangoColor *src)
 {
   PangoColor *ret;
 
-  g_return_val_if_fail (src != NULL, NULL);
+  if (src == NULL)
+    return NULL;
 
   ret = g_slice_new (PangoColor);
 
@@ -68,14 +70,15 @@ pango_color_copy (const PangoColor *src)
 
 /**
  * pango_color_free:
- * @color: an allocated #PangoColor
+ * @color: an allocated #PangoColor, may be %NULL
  *
  * Frees a color allocated by pango_color_copy().
  **/
 void
 pango_color_free (PangoColor *color)
 {
-  g_return_if_fail (color != NULL);
+  if (color == NULL)
+    return;
 
   g_slice_free (PangoColor, color);
 }

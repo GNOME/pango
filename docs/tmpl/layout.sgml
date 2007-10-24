@@ -599,6 +599,15 @@ The #GObject type for #PangoAlignment.
 @Returns: 
 
 
+<!-- ##### FUNCTION pango_layout_iter_copy ##### -->
+<para>
+
+</para>
+
+@iter: 
+@Returns: 
+
+
 <!-- ##### FUNCTION pango_layout_iter_free ##### -->
 <para>
 

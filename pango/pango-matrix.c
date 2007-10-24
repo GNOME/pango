@@ -41,7 +41,7 @@ pango_matrix_get_type (void)
 
 /**
  * pango_matrix_copy:
- * @matrix: a #PangoMatrix, can be %NULL
+ * @matrix: a #PangoMatrix, may be %NULL
  *
  * Copies a #PangoMatrix.
  *
@@ -56,31 +56,31 @@ pango_matrix_copy (const PangoMatrix *matrix)
 {
   PangoMatrix *new_matrix;
 
-  if (matrix)
-    {
-      new_matrix = g_slice_new (PangoMatrix);
-      *new_matrix = *matrix;
-    }
-  else
-    new_matrix = NULL;
+  if (matrix == NULL)
+    return NULL;
+
+  new_matrix = g_slice_new (PangoMatrix);
+
+  *new_matrix = *matrix;
 
   return new_matrix;
 }
 
 /**
  * pango_matrix_free:
- * @matrix: a #PangoMatrix, or %NULL
+ * @matrix: a #PangoMatrix, may be %NULL
  *
  * Free a #PangoMatrix created with pango_matrix_copy().
- * Does nothing if @matrix is %NULL.
  *
  * Since: 1.6
  **/
 void
 pango_matrix_free (PangoMatrix *matrix)
 {
-  if (matrix)
-    g_slice_free (PangoMatrix, matrix);
+  if (matrix == NULL)
+    return;
+
+  g_slice_free (PangoMatrix, matrix);
 }
 
 /**

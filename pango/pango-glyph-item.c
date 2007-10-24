@@ -24,6 +24,7 @@
 
 #include "pango-glyph-item.h"
 #include "pango-glyph-item-private.h"
+#include "pango-impl-utils.h"
 
 #define LTR(glyph_item) (((glyph_item)->item->analysis.level % 2) == 0)
 
@@ -130,8 +131,36 @@ pango_glyph_item_split (PangoGlyphItem *orig,
 }
 
 /**
+ * pango_glyph_item_copy:
+ * @orig: a #PangoGlyphItem, may be %NULL
+ *
+ * Make a deep copy an existing #PangoGlyphItem structure.
+ *
+ * Return value: the newly allocated #PangoGlyphItem, which should
+ *               be freed with pango_glyph_item_free(), or %NULL
+ *               if @orig was %NULL.
+ *
+ * Since: 1.20
+ **/
+PangoGlyphItem *
+pango_glyph_item_copy  (PangoGlyphItem *orig)
+{
+  PangoGlyphItem *result;
+
+  if (orig == NULL)
+    return NULL;
+
+  result = g_slice_new (PangoGlyphItem);
+
+  result->item = pango_item_copy (orig->item);
+  result->glyphs = pango_glyph_string_copy (orig->glyphs);
+
+  return result;
+}
+
+/**
  * pango_glyph_item_free:
- * @glyph_item: a #PangoGlyphItem
+ * @glyph_item: a #PangoGlyphItem, may be %NULL
  *
  * Frees a #PangoGlyphItem and memory to which it points.
  *
@@ -140,12 +169,27 @@ pango_glyph_item_split (PangoGlyphItem *orig,
 void
 pango_glyph_item_free  (PangoGlyphItem *glyph_item)
 {
+  if (glyph_item == NULL)
+    return;
+
   if (glyph_item->item)
     pango_item_free (glyph_item->item);
   if (glyph_item->glyphs)
     pango_glyph_string_free (glyph_item->glyphs);
 
   g_slice_free (PangoGlyphItem, glyph_item);
+}
+
+GType
+pango_glyph_item_get_type (void)
+{
+  static GType our_type = 0;
+
+  if (G_UNLIKELY (our_type == 0))
+    our_type = g_boxed_type_register_static (I_("PangoGlyphItem"),
+					     (GBoxedCopyFunc) pango_glyph_item_copy,
+					     (GBoxedFreeFunc) pango_glyph_item_free);
+  return our_type;
 }
 
 /**

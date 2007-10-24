@@ -42,18 +42,24 @@ pango_item_new (void)
 
 /**
  * pango_item_copy:
- * @item: a #PangoItem
+ * @item: a #PangoItem, may be %NULL
  *
  * Copy an existing #PangoItem structure.
  *
  * Return value: the newly allocated #PangoItem, which should
- *               be freed with pango_item_free().
+ *               be freed with pango_item_free(), or %NULL if
+ *               @item was NULL.
  **/
 PangoItem *
 pango_item_copy (PangoItem *item)
 {
   GSList *extra_attrs, *tmp_list;
-  PangoItem *result = g_slice_new (PangoItem);
+  PangoItem *result;
+
+  if (item == NULL)
+    return NULL;
+  
+  result = g_slice_new (PangoItem);
 
   result->offset = item->offset;
   result->length = item->length;
@@ -78,13 +84,16 @@ pango_item_copy (PangoItem *item)
 
 /**
  * pango_item_free:
- * @item: a #PangoItem
+ * @item: a #PangoItem, may be %NULL
  *
  * Free a #PangoItem and all associated memory.
  **/
 void
 pango_item_free (PangoItem *item)
 {
+  if (item == NULL)
+    return;
+
   if (item->analysis.extra_attrs)
     {
       g_slist_foreach (item->analysis.extra_attrs, (GFunc)pango_attribute_destroy, NULL);

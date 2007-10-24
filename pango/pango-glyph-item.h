@@ -37,9 +37,14 @@ struct _PangoGlyphItem
   PangoGlyphString *glyphs;
 };
 
+#define PANGO_TYPE_GLYPH_ITEM (pango_glyph_item_get_type ())
+
+GType pango_glyph_item_get_type (void) G_GNUC_CONST;
+
 PangoGlyphItem *pango_glyph_item_split        (PangoGlyphItem *orig,
 					       const char     *text,
 					       int             split_index);
+PangoGlyphItem *pango_glyph_item_copy         (PangoGlyphItem *orig);
 void            pango_glyph_item_free         (PangoGlyphItem *glyph_item);
 GSList *        pango_glyph_item_apply_attrs  (PangoGlyphItem *glyph_item,
 					       const char     *text,

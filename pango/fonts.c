@@ -657,19 +657,21 @@ pango_font_description_better_match (const PangoFontDescription *desc,
 
 /**
  * pango_font_description_copy:
- * @desc: a #PangoFontDescription
+ * @desc: a #PangoFontDescription, may be %NULL
  *
  * Make a copy of a #PangoFontDescription.
  *
  * Return value: the newly allocated #PangoFontDescription, which should
- *               be freed with pango_font_description_free().
+ *               be freed with pango_font_description_free(), or %NULL
+ *               if @desc was %NULL.
  **/
 PangoFontDescription *
 pango_font_description_copy  (const PangoFontDescription  *desc)
 {
   PangoFontDescription *result;
 
-  g_return_val_if_fail (desc != NULL, NULL);
+  if (desc == NULL)
+    return NULL;
 
   result = g_slice_new (PangoFontDescription);
 
@@ -686,7 +688,7 @@ pango_font_description_copy  (const PangoFontDescription  *desc)
 
 /**
  * pango_font_description_copy_static:
- * @desc: a #PangoFontDescription
+ * @desc: a #PangoFontDescription, may be %NULL
  *
  * Like pango_font_description_copy(), but only a shallow copy is made
  * of the family name and other allocated fields. The result can only
@@ -694,14 +696,16 @@ pango_font_description_copy  (const PangoFontDescription  *desc)
  * when the copy is only needed temporarily.
  *
  * Return value: the newly allocated #PangoFontDescription, which should
- *               be freed with pango_font_description_free().
+ *               be freed with pango_font_description_free(), or %NULL
+ *               if @desc was %NULL.
  **/
 PangoFontDescription *
 pango_font_description_copy_static (const PangoFontDescription *desc)
 {
   PangoFontDescription *result;
 
-  g_return_val_if_fail (desc != NULL, NULL);
+  if (desc == NULL)
+    return NULL;
 
   result = g_slice_new (PangoFontDescription);
 
@@ -794,25 +798,25 @@ pango_font_description_hash (const PangoFontDescription *desc)
 
 /**
  * pango_font_description_free:
- * @desc: a #PangoFontDescription, or %NULL
+ * @desc: a #PangoFontDescription, may be %NULL
  *
  * Frees a font description.
  **/
 void
 pango_font_description_free  (PangoFontDescription  *desc)
 {
-  if (desc)
-    {
-      if (desc->family_name && !desc->static_family)
-	g_free (desc->family_name);
+  if (desc == NULL)
+    return;
 
-      g_slice_free (PangoFontDescription, desc);
-    }
+  if (desc->family_name && !desc->static_family)
+    g_free (desc->family_name);
+
+  g_slice_free (PangoFontDescription, desc);
 }
 
 /**
  * pango_font_descriptions_free:
- * @descs: a pointer to an array of #PangoFontDescription, or %NULL
+ * @descs: a pointer to an array of #PangoFontDescription, may be %NULL
  * @n_descs: number of font descriptions in @descs
  *
  * Frees a list of font descriptions from pango_font_map_list_fonts()
@@ -823,12 +827,12 @@ pango_font_descriptions_free (PangoFontDescription **descs,
 {
   int i;
 
-  if (descs)
-    {
-      for (i = 0; i<n_descs; i++)
-	pango_font_description_free (descs[i]);
-      g_free (descs);
-    }
+  if (descs == NULL)
+    return;
+
+  for (i = 0; i<n_descs; i++)
+    pango_font_description_free (descs[i]);
+  g_free (descs);
 }
 
 typedef struct
@@ -1455,7 +1459,7 @@ pango_font_metrics_new (void)
 
 /**
  * pango_font_metrics_ref:
- * @metrics: a #PangoFontMetrics structure
+ * @metrics: a #PangoFontMetrics structure, may be %NULL
  *
  * Increase the reference count of a font metrics structure by one.
  *
@@ -1464,7 +1468,7 @@ pango_font_metrics_new (void)
 PangoFontMetrics *
 pango_font_metrics_ref (PangoFontMetrics *metrics)
 {
-  if (!metrics)
+  if (metrics == NULL)
     return NULL;
 
   metrics->ref_count++;
@@ -1474,7 +1478,7 @@ pango_font_metrics_ref (PangoFontMetrics *metrics)
 
 /**
  * pango_font_metrics_unref:
- * @metrics: a #PangoFontMetrics structure
+ * @metrics: a #PangoFontMetrics structure, may be %NULL
  *
  * Decrease the reference count of a font metrics structure by one. If
  * the result is zero, frees the structure and any associated
@@ -1483,8 +1487,9 @@ pango_font_metrics_ref (PangoFontMetrics *metrics)
 void
 pango_font_metrics_unref (PangoFontMetrics *metrics)
 {
-  if (!metrics)
+  if (metrics == NULL)
     return;
+
   g_return_if_fail (metrics->ref_count > 0 );
 
   metrics->ref_count--;

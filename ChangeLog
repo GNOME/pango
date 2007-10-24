@@ -1,3 +1,44 @@
+2007-10-24  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 471577 – GBoxed GType for PangoGlyphItem
+
+	* pango/pango-glyph-item.h:
+	* pango/pango-glyph-item.c:
+	New public API:
+
+		PANGO_TYPE_GLYPH_ITEM
+		pango_glyph_item_copy()
+		pango_glyph_item_get_type()
+
+	* pango/pango-layout.c:
+	New public API:
+	
+		pango_layout_iter_copy()
+
+	* pango/fonts.c (pango_font_description_copy),
+	(pango_font_description_copy_static),
+	(pango_font_description_free), (pango_font_descriptions_free),
+	(pango_font_metrics_ref), (pango_font_metrics_unref):
+	* pango/glyphstring.c (pango_glyph_string_copy),
+	(pango_glyph_string_free):
+	* pango/pango-attributes.c (pango_attr_list_ref),
+	(pango_attr_list_unref), (pango_attr_list_copy):
+	* pango/pango-color.c (pango_color_copy), (pango_color_free):
+	* pango/pango-item.c (pango_item_copy), (pango_item_free):
+	* pango/pango-layout.c (pango_layout_line_ref),
+	(pango_layout_line_unref), (pango_layout_iter_copy),
+	(pango_layout_iter_free):
+	* pango/pango-layout.h:
+	* pango/pango-matrix.c (pango_matrix_copy), (pango_matrix_free):
+	Update all copy/free functions to accept NULL as legitimate input.
+	Previously all were g_return_[val_]if_fail()ing it.
+
+	* pango/pango.def:
+	* docs/pango-sections.txt:
+	* docs/tmpl/glyphs.sgml:
+	* docs/tmpl/layout.sgml:
+	Update.
+
 2007-10-22  Behdad Esfahbod  <behdad@gnome.org>
 
 	Bug 471571 – Add pango_layout_iter_get_layout()

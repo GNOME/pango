@@ -1060,7 +1060,7 @@ pango_attr_list_new (void)
 
 /**
  * pango_attr_list_ref:
- * @list: a #PangoAttrList
+ * @list: a #PangoAttrList, may be %NULL
  *
  * Increase the reference count of the given attribute list by one.
  *
@@ -1071,7 +1071,8 @@ pango_attr_list_new (void)
 PangoAttrList *
 pango_attr_list_ref (PangoAttrList *list)
 {
-  g_return_val_if_fail (list != NULL, NULL);
+  if (list == NULL)
+    return NULL;
 
   list->ref_count++;
 
@@ -1080,7 +1081,7 @@ pango_attr_list_ref (PangoAttrList *list)
 
 /**
  * pango_attr_list_unref:
- * @list: a #PangoAttrList
+ * @list: a #PangoAttrList, may be %NULL
  *
  * Decrease the reference count of the given attribute list by one.
  * If the result is zero, free the attribute list and the attributes
@@ -1091,7 +1092,9 @@ pango_attr_list_unref (PangoAttrList *list)
 {
   GSList *tmp_list;
 
-  g_return_if_fail (list != NULL);
+  if (list == NULL)
+    return;
+
   g_return_if_fail (list->ref_count > 0);
 
   list->ref_count--;
@@ -1114,13 +1117,14 @@ pango_attr_list_unref (PangoAttrList *list)
 
 /**
  * pango_attr_list_copy:
- * @list: a #PangoAttrList
+ * @list: a #PangoAttrList, may be %NULL
  *
  * Copy @list and return an identical new list.
  *
  * Return value: the newly allocated #PangoAttrList, with a
  *               reference count of one, which should
  *               be freed with pango_attr_list_unref().
+ *               Returns %NULL if @list was %NULL.
  **/
 PangoAttrList *
 pango_attr_list_copy (PangoAttrList *list)
@@ -1129,7 +1133,8 @@ pango_attr_list_copy (PangoAttrList *list)
   GSList *iter;
   GSList *new_attrs;
 
-  g_return_val_if_fail (list != NULL, NULL);
+  if (list == NULL)
+    return NULL;
 
   new = pango_attr_list_new ();
 

@@ -92,17 +92,23 @@ pango_glyph_string_get_type (void)
 
 /**
  * pango_glyph_string_copy:
- * @string: a #PangoGlyphString.
+ * @string: a #PangoGlyphString, may be %NULL
  *
- *  Copy a glyph string and associated storage.
+ * Copy a glyph string and associated storage.
  *
  * Return value: the newly allocated #PangoGlyphString, which
- *               should be freed with pango_glyph_string_free().
+ *               should be freed with pango_glyph_string_free(),
+ *               or %NULL if @string was %NULL.
  */
 PangoGlyphString *
 pango_glyph_string_copy (PangoGlyphString *string)
 {
-  PangoGlyphString *new_string = g_slice_new (PangoGlyphString);
+  PangoGlyphString *new_string;
+
+  if (new_string == NULL)
+    return NULL;
+  
+  new_string = g_slice_new (PangoGlyphString);
 
   *new_string = *string;
 
@@ -116,13 +122,15 @@ pango_glyph_string_copy (PangoGlyphString *string)
 
 /**
  * pango_glyph_string_free:
- * @string:    a #PangoGlyphString.
+ * @string: a #PangoGlyphString, may be %NULL
  *
  * Free a glyph string and associated storage.
  */
 void
 pango_glyph_string_free (PangoGlyphString *string)
 {
+  if (string == NULL)
+    return;
   g_free (string->glyphs);
   g_free (string->log_clusters);
   g_slice_free (PangoGlyphString, string);

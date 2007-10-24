@@ -117,13 +117,16 @@ pango_glyph_string_get_width
 pango_glyph_string_index_to_x
 pango_glyph_string_x_to_index
 pango_glyph_string_get_logical_widths
+PANGO_TYPE_GLYPH_ITEM
 pango_glyph_item_split
 pango_glyph_item_apply_attrs
 pango_glyph_item_letter_space
+pango_glyph_item_copy
 pango_glyph_item_free
 
 <SUBSECTION Private>
 pango_glyph_string_get_type
+pango_glyph_item_get_type
 pango_matrix_get_type
 </SECTION>
 
@@ -491,6 +494,7 @@ pango_layout_get_lines
 pango_layout_get_lines_readonly
 
 pango_layout_get_iter
+pango_layout_iter_copy
 pango_layout_iter_free
 pango_layout_iter_next_run
 pango_layout_iter_next_char

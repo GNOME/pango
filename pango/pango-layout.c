@@ -3675,7 +3675,7 @@ pango_layout_check_lines (PangoLayout *layout)
 
 /**
  * pango_layout_line_ref:
- * @line: a #PangoLayoutLine
+ * @line: a #PangoLayoutLine, may be %NULL
  *
  * Increase the reference count of a #PangoLayoutLine by one.
  *
@@ -3688,7 +3688,8 @@ pango_layout_line_ref (PangoLayoutLine *line)
 {
   PangoLayoutLinePrivate *private = (PangoLayoutLinePrivate *)line;
 
-  g_return_val_if_fail (line != NULL, NULL);
+  if (line == NULL)
+    return NULL;
 
   private->ref_count++;
 
@@ -3708,7 +3709,9 @@ pango_layout_line_unref (PangoLayoutLine *line)
 {
   PangoLayoutLinePrivate *private = (PangoLayoutLinePrivate *)line;
 
-  g_return_if_fail (line != NULL);
+  if (line == NULL)
+    return;
+
   g_return_if_fail (private->ref_count > 0);
 
   private->ref_count--;
@@ -5153,11 +5156,26 @@ update_run (PangoLayoutIter *iter,
     }
 }
 
-static PangoLayoutIter *
+/**
+ * pango_layout_iter_copy:
+ * @iter: a #PangoLayoutIter, may be %NULL
+ *
+ * Copies a #PangLayoutIter.
+ *
+ * Return value: the newly allocated #PangoLayoutIter, which should
+ *               be freed with pango_layout_iter_free(), or %NULL if
+ *               @iter was %NULL.
+ *
+ * Since: 1.20
+ **/
+PangoLayoutIter *
 pango_layout_iter_copy (PangoLayoutIter *iter)
 {
   PangoLayoutIter *new;
   GSList *l;
+
+  if (iter == NULL)
+    return NULL;
 
   new = g_slice_new (PangoLayoutIter);
 
@@ -5269,14 +5287,15 @@ pango_layout_get_iter (PangoLayout *layout)
 
 /**
  * pango_layout_iter_free:
- * @iter: a #PangoLayoutIter
+ * @iter: a #PangoLayoutIter, may be %NULL
  *
  * Frees an iterator that's no longer in use.
  **/
 void
 pango_layout_iter_free (PangoLayoutIter *iter)
 {
-  g_return_if_fail (iter != NULL);
+  if (iter == NULL)
+    return;
 
   g_slist_foreach (iter->line_extents, (GFunc)extents_free, NULL);
   g_slist_free (iter->line_extents);

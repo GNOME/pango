@@ -175,7 +175,9 @@ EXPORTS
 	pango_get_mirror_char
 	pango_get_sysconf_subdirectory
 	pango_glyph_item_apply_attrs
+	pango_glyph_item_copy
 	pango_glyph_item_free
+	pango_glyph_item_get_type
 	pango_glyph_item_letter_space
 	pango_glyph_item_split
 	pango_glyph_string_copy
@@ -243,6 +245,7 @@ EXPORTS
 	pango_layout_is_ellipsized
 	pango_layout_is_wrapped
 	pango_layout_iter_at_last_line
+	pango_layout_iter_copy
 	pango_layout_iter_free
 	pango_layout_iter_get_baseline
 	pango_layout_iter_get_char_extents
