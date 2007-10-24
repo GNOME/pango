@@ -1,5 +1,11 @@
 2007-10-24  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango/glyphstring.c (pango_glyph_string_copy),
+	(pango_glyph_string_free):
+	Fix another Oops of mine from recent commits.
+
+2007-10-24  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 472924 – Mark some classes abstract
 
 	* pango/fonts.c:

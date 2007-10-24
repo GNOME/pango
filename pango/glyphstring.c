@@ -105,7 +105,7 @@ pango_glyph_string_copy (PangoGlyphString *string)
 {
   PangoGlyphString *new_string;
 
-  if (new_string == NULL)
+  if (string == NULL)
     return NULL;
   
   new_string = g_slice_new (PangoGlyphString);
@@ -131,6 +131,7 @@ pango_glyph_string_free (PangoGlyphString *string)
 {
   if (string == NULL)
     return;
+
   g_free (string->glyphs);
   g_free (string->log_clusters);
   g_slice_free (PangoGlyphString, string);
