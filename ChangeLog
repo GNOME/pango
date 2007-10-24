@@ -1,5 +1,11 @@
 2007-10-24  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango/opentype/harfbuzz-gpos-private.h:
+	* pango/opentype/harfbuzz-gsub-private.h:
+	Add commented-out dummy struct for Extension lookups.
+
+2007-10-24  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 478865 – Drastically reduce number of PangoFont objects created
 	for rotating text
 
