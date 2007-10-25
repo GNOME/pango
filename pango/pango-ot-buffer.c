@@ -362,7 +362,7 @@ pango_ot_buffer_output (const PangoOTBuffer *buffer,
 	{
 	  PangoRectangle logical_rect;
 
-	  FT_UShort property;
+	  HB_UShort property;
 
 	  if (buffer->zero_width_marks &&
 	      gdef &&

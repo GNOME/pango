@@ -1,5 +1,9 @@
 2007-10-25  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango/opentype/*: Even more cleanup and more type renames.
+
+2007-10-25  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/opentype/*: More cleanup, remove redundant error types.
 
 2007-10-24  Behdad Esfahbod  <behdad@gnome.org>

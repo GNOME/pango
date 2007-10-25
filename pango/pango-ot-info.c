@@ -148,8 +148,8 @@ is_truetype (FT_Face face)
 typedef struct _GlyphInfo GlyphInfo;
 
 struct _GlyphInfo {
-  FT_UShort glyph;
-  FT_UShort class;
+  HB_UShort glyph;
+  HB_UShort class;
 };
 
 static int
@@ -168,7 +168,7 @@ compare_glyph_info (gconstpointer a,
  */
 static gboolean
 get_glyph_class (gunichar   charcode,
-		 FT_UShort *class)
+		 HB_UShort *class)
 {
   /* For characters mapped into the Arabic Presentation forms, using properties
    * derived as we apply GSUB substitutions will be more reliable
@@ -217,10 +217,10 @@ static void
 synthesize_class_def (PangoOTInfo *info)
 {
   GArray *glyph_infos;
-  FT_UShort *glyph_indices;
-  FT_UShort *classes;
-  FT_ULong charcode;
-  FT_UInt glyph;
+  HB_UShort *glyph_indices;
+  HB_UShort *classes;
+  HB_UInt charcode;
+  HB_UInt glyph;
   unsigned int i, j;
   FT_CharMap old_charmap;
 
@@ -254,8 +254,8 @@ synthesize_class_def (PangoOTInfo *info)
    */
   g_array_sort (glyph_infos, compare_glyph_info);
 
-  glyph_indices = g_new (FT_UShort, glyph_infos->len);
-  classes = g_new (FT_UShort, glyph_infos->len);
+  glyph_indices = g_new (HB_UShort, glyph_infos->len);
+  classes = g_new (HB_UShort, glyph_infos->len);
 
   for (i = 0, j = 0; i < glyph_infos->len; i++)
     {
@@ -459,7 +459,7 @@ pango_ot_info_find_script (PangoOTInfo      *info,
     }
 
   /* try with 'dflt'; MS site has had typos and many fonts use it now :( */
-  script_tag = FT_MAKE_TAG ('d', 'f', 'l', 't');
+  script_tag = PANGO_OT_TAG_MAKE ('d', 'f', 'l', 't');
 
   for (i=0; i < script_list->ScriptCount; i++)
     {
@@ -538,7 +538,7 @@ pango_ot_info_find_language (PangoOTInfo      *info,
     }
 
   /* try with 'dflt'; MS site has had typos and many fonts use it now :( */
-  language_tag = FT_MAKE_TAG ('d', 'f', 'l', 't');
+  language_tag = PANGO_OT_TAG_MAKE ('d', 'f', 'l', 't');
 
   for (i = 0; i < script->LangSysCount; i++)
     {
@@ -623,7 +623,7 @@ pango_ot_info_find_feature  (PangoOTInfo      *info,
 
   for (i = 0; i < lang_sys->FeatureCount; i++)
     {
-      FT_UShort index = lang_sys->FeatureIndex[i];
+      HB_UShort index = lang_sys->FeatureIndex[i];
 
       if (feature_list->FeatureRecord[index].FeatureTag == feature_tag)
 	{
@@ -778,7 +778,7 @@ pango_ot_info_list_features  (PangoOTInfo      *info,
 
   for (i = 0; i < lang_sys->FeatureCount; i++)
     {
-      FT_UShort index = lang_sys->FeatureIndex[i];
+      HB_UShort index = lang_sys->FeatureIndex[i];
 
       result[i] = feature_list->FeatureRecord[index].FeatureTag;
     }

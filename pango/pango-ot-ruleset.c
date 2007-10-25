@@ -29,7 +29,7 @@ typedef struct _PangoOTRule PangoOTRule;
 struct _PangoOTRule
 {
   gulong     property_bit;
-  FT_UShort  feature_index;
+  HB_UShort  feature_index;
   guint      table_type : 1;
 };
 
@@ -414,7 +414,7 @@ pango_ot_ruleset_maybe_add_feature (PangoOTRuleset          *ruleset,
  *
  * This is a convenience function that 
  * for each feature in the feature map array @features
- * converts the feature name to a #PangoOTTag feature tag using FT_MAKE_TAG()
+ * converts the feature name to a #PangoOTTag feature tag using PANGO_OT_TAG_MAKE()
  * and calls pango_ot_ruleset_maybe_add_feature() on it.
  *
  * Return value: The number of features in @features that were found
@@ -435,10 +435,10 @@ pango_ot_ruleset_maybe_add_features (PangoOTRuleset          *ruleset,
 
   for (i = 0; i < n_features; i++)
     {
-      PangoOTTag feature_tag = FT_MAKE_TAG (features[i].feature_name[0],
-					    features[i].feature_name[1],
-					    features[i].feature_name[2],
-					    features[i].feature_name[3]);
+      PangoOTTag feature_tag = PANGO_OT_TAG_MAKE (features[i].feature_name[0],
+						  features[i].feature_name[1],
+						  features[i].feature_name[2],
+						  features[i].feature_name[3]);
 
       n_found_features += pango_ot_ruleset_maybe_add_feature (ruleset,
 							      table_type,
