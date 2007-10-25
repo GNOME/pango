@@ -297,7 +297,7 @@ pango_ot_info_get_gdef (PangoOTInfo *info)
 	{
 	  error = HB_Load_GDEF_Table (info->face, &info->gdef);
 
-	  if (error && error != HB_Err_Table_Missing)
+	  if (error && error != HB_Err_Not_Covered)
 	    g_warning ("Error loading GDEF table %d", error);
 
 	  if (!info->gdef)
@@ -327,7 +327,7 @@ pango_ot_info_get_gsub (PangoOTInfo *info)
 	{
 	  error = HB_Load_GSUB_Table (info->face, &info->gsub, gdef);
 
-	  if (error && error != HB_Err_Table_Missing)
+	  if (error && error != HB_Err_Not_Covered)
 	    g_warning ("Error loading GSUB table %d", error);
 	}
     }
@@ -351,7 +351,7 @@ pango_ot_info_get_gpos (PangoOTInfo *info)
 	{
 	  error = HB_Load_GPOS_Table (info->face, &info->gpos, gdef);
 
-	  if (error && error != HB_Err_Table_Missing)
+	  if (error && error != HB_Err_Not_Covered)
 	    g_warning ("Error loading GPOS table %d", error);
 	}
     }
@@ -505,7 +505,7 @@ pango_ot_info_find_language (PangoOTInfo      *info,
 			     guint            *required_feature_index)
 {
   HB_ScriptList *script_list;
-  HB_Script *script;
+  HB_ScriptTable *script;
   int i;
 
   if (language_index)
@@ -593,7 +593,7 @@ pango_ot_info_find_feature  (PangoOTInfo      *info,
 {
   HB_ScriptList *script_list;
   HB_FeatureList *feature_list;
-  HB_Script *script;
+  HB_ScriptTable *script;
   HB_LangSys *lang_sys;
 
   int i;
@@ -690,7 +690,7 @@ pango_ot_info_list_languages (PangoOTInfo      *info,
 {
   PangoOTTag *result;
   HB_ScriptList *script_list;
-  HB_Script *script;
+  HB_ScriptTable *script;
   int i;
 
   g_return_val_if_fail (PANGO_IS_OT_INFO (info), NULL);
@@ -745,7 +745,7 @@ pango_ot_info_list_features  (PangoOTInfo      *info,
 
   HB_ScriptList *script_list;
   HB_FeatureList *feature_list;
-  HB_Script *script;
+  HB_ScriptTable *script;
   HB_LangSys *lang_sys;
 
   int i;
