@@ -1,5 +1,10 @@
 2007-10-24  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango/opentype/*: Rename ftglue.c to harfbuzz-impl.c and more
+	type renames and moving code around.
+
+2007-10-24  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/opentype/*: New header file harfbuzz-global.h.  Rename
 	FT_* int types to HB_* types.
 
