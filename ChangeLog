@@ -1,3 +1,7 @@
+2007-10-26  Behdad Esfahbod  <behdad@gnome.org>
+
+	* pango/pango-script-lang-table.h: Update for fontconfig-2.4.91.
+
 2007-10-25  Behdad Esfahbod  <behdad@gnome.org>
 
 	* pango/pangofc-fontmap.c (pango_fc_font_map_get_patterns):
