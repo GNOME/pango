@@ -1361,7 +1361,6 @@ _pango_fc_font_map_get_coverage (PangoFcFontMap *fcfontmap,
  *
  * Since: 1.6
  **/
-
 PangoCoverage  *
 _pango_fc_font_map_fc_to_coverage (FcCharSet *charset)
 {
