@@ -1,5 +1,12 @@
 2007-10-26  Behdad Esfahbod  <behdad@gnome.org>
 
+	* tools/Makefile.am:
+	* tools/gen-script-for-lang-new.c:
+	Functional dup of gen-script-for-lang that uses FcGetLangs() and
+	FcCharSetForLang() instead of parsing .orth files.
+
+2007-10-26  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/pango-script-lang-table.h: Update for fontconfig-2.4.91.
 
 2007-10-25  Behdad Esfahbod  <behdad@gnome.org>
