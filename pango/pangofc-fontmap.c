@@ -1112,7 +1112,7 @@ pango_fc_font_map_get_patterns (PangoFontMap               *fontmap,
 
       FcPatternDestroy (pattern);
 
-      FcFontSetSortDestroy (font_patterns);
+      FcFontSetDestroy (font_patterns);
 
       patterns->key = fontset_hash_key_copy (&key);
       g_hash_table_insert (priv->fontset_hash,

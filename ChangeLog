@@ -1,5 +1,14 @@
 2007-10-25  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango/pangofc-fontmap.c (pango_fc_font_map_get_patterns):
+	Call FcFontSetDestroy() instead of FcFontSetSortDestroy().
+	These days they are the same, but previously the latter was
+	not freeing the actual patterns.  But we don't need the
+	sort patterns, so this retroactively fixes a leak in older
+	versions!
+
+2007-10-25  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/opentype/*: Even more cleanup and more type renames.
 
 2007-10-25  Behdad Esfahbod  <behdad@gnome.org>
