@@ -48,11 +48,12 @@ tags. &lt;span&gt; has the following attributes:
 
 <varlistentry><term>font_desc</term>
 <listitem><para>
-A font description string, such as "Sans Italic 12"; note that any other 
-span attributes will override this description. So if you have "Sans
-Italic" and also a style="normal" attribute, you will get Sans normal,
-not italic.
-</para></listitem>
+A font description string, such as "Sans Italic 12". See 
+<link linkend="pango-font-description-from-string">pango_font_description_from_string()</link> 
+for a description of the format of the string representation . Note that any 
+other span attributes will override this description. So if you have 
+"Sans Italic" and also a style="normal" attribute, you will get Sans normal, 
+not italic.</para></listitem>
 </varlistentry>
 
 <varlistentry><term>font_family</term>
