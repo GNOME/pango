@@ -1,3 +1,9 @@
+2007-10-26  Murray Cumming  <murrayc@murrayc.com>
+
+	* docs/pango_markup.sgml: Adds a link to 
+	pango_font_description_from_string() so that the font_desc 
+	attribute is not so mysterious. Bug #490661.
+
 2007-10-24  Behdad Esfahbod  <behdad@gnome.org>
 
 	Bug 486951 – ChangeLog.pre-1-18
