@@ -1,3 +1,11 @@
+2007-10-28  Behdad Esfahbod  <behdad@gnome.org>
+
+	* pango/pango-script-lang-table.h:
+	* tools/gen-script-for-lang-new.c:
+	Sort scripts based on frequency.
+
+	* tools/Makefile.am: Don't build anything by default.
+
 2007-10-26  Murray Cumming  <murrayc@murrayc.com>
 
 	* docs/pango_markup.sgml: Adds a link to 

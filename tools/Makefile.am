@@ -7,7 +7,7 @@ INCLUDES =					\
 	-DPANGO_DISABLE_DEPRECATED		\
 	$(PANGO_DEBUG_FLAGS)
 
-noinst_PROGRAMS = 		\
+EXTRA_PROGRAMS = 		\
 	gen-script-for-lang	\
 	gen-script-for-lang-new
 
