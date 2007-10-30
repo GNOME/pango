@@ -1,3 +1,11 @@
+2007-10-29  Behdad Esfahbod  <behdad@gnome.org>
+
+	* === Released 1.19.0 ===
+
+	* configure.in: Version 1.19.0
+
+	* NEWS: Updated.
+
 2007-10-28  Behdad Esfahbod  <behdad@gnome.org>
 
 	* pango/pango-script-lang-table.h:

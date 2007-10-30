@@ -1,3 +1,115 @@
+Overview of changes between 1.18.3 and 1.19.0
+==============================================
+- Update list of languages to that of fontconfig-2.4.91.
+- Various optimizations, making rendering the same Pango layout using
+  changing cairo matrices much faster.
+
+- Make sure all boxed type copy/free functions accept NULL as legitimate
+  input.  Previously most were g_return_[val_]if_fail()ing it.  This is
+  mostly for convenience when writing code in C.
+
+- Apply 'vkrn' GPOS feature in vertical writing.
+
+- In pangofc, set "pangoversion" in pattern passed to fontconfig,
+  such that font configuration can condition on being driven by Pango
+  or not.
+
+- Various optimizations and cleanups in the OpenType Layout engine,
+  aka HarfBuzz.
+
+
+- Changed APIs:
+
+  * All PangoAttribute constructors are changed to initialize the
+    attribute to the range [0..MAXUINT].  The range was undefined
+    previously.  All custom attribute constructors are recommended
+    to call the new pango_attribute_init() to do the same.
+
+  * Public API chance: Mark the following types as abstract:
+
+	PangoFont
+	PangoFontFace
+	PangoFontFamily
+	PangoFontMap
+	PangoFcFont
+	PangoFcFontMap
+
+    PangoContext may be marked so in the future too.
+
+  * Make following macros public.  Previously they were only
+    defined for backend/engine implementations.
+
+	PANGO_GLYPH_EMPTY
+	PANGO_GLYPH_UNKNOWN_FLAG
+	PANGO_GET_UNKNOWN_GLYPH()
+
+
+- New public API:
+	
+  * Convenience for initializing custom attributes:
+
+	pango_attribute_init()
+
+  * Adding boxed type for PangoGlyphItem:
+
+	PANGO_TYPE_GLYPH_ITEM
+	pango_glyph_item_copy()
+	pango_glyph_item_get_type()
+
+  * Add missing copy function for a boxed type in C:
+
+	pango_layout_iter_copy()
+
+  * Add missing getter:
+
+	pango_layout_iter_get_layout()
+
+  * Convenience for writing custom PangoRenderer's:
+
+	pango_renderer_get_layout()
+	pango_renderer_get_layout_line()
+
+  * PangoFc extensions to fontconfig's pattern syntax:
+
+	PANGO_FC_GRAVITY
+	PANGO_FC_VERSION
+
+
+- Bugs fixed in this release:
+	Bug 490661 – Pango Markup: Link to font_desc syntax explanation
+		Based on patch from Chris Toshok
+	Bug 489909 – pango_cairo_update_context() should ignore matrix
+		translation
+	Bug 488840 – harfbuzz: protect against ligid overflow
+	Bug 486932 – Apply vkrn GPOS feature in vertical writing
+	Bug 486951 – ChangeLog.pre-1-18
+	Bug 485621 – Get rid of freetype memory allocator in harfbuzz
+	Bug 485566 – Cache one OpenType Buffer
+	Bug 485559 – Boston Summit HarfBuzz optimizations
+	Bug 481537 – compiler warning fixes
+		Patch from Kjartan Maraas
+	Bug 478865 – Drastically reduce number of PangoFont objects created
+		for rotating text
+	Bug 472924 – Mark some classes abstract
+	Bug 472629 – Add pango_renderer_get_layout(_line)
+	Bug 472303 – Make PANGO_GLYPH_EMPTY and PANGO_GLYPH_UNKNOWN_FLAG public
+	Bug 471601 – Pass pango version information to fontconfig
+	Bug 471577 – GBoxed GType for PangoGlyphItem
+	Bug 471571 – Add pango_layout_iter_get_layout()
+	Bug 471568 – Optimizations in _pango_cairo_update_context()
+	Bug 469641 – Initialize attribute start/end to [0..MAXUINT]
+
+
+Overview of changes between 1.18.2 and 1.18.3
+==============================================
+- Two OpenType engine fixes.  Makes Nafees Nastaliq font
+  work great, and avoids warnings with some other fonts.
+- Fix minor leak in win32 backend.
+- Bugs fixed in this release:
+	Bug 483600 – Leak of font family name in
+	pango_win32_font_description_from_logfont(w)
+	Patch from Daniel Atallah
+
 Overview of changes between 1.18.1 and 1.18.2
 ==============================================
 - Require libthai >= 0.1.9 for enabling thai-lang module
