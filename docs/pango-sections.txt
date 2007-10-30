@@ -41,7 +41,6 @@ pango_context_list_families
 pango_get_mirror_char
 pango_unichar_direction
 pango_find_base_dir
-pango_gravity_to_rotation
 <SUBSECTION Standard>
 PANGO_TYPE_CONTEXT
 PangoContextClass
@@ -1066,6 +1065,7 @@ PANGO_TYPE_GRAVITY_HINT
 PANGO_GRAVITY_IS_VERTICAL
 pango_gravity_get_for_matrix
 pango_gravity_get_for_script
+pango_gravity_to_rotation
 <SUBSECTION Private>
 pango_gravity_get_type
 pango_gravity_hint_get_type

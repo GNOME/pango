@@ -1,3 +1,10 @@
+2007-10-30  Behdad Esfahbod  <behdad@gnome.org>
+
+	* docs/pango-sections.txt:
+	* docs/tmpl/main.sgml:
+	* docs/tmpl/vertical.sgml:
+	Improve vertical docs.
+
 2007-10-29  Behdad Esfahbod  <behdad@gnome.org>
 
 	* === Released 1.19.0 ===

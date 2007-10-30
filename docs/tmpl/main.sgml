@@ -373,15 +373,6 @@ The #GObject type for #PangoDirection.
 @Returns: 
 
 
-<!-- ##### FUNCTION pango_gravity_to_rotation ##### -->
-<para>
-
-</para>
-
-@gravity: 
-@Returns: 
-
-
 <!-- ##### FUNCTION pango_break ##### -->
 <para>
 
