@@ -1,3 +1,31 @@
+2007-11-02  Tor Lillqvist  <tml@novell.com>
+
+	* pango/pango-utils.c (read_builtin_aliases, pango_load_aliases):
+	On Windows store the default aliases file in a string
+	array. (#492517)
+
+	Compared to the pango.aliases file as distributed with my most
+	recent Windows builds there are some changes: Add the DejaVu fonts
+	as the first ones listed for the generic sans, serif and mono font
+	names. Use Tahoma instead of Arial for sans, and Georgia instead
+	of Times New Roman for serif (to be used if the DejaVu fonts
+	aren't present). Add Arial Unicode MS (a font with quite large
+	coverage that comes with MS Office and thus is often
+	available). Add Sylfaen (the Armenian and Georgian font bundled
+	with Windows).
+
+	When using the MS-Windows theme the font used by GTK+ will the
+	system UI one. Both fonts typically used as system fonts, Tahoma
+	(on XP) and Segoe UI (on Vista), are aliased here.
+
+	* pango/pango-utils.c (read_alias_file): Accept also a quoted
+	string for the left-hand side of an aliases file line. This is to
+	enable aliasing fonts with spaces in their name, like "Segoe UI"
+	which is the default system font on Vista. (#492504) (With the
+	above built-in default aliases lists, no actual pango.aliases file
+	is longer required on Windows for non-Latin script support,
+	though.)
+
 2007-10-30  Behdad Esfahbod  <behdad@gnome.org>
 
 	* docs/pango-sections.txt:

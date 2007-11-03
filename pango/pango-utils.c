@@ -1239,6 +1239,120 @@ alias_free (struct PangoAlias *alias)
   g_slice_free (struct PangoAlias, alias);
 }
 
+#ifdef G_OS_WIN32
+
+static const char *builtin_aliases[] = {
+  "courier = \"courier new\"",
+  "\"segoe ui\" = \"segoe ui,arial unicode ms,browallia new,mingliu,simhei,gulimche,ms gothic,sylfaen,kartika,latha,mangal,raavi\"",
+  "tahoma = \"tahoma,arial unicode ms,browallia new,mingliu,simhei,gulimche,ms gothic,sylfaen,kartika,latha,mangal,raavi\"",
+  /* It sucks to use the same GulimChe, MS Gothic, Sylfaen, Kartika,
+   * Latha, Mangal and Raavi fonts for all three of sans, serif and
+   * mono, but it isn't like there would be much choice. For most
+   * non-Latin scripts that Windows includes any font at all for, it
+   * has ony one. One solution is to install the free DejaVu fonts
+   * that are popular on Linux. They are listed here first.
+   */
+  "sans = \"dejavu sans,tahoma,arial unicode ms,browallia new,mingliu,simhei,gulimche,ms gothic,sylfaen,kartika,latha,mangal,raavi\"",
+  "sans-serif = \"dejavu sans,tahoma,arial unicode ms,browallia new,mingliu,simhei,gulimche,ms gothic,sylfaen,kartika,latha,mangal,raavi\"",
+  "serif = \"dejavu serif,georgia,angsana new,mingliu,simsun,gulimche,ms gothic,sylfaen,kartika,latha,mangal,raavi\"",
+  "mono = \"dejavu sans mono,courier new,courier monothai,mingliu,simsun,gulimche,ms gothic,sylfaen,kartika,latha,mangal,raavi\"",
+  "monospace = \"dejavu sans mono,courier new,courier monothai,mingliu,simsun,gulimche,ms gothic,sylfaen,kartika,latha,mangal,raavi\""
+};
+
+static void
+read_builtin_aliases (void)
+{
+
+  GString *line_buffer;
+  GString *tmp_buffer1;
+  GString *tmp_buffer2;
+  const char *pos;
+  int line;
+  struct PangoAlias alias_key;
+  struct PangoAlias *alias;
+  char **new_families;
+  int n_new;
+  int i;
+
+  line_buffer = g_string_new (NULL);
+  tmp_buffer1 = g_string_new (NULL);
+  tmp_buffer2 = g_string_new (NULL);
+
+#define ASSERT(x) if (!(x)) g_error ("Assertion failed: " #x)
+
+  for (line = 0; line < G_N_ELEMENTS (builtin_aliases); line++)
+    {
+      g_string_assign (line_buffer, builtin_aliases[line]);
+      gboolean append = FALSE;
+
+      pos = line_buffer->str;
+
+      ASSERT (pango_scan_string (&pos, tmp_buffer1) &&
+	      pango_skip_space (&pos));
+
+      if (*pos == '+')
+	{
+	  append = TRUE;
+	  pos++;
+	}
+
+      ASSERT (*(pos++) == '=');
+
+      ASSERT (pango_scan_string (&pos, tmp_buffer2));
+
+      ASSERT (!pango_skip_space (&pos));
+
+      alias_key.alias = g_ascii_strdown (tmp_buffer1->str, -1);
+
+      /* Remove any existing values */
+      alias = g_hash_table_lookup (pango_aliases_ht, &alias_key);
+
+      if (!alias)
+	{
+	  alias = g_slice_new0 (struct PangoAlias);
+	  alias->alias = alias_key.alias;
+
+	  g_hash_table_insert (pango_aliases_ht,
+			       alias, alias);
+	}
+      else
+	g_free (alias_key.alias);
+
+      new_families = g_strsplit (tmp_buffer2->str, ",", -1);
+
+      n_new = 0;
+      while (new_families[n_new])
+	n_new++;
+
+      if (alias->families && append)
+	{
+	  alias->families = g_realloc (alias->families,
+				       sizeof (char *) *(n_new + alias->n_families));
+	  for (i = 0; i < n_new; i++)
+	    alias->families[alias->n_families + i] = new_families[i];
+	  g_free (new_families);
+	  alias->n_families += n_new;
+	}
+      else
+	{
+	  for (i = 0; i < alias->n_families; i++)
+	    g_free (alias->families[i]);
+	  g_free (alias->families);
+
+	  alias->families = new_families;
+	  alias->n_families = n_new;
+	}
+    }
+
+#undef ASSERT
+
+  g_string_free (line_buffer, TRUE);
+  g_string_free (tmp_buffer1, TRUE);
+  g_string_free (tmp_buffer2, TRUE);
+}
+
+#endif
+
 static void
 read_alias_file (const char *filename)
 {
@@ -1273,7 +1387,7 @@ read_alias_file (const char *filename)
       if (!pango_skip_space (&pos))
 	continue;
 
-      if (!pango_scan_word (&pos, tmp_buffer1) ||
+      if (!pango_scan_string (&pos, tmp_buffer1) ||
 	  !pango_skip_space (&pos))
 	{
 	  errstring = g_strdup ("Line is not of the form KEY=VALUE or KEY+=VALUE");
@@ -1374,6 +1488,9 @@ pango_load_aliases (void)
 					    (GDestroyNotify)alias_free,
 					    NULL);
 
+#ifdef G_OS_WIN32
+  read_builtin_aliases ();
+#endif
 
   filename = g_strconcat (pango_get_sysconf_subdirectory (),
 			  G_DIR_SEPARATOR_S "pango.aliases",
