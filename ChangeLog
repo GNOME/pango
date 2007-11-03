@@ -1,3 +1,10 @@
+2007-11-03  Tor Lillqvist  <tml@novell.com>
+
+	* pango.aliases.win32: New file. Installed as pango.aliases on
+	Windows.
+
+	* Makefile.am: Distribute it, install it.
+
 2007-11-02  Tor Lillqvist  <tml@novell.com>
 
 	* pango/pango-utils.c (read_alias_file): Accept also a quoted

@@ -16,6 +16,7 @@ EXTRA_DIST = 			\
 	pangoxft-uninstalled.pc.in	\
 	pangoft2-uninstalled.pc.in	\
 	pangowin32-uninstalled.pc.in	\
+	pango.aliases.win32	\
 	ChangeLog.pre-1-0	\
 	ChangeLog.pre-1-2	\
 	ChangeLog.pre-1-4	\
@@ -70,6 +71,11 @@ endif
 
 if HAVE_WIN32
 pkgconfig_DATA += pangowin32.pc
+endif
+
+if OS_WIN32
+install-data-local: pango.aliases.win32
+	$(INSTALL) $(srcdir)/pango.aliases.win32 $(DESTDIR)$(sysconfdir)/pango/pango.aliases
 endif
 
 DISTCHECK_CONFIGURE_FLAGS = --enable-gtk-doc --disable-doc-cross-references
