@@ -512,6 +512,7 @@ pango_scan_string (const char **pos, GString *out)
 gboolean
 pango_scan_int (const char **pos, int *out)
 {
+  unsigned int i = 0;
   char *end;
   long temp;
 
@@ -1273,7 +1274,7 @@ read_alias_file (const char *filename)
       if (!pango_skip_space (&pos))
 	continue;
 
-      if (!pango_scan_word (&pos, tmp_buffer1) ||
+      if (!pango_scan_string (&pos, tmp_buffer1) ||
 	  !pango_skip_space (&pos))
 	{
 	  errstring = g_strdup ("Line is not of the form KEY=VALUE or KEY+=VALUE");

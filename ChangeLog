@@ -1,3 +1,10 @@
+2007-11-02  Tor Lillqvist  <tml@novell.com>
+
+	* pango/pango-utils.c (read_alias_file): Accept also a quoted
+	string for the left-hand side of an aliases file line. This is to
+	enable aliasing fonts with spaces in their name, like "Segoe UI"
+	which is the default system font on Vista. (#492504)
+
 2007-10-26  Murray Cumming  <murrayc@murrayc.com>
 
 	* docs/pango_markup.sgml: Adds a link to 
