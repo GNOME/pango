@@ -1,3 +1,8 @@
+2007-11-05  Behdad Esfahbod  <behdad@gnome.org>
+
+	* tools/gen-script-for-lang-new.c (scripts_for_lang), (main):
+	Update to new propsed language enumeration API for fontconfig.
+
 2007-11-02  Tor Lillqvist  <tml@novell.com>
 
 	* pango/pango-utils.c (read_builtin_aliases, pango_load_aliases):

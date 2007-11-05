@@ -111,7 +111,7 @@ scripts_for_lang (LangInfo   *info)
   FcChar32  map[FC_CHARSET_MAP_SIZE];
   int i;
 
-  charset = FcCharSetForLang ((const FcChar8 *) info->lang);
+  charset = FcLangGetCharSet ((const FcChar8 *) info->lang);
   if (!charset)
     return;
 
@@ -208,6 +208,7 @@ int main (void)
   int max_lang_len = 0;
   int max_script_len = 0;
 
+  FcStrSet *langs_set;
   FcStrList *langs;
   FcChar8* lang;
 
@@ -222,7 +223,9 @@ int main (void)
   script_array = g_array_new (FALSE, FALSE, sizeof (LangInfo));
   
 
-  langs = FcGetLangs ();
+  langs_set = FcGetLangs ();
+  langs = FcStrListCreate (langs_set);
+  FcStrSetDestroy (langs_set);
 
   while ((lang = FcStrListNext (langs)))
     do_lang (script_array, lang);
