@@ -1,5 +1,9 @@
 2007-11-07  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango/opentype/*: And some more.
+
+2007-11-07  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/opentype/*: Some more cleanup and merging.
 
 2007-11-05  Behdad Esfahbod  <behdad@gnome.org>
