@@ -1,3 +1,7 @@
+2007-11-07  Behdad Esfahbod  <behdad@gnome.org>
+
+	* pango/opentype/*: Some more cleanup and merging.
+
 2007-11-05  Behdad Esfahbod  <behdad@gnome.org>
 
 	* tools/gen-script-for-lang-new.c (scripts_for_lang), (main):
