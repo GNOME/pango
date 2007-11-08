@@ -1282,8 +1282,9 @@ read_builtin_aliases (void)
 
   for (line = 0; line < G_N_ELEMENTS (builtin_aliases); line++)
     {
-      g_string_assign (line_buffer, builtin_aliases[line]);
       gboolean append = FALSE;
+
+      g_string_assign (line_buffer, builtin_aliases[line]);
 
       pos = line_buffer->str;
 
