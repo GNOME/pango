@@ -1,3 +1,7 @@
+2007-11-09  Behdad Esfahbod  <behdad@gnome.org>
+
+	* pango/Makefile.am: Include ATSUI included modules.
+
 2007-11-08  Behdad Esfahbod  <behdad@gnome.org>
 
 	Bug 495091 – pango-utils.c:variable is declared at middle of block
