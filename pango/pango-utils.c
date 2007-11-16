@@ -1239,6 +1239,105 @@ alias_free (struct PangoAlias *alias)
   g_slice_free (struct PangoAlias, alias);
 }
 
+static void
+handle_alias_line (GString  *line_buffer,
+		   char    **errstring)
+{
+  GString *tmp_buffer1;
+  GString *tmp_buffer2;
+  const char *pos;
+  struct PangoAlias alias_key;
+  struct PangoAlias *alias;
+  char **new_families;
+  int n_new;
+  int i;
+
+  tmp_buffer1 = g_string_new (NULL);
+  tmp_buffer2 = g_string_new (NULL);
+
+  gboolean append = FALSE;
+
+  pos = line_buffer->str;
+  if (!pango_skip_space (&pos))
+    return;
+
+  if (!pango_scan_string (&pos, tmp_buffer1) ||
+      !pango_skip_space (&pos))
+    {
+      *errstring = g_strdup ("Line is not of the form KEY=VALUE or KEY+=VALUE");
+      goto error;
+    }
+
+  if (*pos == '+')
+    {
+      append = TRUE;
+      pos++;
+    }
+
+  if (*(pos++) != '=')
+    {
+      *errstring = g_strdup ("Line is not of the form KEY=VALUE or KEY+=VALUE");
+      goto error;
+    }
+
+  if (!pango_scan_string (&pos, tmp_buffer2))
+    {
+      *errstring = g_strdup ("Error parsing value string");
+      goto error;
+    }
+  if (pango_skip_space (&pos))
+    {
+      *errstring = g_strdup ("Junk after value string");
+      goto error;
+    }
+
+  alias_key.alias = g_ascii_strdown (tmp_buffer1->str, -1);
+
+  /* Remove any existing values */
+  alias = g_hash_table_lookup (pango_aliases_ht, &alias_key);
+
+  if (!alias)
+    {
+      alias = g_slice_new0 (struct PangoAlias);
+      alias->alias = alias_key.alias;
+      
+      g_hash_table_insert (pango_aliases_ht,
+			   alias, alias);
+    }
+  else
+    g_free (alias_key.alias);
+
+  new_families = g_strsplit (tmp_buffer2->str, ",", -1);
+
+  n_new = 0;
+  while (new_families[n_new])
+    n_new++;
+
+  if (alias->families && append)
+    {
+      alias->families = g_realloc (alias->families,
+				   sizeof (char *) *(n_new + alias->n_families));
+      for (i = 0; i < n_new; i++)
+	alias->families[alias->n_families + i] = new_families[i];
+      g_free (new_families);
+      alias->n_families += n_new;
+    }
+  else
+    {
+      for (i = 0; i < alias->n_families; i++)
+	g_free (alias->families[i]);
+      g_free (alias->families);
+      
+      alias->families = new_families;
+      alias->n_families = n_new;
+    }
+
+ error:
+  
+  g_string_free (tmp_buffer1, TRUE);
+  g_string_free (tmp_buffer2, TRUE);
+}
+
 #ifdef G_OS_WIN32
 
 static const char *builtin_aliases[] = {
@@ -1264,92 +1363,24 @@ read_builtin_aliases (void)
 {
 
   GString *line_buffer;
-  GString *tmp_buffer1;
-  GString *tmp_buffer2;
-  const char *pos;
+  char *errstring = NULL;
   int line;
-  struct PangoAlias alias_key;
-  struct PangoAlias *alias;
-  char **new_families;
-  int n_new;
-  int i;
 
   line_buffer = g_string_new (NULL);
-  tmp_buffer1 = g_string_new (NULL);
-  tmp_buffer2 = g_string_new (NULL);
 
-#define ASSERT(x) if (!(x)) g_error ("Assertion failed: " #x)
-
-  for (line = 0; line < G_N_ELEMENTS (builtin_aliases); line++)
+  for (line = 0; line < G_N_ELEMENTS (builtin_aliases) && errstring == NULL; line++)
     {
-      gboolean append = FALSE;
-
       g_string_assign (line_buffer, builtin_aliases[line]);
-
-      pos = line_buffer->str;
-
-      ASSERT (pango_scan_string (&pos, tmp_buffer1) &&
-	      pango_skip_space (&pos));
-
-      if (*pos == '+')
-	{
-	  append = TRUE;
-	  pos++;
-	}
-
-      ASSERT (*(pos++) == '=');
-
-      ASSERT (pango_scan_string (&pos, tmp_buffer2));
-
-      ASSERT (!pango_skip_space (&pos));
-
-      alias_key.alias = g_ascii_strdown (tmp_buffer1->str, -1);
-
-      /* Remove any existing values */
-      alias = g_hash_table_lookup (pango_aliases_ht, &alias_key);
-
-      if (!alias)
-	{
-	  alias = g_slice_new0 (struct PangoAlias);
-	  alias->alias = alias_key.alias;
-
-	  g_hash_table_insert (pango_aliases_ht,
-			       alias, alias);
-	}
-      else
-	g_free (alias_key.alias);
-
-      new_families = g_strsplit (tmp_buffer2->str, ",", -1);
-
-      n_new = 0;
-      while (new_families[n_new])
-	n_new++;
-
-      if (alias->families && append)
-	{
-	  alias->families = g_realloc (alias->families,
-				       sizeof (char *) *(n_new + alias->n_families));
-	  for (i = 0; i < n_new; i++)
-	    alias->families[alias->n_families + i] = new_families[i];
-	  g_free (new_families);
-	  alias->n_families += n_new;
-	}
-      else
-	{
-	  for (i = 0; i < alias->n_families; i++)
-	    g_free (alias->families[i]);
-	  g_free (alias->families);
-
-	  alias->families = new_families;
-	  alias->n_families = n_new;
-	}
+      handle_alias_line (line_buffer, &errstring);
     }
 
-#undef ASSERT
+  if (errstring)
+    {
+      g_error ("error in built-in aliases:%d: %s\n", line, errstring);
+      g_free (errstring);
+    }
 
   g_string_free (line_buffer, TRUE);
-  g_string_free (tmp_buffer1, TRUE);
-  g_string_free (tmp_buffer2, TRUE);
 }
 
 #endif
@@ -1360,110 +1391,24 @@ read_alias_file (const char *filename)
   FILE *file;
 
   GString *line_buffer;
-  GString *tmp_buffer1;
-  GString *tmp_buffer2;
   char *errstring = NULL;
-  const char *pos;
   int line = 0;
-  struct PangoAlias alias_key;
-  struct PangoAlias *alias;
-  char **new_families;
-  int n_new;
-  int i;
 
   file = g_fopen (filename, "r");
   if (!file)
     return;
 
   line_buffer = g_string_new (NULL);
-  tmp_buffer1 = g_string_new (NULL);
-  tmp_buffer2 = g_string_new (NULL);
 
-  while (pango_read_line (file, line_buffer))
+  while (pango_read_line (file, line_buffer) &&
+	 errstring == NULL)
     {
-      gboolean append = FALSE;
       line++;
-
-      pos = line_buffer->str;
-      if (!pango_skip_space (&pos))
-	continue;
-
-      if (!pango_scan_string (&pos, tmp_buffer1) ||
-	  !pango_skip_space (&pos))
-	{
-	  errstring = g_strdup ("Line is not of the form KEY=VALUE or KEY+=VALUE");
-	  goto error;
-	}
-
-      if (*pos == '+')
-	{
-	  append = TRUE;
-	  pos++;
-	}
-
-      if (*(pos++) != '=')
-	{
-	  errstring = g_strdup ("Line is not of the form KEY=VALUE or KEY+=VALUE");
-	  goto error;
-	}
-
-      if (!pango_scan_string (&pos, tmp_buffer2))
-	{
-	  errstring = g_strdup ("Error parsing value string");
-	  goto error;
-	}
-      if (pango_skip_space (&pos))
-	{
-	  errstring = g_strdup ("Junk after value string");
-	  goto error;
-	}
-
-      alias_key.alias = g_ascii_strdown (tmp_buffer1->str, -1);
-
-      /* Remove any existing values */
-      alias = g_hash_table_lookup (pango_aliases_ht, &alias_key);
-
-      if (!alias)
-	{
-	  alias = g_slice_new0 (struct PangoAlias);
-	  alias->alias = alias_key.alias;
-
-	  g_hash_table_insert (pango_aliases_ht,
-			       alias, alias);
-	}
-      else
-	g_free (alias_key.alias);
-
-      new_families = g_strsplit (tmp_buffer2->str, ",", -1);
-
-      n_new = 0;
-      while (new_families[n_new])
-	n_new++;
-
-      if (alias->families && append)
-	{
-	  alias->families = g_realloc (alias->families,
-				       sizeof (char *) *(n_new + alias->n_families));
-	  for (i = 0; i < n_new; i++)
-	    alias->families[alias->n_families + i] = new_families[i];
-	  g_free (new_families);
-	  alias->n_families += n_new;
-	}
-      else
-	{
-	  for (i = 0; i < alias->n_families; i++)
-	    g_free (alias->families[i]);
-	  g_free (alias->families);
-
-	  alias->families = new_families;
-	  alias->n_families = n_new;
-	}
+      handle_alias_line (line_buffer, &errstring);
     }
 
-  if (ferror (file))
+  if (errstring == NULL && ferror (file))
     errstring = g_strdup (g_strerror(errno));
-
- error:
 
   if (errstring)
     {
@@ -1472,8 +1417,6 @@ read_alias_file (const char *filename)
     }
 
   g_string_free (line_buffer, TRUE);
-  g_string_free (tmp_buffer1, TRUE);
-  g_string_free (tmp_buffer2, TRUE);
 
   fclose (file);
 }

@@ -1,3 +1,8 @@
+2007-11-16  Tor Lillqvist  <tml@novell.com>
+
+	* pango/pango-utils.c (handle_alias_line): Factor out the common
+	code from read_builtin_aliases() and read_alias_file(). (#492517)
+
 2007-11-09  Behdad Esfahbod  <behdad@gnome.org>
 
 	* pango/Makefile.am: Include ATSUI included modules.
