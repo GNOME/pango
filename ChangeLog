@@ -1,3 +1,7 @@
+2007-11-18  Behdad Esfahbod  <behdad@gnome.org>
+
+	* docs/Makefile.am: Replace GNU-specific syntax with more general one.
+
 2007-11-16  Tor Lillqvist  <tml@novell.com>
 
 	* pango/pango-utils.c (handle_alias_line): Factor out the common
