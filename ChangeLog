@@ -1,5 +1,9 @@
 2007-11-23  Behdad Esfahbod  <behdad@gnome.org>
 
+	* docs/check.docs: Make it reusable by not hardcoding "pango".
+
+2007-11-23  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/opentype/harfbuzz-impl.c: Remove unused macro.
 
 2007-11-18  Behdad Esfahbod  <behdad@gnome.org>
