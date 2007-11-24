@@ -1,3 +1,7 @@
+2007-11-23  Behdad Esfahbod  <behdad@gnome.org>
+
+	* pango/opentype/harfbuzz-impl.c: Remove unused macro.
+
 2007-11-18  Behdad Esfahbod  <behdad@gnome.org>
 
 	* docs/Makefile.am: Replace GNU-specific syntax with more general one.
