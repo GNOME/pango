@@ -1,3 +1,9 @@
+2007-11-29  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 500549 – pangocairo.h should include pango.h and cairo.h
+
+	* pango/pangocairo.h: #include <pango/pango.h>
+
 2007-11-23  Behdad Esfahbod  <behdad@gnome.org>
 
 	* docs/check.docs: Make it reusable by not hardcoding "pango".
