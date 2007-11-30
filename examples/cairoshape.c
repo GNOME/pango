@@ -1,4 +1,25 @@
-/* example to use pangocairo to render arbitrary shapes inside a text layout */
+/* Example code to show how to use pangocairo to render arbitrary shapes
+ * inside a text layout, positioned by Pango.  This has become possibly
+ * using the following API added in Pango 1.18:
+ * 
+ * 	pango_cairo_context_set_shape_renderer ()
+ *
+ * This examples uses a small parser to convert shapes in the format of
+ * SVG paths to cairo instructions.  You can typically extract these from
+ * the SVG file's <path> elements directly.
+ *
+ * The code then searches for the Unicode bullet character in the layout
+ * text and automatically adds PangoAttribtues to the layout to replace
+ * each of the with a rendering of the GNOME Foot logo.
+ *
+ *
+ * Written by Behdad Esfahbod, 2007
+ *
+ * Permission to use, copy, modify, distribute, and sell this example
+ * for any purpose is hereby granted without fee.
+ * It is provided "as is" without express or implied warranty.
+ */
+
 
 #include <stdio.h>
 #include <string.h>
@@ -120,7 +141,7 @@ get_layout (cairo_t *cr)
 
   attrs = pango_attr_list_new ();
 
-  /* set gnome shape attributes for bullets */
+  /* Set gnome shape attributes for all bullets */
   for (p = text; (p = strstr (p, BULLET)); p += strlen (BULLET))
     {
       PangoAttribute *attr;
@@ -147,6 +168,8 @@ draw_text (cairo_t *cr, int *width, int *height)
 {
 
   PangoLayout *layout = get_layout (cr);
+
+  /* Adds a fixed 10-pixel margin on the sides. */
 
   if (width || height)
     {
@@ -179,6 +202,8 @@ int main (int argc, char **argv)
 
   filename = argv[1];
 
+  /* First create and use a 0x0 surface, to measure how large
+   * the final surface needs to be */
   surface = cairo_image_surface_create (CAIRO_FORMAT_ARGB32,
 					0, 0);
   cr = cairo_create (surface);
@@ -186,6 +211,7 @@ int main (int argc, char **argv)
   cairo_destroy (cr);
   cairo_surface_destroy (surface);
 
+  /* Now create the final surface and draw to it. */
   surface = cairo_image_surface_create (CAIRO_FORMAT_ARGB32,
 					width, height);
   cr = cairo_create (surface);
@@ -196,6 +222,7 @@ int main (int argc, char **argv)
   draw_text (cr, NULL, NULL);
   cairo_destroy (cr);
 
+  /* Write out the surface as PNG */
   status = cairo_surface_write_to_png (surface, filename);
   cairo_surface_destroy (surface);
 

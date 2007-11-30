@@ -1,4 +1,4 @@
-/* simple example to use pangocairo to render rotated text */
+/* Simple example to use pangocairo to render rotated text */
 
 #include <math.h>
 #include <pango/pangocairo.h>

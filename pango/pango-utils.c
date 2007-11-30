@@ -1593,6 +1593,9 @@ pango_is_zero_width (gunichar ch)
  * multiples of %PANGO_SCALE. The purpose of this function is to avoid
  * such lines looking blurry.
  *
+ * Care is taken to make sure @thickness is at least 1 when this function
+ * returns, but returned @position may become zero as a result of rounding.
+ *
  * Since: 1.12
  */
 void

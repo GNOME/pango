@@ -304,7 +304,7 @@ get_face_metrics (PangoFcFont      *fcfont,
   TT_OS2 *os2;
   gboolean have_transform = FALSE;
 
-  if (!face)
+  if (G_UNLIKELY (!face))
     {
       metrics->descent = 0;
       metrics->ascent = PANGO_SCALE * PANGO_UNKNOWN_GLYPH_HEIGHT;
@@ -358,27 +358,32 @@ get_face_metrics (PangoFcFont      *fcfont,
       metrics->ascent = PANGO_UNITS_26_6 (ascender);
     }
 
-  /* Versions of FreeType < 2.1.8 get underline thickness wrong
-   * for Postscript fonts (always zero), so we need a fallback
-   */
-  if (face->underline_thickness == 0)
+
+  metrics->underline_thickness = 0;
+  metrics->underline_position = 0;
+
+  {
+    FT_Fixed ft_thickness, ft_position;
+
+    ft_thickness = FT_MulFix (face->underline_thickness, face->size->metrics.y_scale);
+    metrics->underline_thickness = PANGO_UNITS_26_6 (ft_thickness);
+
+    ft_position = FT_MulFix (face->underline_position, face->size->metrics.y_scale);
+    metrics->underline_position = PANGO_UNITS_26_6 (ft_position);
+  }
+
+  if (metrics->underline_thickness == 0 || metrics->underline_position == 0)
     {
       metrics->underline_thickness = (PANGO_SCALE * face->size->metrics.y_ppem) / 14;
       metrics->underline_position = - metrics->underline_thickness;
     }
-  else
-    {
-      FT_Fixed ft_thickness, ft_position;
 
-      ft_thickness = FT_MulFix (face->underline_thickness, face->size->metrics.y_scale);
-      metrics->underline_thickness = PANGO_UNITS_26_6 (ft_thickness);
 
-      ft_position = FT_MulFix (face->underline_position, face->size->metrics.y_scale);
-      metrics->underline_position = PANGO_UNITS_26_6 (ft_position);
-    }
+  metrics->strikethrough_thickness = 0;
+  metrics->strikethrough_position = 0;
 
   os2 = FT_Get_Sfnt_Table (face, ft_sfnt_os2);
-  if (os2 && os2->version != 0xFFFF && os2->yStrikeoutSize != 0)
+  if (os2 && os2->version != 0xFFFF)
     {
       FT_Fixed ft_thickness, ft_position;
 
@@ -388,11 +393,13 @@ get_face_metrics (PangoFcFont      *fcfont,
       ft_position = FT_MulFix (os2->yStrikeoutPosition, face->size->metrics.y_scale);
       metrics->strikethrough_position = PANGO_UNITS_26_6 (ft_position);
     }
-  else
+
+  if (metrics->strikethrough_thickness == 0 || metrics->strikethrough_position == 0)
     {
       metrics->strikethrough_thickness = metrics->underline_thickness;
       metrics->strikethrough_position = (PANGO_SCALE * face->size->metrics.y_ppem) / 4;
     }
+
 
   /* If hinting is on for this font, quantize the underline and strikethrough position
    * to integer values.
@@ -403,7 +410,12 @@ get_face_metrics (PangoFcFont      *fcfont,
 				    &metrics->underline_position);
       pango_quantize_line_geometry (&metrics->strikethrough_thickness,
 				    &metrics->strikethrough_position);
+
+      /* Quantizing may have pushed underline_position to 0.  Not good */
+      if (metrics->underline_position == 0)
+	metrics->underline_position = - metrics->underline_thickness;
     }
+
 
   PANGO_FC_FONT_UNLOCK_FACE (fcfont);
 }

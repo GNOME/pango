@@ -1,5 +1,13 @@
-/* example to use pangocairo to render text projected on a path */
-/* Written by Behdad Esfahbod, 2006.  Not copyrighted, in public domain. */
+/* Example code to show how to use pangocairo to render text
+ * projected on a path.
+ *
+ *
+ * Written by Behdad Esfahbod, 2006..2007
+ *
+ * Permission to use, copy, modify, distribute, and sell this example
+ * for any purpose is hereby granted without fee.
+ * It is provided "as is" without express or implied warranty.
+ */
 
 #include <math.h>
 #include <stdlib.h>

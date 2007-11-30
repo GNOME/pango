@@ -140,6 +140,9 @@ pango_cairo_win32_font_create_metrics_for_context (PangoCairoFont *font,
 				&metrics->underline_position);
   pango_quantize_line_geometry (&metrics->strikethrough_thickness,
 				&metrics->strikethrough_position);
+  /* Quantizing may have pushed underline_position to 0.  Not good */
+  if (metrics->underline_position == 0)
+    metrics->underline_position = - metrics->underline_thickness;
 
   layout = pango_layout_new (context);
   font_desc = pango_font_describe_with_absolute_size ((PangoFont *) font);
