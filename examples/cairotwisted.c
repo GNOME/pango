@@ -13,114 +13,10 @@
 #include <stdlib.h>
 #include <pango/pangocairo.h>
 
-void fancy_cairo_stroke (cairo_t *cr);
-void fancy_cairo_stroke_preserve (cairo_t *cr);
 
-
-static double
-two_points_distance (cairo_path_data_t *a, cairo_path_data_t *b)
-{
-  double dx, dy;
-
-  dx = b->point.x - a->point.x;
-  dy = b->point.y - a->point.y;
-
-  return sqrt (dx * dx + dy * dy);
-}
-
-static double
-curve_length (double x0, double y0,
-	      double x1, double y1,
-	      double x2, double y2,
-	      double x3, double y3)
-{
-  cairo_surface_t *surface;
-  cairo_t *cr;
-  cairo_path_t *path;
-  cairo_path_data_t *data, current_point;
-  int i;
-  double length;
-
-  surface = cairo_image_surface_create (CAIRO_FORMAT_A8, 0, 0);
-  cr = cairo_create (surface);
-  cairo_surface_destroy (surface);
-
-  cairo_move_to (cr, x0, y0);
-  cairo_curve_to (cr, x1, y1, x2, y2, x3, y3);
-
-  length = 0;
-  path = cairo_copy_path_flat (cr);
-  for (i=0; i < path->num_data; i += path->data[i].header.length) {
-    data = &path->data[i];
-    switch (data->header.type) {
-
-    case CAIRO_PATH_MOVE_TO:
-	current_point = data[1];
-	break;
-
-    case CAIRO_PATH_LINE_TO:
-	length += two_points_distance (&current_point, &data[1]);
-	current_point = data[1];
-	break;
-
-    default:
-    case CAIRO_PATH_CURVE_TO:
-    case CAIRO_PATH_CLOSE_PATH:
-	g_assert_not_reached ();
-    }
-  }
-  cairo_path_destroy (path);
-
-  cairo_destroy (cr);
-
-  return length;
-}
-
-typedef double parametrization_t;
-
-static parametrization_t *
-parametrize_path (cairo_path_t *path)
-{
-  int i;
-  cairo_path_data_t *data, current_point;
-  parametrization_t *parametrization;
-
-  parametrization = malloc (path->num_data * sizeof (parametrization[0]));
-
-  for (i=0; i < path->num_data; i += path->data[i].header.length) {
-    data = &path->data[i];
-    parametrization[i] = 0.0;
-    switch (data->header.type) {
-    case CAIRO_PATH_MOVE_TO:
-	current_point = data[1];
-	break;
-    case CAIRO_PATH_LINE_TO:
-	parametrization[i] = two_points_distance (&current_point, &data[1]);
-	current_point = data[1];
-	break;
-    case CAIRO_PATH_CURVE_TO:
-	/* naive curve-length, treating bezier as three line segments:
-	parametrization[i] = two_points_distance (&current_point, &data[1])
-			   + two_points_distance (&data[1], &data[2])
-			   + two_points_distance (&data[2], &data[3]);
-	*/
-	parametrization[i] = curve_length (current_point.point.x, current_point.point.x,
-					   data[1].point.x, data[1].point.y,
-					   data[2].point.x, data[2].point.y,
-					   data[3].point.x, data[3].point.y);
-
-	current_point = data[3];
-	break;
-    case CAIRO_PATH_CLOSE_PATH:
-	break;
-    default:
-	g_assert_not_reached ();
-    }
-  }
-
-  return parametrization;
-}
-
+/* A fancy cairo_stroke[_preserve]() that draws points and control
+ * points, and connects them together.
+ */
 static void
 _fancy_cairo_stroke (cairo_t *cr, cairo_bool_t preserve)
 {
@@ -224,20 +120,145 @@ _fancy_cairo_stroke (cairo_t *cr, cairo_bool_t preserve)
   cairo_restore (cr);
 }
 
+/* A fancy cairo_stroke() that draws points and control points, and
+ * connects them together.
+ */
 void
 fancy_cairo_stroke (cairo_t *cr)
 {
   _fancy_cairo_stroke (cr, FALSE);
 }
 
+/* A fancy cairo_stroke_preserve() that draws points and control
+ * points, and connects them together.
+ */
 void
 fancy_cairo_stroke_preserve (cairo_t *cr)
 {
   _fancy_cairo_stroke (cr, TRUE);
 }
 
+
+/* Returns Euclidean distance between two points */
+static double
+two_points_distance (cairo_path_data_t *a, cairo_path_data_t *b)
+{
+  double dx, dy;
+
+  dx = b->point.x - a->point.x;
+  dy = b->point.y - a->point.y;
+
+  return sqrt (dx * dx + dy * dy);
+}
+
+/* Returns length of a Bezier curve.
+ * Seems like computing that analytically is not easy.  The
+ * code just flattens the curve using cairo and adds the length
+ * of segments.
+ */
+static double
+curve_length (double x0, double y0,
+	      double x1, double y1,
+	      double x2, double y2,
+	      double x3, double y3)
+{
+  cairo_surface_t *surface;
+  cairo_t *cr;
+  cairo_path_t *path;
+  cairo_path_data_t *data, current_point;
+  int i;
+  double length;
+
+  surface = cairo_image_surface_create (CAIRO_FORMAT_A8, 0, 0);
+  cr = cairo_create (surface);
+  cairo_surface_destroy (surface);
+
+  cairo_move_to (cr, x0, y0);
+  cairo_curve_to (cr, x1, y1, x2, y2, x3, y3);
+
+  length = 0;
+  path = cairo_copy_path_flat (cr);
+  for (i=0; i < path->num_data; i += path->data[i].header.length) {
+    data = &path->data[i];
+    switch (data->header.type) {
+
+    case CAIRO_PATH_MOVE_TO:
+	current_point = data[1];
+	break;
+
+    case CAIRO_PATH_LINE_TO:
+	length += two_points_distance (&current_point, &data[1]);
+	current_point = data[1];
+	break;
+
+    default:
+    case CAIRO_PATH_CURVE_TO:
+    case CAIRO_PATH_CLOSE_PATH:
+	g_assert_not_reached ();
+    }
+  }
+  cairo_path_destroy (path);
+
+  cairo_destroy (cr);
+
+  return length;
+}
+
+
+typedef double parametrization_t;
+
+/* Compute parametrization info.  That is, for each part of the 
+ * cairo path, tags it with its length.
+ */
+static parametrization_t *
+parametrize_path (cairo_path_t *path)
+{
+  int i;
+  cairo_path_data_t *data, current_point;
+  parametrization_t *parametrization;
+
+  parametrization = malloc (path->num_data * sizeof (parametrization[0]));
+
+  for (i=0; i < path->num_data; i += path->data[i].header.length) {
+    data = &path->data[i];
+    parametrization[i] = 0.0;
+    switch (data->header.type) {
+    case CAIRO_PATH_MOVE_TO:
+	current_point = data[1];
+	break;
+    case CAIRO_PATH_LINE_TO:
+	parametrization[i] = two_points_distance (&current_point, &data[1]);
+	current_point = data[1];
+	break;
+    case CAIRO_PATH_CURVE_TO:
+	/* naive curve-length, treating bezier as three line segments:
+	parametrization[i] = two_points_distance (&current_point, &data[1])
+			   + two_points_distance (&data[1], &data[2])
+			   + two_points_distance (&data[2], &data[3]);
+	*/
+	parametrization[i] = curve_length (current_point.point.x, current_point.point.x,
+					   data[1].point.x, data[1].point.y,
+					   data[2].point.x, data[2].point.y,
+					   data[3].point.x, data[3].point.y);
+
+	current_point = data[3];
+	break;
+    case CAIRO_PATH_CLOSE_PATH:
+	break;
+    default:
+	g_assert_not_reached ();
+    }
+  }
+
+  return parametrization;
+}
+
+
 typedef void (*transform_point_func_t) (void *closure, double *x, double *y);
 
+/* Project a path using a function.  Each point of the path (including
+ * Bezier control points) is passed to the function for transformation.
+ */
 static void
 transform_path (cairo_path_t *path, transform_point_func_t f, void *closure)
 {
@@ -262,26 +283,33 @@ transform_path (cairo_path_t *path, transform_point_func_t f, void *closure)
   }
 }
 
+
+/* Simple struct to hold a path and its parametrization */
 typedef struct {
   cairo_path_t *path;
   parametrization_t *parametrization;
 } parametrized_path_t;
 
+
+/* Project a point x,y onto a parameterized path.  The final point is
+ * where you get if you walk on the path forward from the beginning for x
+ * units, then stop there and walk another y units perpendicular to the
+ * path at that point. */
 static void
 point_on_path (parametrized_path_t *param,
 	       double *x, double *y)
 {
   int i;
-  double ratio, oldy = *y, d = *x, dx, dy;
+  double ratio, the_y = *y, the_x = *x, dx, dy;
   cairo_path_data_t *data, current_point;
   cairo_path_t *path = param->path;
   parametrization_t *parametrization = param->parametrization;
 
   for (i=0; i + path->data[i].header.length < path->num_data &&
-	    (d > parametrization[i] ||
+	    (the_x > parametrization[i] ||
 	     path->data[i].header.type == CAIRO_PATH_MOVE_TO);
        i += path->data[i].header.length) {
-    d -= parametrization[i];
+    the_x -= parametrization[i];
     data = &path->data[i];
     switch (data->header.type) {
     case CAIRO_PATH_MOVE_TO:
@@ -306,23 +334,31 @@ point_on_path (parametrized_path_t *param,
   case CAIRO_PATH_MOVE_TO:
       break;
   case CAIRO_PATH_LINE_TO:
-      ratio = d / parametrization[i];
+      ratio = the_x / parametrization[i];
+      /* Line polynomial */
       *x = current_point.point.x * (1 - ratio) + data[1].point.x * ratio;
       *y = current_point.point.y * (1 - ratio) + data[1].point.y * ratio;
 
+      /* Line gradient */
       dx = -(current_point.point.x - data[1].point.x);
       dy = -(current_point.point.y - data[1].point.y);
 
-      d = oldy;
-      ratio = d / parametrization[i];
-      /*ratio = d / sqrt (dx * dx + dy * dy);*/
-
+      /*optimization for: ratio = the_y / sqrt (dx * dx + dy * dy);*/
+      ratio = the_y / parametrization[i];
       *x += -dy * ratio;
       *y +=  dx * ratio;
 
       break;
   case CAIRO_PATH_CURVE_TO:
-      ratio = d / parametrization[i];
+      /* FIXME the formulas here are not exactly what we want, because the
+       * Bezier parametrization is not uniform.  But I don't know how to do
+       * better.  The caller can do slightly better though, by flattening the
+       * Bezier and avoiding this branch completely.  That has its own cost
+       * though, as large y values magnify the flattening error drastically.
+       */
+
+      ratio = the_x / parametrization[i];
+      /* Bezier polynomial */
       *x = current_point.point.x * (1 - ratio) * (1 - ratio) * (1 - ratio)
 	 + 3 *   data[1].point.x * (1 - ratio) * (1 - ratio) * ratio
 	 + 3 *   data[2].point.x * (1 - ratio) *      ratio  * ratio
@@ -332,6 +368,7 @@ point_on_path (parametrized_path_t *param,
 	 + 3 *   data[2].point.y * (1 - ratio) *      ratio  * ratio
 	 +       data[3].point.y *      ratio  *      ratio  * ratio;
 
+      /* Bezier gradient */
       dx =-3 * current_point.point.x * (1 - ratio) * (1 - ratio)
 	 + 3 *       data[1].point.x * (1 - 4 * ratio + 3 * ratio * ratio)
 	 + 3 *       data[2].point.x * (    2 * ratio - 3 * ratio * ratio)
@@ -341,9 +378,7 @@ point_on_path (parametrized_path_t *param,
 	 + 3 *       data[2].point.y * (    2 * ratio - 3 * ratio * ratio)
 	 + 3 *       data[3].point.y *      ratio  *      ratio;
 
-      d = oldy;
-      ratio = d / sqrt (dx * dx + dy * dy);
-
+      ratio = the_y / sqrt (dx * dx + dy * dy);
       *x += -dy * ratio;
       *y +=  dx * ratio;
 
@@ -355,6 +390,7 @@ point_on_path (parametrized_path_t *param,
   }
 }
 
+/* Projects the current path of cr onto the provided path. */
 static void
 map_path_onto (cairo_t *cr, cairo_path_t *path)
 {
@@ -427,8 +463,16 @@ draw_twisted (cairo_t *cr,
   cairo_save (cr);
 
   /* Decrease tolerance a bit, since it's going to be magnified */
-  cairo_set_tolerance (cr, 0.1);
+  cairo_set_tolerance (cr, 0.01);
 
+  /* Using cairo_copy_path() here shows our deficiency in handling
+   * Bezier curves, specially around sharper curves.
+   *
+   * Using cairo_copy_path_flat() on the other hand, magnifies the
+   * flattening error with large off-path values.  We decreased
+   * tolerance for that reason.  Increase tolerance to see that
+   * artifact.
+   */
   path = cairo_copy_path_flat (cr);
 /*path = cairo_copy_path (cr);*/
 
@@ -504,8 +548,6 @@ int main (int argc, char **argv)
   surface = cairo_image_surface_create (CAIRO_FORMAT_ARGB32,
 					1000, 800);
   cr = cairo_create (surface);
-
-  /* cairo_scale (cr, 0.5, 0.5); */
 
   cairo_set_source_rgb (cr, 1.0, 1.0, 1.0);
   cairo_paint (cr);

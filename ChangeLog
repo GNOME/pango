@@ -1,3 +1,9 @@
+2007-11-30  Behdad Esfahbod  <behdad@gnome.org>
+
+	* examples/cairotwisted.c (two_points_distance), (curve_length),
+	(parametrize_path), (point_on_path), (draw_twisted), (main):
+	Document cairotwisted example.
+
 2007-11-29  Behdad Esfahbod  <behdad@gnome.org>
 
 	* example/cairo*.c: Add some documentation.
