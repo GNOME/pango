@@ -1,5 +1,9 @@
 2007-11-29  Behdad Esfahbod  <behdad@gnome.org>
 
+	* example/cairo*.c: Add some documentation.
+
+2007-11-29  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 485536 – underline_position can be zero
 
 	* pango/pango-utils.c (pango_cairo_quantize_line_geometry):
