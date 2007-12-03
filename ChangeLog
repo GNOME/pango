@@ -1,3 +1,8 @@
+2007-12-03  Behdad Esfahbod  <behdad@gnome.org>
+
+	* examples/cairotwisted.c: Add some more comments to document
+	the math involved.
+
 2007-11-30  Behdad Esfahbod  <behdad@gnome.org>
 
 	* examples/cairotwisted.c (two_points_distance), (curve_length),

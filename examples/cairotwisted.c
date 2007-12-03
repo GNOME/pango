@@ -291,10 +291,27 @@ typedef struct {
 } parametrized_path_t;
 
 
-/* Project a point x,y onto a parameterized path.  The final point is
- * where you get if you walk on the path forward from the beginning for x
- * units, then stop there and walk another y units perpendicular to the
- * path at that point. */
+/* Project a point X,Y onto a parameterized path.  The final point is
+ * where you get if you walk on the path forward from the beginning for X
+ * units, then stop there and walk another Y units perpendicular to the
+ * path at that point.  In more detail:
+ *
+ * There's three pieces of math involved:
+ *
+ *   - The parametric form of the Line equation
+ *     http://en.wikipedia.org/wiki/Line
+ *
+ *   - The parametric form of the Cubic Bézier curve equation
+ *     http://en.wikipedia.org/wiki/B%C3%A9zier_curve
+ *
+ *   - The Gradient (aka multi-dimensional derivative) of the above
+ *     http://en.wikipedia.org/wiki/Gradient
+ *
+ * The parametric forms are used to answer the question of "where will I be
+ * if I walk a distance of X on this path".  The Gradient is used to answer
+ * the question of "where will I be if then I stop, rotate left for 90
+ * degrees and walk straight for a distance of Y".
+ */
 static void
 point_on_path (parametrized_path_t *param,
 	       double *x, double *y)
