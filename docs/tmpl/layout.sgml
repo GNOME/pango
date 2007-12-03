@@ -24,7 +24,7 @@ at once.
 
 <!-- ##### STRUCT PangoLayout ##### -->
 <para>
-The #PangoLayout structure represents and entire paragraph
+The #PangoLayout structure represents an entire paragraph
 of text. It is initialized with a #PangoContext, UTF-8 string
 and set of attributes for that string. Once that is done, the
 set of formatted lines can be extracted from the object,

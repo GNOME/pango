@@ -1,5 +1,11 @@
 2007-12-03  Behdad Esfahbod  <behdad@gnome.org>
 
+	Bug 501317 – "and" found where word should be "an"
+
+	* docs/tmpl/layout.sgml: Fix typo.
+
+2007-12-03  Behdad Esfahbod  <behdad@gnome.org>
+
 	* examples/cairotwisted.c: Add some more comments to document
 	the math involved.
 
