@@ -1,5 +1,13 @@
 2007-12-03  Behdad Esfahbod  <behdad@gnome.org>
 
+	* === Released 1.19.1 ===
+
+	* configure.in: Version 1.19.1
+
+	* NEWS: Updated.
+
+2007-12-03  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 501317 – "and" found where word should be "an"
 
 	* docs/tmpl/layout.sgml: Fix typo.

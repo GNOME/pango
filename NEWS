@@ -1,3 +1,14 @@
+Overview of changes between 1.19.0 and 1.19.1
+==============================================
+- Various cleanup in the HarfBuzz code and merging with upstream/Qt changes.
+- Built-in pango.aliases file for Win32 default aliases.
+- Document cairo examples and misc documentation improvements.
+- Bugs fixed in this release:
+	Bug 485536 – underline_position can be zero
+	Bug 500549 – pangocairo.h should include pango.h and cairo.h
+	Bug 492517 – Built-in default aliases file
+	Bug 495091 – pango-utils.c:variable is declared at middle of block
+
 Overview of changes between 1.18.3 and 1.19.0
 ==============================================
 - Update list of languages to that of fontconfig-2.4.91.
