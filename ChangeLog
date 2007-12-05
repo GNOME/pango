@@ -1,3 +1,12 @@
+2007-12-04  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 501575 – Compile errors
+	Patch from Jens Granseuer
+
+	* pango/opentype/harfbuzz-stream.c (_hb_font_goto_table):
+	* pango/pango-utils.c (handle_alias_line):
+	Fix C99ism.
+
 2007-12-03  Behdad Esfahbod  <behdad@gnome.org>
 
 	* === Released 1.19.1 ===

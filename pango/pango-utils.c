@@ -1248,6 +1248,7 @@ handle_alias_line (GString  *line_buffer,
   const char *pos;
   struct PangoAlias alias_key;
   struct PangoAlias *alias;
+  gboolean append = FALSE;
   char **new_families;
   int n_new;
   int i;
@@ -1255,7 +1256,6 @@ handle_alias_line (GString  *line_buffer,
   tmp_buffer1 = g_string_new (NULL);
   tmp_buffer2 = g_string_new (NULL);
 
-  gboolean append = FALSE;
 
   pos = line_buffer->str;
   if (!pango_skip_space (&pos))
