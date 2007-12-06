@@ -1,5 +1,9 @@
 2007-12-05  Behdad Esfahbod  <behdad@gnome.org>
 
+	* examples/cairotwisted.c (point_on_path): Optimize double math.
+
+2007-12-05  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 501938 – Arabic shaping broken with vertical layout with
 	vertical-hint=line
 

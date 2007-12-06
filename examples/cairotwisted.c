@@ -13,6 +13,8 @@
 #include <stdlib.h>
 #include <pango/pangocairo.h>
 
+void fancy_cairo_stroke (cairo_t *cr);
+void fancy_cairo_stroke_preserve (cairo_t *cr);
 
 /* A fancy cairo_stroke[_preserve]() that draws points and control
  * points, and connects them together.
@@ -351,54 +353,76 @@ point_on_path (parametrized_path_t *param,
   case CAIRO_PATH_MOVE_TO:
       break;
   case CAIRO_PATH_LINE_TO:
-      ratio = the_x / parametrization[i];
-      /* Line polynomial */
-      *x = current_point.point.x * (1 - ratio) + data[1].point.x * ratio;
-      *y = current_point.point.y * (1 - ratio) + data[1].point.y * ratio;
+      {
+	ratio = the_x / parametrization[i];
+	/* Line polynomial */
+	*x = current_point.point.x * (1 - ratio) + data[1].point.x * ratio;
+	*y = current_point.point.y * (1 - ratio) + data[1].point.y * ratio;
 
-      /* Line gradient */
-      dx = -(current_point.point.x - data[1].point.x);
-      dy = -(current_point.point.y - data[1].point.y);
+	/* Line gradient */
+	dx = -(current_point.point.x - data[1].point.x);
+	dy = -(current_point.point.y - data[1].point.y);
 
-      /*optimization for: ratio = the_y / sqrt (dx * dx + dy * dy);*/
-      ratio = the_y / parametrization[i];
-      *x += -dy * ratio;
-      *y +=  dx * ratio;
-
+	/*optimization for: ratio = the_y / sqrt (dx * dx + dy * dy);*/
+	ratio = the_y / parametrization[i];
+	*x += -dy * ratio;
+	*y +=  dx * ratio;
+      }
       break;
   case CAIRO_PATH_CURVE_TO:
-      /* FIXME the formulas here are not exactly what we want, because the
-       * Bezier parametrization is not uniform.  But I don't know how to do
-       * better.  The caller can do slightly better though, by flattening the
-       * Bezier and avoiding this branch completely.  That has its own cost
-       * though, as large y values magnify the flattening error drastically.
-       */
+      {
+	/* FIXME the formulas here are not exactly what we want, because the
+	 * Bezier parametrization is not uniform.  But I don't know how to do
+	 * better.  The caller can do slightly better though, by flattening the
+	 * Bezier and avoiding this branch completely.  That has its own cost
+	 * though, as large y values magnify the flattening error drastically.
+	 */
 
-      ratio = the_x / parametrization[i];
-      /* Bezier polynomial */
-      *x = current_point.point.x * (1 - ratio) * (1 - ratio) * (1 - ratio)
-	 + 3 *   data[1].point.x * (1 - ratio) * (1 - ratio) * ratio
-	 + 3 *   data[2].point.x * (1 - ratio) *      ratio  * ratio
-	 +       data[3].point.x *      ratio  *      ratio  * ratio;
-      *y = current_point.point.y * (1 - ratio) * (1 - ratio) * (1 - ratio)
-	 + 3 *   data[1].point.y * (1 - ratio) * (1 - ratio) * ratio
-	 + 3 *   data[2].point.y * (1 - ratio) *      ratio  * ratio
-	 +       data[3].point.y *      ratio  *      ratio  * ratio;
+        double ratio_1_0, ratio_0_1;
+	double ratio_2_0, ratio_0_2;
+	double ratio_3_0, ratio_2_1, ratio_1_2, ratio_0_3;
+	double _1__4ratio_1_0_3ratio_2_0, _2ratio_1_0_3ratio_2_0;
 
-      /* Bezier gradient */
-      dx =-3 * current_point.point.x * (1 - ratio) * (1 - ratio)
-	 + 3 *       data[1].point.x * (1 - 4 * ratio + 3 * ratio * ratio)
-	 + 3 *       data[2].point.x * (    2 * ratio - 3 * ratio * ratio)
-	 + 3 *       data[3].point.x *      ratio  *      ratio;
-      dy =-3 * current_point.point.y * (1 - ratio) * (1 - ratio)
-	 + 3 *       data[1].point.y * (1 - 4 * ratio + 3 * ratio * ratio)
-	 + 3 *       data[2].point.y * (    2 * ratio - 3 * ratio * ratio)
-	 + 3 *       data[3].point.y *      ratio  *      ratio;
+	ratio = the_x / parametrization[i];
 
-      ratio = the_y / sqrt (dx * dx + dy * dy);
-      *x += -dy * ratio;
-      *y +=  dx * ratio;
+	ratio_1_0 = ratio;
+	ratio_0_1 = 1 - ratio;
 
+	ratio_2_0 = ratio_1_0 * ratio_1_0; /*      ratio  *      ratio  */
+	ratio_0_2 = ratio_0_1 * ratio_0_1; /* (1 - ratio) * (1 - ratio) */
+
+	ratio_3_0 = ratio_2_0 * ratio_1_0; /*      ratio  *      ratio  *      ratio  */
+	ratio_2_1 = ratio_2_0 * ratio_0_1; /*      ratio  *      ratio  * (1 - ratio) */
+	ratio_1_2 = ratio_1_0 * ratio_0_2; /*      ratio  * (1 - ratio) * (1 - ratio) */
+	ratio_0_3 = ratio_0_1 * ratio_0_2; /* (1 - ratio) * (1 - ratio) * (1 - ratio) */
+
+	_1__4ratio_1_0_3ratio_2_0 = 1 - 4 * ratio_1_0 + 3 * ratio_2_0;
+	_2ratio_1_0_3ratio_2_0    =     2 * ratio_1_0 - 3 * ratio_2_0;
+
+	/* Bezier polynomial */
+	*x = current_point.point.x * ratio_0_3
+	   + 3 *   data[1].point.x * ratio_1_2
+	   + 3 *   data[2].point.x * ratio_2_1
+	   +       data[3].point.x * ratio_3_0;
+	*y = current_point.point.y * ratio_0_3
+	   + 3 *   data[1].point.y * ratio_1_2
+	   + 3 *   data[2].point.y * ratio_2_1
+	   +       data[3].point.y * ratio_3_0;
+
+	/* Bezier gradient */
+	dx =-3 * current_point.point.x * ratio_0_2
+	   + 3 *       data[1].point.x * _1__4ratio_1_0_3ratio_2_0
+	   + 3 *       data[2].point.x * _2ratio_1_0_3ratio_2_0
+	   + 3 *       data[3].point.x * ratio_2_0;
+	dy =-3 * current_point.point.y * ratio_0_2
+	   + 3 *       data[1].point.y * _1__4ratio_1_0_3ratio_2_0
+	   + 3 *       data[2].point.y * _2ratio_1_0_3ratio_2_0
+	   + 3 *       data[3].point.y * ratio_2_0;
+
+	ratio = the_y / sqrt (dx * dx + dy * dy);
+	*x += -dy * ratio;
+	*y +=  dx * ratio;
+      }
       break;
   case CAIRO_PATH_CLOSE_PATH:
       break;
