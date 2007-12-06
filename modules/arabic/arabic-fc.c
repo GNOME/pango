@@ -96,6 +96,7 @@ arabic_engine_shape (PangoEngineShape *engine,
   const char *p;
   int cluster = 0;
   gboolean rtl = analysis->level % 2 != 0;
+  gboolean reverse;
   int i;
 
   g_return_if_fail (font != NULL);
@@ -115,7 +116,8 @@ arabic_engine_shape (PangoEngineShape *engine,
   wcs = g_utf8_to_ucs4_fast (text, length, &n_chars);
   properties = g_new0 (gulong, n_chars);
 
-  Arabic_Assign_Properties (wcs, properties, n_chars, !rtl);
+  reverse = !rtl ^ (analysis->gravity == PANGO_GRAVITY_NORTH || analysis->gravity == PANGO_GRAVITY_WEST);
+  Arabic_Assign_Properties (wcs, properties, n_chars, reverse);
 
   g_free (wcs);
 

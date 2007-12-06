@@ -1,5 +1,13 @@
 2007-12-05  Behdad Esfahbod  <behdad@gnome.org>
 
+	Bug 501938 – Arabic shaping broken with vertical layout with
+	vertical-hint=line
+
+	* modules/arabic/arabic-fc.c (arabic_engine_shape): Take gravity into
+	equation when deciding whether to shape visually or logically.
+
+2007-12-05  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango-view/viewer-pangocairo.c (render_callback): Fix assertion
 	in pango_gravity_get_rotation().
 
