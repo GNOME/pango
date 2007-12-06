@@ -163,7 +163,7 @@ render_callback (PangoLayout *layout,
       cairo_translate   (cr,  1.0,  1.0);
       cairo_rotate (cr,
 	pango_gravity_to_rotation (
-	  pango_context_get_base_gravity (
+	  pango_context_get_gravity (
 	    pango_layout_get_context (layout))));
       cairo_move_to     (cr, -1.0, -1.0);
       cairo_rel_line_to (cr, +1.0, -0.2); /* /   */
