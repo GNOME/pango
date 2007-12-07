@@ -117,7 +117,7 @@ pango_cairo_font_map_new (void)
  * Return value: the newly allocated #PangoFontMap of suitable type
  *               which should be freed with g_object_unref(),
  *               or %NULL if the requested cairo font backend is
- *               not supported.
+ *               not supported / compiled in.
  *
  * Since: 1.18
  **/
