@@ -1,3 +1,54 @@
+2007-12-10  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 478914 – Use something invalid instead of '?' when validating
+	input text
+
+	* pango/pango-layout.c (pango_layout_set_text): Set invalid input
+	bytes to -1, which gives a unichar value of -1, and eventually a
+	glyph value of -1, aka PANGO_GLYPH_INVALID_INPUT.
+
+	* pango/fonts.c (pango_font_get_glyph_extents),
+	(pango_font_get_metrics), (pango_font_get_font_map):
+	* pango/modules.c (build_map):
+	* pango/pango-context.c (get_script), (get_shaper_and_font),
+	(string_from_script), (itemize_state_process_run):
+	* pango/pango-coverage.c (pango_coverage_get):
+	* pango/pango-impl-utils.h:
+	* pango/pango-utils.c:
+	* pango/pangocairo-font.c (pango_cairo_font_get_scaled_font),
+	(_pango_cairo_font_private_get_hex_box_info),
+	(_pango_cairo_font_private_get_glyph_extents_missing):
+	* pango/pangocairo-private.h:
+	* pango/pangocairo-render.c (_pango_cairo_renderer_draw_frame),
+	(_pango_cairo_renderer_draw_box_glyph),
+	(_pango_cairo_renderer_draw_unknown_glyph):
+	* pango/pangofc-fontmap.c (pango_fc_font_map_get_patterns):
+	* pango/pangoft2-private.h:
+	* pango/pangoft2-render.c (pango_ft2_font_render_box_glyph),
+	(pango_ft2_font_render_glyph), (pango_ft2_renderer_draw_glyph):
+	* pango/pangoft2.c (pango_ft2_font_get_face),
+	(pango_ft2_font_get_glyph_extents):
+	* pango/pangox.c (pango_x_find_subfont), (pango_x_render):
+	* pango/pangoxft-font.c (_pango_xft_font_get_mini_font),
+	(get_glyph_extents_missing), (pango_xft_font_get_font):
+	* pango/pangoxft-private.h:
+	* pango/pangoxft-render.c (get_total_matrix), (draw_box),
+	(_pango_xft_renderer_draw_box_glyph),
+	(_pango_xft_renderer_draw_unknown_glyph),
+	(pango_xft_renderer_draw_glyphs):
+	* pango/shape.c (pango_shape):
+	Render PANGO_GLYPH_INVALID_INPUT to a single-width box with a cross
+	inside.  Also cleanup spewed warnings and warn at the source, where
+	we fail to find a shaper, instead of at every location that we see
+	a NULL font.
+
+	* pango/pango-font.h:
+	* docs/pango-sections.txt:
+	* docs/tmpl/glyphs.sgml:
+	New public macro:
+
+		PANGO_GLYPH_INVALID_INPUT
+
 2007-12-05  Behdad Esfahbod  <behdad@gnome.org>
 
 	* examples/cairotwisted.c (point_on_path): Optimize double math.

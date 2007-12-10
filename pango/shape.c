@@ -50,7 +50,7 @@ pango_shape (const gchar      *text,
 
   glyphs->num_glyphs = 0;
 
-  if (G_LIKELY (PANGO_IS_ENGINE_SHAPE (analysis->shape_engine) && PANGO_IS_FONT (analysis->font)))
+  if (G_LIKELY (analysis->shape_engine && analysis->font))
     {
       _pango_engine_shape_shape (analysis->shape_engine, analysis->font,
 				 text, length, analysis, glyphs);
@@ -106,22 +106,7 @@ pango_shape (const gchar      *text,
 	}
     }
   else
-    {
-      if (!PANGO_IS_ENGINE_SHAPE (analysis->shape_engine) &&
-	  !_pango_warning_history.shape_shape_engine)
-	{
-	  _pango_warning_history.shape_shape_engine = TRUE;
-	  g_warning ("pango_shape called with bad shape_engine, expect ugly output");
-	}
-      if (!PANGO_IS_FONT (analysis->font) &&
-	  !_pango_warning_history.shape_font)
-	{
-	  _pango_warning_history.shape_font = TRUE;
-	  g_warning ("pango_shape called with bad font, expect ugly output");
-	}
-
-      glyphs->num_glyphs = 0;
-    }
+    glyphs->num_glyphs = 0;
 
   if (!glyphs->num_glyphs)
     {

@@ -97,6 +97,7 @@ pango_matrix_transform_pixel_rectangle
 pango_matrix_get_font_scale_factor
 PangoGlyph
 PANGO_GLYPH_EMPTY
+PANGO_GLYPH_INVALID_INPUT
 PANGO_GLYPH_UNKNOWN_FLAG
 PANGO_GET_UNKNOWN_GLYPH
 PangoGlyphInfo

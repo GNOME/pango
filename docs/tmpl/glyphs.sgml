@@ -304,6 +304,20 @@ Unicode characters (those passing pango_is_zero_width()).
 
 
 
+<!-- ##### MACRO PANGO_GLYPH_INVALID_INPUT ##### -->
+<para>
+The %PANGO_GLYPH_EMPTY macro represents a #PangoGlyph value that has a
+special meaning of invalid input.  #PangoLayout produces one such glyph
+per invalid input UTF-8 byte and such a glyph is rendered as a crossed
+box.
+
+Note that this value is defined such that it has the %PANGO_GLYPH_UNKNOWN_FLAG
+on.
+</para>
+
+@Since: 1.20
+
+
 <!-- ##### MACRO PANGO_GLYPH_UNKNOWN_FLAG ##### -->
 <para>
 The %PANGO_GLYPH_UNKNOWN_FLAG macro is a flag value that can be added to

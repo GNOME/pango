@@ -59,8 +59,6 @@ struct PangoAlias
 
 static GHashTable *pango_aliases_ht = NULL;
 
-PangoWarningHistory _pango_warning_history = { FALSE, FALSE, FALSE };
-
 /**
  * pango_version:
  *
@@ -1585,7 +1583,7 @@ pango_is_zero_width (gunichar ch)
 
 /**
  * pango_quantize_line_geometry:
- * @thickness: pointer to the thickness of a line, in Pango scaled units
+ * @thickness: pointer to the thickness of a line, in Pango units
  * @position: corresponding position
  *
  * Quantizes the thickness and position of a line, typically an
@@ -1593,8 +1591,9 @@ pango_is_zero_width (gunichar ch)
  * multiples of %PANGO_SCALE. The purpose of this function is to avoid
  * such lines looking blurry.
  *
- * Care is taken to make sure @thickness is at least 1 when this function
- * returns, but returned @position may become zero as a result of rounding.
+ * Care is taken to make sure @thickness is at least one pixel when this
+ * function returns, but returned @position may become zero as a result
+ * of rounding.
  *
  * Since: 1.12
  */

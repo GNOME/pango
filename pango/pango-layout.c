@@ -961,8 +961,13 @@ pango_layout_set_text (PangoLayout *layout,
     if (!*end)
       break;
 
+    /* Replace invalid bytes with -1.  The -1 will be converted to
+     * ((gunichar) -1) by glib, and that in turn yields a glyph value of
+     * ((PangoGlyph) -1) by PANGO_GET_UNKNOWN_GLYPH(-1),
+     * and that's PANGO_GLYPH_INVALID_INPUT.
+     */
     if (!valid)
-      *end++ = '?';
+      *end++ = -1;
 
     start = end;
   }

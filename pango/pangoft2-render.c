@@ -100,9 +100,10 @@ pango_ft2_free_rendered_glyph (PangoFT2RenderedGlyph *rendered)
 }
 
 static PangoFT2RenderedGlyph *
-pango_ft2_font_render_box_glyph (int width,
-				 int height,
-				 int top)
+pango_ft2_font_render_box_glyph (int      width,
+				 int      height,
+				 int      top,
+				 gboolean invalid)
 {
   PangoFT2RenderedGlyph *box;
   int i, j, offset1, offset2, line_width;
@@ -150,14 +151,38 @@ pango_ft2_font_render_box_glyph (int width,
 	}
     }
 
+  if (invalid)
+    {
+      /* XXX This may scrabble memory.  Didn't check close enough */
+      int inc = PANGO_SCALE * MAX (width - line_width, 0) / (height + 1);
+      offset1 = PANGO_SCALE;
+      offset2 = PANGO_SCALE * MAX (width - line_width - 1, 0) ;
+      for (i = box->bitmap.pitch;
+	   i < (box->bitmap.rows - 1) * box->bitmap.pitch;
+	   i += box->bitmap.pitch)
+        {
+	  for (j = 0; j < line_width; j++)
+	    {
+	      box->bitmap.buffer[PANGO_PIXELS (offset1) + i + j] = 0xff;
+	      box->bitmap.buffer[PANGO_PIXELS (offset2) + i + j] = 0xff;
+	    }
+	  offset1 += inc;
+	  offset2 -= inc;
+	}
+
+    }
+
   return box;
 }
 
 static PangoFT2RenderedGlyph *
 pango_ft2_font_render_glyph (PangoFont *font,
-			     int glyph_index)
+			     PangoGlyph glyph_index)
 {
   FT_Face face;
+  gboolean invalid_input;
+
+  invalid_input = glyph_index == PANGO_GLYPH_INVALID_INPUT || (glyph_index & ~PANGO_GLYPH_UNKNOWN_FLAG) > 0x10FFFF;
 
   if (glyph_index & PANGO_GLYPH_UNKNOWN_FLAG)
     {
@@ -173,7 +198,8 @@ pango_ft2_font_render_glyph (PangoFont *font,
 
       box = pango_ft2_font_render_box_glyph (PANGO_PIXELS (metrics->approximate_char_width),
 					     PANGO_PIXELS (metrics->ascent + metrics->descent),
-					     PANGO_PIXELS (metrics->ascent));
+					     PANGO_PIXELS (metrics->ascent),
+					     invalid_input);
       pango_font_metrics_unref (metrics);
 
       return box;
@@ -207,7 +233,8 @@ pango_ft2_font_render_glyph (PangoFont *font,
 generic_box:
       return  pango_ft2_font_render_box_glyph (PANGO_UNKNOWN_GLYPH_WIDTH,
 					       PANGO_UNKNOWN_GLYPH_HEIGHT,
-					       PANGO_UNKNOWN_GLYPH_HEIGHT);
+					       PANGO_UNKNOWN_GLYPH_HEIGHT,
+					       invalid_input);
     }
 }
 
@@ -231,16 +258,17 @@ pango_ft2_renderer_draw_glyph (PangoRenderer *renderer,
 
   if (glyph & PANGO_GLYPH_UNKNOWN_FLAG)
     {
-      glyph = pango_ft2_get_unknown_glyph (font);
-      if (glyph == PANGO_GLYPH_EMPTY)
-	{
-	  /* No unknown glyph found for the font, draw a box */
+      /* Since we don't draw hexbox for FT2 renderer,
+       * unifiy the rendered bitmap in the cache by converting
+       * all missing glyphs to either INVALID_INPUT or UNKNOWN_FLAG.
+       */
 
-	  /* Since we only draw an empty box for FT2 renderer,
-	   * we unify the rendered bitmaps in the cache.
-	   */
-	  glyph = PANGO_GLYPH_UNKNOWN_FLAG;
-	}
+      gunichar wc = glyph & (~PANGO_GLYPH_UNKNOWN_FLAG);
+
+      if (G_UNLIKELY (glyph == PANGO_GLYPH_INVALID_INPUT || wc > 0x10FFFF))
+	glyph = PANGO_GLYPH_INVALID_INPUT;
+      else
+	glyph = PANGO_GLYPH_UNKNOWN_FLAG;
     }
 
   rendered_glyph = _pango_ft2_font_get_cache_glyph_data (font, glyph);

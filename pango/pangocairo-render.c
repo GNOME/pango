@@ -21,6 +21,8 @@
 
 #include <config.h>
 
+#include <math.h>
+
 #include "pangocairo-private.h"
 
 typedef struct _PangoCairoRendererClass PangoCairoRendererClass;
@@ -58,15 +60,18 @@ set_color (PangoCairoRenderer *crenderer,
 			  color->blue / 65535.);
 }
 
-/* modifies cairo_set_line_width() without doing cairo_save/restore() */
+/* note: modifies crenderer->cr without doing cairo_save/restore() */
 static void
 _pango_cairo_renderer_draw_frame (PangoCairoRenderer *crenderer,
 				  double              x,
 				  double              y,
 				  double              width,
 				  double              height,
-				  double              line_width)
+				  double              line_width,
+				  gboolean            invalid)
 {
+  cairo_t *cr = crenderer->cr;
+
   if (crenderer->do_path)
     {
       double d2 = line_width * .5, d = line_width;
@@ -74,19 +79,95 @@ _pango_cairo_renderer_draw_frame (PangoCairoRenderer *crenderer,
       /* we draw an outer box in one winding direction and an inner one in the
        * opposite direction.  This works for both cairo windings rules.
        *
-       * what we really want is cairo_stroke_to_path().
+       * what we really want is cairo_stroke_to_path(), but that's not
+       * implemented in cairo yet.
        */
 
       /* outer */
-      cairo_rectangle (crenderer->cr, x-d2, y-d2, width+d, height+d);
+      cairo_rectangle (cr, x-d2, y-d2, width+d, height+d);
+
       /* inner */
-      cairo_rectangle (crenderer->cr, x+d2 + (width-d), y+d2, - (width-d), height-d);
+      if (invalid)
+        {
+	  /* delicacies of computing the joint... this is REALLY slow */
+
+	  double alpha, tan_alpha2, cos_alpha;
+	  double sx, sy;
+
+	  alpha = atan2 (height, width);
+
+	  tan_alpha2 = tan (alpha * .5);
+	  if (tan_alpha2 < 1e-5 || (sx = d2 / tan_alpha2, 2. * sx > width - d))
+	    sx = (width - d) * .5;
+
+	  cos_alpha = cos (alpha);
+	  if (cos_alpha < 1e-5 || (sy = d2 / cos_alpha, 2. * sy > height - d))
+	    sy = (height - d) * .5;
+
+	  /* top triangle */
+	  cairo_new_sub_path (cr);
+	  cairo_line_to (cr, x+width-sx, y+d2);
+	  cairo_line_to (cr, x+sx, y+d2);
+	  cairo_line_to (cr, x+.5*width, y+.5*height-sy);
+	  cairo_close_path (cr);
+
+	  /* bottom triangle */
+	  cairo_new_sub_path (cr);
+	  cairo_line_to (cr, x+width-sx, y+height-d2);
+	  cairo_line_to (cr, x+.5*width, y+.5*height+sy);
+	  cairo_line_to (cr, x+sx, y+height-d2);
+	  cairo_close_path (cr);
+
+
+	  alpha = G_PI_2 - alpha;
+	  tan_alpha2 = tan (alpha * .5);
+	  if (tan_alpha2 < 1e-5 || (sy = d2 / tan_alpha2, 2. * sy > height - d))
+	    sy = (width - d) * .5;
+
+	  cos_alpha = cos (alpha);
+	  if (cos_alpha < 1e-5 || (sx = d2 / cos_alpha, 2. * sx > width - d))
+	    sx = (width - d) * .5;
+
+	  /* left triangle */
+	  cairo_new_sub_path (cr);
+	  cairo_line_to (cr, x+d2, y+sy);
+	  cairo_line_to (cr, x+d2, y+height-sy);
+	  cairo_line_to (cr, x+.5*width-sx, y+.5*height);
+	  cairo_close_path (cr);
+
+	  /* right triangle */
+	  cairo_new_sub_path (cr);
+	  cairo_line_to (cr, x+width-d2, y+sy);
+	  cairo_line_to (cr, x+.5*width+sx, y+.5*height);
+	  cairo_line_to (cr, x+width-d2, y+height-sy);
+	  cairo_close_path (cr);
+	}
+      else
+	cairo_rectangle (cr, x+width-d2, y+d2, - (width-d), height-d);
     }
   else
     {
-      cairo_rectangle (crenderer->cr, x, y, width, height);
-      cairo_set_line_width (crenderer->cr, line_width);
-      cairo_stroke (crenderer->cr);
+      cairo_rectangle (cr, x, y, width, height);
+
+      if (invalid)
+        {
+	  /* draw an X */
+
+	  cairo_new_sub_path (cr);
+	  cairo_move_to (cr, x, y);
+	  cairo_rel_line_to (cr, width, height);
+
+	  cairo_new_sub_path (cr);
+	  cairo_move_to (cr, x + width, y);
+	  cairo_rel_line_to (cr, -width, height);
+
+	  cairo_set_line_cap (cr, CAIRO_LINE_CAP_BUTT);
+	}
+
+      cairo_set_line_width (cr, line_width);
+      cairo_set_line_join (cr, CAIRO_LINE_JOIN_MITER);
+      cairo_set_miter_limit (cr, 2.);
+      cairo_stroke (cr);
     }
 }
 
@@ -94,7 +175,8 @@ static void
 _pango_cairo_renderer_draw_box_glyph (PangoCairoRenderer *crenderer,
 				      PangoGlyphInfo     *gi,
 				      double              cx,
-				      double              cy)
+				      double              cy,
+				      gboolean            invalid)
 {
   double temp_x, temp_y;
 
@@ -107,7 +189,8 @@ _pango_cairo_renderer_draw_box_glyph (PangoCairoRenderer *crenderer,
 				    cy + 1.5 - PANGO_UNKNOWN_GLYPH_HEIGHT,
 				    (double)gi->geometry.width / PANGO_SCALE - 3.0,
 				    PANGO_UNKNOWN_GLYPH_HEIGHT - 3.0,
-				    1.0);
+				    1.0,
+				    invalid);
 
   cairo_move_to (crenderer->cr, temp_x, temp_y);
   cairo_restore (crenderer->cr);
@@ -128,30 +211,42 @@ _pango_cairo_renderer_draw_unknown_glyph (PangoCairoRenderer *crenderer,
   double temp_x, temp_y;
   PangoCairoFontHexBoxInfo *hbi;
   gunichar ch;
+  gboolean invalid_input;
 
   cairo_save (crenderer->cr);
   cairo_get_current_point (crenderer->cr, &temp_x, &temp_y);
 
-  hbi = _pango_cairo_font_get_hex_box_info ((PangoCairoFont *)font);
+  ch = gi->glyph & ~PANGO_GLYPH_UNKNOWN_FLAG;
+  invalid_input = G_UNLIKELY (gi->glyph == PANGO_GLYPH_INVALID_INPUT || ch > 0x10FFFF);
 
+  hbi = _pango_cairo_font_get_hex_box_info ((PangoCairoFont *)font);
   if (!hbi || !_pango_cairo_font_install ((PangoFont *)(hbi->font), crenderer->cr))
     {
-      _pango_cairo_renderer_draw_box_glyph (crenderer, gi, cx, cy);
+      _pango_cairo_renderer_draw_box_glyph (crenderer, gi, cx, cy, invalid_input);
       goto done;
     }
 
-  ch = gi->glyph & ~PANGO_GLYPH_UNKNOWN_FLAG;
-
   rows = hbi->rows;
-  cols = (ch > 0xffff ? 6 : 4) / rows;
-  g_snprintf (buf, sizeof(buf), (ch > 0xffff) ? "%06X" : "%04X", ch);
+  if (G_UNLIKELY (invalid_input))
+    {
+      cols = 1;
+    }
+  else
+    {
+      cols = (ch > 0xffff ? 6 : 4) / rows;
+      g_snprintf (buf, sizeof(buf), (ch > 0xffff) ? "%06X" : "%04X", ch);
+    }
 
   _pango_cairo_renderer_draw_frame (crenderer,
 				    cx + hbi->pad_x * 1.5,
 				    cy + hbi->box_descent - hbi->box_height + hbi->pad_y * 0.5,
 				    (double)gi->geometry.width / PANGO_SCALE - 3 * hbi->pad_x,
 				    (hbi->box_height - hbi->pad_y),
-				    hbi->line_width);
+				    hbi->line_width,
+				    invalid_input);
+
+  if (invalid_input)
+    goto done;
 
   x0 = cx + hbi->pad_x * 3.0;
   y0 = cy + hbi->box_descent - hbi->pad_y * 2;

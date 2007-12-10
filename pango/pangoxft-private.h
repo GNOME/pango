@@ -34,9 +34,9 @@ struct _PangoXftFont
   XftFont *xft_font;		    /* created on demand */
   PangoFont *mini_font;		    /* font used to display missing glyphs */
 
-  guint16 mini_width;		    /* metrics for missing glyph drawing */
-  guint16 mini_height;
-  guint16 mini_pad;
+  guint mini_width;		    /* metrics for missing glyph drawing */
+  guint mini_height;
+  guint mini_pad;
 
   GHashTable *glyph_info;	    /* Used only when we can't get
 				     * glyph extents out of Xft because
@@ -54,14 +54,6 @@ void          _pango_xft_font_map_get_info (PangoFontMap     *fontmap,
 PangoRenderer *_pango_xft_font_map_get_renderer (PangoXftFontMap *xftfontmap);
 
 PangoFont *_pango_xft_font_get_mini_font (PangoXftFont *xfont);
-
-typedef struct _PangoXftWarningHistory PangoXftWarningHistory;
-
-struct _PangoXftWarningHistory {
-  guint get_font		: 1;
-};
-
-extern PangoXftWarningHistory _pango_xft_warning_history;
 
 G_END_DECLS
 

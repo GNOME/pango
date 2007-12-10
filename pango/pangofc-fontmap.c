@@ -1072,18 +1072,14 @@ pango_fc_font_map_get_patterns (PangoFontMap               *fontmap,
 
       if (!font_patterns)
 	{
-	  g_printerr ("No fonts found; this probably means that the fontconfig\n"
+	  g_critical ("No fonts found:\n"
+		      "This probably means that the fontconfig\n"
 		      "library is not correctly configured. You may need to\n"
 		      "edit the fonts.conf configuration file. More information\n"
 		      "about fontconfig can be found in the fontconfig(3) manual\n"
-		      "page and on http://fontconfig.org\n");
+		      "page and on http://fontconfig.org");
 
-	  /* There is no point in proceeding; we'll just get a segfault later
-	   * on, and a bunch more possibly confusing error messages in between.
-	   */
-
-	  /* return NULL; */
-	  exit (1);
+	  font_patterns = FcFontSetCreate ();
 	}
 
       patterns = g_slice_new (PangoFcPatternSet);

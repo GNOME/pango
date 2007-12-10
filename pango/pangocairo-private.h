@@ -132,14 +132,6 @@ GType pango_cairo_renderer_get_type    (void) G_GNUC_CONST;
 const cairo_font_options_t *_pango_cairo_context_get_merged_font_options (PangoContext *context);
 
 
-typedef struct _PangoCairoWarningHistory PangoCairoWarningHistory;
-
-struct _PangoCairoWarningHistory {
-  guint font_get_scaled_font	: 1;
-};
-
-extern PangoCairoWarningHistory _pango_cairo_warning_history;
-
 G_END_DECLS
 
 #endif /* __PANGOCAIRO_PRIVATE_H__ */

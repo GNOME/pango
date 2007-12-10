@@ -290,12 +290,31 @@ box_in_bounds (PangoRenderer *renderer,
 }
 
 static void
+get_total_matrix (PangoMatrix       *total,
+		  const PangoMatrix *global,
+		  double             x,
+		  double             y,
+		  double             width,
+		  double             height)
+{
+  PangoMatrix local = PANGO_MATRIX_INIT;
+  gdouble angle = atan2 (height, width);
+
+  pango_matrix_translate (&local, x, y);
+  pango_matrix_rotate (&local, -angle * (180. / G_PI));
+
+  *total = *global;
+  pango_matrix_concat (total, &local);
+}
+
+static void
 draw_box (PangoRenderer *renderer,
 	  gint           line_width,
 	  gint           x,
 	  gint           y,
 	  gint           width,
-	  gint           height)
+	  gint           height,
+	  gboolean       invalid)
 {
   pango_renderer_draw_rectangle (renderer, PANGO_RENDER_PART_FOREGROUND,
 				 x, y, width, line_width);
@@ -305,13 +324,49 @@ draw_box (PangoRenderer *renderer,
 				 x + width - line_width, y + line_width, line_width, height - line_width * 2);
   pango_renderer_draw_rectangle (renderer, PANGO_RENDER_PART_FOREGROUND,
 				 x, y + height - line_width, width, line_width);
+
+  if (invalid)
+    {
+      int length;
+      double in_width, in_height;
+      PangoMatrix orig_matrix = PANGO_MATRIX_INIT, new_matrix;
+      const PangoMatrix *porig_matrix;
+
+      in_width  = pango_units_to_double (width  - 2 * line_width);
+      in_height = pango_units_to_double (height - 2 * line_width);
+      length = PANGO_SCALE * sqrt (in_width*in_width + in_height*in_height);
+
+      porig_matrix = pango_renderer_get_matrix (renderer);
+      if (porig_matrix)
+        {
+	  orig_matrix = *porig_matrix;
+	  porig_matrix = &orig_matrix;
+	}
+
+      get_total_matrix (&new_matrix, &orig_matrix,
+			pango_units_to_double (x + line_width), pango_units_to_double (y + line_width),
+			in_width, in_height);
+      pango_renderer_set_matrix (renderer, &new_matrix);
+      pango_renderer_draw_rectangle (renderer, PANGO_RENDER_PART_FOREGROUND,
+				     0, -line_width / 2, length, line_width);
+
+      get_total_matrix (&new_matrix, &orig_matrix,
+			pango_units_to_double (x + line_width), pango_units_to_double (y + height - line_width),
+			in_width, -in_height);
+      pango_renderer_set_matrix (renderer, &new_matrix);
+      pango_renderer_draw_rectangle (renderer, PANGO_RENDER_PART_FOREGROUND,
+				     0, -line_width / 2, length, line_width);
+
+      pango_renderer_set_matrix (renderer, porig_matrix);
+    }
 }
 
 static void
 _pango_xft_renderer_draw_box_glyph (PangoRenderer    *renderer,
 				    PangoGlyphInfo   *gi,
 				    int               glyph_x,
-				    int               glyph_y)
+				    int               glyph_y,
+				    gboolean          invalid)
 {
   int x = glyph_x + PANGO_SCALE;
   int y = glyph_y - PANGO_SCALE * (PANGO_UNKNOWN_GLYPH_HEIGHT - 1);
@@ -319,7 +374,7 @@ _pango_xft_renderer_draw_box_glyph (PangoRenderer    *renderer,
   int height = PANGO_SCALE * (PANGO_UNKNOWN_GLYPH_HEIGHT - 2);
 
   if (box_in_bounds (renderer, x, y, width, height))
-    draw_box (renderer, PANGO_SCALE, x, y, width, height);
+    draw_box (renderer, PANGO_SCALE, x, y, width, height, invalid);
 }
 
 static void
@@ -335,17 +390,33 @@ _pango_xft_renderer_draw_unknown_glyph (PangoRenderer    *renderer,
   int xs[4];
   int row, col;
   int cols;
-  PangoGlyph glyph;
+  gunichar ch;
+  gboolean invalid_input;
 
-  PangoFont *mini_font = _pango_xft_font_get_mini_font (xfont);
-  XftFont *mini_xft_font = pango_xft_font_get_font (mini_font);
+  PangoFont *mini_font;
+  XftFont *mini_xft_font;
+
+  ch = gi->glyph & ~PANGO_GLYPH_UNKNOWN_FLAG;
+  if (G_UNLIKELY (gi->glyph == PANGO_GLYPH_INVALID_INPUT || ch > 0x10FFFF))
+    {
+      invalid_input = TRUE;
+      cols = 1;
+    }
+  else
+    {
+      invalid_input = FALSE;
+      cols = ch > 0xffff ? 3 : 2;
+      g_snprintf (buf, sizeof(buf), (ch > 0xffff) ? "%06X" : "%04X", ch);
+    }
+
+  mini_font = _pango_xft_font_get_mini_font (xfont);
+  mini_xft_font = pango_xft_font_get_font (mini_font);
   if (!mini_xft_font)
     {
-      _pango_xft_renderer_draw_box_glyph (renderer, gi, glyph_x, glyph_y);
+      _pango_xft_renderer_draw_box_glyph (renderer, gi, glyph_x, glyph_y, invalid_input);
       return;
     }
 
-  glyph = gi->glyph & ~PANGO_GLYPH_UNKNOWN_FLAG;
 
   ys[0] = glyph_y - PANGO_SCALE * xft_font->ascent + PANGO_SCALE * (((xft_font->ascent + xft_font->descent) - (xfont->mini_height * 2 + xfont->mini_pad * 5 + PANGO_SCALE / 2) / PANGO_SCALE) / 2);
   ys[1] = ys[0] + 2 * xfont->mini_pad + xfont->mini_height;
@@ -356,17 +427,6 @@ _pango_xft_renderer_draw_unknown_glyph (PangoRenderer    *renderer,
   xs[2] = xs[1] + xfont->mini_width + xfont->mini_pad;
   xs[3] = xs[2] + xfont->mini_width + xfont->mini_pad;
 
-  if (glyph > 0xffff)
-    {
-      cols = 3;
-      g_snprintf (buf, sizeof(buf), "%06X", glyph);
-    }
-  else
-    {
-      cols = 2;
-      g_snprintf (buf, sizeof(buf), "%04X", glyph);
-    }
-
   if (box_in_bounds (renderer,
 		     xs[0], ys[0],
 		     xfont->mini_width * cols + xfont->mini_pad * (2 * cols + 1),
@@ -376,7 +436,11 @@ _pango_xft_renderer_draw_unknown_glyph (PangoRenderer    *renderer,
 	draw_box (renderer, xfont->mini_pad,
 		  xs[0], ys[0],
 		  xfont->mini_width * cols + xfont->mini_pad * (2 * cols + 1),
-		  xfont->mini_height * 2 + xfont->mini_pad * 5);
+		  xfont->mini_height * 2 + xfont->mini_pad * 5,
+		  invalid_input);
+
+      if (invalid_input)
+        return;
 
       for (row = 0; row < 2; row++)
 	for (col = 0; col < cols; col++)
@@ -414,7 +478,12 @@ pango_xft_renderer_draw_glyphs (PangoRenderer    *renderer,
 	      int glyph_x = x + x_off + gi->geometry.x_offset;
 	      int glyph_y = y + gi->geometry.y_offset;
 
-	      _pango_xft_renderer_draw_box_glyph (renderer, gi, glyph_x, glyph_y);
+	      _pango_xft_renderer_draw_unknown_glyph (renderer,
+						      xfont,
+						      xft_font,
+						      gi,
+						      glyph_x,
+						      glyph_y);
 	    }
 
 	  x_off += gi->geometry.width;

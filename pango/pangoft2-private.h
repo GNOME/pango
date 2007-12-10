@@ -115,12 +115,4 @@ GType pango_ft2_renderer_get_type    (void) G_GNUC_CONST;
 
 PangoRenderer *_pango_ft2_font_map_get_renderer (PangoFT2FontMap *ft2fontmap);
 
-typedef struct _PangoFT2WarningHistory PangoFT2WarningHistory;
-
-struct _PangoFT2WarningHistory {
-  guint get_face		: 1;
-};
-
-extern PangoFT2WarningHistory _pango_ft2_warning_history;
-
 #endif /* __PANGOFT2_PRIVATE_H__ */

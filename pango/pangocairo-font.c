@@ -27,8 +27,6 @@
 #include "pangocairo-private.h"
 #include "pango-impl-utils.h"
 
-PangoCairoWarningHistory _pango_cairo_warning_history = { FALSE };
-
 #define PANGO_CAIRO_FONT_PRIVATE(font)		\
   ((PangoCairoFontPrivate *)			\
    (font == NULL ? NULL :			\
@@ -151,7 +149,8 @@ done:
  * The scaled font can be referenced and kept using
  * cairo_scaled_font_reference().
  *
- * Return value: the #cairo_scaled_font_t used by @font
+ * Return value: the #cairo_scaled_font_t used by @font,
+ *               or %NULL if @font is %NULL.
  *
  * Since: 1.18
  **/
@@ -160,15 +159,8 @@ pango_cairo_font_get_scaled_font (PangoCairoFont *cfont)
 {
   PangoCairoFontPrivate *cf_priv;
 
-  if (G_UNLIKELY (!PANGO_IS_CAIRO_FONT (cfont)))
-    {
-      if (!_pango_cairo_warning_history.font_get_scaled_font)
-	{
-	  _pango_cairo_warning_history.font_get_scaled_font = TRUE;
-	  g_warning ("pango_cairo_font_get_scaled_font called with bad font, expect ugly output");
-	}
-      return NULL;
-    }
+  if (G_UNLIKELY (!cfont))
+    return NULL;
 
   cf_priv = PANGO_CAIRO_FONT_PRIVATE (cfont);
 
@@ -408,7 +400,7 @@ _pango_cairo_font_private_get_hex_box_info (PangoCairoFontPrivate *cf_priv)
   cairo_font_options_destroy (font_options);
 
 
-  scaled_mini_font = pango_cairo_font_get_scaled_font (mini_font);
+  scaled_mini_font = pango_cairo_font_get_scaled_font ((PangoCairoFont *) mini_font);
 
   for (i = 0 ; i < 16 ; i++)
     {
@@ -576,6 +568,7 @@ _pango_cairo_font_private_get_glyph_extents_missing (PangoCairoFontPrivate *cf_p
 						     PangoRectangle        *logical_rect)
 {
   PangoCairoFontHexBoxInfo *hbi;
+  gunichar ch;
   gint rows, cols;
 
   hbi = _pango_cairo_font_private_get_hex_box_info (cf_priv);
@@ -585,8 +578,13 @@ _pango_cairo_font_private_get_glyph_extents_missing (PangoCairoFontPrivate *cf_p
       return;
     }
 
+  ch = glyph & ~PANGO_GLYPH_UNKNOWN_FLAG;
+
   rows = hbi->rows;
-  cols = ((glyph & ~PANGO_GLYPH_UNKNOWN_FLAG) > 0xffff ? 6 : 4) / rows;
+  if (G_UNLIKELY (glyph == PANGO_GLYPH_INVALID_INPUT || ch > 0x10FFFF))
+    cols = 1;
+  else
+    cols = ((glyph & ~PANGO_GLYPH_UNKNOWN_FLAG) > 0xffff ? 6 : 4) / rows;
 
   if (ink_rect)
     {

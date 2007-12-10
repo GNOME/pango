@@ -170,7 +170,12 @@ pango_coverage_get (PangoCoverage *coverage,
   int block_index;
 
   g_return_val_if_fail (coverage != NULL, PANGO_COVERAGE_NONE);
-  g_return_val_if_fail (index >= 0, PANGO_COVERAGE_NONE);
+
+  /* index should really have been defined unsigned.  Work around
+   * it by just returning NONE.
+   */
+  if (G_UNLIKELY (index < 0))
+    return PANGO_COVERAGE_NONE;
 
   block_index = index / 256;
 

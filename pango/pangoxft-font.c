@@ -27,8 +27,6 @@
 #include "pangoxft-private.h"
 #include "pangofc-private.h"
 
-PangoXftWarningHistory _pango_xft_warning_history = { FALSE };
-
 #define PANGO_XFT_FONT_CLASS(klass)      (G_TYPE_CHECK_CLASS_CAST ((klass), PANGO_TYPE_XFT_FONT, PangoXftFontClass))
 #define PANGO_XFT_IS_FONT_CLASS(klass)   (G_TYPE_CHECK_CLASS_TYPE ((klass), PANGO_TYPE_XFT_FONT))
 #define PANGO_XFT_FONT_GET_CLASS(obj)    (G_TYPE_INSTANCE_GET_CLASS ((obj), PANGO_TYPE_XFT_FONT, PangoXftFontClass))
@@ -153,11 +151,11 @@ _pango_xft_font_get_mini_font (PangoXftFont *xfont)
 	pango_font_description_set_size (desc, new_size);
 
       xfont->mini_font = pango_font_map_load_font (fcfont->fontmap, context, desc);
-      if (!xfont->mini_font)
-	return NULL;
-
       pango_font_description_free (desc);
       g_object_unref (context);
+
+      if (!xfont->mini_font)
+	return NULL;
 
       mini_xft = xft_font_get_font (xfont->mini_font);
 
@@ -168,7 +166,6 @@ _pango_xft_font_get_mini_font (PangoXftFont *xfont)
 	  width = MAX (width, extents.width);
 	  height = MAX (height, extents.height);
 	}
-
 
       xfont->mini_width = PANGO_SCALE * width;
       xfont->mini_height = PANGO_SCALE * height;
@@ -210,8 +207,15 @@ get_glyph_extents_missing (PangoXftFont    *xfont,
 {
   PangoFont *font = PANGO_FONT (xfont);
   XftFont *xft_font = xft_font_get_font (font);
+  gunichar ch;
+  gint cols;
+  
+  ch = glyph & ~PANGO_GLYPH_UNKNOWN_FLAG;
 
-  gint cols = (glyph & ~PANGO_GLYPH_UNKNOWN_FLAG) > 0xffff ? 3 : 2;
+  if (G_UNLIKELY (glyph == PANGO_GLYPH_INVALID_INPUT || ch > 0x10FFFF))
+    cols = 1;
+  else
+    cols = ch > 0xffff ? 3 : 2;
 
   _pango_xft_font_get_mini_font (xfont);
 
@@ -463,20 +467,13 @@ pango_xft_font_real_shutdown (PangoFcFont *fcfont)
  *
  * Returns the XftFont of a font.
  *
- * Return value: the XftFont associated to @font.
+ * Return value: the XftFont associated to @font, or %NULL if @font is %NULL.
  **/
 XftFont *
 pango_xft_font_get_font (PangoFont *font)
 {
-  if (G_UNLIKELY (!PANGO_XFT_IS_FONT (font)))
-    {
-      if (!_pango_xft_warning_history.get_font)
-	{
-	  _pango_xft_warning_history.get_font = TRUE;
-	  g_warning ("pango_xft_font_get_font called with bad font, expect ugly output");
-	}
-      return NULL;
-    }
+  if (G_UNLIKELY (!font))
+    return NULL;
 
   return xft_font_get_font (font);
 }

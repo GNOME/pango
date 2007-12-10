@@ -29,8 +29,6 @@
 #include "pango-fontmap.h"
 #include "pango-impl-utils.h"
 
-static const char bad_font_warning[] = "%s called with null font argument, expect ugly output";
-
 struct _PangoFontDescription
 {
   char *family_name;
@@ -1314,6 +1312,9 @@ pango_font_find_shaper (PangoFont     *font,
  * PANGO_DESCENT(), PANGO_LBEARING(), and PANGO_RBEARING() can be used to convert
  * from the extents rectangle to more traditional font metrics. The units
  * of the rectangles are in 1/PANGO_SCALE of a device unit.
+ *
+ * If @font is %NULL, this function gracefully sets some sane values in the
+ * output variables and returns.
  **/
 void
 pango_font_get_glyph_extents  (PangoFont      *font,
@@ -1323,12 +1324,6 @@ pango_font_get_glyph_extents  (PangoFont      *font,
 {
   if (G_UNLIKELY (!font))
     {
-
-      if (!_pango_warning_history.get_glyph_extents)
-	{
-	  _pango_warning_history.get_glyph_extents = TRUE;
-	  g_warning (bad_font_warning, "pango_font_get_glyph_extents");
-	}
       if (ink_rect)
 	{
 	  ink_rect->x = PANGO_SCALE;
@@ -1361,6 +1356,9 @@ pango_font_get_glyph_extents  (PangoFont      *font,
  * be provided to indicate that the metrics should be retrieved that
  * correspond to the script(s) used by that language.
  *
+ * If @font is %NULL, this function gracefully sets some sane values in the
+ * output variables and returns.
+ *
  * Return value: a #PangoFontMetrics object. The caller must call pango_font_metrics_unref()
  *   when finished using the object.
  **/
@@ -1370,14 +1368,7 @@ pango_font_get_metrics (PangoFont        *font,
 {
   if (G_UNLIKELY (!font))
     {
-      PangoFontMetrics *metrics;
-
-      if (!_pango_warning_history.get_metrics)
-	{
-	  _pango_warning_history.get_metrics = TRUE;
-	  g_warning (bad_font_warning, "pango_font_get_metrics");
-	}
-      metrics = pango_font_metrics_new ();
+      PangoFontMetrics *metrics = pango_font_metrics_new ();
 
       metrics->ascent = PANGO_SCALE * PANGO_UNKNOWN_GLYPH_HEIGHT;
       metrics->descent = 0;
@@ -1400,7 +1391,7 @@ pango_font_get_metrics (PangoFont        *font,
  *
  * Gets the font map for which the font was created.
  *
- * Return value: the #PangoFontMap for the font
+ * Return value: the #PangoFontMap for the font, or %NULL if @font is %NULL.
  *
  * Since: 1.10
  **/
@@ -1408,15 +1399,7 @@ PangoFontMap *
 pango_font_get_font_map (PangoFont *font)
 {
   if (G_UNLIKELY (!font))
-    {
-
-      if (!_pango_warning_history.get_font_map)
-	{
-	  _pango_warning_history.get_font_map = TRUE;
-	  g_warning (bad_font_warning, "pango_font_get_font_map");
-	}
-      return NULL;
-    }
+    return NULL;
 
   if (PANGO_FONT_GET_CLASS (font)->get_font_map)
     return PANGO_FONT_GET_CLASS (font)->get_font_map (font);

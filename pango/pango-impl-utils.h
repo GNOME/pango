@@ -75,21 +75,6 @@ prefix ## _get_type (void)				                   \
 			 parent_type, G_TYPE_FLAG_ABSTRACT)
 
 
-
-/* Warning history.  Used to not spew some warnings more than once. */
-typedef struct _PangoWarningHistory PangoWarningHistory;
-
-struct _PangoWarningHistory {
-  guint shape_font		: 1;
-  guint shape_shape_engine	: 1;
-  guint get_glyph_extents	: 1;
-  guint get_metrics		: 1;
-  guint get_font_map		: 1;
-};
-
-extern PangoWarningHistory _pango_warning_history;
-
-
 /* String interning for static strings */
 #define I_(string) g_intern_static_string (string)
 

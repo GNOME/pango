@@ -117,10 +117,7 @@ pango_x_find_subfont (PangoFont  *font,
   PangoXFont *xfont = (PangoXFont *)font;
 
   if (subfont_index < 1 || subfont_index > xfont->n_subfonts)
-    {
-      g_warning ("Invalid subfont %d", subfont_index);
-      return NULL;
-    }
+    return NULL;
 
   return xfont->subfonts[subfont_index-1];
 }
@@ -411,7 +408,7 @@ pango_x_render  (Display           *display,
 	    glyph_y >= -16384 && glyph_y <= 32767))
 	goto next_glyph;
 
-      if ((glyph & PANGO_GLYPH_UNKNOWN_FLAG) == 0)
+      if (G_LIKELY ((glyph & PANGO_GLYPH_UNKNOWN_FLAG) == 0))
 	{
 	  guint16 index = PANGO_X_GLYPH_INDEX (glyph);
 	  guint16 subfont_index = PANGO_X_GLYPH_SUBFONT (glyph);
@@ -455,6 +452,7 @@ pango_x_render  (Display           *display,
 	  int baseline;
 	  int stroke_thick;
 	  gunichar wc;
+	  gboolean invalid_input;
 
 	unknown_glyph:
 	  FLUSH;
@@ -479,12 +477,13 @@ pango_x_render  (Display           *display,
 	  x2 = x1 + PANGO_PIXELS (glyphs->glyphs[i].geometry.width);
 
 	  baseline = glyph_y;
-	  stroke_thick = MAX ((int) (0.5 + 0.075 * (y2 - y1)), 1);
+	  stroke_thick = MAX ((int) (0.5 + 0.025 * (y2 - y1)), 1);
 
 	  if (glyph & PANGO_GLYPH_UNKNOWN_FLAG)
-	    wc = glyph & (~PANGO_GLYPH_UNKNOWN_FLAG);
+	    wc = glyph & ~PANGO_GLYPH_UNKNOWN_FLAG;
 	  else
 	    wc = 0;
+	  invalid_input = glyph == PANGO_GLYPH_INVALID_INPUT || wc > 0x10FFFF;
 
 	  switch (wc)
 	    {
@@ -544,7 +543,7 @@ pango_x_render  (Display           *display,
 	    default:
 	      {
 		/* Perhaps we should draw the box-with-numbers as in the
-		 * Xft backend, though we have no guarantee of having
+		 * other backends, though we have no guarantee of having
 		 * an appropriate size of font. Right now, we just
 		 * draw an empty box. (To draw the box-with-numbers.
 		 * the backends would have to be changed to use
@@ -572,6 +571,15 @@ pango_x_render  (Display           *display,
 		XFillRectangle (display, d, gc,
 				x1, y2 - stroke_thick,
 				x2 - x1, stroke_thick);
+		if (invalid_input)
+		  {
+		    XDrawLine (display, d, gc,
+			       x1, y1,
+			       x2-1, y2-1);
+		    XDrawLine (display, d, gc,
+			       x2-1, y1,
+			       x1, y2-1);
+		  }
 
 		break;
 	      }

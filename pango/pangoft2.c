@@ -33,8 +33,6 @@
 #include "pangofc-fontmap.h"
 #include "pangofc-private.h"
 
-PangoFT2WarningHistory _pango_ft2_warning_history = { FALSE };
-
 /* for compatibility with older freetype versions */
 #ifndef FT_LOAD_TARGET_MONO
 #define FT_LOAD_TARGET_MONO  FT_LOAD_MONOCHROME
@@ -161,7 +159,8 @@ set_transform (PangoFT2Font *ft2font)
  * face from pango_fc_font_lock_face() you must call
  * pango_fc_font_unlock_face().
  *
- * Return value: a pointer to a <type>FT_Face</type> structure, with the size set correctly
+ * Return value: a pointer to a <type>FT_Face</type> structure, with the size set correctly,
+ *               or %NULL if @font is %NULL.
  **/
 FT_Face
 pango_ft2_font_get_face (PangoFont *font)
@@ -175,15 +174,8 @@ pango_ft2_font_get_face (PangoFont *font)
   int hintstyle;
   int id;
 
-  if (G_UNLIKELY (!PANGO_FT2_IS_FONT (font)))
-    {
-      if (!_pango_ft2_warning_history.get_face)
-	{
-	  _pango_ft2_warning_history.get_face = TRUE;
-	  g_warning ("pango_ft2_font_get_face called with bad font, expect ugly output");
-	}
-      return NULL;
-    }
+  if (G_UNLIKELY (!font))
+    return NULL;
 
   pattern = fcfont->font_pattern;
 
@@ -336,40 +328,35 @@ pango_ft2_font_get_glyph_extents (PangoFont      *font,
 
   if (glyph & PANGO_GLYPH_UNKNOWN_FLAG)
     {
-      glyph = pango_ft2_get_unknown_glyph (font);
-      if (glyph == PANGO_GLYPH_EMPTY)
+      PangoFontMetrics *metrics = pango_font_get_metrics (font, NULL);
+
+      if (metrics)
 	{
-	  /* No unknown glyph found for the font, draw a box */
-	  PangoFontMetrics *metrics = pango_font_get_metrics (font, NULL);
-
-	  if (metrics)
+	  if (ink_rect)
 	    {
-	      if (ink_rect)
-		{
-		  ink_rect->x = PANGO_SCALE;
-		  ink_rect->width = metrics->approximate_char_width - 2 * PANGO_SCALE;
-		  ink_rect->y = - (metrics->ascent - PANGO_SCALE);
-		  ink_rect->height = metrics->ascent + metrics->descent - 2 * PANGO_SCALE;
-		}
-	      if (logical_rect)
-		{
-		  logical_rect->x = 0;
-		  logical_rect->width = metrics->approximate_char_width;
-		  logical_rect->y = -metrics->ascent;
-		  logical_rect->height = metrics->ascent + metrics->descent;
-		}
-
-	      pango_font_metrics_unref (metrics);
+	      ink_rect->x = PANGO_SCALE;
+	      ink_rect->width = metrics->approximate_char_width - 2 * PANGO_SCALE;
+	      ink_rect->y = - (metrics->ascent - PANGO_SCALE);
+	      ink_rect->height = metrics->ascent + metrics->descent - 2 * PANGO_SCALE;
 	    }
-	  else
+	  if (logical_rect)
 	    {
-	      if (ink_rect)
-		ink_rect->x = ink_rect->y = ink_rect->height = ink_rect->width = 0;
-	      if (logical_rect)
-		logical_rect->x = logical_rect->y = logical_rect->height = logical_rect->width = 0;
+	      logical_rect->x = 0;
+	      logical_rect->width = metrics->approximate_char_width;
+	      logical_rect->y = -metrics->ascent;
+	      logical_rect->height = metrics->ascent + metrics->descent;
 	    }
-	  return;
+
+	  pango_font_metrics_unref (metrics);
 	}
+      else
+	{
+	  if (ink_rect)
+	    ink_rect->x = ink_rect->y = ink_rect->height = ink_rect->width = 0;
+	  if (logical_rect)
+	    logical_rect->x = logical_rect->y = logical_rect->height = logical_rect->width = 0;
+	}
+      return;
     }
 
   info = pango_ft2_font_get_glyph_info (font, glyph, TRUE);

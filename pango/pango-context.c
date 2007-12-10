@@ -1094,6 +1094,21 @@ get_base_font (ItemizeState *state)
   return state->base_font;
 }
 
+static PangoScript
+get_script (ItemizeState      *state)
+{
+  /* Always use a basic shaper for vertical layout (ie, east/west gravity)
+   * as none of our script shapers support vertical shaping right now.
+   *
+   * XXX Should move the knowledge into the shaper interface.
+   */
+
+  if (PANGO_GRAVITY_IS_VERTICAL (state->resolved_gravity))
+    return PANGO_SCRIPT_COMMON;
+  else
+    return state->script;
+}
+
 static gboolean
 get_shaper_and_font (ItemizeState      *state,
 		     gunichar           wc,
@@ -1108,20 +1123,8 @@ get_shaper_and_font (ItemizeState      *state,
     return *shape_engine != NULL;
 
   if (!state->exact_engines && !state->fallback_engines)
-    {
-      /* Always use a basic shaper for vertical layout (ie, east/west gravity)
-       * as we do not support vertical shaping as of now.
-       */
-      PangoScript script;
-
-      if (PANGO_GRAVITY_IS_VERTICAL (state->resolved_gravity))
-	script = PANGO_SCRIPT_COMMON;
-      else
-	script = state->script;
-
-      get_engines (state->context, state->derived_lang, script,
-		   &state->exact_engines, &state->fallback_engines);
-    }
+    get_engines (state->context, state->derived_lang, get_script (state),
+		 &state->exact_engines, &state->fallback_engines);
 
   info.lang = state->derived_lang;
   info.wc = wc;
@@ -1289,6 +1292,21 @@ itemize_state_update_for_new_run (ItemizeState *state)
     }
 }
 
+static const char *
+string_from_script (PangoScript script)
+{
+  static GEnumClass *class = NULL;
+  GEnumValue *value;
+  if (!class)
+    class = g_type_class_ref (PANGO_TYPE_SCRIPT);
+
+  value = g_enum_get_value (class, script);
+  if (!value)
+    return string_from_script (PANGO_SCRIPT_INVALID_CODE);
+
+  return value->value_nick;
+}
+
 static void
 itemize_state_process_run (ItemizeState *state)
 {
@@ -1351,8 +1369,30 @@ itemize_state_process_run (ItemizeState *state)
       PangoEngineShape *shape_engine;
       PangoFont *font;
 
-      if (!get_shaper_and_font (state, ' ', &shape_engine, &font))
+      if (G_UNLIKELY (!get_shaper_and_font (state, ' ', &shape_engine, &font)))
 	{
+	  /* If no shaper was found, warn only once per fontmap/script pair */
+	  PangoFontMap *fontmap = state->context->font_map;
+	  const char *script_name = string_from_script (get_script (state));
+
+	  if (!g_object_get_data (G_OBJECT (fontmap), script_name))
+	    {
+	      const char *what;
+	      if (shape_engine == NULL)
+	        what = "shape engine";
+	      else if (font == NULL)
+	        what = "font";
+	      else
+	        what = "nothing (oops!)";
+	       
+	      g_warning ("failed to find shape engine, expect ugly output. engine-type='%s', script='%s'",
+			 pango_font_map_get_shape_engine_type (fontmap),
+			 script_name);
+
+	      g_object_set_data_full (G_OBJECT (fontmap), script_name,
+				      GINT_TO_POINTER (1), NULL);
+	    }
+
 	  shape_engine = _pango_get_fallback_shaper ();
 	  font = NULL;
 	}
