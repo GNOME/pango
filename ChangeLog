@@ -1,5 +1,12 @@
 2007-12-10  Behdad Esfahbod  <behdad@gnome.org>
 
+	Bug 399573 – replace strtoul in pango-markup.c with pango_scan_int()
+
+	* pango/pango-markup.c (span_parse_func): Use pango_scan_int() and
+	improve error message on parse failure.
+
+2007-12-10  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 478914 – Use something invalid instead of '?' when validating
 	input text
 

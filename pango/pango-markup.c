@@ -1079,20 +1079,21 @@ span_parse_func     (MarkupData            *md,
     {
       if (g_ascii_isdigit (*size))
 	{
-	  char *end = NULL;
-	  gulong n;
+	  const char *end;
+	  gint n;
 
-	  n = strtoul (size, &end, 10);
+/* cap size from the top at an arbitrary 2048 */
+#define MAX_SIZE (2048 * PANGO_SCALE)
 
-	  if (*end != '\0' || n < 0 || n > 1000000)
+	  if ((end = size, !pango_scan_int (&end, &n)) || *end != '\0' || n < 0 || n > MAX_SIZE)
 	    {
 	      g_set_error (error,
 			   G_MARKUP_ERROR,
 			   G_MARKUP_ERROR_INVALID_CONTENT,
-			   _("Value of 'size' attribute on <span> tag on line %d"
-			     "could not be parsed; should be an integer, or a "
+			   _("Value of 'size' attribute on <span> tag on line %d "
+			     "could not be parsed; should be an integer less than %d, or a "
 			     "string such as 'small', not '%s'"),
-			   line_number, size);
+			   line_number, MAX_SIZE+1, size);
 	      goto error;
 	    }
 
@@ -1123,7 +1124,7 @@ span_parse_func     (MarkupData            *md,
 	  g_set_error (error,
 		       G_MARKUP_ERROR,
 		       G_MARKUP_ERROR_INVALID_CONTENT,
-		       _("Value of 'size' attribute on <span> tag on line %d"
+		       _("Value of 'size' attribute on <span> tag on line %d "
 			 "could not be parsed; should be an integer, or a "
 			 "string such as 'small', not '%s'"),
 		       line_number, size);
