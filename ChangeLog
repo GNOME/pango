@@ -1,5 +1,11 @@
 2007-12-10  Behdad Esfahbod  <behdad@gnome.org>
 
+	Bug 502926 – pango-1.16.4 configure bug: can fail to accept cairo
+
+	* configure.in: Fix cairo library checking.
+
+2007-12-10  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/pangocairo-fontmap.c: Improve
 	pango_cairo_font_map_get_default() docs.
 
