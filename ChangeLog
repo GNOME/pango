@@ -1,5 +1,10 @@
 2007-12-10  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango/pangocairo-fontmap.c: Improve
+	pango_cairo_font_map_get_default() docs.
+
+2007-12-10  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 399573 – replace strtoul in pango-markup.c with pango_scan_int()
 
 	* pango/pango-markup.c (span_parse_func): Use pango_scan_int() and

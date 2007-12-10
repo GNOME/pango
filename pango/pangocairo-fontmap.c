@@ -149,7 +149,12 @@ pango_cairo_font_map_new_for_font_type (cairo_font_type_t fonttype)
 /**
  * pango_cairo_font_map_get_default:
  *
- * Gets a default font map to use with Cairo.
+ * Gets a default #PangoCairoFontMap to use with Cairo.
+ *
+ * Note that the type of the returned object will depend
+ * on the particular font backend Cairo was compiled to use;
+ * You generally should only use the #PangoFontMap and
+ * #PangoCairoFontMap interfaces on the returned object.
  *
  * Return value: the default Cairo fontmap for #Pango. This
  *  object is owned by Pango and must not be freed.
