@@ -1,5 +1,9 @@
 2007-12-10  Behdad Esfahbod  <behdad@gnome.org>
 
+	* configure.in: Better fix: set both LIBS and LDFLAGS.
+
+2007-12-10  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 502926 – pango-1.16.4 configure bug: can fail to accept cairo
 
 	* configure.in: Fix cairo library checking.

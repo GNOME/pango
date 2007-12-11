@@ -337,10 +337,12 @@ have_cairo_atsui=false
 PKG_CHECK_MODULES(CAIRO, cairo >= 1.2.6, have_cairo=true, AC_MSG_RESULT([no]))
    
 if $have_cairo ; then
-  pango_save_libs=$LIBS
   m4_pattern_allow([PKG_CONFIG_DISABLE_UNINSTALLED])
   INSTALLED_CAIRO_LIBS=`PKG_CONFIG_DISABLE_UNINSTALLED=yes $PKG_CONFIG --libs cairo`
-  LIBS="$LDFLAGS $INSTALLED_CAIRO_LIBS"
+  pango_save_libs=$LIBS
+  LIBS="$LIBS $INSTALLED_CAIRO_LIBS"
+  pango_save_ldflags=$LDFLAGS
+  LDFLAGS="$LDFLAGS $INSTALLED_CAIRO_LIBS"
 
 
   AC_CHECK_LIB(cairo, cairo_surface_write_to_png, have_cairo_png=true, :)
@@ -388,6 +390,7 @@ if $have_cairo ; then
   fi
 
   LIBS=$pango_save_libs
+  LDFLAGS=$pango_save_ldflags
 fi
 
 AM_CONDITIONAL(HAVE_CAIRO, $have_cairo)
