@@ -333,8 +333,9 @@ have_cairo_xlib=false
 have_cairo_freetype=false
 have_cairo_win32=false
 have_cairo_atsui=false
+cairo_required=1.2.6
 
-PKG_CHECK_MODULES(CAIRO, cairo >= 1.2.6, have_cairo=true, AC_MSG_RESULT([no]))
+PKG_CHECK_MODULES(CAIRO, cairo >= $cairo_required, have_cairo=true, AC_MSG_RESULT([no]))
    
 if $have_cairo ; then
   m4_pattern_allow([PKG_CONFIG_DISABLE_UNINSTALLED])
@@ -344,42 +345,41 @@ if $have_cairo ; then
   pango_save_ldflags=$LDFLAGS
   LDFLAGS="$LDFLAGS $INSTALLED_CAIRO_LIBS"
 
-
-  AC_CHECK_LIB(cairo, cairo_surface_write_to_png, have_cairo_png=true, :)
+  PKG_CHECK_EXISTS(cairo-png >= $cairo_required, have_cairo_png=true, :)
   if $have_cairo_png; then
     AC_DEFINE(HAVE_CAIRO_PNG, 1, [Whether Cairo has PNG support])
   fi
 
-  AC_CHECK_LIB(cairo, cairo_ps_surface_create, have_cairo_ps=true, :)
+  PKG_CHECK_EXISTS(cairo-ps >= $cairo_required, have_cairo_ps=true, :)
   if $have_cairo_ps; then
     AC_DEFINE(HAVE_CAIRO_PS, 1, [Whether Cairo has PS support])
   fi
 
-  AC_CHECK_LIB(cairo, cairo_pdf_surface_create, have_cairo_pdf=true, :)
+  PKG_CHECK_EXISTS(cairo-pdf >= $cairo_required, have_cairo_pdf=true, :)
   if $have_cairo_pdf; then
     AC_DEFINE(HAVE_CAIRO_PDF, 1, [Whether Cairo has PDF support])
   fi
 
-  AC_CHECK_LIB(cairo, cairo_xlib_surface_create, have_cairo_xlib=true, :)
+  PKG_CHECK_EXISTS(cairo-xlib >= $cairo_required, have_cairo_xlib=true, :)
   if $have_cairo_xlib; then
     AC_DEFINE(HAVE_CAIRO_XLIB, 1, [Whether Cairo has Xlib support])
   fi
 
   have_cairo=false
 
-  AC_CHECK_LIB(cairo, cairo_win32_scaled_font_select_font, have_cairo_win32=true, :)
+  PKG_CHECK_EXISTS(cairo-win32 >= $cairo_required, have_cairo_win32=true, :)
   if $have_cairo_win32 && $have_win32; then
     AC_DEFINE(HAVE_CAIRO_WIN32, 1, [Whether Cairo uses the Win32 GDI for fonts])
     have_cairo=true
   fi
 
-  AC_CHECK_LIB(cairo, cairo_ft_scaled_font_lock_face, have_cairo_freetype=true, :)
+  PKG_CHECK_EXISTS(cairo-ft >= $cairo_required, have_cairo_freetype=true, :)
   if $have_cairo_freetype && $have_freetype ; then
     AC_DEFINE(HAVE_CAIRO_FREETYPE, 1, [Whether Cairo uses FreeType for fonts])
     have_cairo=true
   fi
 
-  AC_CHECK_LIB(cairo, cairo_atsui_font_face_create_for_atsu_font_id, have_cairo_atsui=true, :)
+  PKG_CHECK_EXISTS(cairo-atsui >= $cairo_required, have_cairo_atsui=true, :)
   if $have_cairo_atsui && $have_atsui ; then
     AC_DEFINE(HAVE_CAIRO_ATSUI, 1, [Whether Cairo uses ATSUI for fonts])
     have_cairo=true
