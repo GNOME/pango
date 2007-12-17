@@ -1,3 +1,24 @@
+Overview of changes between 1.19.1 and 1.19.2
+==============================================
+- Render a crossed box for each invalid input byte to pango_layout_set_text().
+  Previously we rendered an ASCII question mark instead.  The crossed box has
+  a glyph of value of PANGO_GLYPH_INVALID_INPUT.
+- Use pkg-config to detect cairo features [Benjamin Otte]
+- Improved docs.  Particularly, examples/cairo*.c have inline docs now.
+- New public macro:
+
+	PANGO_GLYPH_INVALID_INPUT
+
+- Bugs fixed in this release:
+	Bug 502926 – pango-1.16.4 configure bug: can fail to accept cairo
+	Bug 399573 – replace strtoul in pango-markup.c with pango_scan_int()
+	Bug 478914 – Use something invalid instead of '?' when validating
+		input text
+	Bug 501938 – Arabic shaping broken with vertical layout with
+		vertical-hint=line
+	Bug 501575 – Compile errors
+		Patch from Jens Granseuer
+
 Overview of changes between 1.19.0 and 1.19.1
 ==============================================
 - Various cleanup in the HarfBuzz code and merging with upstream/Qt changes.
