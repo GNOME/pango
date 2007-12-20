@@ -90,6 +90,17 @@ struct _PangoOTRulesetDescription {
 };
 
 
+#define PANGO_TYPE_OT_INFO              (pango_ot_info_get_type ())
+#define PANGO_OT_INFO(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_TYPE_OT_INFO, PangoOTInfo))
+#define PANGO_IS_OT_INFO(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), PANGO_TYPE_OT_INFO))
+GType pango_ot_info_get_type (void) G_GNUC_CONST;
+
+#define PANGO_TYPE_OT_RULESET           (pango_ot_ruleset_get_type ())
+#define PANGO_OT_RULESET(object)        (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_TYPE_OT_RULESET, PangoOTRuleset))
+#define PANGO_IS_OT_RULESET(object)     (G_TYPE_CHECK_INSTANCE_TYPE ((object), PANGO_TYPE_OT_RULESET))
+GType pango_ot_ruleset_get_type (void) G_GNUC_CONST;
+
+
 PangoOTInfo *pango_ot_info_get (FT_Face face);
 
 gboolean pango_ot_info_find_script   (PangoOTInfo      *info,

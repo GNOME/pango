@@ -29,13 +29,6 @@
 
 G_BEGIN_DECLS
 
-#define PANGO_TYPE_OT_INFO              (pango_ot_info_get_type ())
-#define PANGO_OT_INFO(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_TYPE_OT_INFO, PangoOTInfo))
-#define PANGO_OT_INFO_CLASS(klass)      (G_TYPE_CHECK_CLASS_CAST ((klass), PANGO_TYPE_OT_INFO, PangoOTInfoClass))
-#define PANGO_IS_OT_INFO(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), PANGO_TYPE_OT_INFO))
-#define PANGO_IS_OT_INFO_CLASS(klass)   (G_TYPE_CHECK_CLASS_TYPE ((klass), PANGO_TYPE_OT_INFO))
-#define PANGO_OT_INFO_GET_CLASS(obj)    (G_TYPE_INSTANCE_GET_CLASS ((obj), PANGO_TYPE_OT_INFO, PangoOTInfoClass))
-
 typedef struct _PangoOTInfoClass PangoOTInfoClass;
 
 struct _PangoOTInfo
@@ -56,12 +49,6 @@ struct _PangoOTInfoClass
   GObjectClass parent_class;
 };
 
-#define PANGO_TYPE_OT_RULESET              (pango_ot_ruleset_get_type ())
-#define PANGO_OT_RULESET(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_TYPE_OT_RULESET, PangoOTRuleset))
-#define PANGO_OT_RULESET_CLASS(klass)      (G_TYPE_CHECK_CLASS_CAST ((klass), PANGO_TYPE_OT_RULESET, PangoOTRulesetClass))f
-#define PANGO_IS_OT_RULESET(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), PANGO_TYPE_OT_RULESET))
-#define PANGO_IS_OT_RULESET_CLASS(klass)   (G_TYPE_CHECK_CLASS_TYPE ((klass), PANGO_TYPE_OT_RULESET))
-#define PANGO_OT_RULESET_GET_CLASS(obj)    (G_TYPE_INSTANCE_GET_CLASS ((obj), PANGO_TYPE_OT_RULESET, PangoOTRulesetClass))
 
 typedef struct _PangoOTRulesetClass PangoOTRulesetClass;
 
@@ -93,13 +80,9 @@ struct _PangoOTBuffer
   guint applied_gpos : 1;
 };
 
-GType pango_ot_info_get_type (void) G_GNUC_CONST;
-
 HB_GDEF pango_ot_info_get_gdef (PangoOTInfo *info);
 HB_GSUB pango_ot_info_get_gsub (PangoOTInfo *info);
 HB_GPOS pango_ot_info_get_gpos (PangoOTInfo *info);
-
-GType pango_ot_ruleset_get_type (void) G_GNUC_CONST;
 
 G_END_DECLS
 

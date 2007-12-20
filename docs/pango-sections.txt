@@ -1013,6 +1013,16 @@ pango_ot_tag_from_language
 pango_ot_tag_from_script
 pango_ot_tag_to_language
 pango_ot_tag_to_script
+
+<SUBSECTION Standard>
+PANGO_IS_OT_INFO
+PANGO_IS_OT_RULESET
+PANGO_OT_INFO
+PANGO_OT_RULESET
+PANGO_TYPE_OT_INFO
+PANGO_TYPE_OT_RULESET
+pango_ot_info_get_type
+pango_ot_ruleset_get_type
 </SECTION>
 
 <SECTION>

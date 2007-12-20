@@ -1,3 +1,21 @@
+2007-12-19  Behdad Esfahbod  <behdad@gnome.org>
+
+	 Red Hat Bug 426178: gtkdoc-scan fails on pango
+
+	* docs/pango-sections.txt:
+	* pango/pango-ot-private.h:
+	* pango/pango-ot.h:
+	Make the following symbols available to engines:
+
+		PANGO_IS_OT_INFO
+		PANGO_IS_OT_RULESET
+		PANGO_OT_INFO
+		PANGO_OT_RULESET
+		PANGO_TYPE_OT_INFO
+		PANGO_TYPE_OT_RULESET
+		pango_ot_info_get_type
+		pango_ot_ruleset_get_type
+
 2007-12-17  Behdad Esfahbod  <behdad@gnome.org>
 
 	* === Released 1.19.2 ===
