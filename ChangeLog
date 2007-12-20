@@ -1,5 +1,15 @@
 2007-12-19  Behdad Esfahbod  <behdad@gnome.org>
 
+	Bug 504585 – pango-querymodules.1 syntax error
+
+	* Makefile.am:
+	* docs/Makefile.am:
+	* docs/pango-querymodules.1:
+	Fix man-page generation rule, also remove pango-querymodules.1 from
+	SVN so it's regenerated from XML at dist time.
+
+2007-12-19  Behdad Esfahbod  <behdad@gnome.org>
+
 	 Red Hat Bug 426178: gtkdoc-scan fails on pango
 
 	* docs/pango-sections.txt:

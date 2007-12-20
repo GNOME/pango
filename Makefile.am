@@ -72,4 +72,4 @@ if HAVE_WIN32
 pkgconfig_DATA += pangowin32.pc
 endif
 
-DISTCHECK_CONFIGURE_FLAGS = --enable-gtk-doc --disable-doc-cross-references
+DISTCHECK_CONFIGURE_FLAGS = --enable-gtk-doc --enable-man --disable-doc-cross-references

@@ -99,9 +99,8 @@ man_MANS = pango-querymodules.1
 
 if ENABLE_MAN
 
-.1.xml:
+.xml.1:
 	@XSLTPROC@ -nonet http://docbook.sourceforge.net/release/xsl/current/manpages/docbook.xsl $<
-
 endif
 
 EXTRA_DIST +=				\
