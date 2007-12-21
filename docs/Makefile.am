@@ -101,10 +101,15 @@ MAINTAINERCLEANFILES = $(man_MANS)
 if ENABLE_MAN
 .xml.1:
 	@XSLTPROC@ -nonet http://docbook.sourceforge.net/release/xsl/current/manpages/docbook.xsl $<
+dist-local-check-mans-enabled:
+	@if grep "Man generation disabled" $(man_MANS) >/dev/null; then $(RM) $(man_MANS); fi
 else
 $(man_MANS):
 	@echo Man generation disabled.  Creating dummy $@.  Configure with --enable-man to enable it.
 	@echo Man generation disabled.  Remove this file, configure with --enable-man, and rebuild Pango > $@
+dist-local-check-mans-enabled:
+	@echo "*** --enable-man must be used in order to make dist"
+	@false
 endif
 
 EXTRA_DIST +=				\
@@ -114,7 +119,7 @@ EXTRA_DIST +=				\
 	check.docs
 
 # force doc rebulid after configure
-dist-hook-local: dist-local-check-no-cross-references maintainer-clean-local all-local
+dist-hook-local: dist-local-check-mans-enabled dist-local-check-no-cross-references maintainer-clean-local all-local
 	files='$(BUILT_EXTRA_DIST)';				\
 	for f in $$files; do					\
 	  if test -f $$f; then d=.; else d=$(srcdir); fi;	\

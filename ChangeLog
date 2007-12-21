@@ -1,5 +1,9 @@
 2007-12-21  Behdad Esfahbod  <behdad@gnome.org>
 
+	* docs/Makefile.am: Check for dummy man pages in dist-local.
+
+2007-12-21  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 504802 – build failure: No rule to make target
 	`pango-querymodules.1', needed by `all-am'. Stop.
 
