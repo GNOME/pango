@@ -96,11 +96,15 @@ include $(top_srcdir)/gtk-doc.make
 ########################################################################
 
 man_MANS = pango-querymodules.1 
-
+BUILT_EXTRA_DIST = $(man_MANS)
+MAINTAINERCLEANFILES = $(man_MANS)
 if ENABLE_MAN
-
 .xml.1:
 	@XSLTPROC@ -nonet http://docbook.sourceforge.net/release/xsl/current/manpages/docbook.xsl $<
+else
+$(man_MANS):
+	@echo Man generation disabled.  Creating dummy $@.  Configure with --enable-man to enable it.
+	@echo Man generation disabled.  Remove this file, configure with --enable-man, and rebuild Pango > $@
 endif
 
 EXTRA_DIST +=				\
@@ -108,8 +112,6 @@ EXTRA_DIST +=				\
 	layout.eps			\
 	version.xml.in			\
 	check.docs
-
-BUILT_EXTRA_DIST = $(man_MANS)
 
 # force doc rebulid after configure
 dist-hook-local: dist-local-check-no-cross-references maintainer-clean-local all-local
