@@ -1,3 +1,10 @@
+2007-12-29  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 506284 – docs typo for pango_coverage_unref
+	Patch from Christian Persch
+
+	* pango/pango-coverage.c (pango_coverage_unref): Fix typo in docs.
+
 2007-12-21  Behdad Esfahbod  <behdad@gnome.org>
 
 	* docs/Makefile.am: Check for dummy man pages in dist-local.

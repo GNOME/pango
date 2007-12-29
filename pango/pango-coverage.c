@@ -131,8 +131,8 @@ pango_coverage_ref (PangoCoverage *coverage)
  * pango_coverage_unref:
  * @coverage: a #PangoCoverage
  *
- * Increase the reference count on the #PangoCoverage by one.
- * if the result is zero, free the coverage and all associated memory.
+ * Decrease the reference count on the #PangoCoverage by one.
+ * If the result is zero, free the coverage and all associated memory.
  **/
 void
 pango_coverage_unref (PangoCoverage *coverage)
