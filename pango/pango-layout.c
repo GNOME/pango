@@ -451,6 +451,9 @@ pango_layout_is_wrapped (PangoLayout *layout)
  * of @indent will produce a hanging indentation. That is, the first line will
  * have the full width, and subsequent lines will be indented by the
  * absolute value of @indent.
+ *
+ * The indent setting is ignored if layout alignment is set to
+ * %PANGO_ALIGN_CENTER.
  **/
 void
 pango_layout_set_indent (PangoLayout *layout,
@@ -3314,10 +3317,18 @@ process_line (PangoLayout    *layout,
 
   if (layout->ellipsize != PANGO_ELLIPSIZE_NONE)
     state->remaining_width = -1;
-  else if (state->first_line)
-    state->remaining_width = (layout->indent >= 0) ? layout->width - layout->indent : layout->width;
   else
-    state->remaining_width = (layout->indent >= 0) ? layout->width : layout->width + layout->indent;
+    {
+      state->remaining_width = layout->width;
+  
+      if (layout->alignment != PANGO_ALIGN_CENTER)
+        {
+	  if (state->first_line && layout->indent >= 0)
+	    state->remaining_width -= layout->indent;
+	  else if (!state->first_line && layout->indent < 0)
+	    state->remaining_width += layout->indent;
+        }
+    }
   DEBUG ("starting to fill line", line, state);
 
   while (state->items)

@@ -1,5 +1,11 @@
 2008-01-08  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango/pango-layout.c: Ignore indent if aligned center, and document
+	so.  This assumption was present in some places and not the others.
+	Fixed now.
+
+2008-01-08  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 508007 – Add option for single-paragraph mode to pango-view
 
 	* pango-view/viewer-render.c (make_layout), (parse_options): Add
