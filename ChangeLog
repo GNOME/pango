@@ -1,3 +1,11 @@
+2008-01-08  Behdad Esfahbod  <behdad@gnome.org>
+
+	* pango/pango-layout.c (ensure_tab_width), (process_line),
+	(pango_layout_get_effective_attributes),
+	(pango_layout_check_lines): Minor cleanup.  Attributes are initialized
+	with start/end_index to apply to entire text now, no need to
+	initialize them explicitly anymore.
+
 2007-12-29  Behdad Esfahbod  <behdad@gnome.org>
 
 	Bug 506284 – docs typo for pango_coverage_unref

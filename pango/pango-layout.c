@@ -2684,7 +2684,6 @@ ensure_tab_width (PangoLayout *layout)
       PangoAttrIterator *iter;
       PangoFontDescription *font_desc = pango_font_description_copy_static (pango_context_get_font_description (layout->context));
       PangoLanguage *language;
-      int i;
 
       layout_attrs = pango_layout_get_effective_attributes (layout);
       iter = pango_attr_list_get_iterator (layout_attrs);
@@ -2694,16 +2693,11 @@ ensure_tab_width (PangoLayout *layout)
 
       attr = pango_attr_font_desc_new (font_desc);
       pango_font_description_free (font_desc);
-
-      attr->start_index = 0;
-      attr->end_index = 1;
       pango_attr_list_insert_before (tmp_attrs, attr);
 
       if (language)
 	{
 	  attr = pango_attr_language_new (language);
-	  attr->start_index = 0;
-	  attr->end_index = 1;
 	  pango_attr_list_insert_before (tmp_attrs, attr);
 	}
 
@@ -2711,7 +2705,10 @@ ensure_tab_width (PangoLayout *layout)
 
       pango_attr_iterator_destroy (iter);
       if (layout_attrs != layout->attrs)
-	pango_attr_list_unref (layout_attrs);
+        {
+	  pango_attr_list_unref (layout_attrs);
+	  layout_attrs = NULL;
+	}
       pango_attr_list_unref (tmp_attrs);
 
       item = items->data;
@@ -2720,9 +2717,7 @@ ensure_tab_width (PangoLayout *layout)
       pango_item_free (item);
       g_list_free (items);
 
-      layout->tab_width = 0;
-      for (i=0; i < glyphs->num_glyphs; i++)
-	layout->tab_width += glyphs->glyphs[i].geometry.width;
+      layout->tab_width = pango_glyph_string_get_width (glyphs);
 
       pango_glyph_string_free (glyphs);
 
@@ -3308,7 +3303,7 @@ process_line (PangoLayout    *layout,
 
   gboolean have_break = FALSE;      /* If we've seen a possible break yet */
   int break_remaining_width = 0;    /* Remaining width before adding run with break */
-  int break_start_offset = 0;	    /* Start width before adding run with break */
+  int break_start_offset = 0;	    /* Start offset before adding run with break */
   GSList *break_link = NULL;        /* Link holding run before break */
   gboolean wrapped = FALSE;         /* If we had to wrap the line */
 
@@ -3466,9 +3461,6 @@ pango_layout_get_effective_attributes (PangoLayout *layout)
   if (layout->font_desc)
     {
       PangoAttribute *attr = pango_attr_font_desc_new (layout->font_desc);
-      attr->start_index = 0;
-      attr->end_index = layout->length;
-
       pango_attr_list_insert_before (attrs, attr);
     }
 
@@ -3544,7 +3536,7 @@ pango_layout_check_lines (PangoLayout *layout)
   PangoAttrIterator *iter;
   PangoDirection prev_base_dir = PANGO_DIRECTION_NEUTRAL, base_dir = PANGO_DIRECTION_NEUTRAL;
 
-  if (layout->lines)
+  if (G_LIKELY (layout->lines))
     return;
 
   g_assert (!layout->log_attrs);
@@ -3552,7 +3544,7 @@ pango_layout_check_lines (PangoLayout *layout)
   /* For simplicity, we make sure at this point that layout->text
    * is non-NULL even if it is zero length
    */
-  if (!layout->text)
+  if (G_UNLIKELY (!layout->text))
     pango_layout_set_text (layout, NULL, 0);
 
   attrs = pango_layout_get_effective_attributes (layout);
