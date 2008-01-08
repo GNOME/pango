@@ -66,6 +66,7 @@ gboolean opt_wrap_set = FALSE;
 const char *opt_pangorc = NULL;
 const PangoViewer *opt_viewer = NULL;
 const char *opt_language = NULL;
+gboolean opt_single_par = FALSE;
 
 /* Text (or markup) to render */
 static char *text;
@@ -115,6 +116,7 @@ make_layout(PangoContext *context,
   pango_layout_set_auto_dir (layout, opt_auto_dir);
   pango_layout_set_ellipsize (layout, opt_ellipsize);
   pango_layout_set_justify (layout, opt_justify);
+  pango_layout_set_single_paragraph_mode (layout, opt_single_par);
 
   font_description = get_font_description ();
   if (size > 0)
@@ -612,6 +614,8 @@ parse_options (int argc, char *argv[])
      "Angle at which to rotate results",			   "degrees"},
     {"runs",		'n', 0, G_OPTION_ARG_INT,			&opt_runs,
      "Run Pango layout engine this many times",			   "integer"},
+    {"single-par",	0, 0, G_OPTION_ARG_NONE,			&opt_single_par,
+     "Enable single-paragraph mode",					NULL},
     {"text",		't', 0, G_OPTION_ARG_STRING,			&opt_text,
      "Text to display (instead of a file)",			    "string"},
     {"version",		0, G_OPTION_FLAG_NO_ARG, G_OPTION_ARG_CALLBACK, &show_version,

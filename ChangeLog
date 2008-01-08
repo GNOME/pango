@@ -1,5 +1,12 @@
 2008-01-08  Behdad Esfahbod  <behdad@gnome.org>
 
+	Bug 508007 – Add option for single-paragraph mode to pango-view
+
+	* pango-view/viewer-render.c (make_layout), (parse_options): Add
+	--single-par option to pango-view.
+
+2008-01-08  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/pango-layout.c (ensure_tab_width), (process_line),
 	(pango_layout_get_effective_attributes),
 	(pango_layout_check_lines): Minor cleanup.  Attributes are initialized
