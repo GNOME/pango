@@ -1,3 +1,11 @@
+2008-01-08  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 508381 – indent and center alignment don't mix
+
+	* pango/pango-layout.c: Ignore indent if aligned center, and document
+	so.  This assumption was present in some places and not the others.
+	Fixed now.
+
 2008-01-09  Jürg Billeter  <j@bitron.ch>
 
 	* Makefile.am: Use install -D to install pango.aliases.win32 to
