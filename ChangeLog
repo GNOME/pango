@@ -1,3 +1,8 @@
+2008-01-09  Jürg Billeter  <j@bitron.ch>
+
+	* Makefile.am: Use install -D to install pango.aliases.win32 to
+	ensure that the destination directory exists
+
 2008-01-07  Behdad Esfahbod  <behdad@gnome.org>
 
 	* === Released 1.18.4 ===

@@ -75,7 +75,7 @@ endif
 
 if OS_WIN32
 install-data-local: pango.aliases.win32
-	$(INSTALL) $(srcdir)/pango.aliases.win32 $(DESTDIR)$(sysconfdir)/pango/pango.aliases
+	$(INSTALL) -D $(srcdir)/pango.aliases.win32 $(DESTDIR)$(sysconfdir)/pango/pango.aliases
 endif
 
 DISTCHECK_CONFIGURE_FLAGS = --enable-gtk-doc --disable-doc-cross-references
