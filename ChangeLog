@@ -1,3 +1,10 @@
+2008-01-10  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 508179 – PangoGlyphUnit confusion
+
+	* pango/pango-layout.c (process_item): Remove all traces of
+	#PangoGlyphUnit
+
 2008-01-08  Behdad Esfahbod  <behdad@gnome.org>
 
 	Bug 508381 – indent and center alignment don't mix

@@ -489,7 +489,7 @@ pango_layout_get_indent (PangoLayout *layout)
  * @layout: a #PangoLayout.
  * @spacing: the amount of spacing
  *
- * Sets the amount of spacing in #PangoGlyphUnit between the lines of the
+ * Sets the amount of spacing in Pango units between the lines of the
  * layout.
  *
  **/
@@ -510,7 +510,7 @@ pango_layout_set_spacing (PangoLayout *layout,
  * pango_layout_get_spacing:
  * @layout: a #PangoLayout
  *
- * Gets the amount of spacing in #PangoGlyphUnit between the lines of the
+ * Gets the amount of spacing in Pango units between the lines of the
  * layout.
  *
  * Return value: the spacing.
@@ -1343,7 +1343,7 @@ pango_layout_get_line_readonly (PangoLayout *layout,
  * @trailing: an integer indicating the edge of the grapheme to retrieve
  *            the position of. If > 0, the trailing edge of the grapheme,
  *            if 0, the leading of the grapheme.
- * @x_pos: location to store the x_offset (in #PangoGlyphUnit)
+ * @x_pos: location to store the x_offset (in Pango units)
  *
  * Converts an index within a line to a X position.
  *
@@ -1730,9 +1730,9 @@ pango_layout_move_cursor_visually (PangoLayout *layout,
 /**
  * pango_layout_xy_to_index:
  * @layout:    a #PangoLayout
- * @x:         the X offset (in #PangoGlyphUnit)
+ * @x:         the X offset (in Pango units)
  *             from the left edge of the layout.
- * @y:         the Y offset (in #PangoGlyphUnit)
+ * @y:         the Y offset (in Pango units)
  *             from the top edge of the layout
  * @index_:    location to store calculated byte index
  * @trailing:  location to store a integer indicating where
@@ -2949,7 +2949,7 @@ struct _ParaBreakState
   int start_offset;		/* Character offset of first item in state->items in layout->text */
   PangoGlyphString *glyphs;	/* Glyphs for the first item in state->items */
   ItemProperties properties;	/* Properties for the first item in state->items */
-  PangoGlyphUnit *log_widths;	/* Logical widths for first item in state->items.. */
+  int *log_widths;		/* Logical widths for first item in state->items.. */
   int log_widths_offset;        /* Offset into log_widths to the point corresponding
 				 * to the remaining portion of the first item */
 };
@@ -3146,7 +3146,7 @@ process_item (PangoLayout     *layout,
 
       if (processing_new_item)
 	{
-	  state->log_widths = g_new (PangoGlyphUnit, item->num_chars);
+	  state->log_widths = g_new (int, item->num_chars);
 	  pango_glyph_string_get_logical_widths (state->glyphs,
 						 layout->text + item->offset, item->length, item->analysis.level,
 						 state->log_widths);
@@ -3747,7 +3747,7 @@ pango_layout_line_get_type (void)
 /**
  * pango_layout_line_x_to_index:
  * @line:      a #PangoLayoutLine
- * @x_pos:     the X offset (in #PangoGlyphUnit)
+ * @x_pos:     the X offset (in Pango units)
  *             from the left edge of the line.
  * @index_:    location to store calculated byte index for
  *             the grapheme in which the user clicked.
@@ -3971,7 +3971,7 @@ pango_layout_line_x_to_index (PangoLayoutLine *line,
  *               with each range starting at <literal>(*ranges)[2*n]</literal>
  *               and of width <literal>(*ranges)[2*n + 1] - (*ranges)[2*n]</literal>.
  *               This array must be freed with g_free(). The coordinates are relative
- *               to the layout and are in #PangoGlyphUnit.
+ *               to the layout and are in Pango units.
  * @n_ranges: The number of ranges stored in @ranges.
  *
  * Gets a list of visual ranges corresponding to a given logical range.
