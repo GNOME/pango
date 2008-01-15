@@ -53,6 +53,7 @@ gboolean opt_auto_dir = TRUE;
 const char *opt_text = NULL;
 gboolean opt_waterfall = FALSE;
 int opt_width = -1;
+int opt_height = -1;
 int opt_indent = 0;
 gboolean opt_justify = 0;
 int opt_runs = 1;
@@ -117,16 +118,19 @@ make_layout(PangoContext *context,
   pango_layout_set_ellipsize (layout, opt_ellipsize);
   pango_layout_set_justify (layout, opt_justify);
   pango_layout_set_single_paragraph_mode (layout, opt_single_par);
+  pango_layout_set_wrap (layout, opt_wrap);
 
   font_description = get_font_description ();
   if (size > 0)
     pango_font_description_set_size (font_description, size * PANGO_SCALE);
 
   if (opt_width > 0)
-    {
-      pango_layout_set_wrap (layout, opt_wrap);
-      pango_layout_set_width (layout, (opt_width * opt_dpi * PANGO_SCALE + 36) / 72);
-    }
+    pango_layout_set_width (layout, (opt_width * opt_dpi * PANGO_SCALE + 36) / 72);
+
+  if (opt_height > 0)
+    pango_layout_set_height (layout, (opt_height * opt_dpi * PANGO_SCALE + 36) / 72);
+  else
+    pango_layout_set_height (layout, opt_height);
 
   if (opt_indent != 0)
     pango_layout_set_indent (layout, (opt_indent * opt_dpi * PANGO_SCALE + 36) / 72);
@@ -220,14 +224,16 @@ output_body (PangoLayout    *layout,
 	  pango_font_description_free (desc);
 	}
 
-      pango_layout_get_extents (layout, NULL, &logical_rect);
+      pango_layout_get_pixel_extents (layout, NULL, &logical_rect);
 
       if (render_cb)
 	(*render_cb) (layout, x, y+*height, cb_context, cb_data);
 
-      *width = MAX (*width, PANGO_PIXELS (logical_rect.x + logical_rect.width));
-      *width = MAX (*width, PANGO_PIXELS (pango_layout_get_width (layout)));
-      *height += PANGO_PIXELS (logical_rect.height);
+      *width = MAX (*width, 
+		    MAX (logical_rect.x + logical_rect.width,
+			 PANGO_PIXELS (pango_layout_get_width (layout))));
+      *height +=    MAX (logical_rect.y + logical_rect.height,
+			 PANGO_PIXELS (pango_layout_get_height (layout)));
     }
 }
 
@@ -516,7 +522,6 @@ backend_description (void)
 
 }
 
-
 static gboolean
 parse_backend (const char *name,
 	       const char *arg,
@@ -592,6 +597,8 @@ parse_options (int argc, char *argv[])
      "Gravity hint",				       "natural/strong/line"},
     {"header",		0, 0, G_OPTION_ARG_NONE,			&opt_header,
      "Display the options in the output",				NULL},
+    {"height",		0, 0, G_OPTION_ARG_INT,				&opt_height,
+     "Height in points (positive) or number of lines (negative) for ellipsizing", "+points/-numlines"},
     {"hinting",		0, 0, G_OPTION_ARG_CALLBACK,			&parse_hinting,
      "Hinting style",					    "none/auto/full"},
     {"indent",		0, 0, G_OPTION_ARG_INT,				&opt_indent,
@@ -623,7 +630,7 @@ parse_options (int argc, char *argv[])
     {"waterfall",	0, 0, G_OPTION_ARG_NONE,			&opt_waterfall,
      "Create a waterfall display",					NULL},
     {"width",		'w', 0, G_OPTION_ARG_INT,			&opt_width,
-     "Width in points to which to wrap output",			    "points"},
+     "Width in points to which to wrap lines or ellipsize",	    "points"},
     {"wrap",		0, 0, G_OPTION_ARG_CALLBACK,			&parse_wrap,
      "Text wrapping mode (needs a width to be set)",   "word/char/word-char"},
     {NULL}
@@ -663,12 +670,6 @@ parse_options (int argc, char *argv[])
       opt_viewer = *viewers;
       if (!opt_viewer)
 	fail ("No viewer backend found");
-    }
-
-  /* if wrap mode is set then width must be set */
-  if (opt_width < 0 && opt_wrap_set)
-    {
-      g_printerr ("The wrap mode only has effect if a width is set\n");
     }
 
   /* Get the text

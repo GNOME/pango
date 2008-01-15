@@ -40,7 +40,8 @@ struct _PangoLayout
 
   gchar *text;
   int length;			/* length of text in bytes */
-  int width;			/* wrap width, in device units */
+  int width;			/* wrap/ellipsize width, in device units, or -1 if not set */
+  int height;			/* ellipsize width, in device units if positive, number of lines if negative */
   int indent;			/* amount by which first line should be shorter */
   int spacing;			/* spacing between lines */
 
@@ -75,7 +76,8 @@ struct _PangoLayout
 };
 
 gboolean _pango_layout_line_ellipsize (PangoLayoutLine *line,
-				       PangoAttrList   *attrs);
+				       PangoAttrList   *attrs,
+				       int              goal_width);
 
 G_END_DECLS
 

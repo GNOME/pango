@@ -121,6 +121,9 @@ G_CONST_RETURN PangoFontDescription *pango_layout_get_font_description (PangoLay
 void           pango_layout_set_width            (PangoLayout                *layout,
 						  int                         width);
 int            pango_layout_get_width            (PangoLayout                *layout);
+void           pango_layout_set_height           (PangoLayout                *layout,
+						  int                         height);
+int            pango_layout_get_height           (PangoLayout                *layout);
 void           pango_layout_set_wrap             (PangoLayout                *layout,
 						  PangoWrapMode               wrap);
 PangoWrapMode  pango_layout_get_wrap             (PangoLayout                *layout);

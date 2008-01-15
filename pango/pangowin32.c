@@ -240,7 +240,7 @@ pango_win32_render (HDC               hdc,
   guint16 *glyph_indexes;
   gint *dX;
   gint this_x;
-  PangoGlyphUnit start_x_offset, x_offset, next_x_offset, cur_y_offset;
+  gint start_x_offset, x_offset, next_x_offset, cur_y_offset; /* in Pango units */
 
   g_return_if_fail (glyphs != NULL);
 
@@ -278,7 +278,7 @@ pango_win32_render (HDC               hdc,
    * rendered by one call to ExtTextOutW().
    *
    * In order to minimize buildup of rounding errors, we keep track of
-   * where the glyphs should be rendered in PangoGlyphUnits, and round
+   * where the glyphs should be rendered in Pango units, and round
    * to pixels separately for each glyph,
    */
 

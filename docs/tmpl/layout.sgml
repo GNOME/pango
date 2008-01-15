@@ -192,6 +192,24 @@ has no user-visible fields.
 @Returns: 
 
 
+<!-- ##### FUNCTION pango_layout_set_height ##### -->
+<para>
+
+</para>
+
+@layout: 
+@height: 
+
+
+<!-- ##### FUNCTION pango_layout_get_height ##### -->
+<para>
+
+</para>
+
+@layout: 
+@Returns: 
+
+
 <!-- ##### FUNCTION pango_layout_set_wrap ##### -->
 <para>
 

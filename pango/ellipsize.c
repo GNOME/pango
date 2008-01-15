@@ -723,21 +723,15 @@ current_width (EllipsizeState *state)
  **/
 gboolean
 _pango_layout_line_ellipsize (PangoLayoutLine *line,
-			      PangoAttrList   *attrs)
+			      PangoAttrList   *attrs,
+			      int              goal_width)
 {
   EllipsizeState state;
-  int goal_width;
   gboolean is_ellipsized = FALSE;
 
-  if (line->layout->ellipsize == PANGO_ELLIPSIZE_NONE ||
-      line->layout->width < 0)
-    goto ret;
+  g_return_val_if_fail (line->layout->ellipsize != PANGO_ELLIPSIZE_NONE && goal_width >= 0, is_ellipsized);
 
   init_state (&state, line, attrs);
-
-  goal_width = state.layout->width;
-  if (state.layout->indent > 0 && state.layout->alignment != PANGO_ALIGN_CENTER)
-    goal_width -= state.layout->indent;
 
   if (state.total_width <= goal_width)
     goto out;
@@ -758,6 +752,6 @@ _pango_layout_line_ellipsize (PangoLayoutLine *line,
 
  out:
   free_state (&state);
- ret:
+
   return is_ellipsized;
 }

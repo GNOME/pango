@@ -189,6 +189,7 @@ pango_layout_init (PangoLayout *layout)
   layout->text = NULL;
   layout->length = 0;
   layout->width = -1;
+  layout->height = -1;
   layout->indent = 0;
 
   layout->alignment = PANGO_ALIGN_LEFT;
@@ -298,6 +299,7 @@ pango_layout_copy (PangoLayout *src)
   layout->text = g_strdup (src->text);
   layout->length = src->length;
   layout->width = src->width;
+  layout->height = src->height;
   layout->indent = src->indent;
   layout->spacing = src->spacing;
   layout->justify = src->justify;
@@ -341,9 +343,10 @@ pango_layout_get_context (PangoLayout *layout)
  * pango_layout_set_width:
  * @layout: a #PangoLayout.
  * @width: the desired width in Pango units, or -1 to indicate that no
- *         wrapping should be performed.
+ *         wrapping or ellipsization should be performed.
  *
- * Sets the width to which the lines of the #PangoLayout should wrap.
+ * Sets the width to which the lines of the #PangoLayout should wrap or
+ * ellipsized.  The default value is -1: no width set.
  **/
 void
 pango_layout_set_width (PangoLayout *layout,
@@ -364,13 +367,73 @@ pango_layout_set_width (PangoLayout *layout,
  *
  * Gets the width to which the lines of the #PangoLayout should wrap.
  *
- * Return value: the width, or -1 if no width set.
+ * Return value: the width in Pango units, or -1 if no width set.
  **/
 int
 pango_layout_get_width (PangoLayout    *layout)
 {
   g_return_val_if_fail (layout != NULL, 0);
   return layout->width;
+}
+
+/**
+ * pango_layout_set_height:
+ * @layout: a #PangoLayout.
+ * @height: the desired height of the layout in Pango units if positive,
+ *          or desired number of lines if negative.
+ *
+ * Sets the height to which the #PangoLayout should be ellipsized at.  There
+ * are two different behaviors, based on whether @height is positive or
+ * negative.
+ *
+ * If @height is positive, it will be the maximum height of the layout.  Only
+ * lines would be shown that would fit, and if there is any text ommitted,
+ * an ellipsis added.  At least one line is included in each paragraph regardless
+ * of how small the height value is.  A value of zero will render exactly one
+ * line for the entire layout.
+ *
+ * If @height if it is negative, it will be the maximum number of lines per
+ * paragraph.  That is, the total number of lines shown may well be more than
+ * this value if the layout contains multiple paragraphs of text.
+ * The default value of -1 means that first line of each paragraph is ellipsized.
+ *
+ * The height setting only has effect if a positive width is set on @layout
+ * and ellipsization mode of @layout is not %PANGO_ELLIPSIZE_NONE,
+ *
+ * Since: 1.20
+ **/
+void
+pango_layout_set_height (PangoLayout *layout,
+			 int          height)
+{
+  g_return_if_fail (layout != NULL);
+
+  if (height != layout->height)
+    {
+      layout->height = height;
+
+      if (layout->ellipsize != PANGO_ELLIPSIZE_NONE)
+	pango_layout_clear_lines (layout);
+    }
+}
+
+/**
+ * pango_layout_get_height:
+ * @layout: a #PangoLayout
+ *
+ * Gets the height of layout used for ellipsization.  See
+ * pango_layout_set_height() for details.
+ *
+ * Return value: the height, in Pango units if positive, or
+ * number of lines if negative.
+ *
+ * Since: 1.20
+ **/
+int
+pango_layout_get_height (PangoLayout    *layout)
+{
+  g_return_val_if_fail (layout != NULL, 0);
+  return layout->height;
 }
 
 /**
@@ -475,7 +538,7 @@ pango_layout_set_indent (PangoLayout *layout,
  * Gets the paragraph indent width in Pango units. A negative value
  * indicates a hanging indentation.
  *
- * Return value: the indent.
+ * Return value: the indent in Pango units.
  **/
 int
 pango_layout_get_indent (PangoLayout *layout)
@@ -489,9 +552,8 @@ pango_layout_get_indent (PangoLayout *layout)
  * @layout: a #PangoLayout.
  * @spacing: the amount of spacing
  *
- * Sets the amount of spacing in #PangoGlyphUnit between the lines of the
+ * Sets the amount of spacing in Pango unit between the lines of the
  * layout.
- *
  **/
 void
 pango_layout_set_spacing (PangoLayout *layout,
@@ -510,10 +572,9 @@ pango_layout_set_spacing (PangoLayout *layout,
  * pango_layout_get_spacing:
  * @layout: a #PangoLayout
  *
- * Gets the amount of spacing in #PangoGlyphUnit between the lines of the
- * layout.
+ * Gets the amount of spacing between the lines of the layout.
  *
- * Return value: the spacing.
+ * Return value: the spacing in Pango units.
  **/
 int
 pango_layout_get_spacing (PangoLayout *layout)
@@ -804,7 +865,6 @@ pango_layout_get_tabs (PangoLayout *layout)
  * as paragraph separators; instead, keep all text in a single paragraph,
  * and display a glyph for paragraph separator characters. Used when
  * you want to allow editing of newlines on a single text line.
- *
  **/
 void
 pango_layout_set_single_paragraph_mode (PangoLayout *layout,
@@ -846,12 +906,15 @@ pango_layout_get_single_paragraph_mode (PangoLayout *layout)
  *
  * Sets the type of ellipsization being performed for @layout.
  * Depending on the ellipsization mode @ellipsize text is
- * removed from the start, middle, or end of lines so they
- * fit within the width of layout set with pango_layout_set_width ().
+ * removed from the start, middle, or end of text so they
+ * fit within the width and height of layout set with
+ * pango_layout_set_width() and pango_layout_set_height().
  *
  * If the layout contains characters such as newlines that
- * force it to be layed out in multiple lines, then each line
- * is ellipsized separately.
+ * force it to be layed out in multiple paragraphs, then whether
+ * each paragraph is ellipsized separately or the entire layout
+ * is ellipsized as a whole depends on the set height of the layout.
+ * See pango_layout_set_height() for details.
  *
  * Since: 1.6
  **/
@@ -1348,7 +1411,7 @@ pango_layout_get_line_readonly (PangoLayout *layout,
  * @trailing: an integer indicating the edge of the grapheme to retrieve
  *            the position of. If > 0, the trailing edge of the grapheme,
  *            if 0, the leading of the grapheme.
- * @x_pos: location to store the x_offset (in #PangoGlyphUnit)
+ * @x_pos: location to store the x_offset (in Pango unit)
  *
  * Converts an index within a line to a X position.
  *
@@ -1735,9 +1798,9 @@ pango_layout_move_cursor_visually (PangoLayout *layout,
 /**
  * pango_layout_xy_to_index:
  * @layout:    a #PangoLayout
- * @x:         the X offset (in #PangoGlyphUnit)
+ * @x:         the X offset (in Pango units)
  *             from the left edge of the layout.
- * @y:         the Y offset (in #PangoGlyphUnit)
+ * @y:         the Y offset (in Pango units)
  *             from the top edge of the layout
  * @index_:    location to store calculated byte index
  * @trailing:  location to store a integer indicating where
@@ -2940,16 +3003,17 @@ struct _ParaBreakState
   PangoAttrList *attrs;		/* Attributes being used for itemization */
   GList *items;			/* This paragraph turned into items */
   PangoDirection base_dir;	/* Current resolved base direction */
-  gboolean first_line;		/* TRUE if this is the first line of the paragraph */
+  gboolean line_of_par;		/* Line of the paragraph, starting at 1 for first line */
   int line_start_index;		/* Start index (byte offset) of line in layout->text */
   int line_start_offset;	/* Character offset of line in layout->text */
 
+  int line_width;		/* Goal width of line currently processing; < 0 is infinite */
   int remaining_width;		/* Amount of space remaining on line; < 0 is infinite */
 
   int start_offset;		/* Character offset of first item in state->items in layout->text */
   PangoGlyphString *glyphs;	/* Glyphs for the first item in state->items */
   ItemProperties properties;	/* Properties for the first item in state->items */
-  PangoGlyphUnit *log_widths;	/* Logical widths for first item in state->items.. */
+  int *log_widths;		/* Logical widths for first item in state->items.. */
   int log_widths_offset;        /* Offset into log_widths to the point corresponding
 				 * to the remaining portion of the first item */
 };
@@ -3146,7 +3210,7 @@ process_item (PangoLayout     *layout,
 
       if (processing_new_item)
 	{
-	  state->log_widths = g_new (PangoGlyphUnit, item->num_chars);
+	  state->log_widths = g_new (int, item->num_chars);
 	  pango_glyph_string_get_logical_widths (state->glyphs,
 						 layout->text + item->offset, item->length, item->analysis.level,
 						 state->log_widths);
@@ -3298,6 +3362,15 @@ line_set_resolved_dir (PangoLayoutLine *line,
     }
 }
 
+static gboolean
+should_ellipsize_current_line (PangoLayout    *layout, 
+			       ParaBreakState *state)
+{
+  return G_UNLIKELY (layout->ellipsize != PANGO_ELLIPSIZE_NONE &&
+		     layout->width >= 0 &&
+		     state->line_of_par == - layout->height);
+}
+
 static void
 process_line (PangoLayout    *layout,
 	      ParaBreakState *state)
@@ -3312,23 +3385,25 @@ process_line (PangoLayout    *layout,
 
   line = pango_layout_line_new (layout);
   line->start_index = state->line_start_index;
-  line->is_paragraph_start = state->first_line;
+  line->is_paragraph_start = state->line_of_par == 1;
   line_set_resolved_dir (line, state->base_dir);
 
-  if (layout->ellipsize != PANGO_ELLIPSIZE_NONE)
+  state->line_width = layout->width;
+  if (state->line_width >= 0 && layout->alignment != PANGO_ALIGN_CENTER)
+    {
+      if (line->is_paragraph_start && layout->indent >= 0)
+	state->line_width -= layout->indent;
+      else if (!line->is_paragraph_start && layout->indent < 0)
+	state->line_width += layout->indent;
+
+      if (state->line_width < 0)
+        state->line_width = 0;
+    }
+
+  if (G_UNLIKELY (should_ellipsize_current_line (layout, state)))
     state->remaining_width = -1;
   else
-    {
-      state->remaining_width = layout->width;
-  
-      if (layout->alignment != PANGO_ALIGN_CENTER)
-        {
-	  if (state->first_line && layout->indent >= 0)
-	    state->remaining_width -= layout->indent;
-	  else if (!state->first_line && layout->indent < 0)
-	    state->remaining_width += layout->indent;
-        }
-    }
+    state->remaining_width = state->line_width;
   DEBUG ("starting to fill line", line, state);
 
   while (state->items)
@@ -3398,10 +3473,10 @@ process_line (PangoLayout    *layout,
     }
 
  done:
-  layout->is_wrapped = layout->is_wrapped || wrapped;
+  layout->is_wrapped |= wrapped;
   pango_layout_line_postprocess (line, state, wrapped);
   layout->lines = g_slist_prepend (layout->lines, line);
-  state->first_line = FALSE;
+  state->line_of_par++;
   state->line_start_index += line->length;
   state->line_start_offset = state->start_offset;
 }
@@ -3637,14 +3712,19 @@ pango_layout_check_lines (PangoLayout *layout)
 
       if (state.items)
 	{
-	  state.first_line = TRUE;
 	  state.base_dir = base_dir;
+	  state.line_of_par = 1;
 	  state.start_offset = start_offset;
 	  state.line_start_offset = start_offset;
 	  state.line_start_index = start - layout->text;
 
 	  state.glyphs = NULL;
 	  state.log_widths = NULL;
+
+	  /* for deterministic bug haunting's sake set everything! */
+	  state.line_width = -1;
+	  state.remaining_width = -1;
+	  state.log_widths_offset = 0;
 
 	  while (state.items)
 	    process_line (layout, &state);
@@ -3746,7 +3826,7 @@ pango_layout_line_get_type (void)
 /**
  * pango_layout_line_x_to_index:
  * @line:      a #PangoLayoutLine
- * @x_pos:     the X offset (in #PangoGlyphUnit)
+ * @x_pos:     the X offset (in Pango units)
  *             from the left edge of the line.
  * @index_:    location to store calculated byte index for
  *             the grapheme in which the user clicked.
@@ -3970,7 +4050,7 @@ pango_layout_line_x_to_index (PangoLayoutLine *line,
  *               with each range starting at <literal>(*ranges)[2*n]</literal>
  *               and of width <literal>(*ranges)[2*n + 1] - (*ranges)[2*n]</literal>.
  *               This array must be freed with g_free(). The coordinates are relative
- *               to the layout and are in #PangoGlyphUnit.
+ *               to the layout and are in Pango units.
  * @n_ranges: The number of ranges stored in @ranges.
  *
  * Gets a list of visual ranges corresponding to a given logical range.
@@ -4846,6 +4926,9 @@ justify_words (PangoLayoutLine *line,
     ADJUST
   } mode;
 
+  /* FIXME
+   * if ellipsized the current line, remaining_width is -1 so we
+   * end up not justifying the ellipsized line. */
   total_remaining_width = state->remaining_width;
   if (total_remaining_width <= 0)
     return;
@@ -4924,6 +5007,7 @@ pango_layout_line_postprocess (PangoLayoutLine *line,
 			       gboolean         wrapped)
 {
   PangoLayoutRun *last_run = line->runs->data;
+  gboolean ellipsized = FALSE;
   
   /* NB: the runs are in reverse order at this point, since we prepended them to the list
    */
@@ -4936,8 +5020,12 @@ pango_layout_line_postprocess (PangoLayoutLine *line,
 
   /* Ellipsize the line if necessary
    */
-  if (_pango_layout_line_ellipsize (line, state->attrs))
-    line->layout->is_ellipsized = TRUE;
+  if (G_UNLIKELY (state->line_width >= 0 &&
+		  should_ellipsize_current_line (line->layout, state)))
+    {
+      ellipsized =  _pango_layout_line_ellipsize (line, state->attrs, state->line_width);
+      line->layout->is_ellipsized |= ellipsized;
+    }
 
   /* Truncate the logical-final whitespace in the line if we broke the line at it
    */
@@ -4960,7 +5048,7 @@ pango_layout_line_postprocess (PangoLayoutLine *line,
 
   /* Distribute extra space between words if justifying and line was wrapped
    */
-  if (wrapped && line->layout->justify)
+  if (line->layout->justify && (wrapped || ellipsized))
     justify_words (line, state);
 
   DEBUG ("after justification", line, state);

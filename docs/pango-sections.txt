@@ -448,6 +448,8 @@ pango_layout_set_font_description
 pango_layout_get_font_description
 pango_layout_set_width
 pango_layout_get_width
+pango_layout_set_height
+pango_layout_get_height
 pango_layout_set_wrap
 pango_layout_get_wrap
 pango_layout_is_wrapped

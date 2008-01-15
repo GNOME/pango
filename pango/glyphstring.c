@@ -504,7 +504,7 @@ pango_glyph_string_index_to_x (PangoGlyphString *glyphs,
  * @text:      the text for the run
  * @length:    the number of bytes (not characters) in text.
  * @analysis:  the analysis information return from pango_itemize()
- * @x_pos:     the x offset (in #PangoGlyphUnit)
+ * @x_pos:     the x offset (in Pango units)
  * @index_:    location to store calculated byte index within @text
  * @trailing:  location to store a boolean indicating
  *             whether the user clicked on the leading or trailing

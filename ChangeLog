@@ -1,4 +1,40 @@
+2008-01-14  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 469313 – Add pango_layout_set_height()
+	Bug 508179 – PangoGlyphUnit confusion
+
+	* pango/pango-layout.h:
+	* pango/pango-layout-private.h:
+	* pango/pango-layout.c:
+	* pango/ellipsize.c (_pango_layout_line_ellipsize):
+	New public API:
+
+		pango_layout_set_height()
+	
+	See docs for semantics.  Currently only negative height values (number
+	of lines) is implemented.
+
+	* pango-view/viewer-render.c (make_layout), (output_body),
+	(parse_options):
+	Implement --height.
+
+	* pango/pango.def:
+	* docs/pango-sections.txt:
+	* docs/tmpl/layout.sgml:
+	Update.
+
+2008-01-14  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 508179 – PangoGlyphUnit confusion
+
+	* pango/pangowin32.c:
+	* pango/glyphstring.c:
+	* pango/pango-layout.c (process_item): Remove all traces of
+	#PangoGlyphUnit
+
 2008-01-08  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 508381 – indent and center alignment don't mix
 
 	* pango/pango-layout.c: Ignore indent if aligned center, and document
 	so.  This assumption was present in some places and not the others.
