@@ -3104,19 +3104,7 @@ insert_run (PangoLayoutLine *line,
 void
 debug (const char *where, PangoLayoutLine *line, ParaBreakState *state)
 {
-  int line_width = 0;
-
-  GSList *tmp_list;
-
-  tmp_list = line->runs;
-  while (tmp_list)
-    {
-      PangoLayoutRun *run = tmp_list->data;
-
-      line_width += pango_glyph_string_get_width (run->glyphs);
-
-      tmp_list = tmp_list->next;
-    }
+  int line_width = pango_layout_line_get_width (line);
 
   g_message ("rem %d + line %d = %d		%s",
 	     state->remaining_width,
@@ -3511,12 +3499,20 @@ process_line (PangoLayout    *layout,
 	case BREAK_LINE_SEPARATOR:
 	  state->items = g_list_delete_link (state->items, state->items);
 	  state->start_offset += old_num_chars;
+	  /* FIXME We don't set wrapped here.  Which means we don't justify
+	   * lines that end in a line separator.  Not sure which behavior is
+	   * more desired.  For now that we do greedy line breaking, not
+	   * justifying lines of potentially very small length is a good idea,
+	   * but when we do a better job at that, if there's a different
+	   * between line separator and paragraph separator, it should be that
+	   * line separator acts just like a forced break, with no effect on
+	   * justification.
+	   */
 	  goto done;
 	}
     }
 
  done:
-  layout->is_wrapped |= wrapped;
   pango_layout_line_postprocess (line, state, wrapped);
   add_line (line, state);
   state->line_of_par++;
@@ -5091,8 +5087,7 @@ pango_layout_line_postprocess (PangoLayoutLine *line,
   if (G_UNLIKELY (state->line_width >= 0 &&
 		  should_ellipsize_current_line (line->layout, state)))
     {
-      ellipsized =  _pango_layout_line_ellipsize (line, state->attrs, state->line_width);
-      line->layout->is_ellipsized |= ellipsized;
+      ellipsized = _pango_layout_line_ellipsize (line, state->attrs, state->line_width);
     }
 
   /* Truncate the logical-final whitespace in the line if we broke the line at it
@@ -5126,6 +5121,9 @@ pango_layout_line_postprocess (PangoLayoutLine *line,
     }
 
   DEBUG ("after justification", line, state);
+
+  line->layout->is_wrapped |= wrapped;
+  line->layout->is_ellipsized |= ellipsized;
 }
 
 static void

@@ -1,5 +1,10 @@
 2008-01-15  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango/pango-layout.c (debug), (process_line),
+	(pango_layout_line_postprocess): Minor cleanup.
+
+2008-01-15  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 469313 – Add pango_layout_set_height()
 
 	* pango/pango-layout.c (get_x_offset),
