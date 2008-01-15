@@ -1,7 +1,6 @@
 2008-01-14  Behdad Esfahbod  <behdad@gnome.org>
 
 	Bug 469313 – Add pango_layout_set_height()
-	Bug 508179 – PangoGlyphUnit confusion
 
 	* pango/pango-layout.h:
 	* pango/pango-layout-private.h:
