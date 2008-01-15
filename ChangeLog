@@ -1,5 +1,12 @@
 2008-01-15  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango/opentype/*:
+	HarfBuzz was relicensed to a more generous and simpler license.
+	Adapt.  See pango/opentype/COPYING for the new license which is
+	LGPL-compatible.
+
+2008-01-15  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/pango-layout.c (debug), (process_line),
 	(pango_layout_line_postprocess): Minor cleanup.
 
