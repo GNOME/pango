@@ -1,3 +1,15 @@
+2008-01-15  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 469313 – Add pango_layout_set_height()
+
+	* pango/pango-layout.c (get_x_offset),
+	(should_ellipsize_current_line), (add_line), (process_line),
+	(pango_layout_check_lines), (pango_layout_line_get_width),
+	(pango_layout_line_get_x_ranges), (justify_words),
+	(pango_layout_line_postprocess):
+	Implement height >= 0;  There are still bugs left.  Most notably,
+	there will be at least two lines showed no matter how small height is.
+
 2008-01-14  Behdad Esfahbod  <behdad@gnome.org>
 
 	Bug 469313 – Add pango_layout_set_height()

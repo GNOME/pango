@@ -397,8 +397,10 @@ pango_layout_get_width (PangoLayout    *layout)
  * this value if the layout contains multiple paragraphs of text.
  * The default value of -1 means that first line of each paragraph is ellipsized.
  *
- * The height setting only has effect if a positive width is set on @layout
- * and ellipsization mode of @layout is not %PANGO_ELLIPSIZE_NONE,
+ * Currently the height setting only has effect if a positive width is set on
+ * @layout and ellipsization mode of @layout is not %PANGO_ELLIPSIZE_NONE.
+ * This may change in the future.  To be on the safe side, set height to -1
+ * in all cases that it shouldn't have any effect.
  *
  * Since: 1.20
  **/
@@ -442,8 +444,8 @@ pango_layout_get_height (PangoLayout    *layout)
  * @wrap: the wrap mode
  *
  * Sets the wrap mode; the wrap mode only has effect if a width
- * is set on the layout with pango_layout_set_width(). To turn off wrapping,
- * set the width to -1.
+ * is set on the layout with pango_layout_set_width().
+ * To turn off wrapping, set the width to -1.
  **/
 void
 pango_layout_set_wrap (PangoLayout  *layout,
@@ -2271,7 +2273,9 @@ get_x_offset (PangoLayout     *layout,
   PangoAlignment alignment = get_alignment (layout, line);
 
   /* Alignment */
-  if (alignment == PANGO_ALIGN_RIGHT)
+  if (layout_width == 0)
+    *x_offset = 0;
+  else if (alignment == PANGO_ALIGN_RIGHT)
     *x_offset = layout_width - line_width;
   else if (alignment == PANGO_ALIGN_CENTER)
     *x_offset = (layout_width - line_width) / 2;
@@ -3000,22 +3004,29 @@ typedef enum
 
 struct _ParaBreakState
 {
+  /* maintained per layout */
+  int line_height;		/* Estimate of height of current line; < 0 is no estimate */
+  int remaining_height;		/* Remaining height of the layout;  only defined if layout->height >= 0 */
+
+  /* maintained per paragraph */
   PangoAttrList *attrs;		/* Attributes being used for itemization */
   GList *items;			/* This paragraph turned into items */
   PangoDirection base_dir;	/* Current resolved base direction */
   gboolean line_of_par;		/* Line of the paragraph, starting at 1 for first line */
-  int line_start_index;		/* Start index (byte offset) of line in layout->text */
-  int line_start_offset;	/* Character offset of line in layout->text */
 
-  int line_width;		/* Goal width of line currently processing; < 0 is infinite */
-  int remaining_width;		/* Amount of space remaining on line; < 0 is infinite */
-
-  int start_offset;		/* Character offset of first item in state->items in layout->text */
   PangoGlyphString *glyphs;	/* Glyphs for the first item in state->items */
+  int start_offset;		/* Character offset of first item in state->items in layout->text */
   ItemProperties properties;	/* Properties for the first item in state->items */
   int *log_widths;		/* Logical widths for first item in state->items.. */
   int log_widths_offset;        /* Offset into log_widths to the point corresponding
 				 * to the remaining portion of the first item */
+
+  int line_start_index;		/* Start index (byte offset) of line in layout->text */
+  int line_start_offset;	/* Character offset of line in layout->text */
+
+  /* maintained per line */
+  int line_width;		/* Goal width of line currently processing; < 0 is infinite */
+  int remaining_width;		/* Amount of space remaining on line; < 0 is infinite */
 };
 
 static PangoGlyphString *
@@ -3366,9 +3377,41 @@ static gboolean
 should_ellipsize_current_line (PangoLayout    *layout, 
 			       ParaBreakState *state)
 {
-  return G_UNLIKELY (layout->ellipsize != PANGO_ELLIPSIZE_NONE &&
-		     layout->width >= 0 &&
-		     state->line_of_par == - layout->height);
+  if (G_LIKELY (layout->ellipsize == PANGO_ELLIPSIZE_NONE || layout->width < 0))
+    return FALSE;
+  
+
+  if (layout->height >= 0)
+    {
+      /* state->remaining_height is height of layout left */
+
+      /* if we can't stuff two more lines at the current guess of line height,
+       * the line we are going to produce is going to be the last line */
+      return state->line_height * 2 > state->remaining_height;
+    }
+  else
+    {
+      /* -layout->height is numbre of lines per paragraph to show */
+      return state->line_of_par == - layout->height;
+    }
+}
+
+static void
+add_line (PangoLayoutLine *line,
+	  ParaBreakState  *state)
+{
+  PangoLayout *layout = line->layout;
+
+  /* we prepend, then reverse the list later */
+  layout->lines = g_slist_prepend (layout->lines, line);
+
+  if (layout->height >= 0)
+    {
+      PangoRectangle logical_rect;
+      pango_layout_line_get_extents (line, NULL, &logical_rect);
+      state->remaining_height -= logical_rect.height;
+      state->line_height = logical_rect.height;
+    }
 }
 
 static void
@@ -3475,7 +3518,7 @@ process_line (PangoLayout    *layout,
  done:
   layout->is_wrapped |= wrapped;
   pango_layout_line_postprocess (line, state, wrapped);
-  layout->lines = g_slist_prepend (layout->lines, line);
+  add_line (line, state);
   state->line_of_par++;
   state->line_start_index += line->length;
   state->line_start_offset = state->start_offset;
@@ -3621,6 +3664,7 @@ pango_layout_check_lines (PangoLayout *layout)
   PangoAttrList *no_shape_attrs;
   PangoAttrIterator *iter;
   PangoDirection prev_base_dir = PANGO_DIRECTION_NEUTRAL, base_dir = PANGO_DIRECTION_NEUTRAL;
+  ParaBreakState state;
 
   if (G_LIKELY (layout->lines))
     return;
@@ -3652,12 +3696,15 @@ pango_layout_check_lines (PangoLayout *layout)
   else
     base_dir = pango_context_get_base_dir (layout->context);
 
+  /* these are only used if layout->height >= 0 */
+  state.remaining_height = layout->height;
+  state.line_height = -1;
+
   do
     {
       int delim_len;
       const char *end;
       int delimiter_index, next_para_index;
-      ParaBreakState state;
 
       if (layout->single_paragraph)
 	{
@@ -3710,22 +3757,22 @@ pango_layout_check_lines (PangoLayout *layout)
 			   layout->log_attrs + start_offset,
 			   delim_len);
 
+      state.base_dir = base_dir;
+      state.line_of_par = 1;
+      state.start_offset = start_offset;
+      state.line_start_offset = start_offset;
+      state.line_start_index = start - layout->text;
+
+      state.glyphs = NULL;
+      state.log_widths = NULL;
+
+      /* for deterministic bug haunting's sake set everything! */
+      state.line_width = -1;
+      state.remaining_width = -1;
+      state.log_widths_offset = 0;
+
       if (state.items)
 	{
-	  state.base_dir = base_dir;
-	  state.line_of_par = 1;
-	  state.start_offset = start_offset;
-	  state.line_start_offset = start_offset;
-	  state.line_start_index = start - layout->text;
-
-	  state.glyphs = NULL;
-	  state.log_widths = NULL;
-
-	  /* for deterministic bug haunting's sake set everything! */
-	  state.line_width = -1;
-	  state.remaining_width = -1;
-	  state.log_widths_offset = 0;
-
 	  while (state.items)
 	    process_line (layout, &state);
 	}
@@ -3734,13 +3781,15 @@ pango_layout_check_lines (PangoLayout *layout)
 	  PangoLayoutLine *empty_line;
 
 	  empty_line = pango_layout_line_new (layout);
-	  empty_line->start_index = start - layout->text;
+	  empty_line->start_index = state.line_start_index;
 	  empty_line->is_paragraph_start = TRUE;
 	  line_set_resolved_dir (empty_line, base_dir);
 
-	  layout->lines = g_slist_prepend (layout->lines,
-					   empty_line);
+	  add_line (empty_line, &state);
 	}
+
+      if (layout->height >= 0 && state.remaining_height < state.line_height)
+	done = TRUE;
 
       if (!done)
 	start_offset += g_utf8_strlen (start, (end - start) + delim_len);
@@ -4032,6 +4081,24 @@ pango_layout_line_x_to_index (PangoLayoutLine *line,
   return FALSE;
 }
 
+static int
+pango_layout_line_get_width (PangoLayoutLine *line)
+{
+  int width = 0;
+  GSList *tmp_list = line->runs;
+
+  while (tmp_list)
+    {
+      PangoLayoutRun *run = tmp_list->data;
+
+      width += pango_glyph_string_get_width (run->glyphs);
+
+      tmp_list = tmp_list->next;
+    }
+
+  return width;
+}
+
 /**
  * pango_layout_line_get_x_ranges:
  * @line:        a #PangoLayoutLine
@@ -4066,13 +4133,12 @@ pango_layout_line_get_x_ranges (PangoLayoutLine  *line,
 				int             **ranges,
 				int              *n_ranges)
 {
-  PangoRectangle logical_rect;
   gint line_start_index = 0;
   GSList *tmp_list;
   int range_count = 0;
   int accumulated_width = 0;
   int x_offset;
-  int width;
+  int width, line_width;
   PangoAlignment alignment;
 
   g_return_if_fail (line != NULL);
@@ -4084,6 +4150,7 @@ pango_layout_line_get_x_ranges (PangoLayoutLine  *line,
   width = line->layout->width;
   if (width == -1 && alignment != PANGO_ALIGN_LEFT)
     {
+      PangoRectangle logical_rect;
       pango_layout_get_extents (line->layout, NULL, &logical_rect);
       width = logical_rect.width;
     }
@@ -4092,10 +4159,14 @@ pango_layout_line_get_x_ranges (PangoLayoutLine  *line,
    * computations of the x_offset after we go through and figure
    * out where each range is.
    */
-  pango_layout_line_get_extents (line, NULL, &logical_rect);
 
-  /* FIXME it seems to me that width can be -1 here? */
-  get_x_offset (line->layout, line, width, logical_rect.width, &x_offset);
+  {
+    PangoRectangle logical_rect;
+    pango_layout_line_get_extents (line, NULL, &logical_rect);
+    line_width = logical_rect.width;
+  }
+
+  get_x_offset (line->layout, line, width, line_width, &x_offset);
 
   line_start_index = line->start_index;
 
@@ -4162,13 +4233,13 @@ pango_layout_line_get_x_ranges (PangoLayoutLine  *line,
       tmp_list = tmp_list->next;
     }
 
-  if (x_offset + logical_rect.width < line->layout->width &&
+  if (x_offset + line_width < line->layout->width &&
       ((line->resolved_dir == PANGO_DIRECTION_LTR && end_index > line_start_index + line->length) ||
        (line->resolved_dir == PANGO_DIRECTION_RTL && start_index < line_start_index)))
     {
       if (ranges)
 	{
-	  (*ranges)[2*range_count] = x_offset + logical_rect.width;
+	  (*ranges)[2*range_count] = x_offset + line_width;
 	  (*ranges)[2*range_count + 1] = line->layout->width;
 	}
 
@@ -4926,9 +4997,6 @@ justify_words (PangoLayoutLine *line,
     ADJUST
   } mode;
 
-  /* FIXME
-   * if ellipsized the current line, remaining_width is -1 so we
-   * end up not justifying the ellipsized line. */
   total_remaining_width = state->remaining_width;
   if (total_remaining_width <= 0)
     return;
@@ -5049,7 +5117,13 @@ pango_layout_line_postprocess (PangoLayoutLine *line,
   /* Distribute extra space between words if justifying and line was wrapped
    */
   if (line->layout->justify && (wrapped || ellipsized))
-    justify_words (line, state);
+    {
+      /* if we ellipsized, we don't have remaining_width set */
+      if (state->remaining_width < 0)
+	state->remaining_width = state->line_width - pango_layout_line_get_width (line);
+
+      justify_words (line, state);
+    }
 
   DEBUG ("after justification", line, state);
 }
