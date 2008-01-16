@@ -1,3 +1,8 @@
+2008-01-16  Behdad Esfahbod  <behdad@gnome.org>
+
+	* pango/opentype/Makefile.am: Remove COPYING.GPL and COPYING.FTL that
+	are no longer there.
+
 2008-01-15  Behdad Esfahbod  <behdad@gnome.org>
 
 	* pango/opentype/*:
