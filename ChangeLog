@@ -1,5 +1,11 @@
 2008-01-21  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango/pango-layout.c (pango_layout_set_height()): Mark behavior as
+	undefined if height is not -1 and ellipsize mode is
+	PANGO_ELLIPSIZE_NONE.
+
+2008-01-21  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 508002 – change pango_layout_pixel_extents() to round logical rect
 	to be inclusive
 

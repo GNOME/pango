@@ -392,15 +392,16 @@ pango_layout_get_width (PangoLayout    *layout)
  * of how small the height value is.  A value of zero will render exactly one
  * line for the entire layout.
  *
- * If @height if it is negative, it will be the maximum number of lines per
+ * If @height is negative, it will be the (negative of) maximum number of lines per
  * paragraph.  That is, the total number of lines shown may well be more than
  * this value if the layout contains multiple paragraphs of text.
  * The default value of -1 means that first line of each paragraph is ellipsized.
  *
- * Currently the height setting only has effect if a positive width is set on
+ * Height setting only has effect if a positive width is set on
  * @layout and ellipsization mode of @layout is not %PANGO_ELLIPSIZE_NONE.
- * This may change in the future.  To be on the safe side, set height to -1
- * in all cases that it shouldn't have any effect.
+ * The behavior is undefined if a height other than -1 is set and
+ * ellipsization mode is set to %PANGO_ELLIPSIZE_NONE, and may change in the
+ * future.
  *
  * Since: 1.20
  **/
