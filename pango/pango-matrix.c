@@ -332,8 +332,9 @@ pango_matrix_transform_point (const PangoMatrix *matrix,
  * If you have the rectangle in Pango units and want to convert to
  * transformed pixel bounding box, it is more accurate to transform it first
  * (using this function) and pass the result to pango_extents_to_pixels(),
- * as @ink_rect.  However, there is a reason that you may want to convert
- * to pixels first and then transform, and that is when the transformed
+ * first argument, for an inclusive rounded rectangle.
+ * However, there are valid reasons that you may want to convert
+ * to pixels first and then transform, for example when the transformed
  * coordinates may overflow in Pango units (large matrix translation for
  * example).
  *
@@ -408,7 +409,7 @@ pango_matrix_transform_rectangle (const PangoMatrix *matrix,
  *
  * For better accuracy, you should use pango_matrix_transform_rectangle() on
  * original rectangle in Pango units and convert to pixels afterward
- * using pango_extents_to_pixels() as @ink_rect.
+ * using pango_extents_to_pixels()'s first argument.
  *
  * Since: 1.16
  **/
@@ -460,8 +461,8 @@ pango_matrix_transform_pixel_rectangle (const PangoMatrix *matrix,
 	  max_y = quad_y[i];
   }
 
-  rect->x      = min_x;
-  rect->y      = min_y;
-  rect->width  = max_x - rect->x;
-  rect->height = max_y - rect->y;
+  rect->x      = floor (min_x);
+  rect->y      = floor (min_y);
+  rect->width  = ceil (max_x - rect->x);
+  rect->height = ceil (max_y - rect->y);
 }

@@ -1,3 +1,27 @@
+2008-01-21  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 508002 – change pango_layout_pixel_extents() to round logical rect
+	to be inclusive
+
+	* pango/pango-layout.c (pango_layout_get_pixel_extents),
+	(pango_layout_line_get_pixel_extents): Round extents to pixels
+	inclusively.  That is, pass both ink_rect and logical_rect as first
+	argument to pango_extents_to_pixels().
+
+	* pango/pango-matrix.c (pango_matrix_transform_pixel_rectangle):
+	Fix rounding.
+
+	* pango/pango-types.h:
+	* docs/tmpl/glyphs.sgml:
+	* pango/pango-utils.c (pango_extents_to_pixels):
+	Rename pango_extents_to_pixels() function arguments from @ink_rect and
+	@logical_rect to @inclusive and @nearest.  Given that this API is a
+	fairly new addition and not commonly used, language bindings are
+	encouraged to update their argument names accordingly.  Moreover, they
+	are encouraged to wrap this function as two different calls:
+	extents_to_pixels_inclusive() and extents_to_pixels_nearest(), or
+	similar conventions that best reflect their native language.
+
 2008-01-16  Behdad Esfahbod  <behdad@gnome.org>
 
 	* pango/opentype/Makefile.am: Remove COPYING.GPL and COPYING.FTL that

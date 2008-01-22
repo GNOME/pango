@@ -156,8 +156,8 @@ horizontal origin.
 
 </para>
 
-@ink_rect: 
-@logical_rect: 
+@inclusive: 
+@nearest: 
 
 
 <!-- ##### STRUCT PangoMatrix ##### -->

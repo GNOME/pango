@@ -2576,12 +2576,9 @@ pango_layout_get_extents (PangoLayout    *layout,
  *
  * Computes the logical and ink extents of @layout in device units.
  * This function just calls pango_layout_get_extents() followed by
- * pango_extents_to_pixels().
- *
- * See pango_extents_to_pixels() for details of how ink and logical rectangles
- * are rounded to pixels.  In certain situations you may want to use
- * pango_layout_get_extents() directly and pass the resulting logical
- * rectangle to pango_extents_to_pixels() as an ink rectangle().
+ * two pango_extents_to_pixels() calls, rounding @ink_rect and @logical_rect
+ * such that the rounded rectangles fully contain the unrounded one (that is,
+ * passes them as first argument to pango_extents_to_pixels()).
  **/
 void
 pango_layout_get_pixel_extents (PangoLayout *layout,
@@ -2591,7 +2588,8 @@ pango_layout_get_pixel_extents (PangoLayout *layout,
   g_return_if_fail (PANGO_IS_LAYOUT (layout));
 
   pango_layout_get_extents (layout, ink_rect, logical_rect);
-  pango_extents_to_pixels (ink_rect, logical_rect);
+  pango_extents_to_pixels (ink_rect, NULL);
+  pango_extents_to_pixels (logical_rect, NULL);
 }
 
 /**
@@ -4610,7 +4608,9 @@ pango_layout_line_new (PangoLayout *layout)
  *
  * Computes the logical and ink extents of @layout_line in device units.
  * This function just calls pango_layout_line_get_extents() followed by
- * pango_extents_to_pixels().
+ * two pango_extents_to_pixels() calls, rounding @ink_rect and @logical_rect
+ * such that the rounded rectangles fully contain the unrounded one (that is,
+ * passes them as first argument to pango_extents_to_pixels()).
  **/
 void
 pango_layout_line_get_pixel_extents (PangoLayoutLine *layout_line,
@@ -4620,7 +4620,8 @@ pango_layout_line_get_pixel_extents (PangoLayoutLine *layout_line,
   g_return_if_fail (LINE_IS_VALID (layout_line));
 
   pango_layout_line_get_extents (layout_line, ink_rect, logical_rect);
-  pango_extents_to_pixels (ink_rect, logical_rect);
+  pango_extents_to_pixels (ink_rect, NULL);
+  pango_extents_to_pixels (logical_rect, NULL);
 }
 
 /*

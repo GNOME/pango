@@ -84,8 +84,8 @@ struct _PangoRectangle
 #define PANGO_LBEARING(rect) ((rect).x)
 #define PANGO_RBEARING(rect) ((rect).x + (rect).width)
 
-void pango_extents_to_pixels (PangoRectangle *ink_rect,
-			      PangoRectangle *logical_rect);
+void pango_extents_to_pixels (PangoRectangle *inclusive,
+			      PangoRectangle *nearest);
 
 /**
  * PangoDirection:

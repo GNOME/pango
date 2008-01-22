@@ -1655,52 +1655,53 @@ pango_units_to_double (int i)
 
 /**
  * pango_extents_to_pixels:
- * @ink_rect: ink rectangle to convert, or %NULL.
- * @logical_rect: logical rectangle to convert, or %NULL.
+ * @inclusive: rectangle to round to pixels inclusively, or %NULL.
+ * @nearest: rectangle to round to nearest pixels, or %NULL.
  *
  * Converts extents from Pango units to device units, dividing by the
  * %PANGO_SCALE factor and performing rounding.
  *
- * The ink rectangle is converted by flooring the x/y coordinates and extending
+ * The @inclusive rectangle is converted by flooring the x/y coordinates and extending
  * width/height, such that the final rectangle completely includes the original
  * rectangle.
  *
- * The logical rectangle is converted by rounding the coordinates
- * of the rectangle to the nearest device unit.
+ * The @nearest rectangle is converted by rounding the coordinates
+ * of the rectangle to the nearest device unit (pixel).
  *
- * Note that in certain situations you may want pass a logical extents
- * rectangle to this function as @ink_rect.  The rule is: if you want the
- * resulting device-space rectangle to completely contain the original
- * rectangle, pass it in as @ink_rect.
+ * The rule to which argument to use is: if you want the resulting device-space
+ * rectangle to completely contain the original rectangle, pass it in as @inclusive.
+ * If you want two touching-but-not-overlapping rectangles stay
+ * touching-but-not-overlapping after rounding to device units, pass them in
+ * as @nearest.
  *
  * Since: 1.16
  **/
 void
-pango_extents_to_pixels (PangoRectangle *ink_rect,
-			 PangoRectangle *logical_rect)
+pango_extents_to_pixels (PangoRectangle *inclusive,
+			 PangoRectangle *nearest)
 {
-  if (ink_rect)
+  if (inclusive)
     {
-      int orig_x = ink_rect->x;
-      int orig_y = ink_rect->y;
+      int orig_x = inclusive->x;
+      int orig_y = inclusive->y;
 
-      ink_rect->x = PANGO_PIXELS_FLOOR (ink_rect->x);
-      ink_rect->y = PANGO_PIXELS_FLOOR (ink_rect->y);
+      inclusive->x = PANGO_PIXELS_FLOOR (inclusive->x);
+      inclusive->y = PANGO_PIXELS_FLOOR (inclusive->y);
 
-      ink_rect->width  = PANGO_PIXELS_CEIL (orig_x + ink_rect->width ) - ink_rect->x;
-      ink_rect->height = PANGO_PIXELS_CEIL (orig_y + ink_rect->height) - ink_rect->y;
+      inclusive->width  = PANGO_PIXELS_CEIL (orig_x + inclusive->width ) - inclusive->x;
+      inclusive->height = PANGO_PIXELS_CEIL (orig_y + inclusive->height) - inclusive->y;
     }
 
-  if (logical_rect)
+  if (nearest)
     {
-      int orig_x = logical_rect->x;
-      int orig_y = logical_rect->y;
+      int orig_x = nearest->x;
+      int orig_y = nearest->y;
 
-      logical_rect->x = PANGO_PIXELS (logical_rect->x);
-      logical_rect->y = PANGO_PIXELS (logical_rect->y);
+      nearest->x = PANGO_PIXELS (nearest->x);
+      nearest->y = PANGO_PIXELS (nearest->y);
 
-      logical_rect->width  = PANGO_PIXELS (orig_x + logical_rect->width ) - logical_rect->x;
-      logical_rect->height = PANGO_PIXELS (orig_y + logical_rect->height) - logical_rect->y;
+      nearest->width  = PANGO_PIXELS (orig_x + nearest->width ) - nearest->x;
+      nearest->height = PANGO_PIXELS (orig_y + nearest->height) - nearest->y;
     }
 }
 
