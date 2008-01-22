@@ -1,5 +1,13 @@
 2008-01-21  Behdad Esfahbod  <behdad@gnome.org>
 
+	* === Released 1.19.3 ===
+
+	* configure.in: Version 1.19.3
+
+	* NEWS: Updated.
+
+2008-01-21  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/pango-layout.c (pango_layout_set_height()): Mark behavior as
 	undefined if height is not -1 and ellipsize mode is
 	PANGO_ELLIPSIZE_NONE.

@@ -1,3 +1,76 @@
+Overview of changes between 1.19.2 and 1.19.3
+==============================================
+- pango_layout_get_pixel_extents() and pango_layout_line_get_pixel_extents()
+  now round extents to pixels inclusively.  That is, pass both ink_rect and
+  logical_rect as first argument to pango_extents_to_pixels().
+
+- Rename pango_extents_to_pixels() function arguments from @ink_rect and
+  @logical_rect to @inclusive and @nearest.  Given that this API is a
+  fairly new addition and not commonly used, language bindings are
+  encouraged to update their argument names accordingly.  Moreover, they
+  are encouraged to wrap this function as two different calls:
+  extents_to_pixels_inclusive() and extents_to_pixels_nearest(), or
+  similar conventions that best reflect their native language.
+
+- HarfBuzz was relicensed to a more generous and simpler license.
+  Adapt.  See pango/opentype/COPYING for the new license which is
+  LGPL-compatible.
+
+- New public API:
+
+	pango_layout_set_height()
+
+  This sets the height to which the #PangoLayout should be ellipsized at.
+  There are two different behaviors, based on whether @height is positive or
+  negative.
+
+  If @height is positive, it will be the maximum height of the layout.  Only
+  lines would be shown that would fit, and if there is any text ommitted, an
+  ellipsis added.  At least one line is included in each paragraph regardless
+  of how small the height value is.  A value of zero will render exactly one
+  line for the entire layout.
+
+  If @height is negative, it will be the (negative of) maximum number of lines
+  per paragraph.  That is, the total number of lines shown may well be more
+  than this value if the layout contains multiple paragraphs of text.  The
+  default value of -1 means that first line of each paragraph is ellipsized.
+
+  Height setting only has effect if a positive width is set on @layout and
+  ellipsization mode of @layout is not %PANGO_ELLIPSIZE_NONE.
+  The behavior is undefined if a height other than -1 is set and ellipsization
+  mode is set to %PANGO_ELLIPSIZE_NONE, and may change in the future.
+
+  There are still bugs remaining to be fixed, notably bug 511172 (which will
+  be fixed before 1.20), and bug 511171 (which will be fixed in a future
+  version).
+
+- New command-line arguments to pango-view: --height and --single-par.
+
+- Make the following symbols available to engines:
+
+	PANGO_IS_OT_INFO
+	PANGO_IS_OT_RULESET
+	PANGO_OT_INFO
+	PANGO_OT_RULESET
+	PANGO_TYPE_OT_INFO
+	PANGO_TYPE_OT_RULESET
+	pango_ot_info_get_type
+	pango_ot_ruleset_get_type
+
+- Bugs fixed in this release:
+	Bug 508002 – change pango_layout_pixel_extents() to round logical rect
+		to be inclusive
+	Bug 469313 – Add pango_layout_set_height()
+	Bug 508179 – PangoGlyphUnit confusion
+	Bug 508381 – indent and center alignment don't mix
+	Bug 508007 – Add option for single-paragraph mode to pango-view
+	Bug 506284 – docs typo for pango_coverage_unref
+		Patch from Christian Persch
+	Bug 504802 – build failure: No rule to make target
+		`pango-querymodules.1', needed by `all-am'. Stop.
+	Bug 504585 – pango-querymodules.1 syntax error
+	Red Hat Bug 426178: gtkdoc-scan fails on pango
+
 Overview of changes between 1.19.1 and 1.19.2
 ==============================================
 - Render a crossed box for each invalid input byte to pango_layout_set_text().
