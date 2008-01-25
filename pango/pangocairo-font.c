@@ -108,8 +108,6 @@ _pango_cairo_font_private_get_scaled_font (PangoCairoFontPrivate *cf_priv)
   cairo_font_face_destroy (font_face);
 
 done:
-  _pango_cairo_font_private_scaled_font_data_destroy (cf_priv->data);
-  cf_priv->data = NULL;
 
   if (G_UNLIKELY (cf_priv->scaled_font == NULL || cairo_scaled_font_status (cf_priv->scaled_font) != CAIRO_STATUS_SUCCESS))
     {
@@ -137,6 +135,9 @@ done:
 				   GINT_TO_POINTER (1), NULL);
 	}
     }
+
+  _pango_cairo_font_private_scaled_font_data_destroy (cf_priv->data);
+  cf_priv->data = NULL;
 
   return cf_priv->scaled_font;
 }
