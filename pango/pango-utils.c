@@ -69,7 +69,7 @@ static GHashTable *pango_aliases_ht = NULL;
  * A version number can be encoded into an integer using
  * PANGO_VERSION_ENCODE().
  *
- * Returns value: The encoded version of Pango library
+ * Returns: The encoded version of Pango library
  *   available at run time.
  *
  * Since: 1.16
@@ -87,7 +87,7 @@ pango_version (void)
  * it returns the version of Pango available at run-time, as opposed to
  * the version available at compile-time.
  *
- * Returns value: A string containing the version of Pango library
+ * Returns: A string containing the version of Pango library
  *   available at run time.
  *   The returned string is owned by Pango and should not be modified
  *   or freed.

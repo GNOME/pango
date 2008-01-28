@@ -323,7 +323,7 @@ pango_x_font_new (PangoFontMap *fontmap, const char *spec, int size)
  * work correctly in all circumstances. Use of this function should
  * be avoided.
  *
- * Returns a new #PangoFont.
+ * Returns: a new #PangoFont.
  */
 PangoFont *
 pango_x_load_font (Display    *display,

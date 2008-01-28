@@ -191,8 +191,8 @@ PangoFontDescription *pango_fc_font_description_from_pattern (FcPattern *pattern
  * String representing a fontconfig property name that Pango sets on any
  * fontconfig pattern it passes to fontconfig.
  *
- * The property will have an integer value equal to what pango_version()
- * returns.
+ * The property will have an integer value equal to what
+ * pango_version() returns.
  *
  * Since: 1.20
  */

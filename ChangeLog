@@ -1,3 +1,14 @@
+2008-01-28  Wouter Bolsterlee  <wbolster@svn.gnome.org>
+
+	* pango/pango-context.c:
+	* pango/pango-fontmap.c:
+	* pango/pango-utils.c:
+	* pango/pangofc-fontmap.h:
+	* pango/pangox.c:
+	* pango/reorder-items.c:
+
+	Fixed gtk-doc warnings.
+
 2008-01-21  Behdad Esfahbod  <behdad@gnome.org>
 
 	* === Released 1.19.3 ===

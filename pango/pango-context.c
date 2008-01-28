@@ -280,7 +280,7 @@ pango_context_list_families (PangoContext          *context,
  * Loads the font in one of the fontmaps in the context
  * that is the closest match for @desc.
  *
- * Returns the font loaded, or %NULL if no font matched.
+ * Returns: the font loaded, or %NULL if no font matched.
  **/
 PangoFont *
 pango_context_load_font (PangoContext               *context,
@@ -301,7 +301,7 @@ pango_context_load_font (PangoContext               *context,
  * Load a set of fonts in the context that can be used to render
  * a font matching @desc.
  *
- * Returns the fontset, or %NULL if no font matched.
+ * Returns: the fontset, or %NULL if no font matched.
  **/
 PangoFontset *
 pango_context_load_fontset (PangoContext               *context,
