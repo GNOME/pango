@@ -1,4 +1,15 @@
+2008-01-28  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 512566 – dont' use deprecated macro
+	Patch from Christian Persch
+
+	* tests/test-ot-tags.c:
+	* tests/testscript.c:
+	Replace G_GNUC_PRETTY_FUNCTION by G_STRFUNC
+
 2008-01-28  Wouter Bolsterlee  <wbolster@svn.gnome.org>
+
+	Bug 512473 – [patch] gtk-doc warnings
 
 	* pango/pango-context.c:
 	* pango/pango-fontmap.c:
@@ -6,8 +17,7 @@
 	* pango/pangofc-fontmap.h:
 	* pango/pangox.c:
 	* pango/reorder-items.c:
-
-	Fixed gtk-doc warnings. Bug #512473.
+	Fixed gtk-doc warnings.
 
 2008-01-21  Behdad Esfahbod  <behdad@gnome.org>
 

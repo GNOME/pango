@@ -67,7 +67,7 @@
     else								\
       {									\
 	g_warning ("%s:%d (%s): assertion '%s' failed",			\
-		 __FILE__, __LINE__, G_GNUC_PRETTY_FUNCTION, #stmt);	\
+		 __FILE__, __LINE__, G_STRFUNC, #stmt);			\
 	exit (1);							\
       }									\
 } G_STMT_END
