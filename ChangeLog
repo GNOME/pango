@@ -7,7 +7,7 @@
 	* pango/pangox.c:
 	* pango/reorder-items.c:
 
-	Fixed gtk-doc warnings.
+	Fixed gtk-doc warnings. Bug #512473.
 
 2008-01-21  Behdad Esfahbod  <behdad@gnome.org>
 
