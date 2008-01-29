@@ -1,3 +1,24 @@
+2008-01-29  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 496244 – Don't use freetype-config, use pkg-config
+
+	* configure.in:
+	Don't use freetype-config.  Also cleanup lots of old stale macros
+	around configure.in.
+
+	* pango-uninstalled.pc.in:
+	* pango.pc.in:
+	* pangocairo-uninstalled.pc.in:
+	* pangocairo.pc.in:
+	* pangoft2-uninstalled.pc.in:
+	* pangoft2.pc.in:
+	* pangowin32.pc.in:
+	* pangox-uninstalled.pc.in:
+	* pangox.pc.in:
+	* pangoxft-uninstalled.pc.in:
+	* pangoxft.pc.in:
+	And cleaned up all the pkg-config files as a result.
+
 2008-01-28  Behdad Esfahbod  <behdad@gnome.org>
 
 	Bug 512566 – dont' use deprecated macro
