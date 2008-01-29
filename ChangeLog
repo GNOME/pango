@@ -1,5 +1,9 @@
 2008-01-29  Behdad Esfahbod  <behdad@gnome.org>
 
+	* configure.in: Oops.  Add fontconfig cflags/libs with freetype's.
+
+2008-01-29  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 496244 – Don't use freetype-config, use pkg-config
 
 	* configure.in:
