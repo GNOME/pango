@@ -222,44 +222,28 @@ have_xft=false
 #
 PKG_CHECK_MODULES(FONTCONFIG, fontconfig >= 1.0.1, have_fontconfig=true, AC_MSG_RESULT([no]))
 
+#
+# Checks for FreeType
+#
 if $have_fontconfig ; then
-  #
-  # Checks for FreeType
-  #
-  FREETYPE_LIBS=
-  FREETYPE_CFLAGS=
-  AC_PATH_PROG(FREETYPE_CONFIG, freetype-config, no)
-  if test "x$FREETYPE_CONFIG" != "xno" ; then
-    FREETYPE_CFLAGS=`$FREETYPE_CONFIG --cflags`
-    FREETYPE_LIBS=`$FREETYPE_CONFIG --libs`
-
-    pango_save_ldflags=$LDFLAGS
-    LDFLAGS="$LDFLAGS $FREETYPE_LIBS"
-    AC_CHECK_LIB(freetype, FT_Get_Next_Char, have_freetype=true, :)
-    LDFLAGS=$pango_save_ldflags
-  fi
-
-  FREETYPE_LIBS="$FONTCONFIG_LIBS $FREETYPE_LIBS"
-  FREETYPE_CFLAGS="$FONTCONFIG_CFLAGS $FREETYPE_CFLAGS"
-
-  AC_SUBST(FREETYPE_LIBS)
-  AC_SUBST(FREETYPE_CFLAGS)
-  AC_DEFINE(HAVE_FREETYPE, 1, [Have FreeType 2 library])
-
-  #
-  # Checks for Xft/XRender
-  #
-  if $have_x && $have_freetype ; then
-    PKG_CHECK_MODULES(XFT, xft >= 2.0.0 xrender, have_xft=true, AC_MSG_RESULT([no]))
-    if $have_xft ; then
-      AC_DEFINE(HAVE_XFT, 1, [Have Xft library])
-    fi
-  fi
-elif test "x$pango_os_win32" != xyes; then
-  AC_MSG_WARN([No fontconfig found, skipping tests for FreeType and Xft])
+  # The first version of freetype with a .pc file is 2.1.5.  That's recent
+  # enough for all the functions we use I guess.  No version check needed.
+  PKG_CHECK_MODULES(FREETYPE, freetype2, have_freetype=true, AC_MSG_RESULT([no]))
 fi
-
+if $have_freetype ; then
+  AC_DEFINE(HAVE_FREETYPE, 1, [Have FreeType 2 library])
+fi
 AM_CONDITIONAL(HAVE_FREETYPE, $have_freetype)
+
+#
+# Checks for Xft/XRender
+#
+if $have_x && $have_freetype ; then
+  PKG_CHECK_MODULES(XFT, xft >= 2.0.0 xrender, have_xft=true, AC_MSG_RESULT([no]))
+fi
+if $have_xft ; then
+  AC_DEFINE(HAVE_XFT, 1, [Have Xft library])
+fi
 AM_CONDITIONAL(HAVE_XFT, $have_xft)
 
 #
@@ -345,48 +329,54 @@ if $have_cairo ; then
   pango_save_ldflags=$LDFLAGS
   LDFLAGS="$LDFLAGS $INSTALLED_CAIRO_LIBS"
 
-  PKG_CHECK_EXISTS(cairo-png >= $cairo_required, have_cairo_png=true, :)
-  if $have_cairo_png; then
-    AC_DEFINE(HAVE_CAIRO_PNG, 1, [Whether Cairo has PNG support])
-  fi
-
-  PKG_CHECK_EXISTS(cairo-ps >= $cairo_required, have_cairo_ps=true, :)
-  if $have_cairo_ps; then
-    AC_DEFINE(HAVE_CAIRO_PS, 1, [Whether Cairo has PS support])
-  fi
-
-  PKG_CHECK_EXISTS(cairo-pdf >= $cairo_required, have_cairo_pdf=true, :)
-  if $have_cairo_pdf; then
-    AC_DEFINE(HAVE_CAIRO_PDF, 1, [Whether Cairo has PDF support])
-  fi
-
-  PKG_CHECK_EXISTS(cairo-xlib >= $cairo_required, have_cairo_xlib=true, :)
-  if $have_cairo_xlib; then
-    AC_DEFINE(HAVE_CAIRO_XLIB, 1, [Whether Cairo has Xlib support])
-  fi
-
   have_cairo=false
 
-  PKG_CHECK_EXISTS(cairo-win32 >= $cairo_required, have_cairo_win32=true, :)
-  if $have_cairo_win32 && $have_win32; then
+  if $have_win32; then
+    PKG_CHECK_EXISTS(cairo-win32 >= $cairo_required, have_cairo_win32=true, :)
+  fi
+  if $have_cairo_win32; then
     AC_DEFINE(HAVE_CAIRO_WIN32, 1, [Whether Cairo uses the Win32 GDI for fonts])
     have_cairo=true
   fi
 
-  PKG_CHECK_EXISTS(cairo-ft >= $cairo_required, have_cairo_freetype=true, :)
-  if $have_cairo_freetype && $have_freetype ; then
+  if $have_freetype; then
+    PKG_CHECK_EXISTS(cairo-ft >= $cairo_required, have_cairo_freetype=true, :)
+  fi
+  if $have_cairo_freetype; then
     AC_DEFINE(HAVE_CAIRO_FREETYPE, 1, [Whether Cairo uses FreeType for fonts])
     have_cairo=true
   fi
 
-  PKG_CHECK_EXISTS(cairo-atsui >= $cairo_required, have_cairo_atsui=true, :)
-  if $have_cairo_atsui && $have_atsui ; then
+  if $have_atsui; then
+    PKG_CHECK_EXISTS(cairo-atsui >= $cairo_required, have_cairo_atsui=true, :)
+  fi
+  if $have_cairo_atsui; then
     AC_DEFINE(HAVE_CAIRO_ATSUI, 1, [Whether Cairo uses ATSUI for fonts])
     have_cairo=true
   fi
 
   if $have_cairo ; then
     AC_DEFINE(HAVE_CAIRO, 1, [Have usable Cairo library and font backend])
+
+    PKG_CHECK_EXISTS(cairo-png >= $cairo_required, have_cairo_png=true, :)
+    if $have_cairo_png; then
+      AC_DEFINE(HAVE_CAIRO_PNG, 1, [Whether Cairo has PNG support])
+    fi
+  
+    PKG_CHECK_EXISTS(cairo-ps >= $cairo_required, have_cairo_ps=true, :)
+    if $have_cairo_ps; then
+      AC_DEFINE(HAVE_CAIRO_PS, 1, [Whether Cairo has PS support])
+    fi
+  
+    PKG_CHECK_EXISTS(cairo-pdf >= $cairo_required, have_cairo_pdf=true, :)
+    if $have_cairo_pdf; then
+      AC_DEFINE(HAVE_CAIRO_PDF, 1, [Whether Cairo has PDF support])
+    fi
+  
+    PKG_CHECK_EXISTS(cairo-xlib >= $cairo_required, have_cairo_xlib=true, :)
+    if $have_cairo_xlib; then
+      AC_DEFINE(HAVE_CAIRO_XLIB, 1, [Whether Cairo has Xlib support])
+    fi
   fi
 
   LIBS=$pango_save_libs
@@ -398,9 +388,9 @@ AM_CONDITIONAL(HAVE_CAIRO_PNG, $have_cairo_png)
 AM_CONDITIONAL(HAVE_CAIRO_PS, $have_cairo_ps)
 AM_CONDITIONAL(HAVE_CAIRO_PDF, $have_cairo_pdf)
 AM_CONDITIONAL(HAVE_CAIRO_XLIB, $have_cairo_xlib)
-AM_CONDITIONAL(HAVE_CAIRO_WIN32, $have_cairo_win32 && $have_win32)
-AM_CONDITIONAL(HAVE_CAIRO_FREETYPE, $have_cairo_freetype && $have_freetype)
-AM_CONDITIONAL(HAVE_CAIRO_ATSUI, $have_cairo_atsui && $have_atsui)
+AM_CONDITIONAL(HAVE_CAIRO_WIN32, $have_cairo_win32)
+AM_CONDITIONAL(HAVE_CAIRO_FREETYPE, $have_cairo_freetype)
+AM_CONDITIONAL(HAVE_CAIRO_ATSUI, $have_cairo_atsui)
 
 #
 # We must have some backend defined, in order for the pango-querymodules
@@ -408,8 +398,8 @@ AM_CONDITIONAL(HAVE_CAIRO_ATSUI, $have_cairo_atsui && $have_atsui)
 # a new Pango backend outside of Pango, you are up to sending the necessary
 # patch to fix that rule. :-)
 #
-if $have_freetype || $have_x || $have_xft || $have_win32 || $have_cairo_atsui ; then : ; else
-  AC_MSG_ERROR([*** Didn't find any of FreeType, X11, ATSUI, or Win32.
+if $have_freetype || $have_x || $have_xft || $have_cairo; then : ; else
+  AC_MSG_ERROR([*** Could not enable any of FreeType, X11, Cairo, or Win32 backends.
 *** Must have at least one backend to build Pango.])
 fi
 
@@ -683,28 +673,23 @@ case $enable_explicit_deps in
 esac
 AC_MSG_RESULT($enable_explicit_deps)
 
-PKGCONFIG_X_LIBS=
-PKGCONFIG_XFT_LIBS=
-PKGCONFIG_FREETYPE_LIBS=
 PKGCONFIG_MATH_LIBS=
-PKGCONFIG_CAIRO_LIBS=
+PKGCONFIG_CAIRO_REQUIRES=
 
 if test $enable_explicit_deps = yes ; then
-  PKGCONFIG_X_LIBS="$X_LIBS $X_EXTRA_LIBS"
-  PKGCONFIG_XFT_LIBS=$XFT_LIBS
-  PKGCONFIG_FREETYPE_LIBS=$FREETYPE_LIBS
   PKGCONFIG_MATH_LIBS=-lm
-  PKGCONFIG_CAIRO_LIBS=$FREETYPE_LIBS
-  if $have_cairo_freetype ;  then
-    PKGCONFIG_CAIRO_REQUIRES=pangoft2
+
+  X_LIBS="$X_LIBS $X_EXTRA_LIBS"
+
+  if $have_cairo_freetype;  then
+    PKGCONFIG_CAIRO_REQUIRES="$PKGCONFIG_CAIRO_REQUIRES pangoft2"
+  fi
+  if $have_cairo_win32;  then
+    PKGCONFIG_CAIRO_REQUIRES="$PKGCONFIG_CAIRO_REQUIRES pangowin32"
   fi
 fi
 
-AC_SUBST(PKGCONFIG_X_LIBS)
-AC_SUBST(PKGCONFIG_XFT_LIBS)
-AC_SUBST(PKGCONFIG_FREETYPE_LIBS)
 AC_SUBST(PKGCONFIG_MATH_LIBS)
-AC_SUBST(PKGCONFIG_CAIRO_LIBS)
 AC_SUBST(PKGCONFIG_CAIRO_REQUIRES)
 AM_CONDITIONAL(DISABLE_EXPLICIT_DEPS, test $enable_explicit_deps = no)
 
