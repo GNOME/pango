@@ -1,3 +1,13 @@
+2008-02-08  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 504810 – Samvruthokaram (combination of U+0D41 and U+0D4D) is not
+	rendered correctly
+	Patch from Praveen A
+
+	* modules/indic/indic-ot-class-tables.c:
+	* modules/indic/indic-ot.c (indic_ot_reorder):
+	"Fix" it.
+
 2008-01-10  Behdad Esfahbod  <behdad@gnome.org>
 
 	Bug 508179 – PangoGlyphUnit confusion

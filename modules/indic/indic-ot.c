@@ -259,6 +259,12 @@ glong indic_ot_reorder(const gunichar *chars, const glong *utf8_offsets, glong c
 	case CC_NUKTA:
 	case CC_VIRAMA:
 	case CC_AL_LAKUNA:
+	    /* patch for rendering fix for Malayalam SAMVRUTHOKARA by suresh */
+	    if (chars[prev - 1] == 0x0D41) {
+	       	 writeChar(&output, chars[prev], prev, blwf_p);
+		 break;
+	    }
+	    /* end patch */
 	    writeChar(&output, C_DOTTED_CIRCLE, prev, blwf_p);
 	    writeChar(&output, chars[prev], prev, blwf_p);
 	    break;
