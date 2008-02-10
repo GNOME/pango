@@ -1379,7 +1379,7 @@ _pango_fc_font_map_fc_to_coverage (FcCharSet *charset)
 	  FcChar32  bits = map[i];
 	  FcChar32  base = ucs4 + i * 32;
 	  int b = 0;
-	  bits = map[i];
+
 	  while (bits)
 	    {
 	      if (bits & 1)

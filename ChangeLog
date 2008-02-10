@@ -1,3 +1,10 @@
+2008-02-09  Dominic Lachowicz <domlachowicz@gmail.com>
+
+	Bug 515484 – Variable is initialized twice
+
+	* pango/pangofc-fontmap.c (_pango_fc_font_map_fc_to_coverage):
+	Variable was initialized twice.
+	
 2008-02-08  Behdad Esfahbod  <behdad@gnome.org>
 
 	Bug 504810 – Samvruthokaram (combination of U+0D41 and U+0D4D) is not
