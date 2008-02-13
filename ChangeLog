@@ -1,3 +1,7 @@
+2008-02-13  Sven Neumann  <sven@gimp.org>
+
+	* pango/pangoft2.c: indentation.
+
 2008-02-09  Dominic Lachowicz <domlachowicz@gmail.com>
 
 	Bug 515484 – Variable is initialized twice

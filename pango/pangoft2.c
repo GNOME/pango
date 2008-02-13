@@ -49,15 +49,16 @@ struct _PangoFT2FontClass
   PangoFcFontClass parent_class;
 };
 
-static void pango_ft2_font_finalize   (GObject         *object);
+static void     pango_ft2_font_finalize          (GObject        *object);
 
-static void                   pango_ft2_font_get_glyph_extents (PangoFont      *font,
-								PangoGlyph      glyph,
-								PangoRectangle *ink_rect,
-								PangoRectangle *logical_rect);
+static void     pango_ft2_font_get_glyph_extents (PangoFont      *font,
+                                                  PangoGlyph      glyph,
+                                                  PangoRectangle *ink_rect,
+                                                  PangoRectangle *logical_rect);
 
-static FT_Face    pango_ft2_font_real_lock_face         (PangoFcFont      *font);
-static void       pango_ft2_font_real_unlock_face       (PangoFcFont      *font);
+static FT_Face  pango_ft2_font_real_lock_face    (PangoFcFont    *font);
+static void     pango_ft2_font_real_unlock_face  (PangoFcFont    *font);
+
 
 PangoFT2Font *
 _pango_ft2_font_new (PangoFT2FontMap *ft2fontmap,
@@ -462,7 +463,8 @@ pango_ft2_font_finalize (GObject *object)
  * @language: a language tag.
  * @returns: a #PangoCoverage.
  *
- * Gets the #PangoCoverage for a #PangoFT2Font. Use pango_font_get_coverage() instead.
+ * Gets the #PangoCoverage for a #PangoFT2Font. Use
+ * pango_font_get_coverage() instead.
  **/
 PangoCoverage *
 pango_ft2_font_get_coverage (PangoFont     *font,
