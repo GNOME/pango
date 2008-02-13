@@ -53,6 +53,10 @@ struct _PangoWin32SizeInfo
   GSList *logfontws;
 };
 
+#if !defined(NTM_PS_OPENTYPE)
+# define NTM_PS_OPENTYPE 0x20000
+#endif
+
 #define PANGO_WIN32_TYPE_FAMILY              (pango_win32_family_get_type ())
 #define PANGO_WIN32_FAMILY(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_WIN32_TYPE_FAMILY, PangoWin32Family))
 #define PANGO_WIN32_IS_FAMILY(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), PANGO_WIN32_TYPE_FAMILY))
@@ -181,23 +185,25 @@ pango_win32_inner_enum_proc (LOGFONTW    *lfp,
 }
 
 static int CALLBACK
-pango_win32_enum_proc (LOGFONTW    *lfp,
-		       TEXTMETRICW *metrics,
-		       DWORD        fontType,
-		       LPARAM       lParam)
+pango_win32_enum_proc (LOGFONTW       *lfp,
+		       NEWTEXTMETRICW *metrics,
+		       DWORD           fontType,
+		       LPARAM          lParam)
 {
   LOGFONTW lf;
 
-  PING(("%S", lfp->lfFaceName));
+  PING(("%S: %lu %lx", lfp->lfFaceName, fontType, metrics->ntmFlags));
 
-  if (fontType != TRUETYPE_FONTTYPE)
-    return 1;
+  if (fontType == TRUETYPE_FONTTYPE ||
+      (_pango_win32_os_version_info.dwMajorVersion >= 5 &&
+       (metrics->ntmFlags & NTM_PS_OPENTYPE)))
+    {
+      lf = *lfp;
 
-  lf = *lfp;
-
-  EnumFontFamiliesExW (_pango_win32_hdc, &lf,
-		       (FONTENUMPROCW) pango_win32_inner_enum_proc,
-		       lParam, 0);
+      EnumFontFamiliesExW (_pango_win32_hdc, &lf,
+			   (FONTENUMPROCW) pango_win32_inner_enum_proc,
+			   lParam, 0);
+    }
 
   return 1;
 }

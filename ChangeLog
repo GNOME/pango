@@ -1,3 +1,13 @@
+2008-02-14  Tor Lillqvist  <tml@novell.com>
+
+	Bug 515484 – Pango on Windows is missing non-TrueType 
+	font support
+	Patch from Adrian Johnson.
+
+	* pango/pangowin32-fontmap.c (pango_win32_enum_proc): Accept also
+	OpenType/PS fonts. Interpret the metrics parameter as a
+	NEWTEXTMETRICW struct and check the ntmFlags field.
+
 2008-02-13  Sven Neumann  <sven@gimp.org>
 
 	* pango/pangoft2.c: indentation.
