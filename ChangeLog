@@ -1,3 +1,7 @@
+2008-02-15  Behdad Esfahbod  <behdad@gnome.org>
+
+	* pango/pango-layout.c: Improve docs.
+
 2008-02-14  Tor Lillqvist  <tml@novell.com>
 
 	Bug 515484 – Pango on Windows is missing non-TrueType 

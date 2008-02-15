@@ -589,7 +589,7 @@ pango_layout_get_spacing (PangoLayout *layout)
 /**
  * pango_layout_set_attributes:
  * @layout: a #PangoLayout
- * @attrs: a #PangoAttrList
+ * @attrs: a #PangoAttrList, can be %NULL
  *
  * Sets the text attributes for a layout object.
  * References @attrs, so the caller can unref its reference.
@@ -995,6 +995,12 @@ pango_layout_is_ellipsized (PangoLayout *layout)
  *          positive.
  *
  * Sets the text of the layout.
+ *
+ * Note that if you have used
+ * pango_layout_set_markup() or pango_layout_set_markup_with_accel() on
+ * @layout before, you may want to call pango_layout_set_attributes() to clear
+ * the attributes set on the layout from the markup as this function does not
+ * clear attributes.
  **/
 void
 pango_layout_set_text (PangoLayout *layout,
