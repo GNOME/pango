@@ -1,5 +1,11 @@
 2008-02-17  Behdad Esfahbod  <behdad@gnome.org>
 
+	Bug 517083 – pango modules: wrong fallback adding code?
+
+	* pango/modules.c (map_add_engine): Fix typo.
+
+2008-02-17  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/pango-layout.c: Improve docs.
 
 2008-02-15  Behdad Esfahbod  <behdad@gnome.org>
