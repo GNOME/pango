@@ -1,3 +1,9 @@
+2008-02-17  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 517083 – pango modules: wrong fallback adding code?
+
+	* pango/modules.c (map_add_engine): Fix typo.
+
 2008-02-08  Behdad Esfahbod  <behdad@gnome.org>
 
 	Bug 504810 – Samvruthokaram (combination of U+0D41 and U+0D4D) is not

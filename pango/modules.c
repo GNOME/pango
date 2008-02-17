@@ -580,7 +580,7 @@ map_add_engine (PangoMapInfo    *info,
       if (is_exact)
 	entry->exact = g_slist_prepend (entry->exact, pair);
       else
-	entry->exact = g_slist_prepend (entry->fallback, pair);
+	entry->fallback = g_slist_prepend (entry->fallback, pair);
     }
 }
 
