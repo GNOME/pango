@@ -1156,6 +1156,11 @@ pango_layout_set_markup_with_accel (PangoLayout    *layout,
  * glyphs for all characters in the layout text were found, or more
  * than zero otherwise.
  *
+ * This function can be used to determine if there are any fonts
+ * available to render all characters in a certain string, or when
+ * used in combination with %PANGO_ATTR_FALLBACK, to check if a
+ * certain font supports all the characters in the string.
+ *
  * Return value: The number of unknown glyphs in @layout.
  *
  * Since: 1.16

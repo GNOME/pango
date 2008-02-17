@@ -1,3 +1,7 @@
+2008-02-17  Behdad Esfahbod  <behdad@gnome.org>
+
+	* pango/pango-layout.c: Improve docs.
+
 2008-02-15  Behdad Esfahbod  <behdad@gnome.org>
 
 	* pango/pango-layout.c: Improve docs.
