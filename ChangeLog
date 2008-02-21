@@ -1,3 +1,8 @@
+2008-02-21  Kristian Rietveld  <kris@imendio.com>
+
+	* modules/basic/basic-atsui.c (basic_engine_shape): free the
+	ATSU style and utf16 string at the end.
+
 2008-02-17  Behdad Esfahbod  <behdad@gnome.org>
 
 	Bug 517083 – pango modules: wrong fallback adding code?

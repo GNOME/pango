@@ -163,7 +163,10 @@ basic_engine_shape (PangoEngineShape    *engine,
   ATSUDirectReleaseLayoutDataArrayPtr (NULL, kATSUDirectDataLayoutRecordATSLayoutRecordCurrent,
 				       (void *)&layout_records);
 
+  ATSUDisposeStyle(style);
   ATSUDisposeTextLayout (text_layout);
+
+  g_free (utf16);
 }
 
 static void
