@@ -165,6 +165,7 @@ struct _PangoWin32Face
   char *face_name;
   gboolean is_synthetic;
 
+  gboolean has_cmap;
   guint16 cmap_format;
   gpointer cmap;
 

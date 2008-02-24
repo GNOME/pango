@@ -1463,6 +1463,26 @@ font_get_cmap (PangoFont *font)
   return cmap;
 }
 
+static gint
+pango_win32_font_get_type1_glyph_index (PangoFont *font,
+                                        gunichar   wc)
+{
+  wchar_t unicode[2];
+  WORD glyph_index;
+  gint32 res;
+
+  unicode[0] = wc;
+  unicode[1] = 0;
+  pango_win32_font_select_font (font, _pango_win32_hdc);
+  res = GetGlyphIndicesW (_pango_win32_hdc, unicode, 1, &glyph_index, 0);
+  pango_win32_font_done_font (font);
+
+  if (res == 1)
+      return glyph_index;
+  else
+      return 0;
+}
+
 /**
  * pango_win32_font_get_glyph_index:
  * @font: a #PangoFont.
@@ -1481,11 +1501,16 @@ pango_win32_font_get_glyph_index (PangoFont *font,
   gpointer cmap;
   guint16 glyph;
 
-  /* Do GetFontData magic on font->hfont here. */
-  cmap = font_get_cmap (font);
+  if (win32font->win32face->has_cmap)
+    {
+      /* Do GetFontData magic on font->hfont here. */
+      cmap = font_get_cmap (font);
+      if (cmap == NULL)
+	win32font->win32face->has_cmap = FALSE;
+    }
 
-  if (cmap == NULL)
-    return 0;
+  if (!win32font->win32face->has_cmap)
+    return pango_win32_font_get_type1_glyph_index (font, wc);
 
   if (win32font->win32face->cmap_format == 4)
     {
@@ -1636,6 +1661,44 @@ font_has_name_in (PangoFont                       *font,
 }
 
 static void
+pango_win32_font_calc_type1_coverage (PangoFont     *font,
+				      PangoCoverage *coverage,
+				      PangoLanguage *lang)
+{
+  GLYPHSET *glyph_set;
+  gint32 res;
+  guint32 ch;
+  guint32 i;
+  
+  pango_win32_font_select_font (font, _pango_win32_hdc);
+  res = GetFontUnicodeRanges(_pango_win32_hdc, NULL);
+  if (res == 0)
+    goto fail1;
+
+  glyph_set = g_malloc (res);
+  res = GetFontUnicodeRanges(_pango_win32_hdc, glyph_set);
+  if (res == 0)
+    goto fail2;
+  
+  for (i = 0; i < glyph_set->cRanges; i++) 
+    {
+      guint32 end = glyph_set->ranges[i].wcLow + glyph_set->ranges[i].cGlyphs;
+
+      for (ch = glyph_set->ranges[i].wcLow; ch < end; ch++)
+	  if (CH_IS_UNIHAN_BMP (ch))
+	      pango_coverage_set (coverage, ch, PANGO_COVERAGE_APPROXIMATE);
+	  else
+	      pango_coverage_set (coverage, ch, PANGO_COVERAGE_EXACT);
+    }
+
+ fail2:
+  g_free (glyph_set);
+
+ fail1:
+  pango_win32_font_done_font (font);
+}
+
+static void
 pango_win32_font_calc_coverage (PangoFont     *font,
 				PangoCoverage *coverage,
 				PangoLanguage *lang)
@@ -1651,20 +1714,26 @@ pango_win32_font_calc_coverage (PangoFont     *font,
 	pango_font_description_to_string (pango_font_describe (font)),
 	pango_language_to_string (lang)));
 
+  if (win32font->win32face->has_cmap)
+    {
+      /* Do GetFontData magic on font->hfont here. */
+      cmap = font_get_cmap (font);
+      if (cmap == NULL)
+	win32font->win32face->has_cmap = FALSE;
+    }
+
+  if (!win32font->win32face->has_cmap)
+    {
+      pango_win32_font_calc_type1_coverage (font, coverage, lang);
+      return;
+    }
+
   cjkv = pango_win32_coverage_language_classify (lang);
 
   if (cjkv != PANGO_WIN32_COVERAGE_UNSPEC && !font_has_name_in (font, cjkv))
     {
       PING(("hiding UniHan chars"));
       hide_unihan = TRUE;
-    }
-
-  /* Do GetFontData magic on font->hfont here. */
-  cmap = font_get_cmap (font);
-  if (cmap == NULL)
-    {
-      PING(("no table"));
-      return;
     }
 
   PING (("coverage:"));

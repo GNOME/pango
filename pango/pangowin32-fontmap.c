@@ -57,6 +57,10 @@ struct _PangoWin32SizeInfo
 # define NTM_PS_OPENTYPE 0x20000
 #endif
 
+#if !defined(NTM_TYPE1)
+# define NTM_TYPE1 0x100000
+#endif
+
 #define PANGO_WIN32_TYPE_FAMILY              (pango_win32_family_get_type ())
 #define PANGO_WIN32_FAMILY(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_WIN32_TYPE_FAMILY, PangoWin32Family))
 #define PANGO_WIN32_IS_FAMILY(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), PANGO_WIN32_TYPE_FAMILY))
@@ -196,7 +200,7 @@ pango_win32_enum_proc (LOGFONTW       *lfp,
 
   if (fontType == TRUETYPE_FONTTYPE ||
       (_pango_win32_os_version_info.dwMajorVersion >= 5 &&
-       (metrics->ntmFlags & NTM_PS_OPENTYPE)))
+       ((metrics->ntmFlags & NTM_PS_OPENTYPE) || (metrics->ntmFlags & NTM_TYPE1))))
     {
       lf = *lfp;
 
@@ -1098,6 +1102,7 @@ pango_win32_insert_font (PangoWin32FontMap *win32fontmap,
 
   win32face->is_synthetic = is_synthetic;
 
+  win32face->has_cmap = TRUE;
   win32face->cmap_format = 0;
   win32face->cmap = NULL;
 

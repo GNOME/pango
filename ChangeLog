@@ -1,3 +1,31 @@
+2008-02-24  Tor Lillqvist  <tml@novell.com>
+
+	Bug 515484 – Pango on Windows is missing Type 1
+	font support
+	Patch from Adrian Johnson.
+	
+	* pango/pangowin32-private.h (PangoWin32Face): Add has_cmap field
+	that tells whether the font has a cmap or not. A Type 1 font
+	doesn't.
+
+	* pango/pangowin32.c (pango_win32_font_get_type1_glyph_index): New
+	static function. Uses GetGlyphIndicesW() to get the glyph indices
+	for Type 1 fonts. Possibly also TrueType fonts that for some
+	reason lack the cmap formats we understand.
+	(pango_win32_font_calc_type1_coverage): New static function. Uses
+	GetFontUnicodeRanges() to get the coverage for Type 1 fonts, and
+	possibly TrueType fonts that lack the cmap formats we understand.
+	(pango_win32_font_get_glyph_index): Set has_cmap to false if the
+	font doesn't have a cmap. Call
+	pango_win32_font_get_type1_glyph_index() in that case.
+	(pango_win32_font_calc_coverage): Set has_cmap to false if the
+	font doesn't have a cmap. Call
+	pango_win32_font_calc_type1_coverage() in that case.
+	
+	* pango/pangowin32-fontmap.c (pango_win32_enum_proc): Accept also
+	Type 1 fonts.
+	(pango_win32_insert_font): Initialise has_cmap tentativaly to True.
+
 2008-02-21  Kristian Rietveld  <kris@imendio.com>
 
 	* modules/basic/basic-atsui.c (basic_engine_shape): free the
