@@ -367,7 +367,7 @@ dump_glyphs_and_log_clusters (gboolean rtl,
 
 static int
 unichar_index (wchar_t *wtext,
-				int      ix)
+	       int      ix)
 {
   int i, index;
 
@@ -606,7 +606,7 @@ itemize_shape_and_place (PangoFont           *font,
       ng = glyphs->num_glyphs;
       pango_glyph_string_set_size (glyphs, ng + nglyphs);
 
-      set_up_pango_log_clusters (wtext,
+      set_up_pango_log_clusters (wtext + items[item].iCharPos,
 				 items[item].a.fRTL, itemlen, log_clusters,
 				 nglyphs, glyphs->log_clusters + ng,
 				 char_offset);

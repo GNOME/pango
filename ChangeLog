@@ -1,3 +1,13 @@
+2008-02-25  Tor Lillqvist  <tml@novell.com>
+
+	Bug 515484 – Uniscribe interface handles surrogate
+	pairs incorrectly
+
+	* modules/basic/basic-win32.c (itemize_shape_and_place): Pass
+	correctly offset wchar string to set_up_pango_log_clusters() so
+	that when it passes the string on to unichar_index() it notices
+	the surrogate pairs correctly.
+
 2008-02-24  Tor Lillqvist  <tml@novell.com>
 
 	Bug 515484 – Pango on Windows is missing Type 1
