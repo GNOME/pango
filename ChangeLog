@@ -1,3 +1,14 @@
+2008-02-25  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 511172 – pango_layout_set_height() with positive height always
+	shows at least two lines
+
+	* pango/pango-layout.c (should_ellipsize_current_line),
+	(pango_layout_check_lines),
+	(pango_layout_get_empty_extents_at_index),
+	(pango_layout_line_get_empty_extents):
+	Initialize line_height using empty-line extents.
+
 2008-02-25  Tor Lillqvist  <tml@novell.com>
 
 	Bug 515484 – Uniscribe interface handles surrogate

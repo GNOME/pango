@@ -177,6 +177,10 @@ static PangoLayoutLine* _pango_layout_iter_get_line (PangoLayoutIter *iter);
 static void pango_layout_get_item_properties (PangoItem      *item,
 					      ItemProperties *properties);
 
+static void pango_layout_get_empty_extents_at_index (PangoLayout    *layout,
+						     int             index,
+						     PangoRectangle *logical_rect);
+
 static void pango_layout_finalize    (GObject          *object);
 
 G_DEFINE_TYPE (PangoLayout, pango_layout, G_TYPE_OBJECT)
@@ -396,6 +400,10 @@ pango_layout_get_width (PangoLayout    *layout)
  * paragraph.  That is, the total number of lines shown may well be more than
  * this value if the layout contains multiple paragraphs of text.
  * The default value of -1 means that first line of each paragraph is ellipsized.
+ * This behvaior may be changed in the future to act per layout instead of per
+ * paragraph.  File a bug against pango at <ulink
+ * url="http://bugzilla.gnome.org/">http://bugzilla.gnome.org/</ulink> if your
+ * code relies on this behavior.
  *
  * Height setting only has effect if a positive width is set on
  * @layout and ellipsization mode of @layout is not %PANGO_ELLIPSIZE_NONE.
@@ -3389,7 +3397,7 @@ should_ellipsize_current_line (PangoLayout    *layout,
     }
   else
     {
-      /* -layout->height is numbre of lines per paragraph to show */
+      /* -layout->height is number of lines per paragraph to show */
       return state->line_of_par == - layout->height;
     }
 }
@@ -3705,6 +3713,12 @@ pango_layout_check_lines (PangoLayout *layout)
   /* these are only used if layout->height >= 0 */
   state.remaining_height = layout->height;
   state.line_height = -1;
+  if (layout->height >= 0)
+    {
+      PangoRectangle logical;
+      pango_layout_get_empty_extents_at_index (layout, 0, &logical);
+      state.line_height = logical.height;
+    }
 
   do
     {
@@ -4257,20 +4271,15 @@ pango_layout_line_get_x_ranges (PangoLayoutLine  *line,
 }
 
 static void
-pango_layout_line_get_empty_extents (PangoLayoutLine *line,
-				     PangoRectangle  *logical_rect)
+pango_layout_get_empty_extents_at_index (PangoLayout    *layout,
+					 int             index,
+					 PangoRectangle *logical_rect)
 {
   if (logical_rect)
     {
-      char *line_start;
-      int index;
-      PangoLayout *layout = line->layout;
       PangoFont *font;
       PangoFontDescription *font_desc = NULL;
       gboolean free_font_desc = FALSE;
-
-      pango_layout_line_get_range (line, &line_start, NULL);
-      index = line_start - layout->text;
 
       /* Find the font description for this line
        */
@@ -4350,6 +4359,13 @@ pango_layout_line_get_empty_extents (PangoLayoutLine *line,
       logical_rect->x = 0;
       logical_rect->width = 0;
     }
+}
+
+static void
+pango_layout_line_get_empty_extents (PangoLayoutLine *line,
+				     PangoRectangle  *logical_rect)
+{
+  pango_layout_get_empty_extents_at_index (line->layout, line->start_index, logical_rect);
 }
 
 static void
