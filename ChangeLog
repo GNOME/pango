@@ -1,5 +1,13 @@
 2008-02-25  Behdad Esfahbod  <behdad@gnome.org>
 
+	* === Released 1.19.4 ===
+
+	* configure.in: Version 1.19.4
+
+	* NEWS: Updated.
+
+2008-02-25  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 511172 – pango_layout_set_height() with positive height always
 	shows at least two lines
 

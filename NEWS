@@ -1,3 +1,27 @@
+Overview of changes between 1.19.3 and 1.19.4
+==============================================
+- Make Win32 backend be able to use Type1 fonts
+- Fixed blocker bug with pango_layout_set_height() and positive height.
+- Fixed small leak in ATSUI backend.
+- Improved docs.
+- Bugs fixed in this release:
+	Bug 511172 – pango_layout_set_height() with positive height always
+		shows at least two lines
+	Bug 515484 – Uniscribe interface handles surrogate
+		pairs incorrectly
+	Bug 515484 – Pango on Windows is missing Type 1
+		font support
+		Patch from Adrian Johnson.
+	Bug 517083 – pango modules: wrong fallback adding code?
+	Bug 515484 – Variable is initialized twice
+	Bug 504810 – Samvruthokaram (combination of U+0D41 and U+0D4D) is not
+		rendered correctly
+		Patch from Praveen A
+	Bug 496244 – Don't use freetype-config, use pkg-config
+	Bug 512566 – dont' use deprecated macro
+		Patch from Christian Persch
+	Bug 512473 – [patch] gtk-doc warnings
+
 Overview of changes between 1.19.2 and 1.19.3
 ==============================================
 - pango_layout_get_pixel_extents() and pango_layout_line_get_pixel_extents()
