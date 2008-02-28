@@ -1,3 +1,10 @@
+2008-02-28  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 518084 – Thai is not Virama language
+	Patch from Theppitak Karoonboonyanan
+
+	* pango/break.c: Remove Thai Phinthu from VIRAMA()
+
 2008-02-25  Behdad Esfahbod  <behdad@gnome.org>
 
 	* === Released 1.19.4 ===

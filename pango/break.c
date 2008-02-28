@@ -434,7 +434,6 @@ static const CharJamoProps HangulJamoProps[] = {
 		    (wc) == 0x0CCD || \
 		    (wc) == 0x0D4D || \
 		    (wc) == 0x0DCA || \
-		    (wc) == 0x0E3A || \
 		    (wc) == 0x0F84 || \
 		    (wc) == 0x1039 || \
 		    (wc) == 0x17D2)
