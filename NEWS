@@ -1,3 +1,10 @@
+Overview of changes between 1.19.4 and 1.20.0
+==============================================
+- New stable release!
+- Bugs fixed in this release:
+	Bug 518084 – Thai is not Virama language
+		Patch from Theppitak Karoonboonyanan
+
 Overview of changes between 1.19.3 and 1.19.4
 ==============================================
 - Make Win32 backend be able to use Type1 fonts
