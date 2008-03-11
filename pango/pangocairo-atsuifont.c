@@ -210,6 +210,7 @@ _pango_cairo_atsui_font_new (PangoCairoATSUIFontMap     *cafontmap,
   ATSUFontID font_id;
   double size;
   double dpi;
+  double m;
   cairo_matrix_t font_matrix;
 
   postscript_name = _pango_atsui_face_get_postscript_name (face);
@@ -281,11 +282,19 @@ _pango_cairo_atsui_font_new (PangoCairoATSUIFontMap     *cafontmap,
 
   cafont->size = size;
 
-  /* If necessary, apply a shear matrix, matching what Cocoa does. */
+  /* When synthesizing italics, apply a shear matrix matching what Cocoa
+   * does. Cairo quartz had transformed text wrong before 1.5.13, stay
+   * backwards compatible until pango requires a new enough cairo.
+   */
+  if (cairo_version () >= CAIRO_VERSION_ENCODE(1,5,13))
+    m = -0.25;
+  else
+    m = 0.25;
+
   if (synthesize_italic)
     cairo_matrix_init (&font_matrix,
                        1, 0, 
-                       0.25, 1,
+                       m, 1,
                        0, 0);
   else
     cairo_matrix_init_identity (&font_matrix);

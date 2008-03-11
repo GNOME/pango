@@ -1,3 +1,10 @@
+2008-03-11  Richard Hult  <richard@imendio.com>
+
+	* pango/pangocairo-atsuifont.c (_pango_cairo_atsui_font_new):
+	Adapt the shear matrix for synthesized italic to work with cairo
+	1.5.13+, where the quartz surface has been fixed for transformed
+	text.
+
 2008-03-10  Behdad Esfahbod  <behdad@gnome.org>
 
 	* === Released 1.20.0 ===
