@@ -2297,9 +2297,14 @@ get_x_offset (PangoLayout     *layout,
     *x_offset = 0;
   else if (alignment == PANGO_ALIGN_RIGHT)
     *x_offset = layout_width - line_width;
-  else if (alignment == PANGO_ALIGN_CENTER)
+  else if (alignment == PANGO_ALIGN_CENTER) {
     *x_offset = (layout_width - line_width) / 2;
-  else
+    /* hinting */
+    if (((layout_width | line_width) & (PANGO_SCALE - 1)) == 0)
+      {
+	*x_offset = PANGO_UNITS_ROUND (*x_offset);
+      }
+  } else
     *x_offset = 0;
 
   /* Indentation */

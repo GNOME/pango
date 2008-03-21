@@ -1,3 +1,8 @@
+2008-03-21  Behdad Esfahbod  <behdad@gnome.org>
+
+	* pango/pango-layout.c (get_x_offset): When doing ALIGN_CENTER,
+	round line offset to whole pixel if hinting.
+
 2008-03-11  Richard Hult  <richard@imendio.com>
 
 	* pango/pangocairo-atsuifont.c (_pango_cairo_atsui_font_new):
