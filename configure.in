@@ -307,7 +307,7 @@ fi
 #
 # Checks for ATSUI
 #
-AC_CHECK_HEADER(Carbon/Carbon.h, [have_atsui=true], [have_atsui=true])
+AC_CHECK_HEADER(Carbon/Carbon.h, [have_atsui=true], [have_atsui=false])
 
 #
 # Checks for Cairo

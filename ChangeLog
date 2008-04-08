@@ -1,3 +1,7 @@
+2008-04-08  Behdad Esfahbod  <behdad@gnome.org>
+
+	* configure.in: Fix check for Carbon/Carbon.h availability.  Oops!
+
 2008-03-21  Behdad Esfahbod  <behdad@gnome.org>
 
 	* pango/pango-layout.c (get_x_offset): When doing ALIGN_CENTER,
