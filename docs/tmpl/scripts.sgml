@@ -85,6 +85,7 @@ url="http://www.unicode.org/reports/tr24/">Unicode Standard Annex
 @PANGO_SCRIPT_HANUNOO: 	Hanunoo
 @PANGO_SCRIPT_BUHID: 	Buhid
 @PANGO_SCRIPT_TAGBANWA: 	Tagbanwa
+
 @PANGO_SCRIPT_BRAILLE: 	Braille
 @PANGO_SCRIPT_CYPRIOT: 	Cypriot
 @PANGO_SCRIPT_LIMBU: 	Limbu
@@ -93,19 +94,33 @@ url="http://www.unicode.org/reports/tr24/">Unicode Standard Annex
 @PANGO_SCRIPT_LINEAR_B: 	Linear B
 @PANGO_SCRIPT_TAI_LE: 	Tai Le
 @PANGO_SCRIPT_UGARITIC: 	Ugaritic
-@PANGO_SCRIPT_NEW_TAI_LUE: 	New Tai Lue
-@PANGO_SCRIPT_BUGINESE: 	Buginese
-@PANGO_SCRIPT_GLAGOLITIC: 	Glagolitic
-@PANGO_SCRIPT_TIFINAGH: 	Tifinagh
-@PANGO_SCRIPT_SYLOTI_NAGRI: 	Syloti Nagri
-@PANGO_SCRIPT_OLD_PERSIAN: 	Old Persian
-@PANGO_SCRIPT_KHAROSHTHI: 	Kharoshthi
-@PANGO_SCRIPT_UNKNOWN: 		an unassigned code point
-@PANGO_SCRIPT_BALINESE: 		Balinese
-@PANGO_SCRIPT_CUNEIFORM: 	Cuneiform
-@PANGO_SCRIPT_PHOENICIAN: 	Phoenician
-@PANGO_SCRIPT_PHAGS_PA: 		Phags-pa
-@PANGO_SCRIPT_NKO: 		N'Ko
+
+@PANGO_SCRIPT_NEW_TAI_LUE: 	New Tai Lue. Since 1.10
+@PANGO_SCRIPT_BUGINESE: 	Buginese. Since 1.10
+@PANGO_SCRIPT_GLAGOLITIC: 	Glagolitic. Since 1.10
+@PANGO_SCRIPT_TIFINAGH: 	Tifinagh. Since 1.10
+@PANGO_SCRIPT_SYLOTI_NAGRI: 	Syloti Nagri. Since 1.10
+@PANGO_SCRIPT_OLD_PERSIAN: 	Old Persian. Since 1.10
+@PANGO_SCRIPT_KHAROSHTHI: 	Kharoshthi. Since 1.10
+
+@PANGO_SCRIPT_UNKNOWN: 		an unassigned code point. Since 1.14
+@PANGO_SCRIPT_BALINESE: 		Balinese. Since 1.14
+@PANGO_SCRIPT_CUNEIFORM: 	Cuneiform. Since 1.14
+@PANGO_SCRIPT_PHOENICIAN: 	Phoenician. Since 1.14
+@PANGO_SCRIPT_PHAGS_PA: 		Phags-pa. Since 1.14
+@PANGO_SCRIPT_NKO: 		N'Ko. Since 1.14
+
+@PANGO_SCRIPT_KAYAH_LI:   Kayah Li. Since 1.20.1
+@PANGO_SCRIPT_LEPCHA:     Lepcha. Since 1.20.1
+@PANGO_SCRIPT_REJANG:     Rejang. Since 1.20.1
+@PANGO_SCRIPT_SUNDANESE:  Sundanese. Since 1.20.1
+@PANGO_SCRIPT_SAURASHTRA: Saurashtra. Since 1.20.1
+@PANGO_SCRIPT_CHAM:       Cham. Since 1.20.1
+@PANGO_SCRIPT_OL_CHIKI:   Ol Chiki. Since 1.20.1
+@PANGO_SCRIPT_VAI:        Vai. Since 1.20.1
+@PANGO_SCRIPT_CARIAN:     Carian. Since 1.20.1
+@PANGO_SCRIPT_LYCIAN:     Lycian. Since 1.20.1
+@PANGO_SCRIPT_LYDIAN:     Lydian. Since 1.20.1
 
 <!-- ##### MACRO PANGO_TYPE_SCRIPT ##### -->
 <para>

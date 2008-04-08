@@ -110,7 +110,20 @@ typedef enum {                         /* ISO 15924 code */
       PANGO_SCRIPT_CUNEIFORM,          /* Xsux */
       PANGO_SCRIPT_PHOENICIAN,         /* Phnx */
       PANGO_SCRIPT_PHAGS_PA,           /* Phag */
-      PANGO_SCRIPT_NKO                 /* Nkoo */
+      PANGO_SCRIPT_NKO,                /* Nkoo */
+
+      /* Unicode-5.1 additions */
+      PANGO_SCRIPT_KAYAH_LI,           /* Kali */
+      PANGO_SCRIPT_LEPCHA,             /* Lepc */
+      PANGO_SCRIPT_REJANG,             /* Rjng */
+      PANGO_SCRIPT_SUNDANESE,          /* Sund */
+      PANGO_SCRIPT_SAURASHTRA,         /* Saur */
+      PANGO_SCRIPT_CHAM,               /* Cham */
+      PANGO_SCRIPT_OL_CHIKI,           /* Olck */
+      PANGO_SCRIPT_VAI,                /* Vaii */
+      PANGO_SCRIPT_CARIAN,             /* Cari */
+      PANGO_SCRIPT_LYCIAN,             /* Lyci */
+      PANGO_SCRIPT_LYDIAN              /* Lydi */
 } PangoScript;
 
 PangoScript pango_script_for_unichar         (gunichar             ch) G_GNUC_CONST;

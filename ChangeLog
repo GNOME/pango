@@ -1,5 +1,18 @@
 2008-04-08  Behdad Esfahbod  <behdad@gnome.org>
 
+	Bug 491553 – Update to Unicode 5.1.0
+
+	* docs/tmpl/scripts.sgml:
+	* pango/mini-fribidi/README:
+	* pango/mini-fribidi/fribidi_tab_char_type_2.i:
+	* pango/pango-script-lang-table.h:
+	* pango/pango-script.h:
+	Update to Unicode Character Databse 5.1.0.  This adds new entries to
+	the PangoScript enum.  Requires glib >= 2.16.3 for the update Unicode
+	data there, but not bumping the requirement in a stable point release.
+
+2008-04-08  Behdad Esfahbod  <behdad@gnome.org>
+
 	* configure.in:
 	* pango/pangocairo-atsui.h:
 	* pango/pangocairo-atsuifont.c:
