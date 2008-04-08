@@ -1,3 +1,12 @@
+Overview of changes between 1.20.0 and 1.20.1
+==============================================
+- Update to Unicode Character Databse 5.1.0.  This adds new entries to
+  the PangoScript enum.  Requires glib >= 2.16.3 for the update Unicode
+  data there, but not bumping the requirement in a stable point release.
+- Try making our OS X stuff compile with latest cairo 1.5.x snapshots
+  that renamed cairo-atsui to cairo-quartz-font, as well as older versions.
+- Minor bug fixes.
+
 Overview of changes between 1.19.4 and 1.20.0
 ==============================================
 - New stable release!
