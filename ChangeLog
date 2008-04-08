@@ -1,5 +1,13 @@
 2008-04-08  Behdad Esfahbod  <behdad@gnome.org>
 
+	* configure.in:
+	* pango/pangocairo-atsui.h:
+	* pango/pangocairo-atsuifont.c:
+	Try making our OS X stuff compile with latest cairo 1.5.x snapshots
+	that renamed cairo-atsui to cairo-quartz-font.
+
+2008-04-08  Behdad Esfahbod  <behdad@gnome.org>
+
 	* configure.in: Fix check for Carbon/Carbon.h availability.  Oops!
 
 2008-03-21  Behdad Esfahbod  <behdad@gnome.org>

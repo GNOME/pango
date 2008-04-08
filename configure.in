@@ -351,7 +351,9 @@ if $have_cairo ; then
   fi
 
   if $have_atsui; then
+    # for transition from old cairo-atsui to new cairo-quartz-font
     PKG_CHECK_EXISTS(cairo-atsui >= $cairo_required, have_cairo_atsui=true, :)
+    PKG_CHECK_EXISTS(cairo-quartz-font >= $cairo_required, have_cairo_atsui=true, :)
   fi
   if $have_cairo_atsui; then
     AC_DEFINE(HAVE_CAIRO_ATSUI, 1, [Whether Cairo uses ATSUI for fonts])
