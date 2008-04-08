@@ -85,7 +85,6 @@ url="http://www.unicode.org/reports/tr24/">Unicode Standard Annex
 @PANGO_SCRIPT_HANUNOO: 	Hanunoo
 @PANGO_SCRIPT_BUHID: 	Buhid
 @PANGO_SCRIPT_TAGBANWA: 	Tagbanwa
-
 @PANGO_SCRIPT_BRAILLE: 	Braille
 @PANGO_SCRIPT_CYPRIOT: 	Cypriot
 @PANGO_SCRIPT_LIMBU: 	Limbu
@@ -94,7 +93,6 @@ url="http://www.unicode.org/reports/tr24/">Unicode Standard Annex
 @PANGO_SCRIPT_LINEAR_B: 	Linear B
 @PANGO_SCRIPT_TAI_LE: 	Tai Le
 @PANGO_SCRIPT_UGARITIC: 	Ugaritic
-
 @PANGO_SCRIPT_NEW_TAI_LUE: 	New Tai Lue. Since 1.10
 @PANGO_SCRIPT_BUGINESE: 	Buginese. Since 1.10
 @PANGO_SCRIPT_GLAGOLITIC: 	Glagolitic. Since 1.10
@@ -102,14 +100,12 @@ url="http://www.unicode.org/reports/tr24/">Unicode Standard Annex
 @PANGO_SCRIPT_SYLOTI_NAGRI: 	Syloti Nagri. Since 1.10
 @PANGO_SCRIPT_OLD_PERSIAN: 	Old Persian. Since 1.10
 @PANGO_SCRIPT_KHAROSHTHI: 	Kharoshthi. Since 1.10
-
 @PANGO_SCRIPT_UNKNOWN: 		an unassigned code point. Since 1.14
 @PANGO_SCRIPT_BALINESE: 		Balinese. Since 1.14
 @PANGO_SCRIPT_CUNEIFORM: 	Cuneiform. Since 1.14
 @PANGO_SCRIPT_PHOENICIAN: 	Phoenician. Since 1.14
 @PANGO_SCRIPT_PHAGS_PA: 		Phags-pa. Since 1.14
 @PANGO_SCRIPT_NKO: 		N'Ko. Since 1.14
-
 @PANGO_SCRIPT_KAYAH_LI:   Kayah Li. Since 1.20.1
 @PANGO_SCRIPT_LEPCHA:     Lepcha. Since 1.20.1
 @PANGO_SCRIPT_REJANG:     Rejang. Since 1.20.1
