@@ -79,6 +79,7 @@ pango_cairo_atsui_font_get_glyph_extents (PangoFont      *font,
 }
 
 /* XXX remove when we require cairo 1.6 */
+#undef cairo_atsui_font_face_create_for_atsu_font_id
 cairo_public cairo_font_face_t *
 cairo_atsui_face_create_for_atsu_font_id (ATSUFontID font_id);
 

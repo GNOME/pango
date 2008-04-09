@@ -25,7 +25,7 @@
 #include "pangoatsui-private.h"
 #include <pango/pangocairo.h>
 #ifdef CAIRO_HAS_QUARTZ_FONT
-#include <cairo-quartz-font.h>
+#include <cairo-quartz.h>
 #else
 #include <cairo-atsui.h>
 #endif
