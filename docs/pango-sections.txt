@@ -836,6 +836,7 @@ pango_xft_renderer_get_type
 PangoCairoFont
 PangoCairoFontMap
 pango_cairo_font_map_get_default
+pango_cairo_font_map_set_default
 pango_cairo_font_map_new
 pango_cairo_font_map_new_for_font_type
 pango_cairo_font_map_get_font_type

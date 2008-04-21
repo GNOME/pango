@@ -165,6 +165,14 @@ int main (int argc, char **argv)
 @Returns: 
 
 
+<!-- ##### FUNCTION pango_cairo_font_map_set_default ##### -->
+<para>
+
+</para>
+
+@fontmap: 
+
+
 <!-- ##### FUNCTION pango_cairo_font_map_new ##### -->
 <para>
 

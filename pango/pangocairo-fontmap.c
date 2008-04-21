@@ -146,6 +146,8 @@ pango_cairo_font_map_new_for_font_type (cairo_font_type_t fonttype)
   }
 }
 
+static PangoFontMap *default_font_map = NULL;
+
 /**
  * pango_cairo_font_map_get_default:
  *
@@ -156,7 +158,12 @@ pango_cairo_font_map_new_for_font_type (cairo_font_type_t fonttype)
  * You generally should only use the #PangoFontMap and
  * #PangoCairoFontMap interfaces on the returned object.
  *
- * Return value: the default Cairo fontmap for #Pango. This
+ * The default Cairo fontmap can be changed by using
+ * pango_cairo_font_map_set_default().  This can be used to
+ * change the Cairo font backend that the default fontmap
+ * uses for example.
+ *
+ * Return value: the default Cairo fontmap for Pango. This
  *  object is owned by Pango and must not be freed.
  *
  * Since: 1.10
@@ -164,12 +171,39 @@ pango_cairo_font_map_new_for_font_type (cairo_font_type_t fonttype)
 PangoFontMap *
 pango_cairo_font_map_get_default (void)
 {
-  static PangoFontMap *default_font_map = NULL;
-
   if (G_UNLIKELY (!default_font_map))
     default_font_map = pango_cairo_font_map_new ();
 
   return default_font_map;
+}
+
+/**
+ * pango_cairo_font_map_set_default:
+ * @fontmap: The new default font map, or %NULL
+ *
+ * Sets a default #PangoCairoFontMap to use with Cairo.
+ *
+ * This can be used to change the Cairo font backend that the
+ * default fontmap uses for example.  The old default font map
+ * is unreffed and the new font map referenced.
+ *
+ * A value of %NULL for @fontmap will cause a new default font
+ * map to be created on demand, using pango_cairo_font_map_new().
+ *
+ * Since: 1.22
+ **/
+void
+pango_cairo_font_map_set_default (PangoCairoFontMap *fontmap)
+{
+  g_return_if_fail (PANGO_IS_CAIRO_FONT_MAP (fontmap));
+
+  if ((PangoFontMap *) fontmap == default_font_map)
+    return;
+
+  if (default_font_map)
+    g_object_unref (default_font_map);
+
+  default_font_map = g_object_ref (fontmap);
 }
 
 /**

@@ -1,5 +1,19 @@
 2008-04-21  Behdad Esfahbod  <behdad@gnome.org>
 
+	Bug 514617 – Add pango_cairo_font_map_set_default()
+
+	* docs/pango-sections.txt:
+	* docs/tmpl/pangocairo.sgml:
+	* pango/pangocairo-fontmap.c (pango_cairo_font_map_get_default),
+	(pango_cairo_font_map_set_default):
+	* pango/pangocairo.def:
+	* pango/pangocairo.h:
+	New public API:
+
+		pango_cairo_font_map_set_default()
+
+2008-04-21  Behdad Esfahbod  <behdad@gnome.org>
+
 	* docs/pango-docs.sgml: Add index of new API in 1.22.
 
 2008-04-21  Behdad Esfahbod  <behdad@gnome.org>

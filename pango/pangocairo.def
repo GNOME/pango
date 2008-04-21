@@ -13,6 +13,7 @@ EXPORTS
 	pango_cairo_font_get_scaled_font
 	pango_cairo_font_map_create_context
 	pango_cairo_font_map_get_default
+	pango_cairo_font_map_set_default
 	pango_cairo_font_map_get_font_type
 	pango_cairo_font_map_get_resolution
 	pango_cairo_font_map_get_type
