@@ -320,7 +320,7 @@ have_cairo_xlib=false
 have_cairo_freetype=false
 have_cairo_win32=false
 have_cairo_atsui=false
-cairo_required=1.2.6
+cairo_required=1.6.4
 
 PKG_CHECK_MODULES(CAIRO, cairo >= $cairo_required, have_cairo=true, AC_MSG_RESULT([no]))
    
@@ -338,7 +338,7 @@ if $have_cairo ; then
     PKG_CHECK_EXISTS(cairo-win32 >= $cairo_required, have_cairo_win32=true, :)
   fi
   if $have_cairo_win32; then
-    AC_DEFINE(HAVE_CAIRO_WIN32, 1, [Whether Cairo uses the Win32 GDI for fonts])
+    AC_DEFINE(HAVE_CAIRO_WIN32, 1, [Whether Cairo can use the Win32 GDI for fonts])
     have_cairo=true
   fi
 
@@ -346,17 +346,15 @@ if $have_cairo ; then
     PKG_CHECK_EXISTS(cairo-ft >= $cairo_required, have_cairo_freetype=true, :)
   fi
   if $have_cairo_freetype; then
-    AC_DEFINE(HAVE_CAIRO_FREETYPE, 1, [Whether Cairo uses FreeType for fonts])
+    AC_DEFINE(HAVE_CAIRO_FREETYPE, 1, [Whether Cairo can use FreeType for fonts])
     have_cairo=true
   fi
 
   if $have_atsui; then
-    # for transition from old cairo-atsui to new cairo-quartz-font
-    PKG_CHECK_EXISTS(cairo-atsui >= $cairo_required, have_cairo_atsui=true, :)
     PKG_CHECK_EXISTS(cairo-quartz-font >= $cairo_required, have_cairo_atsui=true, :)
   fi
   if $have_cairo_atsui; then
-    AC_DEFINE(HAVE_CAIRO_ATSUI, 1, [Whether Cairo uses ATSUI for fonts])
+    AC_DEFINE(HAVE_CAIRO_ATSUI, 1, [Whether Cairo can use ATSUI for fonts])
     have_cairo=true
   fi
 

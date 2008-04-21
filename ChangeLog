@@ -1,5 +1,16 @@
 2008-04-21  Behdad Esfahbod  <behdad@gnome.org>
 
+	* configure.in:
+	* pango/pangocairo-atsui.h:
+	* pango/pangocairo-atsuifont.c
+	(pango_cairo_atsui_font_create_font_face):
+	* pango/pangocairo-fontmap.c
+	(pango_cairo_font_map_new_for_font_type):
+	Require cairo >= 1.6.4.  Remove compat cruft that were added to
+	support older cairo that had cairo-atsui instead of cairo-quartz-font.
+
+2008-04-21  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 514617 – Add pango_cairo_font_map_set_default()
 
 	* docs/pango-sections.txt:

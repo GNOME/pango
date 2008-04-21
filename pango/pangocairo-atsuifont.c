@@ -78,11 +78,6 @@ pango_cairo_atsui_font_get_glyph_extents (PangoFont      *font,
 					       logical_rect);
 }
 
-/* XXX remove when we require cairo 1.6 */
-#undef cairo_atsui_font_face_create_for_atsu_font_id
-cairo_public cairo_font_face_t *
-cairo_atsui_face_create_for_atsu_font_id (ATSUFontID font_id);
-
 static cairo_font_face_t *
 pango_cairo_atsui_font_create_font_face (PangoCairoFont *font)
 {
@@ -90,7 +85,7 @@ pango_cairo_atsui_font_create_font_face (PangoCairoFont *font)
   ATSUFontID font_id;
 
   font_id = pango_atsui_font_get_atsu_font_id (afont);
-  return cairo_atsui_font_face_create_for_atsu_font_id (font_id);
+  return cairo_quartz_font_face_create_for_atsu_font_id (font_id);
 }
 
 static int

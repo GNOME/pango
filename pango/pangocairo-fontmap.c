@@ -130,7 +130,7 @@ pango_cairo_font_map_new_for_font_type (cairo_font_type_t fonttype)
   switch (fonttype)
   {
 #if defined(HAVE_CAIRO_ATSUI)
-    case CAIRO_FONT_TYPE_ATSUI:
+    case CAIRO_FONT_TYPE_QUARTZ:
       return g_object_new (PANGO_TYPE_CAIRO_ATSUI_FONT_MAP, NULL);
 #endif
 #if defined(HAVE_CAIRO_WIN32)
