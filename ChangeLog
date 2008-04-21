@@ -1,5 +1,18 @@
 2008-04-21  Behdad Esfahbod  <behdad@gnome.org>
 
+	Bug 517119 – Add pango_cairo_create_context()
+
+	* docs/pango-sections.txt:
+	* pango/pangocairo-context.c (pango_cairo_create_context),
+	(pango_cairo_create_layout):
+	* pango/pangocairo.def:
+	* pango/pangocairo.h:
+	New public API:
+
+		pango_cairo_create_context()
+
+2008-04-21  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 404416 – pango_layout_get_baseline or something
 
 	* docs/pango-sections.txt:

@@ -105,6 +105,7 @@ PangoCairoShapeRendererFunc pango_cairo_context_get_shape_renderer (PangoContext
 
 /* Convenience
  */
+PangoContext *pango_cairo_create_context (cairo_t   *cr);
 PangoLayout *pango_cairo_create_layout (cairo_t     *cr);
 void         pango_cairo_update_layout (cairo_t     *cr,
 					PangoLayout *layout);

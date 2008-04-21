@@ -387,6 +387,39 @@ pango_cairo_context_get_shape_renderer (PangoContext                *context,
 }
 
 /**
+ * pango_cairo_create_context:
+ * @cr: a Cairo context
+ *
+ * Creates a context object set up to match the current transformation
+ * and target surface of the Cairo context.  This context can then be
+ * used to create a layout using pango_layout_new().
+ *
+ * This function is a convenience function that creates a context using
+ * the default font map, then updates it to @cr.  If you just need to
+ * create a layout for use with @cr and do not need to access #PangoContext
+ * directly, you can use pango_cairo_create_layout() instead.
+ *
+ * Return value: the newly created #PangoContext. Free with
+ *   g_object_unref().
+ *
+ * Since: 1.22
+ **/
+PangoContext *
+pango_cairo_create_context (cairo_t *cr)
+{
+  PangoFontMap *fontmap;
+  PangoContext *context;
+
+  g_return_val_if_fail (cr != NULL, NULL);
+
+  fontmap = pango_cairo_font_map_get_default ();
+  context = pango_cairo_font_map_create_context ((PangoCairoFontMap *) (fontmap));
+  pango_cairo_update_context (cr, context);
+
+  return context;
+}
+
+/**
  * pango_cairo_create_layout:
  * @cr: a Cairo context
  *
@@ -410,17 +443,13 @@ pango_cairo_context_get_shape_renderer (PangoContext                *context,
 PangoLayout *
 pango_cairo_create_layout  (cairo_t *cr)
 {
-  PangoFontMap *fontmap;
   PangoContext *context;
   PangoLayout *layout;
 
   g_return_val_if_fail (cr != NULL, NULL);
 
-  fontmap = pango_cairo_font_map_get_default ();
-  context = pango_cairo_font_map_create_context ((PangoCairoFontMap *) (fontmap));
+  context = pango_cairo_create_context (cr);
   layout = pango_layout_new (context);
-
-  pango_cairo_update_context (cr, context);
   g_object_unref (context);
 
   return layout;
