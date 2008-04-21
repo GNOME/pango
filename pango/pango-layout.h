@@ -202,6 +202,7 @@ void     pango_layout_get_size             (PangoLayout    *layout,
 void     pango_layout_get_pixel_size       (PangoLayout    *layout,
 					    int            *width,
 					    int            *height);
+int      pango_layout_get_baseline         (PangoLayout    *layout);
 
 int              pango_layout_get_line_count       (PangoLayout    *layout);
 PangoLayoutLine *pango_layout_get_line             (PangoLayout    *layout,

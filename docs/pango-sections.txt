@@ -491,6 +491,7 @@ pango_layout_get_extents
 pango_layout_get_pixel_extents
 pango_layout_get_size
 pango_layout_get_pixel_size
+pango_layout_get_baseline
 pango_layout_get_line_count
 pango_layout_get_line
 pango_layout_get_line_readonly

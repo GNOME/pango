@@ -2669,6 +2669,29 @@ pango_layout_get_pixel_size (PangoLayout *layout,
     *height = logical_rect.height;
 }
 
+/**
+ * pango_layout_get_baseline:
+ * @layout: a #PangoLayout
+ *
+ * Gets the Y position of baseline of the first line in @layout.
+ *
+ * Return value: baseline of first line, from top of @layout.
+ *
+ * Since: 1.22
+ **/
+int
+pango_layout_get_baseline (PangoLayout    *layout)
+{
+  int baseline;
+
+  /* XXX this is so inefficient */
+  PangoLayoutIter *iter = pango_layout_get_iter (layout);
+  baseline = pango_layout_iter_get_baseline (iter);
+  pango_layout_iter_free (iter);
+
+  return baseline;
+}
+
 static void
 pango_layout_clear_lines (PangoLayout *layout)
 {

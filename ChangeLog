@@ -1,5 +1,17 @@
 2008-04-21  Behdad Esfahbod  <behdad@gnome.org>
 
+	Bug 404416 – pango_layout_get_baseline or something
+
+	* docs/pango-sections.txt:
+	* pango/pango-layout.c (pango_layout_get_baseline):
+	* pango/pango-layout.h:
+	* pango/pango.def:
+	New public API:
+
+		pango_layout_get_baseline()
+
+2008-04-21  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 474706 – cairo hexbox looks ugly
 
 	* pango/pangocairo-font.c

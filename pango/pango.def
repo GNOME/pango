@@ -217,6 +217,7 @@ EXPORTS
 	pango_layout_get_alignment
 	pango_layout_get_attributes
 	pango_layout_get_auto_dir
+	pango_layout_get_baseline
 	pango_layout_get_context
 	pango_layout_get_cursor_pos
 	pango_layout_get_ellipsize
