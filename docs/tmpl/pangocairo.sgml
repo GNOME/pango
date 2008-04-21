@@ -308,6 +308,15 @@ with Pango's Cairo renderer.
 @Returns: 
 
 
+<!-- ##### FUNCTION pango_cairo_create_context ##### -->
+<para>
+
+</para>
+
+@cr: 
+@Returns: 
+
+
 <!-- ##### FUNCTION pango_cairo_update_context ##### -->
 <para>
 

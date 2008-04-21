@@ -66,6 +66,7 @@ libpango_1_0_la_SOURCES =			\
 	glyphstring.c				\
 	modules.c				\
 	pango-attributes.c			\
+	pango-bidi-type.c			\
 	pango-color.c				\
 	pango-color-table.h			\
 	pango-context.c				\
@@ -97,6 +98,7 @@ libpango_1_0_la_SOURCES =			\
 pango_headers =		   \
 	pango.h		   \
 	pango-attributes.h \
+	pango-bidi-type.h  \
 	pango-break.h	   \
 	pango-context.h	   \
 	pango-coverage.h   \

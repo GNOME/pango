@@ -1,5 +1,29 @@
 2008-04-21  Behdad Esfahbod  <behdad@gnome.org>
 
+	Bug 515432 – Add function to get bidirectional character type of a
+	unicode character
+	Patch from Jürg Billeter
+
+	* docs/pango-sections.txt:
+	* docs/tmpl/layout.sgml:
+	* docs/tmpl/main.sgml:
+	* docs/tmpl/pangocairo.sgml:
+	* pango/Makefile.am:
+	* pango/pango-bidi-type.c (pango_bidi_type_for_unichar):
+	* pango/pango-bidi-type.h:
+	* pango/pango-types.h:
+	* pango/pango-utils.c (pango_log2vis_get_embedding_levels),
+	(pango_unichar_direction):
+	* pango/pango.def:
+	* pango/pango.h:
+	New public API:
+
+		enum PangoBidiType;
+		pango_bidi_type_get_type()
+		pango_bidi_type_for_unichar()
+
+2008-04-21  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 517119 – Add pango_cairo_create_context()
 
 	* docs/pango-sections.txt:

@@ -48,6 +48,8 @@ EXPORTS
 	pango_attribute_copy
 	pango_attribute_destroy
 	pango_attribute_equal
+	pango_bidi_type_for_unichar
+	pango_bidi_type_get_type
 	pango_break
 	pango_color_copy
 	pango_color_free

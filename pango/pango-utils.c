@@ -1128,10 +1128,8 @@ pango_log2vis_get_embedding_levels (const gchar    *text,
     case PANGO_DIRECTION_WEAK_RTL:
       fribidi_base_dir = FRIBIDI_TYPE_WR;
       break;
-    /*
     case PANGO_DIRECTION_WEAK_LTR:
     case PANGO_DIRECTION_NEUTRAL:
-    */
     default:
       fribidi_base_dir = FRIBIDI_TYPE_WL;
       break;
@@ -1165,19 +1163,23 @@ pango_log2vis_get_embedding_levels (const gchar    *text,
  * pango_unichar_direction:
  * @ch: a Unicode character
  *
- * Determines the direction of a character; either
+ * Determines the inherent direction of a character; either
  * %PANGO_DIRECTION_LTR, %PANGO_DIRECTION_RTL, or
  * %PANGO_DIRECTION_NEUTRAL.
  *
- * Return value: the direction of the character, as used in the
- * Unicode bidirectional algorithm.
+ * This function is useful to categorize characters into left-to-right
+ * letters, right-to-left letters, and everything else.  If full
+ * Unicode bidirectional type of a character is needed,
+ * pango_bidi_type_for_gunichar() can be used instead.
+ *
+ * Return value: the direction of the character.
  */
 PangoDirection
 pango_unichar_direction (gunichar ch)
 {
   FriBidiCharType fribidi_ch_type = fribidi_get_type (ch);
 
-  if (!FRIBIDI_IS_LETTER (fribidi_ch_type))
+  if (!FRIBIDI_IS_STRONG (fribidi_ch_type))
     return PANGO_DIRECTION_NEUTRAL;
   else if (FRIBIDI_IS_RTL (fribidi_ch_type))
     return PANGO_DIRECTION_RTL;

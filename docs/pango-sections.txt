@@ -41,7 +41,10 @@ pango_context_list_families
 pango_get_mirror_char
 pango_unichar_direction
 pango_find_base_dir
+PangoBidiType
+pango_bidi_type_for_unichar
 <SUBSECTION Standard>
+PANGO_TYPE_BIDI_TYPE
 PANGO_TYPE_CONTEXT
 PangoContextClass
 PANGO_CONTEXT
@@ -60,6 +63,7 @@ PangoLogAttr
 pango_shape
 
 <SUBSECTION Private>
+pango_bidi_type_get_type
 pango_direction_get_type
 pango_context_get_type
 pango_item_get_type

@@ -139,6 +139,7 @@ gboolean       pango_get_mirror_char        (gunichar     ch,
 #include <pango/pango-language.h>
 #include <pango/pango-matrix.h>
 #include <pango/pango-script.h>
+#include <pango/pango-bidi-type.h>
 
 
 G_END_DECLS

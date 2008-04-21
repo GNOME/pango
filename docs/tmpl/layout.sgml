@@ -561,6 +561,15 @@ The #GObject type for #PangoAlignment.
 @height: 
 
 
+<!-- ##### FUNCTION pango_layout_get_baseline ##### -->
+<para>
+
+</para>
+
+@layout: 
+@Returns: 
+
+
 <!-- ##### FUNCTION pango_layout_get_line_count ##### -->
 <para>
 
