@@ -1,5 +1,9 @@
 2008-04-21  Behdad Esfahbod  <behdad@gnome.org>
 
+	* docs/pango-docs.sgml: Add index of new API in 1.22.
+
+2008-04-21  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 511183 – Add pango_attr_type_get_name()
 
 	* docs/pango-sections.txt:
