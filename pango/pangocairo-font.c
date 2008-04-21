@@ -320,6 +320,7 @@ _pango_cairo_font_private_get_hex_box_info (PangoCairoFontPrivate *cf_priv)
   gravity = pango_font_description_get_gravity (desc);
 
   cairo_scaled_font_get_ctm (scaled_font, &cairo_ctm);
+  cairo_scaled_font_get_font_options (scaled_font, font_options);
   /* I started adding support for vertical hexboxes here, but it's too much
    * work.  Easier to do with cairo user fonts and vertical writing mode
    * support in cairo.
@@ -371,15 +372,15 @@ _pango_cairo_font_private_get_hex_box_info (PangoCairoFontPrivate *cf_priv)
     pango_font_description_set_family_static (desc, "monospace");
 
     rows = 2;
-    mini_size = size / 2.4;
+    mini_size = size / 2.2;
     if (is_hinted)
       {
 	mini_size = HINT_Y (mini_size);
 
-	if (mini_size < 5.0)
+	if (mini_size < 6.0)
 	  {
 	    rows = 1;
-	    mini_size = MIN (MAX (size - 1, 0), 5.0);
+	    mini_size = MIN (MAX (size - 1, 0), 6.0);
 	  }
       }
 

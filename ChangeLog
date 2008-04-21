@@ -1,5 +1,13 @@
 2008-04-21  Behdad Esfahbod  <behdad@gnome.org>
 
+	Bug 474706 – cairo hexbox looks ugly
+
+	* pango/pangocairo-font.c
+	(_pango_cairo_font_private_get_hex_box_info):
+	Tweak minifont size a bit.  Also propagate font options correctly.
+
+2008-04-21  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 490669 – add some <span> attribute aliases
 
 	* docs/pango_markup.sgml:
