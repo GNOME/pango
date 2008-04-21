@@ -38,6 +38,10 @@ struct _PangoCairoRenderer
   cairo_t *cr;
   gboolean do_path;
   double x_offset, y_offset;
+
+  /* house-keeping options */
+  gboolean is_cached_renderer;
+  gboolean cr_had_current_point;
 };
 
 struct _PangoCairoRendererClass
@@ -178,11 +182,7 @@ _pango_cairo_renderer_draw_box_glyph (PangoCairoRenderer *crenderer,
 				      double              cy,
 				      gboolean            invalid)
 {
-  double temp_x, temp_y;
-
   cairo_save (crenderer->cr);
-  cairo_get_current_point (crenderer->cr, &temp_x, &temp_y);
-
 
   _pango_cairo_renderer_draw_frame (crenderer,
 				    cx + 1.5,
@@ -192,7 +192,6 @@ _pango_cairo_renderer_draw_box_glyph (PangoCairoRenderer *crenderer,
 				    1.0,
 				    invalid);
 
-  cairo_move_to (crenderer->cr, temp_x, temp_y);
   cairo_restore (crenderer->cr);
 }
 
@@ -208,13 +207,11 @@ _pango_cairo_renderer_draw_unknown_glyph (PangoCairoRenderer *crenderer,
   int row, col;
   int rows, cols;
   char hexbox_string[2] = {0, 0};
-  double temp_x, temp_y;
   PangoCairoFontHexBoxInfo *hbi;
   gunichar ch;
   gboolean invalid_input;
 
   cairo_save (crenderer->cr);
-  cairo_get_current_point (crenderer->cr, &temp_x, &temp_y);
 
   ch = gi->glyph & ~PANGO_GLYPH_UNKNOWN_FLAG;
   invalid_input = G_UNLIKELY (gi->glyph == PANGO_GLYPH_INVALID_INPUT || ch > 0x10FFFF);
@@ -270,7 +267,6 @@ _pango_cairo_renderer_draw_unknown_glyph (PangoCairoRenderer *crenderer,
     }
 
 done:
-  cairo_move_to (crenderer->cr, temp_x, temp_y);
   cairo_restore (crenderer->cr);
 }
 
@@ -557,31 +553,32 @@ static PangoCairoRenderer *cached_renderer = NULL;
 G_LOCK_DEFINE_STATIC (cached_renderer);
 
 static PangoCairoRenderer *
-acquire_renderer (gboolean *free_renderer)
+acquire_renderer (void)
 {
   PangoCairoRenderer *renderer;
 
   if (G_LIKELY (G_TRYLOCK (cached_renderer)))
     {
       if (G_UNLIKELY (!cached_renderer))
-	cached_renderer = g_object_new (PANGO_TYPE_CAIRO_RENDERER, NULL);
+        {
+	  cached_renderer = g_object_new (PANGO_TYPE_CAIRO_RENDERER, NULL);
+	  cached_renderer->is_cached_renderer = TRUE;
+	}
 
       renderer = cached_renderer;
-      *free_renderer = FALSE;
     }
   else
     {
       renderer = g_object_new (PANGO_TYPE_CAIRO_RENDERER, NULL);
-      *free_renderer = TRUE;
     }
 
   return renderer;
 }
 
 static void
-release_renderer (PangoCairoRenderer *renderer, gboolean free_renderer)
+release_renderer (PangoCairoRenderer *renderer)
 {
-  if (G_LIKELY (!free_renderer))
+  if (G_LIKELY (renderer->is_cached_renderer))
     {
       renderer->cr = NULL;
       renderer->do_path = FALSE;
@@ -594,6 +591,23 @@ release_renderer (PangoCairoRenderer *renderer, gboolean free_renderer)
     g_object_unref (renderer);
 }
 
+static void
+save_current_point (PangoCairoRenderer *renderer)
+{
+  renderer->cr_had_current_point = cairo_has_current_point (renderer->cr);
+  cairo_get_current_point (renderer->cr, &renderer->x_offset, &renderer->y_offset);
+}
+
+static void
+restore_current_point (PangoCairoRenderer *renderer)
+{
+  if (renderer->cr_had_current_point)
+    /* XXX should do cairo_set_current_point() when we have that function */
+    cairo_move_to (renderer->cr, renderer->x_offset, renderer->y_offset);
+  else
+    cairo_new_sub_path (renderer->cr);
+}
+
 
 /* convenience wrappers using the default renderer */
 
@@ -604,13 +618,12 @@ _pango_cairo_do_glyph_string (cairo_t          *cr,
 			      PangoGlyphString *glyphs,
 			      gboolean          do_path)
 {
-  gboolean free_renderer;
-  PangoCairoRenderer *crenderer = acquire_renderer (&free_renderer);
+  PangoCairoRenderer *crenderer = acquire_renderer ();
   PangoRenderer *renderer = (PangoRenderer *) crenderer;
 
   crenderer->cr = cr;
   crenderer->do_path = do_path;
-  cairo_get_current_point (cr, &crenderer->x_offset, &crenderer->y_offset);
+  save_current_point (crenderer);
 
   if (!do_path)
     {
@@ -633,7 +646,9 @@ _pango_cairo_do_glyph_string (cairo_t          *cr,
       pango_renderer_deactivate (renderer);
     }
 
-  release_renderer (crenderer, free_renderer);
+  restore_current_point (crenderer);
+
+  release_renderer (crenderer);
 }
 
 static void
@@ -641,17 +656,18 @@ _pango_cairo_do_layout_line (cairo_t          *cr,
 			     PangoLayoutLine  *line,
 			     gboolean          do_path)
 {
-  gboolean free_renderer;
-  PangoCairoRenderer *crenderer = acquire_renderer (&free_renderer);
+  PangoCairoRenderer *crenderer = acquire_renderer ();
   PangoRenderer *renderer = (PangoRenderer *) crenderer;
 
   crenderer->cr = cr;
   crenderer->do_path = do_path;
-  cairo_get_current_point (cr, &crenderer->x_offset, &crenderer->y_offset);
+  save_current_point (crenderer);
 
   pango_renderer_draw_layout_line (renderer, line, 0, 0);
 
-  release_renderer (crenderer, free_renderer);
+  restore_current_point (crenderer);
+
+  release_renderer (crenderer);
 }
 
 static void
@@ -659,17 +675,18 @@ _pango_cairo_do_layout (cairo_t     *cr,
 			PangoLayout *layout,
 			gboolean     do_path)
 {
-  gboolean free_renderer;
-  PangoCairoRenderer *crenderer = acquire_renderer (&free_renderer);
+  PangoCairoRenderer *crenderer = acquire_renderer ();
   PangoRenderer *renderer = (PangoRenderer *) crenderer;
 
   crenderer->cr = cr;
   crenderer->do_path = do_path;
-  cairo_get_current_point (cr, &crenderer->x_offset, &crenderer->y_offset);
+  save_current_point (crenderer);
 
   pango_renderer_draw_layout (renderer, layout, 0, 0);
 
-  release_renderer (crenderer, free_renderer);
+  restore_current_point (crenderer);
+
+  release_renderer (crenderer);
 }
 
 static void

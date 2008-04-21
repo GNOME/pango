@@ -1,5 +1,17 @@
 2008-04-21  Behdad Esfahbod  <behdad@gnome.org>
 
+	Bug 501334 – Make pango_cairo_[show_]*[_path]() functions preserve
+	current point
+
+	* pango/pangocairo-render.c (_pango_cairo_renderer_draw_box_glyph),
+	(_pango_cairo_renderer_draw_unknown_glyph), (acquire_renderer),
+	(release_renderer), (save_current_point), (restore_current_point),
+	(_pango_cairo_do_glyph_string), (_pango_cairo_do_layout_line),
+	(_pango_cairo_do_layout):
+	Preserve current point around pango_cairo_* functions().
+
+2008-04-21  Behdad Esfahbod  <behdad@gnome.org>
+
 	* configure.in:
 	* pango/pangocairo-atsui.h:
 	* pango/pangocairo-atsuifont.c
