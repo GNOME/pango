@@ -23,7 +23,7 @@ for def in $srcdir/*.def; do
 	eval $get_pango_syms | sort -u > "$expected"
 	cut -f 2 "$def" | grep -v EXPORTS | sort -u > "$list"
 
-	diff "$list" "$expected" && rm -f "$list" "$expected" || status=1
+	diff "$list" "$expected" >&2 && rm -f "$list" "$expected" || status=1
 done
 
 exit $status
