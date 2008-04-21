@@ -298,7 +298,7 @@ pango_ot_info_get_gdef (PangoOTInfo *info)
 	  error = HB_Load_GDEF_Table (info->face, &info->gdef);
 
 	  if (error && error != HB_Err_Not_Covered)
-	    g_warning ("Error loading GDEF table %d", error);
+	    g_warning ("Error loading GDEF table 0x%04x", error);
 
 	  if (!info->gdef)
 	    error = HB_New_GDEF_Table (&info->gdef);
@@ -328,7 +328,7 @@ pango_ot_info_get_gsub (PangoOTInfo *info)
 	  error = HB_Load_GSUB_Table (info->face, &info->gsub, gdef);
 
 	  if (error && error != HB_Err_Not_Covered)
-	    g_warning ("Error loading GSUB table %d", error);
+	    g_warning ("Error loading GSUB table 0x%04x", error);
 	}
     }
 
@@ -352,7 +352,7 @@ pango_ot_info_get_gpos (PangoOTInfo *info)
 	  error = HB_Load_GPOS_Table (info->face, &info->gpos, gdef);
 
 	  if (error && error != HB_Err_Not_Covered)
-	    g_warning ("Error loading GPOS table %d", error);
+	    g_warning ("Error loading GPOS table 0x%04x", error);
 	}
     }
 
