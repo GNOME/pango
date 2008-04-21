@@ -54,11 +54,14 @@ static PangoAttribute *pango_attr_size_new_internal (int                   size,
 						     gboolean              absolute);
 
 
+static GHashTable *name_map = NULL;
+
 /**
  * pango_attr_type_register:
- * @name: an identifier for the type (currently unused.)
+ * @name: an identifier for the type
  *
- * Allocate a new attribute type ID.
+ * Allocate a new attribute type ID.  The attribute type name can be accessed
+ * later by using pango_attr_type_get_name().
  *
  * Return value: the new type ID.
  **/
@@ -66,8 +69,43 @@ PangoAttrType
 pango_attr_type_register (const gchar *name)
 {
   static guint current_type = 0x1000000;
+  guint type = current_type++;
 
-  return current_type++;
+  if (name)
+    {
+      if (G_UNLIKELY (!name_map))
+	name_map = g_hash_table_new (NULL, NULL);
+
+      g_hash_table_insert (name_map, GUINT_TO_POINTER (type), (gpointer) g_intern_string (name));
+    }
+
+  return type;
+}
+
+/**
+ * pango_attr_type_get_name:
+ * @type: an attribute type ID to fetch the name for
+ *
+ * Fetches the attribute type name passed in when registering the type using
+ * pango_attr_type_register().
+ *
+ * The returned value is an interned string (see g_intern_string() for what
+ * that means) that should not be modified or freed.
+ *
+ * Return value: the type ID name (which may be %NULL), or %NULL if @type is
+ * a built-in Pango attribute type or invalid. 
+ *
+ * Since: 1.22
+ **/
+G_CONST_RETURN char *
+pango_attr_type_get_name (PangoAttrType type)
+{
+  const char *result = NULL;
+
+  if (name_map)
+    result = g_hash_table_lookup (name_map, GUINT_TO_POINTER ((guint) type));
+
+  return result;
 }
 
 /**

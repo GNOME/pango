@@ -195,6 +195,15 @@ set font size.
 @Returns: 
 
 
+<!-- ##### FUNCTION pango_attr_type_get_name ##### -->
+<para>
+
+</para>
+
+@type: 
+@Returns: 
+
+
 <!-- ##### FUNCTION pango_attribute_init ##### -->
 <para>
 

@@ -176,7 +176,8 @@ struct _PangoAttrFontDesc
   PangoFontDescription *desc;
 };
 
-PangoAttrType    pango_attr_type_register    (const gchar          *name);
+PangoAttrType         pango_attr_type_register (const gchar        *name);
+G_CONST_RETURN char * pango_attr_type_get_name (PangoAttrType       type) G_GNUC_CONST;
 
 void             pango_attribute_init        (PangoAttribute       *attr,
 					      const PangoAttrClass *klass);

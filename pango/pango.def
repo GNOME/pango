@@ -39,6 +39,7 @@ EXPORTS
 	pango_attr_style_new
 	pango_attr_type_get_type
 	pango_attr_type_register
+	pango_attr_type_get_name
 	pango_attr_underline_color_new
 	pango_attr_underline_new
 	pango_attr_variant_new

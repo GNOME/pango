@@ -1,3 +1,17 @@
+2008-04-21  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 511183 – Add pango_attr_type_get_name()
+
+	* docs/pango-sections.txt:
+	* docs/tmpl/text-attributes.sgml:
+	* pango/pango-attributes.c (pango_attr_type_register),
+	(pango_attr_type_get_name):
+	* pango/pango-attributes.h:
+	* pango/pango.def:
+	New public API:
+	
+		pango_attr_type_get_name()
+
 2008-04-20  Behdad Esfahbod  <behdad@gnome.org>
 
 	* pango/pango-ot-info.c (pango_ot_info_get_gdef),

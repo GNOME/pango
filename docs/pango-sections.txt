@@ -325,6 +325,7 @@ PangoAttrShape
 PangoAttrSize
 pango_parse_markup
 pango_attr_type_register
+pango_attr_type_get_name
 pango_attribute_init
 pango_attribute_copy
 pango_attribute_equal
