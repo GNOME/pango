@@ -1008,11 +1008,20 @@ span_parse_func     (MarkupData            *md,
 
       switch (names[i][0]) {
       case 'f':
-	CHECK_ATTRIBUTE2(family, "face");
 	CHECK_ATTRIBUTE (fallback);
+	CHECK_ATTRIBUTE2(desc, "font");
 	CHECK_ATTRIBUTE2(desc, "font_desc");
+	CHECK_ATTRIBUTE2(family, "face");
+
 	CHECK_ATTRIBUTE2(family, "font_family");
+	CHECK_ATTRIBUTE2(size, "font_size");
+	CHECK_ATTRIBUTE2(stretch, "font_stretch");
+	CHECK_ATTRIBUTE2(style, "font_style");
+	CHECK_ATTRIBUTE2(variant, "font_variant");
+	CHECK_ATTRIBUTE2(weight, "font_weight");
+
 	CHECK_ATTRIBUTE (foreground);
+	CHECK_ATTRIBUTE2 (foreground, "fgcolor");
 	break;
       case 's':
 	CHECK_ATTRIBUTE (size);
@@ -1035,6 +1044,7 @@ span_parse_func     (MarkupData            *md,
 	break;
       default:
 	CHECK_ATTRIBUTE (background);
+	CHECK_ATTRIBUTE2 (background, "bgcolor");
 	CHECK_ATTRIBUTE2(foreground, "color");
 	CHECK_ATTRIBUTE (rise);
 	CHECK_ATTRIBUTE (variant);

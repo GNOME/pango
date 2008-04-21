@@ -1,5 +1,13 @@
 2008-04-21  Behdad Esfahbod  <behdad@gnome.org>
 
+	Bug 490669 – add some <span> attribute aliases
+
+	* docs/pango_markup.sgml:
+	* pango/pango-markup.c (span_parse_func):
+	Add fgcolor, bgcolor, font, font_size, font_weight, font_variant, ...
+
+2008-04-21  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 501334 – Make pango_cairo_[show_]*[_path]() functions preserve
 	current point
 

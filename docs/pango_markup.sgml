@@ -46,7 +46,9 @@ general markup tag is &lt;span&gt;, then there are some convenience
 tags. &lt;span&gt; has the following attributes:
 <variablelist><title>&lt;span&gt; attributes</title>
 
-<varlistentry><term>font_desc</term>
+<varlistentry>
+<term>font</term>
+<term>font_desc</term>
 <listitem><para>
 A font description string, such as "Sans Italic 12". See 
 <link linkend="pango-font-description-from-string">pango_font_description_from_string()</link> 
@@ -56,51 +58,57 @@ other span attributes will override this description. So if you have
 not italic.</para></listitem>
 </varlistentry>
 
-<varlistentry><term>font_family</term>
+<varlistentry>
+<term>font_family</term>
+<term>face</term>
 <listitem><para>
 A font family name
 </para></listitem>
 </varlistentry>
 
-<varlistentry><term>face</term>
-<listitem><para>
-Synonym for font_family
-</para></listitem>
-</varlistentry>
-
-<varlistentry><term>size</term>
+<varlistentry>
+<term>font_size</term>
+<term>size</term>
 <listitem><para>
 Font size in 1024ths of a point, or one of the absolute sizes 
 'xx-small', 'x-small', 'small', 'medium', 'large', 'x-large',
 'xx-large', or one of the relative sizes 'smaller' or 'larger'.
 If you want to specify a absolute size, it's usually easier
 to take advantage of the ability to specify a partial
-font description using 'font_desc'; you can use
-<literal>font_desc='12.5'</literal> rather than
+font description using 'font'; you can use
+<literal>font='12.5'</literal> rather than
 <literal>size='12800'</literal>.
 </para></listitem>
 </varlistentry>
 
-<varlistentry><term>style</term>
+<varlistentry>
+<term>font_style</term>
+<term>style</term>
 <listitem><para>
 One of 'normal', 'oblique', 'italic'
 </para></listitem>
 </varlistentry>
 
-<varlistentry><term>weight</term>
+<varlistentry>
+<term>font_weight</term>
+<term>weight</term>
 <listitem><para>
 One of 'ultralight', 'light', 'normal', 'bold', 'ultrabold', 'heavy',
 or a numeric weight
 </para></listitem>
 </varlistentry>
 
-<varlistentry><term>variant</term>
+<varlistentry>
+<term>font_variant</term>
+<term>variant</term>
 <listitem><para>
-'normal' or 'smallcaps'
+One of 'normal' or 'smallcaps'
 </para></listitem>
 </varlistentry>
 
-<varlistentry><term>stretch</term>
+<varlistentry>
+<term>font_stretch</term>
+<term>stretch</term>
 <listitem><para>
 One of 'ultracondensed', 'extracondensed', 'condensed',
 'semicondensed', 'normal', 'semiexpanded', 'expanded',
@@ -108,14 +116,19 @@ One of 'ultracondensed', 'extracondensed', 'condensed',
 </para></listitem>
 </varlistentry>
 
-<varlistentry><term>foreground</term>
+<varlistentry>
+<term>foreground</term>
+<term>fgcolor</term>
+<term>color</term>
 <listitem><para>
 An RGB color specification such as '#00FF00' or a color name such as 
 'red'
 </para></listitem>
 </varlistentry>
 
-<varlistentry><term>background</term>
+<varlistentry>
+<term>background</term>
+<term>bgcolor</term>
 <listitem><para>
 An RGB color specification such as '#00FF00' or a color name such as 
 'red'
