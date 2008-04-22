@@ -1,5 +1,13 @@
 2008-04-21  Behdad Esfahbod  <behdad@gnome.org>
 
+	* === Released 1.21.0 ===
+
+	* configure.in: Version 1.21.0
+
+	* NEWS: Updated.
+
+2008-04-21  Behdad Esfahbod  <behdad@gnome.org>
+
 	* ChangeLog.pre-1-20:
 	* Makefile.am:
 	Wrap ChangeLog.

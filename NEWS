@@ -1,3 +1,33 @@
+Overview of changes between 1.20.2 and 1.21.0
+==============================================
+- Require cairo >= 1.6.4.
+- Write out HarfBuzz errors as hex.
+- Add a section in the docs for bidirectional text.
+- Improved hex-box rendering in the cairo backend.
+- Add some aliases for <span> tag attributes.
+- Preserve current-point around pango_cairo_* functions.
+- New public API:
+	pango_attr_type_get_name()
+	enum PangoBidiType;
+	pango_bidi_type_get_type()
+	pango_bidi_type_for_unichar()
+	pango_layout_get_baseline()
+	pango_cairo_create_context()
+	pango_cairo_font_map_set_default()
+
+- Bugs fixed in this release:
+	Bug 515432 – Add function to get bidirectional character type of a
+		unicode character
+		Patch from Jürg Billeter
+	Bug 517119 – Add pango_cairo_create_context()
+	Bug 404416 – pango_layout_get_baseline or something
+	Bug 474706 – cairo hexbox looks ugly
+	Bug 490669 – add some <span> attribute aliases
+	Bug 501334 – Make pango_cairo_[show_]*[_path]() functions preserve
+		current point
+	Bug 514617 – Add pango_cairo_font_map_set_default()
+	Bug 511183 – Add pango_attr_type_get_name()
+
 Overview of changes between 1.20.1 and 1.20.2
 ==============================================
 - Really fix build on OS X.
