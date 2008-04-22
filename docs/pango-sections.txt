@@ -6,7 +6,6 @@ PangoContext
 PangoItem
 PangoAnalysis
 PANGO_ANALYSIS_FLAG_CENTERED_BASELINE
-PangoDirection
 PANGO_TYPE_DIRECTION
 <SUBSECTION>
 pango_itemize
@@ -37,14 +36,7 @@ pango_context_load_font
 pango_context_load_fontset
 pango_context_get_metrics
 pango_context_list_families
-<SUBSECTION>
-pango_get_mirror_char
-pango_unichar_direction
-pango_find_base_dir
-PangoBidiType
-pango_bidi_type_for_unichar
 <SUBSECTION Standard>
-PANGO_TYPE_BIDI_TYPE
 PANGO_TYPE_CONTEXT
 PangoContextClass
 PANGO_CONTEXT
@@ -63,8 +55,6 @@ PangoLogAttr
 pango_shape
 
 <SUBSECTION Private>
-pango_bidi_type_get_type
-pango_direction_get_type
 pango_context_get_type
 pango_item_get_type
 </SECTION>
@@ -1080,14 +1070,31 @@ pango_version_check
 <TITLE>Vertical Text</TITLE>
 <FILE>vertical</FILE>
 PangoGravity
-PANGO_TYPE_GRAVITY
 PangoGravityHint
-PANGO_TYPE_GRAVITY_HINT
 PANGO_GRAVITY_IS_VERTICAL
 pango_gravity_get_for_matrix
 pango_gravity_get_for_script
 pango_gravity_to_rotation
+<SUBSECTION Standard>
+PANGO_TYPE_GRAVITY
+PANGO_TYPE_GRAVITY_HINT
 <SUBSECTION Private>
 pango_gravity_get_type
 pango_gravity_hint_get_type
+</SECTION>
+
+<SECTION>
+<TITLE>Bidirectional Text</TITLE>
+<FILE>bidi</FILE>
+PangoDirection
+pango_unichar_direction
+pango_find_base_dir
+pango_get_mirror_char
+PangoBidiType
+pango_bidi_type_for_unichar
+<SUBSECTION Standard>
+PANGO_TYPE_BIDI_TYPE
+<SUBSECTION Private>
+pango_bidi_type_get_type
+pango_direction_get_type
 </SECTION>

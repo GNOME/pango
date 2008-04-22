@@ -87,53 +87,6 @@ struct _PangoRectangle
 void pango_extents_to_pixels (PangoRectangle *inclusive,
 			      PangoRectangle *nearest);
 
-/**
- * PangoDirection:
- * @PANGO_DIRECTION_LTR: A strong left-to-right direction
- * @PANGO_DIRECTION_RTL: A strong right-to-left direction
- * @PANGO_DIRECTION_TTB_LTR: Deprecated value; treated the
- *   same as %PANGO_DIRECTION_RTL.
- * @PANGO_DIRECTION_TTB_RTL: Deprecated value; treated the
- *   same as %PANGO_DIRECTION_LTR
- * @PANGO_DIRECTION_WEAK_LTR: A weak left-to-right direction
- * @PANGO_DIRECTION_WEAK_RTL: A weak right-to-left direction
- * @PANGO_DIRECTION_NEUTRAL: No direction specified
- *
- * The #PangoDirection type represents a direction in the
- * Unicode bidirectional algorithm; not every value in this
- * enumeration makes sense for every usage of #PangoDirection;
- * for example, the return value of pango_unichar_direction()
- * and pango_find_base_dir() cannot be %PANGO_DIRECTION_WEAK_LTR
- * or %PANGO_DIRECTION_WEAK_RTL, since every character is either
- * neutral or has a strong direction; on the other hand
- * %PANGO_DIRECTION_NEUTRAL doesn't make sense to pass
- * to pango_itemize_with_base_dir().
- *
- * The %PANGO_DIRECTION_TTB_LTR, %PANGO_DIRECTION_TTB_RTL
- * values come from an earlier interpretation of this
- * enumeration as the writing direction of a block of
- * text and are no longer used; See #PangoGravity for how
- * vertical text is handled in Pango.
- **/
-typedef enum {
-  PANGO_DIRECTION_LTR,
-  PANGO_DIRECTION_RTL,
-  PANGO_DIRECTION_TTB_LTR,
-  PANGO_DIRECTION_TTB_RTL,
-  PANGO_DIRECTION_WEAK_LTR,
-  PANGO_DIRECTION_WEAK_RTL,
-  PANGO_DIRECTION_NEUTRAL
-} PangoDirection;
-
-PangoDirection pango_unichar_direction      (gunichar     ch) G_GNUC_CONST;
-PangoDirection pango_find_base_dir          (const gchar *text,
-					     gint         length);
-
-#ifndef PANGO_DISABLE_DEPRECATED
-gboolean       pango_get_mirror_char        (gunichar     ch,
-					     gunichar    *mirrored_ch);
-#endif
-
 
 #include <pango/pango-gravity.h>
 #include <pango/pango-language.h>

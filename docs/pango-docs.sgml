@@ -29,6 +29,7 @@
 <!ENTITY pango-querymodules SYSTEM "pango-querymodules.xml">
 <!ENTITY pango-Version SYSTEM "xml/pango-version.xml">
 <!ENTITY pango-Vertical-Text SYSTEM "xml/vertical.xml">
+<!ENTITY pango-Bidi-Text SYSTEM "xml/bidi.xml">
 <!ENTITY version SYSTEM "version.xml">
 <!ENTITY pango-tree-index SYSTEM "xml/tree_index.sgml">
 ]>
@@ -48,6 +49,7 @@
     &markup-format;
     &pango-Layout-Objects;
     &pango-Scripts;
+    &pango-Bidi-Text;
     &pango-Vertical-Text;
   </chapter>
 

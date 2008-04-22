@@ -84,13 +84,6 @@ pango_attr_gravity_hint_new()
 @PANGO_GRAVITY_WEST: 
 @PANGO_GRAVITY_AUTO: 
 
-<!-- ##### MACRO PANGO_TYPE_GRAVITY ##### -->
-<para>
-The #GObject type for #PangoGravity.
-</para>
-
-
-
 <!-- ##### ENUM PangoGravityHint ##### -->
 <para>
 
@@ -99,13 +92,6 @@ The #GObject type for #PangoGravity.
 @PANGO_GRAVITY_HINT_NATURAL: 
 @PANGO_GRAVITY_HINT_STRONG: 
 @PANGO_GRAVITY_HINT_LINE: 
-
-<!-- ##### MACRO PANGO_TYPE_GRAVITY_HINT ##### -->
-<para>
-The #GObject type for #PangoGravity.
-</para>
-
-
 
 <!-- ##### MACRO PANGO_GRAVITY_IS_VERTICAL ##### -->
 <para>

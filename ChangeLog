@@ -1,5 +1,19 @@
 2008-04-21  Behdad Esfahbod  <behdad@gnome.org>
 
+	* docs/pango-docs.sgml:
+	* docs/pango-sections.txt:
+	* docs/tmpl/bidi.sgml:
+	* docs/tmpl/main.sgml:
+	* docs/tmpl/vertical.sgml:
+	* pango/pango-bidi-type.c (pango_log2vis_get_embedding_levels),
+	(pango_unichar_direction), (pango_get_mirror_char):
+	* pango/pango-bidi-type.h:
+	* pango/pango-types.h:
+	* pango/pango-utils.c:
+	Group bidi stuff together.  Add a section in the docs for them.
+
+2008-04-21  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 515432 – Add function to get bidirectional character type of a
 	unicode character
 	Patch from Jürg Billeter
