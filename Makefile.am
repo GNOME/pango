@@ -26,6 +26,7 @@ EXTRA_DIST = 			\
 	ChangeLog.pre-1-14	\
 	ChangeLog.pre-1-16	\
 	ChangeLog.pre-1-18	\
+	ChangeLog.pre-1-20	\
 	MAINTAINERS		\
 	HACKING			\
 	README.win32		\
