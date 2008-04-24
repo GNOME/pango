@@ -345,7 +345,7 @@ static const int line_break_indexes[] = {
 };
 
 #define BREAK_TYPE_SAFE(btype)            \
-	 (btype < G_N_ELEMENTS(line_break_indexes) ? btype : G_UNICODE_BREAK_UNKNOWN)
+	 ((btype) < G_N_ELEMENTS(line_break_indexes) ? (btype) : G_UNICODE_BREAK_UNKNOWN)
 #define BREAK_INDEX(btype)                \
 	 (line_break_indexes[(btype)])
 #define BREAK_ROW(before_type)            \
@@ -353,7 +353,7 @@ static const int line_break_indexes[] = {
 #define BREAK_OP(before_type, after_type) \
 	 (BREAK_ROW (before_type)[BREAK_INDEX (after_type)])
 #define IN_BREAK_TABLE(btype)             \
-	 (btype < G_N_ELEMENTS(line_break_indexes) && BREAK_INDEX(btype) < INDEX_END_OF_TABLE)
+	 ((btype) < G_N_ELEMENTS(line_break_indexes) && BREAK_INDEX((btype)) < INDEX_END_OF_TABLE)
 
 
 
