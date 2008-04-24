@@ -1,5 +1,12 @@
 2008-04-24  Behdad Esfahbod  <behdad@gnome.org>
 
+	Part of Bug 97545 – Make pango_default_break follow Unicode TR #29
+
+	* pango/break.c (pango_default_break): Make Grapheme Boundary code
+	exactly follow UAX#29 of Unicode 5.1.0
+
+2008-04-24  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/break.c (pango_default_break): Update GraphemeBoundary to
 	Unicode 5.1.0.  Pretty close now.  Passes the TR14 test.
 
