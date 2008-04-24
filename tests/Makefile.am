@@ -3,7 +3,10 @@
 EXTRA_DIST = 			\
 	all-unicode.txt		\
 	boundaries.utf8		\
-	runtests.sh
+	runtests.sh             \
+	GraphemeClusterBreakTest.txt  \
+	SentenceBreakTest.txt   \
+	WordBreakTest.txt
 
 CLEANFILES = pangorc
 DISTCLEANFILES = all-unicode.txt runtests.log
@@ -43,7 +46,7 @@ TESTS_ENVIRONMENT =                    \
 
 noinst_PROGRAMS = gen-all-unicode dump-boundaries 
 
-check_PROGRAMS = testboundaries testcolor testscript
+check_PROGRAMS = testboundaries testboundaries_ucd testcolor testscript
 
 if HAVE_CAIRO
 check_PROGRAMS += testiter
@@ -54,6 +57,7 @@ endif
 
 gen_all_unicode_LDADD = $(GLIB_LIBS)
 testboundaries_LDADD = ../pango/libpango-$(PANGO_API_VERSION).la
+testboundaries_ucd_LDADD = ../pango/libpango-$(PANGO_API_VERSION).la
 testcolor_LDADD = ../pango/libpango-$(PANGO_API_VERSION).la
 testiter_LDADD = ../pango/libpango-$(PANGO_API_VERSION).la ../pango/libpangocairo-$(PANGO_API_VERSION).la 
 testscript_LDADD = ../pango/libpango-$(PANGO_API_VERSION).la

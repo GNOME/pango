@@ -1,6 +1,24 @@
 2008-04-24  Behdad Esfahbod  <behdad@gnome.org>
 
 	Part of Bug 97545 – Make pango_default_break follow Unicode TR #29
+	Patch from Noah Levitt
+
+	* tests/Makefile.am:
+	* tests/runtests.sh.in:
+	* tests/testboundaries_ucd.c (count_attrs), (parse_line),
+	(attrs_equal), (make_test_string), (do_test), (main):
+	Add test driver for UAX#14 and UAX#29 test data from Unicode Character
+	Databse.  Just drop the following four files in pango/tests for it to
+	use them:
+
+		GraphemeBreakTest.txt
+		LineBreakTest.txt
+		SentenceBreakTest.txt
+		WordBreakTest.txt
+
+2008-04-24  Behdad Esfahbod  <behdad@gnome.org>
+
+	Part of Bug 97545 – Make pango_default_break follow Unicode TR #29
 
 	* pango/break.c (pango_default_break): Make Grapheme Boundary code
 	exactly follow UAX#29 of Unicode 5.1.0

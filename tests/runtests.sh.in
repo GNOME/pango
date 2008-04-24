@@ -1,7 +1,7 @@
 #! @SHELL@
 
 LOGFILE=runtests.log
-POTENTIAL_TESTS='testboundaries testcolor'
+POTENTIAL_TESTS='testboundaries testcolor testboundaries_ucd'
 
 ECHO_C='@ECHO_C@'
 ECHO_N='@ECHO_N@'
