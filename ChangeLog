@@ -1,3 +1,10 @@
+2008-04-24  Behdad Esfahbod  <behdad@gnome.org>
+
+	* pango/break.c (pango_default_break): Allow line break at the end of
+	string.  UAX#14 rule LB3 says "Always break at the end of text."
+	With this test, Pango passes the LineBreakTest.txt, sans the bug in
+	the test file that I've already reported to unicoRe.
+
 2008-04-21  Behdad Esfahbod  <behdad@gnome.org>
 
 	* === Released 1.21.0 ===

@@ -743,7 +743,7 @@ pango_default_break (const gchar   *text,
 
       g_assert (prev_break_type != G_UNICODE_BREAK_SPACE);
 
-      attrs[i].is_line_break = FALSE;
+      attrs[i].is_line_break = done; /* XXX ugly */
       attrs[i].is_mandatory_break = FALSE;
 
       if (attrs[i].is_cursor_position) /* If it's not a grapheme boundary,
