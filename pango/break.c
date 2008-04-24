@@ -627,8 +627,10 @@ pango_default_break (const gchar   *text,
       /* ---- Cursor position breaks (Grapheme breaks) ---- */
 
       {
+	GraphemeBreakType GB_type;
+	gboolean is_grapheme_boundary = FALSE;
         /* Find the GraphemeBreakType of wc */
-	GraphemeBreakType GB_type = GB_Other;
+	GB_type = GB_Other;
 	switch (type)
 	  {
 	  case G_UNICODE_CONTROL:
@@ -685,21 +687,23 @@ pango_default_break (const gchar   *text,
 	/* Grapheme Cluster Boundary Rules */
 	/* We apply Rules GB1 and GB2 at the end of the function */
 	if (wc == '\n' && prev_wc == '\r')
-	  attrs[i].is_cursor_position = FALSE; /* Rule GB3 */
+	  is_grapheme_boundary = FALSE; /* Rule GB3 */
 	else if (GB_type == GB_ControlCRLF || prev_GB_type == GB_ControlCRLF)
-	  attrs[i].is_cursor_position = TRUE; /* Rules GB4 and GB5 */
+	  is_grapheme_boundary = TRUE; /* Rules GB4 and GB5 */
 	else if (GB_type == GB_InHangulSyllable)
-	  attrs[i].is_cursor_position = FALSE; /* Rules GB6, GB7, GB8 */
+	  is_grapheme_boundary = FALSE; /* Rules GB6, GB7, GB8 */
 	else if (GB_type == GB_Extend)
-	  attrs[i].is_cursor_position = FALSE; /* Rule GB9 */
+	  is_grapheme_boundary = FALSE; /* Rule GB9 */
 	else if (GB_type == GB_SpacingMark)
-	  attrs[i].is_cursor_position = FALSE; /* Rule GB9a */
+	  is_grapheme_boundary = FALSE; /* Rule GB9a */
 	else if (prev_GB_type == GB_Prepend)
-	  attrs[i].is_cursor_position = FALSE; /* Rule GB9b */
+	  is_grapheme_boundary = FALSE; /* Rule GB9b */
 	else
-	  attrs[i].is_cursor_position = TRUE;  /* Rule GB10 */
+	  is_grapheme_boundary = TRUE;  /* Rule GB10 */
 
 	prev_GB_type = GB_type;
+
+	attrs[i].is_cursor_position = is_grapheme_boundary;
       }
 
       /* If this is a grapheme boundary, we have to decide if backspace
