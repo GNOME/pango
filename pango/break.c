@@ -450,6 +450,9 @@ static const CharJamoProps HangulJamoProps[] = {
 #define HANGUL(wc) ((wc) >= 0xAC00 && (wc) <= 0xD7A3)
 #define BACKSPACE_DELETES_CHARACTER(wc) (!LATIN (wc) && !CYRILLIC (wc) && !GREEK (wc) && !KANA(wc) && !HANGUL(wc))
 
+#define LOGICAL_ORDER_EXCEPTION(wc) (((wc) >= 0x0E40 && (wc) <= 0x0E44) || \
+				     ((wc) >= 0x0EC0 && (wc) <= 0x0EC4))
+
 
 /* p. 132-133 of Unicode spec table 5-6 will help understand this */
 typedef enum
@@ -550,7 +553,7 @@ pango_default_break (const gchar   *text,
 
   next = text;
 
-  prev_type = (GUnicodeType) -1;
+  prev_type = G_UNICODE_PARAGRAPH_SEPARATOR;
   prev_break_type = G_UNICODE_BREAK_UNKNOWN;
   prev_was_break_space = FALSE;
   prev_wc = 0;
@@ -635,6 +638,11 @@ pango_default_break (const gchar   *text,
 
       /* ---- Cursor position breaks (Grapheme breaks) ---- */
 
+      /* TODO: This is quite close to TR29 of Unicode 5.1 now.
+       * We need to implement Extend and SpacingMark support, as well
+       * as checking the category exceptions.
+       */
+
       if (wc == '\n')
 	{
 	  /* Break before line feed unless prev char is a CR */
@@ -644,15 +652,9 @@ pango_default_break (const gchar   *text,
 	  else
 	    attrs[i].is_cursor_position = FALSE;
 	}
-      else if (i == 0 ||
-	       prev_type == G_UNICODE_CONTROL ||
+      else if (prev_type == G_UNICODE_CONTROL ||
 	       prev_type == G_UNICODE_FORMAT)
 	{
-	  /* Break at first position (must be special cased, or if the
-	   * first char is say a combining mark there won't be a
-	   * cursor position at the start, which seems wrong to me
-	   * ???? - maybe it makes sense though, who knows)
-	   */
 	  /* break after all format or control characters */
 	  attrs[i].is_cursor_position = TRUE;
 	}
@@ -690,42 +692,48 @@ pango_default_break (const gchar   *text,
 	    case G_UNICODE_TITLECASE_LETTER:
 	    case G_UNICODE_UPPERCASE_LETTER:
 
+	      /* Handle non-Hangul-syllable non-combining chars */
+
+	      /* Break before Jamo if they are in a broken sequence or
+	       * next to non-Jamo; break if preceded by Jamo; don't
+	       * break if a letter is preceded by a virama; break in
+	       * all other cases. No need to check whether we are or are
+	       * preceded by Jamo explicitly, since a Jamo is not
+	       * a virama, we just break in all cases where we
+	       * aren't a or preceded by a virama.  Don't fool with
+	       * viramas if we aren't part of a script that uses them.
+	       */
+
 	      if (makes_hangul_syllable)
-		attrs[i].is_cursor_position = FALSE;
-	      else
+	        {
+		  attrs[i].is_cursor_position = FALSE; /* Rules GB6, GB7, GB8 */
+		  break;
+		}
+
+	      if (VIRAMA_SCRIPT (wc))
 		{
-		  /* Handle non-Hangul-syllable non-combining chars */
-
-		  /* Break before Jamo if they are in a broken sequence or
-		   * next to non-Jamo; break if preceded by Jamo; don't
-		   * break if a letter is preceded by a virama; break in
-		   * all other cases. No need to check whether we are or are
-		   * preceded by Jamo explicitly, since a Jamo is not
-		   * a virama, we just break in all cases where we
-		   * aren't a or preceded by a virama.  Don't fool with
-		   * viramas if we aren't part of a script that uses them.
+		  /* Check whether we're preceded by a virama; this
+		   * could use some optimization.
 		   */
-
-		  if (VIRAMA_SCRIPT (wc))
+		  if (VIRAMA (prev_wc))
 		    {
-		      /* Check whether we're preceded by a virama; this
-		       * could use some optimization.
-		       */
-		      if (VIRAMA (prev_wc))
-			attrs[i].is_cursor_position = FALSE;
-		      else
-			attrs[i].is_cursor_position = TRUE;
-		    }
-		  else
-		    {
-		      attrs[i].is_cursor_position = TRUE;
+		      attrs[i].is_cursor_position = FALSE;
+		      break;
 		    }
 		}
-	      break;
+
+	      /* fall through */
 
 	    default:
+
+	      if (LOGICAL_ORDER_EXCEPTION (prev_wc))
+	        {
+		  attrs[i].is_cursor_position = FALSE; /* Rule GB9b */
+		  break;
+		}
+
 	      /* Some weirdo char, just break here, why not */
-	      attrs[i].is_cursor_position = TRUE;
+	      attrs[i].is_cursor_position = TRUE; /* Rule GB10 */
 	      break;
 	    }
 	}
@@ -743,7 +751,7 @@ pango_default_break (const gchar   *text,
 
       g_assert (prev_break_type != G_UNICODE_BREAK_SPACE);
 
-      attrs[i].is_line_break = done; /* XXX ugly */
+      attrs[i].is_line_break = FALSE;
       attrs[i].is_mandatory_break = FALSE;
 
       if (attrs[i].is_cursor_position) /* If it's not a grapheme boundary,
@@ -1468,6 +1476,16 @@ pango_default_break (const gchar   *text,
 	  type != G_UNICODE_NON_SPACING_MARK)
 	base_character = wc;
     }
+  i--;
+
+  attrs[i].is_line_break = TRUE;  /* Rule LB3 */
+  attrs[0].is_line_break = FALSE; /* Rule LB2 */
+
+  attrs[i].is_word_end   = TRUE;  /* Rule WB2 */
+  attrs[0].is_word_start = TRUE;  /* Rule WB1 */
+
+  attrs[i].is_cursor_position = TRUE;  /* Rule GB2 */
+  attrs[0].is_cursor_position = TRUE;  /* Rule GB1 */
 }
 
 static gboolean

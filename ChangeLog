@@ -1,5 +1,10 @@
 2008-04-24  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango/break.c (pango_default_break): Update GraphemeBoundary to
+	Unicode 5.1.0.  Pretty close now.  Passes the TR14 test.
+
+2008-04-24  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/break.c (pango_default_break): Allow line break at the end of
 	string.  UAX#14 rule LB3 says "Always break at the end of text."
 	With this test, Pango passes the LineBreakTest.txt, sans the bug in
