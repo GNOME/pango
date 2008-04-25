@@ -170,7 +170,7 @@ attrs_equal (PangoLogAttr *attrs1,
 
       /* can't do a straight comparison because the bitmask may have
        * multiple bits set, and as long as attr&bitmask is not zero, it
-       * counts as being set (see word boundaries) */
+       * counts as being set */
       if (((a.bits & bits.bits) && !(b.bits & bits.bits)) ||
           !(a.bits & bits.bits) && (b.bits & bits.bits))
         return FALSE;
