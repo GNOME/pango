@@ -74,6 +74,9 @@ struct _PangoLogAttr
    * width during justification.
    */
   guint is_expandable_space : 1;
+
+  /* Word boundary as defined by UAX#29 */
+  guint is_word_boundary : 1;	/* is NOT in the middle of a word */
 };
 
 /* Determine information about cluster/word/line breaks in a string

@@ -1,6 +1,17 @@
 2008-04-24  Behdad Esfahbod  <behdad@gnome.org>
 
 	Part of Bug 97545 – Make pango_default_break follow Unicode TR #29
+
+	* docs/tmpl/main.sgml:
+	* pango/break.c (pango_default_break):
+	* pango/pango-break.h:
+	* tests/testboundaries_ucd.c (main):
+	Add new PangoLogAttr member is_word_boundary, that implements UAX#29's
+	Word Boundaries semantics.  Test fully passes for it.
+
+2008-04-24  Behdad Esfahbod  <behdad@gnome.org>
+
+	Part of Bug 97545 – Make pango_default_break follow Unicode TR #29
 	Patch from Noah Levitt
 
 	* tests/Makefile.am:

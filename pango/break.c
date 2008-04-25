@@ -522,6 +522,23 @@ pango_default_break (const gchar   *text,
   } GraphemeBreakType;
   GraphemeBreakType prev_GB_type = GB_Other;
 
+  /* See Word_Break Property Values table of UAX#29 */
+  typedef enum
+  {
+    WB_Other,
+    WB_NewlineCRLF,
+    WB_ExtendFormat,
+    WB_Katakana,
+    WB_ALetter,
+    WB_MidNumLet,
+    WB_MidLetter,
+    WB_MidNum,
+    WB_Numeric,
+    WB_ExtendNumLet,
+  } WordBreakType;
+  WordBreakType prev_prev_WB_type = WB_Other, prev_WB_type = WB_Other;
+  gint prev_WB_i = -1;
+
   WordType current_word_type = WordNone;
   gunichar last_word_letter = 0;
   gunichar base_character = 0;
@@ -566,6 +583,11 @@ pango_default_break (const gchar   *text,
       BreakOpportunity break_op;
       JamoType jamo;
       gboolean makes_hangul_syllable;
+
+      /* UAX#29 boundaries */
+      gboolean is_grapheme_boundary;
+      gboolean is_word_boundary;
+
 
       wc = next_wc;
       break_type = next_break_type;
@@ -624,23 +646,24 @@ pango_default_break (const gchar   *text,
        */
       attrs[i].is_expandable_space = (0x0020 == wc || 0x00A0 == wc);
 
-      /* ---- Cursor position breaks (Grapheme breaks) ---- */
-
+      /* ---- UAX#29 Grapheme Boundaries ---- */
       {
 	GraphemeBreakType GB_type;
-	gboolean is_grapheme_boundary = FALSE;
         /* Find the GraphemeBreakType of wc */
 	GB_type = GB_Other;
 	switch (type)
 	  {
-	  case G_UNICODE_CONTROL:
 	  case G_UNICODE_FORMAT:
+	    if (wc == 0x200C && wc == 0x200D)
+	      {
+		GB_type = GB_Extend; /* U+200C and U+200D are Other_Grapheme_Extend */
+		break;
+	      }
+	    /* fall through */
+	  case G_UNICODE_CONTROL:
 	  case G_UNICODE_LINE_SEPARATOR:
 	  case G_UNICODE_PARAGRAPH_SEPARATOR:
-	    if (wc != 0x200C && wc != 0x200D)
-	      GB_type = GB_ControlCRLF;
-	    else
-	      GB_type = GB_Extend; /* U+200C and U+200D are Other_Grapheme_Extend */
+	    GB_type = GB_ControlCRLF;
 	    break;
 
 	  case G_UNICODE_OTHER_LETTER:
@@ -679,16 +702,13 @@ pango_default_break (const gchar   *text,
 	  case G_UNICODE_NON_SPACING_MARK:
 	    GB_type = GB_Extend; /* Grapheme_Extend */
 	    break;
-
-	  default:
-	    break;
 	  }
 
 	/* Grapheme Cluster Boundary Rules */
 	/* We apply Rules GB1 and GB2 at the end of the function */
 	if (wc == '\n' && prev_wc == '\r')
 	  is_grapheme_boundary = FALSE; /* Rule GB3 */
-	else if (GB_type == GB_ControlCRLF || prev_GB_type == GB_ControlCRLF)
+	else if (prev_GB_type == GB_ControlCRLF || GB_type == GB_ControlCRLF)
 	  is_grapheme_boundary = TRUE; /* Rules GB4 and GB5 */
 	else if (GB_type == GB_InHangulSyllable)
 	  is_grapheme_boundary = FALSE; /* Rules GB6, GB7, GB8 */
@@ -704,14 +724,189 @@ pango_default_break (const gchar   *text,
 	prev_GB_type = GB_type;
 
 	attrs[i].is_cursor_position = is_grapheme_boundary;
+	/* If this is a grapheme boundary, we have to decide if backspace
+	 * deletes a character or the whole grapheme cluster */
+	if (is_grapheme_boundary)
+	  attrs[i].backspace_deletes_character = BACKSPACE_DELETES_CHARACTER (base_character);
+	else
+	  attrs[i].backspace_deletes_character = FALSE;
       }
 
-      /* If this is a grapheme boundary, we have to decide if backspace
-       * deletes a character or the whole grapheme cluster */
-      if (attrs[i].is_cursor_position)
-	attrs[i].backspace_deletes_character = BACKSPACE_DELETES_CHARACTER (base_character);
-      else
-	attrs[i].backspace_deletes_character = FALSE;
+      /* ---- UAX#29 Word Boundaries ---- */
+      {
+	is_word_boundary = FALSE;
+	if (is_grapheme_boundary) /* Rules WB3 and WB4 */
+	  {
+	    PangoScript script;
+	    WordBreakType WB_type;
+
+	    script = pango_script_for_unichar (wc);
+
+	    /* Find the WordBreakType of wc */
+	    WB_type = WB_Other;
+
+	    if (script == PANGO_SCRIPT_KATAKANA)
+	      WB_type = WB_Katakana;
+
+	    if (WB_type == WB_Other)
+	      switch (wc >> 8)
+	        {
+		case 0x30:
+		  if (wc == 0x3031 || wc == 0x3032 || wc == 0x3033 || wc == 0x3034 || wc == 0x3035 ||
+		      wc == 0x309b || wc == 0x309c || wc == 0x30a0 || wc == 0x30fc)
+		    WB_type = WB_Katakana; /* Katakana exceptions */
+		  break;
+		case 0xFF:
+		  if (wc == 0xFF70)
+		    WB_type = WB_Katakana; /* Katakana exceptions */
+		  else if (wc >= 0xFF9E || wc <= 0xFF9F)
+		    WB_type = WB_ExtendFormat; /* Other_Grapheme_Extend */
+		  break;
+		case 0x05:
+		  if (wc == 0x05F3)
+		    WB_type = WB_ALetter; /* ALetter exceptions */
+		  break;
+		}
+
+	    if (WB_type == WB_Other)
+	      switch (break_type)
+	        {
+		case G_UNICODE_BREAK_NUMERIC:
+		  if (wc != 0x066C)
+		    WB_type = WB_Numeric; /* Numeric */
+		  break;
+		case G_UNICODE_BREAK_INFIX_SEPARATOR:
+		  if (wc != 0x003A && wc != 0xFE13 && wc != 0x002E)
+		    WB_type = WB_MidNum; /* MidNum */
+		  break;
+		}
+
+	    if (WB_type == WB_Other)
+	      switch (type)
+		{
+		case G_UNICODE_CONTROL:
+		  if (wc != 0x000D && wc != 0x000A && wc != 0x000B && wc != 0x000C && wc != 0x0085)
+		    break;
+		  /* fall through */
+		case G_UNICODE_LINE_SEPARATOR:
+		case G_UNICODE_PARAGRAPH_SEPARATOR:
+		  WB_type = WB_NewlineCRLF; /* CR, LF, Newline */
+		  break;
+
+		case G_UNICODE_FORMAT:
+		case G_UNICODE_COMBINING_MARK:
+		case G_UNICODE_ENCLOSING_MARK:
+		case G_UNICODE_NON_SPACING_MARK:
+		  WB_type = WB_ExtendFormat; /* Extend, Format */
+		  break;
+
+		case G_UNICODE_CONNECT_PUNCTUATION:
+		  WB_type = WB_ExtendNumLet; /* ExtendNumLet */
+		  break;
+
+		case G_UNICODE_INITIAL_PUNCTUATION:
+		case G_UNICODE_FINAL_PUNCTUATION:
+		  if (wc == 0x2018 || wc == 0x2019)
+		    WB_type = WB_MidNumLet; /* MidNumLet */
+		  break;
+		case G_UNICODE_OTHER_PUNCTUATION:
+		  if (wc == 0x0027 || wc == 0x002e || wc == 0x2024 ||
+		      wc == 0xfe52 || wc == 0xff07 || wc == 0xff0e)
+		    WB_type = WB_MidNumLet; /* MidNumLet */
+		  else if (wc == 0x00b7 || wc == 0x05f4 || wc == 0x2027 || wc == 0x003a || wc == 0x0387 ||
+			   wc == 0xfe13 || wc == 0xfe55 || wc == 0xff1a)
+		    WB_type = WB_MidLetter; /* WB_MidLetter */
+		  else if (wc == 0x066c ||
+			   wc == 0xfe50 || wc == 0xfe54 || wc == 0xff0c || wc == 0xff1b)
+		    WB_type = WB_MidNum; /* MidNum */
+		  break;
+
+		case G_UNICODE_OTHER_SYMBOL:
+		  if (wc >= 0x24B6 && wc <= 0x24E9) /* Other_Alphabetic */
+		    goto Alphabetic;
+		  break;
+
+		case G_UNICODE_OTHER_LETTER:
+		case G_UNICODE_LETTER_NUMBER:
+		  if (wc == 0x3006 || wc == 0x3007 ||
+		      (wc >= 0x3021 && wc <= 0x3029) ||
+		      (wc >= 0x3038 && wc <= 0x303A) ||
+		      (wc >= 0x3400 && wc <= 0x4DB5) ||
+		      (wc >= 0x4E00 && wc <= 0x9FC3) ||
+		      (wc >= 0xF900 && wc <= 0xFA2D) ||
+		      (wc >= 0xFA30 && wc <= 0xFA6A) ||
+		      (wc >= 0xFA70 && wc <= 0xFAD9) ||
+		      (wc >= 0x20000 && wc <= 0x2A6D6) ||
+		      (wc >= 0x2F800 && wc <= 0x2FA1D))
+		    break; /* ALetter exceptions: Ideographic */
+		  goto Alphabetic;
+
+		case G_UNICODE_LOWERCASE_LETTER:
+		case G_UNICODE_MODIFIER_LETTER:
+		case G_UNICODE_TITLECASE_LETTER:
+		case G_UNICODE_UPPERCASE_LETTER:
+		Alphabetic:
+		  if (break_type != G_UNICODE_BREAK_COMPLEX_CONTEXT && script != PANGO_SCRIPT_HIRAGANA)
+		    WB_type = WB_ALetter; /* ALetter */
+		  break;
+		}
+
+	    /* Grapheme Cluster Boundary Rules */
+
+	    /* We apply Rules WB1 and WB2 at the end of the function */
+
+	    if (prev_wc == 0x3031 && wc == 0x41)
+	      g_message ("Y %d %d", prev_WB_type, WB_type);
+	    if (prev_WB_type == WB_NewlineCRLF && prev_WB_i + 1 == i)
+	      {
+	        /* The extra check for prev_WB_i is to correctly handle sequences like
+		 * Newline ÷ Extend × Extend
+		 * since we have not skipped ExtendFormat yet.
+		 */
+	        is_word_boundary = TRUE; /* Rule WB3a */
+	      }
+	    else if (WB_type == WB_NewlineCRLF)
+	      is_word_boundary = TRUE; /* Rule WB3b */
+	    else if (WB_type == WB_ExtendFormat)
+	      is_word_boundary = FALSE; /* Rules WB4? */
+	    else if ((prev_WB_type == WB_ALetter  ||
+		      prev_WB_type == WB_Numeric  ||
+		      prev_WB_type == WB_ExtendNumLet) &&
+		     (     WB_type == WB_ALetter  ||
+		           WB_type == WB_Numeric  ||
+		           WB_type == WB_ExtendNumLet))
+	      is_word_boundary = FALSE; /* Rules WB5, WB8, WB9, WB10, WB13a, WB13b */
+	    else if ((prev_WB_type == WB_Katakana ||
+		      prev_WB_type == WB_ExtendNumLet) &&
+		     (     WB_type == WB_Katakana ||
+		           WB_type == WB_ExtendNumLet))
+	      is_word_boundary = FALSE; /* Rules WB13, WB13a, WB13b */
+	    else if ((prev_prev_WB_type == WB_ALetter && WB_type == WB_ALetter) &&
+		     (prev_WB_type == WB_MidLetter || prev_WB_type == WB_MidNumLet))
+	      {
+		attrs[prev_WB_i].is_word_boundary = FALSE; /* Rule WB6 */
+		is_word_boundary = FALSE; /* Rule WB7 */
+	      }
+	    else if ((prev_prev_WB_type == WB_Numeric && WB_type == WB_Numeric) &&
+		     (prev_WB_type == WB_MidNum || prev_WB_type == WB_MidNumLet))
+	      {
+		is_word_boundary = FALSE; /* Rule WB11 */
+		attrs[prev_WB_i].is_word_boundary = FALSE; /* Rule WB12 */
+	      }
+	    else
+	      is_word_boundary = TRUE; /* Rule WB14 */
+
+	    if (WB_type != WB_ExtendFormat)
+	      {
+		prev_prev_WB_type = prev_WB_type;
+		prev_WB_type = WB_type;
+		prev_WB_i = i;
+	      }
+	  }
+
+	attrs[i].is_word_boundary = is_word_boundary;
+      }
+
 
       /* ---- Line breaking ---- */
 
@@ -1446,14 +1641,15 @@ pango_default_break (const gchar   *text,
     }
   i--;
 
+  attrs[i].is_cursor_position = TRUE;  /* Rule GB2 */
+  attrs[0].is_cursor_position = TRUE;  /* Rule GB1 */
+
+  attrs[i].is_word_boundary = TRUE;  /* Rule WB2 */
+  attrs[0].is_word_boundary = TRUE;  /* Rule WB1 */
+
   attrs[i].is_line_break = TRUE;  /* Rule LB3 */
   attrs[0].is_line_break = FALSE; /* Rule LB2 */
 
-  attrs[i].is_word_end   = TRUE;  /* Rule WB2 */
-  attrs[0].is_word_start = TRUE;  /* Rule WB1 */
-
-  attrs[i].is_cursor_position = TRUE;  /* Rule GB2 */
-  attrs[0].is_cursor_position = TRUE;  /* Rule GB1 */
 }
 
 static gboolean

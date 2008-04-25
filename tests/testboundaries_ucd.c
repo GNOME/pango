@@ -345,8 +345,7 @@ main (gint argc,
 
   filename = g_strdup_printf ("%s/WordBreakTest.txt", srcdir);
   bits.bits = 0;
-  bits.attr.is_word_start = 1; /* either word start or end */
-  bits.attr.is_word_end = 1;   /* (is this right?) */
+  bits.attr.is_word_boundary = 1;
   do_test (filename, bits, FALSE);
 
   filename = g_strdup_printf ("%s/SentenceBreakTest.txt", srcdir);

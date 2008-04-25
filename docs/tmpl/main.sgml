@@ -393,6 +393,10 @@ about the attributes of a single character.
 @is_cursor_position: if set, cursor can appear in front of character.
 	i.e. this is a grapheme boundary, or the first character
         in the text.
+	This flag implements Unicode's
+	<ulink
+	url="http://www.unicode.org/reports/tr29/#Grapheme_Cluster_Boundaries">Grapheme
+	Cluster Boundaries</ulink> semantics.
 @is_word_start: is first character in a word
 @is_word_end: is first non-word char after a word
 	Note that in degenerate cases, you could have both @is_word_start
@@ -424,6 +428,15 @@ about the attributes of a single character.
                               characters.
 @is_expandable_space: is a whitespace character that can possibly be
                       expanded for justification purposes. (Since: 1.18)
+@is_word_boundary: is a word boundary.
+	More specifically, means that this is not a position in the middle
+	of a word.  For example, both sides of a punctuation mark are
+	considered word boundaries.  This flag is particularly useful when
+	selecting text word-by-word.
+	This flag implements Unicode's
+	<ulink url="http://www.unicode.org/reports/tr29/#Word_Boundaries">Word
+	Boundaries</ulink> semantics.
+	(Since: 1.22)
 
 <!-- ##### FUNCTION pango_shape ##### -->
 <para>
