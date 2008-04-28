@@ -69,6 +69,7 @@ main (int    argc,
       else
 	{
 	  FILE *stream;
+	  GPid pid = 0;
 
 	  if (view->write_suffix && g_str_has_suffix (opt_output, view->write_suffix))
 	    {
@@ -86,15 +87,20 @@ main (int    argc,
 	      convert_argv[2] = opt_output;
 
 	      if (!g_spawn_async_with_pipes (NULL, (gchar **)convert_argv, NULL,
+					     G_SPAWN_DO_NOT_REAP_CHILD |
 					     G_SPAWN_SEARCH_PATH |
 					     G_SPAWN_STDOUT_TO_DEV_NULL |
 					     G_SPAWN_STDERR_TO_DEV_NULL,
-					     NULL, NULL, NULL, &fd, NULL, NULL, &error))
+					     NULL, NULL, &pid, &fd, NULL, NULL, &error))
 		fail ("When running ImageMagick 'convert' command: %s\n", error->message);
 	      stream = fdopen (fd, "wb");
 	    }
 	  view->write (instance, surface, stream, width, height);
 	  fclose (stream);
+#ifdef G_OS_UNIX
+	  if (pid)
+	    waitpid (pid, NULL, 0);
+#endif
 	}
     }
 
