@@ -333,20 +333,23 @@ if $have_cairo ; then
   LDFLAGS="$LDFLAGS $INSTALLED_CAIRO_LIBS"
 
   have_cairo=false
-
-  if $have_win32; then
-    PKG_CHECK_EXISTS(cairo-win32 >= $cairo_required, have_cairo_win32=true, :)
-  fi
-  if $have_cairo_win32; then
-    AC_DEFINE(HAVE_CAIRO_WIN32, 1, [Whether Cairo can use the Win32 GDI for fonts])
-    have_cairo=true
-  fi
+  cairo_font_backends=""
 
   if $have_freetype; then
     PKG_CHECK_EXISTS(cairo-ft >= $cairo_required, have_cairo_freetype=true, :)
   fi
   if $have_cairo_freetype; then
     AC_DEFINE(HAVE_CAIRO_FREETYPE, 1, [Whether Cairo can use FreeType for fonts])
+    cairo_font_backends="freetype $cairo_font_backends"
+    have_cairo=true
+  fi
+
+  if $have_win32; then
+    PKG_CHECK_EXISTS(cairo-win32 >= $cairo_required, have_cairo_win32=true, :)
+  fi
+  if $have_cairo_win32; then
+    AC_DEFINE(HAVE_CAIRO_WIN32, 1, [Whether Cairo can use the Win32 GDI for fonts])
+    cairo_font_backends="win32 $cairo_font_backends"
     have_cairo=true
   fi
 
@@ -355,7 +358,16 @@ if $have_cairo ; then
   fi
   if $have_cairo_atsui; then
     AC_DEFINE(HAVE_CAIRO_ATSUI, 1, [Whether Cairo can use ATSUI for fonts])
+    cairo_font_backends="quartz $cairo_font_backends"
     have_cairo=true
+  fi
+
+  AC_MSG_CHECKING([which cairo font backends could be used])
+  if $have_cairo ; then
+    AC_MSG_RESULT([$cairo_font_backends])
+  else
+    AC_MSG_RESULT([none])
+    AC_MSG_NOTICE([Disabling cairo support])
   fi
 
   if $have_cairo ; then
@@ -952,11 +964,11 @@ AC_CONFIG_FILES([tests/runtests.sh],
 AC_OUTPUT
 
 backends=""
-if $have_freetype && $have_fontconfig ; then backends="$backends FreeType"; fi
-if $have_x ; then backends="$backends X"; fi
-if $have_xft ; then backends="$backends Xft"; fi
 if $have_cairo ; then backends="$backends Cairo"; fi
 if $have_win32 ; then backends="$backends Win32"; fi
+if $have_xft ; then backends="$backends Xft"; fi
+if $have_freetype && $have_fontconfig ; then backends="$backends FreeType"; fi
+if $have_x ; then backends="$backends X"; fi
    
 echo "configuration:
 	backends:$backends"

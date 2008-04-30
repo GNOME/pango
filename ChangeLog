@@ -1,3 +1,9 @@
+2008-04-30  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 530685 – Pango no longer using cairo as a backend as of pango 1.19.4
+
+	* configure.in: Be more verbose about cairo font backends found.
+
 2008-04-28  Behdad Esfahbod  <behdad@gnome.org>
 
 	* pango-view/viewer-main.c (main): Wait for convert(1) to finish.
