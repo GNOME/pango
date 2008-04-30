@@ -1,5 +1,11 @@
 2008-04-30  Behdad Esfahbod  <behdad@gnome.org>
 
+	Bug 530757 – Docs build breaks because of hash sign in URL in <ulink...>
+
+	* docs/tmpl/main.sgml: Make it build.
+
+2008-04-30  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 530685 – Pango no longer using cairo as a backend as of pango 1.19.4
 
 	* configure.in: Be more verbose about cairo font backends found.

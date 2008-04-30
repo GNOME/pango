@@ -394,8 +394,7 @@ about the attributes of a single character.
 	i.e. this is a grapheme boundary, or the first character
         in the text.
 	This flag implements Unicode's
-	<ulink
-	url="http://www.unicode.org/reports/tr29/#Grapheme_Cluster_Boundaries">Grapheme
+	<ulink url="http://www.unicode.org/reports/tr29/">Grapheme
 	Cluster Boundaries</ulink> semantics.
 @is_word_start: is first character in a word
 @is_word_end: is first non-word char after a word
@@ -434,7 +433,7 @@ about the attributes of a single character.
 	considered word boundaries.  This flag is particularly useful when
 	selecting text word-by-word.
 	This flag implements Unicode's
-	<ulink url="http://www.unicode.org/reports/tr29/#Word_Boundaries">Word
+	<ulink url="http://www.unicode.org/reports/tr29/">Word
 	Boundaries</ulink> semantics.
 	(Since: 1.22)
 
