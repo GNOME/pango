@@ -1709,10 +1709,15 @@ pango_win32_font_calc_coverage (PangoFont     *font,
   guint32 i;
   PangoWin32CoverageLanguageClass cjkv;
   gboolean hide_unihan = FALSE;
+  PangoFontDescription *desc;
+  gchar *name;
 
-  PING(("font:%s lang:%s",
-	pango_font_description_to_string (pango_font_describe (font)),
+  desc = pango_font_describe (font);
+  name = pango_font_description_to_string (desc);
+  PING(("font:%s lang:%s", name,
 	pango_language_to_string (lang)));
+  g_free (name);
+  pango_font_description_free (desc);
 
   if (win32font->win32face->has_cmap)
     {
