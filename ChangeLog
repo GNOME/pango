@@ -1,3 +1,10 @@
+2008-05-03  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 531242 – Leak when calculating win32 font coverage
+	Patch from Daniel Atallah
+
+	* pango/pangowin32.c (pango_win32_font_calc_coverage): Plug leak.
+
 2008-04-30  Behdad Esfahbod  <behdad@gnome.org>
 
 	Bug 530757 – Docs build breaks because of hash sign in URL in <ulink...>
