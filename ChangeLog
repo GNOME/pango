@@ -1,3 +1,11 @@
+2008-05-13  Behdad Esfahbod  <behdad@gnome.org>
+
+	* === Released 1.21.1 ===
+
+	* configure.in: Version 1.21.1
+
+	* NEWS: Updated.
+
 2008-05-03  Behdad Esfahbod  <behdad@gnome.org>
 
 	Bug 531242 – Leak when calculating win32 font coverage

@@ -1,3 +1,24 @@
+Overview of changes between 1.21.0 and 1.21.1
+==============================================
+- Partial work to make pango_break() exactly follow Unicode TR#14 and TR#29.
+  The Grapheme Boundaries and Word Boundaries now work.  For word boundaries,
+  a new member was added to PangoLogAttr.  Sentence Boundaries and Line Breaks
+  to follow in the next release.
+- Err if no cairo font backends font
+- Misc bug fixes
+- New public API:
+	Add new PangoLogAttr member is_word_boundary, that implements UAX#29's
+	Word Boundaries semantics.  The is_word_start and is_word_end members
+	will change implementation later on to be consitent with the word
+	boundaries.
+
+- Bugs fixed in this release:
+	Bug 531242 – Leak when calculating win32 font coverage
+		Patch from Daniel Atallah
+	Bug 530757 – Docs build breaks because of hash sign in URL in <ulink...>
+	Bug 530685 – Pango no longer using cairo as a backend as of pango 1.19.4
+	Part of Bug 97545 – Make pango_default_break follow Unicode TR #29
+
 Overview of changes between 1.20.2 and 1.21.0
 ==============================================
 - Require cairo >= 1.6.4.
