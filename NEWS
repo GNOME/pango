@@ -4,7 +4,7 @@ Overview of changes between 1.21.0 and 1.21.1
   The Grapheme Boundaries and Word Boundaries now work.  For word boundaries,
   a new member was added to PangoLogAttr.  Sentence Boundaries and Line Breaks
   to follow in the next release.
-- Err if no cairo font backends font
+- Err if no cairo font backends found
 - Misc bug fixes
 - New public API:
 	Add new PangoLogAttr member is_word_boundary, that implements UAX#29's
