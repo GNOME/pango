@@ -3,10 +3,7 @@
 EXTRA_DIST = 			\
 	all-unicode.txt		\
 	boundaries.utf8		\
-	runtests.sh             \
-	GraphemeClusterBreakTest.txt  \
-	SentenceBreakTest.txt   \
-	WordBreakTest.txt
+	runtests.sh
 
 CLEANFILES = pangorc
 DISTCLEANFILES = all-unicode.txt runtests.log
