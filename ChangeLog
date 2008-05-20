@@ -1,5 +1,10 @@
 2008-05-20  Tor Lillqvist  <tml@novell.com>
 
+	* pango/pango-utils.c: Add alias "sansserif" to the builtin
+	aliases on Win32. Same contents as "sans" and "sans-serif".
+
+2008-05-20  Tor Lillqvist  <tml@novell.com>
+
 	Bug 523193 – Vista Hebrew, CJK fonts to builtin win32 pango aliases
 
 	Patch by Daniel Atallah.
