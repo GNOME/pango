@@ -1,3 +1,12 @@
+2008-05-20  Tor Lillqvist  <tml@novell.com>
+
+	Bug 523193 – Vista Hebrew, CJK fonts to builtin win32 pango aliases
+
+	Patch by Daniel Atallah.
+	
+	* pango/pango-utils.c: Add fonts from Vista to the builtin
+	aliases. Also add Lucida Sans Unicode and Lucida Console.
+
 2008-05-03  Behdad Esfahbod  <behdad@gnome.org>
 
 	Bug 531242 – Leak when calculating win32 font coverage
