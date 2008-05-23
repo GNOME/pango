@@ -1,3 +1,13 @@
+Overview of changes between 1.20.2 and 1.20.3
+==============================================
+- Add more Vista fonts to default win32 aliases.
+- Minor win32 leak fix.
+- Bugs fixed in this release:
+	Bug 523193 – Vista Hebrew, CJK fonts to builtin win32 pango aliases
+		Patch by Daniel Atallah.
+	Bug 531242 – Leak when calculating win32 font coverage
+		Patch from Daniel Atallah
+
 Overview of changes between 1.20.1 and 1.20.2
 ==============================================
 - Really fix build on OS X.

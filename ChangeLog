@@ -1,3 +1,11 @@
+2008-05-23  Behdad Esfahbod  <behdad@gnome.org>
+
+	* === Released 1.20.3 ===
+
+	* configure.in: Version 1.20.3
+
+	* NEWS: Updated.
+
 2008-05-20  Tor Lillqvist  <tml@novell.com>
 
 	Bug 523193 – Vista Hebrew, CJK fonts to builtin win32 pango aliases
