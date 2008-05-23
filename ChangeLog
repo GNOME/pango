@@ -1,3 +1,10 @@
+2008-05-23  Tor Lillqvist  <tml@novell.com>
+
+	* pango/pango-utils.c: Revert the addition of the alias
+	"sansserif". The correct name is "sans-serif", and "sans" should
+	also be accepted. If something uses "sansserif" it is wrong. (I
+	saw it in some sample svg files in librsvg.)
+
 2008-05-20  Tor Lillqvist  <tml@novell.com>
 
 	* pango/pango-utils.c: Add alias "sansserif" to the builtin
