@@ -106,17 +106,9 @@ pango_item_free (PangoItem *item)
   g_slice_free (PangoItem, item);
 }
 
-GType
-pango_item_get_type (void)
-{
-  static GType our_type = 0;
-
-  if (G_UNLIKELY (our_type == 0))
-    our_type = g_boxed_type_register_static (I_("PangoItem"),
-					     (GBoxedCopyFunc) pango_item_copy,
-					     (GBoxedFreeFunc) pango_item_free);
-  return our_type;
-}
+G_DEFINE_BOXED_TYPE (PangoItem, pango_item,
+                     pango_item_copy,
+                     pango_item_free);
 
 /**
  * pango_item_split:

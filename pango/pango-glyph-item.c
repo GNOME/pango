@@ -179,17 +179,9 @@ pango_glyph_item_free  (PangoGlyphItem *glyph_item)
   g_slice_free (PangoGlyphItem, glyph_item);
 }
 
-GType
-pango_glyph_item_get_type (void)
-{
-  static GType our_type = 0;
-
-  if (G_UNLIKELY (our_type == 0))
-    our_type = g_boxed_type_register_static (I_("PangoGlyphItem"),
-					     (GBoxedCopyFunc) pango_glyph_item_copy,
-					     (GBoxedFreeFunc) pango_glyph_item_free);
-  return our_type;
-}
+G_DEFINE_BOXED_TYPE (PangoGlyphItem, pango_glyph_item,
+                     pango_glyph_item_copy,
+                     pango_glyph_item_free);
 
 
 /**
@@ -236,17 +228,9 @@ pango_glyph_item_iter_free  (PangoGlyphItemIter *iter)
   g_slice_free (PangoGlyphItemIter, iter);
 }
 
-GType
-pango_glyph_item_iter_get_type (void)
-{
-  static GType our_type = 0;
-
-  if (G_UNLIKELY (our_type == 0))
-    our_type = g_boxed_type_register_static (I_("PangoGlyphItemIter"),
-					     (GBoxedCopyFunc) pango_glyph_item_iter_copy,
-					     (GBoxedFreeFunc) pango_glyph_item_iter_free);
-  return our_type;
-}
+G_DEFINE_BOXED_TYPE (PangoGlyphItemIter, pango_glyph_item_iter,
+                     pango_glyph_item_iter_copy,
+                     pango_glyph_item_iter_free)
 
 /**
  * pango_glyph_item_iter_next_cluster:

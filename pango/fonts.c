@@ -46,19 +46,9 @@ struct _PangoFontDescription
   int size;
 };
 
-GType
-pango_font_description_get_type (void)
-{
-  static GType our_type = 0;
-
-  if (G_UNLIKELY (our_type == 0))
-    our_type = g_boxed_type_register_static (I_("PangoFontDescription"),
-					     (GBoxedCopyFunc)pango_font_description_copy,
-					     (GBoxedFreeFunc)pango_font_description_free);
-
-  return our_type;
-}
-
+G_DEFINE_BOXED_TYPE (PangoFontDescription, pango_font_description,
+                     pango_font_description_copy,
+                     pango_font_description_free);
 
 static const PangoFontDescription pfd_defaults = {
   NULL,			/* family_name */
@@ -1670,19 +1660,9 @@ pango_font_get_font_map (PangoFont *font)
     return NULL;
 }
 
-GType
-pango_font_metrics_get_type (void)
-{
-  static GType our_type = 0;
-
-  if (G_UNLIKELY (our_type == 0))
-    our_type = g_boxed_type_register_static (I_("PangoFontMetrics"),
-					     (GBoxedCopyFunc)pango_font_metrics_ref,
-					     (GBoxedFreeFunc)pango_font_metrics_unref);
-
-  return our_type;
-}
-
+G_DEFINE_BOXED_TYPE (PangoFontMetrics, pango_font_metrics,
+                     pango_font_metrics_ref,
+                     pango_font_metrics_unref);
 
 /**
  * pango_font_metrics_new:

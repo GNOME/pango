@@ -3932,17 +3932,9 @@ pango_layout_line_unref (PangoLayoutLine *line)
     }
 }
 
-GType
-pango_layout_line_get_type (void)
-{
-  static GType our_type = 0;
-
-  if (G_UNLIKELY (our_type == 0))
-    our_type = g_boxed_type_register_static (I_("PangoLayoutLine"),
-					     (GBoxedCopyFunc) pango_layout_line_ref,
-					     (GBoxedFreeFunc) pango_layout_line_unref);
-  return our_type;
-}
+G_DEFINE_BOXED_TYPE (PangoLayoutLine, pango_layout_line,
+                     pango_layout_line_ref,
+                     pango_layout_line_unref);
 
 /**
  * pango_layout_line_x_to_index:
@@ -5462,18 +5454,9 @@ pango_layout_iter_copy (PangoLayoutIter *iter)
   return new;
 }
 
-GType
-pango_layout_iter_get_type (void)
-{
-  static GType our_type = 0;
-
-  if (G_UNLIKELY (our_type == 0))
-    our_type = g_boxed_type_register_static (I_("PangoLayoutIter"),
-					     (GBoxedCopyFunc) pango_layout_iter_copy,
-					     (GBoxedFreeFunc) pango_layout_iter_free);
-
-  return our_type;
-}
+G_DEFINE_BOXED_TYPE (PangoLayoutIter, pango_layout_iter,
+                     pango_layout_iter_copy,
+                     pango_layout_iter_free);
 
 /**
  * pango_layout_get_iter:
