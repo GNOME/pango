@@ -1631,8 +1631,8 @@ font_has_name_in (PangoFont                       *font,
       if ((record.name_id != 1 && record.name_id != 16) || record.string_length <= 0)
 	continue;
 
-      PING(("platform:%d encoding:%d language:%04x name_id:%d",
-	    record.platform_id, record.encoding_id, record.language_id, record.name_id));
+      PING (("platform:%d encoding:%d language:%04x name_id:%d",
+	     record.platform_id, record.encoding_id, record.language_id, record.name_id));
 
       if (record.platform_id == MICROSOFT_PLATFORM_ID)
 	if ((cjkv == PANGO_WIN32_COVERAGE_ZH_TW &&
@@ -1714,8 +1714,8 @@ pango_win32_font_calc_coverage (PangoFont     *font,
 
   desc = pango_font_describe (font);
   name = pango_font_description_to_string (desc);
-  PING(("font:%s lang:%s", name,
-	pango_language_to_string (lang)));
+  PING (("font:%s lang:%s", name,
+	 pango_language_to_string (lang)));
   g_free (name);
   pango_font_description_free (desc);
 
@@ -1737,7 +1737,7 @@ pango_win32_font_calc_coverage (PangoFont     *font,
 
   if (cjkv != PANGO_WIN32_COVERAGE_UNSPEC && !font_has_name_in (font, cjkv))
     {
-      PING(("hiding UniHan chars"));
+      PING (("hiding UniHan chars"));
       hide_unihan = TRUE;
     }
 

@@ -1,5 +1,10 @@
 2008-05-26  Tor Lillqvist  <tml@novell.com>
 
+	* pango/pangowin32.c
+	* pango/pangowin32-fontmap.c: Some whitespace cleanup. 
+
+2008-05-26  Tor Lillqvist  <tml@novell.com>
+
 	* pango/pangowin32-private.h
 	* pango/pangowin32-fontmap.c: Drop the PangoWin32SizeInfo struct
 	and the hash table mapping from the relevant part of a LOGFONTW
