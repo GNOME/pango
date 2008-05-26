@@ -99,9 +99,10 @@ struct _PangoWin32FontMap
   GHashTable *families;
 
   /* Map LOGFONTWs (taking into account only the lfFaceName, lfItalic
-   * and lfWeight fields) to PangoWin32SizeInfo structs.
+   * and lfWeight fields) to LOGFONTWs corresponding to actual fonts
+   * installed.
    */
-  GHashTable *size_infos;
+  GHashTable *fonts;
 
   int n_fonts;
 

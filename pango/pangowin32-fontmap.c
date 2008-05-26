@@ -36,7 +36,6 @@
 #include "modules.h"
 
 typedef struct _PangoWin32Family       PangoWin32Family;
-typedef struct _PangoWin32SizeInfo     PangoWin32SizeInfo;
 
 struct _PangoWin32Family
 {
@@ -46,11 +45,6 @@ struct _PangoWin32Family
   GSList *font_entries;
 
   gboolean is_monospace;
-};
-
-struct _PangoWin32SizeInfo
-{
-  GSList *logfontws;
 };
 
 #if !defined(NTM_PS_OPENTYPE)
@@ -224,27 +218,22 @@ ensure_italic (gpointer key,
 	       gpointer user_data)
 {
   ItalicHelper *helper = (ItalicHelper *)user_data;
-  PangoWin32SizeInfo *sip = (PangoWin32SizeInfo *) value;
-  GSList *list = sip->logfontws;
+  const LOGFONTW *lfp = (const LOGFONTW *) value;
+  LOGFONTW *lfpnew;
 
-  while (list)
+  if (!lfp->lfItalic)
     {
-      LOGFONTW *lfp = (LOGFONTW *) list->data;
-      PING(("%S it=%d wt=%ld", lfp->lfFaceName, lfp->lfItalic, lfp->lfWeight));
-      if (!lfp->lfItalic)
+      /* We have a non-italic variant, look if there is an italic */
+      LOGFONTW logfontw = *lfp;
+      logfontw.lfItalic = 1;
+      if (!g_hash_table_lookup (helper->fontmap->fonts, &logfontw))
 	{
-	  /* we have a non italic variant, look if there is an italic */
-	  LOGFONTW logfontw = *lfp;
-	  logfontw.lfItalic = 1;
-	  sip = (PangoWin32SizeInfo *) g_hash_table_lookup (helper->fontmap->size_infos, &logfontw);
-	  if (!sip)
-	    {
-	      /* remember the non italic variant to be added later as italic */
-	      PING(("synthesizing italic"));
-	      helper->list = g_slist_append (helper->list, lfp);
-	    }
+	  /* Remember the italic variant to be added later */
+	  PING (("synthesizing italic: %S wt=%ld", lfp->lfFaceName, lfp->lfWeight));
+	  lfpnew = g_new (LOGFONTW, 1);
+	  *lfpnew = logfontw;
+	  helper->list = g_slist_append (helper->list, lfpnew);
 	}
-      list = list->next;
     }
 }
 
@@ -257,7 +246,7 @@ _pango_win32_font_map_init (PangoWin32FontMap *win32fontmap)
 
   win32fontmap->families = g_hash_table_new ((GHashFunc) case_insensitive_str_hash,
 					     (GEqualFunc) case_insensitive_str_equal);
-  win32fontmap->size_infos =
+  win32fontmap->fonts =
     g_hash_table_new ((GHashFunc) logfontw_nosize_hash, (GEqualFunc) logfontw_nosize_equal);
   win32fontmap->n_fonts = 0;
 
@@ -271,15 +260,14 @@ _pango_win32_font_map_init (PangoWin32FontMap *win32fontmap)
 		       (LPARAM) win32fontmap, 0);
 
   /* Create synthetic italic entries */
-  g_hash_table_foreach (win32fontmap->size_infos, ensure_italic, &helper);
+  g_hash_table_foreach (win32fontmap->fonts, ensure_italic, &helper);
 
-  /* Can't modify while iterating */
+  /* Process the list of LOGFONTWs for synthesized italic fonts */
   list = helper.list;
   while (list)
     {
-      LOGFONTW logfontw = *((LOGFONTW *)list->data);
-      logfontw.lfItalic = 1;
-      pango_win32_insert_font (win32fontmap, &logfontw, TRUE);
+      pango_win32_insert_font (win32fontmap, (LOGFONTW *)list->data, TRUE);
+      g_free (list->data);
       list = list->next;
     }
   g_slist_free (helper.list);
@@ -1001,12 +989,40 @@ pango_win32_font_description_from_logfontw (const LOGFONTW *lfp)
   return description;
 }
 
+static char *
+charset_name (int charset)
+{
+  static char num[10];
 
-/* This inserts the given font into the size_infos table. If a
- * SizeInfo already exists with the same typeface name, italicness and
- * weight, then the font is added to the SizeInfo's list, else a
- * new SizeInfo is created and inserted in the table.
- */
+  switch (charset)
+    {
+#define CASE(x) case x##_CHARSET: return #x
+      CASE (ANSI);
+      CASE (DEFAULT);
+      CASE (SYMBOL);
+      CASE (SHIFTJIS);
+      CASE (HANGUL);
+      CASE (GB2312);
+      CASE (CHINESEBIG5);
+      CASE (GREEK);
+      CASE (TURKISH);
+      CASE (HEBREW);
+      CASE (ARABIC);
+      CASE (BALTIC);
+      CASE (RUSSIAN);
+      CASE (THAI);
+      CASE (EASTEUROPE);
+      CASE (OEM);
+      CASE (JOHAB);
+      CASE (VIETNAMESE);
+      CASE (MAC);
+#undef CASE
+    default:
+      sprintf (num, "%d", charset);
+      return num;
+    }
+}
+
 static void
 pango_win32_insert_font (PangoWin32FontMap *win32fontmap,
 			 LOGFONTW          *lfp,
@@ -1016,12 +1032,11 @@ pango_win32_insert_font (PangoWin32FontMap *win32fontmap,
   PangoFontDescription *description;
   PangoWin32Family *font_family;
   PangoWin32Face *win32face;
-  PangoWin32SizeInfo *size_info;
-  GSList *tmp_list;
   gint i;
   gchar *p;
 
-  PING(("face=%S,charset=%d,it=%d,wt=%ld,ht=%ld",lfp->lfFaceName,lfp->lfCharSet,lfp->lfItalic,lfp->lfWeight,lfp->lfHeight));
+  PING (("face=%S,charset=%s,it=%d,wt=%ld,ht=%ld",
+	 lfp->lfFaceName, charset_name (lfp->lfCharSet), lfp->lfItalic, lfp->lfWeight, lfp->lfHeight));
 
   /* Ignore Symbol fonts (which don't have any Unicode mapping
    * table). We could also be fancy and use the PostScript glyph name
@@ -1031,55 +1046,16 @@ pango_win32_insert_font (PangoWin32FontMap *win32fontmap,
   if (lfp->lfCharSet == SYMBOL_CHARSET)
     return;
 
-  /* First insert the LOGFONTW into the list of LOGFONTWs for the
-   * typeface name, italicness and weight.
-   */
-  size_info = g_hash_table_lookup (win32fontmap->size_infos, lfp);
-  if (!size_info)
+  if (g_hash_table_lookup (win32fontmap->fonts, lfp))
     {
-      PING(("SizeInfo not found"));
-      size_info = g_new (PangoWin32SizeInfo, 1);
-      size_info->logfontws = NULL;
-
-      lfp2 = g_new (LOGFONTW, 1);
-      *lfp2 = *lfp;
-      g_hash_table_insert (win32fontmap->size_infos, lfp2, size_info);
-    }
-  else
-    {
-      /* Don't store LOGFONTWs that differ only in charset
-       */
-      tmp_list = size_info->logfontws;
-      while (tmp_list)
-	{
-	  LOGFONTW *rover = tmp_list->data;
-
-	  /* We know that lfWeight, lfItalic and lfFaceName match.  We
-	   * don't check lfHeight and lfWidth, those are used
-	   * when creating a font.
-	   */
-	  if (rover->lfEscapement == lfp->lfEscapement &&
-	      rover->lfOrientation == lfp->lfOrientation &&
-	      rover->lfUnderline == lfp->lfUnderline &&
-	      rover->lfStrikeOut == lfp->lfStrikeOut)
-	    {
-	      PING(("already have it"));
-	      return;
-	    }
-
-	  tmp_list = tmp_list->next;
-	}
+      PING (("already have it"));
+      return;
     }
 
-  if (lfp2 == NULL)
-    {
-      lfp2 = g_new (LOGFONTW, 1);
-      *lfp2 = *lfp;
-    }
-
-  size_info->logfontws = g_slist_prepend (size_info->logfontws, lfp2);
-
-  PING(("g_slist_length(size_info->logfontws)=%d", g_slist_length(size_info->logfontws)));
+  PING (("not found"));
+  lfp2 = g_new (LOGFONTW, 1);
+  *lfp2 = *lfp;
+  g_hash_table_insert (win32fontmap->fonts, lfp2, lfp2);
 
   description = pango_win32_font_description_from_logfontw (lfp2);
 
@@ -1093,6 +1069,8 @@ pango_win32_insert_font (PangoWin32FontMap *win32fontmap,
     }
 
   win32face = g_object_new (PANGO_WIN32_TYPE_FACE, NULL);
+
+  PING (("win32face created: %p for %S", win32face, lfp->lfFaceName));
 
   win32face->logfontw = *lfp;
   win32face->description = description;
@@ -1172,54 +1150,24 @@ _pango_win32_make_matching_logfontw (PangoFontMap   *fontmap,
 				     LOGFONTW       *out)
 {
   PangoWin32FontMap *win32fontmap;
-  GSList *tmp_list;
-  PangoWin32SizeInfo *size_info;
-  LOGFONTW *closest_match = NULL;
-  gint match_distance = 0;
+  LOGFONTW *match;
 
   PING(("lfp.face=%S,wt=%ld,ht=%ld,size:%d",lfp->lfFaceName,lfp->lfWeight,lfp->lfHeight,size));
   win32fontmap = PANGO_WIN32_FONT_MAP (fontmap);
 
-  size_info = g_hash_table_lookup (win32fontmap->size_infos, lfp);
+  match = g_hash_table_lookup (win32fontmap->fonts, lfp);
 
-  if (!size_info)
+  if (!match)
     {
-      PING(("SizeInfo not found"));
+      PING (("not found"));
       return;
     }
 
-  tmp_list = size_info->logfontws;
-  while (tmp_list)
-    {
-      LOGFONTW *tmp_logfontw = tmp_list->data;
-      int font_size = abs (tmp_logfontw->lfHeight);
+  /* OK, we have a match; let's modify it to fit this size */
 
-      if (size != -1)
-	{
-	  int new_distance = (font_size == 0) ? 0 : abs (font_size - size);
-
-	  if (!closest_match ||
-	      new_distance < match_distance ||
-	      (new_distance < PANGO_SCALE && font_size != 0))
-	    {
-	      closest_match = tmp_logfontw;
-	      match_distance = new_distance;
-	    }
-	}
-
-      tmp_list = tmp_list->next;
-    }
-
-  if (closest_match)
-    {
-      /* OK, we have a match; let's modify it to fit this size */
-
-      *out = *closest_match;
-      out->lfHeight = -(int)((double)size / win32fontmap->resolution + 0.5);
-      out->lfWidth = 0;
-    }
-  else
-    *out = *lfp; /* Whatever. We need to pass something... */
+  *out = *match;
+  out->lfHeight = -(int)((double)size / win32fontmap->resolution + 0.5);
+  out->lfWidth = 0;
 }
 
 static PangoFontDescription *

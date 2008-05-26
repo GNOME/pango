@@ -1,3 +1,14 @@
+2008-05-26  Tor Lillqvist  <tml@novell.com>
+
+	* pango/pangowin32-private.h
+	* pango/pangowin32-fontmap.c: Drop the PangoWin32SizeInfo struct
+	and the hash table mapping from the relevant part of a LOGFONTW
+	struct to a list of PangoWin32SizeInfos in PangoWin32FontMap. It
+	seems that each list was always of length one anyway, so instead
+	just map directly to each such single list member, also a LOGFONTW
+	struct. Actually I wonder whether this map is needed at all, will
+	have to experiment.
+
 2008-05-23  Tor Lillqvist  <tml@novell.com>
 
 	* pango/pango-utils.c: Revert the addition of the alias
