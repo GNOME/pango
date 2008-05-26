@@ -104,8 +104,6 @@ struct _PangoWin32FontMap
    */
   GHashTable *fonts;
 
-  int n_fonts;
-
   double resolution;		/* (points / pixel) * PANGO_SCALE */
 };
 

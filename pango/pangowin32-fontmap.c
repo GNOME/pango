@@ -42,7 +42,7 @@ struct _PangoWin32Family
   PangoFontFamily parent_instance;
 
   char *family_name;
-  GSList *font_entries;
+  GSList *faces;
 
   gboolean is_monospace;
 };
@@ -89,6 +89,8 @@ static void       pango_win32_fontmap_cache_clear    (PangoWin32FontMap         
 static void       pango_win32_insert_font            (PangoWin32FontMap            *fontmap,
 						      LOGFONTW                     *lfp,
 						      gboolean			    is_synthetic);
+
+static const char *pango_win32_face_get_face_name    (PangoFontFace *face);
 
 static PangoWin32FontMap *default_fontmap = NULL;
 
@@ -248,7 +250,6 @@ _pango_win32_font_map_init (PangoWin32FontMap *win32fontmap)
 					     (GEqualFunc) case_insensitive_str_equal);
   win32fontmap->fonts =
     g_hash_table_new ((GHashFunc) logfontw_nosize_hash, (GEqualFunc) logfontw_nosize_equal);
-  win32fontmap->n_fonts = 0;
 
   win32fontmap->font_cache = pango_win32_font_cache_new ();
   win32fontmap->freed_fonts = g_queue_new ();
@@ -357,7 +358,7 @@ pango_win32_family_list_faces (PangoFontFamily  *family,
 {
   PangoWin32Family *win32family = PANGO_WIN32_FAMILY (family);
 
-  *n_faces = g_slist_length (win32family->font_entries);
+  *n_faces = g_slist_length (win32family->faces);
   if (faces)
     {
       GSList *tmp_list;
@@ -365,7 +366,7 @@ pango_win32_family_list_faces (PangoFontFamily  *family,
 
       *faces = g_new (PangoFontFace *, *n_faces);
 
-      tmp_list = win32family->font_entries;
+      tmp_list = win32family->faces;
       while (tmp_list)
 	{
 	  (*faces)[i++] = tmp_list->data;
@@ -479,7 +480,7 @@ pango_win32_get_font_family (PangoWin32FontMap *win32fontmap,
     {
       win32family = g_object_new (PANGO_WIN32_TYPE_FAMILY, NULL);
       win32family->family_name = g_strdup (family_name);
-      win32family->font_entries = NULL;
+      win32family->faces = NULL;
 
       g_hash_table_insert (win32fontmap->families, win32family->family_name, win32family);
     }
@@ -508,7 +509,7 @@ pango_win32_font_map_load_font (PangoFontMap               *fontmap,
       PangoWin32Face *best_match = NULL;
 
       PING (("got win32family"));
-      tmp_list = win32family->font_entries;
+      tmp_list = win32family->faces;
       while (tmp_list)
 	{
 	  PangoWin32Face *face = tmp_list->data;
@@ -1031,7 +1032,7 @@ pango_win32_insert_font (PangoWin32FontMap *win32fontmap,
 {
   LOGFONTW *lfp2 = NULL;
   PangoFontDescription *description;
-  PangoWin32Family *font_family;
+  PangoWin32Family *win32family;
   PangoWin32Face *win32face;
   gint i;
   gchar *p;
@@ -1087,13 +1088,11 @@ pango_win32_insert_font (PangoWin32FontMap *win32fontmap,
 
   win32face->cached_fonts = NULL;
 
-  font_family =
+  win32family =
     pango_win32_get_font_family (win32fontmap,
 				 pango_font_description_get_family (win32face->description));
-  font_family->font_entries = g_slist_append (font_family->font_entries, win32face);
-  PING (("g_slist_length(font_family->font_entries)=%d", g_slist_length(font_family->font_entries)));
-
-  win32fontmap->n_fonts++;
+  win32family->faces = g_slist_append (win32family->faces, win32face);
+  PING (("g_slist_length(win32family->faces)=%d", g_slist_length (win32family->faces)));
 
 #if 1 /* Thought pango.aliases would make this code unnecessary, but no. */
   /*
@@ -1108,22 +1107,19 @@ pango_win32_insert_font (PangoWin32FontMap *win32fontmap,
     {
     case FF_MODERN : /* monospace */
       PING (("monospace"));
-      font_family->is_monospace = TRUE; /* modify before reuse */
-      font_family = pango_win32_get_font_family (win32fontmap, "monospace");
-      font_family->font_entries = g_slist_append (font_family->font_entries, win32face);
-      win32fontmap->n_fonts++;
+      win32family->is_monospace = TRUE; /* modify before reuse */
+      win32family = pango_win32_get_font_family (win32fontmap, "monospace");
+      win32family->faces = g_slist_append (win32family->faces, win32face);
       break;
     case FF_ROMAN : /* serif */
       PING (("serif"));
-      font_family = pango_win32_get_font_family (win32fontmap, "serif");
-      font_family->font_entries = g_slist_append (font_family->font_entries, win32face);
-      win32fontmap->n_fonts++;
+      win32family = pango_win32_get_font_family (win32fontmap, "serif");
+      win32family->faces = g_slist_append (win32family->faces, win32face);
       break;
     case  FF_SWISS  : /* sans */
       PING (("sans"));
-      font_family = pango_win32_get_font_family (win32fontmap, "sans");
-      font_family->font_entries = g_slist_append (font_family->font_entries, win32face);
-      win32fontmap->n_fonts++;
+      win32family = pango_win32_get_font_family (win32fontmap, "sans");
+      win32family->faces = g_slist_append (win32family->faces, win32face);
       break;
     }
 
@@ -1133,9 +1129,8 @@ pango_win32_insert_font (PangoWin32FontMap *win32fontmap,
   p = g_utf16_to_utf8 (win32face->logfontw.lfFaceName, -1, NULL, NULL, NULL);
   if (p && g_ascii_strcasecmp (p, "courier new") == 0)
     {
-      font_family = pango_win32_get_font_family (win32fontmap, "courier");
-      font_family->font_entries = g_slist_append (font_family->font_entries, win32face);
-      win32fontmap->n_fonts++;
+      win32family = pango_win32_get_font_family (win32fontmap, "courier");
+      win32family->faces = g_slist_append (win32family->faces, win32face);
     }
   g_free (p);
 #endif

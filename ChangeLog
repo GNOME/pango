@@ -1,5 +1,13 @@
 2008-05-26  Tor Lillqvist  <tml@novell.com>
 
+	* pango/pangowin32-private.h
+	* pango/pangowin32-fontmap.c: Drop the PangoWin32FontMap::n_fonts
+	field which wasn't really used for anything. Rename the field
+	PangoWin32Family::font_entries to faces. Rename some local
+	variables to be more consistently named.
+
+2008-05-26  Tor Lillqvist  <tml@novell.com>
+
 	* pango/pangowin32.c
 	* pango/pangowin32-fontmap.c: Some whitespace cleanup. 
 
