@@ -1,3 +1,22 @@
+2008-05-27  Tor Lillqvist  <tml@novell.com>
+
+	* pango/pangowin32-fontmap.c (pango_win32_family_list_faces):
+	Prune duplicated face names. Makes the GTK+ font selector look a
+	bit saner for the "sans", "serif" and "monospace" standard pseudo
+	font families with just one instance of each style.
+
+	That we get duplicated styles in the first place is because of the
+	magic code snippet in pango_win32_insert_font() that sets up the
+	list of faces for the standard pseudo font families. I don't like
+	that code but without it these families wouldn't currently show up
+	in the font selector at all.
+
+	A problem is still that the magic code blindly adds all random
+	fonts that claim to be FF_ROMAN to the list of faces for the
+	"serif" family, etc. I think it would be preferrable to do it only
+	for well-known sensible fonts. That would be those that are listed
+	in builtin_aliases in pango-utils.c, I guess.
+
 2008-05-26  Tor Lillqvist  <tml@novell.com>
 
 	* pango/pangowin32-private.h

@@ -357,22 +357,51 @@ pango_win32_family_list_faces (PangoFontFamily  *family,
 			       int              *n_faces)
 {
   PangoWin32Family *win32family = PANGO_WIN32_FAMILY (family);
+  GSList *p;
+  int n;
 
-  *n_faces = g_slist_length (win32family->faces);
+  p = win32family->faces;
+  n = 0;
+  while (p)
+    {
+      GSList *q;
+      q = win32family->faces;
+      while (q != p)
+	{
+	  if (strcmp (pango_win32_face_get_face_name ((PangoFontFace *) q->data),
+		      pango_win32_face_get_face_name ((PangoFontFace *) p->data)) == 0)
+	    break;
+	  q = q->next;
+	}
+      if (q == p)
+	n++;
+      p = p->next;
+    }
+
   if (faces)
     {
-      GSList *tmp_list;
-      int i = 0;
+      int i;
 
-      *faces = g_new (PangoFontFace *, *n_faces);
+      *faces = g_new (PangoFontFace *, n);
 
-      tmp_list = win32family->faces;
-      while (tmp_list)
+      p = win32family->faces;
+      i = 0;
+      while (p)
 	{
-	  (*faces)[i++] = tmp_list->data;
-	  tmp_list = tmp_list->next;
+	  int j;
+	  for (j = 0; j < i; j++)
+	    {
+	      if (strcmp (pango_win32_face_get_face_name ((*faces)[j]),
+			  pango_win32_face_get_face_name ((PangoFontFace *) p->data)) == 0)
+		break;
+	    }
+	  if (j == i)
+	    (*faces)[i++] = p->data;
+	  p = p->next;
 	}
     }
+  if (n_faces)
+    *n_faces = n;
 }
 
 static const char *
