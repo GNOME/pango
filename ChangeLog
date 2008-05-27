@@ -6,7 +6,8 @@
 	bold weights for fonts that have a real semi-bold weight, like
 	Lucida Sans. (The bold weight ended up looking like the semi-bold
 	anyway.)
-	(pango_win32_font_description_from_logfont): Recognize the
+	(pango_win32_font_description_from_logfont)
+	(pango_win32_font_description_from_logfontw): Recognize the
 	semi-bold weight interval.
 
 2008-05-27  Tor Lillqvist  <tml@novell.com>
