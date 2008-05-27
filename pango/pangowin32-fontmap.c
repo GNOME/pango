@@ -479,17 +479,7 @@ pango_win32_family_list_faces (PangoFontFamily  *family,
   n = 0;
   while (p)
     {
-      GSList *q;
-      q = win32family->faces;
-      while (q != p)
-	{
-	  if (strcmp (pango_win32_face_get_face_name ((PangoFontFace *) q->data),
-		      pango_win32_face_get_face_name ((PangoFontFace *) p->data)) == 0)
-	    break;
-	  q = q->next;
-	}
-      if (q == p)
-	n++;
+      n++;
       p = p->next;
     }
 
@@ -503,15 +493,7 @@ pango_win32_family_list_faces (PangoFontFamily  *family,
       i = 0;
       while (p)
 	{
-	  int j;
-	  for (j = 0; j < i; j++)
-	    {
-	      if (strcmp (pango_win32_face_get_face_name ((*faces)[j]),
-			  pango_win32_face_get_face_name ((PangoFontFace *) p->data)) == 0)
-		break;
-	    }
-	  if (j == i)
-	    (*faces)[i++] = p->data;
+	  (*faces)[i++] = p->data;
 	  p = p->next;
 	}
     }

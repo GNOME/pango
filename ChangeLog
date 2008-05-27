@@ -1,5 +1,12 @@
 2008-05-27  Tor Lillqvist  <tml@novell.com>
 
+	* pango/pangowin32-fontmap.c (pango_win32_family_list_faces):
+	After the change to how the standard pseudo font families are set
+	up below, we don't need to prune out duplicate face names any
+	longer.
+
+2008-05-27  Tor Lillqvist  <tml@novell.com>
+
 	Bug 436363 - Bold and Bold Italic style of MS-Mincho font are not
 	listed in GtkFontSelection
 
