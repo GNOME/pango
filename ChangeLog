@@ -1,5 +1,8 @@
 2008-05-27  Tor Lillqvist  <tml@novell.com>
 
+	Bug 436363 - Bold and Bold Italic style of MS-Mincho font are not
+	listed in GtkFontSelection
+
 	* pango/pangowin32-fontmap.c: Synthesize also Bold and Bold Italic
 	(or Oblique) faces when feasible. Don't synthesize these for
 	decorative or script fonts. Kill the magic code snippet mentioned
