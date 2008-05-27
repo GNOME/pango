@@ -1,3 +1,14 @@
+2008-05-28  Tor Lillqvist  <tml@novell.com>
+
+	* pango/pangowin32-fontmap.c (synthesize_foreach)
+	(_pango_win32_font_map_init): Rework face synthesis once
+	again. Code is simpler now, and we don't needlessly synthesize
+	bold weights for fonts that have a real semi-bold weight, like
+	Lucida Sans. (The bold weight ended up looking like the semi-bold
+	anyway.)
+	(pango_win32_font_description_from_logfont): Recognize the
+	semi-bold weight interval.
+
 2008-05-27  Tor Lillqvist  <tml@novell.com>
 
 	* pango/pangowin32-fontmap.c (pango_win32_family_list_faces):

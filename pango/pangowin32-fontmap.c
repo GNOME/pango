@@ -211,93 +211,90 @@ pango_win32_enum_proc (LOGFONTW       *lfp,
   return 1;
 }
 
-typedef struct _ItalicHelper
-{
-  const char *style;
-  gboolean (*check) (const LOGFONTW *lf);
-  void (*modify) (LOGFONTW *lf);
-  PangoWin32FontMap *fontmap;
-  GSList *list;
-} SynthesizeHelper;
-
-static gboolean
-slanted_feasible (const LOGFONTW *lfp)
-{
-  return (((lfp->lfPitchAndFamily & 0xF0) == FF_MODERN ||
-	   (lfp->lfPitchAndFamily & 0xF0) == FF_ROMAN ||
-	   (lfp->lfPitchAndFamily & 0xF0) == FF_SWISS) &&
-	  !lfp->lfItalic);
-}
-
-static void
-italicize (LOGFONTW *lfp)
-{
-  lfp->lfItalic = 1;
-}
-
-static gboolean
-bold_feasible (const LOGFONTW *lfp)
-{
-  return (((lfp->lfPitchAndFamily & 0xF0) == FF_MODERN ||
-	   (lfp->lfPitchAndFamily & 0xF0) == FF_ROMAN ||
-	   (lfp->lfPitchAndFamily & 0xF0) == FF_SWISS) &&
-	  lfp->lfWeight == FW_NORMAL);
-}
-
-static void
-boldify (LOGFONTW *lfp)
-{
-  lfp->lfWeight = FW_BOLD;
-}
-
 static void
 synthesize_foreach (gpointer key,
 		    gpointer value,
 		    gpointer user_data)
 {
-  SynthesizeHelper *helper = (SynthesizeHelper *)user_data;
-  const LOGFONTW *lfp = (const LOGFONTW *) value;
-  LOGFONTW *lfpnew;
+  PangoWin32Family *win32family = value;
+  PangoWin32FontMap *win32fontmap = user_data;
 
-  if (helper->check (lfp))
+  enum { NORMAL, BOLDER, SLANTED };
+  PangoWin32Face *variant[4] = { NULL, NULL, NULL, NULL };
+
+  GSList *p;
+
+  LOGFONTW lf;
+
+  p = win32family->faces;
+  while (p)
     {
-      /* We have "normal" variant, look if we need to synthesize the required style */
-      LOGFONTW logfontw = *lfp;
-      helper->modify (&logfontw);
-      if (!g_hash_table_lookup (helper->fontmap->fonts, &logfontw))
-	{
-	  PING (("synthesizing %s %s%S wt=%ld",
-		 helper->style,
-		 lfp->lfItalic ? "Italic " : "",
-		 lfp->lfFaceName,
-		 lfp->lfWeight));
-	  lfpnew = g_new (LOGFONTW, 1);
-	  *lfpnew = logfontw;
-	  helper->list = g_slist_append (helper->list, lfpnew);
-	}
+      PangoWin32Face *win32face = p->data;
+
+      /* Don't synthesize anything unless it's a monospace, serif, or sans font */
+      if (!((win32face->logfontw.lfPitchAndFamily & 0xF0) == FF_MODERN ||
+	    (win32face->logfontw.lfPitchAndFamily & 0xF0) == FF_ROMAN ||
+	    (win32face->logfontw.lfPitchAndFamily & 0xF0) == FF_SWISS))
+	return;
+
+      if (win32face->logfontw.lfWeight > (FW_LIGHT + FW_NORMAL) / 2 &&
+	  win32face->logfontw.lfWeight <= (FW_NORMAL + FW_SEMIBOLD) / 2)
+	variant[NORMAL] = win32face;
+
+      if (win32face->logfontw.lfWeight > (FW_NORMAL + FW_SEMIBOLD) / 2)
+	variant[BOLDER] = win32face;
+
+      if (win32face->logfontw.lfItalic)
+	variant[SLANTED] = win32face;
+
+      if (win32face->logfontw.lfWeight >= (FW_NORMAL + FW_SEMIBOLD) / 2 &&
+	  win32face->logfontw.lfItalic)
+	variant[BOLDER+SLANTED] = win32face;
+
+      p = p->next;
     }
-}
 
-static void
-synthesize_faces (PangoWin32FontMap  *win32fontmap,
-		  const char         *style,
-		  gboolean          (*check_func) (const LOGFONTW *lfp),
-		  void              (*modify_func) (LOGFONTW *lfp))
-{
-  SynthesizeHelper helper = { style, check_func, modify_func, win32fontmap, NULL };
-  GSList *list;
-
-  g_hash_table_foreach (win32fontmap->fonts, synthesize_foreach, &helper);
-
-  /* Process the list of LOGFONTWs for the synthesized fonts */
-  list = helper.list;
-  while (list)
+  if (variant[NORMAL] != NULL && variant[BOLDER] == NULL)
     {
-      pango_win32_insert_font (win32fontmap, (LOGFONTW *)list->data, TRUE);
-      g_free (list->data);
-      list = list->next;
+      lf = variant[NORMAL]->logfontw;
+      lf.lfWeight = FW_BOLD;
+      
+      pango_win32_insert_font (win32fontmap, &lf, TRUE);
     }
-  g_slist_free (helper.list);
+
+  if (variant[NORMAL] != NULL && variant[SLANTED] == NULL)
+    {
+      lf = variant[NORMAL]->logfontw;
+      lf.lfItalic = 255;
+      
+      pango_win32_insert_font (win32fontmap, &lf, TRUE);
+    }
+
+  if (variant[NORMAL] != NULL &&
+      variant[BOLDER+SLANTED] == NULL)
+    {
+      lf = variant[NORMAL]->logfontw;
+      lf.lfWeight = FW_BOLD;
+      lf.lfItalic = 255;
+
+      pango_win32_insert_font (win32fontmap, &lf, TRUE);
+    }
+  else if (variant[BOLDER] != NULL &&
+	   variant[BOLDER+SLANTED] == NULL)
+    {
+      lf = variant[BOLDER]->logfontw;
+      lf.lfItalic = 255;
+
+      pango_win32_insert_font (win32fontmap, &lf, TRUE);
+    }
+  else if (variant[SLANTED] != NULL &&
+	   variant[BOLDER+SLANTED] == NULL)
+    {
+      lf = variant[SLANTED]->logfontw;
+      lf.lfWeight = FW_BOLD;
+
+      pango_win32_insert_font (win32fontmap, &lf, TRUE);
+    }
 }
 
 static void
@@ -322,7 +319,7 @@ create_standard_family (PangoWin32FontMap *win32fontmap,
 
 	  while (p)
 	    {
-	      const PangoWin32Face *old_face = (const PangoWin32Face *) p->data;
+	      const PangoWin32Face *old_face = p->data;
 	      PangoWin32Face *new_face = g_object_new (PANGO_WIN32_TYPE_FACE, NULL);
 	      int j;
 
@@ -377,11 +374,7 @@ _pango_win32_font_map_init (PangoWin32FontMap *win32fontmap)
 		       (FONTENUMPROCW) pango_win32_enum_proc,
 		       (LPARAM) win32fontmap, 0);
 
-  /* Create synthetic Italic faces */
-  synthesize_faces (win32fontmap, "Italic", slanted_feasible, italicize);
-
-  /* Create synthetic Bold (and Bold Italic) faces */
-  synthesize_faces (win32fontmap, "Bold", bold_feasible, boldify);
+  g_hash_table_foreach (win32fontmap->families, synthesize_foreach, win32fontmap);
 
   /* Create synthetic "Sans", "Serif" and "Monospace" families */
   create_standard_family (win32fontmap, "Sans");
@@ -898,8 +891,10 @@ pango_win32_font_description_from_logfont (const LOGFONT *lfp)
     weight = PANGO_WEIGHT_ULTRALIGHT;
   else if (lfp->lfWeight <= (FW_LIGHT + FW_NORMAL) / 2)
     weight = PANGO_WEIGHT_LIGHT;
-  else if (lfp->lfWeight <= (FW_NORMAL + FW_BOLD) / 2)
+  else if (lfp->lfWeight <= (FW_NORMAL + FW_SEMIBOLD) / 2)
     weight = PANGO_WEIGHT_NORMAL;
+  else if (lfp->lfWeight <= (FW_SEMIBOLD + FW_BOLD) / 2)
+    weight = PANGO_WEIGHT_SEMIBOLD;
   else if (lfp->lfWeight <= (FW_BOLD + FW_ULTRABOLD) / 2)
     weight = PANGO_WEIGHT_BOLD;
   else if (lfp->lfWeight <= (FW_ULTRABOLD + FW_HEAVY) / 2)
@@ -1096,8 +1091,10 @@ pango_win32_font_description_from_logfontw (const LOGFONTW *lfp)
     weight = PANGO_WEIGHT_ULTRALIGHT;
   else if (lfp->lfWeight <= (FW_LIGHT + FW_NORMAL) / 2)
     weight = PANGO_WEIGHT_LIGHT;
-  else if (lfp->lfWeight <= (FW_NORMAL + FW_BOLD) / 2)
+  else if (lfp->lfWeight <= (FW_NORMAL + FW_SEMIBOLD) / 2)
     weight = PANGO_WEIGHT_NORMAL;
+  else if (lfp->lfWeight <= (FW_SEMIBOLD + FW_BOLD) / 2)
+    weight = PANGO_WEIGHT_SEMIBOLD;
   else if (lfp->lfWeight <= (FW_BOLD + FW_ULTRABOLD) / 2)
     weight = PANGO_WEIGHT_BOLD;
   else if (lfp->lfWeight <= (FW_ULTRABOLD + FW_HEAVY) / 2)
@@ -1185,13 +1182,14 @@ pango_win32_insert_font (PangoWin32FontMap *win32fontmap,
   PangoWin32Face *win32face;
   gint i;
 
-  PING (("face=%S,charset=%s,it=%s,wt=%ld,ht=%ld,ff=%s",
+  PING (("face=%S,charset=%s,it=%s,wt=%ld,ht=%ld,ff=%s%s",
 	 lfp->lfFaceName,
 	 charset_name (lfp->lfCharSet),
 	 lfp->lfItalic ? "yes" : "no",
 	 lfp->lfWeight,
 	 lfp->lfHeight,
-	 ff_name (lfp->lfPitchAndFamily & 0xF0)));
+	 ff_name (lfp->lfPitchAndFamily & 0xF0),
+	 is_synthetic ? " synthetic" : ""));
 
   /* Ignore Symbol fonts (which don't have any Unicode mapping
    * table). We could also be fancy and use the PostScript glyph name
