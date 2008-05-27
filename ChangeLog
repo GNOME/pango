@@ -15,8 +15,8 @@
 	words from the family name. This maps for instance the DejaVu
 	Sans, DejaVu Sans Condensed and DejaVu Sans Light fonts into a
 	single DejaVu Sans family with styles Ultra-Light, Condensed,
-	Oblique Condensed, Oblique, Bold Condensed, Bold, Bold Oblique
-	Condensed, and Bold Oblique, which is nice.
+	Normal, Oblique Condensed, Oblique, Bold Condensed, Bold, Bold
+	Oblique Condensed, and Bold Oblique, which is nice.
 
 2008-05-27  Tor Lillqvist  <tml@novell.com>
 
