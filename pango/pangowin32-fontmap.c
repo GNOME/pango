@@ -237,18 +237,20 @@ synthesize_foreach (gpointer key,
 	    (win32face->logfontw.lfPitchAndFamily & 0xF0) == FF_SWISS))
 	return;
 
-      if (win32face->logfontw.lfWeight > (FW_LIGHT + FW_NORMAL) / 2 &&
-	  win32face->logfontw.lfWeight <= (FW_NORMAL + FW_SEMIBOLD) / 2)
+      if (pango_font_description_get_weight (win32face->description) == PANGO_WEIGHT_NORMAL &&
+	  pango_font_description_get_style (win32face->description) == PANGO_STYLE_NORMAL)
 	variant[NORMAL] = win32face;
 
-      if (win32face->logfontw.lfWeight > (FW_NORMAL + FW_SEMIBOLD) / 2)
+      if (pango_font_description_get_weight (win32face->description) > PANGO_WEIGHT_NORMAL &&
+	  pango_font_description_get_style (win32face->description) == PANGO_STYLE_NORMAL)
 	variant[BOLDER] = win32face;
 
-      if (win32face->logfontw.lfItalic)
+      if (pango_font_description_get_weight (win32face->description) == PANGO_WEIGHT_NORMAL &&
+	  pango_font_description_get_style (win32face->description) >= PANGO_STYLE_OBLIQUE)
 	variant[SLANTED] = win32face;
 
-      if (win32face->logfontw.lfWeight >= (FW_NORMAL + FW_SEMIBOLD) / 2 &&
-	  win32face->logfontw.lfItalic)
+      if (pango_font_description_get_weight (win32face->description) > PANGO_WEIGHT_NORMAL &&
+	  pango_font_description_get_style (win32face->description) >= PANGO_STYLE_OBLIQUE)
 	variant[BOLDER+SLANTED] = win32face;
 
       p = p->next;
@@ -1067,8 +1069,62 @@ pango_win32_font_description_from_logfontw (const LOGFONTW *lfp)
   gchar *family;
   PangoStyle style;
   PangoVariant variant;
-  PangoWeight weight;
+  PangoWeight weight, name_weight;
   PangoStretch stretch;
+
+  static const struct {
+    const char *marker;
+    int marker_len;
+    int remove_len;
+    PangoWeight weight;
+  } weight_names[] = {
+#define ENTRY(n, s) ENTRY2 (n, sizeof (#n) - 1, s)
+#define ENTRY2(n, l, s) ENTRY3 (n, l, l, s)
+#define ENTRY3(n, marker_len, remove_len, s) { #n, marker_len, remove_len, PANGO_WEIGHT_##s }
+    ENTRY (Ultra Light, ULTRALIGHT),
+    ENTRY (UltraLight, ULTRALIGHT),
+    ENTRY (Light, LIGHT),
+    ENTRY (Medium, NORMAL),
+    ENTRY (Demi Bold, SEMIBOLD),
+    ENTRY (Demi, SEMIBOLD),
+    ENTRY (Ultra Bold, ULTRABOLD),
+    ENTRY (Extra Bold, ULTRABOLD),
+    ENTRY (SemiBold, SEMIBOLD),
+    ENTRY (DemiBold, SEMIBOLD),
+    ENTRY (UltraBold, ULTRABOLD),
+    ENTRY (ExtraBold, ULTRABOLD),
+    ENTRY (Bold, BOLD),
+    ENTRY (Heavy, HEAVY),
+    ENTRY (Black, HEAVY),
+#undef ENTRY
+#undef ENTRY2
+#undef ENTRY3
+  };
+
+  static const struct {
+    const char *marker;
+    int marker_len;
+    PangoStretch stretch;
+  } stretch_names[] = {
+#define ENTRY(n, s) { #n, sizeof (#n) - 1, PANGO_STRETCH_##s }
+    ENTRY (Ext Condensed, EXTRA_CONDENSED),
+    ENTRY (Extra Condensed, EXTRA_CONDENSED),
+    ENTRY (UltraCondensed, ULTRA_CONDENSED),
+    ENTRY (ExtraCondensed, EXTRA_CONDENSED),
+    ENTRY (Condensed, CONDENSED),
+    ENTRY (Cond, CONDENSED),
+    ENTRY (Narrow, CONDENSED),
+    ENTRY (Ext Expanded, EXTRA_EXPANDED),
+    ENTRY (Extra Expanded, EXTRA_EXPANDED),
+    ENTRY (Ultra Expanded, ULTRA_EXPANDED),
+    ENTRY (ExtraExpanded, EXTRA_EXPANDED),
+    ENTRY (UltraExpanded, ULTRA_EXPANDED),
+    ENTRY (Expanded, EXPANDED),
+#undef ENTRY
+  };
+
+  int i;
+  char *p;
 
   family = get_family_nameW (lfp);
 
@@ -1102,8 +1158,50 @@ pango_win32_font_description_from_logfontw (const LOGFONTW *lfp)
   else
     weight = PANGO_WEIGHT_HEAVY;
 
-  /* XXX No idea how to figure out the stretch */
+  name_weight = 0;
+
+  p = family;
+  while ((p = strchr (p, ' ')) != NULL)
+    {
+      for (i = 0; i < G_N_ELEMENTS (weight_names); i++)
+	{
+	  if (g_ascii_strncasecmp (p + 1, weight_names[i].marker, weight_names[i].marker_len) == 0 &&
+	      (p[1 + weight_names[i].marker_len] == '\0' ||
+	       p[1 + weight_names[i].marker_len] == ' '))
+	    {
+	      strcpy (p, p + 1 + weight_names[i].remove_len);
+	      name_weight = weight_names[i].weight;
+	      break;
+	    }
+	}
+      if (i < G_N_ELEMENTS (weight_names))
+	break;
+      p++;
+    }
+
+  if (weight == PANGO_WEIGHT_NORMAL && name_weight > 0)
+    weight = name_weight;
+
   stretch = PANGO_STRETCH_NORMAL;
+
+  p = family;
+  while ((p = strchr (p, ' ')) != NULL)
+    {
+      for (i = 0; i < G_N_ELEMENTS (stretch_names); i++)
+	{
+	  if (g_ascii_strncasecmp (p + 1, stretch_names[i].marker, stretch_names[i].marker_len) == 0 &&
+	      (p[1 + stretch_names[i].marker_len] == '\0' ||
+	       p[1 + stretch_names[i].marker_len] == ' '))
+	    {
+	      strcpy (p, p + 1 + stretch_names[i].marker_len);
+	      stretch = stretch_names[i].stretch;
+	      break;
+	    }
+	}
+      if (i < G_N_ELEMENTS (stretch_names))
+	break;
+      p++;
+    }
 
   description = pango_font_description_new ();
   pango_font_description_set_family (description, family);
@@ -1247,7 +1345,8 @@ pango_win32_insert_font (PangoWin32FontMap *win32fontmap,
     
   win32family->faces = g_slist_append (win32family->faces, win32face);
 
-  PING (("g_slist_length(win32family->faces)=%d", g_slist_length (win32family->faces)));
+  PING (("name=%s, length(faces)=%d",
+	 win32family->family_name, g_slist_length (win32family->faces)));
 }
 
 /* Given a LOGFONTW and size, make a matching LOGFONTW corresponding to

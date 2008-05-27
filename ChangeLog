@@ -10,6 +10,14 @@
 	(pango_win32_font_description_from_logfontw): Recognize the
 	semi-bold weight interval.
 
+	Map words that indicate weight and slant in the font name into the
+	corresponding Pango font description settings, and strip those
+	words from the family name. This maps for instance the DejaVu
+	Sans, DejaVu Sans Condensed and DejaVu Sans Light fonts into a
+	single DejaVu Sans family with styles Ultra-Light, Condensed,
+	Oblique Condensed, Oblique, Bold Condensed, Bold, Bold Oblique
+	Condensed, and Bold Oblique, which is nice.
+
 2008-05-27  Tor Lillqvist  <tml@novell.com>
 
 	* pango/pangowin32-fontmap.c (pango_win32_family_list_faces):
