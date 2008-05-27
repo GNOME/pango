@@ -1,5 +1,15 @@
 2008-05-27  Tor Lillqvist  <tml@novell.com>
 
+	* pango/pangowin32-fontmap.c: Synthesize also Bold and Bold Italic
+	(or Oblique) faces when feasible. Don't synthesize these for
+	decorative or script fonts. Kill the magic code snippet mentioned
+	below. Instead, explicitly create font families for the standard
+	pseudo fonts that correspond to the first existing font of the
+	corresponding built-in alias list. Use the face style name Oblique
+	for slanted sans and monospace fonts, not Italic.
+
+2008-05-27  Tor Lillqvist  <tml@novell.com>
+
 	* pango/pangowin32-fontmap.c (pango_win32_family_list_faces):
 	Prune duplicated face names. Makes the GTK+ font selector look a
 	bit saner for the "sans", "serif" and "monospace" standard pseudo
