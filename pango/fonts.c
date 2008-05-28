@@ -885,14 +885,41 @@ static const FieldMap gravity_map[] = {
 };
 
 static gboolean
+field_matches (const gchar *s1,
+	       const gchar *s2,
+	       gsize n)
+{
+  gint c1, c2;
+
+  g_return_val_if_fail (s1 != NULL, 0);
+  g_return_val_if_fail (s2 != NULL, 0);
+
+  while (n && *s1 && *s2)
+    {
+      c1 = (gint)(guchar) TOLOWER (*s1);
+      c2 = (gint)(guchar) TOLOWER (*s2);
+      if (c1 != c2) {
+        if (c1 == '-') {
+	  s1++;
+	  continue;
+	}
+	return FALSE;
+      }
+      s1++; s2++;
+      n--;
+    }
+
+  return n == 0 && *s1 == '\0';
+}
+
+static gboolean
 find_field (const FieldMap *map, int n_elements, const char *str, int len, int *val)
 {
   int i;
 
   for (i=0; i<n_elements; i++)
     {
-      if (map[i].str[0] && g_ascii_strncasecmp (map[i].str, str, len) == 0 &&
-	  map[i].str[len] == '\0')
+      if (map[i].str[0] && field_matches (map[i].str, str, len))
 	{
 	  if (val)
 	    *val = map[i].value;
