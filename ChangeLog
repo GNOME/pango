@@ -1,3 +1,11 @@
+2008-06-02  Behdad Esfahbod  <behdad@gnome.org>
+
+	* === Released 1.21.2 ===
+
+	* configure.in: Version 1.21.2
+
+	* NEWS: Updated.
+
 2008-05-28  Behdad Esfahbod  <behdad@gnome.org>
 
 	Bug 510299 – OpenType font variants are broken with ATSUI/Cairo

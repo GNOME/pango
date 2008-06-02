@@ -1,3 +1,13 @@
+Overview of changes between 1.21.1 and 1.21.2
+==============================================
+- Various win32 font handling improvements
+- Bugs fixed in this release:
+	Bug 510299 – OpenType font variants are broken with ATSUI/Cairo
+	Bug 436363 - Bold and Bold Italic style of MS-Mincho font are not
+		listed in GtkFontSelection
+	Bug 523193 – Vista Hebrew, CJK fonts to builtin win32 pango aliases
+		Patch by Daniel Atallah.
+
 Overview of changes between 1.21.0 and 1.21.1
 ==============================================
 - Partial work to make pango_break() exactly follow Unicode TR#14 and TR#29.
