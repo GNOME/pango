@@ -74,6 +74,10 @@ static void                  pango_fc_font_set_property (GObject          *objec
 							 guint             prop_id,
 							 const GValue     *value,
 							 GParamSpec       *pspec);
+static void                  pango_fc_font_get_property (GObject          *object,
+							 guint             prop_id,
+							 GValue           *value,
+							 GParamSpec       *pspec);
 static PangoEngineShape *    pango_fc_font_find_shaper  (PangoFont        *font,
 							 PangoLanguage    *language,
 							 guint32           ch);
@@ -103,6 +107,7 @@ pango_fc_font_class_init (PangoFcFontClass *class)
 
   object_class->finalize = pango_fc_font_finalize;
   object_class->set_property = pango_fc_font_set_property;
+  object_class->get_property = pango_fc_font_get_property;
   font_class->describe = pango_fc_font_describe;
   font_class->describe_absolute = pango_fc_font_describe_absolute;
   font_class->find_shaper = pango_fc_font_find_shaper;
@@ -114,7 +119,8 @@ pango_fc_font_class_init (PangoFcFontClass *class)
 				   g_param_spec_pointer ("pattern",
 							 "Pattern",
 							 "The fontconfig pattern for this font",
-							 G_PARAM_WRITABLE | G_PARAM_CONSTRUCT_ONLY));
+							 G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY |
+							 G_PARAM_STATIC_STRINGS));
 
   g_type_class_add_private (object_class, sizeof (PangoFcFontPrivate));
 }
@@ -212,6 +218,26 @@ pango_fc_font_set_property (GObject       *object,
 	fcfont->description = pango_fc_font_description_from_pattern (pattern, TRUE);
 	fcfont->is_hinted = pattern_is_hinted (pattern);
 	fcfont->is_transformed = pattern_is_transformed (pattern);
+      }
+      break;
+    default:
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+      break;
+    }
+}
+
+static void
+pango_fc_font_get_property (GObject       *object,
+			    guint          prop_id,
+			    GValue        *value,
+			    GParamSpec    *pspec)
+{
+  switch (prop_id)
+    {
+    case PROP_PATTERN:
+      {
+	PangoFcFont *fcfont = PANGO_FC_FONT (object);
+	g_value_set_pointer (value, fcfont->font_pattern);
       }
       break;
     default:

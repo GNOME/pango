@@ -1,3 +1,10 @@
+2008-06-09  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 537186 – Make PangoFcFont pattern property readable
+
+	* pango/pangofc-font.c (pango_fc_font_class_init),
+	(pango_fc_font_get_property): Make it readable.
+
 2008-06-02  Behdad Esfahbod  <behdad@gnome.org>
 
 	* === Released 1.21.2 ===
