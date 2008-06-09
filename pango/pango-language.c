@@ -78,7 +78,7 @@ pango_language_copy (PangoLanguage *language)
 }
 
 static void
-pango_language_free (PangoLanguage *language)
+pango_language_free (PangoLanguage *language G_GNUC_UNUSED)
 {
   return; /* nothing */
 }
@@ -207,7 +207,7 @@ pango_language_get_default (void)
 
 /**
  * pango_language_from_string:
- * @language: a string representing a language tag
+ * @language: a string representing a language tag, or %NULL
  *
  * Take a RFC-3066 format language tag as a string and convert it to a
  * #PangoLanguage pointer that can be efficiently copied (copy the
@@ -221,8 +221,9 @@ pango_language_get_default (void)
  * Use pango_language_get_default() if you want to get the #PangoLanguage for
  * the current locale of the process.
  *
- * Return value: an opaque pointer to a #PangoLanguage structure.
- *               this will be valid forever after.
+ * Return value: an opaque pointer to a #PangoLanguage structure, or %NULL
+ *               if @language was %NULL.  The returned pointer will be valid
+ *               forever after, and should not be freed.
  **/
 PangoLanguage *
 pango_language_from_string (const char *language)
@@ -231,6 +232,9 @@ pango_language_from_string (const char *language)
   char *result;
   int len;
   char *p;
+
+  if (language == NULL)
+    return NULL;
 
   if (G_UNLIKELY (!hash))
     hash = g_hash_table_new (lang_hash, lang_equal);
@@ -364,7 +368,7 @@ static const LangInfo lang_texts[] = {
 
 /**
  * pango_language_get_sample_string:
- * @language: a #PangoLanguage
+ * @language: a #PangoLanguage, or %NULL
  *
  * Get a string that is representative of the characters needed to
  * render a particular language. This function is a bad hack for

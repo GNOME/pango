@@ -1,5 +1,12 @@
 2008-06-09  Behdad Esfahbod  <behdad@gnome.org>
 
+	Bug 537257 – pango_language_from_string(NULL) not happy
+
+	* pango/pango-language.c (pango_language_from_string):
+	Allow NULL.
+
+2008-06-09  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 537186 – Make PangoFcFont pattern property readable
 
 	* pango/pangofc-font.c (pango_fc_font_class_init),
