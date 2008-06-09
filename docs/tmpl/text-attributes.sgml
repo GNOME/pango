@@ -632,7 +632,7 @@ The #GObject type for #PangoLanguage.
 @Returns: 
 
 
-<!-- ##### MACRO pango_language_to_string ##### -->
+<!-- ##### FUNCTION pango_language_to_string ##### -->
 <para>
 Returns a RFC-3066 format string representing the given language tag. 
 </para>

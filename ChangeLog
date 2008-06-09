@@ -1,5 +1,17 @@
 2008-06-09  Behdad Esfahbod  <behdad@gnome.org>
 
+	Bug 537258 – Add a pango_language_to_string() function
+
+	* docs/tmpl/text-attributes.sgml:
+	* pango/pango-language.c (pango_language_to_string):
+	* pango/pango-language.h:
+	* pango/pango.def:
+	Add a function implementation of pango_language_to_string().
+	The macro is still available.  To be removed in a cycle or two from
+	now. (bug #537466)
+
+2008-06-09  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 537257 – pango_language_from_string(NULL) not happy
 
 	* pango/pango-language.c (pango_language_from_string):

@@ -214,6 +214,7 @@ EXPORTS
 	pango_language_get_type
 	pango_language_includes_script
 	pango_language_matches
+	pango_language_to_string
 	pango_layout_context_changed
 	pango_layout_copy
 	pango_layout_get_alignment

@@ -35,6 +35,7 @@ typedef struct _PangoLanguage PangoLanguage;
 GType          pango_language_get_type    (void) G_GNUC_CONST;
 PangoLanguage *pango_language_from_string (const char *language);
 
+G_CONST_RETURN char *pango_language_to_string   (PangoLanguage *language) G_GNUC_CONST;
 #define pango_language_to_string(language) ((const char *)language)
 
 G_CONST_RETURN char *pango_language_get_sample_string (PangoLanguage *language) G_GNUC_CONST;

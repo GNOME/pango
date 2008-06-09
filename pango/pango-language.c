@@ -258,6 +258,21 @@ pango_language_from_string (const char *language)
 }
 
 /**
+ * pango_language_to_string:
+ * @language: a language tag.
+ *
+ * Gets the RFC-3066 format string representing the given language tag. 
+ *
+ * Returns: a string representing the language tag.  This is owned by
+ *          Pango and should not be freed.
+ */
+G_CONST_RETURN char *
+(pango_language_to_string) (PangoLanguage *language)
+{
+  return pango_language_to_string (language);
+}
+
+/**
  * pango_language_matches:
  * @language: a language tag (see pango_language_from_string()),
  *            %NULL is allowed and matches nothing but '*'
