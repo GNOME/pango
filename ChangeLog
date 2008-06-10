@@ -1,5 +1,13 @@
 2008-06-09  Behdad Esfahbod  <behdad@gnome.org>
 
+	Bug 536190 – Make pango_fc_font_map_clear_cache() public?
+
+	* pango/pangofc-fontmap.c:
+	* pango/pangofc-fontmap.h:
+	Make pango_fc_font_map_clear_cache() public.
+
+2008-06-09  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 537258 – Add a pango_language_to_string() function
 
 	* docs/tmpl/text-attributes.sgml:

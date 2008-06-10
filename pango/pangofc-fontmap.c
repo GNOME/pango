@@ -1278,10 +1278,9 @@ pango_fc_font_map_clear_fontset_cache (PangoFcFontMap *fcfontmap)
  *
  * Clear all cached information and fontsets for this font map;
  * this should be called whenever there is a change in the
- * output of the default_substitute() virtual function.
- *
- * This function is intended to be used only by backend implementations
- * deriving from #PangoFcFontmap.
+ * output of the default_substitute() virtual function of the
+ * font map, or if fontconfig has been reinitialized to new
+ * configuration.
  *
  * Since: 1.4
  **/
