@@ -1,5 +1,13 @@
 2008-06-16  Behdad Esfahbod  <behdad@gnome.org>
 
+	* === Released 1.21.3 ===
+
+	* configure.in: Version 1.21.3
+
+	* NEWS: Updated.
+
+2008-06-16  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 538661 – Improve pango_cairo_context_update_context()
 
 	* pango/pangocairo-context.c (_pango_cairo_update_context):

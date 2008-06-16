@@ -1,3 +1,13 @@
+Overview of changes between 1.21.2 and 1.21.3
+==============================================
+- Various small fixes and improvements
+- Bugs fixed in this release:
+	Bug 538661 – Improve pango_cairo_context_update_context()
+	Bug 536190 – Make pango_fc_font_map_clear_cache() public?
+	Bug 537258 – Add a pango_language_to_string() function
+	Bug 537257 – pango_language_from_string(NULL) not happy
+	Bug 537186 – Make PangoFcFont pattern property readable
+
 Overview of changes between 1.21.1 and 1.21.2
 ==============================================
 - Various win32 font handling improvements
