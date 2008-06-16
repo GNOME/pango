@@ -92,36 +92,31 @@ _pango_cairo_update_context (cairo_t      *cr,
   PangoMatrix pango_matrix;
   const PangoMatrix *current_matrix, identity_matrix = PANGO_MATRIX_INIT;
   const cairo_font_options_t *merged_options;
+  cairo_font_options_t *old_merged_options;
   gboolean changed = FALSE;
 
   info = get_context_info (context, TRUE);
 
-
   target = cairo_get_target (cr);
 
-  if (!info->surface_options) {
+  if (!info->surface_options)
     info->surface_options = cairo_font_options_create ();
-    changed = TRUE;
-    cairo_surface_get_font_options (target, info->surface_options);
-  } else {
-    cairo_font_options_t *surface_options = cairo_font_options_create ();
-    cairo_surface_get_font_options (target, surface_options);
-    if (!cairo_font_options_equal (surface_options, info->surface_options))
-      {
-	cairo_surface_get_font_options (target, info->surface_options);
-	changed = TRUE;
-      }
-    cairo_font_options_destroy (surface_options);
-  }
+  cairo_surface_get_font_options (target, info->surface_options);
 
-  if (info->merged_options)
-    {
-      cairo_font_options_destroy (info->merged_options);
-      info->merged_options = NULL;
-    }
+  old_merged_options = info->merged_options;
+  info->merged_options = NULL;
 
   merged_options = _pango_cairo_context_get_merged_font_options (context);
 
+  if (old_merged_options)
+    {
+      if (!cairo_font_options_equal (merged_options, old_merged_options))
+	changed = TRUE;
+      cairo_font_options_destroy (old_merged_options);
+      old_merged_options = NULL;
+    }
+  else
+    changed = TRUE;
 
   cairo_get_matrix (cr, &cairo_matrix);
   pango_matrix.xx = cairo_matrix.xx;

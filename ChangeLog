@@ -1,3 +1,10 @@
+2008-06-16  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 538661 – Improve pango_cairo_context_update_context()
+
+	* pango/pangocairo-context.c (_pango_cairo_update_context):
+	Relayout only if merged options changed.
+
 2008-06-09  Behdad Esfahbod  <behdad@gnome.org>
 
 	Bug 536190 – Make pango_fc_font_map_clear_cache() public?
