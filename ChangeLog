@@ -1,3 +1,12 @@
+2008-06-18  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 536017 – Remove SF_MPRE_FIXUP from Sinhala script flags
+	Patch by Harshula
+
+	* modules/indic/indic-ot-class-tables.c: Just freakin' do it.
+	I have no idea if it's right or wrong.  Just that I've been
+	pestered enough to do it.  Time will tell...
+
 2008-06-16  Behdad Esfahbod  <behdad@gnome.org>
 
 	* === Released 1.21.3 ===
