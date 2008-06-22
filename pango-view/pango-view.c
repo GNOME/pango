@@ -1,4 +1,4 @@
-#include <config.h>
+#include "config.h"
 #include "viewer.h"
 
 extern const PangoViewer pangocairo_viewer;

@@ -26,7 +26,7 @@
 /* pango/opentype/COPYING for full details of this licensing scheme.        */
 /****************************************************************************/
 
-#include <config.h>
+#include "config.h"
 
 #include "arabic-ot.h"
 

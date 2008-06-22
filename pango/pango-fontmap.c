@@ -19,7 +19,7 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#include <config.h>
+#include "config.h"
 #include "pango-fontmap.h"
 #include "pango-impl-utils.h"
 #include <stdlib.h>

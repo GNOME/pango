@@ -22,7 +22,7 @@
 /* Size of fontset cache */
 #define FONTSET_CACHE_SIZE 64
 
-#include <config.h>
+#include "config.h"
 #include <math.h>
 
 #include "pango-context.h"

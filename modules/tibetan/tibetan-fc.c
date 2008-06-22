@@ -64,7 +64,7 @@
  * use or other dealings in this Software without prior written
  * authorization of the copyright holder.
  */
-#include <config.h>
+#include "config.h"
 #include <string.h>
 
 #include "pango-engine.h"

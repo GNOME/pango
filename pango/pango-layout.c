@@ -19,7 +19,7 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#include <config.h>
+#include "config.h"
 #include "pango-glyph.h"		/* For pango_shape() */
 #include "pango-break.h"
 #include "pango-item.h"

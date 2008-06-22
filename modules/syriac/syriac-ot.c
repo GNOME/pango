@@ -17,7 +17,7 @@
  * under the GNU General Public License and the FreeType license. See
  * pango/opentype/COPYING for full details of this licensing scheme.
  */
-#include <config.h>
+#include "config.h"
 #include "syriac-ot.h"
 
 /*     Here a table of the joining classes for characters in the range
