@@ -1,9 +1,16 @@
+2008-06-23  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 380094 – Fix split matra rendering bug for Kannada language
+
+	* modules/indic/indic-ot-class-tables.c: Fix Indic class for
+	U+0C8D and U+0C8E.
+
 2008-06-21  Johan Dahlin  <jdahlin@async.com.br>
 
-    * *.[ch]: Include "config.h" instead of <config.h>
-    Command used:
-    find -name \*.[ch]|xargs perl -p -i -e 's/^#include <config.h>/#include "config.h"/g'
-    Rubberstamped by Behdad
+	* *.[ch]: Include "config.h" instead of <config.h>
+	Command used:
+	find -name \*.[ch]|xargs perl -p -i -e 's/^#include <config.h>/#include "config.h"/g'
+	Rubberstamped by Behdad
 
 2008-06-18  Behdad Esfahbod  <behdad@gnome.org>
 
