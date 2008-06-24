@@ -1,3 +1,9 @@
+2008-06-24  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 540036 – Doesn't link to fontconfig
+
+	* pango/Makefile.am: Explicitly include FREETYPE_LIBS for pangoxft.
+
 2008-06-23  Behdad Esfahbod  <behdad@gnome.org>
 
 	Bug 380094 – Fix split matra rendering bug for Kannada language
