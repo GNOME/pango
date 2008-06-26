@@ -131,7 +131,7 @@ s-enum-types-h: @REBUILD@ $(pango_headers) Makefile
 	( cd $(srcdir) && glib-mkenums \
 			--fhead "#ifndef __PANGO_ENUM_TYPES_H__\n#define __PANGO_ENUM_TYPES_H__\n\n#include <glib-object.h>\n\nG_BEGIN_DECLS\n" \
 			--fprod "/* enumerations from \"@filename@\" */\n" \
-			--vhead "GType @enum_name@_get_type (void);\n#define PANGO_TYPE_@ENUMSHORT@ (@enum_name@_get_type())\n" 	\
+			--vhead "GType @enum_name@_get_type (void);\n#define @ENUMPREFIX@_TYPE_@ENUMSHORT@ (@enum_name@_get_type())\n" 	\
 			--ftail "G_END_DECLS\n\n#endif /* __PANGO_ENUM_TYPES_H__ */" \
 		$(pango_headers) ) > tmp-pango-enum-types.h \
 	&& (cmp -s tmp-pango-enum-types.h pango-enum-types.h || cp tmp-pango-enum-types.h pango-enum-types.h ) \

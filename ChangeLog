@@ -1,3 +1,10 @@
+2008-06-26  Kristian Rietveld  <kris@imendio.com>
+
+	* configure.in: require glib trunk (for newer glib-mkenums).
+
+	* pango/Makefile.am: when generating pango-enum-types.h use
+	@ENUMPREFIX@ instead of hard coding the prefix.
+
 2008-06-24  Behdad Esfahbod  <behdad@gnome.org>
 
 	Bug 540036 – Doesn't link to fontconfig
