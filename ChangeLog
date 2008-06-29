@@ -1,3 +1,10 @@
+2008-06-29  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 540592 – Crash in HB_GSUB_Apply_String with Linux-Libertine font
+
+	* pango/opentype/harfbuzz-gsub.c (GSUB_Do_String_Lookup): Fix reverse
+	loops for type 8 lookups.
+
 2008-06-26  Kristian Rietveld  <kris@imendio.com>
 
 	* configure.in: require glib trunk (for newer glib-mkenums).
