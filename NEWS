@@ -1,3 +1,9 @@
+Overview of changes between 1.20.3 and 1.20.4
+==============================================
+- Fix OpenType GSUB lookup type 8 crash.
+- Bugs fixed in this release:
+	Bug 540592 – Crash in HB_GSUB_Apply_String with Linux-Libertine font
+
 Overview of changes between 1.20.2 and 1.20.3
 ==============================================
 - Add more Vista fonts to default win32 aliases.

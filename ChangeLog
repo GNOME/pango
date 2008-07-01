@@ -1,3 +1,11 @@
+2008-06-30  Behdad Esfahbod  <behdad@gnome.org>
+
+	* === Released 1.20.4 ===
+
+	* configure.in: Version 1.20.4
+
+	* NEWS: Updated.
+
 2008-06-29  Behdad Esfahbod  <behdad@gnome.org>
 
 	Bug 540592 – Crash in HB_GSUB_Apply_String with Linux-Libertine font
