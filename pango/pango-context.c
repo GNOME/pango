@@ -1339,7 +1339,7 @@ itemize_state_process_run (ItemizeState *state)
        *
        * The exception of PrivateUse and Unassigned characters is necessary
        * to be able to render any of them. (for private or being encoded
-       * scripts, etc.)
+       * scripts, etc.) (Recent glib returns true in isprint for PrivateUse.)
        */
       if (wc == 0x0020 ||
 	  G_UNLIKELY (!g_unichar_isprint (wc) &&
