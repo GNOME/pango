@@ -1,3 +1,8 @@
+2008-08-04  Tor Lillqvist  <tml@novell.com>
+
+	* pango/Makefile.am: Don't attempt to build the MS import
+	libraries for libpangoft2 unless HAVE_FREETYPE.
+
 2008-08-03  Tor Lillqvist  <tml@novell.com>
 
 	* pango/pango-bidi-type.c: Include <string.h> for strlen()

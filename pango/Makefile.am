@@ -376,9 +376,15 @@ uninstall-def-files:
 endif
 
 if MS_LIB_AVAILABLE
-noinst_DATA = pango-$(PANGO_API_VERSION).lib pangoft2-$(PANGO_API_VERSION).lib pangowin32-$(PANGO_API_VERSION).lib pangocairo-$(PANGO_API_VERSION).lib
+MS_LIB_FILES = pango-$(PANGO_API_VERSION).lib pangowin32-$(PANGO_API_VERSION).lib pangocairo-$(PANGO_API_VERSION).lib
 
-install-ms-lib: pango-$(PANGO_API_VERSION).lib pangoft2-$(PANGO_API_VERSION).lib pangowin32-$(PANGO_API_VERSION).lib pangocairo-$(PANGO_API_VERSION).lib
+if HAVE_FREETYPE
+MS_LIB_FILES += pangoft2-$(PANGO_API_VERSION).lib 
+endif
+
+noinst_DATA = $(MS_LIB_FILES)
+
+install-ms-lib: $(MS_LIB_FILES)
 	$(INSTALL) pango-$(PANGO_API_VERSION).lib $(DESTDIR)$(libdir)
 if HAVE_FREETYPE
 	$(INSTALL) pangoft2-$(PANGO_API_VERSION).lib $(DESTDIR)$(libdir)
