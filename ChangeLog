@@ -1,3 +1,8 @@
+2008-08-03  Tor Lillqvist  <tml@novell.com>
+
+	* pango/pango-bidi-type.c: Include <string.h> for strlen()
+	prototype.
+
 2008-06-29  Behdad Esfahbod  <behdad@gnome.org>
 
 	Bug 540592 – Crash in HB_GSUB_Apply_String with Linux-Libertine font
