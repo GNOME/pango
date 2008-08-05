@@ -1,5 +1,8 @@
 2008-08-06  Tor Lillqvist  <tml@novell.com>
 
+	* pango/Makefile.am (install-def-files): Add a mkdir to be sure
+	the destination directory exists before copying files there.
+
 	* configure.in: On Windows set LIB_EXE_MACHINE_FLAG to X86 or X64
 	depending on host architecture.
 
