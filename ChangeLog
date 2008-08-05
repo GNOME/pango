@@ -1,3 +1,10 @@
+2008-08-06  Tor Lillqvist  <tml@novell.com>
+
+	* configure.in: On Windows set LIB_EXE_MACHINE_FLAG to X86 or X64
+	depending on host architecture.
+
+	* pango/Makefile.am: Use it when running lib.exe.
+
 2008-08-04  Tor Lillqvist  <tml@novell.com>
 
 	* pango/Makefile.am: Don't attempt to build the MS import

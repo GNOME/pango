@@ -403,16 +403,16 @@ uninstall-ms-lib:
 endif
 
 pango-$(PANGO_API_VERSION).lib: libpango-$(PANGO_API_VERSION).la $(srcdir)/pango.def
-	lib -name:libpango-$(PANGO_API_VERSION)-$(PANGO_CURRENT_MINUS_AGE).dll -def:$(srcdir)/pango.def -out:$@
+	lib -machine:$(LIB_EXE_MACHINE_FLAG) -name:libpango-$(PANGO_API_VERSION)-$(PANGO_CURRENT_MINUS_AGE).dll -def:$(srcdir)/pango.def -out:$@
 
 pangoft2-$(PANGO_API_VERSION).lib: libpangoft2-$(PANGO_API_VERSION).la $(srcdir)/pangoft2.def
-	lib -name:libpangoft2-$(PANGO_API_VERSION)-$(PANGO_CURRENT_MINUS_AGE).dll -def:$(srcdir)/pangoft2.def -out:$@
+	lib -machine:$(LIB_EXE_MACHINE_FLAG) -name:libpangoft2-$(PANGO_API_VERSION)-$(PANGO_CURRENT_MINUS_AGE).dll -def:$(srcdir)/pangoft2.def -out:$@
 
 pangowin32-$(PANGO_API_VERSION).lib: libpangowin32-$(PANGO_API_VERSION).la $(srcdir)/pangowin32.def
-	lib -name:libpangowin32-$(PANGO_API_VERSION)-$(PANGO_CURRENT_MINUS_AGE).dll -def:$(srcdir)/pangowin32.def -out:$@
+	lib -machine:$(LIB_EXE_MACHINE_FLAG) -name:libpangowin32-$(PANGO_API_VERSION)-$(PANGO_CURRENT_MINUS_AGE).dll -def:$(srcdir)/pangowin32.def -out:$@
 
 pangocairo-$(PANGO_API_VERSION).lib: libpangocairo-$(PANGO_API_VERSION).la $(srcdir)/pangocairo.def
-	lib -name:libpangocairo-$(PANGO_API_VERSION)-$(PANGO_CURRENT_MINUS_AGE).dll -def:$(srcdir)/pangocairo.def -out:$@
+	lib -machine:$(LIB_EXE_MACHINE_FLAG) -name:libpangocairo-$(PANGO_API_VERSION)-$(PANGO_CURRENT_MINUS_AGE).dll -def:$(srcdir)/pangocairo.def -out:$@
 
 
 # ------------------- pango-querymodules -------------------
