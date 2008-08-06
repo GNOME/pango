@@ -23,7 +23,6 @@
 #include <string.h>
 
 #include "pango-glyph-item.h"
-#include "pango-glyph-item-private.h"
 #include "pango-impl-utils.h"
 
 #define LTR(glyph_item) (((glyph_item)->item->analysis.level % 2) == 0)
@@ -134,7 +133,7 @@ pango_glyph_item_split (PangoGlyphItem *orig,
  * pango_glyph_item_copy:
  * @orig: a #PangoGlyphItem, may be %NULL
  *
- * Make a deep copy an existing #PangoGlyphItem structure.
+ * Make a deep copy of an existing #PangoGlyphItem structure.
  *
  * Return value: the newly allocated #PangoGlyphItem, which should
  *               be freed with pango_glyph_item_free(), or %NULL
@@ -162,7 +161,7 @@ pango_glyph_item_copy  (PangoGlyphItem *orig)
  * pango_glyph_item_free:
  * @glyph_item: a #PangoGlyphItem, may be %NULL
  *
- * Frees a #PangoGlyphItem and memory to which it points.
+ * Frees a #PangoGlyphItem and resources to which it points.
  *
  * Since: 1.6
  **/
@@ -192,17 +191,77 @@ pango_glyph_item_get_type (void)
   return our_type;
 }
 
+
 /**
- * _pango_glyph_item_iter_next_cluster:
+ * pango_glyph_item_iter_copy:
+ * @orig: a #PangoGlyphItemIter, may be %NULL
+ *
+ * Make a shallow copy of an existing #PangoGlyphItemIter structure.
+ *
+ * Return value: the newly allocated #PangoGlyphItemIter, which should
+ *               be freed with pango_glyph_item_iter_free(), or %NULL
+ *               if @orig was %NULL.
+ *
+ * Since: 1.22
+ **/
+PangoGlyphItemIter *
+pango_glyph_item_iter_copy  (PangoGlyphItemIter *orig)
+{
+  PangoGlyphItemIter *result;
+
+  if (orig == NULL)
+    return NULL;
+
+  result = g_slice_new (PangoGlyphItemIter);
+
+  *result = *orig;
+
+  return result;
+}
+
+/**
+ * pango_glyph_item_iter_free:
+ * @iter: a #PangoGlyphItemIter, may be %NULL
+ *
+ * Frees a #PangoGlyphItemIter created by pango_glyph_item_iter_copy().
+ *
+ * Since: 1.22
+ **/
+void
+pango_glyph_item_iter_free  (PangoGlyphItemIter *iter)
+{
+  if (iter == NULL)
+    return;
+
+  g_slice_free (PangoGlyphItemIter, iter);
+}
+
+GType
+pango_glyph_item_iter_get_type (void)
+{
+  static GType our_type = 0;
+
+  if (G_UNLIKELY (our_type == 0))
+    our_type = g_boxed_type_register_static (I_("PangoGlyphItemIter"),
+					     (GBoxedCopyFunc) pango_glyph_item_iter_copy,
+					     (GBoxedFreeFunc) pango_glyph_item_iter_free);
+  return our_type;
+}
+
+/**
+ * pango_glyph_item_iter_next_cluster:
  * @iter: a #PangoGlyphItemIter
  *
  * Advances the iterator to the next cluster in the glyph item.
+ * See #PangoGlyphItemIter for details of cluster orders.
  *
  * Return value: %TRUE if the iterator was advanced, %FALSE if we were already on the
  *  last cluster.
+ *
+ * Since: 1.22
  **/
 gboolean
-_pango_glyph_item_iter_next_cluster (PangoGlyphItemIter *iter)
+pango_glyph_item_iter_next_cluster (PangoGlyphItemIter *iter)
 {
   int glyph_index = iter->end_glyph;
   PangoGlyphString *glyphs = iter->glyph_item->glyphs;
@@ -276,16 +335,19 @@ _pango_glyph_item_iter_next_cluster (PangoGlyphItemIter *iter)
 }
 
 /**
- * _pango_glyph_item_iter_prev_cluster:
+ * pango_glyph_item_iter_prev_cluster:
  * @iter: a #PangoGlyphItemIter
  *
  * Moves the iterator to the preceding cluster in the glyph item.
+ * See #PangoGlyphItemIter for details of cluster orders.
  *
  * Return value: %TRUE if the iterator was moved, %FALSE if we were already on the
  *  first cluster.
+ *
+ * Since: 1.22
  **/
 gboolean
-_pango_glyph_item_iter_prev_cluster (PangoGlyphItemIter *iter)
+pango_glyph_item_iter_prev_cluster (PangoGlyphItemIter *iter)
 {
   int glyph_index = iter->start_glyph;
   PangoGlyphString *glyphs = iter->glyph_item->glyphs;
@@ -362,21 +424,23 @@ _pango_glyph_item_iter_prev_cluster (PangoGlyphItemIter *iter)
 }
 
 /**
- * _pango_glyph_item_iter_init_start:
- * @iter: pointer to a #PangoGlyphItemIter structure
- * @glyph_item: the glyph item that @iter points into
+ * pango_glyph_item_iter_init_start:
+ * @iter: a #PangoGlyphItemIter
+ * @glyph_item: the glyph item to iterate over
  * @text: text corresponding to the glyph item
  *
  * Initializes a #PangoGlyphItemIter structure to point to the
  * first cluster in a glyph item.
+ * See #PangoGlyphItemIter for details of cluster orders.
  *
- * Return value: %FALSE if there are no clusters in the glyph item;
- *  in this case, the state of @iter is undefined.
+ * Return value: %FALSE if there are no clusters in the glyph item
+ *
+ * Since: 1.22
  **/
 gboolean
-_pango_glyph_item_iter_init_start (PangoGlyphItemIter  *iter,
-				   PangoGlyphItem      *glyph_item,
-				   const char          *text)
+pango_glyph_item_iter_init_start (PangoGlyphItemIter  *iter,
+				  PangoGlyphItem      *glyph_item,
+				  const char          *text)
 {
   iter->glyph_item = glyph_item;
   iter->text = text;
@@ -389,26 +453,32 @@ _pango_glyph_item_iter_init_start (PangoGlyphItemIter  *iter,
   iter->end_index = glyph_item->item->offset;
   iter->end_char = 0;
 
+  iter->start_glyph = iter->end_glyph;
+  iter->start_index = iter->end_index;
+  iter->start_char = iter->end_char;
+
   /* Advance onto the first cluster of the glyph item */
-  return _pango_glyph_item_iter_next_cluster (iter);
+  return pango_glyph_item_iter_next_cluster (iter);
 }
 
 /**
- * _pango_glyph_item_iter_init_end:
- * @iter: pointer to a #PangoGlyphItemIter structure
- * @glyph_item: the glyph item that @iter points into
+ * pango_glyph_item_iter_init_end:
+ * @iter: a #PangoGlyphItemIter
+ * @glyph_item: the glyph item to iterate over
  * @text: text corresponding to the glyph item
  *
  * Initializes a #PangoGlyphItemIter structure to point to the
  * last cluster in a glyph item.
+ * See #PangoGlyphItemIter for details of cluster orders.
  *
- * Return value: %FALSE if there are no clusters in the glyph item;
- *  in this case, the state of @iter is undefined.
+ * Return value: %FALSE if there are no clusters in the glyph item
+ *
+ * Since: 1.22
  **/
 gboolean
-_pango_glyph_item_iter_init_end (PangoGlyphItemIter  *iter,
-				 PangoGlyphItem      *glyph_item,
-				 const char          *text)
+pango_glyph_item_iter_init_end (PangoGlyphItemIter  *iter,
+				PangoGlyphItem      *glyph_item,
+				const char          *text)
 {
   iter->glyph_item = glyph_item;
   iter->text = text;
@@ -421,8 +491,12 @@ _pango_glyph_item_iter_init_end (PangoGlyphItemIter  *iter,
   iter->start_index = glyph_item->item->offset + glyph_item->item->length;
   iter->start_char = glyph_item->item->num_chars;
 
+  iter->end_glyph = iter->start_glyph;
+  iter->end_index = iter->start_index;
+  iter->end_char = iter->start_char;
+
   /* Advance onto the first cluster of the glyph item */
-  return _pango_glyph_item_iter_prev_cluster (iter);
+  return pango_glyph_item_iter_prev_cluster (iter);
 }
 
 typedef struct
@@ -556,9 +630,9 @@ pango_glyph_item_apply_attrs (PangoGlyphItem   *glyph_item,
       range_end >= glyph_item->item->offset + glyph_item->item->length)
     goto out;
 
-  for (have_cluster = _pango_glyph_item_iter_init_start (&state.iter, glyph_item, text);
+  for (have_cluster = pango_glyph_item_iter_init_start (&state.iter, glyph_item, text);
        have_cluster;
-       have_cluster = _pango_glyph_item_iter_next_cluster (&state.iter))
+       have_cluster = pango_glyph_item_iter_next_cluster (&state.iter))
     {
       gboolean have_next;
 
@@ -675,9 +749,9 @@ pango_glyph_item_letter_space (PangoGlyphItem *glyph_item,
 
   space_right = letter_spacing - space_left;
 
-  for (have_cluster = _pango_glyph_item_iter_init_start (&iter, glyph_item, text);
+  for (have_cluster = pango_glyph_item_iter_init_start (&iter, glyph_item, text);
        have_cluster;
-       have_cluster = _pango_glyph_item_iter_next_cluster (&iter))
+       have_cluster = pango_glyph_item_iter_next_cluster (&iter))
     {
       if (!log_attrs[iter.start_char].is_cursor_position)
         continue;

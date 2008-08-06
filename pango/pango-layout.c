@@ -25,7 +25,7 @@
 #include "pango-item.h"
 #include "pango-engine.h"
 #include "pango-impl-utils.h"
-#include "pango-glyph-item-private.h"
+#include "pango-glyph-item.h"
 #include <string.h>
 
 #include "pango-layout-private.h"
@@ -5064,9 +5064,9 @@ justify_words (PangoLayoutLine *line,
 	  PangoGlyphItemIter cluster_iter;
 	  gboolean have_cluster;
 
-	  for (have_cluster = _pango_glyph_item_iter_init_start (&cluster_iter, run, text);
+	  for (have_cluster = pango_glyph_item_iter_init_start (&cluster_iter, run, text);
 	       have_cluster;
-	       have_cluster = _pango_glyph_item_iter_next_cluster (&cluster_iter))
+	       have_cluster = pango_glyph_item_iter_next_cluster (&cluster_iter))
 	    {
 	      int i;
 	      int dir;

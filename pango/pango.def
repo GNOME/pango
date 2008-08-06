@@ -183,6 +183,13 @@ EXPORTS
 	pango_glyph_item_copy
 	pango_glyph_item_free
 	pango_glyph_item_get_type
+	pango_glyph_item_iter_copy
+	pango_glyph_item_iter_free
+	pango_glyph_item_iter_get_type
+	pango_glyph_item_iter_init_end
+	pango_glyph_item_iter_init_start
+	pango_glyph_item_iter_next_cluster
+	pango_glyph_item_iter_prev_cluster
 	pango_glyph_item_letter_space
 	pango_glyph_item_split
 	pango_glyph_string_copy

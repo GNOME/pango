@@ -1,3 +1,38 @@
+2008-08-06  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 377948 – Make pango_glyph_item_iter public
+
+	* pango/pango-glyph-item.c (pango_glyph_item_iter_copy),
+	(pango_glyph_item_iter_free), (pango_glyph_item_iter_get_type),
+	(pango_glyph_item_iter_next_cluster),
+	(pango_glyph_item_iter_prev_cluster),
+	(pango_glyph_item_iter_init_start),
+	(pango_glyph_item_iter_init_end), (pango_glyph_item_apply_attrs),
+	(pango_glyph_item_letter_space):
+	* pango/pango-glyph-item.h:
+	New public API, for iterating a PangoGlyphItem:
+
+		PangoGlyphItemIter
+		PANGO_TYPE_GLYPH_ITEM_ITER
+		pango_glyph_item_iter_copy()
+		pango_glyph_item_iter_free()
+		pango_glyph_item_iter_init_start()
+		pango_glyph_item_iter_init_end()
+		pango_glyph_item_iter_next_cluster()
+		pango_glyph_item_iter_prev_cluster()
+
+	* pango/pango.def:
+	* docs/tmpl/glyphs.sgml:
+	* docs/pango-sections.txt:
+	* pango/Makefile.am:
+	* pango/ellipsize.c (line_iter_next_cluster),
+	(line_iter_prev_cluster), (find_initial_span):
+	* pango/pango-layout.c (justify_words):
+	Update.
+
+	* pango/pango-glyph-item-private.h:
+	Remove.
+
 2008-08-05  Behdad Esfahbod  <behdad@gnome.org>
 
 	* pango/pango-context.c:

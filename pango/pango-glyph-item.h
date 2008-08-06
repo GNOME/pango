@@ -54,6 +54,38 @@ void            pango_glyph_item_letter_space (PangoGlyphItem *glyph_item,
 					       PangoLogAttr   *log_attrs,
 					       int             letter_spacing);
 
+
+typedef struct _PangoGlyphItemIter PangoGlyphItemIter;
+
+struct _PangoGlyphItemIter
+{
+  PangoGlyphItem *glyph_item;
+  const gchar *text;
+
+  int start_glyph;
+  int start_index;
+  int start_char;
+
+  int end_glyph;
+  int end_index;
+  int end_char;
+};
+
+#define PANGO_TYPE_GLYPH_ITEM_ITER (pango_glyph_item_iter_get_type ())
+
+GType               pango_glyph_item_iter_get_type (void) G_GNUC_CONST;
+PangoGlyphItemIter *pango_glyph_item_iter_copy (PangoGlyphItemIter *orig);
+void                pango_glyph_item_iter_free (PangoGlyphItemIter *iter);
+
+gboolean pango_glyph_item_iter_init_start   (PangoGlyphItemIter *iter,
+					     PangoGlyphItem     *glyph_item,
+					     const char         *text);
+gboolean pango_glyph_item_iter_init_end     (PangoGlyphItemIter *iter,
+					     PangoGlyphItem     *glyph_item,
+					     const char         *text);
+gboolean pango_glyph_item_iter_next_cluster (PangoGlyphItemIter *iter);
+gboolean pango_glyph_item_iter_prev_cluster (PangoGlyphItemIter *iter);
+
 G_END_DECLS
 
 #endif /* __PANGO_GLYPH_ITEM_H__ */

@@ -22,7 +22,7 @@
 #include "config.h"
 #include <string.h>
 
-#include "pango-glyph-item-private.h"
+#include "pango-glyph-item.h"
 #include "pango-layout-private.h"
 #include "pango-engine-private.h"
 
@@ -187,16 +187,16 @@ static gboolean
 line_iter_next_cluster (EllipsizeState *state,
 			LineIter       *iter)
 {
-  if (!_pango_glyph_item_iter_next_cluster (&iter->run_iter))
+  if (!pango_glyph_item_iter_next_cluster (&iter->run_iter))
     {
       if (iter->run_index == state->n_runs - 1)
 	return FALSE;
       else
 	{
 	  iter->run_index++;
-	  _pango_glyph_item_iter_init_start (&iter->run_iter,
-					     state->run_info[iter->run_index].run,
-					     state->layout->text);
+	  pango_glyph_item_iter_init_start (&iter->run_iter,
+					    state->run_info[iter->run_index].run,
+					    state->layout->text);
 	}
     }
 
@@ -209,16 +209,16 @@ static gboolean
 line_iter_prev_cluster (EllipsizeState *state,
 			LineIter       *iter)
 {
-  if (!_pango_glyph_item_iter_prev_cluster (&iter->run_iter))
+  if (!pango_glyph_item_iter_prev_cluster (&iter->run_iter))
     {
       if (iter->run_index == 0)
 	return FALSE;
       else
 	{
 	  iter->run_index--;
-	  _pango_glyph_item_iter_init_end (&iter->run_iter,
-					   state->run_info[iter->run_index].run,
-					   state->layout->text);
+	  pango_glyph_item_iter_init_end (&iter->run_iter,
+					  state->run_info[iter->run_index].run,
+					  state->layout->text);
 	}
     }
 
@@ -513,9 +513,9 @@ find_initial_span (EllipsizeState *state)
   glyph_item = state->run_info[i].run;
 
   cluster_width = 0;		/* Quiet GCC, the line must have at least one cluster */
-  for (have_cluster = _pango_glyph_item_iter_init_start (run_iter, glyph_item, state->layout->text);
+  for (have_cluster = pango_glyph_item_iter_init_start (run_iter, glyph_item, state->layout->text);
        have_cluster;
-       have_cluster = _pango_glyph_item_iter_next_cluster (run_iter))
+       have_cluster = pango_glyph_item_iter_next_cluster (run_iter))
     {
       cluster_width = get_cluster_width (&state->gap_start_iter);
 

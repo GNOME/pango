@@ -76,7 +76,6 @@ libpango_1_0_la_SOURCES =			\
 	pango-fontmap.c				\
 	pango-fontset.c				\
 	pango-glyph-item.c			\
-	pango-glyph-item-private.h		\
 	pango-gravity.c				\
 	pango-impl-utils.h			\
 	pango-item.c				\
