@@ -107,7 +107,7 @@ static const IndicOTCharClass devaCharClasses[] =
     _dr, _db, _db, _db, _db, _da, _da, _da, _da, _dr, _dr, _dr, _dr, _vr, _xx, _xx, /* 0940 - 094F */
     _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _cn, _cn, _cn, _cn, _cn, _cn, _cn, _cn, /* 0950 - 095F */
     _iv, _iv, _db, _db, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, /* 0960 - 096F */
-    _xx                                                                             /* 0970        */
+    _xx, _xx, _iv, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _ct, _ct, _ct, _ct, _ct  /* 0970 - 097F */
 };
 
 /* As a hack, BENGALI LETTER A (U+0985) and BENGALI LETTER E (U+098F)

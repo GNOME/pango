@@ -1,5 +1,13 @@
 2008-08-06  Behdad Esfahbod  <behdad@gnome.org>
 
+	 Fedora Bug 457883 - Sindhi Characters are not supported in
+	 pango [U+097B-U+097F]
+	 Patch from Pravin Satpute
+
+	* modules/indic/indic-ot-class-tables.c: Add [U+097B-U+097F].
+
+2008-08-06  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 441654 – prefix fails when more than one base characters (as
 	conjuncts) present after a half form the next prefix renders
 	incorrectly
