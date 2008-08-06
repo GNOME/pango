@@ -1,5 +1,12 @@
 2008-08-06  Behdad Esfahbod  <behdad@gnome.org>
 
+	Bug 546534 – pango_cairo_font_map_set_default(NULL) errs
+
+	* pango/pangocairo-fontmap.c (pango_cairo_font_map_set_default):
+	Allow NULL.
+
+2008-08-06  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 431394 – Use pango_glyph_item_iter in more places
 
 	* pango/glyphstring.c (pango_glyph_string_get_logical_widths):

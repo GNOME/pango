@@ -187,7 +187,8 @@ pango_cairo_font_map_get_default (void)
  * default fontmap uses for example.  The old default font map
  * is unreffed and the new font map referenced.
  *
- * A value of %NULL for @fontmap will cause a new default font
+ * A value of %NULL for @fontmap will cause the current default
+ * font map to be released and a new default font
  * map to be created on demand, using pango_cairo_font_map_new().
  *
  * Since: 1.22
@@ -195,7 +196,7 @@ pango_cairo_font_map_get_default (void)
 void
 pango_cairo_font_map_set_default (PangoCairoFontMap *fontmap)
 {
-  g_return_if_fail (PANGO_IS_CAIRO_FONT_MAP (fontmap));
+  g_return_if_fail (fontmap == NULL || PANGO_IS_CAIRO_FONT_MAP (fontmap));
 
   if ((PangoFontMap *) fontmap == default_font_map)
     return;
@@ -203,7 +204,9 @@ pango_cairo_font_map_set_default (PangoCairoFontMap *fontmap)
   if (default_font_map)
     g_object_unref (default_font_map);
 
-  default_font_map = g_object_ref (fontmap);
+  if (fontmap)
+    g_object_ref (fontmap);
+  default_font_map = fontmap;
 }
 
 /**
