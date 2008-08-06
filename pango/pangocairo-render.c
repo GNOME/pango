@@ -439,8 +439,8 @@ pango_cairo_renderer_draw_glyph_item (PangoRenderer     *renderer,
 	  g_warning ("pango_cairo_renderer_draw_glyph_item: bad cluster has num_glyphs %d", num_glyphs);
 
 	/* Discount empty and unknown glyphs */
-	for (i = MIN (iter.start_glyph, iter.end_glyph);
-	     i < MAX (iter.start_glyph, iter.end_glyph);
+	for (i = MIN (iter.start_glyph, iter.end_glyph+1);
+	     i < MAX (iter.start_glyph+1, iter.end_glyph);
 	     i++)
 	  {
 	    PangoGlyphInfo *gi = &glyphs->glyphs[i];
