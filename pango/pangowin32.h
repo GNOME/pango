@@ -41,7 +41,9 @@ G_BEGIN_DECLS
 
 /* Calls for applications
  */
+#ifndef PANGO_DISABLE_DEPRECATED
 PangoContext * pango_win32_get_context        (void);
+#endif
 
 void           pango_win32_render             (HDC               hdc,
 					       PangoFont        *font,

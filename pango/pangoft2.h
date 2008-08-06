@@ -85,7 +85,9 @@ void          pango_ft2_font_map_set_default_substitute (PangoFT2FontMap        
 							 gpointer                data,
 							 GDestroyNotify          notify);
 void          pango_ft2_font_map_substitute_changed     (PangoFT2FontMap         *fontmap);
+#ifndef PANGO_DISABLE_DEPRECATED
 PangoContext *pango_ft2_font_map_create_context         (PangoFT2FontMap         *fontmap);
+#endif
 
 
 /* API for rendering modules

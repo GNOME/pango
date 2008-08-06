@@ -863,6 +863,15 @@ Returns the type of a #PangoFontMap.
 @obj: a #PangoFontMap.
 
 
+<!-- ##### FUNCTION pango_font_map_create_context ##### -->
+<para>
+
+</para>
+
+@fontmap:
+@Returns:
+
+
 <!-- ##### FUNCTION pango_font_map_load_font ##### -->
 <para>
 

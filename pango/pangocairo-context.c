@@ -145,7 +145,7 @@ _pango_cairo_update_context (cairo_t      *cr,
 /**
  * pango_cairo_update_context:
  * @cr: a Cairo context
- * @context: a #PangoContext, from pango_cairo_font_map_create_context()
+ * @context: a #PangoContext, from a pangocairo font map
  *
  * Updates a #PangoContext previously created for use with Cairo to
  * match the current transformation and target surface of a Cairo
@@ -167,7 +167,7 @@ pango_cairo_update_context (cairo_t      *cr,
 
 /**
  * pango_cairo_context_set_resolution:
- * @context: a #PangoContext, from pango_cairo_font_map_create_context()
+ * @context: a #PangoContext, from a pangocairo font map
  * @dpi: the resolution in "dots per inch". (Physical inches aren't actually
  *   involved; the terminology is conventional.) A 0 or negative value
  *   means to use the resolution from the font map.
@@ -189,7 +189,7 @@ pango_cairo_context_set_resolution (PangoContext *context,
 
 /**
  * pango_cairo_context_get_resolution:
- * @context: a #PangoContext, from pango_cairo_font_map_create_context()
+ * @context: a #PangoContext, from a pangocairo font map
  *
  * Gets the resolution for the context. See pango_cairo_context_set_resolution()
  *
@@ -211,7 +211,7 @@ pango_cairo_context_get_resolution (PangoContext *context)
 
 /**
  * pango_cairo_context_set_font_options:
- * @context: a #PangoContext, from pango_cairo_font_map_create_context()
+ * @context: a #PangoContext, from a pangocairo font map
  * @options: a #cairo_font_options_t, or %NULL to unset any previously set
  *           options. A copy is made.
  *
@@ -248,7 +248,7 @@ pango_cairo_context_set_font_options (PangoContext               *context,
 
 /**
  * pango_cairo_context_get_font_options:
- * @context: a #PangoContext, from pango_cairo_font_map_create_context()
+ * @context: a #PangoContext, from a pangocairo font map
  *
  * Retrieves any font rendering options previously set with
  * pango_cairo_font_map_set_font_options(). This functions not report options
@@ -306,7 +306,7 @@ _pango_cairo_context_get_merged_font_options (PangoContext *context)
 
 /**
  * pango_cairo_context_set_shape_renderer:
- * @context: a #PangoContext, from pango_cairo_font_map_create_context()
+ * @context: a #PangoContext, from a pangocairo font map
  * @func: Callback function for rendering attributes of type
  * %PANGO_ATTR_SHAPE, or %NULL to disable shape rendering.
  * @data: User data that will be passed to @func.
@@ -341,7 +341,7 @@ pango_cairo_context_set_shape_renderer (PangoContext                *context,
 
 /**
  * pango_cairo_context_get_shape_renderer:
- * @context: a #PangoContext, from pango_cairo_font_map_create_context()
+ * @context: a #PangoContext, from a pangocairo font map
  * @data: Pointer to #gpointer to return user data
  *
  * Sets callback function for context to use for rendering attributes
@@ -408,7 +408,7 @@ pango_cairo_create_context (cairo_t *cr)
   g_return_val_if_fail (cr != NULL, NULL);
 
   fontmap = pango_cairo_font_map_get_default ();
-  context = pango_cairo_font_map_create_context ((PangoCairoFontMap *) (fontmap));
+  context = pango_font_map_create_context (fontmap);
   pango_cairo_update_context (cr, context);
 
   return context;

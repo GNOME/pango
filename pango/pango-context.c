@@ -107,19 +107,18 @@ pango_context_finalize (GObject *object)
 /**
  * pango_context_new:
  *
- * Creates a new #PangoContext initialized to default value.
+ * Creates a new #PangoContext initialized to default values.
  *
- * This function is only useful when implementing a new backend
- * for Pango, something applications won't do. You should use
- * the context creation function for the backend you are using,
- * for example, pango_cairo_font_map_create_context(), pango_xft_get_context(),
- * pango_win32_get_context() or, pango_ft2_font_map_create_context().
+ * This function is not particularly useful as it should always
+ * be followed by a pango_context_set_font_map() call, and the
+ * function pango_font_map_create_context() does these two steps
+ * together and hence users are recommended to use that.
  *
  * If you are using Pango as part of a higher-level system,
- * that system may have it's own ways of create a #PangoContext.
+ * that system may have it's own way of create a #PangoContext.
  * For instance, the GTK+ toolkit has, among others,
  * gdk_pango_context_get_for_screen(), and
- * gtk_widget_get_pango_context().
+ * gtk_widget_get_pango_context().  Use those instead.
  *
  * Return value: the newly allocated #PangoContext, which should
  *               be freed with g_object_unref().

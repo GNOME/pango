@@ -50,8 +50,10 @@ typedef void (*PangoXftSubstituteFunc) (FcPattern *pattern,
  */
 PangoFontMap *pango_xft_get_font_map     (Display *display,
 					  int      screen);
+#ifndef PANGO_DISABLE_DEPRECATED
 PangoContext *pango_xft_get_context      (Display *display,
 					  int      screen);
+#endif
 void          pango_xft_shutdown_display (Display *display,
 					  int      screen);
 

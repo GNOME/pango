@@ -138,7 +138,7 @@ _pango_xft_font_get_mini_font (PangoXftFont *xfont)
 
       _pango_xft_font_map_get_info (fcfont->fontmap, &display, &screen);
 
-      context = pango_xft_get_context (display, screen);
+      context = pango_font_map_create_context (pango_xft_get_font_map (display, screen));
       pango_context_set_language (context, pango_language_from_string ("en"));
 
       pango_font_description_set_family_static (desc, "monospace");

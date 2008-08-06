@@ -65,7 +65,7 @@ pangoft2_view_destroy (gpointer instance)
 static PangoContext *
 pangoft2_view_get_context (gpointer instance)
 {
-  return pango_ft2_font_map_create_context (PANGO_FT2_FONT_MAP (instance));
+  return pango_font_map_create_context (PANGO_FONT_MAP (instance));
 }
 
 static gpointer

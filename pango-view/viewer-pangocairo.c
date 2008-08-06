@@ -84,7 +84,7 @@ pangocairo_view_get_context (gpointer instance)
   CairoViewer *c = (CairoViewer *) instance;
   PangoContext *context;
 
-  context = pango_cairo_font_map_create_context (PANGO_CAIRO_FONT_MAP (c->fontmap));
+  context = pango_font_map_create_context (c->fontmap);
   pango_cairo_context_set_font_options (context, c->font_options);
 
   return context;

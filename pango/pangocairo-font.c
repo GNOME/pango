@@ -233,7 +233,7 @@ _pango_cairo_font_get_metrics (PangoFont     *font,
 
       info->sample_str = sample_str;
 
-      context = pango_cairo_font_map_create_context ((PangoCairoFontMap *) pango_font_get_font_map (font));
+      context = pango_font_map_create_context (pango_font_get_font_map (font));
       pango_context_set_language (context, language);
       font_options = cairo_font_options_create ();
       cairo_scaled_font_get_font_options (_pango_cairo_font_private_get_scaled_font (cf_priv), font_options);
@@ -388,7 +388,7 @@ _pango_cairo_font_private_get_hex_box_info (PangoCairoFontPrivate *cf_priv)
 
     /* load mini_font */
 
-    context = pango_cairo_font_map_create_context ((PangoCairoFontMap *) (fontmap));
+    context = pango_font_map_create_context (fontmap);
 
     pango_context_set_matrix (context, &pango_ctm);
     pango_context_set_language (context, pango_script_get_sample_language (PANGO_SCRIPT_LATIN));

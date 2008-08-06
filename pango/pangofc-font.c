@@ -541,7 +541,7 @@ pango_fc_font_get_metrics (PangoFont     *font,
 
       info->sample_str = sample_str;
 
-      context = pango_fc_font_map_create_context (PANGO_FC_FONT_MAP (fcfont->fontmap));
+      context = pango_font_map_create_context (fcfont->fontmap);
       pango_context_set_language (context, language);
 
       info->metrics = pango_fc_font_create_metrics_for_context (fcfont, context);

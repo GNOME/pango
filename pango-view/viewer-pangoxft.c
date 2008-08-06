@@ -72,7 +72,7 @@ pangoxft_view_get_context (gpointer instance)
 {
   XViewer *x = (XViewer *) instance;
 
-  return pango_xft_get_context (x->display, x->screen);
+  return pango_font_map_create_context (pango_xft_get_font_map (x->display, x->screen));
 }
 
 typedef struct

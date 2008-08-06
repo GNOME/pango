@@ -34,6 +34,7 @@
 #include "pango-engine-private.h"
 #include "pango-fontmap.h"
 #include "pango-impl-utils.h"
+#include "modules.h"
 
 #undef PANGO_DISABLE_DEPRECATED
 
@@ -278,8 +279,17 @@ pango_x_font_map_for_display (Display *display)
   char **xfontnames;
   int num_fonts, i;
   int screen;
+  static gboolean registered_modules = FALSE;
 
   g_return_val_if_fail (display != NULL, NULL);
+
+  if (!registered_modules)
+    {
+      registered_modules = TRUE;
+
+      for (i = 0; _pango_included_x_modules[i].list; i++)
+	pango_module_register (&_pango_included_x_modules[i]);
+    }
 
   /* Make sure that the type system is initialized */
   g_type_init ();

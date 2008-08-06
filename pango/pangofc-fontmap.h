@@ -143,7 +143,9 @@ struct _PangoFcFontMapClass
   void (*_pango_reserved4) (void);
 };
 
+#ifndef PANGO_DISABLE_DEPRECATED
 PangoContext * pango_fc_font_map_create_context (PangoFcFontMap *fcfontmap);
+#endif
 void           pango_fc_font_map_shutdown       (PangoFcFontMap *fcfontmap);
 
 #endif

@@ -26,7 +26,6 @@
 
 #include <X11/Xlib.h>
 #include "pango-impl-utils.h"
-#include "modules.h"
 
 #undef PANGO_DISABLE_DEPRECATED
 
@@ -159,6 +158,30 @@ free_context_info (PangoXContextInfo *info)
   g_slice_free (PangoXContextInfo, info);
 }
 
+static PangoXContextInfo *
+get_context_info (PangoContext *context)
+{
+  PangoXContextInfo *info;
+  static quark = 0;
+
+  if (G_UNLIKELY (!quark))
+    quark = g_quark_from_static_string ("pango-x-info");
+
+  info =  g_object_get_qdata (G_OBJECT (context), quark);
+
+  if (G_UNLIKELY (!info))
+    {
+      info = g_slice_new (PangoXContextInfo);
+      info->get_gc_func = NULL;
+      info->free_gc_func = NULL;
+      g_object_set_qdata_full (G_OBJECT (context),
+			       quark,
+			       info, (GDestroyNotify)free_context_info);
+    }
+
+  return info;
+}
+
 /**
  * pango_x_get_context:
  * @display: an X display (As returned by XOpenDisplay().)
@@ -166,38 +189,15 @@ free_context_info (PangoXContextInfo *info)
  * Retrieves a #PangoContext appropriate for rendering with X fonts on the
  * given display.
  *
+ * This function is deprecated.  Use pango_x_font_map_for_display() followed
+ * by pango_font_map_create_context() instead.
+ *
  * Return value: the new #PangoContext.
  **/
 PangoContext *
 pango_x_get_context (Display *display)
 {
-  PangoContext *result;
-  PangoXContextInfo *info;
-  int i;
-  static gboolean registered_modules = FALSE;
-
-  g_return_val_if_fail (display != NULL, NULL);
-
-  if (!registered_modules)
-    {
-      registered_modules = TRUE;
-
-      for (i = 0; _pango_included_x_modules[i].list; i++)
-	pango_module_register (&_pango_included_x_modules[i]);
-    }
-
-  result = pango_context_new ();
-
-  info = g_slice_new (PangoXContextInfo);
-  info->get_gc_func = NULL;
-  info->free_gc_func = NULL;
-  g_object_set_qdata_full (G_OBJECT (result),
-			   g_quark_from_static_string ("pango-x-info"),
-			   info, (GDestroyNotify)free_context_info);
-
-  pango_context_set_font_map (result, pango_x_font_map_for_display (display));
-
-  return result;
+  return pango_font_map_create_context (pango_x_font_map_for_display (display));
 }
 
 /**
@@ -218,8 +218,7 @@ pango_x_context_set_funcs  (PangoContext     *context,
 
   g_return_if_fail (context != NULL);
 
-  info = g_object_get_qdata (G_OBJECT (context),
-			     g_quark_from_static_string ("pango-x-info"));
+  info = get_context_info (context);
 
   info->get_gc_func = get_gc_func;
   info->free_gc_func = free_gc_func;
@@ -1497,9 +1496,7 @@ pango_x_render_layout_line (Display          *display,
   PangoRectangle logical_rect;
   PangoRectangle ink_rect;
   PangoContext *context = pango_layout_get_context (line->layout);
-  PangoXContextInfo *info =
-    g_object_get_qdata (G_OBJECT (context),
-			g_quark_from_static_string ("pango-x-info"));
+  PangoXContextInfo *info = get_context_info (context);
 
   int x_off = 0;
 

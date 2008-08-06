@@ -1,3 +1,60 @@
+2008-08-05  Behdad Esfahbod  <behdad@gnome.org>
+
+	* pango/pango-context.c:
+	* pango/pango-context.h:
+	Make the following API public:
+
+		pango_context_new()
+		pango_context_set_font_map()
+
+	* pango/pango-fontmap.c (pango_font_map_create_context):
+	* pango/pango-fontmap.h:
+	New public API:
+
+		pango_font_map_create_context()
+
+	* pango/pangocairo-context.c (pango_cairo_create_context):
+	* pango/pangocairo-font.c (_pango_cairo_font_get_metrics),
+	(_pango_cairo_font_private_get_hex_box_info):
+	* pango/pangocairo-fontmap.c (pango_cairo_font_map_create_context):
+	* pango/pangocairo.h:
+	Deprecate pango_cairo_font_map_create_context().
+
+	* pango/pangofc-font.c (pango_fc_font_get_metrics):
+	* pango/pangofc-fontmap.c (pango_fc_font_map_create_context):
+	* pango/pangofc-fontmap.h:
+	Deprecate pango_fc_font_map_create_context().
+
+	* pango/pangoft2-fontmap.c (pango_ft2_font_map_create_context),
+	(pango_ft2_get_context):
+	* pango/pangoft2.h:
+	Deprecate pango_ft2_font_map_create_context().
+
+	* pango/pangowin32.c (pango_win32_get_context),
+	(pango_win32_font_get_metrics):
+	* pango/pangowin32.h:
+	Deprecate pango_win32_get_context().
+
+	* pango/pangoxft-font.c (_pango_xft_font_get_mini_font):
+	* pango/pangoxft-fontmap.c (pango_xft_get_context):
+	* pango/pangoxft.h:
+	Deprecate pango_xft_get_context().
+
+	* pango/pangox-fontmap.c (pango_x_font_map_for_display):
+	* pango/pangox.c (get_context_info), (pango_x_get_context),
+	(pango_x_context_set_funcs), (pango_x_render_layout_line):
+	Deprecate pango_x_get_context(), again.
+
+	* docs/pango-sections.txt:
+	* docs/tmpl/fonts.sgml:
+	* pango-view/viewer-pangocairo.c (pangocairo_view_get_context):
+	* pango-view/viewer-pangoft2.c (pangoft2_view_get_context):
+	* pango-view/viewer-pangox.c (pangox_view_get_context):
+	* pango-view/viewer-pangoxft.c (pangoxft_view_get_context):
+	* pango/check.defs:
+	* pango/pango.def:
+	Update.
+
 2008-07-30  Behdad Esfahbod  <behdad@gnome.org>
 
 	* docs/pango-sections.txt:

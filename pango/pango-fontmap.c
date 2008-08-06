@@ -44,6 +44,37 @@ pango_font_map_init (PangoFontMap *fontmap)
 }
 
 /**
+ * pango_font_map_create_context:
+ * @fontmap: a #PangoFontMap
+ *
+ * Creates a #PangoContext connected to @fontmap.  This is equivalent
+ * to pango_context_new() followed by pango_context_set_font_map().
+ *
+ * If you are using Pango as part of a higher-level system,
+ * that system may have it's own way of create a #PangoContext.
+ * For instance, the GTK+ toolkit has, among others,
+ * gdk_pango_context_get_for_screen(), and
+ * gtk_widget_get_pango_context().  Use those instead.
+ *
+ * Return value: the newly allocated #PangoContext, which should
+ *               be freed with g_object_unref().
+ *
+ * Since: 1.22
+ **/
+PangoContext *
+pango_font_map_create_context (PangoFontMap *fontmap)
+{
+  PangoContext *context;
+
+  g_return_val_if_fail (fontmap != NULL, NULL);
+
+  context = pango_context_new ();
+  pango_context_set_font_map (context, fontmap);
+
+  return context;
+}
+
+/**
  * pango_font_map_load_font:
  * @fontmap: a #PangoFontMap
  * @context: the #PangoContext the font will be used with

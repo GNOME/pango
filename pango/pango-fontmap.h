@@ -34,6 +34,7 @@ G_BEGIN_DECLS
 typedef struct _PangoContext PangoContext;
 
 GType         pango_font_map_get_type       (void) G_GNUC_CONST;
+PangoContext * pango_font_map_create_context (PangoFontMap               *fontmap);
 PangoFont *   pango_font_map_load_font     (PangoFontMap                 *fontmap,
 					    PangoContext                 *context,
 					    const PangoFontDescription   *desc);

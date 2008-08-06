@@ -217,6 +217,9 @@ pango_ft2_font_map_set_resolution (PangoFT2FontMap *fontmap,
  *
  * Create a #PangoContext for the given fontmap.
  *
+ * As of Pango 1.20 this function is deprecated.
+ * Use pango_font_map_create_context() instead.
+ *
  * Return value: the newly created context; free with g_object_unref().
  *
  * Since: 1.2
@@ -226,7 +229,7 @@ pango_ft2_font_map_create_context (PangoFT2FontMap *fontmap)
 {
   g_return_val_if_fail (PANGO_FT2_IS_FONT_MAP (fontmap), NULL);
 
-  return pango_fc_font_map_create_context (PANGO_FC_FONT_MAP (fontmap));
+  return pango_font_map_create_context (PANGO_FONT_MAP (fontmap));
 }
 
 /**
@@ -238,7 +241,7 @@ pango_ft2_font_map_create_context (PangoFT2FontMap *fontmap)
  * (see pango_ft2_fontmap_get_for_display()) and sets the resolution
  * for the default fontmap to @dpi_x by @dpi_y.
  *
- * Use of this function is deprecated; see pango_ft2_fontmap_create_context()
+ * Use of this function is deprecated. Use pango_fontmap_create_context()
  * instead.
  *
  * Return value: the new #PangoContext
@@ -251,7 +254,7 @@ pango_ft2_get_context (double dpi_x, double dpi_y)
   fontmap = pango_ft2_font_map_for_display ();
   pango_ft2_font_map_set_resolution (PANGO_FT2_FONT_MAP (fontmap), dpi_x, dpi_y);
 
-  return pango_ft2_font_map_create_context (PANGO_FT2_FONT_MAP (fontmap));
+  return pango_font_map_create_context (fontmap);
 }
 
 /**

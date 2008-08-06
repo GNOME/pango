@@ -122,17 +122,16 @@ pango_win32_get_hfont (PangoFont *font)
  *
  * Retrieves a #PangoContext appropriate for rendering with Windows fonts.
   *
+ * As of Pango 1.20 this function is deprecated.
+ * Use pango_win32_font_map_for_display() followed by
+ * pango_font_map_create_context() instead.
+ *
  * Return value: the new #PangoContext
  **/
 PangoContext *
 pango_win32_get_context (void)
 {
-  PangoContext *result;
-
-  result = pango_context_new ();
-  pango_context_set_font_map (result, pango_win32_font_map_for_display ());
-
-  return result;
+  return pango_font_map_create_context (pango_win32_font_map_for_display ());
 }
 
 G_DEFINE_TYPE (PangoWin32Font, _pango_win32_font, PANGO_TYPE_FONT)
@@ -586,7 +585,7 @@ pango_win32_font_get_metrics (PangoFont     *font,
 	      PangoLayout *layout;
 
 	      /*  Get the average width of the chars in "0123456789" */
-	      context = pango_win32_get_context ();
+	      context = pango_font_map_create_context (pango_win32_font_map_for_display ());
 	      pango_context_set_language (context, language);
 	      font_desc = pango_font_describe_with_absolute_size (font);
 	      pango_context_set_font_description (context, font_desc);

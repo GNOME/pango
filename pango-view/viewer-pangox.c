@@ -42,7 +42,7 @@ pangox_view_get_context (gpointer instance)
   PangoContext *context;
   PangoMatrix matrix = {0., 0., 0., 0., 0., 0.};
 
-  context = pango_x_get_context (x->display);
+  context = pango_font_map_create_context (pango_x_font_map_for_display (x->display));
 
   /* We set an all-zero matrix on the context, to negotiate that
    * this backend doesn't support transformations.

@@ -74,7 +74,9 @@ cairo_font_type_t pango_cairo_font_map_get_font_type (PangoCairoFontMap *fontmap
 void          pango_cairo_font_map_set_resolution (PangoCairoFontMap *fontmap,
 						   double             dpi);
 double        pango_cairo_font_map_get_resolution (PangoCairoFontMap *fontmap);
+#ifndef PANGO_DISABLE_DEPRECATED
 PangoContext *pango_cairo_font_map_create_context (PangoCairoFontMap *fontmap);
+#endif
 
 /*
  * PangoCairoFont
