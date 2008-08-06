@@ -24,6 +24,7 @@
 #include <math.h>
 
 #include "pangocairo-private.h"
+#include "pango-glyph-item.h"
 
 typedef struct _PangoCairoRendererClass PangoCairoRendererClass;
 
@@ -271,22 +272,30 @@ done:
   cairo_restore (crenderer->cr);
 }
 
-/* cairo_glyph_t is 24 bytes */
-#define MAX_STACK 40
+#ifndef STACK_BUFFER_SIZE
+#define STACK_BUFFER_SIZE (512 * sizeof (int))
+#endif
+
+#define STACK_ARRAY_LENGTH(T) (STACK_BUFFER_SIZE / sizeof(T))
 
 static void
-pango_cairo_renderer_draw_glyphs (PangoRenderer     *renderer,
-				  PangoFont         *font,
-				  PangoGlyphString  *glyphs,
-				  int                x,
-				  int                y)
+pango_cairo_renderer_show_text_glyphs (PangoRenderer        *renderer,
+				       const char           *text,
+				       int                   text_len,
+				       PangoGlyphString     *glyphs,
+				       cairo_text_cluster_t *clusters,
+				       int                   num_clusters,
+				       gboolean              backward,
+				       PangoFont            *font,
+				       int                   x,
+				       int                   y)
 {
   PangoCairoRenderer *crenderer = (PangoCairoRenderer *) (renderer);
 
   int i, count;
   int x_position = 0;
   cairo_glyph_t *cairo_glyphs;
-  cairo_glyph_t stack_glyphs[MAX_STACK];
+  cairo_glyph_t stack_glyphs[STACK_ARRAY_LENGTH (cairo_glyph_t)];
   double base_x = crenderer->x_offset + (double)x / PANGO_SCALE;
   double base_y = crenderer->y_offset + (double)y / PANGO_SCALE;
 
@@ -315,7 +324,7 @@ pango_cairo_renderer_draw_glyphs (PangoRenderer     *renderer,
       goto done;
     }
 
-  if (glyphs->num_glyphs > MAX_STACK)
+  if (glyphs->num_glyphs > (int) G_N_ELEMENTS (stack_glyphs))
     cairo_glyphs = g_new (cairo_glyph_t, glyphs->num_glyphs);
   else
     cairo_glyphs = stack_glyphs;
@@ -345,16 +354,39 @@ pango_cairo_renderer_draw_glyphs (PangoRenderer     *renderer,
       x_position += gi->geometry.width;
     }
 
-  if (crenderer->do_path)
+  if (G_UNLIKELY (crenderer->do_path))
     cairo_glyph_path (crenderer->cr, cairo_glyphs, count);
   else
-    cairo_show_glyphs (crenderer->cr, cairo_glyphs, count);
+    if (G_UNLIKELY (clusters))
+      cairo_show_text_glyphs (crenderer->cr,
+			      text, text_len,
+			      cairo_glyphs, count,
+			      clusters, num_clusters,
+			      backward);
+    else
+      cairo_show_glyphs (crenderer->cr, cairo_glyphs, count);
 
-  if (glyphs->num_glyphs > MAX_STACK)
+  if (cairo_glyphs != stack_glyphs)
     g_free (cairo_glyphs);
 
 done:
   cairo_restore (crenderer->cr);
+}
+
+static void
+pango_cairo_renderer_draw_glyphs (PangoRenderer     *renderer,
+				  PangoFont         *font,
+				  PangoGlyphString  *glyphs,
+				  int                x,
+				  int                y)
+{
+  pango_cairo_renderer_show_text_glyphs (renderer,
+					 NULL, 0,
+					 glyphs,
+					 NULL, 0,
+					 FALSE,
+					 font,
+					 x, y);
 }
 
 static void
@@ -365,92 +397,76 @@ pango_cairo_renderer_draw_glyph_item (PangoRenderer     *renderer,
 				      int                y)
 {
   PangoCairoRenderer *crenderer = (PangoCairoRenderer *) (renderer);
-  PangoFont          *font = glyph_item->item->analysis.font;
-  PangoGlyphString   *glyphs = glyph_item->glyphs;
+  PangoFont          *font      = glyph_item->item->analysis.font;
+  PangoGlyphString   *glyphs    = glyph_item->glyphs;
+  PangoItem          *item      = glyph_item->item;
+  gboolean            backward  = (item->analysis.level & 1) != 0;
 
-  int i, count;
-  int x_position = 0;
-  cairo_glyph_t *cairo_glyphs;
-  cairo_glyph_t stack_glyphs[MAX_STACK];
-  double base_x = crenderer->x_offset + (double)x / PANGO_SCALE;
-  double base_y = crenderer->y_offset + (double)y / PANGO_SCALE;
+  PangoGlyphItemIter   iter;
+  cairo_text_cluster_t *cairo_clusters;
+  cairo_text_cluster_t stack_clusters[STACK_ARRAY_LENGTH (cairo_text_cluster_t)];
+  int num_clusters;
 
   if (!crenderer->has_show_text_glyphs || crenderer->do_path)
     {
-      pango_cairo_renderer_draw_glyphs (renderer,
-					glyph_item->item->analysis.font,
-					glyph_item->glyphs,
-					x, y);
+      pango_cairo_renderer_show_text_glyphs (renderer,
+					     NULL, 0,
+					     glyphs,
+					     NULL, 0,
+					     FALSE,
+					     font,
+					     x, y);
       return;
     }
 
-  cairo_save (crenderer->cr);
-  set_color (crenderer, PANGO_RENDER_PART_FOREGROUND);
-
-  if (!_pango_cairo_font_install (font, crenderer->cr))
-    {
-      for (i = 0; i < glyphs->num_glyphs; i++)
-	{
-	  PangoGlyphInfo *gi = &glyphs->glyphs[i];
-
-	  if (gi->glyph != PANGO_GLYPH_EMPTY)
-	    {
-	      double cx = base_x + (double)(x_position + gi->geometry.x_offset) / PANGO_SCALE;
-	      double cy = gi->geometry.y_offset == 0 ?
-			  base_y :
-			  base_y + (double)(gi->geometry.y_offset) / PANGO_SCALE;
-
-	      /* XXX */
-	      _pango_cairo_renderer_draw_unknown_glyph (crenderer, font, gi, cx, cy);
-	    }
-	  x_position += gi->geometry.width;
-	}
-
-      goto done;
-    }
-
-  if (glyphs->num_glyphs > MAX_STACK)
-    cairo_glyphs = g_new (cairo_glyph_t, glyphs->num_glyphs);
+  if (glyphs->num_glyphs > (int) G_N_ELEMENTS (stack_clusters))
+    cairo_clusters = g_new (cairo_text_cluster_t, glyphs->num_glyphs);
   else
-    cairo_glyphs = stack_glyphs;
+    cairo_clusters = stack_clusters;
 
-  count = 0;
-  for (i = 0; i < glyphs->num_glyphs; i++)
+  num_clusters = 0;
+  if (pango_glyph_item_iter_init_start (&iter, glyph_item, text))
     {
-      PangoGlyphInfo *gi = &glyphs->glyphs[i];
+      do {
+        int num_bytes, num_glyphs, i;
 
-      if (gi->glyph != PANGO_GLYPH_EMPTY)
-	{
-	  double cx = base_x + (double)(x_position + gi->geometry.x_offset) / PANGO_SCALE;
-	  double cy = gi->geometry.y_offset == 0 ?
-		      base_y :
-		      base_y + (double)(gi->geometry.y_offset) / PANGO_SCALE;
+        num_bytes  = iter.end_index - iter.start_index;
+        num_glyphs = backward ? iter.start_glyph - iter.end_glyph : iter.end_glyph - iter.start_glyph;
 
-	  if (gi->glyph & PANGO_GLYPH_UNKNOWN_FLAG)
-	    /* XXX */
-	    _pango_cairo_renderer_draw_unknown_glyph (crenderer, font, gi, cx, cy);
-	  else
-	    {
-	      cairo_glyphs[count].index = gi->glyph;
-	      cairo_glyphs[count].x = cx;
-	      cairo_glyphs[count].y = cy;
-	      count++;
-	    }
-	}
-      x_position += gi->geometry.width;
+	if (num_bytes < 1)
+	  g_warning ("pango_cairo_renderer_draw_glyph_item: bad cluster has num_bytess %d", num_bytes);
+	if (num_glyphs < 1)
+	  g_warning ("pango_cairo_renderer_draw_glyph_item: bad cluster has num_glyphs %d", num_glyphs);
+
+	/* Discount empty and unknown glyphs */
+	for (i = MIN (iter.start_glyph, iter.end_glyph);
+	     i < MAX (iter.start_glyph, iter.end_glyph);
+	     i++)
+	  {
+	    PangoGlyphInfo *gi = &glyphs->glyphs[i];
+
+	    if (gi->glyph == PANGO_GLYPH_EMPTY ||
+		gi->glyph & PANGO_GLYPH_UNKNOWN_FLAG)
+	      num_glyphs--;
+	  }
+
+        cairo_clusters[num_clusters].num_bytes  = num_bytes;
+        cairo_clusters[num_clusters].num_glyphs = num_glyphs;
+        num_clusters++;
+      } while (pango_glyph_item_iter_next_cluster (&iter));
     }
 
-  /* XXX */
-  cairo_show_glyphs (crenderer->cr, cairo_glyphs, count);
+  pango_cairo_renderer_show_text_glyphs (renderer,
+					 text + item->offset, item->length,
+					 glyphs,
+					 cairo_clusters, num_clusters,
+					 backward,
+					 font,
+					 x, y);
 
-  if (glyphs->num_glyphs > MAX_STACK)
-    g_free (cairo_glyphs);
-
-done:
-  cairo_restore (crenderer->cr);
+  if (cairo_clusters != stack_clusters)
+    g_free (cairo_clusters);
 }
-
-#undef MAX_STACK
 
 static void
 pango_cairo_renderer_draw_rectangle (PangoRenderer     *renderer,
