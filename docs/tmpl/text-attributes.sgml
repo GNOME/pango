@@ -634,11 +634,11 @@ The #GObject type for #PangoLanguage.
 
 <!-- ##### FUNCTION pango_language_to_string ##### -->
 <para>
-Returns a RFC-3066 format string representing the given language tag. 
+
 </para>
 
-@language: a language tag.
-@Returns: a string representing the language tag.
+@language:
+@Returns:
 
 
 <!-- ##### FUNCTION pango_language_matches ##### -->
