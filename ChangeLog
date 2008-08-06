@@ -1,3 +1,8 @@
+2008-07-19  Behdad Esfahbod  <behdad@gnome.org>
+
+	* pango/pango-layout.c (process_line): Justify lines broken by U+2028
+	LINE SEPARATOR.  Also affects return value of pango_layout_is_wrapped().
+
 2008-08-06  Tor Lillqvist  <tml@novell.com>
 
 	* pango/Makefile.am (install-def-files): Add a mkdir to be sure

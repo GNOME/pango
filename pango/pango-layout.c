@@ -3545,15 +3545,9 @@ process_line (PangoLayout    *layout,
 	case BREAK_LINE_SEPARATOR:
 	  state->items = g_list_delete_link (state->items, state->items);
 	  state->start_offset += old_num_chars;
-	  /* FIXME We don't set wrapped here.  Which means we don't justify
-	   * lines that end in a line separator.  Not sure which behavior is
-	   * more desired.  For now that we do greedy line breaking, not
-	   * justifying lines of potentially very small length is a good idea,
-	   * but when we do a better job at that, if there's a different
-	   * between line separator and paragraph separator, it should be that
-	   * line separator acts just like a forced break, with no effect on
-	   * justification.
-	   */
+	  /* A line-separate is just a forced break.  Set wrapped, so we do
+	   * justification */
+	  wrapped = TRUE;
 	  goto done;
 	}
     }
