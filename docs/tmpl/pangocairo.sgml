@@ -359,9 +359,9 @@ with Pango's Cairo renderer.
 
 </para>
 
-@cr:
-@text:
-@glyph_item:
+@cr: 
+@text: 
+@glyph_item: 
 
 
 <!-- ##### FUNCTION pango_cairo_show_layout_line ##### -->

@@ -462,7 +462,6 @@ None of the members of a #PangoGlyphItemIter should be modified manually.
 @end_glyph: ending glyph of the cluster
 @end_index: ending text index of the cluster
 @end_char: ending number of characters of the cluster
-
 @Since: 1.22
 
 <!-- ##### MACRO PANGO_TYPE_GLYPH_STRING ##### -->
@@ -592,8 +591,8 @@ The #GObject type for #PangoGlyphItem.
 
 </para>
 
-@orig:
-@Returns:
+@orig: 
+@Returns: 
 
 
 <!-- ##### FUNCTION pango_glyph_item_free ##### -->
@@ -601,7 +600,7 @@ The #GObject type for #PangoGlyphItem.
 
 </para>
 
-@glyph_item:
+@glyph_item: 
 
 
 <!-- ##### FUNCTION pango_glyph_item_split ##### -->
@@ -659,7 +658,7 @@ The #GObject type for #PangoGlyphItemIter.
 
 </para>
 
-@iter:
+@iter: 
 
 
 <!-- ##### FUNCTION pango_glyph_item_iter_init_start ##### -->
@@ -667,10 +666,10 @@ The #GObject type for #PangoGlyphItemIter.
 
 </para>
 
-@iter:
-@glyph_item:
-@text:
-@Returns:
+@iter: 
+@glyph_item: 
+@text: 
+@Returns: 
 
 
 <!-- ##### FUNCTION pango_glyph_item_iter_init_end ##### -->
@@ -678,10 +677,10 @@ The #GObject type for #PangoGlyphItemIter.
 
 </para>
 
-@iter:
+@iter: 
 @glyph_item: 
-@text:
-@Returns:
+@text: 
+@Returns: 
 
 
 <!-- ##### FUNCTION pango_glyph_item_iter_next_cluster ##### -->
@@ -689,8 +688,8 @@ The #GObject type for #PangoGlyphItemIter.
 
 </para>
 
-@iter:
-@Returns:
+@iter: 
+@Returns: 
 
 
 <!-- ##### FUNCTION pango_glyph_item_iter_prev_cluster ##### -->
@@ -698,7 +697,7 @@ The #GObject type for #PangoGlyphItemIter.
 
 </para>
 
-@iter:
-@Returns:
+@iter: 
+@Returns: 
 
 

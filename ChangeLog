@@ -1,5 +1,9 @@
 2008-08-06  Behdad Esfahbod  <behdad@gnome.org>
 
+	* configure.in: Require cairo >= 1.7.1
+
+2008-08-06  Behdad Esfahbod  <behdad@gnome.org>
+
 	 Fedora Bug 457883 - Sindhi Characters are not supported in
 	 pango [U+097B-U+097F]
 	 Patch from Pravin Satpute

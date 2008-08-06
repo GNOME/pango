@@ -637,8 +637,8 @@ The #GObject type for #PangoLanguage.
 
 </para>
 
-@language:
-@Returns:
+@language: 
+@Returns: 
 
 
 <!-- ##### FUNCTION pango_language_matches ##### -->

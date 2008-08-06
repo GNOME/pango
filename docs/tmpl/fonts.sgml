@@ -868,8 +868,8 @@ Returns the type of a #PangoFontMap.
 
 </para>
 
-@fontmap:
-@Returns:
+@fontmap: 
+@Returns: 
 
 
 <!-- ##### FUNCTION pango_font_map_load_font ##### -->
