@@ -116,6 +116,8 @@
 
 2008-07-30  Behdad Esfahbod  <behdad@gnome.org>
 
+	Bug 472625 – Add draw_glyph_item() to PangoRenderer
+
 	* docs/pango-sections.txt:
 	* docs/tmpl/pango-renderer.sgml:
 	* pango/pango-renderer.c:
