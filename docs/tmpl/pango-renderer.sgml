@@ -60,6 +60,7 @@ The #GObject type for #PangoRenderPart.
 @begin: 
 @end: 
 @prepare_run: 
+@draw_glyph_item:
 
 <!-- ##### FUNCTION pango_renderer_draw_layout ##### -->
 <para>
@@ -93,6 +94,18 @@ The #GObject type for #PangoRenderPart.
 @glyphs: 
 @x: 
 @y: 
+
+
+<!-- ##### FUNCTION pango_renderer_draw_glyph_item ##### -->
+<para>
+
+</para>
+
+@renderer:
+@text:
+@glyph_item:
+@x:
+@y:
 
 
 <!-- ##### FUNCTION pango_renderer_draw_rectangle ##### -->

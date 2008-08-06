@@ -354,6 +354,16 @@ with Pango's Cairo renderer.
 @glyphs: 
 
 
+<!-- ##### FUNCTION pango_cairo_show_glyph_item ##### -->
+<para>
+
+</para>
+
+@cr:
+@text:
+@glyph_item:
+
+
 <!-- ##### FUNCTION pango_cairo_show_layout_line ##### -->
 <para>
 

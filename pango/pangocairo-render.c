@@ -37,6 +37,7 @@ struct _PangoCairoRenderer
 
   cairo_t *cr;
   gboolean do_path;
+  gboolean has_show_text_glyphs;
   double x_offset, y_offset;
 
   /* house-keeping options */
@@ -270,6 +271,9 @@ done:
   cairo_restore (crenderer->cr);
 }
 
+/* cairo_glyph_t is 24 bytes */
+#define MAX_STACK 40
+
 static void
 pango_cairo_renderer_draw_glyphs (PangoRenderer     *renderer,
 				  PangoFont         *font,
@@ -278,9 +282,6 @@ pango_cairo_renderer_draw_glyphs (PangoRenderer     *renderer,
 				  int                y)
 {
   PangoCairoRenderer *crenderer = (PangoCairoRenderer *) (renderer);
-
-  /* cairo_glyph_t is 24 bytes */
-#define MAX_STACK 40
 
   int i, count;
   int x_position = 0;
@@ -354,9 +355,102 @@ pango_cairo_renderer_draw_glyphs (PangoRenderer     *renderer,
 
 done:
   cairo_restore (crenderer->cr);
+}
+
+static void
+pango_cairo_renderer_draw_glyph_item (PangoRenderer     *renderer,
+				      const char        *text,
+				      PangoGlyphItem    *glyph_item,
+				      int                x,
+				      int                y)
+{
+  PangoCairoRenderer *crenderer = (PangoCairoRenderer *) (renderer);
+  PangoFont          *font = glyph_item->item->analysis.font;
+  PangoGlyphString   *glyphs = glyph_item->glyphs;
+
+  int i, count;
+  int x_position = 0;
+  cairo_glyph_t *cairo_glyphs;
+  cairo_glyph_t stack_glyphs[MAX_STACK];
+  double base_x = crenderer->x_offset + (double)x / PANGO_SCALE;
+  double base_y = crenderer->y_offset + (double)y / PANGO_SCALE;
+
+  if (!crenderer->has_show_text_glyphs || crenderer->do_path)
+    {
+      pango_cairo_renderer_draw_glyphs (renderer,
+					glyph_item->item->analysis.font,
+					glyph_item->glyphs,
+					x, y);
+      return;
+    }
+
+  cairo_save (crenderer->cr);
+  set_color (crenderer, PANGO_RENDER_PART_FOREGROUND);
+
+  if (!_pango_cairo_font_install (font, crenderer->cr))
+    {
+      for (i = 0; i < glyphs->num_glyphs; i++)
+	{
+	  PangoGlyphInfo *gi = &glyphs->glyphs[i];
+
+	  if (gi->glyph != PANGO_GLYPH_EMPTY)
+	    {
+	      double cx = base_x + (double)(x_position + gi->geometry.x_offset) / PANGO_SCALE;
+	      double cy = gi->geometry.y_offset == 0 ?
+			  base_y :
+			  base_y + (double)(gi->geometry.y_offset) / PANGO_SCALE;
+
+	      /* XXX */
+	      _pango_cairo_renderer_draw_unknown_glyph (crenderer, font, gi, cx, cy);
+	    }
+	  x_position += gi->geometry.width;
+	}
+
+      goto done;
+    }
+
+  if (glyphs->num_glyphs > MAX_STACK)
+    cairo_glyphs = g_new (cairo_glyph_t, glyphs->num_glyphs);
+  else
+    cairo_glyphs = stack_glyphs;
+
+  count = 0;
+  for (i = 0; i < glyphs->num_glyphs; i++)
+    {
+      PangoGlyphInfo *gi = &glyphs->glyphs[i];
+
+      if (gi->glyph != PANGO_GLYPH_EMPTY)
+	{
+	  double cx = base_x + (double)(x_position + gi->geometry.x_offset) / PANGO_SCALE;
+	  double cy = gi->geometry.y_offset == 0 ?
+		      base_y :
+		      base_y + (double)(gi->geometry.y_offset) / PANGO_SCALE;
+
+	  if (gi->glyph & PANGO_GLYPH_UNKNOWN_FLAG)
+	    /* XXX */
+	    _pango_cairo_renderer_draw_unknown_glyph (crenderer, font, gi, cx, cy);
+	  else
+	    {
+	      cairo_glyphs[count].index = gi->glyph;
+	      cairo_glyphs[count].x = cx;
+	      cairo_glyphs[count].y = cy;
+	      count++;
+	    }
+	}
+      x_position += gi->geometry.width;
+    }
+
+  /* XXX */
+  cairo_show_glyphs (crenderer->cr, cairo_glyphs, count);
+
+  if (glyphs->num_glyphs > MAX_STACK)
+    g_free (cairo_glyphs);
+
+done:
+  cairo_restore (crenderer->cr);
+}
 
 #undef MAX_STACK
-}
 
 static void
 pango_cairo_renderer_draw_rectangle (PangoRenderer     *renderer,
@@ -544,6 +638,7 @@ pango_cairo_renderer_class_init (PangoCairoRendererClass *klass)
   PangoRendererClass *renderer_class = PANGO_RENDERER_CLASS (klass);
 
   renderer_class->draw_glyphs = pango_cairo_renderer_draw_glyphs;
+  renderer_class->draw_glyph_item = pango_cairo_renderer_draw_glyph_item;
   renderer_class->draw_rectangle = pango_cairo_renderer_draw_rectangle;
   renderer_class->draw_error_underline = pango_cairo_renderer_draw_error_underline;
   renderer_class->draw_shape = pango_cairo_renderer_draw_shape;
@@ -582,6 +677,7 @@ release_renderer (PangoCairoRenderer *renderer)
     {
       renderer->cr = NULL;
       renderer->do_path = FALSE;
+      renderer->has_show_text_glyphs = FALSE;
       renderer->x_offset = 0.;
       renderer->y_offset = 0.;
 
@@ -596,6 +692,9 @@ save_current_point (PangoCairoRenderer *renderer)
 {
   renderer->cr_had_current_point = cairo_has_current_point (renderer->cr);
   cairo_get_current_point (renderer->cr, &renderer->x_offset, &renderer->y_offset);
+
+  /* abuse save_current_point() to cache cairo_has_show_text_glyphs() result */
+  renderer->has_show_text_glyphs = cairo_has_show_text_glyphs (renderer->cr);
 }
 
 static void
@@ -640,6 +739,45 @@ _pango_cairo_do_glyph_string (cairo_t          *cr,
     }
 
   pango_renderer_draw_glyphs (renderer, font, glyphs, 0, 0);
+
+  if (!do_path)
+    {
+      pango_renderer_deactivate (renderer);
+    }
+
+  restore_current_point (crenderer);
+
+  release_renderer (crenderer);
+}
+
+static void
+_pango_cairo_do_glyph_item (cairo_t          *cr,
+			    const char       *text,
+			    PangoGlyphItem   *glyph_item,
+			    gboolean          do_path)
+{
+  PangoCairoRenderer *crenderer = acquire_renderer ();
+  PangoRenderer *renderer = (PangoRenderer *) crenderer;
+
+  crenderer->cr = cr;
+  crenderer->do_path = do_path;
+  save_current_point (crenderer);
+
+  if (!do_path)
+    {
+      /* unset all part colors, since when drawing just a glyph string,
+       * prepare_run() isn't called.
+       */
+
+      pango_renderer_activate (renderer);
+
+      pango_renderer_set_color (renderer, PANGO_RENDER_PART_FOREGROUND, NULL);
+      pango_renderer_set_color (renderer, PANGO_RENDER_PART_BACKGROUND, NULL);
+      pango_renderer_set_color (renderer, PANGO_RENDER_PART_UNDERLINE, NULL);
+      pango_renderer_set_color (renderer, PANGO_RENDER_PART_STRIKETHROUGH, NULL);
+    }
+
+  pango_renderer_draw_glyph_item (renderer, text, glyph_item, 0, 0);
 
   if (!do_path)
     {
@@ -737,6 +875,38 @@ pango_cairo_show_glyph_string (cairo_t          *cr,
   g_return_if_fail (glyphs != NULL);
 
   _pango_cairo_do_glyph_string (cr, font, glyphs, FALSE);
+}
+
+
+/**
+ * pango_cairo_show_glyph_item:
+ * @cr: a Cairo context
+ * @text: the UTF-8 text that @glyph_item refers to
+ * @glyph_item: a #PangoGlyphItem
+ *
+ * Draws the glyphs in @glyph_item in the specified cairo context,
+ * embedding the text associated with the glyphs in the output if the
+ * output format supports it (PDF for example), otherwise it acts
+ * similar to pango_cairo_show_glyph_string().
+ *
+ * The origin of the glyphs (the left edge of the baseline) will
+ * be drawn at the current point of the cairo context.
+ *
+ * Note that @text is the start of the text for layout, which is then
+ * indexed by <literal>glyph_item->item->offset</literal>.
+ *
+ * Since: 1.20
+ **/
+void
+pango_cairo_show_glyph_item (cairo_t          *cr,
+			     const char       *text,
+			     PangoGlyphItem   *glyph_item)
+{
+  g_return_if_fail (cr != NULL);
+  g_return_if_fail (text != NULL);
+  g_return_if_fail (glyph_item != NULL);
+
+  _pango_cairo_do_glyph_item (cr, text, glyph_item, FALSE);
 }
 
 /**

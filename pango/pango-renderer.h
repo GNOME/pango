@@ -101,6 +101,7 @@ struct _PangoRenderer
  * @begin: Do renderer-specific initialization before drawing
  * @end: Do renderer-specific cleanup after drawing
  * @prepare_run: updates the renderer for a new run
+ * @draw_glyph_item: draws a #PangoGlyphItem
  *
  * Class structure for #PangoRenderer.
  *
@@ -172,10 +173,18 @@ struct _PangoRendererClass
   void (*prepare_run) (PangoRenderer  *renderer,
 		       PangoLayoutRun *run);
 
+  /* All of the following have default implementations
+   * and take as coordinates user coordinates in Pango units
+   */
+  void (*draw_glyph_item) (PangoRenderer     *renderer,
+			   const char        *text,
+			   PangoGlyphItem    *glyph_item,
+			   int                x,
+			   int                y);
+
   /*< private >*/
 
   /* Padding for future expansion */
-  void (*_pango_reserved1) (void);
   void (*_pango_reserved2) (void);
   void (*_pango_reserved3) (void);
   void (*_pango_reserved4) (void);
@@ -194,6 +203,11 @@ void pango_renderer_draw_layout_line     (PangoRenderer    *renderer,
 void pango_renderer_draw_glyphs          (PangoRenderer    *renderer,
 					  PangoFont        *font,
 					  PangoGlyphString *glyphs,
+					  int               x,
+					  int               y);
+void pango_renderer_draw_glyph_item      (PangoRenderer    *renderer,
+					  const char       *text,
+					  PangoGlyphItem   *glyph_item,
 					  int               x,
 					  int               y);
 void pango_renderer_draw_rectangle       (PangoRenderer    *renderer,

@@ -647,6 +647,7 @@ PangoRendererClass
 pango_renderer_draw_layout
 pango_renderer_draw_layout_line
 pango_renderer_draw_glyphs
+pango_renderer_draw_glyph_item
 pango_renderer_draw_rectangle
 pango_renderer_draw_error_underline
 pango_renderer_draw_trapezoid
@@ -851,6 +852,7 @@ pango_cairo_update_context
 pango_cairo_create_layout
 pango_cairo_update_layout
 pango_cairo_show_glyph_string
+pango_cairo_show_glyph_item
 pango_cairo_show_layout_line
 pango_cairo_show_layout
 pango_cairo_show_error_underline

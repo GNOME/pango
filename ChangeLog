@@ -1,5 +1,21 @@
 2008-07-30  Behdad Esfahbod  <behdad@gnome.org>
 
+	* docs/pango-sections.txt:
+	* docs/tmpl/pango-renderer.sgml:
+	* pango/pango-renderer.c:
+	* pango/pango-renderer.h:
+	New public API:
+
+		PangoRenderer::draw_glyph_item()
+		pango_renderer_draw_glyph_item()
+
+	Make layout and layout-line default renderers go through
+	draw_glyph_item(), which then by default falls back to
+	draw_glyphs().  The advantage in draw_glyph_item() is that it
+	has access to the text and cluster information.
+
+2008-07-30  Behdad Esfahbod  <behdad@gnome.org>
+
 	* docs/tmpl/text-attributes.sgml: Fix doc build warning.
 
 2008-07-19  Behdad Esfahbod  <behdad@gnome.org>

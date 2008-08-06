@@ -116,6 +116,9 @@ void         pango_cairo_update_layout (cairo_t     *cr,
 void pango_cairo_show_glyph_string (cairo_t          *cr,
 				    PangoFont        *font,
 				    PangoGlyphString *glyphs);
+void pango_cairo_show_glyph_item   (cairo_t          *cr,
+				    const char       *text,
+				    PangoGlyphItem   *glyph_item);
 void pango_cairo_show_layout_line  (cairo_t          *cr,
 				    PangoLayoutLine  *line);
 void pango_cairo_show_layout       (cairo_t          *cr,

@@ -329,6 +329,7 @@ EXPORTS
 	pango_renderer_deactivate
 	pango_renderer_draw_error_underline
 	pango_renderer_draw_glyph
+	pango_renderer_draw_glyph_item
 	pango_renderer_draw_glyphs
 	pango_renderer_draw_layout
 	pango_renderer_draw_layout_line

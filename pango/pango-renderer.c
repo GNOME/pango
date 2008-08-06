@@ -64,6 +64,11 @@ static void pango_renderer_default_draw_glyphs          (PangoRenderer    *rende
 							 PangoGlyphString *glyphs,
 							 int               x,
 							 int               y);
+static void pango_renderer_default_draw_glyph_item      (PangoRenderer    *renderer,
+							 const char       *text,
+							 PangoGlyphItem   *glyph_item,
+							 int               x,
+							 int               y);
 static void pango_renderer_default_draw_rectangle       (PangoRenderer    *renderer,
 							 PangoRenderPart   part,
 							 int               x,
@@ -107,6 +112,7 @@ pango_renderer_class_init (PangoRendererClass *klass)
   GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
 
   klass->draw_glyphs = pango_renderer_default_draw_glyphs;
+  klass->draw_glyph_item = pango_renderer_default_draw_glyph_item;
   klass->draw_rectangle = pango_renderer_default_draw_rectangle;
   klass->draw_error_underline = pango_renderer_default_draw_error_underline;
   klass->prepare_run = pango_renderer_default_prepare_run;
@@ -455,6 +461,7 @@ pango_renderer_draw_layout_line (PangoRenderer    *renderer,
   GSList *l;
   gboolean got_overall = FALSE;
   PangoRectangle overall_rect;
+  const char *text;
 
   g_return_if_fail (PANGO_IS_RENDERER_FAST (renderer));
 
@@ -475,6 +482,8 @@ pango_renderer_draw_layout_line (PangoRenderer    *renderer,
 
   state.underline = PANGO_UNDERLINE_NONE;
   state.strikethrough = FALSE;
+
+  text = pango_layout_get_text (line->layout);
 
   for (l = line->runs; l; l = l->next)
     {
@@ -556,9 +565,10 @@ pango_renderer_draw_layout_line (PangoRenderer    *renderer,
 	}
       else
 	{
-	  pango_renderer_draw_glyphs (renderer,
-				      run->item->analysis.font, run->glyphs,
-				      x + x_off, y - rise);
+	  pango_renderer_draw_glyph_item (renderer,
+					  text,
+					  run,
+					  x + x_off, y - rise);
 	}
 
       if (renderer->underline != PANGO_UNDERLINE_NONE ||
@@ -655,6 +665,57 @@ pango_renderer_default_draw_glyphs (PangoRenderer    *renderer,
 
       x_position += gi->geometry.width;
     }
+}
+
+/**
+ * pango_renderer_draw_glyph_item:
+ * @renderer: a #PangoRenderer
+ * @text: the UTF-8 text that @glyph_item refers to
+ * @glyph_item: a #PangoGlyphItem
+ * @x: X position of left edge of baseline, in user space coordinates
+ *   in Pango units.
+ * @y: Y position of left edge of baseline, in user space coordinates
+ *    in Pango units.
+ *
+ * Draws the glyphs in @glyph_item with the specified #PangoRenderer,
+ * embedding the text associated with the glyphs in the output if the
+ * output format supports it (PDF for example).
+ *
+ * Note that @text is the start of the text for layout, which is then
+ * indexed by <literal>glyph_item->item->offset</literal>.
+ *
+ * The default implementation of this method simply falls back to
+ * pango_renderer_draw_glyphs().
+ *
+ * Since: 1.22
+ **/
+void
+pango_renderer_draw_glyph_item (PangoRenderer    *renderer,
+				const char       *text,
+				PangoGlyphItem   *glyph_item,
+				int               x,
+				int               y)
+{
+  g_return_if_fail (PANGO_IS_RENDERER_FAST (renderer));
+
+  pango_renderer_activate (renderer);
+
+  PANGO_RENDERER_GET_CLASS (renderer)->draw_glyph_item (renderer, text, glyph_item, x, y);
+
+  pango_renderer_deactivate (renderer);
+}
+
+static void
+pango_renderer_default_draw_glyph_item (PangoRenderer    *renderer,
+					const char       *text,
+					PangoGlyphItem   *glyph_item,
+					int               x,
+					int               y)
+{
+  pango_renderer_draw_glyphs (renderer,
+			      glyph_item->item->analysis.font,
+			      glyph_item->glyphs,
+			      x, y);
 }
 
 /**
