@@ -1,5 +1,15 @@
 2008-08-06  Behdad Esfahbod  <behdad@gnome.org>
 
+	Bug 441654 – prefix fails when more than one base characters (as
+	conjuncts) present after a half form the next prefix renders
+	incorrectly
+	Patch from  Rahul Bhalerao
+
+	* modules/indic/mprefixups.c (indic_mprefixups_apply):
+	Do what I was told to do.
+
+2008-08-06  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 546534 – pango_cairo_font_map_set_default(NULL) errs
 
 	* pango/pangocairo-fontmap.c (pango_cairo_font_map_set_default):

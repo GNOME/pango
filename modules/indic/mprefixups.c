@@ -81,7 +81,7 @@ void indic_mprefixups_apply(MPreFixups *mprefixups, PangoOTBuffer *buffer)
 	pango_ot_buffer_get_glyphs (buffer, &glyphs, &n_glyphs);
 
 	for (i = 0; i < n_glyphs; i++) {
-	    if (baseGlyph < 0 && glyphs[i].cluster == baseIndex)
+	    if ((baseIndex >= glyphs[i].cluster) && (baseIndex-glyphs[i].cluster) % 2 == 0) /* bug 441654 */
 		baseGlyph = i;
 	    if (glyphs[i].cluster == mpreIndex) {
 		    if (mpreGlyph < 0)
