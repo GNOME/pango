@@ -895,7 +895,7 @@ pango_cairo_show_glyph_string (cairo_t          *cr,
  * Note that @text is the start of the text for layout, which is then
  * indexed by <literal>@glyph_item->item->offset</literal>.
  *
- * Since: 1.20
+ * Since: 1.22
  **/
 void
 pango_cairo_show_glyph_item (cairo_t          *cr,
