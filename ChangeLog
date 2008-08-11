@@ -1,3 +1,11 @@
+2008-08-11  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 547303 – pango_layout_get_cursor_pos crashes on certain text
+	buffers
+
+	* pango/pango-layout.c (pango_layout_get_cursor_pos): Handle cursor
+	position in the middle of a "\r\n" cluster.
+
 2008-08-06  Behdad Esfahbod  <behdad@gnome.org>
 
 	* pango/pangocairo-render.c (pango_cairo_renderer_draw_glyph_item):
