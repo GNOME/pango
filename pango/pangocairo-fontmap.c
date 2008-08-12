@@ -255,12 +255,11 @@ pango_cairo_font_map_get_resolution (PangoCairoFontMap *fontmap)
  *
  * Create a #PangoContext for the given fontmap.
  *
- * As of Pango 1.20 this function is deprecated.
- * Use pango_font_map_create_context() instead.
- *
  * Return value: the newly created context; free with g_object_unref().
  *
  * Since: 1.10
+ *
+ * Deprecated: 1.22: Use pango_font_map_create_context() instead.
  **/
 PangoContext *
 pango_cairo_font_map_create_context (PangoCairoFontMap *fontmap)

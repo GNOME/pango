@@ -317,11 +317,10 @@ _pango_xft_font_map_get_info (PangoFontMap *fontmap,
  * Retrieves a #PangoContext appropriate for rendering with
  * Xft fonts on the given screen of the given display.
  *
- * As of Pango 1.20 this function is deprecated.
- * Use pango_xft_get_font_map() followed by
- * pango_font_map_create_context() instead.
- *
  * Return value: the new #PangoContext.
+ *
+ * Deprecated: 1.22: Use pango_xft_get_font_map() followed by
+ * pango_font_map_create_context() instead.
  **/
 PangoContext *
 pango_xft_get_context (Display *display,

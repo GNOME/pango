@@ -1,3 +1,17 @@
+2008-08-12  Sven Herzberg  <sven@imendio.com>
+
+	Bug 547432 – Deprecation of pango_(backend)_font_map_create_context()
+	not clean
+	reviewed by: Behdad Esfahbod
+
+	* pango/pangocairo-fontmap.c,
+	* pango/pangofc-fontmap.c,
+	* pango/pangoft2-fontmap.c,
+	* pango/pangowin32.c,
+	* pango/pangox.c,
+	* pango/pangoxft-fontmap.c: use "Deprecated:" for deprecation messages;
+	fix the deprecation version number
+
 2008-08-11  Behdad Esfahbod  <behdad@gnome.org>
 
 	Bug 547303 – pango_layout_get_cursor_pos crashes on certain text

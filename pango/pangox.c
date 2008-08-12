@@ -189,10 +189,10 @@ get_context_info (PangoContext *context)
  * Retrieves a #PangoContext appropriate for rendering with X fonts on the
  * given display.
  *
- * This function is deprecated.  Use pango_x_font_map_for_display() followed
- * by pango_font_map_create_context() instead.
- *
  * Return value: the new #PangoContext.
+ *
+ * Deprecated: 1.22: Use pango_x_font_map_for_display() followed by
+ * pango_font_map_create_context() instead.
  **/
 PangoContext *
 pango_x_get_context (Display *display)

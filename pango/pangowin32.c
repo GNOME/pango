@@ -121,12 +121,11 @@ pango_win32_get_hfont (PangoFont *font)
  * pango_win32_get_context:
  *
  * Retrieves a #PangoContext appropriate for rendering with Windows fonts.
-  *
- * As of Pango 1.20 this function is deprecated.
- * Use pango_win32_font_map_for_display() followed by
- * pango_font_map_create_context() instead.
  *
  * Return value: the new #PangoContext
+ *
+ * Deprecated: 1.22: Use pango_win32_font_map_for_display() followed by
+ * pango_font_map_create_context() instead.
  **/
 PangoContext *
 pango_win32_get_context (void)

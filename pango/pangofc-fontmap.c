@@ -1415,12 +1415,11 @@ _pango_fc_font_map_fc_to_coverage (FcCharSet *charset)
  * needed for correct operation on the #PangoContext after calling
  * this function.
  *
- * As of Pango 1.20 this function is deprecated.
- * Use pango_font_map_create_context() instead.
- *
  * Return value: a new #PangoContext
  *
  * Since: 1.4
+ *
+ * Deprecated: 1.22: Use pango_font_map_create_context() instead.
  **/
 PangoContext *
 pango_fc_font_map_create_context (PangoFcFontMap *fcfontmap)
