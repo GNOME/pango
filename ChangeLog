@@ -14,6 +14,14 @@
 
 2008-08-11  Behdad Esfahbod  <behdad@gnome.org>
 
+	* === Released 1.21.4 ===
+
+	* configure.in: Version 1.21.4
+
+	* NEWS: Updated.
+
+2008-08-11  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 547303 – pango_layout_get_cursor_pos crashes on certain text
 	buffers
 

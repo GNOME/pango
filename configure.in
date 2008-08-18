@@ -22,13 +22,13 @@ dnl
 dnl The triplet 
 m4_define([pango_version_major], [1])
 m4_define([pango_version_minor], [21])
-m4_define([pango_version_micro], [3])
+m4_define([pango_version_micro], [4])
 m4_define([pango_version],
           [pango_version_major.pango_version_minor.pango_version_micro])
 dnl The X.Y in -lpango-X.Y line. This is expected to stay 1.0 until Pango 2.
 m4_define([pango_api_version], [1.0])
 dnl Number of releases since we've added interfaces
-m4_define([pango_interface_age], [2])
+m4_define([pango_interface_age], [0])
 dnl Number of releases since we've broken binary compatibility.
 m4_define([pango_binary_age],
           [m4_eval(100 * pango_version_minor + pango_version_micro)])
@@ -331,7 +331,7 @@ have_cairo_xlib=false
 have_cairo_freetype=false
 have_cairo_win32=false
 have_cairo_atsui=false
-cairo_required=1.7.1
+cairo_required=1.7.4
 
 PKG_CHECK_MODULES(CAIRO, cairo >= $cairo_required, have_cairo=true, AC_MSG_RESULT([no]))
    

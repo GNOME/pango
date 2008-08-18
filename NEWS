@@ -1,3 +1,84 @@
+Overview of changes between 1.21.3 and 1.21.4
+=============================================
+- Use cairo_show_text_glyphs() if target cairo surface supports that.
+  This is done by adding a new PangoRenderer method, draw_glyph_item().
+  Custom PangoRenderer implementations that delegate to pango_cairo
+  may want to implement this method if they target PDF files.
+- Requires cairo >= 1.7.4 now
+- Win32 build improvements
+- Justify lines broken by U+2028 LINE SEPARATOR
+- Various small fixes and improvements
+- New API additions:
+
+	New public API:
+
+		PangoRenderer::draw_glyph_item()
+		pango_renderer_draw_glyph_item()
+
+	Make layout and layout-line default renderers go through
+	draw_glyph_item(), which then by default falls back to
+	draw_glyphs().  The advantage in draw_glyph_item() is that it
+	has access to the text and cluster information.
+
+	New public API, for iterating a PangoGlyphItem:
+
+		PangoGlyphItemIter
+		PANGO_TYPE_GLYPH_ITEM_ITER
+		pango_glyph_item_iter_copy()
+		pango_glyph_item_iter_free()
+		pango_glyph_item_iter_init_start()
+		pango_glyph_item_iter_init_end()
+		pango_glyph_item_iter_next_cluster()
+		pango_glyph_item_iter_prev_cluster()
+
+	Make the following previously backend-only API public:
+
+		pango_context_new()
+		pango_context_set_font_map()
+
+	This also means that bindings are recommended to allow
+	instantiation of pango.Context.  This was discouraged before.
+
+	New public API:
+
+		pango_font_map_create_context()
+
+	This is equivalent to pango_context_new() followed by an
+	immediate pango_context_set_font_map().  This change also
+	deprecates various per-fontmap-type context constructors:
+
+	Deprecate pango_cairo_font_map_create_context().
+	Deprecate pango_fc_font_map_create_context().
+	Deprecate pango_ft2_font_map_create_context().
+	Deprecate pango_win32_get_context().
+	Deprecate pango_xft_get_context().
+	Deprecate pango_x_get_context().
+
+	Language bindings are encouraged to bind
+	pango.Fontmap.create_context() and remove the create_context()
+	method from subclass implementations.
+
+
+- Bugs fixed in this release:
+	Bug 547303 – pango_layout_get_cursor_pos crashes on certain text
+		buffers
+	Fedora Bug 457883 - Sindhi Characters are not supported in
+		pango [U+097B-U+097F]
+		Patch from Pravin Satpute
+	Bug 441654 – prefix fails when more than one base characters (as
+		conjuncts) present after a half form the next prefix renders
+		incorrectly
+		Patch from  Rahul Bhalerao
+	Bug 546534 – pango_cairo_font_map_set_default(NULL) errs
+	Bug 431394 – Use pango_glyph_item_iter in more places
+	Bug 377948 – Make pango_glyph_item_iter public
+	Bug 472625 – Add draw_glyph_item() to PangoRenderer
+	Bug 540592 – Crash in HB_GSUB_Apply_String with Linux-Libertine font
+	Bug 540036 – Doesn't link to fontconfig
+	Bug 380094 – Fix split matra rendering bug for Kannada language
+	Bug 536017 – Remove SF_MPRE_FIXUP from Sinhala script flags
+		Patch by Harshula
+
 Overview of changes between 1.21.2 and 1.21.3
 ==============================================
 - Various small fixes and improvements
