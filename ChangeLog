@@ -1,3 +1,10 @@
+2008-08-18  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 470895 – Improve OpenType language tag list
+
+	* pango/pango-ot-tag.c: Update to OpenType 1.5 draft, intersected with
+	ISO639-3 of 2008/08/04.
+
 2008-08-12  Sven Herzberg  <sven@imendio.com>
 
 	Bug 547432 – Deprecation of pango_(backend)_font_map_create_context()
