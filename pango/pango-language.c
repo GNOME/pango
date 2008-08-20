@@ -387,6 +387,12 @@ find_best_lang_match (PangoLanguage *language,
   return NULL;
 }
 
+#define FIND_BEST_LANG_MATCH(language, records) \
+	find_best_lang_match ((language), \
+			      records, \
+			      G_N_ELEMENTS (records), \
+			      sizeof (*records));
+
 typedef struct {
   char lang[6];
   guint16 offset;
@@ -413,6 +419,8 @@ static const LangInfo lang_texts[] = {
 #define LANGUAGE(id, source, sample) {G_STRINGIFY(id),	G_STRUCT_OFFSET(union _LangPool, POOLSTRFIELD(__LINE__))},
 #include "pango-language-sample-table.h"
 #undef LANGUAGE
+  /* One extra entry with no final comma, to make it C89-happy */
+ {"~~",	0}
 };
 
 /**
@@ -449,10 +457,7 @@ pango_language_get_sample_string (PangoLanguage *language)
   if (!language)
     language = pango_language_get_default ();
 
-  lang_info = find_best_lang_match (language,
-				    lang_texts,
-				    G_N_ELEMENTS (lang_texts),
-				    sizeof (LangInfo));
+  lang_info = FIND_BEST_LANG_MATCH (language, lang_texts);
 
   if (lang_info)
     return lang_pool.str + lang_info->offset;
@@ -509,10 +514,7 @@ pango_language_get_scripts (PangoLanguage *language,
   const PangoScriptForLang *script_for_lang;
   unsigned int j;
 
-  script_for_lang = find_best_lang_match (language,
-					  pango_script_for_lang,
-					  G_N_ELEMENTS (pango_script_for_lang),
-					  sizeof (PangoScriptForLang));
+  script_for_lang = FIND_BEST_LANG_MATCH (language, pango_script_for_lang);
 
   if (!script_for_lang)
     {
