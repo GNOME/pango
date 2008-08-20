@@ -462,7 +462,7 @@ script_for_lang_compare (gconstpointer key,
  * any assumptions on the maximum number of scripts returned
  * though, except that it is a small number.
  *
- * The pango_language_includes_script() uses this function
+ * The pango_language_includes_script() function uses this function
  * internally.
  *
  * Return value: An array of #PangoScript values, with the
