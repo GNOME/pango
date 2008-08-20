@@ -575,7 +575,8 @@ pango_language_get_sample_string (PangoLanguage *language)
  * some that use two (Latin and Cyrillic for example), and a few
  * use three (Japanese for example).  Applications should not make
  * any assumptions on the maximum number of scripts returned
- * though, except that it is a small number.
+ * though, except that it is positive if the return value is not
+ * %NULL, and it is a small number.
  *
  * The pango_language_includes_script() function uses this function
  * internally.
