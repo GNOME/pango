@@ -5,6 +5,14 @@
 
 2008-08-20  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango/pango-language.c (pango_language_private_init),
+	(pango_language_get_private), (pango_language_from_string),
+	(find_best_lang_match), (find_best_lang_match_cached),
+	(pango_language_get_sample_string), (pango_language_get_scripts):
+	Cache language information to avoid bsearch()ing all the time.
+
+2008-08-20  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/pango-language.c (find_best_lang_match),
 	(pango_language_get_sample_string), (pango_language_get_scripts),
 	(pango_script_get_sample_language):

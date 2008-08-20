@@ -29,6 +29,52 @@
 #include "pango-language.h"
 #include "pango-impl-utils.h"
 
+
+/* We embed a private struct right *before* a where a PangoLanguage *
+ * points to.
+ */
+
+typedef struct {
+  gconstpointer lang_info;
+  gconstpointer script_for_lang;
+
+  int magic; /* Used for verification */
+} PangoLanguagePrivate;
+
+#define PANGO_LANGUAGE_PRIVATE_MAGIC 0x0BE4DAD0
+
+static void
+pango_language_private_init (PangoLanguagePrivate *priv)
+{
+  priv->magic = PANGO_LANGUAGE_PRIVATE_MAGIC;
+
+  priv->lang_info = (gconstpointer) -1;
+  priv->script_for_lang = (gconstpointer) -1;
+}
+
+static PangoLanguagePrivate * pango_language_get_private (PangoLanguage *language) G_GNUC_CONST;
+
+static PangoLanguagePrivate *
+pango_language_get_private (PangoLanguage *language)
+{
+  PangoLanguagePrivate *priv;
+
+  if (!language)
+    return NULL;
+
+  priv = (PangoLanguagePrivate *) ((char *)language - sizeof (PangoLanguagePrivate));
+
+  if (G_UNLIKELY (priv->magic != PANGO_LANGUAGE_PRIVATE_MAGIC))
+    {
+      g_critical ("Invalid PangoLanguage.  Did you pass in a straight string instead of calling pango_language_from_string()?");
+      return NULL;
+    }
+
+  return priv;
+}
+
+
+
 #define LANGUAGE_SEPARATORS ";:, \t"
 
 static const char canon_map[256] = {
@@ -229,6 +275,7 @@ PangoLanguage *
 pango_language_from_string (const char *language)
 {
   static GHashTable *hash = NULL;
+  PangoLanguagePrivate *priv;
   char *result;
   int len;
   char *p;
@@ -246,7 +293,13 @@ pango_language_from_string (const char *language)
     }
 
   len = strlen (language);
-  result = g_malloc (len + 1);
+  result = g_malloc0 (sizeof (PangoLanguagePrivate) + len + 1);
+  g_assert (result);
+
+  priv = (PangoLanguagePrivate *) result;
+  result += sizeof (*priv);
+
+  pango_language_private_init (priv);
 
   p = result;
   while ((*(p++) = canon_map[*(guchar *)language++]))
@@ -354,10 +407,6 @@ find_best_lang_match (PangoLanguage *language,
 
   lang_str = pango_language_to_string (language);
 
-  /* This bsearch could be optimized to occur only once if
-   * we store the pointer to the result in the
-   * same block as the string value for the PangoLanguage.
-   */
   record = bsearch (lang_str,
 		    records, num_records, record_size,
 		    lang_compare_first_component);
@@ -387,11 +436,42 @@ find_best_lang_match (PangoLanguage *language,
   return NULL;
 }
 
+static gconstpointer
+find_best_lang_match_cached (PangoLanguage *language,
+			     gconstpointer *cache,
+			     gconstpointer  records,
+			     guint          num_records,
+			     guint          record_size)
+{
+  gconstpointer result;
+
+  if (G_LIKELY (cache && *cache != (gconstpointer) -1))
+    return *cache;
+
+  result = find_best_lang_match (language,
+				 records,
+				 num_records,
+				 record_size);
+
+  if (cache)
+    *cache = result;
+
+  return result;
+}
+
 #define FIND_BEST_LANG_MATCH(language, records) \
 	find_best_lang_match ((language), \
 			      records, \
 			      G_N_ELEMENTS (records), \
 			      sizeof (*records));
+
+#define FIND_BEST_LANG_MATCH_CACHED(language, cache_key, records) \
+	find_best_lang_match_cached ((language), \
+				     pango_language_get_private (language) ? \
+				       &(pango_language_get_private (language)->cache_key) : NULL, \
+				     records, \
+				     G_N_ELEMENTS (records), \
+				     sizeof (*records));
 
 typedef struct {
   char lang[6];
@@ -457,7 +537,9 @@ pango_language_get_sample_string (PangoLanguage *language)
   if (!language)
     language = pango_language_get_default ();
 
-  lang_info = FIND_BEST_LANG_MATCH (language, lang_texts);
+  lang_info = FIND_BEST_LANG_MATCH_CACHED (language,
+					   lang_info,
+					   lang_texts);
 
   if (lang_info)
     return lang_pool.str + lang_info->offset;
@@ -514,7 +596,9 @@ pango_language_get_scripts (PangoLanguage *language,
   const PangoScriptForLang *script_for_lang;
   unsigned int j;
 
-  script_for_lang = FIND_BEST_LANG_MATCH (language, pango_script_for_lang);
+  script_for_lang = FIND_BEST_LANG_MATCH_CACHED (language,
+						 script_for_lang,
+						 pango_script_for_lang);
 
   if (!script_for_lang)
     {
