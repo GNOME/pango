@@ -27,7 +27,6 @@
 
 G_BEGIN_DECLS
 
-/* Dummy typedef - internally it's a 'const char *' */
 typedef struct _PangoLanguage PangoLanguage;
 
 #define PANGO_TYPE_LANGUAGE (pango_language_get_type ())
@@ -43,6 +42,11 @@ PangoLanguage *pango_language_get_default (void) G_GNUC_CONST;
 
 gboolean      pango_language_matches  (PangoLanguage *language,
 				       const char *range_list) G_GNUC_PURE;
+
+#include <pango/pango-script.h>
+
+gboolean       pango_language_includes_script   (PangoLanguage *language,
+						 PangoScript    script) G_GNUC_PURE;
 
 G_END_DECLS
 

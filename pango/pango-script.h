@@ -24,8 +24,6 @@
 
 #include <glib.h>
 
-#include <pango/pango-language.h>
-
 G_BEGIN_DECLS
 
 /**
@@ -137,9 +135,9 @@ void             pango_script_iter_get_range (PangoScriptIter      *iter,
 gboolean         pango_script_iter_next      (PangoScriptIter      *iter);
 void             pango_script_iter_free      (PangoScriptIter      *iter);
 
+#include <pango/pango-language.h>
+
 PangoLanguage *pango_script_get_sample_language (PangoScript    script) G_GNUC_PURE;
-gboolean       pango_language_includes_script   (PangoLanguage *language,
-						 PangoScript    script) G_GNUC_PURE;
 
 G_END_DECLS
 

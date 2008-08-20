@@ -1,5 +1,12 @@
 2008-08-18  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango/pango-language.h:
+	* pango/pango-script.h:
+	Fix cyclic header ordering and move pango_language_* to
+	pango-language.h
+
+2008-08-18  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 470895 – Improve OpenType language tag list
 
 	* pango/pango-ot-tag.c: Update to OpenType 1.5 draft, intersected with
