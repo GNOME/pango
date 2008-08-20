@@ -1,3 +1,12 @@
+2008-08-20  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 314094 – Get rid of poutpourri default sample string
+
+	* pango/pango-language-sample-table.h:
+	* pango/pango-language.c (pango_language_get_sample_string):
+	Use default language if provided language to get_sample_string()
+	is NULL.
+
 2008-08-19  Behdad Esfahbod  <behdad@gnome.org>
 
 	Bug 473806 – Improve pango_language_get_sample_string()

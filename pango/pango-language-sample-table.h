@@ -46,6 +46,8 @@
  * be demonstrative of normal text in the language, as well as exposing font
  * feature requirements unique to the language.  It should be suitable for use
  * as sample text in a font selection dialog.
+ *
+ * Needless to say, the list MUST be sorted on the language code.
  */
 LANGUAGE(
 	 af	/* Afrikaans */,

@@ -377,37 +377,46 @@ static const LangInfo lang_texts[] = {
  * @language: a #PangoLanguage, or %NULL
  *
  * Get a string that is representative of the characters needed to
- * render a particular language. This function is a bad hack for
- * internal use by renderers and Pango.
+ * render a particular language.
+ *
+ * The sample text may be a pangram, but is not necessarily.  It is chosen to
+ * be demonstrative of normal text in the language, as well as exposing font
+ * feature requirements unique to the language.  It is suitable for use
+ * as sample text in a font selection dialog.
+ *
+ * If @language is %NULL, the default language as found by
+ * pango_language_get_default() is used.
+ *
+ * If Pango does not have a sample string for @language, the classic
+ * "The quick brown fox..." is returned.  This can be detected by
+ * comparing the returned pointer value to that returned for (non-existent)
+ * language code "xx".  That is, compare to:
+ * <informalexample>pango_language_get_sample_string
+ * (pango_language_from_string ("xx"))</informalexample>.
  *
  * Return value: the sample string. This value is owned by Pango
- *   and must not be freed.
+ *   and should not be freed.
  **/
 G_CONST_RETURN char *
 pango_language_get_sample_string (PangoLanguage *language)
 {
+  const char *lang_str;
   const char *result;
 
-  if (language)
-    {
-      const char *lang_str = pango_language_to_string (language);
+  if (!language)
+    language = pango_language_get_default ();
 
-      LangInfo *lang_info = bsearch (lang_str, lang_texts,
-				     G_N_ELEMENTS (lang_texts), sizeof (LangInfo),
-				     lang_info_compare);
+  lang_str = pango_language_to_string (language);
 
-      if (lang_info)
-	result = lang_pool.str + lang_info->offset;
-      else
-	result = "The quick brown fox jumps over the lazy dog.";
-    }
+  LangInfo *lang_info = bsearch (lang_str, lang_texts,
+				 G_N_ELEMENTS (lang_texts), sizeof (LangInfo),
+				 lang_info_compare);
+  /* XXX find best matching language */
+
+  if (lang_info)
+    result = lang_pool.str + lang_info->offset;
   else
-    {
-      /* Complete junk
-       */
-
-      result = "\330\247\331\204\330\263\331\204\330\247\331\205 \330\271\331\204\331\212\331\203\331\205 \304\215esky \316\225\316\273\316\273\316\267\316\275\316\271\316\272\316\254 Fran\303\247ais \346\227\245\346\234\254\350\252\236 \355\225\234\352\270\200 \320\240\321\203\321\201\321\201\320\272\320\270\320\271 \344\270\255\346\226\207,\346\231\256\351\200\232\350\257\235,\346\261\211\350\257\255 T\303\274rk\303\247e";
-    }
+    result = "The quick brown fox jumps over the lazy dog.";
 
   return result;
 }
