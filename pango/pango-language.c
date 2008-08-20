@@ -391,8 +391,9 @@ static const LangInfo lang_texts[] = {
  * "The quick brown fox..." is returned.  This can be detected by
  * comparing the returned pointer value to that returned for (non-existent)
  * language code "xx".  That is, compare to:
- * <informalexample>pango_language_get_sample_string
- * (pango_language_from_string ("xx"))</informalexample>.
+ * <informalexample><programlisting>
+ * pango_language_get_sample_string (pango_language_from_string ("xx"))
+ * </programlisting></informalexample>
  *
  * Return value: the sample string. This value is owned by Pango
  *   and should not be freed.
