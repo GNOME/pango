@@ -5,6 +5,15 @@
 
 2008-08-20  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango/pango-language.c (find_best_lang_match),
+	(pango_language_get_sample_string), (pango_language_get_scripts),
+	(pango_script_get_sample_language):
+	Cleanup bsearching in language arrays.
+
+	Add some language codes for scripts.
+
+2008-08-20  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 314094 – Get rid of poutpourri default sample string
 
 	* pango/pango-language-sample-table.h:

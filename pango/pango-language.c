@@ -318,11 +318,6 @@ pango_language_matches (PangoLanguage *language,
   return FALSE;
 }
 
-typedef struct {
-  char lang[6];
-  guint16 offset;
-} LangInfo;
-
 static int
 lang_compare_first_component (gconstpointer pa,
 			      gconstpointer pb)
@@ -340,14 +335,62 @@ lang_compare_first_component (gconstpointer pa,
   return strncmp (a, b, MAX (da, db));
 }
 
-static int
-lang_info_compare (gconstpointer key,
-		   gconstpointer val)
+/* Finds the best record for @language in an array of records.
+ * Each record should start with the string representation of the language
+ * code for the record (embedded, not a pointer), and the records must be
+ * sorted on language code.
+ */
+static gconstpointer
+find_best_lang_match (PangoLanguage *language,
+		      gconstpointer  records,
+		      guint          num_records,
+		      guint          record_size)
 {
-  const LangInfo *lang_info = val;
+  const char *lang_str;
+  const char *record, *start, *end;
 
-  return lang_compare_first_component (key, lang_info->lang);
+  if (language == NULL)
+    return NULL;
+
+  lang_str = pango_language_to_string (language);
+
+  /* This bsearch could be optimized to occur only once if
+   * we store the pointer to the result in the
+   * same block as the string value for the PangoLanguage.
+   */
+  record = bsearch (lang_str,
+		    records, num_records, record_size,
+		    lang_compare_first_component);
+  if (!record)
+    return NULL;
+
+  start = (const char *) records;
+  end   = start + num_records * record_size;
+
+  /* find the best match among all those that have the same first-component */
+
+  /* go to the final one matching in the first component */
+  while (record < end - record_size &&
+	 lang_compare_first_component (lang_str, record + record_size) == 0)
+    record += record_size;
+
+  /* go back, find which one matches completely */
+  while (start <= record &&
+	 lang_compare_first_component (lang_str, record) == 0)
+    {
+      if (pango_language_matches (language, record))
+        return record;
+
+      record -= record_size;
+    }
+
+  return NULL;
 }
+
+typedef struct {
+  char lang[6];
+  guint16 offset;
+} LangInfo;
 
 /* Pure black magic, based on appendix of dsohowto.pdf */
 #define POOLSTRFIELD(line) POOLSTRFIELD1(line)
@@ -401,25 +444,20 @@ static const LangInfo lang_texts[] = {
 G_CONST_RETURN char *
 pango_language_get_sample_string (PangoLanguage *language)
 {
-  const char *lang_str;
-  const char *result;
+  const LangInfo *lang_info;
 
   if (!language)
     language = pango_language_get_default ();
 
-  lang_str = pango_language_to_string (language);
-
-  LangInfo *lang_info = bsearch (lang_str, lang_texts,
-				 G_N_ELEMENTS (lang_texts), sizeof (LangInfo),
-				 lang_info_compare);
-  /* XXX find best matching language */
+  lang_info = find_best_lang_match (language,
+				    lang_texts,
+				    G_N_ELEMENTS (lang_texts),
+				    sizeof (LangInfo));
 
   if (lang_info)
-    result = lang_pool.str + lang_info->offset;
-  else
-    result = "The quick brown fox jumps over the lazy dog.";
+    return lang_pool.str + lang_info->offset;
 
-  return result;
+  return "The quick brown fox jumps over the lazy dog.";
 }
 
 
@@ -431,16 +469,6 @@ pango_language_get_sample_string (PangoLanguage *language)
 
 
 #include "pango-script-lang-table.h"
-
-static int
-script_for_lang_compare (gconstpointer key,
-			 gconstpointer member)
-{
-  PangoLanguage *lang = (PangoLanguage *)key;
-  const PangoScriptForLang *script_for_lang = member;
-
-  return lang_compare_first_component (lang, script_for_lang->lang);
-}
 
 /**
  * pango_language_get_scripts:
@@ -478,52 +506,20 @@ G_CONST_RETURN PangoScript *
 pango_language_get_scripts (PangoLanguage *language,
 			    int           *num_scripts)
 {
-  PangoScriptForLang *script_for_lang;
+  const PangoScriptForLang *script_for_lang;
   unsigned int j;
-  const char *lang_str;
 
-  if (language == NULL)
-    goto NOT_FOUND;
+  script_for_lang = find_best_lang_match (language,
+					  pango_script_for_lang,
+					  G_N_ELEMENTS (pango_script_for_lang),
+					  sizeof (PangoScriptForLang));
 
-  lang_str = pango_language_to_string (language);
-
-  /* This bsearch could be optimized to occur only once if
-   * we store the pointer to the PangoScriptForLang in the
-   * same block as the string value for the PangoLanguage.
-   */
-  script_for_lang = bsearch (lang_str,
-			     pango_script_for_lang,
-			     G_N_ELEMENTS (pango_script_for_lang),
-			     sizeof (PangoScriptForLang),
-			     script_for_lang_compare);
   if (!script_for_lang)
-    goto NOT_FOUND;
-  else
     {
-      gboolean found = FALSE;
+      if (num_scripts)
+	*num_scripts = 0;
 
-      /* find the best matching language */
-     
-      /* go to the final one matching in the first component */
-      while (script_for_lang + 1 < pango_script_for_lang + G_N_ELEMENTS (pango_script_for_lang) &&
-	     script_for_lang_compare (lang_str, script_for_lang + 1) == 0)
-        script_for_lang++;
-
-      /* go back, find which one matches completely */
-      while (script_for_lang >= pango_script_for_lang &&
-	     script_for_lang_compare (lang_str, script_for_lang) == 0)
-        {
-	  if (pango_language_matches (language, script_for_lang->lang))
-	    {
-	      found = TRUE;
-	      break;
-	    }
-
-          script_for_lang--;
-	}
-
-      if (!found)
-        goto NOT_FOUND;
+      return NULL;
     }
 
   if (num_scripts)
@@ -538,13 +534,6 @@ pango_language_get_scripts (PangoLanguage *language,
     }
 
   return script_for_lang->scripts;
-
- NOT_FOUND:
-
-  if (num_scripts)
-    *num_scripts = 0;
-
-  return NULL;
 }
 
 /**
@@ -734,8 +723,6 @@ pango_script_get_sample_language (PangoScript script)
    * to include the script, so alternate orthographies
    * (Shavian for English, Osmanya for Somali, etc), typically
    * have no sample language
-   *
-   * XXX Add a test to check the above invariant.
    */
   static const char sample_languages[][4] = {
     "",    /* PANGO_SCRIPT_COMMON */
@@ -785,11 +772,10 @@ pango_script_get_sample_language (PangoScript script)
     "iu",  /* PANGO_SCRIPT_CANADIAN_ABORIGINAL */
     "",    /* PANGO_SCRIPT_YI */
     "tl",  /* PANGO_SCRIPT_TAGALOG */
-    /* There are no ISO-636 language codes for the following
-     * Phillipino languages/scripts */
-    "",    /* PANGO_SCRIPT_HANUNOO */
-    "",    /* PANGO_SCRIPT_BUHID */
-    "",    /* PANGO_SCRIPT_TAGBANWA */
+    /* Phillipino languages/scripts */
+    "hnn", /* PANGO_SCRIPT_HANUNOO */
+    "bku", /* PANGO_SCRIPT_BUHID */
+    "tbw", /* PANGO_SCRIPT_TAGBANWA */
 
     "",    /* PANGO_SCRIPT_BRAILLE */
     "",    /* PANGO_SCRIPT_CYPRIOT */
@@ -809,8 +795,7 @@ pango_script_get_sample_language (PangoScript script)
     "",    /* PANGO_SCRIPT_GLAGOLITIC */
     /* Used for for Berber (ber), but Arabic script is more common */
     "",    /* PANGO_SCRIPT_TIFINAGH */
-    /* Syloti Nagri is used for Sylheti, no ISO 639 code */
-    "",    /* PANGO_SCRIPT_SYLOTI_NAGRI */
+    "syl", /* PANGO_SCRIPT_SYLOTI_NAGRI */
     "peo", /* PANGO_SCRIPT_OLD_PERSIAN */
     "",    /* PANGO_SCRIPT_KHAROSHTHI */
 
