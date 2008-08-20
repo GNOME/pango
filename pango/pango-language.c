@@ -421,6 +421,14 @@ pango_language_get_sample_string (PangoLanguage *language)
   return result;
 }
 
+
+
+
+/*
+ * From language to script
+ */
+
+
 #include "pango-script-lang-table.h"
 
 static int
@@ -434,41 +442,47 @@ script_for_lang_compare (gconstpointer key,
 }
 
 /**
- * pango_language_includes_script:
+ * pango_language_get_scripts:
  * @language: a #PangoLanguage, or %NULL
- * @script: a #PangoScript
+ * @num_scripts: location to return number of scripts, or %NULL
  *
- * Determines if @script is one of the scripts used to
- * write @language. The returned value is conservative;
- * if nothing is known about the language tag @language,
- * %TRUE will be returned, since, as far as Pango knows,
- * @script might be used to write @language.
+ * Determines the scripts used to to write @language.
+ * If nothing is known about the language tag @language,
+ * or if @language is %NULL, then %NULL is returned.
+ * The list of scripts returned starts with the script that the
+ * language uses most and continues to the one it uses least.
  *
- * This routine is used in Pango's itemization process when
- * determining if a supplied language tag is relevant to
- * a particular section of text. It probably is not useful for
- * applications in most circumstances.
+ * The value @num_script points at will be set to the number
+ * of scripts in the returned array (or zero if %NULL is returned).
  *
- * Return value: %TRUE if @script is one of the scripts used
- * to write @language or if nothing is known about @language
- * (including the case that @language is %NULL),
- * %FALSE otherwise.
+ * Most languages use only one script for writing, but there are
+ * some that use two (Latin and Cyrillic for example), and a few
+ * use three (Japanese for example).  Applications should not make
+ * any assumptions on the maximum number of scripts returned
+ * though, except that it is a small number.
+ *
+ * The pango_language_includes_script() uses this function
+ * internally.
+ *
+ * Return value: An array of #PangoScript values, with the
+ * number of entries in the array stored in @num_scripts, or
+ * %NULL if Pango does not have any information about this
+ * particular language tag (also the case if @language is %NULL).
+ * The returned array is owned by Pango and should not be modified
+ * or freed.
  
- * Since: 1.4
+ * Since: 1.22
  **/
-gboolean
-pango_language_includes_script (PangoLanguage *language,
-				PangoScript    script)
+G_CONST_RETURN PangoScript *
+pango_language_get_scripts (PangoLanguage *language,
+			    int           *num_scripts)
 {
   PangoScriptForLang *script_for_lang;
   unsigned int j;
   const char *lang_str;
 
-#define REAL_SCRIPT(script) \
-  ((script) > PANGO_SCRIPT_INHERITED)
-
-  if (language == NULL || !REAL_SCRIPT (script))
-    return TRUE;
+  if (language == NULL)
+    goto NOT_FOUND;
 
   lang_str = pango_language_to_string (language);
 
@@ -482,7 +496,7 @@ pango_language_includes_script (PangoLanguage *language,
 			     sizeof (PangoScriptForLang),
 			     script_for_lang_compare);
   if (!script_for_lang)
-    return TRUE;
+    goto NOT_FOUND;
   else
     {
       gboolean found = FALSE;
@@ -508,15 +522,89 @@ pango_language_includes_script (PangoLanguage *language,
 	}
 
       if (!found)
-        return TRUE;
+        goto NOT_FOUND;
     }
 
-  for (j = 0; j < G_N_ELEMENTS (script_for_lang->scripts); j++)
-    if (script_for_lang->scripts[j] == script)
+  if (num_scripts)
+    {
+      for (j = 0; j < G_N_ELEMENTS (script_for_lang->scripts); j++)
+	if (script_for_lang->scripts[j] == 0)
+	  break;
+
+      g_assert (j > 0);
+
+      *num_scripts = j;
+    }
+
+  return script_for_lang->scripts;
+
+ NOT_FOUND:
+
+  if (num_scripts)
+    *num_scripts = 0;
+
+  return NULL;
+}
+
+/**
+ * pango_language_includes_script:
+ * @language: a #PangoLanguage, or %NULL
+ * @script: a #PangoScript
+ *
+ * Determines if @script is one of the scripts used to
+ * write @language. The returned value is conservative;
+ * if nothing is known about the language tag @language,
+ * %TRUE will be returned, since, as far as Pango knows,
+ * @script might be used to write @language.
+ *
+ * This routine is used in Pango's itemization process when
+ * determining if a supplied language tag is relevant to
+ * a particular section of text. It probably is not useful for
+ * applications in most circumstances.
+ *
+ * This function uses pango_language_get_scripts() internally.
+ *
+ * Return value: %TRUE if @script is one of the scripts used
+ * to write @language or if nothing is known about @language
+ * (including the case that @language is %NULL),
+ * %FALSE otherwise.
+ 
+ * Since: 1.4
+ **/
+gboolean
+pango_language_includes_script (PangoLanguage *language,
+				PangoScript    script)
+{
+  const PangoScript *scripts;
+  int num_scripts, j;
+
+/* copied from the one in pango-script.c */
+#define REAL_SCRIPT(script) \
+  ((script) > PANGO_SCRIPT_INHERITED && (script) != PANGO_SCRIPT_UNKNOWN)
+
+  if (!REAL_SCRIPT (script))
+    return TRUE;
+
+#undef REAL_SCRIPT
+
+  scripts = pango_language_get_scripts (language, &num_scripts);
+  if (!scripts)
+    return TRUE;
+
+  for (j = 0; j < num_scripts; j++)
+    if (scripts[j] == script)
       return TRUE;
 
   return FALSE;
 }
+
+
+
+
+/*
+ * From script to language
+ */
+
 
 static PangoLanguage **
 parse_default_languages (void)
@@ -645,6 +733,8 @@ pango_script_get_sample_language (PangoScript script)
    * to include the script, so alternate orthographies
    * (Shavian for English, Osmanya for Somali, etc), typically
    * have no sample language
+   *
+   * XXX Add a test to check the above invariant.
    */
   static const char sample_languages[][4] = {
     "",    /* PANGO_SCRIPT_COMMON */

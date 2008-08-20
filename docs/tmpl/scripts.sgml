@@ -19,12 +19,6 @@ and of ranges within a larger text string.
 <!-- ##### SECTION Stability_Level ##### -->
 
 
-<!-- ##### STRUCT PangoScriptIter ##### -->
-<para>
-
-</para>
-
-
 <!-- ##### ENUM PangoScript ##### -->
 <para>
 The #PangoScript enumeration identifies different writing
@@ -125,6 +119,12 @@ The #GObject type for #PangoScript
 
 
 
+<!-- ##### STRUCT PangoScriptIter ##### -->
+<para>
+
+</para>
+
+
 <!-- ##### FUNCTION pango_script_for_unichar ##### -->
 <para>
 
@@ -139,16 +139,6 @@ The #GObject type for #PangoScript
 
 </para>
 
-@script: 
-@Returns: 
-
-
-<!-- ##### FUNCTION pango_language_includes_script ##### -->
-<para>
-
-</para>
-
-@language: 
 @script: 
 @Returns: 
 
@@ -189,5 +179,88 @@ The #GObject type for #PangoScript
 </para>
 
 @iter: 
+
+
+<!-- ##### STRUCT PangoLanguage ##### -->
+<para>
+The #PangoLanguage structure is used to
+represent a language.
+</para>
+<para>
+#PangoLanguage pointers can be efficiently 
+copied and compared with each other.
+</para>
+
+
+<!-- ##### MACRO PANGO_TYPE_LANGUAGE ##### -->
+<para>
+The #GObject type for #PangoLanguage. 
+</para>
+
+
+
+<!-- ##### FUNCTION pango_language_from_string ##### -->
+<para>
+
+</para>
+
+@language: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_language_to_string ##### -->
+<para>
+
+</para>
+
+@language: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_language_matches ##### -->
+<para>
+
+</para>
+
+@language: 
+@range_list: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_language_includes_script ##### -->
+<para>
+
+</para>
+
+@language: 
+@script: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_language_get_scripts ##### -->
+<para>
+
+</para>
+
+@language: 
+@num_scripts: 
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_language_get_default ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+
+<!-- ##### FUNCTION pango_language_get_sample_string ##### -->
+<para>
+
+</para>
+
+@language: 
+@Returns: 
 
 

@@ -1,5 +1,29 @@
 2008-08-18  Behdad Esfahbod  <behdad@gnome.org>
 
+	Bug 473805 – Add API enumerating scripts for a language
+
+	* docs/Makefile.am:
+	* docs/pango-sections.txt:
+	* docs/tmpl/scripts.sgml:
+	* docs/tmpl/text-attributes.sgml:
+	* docs/tmpl/utils.sgml:
+	* pango/pango-language.c (pango_language_get_scripts),
+	(pango_language_includes_script),
+	(pango_script_get_sample_language):
+	* pango/pango-language.h:
+	* pango/pango-script.c:
+	* pango/pango.def:
+	Add a minor new public API:
+
+		pango_language_get_scripts()
+	
+	This is what pango_language_includes_script() has been using
+	internally.  Previously one had to call that function over all
+	possible script values to determine which scripts a language
+	uses.  The new API makes that much easier.
+
+2008-08-18  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/pango-language.h:
 	* pango/pango-script.h:
 	Fix cyclic header ordering and move pango_language_* to

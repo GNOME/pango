@@ -228,6 +228,7 @@ get_pair_index (gunichar ch)
   return -1;
 }
 
+/* duplicated in pango-language.c */
 #define REAL_SCRIPT(script) \
   ((script) > PANGO_SCRIPT_INHERITED && (script) != PANGO_SCRIPT_UNKNOWN)
 

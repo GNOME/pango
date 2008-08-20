@@ -605,52 +605,6 @@ The #GObject type for #PangoColor.
 @Returns: 
 
 
-<!-- ##### STRUCT PangoLanguage ##### -->
-<para>
-The #PangoLanguage structure is used to
-represent a language.
-</para>
-<para>
-#PangoLanguage pointers can be efficiently 
-copied and compared with each other.
-</para>
-
-
-<!-- ##### MACRO PANGO_TYPE_LANGUAGE ##### -->
-<para>
-The #GObject type for #PangoLanguage. 
-</para>
-
-
-
-<!-- ##### FUNCTION pango_language_from_string ##### -->
-<para>
-
-</para>
-
-@language: 
-@Returns: 
-
-
-<!-- ##### FUNCTION pango_language_to_string ##### -->
-<para>
-
-</para>
-
-@language: 
-@Returns: 
-
-
-<!-- ##### FUNCTION pango_language_matches ##### -->
-<para>
-
-</para>
-
-@language: 
-@range_list: 
-@Returns: 
-
-
 <!-- ##### STRUCT PangoAttrList ##### -->
 <para>
 The #PangoAttrList structure represents a list of attributes

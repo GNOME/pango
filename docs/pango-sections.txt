@@ -374,11 +374,6 @@ pango_color_parse
 pango_color_copy
 pango_color_free
 pango_color_to_string
-PangoLanguage
-PANGO_TYPE_LANGUAGE
-pango_language_from_string
-pango_language_to_string
-pango_language_matches
 <SUBSECTION>
 PangoAttrList
 PANGO_TYPE_ATTR_LIST
@@ -406,7 +401,6 @@ pango_attr_type_get_type
 pango_attr_list_get_type
 pango_underline_get_type
 pango_color_get_type
-pango_language_get_type
 </SECTION>
 
 <SECTION>
@@ -557,21 +551,29 @@ pango_ellipsize_mode_get_type
 </SECTION>
 
 <SECTION>
-<TITLE>Scripts</TITLE>
+<TITLE>Scripts and Languages</TITLE>
 <FILE>scripts</FILE>
-PangoScriptIter
 PangoScript
 PANGO_TYPE_SCRIPT
+PangoScriptIter
 pango_script_for_unichar
 pango_script_get_sample_language
-pango_language_includes_script
 pango_script_iter_new
 pango_script_iter_get_range
 pango_script_iter_next
 pango_script_iter_free
+PangoLanguage
+PANGO_TYPE_LANGUAGE
+pango_language_from_string
+pango_language_to_string
+pango_language_matches
+pango_language_includes_script
+pango_language_get_scripts
+pango_language_get_default
+pango_language_get_sample_string
 <SUBSECTION Private>
 pango_script_get_type
-PangoScriptForLang
+pango_language_get_type
 </SECTION>
 
 <SECTION>
@@ -1057,8 +1059,6 @@ pango_parse_stretch
 pango_get_sysconf_subdirectory
 pango_get_lib_subdirectory
 pango_log2vis_get_embedding_levels
-pango_language_get_default
-pango_language_get_sample_string
 pango_is_zero_width
 pango_quantize_line_geometry
 </SECTION>
