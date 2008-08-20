@@ -242,7 +242,7 @@ static const LangTag ot_languages[] = {
   {"de",	{"DEU "}},	/* German */
   {"din",	{"DNK "}},	/* Dinka */
   {"dng",	{"DUN "}},	/* Dungan */
-  {"doi",	{"DGR "}},	/* Dogri (macrolanguage) */
+  {"doi",	{"DGR "}},	/* Dogri */
   {"dsb",	{"LSB "}},	/* Lower Sorbian */
   {"dv",	{"DIV "}},	/* Dhivehi */
   {"dz",	{"DZN "}},	/* Dzongkha */
@@ -279,6 +279,7 @@ static const LangTag ot_languages[] = {
   {"grt",	{"GRO "}},	/* Garo */
   {"gu",	{"GUJ "}},	/* Gujarati */
   {"guk",	{"GMZ "}},	/* Gumuz */
+  {"gv",	{"MNX "}},	/* Manx Gaelic */
   {"ha",	{"HAU "}},	/* Hausa */
   {"har",	{"HRI "}},	/* Harari */
   {"he",	{"IWR "}},	/* Hebrew */
@@ -317,7 +318,7 @@ static const LangTag ot_languages[] = {
   {"kn",	{"KAN "}},	/* Kannada */
   {"ko",	{"KOR "}},	/* Korean */
   {"koi",	{"KOP "}},	/* Komi-Permyak */
-  {"kok",	{"KOK "}},	/* Konkani (macrolanguage) */
+  {"kok",	{"KOK "}},	/* Konkani */
   {"kpe",	{"KPL "}},	/* Kpelle */
   {"kpv",	{"KOZ "}},	/* Komi-Zyrian */
   {"kpy",	{"KYK "}},	/* Koryak */
@@ -365,12 +366,13 @@ static const LangTag ot_languages[] = {
   {"moh",	{"MOH "}},	/* Mohawk */
   {"mpe",	{"MAJ "}},	/* Majang */
   {"mr",	{"MAR "}},	/* Marathi */
-  {"ms",	{"MLY "}},	/* Malay (macrolanguage) */
+  {"ms",	{"MLY "}},	/* Malay */
   {"mt",	{"MTS "}},	/* Maltese */
   {"mwr",	{"MAW "}},	/* Marwari */
   {"my",	{"BRM "}},	/* Burmese */
   {"mym",	{"MEN "}},	/* Me'en */
   {"myv",	{"ERZ "}},	/* Erzya */
+  {"nb",	{"NOR "}},	/* Norwegian Bokmål */
   {"nco",	{"SIB "}},	/* Sibe */
   {"ne",	{"NEP "}},	/* Nepali */
   {"new",	{"NEW "}},	/* Newari */
@@ -380,13 +382,12 @@ static const LangTag ot_languages[] = {
   {"niv",	{"GIL "}},	/* Gilyak */
   {"nl",	{"NLD "}},	/* Dutch */
   {"nn",	{"NYN "}},	/* Norwegian Nynorsk */
-  {"no",	{"NOR "}},	/* Norwegian */
+  {"no",	{"NOR "}},	/* Norwegian (deprecated) */
   {"nog",	{"NOG "}},	/* Nogai */
   {"nqo",	{"NKO "}},	/* N'Ko */
   {"nsk",	{"NAS "}},	/* Naskapi */
   {"ny",	{"CHI "}},	/* Nyanja */
   {"oc",	{"OCI "}},	/* Occitan (post 1500) */
-  {"oc",	{"PRO "}},	/* Occitan (post 1500) */
   {"oj",	{"OJB "}},	/* Ojibwa */
   {"om",	{"ORO "}},	/* Oromo */
   {"or",	{"ORI "}},	/* Oriya */
@@ -434,7 +435,7 @@ static const LangTag ot_languages[] = {
   {"suq",	{"SUR "}},	/* Suri */
   {"sv",	{"SVE "}},	/* Swedish */
   {"sva",	{"SVA "}},	/* Svan */
-  {"sw",	{"SWK "}},	/* Swahili (macrolanguage) */
+  {"sw",	{"SWK "}},	/* Swahili */
   {"swb",	{"CMR "}},	/* Comorian */
   {"syr",	{"SYR "}},	/* Syriac */
   {"ta",	{"TAM "}},	/* Tamil */
@@ -551,7 +552,6 @@ static const LangTag ot_languages[] = {
 /*{"??",	{"MIZ "}},*/	/* Mizo */
 /*{"??",	{"MLN "}},*/	/* Malinke */
 /*{"??",	{"MNK "}},*/	/* Maninka */
-/*{"??",	{"MNX "}},*/	/* Manx Gaelic */
 /*{"??",	{"MOR "}},*/	/* Moroccan */
 /*{"??",	{"NAG "}},*/	/* Naga-Assamese */
 /*{"??",	{"NCR "}},*/	/* N-Cree */
