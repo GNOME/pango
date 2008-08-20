@@ -319,8 +319,8 @@ pango_language_matches (PangoLanguage *language,
 }
 
 typedef struct {
-  const char lang[4];
-  const char *str;
+  char lang[6];
+  guint16 offset;
 } LangInfo;
 
 static int
@@ -349,36 +349,27 @@ lang_info_compare (gconstpointer key,
   return lang_compare_first_component (key, lang_info->lang);
 }
 
-/* The following array is supposed to contain enough text to tickle all necessary fonts for each
- * of the languages in the following. Yes, it's pretty lame. Not all of the languages
- * in the following have sufficient text to exercise all the accents for the language, and
- * there are obviously many more languages to include as well.
- */
+/* Pure black magic, based on appendix of dsohowto.pdf */
+#define POOLSTRFIELD(line) POOLSTRFIELD1(line)
+#define POOLSTRFIELD1(line) str##line
+static const union _LangPool {
+  struct {
+    char str0[1];
+#define LANGUAGE(id, source, sample) char POOLSTRFIELD(__LINE__)[sizeof(sample)];
+#include "pango-language-sample-table.h"
+#undef LANGUAGE
+  };
+  const char str[1];
+} lang_pool = { {
+    "",
+#define LANGUAGE(id, source, sample) sample,
+#include "pango-language-sample-table.h"
+#undef LANGUAGE
+} };
 static const LangInfo lang_texts[] = {
-  { "ar", "Arabic  \330\247\331\204\330\263\331\204\330\247\331\205 \330\271\331\204\331\212\331\203\331\205" },
-  { "cs", "Czech (\304\215esky)  Dobr\303\275 den" },
-  { "da", "Danish (Dansk)  Hej, Goddag" },
-  { "el", "Greek (\316\225\316\273\316\273\316\267\316\275\316\271\316\272\316\254) \316\223\316\265\316\271\316\254 \317\203\316\261\317\202" },
-  { "en", "English Hello" },
-  { "eo", "Esperanto Saluton" },
-  { "es", "Spanish (Espa\303\261ol) \302\241Hola!" },
-  { "et", "Estonian  Tere, Tervist" },
-  { "fi", "Finnish (Suomi)  Hei, Hyv\303\244\303\244 p\303\244iv\303\244\303\244" },
-  { "fr", "French (Fran\303\247ais)" },
-  { "de", "German Gr\303\274\303\237 Gott" },
-  { "he", "Hebrew   \327\251\327\234\327\225\327\235" },
-  { "it", "Italiano  Ciao, Buon giorno" },
-  { "ja", "Japanese (\346\227\245\346\234\254\350\252\236) \343\201\223\343\202\223\343\201\253\343\201\241\343\201\257, \357\275\272\357\276\235\357\276\206\357\276\201\357\276\212" },
-  { "ko", "Korean (\355\225\234\352\270\200)   \354\225\210\353\205\225\355\225\230\354\204\270\354\232\224, \354\225\210\353\205\225\355\225\230\354\213\255\353\213\210\352\271\214" },
-  { "mt", "Maltese   \304\212aw, Sa\304\247\304\247a" },
-  { "nl", "Nederlands, Vlaams Hallo, Dag" },
-  { "no", "Norwegian (Norsk) Hei, God dag" },
-  { "pl", "Polish   Dzie\305\204 dobry, Hej" },
-  { "ru", "Russian (\320\240\321\203\321\201\321\201\320\272\320\270\320\271)" },
-  { "sk", "Slovak   Dobr\303\275 de\305\210" },
-  { "sv", "Swedish (Svenska) Hej p\303\245 dej, Goddag" },
-  { "tr", "Turkish (T\303\274rk\303\247e) Merhaba" },
-  { "zh", "Chinese (\344\270\255\346\226\207,\346\231\256\351\200\232\350\257\235,\346\261\211\350\257\255)" }
+#define LANGUAGE(id, source, sample) {G_STRINGIFY(id),	G_STRUCT_OFFSET(union _LangPool, POOLSTRFIELD(__LINE__))},
+#include "pango-language-sample-table.h"
+#undef LANGUAGE
 };
 
 /**
@@ -406,9 +397,9 @@ pango_language_get_sample_string (PangoLanguage *language)
 				     lang_info_compare);
 
       if (lang_info)
-	result = lang_info->str;
+	result = lang_pool.str + lang_info->offset;
       else
-	result = "French (Fran\303\247ais)";     /* Assume iso-8859-1 */
+	result = "The quick brown fox jumps over the lazy dog.";
     }
   else
     {

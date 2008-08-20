@@ -41,7 +41,8 @@ IGNORE_HFILES=			\
 	pangox-private.h	\
 	pangoxft-private.h	\
 	pango-ot-private.h	\
-	pango-script-lang-table.h
+	pango-script-lang-table.h	\
+	pango-language-sample-table.h
 
 # CFLAGS and LDFLAGS for compiling scan program. Only needed
 # if $(DOC_MODULE).types is non-empty.

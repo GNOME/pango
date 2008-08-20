@@ -80,6 +80,7 @@ libpango_1_0_la_SOURCES =			\
 	pango-impl-utils.h			\
 	pango-item.c				\
 	pango-language.c			\
+	pango-language-sample-table.h		\
 	pango-layout.c				\
 	pango-layout-private.h			\
 	pango-markup.c				\

@@ -1,5 +1,16 @@
 2008-08-19  Behdad Esfahbod  <behdad@gnome.org>
 
+	Bug 473806 – Improve pango_language_get_sample_string()
+
+	* docs/Makefile.am:
+	* pango/Makefile.am:
+	* pango/pango-language-sample-table.h:
+	* pango/pango-language.c (pango_language_get_sample_string):
+	Add language sample texts that are actually usable.  Compiled from
+	a variety of sources.  See pango-language-sample-table.h.
+
+2008-08-19  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango-view/GLASS.txt:
 	* pango/pango-ot-tag.c:
 	Various corrections.
