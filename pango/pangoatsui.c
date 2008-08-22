@@ -45,7 +45,9 @@ pango_atsui_font_finalize (GObject *object)
 
   pango_font_description_free (priv->desc);
 
-  g_object_unref (priv->fontmap);
+  g_assert (priv->fontmap != NULL);
+  g_object_remove_weak_pointer (G_OBJECT (priv->fontmap), (gpointer *) (gpointer) &priv->fontmap);
+  priv->fontmap = NULL;
 
   G_OBJECT_CLASS (pango_atsui_font_parent_class)->finalize (object);
 }
@@ -135,8 +137,8 @@ _pango_atsui_font_set_font_map (PangoATSUIFont    *font,
   PangoATSUIFontPrivate *priv = font->priv;
 
   g_assert (priv->fontmap == NULL);
-  
-  priv->fontmap = g_object_ref (fontmap);
+  priv->fontmap = (PangoFontMap *) fontmap;
+  g_object_add_weak_pointer (G_OBJECT (prev->fontmap), (gpointer *) (gpointer) &priv->fontmap);
 }
 
 void

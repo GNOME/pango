@@ -667,8 +667,9 @@ pango_win32_font_neww (PangoFontMap   *fontmap,
 
   result = (PangoWin32Font *)g_object_new (PANGO_TYPE_WIN32_FONT, NULL);
 
+  g_assert (result->fontmap == NULL);
   result->fontmap = fontmap;
-  g_object_ref (fontmap);
+  g_object_add_weak_pointer (G_OBJECT (result->fontmap), (gpointer *) (gpointer) &result->fontmap);
 
   result->size = size;
   _pango_win32_make_matching_logfontw (fontmap, lfp, size, &result->logfontw);
@@ -713,7 +714,6 @@ pango_win32_font_map_real_find_font (PangoWin32FontMap          *win32fontmap,
   if (!win32font)
     return NULL;
 
-  win32font->fontmap = fontmap;
   win32font->win32face = face;
   face->cached_fonts = g_slist_prepend (face->cached_fonts, win32font);
 

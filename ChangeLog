@@ -1,3 +1,41 @@
+2008-08-22  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 143542 – PangoFT2Fontmap leak
+
+	* pango/fonts.c:
+	* pango/pangoatsui.c (pango_atsui_font_finalize),
+	(_pango_atsui_font_set_font_map):
+	* pango/pangocairo-font.c (_pango_cairo_font_get_metrics),
+	(_pango_cairo_font_private_get_hex_box_info):
+	* pango/pangocairo-win32font.c (_pango_cairo_win32_font_new):
+	* pango/pangofc-font.c (pango_fc_font_get_metrics):
+	* pango/pangofc-fontmap.c (pango_fc_font_map_add),
+	(_pango_fc_font_map_remove), (cleanup_font):
+	* pango/pangowin32-fontmap.c (pango_win32_font_neww),
+	(pango_win32_font_map_real_find_font):
+	* pango/pangowin32.c (pango_win32_font_finalize):
+	* pango/pangox-fontmap.c (pango_x_font_map_load_font):
+	* pango/pangox.c (pango_x_font_new), (pango_x_font_finalize):
+	Make the reference the font->fontmap reference weak.
+
+	The code for setting the reference must look like this:
+
+	  g_assert (font->fontmap == NULL);
+	  font->fontmap = (PangoFontMap *) fontmap;
+	  g_object_add_weak_pointer (G_OBJECT (font->fontmap), (gpointer *) (gpointer) &font->fontmap);
+
+	And releasing it like:
+
+	  g_assert (font->fontmap != NULL);
+	  g_object_remove_weak_pointer (G_OBJECT (font->fontmap), (gpointer *) (gpointer) &font->fontmap);
+	  font->fontmap = NULL;
+
+	I have converted all fontmaps.  The win32 and atsui ones can
+	use some simple testing.
+
+	The PangoFc fonts actually don't need the weakref as the fontmap
+	already provides a similar link by itself.
+
 2008-08-20  Murray Cumming  <murrayc@murrayc.com>
 
 	* pango/pango-language.c: pango_language_get_scripts(): Fix a 

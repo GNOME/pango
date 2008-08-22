@@ -519,7 +519,6 @@ pango_x_font_map_load_font (PangoFontMap               *fontmap,
 	    {
 	      PangoXFont *xfont = pango_x_font_new (fontmap, best_match->xlfd, size);
 
-	      xfont->fontmap = fontmap;
 	      xfont->xface = best_match;
 	      best_match->cached_fonts = g_slist_prepend (best_match->cached_fonts, xfont);
 

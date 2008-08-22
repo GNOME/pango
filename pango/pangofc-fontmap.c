@@ -554,8 +554,11 @@ pango_fc_font_map_add (PangoFcFontMap *fcfontmap,
   FontHashKey *key_copy;
 
   g_assert (fcfont->fontmap == NULL);
-
-  fcfont->fontmap = g_object_ref (fcfontmap);
+  fcfont->fontmap = (PangoFontMap *) fcfontmap;
+  /* In other fontmaps we add a weak pointer on ->fontmap so the
+   * field is unset when fontmap is finalized.  We don't need it
+   * here though as PangoFcFontMap already cleans up fcfont->fontmap
+   * as part of it's caching scheme. */
 
   font_hash_key_for_context (fcfontmap, context, &key);
   key.pattern = fcfont->font_pattern;
@@ -597,7 +600,6 @@ _pango_fc_font_map_remove (PangoFcFontMap *fcfontmap,
   g_hash_table_remove (priv->font_hash, &key);
   fcfont->fontmap = NULL;
   _pango_fc_font_set_context_key (fcfont, NULL);
-  g_object_unref (fcfontmap);
 }
 
 static PangoFcFamily *
@@ -1435,7 +1437,6 @@ cleanup_font (gpointer        key,
 {
   _pango_fc_font_shutdown (fcfont);
 
-  g_object_unref (fcfont->fontmap);
   fcfont->fontmap = NULL;
 }
 

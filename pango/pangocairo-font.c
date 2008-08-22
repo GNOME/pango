@@ -223,9 +223,16 @@ _pango_cairo_font_get_metrics (PangoFont     *font,
 
   if (!tmp_list)
     {
+      PangoFontMap *fontmap;
       PangoContext *context;
       cairo_font_options_t *font_options;
       int height, shift;
+
+      /* XXX this is racy.  need a ref'ing getter... */
+      fontmap = pango_font_get_font_map (font);
+      if (!fontmap)
+        return pango_font_metrics_new ();
+      fontmap = g_object_ref (fontmap);
 
       info = g_slice_new0 (PangoCairoFontMetricsInfo);
 
@@ -233,7 +240,7 @@ _pango_cairo_font_get_metrics (PangoFont     *font,
 
       info->sample_str = sample_str;
 
-      context = pango_font_map_create_context (pango_font_get_font_map (font));
+      context = pango_font_map_create_context (fontmap);
       pango_context_set_language (context, language);
       font_options = cairo_font_options_create ();
       cairo_scaled_font_get_font_options (_pango_cairo_font_private_get_scaled_font (cf_priv), font_options);
@@ -271,6 +278,7 @@ _pango_cairo_font_get_metrics (PangoFont     *font,
       info->metrics->ascent = height - info->metrics->descent;
 
       g_object_unref (context);
+      g_object_unref (fontmap);
     }
 
   return pango_font_metrics_ref (info->metrics);
@@ -356,10 +364,14 @@ _pango_cairo_font_private_get_hex_box_info (PangoCairoFontPrivate *cf_priv)
 
   /* create mini_font description */
   {
-    PangoContext *context;
     PangoFontMap *fontmap;
+    PangoContext *context;
 
+    /* XXX this is racy.  need a ref'ing getter... */
     fontmap = pango_font_get_font_map ((PangoFont *)cf_priv->cfont);
+    if (!fontmap)
+      return NULL;
+    fontmap = g_object_ref (fontmap);
 
     /* we inherit most font properties for the mini font.  just
      * change family and size.  means, you get bold hex digits
@@ -396,6 +408,7 @@ _pango_cairo_font_private_get_hex_box_info (PangoCairoFontPrivate *cf_priv)
     mini_font = pango_font_map_load_font (fontmap, context, desc);
 
     g_object_unref (context);
+    g_object_unref (fontmap);
   }
 
   pango_font_description_free (desc);

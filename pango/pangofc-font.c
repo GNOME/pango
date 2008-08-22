@@ -529,10 +529,14 @@ pango_fc_font_get_metrics (PangoFont     *font,
 
   if (!tmp_list)
     {
+      PangoFontMap *fontmap;
       PangoContext *context;
 
-      if (!fcfont->fontmap)
+      /* XXX this is racy.  because weakref's are racy... */
+      fontmap = fcfont->fontmap;
+      if (!fontmap)
 	return pango_font_metrics_new ();
+      fontmap = g_object_ref (fontmap);
 
       info = g_slice_new0 (PangoFcMetricsInfo);
 
@@ -541,12 +545,13 @@ pango_fc_font_get_metrics (PangoFont     *font,
 
       info->sample_str = sample_str;
 
-      context = pango_font_map_create_context (fcfont->fontmap);
+      context = pango_font_map_create_context (fontmap);
       pango_context_set_language (context, language);
 
       info->metrics = pango_fc_font_create_metrics_for_context (fcfont, context);
 
       g_object_unref (context);
+      g_object_unref (fontmap);
     }
 
   return pango_font_metrics_ref (info->metrics);

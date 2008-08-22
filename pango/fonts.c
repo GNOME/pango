@@ -1414,9 +1414,17 @@ pango_font_get_metrics (PangoFont        *font,
 
 /**
  * pango_font_get_font_map:
- * @font: a #PangoFont
+ * @font: a #PangoFont, or %NULL
  *
  * Gets the font map for which the font was created.
+ *
+ * Note that the font maintains a <firstterm>weak</firstterm> reference
+ * to the font map, so if all references to font map are dropped, the font
+ * map will be finalized even if there are fonts created with the font
+ * map that are still alive.  In that case this function will return %NULL.
+ * It is the responsibility of the user to ensure that the font map is kept
+ * alive.  In most uses this is not an issue as a #PangoContext holds
+ * a reference to the font map.
  *
  * Return value: the #PangoFontMap for the font, or %NULL if @font is %NULL.
  *

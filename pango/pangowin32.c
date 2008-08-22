@@ -835,7 +835,9 @@ pango_win32_font_finalize (GObject *object)
 
   g_hash_table_destroy (win32font->glyph_info);
 
-  g_object_unref (win32font->fontmap);
+  g_assert (win32font->fontmap != NULL);
+  g_object_remove_weak_pointer (G_OBJECT (win32font->fontmap), (gpointer *) (gpointer) &win32font->fontmap);
+  win32font->fontmap = NULL;
 
   G_OBJECT_CLASS (_pango_win32_font_parent_class)->finalize (object);
 }
