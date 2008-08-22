@@ -138,7 +138,7 @@ _pango_atsui_font_set_font_map (PangoATSUIFont    *font,
 
   g_assert (priv->fontmap == NULL);
   priv->fontmap = (PangoFontMap *) fontmap;
-  g_object_add_weak_pointer (G_OBJECT (prev->fontmap), (gpointer *) (gpointer) &priv->fontmap);
+  g_object_add_weak_pointer (G_OBJECT (priv->fontmap), (gpointer *) (gpointer) &priv->fontmap);
 }
 
 void
