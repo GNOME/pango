@@ -160,8 +160,7 @@ static void
 cache_entry_unref (PangoWin32FontCache *cache,
 		   CacheEntry          *entry)
 {
-  entry->ref_count--;
-  if (entry->ref_count == 0)
+  if (g_atomic_int_dec_and_test (&entry->ref_count))
     {
       PING (("removing cache entry %p", entry->hfont));
 
@@ -233,7 +232,7 @@ pango_win32_font_cache_loadw (PangoWin32FontCache *cache,
 
   if (entry)
     {
-      entry->ref_count++;
+      g_atomic_int_inc (entry->ref_count);
       PING (("increased refcount for cache entry %p: %d", entry->hfont, entry->ref_count));
     }
   else
@@ -384,7 +383,7 @@ pango_win32_font_cache_loadw (PangoWin32FontCache *cache,
     }
   else
     {
-      entry->ref_count++;
+      g_atomic_int_inc (entry->ref_count);
 
       /* Insert into the mru list */
 

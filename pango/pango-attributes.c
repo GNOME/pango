@@ -1131,7 +1131,7 @@ pango_attr_list_ref (PangoAttrList *list)
   if (list == NULL)
     return NULL;
 
-  list->ref_count++;
+  g_atomic_int_inc (&list->ref_count);
 
   return list;
 }
@@ -1154,8 +1154,7 @@ pango_attr_list_unref (PangoAttrList *list)
 
   g_return_if_fail (list->ref_count > 0);
 
-  list->ref_count--;
-  if (list->ref_count == 0)
+  if (g_atomic_int_dec_and_test (&list->ref_count))
     {
       tmp_list = list->attributes;
       while (tmp_list)

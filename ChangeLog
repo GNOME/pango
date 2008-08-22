@@ -1,5 +1,24 @@
 2008-08-22  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango/fonts.c (pango_font_metrics_ref),
+	(pango_font_metrics_unref):
+	* pango/pango-attributes.c (pango_attr_list_ref),
+	(pango_attr_list_unref):
+	* pango/pango-coverage.c (pango_coverage_ref),
+	(pango_coverage_unref):
+	* pango/pango-layout.c (pango_layout_line_ref),
+	(pango_layout_line_unref):
+	* pango/pangowin32-fontcache.c (cache_entry_unref),
+	(pango_win32_font_cache_loadw):
+	* pango/pangox-fontcache.c (cache_entry_unref),
+	(pango_x_font_cache_load):
+	Use atomic reference counting.
+
+	Pango may not be thread safe yet, but fixing it little by little
+	is easier than doing all in one round.
+
+2008-08-22  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 143542 – PangoFT2Fontmap leak
 
 	* pango/fonts.c:

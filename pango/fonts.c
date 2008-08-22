@@ -1489,7 +1489,7 @@ pango_font_metrics_ref (PangoFontMetrics *metrics)
   if (metrics == NULL)
     return NULL;
 
-  metrics->ref_count++;
+  g_atomic_int_inc (&metrics->ref_count);
 
   return metrics;
 }
@@ -1510,9 +1510,7 @@ pango_font_metrics_unref (PangoFontMetrics *metrics)
 
   g_return_if_fail (metrics->ref_count > 0 );
 
-  metrics->ref_count--;
-
-  if (metrics->ref_count == 0)
+  if (g_atomic_int_dec_and_test (&metrics->ref_count))
     g_slice_free (PangoFontMetrics, metrics);
 }
 

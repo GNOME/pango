@@ -118,8 +118,7 @@ pango_x_font_cache_new (Display *display)
 static void
 cache_entry_unref (PangoXFontCache *cache, CacheEntry *entry)
 {
-  entry->ref_count--;
-  if (entry->ref_count == 0)
+  if (g_atomic_int_dec_and_test (&entry->ref_count))
     {
       g_hash_table_remove (cache->forward, entry->xlfd);
       g_hash_table_remove (cache->back, entry->fs);
@@ -154,7 +153,7 @@ pango_x_font_cache_load (PangoXFontCache *cache,
 
   if (entry)
     {
-      entry->ref_count++;
+      g_atomic_int_inc (&entry->ref_count);
     }
   else
     {
@@ -200,7 +199,7 @@ pango_x_font_cache_load (PangoXFontCache *cache,
     }
   else
     {
-      entry->ref_count++;
+      g_atomic_int_inc (&entry->ref_count);
 
       /* Insert into the mru list */
 

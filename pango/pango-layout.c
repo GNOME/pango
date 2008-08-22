@@ -3878,7 +3878,7 @@ pango_layout_line_ref (PangoLayoutLine *line)
   if (line == NULL)
     return NULL;
 
-  private->ref_count++;
+  g_atomic_int_inc (&private->ref_count);
 
   return line;
 }
@@ -3901,8 +3901,7 @@ pango_layout_line_unref (PangoLayoutLine *line)
 
   g_return_if_fail (private->ref_count > 0);
 
-  private->ref_count--;
-  if (private->ref_count == 0)
+  if (g_atomic_int_dec_and_test (&private->ref_count))
     {
       g_slist_foreach (line->runs, (GFunc)free_run, GINT_TO_POINTER (1));
       g_slist_free (line->runs);
