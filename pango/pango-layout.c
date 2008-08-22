@@ -202,6 +202,7 @@ pango_layout_init (PangoLayout *layout)
 
   layout->log_attrs = NULL;
   layout->lines = NULL;
+  layout->line_count = 0;
 
   layout->tab_width = -1;
   layout->unknown_glyphs_count = -1;
@@ -423,7 +424,12 @@ pango_layout_set_height (PangoLayout *layout,
     {
       layout->height = height;
 
-      if (layout->ellipsize != PANGO_ELLIPSIZE_NONE)
+      /* Do not invalidate if the number of lines requested is
+       * larger than the total number of lines in layout.
+       * Bug 549003
+       */
+      if (layout->ellipsize != PANGO_ELLIPSIZE_NONE &&
+	  !(layout->lines && layout->is_ellipsized == FALSE && layout->line_count <= -height))
 	pango_layout_clear_lines (layout);
     }
 }
@@ -1278,7 +1284,7 @@ pango_layout_get_line_count (PangoLayout   *layout)
   g_return_val_if_fail (layout != NULL, 0);
 
   pango_layout_check_lines (layout);
-  return g_slist_length (layout->lines);
+  return layout->line_count;
 }
 
 /**
@@ -2717,6 +2723,7 @@ pango_layout_clear_lines (PangoLayout *layout)
 
       g_slist_free (layout->lines);
       layout->lines = NULL;
+      layout->line_count = 0;
 
       /* This could be handled separately, since we don't need to
        * recompute log_attrs on a width change, but this is easiest
@@ -3446,6 +3453,7 @@ add_line (PangoLayoutLine *line,
 
   /* we prepend, then reverse the list later */
   layout->lines = g_slist_prepend (layout->lines, line);
+  layout->line_count++;
 
   if (layout->height >= 0)
     {

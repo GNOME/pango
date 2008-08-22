@@ -73,6 +73,7 @@ struct _PangoLayout
   PangoTabArray *tabs;
 
   GSList *lines;
+  guint line_count;		/* Number of lines in @lines. 0 if lines is %NULL */
 };
 
 gboolean _pango_layout_line_ellipsize (PangoLayoutLine *line,

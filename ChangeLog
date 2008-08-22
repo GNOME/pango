@@ -1,3 +1,15 @@
+2008-08-22  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 549003 – pango_layout_set_height(): layout should not be cleared
+	unless required
+
+	* pango/pango-layout-private.h:
+	* pango/pango-layout.c (pango_layout_init),
+	(pango_layout_set_height), (pango_layout_get_line_count),
+	(pango_layout_clear_lines), (add_line):
+	Don't invalidate layout if the new height does not force
+	ellipsization.
+
 2008-08-22  Richard Hult  <richard@imendio.com>
 
 	* pango/pangoatsui.c: (_pango_atsui_font_set_font_map): Fix build,
