@@ -1,3 +1,43 @@
+Overview of changes between 1.21.4 and 1.21.5
+=============================================
+- Make the reference the font->fontmap reference weak.  Previously all
+  fontmaps had circular references to their fonts and back, making them
+  leak instead of being freed upon finalization.  Now they all clean after
+  themselves.  There's a slight semantic change though, that a PangoFont does
+  not keep its fontmap alive anymore, so that's up to the user.  But then
+  again, finalizing fontmaps is not a good idea to begin with.
+
+- Improve pango_language_get_sample_string() to add language sample texts that
+  are actually usable.  Compiled from a variety of sources.
+  See pango-language-sample-table.h.
+
+- In pango_language_get_sample_string() use default language if provided
+  language is NULL.
+
+- Update OpenType language-system tags to OpenType 1.5 draft intersected with
+  ISO639-3 of 2008/08/04.
+
+- New API additions:
+	Add a minor new public API:
+
+		pango_language_get_scripts()
+	
+	This is what pango_language_includes_script() has been using
+	internally.  Previously one had to call that function over all
+	possible script values to determine which scripts a language
+	uses.  The new API makes that much easier.
+
+- Bugs fixed in this release:
+	Bug 549003 – pango_layout_set_height(): layout should not be cleared
+		     unless required
+	Bug 143542 – PangoFT2Fontmap leak
+	Bug 314094 – Get rid of poutpourri default sample string
+	Bug 473806 – Improve pango_language_get_sample_string()
+	Bug 473805 – Add API enumerating scripts for a language
+	Bug 470895 – Improve OpenType language tag list
+	Bug 547432 – Deprecation of pango_(backend)_font_map_create_context()
+		     not clean
+
 Overview of changes between 1.21.3 and 1.21.4
 =============================================
 - Use cairo_show_text_glyphs() if target cairo surface supports that.

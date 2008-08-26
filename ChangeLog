@@ -1,3 +1,11 @@
+2008-08-26  Behdad Esfahbod  <behdad@gnome.org>
+
+	* === Released 1.21.5 ===
+
+	* configure.in: Version 1.21.5
+
+	* NEWS: Updated.
+
 2008-08-22  Behdad Esfahbod  <behdad@gnome.org>
 
 	Bug 549003 – pango_layout_set_height(): layout should not be cleared
