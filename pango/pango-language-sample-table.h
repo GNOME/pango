@@ -193,9 +193,9 @@ LANGUAGE(
 	)
 LANGUAGE(
 	 fr	/* French */,
-	 WP-PANG,
-	 "Voyez le brick géant que j'examine près du wharf."
-	 /* See the giant brig I'm examining near the wharf. */
+	 MISC	/* Vincent Untz (#549520) http://fr.wikipedia.org/wiki/Pangramme */,
+	 "Voix ambiguë d'un cœur qui, au zéphyr, préfère les jattes de kiwis."
+	 /* Ambiguous voice of a heart that, in the wind, prefers bowls of kiwis. */
 	)
 LANGUAGE(
 	 fro	/* Old French */,

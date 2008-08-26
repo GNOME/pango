@@ -1,5 +1,12 @@
 2008-08-26  Behdad Esfahbod  <behdad@gnome.org>
 
+	Bug 549520 – fr sample string
+
+	* pango/pango-language-sample-table.h: Change French sample string
+	as per Vincent Untz's suggestion.
+
+2008-08-26  Behdad Esfahbod  <behdad@gnome.org>
+
 	* === Released 1.21.5 ===
 
 	* configure.in: Version 1.21.5
