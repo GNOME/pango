@@ -1,3 +1,10 @@
+2008-08-27  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 549522 – New pt_BR pangram for pango
+
+	* pango/pango-language-sample-table.h: Change pt_BR string as per
+	Leonardo Ferreira Fontenelle's suggestion.
+
 2008-08-26  Behdad Esfahbod  <behdad@gnome.org>
 
 	Bug 549520 – fr sample string

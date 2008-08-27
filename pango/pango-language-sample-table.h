@@ -428,8 +428,9 @@ LANGUAGE(
 	)
 LANGUAGE(
 	 pt-br	/* Brazilian Portuguese */,
-	 GSPECI,
-	 "Gazeta publica hoje no jornal uma breve nota de faxina na quermesse."
+	 WP-PANG,
+	 "À noite, vovô Kowalsky vê o ímã cair no pé do pingüim queixoso e vovó põe açúcar no chá de tâmaras do jabuti feliz."
+	 /* At night, grandpa Kowalsky sees the magnet falling in the complaining penguin's foot and grandma puts sugar in the happy tortoise's date tea.*/
 	)
 LANGUAGE(
 	 ro	/* Romanian */,
