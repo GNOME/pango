@@ -1,3 +1,10 @@
+2008-08-28  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 549758 – Swedish font sample text could use punctuation
+
+	* pango/pango-language-sample-table.h: Add final punctuation to many
+	that were missing one.
+
 2008-08-27  Behdad Esfahbod  <behdad@gnome.org>
 
 	Bug 549522 – New pt_BR pangram for pango

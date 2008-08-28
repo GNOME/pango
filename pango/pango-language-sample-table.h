@@ -58,13 +58,13 @@ LANGUAGE(
 LANGUAGE(
 	 ar	/* Arabic */,
 	 WP-PANG,
-	 "نص حكيم له سر قاطع وذو شأن عظيم مكتوب على ثوب أخضر ومغلف بجلد أزرق"
-	 /* A wise text which has an absolute secret and great importance, written on a green tissue and covered with blue leather */
+	 "نص حكيم له سر قاطع وذو شأن عظيم مكتوب على ثوب أخضر ومغلف بجلد أزرق."
+	 /* A wise text which has an absolute secret and great importance, written on a green tissue and covered with blue leather. */
 	)
 LANGUAGE(
 	 arn	/* Mapudungun */,
 	 WP-PANG,
-	 "Gvxam mincetu apocikvyeh: ñizol ce mamvj ka raq kuse bafkeh mew"
+	 "Gvxam mincetu apocikvyeh: ñizol ce mamvj ka raq kuse bafkeh mew."
 	 /* Tale under the full moon: the chief chemamull and the clay old woman at the lake/sea. */
 	)
 LANGUAGE(
@@ -136,8 +136,8 @@ LANGUAGE(
 LANGUAGE(
 	 de	/* German */,
 	 WP-SFD,
-	 "Zwölf Boxkämpfer jagen Viktor quer über den großen Sylter Deich"
-	 /* Twelve boxing fighters drive Viktor over the great */
+	 "Zwölf Boxkämpfer jagen Viktor quer über den großen Sylter Deich."
+	 /* Twelve boxing fighters drive Viktor over the great. */
 	)
 LANGUAGE(
 	 el	/* Greek */,
@@ -171,8 +171,8 @@ LANGUAGE(
 LANGUAGE(
 	 et	/* Estonian */,
 	 WP-SFD,
-	 "See väike mölder jõuab rongile hüpata"
-	 /* This small miller is able to jump on the train */
+	 "See väike mölder jõuab rongile hüpata."
+	 /* This small miller is able to jump on the train. */
 	)
 LANGUAGE(
 	 eu	/* Basque */,
@@ -183,7 +183,7 @@ LANGUAGE(
 LANGUAGE(
 	 fa	/* Persian */,
 	 MISC	/* Behdad Esfahbod */,
-	 "«اَلا یا اَیُّها السّاقی اَدِر کَأساً وَ ناوِلْهٰا»، که عشق آسان نمود اول ولی افتاد مشکل‌ها"
+	 "«اَلا یا اَیُّها السّاقی اَدِر کَأساً وَ ناوِلْهٰا»، که عشق آسان نمود اول ولی افتاد مشکل‌ها."
 	)
 LANGUAGE(
 	 fi	/* Finnish */,
@@ -329,8 +329,8 @@ LANGUAGE(
 LANGUAGE(
 	 lt	/* Lithuanian */,
 	 WP-PANG,
-	 "Įlinkdama fechtuotojo špaga sublykčiojusi pragręžė apvalų arbūzą"
-	 /* Incurving fencer sword sparkled and perforated a round watermelon */
+	 "Įlinkdama fechtuotojo špaga sublykčiojusi pragręžė apvalų arbūzą."
+	 /* Incurving fencer sword sparkled and perforated a round watermelon. */
 	)
 LANGUAGE(
 	 lv	/* Latvian */,
@@ -464,8 +464,8 @@ LANGUAGE(
 LANGUAGE(
 	 sl	/* Slovenian */,
 	 WP-PANG,
-	 "Šerif bo za vajo spet kuhal domače žgance"
-	 /* For an exercise, sheriff will again make home-made mush */
+	 "Šerif bo za vajo spet kuhal domače žgance."
+	 /* For an exercise, sheriff will again make home-made mush. */
 	)
 LANGUAGE(
 	 sq	/* Albanian */,
@@ -490,8 +490,8 @@ LANGUAGE(
 LANGUAGE(
 	 sv	/* Swedish */,
 	 WP-SFD,
-	 "Flygande bäckasiner söka strax hwila på mjuka tuvor"
-	 /* Flying snipes soon look to rest on soft grass beds */
+	 "Flygande bäckasiner söka strax hwila på mjuka tuvor."
+	 /* Flying snipes soon look to rest on soft grass beds. */
 	)
 LANGUAGE(
 	 swg	/* Swabian */,
