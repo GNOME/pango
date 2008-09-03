@@ -424,7 +424,7 @@ AM_CONDITIONAL(HAVE_CAIRO_ATSUI, $have_cairo_atsui)
 # a new Pango backend outside of Pango, you are up to sending the necessary
 # patch to fix that rule. :-)
 #
-if $have_freetype || $have_x || $have_xft || $have_cairo; then : ; else
+if $have_freetype || $have_x || $have_xft || $have_cairo || $have_win32 ; then : ; else
   AC_MSG_ERROR([*** Could not enable any of FreeType, X11, Cairo, or Win32 backends.
 *** Must have at least one backend to build Pango.])
 fi

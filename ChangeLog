@@ -1,3 +1,9 @@
+2008-09-03  Alberto Ruiz  <aruiz@gnome.org>
+
+	Bug 550659 – configure.in ignores a win32 backend only scenario
+
+	* configure.in: Added $have_win32 check
+
 2008-08-28  Behdad Esfahbod  <behdad@gnome.org>
 
 	Bug 549758 – Swedish font sample text could use punctuation
