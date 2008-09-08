@@ -1,3 +1,11 @@
+2008-09-08  Behdad Esfahbod  <behdad@gnome.org>
+
+	* === Released 1.21.6 ===
+
+	* configure.in: Version 1.21.6
+
+	* NEWS: Updated.
+
 2008-09-03  Alberto Ruiz  <aruiz@gnome.org>
 
 	Bug 550659 – configure.in ignores a win32 backend only scenario

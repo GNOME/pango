@@ -1,3 +1,13 @@
+Overview of changes between 1.21.5 and 1.21.6
+=============================================
+- Win32 cross-compiling build system fix
+- Improve language sample strings.
+- Bugs fixed in this release:
+	Bug 550659 – configure.in ignores a win32 backend only scenario
+	Bug 549758 – Swedish font sample text could use punctuation
+	Bug 549522 – New pt_BR pangram for pango
+	Bug 549520 – fr sample string
+
 Overview of changes between 1.21.4 and 1.21.5
 =============================================
 - Make the reference the font->fontmap reference weak.  Previously all
