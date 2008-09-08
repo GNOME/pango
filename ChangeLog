@@ -1,3 +1,10 @@
+2008-09-08  Tor Lillqvist  <tml@novell.com>
+
+	Bug 551416 - pangowin32-fontcache.c: argument is different type
+
+	* pango/pangowin32-fontcache.c: Pass address of int to
+	g_atomic_int_inc().
+
 2008-09-08  Behdad Esfahbod  <behdad@gnome.org>
 
 	* === Released 1.21.6 ===

@@ -232,7 +232,7 @@ pango_win32_font_cache_loadw (PangoWin32FontCache *cache,
 
   if (entry)
     {
-      g_atomic_int_inc (entry->ref_count);
+      g_atomic_int_inc (&entry->ref_count);
       PING (("increased refcount for cache entry %p: %d", entry->hfont, entry->ref_count));
     }
   else
@@ -383,7 +383,7 @@ pango_win32_font_cache_loadw (PangoWin32FontCache *cache,
     }
   else
     {
-      g_atomic_int_inc (entry->ref_count);
+      g_atomic_int_inc (&entry->ref_count);
 
       /* Insert into the mru list */
 
