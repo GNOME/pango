@@ -1,3 +1,13 @@
+2008-09-11  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 551865 – Can't change justification of a PangoLayout after first
+	draw
+
+	* pango/pango-layout.c (pango_layout_set_attributes),
+	(pango_layout_set_font_description), (pango_layout_set_justify),
+	(pango_layout_set_alignment), (pango_layout_set_tabs):
+	Invalidate layout after property change.  Oops!
+
 2008-09-08  Tor Lillqvist  <tml@novell.com>
 
 	Bug 551416 - pangowin32-fontcache.c: argument is different type

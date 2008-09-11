@@ -617,6 +617,10 @@ pango_layout_set_attributes (PangoLayout   *layout,
 
   old_attrs = layout->attrs;
 
+  /* We always clear lines such that this function can be called
+   * whenever attrs changes.
+   */
+
   layout->attrs = attrs;
   if (layout->attrs)
     pango_attr_list_ref (layout->attrs);
@@ -659,15 +663,13 @@ pango_layout_set_font_description (PangoLayout                 *layout,
 {
   g_return_if_fail (layout != NULL);
 
-  if (desc != layout->font_desc)
+  if (desc != layout->font_desc &&
+      (!desc || !layout->font_desc || !pango_font_description_equal(desc, layout->font_desc)))
     {
       if (layout->font_desc)
 	pango_font_description_free (layout->font_desc);
 
-      if (desc)
-	layout->font_desc = pango_font_description_copy (desc);
-      else
-	layout->font_desc = NULL;
+      layout->font_desc = desc ? pango_font_description_copy (desc) : NULL;
 
       pango_layout_clear_lines (layout);
       layout->tab_width = -1;
@@ -715,7 +717,13 @@ pango_layout_set_justify (PangoLayout *layout,
 {
   g_return_if_fail (layout != NULL);
 
-  layout->justify = justify;
+  if (justify != layout->justify)
+    {
+      layout->justify = justify;
+
+      if (layout->is_ellipsized || layout->is_wrapped)
+	pango_layout_clear_lines (layout);
+    }
 }
 
 /**
@@ -809,7 +817,11 @@ pango_layout_set_alignment (PangoLayout   *layout,
 {
   g_return_if_fail (layout != NULL);
 
-  layout->alignment = alignment;
+  if (alignment != layout->alignment)
+    {
+      layout->alignment = alignment;
+      pango_layout_clear_lines (layout);
+    }
 }
 
 /**
@@ -832,7 +844,7 @@ pango_layout_get_alignment (PangoLayout *layout)
 /**
  * pango_layout_set_tabs:
  * @layout: a #PangoLayout
- * @tabs: a #PangoTabArray
+ * @tabs: a #PangoTabArray, or %NULL
  *
  * Sets the tabs to use for @layout, overriding the default tabs
  * (by default, tabs are every 8 spaces). If @tabs is %NULL, the default
@@ -845,10 +857,16 @@ pango_layout_set_tabs (PangoLayout   *layout,
 {
   g_return_if_fail (PANGO_IS_LAYOUT (layout));
 
-  if (layout->tabs)
-    pango_tab_array_free (layout->tabs);
 
-  layout->tabs = tabs ? pango_tab_array_copy (tabs) : NULL;
+  if (tabs != layout->tabs)
+    {
+      if (layout->tabs)
+	pango_tab_array_free (layout->tabs);
+
+      layout->tabs = tabs ? pango_tab_array_copy (tabs) : NULL;
+
+      pango_layout_clear_lines (layout);
+    }
 }
 
 /**
