@@ -657,18 +657,34 @@ pango_config_key_get (const char *key)
 
 #ifdef G_OS_WIN32
 
-/* DllMain function needed to tuck away the DLL name */
+/* DllMain function needed to tuck away the DLL handle */
 
-G_WIN32_DLLMAIN_FOR_DLL_NAME(static, dll_name)
+static HMODULE pango_dll;
+
+BOOL WINAPI
+DllMain (HINSTANCE hinstDLL,
+	 DWORD     fdwReason,
+	 LPVOID    lpvReserved)
+{
+  switch (fdwReason)
+    {
+    case DLL_PROCESS_ATTACH:
+      pango_dll = (HMODULE) hinstDLL;
+      break;
+    }
+
+  return TRUE;
+}
+
 #endif
 
 /**
  * pango_get_sysconf_subdirectory:
  *
  * On Unix, returns the name of the "pango" subdirectory of SYSCONFDIR
- * (which is set at compile time). On Win32, returns a subdirectory of
- * the Pango installation directory (which is deduced at run time from
- * the DLL's location, or stored in the Registry).
+ * (which is set at compile time). On Windows, returns the etc\pango
+ * subdirectory of the Pango installation directory (which is deduced
+ * at run time from the DLL's location).
  *
  * Return value: the Pango sysconf directory. The returned string should
  * not be freed.
@@ -680,9 +696,11 @@ pango_get_sysconf_subdirectory (void)
   static gchar *result = NULL;
 
   if (result == NULL)
-    result = g_win32_get_package_installation_subdirectory
-      (PACKAGE " " VERSION, dll_name, "etc\\pango");
-
+    {
+      gchar *root = g_win32_get_package_installation_directory_of_module (pango_dll);
+      result = g_build_filename (root, "etc\\pango", NULL);
+      g_free (root);
+    }
   return result;
 #else
   return SYSCONFDIR "/pango";
@@ -693,10 +711,9 @@ pango_get_sysconf_subdirectory (void)
  * pango_get_lib_subdirectory:
  *
  * On Unix, returns the name of the "pango" subdirectory of LIBDIR
- * (which is set at compile time). On Win32, returns the Pango
- * installation directory (which is deduced at run time from the DLL's
- * location, or stored in the Registry). The returned string should
- * not be freed.
+ * (which is set at compile time). On Windows, returns the lib\pango
+ * subdirectory of the Pango installation directory (which is deduced
+ * at run time from the DLL's location).
  *
  * Return value: the Pango lib directory. The returned string should
  * not be freed.
@@ -708,9 +725,11 @@ pango_get_lib_subdirectory (void)
   static gchar *result = NULL;
 
   if (result == NULL)
-    result = g_win32_get_package_installation_subdirectory
-      (PACKAGE " " VERSION, dll_name, "lib\\pango");
-
+    {
+      gchar *root = g_win32_get_package_installation_directory_of_module (pango_dll);
+      result = g_build_filename (root, "lib\\pango", NULL);
+      g_free (root);
+    }
   return result;
 #else
   return LIBDIR "/pango";
