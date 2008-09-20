@@ -182,8 +182,8 @@ LANGUAGE(
 	)
 LANGUAGE(
 	 fa	/* Persian */,
-	 MISC	/* Behdad Esfahbod */,
-	 "«اَلا یا اَیُّها السّاقی اَدِر کَأساً وَ ناوِلْهٰا»، که عشق آسان نمود اول ولی افتاد مشکل‌ها."
+	 MISC	/* Behdad Esfahbod (#548730) */,
+	 "«الا یا اَیُّها السّاقی! اَدِرْ کَأساً وَ ناوِلْهٰا!» که عشق آسان نمود اوّل، ولی افتاد مشکل‌ها!"
 	)
 LANGUAGE(
 	 fi	/* Finnish */,
@@ -434,9 +434,9 @@ LANGUAGE(
 	)
 LANGUAGE(
 	 ro	/* Romanian */,
-	 WP-SFD,
-	 "Agera vulpe maronie sare peste câinele cel leneş."
-	 /* The quick brown fox jumps over the lazy dog. */
+	 MISC	/* Misu Moldovan (#552993) */,
+	 "Fumegând hipnotic sașiul azvârle mreje în bălți."
+	 /* Hypnotically smoking, the cross-eyed man throws fishing nets into ponds. */
 	)
 LANGUAGE(
 	 ru	/* Russian */,

@@ -1,3 +1,10 @@
+2008-09-20  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 552993 – Romanian pangram
+
+	* pango/pango-language-sample-table.h: New Romanian sample text
+	from Misu Moldovan.
+
 2008-09-18  Tor Lillqvist  <tml@novell.com>
 
 	* pango-zip.sh.in: Drop pango.aliases as we have a default such
