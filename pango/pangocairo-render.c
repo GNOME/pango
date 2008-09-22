@@ -362,7 +362,7 @@ pango_cairo_renderer_show_text_glyphs (PangoRenderer        *renderer,
 			      text, text_len,
 			      cairo_glyphs, count,
 			      clusters, num_clusters,
-			      backward);
+			      backward ? CAIRO_TEXT_CLUSTER_FLAG_BACKWARD : 0);
     else
       cairo_show_glyphs (crenderer->cr, cairo_glyphs, count);
 
@@ -710,7 +710,7 @@ save_current_point (PangoCairoRenderer *renderer)
   cairo_get_current_point (renderer->cr, &renderer->x_offset, &renderer->y_offset);
 
   /* abuse save_current_point() to cache cairo_has_show_text_glyphs() result */
-  renderer->has_show_text_glyphs = cairo_has_show_text_glyphs (renderer->cr);
+  renderer->has_show_text_glyphs = cairo_surface_has_show_text_glyphs (cairo_get_target (renderer->cr));
 }
 
 static void
