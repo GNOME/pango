@@ -1,3 +1,15 @@
+Overview of changes between 1.21.6 and 1.22.0
+=============================================
+- Require cairo >= 1.7.6.
+- Improved Romanian sample text
+- Don't use deprecated glib win32 API
+- Misc bug fixes
+- Bugs fixed in this release:
+	Bug 552993 – Romanian pangram
+	Bug 551865 – Can't change justification of a PangoLayout after first
+		draw
+	Bug 551416 - pangowin32-fontcache.c: argument is different type
+
 Overview of changes between 1.21.5 and 1.21.6
 =============================================
 - Win32 cross-compiling build system fix

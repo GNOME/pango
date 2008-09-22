@@ -1,5 +1,13 @@
 2008-09-22  Behdad Esfahbod  <behdad@gnome.org>
 
+	* === Released 1.22.0 ===
+
+	* configure.in: Version 1.22.0
+
+	* NEWS: Updated.
+
+2008-09-22  Behdad Esfahbod  <behdad@gnome.org>
+
 	* configure.in:
 	* pango/pangocairo-render.c
 	(pango_cairo_renderer_show_text_glyphs), (save_current_point):
