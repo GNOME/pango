@@ -1,5 +1,12 @@
 2008-09-22  Behdad Esfahbod  <behdad@gnome.org>
 
+	Bug 553345 – Japanese pangram.
+	Patch from  Takeshi AIHANA
+
+	* pango/pango-language-sample-table.h: Improve Japanese text.
+
+2008-09-22  Behdad Esfahbod  <behdad@gnome.org>
+
 	* === Released 1.22.0 ===
 
 	* configure.in: Version 1.22.0

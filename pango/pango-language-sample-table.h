@@ -284,7 +284,7 @@ LANGUAGE(
 LANGUAGE(
 	 ja	/* Japanese */,
 	 KERMIT,
-	 "いろはにほへど　ちりぬるを　色は匂へど 散りぬるを"
+	 "いろはにほへと ちりぬるを 色は匂へど 散りぬるを"
 	)
 LANGUAGE(
 	 jam	/* Jamaican Creole English */,
