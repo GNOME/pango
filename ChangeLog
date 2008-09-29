@@ -1,3 +1,8 @@
+2008-09-29  Behdad Esfahbod  <behdad@gnome.org>
+
+	* pango/opentype/harfbuzz-gpos.c (Position_CursiveChain):
+	Fix left-to-right positioning.  Reported by Peter Hunter.
+
 2008-09-22  Behdad Esfahbod  <behdad@gnome.org>
 
 	Bug 553345 – Japanese pangram.
