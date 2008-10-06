@@ -5445,8 +5445,7 @@ pango_layout_iter_copy (PangoLayoutIter *iter)
   for (l = iter->line_extents; l; l = l->next)
     {
       new->line_extents = g_slist_prepend (new->line_extents,
-					   g_memdup (l->data,
-						     sizeof (Extents)));
+                              g_slice_dup (Extents, l->data));
       if (l == iter->line_extents_link)
 	new->line_extents_link = new->line_extents;
     }
