@@ -198,7 +198,7 @@ hex (const char *spec,
 
 /**
  * pango_color_parse:
- * @color: a #PangoColor structure in which to store the result
+ * @color: a #PangoColor structure in which to store the result, or %NULL
  * @spec: a string specifying the new color
  *
  * Fill in the fields of a color from a string specification. The

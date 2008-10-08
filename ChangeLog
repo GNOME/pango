@@ -1,3 +1,9 @@
+2008-10-06  Christian Persch  <chpe@gnome.org>
+
+	Bug 539623 – document that pango_color_parse accepts NULL
+
+	* pango/pango-color.c: Clarify docs.
+
 2008-10-06  Behdad Esfahbod  <behdad@gnome.org>
 
 	Bug 555219 – Memory leak when using pango_layout_iter_copy
