@@ -1,3 +1,10 @@
+2008-10-10  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 552107 – Small libtool fixes
+
+	* configure.in: Regenerate libtool early, quote $deplibs_check_method.
+	Patch by Patryk Zawadzki
+
 2008-10-10  Kjartan Maraas  <kmaraas@gnome.org>
 
 	* pango/pangox.c: (get_context_info): Fix a gcc warning.

@@ -135,6 +135,8 @@ if test "$pango_os_win32" = "yes"; then
 fi
 
 AM_PROG_LIBTOOL
+dnl when using libtool 2.x create libtool early, because it's used in configure
+m4_ifdef([LT_OUTPUT], [LT_OUTPUT])
 
 AC_MSG_CHECKING([for some Win32 platform])
 case "$host" in
@@ -685,7 +687,7 @@ AC_MSG_CHECKING([Whether to write dependencies into .pc files])
 case $enable_explicit_deps in
   auto)
     export SED
-    deplibs_check_method=`(./libtool --config; echo 'eval echo $deplibs_check_method') | sh`
+    deplibs_check_method=`(./libtool --config; echo 'eval echo \"$deplibs_check_method\"') | sh`
     if test "x$deplibs_check_method" '!=' xpass_all || test "x$enable_static" = xyes ; then
       enable_explicit_deps=yes  
     else
