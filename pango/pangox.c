@@ -162,7 +162,7 @@ static PangoXContextInfo *
 get_context_info (PangoContext *context)
 {
   PangoXContextInfo *info;
-  static quark = 0;
+  static GQuark quark = 0;
 
   if (G_UNLIKELY (!quark))
     quark = g_quark_from_static_string ("pango-x-info");
