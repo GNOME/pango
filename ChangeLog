@@ -1,3 +1,11 @@
+2008-10-14  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 528272 – "Error loading GPOS table 5503" when using katakana
+	characters
+
+	* pango/opentype/harfbuzz-gpos.c (Load_Mark2Array): Skip parsing
+	null anchor tables.
+
 2008-10-10  Behdad Esfahbod  <behdad@gnome.org>
 
 	Bug 552107 – Small libtool fixes
