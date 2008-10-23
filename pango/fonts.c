@@ -933,9 +933,7 @@ find_field (const FieldMap *map, int n_elements, const char *str, int len, int *
 static gboolean
 find_field_any (const char *str, int len, PangoFontDescription *desc)
 {
-  gboolean found = FALSE;
-
-  if (g_ascii_strcasecmp (str, "Normal") == 0)
+  if (field_matches ("Normal", str, len))
     return TRUE;
 
 #define FIELD(NAME, MASK) \
@@ -943,9 +941,9 @@ find_field_any (const char *str, int len, PangoFontDescription *desc)
   if (find_field (NAME##_map, G_N_ELEMENTS (NAME##_map), str, len, \
 		  desc ? (int *)&desc->NAME : NULL)) \
     { \
-      found = TRUE; \
       if (desc) \
 	desc->mask |= MASK; \
+      return TRUE; \
     } \
   } G_STMT_END
 
@@ -957,7 +955,7 @@ find_field_any (const char *str, int len, PangoFontDescription *desc)
 
 #undef FIELD
 
-  return found;
+  return FALSE;
 }
 
 static const char *

@@ -1,3 +1,10 @@
+2008-10-23  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 557620 – pango_font_description_from_string not correct
+
+	* pango/fonts.c (find_field_any): Fix parsing of "normal" when
+	not at the end of string.
+
 2008-10-20  Behdad Esfahbod  <behdad@gnome.org>
 
 	* === Released 1.22.1 ===
