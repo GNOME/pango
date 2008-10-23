@@ -1,3 +1,20 @@
+Overview of changes between 1.22.0 and 1.22.1
+=============================================
+- Fix crasher when freeing PangoLayoutIter's
+- Fix loading of bogus OpenType anchor tables
+- Fix OpenType CursiveChain positioning
+- Misc bug fixes
+- Bugs fixed in this release:
+	Bug 528272 – "Error loading GPOS table 5503" when using katakana
+		characters
+	Bug 552107 – Small libtool fixes
+		Patch by Patryk Zawadzki
+	Bug 539623 – document that pango_color_parse accepts NULL
+	Bug 555219 – Memory leak when using pango_layout_iter_copy
+		Patch from Falk Rohsiepe
+	Bug 553345 – Japanese pangram.
+		Patch from  Takeshi AIHANA
+
 Overview of changes between 1.21.6 and 1.22.0
 =============================================
 - Require cairo >= 1.7.6.
