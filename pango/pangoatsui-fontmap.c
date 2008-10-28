@@ -37,6 +37,8 @@ struct _PangoATSUIFamily
 
   char *family_name;
 
+  guint is_monospace : 1;
+
   PangoFontFace **faces;
   gint n_faces;
 };
@@ -186,6 +188,7 @@ pango_atsui_family_list_faces (PangoFontFamily  *family,
 
 static const char *
 pango_atsui_family_get_name (PangoFontFamily *family)
+
 {
   PangoATSUIFamily *atsuifamily = PANGO_ATSUI_FAMILY (family);
 
@@ -195,8 +198,9 @@ pango_atsui_family_get_name (PangoFontFamily *family)
 static gboolean
 pango_atsui_family_is_monospace (PangoFontFamily *family)
 {
-  /* Fixme: Implement */
-  return FALSE;
+  PangoATSUIFamily *atsuifamily = PANGO_ATSUI_FAMILY (family);
+
+  return atsuifamily->is_monospace;
 }
 
 static void
@@ -765,10 +769,10 @@ pango_atsui_font_map_list_families (PangoFontMap      *fontmap,
 static void
 pango_atsui_font_map_init (PangoATSUIFontMap *atsuifontmap)
 {
-  NSArray *family_array;
   NSAutoreleasePool *pool;
+  NSFontManager *manager;
+  NSArray *family_array;
   PangoATSUIFamily *family;
-
   int size, i;
 
   atsuifontmap->families = g_hash_table_new_full (g_str_hash, g_str_equal,
@@ -781,17 +785,32 @@ pango_atsui_font_map_init (PangoATSUIFontMap *atsuifontmap)
 						   NULL);
 
   pool = [[NSAutoreleasePool alloc] init];
-  family_array = [[NSFontManager sharedFontManager] availableFontFamilies];
+  manager = [NSFontManager sharedFontManager];
+  family_array = [manager availableFontFamilies];
   size = [family_array count];
 
-  for (i = 0; i < size; i++) {
-    NSString *family_name = [family_array objectAtIndex:i];
+  for (i = 0; i < size; i++)
+    {
+      NSString *family_name = [family_array objectAtIndex:i];
+      NSArray *members;
 
-    family = g_object_new (PANGO_TYPE_ATSUI_FAMILY, NULL);
-    family->family_name = g_strdup ([family_name UTF8String]);
+      family = g_object_new (PANGO_TYPE_ATSUI_FAMILY, NULL);
+      family->family_name = g_strdup ([family_name UTF8String]);
+  
+      members = [manager availableMembersOfFontFamily:family_name];
+      if ([members count] > 0)
+        {
+          NSArray *font_array = [members objectAtIndex:0];
 
-    g_hash_table_insert (atsuifontmap->families, g_utf8_casefold (family->family_name, -1), family);
-  }
+          /* We assume that all faces in the family are monospaced, or
+           * none.
+           */
+	  if ([[font_array objectAtIndex:3] intValue] & NSFixedPitchFontMask)
+            family->is_monospace = TRUE;
+        }
+
+      g_hash_table_insert (atsuifontmap->families, g_utf8_casefold (family->family_name, -1), family);
+    }
 
   /* Insert aliases */
   family = g_object_new (PANGO_TYPE_ATSUI_FAMILY, NULL);
@@ -804,6 +823,7 @@ pango_atsui_font_map_init (PangoATSUIFontMap *atsuifontmap)
 
   family = g_object_new (PANGO_TYPE_ATSUI_FAMILY, NULL);
   family->family_name = g_strdup ("Monospace");
+  family->is_monospace = TRUE;
   g_hash_table_insert (atsuifontmap->families, g_utf8_casefold (family->family_name, -1), family);
 
   [pool release];

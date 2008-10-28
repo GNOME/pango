@@ -1,3 +1,12 @@
+2008-10-27  Richard Hult  <richard@imendio.com>
+
+	Bug 558107 – is_monospace always returns FALSE in pangoatsui
+
+	* pango/pangoatsui-fontmap.c: (pango_atsui_family_is_monospace),
+	(pango_atsui_font_map_init): Mark families whose faces have the
+	NSFixedPitchFontMask set as monospaced, and use this in the
+	is_monospace implementation.
+
 2008-10-23  Behdad Esfahbod  <behdad@gnome.org>
 
 	Bug 557620 – pango_font_description_from_string not correct
