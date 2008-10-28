@@ -1,3 +1,13 @@
+Overview of changes between 1.22.1 and 1.22.2
+=============================================
+- Fix crasher when a PangoFcFontMap was freed before its fonts.
+- Mark monospace fonts as monospace in the pangoatsui backend.
+- Fix font description parsing to better handle "normal".
+- Bugs fixed in this release:
+	Bug 558254 – Internal reference handling messed up
+	Bug 558107 – is_monospace always returns FALSE in pangoatsui
+	Bug 557620 – pango_font_description_from_string not correct
+
 Overview of changes between 1.22.0 and 1.22.1
 =============================================
 - Fix crasher when freeing PangoLayoutIter's

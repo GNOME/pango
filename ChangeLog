@@ -1,5 +1,13 @@
 2008-10-28  Behdad Esfahbod  <behdad@gnome.org>
 
+	* === Released 1.22.2 ===
+
+	* configure.in: Version 1.22.2
+
+	* NEWS: Updated.
+
+2008-10-28  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 558254 – Internal reference handling messed up
 
 	* pango/pangofc-font.c (pango_fc_font_get_coverage):
