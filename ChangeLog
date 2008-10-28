@@ -1,3 +1,11 @@
+2008-10-28  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 558254 – Internal reference handling messed up
+
+	* pango/pangofc-font.c (pango_fc_font_get_coverage):
+	* pango/pangofc-fontmap.c (pango_fc_font_map_finalize):
+	Make sure fonts->fontmap is set to NULL when fontmap finalizes.
+
 2008-10-27  Richard Hult  <richard@imendio.com>
 
 	Bug 558107 – is_monospace always returns FALSE in pangoatsui

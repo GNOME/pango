@@ -484,7 +484,10 @@ pango_fc_font_map_finalize (GObject *object)
   PangoFcFontMap *fcfontmap = PANGO_FC_FONT_MAP (object);
   PangoFcFontMapPrivate *priv = fcfontmap->priv;
 
-  pango_fc_font_map_cache_clear (fcfontmap);
+
+  /* Shutdown, so we clear the fonts and mark them as shut down */
+  pango_fc_font_map_shutdown (fcfontmap);
+
   g_queue_free (priv->fontset_cache);
   g_hash_table_destroy (priv->coverage_hash);
 

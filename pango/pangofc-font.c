@@ -309,6 +309,9 @@ pango_fc_font_get_coverage (PangoFont     *font,
       return _pango_fc_font_map_fc_to_coverage (charset);
     }
 
+  if (!fcfont->fontmap)
+    return pango_coverage_new ();
+
   return _pango_fc_font_map_get_coverage (PANGO_FC_FONT_MAP (fcfont->fontmap),
 					  fcfont);
 }
