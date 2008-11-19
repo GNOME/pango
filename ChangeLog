@@ -1,5 +1,12 @@
 2008-11-19  Behdad Esfahbod  <behdad@gnome.org>
 
+	Bug 560730 – pango 1.22.2 build failure on Solaris 10, too many array
+	initializers in pango-language.c
+
+	* pango/pango-language.c: Don't use anonymous struct.
+
+2008-11-19  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/pango-ot-info.c (pango_ot_info_get_gdef),
 	(pango_ot_info_get_gsub), (pango_ot_info_get_gpos):
 	Write error code in capital hex.

@@ -481,13 +481,15 @@ typedef struct {
 /* Pure black magic, based on appendix of dsohowto.pdf */
 #define POOLSTRFIELD(line) POOLSTRFIELD1(line)
 #define POOLSTRFIELD1(line) str##line
-static const union _LangPool {
-  struct {
-    char str0[1];
+struct _LangPoolStruct {
+  char str0[1];
 #define LANGUAGE(id, source, sample) char POOLSTRFIELD(__LINE__)[sizeof(sample)];
 #include "pango-language-sample-table.h"
 #undef LANGUAGE
-  };
+};
+
+static const union _LangPool {
+  struct _LangPoolStruct lang_pool_struct;
   const char str[1];
 } lang_pool = { {
     "",
@@ -496,7 +498,7 @@ static const union _LangPool {
 #undef LANGUAGE
 } };
 static const LangInfo lang_texts[] = {
-#define LANGUAGE(id, source, sample) {G_STRINGIFY(id),	G_STRUCT_OFFSET(union _LangPool, POOLSTRFIELD(__LINE__))},
+#define LANGUAGE(id, source, sample) {G_STRINGIFY(id),	G_STRUCT_OFFSET(struct _LangPoolStruct, POOLSTRFIELD(__LINE__))},
 #include "pango-language-sample-table.h"
 #undef LANGUAGE
   /* One extra entry with no final comma, to make it C89-happy */
