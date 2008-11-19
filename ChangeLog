@@ -1,3 +1,9 @@
+2008-11-19  Behdad Esfahbod  <behdad@gnome.org>
+
+	* pango/pango-ot-info.c (pango_ot_info_get_gdef),
+	(pango_ot_info_get_gsub), (pango_ot_info_get_gpos):
+	Write error code in capital hex.
+
 2008-10-28  Behdad Esfahbod  <behdad@gnome.org>
 
 	* === Released 1.22.2 ===
