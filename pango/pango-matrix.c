@@ -192,7 +192,7 @@ pango_matrix_concat (PangoMatrix       *matrix,
   matrix->yx = tmp.yx * new_matrix->xx + tmp.yy * new_matrix->yx;
   matrix->yy = tmp.yx * new_matrix->xy + tmp.yy * new_matrix->yy;
   matrix->x0  = tmp.xx * new_matrix->x0 + tmp.xy * new_matrix->y0 + tmp.x0;
-  matrix->y0  = tmp.yx * new_matrix->y0 + tmp.yy * new_matrix->y0 + tmp.y0;
+  matrix->y0  = tmp.yx * new_matrix->x0 + tmp.yy * new_matrix->y0 + tmp.y0;
 }
 
 /**

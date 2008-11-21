@@ -1,3 +1,11 @@
+2008-11-21  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 561779 – incorrect calculations in pango_matrix_concat
+	implementation
+
+	* pango/pango-matrix.c (pango_matrix_concat): Fix bug in y0
+	computation.
+
 2008-11-19  Behdad Esfahbod  <behdad@gnome.org>
 
 	Bug 560730 – pango 1.22.2 build failure on Solaris 10, too many array
