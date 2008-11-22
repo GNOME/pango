@@ -102,10 +102,10 @@ thai_engine_break (PangoEngineLang *engine,
     }
 
   if (brk_pnts != brk_stack)
-      g_free (brk_pnts);
+    g_free (brk_pnts);
 
   if (tis_text != tis_stack)
-      g_free (tis_text);
+    g_free (tis_text);
 }
 
 static void

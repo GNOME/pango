@@ -1,3 +1,8 @@
+2008-11-22  Theppitak Karoonboonyanan  <thep@linux.thai.net>
+
+	* modules/thai/thai-lang.c (thai_engine_break):
+	Minor indentation fixes for previous commit.
+
 2008-11-22  Chris Wilson  <chris@chris-wilson.co.uk>
 
 	Bug 561740 – Use stack allocation for thai_engine_break
