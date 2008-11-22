@@ -1,3 +1,10 @@
+2008-11-22  Chris Wilson  <chris@chris-wilson.co.uk>
+
+	Bug 561740 – Use stack allocation for thai_engine_break
+
+	* modules/thai/thai-lang.c (utf8_to_tis), (thai_engine_break):
+	Small tweak to allocate small, temporary arrays on the stack.
+
 2008-11-21  Behdad Esfahbod  <behdad@gnome.org>
 
 	Bug 561779 – incorrect calculations in pango_matrix_concat

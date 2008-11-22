@@ -45,25 +45,22 @@ static PangoEngineInfo script_engines[] = {
   }
 };
 
+/*
+ * tis_text is assumed to be large enough to hold the converted string,
+ * i.e. it must be at least g_utf8_strlen(text, len)+1 bytes.
+ */
 static thchar_t *
-utf8_to_tis (const char *text, int len)
+utf8_to_tis (const char *text, int len, thchar_t *tis_text, int *tis_cnt)
 {
-  thchar_t   *tis_text;
   thchar_t   *tis_p;
   const char *text_p;
-
-  if (len < 0)
-    len = strlen (text);
-
-  tis_text = g_new (thchar_t, g_utf8_strlen (text, len) + 1);
-  if (!tis_text)
-    return NULL;
 
   tis_p = tis_text;
   for (text_p = text; text_p < text + len; text_p = g_utf8_next_char (text_p))
     *tis_p++ = th_uni2tis (g_utf8_get_char (text_p));
-  *tis_p = '\0';
+  *tis_p++ = '\0';
 
+  *tis_cnt = tis_p - tis_text;
   return tis_text;
 }
 
@@ -75,28 +72,40 @@ thai_engine_break (PangoEngineLang *engine,
 		   PangoLogAttr    *attrs,
 		   int              attrs_len)
 {
+  thchar_t tis_stack[512];
+  int brk_stack[512];
   thchar_t *tis_text;
+  int *brk_pnts;
+  int cnt;
 
-  tis_text = utf8_to_tis (text, len);
-  if (tis_text)
+  if (len < 0)
+    len = strlen (text);
+  cnt = g_utf8_strlen (text, len) + 1;
+
+  tis_text = tis_stack;
+  if (cnt > G_N_ELEMENTS (tis_stack))
+    tis_text = g_new (thchar_t, cnt);
+
+  utf8_to_tis (text, len, tis_text, &cnt);
+
+  brk_pnts = brk_stack;
+  if (cnt > G_N_ELEMENTS (brk_stack))
+    brk_pnts = g_new (int, cnt);
+
+  /* find line break positions */
+  len = th_brk (tis_text, brk_pnts, len);
+  for (cnt = 0; cnt < len; cnt++)
     {
-      int brk_len = strlen ((const char*)tis_text) + 1;
-      int *brk_pnts = g_new (int, brk_len);
-      int brk_n;
-      int i;
-
-      /* find line break positions */
-      brk_n = th_brk (tis_text, brk_pnts, brk_len);
-      for (i = 0; i < brk_n; i++)
-	{
-	  attrs[brk_pnts[i]].is_line_break = TRUE;
-	  attrs[brk_pnts[i]].is_word_start = TRUE;
-	  attrs[brk_pnts[i]].is_word_end = TRUE;
-	}
-
-      g_free (brk_pnts);
-      g_free (tis_text);
+      attrs[brk_pnts[cnt]].is_line_break = TRUE;
+      attrs[brk_pnts[cnt]].is_word_start = TRUE;
+      attrs[brk_pnts[cnt]].is_word_end = TRUE;
     }
+
+  if (brk_pnts != brk_stack)
+      g_free (brk_pnts);
+
+  if (tis_text != tis_stack)
+      g_free (tis_text);
 }
 
 static void
