@@ -1,3 +1,14 @@
+Overview of changes between 1.22.2 and 1.22.3
+=============================================
+- Minor bug fix with matrix operations
+- Fix build with older compilers
+- Bugs fixed in this release:
+	Bug 561779 – incorrect calculations in pango_matrix_concat
+		implementation
+	Bug 560730 – pango 1.22.2 build failure on Solaris 10, too many array
+		initializers in pango-language.c
+	Bug 561740 – Use stack allocation for thai_engine_break
+
 Overview of changes between 1.22.1 and 1.22.2
 =============================================
 - Fix crasher when a PangoFcFontMap was freed before its fonts.

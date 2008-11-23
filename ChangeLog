@@ -1,3 +1,11 @@
+2008-11-23  Behdad Esfahbod  <behdad@gnome.org>
+
+	* === Released 1.22.3 ===
+
+	* configure.in: Version 1.22.3
+
+	* NEWS: Updated.
+
 2008-11-22  Theppitak Karoonboonyanan  <thep@linux.thai.net>
 
 	* modules/thai/thai-lang.c (thai_engine_break):
