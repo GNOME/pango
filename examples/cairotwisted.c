@@ -216,7 +216,7 @@ static parametrization_t *
 parametrize_path (cairo_path_t *path)
 {
   int i;
-  cairo_path_data_t *data, current_point;
+  cairo_path_data_t *data, last_move_to, current_point;
   parametrization_t *parametrization;
 
   parametrization = malloc (path->num_data * sizeof (parametrization[0]));
@@ -226,8 +226,13 @@ parametrize_path (cairo_path_t *path)
     parametrization[i] = 0.0;
     switch (data->header.type) {
     case CAIRO_PATH_MOVE_TO:
+	last_move_to = data[1];
 	current_point = data[1];
 	break;
+    case CAIRO_PATH_CLOSE_PATH:
+	/* Make it look like it's a line_to to last_move_to */
+	data = (&last_move_to) - 1;
+	/* fall through */
     case CAIRO_PATH_LINE_TO:
 	parametrization[i] = two_points_distance (&current_point, &data[1]);
 	current_point = data[1];
@@ -244,8 +249,6 @@ parametrize_path (cairo_path_t *path)
 					   data[3].point.x, data[3].point.y);
 
 	current_point = data[3];
-	break;
-    case CAIRO_PATH_CLOSE_PATH:
 	break;
     default:
 	g_assert_not_reached ();
@@ -320,7 +323,7 @@ point_on_path (parametrized_path_t *param,
 {
   int i;
   double ratio, the_y = *y, the_x = *x, dx, dy;
-  cairo_path_data_t *data, current_point;
+  cairo_path_data_t *data, last_move_to, current_point;
   cairo_path_t *path = param->path;
   parametrization_t *parametrization = param->parametrization;
 
@@ -333,6 +336,7 @@ point_on_path (parametrized_path_t *param,
     switch (data->header.type) {
     case CAIRO_PATH_MOVE_TO:
 	current_point = data[1];
+        last_move_to = data[1];
 	break;
     case CAIRO_PATH_LINE_TO:
 	current_point = data[1];
@@ -352,6 +356,10 @@ point_on_path (parametrized_path_t *param,
 
   case CAIRO_PATH_MOVE_TO:
       break;
+  case CAIRO_PATH_CLOSE_PATH:
+      /* Make it look like it's a line_to to last_move_to */
+      data = (&last_move_to) - 1;
+      /* fall through */
   case CAIRO_PATH_LINE_TO:
       {
 	ratio = the_x / parametrization[i];
@@ -423,8 +431,6 @@ point_on_path (parametrized_path_t *param,
 	*x += -dy * ratio;
 	*y +=  dx * ratio;
       }
-      break;
-  case CAIRO_PATH_CLOSE_PATH:
       break;
   default:
       g_assert_not_reached ();

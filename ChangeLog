@@ -1,3 +1,8 @@
+2008-11-26  Behdad Esfahbod  <behdad@gnome.org>
+
+	* examples/cairotwisted.c (parametrize_path), (point_on_path):
+	Handle close_path correctly.
+
 2008-11-23  Behdad Esfahbod  <behdad@gnome.org>
 
 	* === Released 1.22.3 ===
