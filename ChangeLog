@@ -1,3 +1,16 @@
+2008-11-28  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 562574 – Pangocariowin32 is leaking every cairo font it ever
+	creates
+
+	* pango/pangocairo-atsuifont.c (pango_cairo_atsui_font_finalize):
+	* pango/pangocairo-win32font.c (pango_cairo_win32_font_finalize):
+	Finalize shared pangocairo font resources.  Oops!
+
+	* pango/pangocairo-font.c (_pango_cairo_font_private_finalize):
+	Protect against multiple calls to finalize.  This is practiced by the
+	pangocairo-fcfont when a font is shutdown and then finalized.
+
 2008-11-26  Behdad Esfahbod  <behdad@gnome.org>
 
 	* examples/cairotwisted.c (parametrize_path), (point_on_path):

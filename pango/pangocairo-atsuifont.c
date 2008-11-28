@@ -174,6 +174,10 @@ pango_cairo_atsui_font_describe_absolute (PangoFont *font)
 static void
 pango_cairo_atsui_font_finalize (GObject *object)
 {
+  PangoCairoATSUIFont *cafont = (PangoCairoATSUIFont *) object;
+
+  _pango_cairo_font_private_finalize (&cafont->cf_priv);
+
   G_OBJECT_CLASS (pango_cairo_atsui_font_parent_class)->finalize (object);
 }
 
@@ -191,7 +195,7 @@ pango_cairo_atsui_font_class_init (PangoCairoATSUIFontClass *class)
 }
 
 static void
-pango_cairo_atsui_font_init (PangoCairoATSUIFont *cafont)
+pango_cairo_atsui_font_init (PangoCairoATSUIFont *cafont G_GNUC_UNUSED)
 {
 }
 

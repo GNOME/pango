@@ -164,6 +164,10 @@ pango_cairo_win32_font_create_metrics_for_context (PangoCairoFont *font,
 static void
 pango_cairo_win32_font_finalize (GObject *object)
 {
+  PangoCairoWin32Font *cwfont = (PangoCairoWin32Font *) object;
+
+  _pango_cairo_font_private_finalize (&cwfont->cf_priv);
+
   G_OBJECT_CLASS (pango_cairo_win32_font_parent_class)->finalize (object);
 }
 
@@ -225,7 +229,7 @@ pango_cairo_win32_font_class_init (PangoCairoWin32FontClass *class)
 }
 
 static void
-pango_cairo_win32_font_init (PangoCairoWin32Font *cwfont)
+pango_cairo_win32_font_init (PangoCairoWin32Font *cwfont G_GNUC_UNUSED)
 {
 }
 

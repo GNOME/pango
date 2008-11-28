@@ -560,14 +560,18 @@ _pango_cairo_font_private_finalize (PangoCairoFontPrivate *cf_priv)
 
   if (cf_priv->scaled_font)
     cairo_scaled_font_destroy (cf_priv->scaled_font);
+  cf_priv->scaled_font = NULL;
 
   _pango_cairo_font_hex_box_info_destroy (cf_priv->hbi);
+  cf_priv->hbi = NULL;
 
   if (cf_priv->glyph_extents_cache)
     g_free (cf_priv->glyph_extents_cache);
+  cf_priv->glyph_extents_cache = NULL;
 
   g_slist_foreach (cf_priv->metrics_by_lang, (GFunc)free_metrics_info, NULL);
   g_slist_free (cf_priv->metrics_by_lang);
+  cf_priv->metrics_by_lang = NULL;
 }
 
 gboolean

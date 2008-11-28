@@ -88,7 +88,7 @@ G_DEFINE_TYPE_WITH_CODE (PangoCairoFcFont, pango_cairo_fc_font, PANGO_TYPE_FC_FO
 static void
 pango_cairo_fc_font_finalize (GObject *object)
 {
-  PangoCairoFcFont *cffont = (PangoCairoFcFont *) (object);
+  PangoCairoFcFont *cffont = (PangoCairoFcFont *) object;
 
   _pango_cairo_font_private_finalize (&cffont->cf_priv);
 
@@ -162,7 +162,7 @@ pango_cairo_fc_font_class_init (PangoCairoFcFontClass *class)
 }
 
 static void
-pango_cairo_fc_font_init (PangoCairoFcFont *cffont)
+pango_cairo_fc_font_init (PangoCairoFcFont *cffont G_GNUC_UNUSED)
 {
 }
 
