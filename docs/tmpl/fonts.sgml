@@ -441,7 +441,10 @@ of their meaning.
 @descent: the distance from the baseline to the lowest point of the glyphs of
 	 the font. This is positive in practically all fonts.
 @approximate_char_width: approximate average width of the regular glyphs of
-         the font.
+         the font.  Note that for this calculation, East Asian characters
+	 (those passing g_unichar_iswide()) are counted as double-width.
+	 This produces a more uniform value for this measure across languages
+	 and results in more uniform and more expected UI sizes.
 @approximate_digit_width: approximate average width of the glyphs for digits
          of the font.
 @underline_position: position of the underline. This is normally negative.

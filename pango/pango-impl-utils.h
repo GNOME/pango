@@ -23,6 +23,7 @@
 #ifndef __PANGO_IMPL_UTILS_H__
 #define __PANGO_IMPL_UTILS_H__
 
+#include <glib.h>
 #include <glib-object.h>
 #include <pango/pango.h>
 
@@ -91,6 +92,36 @@ void _pango_shape_get_extents (gint              n_chars,
 			       PangoRectangle   *shape_logical,
 			       PangoRectangle   *ink_rect,
 			       PangoRectangle   *logical_rect);
+
+
+/* We define these functions static here because we don't want to add public API
+ * for them (if anything, it belongs to glib, but glib found it trivial enough
+ * not to add API for).  At some point metrics calculations will be
+ * centralized and this mess can be minimized.  Or so I hope.
+ */
+
+static inline G_GNUC_UNUSED int
+pango_unichar_width (gunichar c)
+{
+  return G_UNLIKELY (g_unichar_iszerowidth (c)) ? 0 :
+	   G_UNLIKELY (g_unichar_iswide (c)) ? 2 : 1;
+}
+
+static G_GNUC_UNUSED glong
+pango_utf8_strwidth (const gchar *p)
+{
+  glong len = 0;
+  g_return_val_if_fail (p != NULL, 0);
+
+  while (*p)
+    {
+      len += pango_unichar_width (g_utf8_get_char (p));
+      p = g_utf8_next_char (p);
+    }
+
+  return len;
+}
+
 
 G_END_DECLS
 

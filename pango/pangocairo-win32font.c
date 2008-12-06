@@ -150,7 +150,7 @@ pango_cairo_win32_font_create_metrics_for_context (PangoCairoFont *font,
   pango_layout_set_text (layout, sample_str, -1);
   pango_layout_get_extents (layout, NULL, &extents);
 
-  metrics->approximate_char_width = extents.width / g_utf8_strlen (sample_str, -1);
+  metrics->approximate_char_width = extents.width / pango_utf8_strwidth (sample_str);
 
   pango_layout_set_text (layout, "0123456789", -1);
   metrics->approximate_digit_width = max_glyph_width (layout);

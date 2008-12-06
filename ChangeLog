@@ -1,3 +1,21 @@
+2008-12-05  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 563356 – The input area of firefox and the blank width after text
+	in gnome-menu was stretched too wide, under pango-1.22.3
+
+	* docs/tmpl/fonts.sgml:
+	* pango/pango-impl-utils.h:
+	* pango/pangocairo-atsuifont.c
+	(pango_cairo_atsui_font_create_metrics_for_context):
+	* pango/pangocairo-win32font.c
+	(pango_cairo_win32_font_create_metrics_for_context):
+	* pango/pangofc-font.c (pango_fc_font_create_metrics_for_context):
+	For approximate_char_width calculation take each char's width into
+	account.  That is, do a weighted average instead of uniform average.
+	g_unichar_iszerowidth() chars count as 0, g_unichar_iswide() chars
+	count 2, and the rest count as 1.  Pretty much wcwidth() behavior.
+	See bug report for rationale.
+
 2008-11-28  Behdad Esfahbod  <behdad@gnome.org>
 
 	Bug 562574 – Pangocariowin32 is leaking every cairo font it ever
