@@ -111,6 +111,7 @@ done:
 
   if (G_UNLIKELY (cf_priv->scaled_font == NULL || cairo_scaled_font_status (cf_priv->scaled_font) != CAIRO_STATUS_SUCCESS))
     {
+      cairo_scaled_font_t *scaled_font = cf_priv->scaled_font;
       PangoFont *font = PANGO_FONT (cf_priv->cfont);
       static GQuark warned_quark = 0;
       if (!warned_quark)
@@ -128,6 +129,18 @@ done:
 	  g_warning ("failed to create cairo %s, expect ugly output. the offending font is '%s'",
 		     font_face ? "scaled font" : "font face",
 		     s);
+
+	  if (!font_face)
+		g_warning ("font_face is NULL");
+	  else
+		g_warning ("font_font status is: %s",
+			   cairo_status_to_string (cairo_font_face_status (font_face)));
+
+	  if (!scaled_font)
+		g_warning ("scaled_font is NULL");
+	  else
+		g_warning ("scaled_font status is: %s",
+			   cairo_status_to_string (cairo_scaled_font_status (scaled_font)));
 
 	  g_free (s);
 

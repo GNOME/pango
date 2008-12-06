@@ -1,3 +1,9 @@
+2008-12-06  Behdad Esfahbod  <behdad@gnome.org>
+
+	* pango/pangocairo-font.c
+	(_pango_cairo_font_private_get_scaled_font):
+	Add more debug info if creating scaled font failed.
+
 2008-12-05  Behdad Esfahbod  <behdad@gnome.org>
 
 	Bug 563356 – The input area of firefox and the blank width after text
