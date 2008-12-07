@@ -762,7 +762,7 @@ update_attr_iterator (ItemizeState *state)
   state->gravity = attr == NULL ? PANGO_GRAVITY_AUTO : ((PangoAttrInt *)attr)->value;
 
   attr = find_attribute (state->extra_attrs, PANGO_ATTR_GRAVITY_HINT);
-  state->gravity_hint = attr == NULL ? state->context->gravity_hint : ((PangoAttrInt *)attr)->value;
+  state->gravity_hint = attr == NULL ? state->context->gravity_hint : (PangoGravityHint)((PangoAttrInt *)attr)->value;
 
   state->changed |= FONT_CHANGED;
   if (state->lang != old_lang)
@@ -1058,7 +1058,7 @@ typedef struct {
 } GetShaperFontInfo;
 
 static gboolean
-get_shaper_and_font_foreach (PangoFontset *fontset,
+get_shaper_and_font_foreach (PangoFontset *fontset G_GNUC_UNUSED,
 			     PangoFont    *font,
 			     gpointer      data)
 {
@@ -1622,13 +1622,13 @@ update_metrics_from_items (PangoFontMetrics *metrics,
 /**
  * pango_context_get_metrics:
  * @context: a #PangoContext
- * @desc: a #PangoFontDescription structure
+ * @desc: a #PangoFontDescription structure.  %NULL means that the font
+ * 	      description from the context will be used.
  * @language: language tag used to determine which script to get the metrics
  *            for. %NULL means that the language tag from the context will
  *            be used. If no language tag is set on the context, metrics
- *            large enough to cover a range of languages will be returned.
- *            The process of determining such metrics is slow, so it is best
- *            to always make sure some real language tag will be used.
+ *            for the default language (as determined by
+ *            pango_language_get_default()) will be returned.
  *
  * Get overall metric information for a particular font
  * description.  Since the metrics may be substantially different for
@@ -1657,7 +1657,9 @@ pango_context_get_metrics (PangoContext                 *context,
   GList *items;
 
   g_return_val_if_fail (PANGO_IS_CONTEXT (context), NULL);
-  g_return_val_if_fail (desc != NULL, NULL);
+
+  if (!desc)
+    desc = context->font_desc;
 
   if (!language)
     language = context->language;
