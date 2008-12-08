@@ -800,6 +800,7 @@ pango_fc_make_pattern (const  PangoFontDescription *description,
 		       double                       dpi)
 {
   FcPattern *pattern;
+  const char *prgname;
   int slant;
   int weight;
   PangoGravity gravity;
@@ -810,6 +811,7 @@ pango_fc_make_pattern (const  PangoFontDescription *description,
   int width;
 #endif
 
+  prgname = g_get_prgname ();
   slant = pango_fc_convert_slant_to_fc (pango_font_description_get_style (description));
   weight = pango_fc_convert_weight_to_fc (pango_font_description_get_weight (description));
 #ifdef FC_WIDTH
@@ -856,6 +858,9 @@ pango_fc_make_pattern (const  PangoFontDescription *description,
       GEnumValue *value = g_enum_get_value (get_gravity_class (), gravity);
       FcPatternAddString (pattern, PANGO_FC_GRAVITY, value->value_nick);
     }
+
+  if (prgname)
+    FcPatternAddString (pattern, PANGO_FC_PRGNAME, prgname);
 
   return pattern;
 }

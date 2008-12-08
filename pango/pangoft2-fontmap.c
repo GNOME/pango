@@ -311,7 +311,7 @@ _pango_ft2_font_map_get_library (PangoFontMap *fontmap)
  *
  * Gets the singleton PangoFT2Renderer for this fontmap.
  *
- * Return value:
+ * Return value: the renderer.
  **/
 PangoRenderer *
 _pango_ft2_font_map_get_renderer (PangoFT2FontMap *ft2fontmap)

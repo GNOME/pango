@@ -337,7 +337,7 @@ pango_xft_get_context (Display *display,
  *
  * Gets the singleton #PangoXFTRenderer for this fontmap.
  *
- * Return value:
+ * Return value: the renderer.
  **/
 PangoRenderer *
 _pango_xft_font_map_get_renderer (PangoXftFontMap *xftfontmap)

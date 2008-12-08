@@ -922,6 +922,7 @@ pango_fc_font_map_shutdown
 pango_fc_font_description_from_pattern
 PANGO_FC_GRAVITY
 PANGO_FC_VERSION
+PANGO_FC_PRGNAME
 <SUBSECTION Standard>
 PANGO_FC_FONT_MAP
 PANGO_IS_FC_FONT_MAP
