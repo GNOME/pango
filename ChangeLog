@@ -1,5 +1,13 @@
 2008-12-07  Behdad Esfahbod  <behdad@gnome.org>
 
+	Bug 499624 – Spaces around commas in PangoFontDescription family name
+	should be trimmed
+
+	* pango/pangofc-fontmap.c (pango_fc_make_pattern): Trim family strings
+	before adding to pattern.
+
+2008-12-07  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 563557 – set g_get_prgname() in fc pattern
 
 	* docs/pango-sections.txt:
