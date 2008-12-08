@@ -34,6 +34,8 @@ G_BEGIN_DECLS
 
 /* Module API */
 
+#include <gmodule.h>
+
 #define PANGO_RENDER_TYPE_NONE "PangoRenderNone"
 
 #define PANGO_TYPE_ENGINE              (pango_engine_get_type ())
@@ -354,7 +356,7 @@ prefix ## _register_type (GTypeModule *module)				  \
 			    PANGO_TYPE_ENGINE_SHAPE)
 
 /* Macro used for possibly builtin Pango modules. Not useful
- * for externally build modules. If we are compiling a module standaline,
+ * for externally build modules. If we are compiling a module standalone,
  * then we name the entry points script_engine_list, etc. But if we
  * are compiling it for inclusion directly in Pango, then we need them to
  * to have distinct names for this module, so we prepend a prefix.
@@ -369,7 +371,7 @@ prefix ## _register_type (GTypeModule *module)				  \
 #define _PANGO_MODULE_ENTRY2(prefix,func) _PANGO_MODULE_ENTRY3(prefix,func)
 #define _PANGO_MODULE_ENTRY3(prefix,func) prefix##_script_engine_##func
 #else
-#define PANGO_MODULE_ENTRY(func) script_engine_##func
+#define PANGO_MODULE_ENTRY(func) G_MODULE_EXPORT script_engine_##func
 #endif
 
 #endif /* PANGO_ENABLE_ENGINE */

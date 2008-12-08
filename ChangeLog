@@ -1,5 +1,9 @@
 2008-12-07  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango/pango-engine.h: Add G_MODULE_EXPORT annotation for modules.
+
+2008-12-07  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/pango-context.c (pango_context_get_metrics):
 	Fix docs re NULL language.  Also allow NULL desc.
 
