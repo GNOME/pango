@@ -1,5 +1,12 @@
 2008-12-07  Behdad Esfahbod  <behdad@gnome.org>
 
+	Bug 499626 – Space should be optional after comma in
+	PangoFontDescription input string
+
+	* pango/fonts.c (getword): Don't require space after comma.
+
+2008-12-07  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 499624 – Spaces around commas in PangoFontDescription family name
 	should be trimmed
 

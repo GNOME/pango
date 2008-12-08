@@ -967,7 +967,7 @@ getword (const char *str, const char *last, size_t *wordlen)
     last--;
 
   result = last;
-  while (result > str && !g_ascii_isspace (*(result - 1)))
+  while (result > str && !g_ascii_isspace (*(result - 1)) && *(result - 1) != ',')
     result--;
 
   *wordlen = last - result;
