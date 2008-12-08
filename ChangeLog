@@ -3,6 +3,16 @@
 	Bug 499624 – Spaces around commas in PangoFontDescription family name
 	should be trimmed
 
+	* pango/fonts.c (pango_font_description_from_string):
+	* pango/pangofc-fontmap.c (pango_fc_make_pattern):
+	Do it in pango_font_description_from_string() instead of pangofc
+	backend.
+
+2008-12-07  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 499624 – Spaces around commas in PangoFontDescription family name
+	should be trimmed
+
 	* pango/pangofc-fontmap.c (pango_fc_make_pattern): Trim family strings
 	before adding to pattern.
 

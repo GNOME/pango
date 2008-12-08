@@ -845,11 +845,8 @@ pango_fc_make_pattern (const  PangoFontDescription *description,
 
   families = g_strsplit (pango_font_description_get_family (description), ",", -1);
 
-  for (i = 0; families[i]; i++) {
-    char *family = pango_trim_string (families[i]);
-    FcPatternAddString (pattern, FC_FAMILY, family);
-    g_free (family);
-  }
+  for (i = 0; families[i]; i++)
+    FcPatternAddString (pattern, FC_FAMILY, families[i]);
 
   g_strfreev (families);
 

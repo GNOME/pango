@@ -1084,7 +1084,23 @@ pango_font_description_from_string (const char *str)
 
   if (str != last)
     {
+      int i;
+      char **families;
+
       desc->family_name = g_strndup (str, last - str);
+
+      /* Now sanitize it to trim space from around individual family names.
+       * bug #499624 */
+
+      families = g_strsplit (desc->family_name, ",", -1);
+
+      for (i = 0; families[i]; i++)
+	g_strstrip (families[i]);
+
+      g_free (desc->family_name);
+      desc->family_name = g_strjoinv (",", families);
+      g_strfreev (families);
+
       desc->mask |= PANGO_FONT_MASK_FAMILY;
     }
 
