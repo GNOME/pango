@@ -76,7 +76,7 @@ pango_xft_font_class_init (PangoXftFontClass *class)
 }
 
 static void
-pango_xft_font_init (PangoXftFont *xftfont)
+pango_xft_font_init (PangoXftFont *xftfont G_GNUC_UNUSED)
 {
 }
 
@@ -370,12 +370,6 @@ load_fallback_font (PangoXftFont *xfont)
 			  FC_FAMILY, FcTypeString, "sans",
 			  size_is_absolute ? FC_PIXEL_SIZE : FC_SIZE, FcTypeDouble, size,
 			  NULL);
-
-  if (!xft_font)
-    {
-      g_warning ("Cannot open fallback font, nothing to do");
-      exit (1);
-    }
 
   xfont->xft_font = xft_font;
 }

@@ -1,5 +1,10 @@
 2008-12-09  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango/pangoxft-font.c (pango_xft_font_init),
+	(load_fallback_font): Don't call exit().  Let us crash.
+
+2008-12-09  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 563803 – pango_renderer_finalize fails to call parent finalize
 
 	* pango/pango-renderer.c (pango_renderer_class_init),
