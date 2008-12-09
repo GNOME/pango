@@ -1,3 +1,15 @@
+2008-12-09  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 563803 – pango_renderer_finalize fails to call parent finalize
+
+	* pango/pango-renderer.c (pango_renderer_class_init),
+	(pango_renderer_finalize): Call parent finalize.
+	
+	* pango/pango-renderer.c (add_strikethrough),
+	(pango_renderer_default_draw_glyph_item),
+	(pango_renderer_default_draw_error_underline):
+	Clean up a bit.
+
 2008-12-07  Behdad Esfahbod  <behdad@gnome.org>
 
 	Bug 499626 – Space should be optional after comma in

@@ -106,10 +106,14 @@ to_device (PangoMatrix *matrix,
 
 G_DEFINE_ABSTRACT_TYPE (PangoRenderer, pango_renderer, G_TYPE_OBJECT)
 
+static GObjectClass *parent_class;
+
 static void
 pango_renderer_class_init (PangoRendererClass *klass)
 {
   GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
+
+  parent_class = G_OBJECT_CLASS (g_type_class_peek_parent (klass));
 
   klass->draw_glyphs = pango_renderer_default_draw_glyphs;
   klass->draw_glyph_item = pango_renderer_default_draw_glyph_item;
@@ -138,6 +142,8 @@ pango_renderer_finalize (GObject *gobject)
 
   if (renderer->matrix)
     pango_matrix_free (renderer->matrix);
+
+  parent_class->finalize (gobject);
 }
 
 /**
@@ -348,7 +354,7 @@ add_strikethrough (PangoRenderer    *renderer,
 		   PangoFontMetrics *metrics,
 		   int               base_x,
 		   int               base_y,
-		   PangoRectangle   *ink_rect,
+		   PangoRectangle   *ink_rect G_GNUC_UNUSED,
 		   PangoRectangle   *logical_rect)
 {
   PangoRectangle *current_rect = &state->strikethrough_rect;
@@ -707,7 +713,7 @@ pango_renderer_draw_glyph_item (PangoRenderer    *renderer,
 
 static void
 pango_renderer_default_draw_glyph_item (PangoRenderer    *renderer,
-					const char       *text,
+					const char       *text G_GNUC_UNUSED,
 					PangoGlyphItem   *glyph_item,
 					int               x,
 					int               y)
@@ -967,6 +973,8 @@ pango_renderer_default_draw_error_underline (PangoRenderer *renderer,
   int width_units = (width + unit_width / 2) / unit_width;
   static const PangoMatrix identity = PANGO_MATRIX_INIT;
   const PangoMatrix *matrix;
+  double dx, dx0, dy0;
+  PangoMatrix total;
 
   x += (width - width_units * unit_width) / 2;
   width = width_units * unit_width;
@@ -976,10 +984,13 @@ pango_renderer_default_draw_error_underline (PangoRenderer *renderer,
   else
     matrix = &identity;
 
+  get_total_matrix (&total, matrix, x, y, square);
+  dx = unit_width * 2;
+  dx0 = (matrix->xx * dx) / PANGO_SCALE;
+  dy0 = (matrix->yx * dx) / PANGO_SCALE;
+
   while (TRUE)
     {
-      PangoMatrix total;
-      get_total_matrix (&total, matrix, x, y, square);
 
       draw_rectangle (renderer, &total, PANGO_RENDER_PART_UNDERLINE, /* A */
 		      0,                      0,
@@ -991,17 +1002,18 @@ pango_renderer_default_draw_error_underline (PangoRenderer *renderer,
 			  HEIGHT_SQUARES * 2 - 2, - (HEIGHT_SQUARES * 2 - 3),
 			  1,                      HEIGHT_SQUARES * 2 - 3);
 	  width_units -= 2;
-	  x += unit_width * 2;
-	}
-      else if (width_units == 2)
-	{
-	  draw_rectangle (renderer, &total, PANGO_RENDER_PART_UNDERLINE, /* C */
-			  HEIGHT_SQUARES * 2 - 2, - (HEIGHT_SQUARES * 2 - 2),
-			  1,                      HEIGHT_SQUARES * 2 - 2);
-	  break;
+
+	  total.x0 += dx0;
+	  total.y0 += dy0;
 	}
       else
 	break;
+    }
+  if (width_units == 2)
+    {
+      draw_rectangle (renderer, &total, PANGO_RENDER_PART_UNDERLINE, /* C */
+		      HEIGHT_SQUARES * 2 - 2, - (HEIGHT_SQUARES * 2 - 2),
+		      1,                      HEIGHT_SQUARES * 2 - 2);
     }
 }
 
