@@ -10,7 +10,7 @@
 markup language to encode text with attributes</refpurpose>
 </refnamediv>
 
-<refsect1>
+<refsect1 id="PangoMarkupFormatLanguage">
 <title>Pango Text Attribute Markup Language</title>
 
 <para>

@@ -17,7 +17,7 @@
 </cmdsynopsis>
 </refsynopsisdiv>
 
-<refsect1><title>Description</title>
+<refsect1 id="Description"><title>Description</title>
 <para>
 <command>pango-querymodules</command> collects information about loadable 
 modules for Pango and writes it to <filename>stdout</filename>. 
@@ -31,7 +31,7 @@ may be absolute or relative paths.
 </para>
 </refsect1>
 
-<refsect1><title>Environment</title>
+<refsect1 id="Environment"><title>Environment</title>
 <para>
 The Pango module path is specified by the key
 <literal>Pango/ModulesPath</literal> in the Pango config database, which is
@@ -42,7 +42,7 @@ read from
 </para>
 </refsect1>
 
-<refsect1><title>Bugs</title>
+<refsect1 id="Bugs"><title>Bugs</title>
 <para>
 None known yet.
 </para>

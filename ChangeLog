@@ -1,3 +1,11 @@
+2008-12-14  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 563898 – Generated output is not deterministic
+
+	* docs/pango-querymodules.xml:
+	* docs/pango_markup.sgml:
+	Add section ids, such that generated HTML is deterministic.
+
 2008-12-09  Behdad Esfahbod  <behdad@gnome.org>
 
 	* pango/pangoxft-font.c (pango_xft_font_init),
