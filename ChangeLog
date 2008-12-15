@@ -1,3 +1,10 @@
+2008-12-15  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 564644 – Not complete description of the
+	pango_font_description_better_match function
+
+	* pango/fonts.c: Improve docs.
+
 2008-12-14  Behdad Esfahbod  <behdad@gnome.org>
 
 	Bug 563898 – Generated output is not deterministic

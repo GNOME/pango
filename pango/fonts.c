@@ -627,7 +627,9 @@ compute_distance (const PangoFontDescription *a,
  * Determines if the style attributes of @new_match are a closer match
  * for @desc than @old_match, or if @old_match is %NULL, determines if
  * @new_match is a match at all. Approximate matching is done for
- * weight and style; other attributes must match exactly.
+ * weight and style; other style attributes must match exactly.
+ * Style attributes are all attributes other than family and size-related
+ * attributes.
  *
  * Return value: %TRUE if @new_match is a better match
  **/
