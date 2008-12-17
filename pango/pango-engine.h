@@ -371,7 +371,7 @@ prefix ## _register_type (GTypeModule *module)				  \
 #define _PANGO_MODULE_ENTRY2(prefix,func) _PANGO_MODULE_ENTRY3(prefix,func)
 #define _PANGO_MODULE_ENTRY3(prefix,func) prefix##_script_engine_##func
 #else
-#define PANGO_MODULE_ENTRY(func) G_MODULE_EXPORT script_engine_##func
+#define PANGO_MODULE_ENTRY(func) script_engine_##func
 #endif
 
 #endif /* PANGO_ENABLE_ENGINE */

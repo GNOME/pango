@@ -1,3 +1,10 @@
+2008-12-17  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 564877 – pango-engine.h: PANGO_MODULE_PREFIX and G_MODULE_EXPORT
+
+	* pango/pango-engine.h: Don't add G_MODULE_EXPORT.  This
+	roles back a change introduced in 1.22.4.
+
 2008-12-15  Behdad Esfahbod  <behdad@gnome.org>
 
 	* === Released 1.22.4 ===
