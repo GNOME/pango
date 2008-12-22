@@ -1,3 +1,10 @@
+2008-12-22  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 565379 – pango_font_description_better_match some style attributes
+	of old_match are not checked
+
+	* pango/fonts.c: Improve docs.
+
 2008-12-17  Behdad Esfahbod  <behdad@gnome.org>
 
 	Bug 564877 – pango-engine.h: PANGO_MODULE_PREFIX and G_MODULE_EXPORT

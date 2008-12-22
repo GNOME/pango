@@ -634,6 +634,8 @@ compute_distance (const PangoFontDescription *a,
  * and PANGO_STYLE_ITALIC as matches, but not as good a match as when the
  * styles are equal.
  *
+ * Note that @old_match should match @desc.
+ *
  * Return value: %TRUE if @new_match is a better match
  **/
 gboolean
