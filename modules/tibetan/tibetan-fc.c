@@ -412,7 +412,7 @@ get_index (PangoFcFont *fc_font, gunichar wc)
 
 
 static void
-tibetan_engine_shape (PangoEngineShape *engine,
+tibetan_engine_shape (PangoEngineShape *engine G_GNUC_UNUSED,
 		    PangoFont        *font,
 		    const char       *text,
 		    int               length,

@@ -127,11 +127,9 @@ add_glyph (PangoGlyphString *glyphs,
 }
 
 static void
-add_cluster(PangoFont        *font,
-	    PangoGlyphString *glyphs,
+add_cluster(PangoGlyphString *glyphs,
 	    int              cluster_size,
 	    int              cluster_start,
-	    int              glyph_num[],
 	    PangoGlyph       glyph[],
 	    int              width[],
 	    int              x_offset[],
@@ -147,7 +145,7 @@ add_cluster(PangoFont        *font,
 }
 
 static void
-fallback_shape (PangoEngineShape *engine,
+fallback_shape (PangoEngineShape *engine G_GNUC_UNUSED,
 		PangoFont        *font,
 		const char       *text,
 		gint              length,
@@ -192,11 +190,9 @@ fallback_shape (PangoEngineShape *engine,
 					x_offset,
 					y_offset);
 
-      add_cluster(font,
-		  glyphs,
+      add_cluster(glyphs,
 		  cluster_size,
 		  log_cluster - text,
-		  glyph_num,
 		  glyph,
 		  glyph_width,
 		  x_offset,

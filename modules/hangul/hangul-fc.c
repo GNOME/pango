@@ -396,11 +396,11 @@ render_basic (PangoFont *font, gunichar wc,
 }
 
 static void
-hangul_engine_shape (PangoEngineShape *engine,
+hangul_engine_shape (PangoEngineShape *engine G_GNUC_UNUSED,
 		     PangoFont        *font,
 		     const char       *text,
 		     gint              length,
-		     const PangoAnalysis *analysis,
+		     const PangoAnalysis *analysis G_GNUC_UNUSED,
 		     PangoGlyphString *glyphs)
 {
   int n_chars = g_utf8_strlen (text, length);

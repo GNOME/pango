@@ -239,7 +239,7 @@ find_char (CharCache *cache, PangoFont *font, gunichar wc, const char *input)
 	    }
 	}
 
-      mask_table->n_subfonts = pango_x_list_subfonts (font, (char**)charset_names, n_charsets, &mask_table->subfonts, &subfont_charsets);
+      mask_table->n_subfonts = pango_x_list_subfonts (font, (char**)(void*)charset_names, n_charsets, &mask_table->subfonts, &subfont_charsets);
 
       mask_table->charsets = g_new (Charset *, mask_table->n_subfonts);
       for (i=0; i<mask_table->n_subfonts; i++)
@@ -302,7 +302,7 @@ set_glyph (PangoFont *font, PangoGlyphString *glyphs, int i, int offset, PangoGl
 }
 
 static PangoGlyph
-conv_8bit (CharCache  *cache,
+conv_8bit (CharCache  *cache G_GNUC_UNUSED,
 	   GIConv      cd,
 	   const char *input)
 {
@@ -321,7 +321,7 @@ conv_8bit (CharCache  *cache,
 }
 
 static PangoGlyph
-conv_eucjp (CharCache  *cache,
+conv_eucjp (CharCache  *cache G_GNUC_UNUSED,
 	    GIConv      cd,
 	    const char *input)
 {
@@ -347,7 +347,7 @@ conv_eucjp (CharCache  *cache,
 }
 
 static PangoGlyph
-conv_16bit (CharCache  *cache,
+conv_16bit (CharCache  *cache G_GNUC_UNUSED,
 	    GIConv      cd,
 	    const char *input)
 {
@@ -369,7 +369,7 @@ conv_16bit (CharCache  *cache,
 }
 
 static PangoGlyph
-conv_16bit_MSB_on (CharCache  *cache,
+conv_16bit_MSB_on (CharCache  *cache G_GNUC_UNUSED,
 		   GIConv      cd,
 		   const char *input)
 {
@@ -391,7 +391,7 @@ conv_16bit_MSB_on (CharCache  *cache,
 }
 
 static PangoGlyph
-conv_gb18030_1 (CharCache  *cache,
+conv_gb18030_1 (CharCache  *cache G_GNUC_UNUSED,
 		GIConv      cd,
 		const char *input)
 {
@@ -414,7 +414,7 @@ conv_gb18030_1 (CharCache  *cache,
 }
 
 static PangoGlyph
-conv_euctw (CharCache  *cache,
+conv_euctw (CharCache  *cache G_GNUC_UNUSED,
 	    GIConv      cd,
 	    const char *input)
 {
@@ -439,8 +439,8 @@ conv_euctw (CharCache  *cache,
 }
 
 static PangoGlyph
-conv_ucs4 (CharCache  *cache,
-	   GIConv      cd,
+conv_ucs4 (CharCache  *cache G_GNUC_UNUSED,
+	   GIConv      cd G_GNUC_UNUSED,
 	   const char *input)
 {
   return g_utf8_get_char (input);
@@ -554,7 +554,7 @@ get_char_cache (PangoFont     *font,
 }
 
 static void
-basic_engine_shape (PangoEngineShape *engine,
+basic_engine_shape (PangoEngineShape *engine G_GNUC_UNUSED,
 		    PangoFont        *font,
 		    const char       *text,
 		    gint              length,
@@ -668,7 +668,7 @@ basic_engine_shape (PangoEngineShape *engine,
 }
 
 static PangoCoverageLevel
-basic_engine_covers (PangoEngineShape *engine,
+basic_engine_covers (PangoEngineShape *engine G_GNUC_UNUSED,
 		     PangoFont        *font,
 		     PangoLanguage    *lang,
 		     gunichar          wc)

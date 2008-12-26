@@ -200,10 +200,11 @@ get_glyph_index_tis (ThaiFontInfo *font_info, guchar c)
     return lao_0[c];
 
   switch (font_info->font_set) {
+    default:
+    case THAI_FONT_NONE:    return 0;
     case THAI_FONT_TIS:     return tis620_0[c & 0x7f];
     case THAI_FONT_TIS_MAC: return tis620_1[c & 0x7f];
     case THAI_FONT_TIS_WIN: return tis620_2[c & 0x7f];
-    default:                return 0;
   }
 }
 
@@ -253,7 +254,7 @@ static const PangoOTFeatureMap gpos_features[] =
 };
 
 static void
-thai_engine_shape (PangoEngineShape *engine,
+thai_engine_shape (PangoEngineShape *engine G_GNUC_UNUSED,
 		   PangoFont        *font,
 		   const char       *text,
 		   gint              length,
@@ -312,7 +313,7 @@ thai_engine_shape (PangoEngineShape *engine,
 }
 
 PangoGlyph
-thai_make_unknown_glyph (ThaiFontInfo *font_info, gunichar uc)
+thai_make_unknown_glyph (ThaiFontInfo *font_info G_GNUC_UNUSED, gunichar uc)
 {
   return PANGO_GET_UNKNOWN_GLYPH (uc);
 }

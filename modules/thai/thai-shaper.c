@@ -398,7 +398,7 @@ get_glyphs_list (ThaiFontInfo	*font_info,
 {
   gint i;
 
-  switch (script)
+  switch ((int) script)
     {
       case PANGO_SCRIPT_THAI:
 	switch (font_info->font_set)

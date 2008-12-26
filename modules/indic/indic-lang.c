@@ -92,12 +92,12 @@ not_cursor_position (PangoLogAttr *attr)
 }
 
 static void
-indic_engine_break (PangoEngineLang *engine,
+indic_engine_break (PangoEngineLang *engine G_GNUC_UNUSED,
 		    const char      *text,
 		    int              length,
 		    PangoAnalysis   *analysis,
 		    PangoLogAttr    *attrs,
-		    int              attrs_len)
+		    int              attrs_len G_GNUC_UNUSED)
 {
   const gchar *p, *next = NULL, *next_next;
   gunichar prev_wc, this_wc, next_wc, next_next_wc;

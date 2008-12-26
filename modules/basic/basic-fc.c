@@ -120,7 +120,7 @@ static const PangoOTFeatureMap vertical_gpos_features[] =
 };
 
 static void
-basic_engine_shape (PangoEngineShape *engine,
+basic_engine_shape (PangoEngineShape *engine G_GNUC_UNUSED,
 		    PangoFont        *font,
 		    const char       *text,
 		    gint              length,

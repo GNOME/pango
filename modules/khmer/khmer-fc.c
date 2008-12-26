@@ -450,7 +450,7 @@ get_index (PangoFcFont *fc_font, gunichar wc)
 
 
 static void
-khmer_engine_shape (PangoEngineShape *engine,
+khmer_engine_shape (PangoEngineShape *engine G_GNUC_UNUSED,
 		    PangoFont        *font,
 		    const char       *text,
 		    int               length,

@@ -78,7 +78,7 @@ static const PangoOTFeatureMap gpos_features[] =
 };
 
 static void
-syriac_engine_shape (PangoEngineShape *engine,
+syriac_engine_shape (PangoEngineShape *engine G_GNUC_UNUSED,
 		     PangoFont        *font,
 		     const char       *text,
 		     gint              length,

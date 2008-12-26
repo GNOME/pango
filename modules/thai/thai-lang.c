@@ -65,12 +65,12 @@ utf8_to_tis (const char *text, int len, thchar_t *tis_text, int *tis_cnt)
 }
 
 static void
-thai_engine_break (PangoEngineLang *engine,
+thai_engine_break (PangoEngineLang *engine G_GNUC_UNUSED,
 		   const char      *text,
 		   int              len,
-		   PangoAnalysis   *analysis,
+		   PangoAnalysis   *analysis G_GNUC_UNUSED,
 		   PangoLogAttr    *attrs,
-		   int              attrs_len)
+		   int              attrs_len G_GNUC_UNUSED)
 {
   thchar_t tis_stack[512];
   int brk_stack[512];
@@ -83,13 +83,13 @@ thai_engine_break (PangoEngineLang *engine,
   cnt = g_utf8_strlen (text, len) + 1;
 
   tis_text = tis_stack;
-  if (cnt > G_N_ELEMENTS (tis_stack))
+  if (cnt > (int) G_N_ELEMENTS (tis_stack))
     tis_text = g_new (thchar_t, cnt);
 
   utf8_to_tis (text, len, tis_text, &cnt);
 
   brk_pnts = brk_stack;
-  if (cnt > G_N_ELEMENTS (brk_stack))
+  if (cnt > (int) G_N_ELEMENTS (brk_stack))
     brk_pnts = g_new (int, cnt);
 
   /* find line break positions */

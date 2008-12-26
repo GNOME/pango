@@ -1,5 +1,25 @@
 2008-12-25  Behdad Esfahbod  <behdad@gnome.org>
 
+	* modules/arabic/arabic-fc.c (arabic_engine_shape):
+	* modules/arabic/arabic-lang.c (arabic_engine_break):
+	* modules/basic/basic-fc.c (basic_engine_shape):
+	* modules/basic/basic-x.c (find_char), (conv_8bit), (conv_eucjp),
+	(conv_16bit), (conv_16bit_MSB_on), (conv_gb18030_1), (conv_euctw),
+	(conv_ucs4), (basic_engine_shape), (basic_engine_covers):
+	* modules/hangul/hangul-fc.c (hangul_engine_shape):
+	* modules/hebrew/hebrew-fc.c (add_cluster), (fallback_shape):
+	* modules/indic/indic-lang.c (indic_engine_break):
+	* modules/khmer/khmer-fc.c (khmer_engine_shape):
+	* modules/syriac/syriac-fc.c (syriac_engine_shape):
+	* modules/thai/thai-fc.c (get_glyph_index_tis),
+	(thai_engine_shape), (thai_make_unknown_glyph):
+	* modules/thai/thai-lang.c (thai_engine_break):
+	* modules/thai/thai-shaper.c (get_glyphs_list):
+	* modules/tibetan/tibetan-fc.c (tibetan_engine_shape):
+	Fix all warnings in modules/.
+
+2008-12-25  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango-view/viewer-main.c (main):
 	* pango-view/viewer-pangocairo.c (pangocairo_view_create),
 	(transform_callback), (pangocairo_view_render),

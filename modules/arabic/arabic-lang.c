@@ -71,12 +71,12 @@ static PangoEngineInfo script_engines[] = {
 #define IS_COMPOSITE_WITH_ALEF(c) (MADDAH_ABOVE <= (c) && (c) <= HAMZA_BELOW)
 
 static void
-arabic_engine_break (PangoEngineLang *engine,
+arabic_engine_break (PangoEngineLang *engine G_GNUC_UNUSED,
 		     const char      *text,
 		     int              length,
-		     PangoAnalysis   *analysis,
+		     PangoAnalysis   *analysis G_GNUC_UNUSED,
 		     PangoLogAttr    *attrs,
-		     int              attrs_len)
+		     int              attrs_len G_GNUC_UNUSED)
 {
   int i;
   const char *p;
