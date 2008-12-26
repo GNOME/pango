@@ -25,12 +25,12 @@
 G_DEFINE_ABSTRACT_TYPE (PangoFcDecoder, pango_fc_decoder, G_TYPE_OBJECT)
 
 static void
-pango_fc_decoder_init (PangoFcDecoder *decoder)
+pango_fc_decoder_init (PangoFcDecoder *decoder G_GNUC_UNUSED)
 {
 }
 
 static void
-pango_fc_decoder_class_init (PangoFcDecoderClass *klass)
+pango_fc_decoder_class_init (PangoFcDecoderClass *klass G_GNUC_UNUSED)
 {
 }
 

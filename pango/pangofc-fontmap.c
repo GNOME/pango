@@ -675,11 +675,11 @@ pango_fc_font_map_list_families (PangoFontMap      *fontmap,
       count = 0;
       for (i = 0; i < fontset->nfont; i++)
 	{
-	  FcChar8 *s;
+	  char *s;
 	  FcResult res;
 	  int spacing;
 
-	  res = FcPatternGetString (fontset->fonts[i], FC_FAMILY, 0, (FcChar8 **) &s);
+	  res = FcPatternGetString (fontset->fonts[i], FC_FAMILY, 0, (FcChar8 **)(void*)&s);
 	  g_assert (res == FcResultMatch);
 
 	  res = FcPatternGetInteger (fontset->fonts[i], FC_SPACING, 0, &spacing);
@@ -689,7 +689,7 @@ pango_fc_font_map_list_families (PangoFontMap      *fontmap,
 
 	  if (!is_alias_family (s) && !g_hash_table_lookup (temp_family_hash, s))
 	    {
-	      PangoFcFamily *temp_family = create_family (fcfontmap, (gchar *)s, spacing);
+	      PangoFcFamily *temp_family = create_family (fcfontmap, s, spacing);
 	      g_hash_table_insert (temp_family_hash, g_strdup (s), s);
 	      priv->families[count++] = temp_family;
 	    }
@@ -846,7 +846,7 @@ pango_fc_make_pattern (const  PangoFontDescription *description,
   families = g_strsplit (pango_font_description_get_family (description), ",", -1);
 
   for (i = 0; families[i]; i++)
-    FcPatternAddString (pattern, FC_FAMILY, families[i]);
+    FcPatternAddString (pattern, FC_FAMILY, (FcChar8*) families[i]);
 
   g_strfreev (families);
 
@@ -856,11 +856,11 @@ pango_fc_make_pattern (const  PangoFontDescription *description,
   if (gravity != PANGO_GRAVITY_SOUTH)
     {
       GEnumValue *value = g_enum_get_value (get_gravity_class (), gravity);
-      FcPatternAddString (pattern, PANGO_FC_GRAVITY, value->value_nick);
+      FcPatternAddString (pattern, PANGO_FC_GRAVITY, (FcChar8*) value->value_nick);
     }
 
   if (prgname)
-    FcPatternAddString (pattern, PANGO_FC_PRGNAME, prgname);
+    FcPatternAddString (pattern, PANGO_FC_PRGNAME, (FcChar8*) prgname);
 
   return pattern;
 }
@@ -1051,7 +1051,6 @@ pango_fc_font_map_get_patterns (PangoFontMap               *fontmap,
   int f;
   PangoFcPatternSet *patterns;
   FcFontSet *font_patterns;
-  PangoMatrix matrix;
   FontsetHashKey key;
 
   if (!language && context)
@@ -1136,7 +1135,7 @@ pango_fc_font_map_get_patterns (PangoFontMap               *fontmap,
 }
 
 static gboolean
-get_first_font (PangoFontset  *fontset,
+get_first_font (PangoFontset  *fontset G_GNUC_UNUSED,
 		PangoFont     *font,
 		gpointer       data)
 {
@@ -1333,7 +1332,7 @@ _pango_fc_font_map_get_coverage (PangoFcFontMap *fcfontmap,
    * a filename/index pair; there shouldn't be any reason
    * this isn't true, but it's not specified anywhere
    */
-  if (FcPatternGetString (fcfont->font_pattern, FC_FILE, 0, (FcChar8 **) &key.filename) != FcResultMatch)
+  if (FcPatternGetString (fcfont->font_pattern, FC_FILE, 0, (FcChar8 **)(void*)&key.filename) != FcResultMatch)
     return NULL;
 
   if (FcPatternGetInteger (fcfont->font_pattern, FC_INDEX, 0, &key.id) != FcResultMatch)
@@ -1440,7 +1439,7 @@ pango_fc_font_map_create_context (PangoFcFontMap *fcfontmap)
 }
 
 static void
-cleanup_font (gpointer        key,
+cleanup_font (gpointer        key G_GNUC_UNUSED,
 	      PangoFcFont    *fcfont)
 {
   _pango_fc_font_shutdown (fcfont);
@@ -1630,7 +1629,7 @@ pango_fc_font_description_from_pattern (FcPattern *pattern, gboolean include_siz
    * the pattern */
   if (FcPatternGetString (pattern, PANGO_FC_GRAVITY, 0, (FcChar8 **)&s) == FcResultMatch)
     {
-      GEnumValue *value = g_enum_get_value_by_nick (get_gravity_class (), s);
+      GEnumValue *value = g_enum_get_value_by_nick (get_gravity_class (), (char *)s);
       gravity = value->value;
 
       pango_font_description_set_gravity (desc, gravity);
@@ -1735,8 +1734,8 @@ pango_fc_face_list_sizes (PangoFontFace  *face,
   FcObjectSet *objectset;
 
   pattern = FcPatternCreate ();
-  FcPatternAddString (pattern, FC_FAMILY, fcface->family->family_name);
-  FcPatternAddString (pattern, FC_STYLE, fcface->style);
+  FcPatternAddString (pattern, FC_FAMILY, (FcChar8*)(void*)fcface->family->family_name);
+  FcPatternAddString (pattern, FC_STYLE, (FcChar8*)(void*)fcface->style);
 
   objectset = FcObjectSetCreate ();
   FcObjectSetAdd (objectset, FC_PIXEL_SIZE);
@@ -1912,7 +1911,7 @@ pango_fc_family_list_faces (PangoFontFamily  *family,
 
 	  for (i = 0; i < fontset->nfont; i++)
 	    {
-	      FcChar8 *style, *font_style = NULL;
+	      const char *style, *font_style = NULL;
 	      int weight, slant;
 
 	      if (FcPatternGetInteger(fontset->fonts[i], FC_WEIGHT, 0, &weight) != FcResultMatch)
@@ -1921,7 +1920,7 @@ pango_fc_family_list_faces (PangoFontFamily  *family,
 	      if (FcPatternGetInteger(fontset->fonts[i], FC_SLANT, 0, &slant) != FcResultMatch)
 		slant = FC_SLANT_ROMAN;
 
-	      if (FcPatternGetString (fontset->fonts[i], FC_STYLE, 0, &font_style) != FcResultMatch)
+	      if (FcPatternGetString (fontset->fonts[i], FC_STYLE, 0, (FcChar8 **)(void*)&font_style) != FcResultMatch)
 		font_style = NULL;
 
 	      if (weight <= FC_WEIGHT_MEDIUM)

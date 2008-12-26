@@ -122,7 +122,7 @@ pango_coverage_ref (PangoCoverage *coverage)
 {
   g_return_val_if_fail (coverage != NULL, NULL);
 
-  g_atomic_int_inc (&coverage->ref_count);
+  g_atomic_int_inc ((int *) &coverage->ref_count);
 
   return coverage;
 }
@@ -142,7 +142,7 @@ pango_coverage_unref (PangoCoverage *coverage)
   g_return_if_fail (coverage != NULL);
   g_return_if_fail (coverage->ref_count > 0);
 
-  if (g_atomic_int_dec_and_test (&coverage->ref_count))
+  if (g_atomic_int_dec_and_test ((int *) &coverage->ref_count))
     {
       for (i=0; i<coverage->n_blocks; i++)
 	g_free (coverage->blocks[i].data);

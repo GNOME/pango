@@ -178,13 +178,13 @@ pango_module_load (GTypeModule *module)
 
       /* extract symbols from the lib */
       if (!g_module_symbol (pango_module->library, "script_engine_init",
-			    (gpointer *)&pango_module->init) ||
+			    (gpointer *)(void *)&pango_module->init) ||
 	  !g_module_symbol (pango_module->library, "script_engine_exit",
-			    (gpointer *)&pango_module->exit) ||
+			    (gpointer *)(void *)&pango_module->exit) ||
 	  !g_module_symbol (pango_module->library, "script_engine_list",
-			    (gpointer *)&pango_module->list) ||
+			    (gpointer *)(void *)&pango_module->list) ||
 	  !g_module_symbol (pango_module->library, "script_engine_create",
-			    (gpointer *)&pango_module->create))
+			    (gpointer *)(void *)&pango_module->create))
 	{
 	  g_warning ("%s", g_module_error());
 	  g_module_close (pango_module->library);
@@ -373,7 +373,8 @@ script_from_string (const char *str)
 }
 
 static void
-script_info_free (PangoEngineScriptInfo *script_info, gpointer data)
+script_info_free (PangoEngineScriptInfo *script_info,
+		  gpointer data G_GNUC_UNUSED)
 {
   g_slice_free (PangoEngineScriptInfo, script_info);
 }

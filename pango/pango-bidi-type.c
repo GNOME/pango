@@ -24,6 +24,7 @@
 #include <string.h>
 
 #include "pango-bidi-type.h"
+#include "pango-utils.h"
 
 #include "mini-fribidi/fribidi.h"
 

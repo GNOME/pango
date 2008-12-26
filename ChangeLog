@@ -1,5 +1,34 @@
 2008-12-25  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango/modules.c (pango_module_load), (script_info_free):
+	* pango/opentype/harfbuzz-gpos.c (HB_Load_GPOS_Table):
+	* pango/pango-bidi-type.c:
+	* pango/pango-coverage.c (pango_coverage_ref),
+	(pango_coverage_unref):
+	* pango/pango-engine.c (pango_engine_shape_real_covers),
+	(fallback_engine_shape), (fallback_engine_covers):
+	* pango/pango-fontmap.c (pango_font_map_init):
+	* pango/pango-ot-ruleset.c (pango_ot_ruleset_finalize),
+	(pango_ot_ruleset_new):
+	* pango/pangofc-decoder.c (pango_fc_decoder_init),
+	(pango_fc_decoder_class_init):
+	* pango/pangofc-font.c (pango_fc_font_find_shaper),
+	(pango_fc_font_get_coverage):
+	* pango/pangofc-fontmap.c (pango_fc_font_map_list_families),
+	(pango_fc_make_pattern), (pango_fc_font_map_get_patterns),
+	(get_first_font), (_pango_fc_font_map_get_coverage),
+	(cleanup_font), (pango_fc_font_description_from_pattern),
+	(pango_fc_face_list_sizes), (pango_fc_family_list_faces):
+	* pango/pangoft2-fontmap.c (pango_ft2_font_map_get_resolution):
+	* pango/pangoft2-render.c (pango_ft2_renderer_init),
+	(pango_ft2_renderer_draw_trapezoid):
+	* pango/pangoft2.c (pango_ft2_font_get_face),
+	(pango_ft2_font_real_unlock_face),
+	(pango_ft2_free_glyph_info_callback):
+	Fix more warnings.
+
+2008-12-25  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/break.c (pango_default_break):
 	* pango/fonts.c (find_field_any), (pango_font_class_init),
 	(pango_font_init), (pango_font_metrics_ref),

@@ -341,7 +341,7 @@ _pango_ft2_font_map_default_substitute (PangoFcFontMap *fcfontmap,
 
 static double
 pango_ft2_font_map_get_resolution (PangoFcFontMap       *fcfontmap,
-				   PangoContext         *context)
+				   PangoContext         *context G_GNUC_UNUSED)
 {
   return ((PangoFT2FontMap *)fcfontmap)->dpi_y;
 }

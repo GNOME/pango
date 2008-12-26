@@ -283,7 +283,7 @@ pango_fc_get_shaper_map (PangoLanguage *language)
 }
 
 static PangoEngineShape *
-pango_fc_font_find_shaper (PangoFont     *font,
+pango_fc_font_find_shaper (PangoFont     *font G_GNUC_UNUSED,
 			   PangoLanguage *language,
 			   guint32        ch)
 {
@@ -297,7 +297,7 @@ pango_fc_font_find_shaper (PangoFont     *font,
 
 static PangoCoverage *
 pango_fc_font_get_coverage (PangoFont     *font,
-			    PangoLanguage *language)
+			    PangoLanguage *language G_GNUC_UNUSED)
 {
   PangoFcFont *fcfont = (PangoFcFont *)font;
   PangoFcFontPrivate *priv = fcfont->priv;

@@ -39,7 +39,7 @@ pango_font_map_class_init (PangoFontMapClass *class)
 }
 
 static void
-pango_font_map_init (PangoFontMap *fontmap)
+pango_font_map_init (PangoFontMap *fontmap G_GNUC_UNUSED)
 {
 }
 

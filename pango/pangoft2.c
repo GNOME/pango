@@ -239,7 +239,7 @@ pango_ft2_font_get_face (PangoFont *font)
       if (error != FT_Err_Ok)
 	{
 	bail0:
-	  load_fallback_face (ft2font, filename);
+	  load_fallback_face (ft2font, (char *) filename);
 	}
 
       g_assert (ft2font->face);
@@ -420,12 +420,12 @@ pango_ft2_font_real_lock_face (PangoFcFont *font)
 }
 
 static void
-pango_ft2_font_real_unlock_face (PangoFcFont *font)
+pango_ft2_font_real_unlock_face (PangoFcFont *font G_GNUC_UNUSED)
 {
 }
 
 static gboolean
-pango_ft2_free_glyph_info_callback (gpointer key,
+pango_ft2_free_glyph_info_callback (gpointer key G_GNUC_UNUSED,
 				    gpointer value,
 				    gpointer data)
 {

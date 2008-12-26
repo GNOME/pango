@@ -34,7 +34,7 @@ PANGO_DEFINE_TYPE_ABSTRACT (PangoEngineLang, pango_engine_lang,
 			    PANGO_TYPE_ENGINE)
 
 static PangoCoverageLevel
-pango_engine_shape_real_covers (PangoEngineShape *engine,
+pango_engine_shape_real_covers (PangoEngineShape *engine G_GNUC_UNUSED,
 				PangoFont        *font,
 				PangoLanguage    *language,
 				gunichar          wc)
@@ -95,8 +95,8 @@ typedef PangoEngineShape PangoFallbackEngine;
 typedef PangoEngineShapeClass PangoFallbackEngineClass;
 
 static void
-fallback_engine_shape (PangoEngineShape *engine,
-		       PangoFont        *font,
+fallback_engine_shape (PangoEngineShape *engine G_GNUC_UNUSED,
+		       PangoFont        *font G_GNUC_UNUSED,
 		       const char       *text,
 		       gint              length,
 		       const PangoAnalysis *analysis,
@@ -143,10 +143,10 @@ fallback_engine_shape (PangoEngineShape *engine,
 }
 
 static PangoCoverageLevel
-fallback_engine_covers (PangoEngineShape *engine,
-			PangoFont        *font,
-			PangoLanguage    *lang,
-			gunichar          wc)
+fallback_engine_covers (PangoEngineShape *engine G_GNUC_UNUSED,
+			PangoFont        *font G_GNUC_UNUSED,
+			PangoLanguage    *lang G_GNUC_UNUSED,
+			gunichar          wc G_GNUC_UNUSED)
 {
   return PANGO_COVERAGE_NONE;
 }

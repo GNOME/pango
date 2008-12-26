@@ -65,7 +65,7 @@ static void pango_ft2_renderer_draw_trapezoid (PangoRenderer    *renderer,
 G_DEFINE_TYPE (PangoFT2Renderer, pango_ft2_renderer, PANGO_TYPE_RENDERER)
 
 static void
-pango_ft2_renderer_init (PangoFT2Renderer *renderer)
+pango_ft2_renderer_init (PangoFT2Renderer *renderer G_GNUC_UNUSED)
 {
 }
 
@@ -437,7 +437,7 @@ interpolate_position (Position *result,
  */
 static void
 pango_ft2_renderer_draw_trapezoid (PangoRenderer   *renderer,
-				   PangoRenderPart  part,
+				   PangoRenderPart  part G_GNUC_UNUSED,
 				   double           y1,
 				   double           x11,
 				   double           x21,
