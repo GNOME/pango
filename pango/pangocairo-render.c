@@ -498,6 +498,45 @@ pango_cairo_renderer_draw_rectangle (PangoRenderer     *renderer,
     }
 }
 
+static void
+pango_cairo_renderer_draw_trapezoid (PangoRenderer     *renderer,
+				     PangoRenderPart    part,
+				     double             y1_,
+				     double             x11,
+				     double             x21,
+				     double             y2,
+				     double             x12,
+				     double             x22)
+{
+  PangoCairoRenderer *crenderer = (PangoCairoRenderer *) (renderer);
+  cairo_t *cr;
+  double x, y;
+
+  cr = crenderer->cr;
+
+  cairo_save (cr);
+
+  if (!crenderer->do_path)
+    set_color (crenderer, part);
+
+  x = crenderer->x_offset,
+  y = crenderer->y_offset;
+  cairo_user_to_device_distance (cr, &x, &y);
+  cairo_identity_matrix (cr);
+  cairo_translate (cr, x, y);
+
+  cairo_move_to (cr, x11, y1_);
+  cairo_line_to (cr, x21, y1_);
+  cairo_line_to (cr, x22, y2);
+  cairo_line_to (cr, x12, y2);
+  cairo_close_path (cr);
+
+  if (!crenderer->do_path)
+    cairo_fill (cr);
+
+  cairo_restore (cr);
+}
+
 /* Draws an error underline that looks like one of:
  *              H       E                H
  *     /\      /\      /\        /\      /\               -
@@ -527,8 +566,10 @@ draw_error_underline (cairo_t *cr,
 {
   double square = height / HEIGHT_SQUARES;
   double unit_width = (HEIGHT_SQUARES - 1) * square;
+  double double_width = 2 * unit_width;
   int width_units = (width + unit_width / 2) / unit_width;
   double y_top, y_bottom;
+  double x_left, x_middle, x_right;
   int i;
 
   x += (width - width_units * unit_width) / 2;
@@ -538,38 +579,35 @@ draw_error_underline (cairo_t *cr,
   y_bottom = y + height;
 
   /* Bottom of squiggle */
+  x_middle = x + unit_width;
+  x_right  = x + double_width;
   cairo_move_to (cr, x - square / 2, y_top + square / 2); /* A */
-  for (i = 0; i < width_units; i += 2)
+  for (i = 0; i < width_units-2; i += 2)
     {
-      double x_middle = x + (i + 1) * unit_width;
-      double x_right = x + (i + 2) * unit_width;
-
       cairo_line_to (cr, x_middle, y_bottom); /* B */
+      cairo_line_to (cr, x_right, y_top + square); /* C */
 
-      if (i + 1 == width_units)
-	/* Nothing */;
-      else if (i + 2 == width_units)
-	cairo_line_to (cr, x_right + square / 2, y_top + square / 2); /* D */
-      else
-	cairo_line_to (cr, x_right, y_top + square); /* C */
+      x_middle += double_width;
+      x_right  += double_width;
     }
+  cairo_line_to (cr, x_middle, y_bottom); /* B */
+
+  if (i + 1 == width_units)
+    cairo_line_to (cr, x_middle + square / 2, y_bottom - square / 2); /* G */
+  else if (i + 2 == width_units) {
+    cairo_line_to (cr, x_right + square / 2, y_top + square / 2); /* D */
+    cairo_line_to (cr, x_right, y_top); /* E */
+  }
 
   /* Top of squiggle */
-  for (i -= 2; i >= 0; i -= 2)
+  x_left = x_middle - unit_width;
+  for (; i >= 0; i -= 2)
     {
-      double x_left = x + i * unit_width;
-      double x_middle = x + (i + 1) * unit_width;
-      double x_right = x + (i + 2) * unit_width;
-
-      if (i + 1 == width_units)
-	cairo_line_to (cr, x_middle + square / 2, y_bottom - square / 2); /* G */
-      else {
-	if (i + 2 == width_units)
-	  cairo_line_to (cr, x_right, y_top); /* E */
-	cairo_line_to (cr, x_middle, y_bottom - square); /* F */
-      }
-
+      cairo_line_to (cr, x_middle, y_bottom - square); /* F */
       cairo_line_to (cr, x_left, y_top);   /* H */
+
+      x_left   -= double_width;
+      x_middle -= double_width;
     }
 }
 
@@ -656,6 +694,7 @@ pango_cairo_renderer_class_init (PangoCairoRendererClass *klass)
   renderer_class->draw_glyphs = pango_cairo_renderer_draw_glyphs;
   renderer_class->draw_glyph_item = pango_cairo_renderer_draw_glyph_item;
   renderer_class->draw_rectangle = pango_cairo_renderer_draw_rectangle;
+  renderer_class->draw_trapezoid = pango_cairo_renderer_draw_trapezoid;
   renderer_class->draw_error_underline = pango_cairo_renderer_draw_error_underline;
   renderer_class->draw_shape = pango_cairo_renderer_draw_shape;
 }

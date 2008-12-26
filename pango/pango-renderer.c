@@ -975,6 +975,7 @@ pango_renderer_default_draw_error_underline (PangoRenderer *renderer,
   const PangoMatrix *matrix;
   double dx, dx0, dy0;
   PangoMatrix total;
+  int i;
 
   x += (width - width_units * unit_width) / 2;
   width = width_units * unit_width;
@@ -989,27 +990,25 @@ pango_renderer_default_draw_error_underline (PangoRenderer *renderer,
   dx0 = (matrix->xx * dx) / PANGO_SCALE;
   dy0 = (matrix->yx * dx) / PANGO_SCALE;
 
+  i = (width_units - 1) / 2;
   while (TRUE)
     {
-
       draw_rectangle (renderer, &total, PANGO_RENDER_PART_UNDERLINE, /* A */
 		      0,                      0,
 		      HEIGHT_SQUARES * 2 - 1, 1);
 
-      if (width_units > 2)
-	{
-	  draw_rectangle (renderer, &total, PANGO_RENDER_PART_UNDERLINE, /* B */
-			  HEIGHT_SQUARES * 2 - 2, - (HEIGHT_SQUARES * 2 - 3),
-			  1,                      HEIGHT_SQUARES * 2 - 3);
-	  width_units -= 2;
+      if (i <= 0)
+        break;
+      i--;
 
-	  total.x0 += dx0;
-	  total.y0 += dy0;
-	}
-      else
-	break;
+      draw_rectangle (renderer, &total, PANGO_RENDER_PART_UNDERLINE, /* B */
+		      HEIGHT_SQUARES * 2 - 2, - (HEIGHT_SQUARES * 2 - 3),
+		      1,                      HEIGHT_SQUARES * 2 - 3);
+
+      total.x0 += dx0;
+      total.y0 += dy0;
     }
-  if (width_units == 2)
+  if (width_units % 2 == 0)
     {
       draw_rectangle (renderer, &total, PANGO_RENDER_PART_UNDERLINE, /* C */
 		      HEIGHT_SQUARES * 2 - 2, - (HEIGHT_SQUARES * 2 - 2),

@@ -1,5 +1,22 @@
 2008-12-25  Behdad Esfahbod  <behdad@gnome.org>
 
+	Bug 469049 – Fix all compiler warnings
+
+	* pango-view/viewer-pangocairo.c (render_callback):
+	* pango/fonts.c (append_field), (pango_font_description_to_string):
+	* pango/opentype/harfbuzz-dump.c:
+	* pango/pango-bidi-type.c (pango_log2vis_get_embedding_levels):
+	* pango/pango-coverage.c (pango_coverage_set):
+	* pango/pango-markup.c (span_parse_func):
+	* pango/pango-renderer.c
+	(pango_renderer_default_draw_error_underline):
+	* pango/pango-utils.c (pango_scan_string):
+	* pango/pangocairo-render.c (pango_cairo_renderer_draw_trapezoid),
+	(draw_error_underline), (pango_cairo_renderer_class_init):
+	Fix all the remaining warnings.
+
+2008-12-25  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/modules.c (pango_module_load), (script_info_free):
 	* pango/opentype/harfbuzz-gpos.c (HB_Load_GPOS_Table):
 	* pango/pango-bidi-type.c:

@@ -1244,7 +1244,7 @@ span_parse_func     (MarkupData            *md G_GNUC_UNUSED,
     {
       PangoUnderline ul = PANGO_UNDERLINE_NONE;
 
-      if (!span_parse_enum ("underline", underline, PANGO_TYPE_UNDERLINE, (int *) &ul, line_number, error))
+      if (!span_parse_enum ("underline", underline, PANGO_TYPE_UNDERLINE, (int*)(void*)&ul, line_number, error))
 	goto error;
 
       add_attribute (tag, pango_attr_underline_new (ul));
@@ -1264,7 +1264,7 @@ span_parse_func     (MarkupData            *md G_GNUC_UNUSED,
     {
       PangoGravity gr = PANGO_GRAVITY_SOUTH;
 
-      if (!span_parse_enum ("gravity", gravity, PANGO_TYPE_GRAVITY, (int *) &gr, line_number, error))
+      if (!span_parse_enum ("gravity", gravity, PANGO_TYPE_GRAVITY, (int*)(void*)&gr, line_number, error))
 	goto error;
 
       add_attribute (tag, pango_attr_gravity_new (gr));
@@ -1274,7 +1274,7 @@ span_parse_func     (MarkupData            *md G_GNUC_UNUSED,
     {
       PangoGravityHint hint = PANGO_GRAVITY_HINT_NATURAL;
 
-      if (!span_parse_enum ("gravity_hint", gravity_hint, PANGO_TYPE_GRAVITY_HINT, (int *) &hint, line_number, error))
+      if (!span_parse_enum ("gravity_hint", gravity_hint, PANGO_TYPE_GRAVITY_HINT, (int*)(void*)&hint, line_number, error))
 	goto error;
 
       add_attribute (tag, pango_attr_gravity_hint_new (hint));

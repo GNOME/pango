@@ -131,7 +131,7 @@ pango_log2vis_get_embedding_levels (const gchar    *text,
   {
     if (length < 0)
       length = strlen (text);
-    embedding_levels_list = fribidi_log2vis_get_embedding_levels_new_utf8 (text, length, &fribidi_base_dir);
+    embedding_levels_list = (guint8 *) fribidi_log2vis_get_embedding_levels_new_utf8 (text, length, &fribidi_base_dir);
   }
 #else
   {

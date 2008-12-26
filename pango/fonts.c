@@ -1120,19 +1120,19 @@ append_field (GString *str, const FieldMap *map, int n_elements, int val)
   int i;
   for (i=0; i<n_elements; i++)
     {
-      if (map[i].value == val)
+      if (map[i].value != val)
+        continue;
+
+      if (G_LIKELY (map[i].str && map[i].str[0]))
 	{
-	  if (map[i].str && map[i].str[0])
-	    {
-	      if (str->len > 0 && str->str[str->len -1] != ' ')
-		g_string_append_c (str, ' ');
-	      g_string_append (str, map[i].str);
-	    }
-	  return;
+	  if (G_LIKELY (str->len > 0 && str->str[str->len -1] != ' '))
+	    g_string_append_c (str, ' ');
+	  g_string_append (str, map[i].str);
 	}
+      return;
     }
 
-  if (str->len > 0 || str->str[str->len -1] != ' ')
+  if (G_LIKELY (str->len > 0 || str->str[str->len -1] != ' '))
     g_string_append_c (str, ' ');
   g_string_append_printf (str, "%d", val);
 }
@@ -1158,7 +1158,7 @@ pango_font_description_to_string (const PangoFontDescription  *desc)
 
   result = g_string_new (NULL);
 
-  if (desc->family_name && desc->mask & PANGO_FONT_MASK_FAMILY)
+  if (G_LIKELY (desc->family_name && desc->mask & PANGO_FONT_MASK_FAMILY))
     {
       const char *p;
       size_t wordlen;

@@ -425,7 +425,7 @@ pango_scan_string (const char **pos, GString *out)
   while (g_ascii_isspace (*p))
     p++;
 
-  if (!*p)
+  if (G_UNLIKELY (!*p))
     return FALSE;
   else if (*p == '"')
     {
