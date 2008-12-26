@@ -824,7 +824,7 @@ pango_font_description_free  (PangoFontDescription  *desc)
  * @descs: a pointer to an array of #PangoFontDescription, may be %NULL
  * @n_descs: number of font descriptions in @descs
  *
- * Frees a list of font descriptions from pango_font_map_list_fonts()
+ * Frees an array of font descriptions.
  **/
 void
 pango_font_descriptions_free (PangoFontDescription **descs,

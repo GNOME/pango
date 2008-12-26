@@ -1,5 +1,11 @@
 2008-12-26  Behdad Esfahbod  <behdad@gnome.org>
 
+	Bug 565644 – Maybe pango_font_descriptions_free is deprecated
+
+	* pango/fonts.c: Adjust docs.
+
+2008-12-26  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango-view/viewer-pangocairo.c (pangocairo_view_destroy):
 	Call cairo_debug_reset_static_data().
 
