@@ -75,6 +75,8 @@ pangocairo_view_destroy (gpointer instance)
 
   c->iface->backend_class->destroy (c->backend);
 
+  cairo_debug_reset_static_data ();
+
   g_slice_free (CairoViewer, c);
 }
 
