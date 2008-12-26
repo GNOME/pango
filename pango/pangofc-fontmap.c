@@ -491,12 +491,6 @@ pango_fc_font_map_finalize (GObject *object)
   g_queue_free (priv->fontset_cache);
   g_hash_table_destroy (priv->coverage_hash);
 
-  if (priv->fontset_hash)
-    g_hash_table_destroy (priv->fontset_hash);
-
-  if (priv->font_hash)
-    g_hash_table_destroy (priv->font_hash);
-
   if (priv->pattern_hash)
     g_hash_table_destroy (priv->pattern_hash);
 
@@ -1466,12 +1460,18 @@ pango_fc_font_map_shutdown (PangoFcFontMap *fcfontmap)
   PangoFcFontMapPrivate *priv = fcfontmap->priv;
 
   pango_fc_font_map_cache_clear (fcfontmap);
-  g_hash_table_destroy (priv->fontset_hash);
-  priv->fontset_hash = NULL;
 
-  g_hash_table_foreach (priv->font_hash, (GHFunc)cleanup_font, NULL);
-  g_hash_table_destroy (priv->font_hash);
-  priv->font_hash = NULL;
+  if (priv->fontset_hash) {
+    g_hash_table_destroy (priv->fontset_hash);
+    priv->fontset_hash = NULL;
+  }
+
+  if (priv->font_hash) {
+    g_hash_table_foreach (priv->font_hash, (GHFunc)cleanup_font, NULL);
+    g_hash_table_destroy (priv->font_hash);
+    priv->font_hash = NULL;
+  }
+
   priv->closed = TRUE;
 }
 

@@ -1,5 +1,11 @@
 2008-12-25  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango/pangofc-fontmap.c (pango_fc_font_map_finalize),
+	(pango_fc_font_map_shutdown):
+	Cleanup fontmap finalization.
+
+2008-12-25  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 469049 – Fix all compiler warnings
 
 	* pango-view/viewer-pangocairo.c (render_callback):
