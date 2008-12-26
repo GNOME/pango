@@ -105,7 +105,7 @@ static void
 mini_svg_shape_renderer (cairo_t        *cr,
 			 PangoAttrShape *attr,
 			 gboolean        do_path,
-			 gpointer        data)
+			 gpointer        data G_GNUC_UNUSED)
 {
   MiniSvg *shape = (MiniSvg *) attr->data;
   double scale_x, scale_y;
