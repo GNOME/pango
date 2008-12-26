@@ -644,7 +644,7 @@ pango_cairo_renderer_draw_shape (PangoRenderer  *renderer,
 }
 
 static void
-pango_cairo_renderer_init (PangoCairoRenderer *renderer)
+pango_cairo_renderer_init (PangoCairoRenderer *renderer G_GNUC_UNUSED)
 {
 }
 

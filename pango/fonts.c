@@ -946,7 +946,7 @@ find_field_any (const char *str, int len, PangoFontDescription *desc)
 #define FIELD(NAME, MASK) \
   G_STMT_START { \
   if (find_field (NAME##_map, G_N_ELEMENTS (NAME##_map), str, len, \
-		  desc ? (int *)&desc->NAME : NULL)) \
+		  desc ? (int *)(void *)&desc->NAME : NULL)) \
     { \
       if (desc) \
 	desc->mask |= MASK; \
@@ -1248,12 +1248,12 @@ pango_font_description_to_filename (const PangoFontDescription  *desc)
 G_DEFINE_ABSTRACT_TYPE (PangoFont, pango_font, G_TYPE_OBJECT)
 
 static void
-pango_font_class_init (PangoFontClass *class)
+pango_font_class_init (PangoFontClass *class G_GNUC_UNUSED)
 {
 }
 
 static void
-pango_font_init (PangoFont *font)
+pango_font_init (PangoFont *font G_GNUC_UNUSED)
 {
 }
 
@@ -1510,7 +1510,7 @@ pango_font_metrics_ref (PangoFontMetrics *metrics)
   if (metrics == NULL)
     return NULL;
 
-  g_atomic_int_inc (&metrics->ref_count);
+  g_atomic_int_inc ((int *) &metrics->ref_count);
 
   return metrics;
 }
@@ -1531,7 +1531,7 @@ pango_font_metrics_unref (PangoFontMetrics *metrics)
 
   g_return_if_fail (metrics->ref_count > 0 );
 
-  if (g_atomic_int_dec_and_test (&metrics->ref_count))
+  if (g_atomic_int_dec_and_test ((int *) &metrics->ref_count))
     g_slice_free (PangoFontMetrics, metrics);
 }
 
@@ -1700,12 +1700,12 @@ pango_font_metrics_get_strikethrough_thickness (PangoFontMetrics *metrics)
 G_DEFINE_ABSTRACT_TYPE (PangoFontFamily, pango_font_family, G_TYPE_OBJECT)
 
 static void
-pango_font_family_class_init (PangoFontFamilyClass *class)
+pango_font_family_class_init (PangoFontFamilyClass *class G_GNUC_UNUSED)
 {
 }
 
 static void
-pango_font_family_init (PangoFontFamily *family)
+pango_font_family_init (PangoFontFamily *family G_GNUC_UNUSED)
 {
 }
 
@@ -1789,12 +1789,12 @@ pango_font_family_is_monospace (PangoFontFamily  *family)
 G_DEFINE_ABSTRACT_TYPE (PangoFontFace, pango_font_face, G_TYPE_OBJECT)
 
 static void
-pango_font_face_class_init (PangoFontFaceClass *class)
+pango_font_face_class_init (PangoFontFaceClass *class G_GNUC_UNUSED)
 {
 }
 
 static void
-pango_font_face_init (PangoFontFace *face)
+pango_font_face_init (PangoFontFace *face G_GNUC_UNUSED)
 {
 }
 

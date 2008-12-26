@@ -405,20 +405,20 @@ start_element_handler  (GMarkupParseContext *context,
 }
 
 static void
-end_element_handler    (GMarkupParseContext *context,
-			const gchar         *element_name,
+end_element_handler    (GMarkupParseContext *context G_GNUC_UNUSED,
+			const gchar         *element_name G_GNUC_UNUSED,
 			gpointer             user_data,
-			GError             **error)
+			GError             **error G_GNUC_UNUSED)
 {
   markup_data_close_tag (user_data);
 }
 
 static void
-text_handler           (GMarkupParseContext *context,
+text_handler           (GMarkupParseContext *context G_GNUC_UNUSED,
 			const gchar         *text,
 			gsize                text_len,
 			gpointer             user_data,
-			GError             **error)
+			GError             **error G_GNUC_UNUSED)
 {
   MarkupData *md = user_data;
 
@@ -746,10 +746,10 @@ add_attribute (OpenTag        *ot,
 	 } }G_STMT_END
 
 static gboolean
-b_parse_func        (MarkupData            *md,
+b_parse_func        (MarkupData            *md G_GNUC_UNUSED,
 		     OpenTag               *tag,
 		     const gchar          **names,
-		     const gchar          **values,
+		     const gchar          **values G_GNUC_UNUSED,
 		     GMarkupParseContext   *context,
 		     GError               **error)
 {
@@ -759,10 +759,10 @@ b_parse_func        (MarkupData            *md,
 }
 
 static gboolean
-big_parse_func      (MarkupData            *md,
+big_parse_func      (MarkupData            *md G_GNUC_UNUSED,
 		     OpenTag               *tag,
 		     const gchar          **names,
-		     const gchar          **values,
+		     const gchar          **values G_GNUC_UNUSED,
 		     GMarkupParseContext   *context,
 		     GError               **error)
 {
@@ -950,7 +950,7 @@ span_parse_enum (const char *attr_name,
 }
 
 static gboolean
-span_parse_func     (MarkupData            *md,
+span_parse_func     (MarkupData            *md G_GNUC_UNUSED,
 		     OpenTag               *tag,
 		     const gchar          **names,
 		     const gchar          **values,
@@ -1244,7 +1244,7 @@ span_parse_func     (MarkupData            *md,
     {
       PangoUnderline ul = PANGO_UNDERLINE_NONE;
 
-      if (!span_parse_enum ("underline", underline, PANGO_TYPE_UNDERLINE, &ul, line_number, error))
+      if (!span_parse_enum ("underline", underline, PANGO_TYPE_UNDERLINE, (int *) &ul, line_number, error))
 	goto error;
 
       add_attribute (tag, pango_attr_underline_new (ul));
@@ -1264,7 +1264,7 @@ span_parse_func     (MarkupData            *md,
     {
       PangoGravity gr = PANGO_GRAVITY_SOUTH;
 
-      if (!span_parse_enum ("gravity", gravity, PANGO_TYPE_GRAVITY, &gr, line_number, error))
+      if (!span_parse_enum ("gravity", gravity, PANGO_TYPE_GRAVITY, (int *) &gr, line_number, error))
 	goto error;
 
       add_attribute (tag, pango_attr_gravity_new (gr));
@@ -1274,7 +1274,7 @@ span_parse_func     (MarkupData            *md,
     {
       PangoGravityHint hint = PANGO_GRAVITY_HINT_NATURAL;
 
-      if (!span_parse_enum ("gravity_hint", gravity_hint, PANGO_TYPE_GRAVITY_HINT, &hint, line_number, error))
+      if (!span_parse_enum ("gravity_hint", gravity_hint, PANGO_TYPE_GRAVITY_HINT, (int *) &hint, line_number, error))
 	goto error;
 
       add_attribute (tag, pango_attr_gravity_hint_new (hint));
@@ -1344,10 +1344,10 @@ span_parse_func     (MarkupData            *md,
 }
 
 static gboolean
-i_parse_func        (MarkupData            *md,
+i_parse_func        (MarkupData            *md G_GNUC_UNUSED,
 		     OpenTag               *tag,
 		     const gchar          **names,
-		     const gchar          **values,
+		     const gchar          **values G_GNUC_UNUSED,
 		     GMarkupParseContext   *context,
 		     GError               **error)
 {
@@ -1358,12 +1358,12 @@ i_parse_func        (MarkupData            *md,
 }
 
 static gboolean
-markup_parse_func (MarkupData            *md,
-		   OpenTag               *tag,
-		   const gchar          **names,
-		   const gchar          **values,
-		   GMarkupParseContext   *context,
-		   GError               **error)
+markup_parse_func (MarkupData            *md G_GNUC_UNUSED,
+		   OpenTag               *tag G_GNUC_UNUSED,
+		   const gchar          **names G_GNUC_UNUSED,
+		   const gchar          **values G_GNUC_UNUSED,
+		   GMarkupParseContext   *context G_GNUC_UNUSED,
+		   GError               **error G_GNUC_UNUSED)
 {
   /* We don't do anything with this tag at the moment. */
 
@@ -1371,10 +1371,10 @@ markup_parse_func (MarkupData            *md,
 }
 
 static gboolean
-s_parse_func        (MarkupData            *md,
+s_parse_func        (MarkupData            *md G_GNUC_UNUSED,
 		     OpenTag               *tag,
 		     const gchar          **names,
-		     const gchar          **values,
+		     const gchar          **values G_GNUC_UNUSED,
 		     GMarkupParseContext   *context,
 		     GError               **error)
 {
@@ -1387,10 +1387,10 @@ s_parse_func        (MarkupData            *md,
 #define SUPERSUB_RISE 5000
 
 static gboolean
-sub_parse_func      (MarkupData            *md,
+sub_parse_func      (MarkupData            *md G_GNUC_UNUSED,
 		     OpenTag               *tag,
 		     const gchar          **names,
-		     const gchar          **values,
+		     const gchar          **values G_GNUC_UNUSED,
 		     GMarkupParseContext   *context,
 		     GError               **error)
 {
@@ -1409,10 +1409,10 @@ sub_parse_func      (MarkupData            *md,
 }
 
 static gboolean
-sup_parse_func      (MarkupData            *md,
+sup_parse_func      (MarkupData            *md G_GNUC_UNUSED,
 		     OpenTag               *tag,
 		     const gchar          **names,
-		     const gchar          **values,
+		     const gchar          **values G_GNUC_UNUSED,
 		     GMarkupParseContext   *context,
 		     GError               **error)
 {
@@ -1431,10 +1431,10 @@ sup_parse_func      (MarkupData            *md,
 }
 
 static gboolean
-small_parse_func    (MarkupData            *md,
+small_parse_func    (MarkupData            *md G_GNUC_UNUSED,
 		     OpenTag               *tag,
 		     const gchar          **names,
-		     const gchar          **values,
+		     const gchar          **values G_GNUC_UNUSED,
 		     GMarkupParseContext   *context,
 		     GError               **error)
 {
@@ -1451,10 +1451,10 @@ small_parse_func    (MarkupData            *md,
 }
 
 static gboolean
-tt_parse_func       (MarkupData            *md,
+tt_parse_func       (MarkupData            *md G_GNUC_UNUSED,
 		     OpenTag               *tag,
 		     const gchar          **names,
-		     const gchar          **values,
+		     const gchar          **values G_GNUC_UNUSED,
 		     GMarkupParseContext   *context,
 		     GError               **error)
 {
@@ -1466,10 +1466,10 @@ tt_parse_func       (MarkupData            *md,
 }
 
 static gboolean
-u_parse_func        (MarkupData            *md,
+u_parse_func        (MarkupData            *md G_GNUC_UNUSED,
 		     OpenTag               *tag,
 		     const gchar          **names,
-		     const gchar          **values,
+		     const gchar          **values G_GNUC_UNUSED,
 		     GMarkupParseContext   *context,
 		     GError               **error)
 {

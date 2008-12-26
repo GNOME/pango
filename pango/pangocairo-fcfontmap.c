@@ -53,7 +53,7 @@ pango_cairo_fc_font_map_get_resolution_cairo (PangoCairoFontMap *cfontmap)
 }
 
 static cairo_font_type_t
-pango_cairo_fc_font_map_get_font_type (PangoCairoFontMap *cfontmap)
+pango_cairo_fc_font_map_get_font_type (PangoCairoFontMap *cfontmap G_GNUC_UNUSED)
 {
   return CAIRO_FONT_TYPE_FT;
 }
@@ -80,7 +80,7 @@ pango_cairo_fc_font_map_finalize (GObject *object)
 }
 
 static void
-pango_cairo_fc_font_map_context_substitute (PangoFcFontMap *fcfontmap,
+pango_cairo_fc_font_map_context_substitute (PangoFcFontMap *fcfontmap G_GNUC_UNUSED,
 					    PangoContext   *context,
 					    FcPattern      *pattern)
 {
@@ -114,21 +114,21 @@ pango_cairo_fc_font_map_get_resolution_fc (PangoFcFontMap *fcfontmap,
 }
 
 static gconstpointer
-pango_cairo_fc_font_map_context_key_get (PangoFcFontMap *fcfontmap,
+pango_cairo_fc_font_map_context_key_get (PangoFcFontMap *fcfontmap G_GNUC_UNUSED,
 					 PangoContext   *context)
 {
   return _pango_cairo_context_get_merged_font_options (context);
 }
 
 static gpointer
-pango_cairo_fc_font_map_context_key_copy (PangoFcFontMap *fcfontmap,
+pango_cairo_fc_font_map_context_key_copy (PangoFcFontMap *fcfontmap G_GNUC_UNUSED,
 					  gconstpointer   key)
 {
   return cairo_font_options_copy (key);
 }
 
 static void
-pango_cairo_fc_font_map_context_key_free (PangoFcFontMap *fcfontmap,
+pango_cairo_fc_font_map_context_key_free (PangoFcFontMap *fcfontmap G_GNUC_UNUSED,
 					  gpointer        key)
 {
   cairo_font_options_destroy (key);
@@ -136,14 +136,14 @@ pango_cairo_fc_font_map_context_key_free (PangoFcFontMap *fcfontmap,
 
 
 static guint32
-pango_cairo_fc_font_map_context_key_hash (PangoFcFontMap *fcfontmap,
+pango_cairo_fc_font_map_context_key_hash (PangoFcFontMap *fcfontmap G_GNUC_UNUSED,
 					  gconstpointer        key)
 {
   return (guint32)cairo_font_options_hash (key);
 }
 
 static gboolean
-pango_cairo_fc_font_map_context_key_equal (PangoFcFontMap *fcfontmap,
+pango_cairo_fc_font_map_context_key_equal (PangoFcFontMap *fcfontmap G_GNUC_UNUSED,
 					   gconstpointer   key_a,
 					   gconstpointer   key_b)
 {

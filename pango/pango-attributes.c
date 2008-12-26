@@ -1131,7 +1131,7 @@ pango_attr_list_ref (PangoAttrList *list)
   if (list == NULL)
     return NULL;
 
-  g_atomic_int_inc (&list->ref_count);
+  g_atomic_int_inc ((int *) &list->ref_count);
 
   return list;
 }
@@ -1154,7 +1154,7 @@ pango_attr_list_unref (PangoAttrList *list)
 
   g_return_if_fail (list->ref_count > 0);
 
-  if (g_atomic_int_dec_and_test (&list->ref_count))
+  if (g_atomic_int_dec_and_test ((int *) &list->ref_count))
     {
       tmp_list = list->attributes;
       while (tmp_list)
@@ -1828,7 +1828,7 @@ pango_attr_iterator_get_font (PangoAttrIterator     *iterator,
       PangoAttribute *attr = tmp_list1->data;
       tmp_list1 = tmp_list1->next;
 
-      switch (attr->klass->type)
+      switch ((int) attr->klass->type)
 	{
 	case PANGO_ATTR_FONT_DESC:
 	  {

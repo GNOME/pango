@@ -183,10 +183,10 @@ query_module (const char *dir, const char *name)
 }
 
 static gboolean
-show_version(const char *name,
-	     const char *arg,
-	     gpointer    data,
-	     GError    **error)
+show_version(const char *name G_GNUC_UNUSED,
+	     const char *arg G_GNUC_UNUSED,
+	     gpointer    data G_GNUC_UNUSED,
+	     GError    **error G_GNUC_UNUSED)
 {
   g_printf("pango-querymodules (%s) %s\n", PACKAGE_NAME, PACKAGE_VERSION);
   g_printf("module interface version: %s\n", MODULE_VERSION);

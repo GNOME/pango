@@ -177,7 +177,7 @@ get_glyph_class (gunichar   charcode,
       (charcode >= 0xFE70 && charcode <= 0XFEFF))   /* Arabic Presentation Forms-B */
     return FALSE;
 
-  switch (g_unichar_type (charcode))
+  switch ((int) g_unichar_type (charcode))
     {
     case G_UNICODE_COMBINING_MARK:
     case G_UNICODE_ENCLOSING_MARK:

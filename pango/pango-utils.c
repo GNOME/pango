@@ -1613,7 +1613,7 @@ pango_extents_to_pixels (PangoRectangle *inclusive,
 void
 _pango_shape_shape (const char       *text,
 		    gint              n_chars,
-		    PangoRectangle   *shape_ink,
+		    PangoRectangle   *shape_ink G_GNUC_UNUSED,
 		    PangoRectangle   *shape_logical,
 		    PangoGlyphString *glyphs)
 {

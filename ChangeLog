@@ -1,3 +1,50 @@
+2008-12-25  Behdad Esfahbod  <behdad@gnome.org>
+
+	* pango/break.c (pango_default_break):
+	* pango/fonts.c (find_field_any), (pango_font_class_init),
+	(pango_font_init), (pango_font_metrics_ref),
+	(pango_font_metrics_unref), (pango_font_family_class_init),
+	(pango_font_family_init), (pango_font_face_class_init),
+	(pango_font_face_init):
+	* pango/pango-attributes.c (pango_attr_list_ref),
+	(pango_attr_list_unref), (pango_attr_iterator_get_font):
+	* pango/pango-layout.c (pango_layout_set_height), (extents_free),
+	(no_shape_filter_func), (pango_layout_line_ref),
+	(pango_layout_line_unref), (pango_layout_get_item_properties):
+	* pango/pango-markup.c (end_element_handler), (text_handler),
+	(b_parse_func), (big_parse_func), (span_parse_func),
+	(i_parse_func), (markup_parse_func), (s_parse_func),
+	(sub_parse_func), (sup_parse_func), (small_parse_func),
+	(tt_parse_func), (u_parse_func):
+	* pango/pango-ot-info.c (get_glyph_class):
+	* pango/pango-renderer.c (get_item_properties),
+	(pango_renderer_default_prepare_run):
+	* pango/pango-utils.c (_pango_shape_shape):
+	* pango/pangocairo-fcfontmap.c
+	(pango_cairo_fc_font_map_get_font_type),
+	(pango_cairo_fc_font_map_context_substitute),
+	(pango_cairo_fc_font_map_context_key_get),
+	(pango_cairo_fc_font_map_context_key_copy),
+	(pango_cairo_fc_font_map_context_key_free),
+	(pango_cairo_fc_font_map_context_key_hash),
+	(pango_cairo_fc_font_map_context_key_equal):
+	* pango/pangocairo-fontmap.c
+	(pango_cairo_font_map_new_for_font_type),
+	(pango_cairo_font_map_set_default):
+	* pango/pangocairo-render.c (pango_cairo_renderer_init):
+	* pango/pangox-fontcache.c (free_cache_entry):
+	* pango/pangox-fontmap.c (close_display_cb),
+	(list_families_foreach), (pango_x_font_map_load_font),
+	(ignore_error):
+	* pango/pangox.c (average_width_foreach), (subfonts_foreach),
+	(pango_x_font_find_shaper), (pango_x_get_unknown_glyph),
+	(pango_x_get_item_properties), (pango_x_apply_ligatures),
+	(pango_x_font_get_unknown_glyph):
+	* pango/pangoxft-fontmap.c (pango_xft_font_map_init),
+	(close_display_cb):
+	* pango/querymodules.c (show_version):
+	Fix warnings.
+
 2008-12-22  Behdad Esfahbod  <behdad@gnome.org>
 
 	Bug 565379 – pango_font_description_better_match some style attributes

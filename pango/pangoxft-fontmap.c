@@ -81,7 +81,7 @@ pango_xft_font_map_class_init (PangoXftFontMapClass *class)
 }
 
 static void
-pango_xft_font_map_init (PangoXftFontMap *xftfontmap)
+pango_xft_font_map_init (PangoXftFontMap *xftfontmap G_GNUC_UNUSED)
 {
 }
 
@@ -130,7 +130,7 @@ static GSList *registered_displays;
 
 static int
 close_display_cb (Display   *display,
-		  XExtCodes *extcodes)
+		  XExtCodes *extcodes G_GNUC_UNUSED)
 {
   GSList *tmp_list;
 

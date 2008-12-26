@@ -481,9 +481,9 @@ typedef enum
 void
 pango_default_break (const gchar   *text,
 		     gint           length,
-		     PangoAnalysis *analysis,
+		     PangoAnalysis *analysis G_GNUC_UNUSED,
 		     PangoLogAttr  *attrs,
-		     int            attrs_len)
+		     int            attrs_len G_GNUC_UNUSED)
 {
   /* The rationale for all this is in section 5.15 of the Unicode 3.0 book,
    * the line breaking stuff is also in TR14 on unicode.org
@@ -651,7 +651,7 @@ pango_default_break (const gchar   *text,
 	GraphemeBreakType GB_type;
         /* Find the GraphemeBreakType of wc */
 	GB_type = GB_Other;
-	switch (type)
+	switch ((int) type)
 	  {
 	  case G_UNICODE_FORMAT:
 	    if (wc == 0x200C && wc == 0x200D)
@@ -769,7 +769,7 @@ pango_default_break (const gchar   *text,
 		}
 
 	    if (WB_type == WB_Other)
-	      switch (break_type)
+	      switch ((int) break_type)
 	        {
 		case G_UNICODE_BREAK_NUMERIC:
 		  if (wc != 0x066C)
@@ -782,7 +782,7 @@ pango_default_break (const gchar   *text,
 		}
 
 	    if (WB_type == WB_Other)
-	      switch (type)
+	      switch ((int) type)
 		{
 		case G_UNICODE_CONTROL:
 		  if (wc != 0x000D && wc != 0x000A && wc != 0x000B && wc != 0x000C && wc != 0x0085)
@@ -935,7 +935,7 @@ pango_default_break (const gchar   *text,
 	  attrs[i].is_char_break = TRUE;
 
 	  /* Make any necessary replacements first */
-	  switch (prev_break_type)
+	  switch ((int) prev_break_type)
 	    {
 	    case G_UNICODE_BREAK_HANGUL_L_JAMO:
 	    case G_UNICODE_BREAK_HANGUL_V_JAMO:
@@ -966,7 +966,7 @@ pango_default_break (const gchar   *text,
 	      ;
 	    }
 
-	  switch (prev_break_type)
+	  switch ((int) prev_break_type)
 	    {
 	    case G_UNICODE_BREAK_MANDATORY:
 	    case G_UNICODE_BREAK_LINE_FEED:
@@ -1008,7 +1008,7 @@ pango_default_break (const gchar   *text,
 	       * boundaries.
 	       */
 
-	      switch (break_type)
+	      switch ((int) break_type)
 		{
 		case G_UNICODE_BREAK_MANDATORY:
 		case G_UNICODE_BREAK_LINE_FEED:
@@ -1073,29 +1073,29 @@ pango_default_break (const gchar   *text,
 	      break;
 	    }
 
-	  if (break_op != BREAK_ALREADY_HANDLED)
+	  switch (break_op)
 	    {
-	      switch (break_op)
-		{
-		case BREAK_PROHIBITED:
-		  /* can't break here */
-		  attrs[i].is_char_break = FALSE;
-		  break;
+	    case BREAK_PROHIBITED:
+	      /* can't break here */
+	      attrs[i].is_char_break = FALSE;
+	      break;
 
-		case BREAK_IF_SPACES:
-		  /* break if prev char was space */
-		  if (prev_was_break_space)
-		    attrs[i].is_line_break = TRUE;
-		  break;
+	    case BREAK_IF_SPACES:
+	      /* break if prev char was space */
+	      if (prev_was_break_space)
+		attrs[i].is_line_break = TRUE;
+	      break;
 
-		case BREAK_ALLOWED:
-		  attrs[i].is_line_break = TRUE;
-		  break;
+	    case BREAK_ALLOWED:
+	      attrs[i].is_line_break = TRUE;
+	      break;
 
-		default:
-		  g_assert_not_reached ();
-		  break;
-		}
+	    case BREAK_ALREADY_HANDLED:
+	      break;
+
+	    default:
+	      g_assert_not_reached ();
+	      break;
 	    }
 	}
 
@@ -1117,7 +1117,7 @@ pango_default_break (const gchar   *text,
       if (current_word_type != WordNone)
 	{
 	  /* Check for a word end */
-	  switch (type)
+	  switch ((int) type)
 	    {
 	    case G_UNICODE_COMBINING_MARK:
 	    case G_UNICODE_ENCLOSING_MARK:
@@ -1184,7 +1184,7 @@ pango_default_break (const gchar   *text,
       else
 	{
 	  /* Check for a word start */
-	  switch (type)
+	  switch ((int) type)
 	    {
 	    case G_UNICODE_LOWERCASE_LETTER:
 	    case G_UNICODE_MODIFIER_LETTER:
@@ -1226,7 +1226,7 @@ pango_default_break (const gchar   *text,
        */
 
 #define MAYBE_START_NEW_SENTENCE                                \
-	      switch (type)                                     \
+	      switch ((int) type)                               \
 		{                                               \
 		case G_UNICODE_LINE_SEPARATOR:                  \
 		case G_UNICODE_PARAGRAPH_SEPARATOR:             \
@@ -1259,7 +1259,7 @@ pango_default_break (const gchar   *text,
       /* Break after line/para separators except carriage return
        * followed by newline
        */
-      switch (prev_type)
+      switch ((int) prev_type)
 	{
 	case G_UNICODE_LINE_SEPARATOR:
 	case G_UNICODE_PARAGRAPH_SEPARATOR:
@@ -1281,7 +1281,7 @@ pango_default_break (const gchar   *text,
       /* break before para/line separators except newline following
        * carriage return
        */
-      switch (type)
+      switch ((int) type)
 	{
 	case G_UNICODE_LINE_SEPARATOR:
 	case G_UNICODE_PARAGRAPH_SEPARATOR:
@@ -1304,7 +1304,7 @@ pango_default_break (const gchar   *text,
 	{
 	case STATE_SENTENCE_OUTSIDE:
 	  /* Start sentence if we have non-whitespace/format/control */
-	  switch (type)
+	  switch ((int) type)
 	    {
 	    case G_UNICODE_LINE_SEPARATOR:
 	    case G_UNICODE_PARAGRAPH_SEPARATOR:
@@ -1342,7 +1342,7 @@ pango_default_break (const gchar   *text,
 	   * loosely-specified OTHER_PUNCTUATION such as period,
 	   * comma, etc.; follow Unicode rules for breaks
 	   */
-	  switch (type)
+	  switch ((int) type)
 	    {
 	    case G_UNICODE_OTHER_PUNCTUATION:
 	    case G_UNICODE_CLOSE_PUNCTUATION:
@@ -1386,7 +1386,7 @@ pango_default_break (const gchar   *text,
 	  /* End sentence on anything besides more punctuation; follow
 	   * rules for breaks
 	   */
-	  switch (type)
+	  switch ((int) type)
 	    {
 	    case G_UNICODE_OTHER_PUNCTUATION:
 	    case G_UNICODE_CLOSE_PUNCTUATION:
@@ -1440,7 +1440,7 @@ pango_default_break (const gchar   *text,
 	   * we had to see a space, which ends the sentence.
 	   */
 
-	  switch (type)
+	  switch ((int) type)
 	    {
 	    case G_UNICODE_SPACE_SEPARATOR:
 	      /* continue in this state */
@@ -1479,7 +1479,7 @@ pango_default_break (const gchar   *text,
 	  break;
 
 	case STATE_SENTENCE_DOT:
-	  switch (type)
+	  switch ((int) type)
 	    {
 	    case G_UNICODE_CLOSE_PUNCTUATION:
 	      sentence_state = STATE_SENTENCE_POST_DOT_CLOSE;
@@ -1508,7 +1508,7 @@ pango_default_break (const gchar   *text,
 	  break;
 
 	case STATE_SENTENCE_POST_DOT_CLOSE:
-	  switch (type)
+	  switch ((int) type)
 	    {
 	    case G_UNICODE_SPACE_SEPARATOR:
 	      possible_sentence_end = i;
@@ -1536,7 +1536,7 @@ pango_default_break (const gchar   *text,
 
 	  possible_sentence_boundary = i;
 
-	  switch (type)
+	  switch ((int) type)
 	    {
 	    case G_UNICODE_SPACE_SEPARATOR:
 	      /* remain in current state */
@@ -1572,7 +1572,7 @@ pango_default_break (const gchar   *text,
 	  break;
 
 	case STATE_SENTENCE_POST_DOT_OPEN:
-	  switch (type)
+	  switch ((int) type)
 	    {
 	    case G_UNICODE_OPEN_PUNCTUATION:
 	      /* continue in current state */

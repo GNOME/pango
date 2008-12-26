@@ -53,7 +53,7 @@ struct _CacheEntry
 };
 
 static void
-free_cache_entry (char            *xlfd,
+free_cache_entry (char            *xlfd G_GNUC_UNUSED,
 		  CacheEntry      *entry,
 		  PangoXFontCache *cache)
 {

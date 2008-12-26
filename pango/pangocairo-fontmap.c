@@ -127,7 +127,7 @@ pango_cairo_font_map_new_for_font_type (cairo_font_type_t fonttype)
   /* Make sure that the type system is initialized */
   g_type_init ();
 
-  switch (fonttype)
+  switch ((int) fonttype)
   {
 #if defined(HAVE_CAIRO_ATSUI)
     case CAIRO_FONT_TYPE_QUARTZ:
@@ -206,7 +206,7 @@ pango_cairo_font_map_set_default (PangoCairoFontMap *fontmap)
 
   if (fontmap)
     g_object_ref (fontmap);
-  default_font_map = fontmap;
+  default_font_map = (PangoFontMap *) fontmap;
 }
 
 /**

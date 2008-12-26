@@ -429,7 +429,8 @@ pango_layout_set_height (PangoLayout *layout,
        * Bug 549003
        */
       if (layout->ellipsize != PANGO_ELLIPSIZE_NONE &&
-	  !(layout->lines && layout->is_ellipsized == FALSE && layout->line_count <= -height))
+	  !(layout->lines && layout->is_ellipsized == FALSE &&
+	    height < 0 && layout->line_count <= (guint) -height))
 	pango_layout_clear_lines (layout);
     }
 }
@@ -2791,7 +2792,7 @@ free_run (PangoLayoutRun *run, gpointer data)
 }
 
 static void
-extents_free (Extents *ext, gpointer data)
+extents_free (Extents *ext, gpointer data G_GNUC_UNUSED)
 {
   g_slice_free (Extents, ext);
 }
@@ -3668,7 +3669,7 @@ pango_layout_get_effective_attributes (PangoLayout *layout)
 
 static gboolean
 no_shape_filter_func (PangoAttribute *attribute,
-		      gpointer        data)
+		      gpointer        data G_GNUC_UNUSED)
 {
   static const PangoAttrType no_shape_types[] = {
     PANGO_ATTR_FOREGROUND,
@@ -3904,7 +3905,7 @@ pango_layout_line_ref (PangoLayoutLine *line)
   if (line == NULL)
     return NULL;
 
-  g_atomic_int_inc (&private->ref_count);
+  g_atomic_int_inc ((int *) &private->ref_count);
 
   return line;
 }
@@ -3927,7 +3928,7 @@ pango_layout_line_unref (PangoLayoutLine *line)
 
   g_return_if_fail (private->ref_count > 0);
 
-  if (g_atomic_int_dec_and_test (&private->ref_count))
+  if (g_atomic_int_dec_and_test ((int *) &private->ref_count))
     {
       g_slist_foreach (line->runs, (GFunc)free_run, GINT_TO_POINTER (1));
       g_slist_free (line->runs);
@@ -5228,7 +5229,7 @@ pango_layout_get_item_properties (PangoItem      *item,
     {
       PangoAttribute *attr = tmp_list->data;
 
-      switch (attr->klass->type)
+      switch ((int) attr->klass->type)
 	{
 	case PANGO_ATTR_UNDERLINE:
 	  properties->uline = ((PangoAttrInt *)attr)->value;

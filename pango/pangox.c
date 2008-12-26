@@ -929,7 +929,7 @@ get_font_metrics_from_string (PangoFont        *font,
 }
 
 static void
-average_width_foreach (PangoFont      *font,
+average_width_foreach (PangoFont      *font G_GNUC_UNUSED,
 		       PangoGlyphInfo *glyph_info,
 		       gpointer        data)
 {
@@ -1276,7 +1276,7 @@ pango_x_font_dispose (GObject *object)
 
 
 static void
-subfonts_foreach (gpointer key, gpointer value, gpointer data)
+subfonts_foreach (gpointer key, gpointer value, gpointer data G_GNUC_UNUSED)
 {
   g_free (key);
   g_free (value);
@@ -1372,7 +1372,7 @@ pango_x_font_get_coverage (PangoFont     *font,
 }
 
 static PangoEngineShape *
-pango_x_font_find_shaper (PangoFont     *font,
+pango_x_font_find_shaper (PangoFont     *font G_GNUC_UNUSED,
 			  PangoLanguage *language,
 			  guint32        ch)
 {
@@ -1471,7 +1471,7 @@ pango_x_find_glyph (PangoFont *font,
  * Return value: a glyph index into @font.
  **/
 PangoGlyph
-pango_x_get_unknown_glyph (PangoFont *font)
+pango_x_get_unknown_glyph (PangoFont *font G_GNUC_UNUSED)
 {
   return PANGO_GET_UNKNOWN_GLYPH (0);
 }
@@ -1666,7 +1666,7 @@ pango_x_get_item_properties (PangoItem      *item,
     {
       PangoAttribute *attr = tmp_list->data;
 
-      switch (attr->klass->type)
+      switch ((int) attr->klass->type)
 	{
 	case PANGO_ATTR_UNDERLINE:
 	  if (uline)
@@ -1709,11 +1709,11 @@ pango_x_get_item_properties (PangoItem      *item,
  * Return value: %FALSE, always.
  */
 gboolean
-pango_x_apply_ligatures (PangoFont     *font,
-			 PangoXSubfont  subfont_id,
-			 gunichar     **glyphs,
-			 int           *n_glyphs,
-			 int           **clusters)
+pango_x_apply_ligatures (PangoFont     *font G_GNUC_UNUSED,
+			 PangoXSubfont  subfont_id G_GNUC_UNUSED,
+			 gunichar     **glyphs G_GNUC_UNUSED,
+			 int           *n_glyphs G_GNUC_UNUSED,
+			 int           **clusters G_GNUC_UNUSED)
 {
   return FALSE;
 }
@@ -1816,7 +1816,7 @@ pango_x_fallback_shape (PangoFont        *font,
  * Return value: a glyph index into @font.
  */
 PangoGlyph
-pango_x_font_get_unknown_glyph (PangoFont *font,
+pango_x_font_get_unknown_glyph (PangoFont *font G_GNUC_UNUSED,
 				gunichar   wc)
 {
   return PANGO_GET_UNKNOWN_GLYPH (wc);

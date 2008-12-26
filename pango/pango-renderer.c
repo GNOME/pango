@@ -400,7 +400,7 @@ get_item_properties (PangoItem       *item,
     {
       PangoAttribute *attr = l->data;
 
-      switch (attr->klass->type)
+      switch ((int) attr->klass->type)
 	{
 	case PANGO_ATTR_SHAPE:
 	  if (shape_attr)
@@ -1265,7 +1265,7 @@ pango_renderer_default_prepare_run (PangoRenderer  *renderer,
     {
       PangoAttribute *attr = l->data;
 
-      switch (attr->klass->type)
+      switch ((int) attr->klass->type)
 	{
 	case PANGO_ATTR_UNDERLINE:
 	  renderer->underline = ((PangoAttrInt *)attr)->value;

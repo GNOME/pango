@@ -233,7 +233,7 @@ static GSList *registered_displays;
 
 static int
 close_display_cb (Display   *display,
-		  XExtCodes *extcodes)
+		  XExtCodes *extcodes G_GNUC_UNUSED)
 {
   pango_x_shutdown_display (display);
   registered_displays = g_slist_remove (registered_displays, display);
@@ -397,7 +397,7 @@ pango_x_font_map_finalize (GObject *object)
 }
 
 static void
-list_families_foreach (gpointer key,
+list_families_foreach (gpointer key G_GNUC_UNUSED,
 		       gpointer value,
 		       gpointer user_data)
 {
@@ -459,7 +459,7 @@ pango_x_get_font_family (PangoXFontMap *xfontmap,
 
 static PangoFont *
 pango_x_font_map_load_font (PangoFontMap               *fontmap,
-			    PangoContext               *context,
+			    PangoContext               *context G_GNUC_UNUSED,
 			    const PangoFontDescription *description)
 {
   PangoXFontMap *xfontmap = (PangoXFontMap *)fontmap;
@@ -545,8 +545,8 @@ pango_x_font_map_load_font (PangoFontMap               *fontmap,
 static gboolean error_occurred;
 
 static int
-ignore_error (Display     *d,
-	      XErrorEvent *e)
+ignore_error (Display     *d G_GNUC_UNUSED,
+	      XErrorEvent *e G_GNUC_UNUSED)
 {
   return 0;
 }
@@ -1643,7 +1643,7 @@ pango_x_family_list_faces (PangoFontFamily  *family,
     }
 }
 
-G_CONST_RETURN char *
+static G_CONST_RETURN char *
 pango_x_family_get_name (PangoFontFamily  *family)
 {
   PangoXFamily *xfamily = PANGO_X_FAMILY (family);
