@@ -27,7 +27,7 @@
 
 static void
 default_substitute (FcPattern *pattern,
-		    gpointer   data)
+		    gpointer   data G_GNUC_UNUSED)
 {
   FcPatternDel (pattern, FC_DPI);
   FcPatternAddInteger (pattern, FC_DPI, opt_dpi);
@@ -86,7 +86,7 @@ render_callback (PangoLayout *layout,
 		 int          x,
 		 int          y,
 		 gpointer     context,
-		 gpointer     state)
+		 gpointer     state G_GNUC_UNUSED)
 {
   MyXftContext *xft_context = (MyXftContext *) context;
 

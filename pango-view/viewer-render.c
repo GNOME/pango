@@ -365,7 +365,7 @@ parse_enum (GType       type,
 	    int        *value,
 	    const char *name,
 	    const char *arg,
-	    gpointer    data,
+	    gpointer    data G_GNUC_UNUSED,
 	    GError **error)
 {
   char *possible_values = NULL;
@@ -399,7 +399,7 @@ parse_align (const char *name,
 	     gpointer    data,
 	     GError **error)
 {
-  return parse_enum (PANGO_TYPE_ALIGNMENT, &opt_align,
+  return parse_enum (PANGO_TYPE_ALIGNMENT, (int*)(void*)&opt_align,
 		     name, arg, data, error);
 }
 
@@ -409,7 +409,7 @@ parse_ellipsis (const char *name,
 		gpointer    data,
 		GError **error)
 {
-  return parse_enum (PANGO_TYPE_ELLIPSIZE_MODE, &opt_ellipsize,
+  return parse_enum (PANGO_TYPE_ELLIPSIZE_MODE, (int*)(void*)&opt_ellipsize,
 		     name, arg, data, error);
 }
 
@@ -419,7 +419,7 @@ parse_gravity (const char *name,
 	       gpointer    data,
 	       GError **error)
 {
-  return parse_enum (PANGO_TYPE_GRAVITY, &opt_gravity,
+  return parse_enum (PANGO_TYPE_GRAVITY, (int*)(void*)&opt_gravity,
 		     name, arg, data, error);
 }
 
@@ -429,14 +429,14 @@ parse_gravity_hint (const char *name,
 		    gpointer    data,
 		    GError **error)
 {
-  return parse_enum (PANGO_TYPE_GRAVITY_HINT, &opt_gravity_hint,
+  return parse_enum (PANGO_TYPE_GRAVITY_HINT, (int*)(void*)&opt_gravity_hint,
 		     name, arg, data, error);
 }
 
 static gboolean
-parse_hinting (const char *name,
+parse_hinting (const char *name G_GNUC_UNUSED,
 	       const char *arg,
-	       gpointer    data,
+	       gpointer    data G_GNUC_UNUSED,
 	       GError    **error)
 {
   gboolean ret = TRUE;
@@ -466,7 +466,7 @@ parse_wrap (const char *name,
 	    GError    **error)
 {
   gboolean ret;
-  if ((ret = parse_enum (PANGO_TYPE_WRAP_MODE, &opt_wrap,
+  if ((ret = parse_enum (PANGO_TYPE_WRAP_MODE, (int*)(void*)&opt_wrap,
 			 name, arg, data, error)))
     {
       opt_wrap_set = TRUE;
@@ -523,9 +523,9 @@ backend_description (void)
 }
 
 static gboolean
-parse_backend (const char *name,
+parse_backend (const char *name G_GNUC_UNUSED,
 	       const char *arg,
-	       gpointer    data,
+	       gpointer    data G_GNUC_UNUSED,
 	       GError    **error)
 {
   gboolean ret = TRUE;
@@ -555,10 +555,10 @@ parse_backend (const char *name,
 
 
 static gboolean
-show_version(const char *name,
-	     const char *arg,
-	     gpointer    data,
-	     GError    **error)
+show_version(const char *name G_GNUC_UNUSED,
+	     const char *arg G_GNUC_UNUSED,
+	     gpointer    data G_GNUC_UNUSED,
+	     GError    **error G_GNUC_UNUSED)
 {
   g_printf("%s (%s) %s\n", prog_name, PACKAGE_NAME, PACKAGE_VERSION);
   g_printf("module interface version: %s\n", MODULE_VERSION);

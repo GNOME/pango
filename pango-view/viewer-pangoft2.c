@@ -32,7 +32,7 @@
 
 static void
 substitute_func (FcPattern *pattern,
-		 gpointer   data)
+		 gpointer   data G_GNUC_UNUSED)
 {
   if (opt_hinting != HINT_DEFAULT)
     {
@@ -45,7 +45,7 @@ substitute_func (FcPattern *pattern,
 }
 
 static gpointer
-pangoft2_view_create (const PangoViewer *klass)
+pangoft2_view_create (const PangoViewer *klass G_GNUC_UNUSED)
 {
   PangoFontMap *fontmap;
   fontmap = pango_ft2_font_map_new ();
@@ -69,7 +69,7 @@ pangoft2_view_get_context (gpointer instance)
 }
 
 static gpointer
-pangoft2_view_create_surface (gpointer instance,
+pangoft2_view_create_surface (gpointer instance G_GNUC_UNUSED,
 			      int      width,
 			      int      height)
 {
@@ -88,7 +88,7 @@ pangoft2_view_create_surface (gpointer instance,
 }
 
 static void
-pangoft2_view_destroy_surface (gpointer instance,
+pangoft2_view_destroy_surface (gpointer instance G_GNUC_UNUSED,
 			       gpointer surface)
 {
   FT_Bitmap *bitmap = (FT_Bitmap *) surface;
@@ -102,7 +102,7 @@ render_callback (PangoLayout *layout,
 		 int          x,
 		 int          y,
 		 gpointer     context,
-		 gpointer     state)
+		 gpointer     state G_GNUC_UNUSED)
 {
   pango_ft2_render_layout ((FT_Bitmap *)context,
 			   layout,
@@ -110,11 +110,11 @@ render_callback (PangoLayout *layout,
 }
 
 static void
-pangoft2_view_render (gpointer      instance,
+pangoft2_view_render (gpointer      instance G_GNUC_UNUSED,
 		      gpointer      surface,
 		      PangoContext *context,
-		      int           width,
-		      int           height,
+		      int           width G_GNUC_UNUSED,
+		      int           height G_GNUC_UNUSED,
 		      gpointer      state)
 {
   int pix_idx;
@@ -127,13 +127,13 @@ pangoft2_view_render (gpointer      instance,
 }
 
 static void
-pangoft2_view_write (gpointer instance,
+pangoft2_view_write (gpointer instance G_GNUC_UNUSED,
 		     gpointer surface,
 		     FILE    *stream,
 		     int      width,
 		     int      height)
 {
-  int row;
+  int row, bytes;
   FT_Bitmap *bitmap = (FT_Bitmap *) surface;
 
   /* Write it as pgm to output */
@@ -142,7 +142,7 @@ pangoft2_view_write (gpointer instance,
 	  "%d %d\n"
 	  "255\n", width, height);
   for (row = 0; row < height; row++)
-    fwrite(bitmap->buffer + row * bitmap->pitch, 1, width, stream);
+    bytes = fwrite(bitmap->buffer + row * bitmap->pitch, 1, width, stream);
 }
 
 const PangoViewer pangoft2_viewer = {

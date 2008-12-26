@@ -38,7 +38,7 @@ typedef struct
 
 /* TODO: hinting */
 static gpointer
-pangocairo_view_create (const PangoViewer *klass)
+pangocairo_view_create (const PangoViewer *klass G_GNUC_UNUSED)
 {
   CairoViewer *instance;
 
@@ -279,7 +279,7 @@ static void
 transform_callback (PangoContext *context,
 		    PangoMatrix  *matrix,
 		    gpointer      cr_context,
-		    gpointer      state)
+		    gpointer      state G_GNUC_UNUSED)
 {
   cairo_t *cr = (cairo_t *)cr_context;
   cairo_matrix_t cairo_matrix;
@@ -304,11 +304,11 @@ transform_callback (PangoContext *context,
 }
 
 static void
-pangocairo_view_render (gpointer      instance,
+pangocairo_view_render (gpointer      instance G_GNUC_UNUSED,
 			gpointer      surface,
 			PangoContext *context,
-			int           width,
-			int           height,
+			int           width G_GNUC_UNUSED,
+			int           height G_GNUC_UNUSED,
 			gpointer      state)
 {
   cairo_t *cr;
@@ -355,11 +355,11 @@ write_func (void                *closure,
 }
 
 static void
-pangocairo_view_write (gpointer instance,
+pangocairo_view_write (gpointer instance G_GNUC_UNUSED,
 		       gpointer surface,
 		       FILE    *stream,
-		       int      width,
-		       int      height)
+		       int      width G_GNUC_UNUSED,
+		       int      height G_GNUC_UNUSED)
 {
   CairoSurface *c_surface = (CairoSurface *) surface;
 

@@ -86,7 +86,7 @@ main (int    argc,
 
 	      convert_argv[2] = opt_output;
 
-	      if (!g_spawn_async_with_pipes (NULL, (gchar **)convert_argv, NULL,
+	      if (!g_spawn_async_with_pipes (NULL, (gchar **)(void*)convert_argv, NULL,
 					     G_SPAWN_DO_NOT_REAP_CHILD |
 					     G_SPAWN_SEARCH_PATH |
 					     G_SPAWN_STDOUT_TO_DEV_NULL |
@@ -141,7 +141,7 @@ main (int    argc,
 	    fail ("%s viewer backend does not support displaying or writing", view->name);
 	  display_argv[2] = title;
 
-	  if (!g_spawn_async_with_pipes (NULL, (gchar **)display_argv, NULL,
+	  if (!g_spawn_async_with_pipes (NULL, (gchar **)(void*)display_argv, NULL,
 					 G_SPAWN_DO_NOT_REAP_CHILD |
 					 G_SPAWN_SEARCH_PATH |
 					 G_SPAWN_STDOUT_TO_DEV_NULL |

@@ -64,7 +64,7 @@ render_callback (PangoLayout *layout,
 		 int          x,
 		 int          y,
 		 gpointer     context,
-		 gpointer     state)
+		 gpointer     state G_GNUC_UNUSED)
 {
   MyXContext *x_context = (MyXContext *) context;
 

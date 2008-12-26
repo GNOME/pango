@@ -1,5 +1,24 @@
 2008-12-25  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango-view/viewer-main.c (main):
+	* pango-view/viewer-pangocairo.c (pangocairo_view_create),
+	(transform_callback), (pangocairo_view_render),
+	(pangocairo_view_write):
+	* pango-view/viewer-pangoft2.c (substitute_func),
+	(pangoft2_view_create), (pangoft2_view_create_surface),
+	(pangoft2_view_destroy_surface), (render_callback),
+	(pangoft2_view_render), (pangoft2_view_write):
+	* pango-view/viewer-pangox.c (render_callback):
+	* pango-view/viewer-pangoxft.c (default_substitute),
+	(render_callback):
+	* pango-view/viewer-render.c (parse_enum), (parse_align),
+	(parse_ellipsis), (parse_gravity), (parse_gravity_hint),
+	(parse_hinting), (parse_wrap), (parse_backend), (show_version):
+	* pango-view/viewer-x.c (x_view_init):
+	Fix all warnings in pango-view/
+
+2008-12-25  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/pangofc-fontmap.c (pango_fc_font_map_finalize),
 	(pango_fc_font_map_shutdown):
 	Cleanup fontmap finalization.
