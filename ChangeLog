@@ -1,5 +1,10 @@
 2009-01-02  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango/pangocairo-context.c (_pango_cairo_update_context):
+	Completely ignore CTM translation offsets.
+
+2009-01-02  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/pangocairo-fcfontmap.c (pango_cairo_fc_font_map_finalize):
 	* pango/pangoft2-fontmap.c (pango_ft2_font_map_finalize):
 	Finalize FreeType library after finalizing the FC fontmap.  Fixes

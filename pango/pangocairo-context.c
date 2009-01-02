@@ -123,8 +123,8 @@ _pango_cairo_update_context (cairo_t      *cr,
   pango_matrix.yx = cairo_matrix.yx;
   pango_matrix.xy = cairo_matrix.xy;
   pango_matrix.yy = cairo_matrix.yy;
-  pango_matrix.x0 = cairo_matrix.x0;
-  pango_matrix.y0 = cairo_matrix.y0;
+  pango_matrix.x0 = 0;
+  pango_matrix.y0 = 0;
 
   current_matrix = pango_context_get_matrix (context);
   if (!current_matrix)
@@ -133,7 +133,7 @@ _pango_cairo_update_context (cairo_t      *cr,
   /* layout is matrix-independent if metrics-hinting is off.
    * also ignore matrix translation offsets */
   if ((cairo_font_options_get_hint_metrics (merged_options) != CAIRO_HINT_METRICS_OFF) &&
-      (0 != memcmp (&pango_matrix, current_matrix, 4 * sizeof (double))))
+      (0 != memcmp (&pango_matrix, current_matrix, sizeof (PangoMatrix))))
     changed = TRUE;
 
   pango_context_set_matrix (context, &pango_matrix);
