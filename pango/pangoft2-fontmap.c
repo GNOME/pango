@@ -102,9 +102,9 @@ pango_ft2_font_map_finalize (GObject *object)
   if (ft2fontmap->substitute_destroy)
     ft2fontmap->substitute_destroy (ft2fontmap->substitute_data);
 
-  FT_Done_FreeType (ft2fontmap->library);
-
   G_OBJECT_CLASS (pango_ft2_font_map_parent_class)->finalize (object);
+
+  FT_Done_FreeType (ft2fontmap->library);
 }
 
 /**

@@ -74,9 +74,9 @@ pango_cairo_fc_font_map_finalize (GObject *object)
 {
   PangoCairoFcFontMap *cffontmap = (PangoCairoFcFontMap *) (object);
 
-  FT_Done_FreeType (cffontmap->library);
-
   G_OBJECT_CLASS (pango_cairo_fc_font_map_parent_class)->finalize (object);
+
+  FT_Done_FreeType (cffontmap->library);
 }
 
 static void

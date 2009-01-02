@@ -1,5 +1,12 @@
 2009-01-02  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango/pangocairo-fcfontmap.c (pango_cairo_fc_font_map_finalize):
+	* pango/pangoft2-fontmap.c (pango_ft2_font_map_finalize):
+	Finalize FreeType library after finalizing the FC fontmap.  Fixes
+	segfault in the PangoFT2FontMap's finalize.
+
+2009-01-02  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/pango-context.c (shaper_font_element_destroy),
 	(get_shaper_font_cache), (shaper_font_cache_insert),
 	(get_shaper_and_font_foreach), (itemize_state_process_run):
