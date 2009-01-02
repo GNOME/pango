@@ -57,10 +57,13 @@ main (int    argc,
 
   instance = view->create (view);
   context = view->get_context (instance);
-  do_output (context, NULL, NULL, NULL, NULL, &width, &height);
+  width = height = 1;
+  surface = view->create_surface (instance, width, height);
+  view->render (instance, surface, context, &width, &height, NULL);
+  view->destroy_surface (instance, surface);
   surface = view->create_surface (instance, width, height);
   for (run = 0; run < MAX(1,opt_runs); run++)
-    view->render (instance, surface, context, width, height, NULL);
+    view->render (instance, surface, context, &width, &height, NULL);
 
   if (opt_output)
     {
@@ -123,7 +126,7 @@ main (int    argc,
 	      if (!state)
 		break;
 
-	      view->render (instance, surface, context, width, height, state);
+	      view->render (instance, surface, context, &width, &height, state);
 	    }
 
 	  if (view->destroy_window)

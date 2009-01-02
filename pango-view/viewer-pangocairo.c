@@ -309,27 +309,16 @@ static void
 pangocairo_view_render (gpointer      instance G_GNUC_UNUSED,
 			gpointer      surface,
 			PangoContext *context,
-			int           width G_GNUC_UNUSED,
-			int           height G_GNUC_UNUSED,
+			int          *width,
+			int          *height,
 			gpointer      state)
 {
   cairo_t *cr;
   CairoSurface *c_surface = (CairoSurface *) surface;
 
-  if (!surface)
-    {
-      cairo_surface_t *cs;
-      /* This is annoying ... we have to create a temporary surface just to
-       * get the extents of the text.
-       */
-      /* image surface here is not good as it may have font options different
-       * from the target surface */
-      cs = cairo_image_surface_create (CAIRO_FORMAT_RGB24, 1, 1);
-      cr = cairo_create (cs);
-      cairo_surface_destroy (cs);
-    }
-  else
-    cr = cairo_create (c_surface->cairo);
+  g_assert (surface);
+
+  cr = cairo_create (c_surface->cairo);
 
   transform_callback (context, NULL, cr, state);
 
@@ -337,7 +326,7 @@ pangocairo_view_render (gpointer      instance G_GNUC_UNUSED,
   cairo_paint (cr);
 
   cairo_set_source_rgb (cr, 0.0, 0.0, 0.0);
-  do_output (context, render_callback, transform_callback, cr, state, NULL, NULL);
+  do_output (context, render_callback, transform_callback, cr, state, width, height);
 
   cairo_destroy (cr);
 }

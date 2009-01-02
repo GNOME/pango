@@ -113,14 +113,14 @@ static void
 pangoft2_view_render (gpointer      instance G_GNUC_UNUSED,
 		      gpointer      surface,
 		      PangoContext *context,
-		      int           width G_GNUC_UNUSED,
-		      int           height G_GNUC_UNUSED,
+		      int          *width,
+		      int          *height,
 		      gpointer      state)
 {
   int pix_idx;
   FT_Bitmap *bitmap = (FT_Bitmap *) surface;
 
-  do_output (context, render_callback, NULL, surface, state, NULL, NULL);
+  do_output (context, render_callback, NULL, surface, state, width, height);
 
   for (pix_idx=0; pix_idx<bitmap->pitch * bitmap->rows; pix_idx++)
     bitmap->buffer[pix_idx] = 255 - bitmap->buffer[pix_idx];

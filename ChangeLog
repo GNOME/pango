@@ -1,5 +1,16 @@
 2009-01-02  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango-view/viewer-main.c (main):
+	* pango-view/viewer-pangocairo.c (pangocairo_view_render):
+	* pango-view/viewer-pangoft2.c (pangoft2_view_render):
+	* pango-view/viewer-pangox.c (pangox_view_render):
+	* pango-view/viewer-pangoxft.c (pangoxft_view_render):
+	* pango-view/viewer.h:
+	Make sure we measure layout with the same surface type as the
+	final target.  Also reduces fonts loaded by the pangocairo backend.
+
+2009-01-02  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/pangocairo-context.c (_pango_cairo_update_context):
 	Completely ignore CTM translation offsets.
 

@@ -100,8 +100,8 @@ static void
 pangoxft_view_render (gpointer      instance,
 		      gpointer      surface,
 		      PangoContext *context,
-		      int           width,
-		      int           height,
+		      int          *width,
+		      int          *height,
 		      gpointer      state)
 {
   XViewer *x = (XViewer *) instance;
@@ -119,7 +119,7 @@ pangoxft_view_render (gpointer      instance,
   color.color.green = 0xffff;
   color.color.alpha = 0xffff;
 
-  XftDrawRect (draw, &color, 0, 0, width, height);
+  XftDrawRect (draw, &color, 0, 0, *width, *height);
 
   color.color.red = 0x0;
   color.color.green = 0x0;
@@ -129,7 +129,7 @@ pangoxft_view_render (gpointer      instance,
   xft_context.draw = draw;
   xft_context.color = color;
 
-  do_output (context, render_callback, NULL, &xft_context, state, NULL, NULL);
+  do_output (context, render_callback, NULL, &xft_context, state, width, height);
 
   XftDrawDestroy (draw);
 }

@@ -50,8 +50,8 @@ struct _PangoViewer {
   void (*render) (gpointer      instance,
 		  gpointer      surface,
 		  PangoContext *context,
-		  int           width,
-		  int           height,
+		  int          *width,
+		  int          *height,
 		  gpointer      state);
 
   /* The following can be NULL */

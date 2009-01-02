@@ -79,8 +79,8 @@ static void
 pangox_view_render (gpointer      instance,
 		    gpointer      surface,
 		    PangoContext *context,
-		    int           width,
-		    int           height,
+		    int          *width,
+		    int          *height,
 		    gpointer      state)
 {
   XViewer *x = (XViewer *) instance;
@@ -91,14 +91,14 @@ pangox_view_render (gpointer      instance,
   gc = XCreateGC (x->display, pixmap, 0, NULL);
 
   XSetForeground(x->display, gc, WhitePixel(x->display, x->screen));
-  XFillRectangle (x->display, pixmap, gc, 0, 0, width, height);
+  XFillRectangle (x->display, pixmap, gc, 0, 0, *width, *height);
 
   x_context.x = x;
   x_context.drawable = pixmap;
   x_context.gc = gc;
 
   XSetForeground(x->display, gc, BlackPixel(x->display, x->screen));
-  do_output (context, render_callback, NULL, &x_context, state, NULL, NULL);
+  do_output (context, render_callback, NULL, &x_context, state, width, height);
 
   XFlush(x->display);
 
