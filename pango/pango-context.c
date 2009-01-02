@@ -577,6 +577,8 @@ shaper_font_cache_destroy (ShaperFontCache *cache)
 static void
 shaper_font_element_destroy (ShaperFontElement *element)
 {
+  if (element->shape_engine)
+    g_object_unref (element->shape_engine);
   if (element->font)
     g_object_unref (element->font);
   g_slice_free (ShaperFontElement, element);
@@ -588,7 +590,7 @@ get_shaper_font_cache (PangoFontset *fontset)
   ShaperFontCache *cache;
 
   static GQuark cache_quark = 0;
-  if (!cache_quark)
+  if (G_UNLIKELY (!cache_quark))
     cache_quark = g_quark_from_static_string ("pango-shaper-font-cache");
 
   cache = g_object_get_qdata (G_OBJECT (fontset), cache_quark);
@@ -632,8 +634,8 @@ shaper_font_cache_insert (ShaperFontCache   *cache,
 			  PangoFont         *font)
 {
   ShaperFontElement *element = g_slice_new (ShaperFontElement);
-  element->shape_engine = shape_engine;
-  element->font = font;
+  element->shape_engine = shape_engine ? g_object_ref (shape_engine) : NULL;
+  element->font = font ? g_object_ref (font) : NULL;
 
   g_hash_table_insert (cache->hash, GUINT_TO_POINTER (wc), element);
 }
@@ -1075,7 +1077,7 @@ get_shaper_and_font_foreach (PangoFontset *fontset G_GNUC_UNUSED,
       if (level != PANGO_COVERAGE_NONE)
 	{
 	  info->shape_engine = engine;
-	  info->font = g_object_ref (font);
+	  info->font = font;
 	  return TRUE;
 	}
     }
@@ -1384,7 +1386,8 @@ itemize_state_process_run (ItemizeState *state)
 	      else
 	        what = "nothing (oops!)";
 	       
-	      g_warning ("failed to find shape engine, expect ugly output. engine-type='%s', script='%s'",
+	      g_warning ("failed to find %s, expect ugly output. engine-type='%s', script='%s'",
+			 what,
 			 pango_font_map_get_shape_engine_type (fontmap),
 			 script_name);
 

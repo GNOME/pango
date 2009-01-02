@@ -1,3 +1,10 @@
+2009-01-02  Behdad Esfahbod  <behdad@gnome.org>
+
+	* pango/pango-context.c (shaper_font_element_destroy),
+	(get_shaper_font_cache), (shaper_font_cache_insert),
+	(get_shaper_and_font_foreach), (itemize_state_process_run):
+	Fix possible reference leak when fallback is disabled.
+
 2008-12-26  Behdad Esfahbod  <behdad@gnome.org>
 
 	Bug 565644 – Maybe pango_font_descriptions_free is deprecated
