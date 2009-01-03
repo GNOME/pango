@@ -1,5 +1,11 @@
 2009-01-02  Behdad Esfahbod  <behdad@gnome.org>
 
+	Bug 515807 – Don't bind modules lazily
+
+	* pango/modules.c (pango_module_load): Don't bind modules lazy.
+
+2009-01-02  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 512662 – Update check.docs for pango-undeclared.txt
 
 	* docs/Makefile.am:
