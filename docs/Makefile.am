@@ -95,6 +95,9 @@ endif
 
 include $(top_srcdir)/gtk-doc.make
 
+# This line really belongs in gtk-doc.mk
+$(REPORT_FILES): sgml-build.stamp
+
 ########################################################################
 
 man_MANS = pango-querymodules.1 
@@ -146,3 +149,4 @@ endif
 .PHONY: dist-local-check-no-cross-references
 
 TESTS = check.docs
+TESTS_ENVIRONMENT = srcdir="$(srcdir)" top_srcdir="$(top_srcdir)" MAKE="$(MAKE) $(AM_MAKEFLAGS)" DOC_MODULE="$(DOC_MODULE)" REPORT_FILES="$(REPORT_FILES)"

@@ -1,5 +1,13 @@
 2009-01-02  Behdad Esfahbod  <behdad@gnome.org>
 
+	Bug 512662 – Update check.docs for pango-undeclared.txt
+
+	* docs/Makefile.am:
+	* docs/check.docs:
+	Sync to the version in cairo.
+
+2009-01-02  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango-view/viewer-main.c (main):
 	* pango-view/viewer-pangocairo.c (pangocairo_view_render):
 	* pango-view/viewer-pangoft2.c (pangoft2_view_render):
