@@ -1,5 +1,17 @@
 2009-01-03  Behdad Esfahbod  <behdad@gnome.org>
 
+	Bug 384362 – pango can't select some font styles
+
+	* pango/pango-font.h:
+	Add enum values PANGO_WEIGHT_THIN and PANGO_WEIGHT_MEDIUM to
+	PangoWeight.
+
+	* pango/fonts.c: Parse "Thin", "Extra-Light", "Regular", "Demi-Bold",
+	"Extra-Bold", and "Black" as weight descriptors (from the OpenType
+	spec).
+
+2009-01-03  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 168085 – numeric styles in pango_font_description_to_string()
 
 	* pango/fonts.c (parse_int), (find_field), (find_field_any),

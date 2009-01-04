@@ -858,14 +858,20 @@ static const FieldMap variant_map[] = {
 };
 
 static const FieldMap weight_map[] = {
+  { PANGO_WEIGHT_THIN, "Thin" },
   { PANGO_WEIGHT_ULTRALIGHT, "Ultra-Light" },
+  { PANGO_WEIGHT_ULTRALIGHT, "Extra-Light" },
   { PANGO_WEIGHT_LIGHT, "Light" },
   { PANGO_WEIGHT_NORMAL, "" },
-  { 500, "Medium" },
+  { PANGO_WEIGHT_NORMAL, "Regular" },
+  { PANGO_WEIGHT_MEDIUM, "Medium" },
   { PANGO_WEIGHT_SEMIBOLD, "Semi-Bold" },
+  { PANGO_WEIGHT_SEMIBOLD, "Demi-Bold" },
   { PANGO_WEIGHT_BOLD, "Bold" },
   { PANGO_WEIGHT_ULTRABOLD, "Ultra-Bold" },
-  { PANGO_WEIGHT_HEAVY, "Heavy" }
+  { PANGO_WEIGHT_ULTRABOLD, "Extra-Bold" },
+  { PANGO_WEIGHT_HEAVY, "Heavy" },
+  { PANGO_WEIGHT_HEAVY, "Black" }
 };
 
 static const FieldMap stretch_map[] = {
