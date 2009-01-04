@@ -1,3 +1,10 @@
+2009-01-03  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 529591 – Code related to malayalam is misplaced.
+	Patch from Rahul Bhalerao
+
+	* modules/indic/indic-ot.c (indic_ot_reorder): Fix it.
+
 2009-01-02  Behdad Esfahbod  <behdad@gnome.org>
 
 	Bug 515807 – Don't bind modules lazily
