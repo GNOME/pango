@@ -1,5 +1,14 @@
 2009-01-03  Behdad Esfahbod  <behdad@gnome.org>
 
+	Bug 168085 – numeric styles in pango_font_description_to_string()
+
+	* pango/fonts.c (parse_int), (find_field), (find_field_any),
+	(append_field), (pango_font_description_to_string):
+	Print-out, and parse, numeric styles correctly.  Things like
+	"DejaVu Sans weight=100" parse correctly now.
+
+2009-01-03  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 529591 – Code related to malayalam is misplaced.
 	Patch from Rahul Bhalerao
 

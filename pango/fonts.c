@@ -920,9 +920,38 @@ field_matches (const gchar *s1,
 }
 
 static gboolean
-find_field (const FieldMap *map, int n_elements, const char *str, int len, int *val)
+parse_int (const char *word,
+	   size_t      wordlen,
+	   int        *out)
+{
+  char *end;
+  long val = strtol (word, &end, 10);
+  int i = val;
+
+  if (end != word && (end == word + wordlen) && val >= 0 && val == i)
+    {
+      if (out)
+        *out = i;
+
+      return TRUE;
+    }
+
+  return FALSE;
+}
+
+static gboolean
+find_field (const char *what, const FieldMap *map, int n_elements, const char *str, int len, int *val)
 {
   int i;
+  gboolean had_prefix = FALSE;
+
+  i = strlen (what);
+  if (len > i && 0 == strncmp (what, str, i) && str[i] == '=')
+    {
+      str += i + 1;
+      len -= i + 1;
+      had_prefix = TRUE;
+    }
 
   for (i=0; i<n_elements; i++)
     {
@@ -933,6 +962,9 @@ find_field (const FieldMap *map, int n_elements, const char *str, int len, int *
 	  return TRUE;
 	}
     }
+
+  if (had_prefix)
+    return parse_int (str, len, val);
 
   return FALSE;
 }
@@ -945,7 +977,7 @@ find_field_any (const char *str, int len, PangoFontDescription *desc)
 
 #define FIELD(NAME, MASK) \
   G_STMT_START { \
-  if (find_field (NAME##_map, G_N_ELEMENTS (NAME##_map), str, len, \
+  if (find_field (G_STRINGIFY (NAME), NAME##_map, G_N_ELEMENTS (NAME##_map), str, len, \
 		  desc ? (int *)(void *)&desc->NAME : NULL)) \
     { \
       if (desc) \
@@ -954,10 +986,10 @@ find_field_any (const char *str, int len, PangoFontDescription *desc)
     } \
   } G_STMT_END
 
-  FIELD (style,   PANGO_FONT_MASK_STYLE);
-  FIELD (variant, PANGO_FONT_MASK_VARIANT);
   FIELD (weight,  PANGO_FONT_MASK_WEIGHT);
+  FIELD (style,   PANGO_FONT_MASK_STYLE);
   FIELD (stretch, PANGO_FONT_MASK_STRETCH);
+  FIELD (variant, PANGO_FONT_MASK_VARIANT);
   FIELD (gravity, PANGO_FONT_MASK_GRAVITY);
 
 #undef FIELD
@@ -1115,7 +1147,7 @@ pango_font_description_from_string (const char *str)
 }
 
 static void
-append_field (GString *str, const FieldMap *map, int n_elements, int val)
+append_field (GString *str, const char *what, const FieldMap *map, int n_elements, int val)
 {
   int i;
   for (i=0; i<n_elements; i++)
@@ -1134,7 +1166,7 @@ append_field (GString *str, const FieldMap *map, int n_elements, int val)
 
   if (G_LIKELY (str->len > 0 || str->str[str->len -1] != ' '))
     g_string_append_c (str, ' ');
-  g_string_append_printf (str, "%d", val);
+  g_string_append_printf (str, "%s=%d", what, val);
 }
 
 /**
@@ -1181,12 +1213,17 @@ pango_font_description_to_string (const PangoFontDescription  *desc)
 	g_string_append_c (result, ',');
     }
 
-  append_field (result, weight_map, G_N_ELEMENTS (weight_map), desc->weight);
-  append_field (result, style_map, G_N_ELEMENTS (style_map), desc->style);
-  append_field (result, stretch_map, G_N_ELEMENTS (stretch_map), desc->stretch);
-  append_field (result, variant_map, G_N_ELEMENTS (variant_map), desc->variant);
+#define FIELD(NAME, MASK) \
+  append_field (result, G_STRINGIFY (NAME), NAME##_map, G_N_ELEMENTS (NAME##_map), desc->NAME)
+
+  FIELD (weight,  PANGO_FONT_MASK_WEIGHT);
+  FIELD (style,   PANGO_FONT_MASK_STYLE);
+  FIELD (stretch, PANGO_FONT_MASK_STRETCH);
+  FIELD (variant, PANGO_FONT_MASK_VARIANT);
   if (desc->mask & PANGO_FONT_MASK_GRAVITY)
-    append_field (result, gravity_map, G_N_ELEMENTS (gravity_map), desc->gravity);
+    FIELD (gravity, PANGO_FONT_MASK_GRAVITY);
+
+#undef FIELD
 
   if (result->len == 0)
     g_string_append (result, "Normal");
