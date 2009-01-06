@@ -483,7 +483,7 @@ pango_fc_font_map_finalize (GObject *object)
 {
   PangoFcFontMap *fcfontmap = PANGO_FC_FONT_MAP (object);
   PangoFcFontMapPrivate *priv = fcfontmap->priv;
-
+  int i;
 
   /* Shutdown, so we clear the fonts and mark them as shut down */
   pango_fc_font_map_shutdown (fcfontmap);
@@ -504,6 +504,13 @@ pango_fc_font_map_finalize (GObject *object)
       g_slice_free (PangoFcFindFuncInfo, info);
       priv->findfuncs = g_slist_delete_link (priv->findfuncs, priv->findfuncs);
     }
+
+  for (i = 0; i < priv->n_families; i++)
+    {
+      priv->families[i]->fontmap = NULL;
+      g_object_unref (priv->families[i]);
+    }
+  g_free (priv->families);
 
   G_OBJECT_CLASS (pango_fc_font_map_parent_class)->finalize (object);
 }
@@ -1642,6 +1649,8 @@ pango_fc_font_description_from_pattern (FcPattern *pattern, gboolean include_siz
  * PangoFcFace
  */
 
+static GObjectClass *pango_fc_face_parent_class = NULL;
+
 static PangoFontDescription *
 make_alias_description (PangoFcFamily *fcfamily,
 			gboolean        bold,
@@ -1665,6 +1674,8 @@ pango_fc_face_describe (PangoFontFace *face)
   FcResult res;
   FcPattern *match_pattern;
   FcPattern *result_pattern;
+
+  g_return_val_if_fail (fcfamily != NULL, NULL);
 
   if (fcface->fake)
     {
@@ -1732,6 +1743,11 @@ pango_fc_face_list_sizes (PangoFontFace  *face,
   FcPattern *pattern;
   FcFontSet *fontset;
   FcObjectSet *objectset;
+
+  *sizes = NULL;
+  *n_sizes = 0;
+  g_return_if_fail (fcface->family != NULL);
+  g_return_if_fail (fcface->family->fontmap != NULL);
 
   pattern = FcPatternCreate ();
   FcPatternAddString (pattern, FC_FAMILY, (FcChar8*)(void*)fcface->family->family_name);
@@ -1805,8 +1821,23 @@ pango_fc_face_is_synthesized (PangoFontFace *face)
 }
 
 static void
+pango_fc_face_finalize (GObject *object)
+{
+  PangoFcFace *fcface = PANGO_FC_FACE (object);
+
+  g_free (fcface->style);
+
+  pango_fc_face_parent_class->finalize (object);
+}
+
+static void
 pango_fc_face_class_init (PangoFontFaceClass *class)
 {
+  GObjectClass *object_class = G_OBJECT_CLASS (class);
+
+  pango_fc_face_parent_class = g_type_class_peek_parent (class);
+  object_class->finalize = pango_fc_face_finalize;
+
   class->describe = pango_fc_face_describe;
   class->get_face_name = pango_fc_face_get_face_name;
   class->list_sizes = pango_fc_face_list_sizes;
@@ -1845,6 +1876,9 @@ pango_fc_face_get_type (void)
 /*
  * PangoFcFamily
  */
+
+static GObjectClass *pango_fc_family_parent_class = NULL;
+
 static PangoFcFace *
 create_face (PangoFcFamily *fcfamily,
 	     const char     *style,
@@ -1865,7 +1899,13 @@ pango_fc_family_list_faces (PangoFontFamily  *family,
 {
   PangoFcFamily *fcfamily = PANGO_FC_FAMILY (family);
   PangoFcFontMap *fcfontmap = fcfamily->fontmap;
-  PangoFcFontMapPrivate *priv = fcfontmap->priv;
+  PangoFcFontMapPrivate *priv;
+
+  *faces = NULL;
+  *n_faces = 0;
+  g_return_if_fail (fcfontmap != NULL);
+
+  priv = fcfontmap->priv;
 
   if (fcfamily->n_faces < 0)
     {
@@ -2003,8 +2043,31 @@ pango_fc_family_is_monospace (PangoFontFamily *family)
 }
 
 static void
+pango_fc_family_finalize (GObject *object)
+{
+  int i;
+  PangoFcFamily *fcfamily = PANGO_FC_FAMILY (object);
+
+  g_free (fcfamily->family_name);
+
+  for (i = 0; i < fcfamily->n_faces; i++)
+    {
+      fcfamily->faces[i]->family = NULL;
+      g_object_unref (fcfamily->faces[i]);
+    }
+  g_free (fcfamily->faces);
+
+  pango_fc_family_parent_class->finalize (object);
+}
+
+static void
 pango_fc_family_class_init (PangoFontFamilyClass *class)
 {
+  GObjectClass *object_class = G_OBJECT_CLASS (class);
+
+  pango_fc_family_parent_class = g_type_class_peek_parent (class);
+  object_class->finalize = pango_fc_family_finalize;
+
   class->list_faces = pango_fc_family_list_faces;
   class->get_name = pango_fc_family_get_name;
   class->is_monospace = pango_fc_family_is_monospace;
