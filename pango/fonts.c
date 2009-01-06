@@ -1280,13 +1280,12 @@ pango_font_description_to_filename (const PangoFontDescription  *desc)
 
   result = pango_font_description_to_string (desc);
 
-  /* XXX This should be rewritten to read char-by-char instead
-   * of byte-by-byte, to be Unicode safe.
-   */
   p = result;
   while (*p)
     {
-      if (strchr ("-+_.", *p) == NULL && !g_ascii_isalnum (*p))
+      if (G_UNLIKELY ((guchar) *p >= 128))
+        /* skip over non-ASCII chars */;
+      else if (strchr ("-+_.", *p) == NULL && !g_ascii_isalnum (*p))
 	*p = '_';
       else
 	*p = g_ascii_tolower (*p);
