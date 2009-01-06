@@ -128,12 +128,7 @@ dist-hook-local: dist-local-check-mans-enabled dist-local-check-no-cross-referen
 	files='$(BUILT_EXTRA_DIST)';				\
 	for f in $$files; do					\
 	  if test -f $$f; then d=.; else d=$(srcdir); fi;	\
-	  cp $$d/$$f $(distdir) || exit 1; done;		\
-								\
-	mkdir $(distdir)/TEXT;					\
-	for f in $(srcdir)/TEXT/* ; do				\
-	  test -f $$f && cp -p $$f $(distdir)/TEXT;		\
-	done
+	  cp $$d/$$f $(distdir) || exit 1; done;
 
 #
 # Require gtk-doc when making dist
