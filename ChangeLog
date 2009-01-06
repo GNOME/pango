@@ -1,5 +1,16 @@
 2009-01-06  Behdad Esfahbod  <behdad@gnome.org>
 
+	Bug 328206 – Update/remove some old files
+
+	* tools/Makefile.am:
+	* tools/add-copyright:
+	* tools/compress-table.pl:
+	* tools/maps/README:
+	* tools/maps/tis-620:
+	Remove some old files.
+
+2009-01-06  Behdad Esfahbod  <behdad@gnome.org>
+
 	* tools/Makefile.am:
 	* tools/gen-script-for-lang.c:
 	* tools/gen-script-for-lang-new.c:

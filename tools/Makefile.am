@@ -11,11 +11,7 @@ EXTRA_PROGRAMS = 		\
 	gen-script-for-lang
 
 EXTRA_DIST= 			\
-	add-copyright 		\
-	compress-table.pl 	\
-	gen-color-table.pl	\
-	maps/README		\
-	maps/tis-620
+	gen-color-table.pl
 
 gen_script_for_lang_SOURCES = gen-script-for-lang.c
 gen_script_for_lang_LDADD = ../pango/libpango-$(PANGO_API_VERSION).la
