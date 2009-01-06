@@ -716,36 +716,28 @@ pango_fc_font_map_list_families (PangoFontMap      *fontmap,
 static int
 pango_fc_convert_weight_to_fc (PangoWeight pango_weight)
 {
-#ifdef FC_WEIGHT_ULTRABOLD
-  /* fontconfig 2.1 only had light/medium/demibold/bold/black */
-  if (pango_weight < (PANGO_WEIGHT_ULTRALIGHT + PANGO_WEIGHT_LIGHT) / 2)
+  if (pango_weight <= (PANGO_WEIGHT_THIN + PANGO_WEIGHT_ULTRALIGHT) / 2)
+    return FC_WEIGHT_THIN;
+  else if (pango_weight <= (PANGO_WEIGHT_ULTRALIGHT + PANGO_WEIGHT_LIGHT) / 2)
     return FC_WEIGHT_ULTRALIGHT;
-  else if (pango_weight < (PANGO_WEIGHT_LIGHT + PANGO_WEIGHT_NORMAL) / 2)
+  else if (pango_weight <= (PANGO_WEIGHT_LIGHT + PANGO_WEIGHT_BOOK) / 2)
     return FC_WEIGHT_LIGHT;
-  else if (pango_weight < (PANGO_WEIGHT_NORMAL + 500 /* PANGO_WEIGHT_MEDIUM */) / 2)
+  else if (pango_weight <= (PANGO_WEIGHT_BOOK + PANGO_WEIGHT_NORMAL) / 2)
+    return FC_WEIGHT_BOOK;
+  else if (pango_weight <= (PANGO_WEIGHT_NORMAL + PANGO_WEIGHT_MEDIUM) / 2)
     return FC_WEIGHT_NORMAL;
-  else if (pango_weight < (500 /* PANGO_WEIGHT_MEDIUM */ + PANGO_WEIGHT_SEMIBOLD) / 2)
+  else if (pango_weight <= (PANGO_WEIGHT_MEDIUM + PANGO_WEIGHT_SEMIBOLD) / 2)
     return FC_WEIGHT_MEDIUM;
-  else if (pango_weight < (PANGO_WEIGHT_SEMIBOLD + PANGO_WEIGHT_BOLD) / 2)
+  else if (pango_weight <= (PANGO_WEIGHT_SEMIBOLD + PANGO_WEIGHT_BOLD) / 2)
     return FC_WEIGHT_DEMIBOLD;
-  else if (pango_weight < (PANGO_WEIGHT_BOLD + PANGO_WEIGHT_ULTRABOLD) / 2)
+  else if (pango_weight <= (PANGO_WEIGHT_BOLD + PANGO_WEIGHT_ULTRABOLD) / 2)
     return FC_WEIGHT_BOLD;
-  else if (pango_weight < (PANGO_WEIGHT_ULTRABOLD + PANGO_WEIGHT_HEAVY) / 2)
+  else if (pango_weight <= (PANGO_WEIGHT_ULTRABOLD + PANGO_WEIGHT_HEAVY) / 2)
     return FC_WEIGHT_ULTRABOLD;
-  else
+  else if (pango_weight <= (PANGO_WEIGHT_HEAVY + PANGO_WEIGHT_ULTRAHEAVY) / 2)
     return FC_WEIGHT_BLACK;
-#else  /* fontconfig < 2.2 */
-  if (pango_weight < (PANGO_WEIGHT_LIGHT + PANGO_WEIGHT_NORMAL) / 2)
-    return FC_WEIGHT_LIGHT;
-  else if (pango_weight < (500 /* PANGO_WEIGHT_MEDIUM */ + PANGO_WEIGHT_SEMIBOLD) / 2)
-    return FC_WEIGHT_MEDIUM;
-  else if (pango_weight < (PANGO_WEIGHT_SEMIBOLD + PANGO_WEIGHT_BOLD) / 2)
-    return FC_WEIGHT_DEMIBOLD;
-  else if (pango_weight < (PANGO_WEIGHT_BOLD + PANGO_WEIGHT_ULTRABOLD) / 2)
-    return FC_WEIGHT_BOLD;
   else
-    return FC_WEIGHT_BLACK;
-#endif
+    return FC_WEIGHT_EXTRABLACK;
 }
 
 static int
@@ -1485,39 +1477,28 @@ pango_fc_font_map_shutdown (PangoFcFontMap *fcfontmap)
 static PangoWeight
 pango_fc_convert_weight_to_pango (int fc_weight)
 {
-#ifdef FC_WEIGHT_ULTRABOLD
-  /* fontconfig 2.1 only had light/medium/demibold/bold/black */
-  if (fc_weight < (FC_WEIGHT_ULTRALIGHT + FC_WEIGHT_LIGHT) / 2)
+  if (fc_weight <= (FC_WEIGHT_THIN + FC_WEIGHT_EXTRALIGHT) / 2)
+    return PANGO_WEIGHT_THIN;
+  else if (fc_weight <= (FC_WEIGHT_EXTRALIGHT + FC_WEIGHT_LIGHT) / 2)
     return PANGO_WEIGHT_ULTRALIGHT;
-  else if (fc_weight < (FC_WEIGHT_LIGHT + FC_WEIGHT_REGULAR) / 2)
+  else if (fc_weight <= (FC_WEIGHT_LIGHT + FC_WEIGHT_BOOK) / 2)
     return PANGO_WEIGHT_LIGHT;
-  else if (fc_weight < (FC_WEIGHT_REGULAR + FC_WEIGHT_DEMIBOLD) / 2)
+  else if (fc_weight <= (FC_WEIGHT_BOOK + FC_WEIGHT_REGULAR) / 2)
+    return PANGO_WEIGHT_BOOK;
+  else if (fc_weight <= (FC_WEIGHT_REGULAR + FC_WEIGHT_MEDIUM) / 2)
     return PANGO_WEIGHT_NORMAL;
-  /* We group the 500/MEDIUM weight with normal to reduce confusion
-   *
-   * else if (fc_weight < (FC_WEIGHT_MEDIUM + FC_WEIGHT_DEMIBOLD) / 2)
-   *  return 500;
-   */
-  else if (fc_weight < (FC_WEIGHT_DEMIBOLD + FC_WEIGHT_BOLD) / 2)
+   else if (fc_weight <= (FC_WEIGHT_MEDIUM + FC_WEIGHT_DEMIBOLD) / 2)
+    return PANGO_WEIGHT_MEDIUM;
+  else if (fc_weight <= (FC_WEIGHT_DEMIBOLD + FC_WEIGHT_BOLD) / 2)
     return PANGO_WEIGHT_SEMIBOLD;
-  else if (fc_weight < (FC_WEIGHT_BOLD + FC_WEIGHT_ULTRABOLD) / 2)
+  else if (fc_weight <= (FC_WEIGHT_BOLD + FC_WEIGHT_EXTRABOLD) / 2)
     return PANGO_WEIGHT_BOLD;
-  else if (fc_weight < (FC_WEIGHT_ULTRABOLD + FC_WEIGHT_BLACK) / 2)
+  else if (fc_weight <= (FC_WEIGHT_EXTRABOLD + FC_WEIGHT_BLACK) / 2)
     return PANGO_WEIGHT_ULTRABOLD;
-  else
+  else if (fc_weight <= (FC_WEIGHT_BLACK + FC_WEIGHT_EXTRABLACK) / 2)
     return PANGO_WEIGHT_HEAVY;
-#else  /* fontconfig < 2.2 */
-  if (fc_weight < (FC_WEIGHT_LIGHT + FC_WEIGHT_MEDIUM) / 2)
-    return PANGO_WEIGHT_LIGHT;
-  else if (fc_weight < (FC_WEIGHT_MEDIUM + FC_WEIGHT_DEMIBOLD) / 2)
-    return PANGO_WEIGHT_NORMAL;
-  else if (fc_weight < (FC_WEIGHT_DEMIBOLD + FC_WEIGHT_BOLD) / 2)
-    return PANGO_WEIGHT_SEMIBOLD;
-  else if (fc_weight < (FC_WEIGHT_BOLD + FC_WEIGHT_BLACK) / 2)
-    return PANGO_WEIGHT_BOLD;
   else
-    return PANGO_WEIGHT_ULTRABOLD;
-#endif
+    return PANGO_WEIGHT_ULTRAHEAVY;
 }
 
 static PangoStyle

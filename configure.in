@@ -235,7 +235,7 @@ have_xft=false
 #
 # Check for fontconfig
 #
-PKG_CHECK_MODULES(FONTCONFIG, fontconfig >= 1.0.1, have_fontconfig=true, AC_MSG_RESULT([no]))
+PKG_CHECK_MODULES(FONTCONFIG, fontconfig >= 2.5.0, have_fontconfig=true, AC_MSG_RESULT([no]))
 
 #
 # Checks for FreeType

@@ -2,6 +2,19 @@
 
 	Bug 166709 – Handle font variants more consistently
 
+	* configure.in: Require fontconfig >= 2.5.0
+
+	* pango/fonts.c: Parse "Roman" as style=normal instead of
+	weight=normal.  Doesn't make much difference in reality.
+
+	* pango/pangofc-fontmap.c (pango_fc_convert_weight_to_fc),
+	(pango_fc_convert_weight_to_pango): Update to reflect newly
+	added weights.
+
+2009-01-06  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 166709 – Handle font variants more consistently
+
 	* pango/pango-font.h:
 	Add enum values PANGO_WEIGHT_BOOK and PANGO_WEIGHT_ULTRAHEAVY.
 

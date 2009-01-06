@@ -848,6 +848,7 @@ typedef struct
 
 static const FieldMap style_map[] = {
   { PANGO_STYLE_NORMAL, "" },
+  { PANGO_STYLE_NORMAL, "Roman" },
   { PANGO_STYLE_OBLIQUE, "Oblique" },
   { PANGO_STYLE_ITALIC, "Italic" }
 };
@@ -865,7 +866,6 @@ static const FieldMap weight_map[] = {
   { PANGO_WEIGHT_BOOK, "Book" },
   { PANGO_WEIGHT_NORMAL, "" },
   { PANGO_WEIGHT_NORMAL, "Regular" },
-  { PANGO_WEIGHT_NORMAL, "Roman" },
   { PANGO_WEIGHT_MEDIUM, "Medium" },
   { PANGO_WEIGHT_SEMIBOLD, "Semi-Bold" },
   { PANGO_WEIGHT_SEMIBOLD, "Demi-Bold" },
