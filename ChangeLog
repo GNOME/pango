@@ -1,5 +1,15 @@
 2009-01-06  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango/fonts.c (find_field), (parse_field), (pango_parse_style),
+	(pango_parse_variant), (pango_parse_weight), (pango_parse_stretch):
+	Move the parse_*() functions in fonts.c and have them share tables
+	with pango_font_description_to/from_string().
+
+	* pango/pango-utils.c (parse_int), (pango_parse_enum):
+	Accept integers in pango_parse_enum().
+
+2009-01-06  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 166676 – pango_fc_font_map_finalize
 
 	* pango/pangofc-fontmap.c (pango_fc_font_map_finalize),

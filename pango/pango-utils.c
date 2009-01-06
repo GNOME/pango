@@ -743,6 +743,25 @@ pango_get_lib_subdirectory (void)
 }
 
 
+static gboolean
+parse_int (const char *word,
+	   int        *out)
+{
+  char *end;
+  long val = strtol (word, &end, 10);
+  int i = val;
+
+  if (end != word && *end == '\0' && val >= 0 && val == i)
+    {
+      if (out)
+        *out = i;
+
+      return TRUE;
+    }
+
+  return FALSE;
+}
+
 /**
  * pango_parse_enum:
  * @type: enum type to parse, eg. %PANGO_TYPE_ELLIPSIZE_MODE.
@@ -751,10 +770,11 @@ pango_get_lib_subdirectory (void)
  * @warn: if %TRUE, issue a g_warning() on bad input.
  * @possible_values: place to store list of possible values on failure, or %NULL.
  *
- * Parses an enum type and stored the result in @value.
+ * Parses an enum type and stores the result in @value.
  *
  * If @str does not match the nick name of any of the possible values for the
- * enum, %FALSE is returned, a warning is issued if @warn is %TRUE, and a
+ * enum and is not an integer, %FALSE is returned, a warning is issued
+ * if @warn is %TRUE, and a
  * string representing the list of possible values is stored in
  * @possible_values.  The list is slash-separated, eg.
  * "none/start/middle/end".  If failed and @possible_values is not %NULL,
@@ -785,10 +805,10 @@ pango_parse_enum (GType       type,
       if (G_LIKELY (value))
 	*value = v->value;
     }
-  else
+  else if (!parse_int (str, value))
     {
       ret = FALSE;
-      if (warn || possible_values)
+      if (G_LIKELY (warn || possible_values))
 	{
 	  int i;
 	  GString *s = g_string_new (NULL);
@@ -816,298 +836,6 @@ pango_parse_enum (GType       type,
   g_type_class_unref (class);
 
   return ret;
-}
-
-/**
- * pango_parse_style:
- * @str: a string to parse.
- * @style: a #PangoStyle to store the result in.
- * @warn: if %TRUE, issue a g_warning() on bad input.
- *
- * Parses a font style. The allowed values are "normal",
- * "italic" and "oblique", case variations being
- * ignored.
- *
- * Return value: %TRUE if @str was successfully parsed.
- **/
-gboolean
-pango_parse_style (const char *str,
-		   PangoStyle *style,
-		   gboolean    warn)
-{
-  if (*str == '\0')
-    return FALSE;
-
-  switch (str[0])
-    {
-    case 'n':
-    case 'N':
-      if (g_ascii_strcasecmp (str, "normal") == 0)
-	{
-	  *style = PANGO_STYLE_NORMAL;
-	  return TRUE;
-	}
-      break;
-    case 'i':
-    case 'I':
-      if (g_ascii_strcasecmp (str, "italic") == 0)
-	{
-	  *style = PANGO_STYLE_ITALIC;
-	  return TRUE;
-	}
-      break;
-    case 'o':
-    case 'O':
-      if (g_ascii_strcasecmp (str, "oblique") == 0)
-	{
-	  *style = PANGO_STYLE_OBLIQUE;
-	  return TRUE;
-	}
-      break;
-    }
-  if (warn)
-    g_warning ("style must be normal, italic, or oblique");
-
-  return FALSE;
-}
-
-/**
- * pango_parse_variant:
- * @str: a string to parse.
- * @variant: a #PangoVariant to store the result in.
- * @warn: if %TRUE, issue a g_warning() on bad input.
- *
- * Parses a font variant. The allowed values are "normal"
- * and "smallcaps" or "small_caps", case variations being
- * ignored.
- *
- * Return value: %TRUE if @str was successfully parsed.
- **/
-gboolean
-pango_parse_variant (const char   *str,
-		     PangoVariant *variant,
-		     gboolean	   warn)
-{
-  if (*str == '\0')
-    return FALSE;
-
-  switch (str[0])
-    {
-    case 'n':
-    case 'N':
-      if (g_ascii_strcasecmp (str, "normal") == 0)
-	{
-	  *variant = PANGO_VARIANT_NORMAL;
-	  return TRUE;
-	}
-      break;
-    case 's':
-    case 'S':
-      if (g_ascii_strcasecmp (str, "small_caps") == 0 ||
-	  g_ascii_strcasecmp (str, "smallcaps") == 0)
-	{
-	  *variant = PANGO_VARIANT_SMALL_CAPS;
-	  return TRUE;
-	}
-      break;
-    }
-
-  if (warn)
-    g_warning ("variant must be normal or small_caps");
-  return FALSE;
-}
-
-/**
- * pango_parse_weight:
- * @str: a string to parse.
- * @weight: a #PangoWeight to store the result in.
- * @warn: if %TRUE, issue a g_warning() on bad input.
- *
- * Parses a font weight. The allowed values are "heavy",
- * "ultrabold", "bold", "normal", "light", "ultraleight"
- * and integers. Case variations are ignored.
- *
- * Return value: %TRUE if @str was successfully parsed.
- **/
-gboolean
-pango_parse_weight (const char  *str,
-		    PangoWeight *weight,
-		    gboolean     warn)
-{
-  if (*str == '\0')
-    return FALSE;
-
-  switch (str[0])
-    {
-    case 'b':
-    case 'B':
-      if (g_ascii_strcasecmp (str, "bold") == 0)
-	{
-	  *weight = PANGO_WEIGHT_BOLD;
-	  return TRUE;
-	}
-      break;
-    case 'h':
-    case 'H':
-      if (g_ascii_strcasecmp (str, "heavy") == 0)
-	{
-	  *weight = PANGO_WEIGHT_HEAVY;
-	  return TRUE;
-	}
-      break;
-    case 'l':
-    case 'L':
-      if (g_ascii_strcasecmp (str, "light") == 0)
-	{
-	  *weight = PANGO_WEIGHT_LIGHT;
-	  return TRUE;
-	}
-      break;
-    case 'n':
-    case 'N':
-      if (g_ascii_strcasecmp (str, "normal") == 0)
-	{
-	  *weight = PANGO_WEIGHT_NORMAL;
-	  return TRUE;
-	}
-      break;
-    case 'u':
-    case 'U':
-      if (g_ascii_strcasecmp (str, "ultralight") == 0)
-	{
-	  *weight = PANGO_WEIGHT_ULTRALIGHT;
-	  return TRUE;
-	}
-      else if (g_ascii_strcasecmp (str, "ultrabold") == 0)
-	{
-	  *weight = PANGO_WEIGHT_ULTRABOLD;
-	  return TRUE;
-	}
-      break;
-    case '0':
-    case '1':
-    case '2':
-    case '3':
-    case '4':
-    case '5':
-    case '6':
-    case '7':
-    case '8':
-    case '9':
-      {
-	char *end;
-
-	*weight = strtol (str, &end, 10);
-	if (*end != '\0')
-	  {
-	    if (warn)
-	      g_warning ("failed parsing numerical weight '%s'", str);
-	    return FALSE;
-	  }
-	return TRUE;
-      }
-    }
-
-  if (warn)
-    g_warning ("weight must be ultralight, light, normal, bold, ultrabold, heavy, or an integer");
-  return FALSE;
-}
-
-/**
- * pango_parse_stretch:
- * @str: a string to parse.
- * @stretch: a #PangoStretch to store the result in.
- * @warn: if %TRUE, issue a g_warning() on bad input.
- *
- * Parses a font stretch. The allowed values are
- * "ultra_condensed", "extra_condensed", "condensed",
- * "semi_condensed", "normal", "semi_expanded", "expanded",
- * "extra_expanded" and "ultra_expanded". Case variations are
- * ignored and the '_' characters may be omitted.
- *
- * Return value: %TRUE if @str was successfully parsed.
- **/
-gboolean
-pango_parse_stretch (const char   *str,
-		     PangoStretch *stretch,
-		     gboolean	   warn)
-{
-  if (*str == '\0')
-    return FALSE;
-
-  switch (str[0])
-    {
-    case 'c':
-    case 'C':
-      if (g_ascii_strcasecmp (str, "condensed") == 0)
-	{
-	  *stretch = PANGO_STRETCH_CONDENSED;
-	  return TRUE;
-	}
-      break;
-    case 'e':
-    case 'E':
-      if (g_ascii_strcasecmp (str, "extra_condensed") == 0 ||
-	  g_ascii_strcasecmp (str, "extracondensed") == 0)
-	{
-	  *stretch = PANGO_STRETCH_EXTRA_CONDENSED;
-	  return TRUE;
-	}
-     if (g_ascii_strcasecmp (str, "extra_expanded") == 0 ||
-	 g_ascii_strcasecmp (str, "extraexpanded") == 0)
-	{
-	  *stretch = PANGO_STRETCH_EXTRA_EXPANDED;
-	  return TRUE;
-	}
-      if (g_ascii_strcasecmp (str, "expanded") == 0)
-	{
-	  *stretch = PANGO_STRETCH_EXPANDED;
-	  return TRUE;
-	}
-      break;
-    case 'n':
-    case 'N':
-      if (g_ascii_strcasecmp (str, "normal") == 0)
-	{
-	  *stretch = PANGO_STRETCH_NORMAL;
-	  return TRUE;
-	}
-      break;
-    case 's':
-    case 'S':
-      if (g_ascii_strcasecmp (str, "semi_condensed") == 0 ||
-	  g_ascii_strcasecmp (str, "semicondensed") == 0)
-	{
-	  *stretch = PANGO_STRETCH_SEMI_CONDENSED;
-	  return TRUE;
-	}
-      if (g_ascii_strcasecmp (str, "semi_expanded") == 0 ||
-	  g_ascii_strcasecmp (str, "semiexpanded") == 0)
-	{
-	  *stretch = PANGO_STRETCH_SEMI_EXPANDED;
-	  return TRUE;
-	}
-      break;
-    case 'u':
-    case 'U':
-      if (g_ascii_strcasecmp (str, "ultra_condensed") == 0 ||
-	  g_ascii_strcasecmp (str, "ultracondensed") == 0)
-	{
-	  *stretch = PANGO_STRETCH_ULTRA_CONDENSED;
-	  return TRUE;
-	}
-      if (g_ascii_strcasecmp (str, "ultra_expanded") == 0 ||
-	  g_ascii_strcasecmp (str, "ultraexpanded") == 0)
-	{
-	  *stretch = PANGO_STRETCH_ULTRA_EXPANDED;
-	  return TRUE;
-	}
-      break;
-    }
-
-  if (warn)
-    g_warning ("stretch must be ultra_condensed, extra_condensed, condensed, semi_condensed, normal, semi_expanded, expanded, extra_expanded, or ultra_expanded");
-  return FALSE;
 }
 
 

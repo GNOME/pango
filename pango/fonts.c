@@ -946,17 +946,25 @@ parse_int (const char *word,
 }
 
 static gboolean
-find_field (const char *what, const FieldMap *map, int n_elements, const char *str, int len, int *val)
+find_field (const char *what,
+	    const FieldMap *map,
+	    int n_elements,
+	    const char *str,
+	    int len,
+	    int *val)
 {
   int i;
   gboolean had_prefix = FALSE;
 
-  i = strlen (what);
-  if (len > i && 0 == strncmp (what, str, i) && str[i] == '=')
+  if (what)
     {
-      str += i + 1;
-      len -= i + 1;
-      had_prefix = TRUE;
+      i = strlen (what);
+      if (len > i && 0 == strncmp (what, str, i) && str[i] == '=')
+	{
+	  str += i + 1;
+	  len -= i + 1;
+	  had_prefix = TRUE;
+	}
     }
 
   for (i=0; i<n_elements; i++)
@@ -969,7 +977,7 @@ find_field (const char *what, const FieldMap *map, int n_elements, const char *s
 	}
     }
 
-  if (had_prefix)
+  if (!what || had_prefix)
     return parse_int (str, len, val);
 
   return FALSE;
@@ -1287,6 +1295,153 @@ pango_font_description_to_filename (const PangoFontDescription  *desc)
 
   return result;
 }
+
+
+static gboolean
+parse_field (const char *what,
+	     const FieldMap *map,
+	     int n_elements,
+	     const char *str,
+	     int *val,
+	     gboolean warn)
+{
+  gboolean found;
+  int len = strlen (str);
+
+  if (G_UNLIKELY (*str == '\0'))
+    return FALSE;
+
+  if (field_matches ("Normal", str, len))
+    {
+      /* find the map entry with empty string */
+      int i;
+
+      for (i = 0; i < n_elements; i++)
+        if (map[i].str[0] == '\0')
+	  {
+	    *val = map[i].value;
+	    return TRUE;
+	  }
+
+      *val = 0;
+      return TRUE;
+    }
+
+  found = find_field (NULL, map, n_elements, str, len, val);
+
+  if (!found && warn)
+    {
+	int i;
+	GString *s = g_string_new (NULL);
+
+	for (i = 0; i < n_elements; i++)
+	  {
+	    if (i)
+	      g_string_append_c (s, '/');
+	    g_string_append (s, map[i].str[0] == '\0' ? "Normal" : map[i].str);
+	  }
+
+	g_warning ("%s must be one of %s or a number",
+		   what,
+		   s->str);
+
+	g_string_free (s, TRUE);
+    }
+
+  return found;
+}
+
+#define FIELD(NAME, MASK) \
+  parse_field (G_STRINGIFY (NAME), NAME##_map, G_N_ELEMENTS (NAME##_map), str, (int *)(void *)NAME, warn)
+
+/**
+ * pango_parse_style:
+ * @str: a string to parse.
+ * @style: a #PangoStyle to store the result in.
+ * @warn: if %TRUE, issue a g_warning() on bad input.
+ *
+ * Parses a font style. The allowed values are "normal",
+ * "italic" and "oblique", case variations being
+ * ignored.
+ *
+ * Return value: %TRUE if @str was successfully parsed.
+ **/
+gboolean
+pango_parse_style (const char *str,
+		   PangoStyle *style,
+		   gboolean    warn)
+{
+  return FIELD (style,   PANGO_FONT_MASK_STYLE);
+}
+
+/**
+ * pango_parse_variant:
+ * @str: a string to parse.
+ * @variant: a #PangoVariant to store the result in.
+ * @warn: if %TRUE, issue a g_warning() on bad input.
+ *
+ * Parses a font variant. The allowed values are "normal"
+ * and "smallcaps" or "small_caps", case variations being
+ * ignored.
+ *
+ * Return value: %TRUE if @str was successfully parsed.
+ **/
+gboolean
+pango_parse_variant (const char   *str,
+		     PangoVariant *variant,
+		     gboolean	   warn)
+{
+  return FIELD (variant, PANGO_FONT_MASK_VARIANT);
+}
+
+/**
+ * pango_parse_weight:
+ * @str: a string to parse.
+ * @weight: a #PangoWeight to store the result in.
+ * @warn: if %TRUE, issue a g_warning() on bad input.
+ *
+ * Parses a font weight. The allowed values are "heavy",
+ * "ultrabold", "bold", "normal", "light", "ultraleight"
+ * and integers. Case variations are ignored.
+ *
+ * Return value: %TRUE if @str was successfully parsed.
+ **/
+gboolean
+pango_parse_weight (const char  *str,
+		    PangoWeight *weight,
+		    gboolean     warn)
+{
+  return FIELD (weight,  PANGO_FONT_MASK_WEIGHT);
+}
+
+/**
+ * pango_parse_stretch:
+ * @str: a string to parse.
+ * @stretch: a #PangoStretch to store the result in.
+ * @warn: if %TRUE, issue a g_warning() on bad input.
+ *
+ * Parses a font stretch. The allowed values are
+ * "ultra_condensed", "extra_condensed", "condensed",
+ * "semi_condensed", "normal", "semi_expanded", "expanded",
+ * "extra_expanded" and "ultra_expanded". Case variations are
+ * ignored and the '_' characters may be omitted.
+ *
+ * Return value: %TRUE if @str was successfully parsed.
+ **/
+gboolean
+pango_parse_stretch (const char   *str,
+		     PangoStretch *stretch,
+		     gboolean	   warn)
+{
+  return FIELD (stretch, PANGO_FONT_MASK_STRETCH);
+}
+
+
+
+
+/*
+ * PangoFont
+ */
 
 G_DEFINE_ABSTRACT_TYPE (PangoFont, pango_font, G_TYPE_OBJECT)
 
