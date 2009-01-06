@@ -1,5 +1,17 @@
 2009-01-06  Behdad Esfahbod  <behdad@gnome.org>
 
+	Bug 166709 – Handle font variants more consistently
+
+	* pango/pango-font.h:
+	Add enum values PANGO_WEIGHT_BOOK and PANGO_WEIGHT_ULTRAHEAVY.
+
+	* pango/fonts.c:
+	* docs/tmpl/fonts.sgml:
+	Add new weights with their aliases, as well as aliasing "Roman" to the
+	normal weight.
+
+2009-01-06  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/fonts.c (pango_font_description_to_filename):
 	Make it Unicode safe.
 
