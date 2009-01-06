@@ -1,5 +1,12 @@
 2009-01-06  Behdad Esfahbod  <behdad@gnome.org>
 
+	* tools/Makefile.am:
+	* tools/gen-script-for-lang.c:
+	* tools/gen-script-for-lang-new.c:
+	Remove the old gen-script-for-lang tool, rename the new one to it.
+
+2009-01-06  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 166709 – Handle font variants more consistently
 
 	* configure.in: Require fontconfig >= 2.5.0

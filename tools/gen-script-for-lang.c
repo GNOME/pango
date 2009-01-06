@@ -24,22 +24,25 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 #include <pango/pango-enum-types.h>
 #include <pango/pango-script.h>
 #include <pango/pango-types.h>
-#include <pango/pango-utils.h>
+
+#include <fontconfig/fontconfig.h>
 
 #define MAX_SCRIPTS 3
 
 typedef struct {
-  PangoLanguage *lang;
-  PangoScript scripts[MAX_SCRIPTS];
-} LangInfo;
+  PangoScript script;
+  int freq;
+} ScriptInfo;
 
-static void scripts_for_file (const char *base_dir,
-			      const char *file_part,
-			      LangInfo   *info);
+typedef struct {
+  PangoLanguage *lang;
+  ScriptInfo scripts[MAX_SCRIPTS];
+} LangInfo;
 
 static const char *get_script_name (PangoScript script)
 {
@@ -66,178 +69,123 @@ static void fail (const char *format, ...)
   exit (1);
 }
 
-static gboolean scan_hex (const char **str, gunichar *result)
-{
-  const char *end;
-
-  *result = strtol (*str, (char **)&end, 16);
-  if (end == *str)
-    return FALSE;
-
-  *str = end;
-  return TRUE;
-}
-
 static void
-scripts_for_line (const char  *base_dir,
-		  const char  *file_part,
-		  const char  *str,
-		  LangInfo    *info)
+script_for_char (gunichar   ch,
+		 LangInfo  *info)
 {
-  gunichar start_char;
-  gunichar end_char;
-  gunichar ch;
-  const char *p = str;
-
-  if (g_str_has_prefix (str, "include"))
+  PangoScript script = pango_script_for_unichar (ch);
+  if (script != PANGO_SCRIPT_COMMON &&
+      script != PANGO_SCRIPT_INHERITED)
     {
-      GString *file_part = g_string_new (NULL);
-      
-      str += strlen ("include");
-      if (!pango_skip_space (&str))
-	goto err;
+      int j;
 
-      if (!pango_scan_string (&str, file_part) ||
-	  pango_skip_space (&str))
-	goto err;
-
-      scripts_for_file (base_dir, file_part->str, info);
-      g_string_free (file_part, TRUE);
-
-      return;
-    }
-  
-  /* Format is HEX_DIGITS or HEX_DIGITS-HEX_DIGITS */
-  if (!scan_hex (&p, &start_char))
-    goto err;
-  
-  end_char = start_char;
-
-  pango_skip_space (&p);
-  if (*p == '-')
-    {
-      p++;
-      if (!scan_hex (&p, &end_char))
-	goto err;
-
-      pango_skip_space (&p);
-    }
-
-  /* The rest of the line is ignored */
-  /*
-  if (*p != '\0')
-    goto err;
-   */
-
-  for (ch = start_char; ch <= end_char; ch++)
-    {
-      PangoScript script = pango_script_for_unichar (ch);
-      if (script != PANGO_SCRIPT_COMMON &&
-	  script != PANGO_SCRIPT_INHERITED)
+      if (script == PANGO_SCRIPT_UNKNOWN)
 	{
-	  int j;
-
-	  if (script == PANGO_SCRIPT_UNKNOWN)
-	    {
-	       g_message ("Script unknown for U+%04X", ch);
-	       continue;
-	    }
-
-	  for (j = 0; j < MAX_SCRIPTS; j++)
-	    {
-	      if (info->scripts[j] == script)
-		break;
-	      if (info->scripts[j] == PANGO_SCRIPT_INVALID_CODE)
-		{
-		  info->scripts[j] = script;
-		  break;
-		}
-	    }
-
-	  if (j == MAX_SCRIPTS)
-	    fail ("More than %d scripts found for %s\n", MAX_SCRIPTS, file_part);
+	   g_message ("Script unknown for U+%04X", ch);
+	   return;
 	}
-    }
 
-  return;
-  
- err:
-  fail ("While processing '%s', cannot parse line: '%s'\n", file_part, str);
-  return; /* Not reached */
+      for (j = 0; j < MAX_SCRIPTS; j++)
+	{
+	  if (info->scripts[j].script == script)
+	    break;
+	  if (info->scripts[j].script == PANGO_SCRIPT_COMMON)
+	    {
+	      info->scripts[j].script = script;
+	      break;
+	    }
+	}
+
+      if (j == MAX_SCRIPTS)
+	fail ("More than %d scripts found for %s.  Increase MAX_SCRIPTS.\n", MAX_SCRIPTS, pango_language_to_string (info->lang));
+
+      info->scripts[j].freq++;
+    }
 }
      
 static void
-scripts_for_file (const char *base_dir,
-		  const char *file_part,
-		  LangInfo   *info)
+scripts_for_lang (LangInfo   *info)
 {
-  GError *error = NULL;
-  char *filename = g_build_filename (base_dir, file_part, NULL);
-  GIOChannel *channel = g_io_channel_new_file (filename, "r", &error);
-  GIOStatus status = G_IO_STATUS_NORMAL;
+  const FcCharSet *charset;
+  FcChar32  ucs4, pos;
+  FcChar32  map[FC_CHARSET_MAP_SIZE];
+  int i;
 
-  if (!channel)
-    fail ("Error opening '%s': %s\n", filename, error->message);
+  charset = FcLangGetCharSet ((const FcChar8 *) info->lang);
+  if (!charset)
+    return;
 
-  /* The files have ISO-8859-1 copyright signs in them */
-  if (!g_io_channel_set_encoding (channel, "ISO-8859-1", &error))
-      fail ("Cannot set encoding when reading '%s': %s\n", filename, error->message);
-  
-  while (status == G_IO_STATUS_NORMAL)
+  for (ucs4 = FcCharSetFirstPage (charset, map, &pos);
+       ucs4 != FC_CHARSET_DONE;
+       ucs4 = FcCharSetNextPage (charset, map, &pos))
     {
-      char *str;
-      size_t term;
-      char *comment;
-      
-      status = g_io_channel_read_line  (channel, &str, NULL, &term, &error);
-      switch (status)
+
+      for (i = 0; i < FC_CHARSET_MAP_SIZE; i++)
 	{
-	case G_IO_STATUS_NORMAL:
-	  str[term] = '\0';
-	  comment = strchr (str, '#');
-	  if (comment)
-	    *comment = '\0';
-	  g_strstrip (str);
-	  if (str[0] != '\0')	/* Empty */
-	    scripts_for_line (base_dir, file_part, str, info);
-	  g_free (str);
-	  break;
-	case G_IO_STATUS_EOF:
-	  break;
-	case G_IO_STATUS_ERROR:
-	  fail ("Error reading '%s': %s\n", filename, error->message);
-	  break;
-	case G_IO_STATUS_AGAIN:
-	  g_assert_not_reached ();
-	  break;
+	  FcChar32  bits = map[i];
+	  FcChar32  base = ucs4 + i * 32;
+	  int b = 0;
+	  bits = map[i];
+	  while (bits)
+	    {
+	      if (bits & 1)
+		script_for_char (base + b, info);
+
+	      bits >>= 1;
+	      b++;
+	    }
 	}
     }
-
-  if (!g_io_channel_shutdown (channel, FALSE, &error))
-    fail ("Error closing '%s': %s\n", filename, error->message);
-
-  g_free (filename);
 }
 
 static void
-do_file (GArray      *script_array,
-	 const char  *base_dir,
-	 const char  *file_part)
+do_lang (GArray        *script_array,
+	 const FcChar8 *lang)
 {
-  char *langpart;
   LangInfo info;
   int j;
 
-  langpart = g_strndup (file_part, strlen (file_part) - strlen (".orth"));
-  info.lang = pango_language_from_string (langpart);
-  g_free (langpart);
+  info.lang = pango_language_from_string ((const char *)lang);
 
   for (j = 0; j < MAX_SCRIPTS; j++)
-    info.scripts[j] = PANGO_SCRIPT_INVALID_CODE;
+    {
+      info.scripts[j].script = PANGO_SCRIPT_COMMON;
+      info.scripts[j].freq = 0;
+    }
   
-  scripts_for_file (base_dir, file_part, &info);
+  scripts_for_lang (&info);
 
   g_array_append_val (script_array, info);
+}
+
+static int
+compare_script (gconstpointer a,
+		gconstpointer b,
+		gpointer      data)
+{
+  const ScriptInfo *info_a = a;
+  const ScriptInfo *info_b = b;
+  G_GNUC_UNUSED LangInfo *lang_info = data;
+
+  /* first compare frequencies, higher first */
+  if (info_a->freq > info_b->freq)
+    return -1;
+  if (info_a->freq < info_b->freq)
+    return +1;
+
+  /* next compare script indices, higher first (it's more specific) */
+  if (info_a->script > info_b->script)
+    return -1;
+  if (info_a->script < info_b->script)
+    return +1;
+
+  /* for stability, next compare pointers themselves, smaller first */
+  if (info_a < info_b)
+    return -1;
+  if (info_a > info_b)
+    return +1;
+
+  return 0;
 }
 
 static int
@@ -251,73 +199,113 @@ compare_lang (gconstpointer a,
 		 pango_language_to_string (info_b->lang));
 }
 
-int main (int argc, char **argv)
+int main (void)
 {
-  GDir *dir;
-  GError *error = NULL;
   GArray *script_array;
+
   unsigned int i;
   int j;
   int max_lang_len = 0;
+  int max_script_len = 0;
+
+  FcStrSet *langs_set;
+  FcStrList *langs;
+  FcChar8* lang;
+
+  char date_buf[200];
+  const char *date_str = "unknown";
+  time_t t;
+  struct tm *tmp;
+  int fc_version;
 
   g_type_init ();
 
-  if (argc != 2)
-    fail ("Usage: gen-script-for-lang DIR > script-for-lang.h\n");
-
-  dir = g_dir_open (argv[1], 0, &error);
-  if (!dir)
-    fail ("%s\n", error->message);
-
   script_array = g_array_new (FALSE, FALSE, sizeof (LangInfo));
   
-  while (TRUE)
-    {
-      const char *name = g_dir_read_name (dir);
-      if (!name)
-	break;
 
-      if (g_str_has_suffix (name, ".orth"))
-	do_file (script_array, argv[1], name);
-    }
+  langs_set = FcGetLangs ();
+  langs = FcStrListCreate (langs_set);
+  FcStrSetDestroy (langs_set);
+
+  while ((lang = FcStrListNext (langs)))
+    do_lang (script_array, lang);
+
+  FcStrListDone (langs);
+
 
   g_array_sort (script_array, compare_lang);
 
   for (i = 0; i < script_array->len; i++)
     {
       LangInfo *info = &g_array_index (script_array, LangInfo, i);
-      
+
       max_lang_len = MAX (max_lang_len,
-			  1 + (int)strlen (pango_language_to_string (info->lang)));
-    }
+			  (int)strlen (pango_language_to_string (info->lang)));
+
+      g_qsort_with_data (info->scripts,
+			 G_N_ELEMENTS (info->scripts),
+			 sizeof (info->scripts[0]), 
+			 compare_script,
+			 info);
+
+      for (j = 0; j < MAX_SCRIPTS; j++)
+        if (!info->scripts[j].freq)
+	  break;
       
-  g_print ("typedef struct {\n"
+      max_script_len = MAX (max_script_len, j);
+    }
+
+  if ((t = time(NULL), tmp = localtime (&t)) && strftime(date_buf, sizeof(date_buf), "%F", tmp))
+    date_str = date_buf;
+
+  fc_version = FcGetVersion ();
+
+  g_print ("/* pango-script-lang-table.h:\n"
+	   " * \n"
+	   " * Generated by %s\n"
+	   " * Date: %s\n"
+	   " * Source: fontconfig-%d.%d.%d\n"
+	   " * \n"
+	   " * Do not edit.\n"
+	   " */\n",
+	   __FILE__,
+	   date_str,
+	   fc_version / 10000, (fc_version / 100) % 100, fc_version % 100);
+
+  g_print ("typedef struct _PangoScriptForLang {\n"
 	   "  const char lang[%d];\n"
 	   "  PangoScript scripts[%d];\n"
 	   "} PangoScriptForLang;\n"
 	   "\n"
 	   "static const PangoScriptForLang pango_script_for_lang[] = {\n",
-	   max_lang_len,
-	   MAX_SCRIPTS);
+	   max_lang_len + 1,
+	   max_script_len);
   
   for (i = 0; i < script_array->len; i++)
     {
       LangInfo *info = &g_array_index (script_array, LangInfo, i);
       
-      g_print ("  { \"%s\", { ", pango_language_to_string (info->lang));
+      g_print ("  { \"%s\", %*s{ ",
+	       pango_language_to_string (info->lang),
+	       max_lang_len - strlen (pango_language_to_string (info->lang)), "");
       for (j = 0; j < MAX_SCRIPTS; j++)
 	{
+	  if (!info->scripts[j].freq)
+	    break;
+
 	  if (j != 0)
 	    g_print (", ");
-	  g_print ("%s", get_script_name (info->scripts[j]));
+	  g_print ("%s/*%d*/",
+		   get_script_name (info->scripts[j].script),
+		   info->scripts[j].freq);
 	}
-      g_print (" } },\n");
+      g_print (" } }");
+      if (i + 1 != script_array->len)
+	g_print (",");
+      g_print ("\n");
     }
 
   g_print ("};\n");
-  
-  
-  g_dir_close (dir);
-  
+
   return 0;
 }
