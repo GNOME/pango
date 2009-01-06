@@ -727,7 +727,13 @@ pango_get_lib_subdirectory (void)
   if (result == NULL)
     {
       gchar *root = g_win32_get_package_installation_directory_of_module (pango_dll);
-      result = g_build_filename (root, "lib\\pango", NULL);
+      /* If we are running against an uninstalled copy of the Pango DLL,
+       * use the compile-time installation prefix.
+       */
+      if (g_str_has_suffix (root, "\\.libs"))
+	result = g_strdup (LIBDIR "/pango");
+      else
+	result = g_build_filename (root, "lib\\pango", NULL);
       g_free (root);
     }
   return result;

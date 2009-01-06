@@ -1,3 +1,11 @@
+2009-01-06  Tor Lillqvist  <tml@iki.fi>
+
+	Bug 164001 - pango-querymodules doesn't work uninstalled on win32
+
+	* pango/pango-utils.c (pango_get_lib_subdirectory): When running
+	against an uninstalled, compile-time DLL, in the libtool-style
+	.libs folder, use the compile-time install prefix.
+
 2009-01-03  Behdad Esfahbod  <behdad@gnome.org>
 
 	Bug 384362 – pango can't select some font styles
