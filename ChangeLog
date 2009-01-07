@@ -1,5 +1,11 @@
 2009-01-06  Behdad Esfahbod  <behdad@gnome.org>
 
+	Bug 551469 – Fold '@' to '-' when parsing PangoLanguages
+
+	* pango/pango-language.c: Fold '@' to '-' when parsing PangoLanguages.
+
+2009-01-06  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 328206 – Update/remove some old files
 
 	* docs/Makefile.am:
