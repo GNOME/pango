@@ -319,6 +319,8 @@ PangoAttrType
 PANGO_TYPE_ATTR_TYPE
 PangoAttrClass
 PangoAttribute
+PANGO_ATTR_INDEX_FROM_TEXT_BEGINNING
+PANGO_ATTR_INDEX_TO_TEXT_END
 PangoAttrString
 PangoAttrLanguage
 PangoAttrColor

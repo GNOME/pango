@@ -1,3 +1,17 @@
+2009-01-07  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 566941 – Add PANGO_ATTRIBUTE_INDEX_FROM_TEXT_BEGINNING and
+	PANGO_ATTRIBUTE_INDEX_TO_TEXT_END
+
+	* docs/pango-sections.txt:
+	* docs/tmpl/text-attributes.sgml:
+	* pango/pango-attributes.c (pango_attribute_init):
+	* pango/pango-attributes.h:
+	Add two new public macros:
+
+		PANGO_ATTRIBUTE_INDEX_FROM_TEXT_BEGINNING
+		PANGO_ATTRIBUTE_INDEX_TO_TEXT_END
+
 2009-01-06  Behdad Esfahbod  <behdad@gnome.org>
 
 	Bug 551469 – Fold '@' to '-' when parsing PangoLanguages

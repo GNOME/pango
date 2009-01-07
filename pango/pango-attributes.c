@@ -113,8 +113,10 @@ pango_attr_type_get_name (PangoAttrType type)
  * @attr: a #PangoAttribute
  * @klass: a #PangoAttributeClass
  *
- * Initializes @attr's klass to @klass, it's start_index to zero,
- * and end_index to %G_MAXUINT such that the attribute applies
+ * Initializes @attr's klass to @klass,
+ * it's start_index to %PANGO_ATTR_INDEX_FROM_TEXT_BEGINNING
+ * and end_index to %PANGO_ATTR_INDEX_TO_TEXT_END
+ * such that the attribute applies
  * to the entire text by default.
  *
  * Since: 1.20
@@ -127,8 +129,8 @@ pango_attribute_init (PangoAttribute       *attr,
   g_return_if_fail (klass != NULL);
 
   attr->klass = klass;
-  attr->start_index = 0;
-  attr->end_index = G_MAXUINT;
+  attr->start_index = PANGO_ATTR_INDEX_FROM_TEXT_BEGINNING;
+  attr->end_index   = PANGO_ATTR_INDEX_TO_TEXT_END;
 }
 
 /**

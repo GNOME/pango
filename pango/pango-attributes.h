@@ -101,6 +101,9 @@ typedef enum {
   PANGO_UNDERLINE_ERROR
 } PangoUnderline;
 
+#define PANGO_ATTR_INDEX_FROM_TEXT_BEGINNING	0
+#define PANGO_ATTR_INDEX_TO_TEXT_END		G_MAXUINT
+
 struct _PangoAttribute
 {
   const PangoAttrClass *klass;
