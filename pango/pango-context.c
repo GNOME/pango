@@ -1384,16 +1384,7 @@ itemize_state_process_run (ItemizeState *state)
 
 	  if (!g_object_get_data (G_OBJECT (fontmap), script_name))
 	    {
-	      const char *what;
-	      if (shape_engine == NULL)
-	        what = "shape engine";
-	      else if (font == NULL)
-	        what = "font";
-	      else
-	        what = "nothing (oops!)";
-	       
-	      g_warning ("failed to find %s, expect ugly output. engine-type='%s', script='%s'",
-			 what,
+	      g_warning ("failed to choose a font, expect ugly output. engine-type='%s', script='%s'",
 			 pango_font_map_get_shape_engine_type (fontmap),
 			 script_name);
 

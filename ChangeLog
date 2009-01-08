@@ -1,5 +1,10 @@
 2009-01-08  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango/pango-context.c (itemize_state_process_run):
+	Improve warning message.
+
+2009-01-08  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 549532 – Correction to the sample string for Hindi in
 	pango-language-sample-table.h
 
