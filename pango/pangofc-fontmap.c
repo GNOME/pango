@@ -1055,7 +1055,7 @@ pango_fc_font_map_get_patterns (PangoFontMap               *fontmap,
   key.desc = pango_font_description_copy_static (desc);
   pango_font_description_unset_fields (key.desc, PANGO_FONT_MASK_SIZE);
 
-  if (PANGO_FC_FONT_MAP_GET_CLASS (fcfontmap)->context_key_get)
+  if (context && PANGO_FC_FONT_MAP_GET_CLASS (fcfontmap)->context_key_get)
     key.context_key = (gpointer)PANGO_FC_FONT_MAP_GET_CLASS (fcfontmap)->context_key_get (fcfontmap, context);
   else
     key.context_key = NULL;
