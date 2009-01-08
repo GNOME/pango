@@ -1,3 +1,11 @@
+2009-01-08  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 549532 – Correction to the sample string for Hindi in
+	pango-language-sample-table.h
+
+	* pango/pango-language-sample-table.h:
+	Improve Hindi sample text.
+
 2009-01-07  Behdad Esfahbod  <behdad@gnome.org>
 
 	Bug 566726 – Minor optimization

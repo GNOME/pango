@@ -247,9 +247,9 @@ LANGUAGE(
 	)
 LANGUAGE(
 	 hi	/* Hindi */,
-	 GLASS,
-	 "मैं काँच खा सकता हूँ, मुझे उस से कोई पीडा नहीं होती."
-	 /* I can eat glass and it doesn't hurt me. */
+	 MISC	/* G Karunakar (#549532) */,
+	 "नहीं नजर किसी की बुरी नहीं किसी का मुँह काला जो करे सो उपर वाला"
+	 /* its not in the sight or the face, but its all in god's grace. */
 	)
 LANGUAGE(
 	 hr	/* Croatian */,
