@@ -1,5 +1,12 @@
 2009-01-07  Behdad Esfahbod  <behdad@gnome.org>
 
+	Bug 566726 – Minor optimization
+
+	* pango/pango-context.c (get_shaper_and_font):
+	Don't walk the fontset if there are no engines.
+
+2009-01-07  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 566941 – Add PANGO_ATTRIBUTE_INDEX_FROM_TEXT_BEGINNING and
 	PANGO_ATTRIBUTE_INDEX_TO_TEXT_END
 

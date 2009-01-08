@@ -1133,28 +1133,34 @@ get_shaper_and_font (ItemizeState      *state,
   info.font = NULL;
 
   info.engines = state->exact_engines;
-  if (state->enable_fallback)
-    pango_fontset_foreach (state->current_fonts, get_shaper_and_font_foreach, &info);
-  else
-    get_shaper_and_font_foreach (NULL, get_base_font (state), &info);
-
-  if (info.shape_engine)
+  if (info.engines)
     {
-      *shape_engine = info.shape_engine;
-      *font = info.font;
-
-      /* skip caching if fallback disabled (see above) */
       if (state->enable_fallback)
-	shaper_font_cache_insert (state->cache, wc, *shape_engine, *font);
+	pango_fontset_foreach (state->current_fonts, get_shaper_and_font_foreach, &info);
+      else
+	get_shaper_and_font_foreach (NULL, get_base_font (state), &info);
 
-      return TRUE;
+      if (info.shape_engine)
+	{
+	  *shape_engine = info.shape_engine;
+	  *font = info.font;
+
+	  /* skip caching if fallback disabled (see above) */
+	  if (state->enable_fallback)
+	    shaper_font_cache_insert (state->cache, wc, *shape_engine, *font);
+
+	  return TRUE;
+	}
     }
 
   info.engines = state->fallback_engines;
-  if (state->enable_fallback)
-    pango_fontset_foreach (state->current_fonts, get_shaper_and_font_foreach, &info);
-  else
-    get_shaper_and_font_foreach (NULL, get_base_font (state), &info);
+  if (info.engines)
+    {
+      if (state->enable_fallback)
+	pango_fontset_foreach (state->current_fonts, get_shaper_and_font_foreach, &info);
+      else
+	get_shaper_and_font_foreach (NULL, get_base_font (state), &info);
+    }
 
   *shape_engine = info.shape_engine;
   *font = info.font;
