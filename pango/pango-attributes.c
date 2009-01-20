@@ -1793,7 +1793,8 @@ pango_attr_iterator_get (PangoAttrIterator *iterator,
  *        <literal>pango_font_description_set_family (desc, pango_font_description_get_family (desc))</literal>.
  * @language: if non-%NULL, location to store language tag for item, or %NULL
  *            if none is found.
- * @extra_attrs: if non-%NULL, location in which to store a list of non-font
+ * @extra_attrs: (element type Pango.Attribute): (transfer full): if non-%NULL,
+ *           location in which to store a list of non-font
  *           attributes at the the current position; only the highest priority
  *           value of each attribute will be added to this list. In order
  *           to free this value, you must call pango_attribute_destroy() on
@@ -2013,7 +2014,8 @@ pango_attr_list_filter (PangoAttrList       *list,
  * Gets a list of all attributes at the current position of the
  * iterator.
  *
- * Return value: a list of all attributes for the current range.
+ * Return value: (element-type Pango.Attribute): (transfer full): a list of
+ *   all attributes for the current range.
  *   To free this value, call pango_attribute_destroy() on
  *   each value and g_slist_free() on the list.
  *

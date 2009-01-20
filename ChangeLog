@@ -1,3 +1,12 @@
+2009-01-20  Johan Dahlin  <jdahlin@async.com.br>
+
+	Bug 567934 – Add introspection support inside pango
+
+	* configure.in:
+	* pango/Makefile.am:
+	* pango/pango-attributes.c:
+	* pango/pango-layout.c:
+
 2009-01-08  Behdad Esfahbod  <behdad@gnome.org>
 
 	* pango/pangofc-fontmap.c (pango_fc_font_map_get_patterns):
