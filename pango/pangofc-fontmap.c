@@ -951,7 +951,7 @@ uniquify_pattern (PangoFcFontMap *fcfontmap,
   PangoFcFontMapPrivate *priv = fcfontmap->priv;
   FcPattern *old_pattern;
 
-  if (!priv->pattern_hash)
+  if (G_UNLIKELY (!priv->pattern_hash))
     priv->pattern_hash =
       g_hash_table_new_full ((GHashFunc)pango_fc_pattern_hash,
 			     (GEqualFunc)pango_fc_pattern_equal,
