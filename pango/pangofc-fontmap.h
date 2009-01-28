@@ -29,6 +29,24 @@
 
 G_BEGIN_DECLS
 
+/**
+ * PangoFcFontKey:
+ *
+ * An opaque structure containing all the information needed for
+ * loading a font #PangoFcFont.
+ *
+ * Since: 1.24
+ **/
+typedef struct _PangoFcFontKey        PangoFcFontKey;
+
+const FcPattern   *pango_fc_font_key_get_pattern     (const PangoFcFontKey *key);
+const PangoMatrix *pango_fc_font_key_get_matrix      (const PangoFcFontKey *key);
+gpointer           pango_fc_font_key_get_context_key (const PangoFcFontKey *key);
+
+/*
+ * PangoFcFontMap
+ */
+
 #define PANGO_TYPE_FC_FONT_MAP              (pango_fc_font_map_get_type ())
 #define PANGO_FC_FONT_MAP(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_TYPE_FC_FONT_MAP, PangoFcFontMap))
 #define PANGO_IS_FC_FONT_MAP(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), PANGO_TYPE_FC_FONT_MAP))
@@ -64,7 +82,7 @@ struct _PangoFcFontMap
  * @default_substitute: Substitutes in default values for
  *  unspecified fields in a #FcPattern. This will be called
  *  prior to creating a font for the pattern. May be %NULL.
- *  Deprecated in favor of @context_substitute().
+ *  Deprecated in favor of @font_key_substitute().
  * @new_font: Creates a new #PangoFcFont for the specified
  *  pattern of the appropriate type for this font map. The
  *  @pattern argument must be passed to the "pattern" property
@@ -87,15 +105,18 @@ struct _PangoFcFontMap
  *  @context_key_copy.
  * @context_key_hash: Gets a hash value for a context key
  * @context_key_equal: Compares two context keys for equality.
- * @create_font: Creates a new #PangoFcFont for the specified
- *  pattern of the appropriate type for this font map using
- *  information from the context that is passed in. The
- *  @pattern argument must be passed to the "pattern" property
- *  of #PangoFcFont when you call g_object_new(). Deprecated
- *  in favor of @create_font(). If %NULL, new_font() is used.
- * @context_substitute: Substitutes in default values for
+ * @font_key_substitute: Substitutes in default values for
  *  unspecified fields in a #FcPattern. This will be called
  *  prior to creating a font for the pattern. May be %NULL.
+ *  (Since: 1.24)
+ * @create_font: Creates a new #PangoFcFont for the specified
+ *  pattern of the appropriate type for this font map using
+ *  information from the font key that is passed in. The
+ *  @pattern member of @font_key can be retrieved using
+ *  pango_fc_font_key_get_pattern() and must be passed to
+ *  the "pattern" property of #PangoFcFont when you call
+ *  g_object_new().  If %NULL, new_font() is used.
+ *  (Since: 1.24)
  *
  * Class structure for #PangoFcFontMap.
  **/
@@ -105,7 +126,7 @@ struct _PangoFcFontMapClass
   PangoFontMapClass parent_class;
 
   /*< public >*/
-  /* Deprecated in favor of context_substitute */
+  /* Deprecated in favor of font_key_substitute */
   void         (*default_substitute) (PangoFcFontMap   *fontmap,
 				      FcPattern        *pattern);
   /* Deprecated in favor of create_font */
@@ -127,13 +148,11 @@ struct _PangoFcFontMapClass
 				      gconstpointer               key_a,
 				      gconstpointer               key_b);
 
-  void         (*context_substitute) (PangoFcFontMap             *fontmap,
-				      PangoContext               *context,
+  void         (*font_key_substitute)(PangoFcFontMap             *fontmap,
+				      PangoFcFontKey             *fontkey,
 				      FcPattern                  *pattern);
   PangoFcFont  *(*create_font)       (PangoFcFontMap             *fontmap,
-				      PangoContext               *context,
-				      const PangoFontDescription *desc,
-				      FcPattern                  *pattern);
+				      PangoFcFontKey             *fontkey);
   /*< private >*/
 
   /* Padding for future expansion */

@@ -54,9 +54,9 @@ PangoFcDecoder *_pango_fc_font_get_decoder       (PangoFcFont    *font);
 void            _pango_fc_font_set_decoder       (PangoFcFont    *font,
 						  PangoFcDecoder *decoder);
 
-gpointer        _pango_fc_font_get_context_key   (PangoFcFont    *font);
-void            _pango_fc_font_set_context_key   (PangoFcFont    *font,
-						  gpointer        context_key);
+PangoFcFontKey *_pango_fc_font_get_font_key      (PangoFcFont    *fcfont);
+void            _pango_fc_font_set_font_key      (PangoFcFont    *fcfont,
+						  PangoFcFontKey *key);
 
 void            pango_fc_font_get_raw_extents    (PangoFcFont    *font,
 						  FT_Int32        load_flags,

@@ -99,6 +99,7 @@ such that the attribute covers from the beginning of the text.
 Since: 1.24
 
 
+
 <!-- ##### MACRO PANGO_ATTR_INDEX_TO_TEXT_END ##### -->
 <para>
 This value can be used to set the end_index member of a #PangoAttribute

@@ -933,10 +933,17 @@ PANGO_FC_FONT_MAP_CLASS
 PANGO_IS_FC_FONT_MAP_CLASS
 PANGO_FC_FONT_MAP_GET_CLASS
 
+<SUBSECTION>
+PangoFcFontKey
+pango_fc_font_key_get_context_key
+pango_fc_font_key_get_matrix
+pango_fc_font_key_get_pattern
+
 <SUBSECTION Private>
 PangoFcFontMapPrivate
 pango_fc_font_map_get_type
 </SECTION>
+
 
 <SECTION>
 <FILE>pangofc-font</FILE>

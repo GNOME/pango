@@ -57,7 +57,7 @@ typedef struct _PangoFcFontPrivate PangoFcFontPrivate;
 struct _PangoFcFontPrivate
 {
   PangoFcDecoder *decoder;
-  gpointer context_key;
+  PangoFcFontKey *key;
   GUnicharToGlyphCacheEntry *char_to_glyph_cache;
 };
 
@@ -855,21 +855,21 @@ _pango_fc_font_set_decoder (PangoFcFont    *font,
     g_object_ref (priv->decoder);
 }
 
-gpointer
-_pango_fc_font_get_context_key (PangoFcFont *fcfont)
+PangoFcFontKey *
+_pango_fc_font_get_font_key (PangoFcFont *fcfont)
 {
   PangoFcFontPrivate *priv = fcfont->priv;
 
-  return priv->context_key;
+  return priv->key;
 }
 
 void
-_pango_fc_font_set_context_key (PangoFcFont *fcfont,
-				gpointer     context_key)
+_pango_fc_font_set_font_key (PangoFcFont    *fcfont,
+			     PangoFcFontKey *key)
 {
   PangoFcFontPrivate *priv = fcfont->priv;
 
-  priv->context_key = context_key;
+  priv->key = key;
 }
 
 static FT_Glyph_Metrics *

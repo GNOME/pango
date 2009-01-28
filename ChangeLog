@@ -1,5 +1,38 @@
 2009-01-09  Behdad Esfahbod  <behdad@gnome.org>
 
+	* docs/pango-sections.txt:
+	* docs/tmpl/pangofc-fontmap.sgml:
+	* docs/tmpl/text-attributes.sgml:
+	* pango/pangocairo-fc.h:
+	* pango/pangocairo-fcfont.c (get_font_size), (get_gravity_class),
+	(get_gravity), (_pango_cairo_fc_font_new):
+	* pango/pangocairo-fcfontmap.c
+	(pango_cairo_fc_font_map_font_key_substitute),
+	(pango_cairo_fc_font_map_create_font),
+	(pango_cairo_fc_font_map_class_init):
+	* pango/pangofc-font.c (_pango_fc_font_get_font_key),
+	(_pango_fc_font_set_font_key):
+	* pango/pangofc-fontmap.c (pango_fc_font_key_equal),
+	(pango_fc_font_key_hash), (pango_fc_font_key_free),
+	(pango_fc_font_key_copy), (get_context_matrix),
+	(pango_fc_font_key_init), (pango_fc_font_key_get_pattern),
+	(pango_fc_font_key_get_matrix),
+	(pango_fc_font_key_get_context_key), (pango_fc_font_map_init),
+	(pango_fc_font_map_class_init), (pango_fc_font_map_add),
+	(_pango_fc_font_map_remove), (pango_fc_make_pattern),
+	(pango_fc_font_map_new_font), (pango_fc_default_substitute),
+	(pango_fc_font_map_get_patterns), (pango_fc_font_map_load_fontset):
+	* pango/pangofc-fontmap.h:
+	* pango/pangofc-private.h:
+	Change PangoFc font loading API such that PangoContext is not passed
+	down.  We use a new opaque struct called PangoFcFontKey.  This struct
+	is in fact our font hash key.  This avoids problems where previously
+	we were using context members that were not necessarily considered
+	by the pangofc layer when caching.
+	This is in preparation for lazy loading of fonts in the pangofc fontmap.
+
+2009-01-09  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/pangocairo-atsuifont.c (_pango_cairo_atsui_font_new):
 	* pango/pangocairo-fcfont.c (_pango_cairo_fc_font_new):
 	* pango/pangocairo-font.c (_pango_cairo_font_private_initialize):

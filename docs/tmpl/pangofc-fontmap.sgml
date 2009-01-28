@@ -53,7 +53,7 @@ Fontconfig-based backend involves deriving from both
 @context_key_free: 
 @context_key_hash: 
 @context_key_equal: 
-@context_substitute: 
+@font_key_substitute:
 @create_font: 
 
 <!-- ##### FUNCTION pango_fc_font_map_create_context ##### -->
@@ -131,5 +131,38 @@ Fontconfig-based backend involves deriving from both
 
 </para>
 
+
+
+<!-- ##### STRUCT PangoFcFontKey ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### FUNCTION pango_fc_font_key_get_context_key ##### -->
+<para>
+
+</para>
+
+@key:
+@Returns:
+
+
+<!-- ##### FUNCTION pango_fc_font_key_get_matrix ##### -->
+<para>
+
+</para>
+
+@key:
+@Returns:
+
+
+<!-- ##### FUNCTION pango_fc_font_key_get_pattern ##### -->
+<para>
+
+</para>
+
+@key:
+@Returns:
 
 

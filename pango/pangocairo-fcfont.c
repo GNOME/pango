@@ -169,52 +169,59 @@ pango_cairo_fc_font_init (PangoCairoFcFont *cffont G_GNUC_UNUSED)
  ********************/
 
 static double
-get_font_size (PangoCairoFcFontMap        *cffontmap,
-	       PangoContext               *context,
-	       const PangoFontDescription *desc,
-	       FcPattern                  *pattern)
+get_font_size (const FcPattern *pattern)
 {
   double size;
-
- /* The reason why we read FC_PIXEL_SIZE here rather than just
-  * using the specified size is to support operations like clamping
-  * a font to a minimal readable size in fonts.conf. This is pretty weird,
-  * since it could mean that changing the Cairo CTM doesn't change the
-  * font size, but it's just a more radical version of the non-linear
-  * font scaling we already have due to hinting and due to bitmap
-  * fonts being only available at a few sizes.
-  *
-  * If honoring FC_PIXEL_SIZE gets in the way of more useful features
-  * it should be removed since it only matters in the unusual case
-  * of people doing exotic stuff in fonts.conf.
-  */
+  double dpi;
 
   if (FcPatternGetDouble (pattern, FC_PIXEL_SIZE, 0, &size) == FcResultMatch)
-    return size * PANGO_SCALE / pango_matrix_get_font_scale_factor (pango_context_get_matrix (context));
+    return size * PANGO_SCALE;
 
   /* Just in case FC_PIXEL_SIZE got unset between pango_fc_make_pattern()
-   * and here.
+   * and here.  That would be very weird.
    */
-  if (pango_font_description_get_size_is_absolute (desc))
-    return pango_font_description_get_size (desc);
-  else
+
+  if (FcPatternGetDouble (pattern, FC_DPI, 0, &dpi) != FcResultMatch)
+    dpi = 72;
+
+  if (FcPatternGetDouble (pattern, FC_SIZE, 0, &size) == FcResultMatch)
+    return size * dpi / 72.;
+
+  /* Whatever */
+  return 18.;
+}
+
+static gpointer
+get_gravity_class (void)
+{
+  static GEnumClass *class = NULL;
+
+  if (G_UNLIKELY (!class))
+    class = g_type_class_ref (PANGO_TYPE_GRAVITY);
+
+  return class;
+}
+
+static PangoGravity
+get_gravity (const FcPattern *pattern)
+{
+  char *s;
+
+  if (FcPatternGetString (pattern, PANGO_FC_GRAVITY, 0, (FcChar8 **)(void *)&s) == FcResultMatch)
     {
-      double dpi = pango_cairo_context_get_resolution (context);
-
-      if (dpi <= 0)
-	dpi = cffontmap->dpi;
-
-      return dpi * pango_font_description_get_size (desc) / 72.;
+      GEnumValue *value = g_enum_get_value_by_nick (get_gravity_class (), s);
+      return value->value;
     }
+
+  return PANGO_GRAVITY_SOUTH;
 }
 
 PangoFcFont *
-_pango_cairo_fc_font_new (PangoCairoFcFontMap        *cffontmap,
-			  PangoContext               *context,
-			  const PangoFontDescription *desc,
-			  FcPattern	             *pattern)
+_pango_cairo_fc_font_new (PangoCairoFcFontMap *cffontmap,
+			  PangoFcFontKey      *key)
 {
   PangoCairoFcFont *cffont;
+  const FcPattern *pattern = pango_fc_font_key_get_pattern (key);
   cairo_matrix_t font_matrix;
   FcMatrix *fc_matrix;
   double size;
@@ -226,7 +233,8 @@ _pango_cairo_fc_font_new (PangoCairoFcFontMap        *cffontmap,
 			 "pattern", pattern,
 			 NULL);
 
-  size = get_font_size (cffontmap, context, desc, pattern);
+  size = get_font_size (pattern) /
+	 pango_matrix_get_font_scale_factor (pango_fc_font_key_get_matrix (key));
 
   if  (FcPatternGetMatrix (pattern,
 			   FC_MATRIX, 0, &fc_matrix) == FcResultMatch)
@@ -244,9 +252,9 @@ _pango_cairo_fc_font_new (PangoCairoFcFontMap        *cffontmap,
 
   _pango_cairo_font_private_initialize (&cffont->cf_priv,
 					(PangoCairoFont *) cffont,
-					pango_font_description_get_gravity (desc),
-					_pango_cairo_context_get_merged_font_options (context),
-					pango_context_get_matrix (context),
+					get_gravity (pattern),
+					pango_fc_font_key_get_context_key (key),
+					pango_fc_font_key_get_matrix (key),
 					&font_matrix);
 
   ((PangoFcFont *)(cffont))->is_hinted = _pango_cairo_font_private_is_metrics_hinted (&cffont->cf_priv);
