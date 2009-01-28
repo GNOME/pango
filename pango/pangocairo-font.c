@@ -515,13 +515,12 @@ _pango_cairo_font_get_hex_box_info (PangoCairoFont *cfont)
 void
 _pango_cairo_font_private_initialize (PangoCairoFontPrivate      *cf_priv,
 				      PangoCairoFont             *cfont,
-				      PangoContext               *context,
 				      const PangoFontDescription *desc,
+				      const cairo_font_options_t *font_options,
+				      const PangoMatrix          *pango_ctm,
 				      const cairo_matrix_t       *font_matrix)
 {
-  const cairo_font_options_t *font_options;
   cairo_matrix_t gravity_matrix;
-  const PangoMatrix *pango_ctm;
 
   cf_priv->cfont = cfont;
   cf_priv->gravity = pango_font_description_get_gravity (desc);
@@ -538,7 +537,6 @@ _pango_cairo_font_private_initialize (PangoCairoFontPrivate      *cf_priv,
 			 font_matrix,
 			 &gravity_matrix);
 
-  pango_ctm = pango_context_get_matrix (context);
   if (pango_ctm)
     cairo_matrix_init (&cf_priv->data->ctm,
 		       pango_ctm->xx,
@@ -549,7 +547,6 @@ _pango_cairo_font_private_initialize (PangoCairoFontPrivate      *cf_priv,
   else
     cairo_matrix_init_identity (&cf_priv->data->ctm);
 
-  font_options = _pango_cairo_context_get_merged_font_options (context);
   cf_priv->data->options = cairo_font_options_copy (font_options);
   cf_priv->is_hinted = cairo_font_options_get_hint_metrics (font_options) != CAIRO_HINT_METRICS_OFF;
 

@@ -1,3 +1,15 @@
+2009-01-09  Behdad Esfahbod  <behdad@gnome.org>
+
+	* pango/pangocairo-atsuifont.c (_pango_cairo_atsui_font_new):
+	* pango/pangocairo-fcfont.c (_pango_cairo_fc_font_new):
+	* pango/pangocairo-font.c (_pango_cairo_font_private_initialize):
+	* pango/pangocairo-private.h:
+	* pango/pangocairo-win32font.c (_pango_cairo_win32_font_new):
+	Remove context argument from _pango_cairo_font_private_initialize().
+	Replace it with pango_ctm and font_options, the only things from
+	context we actually needed.  This is in preparation for lazy loading
+	of fonts in the pangofc fontmap.
+
 2009-01-20  Johan Dahlin  <jdahlin@async.com.br>
 
 	Bug 567934 – Add introspection support inside pango

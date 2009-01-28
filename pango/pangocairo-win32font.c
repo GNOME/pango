@@ -318,8 +318,9 @@ _pango_cairo_win32_font_new (PangoCairoWin32FontMap     *cwfontmap,
 
   _pango_cairo_font_private_initialize (&cwfont->cf_priv,
 					(PangoCairoFont *) cwfont,
-					context,
 					desc,
+					_pango_cairo_context_get_merged_font_options (context),
+					pango_context_get_matrix (context),
 					&font_matrix);
 
   return PANGO_FONT (cwfont);
