@@ -42,8 +42,6 @@ struct _PangoCairoFcFont
 {
   PangoFcFont font;
   PangoCairoFontPrivate cf_priv;
-
-  PangoGravity gravity;
 };
 
 struct _PangoCairoFcFontClass
