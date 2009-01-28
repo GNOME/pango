@@ -388,12 +388,12 @@ font_hash_key_equal (const FontHashKey *key_a,
       key_a->matrix.yy == key_b->matrix.yy &&
       key_a->pattern == key_b->pattern)
     {
-      if (key_a->context_key)
+      if (key_a->context_key && key_b->context_key)
 	return PANGO_FC_FONT_MAP_GET_CLASS (key_a->fontmap)->context_key_equal (key_a->fontmap,
 										key_a->context_key,
 										key_b->context_key);
       else
-	return TRUE;
+        return key_a->context_key == key_b->context_key;
     }
   else
     return FALSE;

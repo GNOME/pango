@@ -1,5 +1,10 @@
 2009-01-09  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango/pangofc-fontmap.c (font_hash_key_equal):
+	Avoid context key comparison if any of the keys is NULL.
+
+2009-01-09  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/pangocairo-atsuifont.c (_pango_cairo_atsui_font_new):
 	* pango/pangocairo-fcfont.c (_pango_cairo_fc_font_new):
 	* pango/pangocairo-font.c (_pango_cairo_font_private_initialize):
