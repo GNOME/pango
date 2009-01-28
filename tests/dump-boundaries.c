@@ -49,9 +49,9 @@ static void fail (const char *format, ...)
 static void
 dump_text (const char *text)
 {
-  int len;
+  unsigned int len;
   PangoLogAttr *attrs;
-  int i;
+  unsigned int i;
   gunichar *ucs4;
 
   if (!g_utf8_validate (text, -1, NULL))
@@ -69,8 +69,7 @@ dump_text (const char *text)
 
   ucs4 = g_utf8_to_ucs4 (text, -1, NULL, NULL, NULL);
 
-  i = 0;
-  while (i <= len)
+  for (i = 0; i < len + 1; i++)
     {
       char buf[7] = { '\0', };
       char *loc;
@@ -101,8 +100,6 @@ dump_text (const char *text)
 	       attrs[i].is_sentence_end);
 
       g_free (loc);
-
-      ++i;
     }
 
   g_free (ucs4);
