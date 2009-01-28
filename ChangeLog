@@ -1,5 +1,11 @@
 2009-01-09  Behdad Esfahbod  <behdad@gnome.org>
 
+	* docs/Makefile.am:
+	* docs/pango.types:
+	Autogenerage pango.types.  Remove it from repository, but dist it.
+
+2009-01-09  Behdad Esfahbod  <behdad@gnome.org>
+
 	* docs/pango-sections.txt:
 	* docs/tmpl/pangofc-fontmap.sgml:
 	* docs/tmpl/text-attributes.sgml:

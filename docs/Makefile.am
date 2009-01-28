@@ -98,11 +98,19 @@ include $(top_srcdir)/gtk-doc.make
 # This line really belongs in gtk-doc.mk
 $(REPORT_FILES): sgml-build.stamp
 
+pango.types:
+	@echo "Rebuilding $@"
+	@LANG=C; LIST=$$(grep 'pango_[_a-zA-Z0-9]*_get_type' $(HFILE_GLOB) | grep -v '\(private\|atsui\|win32\)' | sed 's/\([^:]*:\).*\(pango[_a-zA-Z0-9]*_get_type\).*/\1\2/') && \
+	echo "$$LIST" | sed 's/.*\/\(pango\/.*\):.*/#include <\1>/' | sort -u > $@.tmp && \
+	echo >> $@.tmp && \
+	echo "$$LIST" | cut -d : -f 2 | sort -u >> $@.tmp && \
+	mv $@.tmp $@
+
+BUILT_SOURCES = pango.types
+
 ########################################################################
 
 man_MANS = pango-querymodules.1 
-BUILT_EXTRA_DIST = $(man_MANS)
-MAINTAINERCLEANFILES = $(man_MANS)
 if ENABLE_MAN
 .xml.1:
 	@XSLTPROC@ -nonet http://docbook.sourceforge.net/release/xsl/current/manpages/docbook.xsl $<
@@ -117,18 +125,17 @@ dist-local-check-mans-enabled:
 	@false
 endif
 
+MAINTAINERCLEANFILES = $(man_MANS) $(BUILT_SOURCES)
 EXTRA_DIST +=				\
 	layout.fig			\
 	layout.eps			\
 	version.xml.in			\
-	check.docs
+	check.docs			\
+	pango.types			\
+	$(man_MANS)
 
 # force doc rebulid after configure
 dist-hook-local: dist-local-check-mans-enabled dist-local-check-no-cross-references maintainer-clean-local all-local
-	files='$(BUILT_EXTRA_DIST)';				\
-	for f in $$files; do					\
-	  if test -f $$f; then d=.; else d=$(srcdir); fi;	\
-	  cp $$d/$$f $(distdir) || exit 1; done;
 
 #
 # Require gtk-doc when making dist
