@@ -29,6 +29,9 @@
 
 G_BEGIN_DECLS
 
+
+#ifdef PANGO_ENABLE_BACKEND
+
 /**
  * PangoFcFontsetKey:
  *
@@ -39,7 +42,7 @@ G_BEGIN_DECLS
  **/
 typedef struct _PangoFcFontsetKey  PangoFcFontsetKey;
 
-const PangoLanguage        *pango_fc_fontset_key_get_language      (const PangoFcFontsetKey *key);
+PangoLanguage              *pango_fc_fontset_key_get_language      (const PangoFcFontsetKey *key);
 const PangoFontDescription *pango_fc_fontset_key_get_description   (const PangoFcFontsetKey *key);
 const PangoMatrix          *pango_fc_fontset_key_get_matrix        (const PangoFcFontsetKey *key);
 double                      pango_fc_fontset_key_get_absolute_size (const PangoFcFontsetKey *key);
@@ -59,6 +62,9 @@ typedef struct _PangoFcFontKey     PangoFcFontKey;
 const FcPattern   *pango_fc_font_key_get_pattern     (const PangoFcFontKey *key);
 const PangoMatrix *pango_fc_font_key_get_matrix      (const PangoFcFontKey *key);
 gpointer           pango_fc_font_key_get_context_key (const PangoFcFontKey *key);
+
+#endif
+
 
 /*
  * PangoFcFontMap

@@ -382,6 +382,9 @@ pango_fontset_simple_get_font (PangoFontset  *fontset,
 	}
     }
 
+  if (G_UNLIKELY (result == -1))
+    return NULL;
+
   font = g_ptr_array_index(simple->fonts, result);
   return g_object_ref (font);
 }

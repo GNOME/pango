@@ -1,3 +1,17 @@
+2009-01-27  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 566727 – PangoFontsetLazy
+
+	* pango/pangofc-fontmap.c: Rework caching.
+
+	Cache FcFontSort results separately from PangoFontset's.
+
+	Add PangoFcFontset which is lazy and does not create fonts until it
+	really needs to.
+
+	Use FcFontMatch() and only do FcFontSort() if fallback fonts are
+	needed.
+
 2009-01-16  Behdad Esfahbod  <behdad@gnome.org>
 
 	* docs/pango-sections.txt:
