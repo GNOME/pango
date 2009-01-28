@@ -522,7 +522,6 @@ pango_ot_info_find_language (PangoOTInfo      *info,
     return FALSE;
 
   g_return_val_if_fail (script_index < script_list->ScriptCount, FALSE);
-
   script = &script_list->ScriptRecord[script_index].Script;
 
   for (i = 0; i < script->LangSysCount; i++)
@@ -610,7 +609,6 @@ pango_ot_info_find_feature  (PangoOTInfo      *info,
     return FALSE;
 
   g_return_val_if_fail (script_index < script_list->ScriptCount, FALSE);
-
   script = &script_list->ScriptRecord[script_index].Script;
 
   if (language_index == PANGO_OT_DEFAULT_LANGUAGE)
@@ -625,7 +623,8 @@ pango_ot_info_find_feature  (PangoOTInfo      *info,
     {
       HB_UShort index = lang_sys->FeatureIndex[i];
 
-      if (feature_list->FeatureRecord[index].FeatureTag == feature_tag)
+      if (index < feature_list->FeatureCount &&
+	  feature_list->FeatureRecord[index].FeatureTag == feature_tag)
 	{
 	  if (feature_index)
 	    *feature_index = index;
@@ -706,7 +705,6 @@ pango_ot_info_list_languages (PangoOTInfo      *info,
     return NULL;
 
   g_return_val_if_fail (script_index < script_list->ScriptCount, NULL);
-
   script = &script_list->ScriptRecord[script_index].Script;
 
   result = g_new (PangoOTTag, script->LangSysCount + 1);
@@ -748,7 +746,7 @@ pango_ot_info_list_features  (PangoOTInfo      *info,
   HB_ScriptTable *script;
   HB_LangSys *lang_sys;
 
-  int i;
+  int i, j;
 
   g_return_val_if_fail (PANGO_IS_OT_INFO (info), NULL);
 
@@ -763,7 +761,6 @@ pango_ot_info_list_features  (PangoOTInfo      *info,
     return NULL;
 
   g_return_val_if_fail (script_index < script_list->ScriptCount, NULL);
-
   script = &script_list->ScriptRecord[script_index].Script;
 
   if (language_index == PANGO_OT_DEFAULT_LANGUAGE)
@@ -776,14 +773,16 @@ pango_ot_info_list_features  (PangoOTInfo      *info,
 
   result = g_new (PangoOTTag, lang_sys->FeatureCount + 1);
 
+  j = 0;
   for (i = 0; i < lang_sys->FeatureCount; i++)
     {
       HB_UShort index = lang_sys->FeatureIndex[i];
 
-      result[i] = feature_list->FeatureRecord[index].FeatureTag;
+      if (index < feature_list->FeatureCount)
+	result[j++] = feature_list->FeatureRecord[index].FeatureTag;
     }
 
-  result[i] = 0;
+  result[j] = 0;
 
   return result;
 }

@@ -1,5 +1,14 @@
 2009-01-28  Behdad Esfahbod  <behdad@gnome.org>
 
+	Bug 567392 – Abiword crashes in pango when opening document with
+	certain locales
+
+	* pango/pango-ot-info.c (pango_ot_info_find_language),
+	(pango_ot_info_find_feature), (pango_ot_info_list_languages),
+	(pango_ot_info_list_features): Protect against more broken fonts.
+
+2009-01-28  Behdad Esfahbod  <behdad@gnome.org>
+
 	* configure.in: Bump version to 1.23.0.  Not releasing yet.
 
 2009-01-27  Behdad Esfahbod  <behdad@gnome.org>
