@@ -223,8 +223,9 @@ _pango_cairo_fc_font_new (PangoCairoFcFontMap *cffontmap,
   PangoCairoFcFont *cffont;
   const FcPattern *pattern = pango_fc_font_key_get_pattern (key);
   cairo_matrix_t font_matrix;
-  FcMatrix *fc_matrix;
+  FcMatrix fc_matrix, *fc_matrix_val;
   double size;
+  int i;
 
   g_return_val_if_fail (PANGO_IS_CAIRO_FC_FONT_MAP (cffontmap), NULL);
   g_return_val_if_fail (pattern != NULL, NULL);
@@ -236,16 +237,16 @@ _pango_cairo_fc_font_new (PangoCairoFcFontMap *cffontmap,
   size = get_font_size (pattern) /
 	 pango_matrix_get_font_scale_factor (pango_fc_font_key_get_matrix (key));
 
-  if  (FcPatternGetMatrix (pattern,
-			   FC_MATRIX, 0, &fc_matrix) == FcResultMatch)
-    cairo_matrix_init (&font_matrix,
-		       fc_matrix->xx,
-		       - fc_matrix->yx,
-		       - fc_matrix->xy,
-		       fc_matrix->yy,
-		       0., 0.);
-  else
-    cairo_matrix_init_identity (&font_matrix);
+  FcMatrixInit (&fc_matrix);
+  for (i = 0; FcPatternGetMatrix (pattern, FC_MATRIX, i, &fc_matrix_val) == FcResultMatch; i++)
+    FcMatrixMultiply (&fc_matrix, &fc_matrix, fc_matrix_val);
+
+  cairo_matrix_init (&font_matrix,
+		     fc_matrix.xx,
+		     - fc_matrix.yx,
+		     - fc_matrix.xy,
+		     fc_matrix.yy,
+		     0., 0.);
 
   cairo_matrix_scale (&font_matrix,
 		      size / PANGO_SCALE, size / PANGO_SCALE);

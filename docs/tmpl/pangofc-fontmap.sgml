@@ -50,11 +50,11 @@ Fontconfig-based backend involves deriving from both
 @get_resolution: 
 @context_key_get: 
 @context_key_copy: 
-@context_key_free: 
-@context_key_hash: 
-@context_key_equal: 
-@font_key_substitute:
-@create_font: 
+@context_key_free:
+@context_key_hash:
+@context_key_equal:
+@fontset_key_substitute:
+@create_font:
 
 <!-- ##### FUNCTION pango_fc_font_map_create_context ##### -->
 <para>
@@ -131,6 +131,66 @@ Fontconfig-based backend involves deriving from both
 
 </para>
 
+
+
+<!-- ##### STRUCT PangoFcFontsetKey ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### FUNCTION pango_fc_fontset_key_get_context_key ##### -->
+<para>
+
+</para>
+
+@key:
+@Returns:
+
+
+<!-- ##### FUNCTION pango_fc_fontset_key_get_description ##### -->
+<para>
+
+</para>
+
+@key:
+@Returns:
+
+
+<!-- ##### FUNCTION pango_fc_fontset_key_get_language ##### -->
+<para>
+
+</para>
+
+@key:
+@Returns:
+
+
+<!-- ##### FUNCTION pango_fc_fontset_key_get_matrix ##### -->
+<para>
+
+</para>
+
+@key:
+@Returns:
+
+
+<!-- ##### FUNCTION pango_fc_fontset_key_get_absolute_size ##### -->
+<para>
+
+</para>
+
+@key:
+@Returns:
+
+
+<!-- ##### FUNCTION pango_fc_fontset_key_get_resolution ##### -->
+<para>
+
+</para>
+
+@key:
+@Returns:
 
 
 <!-- ##### STRUCT PangoFcFontKey ##### -->

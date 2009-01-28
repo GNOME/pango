@@ -30,14 +30,31 @@
 G_BEGIN_DECLS
 
 /**
- * PangoFcFontKey:
+ * PangoFcFontsetKey:
  *
  * An opaque structure containing all the information needed for
- * loading a font #PangoFcFont.
+ * loading a fontset with the PangoFc fontmap.
  *
  * Since: 1.24
  **/
-typedef struct _PangoFcFontKey        PangoFcFontKey;
+typedef struct _PangoFcFontsetKey  PangoFcFontsetKey;
+
+const PangoLanguage        *pango_fc_fontset_key_get_language      (const PangoFcFontsetKey *key);
+const PangoFontDescription *pango_fc_fontset_key_get_description   (const PangoFcFontsetKey *key);
+const PangoMatrix          *pango_fc_fontset_key_get_matrix        (const PangoFcFontsetKey *key);
+double                      pango_fc_fontset_key_get_absolute_size (const PangoFcFontsetKey *key);
+double                      pango_fc_fontset_key_get_resolution    (const PangoFcFontsetKey *key);
+gpointer                    pango_fc_fontset_key_get_context_key   (const PangoFcFontsetKey *key);
+
+/**
+ * PangoFcFontKey:
+ *
+ * An opaque structure containing all the information needed for
+ * loading a font with the PangoFc fontmap.
+ *
+ * Since: 1.24
+ **/
+typedef struct _PangoFcFontKey     PangoFcFontKey;
 
 const FcPattern   *pango_fc_font_key_get_pattern     (const PangoFcFontKey *key);
 const PangoMatrix *pango_fc_font_key_get_matrix      (const PangoFcFontKey *key);
@@ -105,7 +122,7 @@ struct _PangoFcFontMap
  *  @context_key_copy.
  * @context_key_hash: Gets a hash value for a context key
  * @context_key_equal: Compares two context keys for equality.
- * @font_key_substitute: Substitutes in default values for
+ * @fontset_key_substitute: Substitutes in default values for
  *  unspecified fields in a #FcPattern. This will be called
  *  prior to creating a font for the pattern. May be %NULL.
  *  (Since: 1.24)
@@ -126,7 +143,7 @@ struct _PangoFcFontMapClass
   PangoFontMapClass parent_class;
 
   /*< public >*/
-  /* Deprecated in favor of font_key_substitute */
+  /* Deprecated in favor of fontset_key_substitute */
   void         (*default_substitute) (PangoFcFontMap   *fontmap,
 				      FcPattern        *pattern);
   /* Deprecated in favor of create_font */
@@ -148,8 +165,8 @@ struct _PangoFcFontMapClass
 				      gconstpointer               key_a,
 				      gconstpointer               key_b);
 
-  void         (*font_key_substitute)(PangoFcFontMap             *fontmap,
-				      PangoFcFontKey             *fontkey,
+  void         (*fontset_key_substitute)(PangoFcFontMap             *fontmap,
+				      PangoFcFontsetKey          *fontsetkey,
 				      FcPattern                  *pattern);
   PangoFcFont  *(*create_font)       (PangoFcFontMap             *fontmap,
 				      PangoFcFontKey             *fontkey);

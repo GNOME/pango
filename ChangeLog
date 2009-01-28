@@ -1,3 +1,37 @@
+2009-01-16  Behdad Esfahbod  <behdad@gnome.org>
+
+	* docs/pango-sections.txt:
+	* docs/tmpl/pangofc-fontmap.sgml:
+	* pango/pangocairo-fcfontmap.c
+	(pango_cairo_fc_font_map_fontset_key_substitute),
+	(pango_cairo_fc_font_map_class_init):
+	* pango/pangofc-font.c (_pango_fc_font_get_font_key),
+	(_pango_fc_font_set_font_key):
+	* pango/pangofc-fontmap.c (pango_fc_fontset_key_equal),
+	(pango_fc_fontset_key_hash), (pango_fc_fontset_key_free),
+	(pango_fc_fontset_key_copy), (pango_fc_fontset_key_get_language),
+	(pango_fc_fontset_key_get_description),
+	(pango_fc_fontset_key_get_matrix),
+	(pango_fc_fontset_key_get_absolute_size),
+	(pango_fc_fontset_key_get_resolution),
+	(pango_fc_fontset_key_get_context_key), (pango_fc_font_key_hash),
+	(pango_fc_font_map_init), (_pango_fc_font_map_remove),
+	(pango_fc_make_pattern), (pango_fc_font_map_new_font),
+	(pango_fc_default_substitute), (pango_fc_fontset_key_make_pattern),
+	(pango_fc_font_map_get_patterns):
+	* pango/pangofc-fontmap.h:
+	Use new type PangoFcFontset for pattern substitution.
+
+2009-01-09  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 567165 – Apply all pattern matrices
+
+	* pango/pangocairo-fcfont.c (_pango_cairo_fc_font_new):
+	* pango/pangofc-fontmap.c (pango_fc_font_map_new_font):
+	Apply all FC_MATRIX values, not just the first one.  Fixes synthetic
+	italic rotated text with ft2 and xft backends.  Can't believe no one
+	ever noticed that they are broken...
+
 2009-01-09  Behdad Esfahbod  <behdad@gnome.org>
 
 	* docs/Makefile.am:
