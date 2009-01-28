@@ -1,5 +1,13 @@
 2009-01-28  Behdad Esfahbod  <behdad@gnome.org>
 
+	Bug 560792 – Make PangoLayoutLine with line->layout==NULL renderable
+
+	* pango/pango-renderer.c (pango_renderer_draw_layout_line),
+	(pango_renderer_draw_glyph_item), (pango_renderer_set_matrix):
+	Handle line->layout == NULL.
+
+2009-01-28  Behdad Esfahbod  <behdad@gnome.org>
+
 	Bug 567392 – Abiword crashes in pango when opening document with
 	certain locales
 

@@ -475,11 +475,11 @@ pango_renderer_draw_layout_line (PangoRenderer    *renderer,
    * active.
    */
   if (!renderer->active_count)
-    {
-      PangoContext *context = pango_layout_get_context (line->layout);
-      pango_renderer_set_matrix (renderer,
-				 pango_context_get_matrix (context));
-    }
+    pango_renderer_set_matrix (renderer,
+			       G_LIKELY (line->layout) ?
+			       pango_context_get_matrix
+			       (pango_layout_get_context (line->layout)) :
+			       NULL);
 
   pango_renderer_activate (renderer);
 
@@ -489,7 +489,7 @@ pango_renderer_draw_layout_line (PangoRenderer    *renderer,
   state.underline = PANGO_UNDERLINE_NONE;
   state.strikethrough = FALSE;
 
-  text = pango_layout_get_text (line->layout);
+  text = G_LIKELY (line->layout) ? pango_layout_get_text (line->layout) : NULL;
 
   for (l = line->runs; l; l = l->next)
     {
@@ -676,7 +676,7 @@ pango_renderer_default_draw_glyphs (PangoRenderer    *renderer,
 /**
  * pango_renderer_draw_glyph_item:
  * @renderer: a #PangoRenderer
- * @text: the UTF-8 text that @glyph_item refers to
+ * @text: the UTF-8 text that @glyph_item refers to, or %NULL
  * @glyph_item: a #PangoGlyphItem
  * @x: X position of left edge of baseline, in user space coordinates
  *   in Pango units.
@@ -690,6 +690,8 @@ pango_renderer_default_draw_glyphs (PangoRenderer    *renderer,
  * Note that @text is the start of the text for layout, which is then
  * indexed by <literal>@glyph_item->item->offset</literal>.
  *
+ * If @text is %NULL, this simply calls pango_renderer_draw_glyphs().
+ *
  * The default implementation of this method simply falls back to
  * pango_renderer_draw_glyphs().
  *
@@ -702,6 +704,15 @@ pango_renderer_draw_glyph_item (PangoRenderer    *renderer,
 				int               x,
 				int               y)
 {
+  if (G_UNLIKELY (text))
+    {
+      pango_renderer_draw_glyphs (renderer,
+				  glyph_item->item->analysis.font,
+				  glyph_item->glyphs,
+				  x, y);
+      return;
+    }
+
   g_return_if_fail (PANGO_IS_RENDERER_FAST (renderer));
 
   pango_renderer_activate (renderer);
@@ -1323,13 +1334,8 @@ pango_renderer_set_matrix (PangoRenderer     *renderer,
 {
   g_return_if_fail (PANGO_IS_RENDERER_FAST (renderer));
 
-  if (renderer->matrix)
-    pango_matrix_free (renderer->matrix);
-  if (matrix)
-    renderer->matrix = pango_matrix_copy (matrix);
-  else
-    renderer->matrix = NULL;
-
+  pango_matrix_free (renderer->matrix);
+  renderer->matrix = pango_matrix_copy (matrix);
 }
 
 /**
@@ -1371,7 +1377,7 @@ pango_renderer_get_matrix (PangoRenderer *renderer)
  * Since: 1.20
  **/
 PangoLayout *
-pango_renderer_get_layout      (PangoRenderer     *renderer)
+pango_renderer_get_layout (PangoRenderer *renderer)
 {
   if (G_UNLIKELY (renderer->priv->line == NULL))
     return NULL;
