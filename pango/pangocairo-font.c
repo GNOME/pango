@@ -515,7 +515,7 @@ _pango_cairo_font_get_hex_box_info (PangoCairoFont *cfont)
 void
 _pango_cairo_font_private_initialize (PangoCairoFontPrivate      *cf_priv,
 				      PangoCairoFont             *cfont,
-				      const PangoFontDescription *desc,
+				      PangoGravity                gravity,
 				      const cairo_font_options_t *font_options,
 				      const PangoMatrix          *pango_ctm,
 				      const cairo_matrix_t       *font_matrix)
@@ -523,7 +523,7 @@ _pango_cairo_font_private_initialize (PangoCairoFontPrivate      *cf_priv,
   cairo_matrix_t gravity_matrix;
 
   cf_priv->cfont = cfont;
-  cf_priv->gravity = pango_font_description_get_gravity (desc);
+  cf_priv->gravity = gravity;
 
   cf_priv->data = _pango_cairo_font_private_scaled_font_data_create (); 
 

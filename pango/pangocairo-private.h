@@ -109,7 +109,7 @@ PangoCairoFontHexBoxInfo *_pango_cairo_font_get_hex_box_info (PangoCairoFont *cf
 
 void _pango_cairo_font_private_initialize (PangoCairoFontPrivate      *cf_priv,
 					   PangoCairoFont             *font,
-					   const PangoFontDescription *desc,
+					   PangoGravity                gravity,
 					   const cairo_font_options_t *font_options,
 					   const PangoMatrix          *pango_ctm,
 					   const cairo_matrix_t       *font_matrix);

@@ -308,7 +308,7 @@ _pango_cairo_atsui_font_new (PangoCairoATSUIFontMap     *cafontmap,
 
   _pango_cairo_font_private_initialize (&cafont->cf_priv,
 					(PangoCairoFont *) cafont,
-					desc,
+					pango_font_description_get_gravity (desc),
 					_pango_cairo_context_get_merged_font_options (context),
 					pango_context_get_matrix (context),
 					&font_matrix);

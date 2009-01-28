@@ -244,7 +244,7 @@ _pango_cairo_fc_font_new (PangoCairoFcFontMap        *cffontmap,
 
   _pango_cairo_font_private_initialize (&cffont->cf_priv,
 					(PangoCairoFont *) cffont,
-					desc,
+					pango_font_description_get_gravity (desc),
 					_pango_cairo_context_get_merged_font_options (context),
 					pango_context_get_matrix (context),
 					&font_matrix);
