@@ -50,11 +50,11 @@ Fontconfig-based backend involves deriving from both
 @get_resolution: 
 @context_key_get: 
 @context_key_copy: 
-@context_key_free:
-@context_key_hash:
-@context_key_equal:
-@fontset_key_substitute:
-@create_font:
+@context_key_free: 
+@context_key_hash: 
+@context_key_equal: 
+@fontset_key_substitute: 
+@create_font: 
 
 <!-- ##### FUNCTION pango_fc_font_map_create_context ##### -->
 <para>
@@ -144,8 +144,8 @@ Fontconfig-based backend involves deriving from both
 
 </para>
 
-@key:
-@Returns:
+@key: 
+@Returns: 
 
 
 <!-- ##### FUNCTION pango_fc_fontset_key_get_description ##### -->
@@ -153,8 +153,8 @@ Fontconfig-based backend involves deriving from both
 
 </para>
 
-@key:
-@Returns:
+@key: 
+@Returns: 
 
 
 <!-- ##### FUNCTION pango_fc_fontset_key_get_language ##### -->
@@ -162,8 +162,8 @@ Fontconfig-based backend involves deriving from both
 
 </para>
 
-@key:
-@Returns:
+@key: 
+@Returns: 
 
 
 <!-- ##### FUNCTION pango_fc_fontset_key_get_matrix ##### -->
@@ -171,8 +171,8 @@ Fontconfig-based backend involves deriving from both
 
 </para>
 
-@key:
-@Returns:
+@key: 
+@Returns: 
 
 
 <!-- ##### FUNCTION pango_fc_fontset_key_get_absolute_size ##### -->
@@ -180,8 +180,8 @@ Fontconfig-based backend involves deriving from both
 
 </para>
 
-@key:
-@Returns:
+@key: 
+@Returns: 
 
 
 <!-- ##### FUNCTION pango_fc_fontset_key_get_resolution ##### -->
@@ -189,8 +189,8 @@ Fontconfig-based backend involves deriving from both
 
 </para>
 
-@key:
-@Returns:
+@key: 
+@Returns: 
 
 
 <!-- ##### STRUCT PangoFcFontKey ##### -->
@@ -204,8 +204,8 @@ Fontconfig-based backend involves deriving from both
 
 </para>
 
-@key:
-@Returns:
+@key: 
+@Returns: 
 
 
 <!-- ##### FUNCTION pango_fc_font_key_get_matrix ##### -->
@@ -213,8 +213,8 @@ Fontconfig-based backend involves deriving from both
 
 </para>
 
-@key:
-@Returns:
+@key: 
+@Returns: 
 
 
 <!-- ##### FUNCTION pango_fc_font_key_get_pattern ##### -->
@@ -222,7 +222,7 @@ Fontconfig-based backend involves deriving from both
 
 </para>
 
-@key:
-@Returns:
+@key: 
+@Returns: 
 
 
