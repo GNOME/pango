@@ -10,6 +10,9 @@ EXPORTS
 	pango_fc_font_get_unknown_glyph
 	pango_fc_font_has_char
 	pango_fc_font_kern_glyphs
+	pango_fc_font_key_get_context_key
+	pango_fc_font_key_get_matrix
+	pango_fc_font_key_get_pattern
 	pango_fc_font_lock_face
 	pango_fc_font_map_add_decoder_find_func
 	pango_fc_font_map_cache_clear
