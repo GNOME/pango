@@ -1,5 +1,42 @@
 2009-01-29  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango/opentype/harfbuzz-open.h:
+	* pango/opentype/harfbuzz-gdef.c (Make_ClassRange),
+	(HB_GDEF_Build_ClassDefinition):
+	* pango/opentype/harfbuzz-gpos.c (Load_PosClassRule),
+	(Load_ChainPosClassRule):
+	* pango/opentype/harfbuzz-gsub.c (Load_SubClassRule),
+	(Load_ChainSubClassRule):
+	* pango/opentype/harfbuzz-open.c (Load_ClassDef1),
+	(Load_ClassDef2), (_HB_OPEN_Load_ClassDefinition),
+	(_HB_OPEN_Load_EmptyClassDefinition),
+	(_HB_OPEN_Free_ClassDefinition):
+	Remove ClassDef->Defined field.  This is the comment accompanying it:
+
+	  The `Defined' field is not defined in the OpenType specification
+	  but apparently needed for processing fonts like trado.ttf: This
+	  font refers to a class which contains not a single element.  We
+	  map such classes to class 0.    
+
+	The comment is correct that trado.ttf (MS Traditional Arabic) uses
+	such classes.  However, in my testing I couldn't identify any
+	problems with the font if the special handling is removed.  I also
+	processed as many fonts as I could get my hand on and trado.ttf was
+	the only not-totally-broken font hitting the special-case code.
+	DejaVu fonts hit it too, but I'm sure they do not require the
+	special-handling code.  Most probably, that code introduces bugs
+	in them.
+
+	The special-casing was consuming lots of memory.  EIGHT MEGABYTES
+	for loading DejaVu Sans!  While this could be complete fixed, I
+	decided to remove the special-handling code altogether.  I don't
+	think it will make any real difference, and if it does, we'll fix
+	fonts.  Such hacks will not be in harfbuzz-ng anyway.
+
+	Bug originally reported by nsf.
+
+2009-01-29  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/opentype/harfbuzz-impl.c (_hb_alloc): Use calloc(),
 	instead of malloc()ing and memset()ing.
 
