@@ -1,3 +1,9 @@
+2009-01-29  Behdad Esfahbod  <behdad@gnome.org>
+
+	* pango/opentype/harfbuzz-gpos.c (Load_BaseArray), (Free_BaseArray):
+	Allocate all array rows in a single ALLOC call.  Saves over 2000
+	alloc calls when loading DejaVu Sans!
+
 2009-01-28  Behdad Esfahbod  <behdad@gnome.org>
 
 	Bug 560792 – Make PangoLayoutLine with line->layout==NULL renderable
