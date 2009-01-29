@@ -1,5 +1,9 @@
 2009-01-29  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango/opentype/harfbuzz-dump-main.c (main): Remove old cruft.
+
+2009-01-29  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/pangofc-fontmap.c (pango_fc_font_map_fini),
 	(pango_fc_font_map_shutdown): Don't disassociate family from fontmap
 	during cache_clear().
