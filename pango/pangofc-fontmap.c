@@ -1009,10 +1009,7 @@ pango_fc_font_map_fini (PangoFcFontMap *fcfontmap)
   priv->pattern_hash = NULL;
 
   for (i = 0; i < priv->n_families; i++)
-    {
-      priv->families[i]->fontmap = NULL;
-      g_object_unref (priv->families[i]);
-    }
+    g_object_unref (priv->families[i]);
   g_free (priv->families);
   priv->n_families = -1;
   priv->families = NULL;
@@ -1843,11 +1840,14 @@ void
 pango_fc_font_map_shutdown (PangoFcFontMap *fcfontmap)
 {
   PangoFcFontMapPrivate *priv = fcfontmap->priv;
+  int i;
 
   if (priv->closed)
     return;
 
   g_hash_table_foreach (priv->font_hash, (GHFunc) shutdown_font, NULL);
+  for (i = 0; i < priv->n_families; i++)
+    priv->families[i]->fontmap = NULL;
 
   pango_fc_font_map_fini (fcfontmap);
 
@@ -2243,8 +2243,8 @@ create_face (PangoFcFamily *fcfamily,
 
 static void
 pango_fc_family_list_faces (PangoFontFamily  *family,
-			     PangoFontFace  ***faces,
-			     int              *n_faces)
+			    PangoFontFace  ***faces,
+			    int              *n_faces)
 {
   PangoFcFamily *fcfamily = PANGO_FC_FAMILY (family);
   PangoFcFontMap *fcfontmap = fcfamily->fontmap;

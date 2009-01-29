@@ -1,5 +1,11 @@
 2009-01-29  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango/pangofc-fontmap.c (pango_fc_font_map_fini),
+	(pango_fc_font_map_shutdown): Don't disassociate family from fontmap
+	during cache_clear().
+
+2009-01-29  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/opentype/harfbuzz-gpos.c (Load_BaseArray), (Free_BaseArray):
 	Allocate all array rows in a single ALLOC call.  Saves over 2000
 	alloc calls when loading DejaVu Sans!
