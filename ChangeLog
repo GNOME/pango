@@ -1,5 +1,10 @@
 2009-01-29  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango/opentype/harfbuzz-impl.c (_hb_alloc): Use calloc(),
+	instead of malloc()ing and memset()ing.
+
+2009-01-29  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/opentype/harfbuzz-dump-main.c (main): Remove old cruft.
 
 2009-01-29  Behdad Esfahbod  <behdad@gnome.org>
