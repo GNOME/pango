@@ -1,3 +1,10 @@
+2009-01-30  Behdad Esfahbod  <behdad@gnome.org>
+
+	Bug 569763 – pango doesn't like font descriptions without family!
+
+	* pango/pangofc-fontmap.c (pango_fc_make_pattern): Don't crash is desc
+	doesn't have family set.
+
 2009-01-29  Behdad Esfahbod  <behdad@gnome.org>
 
 	* pango-view/viewer-render.c (make_layout), (get_options_string):

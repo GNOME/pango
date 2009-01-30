@@ -1353,13 +1353,15 @@ pango_fc_make_pattern (const  PangoFontDescription *description,
 			    FC_PIXEL_SIZE,  FcTypeDouble,  pixel_size / 1024.,
 			    NULL);
 
-  g_message ("'%s'", pango_font_description_get_family (description));
-  families = g_strsplit (pango_font_description_get_family (description), ",", -1);
+  if (pango_font_description_get_family (description))
+    {
+      families = g_strsplit (pango_font_description_get_family (description), ",", -1);
 
-  for (i = 0; families[i]; i++)
-    FcPatternAddString (pattern, FC_FAMILY, (FcChar8*) families[i]);
+      for (i = 0; families[i]; i++)
+	FcPatternAddString (pattern, FC_FAMILY, (FcChar8*) families[i]);
 
-  g_strfreev (families);
+      g_strfreev (families);
+    }
 
   if (language)
     FcPatternAddString (pattern, FC_LANG, (FcChar8 *) pango_language_to_string (language));
