@@ -1353,6 +1353,7 @@ pango_fc_make_pattern (const  PangoFontDescription *description,
 			    FC_PIXEL_SIZE,  FcTypeDouble,  pixel_size / 1024.,
 			    NULL);
 
+  g_message ("'%s'", pango_font_description_get_family (description));
   families = g_strsplit (pango_font_description_get_family (description), ",", -1);
 
   for (i = 0; families[i]; i++)

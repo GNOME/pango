@@ -32,17 +32,11 @@
 
 #include "viewer-render.h"
 
-#define DEFAULT_FONT_FAMILY "Sans"
-#define DEFAULT_FONT_SIZE 18
-
-#define _MAKE_FONT_NAME(family, size) family " " #size
-#define MAKE_FONT_NAME(family, size) _MAKE_FONT_NAME(family, size)
-
 const char *prog_name;
 
 gboolean opt_display = TRUE;
 int opt_dpi = 96;
-const char *opt_font = MAKE_FONT_NAME (DEFAULT_FONT_FAMILY, DEFAULT_FONT_SIZE);
+const char *opt_font = "";
 gboolean opt_header = FALSE;
 const char *opt_output = NULL;
 int opt_margin = 10;
@@ -85,20 +79,6 @@ fail (const char *format, ...)
   exit (1);
 }
 
-static PangoFontDescription *
-get_font_description (void)
-{
-  PangoFontDescription *font_description = pango_font_description_from_string (opt_font);
-
-  if ((pango_font_description_get_set_fields (font_description) & PANGO_FONT_MASK_FAMILY) == 0)
-    pango_font_description_set_family (font_description, DEFAULT_FONT_FAMILY);
-
-  if ((pango_font_description_get_set_fields (font_description) & PANGO_FONT_MASK_SIZE) == 0)
-    pango_font_description_set_size (font_description, DEFAULT_FONT_SIZE * PANGO_SCALE);
-
-  return font_description;
-}
-
 static PangoLayout *
 make_layout(PangoContext *context,
 	    const char   *text,
@@ -120,7 +100,7 @@ make_layout(PangoContext *context,
   pango_layout_set_single_paragraph_mode (layout, opt_single_par);
   pango_layout_set_wrap (layout, opt_wrap);
 
-  font_description = get_font_description ();
+  font_description = pango_font_description_from_string (opt_font);
   if (size > 0)
     pango_font_description_set_size (font_description, size * PANGO_SCALE);
 
@@ -156,7 +136,7 @@ make_layout(PangoContext *context,
 gchar *
 get_options_string (void)
 {
-  PangoFontDescription *font_description = get_font_description ();
+  PangoFontDescription *font_description = pango_font_description_from_string (opt_font);
   gchar *font_name;
   gchar *result;
 

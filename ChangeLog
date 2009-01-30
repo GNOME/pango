@@ -1,5 +1,11 @@
 2009-01-29  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango-view/viewer-render.c (make_layout), (get_options_string):
+	Remove default font family and size.  This means default size is not
+	12 IIRC, not 18 as it was.
+
+2009-01-29  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/opentype/harfbuzz-open.h:
 	* pango/opentype/harfbuzz-gdef.c (Make_ClassRange),
 	(HB_GDEF_Build_ClassDefinition):
