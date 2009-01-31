@@ -1,3 +1,10 @@
+2009-01-31  Behdad Esfahbod  <behdad@gnome.org>
+
+	* pango/pangofc-fontmap.c (pango_fc_face_describe),
+	(pango_fc_face_list_sizes), (pango_fc_family_list_faces):
+	It's not a programming error if face->family is NULL or
+	family->fontmap is NULL.  Be graceful.
+
 2009-01-30  Behdad Esfahbod  <behdad@gnome.org>
 
 	Bug 569763 – pango doesn't like font descriptions without family!

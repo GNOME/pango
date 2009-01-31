@@ -2050,7 +2050,8 @@ pango_fc_face_describe (PangoFontFace *face)
   FcPattern *match_pattern;
   FcPattern *result_pattern;
 
-  g_return_val_if_fail (fcfamily != NULL, NULL);
+  if (G_UNLIKELY (!fcfamily))
+    return pango_font_description_new ();
 
   if (fcface->fake)
     {
@@ -2121,8 +2122,8 @@ pango_fc_face_list_sizes (PangoFontFace  *face,
 
   *sizes = NULL;
   *n_sizes = 0;
-  g_return_if_fail (fcface->family != NULL);
-  g_return_if_fail (fcface->family->fontmap != NULL);
+  if (G_UNLIKELY (!fcface->family || !fcface->family->fontmap))
+    return;
 
   pattern = FcPatternCreate ();
   FcPatternAddString (pattern, FC_FAMILY, (FcChar8*)(void*)fcface->family->family_name);
@@ -2255,7 +2256,8 @@ pango_fc_family_list_faces (PangoFontFamily  *family,
 
   *faces = NULL;
   *n_faces = 0;
-  g_return_if_fail (fcfontmap != NULL);
+  if (G_UNLIKELY (!fcfontmap))
+    return;
 
   priv = fcfontmap->priv;
 
