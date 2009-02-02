@@ -1,5 +1,12 @@
 2009-01-31  Behdad Esfahbod  <behdad@gnome.org>
 
+	* pango/opentype/harfbuzz-gpos.c (Load_Mark2Array),
+	(Free_Mark2Array):
+	Allocate all array rows in a single ALLOC call.  Saves over 100 
+	alloc calls when loading DejaVu Sans,
+
+2009-01-31  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/pangofc-fontmap.c (pango_fc_face_describe),
 	(pango_fc_face_list_sizes), (pango_fc_family_list_faces):
 	It's not a programming error if face->family is NULL or
