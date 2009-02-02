@@ -135,14 +135,6 @@ pango_cairo_fc_font_unlock_face (PangoFcFont *font)
 }
 
 static void
-pango_cairo_fc_font_shutdown (PangoFcFont *fcfont)
-{
-  PangoCairoFcFont *cffont = (PangoCairoFcFont *) (fcfont);
-
-  _pango_cairo_font_private_finalize (&cffont->cf_priv);
-}
-
-static void
 pango_cairo_fc_font_class_init (PangoCairoFcFontClass *class)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (class);
@@ -156,7 +148,6 @@ pango_cairo_fc_font_class_init (PangoCairoFcFontClass *class)
 
   fc_font_class->lock_face = pango_cairo_fc_font_lock_face;
   fc_font_class->unlock_face = pango_cairo_fc_font_unlock_face;
-  fc_font_class->shutdown = pango_cairo_fc_font_shutdown;
 }
 
 static void
