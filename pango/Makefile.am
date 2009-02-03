@@ -538,20 +538,20 @@ pangocairo-$(PANGO_API_VERSION).lib: libpangocairo-$(PANGO_API_VERSION).la $(src
 
 # ------------------- introspection -------------------
 
-if HAVE_INTROSPECTION
-
-girdir = $(GIRDIR)
-dist_gir_DATA = $(BUILT_GIRSOURCES)
-
-EXTRA_DIST += $(BUILT_GIRSOURCES)
-
-typelibsdir = $(TYPELIBDIR)
-typelibs_DATA = $(BUILT_GIRSOURCES:.gir=.typelib)
-
-%.typelib: %.gir $(G_IR_COMPILER)
-	LD_LIBRARY_PATH=$${LD_LIBRARY_PATH:+$$LD_LIBRARY_PATH:}. $(G_IR_COMPILER) --includedir=$(srcdir) --includedir=. $(G_IR_COMPILER_OPTS) $< -o $(builddir)/$(@F)
-
-endif # HAVE_INTROSPECTION
+#if HAVE_INTROSPECTION
+#
+#girdir = $(GIRDIR)
+#dist_gir_DATA = $(BUILT_GIRSOURCES)
+#
+#EXTRA_DIST += $(BUILT_GIRSOURCES)
+#
+#typelibsdir = $(TYPELIBDIR)
+#typelibs_DATA = $(BUILT_GIRSOURCES:.gir=.typelib)
+#
+#%.typelib: %.gir $(G_IR_COMPILER)
+#	LD_LIBRARY_PATH=$${LD_LIBRARY_PATH:+$$LD_LIBRARY_PATH:}. $(G_IR_COMPILER) --includedir=$(srcdir) --includedir=. $(G_IR_COMPILER_OPTS) $< -o $(builddir)/$(@F)
+#
+#endif # HAVE_INTROSPECTION
 
 # ------------------- pango-querymodules -------------------
 

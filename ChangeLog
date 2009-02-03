@@ -1,3 +1,8 @@
+2009-02-03  Behdad Esfahbod  <behdad@gnome.org>
+
+	* pango/Makefile.am: Comment out gobject-introspection for now,
+	to get a release out.
+
 2009-02-02  Behdad Esfahbod  <behdad@gnome.org>
 
 	* configure.in: Fix conditional.
