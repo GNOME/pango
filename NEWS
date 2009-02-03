@@ -1,3 +1,57 @@
+Overview of changes between 1.22.4 and 1.23.0
+=============================================
+- Change the PangoFc font loading API to allow for lazy loading of fonts.
+- Add private PangoFcFontset that loads fallback fonts as needed.
+- Call FcFontMatch() and only if fallback fonts are needed call FcFontSort().
+- Optimize HarfBuzz number of malloc calls
+- Don't malloc megs of unused memory in HarfBuzz
+- Print-out, and parse, numeric styles correctly.  Things like
+  "DejaVu Sans weight=100" parse as font description now.
+- New public API:
+
+	Add two new public macros:
+
+		PANGO_ATTRIBUTE_INDEX_FROM_TEXT_BEGINNING
+		PANGO_ATTRIBUTE_INDEX_TO_TEXT_END
+
+	Add new public enum values:
+	
+		PANGO_WEIGHT_BOOK
+		PANGO_WEIGHT_ULTRAHEAVY
+		PANGO_WEIGHT_THIN
+		PANGO_WEIGHT_MEDIUM
+
+- Misc bug fixes
+- Bugs fixed in this release:
+	Bug 569763 – pango doesn't like font descriptions without family!
+	Bug 560792 – Make PangoLayoutLine with line->layout==NULL renderable
+	Bug 567392 – Abiword crashes in pango when opening document with
+		certain locales
+	Bug 566727 – PangoFontsetLazy
+	Bug 567165 – Apply all pattern matrices
+	Bug 567934 – Add introspection support inside pango
+	Bug 549532 – Correction to the sample string for Hindi in
+		pango-language-sample-table.h
+	Bug 566726 – Minor optimization
+	Bug 566941 – Add PANGO_ATTRIBUTE_INDEX_FROM_TEXT_BEGINNING and
+		PANGO_ATTRIBUTE_INDEX_TO_TEXT_END
+	Bug 551469 – Fold '@' to '-' when parsing PangoLanguages
+	Bug 328206 – Update/remove some old files
+	Bug 166709 – Handle font variants more consistently
+	Bug 166676 – pango_fc_font_map_finalize
+	Bug 164001 - pango-querymodules doesn't work uninstalled on win32
+	Bug 384362 – pango can't select some font styles
+	Bug 168085 – numeric styles in pango_font_description_to_string()
+	Bug 529591 – Code related to malayalam is misplaced.
+		Patch from Rahul Bhalerao
+	Bug 515807 – Don't bind modules lazily
+	Bug 512662 – Update check.docs for pango-undeclared.txt
+	Bug 565644 – Maybe pango_font_descriptions_free is deprecated
+	Bug 469049 – Fix all compiler warnings
+	Bug 565379 – pango_font_description_better_match some style attributes
+		of old_match are not checked
+	Bug 564877 – pango-engine.h: PANGO_MODULE_PREFIX and G_MODULE_EXPORT
+
 Overview of changes between 1.22.3 and 1.22.4
 =============================================
 - Misc bug fixes

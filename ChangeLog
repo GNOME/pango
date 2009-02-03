@@ -1,5 +1,13 @@
 2009-02-03  Behdad Esfahbod  <behdad@gnome.org>
 
+	* === Released 1.23.0 ===
+
+	* configure.in: Version 1.23.0
+
+	* NEWS: Updated.
+
+2009-02-03  Behdad Esfahbod  <behdad@gnome.org>
+
 	* pango/Makefile.am: Comment out gobject-introspection for now,
 	to get a release out.
 
