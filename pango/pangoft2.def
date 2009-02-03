@@ -20,6 +20,12 @@ EXPORTS
 	pango_fc_font_map_get_type
 	pango_fc_font_map_shutdown
 	pango_fc_font_unlock_face
+	pango_fc_fontset_key_get_absolute_size
+	pango_fc_fontset_key_get_context_key
+	pango_fc_fontset_key_get_description
+	pango_fc_fontset_key_get_language
+	pango_fc_fontset_key_get_matrix
+	pango_fc_fontset_key_get_resolution
 	pango_ft2_font_get_coverage
 	pango_ft2_font_get_face
 	pango_ft2_font_get_kerning
