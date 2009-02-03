@@ -475,7 +475,7 @@ G_IR_COMPILER=
 G_IR_GENERATE=
 GIRDIR=
 TYPELIBDIR=
-if test $have_introspection; then
+if $have_introspection; then
    G_IR_SCANNER=`$PKG_CONFIG --variable=g_ir_scanner gobject-introspection-1.0`
    G_IR_COMPILER=`$PKG_CONFIG --variable=g_ir_compiler gobject-introspection-1.0`
    G_IR_GENERATE=`$PKG_CONFIG --variable=g_ir_generate gobject-introspection-1.0`

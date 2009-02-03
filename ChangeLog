@@ -1,3 +1,7 @@
+2009-02-02  Behdad Esfahbod  <behdad@gnome.org>
+
+	* configure.in: Fix conditional.
+
 2009-02-01  Behdad Esfahbod  <behdad@gnome.org>
 
 	* pango/pangocairo-fcfont.c (pango_cairo_fc_font_class_init):
