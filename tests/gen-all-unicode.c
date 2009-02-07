@@ -2,7 +2,8 @@
 #include <stdio.h>
 
 int
-main (int argc, char **argv)
+main (int argc G_GNUC_UNUSED,
+      char **argv G_GNUC_UNUSED)
 {
   gunichar i;
   gint j;
