@@ -839,7 +839,11 @@ pango_fc_fontset_finalize (GObject *object)
   unsigned int i;
 
   for (i = 0; i < fontset->fonts->len; i++)
-    g_object_unref (g_ptr_array_index(fontset->fonts, i));
+  {
+    PangoFont *font = g_ptr_array_index(fontset->fonts, i);
+    if (font)
+      g_object_unref (font);
+  }
   g_ptr_array_free (fontset->fonts, TRUE);
 
   for (i = 0; i < fontset->coverages->len; i++)
