@@ -23,7 +23,6 @@ TEST_TEXTS =			\
 	GLASS.txt
 
 EXTRA_DIST =			\
-	viewer-win32.c		\
 	$(TEST_TEXTS)
 
 CLEANFILES = pangorc
