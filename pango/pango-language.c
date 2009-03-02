@@ -688,7 +688,7 @@ pango_language_includes_script (PangoLanguage *language,
 static PangoLanguage **
 parse_default_languages (void)
 {
-  char *p;
+  char *p, *p_copy;
   gboolean done = FALSE;
   GArray *langs;
 
@@ -700,7 +700,7 @@ parse_default_languages (void)
   if (p == NULL)
     return NULL;
 
-  p = g_strdup (p);
+  p_copy = p = g_strdup (p);
 
   langs = g_array_new (TRUE, FALSE, sizeof (PangoLanguage *));
 
@@ -726,6 +726,8 @@ parse_default_languages (void)
       if (!done)
 	p = end + 1;
     }
+
+  g_free (p_copy);
 
   return (PangoLanguage **) g_array_free (langs, FALSE);
 }
