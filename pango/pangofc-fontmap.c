@@ -19,7 +19,7 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#define FONTSET_CACHE_SIZE 64
+#define FONTSET_CACHE_SIZE 256
 
 #include "config.h"
 #include <math.h>
