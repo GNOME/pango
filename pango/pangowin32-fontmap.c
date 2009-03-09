@@ -1069,62 +1069,8 @@ pango_win32_font_description_from_logfontw (const LOGFONTW *lfp)
   gchar *family;
   PangoStyle style;
   PangoVariant variant;
-  PangoWeight weight, name_weight;
+  PangoWeight weight;
   PangoStretch stretch;
-
-  static const struct {
-    const char *marker;
-    int marker_len;
-    int remove_len;
-    PangoWeight weight;
-  } weight_names[] = {
-#define ENTRY(n, s) ENTRY2 (n, sizeof (#n) - 1, s)
-#define ENTRY2(n, l, s) ENTRY3 (n, l, l, s)
-#define ENTRY3(n, marker_len, remove_len, s) { #n, marker_len, remove_len, PANGO_WEIGHT_##s }
-    ENTRY (Ultra Light, ULTRALIGHT),
-    ENTRY (UltraLight, ULTRALIGHT),
-    ENTRY (Light, LIGHT),
-    ENTRY (Medium, NORMAL),
-    ENTRY (Demi Bold, SEMIBOLD),
-    ENTRY (Demi, SEMIBOLD),
-    ENTRY (Ultra Bold, ULTRABOLD),
-    ENTRY (Extra Bold, ULTRABOLD),
-    ENTRY (SemiBold, SEMIBOLD),
-    ENTRY (DemiBold, SEMIBOLD),
-    ENTRY (UltraBold, ULTRABOLD),
-    ENTRY (ExtraBold, ULTRABOLD),
-    ENTRY (Bold, BOLD),
-    ENTRY (Heavy, HEAVY),
-    ENTRY (Black, HEAVY),
-#undef ENTRY
-#undef ENTRY2
-#undef ENTRY3
-  };
-
-  static const struct {
-    const char *marker;
-    int marker_len;
-    PangoStretch stretch;
-  } stretch_names[] = {
-#define ENTRY(n, s) { #n, sizeof (#n) - 1, PANGO_STRETCH_##s }
-    ENTRY (Ext Condensed, EXTRA_CONDENSED),
-    ENTRY (Extra Condensed, EXTRA_CONDENSED),
-    ENTRY (UltraCondensed, ULTRA_CONDENSED),
-    ENTRY (ExtraCondensed, EXTRA_CONDENSED),
-    ENTRY (Condensed, CONDENSED),
-    ENTRY (Cond, CONDENSED),
-    ENTRY (Narrow, CONDENSED),
-    ENTRY (Ext Expanded, EXTRA_EXPANDED),
-    ENTRY (Extra Expanded, EXTRA_EXPANDED),
-    ENTRY (Ultra Expanded, ULTRA_EXPANDED),
-    ENTRY (ExtraExpanded, EXTRA_EXPANDED),
-    ENTRY (UltraExpanded, ULTRA_EXPANDED),
-    ENTRY (Expanded, EXPANDED),
-#undef ENTRY
-  };
-
-  int i;
-  char *p;
 
   family = get_family_nameW (lfp);
 
@@ -1158,50 +1104,8 @@ pango_win32_font_description_from_logfontw (const LOGFONTW *lfp)
   else
     weight = PANGO_WEIGHT_HEAVY;
 
-  name_weight = 0;
-
-  p = family;
-  while ((p = strchr (p, ' ')) != NULL)
-    {
-      for (i = 0; i < G_N_ELEMENTS (weight_names); i++)
-	{
-	  if (g_ascii_strncasecmp (p + 1, weight_names[i].marker, weight_names[i].marker_len) == 0 &&
-	      (p[1 + weight_names[i].marker_len] == '\0' ||
-	       p[1 + weight_names[i].marker_len] == ' '))
-	    {
-	      strcpy (p, p + 1 + weight_names[i].remove_len);
-	      name_weight = weight_names[i].weight;
-	      break;
-	    }
-	}
-      if (i < G_N_ELEMENTS (weight_names))
-	break;
-      p++;
-    }
-
-  if (weight == PANGO_WEIGHT_NORMAL && name_weight > 0)
-    weight = name_weight;
-
+  /* XXX No idea how to figure out the stretch */
   stretch = PANGO_STRETCH_NORMAL;
-
-  p = family;
-  while ((p = strchr (p, ' ')) != NULL)
-    {
-      for (i = 0; i < G_N_ELEMENTS (stretch_names); i++)
-	{
-	  if (g_ascii_strncasecmp (p + 1, stretch_names[i].marker, stretch_names[i].marker_len) == 0 &&
-	      (p[1 + stretch_names[i].marker_len] == '\0' ||
-	       p[1 + stretch_names[i].marker_len] == ' '))
-	    {
-	      strcpy (p, p + 1 + stretch_names[i].marker_len);
-	      stretch = stretch_names[i].stretch;
-	      break;
-	    }
-	}
-      if (i < G_N_ELEMENTS (stretch_names))
-	break;
-      p++;
-    }
 
   description = pango_font_description_new ();
   pango_font_description_set_family (description, family);
