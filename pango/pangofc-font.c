@@ -38,32 +38,14 @@ enum {
   PROP_FONTMAP
 };
 
-typedef struct _GUnicharToGlyphCacheEntry GUnicharToGlyphCacheEntry;
-
-/* An entry in the fixed-size cache for the gunichar -> glyph mapping.
- * The cache is indexed by the lower N bits of the gunichar (see
- * GLYPH_CACHE_NUM_ENTRIES).  For scripts with few code points,
- * this should provide pretty much instant lookups.
- *
- * The "ch" field is zero if that cache entry is invalid.
- */
-struct _GUnicharToGlyphCacheEntry
-{
-  gunichar   ch;
-  PangoGlyph glyph;
-};
-
 typedef struct _PangoFcFontPrivate PangoFcFontPrivate;
 
 struct _PangoFcFontPrivate
 {
   PangoFcDecoder *decoder;
   PangoFcFontKey *key;
-  GUnicharToGlyphCacheEntry *char_to_glyph_cache;
+  PangoFcCmapCache *cmap_cache;
 };
-
-#define GLYPH_CACHE_NUM_ENTRIES 256 /* should be power of two */
-#define GLYPH_CACHE_MASK (GLYPH_CACHE_NUM_ENTRIES - 1)
 
 static gboolean pango_fc_font_real_has_char  (PangoFcFont *font,
 					      gunichar     wc);
@@ -166,7 +148,8 @@ pango_fc_font_finalize (GObject *object)
   if (priv->decoder)
     _pango_fc_font_set_decoder (fcfont, NULL);
 
-  g_free (priv->char_to_glyph_cache);
+  if (priv->cmap_cache)
+    _pango_fc_cmap_cache_unref (priv->cmap_cache);
 
   G_OBJECT_CLASS (pango_fc_font_parent_class)->finalize (object);
 }
@@ -619,23 +602,25 @@ static guint
 pango_fc_font_real_get_glyph (PangoFcFont *font,
 			      gunichar     wc)
 {
+  PangoFcFontPrivate *priv = font->priv;
   FT_Face face;
   FT_UInt index;
 
   guint idx;
-  GUnicharToGlyphCacheEntry *entry;
+  PangoFcCmapCacheEntry *entry;
 
-  PangoFcFontPrivate *priv = font->priv;
 
-  if (G_UNLIKELY (priv->char_to_glyph_cache == NULL))
+  if (G_UNLIKELY (priv->cmap_cache == NULL))
     {
-      priv->char_to_glyph_cache = g_new0 (GUnicharToGlyphCacheEntry, GLYPH_CACHE_NUM_ENTRIES);
-      /* Make sure all cache entries are invalid initially */
-      priv->char_to_glyph_cache[0].ch = 1; /* char 1 cannot happen in bucket 0 */
+      priv->cmap_cache = _pango_fc_font_map_get_cmap_cache ((PangoFcFontMap *) font->fontmap,
+							    font);
+
+      if (G_UNLIKELY (!priv->cmap_cache))
+	return 0;
     }
 
-  idx = wc & GLYPH_CACHE_MASK;
-  entry = priv->char_to_glyph_cache + idx;
+  idx = wc & CMAP_CACHE_MASK;
+  entry = priv->cmap_cache->entries + idx;
 
   if (entry->ch != wc)
     {

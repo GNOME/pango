@@ -31,7 +31,7 @@
 #include "modules.h"
 #include "pango-enum-types.h"
 
-typedef struct _PangoFcCoverageKey  PangoFcCoverageKey;
+typedef struct _PangoFcFontFaceData PangoFcFontFaceData;
 typedef struct _PangoFcFace         PangoFcFace;
 typedef struct _PangoFcFamily       PangoFcFamily;
 typedef struct _PangoFcFindFuncInfo PangoFcFindFuncInfo;
@@ -64,7 +64,7 @@ struct _PangoFcFontMapPrivate
    */
   GHashTable *pattern_hash;
 
-  GHashTable *coverage_hash; /* Maps font file name/id -> PangoCoverage */
+  GHashTable *font_face_data_hash; /* Maps font file name/id -> data */
 
   /* List of all families availible */
   PangoFcFamily **families;
@@ -78,7 +78,7 @@ struct _PangoFcFontMapPrivate
   guint closed : 1;
 };
 
-struct _PangoFcCoverageKey
+struct _PangoFcFontFaceData
 {
   /* Key */
   char *filename;
@@ -86,6 +86,8 @@ struct _PangoFcCoverageKey
 
   /* Data */
   FcPattern *pattern;	/* Referenced pattern that owns filename */
+  PangoCoverage *coverage;
+  PangoFcCmapCache *cmap_cache;
 };
 
 struct _PangoFcFace
@@ -141,9 +143,9 @@ static PangoFont *pango_fc_font_map_new_font   (PangoFcFontMap    *fontmap,
 						PangoFcFontsetKey *fontset_key,
 						FcPattern         *match);
 
-static guint    pango_fc_coverage_key_hash  (PangoFcCoverageKey *key);
-static gboolean pango_fc_coverage_key_equal (PangoFcCoverageKey *key1,
-					      PangoFcCoverageKey *key2);
+static guint    pango_fc_font_face_data_hash  (PangoFcFontFaceData *key);
+static gboolean pango_fc_font_face_data_equal (PangoFcFontFaceData *key1,
+					       PangoFcFontFaceData *key2);
 
 static void               pango_fc_fontset_key_init  (PangoFcFontsetKey          *key,
 						      PangoFcFontMap             *fcfontmap,
@@ -188,23 +190,31 @@ get_gravity_class (void)
 }
 
 static guint
-pango_fc_coverage_key_hash (PangoFcCoverageKey *key)
+pango_fc_font_face_data_hash (PangoFcFontFaceData *key)
 {
   return g_str_hash (key->filename) ^ key->id;
 }
 
 static gboolean
-pango_fc_coverage_key_equal (PangoFcCoverageKey *key1,
-			     PangoFcCoverageKey *key2)
+pango_fc_font_face_data_equal (PangoFcFontFaceData *key1,
+			       PangoFcFontFaceData *key2)
 {
-  return key1->id == key2->id && (key1 == key2 || 0 == strcmp (key1->filename, key2->filename));
+  return key1->id == key2->id &&
+	 (key1 == key2 || 0 == strcmp (key1->filename, key2->filename));
 }
 
 static void
-pango_fc_coverage_key_free (PangoFcCoverageKey *key)
+pango_fc_font_face_data_free (PangoFcFontFaceData *data)
 {
-  FcPatternDestroy (key->pattern);
-  g_slice_free (PangoFcCoverageKey, key);
+  FcPatternDestroy (data->pattern);
+
+  if (data->coverage)
+    pango_coverage_unref (data->coverage);
+
+  if (data->cmap_cache)
+    _pango_fc_cmap_cache_unref (data->cmap_cache);
+
+  g_slice_free (PangoFcFontFaceData, data);
 }
 
 /* Fowler / Noll / Vo (FNV) Hash (http://www.isthe.com/chongo/tech/comp/fnv/)
@@ -992,10 +1002,10 @@ pango_fc_font_map_init (PangoFcFontMap *fcfontmap)
 					      (GDestroyNotify) FcPatternDestroy,
 					      NULL);
 
-  priv->coverage_hash = g_hash_table_new_full ((GHashFunc)pango_fc_coverage_key_hash,
-					       (GEqualFunc)pango_fc_coverage_key_equal,
-					       (GDestroyNotify)pango_fc_coverage_key_free,
-					       (GDestroyNotify)pango_coverage_unref);
+  priv->font_face_data_hash = g_hash_table_new_full ((GHashFunc)pango_fc_font_face_data_hash,
+						     (GEqualFunc)pango_fc_font_face_data_equal,
+						     (GDestroyNotify)pango_fc_font_face_data_free,
+						     NULL);
   priv->dpi = -1;
 }
 
@@ -1017,8 +1027,8 @@ pango_fc_font_map_fini (PangoFcFontMap *fcfontmap)
   g_hash_table_destroy (priv->font_hash);
   priv->font_hash = NULL;
 
-  g_hash_table_destroy (priv->coverage_hash);
-  priv->coverage_hash = NULL;
+  g_hash_table_destroy (priv->font_face_data_hash);
+  priv->font_face_data_hash = NULL;
 
   g_hash_table_destroy (priv->pattern_hash);
   priv->pattern_hash = NULL;
@@ -1710,20 +1720,85 @@ pango_fc_font_map_cache_clear (PangoFcFontMap *fcfontmap)
   pango_fc_font_map_init (fcfontmap);
 }
 
-static void
-pango_fc_font_map_set_coverage (PangoFcFontMap            *fcfontmap,
-				PangoFcCoverageKey        *key,
-				PangoCoverage             *coverage)
+static PangoFcFontFaceData *
+pango_fc_font_map_get_font_face_data (PangoFcFontMap *fcfontmap,
+				      FcPattern      *font_pattern)
 {
   PangoFcFontMapPrivate *priv = fcfontmap->priv;
-  PangoFcCoverageKey *key_dup;
+  PangoFcFontFaceData key;
+  PangoFcFontFaceData *data;
 
-  key_dup = g_slice_new (PangoFcCoverageKey);
-  *key_dup = *key;
-  FcPatternReference (key_dup->pattern);
+  if (FcPatternGetString (font_pattern, FC_FILE, 0, (FcChar8 **)(void*)&key.filename) != FcResultMatch)
+    return NULL;
 
-  g_hash_table_insert (priv->coverage_hash,
-		       key_dup, pango_coverage_ref (coverage));
+  if (FcPatternGetInteger (font_pattern, FC_INDEX, 0, &key.id) != FcResultMatch)
+    return NULL;
+
+  data = g_hash_table_lookup (priv->font_face_data_hash, &key);
+  if (G_LIKELY (data))
+    return data;
+
+  data = g_slice_new0 (PangoFcFontFaceData);
+  data->filename = key.filename;
+  data->id = key.id;
+
+  data->pattern = font_pattern;
+  FcPatternReference (data->pattern);
+
+  g_hash_table_insert (priv->font_face_data_hash, data, data);
+
+  return data;
+}
+
+PangoFcCmapCache *
+_pango_fc_cmap_cache_ref (PangoFcCmapCache *cmap_cache)
+{
+  g_atomic_int_inc ((int *) &cmap_cache->ref_count);
+
+  return cmap_cache;
+}
+
+void
+_pango_fc_cmap_cache_unref (PangoFcCmapCache *cmap_cache)
+{
+  g_return_if_fail (cmap_cache->ref_count > 0);
+
+  if (g_atomic_int_dec_and_test ((int *) &cmap_cache->ref_count))
+    {
+      g_free (cmap_cache);
+    }
+}
+
+PangoFcCmapCache *
+_pango_fc_font_map_get_cmap_cache (PangoFcFontMap *fcfontmap,
+				   PangoFcFont    *fcfont)
+{
+  PangoFcFontMapPrivate *priv;
+  PangoFcFontFaceData *data;
+  PangoFcCmapCache *cmap_cache;
+
+  if (G_UNLIKELY (fcfontmap == NULL))
+	return NULL;
+
+  if (G_UNLIKELY (!fcfont->font_pattern))
+    return NULL;
+
+  priv = fcfontmap->priv;
+
+  data = pango_fc_font_map_get_font_face_data (fcfontmap, fcfont->font_pattern);
+  if (G_UNLIKELY (!data))
+    return NULL;
+
+  if (G_UNLIKELY (data->cmap_cache == NULL))
+    {
+      data->cmap_cache = g_new0 (PangoFcCmapCache, 1);
+      data->cmap_cache->ref_count = 1;
+
+      /* Make sure all cache entries are invalid initially */
+      data->cmap_cache->entries[0].ch = 1; /* char 1 cannot happen in bucket 0 */
+    }
+
+  return _pango_fc_cmap_cache_ref (data->cmap_cache);
 }
 
 PangoCoverage *
@@ -1731,39 +1806,30 @@ _pango_fc_font_map_get_coverage (PangoFcFontMap *fcfontmap,
 				 PangoFcFont    *fcfont)
 {
   PangoFcFontMapPrivate *priv = fcfontmap->priv;
-  PangoFcCoverageKey key;
+  PangoFcFontFaceData *data;
   PangoCoverage *coverage;
   FcCharSet *charset;
 
-  key.pattern = fcfont->font_pattern;
-
-  /*
-   * Assume that coverage information is identified by
-   * a filename/index pair; there shouldn't be any reason
-   * this isn't true, but it's not specified anywhere
-   */
-  if (FcPatternGetString (fcfont->font_pattern, FC_FILE, 0, (FcChar8 **)(void*)&key.filename) != FcResultMatch)
+  if (G_UNLIKELY (!fcfont->font_pattern))
     return NULL;
 
-  if (FcPatternGetInteger (fcfont->font_pattern, FC_INDEX, 0, &key.id) != FcResultMatch)
+  data = pango_fc_font_map_get_font_face_data (fcfontmap, fcfont->font_pattern);
+  if (G_UNLIKELY (!data))
     return NULL;
 
-  coverage = g_hash_table_lookup (priv->coverage_hash, &key);
-  if (G_LIKELY (coverage))
-    return pango_coverage_ref (coverage);
+  if (G_UNLIKELY (data->coverage == NULL))
+    {
+      /*
+       * Pull the coverage out of the pattern, this
+       * doesn't require loading the font
+       */
+      if (FcPatternGetCharSet (fcfont->font_pattern, FC_CHARSET, 0, &charset) != FcResultMatch)
+	return NULL;
 
-  /*
-   * Pull the coverage out of the pattern, this
-   * doesn't require loading the font
-   */
-  if (FcPatternGetCharSet (fcfont->font_pattern, FC_CHARSET, 0, &charset) != FcResultMatch)
-    return NULL;
+      data->coverage = _pango_fc_font_map_fc_to_coverage (charset);
+    }
 
-  coverage = _pango_fc_font_map_fc_to_coverage (charset);
-
-  pango_fc_font_map_set_coverage (fcfontmap, &key, coverage);
-
-  return coverage;
+  return pango_coverage_ref (data->coverage);
 }
 
 /**
