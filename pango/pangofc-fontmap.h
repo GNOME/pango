@@ -213,6 +213,8 @@ void pango_fc_font_map_add_decoder_find_func (PangoFcFontMap        *fcfontmap,
 					      PangoFcDecoderFindFunc findfunc,
 					      gpointer               user_data,
 					      GDestroyNotify         dnotify);
+PangoFcDecoder *pango_fc_font_map_find_decoder (PangoFcFontMap *fcfontmap,
+					        FcPattern      *pattern);
 
 PangoFontDescription *pango_fc_font_description_from_pattern (FcPattern *pattern,
 							      gboolean   include_size);

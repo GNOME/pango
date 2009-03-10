@@ -73,6 +73,7 @@ _pango_ft2_font_new (PangoFT2FontMap *ft2fontmap,
 
   ft2font = (PangoFT2Font *)g_object_new (PANGO_TYPE_FT2_FONT,
 					  "pattern", pattern,
+					  "fontmap", fontmap,
 					  NULL);
 
   if (FcPatternGetDouble (pattern, FC_PIXEL_SIZE, 0, &d) == FcResultMatch)

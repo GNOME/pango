@@ -34,7 +34,8 @@
 
 enum {
   PROP_0,
-  PROP_PATTERN
+  PROP_PATTERN,
+  PROP_FONTMAP
 };
 
 typedef struct _GUnicharToGlyphCacheEntry GUnicharToGlyphCacheEntry;
@@ -121,6 +122,13 @@ pango_fc_font_class_init (PangoFcFontClass *class)
 							 "The fontconfig pattern for this font",
 							 G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY |
 							 G_PARAM_STATIC_STRINGS));
+  g_object_class_install_property (object_class, PROP_FONTMAP,
+				   g_param_spec_object ("fontmap",
+							"Font Map",
+							"The PangoFc font map this font is associated with (Since: 1.26)",
+							PANGO_TYPE_FC_FONT_MAP,
+							G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY |
+							G_PARAM_STATIC_STRINGS));
 
   g_type_class_add_private (object_class, sizeof (PangoFcFontPrivate));
 }
@@ -203,11 +211,12 @@ pango_fc_font_set_property (GObject       *object,
 			    const GValue  *value,
 			    GParamSpec    *pspec)
 {
+  PangoFcFont *fcfont = PANGO_FC_FONT (object);
+
   switch (prop_id)
     {
     case PROP_PATTERN:
       {
-	PangoFcFont *fcfont = PANGO_FC_FONT (object);
 	FcPattern *pattern = g_value_get_pointer (value);
 
 	g_return_if_fail (pattern != NULL);
@@ -219,11 +228,30 @@ pango_fc_font_set_property (GObject       *object,
 	fcfont->is_hinted = pattern_is_hinted (pattern);
 	fcfont->is_transformed = pattern_is_transformed (pattern);
       }
-      break;
+      goto set_decoder;
+
+    case PROP_FONTMAP:
+      {
+	PangoFcFontMap *fcfontmap = PANGO_FC_FONT_MAP (g_value_get_object (value));
+
+	g_return_if_fail (fcfont->fontmap == NULL);
+	fcfont->fontmap = (PangoFontMap *) fcfontmap;
+	if (fcfont->fontmap)
+	  g_object_add_weak_pointer (G_OBJECT (fcfont->fontmap), (gpointer *) (gpointer) &fcfont->fontmap);
+      }
+      goto set_decoder;
+
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
-      break;
+      return;
     }
+
+set_decoder:
+  /* set decoder if both pattern and fontmap are set now */
+  if (fcfont->font_pattern && fcfont->fontmap)
+    _pango_fc_font_set_decoder (fcfont,
+				pango_fc_font_map_find_decoder  ((PangoFcFontMap *) fcfont->fontmap,
+								 fcfont->font_pattern));
 }
 
 static void
@@ -238,6 +266,12 @@ pango_fc_font_get_property (GObject       *object,
       {
 	PangoFcFont *fcfont = PANGO_FC_FONT (object);
 	g_value_set_pointer (value, fcfont->font_pattern);
+      }
+      break;
+    case PROP_FONTMAP:
+      {
+	PangoFcFont *fcfont = PANGO_FC_FONT (object);
+	g_value_set_object (value, fcfont->fontmap);
       }
       break;
     default:

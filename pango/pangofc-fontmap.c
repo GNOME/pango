@@ -1058,8 +1058,12 @@ pango_fc_font_map_add_decoder_find_func (PangoFcFontMap        *fcfontmap,
 					 gpointer               user_data,
 					 GDestroyNotify         dnotify)
 {
-  PangoFcFontMapPrivate *priv = fcfontmap->priv;
+  PangoFcFontMapPrivate *priv;
   PangoFcFindFuncInfo *info;
+
+  g_return_val_if_fail (PANGO_IS_FC_FONT_MAP (fcfontmap), NULL);
+
+  priv = fcfontmap->priv;
 
   info = g_slice_new (PangoFcFindFuncInfo);
 
@@ -1068,6 +1072,41 @@ pango_fc_font_map_add_decoder_find_func (PangoFcFontMap        *fcfontmap,
   info->dnotify = dnotify;
 
   priv->findfuncs = g_slist_append (priv->findfuncs, info);
+}
+
+/**
+ * pango_fc_font_map_find_decoder:
+ * @fcfontmap: The #PangoFcFontMap to use.
+ * @pattern: The #FcPattern to find the decoder for.
+ *
+ * Finds the decoder to use for @pattern.  Decoders can be added to
+ * a font map using pango_fc_font_map_add_decoder_find_func().
+ *
+ * Returns: a newly created #PangoFcDecoder object or %NULL if
+ *          no decoder is set for @pattern.
+ *
+ * Since: 1.26.
+ **/
+PangoFcDecoder *
+pango_fc_font_map_find_decoder  (PangoFcFontMap *fcfontmap,
+				 FcPattern      *pattern)
+{
+  GSList *l;
+
+  g_return_val_if_fail (PANGO_IS_FC_FONT_MAP (fcfontmap), NULL);
+  g_return_val_if_fail (pattern != NULL, NULL);
+
+  for (l = fcfontmap->priv->findfuncs; l && l->data; l = l->next)
+    {
+      PangoFcFindFuncInfo *info = l->data;
+      PangoFcDecoder *decoder;
+
+      decoder = info->findfunc (pattern, info->user_data);
+      if (decoder)
+	return decoder;
+    }
+
+  return NULL;
 }
 
 static void
@@ -1089,13 +1128,6 @@ pango_fc_font_map_add (PangoFcFontMap *fcfontmap,
   PangoFcFontMapPrivate *priv = fcfontmap->priv;
   PangoFcFontKey *key_copy;
 
-  g_assert (fcfont->fontmap == NULL);
-  fcfont->fontmap = (PangoFontMap *) fcfontmap;
-  /* In other fontmaps we add a weak pointer on ->fontmap so the
-   * field is unset when fontmap is finalized.  We don't need it
-   * here though as PangoFcFontMap already cleans up fcfont->fontmap
-   * as part of it's caching scheme. */
-
   key_copy = pango_fc_font_key_copy (key);
   _pango_fc_font_set_font_key (fcfont, key_copy);
   g_hash_table_insert (priv->font_hash, key_copy, fcfont);
@@ -1108,8 +1140,6 @@ _pango_fc_font_map_remove (PangoFcFontMap *fcfontmap,
 {
   PangoFcFontMapPrivate *priv = fcfontmap->priv;
   PangoFcFontKey *key;
-
-  fcfont->fontmap = NULL;
 
   key = _pango_fc_font_get_font_key (fcfont);
   if (key)
@@ -1411,7 +1441,6 @@ pango_fc_font_map_new_font (PangoFcFontMap    *fcfontmap,
   PangoFcFontMapPrivate *priv = fcfontmap->priv;
   FcPattern *pattern;
   PangoFcFont *fcfont;
-  GSList *l;
   PangoFcFontKey key;
 
   if (priv->closed)
@@ -1462,24 +1491,8 @@ pango_fc_font_map_new_font (PangoFcFontMap    *fcfontmap,
 
   fcfont->matrix = key.matrix;
 
+  /* cache it on fontmap */
   pango_fc_font_map_add (fcfontmap, &key, fcfont);
-
-  /*
-   * Give any custom decoders a crack at this font now that it's been
-   * created.
-   */
-  for (l = priv->findfuncs; l && l->data; l = l->next)
-    {
-      PangoFcFindFuncInfo *info = l->data;
-      PangoFcDecoder *decoder;
-
-      decoder = info->findfunc (match, info->user_data);
-      if (decoder)
-	{
-	  _pango_fc_font_set_decoder (fcfont, decoder);
-	  break;
-	}
-    }
 
   return (PangoFont *)fcfont;
 }
@@ -1825,9 +1838,15 @@ pango_fc_font_map_create_context (PangoFcFontMap *fcfontmap)
 
 static void
 shutdown_font (gpointer        key G_GNUC_UNUSED,
-	       PangoFcFont    *fcfont)
+	       PangoFcFont    *fcfont,
+	       PangoFcFontMap *fcfontmap)
 {
   _pango_fc_font_shutdown (fcfont);
+
+  /* While _pango_fc_font_shutdown() tries to call the following
+   * function, it's too late as the fontmap weakref has already
+   * NULL'ed fcfont->fontmap, so we do it ourselves. */
+  _pango_fc_font_map_remove (fcfontmap, fcfont);
 }
 
 /**
@@ -1852,7 +1871,7 @@ pango_fc_font_map_shutdown (PangoFcFontMap *fcfontmap)
   if (priv->closed)
     return;
 
-  g_hash_table_foreach (priv->font_hash, (GHFunc) shutdown_font, NULL);
+  g_hash_table_foreach (priv->font_hash, (GHFunc) shutdown_font, fcfontmap);
   for (i = 0; i < priv->n_families; i++)
     priv->families[i]->fontmap = NULL;
 

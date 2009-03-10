@@ -17,6 +17,7 @@ EXPORTS
 	pango_fc_font_map_add_decoder_find_func
 	pango_fc_font_map_cache_clear
 	pango_fc_font_map_create_context
+	pango_fc_font_map_find_decoder
 	pango_fc_font_map_get_type
 	pango_fc_font_map_shutdown
 	pango_fc_font_unlock_face

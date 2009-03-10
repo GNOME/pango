@@ -92,6 +92,7 @@ _pango_xft_font_new (PangoXftFontMap *xftfontmap,
 
   xfont = (PangoXftFont *)g_object_new (PANGO_TYPE_XFT_FONT,
 					"pattern", pattern,
+					"fontmap", fontmap,
 					NULL);
 
   /* Hack to force hinting of vertical metrics; hinting off for

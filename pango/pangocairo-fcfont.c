@@ -223,6 +223,7 @@ _pango_cairo_fc_font_new (PangoCairoFcFontMap *cffontmap,
 
   cffont = g_object_new (PANGO_TYPE_CAIRO_FC_FONT,
 			 "pattern", pattern,
+			 "fontmap", cffontmap,
 			 NULL);
 
   size = get_font_size (pattern) /
