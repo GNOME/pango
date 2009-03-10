@@ -80,8 +80,12 @@ struct _PangoFcFontMapPrivate
 
 struct _PangoFcCoverageKey
 {
+  /* Key */
   char *filename;
   int id;            /* needed to handle TTC files with multiple faces */
+
+  /* Data */
+  FcPattern *pattern;	/* Referenced pattern that owns filename */
 };
 
 struct _PangoFcFace
@@ -191,9 +195,16 @@ pango_fc_coverage_key_hash (PangoFcCoverageKey *key)
 
 static gboolean
 pango_fc_coverage_key_equal (PangoFcCoverageKey *key1,
-			       PangoFcCoverageKey *key2)
+			     PangoFcCoverageKey *key2)
 {
-  return key1->id == key2->id && strcmp (key1->filename, key2->filename) == 0;
+  return key1->id == key2->id && (key1 == key2 || 0 == strcmp (key1->filename, key2->filename));
+}
+
+static void
+pango_fc_coverage_key_free (PangoFcCoverageKey *key)
+{
+  FcPatternDestroy (key->pattern);
+  g_slice_free (PangoFcCoverageKey, key);
 }
 
 /* Fowler / Noll / Vo (FNV) Hash (http://www.isthe.com/chongo/tech/comp/fnv/)
@@ -983,7 +994,7 @@ pango_fc_font_map_init (PangoFcFontMap *fcfontmap)
 
   priv->coverage_hash = g_hash_table_new_full ((GHashFunc)pango_fc_coverage_key_hash,
 					       (GEqualFunc)pango_fc_coverage_key_equal,
-					       (GDestroyNotify)g_free,
+					       (GDestroyNotify)pango_fc_coverage_key_free,
 					       (GDestroyNotify)pango_coverage_unref);
   priv->dpi = -1;
 }
@@ -1061,7 +1072,7 @@ pango_fc_font_map_add_decoder_find_func (PangoFcFontMap        *fcfontmap,
   PangoFcFontMapPrivate *priv;
   PangoFcFindFuncInfo *info;
 
-  g_return_val_if_fail (PANGO_IS_FC_FONT_MAP (fcfontmap), NULL);
+  g_return_if_fail (PANGO_IS_FC_FONT_MAP (fcfontmap));
 
   priv = fcfontmap->priv;
 
@@ -1707,10 +1718,9 @@ pango_fc_font_map_set_coverage (PangoFcFontMap            *fcfontmap,
   PangoFcFontMapPrivate *priv = fcfontmap->priv;
   PangoFcCoverageKey *key_dup;
 
-  key_dup = g_malloc (sizeof (PangoFcCoverageKey) + strlen (key->filename) + 1);
-  key_dup->id = key->id;
-  key_dup->filename = (char *) (key_dup + 1);
-  strcpy (key_dup->filename, key->filename);
+  key_dup = g_slice_new (PangoFcCoverageKey);
+  *key_dup = *key;
+  FcPatternReference (key_dup->pattern);
 
   g_hash_table_insert (priv->coverage_hash,
 		       key_dup, pango_coverage_ref (coverage));
@@ -1724,6 +1734,8 @@ _pango_fc_font_map_get_coverage (PangoFcFontMap *fcfontmap,
   PangoFcCoverageKey key;
   PangoCoverage *coverage;
   FcCharSet *charset;
+
+  key.pattern = fcfont->font_pattern;
 
   /*
    * Assume that coverage information is identified by
