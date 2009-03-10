@@ -144,7 +144,7 @@ pango_coverage_unref (PangoCoverage *coverage)
   if (g_atomic_int_dec_and_test ((int *) &coverage->ref_count))
     {
       for (i=0; i<coverage->n_blocks; i++)
-	g_free (coverage->blocks[i].data);
+	g_slice_free1 (64, coverage->blocks[i].data);
 
       g_free (coverage->blocks);
       g_slice_free (PangoCoverage, coverage);
@@ -235,7 +235,7 @@ pango_coverage_set (PangoCoverage     *coverage,
       if (level == coverage->blocks[block_index].level)
 	return;
 
-      data = g_new (guchar, 64);
+      data = g_slice_alloc (64);
       coverage->blocks[block_index].data = data;
 
       byte = coverage->blocks[block_index].level |
@@ -398,7 +398,7 @@ pango_coverage_to_bytes   (PangoCoverage  *coverage,
 
 	  if (j == 64)
 	    {
-	      g_free (data);
+	      g_slice_free1 (64, data);
 	      coverage->blocks[i].data = NULL;
 	      coverage->blocks[i].level = first_val & 0x3;
 	    }
