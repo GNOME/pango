@@ -392,15 +392,18 @@ pango_coverage_to_bytes   (PangoCoverage  *coverage,
 	  guchar *data = coverage->blocks[i].data;
 	  guchar first_val = data[0];
 
-	  for (j = 1 ; j < 64; j++)
-	    if (data[j] != first_val)
-	      break;
-
-	  if (j == 64)
+	  if (first_val == 0 || first_val == 0xff)
 	    {
-	      g_slice_free1 (64, data);
-	      coverage->blocks[i].data = NULL;
-	      coverage->blocks[i].level = first_val & 0x3;
+	      for (j = 1 ; j < 64; j++)
+		if (data[j] != first_val)
+		  break;
+
+	      if (j == 64)
+		{
+		  g_slice_free1 (64, data);
+		  coverage->blocks[i].data = NULL;
+		  coverage->blocks[i].level = first_val & 0x3;
+		}
 	    }
 	}
 
