@@ -42,7 +42,6 @@ struct _PangoCoverage
 {
   guint ref_count;
   int n_blocks;
-  int data_size;
 
   PangoBlockInfo *blocks;
 };
