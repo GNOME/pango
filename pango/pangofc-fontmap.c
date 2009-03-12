@@ -31,6 +31,60 @@
 #include "modules.h"
 #include "pango-enum-types.h"
 
+
+/* Overview:
+ *
+ * All programming is a practice in caching data.  PangoFcFontMap is the
+ * major caching container of a Pango system on a Linux desktop.  Here is
+ * a short overview of how it all works.
+ *
+ * In short, Fontconfig search patterns are constructed and a fontset loaded
+ * using them.  Here is how we achieve that:
+ *
+ * - All FcPattern's referenced by any object in the fontmap are uniquified
+ *   and cached in the fontmap.  This both speeds lookups based on patterns
+ *   faster, and saves memory.  This is handled by fontmap->priv->pattern_hash.
+ *   The patterns are cached indefinitely.
+ *
+ * - The results of a FcFontSort() are used to populate fontsets.  However,
+ *   FcFontSort() relies on the search pattern only, which includes the font
+ *   size but not the full font matrix.  The fontset however depends on the
+ *   matrix.  As a result, multiple fontsets may need results of the
+ *   FcFontSort() on the same input pattern (think rotating text).  As such,
+ *   we cache FcFontSort() results in fontmap->priv->patterns_hash which
+ *   is a refcounted structure.  This level of abstraction also allows for
+ *   optimizations like calling FcFontMatch() instead of FcFontSort(), and
+ *   only calling FcFontSort() if any patterns other than the first match
+ *   are needed.  Another possible optimization would be to call FcFontSort()
+ *   without trimming, and do the trimming lazily as we go.  Only pattern sets
+ *   already referenced by a fontset are cached.
+ *
+ * - A number of most-recently-used fontsets are cached and reused when
+ *   needed.  This is achieved using fontmap->priv->fontset_hash and
+ *   fontmap->priv->fontset_cache.
+ *
+ * - All fonts created by any of our fontsets are also cached and reused.
+ *   This is what fontmap->priv->font_hash does.
+ *
+ * - Data that only depends on the font file and face index is cached and
+ *   reused by multiple fonts.  This includes coverage and cmap cache info.
+ *   This is done using fontmap->priv->font_face_data_hash.
+ *
+ * Upon a cache_clear() request, all caches are emptied.  All objects (fonts,
+ * fontsets, faces, families) having a reference from outside will still live
+ * and may reference the fontmap still, but will not be reused by the fontmap.
+ *
+ *
+ * Todo:
+ *
+ * - Make PangoCoverage a GObject and subclass it as PangoFcCoverage which
+ *   will directly use FcCharset. (#569622)
+ *
+ * - Lazy trimming of FcFontSort() results.  Requires fontconfig with
+ *   FcCharSetMerge().
+ */
+
+
 typedef struct _PangoFcFontFaceData PangoFcFontFaceData;
 typedef struct _PangoFcFace         PangoFcFace;
 typedef struct _PangoFcFamily       PangoFcFamily;
