@@ -778,7 +778,7 @@ pango_fc_patterns_get_font_pattern (PangoFcPatterns *pats, int i)
 	}
     }
 
-  if (i < pats->fontset->nfont)
+  if (pats->fontset && i < pats->fontset->nfont)
     return pats->fontset->fonts[i];
   else
     return NULL;
