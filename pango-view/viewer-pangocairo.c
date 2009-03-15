@@ -43,8 +43,7 @@ pangocairo_view_create (const PangoViewer *klass G_GNUC_UNUSED)
 
   instance = g_slice_new (CairoViewer);
 
-  instance->iface = get_cairo_viewer_iface ();
-  instance->backend = instance->iface->backend_class->create (instance->iface->backend_class);
+  instance->backend = cairo_viewer_iface_create (&instance->iface);
 
   instance->fontmap = pango_cairo_font_map_new ();
   pango_cairo_font_map_set_resolution (PANGO_CAIRO_FONT_MAP (instance->fontmap), opt_dpi);

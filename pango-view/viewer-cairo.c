@@ -25,6 +25,8 @@
 
 #include <cairo.h>
 
+#include <string.h>
+
 
 
 #ifdef HAVE_CAIRO_XLIB
@@ -50,6 +52,18 @@ static CairoViewerIface cairo_x_viewer_iface = {
   cairo_x_view_iface_create_surface
 };
 #endif /* HAVE_CAIRO_XLIB */
+
+
+
+
+static cairo_surface_t *
+cairo_view_iface_create_surface (gpointer instance,
+				 gpointer surface,
+				 int      width,
+				 int      height)
+{
+  return cairo_surface_reference (surface);
+}
 
 
 
@@ -96,27 +110,183 @@ const PangoViewer cairo_image_viewer = {
   NULL
 };
 
+static CairoViewerIface cairo_image_viewer_iface = {
+  &cairo_image_viewer,
+  cairo_view_iface_create_surface
+};
+
+
+
+
+#ifdef CAIRO_HAS_SVG_SURFACE
+#    include <cairo-svg.h>
+#endif
+#ifdef CAIRO_HAS_PDF_SURFACE
+#    include <cairo-pdf.h>
+#endif
+#ifdef CAIRO_HAS_PS_SURFACE
+#    include <cairo-ps.h>
+#  if CAIRO_VERSION >= CAIRO_VERSION_ENCODE(1,6,0)
+#    define HAS_EPS 1
+
 static cairo_surface_t *
-cairo_image_view_iface_create_surface (gpointer instance,
-				       gpointer surface,
-				       int      width,
-				       int      height)
+_cairo_eps_surface_create (const char *filename,
+			   double      width,
+			   double      height)
 {
+  cairo_surface_t *surface;
+
+  surface = cairo_ps_surface_create (filename, width, height);
+  cairo_ps_surface_set_eps (surface, TRUE);
+
   return surface;
 }
 
-static CairoViewerIface cairo_image_viewer_iface = {
-  &cairo_image_viewer,
-  cairo_image_view_iface_create_surface
+#  else
+#    undef HAS_EPS
+#  endif
+#endif
+
+typedef cairo_surface_t *(*CairoVectorFileCreateFunc) (const char *filename,
+						       double width,
+						       double height);
+
+typedef struct
+{
+  const char *filename;
+  CairoVectorFileCreateFunc constructor;
+} CairoVectorViewer;
+
+static gpointer
+cairo_vector_view_create (const PangoViewer *klass G_GNUC_UNUSED)
+{
+  const char *extension = NULL;
+  CairoVectorFileCreateFunc constructor = NULL;
+
+  if (opt_output)
+    {
+      extension = strrchr (opt_output, '.');
+      if (extension)
+	  extension++; /* skip the dot */
+    }
+
+  if (!extension)
+    return NULL;
+
+  if (0)
+    ;
+  #ifdef CAIRO_HAS_SVG_SURFACE
+    else if (0 == strcasecmp (extension, "svg"))
+      constructor = cairo_svg_surface_create;
+  #endif
+  #ifdef CAIRO_HAS_PDF_SURFACE
+    else if (0 == strcasecmp (extension, "pdf"))
+      constructor = cairo_pdf_surface_create;
+  #endif
+  #ifdef CAIRO_HAS_PS_SURFACE
+    else if (0 == strcasecmp (extension, "ps"))
+      constructor = cairo_ps_surface_create;
+   #ifdef HAS_EPS
+    else if (0 == strcasecmp (extension, "eps"))
+      constructor = _cairo_eps_surface_create;
+   #endif
+  #endif
+
+  if (constructor)
+    {
+      CairoVectorViewer *instance;
+
+      instance = g_slice_new (CairoVectorViewer);
+
+      /* save output filename and unset it such that the viewer layer
+       * doesn't try to save to file.
+       */
+     instance->filename = opt_output;
+     opt_output = NULL;
+
+     instance->constructor = constructor;
+
+     /* Fix dpi on 72.  That's what cairo vector surfaces are. */
+     opt_dpi = 72;
+
+     return instance;
+    }
+
+  return NULL;
+}
+
+static void
+cairo_vector_view_destroy (gpointer instance G_GNUC_UNUSED)
+{
+  CairoVectorViewer *c = (CairoVectorViewer *) instance;
+
+  g_slice_free (CairoVectorViewer, c);
+}
+
+static gpointer
+cairo_vector_view_create_surface (gpointer instance,
+				  int      width,
+				  int      height)
+{
+  CairoVectorViewer *c = (CairoVectorViewer *) instance;
+  cairo_surface_t *surface;
+
+  surface = c->constructor (c->filename, width, height);
+
+    /*cairo_surface_set_fallback_resolution (surface, fallback_resolution_x, fallback_resolution_y);*/
+
+  return surface;
+}
+
+static void
+cairo_vector_view_destroy_surface (gpointer instance,
+				   gpointer surface)
+{
+  /* TODO: check for errors */
+  cairo_surface_destroy (surface);
+}
+
+const PangoViewer cairo_vector_viewer = {
+  "CairoFile",
+  NULL,
+  NULL,
+  cairo_vector_view_create,
+  cairo_vector_view_destroy,
+  NULL,
+  cairo_vector_view_create_surface,
+  cairo_vector_view_destroy_surface,
+  NULL,
+  NULL,
+  NULL,
+  NULL,
+  NULL
 };
 
-const CairoViewerIface *
-get_cairo_viewer_iface (void)
+static CairoViewerIface cairo_vector_viewer_iface = {
+  &cairo_vector_viewer,
+  cairo_view_iface_create_surface
+};
+
+
+
+gpointer
+cairo_viewer_iface_create (const CairoViewerIface **iface)
 {
+  gpointer ret;
+
+  *iface = &cairo_vector_viewer_iface;
+  ret = (*iface)->backend_class->create ((*iface)->backend_class);
+  if (ret)
+    return ret;
+
 #ifdef HAVE_CAIRO_XLIB
   if (opt_display)
-    return &cairo_x_viewer_iface;
+    {
+      *iface = &cairo_x_viewer_iface;
+      return (*iface)->backend_class->create ((*iface)->backend_class);
+    }
 #endif /* HAVE_CAIRO_XLIB */
 
-  return &cairo_image_viewer_iface;
+  *iface = &cairo_image_viewer_iface;
+  return (*iface)->backend_class->create ((*iface)->backend_class);
 }
