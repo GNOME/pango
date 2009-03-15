@@ -93,7 +93,6 @@ struct _PangoViewer {
 
 };
 
-extern const PangoViewer *fallback_viewer;
 extern const PangoViewer *viewers[];
 
 #endif /* VIEWER_H */

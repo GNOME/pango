@@ -21,16 +21,21 @@
 #include "config.h"
 
 #include "viewer-cairo.h"
+#include "viewer-render.h"
+
+#include <cairo.h>
+
+
 
 #ifdef HAVE_CAIRO_XLIB
 #include "viewer-x.h"
 #include <cairo-xlib.h>
 
 static cairo_surface_t *
-cairo_x_view_create_surface (gpointer instance,
-			     gpointer surface,
-			     int      width,
-			     int      height)
+cairo_x_view_iface_create_surface (gpointer instance,
+				   gpointer surface,
+				   int      width,
+				   int      height)
 {
   XViewer *x = (XViewer *)instance;
   Drawable drawable = (Drawable) surface;
@@ -42,12 +47,76 @@ cairo_x_view_create_surface (gpointer instance,
 
 static CairoViewerIface cairo_x_viewer_iface = {
   &x_viewer,
-  cairo_x_view_create_surface
+  cairo_x_view_iface_create_surface
+};
+#endif /* HAVE_CAIRO_XLIB */
+
+
+
+static gpointer
+cairo_image_view_create (const PangoViewer *klass G_GNUC_UNUSED)
+{
+  return NULL;
+}
+
+static void
+cairo_image_view_destroy (gpointer instance G_GNUC_UNUSED)
+{
+}
+
+static gpointer
+cairo_image_view_create_surface (gpointer instance,
+				 int      width,
+				 int      height)
+{
+  /* TODO: Be smarter about format? */
+  return cairo_image_surface_create (CAIRO_FORMAT_ARGB32, width, height);
+}
+
+static void
+cairo_image_view_destroy_surface (gpointer instance,
+				  gpointer surface)
+{
+  cairo_surface_destroy (surface);
+}
+
+const PangoViewer cairo_image_viewer = {
+  "CairoImage",
+  NULL,
+  NULL,
+  cairo_image_view_create,
+  cairo_image_view_destroy,
+  NULL,
+  cairo_image_view_create_surface,
+  cairo_image_view_destroy_surface,
+  NULL,
+  NULL,
+  NULL,
+  NULL,
+  NULL
+};
+
+static cairo_surface_t *
+cairo_image_view_iface_create_surface (gpointer instance,
+				       gpointer surface,
+				       int      width,
+				       int      height)
+{
+  return surface;
+}
+
+static CairoViewerIface cairo_image_viewer_iface = {
+  &cairo_image_viewer,
+  cairo_image_view_iface_create_surface
 };
 
 const CairoViewerIface *
-get_default_cairo_viewer_iface (void)
+get_cairo_viewer_iface (void)
 {
-  return &cairo_x_viewer_iface;
-}
+#ifdef HAVE_CAIRO_XLIB
+  if (opt_display)
+    return &cairo_x_viewer_iface;
 #endif /* HAVE_CAIRO_XLIB */
+
+  return &cairo_image_viewer_iface;
+}

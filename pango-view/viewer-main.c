@@ -118,8 +118,13 @@ main (int    argc,
 	  gpointer state = NULL;
 
 	  if (view->create_window)
-	    window = view->create_window (instance, title, width, height);
+	    {
+	      window = view->create_window (instance, title, width, height);
+	      if (!window)
+	        goto no_display;
+	    }
 
+	  opt_display = FALSE;
 	  while (1)
 	    {
 	      state = view->display (instance, surface, window, width, height, state);
@@ -132,7 +137,10 @@ main (int    argc,
 	  if (view->destroy_window)
 	    view->destroy_window (instance, window);
 	}
-      else
+no_display:
+
+      /* If failed to display natively, call ImageMagick */
+      if (opt_display)
 	{
 	  int fd;
 	  FILE *stream;

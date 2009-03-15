@@ -37,6 +37,6 @@ struct _CairoViewerIface
 				       int      height);
 };
 
-const CairoViewerIface *get_default_cairo_viewer_iface (void);
+const CairoViewerIface *get_cairo_viewer_iface (void);
 
 #endif /* VIEWER_CAIRO_H */

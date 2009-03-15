@@ -32,7 +32,7 @@ x_view_init (gpointer           instance,
 
   x->display = XOpenDisplay (NULL);
   if (!x->display)
-    fail ("Cannot open display %s\n", XDisplayName (NULL));
+    fail ("Cannot open display %s", XDisplayName (NULL));
 
   x->screen = DefaultScreen (x->display);
 }
@@ -237,5 +237,3 @@ const PangoViewer x_viewer = {
   x_view_destroy_window,
   x_view_display
 };
-
-const PangoViewer *fallback_viewer = &x_viewer;

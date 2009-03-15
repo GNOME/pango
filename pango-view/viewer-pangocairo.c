@@ -36,7 +36,6 @@ typedef struct
   cairo_font_options_t *font_options;
 } CairoViewer;
 
-/* TODO: hinting */
 static gpointer
 pangocairo_view_create (const PangoViewer *klass G_GNUC_UNUSED)
 {
@@ -44,7 +43,7 @@ pangocairo_view_create (const PangoViewer *klass G_GNUC_UNUSED)
 
   instance = g_slice_new (CairoViewer);
 
-  instance->iface = get_default_cairo_viewer_iface ();
+  instance->iface = get_cairo_viewer_iface ();
   instance->backend = instance->iface->backend_class->create (instance->iface->backend_class);
 
   instance->fontmap = pango_cairo_font_map_new ();
@@ -363,6 +362,9 @@ pangocairo_view_create_window (gpointer    instance,
 			       int         height)
 {
   CairoViewer *c = (CairoViewer *) instance;
+
+  if (!c->iface->backend_class->create_window)
+    return NULL;
 
   return c->iface->backend_class->create_window (c->backend,
 						 title,
