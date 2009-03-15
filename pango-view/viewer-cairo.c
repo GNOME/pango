@@ -39,12 +39,22 @@ cairo_x_view_iface_create_surface (gpointer instance,
 				   int      width,
 				   int      height)
 {
+  cairo_t *cr;
+  cairo_surface_t *cairo_surface;
+
   XViewer *x = (XViewer *)instance;
   Drawable drawable = (Drawable) surface;
 
-  return cairo_xlib_surface_create (x->display, drawable,
-				    DefaultVisual (x->display, x->screen),
-				    width, height);
+  cairo_surface = cairo_xlib_surface_create (x->display, drawable,
+					     DefaultVisual (x->display, x->screen),
+					     width, height);
+
+  cr = cairo_create (cairo_surface);
+  cairo_set_source_rgb (cr, 1.0, 1.0, 1.0);
+  cairo_paint (cr);
+  cairo_destroy (cr);
+
+  return cairo_surface;
 }
 
 static CairoViewerIface cairo_x_viewer_iface = {
@@ -83,8 +93,18 @@ cairo_image_view_create_surface (gpointer instance,
 				 int      width,
 				 int      height)
 {
+  cairo_t *cr;
+  cairo_surface_t *surface;
+
   /* TODO: Be smarter about format? */
-  return cairo_image_surface_create (CAIRO_FORMAT_ARGB32, width, height);
+  surface = cairo_image_surface_create (CAIRO_FORMAT_ARGB32, width, height);
+
+  cr = cairo_create (surface);
+  cairo_set_source_rgb (cr, 1.0, 1.0, 1.0);
+  cairo_paint (cr);
+  cairo_destroy (cr);
+
+  return surface;
 }
 
 static void

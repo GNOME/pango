@@ -318,9 +318,6 @@ pangocairo_view_render (gpointer      instance G_GNUC_UNUSED,
 
   transform_callback (context, NULL, cr, state);
 
-  cairo_set_source_rgb (cr, 1.0, 1.0, 1.0);
-  cairo_paint (cr);
-
   cairo_set_source_rgb (cr, 0.0, 0.0, 0.0);
   do_output (context, render_callback, transform_callback, cr, state, width, height);
 
