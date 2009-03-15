@@ -36,17 +36,12 @@ INCLUDES =				\
 	$(FREETYPE_CFLAGS)		\
 	$(X_CFLAGS)
 
-bin_PROGRAMS =
-
 #########################################################
-if HAVE_X
-bin_PROGRAMS += pango-view
+bin_PROGRAMS = pango-view
 pango_view_SOURCES =					\
 	viewer-render.h					\
 	viewer-render.c					\
 	viewer.h					\
-	viewer-x.h					\
-	viewer-x.c					\
 	viewer-main.c					\
 	pango-view.c
 pango_view_LDADD =					\
@@ -54,9 +49,12 @@ pango_view_LDADD =					\
 	$(GLIB_LIBS)
 if HAVE_X
 pango_view_SOURCES +=					\
+	viewer-x.h					\
+	viewer-x.c					\
 	viewer-pangox.c
 pango_view_LDADD +=					\
-	../pango/libpangox-$(PANGO_API_VERSION).la
+	../pango/libpangox-$(PANGO_API_VERSION).la	\
+	$(X_LIBS)
 endif
 if HAVE_FREETYPE
 pango_view_SOURCES +=					\
@@ -74,19 +72,13 @@ pango_view_LDADD +=					\
 	$(XFT_LIBS)
 endif
 if HAVE_CAIRO
-if HAVE_CAIRO_XLIB
 pango_view_SOURCES +=					\
 	viewer-cairo.h					\
 	viewer-cairo.c					\
 	viewer-pangocairo.c
 pango_view_LDADD +=					\
-	../pango/libpangoft2-$(PANGO_API_VERSION).la	\
 	../pango/libpangocairo-$(PANGO_API_VERSION).la	\
 	$(CAIRO_LIBS)
-endif
-endif
-pango_view_LDADD +=					\
-	$(X_LIBS)
 endif
 #########################################################
 
