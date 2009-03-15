@@ -53,8 +53,6 @@ pangocairo_view_create (const PangoViewer *klass G_GNUC_UNUSED)
   instance->font_options = cairo_font_options_create ();
   if (opt_hinting != HINT_DEFAULT)
     {
-      cairo_font_options_set_hint_metrics (instance->font_options, CAIRO_HINT_METRICS_ON);
-
       if (opt_hinting == HINT_NONE)
 	cairo_font_options_set_hint_style (instance->font_options, CAIRO_HINT_STYLE_NONE);
       else if (opt_hinting == HINT_FULL)
