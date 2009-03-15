@@ -401,7 +401,11 @@ pangocairo_view_display (gpointer instance,
 const PangoViewer pangocairo_viewer = {
   "PangoCairo",
   "cairo",
+#ifdef HAVE_CAIRO_PNG
+  "png",
+#else
   NULL,
+#endif
   pangocairo_view_create,
   pangocairo_view_destroy,
   pangocairo_view_get_context,
