@@ -49,7 +49,24 @@ MAINTAINERCLEANFILES = \
 	$(srcdir)/mkinstalldirs \
 	$(srcdir)/omf.make \
 	$(srcdir)/xmldocs.make \
+	$(srcdir)/ChangeLog \
 	`find "$(srcdir)" -type f -name Makefile.in -print`
+
+ChangeLog: $(srcdir)/ChangeLog
+$(srcdir)/ChangeLog:
+	@echo Creating $@
+	@if test -d "$(srcdir)/.git"; then \
+	  (GIT_DIR=$(top_srcdir)/.git ./missing --run git log 1.23.0^^.. --stat) | fmt --split-only > $@.tmp \
+	  && mv -f $@.tmp $@ \
+	  || ($(RM) $@.tmp; \
+	      echo Failed to generate ChangeLog, your ChangeLog may be outdated >&2; \
+	      (test -f $@ || echo git-log is required to generate this file >> $@)); \
+	else \
+	  test -f $@ || \
+	  (echo A git checkout and git-log is required to generate ChangeLog >&2 && \
+	  echo A git checkout and git-log is required to generate this file >> $@); \
+	fi
+.PHONY: $(srcdir)/ChangeLog
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = pango.pc
