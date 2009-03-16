@@ -1,3 +1,40 @@
+Overview of changes between 1.23.0 and 1.24.0
+=============================================
+- pango-view improvements:
+
+  * pango-view -q now works without a X server.
+
+  * Ability to save to PS, EPS, PDF, and SVG files.  Filetype is
+    detected from output file extension.
+
+  * New options --foreground, --background, and --annotate.
+
+  * Now installs a manual page, thanks to help2man.
+
+- PangoFc API changes:
+
+  * PangoFcFont now has a "fontmap" property that subclasses can use
+    at construction time to setup the font->fontmap link.
+
+  * New backend-public API:
+
+	pango_fc_font_map_find_decoder()
+
+- Misc optimizations
+- Build fixes
+- Misc bug fixes
+- Bugs fixed in this release:
+    Bug 547963 – man page for pango-view
+    Bug 502804 – pango-view or pangocairo-view option to annotate
+    Bug 502801 – per-backend pango-view options
+    Bug 502805 – pango-view option for foreground/background color
+    Red Hat Bug 490331 -  Crash of galeon in libpango
+    Bug 523166 – pango-view opens display even when invoked with -q
+    Bug 567160 – Share cmap cache between PangoFcFont's of the same face
+    Red Hat Bug 487593 -  crash changing language in gdm
+    Bug 572662 – Remove deprecated GTK+ symbols
+    Bug 572529 – Poor -I ordering can break build
+
 Overview of changes between 1.22.4 and 1.23.0
 =============================================
 - Change the PangoFc font loading API to allow for lazy loading of fonts.
