@@ -114,18 +114,15 @@ pangoxft_view_render (gpointer      instance,
 			DefaultVisual (x->display, x->screen),
 			DefaultColormap (x->display, x->screen));
 
-  if (opt_bg_set)
-    {
-      /* XftDrawRect only fills solid.
-       * Flatten with white.
-       */
-      color.color.red = ((opt_bg_color.red * opt_bg_alpha) >> 16) + (65535 - opt_bg_alpha);
-      color.color.green = ((opt_bg_color.green * opt_bg_alpha) >> 16) + (65535 - opt_bg_alpha);
-      color.color.blue = ((opt_bg_color.blue * opt_bg_alpha) >> 16) + (65535 - opt_bg_alpha);
-      color.color.alpha = 65535;
+  /* XftDrawRect only fills solid.
+   * Flatten with white.
+   */
+  color.color.red = ((opt_bg_color.red * opt_bg_alpha) >> 16) + (65535 - opt_bg_alpha);
+  color.color.green = ((opt_bg_color.green * opt_bg_alpha) >> 16) + (65535 - opt_bg_alpha);
+  color.color.blue = ((opt_bg_color.blue * opt_bg_alpha) >> 16) + (65535 - opt_bg_alpha);
+  color.color.alpha = 65535;
 
-      XftDrawRect (draw, &color, 0, 0, *width, *height);
-    }
+  XftDrawRect (draw, &color, 0, 0, *width, *height);
 
   color.color.red = opt_fg_color.red;
   color.color.blue = opt_fg_color.green;

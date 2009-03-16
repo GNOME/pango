@@ -33,37 +33,6 @@
 #include "viewer-x.h"
 #include <cairo-xlib.h>
 
-static void
-cairo_view_iface_paint_background_over (gpointer  instance G_GNUC_UNUSED,
-					cairo_t  *cr)
-{
-  if (opt_bg_set)
-    {
-      cairo_set_source_rgba (cr,
-			     opt_bg_color.red / 65535.,
-			     opt_bg_color.green / 65535.,
-			     opt_bg_color.blue / 65535.,
-			     opt_bg_alpha / 65535.);
-      cairo_paint (cr);
-    }
-}
-
-static void
-cairo_view_iface_paint_background_source (gpointer  instance G_GNUC_UNUSED,
-					  cairo_t  *cr)
-{
-  if (opt_bg_set)
-    {
-      cairo_set_operator (cr, CAIRO_OPERATOR_SOURCE);
-      cairo_set_source_rgba (cr,
-			     opt_bg_color.red / 65535.,
-			     opt_bg_color.green / 65535.,
-			     opt_bg_color.blue / 65535.,
-			     opt_bg_alpha / 65535.);
-      cairo_paint (cr);
-    }
-}
-
 
 
 static cairo_surface_t *
@@ -80,10 +49,28 @@ cairo_x_view_iface_create_surface (gpointer instance,
 				    width, height);
 }
 
+static void
+cairo_x_view_iface_paint_background (gpointer  instance G_GNUC_UNUSED,
+				     cairo_t  *cr)
+{
+  cairo_set_source_rgb (cr, 1, 1, 1);
+  cairo_paint (cr);
+
+  if (opt_bg_set)
+    {
+      cairo_set_source_rgba (cr,
+			     opt_bg_color.red / 65535.,
+			     opt_bg_color.green / 65535.,
+			     opt_bg_color.blue / 65535.,
+			     opt_bg_alpha / 65535.);
+      cairo_paint (cr);
+    }
+}
+
 static CairoViewerIface cairo_x_viewer_iface = {
   &x_viewer,
   cairo_x_view_iface_create_surface,
-  cairo_view_iface_paint_background_over
+  cairo_x_view_iface_paint_background
 };
 #endif /* HAVE_CAIRO_XLIB */
 
@@ -154,10 +141,29 @@ const PangoViewer cairo_image_viewer = {
   NULL
 };
 
+static void
+cairo_image_view_iface_paint_background (gpointer  instance G_GNUC_UNUSED,
+					 cairo_t  *cr)
+{
+  cairo_set_source_rgb (cr, 1, 1, 1);
+  cairo_paint (cr);
+
+  if (opt_bg_set)
+    {
+      cairo_set_operator (cr, CAIRO_OPERATOR_SOURCE);
+      cairo_set_source_rgba (cr,
+			     opt_bg_color.red / 65535.,
+			     opt_bg_color.green / 65535.,
+			     opt_bg_color.blue / 65535.,
+			     opt_bg_alpha / 65535.);
+      cairo_paint (cr);
+    }
+}
+
 static CairoViewerIface cairo_image_viewer_iface = {
   &cairo_image_viewer,
   cairo_view_iface_create_surface,
-  cairo_view_iface_paint_background_source
+  cairo_image_view_iface_paint_background
 };
 
 
@@ -307,10 +313,26 @@ const PangoViewer cairo_vector_viewer = {
   NULL
 };
 
+static void
+cairo_vector_view_iface_paint_background (gpointer  instance G_GNUC_UNUSED,
+					  cairo_t  *cr)
+{
+  if (opt_bg_set)
+    {
+      cairo_set_operator (cr, CAIRO_OPERATOR_SOURCE);
+      cairo_set_source_rgba (cr,
+			     opt_bg_color.red / 65535.,
+			     opt_bg_color.green / 65535.,
+			     opt_bg_color.blue / 65535.,
+			     opt_bg_alpha / 65535.);
+      cairo_paint (cr);
+    }
+}
+
 static CairoViewerIface cairo_vector_viewer_iface = {
   &cairo_vector_viewer,
   cairo_view_iface_create_surface,
-  cairo_view_iface_paint_background_over
+  cairo_vector_view_iface_paint_background
 };
 
 
