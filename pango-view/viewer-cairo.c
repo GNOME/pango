@@ -33,33 +33,57 @@
 #include "viewer-x.h"
 #include <cairo-xlib.h>
 
+static void
+cairo_view_iface_paint_background_over (gpointer  instance G_GNUC_UNUSED,
+					cairo_t  *cr)
+{
+  if (opt_bg_set)
+    {
+      cairo_set_source_rgba (cr,
+			     opt_bg_color.red / 65535.,
+			     opt_bg_color.green / 65535.,
+			     opt_bg_color.blue / 65535.,
+			     opt_bg_alpha / 65535.);
+      cairo_paint (cr);
+    }
+}
+
+static void
+cairo_view_iface_paint_background_source (gpointer  instance G_GNUC_UNUSED,
+					  cairo_t  *cr)
+{
+  if (opt_bg_set)
+    {
+      cairo_set_operator (cr, CAIRO_OPERATOR_SOURCE);
+      cairo_set_source_rgba (cr,
+			     opt_bg_color.red / 65535.,
+			     opt_bg_color.green / 65535.,
+			     opt_bg_color.blue / 65535.,
+			     opt_bg_alpha / 65535.);
+      cairo_paint (cr);
+    }
+}
+
+
+
 static cairo_surface_t *
 cairo_x_view_iface_create_surface (gpointer instance,
 				   gpointer surface,
 				   int      width,
 				   int      height)
 {
-  cairo_t *cr;
-  cairo_surface_t *cairo_surface;
-
   XViewer *x = (XViewer *)instance;
   Drawable drawable = (Drawable) surface;
 
-  cairo_surface = cairo_xlib_surface_create (x->display, drawable,
-					     DefaultVisual (x->display, x->screen),
-					     width, height);
-
-  cr = cairo_create (cairo_surface);
-  cairo_set_source_rgb (cr, 1.0, 1.0, 1.0);
-  cairo_paint (cr);
-  cairo_destroy (cr);
-
-  return cairo_surface;
+  return cairo_xlib_surface_create (x->display, drawable,
+				    DefaultVisual (x->display, x->screen),
+				    width, height);
 }
 
 static CairoViewerIface cairo_x_viewer_iface = {
   &x_viewer,
-  cairo_x_view_iface_create_surface
+  cairo_x_view_iface_create_surface,
+  cairo_view_iface_paint_background_over
 };
 #endif /* HAVE_CAIRO_XLIB */
 
@@ -132,7 +156,8 @@ const PangoViewer cairo_image_viewer = {
 
 static CairoViewerIface cairo_image_viewer_iface = {
   &cairo_image_viewer,
-  cairo_view_iface_create_surface
+  cairo_view_iface_create_surface,
+  cairo_view_iface_paint_background_source
 };
 
 
@@ -284,7 +309,8 @@ const PangoViewer cairo_vector_viewer = {
 
 static CairoViewerIface cairo_vector_viewer_iface = {
   &cairo_vector_viewer,
-  cairo_view_iface_create_surface
+  cairo_view_iface_create_surface,
+  cairo_view_iface_paint_background_over
 };
 
 

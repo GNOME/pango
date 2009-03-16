@@ -302,13 +302,14 @@ transform_callback (PangoContext *context,
 }
 
 static void
-pangocairo_view_render (gpointer      instance G_GNUC_UNUSED,
+pangocairo_view_render (gpointer      instance,
 			gpointer      surface,
 			PangoContext *context,
 			int          *width,
 			int          *height,
 			gpointer      state)
 {
+  CairoViewer *c = (CairoViewer *) instance;
   cairo_t *cr;
   CairoSurface *c_surface = (CairoSurface *) surface;
 
@@ -318,7 +319,15 @@ pangocairo_view_render (gpointer      instance G_GNUC_UNUSED,
 
   transform_callback (context, NULL, cr, state);
 
-  cairo_set_source_rgb (cr, 0.0, 0.0, 0.0);
+  c->iface->paint_background (instance, cr);
+
+  cairo_set_operator (cr, CAIRO_OPERATOR_OVER);
+  cairo_set_source_rgba (cr,
+			 opt_fg_color.red / 65535.,
+			 opt_fg_color.green / 65535.,
+			 opt_fg_color.blue / 65535.,
+			 opt_fg_alpha / 65535.);
+
   do_output (context, render_callback, transform_callback, cr, state, width, height);
 
   cairo_destroy (cr);

@@ -62,6 +62,11 @@ const char *opt_pangorc = NULL;
 const PangoViewer *opt_viewer = NULL;
 const char *opt_language = NULL;
 gboolean opt_single_par = FALSE;
+PangoColor opt_fg_color = {0, 0, 0};
+guint16 opt_fg_alpha = 65535;
+gboolean opt_bg_set = FALSE;
+PangoColor opt_bg_color = {65535, 65535, 65535};
+guint16 opt_bg_alpha = 65535;
 
 /* Text (or markup) to render */
 static char *text;
@@ -365,7 +370,6 @@ parse_enum (GType       type,
 		  "Argument for %s must be one of %s",
 		  name,
 		  possible_values);
-      ret = FALSE;
     }
 
   g_free (possible_values);
@@ -452,6 +456,93 @@ parse_wrap (const char *name,
       opt_wrap_set = TRUE;
     }
   return ret;
+}
+
+static gboolean
+parse_rgba_color (PangoColor *color,
+		  guint16    *alpha,
+		  const char *name,
+		  const char *arg,
+		  gpointer    data G_GNUC_UNUSED,
+		  GError    **error)
+{
+  char *possible_values = NULL;
+  gboolean ret;
+  char buf[32];
+  int len;
+
+  len = strlen (arg);
+  /* handle alpha */
+  if (*arg == '#' && (len == 5 || len == 9 || len == 17))
+    {
+      int width, bits;
+      unsigned int a;
+
+      bits = len - 1;
+      width = bits >> 2;
+
+      strcpy (buf, arg);
+      arg = buf;
+
+      if (!sscanf (buf + len - width, "%x", &a))
+        {
+	  ret = FALSE;
+	  goto err;
+	}
+      buf[len - width] = '\0';
+
+      a <<= (16 - bits);
+      while (bits < 16)
+        {
+	  a |= (a >> bits);
+	  bits *= 2;
+	}
+      *alpha = a;
+    }
+  else
+    *alpha = 65535;
+
+  ret = pango_color_parse (color, arg);
+
+err:
+  if (!ret && error)
+    {
+      g_set_error(error,
+		  G_OPTION_ERROR,
+		  G_OPTION_ERROR_BAD_VALUE,
+		  "Argument for %s must be a color name like red, or CSS-style #rrggbb / #rrggbbaa",
+		  name);
+    }
+
+  return ret;
+}
+
+static gboolean
+parse_foreground (const char *name,
+		  const char *arg,
+		  gpointer    data,
+		  GError **error)
+{
+  return parse_rgba_color (&opt_fg_color, &opt_fg_alpha,
+			   name, arg, data, error);
+}
+
+static gboolean
+parse_background (const char *name,
+		  const char *arg,
+		  gpointer    data,
+		  GError **error)
+{
+  opt_bg_set = TRUE;
+
+  if (0 == strcmp ("transparent", arg))
+    {
+      opt_bg_alpha = 0;
+      return TRUE;
+    }
+
+  return parse_rgba_color (&opt_bg_color, &opt_bg_alpha,
+			   name, arg, data, error);
 }
 
 static gchar *
@@ -561,6 +652,8 @@ parse_options (int argc, char *argv[])
      "No layout direction according to contents",			NULL},
     {"backend",		0, backend_flag, G_OPTION_ARG_CALLBACK,		&parse_backend,
      backend_desc,					     backend_options},
+    {"background",	0, 0, G_OPTION_ARG_CALLBACK,			&parse_background,
+     "Set the background color",			       "red/#rrggbb/#rrggbbaa/transparent/etc"},
     {"no-display",	'q', G_OPTION_FLAG_REVERSE, G_OPTION_ARG_NONE,	&opt_display,
      "Do not display (just write to file or whatever)",			NULL},
     {"dpi",		0, 0, G_OPTION_ARG_INT,				&opt_dpi,
@@ -571,6 +664,8 @@ parse_options (int argc, char *argv[])
      "Ellipsization mode",				  "start/middle/end"},
     {"font",		0, 0, G_OPTION_ARG_STRING,			&opt_font,
      "Set the font description",			       "description"},
+    {"foreground",	0, 0, G_OPTION_ARG_CALLBACK,			&parse_foreground,
+     "Set the text color",				       "red/#rrggbb/#rrggbbaa/etc"},
     {"gravity",		0, 0, G_OPTION_ARG_CALLBACK,			&parse_gravity,
      "Base gravity: glyph rotation",		"south/east/north/west/auto"},
     {"gravity-hint",	0, 0, G_OPTION_ARG_CALLBACK,			&parse_gravity_hint,

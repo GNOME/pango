@@ -73,7 +73,7 @@ extern int opt_indent;
 extern PangoEllipsizeMode opt_ellipsize;
 extern const char *opt_pangorc;
 
-/* handled by view.c */
+/* handled by viewer-main.c */
 extern gboolean opt_display;
 extern const char *opt_output;
 extern int opt_runs;
@@ -82,5 +82,10 @@ extern const PangoViewer *opt_viewer;
 /* handled by backend-specific code */
 extern int opt_dpi;
 extern HintMode opt_hinting;
+extern PangoColor opt_fg_color;
+extern guint16 opt_fg_alpha;
+extern gboolean opt_bg_set;
+extern PangoColor opt_bg_color;
+extern guint16 opt_bg_alpha;
 
 #endif /* VIEWER_RENDER_H */

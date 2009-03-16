@@ -66,9 +66,17 @@ x_view_create_surface (gpointer instance,
 {
   XViewer *x = (XViewer *) instance;
   Pixmap pixmap;
+  GC gc;
 
   pixmap = XCreatePixmap (x->display, DefaultRootWindow (x->display), width, height,
 			  DefaultDepth (x->display, x->screen));
+
+  gc = XCreateGC (x->display, pixmap, 0, NULL);
+
+  XSetForeground (x->display, gc, WhitePixel (x->display, x->screen));
+  XFillRectangle (x->display, pixmap, gc, 0, 0, width, height);
+
+  XFreeGC (x->display, gc);
 
   return (gpointer) pixmap;
 }
