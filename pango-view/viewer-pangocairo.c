@@ -26,6 +26,8 @@
 
 #include <pango/pangocairo.h>
 
+static int opt_annotate = 0;
+
 typedef struct
 {
   const CairoViewerIface *iface;
@@ -136,7 +138,7 @@ render_callback (PangoLayout *layout,
 		 gpointer     state)
 {
   cairo_t *cr = (cairo_t *) context;
-  int annotate = GPOINTER_TO_INT (state) % 3;
+  int annotate = (GPOINTER_TO_INT (state) + opt_annotate) % 3;
 
   cairo_save (cr);
   cairo_translate (cr, x, y);
@@ -406,6 +408,30 @@ pangocairo_view_display (gpointer instance,
 					   state);
 }
 
+static GOptionGroup *
+pangocairo_view_get_option_group (const PangoViewer *klass G_GNUC_UNUSED)
+{
+  GOptionEntry entries[] =
+  {
+    {"annotate",	0, 0, G_OPTION_ARG_INT, &opt_annotate,
+     "Annotate the output",				"1 or 2"},
+    {NULL}
+  };
+  GOptionGroup *group;
+
+  group = g_option_group_new ("cairo",
+			      "Cairo backend options:",
+			      "Options understood by the cairo backend",
+			      NULL,
+			      NULL);
+
+  g_option_group_add_entries (group, entries);
+
+  cairo_viewer_add_options (group);
+
+  return group;
+}
+
 const PangoViewer pangocairo_viewer = {
   "PangoCairo",
   "cairo",
@@ -427,5 +453,8 @@ const PangoViewer pangocairo_viewer = {
 #endif
   pangocairo_view_create_window,
   pangocairo_view_destroy_window,
-  pangocairo_view_display
+  pangocairo_view_display,
+  NULL,
+  NULL,
+  pangocairo_view_get_option_group
 };

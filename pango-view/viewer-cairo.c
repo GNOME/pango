@@ -358,3 +358,8 @@ cairo_viewer_iface_create (const CairoViewerIface **iface)
   *iface = &cairo_image_viewer_iface;
   return (*iface)->backend_class->create ((*iface)->backend_class);
 }
+
+void
+cairo_viewer_add_options (GOptionGroup *group G_GNUC_UNUSED)
+{
+}

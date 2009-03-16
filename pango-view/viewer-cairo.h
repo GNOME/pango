@@ -42,4 +42,6 @@ struct _CairoViewerIface
 
 gpointer cairo_viewer_iface_create (const CairoViewerIface **iface_out);
 
+void cairo_viewer_add_options (GOptionGroup *group);
+
 #endif /* VIEWER_CAIRO_H */

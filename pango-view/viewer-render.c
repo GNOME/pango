@@ -466,7 +466,6 @@ parse_rgba_color (PangoColor *color,
 		  gpointer    data G_GNUC_UNUSED,
 		  GError    **error)
 {
-  char *possible_values = NULL;
   gboolean ret;
   char buf[32];
   int len;
@@ -653,7 +652,7 @@ parse_options (int argc, char *argv[])
     {"backend",		0, backend_flag, G_OPTION_ARG_CALLBACK,		&parse_backend,
      backend_desc,					     backend_options},
     {"background",	0, 0, G_OPTION_ARG_CALLBACK,			&parse_background,
-     "Set the background color",			       "red/#rrggbb/#rrggbbaa/transparent/etc"},
+     "Set the background color",     "red/#rrggbb/#rrggbbaa/transparent"},
     {"no-display",	'q', G_OPTION_FLAG_REVERSE, G_OPTION_ARG_NONE,	&opt_display,
      "Do not display (just write to file or whatever)",			NULL},
     {"dpi",		0, 0, G_OPTION_ARG_INT,				&opt_dpi,
@@ -665,7 +664,7 @@ parse_options (int argc, char *argv[])
     {"font",		0, 0, G_OPTION_ARG_STRING,			&opt_font,
      "Set the font description",			       "description"},
     {"foreground",	0, 0, G_OPTION_ARG_CALLBACK,			&parse_foreground,
-     "Set the text color",				       "red/#rrggbb/#rrggbbaa/etc"},
+     "Set the text color",		         "red/#rrggbb/#rrggbbaa"},
     {"gravity",		0, 0, G_OPTION_ARG_CALLBACK,			&parse_gravity,
      "Base gravity: glyph rotation",		"south/east/north/west/auto"},
     {"gravity-hint",	0, 0, G_OPTION_ARG_CALLBACK,			&parse_gravity_hint,
@@ -714,10 +713,20 @@ parse_options (int argc, char *argv[])
   GError *parse_error = NULL;
   GOptionContext *context;
   size_t len;
+  const PangoViewer **viewer;
 
   prog_name = g_path_get_basename (argv[0]);
   context = g_option_context_new ("- FILE");
   g_option_context_add_main_entries (context, entries, NULL);
+
+  for (viewer = viewers; *viewer; viewer++)
+    if ((*viewer)->get_option_group)
+      {
+        GOptionGroup *group = (*viewer)->get_option_group (*viewer);
+	if (group)
+	  g_option_context_add_group (context, group);
+      }
+
   if (!g_option_context_parse (context, &argc, &argv, &parse_error))
   {
     if (parse_error != NULL)
