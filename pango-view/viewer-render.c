@@ -32,8 +32,6 @@
 
 #include "viewer-render.h"
 
-const char *prog_name;
-
 gboolean opt_display = TRUE;
 int opt_dpi = 96;
 const char *opt_font = "";
@@ -79,7 +77,7 @@ fail (const char *format, ...)
   va_list vap;
   va_start (vap, format);
   msg = g_strdup_vprintf (format, vap);
-  g_printerr ("%s: %s\n", prog_name, msg);
+  g_printerr ("%s: %s\n", g_get_prgname (), msg);
 
   exit (1);
 }
@@ -630,11 +628,11 @@ show_version(const char *name G_GNUC_UNUSED,
 	     gpointer    data G_GNUC_UNUSED,
 	     GError    **error G_GNUC_UNUSED)
 {
-  g_printf("%s (%s) %s\n", prog_name, PACKAGE_NAME, PACKAGE_VERSION);
-  g_printf("module interface version: %s\n", MODULE_VERSION);
+  g_printf("%s (%s) %s\n", g_get_prgname (), PACKAGE_NAME, PACKAGE_VERSION);
+  g_printf("\nPango module interface version: %s\n", MODULE_VERSION);
 
   if (PANGO_VERSION != pango_version())
-    g_printf("\nLinked Pango library has a different version: %s\n", pango_version_string ());
+    g_printf("Linked Pango library has a different version: %s\n", pango_version_string ());
 
   exit(0);
 }
@@ -715,7 +713,6 @@ parse_options (int argc, char *argv[])
   size_t len;
   const PangoViewer **viewer;
 
-  prog_name = g_path_get_basename (argv[0]);
   context = g_option_context_new ("- FILE");
   g_option_context_add_main_entries (context, entries, NULL);
 
@@ -744,7 +741,7 @@ parse_options (int argc, char *argv[])
       if (opt_text && argc != 1)
 	fail ("When specifying --text, no file should be given");
 
-      g_printerr ("Usage: %s [OPTION...] FILE\n", prog_name);
+      g_printerr ("Usage: %s [OPTION...] FILE\n", g_get_prgname ());
       exit (1);
     }
 

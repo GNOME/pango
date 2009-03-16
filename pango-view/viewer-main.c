@@ -48,6 +48,7 @@ main (int    argc,
   gpointer surface;
 
   g_type_init();
+  g_set_prgname ("pango-view");
   setlocale (LC_ALL, "");
   parse_options (argc, argv);
 

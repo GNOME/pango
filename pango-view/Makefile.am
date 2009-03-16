@@ -37,6 +37,7 @@ INCLUDES =				\
 	$(X_CFLAGS)
 
 #########################################################
+
 bin_PROGRAMS = pango-view
 pango_view_SOURCES =					\
 	viewer-render.h					\
@@ -80,6 +81,31 @@ pango_view_LDADD +=					\
 	../pango/libpangocairo-$(PANGO_API_VERSION).la	\
 	$(CAIRO_LIBS)
 endif
+
+#########################################################
+
+MAINTAINERCLEANFILES = pango-view.1
+
+dist_man_MANS = pango-view.1
+
+$(srcdir)/pango-view.1: ../configure.in $(pango_view_SOURCES)
+	$(MAKE) $(AM_MAKEFLAGS) pango-view
+	@echo "Creating $@ using help2man(1)"
+	@$(top_builddir)/missing --run \
+	   help2man --no-info --section=1 \
+		    --help-option="--help-all" --output="$@.tmp" \
+		    --name 'Pango text viewer' ./pango-view \
+	 && mv "$@.tmp" "$@" \
+	  || ($(RM) "$@"; \
+	      echo Failed to update pango-view.1, the man page may be outdated >&2; \
+	      (test -f "$@" || echo help2man is required to generate this file. >> "$@"));
+
+install-data-hook:
+	@cd "$(DESTDIR)$(man1dir)" && gzip -c pango-view.1 > preload.1.gz && $(RM) preload.1
+
+uninstall-hook:
+	$(RM) "$(DESTDIR)$(man1dir)/pango-view.1.gz"
+
 #########################################################
 
 BUILT_SOURCES = pangorc
