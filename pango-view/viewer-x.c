@@ -182,11 +182,7 @@ x_view_display (gpointer instance,
   XRectangle  r;
   Region update_region;
   unsigned int quit_keycode;
-  unsigned int borders_keycode;
-  gboolean show_borders = FALSE;
-
-  if (state)
-    show_borders = GPOINTER_TO_UINT (state) == 0xdeadbeef;
+  unsigned int annotate_keycode;
 
   /* force a full redraw */
   update_region = XCreateRegion ();
@@ -196,7 +192,7 @@ x_view_display (gpointer instance,
   r.height = height;
   XUnionRectWithRegion (&r, update_region, update_region);
 
-  borders_keycode = XKeysymToKeycode(x->display, 'B');
+  annotate_keycode = XKeysymToKeycode(x->display, 'B');
   quit_keycode = XKeysymToKeycode(x->display, 'Q');
 
   while (1)
@@ -208,11 +204,10 @@ x_view_display (gpointer instance,
       switch (xev.xany.type) {
       case KeyPress:
 	if (xev.xkey.keycode == quit_keycode)
-	  return NULL;
-	else if (xev.xkey.keycode == borders_keycode)
+	  return GINT_TO_POINTER (-1);
+	else if (xev.xkey.keycode == annotate_keycode)
 	  {
-	    show_borders = !show_borders;
-	    return GUINT_TO_POINTER (show_borders ? 0xdeadbeef : 0xbe);
+	    return GUINT_TO_POINTER (GPOINTER_TO_INT (state) + 1);
 	  }
 	break;
       case Expose:

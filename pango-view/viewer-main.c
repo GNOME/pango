@@ -128,7 +128,7 @@ main (int    argc,
 	  while (1)
 	    {
 	      state = view->display (instance, surface, window, width, height, state);
-	      if (!state)
+	      if (state == GINT_TO_POINTER (-1))
 		break;
 
 	      view->render (instance, surface, context, &width, &height, state);

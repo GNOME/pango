@@ -133,15 +133,15 @@ render_callback (PangoLayout *layout,
 		 int          x,
 		 int          y,
 		 gpointer     context,
-		 gpointer     data)
+		 gpointer     state)
 {
   cairo_t *cr = (cairo_t *) context;
-  gboolean show_borders = GPOINTER_TO_UINT (data) == 0xdeadbeef;
+  int annotate = GPOINTER_TO_INT (state) % 3;
 
   cairo_save (cr);
   cairo_translate (cr, x, y);
 
-  if (show_borders)
+  if (annotate)
     {
       cairo_pattern_t *pattern;
       PangoRectangle ink, logical;
@@ -150,68 +150,71 @@ render_callback (PangoLayout *layout,
 
       pango_layout_get_extents (layout, &ink, &logical);
 
-      /* draw resolved gravity "roof" in blue */
-      cairo_save (cr);
-      cairo_translate (cr,
-		       (double)logical.x / PANGO_SCALE,
-		       (double)logical.y / PANGO_SCALE);
-      cairo_scale     (cr,
-		       (double)logical.width / PANGO_SCALE * 0.5,
-		       (double)logical.height / PANGO_SCALE * 0.5);
-      cairo_translate   (cr,  1.0,  1.0);
-      cairo_rotate (cr,
-	pango_gravity_to_rotation (
-	  pango_context_get_gravity (
-	    pango_layout_get_context (layout))));
-      cairo_move_to     (cr, -1.0, -1.0);
-      cairo_rel_line_to (cr, +1.0, -0.2); /* /   */
-      cairo_rel_line_to (cr, +1.0, +0.2); /*   \ */
-      cairo_close_path  (cr);             /*  -  */
-      pattern = cairo_pattern_create_linear (0, -1.0, 0, -1.2);
-      cairo_pattern_add_color_stop_rgba (pattern, 0.0, 0.0, 0.0, 1.0, 0.0);
-      cairo_pattern_add_color_stop_rgba (pattern, 1.0, 0.0, 0.0, 1.0, 0.15);
-      cairo_set_source (cr, pattern);
-      cairo_fill (cr);
-      /* once more, without close_path this time */
-      cairo_move_to     (cr, -1.0, -1.0);
-      cairo_rel_line_to (cr, +1.0, -0.2); /* /   */
-      cairo_rel_line_to (cr, +1.0, +0.2); /*   \ */
-      /* silly line_width is not locked :(. get rid of scale. */
-      cairo_restore (cr);
-      cairo_save (cr);
-      cairo_set_source_rgba (cr, 0.0, 0.0, 0.7, 0.2);
-      cairo_stroke (cr);
-      cairo_restore (cr);
+      if (annotate >= 2)
+        {
+	  /* draw resolved gravity "roof" in blue */
+	  cairo_save (cr);
+	  cairo_translate (cr,
+			   (double)logical.x / PANGO_SCALE,
+			   (double)logical.y / PANGO_SCALE);
+	  cairo_scale     (cr,
+			   (double)logical.width / PANGO_SCALE * 0.5,
+			   (double)logical.height / PANGO_SCALE * 0.5);
+	  cairo_translate   (cr,  1.0,  1.0);
+	  cairo_rotate (cr,
+	    pango_gravity_to_rotation (
+	      pango_context_get_gravity (
+		pango_layout_get_context (layout))));
+	  cairo_move_to     (cr, -1.0, -1.0);
+	  cairo_rel_line_to (cr, +1.0, -0.2); /* /   */
+	  cairo_rel_line_to (cr, +1.0, +0.2); /*   \ */
+	  cairo_close_path  (cr);             /*  -  */
+	  pattern = cairo_pattern_create_linear (0, -1.0, 0, -1.2);
+	  cairo_pattern_add_color_stop_rgba (pattern, 0.0, 0.0, 0.0, 1.0, 0.0);
+	  cairo_pattern_add_color_stop_rgba (pattern, 1.0, 0.0, 0.0, 1.0, 0.15);
+	  cairo_set_source (cr, pattern);
+	  cairo_fill (cr);
+	  /* once more, without close_path this time */
+	  cairo_move_to     (cr, -1.0, -1.0);
+	  cairo_rel_line_to (cr, +1.0, -0.2); /* /   */
+	  cairo_rel_line_to (cr, +1.0, +0.2); /*   \ */
+	  /* silly line_width is not locked :(. get rid of scale. */
+	  cairo_restore (cr);
+	  cairo_save (cr);
+	  cairo_set_source_rgba (cr, 0.0, 0.0, 0.7, 0.2);
+	  cairo_stroke (cr);
+	  cairo_restore (cr);
 
 
-      /* draw block progression arrow in green */
-      cairo_save (cr);
-      cairo_translate (cr,
-		       (double)logical.x / PANGO_SCALE,
-		       (double)logical.y / PANGO_SCALE);
-      cairo_scale     (cr,
-		       (double)logical.width / PANGO_SCALE * 0.5,
-		       (double)logical.height / PANGO_SCALE * 0.5);
-      cairo_translate   (cr,  1.0,  1.0);
-      cairo_move_to     (cr, -0.4, -0.7);
-      cairo_rel_line_to (cr, +0.8,  0.0); /*  --   */
-      cairo_rel_line_to (cr,  0.0, +0.9); /*    |  */
-      cairo_rel_line_to (cr, +0.4,  0.0); /*     - */
-      cairo_rel_line_to (cr, -0.8, +0.5); /*    /  */
-      cairo_rel_line_to (cr, -0.8, -0.5); /*  \    */
-      cairo_rel_line_to (cr, +0.4,  0.0); /* -     */
-      cairo_close_path  (cr);             /*  |    */
-      pattern = cairo_pattern_create_linear (0, -0.7, 0, 0.7);
-      cairo_pattern_add_color_stop_rgba (pattern, 0.0, 0.0, 1.0, 0.0, 0.0);
-      cairo_pattern_add_color_stop_rgba (pattern, 1.0, 0.0, 1.0, 0.0, 0.15);
-      cairo_set_source (cr, pattern);
-      cairo_fill_preserve (cr);
-      /* silly line_width is not locked :(. get rid of scale. */
-      cairo_restore (cr);
-      cairo_save (cr);
-      cairo_set_source_rgba (cr, 0.0, 0.7, 0.0, 0.2);
-      cairo_stroke (cr);
-      cairo_restore (cr);
+	  /* draw block progression arrow in green */
+	  cairo_save (cr);
+	  cairo_translate (cr,
+			   (double)logical.x / PANGO_SCALE,
+			   (double)logical.y / PANGO_SCALE);
+	  cairo_scale     (cr,
+			   (double)logical.width / PANGO_SCALE * 0.5,
+			   (double)logical.height / PANGO_SCALE * 0.5);
+	  cairo_translate   (cr,  1.0,  1.0);
+	  cairo_move_to     (cr, -0.4, -0.7);
+	  cairo_rel_line_to (cr, +0.8,  0.0); /*  --   */
+	  cairo_rel_line_to (cr,  0.0, +0.9); /*    |  */
+	  cairo_rel_line_to (cr, +0.4,  0.0); /*     - */
+	  cairo_rel_line_to (cr, -0.8, +0.5); /*    /  */
+	  cairo_rel_line_to (cr, -0.8, -0.5); /*  \    */
+	  cairo_rel_line_to (cr, +0.4,  0.0); /* -     */
+	  cairo_close_path  (cr);             /*  |    */
+	  pattern = cairo_pattern_create_linear (0, -0.7, 0, 0.7);
+	  cairo_pattern_add_color_stop_rgba (pattern, 0.0, 0.0, 1.0, 0.0, 0.0);
+	  cairo_pattern_add_color_stop_rgba (pattern, 1.0, 0.0, 1.0, 0.0, 0.15);
+	  cairo_set_source (cr, pattern);
+	  cairo_fill_preserve (cr);
+	  /* silly line_width is not locked :(. get rid of scale. */
+	  cairo_restore (cr);
+	  cairo_save (cr);
+	  cairo_set_source_rgba (cr, 0.0, 0.7, 0.0, 0.2);
+	  cairo_stroke (cr);
+	  cairo_restore (cr);
+	}
 
       /* draw baselines with line direction arrow in orange */
       cairo_save (cr);
