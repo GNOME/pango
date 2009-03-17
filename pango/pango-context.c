@@ -1067,6 +1067,9 @@ get_shaper_and_font_foreach (PangoFontset *fontset G_GNUC_UNUSED,
   GetShaperFontInfo *info = data;
   GSList *l;
 
+  if (G_UNLIKELY (!font))
+    return FALSE;
+
   for (l = info->engines; l; l = l->next)
     {
       PangoEngineShape *engine = l->data;
