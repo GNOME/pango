@@ -23,6 +23,7 @@
 
 #include "pango-break.h"
 #include "pango-modules.h"
+#include "pango-script-private.h"
 #include <string.h>
 
 #define PARAGRAPH_SEPARATOR 0x2029
@@ -1864,7 +1865,7 @@ pango_get_log_attrs (const char    *text,
   static guint engine_type_id = 0;
   static guint render_type_id = 0;
   PangoAnalysis analysis = { NULL };
-  PangoScriptIter *iter;
+  PangoScriptIter iter;
 
   g_return_if_fail (length == 0 || text != NULL);
   g_return_if_fail (log_attrs != NULL);
@@ -1883,17 +1884,17 @@ pango_get_log_attrs (const char    *text,
 
   chars_broken = 0;
 
-  iter = pango_script_iter_new (text, length);
-  pango_script_iter_get_range (iter, &range_start, &range_end, &script);
+  _pango_script_iter_init (&iter, text, length);
+  pango_script_iter_get_range (&iter, &range_start, &range_end, &script);
   range_engine = (PangoEngineLang*) pango_map_get_engine (lang_map, script);
   g_assert (range_start == text);
 
-  while (pango_script_iter_next (iter))
+  while (pango_script_iter_next (&iter))
     {
       const char *run_start, *run_end;
       PangoEngineLang* run_engine;
 
-      pango_script_iter_get_range (iter, &run_start, &run_end, &script);
+      pango_script_iter_get_range (&iter, &run_start, &run_end, &script);
       run_engine = (PangoEngineLang*) pango_map_get_engine (lang_map, script);
       g_assert (range_end == run_start);
 
@@ -1909,7 +1910,7 @@ pango_get_log_attrs (const char    *text,
 	}
       range_end = run_end;
     }
-  pango_script_iter_free (iter);
+  _pango_script_iter_fini (&iter);
 
   g_assert (length < 0 || range_end == text + length);
 

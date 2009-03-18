@@ -58,29 +58,7 @@
 #include <string.h>
 
 #include "pango-script.h"
-
-#define PAREN_STACK_DEPTH 128
-
-typedef struct _ParenStackEntry ParenStackEntry;
-
-struct _ParenStackEntry
-{
-  int pair_index;
-  PangoScript script_code;
-};
-
-struct _PangoScriptIter
-{
-  const gchar *text_start;
-  const gchar *text_end;
-
-  const gchar *script_start;
-  const gchar *script_end;
-  PangoScript script_code;
-
-  ParenStackEntry paren_stack[PAREN_STACK_DEPTH];
-  int paren_sp;
-};
+#include "pango-script-private.h"
 
 /**
  * pango_script_for_unichar:
@@ -106,29 +84,11 @@ pango_script_for_unichar (gunichar ch)
 
 /**********************************************************************/
 
-/**
- * pango_script_iter_new:
- * @text: a UTF-8 string
- * @length: length of @text, or -1 if @text is nul-terminated.
- *
- * Create a new #PangoScriptIter, used to break a string of
- * Unicode into runs by text. No copy is made of @text, so
- * the caller needs to make sure it remains valid until
- * the iterator is freed with pango_script_iter_free ().x
- *
- * Return value: the new script iterator, initialized
- *  to point at the first range in the text, which should be
- *  freed with pango_script_iter_free(). If the string is
- *  empty, it will point at an empty range.
- *
- * Since: 1.4
- **/
 PangoScriptIter *
-pango_script_iter_new (const char *text,
-		       int         length)
+_pango_script_iter_init (PangoScriptIter *iter,
+	                 const char      *text,
+			 int              length)
 {
-  PangoScriptIter *iter = g_slice_new (PangoScriptIter);
-
   iter->text_start = text;
   if (length >= 0)
     iter->text_end = text + length;
@@ -147,6 +107,35 @@ pango_script_iter_new (const char *text,
 }
 
 /**
+ * pango_script_iter_new:
+ * @text: a UTF-8 string
+ * @length: length of @text, or -1 if @text is nul-terminated.
+ *
+ * Create a new #PangoScriptIter, used to break a string of
+ * Unicode into runs by text. No copy is made of @text, so
+ * the caller needs to make sure it remains valid until
+ * the iterator is freed with pango_script_iter_free().
+ *
+ * Return value: the new script iterator, initialized
+ *  to point at the first range in the text, which should be
+ *  freed with pango_script_iter_free(). If the string is
+ *  empty, it will point at an empty range.
+ *
+ * Since: 1.4
+ **/
+PangoScriptIter *
+pango_script_iter_new (const char *text,
+		       int         length)
+{
+  return _pango_script_iter_init (g_slice_new (PangoScriptIter), text, length);
+}
+
+void
+_pango_script_iter_fini (PangoScriptIter *iter)
+{
+}
+
+/**
  * pango_script_iter_free:
  * @iter: a #PangoScriptIter
  *
@@ -157,6 +146,7 @@ pango_script_iter_new (const char *text,
 void
 pango_script_iter_free (PangoScriptIter *iter)
 {
+  _pango_script_iter_fini (iter);
   g_slice_free (PangoScriptIter, iter);
 }
 

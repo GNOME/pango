@@ -29,6 +29,7 @@
 #include "pango-engine.h"
 #include "pango-engine-private.h"
 #include "pango-modules.h"
+#include "pango-script-private.h"
 
 struct _PangoContext
 {
@@ -685,7 +686,7 @@ struct _ItemizeState
 
   ChangedFlags changed;
 
-  PangoScriptIter *script_iter;
+  PangoScriptIter script_iter;
   const char *script_end;
   PangoScript script;
 
@@ -850,8 +851,8 @@ itemize_state_init (ItemizeState      *state,
 
   /* Initialize the script iterator
    */
-  state->script_iter = pango_script_iter_new (text + start_index, length);
-  pango_script_iter_get_range (state->script_iter, NULL,
+  _pango_script_iter_init (&state->script_iter, text + start_index, length);
+  pango_script_iter_get_range (&state->script_iter, NULL,
 			       &state->script_end, &state->script);
 
   update_end (state);
@@ -899,8 +900,8 @@ itemize_state_next (ItemizeState *state)
 
   if (state->run_end == state->script_end)
     {
-      pango_script_iter_next (state->script_iter);
-      pango_script_iter_get_range (state->script_iter, NULL,
+      pango_script_iter_next (&state->script_iter);
+      pango_script_iter_get_range (&state->script_iter, NULL,
 				   &state->script_end, &state->script);
       state->changed |= SCRIPT_CHANGED;
     }
@@ -1410,7 +1411,7 @@ itemize_state_finish (ItemizeState *state)
   g_free (state->embedding_levels);
   if (state->free_attr_iter)
     pango_attr_iterator_destroy (state->attr_iter);
-  pango_script_iter_free (state->script_iter);
+  _pango_script_iter_fini (&state->script_iter);
   pango_font_description_free (state->font_desc);
 
   itemize_state_reset_shape_engines (state);
