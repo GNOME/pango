@@ -7,7 +7,7 @@ extern const PangoViewer pangoft2_viewer;
 extern const PangoViewer pangox_viewer;
 
 const PangoViewer *viewers[] = {
-#ifdef HAVE_CAIRO_XLIB
+#ifdef HAVE_CAIRO
   &pangocairo_viewer,
 #endif
 #ifdef HAVE_XFT
