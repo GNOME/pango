@@ -183,7 +183,7 @@ static const IndicOTCharClass teluCharClasses[] =
     _bb, _bb, _bb, _bb, _xx, _bb, _bb, _bb, _bb, _bb, _xx, _xx, _xx, _xx, _da, _da, /* 0C30 - 0C3F */
     _da, _dr, _dr, _dr, _dr, _xx, _da, _da, _s1, _xx, _da, _da, _da, _vr, _xx, _xx, /* 0C40 - 0C4F */
     _xx, _xx, _xx, _xx, _xx, _da, _db, _xx, _bb, _bb, _xx, _xx, _xx, _xx, _xx, _xx, /* 0C50 - 0C5F */
-    _iv, _iv, _db, _db, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx  /* 0C60 - 0C6F */
+    _iv, _iv, _db, _db, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, /* 0C60 - 0C6F */
     _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx  /* 0C70 - 0C7F */
 };
 
@@ -218,8 +218,8 @@ static const IndicOTCharClass mlymCharClasses[] =
     _cn, _cn, _ct, _ct, _ct, _pb, _ct, _ct, _ct, _ct, _xx, _xx, _xx, _xx, _dr, _dr, /* 0D30 - 0D3F */
     _dr, _dr, _dr, _dr, _dr, _xx, _dl, _dl, _dl, _xx, _s1, _s2, _s3, _vr, _xx, _xx, /* 0D40 - 0D4F */
     _xx, _xx, _xx, _xx, _xx, _xx, _xx, _dr, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, /* 0D50 - 0D5F */
-    _iv, _iv, _db, _db, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx  /* 0D60 - 0D6F */
-    _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, /* 0D70 - 0D7F */
+    _iv, _iv, _db, _db, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, /* 0D60 - 0D6F */
+    _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx  /* 0D70 - 0D7F */
 };
 
 static const IndicOTCharClass sinhCharClasses[] =
