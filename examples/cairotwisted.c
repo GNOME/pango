@@ -211,6 +211,8 @@ typedef double parametrization_t;
 
 /* Compute parametrization info.  That is, for each part of the 
  * cairo path, tags it with its length.
+ *
+ * Free returned value with g_free().
  */
 static parametrization_t *
 parametrize_path (cairo_path_t *path)
@@ -219,7 +221,7 @@ parametrize_path (cairo_path_t *path)
   cairo_path_data_t *data, last_move_to, current_point;
   parametrization_t *parametrization;
 
-  parametrization = malloc (path->num_data * sizeof (parametrization[0]));
+  parametrization = g_malloc (path->num_data * sizeof (parametrization[0]));
 
   for (i=0; i < path->num_data; i += path->data[i].header.length) {
     data = &path->data[i];
@@ -454,6 +456,8 @@ map_path_onto (cairo_t *cr, cairo_path_t *path)
 		  (transform_point_func_t) point_on_path, &param);
 
   cairo_append_path (cr, current_path);
+
+  g_free (param.parametrization);
 }
 
 
