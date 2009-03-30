@@ -457,6 +457,7 @@ map_path_onto (cairo_t *cr, cairo_path_t *path)
 
   cairo_append_path (cr, current_path);
 
+  cairo_path_destroy (current_path);
   g_free (param.parametrization);
 }
 
@@ -531,6 +532,8 @@ draw_twisted (cairo_t *cr,
 
   draw_text (cr, x, y, font, text);
   map_path_onto (cr, path);
+
+  cairo_path_destroy (path);
 
   cairo_fill_preserve (cr);
 
