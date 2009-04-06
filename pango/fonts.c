@@ -519,7 +519,7 @@ pango_font_description_unset_fields (PangoFontDescription *desc,
 /**
  * pango_font_description_merge:
  * @desc: a #PangoFontDescription
- * @desc_to_merge: the #PangoFontDescription to merge from
+ * @desc_to_merge: the #PangoFontDescription to merge from, or %NULL
  * @replace_existing: if %TRUE, replace fields in @desc with the
  *   corresponding values from @desc_to_merge, even if they
  *   are already exist.
@@ -528,6 +528,8 @@ pango_font_description_unset_fields (PangoFontDescription *desc,
  * @desc.  If @replace_existing is %FALSE, only fields in @desc that
  * are not already set are affected. If %TRUE, then fields that are
  * already set will be replaced as well.
+ *
+ * If @desc_to_merge is %NULL, this function performs nothing.
  **/
 void
 pango_font_description_merge (PangoFontDescription       *desc,
@@ -537,7 +539,9 @@ pango_font_description_merge (PangoFontDescription       *desc,
   gboolean family_merged;
 
   g_return_if_fail (desc != NULL);
-  g_return_if_fail (desc_to_merge != NULL);
+
+  if (desc_to_merge == NULL)
+    return;
 
   family_merged = desc_to_merge->family_name && (replace_existing || !desc->family_name);
 
