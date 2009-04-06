@@ -3109,6 +3109,10 @@ struct _ParaBreakState
   int remaining_width;		/* Amount of space remaining on line; < 0 is infinite */
 };
 
+static gboolean
+should_ellipsize_current_line (PangoLayout    *layout,
+			       ParaBreakState *state);
+
 static PangoGlyphString *
 shape_run (PangoLayoutLine *line,
 	   ParaBreakState  *state,
@@ -3245,7 +3249,8 @@ process_item (PangoLayout     *layout,
     }
 
   if (!layout->single_paragraph &&
-      g_utf8_get_char (layout->text + item->offset) == LINE_SEPARATOR)
+      g_utf8_get_char (layout->text + item->offset) == LINE_SEPARATOR &&
+      !should_ellipsize_current_line (layout, state))
     {
       insert_run (line, state, item, TRUE);
       state->log_widths_offset += item->num_chars;
@@ -3654,7 +3659,7 @@ pango_layout_get_effective_attributes (PangoLayout *layout)
   PangoAttrList *attrs;
 
   if (layout->attrs)
-   attrs = pango_attr_list_copy (layout->attrs);
+    attrs = pango_attr_list_copy (layout->attrs);
   else
     attrs = pango_attr_list_new ();
 
