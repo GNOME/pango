@@ -669,6 +669,7 @@ pango_atsui_font_map_load_font (PangoFontMap               *fontmap,
 {
   PangoATSUIFontMap *atsuifontmap = (PangoATSUIFontMap *)fontmap;
   PangoATSUIFamily *font_family;
+  const gchar *family;
   gchar *name;
   gint size;
 
@@ -676,7 +677,9 @@ pango_atsui_font_map_load_font (PangoFontMap               *fontmap,
   if (size < 0)
     return NULL;
 
-  name = g_utf8_casefold (pango_font_description_get_family (description), -1);
+  family = pango_font_description_get_family (description);
+  family = family ? family : "";
+  name = g_utf8_casefold (family, -1);
   font_family = g_hash_table_lookup (atsuifontmap->families, name);
   g_free (name);
 

@@ -466,12 +466,14 @@ pango_x_font_map_load_font (PangoFontMap               *fontmap,
   PangoXFamily *font_family;
   PangoFont *result = NULL;
   GSList *tmp_list;
+  const gchar *family;
   gchar *name;
   gint size;
 
   g_return_val_if_fail (description != NULL, NULL);
 
-  name = g_ascii_strdown (pango_font_description_get_family (description), -1);
+  family = pango_font_description_get_family (description);
+  name = g_ascii_strdown (family ? family : "", -1);
   size = pango_font_description_get_size (description);
 
   if (size < 0)

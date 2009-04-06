@@ -90,7 +90,6 @@ pango_font_map_load_font  (PangoFontMap               *fontmap,
 			   const PangoFontDescription *desc)
 {
   g_return_val_if_fail (fontmap != NULL, NULL);
-  g_return_val_if_fail (pango_font_description_get_family (desc) != NULL, NULL);
 
   return PANGO_FONT_MAP_GET_CLASS (fontmap)->load_font (fontmap, context, desc);
 }
@@ -133,7 +132,6 @@ pango_font_map_load_fontset (PangoFontMap                 *fontmap,
 			     PangoLanguage                *language)
 {
   g_return_val_if_fail (fontmap != NULL, NULL);
-  g_return_val_if_fail (pango_font_description_get_family (desc) != NULL, NULL);
 
   return PANGO_FONT_MAP_GET_CLASS (fontmap)->load_fontset (fontmap, context, desc, language);
 }
@@ -180,12 +178,14 @@ pango_font_map_real_load_fontset (PangoFontMap               *fontmap,
 				  PangoLanguage              *language)
 {
   PangoFontDescription *tmp_desc = pango_font_description_copy_static (desc);
+  const char *family;
   char **families;
   int i;
   PangoFontsetSimple *fonts;
   static GHashTable *warned_fonts = NULL;
 
-  families = g_strsplit (pango_font_description_get_family (desc), ",", -1);
+  family = pango_font_description_get_family (desc);
+  families = g_strsplit (family ? family : "", ",", -1);
 
   fonts = pango_fontset_simple_new (language);
 
