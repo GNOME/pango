@@ -4343,6 +4343,15 @@ pango_layout_get_empty_extents_at_index (PangoLayout    *layout,
       PangoFontDescription *font_desc = NULL;
       gboolean free_font_desc = FALSE;
 
+      font_desc = pango_context_get_font_description (layout->context);
+
+      if (layout->font_desc)
+        {
+	  font_desc = pango_font_description_copy_static (font_desc);
+	  pango_font_description_merge (font_desc, layout->font_desc, TRUE);
+	  free_font_desc = TRUE;
+	}
+
       /* Find the font description for this line
        */
       if (layout->attrs)
@@ -4363,8 +4372,11 @@ pango_layout_get_empty_extents_at_index (PangoLayout    *layout,
 		  else
 		    base_font_desc = pango_context_get_font_description (layout->context);
 
-		  font_desc = pango_font_description_copy_static (base_font_desc);
-		  free_font_desc = TRUE;
+		  if (!free_font_desc)
+		    {
+		      font_desc = pango_font_description_copy_static (font_desc);
+		      free_font_desc = TRUE;
+		    }
 
 		  pango_attr_iterator_get_font (iter,
 						font_desc,
@@ -4378,13 +4390,6 @@ pango_layout_get_empty_extents_at_index (PangoLayout    *layout,
 	  while (pango_attr_iterator_next (iter));
 
 	  pango_attr_iterator_destroy (iter);
-	}
-      else
-	{
-	  if (layout->font_desc)
-	    font_desc = layout->font_desc;
-	  else
-	    font_desc = pango_context_get_font_description (layout->context);
 	}
 
       font = pango_context_load_font (layout->context, font_desc);
