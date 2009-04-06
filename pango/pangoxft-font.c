@@ -326,19 +326,23 @@ pango_xft_font_get_glyph_extents (PangoFont        *font,
 {
   PangoXftFont *xfont = (PangoXftFont *)font;
   PangoFcFont *fcfont = PANGO_FC_FONT (font);
+  gboolean empty = FALSE;
 
-  if (!fcfont->fontmap)		/* Display closed */
-    goto fallback;
-
-  if (glyph == PANGO_GLYPH_EMPTY)
+  if (G_UNLIKELY (!fcfont->fontmap))	/* Display closed */
     {
-    fallback:
       if (ink_rect)
 	ink_rect->x = ink_rect->width = ink_rect->y = ink_rect->height = 0;
       if (logical_rect)
 	logical_rect->x = logical_rect->width = logical_rect->y = logical_rect->height = 0;
       return;
     }
+
+  if (glyph == PANGO_GLYPH_EMPTY)
+    {
+      glyph = pango_fc_font_get_glyph (font, ' ');
+      empty = TRUE;
+    }
+
   if (glyph & PANGO_GLYPH_UNKNOWN_FLAG)
     {
       get_glyph_extents_missing (xfont, glyph, ink_rect, logical_rect);
@@ -349,6 +353,15 @@ pango_xft_font_get_glyph_extents (PangoFont        *font,
 	get_glyph_extents_xft (fcfont, glyph, ink_rect, logical_rect);
       else
 	get_glyph_extents_raw (xfont, glyph, ink_rect, logical_rect);
+    }
+
+  if (empty)
+    {
+      if (ink_rect)
+	ink_rect->x = ink_rect->y = ink_rect->height = ink_rect->width = 0;
+      if (logical_rect)
+	logical_rect->x = logical_rect->width = 0;
+      return;
     }
 }
 

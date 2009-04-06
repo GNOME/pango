@@ -318,14 +318,12 @@ pango_ft2_font_get_glyph_extents (PangoFont      *font,
 				  PangoRectangle *logical_rect)
 {
   PangoFT2GlyphInfo *info;
+  gboolean empty = FALSE;
 
   if (glyph == PANGO_GLYPH_EMPTY)
     {
-      if (ink_rect)
-	ink_rect->x = ink_rect->y = ink_rect->height = ink_rect->width = 0;
-      if (logical_rect)
-	logical_rect->x = logical_rect->y = logical_rect->height = logical_rect->width = 0;
-      return;
+      glyph = pango_fc_font_get_glyph (font, ' ');
+      empty = TRUE;
     }
 
   if (glyph & PANGO_GLYPH_UNKNOWN_FLAG)
@@ -367,6 +365,15 @@ pango_ft2_font_get_glyph_extents (PangoFont      *font,
     *ink_rect = info->ink_rect;
   if (logical_rect)
     *logical_rect = info->logical_rect;
+
+  if (empty)
+    {
+      if (ink_rect)
+	ink_rect->x = ink_rect->y = ink_rect->height = ink_rect->width = 0;
+      if (logical_rect)
+	logical_rect->x = logical_rect->width = 0;
+      return;
+    }
 }
 
 /**
