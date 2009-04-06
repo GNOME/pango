@@ -5166,17 +5166,20 @@ pango_layout_line_postprocess (PangoLayoutLine *line,
 			       ParaBreakState  *state,
 			       gboolean         wrapped)
 {
-  PangoLayoutRun *last_run = line->runs->data;
   gboolean ellipsized = FALSE;
   
-  /* NB: the runs are in reverse order at this point, since we prepended them to the list
+  DEBUG ("postprocessing", line, state);
+
+  /* Truncate the logical-final whitespace in the line if we broke the line at it
    */
+  if (wrapped)
+    /* The runs are in reverse order at this point, since we prepended them to the list.
+     * So, the first run is the last logical run. */
+    zero_line_final_space (line, state, line->runs->data);
 
   /* Reverse the runs
    */
   line->runs = g_slist_reverse (line->runs);
-
-  DEBUG ("postprocessing", line, state);
 
   /* Ellipsize the line if necessary
    */
@@ -5185,11 +5188,6 @@ pango_layout_line_postprocess (PangoLayoutLine *line,
     {
       ellipsized = _pango_layout_line_ellipsize (line, state->attrs, state->line_width);
     }
-
-  /* Truncate the logical-final whitespace in the line if we broke the line at it
-   */
-  if (wrapped)
-    zero_line_final_space (line, state, last_run);
 
   DEBUG ("after removing final space", line, state);
 
