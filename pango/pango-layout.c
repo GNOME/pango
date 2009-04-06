@@ -3186,11 +3186,11 @@ debug (const char *where, PangoLayoutLine *line, ParaBreakState *state)
 {
   int line_width = pango_layout_line_get_width (line);
 
-  g_message ("rem %d + line %d = %d		%s",
-	     state->remaining_width,
-	     line_width,
-	     state->remaining_width + line_width,
-	     where);
+  g_debug ("rem %d + line %d = %d		%s",
+	   state->remaining_width,
+	   line_width,
+	   state->remaining_width + line_width,
+	   where);
 }
 #else
 # define DEBUG(where, line, state) do { } while (0)

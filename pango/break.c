@@ -857,7 +857,7 @@ pango_default_break (const gchar   *text,
 	    /* We apply Rules WB1 and WB2 at the end of the function */
 
 	    if (prev_wc == 0x3031 && wc == 0x41)
-	      g_message ("Y %d %d", prev_WB_type, WB_type);
+	      g_debug ("Y %d %d", prev_WB_type, WB_type);
 	    if (prev_WB_type == WB_NewlineCRLF && prev_WB_i + 1 == i)
 	      {
 	        /* The extra check for prev_WB_i is to correctly handle sequences like
