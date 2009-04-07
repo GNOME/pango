@@ -47,7 +47,7 @@ tags. &lt;span&gt; has the following attributes:
 <variablelist><title>&lt;span&gt; attributes</title>
 
 <varlistentry>
-<term>font</term>
+<term>font<footnote id='since_1_21'><para>Since 1.21</para></footnote></term>
 <term>font_desc</term>
 <listitem><para>
 A font description string, such as "Sans Italic 12". See 
@@ -67,7 +67,7 @@ A font family name
 </varlistentry>
 
 <varlistentry>
-<term>font_size</term>
+<term>font_size<footnoteref linkend='since_1_21'/></term>
 <term>size</term>
 <listitem><para>
 Font size in 1024ths of a point, or one of the absolute sizes 
@@ -82,7 +82,7 @@ font description using 'font'; you can use
 </varlistentry>
 
 <varlistentry>
-<term>font_style</term>
+<term>font_style<footnoteref linkend='since_1_21'/></term>
 <term>style</term>
 <listitem><para>
 One of 'normal', 'oblique', 'italic'
@@ -90,7 +90,7 @@ One of 'normal', 'oblique', 'italic'
 </varlistentry>
 
 <varlistentry>
-<term>font_weight</term>
+<term>font_weight<footnoteref linkend='since_1_21'/></term>
 <term>weight</term>
 <listitem><para>
 One of 'ultralight', 'light', 'normal', 'bold', 'ultrabold', 'heavy',
@@ -99,7 +99,7 @@ or a numeric weight
 </varlistentry>
 
 <varlistentry>
-<term>font_variant</term>
+<term>font_variant<footnoteref linkend='since_1_21'/></term>
 <term>variant</term>
 <listitem><para>
 One of 'normal' or 'smallcaps'
@@ -107,7 +107,7 @@ One of 'normal' or 'smallcaps'
 </varlistentry>
 
 <varlistentry>
-<term>font_stretch</term>
+<term>font_stretch<footnoteref linkend='since_1_21'/></term>
 <term>stretch</term>
 <listitem><para>
 One of 'ultracondensed', 'extracondensed', 'condensed',
@@ -118,7 +118,7 @@ One of 'ultracondensed', 'extracondensed', 'condensed',
 
 <varlistentry>
 <term>foreground</term>
-<term>fgcolor</term>
+<term>fgcolor<footnoteref linkend='since_1_21'/></term>
 <term>color</term>
 <listitem><para>
 An RGB color specification such as '#00FF00' or a color name such as 
@@ -128,7 +128,7 @@ An RGB color specification such as '#00FF00' or a color name such as
 
 <varlistentry>
 <term>background</term>
-<term>bgcolor</term>
+<term>bgcolor<footnoteref linkend='since_1_21'/></term>
 <listitem><para>
 An RGB color specification such as '#00FF00' or a color name such as 
 'red'

@@ -124,6 +124,13 @@ The #GObject type for #PangoScript
 
 </para>
 
+@text_start: 
+@text_end: 
+@script_start: 
+@script_end: 
+@script_code: 
+@paren_stack: 
+@paren_sp: 
 
 <!-- ##### FUNCTION pango_script_for_unichar ##### -->
 <para>
