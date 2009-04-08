@@ -1565,6 +1565,11 @@ pango_fc_font_map_new_font (PangoFcFontMap    *fcfontmap,
     return NULL;
 
   fcfont->matrix = key.matrix;
+  /* In case the backend didn't set the fontmap */
+  if (!fcfont->fontmap)
+    g_object_set (fcfont,
+		  "fontmap", fcfontmap,
+		  NULL);
 
   /* cache it on fontmap */
   pango_fc_font_map_add (fcfontmap, &key, fcfont);
