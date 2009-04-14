@@ -34,6 +34,7 @@ IGNORE_HFILES=			\
 	pango-glyph-item-private.h	\
 	pango-layout-private.h	\
 	pango-script-table.h	\
+	pango-script-private.h	\
 	pangofc-private.h	\
 	pangoft2-private.h	\
 	pangowin32-private.h	\
