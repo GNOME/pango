@@ -1,3 +1,22 @@
+Overview of changes between 1.24.0 and 1.24.1
+=============================================
+- Fix a couple of crashers
+- Fix minor pangofc API semantics breakage
+- Better handle SFNT fonts in dfont containers
+- Improved docs
+- Improved Indic shaper for new Unicode 5.1 characters
+- Misc bug fixes
+- Bugs fixed in this release:
+
+    Bug 577952 – Error loading {GDEF,GSUB,GPOS} table 0x6EAD
+    Bug 578336 – ABI breakage from 1.22 to 1.24 in fontmap field
+    	of PangoFcFont
+    Bug 556132 – gnome-panel crashed with SIGSEGV in
+    	g_cclosure_marshal_VOID__BOXED()
+    Bug 571291 – Unicode 5.1 support in pango - Indic Lanuages
+    Bug 576298 – Fails to link pango-view if --without-x is specified
+    	but cairo has X11 support
+
 Overview of changes between 1.23.0 and 1.24.0
 =============================================
 - pango-view improvements:

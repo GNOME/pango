@@ -624,7 +624,7 @@ pango_win32_font_map_load_font (PangoFontMap               *fontmap,
 
   family = pango_font_description_get_family (description);
   family = family ? family : "";
-  PING (("name=%s", family))
+  PING (("name=%s", family));
 
   win32family = g_hash_table_lookup (win32fontmap->families, family);
   if (win32family)
