@@ -28,7 +28,6 @@
 
 #include "harfbuzz-global.h"
 #include "harfbuzz-buffer.h"
-#include "harfbuzz-gdef.h"
 #include "harfbuzz-gsub.h"
 #include "harfbuzz-gpos.h"
 #include "harfbuzz-open.h"

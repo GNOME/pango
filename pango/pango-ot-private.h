@@ -39,8 +39,8 @@ struct _PangoOTInfo
 
   FT_Face face;
 
+  hb_ot_layout_t *layout;
   HB_GSUB gsub;
-  HB_GDEF gdef;
   HB_GPOS gpos;
 };
 
@@ -80,7 +80,7 @@ struct _PangoOTBuffer
   guint applied_gpos : 1;
 };
 
-HB_GDEF pango_ot_info_get_gdef (PangoOTInfo *info);
+hb_ot_layout_t *_pango_ot_info_get_layout (PangoOTInfo *info);
 HB_GSUB pango_ot_info_get_gsub (PangoOTInfo *info);
 HB_GPOS pango_ot_info_get_gpos (PangoOTInfo *info);
 

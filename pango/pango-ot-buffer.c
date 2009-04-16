@@ -325,8 +325,7 @@ pango_ot_buffer_output (const PangoOTBuffer *buffer,
 			PangoGlyphString    *glyphs)
 {
   FT_Face face;
-  PangoOTInfo *info;
-  HB_GDEF gdef = NULL;
+  hb_ot_layout_t *layout;
   unsigned int i;
   int last_cluster;
 
@@ -352,8 +351,7 @@ pango_ot_buffer_output (const PangoOTBuffer *buffer,
       last_cluster = glyphs->log_clusters[i];
     }
 
-  info = pango_ot_info_get (face);
-  gdef = pango_ot_info_get_gdef (info);
+  layout = _pango_ot_info_get_layout (pango_ot_info_get (face));
 
   /* Apply default positioning */
   for (i = 0; i < (unsigned int)glyphs->num_glyphs; i++)
@@ -362,12 +360,8 @@ pango_ot_buffer_output (const PangoOTBuffer *buffer,
 	{
 	  PangoRectangle logical_rect;
 
-	  HB_UShort property;
-
 	  if (buffer->zero_width_marks &&
-	      gdef &&
-	      HB_GDEF_Get_Glyph_Property (gdef, glyphs->glyphs[i].glyph, &property) == HB_Err_Ok &&
-	      (property == HB_GDEF_MARK || (property & HB_LOOKUP_FLAG_IGNORE_SPECIAL_MARKS) != 0))
+	      hb_ot_layout_get_glyph_class (layout, glyphs->glyphs[i].glyph) == HB_OT_LAYOUT_GLYPH_CLASS_MARK)
 	    {
 	      glyphs->glyphs[i].geometry.width = 0;
 	    }
