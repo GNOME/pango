@@ -19,3 +19,5 @@ pango_khmer_fc_la_LIBADD = $(pangoft2libs)
 pango_khmer_fc_la_SOURCES = $(fc_sources)
 libpango_khmer_fc_la_SOURCES = $(fc_sources)
 libpango_khmer_fc_la_CFLAGS = -DPANGO_MODULE_PREFIX=_pango_khmer_fc
+
+-include $(top_srcdir)/git.mk

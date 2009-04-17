@@ -21,3 +21,5 @@ pango_syriac_fc_la_LIBADD = $(pangoft2libs)
 pango_syriac_fc_la_SOURCES = $(fc_sources)
 libpango_syriac_fc_la_SOURCES = $(fc_sources)
 libpango_syriac_fc_la_CFLAGS = -DPANGO_MODULE_PREFIX=_pango_syriac_fc
+
+-include $(top_srcdir)/git.mk

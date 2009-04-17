@@ -42,3 +42,5 @@ pango_indic_lang_la_LIBADD = $(pangolibs)
 pango_indic_lang_la_SOURCES = $(lang_sources)
 libpango_indic_lang_la_SOURCES = $(lang_sources)
 libpango_indic_lang_la_CFLAGS = -DPANGO_MODULE_PREFIX=_pango_indic_lang
+
+-include $(top_srcdir)/git.mk

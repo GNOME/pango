@@ -29,3 +29,5 @@ EXTRA_DIST = 			\
 	fribidi_tab_char_type_2.i \
         fribidi_types.i
 
+
+-include $(top_srcdir)/git.mk

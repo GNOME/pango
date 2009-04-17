@@ -39,3 +39,5 @@ pango_arabic_lang_la_LIBADD = $(pangolibs)
 pango_arabic_lang_la_SOURCES = $(lang_sources)
 libpango_arabic_lang_la_SOURCES = $(lang_sources)
 libpango_arabic_lang_la_CFLAGS = -DPANGO_MODULE_PREFIX=_pango_arabic_lang
+
+-include $(top_srcdir)/git.mk

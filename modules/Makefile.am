@@ -72,3 +72,5 @@ dynamic-modules:
         done
 
 .PHONY: included-modules dynamic-modules
+
+-include $(top_srcdir)/git.mk

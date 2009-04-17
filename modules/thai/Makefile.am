@@ -39,3 +39,5 @@ pango_thai_lang_la_SOURCES = $(lang_sources)
 libpango_thai_lang_la_SOURCES = $(lang_sources)
 libpango_thai_lang_la_CFLAGS = -DPANGO_MODULE_PREFIX=_pango_thai_lang $(LIBTHAI_CFLAGS)
 libpango_thai_lang_la_LIBADD = $(LIBTHAI_LIBS)
+
+-include $(top_srcdir)/git.mk

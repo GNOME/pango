@@ -18,3 +18,5 @@ pango_tibetan_fc_la_LIBADD = $(pangoft2libs)
 pango_tibetan_fc_la_SOURCES = $(tibetan_fc_sources)
 libpango_tibetan_fc_la_SOURCES = $(tibetan_fc_sources)
 libpango_tibetan_fc_la_CFLAGS = -DPANGO_MODULE_PREFIX=_pango_tibetan_fc
+
+-include $(top_srcdir)/git.mk

@@ -72,3 +72,5 @@ libpango_basic_atsui_la_CFLAGS = -DPANGO_MODULE_PREFIX=_pango_basic_atsui
 EXTRA_DIST =		\
 	tables-big.i	\
 	tables-small.i
+
+-include $(top_srcdir)/git.mk

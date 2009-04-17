@@ -20,3 +20,5 @@ pango_hebrew_fc_la_LIBADD = $(pangoft2libs)
 pango_hebrew_fc_la_SOURCES = $(hebrew_fc_sources)
 libpango_hebrew_fc_la_SOURCES = $(hebrew_fc_sources)
 libpango_hebrew_fc_la_CFLAGS = -DPANGO_MODULE_PREFIX=_pango_hebrew_fc
+
+-include $(top_srcdir)/git.mk

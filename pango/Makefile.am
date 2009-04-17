@@ -646,3 +646,5 @@ endif
 uninstall-local: uninstall-ms-lib uninstall-def-files
 
 TESTS = check.defs
+
+-include $(top_srcdir)/git.mk

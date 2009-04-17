@@ -153,3 +153,5 @@ endif
 
 TESTS = check.docs
 TESTS_ENVIRONMENT = srcdir="$(srcdir)" top_srcdir="$(top_srcdir)" MAKE="$(MAKE) $(AM_MAKEFLAGS)" DOC_MODULE="$(DOC_MODULE)" REPORT_FILES="$(REPORT_FILES)"
+
+-include $(top_srcdir)/git.mk

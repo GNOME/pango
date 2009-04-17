@@ -112,3 +112,5 @@ BUILT_SOURCES = pangorc
 
 pangorc: $(srcdir)/../modules/pangorc
 	cp $(srcdir)/../modules/pangorc $@
+
+-include $(top_srcdir)/git.mk

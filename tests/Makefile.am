@@ -74,3 +74,5 @@ pangorc: $(srcdir)/../modules/pangorc
 	cp $(srcdir)/../modules/pangorc $@
 
 $(noinst_PROGRAMS) $(check_PROGRAMS): pangorc
+
+-include $(top_srcdir)/git.mk

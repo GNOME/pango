@@ -93,3 +93,5 @@ pkgconfig_DATA += pangowin32.pc
 endif
 
 DISTCHECK_CONFIGURE_FLAGS = --enable-gtk-doc --enable-man --disable-doc-cross-references
+
+-include $(top_srcdir)/git.mk

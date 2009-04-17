@@ -15,3 +15,5 @@ EXTRA_DIST= 			\
 
 gen_script_for_lang_SOURCES = gen-script-for-lang.c
 gen_script_for_lang_LDADD = ../pango/libpango-$(PANGO_API_VERSION).la $(FREETYPE_LIBS)
+
+-include $(top_srcdir)/git.mk

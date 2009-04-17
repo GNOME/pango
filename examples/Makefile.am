@@ -29,3 +29,5 @@ endif
 cairotwisted_LDADD = $(cairosimple_LDADD)
 cairoshape_LDADD   = $(cairosimple_LDADD)
 endif
+
+-include $(top_srcdir)/git.mk

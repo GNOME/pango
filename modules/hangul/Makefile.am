@@ -22,3 +22,5 @@ libpango_hangul_fc_la_CFLAGS = -DPANGO_MODULE_PREFIX=_pango_hangul_fc
 
 EXTRA_DIST =			\
 	tables-jamos.i
+
+-include $(top_srcdir)/git.mk
