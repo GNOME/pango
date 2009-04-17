@@ -40,6 +40,11 @@ Fontconfig-based backend involves deriving from both
 </para>
 
 
+<!-- ##### ARG PangoFcFont:fontmap ##### -->
+<para>
+
+</para>
+
 <!-- ##### ARG PangoFcFont:pattern ##### -->
 <para>
 
