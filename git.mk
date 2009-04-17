@@ -1,7 +1,21 @@
+# git.mk
+#
+# Copyright 2009 Red Hat, Inc.
+# Written by Behdad Esfahbod
+#
+# To use in your project, import this file in your git repo's toplevel,
+# then do "make -f git.mk".  This modifies all Makefile.am files in
+# your project to include git.mk.
+#
+# This enables automatic .gitignore generation.  If you need to ignore
+# more files, add them to the GITIGNOREFILES variable in your Makefile.am.
+# Note that for files like editor backup, etc, there are better places to
+# ignore them.  See "man gitignore".
+#
 
-git-all: gitignore-install
+git-all: git-mk-install
 
-gitignore-install:
+git-mk-install:
 	@echo Installing git makefile
 	@any_failed=; find $(top_srcdir) -name Makefile.am | while read x; do \
 		if grep 'include .*/git.mk' $$x >/dev/null; then \
@@ -21,6 +35,9 @@ gitignore-install:
 				any_failed=1; \
 			fi; \
 	fi; done; test x$$any_failed = x
+
+
+### .gitignore generation
 
 .gitignore: Makefile.am $(top_srcdir)/git.mk
 	@echo Generating $@
@@ -70,3 +87,4 @@ maintainer-clean-local: gitignore-clean
 gitignore-clean:
 	rm -f .gitignore
 .PHONY: gitignore-clean
+

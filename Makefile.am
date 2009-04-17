@@ -53,6 +53,8 @@ MAINTAINERCLEANFILES = \
 	$(srcdir)/ChangeLog \
 	`find "$(srcdir)" -type f -name Makefile.in -print`
 
+### ChangeLog generation
+
 ChangeLog: $(srcdir)/ChangeLog
 $(srcdir)/ChangeLog:
 	@echo Creating $@
@@ -68,6 +70,7 @@ $(srcdir)/ChangeLog:
 	  echo A git checkout and git-log is required to generate this file >> $@); \
 	fi
 .PHONY: $(srcdir)/ChangeLog
+
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = pango.pc
