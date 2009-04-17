@@ -32,7 +32,8 @@ EXTRA_DIST = 			\
 	HACKING			\
 	README.win32		\
 	pango-zip.sh.in		\
-	sanitize-la.sh
+	sanitize-la.sh		\
+	pango.doap
 MAINTAINERCLEANFILES = \
 	$(srcdir)/INSTALL \
 	$(srcdir)/aclocal.m4 \
