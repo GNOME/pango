@@ -35,6 +35,9 @@
 # not tarballs.  It serves no useful purpose in tarballs and clutters the
 # build dir.
 #
+# This file knows how to handle autoconf, automake, libtool, gtk-doc,
+# gnome-doc-utils, intltool.
+#
 #
 # KNOWN ISSUES:
 #
@@ -76,13 +79,26 @@ git-mk-install:
 
 .gitignore: Makefile.am $(top_srcdir)/git.mk
 	@echo Generating $@; \
-	GTKDOCGITIGNOREFILES=; test "x$(DOC_MODULE)" = x || \
+	GTKDOCGITIGNOREFILES=; \
+	test "x$(DOC_MODULE)" = x -o "x$(DOC_MAIN_SGML_FILE)" = x || \
 	GTKDOCGITIGNOREFILES=" \
 		$(DOC_MODULE)-decl-list.txt \
 		$(DOC_MODULE)-decl.txt \
 		tmpl/$(DOC_MODULE)-unused.sgml \
 		tmpl/*.bak \
 		xml html \
+		"; \
+	GNOMEDOCUTILSGITIGNOREFILES=; \
+	test "x$(DOC_MODULE)" = x -o "x$(DOC_LINGUAS)" = x || \
+	GNOMEDOCUTILSGITIGNOREFILES=" \
+		$(_DOC_C_DOCS) \
+		$(_DOC_LC_DOCS) \
+		$(_DOC_OMF_ALL) \
+		$(_DOC_DSK_ALL) \
+		$(_DOC_HTML_ALL) \
+		$(_DOC_POFILES) \
+		*/.xml2po.mo \
+		*/*.omf.out \
 		"; \
 	INTLTOOLGITIGNOREFILES=; test -f $(srcdir)/po/Makefile.in.in && \
 	INTLTOOLGITIGNOREFILES=" \
@@ -93,6 +109,7 @@ git-mk-install:
 		po/*.mo \
 		po/POTFILES \
 		po/stamp-it \
+		po/.intltool-merge-cache \
 		intltool-extract.in \
 		intltool-merge.in \
 		intltool-update.in \
@@ -105,12 +122,11 @@ git-mk-install:
 		stamp-h1 \
 		libtool \
 		config.lt \
-		gtk-doc.make \
-		git.mk \
 		"; \
 	for x in \
 		.gitignore \
 		$$GTKDOCGITIGNOREFILES \
+		$$GNOMEDOCUTILSGITIGNOREFILES \
 		$$INTLTOOLGITIGNOREFILES \
 		$$AUTOCONFGITIGNOREFILES \
 		$(GITIGNOREFILES) \
@@ -137,6 +153,7 @@ git-mk-install:
 		"*.rej" \
 		"*.bak" \
 		"*~" \
+		".*.swp" \
 	; do echo /$$x; done | \
 	grep -v '/[.][.]/' | \
 	sed 's@/[.]/@/@g' | \
