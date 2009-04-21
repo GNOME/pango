@@ -89,7 +89,7 @@ MAINTAINERCLEANFILES = pango-view.1
 dist_man_MANS = pango-view.1
 
 $(srcdir)/pango-view.1: ../configure.in $(pango_view_SOURCES)
-	$(MAKE) $(AM_MAKEFLAGS) pango-view
+	$(MAKE) $(AM_MAKEFLAGS) pango-view$(EXEEXT)
 	@echo "Creating $@ using help2man(1)"
 	@$(top_builddir)/missing --run \
 	   help2man --no-info --section=1 \
