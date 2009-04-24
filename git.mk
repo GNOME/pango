@@ -28,8 +28,8 @@
 # ignore them.  See "man gitignore".
 #
 # If "make maintainer-clean" removes the files but they are not recognized
-# by this script (that is, if "git stat" shows untracked files still), send
-# me the output of "git stat" as well as your Makefile.am and Makefile for
+# by this script (that is, if "git status" shows untracked files still), send
+# me the output of "git status" as well as your Makefile.am and Makefile for
 # the directories involved.
 #
 # For a list of toplevel files that should be in MAINTAINERCLEANFILES, see
