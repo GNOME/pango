@@ -157,7 +157,7 @@ $(srcdir)/.gitignore: Makefile.am $(top_srcdir)/git.mk
 		"*.rej" \
 		"*.bak" \
 		"*~" \
-		".*.swp" \
+		".*.sw[nop]" \
 	; do echo /$$x; done | \
 	sed "s@^/`echo "$(srcdir)" | sed 's/\(.\)/[\1]/g'`/@/@" | \
 	sed 's@/[.]/@/@g' | \
