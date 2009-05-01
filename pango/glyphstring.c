@@ -506,6 +506,12 @@ pango_glyph_string_index_to_x (PangoGlyphString *glyphs,
   if (trailing)
     cluster_offset += 1;
 
+  if (G_UNLIKELY (!cluster_chars)) /* pedantic */
+    {
+      *x_pos = start_xpos;
+      return;
+    }
+
   *x_pos = ((cluster_chars - cluster_offset) * start_xpos +
 	    cluster_offset * end_xpos) / cluster_chars;
 }
