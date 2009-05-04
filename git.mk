@@ -164,15 +164,16 @@ $(srcdir)/.gitignore: Makefile.am $(top_srcdir)/git.mk
 	LANG=C sort | uniq > $@.tmp && \
 	mv $@.tmp $@;
 
-all: $(srcdir)/.gitignore gitignore-recurse
-gitignore-recurse:
+all: $(srcdir)/.gitignore gitignore-recurse-maybe
+gitignore-recurse-maybe:
 	@if test "x$(SUBDIRS)" = "x$(DIST_SUBDIRS)"; then :; else \
-		list='$(DIST_SUBDIRS)'; for subdir in $$list; do \
-		  test "$$subdir" = . || (cd $$subdir && $(MAKE) $(AM_MAKEFLAGS) .gitignore gitignore-recurse); \
-		done; \
+		$(MAKE) $(AM_MAKEFLAGS) gitignore-recurse; \
 	fi;
+gitignore-recurse:
+	@list='$(DIST_SUBDIRS)'; for subdir in $$list; do \
+	  test "$$subdir" = . || (cd $$subdir && $(MAKE) $(AM_MAKEFLAGS) .gitignore gitignore-recurse); \
+	done
 maintainer-clean: gitignore-clean
 gitignore-clean:
 	-rm -f $(srcdir)/.gitignore
-.PHONY: gitignore-clean gitignore-recurse
-
+.PHONY: gitignore-clean gitignore-recurse gitignore-recurse-maybe
