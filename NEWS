@@ -1,3 +1,14 @@
+Overview of changes between 1.24.1 and 1.24.2
+=============================================
+- Misc bug fixes
+    Bug 580987 – SIGFPE in pango_glyph_string_index_to_x
+    Bug 580273 – Font metrics functions incorrectly listed as reporting
+	    point sizes
+    Bug 579694 – Cygwin parallel-build patch
+    Bug 578944 – pango-1.24.1 fails its testsuite
+    Bug 578935 – Syntax error (missing semicolon) in
+	    pango/pangowin32-fontmap.c
+
 Overview of changes between 1.24.0 and 1.24.1
 =============================================
 - Fix a couple of crashers
