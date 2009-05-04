@@ -168,7 +168,7 @@ all: $(srcdir)/.gitignore gitignore-recurse
 gitignore-recurse:
 	@if test "x$(SUBDIRS)" = "x$(DIST_SUBDIRS)"; then :; else \
 		list='$(DIST_SUBDIRS)'; for subdir in $$list; do \
-		  test "$$subdir" = . || (cd $$subdir && $(MAKE) $(AM_MAKEFLAGS) .gitignore); \
+		  test "$$subdir" = . || (cd $$subdir && $(MAKE) $(AM_MAKEFLAGS) .gitignore gitignore-recurse); \
 		done; \
 	fi;
 maintainer-clean: gitignore-clean
