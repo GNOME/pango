@@ -40,7 +40,6 @@ struct _PangoOTInfo
   FT_Face face;
 
   hb_ot_layout_t *layout;
-  HB_GSUB gsub;
   HB_GPOS gpos;
 };
 
@@ -49,6 +48,15 @@ struct _PangoOTInfoClass
   GObjectClass parent_class;
 };
 
+
+typedef struct _PangoOTRule PangoOTRule;
+
+struct _PangoOTRule
+{
+  gulong     property_bit;
+  HB_UShort  feature_index;
+  guint      table_type : 1;
+};
 
 typedef struct _PangoOTRulesetClass PangoOTRulesetClass;
 
@@ -81,7 +89,9 @@ struct _PangoOTBuffer
 };
 
 hb_ot_layout_t *_pango_ot_info_get_layout (PangoOTInfo *info);
-HB_GSUB pango_ot_info_get_gsub (PangoOTInfo *info);
+void _pango_ot_info_substitute  (const PangoOTInfo    *info,
+				 const PangoOTRuleset *ruleset,
+				 PangoOTBuffer        *buffer);
 HB_GPOS pango_ot_info_get_gpos (PangoOTInfo *info);
 
 G_END_DECLS

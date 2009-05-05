@@ -83,11 +83,6 @@ pango_ot_info_finalize (GObject *object)
   if (info->layout)
     hb_ot_layout_destroy (info->layout);
 
-  if (info->gsub)
-    {
-      HB_Done_GSUB_Table (info->gsub);
-      info->gsub = NULL;
-    }
   if (info->gpos)
     {
       HB_Done_GPOS_Table (info->gpos);
@@ -288,29 +283,6 @@ synthesize_class_def (PangoOTInfo *info)
 
   if (old_charmap && info->face->charmap != old_charmap)
     FT_Set_Charmap (info->face, old_charmap);
-}
-
-HB_GSUB
-pango_ot_info_get_gsub (PangoOTInfo *info)
-{
-  g_return_val_if_fail (PANGO_IS_OT_INFO (info), NULL);
-
-  if (!(info->loaded & INFO_LOADED_GSUB))
-    {
-      HB_Error error;
-
-      info->loaded |= INFO_LOADED_GSUB;
-
-      if (FT_IS_SFNT (info->face))
-	{
-	  error = HB_Load_GSUB_Table (info->face, &info->gsub, _pango_ot_info_get_layout (info));
-
-	  if (error && error != HB_Err_Not_Covered)
-	    g_warning ("Error loading GSUB table 0x%04X", error);
-	}
-    }
-
-  return info->gsub;
 }
 
 HB_GPOS
@@ -572,4 +544,41 @@ pango_ot_info_list_features  (PangoOTInfo      *info,
   result[i] = 0;
 
   return result;
+}
+
+void
+_pango_ot_info_substitute  (const PangoOTInfo    *info,
+			    const PangoOTRuleset *ruleset,
+			    PangoOTBuffer        *buffer)
+{
+  unsigned int i;
+
+  for (i = 0; i < ruleset->rules->len; i++)
+    {
+      PangoOTRule *rule = &g_array_index (ruleset->rules, PangoOTRule, i);
+      hb_ot_layout_feature_mask_t mask;
+      unsigned int lookup_count, j;
+
+      if (rule->table_type != PANGO_OT_TABLE_GSUB)
+	continue;
+
+      mask = rule->property_bit;
+      lookup_count = hb_ot_layout_feature_get_lookup_count (info->layout,
+							    HB_OT_LAYOUT_TABLE_TYPE_GSUB,
+							    rule->feature_index);
+
+      for (j = 0; j < lookup_count; j++)
+        {
+	  unsigned int lookup_index;
+
+	  lookup_index = hb_ot_layout_feature_get_lookup_index (info->layout,
+								HB_OT_LAYOUT_TABLE_TYPE_GSUB,
+								rule->feature_index,
+								j);
+	  hb_ot_layout_substitute_lookup (info->layout,
+					  buffer->buffer,
+					  lookup_index,
+					  rule->property_bit);
+	}
+    }
 }
