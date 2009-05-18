@@ -32,12 +32,6 @@ static void synthesize_class_def (PangoOTInfo *info);
 
 static GObjectClass *parent_class;
 
-enum
-{
-  INFO_LOADED_GSUB = 1 << 1,
-  INFO_LOADED_GPOS = 1 << 2
-};
-
 GType
 pango_ot_info_get_type (void)
 {
@@ -82,12 +76,6 @@ pango_ot_info_finalize (GObject *object)
 
   if (info->layout)
     hb_ot_layout_destroy (info->layout);
-
-  if (info->gpos)
-    {
-      HB_Done_GPOS_Table (info->gpos);
-      info->gpos = NULL;
-    }
 
   parent_class->finalize (object);
 }
@@ -283,29 +271,6 @@ synthesize_class_def (PangoOTInfo *info)
 
   if (old_charmap && info->face->charmap != old_charmap)
     FT_Set_Charmap (info->face, old_charmap);
-}
-
-HB_GPOS
-pango_ot_info_get_gpos (PangoOTInfo *info)
-{
-  g_return_val_if_fail (PANGO_IS_OT_INFO (info), NULL);
-
-  if (!(info->loaded & INFO_LOADED_GPOS))
-    {
-      HB_Error error;
-
-      info->loaded |= INFO_LOADED_GPOS;
-
-      if (FT_IS_SFNT (info->face))
-	{
-	  error = HB_Load_GPOS_Table (info->face, &info->gpos, _pango_ot_info_get_layout (info));
-
-	  if (error && error != HB_Err_Not_Covered)
-	    g_warning ("Error loading GPOS table 0x%04X", error);
-	}
-    }
-
-  return info->gpos;
 }
 
 static hb_ot_layout_table_type_t
@@ -579,6 +544,68 @@ _pango_ot_info_substitute  (const PangoOTInfo    *info,
 					  buffer->buffer,
 					  lookup_index,
 					  rule->property_bit);
+	}
+    }
+}
+
+void
+_pango_ot_info_position    (const PangoOTInfo    *info,
+			    const PangoOTRuleset *ruleset,
+			    PangoOTBuffer        *buffer)
+{
+  unsigned int i;
+
+  for (i = 0; i < ruleset->rules->len; i++)
+    {
+      PangoOTRule *rule = &g_array_index (ruleset->rules, PangoOTRule, i);
+      hb_ot_layout_feature_mask_t mask;
+      unsigned int lookup_count, j;
+
+      if (rule->table_type != PANGO_OT_TABLE_GPOS)
+	continue;
+
+      mask = rule->property_bit;
+      lookup_count = hb_ot_layout_feature_get_lookup_count (info->layout,
+							    HB_OT_LAYOUT_TABLE_TYPE_GSUB,
+							    rule->feature_index);
+
+      if (lookup_count)
+	_hb_buffer_clear_positions (buffer->buffer);
+
+      for (j = 0; j < lookup_count; j++)
+        {
+	  unsigned int lookup_index;
+
+	  lookup_index = hb_ot_layout_feature_get_lookup_index (info->layout,
+								HB_OT_LAYOUT_TABLE_TYPE_GSUB,
+								rule->feature_index,
+								j);
+	  hb_ot_layout_position_lookup (info->layout,
+					buffer->buffer,
+					lookup_index,
+					rule->property_bit);
+	}
+
+      if (lookup_count)
+	{
+	  HB_UInt   i, j;
+	  HB_Position positions = buffer->buffer->positions;
+
+	  /* First handle all left-to-right connections */
+	  for (j = 0; j < buffer->buffer->in_length; j++)
+	  {
+	    if (positions[j].cursive_chain > 0)
+	      positions[j].y_pos += positions[j - positions[j].cursive_chain].y_pos;
+	  }
+
+	  /* Then handle all right-to-left connections */
+	  for (i = buffer->buffer->in_length; i > 0; i--)
+	  {
+	    j = i - 1;
+
+	    if (positions[j].cursive_chain < 0)
+	      positions[j].y_pos += positions[j - positions[j].cursive_chain].y_pos;
+	  }
 	}
     }
 }

@@ -40,7 +40,6 @@ struct _PangoOTInfo
   FT_Face face;
 
   hb_ot_layout_t *layout;
-  HB_GPOS gpos;
 };
 
 struct _PangoOTInfoClass
@@ -92,7 +91,9 @@ hb_ot_layout_t *_pango_ot_info_get_layout (PangoOTInfo *info);
 void _pango_ot_info_substitute  (const PangoOTInfo    *info,
 				 const PangoOTRuleset *ruleset,
 				 PangoOTBuffer        *buffer);
-HB_GPOS pango_ot_info_get_gpos (PangoOTInfo *info);
+void _pango_ot_info_position    (const PangoOTInfo    *info,
+				 const PangoOTRuleset *ruleset,
+				 PangoOTBuffer        *buffer);
 
 G_END_DECLS
 
