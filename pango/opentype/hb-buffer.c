@@ -26,9 +26,7 @@
  */
 
 #include "harfbuzz-impl.h"
-#include "harfbuzz-buffer-private.h"
-#include "harfbuzz-gsub-private.h"
-#include "harfbuzz-gpos-private.h"
+#include "hb-buffer-private.h"
 
 /* Here is how the buffer works internally:
  *

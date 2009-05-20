@@ -25,8 +25,8 @@
  * Red Hat Author(s): Owen Taylor, Behdad Esfahbod
  */
 
-#ifndef HARFBUZZ_BUFFER_H
-#define HARFBUZZ_BUFFER_H
+#ifndef HB_BUFFER_H
+#define HB_BUFFER_H
 
 #include "hb-common.h"
 
@@ -91,4 +91,4 @@ hb_buffer_add_glyph (hb_buffer_t    *buffer,
 
 HB_END_DECLS();
 
-#endif /* HARFBUZZ_BUFFER_H */
+#endif /* HB_BUFFER_H */
