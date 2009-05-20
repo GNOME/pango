@@ -556,8 +556,17 @@ _pango_ot_info_position    (const PangoOTInfo    *info,
   unsigned int i;
 
   _hb_buffer_clear_positions (buffer->buffer);
-  _hb_buffer_clear_positions (buffer->buffer);
-  hb_ot_layout_set_direction (info->layout, buffer->rtl);
+
+  hb_ot_layout_set_direction (info->layout,
+			      buffer->rtl);
+  hb_ot_layout_set_hinting (info->layout,
+			    buffer->font->is_hinted);
+  hb_ot_layout_set_scale (info->layout,
+			  info->face->size->metrics.x_scale,
+			  info->face->size->metrics.y_scale);
+  hb_ot_layout_set_ppem (info->layout,
+			 info->face->size->metrics.x_ppem,
+			 info->face->size->metrics.y_ppem);
 
   for (i = 0; i < ruleset->rules->len; i++)
     {
@@ -609,4 +618,6 @@ _pango_ot_info_position    (const PangoOTInfo    *info,
 	  positions[j].y_pos += positions[j - positions[j].cursive_chain].y_pos;
       }
     }
+
+   buffer->applied_gpos = TRUE;
 }
