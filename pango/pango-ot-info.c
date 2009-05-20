@@ -556,6 +556,8 @@ _pango_ot_info_position    (const PangoOTInfo    *info,
   unsigned int i;
 
   _hb_buffer_clear_positions (buffer->buffer);
+  _hb_buffer_clear_positions (buffer->buffer);
+  hb_ot_layout_set_direction (info->layout, buffer->rtl);
 
   for (i = 0; i < ruleset->rules->len; i++)
     {
