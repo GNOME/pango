@@ -555,6 +555,8 @@ _pango_ot_info_position    (const PangoOTInfo    *info,
 {
   unsigned int i;
 
+  _hb_buffer_clear_positions (buffer->buffer);
+
   for (i = 0; i < ruleset->rules->len; i++)
     {
       PangoOTRule *rule = &g_array_index (ruleset->rules, PangoOTRule, i);
@@ -566,18 +568,15 @@ _pango_ot_info_position    (const PangoOTInfo    *info,
 
       mask = rule->property_bit;
       lookup_count = hb_ot_layout_feature_get_lookup_count (info->layout,
-							    HB_OT_LAYOUT_TABLE_TYPE_GSUB,
+							    HB_OT_LAYOUT_TABLE_TYPE_GPOS,
 							    rule->feature_index);
-
-      if (lookup_count)
-	_hb_buffer_clear_positions (buffer->buffer);
 
       for (j = 0; j < lookup_count; j++)
         {
 	  unsigned int lookup_index;
 
 	  lookup_index = hb_ot_layout_feature_get_lookup_index (info->layout,
-								HB_OT_LAYOUT_TABLE_TYPE_GSUB,
+								HB_OT_LAYOUT_TABLE_TYPE_GPOS,
 								rule->feature_index,
 								j);
 	  hb_ot_layout_position_lookup (info->layout,
@@ -586,26 +585,26 @@ _pango_ot_info_position    (const PangoOTInfo    *info,
 					rule->property_bit);
 	}
 
-      if (lookup_count)
-	{
-	  HB_UInt   i, j;
-	  HB_Position positions = buffer->buffer->positions;
+    }
 
-	  /* First handle all left-to-right connections */
-	  for (j = 0; j < buffer->buffer->in_length; j++)
-	  {
-	    if (positions[j].cursive_chain > 0)
-	      positions[j].y_pos += positions[j - positions[j].cursive_chain].y_pos;
-	  }
+    {
+      HB_UInt   i, j;
+      HB_Position positions = buffer->buffer->positions;
 
-	  /* Then handle all right-to-left connections */
-	  for (i = buffer->buffer->in_length; i > 0; i--)
-	  {
-	    j = i - 1;
+      /* First handle all left-to-right connections */
+      for (j = 0; j < buffer->buffer->in_length; j++)
+      {
+	if (positions[j].cursive_chain > 0)
+	  positions[j].y_pos += positions[j - positions[j].cursive_chain].y_pos;
+      }
 
-	    if (positions[j].cursive_chain < 0)
-	      positions[j].y_pos += positions[j - positions[j].cursive_chain].y_pos;
-	  }
-	}
+      /* Then handle all right-to-left connections */
+      for (i = buffer->buffer->in_length; i > 0; i--)
+      {
+	j = i - 1;
+
+	if (positions[j].cursive_chain < 0)
+	  positions[j].y_pos += positions[j - positions[j].cursive_chain].y_pos;
+      }
     }
 }
