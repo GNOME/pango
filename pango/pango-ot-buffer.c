@@ -24,26 +24,26 @@
 #include "pango-ot-private.h"
 #include "pangofc-private.h"
 
-/* cache a single HB_Buffer */
-static HB_Buffer cached_buffer = NULL;
+/* cache a single hb_buffer_t */
+static hb_buffer_t *cached_buffer = NULL;
 G_LOCK_DEFINE_STATIC (cached_buffer);
 
-static HB_Buffer
+static hb_buffer_t *
 acquire_buffer (gboolean *free_buffer)
 {
-  HB_Buffer buffer;
+  hb_buffer_t *buffer;
 
   if (G_LIKELY (G_TRYLOCK (cached_buffer)))
     {
       if (G_UNLIKELY (!cached_buffer))
-	hb_buffer_new (&cached_buffer);
+	cached_buffer = hb_buffer_new ();
 
       buffer = cached_buffer;
       *free_buffer = FALSE;
     }
   else
     {
-      hb_buffer_new (&buffer);
+      buffer = hb_buffer_new ();
       *free_buffer = TRUE;
     }
 
@@ -51,7 +51,7 @@ acquire_buffer (gboolean *free_buffer)
 }
 
 static void
-release_buffer (HB_Buffer buffer, gboolean free_buffer)
+release_buffer (hb_buffer_t *buffer, gboolean free_buffer)
 {
   if (G_LIKELY (!free_buffer))
     {

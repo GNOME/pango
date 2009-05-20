@@ -139,8 +139,8 @@ _pango_ot_info_get_layout (PangoOTInfo *info)
 typedef struct _GlyphInfo GlyphInfo;
 
 struct _GlyphInfo {
-  HB_UShort glyph;
-  HB_UShort class;
+  unsigned short glyph;
+  unsigned short class;
 };
 
 static int
@@ -158,8 +158,8 @@ compare_glyph_info (gconstpointer a,
  * a character code that maps to the glyph
  */
 static gboolean
-get_glyph_class (gunichar   charcode,
-		 HB_UShort *class)
+get_glyph_class (gunichar        charcode,
+		 unsigned short *class)
 {
   /* For characters mapped into the Arabic Presentation forms, using properties
    * derived as we apply GSUB substitutions will be more reliable
@@ -193,8 +193,8 @@ set_unicode_charmap (FT_Face face)
   for (charmap = 0; charmap < face->num_charmaps; charmap++)
     if (face->charmaps[charmap]->encoding == ft_encoding_unicode)
       {
-	HB_Error error = FT_Set_Charmap(face, face->charmaps[charmap]);
-	return error == HB_Err_Ok;
+	FT_Error error = FT_Set_Charmap(face, face->charmaps[charmap]);
+	return error == FT_Err_Ok;
       }
 
   return FALSE;
@@ -599,7 +599,7 @@ _pango_ot_info_position    (const PangoOTInfo    *info,
     }
 
     {
-      HB_UInt   i, j;
+      unsigned int i, j;
       HB_Position positions = buffer->buffer->positions;
 
       /* First handle all left-to-right connections */

@@ -25,7 +25,7 @@
 #include <glib-object.h>
 
 #include <pango/pango-ot.h>
-#include "opentype/harfbuzz.h"
+#include "opentype/hb-ot-layout.h"
 
 G_BEGIN_DECLS
 
@@ -52,9 +52,9 @@ typedef struct _PangoOTRule PangoOTRule;
 
 struct _PangoOTRule
 {
-  gulong     property_bit;
-  HB_UShort  feature_index;
-  guint      table_type : 1;
+  gulong property_bit;
+  guint  feature_index;
+  guint  table_type : 1;
 };
 
 typedef struct _PangoOTRulesetClass PangoOTRulesetClass;
@@ -79,7 +79,7 @@ struct _PangoOTRulesetClass
 
 struct _PangoOTBuffer
 {
-  HB_Buffer buffer;
+  hb_buffer_t *buffer;
   gboolean should_free_hb_buffer;
   PangoFcFont *font;
   guint rtl : 1;
