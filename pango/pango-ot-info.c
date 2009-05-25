@@ -555,6 +555,7 @@ _pango_ot_info_position    (const PangoOTInfo    *info,
 {
   unsigned int i;
 
+  /* XXX */
   _hb_buffer_clear_positions (buffer->buffer);
 
   hb_ot_layout_set_direction (info->layout,
@@ -600,7 +601,7 @@ _pango_ot_info_position    (const PangoOTInfo    *info,
 
     {
       unsigned int i, j;
-      HB_Position positions = buffer->buffer->positions;
+      hb_glyph_position_t *positions = buffer->buffer->positions;
 
       /* First handle all left-to-right connections */
       for (j = 0; j < buffer->buffer->in_length; j++)

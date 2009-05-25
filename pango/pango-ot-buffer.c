@@ -222,9 +222,9 @@ swap_range (PangoGlyphString *glyphs, int start, int end)
 }
 
 static void
-apply_gpos_ltr (PangoGlyphString *glyphs,
-		HB_Position      positions,
-		gboolean         is_hinted)
+apply_gpos_ltr (PangoGlyphString    *glyphs,
+		hb_glyph_position_t *positions,
+		gboolean             is_hinted)
 {
   int i;
 
@@ -264,9 +264,9 @@ apply_gpos_ltr (PangoGlyphString *glyphs,
 }
 
 static void
-apply_gpos_rtl (PangoGlyphString *glyphs,
-		HB_Position      positions,
-		gboolean         is_hinted)
+apply_gpos_rtl (PangoGlyphString    *glyphs,
+		hb_glyph_position_t *positions,
+		gboolean             is_hinted)
 {
   int i;
 
@@ -338,11 +338,11 @@ pango_ot_buffer_output (const PangoOTBuffer *buffer,
   last_cluster = -1;
   for (i = 0; i < buffer->buffer->in_length; i++)
     {
-      HB_GlyphItem item = &buffer->buffer->in_string[i];
+      hb_glyph_info_t *ginfo = &buffer->buffer->in_string[i];
 
-      glyphs->glyphs[i].glyph = item->gindex;
+      glyphs->glyphs[i].glyph = ginfo->gindex;
 
-      glyphs->log_clusters[i] = item->cluster;
+      glyphs->log_clusters[i] = ginfo->cluster;
       if (glyphs->log_clusters[i] != last_cluster)
 	glyphs->glyphs[i].attr.is_cluster_start = 1;
       else
