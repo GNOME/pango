@@ -597,8 +597,10 @@ _pango_ot_info_position    (const PangoOTInfo    *info,
 					rule->property_bit);
 	}
 
+      buffer->applied_gpos = TRUE;
     }
 
+    if (buffer->applied_gpos)
     {
       unsigned int i, j;
       hb_glyph_position_t *positions = buffer->buffer->positions;
@@ -619,6 +621,4 @@ _pango_ot_info_position    (const PangoOTInfo    *info,
 	  positions[j].y_pos += positions[j - positions[j].cursive_chain].y_pos;
       }
     }
-
-   buffer->applied_gpos = TRUE;
 }
