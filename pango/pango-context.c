@@ -1575,12 +1575,15 @@ get_base_metrics (PangoFontset *fontset)
 static void
 update_metrics_from_items (PangoFontMetrics *metrics,
 			   PangoLanguage    *language,
+			   const char       *text,
 			   GList            *items)
 
 {
   GHashTable *fonts_seen = g_hash_table_new (NULL, NULL);
-  int count = 0;
+  PangoGlyphString *glyphs = pango_glyph_string_new ();
   GList *l;
+
+  metrics->approximate_char_width = 0;
 
   for (l = items; l; l = l->next)
     {
@@ -1595,29 +1598,17 @@ update_metrics_from_items (PangoFontMetrics *metrics,
 	  /* metrics will already be initialized from the first font in the fontset */
 	  metrics->ascent = MAX (metrics->ascent, raw_metrics->ascent);
 	  metrics->descent = MAX (metrics->descent, raw_metrics->descent);
-
-	  if (count == 0)
-	    {
-	      metrics->approximate_char_width = raw_metrics->approximate_char_width;
-	      metrics->approximate_digit_width = raw_metrics->approximate_digit_width;
-	    }
-	  else
-	    {
-	      metrics->approximate_char_width += raw_metrics->approximate_char_width;
-	      metrics->approximate_digit_width += raw_metrics->approximate_digit_width;
-	    }
-	  count++;
 	  pango_font_metrics_unref (raw_metrics);
 	}
+
+      pango_shape (text + item->offset, item->length, &item->analysis, glyphs);
+      metrics->approximate_char_width += pango_glyph_string_get_width (glyphs);
     }
 
+  pango_glyph_string_free (glyphs);
   g_hash_table_destroy (fonts_seen);
 
-  if (count)
-    {
-      metrics->approximate_char_width /= count;
-      metrics->approximate_digit_width /= count;
-    }
+  metrics->approximate_char_width /= pango_utf8_strwidth (text);
 }
 
 /**
@@ -1671,7 +1662,7 @@ pango_context_get_metrics (PangoContext                 *context,
   sample_str = pango_language_get_sample_string (language);
   items = itemize_with_font (context, sample_str, 0, strlen (sample_str), desc);
 
-  update_metrics_from_items (metrics, language, items);
+  update_metrics_from_items (metrics, language, sample_str, items);
 
   g_list_foreach (items, (GFunc)pango_item_free, NULL);
   g_list_free (items);
