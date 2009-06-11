@@ -314,7 +314,7 @@ lib_LTLIBRARIES += libpangoxft-1.0.la
 BUILT_GIRSOURCES += PangoXft-1.0.gir
 endif
 
-pangoxft_headers = pangoxft.h pangoxft-render.h pango-ot.h
+pangoxft_headers = pangoxft.h pangoxft-render.h
 
 libpangoxft_1_0_la_LDFLAGS = $(LIBRARY_LIBTOOL_OPTIONS)
 libpangoxft_1_0_la_LIBADD =			\
