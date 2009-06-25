@@ -140,7 +140,11 @@ pango_fc_font_finalize (GObject *object)
   g_slist_free (fcfont->metrics_by_lang);
 
   if (fcfont->fontmap)
-    _pango_fc_font_map_remove (PANGO_FC_FONT_MAP (fcfont->fontmap), fcfont);
+    {
+      _pango_fc_font_map_remove (PANGO_FC_FONT_MAP (fcfont->fontmap), fcfont);
+      g_object_remove_weak_pointer (G_OBJECT (fcfont->fontmap), (gpointer *) (gpointer) &fcfont->fontmap);
+      fcfont->fontmap = NULL;
+    }
 
   FcPatternDestroy (fcfont->font_pattern);
   pango_font_description_free (fcfont->description);
