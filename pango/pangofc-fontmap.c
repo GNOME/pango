@@ -1209,6 +1209,7 @@ pango_fc_font_map_add (PangoFcFontMap *fcfontmap,
 }
 
 /* Remove mapping from fcfont->key to fcfont */
+/* Closely related to shutdown_font() */
 void
 _pango_fc_font_map_remove (PangoFcFontMap *fcfontmap,
 			   PangoFcFont    *fcfont)
@@ -1973,17 +1974,20 @@ pango_fc_font_map_create_context (PangoFcFontMap *fcfontmap)
   return pango_font_map_create_context (PANGO_FONT_MAP (fcfontmap));
 }
 
+/* Closely related to _pango_fc_font_map_remove() */
 static void
-shutdown_font (gpointer        key G_GNUC_UNUSED,
+shutdown_font (gpointer        key,
 	       PangoFcFont    *fcfont,
 	       PangoFcFontMap *fcfontmap)
 {
   _pango_fc_font_shutdown (fcfont);
 
-  /* While _pango_fc_font_shutdown() tries to call the following
-   * function, it's too late as the fontmap weakref has already
-   * NULL'ed fcfont->fontmap, so we do it ourselves. */
-  _pango_fc_font_map_remove (fcfontmap, fcfont);
+  /* While _pango_fc_font_shutdown() tries to call
+   * _pango_fc_font_map_remove(), it's too late as the fontmap
+   * weakref has already NULL'ed fcfont->fontmap, so we cleanup
+   * ourselves. */
+  _pango_fc_font_set_font_key (fcfont, NULL);
+  pango_fc_font_key_free (key);
 }
 
 /**
