@@ -1,3 +1,8 @@
+Overview of changes between 1.24.3 and 1.24.4
+=============================================
+- Misc bug fixes
+    Bug 586814 – Crashes related to fontmap destruction after upgrade
+
 Overview of changes between 1.24.2 and 1.24.3
 =============================================
 - Fix build with new automake
