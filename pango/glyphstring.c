@@ -320,7 +320,9 @@ pango_glyph_string_get_width (PangoGlyphString *glyphs)
  * @text: the text corresponding to the glyphs
  * @length: the length of @text, in bytes
  * @embedding_level: the embedding level of the string
- * @logical_widths: an array whose length is g_utf8_strlen (text, length)
+ * @logical_widths: an array whose length is the number of characters in
+ *                  text (equal to g_utf8_strlen (text, length) unless
+ *                  text has NUL bytes)
  *                  to be filled in with the resulting character widths.
  *
  * Given a #PangoGlyphString resulting from pango_shape() and the corresponding
@@ -337,7 +339,7 @@ pango_glyph_string_get_logical_widths (PangoGlyphString *glyphs,
 {
   /* Build a PangoGlyphItem so we can use PangoGlyphItemIter.
    * This API should have been made to take a PangoGlyphItem... */
-  PangoItem item = {0, length, g_utf8_strlen (text, length),
+  PangoItem item = {0, length, pango_utf8_strlen (text, length),
 		    {NULL, NULL, NULL,
 		     embedding_level, PANGO_GRAVITY_AUTO, 0,
 		     PANGO_SCRIPT_UNKNOWN, NULL,

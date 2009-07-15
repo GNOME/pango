@@ -1084,7 +1084,7 @@ pango_layout_set_text (PangoLayout *layout,
     /* TODO: Write out the beginning excerpt of text? */
     g_warning ("Invalid UTF-8 string passed to pango_layout_set_text()");
 
-  layout->n_chars = g_utf8_strlen (layout->text, -1);
+  layout->n_chars = pango_utf8_strlen (layout->text, -1);
 
   pango_layout_clear_lines (layout);
 
@@ -1737,7 +1737,7 @@ pango_layout_move_cursor_visually (PangoLayout *layout,
     old_index = g_utf8_next_char (layout->text + old_index) - layout->text;
 
   log2vis_map = pango_layout_line_get_log2vis_map (line, strong);
-  n_vis = g_utf8_strlen (layout->text + line->start_index, line->length);
+  n_vis = pango_utf8_strlen (layout->text + line->start_index, line->length);
 
   /* Clamp old_index to fit on the line */
   if (old_index > (line->start_index + line->length))
@@ -1793,7 +1793,7 @@ pango_layout_move_cursor_visually (PangoLayout *layout,
 	  paragraph_boundary = (line->start_index != old_index);
 	}
 
-      n_vis = g_utf8_strlen (layout->text + line->start_index, line->length);
+      n_vis = pango_utf8_strlen (layout->text + line->start_index, line->length);
       start_offset = g_utf8_pointer_to_offset (layout->text, layout->text + line->start_index);
 
       if (vis_pos == 0 && direction < 0)
@@ -2052,7 +2052,7 @@ pango_layout_line_get_vis2log_map (PangoLayoutLine *line,
   int n_chars;
 
   pango_layout_line_get_range (line, &start, &end);
-  n_chars = g_utf8_strlen (start, end - start);
+  n_chars = pango_utf8_strlen (start, end - start);
 
   result = g_new (int, n_chars + 1);
 
@@ -2139,7 +2139,7 @@ pango_layout_line_get_log2vis_map (PangoLayoutLine *line,
   int n_chars;
 
   pango_layout_line_get_range (line, &start, &end);
-  n_chars = g_utf8_strlen (start, end - start);
+  n_chars = pango_utf8_strlen (start, end - start);
   result = g_new0 (int, end - start + 1);
 
   reverse_map = pango_layout_line_get_vis2log_map (line, strong);
@@ -3635,7 +3635,7 @@ get_items_log_attrs (const char   *text,
       /* Break the paragraph delimiters with the last item */
       if (items->next == NULL)
 	{
-	  tmp_item.num_chars += g_utf8_strlen (text + index + tmp_item.length, para_delimiter_len);
+	  tmp_item.num_chars += pango_utf8_strlen (text + index + tmp_item.length, para_delimiter_len);
 	  tmp_item.length += para_delimiter_len;
 	}
 
@@ -3874,7 +3874,7 @@ pango_layout_check_lines (PangoLayout *layout)
 	done = TRUE;
 
       if (!done)
-	start_offset += g_utf8_strlen (start, (end - start) + delim_len);
+	start_offset += pango_utf8_strlen (start, (end - start) + delim_len);
 
       start = end + delim_len;
     }
@@ -5362,7 +5362,7 @@ update_cluster (PangoLayoutIter *iter,
     }
 
   cluster_text = iter->layout->text + iter->run->item->offset + cluster_start_index;
-  iter->cluster_num_chars = g_utf8_strlen (cluster_text, cluster_length);
+  iter->cluster_num_chars = pango_utf8_strlen (cluster_text, cluster_length);
 
   if (iter->ltr)
     iter->index = cluster_text - iter->layout->text;

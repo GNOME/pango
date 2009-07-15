@@ -24,6 +24,7 @@
 #include "pango-break.h"
 #include "pango-modules.h"
 #include "pango-script-private.h"
+#include "pango-impl-utils.h"
 #include <string.h>
 
 #define PARAGRAPH_SEPARATOR 0x2029
@@ -1809,7 +1810,7 @@ tailor_segment (const char      *range_start,
   PangoLogAttr attr_before = log_attrs[0];
 
   analysis->lang_engine = range_engine;
-  chars_in_range = g_utf8_strlen (range_start, range_end - range_start);
+  chars_in_range = pango_utf8_strlen (range_start, range_end - range_start);
 
 
   if (tailor_break (range_start,
