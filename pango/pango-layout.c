@@ -3848,7 +3848,7 @@ pango_layout_check_lines (PangoLayout *layout)
       state.glyphs = NULL;
       state.log_widths = NULL;
 
-      /* for deterministic bug haunting's sake set everything! */
+      /* for deterministic bug hunting's sake set everything! */
       state.line_width = -1;
       state.remaining_width = -1;
       state.log_widths_offset = 0;
