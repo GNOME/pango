@@ -777,9 +777,6 @@ _pango_fc_font_shutdown (PangoFcFont *font)
 
   if (PANGO_FC_FONT_GET_CLASS (font)->shutdown)
     PANGO_FC_FONT_GET_CLASS (font)->shutdown (font);
-
-  if (font->fontmap)
-    _pango_fc_font_map_remove (PANGO_FC_FONT_MAP (font->fontmap), font);
 }
 
 /**
