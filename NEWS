@@ -1,3 +1,11 @@
+Overview of changes between 1.24.4 and 1.24.5
+=============================================
+- Build introspection again
+- Misc bug fixes
+	Bug 589133 – Firefox 3.5 complains about invalid weak references
+	Bug 585806 – crash during pango_fc_font_map_shutdown
+	Bug 588678 – pango crash: install a new theme from
+
 Overview of changes between 1.24.3 and 1.24.4
 =============================================
 - Misc bug fixes
