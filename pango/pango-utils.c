@@ -967,7 +967,7 @@ handle_alias_line (GString  *line_buffer,
   g_string_free (tmp_buffer2, TRUE);
 }
 
-#ifdef G_OS_WIN32
+#ifdef HAVE_CAIRO_WIN32
 
 static const char *builtin_aliases[] = {
   "courier = \"courier new\"",
@@ -1061,7 +1061,7 @@ pango_load_aliases (void)
 					    (GDestroyNotify)alias_free,
 					    NULL);
 
-#ifdef G_OS_WIN32
+#ifdef HAVE_CAIRO_WIN32
   read_builtin_aliases ();
 #endif
 
