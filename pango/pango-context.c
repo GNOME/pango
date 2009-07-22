@@ -645,10 +645,26 @@ typedef enum {
   SCRIPT_CHANGED       = 1 << 1,
   LANG_CHANGED         = 1 << 2,
   FONT_CHANGED         = 1 << 3,
-  DERIVED_LANG_CHANGED = 1 << 4
+  DERIVED_LANG_CHANGED = 1 << 4,
+  WIDTH_CHANGED        = 1 << 5
 } ChangedFlags;
 
+
+
+typedef struct _PangoWidthIter PangoWidthIter;
+
+struct _PangoWidthIter
+{
+	const gchar *text_start;
+	const gchar *text_end;
+	const gchar *start;
+	const gchar *end;
+	gboolean wide;
+};
+
 typedef struct _ItemizeState ItemizeState;
+
+
 
 struct _ItemizeState
 {
@@ -686,6 +702,8 @@ struct _ItemizeState
   PangoScriptIter script_iter;
   const char *script_end;
   PangoScript script;
+
+  PangoWidthIter width_iter;
 
   PangoLanguage *derived_lang;
   PangoEngineLang *lang_engine;
@@ -777,6 +795,38 @@ update_end (ItemizeState *state)
     state->run_end = state->attr_end;
   if (state->script_end < state->run_end)
     state->run_end = state->script_end;
+  if (state->width_iter.end < state->run_end)
+    state->run_end = state->width_iter.end;
+}
+
+static void
+width_iter_next(PangoWidthIter* iter)
+{
+  iter->start = iter->end;
+
+  if (iter->end < iter->text_end)
+    {
+      gunichar ch = g_utf8_get_char (iter->end);
+      iter->wide = g_unichar_iswide (ch);
+    }
+
+  while (iter->end < iter->text_end)
+    {
+      gunichar ch = g_utf8_get_char (iter->end);
+      if (g_unichar_iswide (ch) != iter->wide)
+        break;
+      iter->end = g_utf8_next_char (iter->end);
+    }
+}
+
+static void
+width_iter_init (PangoWidthIter* iter, const char* text, int length)
+{
+  iter->text_start = text;
+  iter->text_end = text + length;
+  iter->start = iter->end = text;
+
+  width_iter_next (iter);
 }
 
 static void
@@ -852,6 +902,9 @@ itemize_state_init (ItemizeState      *state,
   pango_script_iter_get_range (&state->script_iter, NULL,
 			       &state->script_end, &state->script);
 
+  /* Initialize the width iterator */
+  width_iter_init (&state->width_iter, text + start_index, length);
+
   update_end (state);
 
   if (pango_font_description_get_set_fields (state->font_desc) & PANGO_FONT_MASK_GRAVITY)
@@ -871,7 +924,7 @@ itemize_state_init (ItemizeState      *state,
   state->fallback_engines = NULL;
   state->base_font = NULL;
 
-  state->changed = EMBEDDING_CHANGED | SCRIPT_CHANGED | LANG_CHANGED | FONT_CHANGED;
+  state->changed = EMBEDDING_CHANGED | SCRIPT_CHANGED | LANG_CHANGED | FONT_CHANGED | WIDTH_CHANGED;
 }
 
 static gboolean
@@ -901,6 +954,11 @@ itemize_state_next (ItemizeState *state)
       pango_script_iter_get_range (&state->script_iter, NULL,
 				   &state->script_end, &state->script);
       state->changed |= SCRIPT_CHANGED;
+    }
+  if (state->run_end == state->width_iter.end)
+    {
+      width_iter_next (&state->width_iter);
+      state->changed |= WIDTH_CHANGED;
     }
 
   update_end (state);
@@ -1231,7 +1289,7 @@ itemize_state_update_for_new_run (ItemizeState *state)
 {
   /* This block should be moved to update_attr_iterator, but I'm too lazy to
    * do it right now */
-  if (state->changed & (FONT_CHANGED | SCRIPT_CHANGED))
+  if (state->changed & (FONT_CHANGED | SCRIPT_CHANGED | WIDTH_CHANGED))
     {
       PangoGravity old_gravity = state->resolved_gravity;
 
@@ -1239,6 +1297,11 @@ itemize_state_update_for_new_run (ItemizeState *state)
 	{
 	  state->resolved_gravity = state->font_desc_gravity;
 	}
+      else if (state->width_iter.wide)
+        {
+	  /* Wide characters are always upright */
+          state->resolved_gravity = state->context->resolved_gravity;
+        }
       else
 	{
 	  PangoGravity gravity = state->gravity;
