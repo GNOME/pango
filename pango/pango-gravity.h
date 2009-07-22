@@ -102,6 +102,11 @@ PangoGravity pango_gravity_get_for_matrix (const PangoMatrix *matrix) G_GNUC_PUR
 PangoGravity pango_gravity_get_for_script (PangoScript        script,
 					   PangoGravity       base_gravity,
 					   PangoGravityHint   hint) G_GNUC_CONST;
+PangoGravity pango_gravity_get_for_script_and_width
+					  (PangoScript        script,
+					   gboolean           wide,
+					   PangoGravity       base_gravity,
+					   PangoGravityHint   hint) G_GNUC_CONST;
 
 
 G_END_DECLS

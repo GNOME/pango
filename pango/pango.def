@@ -205,6 +205,7 @@ EXPORTS
 	pango_glyph_string_x_to_index
 	pango_gravity_get_for_matrix
 	pango_gravity_get_for_script
+	pango_gravity_get_for_script_and_width
 	pango_gravity_get_type
 	pango_gravity_hint_get_type
 	pango_gravity_to_rotation

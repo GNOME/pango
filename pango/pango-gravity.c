@@ -113,8 +113,9 @@ typedef struct {
   guint8 preferred_gravity;	/* Preferred context gravity */
 
   /* gboolean */
-  guint8 upright;		/* Whether glyphs are upright or
-				 * rotated in foreign context */
+  guint8 wide;			/* Whether script is mostly wide.
+				 * Wide characters are upright (ie.
+				 * not rotated) in foreign context */
 } PangoScriptProperties;
 
 #define NONE PANGO_VERTICAL_DIRECTION_NONE
@@ -245,6 +246,7 @@ get_script_properties (PangoScript script)
  * pass %PANGO_GRAVITY_AUTO and %PANGO_GRAVITY_HINT_STRONG in.
  *
  * Return value: resolved gravity suitable to use for a run of text
+ * with @script.
  *
  * Since: 1.16
  */
@@ -262,17 +264,61 @@ pango_gravity_get_for_script (PangoScript      script,
 
   vertical = PANGO_GRAVITY_IS_VERTICAL (base_gravity);
 
+  return pango_gravity_get_for_script_and_width (script, props.wide,
+						 base_gravity, hint);
+}
+
+/**
+ * pango_gravity_get_for_script_and_width:
+ * @script: #PangoScript to query
+ * @wide: %TRUE for wide characters as returned by g_unichar_iswide()
+ * @base_gravity: base gravity of the paragraph
+ * @hint: orientation hint
+ *
+ * Based on the script, East Asian width, base gravity, and hint,
+ * returns actual gravity to use in laying out a single character
+ * or #PangoItem.
+ *
+ * This function is similar to pango_gravity_get_for_script() except
+ * that this function makes a distinction between narrow/half-width and
+ * wide/full-width characters also.  Wide/full-width characters always
+ * stand <emph>upright</emph>, that is, they always take the base gravity,
+ * whereas narrow/full-width characters are always rotated in vertical
+ * context.
+ *
+ * If @base_gravity is %PANGO_GRAVITY_AUTO, it is first replaced with the
+ * preferred gravity of @script.
+ *
+ * Return value: resolved gravity suitable to use for a run of text
+ * with @script and @wide.
+ *
+ * Since: 1.26
+ */
+PangoGravity
+pango_gravity_get_for_script_and_width (PangoScript        script,
+					gboolean           wide,
+					PangoGravity       base_gravity,
+					PangoGravityHint   hint)
+{
+  PangoScriptProperties props = get_script_properties (script);
+  gboolean vertical;
+
+
+  if (G_UNLIKELY (base_gravity == PANGO_GRAVITY_AUTO))
+    base_gravity = props.preferred_gravity;
+
+  vertical = PANGO_GRAVITY_IS_VERTICAL (base_gravity);
+
   /* Everything is designed such that a system with no vertical support
    * renders everything correctly horizontally.  So, if not in a vertical
    * gravity, base and resolved gravities are always the same.
    *
-   * If the script should be upright all the time, like Chinese and Japenese,
-   * any base gravity should resolve to itself.
+   * Wide characters are always upright.
    */
-  if (G_LIKELY (!vertical || props.upright))
+  if (G_LIKELY (!vertical || wide))
     return base_gravity;
 
-  /* If here, we have a non-upright script in a vertical gravity setting.
+  /* If here, we have a narrow character in a vertical gravity setting.
    * Resolve depending on the hint.
    */
   switch (hint)
