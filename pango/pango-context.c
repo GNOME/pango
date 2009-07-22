@@ -1293,15 +1293,11 @@ itemize_state_update_for_new_run (ItemizeState *state)
     {
       PangoGravity old_gravity = state->resolved_gravity;
 
+      /* Font-desc gravity overrides everything */
       if (state->font_desc_gravity != PANGO_GRAVITY_AUTO)
 	{
 	  state->resolved_gravity = state->font_desc_gravity;
 	}
-      else if (state->width_iter.wide)
-        {
-	  /* Wide characters are always upright */
-          state->resolved_gravity = state->context->resolved_gravity;
-        }
       else
 	{
 	  PangoGravity gravity = state->gravity;
@@ -1310,9 +1306,10 @@ itemize_state_update_for_new_run (ItemizeState *state)
 	  if (G_LIKELY (gravity == PANGO_GRAVITY_AUTO))
 	    gravity = state->context->resolved_gravity;
 
-	  state->resolved_gravity = pango_gravity_get_for_script (state->script,
-								  gravity,
-								  gravity_hint);
+	  state->resolved_gravity = pango_gravity_get_for_script_and_width (state->script,
+									    state->width_iter.wide,
+									    gravity,
+									    gravity_hint);
 	}
 
       if (old_gravity != state->resolved_gravity)

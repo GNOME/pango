@@ -121,6 +121,18 @@ pango_attr_gravity_hint_new()
 @Returns: 
 
 
+<!-- ##### FUNCTION pango_gravity_get_for_script_and_width ##### -->
+<para>
+
+</para>
+
+@script: 
+@wide: 
+@base_gravity: 
+@hint: 
+@Returns: 
+
+
 <!-- ##### FUNCTION pango_gravity_to_rotation ##### -->
 <para>
 
