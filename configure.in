@@ -21,15 +21,15 @@ dnl
 
 dnl The triplet 
 m4_define([pango_version_major], [1])
-m4_define([pango_version_minor], [24])
-m4_define([pango_version_micro], [2])
+m4_define([pango_version_minor], [25])
+m4_define([pango_version_micro], [0])
 m4_define([pango_version],
           [pango_version_major.pango_version_minor.pango_version_micro])
 dnl The X.Y in -lpango-X.Y line. This is expected to stay 1.0 until Pango 2.
 m4_define([pango_api_version], [1.0])
 dnl Number of releases since we've added interfaces
 dnl XXX For 1.25 release simply remove it and make it automatic.
-m4_define([pango_interface_age], [2])
+m4_define([pango_interface_age], [0])
 dnl Number of releases since we've broken binary compatibility.
 m4_define([pango_binary_age],
           [m4_eval(100 * pango_version_minor + pango_version_micro)])
@@ -153,7 +153,7 @@ esac
 AC_MSG_RESULT([$pango_platform_win32])
 AM_CONDITIONAL(PLATFORM_WIN32, test "$pango_platform_win32" = "yes")
 
-if test "$pango_os_win32" = "yes"; then
+if test "$pango_platform_win32" = "yes"; then
   AC_CHECK_TOOL(WINDRES, windres, no)
   if test "$WINDRES" = no; then
     AC_MSG_ERROR([*** Could not find an implementation of windres in your PATH.])
@@ -675,7 +675,7 @@ dnl ********************************************************
 #
 LIBRARY_LIBTOOL_OPTIONS="-version-info $VERSION_INFO"
 MODULE_LIBTOOL_OPTIONS="-export-dynamic -avoid-version"
-if test "$pango_os_win32" = yes; then
+if test "$pango_platform_win32" = yes; then
     # We currently use .def files on Windows
     true
     LIBRARY_LIBTOOL_OPTIONS="$LIBRARY_LIBTOOL_OPTIONS -no-undefined"
@@ -968,6 +968,8 @@ pango/opentype/Makefile
 pango/pango.rc
 pango/pangoft2.rc
 pango/pangowin32.rc
+pango/pangox.rc
+pango/pangoxft.rc
 pango-view/Makefile
 modules/Makefile
 modules/arabic/Makefile

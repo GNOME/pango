@@ -1,3 +1,27 @@
+Overview of changes between 1.24.4 and 1.24.5
+=============================================
+- Build introspection again
+- Misc bug fixes
+	Bug 589133 – Firefox 3.5 complains about invalid weak references
+	Bug 585806 – crash during pango_fc_font_map_shutdown
+	Bug 588678 – pango crash: install a new theme from
+
+Overview of changes between 1.24.3 and 1.24.4
+=============================================
+- Misc bug fixes
+    Bug 586814 – Crashes related to fontmap destruction after upgrade
+
+Overview of changes between 1.24.2 and 1.24.3
+=============================================
+- Fix build with new automake
+- Misc bug fixes
+    Bug 585337 – Fails to install: install: will not overwrite
+    	just-created
+    Bug 585164 – 'man preload' shows man page for pango-view
+    Bug 584328 – Persian sample text is not good
+    Bug 583250 – pango_font_metrics_get_approximate_char_width is
+	    wrong when LANG=fa_IR
+
 Overview of changes between 1.24.1 and 1.24.2
 =============================================
 - Misc bug fixes

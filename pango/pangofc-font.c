@@ -45,6 +45,7 @@ struct _PangoFcFontPrivate
   PangoFcDecoder *decoder;
   PangoFcFontKey *key;
   PangoFcCmapCache *cmap_cache;
+  gboolean has_weak_pointer; /* have set a weak_pointer from fontmap to us */
 };
 
 static gboolean pango_fc_font_real_has_char  (PangoFcFont *font,
@@ -140,7 +141,15 @@ pango_fc_font_finalize (GObject *object)
   g_slist_free (fcfont->metrics_by_lang);
 
   if (fcfont->fontmap)
-    _pango_fc_font_map_remove (PANGO_FC_FONT_MAP (fcfont->fontmap), fcfont);
+    {
+      _pango_fc_font_map_remove (PANGO_FC_FONT_MAP (fcfont->fontmap), fcfont);
+      if (priv->has_weak_pointer)
+        {
+	  priv->has_weak_pointer = FALSE;
+	  g_object_remove_weak_pointer (G_OBJECT (fcfont->fontmap), (gpointer *) (gpointer) &fcfont->fontmap);
+	}
+      fcfont->fontmap = NULL;
+    }
 
   FcPatternDestroy (fcfont->font_pattern);
   pango_font_description_free (fcfont->description);
@@ -220,7 +229,11 @@ pango_fc_font_set_property (GObject       *object,
 	g_return_if_fail (fcfont->fontmap == NULL);
 	fcfont->fontmap = (PangoFontMap *) fcfontmap;
 	if (fcfont->fontmap)
-	  g_object_add_weak_pointer (G_OBJECT (fcfont->fontmap), (gpointer *) (gpointer) &fcfont->fontmap);
+	  {
+	    PangoFcFontPrivate *priv = fcfont->priv;
+	    priv->has_weak_pointer = TRUE;
+	    g_object_add_weak_pointer (G_OBJECT (fcfont->fontmap), (gpointer *) (gpointer) &fcfont->fontmap);
+	  }
       }
       goto set_decoder;
 
@@ -773,9 +786,6 @@ _pango_fc_font_shutdown (PangoFcFont *font)
 
   if (PANGO_FC_FONT_GET_CLASS (font)->shutdown)
     PANGO_FC_FONT_GET_CLASS (font)->shutdown (font);
-
-  if (font->fontmap)
-    _pango_fc_font_map_remove (PANGO_FC_FONT_MAP (font->fontmap), font);
 }
 
 /**

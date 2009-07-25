@@ -56,7 +56,7 @@ libpango_1_0_la_DEPENDENCIES = 		\
 libpango_1_0_la_LIBADD += mini-fribidi/libmini-fribidi.la
 libpango_1_0_la_DEPENDENCIES += mini-fribidi/libmini-fribidi.la
 
-if OS_WIN32
+if PLATFORM_WIN32
 libpango_1_0_la_LDFLAGS += -export-symbols $(srcdir)/pango.def -Wl,pango-win32-res.o
 libpango_1_0_la_DEPENDENCIES += pango-win32-res.o pango.def
 endif
@@ -203,6 +203,15 @@ libpangox_1_0_la_LIBADD = 			\
 libpangox_1_0_la_DEPENDENCIES =			\
 	libpango-$(PANGO_API_VERSION).la	\
 	$(INCLUDED_X_MODULES)
+
+if PLATFORM_WIN32
+libpangox_1_0_la_LDFLAGS += -export-symbols $(srcdir)/pangox.def -Wl,pangox-win32-res.o
+libpangox_1_0_la_DEPENDENCIES += pangox-win32-res.o pangox.def
+endif
+
+pangox-win32-res.o: pangox.rc
+	$(WINDRES) $< $@
+
 libpangox_1_0_la_SOURCES = 			\
 	$(pangox_public_sources) 		\
 	modules.h 	   			\
@@ -279,7 +288,7 @@ libpangoft2_1_0_la_SOURCES =   	\
 	pango-ot-tag.c
 
 
-if OS_WIN32
+if PLATFORM_WIN32
 libpangoft2_1_0_la_LDFLAGS += -export-symbols $(srcdir)/pangoft2.def -Wl,pangoft2-win32-res.o
 libpangoft2_1_0_la_DEPENDENCIES += pangoft2-win32-res.o pangoft2.def
 endif
@@ -314,7 +323,7 @@ lib_LTLIBRARIES += libpangoxft-1.0.la
 BUILT_GIRSOURCES += PangoXft-1.0.gir
 endif
 
-pangoxft_headers = pangoxft.h pangoxft-render.h pango-ot.h
+pangoxft_headers = pangoxft.h pangoxft-render.h
 
 libpangoxft_1_0_la_LDFLAGS = $(LIBRARY_LIBTOOL_OPTIONS)
 libpangoxft_1_0_la_LIBADD =			\
@@ -328,6 +337,14 @@ libpangoxft_1_0_la_LIBADD =			\
 libpangoxft_1_0_la_DEPENDENCIES =		\
 	libpangoft2-$(PANGO_API_VERSION).la	\
 	libpango-$(PANGO_API_VERSION).la
+
+if PLATFORM_WIN32
+libpangoxft_1_0_la_LDFLAGS += -export-symbols $(srcdir)/pangoxft.def -Wl,pangoxft-win32-res.o
+libpangoxft_1_0_la_DEPENDENCIES += pangoxft-win32-res.o pangoxft.def
+endif
+pangoxft-win32-res.o: pangoxft.rc
+	$(WINDRES) $< $@
+
 libpangoxft_1_0_la_SOURCES =   	\
 	pangoxft-font.c		\
 	pangoxft-fontmap.c      \
@@ -381,7 +398,7 @@ libpangocairo_1_0_la_SOURCES =  \
 	pangocairo-private.h
 
 if HAVE_CAIRO_WIN32
-if OS_WIN32
+if PLATFORM_WIN32
 libpangocairo_1_0_la_LDFLAGS += -export-symbols $(srcdir)/pangocairo.def
 libpangocairo_1_0_la_DEPENDENCIES += pangocairo.def
 endif
@@ -424,7 +441,7 @@ endif
 PangoCairo-1.0.gir: $(libpangocairo_1_0_la_SOURCES)
 PangoCairo-1.0.gir: $(pangocairo_headers)
 PangoCairo-1.0.gir: libpangocairo-1.0.la
-PangoCairo-1.0.gir: Pango-1.0.gir $(G_IR_SCANNER)
+PangoCairo-1.0.gir: Pango-1.0.gir $(G_IR_SCANNER) Makefile
 	$(G_IR_SCANNER) -v --namespace PangoCairo --nsversion=1.0 \
 	    --add-include-path=$(srcdir) --add-include-path=. \
             --include=GObject-2.0 \
@@ -437,7 +454,6 @@ PangoCairo-1.0.gir: Pango-1.0.gir $(G_IR_SCANNER)
             --pkg cairo \
 	    -I$(top_srcdir) \
 	    $(PANGO_CFLAGS) \
-            $(libpangocairo_1_0_la_SOURCES) \
 	    $(pangocairo_headers)
 
 # ------------------- libpangowin32 -------------------
@@ -465,7 +481,7 @@ libpangowin32_1_0_la_SOURCES =	\
 	pangowin32-fontcache.c	\
 	pangowin32-fontmap.c
 
-if OS_WIN32
+if PLATFORM_WIN32
 libpangowin32_1_0_la_LDFLAGS += -export-symbols $(srcdir)/pangowin32.def -Wl,pangowin32-win32-res.o
 libpangowin32_1_0_la_DEPENDENCIES += pangowin32-win32-res.o pangowin32.def
 endif
@@ -484,6 +500,10 @@ if HAVE_FREETYPE
 endif
 	$(INSTALL) $(srcdir)/pangowin32.def $(DESTDIR)$(libdir)/pangowin32-$(PANGO_API_VERSION).def
 	$(INSTALL) $(srcdir)/pangocairo.def $(DESTDIR)$(libdir)/pangocairo-$(PANGO_API_VERSION).def
+if HAVE_X
+	$(INSTALL) $(srcdir)/pangox.def $(DESTDIR)$(libdir)/pangox-$(PANGO_API_VERSION).def
+	$(INSTALL) $(srcdir)/pangoxft.def $(DESTDIR)$(libdir)/pangoxft-$(PANGO_API_VERSION).def
+endif
 uninstall-def-files:
 	-rm $(DESTDIR)$(libdir)/pango$(PANGO_API_VERSION).def
 if HAVE_FREETYPE
@@ -491,6 +511,10 @@ if HAVE_FREETYPE
 endif
 	-rm $(DESTDIR)$(libdir)/pangowin32-$(PANGO_API_VERSION).def
 	-rm $(DESTDIR)$(libdir)/pangocairo-$(PANGO_API_VERSION).def
+if HAVE_X
+	-rm $(DESTDIR)$(libdir)/pangox-$(PANGO_API_VERSION).def
+	-rm $(DESTDIR)$(libdir)/pangoxft-$(PANGO_API_VERSION).def
+endif
 else
 install-def-files:
 uninstall-def-files:
@@ -539,20 +563,20 @@ pangocairo-$(PANGO_API_VERSION).lib: libpangocairo-$(PANGO_API_VERSION).la $(src
 
 # ------------------- introspection -------------------
 
-#if HAVE_INTROSPECTION
-#
-#girdir = $(GIRDIR)
-#dist_gir_DATA = $(BUILT_GIRSOURCES)
-#
-#EXTRA_DIST += $(BUILT_GIRSOURCES)
-#
-#typelibsdir = $(TYPELIBDIR)
-#typelibs_DATA = $(BUILT_GIRSOURCES:.gir=.typelib)
-#
-#%.typelib: %.gir $(G_IR_COMPILER)
-#	LD_LIBRARY_PATH=$${LD_LIBRARY_PATH:+$$LD_LIBRARY_PATH:}. $(G_IR_COMPILER) --includedir=$(srcdir) --includedir=. $(G_IR_COMPILER_OPTS) $< -o $(builddir)/$(@F)
-#
-#endif # HAVE_INTROSPECTION
+if HAVE_INTROSPECTION
+
+girdir = $(GIRDIR)
+dist_gir_DATA = $(BUILT_GIRSOURCES)
+
+EXTRA_DIST += $(BUILT_GIRSOURCES)
+
+typelibsdir = $(TYPELIBDIR)
+typelibs_DATA = $(BUILT_GIRSOURCES:.gir=.typelib)
+
+%.typelib: %.gir $(G_IR_COMPILER)
+	LD_LIBRARY_PATH=$${LD_LIBRARY_PATH:+$$LD_LIBRARY_PATH:}. $(G_IR_COMPILER) --includedir=$(srcdir) --includedir=. $(G_IR_COMPILER_OPTS) $< -o $(builddir)/$(@F)
+
+endif # HAVE_INTROSPECTION
 
 # ------------------- pango-querymodules -------------------
 
@@ -596,6 +620,10 @@ EXTRA_DIST +=					\
 	pangoft2.rc.in				\
 	pangowin32.rc				\
 	pangowin32.rc.in			\
+	pangox.rc				\
+	pangox.rc.in				\
+	pangoxft.rc				\
+	pangoxft.rc.in				\
 	check.defs
 
 

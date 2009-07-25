@@ -1104,6 +1104,7 @@ PangoGravityHint
 PANGO_GRAVITY_IS_VERTICAL
 pango_gravity_get_for_matrix
 pango_gravity_get_for_script
+pango_gravity_get_for_script_and_width
 pango_gravity_to_rotation
 <SUBSECTION Standard>
 PANGO_TYPE_GRAVITY

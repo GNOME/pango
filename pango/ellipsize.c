@@ -25,6 +25,7 @@
 #include "pango-glyph-item.h"
 #include "pango-layout-private.h"
 #include "pango-engine-private.h"
+#include "pango-impl-utils.h"
 
 typedef struct _EllipsizeState EllipsizeState;
 typedef struct _RunInfo        RunInfo;
@@ -123,7 +124,7 @@ init_state (EllipsizeState  *state,
   state->n_runs = g_slist_length (line->runs);
   state->run_info = g_new (RunInfo, state->n_runs);
 
-  start_offset = g_utf8_strlen (line->layout->text,
+  start_offset = pango_utf8_strlen (line->layout->text,
 				line->start_index);
 
   state->total_width = 0;
@@ -636,7 +637,7 @@ fixup_ellipsis_run (EllipsizeState *state)
   /* Fix up the item to point to the entire elided text */
   item->offset = state->gap_start_iter.run_iter.start_index;
   item->length = state->gap_end_iter.run_iter.end_index - item->offset;
-  item->num_chars = g_utf8_strlen (state->layout->text + item->offset, item->length);
+  item->num_chars = pango_utf8_strlen (state->layout->text + item->offset, item->length);
 
   /* The level for the item is the minimum level of the elided text */
   level = G_MAXINT;
