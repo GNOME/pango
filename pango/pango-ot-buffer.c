@@ -36,14 +36,14 @@ acquire_buffer (gboolean *free_buffer)
   if (G_LIKELY (G_TRYLOCK (cached_buffer)))
     {
       if (G_UNLIKELY (!cached_buffer))
-	cached_buffer = hb_buffer_new ();
+	cached_buffer = hb_buffer_new (64);
 
       buffer = cached_buffer;
       *free_buffer = FALSE;
     }
   else
     {
-      buffer = hb_buffer_new ();
+      buffer = hb_buffer_new (32);
       *free_buffer = TRUE;
     }
 
