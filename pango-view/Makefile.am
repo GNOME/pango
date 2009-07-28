@@ -100,12 +100,6 @@ $(srcdir)/pango-view.1: ../configure.in $(pango_view_SOURCES)
 	      echo Failed to update pango-view.1, the man page may be outdated >&2; \
 	      (test -f "$@" || echo help2man is required to generate this file. >> "$@"));
 
-install-data-hook:
-	@cd "$(DESTDIR)$(man1dir)" && gzip -c pango-view.1 > pango-view.1.gz && $(RM) pango-view.1
-
-uninstall-hook:
-	$(RM) "$(DESTDIR)$(man1dir)/pango-view.1.gz"
-
 #########################################################
 
 BUILT_SOURCES = pangorc
