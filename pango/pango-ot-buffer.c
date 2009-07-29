@@ -155,6 +155,8 @@ pango_ot_buffer_set_rtl (PangoOTBuffer *buffer,
 			 gboolean       rtl)
 {
   buffer->rtl = rtl != FALSE;
+  hb_buffer_set_direction (buffer->buffer,
+			   buffer->rtl ? HB_DIRECTION_RTL : HB_DIRECTION_LTR);
 }
 
 /**

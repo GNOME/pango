@@ -558,8 +558,6 @@ _pango_ot_info_position    (const PangoOTInfo    *info,
   /* XXX */
   _hb_buffer_clear_positions (buffer->buffer);
 
-  hb_ot_layout_set_direction (info->layout,
-			      buffer->rtl);
   hb_ot_layout_set_hinting (info->layout,
 			    buffer->font->is_hinted);
   hb_ot_layout_set_scale (info->layout,
