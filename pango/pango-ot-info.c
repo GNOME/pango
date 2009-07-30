@@ -558,14 +558,16 @@ _pango_ot_info_position    (const PangoOTInfo    *info,
   /* XXX */
   _hb_buffer_clear_positions (buffer->buffer);
 
-  hb_ot_layout_set_hinting (info->layout,
-			    buffer->font->is_hinted);
   hb_ot_layout_set_scale (info->layout,
 			  info->face->size->metrics.x_scale,
 			  info->face->size->metrics.y_scale);
-  hb_ot_layout_set_ppem (info->layout,
-			 info->face->size->metrics.x_ppem,
-			 info->face->size->metrics.y_ppem);
+
+  if (buffer->font->is_hinted)
+    hb_ot_layout_set_ppem (info->layout,
+			   info->face->size->metrics.x_ppem,
+			   info->face->size->metrics.y_ppem);
+  else
+    hb_ot_layout_set_ppem (info->layout, 0, 0);
 
   for (i = 0; i < ruleset->rules->len; i++)
     {
