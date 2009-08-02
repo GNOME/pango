@@ -74,8 +74,8 @@ pango_ot_info_finalize (GObject *object)
 {
   PangoOTInfo *info = PANGO_OT_INFO (object);
 
-  if (info->layout)
-    hb_ot_layout_destroy (info->layout);
+  if (info->hb_face)
+    hb_face_destroy (info->hb_face);
 
   parent_class->finalize (object);
 }
@@ -117,23 +117,30 @@ pango_ot_info_get (FT_Face face)
 
       if (FT_IS_SFNT (face))
         {
-	  /* XXX handle face->stream->base == NULL better */
-	  info->layout = hb_ot_layout_create_for_data ((const char *) face->stream->base, face->face_index);
+	  hb_blob_t *blob;
 
-	  if (!hb_ot_layout_has_font_glyph_classes (info->layout))
+	  /* XXX handle face->stream->base == NULL better */
+	  blob = hb_blob_create ((const char *) face->stream->base,
+				 (unsigned int) face->stream->size,
+				 HB_MEMORY_MODE_READONLY_MAY_MAKE_WRITEABLE,
+				 NULL, NULL);
+	  info->hb_face = hb_face_create_for_data (blob, face->face_index);
+	  hb_blob_destroy (blob);
+
+	  if (!hb_ot_layout_has_font_glyph_classes (info->hb_face))
 	    synthesize_class_def (info);
 	}
       else
-        info->layout = hb_ot_layout_create ();
+        info->hb_face = hb_face_create_for_data (NULL, 0);
     }
 
   return info;
 }
 
-hb_ot_layout_t *
-_pango_ot_info_get_layout (PangoOTInfo *info)
+hb_face_t *
+_pango_ot_info_get_hb_face (PangoOTInfo *info)
 {
-  return info->layout;
+  return info->hb_face;
 }
 
 typedef struct _GlyphInfo GlyphInfo;
@@ -263,7 +270,7 @@ synthesize_class_def (PangoOTInfo *info)
 
   g_array_free (glyph_infos, TRUE);
 
-  hb_ot_layout_build_glyph_classes (info->layout, info->face->num_glyphs,
+  hb_ot_layout_build_glyph_classes (info->hb_face, info->face->num_glyphs,
 				    glyph_indices, classes, j);
 
   g_free (glyph_indices);
@@ -273,13 +280,13 @@ synthesize_class_def (PangoOTInfo *info)
     FT_Set_Charmap (info->face, old_charmap);
 }
 
-static hb_ot_layout_table_type_t
+static hb_tag_t
 get_hb_table_type (PangoOTTableType table_type)
 {
   switch (table_type) {
-    case PANGO_OT_TABLE_GSUB: return HB_OT_LAYOUT_TABLE_TYPE_GSUB;
-    case PANGO_OT_TABLE_GPOS: return HB_OT_LAYOUT_TABLE_TYPE_GPOS;
-    default:                  return (hb_ot_layout_table_type_t) -1;
+    case PANGO_OT_TABLE_GSUB: return HB_OT_TAG_GSUB;
+    case PANGO_OT_TABLE_GPOS: return HB_OT_TAG_GPOS;
+    default:                  return HB_TAG_NONE;
   }
 }
 
@@ -308,9 +315,9 @@ pango_ot_info_find_script (PangoOTInfo      *info,
 			   PangoOTTag        script_tag,
 			   guint            *script_index)
 {
-  hb_ot_layout_table_type_t tt = get_hb_table_type (table_type);
+  hb_tag_t tt = get_hb_table_type (table_type);
 
-  return hb_ot_layout_table_find_script (info->layout, tt,
+  return hb_ot_layout_table_find_script (info->hb_face, tt,
 					 script_tag,
 					 script_index);
 }
@@ -346,15 +353,15 @@ pango_ot_info_find_language (PangoOTInfo      *info,
 {
   gboolean ret;
   unsigned l_index;
-  hb_ot_layout_table_type_t tt = get_hb_table_type (table_type);
+  hb_tag_t tt = get_hb_table_type (table_type);
 
-  ret = hb_ot_layout_script_find_language (info->layout, tt,
+  ret = hb_ot_layout_script_find_language (info->hb_face, tt,
 					   script_index,
 					   language_tag,
 					   &l_index);
   if (language_index) *language_index = l_index;
 
-  hb_ot_layout_language_get_required_feature_index (info->layout, tt,
+  hb_ot_layout_language_get_required_feature_index (info->hb_face, tt,
 						    script_index,
 						    l_index,
 						    required_feature_index);
@@ -392,9 +399,9 @@ pango_ot_info_find_feature  (PangoOTInfo      *info,
 			     guint             language_index,
 			     guint            *feature_index)
 {
-  hb_ot_layout_table_type_t tt = get_hb_table_type (table_type);
+  hb_tag_t tt = get_hb_table_type (table_type);
 
-  return hb_ot_layout_language_find_feature (info->layout, tt,
+  return hb_ot_layout_language_find_feature (info->hb_face, tt,
 					     script_index,
 					     language_index,
 					     feature_tag,
@@ -415,16 +422,16 @@ PangoOTTag *
 pango_ot_info_list_scripts (PangoOTInfo      *info,
 			    PangoOTTableType  table_type)
 {
-  hb_ot_layout_table_type_t tt = get_hb_table_type (table_type);
+  hb_tag_t tt = get_hb_table_type (table_type);
   PangoOTTag *result;
   unsigned int count, i;
 
-  count = hb_ot_layout_table_get_script_count (info->layout, tt);
+  count = hb_ot_layout_table_get_script_count (info->hb_face, tt);
 
   result = g_new (PangoOTTag, count + 1);
 
   for (i = 0; i < count; i++)
-    result[i] = hb_ot_layout_table_get_script_tag (info->layout, tt, i);
+    result[i] = hb_ot_layout_table_get_script_tag (info->hb_face, tt, i);
 
   result[i] = 0;
 
@@ -449,17 +456,17 @@ pango_ot_info_list_languages (PangoOTInfo      *info,
 			      guint             script_index,
 			      PangoOTTag        language_tag G_GNUC_UNUSED)
 {
-  hb_ot_layout_table_type_t tt = get_hb_table_type (table_type);
+  hb_tag_t tt = get_hb_table_type (table_type);
   PangoOTTag *result;
   unsigned int count, i;
 
-  count = hb_ot_layout_script_get_language_count (info->layout, tt,
+  count = hb_ot_layout_script_get_language_count (info->hb_face, tt,
 						  script_index);
 
   result = g_new (PangoOTTag, count + 1);
 
   for (i = 0; i < count; i++)
-    result[i] = hb_ot_layout_script_get_language_tag (info->layout, tt,
+    result[i] = hb_ot_layout_script_get_language_tag (info->hb_face, tt,
 						      script_index,
 						      i);
 
@@ -490,18 +497,18 @@ pango_ot_info_list_features  (PangoOTInfo      *info,
 			      guint             script_index,
 			      guint             language_index)
 {
-  hb_ot_layout_table_type_t tt = get_hb_table_type (table_type);
+  hb_tag_t tt = get_hb_table_type (table_type);
   PangoOTTag *result;
   unsigned int count, i;
 
-  count = hb_ot_layout_language_get_feature_count (info->layout, tt,
+  count = hb_ot_layout_language_get_feature_count (info->hb_face, tt,
 						   script_index,
 						   language_index);
 
   result = g_new (PangoOTTag, count + 1);
 
   for (i = 0; i < count; i++)
-    result[i] = hb_ot_layout_language_get_feature_tag (info->layout, tt,
+    result[i] = hb_ot_layout_language_get_feature_tag (info->hb_face, tt,
 						       script_index,
 						       language_index,
 						       i);
@@ -528,19 +535,19 @@ _pango_ot_info_substitute  (const PangoOTInfo    *info,
 	continue;
 
       mask = rule->property_bit;
-      lookup_count = hb_ot_layout_feature_get_lookup_count (info->layout,
-							    HB_OT_LAYOUT_TABLE_TYPE_GSUB,
+      lookup_count = hb_ot_layout_feature_get_lookup_count (info->hb_face,
+							    HB_OT_TAG_GSUB,
 							    rule->feature_index);
 
       for (j = 0; j < lookup_count; j++)
         {
 	  unsigned int lookup_index;
 
-	  lookup_index = hb_ot_layout_feature_get_lookup_index (info->layout,
-								HB_OT_LAYOUT_TABLE_TYPE_GSUB,
+	  lookup_index = hb_ot_layout_feature_get_lookup_index (info->hb_face,
+								HB_OT_TAG_GSUB,
 								rule->feature_index,
 								j);
-	  hb_ot_layout_substitute_lookup (info->layout,
+	  hb_ot_layout_substitute_lookup (info->hb_face,
 					  buffer->buffer,
 					  lookup_index,
 					  rule->property_bit);
@@ -554,19 +561,20 @@ _pango_ot_info_position    (const PangoOTInfo    *info,
 			    PangoOTBuffer        *buffer)
 {
   unsigned int i;
+  gboolean is_hinted;
+  hb_font_t *hb_font;
 
   hb_buffer_clear_positions (buffer->buffer);
 
-  hb_ot_layout_set_scale (info->layout,
-			  info->face->size->metrics.x_scale,
-			  info->face->size->metrics.y_scale);
-
-  if (buffer->font->is_hinted)
-    hb_ot_layout_set_ppem (info->layout,
-			   info->face->size->metrics.x_ppem,
-			   info->face->size->metrics.y_ppem);
-  else
-    hb_ot_layout_set_ppem (info->layout, 0, 0);
+  /* XXX reuse hb_font */
+  hb_font = hb_font_create (info->hb_face);
+  hb_font_set_scale (hb_font,
+		     info->face->size->metrics.x_scale,
+		     info->face->size->metrics.y_scale);
+  is_hinted = buffer->font->is_hinted;
+  hb_font_set_ppem (hb_font,
+		    is_hinted ? info->face->size->metrics.x_ppem : 0,
+		    is_hinted ? info->face->size->metrics.y_ppem : 0);
 
   for (i = 0; i < ruleset->rules->len; i++)
     {
@@ -578,19 +586,19 @@ _pango_ot_info_position    (const PangoOTInfo    *info,
 	continue;
 
       mask = rule->property_bit;
-      lookup_count = hb_ot_layout_feature_get_lookup_count (info->layout,
-							    HB_OT_LAYOUT_TABLE_TYPE_GPOS,
+      lookup_count = hb_ot_layout_feature_get_lookup_count (info->hb_face,
+							    HB_OT_TAG_GPOS,
 							    rule->feature_index);
 
       for (j = 0; j < lookup_count; j++)
         {
 	  unsigned int lookup_index;
 
-	  lookup_index = hb_ot_layout_feature_get_lookup_index (info->layout,
-								HB_OT_LAYOUT_TABLE_TYPE_GPOS,
+	  lookup_index = hb_ot_layout_feature_get_lookup_index (info->hb_face,
+								HB_OT_TAG_GPOS,
 								rule->feature_index,
 								j);
-	  hb_ot_layout_position_lookup (info->layout,
+	  hb_ot_layout_position_lookup (info->hb_face, hb_font,
 					buffer->buffer,
 					lookup_index,
 					rule->property_bit);
@@ -621,4 +629,6 @@ _pango_ot_info_position    (const PangoOTInfo    *info,
 	  positions[j].y_pos += positions[j - positions[j].cursive_chain].y_pos;
       }
     }
+
+  hb_font_destroy (hb_font);
 }

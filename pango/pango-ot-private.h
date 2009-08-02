@@ -25,7 +25,7 @@
 #include <glib-object.h>
 
 #include <pango/pango-ot.h>
-#include "opentype/hb-ot-layout.h"
+#include "opentype/hb-ot.h"
 
 G_BEGIN_DECLS
 
@@ -39,7 +39,7 @@ struct _PangoOTInfo
 
   FT_Face face;
 
-  hb_ot_layout_t *layout;
+  hb_face_t *hb_face;
 };
 
 struct _PangoOTInfoClass
@@ -87,7 +87,7 @@ struct _PangoOTBuffer
   guint applied_gpos : 1;
 };
 
-hb_ot_layout_t *_pango_ot_info_get_layout (PangoOTInfo *info);
+hb_face_t *_pango_ot_info_get_hb_face (PangoOTInfo *info);
 void _pango_ot_info_substitute  (const PangoOTInfo    *info,
 				 const PangoOTRuleset *ruleset,
 				 PangoOTBuffer        *buffer);
