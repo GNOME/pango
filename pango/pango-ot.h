@@ -64,12 +64,13 @@ typedef enum
 /* Note that this must match hb_glyph_info_t */
 struct _PangoOTGlyph
 {
-  guint    glyph;
+  guint32  glyph;
   guint    properties;
   guint    cluster;
   gushort  component;
   gushort  ligID;
-  gushort  property_cache;    /* Internal */
+
+  guint    internal;
 };
 
 struct _PangoOTFeatureMap
