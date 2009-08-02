@@ -655,8 +655,8 @@ CLEANFILES =			\
 	s-enum-types-c
 
 MOSTLYCLEANFILES = 		\
-	*.def.list		\
-	*.def.expected
+	*.list			\
+	*.expected
 
 DISTCLEANFILES = 		\
 	pango-features.h	\
