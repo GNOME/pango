@@ -36,14 +36,14 @@ acquire_buffer (gboolean *free_buffer)
   if (G_LIKELY (G_TRYLOCK (cached_buffer)))
     {
       if (G_UNLIKELY (!cached_buffer))
-	cached_buffer = hb_buffer_new (64);
+	cached_buffer = hb_buffer_create (64);
 
       buffer = cached_buffer;
       *free_buffer = FALSE;
     }
   else
     {
-      buffer = hb_buffer_new (32);
+      buffer = hb_buffer_create (32);
       *free_buffer = TRUE;
     }
 
@@ -53,13 +53,13 @@ acquire_buffer (gboolean *free_buffer)
 static void
 release_buffer (hb_buffer_t *buffer, gboolean free_buffer)
 {
-  if (G_LIKELY (!free_buffer))
+  if (G_LIKELY (!free_buffer) && hb_buffer_get_reference_count (buffer) == 1)
     {
       hb_buffer_clear (buffer);
       G_UNLOCK (cached_buffer);
     }
   else
-    hb_buffer_free (buffer);
+    hb_buffer_destroy (buffer);
 }
 
 /**
@@ -197,10 +197,10 @@ pango_ot_buffer_get_glyphs (const PangoOTBuffer  *buffer,
 			    int                  *n_glyphs)
 {
   if (glyphs)
-    *glyphs = (PangoOTGlyph *)buffer->buffer->in_string;
+    *glyphs = (PangoOTGlyph *) hb_buffer_get_glyph_infos (buffer->buffer);
 
   if (n_glyphs)
-    *n_glyphs = buffer->buffer->in_length;
+    *n_glyphs = hb_buffer_get_len (buffer->buffer);
 }
 
 static void
@@ -331,20 +331,26 @@ pango_ot_buffer_output (const PangoOTBuffer *buffer,
   unsigned int i;
   int last_cluster;
 
+  unsigned int len;
+  PangoOTGlyph *otglyphs;
+  hb_glyph_position_t *positions;
+
   face = pango_fc_font_lock_face (buffer->font);
   g_assert (face);
 
+  pango_ot_buffer_get_glyphs (buffer, &otglyphs, (int *) &len);
+
   /* Copy glyphs into output glyph string */
-  pango_glyph_string_set_size (glyphs, buffer->buffer->in_length);
+  pango_glyph_string_set_size (glyphs, len);
 
   last_cluster = -1;
-  for (i = 0; i < buffer->buffer->in_length; i++)
+  for (i = 0; i < len; i++)
     {
-      hb_glyph_info_t *ginfo = &buffer->buffer->in_string[i];
+      PangoOTGlyph *otglyph = &otglyphs[i];
 
-      glyphs->glyphs[i].glyph = ginfo->gindex;
+      glyphs->glyphs[i].glyph = otglyph->glyph;
 
-      glyphs->log_clusters[i] = ginfo->cluster;
+      glyphs->log_clusters[i] = otglyph->cluster;
       if (glyphs->log_clusters[i] != last_cluster)
 	glyphs->glyphs[i].attr.is_cluster_start = 1;
       else
@@ -386,12 +392,13 @@ pango_ot_buffer_output (const PangoOTBuffer *buffer,
       swap_range (glyphs, 0, glyphs->num_glyphs);
     }
 
+  positions = hb_buffer_get_glyph_positions (buffer->buffer);
   if (buffer->applied_gpos)
     {
       if (buffer->rtl)
-	apply_gpos_rtl (glyphs, buffer->buffer->positions, buffer->font->is_hinted);
+	apply_gpos_rtl (glyphs, positions, buffer->font->is_hinted);
       else
-	apply_gpos_ltr (glyphs, buffer->buffer->positions, buffer->font->is_hinted);
+	apply_gpos_ltr (glyphs, positions, buffer->font->is_hinted);
     }
   else
     {

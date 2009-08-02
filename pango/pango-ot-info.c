@@ -555,8 +555,7 @@ _pango_ot_info_position    (const PangoOTInfo    *info,
 {
   unsigned int i;
 
-  /* XXX */
-  _hb_buffer_clear_positions (buffer->buffer);
+  hb_buffer_clear_positions (buffer->buffer);
 
   hb_ot_layout_set_scale (info->layout,
 			  info->face->size->metrics.x_scale,
@@ -603,17 +602,18 @@ _pango_ot_info_position    (const PangoOTInfo    *info,
     if (buffer->applied_gpos)
     {
       unsigned int i, j;
-      hb_glyph_position_t *positions = buffer->buffer->positions;
+      unsigned int len = hb_buffer_get_len (buffer->buffer);
+      hb_glyph_position_t *positions = hb_buffer_get_glyph_positions (buffer->buffer);
 
       /* First handle all left-to-right connections */
-      for (j = 0; j < buffer->buffer->in_length; j++)
+      for (j = 0; j < len; j++)
       {
 	if (positions[j].cursive_chain > 0)
 	  positions[j].y_pos += positions[j - positions[j].cursive_chain].y_pos;
       }
 
       /* Then handle all right-to-left connections */
-      for (i = buffer->buffer->in_length; i > 0; i--)
+      for (i = len; i > 0; i--)
       {
 	j = i - 1;
 
