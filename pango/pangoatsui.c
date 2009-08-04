@@ -32,7 +32,7 @@ struct _PangoATSUIFontPrivate
   PangoFontDescription *desc;
   gpointer context_key;
 
-  ATSUFontID font_id;
+  CGFontRef font_id;
 
   PangoFontMap *fontmap;
 };
@@ -176,8 +176,8 @@ _pango_atsui_font_set_context_key (PangoATSUIFont *afont,
 }
 
 void
-_pango_atsui_font_set_atsu_font_id (PangoATSUIFont *font,
-                                    ATSUFontID      font_id)
+_pango_atsui_font_set_cgfont (PangoATSUIFont *font,
+                                    CGFontRef      font_id)
 {
   PangoATSUIFontPrivate *priv = font->priv;
 
@@ -185,17 +185,17 @@ _pango_atsui_font_set_atsu_font_id (PangoATSUIFont *font,
 }
 
 /**
- * pango_atsui_font_get_atsu_font_id:
+ * pango_atsui_font_get_cgfont:
  * @font: A #PangoATSUIFont
  *
- * Returns the ATSUFontID of a font.
+ * Returns the CGFontRef of a font.
  *
- * Return value: the ATSUFontID associated to @font.
+ * Return value: the CGFontRef associated to @font.
  *
  * Since: 1.18
  */
-ATSUFontID
-pango_atsui_font_get_atsu_font_id (PangoATSUIFont *font)
+CGFontRef
+pango_atsui_font_get_cgfont (PangoATSUIFont *font)
 {
   PangoATSUIFontPrivate *priv = font->priv;
 

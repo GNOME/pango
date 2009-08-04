@@ -68,7 +68,7 @@ struct _PangoATSUIFontClass
 
 #endif /* PANGO_ENABLE_BACKEND */
 
-ATSUFontID pango_atsui_font_get_atsu_font_id (PangoATSUIFont *font);
+CGFontRef pango_atsui_font_get_cgfont (PangoATSUIFont *font);
 
 #endif /* PANGO_ENABLE_ENGINE || PANGO_ENABLE_BACKEND */
 

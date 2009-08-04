@@ -83,10 +83,10 @@ static cairo_font_face_t *
 pango_cairo_atsui_font_create_font_face (PangoCairoFont *font)
 {
   PangoATSUIFont *afont = (PangoATSUIFont *) (font);
-  ATSUFontID font_id;
+  CGFontRef font_id;
 
-  font_id = pango_atsui_font_get_atsu_font_id (afont);
-  return cairo_quartz_font_face_create_for_atsu_font_id (font_id);
+  font_id = pango_atsui_font_get_cgfont (afont);
+  return cairo_quartz_font_face_create_for_cgfont (font_id);
 }
 
 static int
@@ -119,8 +119,8 @@ pango_cairo_atsui_font_create_metrics_for_context (PangoCairoFont *font,
 {
   PangoCairoATSUIFont *cafont = (PangoCairoATSUIFont *) font;
   PangoATSUIFont *afont = (PangoATSUIFont *) font;
-  ATSFontRef ats_font;
-  ATSFontMetrics ats_metrics;
+  CGFontRef cg_font;
+  CTFontRef ct_font;
   PangoFontMetrics *metrics;
   PangoFontDescription *font_desc;
   PangoLayout *layout;
@@ -128,20 +128,19 @@ pango_cairo_atsui_font_create_metrics_for_context (PangoCairoFont *font,
   PangoLanguage *language = pango_context_get_language (context);
   const char *sample_str = pango_language_get_sample_string (language);
 
-  ats_font = FMGetATSFontRefFromFont (pango_atsui_font_get_atsu_font_id (afont));
-
-  ATSFontGetHorizontalMetrics (ats_font, kATSOptionFlagsDefault, &ats_metrics);
+  cg_font = pango_atsui_font_get_cgfont (afont);
+  ct_font = CTFontCreateWithGraphicsFont(cg_font, cafont->size, NULL, NULL);
 
   metrics = pango_font_metrics_new ();
 
-  metrics->ascent = ats_metrics.ascent * cafont->size * PANGO_SCALE;
-  metrics->descent = -ats_metrics.descent * cafont->size * PANGO_SCALE;
+  metrics->ascent = CTFontGetAscent(ct_font) * PANGO_SCALE;
+  metrics->descent = -CTFontGetDescent(ct_font) * PANGO_SCALE;
 
-  metrics->underline_position = ats_metrics.underlinePosition * cafont->size * PANGO_SCALE;
-  metrics->underline_thickness = ats_metrics.underlineThickness * cafont->size * PANGO_SCALE;
+  metrics->underline_position = CTFontGetUnderlinePosition(ct_font) * PANGO_SCALE;
+  metrics->underline_thickness = CTFontGetUnderlineThickness(ct_font) * PANGO_SCALE;
 
   metrics->strikethrough_position = metrics->ascent / 3;
-  metrics->strikethrough_thickness = ats_metrics.underlineThickness * cafont->size * PANGO_SCALE;
+  metrics->strikethrough_thickness = metrics->underline_thickness * PANGO_SCALE;
 
   layout = pango_layout_new (context);
   font_desc = pango_font_describe_with_absolute_size ((PangoFont *) font);
@@ -156,6 +155,8 @@ pango_cairo_atsui_font_create_metrics_for_context (PangoCairoFont *font,
 
   pango_font_description_free (font_desc);
   g_object_unref (layout);
+  
+  
 
   return metrics;
 }
@@ -212,7 +213,7 @@ _pango_cairo_atsui_font_new (PangoCairoATSUIFontMap     *cafontmap,
   PangoATSUIFont *afont;
   CFStringRef cfstr;
   ATSFontRef font_ref;
-  ATSUFontID font_id;
+  CGFontRef font_id;
   double size;
   double dpi;
   double m;
@@ -257,7 +258,7 @@ _pango_cairo_atsui_font_new (PangoCairoATSUIFontMap     *cafontmap,
   if (font_ref == kATSFontRefUnspecified)
     return NULL;
 
-  font_id = FMGetFontFromATSFontRef (font_ref);
+  font_id = CGFontCreateWithPlatformFont (&font_ref);
   if (!font_id)
     return NULL;
 
@@ -268,7 +269,7 @@ _pango_cairo_atsui_font_new (PangoCairoATSUIFontMap     *cafontmap,
   _pango_atsui_font_set_face (afont, face);
 
   size = (double) pango_font_description_get_size (desc) / PANGO_SCALE;
-  _pango_atsui_font_set_atsu_font_id (afont, font_id);
+  _pango_atsui_font_set_cgfont (afont, font_id);
 
   if (context)
     {

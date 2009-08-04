@@ -93,8 +93,8 @@ PangoATSUIFace *      _pango_atsui_font_get_face             (PangoATSUIFont    
 gpointer              _pango_atsui_font_get_context_key      (PangoATSUIFont    *afont);
 void                  _pango_atsui_font_set_context_key      (PangoATSUIFont    *afont,
                                                               gpointer           context_key);
-void                  _pango_atsui_font_set_atsu_font_id     (PangoATSUIFont    *font,
-                                                              ATSUFontID         font_id);
+void                  _pango_atsui_font_set_cgfont           (PangoATSUIFont    *font,
+                                                              CGFontRef         font_id);
 
 G_END_DECLS
 
