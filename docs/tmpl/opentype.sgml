@@ -60,7 +60,7 @@ It contains the following fields.
 @cluster: the cluster that this glyph belongs to.
 @component: a component value, set by the OpenType layout engine.
 @ligID: a ligature index value, set by the OpenType layout engine.
-@property_cache: for internal use.
+@internal: for Pango internal use
 
 <!-- ##### STRUCT PangoOTRuleset ##### -->
 <para>
