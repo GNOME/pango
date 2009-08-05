@@ -1810,7 +1810,7 @@ pango_fc_font_map_get_font_face_data (PangoFcFontMap *fcfontmap,
   return data;
 }
 
-PangoFcCmapCache *
+static PangoFcCmapCache *
 _pango_fc_cmap_cache_ref (PangoFcCmapCache *cmap_cache)
 {
   g_atomic_int_inc ((int *) &cmap_cache->ref_count);
@@ -1835,7 +1835,6 @@ _pango_fc_font_map_get_cmap_cache (PangoFcFontMap *fcfontmap,
 {
   PangoFcFontMapPrivate *priv;
   PangoFcFontFaceData *data;
-  PangoFcCmapCache *cmap_cache;
 
   if (G_UNLIKELY (fcfontmap == NULL))
 	return NULL;
@@ -1865,9 +1864,7 @@ PangoCoverage *
 _pango_fc_font_map_get_coverage (PangoFcFontMap *fcfontmap,
 				 PangoFcFont    *fcfont)
 {
-  PangoFcFontMapPrivate *priv = fcfontmap->priv;
   PangoFcFontFaceData *data;
-  PangoCoverage *coverage;
   FcCharSet *charset;
 
   if (G_UNLIKELY (!fcfont->font_pattern))

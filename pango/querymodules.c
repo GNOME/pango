@@ -182,7 +182,7 @@ query_module (const char *dir, const char *name)
     g_module_close (module);
 }
 
-static gboolean
+static G_GNUC_NORETURN gboolean
 show_version(const char *name G_GNUC_UNUSED,
 	     const char *arg G_GNUC_UNUSED,
 	     gpointer    data G_GNUC_UNUSED,
