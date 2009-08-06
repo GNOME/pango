@@ -134,7 +134,7 @@ pango_ot_info_get (FT_Face face)
 	    synthesize_class_def (info);
 	}
       else
-        info->hb_face = hb_face_create_for_data (NULL, 0);
+        info->hb_face = hb_face_create_for_data (hb_blob_create_empty (), 0);
     }
 
   return info;
