@@ -106,10 +106,13 @@ pango_ot_info_get (FT_Face face)
 {
   PangoOTInfo *info;
 
-  if (face->generic.data)
+  if (G_LIKELY (face->generic.data && face->generic.finalizer == pango_ot_info_finalizer))
     return face->generic.data;
   else
     {
+      if (face->generic.finalizer)
+        face->generic.finalizer (face->generic.data);
+
       info = face->generic.data = g_object_new (PANGO_TYPE_OT_INFO, NULL);
       face->generic.finalizer = pango_ot_info_finalizer;
 
