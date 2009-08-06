@@ -110,6 +110,8 @@ pango_ot_info_get (FT_Face face)
     return face->generic.data;
   else
     {
+      hb_blob_t *blob;
+
       if (face->generic.finalizer)
         face->generic.finalizer (face->generic.data);
 
@@ -118,23 +120,17 @@ pango_ot_info_get (FT_Face face)
 
       info->face = face;
 
-      if (FT_IS_SFNT (face))
-        {
-	  hb_blob_t *blob;
+      /* XXX handle face->stream->base == NULL better */
+      blob = hb_blob_create ((const char *) face->stream->base,
+			     (unsigned int) face->stream->size,
+			     HB_MEMORY_MODE_READONLY_MAY_MAKE_WRITEABLE,
+			     NULL, NULL);
+      info->hb_face = hb_face_create_for_data (blob, face->face_index);
+      hb_blob_destroy (blob);
 
-	  /* XXX handle face->stream->base == NULL better */
-	  blob = hb_blob_create ((const char *) face->stream->base,
-				 (unsigned int) face->stream->size,
-				 HB_MEMORY_MODE_READONLY_MAY_MAKE_WRITEABLE,
-				 NULL, NULL);
-	  info->hb_face = hb_face_create_for_data (blob, face->face_index);
-	  hb_blob_destroy (blob);
-
-	  if (!hb_ot_layout_has_font_glyph_classes (info->hb_face))
-	    synthesize_class_def (info);
-	}
-      else
-        info->hb_face = hb_face_create_for_data (hb_blob_create_empty (), 0);
+      /* XXX this is such a waste if not SFNT */
+      if (!hb_ot_layout_has_font_glyph_classes (info->hb_face))
+	synthesize_class_def (info);
     }
 
   return info;
