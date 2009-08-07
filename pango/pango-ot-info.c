@@ -423,16 +423,12 @@ pango_ot_info_list_scripts (PangoOTInfo      *info,
 {
   hb_tag_t tt = get_hb_table_type (table_type);
   PangoOTTag *result;
-  unsigned int count, i;
+  unsigned int count;
 
-  count = hb_ot_layout_table_get_script_count (info->hb_face, tt);
-
+  hb_ot_layout_table_get_script_tags (info->hb_face, tt, &count, NULL);
   result = g_new (PangoOTTag, count + 1);
-
-  for (i = 0; i < count; i++)
-    result[i] = hb_ot_layout_table_get_script_tag (info->hb_face, tt, i);
-
-  result[i] = 0;
+  hb_ot_layout_table_get_script_tags (info->hb_face, tt, &count, result);
+  result[count] = 0;
 
   return result;
 }
@@ -457,19 +453,12 @@ pango_ot_info_list_languages (PangoOTInfo      *info,
 {
   hb_tag_t tt = get_hb_table_type (table_type);
   PangoOTTag *result;
-  unsigned int count, i;
+  unsigned int count;
 
-  count = hb_ot_layout_script_get_language_count (info->hb_face, tt,
-						  script_index);
-
+  hb_ot_layout_script_get_language_tags (info->hb_face, tt, script_index, &count, NULL);
   result = g_new (PangoOTTag, count + 1);
-
-  for (i = 0; i < count; i++)
-    result[i] = hb_ot_layout_script_get_language_tag (info->hb_face, tt,
-						      script_index,
-						      i);
-
-  result[i] = 0;
+  hb_ot_layout_script_get_language_tags (info->hb_face, tt, script_index, &count, result);
+  result[count] = 0;
 
   return result;
 }
@@ -498,21 +487,12 @@ pango_ot_info_list_features  (PangoOTInfo      *info,
 {
   hb_tag_t tt = get_hb_table_type (table_type);
   PangoOTTag *result;
-  unsigned int count, i;
+  unsigned int count;
 
-  count = hb_ot_layout_language_get_feature_count (info->hb_face, tt,
-						   script_index,
-						   language_index);
-
+  hb_ot_layout_language_get_feature_tags (info->hb_face, tt, script_index, language_index, &count, NULL);
   result = g_new (PangoOTTag, count + 1);
-
-  for (i = 0; i < count; i++)
-    result[i] = hb_ot_layout_language_get_feature_tag (info->hb_face, tt,
-						       script_index,
-						       language_index,
-						       i);
-
-  result[i] = 0;
+  hb_ot_layout_language_get_feature_tags (info->hb_face, tt, script_index, language_index, &count, result);
+  result[count] = 0;
 
   return result;
 }
@@ -529,28 +509,24 @@ _pango_ot_info_substitute  (const PangoOTInfo    *info,
       PangoOTRule *rule = &g_array_index (ruleset->rules, PangoOTRule, i);
       hb_ot_layout_feature_mask_t mask;
       unsigned int lookup_count, j;
+      unsigned int lookup_indexes[100];
 
       if (rule->table_type != PANGO_OT_TABLE_GSUB)
 	continue;
 
       mask = rule->property_bit;
-      lookup_count = hb_ot_layout_feature_get_lookup_count (info->hb_face,
-							    HB_OT_TAG_GSUB,
-							    rule->feature_index);
+      lookup_count = G_N_ELEMENTS (lookup_indexes);
+      hb_ot_layout_feature_get_lookup_indexes (info->hb_face,
+					       HB_OT_TAG_GSUB,
+					       rule->feature_index,
+					       &lookup_count,
+					       lookup_indexes);
 
       for (j = 0; j < lookup_count; j++)
-        {
-	  unsigned int lookup_index;
-
-	  lookup_index = hb_ot_layout_feature_get_lookup_index (info->hb_face,
-								HB_OT_TAG_GSUB,
-								rule->feature_index,
-								j);
-	  hb_ot_layout_substitute_lookup (info->hb_face,
-					  buffer->buffer,
-					  lookup_index,
-					  rule->property_bit);
-	}
+	hb_ot_layout_substitute_lookup (info->hb_face,
+					buffer->buffer,
+					lookup_indexes[j],
+					rule->property_bit);
     }
 }
 
@@ -580,28 +556,24 @@ _pango_ot_info_position    (const PangoOTInfo    *info,
       PangoOTRule *rule = &g_array_index (ruleset->rules, PangoOTRule, i);
       hb_ot_layout_feature_mask_t mask;
       unsigned int lookup_count, j;
+      unsigned int lookup_indexes[100];
 
       if (rule->table_type != PANGO_OT_TABLE_GPOS)
 	continue;
 
       mask = rule->property_bit;
-      lookup_count = hb_ot_layout_feature_get_lookup_count (info->hb_face,
-							    HB_OT_TAG_GPOS,
-							    rule->feature_index);
+      lookup_count = G_N_ELEMENTS (lookup_indexes);
+      hb_ot_layout_feature_get_lookup_indexes (info->hb_face,
+					       HB_OT_TAG_GPOS,
+					       rule->feature_index,
+					       &lookup_count,
+					       lookup_indexes);
 
       for (j = 0; j < lookup_count; j++)
-        {
-	  unsigned int lookup_index;
-
-	  lookup_index = hb_ot_layout_feature_get_lookup_index (info->hb_face,
-								HB_OT_TAG_GPOS,
-								rule->feature_index,
-								j);
-	  hb_ot_layout_position_lookup (info->hb_face, hb_font,
-					buffer->buffer,
-					lookup_index,
-					rule->property_bit);
-	}
+	hb_ot_layout_position_lookup (info->hb_face, hb_font,
+				      buffer->buffer,
+				      lookup_indexes[j],
+				      rule->property_bit);
 
       buffer->applied_gpos = TRUE;
     }
