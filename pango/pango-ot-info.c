@@ -507,7 +507,7 @@ _pango_ot_info_substitute  (const PangoOTInfo    *info,
   for (i = 0; i < ruleset->rules->len; i++)
     {
       PangoOTRule *rule = &g_array_index (ruleset->rules, PangoOTRule, i);
-      hb_ot_layout_feature_mask_t mask;
+      hb_mask_t mask;
       unsigned int lookup_count, j;
       unsigned int lookup_indexes[100];
 
@@ -554,7 +554,7 @@ _pango_ot_info_position    (const PangoOTInfo    *info,
   for (i = 0; i < ruleset->rules->len; i++)
     {
       PangoOTRule *rule = &g_array_index (ruleset->rules, PangoOTRule, i);
-      hb_ot_layout_feature_mask_t mask;
+      hb_mask_t mask;
       unsigned int lookup_count, j;
       unsigned int lookup_indexes[100];
 
