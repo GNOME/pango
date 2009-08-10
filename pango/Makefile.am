@@ -441,7 +441,7 @@ endif
 PangoCairo-1.0.gir: $(libpangocairo_1_0_la_SOURCES)
 PangoCairo-1.0.gir: $(pangocairo_headers)
 PangoCairo-1.0.gir: libpangocairo-1.0.la
-PangoCairo-1.0.gir: Pango-1.0.gir $(G_IR_SCANNER) Makefile
+PangoCairo-1.0.gir: Pango-1.0.gir $(G_IR_SCANNER)
 	$(G_IR_SCANNER) -v --namespace PangoCairo --nsversion=1.0 \
 	    --add-include-path=$(srcdir) --add-include-path=. \
             --include=GObject-2.0 \
@@ -454,6 +454,7 @@ PangoCairo-1.0.gir: Pango-1.0.gir $(G_IR_SCANNER) Makefile
             --pkg cairo \
 	    -I$(top_srcdir) \
 	    $(PANGO_CFLAGS) \
+            $(libpangocairo_1_0_la_SOURCES) \
 	    $(pangocairo_headers)
 
 # ------------------- libpangowin32 -------------------
@@ -563,20 +564,20 @@ pangocairo-$(PANGO_API_VERSION).lib: libpangocairo-$(PANGO_API_VERSION).la $(src
 
 # ------------------- introspection -------------------
 
-if HAVE_INTROSPECTION
-
-girdir = $(GIRDIR)
-dist_gir_DATA = $(BUILT_GIRSOURCES)
-
-EXTRA_DIST += $(BUILT_GIRSOURCES)
-
-typelibsdir = $(TYPELIBDIR)
-typelibs_DATA = $(BUILT_GIRSOURCES:.gir=.typelib)
-
-%.typelib: %.gir $(G_IR_COMPILER)
-	LD_LIBRARY_PATH=$${LD_LIBRARY_PATH:+$$LD_LIBRARY_PATH:}. $(G_IR_COMPILER) --includedir=$(srcdir) --includedir=. $(G_IR_COMPILER_OPTS) $< -o $(builddir)/$(@F)
-
-endif # HAVE_INTROSPECTION
+#if HAVE_INTROSPECTION
+#
+#girdir = $(GIRDIR)
+#dist_gir_DATA = $(BUILT_GIRSOURCES)
+#
+#EXTRA_DIST += $(BUILT_GIRSOURCES)
+#
+#typelibsdir = $(TYPELIBDIR)
+#typelibs_DATA = $(BUILT_GIRSOURCES:.gir=.typelib)
+#
+#%.typelib: %.gir $(G_IR_COMPILER)
+#	LD_LIBRARY_PATH=$${LD_LIBRARY_PATH:+$$LD_LIBRARY_PATH:}. $(G_IR_COMPILER) --includedir=$(srcdir) --includedir=. $(G_IR_COMPILER_OPTS) $< -o $(builddir)/$(@F)
+#
+#endif # HAVE_INTROSPECTION
 
 # ------------------- pango-querymodules -------------------
 
