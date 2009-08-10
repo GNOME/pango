@@ -1,3 +1,21 @@
+Overview of changes between 1.24.5 and 1.25.1
+=============================================
+- Merge harfbuzz-ng: brand new OpenType Layout engine
+  Currently is not very portable.  Will be fixed as
+  reports come in.
+
+- Port to ATSUI backend to use CoreText instead of ATS
+- New public API:
+
+	pango_gravity_get_for_script_and_width()
+
+- Misc bug fixes
+    Bug 590042 – pango-view.1 manpage should not be gzipped
+    Bug 410169 – gravity problem with Common chars
+    Bug 589113 – Some characters rotated incorrectly in vertical text
+    Bug 582851 -- Little fix for compiling with Cygwin
+    Bug 588060 -- Fonts missing on Cygwin
+
 Overview of changes between 1.24.4 and 1.24.5
 =============================================
 - Build introspection again
