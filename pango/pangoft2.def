@@ -60,9 +60,6 @@ EXPORTS
 	pango_ot_info_find_language
 	pango_ot_info_find_script
 	pango_ot_info_get
-	pango_ot_info_get_gdef
-	pango_ot_info_get_gpos
-	pango_ot_info_get_gsub
 	pango_ot_info_get_type
 	pango_ot_info_list_features
 	pango_ot_info_list_languages
