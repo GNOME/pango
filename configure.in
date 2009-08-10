@@ -111,17 +111,8 @@ AC_SUBST(LIB_EXE_MACHINE_FLAG)
 AM_CONDITIONAL(OS_WIN32, test "$pango_os_win32" = "yes")
 
 AC_PROG_CC
-	
-dnl 
-dnl Check for a working C++ compiler, but do not bail out, if none is found.
-dnl We use this for an automated test for C++ header correctness.
-dnl 
-AC_CHECK_PROGS(CXX, [$CCC c++ g++ gcc CC cxx cc++ cl], gcc)
-AC_LANG_SAVE
-AC_LANG_CPLUSPLUS
-AC_TRY_COMPILE(,[class a { int b; } c;], ,CXX=)
+AC_PROG_CXX
 AM_CONDITIONAL(HAVE_CXX, test "$CXX" != "")
-AC_LANG_RESTORE
 
 AC_LIBTOOL_WIN32_DLL
 AM_DISABLE_STATIC
