@@ -128,6 +128,8 @@ pango_ot_info_get (FT_Face face)
       info->hb_face = hb_face_create_for_data (blob, face->face_index);
       hb_blob_destroy (blob);
 
+      hb_face_set_unicode_funcs (info->hb_face, hb_glib_get_unicode_funcs ());
+
       /* XXX this is such a waste if not SFNT */
       if (!hb_ot_layout_has_font_glyph_classes (info->hb_face))
 	synthesize_class_def (info);
