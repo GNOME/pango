@@ -23,7 +23,7 @@
 
 #include "pango-ot-private.h"
 #include "pango-impl-utils.h"
-#include FT_MODULE_H
+#include FT_TRUETYPE_TABLES_H
 
 static void pango_ot_info_class_init (GObjectClass *object_class);
 static void pango_ot_info_finalize   (GObject *object);
@@ -90,6 +90,32 @@ pango_ot_info_finalizer (void *object)
   g_object_unref (info);
 }
 
+static hb_blob_t *
+_get_table  (hb_tag_t tag, void *user_data)
+{
+  PangoOTInfo *info = (PangoOTInfo *) user_data;
+  FT_Byte *buffer;
+  FT_ULong  length = 0;
+  FT_Error error;
+
+  error = FT_Load_Sfnt_Table (info->face, tag, 0, NULL, &length);
+  if (error)
+    return hb_blob_create_empty ();
+
+  buffer = g_malloc (length);
+  if (buffer == NULL)
+    return hb_blob_create_empty ();
+
+  error = FT_Load_Sfnt_Table (info->face, tag, 0, buffer, &length);
+  if (error)
+    return hb_blob_create_empty ();
+
+  return hb_blob_create ((const char *) buffer, length,
+			 HB_MEMORY_MODE_WRITEABLE,
+			 g_free, NULL);
+}
+
+
 /**
  * pango_ot_info_get:
  * @face: a <type>FT_Face</type>.
@@ -110,8 +136,6 @@ pango_ot_info_get (FT_Face face)
     return face->generic.data;
   else
     {
-      hb_blob_t *blob;
-
       if (face->generic.finalizer)
         face->generic.finalizer (face->generic.data);
 
@@ -120,13 +144,19 @@ pango_ot_info_get (FT_Face face)
 
       info->face = face;
 
-      /* XXX handle face->stream->base == NULL better */
-      blob = hb_blob_create ((const char *) face->stream->base,
-			     (unsigned int) face->stream->size,
-			     HB_MEMORY_MODE_READONLY_MAY_MAKE_WRITEABLE,
-			     NULL, NULL);
-      info->hb_face = hb_face_create_for_data (blob, face->face_index);
-      hb_blob_destroy (blob);
+      if (face->stream->base != NULL) {
+	hb_blob_t *blob;
+
+	blob = hb_blob_create ((const char *) face->stream->base,
+			       (unsigned int) face->stream->size,
+			       HB_MEMORY_MODE_READONLY_MAY_MAKE_WRITEABLE,
+			       NULL, NULL);
+	info->hb_face = hb_face_create_for_data (blob, face->face_index);
+	hb_blob_destroy (blob);
+      } else {
+	info->hb_face = hb_face_create_for_tables (_get_table, NULL, info);
+      }
+
 
       hb_face_set_unicode_funcs (info->hb_face, hb_glib_get_unicode_funcs ());
 
