@@ -1,3 +1,11 @@
+Overview of changes between 1.25.1 and 1.25.2
+=============================================
+- Tweak C++ compiler options.  If you get link errors with gcc on
+  x86-64 about __gxx_personality_v0(), make sure your CXXFLAGS does
+  not have -fexceptions.  This will be fixed in Pango itself later.
+- Fix crasher with gzipped fonts.
+    Bug 591409 – crash in firefox.  Handle non-mmapped FT_Face
+
 Overview of changes between 1.24.5 and 1.25.1
 =============================================
 - Merge harfbuzz-ng: brand new OpenType Layout engine
