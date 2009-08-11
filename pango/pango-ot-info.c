@@ -455,7 +455,7 @@ pango_ot_info_list_scripts (PangoOTInfo      *info,
 {
   hb_tag_t tt = get_hb_table_type (table_type);
   PangoOTTag *result;
-  unsigned int count;
+  unsigned int count = 0;
 
   hb_ot_layout_table_get_script_tags (info->hb_face, tt, &count, NULL);
   result = g_new (PangoOTTag, count + 1);
@@ -485,7 +485,7 @@ pango_ot_info_list_languages (PangoOTInfo      *info,
 {
   hb_tag_t tt = get_hb_table_type (table_type);
   PangoOTTag *result;
-  unsigned int count;
+  unsigned int count = 0;
 
   hb_ot_layout_script_get_language_tags (info->hb_face, tt, script_index, &count, NULL);
   result = g_new (PangoOTTag, count + 1);
@@ -519,7 +519,7 @@ pango_ot_info_list_features  (PangoOTInfo      *info,
 {
   hb_tag_t tt = get_hb_table_type (table_type);
   PangoOTTag *result;
-  unsigned int count;
+  unsigned int count = 0;
 
   hb_ot_layout_language_get_feature_tags (info->hb_face, tt, script_index, language_index, &count, NULL);
   result = g_new (PangoOTTag, count + 1);
