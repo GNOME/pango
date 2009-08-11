@@ -889,7 +889,7 @@ pango_cairo_font_map_get_type
 <TITLE>ATSUI Fonts</TITLE>
 <FILE>atsui-fonts</FILE>
 PANGO_RENDER_TYPE_ATSUI
-pango_atsui_font_get_atsu_font_id
+pango_atsui_font_get_cgfont
 <SUBSECTION Standard>
 PANGO_ATSUI_FONT
 PANGO_ATSUI_FONT_CLASS
