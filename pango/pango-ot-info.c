@@ -542,7 +542,7 @@ _pango_ot_info_position    (const PangoOTInfo    *info,
   hb_buffer_clear_positions (buffer->buffer);
 
   /* XXX reuse hb_font */
-  hb_font = hb_font_create (info->hb_face);
+  hb_font = hb_font_create ();
   hb_font_set_scale (hb_font,
 		     info->face->size->metrics.x_scale,
 		     info->face->size->metrics.y_scale);
