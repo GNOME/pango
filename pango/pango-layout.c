@@ -3295,10 +3295,9 @@ process_item (PangoLayout     *layout,
 
       if (processing_new_item)
 	{
+	  PangoGlyphItem glyph_item = {item, state->glyphs};
 	  state->log_widths = g_new (int, item->num_chars);
-	  pango_glyph_string_get_logical_widths (state->glyphs,
-						 layout->text + item->offset, item->length, item->analysis.level,
-						 state->log_widths);
+	  pango_glyph_item_get_logical_widths (&glyph_item, layout->text, state->log_widths);
 	}
 
     retry_break:

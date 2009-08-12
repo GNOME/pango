@@ -636,6 +636,16 @@ The #GObject type for #PangoGlyphItem.
 @letter_spacing: 
 
 
+<!-- ##### FUNCTION pango_glyph_item_get_logical_widths ##### -->
+<para>
+
+</para>
+
+@glyph_item: 
+@text: 
+@logical_widths: 
+
+
 <!-- ##### MACRO PANGO_TYPE_GLYPH_ITEM_ITER ##### -->
 <para>
 The #GObject type for #PangoGlyphItemIter.

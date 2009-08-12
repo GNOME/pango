@@ -118,6 +118,7 @@ pango_glyph_item_free
 pango_glyph_item_split
 pango_glyph_item_apply_attrs
 pango_glyph_item_letter_space
+pango_glyph_item_get_logical_widths
 PANGO_TYPE_GLYPH_ITEM_ITER
 pango_glyph_item_iter_copy
 pango_glyph_item_iter_free

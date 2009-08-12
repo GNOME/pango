@@ -782,3 +782,63 @@ pango_glyph_item_letter_space (PangoGlyphItem *glyph_item,
 	}
     }
 }
+
+/**
+ * pango_glyph_item_get_logical_widths:
+ * @glyph_item: a #PangoGlyphItem
+ * @text: text that @glyph_item corresponds to
+ *   (glyph_item->item->offset is an offset from the
+ *    start of @text)
+ * @logical_widths: an array whose length is the number of characters in
+ *                  glyph_item (equal to glyph_item->item->num_chars)
+ *                  to be filled in with the resulting character widths.
+ *
+ * Given a #PangoGlyphItem and the corresponding
+ * text, determine the screen width corresponding to each character. When
+ * multiple characters compose a single cluster, the width of the entire
+ * cluster is divided equally among the characters.
+ *
+ * See also pango_glyph_string_get_logical_widths().
+ *
+ * Since: 1.26
+ **/
+void
+pango_glyph_item_get_logical_widths (PangoGlyphItem *glyph_item,
+				     const char     *text,
+				     int            *logical_widths)
+{
+  PangoGlyphItemIter iter;
+  gboolean has_cluster;
+  int dir;
+
+  dir = glyph_item->item->analysis.level % 2 == 0 ? +1 : -1;
+  for (has_cluster = pango_glyph_item_iter_init_start (&iter, glyph_item, text);
+       has_cluster;
+       has_cluster = pango_glyph_item_iter_next_cluster (&iter))
+    {
+      int glyph_index, char_index, num_chars, cluster_width = 0, char_width;
+
+      for (glyph_index  = iter.start_glyph;
+	   glyph_index != iter.end_glyph;
+	   glyph_index += dir)
+        {
+	  cluster_width += glyph_item->glyphs->glyphs[glyph_index].geometry.width;
+	}
+
+      num_chars = iter.end_char - iter.start_char;
+      if (num_chars) /* pedantic */
+        {
+	  char_width = cluster_width / num_chars;
+
+	  for (char_index = iter.start_char;
+	       char_index < iter.end_char;
+	       char_index++)
+	    {
+	      logical_widths[char_index] = char_width;
+	    }
+
+	  /* add any residues to the first char */
+	  logical_widths[iter.start_char] += cluster_width - (char_width * num_chars);
+	}
+    }
+}

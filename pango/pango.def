@@ -182,6 +182,7 @@ EXPORTS
 	pango_glyph_item_apply_attrs
 	pango_glyph_item_copy
 	pango_glyph_item_free
+	pango_glyph_item_get_logical_widths
 	pango_glyph_item_get_type
 	pango_glyph_item_iter_copy
 	pango_glyph_item_iter_free

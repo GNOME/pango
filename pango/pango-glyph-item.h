@@ -53,6 +53,9 @@ void            pango_glyph_item_letter_space (PangoGlyphItem *glyph_item,
 					       const char     *text,
 					       PangoLogAttr   *log_attrs,
 					       int             letter_spacing);
+void 	  pango_glyph_item_get_logical_widths (PangoGlyphItem *glyph_item,
+					       const char     *text,
+					       int            *logical_widths);
 
 
 typedef struct _PangoGlyphItemIter PangoGlyphItemIter;
