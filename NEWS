@@ -1,3 +1,19 @@
+Overview of changes between 1.25.2 and 1.25.3
+=============================================
+- Fix couple of crashers
+- Enforce -fno-exceptions better, should fix build issues for
+  distros on x86-64.
+- Call mprotect() only when available.
+- New public API: pango_glyph_item_get_logical_widths()
+- Remove G_GNUC_PURE attr from pango_glyph_string_get_width()
+- Fix buffer corruption in HarfBuzz
+- Bugs fixed:
+    Bug 591413 – needs to link with libstdc++
+    Bug 591511 – hb-blob.c does not compile using mingw on windows
+    Bug 591557 – [HB] crash scrolling the evolution message list
+    Bug 591576 – crashed with SIGSEGV at pango
+    Bug 591465 – Gimp crashes upon opening the font selection dialog
+
 Overview of changes between 1.25.1 and 1.25.2
 =============================================
 - Tweak C++ compiler options.  If you get link errors with gcc on
