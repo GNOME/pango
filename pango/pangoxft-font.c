@@ -339,7 +339,7 @@ pango_xft_font_get_glyph_extents (PangoFont        *font,
 
   if (glyph == PANGO_GLYPH_EMPTY)
     {
-      glyph = pango_fc_font_get_glyph (font, ' ');
+      glyph = pango_fc_font_get_glyph (fcfont, ' ');
       empty = TRUE;
     }
 
