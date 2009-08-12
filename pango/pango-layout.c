@@ -3177,6 +3177,7 @@ insert_run (PangoLayoutLine *line,
 	pango_glyph_string_free (state->glyphs);
       state->glyphs = NULL;
       g_free (state->log_widths);
+      state->log_widths = NULL;
     }
 
   line->runs = g_slist_prepend (line->runs, run);
@@ -3382,6 +3383,7 @@ process_item (PangoLayout     *layout,
 	  pango_glyph_string_free (state->glyphs);
 	  state->glyphs = NULL;
 	  g_free (state->log_widths);
+	  state->log_widths = NULL;
 
 	  return BREAK_NONE_FIT;
 	}
