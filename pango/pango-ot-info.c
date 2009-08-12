@@ -541,7 +541,7 @@ _pango_ot_info_substitute  (const PangoOTInfo    *info,
       PangoOTRule *rule = &g_array_index (ruleset->rules, PangoOTRule, i);
       hb_mask_t mask;
       unsigned int lookup_count, j;
-      unsigned int lookup_indexes[100];
+      unsigned int lookup_indexes[1000];
 
       if (rule->table_type != PANGO_OT_TABLE_GSUB)
 	continue;
@@ -588,7 +588,7 @@ _pango_ot_info_position    (const PangoOTInfo    *info,
       PangoOTRule *rule = &g_array_index (ruleset->rules, PangoOTRule, i);
       hb_mask_t mask;
       unsigned int lookup_count, j;
-      unsigned int lookup_indexes[100];
+      unsigned int lookup_indexes[1000];
 
       if (rule->table_type != PANGO_OT_TABLE_GPOS)
 	continue;
