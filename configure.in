@@ -111,8 +111,32 @@ AC_SUBST(LIB_EXE_MACHINE_FLAG)
 AM_CONDITIONAL(OS_WIN32, test "$pango_os_win32" = "yes")
 
 AC_PROG_CC
-AC_PROG_CXX
+
+dnl
+dnl Check for a working C++ compiler, but do not bail out, if none is found.
+dnl We use this for an automated test for C++ header correctness.
+dnl
+AC_CHECK_PROGS(CXX, [$CCC c++ g++ gcc CC cxx cc++ cl], gcc)
+AC_LANG_SAVE
+AC_LANG_CPLUSPLUS
+AC_TRY_COMPILE(,[class a { int b; } c;], ,CXX=)
 AM_CONDITIONAL(HAVE_CXX, test "$CXX" != "")
+AC_LANG_RESTORE
+
+#
+# Checks for HarfBuzz
+#
+
+AC_PROG_CXX
+AC_CHECK_FUNCS(mprotect)
+
+# Make sure we don't link to libstdc++ (needs de-gcc-fication)
+CXXFLAGS="$CXXFLAGS -fno-rtti -fno-exceptions"
+
+
+#
+# Win32 stuff
+#
 
 AC_LIBTOOL_WIN32_DLL
 AM_DISABLE_STATIC
@@ -602,8 +626,7 @@ AM_CONDITIONAL(DYNAMIC_TIBETAN_FC,	echo $dynamic_modules | egrep '(^|,)tibetan-f
 # We use flockfile to implement pango_getline() - should be moved to GLib
 # strtok_r isn't present on some systems
 #
-# mprotect is for HarfBuzz
-AC_CHECK_FUNCS(flockfile strtok_r mprotect)
+AC_CHECK_FUNCS(flockfile strtok_r)
 
 dnl **************************
 dnl *** Checks for gtk-doc ***
