@@ -581,7 +581,7 @@ itemize_shape_and_place (PangoFont           *font,
 #endif
 
       items[item].a.fRTL = analysis->level % 2;
-      if ((*script_shape) (hdc, &script_cache[script],
+      if ((*script_shape) (hdc, script_cache,
 			   wtext + items[item].iCharPos, itemlen,
 			   G_N_ELEMENTS (iglyphs),
 			   &items[item].a,
@@ -611,7 +611,7 @@ itemize_shape_and_place (PangoFont           *font,
 				 nglyphs, glyphs->log_clusters + ng,
 				 char_offset);
 
-      if ((*script_place) (hdc, &script_cache[script], iglyphs, nglyphs,
+      if ((*script_place) (hdc, script_cache, iglyphs, nglyphs,
 			   visattrs, &items[item].a,
 			   advances, offsets, &abc))
 	{
@@ -673,7 +673,7 @@ uniscribe_shape (PangoFont           *font,
   long wlen;
   int i;
   gboolean retval = TRUE;
-  SCRIPT_CACHE script_cache[100];
+  SCRIPT_CACHE script_cache;
 
   if (!pango_win32_font_select_font (font, hdc))
     return FALSE;
@@ -684,11 +684,10 @@ uniscribe_shape (PangoFont           *font,
 
   if (retval)
     {
-      memset (script_cache, 0, sizeof (script_cache));
+      memset (&script_cache, 0, sizeof (script_cache));
       retval = itemize_shape_and_place (font, hdc, wtext, wlen, analysis, glyphs, script_cache);
-      for (i = 0; i < G_N_ELEMENTS (script_cache); i++)
-	if (script_cache[i])
-	  (*script_free_cache)(&script_cache[i]);
+      if (script_cache)
+	  (*script_free_cache)(&script_cache);
     }
 
   if (retval)
