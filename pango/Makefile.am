@@ -552,7 +552,7 @@ pangocairo-$(PANGO_API_VERSION).lib: libpangocairo-$(PANGO_API_VERSION).la $(src
 if HAVE_INTROSPECTION
 
 girdir = $(GIRDIR)
-dist_gir_DATA = $(BUILT_GIRSOURCES)
+gir_DATA = $(BUILT_GIRSOURCES)
 
 typelibsdir = $(TYPELIBDIR)
 typelibs_DATA = $(BUILT_GIRSOURCES:.gir=.typelib)
