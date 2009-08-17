@@ -60,8 +60,7 @@ CHANGELOG_START = 1.23.0^^
 
 ChangeLog: $(srcdir)/ChangeLog
 $(srcdir)/ChangeLog:
-	@echo Creating $@
-	@if test -d "$(srcdir)/.git"; then \
+	$(AM_V_GEN) if test -d "$(srcdir)/.git"; then \
 	  (GIT_DIR=$(top_srcdir)/.git ./missing --run \
 	   git log $(CHANGELOG_START).. --stat) | fmt --split-only > $@.tmp \
 	  && mv -f $@.tmp $@ \
