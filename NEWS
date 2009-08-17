@@ -1,3 +1,16 @@
+Overview of changes between 1.25.3 and 1.25.4
+=============================================
+- Fix various possible overflows in HarfBuzz
+- Improve HB font sanitizing
+- Improved win32 performance
+- Really fix ming32 build issues
+- Re-enable introspection
+- Bugs fixed:
+    Bug 592131 -  Add AM_SILENT_RULES
+    Bug 592036 - integer overflow bug causes misrendering of Nepali
+	    characters
+    Bug 591511 – hh-blob.c does not compile using mingw on windows
+
 Overview of changes between 1.25.2 and 1.25.3
 =============================================
 - Fix couple of crashers
