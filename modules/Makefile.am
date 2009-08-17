@@ -50,7 +50,7 @@ pango.modules:						\
 	$(SUBDIRS)					\
 	$(top_builddir)/config.status			\
 	$(top_builddir)/pango/pango-querymodules$(EXEEXT)
-	@if $(RUN_QUERY_MODULES_TEST) && find . -name '*.la' | grep -v '\.libs' | grep -v libpango | grep '.' > /dev/null ; then \
+	$(AM_V_GEN) if $(RUN_QUERY_MODULES_TEST) && find . -name '*.la' | grep -v '\.libs' | grep -v libpango | grep '.' > /dev/null ; then \
           echo "Writing a pango.modules file to use with tests/examples."; \
           $(top_builddir)/pango/pango-querymodules$(EXEEXT) `find . -name '*.la' | grep -v '\.libs' | grep -v libpango` > $@ ;\
 	else \

@@ -61,7 +61,7 @@ libpango_1_0_la_LDFLAGS += -export-symbols $(srcdir)/pango.def -Wl,pango-win32-r
 libpango_1_0_la_DEPENDENCIES += pango-win32-res.o pango.def
 endif
 pango-win32-res.o: pango.rc
-	$(WINDRES) $< $@
+	$(AM_V_GEN) $(WINDRES) $< $@
 
 libpango_1_0_la_SOURCES =			\
 	break.c					\
@@ -131,9 +131,9 @@ pangoinclude_HEADERS =	   \
 	pango-enum-types.h
 
 pango-enum-types.h: s-enum-types-h
-	@true
+	$(AM_V_GEN) true
 s-enum-types-h: @REBUILD@ $(pango_headers) Makefile
-	( cd $(srcdir) && glib-mkenums \
+	$(AM_V_GEN) ( cd $(srcdir) && glib-mkenums \
 			--fhead "#ifndef __PANGO_ENUM_TYPES_H__\n#define __PANGO_ENUM_TYPES_H__\n\n#include <glib-object.h>\n\nG_BEGIN_DECLS\n" \
 			--fprod "/* enumerations from \"@filename@\" */\n" \
 			--vhead "GType @enum_name@_get_type (void);\n#define @ENUMPREFIX@_TYPE_@ENUMSHORT@ (@enum_name@_get_type())\n" 	\
@@ -144,9 +144,9 @@ s-enum-types-h: @REBUILD@ $(pango_headers) Makefile
 	&& echo timestamp > $(@F)
 
 pango-enum-types.c: s-enum-types-c
-	@true
+	$(AM_V_GEN) true
 s-enum-types-c: @REBUILD@ $(pango_headers) Makefile
-	( cd $(srcdir) && glib-mkenums \
+	$(AM_V_GEN) ( cd $(srcdir) && glib-mkenums \
 			--fhead "#include <pango.h>" \
 			--fprod "\n/* enumerations from \"@filename@\" */" \
 			--vhead "GType\n@enum_name@_get_type (void)\n{\n  static GType etype = 0;\n  if (etype == 0) {\n    static const G@Type@Value values[] = {" 	\
@@ -158,13 +158,13 @@ s-enum-types-c: @REBUILD@ $(pango_headers) Makefile
 	&& echo timestamp > $(@F)
 
 pango-features.h:
-	cd $(top_builddir) && ./config.status pango/pango-features.h
+	$(AM_V_GEN) cd $(top_builddir) && ./config.status pango/pango-features.h
 
 Pango-1.0.gir: $(libpango_1_0_la_SOURCES)
 Pango-1.0.gir: $(pango_headers)
 Pango-1.0.gir: libpango-1.0.la
 Pango-1.0.gir: $(G_IR_SCANNER) Makefile
-	$(G_IR_SCANNER) -v --namespace Pango --nsversion=1.0 \
+	$(AM_V_GEN) $(G_IR_SCANNER) -v --namespace Pango --nsversion=1.0 \
 	    --add-include-path=$(srcdir) --add-include-path=. \
             --include=GObject-2.0 \
             --include=cairo-1.0 \
@@ -273,13 +273,13 @@ libpangoft2_1_0_la_LDFLAGS += -export-symbols $(srcdir)/pangoft2.def -Wl,pangoft
 libpangoft2_1_0_la_DEPENDENCIES += pangoft2-win32-res.o pangoft2.def
 endif
 pangoft2-win32-res.o: pangoft2.rc
-	$(WINDRES) $< $@
+	$(AM_V_GEN) $(WINDRES) $< $@
 
 PangoFT2-1.0.gir: $(pangoft2_headers)
 PangoFT2-1.0.gir: $(libpangoft2_1_0_la_SOURCES)
 PangoFT2-1.0.gir: libpangoft2-1.0.la
 PangoFT2-1.0.gir: Pango-1.0.gir $(G_IR_SCANNER) Makefile
-	$(G_IR_SCANNER) -v --namespace PangoFT2 --nsversion=1.0 \
+	$(AM_V_GEN) $(G_IR_SCANNER) -v --namespace PangoFT2 --nsversion=1.0 \
 	    --add-include-path=$(srcdir) --add-include-path=. \
             --include=GObject-2.0 \
             --include=Pango-1.0 \
@@ -323,7 +323,7 @@ libpangoxft_1_0_la_LDFLAGS += -export-symbols $(srcdir)/pangoxft.def -Wl,pangoxf
 libpangoxft_1_0_la_DEPENDENCIES += pangoxft-win32-res.o pangoxft.def
 endif
 pangoxft-win32-res.o: pangoxft.rc
-	$(WINDRES) $< $@
+	$(AM_V_GEN) $(WINDRES) $< $@
 
 libpangoxft_1_0_la_SOURCES =   	\
 	pangoxft-font.c		\
@@ -336,7 +336,7 @@ PangoXft-1.0.gir: $(pangoxft_headers)
 PangoXft-1.0.gir: $(libpangoxft_1_0_la_SOURCES)
 PangoXft-1.0.gir: libpangoxft-1.0.la
 PangoXft-1.0.gir: Pango-1.0.gir PangoFT2-1.0.gir $(G_IR_SCANNER) Makefile
-	$(G_IR_SCANNER) -v --namespace PangoXft --nsversion=1.0 \
+	$(AM_V_GEN) $(G_IR_SCANNER) -v --namespace PangoXft --nsversion=1.0 \
 	    --add-include-path=$(srcdir) --add-include-path=. \
             --include=GObject-2.0 \
             --include=xft-2.0 \
@@ -425,7 +425,7 @@ PangoCairo-1.0.gir: $(libpangocairo_1_0_la_SOURCES)
 PangoCairo-1.0.gir: $(pangocairo_headers)
 PangoCairo-1.0.gir: libpangocairo-1.0.la
 PangoCairo-1.0.gir: Pango-1.0.gir $(PANGOCAIRO_FONT_BACKEND_GI_MODULE).gir $(G_IR_SCANNER) Makefile
-	$(G_IR_SCANNER) -v --namespace PangoCairo --nsversion=1.0 \
+	$(AM_V_GEN) $(G_IR_SCANNER) -v --namespace PangoCairo --nsversion=1.0 \
 	    --add-include-path=$(srcdir) --add-include-path=. \
             --include=GObject-2.0 \
             --include=cairo-1.0 \
@@ -472,14 +472,14 @@ libpangowin32_1_0_la_LDFLAGS += -export-symbols $(srcdir)/pangowin32.def -Wl,pan
 libpangowin32_1_0_la_DEPENDENCIES += pangowin32-win32-res.o pangowin32.def
 endif
 pangowin32-win32-res.o: pangowin32.rc
-	$(WINDRES) $< $@
+	$(AM_V_GEN) $(WINDRES) $< $@
 
 
 # ------------------- win32 build stuff -------------------
 
 if OS_WIN32
 install-def-files:
-	mkdir -p $(DESTDIR)$(libdir)
+	$(AM_V_GEN) mkdir -p $(DESTDIR)$(libdir) && \
 	$(INSTALL) $(srcdir)/pango.def $(DESTDIR)$(libdir)/pango-$(PANGO_API_VERSION).def
 if HAVE_FREETYPE
 	$(INSTALL) $(srcdir)/pangoft2.def $(DESTDIR)$(libdir)/pangoft2-$(PANGO_API_VERSION).def
@@ -535,16 +535,16 @@ uninstall-ms-lib:
 endif
 
 pango-$(PANGO_API_VERSION).lib: libpango-$(PANGO_API_VERSION).la $(srcdir)/pango.def
-	lib -machine:$(LIB_EXE_MACHINE_FLAG) -name:libpango-$(PANGO_API_VERSION)-$(PANGO_CURRENT_MINUS_AGE).dll -def:$(srcdir)/pango.def -out:$@
+	$(AM_V_GEN) lib -machine:$(LIB_EXE_MACHINE_FLAG) -name:libpango-$(PANGO_API_VERSION)-$(PANGO_CURRENT_MINUS_AGE).dll -def:$(srcdir)/pango.def -out:$@
 
 pangoft2-$(PANGO_API_VERSION).lib: libpangoft2-$(PANGO_API_VERSION).la $(srcdir)/pangoft2.def
-	lib -machine:$(LIB_EXE_MACHINE_FLAG) -name:libpangoft2-$(PANGO_API_VERSION)-$(PANGO_CURRENT_MINUS_AGE).dll -def:$(srcdir)/pangoft2.def -out:$@
+	$(AM_V_GEN) lib -machine:$(LIB_EXE_MACHINE_FLAG) -name:libpangoft2-$(PANGO_API_VERSION)-$(PANGO_CURRENT_MINUS_AGE).dll -def:$(srcdir)/pangoft2.def -out:$@
 
 pangowin32-$(PANGO_API_VERSION).lib: libpangowin32-$(PANGO_API_VERSION).la $(srcdir)/pangowin32.def
-	lib -machine:$(LIB_EXE_MACHINE_FLAG) -name:libpangowin32-$(PANGO_API_VERSION)-$(PANGO_CURRENT_MINUS_AGE).dll -def:$(srcdir)/pangowin32.def -out:$@
+	$(AM_V_GEN) lib -machine:$(LIB_EXE_MACHINE_FLAG) -name:libpangowin32-$(PANGO_API_VERSION)-$(PANGO_CURRENT_MINUS_AGE).dll -def:$(srcdir)/pangowin32.def -out:$@
 
 pangocairo-$(PANGO_API_VERSION).lib: libpangocairo-$(PANGO_API_VERSION).la $(srcdir)/pangocairo.def
-	lib -machine:$(LIB_EXE_MACHINE_FLAG) -name:libpangocairo-$(PANGO_API_VERSION)-$(PANGO_CURRENT_MINUS_AGE).dll -def:$(srcdir)/pangocairo.def -out:$@
+	$(AM_V_GEN) lib -machine:$(LIB_EXE_MACHINE_FLAG) -name:libpangocairo-$(PANGO_API_VERSION)-$(PANGO_CURRENT_MINUS_AGE).dll -def:$(srcdir)/pangocairo.def -out:$@
 
 
 # ------------------- introspection -------------------
@@ -558,7 +558,7 @@ typelibsdir = $(TYPELIBDIR)
 typelibs_DATA = $(BUILT_GIRSOURCES:.gir=.typelib)
 
 %.typelib: %.gir $(G_IR_COMPILER)
-	LD_LIBRARY_PATH=$${LD_LIBRARY_PATH:+$$LD_LIBRARY_PATH:}. $(G_IR_COMPILER) --includedir=$(srcdir) --includedir=. $(G_IR_COMPILER_OPTS) $< -o $(builddir)/$(@F)
+	$(AM_V_GEN) LD_LIBRARY_PATH=$${LD_LIBRARY_PATH:+$$LD_LIBRARY_PATH:}. $(G_IR_COMPILER) --includedir=$(srcdir) --includedir=. $(G_IR_COMPILER_OPTS) $< -o $(builddir)/$(@F)
 
 endif # HAVE_INTROSPECTION
 
@@ -613,10 +613,10 @@ EXTRA_DIST +=					\
 
 if HAVE_INCLUDED_MODULES
 included-modules:
-	@cd $(top_builddir)/modules && $(MAKE) $(AM_MAKEFLAGS) included-modules
+	$(AM_V_GEN) cd $(top_builddir)/modules && $(MAKE) $(AM_MAKEFLAGS) included-modules
 
 $(INCLUDED_LANG_MODULES) $(INCLUDED_X_MODULES) $(INCLUDED_FC_MODULES) $(INCLUDED_WIN32_MODULES) $(INCLUDED_ATSUI_MODULES): included-modules
-	@true
+	$(AM_V_GEN) true
 
 .PHONY: included-modules
 endif
@@ -630,7 +630,7 @@ MODULE_DEF_FILES = \
 	module-defs-atsui.c
 
 $(MODULE_DEF_FILES): $(top_builddir)/config.status
-	cd $(top_builddir) && $(SHELL) ./config.status pango/$@
+	$(AM_V_GEN) cd $(top_builddir) && $(SHELL) ./config.status pango/$@
 
 CLEANFILES =			\
 	pango-enum-types.h	\
