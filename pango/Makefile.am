@@ -163,12 +163,12 @@ pango-features.h:
 Pango-1.0.gir: $(libpango_1_0_la_SOURCES)
 Pango-1.0.gir: $(pango_headers)
 Pango-1.0.gir: libpango-1.0.la
-Pango-1.0.gir: $(G_IR_SCANNER)
+Pango-1.0.gir: $(G_IR_SCANNER) Makefile
 	$(G_IR_SCANNER) -v --namespace Pango --nsversion=1.0 \
 	    --add-include-path=$(srcdir) --add-include-path=. \
             --include=GObject-2.0 \
             --include=cairo-1.0 \
-            --library=pango-1.0 \
+            --library=libpango-1.0.la \
 	    --libtool="$(LIBTOOL)" \
             --output $@ \
             --pkg gobject-2.0 \
@@ -187,7 +187,6 @@ pangoinclude_HEADERS += $(pangox_headers)
 lib_LTLIBRARIES += libpangox-1.0.la
 aliasdir = $(sysconfdir)/pango
 alias_DATA = pangox.aliases
-BUILT_GIRSOURCES += PangoX-1.0.gir
 endif
 
 pangox_headers = pangox.h
@@ -219,25 +218,6 @@ libpangox_1_0_la_SOURCES = 			\
 	pangox-private.h   			\
 	pangox-fontcache.c 			\
 	pangox-fontmap.c
-
-PangoX-1.0.gir: $(libpangox_1_0_la_SOURCES)
-PangoX-1.0.gir: $(pangox_headers)
-PangoX-1.0.gir: libpangox-1.0.la
-PangoX-1.0.gir: Pango-1.0.gir $(G_IR_SCANNER)
-	$(G_IR_SCANNER) -v --namespace PangoX --nsversion=1.0 \
-	    --add-include-path=$(srcdir) --add-include-path=. \
-            --include=GObject-2.0 \
-            --include=xlib-2.0 \
-            --include=Pango-1.0 \
-            --library=pangox-1.0 \
-	    --libtool="$(LIBTOOL)" \
-            --output $@ \
-            --pkg gobject-2.0 \
-            --pkg freetype2 \
-            --pkg pangox \
-	    -I$(top_srcdir) \
-	    $(pangox_public_sources) \
-	    $(pangox_headers)
 
 # ------------------- libpangoft2 -------------------
 
@@ -298,14 +278,14 @@ pangoft2-win32-res.o: pangoft2.rc
 PangoFT2-1.0.gir: $(pangoft2_headers)
 PangoFT2-1.0.gir: $(libpangoft2_1_0_la_SOURCES)
 PangoFT2-1.0.gir: libpangoft2-1.0.la
-PangoFT2-1.0.gir: Pango-1.0.gir $(G_IR_SCANNER)
+PangoFT2-1.0.gir: Pango-1.0.gir $(G_IR_SCANNER) Makefile
 	$(G_IR_SCANNER) -v --namespace PangoFT2 --nsversion=1.0 \
 	    --add-include-path=$(srcdir) --add-include-path=. \
             --include=GObject-2.0 \
             --include=Pango-1.0 \
             --include=freetype2-2.0 \
             --include=fontconfig-2.0 \
-            --library=pangoft2-1.0 \
+            --library=libpangoft2-1.0.la \
 	    --libtool="$(LIBTOOL)" \
             --output $@ \
             --pkg gobject-2.0 \
@@ -355,14 +335,14 @@ libpangoxft_1_0_la_SOURCES =   	\
 PangoXft-1.0.gir: $(pangoxft_headers)
 PangoXft-1.0.gir: $(libpangoxft_1_0_la_SOURCES)
 PangoXft-1.0.gir: libpangoxft-1.0.la
-PangoXft-1.0.gir: Pango-1.0.gir PangoFT2-1.0.gir $(G_IR_SCANNER)
+PangoXft-1.0.gir: Pango-1.0.gir PangoFT2-1.0.gir $(G_IR_SCANNER) Makefile
 	$(G_IR_SCANNER) -v --namespace PangoXft --nsversion=1.0 \
 	    --add-include-path=$(srcdir) --add-include-path=. \
             --include=GObject-2.0 \
             --include=xft-2.0 \
             --include=xlib-2.0 \
             --include=PangoFT2-1.0 \
-            --library=pangoxft-1.0 \
+            --library=libpangoxft-1.0.la \
 	    --libtool="$(LIBTOOL)" \
             --output $@ \
             --pkg gobject-2.0 \
@@ -412,6 +392,7 @@ endif
 if HAVE_CAIRO_FREETYPE
 libpangocairo_1_0_la_LIBADD +=  libpangoft2-$(PANGO_API_VERSION).la $(FREETYPE_LIBS)
 libpangocairo_1_0_la_DEPENDENCIES += libpangoft2-$(PANGO_API_VERSION).la 
+PANGOCAIRO_FONT_BACKEND_GI_MODULE = PangoFT2-1.0
 
 libpangocairo_1_0_la_SOURCES += \
 	pangocairo-fcfont.c	\
@@ -436,18 +417,22 @@ pangoinclude_HEADERS += pangoatsui.h
 libpangocairo_1_0_la_CFLAGS = -xobjective-c
 libpangocairo_1_0_la_LDFLAGS += -framework CoreFoundation -framework Carbon -framework Cocoa
 libpangocairo_1_0_la_LIBADD += $(INCLUDED_ATSUI_MODULES)
+# We don't have an ATSUI GIR right now, so this is just hypothetical
+PANGOCAIRO_FONT_BACKEND_GI_MODULE = PangoATSUI-1.0
 endif
 
 PangoCairo-1.0.gir: $(libpangocairo_1_0_la_SOURCES)
 PangoCairo-1.0.gir: $(pangocairo_headers)
 PangoCairo-1.0.gir: libpangocairo-1.0.la
-PangoCairo-1.0.gir: Pango-1.0.gir $(G_IR_SCANNER)
+PangoCairo-1.0.gir: Pango-1.0.gir $(PANGOCAIRO_FONT_BACKEND_GI_MODULE).gir $(G_IR_SCANNER) Makefile
 	$(G_IR_SCANNER) -v --namespace PangoCairo --nsversion=1.0 \
 	    --add-include-path=$(srcdir) --add-include-path=. \
             --include=GObject-2.0 \
             --include=cairo-1.0 \
             --include=Pango-1.0 \
-            --library=pangocairo-1.0 \
+	    --add-include-path=. \
+	    --include=$(PANGOCAIRO_FONT_BACKEND_GI_MODULE) \
+            --library=libpangocairo-1.0.la \
 	    --libtool="$(LIBTOOL)" \
             --output $@ \
             --pkg gobject-2.0 \
@@ -564,20 +549,20 @@ pangocairo-$(PANGO_API_VERSION).lib: libpangocairo-$(PANGO_API_VERSION).la $(src
 
 # ------------------- introspection -------------------
 
-#if HAVE_INTROSPECTION
-#
-#girdir = $(GIRDIR)
-#dist_gir_DATA = $(BUILT_GIRSOURCES)
-#
-#EXTRA_DIST += $(BUILT_GIRSOURCES)
-#
-#typelibsdir = $(TYPELIBDIR)
-#typelibs_DATA = $(BUILT_GIRSOURCES:.gir=.typelib)
-#
-#%.typelib: %.gir $(G_IR_COMPILER)
-#	LD_LIBRARY_PATH=$${LD_LIBRARY_PATH:+$$LD_LIBRARY_PATH:}. $(G_IR_COMPILER) --includedir=$(srcdir) --includedir=. $(G_IR_COMPILER_OPTS) $< -o $(builddir)/$(@F)
-#
-#endif # HAVE_INTROSPECTION
+if HAVE_INTROSPECTION
+
+girdir = $(GIRDIR)
+dist_gir_DATA = $(BUILT_GIRSOURCES)
+
+EXTRA_DIST += $(BUILT_GIRSOURCES)
+
+typelibsdir = $(TYPELIBDIR)
+typelibs_DATA = $(BUILT_GIRSOURCES:.gir=.typelib)
+
+%.typelib: %.gir $(G_IR_COMPILER)
+	LD_LIBRARY_PATH=$${LD_LIBRARY_PATH:+$$LD_LIBRARY_PATH:}. $(G_IR_COMPILER) --includedir=$(srcdir) --includedir=. $(G_IR_COMPILER_OPTS) $< -o $(builddir)/$(@F)
+
+endif # HAVE_INTROSPECTION
 
 # ------------------- pango-querymodules -------------------
 
