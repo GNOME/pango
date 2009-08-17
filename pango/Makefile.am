@@ -554,8 +554,6 @@ if HAVE_INTROSPECTION
 girdir = $(GIRDIR)
 dist_gir_DATA = $(BUILT_GIRSOURCES)
 
-EXTRA_DIST += $(BUILT_GIRSOURCES)
-
 typelibsdir = $(TYPELIBDIR)
 typelibs_DATA = $(BUILT_GIRSOURCES:.gir=.typelib)
 
