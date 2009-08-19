@@ -111,7 +111,7 @@ _get_table  (hb_tag_t tag, void *user_data)
     return hb_blob_create_empty ();
 
   return hb_blob_create ((const char *) buffer, length,
-			 HB_MEMORY_MODE_WRITEABLE,
+			 HB_MEMORY_MODE_WRITABLE,
 			 g_free, NULL);
 }
 
@@ -149,7 +149,7 @@ pango_ot_info_get (FT_Face face)
 
 	blob = hb_blob_create ((const char *) face->stream->base,
 			       (unsigned int) face->stream->size,
-			       HB_MEMORY_MODE_READONLY_MAY_MAKE_WRITEABLE,
+			       HB_MEMORY_MODE_READONLY_MAY_MAKE_WRITABLE,
 			       NULL, NULL);
 	info->hb_face = hb_face_create_for_data (blob, face->face_index);
 	hb_blob_destroy (blob);
