@@ -135,6 +135,7 @@ $(srcdir)/.gitignore: Makefile.am $(top_srcdir)/git.mk
 			$(GITIGNOREFILES) \
 			$(CLEANFILES) \
 			$(PROGRAMS) \
+			$(check_PROGRAMS) \
 			$(EXTRA_PROGRAMS) \
 			$(LTLIBRARIES) \
 			so_locations \
