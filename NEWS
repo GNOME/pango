@@ -1,3 +1,10 @@
+Overview of changes between 1.25.4 and 1.25.5
+=============================================
+- Minor HarfBuzz code shuffling
+- Bugs fixed:
+    Bug 592484 -  invalid write in HB
+    Bug 592194 -  Fix missing _SC_PAGE_SIZE macro
+
 Overview of changes between 1.25.3 and 1.25.4
 =============================================
 - Fix various possible overflows in HarfBuzz
