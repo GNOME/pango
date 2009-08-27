@@ -554,6 +554,7 @@ _pango_ot_info_substitute  (const PangoOTInfo    *info,
 					       &lookup_count,
 					       lookup_indexes);
 
+      lookup_count = MIN (G_N_ELEMENTS (lookup_indexes), lookup_count);
       for (j = 0; j < lookup_count; j++)
 	hb_ot_layout_substitute_lookup (info->hb_face,
 					buffer->buffer,
@@ -601,6 +602,7 @@ _pango_ot_info_position    (const PangoOTInfo    *info,
 					       &lookup_count,
 					       lookup_indexes);
 
+      lookup_count = MIN (G_N_ELEMENTS (lookup_indexes), lookup_count);
       for (j = 0; j < lookup_count; j++)
 	hb_ot_layout_position_lookup (info->hb_face, hb_font,
 				      buffer->buffer,
