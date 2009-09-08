@@ -1,3 +1,10 @@
+Overview of changes between 1.25.5 and 1.25.6
+=============================================
+- Fix a couple of array overflow bugs
+- Bugs fixed:
+    Bug 593240 - updating pango to latest git master makes things crash
+    Bug 593231 - < c99 compiler dislikes ValueRecord
+
 Overview of changes between 1.25.4 and 1.25.5
 =============================================
 - Minor HarfBuzz code shuffling
