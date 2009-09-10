@@ -154,7 +154,9 @@ endif
 
 .PHONY: dist-local-check-no-cross-references
 
+if ENABLE_GTK_DOC
 TESTS = check.docs
 TESTS_ENVIRONMENT = srcdir="$(srcdir)" top_srcdir="$(top_srcdir)" MAKE="$(MAKE) $(AM_MAKEFLAGS)" DOC_MODULE="$(DOC_MODULE)" REPORT_FILES="$(REPORT_FILES)"
+endif
 
 -include $(top_srcdir)/git.mk
