@@ -293,35 +293,22 @@ pango_layout_copy (PangoLayout *src)
 
   g_return_val_if_fail (PANGO_IS_LAYOUT (src), NULL);
 
-  layout = pango_layout_new (src->context);
+  /* Copy referenced members */
 
+  layout = pango_layout_new (src->context);
   if (src->attrs)
     layout->attrs = pango_attr_list_copy (src->attrs);
-
   if (src->font_desc)
     layout->font_desc = pango_font_description_copy (src->font_desc);
-
-  layout->text = g_strdup (src->text);
-  layout->length = src->length;
-  layout->width = src->width;
-  layout->height = src->height;
-  layout->indent = src->indent;
-  layout->spacing = src->spacing;
-  layout->justify = src->justify;
-  layout->auto_dir = src->auto_dir;
-  layout->alignment = src->alignment;
-  layout->n_chars = src->n_chars;
-  layout->tab_width = src->tab_width;
-
   if (src->tabs)
     layout->tabs = pango_tab_array_copy (src->tabs);
-  layout->wrap = src->wrap;
-  layout->ellipsize = src->ellipsize;
 
-  layout->unknown_glyphs_count = -1;
+  /* Dupped */
+  layout->text = g_strdup (src->text);
 
-  /* unknown_glyphs_count, is_wrapped, is_ellipsized, log_attrs, lines
-   * fields are updated by check_lines */
+  /* Value fields */
+  memcpy (&layout->copy_begin, &src->copy_begin,
+	  G_STRUCT_OFFSET (PangoLayout, copy_end) - G_STRUCT_OFFSET (PangoLayout, copy_begin));
 
   return layout;
 }
