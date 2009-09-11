@@ -460,7 +460,7 @@ pango_layout_set_wrap (PangoLayout  *layout,
     {
       layout->wrap = wrap;
 
-      if (layout->is_wrapped)
+      if (layout->width != -1)
 	pango_layout_clear_lines (layout);
     }
 }
