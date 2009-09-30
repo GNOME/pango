@@ -990,7 +990,7 @@ pango_cairo_show_layout_line (cairo_t          *cr,
  * @cr: a Cairo context
  * @layout: a Pango layout
  *
- * Draws a #PangoLayoutLine in the specified cairo context.
+ * Draws a #PangoLayout in the specified cairo context.
  * The top-left corner of the #PangoLayout will be drawn
  * at the current point of the cairo context.
  *
