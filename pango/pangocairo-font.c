@@ -133,7 +133,7 @@ done:
 	  if (!font_face)
 		g_warning ("font_face is NULL");
 	  else
-		g_warning ("font_font status is: %s",
+		g_warning ("font_face status is: %s",
 			   cairo_status_to_string (cairo_font_face_status (font_face)));
 
 	  if (!scaled_font)
