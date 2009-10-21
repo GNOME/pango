@@ -82,7 +82,7 @@ git-mk-install:
 ### .gitignore generation
 
 $(srcdir)/.gitignore: Makefile.am $(top_srcdir)/git.mk
-	@echo Generating $@; \
+	$(AM_V_GEN) \
 	{ \
 		if test "x$(DOC_MODULE)" = x -o "x$(DOC_MAIN_SGML_FILE)" = x; then :; else \
 			for x in \
@@ -115,6 +115,7 @@ $(srcdir)/.gitignore: Makefile.am $(top_srcdir)/git.mk
 				po/.intltool-merge-cache \
 				"po/*.gmo" \
 				"po/*.mo" \
+				po/$(GETTEXT_PACKAGE).pot \
 				intltool-extract.in \
 				intltool-merge.in \
 				intltool-update.in \
