@@ -368,12 +368,10 @@ cairo_required=1.7.6
 PKG_CHECK_MODULES(CAIRO, cairo >= $cairo_required, have_cairo=true, AC_MSG_RESULT([no]))
    
 if $have_cairo ; then
-  m4_pattern_allow([PKG_CONFIG_DISABLE_UNINSTALLED])
-  INSTALLED_CAIRO_LIBS=`PKG_CONFIG_DISABLE_UNINSTALLED=yes $PKG_CONFIG --libs cairo`
   pango_save_libs=$LIBS
-  LIBS="$LIBS $INSTALLED_CAIRO_LIBS"
+  LIBS="$LIBS $CAIRO_LIBS"
   pango_save_ldflags=$LDFLAGS
-  LDFLAGS="$LDFLAGS $INSTALLED_CAIRO_LIBS"
+  LDFLAGS="$LDFLAGS $CAIRO_LIBS"
 
   have_cairo=false
   cairo_font_backends=""
