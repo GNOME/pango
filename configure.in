@@ -470,6 +470,11 @@ PKG_CHECK_MODULES(GLIB, $GLIB_MODULES, :,
 *** Glib $GLIB_REQUIRED_VERSION or better is required. The latest version of 
 *** Glib is always available from ftp://ftp.gtk.org/.]))
 
+# Setup GLIB_MKENUMS to use glib-mkenums even if GLib is uninstalled.
+GLIB_MKENUMS=`$PKG_CONFIG --variable=glib_mkenums glib-2.0`
+AC_SUBST(GLIB_MKENUMS)
+
+
 # Add in gthread-2.0 to CFLAGS but not to LIBS so we get any
 # necesary defines for thread-safety.
 GLIB_CFLAGS=`$PKG_CONFIG --cflags $GLIB_MODULES gthread-2.0`

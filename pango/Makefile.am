@@ -133,7 +133,7 @@ pangoinclude_HEADERS =	   \
 pango-enum-types.h: s-enum-types-h
 	$(AM_V_GEN) true
 s-enum-types-h: @REBUILD@ $(pango_headers) Makefile
-	$(AM_V_GEN) ( cd $(srcdir) && glib-mkenums \
+	$(AM_V_GEN) ( cd $(srcdir) && $(GLIB_MKENUMS) \
 			--fhead "#ifndef __PANGO_ENUM_TYPES_H__\n#define __PANGO_ENUM_TYPES_H__\n\n#include <glib-object.h>\n\nG_BEGIN_DECLS\n" \
 			--fprod "/* enumerations from \"@filename@\" */\n" \
 			--vhead "GType @enum_name@_get_type (void);\n#define @ENUMPREFIX@_TYPE_@ENUMSHORT@ (@enum_name@_get_type())\n" 	\
@@ -146,7 +146,7 @@ s-enum-types-h: @REBUILD@ $(pango_headers) Makefile
 pango-enum-types.c: s-enum-types-c
 	$(AM_V_GEN) true
 s-enum-types-c: @REBUILD@ $(pango_headers) Makefile
-	$(AM_V_GEN) ( cd $(srcdir) && glib-mkenums \
+	$(AM_V_GEN) ( cd $(srcdir) && $(GLIB_MKENUMS) \
 			--fhead "#include <pango.h>" \
 			--fprod "\n/* enumerations from \"@filename@\" */" \
 			--vhead "GType\n@enum_name@_get_type (void)\n{\n  static GType etype = 0;\n  if (etype == 0) {\n    static const G@Type@Value values[] = {" 	\
