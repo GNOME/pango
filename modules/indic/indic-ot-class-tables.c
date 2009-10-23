@@ -105,7 +105,7 @@ static const IndicOTCharClass devaCharClasses[] =
     _ct, _ct, _ct, _ct, _ct, _ct, _ct, _ct, _ct, _cn, _ct, _ct, _ct, _ct, _ct, _ct, /* 0920 - 092F */
     _rv, _cn, _ct, _ct, _ct, _ct, _ct, _ct, _ct, _ct, _xx, _xx, _nu, _xx, _dr, _dl, /* 0930 - 093F */
     _dr, _db, _db, _db, _db, _da, _da, _da, _da, _dr, _dr, _dr, _dr, _vr, _xx, _xx, /* 0940 - 094F */
-    _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _cn, _cn, _cn, _cn, _cn, _cn, _cn, _cn, /* 0950 - 095F */
+    _xx, _xx, _db, _da, _da, _xx, _xx, _xx, _cn, _cn, _cn, _cn, _cn, _cn, _cn, _cn, /* 0950 - 095F */
     _iv, _iv, _db, _db, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, /* 0960 - 096F */
     _xx, _xx, _iv, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _ct, _ct, _ct, _ct, _ct  /* 0970 - 097F */
 };
@@ -147,7 +147,7 @@ static const IndicOTCharClass gujrCharClasses[] =
     _rv, _xx, _ct, _ct, _xx, _ct, _ct, _ct, _ct, _ct, _xx, _xx, _nu, _xx, _dr, _dl, /* 0AB0 - 0ABF */
     _dr, _db, _db, _db, _db, _da, _xx, _da, _da, _dr, _xx, _dr, _dr, _vr, _xx, _xx, /* 0AC0 - 0ACF */
     _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, /* 0AD0 - 0ADF */
-    _iv, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx  /* 0AE0 - 0AEF */
+    _iv, _xx, _db, _db, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx  /* 0AE0 - 0AEF */
 };
 
 static const IndicOTCharClass oryaCharClasses[] =
@@ -200,10 +200,10 @@ static const IndicOTCharClass kndaCharClasses[] =
     _xx, _xx, _mp, _mp, _xx, _iv, _iv, _iv, _iv, _iv, _iv, _iv, _iv, _xx, _iv, _iv, /* 0C80 - 0C8F */
     _iv, _xx, _iv, _iv, _iv, _bb, _bb, _bb, _bb, _bb, _bb, _bb, _bb, _bb, _bb, _bb, /* 0C90 - 0C9F */
     _bb, _bb, _bb, _bb, _bb, _bb, _bb, _bb, _bb, _xx, _bb, _bb, _bb, _bb, _bb, _bb, /* 0CA0 - 0CAF */
-    _rb, _ct, _bb, _bb, _xx, _bb, _bb, _bb, _bb, _bb, _xx, _xx, _xx, _xx, _dr, _da, /* 0CB0 - 0CBF */
+    _rb, _ct, _bb, _bb, _xx, _bb, _bb, _bb, _bb, _bb, _xx, _xx, _nu, _xx, _dr, _da, /* 0CB0 - 0CBF */
     _s1, _dr, _dr, _lm, _lm, _xx, _da, _s2, _s3, _xx, _s4, _s5, _da, _vr, _xx, _xx, /* 0CC0 - 0CCF */
     _xx, _xx, _xx, _xx, _xx, _lm, _lm, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _ct, _xx, /* 0CD0 - 0CDF */
-    _iv, _iv, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx  /* 0CE0 - 0CEF */
+    _iv, _iv, _lm, _lm, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx, _xx  /* 0CE0 - 0CEF */
 };
 
 /*
