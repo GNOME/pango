@@ -29,6 +29,17 @@ static hb_buffer_t *cached_buffer = NULL;
 G_LOCK_DEFINE_STATIC (cached_buffer);
 
 static hb_buffer_t *
+create_buffer (void)
+{
+  hb_buffer_t *buffer;
+
+  buffer = hb_buffer_create (32);
+  hb_buffer_set_unicode_funcs (buffer, hb_glib_get_unicode_funcs ());
+
+  return buffer;
+}
+
+static hb_buffer_t *
 acquire_buffer (gboolean *free_buffer)
 {
   hb_buffer_t *buffer;
@@ -36,14 +47,14 @@ acquire_buffer (gboolean *free_buffer)
   if (G_LIKELY (G_TRYLOCK (cached_buffer)))
     {
       if (G_UNLIKELY (!cached_buffer))
-	cached_buffer = hb_buffer_create (64);
+	cached_buffer = create_buffer ();
 
       buffer = cached_buffer;
       *free_buffer = FALSE;
     }
   else
     {
-      buffer = hb_buffer_create (32);
+      buffer = create_buffer ();
       *free_buffer = TRUE;
     }
 

@@ -366,7 +366,7 @@ have_cairo_atsui=false
 cairo_required=1.7.6
 
 PKG_CHECK_MODULES(CAIRO, cairo >= $cairo_required, have_cairo=true, AC_MSG_RESULT([no]))
-   
+
 if $have_cairo ; then
   pango_save_libs=$LIBS
   LIBS="$LIBS $CAIRO_LIBS"
@@ -447,6 +447,11 @@ AM_CONDITIONAL(HAVE_CAIRO_XLIB, $have_cairo_xlib)
 AM_CONDITIONAL(HAVE_CAIRO_WIN32, $have_cairo_win32)
 AM_CONDITIONAL(HAVE_CAIRO_FREETYPE, $have_cairo_freetype)
 AM_CONDITIONAL(HAVE_CAIRO_ATSUI, $have_cairo_atsui)
+
+
+harfbuzz_required=0.1
+PKG_CHECK_MODULES(HARFBUZZ, harfbuzz >= $harfbuzz_required, have_harfbuzz=true, have_harfbuzz=false)
+AM_CONDITIONAL(HAVE_HARFBUZZ, $have_harfbuzz)
 
 #
 # We must have some backend defined, in order for the pango-querymodules
@@ -994,7 +999,6 @@ AC_CONFIG_FILES([
 Makefile 
 pango/Makefile
 pango/mini-fribidi/Makefile
-pango/opentype/Makefile
 pango/pango.rc
 pango/pangoft2.rc
 pango/pangowin32.rc

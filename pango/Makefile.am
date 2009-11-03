@@ -4,18 +4,10 @@
 # which are more like other make's VPATH.
 GPATH = $(srcdir)
 
-if HAVE_FREETYPE
-OPENTYPE_SUBDIR=opentype
-endif
-
 EXTRA_DIST = 
 BUILT_GIRSOURCES =
 
-FRIBIDI_SUBDIR=mini-fribidi
-
-SUBDIRS = $(OPENTYPE_SUBDIR) $(FRIBIDI_SUBDIR)
-
-DIST_SUBDIRS = mini-fribidi opentype
+SUBDIRS = mini-fribidi
 
 INCLUDES =						\
 	-DG_LOG_DOMAIN=\"Pango\"			\
@@ -28,6 +20,7 @@ INCLUDES =						\
 	$(GLIB_CFLAGS)					\
 	$(XFT_CFLAGS)					\
 	$(CAIRO_CFLAGS)					\
+	$(HARFBUZZ_CFLAGS)				\
 	$(FREETYPE_CFLAGS)				\
 	$(X_CFLAGS)
 
@@ -242,14 +235,13 @@ pangoft2_public_sources = 	\
 
 libpangoft2_1_0_la_LDFLAGS = $(LIBRARY_LIBTOOL_OPTIONS)
 libpangoft2_1_0_la_LIBADD =			\
-	opentype/libharfbuzz.la			\
 	libpango-$(PANGO_API_VERSION).la	\
 	$(INCLUDED_FC_MODULES)			\
 	$(GLIB_LIBS)				\
+	$(HARFBUZZ_LIBS)			\
 	$(FREETYPE_LIBS)			\
 	$(libm)
 libpangoft2_1_0_la_DEPENDENCIES =		\
-	opentype/libharfbuzz.la			\
 	libpango-$(PANGO_API_VERSION).la	\
 	$(INCLUDED_FC_MODULES)
 libpangoft2_1_0_la_SOURCES =   	\

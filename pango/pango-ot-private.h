@@ -25,8 +25,8 @@
 #include <glib-object.h>
 
 #include <pango/pango-ot.h>
-#include "opentype/hb-ot.h"
-#include "opentype/hb-glib.h"
+#include <hb-ot.h>
+#include <hb-glib.h>
 
 G_BEGIN_DECLS
 

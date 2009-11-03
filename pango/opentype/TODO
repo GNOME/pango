@@ -1,6 +1,0 @@
-- HB_OT_LAYOUT_GLYPH_CLASS_BASE_GLYPH vs LookupType::... mess
-- Rename LookupFlag::MarkAttachmentType to LookupFlag:IgnoreSpecialMarks
-- cmap14 support in get_glyph callback
-- size_t?
-- Figure out compiler selection (add test for link to libstdc++)
-- Rename MEMORY_MODE to ACCESS_MODE
