@@ -112,7 +112,7 @@ _get_table  (hb_tag_t tag, void *user_data)
 
   return hb_blob_create ((const char *) buffer, length,
 			 HB_MEMORY_MODE_WRITABLE,
-			 g_free, NULL);
+			 g_free, buffer);
 }
 
 
