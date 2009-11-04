@@ -452,11 +452,11 @@ pango_ot_info_list_scripts (PangoOTInfo      *info,
 {
   hb_tag_t tt = get_hb_table_type (table_type);
   PangoOTTag *result;
-  unsigned int count = 0;
+  unsigned int count;
 
-  hb_ot_layout_table_get_script_tags (info->hb_face, tt, &count, NULL);
+  count = hb_ot_layout_table_get_script_tags (info->hb_face, tt, 0, NULL, NULL);
   result = g_new (PangoOTTag, count + 1);
-  hb_ot_layout_table_get_script_tags (info->hb_face, tt, &count, result);
+  hb_ot_layout_table_get_script_tags (info->hb_face, tt, 0, &count, result);
   result[count] = 0;
 
   return result;
@@ -482,11 +482,11 @@ pango_ot_info_list_languages (PangoOTInfo      *info,
 {
   hb_tag_t tt = get_hb_table_type (table_type);
   PangoOTTag *result;
-  unsigned int count = 0;
+  unsigned int count;
 
-  hb_ot_layout_script_get_language_tags (info->hb_face, tt, script_index, &count, NULL);
+  count = hb_ot_layout_script_get_language_tags (info->hb_face, tt, script_index, 0, NULL, NULL);
   result = g_new (PangoOTTag, count + 1);
-  hb_ot_layout_script_get_language_tags (info->hb_face, tt, script_index, &count, result);
+  hb_ot_layout_script_get_language_tags (info->hb_face, tt, script_index, 0, &count, result);
   result[count] = 0;
 
   return result;
@@ -516,11 +516,11 @@ pango_ot_info_list_features  (PangoOTInfo      *info,
 {
   hb_tag_t tt = get_hb_table_type (table_type);
   PangoOTTag *result;
-  unsigned int count = 0;
+  unsigned int count;
 
-  hb_ot_layout_language_get_feature_tags (info->hb_face, tt, script_index, language_index, &count, NULL);
+  count = hb_ot_layout_language_get_feature_tags (info->hb_face, tt, script_index, language_index, 0, NULL, NULL);
   result = g_new (PangoOTTag, count + 1);
-  hb_ot_layout_language_get_feature_tags (info->hb_face, tt, script_index, language_index, &count, result);
+  hb_ot_layout_language_get_feature_tags (info->hb_face, tt, script_index, language_index, 0, &count, result);
   result[count] = 0;
 
   return result;
@@ -548,10 +548,10 @@ _pango_ot_info_substitute  (const PangoOTInfo    *info,
       hb_ot_layout_feature_get_lookup_indexes (info->hb_face,
 					       HB_OT_TAG_GSUB,
 					       rule->feature_index,
+					       0,
 					       &lookup_count,
 					       lookup_indexes);
 
-      lookup_count = MIN (G_N_ELEMENTS (lookup_indexes), lookup_count);
       for (j = 0; j < lookup_count; j++)
 	hb_ot_layout_substitute_lookup (info->hb_face,
 					buffer->buffer,
@@ -596,10 +596,10 @@ _pango_ot_info_position    (const PangoOTInfo    *info,
       hb_ot_layout_feature_get_lookup_indexes (info->hb_face,
 					       HB_OT_TAG_GPOS,
 					       rule->feature_index,
+					       0,
 					       &lookup_count,
 					       lookup_indexes);
 
-      lookup_count = MIN (G_N_ELEMENTS (lookup_indexes), lookup_count);
       for (j = 0; j < lookup_count; j++)
 	hb_ot_layout_position_lookup (info->hb_face, hb_font,
 				      buffer->buffer,
