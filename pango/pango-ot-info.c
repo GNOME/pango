@@ -90,31 +90,6 @@ pango_ot_info_finalizer (void *object)
   g_object_unref (info);
 }
 
-static hb_blob_t *
-_get_table  (hb_tag_t tag, void *user_data)
-{
-  PangoOTInfo *info = (PangoOTInfo *) user_data;
-  FT_Byte *buffer;
-  FT_ULong  length = 0;
-  FT_Error error;
-
-  error = FT_Load_Sfnt_Table (info->face, tag, 0, NULL, &length);
-  if (error)
-    return hb_blob_create_empty ();
-
-  buffer = g_malloc (length);
-  if (buffer == NULL)
-    return hb_blob_create_empty ();
-
-  error = FT_Load_Sfnt_Table (info->face, tag, 0, buffer, &length);
-  if (error)
-    return hb_blob_create_empty ();
-
-  return hb_blob_create ((const char *) buffer, length,
-			 HB_MEMORY_MODE_WRITABLE,
-			 g_free, buffer);
-}
-
 
 /**
  * pango_ot_info_get:
@@ -143,19 +118,7 @@ pango_ot_info_get (FT_Face face)
       face->generic.finalizer = pango_ot_info_finalizer;
 
       info->face = face;
-
-      if (face->stream->base != NULL) {
-	hb_blob_t *blob;
-
-	blob = hb_blob_create ((const char *) face->stream->base,
-			       (unsigned int) face->stream->size,
-			       HB_MEMORY_MODE_READONLY_MAY_MAKE_WRITABLE,
-			       NULL, NULL);
-	info->hb_face = hb_face_create_for_data (blob, face->face_index);
-	hb_blob_destroy (blob);
-      } else {
-	info->hb_face = hb_face_create_for_tables (_get_table, NULL, info);
-      }
+      info->hb_face = hb_ft_face_create (face, NULL);
 
       /* XXX this is such a waste if not SFNT */
       if (!hb_ot_layout_has_font_glyph_classes (info->hb_face))
